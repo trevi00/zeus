@@ -8,8 +8,8 @@ drivers load these rows as identical inputs, so the S6 goldens characterize the 
 over them without depending on unmoved contexts (DESIGN-s6 §7).
 
 Provenance: SOURCE M7 e38aa722 (`src/` and `tests/` unchanged, checked below); the M7 dev environment (the
-repository root `.venv`, which imports `src/`); the harness determinism patches (FakeClock/FakeIds) installed after
-every M7 module is imported; pinned Git identity/dates (GIT_ENV); a fixed temporary root that is recreated for every
+repository root `.venv`, which imports `src/`); the harness determinism patches (a 1 ms ticking FakeClock, FakeIds) installed
+after every M7 module is imported; pinned Git identity/dates (GIT_ENV); a fixed temporary root that is recreated for every
 run. The output is byte-reproducible:
 run it twice and compare. Run from the repository root:
 
@@ -44,6 +44,23 @@ def unchanged() -> None:
         raise SystemExit("src/ or tests/ differ from SOURCE " + SOURCE + ": refusing to record")
 
 
+def ticking_clock():
+    """A FakeClock that advances 1 ms per read: deterministic, and strictly increasing like real time. The flows
+    order rows by (created_at, id), so a frozen clock would change which prior failures count (checked: the M7
+    `budget_refused` flow fails under a frozen clock and passes under this one)."""
+    import datetime
+
+    import determinism
+
+    class TickingClock(determinism.FakeClock):
+        def now(self, tz=None):
+            value = super().now(tz)
+            self.advance(0.001)
+            return value
+
+    return TickingClock(), datetime
+
+
 def rows(store) -> list:
     with store.transaction() as tx:
         return sorted(({"bucket": r["bucket"], "id": r["id"], "body": r["body"]} for r in tx.records()),
@@ -57,11 +74,45 @@ def held_flow(tmp: Path) -> dict:
     root, successor, research, investigation, dispatch = tcr.held(world, tmp)
     return {"flow": "tests/test_continuation_research.py::held", "world": world,
             "ids": {"root": root, "successor": successor, "research_intent": research["id"],
-                    "investigation": investigation},
-            "evidence": {tcr.EVIDENCE[0]: tcr.REPORT}}
+                    "investigation": investigation}}
 
 
-FLOWS = {"held": held_flow}
+def accepted003_flow(tmp: Path) -> dict:
+    import test_continuation_research as tcr
+
+    world = tcr.World(tmp)
+    root, successor, research, investigation, dispatch, repair = tcr.accepted003(world, tmp)
+    return {"flow": "tests/test_continuation_research.py::accepted003", "world": world,
+            "ids": {"root": root, "successor": successor, "research_intent": research["id"],
+                    "investigation": investigation, "repair_intent": repair["id"]}}
+
+
+def budget_refused_flow(tmp: Path) -> dict:
+    import test_continuation_research as tcr
+
+    world = tcr.World(tmp, max_corrections=2)
+    family = tcr.budget_refused(world, tmp)
+    return {"flow": "tests/test_continuation_research.py::budget_refused", "world": world,
+            "ids": {"child": family["child"], "refused_intent": family["refused"]["id"],
+                    "research_intent": family["research"]["id"]}}
+
+
+FLOWS = {"held": held_flow, "accepted003": accepted003_flow, "budget_refused": budget_refused_flow}
+
+
+def artifacts(root: Path) -> dict:
+    """ref -> text of every artifact the flow stored (the evidence bytes the scenarios verify)."""
+    import hashlib
+
+    out = {}
+    for path in sorted(p for p in root.rglob("*") if p.is_file()):
+        data = path.read_bytes()
+        try:
+            text = data.decode("utf-8")
+        except UnicodeDecodeError:
+            continue
+        out["sha256:" + hashlib.sha256(data).hexdigest()] = text
+    return out
 
 
 def main(argv) -> int:
@@ -69,19 +120,20 @@ def main(argv) -> int:
     os.environ.update(GIT_ENV)
     import determinism
     import test_continuation  # noqa: F401  (every M7 module the flows use is imported before patching)
-    import test_continuation_research  # noqa: F401
+    import test_continuation_research as tcr
 
     out = {"schema": "zeus:rebuild-s6-fixture:1", "source_commit": "e38aa722", "generator":
-           "compare/fixtures/s6/generate_research.py", "labelled": True, "flows": {}}
+           "compare/fixtures/s6/generate_research.py", "labelled": True, "flows": {},
+           "texts": {"report": tcr.REPORT, "attestation": tcr.ATTESTATION, "rationale": tcr.RATIONALE}}
     for name, flow in FLOWS.items():
-        determinism.install(determinism.FakeClock(), determinism.FakeIds())
+        determinism.install(ticking_clock()[0], determinism.FakeIds())
         if ROOT.exists():
             shutil.rmtree(ROOT)
         ROOT.mkdir(parents=True)
         made = flow(ROOT)
         world = made["world"]
         out["flows"][name] = {
-            "flow": made["flow"], "ids": made["ids"], "evidence": made["evidence"],
+            "flow": made["flow"], "ids": made["ids"], "evidence": artifacts(ROOT / "runtime" / "artifacts"),
             "policy_document": world.document, "pin": world.pin,
             "runtime": world.runtime("a"), "control": rows(world.control), "lane": rows(world.lane.store)}
     shutil.rmtree(ROOT, ignore_errors=True)
