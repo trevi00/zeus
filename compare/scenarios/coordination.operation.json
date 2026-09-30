@@ -1,0 +1,9 @@
+{
+ "family": "coordination.operation",
+ "description": "S5 Operation (RESEARCH-S5 D5/D6, check (d)): manifest example and refusals, deterministic assignment id; two-stage success, cached replay, configuration_mismatch, running and cycle residue without takeover; worker failure/exception, incomplete evidence (failed + owner handoff), lead rejection, ledger exhaustion, first settlement failure, collection failure, passed deadline; status; labelled M7 test fixtures (bus, fault-injected budget, executor with inspection rows, collector)",
+ "reference_driver": "drivers/reference/s5_operation.py",
+ "target_driver": null,
+ "golden": "goldens/reference/coordination.operation.json",
+ "slice": "S5",
+ "target_status": "pending: Operation is not yet moved"
+}

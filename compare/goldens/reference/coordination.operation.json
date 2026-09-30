@@ -1,0 +1,782 @@
+{
+ "canary_absent": true,
+ "collection_failed": {
+  "calls": [
+   "task",
+   "decision"
+  ],
+  "collected": 1,
+  "outcome": {
+   "cached": false,
+   "digest": "2edaaaa1d37da89b89245b86028e2f3c2d0bbcf4a333d924fbbe91c4e1d6d03f",
+   "exit_code": 1,
+   "reason_code": "collection_failed",
+   "status": "failed"
+  },
+  "records": [
+   [
+    "decisions_pending",
+    "5eed0000-0000-4000-8000-000000000020",
+    "debb710558ac50c053852c341a94fb5bb6c72ef8d6fd05f7f5a1044e831cc452"
+   ],
+   [
+    "evidence_inspections",
+    "insp-70d8050f-6e8b-5342-a78b-dc261e458f8f",
+    "4dbc5dce33f83f323ab7f03d0ff62354e5d86d82f3d9a04f07534cb13075d407"
+   ],
+   [
+    "local_cycles",
+    "operation:op-001",
+    "6125fe1ade6e8b42567a117d640f885aac2baefdc4e2d90931e3d9fc787b57e0"
+   ],
+   [
+    "operations",
+    "op-001",
+    "f1be492a298465f0df25522ad81197a92db10a789bd7ec9df906f4190802289a"
+   ],
+   [
+    "outbox",
+    "5eed0000-0000-4000-8000-000000000020",
+    "a7911e6d708b76f2dc1588af3f06fcd51497ecdd6a3c7f5b72b21c45e2f050c1"
+   ],
+   [
+    "outbox",
+    "70d8050f-6e8b-5342-a78b-dc261e458f8f",
+    "654f71cf3ee8e0268c405ad8268e979a2125cf75914708ee556770c73a8768ab"
+   ],
+   [
+    "outbox_attempts",
+    "5eed0000-0000-4000-8000-00000000001f",
+    "d51485ba6fe9184c79e9340155c1b13184fca6db6ae1688d09253371ae382eaa"
+   ],
+   [
+    "outbox_attempts",
+    "5eed0000-0000-4000-8000-000000000021",
+    "eb493006e0d885f23b6eebae62bea54381bb9c188d1b0afd9ab4f55e5bf58f73"
+   ],
+   [
+    "outbox_delivery",
+    "5eed0000-0000-4000-8000-000000000020",
+    "de8d37aa03e82674eec8ac01c0f05bb3dc59a95725c8658b462fa6664d649513"
+   ],
+   [
+    "outbox_delivery",
+    "70d8050f-6e8b-5342-a78b-dc261e458f8f",
+    "c994b8456ac28283e39266c6d521f676d106460f71fa9e0cd9fd7e58d6daae30"
+   ],
+   [
+    "tasks",
+    "70d8050f-6e8b-5342-a78b-dc261e458f8f",
+    "0320502e262d0602543ffbe61a7f6b4c32130f9988209c61f7cebe6ee51d8b7d"
+   ],
+   [
+    "workflow_inbox",
+    "5eed0000-0000-4000-8000-000000000020",
+    "025501dbcc7e037f6c651d11986ab3ba74ee181e3726a30329ad0ae3f3a9c15d"
+   ]
+  ],
+  "reserved": 2,
+  "settled": [
+   [
+    "slot-1",
+    "succeeded"
+   ],
+   [
+    "slot-2",
+    "succeeded"
+   ]
+  ]
+ },
+ "configuration_mismatch": {
+  "message": "operation refused: configuration_mismatch",
+  "reason_code": "configuration_mismatch",
+  "refused": "OperationRefused"
+ },
+ "cycle_residue": {
+  "calls": [],
+  "collected": 0,
+  "outcome": {
+   "message": "operation refused: cycle_residue",
+   "reason_code": "cycle_residue",
+   "refused": "OperationRefused"
+  },
+  "records": [
+   [
+    "local_cycles",
+    "operation:op-001",
+    "a1992a05fc6868e44f3fee9507f9d072549c417141ca93815bdb9c9e7cee918d"
+   ]
+  ],
+  "reserved": 0,
+  "settled": []
+ },
+ "deadline_expired": {
+  "calls": [],
+  "collected": 1,
+  "outcome": {
+   "cached": false,
+   "digest": "dbff5ce896a19512ab85b01c3ccf2d380aa3f310d16a3466388c8d2a89237973",
+   "exit_code": 1,
+   "reason_code": "deadline_expired",
+   "status": "failed"
+  },
+  "records": [
+   [
+    "execution_fences",
+    "tasks:70d8050f-6e8b-5342-a78b-dc261e458f8f",
+    "689c2ca26df9da422f5eb0144939c1ede0d88c636da7d418d0498ae5ce3c6590"
+   ],
+   [
+    "local_cycles",
+    "operation:op-001",
+    "150ebced96b1f3b626fdb71ac4567de2af48ba1aa14ae0dc33d4748a1658f740"
+   ],
+   [
+    "operation_dispositions",
+    "964374bc1e9294ffa2ca55c5b3c1d9cd6c76aab986fcba522e87355f13d2b224",
+    "36f31cc1dcb8d8d15a66387e567b77d87441b394dd494d8ab2818ac46e03550e"
+   ],
+   [
+    "operations",
+    "op-001",
+    "402c1bf6bacc2ce9f17a386ff5d592ae2f5d5d4bcfa3bb9eed59db7227194d96"
+   ],
+   [
+    "outbox",
+    "70d8050f-6e8b-5342-a78b-dc261e458f8f",
+    "80966e721b221995badc22fe32b99058ace4978e9995e5bd0c9fc415158340e0"
+   ],
+   [
+    "outbox_attempts",
+    "5eed0000-0000-4000-8000-000000000023",
+    "44d5682a77787bfa5a71086587081334c7fc4e7c3a05eb2def2415480d41d913"
+   ],
+   [
+    "outbox_delivery",
+    "70d8050f-6e8b-5342-a78b-dc261e458f8f",
+    "a7c6fc2b1c80f36b870b73967c84fa62db3d1c0c9610487825041bf9a94ff1b2"
+   ],
+   [
+    "tasks",
+    "70d8050f-6e8b-5342-a78b-dc261e458f8f",
+    "ddf83f4de91fecfd9451132e7b4b3132068c86d64b17237dccf474a25bcba31f"
+   ]
+  ],
+  "reserved": 0,
+  "settled": []
+ },
+ "evidence_incomplete": {
+  "calls": [
+   "task"
+  ],
+  "collected": 1,
+  "outcome": {
+   "cached": false,
+   "digest": "5b222404c0c70b35105c9446b3d9f8c947de0e100fbdaeac15b790983f046386",
+   "exit_code": 1,
+   "reason_code": "evidence_gate_refused",
+   "status": "failed"
+  },
+  "records": [
+   [
+    "decisions_pending",
+    "5eed0000-0000-4000-8000-000000000010",
+    "6b3ad49e6903d2322940bc0d8d7253cf59cf614fcb6638e2d2b068ab18f603b5"
+   ],
+   [
+    "evidence_inspections",
+    "insp-70d8050f-6e8b-5342-a78b-dc261e458f8f",
+    "2f84a61b5d0dc45e8e7a51130b2e9272f53449cad27ade9ea658b7b1680507e0"
+   ],
+   [
+    "execution_fences",
+    "decisions_pending:5eed0000-0000-4000-8000-000000000010",
+    "bf80bc2c97df68541e62749b12a71a3d798d305a79e8b7f7c1696294dea27116"
+   ],
+   [
+    "local_cycles",
+    "operation:op-001",
+    "85252795d8bc24a1e93eb969294d8808b580903bd1756a2e1e5c8f1e3b6f13e5"
+   ],
+   [
+    "operation_dispositions",
+    "d6be02f5b79a18dd3efe812945dd1090a736fde0f70a5ffeb9cc240d6912ef26",
+    "6a8ad756c6a1cd73c3f72ac71200d64633758b397d80693adb12361509469626"
+   ],
+   [
+    "operations",
+    "op-001",
+    "1db4a7a0bfa03503244b6b1d8864aa38aeeede21e5ec1507d20fd2465a622249"
+   ],
+   [
+    "outbox",
+    "5eed0000-0000-4000-8000-000000000010",
+    "fdf2fb1a2b4cd4aff22ea6636fe677beec2fa2d839d1182c403cc4858c7c4b6f"
+   ],
+   [
+    "outbox",
+    "70d8050f-6e8b-5342-a78b-dc261e458f8f",
+    "654f71cf3ee8e0268c405ad8268e979a2125cf75914708ee556770c73a8768ab"
+   ],
+   [
+    "outbox_attempts",
+    "5eed0000-0000-4000-8000-00000000000f",
+    "898e08e3025e597310d40282e16418c4f0b0d7b459691513c059cd24f483ee83"
+   ],
+   [
+    "outbox_attempts",
+    "5eed0000-0000-4000-8000-000000000011",
+    "ada67a26768f38116ba506a0c379c42326a029b504c6e2c20c13d3fb323a5587"
+   ],
+   [
+    "outbox_delivery",
+    "5eed0000-0000-4000-8000-000000000010",
+    "34069b2c028644cefaf525e2fa8aff1095ed15ffc4b6fd7258dd3f3049a73f97"
+   ],
+   [
+    "outbox_delivery",
+    "70d8050f-6e8b-5342-a78b-dc261e458f8f",
+    "92641772db0ab6c7c7e8cb0b253b6997fe50ba26ebe1257adf01c19cc1168a9b"
+   ],
+   [
+    "tasks",
+    "70d8050f-6e8b-5342-a78b-dc261e458f8f",
+    "0320502e262d0602543ffbe61a7f6b4c32130f9988209c61f7cebe6ee51d8b7d"
+   ],
+   [
+    "workflow_inbox",
+    "5eed0000-0000-4000-8000-000000000010",
+    "256bc50ceac32ae21511735aa59fd61eeab166598cee26164620c91f90606a00"
+   ]
+  ],
+  "reserved": 1,
+  "settled": [
+   [
+    "slot-1",
+    "succeeded"
+   ]
+  ]
+ },
+ "lead_rejected": {
+  "calls": [
+   "task",
+   "decision"
+  ],
+  "collected": 1,
+  "outcome": {
+   "cached": false,
+   "digest": "2fe5f3284fad016f37c993641546bfc0e27bb100041436803b2e3e7245ab701b",
+   "exit_code": 1,
+   "reason_code": "lead_rejected",
+   "status": "rejected"
+  },
+  "records": [
+   [
+    "decisions_pending",
+    "5eed0000-0000-4000-8000-000000000014",
+    "e1e4c6a9a1ce333f546688437497651f223b2c6691eeea92f33c43bc55217380"
+   ],
+   [
+    "evidence_inspections",
+    "insp-70d8050f-6e8b-5342-a78b-dc261e458f8f",
+    "4dbc5dce33f83f323ab7f03d0ff62354e5d86d82f3d9a04f07534cb13075d407"
+   ],
+   [
+    "local_cycles",
+    "operation:op-001",
+    "8ce30223a8cf90adceffa8e26199276d60f7b0990fb908e800de44cc0da316d5"
+   ],
+   [
+    "operations",
+    "op-001",
+    "0128a12d0739943838e4646dade6cc703402d4dbed20a121b9817098d15da8bc"
+   ],
+   [
+    "outbox",
+    "5eed0000-0000-4000-8000-000000000014",
+    "a58775e12f4e2227ba290e6a73a321ce5a30ecfe5b077a14ae77cd49c9717d50"
+   ],
+   [
+    "outbox",
+    "70d8050f-6e8b-5342-a78b-dc261e458f8f",
+    "654f71cf3ee8e0268c405ad8268e979a2125cf75914708ee556770c73a8768ab"
+   ],
+   [
+    "outbox_attempts",
+    "5eed0000-0000-4000-8000-000000000013",
+    "137619c7504aa09fefec4fb0179f2f64559341e9c8a9b2d189afcd5bae8b9221"
+   ],
+   [
+    "outbox_attempts",
+    "5eed0000-0000-4000-8000-000000000015",
+    "b8af9e004e91227f8799e9ed350205444da89f95335b3a8625d7c2b0ed7d7c80"
+   ],
+   [
+    "outbox_delivery",
+    "5eed0000-0000-4000-8000-000000000014",
+    "ec335b86e4e8716546bd162bd00652424bbcbf17abfa6cefa0857492dce9958a"
+   ],
+   [
+    "outbox_delivery",
+    "70d8050f-6e8b-5342-a78b-dc261e458f8f",
+    "b370e681775871e1b6041fdc2ca9887fe67e42c7c657d045085da03ef4538026"
+   ],
+   [
+    "tasks",
+    "70d8050f-6e8b-5342-a78b-dc261e458f8f",
+    "0320502e262d0602543ffbe61a7f6b4c32130f9988209c61f7cebe6ee51d8b7d"
+   ],
+   [
+    "workflow_inbox",
+    "5eed0000-0000-4000-8000-000000000014",
+    "fd383668b757e0ef21b6b4df8b51897fd7a66752e800147da83c3df5a3601219"
+   ]
+  ],
+  "reserved": 2,
+  "settled": [
+   [
+    "slot-1",
+    "succeeded"
+   ],
+   [
+    "slot-2",
+    "succeeded"
+   ]
+  ]
+ },
+ "ledger_exhausted": {
+  "calls": [
+   "task"
+  ],
+  "collected": 1,
+  "outcome": {
+   "cached": false,
+   "digest": "cefd331d53164bb4bc9ece6df0db9b168377520a7f926c2eae48055d97151bbe",
+   "exit_code": 1,
+   "reason_code": "budget_exhausted",
+   "status": "exhausted"
+  },
+  "records": [
+   [
+    "decisions_pending",
+    "5eed0000-0000-4000-8000-000000000018",
+    "d412a05ba405bf6262fea70f78d9e55e15a4bd30fa9fdc1b420918d125aae910"
+   ],
+   [
+    "evidence_inspections",
+    "insp-70d8050f-6e8b-5342-a78b-dc261e458f8f",
+    "4dbc5dce33f83f323ab7f03d0ff62354e5d86d82f3d9a04f07534cb13075d407"
+   ],
+   [
+    "execution_fences",
+    "decisions_pending:5eed0000-0000-4000-8000-000000000018",
+    "64266f4c1cb9c6ce7506137c0762e91deb87056e88dff47fa9e42c271a56a065"
+   ],
+   [
+    "local_cycles",
+    "operation:op-001",
+    "3c0cdf0be9d178383b418cdfacb3bb3cc56e771cc6cb0d23d667097a1e6ac6d9"
+   ],
+   [
+    "operation_dispositions",
+    "0dc031c4c22a0876f85d8eb741e0cf6fcece366d1192236f13b82b56ac3163f9",
+    "0e938794723c8b3f33f653a9370c1e1e42d77c70b1d34f8daff44dd4ef878d74"
+   ],
+   [
+    "operations",
+    "op-001",
+    "ccd44b7af366e8a67a685e958791cbb0a3f900947fa3812bc30790f238770a05"
+   ],
+   [
+    "outbox",
+    "5eed0000-0000-4000-8000-000000000018",
+    "61466586f8bd63017bd4560ef65927ff8609776c994f15ab0a4ff9435705ef06"
+   ],
+   [
+    "outbox",
+    "70d8050f-6e8b-5342-a78b-dc261e458f8f",
+    "654f71cf3ee8e0268c405ad8268e979a2125cf75914708ee556770c73a8768ab"
+   ],
+   [
+    "outbox_attempts",
+    "5eed0000-0000-4000-8000-000000000017",
+    "c83cc1c3d3522f1354cdc4ce9755009ddf62d4fc64734f6cac454945e114f1f5"
+   ],
+   [
+    "outbox_attempts",
+    "5eed0000-0000-4000-8000-000000000019",
+    "47dcde3e909b604da3ff27ce078c3085544c502344fa1b90faeee3b5d5f2eba9"
+   ],
+   [
+    "outbox_delivery",
+    "5eed0000-0000-4000-8000-000000000018",
+    "5ea6b389faffdeb9098cbc3f29b32595edbce0dd4d245c03023a98c32db83f4e"
+   ],
+   [
+    "outbox_delivery",
+    "70d8050f-6e8b-5342-a78b-dc261e458f8f",
+    "7665e06f58719e39fa995414e21b52ae509e3d76a6ac81f30f8923a5ab915061"
+   ],
+   [
+    "tasks",
+    "70d8050f-6e8b-5342-a78b-dc261e458f8f",
+    "0320502e262d0602543ffbe61a7f6b4c32130f9988209c61f7cebe6ee51d8b7d"
+   ],
+   [
+    "workflow_inbox",
+    "5eed0000-0000-4000-8000-000000000018",
+    "4a2069acbdf44da7452c175bdcc29362151d99e47b9378f5083d014ea0a40850"
+   ]
+  ],
+  "reserved": 1,
+  "settled": [
+   [
+    "slot-1",
+    "succeeded"
+   ]
+  ]
+ },
+ "manifest_bad_allowed": {
+  "message": "Operation manifest plan.allowed_paths must be distinct safe relative paths",
+  "reason_code": null,
+  "refused": "ManifestError"
+ },
+ "manifest_bad_budget": {
+  "message": "Operation manifest budget needs positive integer per_host and total >= per_host and an optional mode of finite or subscription",
+  "reason_code": null,
+  "refused": "ManifestError"
+ },
+ "manifest_bad_goal_path": {
+  "message": "Operation manifest goal.path must be a safe relative Markdown path",
+  "reason_code": null,
+  "refused": "ManifestError"
+ },
+ "manifest_bad_id": {
+  "message": "Operation manifest id must be a short safe token",
+  "reason_code": null,
+  "refused": "ManifestError"
+ },
+ "manifest_bad_model": {
+  "message": "Operation manifest claude controls are refused by the provider policy",
+  "reason_code": null,
+  "refused": "ManifestError"
+ },
+ "manifest_bad_schema": {
+  "message": "Operation manifest root has unknown or missing fields: -design",
+  "reason_code": null,
+  "refused": "ManifestError"
+ },
+ "manifest_bad_timeout": {
+  "message": "Operation manifest claude controls are refused by the provider policy",
+  "reason_code": null,
+  "refused": "ManifestError"
+ },
+ "manifest_deterministic": true,
+ "manifest_valid": {
+  "value": "1b5fb74d82e225938af86917d99df66eed4256fb446dee8b40ee07309e5ce5a5"
+ },
+ "replay": {
+  "cached": true,
+  "digest": "0d2a4a4cd27ce2253accbd17e0fd08527de158488233570a63153a3a961366f4",
+  "status": "accepted"
+ },
+ "running_residue": {
+  "calls": [],
+  "collected": 0,
+  "outcome": {
+   "message": "operation refused: running_residue",
+   "reason_code": "running_residue",
+   "refused": "OperationRefused"
+  },
+  "records": [
+   [
+    "local_cycles",
+    "operation:op-001",
+    "f24b48c9c6d2435759d0f54e5119e0acfb54400686508e42d17ec484b54ba602"
+   ],
+   [
+    "operations",
+    "op-001",
+    "27360b86567b0408824ac7c01ff27420008ce48e9072fea297319967b0f54371"
+   ],
+   [
+    "outbox",
+    "70d8050f-6e8b-5342-a78b-dc261e458f8f",
+    "f474080f6df7f94733c16ac055d0170d7ea2ba1547c714299a1efc21fbae9105"
+   ]
+  ],
+  "reserved": 0,
+  "settled": []
+ },
+ "settlement_failed": {
+  "calls": [
+   "task"
+  ],
+  "collected": 1,
+  "outcome": {
+   "cached": false,
+   "digest": "ab5b29c3102a735804a4cc6c8dd7cda171cb3cdb2dbe0a8ad6d9619970e5eb95",
+   "exit_code": 1,
+   "reason_code": "settlement_failed",
+   "status": "failed"
+  },
+  "records": [
+   [
+    "evidence_inspections",
+    "insp-70d8050f-6e8b-5342-a78b-dc261e458f8f",
+    "4dbc5dce33f83f323ab7f03d0ff62354e5d86d82f3d9a04f07534cb13075d407"
+   ],
+   [
+    "local_cycles",
+    "operation:op-001",
+    "3d86c3d207ed2dedeaf01fd1414999b3e6a213678d36730992f1a108d9466584"
+   ],
+   [
+    "operations",
+    "op-001",
+    "83f60a70fcf49a13efa0d51beb2950978d4f968dc76caac4b8d81d66f1d86598"
+   ],
+   [
+    "outbox",
+    "5eed0000-0000-4000-8000-00000000001c",
+    "e7afe8a29b7ee2c198f5d17dc6d416b91fecc96fb26a8dd1e926831ef9ada209"
+   ],
+   [
+    "outbox",
+    "70d8050f-6e8b-5342-a78b-dc261e458f8f",
+    "654f71cf3ee8e0268c405ad8268e979a2125cf75914708ee556770c73a8768ab"
+   ],
+   [
+    "outbox_attempts",
+    "5eed0000-0000-4000-8000-00000000001b",
+    "4ab69ee871daf2398aa006f1d464c2ec0cd3aeaa7003fe93598c0071d951890d"
+   ],
+   [
+    "outbox_attempts",
+    "5eed0000-0000-4000-8000-00000000001d",
+    "9f8d7f4266507417005b8bd6bb8292f8fa78f529c7f5a0713978b806b79cb794"
+   ],
+   [
+    "outbox_delivery",
+    "5eed0000-0000-4000-8000-00000000001c",
+    "607e7a04669ab1d993143b189872baf12edf342444a3c8aa91c19d3e8a255731"
+   ],
+   [
+    "outbox_delivery",
+    "70d8050f-6e8b-5342-a78b-dc261e458f8f",
+    "1f079b1d7e809a7c8a59a6494ab8f65e3cdf91b56023cbd058368bab47fba67f"
+   ],
+   [
+    "tasks",
+    "70d8050f-6e8b-5342-a78b-dc261e458f8f",
+    "0320502e262d0602543ffbe61a7f6b4c32130f9988209c61f7cebe6ee51d8b7d"
+   ]
+  ],
+  "reserved": 1,
+  "settled": []
+ },
+ "status": {
+  "value": "eac51780f2a9744d283881b213f78714b7c065ef5e72be89023cb03a039d668a"
+ },
+ "success": {
+  "calls": [
+   "task",
+   "decision"
+  ],
+  "collected": 1,
+  "outcome": {
+   "cached": false,
+   "digest": "61661308537e955a57cb6635771fc3f0943fe2f6558ff597b52d231c2777264b",
+   "exit_code": 0,
+   "reason_code": "lead_accepted",
+   "status": "accepted"
+  },
+  "records": [
+   [
+    "decisions_pending",
+    "5eed0000-0000-4000-8000-000000000003",
+    "d101f1d195a1a60584f7775cfb9192aff004ea7ac219ab869d5a475279540b04"
+   ],
+   [
+    "evidence_inspections",
+    "insp-70d8050f-6e8b-5342-a78b-dc261e458f8f",
+    "4dbc5dce33f83f323ab7f03d0ff62354e5d86d82f3d9a04f07534cb13075d407"
+   ],
+   [
+    "local_cycles",
+    "operation:op-001",
+    "e1973c0c4208400f08a7089f3ae4feae2740039ca8eb6e5ed89b906a1a41ae14"
+   ],
+   [
+    "operations",
+    "op-001",
+    "ada4213fbc56c46c84af8109b34d90ad66a1d815d775e42ce26fc599bebbdd97"
+   ],
+   [
+    "outbox",
+    "5eed0000-0000-4000-8000-000000000003",
+    "9fb21f379912aecf467c653d67ebe87f29a336fc4ce5c403f09c471e778a9a07"
+   ],
+   [
+    "outbox",
+    "70d8050f-6e8b-5342-a78b-dc261e458f8f",
+    "654f71cf3ee8e0268c405ad8268e979a2125cf75914708ee556770c73a8768ab"
+   ],
+   [
+    "outbox_attempts",
+    "5eed0000-0000-4000-8000-000000000002",
+    "b23f551572889bf9f9596fea1b08eb0f297eff8ca9efdd06d231831a877ded2f"
+   ],
+   [
+    "outbox_attempts",
+    "5eed0000-0000-4000-8000-000000000004",
+    "c1e303aaf2ea3ac7e24ee2cb125471657f81948e105764eb834ce544c8e6c63b"
+   ],
+   [
+    "outbox_delivery",
+    "5eed0000-0000-4000-8000-000000000003",
+    "f8ecf8d68d643a3aa55b31f6b3569a30cfd62c04699962e40a791a925ed1ec1b"
+   ],
+   [
+    "outbox_delivery",
+    "70d8050f-6e8b-5342-a78b-dc261e458f8f",
+    "b23f2a0a50dd5b697722f59c0a3c3d4d7bfb3d33501cc76a6e7ce3d1ce77ba25"
+   ],
+   [
+    "tasks",
+    "70d8050f-6e8b-5342-a78b-dc261e458f8f",
+    "0320502e262d0602543ffbe61a7f6b4c32130f9988209c61f7cebe6ee51d8b7d"
+   ],
+   [
+    "workflow_inbox",
+    "5eed0000-0000-4000-8000-000000000003",
+    "ff4a439fbc17499f47b52b0dc6ac56861cbf6f30463519b9f66587a1769a8753"
+   ]
+  ],
+  "reserved": 2,
+  "settled": [
+   [
+    "slot-1",
+    "succeeded"
+   ],
+   [
+    "slot-2",
+    "succeeded"
+   ]
+  ]
+ },
+ "worker_exception": {
+  "calls": [
+   "task"
+  ],
+  "collected": 1,
+  "outcome": {
+   "cached": false,
+   "digest": "064e0b4de855345c3d2e429201e642474ea7fe53d2e947100b189e4676990b2c",
+   "exit_code": 1,
+   "reason_code": "exception:RuntimeError",
+   "status": "failed"
+  },
+  "records": [
+   [
+    "execution_fences",
+    "tasks:70d8050f-6e8b-5342-a78b-dc261e458f8f",
+    "689c2ca26df9da422f5eb0144939c1ede0d88c636da7d418d0498ae5ce3c6590"
+   ],
+   [
+    "local_cycles",
+    "operation:op-001",
+    "df07d0644122a109e48412a4cc5e0e3e6003c0548c554d0c0661e034a603cfbd"
+   ],
+   [
+    "operation_dispositions",
+    "964374bc1e9294ffa2ca55c5b3c1d9cd6c76aab986fcba522e87355f13d2b224",
+    "8d8d345a5e5b01de3b439f451ff533d5f7d558e8ff27a9ddd7c031d282e064c7"
+   ],
+   [
+    "operations",
+    "op-001",
+    "b213e8a32958482f37c9490edc0213a0065e39bee2c38de25089c4fb06d3778b"
+   ],
+   [
+    "outbox",
+    "70d8050f-6e8b-5342-a78b-dc261e458f8f",
+    "654f71cf3ee8e0268c405ad8268e979a2125cf75914708ee556770c73a8768ab"
+   ],
+   [
+    "outbox_attempts",
+    "5eed0000-0000-4000-8000-00000000000d",
+    "4e38ae3f4f4e5fc0777345cbc0e3256916c13f677479f8c59e97b24a652f950a"
+   ],
+   [
+    "outbox_delivery",
+    "70d8050f-6e8b-5342-a78b-dc261e458f8f",
+    "d106e87525fa7239c89b35efc2f706842071d808e6a83cad614305b6817b6c70"
+   ],
+   [
+    "tasks",
+    "70d8050f-6e8b-5342-a78b-dc261e458f8f",
+    "f0e2f703cb44b89c810553ede56f582fff793e8d3945f2d837b823aaad3a20ec"
+   ]
+  ],
+  "reserved": 1,
+  "settled": [
+   [
+    "slot-1",
+    "exception"
+   ]
+  ]
+ },
+ "worker_failed": {
+  "calls": [
+   "task"
+  ],
+  "collected": 1,
+  "outcome": {
+   "cached": false,
+   "digest": "37b4efc06133b3bd0d06b83a93bfb48f9c662ebf8809dd3bbe59f17a8a0f34cb",
+   "exit_code": 1,
+   "reason_code": "execution_failed",
+   "status": "failed"
+  },
+  "records": [
+   [
+    "local_cycles",
+    "operation:op-001",
+    "84ffc59111dd78c10f8bf49f2fb5ca801e6e9f3f8236d075be641e28ce0d15f2"
+   ],
+   [
+    "operations",
+    "op-001",
+    "f995fe1197590797137182bc3a091c5254d1dce5ccab105e5c058b9a3c6df26a"
+   ],
+   [
+    "outbox",
+    "70d8050f-6e8b-5342-a78b-dc261e458f8f",
+    "654f71cf3ee8e0268c405ad8268e979a2125cf75914708ee556770c73a8768ab"
+   ],
+   [
+    "outbox_attempts",
+    "5eed0000-0000-4000-8000-00000000000b",
+    "f0eec95b7fd1a3f9b14fbdcc34f837cfb5ea80c0b1dfb6cdcc5f0553fa1ffb4c"
+   ],
+   [
+    "outbox_delivery",
+    "70d8050f-6e8b-5342-a78b-dc261e458f8f",
+    "fe70e8f873c4eb6ef55bb82198d4ff2332f294f471c1ddb4b139ce28cfc240e6"
+   ],
+   [
+    "tasks",
+    "70d8050f-6e8b-5342-a78b-dc261e458f8f",
+    "973630d3342256c021060072d5adc4de51c39812275bd46b7f36387ef5ebf3e5"
+   ]
+  ],
+  "reserved": 1,
+  "settled": [
+   [
+    "slot-1",
+    "failed"
+   ]
+  ]
+ }
+}
