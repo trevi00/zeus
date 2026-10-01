@@ -2,8 +2,7 @@
  "family": "delivery.host_migration_transfer",
  "description": "S7 M7 host migration adapter without the PostgreSQL/Redis transfer, characterized before its move (INV-HOST-MIGRATION-001): the launcher files (document bytes, atomic write, activation receipt and fence, current_revision, classification, release readiness), the switch (receipt then current with both directories fsynced, the crash window, a cached rerun, foreign bytes, fence and unready release, a failed replace removing only its own link, a stale reader refused by the launcher, PH4-11, the non-POSIX refusal, the in-process CLI and the launcher as a real dry-run process), the recovery preconditions and runner scan over a LABELLED proc root, the switch/switch and record/switch interleavings, SystemdHostTarget over a LABELLED systemctl double, prepare_layout, the canonical tool resolution and wrapper exit rule, the per-schema comparison through the real canonical tool, the plan-only rename totality and the catalog comparison mapping; the PostgreSQL, Redis, docker and S10 CLI tests are carried",
  "reference_driver": "drivers/reference/s7_host_migration_transfer.py",
- "target_driver": null,
+ "target_driver": "drivers/target/s7_host_migration_transfer.py",
  "golden": "goldens/reference/delivery.host_migration_transfer.json",
- "slice": "S7",
- "target_status": "pending: S7 host migration move (V6)"
+ "slice": "S7"
 }
