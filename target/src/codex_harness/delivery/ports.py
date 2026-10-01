@@ -4,10 +4,11 @@ Layer: ports
 Context: delivery
 Owns: OWNED_BUCKETS of the delivery context (the host delivery and host migration buckets); the consumer-declared Protocols HostDelivery's objects call on review's
     release owner, and `WorkerProfiles` (the worker profile the host_delivery adapter reads through context's
-    worker_profile adapter). Each has at most 6 methods; the implementations (review's Releases and ReleaseQueue) are
+    worker_profile adapter) and `ContainerNaming` (the owned verification container names and labels the release runner
+    asks execution's rule for). Each has at most 6 methods; the implementations (review's Releases and ReleaseQueue) are
     structural and never import this module; composition wires them
 Does not own: the release rows (review), the host targets, GitHub and canary adapters (S7 adapter step)
-Entry points: OWNED_BUCKETS, ReleaseAuthority, ReleaseClaims, ReleaseSettlement, WorkerProfiles
+Entry points: OWNED_BUCKETS, ReleaseAuthority, ReleaseClaims, ReleaseSettlement, WorkerProfiles, ContainerNaming
 Contracts: INV-HOST-DELIVERY-001, INV-RELEASE-001
 """
 
@@ -75,3 +76,14 @@ class WorkerProfiles(Protocol):
     def _normalized(self, text: str) -> str: ...
 
     def _sha256(self, text: str) -> str: ...
+
+
+class ContainerNaming(Protocol):
+    """execution: the exact name and label pair of one owned container (S7 pilot 47, INV-HOST-DELIVERY-VERIFY-001).
+
+    Implemented by composition over `execution.domain.container_spec` and execution's `OwnedContainer.name` rule;
+    delivery never imports execution's adapters."""
+
+    def name(self, run_id, role) -> str: ...
+
+    def labels(self, run_id, role) -> list[str]: ...
