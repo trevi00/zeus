@@ -19,6 +19,8 @@ CENSUS_NAMES = ["WAITING_ONLY", "CONTINUATION_OPEN", "census"]
 R_F1_NAMES = {"ACCEPTED", "DEPENDENCY_BLOCKING"}
 # Pilot 63 adds the R-p3 read constants and the R-p4 `safe_code` owner to the same module (test_s8_portfolio_move).
 R_P63_NAMES = {"DISPATCHING", "EXHAUSTED", "FAILED", "QUEUED", "REJECTED", "SAFE_CODE", "safe_code"}
+# S8 pilot 76 (V15 R2): the two backlog bucket names moved ahead from M7 `application/fleet_backlog.py`
+R_P76_NAMES = {"BUCKET_PLANS", "BUCKET_INTENTS"}
 
 
 def m7_text(path):
@@ -127,11 +129,11 @@ def test_backlog_keeps_the_s5_bytes_and_appends_m7_in_order():
     text = target_text(BACKLOG)
     kept = set(top_names(base))
     ours, theirs = statements(text), statements(ref)
-    # every M7 statement is in the output with the same AST; the output adds only the R-f1 pair and `binding`
-    assert {k: v for k, v in ours.items() if k[0] not in R_F1_NAMES | R_P63_NAMES | {"binding"}} == theirs
-    assert {k[0] for k in ours} - {k[0] for k in theirs} == R_F1_NAMES | R_P63_NAMES | {"binding"}
+    # every M7 statement is in the output with the same AST; the output adds only the R-f1 pair, R-p63's constants, R-p76's two bucket names and `binding`
+    assert {k: v for k, v in ours.items() if k[0] not in R_F1_NAMES | R_P63_NAMES | R_P76_NAMES | {"binding"}} == theirs
+    assert {k[0] for k in ours} - {k[0] for k in theirs} == R_F1_NAMES | R_P63_NAMES | R_P76_NAMES | {"binding"}
     assert set(top_names(ref)) <= set(top_names(text))
-    appended = [k[0] for k in ours if k[0] not in kept | R_F1_NAMES | R_P63_NAMES | {"binding"}]
+    appended = [k[0] for k in ours if k[0] not in kept | R_F1_NAMES | R_P63_NAMES | R_P76_NAMES | {"binding"}]
     assert appended == [k[0] for k in theirs if k[0] not in kept]
     # the S5 definitions keep their bytes
     for node in ast.parse(base).body:
