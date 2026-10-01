@@ -2,8 +2,7 @@
  "family": "research.council_snapshot",
  "description": "S8 council snapshot port of M7 adapters/council_snapshot.py (SnapshotUnavailable; ReadOnlySnapshot: the constructor's timeout validation, observe, _session, the BEGIN/IDENTITY/SELECT statements, the reductions through domain.council, the failure mapping to snapshot_unavailable with no __cause__/__context__), characterized before the council_snapshot move: every raise and except of the module with the statements issued in order, the connect call, the one clock read, the endpoint digest and the unmapped failures; M7 tests/test_council.py parts that drive the port; an injected LABELLED fake connection and connect, no PostgreSQL (tests/test_council_postgres.py is the owner's integration lane)",
  "reference_driver": "drivers/reference/s8_council_snapshot.py",
- "target_driver": null,
+ "target_driver": "drivers/target/s8_council_snapshot.py",
  "golden": "goldens/reference/research.council_snapshot.json",
- "slice": "S8",
- "target_status": "pending: S8 step 3 (council snapshot move)"
+ "slice": "S8"
 }
