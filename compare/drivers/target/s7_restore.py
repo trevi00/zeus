@@ -9,7 +9,7 @@ The api members and their target sources:
 - domain host_migration (`delivery.domain.host_migration`): `MigrationRefused`, `compare_catalogs`, `reverse_maps`.
 - `PostgresStore` (`storage.adapters.postgres_store`), `PostgresKnowledge` (`knowledge.adapters.postgres_knowledge`).
 - `Fleet(store)`: the S5 facade (`s5_fleet_composition.FleetFacade`) over the S5 registry/admission/pause/recovery objects,
-  with the clock and token the reference gets from `determinism.install` (the SAME `FakeClock(2026-09-25T09:00Z)` and
+  with the clock and token the reference gets from its installed fakes (the SAME `FakeClock(2026-09-25T09:00Z)` and
   `FakeIds`, instantiated without installing them).
 - `BUCKET_JOBS`, `BUCKET_REGISTRY` (`coordination.application.fleet.state`); `config_digest`, `repository_identity`,
   `resolve_repository`, `validate_budget` (`coordination.domain.fleet`); `HOST_MIGRATION_SCHEMA`
@@ -24,7 +24,7 @@ The api members and their target sources:
 - `checkout(path)` patches the adapter's `PACKAGE_DIR` to `<path>/src/codex_harness`.
 
 Clock seam (as in pilot 43): the imported `_utcnow` of the target adapter modules is substituted for the run with the same
-fake clock (a module-attribute substitution, restored afterwards); no `determinism.install`."""
+fake clock (a module-attribute substitution, restored afterwards); the fakes are never installed."""
 
 import contextlib
 import os

@@ -17,7 +17,7 @@ composition would pass (DESIGN-s7 adapters-move §9.4), so the common module run
 - `launcher` is the unchanged deploy/aibox launcher module, loaded from the SOURCE tree as the reference loads it.
 - `main` (the S10 CLI) is not part of the target api: its cases are `delivery.host_migration_cli`.
 
-The clock seam (as in pilot 43): the reference freezes time with `determinism.install`, so the digests of the fence
+The clock seam (as in pilot 43): the reference freezes time by installing its fake clock, so the digests of the fence
 document (`at`), the controller state (`started_at`) and the recovery receipts embed that instant. This driver installs no
 determinism; for the run it substitutes the imported `_utcnow` of each target adapter module that stamps those files
 (`delivery.adapters.host_migration` and `delivery.adapters.host_delivery`) with the SAME `determinism.FakeClock` the
