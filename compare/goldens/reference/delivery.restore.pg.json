@@ -1,0 +1,546 @@
+{
+ "canonical": {
+  "coverage": {
+   "receipt": {
+    "check": "pg-coverage",
+    "exit_code": 0,
+    "ok": true,
+    "result_sha256": "c635841354f655596cc21dad5246a9c1f369b02d84448e12222080fdcc5622ad",
+    "schema": "urn:zeus:host-migration-evidence:1",
+    "subject": null
+   },
+   "result": {
+    "covered": 4,
+    "duplicated": [],
+    "extra": [],
+    "failed": [],
+    "missing": [],
+    "ok": true,
+    "schemas": 4
+   }
+  },
+  "public": {
+   "receipt": {
+    "check": "compare-pg",
+    "exit_code": 0,
+    "ok": true,
+    "result_sha256": "5f76a47e8fbc0c175475cd6b40129cca465b16d5c0767ecc470bbd42442cd586",
+    "schema": "urn:zeus:host-migration-evidence:1",
+    "subject": "schema=public"
+   },
+   "result": {
+    "match": true,
+    "problems": [],
+    "row_problem_count": 0,
+    "rows": []
+   },
+   "target_schema": "zeus_aibox_control"
+  },
+  "zeus_fleet_harness": {
+   "receipt": {
+    "check": "compare-pg",
+    "exit_code": 0,
+    "ok": true,
+    "result_sha256": "5f76a47e8fbc0c175475cd6b40129cca465b16d5c0767ecc470bbd42442cd586",
+    "schema": "urn:zeus:host-migration-evidence:1",
+    "subject": "schema=zeus_fleet_harness"
+   },
+   "result": {
+    "match": true,
+    "problems": [],
+    "row_problem_count": 0,
+    "rows": []
+   },
+   "target_schema": "zeus_aibox_harness"
+  },
+  "zeus_fleet_interface": {
+   "receipt": {
+    "check": "compare-pg",
+    "exit_code": 0,
+    "ok": true,
+    "result_sha256": "5f76a47e8fbc0c175475cd6b40129cca465b16d5c0767ecc470bbd42442cd586",
+    "schema": "urn:zeus:host-migration-evidence:1",
+    "subject": "schema=zeus_fleet_interface"
+   },
+   "result": {
+    "match": true,
+    "problems": [],
+    "row_problem_count": 0,
+    "rows": []
+   },
+   "target_schema": "zeus_aibox_interface"
+  },
+  "zeus_team_profile_001": {
+   "receipt": {
+    "check": "compare-pg",
+    "exit_code": 0,
+    "ok": true,
+    "result_sha256": "5f76a47e8fbc0c175475cd6b40129cca465b16d5c0767ecc470bbd42442cd586",
+    "schema": "urn:zeus:host-migration-evidence:1",
+    "subject": "schema=zeus_team_profile_001"
+   },
+   "result": {
+    "match": true,
+    "problems": [],
+    "row_problem_count": 0,
+    "rows": []
+   },
+   "target_schema": "zeus_team_profile_001"
+  }
+ },
+ "catalog": {
+  "catalog_digest": "b6adbed2e4ebf761e0a8bad17f2be5ed4cb36308d97286991f54e27812bd4d65",
+  "extensions": [
+   [
+    "plpgsql",
+    "1.0",
+    "pg_catalog"
+   ],
+   [
+    "vector",
+    "0.8.6",
+    "public"
+   ]
+  ],
+  "public_relations": [
+   "documents",
+   "knowledge_edges",
+   "knowledge_nodes",
+   "schema_migrations"
+  ],
+  "schemas": [
+   "public",
+   "zeus_fleet_harness",
+   "zeus_fleet_interface",
+   "zeus_team_profile_001"
+  ]
+ },
+ "dump": {
+  "archive_matches_file": true,
+  "archive_sha256_length": 64,
+  "database": "zeus",
+  "path": "/dump/zeus-rehearsal.dump",
+  "toc_entries": 71,
+  "toc_sha256": "77850619345584d810ee890e332878799dbce849dc342734ea0215c139d1a662"
+ },
+ "refuse_recover": {
+  "archive_digest_mismatch": {
+   "detail": "archive_digest_mismatch: archive",
+   "refused": "MigrationRefused"
+  },
+  "failed": {
+   "detail": "pg_restore_failed: exit_code",
+   "refused": "MigrationRefused"
+  },
+  "failed_receipt_state": "restore_failed",
+  "hollow_recover": {
+   "detail": "restore_contents_mismatch: database",
+   "refused": "MigrationRefused"
+  },
+  "no_silent_retry": {
+   "detail": "target_occupied: database",
+   "refused": "MigrationRefused"
+  },
+  "other_failed": {
+   "detail": "pg_restore_failed: exit_code",
+   "refused": "MigrationRefused"
+  },
+  "other_recovered": {
+   "refused": null,
+   "result": {
+    "acl_reapplied": [],
+    "archive_sha256": "<archive:source>",
+    "at": "2026-09-25T09:00:00+00:00",
+    "cached": false,
+    "database": "zeus_aibox_g000001",
+    "plan": {
+     "extension_home": "public",
+     "parking": "zeus_migration_extensions",
+     "renames": [
+      [
+       "public",
+       "zeus_aibox_control"
+      ],
+      [
+       "zeus_fleet_harness",
+       "zeus_aibox_harness"
+      ],
+      [
+       "zeus_fleet_interface",
+       "zeus_aibox_interface"
+      ]
+     ],
+     "reverse": false
+    },
+    "renamed_catalog_sha256": "0c7c928a7011b3d25ebee414e4b53f6f93f3d032656f89ace0598a34213f7126",
+    "restore_id": "<restore:zeus_aibox_g000001>",
+    "rows": 123,
+    "schema": "urn:zeus:host-migration-pg-restore:1",
+    "schemas": 4,
+    "source_catalog_sha256": "b6adbed2e4ebf761e0a8bad17f2be5ed4cb36308d97286991f54e27812bd4d65",
+    "state": "renamed",
+    "tables": 16,
+    "toc_entries": 71,
+    "toc_sha256": "77850619345584d810ee890e332878799dbce849dc342734ea0215c139d1a662",
+    "verified": true
+   }
+  },
+  "rename_map_not_total": {
+   "detail": "rename_map_not_total: schema_map.zeus_team_profile_001",
+   "refused": "MigrationRefused"
+  },
+  "restored_is_not_partial": {
+   "detail": "target_occupied: database",
+   "refused": "MigrationRefused"
+  }
+ },
+ "registry": {
+  "alias_resolves_to_target": true,
+  "changed_rows": [
+   [
+    "fleet_host_migrations",
+    "extra"
+   ],
+   [
+    "fleet_registry",
+    "changed"
+   ]
+  ],
+  "config_sha256_is_the_stored_config_digest": true,
+  "frozen_repository_unchanged": true,
+  "lanes": {
+   "harness": {
+    "redis_namespace": "zeus-fleet-harness",
+    "repository": "<root>/srv/zeus/repo",
+    "runtime": "<root>/srv/zeus/runtime/lanes/harness",
+    "schema": "zeus_aibox_harness"
+   },
+   "interface": {
+    "redis_namespace": "zeus-fleet-interface",
+    "repository": "<root>/srv/zeus/repo",
+    "runtime": "<root>/srv/zeus/runtime/lanes/interface",
+    "schema": "zeus_aibox_interface"
+   }
+  },
+  "migrated": {
+   "cached": false,
+   "config": {
+    "accounting_mode": "finite",
+    "budget": {
+     "per_host": 160,
+     "total": 160
+    },
+    "id": "zeus-local-fleet",
+    "lanes": [
+     {
+      "id": "harness",
+      "team": "harness"
+     },
+     {
+      "id": "interface",
+      "team": "interface"
+     }
+    ],
+    "max_parallel": 2,
+    "schema": "urn:zeus:fleet:1"
+   },
+   "config_sha256": "<config:migrated>",
+   "migrated": true,
+   "receipt": {
+    "authority": "owner_host_migration; lane repository, runtime and schema bindings only; lane/team identity, Redis namespaces, history and provider authority unchanged",
+    "config_sha256": "<config:migrated>",
+    "fleet": "zeus-local-fleet",
+    "id": "<receipt:host_migration>",
+    "lanes": [
+     {
+      "id": "harness",
+      "schema": "zeus_aibox_harness"
+     },
+     {
+      "id": "interface",
+      "schema": "zeus_aibox_interface"
+     }
+    ],
+    "migration_id": "aibox-migration-001",
+    "operator": "owner",
+    "prior_config_sha256": "8e6668003de242b4e3bb62a77ed95d657a8f8f8c918945890d2c51da0066f261",
+    "recorded_at": "2026-09-25T09:00:00+00:00",
+    "schema": "urn:zeus:fleet-host-migration-receipt:1"
+   }
+  },
+  "proof": {
+   "lanes": [
+    {
+     "active_runs": 0,
+     "id": "harness",
+     "queued_bindings": [],
+     "repository": {
+      "independent": true,
+      "path_identity": "<path_identity:repository>",
+      "target_identity": "672575edf7491e09b0bd01ecc17db6490c122898c8dc3825615b4ed95522fec6"
+     },
+     "runtime": {
+      "writable": true
+     },
+     "schema": {
+      "name": "zeus_aibox_harness",
+      "provisioned": true
+     }
+    },
+    {
+     "active_runs": 0,
+     "id": "interface",
+     "queued_bindings": [],
+     "repository": {
+      "independent": true,
+      "path_identity": "<path_identity:repository>",
+      "target_identity": "672575edf7491e09b0bd01ecc17db6490c122898c8dc3825615b4ed95522fec6"
+     },
+     "runtime": {
+      "writable": true
+     },
+     "schema": {
+      "name": "zeus_aibox_interface",
+      "provisioned": true
+     }
+    }
+   ],
+   "observed_at": "2026-09-25T09:00:00+00:00",
+   "runner": {
+    "journal_sha256": "f594008fd4920c5fe481c9389e099fb563eb076ea3f59ff44afc41fc4d225bd2",
+    "reason": null,
+    "run_id": "r1",
+    "state": "stopped"
+   },
+   "schema": "urn:zeus:fleet-host-migration-proof:1"
+  },
+  "receipt_rows": 1,
+  "replay_cached": true
+ },
+ "restore": {
+  "catalog_match": {
+   "diff_count": 0,
+   "diffs": [],
+   "match": true,
+   "rows": 123,
+   "schemas": 4,
+   "tables": 16
+  },
+  "first": {
+   "acl_reapplied": [],
+   "archive_sha256": "<archive:source>",
+   "at": "2026-09-25T09:00:00+00:00",
+   "cached": false,
+   "database": "zeus_aibox_r000001",
+   "plan": {
+    "extension_home": "public",
+    "parking": "zeus_migration_extensions",
+    "renames": [
+     [
+      "public",
+      "zeus_aibox_control"
+     ],
+     [
+      "zeus_fleet_harness",
+      "zeus_aibox_harness"
+     ],
+     [
+      "zeus_fleet_interface",
+      "zeus_aibox_interface"
+     ]
+    ],
+    "reverse": false
+   },
+   "renamed_catalog_sha256": "0c7c928a7011b3d25ebee414e4b53f6f93f3d032656f89ace0598a34213f7126",
+   "restore_id": "<restore:zeus_aibox_r000001>",
+   "rows": 123,
+   "schema": "urn:zeus:host-migration-pg-restore:1",
+   "schemas": 4,
+   "source_catalog_sha256": "b6adbed2e4ebf761e0a8bad17f2be5ed4cb36308d97286991f54e27812bd4d65",
+   "state": "renamed",
+   "tables": 16,
+   "toc_entries": 71,
+   "toc_sha256": "77850619345584d810ee890e332878799dbce849dc342734ea0215c139d1a662",
+   "verified": true
+  },
+  "occupied": {
+   "detail": "target_occupied: database",
+   "refused": "MigrationRefused"
+  },
+  "receipt_file": {
+   "acl_reapplied": [],
+   "archive_sha256": "<archive:source>",
+   "at": "2026-09-25T09:00:00+00:00",
+   "database": "zeus_aibox_r000001",
+   "plan": {
+    "extension_home": "public",
+    "parking": "zeus_migration_extensions",
+    "renames": [
+     [
+      "public",
+      "zeus_aibox_control"
+     ],
+     [
+      "zeus_fleet_harness",
+      "zeus_aibox_harness"
+     ],
+     [
+      "zeus_fleet_interface",
+      "zeus_aibox_interface"
+     ]
+    ],
+    "reverse": false
+   },
+   "renamed_catalog_sha256": "0c7c928a7011b3d25ebee414e4b53f6f93f3d032656f89ace0598a34213f7126",
+   "restore_id": "<restore:zeus_aibox_r000001>",
+   "rows": 123,
+   "schema": "urn:zeus:host-migration-pg-restore:1",
+   "schemas": 4,
+   "source_catalog_sha256": "b6adbed2e4ebf761e0a8bad17f2be5ed4cb36308d97286991f54e27812bd4d65",
+   "state": "renamed",
+   "tables": 16,
+   "toc_entries": 71,
+   "toc_sha256": "77850619345584d810ee890e332878799dbce849dc342734ea0215c139d1a662",
+   "verified": true
+  },
+  "replay": {
+   "acl_reapplied": [],
+   "archive_sha256": "<archive:source>",
+   "at": "2026-09-25T09:00:00+00:00",
+   "cached": true,
+   "database": "zeus_aibox_r000001",
+   "plan": {
+    "extension_home": "public",
+    "parking": "zeus_migration_extensions",
+    "renames": [
+     [
+      "public",
+      "zeus_aibox_control"
+     ],
+     [
+      "zeus_fleet_harness",
+      "zeus_aibox_harness"
+     ],
+     [
+      "zeus_fleet_interface",
+      "zeus_aibox_interface"
+     ]
+    ],
+    "reverse": false
+   },
+   "renamed_catalog_sha256": "0c7c928a7011b3d25ebee414e4b53f6f93f3d032656f89ace0598a34213f7126",
+   "restore_id": "<restore:zeus_aibox_r000001>",
+   "rows": 123,
+   "schema": "urn:zeus:host-migration-pg-restore:1",
+   "schemas": 4,
+   "source_catalog_sha256": "b6adbed2e4ebf761e0a8bad17f2be5ed4cb36308d97286991f54e27812bd4d65",
+   "state": "renamed",
+   "tables": 16,
+   "toc_entries": 71,
+   "toc_sha256": "77850619345584d810ee890e332878799dbce849dc342734ea0215c139d1a662",
+   "verified": true
+  },
+  "target_catalog_digest": "0c7c928a7011b3d25ebee414e4b53f6f93f3d032656f89ace0598a34213f7126",
+  "target_extensions": [
+   [
+    "plpgsql",
+    "1.0",
+    "pg_catalog"
+   ],
+   [
+    "vector",
+    "0.8.6",
+    "public"
+   ]
+  ],
+  "target_schemas": [
+   "public",
+   "zeus_aibox_control",
+   "zeus_aibox_harness",
+   "zeus_aibox_interface",
+   "zeus_team_profile_001"
+  ]
+ },
+ "reverse": {
+  "against_original_diffs": [
+   [
+    "public",
+    "relations"
+   ]
+  ],
+  "back_toc_entries": 73,
+  "digest_bindings": {
+   "renamed_catalog_is_the_reversed_catalog": true,
+   "source_catalog_is_the_latest_target_catalog": true
+  },
+  "latest_vs_reversed": {
+   "diff_count": 0,
+   "diffs": [],
+   "match": true,
+   "rows": 124,
+   "schemas": 4,
+   "tables": 16
+  },
+  "result": {
+   "acl_reapplied": [
+    "zeus_aibox_control"
+   ],
+   "archive_sha256": "<archive:target>",
+   "at": "2026-09-25T09:00:00+00:00",
+   "cached": false,
+   "database": "zeus_reverse_000001",
+   "plan": {
+    "extension_home": "public",
+    "parking": "zeus_migration_extensions",
+    "renames": [
+     [
+      "zeus_aibox_control",
+      "public"
+     ],
+     [
+      "zeus_aibox_harness",
+      "zeus_fleet_harness"
+     ],
+     [
+      "zeus_aibox_interface",
+      "zeus_fleet_interface"
+     ]
+    ],
+    "reverse": true
+   },
+   "renamed_catalog_sha256": "<catalog:reversed>",
+   "restore_id": "<restore:zeus_reverse_000001>",
+   "rows": 124,
+   "schema": "urn:zeus:host-migration-pg-restore:1",
+   "schemas": 4,
+   "source_catalog_sha256": "<catalog:latest>",
+   "state": "renamed",
+   "tables": 16,
+   "toc_entries": 73,
+   "toc_sha256": "090d299c31e98076e2f050daa43e45be438c2a4c7cfa24c176944817fc94657f",
+   "verified": true
+  },
+  "reverse_map": {
+   "zeus_aibox_control": "public",
+   "zeus_aibox_harness": "zeus_fleet_harness",
+   "zeus_aibox_interface": "zeus_fleet_interface",
+   "zeus_team_profile_001": "zeus_team_profile_001"
+  },
+  "reversed_schemas": [
+   "public",
+   "zeus_fleet_harness",
+   "zeus_fleet_interface",
+   "zeus_team_profile_001"
+  ]
+ },
+ "search_path": {
+  "embedding_type": "vector",
+  "migrate_noop": true,
+  "top_hits": [
+   "control:node:0",
+   "control:node:1",
+   "control:node:2"
+  ],
+  "without_public": "UndefinedObject"
+ }
+}
