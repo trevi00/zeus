@@ -4,7 +4,6 @@ The API mirrors the reference driver's names over the target homes: `ExecutionEv
 `research.adapters.autonomous_evidence` and `ContractError` from the kernel. The `artifacts` store is the scenario's LABELLED fake."""
 
 import sys
-from datetime import datetime, timezone
 from pathlib import Path
 from types import SimpleNamespace
 
@@ -15,15 +14,12 @@ import driver  # noqa: E402
 
 driver.start("target")
 
-import determinism  # noqa: E402
 import s8_autonomous_evidence  # noqa: E402
 from codex_harness.kernel.errors import ContractError  # noqa: E402
 from codex_harness.research.adapters.autonomous_evidence import (  # noqa: E402
     EvidenceUnavailable,
     ExecutionEvidence,
 )
-
-determinism.install(determinism.FakeClock(datetime(2026, 9, 22, tzinfo=timezone.utc)), determinism.FakeIds())
 
 API = SimpleNamespace(ExecutionEvidence=ExecutionEvidence, EvidenceUnavailable=EvidenceUnavailable, ContractError=ContractError)
 
