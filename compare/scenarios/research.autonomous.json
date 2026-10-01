@@ -1,0 +1,9 @@
+{
+ "family": "research.autonomous",
+ "description": "S8 research autonomous cycle of M7 application/autonomous.py (AutonomousRun: status, claim, _transition, run, _pipeline, _freeze_packet, _implement_and_promote, _role, _require_admitted, _verify_execution, _deliver, _check_deadline, _residuals, _promote, _finish; AutonomousRefused, provider_labels, bus_view, _safe_binding, row_digest), characterized before the autonomous move (V12: coordination.application.autonomous): the M7 tests/test_autonomous.py behaviours the module decides and every one of the 44 raises (or its named unreachable reason), with the digests of autonomous_runs, operations, outbox and the promotion buckets before and after each refusal and promotion; LABELLED executor, role artifacts, evidence source, clock and buses (the real autonomous_roles/autonomous_evidence adapters and the S10 CLI never run), MemoryStore, no PostgreSQL",
+ "reference_driver": "drivers/reference/s8_autonomous.py",
+ "target_driver": null,
+ "golden": "goldens/reference/research.autonomous.json",
+ "slice": "S8",
+ "target_status": "pending: S8 autonomous move (V12: coordination.application.autonomous)"
+}
