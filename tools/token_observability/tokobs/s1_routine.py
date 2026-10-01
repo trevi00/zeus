@@ -11,6 +11,11 @@ Implements: ACCEPTANCE A01-A19 (S1 parts), A24, A31, A34-A40, A42, A44, A45, A47
 
 Reading rules in one place: only complete lines are parsed; a torn tail waits while the attempt is open and is
 settled once from the complete prefix when terminal evidence or the horizon exists. mtime is never read.
+
+Read bound, stated honestly: `MAX_READ_BYTES` is the NOMINAL chunk per stream per scan. `_read_chunk` keeps reading
+until the chunk holds a newline, and `_first_line_hash` reads one whole line, so a single line longer than the chunk
+is held in memory in full: the memory bound is the chunk size plus the longest line of the stream, not the chunk size.
+No numeric line limit is added here; the resource-bound validation belongs to W2 (REVIEW-W1-r1, nonblocking).
 """
 
 from __future__ import annotations

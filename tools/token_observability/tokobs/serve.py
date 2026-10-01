@@ -1,6 +1,6 @@
 """`tokobs serve`: the periodic scan plus a read-only `/metrics` endpoint (stdlib `http.server`).
 
-Purpose: the collector container's entry (DESIGN §3, §7). Layer: tooling. Owns: the 60 s scan loop under the
+Purpose: the collector container's entry (DESIGN §3, §7). Layer: tooling. Owns: the 30 s scan loop (DESIGN §3 collector cadence) under the
 single-instance flock (held for the life of the service, so a second `serve` exits 75), the `/metrics` body
 (`data.prom` + `health.prom`, both always served so a render refusal stays visible), the `--listen` check
 (an IP:port only, never a hostname), and the `--fixture` mode.
@@ -25,7 +25,7 @@ from .config import TaskClassRegistry
 from .ledger import collector_lock, open_ledger
 from .render import DATA_NAME, HEALTH_NAME, render
 
-SCAN_INTERVAL_SECONDS = 60
+SCAN_INTERVAL_SECONDS = 30  # DESIGN §3: collector cadence 30 s
 CONTENT_TYPE = "text/plain; version=0.0.4; charset=utf-8"
 FIXTURE_SAMPLE = (
     "# HELP zeus_tokobs_fixture_sample Static sample served by `tokobs serve --fixture`\n"

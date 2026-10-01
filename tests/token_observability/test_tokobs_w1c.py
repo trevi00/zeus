@@ -447,3 +447,48 @@ def test_f4_report_cli_looks_up_an_invocation_without_a_task_binding(tmp_path, c
     out = json.loads(capsys.readouterr().out)
     assert out["invocation"]["id"] == "codex:h" and "task" not in out
     assert main(["report", "--data", str(rig.data), "--invocation", "nothing"]) == 1
+
+
+def test_f4_a_lane_predecessor_discovered_after_the_successor_finalized_is_a_late_predecessor(tmp_path):
+    rig = Rig(tmp_path)
+    rig.lane_meta("lane-one", "run-r2.json", state="finished", exit_code=0, mode="resume", predecessor_run="run.json")
+    rig.stream("evidence/lane-one/events-r2.jsonl", claude_init(model="opus"),
+               claude_result("a2", usage(0, 5, 0, 0), {OPUS: entry(0, 19, 0, 0)}, index=1))
+    rig.scan(advance=30)
+    second = "lane:lane-one:run-r2.json"
+    assert rig.inv(second)["unknown_reason"] == "no_baseline"
+    rig.lane_meta("lane-one", "run.json", state="finished", exit_code=0)
+    rig.stream("evidence/lane-one/events.jsonl", claude_init(model="opus"),
+               claude_result("a1", usage(0, 10, 0, 0), {OPUS: entry(0, 10, 0, 0)}))
+    prom = rig.scan(advance=30)
+    assert prom.sum("zeus_tokobs_ledger_corrections_total", kind="late_predecessor") == 1
+    assert rig.inv(second)["unknown_reason"] == "no_baseline"  # finalized state untouched
+    refined = _inv_report(rig, second)["invocation"]["late"]["refined_allocation"]
+    assert refined["state"] == "refined" and refined["predecessor"] == "lane:lane-one:run.json"
+    assert refined["remainder"] == [{"model": OPUS, "role": "nested_unattributed", "token_type": "output",
+                                     "value": 4}]  # 19 - 10 - M 5
+    assert rig.scan(advance=30).sum("zeus_tokobs_ledger_corrections_total", kind="late_predecessor") == 1
+
+
+# ----------------------------------------------------------------------------- nonblocking items
+
+
+def test_serve_scan_cadence_is_the_designs_30_seconds():
+    from tokobs.serve import SCAN_INTERVAL_SECONDS
+    assert SCAN_INTERVAL_SECONDS == 30  # DESIGN §3 "Collector cadence 30 s"
+    import argparse
+
+    import tokobs.__main__ as cli
+    captured = {}
+
+    def fake_serve(ns: argparse.Namespace) -> int:
+        captured["interval"] = ns.interval
+        return 0
+
+    original = cli._serve
+    cli._serve = fake_serve
+    try:
+        assert cli.main(["serve", "--listen", "127.0.0.1:0", "--fixture"]) == 0
+    finally:
+        cli._serve = original
+    assert captured["interval"] == 30.0

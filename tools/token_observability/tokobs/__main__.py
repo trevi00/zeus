@@ -18,6 +18,7 @@ from .ledger import EXIT_BUSY, CollectorBusy, LedgerError, collector_lock, open_
 from .render import render
 from .report import invocation_report, render_report, task_report
 from .s1_routine import parse_at
+from .serve import SCAN_INTERVAL_SECONDS
 
 
 def _now(text: str | None) -> int:
@@ -70,7 +71,7 @@ def main(argv: list[str] | None = None) -> int:
     srv.add_argument("--s9-dir", type=Path, help="directory holding monitoring.json (read-only)")
     srv.add_argument("--deferred-file", type=Path, help="S4/OTel-shaped rows to count, never ingest (§3.10)")
     srv.add_argument("--live-since", type=int)
-    srv.add_argument("--interval", type=float, default=60.0)
+    srv.add_argument("--interval", type=float, default=float(SCAN_INTERVAL_SECONDS))
     try:
         ns = parser.parse_args(argv)
     except SystemExit as exc:

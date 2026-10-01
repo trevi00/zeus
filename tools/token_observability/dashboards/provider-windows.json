@@ -1,0 +1,150 @@
+{
+ "title": "zeus-llm-usage: provider windows",
+ "uid": "zeus-llm-usage-windows",
+ "schemaVersion": 39,
+ "description": "A54 static mapping of the provider-window panels (DESIGN \u00a73.8, \u00a76). W2 provisions the full dashboard from these panels; nothing here is installed.",
+ "panels": [
+  {
+   "id": 1,
+   "type": "stat",
+   "title": "Window state five_hour",
+   "description": "Reported by the provider; not derived from token counts. 1 current, 2 stale, 3 expired, 4 unavailable; an older valid value is never shown as current.",
+   "targets": [
+    {
+     "refId": "A",
+     "expr": "sum by (slot) (zeus_llm_provider_window_state{provider=\"anthropic\",window=\"five_hour\",state=\"current\"}) * 1 + sum by (slot) (zeus_llm_provider_window_state{provider=\"anthropic\",window=\"five_hour\",state=\"stale\"}) * 2 + sum by (slot) (zeus_llm_provider_window_state{provider=\"anthropic\",window=\"five_hour\",state=\"expired\"}) * 3 + sum by (slot) (zeus_llm_provider_window_state{provider=\"anthropic\",window=\"five_hour\",state=\"unavailable\"}) * 4",
+     "legendFormat": "{{slot}}"
+    }
+   ],
+   "fieldConfig": {
+    "defaults": {
+     "mappings": [
+      {
+       "type": "value",
+       "options": {
+        "1": {
+         "text": "Current",
+         "color": "green",
+         "index": 0
+        },
+        "2": {
+         "text": "Stale: last observed {{time}}",
+         "color": "orange",
+         "index": 1
+        },
+        "3": {
+         "text": "Expired",
+         "color": "#9fa7b3",
+         "index": 2
+        },
+        "4": {
+         "text": "Unavailable: newest observation has no valid reading for this window",
+         "color": "#5c6370",
+         "index": 3
+        }
+       }
+      }
+     ],
+     "noValue": "No data"
+    },
+    "overrides": []
+   }
+  },
+  {
+   "id": 2,
+   "type": "gauge",
+   "title": "Window utilization five_hour",
+   "description": "Reported by the provider; not derived from token counts. Shown for current and stale windows only.",
+   "targets": [
+    {
+     "refId": "A",
+     "expr": "zeus_llm_provider_utilization_ratio{provider=\"anthropic\",window=\"five_hour\",freshness=~\"current|stale\"}",
+     "legendFormat": "{{slot}} {{freshness}}"
+    },
+    {
+     "refId": "B",
+     "expr": "zeus_llm_provider_window_observed_timestamp_seconds{provider=\"anthropic\",window=\"five_hour\"} * 1000",
+     "legendFormat": "{{slot}} observed"
+    }
+   ],
+   "fieldConfig": {
+    "defaults": {
+     "unit": "percentunit",
+     "noValue": "No data"
+    },
+    "overrides": []
+   }
+  },
+  {
+   "id": 3,
+   "type": "stat",
+   "title": "Window state seven_day",
+   "description": "Reported by the provider; not derived from token counts. 1 current, 2 stale, 3 expired, 4 unavailable; an older valid value is never shown as current.",
+   "targets": [
+    {
+     "refId": "A",
+     "expr": "sum by (slot) (zeus_llm_provider_window_state{provider=\"anthropic\",window=\"seven_day\",state=\"current\"}) * 1 + sum by (slot) (zeus_llm_provider_window_state{provider=\"anthropic\",window=\"seven_day\",state=\"stale\"}) * 2 + sum by (slot) (zeus_llm_provider_window_state{provider=\"anthropic\",window=\"seven_day\",state=\"expired\"}) * 3 + sum by (slot) (zeus_llm_provider_window_state{provider=\"anthropic\",window=\"seven_day\",state=\"unavailable\"}) * 4",
+     "legendFormat": "{{slot}}"
+    }
+   ],
+   "fieldConfig": {
+    "defaults": {
+     "mappings": [
+      {
+       "type": "value",
+       "options": {
+        "1": {
+         "text": "Current",
+         "color": "green",
+         "index": 0
+        },
+        "2": {
+         "text": "Stale: last observed {{time}}",
+         "color": "orange",
+         "index": 1
+        },
+        "3": {
+         "text": "Expired",
+         "color": "#9fa7b3",
+         "index": 2
+        },
+        "4": {
+         "text": "Unavailable: newest observation has no valid reading for this window",
+         "color": "#5c6370",
+         "index": 3
+        }
+       }
+      }
+     ],
+     "noValue": "No data"
+    },
+    "overrides": []
+   }
+  },
+  {
+   "id": 4,
+   "type": "gauge",
+   "title": "Window utilization seven_day",
+   "description": "Reported by the provider; not derived from token counts. Shown for current and stale windows only.",
+   "targets": [
+    {
+     "refId": "A",
+     "expr": "zeus_llm_provider_utilization_ratio{provider=\"anthropic\",window=\"seven_day\",freshness=~\"current|stale\"}",
+     "legendFormat": "{{slot}} {{freshness}}"
+    },
+    {
+     "refId": "B",
+     "expr": "zeus_llm_provider_window_observed_timestamp_seconds{provider=\"anthropic\",window=\"seven_day\"} * 1000",
+     "legendFormat": "{{slot}} observed"
+    }
+   ],
+   "fieldConfig": {
+    "defaults": {
+     "unit": "percentunit",
+     "noValue": "No data"
+    },
+    "overrides": []
+   }
+  }
+ ]
+}
