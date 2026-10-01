@@ -4,5 +4,40 @@
  "reference_driver": "drivers/reference/s5_relocation.py",
  "target_driver": "drivers/target/s5_relocation.py",
  "golden": "goldens/reference/coordination.fleet_relocation.json",
- "slice": "S5"
+ "slice": "S5",
+ "intended_differences": [
+  {
+   "path": "$.migration_records",
+   "op": "insert_item",
+   "index": 1,
+   "item": [
+    "fleet_control",
+    "authority_version",
+    "c7ca8834e69ceec8b787badf09da1c90fd809cdc95a74f4c2c47358b0f3ad25f"
+   ],
+   "authority": "Buzz DESIGN v3 §5 P2 + DESIGN-B §5 D-B2-1 (owner, 2026-10-01T15:20:37Z)"
+  },
+  {
+   "path": "$.records",
+   "op": "insert_item",
+   "index": 1,
+   "item": [
+    "fleet_control",
+    "authority_version",
+    "c7ca8834e69ceec8b787badf09da1c90fd809cdc95a74f4c2c47358b0f3ad25f"
+   ],
+   "authority": "Buzz DESIGN v3 §5 P2 + DESIGN-B §5 D-B2-1 (owner, 2026-10-01T15:20:37Z)"
+  },
+  {
+   "path": "$.records_before",
+   "op": "insert_item",
+   "index": 1,
+   "item": [
+    "fleet_control",
+    "authority_version",
+    "c7ca8834e69ceec8b787badf09da1c90fd809cdc95a74f4c2c47358b0f3ad25f"
+   ],
+   "authority": "Buzz DESIGN v3 §5 P2 + DESIGN-B §5 D-B2-1 (owner, 2026-10-01T15:20:37Z)"
+  }
+ ]
 }

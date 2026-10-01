@@ -4,5 +4,29 @@
  "reference_driver": "drivers/reference/s5_fleet.py",
  "target_driver": "drivers/target/s5_fleet.py",
  "golden": "goldens/reference/coordination.fleet.json",
- "slice": "S5"
+ "slice": "S5",
+ "intended_differences": [
+  {
+   "path": "$.admission_records",
+   "op": "insert_item",
+   "index": 1,
+   "item": [
+    "fleet_control",
+    "authority_version",
+    "bd39050680f2e9787490bf13c20644aedec680a528a1cfc6b7e008164b0545ce"
+   ],
+   "authority": "Buzz DESIGN v3 §5 P2 + DESIGN-B §5 D-B2-1 (owner, 2026-10-01T15:20:37Z)"
+  },
+  {
+   "path": "$.grant_records",
+   "op": "insert_item",
+   "index": 2,
+   "item": [
+    "fleet_control",
+    "authority_version",
+    "bd39050680f2e9787490bf13c20644aedec680a528a1cfc6b7e008164b0545ce"
+   ],
+   "authority": "Buzz DESIGN v3 §5 P2 + DESIGN-B §5 D-B2-1 (owner, 2026-10-01T15:20:37Z)"
+  }
+ ]
 }
