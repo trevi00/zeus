@@ -1,4 +1,4 @@
-"""tokobs command line: `scan`, `render`, `report` (W1b adds `serve`).
+"""tokobs command line: `scan`, `render`, `report`, `serve`.
 
 Purpose: argparse entry that only invokes the use-case modules. Layer: tooling. Owns: exit codes (0 ok, 1 not found
 or refused input, 2 usage, 75 another collector holds the lock). Does-not-own: any policy.
@@ -26,6 +26,24 @@ def _now(text: str | None) -> int:
     return parse_at(text) or int(text)  # `--now` is a test/replay hook: ISO `…Z` or epoch seconds
 
 
+def _serve(ns: argparse.Namespace) -> int:
+    from .serve import Service
+    try:
+        service = Service(
+            ns.listen, data=ns.data, source_root=Path(validate_root(ns.source_root)) if ns.source_root else None,
+            fixture=ns.fixture, interval=ns.interval, registry=load_registry(ns.task_classes),
+            live_since=ns.live_since, s9_dir=ns.s9_dir, deferred_file=ns.deferred_file)
+    except ValueError as exc:
+        print(f"tokobs: {exc}", file=sys.stderr)
+        return 2
+    service.start()
+    try:
+        service.wait()
+    finally:
+        service.stop()
+    return 0
+
+
 def main(argv: list[str] | None = None) -> int:
     parser = argparse.ArgumentParser(prog="tokobs")
     sub = parser.add_subparsers(dest="cmd", required=True)
@@ -41,6 +59,16 @@ def main(argv: list[str] | None = None) -> int:
     rep = sub.add_parser("report", help="print one task's invocations, contributions and corrections")
     rep.add_argument("--data", required=True, type=Path)
     rep.add_argument("--task", required=True)
+    srv = sub.add_parser("serve", help="periodic scan under the flock + /metrics (DESIGN §3, §7)")
+    srv.add_argument("--listen", required=True, help="ADDR:PORT, an IP address (never a hostname)")
+    srv.add_argument("--data", type=Path)
+    srv.add_argument("--source-root")
+    srv.add_argument("--fixture", action="store_true", help="serve a static sample; read no worker input")
+    srv.add_argument("--task-classes", type=Path)
+    srv.add_argument("--s9-dir", type=Path, help="directory holding monitoring.json (read-only)")
+    srv.add_argument("--deferred-file", type=Path, help="S4/OTel-shaped rows to count, never ingest (§3.10)")
+    srv.add_argument("--live-since", type=int)
+    srv.add_argument("--interval", type=float, default=60.0)
     try:
         ns = parser.parse_args(argv)
     except SystemExit as exc:
@@ -50,6 +78,8 @@ def main(argv: list[str] | None = None) -> int:
             validate_root(ns.source_root)
             scan_once(ns.data, Path(ns.source_root), now=_now(ns.now), registry=load_registry(ns.task_classes),
                       live_since=ns.live_since)
+        elif ns.cmd == "serve":
+            return _serve(ns)
         elif ns.cmd == "render":
             now = _now(ns.now)
             with collector_lock(ns.data):

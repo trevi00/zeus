@@ -3,7 +3,8 @@
 Purpose: operator inspection of the ledger for a single task. Layer: tooling. Owns: DESIGN §4 report shape
 (ids, enums and numbers only; no text field exists in the ledger to print). Does-not-own: any write.
 Implements: ACCEPTANCE A10/A11 (attempts, rework, task tokens), A24 (no text), §3.3 late-arrival visibility.
-W1b adds the refined allocation of late Codex points/predecessors.
+Limit: Codex runs are not tasks, so the refined allocation of late Codex points is in the ledger (`codex_points`,
+`corrections`) and not in this per-task report.
 """
 
 from __future__ import annotations

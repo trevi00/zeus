@@ -282,6 +282,9 @@ class Rig:
         self.check_universal(prom)
         return prom
 
+    def series(self, which: str) -> Prom:
+        return Prom(parse_prom((self.data / f"{which}.prom").read_text()))
+
     def health(self) -> Prom:
         return Prom(parse_prom((self.data / "health.prom").read_text()))
 

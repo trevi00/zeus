@@ -1,9 +1,9 @@
 """Prometheus exposition rendering: `data.prom` (last good) and `health.prom` (always current).
 
 Purpose: turn the ledger into bounded exposition text and write it atomically. Layer: tooling.
-Owns: DESIGN §5 metric contract for the S1/core subset, label allowlists and regex, the 5,000-series refusal with
-render-refusal health, atomic replace with 0600 files (K10). Does-not-own: scanning, HTTP serving (W1b), the
-provider-window and S9 metrics (W1b).
+Owns: DESIGN §5 metric contract (tokens, reasoning, invocations, unknowns, tasks, provider windows, health incl.
+ingest lag, backfill, deferred rows and S9 freshness), label allowlists and regex, the 5,000-series refusal with
+render-refusal health, atomic replace with 0600 files (K10). Does-not-own: scanning, HTTP serving (serve.py).
 Implements: ACCEPTANCE A24 (bounded labels, no ids), A43 (render refusal), the counter-monotonicity universal
 assertion (every counter is a Σ over append-only rows, never a stored mutable number), A15 (deterministic text).
 """

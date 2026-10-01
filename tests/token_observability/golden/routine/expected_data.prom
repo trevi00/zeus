@@ -1,0 +1,86 @@
+# HELP zeus_llm_advisor_consultations_total Observed advisor blocks
+# TYPE zeus_llm_advisor_consultations_total counter
+zeus_llm_advisor_consultations_total{advisor_model="claude-opus-5-5",executor_model="claude-sonnet-5-5",task_class="unclassified"} 1
+# HELP zeus_llm_advisor_state_total Advisor state from the receipt
+# TYPE zeus_llm_advisor_state_total counter
+zeus_llm_advisor_state_total{state="enabled"} 2
+# HELP zeus_llm_estimated_cost_usd_total Client cost estimate from modelUsage; not a charge
+# TYPE zeus_llm_estimated_cost_usd_total counter
+zeus_llm_estimated_cost_usd_total{model="claude-opus-5-5",provider="anthropic",source="routine",task_class="unclassified"} 0.25
+zeus_llm_estimated_cost_usd_total{model="claude-sonnet-5-5",provider="anthropic",source="routine",task_class="unclassified"} 0.75
+# HELP zeus_llm_invocations_total Finalized invocations, once each
+# TYPE zeus_llm_invocations_total counter
+zeus_llm_invocations_total{model="claude-sonnet-5-5",outcome="failed",provider="anthropic",role="implementer",source="routine"} 1
+zeus_llm_invocations_total{model="claude-sonnet-5-5",outcome="finished",provider="anthropic",role="implementer",source="routine"} 1
+# HELP zeus_llm_model_mismatch_total Requested model differs from the observed model
+# TYPE zeus_llm_model_mismatch_total counter
+# HELP zeus_llm_model_unrecognized_total Model names outside the allowlist
+# TYPE zeus_llm_model_unrecognized_total counter
+# HELP zeus_llm_open_invocations Invocations not yet finalized
+# TYPE zeus_llm_open_invocations gauge
+zeus_llm_open_invocations{provider="anthropic",source="routine",state="awaiting_predecessor"} 0
+zeus_llm_open_invocations{provider="anthropic",source="routine",state="open"} 0
+zeus_llm_open_invocations{provider="anthropic",source="routine",state="terminal_observed_pending_eof"} 0
+# HELP zeus_llm_provider_utilization_ratio Provider-reported utilization; not derived from tokens
+# TYPE zeus_llm_provider_utilization_ratio gauge
+# HELP zeus_llm_provider_window_observed_timestamp_seconds Bracketed observation time of the window
+# TYPE zeus_llm_provider_window_observed_timestamp_seconds gauge
+# HELP zeus_llm_provider_window_resets_timestamp_seconds Provider-reported window reset time
+# TYPE zeus_llm_provider_window_resets_timestamp_seconds gauge
+# HELP zeus_llm_provider_window_state Provider window state, one-hot (DESIGN §3.8)
+# TYPE zeus_llm_provider_window_state gauge
+# HELP zeus_llm_reasoning_output_tokens_total Codex reasoning tokens, a subset of output
+# TYPE zeus_llm_reasoning_output_tokens_total counter
+# HELP zeus_llm_tokens_total Measured tokens by provider, model, role, type, source, task class
+# TYPE zeus_llm_tokens_total counter
+zeus_llm_tokens_total{model="claude-opus-5-5",provider="anthropic",role="advisor",source="routine",task_class="unclassified",token_type="cache_read"} 200
+zeus_llm_tokens_total{model="claude-opus-5-5",provider="anthropic",role="advisor",source="routine",task_class="unclassified",token_type="input"} 5
+zeus_llm_tokens_total{model="claude-opus-5-5",provider="anthropic",role="advisor",source="routine",task_class="unclassified",token_type="output"} 40
+zeus_llm_tokens_total{model="claude-sonnet-5-5",provider="anthropic",role="implementer",source="routine",task_class="unclassified",token_type="cache_read"} 1500
+zeus_llm_tokens_total{model="claude-sonnet-5-5",provider="anthropic",role="implementer",source="routine",task_class="unclassified",token_type="cache_write"} 15
+zeus_llm_tokens_total{model="claude-sonnet-5-5",provider="anthropic",role="implementer",source="routine",task_class="unclassified",token_type="input"} 3
+zeus_llm_tokens_total{model="claude-sonnet-5-5",provider="anthropic",role="implementer",source="routine",task_class="unclassified",token_type="output"} 130
+# HELP zeus_llm_unknown_invocations_total Finalized invocations with unknown coverage, at most one each
+# TYPE zeus_llm_unknown_invocations_total counter
+# HELP zeus_llm_unknown_shares_total Per-model unknown share detail; not part of the ratio
+# TYPE zeus_llm_unknown_shares_total counter
+# HELP zeus_task_attempts_total Attempts of closed tasks
+# TYPE zeus_task_attempts_total counter
+zeus_task_attempts_total{outcome="accepted",task_class="unclassified"} 2
+# HELP zeus_task_elapsed_seconds First dispatch to close
+# TYPE zeus_task_elapsed_seconds histogram
+zeus_task_elapsed_seconds_bucket{le="+Inf",outcome="accepted",task_class="unclassified"} 1
+zeus_task_elapsed_seconds_bucket{le="14400",outcome="accepted",task_class="unclassified"} 0
+zeus_task_elapsed_seconds_bucket{le="1800",outcome="accepted",task_class="unclassified"} 0
+zeus_task_elapsed_seconds_bucket{le="28800",outcome="accepted",task_class="unclassified"} 0
+zeus_task_elapsed_seconds_bucket{le="300",outcome="accepted",task_class="unclassified"} 0
+zeus_task_elapsed_seconds_bucket{le="3600",outcome="accepted",task_class="unclassified"} 0
+zeus_task_elapsed_seconds_bucket{le="7200",outcome="accepted",task_class="unclassified"} 0
+zeus_task_elapsed_seconds_bucket{le="86400",outcome="accepted",task_class="unclassified"} 0
+zeus_task_elapsed_seconds_bucket{le="900",outcome="accepted",task_class="unclassified"} 0
+zeus_task_elapsed_seconds_count{outcome="accepted",task_class="unclassified"} 1
+zeus_task_elapsed_seconds_sum{outcome="accepted",task_class="unclassified"} 458550
+# HELP zeus_task_outcomes_total Closed tasks
+# TYPE zeus_task_outcomes_total counter
+zeus_task_outcomes_total{first_pass="false",outcome="accepted",task_class="unclassified"} 1
+# HELP zeus_task_review_rounds_total Review rounds of closed tasks; no source exists today (C-W1-5)
+# TYPE zeus_task_review_rounds_total counter
+# HELP zeus_task_tokens_total Task contributions, added once at close
+# TYPE zeus_task_tokens_total counter
+zeus_task_tokens_total{outcome="accepted",role="advisor",task_class="unclassified",token_type="cache_read"} 200
+zeus_task_tokens_total{outcome="accepted",role="advisor",task_class="unclassified",token_type="input"} 5
+zeus_task_tokens_total{outcome="accepted",role="advisor",task_class="unclassified",token_type="output"} 40
+zeus_task_tokens_total{outcome="accepted",role="implementer",task_class="unclassified",token_type="cache_read"} 1500
+zeus_task_tokens_total{outcome="accepted",role="implementer",task_class="unclassified",token_type="cache_write"} 15
+zeus_task_tokens_total{outcome="accepted",role="implementer",task_class="unclassified",token_type="input"} 3
+zeus_task_tokens_total{outcome="accepted",role="implementer",task_class="unclassified",token_type="output"} 130
+# HELP zeus_task_unknown_invocations_total Unknown invocations of closed tasks
+# TYPE zeus_task_unknown_invocations_total counter
+zeus_task_unknown_invocations_total{outcome="accepted",task_class="unclassified"} 0
+# HELP zeus_tokobs_ledger_corrections_total Late facts recorded as corrections
+# TYPE zeus_tokobs_ledger_corrections_total counter
+zeus_tokobs_ledger_corrections_total{kind="duplicate_after_publish"} 0
+zeus_tokobs_ledger_corrections_total{kind="late_point"} 0
+zeus_tokobs_ledger_corrections_total{kind="late_predecessor"} 0
+zeus_tokobs_ledger_corrections_total{kind="late_tail"} 0
+zeus_tokobs_ledger_corrections_total{kind="late_terminal"} 0

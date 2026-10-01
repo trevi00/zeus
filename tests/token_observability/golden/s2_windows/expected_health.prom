@@ -1,0 +1,51 @@
+# HELP zeus_tokobs_backfill_invocations Invocations classified as history (excluded from counters)
+# TYPE zeus_tokobs_backfill_invocations gauge
+zeus_tokobs_backfill_invocations 0
+# HELP zeus_tokobs_ingest_lag_seconds Unobserved window at the start of the last scan
+# TYPE zeus_tokobs_ingest_lag_seconds gauge
+zeus_tokobs_ingest_lag_seconds 14500
+# HELP zeus_tokobs_last_render_success_timestamp_seconds Unix time of the last successful render
+# TYPE zeus_tokobs_last_render_success_timestamp_seconds gauge
+zeus_tokobs_last_render_success_timestamp_seconds 1790014560
+# HELP zeus_tokobs_last_scan_success_timestamp_seconds Unix time of the last successful scan
+# TYPE zeus_tokobs_last_scan_success_timestamp_seconds gauge
+zeus_tokobs_last_scan_success_timestamp_seconds 1790014560
+# HELP zeus_tokobs_malformed_lines_total Complete malformed lines and settled torn tails
+# TYPE zeus_tokobs_malformed_lines_total counter
+zeus_tokobs_malformed_lines_total{source="coordinator"} 0
+zeus_tokobs_malformed_lines_total{source="lane"} 0
+zeus_tokobs_malformed_lines_total{source="routine"} 0
+# HELP zeus_tokobs_render_refused 1 when the last render was refused
+# TYPE zeus_tokobs_render_refused gauge
+zeus_tokobs_render_refused 0
+# HELP zeus_tokobs_scan_duration_seconds Duration of the last scan
+# TYPE zeus_tokobs_scan_duration_seconds gauge
+zeus_tokobs_scan_duration_seconds 0
+# HELP zeus_tokobs_series_count Series in the last attempted render
+# TYPE zeus_tokobs_series_count gauge
+zeus_tokobs_series_count 34
+# HELP zeus_tokobs_source_files Stream files by state
+# TYPE zeus_tokobs_source_files gauge
+zeus_tokobs_source_files{source="coordinator",state="alias_pending"} 0
+zeus_tokobs_source_files{source="coordinator",state="bound"} 0
+zeus_tokobs_source_files{source="coordinator",state="finalized"} 1
+zeus_tokobs_source_files{source="coordinator",state="open"} 0
+zeus_tokobs_source_files{source="lane",state="alias_pending"} 0
+zeus_tokobs_source_files{source="lane",state="bound"} 0
+zeus_tokobs_source_files{source="lane",state="finalized"} 1
+zeus_tokobs_source_files{source="lane",state="open"} 0
+zeus_tokobs_source_files{source="routine",state="alias_pending"} 0
+zeus_tokobs_source_files{source="routine",state="bound"} 0
+zeus_tokobs_source_files{source="routine",state="finalized"} 0
+zeus_tokobs_source_files{source="routine",state="open"} 0
+# HELP zeus_tokobs_source_up 1 when the source directory is readable
+# TYPE zeus_tokobs_source_up gauge
+zeus_tokobs_source_up{source="codex_exec"} 1
+zeus_tokobs_source_up{source="coordinator"} 1
+zeus_tokobs_source_up{source="lane"} 1
+zeus_tokobs_source_up{source="routine"} 1
+# HELP zeus_tokobs_unbound_streams Read aliases with no canonical invocation
+# TYPE zeus_tokobs_unbound_streams gauge
+zeus_tokobs_unbound_streams{source="coordinator"} 0
+zeus_tokobs_unbound_streams{source="lane"} 0
+zeus_tokobs_unbound_streams{source="routine"} 0
