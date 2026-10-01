@@ -7,7 +7,7 @@ Does not own: the decisions_pending and outbox rows (coordination: PendingDecisi
 Entry points: ResearchAudits
 Contracts: INV-RESEARCH-001
 
-Moved from M7 `application/research.py` (SOURCE e38aa722) through named rules (DESIGN-s8 §1 V3/V4, §6 V11, A/evidence/rebuild/s8/research-app-move/transcribe.py): R-r0 (each name from the target home of the module that defines it), R-r1 (`AuditArtifacts` and `SourceVerifier` are declared in `research.ports`), R-r2 (`ExecutionRecovery.validate_decision` is the injected `decision_validation` port, checked by one added `require`), R-r3 (the continuation goes through the injected `outbox` port), R-r4 (the review row is queued through the injected `pending_decisions` port, which owns the presence check); every other body is M7's. The first line is M7's module docstring.
+Moved from M7 `application/research.py` (SOURCE e38aa722) through named rules (DESIGN-s8 §1 V3/V4, §6 V11, A/evidence/rebuild/s8/research-app-move/transcribe.py): R-r0 (each name from the target home of the module that defines it), R-r1 (`AuditArtifacts` and `SourceVerifier` are declared in `research.ports`), R-r2 (`ExecutionRecovery.validate_decision` is the injected `decision_validation` port, checked by one added `require`), R-r3 (the continuation goes through the injected `outbox` port), R-r4' (the presence check and the queue of the review row go through the injected `pending_decisions` port, the check still before `envelope()`); every other body is M7's. The first line is M7's module docstring.
 """
 from __future__ import annotations
 
@@ -411,6 +411,8 @@ class ResearchAudits:
     def _queue_review(self, tx, audit_id, proposal, bound, actor):
         from codex_harness.kernel.message import envelope
         key = digest({'binding': bound, 'actor': actor})
+        if self.pending_decisions.exists(tx, key):
+            return
         message = envelope('review.result', 'lead:research', actor, 'audit_review',
                            {'audit_id': audit_id}, 'audit:' + audit_id)
         self.pending_decisions.queue(tx, {'id': key, 'actor': actor, 'phase': 'audit_review',
