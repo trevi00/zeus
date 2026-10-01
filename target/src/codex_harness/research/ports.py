@@ -5,10 +5,11 @@ Context: research
 Owns: OWNED_BUCKETS of the research context; OutboxAppend and EventAppend, the consumer-declared shapes of
     coordination's Outbox.append and EventJournal.append; AuditArtifacts and SourceVerifier (moved from M7 `ports`);
     DecisionValidation and PendingDecisions, the shapes of coordination's ExecutionRecovery.validate_decision and
-    PendingDecisions.queue that ResearchAudits calls
-Does not own: the outbox, events and decisions_pending bucket bodies (coordination)
+    PendingDecisions.queue that ResearchAudits calls; InvestigationCandidates, the shape of intake's
+    ProgressCandidates that AuditProgress calls (S8 pilot 72)
+Does not own: the outbox, events, decisions_pending and portfolio_investigations bucket bodies (coordination, intake)
 Entry points: OWNED_BUCKETS, OutboxAppend, EventAppend, AuditArtifacts, SourceVerifier, DecisionValidation,
-    PendingDecisions
+    PendingDecisions, InvestigationCandidates
 Contracts: INV-RECURRENCE-001, INV-MESSAGE-001
 """
 
@@ -24,7 +25,9 @@ OWNED_BUCKETS = ("inbox", "incidents", "hooks", "research_programs", "dge_sessio
                  "research_adaptations", "research_approvals", "research_audits", "research_backlog",
                  "research_checkpoints", "research_evidence_history", "research_observed_assets",
                  "research_partitions", "research_paths", "research_receipts", "research_reviews",
-                 "research_subsystems")  # paths/subsystems: written through the loop variable `kind`
+                 "research_subsystems",  # paths/subsystems: written through the loop variable `kind`
+                 # S8 pilot 72 (V4): the two buckets only research.application.audit_progress writes
+                 "audit_progress_state", "audit_progress_windows")
 
 
 class OutboxAppend(Protocol):
@@ -51,3 +54,8 @@ class DecisionValidation(Protocol):
 class PendingDecisions(Protocol):
     def exists(self, tx, key: str) -> bool: ...
     def queue(self, tx, row: dict) -> bool: ...
+
+
+class InvestigationCandidates(Protocol):
+    def progress_candidate(self, tx, identifier: str): ...
+    def record_progress_candidate(self, tx, identifier: str, row: dict) -> None: ...
