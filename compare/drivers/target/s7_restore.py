@@ -47,7 +47,8 @@ import s7_restore  # noqa: E402
 from codex_harness.coordination.application.fleet import state as fleet_state  # noqa: E402
 from codex_harness.coordination.domain import fleet as fleet_domain  # noqa: E402
 from codex_harness.coordination.domain.fleet_recovery import HOST_MIGRATION_SCHEMA  # noqa: E402
-from codex_harness.delivery.adapters import host_delivery, host_migration as adapter  # noqa: E402
+from codex_harness.delivery.adapters import host_delivery  # noqa: E402
+from codex_harness.delivery.adapters import host_migration as adapter  # noqa: E402
 from codex_harness.delivery.domain.host_migration import (  # noqa: E402
     MigrationRefused,
     compare_catalogs,

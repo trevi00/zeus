@@ -24,13 +24,13 @@ determinism; for the run it substitutes the imported `_utcnow` of each target ad
 reference installs (a module-attribute substitution, restored afterwards)."""
 
 import contextlib
-from datetime import timezone
 import importlib
 import importlib.util
 import inspect
 import os
 import stat
 import sys
+from datetime import timezone
 from pathlib import Path
 
 HERE = Path(__file__).resolve().parents[1]
@@ -43,9 +43,9 @@ driver.start("target")
 from types import SimpleNamespace  # noqa: E402
 
 import determinism  # noqa: E402
-
 import s7_host_migration_transfer  # noqa: E402
-from codex_harness.delivery.adapters import host_delivery, host_migration as adapter  # noqa: E402
+from codex_harness.delivery.adapters import host_delivery  # noqa: E402
+from codex_harness.delivery.adapters import host_migration as adapter  # noqa: E402
 from codex_harness.delivery.application import host_migration as application  # noqa: E402
 from codex_harness.delivery.domain import host_migration as policy  # noqa: E402
 from codex_harness.delivery.domain.host_delivery import (  # noqa: E402
