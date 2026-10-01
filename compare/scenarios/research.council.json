@@ -2,8 +2,7 @@
  "family": "research.council",
  "description": "S8 research council of M7 application/council.py (CouncilRun: __init__, _pipeline, _admit, _role, _observe, _guard, _frozen_document, _relay, _recheck, and the module names SNAPSHOT_SOURCE, SNAPSHOT_REFUSALS, PROPOSAL_SECTION, CONSUMER_OVERFLOW, CONSUMER_REFUSAL_OUTCOMES), characterized before the council move (V12: coordination.application.council): the M7 tests/test_council.py behaviours the module decides, the producer and consumer gates of tests/test_council_input.py that run through CouncilRun, and every raise (or its named unreachable reason), with the digests of autonomous_runs, operations, outbox, the promotion buckets and the dge buckets before and after each refusal and promotion; the snapshot port is M7's own ReadOnlySnapshot over a LABELLED fake connection, the artifact store, executor, evidence source, clock and buses are LABELLED doubles (the council input domain, the roles adapter and delivery are other families), MemoryStore, no PostgreSQL",
  "reference_driver": "drivers/reference/s8_council.py",
- "target_driver": null,
+ "target_driver": "drivers/target/s8_council.py",
  "golden": "goldens/reference/research.council.json",
- "slice": "S8",
- "target_status": "pending: S8 council move (V12: coordination.application.council)"
+ "slice": "S8"
 }
