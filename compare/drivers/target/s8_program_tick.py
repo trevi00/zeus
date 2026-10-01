@@ -46,7 +46,10 @@ from codex_harness.research.application import research_program as application  
 from codex_harness.research.domain.autonomous import manifest_digest  # noqa: E402
 from codex_harness.research.domain.council import validate_any_manifest  # noqa: E402
 from codex_harness.research.domain.discovery_pressure import DiscoveryPaused  # noqa: E402
-from codex_harness.research.domain.research_program import ProgramRefused, validate_config  # noqa: E402
+from codex_harness.research.domain.research_program import (  # noqa: E402
+    ProgramRefused,
+    validate_config,
+)
 from codex_harness.routing.adapters.provider_policy import packaged_policy  # noqa: E402
 from codex_harness.storage.adapters.file_artifacts import FileArtifacts  # noqa: E402
 from codex_harness.storage.adapters.memory_store import MemoryStore  # noqa: E402
