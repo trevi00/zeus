@@ -189,7 +189,31 @@ def test_a27_no_expression_combines_a_provider_metric_with_a_token_metric():
             assert NOT_DERIVED in panel["description"], (name, panel["title"])
 
 
-def test_a27_the_provider_window_panels_equal_provider_windows_json():
+def provider_window_panels():
+    rows = panels("zeus-llm-usage")
+    start = next(i for i, p in enumerate(rows) if p["type"] == "row" and p["title"] == "Provider windows")
+    end = next(i for i, p in enumerate(rows) if i > start and p["type"] == "row")
+    return rows[start + 1:end]
+
+
+def window_of(panel):
+    return "five_hour" if panel["title"].endswith("five_hour") else "seven_day"
+
+
+def effective_unit(panel, ref_id):
+    """Unit Grafana applies to the frame of `ref_id`: defaults, then matching overrides (byFrameRefID only)."""
+    config = panel["fieldConfig"]
+    unit = config["defaults"].get("unit")
+    for override in config.get("overrides", []):
+        assert override["matcher"]["id"] == "byFrameRefID", override
+        if override["matcher"]["options"] == ref_id:
+            for prop in override["properties"]:
+                if prop["id"] == "unit":
+                    unit = prop["value"]
+    return unit
+
+
+def test_a27_provider_window_panels_derive_from_provider_windows_json_with_the_f1_presentation():
     def normalized(panel):
         panel = copy.deepcopy(panel)
         for key in ("id", "gridPos", "datasource"):
@@ -198,13 +222,81 @@ def test_a27_the_provider_window_panels_equal_provider_windows_json():
             target.pop("datasource", None)
         return panel
 
-    expected = [normalized(p) for p in json.loads(WINDOWS.read_text())["panels"]]
-    rows = panels("zeus-llm-usage")
-    start = next(i for i, p in enumerate(rows) if p["type"] == "row" and p["title"] == "Provider windows")
-    end = next(i for i, p in enumerate(rows) if i > start and p["type"] == "row")
-    assert [normalized(p) for p in rows[start + 1:end]] == expected
-    assert len(expected) == 4
-    assert all("Reported by the provider; not derived from token counts" in p["description"] for p in expected)
+    def with_f1_presentation(panel):
+        # the only differences from the W1 (A54) artifact: DESIGN 6 / review F1, observation time as a date
+        panel = normalized(panel)
+        if panel["type"] == "stat":
+            w = window_of(panel)
+            panel["fieldConfig"]["defaults"]["mappings"][0]["options"]["2"]["text"] = "Stale"
+            panel["targets"].append({
+                "refId": "B",
+                "expr": "max by (slot) (zeus_llm_provider_window_observed_timestamp_seconds"
+                        f'{{provider="anthropic",window="{w}"}}) * 1000',
+                "legendFormat": "{{slot}} last observed"})
+            panel["fieldConfig"]["overrides"] = [{"matcher": {"id": "byFrameRefID", "options": "B"},
+                                                  "properties": [{"id": "unit", "value": "dateTimeAsIso"}]}]
+        else:
+            panel["targets"] = [t for t in panel["targets"] if t["refId"] == "A"]
+        return panel
+
+    source = json.loads(WINDOWS.read_text())["panels"]
+    actual = provider_window_panels()
+    assert len(source) == len(actual) == 4
+    for src, got in zip(source, actual):
+        assert (got["title"], got["type"], got["description"]) == (src["title"], src["type"], src["description"])
+        src_a = [t["expr"] for t in src["targets"] if t["refId"] == "A"]
+        assert [t["expr"] for t in got["targets"] if t["refId"] == "A"] == src_a
+        assert "Reported by the provider; not derived from token counts" in got["description"]
+    assert [normalized(p) for p in actual] == [with_f1_presentation(p) for p in source]
+
+
+def strings(node):
+    if isinstance(node, str):
+        yield node
+    elif isinstance(node, dict):
+        for k, v in node.items():
+            yield k
+            yield from strings(v)
+    elif isinstance(node, list):
+        for v in node:
+            yield from strings(v)
+
+
+def test_f1_observation_time_is_a_date_and_utilization_a_ratio():
+    assert not [t for t in strings(load("zeus-llm-usage")) if "{{time}}" in t]
+    by_title = {p["title"]: p for p in provider_window_panels()}
+    for window in ("five_hour", "seven_day"):
+        state, gauge = by_title[f"Window state {window}"], by_title[f"Window utilization {window}"]
+        b = [t for t in state["targets"] if t["refId"] == "B"]
+        assert len(b) == 1
+        assert "zeus_llm_provider_window_observed_timestamp_seconds" in b[0]["expr"]
+        assert f'window="{window}"' in b[0]["expr"] and "by (slot)" in b[0]["expr"]
+        assert "{{slot}}" in b[0]["legendFormat"]
+        assert effective_unit(state, "B").startswith("dateTime")
+        assert effective_unit(state, "A") is None
+        assert not [m for m in state["fieldConfig"]["defaults"]["mappings"]
+                    if m["type"] == "value" and "B" in json.dumps(m)]
+        (target,) = gauge["targets"]
+        assert target["refId"] == "A" and "zeus_llm_provider_utilization_ratio" in target["expr"]
+        assert f'window="{window}"' in target["expr"] and "{{slot}}" in target["legendFormat"]
+        assert effective_unit(gauge, "A") == "percentunit"
+        assert gauge["fieldConfig"]["defaults"]["noValue"] == "No data"
+
+
+def test_f1_synthetic_readings_resolve_to_the_right_units_and_texts():
+    by_title = {p["title"]: p for p in provider_window_panels()}
+    for window in ("five_hour", "seven_day"):
+        state, gauge = by_title[f"Window state {window}"], by_title[f"Window utilization {window}"]
+        # current 0.79 is a ratio shown as a percentage; the epoch (ms) is a date, never a percentage
+        assert effective_unit(gauge, "A") == "percentunit"
+        assert effective_unit(state, "B").startswith("dateTime")
+        assert 1700000000 * 1000 > 0 and effective_unit(state, "B") != "percentunit"
+        texts = {k: v["text"] for k, v in state["fieldConfig"]["defaults"]["mappings"][0]["options"].items()}
+        assert texts["2"] == "Stale"
+        assert texts["3"] == "Expired"
+        assert texts["4"] == "Unavailable: newest observation has no valid reading for this window"
+        # expired (3) and unavailable (4) carry no utilization: the gauge query filters them out
+        assert 'freshness=~"current|stale"' in gauge["targets"][0]["expr"]
 
 
 # -- A28 -------------------------------------------------------------------------

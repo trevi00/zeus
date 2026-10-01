@@ -700,6 +700,15 @@
             "type": "prometheus",
             "uid": "tokobs-prom"
           }
+        },
+        {
+          "refId": "B",
+          "expr": "max by (slot) (zeus_llm_provider_window_observed_timestamp_seconds{provider=\"anthropic\",window=\"five_hour\"}) * 1000",
+          "legendFormat": "{{slot}} last observed",
+          "datasource": {
+            "type": "prometheus",
+            "uid": "tokobs-prom"
+          }
         }
       ],
       "fieldConfig": {
@@ -714,7 +723,7 @@
                   "index": 0
                 },
                 "2": {
-                  "text": "Stale: last observed {{time}}",
+                  "text": "Stale",
                   "color": "orange",
                   "index": 1
                 },
@@ -733,7 +742,20 @@
           ],
           "noValue": "No data"
         },
-        "overrides": []
+        "overrides": [
+          {
+            "matcher": {
+              "id": "byFrameRefID",
+              "options": "B"
+            },
+            "properties": [
+              {
+                "id": "unit",
+                "value": "dateTimeAsIso"
+              }
+            ]
+          }
+        ]
       },
       "gridPos": {
         "h": 8,
@@ -756,15 +778,6 @@
           "refId": "A",
           "expr": "zeus_llm_provider_utilization_ratio{provider=\"anthropic\",window=\"five_hour\",freshness=~\"current|stale\"}",
           "legendFormat": "{{slot}} {{freshness}}",
-          "datasource": {
-            "type": "prometheus",
-            "uid": "tokobs-prom"
-          }
-        },
-        {
-          "refId": "B",
-          "expr": "zeus_llm_provider_window_observed_timestamp_seconds{provider=\"anthropic\",window=\"five_hour\"} * 1000",
-          "legendFormat": "{{slot}} observed",
           "datasource": {
             "type": "prometheus",
             "uid": "tokobs-prom"
@@ -803,6 +816,15 @@
             "type": "prometheus",
             "uid": "tokobs-prom"
           }
+        },
+        {
+          "refId": "B",
+          "expr": "max by (slot) (zeus_llm_provider_window_observed_timestamp_seconds{provider=\"anthropic\",window=\"seven_day\"}) * 1000",
+          "legendFormat": "{{slot}} last observed",
+          "datasource": {
+            "type": "prometheus",
+            "uid": "tokobs-prom"
+          }
         }
       ],
       "fieldConfig": {
@@ -817,7 +839,7 @@
                   "index": 0
                 },
                 "2": {
-                  "text": "Stale: last observed {{time}}",
+                  "text": "Stale",
                   "color": "orange",
                   "index": 1
                 },
@@ -836,7 +858,20 @@
           ],
           "noValue": "No data"
         },
-        "overrides": []
+        "overrides": [
+          {
+            "matcher": {
+              "id": "byFrameRefID",
+              "options": "B"
+            },
+            "properties": [
+              {
+                "id": "unit",
+                "value": "dateTimeAsIso"
+              }
+            ]
+          }
+        ]
       },
       "gridPos": {
         "h": 8,
@@ -859,15 +894,6 @@
           "refId": "A",
           "expr": "zeus_llm_provider_utilization_ratio{provider=\"anthropic\",window=\"seven_day\",freshness=~\"current|stale\"}",
           "legendFormat": "{{slot}} {{freshness}}",
-          "datasource": {
-            "type": "prometheus",
-            "uid": "tokobs-prom"
-          }
-        },
-        {
-          "refId": "B",
-          "expr": "zeus_llm_provider_window_observed_timestamp_seconds{provider=\"anthropic\",window=\"seven_day\"} * 1000",
-          "legendFormat": "{{slot}} observed",
           "datasource": {
             "type": "prometheus",
             "uid": "tokobs-prom"
