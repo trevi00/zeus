@@ -153,7 +153,7 @@ def publish_unbound(scan: Scan) -> None:
             horizon = scan.codex_idle_seconds if source == CODEX_SOURCE else LANE_HORIZON_SECONDS
             if scan.now - modified <= horizon:
                 continue
-            history = stream_is_history(scan.live_since, modified, terminal=False, horizon_seconds=horizon)
+            history = stream_is_history(scan.live_since, modified, terminal_at=None, horizon_seconds=horizon)
             if source == CODEX_SOURCE:
                 points = conn.execute("SELECT thread_id,input_tokens,cached,cache_write,output,reasoning FROM "
                                       "alias_codex_points WHERE alias_id=?", (alias_id,)).fetchall()

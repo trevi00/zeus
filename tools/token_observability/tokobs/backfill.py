@@ -14,16 +14,19 @@ from __future__ import annotations
 from .ledger import Ledger
 
 
-def stream_is_history(live_since: int | None, last_written: float | None, *, terminal: bool,
+def stream_is_history(live_since: int | None, last_written: float | None, *, terminal_at: float | None,
                       horizon_seconds: int) -> bool:
-    """S2/S3 (F5): a stream is history only when it had ENDED before `live_since`: it carries terminal evidence
-    (the lane's `state=finished`, a Codex terminal line) and nothing was written at or after `live_since`, or its
-    own unavailability horizon had already passed AT `live_since`. A stream still in flight at the first start
-    (no terminal evidence, inside the horizon) stays live, whatever its last write; mtime is an upper bound for
-    the terminal write and an idle measure (§3.1), never proof of finalization on its own."""
+    """S2/S3 (F5, REVIEW-W1-r2): terminal PRESENCE is not proof of terminal AGE. A stream is history only with
+    (a) a source-supported terminal timestamp (`terminal_at`, e.g. the lane metadata's own `finished_at`) before
+    `live_since`, or (b) its unavailability horizon already satisfied AT `live_since` (idle measure, §3.1: the last
+    write is older than the horizon). The stream's mtime is never a terminal time and a different file's old mtime
+    never proves when a completion was written: with no terminal timestamp and an unexpired horizon the stream stays
+    live (disclosed limit, §3.9). Anything written at or after `live_since` is live."""
     if live_since is None or last_written is None or last_written >= live_since:
         return False
-    return terminal or live_since - last_written > horizon_seconds
+    if terminal_at is not None:
+        return terminal_at < live_since
+    return live_since - last_written > horizon_seconds
 
 
 def attempt_is_history(live_since: int | None, started_at: int, terminal_at: int | None, horizon_seconds: int) -> bool:

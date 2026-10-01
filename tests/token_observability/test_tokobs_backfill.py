@@ -60,27 +60,65 @@ CODEX_TURN = {"type": "turn.completed", "usage": {
 
 
 def test_a32_streams_that_had_ended_before_live_since_are_history(tmp_path):
-    """F5: history is terminal evidence or an unavailability horizon already satisfied AT live_since. The last write
-    alone proves neither."""
+    """F5: history is a source-supported terminal timestamp before live_since or an unavailability horizon already
+    satisfied AT live_since. Terminal presence plus an old last write proves neither."""
     rig = Rig(tmp_path)
     rig.credential_receipt("coordinator:fleet", "fleet-old-events.jsonl")
     rig.stream("fleet-old-events.jsonl", claude_init(model="opus"), claude_result(
         "o1", usage(0, 5, 0, 0), {OPUS: entry(0, 5, 0, 0)}))  # no terminal evidence: needs the horizon
     rig.codex_script("old", resume=False)
     rig.codex_events("old", {"type": "thread.started", "thread_id": "t"}, CODEX_TURN)  # a terminal line
-    rig.now = T0 + 14_400 + 100  # the coordinator's horizon was already satisfied at live_since
+    rig.now = T0 + 14_400 + 100  # both horizons (coordinator 14,400 s, Codex 1,860 s) were satisfied at live_since
     prom = rig.scan(live_since=rig.now)
     assert prom.sum("zeus_llm_tokens_total") == 0 and prom.sum("zeus_llm_reasoning_output_tokens_total") == 0
     assert prom.sum("zeus_llm_invocations_total") == 0
     assert rig.health().sum("zeus_tokobs_backfill_invocations") == 2
 
 
-def test_a32_lane_with_finished_metadata_last_written_before_live_since_is_history(tmp_path):
+def _lane(rig, name="lane-old", *, stream_at, **meta):
+    rig.lane_meta(name, state="finished", exit_code=0, **meta)
+    rig.stream(f"evidence/{name}/events.jsonl", claude_init(model="opus"), claude_result(
+        "l1", usage(0, 100, 0, 0), {OPUS: entry(0, 100, 0, 0)}), touch=False)
+    rig.touch(rig.root / "evidence" / name / "events.jsonl", stream_at)
+
+
+def test_a32_lane_with_a_supported_pre_cutoff_terminal_timestamp_is_history(tmp_path):
     rig = Rig(tmp_path)
-    rig.lane_meta("lane-old", state="finished", exit_code=0)
-    rig.stream("evidence/lane-old/events.jsonl", claude_init(model="opus"), claude_result(
-        "l1", usage(0, 5, 0, 0), {OPUS: entry(0, 5, 0, 0)}))
+    _lane(rig, stream_at=LIVE - 100, finished_at=iso(LIVE - 90))  # finished before the cutoff, by its own metadata
     rig.now = LIVE
+    prom = rig.scan(live_since=LIVE)
+    assert prom.sum("zeus_llm_tokens_total") == 0
+    assert rig.health().sum("zeus_tokobs_backfill_invocations") == 1
+
+
+def test_f5_old_stream_bytes_with_post_cutoff_completion_metadata_stay_live(tmp_path):
+    """The reviewer's trigger: the stream's last write predates the cutoff, the completion is written after it."""
+    rig = Rig(tmp_path)
+    _lane(rig, stream_at=LIVE - 100, finished_at=iso(LIVE + 20))  # 1 on 02328356
+    rig.now = LIVE + 30
+    prom = rig.scan(live_since=LIVE)
+    assert prom.sum("zeus_llm_tokens_total", token_type="output") == 100  # live total
+    assert rig.health().sum("zeus_tokobs_backfill_invocations") == 0  # backfill total
+    assert rig.sql("SELECT backfill FROM invocations WHERE id LIKE 'lane:%'") == [(0,)]
+
+
+def test_f5_delayed_discovery_with_unavailable_terminal_time_inside_the_horizon_is_live(tmp_path):
+    """Finished metadata without a finished_at: the old stream mtime is not a completion time."""
+    rig = Rig(tmp_path)
+    _lane(rig, stream_at=LIVE - 100)
+    rig.now = LIVE + 30
+    prom = rig.scan(live_since=LIVE)
+    assert prom.sum("zeus_llm_tokens_total", token_type="output") == 100
+    assert rig.health().sum("zeus_tokobs_backfill_invocations") == 0
+    rig.now += 60  # a later scan: the classification stays as created
+    assert rig.scan().sum("zeus_llm_tokens_total", token_type="output") == 100
+    assert rig.sql("SELECT backfill FROM invocations WHERE id LIKE 'lane:%'") == [(0,)]
+
+
+def test_f5_a_horizon_already_expired_at_the_cutoff_is_history_without_a_terminal_timestamp(tmp_path):
+    rig = Rig(tmp_path)
+    _lane(rig, stream_at=LIVE - 14_401)  # idle for more than the 14,400 s horizon at live_since
+    rig.now = LIVE + 30
     prom = rig.scan(live_since=LIVE)
     assert prom.sum("zeus_llm_tokens_total") == 0
     assert rig.health().sum("zeus_tokobs_backfill_invocations") == 1
@@ -121,11 +159,22 @@ def test_f5_an_active_codex_run_at_first_start_counts_its_terminal_usage_as_live
     assert rig.health().sum("zeus_tokobs_backfill_invocations") == 0
 
 
-def test_f5_a_codex_run_finished_before_first_start_stays_history(tmp_path):
+def test_f5_a_codex_terminal_line_inside_the_horizon_has_no_terminal_time_and_stays_live(tmp_path):
+    """A Codex line carries no time: terminal presence plus a recent old mtime is not age evidence."""
     rig = Rig(tmp_path)
     rig.codex_script("done", resume=False)
     rig.codex_events("done", {"type": "thread.started", "thread_id": "t"}, CODEX_TURN)
-    rig.now = T0 + 60  # well inside the idle horizon, but the terminal evidence is already on disk
+    rig.now = T0 + 60  # well inside the idle horizon
+    prom = rig.scan(live_since=rig.now)
+    assert prom.sum("zeus_llm_tokens_total", token_type="output") == 4  # live total
+    assert rig.health().sum("zeus_tokobs_backfill_invocations") == 0  # backfill total
+
+
+def test_f5_a_codex_run_whose_idle_horizon_had_expired_at_first_start_is_history(tmp_path):
+    rig = Rig(tmp_path)
+    rig.codex_script("done", resume=False)
+    rig.codex_events("done", {"type": "thread.started", "thread_id": "t"}, CODEX_TURN)
+    rig.now = T0 + 1_860 + 1
     prom = rig.scan(live_since=rig.now)
     assert prom.sum("zeus_llm_tokens_total") == 0
     assert rig.health().sum("zeus_tokobs_backfill_invocations") == 1

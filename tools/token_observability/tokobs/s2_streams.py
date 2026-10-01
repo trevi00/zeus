@@ -145,7 +145,8 @@ def _ensure(scan: Scan, spec: StreamSpec) -> dict:
         if resumed and isinstance(run, str) and RUN_NAME.match(run):
             predecessor = f"lane:{spec.lane_dir}:{run}"
     started = parse_ts(meta.get("started_at"))
-    history = stream_is_history(scan.live_since, _mtime(spec.path), terminal=meta.get("state") == "finished",
+    finished = parse_ts(meta.get("finished_at")) if meta.get("state") == "finished" else None
+    history = stream_is_history(scan.live_since, _mtime(spec.path), terminal_at=finished,
                                 horizon_seconds=LANE_HORIZON_SECONDS)
     scan.conn.execute(
         "INSERT INTO invocations(id,source,provider,session_or_thread,mode,predecessor_id,requested_model_raw,"

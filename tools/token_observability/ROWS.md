@@ -36,10 +36,11 @@ Files: `tests/token_observability/test_tokobs_<s1_lifecycle|streams|partition|re
   `late_tail` growth fact); `report --invocation <id|stem>` shows a Codex run, lane or coordinator stream without a task
   binding, with its late facts and the refined or still-unknown allocation. A late result is never a published contribution.
 - Idle horizons use mtime (delay only, §3.1); Codex idle = 2 x `POLICY.decision_seconds` read by `vocab.codex_idle_seconds()` (C-W1-8).
-- Ingest lag = now minus the previous successful scan. Backfill for S2/S3 (F5) = terminal evidence with no write at or
-  after `live_since`, or the source's own horizon already satisfied AT `live_since`; a stream in flight at the first
-  start is live. The last write alone is never history. A finished stream rewritten after `live_since` is live (no
-  earlier timestamp exists to prove otherwise).
+- Ingest lag = now minus the previous successful scan. Backfill for S2/S3 (F5, REVIEW-W1-r2) = a source-supported
+  terminal timestamp before `live_since` (a lane's own `finished_at`), or the source's unavailability horizon already
+  satisfied AT `live_since`. Terminal presence is not terminal age; a stream's mtime is an idle measure only and never a
+  completion time. A finished stream with no earlier terminal-time evidence (a Codex line carries none) stays live
+  inside the horizon: a disclosed limit (§3.9), not a back-dated timestamp.
 - Review rounds: no source exists (C-W1-5); `<stem>-codex-prestart.json` is a W2 allowlist item (C-W1-4).
 - Real Codex lines carry `cache_write_input_tokens` (always 0); a point lacking it leaves `cache_write` unknown (C-W1-3).
 - Read bound: `MAX_READ_BYTES` is the nominal chunk. A single line longer than the chunk is held whole (`_read_chunk`
@@ -55,6 +56,6 @@ Files: `tests/token_observability/test_tokobs_<s1_lifecycle|streams|partition|re
 | F2 | `partition.NESTED_*` tri-state (`results.nested` 0 none / 1 present / 2 unknown); exclusive `advisor` only on explicit zero/zero | `test_f2_exclusive_advisor_needs_explicit_zero_nested_counters` (6 cases), `test_f2_no_consultation_…`, `test_f2_one_result_without_the_zero_evidence_…` |
 | F3 | `vocab.version_semantics` (+ `CHARACTERIZED_FAMILIES`); an uncharacterized major/minor is M only + `unknown_version_semantics` | `test_f3_an_uncharacterized_major_or_minor_…` (3), `test_f3_a_supported_version_…`, `test_f3_one_policy_…` |
 | F4 | migration 4 (`late_results`, `late_result_models`, `late_codex_terminal`, `corrections.linked_ref`); `late.py`; Codex `late_terminal`; linked `late_predecessor`/`late_point`; `report --invocation` | `test_f4_a_predecessor_arriving_…`, `test_f4_a_late_predecessor_that_still_cannot_refine_…`, `test_f4_late_results_without_numbers_…`, `test_f4_a_codex_terminal_after_the_horizon_…`, `test_f4_a_codex_failed_terminal_…`, `test_f4_a_late_codex_point_…`, `test_f4_report_cli_…`, `test_f4_a_lane_predecessor_discovered_…` |
-| F5 | `backfill.stream_is_history(terminal=, horizon_seconds=)`; S3 `has_terminal_line`; the mtime-only test is replaced | backfill `test_a32_streams_that_had_ended_before_live_since_are_history`, `test_a32_lane_with_finished_metadata_…`, `test_f5_*` (3) |
+| F5 | `backfill.stream_is_history(terminal=, horizon_seconds=)`; S3 `has_terminal_line` (superseded by round 2); the mtime-only test is replaced | backfill `test_a32_streams_that_had_ended_before_live_since_are_history`, `test_a32_lane_with_finished_metadata_…`, `test_f5_*` (3) |
 | F6 | `dashboards/provider-windows.json` + lint | dashboards `test_a54_*` (5) |
 | nonblocking | serve cadence 30 s; per-line read bound stated in the `s1_routine` docstring and above | `test_serve_scan_cadence_is_the_designs_30_seconds` |
