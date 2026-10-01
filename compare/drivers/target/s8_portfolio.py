@@ -4,8 +4,9 @@
 The API mirrors the reference driver's names over the target homes: the bucket and research constants from
 `intake.domain.portfolio` (R-p1/R-p2), the Fleet status constants as intake publishes them (R-p3, pinned equal to
 coordination's by test_s8_portfolio_move) and `BUCKET_JOBS` from `intake.application.portfolio_lineage`. The scenario
-reads the kernel's default system clock in a few places (`reconcile(store)`), as M7 read `utcnow`; so the harness's scripted
-clock is installed exactly as the reference driver installs it (`determinism.install`), over the target's loaded modules."""
+reads the kernel's default clock in a few places (`reconcile(store)`, as M7 read `utcnow`); the harness's scripted clock
+reaches it through the kernel `Clock` port: the driver sets `kernel.ids.SYSTEM_CLOCK`, the one default `utcnow` reads
+(the target's standard library is never patched)."""
 
 import sys
 from datetime import datetime, timezone
@@ -26,13 +27,14 @@ from codex_harness.intake.application import portfolio as application  # noqa: E
 from codex_harness.intake.application.portfolio_lineage import BUCKET_JOBS  # noqa: E402
 from codex_harness.intake.domain import backlog as fleet_constants  # noqa: E402
 from codex_harness.intake.domain.portfolio import FAILURE_KIND, PROGRESS_KIND  # noqa: E402
+from codex_harness.kernel import ids  # noqa: E402
 from codex_harness.kernel.errors import ContractError  # noqa: E402
 from codex_harness.kernel.ids import digest  # noqa: E402
 from codex_harness.storage.adapters.memory_store import MemoryStore  # noqa: E402
+from s1_target import PortClock  # noqa: E402
 
 CLOCK = determinism.FakeClock(datetime(2026, 9, 22, tzinfo=timezone.utc))
-IDS = determinism.FakeIds()
-determinism.install(CLOCK, IDS)
+ids.SYSTEM_CLOCK = PortClock(CLOCK)
 
 names = ("Portfolio", "PortfolioRefused", "validate_definitions", "validate_evidence", "family_id", "classified_failure",
          "failure_families", "reconcile", "job_entry", "follow_up_view", "project_activity", "activity_mode", "status_projection",
