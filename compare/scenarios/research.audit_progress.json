@@ -1,0 +1,9 @@
+{
+ "family": "research.audit_progress",
+ "description": "S8 research audit progress of M7 application/audit_progress.py (packaged_policy, _seconds, AuditProgress: _facts, _evidence, observe, _observe, _apply, _start_epoch, _close_window, _candidate, _record, _degraded, state, windows, candidates; status_view), characterized before the audit_progress move: both raises, every except branch (the module has no require), the M7 tests/test_audit_progress.py behaviours this module decides (the others named as other families), with the digests of the audit_progress_state, audit_progress_windows and portfolio_investigations buckets before and after each observation and refusal; LABELLED planted audit, partition, coverage, receipt and settled-task rows in the shape their owners write (g8 runs the owners), M7's own FileArtifacts over a run-scoped directory, the harness fake clock; no Git, Docker, model or PostgreSQL",
+ "reference_driver": "drivers/reference/s8_audit_progress.py",
+ "target_driver": null,
+ "golden": "goldens/reference/research.audit_progress.json",
+ "slice": "S8",
+ "target_status": "pending: S8 audit_progress move"
+}
