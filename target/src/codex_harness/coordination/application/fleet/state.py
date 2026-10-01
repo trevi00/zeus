@@ -3,9 +3,9 @@ view and the five read helpers every unit uses inside its own transaction.
 
 Layer: application
 Context: coordination
-Owns: the Fleet bucket names and read-only views over them (no writes)
-Does not own: any write (the four Fleet objects own them)
-Entry points: registry, control, view, hold_key, repository_aliases, owner_handoff_view
+Owns: the Fleet bucket names, read-only views over them and the P2 control-version record's one writer
+Does not own: any other write (the four Fleet objects own them)
+Entry points: registry, control, control_version, bump_control_version, view, hold_key, repository_aliases, owner_handoff_view
 Contracts: INV-FLEET-001
 
 Moved from M7 `application/fleet.py` (SOURCE e38aa722) by the named split (DESIGN-s5 §F); the method
@@ -30,6 +30,9 @@ BUCKET_UNITS = "fleet_units"
 # Control-row field naming the managed host activation that paused admission (`activation_gate`).
 ACTIVATION_HOLD = "activation_hold"
 CONTROL_KEY = "admission"
+# P2 (Buzz DESIGN v3 §5, DESIGN-B §5 D-B2-1): the pause-authority version lives in its OWN record, never in the
+# CONTROL_KEY row; `bump_control_version` is its only writer.
+AUTHORITY_VERSION_KEY = "authority_version"
 SAFE_HANDOFF_VALUE = re.compile(r"[A-Za-z0-9_.:-]{1,80}\Z")
 
 
@@ -77,6 +80,20 @@ def registry(tx) -> dict | None:
 def control(tx) -> dict:
     """Pause flag and effective budget; an older row without a budget keeps the registered one."""
     return tx.get(BUCKET_CONTROL, CONTROL_KEY) or {"paused": False}
+
+
+def control_version(tx) -> int:
+    """The P2 pause-authority version; an absent record reads 0."""
+    record = tx.get(BUCKET_CONTROL, AUTHORITY_VERSION_KEY)
+    return record["control_version"] if record else 0
+
+
+def bump_control_version(tx) -> int:
+    """P2: +1 for one committed pause-authority change, in the caller's transaction. Called only by the three owner
+    paths (`FleetPause.set_paused_in`, the `activation_gate` hold write, `release_activation_hold`)."""
+    version = control_version(tx) + 1
+    tx.put(BUCKET_CONTROL, AUTHORITY_VERSION_KEY, {"control_version": version})
+    return version
 
 
 def view(job: dict) -> dict:

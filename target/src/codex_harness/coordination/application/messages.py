@@ -6,7 +6,7 @@ Owns: buckets workflow_inbox (report consumption), rebase_requests, and the deci
     research_discoveries/outbox rows a handled report queues in the same unit
 Does not own: task leases and submission (Workflow / TaskOwnership), terminal-operation parking (operation_finalization,
     injected into the Workflow), execution notices' own records (execution_notices)
-Entry points: MessageHandler.handle, MessageHandler.cancel, MessageHandler.request_rebase, MessageHandler.context
+Entry points: MessageHandler.handle, MessageHandler.cancel, MessageHandler.cancel_in, MessageHandler.request_rebase, MessageHandler.context
 Contracts: INV-MESSAGE-001, INV-IDEMPOTENCY-001, INV-OPERATION-FINALIZATION-001, INV-RESEARCH-001, INV-RESEARCH-004
 
 M7 `Workflow.cancel/request_rebase/handle/context` (SOURCE e38aa722), moved as the MessageHandler half of design v2's
@@ -19,9 +19,18 @@ from __future__ import annotations
 from codex_harness.coordination.application.execution_fence import advance as advance_fence
 from codex_harness.coordination.application.execution_notices import receive
 from codex_harness.coordination.application.execution_notices import record as execution_notice
-from codex_harness.kernel.errors import require
+from codex_harness.coordination.domain.remote_control import NOT_APPLIED, STALE_GENERATION
+from codex_harness.kernel.errors import ContractError, require
 from codex_harness.kernel.ids import canonical, digest, utcnow
 from codex_harness.research.domain.research import require_dispatch
+
+
+class TaskRefused(ContractError):
+    """A refused operator task command: `code` is a B1 `remote_control` refusal code; nothing was written."""
+
+    def __init__(self, code: str, message: str):
+        super().__init__(message)
+        self.code = code
 
 
 class MessageHandler:
@@ -38,15 +47,25 @@ class MessageHandler:
 
     def cancel(self, task_id: str, actor: str, reason: str) -> None:
         with self.store.transaction() as tx:
-            task = tx.get("tasks", task_id)
-            require(task is not None and bool(reason), "Task and cancellation reason required")
-            require(actor in {"conductor", task["message"]["who"]["sender"]}, "Cannot cancel task")
-            require(task["status"] not in {"succeeded", "cancelled"}, "Task already terminal")
-            self.workflow._attempt_outcome(task, "cancelled", utcnow(self.clock), reason)
-            advance_fence(tx, "tasks", task_id, task["generation"] + 1, clock=self.clock)
-            task.update(status="cancelled", error=reason, generation=task["generation"] + 1)
-            tx.put("tasks", task_id, task)
-            execution_notice(tx, self.org, task, 'tasks', 'operator_cancelled', utcnow(self.clock), ids=self.ids)
+            self.cancel_in(tx, task_id, actor, reason, expected_generation=None)
+
+    def cancel_in(self, tx, task_id: str, actor: str, reason: str, *, expected_generation: int | None = None) -> None:
+        """The body of `cancel` in the CALLER's transaction (Buzz DESIGN v3 §4.3).
+
+        A given `expected_generation` that differs from the task's refuses `stale_generation`; a terminal task
+        refuses `not_applied` (both `TaskRefused`, a ContractError, with nothing written)."""
+        task = tx.get("tasks", task_id)
+        require(task is not None and bool(reason), "Task and cancellation reason required")
+        require(actor in {"conductor", task["message"]["who"]["sender"]}, "Cannot cancel task")
+        if expected_generation is not None and expected_generation != task["generation"]:
+            raise TaskRefused(STALE_GENERATION, "Task generation changed")
+        if task["status"] in {"succeeded", "cancelled"}:
+            raise TaskRefused(NOT_APPLIED, "Task already terminal")
+        self.workflow._attempt_outcome(task, "cancelled", utcnow(self.clock), reason)
+        advance_fence(tx, "tasks", task_id, task["generation"] + 1, clock=self.clock)
+        task.update(status="cancelled", error=reason, generation=task["generation"] + 1)
+        tx.put("tasks", task_id, task)
+        execution_notice(tx, self.org, task, 'tasks', 'operator_cancelled', utcnow(self.clock), ids=self.ids)
 
     def request_rebase(self, task_id: str, new_base: str) -> dict:
         with self.store.transaction() as tx:

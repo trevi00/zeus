@@ -4,8 +4,8 @@ Layer: application
 Context: coordination
 Owns: buckets fleet_control, fleet_budget_grants
 Does not own: admission itself (fleet.admission); the delivery FleetDrain port it will implement (S7)
-Entry points: FleetPause.pause, .resume, .activation_gate, .release_activation_hold, .authorize_budget, .budget_grants
-Contracts: INV-FLEET-001
+Entry points: FleetPause.set_paused_in, .pause, .resume, .activation_gate, .release_activation_hold, .authorize_budget, .budget_grants
+Contracts: INV-FLEET-001; Buzz DESIGN v3 §5 P2 (control version)
 
 Moved from M7 `application/fleet.py` (SOURCE e38aa722) by the named split (DESIGN-s5 §F); the method
 bodies are M7's.
@@ -33,6 +33,7 @@ from codex_harness.coordination.domain.fleet import (
     safe_code,
     validate_grant,
 )
+from codex_harness.coordination.domain.remote_control import ACTIVATION_HOLD_PRESENT, STALE_CONTROL
 from codex_harness.kernel.errors import require
 from codex_harness.kernel.ids import utcnow
 from codex_harness.kernel.usage import MODES, SUBSCRIPTION, accounting_mode
@@ -45,16 +46,35 @@ class FleetPause:
         self.store, self.clock, self.token = store, clock, token
 
     # ----- admission control --------------------------------------------------------------
+    def set_paused_in(self, tx, paused: bool, *, expected_control: dict | None,
+                      allow_hold_release: bool = False) -> dict:
+        """Set the pause flag inside the caller's transaction (Buzz DESIGN v3 §4.3 / §5 P2).
+
+        `expected_control` = {"paused", "version"} is compared here, in the transaction, with the control row and
+        the P2 version (a mismatch refuses `stale_control`); None skips the comparison (the local wrappers). A
+        resume over an activation hold refuses `activation_hold_present` unless `allow_hold_release`. Nothing is
+        written on a refusal; a change bumps the version by one."""
+        if state.registry(tx) is None:
+            raise FleetRefused("unregistered")
+        current = state.control(tx)
+        if expected_control is not None and (expected_control.get("paused") is not bool(current.get("paused"))
+                                             or expected_control.get("version") != state.control_version(tx)):
+            raise FleetRefused(STALE_CONTROL)
+        hold = current.get(ACTIVATION_HOLD)
+        if not paused and hold is not None and not allow_hold_release:
+            raise FleetRefused(ACTIVATION_HOLD_PRESENT)
+        # Only the flag changes: a granted effective budget survives pause/resume. An owner pause
+        # or resume takes the pause over, so a host activation hold never outlives it (when allowed).
+        control = current if not allow_hold_release else {
+            key: value for key, value in current.items() if key != ACTIVATION_HOLD}
+        row = {**control, "paused": paused, "updated_at": self.clock()}
+        tx.put(BUCKET_CONTROL, CONTROL_KEY, row)
+        state.bump_control_version(tx)
+        return row
+
     def _set_paused(self, paused: bool) -> dict:
         with self.store.transaction() as tx:
-            if state.registry(tx) is None:
-                raise FleetRefused("unregistered")
-            # Only the flag changes: a granted effective budget survives pause/resume. An owner pause
-            # or resume takes the pause over, so a host activation hold never outlives it.
-            control = {key: value for key, value in state.control(tx).items() if key != ACTIVATION_HOLD}
-            row = {**control, "paused": paused, "updated_at": self.clock()}
-            tx.put(BUCKET_CONTROL, CONTROL_KEY, row)
-        return row
+            return self.set_paused_in(tx, paused, expected_control=None, allow_hold_release=True)
 
     def pause(self) -> dict:
         """Stops NEW admissions durably; dispatching work is allowed to finish."""
@@ -91,6 +111,7 @@ class FleetPause:
                 hold = {"target_id": target_id, "descriptor_sha256": descriptor_sha256, "at": self.clock()}
                 control = {**control, "paused": True, ACTIVATION_HOLD: hold, "updated_at": self.clock()}
                 tx.put(BUCKET_CONTROL, CONTROL_KEY, control)
+                state.bump_control_version(tx)
             committed = state.hold_key(control)
         unknown = {"paused": True, "hold": ours, "reserving": None, "units_held": None, "settled": False}
         try:
@@ -123,6 +144,7 @@ class FleetPause:
                 return {"released": False}
             row = {key: value for key, value in control.items() if key != ACTIVATION_HOLD}
             tx.put(BUCKET_CONTROL, CONTROL_KEY, {**row, "paused": False, "updated_at": self.clock()})
+            state.bump_control_version(tx)
         return {"released": True}
 
     def authorize_budget(self, per_host, total, expected_total, mode=None) -> dict:
