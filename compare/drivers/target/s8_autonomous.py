@@ -5,8 +5,8 @@ organization, outbox flusher, incident use case) and M7's `Workflow` its `Workfl
 injected ports (R-a1, R-a3): research's `DebateSessions` factory, evidence's `EvidenceRecords`, knowledge's promotion module and
 the S5 `Operation` composition (as `s5_operation.py` builds it, plus the observer and research's design gate). The scenario reads
 the kernel's default clock where M7 read `utcnow`; the harness's scripted clock (the composition's, set to the scenario's start)
-reaches it through the kernel `Clock` port, and the scripted ids through the `IdSource` default of `envelope`. The module's `time` name is replaced by the scripted clock's monotonic (see below). `EvidenceUnavailable` is the scenario's LABELLED stand-in for the adapter's refusal
-(`adapters/autonomous_evidence` is a later family): a `ContractError` with the adapter's message and `reason_code`."""
+reaches it through the kernel `Clock` port, and the scripted ids through the `IdSource` default of `envelope`. The module's `time` name is replaced by the scripted clock's monotonic (see below). `EvidenceUnavailable` is the moved
+`research.adapters.autonomous_evidence` refusal (S8 pilot 80)."""
 
 import sys
 from datetime import datetime, timezone
@@ -30,6 +30,7 @@ from codex_harness.kernel.errors import ContractError  # noqa: E402
 from codex_harness.kernel.ids import canonical  # noqa: E402
 from codex_harness.kernel.message import envelope  # noqa: E402
 from codex_harness.knowledge.application import promotion as knowledge_promotion  # noqa: E402
+from codex_harness.research.adapters.autonomous_evidence import EvidenceUnavailable  # noqa: E402
 from codex_harness.research.application import dge  # noqa: E402
 from codex_harness.research.domain import autonomous as domain  # noqa: E402
 from codex_harness.routing.adapters.provider_policy import packaged_policy  # noqa: E402
@@ -45,14 +46,6 @@ EVIDENCE_RECORDS = EvidenceRecords()
 # The module reads `time.monotonic()` for the `durations` it records; M7's reference run had the stdlib clock patched. The target's
 # standard library is never patched, so the driver substitutes the module's `time` name with the scripted clock's monotonic reading.
 application.time = SimpleNamespace(monotonic=composition.CLOCK.monotonic)
-
-
-class EvidenceUnavailable(ContractError):
-    """LABELLED stand-in for `adapters.autonomous_evidence.EvidenceUnavailable` (the adapter is a later family)."""
-
-    def __init__(self, reason_code: str):
-        super().__init__("execution evidence " + reason_code)
-        self.reason_code = reason_code
 
 
 def autonomous_run(service, *args, **kwargs):

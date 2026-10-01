@@ -5,8 +5,7 @@ M7's `Harness` is the S5 `Service`, M7's `Workflow` its `WorkflowAndMessages`, a
 scenario also builds) gets its four injected ports (R-c1): research's `DebateSessions` factory, evidence's `EvidenceRecords`,
 knowledge's promotion module and the S5 `Operation` composition (as `s5_operation.py` builds it, plus the observer and research's
 design gate). `ReadOnlySnapshot`/`SnapshotUnavailable` are the moved `research.adapters.council_snapshot` (S8 pilot 79; the
-scenario always injects its fake `connect`). `EvidenceUnavailable` is the scenario's LABELLED stand-in for `adapters/autonomous_evidence`
-(a later family; it stays until that adapter moves).
+scenario always injects its fake `connect`) and `EvidenceUnavailable` the moved `research.adapters.autonomous_evidence` (S8 pilot 80).
 The artifact store, executor, evidence source, clock and buses are the scenario's doubles."""
 
 import sys
@@ -32,6 +31,7 @@ from codex_harness.kernel.errors import ContractError  # noqa: E402
 from codex_harness.kernel.ids import canonical  # noqa: E402
 from codex_harness.kernel.message import envelope  # noqa: E402
 from codex_harness.knowledge.application import promotion as knowledge_promotion  # noqa: E402
+from codex_harness.research.adapters.autonomous_evidence import EvidenceUnavailable  # noqa: E402
 from codex_harness.research.adapters.council_snapshot import (  # noqa: E402
     ReadOnlySnapshot,
     SnapshotUnavailable,
@@ -50,15 +50,6 @@ EVIDENCE_RECORDS = EvidenceRecords()
 # The module (and its base class) read `time.monotonic()` for recorded durations: the driver substitutes the base module's `time`
 # name with the scripted clock's monotonic reading (the target's standard library is never patched), as `s8_autonomous` does.
 base_run.time = SimpleNamespace(monotonic=composition.CLOCK.monotonic)
-
-
-class EvidenceUnavailable(ContractError):
-    """LABELLED stand-in for `adapters.autonomous_evidence.EvidenceUnavailable` (the adapter is a later family): it stays until
-    `autonomous_evidence` moves; the snapshot port is no longer a stand-in (S8 pilot 79: `research.adapters.council_snapshot`)."""
-
-    def __init__(self, reason_code: str):
-        super().__init__("execution evidence " + reason_code)
-        self.reason_code = reason_code
 
 
 def _ports(service):
