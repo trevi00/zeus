@@ -1461,7 +1461,7 @@
         "parse": null,
         "read": null,
         "sha256": null,
-        "size": 40,
+        "size": "<directory-size>",
         "type": "directory",
         "uid": "<controller-uid>"
        }
@@ -1572,7 +1572,7 @@
       "parse": null,
       "read": null,
       "sha256": null,
-      "size": 40,
+      "size": "<directory-size>",
       "type": "directory",
       "uid": "<controller-uid>"
      }

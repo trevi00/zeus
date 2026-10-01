@@ -399,6 +399,7 @@ def completed(argv, returncode=0, stdout="", stderr=""):
 def fake_proc(ws, processes):
     proc = ws.root / "proc"
     proc.mkdir(exist_ok=True)
+    os.chmod(proc, 0o700)  # explicit: `file_facts_present` records this mode; never the process umask (CI 0022)
     for pid, (argv, cgroup) in processes.items():
         entry = proc / str(pid)
         entry.mkdir(parents=True, exist_ok=True)

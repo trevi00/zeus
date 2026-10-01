@@ -53,6 +53,9 @@ Added here, each fixture-derived (the fixture learns the value from the very arg
   legacy container name `harness-canary-<12 hex>` (os.urandom) the fixture reads from `--name` → `<canary-name>`; both
   shapes are checked and recorded (`dir_prefix_ok`, `name_shape_ok`);
 - the canary token (os.urandom) the fixture reads from `input.txt` → `<token>`, and its sha256 → `<token-sha256>`;
+- the `size` of a file record whose `type` is `directory` → `<directory-size>` (filesystem-dependent: tmpfs vs ext4);
+  the fixture's canary files and directories get EXPLICIT modes, so no recorded mode depends on the process umask
+  (CI 0022 vs the aibox owner's 0077, found 2026-10-01);
 - git's own diagnostic after `Git operation failed (<op>, cwd=...): ` → `<git-diagnostic>`: its wording varies by git
   version and sandbox mount layout (CI ubuntu-latest vs aibox bwrap, found 2026-10-01), and M7 truncates the message
   at 200 characters BEFORE path normalization, so the cut moves with the scratch path length. The error type, the
@@ -254,6 +257,8 @@ class World:
 
     def n(self, value):
         if isinstance(value, dict):
+            if value.get("type") == "directory" and type(value.get("size")) is int:
+                value = {**value, "size": "<directory-size>"}  # filesystem-dependent (tmpfs 40, ext4 4096)
             out = {}
             for key, item in value.items():
                 if key in ("uid", "gid") and type(item) is int and item == (os.getuid() if key == "uid" else os.getgid()):
@@ -673,6 +678,7 @@ def written(name, data):
         target.unlink()
         if data is not None:
             target.write_bytes(data(token) if callable(data) else data)
+            os.chmod(target, 0o600)  # explicit: the fixture's input must not depend on the process umask (CI 0022)
     return container
 
 
@@ -853,6 +859,7 @@ def group_file_canary(fx):
         target = root.parent / ("outside-" + root.name + ".txt")
         outside["path"] = target
         target.write_bytes(token.encode())
+        os.chmod(target, 0o600)  # explicit, umask-independent
         (root / "output.txt").unlink()
         (root / "output.txt").symlink_to(target)
 
@@ -864,7 +871,8 @@ def group_file_canary(fx):
     def directory(root, token):
         honest(root, token)
         (root / "result.json").unlink()
-        (root / "result.json").mkdir()
+        (root / "result.json").mkdir(mode=0o700)
+        os.chmod(root / "result.json", 0o700)  # explicit, umask-independent
 
     out["directory_is_not_regular"], _ = canary_case(fx, "directory", M + "test_a_directory_is_not_regular", directory)
     if os.geteuid() == 0:
