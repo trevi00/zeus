@@ -7,7 +7,7 @@ Owns: the `remote_commands` bucket (the immutable binding; forward-only disposit
 Does not own: the command schema and the disposition machine (domain `remote_control`), the cancel and pause effects
     (`MessageHandler.cancel_in`, `FleetPause.set_paused_in`), the bridge lease, the inbox rows, the receipt event
     (observation `buzz_projection`), the desk conversation (S8: refused `desk_not_migrated` until it moves)
-Entry points: RemoteControl.admit
+Entry points: RemoteControl.admit, transitions_after
 Contracts: INV-IDEMPOTENCY-001, INV-EXECUTION-IDENTITY-001 (Buzz DESIGN §4.3/§4.4/§6.2.3/§6.4/§6.5; DESIGN-B §6 R1-R10)
 
 `admit(inbox_row, generation)` runs the §6.2.3 order: (i) the schema, (ii) the existing binding (replay, alias,
@@ -16,6 +16,9 @@ precondition, the effect through the seam, the binding and the transition row in
 inbox outcome the sink hands to `InboundPass` (R1). An unexpected exception from that transaction leads to ONE settle
 transaction that re-reads the binding (R6, §6.4): present is its disposition, absent binds `refused: not_applied`.
 A lost bridge lease propagates unchanged (nothing commits, the inbox row stays pending, §6.5).
+
+`transitions_after` is the read side of the audit (DESIGN-B Q2, Q5): the immutable transition rows, enriched read-only
+with what a receipt needs and a transition row does not carry. It writes nothing.
 """
 
 from __future__ import annotations
@@ -29,6 +32,7 @@ from codex_harness.coordination.domain.fleet import FleetRefused
 from codex_harness.kernel.errors import ContractError
 
 COMMANDS = "remote_commands"
+INBOX = "remote_inbox"
 TRANSITIONS = "remote_command_transitions"
 ACTOR = "conductor"  # R8: the effects run as the conductor (the CLI cancels as the conductor)
 ADMITTED, REFUSED = "command_admitted", "command_refused"
@@ -190,3 +194,25 @@ class RemoteControl:
                 return _bound_result(existing) if existing["event_id"] == intake.event_id else _result(
                     REFUSED, intake.command_id, None, intake.refusal.code)
             return self._replay(tx, existing, intake)
+
+
+def transitions_after(tx, after: int | None, limit: int) -> list[dict]:
+    """Transition rows with `at >= after` (all when None), oldest first by `(at, id)`, at most `limit`.
+
+    The bound is INCLUSIVE (DESIGN-B Q5): `at` has one-second resolution, so a transition committed later in the same
+    second as an already-read one must not be skipped; the reader absorbs the overlap by the receipt's op id. Each row
+    is the stored transition plus `op` (the command's op), `command_author` and `channel` (from the retained inbox
+    row of the command event); each is None when its source is absent. Read-only (P6).
+    """
+    if after is not None and (isinstance(after, bool) or not isinstance(after, int) or after < 0):
+        raise ContractError("remote control: after must be a non-negative integer or None")
+    if isinstance(limit, bool) or not isinstance(limit, int) or limit < 1:
+        raise ContractError("remote control: limit must be a positive integer")
+    rows = [row for row in tx.scan(TRANSITIONS) if after is None or row["at"] >= after]
+    out = []
+    for row in sorted(rows, key=lambda r: (r["at"], r["id"]))[:limit]:
+        binding = tx.get(COMMANDS, row["command_id"]) or {}
+        inbox = tx.get(INBOX, row["command_event_id"]) or {}
+        out.append({**row, "op": binding.get("op"), "command_author": inbox.get("author"),
+                    "channel": inbox.get("channel")})
+    return out

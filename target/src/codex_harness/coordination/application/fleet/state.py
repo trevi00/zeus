@@ -5,7 +5,7 @@ Layer: application
 Context: coordination
 Owns: the Fleet bucket names, read-only views over them and the P2 control-version record's one writer
 Does not own: any other write (the four Fleet objects own them)
-Entry points: registry, control, control_version, bump_control_version, view, hold_key, repository_aliases, owner_handoff_view
+Entry points: registry, control, control_version, fleet_view, bump_control_version, view, hold_key, repository_aliases, owner_handoff_view
 Contracts: INV-FLEET-001
 
 Moved from M7 `application/fleet.py` (SOURCE e38aa722) by the named split (DESIGN-s5 §F); the method
@@ -86,6 +86,13 @@ def control_version(tx) -> int:
     """The P2 pause-authority version; an absent record reads 0."""
     record = tx.get(BUCKET_CONTROL, AUTHORITY_VERSION_KEY)
     return record["control_version"] if record else 0
+
+
+def fleet_view(tx) -> dict:
+    """The read-only pause-authority view the Buzz projection shows: `{paused, activation_hold, control_version}`."""
+    row = control(tx)
+    return {"paused": row.get("paused") is True, "activation_hold": isinstance(row.get(ACTIVATION_HOLD), dict),
+            "control_version": control_version(tx)}
 
 
 def bump_control_version(tx) -> int:
