@@ -1,0 +1,131 @@
+"""The disjoint token partition of one finalized Claude process (R1).
+
+Purpose: given the distinct results of a process and its baseline, decide what the whole-tree remainder is and
+which role each model's share takes, so each model's delta is counted exactly once. Pure functions: no I/O.
+Layer: tooling. Owns: DESIGN §3.4 steps 1-8, §3.7 baseline selection inputs. Does-not-own: reading streams,
+choosing the baseline (s1_routine), or writing contributions (publication).
+Implements: ACCEPTANCE A01, A04, A31, A34, A35, A36, A37, A38, A42 (shares), A05/A45 (no_baseline).
+
+Partition rules in one line: published(P) = M + N_e + sum over m != e of T_m = sum over m of T_m, where M is the
+sum of distinct `usage` (published per result, outside this module) and this module returns only the remainder.
+Unknown coverage (any reason) publishes M only; the remainder is then the process's one unknown (§3.4 step 6).
+"""
+
+from __future__ import annotations
+
+from dataclasses import dataclass, field
+
+from .vocab import TOKEN_TYPES
+
+# result_models / cumulative column names for the four normalized token types (K4).
+USAGE_FIELDS = {"input": "input_tokens", "output": "output_tokens", "cache_read": "cache_read_input_tokens",
+                "cache_write": "cache_creation_input_tokens"}
+MODEL_USAGE_FIELDS = {"input": "inputTokens", "output": "outputTokens", "cache_read": "cacheReadInputTokens",
+                      "cache_write": "cacheCreationInputTokens"}
+COST_EPSILON = 1e-9
+
+
+@dataclass(frozen=True)
+class ResultFacts:
+    """What the partition needs of one distinct result (numbers and flags only)."""
+    usage: dict[str, int] | None  # token_type -> value; None when absent or invalid
+    models: dict[str, dict[str, float]] | None  # model label -> token_type/cost_usd; None when absent or invalid
+    is_error: bool = False
+    zeroed: bool = False
+    nested: bool = False  # subagent_stats.spawned or spawned_by_subagents > 0
+
+    @property
+    def usable(self) -> bool:
+        return self.zeroed or self.usage is not None
+
+
+@dataclass(frozen=True)
+class Baseline:
+    """kind: `zero` (fresh process, or resumed before 2.1.277), `cumulative` (proven predecessor; `models` is
+    its absolute last modelUsage), `unknown_version` (resumed, version missing), `missing`, `unproven`."""
+    kind: str
+    models: dict[str, dict[str, float]] = field(default_factory=dict)
+
+
+@dataclass
+class Plan:
+    remainder: list[tuple[str, str, str, int]] = field(default_factory=list)  # (model, role, token_type, value)
+    costs: dict[str, float] = field(default_factory=dict)
+    reasons: set[str] = field(default_factory=set)
+    share_models: list[str] = field(default_factory=list)
+    cumulative: dict[str, dict[str, float]] | None = None  # the last good result's absolute modelUsage
+
+
+def last_good(results: list[ResultFacts]) -> ResultFacts | None:
+    """The newest result with a usable, non-zeroed modelUsage; a zeroed crash result carries no cumulative."""
+    for result in reversed(results):
+        if not result.zeroed and result.models:
+            return result
+    return None
+
+
+def advisor_role(model: str, advisor: str | None, consultations: int, nested: bool) -> str:
+    """DESIGN §3.4 step 4: configuration alone never proves advisor use."""
+    if advisor is not None and model == advisor and consultations >= 1:
+        return "advisor_or_nested" if nested else "advisor"
+    return "nested_unattributed"
+
+
+def plan_partition(results: list[ResultFacts], executor: str, advisor: str | None, consultations: int,
+                   baseline: Baseline, external_reasons: set[str]) -> Plan:
+    plan = Plan(reasons=set(external_reasons))
+    if any(r.zeroed for r in results):
+        plan.reasons.add("error_zeroed")
+    if any(not r.usable for r in results):
+        plan.reasons.add("malformed")  # a result without usable usage: M is incomplete, so no remainder
+    good = last_good(results)
+    if good is None:
+        if results and not plan.reasons:
+            plan.reasons.add("malformed")  # results exist but none carries a modelUsage
+        return plan
+    plan.cumulative = good.models
+    if baseline.kind == "unknown_version":
+        plan.reasons.add("unknown_version_semantics")
+    elif baseline.kind in ("missing", "unproven"):
+        plan.reasons.add("no_baseline")
+    base = baseline.models if baseline.kind == "cumulative" else {}
+    deltas: dict[str, dict[str, int]] = {}
+    if baseline.kind in ("zero", "cumulative"):
+        for model, cum in good.models.items():
+            ref = base.get(model, {})
+            deltas[model] = {}
+            for tau in TOKEN_TYPES:
+                delta = int(cum[tau]) - int(ref.get(tau, 0))
+                if delta < 0:
+                    plan.reasons.add("non_monotonic")  # step 2: never a negative contribution
+                deltas[model][tau] = delta
+    nested = any(r.nested for r in results)
+    if "non_monotonic" not in plan.reasons and deltas:
+        m_total = {tau: sum((r.usage or {}).get(tau, 0) for r in results if r.usable and not r.zeroed)
+                   for tau in TOKEN_TYPES}
+        exec_delta = deltas.get(executor, dict.fromkeys(TOKEN_TYPES, 0))
+        if any(exec_delta[tau] - m_total[tau] < 0 for tau in TOKEN_TYPES):
+            plan.reasons.add("inconsistent")  # step 3: T_e < M
+        elif not plan.reasons:
+            for tau in TOKEN_TYPES:
+                _push(plan, executor, "nested_unattributed", tau, exec_delta[tau] - m_total[tau])
+            for model in sorted(deltas):
+                if model == executor:
+                    continue
+                role = advisor_role(model, advisor, consultations, nested)
+                for tau in TOKEN_TYPES:
+                    _push(plan, model, role, tau, deltas[model][tau])
+            for model in sorted(good.models):
+                cost = float(good.models[model].get("cost_usd", 0.0)) - float(base.get(model, {}).get("cost_usd", 0.0))
+                if cost > COST_EPSILON:
+                    plan.costs[model] = cost
+    if plan.reasons:
+        plan.remainder.clear()
+        plan.costs.clear()
+        plan.share_models = sorted(good.models)
+    return plan
+
+
+def _push(plan: Plan, model: str, role: str, tau: str, value: int) -> None:
+    if value > 0:
+        plan.remainder.append((model, role, tau, value))
