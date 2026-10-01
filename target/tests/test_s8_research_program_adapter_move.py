@@ -64,7 +64,7 @@ def test_adapter_is_m7_in_m7_order_and_only_the_named_statements_differ():
         expected.append(key)
     assert list(ours) == expected
     changed = [key[0] for key, node in ref.items() if ast.dump(ours[key]) != ast.dump(node)]
-    assert sorted(changed) == ["GitCapture", "collect_local"]
+    assert sorted(changed) == ["GitCapture", "ProgramRunner", "collect_local"]  # ProgramRunner: R-q3b (V14)
     theirs, mine = methods(m7_text(), "GitCapture"), methods(target_text(), "GitCapture")
     assert list(mine) == list(theirs) == ["__init__", "_git", "capture", "_hash_blob"]
     assert [k for k in theirs if ast.dump(mine[k]) != ast.dump(theirs[k])] == ["__init__", "_git", "capture"]
@@ -168,3 +168,69 @@ def test_the_wired_collect_local_keeps_m7_unavailable_mapping():
     status, items = module.collect_local({"local_candidates": [{"id": "x"}], "base_revision": "b"}, object(),
                                          verify_sources=refuse)
     assert (status["status"], status["code"], items) == ("unavailable", "source_digest_mismatch", [])
+
+
+# ---- S8 V14 (DESIGN-s8 §9): `verify_sources` moved ahead into research; `ProgramRunner` forwards it (R-q3b) --------------------
+def test_v14_verify_sources_is_m7_dge_cli_verbatim_but_for_the_dropped_type_annotation():
+    m7 = subprocess.run(["git", "-C", str(REPO), "show", f"{SOURCE}:src/codex_harness/adapters/dge_cli.py"], check=True,
+                        capture_output=True, text=True).stdout
+    ref = next(n for n in ast.parse(m7).body if isinstance(n, ast.FunctionDef) and n.name == "verify_sources")
+    path = SRC / "research" / "adapters" / "dge_sources.py"
+    ours_tree = ast.parse(path.read_text())
+    ours = next(n for n in ours_tree.body if isinstance(n, ast.FunctionDef) and n.name == "verify_sources")
+    assert [n.name for n in ours_tree.body if isinstance(n, ast.FunctionDef)] == ["verify_sources"]
+    assert ref.args.args[1].annotation is not None  # M7's type-only `GitSource` annotation
+    ref.args.args[1].annotation = None
+    assert ast.dump(ours) == ast.dump(ref)
+    mods = {n.module for n in ast.walk(ours_tree) if isinstance(n, ast.ImportFrom)}
+    assert mods == {"__future__", "codex_harness.kernel.errors", "codex_harness.research.domain.dge"}
+
+
+def test_v14_verify_sources_binds_regular_blobs_and_refuses_the_rest_with_m7_codes():
+    import hashlib
+
+    from codex_harness.research.adapters.dge_sources import verify_sources
+    from codex_harness.research.domain.dge import DgeRefused
+
+    data = b"hello\n"
+    entry = {"id": "s1", "path": "a.txt", "sha256": hashlib.sha256(data).hexdigest()}
+
+    class Source:
+        def __init__(self, exists=True, blob=("100644", data)):
+            self.exists, self.found = exists, blob
+
+        def commit_exists(self, revision):
+            return self.exists
+
+        def blob(self, revision, path):
+            return self.found
+
+    packet = {"base_revision": "b" * 40, "sources": [entry]}
+    assert [b["path"] for b in verify_sources(packet, Source())] == ["a.txt"]
+    for source, code in ((Source(exists=False), "base_revision_missing"), (Source(blob=(None, b"")), "source_missing_at_base"),
+                         (Source(blob=("120000", data)), "source_not_regular"),
+                         (Source(blob=("100644", b"other")), "source_digest_mismatch")):
+        with pytest.raises(DgeRefused) as info:
+            verify_sources(packet, source)
+        assert info.value.reason_code == code
+
+
+def test_r_q3b_program_runner_takes_verify_sources_keyword_only_and_tick_forwards_it():
+    text, m7 = target_text(), m7_text()
+    new, old = methods(text, "ProgramRunner")["__init__"].args, methods(m7, "ProgramRunner")["__init__"].args
+    assert [a.arg for a in new.args] == [a.arg for a in old.args] and old.kwonlyargs == []
+    assert [a.arg for a in new.kwonlyargs] == ["verify_sources"] and new.kw_defaults[0].value is None
+    assert text.count("collect_local(config, self.git_source, verify_sources=self.verify_sources)") == 1
+    assert m7.count("collect_local(config, self.git_source)") == 1
+    assert [k for k, v in methods(text, "ProgramRunner").items() if ast.dump(v) != ast.dump(methods(m7, "ProgramRunner")[k])] == [
+        "__init__", "tick"]
+
+
+def test_composition_wires_dge_sources_into_local_collector_and_the_program_runner():
+    from codex_harness.composition import research_program_adapters as composition
+    from codex_harness.research.adapters import dge_sources
+
+    assert composition.local_collector().keywords == {"verify_sources": dge_sources.verify_sources}
+    runner = composition.program_runner(None, None, None, None, None, None, None, "runtime", None)
+    assert runner.verify_sources is dge_sources.verify_sources
+    assert importlib.import_module(MOD).ProgramRunner(None, None, None, None, None, None, None, "runtime", None).verify_sources is None

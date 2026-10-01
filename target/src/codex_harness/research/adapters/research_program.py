@@ -9,11 +9,11 @@ state machine, one transaction per recorded fact, never across a fetch, a Git co
 Layer: adapters
 Context: research
 Owns: the research program adapters: live and local collection, the detached capture commit, the JSONL event log, the bounded report, the finite tick runner and the transport probe
-Does not own: the host_os process runner and Git source (injected), the dge source verifier (an S10 CLI, injected), the program state machine (research.application.research_program), the council
+Does not own: the host_os process runner and Git source (injected), the dge source verifier (research.adapters.dge_sources, injected), the program state machine (research.application.research_program), the council
 Entry points: CaptureError, collect_live, collect_local, GitCapture, EventLog, render_report, write_report, ProgramRunner, TransportProbe
 Contracts: INV-RESEARCH-PROGRAM-001
 
-Moved from M7 `adapters/research_program.py` (SOURCE e38aa722) through named rules (DESIGN-s8 §6 V11, §8 V13, A/evidence/rebuild/s8/research-program-adapter-move/transcribe.py): R-q0 (each name from the target home of the module that defines it), R-q1 (V9 local `RUNS` constant), R-q2 (host_os's `run_process` and `GitSource` injected into `GitCapture` as keyword-only ports, each checked by one added `require`), R-q3 (the dge `verify_sources` injected into `collect_local`, an S10 carry); every other body is M7's. The first paragraphs are M7's module docstring.
+Moved from M7 `adapters/research_program.py` (SOURCE e38aa722) through named rules (DESIGN-s8 §6 V11, §8 V13, A/evidence/rebuild/s8/research-program-adapter-move/transcribe.py): R-q0 (each name from the target home of the module that defines it), R-q1 (V9 local `RUNS` constant), R-q2 (host_os's `run_process` and `GitSource` injected into `GitCapture` as keyword-only ports, each checked by one added `require`), R-q3 (the dge `verify_sources` injected into `collect_local`), R-q3b (V14: `ProgramRunner` forwards it, keyword-only); every other body is M7's. The first paragraphs are M7's module docstring.
 """
 from __future__ import annotations
 
@@ -286,13 +286,15 @@ class ProgramRunner:
     labelled stand-in. `github_detail(url)` is optional and its failure is recorded unknown."""
 
     def __init__(self, service, programs: ResearchProgram, sources, git_source, capture: GitCapture, budget, artifacts,
-                 runtime: Path, council, github_detail=None, clock=utcnow, repository: str = ""):
+                 runtime: Path, council, github_detail=None, clock=utcnow, repository: str = "", *, verify_sources=None):
         self.service, self.programs, self.sources, self.git_source = service, programs, sources, git_source
         self.capture, self.budget, self.artifacts, self.runtime = capture, budget, artifacts, Path(runtime)
         self.council, self.github_detail, self.clock = council, github_detail, clock
         # review001 R1: the identity digest of the CURRENT repository root; compared with the
         # registered identity inside the reservation transaction, before any tick effect.
         self.repository = repository
+        # V14 port (keyword-only): the dge `verify_sources`, handed to `collect_local` by `tick` (R-q3b)
+        self.verify_sources = verify_sources
 
     def run(self, program_id: str, ticks: int, *, intent: str) -> dict:
         if type(ticks) is not int or ticks < 1:
@@ -317,7 +319,7 @@ class ProgramRunner:
         number = cycle["number"]
         log.emit("general", "tick_started", cycle=number)
         # ----- discovery: read-only, no model calls, no open transaction -----
-        local_status, local_items = collect_local(config, self.git_source)
+        local_status, local_items = collect_local(config, self.git_source, verify_sources=self.verify_sources)
         live_status, live_items = collect_live(self.sources, intent=intent)
         sources = {"local": local_status, **live_status}
         # A policy-paused feed is a recorded decision, not a degraded source (INV-DISCOVERY-PRESSURE-001).
