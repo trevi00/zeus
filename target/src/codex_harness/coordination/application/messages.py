@@ -46,8 +46,11 @@ class MessageHandler:
         return self.workflow._next(parent, sender, recipient, action, details, clock=self.clock, ids=self.ids)
 
     def cancel(self, task_id: str, actor: str, reason: str) -> None:
-        with self.store.transaction() as tx:
-            self.cancel_in(tx, task_id, actor, reason, expected_generation=None)
+        try:
+            with self.store.transaction() as tx:
+                self.cancel_in(tx, task_id, actor, reason, expected_generation=None)
+        except TaskRefused as refused:  # the local refusal stays the plain ContractError M7 raised
+            raise ContractError(str(refused)) from None
 
     def cancel_in(self, tx, task_id: str, actor: str, reason: str, *, expected_generation: int | None = None) -> None:
         """The body of `cancel` in the CALLER's transaction (Buzz DESIGN v3 §4.3).

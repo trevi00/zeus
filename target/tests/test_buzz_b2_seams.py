@@ -193,8 +193,9 @@ def test_cancel_in_on_a_terminal_task_is_not_applied_and_the_local_cancel_keeps_
         with workflow.store.transaction() as tx:
             workflow.messages.cancel_in(tx, task["id"], "conductor", "again", expected_generation=None)
     assert refused.value.code == rc.NOT_APPLIED and records(workflow.store) == before
-    with pytest.raises(ContractError, match="Task already terminal"):
+    with pytest.raises(ContractError, match="Task already terminal") as local:
         workflow.cancel(task["id"], "conductor", "again")
+    assert type(local.value) is ContractError  # the compare golden records the exception type
     assert records(workflow.store) == before
 
 
