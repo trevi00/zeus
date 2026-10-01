@@ -97,13 +97,23 @@ def test_only_the_dge_application_writes_the_dge_buckets():
     # M7 and the target alike: the bucket names occur as store keys only in this module; the other readers import the
     # constants (autonomous, decision_feedback, research_program read `SESSIONS`/`EVENTS`).
     src = REPO / "target" / "src" / "codex_harness"
+    # V9 (S8 pilot 68, R-a2): a reader that defines its own local constant for the published-language name may contain the
+    # literal; it must never write it.
+    v9_readers = {"coordination/application/autonomous.py"}
     writers = []
     for path in sorted(src.rglob("*.py")):
         text = path.read_text()
         if ('"dge_sessions"' in text or '"dge_events"' in text) and path.relative_to(src).as_posix() not in (
-                "research/application/dge.py", "research/ports.py"):
+                {"research/application/dge.py", "research/ports.py"} | v9_readers):
             writers.append(path.relative_to(src).as_posix())
     assert writers == []
+    for reader in v9_readers:
+        for call in ast.walk(ast.parse((src / reader).read_text())):
+            if (isinstance(call, ast.Call) and isinstance(call.func, ast.Attribute) and call.func.attr in ("put", "delete")
+                    and call.args):
+                first = call.args[0]
+                assert not (isinstance(first, ast.Constant) and first.value in ("dge_sessions", "dge_events")), reader
+                assert not (isinstance(first, ast.Name) and first.id in ("SESSIONS", "EVENTS")), reader
     # a module that imports SESSIONS/EVENTS from the dge application must not put them (other modules' EVENTS differ)
     importers = [path for path in sorted(src.rglob("*.py")) if path.relative_to(src).as_posix() != "research/application/dge.py"
                  and "research.application.dge import" in path.read_text()]

@@ -25,10 +25,7 @@ import s8_autonomous  # noqa: E402
 from codex_harness.coordination.application import autonomous as application  # noqa: E402
 from codex_harness.coordination.application.operation import Operation  # noqa: E402
 from codex_harness.evidence.application.inspections import EvidenceRecords  # noqa: E402
-from codex_harness.kernel import (
-    ids,  # noqa: E402
-    message,  # noqa: E402
-)
+from codex_harness.kernel import ids, message  # noqa: E402
 from codex_harness.kernel.errors import ContractError  # noqa: E402
 from codex_harness.kernel.ids import canonical  # noqa: E402
 from codex_harness.kernel.message import envelope  # noqa: E402
