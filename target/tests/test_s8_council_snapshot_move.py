@@ -133,7 +133,7 @@ class Conn:
 
 def port(log, fail=None, **kwargs):
     module = importlib.import_module(MODULE)
-    return module.ReadOnlySnapshot("postgresql://u:SECRET-dsn@h/db", connect=lambda dsn, **kw: Conn(log, fail),
+    return module.ReadOnlySnapshot("host=h password=SECRET-dsn dbname=db", connect=lambda dsn, **kw: Conn(log, fail),
                                    clock=lambda: "2029-01-01T00:00:00+00:00", **kwargs)
 
 
