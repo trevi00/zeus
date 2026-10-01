@@ -4,16 +4,17 @@ Layer: domain
 Context: research
 Owns: the pinned Baldrix M22 numeric threshold replay (diagnostic, not native policy approval)
 Does not own: staging or activating a threshold, and native routing replay
-Entry points: top_entries, finite_number, split_by_holdout, full_body_admit_precision, admitted_entries, non_truncation_rate, ThresholdGateResult, evaluate_threshold_change, replay_report
+Entry points: top_entries, split_by_holdout, full_body_admit_precision, admitted_entries, non_truncation_rate, ThresholdGateResult, evaluate_threshold_change, replay_report
 Contracts: INV-THRESHOLD-APPROVAL-001
 
-Moved from M7 `domain/threshold_replay.py` (SOURCE e38aa722) through named rules (DESIGN-s8 §3 step 1, A/evidence/rebuild/s8/domain-moves-b/transcribe.py); only the import lines and this header differ, every body is M7's. M7 module docstring:
+Moved from M7 `domain/threshold_replay.py` (SOURCE e38aa722) through named rules (DESIGN-s8 §3 step 1, A/evidence/rebuild/s8/domain-moves-b/transcribe.py); only the import lines, this header and the declared removal of `finite_number` (one owner: `codex_harness.kernel.numbers`, S2) differ, every other body is M7's. M7 module docstring:
 Pinned Baldrix M22 numeric replay; diagnostic, not native policy approval.
 """
 import math
 from dataclasses import asdict, dataclass
 
 from codex_harness.kernel.errors import require
+from codex_harness.kernel.numbers import finite_number
 from codex_harness.kernel.timestamps import timestamp
 
 REFERENCE_BODY_BUDGET = 4000
@@ -24,13 +25,6 @@ REFERENCE_MODEL = 'baldrix-b9586c59-total-score-raw-body'
 def top_entries(event):
     top = event.get('top') if isinstance(event, dict) else None
     return [entry for entry in top if isinstance(entry, dict)] if isinstance(top, list) else []
-
-
-def finite_number(value):
-    try:
-        return isinstance(value, (int, float)) and not isinstance(value, bool) and math.isfinite(value)
-    except OverflowError:
-        return False
 
 
 def split_by_holdout(events, boundary):

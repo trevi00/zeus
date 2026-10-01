@@ -21,6 +21,8 @@ M7 = "src/codex_harness/domain/"
 MODULES = {name: f"codex_harness.research.domain.{name}" for name in (
     "audit_repair", "council_input", "decision_feedback", "threshold_replay", "threshold_proposals", "research")}
 S4_PAIR = ("research_origin", "require_dispatch")
+# R-b-fix (pilot 57): S2 made kernel.numbers the single owner of finite_number; this one definition is removed.
+DECLARED_REMOVALS = {"threshold_replay": {"finite_number"}}
 
 
 def git_text(rev, path):
@@ -53,13 +55,16 @@ def definitions(src):
 def test_module_names_equal_m7(m7name):
     module = importlib.import_module(MODULES[m7name])
     ref = git_text(SOURCE, M7 + m7name + ".py")
-    assert top_names(target_text(MODULES[m7name])) == top_names(ref)
+    assert top_names(target_text(MODULES[m7name])) | DECLARED_REMOVALS.get(m7name, set()) == top_names(ref)
     assert all(hasattr(module, name) for name in top_names(ref))
 
 
 @pytest.mark.parametrize("m7name", MODULES)
 def test_every_function_and_class_ast_equals_m7(m7name):
     ours, ref = definitions(target_text(MODULES[m7name])), definitions(git_text(SOURCE, M7 + m7name + ".py"))
+    for removed in DECLARED_REMOVALS.get(m7name, ()):
+        assert removed not in ours
+        ref.pop(removed)
     assert ref and ours == ref
 
 
@@ -123,6 +128,7 @@ def test_s6_and_kernel_imports_resolve_to_the_moved_names():
 
     assert threshold_proposals.replay is threshold_replay
     assert threshold_proposals.finite_number is numbers.finite_number
+    assert threshold_replay.finite_number is numbers.finite_number
     assert decision_feedback.ARBITER is autonomous.ARBITER and decision_feedback.TERMINAL is autonomous.TERMINAL
     assert decision_feedback.VERDICTS is dge.VERDICTS
     assert decision_feedback.COUNCIL_AGENTS is council.COUNCIL_AGENTS
