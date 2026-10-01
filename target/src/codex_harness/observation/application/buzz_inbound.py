@@ -14,7 +14,9 @@ Each event commits alone: lease check, idempotent `insert_pending` and, for a no
 together with the pass keyset. The owner sink runs AFTER that commit; a sink exception leaves the row `pending`
 and the next pass resumes it (F2). The cursor is written after the inbox commit and never moves backwards.
 
-The query lower bound is `min(cursor_time - LOOKBACK, now - LOOKBACK, every unretired pass's lower)` (§6.2.1, P1).
+The query lower bound is `min(cursor_time - LOOKBACK, now - LOOKBACK, every unretired pass's own_lower)` (§6.2.1, P1):
+a pass records its own horizon (`own_lower`, with `upper` its retirement identity) apart from the `lower` it queried, so
+an older interval that a later query re-covers retires on its own schedule and then stops lowering queries (§6.2.4).
 EOSE and short pages are observations, never proof (§6.2 step 4): a finished pass is always recorded
 `gap_unknown`, with the `ended` reason, and stays an unresolved checkpoint until its upper bound is older than
 `now - LOOKBACK`; it then retires from the operational view but stays recorded. A crash leaves the pass
@@ -81,12 +83,15 @@ class InboundPass:
                 if row["state"] == "running":
                     return row["id"], row
             cursor = tx.get(CURSORS, channel)
-            lower = now - self.lookback
+            horizon = now - self.lookback  # this pass's own horizon: what its interval itself covers
             if cursor is not None:
-                lower = min(lower, cursor["created_at"] - self.lookback)
-            lower = min([lower] + [row["lower"] for row in rows if row["retired_at"] is None])
+                horizon = min(horizon, cursor["created_at"] - self.lookback)
+            # A live interval lowers the query by its ORIGINAL bound; the query's inherited lower never becomes the
+            # next interval's own bound, so carrying an old bound cannot refresh its lifetime (§6.2.4).
+            lower = min([horizon] + [row.get("own_lower", row["lower"]) for row in rows if row["retired_at"] is None])
             key = f"{channel}:{len(rows) + 1:08d}"
-            record = {"id": key, "channel": channel, "lower": lower, "upper": now, "keyset": None, "high": None,
+            record = {"id": key, "channel": channel, "lower": lower, "own_lower": horizon, "upper": now,
+                      "keyset": None, "high": None,
                       "events": 0, "state": "running", "coverage": None, "ended": None, "retired_at": None}
             tx.put(PASSES, key, record)
             return key, record

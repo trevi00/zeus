@@ -302,3 +302,111 @@ def test_10d_compaction_under_a_stale_generation_commits_nothing():
 @pytest.mark.skip(reason="the labelled disposable-PG fixture is not provided to this worker; the owner runs integration")
 def test_pg_inbox_and_lease_idempotency():
     raise AssertionError("runs against the labelled disposable PostgreSQL only")
+
+
+# -- A3c F2: a re-queried unresolved interval keeps its own bounds, so it retires on schedule ----------------------
+
+def _oracle_lower(intervals, cursor_time, now):
+    """§6.2.1/§6.2.4 from first principles: this pass's horizon, lowered only by LIVE (upper not older than the
+    admission horizon) earlier intervals' own bounds."""
+    own = now - 780
+    if cursor_time is not None:
+        own = min(own, cursor_time - 780)
+    return min([own] + [lo for lo, upper in intervals if upper >= now - 780]), own
+
+
+def _sustained(passes, *, restart_at=None, crash_at=None, keyset_crash=False):
+    """`passes` reconciliations 300 s apart, one event each, the cursor advancing with the receiver clock."""
+    w = World()
+    intervals, cursor_time, resuming, lowers = [], None, None, []
+    for i in range(passes):
+        w.now = NOW + i * 300
+        newest = ev(i + 1, w.now)
+        w.relay.events.append(newest)
+        if restart_at == i:
+            w.pass_ = w.make()  # a restarted bridge: only the store survives
+        if resuming is None:
+            lower, own = _oracle_lower(intervals, cursor_time, w.now)
+            opened = (own, w.now)
+        else:
+            lower = resuming["lower"]  # a resumed pass keeps its recorded bounds
+        crash = crash_at == i
+        if crash:
+            real, calls = w.inbox.insert_pending, []
+
+            def crashing(tx, meta, real=real, calls=calls):
+                calls.append(meta["event_id"])
+                if len(calls) == (2 if keyset_crash else 1):
+                    raise RuntimeError("crash mid-pass")
+                return real(tx, meta)
+
+            w.inbox.insert_pending = crashing
+            if keyset_crash:  # a second, older event so one commits (keyset set) before the crash
+                w.relay.events.append(ev(100 + i, w.now - 1))
+            with pytest.raises(RuntimeError):
+                w.pass_.run(w.generation)
+            w.inbox.insert_pending = real
+            [running] = [r for r in w.rows("buzz_passes") if r["state"] == "running"]
+            assert w.relay.queries[-1]["since"] == lower == running["lower"]
+            resuming = running
+            if resuming["keyset"] is not None:
+                cursor_time = w.rows("buzz_cursors")[0]["created_at"]
+            lowers.append(lower)
+            continue
+        w.pass_.run(w.generation)
+        query = w.relay.queries[-1]
+        assert query["since"] == lower, (i, query["since"], lower)
+        if resuming is not None:
+            assert ("until" in query) == (resuming["keyset"] is not None)  # the crash-resume keyset is kept
+            intervals.append((resuming["own_lower"], resuming["upper"]))
+            if resuming["keyset"] is None:
+                cursor_time = newest["created_at"]
+            resuming = None  # with a keyset the resumed query (until) cannot see this pass's newer event
+        else:
+            intervals.append(opened)
+            cursor_time = newest["created_at"]
+        lowers.append(lower)
+    return w, lowers
+
+
+def test_a3c_f2_1_an_expired_interval_stops_lowering_queries_but_stays_audited_unknown():
+    w, lowers = _sustained(14)  # 3900 s: well beyond twice LOOKBACK
+    passes = w.rows("buzz_passes")
+    assert lowers[0] == NOW - 780 and lowers[-1] > lowers[0] and lowers[-1] == NOW + 10 * 300 - 780  # the live horizon: three passes back
+    first = passes[0]
+    assert first["state"] == "gap_unknown" and first["coverage"] == "gap_unknown" and first["lower"] == NOW - 780
+    assert first["retired_at"] is not None and first["upper"] == NOW  # the original identity is never refreshed
+    assert all(p["upper"] == NOW + n * 300 for n, p in enumerate(passes))
+    assert all(p["state"] == "gap_unknown" for p in passes)
+    assert NOW - 780 not in lowers[4:]  # once the initial and its cursor-bound successor expired, it never reappears
+    assert all(NOW + n * 300 - lowers[n] <= 2 * 780 + 300 for n in range(14))  # bounded work per pass
+
+
+def test_a3c_f2_2_active_unresolved_intervals_still_constrain_the_query():
+    w, lowers = _sustained(3)  # nothing is old enough to retire yet
+    assert lowers == [NOW - 780] * 3  # the initial interval is live, so it lowers every query
+    assert all(p["retired_at"] is None for p in w.rows("buzz_passes"))
+    w.now = NOW + 3 * 300
+    w.relay.events.append(ev(50, w.now))
+    w.pass_.run(w.generation)
+    first, second, third, fourth = w.rows("buzz_passes")
+    assert first["retired_at"] is not None and second["retired_at"] is None  # 900 s: only the first expired
+    assert w.relay.queries[-1]["since"] == min(second["own_lower"], third["own_lower"]) < fourth["own_lower"] + 1
+    assert w.relay.queries[-1]["since"] == second["own_lower"] and second["upper"] >= w.now - 780
+
+
+def test_a3c_f2_3_the_bound_repeats_across_a_restart():
+    w, lowers = _sustained(14, restart_at=7)
+    assert lowers[-1] > lowers[0] and NOW - 780 not in lowers[4:]
+
+
+def test_a3c_f2_4_an_interrupted_pass_resumes_with_its_bounds_and_the_bound_still_rises():
+    w, lowers = _sustained(14, crash_at=5)
+    assert lowers[-1] > lowers[0] and len(w.rows("buzz_passes")) == 13  # the crashed pass was resumed, not duplicated
+    assert all(p["state"] == "gap_unknown" for p in w.rows("buzz_passes"))
+
+
+def test_a3c_f2_5_a_crash_resume_keyset_survives_with_a_restart():
+    w, lowers = _sustained(14, restart_at=6, crash_at=5, keyset_crash=True)
+    assert lowers[-1] > lowers[0] and len(w.rows("buzz_passes")) == 13
+    assert len(w.rows("remote_inbox")) == 14 + 1  # every event, including the interrupted pass's second one
