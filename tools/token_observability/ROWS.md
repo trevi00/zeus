@@ -59,3 +59,27 @@ Files: `tests/token_observability/test_tokobs_<s1_lifecycle|streams|partition|re
 | F5 | `backfill.stream_is_history(terminal=, horizon_seconds=)`; S3 `has_terminal_line` (superseded by round 2); the mtime-only test is replaced | backfill `test_a32_streams_that_had_ended_before_live_since_are_history`, `test_a32_lane_with_finished_metadata_…`, `test_f5_*` (3) |
 | F6 | `dashboards/provider-windows.json` + lint | dashboards `test_a54_*` (5) |
 | nonblocking | serve cadence 30 s; per-line read bound stated in the `s1_routine` docstring and above | `test_serve_scan_cadence_is_the_designs_30_seconds` |
+
+## Round-2 closure (REVIEW-W1-r2, final prescription F4/F5); each assertion → passing test
+
+F4 (`test_tokobs_w1c.py`; `late._baseline_models` returns the proof state, `unproven` when any ordinary `results` or
+`late_results` row of the predecessor is zeroed, passed through the shared `resumed_baseline`):
+
+| Prescription assertion | Test |
+|---|---|
+| Executed late success(100) → zeroed error, successor cumulative 150, M 20: `still_unknown`, `no_baseline`, remainder `[]`; late facts and link kept; published rows unchanged; replay adds no correction | `test_f4_a_late_predecessor_with_a_zeroed_result_keeps_the_zeroed_crash_refusal` |
+| Order does not matter (zeroed then nonzero late result) | `test_f4_a_zeroed_late_result_alone_is_not_a_proven_baseline_either` |
+| Zeroed ordinary predecessor with later correction link: `still_unknown`/`no_baseline`, `[]` | `test_f4_a_zeroed_ordinary_predecessor_discovered_later_with_correction_facts_is_still_unknown` |
+| Positive control: successful late predecessor still reports remainder 30 (150 − 100 − M 20); lane control 4 | `test_f4_a_predecessor_arriving_after_the_successor_finalized_is_a_linked_late_predecessor`, `test_f4_a_lane_predecessor_discovered_after_the_successor_finalized_is_a_late_predecessor` |
+| Unknown-version and restart rules unchanged | `test_f4_a_late_predecessor_that_still_cannot_refine_reports_still_unknown` |
+
+F5 (`test_tokobs_backfill.py`; `backfill.stream_is_history(terminal_at=, horizon_seconds=)`; lane `finished_at`
+is the only source-supported terminal timestamp, Codex lines carry none):
+
+| Prescription assertion | Test | Synthetic totals (live output / backfill count) |
+|---|---|---|
+| Old stream bytes + post-cutoff completion metadata → live | `test_f5_old_stream_bytes_with_post_cutoff_completion_metadata_stay_live` | 100 / 0 |
+| Delayed discovery, terminal time unavailable, inside the horizon → live (and stays live on a later scan) | `test_f5_delayed_discovery_with_unavailable_terminal_time_inside_the_horizon_is_live`, `test_f5_a_codex_terminal_line_inside_the_horizon_has_no_terminal_time_and_stays_live` | 100 / 0; 4 / 0 |
+| Supported pre-cutoff terminal timestamp → history | `test_a32_lane_with_a_supported_pre_cutoff_terminal_timestamp_is_history` | 0 / 1 |
+| Horizon expired before the cutoff → history | `test_f5_a_horizon_already_expired_at_the_cutoff_is_history_without_a_terminal_timestamp`, `test_f5_a_codex_run_whose_idle_horizon_had_expired_at_first_start_is_history`, `test_a32_streams_that_had_ended_before_live_since_are_history` | 0 / 1; 0 / 1; 0 / 2 |
+| Controls kept: active S2/S3 and restart, routine A32, outage catch-up | `test_f5_an_active_coordinator_…`, `test_f5_an_active_codex_run_…`, `test_a32_evidence_older_than_live_since_…`, `test_a32_an_attempt_still_in_flight_…`, `test_a32_outage_catch_up_…` | unchanged |
