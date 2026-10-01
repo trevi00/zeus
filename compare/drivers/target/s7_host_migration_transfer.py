@@ -17,9 +17,14 @@ composition would pass (DESIGN-s7 adapters-move §9.4), so the common module run
 - `launcher` is the unchanged deploy/aibox launcher module, loaded from the SOURCE tree as the reference loads it.
 - `main` (the S10 CLI) is not part of the target api: its cases are `delivery.host_migration_cli`.
 
-The driver installs no determinism (the fence document's `at` is normalized by the common module)."""
+The clock seam (as in pilot 43): the reference freezes time with `determinism.install`, so the digests of the fence
+document (`at`), the controller state (`started_at`) and the recovery receipts embed that instant. This driver installs no
+determinism; for the run it substitutes the imported `_utcnow` of each target adapter module that stamps those files
+(`delivery.adapters.host_migration` and `delivery.adapters.host_delivery`) with the SAME `determinism.FakeClock` the
+reference installs (a module-attribute substitution, restored afterwards)."""
 
 import contextlib
+from datetime import timezone
 import importlib
 import importlib.util
 import inspect
@@ -37,8 +42,10 @@ driver.start("target")
 
 from types import SimpleNamespace  # noqa: E402
 
+import determinism  # noqa: E402
+
 import s7_host_migration_transfer  # noqa: E402
-from codex_harness.delivery.adapters import host_migration as adapter  # noqa: E402
+from codex_harness.delivery.adapters import host_delivery, host_migration as adapter  # noqa: E402
 from codex_harness.delivery.application import host_migration as application  # noqa: E402
 from codex_harness.delivery.domain import host_migration as policy  # noqa: E402
 from codex_harness.delivery.domain.host_delivery import (  # noqa: E402
@@ -52,6 +59,8 @@ from codex_harness.kernel.ids import digest  # noqa: E402
 from codex_harness.storage.adapters.memory_store import MemoryStore  # noqa: E402
 
 SOURCE_ROOT = Path(os.environ["ZEUS_REBUILD_SOURCE_ROOT"]).resolve()
+TOOL_ROOT = Path(os.environ["ZEUS_REBUILD_TARGET_SRC"]).resolve().parent
+CLOCK = determinism.FakeClock()
 LAUNCHER_PATH = SOURCE_ROOT / "deploy" / "aibox" / "zeus_aibox_service.py"
 _spec = importlib.util.spec_from_file_location("zeus_aibox_service_transfer", LAUNCHER_PATH)
 _launcher = importlib.util.module_from_spec(_spec)
@@ -162,7 +171,21 @@ API = SimpleNamespace(
     BUCKET_TRANSITIONS=application.BUCKET_TRANSITIONS, BUCKET_CHECKPOINTS=application.BUCKET_CHECKPOINTS,
     policy=policy, DESCRIPTOR_SCHEMA=DESCRIPTOR_SCHEMA, descriptor_digest=descriptor_digest, digest=digest,
     validate_targets=validate_targets, KIND_SYSTEMD=KIND_SYSTEMD, launcher=_launcher, launcher_path=LAUNCHER_PATH,
-    SOURCE_ROOT=SOURCE_ROOT, trace=trace, os_replace=os_replace, patched=patched, checkout=checkout)
+    SOURCE_ROOT=SOURCE_ROOT, TOOL_ROOT=TOOL_ROOT, trace=trace, os_replace=os_replace, patched=patched, checkout=checkout)
+
+
+
+@contextlib.contextmanager
+def fake_utcnow():
+    saved = adapter._utcnow, host_delivery._utcnow
+    adapter._utcnow = host_delivery._utcnow = lambda: CLOCK.now(timezone.utc).isoformat()
+    try:
+        yield
+    finally:
+        adapter._utcnow, host_delivery._utcnow = saved
+
 
 if __name__ == "__main__":
-    driver.finish("target", "delivery.host_migration_transfer", s7_host_migration_transfer.run(API))
+    with fake_utcnow():
+        result = s7_host_migration_transfer.run(API)
+    driver.finish("target", "delivery.host_migration_transfer", result)

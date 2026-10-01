@@ -137,7 +137,7 @@ API = SimpleNamespace(
     BUCKET_TRANSITIONS=application.BUCKET_TRANSITIONS, BUCKET_CHECKPOINTS=application.BUCKET_CHECKPOINTS,
     policy=policy, DESCRIPTOR_SCHEMA=DESCRIPTOR_SCHEMA, descriptor_digest=descriptor_digest, digest=digest,
     validate_targets=validate_targets, KIND_SYSTEMD=KIND_SYSTEMD, launcher=_launcher, launcher_path=LAUNCHER_PATH,
-    SOURCE_ROOT=SOURCE_ROOT, trace=trace, os_replace=os_replace, patched=patched, checkout=checkout)
+    SOURCE_ROOT=SOURCE_ROOT, TOOL_ROOT=SOURCE_ROOT, trace=trace, os_replace=os_replace, patched=patched, checkout=checkout)
 
 if __name__ == "__main__":
     driver.finish("reference", "delivery.host_migration_transfer", s7_host_migration_transfer.run(API))

@@ -48,7 +48,7 @@ name afterwards. M7's own spy list is the `events` without the `os.fsync:` entri
 `FENCE_FILE`, `RECORDED_NOT_SWITCHED`, `RECEIPT_WRITTEN`, `SWITCHED`, `INCONSISTENT`, `POSIX_ONLY`, `SWITCH_UNITS`, `LAYOUT`;
 `MigrationRefused`; pilot 28's `MemoryStore`, `HostMigrations`, `BUCKET`, `BUCKET_TRANSITIONS`, `BUCKET_CHECKPOINTS`, `policy`,
 `DESCRIPTOR_SCHEMA`, `descriptor_digest`, `digest`; `validate_targets` and `KIND_SYSTEMD` (domain.host_delivery);
-`launcher` (the launcher module) and `launcher_path`; `SOURCE_ROOT`; and the hooks `trace()`, `os_replace(factory)`
+`launcher` (the launcher module) and `launcher_path`; `SOURCE_ROOT`; `TOOL_ROOT` (the root whose `scripts/aibox_data` is copied: SOURCE for the reference, `target/` for the target); and the hooks `trace()`, `os_replace(factory)`
 (`adapter.os.replace` becomes `factory(real)` for the block), `patched(**attrs)` (adapter attributes replaced for the block)
 and `checkout(path)`.
 
@@ -1420,12 +1420,12 @@ def layout_edges(ws):
 # ============================== canonical =========================================================================
 
 def checkout_path(ws, *, tool: bool = True) -> Path:
-    """LABELLED checkout layout: `<root>/checkout/src/codex_harness` and, with `tool`, a COPY of SOURCE scripts/aibox_data."""
+    """LABELLED checkout layout: `<root>/checkout/src/codex_harness` and, with `tool`, a COPY of the side's scripts/aibox_data (`TOOL_ROOT`)."""
     path = ws.root / "checkout"
     (path / "src" / "codex_harness").mkdir(parents=True)
     (path / "src" / "codex_harness" / "__init__.py").write_text("")
     if tool:
-        shutil.copytree(Path(A.SOURCE_ROOT) / "scripts" / "aibox_data", path / "scripts" / "aibox_data",
+        shutil.copytree(Path(A.TOOL_ROOT) / "scripts" / "aibox_data", path / "scripts" / "aibox_data",
                         ignore=shutil.ignore_patterns("__pycache__", "*.pyc"))
     return path
 
