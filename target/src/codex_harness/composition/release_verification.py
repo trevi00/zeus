@@ -48,13 +48,13 @@ class ExecutionContainerNaming:
 
 
 def release_runner(service, git, artifacts, auth, auto_merge=True, fence=None, verification_root=None, *,
-                   runner, release_suite, verification_services, hooks, request_rebase, clock=None):
+                   runner, release_suite, verification_services, hooks, request_rebase, clock=None, events=None, hooks_rollback=None, ids=None):
     """M7's `ReleaseRunner(service, git, artifacts, auth, auto_merge, fence, verification_root)`, wired (V6).
 
     `runner` (host_os), `release_suite` and `verification_services` (S8), `hooks` (S10) and `request_rebase` (S5)
     are carried: their owners are not in the target yet, so the caller passes them."""
     releases = Releases(service.store, service.org, ticket_binding=tickets.ticket_binding,
-                        ticket_superseded=tickets.TicketSuperseded, clock=clock)
+                        ticket_superseded=tickets.TicketSuperseded, clock=clock, events=events, hooks=hooks_rollback, ids=ids)
     return ReleaseRunner(
         service, git, artifacts, auth, auto_merge, fence, verification_root or configuration.runtime_dir() / "verification",
         releases=releases, ticket_binding=tickets.ticket_binding, ticket_superseded=tickets.TicketSuperseded,
