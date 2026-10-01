@@ -11,7 +11,6 @@ Moved from SOURCE M7 `src/codex_harness/domain/skill_audit.py` (behaviour unchan
 import math
 import re
 from collections import Counter
-from datetime import datetime, timezone
 from statistics import median
 
 from codex_harness.context.domain.skills.history import (
@@ -22,6 +21,7 @@ from codex_harness.context.domain.skills.history import (
     valid_record,
 )
 from codex_harness.kernel.errors import require
+from codex_harness.kernel.timestamps import timestamp
 
 DIMENSIONS = ('intent', 'path', 'kw', 'pat')
 # FA-012: what an observation can prove, stated per target instead of one blended "precision".
@@ -43,16 +43,6 @@ def duration_seconds(value):
     result = float(match[1]) * {'s': 1, 'm': 60, 'h': 3600, 'd': 86400}[match[2]]
     require(math.isfinite(result) and result > 0, 'Duration must be finite and positive')
     return result
-
-
-def timestamp(value):
-    if not isinstance(value, str):
-        return None
-    try:
-        parsed = datetime.fromisoformat(value.replace('Z', '+00:00'))
-        return parsed.replace(tzinfo=timezone.utc).timestamp() if parsed.tzinfo is None else parsed.timestamp()
-    except (ValueError, OverflowError, OSError):
-        return None
 
 
 def audit_history(events, *, min_samples=MIN_SAMPLES, cutoff=None):
