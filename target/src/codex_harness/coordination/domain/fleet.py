@@ -17,6 +17,8 @@ from __future__ import annotations
 import os
 import re
 
+# `binding` has one owner, intake.domain.backlog (DESIGN-s8 V2f R-f3); the name stays module-level here.
+from codex_harness.intake.domain.backlog import binding  # noqa: F401
 from codex_harness.kernel.errors import ContractError
 from codex_harness.kernel.ids import digest, safe_relative_path
 from codex_harness.kernel.usage import NUMERIC_FIELDS, UsagePolicyError, accounting_mode
@@ -334,12 +336,6 @@ def new_job(manifest: dict, manifest_sha256: str, lane: dict, goal: dict, depend
             "dependencies": list(dependencies), "owner_token": None, "exit_code": None,
             "calls": {"reserved": None, "settled": None}, "receipt": None, "error_type": None,
             "created_at": now, "updated_at": now, "dispatched_at": None, "finished_at": None}
-
-
-def binding(job: dict) -> dict:
-    """What an identical enqueue must repeat exactly; anything else is a refused change."""
-    return {"lane": job["lane"], "manifest_sha256": job["manifest_sha256"], "repository": job["repository"],
-            "dependencies": list(job["dependencies"]), "goal": dict(job["goal"])}
 
 
 def job_blockers(job: dict, jobs: dict, config: dict, aliases=None) -> list[str]:
