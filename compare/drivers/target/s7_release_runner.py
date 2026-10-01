@@ -39,8 +39,6 @@ import s7_release_runner  # noqa: E402
 from s1_target import PortClock, PortIds  # noqa: E402
 
 from codex_harness.composition.release_verification import ExecutionContainerNaming, release_runner  # noqa: E402
-from codex_harness.coordination.application.events import EventJournal
-from codex_harness.research.application.hook_rollback import HookRollback
 from codex_harness.delivery.adapters import deployment  # noqa: E402
 from codex_harness.host_os.adapters import process_groups  # noqa: E402
 from codex_harness.host_os.adapters.git_workspace import GitWorkspace  # noqa: E402
@@ -95,7 +93,7 @@ def ReleaseRunner(service, git, artifacts, auth, auto_merge=True, fence=None, ve
     return release_runner(
         service, git, artifacts, auth, auto_merge, fence, verification_root, runner=RUNNER,
         release_suite=SUITE_REFUSAL, verification_services=SERVICES, hooks=HOOKS_REFUSAL,
-        request_rebase=lambda task_id, new_base: REBASE.value(handler, task_id, new_base), clock=PORT, events=EventJournal(), hooks_rollback=HookRollback(), ids=PortIds(IDS))
+        request_rebase=lambda task_id, new_base: REBASE.value(handler, task_id, new_base), clock=PORT, ids=PortIds(IDS))
 
 
 # The unbound staticmethod the controller cases call on the class, as on the reference's `ReleaseRunner`.

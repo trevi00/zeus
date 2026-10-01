@@ -2,7 +2,7 @@
 
 Layer: ports
 Context: delivery
-Owns: OWNED_BUCKETS of the delivery context (the host delivery and host migration buckets); the consumer-declared Protocols HostDelivery's objects call on review's
+Owns: OWNED_BUCKETS of the delivery context (the host delivery and host migration buckets, and the release runner's `promotion_intents` and `health_probes`: in M7 only `adapters/deployment.py` writes them); the consumer-declared Protocols HostDelivery's objects call on review's
     release owner, and `WorkerProfiles` (the worker profile the host_delivery adapter reads through context's
     worker_profile adapter) and `ContainerNaming` (the owned verification container names and labels the release runner
     asks execution's rule for). Each has at most 6 methods; the implementations (review's Releases and ReleaseQueue) are
@@ -18,7 +18,7 @@ from typing import Protocol
 
 OWNED_BUCKETS = ("host_delivery_targets", "host_delivery_plans", "host_delivery_intents",
                  "host_delivery_descriptors", "host_delivery_migrations", "images", "host_migrations",
-                 "host_migration_transitions", "host_migration_checkpoints")
+                 "host_migration_transitions", "host_migration_checkpoints", "promotion_intents", "health_probes")
 
 
 class ReleaseAuthority(Protocol):

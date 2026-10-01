@@ -3,7 +3,7 @@
 Layer: adapters
 Context: delivery
 Owns: `ReleaseRunner`, the file canary, `attempt_resources`, the evaluator pin and the controller code refusals (M7 `adapters/deployment.py`)
-Does not own: the release rows (review.application.releases, injected as `releases`), the ticket binding (intake, injected), process creation (host_os, injected as `runner`), the release suite and the verification services (S8, injected), the native hooks (S10, injected), the rebase request (S5, injected), the container names (execution, injected as `naming`), the Compose environment (composition.configuration, injected)
+Does not own: the release rows (review.application.releases, injected as `releases`), the ticket binding (intake, injected), process creation (host_os, injected as `runner`), the release suite and the verification services (S8, injected), the native hooks (S10, injected), the rebase request (S5, injected), the container names (execution, injected as `naming`), the release and queue rows (review, injected as `releases` and `release_queue`), the Compose environment (composition.configuration, injected)
 Entry points: ReleaseRunner, attempt_resources, canary_handoff_script, inspect_canary_file, canary_postcondition, evaluator_patch_sha256, resolve_evaluator_pin, uv_command, controller_code_revision
 Contracts: INV-CHECK-001, INV-CHECK-002, INV-RELEASE-FILE-CANARY-001, INV-RELEASE-EVALUATOR-MIGRATION-001, INV-RELEASE-ENVIRONMENT-REVERIFY-001, INV-HOST-DELIVERY-VERIFY-001, INV-RELEASE-001
 
@@ -62,11 +62,11 @@ class EvaluatorCodeMismatch(ContractError):
 
 def controller_code_revision() -> str | None:
     """The revision of the codex_harness package this process runs (runtime_revision SSOT)."""
-    import codex_harness
     from codex_harness.delivery.adapters.host_delivery import runtime_revision
 
     try:
-        return runtime_revision(Path(codex_harness.__file__).resolve().parents[2])
+        # M7: Path(codex_harness.__file__).resolve().parents[2], the package's grandparent
+        return runtime_revision(Path(__file__).resolve().parents[4])
     except Exception:  # unknown is refused by the caller, never assumed equal
         return None
 
@@ -220,7 +220,7 @@ class ReleaseRunner:
     def __init__(self, service, git, artifacts, auth: str, auto_merge: bool = True, fence=None,
                  verification_root=None, *, releases, ticket_binding, ticket_superseded, runner, release_suite,
                  verification_services, verification_environment, hooks, request_rebase, compose_environment,
-                 naming, clock=None):
+                 naming, release_queue, clock=None):
         # V6 (DESIGN-s7 adapters-move §13): every collaborator another context owns is injected; composition
         # (`composition.release_verification.release_runner`) wires the defaults M7 constructed here.
         self.service, self.git, self.artifacts = service, git, artifacts
@@ -233,7 +233,7 @@ class ReleaseRunner:
         self.release_suite, self.verification_services = release_suite, verification_services
         self.verification_environment, self.hooks = verification_environment, hooks
         self.request_rebase, self.compose_environment = request_rebase, compose_environment
-        self.naming, self.clock = naming, clock
+        self.naming, self.release_queue, self.clock = naming, release_queue, clock
 
     def _observe_workspace(self, cwd):
         """What the check will actually run against: HEAD and cleanliness of the cwd, read from Git."""
@@ -297,10 +297,7 @@ class ReleaseRunner:
         except self.ticket_superseded as exc:
             self.fence()
             with self.service.store.transaction() as tx:
-                release = tx.get("releases", release_id)
-                require(release is not None, "Release not found")
-                release.update(status="superseded_by_ticket_revision", reason=str(exc))
-                tx.put("releases", release_id, release)
+                self.releases.record_superseded(release_id, str(exc), transaction=tx)
             return {"status": "superseded_by_ticket_revision", "reason": str(exc)}
 
     def _rejection_checks(self, release, completed, failed) -> dict:
@@ -624,10 +621,8 @@ class ReleaseRunner:
             require(release is not None, "Release not found")
             # This operation changes only ledger state; it never mutates the Git worktree.
             tx.put("promotion_intents", release_id, {**intent, "status": "abandoned", "reason": reason})
-            tx.put("releases", release_id, {**release, "status": "cancelled", "reason": reason})
-            queue = tx.get("release_queue", release_id)
-            if queue:
-                tx.put("release_queue", release_id, {**queue, "status": "cancelled", "reason": reason})
+            self.releases.cancel(release_id, reason, transaction=tx)
+            self.release_queue.cancel(release_id, reason, transaction=tx)
             return {"status": "abandoned", "release_id": release_id}
 
     def file_canary(self, image: str, name: str | None = None, labels=()) -> dict:

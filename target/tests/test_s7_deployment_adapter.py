@@ -8,7 +8,7 @@ from codex_harness.delivery.adapters import deployment
 from codex_harness.kernel.errors import ContractError
 
 INJECTED = ("releases", "ticket_binding", "ticket_superseded", "runner", "release_suite", "verification_services",
-            "verification_environment", "hooks", "request_rebase", "compose_environment", "naming")
+            "verification_environment", "hooks", "request_rebase", "compose_environment", "naming", "release_queue")
 POSITIONAL = ["self", "service", "git", "artifacts", "auth", "auto_merge", "fence", "verification_root"]
 
 

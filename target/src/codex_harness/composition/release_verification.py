@@ -13,10 +13,14 @@ from __future__ import annotations
 import os
 
 from codex_harness.composition import configuration
+from codex_harness.coordination.application import execution_fence
+from codex_harness.coordination.application.events import EventJournal
 from codex_harness.delivery.adapters.deployment import ReleaseRunner
 from codex_harness.execution.domain.container_spec import LABEL, ROLE_LABEL
 from codex_harness.host_os.adapters.process_groups import python_channel_environment
 from codex_harness.intake.application import tickets
+from codex_harness.research.application.hook_rollback import HookRollback
+from codex_harness.review.application.release_queue import ReleaseQueue
 from codex_harness.review.application.releases import Releases
 
 ENVIRONMENT_KEYS = {"PATH", "SYSTEMROOT", "WINDIR", "COMSPEC", "PATHEXT", "TEMP", "TMP", "TMPDIR",
@@ -48,16 +52,19 @@ class ExecutionContainerNaming:
 
 
 def release_runner(service, git, artifacts, auth, auto_merge=True, fence=None, verification_root=None, *,
-                   runner, release_suite, verification_services, hooks, request_rebase, clock=None, events=None, hooks_rollback=None, ids=None):
+                   runner, release_suite, verification_services, hooks, request_rebase, clock=None, ids=None):
     """M7's `ReleaseRunner(service, git, artifacts, auth, auto_merge, fence, verification_root)`, wired (V6).
 
     `runner` (host_os), `release_suite` and `verification_services` (S8), `hooks` (S10) and `request_rebase` (S5)
     are carried: their owners are not in the target yet, so the caller passes them."""
     releases = Releases(service.store, service.org, ticket_binding=tickets.ticket_binding,
-                        ticket_superseded=tickets.TicketSuperseded, clock=clock, events=events, hooks=hooks_rollback, ids=ids)
+                        ticket_superseded=tickets.TicketSuperseded, clock=clock, events=EventJournal(),
+                        hooks=HookRollback(), ids=ids)
+    queue = ReleaseQueue(service.store, ticket_binding=tickets.ticket_binding, fences=execution_fence, clock=clock,
+                         ids=ids)
     return ReleaseRunner(
         service, git, artifacts, auth, auto_merge, fence, verification_root or configuration.runtime_dir() / "verification",
         releases=releases, ticket_binding=tickets.ticket_binding, ticket_superseded=tickets.TicketSuperseded,
         runner=runner, release_suite=release_suite, verification_services=verification_services,
         verification_environment=verification_environment, hooks=hooks, request_rebase=request_rebase,
-        compose_environment=configuration.compose_environment, naming=ExecutionContainerNaming(), clock=clock)
+        compose_environment=configuration.compose_environment, naming=ExecutionContainerNaming(), release_queue=queue, clock=clock)
