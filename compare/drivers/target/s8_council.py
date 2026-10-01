@@ -24,7 +24,7 @@ driver.start("target")
 
 import s5_coordination_composition as composition  # noqa: E402
 import s8_council  # noqa: E402
-from codex_harness.coordination.application import autonomous as autonomous_application  # noqa: E402
+from codex_harness.coordination.application import autonomous as base_run  # noqa: E402
 from codex_harness.coordination.application import council as application  # noqa: E402
 from codex_harness.coordination.application.operation import Operation  # noqa: E402
 from codex_harness.evidence.application.inspections import EvidenceRecords  # noqa: E402
@@ -52,7 +52,7 @@ message.SYSTEM_IDS = composition.IDPORT
 EVIDENCE_RECORDS = EvidenceRecords()
 # The module (and its base class) read `time.monotonic()` for recorded durations: the driver substitutes the base module's `time`
 # name with the scripted clock's monotonic reading (the target's standard library is never patched), as `s8_autonomous` does.
-autonomous_application.time = SimpleNamespace(monotonic=composition.CLOCK.monotonic)
+base_run.time = SimpleNamespace(monotonic=composition.CLOCK.monotonic)
 
 BEGIN = "BEGIN ISOLATION LEVEL REPEATABLE READ READ ONLY"
 IDENTITY = "SELECT current_database(), current_schema(), current_setting('server_version')"
@@ -139,10 +139,10 @@ class _AnyRun(type):
     different class from the real `AutonomousRun`, so the check is answered against the module's real class."""
 
     def __instancecheck__(cls, obj):
-        return isinstance(obj, autonomous_application.AutonomousRun)
+        return isinstance(obj, base_run.AutonomousRun)
 
 
-class AutonomousRun(autonomous_application.AutonomousRun, metaclass=_AnyRun):
+class AutonomousRun(base_run.AutonomousRun, metaclass=_AnyRun):
     def __init__(self, service, *args, **kwargs):
         super().__init__(service, *args, **_ports(service), **kwargs)
 
@@ -154,7 +154,7 @@ class CouncilRun(application.CouncilRun):
 
 API = SimpleNamespace(
     MemoryStore=MemoryStore, CouncilRun=CouncilRun, AutonomousRun=AutonomousRun,
-    AutonomousRefused=autonomous_application.AutonomousRefused, SNAPSHOT_SOURCE=application.SNAPSHOT_SOURCE,
+    AutonomousRefused=base_run.AutonomousRefused, SNAPSHOT_SOURCE=application.SNAPSHOT_SOURCE,
     SNAPSHOT_REFUSALS=application.SNAPSHOT_REFUSALS, PROPOSAL_SECTION=application.PROPOSAL_SECTION,
     CONSUMER_OVERFLOW=application.CONSUMER_OVERFLOW, CONSUMER_REFUSAL_OUTCOMES=application.CONSUMER_REFUSAL_OUTCOMES,
     ReadOnlySnapshot=ReadOnlySnapshot, SnapshotUnavailable=SnapshotUnavailable,
