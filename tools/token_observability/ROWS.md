@@ -32,7 +32,7 @@ Files: `tests/token_observability/test_tokobs_<s1_lifecycle|streams|partition|re
 ## W1b limits
 - Coordinator and lane-without-mode streams: continuity per C-W1-6 (fresh lane baseline 0; coordinator M only).
 - `late_terminal` is not detected for Codex runs (only `late_tail`); `report --task` does not show Codex late points.
-- Idle horizons use mtime (delay only, §3.1); Codex idle = 2 x 900 s mirrored in `vocab.CODEX_IDLE_SECONDS`, guarded by a policy test.
+- Idle horizons use mtime (delay only, §3.1); Codex idle = 2 x `POLICY.decision_seconds` read by `vocab.codex_idle_seconds()` (C-W1-8; was mirrored in `vocab.CODEX_IDLE_SECONDS`, guarded by a policy test.
 - Ingest lag = now minus the previous successful scan; backfill for S2/S3 = stream last written before `live_since`.
 - Review rounds: no source exists (C-W1-5); `<stem>-codex-prestart.json` is a W2 allowlist item (C-W1-4).
 - Real Codex lines carry `cache_write_input_tokens` (always 0); a point lacking it leaves `cache_write` unknown (C-W1-3).

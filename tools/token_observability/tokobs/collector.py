@@ -22,7 +22,7 @@ from .ledger import Ledger, collector_lock, open_ledger
 from .s1_routine import MAX_READ_BYTES, Scan, scan_routine
 from .s2_streams import scan_s2
 from .s3_codex import scan_codex
-from .vocab import CODEX_IDLE_SECONDS
+from .vocab import codex_idle_seconds
 
 
 def scan_locked(ledger: Ledger, source_root: Path, *, now: int, registry: TaskClassRegistry | None = None,
@@ -36,7 +36,7 @@ def scan_locked(ledger: Ledger, source_root: Path, *, now: int, registry: TaskCl
         stored = ensure_live_since(ledger, now, live_since)
         record_ingest_lag(ledger, now)
     scan = Scan(ledger, Path(source_root), now, registry or TaskClassRegistry(), max_read_bytes, stored,
-                CODEX_IDLE_SECONDS)
+                codex_idle_seconds())
     aliases = scan_routine(scan)
     claude_aliases = aliases + scan_s2(scan)
     codex_aliases = scan_codex(scan)

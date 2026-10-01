@@ -1,6 +1,5 @@
 """ACCEPTANCE A20, A21, A46, A47 (Codex), A49, A59 and C-W1-3, C-W1-4: S3 Codex exec streams."""
 
-import re
 import shutil
 from pathlib import Path
 
@@ -30,10 +29,13 @@ def by_run(rig):
     return dict(rig.sql("SELECT invocation_id || '/' || token_type, SUM(value) FROM contributions GROUP BY 1"))
 
 
-def test_the_idle_horizon_mirrors_the_policy_decision_seconds():
-    policy = (Path(__file__).resolve().parents[2] / "src/codex_harness/domain/policy.py").read_text()
-    (decision,) = re.findall(r"decision_seconds:\s*int\s*=\s*(\d+)", policy)
-    assert vocab.CODEX_IDLE_SECONDS == 2 * int(decision)  # DESIGN §3.2
+def test_the_idle_horizon_is_read_from_the_single_policy_definition():
+    from codex_harness.domain.policy import (
+        POLICY,  # AGENTS.md: the single definition, never restated (C-W1-8)
+    )
+
+    assert vocab.codex_idle_seconds() == 2 * POLICY.decision_seconds  # DESIGN §3.2
+    assert "900" not in (Path(vocab.__file__).read_text())  # the number itself is not restated
 
 
 def test_a20_codex_cumulative_points_attributed_with_recorded_prestart_tuples(tmp_path):

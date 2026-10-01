@@ -27,11 +27,13 @@ REASON_PRECEDENCE = ("no_result", "error_zeroed", "terminal_unproven", "incomple
 EXECUTOR_ROLE = {"routine": "implementer", "coordinator": "coordinator", "lane": "lane_worker",
                  "codex_exec": "reviewer"}
 LANE_HORIZON_SECONDS = 14_400  # DESIGN §3.2 / C-W1-2: idle horizon of a stream without launcher metadata
-# DESIGN §3.2: S3 idle horizon = 2 x the policy `decision_seconds` (src/codex_harness/domain/policy.py). The
-# collector is stdlib-only and runs where that package is absent, so the value is mirrored here and a test
-# (test_tokobs_codex) asserts it still equals the policy field.
-CODEX_DECISION_SECONDS = 900
-CODEX_IDLE_SECONDS = 2 * CODEX_DECISION_SECONDS
+def codex_idle_seconds() -> int:
+    """DESIGN §3.2: the S3 idle horizon is 2 x the policy `decision_seconds`. AGENTS.md: `domain/policy.py` holds
+    the single definition and the number is never restated (C-W1-8), so it is read from that stdlib-only module of
+    the same checkout; the collector's deployment must provide the checkout's `src` (W2)."""
+    from codex_harness.domain.policy import POLICY
+
+    return 2 * POLICY.decision_seconds
 IDENTITY_UNAVAILABLE = "identity_unavailable"
 ADVISOR_STATES = ("enabled", "skipped", "unknown", "not_configured")
 CORRECTION_KINDS = ("late_point", "late_predecessor", "late_terminal", "late_tail", "duplicate_after_publish")
