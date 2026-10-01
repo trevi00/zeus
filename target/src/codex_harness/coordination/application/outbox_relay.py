@@ -118,6 +118,10 @@ def _quarantine(tx, identity, item, source_hash, reason, delivery, audit=None, *
     return "quarantined", None
 
 
+# S8 pilot 73 (V13 R3): the public name of the quarantine write, wired into research's `OutboxQuarantine` port.
+quarantine = _quarantine
+
+
 def _message_facts(item):
     message = item.get("message") if isinstance(item, dict) else None
     if not isinstance(message, dict):

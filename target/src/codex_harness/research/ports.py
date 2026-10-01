@@ -6,10 +6,12 @@ Owns: OWNED_BUCKETS of the research context; OutboxAppend and EventAppend, the c
     coordination's Outbox.append and EventJournal.append; AuditArtifacts and SourceVerifier (moved from M7 `ports`);
     DecisionValidation and PendingDecisions, the shapes of coordination's ExecutionRecovery.validate_decision and
     PendingDecisions.queue that ResearchAudits calls; InvestigationCandidates, the shape of intake's
-    ProgressCandidates that AuditProgress calls (S8 pilot 72)
+    ProgressCandidates that AuditProgress calls (S8 pilot 72); ResearchLaunchFacts, ExecutionFences and
+    OutboxQuarantine, the shapes of coordination's owner-action launch facts, execution fence and outbox quarantine
+    that ResearchProgram calls (S8 pilot 73)
 Does not own: the outbox, events, decisions_pending and portfolio_investigations bucket bodies (coordination, intake)
 Entry points: OWNED_BUCKETS, OutboxAppend, EventAppend, AuditArtifacts, SourceVerifier, DecisionValidation,
-    PendingDecisions, InvestigationCandidates
+    PendingDecisions, InvestigationCandidates, ResearchLaunchFacts, ExecutionFences, OutboxQuarantine
 Contracts: INV-RECURRENCE-001, INV-MESSAGE-001
 """
 
@@ -27,7 +29,11 @@ OWNED_BUCKETS = ("inbox", "incidents", "hooks", "research_programs", "dge_sessio
                  "research_partitions", "research_paths", "research_receipts", "research_reviews",
                  "research_subsystems",  # paths/subsystems: written through the loop variable `kind`
                  # S8 pilot 72 (V4): the two buckets only research.application.audit_progress writes
-                 "audit_progress_state", "audit_progress_windows")
+                 "audit_progress_state", "audit_progress_windows",
+                 # S8 pilot 73 (V4): the six buckets only research.application.research_program writes
+                 # (research_programs is already listed above)
+                 "research_program_candidates", "research_program_cycles", "research_investigation_dispatches",
+                 "research_dispatch_recoveries", "research_dispatch_successors", "research_dispatch_heads")
 
 
 class OutboxAppend(Protocol):
@@ -59,3 +65,17 @@ class PendingDecisions(Protocol):
 class InvestigationCandidates(Protocol):
     def progress_candidate(self, tx, identifier: str): ...
     def record_progress_candidate(self, tx, identifier: str, row: dict) -> None: ...
+
+
+class ResearchLaunchFacts(Protocol):
+    def launches(self, tx, owner: str) -> list: ...
+    def authentic(self, action: dict, owner: str) -> bool: ...
+
+
+class ExecutionFences(Protocol):
+    def advance(self, tx, bucket: str, row_id: str, generation: int, owner=None) -> None: ...
+    def current(self, tx, bucket: str, row_id: str): ...
+
+
+class OutboxQuarantine(Protocol):
+    def quarantine(self, tx, identity, item, source_hash, reason, delivery, audit=None): ...

@@ -18,9 +18,8 @@ from __future__ import annotations
 
 from codex_harness.kernel.errors import ContractError
 from codex_harness.kernel.ids import digest, utcnow
-from codex_harness.knowledge.domain.promotion import PROMOTED_NAMESPACE
+from codex_harness.knowledge.domain.promotion import BUCKET, PROMOTED_NAMESPACE
 
-BUCKET = "promotions"
 RECEIPT_SCHEMA = "urn:zeus:promotion-receipt:1"
 
 
