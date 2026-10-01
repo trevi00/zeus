@@ -26,7 +26,8 @@ Named adaptations (each is a construction/import/patch-target adaptation, never 
   (M7 `adapters.operation_cli`); `organization` is `routing.adapters.organization_source.packaged_organization`;
   `MemoryStore`, `GitWorkspace`, `GitCommandError`, `MergeRefused`, `ContractError`, `FileArtifacts`, `MemorySpool`,
   `MemoryDirectory`, `Observer`, `new_process_run_id`, `POLICY`, `digest` and the BUCKET_* names come from their
-  target homes. `Fleet` is `m7_coordination.Fleet`.
+  target homes. `Fleet` is `m7_coordination.Fleet` plus M7's private `_repository_aliases(tx)`, which is
+  `coordination.application.fleet.state.repository_aliases`.
 - `collect_monitor_canary` / `canary_checks` default `facts` to the delivery status projection over the store (M7
   `monitoring.host_delivery_facts` is `HostDelivery(store).status()`); `first_activation_facts` defaults `run` to
   `process_groups.run_process` and `source` to a `GitSource` over the lane repository, as M7's defaults resolved them.
@@ -45,6 +46,22 @@ Named adaptations (each is a construction/import/patch-target adaptation, never 
   `test_the_launched_service_reports_the_identity_it_actually_loaded` (M7 lines 995-997: "Observed, not echoed: this
   process's own root, package, revision and effective configuration"; M7 already allows `RUNTIME_REVISION or ""`), it
   binds the ported module's `RUNTIME_ROOT`/`RUNTIME_REVISION` to the process's real values. Child-launching tests keep (a).
+- Host migration (`test_host_migration*.py`, `test_fleet_host_migration.py`): `host_migration` and
+  `host_migration_evidence` stand for M7 `adapters.host_migration` / `adapters.host_migration_evidence` (the suites'
+  `adapter` / `producer`). Each is a facade over the moved module: a name reads from the module, an assignment
+  (`monkeypatch.setattr(adapter, "write_activation", ...)`, `_posix`) is made on the module, so the module's own calls see
+  it; `adapter.os` is the module's `os`. The names whose moved signature REQUIRES a collaborator (DESIGN-s7 adapters-move
+  V6) close over the one composition passes, a case's own `runner=` winning as in M7: `run_canonical` and
+  `pg_compare_schema` the chokepoint `process_groups.run` (M7's default was `subprocess.run`); `pg_dump_database`,
+  `pg_restore_database`, `recovery_preconditions` and `switch_effect` `process_groups.run_process`;
+  `HostReader` and `bounded_run` of the evidence module `processes=ChokepointProcesses()`. The operator CLI names
+  (`main`, `parser`, `schema_store`, `cli_ports`, `observe_command`) and `canonical_module`'s provider (S10) are not on
+  the facades: only tests skipped whole, with the owning slice, name them. `HostMigrations` is
+  `delivery.application.host_migration`, `HostFacts` is `host_os.adapters.host_facts`.
+- `fleet_recovery` stands for M7 `adapters.fleet_recovery`: the moved `coordination.adapters.fleet_recovery` (its
+  `checkout_identity`, `collect_host_migration_proof` and `run_root` are also module names here) with
+  `state`, `run_records` and `git_source` supplied as `composition.fleet_recovery.collectors()` wires them (`budget`
+  is only `collect_recovery_proof`'s). `fleet_cli` (the operator CLI, S10) is an `unavailable` placeholder.
 - `unavailable(slice_, name)` is `m7_coordination.unavailable`: a name whose owner is in a later slice imports as a
   placeholder that raises on use, and only tests skipped whole (with the owning slice) name it.
 """
@@ -55,13 +72,19 @@ import inspect
 
 import pytest
 from conftest import ATTESTED
-from m7_coordination import Fleet, unavailable  # noqa: F401
+from m7_coordination import Fleet as _Fleet
+from m7_coordination import unavailable
 
 from codex_harness.composition import configuration
+from codex_harness.composition import fleet_recovery as _recovery_composition
 from codex_harness.context.adapters import worker_profile
+from codex_harness.coordination.adapters import fleet_recovery as _fleet_recovery
 from codex_harness.coordination.application import execution_fence
 from codex_harness.coordination.application.events import EventJournal
+from codex_harness.coordination.application.fleet.state import repository_aliases
 from codex_harness.delivery.adapters import host_delivery as _adapter
+from codex_harness.delivery.adapters import host_migration as _migration
+from codex_harness.delivery.adapters import host_migration_evidence as _evidence
 from codex_harness.delivery.adapters.host_delivery import (  # noqa: F401
     DESCRIPTOR_FILE,
     LOCK_DIR,
@@ -94,6 +117,7 @@ from codex_harness.delivery.application.host_delivery.stages.switch import Switc
 from codex_harness.delivery.application.host_delivery.stages.verify import Verification
 from codex_harness.delivery.application.host_delivery.state import DeliveryState
 from codex_harness.delivery.application.host_delivery.withdrawal import Withdrawal
+from codex_harness.delivery.application.host_migration import HostMigrations  # noqa: F401
 from codex_harness.host_os.adapters import process_groups
 from codex_harness.host_os.adapters.git_source import GitSource  # noqa: F401
 from codex_harness.host_os.adapters.git_workspace import (  # noqa: F401
@@ -101,6 +125,7 @@ from codex_harness.host_os.adapters.git_workspace import (  # noqa: F401
     GitWorkspace,
     MergeRefused,
 )
+from codex_harness.host_os.adapters.host_facts import HostFacts  # noqa: F401
 from codex_harness.intake.application import tickets
 from codex_harness.kernel.errors import ContractError  # noqa: F401
 from codex_harness.kernel.ids import SYSTEM_CLOCK, SYSTEM_IDS, digest, utcnow  # noqa: F401
@@ -118,6 +143,11 @@ from codex_harness.storage.adapters.file_artifacts import FileArtifacts  # noqa:
 from codex_harness.storage.adapters.memory_store import MemoryStore  # noqa: F401
 
 aliases, read_env = configuration.aliases, configuration.read_env
+
+
+class Fleet(_Fleet):
+    def _repository_aliases(self, tx):
+        return repository_aliases(tx)
 
 
 def loaded_runtime() -> dict:
@@ -218,6 +248,77 @@ def collect_monitor_canary(target, descriptor, startup, *, store=None, facts=Non
 
 def canary_checks(store=None, *, facts=None):
     return _adapter.canary_checks(store, facts=facts or delivery_facts)
+
+
+class _Facade:
+    """A module as the M7 suites saw it: names read from the moved module unless wrapped, assignments land on the module."""
+
+    def __init__(self, module, **wrapped):
+        object.__setattr__(self, "_module", module)
+        object.__setattr__(self, "_wrapped", wrapped)
+
+    def __getattr__(self, name):
+        wrapped = object.__getattribute__(self, "_wrapped")
+        return wrapped[name] if name in wrapped else getattr(object.__getattribute__(self, "_module"), name)
+
+    def __setattr__(self, name, value):
+        wrapped = object.__getattribute__(self, "_wrapped")
+        if name in wrapped:
+            wrapped[name] = value
+        else:
+            setattr(object.__getattribute__(self, "_module"), name, value)
+
+    def __delattr__(self, name):
+        delattr(object.__getattribute__(self, "_module"), name)
+
+
+def _with_runner(function, default):
+    def call(*args, runner=default, **kwargs):
+        return function(*args, runner=runner, **kwargs)
+    return call
+
+
+host_migration = _Facade(
+    _migration,
+    run_canonical=_with_runner(_migration.run_canonical, process_groups.run),
+    pg_compare_schema=_with_runner(_migration.pg_compare_schema, process_groups.run),
+    pg_dump_database=_with_runner(_migration.pg_dump_database, process_groups.run_process),
+    pg_restore_database=_with_runner(_migration.pg_restore_database, process_groups.run_process),
+    recovery_preconditions=_with_runner(_migration.recovery_preconditions, process_groups.run_process),
+    switch_effect=_with_runner(_migration.switch_effect, process_groups.run_process))
+
+
+class _HostReader(_evidence.HostReader):
+    def __init__(self, **kwargs):
+        super().__init__(processes=process_groups.ChokepointProcesses(), **kwargs)
+
+
+def _bounded_run(argv, **kwargs):
+    return _evidence.bounded_run(argv, processes=process_groups.ChokepointProcesses(), **kwargs)
+
+
+host_migration_evidence = _Facade(_evidence, HostReader=_HostReader, bounded_run=_bounded_run)
+
+
+def _collected():
+    return _recovery_composition.collectors(budget=None)
+
+
+def checkout_identity(path, source=None):
+    return _fleet_recovery.checkout_identity(path, source, git_source=_collected().git_source)
+
+
+def collect_host_migration_proof(request, jobs, *, journal, host_dsn, state=None, **kwargs):
+    wired = _collected()
+    return _fleet_recovery.collect_host_migration_proof(
+        request, jobs, journal=journal, host_dsn=host_dsn, state=wired.state if state is None else state,
+        run_records=wired.run_records, git_source=wired.git_source, **kwargs)
+
+
+run_root = _fleet_recovery.run_root
+fleet_recovery = _Facade(_fleet_recovery, checkout_identity=checkout_identity,
+                         collect_host_migration_proof=collect_host_migration_proof)
+fleet_cli = unavailable("S10", "adapters.fleet_cli")
 
 
 def releases_for(store, org):
