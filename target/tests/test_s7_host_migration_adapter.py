@@ -29,7 +29,7 @@ def test_canonical_tool_resolves_like_m7_from_the_package_location(tmp_path, mon
 def test_every_process_runner_is_required():
     required = [host_migration.run_canonical, host_migration.pg_compare_schema, host_migration._docker_pg,
                 host_migration.pg_dump_database, host_migration.pg_restore_database,
-                host_migration.recovery_preconditions, host_migration.SystemdHostTarget.__init__]
+                host_migration.recovery_preconditions, host_migration.switch_effect, host_migration.SystemdHostTarget.__init__]
     for function in required:
         assert inspect.signature(function).parameters["runner"].default is inspect.Parameter.empty, function
 
@@ -39,12 +39,14 @@ def test_systemd_target_requires_its_runner():
         host_migration.SystemdHostTarget(control_dir="/x")
 
 
-def test_switch_effect_default_observer_fails_closed_without_a_runner(tmp_path):
-    control = tmp_path / "control"
-    control.mkdir()
-    violations = host_migration.recovery_preconditions(control, tmp_path / "managed", runner=None,
-                                                       proc=tmp_path / "proc")
-    assert any(v.startswith("unit_state_unknown:") for v in violations)
+def test_switch_effect_requires_its_runner(tmp_path):
+    with pytest.raises(TypeError):
+        host_migration.switch_effect(tmp_path, tmp_path, tmp_path)
+
+
+def test_redis_inventory_requires_canonical_module():
+    with pytest.raises(TypeError):
+        host_migration.redis_inventory(object(), [])
 
 
 def test_run_canonical_uses_only_the_injected_runner(monkeypatch):

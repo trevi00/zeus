@@ -97,6 +97,7 @@ S7_FAMILIES = {"review.releases_queue", "delivery.registry", "delivery.stages", 
                "effects.delivery_units", "effects.delivery_units.pg", "delivery.host_targets",
                "delivery.managed_runtime", "delivery.managed_systemd", "delivery.release_runner",
                "delivery.canaries", "delivery.migration_evidence", "delivery.host_migration_transfer",
+               "delivery.host_migration_cli",
                "delivery.fleet_recovery_collectors", "delivery.restore.pg"}
 S7_IMPLEMENTED = {"delivery.host_targets", "delivery.managed_runtime", "delivery.managed_systemd",
                   "review.releases_queue", "delivery.registry", "delivery.stages",

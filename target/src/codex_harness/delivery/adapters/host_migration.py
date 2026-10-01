@@ -3,7 +3,7 @@
 Layer: adapters
 Context: delivery
 Owns: the canonical-tool runs, the PG export/catalog/dump/restore, the Redis inventory and copy, the launcher files, the activation switch, `SystemdHostTarget`, `prepare_layout` (M7 `adapters/host_migration.py`)
-Does not own: the operator CLI (`schema_store`, `execute`, `parser`, `main` and their helpers: S10), process creation (the host_os chokepoint, injected as `runner`), the migration policy (`delivery.domain.host_migration`)
+Does not own: `canonical_module` (composition/canonical_tools.py: a dynamic import), the operator CLI (`schema_store`, `execute`, `parser`, `main` and their helpers: S10), process creation (the host_os chokepoint, injected as `runner`), the migration policy (`delivery.domain.host_migration`)
 Entry points: run_canonical, pg_compare_schema, pg_dump_database, pg_restore_database, switch_effect, recovery_preconditions, SystemdHostTarget
 Contracts: INV-HOST-MIGRATION-001
 
@@ -107,16 +107,6 @@ def canonical_tool() -> Path:
     if not (tool / "__main__.py").is_file():
         raise MigrationRefused("canonical_tool_unavailable", "scripts/aibox_data")
     return tool
-
-
-def canonical_module(name: str):
-    """In-process access to a canonical helper (e.g. the stream-entries digest) for the exporters."""
-    import importlib
-
-    scripts = str(canonical_tool().parent)
-    if scripts not in sys.path:
-        sys.path.insert(0, scripts)
-    return importlib.import_module("aibox_data." + name)
 
 
 def run_canonical(argv: list, *, check: str | None = None, subject=None, runner) -> dict:
@@ -574,7 +564,7 @@ def _stream(client, key: str, entries_sha256) -> dict:
             "entries_sha256": entries_sha256(entries), "groups": groups}
 
 
-def redis_inventory(client, namespaces) -> dict:
+def redis_inventory(client, namespaces, *, canonical_module) -> dict:
     """The canonical E4 document for the namespaces: keys via SCAN MATCH <ns>:* only."""
     entries_sha256 = canonical_module("contracts").stream_entries_sha256
     keys, streams = {}, {}
@@ -863,7 +853,7 @@ def _replace_current(releases: Path, revision: str) -> None:
 
 
 def switch_effect(control_dir, releases_dir, managed_state_dir, *, check: bool = False, preconditions=None,
-                  runner=None):
+                  runner):
     """The file effect `HostMigrations.activation_switch` runs under the coordinator transaction.
 
     Order: classify; refuse inconsistent files, a host fence, an unready release or any violated
@@ -1000,7 +990,7 @@ def prepare_layout(root, *, apply: bool = False) -> dict:
     return {"root": str(root), "applied": apply, "directories": rows}
 
 
-__all__ = ["SystemdHostTarget", "canonical_module", "canonical_tool", "classify_activation_files", "copy_redis",
+__all__ = ["SystemdHostTarget", "canonical_tool", "classify_activation_files", "copy_redis",
            "current_revision", "recovery_preconditions", "release_ready",
            "runner_processes", "switch_effect",
            "pg_catalog", "pg_compare_schema", "pg_coverage_receipt", "pg_dump_database", "pg_export",

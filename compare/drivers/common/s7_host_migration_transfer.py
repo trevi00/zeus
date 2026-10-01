@@ -8,8 +8,8 @@ Eight case groups, each case labelled in the result (`{group: {case: {...}}}`), 
 - `files`: the launcher files (`_document_bytes`, `_atomic_write`, `write_activation`, `write_fence`), `current_revision`,
   `classify_activation_files`, `release_ready`, and the launcher accepting exactly the coordinator-written receipt.
 - `switch`: `switch_effect` (a1 receipt then `current` with both directories fsynced; a2 the crash window; a3 cached; a4
-  foreign bytes; a5 fence/unready; a6 own temporary link; a7 stale reader), the PH4-11 files, the non-POSIX refusal, the
-  CLI `activation-switch` in process, and the launcher as a real `--dry-run` process.
+  foreign bytes; a5 fence/unready; a6 own temporary link; a7 stale reader), the PH4-11 files, the non-POSIX refusal (the CLI
+  cases: `delivery.host_migration_cli`), and the launcher as a real `--dry-run` process.
 - `recovery`: `recovery_preconditions` (every violation), `runner_processes` over a LABELLED proc root, `_runner_argv`.
 - `interleave`: the switch/switch and record/switch interleavings over the tests' own thread/event choreography.
 - `systemd`: `SystemdHostTarget` through a LABELLED systemctl double.
@@ -68,8 +68,8 @@ test_canonical_tool_is_resolved_from_this_checkout, test_canonical_tool_runs_und
 and, of test_host_migration_successor.py: t3, ph4_11_recording_limited_active_writes_no_current, a1..a7 (a4 x5 and a5 x6
 damages), every_recovery_precondition (x12), an_idle_host_passes_and_an_unreadable_process_table_is_a_violation,
 switch_switch_interleaving, record_switch_interleaving, a_successor_recorded_before_the_first_switch,
-portable_a_second_switch_then_a_record, switch_refuses_on_non_posix (store, files and the in-process CLI),
-cli_records_a_successor_and_switches_only_with_an_expected_head, the_launcher_process_refuses_the_mixed_pair.
+portable_a_second_switch_then_a_record, switch_refuses_on_non_posix (store and files; the CLI part: `delivery.host_migration_cli`),
+the_launcher_process_refuses_the_mixed_pair.
 Characterized directly (no M7 test): `_document_bytes`, `_atomic_write`, `write_activation`/`write_fence` edges,
 `current_revision`, `classify_activation_files`, `release_ready`, `_runner_argv`, `runner_processes`, the unit allow-list,
 `running` states and `_launch` refusals of `SystemdHostTarget`, `catalog_digest`.
@@ -79,7 +79,6 @@ from __future__ import annotations
 
 import contextlib
 import hashlib
-import io
 import json
 import os
 import re
@@ -897,7 +896,7 @@ def switch_ph4_11(ws):
 
 
 def switch_non_posix(ws):
-    """The counterpart of every posix row: refused before any effect, `check` included, and by the CLI before the store."""
+    """The counterpart of every posix row: refused before any effect, `check` included (the CLI part: `delivery.host_migration_cli`)."""
     coordinator, _, intent_id = HM.paused()
     h = SimpleNamespace(control=ws.root / "control", releases=ws.root / "releases", managed=ws.root / "managed",
                         calls=[], root=ws.root)
@@ -917,55 +916,11 @@ def switch_non_posix(ws):
         for label, check, expected in (("effect", False, head), ("check", True, None)):
             out["direct"][label] = att(ws, lambda check=check, expected=expected: switch(
                 coordinator, h, expected=expected, check=check, preconditions=lambda c, m: observed.append(1) or []))
-        paths = ["--migration-id", MID, "--control-dir", str(h.control), "--releases-dir", str(h.releases),
-                 "--managed-state-dir", str(h.managed), "--dsn-env", "ZEUS_AIBOX_MIGRATION_DSN",
-                 "--schema", "zeus_aibox_migration"]
-        opened = []
-        out["cli"] = {}
-        with A.patched(_coordinator=lambda args: opened.append(1) or coordinator):
-            for label, extra in (("expected_id", ["--expected-id", head]), ("check", ["--check"])):
-                out["cli"][label] = cli(ws, ["activation-switch", *extra, *paths])
     out["events"] = list(events)
     out["preconditions_observed"] = observed
-    out["coordinator_opened"] = opened
     out["files_unchanged"] = files() == before
     out["rows_unchanged"] = HM.store_state(coordinator.store) == rows
     out["no_temporary_link"] = not [name for name, _ in before if ".current." in name]
-    return out
-
-
-def cli(ws, argv) -> dict:
-    """One in-process `main(argv)`: its exit code and the JSON it printed (normalized)."""
-    captured = io.StringIO()
-    with contextlib.redirect_stdout(captured):
-        code = A.main(list(argv))
-    text = captured.getvalue()
-    try:
-        return {"exit": code, "json": ws.n(json.loads(text))}
-    except ValueError:
-        return {"exit": code, "text": ws.n(text)}
-
-
-def switch_cli(ws):
-    """test_cli_records_a_successor_and_switches_only_with_an_expected_head (in process, labelled doubles)."""
-    coordinator, _, intent_id = HM.paused()
-    h = host(ws, coordinator)
-    document = ws.root / "successor.json"
-    document.write_text(json.dumps(HM.successor(intent_id)))
-    store = ["--dsn-env", "ZEUS_AIBOX_MIGRATION_DSN", "--schema", "zeus_aibox_migration"]
-    out = {}
-    with A.patched(_coordinator=lambda args: coordinator, recovery_preconditions=lambda control, managed: []):
-        out["record"] = cli(ws, ["activation-successor", "--file", str(document), *store])
-        head = out["record"]["json"]["successor_id"]
-        out["replay"] = cli(ws, ["activation-successor", "--file", str(document), *store])
-        paths = ["--migration-id", MID, "--control-dir", str(h.control), "--releases-dir", str(h.releases),
-                 "--managed-state-dir", str(h.managed), *store]
-        out["switch_without_expected_id"] = cli(ws, ["activation-switch", *paths])
-        out["check"] = cli(ws, ["activation-switch", "--check", *paths])
-        out["switch"] = cli(ws, ["activation-switch", "--expected-id", head, *paths])
-        (h.control / "host-activation.json").write_text("{}\n")
-        out["check_inconsistent"] = cli(ws, ["activation-switch", "--check", *paths])
-    out["view"] = view(ws, h)
     return out
 
 
@@ -1743,7 +1698,7 @@ GROUPS = {
                *[("a5_refused_" + d, switch_a5(d)) for d in ("fence", "missing", "writable", "runtime", "venv", "package")],
                ("a6_failed_replace_removes_only_its_own_link", switch_a6), ("a7_stale_reader_refused_by_the_launcher", switch_a7),
                ("ph4_11_limited_active_writes_no_current", switch_ph4_11), ("non_posix_refusal", switch_non_posix),
-               ("cli_successor_and_switch", switch_cli), ("launcher_process", switch_launcher_process)],
+               ("launcher_process", switch_launcher_process)],
     "recovery": [*[("precondition_" + name, recovery_precondition(name, violation)) for name, violation in PRECONDITIONS],
                  ("idle_host_and_unreadable_process_table", recovery_idle_host), ("unit_states", recovery_unit_states),
                  ("owner_marker", recovery_owner_marker), ("runner_argv", recovery_runner_argv),

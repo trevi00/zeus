@@ -4552,108 +4552,6 @@
     ]
    }
   },
-  "cli_successor_and_switch": {
-   "check": {
-    "exit": 0,
-    "json": {
-     "check": true,
-     "classification": "recorded_not_switched",
-     "current": "bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb",
-     "effective_id": "1213d29d0208a467a50964762b07fbdcd3205b74823bab0f31a6a8cd48a53076",
-     "effective_revision": "eeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee",
-     "host_fenced": false,
-     "preconditions": [],
-     "predecessor_revision": "bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb",
-     "receipt_sha256": "8d46e448e57a74705472f2beb9595753c708374e2d4e577cbb0424b64d3ebdd9"
-    }
-   },
-   "check_inconsistent": {
-    "exit": 1,
-    "json": {
-     "check": true,
-     "classification": "activation_files_inconsistent",
-     "current": "eeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee",
-     "effective_id": "1213d29d0208a467a50964762b07fbdcd3205b74823bab0f31a6a8cd48a53076",
-     "effective_revision": "eeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee",
-     "host_fenced": false,
-     "preconditions": [],
-     "predecessor_revision": "bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb",
-     "receipt_sha256": "ca3d163bab055381827226140568f3bef7eaac187cebd76878e0b63e9e442356"
-    }
-   },
-   "record": {
-    "exit": 0,
-    "json": {
-     "cached": false,
-     "predecessor_id": "f16ac7d1cbe2eedab671120c5d066a2449295821956953a553839775fbad24d1",
-     "recorded": true,
-     "successor_id": "1213d29d0208a467a50964762b07fbdcd3205b74823bab0f31a6a8cd48a53076"
-    }
-   },
-   "replay": {
-    "exit": 0,
-    "json": {
-     "cached": true,
-     "predecessor_id": "f16ac7d1cbe2eedab671120c5d066a2449295821956953a553839775fbad24d1",
-     "recorded": false,
-     "successor_id": "1213d29d0208a467a50964762b07fbdcd3205b74823bab0f31a6a8cd48a53076"
-    }
-   },
-   "switch": {
-    "exit": 0,
-    "json": {
-     "cached": false,
-     "classification": "switched",
-     "classification_before": "recorded_not_switched",
-     "current": "eeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee",
-     "effective_id": "1213d29d0208a467a50964762b07fbdcd3205b74823bab0f31a6a8cd48a53076",
-     "effective_revision": "eeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee",
-     "predecessor_revision": "bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb",
-     "receipt_sha256": "324fed01a489e07b994849a38e09cde36470c4ecbfb5c49e8cb561ffb1404f56",
-     "receipt_written": true,
-     "revision": "eeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee"
-    }
-   },
-   "switch_without_expected_id": {
-    "exit": 1,
-    "json": {
-     "field": "expected_id",
-     "refused": "expected_id_required"
-    }
-   },
-   "view": {
-    "control": {
-     "fleet-owner.json": {
-      "json": {
-       "owner": "managed-fleet",
-       "schema": "urn:zeus:aibox-fleet-owner:1",
-       "unit": "zeus-aibox-managed-fleet.service"
-      },
-      "sha256": "5baeb88cc94e689a8eb390a8ed9936348e9283ccafa1cc836a52f62e9c093958"
-     },
-     "host-activation.json": {
-      "json": {},
-      "sha256": "ca3d163bab055381827226140568f3bef7eaac187cebd76878e0b63e9e442356"
-     }
-    },
-    "current": "eeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee",
-    "releases": {
-     "7777777777777777777777777777777777777777": {
-      "dir": "0o555"
-     },
-     "bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb": {
-      "dir": "0o555"
-     },
-     "current": {
-      "link": "eeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee"
-     },
-     "eeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee": {
-      "dir": "0o555"
-     }
-    },
-    "systemctl_argv": []
-   }
-  },
   "launcher_process": {
    "crash": {
     "raised": {
@@ -4730,23 +4628,6 @@
    }
   },
   "non_posix_refusal": {
-   "cli": {
-    "check": {
-     "exit": 1,
-     "json": {
-      "field": "platform",
-      "refused": "successor_switch_posix_only"
-     }
-    },
-    "expected_id": {
-     "exit": 1,
-     "json": {
-      "field": "platform",
-      "refused": "successor_switch_posix_only"
-     }
-    }
-   },
-   "coordinator_opened": [],
    "direct": {
     "check": {
      "raised": {

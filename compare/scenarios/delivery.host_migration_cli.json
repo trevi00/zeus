@@ -1,0 +1,9 @@
+{
+ "family": "delivery.host_migration_cli",
+ "description": "S7 M7 host migration in-process operator CLI, characterized before its move (INV-HOST-MIGRATION-001): the successor record and replay, activation-switch refused without an expected id, check, switch and an inconsistent check through main(argv), and the CLI refused by the non-POSIX platform check before the coordinator opens; split out of delivery.host_migration_transfer (S7 pilot 44) because the CLI is the S10 carry, so this family is reference-only until S10",
+ "reference_driver": "drivers/reference/s7_host_migration_cli.py",
+ "target_driver": null,
+ "golden": "goldens/reference/delivery.host_migration_cli.json",
+ "slice": "S7",
+ "target_status": "pending: S10 operator CLI (host_migration main/_coordinator)"
+}
