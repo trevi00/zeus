@@ -380,6 +380,47 @@ def differing_paths(expected, actual, path="$") -> list[str]:
     return [] if expected == actual else [path]
 
 
+INTENDED_OPS = frozenset({"absent", "remove_item"})
+
+
+def apply_intended_differences(golden, declarations) -> tuple[object, list[str]]:
+    """The target's EXPECTED result: the reference golden with each declared, authorized intended difference applied.
+
+    A declaration is `{"path": "$.a.b", "op": "absent" | "remove_item", "item": <for remove_item>, "authority":
+    "<who decided, where recorded>"}`. It is an ASSERTION, not a mask:
+    - the path must exist in the reference golden (a stale declaration is refused);
+    - the target must then differ in exactly that way (the key absent, or exactly that one list item removed);
+    - every other byte must be equal.
+
+    Used only for explicitly retired behaviour (e.g. the W-B Windows branches the user retired on 2026-09-28,
+    DESIGN-s7 §0). Returns `(expected, problems)`; any problem makes the scenario fail."""
+    expected = json.loads(json.dumps(golden))
+    problems = []
+    for index, declaration in enumerate(declarations or []):
+        path, op = declaration.get("path"), declaration.get("op")
+        if (not isinstance(path, str) or not path.startswith("$.") or op not in INTENDED_OPS
+                or not str(declaration.get("authority") or "").strip()):
+            problems.append(f"intended_differences[{index}]: invalid declaration")
+            continue
+        keys = path[2:].split(".")
+        node = expected
+        for key in keys[:-1]:
+            node = node.get(key) if isinstance(node, dict) else None
+        last = keys[-1]
+        if not isinstance(node, dict) or last not in node:
+            problems.append(f"intended_differences[{index}]: {path} is not in the reference golden (stale)")
+            continue
+        if op == "absent":
+            del node[last]
+        else:
+            value = node[last]
+            if not isinstance(value, list) or value.count(declaration.get("item")) != 1:
+                problems.append(f"intended_differences[{index}]: {path} does not hold the item exactly once")
+                continue
+            value.remove(declaration["item"])
+    return expected, problems
+
+
 def run_target(driver_path: Path, work: Path, extra: dict, use_bwrap: bool) -> dict:
     if not TARGET_PYTHON.exists():
         return {"error": "target venv missing: run `uv sync --frozen --project target`"}
@@ -463,9 +504,15 @@ def run(record: bool, use_bwrap: bool, only: list[str], pg: bool = False,
             t_origin = target_result["origin"]
             t_origin_ok = (t_origin.get("tree") == str(TARGET_SRC) and t_origin.get("modules_checked", 0) > 0
                            and target_result.get("side") == "target")
-            equal = golden is not None and golden == target_result["result"]
-            if not equal:
-                row["target_differing_paths"] = differing_paths(golden, target_result["result"])[:20]
+            declared = scenario.get("intended_differences") or []
+            expected, problems = apply_intended_differences(golden, declared) if golden is not None else (None, [])
+            equal = golden is not None and not problems and expected == target_result["result"]
+            if declared:
+                row["intended_differences"] = len(declared)
+            if problems:
+                row["intended_difference_problems"] = problems
+            if not equal and expected is not None:
+                row["target_differing_paths"] = differing_paths(expected, target_result["result"])[:20]
             row.update(target="equal" if equal else "DIFFERENT", target_origin_ok=t_origin_ok,
                        target_origin={k: t_origin.get(k) for k in ("modules_checked", "python")})
             ok = ok and equal and t_origin_ok

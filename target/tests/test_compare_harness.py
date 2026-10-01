@@ -200,3 +200,36 @@ def test_postgresql_unit_matches_memory_and_reads_back_durable_rows():
     split = pg["control_split_commit"]
     assert split["violations"] == ["nested_begin"] and split["durable_authority_rows"] == []
     assert {e.get("error") for e in split["trace"] if e["kind"] == "ROLLBACK"} == {"LockNotAvailable"}
+
+
+# ---- declared intended differences (owner, 2026-10-01): asserted, never masks ----
+def _run_module():
+    import importlib.util
+    spec = importlib.util.spec_from_file_location("compare_run_for_intended", COMPARE / "run.py")
+    mod = importlib.util.module_from_spec(spec)
+    spec.loader.exec_module(mod)
+    return mod
+
+
+def test_an_intended_difference_is_asserted_exactly_and_nothing_else_is_masked():
+    run = _run_module()
+    golden = {"ports": {"default": {"kinds": ["process", "w_b"], "ports": {"process": 1, "w_b": 2}}, "other": 3}}
+    declared = [{"path": "$.ports.default.ports.w_b", "op": "absent", "authority": "user 2026-09-28"},
+                {"path": "$.ports.default.kinds", "op": "remove_item", "item": "w_b", "authority": "user 2026-09-28"}]
+    expected, problems = run.apply_intended_differences(golden, declared)
+    assert problems == [] and expected == {"ports": {"default": {"kinds": ["process"], "ports": {"process": 1}},
+                                                     "other": 3}}
+    assert golden["ports"]["default"]["ports"]["w_b"] == 2  # the reference golden itself is never rewritten
+    # a target that still HAS the retired key is not equal to the expectation (the difference is asserted)
+    assert expected != golden
+
+
+def test_stale_or_invalid_declarations_are_problems():
+    run = _run_module()
+    golden = {"a": {"b": [1]}}
+    for bad in ({"path": "$.a.c", "op": "absent", "authority": "x"},            # not in the golden: stale
+                {"path": "$.a.b", "op": "remove_item", "item": 2, "authority": "x"},  # item not present once
+                {"path": "$.a.b", "op": "replace", "authority": "x"},           # unknown op
+                {"path": "$.a.b", "op": "absent", "authority": ""}):            # no authority
+        _, problems = run.apply_intended_differences(golden, [bad])
+        assert problems, bad

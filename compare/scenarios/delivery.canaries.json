@@ -4,5 +4,33 @@
  "reference_driver": "drivers/reference/s7_host_delivery_helpers.py",
  "target_driver": "drivers/target/s7_host_delivery_helpers.py",
  "golden": "goldens/reference/delivery.canaries.json",
- "slice": "S7"
+ "slice": "S7",
+ "intended_differences": [
+  {
+   "path": "$.ports.default.kinds",
+   "op": "remove_item",
+   "item": "windows_scheduled_task",
+   "authority": "W-B retired: user decision 2026-09-28T08:28:48Z (Linux/aibox is the sole runtime; Windows is view-only) and DESIGN-s7 §0 carry (ScheduledTaskHostTarget classified, not moved); the target's host_ports holds no Windows scheduled-task kind"
+  },
+  {
+   "path": "$.ports.default.ports.windows_scheduled_task",
+   "op": "absent",
+   "authority": "W-B retired: user decision 2026-09-28T08:28:48Z (Linux/aibox is the sole runtime; Windows is view-only) and DESIGN-s7 §0 carry (ScheduledTaskHostTarget classified, not moved); the target's host_ports holds no Windows scheduled-task kind"
+  },
+  {
+   "path": "$.ports.default.fleet.windows_scheduled_task",
+   "op": "absent",
+   "authority": "W-B retired: user decision 2026-09-28T08:28:48Z (Linux/aibox is the sole runtime; Windows is view-only) and DESIGN-s7 §0 carry (ScheduledTaskHostTarget classified, not moved); the target's host_ports holds no Windows scheduled-task kind"
+  },
+  {
+   "path": "$.ports.fleet_bound_to_the_managed_kinds_only.windows_scheduled_task",
+   "op": "absent",
+   "authority": "W-B retired: user decision 2026-09-28T08:28:48Z (Linux/aibox is the sole runtime; Windows is view-only) and DESIGN-s7 §0 carry (ScheduledTaskHostTarget classified, not moved); the target's host_ports holds no Windows scheduled-task kind"
+  },
+  {
+   "path": "$.ports.kwargs_reach_the_process_target_only.ports.windows_scheduled_task",
+   "op": "absent",
+   "authority": "W-B retired: user decision 2026-09-28T08:28:48Z (Linux/aibox is the sole runtime; Windows is view-only) and DESIGN-s7 §0 carry (ScheduledTaskHostTarget classified, not moved); the target's host_ports holds no Windows scheduled-task kind"
+  }
+ ]
 }
