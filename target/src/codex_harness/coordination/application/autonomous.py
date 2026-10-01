@@ -8,7 +8,7 @@ Does not own: the debate sessions (research.application.dge), the evidence consu
 Entry points: AutonomousRefused, provider_labels, AutonomousRun, bus_view, row_digest, BUCKET, OUTCOME_BY_REASON
 Contracts: INV-AUTONOMOUS-001
 
-Moved from M7 `application/autonomous.py` (SOURCE e38aa722) through named rules (DESIGN-s8 §1 V3/V4/V9, §6 V11, §7 V12, A/evidence/rebuild/s8/autonomous-move/transcribe.py): R-a0 (each name from the target home of the module that defines it), R-a1 (research's `DebateSessions`, evidence's `EvidenceInspections.require_all_checked` and knowledge's `promote` are injected keyword-only ports `sessions_factory`, `evidence_records`, `promotion`, checked by one separate `require`), R-a2 (`SESSIONS` is defined locally; research.application.dge owns the name); every other body is M7's. M7 module docstring:
+Moved from M7 `application/autonomous.py` (SOURCE e38aa722) through named rules (DESIGN-s8 §1 V3/V4/V9, §6 V11, §7 V12, A/evidence/rebuild/s8/autonomous-move/transcribe.py): R-a0 (each name from the target home of the module that defines it), R-a1 (research's `DebateSessions`, evidence's `EvidenceInspections.require_all_checked` and knowledge's `promote` are injected keyword-only ports `sessions_factory`, `evidence_records`, `promotion`, checked by one separate `require`), R-a3 (`Operation` is built by the injected `operation_factory`: the S5 Operation takes store/org/flusher, not M7's service), R-a4 (`flush_outbox` takes the service's `.flusher`), R-a2 (`SESSIONS` is defined locally; research.application.dge owns the name); every other body is M7's. M7 module docstring:
 
 A durable `autonomous_runs` row owns the run id. Every role is one fresh task from the conductor to a
 dedicated lead through the outbox and bus, claimed and executed by the existing executor under the
@@ -34,7 +34,7 @@ from codex_harness.coordination.application.local_cycle import (
     observe_received,
     observe_rejected,
 )
-from codex_harness.coordination.application.operation import BudgetedExecutor, BudgetRefused, Operation
+from codex_harness.coordination.application.operation import BudgetedExecutor, BudgetRefused
 from codex_harness.coordination.application.outbox_relay import bus_route, pin_route
 from codex_harness.coordination.domain.operation import correlation_id as operation_correlation
 from codex_harness.intake.domain.operation_manifest import WORKER
@@ -99,13 +99,16 @@ def provider_labels(model: str):
 class AutonomousRun:
     def __init__(self, service, executor=None, bus=None, workflow=None, budget=None, collector=None,
                  verify_sources=None, repository=None, observer=None, clock=utcnow, evidence=None,
-                 *, sessions_factory=None, evidence_records=None, promotion=None):
+                 *, sessions_factory=None, evidence_records=None, promotion=None,
+                 operation_factory=None):
         self.service, self.executor, self.bus, self.workflow = service, executor, bus, workflow
         self.budget, self.collector, self.verify_sources = budget, collector, verify_sources
         self.repository, self.observer, self.clock, self.evidence = repository, observer, clock, evidence
         # V12 V3 ports (keyword-only so CouncilRun's positional `super().__init__` is unchanged): research's session
-        # factory (`research.application.dge.DebateSessions`), evidence's `EvidenceRecords`, knowledge's `promotion` module
+        # factory (`research.application.dge.DebateSessions`), evidence's `EvidenceRecords`, knowledge's `promotion` module,
+        # and the S5 `Operation` composition (R-a3)
         self.sessions_factory, self.evidence_records, self.promotion = sessions_factory, evidence_records, promotion
+        self.operation_factory = operation_factory
 
     # ----- read-only ----------------------------------------------------------------------
     def status(self, run_id: str) -> dict:
@@ -193,8 +196,9 @@ class AutonomousRun:
         row = claimed["row"]
         require(self.executor is not None and self.budget is not None and self.bus is not None and self.workflow is not None
                 and self.evidence is not None, "Autonomous run needs an executor, a call budget, a bus, a workflow and an evidence port")
-        require(self.sessions_factory is not None and self.evidence_records is not None and self.promotion is not None,
-                "Autonomous run needs a debate-session factory, an evidence-records port and a promotion port")
+        require(self.sessions_factory is not None and self.evidence_records is not None and self.promotion is not None
+                and self.operation_factory is not None,
+                "Autonomous run needs a debate-session factory, an evidence-records port, a promotion port and an operation factory")
         wrapped = BudgetedExecutor(self.executor, self.budget, manifest["budget"], "autonomous:" + manifest["id"],
                                    manifest["claude"]["model"], labels=provider_labels(manifest["claude"]["model"]))
         try:
@@ -274,8 +278,8 @@ class AutonomousRun:
         self._transition(run_id, last_stage, "implementation")
         self._log("implementation", run_id, "started")
         started = time.monotonic()
-        operation = Operation(self.service, self.executor, self.bus, self.workflow, self.budget, self.collector,
-                              observer=self.observer)
+        operation = self.operation_factory(self.executor, self.bus, self.workflow, self.budget, self.collector,
+                                   observer=self.observer)
         # The same absolute deadline is checked before the worker and the reviewer start; never reset.
         receipt = operation.run(operation_manifest(manifest, digest_value), identity, goal, deadline=manifest["deadline"],
                                 clock=self.clock, labels=provider_labels(manifest["claude"]["model"]))
@@ -317,7 +321,7 @@ class AutonomousRun:
         started = time.monotonic()
         # Implementation015: this run's own assignment is published by correlation, independent of
         # the global cursor and of unrelated queue history; an unfinished publication refuses here.
-        if not flush_outbox(self.service, self.bus, self.observer, correlation)["complete"]:
+        if not flush_outbox(self.service.flusher, self.bus, self.observer, correlation)["complete"]:
             raise AutonomousRefused("publication_incomplete")
         self._deliver(agent, correlation)
         expected = {"id": message["message_id"], "correlation_id": correlation, "statuses": {"queued"}}
@@ -326,7 +330,7 @@ class AutonomousRun:
             result = wrapped.execute_one(agent, expected=expected)
         except BudgetRefused as exc:
             raise AutonomousRefused("budget_exhausted") from exc
-        published = flush_outbox(self.service, self.bus, self.observer, correlation)
+        published = flush_outbox(self.service.flusher, self.bus, self.observer, correlation)
         if any(not s["settled"] for s in wrapped.slots):
             raise AutonomousRefused("settlement_failed")
         if result is None:
@@ -438,7 +442,7 @@ class AutonomousRun:
             # same correlation and are published here. An unfinished publication stops the run with
             # the named reason, before the ACK and before any further role, reservation or provider
             # entry; the handled result stays committed and the message stays pending, never retried.
-            if not flush_outbox(self.service, self.bus, self.observer, correlation)["complete"]:
+            if not flush_outbox(self.service.flusher, self.bus, self.observer, correlation)["complete"]:
                 raise AutonomousRefused("publication_incomplete")
             self.bus.ack(agent, entry_id)
             observe_acknowledged(self.observer, entry_id, message)
