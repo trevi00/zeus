@@ -1,0 +1,497 @@
+"""Durable audit progress. Inventory import never implies semantic coverage.
+
+Layer: application
+Context: research
+Owns: the audit core use case (backlog, import, partition, checkpoint, observed assets, proposal, execution, independent review); buckets research_adaptations, research_approvals, research_audits, research_backlog, research_checkpoints, research_evidence_history, research_observed_assets, research_partitions, research_paths, research_receipts, research_reviews, research_subsystems (only this module writes them)
+Does not own: the decisions_pending and outbox rows (coordination: PendingDecisions.queue, Outbox.append), the decision validation (coordination ExecutionRecovery), the audit gate (research.application.audit_gate), the source verifier and runner adapters
+Entry points: ResearchAudits
+Contracts: INV-RESEARCH-001
+
+Moved from M7 `application/research.py` (SOURCE e38aa722) through named rules (DESIGN-s8 §1 V3/V4, §6 V11, A/evidence/rebuild/s8/research-app-move/transcribe.py): R-r0 (each name from the target home of the module that defines it), R-r1 (`AuditArtifacts` and `SourceVerifier` are declared in `research.ports`), R-r2 (`ExecutionRecovery.validate_decision` is the injected `decision_validation` port, checked by one added `require`), R-r3 (the continuation goes through the injected `outbox` port), R-r4 (the review row is queued through the injected `pending_decisions` port, which owns the presence check); every other body is M7's. The first line is M7's module docstring.
+"""
+from __future__ import annotations
+
+import base64
+import json
+from dataclasses import asdict
+from importlib.resources import files
+
+from codex_harness.kernel.errors import require
+from codex_harness.kernel.ids import canonical, digest, utcnow
+from codex_harness.research.domain.research import (
+    AdaptationProposal,
+    AuditDraftRejected,
+    InventoryEntry,
+    ObservedAsset,
+    PartitionCheckpoint,
+    PathDisposition,
+    SourceIdentity,
+    SubsystemAnalysis,
+    parse_record,
+    receipt_successful,
+    reject,
+)
+from codex_harness.research.ports import AuditArtifacts, SourceVerifier
+from codex_harness.storage.ports import Store
+
+
+class ResearchAudits:
+    def __init__(self, store: Store, verifier: SourceVerifier | None,
+                 artifacts: AuditArtifacts, workflow, runner=None, *, decision_validation=None, outbox=None,
+                 pending_decisions=None):
+        self.store, self.verifier = store, verifier
+        self.artifacts, self.workflow = artifacts, workflow
+        self.runner = runner
+        # V3 ports (keyword-only): coordination's `ExecutionRecovery.validate_decision`, `Outbox.append` and
+        # `PendingDecisions.queue` (the owners of `decisions_pending` and `outbox`)
+        self.decision_validation, self.outbox, self.pending_decisions = decision_validation, outbox, pending_decisions
+
+    def seed_backlog(self):
+        seeds = json.loads(files('codex_harness.resources').joinpath('research-backlog.json').read_text())
+        records = []
+        for priority, seed in enumerate(seeds, 1):
+            manifest = self.artifacts.document(seed['manifest_ref'])
+            paths = [item['path'] for item in manifest['files']]
+            require(manifest['repository'] == seed['repository']
+                    and manifest['revision'] == seed['revision']
+                    and len(paths) == seed['files'] and len(set(paths)) == len(paths),
+                    'Backlog manifest mismatch')
+            records.append({'id': digest(seed), 'version': 1, **seed, 'priority': priority,
+                'status': 'inventoried_not_reviewed', 'activation': 'pending_verified_rollout',
+                'source_verified': False, 'reviewed_paths': 0, 'remaining_paths': paths,
+                'remaining_subsystems': ['subsystem discovery required'],
+                'open_questions': ['Verify original Git objects and linked artifact bytes'],
+                'manifest_ref': seed['manifest_ref']})
+        with self.store.transaction() as tx:
+            historical = tx.records()
+            for record in records:
+                matches = [r['id'] for r in historical if r['bucket'] == 'reference_audits'
+                           and all(value in canonical(r['body']) for value in
+                                   (record['repository'], record['revision'], record['manifest_ref']))]
+                require(bool(matches), 'Missing historical reference audit for backlog')
+                record['historical_reference_ids'] = matches
+                old = tx.get('research_backlog', record['id'])
+                if old is None:
+                    tx.put('research_backlog', record['id'], record)
+            # INV-RESEARCH-001: preserve reference_audits and all legacy proposals verbatim.
+            return [tx.get('research_backlog', r['id']) for r in records]
+
+    def import_audit(self, source: SourceIdentity, entries: list[InventoryEntry],
+                     subsystems: list[str]):
+        source = parse_record({'version': 1, 'kind': 'SourceIdentity', 'record': asdict(source)})
+        entries = [parse_record({'version': 1, 'kind': 'InventoryEntry', 'record': asdict(e)})
+                   for e in entries]
+        require(self.verifier is not None, 'Source verifier unavailable')
+        require(subsystems and len(subsystems) == len(set(subsystems))
+                and all(subsystems), 'Explicit unique subsystem inventory required')
+        verified = self.verifier.verify(source, entries)
+        key = digest(asdict(source))
+        record = {'id': key, 'version': 1, 'source': asdict(source), 'inventory': verified['entries'],
+                  'subsystems': sorted(subsystems), 'status': 'source_verified_not_reviewed',
+                  'activation': 'pending_verified_rollout'}
+        with self.store.transaction() as tx:
+            old = tx.get('research_audits', key)
+            require(old is None or old == record, 'Conflicting audit import')
+            if old is None:
+                tx.put('research_audits', key, record)
+        return record
+
+    def partition(self, audit_id: str, limit: int = 32):
+        require(type(limit) is int and 0 < limit <= 128, 'Invalid partition budget')
+        with self.store.transaction() as tx:
+            audit = tx.get('research_audits', audit_id)
+            require(audit is not None, 'Unknown audit')
+            existing = [p for p in tx.scan('research_partitions') if p['audit_id'] == audit_id]
+            if existing:
+                return sorted(existing, key=lambda p: p['partition_id'])
+            paths = sorted(e['path'] for e in audit['inventory'])
+            records = []
+            # Subsystem work is separate; every scope item survives task budgets.
+            for kind, scope in [('paths', paths), ('subsystems', audit['subsystems'])]:
+                for offset in range(0, len(scope), limit):
+                    selected = scope[offset:offset + limit]
+                    key = digest({'audit': audit_id, 'kind': kind, 'scope': selected})
+                    p = PartitionCheckpoint(audit_id, key, 0,
+                        selected if kind == 'paths' else [], selected if kind == 'subsystems' else [],
+                        [], selected if kind == 'paths' else [], selected if kind == 'subsystems' else [],
+                        [], 'pending')
+                    p.validate()
+                    body = asdict(p)
+                    tx.put('research_partitions', key, body)
+                    records.append(body)
+            return records
+
+    @staticmethod
+    def _anchors(tx, audit):
+        """The authoritative artifact references of THIS audit, read from trusted records only.
+
+        self-improvement-reference-001, 2026-09-21: the verified source manifest, the verified
+        inventory artifacts, the evidence its partitions and checkpoints already retain, and the
+        output of runner executions stored for it. A reference in this set is trusted input, so
+        failing to read it is an execution failure and never a candidate's fault. This is a
+        classification of existing records, not a new provenance grant: an unanchored reference
+        whose body is readable remains as acceptable as it has always been.
+        """
+        source = audit.get('source') or {}
+        require(bool(source.get('manifest_ref')), 'Audit source manifest unavailable')
+        refs = {source['manifest_ref']}
+        refs.update(e['artifact_ref'] for e in audit['inventory'] if e['artifact_ref'])
+        for bucket in ('research_partitions', 'research_checkpoints'):
+            refs.update(ref for row in tx.scan(bucket) if row['audit_id'] == audit['id']
+                        for ref in row['evidence_refs'])
+        refs.update(row['receipt']['output_ref'] for row in tx.scan('research_receipts')
+                    if row['audit_id'] == audit['id'])
+        return refs
+
+    def _claimed_evidence(self, anchors, refs):
+        """Inspect evidence a candidate NAMES. Only an absent unanchored body is its own fault.
+
+        An anchored reference is trusted input: every failure to read it stays a hard failure. For
+        an unanchored one, a `FileNotFoundError` means the draft invented or mistyped a reference
+        that was never stored, which no later review could inspect. A modified body, invalid or
+        missing metadata, a permission error and every other IO failure stay hard failures: those
+        say the artifact store is damaged, not that the draft is wrong.
+        """
+        for ref in refs:
+            if ref in anchors:
+                self.artifacts.inspect(ref)
+                continue
+            try:
+                self.artifacts.inspect(ref)
+            except FileNotFoundError as absent:
+                raise AuditDraftRejected('Claimed evidence artifact is absent') from absent
+
+    def checkpoint(self, task, checkpoint: PartitionCheckpoint,
+                   dispositions: list[PathDisposition], analyses: list[SubsystemAnalysis],
+                   continuation: dict | None = None):
+        checkpoint = parse_record({'version': 1, 'kind': 'PartitionCheckpoint',
+                                   'record': asdict(checkpoint)})
+        for record in [*dispositions, *analyses]:
+            parse_record({'version': 1, 'kind': type(record).__name__, 'record': asdict(record)})
+        # Candidate claims are `reject`ed with their existing messages; trusted anchors - ownership,
+        # lease, assignment, generation, immutable scope, stored records and the store itself -
+        # stay ordinary `require` failures. The whole transaction is all-or-nothing either way: a
+        # rejection raised after staged writes leaves this transaction before any caller sees it.
+        with self.store.transaction() as tx:
+            current_task = self.workflow._owned(tx, task)
+            details = current_task['message']['what']['details']
+            require(details.get('audit_id') == checkpoint.audit_id
+                    and details.get('partition_id') == checkpoint.partition_id,
+                    'Execution is not assigned this partition')
+            old = tx.get('research_partitions', checkpoint.partition_id)
+            require(old is not None and old['audit_id'] == checkpoint.audit_id
+                    and old['generation'] == checkpoint.generation, 'Stale partition writer')
+            require(old['paths'] == checkpoint.paths and old['subsystems'] == checkpoint.subsystems,
+                    'Partition scope changed')
+            audit = tx.get('research_audits', checkpoint.audit_id)
+            require(audit is not None, 'Unknown audit')
+            # Ownership, generation and immutable scope are settled above; from here the draft's
+            # own relationship and evidence claims are classified against the trusted records.
+            # self-improvement-reference-001, 2026-09-21 independent lead disposition: duplicate
+            # coverage is the FIRST of those candidate claims, so it is refused here and no longer
+            # ahead of the trusted guards. A stale, unassigned or rescoped execution that also
+            # submits duplicates therefore fails as the ordinary execution failure it is.
+            reject(len({p.path for p in dispositions}) == len(dispositions)
+                   and len({s.name for s in analyses}) == len(analyses), 'Duplicate coverage')
+            anchors = self._anchors(tx, audit)
+            for record in [*dispositions, *analyses]:
+                self._claimed_evidence(anchors, record.evidence_refs)
+            self._claimed_evidence(anchors, checkpoint.evidence_refs)
+            reject(all(p.path in old['paths'] for p in dispositions)
+                   and all(s.name in old['subsystems'] for s in analyses), 'Cross-partition evidence')
+            inventory = {p['path']: p for p in audit['inventory']}
+            # INV-RESEARCH-003: model-authored receipt IDs are not runner attestations.
+            for item in [*dispositions, *analyses]:
+                for receipt_id in item.receipt_ids:
+                    receipt = tx.get('research_receipts', receipt_id)
+                    reject(receipt is not None and receipt['audit_id'] == checkpoint.audit_id
+                           and receipt['task_id'] == task['id']
+                           and receipt['generation'] == task['generation']
+                           and receipt_successful(receipt['receipt']),
+                           'Runner receipt missing, stale, blocked or unsuccessful')
+                    # The receipt is now a trusted stored record: its own output is an anchor.
+                    self.artifacts.inspect(receipt['receipt']['output_ref'])
+            for disposition in dispositions:
+                entry = inventory[disposition.path]
+                if disposition.disposition in {'unreviewed', 'unavailable'}:
+                    continue
+                reject(entry['mode'] != '160000', 'Submodule requires its own verified audit')
+                envelope = self.artifacts.document(entry['artifact_ref'])
+                raw = base64.b64decode(envelope['data'], validate=True)
+                try:
+                    raw.decode('utf-8')
+                    binary = b'\0' in raw
+                except UnicodeDecodeError:
+                    binary = True
+                reject(not binary or (disposition.disposition == 'binary'
+                       and disposition.receipt_ids),
+                       'Binary coverage requires verified runner inspection')
+                # Links are exact inventory identities; nothing is encoded, decoded or normalized
+                # here, because a silently repaired claim is no longer the claim that was made.
+                reject(set(disposition.links) <= set(inventory), 'Unknown generator/original path')
+            for analysis in analyses:
+                reject(set(analysis.paths) <= set(inventory), 'Unknown subsystem path')
+                # INV-RESEARCH-003: listing files cannot attest that a claimed test command ran.
+                not_run = {test['test'] for test in analysis.tests_not_run}
+                executed = [tx.get('research_receipts', ref)['receipt'] for ref in analysis.receipt_ids]
+                for test in analysis.tests:
+                    if test in not_run:
+                        continue
+                    try:
+                        command = json.loads(test)
+                    except (TypeError, ValueError):
+                        command = None
+                    reject(isinstance(command, list) and command and all(isinstance(s, str) for s in command)
+                           and command[0] not in {'source-list', 'source-read'}
+                           and any(r['command'] == command
+                                   and r['isolation'] != 'inert-objects-no-code-execution'
+                                   for r in executed),
+                           'Claimed test lacks matching successful execution command')
+            for kind, records, field in [('research_paths', dispositions, 'path'),
+                                         ('research_subsystems', analyses, 'name')]:
+                for record in records:
+                    key = digest({'audit': checkpoint.audit_id, 'item': getattr(record, field)})
+                    body = {'audit_id': checkpoint.audit_id, 'record': asdict(record),
+                            'task_id': task['id'], 'generation': task['generation']}
+                    tx.put(kind, key, body)
+                    tx.put('research_evidence_history', digest(body), body)
+            paths, subsystems = self._coverage(tx, audit)
+            # The candidate's own account of what is left, reconciled against persisted coverage
+            # AFTER this batch's rows are staged. A refusal here leaves the transaction, so those
+            # staged coverage and history rows roll back with everything else.
+            reject(set(checkpoint.remaining_paths) == set(old['paths']) - paths
+                   and set(checkpoint.remaining_subsystems) == set(old['subsystems']) - subsystems,
+                   'Remaining work does not reconcile')
+            body = asdict(checkpoint)
+            body['evidence_refs'] = sorted(set(old['evidence_refs']) | set(body['evidence_refs']) |
+                {ref for r in [*dispositions, *analyses] for ref in r.evidence_refs})
+            body['generation'] += 1
+            # Immutable checkpoint history retains prior evidence transitively.
+            history = digest(body)
+            tx.put('research_checkpoints', history, body)
+            tx.put('research_partitions', checkpoint.partition_id, body)
+            if continuation:
+                self.workflow.org.authorize(continuation)
+                require(continuation['who']['sender'] == task['agent']
+                        and continuation['what']['details'].get('audit_id') == checkpoint.audit_id
+                        and continuation['what']['details'].get('partition_id') == checkpoint.partition_id,
+                        'Invalid audit continuation')
+                self.outbox.append(tx, continuation)
+            return body
+
+    @staticmethod
+    def _coverage(tx, audit):
+        paths, subsystems = set(), set()
+        for row in tx.scan('research_paths'):
+            if row['audit_id'] == audit['id']:
+                p = PathDisposition(**row['record'])
+                p.validate()
+                if p.disposition not in {'unreviewed', 'unavailable'}:
+                    paths.add(p.path)
+        for row in tx.scan('research_subsystems'):
+            if row['audit_id'] == audit['id']:
+                s = SubsystemAnalysis(**row['record'])
+                s.validate()
+                if not (s.contradictions or s.unresolved_dependencies or s.tests_not_run):
+                    subsystems.add(s.name)
+        return paths, subsystems
+
+    @staticmethod
+    def _observed(tx, audit):
+        """INV-RESEARCH-001: observed assets are a separate ledger with their own completeness."""
+        from collections import Counter
+        rows = [r for r in tx.scan('research_observed_assets') if r['audit_id'] == audit['id']]
+        assets = [ObservedAsset(**r['record']) for r in rows]
+        for asset in assets:
+            asset.validate()
+        pending = sorted(a.path for a in assets if a.pending)
+        return {'total': len(assets), 'pending': len(pending), 'pending_paths': pending,
+                'states': dict(sorted(Counter(a.state for a in assets).items()))}
+
+    def observe_assets(self, audit_id, assets: list[ObservedAsset]):
+        assets = [parse_record({'version': 1, 'kind': 'ObservedAsset', 'record': asdict(a)}) for a in assets]
+        require(assets and len({a.path for a in assets}) == len(assets), 'Unique observed asset paths required')
+        for asset in assets:
+            for ref in asset.evidence_refs:
+                self.artifacts.inspect(ref)
+        with self.store.transaction() as tx:
+            audit = tx.get('research_audits', audit_id)
+            require(audit is not None, 'Unknown audit')
+            tracked = {e['path'] for e in audit['inventory']}
+            changed = 0
+            for asset in assets:
+                require(asset.path not in tracked, 'Tracked Git paths belong to the inventory, not the observed ledger')
+                key = digest({'audit': audit_id, 'path': asset.path})
+                record = asdict(asset)
+                old = tx.get('research_observed_assets', key)
+                if old is not None:
+                    if old['record'] == record:
+                        continue
+                    previous = ObservedAsset(**old['record'])
+                    require(previous.pending or not asset.pending,
+                            'Observed asset disposition cannot regress to pending')
+                    history = old.get('history', []) + [old['record']]
+                else:
+                    history = []
+                tx.put('research_observed_assets', key, {'id': key, 'audit_id': audit_id, 'record': record,
+                                                         'history': history, 'at': utcnow()})
+                changed += 1
+            return {'audit_id': audit_id, 'changed': changed, **self._observed(tx, audit)}
+
+    def coverage(self, audit_id):
+        with self.store.transaction() as tx:
+            audit = tx.get('research_audits', audit_id)
+            require(audit is not None, 'Unknown audit')
+            paths, subsystems = self._coverage(tx, audit)
+            observed = self._observed(tx, audit)
+            remaining_paths = sorted(set(p['path'] for p in audit['inventory']) - paths)
+            remaining_subsystems = sorted(set(audit['subsystems']) - subsystems)
+            # The completion verdict shares the proposal gate's denominators (review counterexample,
+            # PR #43): open partition questions keep the analysis incomplete on every read path.
+            open_questions = sorted(q for p in tx.scan('research_partitions') if p['audit_id'] == audit_id
+                                    for q in p['open_questions'])
+            return {'reviewed_paths': len(paths),
+                    'remaining_paths': remaining_paths,
+                    'remaining_subsystems': remaining_subsystems,
+                    'observed_assets': observed,
+                    'open_questions': open_questions,
+                    'whole_analysis_complete': not remaining_paths and not remaining_subsystems
+                    and observed['pending'] == 0 and not open_questions,
+                    'adoption_eligible': self._eligible(tx, audit),
+                    'reason': 'Eligibility requires complete coverage, dispositioned observed assets, '
+                              'no open partition questions and current independent approvals'}
+
+    def propose(self, audit_id, proposal: AdaptationProposal):
+        proposal = parse_record({'version': 1, 'kind': 'AdaptationProposal', 'record': asdict(proposal)})
+        require(self.workflow.org.actor(proposal.author, 'worker').team == 'research',
+                'Research proposal author required')
+        with self.store.transaction() as tx:
+            audit = tx.get('research_audits', audit_id)
+            require(audit is not None and audit['source'] == asdict(proposal.source),
+                    'Cross-repository proposal')
+            require(set(proposal.scope) <= {p['path'] for p in audit['inventory']}, 'Unknown proposal scope')
+            body = {'audit_id': audit_id, 'proposal': asdict(proposal), 'status': 'deferred'}
+            key = digest(body)
+            body['id'] = key
+            tx.put('research_adaptations', key, body)
+            if proposal.decision in {'adopt', 'adapt'}:
+                paths, systems = self._coverage(tx, audit)
+                require(paths == {e['path'] for e in audit['inventory']}
+                        and systems == set(audit['subsystems']), 'Audit coverage incomplete')
+                require(self._observed(tx, audit)['pending'] == 0, 'Observed assets await disposition')
+                from codex_harness.research.application.audit_gate import binding
+                require(not any(p['open_questions'] for p in tx.scan('research_partitions')
+                                if p['audit_id'] == audit_id), 'Open audit questions remain')
+                bound = binding(tx, audit_id, body['proposal'])
+                self._queue_review(tx, audit_id, body['proposal'], bound, 'lead:research')
+            return body
+
+
+    def execute(self, task, audit_id, command):
+        """Only the configured infrastructure runner can create receipt authority."""
+        require(self.runner is not None, 'Isolated runner unavailable')
+        with self.store.transaction() as tx:
+            current = self.workflow._owned(tx, task)
+            details = (current.get('input') or current.get('message', {}).get('what', {}).get('details', {}))
+            require(details.get('audit_id') == audit_id, 'Execution is not assigned this audit')
+            audit = tx.get('research_audits', audit_id)
+            require(audit is not None, 'Unknown audit')
+        receipt = self.runner.execute_assigned(SourceIdentity(**audit['source']), command, task, self.workflow)
+        receipt.validate()
+        require(asdict(receipt.source) == audit['source'], 'Runner source mismatch')
+        self.artifacts.inspect(receipt.output_ref)
+        body = {'audit_id': audit_id, 'task_id': task['id'], 'generation': task['generation'],
+                'receipt': asdict(receipt)}
+        key = digest(body)
+        with self.store.transaction() as tx:
+            self.workflow._owned(tx, task)
+            tx.put('research_receipts', key, body)
+        return {'id': key, **body}
+
+    def _queue_review(self, tx, audit_id, proposal, bound, actor):
+        from codex_harness.kernel.message import envelope
+        key = digest({'binding': bound, 'actor': actor})
+        message = envelope('review.result', 'lead:research', actor, 'audit_review',
+                           {'audit_id': audit_id}, 'audit:' + audit_id)
+        self.pending_decisions.queue(tx, {'id': key, 'actor': actor, 'phase': 'audit_review',
+            'input': {'audit_id': audit_id, 'proposal': proposal, 'binding': bound},
+            'message': message, 'status': 'pending', 'attempt': 0})
+
+    def review(self, task, review):
+        from codex_harness.research.application.audit_gate import binding
+        review = parse_record({'version': 1, 'kind': 'IndependentReview', 'record': asdict(review)})
+        with self.store.transaction() as tx:
+            current = self.workflow._owned(tx, task)
+            require(self.decision_validation is not None, 'Decision validation is not wired')
+            self.decision_validation.validate_decision(tx, current)
+            require(current.get('phase') == 'audit_review' and current['actor'] == review.actor,
+                    'Unauthorized audit reviewer')
+            data = current['input']
+            require(review.actor != data['proposal']['author'], 'Self review forbidden')
+            require(review.binding == data['binding'] == binding(tx, data['audit_id'], data['proposal']),
+                    'Stale audit review')
+            receipt = tx.get('research_receipts', review.execution_id)
+            require(receipt is not None and receipt['audit_id'] == data['audit_id']
+                    and receipt['task_id'] == task['id'] and receipt['generation'] == task['generation'],
+                    'Independent command inspection required')
+            self.artifacts.inspect(receipt['receipt']['output_ref'])
+            successful = receipt_successful(receipt['receipt'])
+            require(successful or not review.accepted,
+                    'Inspection-blocked review cannot approve' if receipt['receipt'].get('inspection_blocked')
+                    else 'Inspection did not pass (' + str(receipt['receipt'].get('outcome')) + '); review cannot approve')
+            key = digest(asdict(review))
+            existing = tx.get('research_reviews', key)
+            if existing is not None:
+                # Redelivery of an already recorded review is idempotent: it keeps its original
+                # sequence and time and never reorders a later rejection (review counterexample, PR #39).
+                return existing
+            # INV-RESEARCH-004: reviews are ordered per binding and actor; the latest one is the verdict.
+            siblings = [r for r in tx.scan('research_reviews')
+                        if r['review']['binding'] == review.binding and r['review']['actor'] == review.actor]
+            # An acceptance is bound to one inspection execution. Re-wording a review that reuses an
+            # execution already judged by this actor is not a new inspection, so it cannot re-approve
+            # after a rejection (review counterexample, PR #39). Rejections stay conservative.
+            require(not review.accepted or not any(r['review']['execution_id'] == review.execution_id
+                                                   for r in siblings),
+                    'Re-approval requires a new inspection execution')
+            record = {'audit_id': data['audit_id'], 'review': asdict(review),
+                      'status': 'reviewed' if successful else 'inspection-blocked',
+                      'sequence': 1 + max((r.get('sequence', 0) for r in siblings), default=0), 'at': utcnow()}
+            tx.put('research_reviews', key, record)
+            if not review.accepted:
+                approval = tx.get('research_approvals', review.binding)
+                if approval is not None and approval.get('status', 'approved') == 'approved':
+                    # A rejection after approval revokes it; an earlier PASS never outranks a later verdict.
+                    tx.put('research_approvals', review.binding, {**approval, 'status': 'revoked',
+                           'revoked_by': key, 'revoked_at': record['at']})
+                return record
+            if review.actor == 'lead:research':
+                self._queue_review(tx, data['audit_id'], data['proposal'], review.binding, 'conductor')
+            else:
+                require(any(r['review']['binding'] == review.binding
+                            and r['review']['actor'] == 'lead:research' and r['review']['accepted']
+                            for r in tx.scan('research_reviews')), 'Research lead approval required')
+                reviews = [r for r in tx.scan('research_reviews')
+                           if r['review']['binding'] == review.binding and r['review']['accepted']]
+                approval = {'audit_id': data['audit_id'], 'binding': review.binding,
+                            'proposal': data['proposal'],
+                            'reviews': [digest(r['review']) for r in reviews], 'status': 'approved'}
+                previous = tx.get('research_approvals', review.binding)
+                if previous is not None and previous.get('status') == 'revoked':
+                    approval['revocations'] = previous.get('revocations', []) + [
+                        {k: previous[k] for k in ('revoked_by', 'revoked_at')}]
+                tx.put('research_approvals', review.binding, approval)
+            return record
+
+    def _eligible(self, tx, audit):
+        from codex_harness.kernel.errors import ContractError
+        from codex_harness.research.application.audit_gate import inspect_approval
+        for key, row in [(r['binding'], r) for r in tx.scan('research_approvals')]:
+            if row['audit_id'] == audit['id']:
+                try:
+                    inspect_approval(tx, {'audit_id': audit['id'], 'audit_approval': key},
+                                     self.artifacts)
+                    return True
+                except (ContractError, OSError, ValueError):
+                    pass
+        return False
