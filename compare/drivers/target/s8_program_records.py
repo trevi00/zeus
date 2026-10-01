@@ -24,8 +24,8 @@ import s8_program_records  # noqa: E402
 from codex_harness.coordination.application import execution_fence, outbox_relay  # noqa: E402
 from codex_harness.coordination.application.autonomous import BUCKET as RUNS  # noqa: E402
 from codex_harness.coordination.application.fleet.state import BUCKET_JOBS  # noqa: E402
-from codex_harness.coordination.application.research_launch_facts import (
-    ResearchLaunchFacts,  # noqa: E402
+from codex_harness.coordination.application.research_launch_facts import (  # noqa: E402
+    ResearchLaunchFacts,
 )
 from codex_harness.coordination.domain import owner_actions  # noqa: E402
 from codex_harness.intake.application.portfolio import Portfolio, family_id  # noqa: E402
