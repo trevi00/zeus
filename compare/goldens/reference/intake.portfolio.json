@@ -1,0 +1,3561 @@
+{
+ "cases_per_group": {
+  "g1_definitions": 61,
+  "g2_bindings_investigations": 58,
+  "g3_acceptances_followups": 70,
+  "g4_status_activity": 26,
+  "g5_reconcile_adapter": 20
+ },
+ "g1_definitions": {
+  "accepted_criteria_16": {
+   "accepted": true,
+   "sha256": "6096bd68a178767b6c79487dc93543c6e34711281571297d9733e90e0499d981"
+  },
+  "accepted_id_64_chars": {
+   "accepted": true,
+   "sha256": "2fa64f9b2877e5e330824774b1ce1a5a5ccb662a514f22bd7c15ac2eb0e29edc"
+  },
+  "accepted_id_unicode_alphanumeric": {
+   "accepted": true,
+   "sha256": "291ea6697840fdd16b546390d85d018c73b68de63c314061bec8894cdebe58aa"
+  },
+  "accepted_id_with_dot_dash_underscore": {
+   "accepted": true,
+   "sha256": "ad97f56845dd43e7bd8ed6649b586f65745118208d2140f71d22ddcffc6d7c2d"
+  },
+  "accepted_outcome_600_chars": {
+   "accepted": true,
+   "sha256": "378044f461121b52d60970b0d0eb6e6d70315a5210e87246f520de202757cb73"
+  },
+  "accepted_outcome_newline_allowed": {
+   "accepted": true,
+   "sha256": "4605f8bd34f7ee0a87d8cb15680eb677586a223292fea4721c581190e7fb33fe"
+  },
+  "accepted_projects_16": {
+   "accepted": true,
+   "sha256": "c2676947b5c1ad1672b761421398f2763cc199b7e50eee115272e87308833c69"
+  },
+  "accepted_source_ref_nested": {
+   "accepted": true,
+   "sha256": "50d09aababa58aeea7e41329666f8d3bf2f440722eeadb1e32d5cdfa383fd80c"
+  },
+  "accepted_title_120_chars": {
+   "accepted": true,
+   "sha256": "f27ecb7e51264c5a9adc5f157bd138ef16962ee19d1193b834b80e117550eb6e"
+  },
+  "accepted_title_padded_keeps_whitespace": {
+   "accepted": true,
+   "sha256": "5cc637c51eac459072ed8821b09ade96c357da16ca54240fc67e5bf64bb0aba3"
+  },
+  "adapter_portfolio_default_definitions_status_equal": {
+   "equal": true
+  },
+  "m7_constructor_refusals_name_a_field_never_a_value": [
+   {
+    "agrees_with_validate": true,
+    "field": "schema",
+    "leaks_value": false,
+    "raised": "PortfolioRefused",
+    "reason_code": "definitions_invalid",
+    "starts_with_definitions": true
+   },
+   {
+    "agrees_with_validate": true,
+    "field": "projects",
+    "leaks_value": false,
+    "raised": "PortfolioRefused",
+    "reason_code": "definitions_invalid",
+    "starts_with_definitions": true
+   },
+   {
+    "agrees_with_validate": true,
+    "field": "projects",
+    "leaks_value": false,
+    "raised": "PortfolioRefused",
+    "reason_code": "definitions_invalid",
+    "starts_with_definitions": true
+   },
+   {
+    "agrees_with_validate": true,
+    "field": "projects[].id",
+    "leaks_value": false,
+    "raised": "PortfolioRefused",
+    "reason_code": "definitions_invalid",
+    "starts_with_definitions": true
+   },
+   {
+    "agrees_with_validate": true,
+    "field": "projects[].title",
+    "leaks_value": false,
+    "raised": "PortfolioRefused",
+    "reason_code": "definitions_invalid",
+    "starts_with_definitions": true
+   },
+   {
+    "agrees_with_validate": true,
+    "field": "projects[].source_ref",
+    "leaks_value": false,
+    "raised": "PortfolioRefused",
+    "reason_code": "definitions_invalid",
+    "starts_with_definitions": true
+   },
+   {
+    "agrees_with_validate": true,
+    "field": "projects[].source_ref",
+    "leaks_value": false,
+    "raised": "PortfolioRefused",
+    "reason_code": "definitions_invalid",
+    "starts_with_definitions": true
+   },
+   {
+    "agrees_with_validate": true,
+    "field": "projects[].criteria",
+    "leaks_value": false,
+    "raised": "PortfolioRefused",
+    "reason_code": "definitions_invalid",
+    "starts_with_definitions": true
+   },
+   {
+    "agrees_with_validate": true,
+    "field": "projects[].criteria[].text",
+    "leaks_value": false,
+    "raised": "PortfolioRefused",
+    "reason_code": "definitions_invalid",
+    "starts_with_definitions": true
+   },
+   {
+    "agrees_with_validate": true,
+    "field": "projects[].criteria[]",
+    "leaks_value": false,
+    "raised": "PortfolioRefused",
+    "reason_code": "definitions_invalid",
+    "starts_with_definitions": true
+   },
+   {
+    "agrees_with_validate": true,
+    "field": "projects[].criteria[].id",
+    "leaks_value": false,
+    "raised": "PortfolioRefused",
+    "reason_code": "definitions_duplicate",
+    "starts_with_definitions": true
+   },
+   {
+    "agrees_with_validate": true,
+    "field": "projects[].id",
+    "leaks_value": false,
+    "raised": "PortfolioRefused",
+    "reason_code": "definitions_duplicate",
+    "starts_with_definitions": true
+   },
+   {
+    "agrees_with_validate": true,
+    "field": "definitions",
+    "leaks_value": false,
+    "raised": "PortfolioRefused",
+    "reason_code": "definitions_invalid",
+    "starts_with_definitions": true
+   }
+  ],
+  "m7_every_goal_is_visible_before_any_binding": {
+   "definition_sha256_matches": true,
+   "investigations": [],
+   "investigations_truncated": false,
+   "progress": [
+    [],
+    false
+   ],
+   "project_ids_in_order": true,
+   "projects": [
+    {
+     "activity": {
+      "accepted": 0,
+      "historical_failed": 0,
+      "mode": "not_started",
+      "queued": 0,
+      "running": 0,
+      "unknown": 0,
+      "unresolved_failed": 0
+     },
+     "counts": {
+      "criteria_accepted": 0,
+      "criteria_total": 3,
+      "jobs_total": 0
+     },
+     "criteria_refs_empty": true,
+     "criteria_statuses": [
+      "pending"
+     ],
+     "id": "local-absorption",
+     "jobs": [],
+     "jobs_truncated": false
+    },
+    {
+     "activity": {
+      "accepted": 0,
+      "historical_failed": 0,
+      "mode": "not_started",
+      "queued": 0,
+      "running": 0,
+      "unknown": 0,
+      "unresolved_failed": 0
+     },
+     "counts": {
+      "criteria_accepted": 0,
+      "criteria_total": 3,
+      "jobs_total": 0
+     },
+     "criteria_refs_empty": true,
+     "criteria_statuses": [
+      "pending"
+     ],
+     "id": "sterk-migration",
+     "jobs": [],
+     "jobs_truncated": false
+    },
+    {
+     "activity": {
+      "accepted": 0,
+      "historical_failed": 0,
+      "mode": "not_started",
+      "queued": 0,
+      "running": 0,
+      "unknown": 0,
+      "unresolved_failed": 0
+     },
+     "counts": {
+      "criteria_accepted": 0,
+      "criteria_total": 3,
+      "jobs_total": 0
+     },
+     "criteria_refs_empty": true,
+     "criteria_statuses": [
+      "pending"
+     ],
+     "id": "research-improvement",
+     "jobs": [],
+     "jobs_truncated": false
+    }
+   ],
+   "schema": "urn:zeus:portfolio-status:1",
+   "store_after": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945",
+   "unbound_jobs": 0,
+   "unclassified_failures": 0
+  },
+  "packaged_definitions": {
+   "constants": {
+    "DEFINITIONS_SCHEMA": "urn:zeus:portfolio-definitions:1",
+    "STATUS_SCHEMA": "urn:zeus:portfolio-status:1",
+    "limits": {
+     "MAX_CRITERIA": 16,
+     "MAX_ID": 64,
+     "MAX_PROJECTS": 16,
+     "MAX_REF": 200,
+     "MAX_REFS": 10,
+     "MAX_TEXT": 600,
+     "MAX_TITLE": 120
+    }
+   },
+   "name": "operating-portfolio-v1.json",
+   "projects": [
+    [
+     "local-absorption",
+     [
+      "coverage",
+      "adoption",
+      "operation"
+     ]
+    ],
+    [
+     "sterk-migration",
+     [
+      "projects",
+      "coverage",
+      "acceptance"
+     ]
+    ],
+    [
+     "research-improvement",
+     [
+      "recurrence",
+      "research",
+      "verified-loop"
+     ]
+    ]
+   ],
+   "schema": "urn:zeus:portfolio-definitions:1",
+   "sha256": "99fe3b7ed37013b24eae081ce2e9b929fbc76c29c9f0e14ea6c546cb5f3c19ec"
+  },
+  "portfolio_cached_form_two_instances_agree": {
+   "equal_sha": true
+  },
+  "refused_criteria_17": {
+   "field": "projects[].criteria",
+   "leaks_value": false,
+   "message": "portfolio refused: definitions_invalid (projects[].criteria)",
+   "raised": "PortfolioRefused",
+   "reason_code": "definitions_invalid"
+  },
+  "refused_criteria_duplicate_ids": {
+   "field": "projects[].criteria[].id",
+   "leaks_value": false,
+   "message": "portfolio refused: definitions_duplicate (projects[].criteria[].id)",
+   "raised": "PortfolioRefused",
+   "reason_code": "definitions_duplicate"
+  },
+  "refused_criteria_empty": {
+   "field": "projects[].criteria",
+   "leaks_value": false,
+   "message": "portfolio refused: definitions_invalid (projects[].criteria)",
+   "raised": "PortfolioRefused",
+   "reason_code": "definitions_invalid"
+  },
+  "refused_criteria_not_a_list": {
+   "field": "projects[].criteria",
+   "leaks_value": false,
+   "message": "portfolio refused: definitions_invalid (projects[].criteria)",
+   "raised": "PortfolioRefused",
+   "reason_code": "definitions_invalid"
+  },
+  "refused_criterion_extra_key": {
+   "field": "projects[].criteria[]",
+   "leaks_value": false,
+   "message": "portfolio refused: definitions_invalid (projects[].criteria[])",
+   "raised": "PortfolioRefused",
+   "reason_code": "definitions_invalid"
+  },
+  "refused_criterion_id_bad": {
+   "field": "projects[].criteria[].id",
+   "leaks_value": false,
+   "message": "portfolio refused: definitions_invalid (projects[].criteria[].id)",
+   "raised": "PortfolioRefused",
+   "reason_code": "definitions_invalid"
+  },
+  "refused_criterion_missing_key": {
+   "field": "projects[].criteria[]",
+   "leaks_value": false,
+   "message": "portfolio refused: definitions_invalid (projects[].criteria[])",
+   "raised": "PortfolioRefused",
+   "reason_code": "definitions_invalid"
+  },
+  "refused_criterion_not_a_dict": {
+   "field": "projects[].criteria[]",
+   "leaks_value": false,
+   "message": "portfolio refused: definitions_invalid (projects[].criteria[])",
+   "raised": "PortfolioRefused",
+   "reason_code": "definitions_invalid"
+  },
+  "refused_criterion_text_601": {
+   "field": "projects[].criteria[].text",
+   "leaks_value": false,
+   "message": "portfolio refused: definitions_invalid (projects[].criteria[].text)",
+   "raised": "PortfolioRefused",
+   "reason_code": "definitions_invalid"
+  },
+  "refused_criterion_text_empty": {
+   "field": "projects[].criteria[].text",
+   "leaks_value": false,
+   "message": "portfolio refused: definitions_invalid (projects[].criteria[].text)",
+   "raised": "PortfolioRefused",
+   "reason_code": "definitions_invalid"
+  },
+  "refused_id_65_chars": {
+   "field": "projects[].id",
+   "leaks_value": false,
+   "message": "portfolio refused: definitions_invalid (projects[].id)",
+   "raised": "PortfolioRefused",
+   "reason_code": "definitions_invalid"
+  },
+  "refused_id_bool": {
+   "field": "projects[].id",
+   "leaks_value": false,
+   "message": "portfolio refused: definitions_invalid (projects[].id)",
+   "raised": "PortfolioRefused",
+   "reason_code": "definitions_invalid"
+  },
+  "refused_id_empty": {
+   "field": "projects[].id",
+   "leaks_value": false,
+   "message": "portfolio refused: definitions_invalid (projects[].id)",
+   "raised": "PortfolioRefused",
+   "reason_code": "definitions_invalid"
+  },
+  "refused_id_not_a_string": {
+   "field": "projects[].id",
+   "leaks_value": false,
+   "message": "portfolio refused: definitions_invalid (projects[].id)",
+   "raised": "PortfolioRefused",
+   "reason_code": "definitions_invalid"
+  },
+  "refused_id_starts_with_dot": {
+   "field": "projects[].id",
+   "leaks_value": false,
+   "message": "portfolio refused: definitions_invalid (projects[].id)",
+   "raised": "PortfolioRefused",
+   "reason_code": "definitions_invalid"
+  },
+  "refused_id_starts_with_underscore": {
+   "field": "projects[].id",
+   "leaks_value": false,
+   "message": "portfolio refused: definitions_invalid (projects[].id)",
+   "raised": "PortfolioRefused",
+   "reason_code": "definitions_invalid"
+  },
+  "refused_id_with_space_and_canary": {
+   "field": "projects[].id",
+   "leaks_value": false,
+   "message": "portfolio refused: definitions_invalid (projects[].id)",
+   "raised": "PortfolioRefused",
+   "reason_code": "definitions_invalid"
+  },
+  "refused_outcome_601_chars": {
+   "field": "projects[].outcome",
+   "leaks_value": false,
+   "message": "portfolio refused: definitions_invalid (projects[].outcome)",
+   "raised": "PortfolioRefused",
+   "reason_code": "definitions_invalid"
+  },
+  "refused_outcome_empty": {
+   "field": "projects[].outcome",
+   "leaks_value": false,
+   "message": "portfolio refused: definitions_invalid (projects[].outcome)",
+   "raised": "PortfolioRefused",
+   "reason_code": "definitions_invalid"
+  },
+  "refused_project_extra_key": {
+   "field": "projects[]",
+   "leaks_value": false,
+   "message": "portfolio refused: definitions_invalid (projects[])",
+   "raised": "PortfolioRefused",
+   "reason_code": "definitions_invalid"
+  },
+  "refused_project_missing_key": {
+   "field": "projects[]",
+   "leaks_value": false,
+   "message": "portfolio refused: definitions_invalid (projects[])",
+   "raised": "PortfolioRefused",
+   "reason_code": "definitions_invalid"
+  },
+  "refused_project_not_a_dict": {
+   "field": "projects[]",
+   "leaks_value": false,
+   "message": "portfolio refused: definitions_invalid (projects[])",
+   "raised": "PortfolioRefused",
+   "reason_code": "definitions_invalid"
+  },
+  "refused_projects_17": {
+   "field": "projects",
+   "leaks_value": false,
+   "message": "portfolio refused: definitions_invalid (projects)",
+   "raised": "PortfolioRefused",
+   "reason_code": "definitions_invalid"
+  },
+  "refused_projects_duplicate_ids": {
+   "field": "projects[].id",
+   "leaks_value": false,
+   "message": "portfolio refused: definitions_duplicate (projects[].id)",
+   "raised": "PortfolioRefused",
+   "reason_code": "definitions_duplicate"
+  },
+  "refused_projects_duplicate_ids_with_other_valid": {
+   "field": "projects[].id",
+   "leaks_value": false,
+   "message": "portfolio refused: definitions_duplicate (projects[].id)",
+   "raised": "PortfolioRefused",
+   "reason_code": "definitions_duplicate"
+  },
+  "refused_projects_empty": {
+   "field": "projects",
+   "leaks_value": false,
+   "message": "portfolio refused: definitions_invalid (projects)",
+   "raised": "PortfolioRefused",
+   "reason_code": "definitions_invalid"
+  },
+  "refused_projects_not_a_list": {
+   "field": "projects",
+   "leaks_value": false,
+   "message": "portfolio refused: definitions_invalid (projects)",
+   "raised": "PortfolioRefused",
+   "reason_code": "definitions_invalid"
+  },
+  "refused_schema_not_a_string": {
+   "field": "schema",
+   "leaks_value": false,
+   "message": "portfolio refused: definitions_invalid (schema)",
+   "raised": "PortfolioRefused",
+   "reason_code": "definitions_invalid"
+  },
+  "refused_schema_other_version": {
+   "field": "schema",
+   "leaks_value": false,
+   "message": "portfolio refused: definitions_invalid (schema)",
+   "raised": "PortfolioRefused",
+   "reason_code": "definitions_invalid"
+  },
+  "refused_source_ref_absolute": {
+   "field": "projects[].source_ref",
+   "leaks_value": false,
+   "message": "portfolio refused: definitions_invalid (projects[].source_ref)",
+   "raised": "PortfolioRefused",
+   "reason_code": "definitions_invalid"
+  },
+  "refused_source_ref_empty": {
+   "field": "projects[].source_ref",
+   "leaks_value": false,
+   "message": "portfolio refused: definitions_invalid (projects[].source_ref)",
+   "raised": "PortfolioRefused",
+   "reason_code": "definitions_invalid"
+  },
+  "refused_source_ref_not_a_string": {
+   "field": "projects[].source_ref",
+   "leaks_value": false,
+   "message": "portfolio refused: definitions_invalid (projects[].source_ref)",
+   "raised": "PortfolioRefused",
+   "reason_code": "definitions_invalid"
+  },
+  "refused_source_ref_parent": {
+   "field": "projects[].source_ref",
+   "leaks_value": false,
+   "message": "portfolio refused: definitions_invalid (projects[].source_ref)",
+   "raised": "PortfolioRefused",
+   "reason_code": "definitions_invalid"
+  },
+  "refused_title_121_chars": {
+   "field": "projects[].title",
+   "leaks_value": false,
+   "message": "portfolio refused: definitions_invalid (projects[].title)",
+   "raised": "PortfolioRefused",
+   "reason_code": "definitions_invalid"
+  },
+  "refused_title_blank": {
+   "field": "projects[].title",
+   "leaks_value": false,
+   "message": "portfolio refused: definitions_invalid (projects[].title)",
+   "raised": "PortfolioRefused",
+   "reason_code": "definitions_invalid"
+  },
+  "refused_title_canary_times_40": {
+   "field": "projects[].title",
+   "leaks_value": false,
+   "message": "portfolio refused: definitions_invalid (projects[].title)",
+   "raised": "PortfolioRefused",
+   "reason_code": "definitions_invalid"
+  },
+  "refused_title_control_char": {
+   "field": "projects[].title",
+   "leaks_value": false,
+   "message": "portfolio refused: definitions_invalid (projects[].title)",
+   "raised": "PortfolioRefused",
+   "reason_code": "definitions_invalid"
+  },
+  "refused_title_empty": {
+   "field": "projects[].title",
+   "leaks_value": false,
+   "message": "portfolio refused: definitions_invalid (projects[].title)",
+   "raised": "PortfolioRefused",
+   "reason_code": "definitions_invalid"
+  },
+  "refused_title_not_a_string": {
+   "field": "projects[].title",
+   "leaks_value": false,
+   "message": "portfolio refused: definitions_invalid (projects[].title)",
+   "raised": "PortfolioRefused",
+   "reason_code": "definitions_invalid"
+  },
+  "refused_top_extra_key": {
+   "field": "definitions",
+   "leaks_value": false,
+   "message": "portfolio refused: definitions_invalid (definitions)",
+   "raised": "PortfolioRefused",
+   "reason_code": "definitions_invalid"
+  },
+  "refused_top_missing_projects": {
+   "field": "definitions",
+   "leaks_value": false,
+   "message": "portfolio refused: definitions_invalid (definitions)",
+   "raised": "PortfolioRefused",
+   "reason_code": "definitions_invalid"
+  },
+  "refused_top_missing_schema": {
+   "field": "definitions",
+   "leaks_value": false,
+   "message": "portfolio refused: definitions_invalid (definitions)",
+   "raised": "PortfolioRefused",
+   "reason_code": "definitions_invalid"
+  },
+  "refused_top_not_a_dict": {
+   "field": "definitions",
+   "leaks_value": false,
+   "message": "portfolio refused: definitions_invalid (definitions)",
+   "raised": "PortfolioRefused",
+   "reason_code": "definitions_invalid"
+  },
+  "validate_evidence": {
+   "blank_item": {
+    "field": "evidence_refs[]",
+    "leaks_value": false,
+    "message": "portfolio refused: evidence_invalid (evidence_refs[])",
+    "raised": "PortfolioRefused",
+    "reason_code": "evidence_invalid"
+   },
+   "bytes_item": {
+    "field": "evidence_refs[]",
+    "leaks_value": false,
+    "message": "portfolio refused: evidence_invalid (evidence_refs[])",
+    "raised": "PortfolioRefused",
+    "reason_code": "evidence_invalid"
+   },
+   "duplicate_after_distinct": {
+    "field": "evidence_refs[]",
+    "leaks_value": false,
+    "message": "portfolio refused: evidence_invalid (evidence_refs[])",
+    "raised": "PortfolioRefused",
+    "reason_code": "evidence_invalid"
+   },
+   "duplicates": {
+    "field": "evidence_refs[]",
+    "leaks_value": false,
+    "message": "portfolio refused: evidence_invalid (evidence_refs[])",
+    "raised": "PortfolioRefused",
+    "reason_code": "evidence_invalid"
+   },
+   "eleven": {
+    "field": "evidence_refs",
+    "leaks_value": false,
+    "message": "portfolio refused: evidence_invalid (evidence_refs)",
+    "raised": "PortfolioRefused",
+    "reason_code": "evidence_invalid"
+   },
+   "empty": {
+    "field": "evidence_refs",
+    "leaks_value": false,
+    "message": "portfolio refused: evidence_invalid (evidence_refs)",
+    "raised": "PortfolioRefused",
+    "reason_code": "evidence_invalid"
+   },
+   "empty_string_item": {
+    "field": "evidence_refs[]",
+    "leaks_value": false,
+    "message": "portfolio refused: evidence_invalid (evidence_refs[])",
+    "raised": "PortfolioRefused",
+    "reason_code": "evidence_invalid"
+   },
+   "item_201_chars": {
+    "field": "evidence_refs[]",
+    "leaks_value": false,
+    "message": "portfolio refused: evidence_invalid (evidence_refs[])",
+    "raised": "PortfolioRefused",
+    "reason_code": "evidence_invalid"
+   },
+   "item_canary_times_40": {
+    "field": "evidence_refs[]",
+    "leaks_value": false,
+    "message": "portfolio refused: evidence_invalid (evidence_refs[])",
+    "raised": "PortfolioRefused",
+    "reason_code": "evidence_invalid"
+   },
+   "item_with_control_char": {
+    "field": "evidence_refs[]",
+    "leaks_value": false,
+    "message": "portfolio refused: evidence_invalid (evidence_refs[])",
+    "raised": "PortfolioRefused",
+    "reason_code": "evidence_invalid"
+   },
+   "item_with_newline": {
+    "field": "evidence_refs[]",
+    "leaks_value": false,
+    "message": "portfolio refused: evidence_invalid (evidence_refs[])",
+    "raised": "PortfolioRefused",
+    "reason_code": "evidence_invalid"
+   },
+   "non_string_item": {
+    "field": "evidence_refs[]",
+    "leaks_value": false,
+    "message": "portfolio refused: evidence_invalid (evidence_refs[])",
+    "raised": "PortfolioRefused",
+    "reason_code": "evidence_invalid"
+   },
+   "none": {
+    "field": "evidence_refs",
+    "leaks_value": false,
+    "message": "portfolio refused: evidence_invalid (evidence_refs)",
+    "raised": "PortfolioRefused",
+    "reason_code": "evidence_invalid"
+   },
+   "not_a_list_string": {
+    "field": "evidence_refs",
+    "leaks_value": false,
+    "message": "portfolio refused: evidence_invalid (evidence_refs)",
+    "raised": "PortfolioRefused",
+    "reason_code": "evidence_invalid"
+   },
+   "not_a_list_tuple": {
+    "field": "evidence_refs",
+    "leaks_value": false,
+    "message": "portfolio refused: evidence_invalid (evidence_refs)",
+    "raised": "PortfolioRefused",
+    "reason_code": "evidence_invalid"
+   },
+   "ok_200_chars": {
+    "accepted": true,
+    "sha256": "4e7d5fb3a8aefa868471abd6aa0125d55193e1d987b883999e53c631c0353937"
+   },
+   "ok_one": {
+    "accepted": true,
+    "sha256": "cd65ea2c2ad99e94a85b1b6df72efef9cb2ed0ae933a60c32ce16317f7d7d6aa"
+   },
+   "ok_padded_kept": {
+    "accepted": true,
+    "sha256": "55594044b5e0df5ed1da95004abfd885efbab14929e9fd19e486782c29a3e462"
+   },
+   "ok_ten": {
+    "accepted": true,
+    "sha256": "d7c5c1203de305bcd9dd31e9964a04c147de3b2efa03338316665c74dbb230a5"
+   },
+   "ok_two": {
+    "accepted": true,
+    "sha256": "85719c87c116d627d73137880343ebb0a5aa8ef53b67a61109d13d15adc19ee6"
+   },
+   "returns_a_copy": {
+    "equal": true,
+    "same_object": false
+   }
+  },
+  "validate_identical_form": {
+   "definition_sha256_is_digest_of_definitions": true,
+   "equal_again": true,
+   "equal_to_input": true,
+   "portfolio_definitions_equal_validated": true,
+   "projects_are_copies": true,
+   "same_object_as_input": false,
+   "same_object_twice": false,
+   "sha256": "99fe3b7ed37013b24eae081ce2e9b929fbc76c29c9f0e14ea6c546cb5f3c19ec"
+  },
+  "validate_never_mutates_the_input": {
+   "unchanged": true
+  }
+ },
+ "g2_bindings_investigations": {
+  "bind_criterion_of_another_project_is_unknown": {
+   "field": "criterion_id",
+   "message": "portfolio refused: criterion_unknown (criterion_id)",
+   "nothing_written": true,
+   "raised": "PortfolioRefused",
+   "reason_code": "criterion_unknown",
+   "store_after": "413fcffb6d96c2391aa513bba04d67806ca270c9731c6ff5e0d42ae2f0adfc20",
+   "store_before": "413fcffb6d96c2391aa513bba04d67806ca270c9731c6ff5e0d42ae2f0adfc20"
+  },
+  "bind_criterion_unknown": {
+   "field": "criterion_id",
+   "message": "portfolio refused: criterion_unknown (criterion_id)",
+   "nothing_written": true,
+   "raised": "PortfolioRefused",
+   "reason_code": "criterion_unknown",
+   "store_after": "413fcffb6d96c2391aa513bba04d67806ca270c9731c6ff5e0d42ae2f0adfc20",
+   "store_before": "413fcffb6d96c2391aa513bba04d67806ca270c9731c6ff5e0d42ae2f0adfc20"
+  },
+  "bind_first": {
+   "nothing_written": false,
+   "store_after": "b96025db086943c6d726ed44c4d8b9c6f71e5cba081f3cc722e8ad369dfd005b",
+   "store_before": "413fcffb6d96c2391aa513bba04d67806ca270c9731c6ff5e0d42ae2f0adfc20",
+   "value": {
+    "binding": {
+     "created_at": "2026-09-20T00:00:00+00:00",
+     "criterion_id": "projects",
+     "id": "op-1",
+     "job_id": "op-1",
+     "project_id": "sterk-migration",
+     "recorded_by": "owner"
+    },
+    "bound": true,
+    "cached": false
+   }
+  },
+  "bind_identical_replay_is_cached": {
+   "nothing_written": true,
+   "store_after": "b96025db086943c6d726ed44c4d8b9c6f71e5cba081f3cc722e8ad369dfd005b",
+   "store_before": "b96025db086943c6d726ed44c4d8b9c6f71e5cba081f3cc722e8ad369dfd005b",
+   "value": {
+    "binding": {
+     "created_at": "2026-09-20T00:00:00+00:00",
+     "criterion_id": "projects",
+     "id": "op-1",
+     "job_id": "op-1",
+     "project_id": "sterk-migration",
+     "recorded_by": "owner"
+    },
+    "bound": true,
+    "cached": true
+   }
+  },
+  "bind_invalid_job_id_bytes": {
+   "field": "job_id",
+   "message": "portfolio refused: binding_invalid (job_id)",
+   "nothing_written": true,
+   "raised": "PortfolioRefused",
+   "reason_code": "binding_invalid",
+   "store_after": "413fcffb6d96c2391aa513bba04d67806ca270c9731c6ff5e0d42ae2f0adfc20",
+   "store_before": "413fcffb6d96c2391aa513bba04d67806ca270c9731c6ff5e0d42ae2f0adfc20"
+  },
+  "bind_invalid_job_id_empty": {
+   "field": "job_id",
+   "message": "portfolio refused: binding_invalid (job_id)",
+   "nothing_written": true,
+   "raised": "PortfolioRefused",
+   "reason_code": "binding_invalid",
+   "store_after": "413fcffb6d96c2391aa513bba04d67806ca270c9731c6ff5e0d42ae2f0adfc20",
+   "store_before": "413fcffb6d96c2391aa513bba04d67806ca270c9731c6ff5e0d42ae2f0adfc20"
+  },
+  "bind_invalid_job_id_int": {
+   "field": "job_id",
+   "message": "portfolio refused: binding_invalid (job_id)",
+   "nothing_written": true,
+   "raised": "PortfolioRefused",
+   "reason_code": "binding_invalid",
+   "store_after": "413fcffb6d96c2391aa513bba04d67806ca270c9731c6ff5e0d42ae2f0adfc20",
+   "store_before": "413fcffb6d96c2391aa513bba04d67806ca270c9731c6ff5e0d42ae2f0adfc20"
+  },
+  "bind_invalid_job_id_none": {
+   "field": "job_id",
+   "message": "portfolio refused: binding_invalid (job_id)",
+   "nothing_written": true,
+   "raised": "PortfolioRefused",
+   "reason_code": "binding_invalid",
+   "store_after": "413fcffb6d96c2391aa513bba04d67806ca270c9731c6ff5e0d42ae2f0adfc20",
+   "store_before": "413fcffb6d96c2391aa513bba04d67806ca270c9731c6ff5e0d42ae2f0adfc20"
+  },
+  "bind_job_unknown": {
+   "field": "job_id",
+   "message": "portfolio refused: job_unknown (job_id)",
+   "nothing_written": true,
+   "raised": "PortfolioRefused",
+   "reason_code": "job_unknown",
+   "store_after": "413fcffb6d96c2391aa513bba04d67806ca270c9731c6ff5e0d42ae2f0adfc20",
+   "store_before": "413fcffb6d96c2391aa513bba04d67806ca270c9731c6ff5e0d42ae2f0adfc20"
+  },
+  "bind_leaves_the_job_rows_untouched": {
+   "buckets": [
+    "fleet_jobs",
+    "portfolio_bindings"
+   ],
+   "jobs_unchanged": true
+  },
+  "bind_other_criterion_conflicts": {
+   "field": null,
+   "message": "portfolio refused: binding_conflict",
+   "nothing_written": true,
+   "raised": "PortfolioRefused",
+   "reason_code": "binding_conflict",
+   "store_after": "b96025db086943c6d726ed44c4d8b9c6f71e5cba081f3cc722e8ad369dfd005b",
+   "store_before": "b96025db086943c6d726ed44c4d8b9c6f71e5cba081f3cc722e8ad369dfd005b"
+  },
+  "bind_other_target_conflicts": {
+   "field": null,
+   "message": "portfolio refused: binding_conflict",
+   "nothing_written": true,
+   "raised": "PortfolioRefused",
+   "reason_code": "binding_conflict",
+   "store_after": "b96025db086943c6d726ed44c4d8b9c6f71e5cba081f3cc722e8ad369dfd005b",
+   "store_before": "b96025db086943c6d726ed44c4d8b9c6f71e5cba081f3cc722e8ad369dfd005b"
+  },
+  "bind_project_unknown": {
+   "field": "project_id",
+   "message": "portfolio refused: project_unknown (project_id)",
+   "nothing_written": true,
+   "raised": "PortfolioRefused",
+   "reason_code": "project_unknown",
+   "store_after": "413fcffb6d96c2391aa513bba04d67806ca270c9731c6ff5e0d42ae2f0adfc20",
+   "store_before": "413fcffb6d96c2391aa513bba04d67806ca270c9731c6ff5e0d42ae2f0adfc20"
+  },
+  "bind_projection": {
+   "counts": {
+    "criteria_accepted": 0,
+    "criteria_total": 3,
+    "jobs_total": 1
+   },
+   "jobs": [
+    {
+     "criterion_id": "projects",
+     "id": "op-1",
+     "lane": "a",
+     "reason_code": null,
+     "status": "queued",
+     "updated_at": "2026-09-20T00:00:00+00:00"
+    }
+   ],
+   "unbound_jobs": 0
+  },
+  "bind_records_the_clock_read": {
+   "created_at": "2026-09-20T05:00:00+00:00"
+  },
+  "bind_returned_record_is_a_copy": {
+   "stored_project": "sterk-migration"
+  },
+  "bind_row_in_the_store": {
+   "created_at": "2026-09-20T00:00:00+00:00",
+   "criterion_id": "projects",
+   "id": "op-1",
+   "job_id": "op-1",
+   "project_id": "sterk-migration",
+   "recorded_by": "owner"
+  },
+  "bind_target_is_checked_before_the_job_id": {
+   "field": "project_id",
+   "message": "portfolio refused: project_unknown (project_id)",
+   "nothing_written": true,
+   "raised": "PortfolioRefused",
+   "reason_code": "project_unknown",
+   "store_after": "413fcffb6d96c2391aa513bba04d67806ca270c9731c6ff5e0d42ae2f0adfc20",
+   "store_before": "413fcffb6d96c2391aa513bba04d67806ca270c9731c6ff5e0d42ae2f0adfc20"
+  },
+  "classified_failure": {
+   "accepted": null,
+   "dispatching": null,
+   "exhausted": null,
+   "failed_empty_reason": null,
+   "failed_missing_reason": null,
+   "failed_non_string_reason": null,
+   "failed_none_reason": null,
+   "failed_safe": [
+    "failed",
+    "child_refused"
+   ],
+   "failed_unknown_code": null,
+   "failed_unsafe_reason": null,
+   "no_status": null,
+   "queued": null,
+   "rejected_safe": [
+    "rejected",
+    "lead_rejected"
+   ],
+   "unknown_status": null
+  },
+  "disposition_applies_to_a_legacy_row_without_a_kind": {
+   "nothing_written": false,
+   "store_after": "9080b08725d0c304a708bc6521c6784faddb0099b06507557f090b6e0fa2230c",
+   "store_before": "8ea514cadeca09a821d05ac4819379b20b840c9e72124607c01865bbadc38e3b",
+   "value": {
+    "cached": false,
+    "candidate": {
+     "decided_at": "2026-09-20T05:00:00+00:00",
+     "evidence_refs": [
+      "sha256:dddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddd",
+      "docs/zeus/operations/operating-portfolio-001/SPEC.md"
+     ],
+     "id": "legacy",
+     "state": "deferred",
+     "updated_at": "2026-09-20T05:00:00+00:00"
+    },
+    "decided": true
+   }
+  },
+  "disposition_applies_to_a_progress_kind_row_the_same_way": {
+   "nothing_written": false,
+   "store_after": "baabd90a1532ce1583b6f74bd849f77b45628e4bdba897437d4e4e3ec002e77b",
+   "store_before": "13fd3436ef9f4f787f1d09767d06227ea341050c7dcaa56af14a178010a1bdb4",
+   "value": {
+    "cached": false,
+    "candidate": {
+     "decided_at": "2026-09-20T05:00:00+00:00",
+     "evidence_refs": [
+      "sha256:dddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddd",
+      "docs/zeus/operations/operating-portfolio-001/SPEC.md"
+     ],
+     "id": "p-1",
+     "kind": "audit_progress",
+     "state": "researched",
+     "updated_at": "2026-09-20T05:00:00+00:00"
+    },
+    "decided": true
+   }
+  },
+  "disposition_candidate_unknown": {
+   "field": "candidate_id",
+   "message": "portfolio refused: candidate_unknown (candidate_id)",
+   "nothing_written": true,
+   "raised": "PortfolioRefused",
+   "reason_code": "candidate_unknown",
+   "store_after": "4f4dc27559ff657e0d1f45cae07e3e0c99075465d1ee13cc5cb5f52c0aa77b7b",
+   "store_before": "4f4dc27559ff657e0d1f45cae07e3e0c99075465d1ee13cc5cb5f52c0aa77b7b"
+  },
+  "disposition_evidence_is_checked_before_the_candidate": {
+   "field": "evidence_refs",
+   "message": "portfolio refused: evidence_invalid (evidence_refs)",
+   "nothing_written": true,
+   "raised": "PortfolioRefused",
+   "reason_code": "evidence_invalid",
+   "store_after": "4f4dc27559ff657e0d1f45cae07e3e0c99075465d1ee13cc5cb5f52c0aa77b7b",
+   "store_before": "4f4dc27559ff657e0d1f45cae07e3e0c99075465d1ee13cc5cb5f52c0aa77b7b"
+  },
+  "disposition_first": {
+   "nothing_written": false,
+   "store_after": "27d21e964f9a28e1710f92187ff2ec640ca65430a39de3335bbe9fd8cd44f349",
+   "store_before": "4f4dc27559ff657e0d1f45cae07e3e0c99075465d1ee13cc5cb5f52c0aa77b7b",
+   "value": {
+    "cached": false,
+    "candidate": {
+     "count": 2,
+     "created_at": "2026-09-20T01:00:00+00:00",
+     "decided_at": "2026-09-20T03:00:00+00:00",
+     "evidence_refs": [
+      "sha256:dddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddd",
+      "docs/zeus/operations/operating-portfolio-001/SPEC.md"
+     ],
+     "family_status": "failed",
+     "id": "b12f72af981340fcb2185b01c5ed121ba0c744d0530a6a5926b2fd0a03a8d199",
+     "job_ids": [
+      "op-1",
+      "op-2"
+     ],
+     "reason_code": "child_refused",
+     "state": "deferred",
+     "updated_at": "2026-09-20T03:00:00+00:00"
+    },
+    "decided": true
+   }
+  },
+  "disposition_identical_replay_is_cached": {
+   "nothing_written": true,
+   "store_after": "27d21e964f9a28e1710f92187ff2ec640ca65430a39de3335bbe9fd8cd44f349",
+   "store_before": "27d21e964f9a28e1710f92187ff2ec640ca65430a39de3335bbe9fd8cd44f349",
+   "value": {
+    "cached": true,
+    "candidate": {
+     "count": 2,
+     "created_at": "2026-09-20T01:00:00+00:00",
+     "decided_at": "2026-09-20T03:00:00+00:00",
+     "evidence_refs": [
+      "sha256:dddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddd",
+      "docs/zeus/operations/operating-portfolio-001/SPEC.md"
+     ],
+     "family_status": "failed",
+     "id": "b12f72af981340fcb2185b01c5ed121ba0c744d0530a6a5926b2fd0a03a8d199",
+     "job_ids": [
+      "op-1",
+      "op-2"
+     ],
+     "reason_code": "child_refused",
+     "state": "deferred",
+     "updated_at": "2026-09-20T03:00:00+00:00"
+    },
+    "decided": true
+   }
+  },
+  "disposition_on_a_row_without_a_state_raises_keyerror": {
+   "message": "'state'",
+   "nothing_written": true,
+   "raised": "KeyError",
+   "store_after": "4be89746b85807e9a0422d9cffc39d912836cdf6479d156710afecee24add24c",
+   "store_before": "4be89746b85807e9a0422d9cffc39d912836cdf6479d156710afecee24add24c"
+  },
+  "disposition_other_evidence_conflicts": {
+   "field": null,
+   "message": "portfolio refused: disposition_conflict",
+   "nothing_written": true,
+   "raised": "PortfolioRefused",
+   "reason_code": "disposition_conflict",
+   "store_after": "27d21e964f9a28e1710f92187ff2ec640ca65430a39de3335bbe9fd8cd44f349",
+   "store_before": "27d21e964f9a28e1710f92187ff2ec640ca65430a39de3335bbe9fd8cd44f349"
+  },
+  "disposition_other_state_conflicts": {
+   "field": null,
+   "message": "portfolio refused: disposition_conflict",
+   "nothing_written": true,
+   "raised": "PortfolioRefused",
+   "reason_code": "disposition_conflict",
+   "store_after": "27d21e964f9a28e1710f92187ff2ec640ca65430a39de3335bbe9fd8cd44f349",
+   "store_before": "27d21e964f9a28e1710f92187ff2ec640ca65430a39de3335bbe9fd8cd44f349"
+  },
+  "disposition_refused_evidence_canary": {
+   "field": "evidence_refs[]",
+   "leaks_value": false,
+   "message": "portfolio refused: evidence_invalid (evidence_refs[])",
+   "nothing_written": true,
+   "raised": "PortfolioRefused",
+   "reason_code": "evidence_invalid",
+   "store_after": "4f4dc27559ff657e0d1f45cae07e3e0c99075465d1ee13cc5cb5f52c0aa77b7b",
+   "store_before": "4f4dc27559ff657e0d1f45cae07e3e0c99075465d1ee13cc5cb5f52c0aa77b7b"
+  },
+  "disposition_refused_evidence_duplicates": {
+   "field": "evidence_refs[]",
+   "leaks_value": false,
+   "message": "portfolio refused: evidence_invalid (evidence_refs[])",
+   "nothing_written": true,
+   "raised": "PortfolioRefused",
+   "reason_code": "evidence_invalid",
+   "store_after": "4f4dc27559ff657e0d1f45cae07e3e0c99075465d1ee13cc5cb5f52c0aa77b7b",
+   "store_before": "4f4dc27559ff657e0d1f45cae07e3e0c99075465d1ee13cc5cb5f52c0aa77b7b"
+  },
+  "disposition_refused_evidence_empty": {
+   "field": "evidence_refs",
+   "leaks_value": false,
+   "message": "portfolio refused: evidence_invalid (evidence_refs)",
+   "nothing_written": true,
+   "raised": "PortfolioRefused",
+   "reason_code": "evidence_invalid",
+   "store_after": "4f4dc27559ff657e0d1f45cae07e3e0c99075465d1ee13cc5cb5f52c0aa77b7b",
+   "store_before": "4f4dc27559ff657e0d1f45cae07e3e0c99075465d1ee13cc5cb5f52c0aa77b7b"
+  },
+  "disposition_refused_evidence_not_a_list": {
+   "field": "evidence_refs",
+   "leaks_value": false,
+   "message": "portfolio refused: evidence_invalid (evidence_refs)",
+   "nothing_written": true,
+   "raised": "PortfolioRefused",
+   "reason_code": "evidence_invalid",
+   "store_after": "4f4dc27559ff657e0d1f45cae07e3e0c99075465d1ee13cc5cb5f52c0aa77b7b",
+   "store_before": "4f4dc27559ff657e0d1f45cae07e3e0c99075465d1ee13cc5cb5f52c0aa77b7b"
+  },
+  "disposition_refused_state_confirmed": {
+   "field": "state",
+   "leaks_value": false,
+   "message": "portfolio refused: disposition_invalid (state)",
+   "nothing_written": true,
+   "raised": "PortfolioRefused",
+   "reason_code": "disposition_invalid",
+   "store_after": "4f4dc27559ff657e0d1f45cae07e3e0c99075465d1ee13cc5cb5f52c0aa77b7b",
+   "store_before": "4f4dc27559ff657e0d1f45cae07e3e0c99075465d1ee13cc5cb5f52c0aa77b7b"
+  },
+  "disposition_refused_state_none": {
+   "field": "state",
+   "leaks_value": false,
+   "message": "portfolio refused: disposition_invalid (state)",
+   "nothing_written": true,
+   "raised": "PortfolioRefused",
+   "reason_code": "disposition_invalid",
+   "store_after": "4f4dc27559ff657e0d1f45cae07e3e0c99075465d1ee13cc5cb5f52c0aa77b7b",
+   "store_before": "4f4dc27559ff657e0d1f45cae07e3e0c99075465d1ee13cc5cb5f52c0aa77b7b"
+  },
+  "disposition_refused_state_research_required": {
+   "field": "state",
+   "leaks_value": false,
+   "message": "portfolio refused: disposition_invalid (state)",
+   "nothing_written": true,
+   "raised": "PortfolioRefused",
+   "reason_code": "disposition_invalid",
+   "store_after": "4f4dc27559ff657e0d1f45cae07e3e0c99075465d1ee13cc5cb5f52c0aa77b7b",
+   "store_before": "4f4dc27559ff657e0d1f45cae07e3e0c99075465d1ee13cc5cb5f52c0aa77b7b"
+  },
+  "disposition_reordered_evidence_conflicts": {
+   "field": null,
+   "message": "portfolio refused: disposition_conflict",
+   "nothing_written": true,
+   "raised": "PortfolioRefused",
+   "reason_code": "disposition_conflict",
+   "store_after": "27d21e964f9a28e1710f92187ff2ec640ca65430a39de3335bbe9fd8cd44f349",
+   "store_before": "27d21e964f9a28e1710f92187ff2ec640ca65430a39de3335bbe9fd8cd44f349"
+  },
+  "disposition_state_is_checked_before_the_candidate": {
+   "field": "state",
+   "message": "portfolio refused: disposition_invalid (state)",
+   "nothing_written": true,
+   "raised": "PortfolioRefused",
+   "reason_code": "disposition_invalid",
+   "store_after": "4f4dc27559ff657e0d1f45cae07e3e0c99075465d1ee13cc5cb5f52c0aa77b7b",
+   "store_before": "4f4dc27559ff657e0d1f45cae07e3e0c99075465d1ee13cc5cb5f52c0aa77b7b"
+  },
+  "failure_families": {
+   "families": [
+    [
+     [
+      "failed",
+      "child_refused"
+     ],
+     [
+      "j-3"
+     ]
+    ],
+    [
+     [
+      "rejected",
+      "lead_rejected"
+     ],
+     [
+      "j-5",
+      "j-6"
+     ]
+    ]
+   ],
+   "unclassified": 2
+  },
+  "failure_families_empty": [
+   {},
+   0
+  ],
+  "family_id": {
+   "differs_by_reason": true,
+   "differs_by_status": true,
+   "equals_digest_of_the_pair": true,
+   "length": 64,
+   "stable": true,
+   "value": "b12f72af981340fcb2185b01c5ed121ba0c744d0530a6a5926b2fd0a03a8d199"
+  },
+  "inherit_existing_other_target_conflicts": {
+   "field": null,
+   "message": "portfolio refused: binding_conflict",
+   "nothing_written": true,
+   "raised": "PortfolioRefused",
+   "reason_code": "binding_conflict",
+   "store_after": "77be470f1b1f8998b4c6d929003106e33eba954959fffc99469058deda1ca34d",
+   "store_before": "77be470f1b1f8998b4c6d929003106e33eba954959fffc99469058deda1ca34d"
+  },
+  "inherit_existing_owner_binding_of_the_same_target_replays": {
+   "nothing_written": true,
+   "store_after": "d084435a7cb509933b6afec63cad1f1e6bb55c6f0a2c1ca9448dbf6b8fdefa2f",
+   "store_before": "d084435a7cb509933b6afec63cad1f1e6bb55c6f0a2c1ca9448dbf6b8fdefa2f",
+   "value": {
+    "binding": {
+     "created_at": "2026-09-20T00:00:00+00:00",
+     "criterion_id": "coverage",
+     "id": "owner-same",
+     "job_id": "owner-same",
+     "project_id": "sterk-migration",
+     "recorded_by": "owner"
+    },
+    "bound": true,
+    "cached": true
+   }
+  },
+  "inherit_first": {
+   "nothing_written": false,
+   "store_after": "90204d56a2cda347253851dedde427fdaf476e1e6612870c18ef5d6a3a029d75",
+   "store_before": "b17a818368963febc031d9efc8c140b20a22b3950480891c7cd438303f84be66",
+   "value": {
+    "binding": {
+     "authority": "present ownership inherited through verified continuation lineage; not historical capture membership and not criterion acceptance",
+     "created_at": "2026-09-20T05:00:00+00:00",
+     "criterion_id": "coverage",
+     "id": "child",
+     "job_id": "child",
+     "lineage": {
+      "intent": "i-1",
+      "origin_job": "origin",
+      "program": "rp-001"
+     },
+     "project_id": "sterk-migration",
+     "recorded_by": "continuation_lineage"
+    },
+    "bound": true,
+    "cached": false
+   }
+  },
+  "inherit_lineage_may_override_origin_job": {
+   "binding": {
+    "origin_job": "claimed-elsewhere",
+    "x": 1
+   }
+  },
+  "inherit_origin_absent_returns_none": {
+   "nothing_written": true,
+   "store_after": "984c81d4d272b47f7924e3c672470cf0a8fa6703afad15103ed7bf1290ccab88",
+   "store_before": "984c81d4d272b47f7924e3c672470cf0a8fa6703afad15103ed7bf1290ccab88",
+   "value": null
+  },
+  "inherit_projection_places_the_job_under_the_origin_target": {
+   "criterion": [
+    "coverage",
+    "coverage"
+   ],
+   "jobs": [
+    "child",
+    "origin"
+   ]
+  },
+  "inherit_refusal_is_not_a_nested_transaction": {
+   "refused_inside_an_open_transaction": [
+    "job_unknown",
+    "job_id"
+   ]
+  },
+  "inherit_replay_is_cached": {
+   "nothing_written": true,
+   "store_after": "90204d56a2cda347253851dedde427fdaf476e1e6612870c18ef5d6a3a029d75",
+   "store_before": "90204d56a2cda347253851dedde427fdaf476e1e6612870c18ef5d6a3a029d75",
+   "value": {
+    "binding": {
+     "authority": "present ownership inherited through verified continuation lineage; not historical capture membership and not criterion acceptance",
+     "created_at": "2026-09-20T05:00:00+00:00",
+     "criterion_id": "coverage",
+     "id": "child",
+     "job_id": "child",
+     "lineage": {
+      "intent": "i-1",
+      "origin_job": "origin",
+      "program": "rp-001"
+     },
+     "project_id": "sterk-migration",
+     "recorded_by": "continuation_lineage"
+    },
+    "bound": true,
+    "cached": true
+   }
+  },
+  "inherit_row_in_the_store": {
+   "authority": "present ownership inherited through verified continuation lineage; not historical capture membership and not criterion acceptance",
+   "created_at": "2026-09-20T05:00:00+00:00",
+   "criterion_id": "coverage",
+   "id": "child",
+   "job_id": "child",
+   "lineage": {
+    "intent": "i-1",
+    "origin_job": "origin",
+    "program": "rp-001"
+   },
+   "project_id": "sterk-migration",
+   "recorded_by": "continuation_lineage"
+  },
+  "inherit_unbound_origin_returns_none": {
+   "nothing_written": true,
+   "store_after": "984c81d4d272b47f7924e3c672470cf0a8fa6703afad15103ed7bf1290ccab88",
+   "store_before": "984c81d4d272b47f7924e3c672470cf0a8fa6703afad15103ed7bf1290ccab88",
+   "value": null
+  },
+  "inherit_unknown_job": {
+   "field": "job_id",
+   "message": "portfolio refused: job_unknown (job_id)",
+   "nothing_written": true,
+   "raised": "PortfolioRefused",
+   "reason_code": "job_unknown",
+   "store_after": "b17a818368963febc031d9efc8c140b20a22b3950480891c7cd438303f84be66",
+   "store_before": "b17a818368963febc031d9efc8c140b20a22b3950480891c7cd438303f84be66"
+  },
+  "lineage_authority": "present ownership inherited through verified continuation lineage; not historical capture membership and not criterion acceptance",
+  "m7_classifier_unknown_rows_make_no_candidate": {
+   "investigation_rows": 0,
+   "summary": {
+    "at": "2026-09-20T00:00:00+00:00",
+    "candidates": [],
+    "created": 0,
+    "families": 0,
+    "reconciled": true,
+    "scanned": 2,
+    "unclassified_failures": 2,
+    "updated": 0
+   }
+  },
+  "m7_replay_over_an_unchanged_fleet_writes_nothing": {
+   "nothing_written": true,
+   "summary": {
+    "at": "2026-09-20T02:00:00+00:00",
+    "candidates": [
+     "b12f72af981340fcb2185b01c5ed121ba0c744d0530a6a5926b2fd0a03a8d199"
+    ],
+    "created": 0,
+    "families": 2,
+    "reconciled": true,
+    "scanned": 7,
+    "unclassified_failures": 2,
+    "updated": 0
+   }
+  },
+  "m7_third_failure_extends_the_decided_candidate": {
+   "candidate": {
+    "count": 3,
+    "evidence_refs": [
+     "sha256:dddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddd",
+     "docs/zeus/operations/operating-portfolio-001/SPEC.md"
+    ],
+    "family_status": "failed",
+    "id": "b12f72af981340fcb2185b01c5ed121ba0c744d0530a6a5926b2fd0a03a8d199",
+    "job_ids": [
+     "op-1",
+     "op-2",
+     "op-3"
+    ],
+    "reason_code": "child_refused",
+    "state": "deferred",
+    "updated_at": "2026-09-20T04:00:00+00:00"
+   },
+   "decided_at": "2026-09-20T03:00:00+00:00",
+   "summary": {
+    "at": "2026-09-20T04:00:00+00:00",
+    "candidates": [
+     "b12f72af981340fcb2185b01c5ed121ba0c744d0530a6a5926b2fd0a03a8d199"
+    ],
+    "created": 0,
+    "families": 1,
+    "reconciled": true,
+    "scanned": 3,
+    "unclassified_failures": 0,
+    "updated": 1
+   }
+  },
+  "m7_two_failures_make_one_candidate": {
+   "candidates": [
+    {
+     "count": 2,
+     "evidence_refs": [],
+     "family_status": "failed",
+     "id": "b12f72af981340fcb2185b01c5ed121ba0c744d0530a6a5926b2fd0a03a8d199",
+     "job_ids": [
+      "op-1",
+      "op-2"
+     ],
+     "reason_code": "child_refused",
+     "state": "research_required",
+     "updated_at": "2026-09-20T01:00:00+00:00"
+    }
+   ],
+   "leaks_canary_or_path": false,
+   "row": {
+    "count": 2,
+    "created_at": "2026-09-20T01:00:00+00:00",
+    "decided_at": null,
+    "evidence_refs": [],
+    "family_status": "failed",
+    "id": "b12f72af981340fcb2185b01c5ed121ba0c744d0530a6a5926b2fd0a03a8d199",
+    "job_ids": [
+     "op-1",
+     "op-2"
+    ],
+    "reason_code": "child_refused",
+    "state": "research_required",
+    "updated_at": "2026-09-20T01:00:00+00:00"
+   },
+   "summary": {
+    "at": "2026-09-20T01:00:00+00:00",
+    "candidates": [
+     "b12f72af981340fcb2185b01c5ed121ba0c744d0530a6a5926b2fd0a03a8d199"
+    ],
+    "created": 1,
+    "families": 2,
+    "reconciled": true,
+    "scanned": 7,
+    "unclassified_failures": 2,
+    "updated": 0
+   },
+   "truncated": false,
+   "unbound_jobs": 7,
+   "unclassified_failures": 2
+  },
+  "m7_uncertain_and_active_work_keep_their_fleet_meaning": {
+   "families_over_the_fleet": [
+    [
+     [
+      "failed",
+      "child_refused"
+     ],
+     [
+      "op-1",
+      "op-2"
+     ]
+    ],
+    [
+     [
+      "rejected",
+      "lead_rejected"
+     ],
+     [
+      "op-3"
+     ]
+    ]
+   ],
+   "queued": "queued",
+   "unknown_job_status": "unknown"
+  },
+  "vocabulary": {
+   "DEFERRED": "deferred",
+   "DISPOSITIONS": [
+    "deferred",
+    "researched"
+   ],
+   "FAILURE_KIND": "failure_family",
+   "FAILURE_STATUSES": [
+    "failed",
+    "rejected"
+   ],
+   "FAMILY_MINIMUM": 2,
+   "PROGRESS_KIND": "audit_progress",
+   "RESEARCHED": "researched",
+   "RESEARCH_REQUIRED": "research_required",
+   "SAMPLE": 50,
+   "UNCLASSIFIED": "unknown",
+   "buckets": [
+    "portfolio_bindings",
+    "portfolio_acceptances",
+    "portfolio_investigations",
+    "portfolio_followups"
+   ]
+  }
+ },
+ "g3_acceptances_followups": {
+  "accept_another_criterion_of_the_same_project_is_a_second_row": {
+   "nothing_written": false,
+   "store_after": "42324f7108d30c0d4b0c34858fcc2b9040a3b0a2719389dd9bca9315e91b2ad8",
+   "store_before": "ea6a2256e3cfe635d47bdeaac5dd78aa330be74f1033019fd51f0c6b67a5fc9a",
+   "value": {
+    "acceptance": {
+     "authority": "owner_recorded",
+     "created_at": "2026-09-20T05:00:00+00:00",
+     "criterion_id": "coverage",
+     "evidence_refs": [
+      "x"
+     ],
+     "id": "sterk-migration:coverage",
+     "project_id": "sterk-migration",
+     "recorded_by": "owner"
+    },
+    "accepted": true,
+    "cached": false
+   }
+  },
+  "accept_criterion_unknown": {
+   "field": "criterion_id",
+   "message": "portfolio refused: criterion_unknown (criterion_id)",
+   "nothing_written": true,
+   "raised": "PortfolioRefused",
+   "reason_code": "criterion_unknown",
+   "store_after": "93cb8df9af75ac0dc7db8245eed21c3693d8351327dd3d0c3017fa11ea681ad4",
+   "store_before": "93cb8df9af75ac0dc7db8245eed21c3693d8351327dd3d0c3017fa11ea681ad4"
+  },
+  "accept_first": {
+   "nothing_written": false,
+   "store_after": "ea6a2256e3cfe635d47bdeaac5dd78aa330be74f1033019fd51f0c6b67a5fc9a",
+   "store_before": "93cb8df9af75ac0dc7db8245eed21c3693d8351327dd3d0c3017fa11ea681ad4",
+   "value": {
+    "acceptance": {
+     "authority": "owner_recorded",
+     "created_at": "2026-09-20T05:00:00+00:00",
+     "criterion_id": "projects",
+     "evidence_refs": [
+      "sha256:dddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddd",
+      "docs/zeus/operations/operating-portfolio-001/SPEC.md"
+     ],
+     "id": "sterk-migration:projects",
+     "project_id": "sterk-migration",
+     "recorded_by": "owner"
+    },
+    "accepted": true,
+    "cached": false
+   }
+  },
+  "accept_identical_replay_is_cached": {
+   "nothing_written": true,
+   "store_after": "ea6a2256e3cfe635d47bdeaac5dd78aa330be74f1033019fd51f0c6b67a5fc9a",
+   "store_before": "ea6a2256e3cfe635d47bdeaac5dd78aa330be74f1033019fd51f0c6b67a5fc9a",
+   "value": {
+    "acceptance": {
+     "authority": "owner_recorded",
+     "created_at": "2026-09-20T05:00:00+00:00",
+     "criterion_id": "projects",
+     "evidence_refs": [
+      "sha256:dddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddd",
+      "docs/zeus/operations/operating-portfolio-001/SPEC.md"
+     ],
+     "id": "sterk-migration:projects",
+     "project_id": "sterk-migration",
+     "recorded_by": "owner"
+    },
+    "accepted": true,
+    "cached": true
+   }
+  },
+  "accept_is_independent_of_the_job_statuses": {
+   "accepted_criteria": 2,
+   "statuses": [
+    "accepted"
+   ]
+  },
+  "accept_other_evidence_conflicts": {
+   "field": null,
+   "message": "portfolio refused: acceptance_conflict",
+   "nothing_written": true,
+   "raised": "PortfolioRefused",
+   "reason_code": "acceptance_conflict",
+   "store_after": "ea6a2256e3cfe635d47bdeaac5dd78aa330be74f1033019fd51f0c6b67a5fc9a",
+   "store_before": "ea6a2256e3cfe635d47bdeaac5dd78aa330be74f1033019fd51f0c6b67a5fc9a"
+  },
+  "accept_project_unknown": {
+   "field": "project_id",
+   "message": "portfolio refused: project_unknown (project_id)",
+   "nothing_written": true,
+   "raised": "PortfolioRefused",
+   "reason_code": "project_unknown",
+   "store_after": "93cb8df9af75ac0dc7db8245eed21c3693d8351327dd3d0c3017fa11ea681ad4",
+   "store_before": "93cb8df9af75ac0dc7db8245eed21c3693d8351327dd3d0c3017fa11ea681ad4"
+  },
+  "accept_refused_evidence_duplicate": {
+   "field": "evidence_refs[]",
+   "message": "portfolio refused: evidence_invalid (evidence_refs[])",
+   "nothing_written": true,
+   "raised": "PortfolioRefused",
+   "reason_code": "evidence_invalid",
+   "store_after": "93cb8df9af75ac0dc7db8245eed21c3693d8351327dd3d0c3017fa11ea681ad4",
+   "store_before": "93cb8df9af75ac0dc7db8245eed21c3693d8351327dd3d0c3017fa11ea681ad4"
+  },
+  "accept_refused_evidence_eleven": {
+   "field": "evidence_refs",
+   "message": "portfolio refused: evidence_invalid (evidence_refs)",
+   "nothing_written": true,
+   "raised": "PortfolioRefused",
+   "reason_code": "evidence_invalid",
+   "store_after": "93cb8df9af75ac0dc7db8245eed21c3693d8351327dd3d0c3017fa11ea681ad4",
+   "store_before": "93cb8df9af75ac0dc7db8245eed21c3693d8351327dd3d0c3017fa11ea681ad4"
+  },
+  "accept_refused_evidence_empty": {
+   "field": "evidence_refs",
+   "message": "portfolio refused: evidence_invalid (evidence_refs)",
+   "nothing_written": true,
+   "raised": "PortfolioRefused",
+   "reason_code": "evidence_invalid",
+   "store_after": "93cb8df9af75ac0dc7db8245eed21c3693d8351327dd3d0c3017fa11ea681ad4",
+   "store_before": "93cb8df9af75ac0dc7db8245eed21c3693d8351327dd3d0c3017fa11ea681ad4"
+  },
+  "accept_refused_evidence_empty_item": {
+   "field": "evidence_refs[]",
+   "message": "portfolio refused: evidence_invalid (evidence_refs[])",
+   "nothing_written": true,
+   "raised": "PortfolioRefused",
+   "reason_code": "evidence_invalid",
+   "store_after": "93cb8df9af75ac0dc7db8245eed21c3693d8351327dd3d0c3017fa11ea681ad4",
+   "store_before": "93cb8df9af75ac0dc7db8245eed21c3693d8351327dd3d0c3017fa11ea681ad4"
+  },
+  "accept_refused_evidence_item_201_chars": {
+   "field": "evidence_refs[]",
+   "message": "portfolio refused: evidence_invalid (evidence_refs[])",
+   "nothing_written": true,
+   "raised": "PortfolioRefused",
+   "reason_code": "evidence_invalid",
+   "store_after": "93cb8df9af75ac0dc7db8245eed21c3693d8351327dd3d0c3017fa11ea681ad4",
+   "store_before": "93cb8df9af75ac0dc7db8245eed21c3693d8351327dd3d0c3017fa11ea681ad4"
+  },
+  "accept_refused_evidence_non_string_item": {
+   "field": "evidence_refs[]",
+   "message": "portfolio refused: evidence_invalid (evidence_refs[])",
+   "nothing_written": true,
+   "raised": "PortfolioRefused",
+   "reason_code": "evidence_invalid",
+   "store_after": "93cb8df9af75ac0dc7db8245eed21c3693d8351327dd3d0c3017fa11ea681ad4",
+   "store_before": "93cb8df9af75ac0dc7db8245eed21c3693d8351327dd3d0c3017fa11ea681ad4"
+  },
+  "accept_refused_evidence_none": {
+   "field": "evidence_refs",
+   "message": "portfolio refused: evidence_invalid (evidence_refs)",
+   "nothing_written": true,
+   "raised": "PortfolioRefused",
+   "reason_code": "evidence_invalid",
+   "store_after": "93cb8df9af75ac0dc7db8245eed21c3693d8351327dd3d0c3017fa11ea681ad4",
+   "store_before": "93cb8df9af75ac0dc7db8245eed21c3693d8351327dd3d0c3017fa11ea681ad4"
+  },
+  "accept_refused_evidence_string": {
+   "field": "evidence_refs",
+   "message": "portfolio refused: evidence_invalid (evidence_refs)",
+   "nothing_written": true,
+   "raised": "PortfolioRefused",
+   "reason_code": "evidence_invalid",
+   "store_after": "93cb8df9af75ac0dc7db8245eed21c3693d8351327dd3d0c3017fa11ea681ad4",
+   "store_before": "93cb8df9af75ac0dc7db8245eed21c3693d8351327dd3d0c3017fa11ea681ad4"
+  },
+  "accept_reordered_evidence_conflicts": {
+   "field": null,
+   "message": "portfolio refused: acceptance_conflict",
+   "nothing_written": true,
+   "raised": "PortfolioRefused",
+   "reason_code": "acceptance_conflict",
+   "store_after": "ea6a2256e3cfe635d47bdeaac5dd78aa330be74f1033019fd51f0c6b67a5fc9a",
+   "store_before": "ea6a2256e3cfe635d47bdeaac5dd78aa330be74f1033019fd51f0c6b67a5fc9a"
+  },
+  "accept_returned_record_is_a_copy": {
+   "stored": [
+    "sha256:dddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddd",
+    "docs/zeus/operations/operating-portfolio-001/SPEC.md"
+   ]
+  },
+  "accept_row_in_the_store": {
+   "authority": "owner_recorded",
+   "created_at": "2026-09-20T05:00:00+00:00",
+   "criterion_id": "projects",
+   "evidence_refs": [
+    "sha256:dddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddd",
+    "docs/zeus/operations/operating-portfolio-001/SPEC.md"
+   ],
+   "id": "sterk-migration:projects",
+   "project_id": "sterk-migration",
+   "recorded_by": "owner"
+  },
+  "accept_target_is_checked_before_the_evidence": {
+   "field": "project_id",
+   "message": "portfolio refused: project_unknown (project_id)",
+   "nothing_written": true,
+   "raised": "PortfolioRefused",
+   "reason_code": "project_unknown",
+   "store_after": "93cb8df9af75ac0dc7db8245eed21c3693d8351327dd3d0c3017fa11ea681ad4",
+   "store_before": "93cb8df9af75ac0dc7db8245eed21c3693d8351327dd3d0c3017fa11ea681ad4"
+  },
+  "link_refused_criterion_no_longer_defined": {
+   "field": "criterion_id",
+   "message": "portfolio refused: criterion_unknown (criterion_id)",
+   "nothing_written": true,
+   "raised": "PortfolioRefused",
+   "reason_code": "criterion_unknown",
+   "store_after": "9a3802e8b7d07e073afe99f1c313707f7959d3043ee59480b55bcbaddbd1b26e",
+   "store_before": "9a3802e8b7d07e073afe99f1c313707f7959d3043ee59480b55bcbaddbd1b26e"
+  },
+  "link_refused_project_no_longer_defined": {
+   "field": "project_id",
+   "message": "portfolio refused: project_unknown (project_id)",
+   "nothing_written": true,
+   "raised": "PortfolioRefused",
+   "reason_code": "project_unknown",
+   "store_after": "e4aaeb1bcfe2d29ed8c910cf52bfb98dc8232bf37de54e8269b42992d5d59cb0",
+   "store_before": "e4aaeb1bcfe2d29ed8c910cf52bfb98dc8232bf37de54e8269b42992d5d59cb0"
+  },
+  "link_replay_survives_a_vanished_successor_row": {
+   "nothing_written": true,
+   "store_after": "3235f059ad0c92d032087479218d5e785f108d8710fbeaed381dc9cc3610b311",
+   "store_before": "3235f059ad0c92d032087479218d5e785f108d8710fbeaed381dc9cc3610b311",
+   "value": {
+    "cached": true,
+    "follow_up": {
+     "authority": "owner_linked",
+     "created_at": "2026-09-20T05:00:00+00:00",
+     "criterion_id": "projects",
+     "evidence_refs": [
+      "sha256:dddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddd",
+      "docs/zeus/operations/operating-portfolio-001/SPEC.md"
+     ],
+     "failed_job_id": "op-fail",
+     "id": "op-fail",
+     "project_id": "sterk-migration",
+     "recorded_by": "owner",
+     "successor_job_id": "op-next"
+    },
+    "linked": true
+   }
+  },
+  "link_replay_with_a_vanished_successor_and_other_evidence_conflicts": {
+   "field": null,
+   "message": "portfolio refused: followup_conflict",
+   "nothing_written": true,
+   "raised": "PortfolioRefused",
+   "reason_code": "followup_conflict",
+   "store_after": "3235f059ad0c92d032087479218d5e785f108d8710fbeaed381dc9cc3610b311",
+   "store_before": "3235f059ad0c92d032087479218d5e785f108d8710fbeaed381dc9cc3610b311"
+  },
+  "m7_a_collector_without_follow_up_rows_keeps_the_previous_shape": {
+   "legacy_activity": {
+    "accepted": 1,
+    "historical_failed": 0,
+    "mode": "needs_attention",
+    "queued": 0,
+    "running": 0,
+    "unknown": 0,
+    "unresolved_failed": 1
+   },
+   "legacy_jobs_have_no_follow_up_key": true,
+   "stripped_equals_legacy": true,
+   "with_links_historical": 1
+  },
+  "m7_a_link_the_current_rows_no_longer_support_reads_as_unknown": {
+   "activity": {
+    "accepted": 1,
+    "historical_failed": 0,
+    "mode": "running",
+    "queued": 0,
+    "running": 1,
+    "unknown": 0,
+    "unresolved_failed": 4
+   },
+   "jobs_total": 6,
+   "links": {
+    "op-a": {
+     "evidence_refs": [
+      "sha256:dddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddd",
+      "docs/zeus/operations/operating-portfolio-001/SPEC.md"
+     ],
+     "reason": "successor_missing",
+     "recorded_at": "2026-09-20T05:00:00+00:00",
+     "state": "unknown",
+     "successor_job_id": "op-gone",
+     "successor_status": null
+    },
+    "op-b": {
+     "evidence_refs": [
+      "sha256:dddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddd",
+      "docs/zeus/operations/operating-portfolio-001/SPEC.md"
+     ],
+     "reason": "successor_not_accepted",
+     "recorded_at": "2026-09-20T05:00:00+00:00",
+     "state": "unknown",
+     "successor_job_id": "op-running",
+     "successor_status": "dispatching"
+    },
+    "op-c": {
+     "evidence_refs": [
+      "sha256:dddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddd",
+      "docs/zeus/operations/operating-portfolio-001/SPEC.md"
+     ],
+     "reason": "binding_missing",
+     "recorded_at": "2026-09-20T05:00:00+00:00",
+     "state": "unknown",
+     "successor_job_id": "op-free",
+     "successor_status": "accepted"
+    },
+    "op-d": {
+     "evidence_refs": [
+      "sha256:dddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddd",
+      "docs/zeus/operations/operating-portfolio-001/SPEC.md"
+     ],
+     "reason": "target_mismatch",
+     "recorded_at": "2026-09-20T05:00:00+00:00",
+     "state": "unknown",
+     "successor_job_id": "op-elsewhere",
+     "successor_status": "accepted"
+    }
+   },
+   "unbound_jobs": 1
+  },
+  "m7_activity_counts_the_full_population_and_the_mode_never_hides_uncertainty": {
+   "activity": {
+    "accepted": 51,
+    "historical_failed": 1,
+    "mode": "unknown",
+    "queued": 1,
+    "running": 1,
+    "unknown": 1,
+    "unresolved_failed": 1
+   },
+   "activity_sums_to_the_population": 56,
+   "jobs_total": 56,
+   "modes": {
+    "accepted": "idle",
+    "empty": "not_started",
+    "exhausted_and_accepted": "needs_attention",
+    "linked_failure_and_accepted": "idle",
+    "queued_and_rejected": "queued",
+    "running_and_failed": "running",
+    "unknown_and_accepted": "unknown"
+   },
+   "sample": 50,
+   "truncated": true,
+   "unknown_status_alone": {
+    "accepted": 0,
+    "historical_failed": 0,
+    "mode": "unknown",
+    "queued": 0,
+    "running": 0,
+    "unknown": 1,
+    "unresolved_failed": 0
+   }
+  },
+  "m7_an_accepted_job_is_work_not_the_owner_decision": {
+   "criterion": {
+    "evidence_refs": [],
+    "id": "projects",
+    "status": "pending",
+    "text": "프로젝트 목표·수용 기준·실제 작업을 관제에서 확인한다."
+   }
+  },
+  "m7_exhausted_is_history_the_owner_may_link": {
+   "nothing_written": false,
+   "store_after": "38f2afd0d9b0fc5f9189c0003dff228c4e99ca40fd92758d55862d0fa0953df6",
+   "store_before": "02ee099c486549fa110942f39f6c9f1878ccaf72f6bb311f6ea3c586598409ad",
+   "value": {
+    "cached": false,
+    "follow_up": {
+     "authority": "owner_linked",
+     "created_at": "2026-09-20T05:00:00+00:00",
+     "criterion_id": "projects",
+     "evidence_refs": [
+      "sha256:dddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddd",
+      "docs/zeus/operations/operating-portfolio-001/SPEC.md"
+     ],
+     "failed_job_id": "op-spent",
+     "id": "op-spent",
+     "project_id": "sterk-migration",
+     "recorded_by": "owner",
+     "successor_job_id": "op-repair"
+    },
+    "linked": true
+   }
+  },
+  "m7_exhausted_link_projection": {
+   "activity": {
+    "accepted": 2,
+    "historical_failed": 2,
+    "mode": "unknown",
+    "queued": 1,
+    "running": 1,
+    "unknown": 1,
+    "unresolved_failed": 1
+   },
+   "state": "linked"
+  },
+  "m7_link_conflict_leaves_one_row": {
+   "keys": [
+    "op-fail"
+   ],
+   "row_unchanged": true
+  },
+  "m7_link_conflict_other_evidence": {
+   "field": null,
+   "message": "portfolio refused: followup_conflict",
+   "nothing_written": true,
+   "raised": "PortfolioRefused",
+   "reason_code": "followup_conflict",
+   "store_after": "01ad24c74f92b8dd9375706972954ecd90a810fa0818e35f19e239c68c31d53e",
+   "store_before": "01ad24c74f92b8dd9375706972954ecd90a810fa0818e35f19e239c68c31d53e"
+  },
+  "m7_link_conflict_other_successor": {
+   "field": null,
+   "message": "portfolio refused: followup_conflict",
+   "nothing_written": true,
+   "raised": "PortfolioRefused",
+   "reason_code": "followup_conflict",
+   "store_after": "01ad24c74f92b8dd9375706972954ecd90a810fa0818e35f19e239c68c31d53e",
+   "store_before": "01ad24c74f92b8dd9375706972954ecd90a810fa0818e35f19e239c68c31d53e"
+  },
+  "m7_link_conflict_reordered_evidence": {
+   "field": null,
+   "message": "portfolio refused: followup_conflict",
+   "nothing_written": true,
+   "raised": "PortfolioRefused",
+   "reason_code": "followup_conflict",
+   "store_after": "01ad24c74f92b8dd9375706972954ecd90a810fa0818e35f19e239c68c31d53e",
+   "store_before": "01ad24c74f92b8dd9375706972954ecd90a810fa0818e35f19e239c68c31d53e"
+  },
+  "m7_link_exact_replay": {
+   "equals_the_stored_row": true,
+   "nothing_written": true,
+   "store_after": "01ad24c74f92b8dd9375706972954ecd90a810fa0818e35f19e239c68c31d53e",
+   "store_before": "01ad24c74f92b8dd9375706972954ecd90a810fa0818e35f19e239c68c31d53e",
+   "value": {
+    "cached": true,
+    "follow_up": {
+     "authority": "owner_linked",
+     "created_at": "2026-09-20T05:00:00+00:00",
+     "criterion_id": "projects",
+     "evidence_refs": [
+      "sha256:dddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddd",
+      "docs/zeus/operations/operating-portfolio-001/SPEC.md"
+     ],
+     "failed_job_id": "op-fail",
+     "id": "op-fail",
+     "project_id": "sterk-migration",
+     "recorded_by": "owner",
+     "successor_job_id": "op-next"
+    },
+    "linked": true
+   }
+  },
+  "m7_link_first": {
+   "nothing_written": false,
+   "store_after": "01ad24c74f92b8dd9375706972954ecd90a810fa0818e35f19e239c68c31d53e",
+   "store_before": "38fc6cd6b6ad78d0adae1fba62c14cd4ca42521bad3dd8fd0fc7ee21b0f2c5f7",
+   "value": {
+    "cached": false,
+    "follow_up": {
+     "authority": "owner_linked",
+     "created_at": "2026-09-20T05:00:00+00:00",
+     "criterion_id": "projects",
+     "evidence_refs": [
+      "sha256:dddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddd",
+      "docs/zeus/operations/operating-portfolio-001/SPEC.md"
+     ],
+     "failed_job_id": "op-fail",
+     "id": "op-fail",
+     "project_id": "sterk-migration",
+     "recorded_by": "owner",
+     "successor_job_id": "op-next"
+    },
+    "linked": true
+   }
+  },
+  "m7_link_joins_one_failure_to_its_successor": {
+   "failure_row_untouched": true,
+   "followup_keys": [
+    "op-fail"
+   ],
+   "recorded": {
+    "cached": false,
+    "follow_up": {
+     "authority": "owner_linked",
+     "created_at": "2026-09-20T05:00:00+00:00",
+     "criterion_id": "projects",
+     "evidence_refs": [
+      "sha256:dddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddd",
+      "docs/zeus/operations/operating-portfolio-001/SPEC.md",
+      "CANARY-must-never-be-emitted"
+     ],
+     "failed_job_id": "op-fail",
+     "id": "op-fail",
+     "project_id": "sterk-migration",
+     "recorded_by": "owner",
+     "successor_job_id": "op-next"
+    },
+    "linked": true
+   }
+  },
+  "m7_link_no_follow_up_row_after_the_refusals": {
+   "rows": 0
+  },
+  "m7_link_over_postgres_is_one_atomic_row": {
+   "unreachable": "needs the real PostgreSQL store (out of scope, DESIGN-s8 §6: PG cases are integration); the memory-store form is m7_link_first, m7_link_exact_replay, m7_link_conflict_* and the concurrent case"
+  },
+  "m7_link_projection": {
+   "activity": {
+    "accepted": 1,
+    "historical_failed": 1,
+    "mode": "idle",
+    "queued": 0,
+    "running": 0,
+    "unknown": 0,
+    "unresolved_failed": 0
+   },
+   "criteria_accepted": 0,
+   "criteria_statuses": [
+    "pending"
+   ],
+   "failed": {
+    "criterion_id": "projects",
+    "follow_up": {
+     "evidence_refs": [
+      "sha256:dddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddd",
+      "docs/zeus/operations/operating-portfolio-001/SPEC.md"
+     ],
+     "reason": null,
+     "recorded_at": "2026-09-20T05:00:00+00:00",
+     "state": "linked",
+     "successor_job_id": "op-next",
+     "successor_status": "accepted"
+    },
+    "id": "op-fail",
+    "lane": "a",
+    "reason_code": "child_refused",
+    "status": "failed",
+    "updated_at": "2026-09-20T00:00:00+00:00"
+   },
+   "other_project_activity": {
+    "accepted": 0,
+    "historical_failed": 0,
+    "mode": "not_started",
+    "queued": 0,
+    "running": 0,
+    "unknown": 0,
+    "unresolved_failed": 0
+   },
+   "successor_has_no_link_key": true
+  },
+  "m7_link_refused_evidence_canary": {
+   "field": "evidence_refs[]",
+   "leaks_value": false,
+   "message": "portfolio refused: evidence_invalid (evidence_refs[])",
+   "nothing_written": true,
+   "raised": "PortfolioRefused",
+   "reason_code": "evidence_invalid",
+   "store_after": "02ee099c486549fa110942f39f6c9f1878ccaf72f6bb311f6ea3c586598409ad",
+   "store_before": "02ee099c486549fa110942f39f6c9f1878ccaf72f6bb311f6ea3c586598409ad"
+  },
+  "m7_link_refused_evidence_duplicates": {
+   "field": "evidence_refs[]",
+   "leaks_value": false,
+   "message": "portfolio refused: evidence_invalid (evidence_refs[])",
+   "nothing_written": true,
+   "raised": "PortfolioRefused",
+   "reason_code": "evidence_invalid",
+   "store_after": "02ee099c486549fa110942f39f6c9f1878ccaf72f6bb311f6ea3c586598409ad",
+   "store_before": "02ee099c486549fa110942f39f6c9f1878ccaf72f6bb311f6ea3c586598409ad"
+  },
+  "m7_link_refused_evidence_empty": {
+   "field": "evidence_refs",
+   "leaks_value": false,
+   "message": "portfolio refused: evidence_invalid (evidence_refs)",
+   "nothing_written": true,
+   "raised": "PortfolioRefused",
+   "reason_code": "evidence_invalid",
+   "store_after": "02ee099c486549fa110942f39f6c9f1878ccaf72f6bb311f6ea3c586598409ad",
+   "store_before": "02ee099c486549fa110942f39f6c9f1878ccaf72f6bb311f6ea3c586598409ad"
+  },
+  "m7_link_refused_evidence_is_checked_before_the_jobs": {
+   "field": "evidence_refs",
+   "leaks_value": false,
+   "message": "portfolio refused: evidence_invalid (evidence_refs)",
+   "nothing_written": true,
+   "raised": "PortfolioRefused",
+   "reason_code": "evidence_invalid",
+   "store_after": "02ee099c486549fa110942f39f6c9f1878ccaf72f6bb311f6ea3c586598409ad",
+   "store_before": "02ee099c486549fa110942f39f6c9f1878ccaf72f6bb311f6ea3c586598409ad"
+  },
+  "m7_link_refused_failed_id_empty": {
+   "field": "failed_job_id",
+   "leaks_value": false,
+   "message": "portfolio refused: followup_invalid (failed_job_id)",
+   "nothing_written": true,
+   "raised": "PortfolioRefused",
+   "reason_code": "followup_invalid",
+   "store_after": "02ee099c486549fa110942f39f6c9f1878ccaf72f6bb311f6ea3c586598409ad",
+   "store_before": "02ee099c486549fa110942f39f6c9f1878ccaf72f6bb311f6ea3c586598409ad"
+  },
+  "m7_link_refused_failed_id_none": {
+   "field": "failed_job_id",
+   "leaks_value": false,
+   "message": "portfolio refused: followup_invalid (failed_job_id)",
+   "nothing_written": true,
+   "raised": "PortfolioRefused",
+   "reason_code": "followup_invalid",
+   "store_after": "02ee099c486549fa110942f39f6c9f1878ccaf72f6bb311f6ea3c586598409ad",
+   "store_before": "02ee099c486549fa110942f39f6c9f1878ccaf72f6bb311f6ea3c586598409ad"
+  },
+  "m7_link_refused_ids_are_checked_before_the_evidence": {
+   "field": "failed_job_id",
+   "leaks_value": false,
+   "message": "portfolio refused: followup_invalid (failed_job_id)",
+   "nothing_written": true,
+   "raised": "PortfolioRefused",
+   "reason_code": "followup_invalid",
+   "store_after": "02ee099c486549fa110942f39f6c9f1878ccaf72f6bb311f6ea3c586598409ad",
+   "store_before": "02ee099c486549fa110942f39f6c9f1878ccaf72f6bb311f6ea3c586598409ad"
+  },
+  "m7_link_refused_jobs_are_checked_before_the_statuses": {
+   "field": "failed_job_id",
+   "leaks_value": false,
+   "message": "portfolio refused: job_unknown (failed_job_id)",
+   "nothing_written": true,
+   "raised": "PortfolioRefused",
+   "reason_code": "job_unknown",
+   "store_after": "02ee099c486549fa110942f39f6c9f1878ccaf72f6bb311f6ea3c586598409ad",
+   "store_before": "02ee099c486549fa110942f39f6c9f1878ccaf72f6bb311f6ea3c586598409ad"
+  },
+  "m7_link_refused_origin_is_accepted_not_history": {
+   "field": "failed_job_id",
+   "leaks_value": false,
+   "message": "portfolio refused: followup_origin_invalid (failed_job_id)",
+   "nothing_written": true,
+   "raised": "PortfolioRefused",
+   "reason_code": "followup_origin_invalid",
+   "store_after": "02ee099c486549fa110942f39f6c9f1878ccaf72f6bb311f6ea3c586598409ad",
+   "store_before": "02ee099c486549fa110942f39f6c9f1878ccaf72f6bb311f6ea3c586598409ad"
+  },
+  "m7_link_refused_origin_is_dispatching": {
+   "field": "failed_job_id",
+   "leaks_value": false,
+   "message": "portfolio refused: followup_origin_invalid (failed_job_id)",
+   "nothing_written": true,
+   "raised": "PortfolioRefused",
+   "reason_code": "followup_origin_invalid",
+   "store_after": "02ee099c486549fa110942f39f6c9f1878ccaf72f6bb311f6ea3c586598409ad",
+   "store_before": "02ee099c486549fa110942f39f6c9f1878ccaf72f6bb311f6ea3c586598409ad"
+  },
+  "m7_link_refused_origin_is_queued": {
+   "field": "failed_job_id",
+   "leaks_value": false,
+   "message": "portfolio refused: followup_origin_invalid (failed_job_id)",
+   "nothing_written": true,
+   "raised": "PortfolioRefused",
+   "reason_code": "followup_origin_invalid",
+   "store_after": "02ee099c486549fa110942f39f6c9f1878ccaf72f6bb311f6ea3c586598409ad",
+   "store_before": "02ee099c486549fa110942f39f6c9f1878ccaf72f6bb311f6ea3c586598409ad"
+  },
+  "m7_link_refused_origin_is_unknown": {
+   "field": "failed_job_id",
+   "leaks_value": false,
+   "message": "portfolio refused: followup_origin_invalid (failed_job_id)",
+   "nothing_written": true,
+   "raised": "PortfolioRefused",
+   "reason_code": "followup_origin_invalid",
+   "store_after": "02ee099c486549fa110942f39f6c9f1878ccaf72f6bb311f6ea3c586598409ad",
+   "store_before": "02ee099c486549fa110942f39f6c9f1878ccaf72f6bb311f6ea3c586598409ad"
+  },
+  "m7_link_refused_origin_job_absent": {
+   "field": "failed_job_id",
+   "leaks_value": false,
+   "message": "portfolio refused: job_unknown (failed_job_id)",
+   "nothing_written": true,
+   "raised": "PortfolioRefused",
+   "reason_code": "job_unknown",
+   "store_after": "02ee099c486549fa110942f39f6c9f1878ccaf72f6bb311f6ea3c586598409ad",
+   "store_before": "02ee099c486549fa110942f39f6c9f1878ccaf72f6bb311f6ea3c586598409ad"
+  },
+  "m7_link_refused_origin_unbound": {
+   "field": "failed_job_id",
+   "leaks_value": false,
+   "message": "portfolio refused: binding_missing (failed_job_id)",
+   "nothing_written": true,
+   "raised": "PortfolioRefused",
+   "reason_code": "binding_missing",
+   "store_after": "02ee099c486549fa110942f39f6c9f1878ccaf72f6bb311f6ea3c586598409ad",
+   "store_before": "02ee099c486549fa110942f39f6c9f1878ccaf72f6bb311f6ea3c586598409ad"
+  },
+  "m7_link_refused_other_criterion": {
+   "field": "successor_job_id",
+   "leaks_value": false,
+   "message": "portfolio refused: followup_target_mismatch (successor_job_id)",
+   "nothing_written": true,
+   "raised": "PortfolioRefused",
+   "reason_code": "followup_target_mismatch",
+   "store_after": "02ee099c486549fa110942f39f6c9f1878ccaf72f6bb311f6ea3c586598409ad",
+   "store_before": "02ee099c486549fa110942f39f6c9f1878ccaf72f6bb311f6ea3c586598409ad"
+  },
+  "m7_link_refused_other_project": {
+   "field": "successor_job_id",
+   "leaks_value": false,
+   "message": "portfolio refused: followup_target_mismatch (successor_job_id)",
+   "nothing_written": true,
+   "raised": "PortfolioRefused",
+   "reason_code": "followup_target_mismatch",
+   "store_after": "02ee099c486549fa110942f39f6c9f1878ccaf72f6bb311f6ea3c586598409ad",
+   "store_before": "02ee099c486549fa110942f39f6c9f1878ccaf72f6bb311f6ea3c586598409ad"
+  },
+  "m7_link_refused_same_job": {
+   "field": "successor_job_id",
+   "leaks_value": false,
+   "message": "portfolio refused: followup_invalid (successor_job_id)",
+   "nothing_written": true,
+   "raised": "PortfolioRefused",
+   "reason_code": "followup_invalid",
+   "store_after": "02ee099c486549fa110942f39f6c9f1878ccaf72f6bb311f6ea3c586598409ad",
+   "store_before": "02ee099c486549fa110942f39f6c9f1878ccaf72f6bb311f6ea3c586598409ad"
+  },
+  "m7_link_refused_successor_id_empty": {
+   "field": "successor_job_id",
+   "leaks_value": false,
+   "message": "portfolio refused: followup_invalid (successor_job_id)",
+   "nothing_written": true,
+   "raised": "PortfolioRefused",
+   "reason_code": "followup_invalid",
+   "store_after": "02ee099c486549fa110942f39f6c9f1878ccaf72f6bb311f6ea3c586598409ad",
+   "store_before": "02ee099c486549fa110942f39f6c9f1878ccaf72f6bb311f6ea3c586598409ad"
+  },
+  "m7_link_refused_successor_id_not_a_string": {
+   "field": "successor_job_id",
+   "leaks_value": false,
+   "message": "portfolio refused: followup_invalid (successor_job_id)",
+   "nothing_written": true,
+   "raised": "PortfolioRefused",
+   "reason_code": "followup_invalid",
+   "store_after": "02ee099c486549fa110942f39f6c9f1878ccaf72f6bb311f6ea3c586598409ad",
+   "store_before": "02ee099c486549fa110942f39f6c9f1878ccaf72f6bb311f6ea3c586598409ad"
+  },
+  "m7_link_refused_successor_is_dispatching": {
+   "field": "successor_job_id",
+   "leaks_value": false,
+   "message": "portfolio refused: successor_not_accepted (successor_job_id)",
+   "nothing_written": true,
+   "raised": "PortfolioRefused",
+   "reason_code": "successor_not_accepted",
+   "store_after": "02ee099c486549fa110942f39f6c9f1878ccaf72f6bb311f6ea3c586598409ad",
+   "store_before": "02ee099c486549fa110942f39f6c9f1878ccaf72f6bb311f6ea3c586598409ad"
+  },
+  "m7_link_refused_successor_is_failed": {
+   "field": "successor_job_id",
+   "leaks_value": false,
+   "message": "portfolio refused: successor_not_accepted (successor_job_id)",
+   "nothing_written": true,
+   "raised": "PortfolioRefused",
+   "reason_code": "successor_not_accepted",
+   "store_after": "02ee099c486549fa110942f39f6c9f1878ccaf72f6bb311f6ea3c586598409ad",
+   "store_before": "02ee099c486549fa110942f39f6c9f1878ccaf72f6bb311f6ea3c586598409ad"
+  },
+  "m7_link_refused_successor_is_queued": {
+   "field": "successor_job_id",
+   "leaks_value": false,
+   "message": "portfolio refused: successor_not_accepted (successor_job_id)",
+   "nothing_written": true,
+   "raised": "PortfolioRefused",
+   "reason_code": "successor_not_accepted",
+   "store_after": "02ee099c486549fa110942f39f6c9f1878ccaf72f6bb311f6ea3c586598409ad",
+   "store_before": "02ee099c486549fa110942f39f6c9f1878ccaf72f6bb311f6ea3c586598409ad"
+  },
+  "m7_link_refused_successor_is_unknown": {
+   "field": "successor_job_id",
+   "leaks_value": false,
+   "message": "portfolio refused: successor_not_accepted (successor_job_id)",
+   "nothing_written": true,
+   "raised": "PortfolioRefused",
+   "reason_code": "successor_not_accepted",
+   "store_after": "02ee099c486549fa110942f39f6c9f1878ccaf72f6bb311f6ea3c586598409ad",
+   "store_before": "02ee099c486549fa110942f39f6c9f1878ccaf72f6bb311f6ea3c586598409ad"
+  },
+  "m7_link_refused_successor_job_absent": {
+   "field": "successor_job_id",
+   "leaks_value": false,
+   "message": "portfolio refused: job_unknown (successor_job_id)",
+   "nothing_written": true,
+   "raised": "PortfolioRefused",
+   "reason_code": "job_unknown",
+   "store_after": "02ee099c486549fa110942f39f6c9f1878ccaf72f6bb311f6ea3c586598409ad",
+   "store_before": "02ee099c486549fa110942f39f6c9f1878ccaf72f6bb311f6ea3c586598409ad"
+  },
+  "m7_link_refused_successor_unbound": {
+   "field": "successor_job_id",
+   "leaks_value": false,
+   "message": "portfolio refused: binding_missing (successor_job_id)",
+   "nothing_written": true,
+   "raised": "PortfolioRefused",
+   "reason_code": "binding_missing",
+   "store_after": "02ee099c486549fa110942f39f6c9f1878ccaf72f6bb311f6ea3c586598409ad",
+   "store_before": "02ee099c486549fa110942f39f6c9f1878ccaf72f6bb311f6ea3c586598409ad"
+  },
+  "m7_link_returned_record_is_a_copy": {
+   "canary_reaches_the_projection": false
+  },
+  "m7_monitor_envelope_carries_the_additive_fields": {
+   "status_writes_nothing": {
+    "activity": {
+     "accepted": 1,
+     "historical_failed": 1,
+     "mode": "idle",
+     "queued": 0,
+     "running": 0,
+     "unknown": 0,
+     "unresolved_failed": 0
+    },
+    "canary_free": true,
+    "link_state": "linked",
+    "nothing_written": true
+   },
+   "unreachable": "monitoring.collect and monitoring.read_only belong to the monitoring adapter (another family, with docker and redis facts); the portfolio side is the read-only status(), asserted here to write nothing"
+  },
+  "m7_the_criterion_reads_accepted_with_its_refs": {
+   "counts": {
+    "criteria_accepted": 1,
+    "criteria_total": 3,
+    "jobs_total": 1
+   },
+   "criterion": {
+    "evidence_refs": [
+     "sha256:dddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddd",
+     "docs/zeus/operations/operating-portfolio-001/SPEC.md"
+    ],
+    "id": "projects",
+    "status": "accepted",
+    "text": "프로젝트 목표·수용 기준·실제 작업을 관제에서 확인한다."
+   }
+  },
+  "m7_the_projection_is_a_copy": {
+   "refs_after": [
+    "sha256:dddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddd",
+    "docs/zeus/operations/operating-portfolio-001/SPEC.md"
+   ]
+  },
+  "m7_two_concurrent_links_leave_exactly_one_row": {
+   "failed": "op-fail",
+   "outcomes_are_the_winner_and_followup_conflict": true,
+   "rows": 1,
+   "winner_is_one_of_the_two": true
+  },
+  "rejected_is_history_the_owner_may_link": {
+   "nothing_written": false,
+   "store_after": "73ed0f7489e8b7349034a65bf74680c75a4740d0ea5aaf79d80df20ec6e4b89c",
+   "store_before": "38f2afd0d9b0fc5f9189c0003dff228c4e99ca40fd92758d55862d0fa0953df6",
+   "value": {
+    "cached": false,
+    "follow_up": {
+     "authority": "owner_linked",
+     "created_at": "2026-09-20T05:00:00+00:00",
+     "criterion_id": "projects",
+     "evidence_refs": [
+      "sha256:dddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddd",
+      "docs/zeus/operations/operating-portfolio-001/SPEC.md"
+     ],
+     "failed_job_id": "op-rejected",
+     "id": "op-rejected",
+     "project_id": "sterk-migration",
+     "recorded_by": "owner",
+     "successor_job_id": "op-repair"
+    },
+    "linked": true
+   }
+  }
+ },
+ "g4_status_activity": {
+  "a_successor_bound_later_still_links": {
+   "state": "linked"
+  },
+  "acceptances_read_only_defined_goals_and_copy_their_refs": {
+   "copy": true,
+   "counts": {
+    "criteria_accepted": 1,
+    "criteria_total": 3,
+    "jobs_total": 0
+   },
+   "criteria": [
+    {
+     "evidence_refs": [
+      "sha256:dddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddd",
+      "docs/zeus/operations/operating-portfolio-001/SPEC.md"
+     ],
+     "id": "projects",
+     "status": "accepted",
+     "text": "프로젝트 목표·수용 기준·실제 작업을 관제에서 확인한다."
+    },
+    {
+     "evidence_refs": [],
+     "id": "coverage",
+     "status": "pending",
+     "text": "참고 이슈별 적용·보류·대체 여부와 증거를 기록한다."
+    },
+    {
+     "evidence_refs": [],
+     "id": "acceptance",
+     "status": "pending",
+     "text": "사용자가 실제 운영 시나리오로 필요한 관제 흐름을 인수한다."
+    }
+   ],
+   "retired_leaks": false
+  },
+  "activity_mode_table": {
+   "idle": "idle",
+   "idle_with_only_historical": "idle",
+   "missing_keys_raise": {
+    "message": "'unknown'",
+    "raised": "KeyError"
+   },
+   "needs_attention": "needs_attention",
+   "queued_beats_attention": "queued",
+   "running_beats_queued": "running",
+   "unknown_beats_running": "unknown",
+   "zero_total": "not_started",
+   "zero_total_beats_counts": "not_started"
+  },
+  "an_acceptance_row_without_refs_raises": {
+   "message": "'evidence_refs'",
+   "raised": "KeyError"
+  },
+  "bindings_to_a_missing_job_or_an_undefined_goal_stay_unbound": {
+   "shown": {
+    "local-absorption": [],
+    "research-improvement": [
+     "j-other"
+    ],
+    "sterk-migration": [
+     "j-bound"
+    ]
+   },
+   "totals": {
+    "local-absorption": 0,
+    "research-improvement": 1,
+    "sterk-migration": 1
+   },
+   "unbound_jobs": 3
+  },
+  "exhausted_counts_toward_unresolved_failed": {
+   "accepted": 0,
+   "historical_failed": 0,
+   "mode": "needs_attention",
+   "queued": 0,
+   "running": 0,
+   "unknown": 0,
+   "unresolved_failed": 2
+  },
+  "family_row_missing_a_field_raises": {
+   "message": "'family_status'",
+   "raised": "KeyError"
+  },
+  "follow_up_view": {
+   "binding_missing_failed": {
+    "evidence_refs": [
+     "sha256:dddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddd",
+     "docs/zeus/operations/operating-portfolio-001/SPEC.md"
+    ],
+    "reason": "binding_missing",
+    "recorded_at": "2026-09-20T05:00:00+00:00",
+    "state": "unknown",
+    "successor_job_id": "ok",
+    "successor_status": "accepted"
+   },
+   "binding_missing_successor": {
+    "evidence_refs": [
+     "sha256:dddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddd",
+     "docs/zeus/operations/operating-portfolio-001/SPEC.md"
+    ],
+    "reason": "binding_missing",
+    "recorded_at": "2026-09-20T05:00:00+00:00",
+    "state": "unknown",
+    "successor_job_id": "ok",
+    "successor_status": "accepted"
+   },
+   "evidence_is_copied": {
+    "copied": true
+   },
+   "linked": {
+    "evidence_refs": [
+     "sha256:dddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddd",
+     "docs/zeus/operations/operating-portfolio-001/SPEC.md"
+    ],
+    "reason": null,
+    "recorded_at": "2026-09-20T05:00:00+00:00",
+    "state": "linked",
+    "successor_job_id": "ok",
+    "successor_status": "accepted"
+   },
+   "missing_created_at_reads_none": {
+    "evidence_refs": [
+     "sha256:dddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddd",
+     "docs/zeus/operations/operating-portfolio-001/SPEC.md"
+    ],
+    "reason": null,
+    "recorded_at": null,
+    "state": "linked",
+    "successor_job_id": "ok",
+    "successor_status": "accepted"
+   },
+   "missing_evidence_refs_key_reads_empty": {
+    "evidence_refs": [],
+    "reason": null,
+    "recorded_at": "2026-09-20T05:00:00+00:00",
+    "state": "linked",
+    "successor_job_id": "ok",
+    "successor_status": "accepted"
+   },
+   "successor_id_none_is_missing": {
+    "evidence_refs": [
+     "sha256:dddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddd",
+     "docs/zeus/operations/operating-portfolio-001/SPEC.md"
+    ],
+    "reason": "successor_missing",
+    "recorded_at": "2026-09-20T05:00:00+00:00",
+    "state": "unknown",
+    "successor_job_id": null,
+    "successor_status": null
+   },
+   "successor_missing": {
+    "evidence_refs": [
+     "sha256:dddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddd",
+     "docs/zeus/operations/operating-portfolio-001/SPEC.md"
+    ],
+    "reason": "successor_missing",
+    "recorded_at": "2026-09-20T05:00:00+00:00",
+    "state": "unknown",
+    "successor_job_id": "gone",
+    "successor_status": null
+   },
+   "successor_not_accepted": {
+    "evidence_refs": [
+     "sha256:dddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddd",
+     "docs/zeus/operations/operating-portfolio-001/SPEC.md"
+    ],
+    "reason": "successor_not_accepted",
+    "recorded_at": "2026-09-20T05:00:00+00:00",
+    "state": "unknown",
+    "successor_job_id": "queued",
+    "successor_status": "queued"
+   },
+   "successor_status_is_reported_even_when_not_accepted": "queued",
+   "successor_without_a_status_is_not_accepted": {
+    "evidence_refs": [
+     "sha256:dddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddd",
+     "docs/zeus/operations/operating-portfolio-001/SPEC.md"
+    ],
+    "reason": "successor_not_accepted",
+    "recorded_at": "2026-09-20T05:00:00+00:00",
+    "state": "unknown",
+    "successor_job_id": "nostatus",
+    "successor_status": null
+   },
+   "target_mismatch": {
+    "evidence_refs": [
+     "sha256:dddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddd",
+     "docs/zeus/operations/operating-portfolio-001/SPEC.md"
+    ],
+    "reason": "target_mismatch",
+    "recorded_at": "2026-09-20T05:00:00+00:00",
+    "state": "unknown",
+    "successor_job_id": "other",
+    "successor_status": "accepted"
+   }
+  },
+  "follow_ups_argument_forms": {
+   "later_link_for_the_same_failure_wins": {
+    "activity": {
+     "accepted": 1,
+     "historical_failed": 1,
+     "mode": "idle",
+     "queued": 0,
+     "running": 0,
+     "unknown": 0,
+     "unresolved_failed": 0
+    },
+    "f_link": {
+     "evidence_refs": [
+      "sha256:dddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddd",
+      "docs/zeus/operations/operating-portfolio-001/SPEC.md"
+     ],
+     "reason": null,
+     "recorded_at": "2026-09-20T05:00:00+00:00",
+     "state": "linked",
+     "successor_job_id": "s",
+     "successor_status": "accepted"
+    }
+   },
+   "link_for_a_job_that_is_not_bound": {
+    "activity": {
+     "accepted": 1,
+     "historical_failed": 0,
+     "mode": "needs_attention",
+     "queued": 0,
+     "running": 0,
+     "unknown": 0,
+     "unresolved_failed": 1
+    },
+    "f_link": null
+   },
+   "list": {
+    "activity": {
+     "accepted": 1,
+     "historical_failed": 1,
+     "mode": "idle",
+     "queued": 0,
+     "running": 0,
+     "unknown": 0,
+     "unresolved_failed": 0
+    },
+    "f_link": {
+     "evidence_refs": [
+      "sha256:dddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddd",
+      "docs/zeus/operations/operating-portfolio-001/SPEC.md"
+     ],
+     "reason": null,
+     "recorded_at": "2026-09-20T05:00:00+00:00",
+     "state": "linked",
+     "successor_job_id": "s",
+     "successor_status": "accepted"
+    }
+   },
+   "missing_failed_id_ignored": {
+    "activity": {
+     "accepted": 1,
+     "historical_failed": 0,
+     "mode": "needs_attention",
+     "queued": 0,
+     "running": 0,
+     "unknown": 0,
+     "unresolved_failed": 1
+    },
+    "f_link": null
+   },
+   "non_dict_entries_ignored": {
+    "activity": {
+     "accepted": 1,
+     "historical_failed": 1,
+     "mode": "idle",
+     "queued": 0,
+     "running": 0,
+     "unknown": 0,
+     "unresolved_failed": 0
+    },
+    "f_link": {
+     "evidence_refs": [
+      "sha256:dddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddd",
+      "docs/zeus/operations/operating-portfolio-001/SPEC.md"
+     ],
+     "reason": null,
+     "recorded_at": "2026-09-20T05:00:00+00:00",
+     "state": "linked",
+     "successor_job_id": "s",
+     "successor_status": "accepted"
+    }
+   },
+   "non_string_failed_id_ignored": {
+    "activity": {
+     "accepted": 1,
+     "historical_failed": 0,
+     "mode": "needs_attention",
+     "queued": 0,
+     "running": 0,
+     "unknown": 0,
+     "unresolved_failed": 1
+    },
+    "f_link": null
+   },
+   "none_default": {
+    "activity": {
+     "accepted": 1,
+     "historical_failed": 0,
+     "mode": "needs_attention",
+     "queued": 0,
+     "running": 0,
+     "unknown": 0,
+     "unresolved_failed": 1
+    },
+    "f_link": null
+   },
+   "tuple": {
+    "activity": {
+     "accepted": 1,
+     "historical_failed": 1,
+     "mode": "idle",
+     "queued": 0,
+     "running": 0,
+     "unknown": 0,
+     "unresolved_failed": 0
+    },
+    "f_link": {
+     "evidence_refs": [
+      "sha256:dddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddd",
+      "docs/zeus/operations/operating-portfolio-001/SPEC.md"
+     ],
+     "reason": null,
+     "recorded_at": "2026-09-20T05:00:00+00:00",
+     "state": "linked",
+     "successor_job_id": "s",
+     "successor_status": "accepted"
+    }
+   }
+  },
+  "investigation_kinds_are_projected_apart": {
+   "families": [
+    {
+     "count": 3,
+     "evidence_refs": [],
+     "family_status": "rejected",
+     "id": "f-legacy",
+     "job_ids": [
+      "a",
+      "b",
+      "c"
+     ],
+     "reason_code": "lead_rejected",
+     "state": "research_required",
+     "updated_at": null
+    },
+    {
+     "count": 2,
+     "evidence_refs": [
+      "sha256:dddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddd",
+      "docs/zeus/operations/operating-portfolio-001/SPEC.md"
+     ],
+     "family_status": "failed",
+     "id": "f-explicit",
+     "job_ids": [
+      "a",
+      "b"
+     ],
+     "reason_code": "child_refused",
+     "state": "researched",
+     "updated_at": "2026-09-20T00:00:00+00:00"
+    }
+   ],
+   "families_truncated": false,
+   "other_kind_is_in_neither": true,
+   "progress_first": {
+    "audit_id": "a-1",
+    "count": 2,
+    "epoch": 1,
+    "evidence_refs": [
+     "e"
+    ],
+    "id": "p-01",
+    "kind": "audit_progress",
+    "observations": 3,
+    "reason_code": "low_yield",
+    "state": "research_required",
+    "updated_at": "2026-09-20T00:01:00+00:00",
+    "windows": [
+     "w1",
+     "w2"
+    ]
+   },
+   "progress_first_id": "p-01",
+   "progress_job_ids_or_secret_leak": false,
+   "progress_last_id": "p-50",
+   "progress_listed": 50,
+   "progress_truncated": true
+  },
+  "job_entry": {
+   "empty_reason": {
+    "criterion_id": "c1",
+    "id": "j",
+    "lane": "a",
+    "reason_code": "unknown",
+    "status": "failed",
+    "updated_at": "2026-09-20T00:00:00+00:00"
+   },
+   "extra_fields_are_not_projected": {
+    "criterion_id": "c1",
+    "id": "j",
+    "lane": "a",
+    "reason_code": "child_refused",
+    "status": "failed",
+    "updated_at": "2026-09-20T00:00:00+00:00"
+   },
+   "follow_up_empty_dict_is_added": {
+    "criterion_id": "c1",
+    "follow_up": {},
+    "id": "j",
+    "lane": "a",
+    "reason_code": "child_refused",
+    "status": "failed",
+    "updated_at": "2026-09-20T00:00:00+00:00"
+   },
+   "missing_id_raises": {
+    "message": "'id'",
+    "raised": "KeyError"
+   },
+   "missing_optional_fields": {
+    "criterion_id": "c1",
+    "id": "j",
+    "lane": null,
+    "reason_code": null,
+    "status": null,
+    "updated_at": null
+   },
+   "no_reason": {
+    "criterion_id": "c1",
+    "id": "j",
+    "lane": "a",
+    "reason_code": null,
+    "status": "failed",
+    "updated_at": "2026-09-20T00:00:00+00:00"
+   },
+   "plain": {
+    "criterion_id": "c1",
+    "id": "j",
+    "lane": "a",
+    "reason_code": "child_refused",
+    "status": "failed",
+    "updated_at": "2026-09-20T00:00:00+00:00"
+   },
+   "unsafe_reason_becomes_a_safe_code": {
+    "criterion_id": "c1",
+    "id": "j",
+    "lane": "a",
+    "reason_code": "raw",
+    "status": "failed",
+    "updated_at": "2026-09-20T00:00:00+00:00"
+   },
+   "unsafe_reason_leaks": false,
+   "with_follow_up": {
+    "criterion_id": "c1",
+    "follow_up": {
+     "state": "linked"
+    },
+    "id": "j",
+    "lane": "a",
+    "reason_code": "child_refused",
+    "status": "failed",
+    "updated_at": "2026-09-20T00:00:00+00:00"
+   }
+  },
+  "jobs_without_a_string_id_are_never_counted": {
+   "shown": [
+    "good"
+   ],
+   "unbound_jobs": 1,
+   "unclassified_failures": 0
+  },
+  "m7_activity_over_bound_jobs_of_every_status": {
+   "accepted": 1,
+   "historical_failed": 0,
+   "mode": "unknown",
+   "queued": 1,
+   "running": 1,
+   "unknown": 1,
+   "unresolved_failed": 3
+  },
+  "m7_monitor_envelope_is_additive_read_only_and_unavailable_on_store_failure": {
+   "unreachable": "monitoring.collect/read_only (the monitoring adapter, another family) builds the envelope; the portfolio side is status_is_read_only and m7_store_failure_propagates_from_status"
+  },
+  "m7_projection_samples_candidates_while_counting_every_row": {
+   "count": 9,
+   "first_is_not_the_oldest": true,
+   "job_ids_are_the_last_fifty_sorted": true,
+   "job_ids_sample": 50,
+   "last_is_the_newest": true,
+   "listed": 50,
+   "truncated": true
+  },
+  "m7_projection_samples_jobs_while_counting_every_row": {
+   "activity": {
+    "accepted": 0,
+    "historical_failed": 0,
+    "mode": "queued",
+    "queued": 55,
+    "running": 0,
+    "unknown": 0,
+    "unresolved_failed": 0
+   },
+   "first": "op-005",
+   "jobs_total": 55,
+   "sample": 50,
+   "sample_is_the_latest_fifty": true,
+   "truncated": true
+  },
+  "m7_store_failure_propagates_from_status": {
+   "message": "injected outage (LABELLED fixture)",
+   "raised": "RuntimeError"
+  },
+  "progress_row_with_only_its_kind_reads_none_and_empty": [
+   {
+    "audit_id": null,
+    "count": null,
+    "epoch": null,
+    "evidence_refs": [],
+    "id": "p-sparse",
+    "kind": "audit_progress",
+    "observations": 0,
+    "reason_code": null,
+    "state": null,
+    "updated_at": null,
+    "windows": []
+   }
+  ],
+  "project_activity": {
+   "a_link_none_counts_unresolved": {
+    "accepted": 0,
+    "historical_failed": 0,
+    "mode": "needs_attention",
+    "queued": 0,
+    "running": 0,
+    "unknown": 0,
+    "unresolved_failed": 1
+   },
+   "a_link_without_state_raises": {
+    "message": "'state'",
+    "raised": "KeyError"
+   },
+   "accepted": {
+    "accepted": 1,
+    "historical_failed": 0,
+    "mode": "idle",
+    "queued": 0,
+    "running": 0,
+    "unknown": 0,
+    "unresolved_failed": 0
+   },
+   "accepted_with_a_link_is_still_accepted": {
+    "accepted": 1,
+    "historical_failed": 0,
+    "mode": "idle",
+    "queued": 0,
+    "running": 0,
+    "unknown": 0,
+    "unresolved_failed": 0
+   },
+   "all_kinds": {
+    "accepted": 1,
+    "historical_failed": 0,
+    "mode": "unknown",
+    "queued": 1,
+    "running": 1,
+    "unknown": 3,
+    "unresolved_failed": 3
+   },
+   "dispatching": {
+    "accepted": 0,
+    "historical_failed": 0,
+    "mode": "running",
+    "queued": 0,
+    "running": 1,
+    "unknown": 0,
+    "unresolved_failed": 0
+   },
+   "empty": {
+    "accepted": 0,
+    "historical_failed": 0,
+    "mode": "not_started",
+    "queued": 0,
+    "running": 0,
+    "unknown": 0,
+    "unresolved_failed": 0
+   },
+   "exhausted": {
+    "accepted": 0,
+    "historical_failed": 0,
+    "mode": "needs_attention",
+    "queued": 0,
+    "running": 0,
+    "unknown": 0,
+    "unresolved_failed": 1
+   },
+   "exhausted_with_linked_follow_up": {
+    "accepted": 0,
+    "historical_failed": 1,
+    "mode": "idle",
+    "queued": 0,
+    "running": 0,
+    "unknown": 0,
+    "unresolved_failed": 0
+   },
+   "failed": {
+    "accepted": 0,
+    "historical_failed": 0,
+    "mode": "needs_attention",
+    "queued": 0,
+    "running": 0,
+    "unknown": 0,
+    "unresolved_failed": 1
+   },
+   "failed_with_linked_follow_up": {
+    "accepted": 0,
+    "historical_failed": 1,
+    "mode": "idle",
+    "queued": 0,
+    "running": 0,
+    "unknown": 0,
+    "unresolved_failed": 0
+   },
+   "failed_with_unknown_follow_up": {
+    "accepted": 0,
+    "historical_failed": 0,
+    "mode": "needs_attention",
+    "queued": 0,
+    "running": 0,
+    "unknown": 0,
+    "unresolved_failed": 1
+   },
+   "missing_status": {
+    "accepted": 0,
+    "historical_failed": 0,
+    "mode": "unknown",
+    "queued": 0,
+    "running": 0,
+    "unknown": 1,
+    "unresolved_failed": 0
+   },
+   "queued": {
+    "accepted": 0,
+    "historical_failed": 0,
+    "mode": "queued",
+    "queued": 1,
+    "running": 0,
+    "unknown": 0,
+    "unresolved_failed": 0
+   },
+   "rejected": {
+    "accepted": 0,
+    "historical_failed": 0,
+    "mode": "needs_attention",
+    "queued": 0,
+    "running": 0,
+    "unknown": 0,
+    "unresolved_failed": 1
+   },
+   "rejected_with_linked_follow_up": {
+    "accepted": 0,
+    "historical_failed": 1,
+    "mode": "idle",
+    "queued": 0,
+    "running": 0,
+    "unknown": 0,
+    "unresolved_failed": 0
+   },
+   "unknown": {
+    "accepted": 0,
+    "historical_failed": 0,
+    "mode": "unknown",
+    "queued": 0,
+    "running": 0,
+    "unknown": 1,
+    "unresolved_failed": 0
+   },
+   "unknown_vocabulary": {
+    "accepted": 0,
+    "historical_failed": 0,
+    "mode": "unknown",
+    "queued": 0,
+    "running": 0,
+    "unknown": 1,
+    "unresolved_failed": 0
+   }
+  },
+  "projected_job_carries_only_the_wire_shape": {
+   "jobs": [
+    {
+     "criterion_id": "projects",
+     "id": "w",
+     "lane": "lane-x",
+     "reason_code": "child_refused",
+     "status": "failed",
+     "updated_at": "2026-09-20T00:00:00+00:00"
+    }
+   ],
+   "leak": false
+  },
+  "rejected_counts_toward_unresolved_failed": {
+   "accepted": 0,
+   "historical_failed": 0,
+   "mode": "needs_attention",
+   "queued": 0,
+   "running": 0,
+   "unknown": 0,
+   "unresolved_failed": 1
+  },
+  "sample_order_treats_a_missing_time_as_oldest": [
+   "a",
+   "b",
+   "c"
+  ],
+  "status_is_read_only": {
+   "nothing_written": true
+  },
+  "status_projection_empty_shape": {
+   "activity_keys": [
+    "accepted",
+    "historical_failed",
+    "mode",
+    "queued",
+    "running",
+    "unknown",
+    "unresolved_failed"
+   ],
+   "counts_keys": [
+    "criteria_accepted",
+    "criteria_total",
+    "jobs_total"
+   ],
+   "definition_sha256_is_digest": true,
+   "empty_follow_ups_equal_default": true,
+   "keys": [
+    "definition_sha256",
+    "investigations",
+    "investigations_truncated",
+    "progress_investigations",
+    "progress_investigations_truncated",
+    "projects",
+    "schema",
+    "unbound_jobs",
+    "unclassified_failures"
+   ],
+   "project_keys": [
+    "activity",
+    "counts",
+    "criteria",
+    "id",
+    "jobs",
+    "jobs_truncated",
+    "outcome",
+    "source_ref",
+    "title"
+   ],
+   "schema": "urn:zeus:portfolio-status:1"
+  },
+  "unclassified_failures_count_failed_and_rejected_only": {
+   "unclassified_failures": 2
+  },
+  "vocabulary": {
+   "ACTIVITY_COUNTS": [
+    "running",
+    "queued",
+    "unknown",
+    "accepted",
+    "unresolved_failed",
+    "historical_failed"
+   ],
+   "ACTIVITY_MODES": [
+    "idle",
+    "needs_attention",
+    "not_started",
+    "queued",
+    "running",
+    "unknown"
+   ],
+   "FAILURE_STATUSES": [
+    "failed",
+    "rejected"
+   ],
+   "FOLLOWUP_FAILURES": [
+    "exhausted",
+    "failed",
+    "rejected"
+   ],
+   "SAMPLE": 50,
+   "STATUS_SCHEMA": "urn:zeus:portfolio-status:1",
+   "UNCLASSIFIED": "unknown",
+   "fleet_statuses_read": {
+    "ACCEPTED": "accepted",
+    "DISPATCHING": "dispatching",
+    "EXHAUSTED": "exhausted",
+    "FAILED": "failed",
+    "QUEUED": "queued",
+    "REJECTED": "rejected"
+   },
+   "follow_up": [
+    "linked",
+    "unknown"
+   ]
+  }
+ },
+ "g5_reconcile_adapter": {
+  "adapter": {
+   "DEFINITIONS": "operating-portfolio-v1.json",
+   "packaged_definitions_default_is_the_resource": true,
+   "packaged_definitions_is_unvalidated": {
+    "keys": [
+     "projects",
+     "schema"
+    ],
+    "validated_equal": true
+   },
+   "packaged_definitions_returns_a_fresh_document": true,
+   "packaged_definitions_unknown_resource": {
+    "raised": "FileNotFoundError"
+   },
+   "portfolio_custom_definitions": {
+    "projects": [
+     "only"
+    ]
+   },
+   "portfolio_default": {
+    "class": "Portfolio",
+    "sha": "99fe3b7ed37013b24eae081ce2e9b929fbc76c29c9f0e14ea6c546cb5f3c19ec",
+    "store_is_the_given_store": true
+   },
+   "portfolio_empty_definitions_is_not_the_default": {
+    "field": "definitions",
+    "message": "portfolio refused: definitions_invalid (definitions)",
+    "raised": "PortfolioRefused",
+    "reason_code": "definitions_invalid"
+   },
+   "portfolio_invalid_definitions_refuse": {
+    "field": "schema",
+    "message": "portfolio refused: definitions_invalid (schema)",
+    "raised": "PortfolioRefused",
+    "reason_code": "definitions_invalid"
+   }
+  },
+  "m7_actual_fleet_cli_run_reconciles_through_the_real_runner": {
+   "unreachable": "fleet_cli.execute and the real runner are the fleet family; the portfolio side is reconciler_callable over rows of two failures reading one candidate of count 2"
+  },
+  "m7_reconciliation_transitions_are_logged_once": {
+   "unreachable": "the runner's logger 'zeus.fleet.runner' is the fleet family; reconcile itself logs nothing (a call with a raising store propagates, reconcile_store_failure_propagates)"
+  },
+  "m7_runner_reconciles_once_per_tick_and_its_failure_never_blocks_admission": {
+   "unreachable": "FleetRunner is the fleet family; the portfolio side is reconciler_callable (counted summary, never a cause) and reconcile_store_failure_propagates (the runner is what turns it into `unavailable`)"
+  },
+  "module_surface": {
+   "__all__": [
+    "ACTIVITY_MODES",
+    "BUCKET_ACCEPTANCES",
+    "BUCKET_BINDINGS",
+    "BUCKET_FOLLOWUPS",
+    "BUCKET_INVESTIGATIONS",
+    "DEFERRED",
+    "FOLLOWUP_LINKED",
+    "FOLLOWUP_UNKNOWN",
+    "Portfolio",
+    "PortfolioRefused",
+    "RESEARCHED",
+    "RESEARCH_REQUIRED",
+    "STATUS_SCHEMA",
+    "activity_mode",
+    "family_id",
+    "follow_up_view",
+    "inherit_binding",
+    "project_activity",
+    "reconcile",
+    "status_projection",
+    "validate_definitions"
+   ],
+   "adapter_all": [
+    "DEFINITIONS",
+    "packaged_definitions",
+    "portfolio",
+    "portfolio_reconciler"
+   ]
+  },
+  "portfolio_reconcile_is_the_module_function": {
+   "needs_no_definitions": 0,
+   "summary": {
+    "at": "2026-09-20T00:00:00+00:00",
+    "candidates": [
+     "b12f72af981340fcb2185b01c5ed121ba0c744d0530a6a5926b2fd0a03a8d199"
+    ],
+    "created": 1,
+    "families": 1,
+    "reconciled": true,
+    "scanned": 2,
+    "unclassified_failures": 0,
+    "updated": 0
+   }
+  },
+  "reconcile_a_stored_row_without_job_ids_reads_empty": {
+   "row": {
+    "count": 2,
+    "id": "b12f72af981340fcb2185b01c5ed121ba0c744d0530a6a5926b2fd0a03a8d199",
+    "job_ids": [
+     "l1",
+     "l2"
+    ],
+    "state": "research_required",
+    "updated_at": "2026-09-20T00:00:00+00:00"
+   },
+   "summary": {
+    "at": "2026-09-20T00:00:00+00:00",
+    "candidates": [
+     "b12f72af981340fcb2185b01c5ed121ba0c744d0530a6a5926b2fd0a03a8d199"
+    ],
+    "created": 0,
+    "families": 1,
+    "reconciled": true,
+    "scanned": 2,
+    "unclassified_failures": 0,
+    "updated": 1
+   }
+  },
+  "reconcile_a_stored_superset_is_never_shrunk": {
+   "nothing_written": true,
+   "row": {
+    "count": 99,
+    "created_at": "2026-09-20T00:00:00+00:00",
+    "decided_at": "2026-09-20T12:00:00+00:00",
+    "evidence_refs": [
+     "sha256:dddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddd",
+     "docs/zeus/operations/operating-portfolio-001/SPEC.md"
+    ],
+    "family_status": "failed",
+    "id": "b12f72af981340fcb2185b01c5ed121ba0c744d0530a6a5926b2fd0a03a8d199",
+    "job_ids": [
+     "a1",
+     "a2",
+     "a3",
+     "a4",
+     "z-gone"
+    ],
+    "reason_code": "child_refused",
+    "state": "deferred",
+    "updated_at": "2026-09-21T00:00:00+00:00"
+   },
+   "summary": {
+    "at": "2026-09-21T00:00:00+00:00",
+    "candidates": [
+     "b12f72af981340fcb2185b01c5ed121ba0c744d0530a6a5926b2fd0a03a8d199",
+     "980f87fb3d77b1a31074aa2b4ccb7194e67438ff78e95c1231aa05623359969c"
+    ],
+    "created": 0,
+    "families": 4,
+    "reconciled": true,
+    "scanned": 19,
+    "unclassified_failures": 4,
+    "updated": 0
+   }
+  },
+  "reconcile_an_unsorted_stored_membership_is_rewritten_sorted": {
+   "row_ids": [
+    "r1",
+    "r2",
+    "r3"
+   ],
+   "summary": {
+    "at": "2026-09-21T00:00:00+00:00",
+    "candidates": [
+     "b12f72af981340fcb2185b01c5ed121ba0c744d0530a6a5926b2fd0a03a8d199",
+     "980f87fb3d77b1a31074aa2b4ccb7194e67438ff78e95c1231aa05623359969c"
+    ],
+    "created": 0,
+    "families": 4,
+    "reconciled": true,
+    "scanned": 19,
+    "unclassified_failures": 4,
+    "updated": 1
+   }
+  },
+  "reconcile_below_the_minimum_is_not_a_candidate": {
+   "exhausted_family": false,
+   "has_row": false,
+   "same_reason_other_status_family": false,
+   "solo_family": "238b9a31d79101dc6527f9b6ad415bf54b57fb6e6d4eab85ca399ccba4f6c07f"
+  },
+  "reconcile_default_clock_and_candidate_order": {
+   "created_at_is_the_clock_read": true,
+   "order_is_the_sorted_family_key": true,
+   "summary": {
+    "at": "2026-09-22T00:00:00+00:00",
+    "candidates": [
+     "277c990b9b2569e739af56ff7ab7fae498e15f82ea8c5699713ed48d23cc7419",
+     "e6aa095d02d0202ffe73c421dc3c61fcfeb24f354a1cc9ec9256482c7bd1090e",
+     "43a8ce8fdd19b329bbb5b4a98cebca1775b2491ab4beef8866f7f3241c3051b9"
+    ],
+    "created": 3,
+    "families": 3,
+    "reconciled": true,
+    "scanned": 6,
+    "unclassified_failures": 0,
+    "updated": 0
+   }
+  },
+  "reconcile_empty_store": {
+   "nothing_written": true,
+   "store_after": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945",
+   "store_before": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945",
+   "value": {
+    "at": "2026-09-20T00:00:00+00:00",
+    "candidates": [],
+    "created": 0,
+    "families": 0,
+    "reconciled": true,
+    "scanned": 0,
+    "unclassified_failures": 0,
+    "updated": 0
+   }
+  },
+  "reconcile_first": {
+   "nothing_written": false,
+   "store_after": "0933b86410db08bee1d3fdb9c58e9fde5af4d52572bc4caad8fb5b17b715f015",
+   "store_before": "b9b327ec78fdabe82d843c7443a1d8bae3233880f2bc393a51a14e2fcc5e8cf6",
+   "value": {
+    "at": "2026-09-20T00:00:00+00:00",
+    "candidates": [
+     "b12f72af981340fcb2185b01c5ed121ba0c744d0530a6a5926b2fd0a03a8d199",
+     "980f87fb3d77b1a31074aa2b4ccb7194e67438ff78e95c1231aa05623359969c"
+    ],
+    "created": 2,
+    "families": 4,
+    "reconciled": true,
+    "scanned": 17,
+    "unclassified_failures": 4,
+    "updated": 0
+   }
+  },
+  "reconcile_new_members_extend_and_keep_the_disposition": {
+   "decided_row": {
+    "count": 4,
+    "created_at": "2026-09-20T00:00:00+00:00",
+    "decided_at": "2026-09-20T12:00:00+00:00",
+    "evidence_refs": [
+     "sha256:dddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddd",
+     "docs/zeus/operations/operating-portfolio-001/SPEC.md"
+    ],
+    "family_status": "failed",
+    "id": "b12f72af981340fcb2185b01c5ed121ba0c744d0530a6a5926b2fd0a03a8d199",
+    "job_ids": [
+     "a1",
+     "a2",
+     "a3",
+     "a4"
+    ],
+    "reason_code": "child_refused",
+    "state": "deferred",
+    "updated_at": "2026-09-21T00:00:00+00:00"
+   },
+   "other_family_row": {
+    "count": 3,
+    "created_at": "2026-09-20T00:00:00+00:00",
+    "decided_at": null,
+    "evidence_refs": [],
+    "family_status": "rejected",
+    "id": "980f87fb3d77b1a31074aa2b4ccb7194e67438ff78e95c1231aa05623359969c",
+    "job_ids": [
+     "r1",
+     "r2",
+     "r3"
+    ],
+    "reason_code": "lead_rejected",
+    "state": "research_required",
+    "updated_at": "2026-09-21T00:00:00+00:00"
+   },
+   "summary": {
+    "at": "2026-09-21T00:00:00+00:00",
+    "candidates": [
+     "b12f72af981340fcb2185b01c5ed121ba0c744d0530a6a5926b2fd0a03a8d199",
+     "980f87fb3d77b1a31074aa2b4ccb7194e67438ff78e95c1231aa05623359969c"
+    ],
+    "created": 0,
+    "families": 4,
+    "reconciled": true,
+    "scanned": 19,
+    "unclassified_failures": 4,
+    "updated": 2
+   }
+  },
+  "reconcile_replay_writes_nothing": {
+   "nothing_written": true,
+   "store_after": "0933b86410db08bee1d3fdb9c58e9fde5af4d52572bc4caad8fb5b17b715f015",
+   "store_before": "0933b86410db08bee1d3fdb9c58e9fde5af4d52572bc4caad8fb5b17b715f015",
+   "value": {
+    "at": "2026-09-20T00:00:00+00:00",
+    "candidates": [
+     "b12f72af981340fcb2185b01c5ed121ba0c744d0530a6a5926b2fd0a03a8d199",
+     "980f87fb3d77b1a31074aa2b4ccb7194e67438ff78e95c1231aa05623359969c"
+    ],
+    "created": 0,
+    "families": 4,
+    "reconciled": true,
+    "scanned": 17,
+    "unclassified_failures": 4,
+    "updated": 0
+   }
+  },
+  "reconcile_rows": [
+   {
+    "count": 2,
+    "created_at": "2026-09-20T00:00:00+00:00",
+    "decided_at": null,
+    "evidence_refs": [],
+    "family_status": "rejected",
+    "id": "980f87fb3d77b1a31074aa2b4ccb7194e67438ff78e95c1231aa05623359969c",
+    "job_ids": [
+     "r1",
+     "r2"
+    ],
+    "reason_code": "lead_rejected",
+    "state": "research_required",
+    "updated_at": "2026-09-20T00:00:00+00:00"
+   },
+   {
+    "count": 3,
+    "created_at": "2026-09-20T00:00:00+00:00",
+    "decided_at": null,
+    "evidence_refs": [],
+    "family_status": "failed",
+    "id": "b12f72af981340fcb2185b01c5ed121ba0c744d0530a6a5926b2fd0a03a8d199",
+    "job_ids": [
+     "a1",
+     "a2",
+     "a3"
+    ],
+    "reason_code": "child_refused",
+    "state": "research_required",
+    "updated_at": "2026-09-20T00:00:00+00:00"
+   }
+  ],
+  "reconcile_store_failure_propagates": {
+   "message": "injected outage (LABELLED fixture)",
+   "raised": "RuntimeError"
+  },
+  "reconcile_touches_only_the_investigations_bucket": {
+   "buckets_after": [
+    "fleet_jobs",
+    "portfolio_investigations"
+   ],
+   "jobs_unchanged": true
+  },
+  "reconciler_callable": {
+   "candidate": [
+    {
+     "count": 2,
+     "job_ids": [
+      "op-1",
+      "op-2"
+     ],
+     "reason_code": "child_refused",
+     "state": "research_required"
+    }
+   ],
+   "first": {
+    "at": "2026-09-22T00:00:00+00:00",
+    "candidates": [
+     "b12f72af981340fcb2185b01c5ed121ba0c744d0530a6a5926b2fd0a03a8d199"
+    ],
+    "created": 1,
+    "families": 1,
+    "reconciled": true,
+    "scanned": 2,
+    "unclassified_failures": 0,
+    "updated": 0
+   },
+   "is_callable_taking_no_arguments": true,
+   "second": {
+    "at": "2026-09-22T00:00:00+00:00",
+    "candidates": [
+     "b12f72af981340fcb2185b01c5ed121ba0c744d0530a6a5926b2fd0a03a8d199"
+    ],
+    "created": 0,
+    "families": 1,
+    "reconciled": true,
+    "scanned": 2,
+    "unclassified_failures": 0,
+    "updated": 0
+   }
+  },
+  "reconciler_needs_no_definitions_or_resource": {
+   "at": "2026-09-22T00:00:00+00:00",
+   "candidates": [],
+   "created": 0,
+   "families": 0,
+   "reconciled": true,
+   "scanned": 0,
+   "unclassified_failures": 0,
+   "updated": 0
+  }
+ }
+}

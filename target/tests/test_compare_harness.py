@@ -99,7 +99,8 @@ S7_FAMILIES = {"review.releases_queue", "delivery.registry", "delivery.stages", 
                "delivery.canaries", "delivery.migration_evidence", "delivery.host_migration_transfer",
                "delivery.host_migration_cli", "delivery.migration_evidence_cli",
                "delivery.fleet_recovery_collectors", "delivery.restore.pg", "delivery.tooling"}
-S8_FAMILIES = {"research.program_tick", "research.capture", "research.program_records", "research.dispatch_recovery", "research.sources"}
+S8_FAMILIES = {"research.program_tick", "research.capture", "research.program_records", "research.dispatch_recovery", "research.sources",
+               "intake.portfolio"}
 S7_IMPLEMENTED = {"delivery.tooling", "delivery.restore.pg", "delivery.fleet_recovery_collectors", "delivery.release_runner", "delivery.canaries", "delivery.migration_evidence", "delivery.host_migration_transfer", "delivery.host_targets", "delivery.managed_runtime", "delivery.managed_systemd",
                   "review.releases_queue", "delivery.registry", "delivery.stages",
                   "delivery.owner_commands", "delivery.migration", "delivery.host_migrations",
