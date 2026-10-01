@@ -25,11 +25,8 @@ driver.start("target")
 
 import s5_coordination_composition as composition  # noqa: E402
 import s8_audit_core  # noqa: E402
-from codex_harness.coordination.application import execution_time  # noqa: E402
+from codex_harness.coordination.application import execution_recovery, execution_time  # noqa: E402
 from codex_harness.coordination.application.decisions import PendingDecisions  # noqa: E402
-from codex_harness.coordination.application.execution_recovery import (
-    ExecutionRecovery,  # noqa: E402
-)
 from codex_harness.coordination.application.outbox import Outbox  # noqa: E402
 from codex_harness.kernel import ids, message  # noqa: E402
 from codex_harness.kernel.errors import ContractError, require  # noqa: E402
@@ -59,7 +56,7 @@ def seeds_from(seeds):
 
 
 def recovery(store, org, artifacts):
-    return ExecutionRecovery(store, org, artifacts, audit_binding=audit_gate.binding, clock=composition.PORT, ids=composition.IDPORT)
+    return execution_recovery.ExecutionRecovery(store, org, artifacts, audit_binding=audit_gate.binding, clock=composition.PORT, ids=composition.IDPORT)
 
 
 def research_audits(store, verifier, artifacts, workflow, runner=None):
