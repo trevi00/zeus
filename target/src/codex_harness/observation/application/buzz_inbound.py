@@ -6,7 +6,7 @@ Owns: the `buzz_cursors` and `buzz_passes` buckets; the pass order (lower bound,
     cursor, pass record)
 Does not own: `remote_inbox` and `bridge_owner` rows (coordination, reached through the injected ports), command
     semantics (the injected sink; Batch B), the relay protocol (the injected RelayClient)
-Entry points: InboundPass.run
+Entry points: InboundPass.run, InboundPass.compact
 Contracts: INV-OBSERVATION-001, INV-IDEMPOTENCY-001
 
 Every transaction re-reads the bridge lease generation first (buzz DESIGN §6.5), so a stale bridge commits nothing.
@@ -36,6 +36,13 @@ class InboundPass:
     def run(self, generation: int) -> dict:
         """Run every bound channel once under `generation`; the per-channel result."""
         return {channel: self._channel(channel, generation) for channel in self.channels}
+
+    def compact(self, generation: int) -> int:
+        """Reclaim processed no-command inbox bodies older than `lookback + 24 h` (§6.2 F6; DA-R1)."""
+        older_than = int(self.clock()) - self.lookback - 86400
+        with self.store.transaction() as tx:
+            self.lease.require_current(tx, generation)
+            return self.inbox.compact(tx, older_than)
 
     # -- one channel ------------------------------------------------------------------------------------
 

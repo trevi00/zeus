@@ -5,7 +5,7 @@ Context: observation
 Owns: OWNED_BUCKETS of the observation context; SpoolFull and ObservationSpool (M7 `ports.py`, moved ahead in S4
     unchanged: the append-only record store the Observer writes through)
 Also owns (Buzz A1/A2, additive): the EventSigner, EventVerifier and RelayClient signatures (no implementation)
-Also owns (Buzz A3a, additive): the RemoteInboxPort and BridgeLeasePort signatures, which coordination's owner
+Also owns (Buzz A3a/A3b, additive): the RemoteInboxPort and BridgeLeasePort signatures, which coordination's owner
     operations implement structurally (no import from observation to coordination)
 Does not own: ObservationDirectory (9 methods, above the port-size limit: S9) and the other observation Protocols
     (PostgresFacts, RedisFacts, ...: S9)
@@ -22,7 +22,9 @@ from typing import Protocol
 OWNED_BUCKETS = ("observation_audit", "observations", "observation_quarantine", "observation_alerts",
                  "observation_collections", "observation_terminations", "health",
                  # Buzz A3a (design §6.2 steps 4 and 6): the per-channel cursor and the persisted reconciliation passes.
-                 "buzz_cursors", "buzz_passes")
+                 "buzz_cursors", "buzz_passes",
+                 # Buzz A3b (design §6.1): the signed outbound ops, the per-class deferral watermarks, one alert row.
+                 "buzz_outbox", "buzz_outbox_watermarks", "buzz_alerts")
 
 
 class SpoolFull(RuntimeError):
@@ -66,6 +68,7 @@ class RemoteInboxPort(Protocol):
     def insert_pending(self, tx, meta: dict) -> str: ...
     def mark_processed(self, tx, event_id: str, outcome: str) -> dict: ...
     def pending(self, tx) -> list[dict]: ...
+    def compact(self, tx, older_than: int) -> int: ...
 
 
 class BridgeLeasePort(Protocol):

@@ -239,10 +239,64 @@ def test_9_the_cursor_never_moves_backwards():
     assert w.rows("buzz_cursors")[0]["event_id"] == f"{99:064x}"
 
 
-def test_10_prune_is_not_provided_because_the_storage_port_cannot_delete():
-    # Escalated to the owner: Transaction has get/put/scan/records/entries only (storage/ports.py:33), so F6 pruning
-    # cannot delete rows. Until then a pending row, like every row, is never removed.
-    assert not hasattr(RemoteInbox(), "prune") and not hasattr(InboundPass, "prune")
+def _processed_world():
+    """One no-command row (non-owner), one command row (owner, sunk) and one pending row (sink down)."""
+    w = World([ev(20, NOW - 10, author=ROLE), ev(21, NOW - 20)])
+    w.pass_.run(w.generation)
+    with w.store.transaction() as tx:
+        w.inbox.insert_pending(tx, {"event_id": "p" * 64, "author": OWNER, "created_at": NOW, "received_at": NOW,
+                                    "channel": CHANNEL, "event": ev(22, NOW)})
+    return w
+
+
+def test_10_compaction_keeps_the_identity_and_drops_the_body():
+    w = _processed_world()
+    with w.store.transaction() as tx:  # a no-command row that still carries a body, as an older writer left it
+        row = tx.get("remote_inbox", ev(20, 0)["id"])
+        row["event"] = ev(20, NOW - 10)
+        tx.put("remote_inbox", row["id"], row)
+    w.now += 800 + 86400 + 100
+    assert w.pass_.compact(w.generation) == 1
+    row = next(r for r in w.rows("remote_inbox") if r["event_id"] == ev(20, 0)["id"])
+    assert "event" not in row and row["compacted"] is True
+    assert (row["author"], row["created_at"], row["channel"], row["outcome"], row["state"]) == (
+        ROLE, NOW - 10, CHANNEL, "ignored_not_owner", "processed") and row["received_at"] == NOW
+    assert w.pass_.compact(w.generation) == 0  # idempotent
+
+
+def test_10b_a_duplicate_of_a_compacted_event_is_still_a_duplicate():
+    w = _processed_world()
+    w.now += 800 + 86400 + 100
+    w.pass_.compact(w.generation)
+    with w.store.transaction() as tx:
+        assert w.inbox.insert_pending(tx, {"event_id": ev(20, 0)["id"], "author": ROLE, "created_at": 1,
+                                           "received_at": 2, "channel": "x"}) == "duplicate"
+        assert tx.get("remote_inbox", ev(20, 0)["id"])["compacted"] is True
+
+
+def test_10c_pending_command_and_young_rows_are_untouched():
+    w = _processed_world()
+    before = {r["event_id"]: r for r in w.rows("remote_inbox")}
+    w.now += 800 + 86400 + 100
+    w.pass_.compact(w.generation)
+    after = {r["event_id"]: r for r in w.rows("remote_inbox")}
+    command, pending = ev(21, 0)["id"], "p" * 64
+    assert after[command] == before[command] and "event" in after[command]  # stub_recorded keeps its event
+    assert after[pending] == before[pending] and after[pending]["state"] == "pending" and "event" in after[pending]
+    w2 = _processed_world()  # received less than lookback + 24 h ago: nothing compacts
+    w2.now += 86400
+    assert w2.pass_.compact(w2.generation) == 0
+
+
+def test_10d_compaction_under_a_stale_generation_commits_nothing():
+    w = _processed_world()
+    w.now += 800 + 86400 + 100
+    with w.store.transaction() as tx:
+        w.lease.acquire(tx, "bridge-1", w.now, 60)  # gen 2
+    before = w.digest()
+    with pytest.raises(ContractError, match="bridge_lease_lost"):
+        w.pass_.compact(w.generation)
+    assert w.digest() == before
 
 
 @pytest.mark.skip(reason="the labelled disposable-PG fixture is not provided to this worker; the owner runs integration")

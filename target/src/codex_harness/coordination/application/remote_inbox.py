@@ -2,17 +2,18 @@
 
 Layer: application
 Context: coordination
-Owns: the `remote_inbox` bucket: insert_pending, mark_processed, pending
+Owns: the `remote_inbox` bucket: insert_pending, mark_processed, pending, compact
 Does not own: parsing or admitting a command (RemoteControl, Batch B), the relay query and the cursor (observation)
-Entry points: RemoteInbox.insert_pending, RemoteInbox.mark_processed, RemoteInbox.pending
+Entry points: RemoteInbox.insert_pending, RemoteInbox.mark_processed, RemoteInbox.pending, RemoteInbox.compact
 Contracts: INV-IDEMPOTENCY-001
 
 Every method joins the CALLER's transaction (the V5 owner-operation pattern), so the bridge-lease check, the insert
 and the processed mark of one event commit together (buzz DESIGN §6.2 step 2, §6.5). Rows are
 `{id, event_id, author, created_at, received_at, channel, state: pending|processed, outcome}`; an owner-authored
 row may also carry the raw `event` so a crash-left `pending` row is resumable without the relay re-sending it (F2).
-`prune` (F6: processed no-command rows after LOOKBACK + 24 h) is NOT implemented: the storage Transaction port has no
-delete, and adding one is outside this task (escalated to the owner).
+F6 bounding is `compact`, not deletion (owner decision DA-R1: the storage Transaction port has no delete): a processed
+no-command row older than the horizon loses its raw `event` body and gets `compacted: true`, keeping its identity
+(event_id, author, created_at, received_at, channel, outcome), so a duplicate of it is still `duplicate`.
 """
 
 from __future__ import annotations
@@ -47,6 +48,21 @@ class RemoteInbox:
             row.pop("event", None)
         tx.put(BUCKET, event_id, row)
         return row
+
+    def compact(self, tx, older_than: int) -> int:
+        """Reclaim the body of processed no-command rows received before `older_than`; the number compacted.
+
+        Pending rows and rows whose outcome carried (or may have carried) a command are never touched.
+        """
+        count = 0
+        for row in tx.scan(BUCKET):
+            if (row["state"] == "processed" and row["outcome"] not in COMMAND_OUTCOMES
+                    and row["received_at"] < older_than and not row.get("compacted")):
+                row.pop("event", None)
+                row["compacted"] = True
+                tx.put(BUCKET, row["id"], row)
+                count += 1
+        return count
 
     def pending(self, tx) -> list[dict]:
         rows = [row for row in tx.scan(BUCKET) if row["state"] == "pending"]
