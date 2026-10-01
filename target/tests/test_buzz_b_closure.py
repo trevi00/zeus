@@ -1,6 +1,6 @@
 """Buzz Batch B: the bridge never imports provider or credential adapters (Buzz DESIGN §5, §8; DESIGN-B §1 closure test).
 
-The `buzz_bridge` composition itself is Batch D. Until it exists this tests the import closure of the modules that do:
+This tests the import closure of the Batch D bridge process (composition and entry, D1) and of the modules it wires:
 Batch B (remote control and the projection, both layers) and Batch A's transport (relay, signer, verifier, outbox,
 inbound pass, bridge lease, remote inbox). The closure follows every static import, `from pkg import module` and each
 package `__init__` on the way, so one transitive edge into a provider is found.
@@ -61,7 +61,10 @@ def violations(modules: set[str]) -> list[str]:
                       and not m.startswith(ALLOWED_CREDENTIAL_ADAPTER + ".")))
 
 
-@pytest.mark.parametrize("entry", BATCH_B + BATCH_A_TRANSPORT)
+BATCH_D_PROCESS = ("composition.buzz_bridge", "entry.processes.buzz_bridge")
+
+
+@pytest.mark.parametrize("entry", BATCH_B + BATCH_A_TRANSPORT + BATCH_D_PROCESS)
 def test_the_import_closure_has_no_provider_and_no_credential_adapter_but_role_keys(entry):
     modules = closure(entry)
     assert f"{ROOT}.{entry}" in modules and len(modules) >= 2
