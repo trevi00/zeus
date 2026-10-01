@@ -2,8 +2,7 @@
  "family": "evidence.inspections",
  "description": "S8 evidence inspections of M7 application/evidence_inspection.py (EvidenceInspections: binding, inspect with its fence, require_all_checked; forwards_progress), characterized before the evidence_inspection move: every raise and every require of the module with the digests of evidence_inspections and evidence_inspection_notices before and after, the M7 tests/test_evidence_inspection.py behaviours the application decides (the typed lease and candidate, the v4 identity, the cache, the recording-failure notice, the consumer's reads); MemoryStore, a LABELLED inspector double with the result shapes of EvidenceInspector, no adapter, no executor, no PostgreSQL",
  "reference_driver": "drivers/reference/s8_evidence_inspections.py",
- "target_driver": null,
+ "target_driver": "drivers/target/s8_evidence_inspections.py",
  "golden": "goldens/reference/evidence.inspections.json",
- "slice": "S8",
- "target_status": "pending: S8 evidence_inspection move"
+ "slice": "S8"
 }
