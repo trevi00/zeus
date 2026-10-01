@@ -2,8 +2,7 @@
  "family": "delivery.canaries",
  "description": "S7 M7 host_delivery adapter module functions, characterized before their move (INV-HOST-DELIVERY-001, INV-HOST-DELIVERY-FIRST-ACTIVATION-001): the plan-scoped canary file names and tokens, the enabled setting, the bounded JSON state read and the atomic write (G4, no fsync, recorded), the git directory / checkout / runtime revision resolution over REAL pinned repositories (plain, packed refs, detached, linked worktree through commondir) and hand-written git directories, the effective worker image and profile digest and the committed digest at a revision, first-activation facts over a LABELLED docker double, load_plan at a revision with every size and shape refusal, normalize_checks, host_ports per target kind, systemd_control_dir, and the three canaries with canary_checks over fixture state dirs, receipts, LABELLED sleeper processes and a LABELLED store; environment-dependent readers take their inputs as parameters or a LABELLED settings file and environment that each case sets and restores",
  "reference_driver": "drivers/reference/s7_host_delivery_helpers.py",
- "target_driver": null,
+ "target_driver": "drivers/target/s7_host_delivery_helpers.py",
  "golden": "goldens/reference/delivery.canaries.json",
- "slice": "S7",
- "target_status": "pending: S7 host_delivery adapter move (V6)"
+ "slice": "S7"
 }
