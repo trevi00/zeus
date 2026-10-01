@@ -3,10 +3,11 @@
 Layer: ports
 Context: delivery
 Owns: OWNED_BUCKETS of the delivery context (the host delivery and host migration buckets); the consumer-declared Protocols HostDelivery's objects call on review's
-    release owner. Each has at most 6 methods; the implementations (review's Releases and ReleaseQueue) are
+    release owner, and `WorkerProfiles` (the worker profile the host_delivery adapter reads through context's
+    worker_profile adapter). Each has at most 6 methods; the implementations (review's Releases and ReleaseQueue) are
     structural and never import this module; composition wires them
 Does not own: the release rows (review), the host targets, GitHub and canary adapters (S7 adapter step)
-Entry points: OWNED_BUCKETS, ReleaseAuthority, ReleaseClaims, ReleaseSettlement
+Entry points: OWNED_BUCKETS, ReleaseAuthority, ReleaseClaims, ReleaseSettlement, WorkerProfiles
 Contracts: INV-HOST-DELIVERY-001, INV-RELEASE-001
 """
 
@@ -58,3 +59,19 @@ class ReleaseSettlement(Protocol):
     def defer(self, claim, result, *, resume_after_seconds=0, now=None): ...
 
     def finish(self, claim, result, now=None): ...
+
+
+class WorkerProfiles(Protocol):
+    """context: the packaged worker profile, as the host_delivery adapter reads it (S7 pilot 42a). Implemented
+    structurally by `context.adapters.worker_profile` (module-level names), passed in by composition."""
+
+    PROFILES: dict
+    MAX_CHARACTERS: int
+
+    def load_profile(self, name) -> dict: ...
+
+    def profile_digest(self, profile: dict) -> str: ...
+
+    def _normalized(self, text: str) -> str: ...
+
+    def _sha256(self, text: str) -> str: ...
