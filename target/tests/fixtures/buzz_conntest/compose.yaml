@@ -17,8 +17,8 @@
 # address INSIDE the container; the host side is the loopback publish.)
 #
 # Digests: relay and minio are the digests given by the task / Buzz's compose. Buzz's compose names postgres and
-# redis by TAG only, so their digests are `__DIGEST_TBD__` placeholders: THE OWNER PINS THEM before the run (the
-# test refuses to start while a placeholder remains).
+# redis by TAG only; the owner pinned them on 2026-10-01 from the registry index digests (postgres 17.11,
+# redis 7.4.11, each verified by running the image with network none).
 name: zeus-buzz-conntest
 
 services:
@@ -80,7 +80,7 @@ services:
 
   postgres:
     # Buzz's compose pins the tag only: the owner replaces the placeholder with the digest of postgres:17-alpine.
-    image: postgres:17-alpine@sha256:__DIGEST_TBD__
+    image: postgres:17-alpine@sha256:b0f9560a2de083e2cc7382e75f808c7381a32852a7ec49117deedb300e552b24
     environment:
       POSTGRES_DB: buzz
       POSTGRES_USER: buzz
@@ -100,7 +100,7 @@ services:
 
   redis:
     # Buzz's compose pins the tag only: the owner replaces the placeholder with the digest of redis:7-alpine.
-    image: redis:7-alpine@sha256:__DIGEST_TBD__
+    image: redis:7-alpine@sha256:858f009f9709ce576febc734aa78b8f6d624b82571f9ddb6bda4377c833b3499
     command: ["redis-server", "--appendonly", "yes", "--requirepass", "${REDIS_PASSWORD:?set by the test}"]
     environment:
       REDIS_PASSWORD: ${REDIS_PASSWORD:?set by the test}
