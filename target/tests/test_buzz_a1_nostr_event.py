@@ -137,3 +137,19 @@ def test_classify_none_and_example():
     assert ne.classify(frame.message) == "auth-required"
     for message in ("", "hello", "unknown: x", "duplicate", "Duplicate: x", " duplicate: x", "a:duplicate: x"):
         assert ne.classify(message) == "none"
+
+
+def test_new_observation_domain_modules_import_only_stdlib_and_kernel():
+    import ast
+    import sys
+    from pathlib import Path
+
+    domain = Path(ne.__file__).parent
+    for name in ("nostr_event.py", "bip340.py"):
+        for node in ast.walk(ast.parse((domain / name).read_text(encoding="utf-8"))):
+            modules = ([a.name for a in node.names] if isinstance(node, ast.Import)
+                       else [node.module or ""] if isinstance(node, ast.ImportFrom) and not node.level else [])
+            assert not (isinstance(node, ast.ImportFrom) and node.level), name
+            for module in modules:
+                top = module.split(".")[0]
+                assert top in sys.stdlib_module_names or module.startswith("codex_harness.kernel"), (name, module)
