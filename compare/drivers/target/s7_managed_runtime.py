@@ -26,15 +26,22 @@ from codex_harness.context.adapters import worker_profile  # noqa: E402
 from codex_harness.delivery.adapters import host_delivery  # noqa: E402
 
 
+IDS = s7_managed_runtime.SpreadIds()
+
+
+def Materializer(target, **kwargs):
+    return s7_managed_composition.Materializer(target, new_hex=lambda: IDS.uuid4().hex, **kwargs)
+
+
 def sync_clock():
     """No-op: the target driver installs no determinism; its clock is the real wall time."""
 
 
 API = SimpleNamespace(
-    **s7_managed_composition.names(),
+    **{**s7_managed_composition.names(), "Materializer": Materializer},
     effective_profile_digest=lambda: host_delivery.effective_profile_digest(worker_profile),
     SOURCE_PACKAGE=Path(os.environ["ZEUS_REBUILD_SOURCE_ROOT"]).resolve() / "src" / "codex_harness",
-    sync_clock=sync_clock, reset_ids=lambda: None)
+    sync_clock=sync_clock, reset_ids=IDS.reset)
 
 if __name__ == "__main__":
     driver.finish("target", "delivery.managed_runtime", s7_managed_runtime.run(API))
