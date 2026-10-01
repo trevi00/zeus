@@ -2,8 +2,7 @@
  "family": "delivery.managed_systemd",
  "description": "S7 M7 managed Fleet target supervised by ONE owner-fixed systemd unit, characterized before its move (INV-OWNER-ACTIONS-001, aibox SPEC s14 G3): only the owner-fixed unit can supervise and a plan names none; through the real HostDelivery coordinator over real sealed runtimes, the real trusted supervise process and the real sealed fixture-workload child, the controller starts only the unit and the sealed runtime reports itself, a restarted controller recognizes the running unit and never starts a second Fleet, a failed unit restarts under the same checks and a requested stop is never restarted, a surviving old child refuses, and a failed candidate rolls back through the same unit (every systemctl argv the labelled SimulatedSystemd control double receives is recorded: show and start of the one unit only); supervise in process refuses before any launch for each of nine named faults (no, foreign or stale request, changed descriptor or manifest, a requested stop, held, unknown or unreachable debt, a wrong kind) and launches the persisted request exactly once when the checks hold; the unit state is read, never guessed; the fixture source repository is the pinned-identity git copy of SOURCE reused from delivery.managed_runtime; the host cgroup behaviour is unreachable here and named",
  "reference_driver": "drivers/reference/s7_managed_systemd.py",
- "target_driver": null,
+ "target_driver": "drivers/target/s7_managed_systemd.py",
  "golden": "goldens/reference/delivery.managed_systemd.json",
- "slice": "S7",
- "target_status": "pending: S7 managed runtime move (V6)"
+ "slice": "S7"
 }
