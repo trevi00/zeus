@@ -380,20 +380,22 @@ def differing_paths(expected, actual, path="$") -> list[str]:
     return [] if expected == actual else [path]
 
 
-INTENDED_OPS = frozenset({"absent", "remove_item"})
+INTENDED_OPS = frozenset({"absent", "remove_item", "insert_item"})
 
 
 def apply_intended_differences(golden, declarations) -> tuple[object, list[str]]:
     """The target's EXPECTED result: the reference golden with each declared, authorized intended difference applied.
 
-    A declaration is `{"path": "$.a.b", "op": "absent" | "remove_item", "item": <for remove_item>, "authority":
-    "<who decided, where recorded>"}`. It is an ASSERTION, not a mask:
+    A declaration is `{"path": "$.a.b", "op": "absent" | "remove_item" | "insert_item", "item": <for remove_item and
+    insert_item>, "index": <for insert_item>, "authority": "<who decided, where recorded>"}`. It is an ASSERTION,
+    not a mask:
     - the path must exist in the reference golden (a stale declaration is refused);
-    - the target must then differ in exactly that way (the key absent, or exactly that one list item removed);
+    - the target must then differ in exactly that way (the key absent, exactly that one list item removed, or
+      exactly that one item inserted at `index`, 0 <= index <= len, into a list the golden holds);
     - every other byte must be equal.
 
-    Used only for explicitly retired behaviour (e.g. the W-B Windows branches the user retired on 2026-09-28,
-    DESIGN-s7 §0). Returns `(expected, problems)`; any problem makes the scenario fail."""
+    Used only for retired behaviour (e.g. the W-B Windows branches the user retired on 2026-09-28, DESIGN-s7 §0) or
+    a design-authorized addition (e.g. the P2 control-version record, Buzz DESIGN-B §5 D-B2-1). Returns `(expected, problems)`; any problem makes the scenario fail."""
     expected = json.loads(json.dumps(golden))
     problems = []
     for index, declaration in enumerate(declarations or []):
@@ -412,6 +414,15 @@ def apply_intended_differences(golden, declarations) -> tuple[object, list[str]]
             continue
         if op == "absent":
             del node[last]
+        elif op == "insert_item":
+            value, at = node[last], declaration.get("index")
+            if not isinstance(value, list):
+                problems.append(f"intended_differences[{index}]: {path} is not a list in the reference golden")
+                continue
+            if type(at) is not int or not 0 <= at <= len(value) or "item" not in declaration:
+                problems.append(f"intended_differences[{index}]: {path} insert index/item invalid for {len(value)} items")
+                continue
+            value.insert(at, declaration["item"])
         else:
             value = node[last]
             if not isinstance(value, list) or value.count(declaration.get("item")) != 1:

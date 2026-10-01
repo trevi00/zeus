@@ -235,6 +235,33 @@ def test_stale_or_invalid_declarations_are_problems():
         assert problems, bad
 
 
+def test_insert_item_is_an_exact_positioned_assertion():
+    run = _run_module()
+    golden = {"a": {"b": [["x", 1], ["z", 3]], "c": 5}}
+    item = ["y", 2]
+    for at, want in ((0, [item, ["x", 1], ["z", 3]]), (1, [["x", 1], item, ["z", 3]]), (2, [["x", 1], ["z", 3], item])):
+        expected, problems = run.apply_intended_differences(
+            golden, [{"path": "$.a.b", "op": "insert_item", "index": at, "item": item, "authority": "x"}])
+        assert problems == [] and expected == {"a": {"b": want, "c": 5}}
+        assert expected != golden
+    assert golden == {"a": {"b": [["x", 1], ["z", 3]], "c": 5}}  # the reference golden is never rewritten
+
+
+def test_insert_item_refuses_stale_path_bad_index_and_non_list():
+    run = _run_module()
+    golden = {"a": {"b": [1, 2], "c": 5}}
+    for bad in ({"path": "$.a.missing", "op": "insert_item", "index": 0, "item": 1, "authority": "x"},  # stale
+                {"path": "$.a.b", "op": "insert_item", "index": 3, "item": 1, "authority": "x"},        # > len
+                {"path": "$.a.b", "op": "insert_item", "index": -1, "item": 1, "authority": "x"},       # < 0
+                {"path": "$.a.b", "op": "insert_item", "index": True, "item": 1, "authority": "x"},     # not an int
+                {"path": "$.a.b", "op": "insert_item", "item": 1, "authority": "x"},                    # no index
+                {"path": "$.a.b", "op": "insert_item", "index": 0, "authority": "x"},                   # no item
+                {"path": "$.a.c", "op": "insert_item", "index": 0, "item": 1, "authority": "x"},        # not a list
+                {"path": "$.a.b", "op": "insert_item", "index": 0, "item": 1, "authority": ""}):        # no authority
+        _, problems = run.apply_intended_differences(golden, [bad])
+        assert problems, bad
+
+
 def test_a_pair_family_target_side_gets_its_own_fresh_pair(tmp_path, monkeypatch):
     """The pair families fix their database names "on a fresh pair per run" (S7 restore design §2): the target side
     runs on a NEW pair, started after the reference side's pair is removed, never on the pair the reference seeded."""
