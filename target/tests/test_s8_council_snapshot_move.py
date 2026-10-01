@@ -197,4 +197,4 @@ def test_the_default_connect_is_psycopg_and_the_council_driver_uses_this_module(
     driver = (REPO / "compare" / "drivers" / "target" / "s8_council.py").read_text()
     assert "from codex_harness.research.adapters.council_snapshot import" in driver
     assert "class ReadOnlySnapshot" not in driver and "class SnapshotUnavailable" not in driver
-    assert "class EvidenceUnavailable" in driver  # the stand-in that stays until autonomous_evidence moves
+    assert "class EvidenceUnavailable" not in driver  # the stand-in was removed when autonomous_evidence moved (S8 pilot 80)
