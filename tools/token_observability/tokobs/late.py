@@ -148,18 +148,24 @@ def link_late_predecessors(scan: Scan) -> None:
 # --------------------------------------------------------------------- refinement (read-only, report side)
 
 
-def _baseline_models(conn: sqlite3.Connection, predecessor: str) -> tuple[str, dict[str, dict[str, float]]]:
-    """The newest non-zeroed late result's modelUsage of the predecessor; else its own finalized cumulative."""
+def _baseline_models(conn: sqlite3.Connection, predecessor: str) -> tuple[str, str, dict[str, dict[str, float]]]:
+    """(source, proof state, models) of the predecessor: the newest non-zeroed late result's modelUsage, else its own
+    finalized cumulative. The proof state applies the ordinary zeroed-crash continuity refusal (`_predecessor`,
+    s1_routine) to the ordinary AND the late results of the predecessor: a zeroed one may hide spend, so an earlier
+    nonzero model row never proves the baseline."""
+    zeroed = conn.execute("SELECT 1 FROM results WHERE invocation_id=?1 AND zeroed=1 UNION ALL "
+                          "SELECT 1 FROM late_results WHERE invocation_id=?1 AND zeroed=1", (predecessor,)).fetchone()
+    proof = "unproven" if zeroed else "proven"
     late = conn.execute("SELECT lr.late_id FROM late_results lr WHERE lr.invocation_id=? AND lr.zeroed=0 AND EXISTS "
                         "(SELECT 1 FROM late_result_models m WHERE m.late_id=lr.late_id) ORDER BY lr.late_id DESC "
                         "LIMIT 1", (predecessor,)).fetchone()
     if late is not None:
         rows = conn.execute("SELECT model,input,output,cache_read,cache_write,cost_usd FROM late_result_models "
                             "WHERE late_id=?", (late[0],)).fetchall()
-        return "late_result", {r[0]: dict(zip((*TOKEN_TYPES, "cost_usd"), r[1:], strict=True)) for r in rows}
+        return "late_result", proof, {r[0]: dict(zip((*TOKEN_TYPES, "cost_usd"), r[1:], strict=True)) for r in rows}
     rows = conn.execute("SELECT model,input,output,cache_read,cache_write,cost_usd FROM cumulative "
                         "WHERE invocation_id=?", (predecessor,)).fetchall()
-    return "predecessor_cumulative", {r[0]: dict(zip((*TOKEN_TYPES, "cost_usd"), r[1:], strict=True)) for r in rows}
+    return "predecessor_cumulative", proof, {r[0]: dict(zip((*TOKEN_TYPES, "cost_usd"), r[1:], strict=True)) for r in rows}
 
 
 def refine_successor(conn: sqlite3.Connection, inv: dict) -> dict | None:
@@ -169,7 +175,7 @@ def refine_successor(conn: sqlite3.Connection, inv: dict) -> dict | None:
     if not links:
         return None
     predecessor = links[-1][0]
-    source, baseline_models = _baseline_models(conn, predecessor)
+    source, proof, baseline_models = _baseline_models(conn, predecessor)
     answer: dict = {"predecessor": predecessor, "baseline_source": source, "published": False}
     if not baseline_models:
         return {**answer, "state": "still_unknown", "reason": "no_baseline", "remainder": []}
@@ -180,7 +186,7 @@ def refine_successor(conn: sqlite3.Connection, inv: dict) -> dict | None:
     consultations = conn.execute("SELECT COUNT(*) FROM advisor_consultations WHERE invocation_id=?",
                                  (inv["id"],)).fetchone()[0]
     plan = plan_partition(_results(conn, inv["id"]), executor, inv["advisor_model"], consultations,
-                          resumed_baseline(inv, "proven", baseline_models), external)
+                          resumed_baseline(inv, proof, baseline_models), external)
     if plan.share_models or not plan.cumulative:
         return {**answer, "state": "still_unknown", "reason": primary_reason(plan.reasons) or "no_result",
                 "remainder": []}

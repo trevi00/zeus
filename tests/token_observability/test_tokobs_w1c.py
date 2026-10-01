@@ -470,6 +470,65 @@ def test_f4_a_lane_predecessor_discovered_after_the_successor_finalized_is_a_lat
     assert rig.scan(advance=30).sum("zeus_tokobs_ledger_corrections_total", kind="late_predecessor") == 1
 
 
+def _zeroed_crash(uuid="crash", index=1):
+    return claude_result(uuid, usage(), {}, index=index, is_error=True, subtype="error_during_execution")
+
+
+def test_f4_a_late_predecessor_with_a_zeroed_result_keeps_the_zeroed_crash_refusal(tmp_path):
+    """The executed trigger: late success (cumulative 100) then a zeroed error. Successor cumulative 150, M 20: the
+    ordinary path refuses continuity (a zeroed crash may hide spend), so the refinement refuses too (no_baseline)."""
+    rig = Rig(tmp_path)
+    _missing_predecessor(rig)
+    frozen = _published(rig)
+    rig.events(TASK, 1, claude_init(), claude_result("r1", usage(0, 100, 0, 0), {SONNET: entry(0, 100, 0, 0)}),
+               _zeroed_crash())
+    after = rig.scan(advance=30)
+    assert rig.sql("SELECT zeroed FROM late_results WHERE invocation_id=? ORDER BY late_id",
+                   f"routine:{TASK}:1") == [(0,), (1,)]  # the late facts are kept...
+    assert after.sum("zeus_tokobs_ledger_corrections_total", kind="late_predecessor") == 1  # ...and so is the link
+    refined = _task_report(rig, TASK)["invocations"][1]["late"]["refined_allocation"]
+    assert (refined["state"], refined["reason"], refined["remainder"], refined["published"]) == (
+        "still_unknown", "no_baseline", [], False)  # not 30: an earlier nonzero model row proves nothing
+    assert _published(rig) == frozen
+    replay = rig.scan(advance=30)
+    assert replay.sum("zeus_tokobs_ledger_corrections_total", kind="late_predecessor") == 1
+    assert _published(rig) == frozen
+
+
+def test_f4_a_zeroed_late_result_alone_is_not_a_proven_baseline_either(tmp_path):
+    """Order does not matter: zeroed first, then a nonzero late result."""
+    rig = Rig(tmp_path)
+    _missing_predecessor(rig)
+    rig.events(TASK, 1, claude_init(), _zeroed_crash("crash", 0),
+               claude_result("r1", usage(0, 100, 0, 0), {SONNET: entry(0, 100, 0, 0)}, index=1))
+    rig.scan(advance=30)
+    refined = _task_report(rig, TASK)["invocations"][1]["late"]["refined_allocation"]
+    assert (refined["state"], refined["reason"], refined["remainder"]) == ("still_unknown", "no_baseline", [])
+
+
+def test_f4_a_zeroed_ordinary_predecessor_discovered_later_with_correction_facts_is_still_unknown(tmp_path):
+    rig = Rig(tmp_path)
+    rig.lane_meta("lane-one", "run-r2.json", state="finished", exit_code=0, mode="resume", predecessor_run="run.json")
+    rig.stream("evidence/lane-one/events-r2.jsonl", claude_init(model="opus"),
+               claude_result("a2", usage(0, 5, 0, 0), {OPUS: entry(0, 19, 0, 0)}, index=1))
+    rig.scan(advance=30)
+    second = "lane:lane-one:run-r2.json"
+    frozen = _published(rig)
+    rig.lane_meta("lane-one", "run.json", state="finished", exit_code=0)
+    rig.stream("evidence/lane-one/events.jsonl", claude_init(model="opus"),
+               claude_result("a1", usage(0, 10, 0, 0), {OPUS: entry(0, 10, 0, 0)}), _zeroed_crash("a1x", 1))
+    prom = rig.scan(advance=30)
+    assert rig.sql("SELECT zeroed FROM results WHERE invocation_id='lane:lane-one:run.json' ORDER BY seq") == [
+        (0,), (1,)]
+    assert prom.sum("zeus_tokobs_ledger_corrections_total", kind="late_predecessor") == 1
+    refined = _inv_report(rig, second)["invocation"]["late"]["refined_allocation"]
+    assert (refined["state"], refined["reason"], refined["remainder"]) == ("still_unknown", "no_baseline", [])
+    assert rig.inv(second)["unknown_reason"] == "no_baseline"
+    assert {k: v for k, v in _published(rig).items() if k != "outcomes"}["contributions"][
+        :len(frozen["contributions"])] == frozen["contributions"]  # the successor's published rows are unchanged
+    assert rig.scan(advance=30).sum("zeus_tokobs_ledger_corrections_total", kind="late_predecessor") == 1
+
+
 # ----------------------------------------------------------------------------- nonblocking items
 
 
