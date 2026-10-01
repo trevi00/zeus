@@ -32,7 +32,9 @@ services:
       BUZZ_REQUIRE_RELAY_MEMBERSHIP: "true"
       BUZZ_REQUIRE_AUTH_TOKEN: "true"
       BUZZ_AUTO_MIGRATE: "true"
-      BUZZ_GIT_CONFORMANCE_PROBE: "true"
+      # Owner A4 run 2: the git object-store conformance probe is fatal without S3 (main.rs:698ff); A4 uses no git
+      # features and the MinIO images are not anonymously pullable (A4-PREP Run 1). Test-only; never production.
+      BUZZ_GIT_CONFORMANCE_PROBE: "false"
       BUZZ_BIND_ADDR: 0.0.0.0:3000
       BUZZ_HEALTH_PORT: "8080"
       BUZZ_METRICS_PORT: "9102"
@@ -59,10 +61,6 @@ services:
         condition: service_healthy
       redis:
         condition: service_healthy
-      minio:
-        condition: service_healthy
-      minio-init:
-        condition: service_completed_successfully
     # The readiness healthcheck exactly as Buzz's compose: /_readiness over /dev/tcp (bash, no curl).
     healthcheck:
       test:
@@ -118,47 +116,9 @@ services:
     networks:
       - internal
 
-  minio:
-    image: quay.io/minio/minio:RELEASE.2025-09-07T16-13-09Z@sha256:14cea493d9a34af32f524e538b8346cf79f3321eff8e708c1e2960462bd8936e
-    command: server /data --console-address ":9001"
-    environment:
-      MINIO_ROOT_USER: ${BUZZ_S3_ACCESS_KEY:?set by the test}
-      MINIO_ROOT_PASSWORD: ${BUZZ_S3_SECRET_KEY:?set by the test}
-    volumes:
-      - buzz-minio-data:/data
-    healthcheck:
-      test: ["CMD", "curl", "-f", "http://127.0.0.1:9000/minio/health/live"]
-      interval: 5s
-      timeout: 5s
-      retries: 12
-      start_period: 10s
-    restart: "no"
-    networks:
-      - internal
-
-  minio-init:
-    image: quay.io/minio/mc:RELEASE.2025-08-13T08-35-41Z@sha256:a7fe349ef4bd8521fb8497f55c6042871b2ae640607cf99d9bede5e9bdf11727
-    depends_on:
-      minio:
-        condition: service_healthy
-    environment:
-      BUZZ_S3_ACCESS_KEY: ${BUZZ_S3_ACCESS_KEY:?set by the test}
-      BUZZ_S3_SECRET_KEY: ${BUZZ_S3_SECRET_KEY:?set by the test}
-      BUZZ_S3_BUCKET: buzz-media
-    entrypoint: >
-      /bin/sh -euc '
-        mc alias set local http://minio:9000 "$${BUZZ_S3_ACCESS_KEY}" "$${BUZZ_S3_SECRET_KEY}"
-        mc mb --ignore-existing "local/$${BUZZ_S3_BUCKET}"
-        mc anonymous set none "local/$${BUZZ_S3_BUCKET}"
-      '
-    restart: "no"
-    networks:
-      - internal
-
 volumes:
   buzz-postgres-data:
   buzz-redis-data:
-  buzz-minio-data:
   buzz-git-data:
 
 networks:

@@ -25,7 +25,7 @@ def test_compose_has_no_placeholder_and_pins_every_image():
     text = COMPOSE.read_text(encoding="utf-8")
     assert "__DIGEST_TBD__" not in text
     images = re.findall(r"^\s+image:\s*(\S+)\s*$", text, flags=re.MULTILINE)
-    assert len(images) == 5
+    assert len(images) == 3  # relay, postgres, redis (MinIO dropped in A4 run 2: not pullable, not needed)
     assert all(re.search(r"@sha256:[0-9a-f]{64}$", image) for image in images), images
 
 
