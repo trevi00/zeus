@@ -1,0 +1,3635 @@
+{
+ "cases_per_group": {
+  "collect": 17,
+  "parse": 20,
+  "pressure_hold": 18,
+  "proxy_independence": 5,
+  "transport": 12
+ },
+ "collect": {
+  "artifact_store_down": {
+   "artifact_puts": [],
+   "fetch_calls": [
+    "https://news.hada.io/rss/news"
+   ],
+   "result": {
+    "message": "fixture artifact store down",
+    "raised": "OSError"
+   }
+  },
+  "collect_live_swallow": {
+   "both_ok": {
+    "artifact_puts": 2,
+    "fetch_calls": [
+     "https://github.com/trending",
+     "https://news.hada.io/rss/news"
+    ],
+    "items": 5,
+    "status": {
+     "geeknews": {
+      "artifact": "sha256:2839123482f77c12b80dca3eb2e5f01e20c16751bd7158d2b172a349ed7e76d8",
+      "code": null,
+      "fetched_at": "2026-09-22T00:00:00+00:00",
+      "items": 3,
+      "status": "ok"
+     },
+     "github": {
+      "artifact": "sha256:560b5cb1383e28664d0a33e453a6e42abafaaaf0c2dc2fda4489fa78f875c164",
+      "code": null,
+      "fetched_at": "2026-09-22T00:00:00+00:00",
+      "items": 2,
+      "status": "ok"
+     }
+    }
+   },
+   "contract_error": {
+    "artifact_puts": 0,
+    "fetch_calls": [
+     "https://github.com/trending",
+     "https://news.hada.io/rss/news"
+    ],
+    "items": 0,
+    "status": {
+     "geeknews": {
+      "artifact": null,
+      "code": "ContractError",
+      "fetched_at": null,
+      "items": null,
+      "status": "unavailable"
+     },
+     "github": {
+      "artifact": null,
+      "code": "ContractError",
+      "fetched_at": null,
+      "items": null,
+      "status": "unavailable"
+     }
+    }
+   },
+   "http_error": {
+    "artifact_puts": 0,
+    "fetch_calls": [
+     "https://github.com/trending",
+     "https://news.hada.io/rss/news"
+    ],
+    "items": 0,
+    "status": {
+     "geeknews": {
+      "artifact": null,
+      "code": "HTTPError",
+      "fetched_at": null,
+      "items": null,
+      "status": "unavailable"
+     },
+     "github": {
+      "artifact": null,
+      "code": "HTTPError",
+      "fetched_at": null,
+      "items": null,
+      "status": "unavailable"
+     }
+    }
+   },
+   "one_down": {
+    "artifact_puts": 1,
+    "fetch_calls": [
+     "https://github.com/trending",
+     "https://news.hada.io/rss/news"
+    ],
+    "items": 2,
+    "status": {
+     "geeknews": {
+      "artifact": "sha256:4de8de6eed2e61345f48250e359e97eee83a459ce382bf41cc014f99fe5aaeeb",
+      "code": null,
+      "fetched_at": "2026-09-22T00:00:00+00:00",
+      "items": 2,
+      "status": "ok"
+     },
+     "github": {
+      "artifact": null,
+      "code": "HTTPError",
+      "fetched_at": null,
+      "items": null,
+      "status": "unavailable"
+     }
+    }
+   },
+   "os_error": {
+    "artifact_puts": 0,
+    "fetch_calls": [
+     "https://github.com/trending",
+     "https://news.hada.io/rss/news"
+    ],
+    "items": 0,
+    "status": {
+     "geeknews": {
+      "artifact": null,
+      "code": "OSError",
+      "fetched_at": null,
+      "items": null,
+      "status": "unavailable"
+     },
+     "github": {
+      "artifact": null,
+      "code": "OSError",
+      "fetched_at": null,
+      "items": null,
+      "status": "unavailable"
+     }
+    }
+   },
+   "socket_timeout": {
+    "artifact_puts": 0,
+    "fetch_calls": [
+     "https://github.com/trending",
+     "https://news.hada.io/rss/news"
+    ],
+    "items": 0,
+    "status": {
+     "geeknews": {
+      "artifact": null,
+      "code": "TimeoutError",
+      "fetched_at": null,
+      "items": null,
+      "status": "unavailable"
+     },
+     "github": {
+      "artifact": null,
+      "code": "TimeoutError",
+      "fetched_at": null,
+      "items": null,
+      "status": "unavailable"
+     }
+    }
+   },
+   "timeout": {
+    "artifact_puts": 0,
+    "fetch_calls": [
+     "https://github.com/trending",
+     "https://news.hada.io/rss/news"
+    ],
+    "items": 0,
+    "status": {
+     "geeknews": {
+      "artifact": null,
+      "code": "TimeoutError",
+      "fetched_at": null,
+      "items": null,
+      "status": "unavailable"
+     },
+     "github": {
+      "artifact": null,
+      "code": "TimeoutError",
+      "fetched_at": null,
+      "items": null,
+      "status": "unavailable"
+     }
+    }
+   },
+   "url_error": {
+    "artifact_puts": 0,
+    "fetch_calls": [
+     "https://github.com/trending",
+     "https://news.hada.io/rss/news"
+    ],
+    "items": 0,
+    "status": {
+     "geeknews": {
+      "artifact": null,
+      "code": "URLError",
+      "fetched_at": null,
+      "items": null,
+      "status": "unavailable"
+     },
+     "github": {
+      "artifact": null,
+      "code": "URLError",
+      "fetched_at": null,
+      "items": null,
+      "status": "unavailable"
+     }
+    }
+   },
+   "value_error": {
+    "artifact_puts": 0,
+    "fetch_calls": [
+     "https://github.com/trending",
+     "https://news.hada.io/rss/news"
+    ],
+    "items": 0,
+    "status": {
+     "geeknews": {
+      "artifact": null,
+      "code": "ValueError",
+      "fetched_at": null,
+      "items": null,
+      "status": "unavailable"
+     },
+     "github": {
+      "artifact": null,
+      "code": "ValueError",
+      "fetched_at": null,
+      "items": null,
+      "status": "unavailable"
+     }
+    }
+   }
+  },
+  "empty_source": {
+   "artifact_puts": [],
+   "fetch_calls": [],
+   "result": {
+    "message": "Unknown research source",
+    "raised": "ContractError"
+   }
+  },
+  "fetch_raises": {
+   "contract_error": {
+    "artifact_puts": [],
+    "fetch_calls": [
+     "https://github.com/trending"
+    ],
+    "result": {
+     "message": "Research response exceeds size budget",
+     "raised": "ContractError"
+    }
+   },
+   "http_error": {
+    "artifact_puts": [],
+    "fetch_calls": [
+     "https://github.com/trending"
+    ],
+    "result": {
+     "message": "HTTP Error 503: Service Unavailable",
+     "raised": "HTTPError"
+    }
+   },
+   "os_error": {
+    "artifact_puts": [],
+    "fetch_calls": [
+     "https://github.com/trending"
+    ],
+    "result": {
+     "message": "fixture connection reset",
+     "raised": "OSError"
+    }
+   },
+   "socket_timeout": {
+    "artifact_puts": [],
+    "fetch_calls": [
+     "https://github.com/trending"
+    ],
+    "result": {
+     "message": "fixture socket timeout",
+     "raised": "TimeoutError"
+    }
+   },
+   "timeout": {
+    "artifact_puts": [],
+    "fetch_calls": [
+     "https://github.com/trending"
+    ],
+    "result": {
+     "message": "fixture timed out",
+     "raised": "TimeoutError"
+    }
+   },
+   "url_error": {
+    "artifact_puts": [],
+    "fetch_calls": [
+     "https://github.com/trending"
+    ],
+    "result": {
+     "message": "<urlopen error fixture: name resolution failed>",
+     "raised": "URLError"
+    }
+   },
+   "value_error": {
+    "artifact_puts": [],
+    "fetch_calls": [
+     "https://github.com/trending"
+    ],
+    "result": {
+     "message": "fixture bad value",
+     "raised": "ValueError"
+    }
+   }
+  },
+  "geeknews_atom": {
+   "artifact_puts": [
+    {
+     "chars": 619,
+     "sha256": "4de8de6eed2e61345f48250e359e97eee83a459ce382bf41cc014f99fe5aaeeb",
+     "source": "https://news.hada.io/rss/news"
+    }
+   ],
+   "fetch_calls": [
+    "https://news.hada.io/rss/news"
+   ],
+   "result": {
+    "value": {
+     "artifact": "sha256:4de8de6eed2e61345f48250e359e97eee83a459ce382bf41cc014f99fe5aaeeb",
+     "fetched_at": "2026-09-22T00:00:00+00:00",
+     "items": [
+      {
+       "summary": "body one",
+       "title": "Atom one",
+       "url": "https://example.org/a1"
+      },
+      {
+       "summary": "",
+       "title": "Atom no content",
+       "url": "https://example.org/a3"
+      }
+     ],
+     "source": "https://news.hada.io/rss/news"
+    }
+   }
+  },
+  "geeknews_malformed": {
+   "artifact_puts": [
+    {
+     "chars": 88,
+     "sha256": "e5775b222c50b7cce4540f0baf68b8816a89b7a981e9d04446c3464b092c0e09",
+     "source": "https://news.hada.io/rss/news"
+    }
+   ],
+   "fetch_calls": [
+    "https://news.hada.io/rss/news"
+   ],
+   "result": {
+    "message": "mismatched tag: line 1, column 80",
+    "raised": "ParseError"
+   }
+  },
+  "geeknews_mixed": {
+   "artifact_puts": [
+    {
+     "chars": 222,
+     "sha256": "615ec02e870dfde3bb36c03ecd77d3e6981d8bd8347a4c43531f1631fabd3b55",
+     "source": "https://news.hada.io/rss/news"
+    }
+   ],
+   "fetch_calls": [
+    "https://news.hada.io/rss/news"
+   ],
+   "result": {
+    "value": {
+     "artifact": "sha256:615ec02e870dfde3bb36c03ecd77d3e6981d8bd8347a4c43531f1631fabd3b55",
+     "fetched_at": "2026-09-22T00:00:00+00:00",
+     "items": [
+      {
+       "summary": "d",
+       "title": "rss-in-atom-doc",
+       "url": "https://example.org/r"
+      },
+      {
+       "summary": "",
+       "title": "e",
+       "url": "https://example.org/e"
+      }
+     ],
+     "source": "https://news.hada.io/rss/news"
+    }
+   }
+  },
+  "geeknews_no_entries": {
+   "artifact_puts": [
+    {
+     "chars": 64,
+     "sha256": "8d59afa7e3d5fe373e4dc22b1ad13c02347a78f414111f28831abe62d6f7f1bd",
+     "source": "https://news.hada.io/rss/news"
+    }
+   ],
+   "fetch_calls": [
+    "https://news.hada.io/rss/news"
+   ],
+   "result": {
+    "message": "Research source returned no parseable entries",
+    "raised": "ContractError"
+   }
+  },
+  "geeknews_rss": {
+   "artifact_puts": [
+    {
+     "chars": 2284,
+     "sha256": "2839123482f77c12b80dca3eb2e5f01e20c16751bd7158d2b172a349ed7e76d8",
+     "source": "https://news.hada.io/rss/news"
+    }
+   ],
+   "fetch_calls": [
+    "https://news.hada.io/rss/news"
+   ],
+   "result": {
+    "value": {
+     "artifact": "sha256:2839123482f77c12b80dca3eb2e5f01e20c16751bd7158d2b172a349ed7e76d8",
+     "fetched_at": "2026-09-22T00:00:00+00:00",
+     "items": [
+      {
+       "summary": "Locks everywhere",
+       "title": "Advisory lock patterns",
+       "url": "https://news.hada.io/topic?id=1"
+      },
+      {
+       "summary": "",
+       "title": "No description",
+       "url": "https://news.hada.io/topic?id=3"
+      },
+      {
+       "summary": "xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx",
+       "title": "Long",
+       "url": "https://news.hada.io/topic?id=4"
+      }
+     ],
+     "source": "https://news.hada.io/rss/news"
+    }
+   }
+  },
+  "github": {
+   "artifact_puts": [
+    {
+     "chars": 753,
+     "sha256": "560b5cb1383e28664d0a33e453a6e42abafaaaf0c2dc2fda4489fa78f875c164",
+     "source": "https://github.com/trending"
+    }
+   ],
+   "fetch_calls": [
+    "https://github.com/trending"
+   ],
+   "result": {
+    "value": {
+     "artifact": "sha256:560b5cb1383e28664d0a33e453a6e42abafaaaf0c2dc2fda4489fa78f875c164",
+     "fetched_at": "2026-09-22T00:00:00+00:00",
+     "items": [
+      {
+       "summary": "Postgres & advisory locks",
+       "title": "acme/pgtool",
+       "url": "https://github.com/acme/pgtool"
+      },
+      {
+       "summary": "",
+       "title": "org/repo.name-1",
+       "url": "https://github.com/org/repo.name-1"
+      }
+     ],
+     "source": "https://github.com/trending"
+    }
+   }
+  },
+  "github_detail": {
+   "http_error": {
+    "artifact_puts": [],
+    "fetch_calls": [
+     "https://api.github.com/repos/acme/pgtool"
+    ],
+    "result": {
+     "message": "HTTP Error 403: rate limit",
+     "raised": "HTTPError"
+    }
+   },
+   "invalid_revision": {
+    "artifact_puts": [],
+    "fetch_calls": [
+     "https://api.github.com/repos/acme/pgtool",
+     "https://api.github.com/repos/acme/pgtool/commits/release%2F1.x"
+    ],
+    "result": {
+     "message": "Invalid source revision",
+     "raised": "ContractError"
+    }
+   },
+   "invalid_url_": {
+    "artifact_puts": [],
+    "fetch_calls": [],
+    "result": {
+     "message": "Invalid repository URL",
+     "raised": "ContractError"
+    }
+   },
+   "invalid_url_http__github.com_acme_pgtool": {
+    "artifact_puts": [],
+    "fetch_calls": [],
+    "result": {
+     "message": "Invalid repository URL",
+     "raised": "ContractError"
+    }
+   },
+   "invalid_url_https__github.com_a b_c": {
+    "artifact_puts": [],
+    "fetch_calls": [],
+    "result": {
+     "message": "Invalid repository URL",
+     "raised": "ContractError"
+    }
+   },
+   "invalid_url_https__github.com_acme": {
+    "artifact_puts": [],
+    "fetch_calls": [],
+    "result": {
+     "message": "Invalid repository URL",
+     "raised": "ContractError"
+    }
+   },
+   "invalid_url_https__github.com_acme_pgtool_": {
+    "artifact_puts": [],
+    "fetch_calls": [],
+    "result": {
+     "message": "Invalid repository URL",
+     "raised": "ContractError"
+    }
+   },
+   "invalid_url_https__github.com_acme_pgtool_tree_main": {
+    "artifact_puts": [],
+    "fetch_calls": [],
+    "result": {
+     "message": "Invalid repository URL",
+     "raised": "ContractError"
+    }
+   },
+   "invalid_url_https__gitlab.com_acme_pgtool": {
+    "artifact_puts": [],
+    "fetch_calls": [],
+    "result": {
+     "message": "Invalid repository URL",
+     "raised": "ContractError"
+    }
+   },
+   "metadata_not_json": {
+    "artifact_puts": [],
+    "fetch_calls": [
+     "https://api.github.com/repos/acme/pgtool"
+    ],
+    "result": {
+     "message": "Expecting value: line 1 column 1 (char 0)",
+     "raised": "JSONDecodeError"
+    }
+   },
+   "metadata_without_archived": {
+    "artifact_puts": [
+     {
+      "chars": 18009,
+      "sha256": "dc6a6318086def22aed5f0684e76b294af549749d0aacd78cc6d56ecad014c6d",
+      "source": "https://github.com/acme/pgtool/blob/aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa/README.md"
+     }
+    ],
+    "fetch_calls": [
+     "https://api.github.com/repos/acme/pgtool",
+     "https://api.github.com/repos/acme/pgtool/commits/release%2F1.x",
+     "https://api.github.com/repos/acme/pgtool/readme?ref=aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa"
+    ],
+    "result": {
+     "message": "'archived'",
+     "raised": "KeyError"
+    }
+   },
+   "metadata_without_branch": {
+    "artifact_puts": [],
+    "fetch_calls": [
+     "https://api.github.com/repos/acme/pgtool"
+    ],
+    "result": {
+     "message": "'default_branch'",
+     "raised": "KeyError"
+    }
+   },
+   "no_license": {
+    "artifact_puts": [
+     {
+      "chars": 18009,
+      "sha256": "dc6a6318086def22aed5f0684e76b294af549749d0aacd78cc6d56ecad014c6d",
+      "source": "https://github.com/acme/pgtool/blob/aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa/README.md"
+     }
+    ],
+    "fetch_calls": [
+     "https://api.github.com/repos/acme/pgtool",
+     "https://api.github.com/repos/acme/pgtool/commits/release%2F1.x",
+     "https://api.github.com/repos/acme/pgtool/readme?ref=aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa"
+    ],
+    "result": {
+     "value": {
+      "archived": false,
+      "default_branch": "release/1.x",
+      "description": "Postgres tooling",
+      "fetched_at": "2026-09-22T00:00:00+00:00",
+      "license": null,
+      "pushed_at": "2028-01-01T00:00:00Z",
+      "readme_excerpt": {
+       "bytes": 9999,
+       "sha256": "5decb6f13908b03a110257a5d99720440eb598361e0a3136bb9620158391a25b"
+      },
+      "readme_ref": "sha256:dc6a6318086def22aed5f0684e76b294af549749d0aacd78cc6d56ecad014c6d",
+      "revision": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+      "url": "https://github.com/acme/pgtool"
+     }
+    }
+   },
+   "readme_encoding": {
+    "artifact_puts": [],
+    "fetch_calls": [
+     "https://api.github.com/repos/acme/pgtool",
+     "https://api.github.com/repos/acme/pgtool/commits/release%2F1.x",
+     "https://api.github.com/repos/acme/pgtool/readme?ref=aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa"
+    ],
+    "result": {
+     "message": "Unsupported README encoding",
+     "raised": "ContractError"
+    }
+   },
+   "readme_missing_key": {
+    "artifact_puts": [],
+    "fetch_calls": [
+     "https://api.github.com/repos/acme/pgtool",
+     "https://api.github.com/repos/acme/pgtool/commits/release%2F1.x",
+     "https://api.github.com/repos/acme/pgtool/readme?ref=aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa"
+    ],
+    "result": {
+     "message": "'content'",
+     "raised": "KeyError"
+    }
+   },
+   "short_revision": {
+    "artifact_puts": [],
+    "fetch_calls": [
+     "https://api.github.com/repos/acme/pgtool",
+     "https://api.github.com/repos/acme/pgtool/commits/release%2F1.x"
+    ],
+    "result": {
+     "message": "Invalid source revision",
+     "raised": "ContractError"
+    }
+   },
+   "success": {
+    "artifact_puts": [
+     {
+      "chars": 18009,
+      "sha256": "dc6a6318086def22aed5f0684e76b294af549749d0aacd78cc6d56ecad014c6d",
+      "source": "https://github.com/acme/pgtool/blob/aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa/README.md"
+     }
+    ],
+    "fetch_calls": [
+     "https://api.github.com/repos/acme/pgtool",
+     "https://api.github.com/repos/acme/pgtool/commits/release%2F1.x",
+     "https://api.github.com/repos/acme/pgtool/readme?ref=aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa"
+    ],
+    "result": {
+     "value": {
+      "archived": false,
+      "default_branch": "release/1.x",
+      "description": "Postgres tooling",
+      "fetched_at": "2026-09-22T00:00:00+00:00",
+      "license": "MIT",
+      "pushed_at": "2028-01-01T00:00:00Z",
+      "readme_excerpt": {
+       "bytes": 9999,
+       "sha256": "5decb6f13908b03a110257a5d99720440eb598361e0a3136bb9620158391a25b"
+      },
+      "readme_ref": "sha256:dc6a6318086def22aed5f0684e76b294af549749d0aacd78cc6d56ecad014c6d",
+      "revision": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+      "url": "https://github.com/acme/pgtool"
+     }
+    }
+   },
+   "timeout_on_commit": {
+    "artifact_puts": [],
+    "fetch_calls": [
+     "https://api.github.com/repos/acme/pgtool",
+     "https://api.github.com/repos/acme/pgtool/commits/release%2F1.x"
+    ],
+    "result": {
+     "message": "fixture timed out",
+     "raised": "TimeoutError"
+    }
+   }
+  },
+  "github_malformed_page": {
+   "artifact_puts": [
+    {
+     "chars": 74,
+     "sha256": "dbf60e3de109ca345cdfcfea3dcecaa7cb9fc897acdab797162796e4ce8ed4d5",
+     "source": "https://github.com/trending"
+    }
+   ],
+   "fetch_calls": [
+    "https://github.com/trending"
+   ],
+   "result": {
+    "message": "Research source returned no parseable entries",
+    "raised": "ContractError"
+   }
+  },
+  "github_page_without_articles": {
+   "artifact_puts": [
+    {
+     "chars": 13,
+     "sha256": "b633a587c652d02386c4f16f8c6f6aab7352d97f16367c3c40576214372dd628",
+     "source": "https://github.com/trending"
+    }
+   ],
+   "fetch_calls": [
+    "https://github.com/trending"
+   ],
+   "result": {
+    "message": "Research source returned no parseable entries",
+    "raised": "ContractError"
+   }
+  },
+  "github_seventeen_items_bound": {
+   "fetch_calls": [
+    "https://github.com/trending"
+   ],
+   "items": 15
+  },
+  "oversize_2000001_stubbed": {
+   "artifact_puts": [
+    {
+     "chars": 2000001,
+     "sha256": "58edf06312fbc20016cd1bb4b3784b23eeae2184f5d22cc271b0e28ea66416c5",
+     "source": "https://news.hada.io/rss/news"
+    }
+   ],
+   "fetch_calls": [
+    "https://news.hada.io/rss/news"
+   ],
+   "result": {
+    "value": {
+     "artifact": "sha256:58edf06312fbc20016cd1bb4b3784b23eeae2184f5d22cc271b0e28ea66416c5",
+     "fetched_at": "2026-09-22T00:00:00+00:00",
+     "items": [
+      {
+       "summary": "",
+       "title": "t",
+       "url": "https://news.hada.io/topic?id=9"
+      }
+     ],
+     "source": "https://news.hada.io/rss/news"
+    }
+   }
+  },
+  "unknown_source": {
+   "artifact_puts": [],
+   "fetch_calls": [],
+   "result": {
+    "message": "Unknown research source",
+    "raised": "ContractError"
+   }
+  },
+  "urls": {
+   "geeknews": "https://news.hada.io/rss/news",
+   "github": "https://github.com/trending"
+  }
+ },
+ "parse": {
+  "at_cap_body": {
+   "body": {
+    "chars": 2000000,
+    "sha256": "9a027c57aa1171b97d9a8f7329af7965ef8e9437e295a6106b15c4b734384c0b"
+   },
+   "bytes": 2000000,
+   "parse_feed": {
+    "value": [
+     {
+      "summary": "",
+      "title": "t",
+      "url": "https://news.hada.io/topic?id=9"
+     }
+    ]
+   }
+  },
+  "oversize_body": {
+   "body": {
+    "chars": 2000001,
+    "sha256": "58edf06312fbc20016cd1bb4b3784b23eeae2184f5d22cc271b0e28ea66416c5"
+   },
+   "bytes": 2000001,
+   "parse_feed": {
+    "value": [
+     {
+      "summary": "",
+      "title": "t",
+      "url": "https://news.hada.io/topic?id=9"
+     }
+    ]
+   },
+   "parse_github": {
+    "value": []
+   }
+  },
+  "parse_feed_atom": {
+   "value": [
+    {
+     "summary": "body one",
+     "title": "Atom one",
+     "url": "https://example.org/a1"
+    },
+    {
+     "summary": "",
+     "title": "Atom no content",
+     "url": "https://example.org/a3"
+    }
+   ]
+  },
+  "parse_feed_empty": {
+   "message": "no element found: line 1, column 0",
+   "raised": "ParseError"
+  },
+  "parse_feed_github_html": {
+   "value": []
+  },
+  "parse_feed_malformed_feed": {
+   "message": "mismatched tag: line 1, column 80",
+   "raised": "ParseError"
+  },
+  "parse_feed_malformed_page": {
+   "message": "mismatched tag: line 1, column 56",
+   "raised": "ParseError"
+  },
+  "parse_feed_mixed": {
+   "value": [
+    {
+     "summary": "d",
+     "title": "rss-in-atom-doc",
+     "url": "https://example.org/r"
+    },
+    {
+     "summary": "",
+     "title": "e",
+     "url": "https://example.org/e"
+    }
+   ]
+  },
+  "parse_feed_no_entries": {
+   "value": []
+  },
+  "parse_feed_not_xml": {
+   "message": "syntax error: line 1, column 0",
+   "raised": "ParseError"
+  },
+  "parse_feed_rss": {
+   "value": [
+    {
+     "summary": "Locks everywhere",
+     "title": "Advisory lock patterns",
+     "url": "https://news.hada.io/topic?id=1"
+    },
+    {
+     "summary": "",
+     "title": "No description",
+     "url": "https://news.hada.io/topic?id=3"
+    },
+    {
+     "summary": "xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx",
+     "title": "Long",
+     "url": "https://news.hada.io/topic?id=4"
+    }
+   ]
+  },
+  "parse_feed_small_rss": {
+   "value": [
+    {
+     "summary": "",
+     "title": "t",
+     "url": "https://news.hada.io/topic?id=1"
+    }
+   ]
+  },
+  "parse_feed_summary_bound": [
+   16,
+   0,
+   1500
+  ],
+  "parse_github_empty": {
+   "value": []
+  },
+  "parse_github_github_html": {
+   "value": [
+    {
+     "summary": "Postgres & advisory locks",
+     "title": "acme/pgtool",
+     "url": "https://github.com/acme/pgtool"
+    },
+    {
+     "summary": "",
+     "title": "org/repo.name-1",
+     "url": "https://github.com/org/repo.name-1"
+    }
+   ]
+  },
+  "parse_github_malformed_page": {
+   "value": []
+  },
+  "parse_github_no_entries": {
+   "value": []
+  },
+  "parse_github_not_xml": {
+   "value": []
+  },
+  "parse_github_rss": {
+   "value": []
+  },
+  "parse_github_seventeen": {
+   "count": 17,
+   "first": {
+    "summary": "desc 0",
+    "title": "own00/repo00",
+    "url": "https://github.com/own00/repo00"
+   },
+   "last": {
+    "summary": "desc 16",
+    "title": "own16/repo16",
+    "url": "https://github.com/own16/repo16"
+   }
+  }
+ },
+ "pressure_hold": {
+  "census": {
+   "backlog_disabled": {
+    "capacity": 2,
+    "complete": true,
+    "excluded": {},
+    "occupancy": {
+     "jobs_reserving": 0,
+     "units_held": 0
+    },
+    "paused": false,
+    "registered": true,
+    "unknown": {
+     "backlog": 0,
+     "budget": 0,
+     "continuation": 0
+    },
+    "waiting": 0
+   },
+   "backlog_open_with_job": {
+    "capacity": 2,
+    "complete": true,
+    "excluded": {},
+    "occupancy": {
+     "jobs_reserving": 0,
+     "units_held": 0
+    },
+    "paused": false,
+    "registered": true,
+    "unknown": {
+     "backlog": 0,
+     "budget": 0,
+     "continuation": 0
+    },
+    "waiting": 1
+   },
+   "backlog_unknown": {
+    "capacity": 2,
+    "complete": false,
+    "excluded": {},
+    "occupancy": {
+     "jobs_reserving": 0,
+     "units_held": 0
+    },
+    "paused": false,
+    "registered": true,
+    "unknown": {
+     "backlog": 1,
+     "budget": 0,
+     "continuation": 0
+    },
+    "waiting": 0
+   },
+   "blocked_jobs": {
+    "capacity": 2,
+    "complete": true,
+    "excluded": {
+     "dependency_failed": 1,
+     "dependency_missing": 1,
+     "dependency_waiting": 1
+    },
+    "occupancy": {
+     "jobs_reserving": 0,
+     "units_held": 0
+    },
+    "paused": false,
+    "registered": true,
+    "unknown": {
+     "backlog": 0,
+     "budget": 0,
+     "continuation": 0
+    },
+    "waiting": 0
+   },
+   "continuation_conductor_intended": {
+    "capacity": 2,
+    "complete": true,
+    "excluded": {},
+    "occupancy": {
+     "jobs_reserving": 0,
+     "units_held": 0
+    },
+    "paused": false,
+    "registered": true,
+    "unknown": {
+     "backlog": 0,
+     "budget": 0,
+     "continuation": 0
+    },
+    "waiting": 0
+   },
+   "continuation_held": {
+    "capacity": 2,
+    "complete": true,
+    "excluded": {},
+    "occupancy": {
+     "jobs_reserving": 0,
+     "units_held": 0
+    },
+    "paused": false,
+    "registered": true,
+    "unknown": {
+     "backlog": 0,
+     "budget": 0,
+     "continuation": 0
+    },
+    "waiting": 0
+   },
+   "continuation_research_route": {
+    "capacity": 2,
+    "complete": true,
+    "excluded": {},
+    "occupancy": {
+     "jobs_reserving": 0,
+     "units_held": 0
+    },
+    "paused": false,
+    "registered": true,
+    "unknown": {
+     "backlog": 0,
+     "budget": 0,
+     "continuation": 0
+    },
+    "waiting": 1
+   },
+   "continuation_unknown": {
+    "capacity": 2,
+    "complete": false,
+    "excluded": {},
+    "occupancy": {
+     "jobs_reserving": 0,
+     "units_held": 0
+    },
+    "paused": false,
+    "registered": true,
+    "unknown": {
+     "backlog": 0,
+     "budget": 0,
+     "continuation": 1
+    },
+    "waiting": 0
+   },
+   "continuation_with_successor_job": {
+    "capacity": 2,
+    "complete": true,
+    "excluded": {},
+    "occupancy": {
+     "jobs_reserving": 0,
+     "units_held": 0
+    },
+    "paused": false,
+    "registered": true,
+    "unknown": {
+     "backlog": 0,
+     "budget": 0,
+     "continuation": 0
+    },
+    "waiting": 1
+   },
+   "fleet_paused_control": {
+    "capacity": 1,
+    "complete": true,
+    "excluded": {},
+    "occupancy": {
+     "jobs_reserving": 0,
+     "units_held": 0
+    },
+    "paused": true,
+    "registered": true,
+    "unknown": {
+     "backlog": 0,
+     "budget": 0,
+     "continuation": 0
+    },
+    "waiting": 3
+   },
+   "held_unit": {
+    "capacity": 2,
+    "complete": true,
+    "excluded": {},
+    "occupancy": {
+     "jobs_reserving": 0,
+     "units_held": 1
+    },
+    "paused": false,
+    "registered": true,
+    "unknown": {
+     "backlog": 0,
+     "budget": 0,
+     "continuation": 0
+    },
+    "waiting": 0
+   },
+   "job_exclusions": {
+    "capacity": 2,
+    "complete": true,
+    "excluded": {
+     "budget_stale": 1,
+     "dependency_failed": 1,
+     "path_conflict": 1
+    },
+    "occupancy": {
+     "jobs_reserving": 2,
+     "units_held": 0
+    },
+    "paused": false,
+    "registered": true,
+    "unknown": {
+     "backlog": 0,
+     "budget": 0,
+     "continuation": 0
+    },
+    "waiting": 2
+   },
+   "ledger_finite_broken": {
+    "capacity": 2,
+    "complete": false,
+    "excluded": {},
+    "occupancy": {
+     "jobs_reserving": 0,
+     "units_held": 0
+    },
+    "paused": false,
+    "registered": true,
+    "unknown": {
+     "backlog": 0,
+     "budget": 1,
+     "continuation": 0
+    },
+    "waiting": 1
+   },
+   "ledger_finite_clean": {
+    "capacity": 2,
+    "complete": true,
+    "excluded": {},
+    "occupancy": {
+     "jobs_reserving": 0,
+     "units_held": 0
+    },
+    "paused": false,
+    "registered": true,
+    "unknown": {
+     "backlog": 0,
+     "budget": 0,
+     "continuation": 0
+    },
+    "waiting": 1
+   },
+   "ledger_finite_damaged": {
+    "capacity": 2,
+    "complete": true,
+    "excluded": {},
+    "occupancy": {
+     "jobs_reserving": 0,
+     "units_held": 0
+    },
+    "paused": false,
+    "registered": true,
+    "unknown": {
+     "backlog": 0,
+     "budget": 0,
+     "continuation": 0
+    },
+    "waiting": 1
+   },
+   "ledger_finite_exhausted": {
+    "capacity": 1,
+    "complete": true,
+    "excluded": {
+     "budget_exhausted": 3
+    },
+    "occupancy": {
+     "jobs_reserving": 0,
+     "units_held": 0
+    },
+    "paused": false,
+    "registered": true,
+    "unknown": {
+     "backlog": 0,
+     "budget": 0,
+     "continuation": 0
+    },
+    "waiting": 0
+   },
+   "ledger_finite_none": {
+    "capacity": 2,
+    "complete": false,
+    "excluded": {},
+    "occupancy": {
+     "jobs_reserving": 0,
+     "units_held": 0
+    },
+    "paused": false,
+    "registered": true,
+    "unknown": {
+     "backlog": 0,
+     "budget": 1,
+     "continuation": 0
+    },
+    "waiting": 1
+   },
+   "ledger_finite_none_without_waiting": {
+    "capacity": 2,
+    "complete": true,
+    "excluded": {},
+    "occupancy": {
+     "jobs_reserving": 0,
+     "units_held": 0
+    },
+    "paused": false,
+    "registered": true,
+    "unknown": {
+     "backlog": 0,
+     "budget": 0,
+     "continuation": 0
+    },
+    "waiting": 0
+   },
+   "ledger_subscription_broken": {
+    "capacity": 2,
+    "complete": false,
+    "excluded": {},
+    "occupancy": {
+     "jobs_reserving": 0,
+     "units_held": 0
+    },
+    "paused": false,
+    "registered": true,
+    "unknown": {
+     "backlog": 0,
+     "budget": 1,
+     "continuation": 0
+    },
+    "waiting": 1
+   },
+   "ledger_subscription_clean": {
+    "capacity": 2,
+    "complete": true,
+    "excluded": {},
+    "occupancy": {
+     "jobs_reserving": 0,
+     "units_held": 0
+    },
+    "paused": false,
+    "registered": true,
+    "unknown": {
+     "backlog": 0,
+     "budget": 0,
+     "continuation": 0
+    },
+    "waiting": 1
+   },
+   "ledger_subscription_damaged": {
+    "capacity": 2,
+    "complete": true,
+    "excluded": {
+     "budget_exhausted": 1
+    },
+    "occupancy": {
+     "jobs_reserving": 0,
+     "units_held": 0
+    },
+    "paused": false,
+    "registered": true,
+    "unknown": {
+     "backlog": 0,
+     "budget": 0,
+     "continuation": 0
+    },
+    "waiting": 0
+   },
+   "ledger_subscription_none": {
+    "capacity": 2,
+    "complete": false,
+    "excluded": {},
+    "occupancy": {
+     "jobs_reserving": 0,
+     "units_held": 0
+    },
+    "paused": false,
+    "registered": true,
+    "unknown": {
+     "backlog": 0,
+     "budget": 1,
+     "continuation": 0
+    },
+    "waiting": 1
+   },
+   "ledger_subscription_none_without_waiting": {
+    "capacity": 2,
+    "complete": true,
+    "excluded": {},
+    "occupancy": {
+     "jobs_reserving": 0,
+     "units_held": 0
+    },
+    "paused": false,
+    "registered": true,
+    "unknown": {
+     "backlog": 0,
+     "budget": 0,
+     "continuation": 0
+    },
+    "waiting": 0
+   },
+   "unregistered": {
+    "registered": false
+   },
+   "waiting_only_lane_busy": {
+    "capacity": 2,
+    "complete": true,
+    "excluded": {},
+    "occupancy": {
+     "jobs_reserving": 1,
+     "units_held": 0
+    },
+    "paused": false,
+    "registered": true,
+    "unknown": {
+     "backlog": 0,
+     "budget": 0,
+     "continuation": 0
+    },
+    "waiting": 1
+   }
+  },
+  "decide_fallbacks": {
+   "capacity_bool": {
+    "value": {
+     "decision": "hold",
+     "hysteresis_state": "active",
+     "reason_code": "pressure_unknown"
+    }
+   },
+   "capacity_none": {
+    "value": {
+     "decision": "hold",
+     "hysteresis_state": "paused",
+     "reason_code": "pressure_unknown"
+    }
+   },
+   "capacity_one_pause_at_three": {
+    "value": {
+     "decision": "hold",
+     "hysteresis_state": "paused",
+     "reason_code": "pressure_high"
+    }
+   },
+   "capacity_one_resume_at_one": {
+    "value": {
+     "decision": "allow",
+     "hysteresis_state": "active",
+     "reason_code": "pressure_ok"
+    }
+   },
+   "capacity_zero": {
+    "value": {
+     "decision": "hold",
+     "hysteresis_state": "active",
+     "reason_code": "pressure_unknown"
+    }
+   },
+   "empty_prior_state": {
+    "value": {
+     "decision": "allow",
+     "hysteresis_state": "active",
+     "reason_code": "pressure_ok"
+    }
+   },
+   "incomplete": {
+    "value": {
+     "decision": "hold",
+     "hysteresis_state": "paused",
+     "reason_code": "pressure_unknown"
+    }
+   },
+   "no_policy": {
+    "value": {
+     "decision": "hold",
+     "hysteresis_state": "paused",
+     "reason_code": "pressure_unknown"
+    }
+   },
+   "paused_fleet": {
+    "value": {
+     "decision": "hold",
+     "hysteresis_state": "active",
+     "reason_code": "fleet_paused"
+    }
+   },
+   "unregistered": {
+    "value": {
+     "decision": "hold",
+     "hysteresis_state": "paused",
+     "reason_code": "fleet_unregistered"
+    }
+   }
+  },
+  "decide_hysteresis": {
+   "w0_paused": {
+    "decision": "allow",
+    "hysteresis_state": "active",
+    "reason_code": "pressure_ok"
+   },
+   "w1_None": {
+    "decision": "allow",
+    "hysteresis_state": "active",
+    "reason_code": "pressure_ok"
+   },
+   "w2_None": {
+    "decision": "allow",
+    "hysteresis_state": "active",
+    "reason_code": "pressure_ok"
+   },
+   "w2_paused": {
+    "decision": "allow",
+    "hysteresis_state": "active",
+    "reason_code": "pressure_ok"
+   },
+   "w3_active": {
+    "decision": "allow",
+    "hysteresis_state": "active",
+    "reason_code": "pressure_ok"
+   },
+   "w3_paused": {
+    "decision": "hold",
+    "hysteresis_state": "paused",
+    "reason_code": "pressure_high"
+   },
+   "w4_active": {
+    "decision": "allow",
+    "hysteresis_state": "active",
+    "reason_code": "pressure_ok"
+   },
+   "w5_None": {
+    "decision": "allow",
+    "hysteresis_state": "active",
+    "reason_code": "pressure_ok"
+   },
+   "w5_paused": {
+    "decision": "hold",
+    "hysteresis_state": "paused",
+    "reason_code": "pressure_high"
+   },
+   "w6_None": {
+    "decision": "hold",
+    "hysteresis_state": "paused",
+    "reason_code": "pressure_high"
+   },
+   "w6_paused": {
+    "decision": "hold",
+    "hysteresis_state": "paused",
+    "reason_code": "pressure_high"
+   },
+   "w7_active": {
+    "decision": "hold",
+    "hysteresis_state": "paused",
+    "reason_code": "pressure_high"
+   }
+  },
+  "evaluator": {
+   "capacity_is_configured_slots": {
+    "authority": "proactive discovery admission only; never a Fleet pause, an admission, a tick or a verdict about any job, and the thresholds are the policy document's own (suggested_unconfirmed until confirmed)",
+    "basis": {
+     "complete": true,
+     "excluded_counts": {},
+     "fleet_config_sha256": "5013afff1c2ccc6b96b90bbba1575052c2d3d41f1f3ad4374b23009dd75993b1",
+     "ledger": "fresh",
+     "paused": false,
+     "registered": true,
+     "unknown_counts": {
+      "backlog": 0,
+      "budget": 0,
+      "continuation": 0
+     }
+    },
+    "capacity": 2,
+    "decision": "allow",
+    "detail": null,
+    "evaluation_sequence": 1,
+    "hysteresis_state": "active",
+    "occupancy": {
+     "jobs_reserving": 2,
+     "units_held": 0
+    },
+    "policy": {
+     "digest": "17149816dca7f5752c88b8c34937072dff5535ed79268e8b180d8c76238bb0b5",
+     "id": "fixture-policy",
+     "k_pause": 3,
+     "k_resume": 1,
+     "threshold_status": "suggested_unconfirmed"
+    },
+    "reason_code": "pressure_ok",
+    "recorded": true,
+    "schema": "urn:zeus:discovery-pressure:1",
+    "version": 1,
+    "waiting": 0,
+    "waiting_jobs_lower_bound": 0
+   },
+   "evaluation_cannot_complete": {
+    "jobs_unreadable": {
+     "audits": [],
+     "decision": {
+      "decision": "hold",
+      "detail": "evaluation_failed",
+      "hysteresis_state": null,
+      "reason_code": "pressure_unknown",
+      "recorded": false,
+      "schema": "urn:zeus:discovery-pressure:1",
+      "waiting": null
+     },
+     "evaluated": false
+    },
+    "registry_malformed": {
+     "audits": [],
+     "decision": {
+      "decision": "hold",
+      "detail": "evaluation_failed",
+      "hysteresis_state": null,
+      "reason_code": "pressure_unknown",
+      "recorded": false,
+      "schema": "urn:zeus:discovery-pressure:1",
+      "waiting": null
+     },
+     "evaluated": false
+    },
+    "store_unavailable": {
+     "audits": [],
+     "decision": {
+      "decision": "hold",
+      "detail": "evaluation_failed",
+      "hysteresis_state": null,
+      "reason_code": "pressure_unknown",
+      "recorded": false,
+      "schema": "urn:zeus:discovery-pressure:1",
+      "waiting": null
+     },
+     "evaluated": false
+    }
+   },
+   "failed_audit": {
+    "decision": {
+     "decision": "hold",
+     "detail": "evaluation_failed",
+     "hysteresis_state": null,
+     "reason_code": "pressure_unknown",
+     "recorded": false,
+     "schema": "urn:zeus:discovery-pressure:1",
+     "waiting": null
+    },
+    "next_evaluation_recorded": true,
+    "row_written": false
+   },
+   "first_reading_and_restart": {
+    "first": {
+     "authority": "proactive discovery admission only; never a Fleet pause, an admission, a tick or a verdict about any job, and the thresholds are the policy document's own (suggested_unconfirmed until confirmed)",
+     "basis": {
+      "complete": true,
+      "excluded_counts": {},
+      "fleet_config_sha256": "8d54fdb280aec539571e39e2cce06200fe7e5241eb8b8d9351a4cfc2e56e4df4",
+      "ledger": "fresh",
+      "paused": false,
+      "registered": true,
+      "unknown_counts": {
+       "backlog": 0,
+       "budget": 0,
+       "continuation": 0
+      }
+     },
+     "capacity": 1,
+     "decision": "hold",
+     "detail": null,
+     "evaluation_sequence": 1,
+     "hysteresis_state": "paused",
+     "occupancy": {
+      "jobs_reserving": 0,
+      "units_held": 0
+     },
+     "policy": {
+      "digest": "17149816dca7f5752c88b8c34937072dff5535ed79268e8b180d8c76238bb0b5",
+      "id": "fixture-policy",
+      "k_pause": 3,
+      "k_resume": 1,
+      "threshold_status": "suggested_unconfirmed"
+     },
+     "reason_code": "pressure_high",
+     "recorded": true,
+     "schema": "urn:zeus:discovery-pressure:1",
+     "version": 1,
+     "waiting": 3,
+     "waiting_jobs_lower_bound": 3
+    },
+    "restarted_in_band": {
+     "authority": "proactive discovery admission only; never a Fleet pause, an admission, a tick or a verdict about any job, and the thresholds are the policy document's own (suggested_unconfirmed until confirmed)",
+     "basis": {
+      "complete": true,
+      "excluded_counts": {},
+      "fleet_config_sha256": "8d54fdb280aec539571e39e2cce06200fe7e5241eb8b8d9351a4cfc2e56e4df4",
+      "ledger": "fresh",
+      "paused": false,
+      "registered": true,
+      "unknown_counts": {
+       "backlog": 0,
+       "budget": 0,
+       "continuation": 0
+      }
+     },
+     "capacity": 1,
+     "decision": "hold",
+     "detail": null,
+     "evaluation_sequence": 2,
+     "hysteresis_state": "paused",
+     "occupancy": {
+      "jobs_reserving": 0,
+      "units_held": 0
+     },
+     "policy": {
+      "digest": "17149816dca7f5752c88b8c34937072dff5535ed79268e8b180d8c76238bb0b5",
+      "id": "fixture-policy",
+      "k_pause": 3,
+      "k_resume": 1,
+      "threshold_status": "suggested_unconfirmed"
+     },
+     "reason_code": "pressure_high",
+     "recorded": true,
+     "schema": "urn:zeus:discovery-pressure:1",
+     "version": 1,
+     "waiting": 2,
+     "waiting_jobs_lower_bound": 2
+    },
+    "status_row": {
+     "authority": "proactive discovery admission only; never a Fleet pause, an admission, a tick or a verdict about any job, and the thresholds are the policy document's own (suggested_unconfirmed until confirmed)",
+     "basis": {
+      "complete": true,
+      "excluded_counts": {},
+      "fleet_config_sha256": "8d54fdb280aec539571e39e2cce06200fe7e5241eb8b8d9351a4cfc2e56e4df4",
+      "ledger": "fresh",
+      "paused": false,
+      "registered": true,
+      "unknown_counts": {
+       "backlog": 0,
+       "budget": 0,
+       "continuation": 0
+      }
+     },
+     "capacity": 1,
+     "decision": "hold",
+     "detail": null,
+     "evaluation_sequence": 2,
+     "hysteresis_state": "paused",
+     "occupancy": {
+      "jobs_reserving": 0,
+      "units_held": 0
+     },
+     "policy": {
+      "digest": "17149816dca7f5752c88b8c34937072dff5535ed79268e8b180d8c76238bb0b5",
+      "id": "fixture-policy",
+      "k_pause": 3,
+      "k_resume": 1,
+      "threshold_status": "suggested_unconfirmed"
+     },
+     "reason_code": "pressure_high",
+     "schema": "urn:zeus:discovery-pressure:1",
+     "version": 1,
+     "waiting": 2,
+     "waiting_jobs_lower_bound": 2
+    },
+    "status_unevaluated": {
+     "evaluated": false,
+     "row": null,
+     "schema": "urn:zeus:discovery-pressure:1"
+    },
+    "status_writes_nothing": true
+   },
+   "ledger_freshness": {
+    "backwards_clock": {
+     "authority": "proactive discovery admission only; never a Fleet pause, an admission, a tick or a verdict about any job, and the thresholds are the policy document's own (suggested_unconfirmed until confirmed)",
+     "basis": {
+      "complete": false,
+      "excluded_counts": {},
+      "fleet_config_sha256": "8d54fdb280aec539571e39e2cce06200fe7e5241eb8b8d9351a4cfc2e56e4df4",
+      "ledger": "stale",
+      "paused": false,
+      "registered": true,
+      "unknown_counts": {
+       "backlog": 0,
+       "budget": 1,
+       "continuation": 0
+      }
+     },
+     "capacity": 1,
+     "decision": "hold",
+     "detail": null,
+     "evaluation_sequence": 4,
+     "hysteresis_state": "paused",
+     "occupancy": {
+      "jobs_reserving": 0,
+      "units_held": 0
+     },
+     "policy": {
+      "digest": "17149816dca7f5752c88b8c34937072dff5535ed79268e8b180d8c76238bb0b5",
+      "id": "fixture-policy",
+      "k_pause": 3,
+      "k_resume": 1,
+      "threshold_status": "suggested_unconfirmed"
+     },
+     "reason_code": "pressure_unknown",
+     "recorded": true,
+     "schema": "urn:zeus:discovery-pressure:1",
+     "version": 2,
+     "waiting": null,
+     "waiting_jobs_lower_bound": 1
+    },
+    "fresh_resumes": {
+     "authority": "proactive discovery admission only; never a Fleet pause, an admission, a tick or a verdict about any job, and the thresholds are the policy document's own (suggested_unconfirmed until confirmed)",
+     "basis": {
+      "complete": true,
+      "excluded_counts": {},
+      "fleet_config_sha256": "8d54fdb280aec539571e39e2cce06200fe7e5241eb8b8d9351a4cfc2e56e4df4",
+      "ledger": "fresh",
+      "paused": false,
+      "registered": true,
+      "unknown_counts": {
+       "backlog": 0,
+       "budget": 0,
+       "continuation": 0
+      }
+     },
+     "capacity": 1,
+     "decision": "allow",
+     "detail": null,
+     "evaluation_sequence": 5,
+     "hysteresis_state": "active",
+     "occupancy": {
+      "jobs_reserving": 0,
+      "units_held": 0
+     },
+     "policy": {
+      "digest": "17149816dca7f5752c88b8c34937072dff5535ed79268e8b180d8c76238bb0b5",
+      "id": "fixture-policy",
+      "k_pause": 3,
+      "k_resume": 1,
+      "threshold_status": "suggested_unconfirmed"
+     },
+     "reason_code": "pressure_ok",
+     "recorded": true,
+     "schema": "urn:zeus:discovery-pressure:1",
+     "version": 3,
+     "waiting": 1,
+     "waiting_jobs_lower_bound": 1
+    },
+    "stale": {
+     "authority": "proactive discovery admission only; never a Fleet pause, an admission, a tick or a verdict about any job, and the thresholds are the policy document's own (suggested_unconfirmed until confirmed)",
+     "basis": {
+      "complete": false,
+      "excluded_counts": {},
+      "fleet_config_sha256": "8d54fdb280aec539571e39e2cce06200fe7e5241eb8b8d9351a4cfc2e56e4df4",
+      "ledger": "stale",
+      "paused": false,
+      "registered": true,
+      "unknown_counts": {
+       "backlog": 0,
+       "budget": 1,
+       "continuation": 0
+      }
+     },
+     "capacity": 1,
+     "decision": "hold",
+     "detail": null,
+     "evaluation_sequence": 2,
+     "hysteresis_state": "paused",
+     "occupancy": {
+      "jobs_reserving": 0,
+      "units_held": 0
+     },
+     "policy": {
+      "digest": "17149816dca7f5752c88b8c34937072dff5535ed79268e8b180d8c76238bb0b5",
+      "id": "fixture-policy",
+      "k_pause": 3,
+      "k_resume": 1,
+      "threshold_status": "suggested_unconfirmed"
+     },
+     "reason_code": "pressure_unknown",
+     "recorded": true,
+     "schema": "urn:zeus:discovery-pressure:1",
+     "version": 2,
+     "waiting": null,
+     "waiting_jobs_lower_bound": 3
+    },
+    "stale_does_not_resume": {
+     "authority": "proactive discovery admission only; never a Fleet pause, an admission, a tick or a verdict about any job, and the thresholds are the policy document's own (suggested_unconfirmed until confirmed)",
+     "basis": {
+      "complete": false,
+      "excluded_counts": {},
+      "fleet_config_sha256": "8d54fdb280aec539571e39e2cce06200fe7e5241eb8b8d9351a4cfc2e56e4df4",
+      "ledger": "stale",
+      "paused": false,
+      "registered": true,
+      "unknown_counts": {
+       "backlog": 0,
+       "budget": 1,
+       "continuation": 0
+      }
+     },
+     "capacity": 1,
+     "decision": "hold",
+     "detail": null,
+     "evaluation_sequence": 3,
+     "hysteresis_state": "paused",
+     "occupancy": {
+      "jobs_reserving": 0,
+      "units_held": 0
+     },
+     "policy": {
+      "digest": "17149816dca7f5752c88b8c34937072dff5535ed79268e8b180d8c76238bb0b5",
+      "id": "fixture-policy",
+      "k_pause": 3,
+      "k_resume": 1,
+      "threshold_status": "suggested_unconfirmed"
+     },
+     "reason_code": "pressure_unknown",
+     "recorded": true,
+     "schema": "urn:zeus:discovery-pressure:1",
+     "version": 2,
+     "waiting": null,
+     "waiting_jobs_lower_bound": 1
+    },
+    "within": {
+     "authority": "proactive discovery admission only; never a Fleet pause, an admission, a tick or a verdict about any job, and the thresholds are the policy document's own (suggested_unconfirmed until confirmed)",
+     "basis": {
+      "complete": true,
+      "excluded_counts": {},
+      "fleet_config_sha256": "8d54fdb280aec539571e39e2cce06200fe7e5241eb8b8d9351a4cfc2e56e4df4",
+      "ledger": "fresh",
+      "paused": false,
+      "registered": true,
+      "unknown_counts": {
+       "backlog": 0,
+       "budget": 0,
+       "continuation": 0
+      }
+     },
+     "capacity": 1,
+     "decision": "hold",
+     "detail": null,
+     "evaluation_sequence": 1,
+     "hysteresis_state": "paused",
+     "occupancy": {
+      "jobs_reserving": 0,
+      "units_held": 0
+     },
+     "policy": {
+      "digest": "17149816dca7f5752c88b8c34937072dff5535ed79268e8b180d8c76238bb0b5",
+      "id": "fixture-policy",
+      "k_pause": 3,
+      "k_resume": 1,
+      "threshold_status": "suggested_unconfirmed"
+     },
+     "reason_code": "pressure_high",
+     "recorded": true,
+     "schema": "urn:zeus:discovery-pressure:1",
+     "version": 1,
+     "waiting": 3,
+     "waiting_jobs_lower_bound": 3
+    }
+   },
+   "monitor_projection": {
+    "before": {
+     "evaluated": false,
+     "row": null,
+     "schema": "urn:zeus:discovery-pressure:1"
+    },
+    "capacity": 2,
+    "evaluated": true,
+    "reason_code": "pressure_ok",
+    "threshold_status": "suggested_unconfirmed",
+    "waiting": 0
+   },
+   "naive_clock": {
+    "authority": "proactive discovery admission only; never a Fleet pause, an admission, a tick or a verdict about any job, and the thresholds are the policy document's own (suggested_unconfirmed until confirmed)",
+    "basis": {
+     "complete": false,
+     "excluded_counts": {},
+     "fleet_config_sha256": "5013afff1c2ccc6b96b90bbba1575052c2d3d41f1f3ad4374b23009dd75993b1",
+     "ledger": "stale",
+     "paused": false,
+     "registered": true,
+     "unknown_counts": {
+      "backlog": 0,
+      "budget": 1,
+      "continuation": 0
+     }
+    },
+    "capacity": 2,
+    "decision": "hold",
+    "detail": null,
+    "evaluation_sequence": 1,
+    "hysteresis_state": "active",
+    "occupancy": {
+     "jobs_reserving": 0,
+     "units_held": 0
+    },
+    "policy": {
+     "digest": "17149816dca7f5752c88b8c34937072dff5535ed79268e8b180d8c76238bb0b5",
+     "id": "fixture-policy",
+     "k_pause": 3,
+     "k_resume": 1,
+     "threshold_status": "suggested_unconfirmed"
+    },
+    "reason_code": "pressure_unknown",
+    "recorded": true,
+    "schema": "urn:zeus:discovery-pressure:1",
+    "version": 1,
+    "waiting": null,
+    "waiting_jobs_lower_bound": 1
+   },
+   "observer_required": {
+    "message": "Discovery pressure transitions need the mandatory audit observer",
+    "raised": "ContractError"
+   },
+   "transition_audit": {
+    "audits": [
+     {
+      "capacity": 1,
+      "from_decision": "allow",
+      "from_state": "active",
+      "reason_code": "pressure_high",
+      "to_decision": "hold",
+      "to_state": "paused",
+      "version": 2,
+      "waiting": 3
+     },
+     {
+      "capacity": 1,
+      "from_decision": null,
+      "from_state": null,
+      "reason_code": "pressure_ok",
+      "to_decision": "allow",
+      "to_state": "active",
+      "version": 1,
+      "waiting": 0
+     }
+    ],
+    "sequences": [
+     1,
+     2,
+     3
+    ],
+    "state_after": "paused",
+    "versions": [
+     1,
+     1,
+     2
+    ]
+   },
+   "unknown_keeps_memory": {
+    "in_band_after": {
+     "authority": "proactive discovery admission only; never a Fleet pause, an admission, a tick or a verdict about any job, and the thresholds are the policy document's own (suggested_unconfirmed until confirmed)",
+     "basis": {
+      "complete": true,
+      "excluded_counts": {},
+      "fleet_config_sha256": "8d54fdb280aec539571e39e2cce06200fe7e5241eb8b8d9351a4cfc2e56e4df4",
+      "ledger": "fresh",
+      "paused": false,
+      "registered": true,
+      "unknown_counts": {
+       "backlog": 0,
+       "budget": 0,
+       "continuation": 0
+      }
+     },
+     "capacity": 1,
+     "decision": "hold",
+     "detail": null,
+     "evaluation_sequence": 3,
+     "hysteresis_state": "paused",
+     "occupancy": {
+      "jobs_reserving": 0,
+      "units_held": 0
+     },
+     "policy": {
+      "digest": "17149816dca7f5752c88b8c34937072dff5535ed79268e8b180d8c76238bb0b5",
+      "id": "fixture-policy",
+      "k_pause": 3,
+      "k_resume": 1,
+      "threshold_status": "suggested_unconfirmed"
+     },
+     "reason_code": "pressure_high",
+     "recorded": true,
+     "schema": "urn:zeus:discovery-pressure:1",
+     "version": 3,
+     "waiting": 2,
+     "waiting_jobs_lower_bound": 2
+    },
+    "paused": {
+     "authority": "proactive discovery admission only; never a Fleet pause, an admission, a tick or a verdict about any job, and the thresholds are the policy document's own (suggested_unconfirmed until confirmed)",
+     "basis": {
+      "complete": true,
+      "excluded_counts": {},
+      "fleet_config_sha256": "8d54fdb280aec539571e39e2cce06200fe7e5241eb8b8d9351a4cfc2e56e4df4",
+      "ledger": "fresh",
+      "paused": false,
+      "registered": true,
+      "unknown_counts": {
+       "backlog": 0,
+       "budget": 0,
+       "continuation": 0
+      }
+     },
+     "capacity": 1,
+     "decision": "hold",
+     "detail": null,
+     "evaluation_sequence": 1,
+     "hysteresis_state": "paused",
+     "occupancy": {
+      "jobs_reserving": 0,
+      "units_held": 0
+     },
+     "policy": {
+      "digest": "17149816dca7f5752c88b8c34937072dff5535ed79268e8b180d8c76238bb0b5",
+      "id": "fixture-policy",
+      "k_pause": 3,
+      "k_resume": 1,
+      "threshold_status": "suggested_unconfirmed"
+     },
+     "reason_code": "pressure_high",
+     "recorded": true,
+     "schema": "urn:zeus:discovery-pressure:1",
+     "version": 1,
+     "waiting": 3,
+     "waiting_jobs_lower_bound": 3
+    },
+    "unknown": {
+     "authority": "proactive discovery admission only; never a Fleet pause, an admission, a tick or a verdict about any job, and the thresholds are the policy document's own (suggested_unconfirmed until confirmed)",
+     "basis": {
+      "complete": false,
+      "excluded_counts": {},
+      "fleet_config_sha256": "8d54fdb280aec539571e39e2cce06200fe7e5241eb8b8d9351a4cfc2e56e4df4",
+      "ledger": "unreadable",
+      "paused": false,
+      "registered": true,
+      "unknown_counts": {
+       "backlog": 0,
+       "budget": 1,
+       "continuation": 0
+      }
+     },
+     "capacity": 1,
+     "decision": "hold",
+     "detail": null,
+     "evaluation_sequence": 2,
+     "hysteresis_state": "paused",
+     "occupancy": {
+      "jobs_reserving": 0,
+      "units_held": 0
+     },
+     "policy": {
+      "digest": "17149816dca7f5752c88b8c34937072dff5535ed79268e8b180d8c76238bb0b5",
+      "id": "fixture-policy",
+      "k_pause": 3,
+      "k_resume": 1,
+      "threshold_status": "suggested_unconfirmed"
+     },
+     "reason_code": "pressure_unknown",
+     "recorded": true,
+     "schema": "urn:zeus:discovery-pressure:1",
+     "version": 2,
+     "waiting": null,
+     "waiting_jobs_lower_bound": 3
+    }
+   }
+  },
+  "evaluator_with_invalid_policy": {
+   "bad_status": {
+    "authority": "proactive discovery admission only; never a Fleet pause, an admission, a tick or a verdict about any job, and the thresholds are the policy document's own (suggested_unconfirmed until confirmed)",
+    "basis": {
+     "complete": true,
+     "excluded_counts": {},
+     "fleet_config_sha256": "5013afff1c2ccc6b96b90bbba1575052c2d3d41f1f3ad4374b23009dd75993b1",
+     "ledger": "unreadable",
+     "paused": false,
+     "registered": true,
+     "unknown_counts": {
+      "backlog": 0,
+      "budget": 0,
+      "continuation": 0
+     }
+    },
+    "capacity": 2,
+    "decision": "hold",
+    "detail": "config_invalid",
+    "evaluation_sequence": 1,
+    "hysteresis_state": "active",
+    "occupancy": {
+     "jobs_reserving": 0,
+     "units_held": 0
+    },
+    "policy": null,
+    "reason_code": "pressure_unknown",
+    "recorded": true,
+    "schema": "urn:zeus:discovery-pressure:1",
+    "version": 1,
+    "waiting": 0,
+    "waiting_jobs_lower_bound": 0
+   },
+   "missing_age": {
+    "authority": "proactive discovery admission only; never a Fleet pause, an admission, a tick or a verdict about any job, and the thresholds are the policy document's own (suggested_unconfirmed until confirmed)",
+    "basis": {
+     "complete": true,
+     "excluded_counts": {},
+     "fleet_config_sha256": "5013afff1c2ccc6b96b90bbba1575052c2d3d41f1f3ad4374b23009dd75993b1",
+     "ledger": "unreadable",
+     "paused": false,
+     "registered": true,
+     "unknown_counts": {
+      "backlog": 0,
+      "budget": 0,
+      "continuation": 0
+     }
+    },
+    "capacity": 2,
+    "decision": "hold",
+    "detail": "config_invalid",
+    "evaluation_sequence": 1,
+    "hysteresis_state": "active",
+    "occupancy": {
+     "jobs_reserving": 0,
+     "units_held": 0
+    },
+    "policy": null,
+    "reason_code": "pressure_unknown",
+    "recorded": true,
+    "schema": "urn:zeus:discovery-pressure:1",
+    "version": 1,
+    "waiting": 0,
+    "waiting_jobs_lower_bound": 0
+   },
+   "none": {
+    "authority": "proactive discovery admission only; never a Fleet pause, an admission, a tick or a verdict about any job, and the thresholds are the policy document's own (suggested_unconfirmed until confirmed)",
+    "basis": {
+     "complete": true,
+     "excluded_counts": {},
+     "fleet_config_sha256": "5013afff1c2ccc6b96b90bbba1575052c2d3d41f1f3ad4374b23009dd75993b1",
+     "ledger": "unreadable",
+     "paused": false,
+     "registered": true,
+     "unknown_counts": {
+      "backlog": 0,
+      "budget": 0,
+      "continuation": 0
+     }
+    },
+    "capacity": 2,
+    "decision": "hold",
+    "detail": "config_missing",
+    "evaluation_sequence": 1,
+    "hysteresis_state": "active",
+    "occupancy": {
+     "jobs_reserving": 0,
+     "units_held": 0
+    },
+    "policy": null,
+    "reason_code": "pressure_unknown",
+    "recorded": true,
+    "schema": "urn:zeus:discovery-pressure:1",
+    "version": 1,
+    "waiting": 0,
+    "waiting_jobs_lower_bound": 0
+   },
+   "resume_above": {
+    "authority": "proactive discovery admission only; never a Fleet pause, an admission, a tick or a verdict about any job, and the thresholds are the policy document's own (suggested_unconfirmed until confirmed)",
+    "basis": {
+     "complete": true,
+     "excluded_counts": {},
+     "fleet_config_sha256": "5013afff1c2ccc6b96b90bbba1575052c2d3d41f1f3ad4374b23009dd75993b1",
+     "ledger": "unreadable",
+     "paused": false,
+     "registered": true,
+     "unknown_counts": {
+      "backlog": 0,
+      "budget": 0,
+      "continuation": 0
+     }
+    },
+    "capacity": 2,
+    "decision": "hold",
+    "detail": "config_invalid",
+    "evaluation_sequence": 1,
+    "hysteresis_state": "active",
+    "occupancy": {
+     "jobs_reserving": 0,
+     "units_held": 0
+    },
+    "policy": null,
+    "reason_code": "pressure_unknown",
+    "recorded": true,
+    "schema": "urn:zeus:discovery-pressure:1",
+    "version": 1,
+    "waiting": 0,
+    "waiting_jobs_lower_bound": 0
+   }
+  },
+  "exempt_never_consult": {
+   "existing_work_result": {
+    "with_holding_evaluator": {
+     "artifact_puts": [
+      {
+       "chars": 103,
+       "sha256": "7c81b3ff041643f64ba6e7d88456339cdeefcc5d73b9440f63f92246b9ee44ed",
+       "source": "https://news.hada.io/rss/news"
+      }
+     ],
+     "fetch_calls": [
+      "https://news.hada.io/rss/news"
+     ],
+     "pressure_calls": 0,
+     "result": {
+      "value": {
+       "artifact": "sha256:7c81b3ff041643f64ba6e7d88456339cdeefcc5d73b9440f63f92246b9ee44ed",
+       "fetched_at": "2026-09-22T00:00:00+00:00",
+       "items": [
+        {
+         "summary": "",
+         "title": "t",
+         "url": "https://news.hada.io/topic?id=1"
+        }
+       ],
+       "source": "https://news.hada.io/rss/news"
+      }
+     }
+    },
+    "without_evaluator": {
+     "artifact_puts": [
+      {
+       "chars": 103,
+       "sha256": "7c81b3ff041643f64ba6e7d88456339cdeefcc5d73b9440f63f92246b9ee44ed",
+       "source": "https://news.hada.io/rss/news"
+      }
+     ],
+     "fetch_calls": [
+      "https://news.hada.io/rss/news"
+     ],
+     "result": {
+      "value": {
+       "artifact": "sha256:7c81b3ff041643f64ba6e7d88456339cdeefcc5d73b9440f63f92246b9ee44ed",
+       "fetched_at": "2026-09-22T00:00:00+00:00",
+       "items": [
+        {
+         "summary": "",
+         "title": "t",
+         "url": "https://news.hada.io/topic?id=1"
+        }
+       ],
+       "source": "https://news.hada.io/rss/news"
+      }
+     }
+    }
+   },
+   "incident": {
+    "with_holding_evaluator": {
+     "artifact_puts": [
+      {
+       "chars": 103,
+       "sha256": "7c81b3ff041643f64ba6e7d88456339cdeefcc5d73b9440f63f92246b9ee44ed",
+       "source": "https://news.hada.io/rss/news"
+      }
+     ],
+     "fetch_calls": [
+      "https://news.hada.io/rss/news"
+     ],
+     "pressure_calls": 0,
+     "result": {
+      "value": {
+       "artifact": "sha256:7c81b3ff041643f64ba6e7d88456339cdeefcc5d73b9440f63f92246b9ee44ed",
+       "fetched_at": "2026-09-22T00:00:00+00:00",
+       "items": [
+        {
+         "summary": "",
+         "title": "t",
+         "url": "https://news.hada.io/topic?id=1"
+        }
+       ],
+       "source": "https://news.hada.io/rss/news"
+      }
+     }
+    },
+    "without_evaluator": {
+     "artifact_puts": [
+      {
+       "chars": 103,
+       "sha256": "7c81b3ff041643f64ba6e7d88456339cdeefcc5d73b9440f63f92246b9ee44ed",
+       "source": "https://news.hada.io/rss/news"
+      }
+     ],
+     "fetch_calls": [
+      "https://news.hada.io/rss/news"
+     ],
+     "result": {
+      "value": {
+       "artifact": "sha256:7c81b3ff041643f64ba6e7d88456339cdeefcc5d73b9440f63f92246b9ee44ed",
+       "fetched_at": "2026-09-22T00:00:00+00:00",
+       "items": [
+        {
+         "summary": "",
+         "title": "t",
+         "url": "https://news.hada.io/topic?id=1"
+        }
+       ],
+       "source": "https://news.hada.io/rss/news"
+      }
+     }
+    }
+   },
+   "task_required": {
+    "with_holding_evaluator": {
+     "artifact_puts": [
+      {
+       "chars": 103,
+       "sha256": "7c81b3ff041643f64ba6e7d88456339cdeefcc5d73b9440f63f92246b9ee44ed",
+       "source": "https://news.hada.io/rss/news"
+      }
+     ],
+     "fetch_calls": [
+      "https://news.hada.io/rss/news"
+     ],
+     "pressure_calls": 0,
+     "result": {
+      "value": {
+       "artifact": "sha256:7c81b3ff041643f64ba6e7d88456339cdeefcc5d73b9440f63f92246b9ee44ed",
+       "fetched_at": "2026-09-22T00:00:00+00:00",
+       "items": [
+        {
+         "summary": "",
+         "title": "t",
+         "url": "https://news.hada.io/topic?id=1"
+        }
+       ],
+       "source": "https://news.hada.io/rss/news"
+      }
+     }
+    },
+    "without_evaluator": {
+     "artifact_puts": [
+      {
+       "chars": 103,
+       "sha256": "7c81b3ff041643f64ba6e7d88456339cdeefcc5d73b9440f63f92246b9ee44ed",
+       "source": "https://news.hada.io/rss/news"
+      }
+     ],
+     "fetch_calls": [
+      "https://news.hada.io/rss/news"
+     ],
+     "result": {
+      "value": {
+       "artifact": "sha256:7c81b3ff041643f64ba6e7d88456339cdeefcc5d73b9440f63f92246b9ee44ed",
+       "fetched_at": "2026-09-22T00:00:00+00:00",
+       "items": [
+        {
+         "summary": "",
+         "title": "t",
+         "url": "https://news.hada.io/topic?id=1"
+        }
+       ],
+       "source": "https://news.hada.io/rss/news"
+      }
+     }
+    }
+   },
+   "user_request": {
+    "with_holding_evaluator": {
+     "artifact_puts": [
+      {
+       "chars": 103,
+       "sha256": "7c81b3ff041643f64ba6e7d88456339cdeefcc5d73b9440f63f92246b9ee44ed",
+       "source": "https://news.hada.io/rss/news"
+      }
+     ],
+     "fetch_calls": [
+      "https://news.hada.io/rss/news"
+     ],
+     "pressure_calls": 0,
+     "result": {
+      "value": {
+       "artifact": "sha256:7c81b3ff041643f64ba6e7d88456339cdeefcc5d73b9440f63f92246b9ee44ed",
+       "fetched_at": "2026-09-22T00:00:00+00:00",
+       "items": [
+        {
+         "summary": "",
+         "title": "t",
+         "url": "https://news.hada.io/topic?id=1"
+        }
+       ],
+       "source": "https://news.hada.io/rss/news"
+      }
+     }
+    },
+    "without_evaluator": {
+     "artifact_puts": [
+      {
+       "chars": 103,
+       "sha256": "7c81b3ff041643f64ba6e7d88456339cdeefcc5d73b9440f63f92246b9ee44ed",
+       "source": "https://news.hada.io/rss/news"
+      }
+     ],
+     "fetch_calls": [
+      "https://news.hada.io/rss/news"
+     ],
+     "result": {
+      "value": {
+       "artifact": "sha256:7c81b3ff041643f64ba6e7d88456339cdeefcc5d73b9440f63f92246b9ee44ed",
+       "fetched_at": "2026-09-22T00:00:00+00:00",
+       "items": [
+        {
+         "summary": "",
+         "title": "t",
+         "url": "https://news.hada.io/topic?id=1"
+        }
+       ],
+       "source": "https://news.hada.io/rss/news"
+      }
+     }
+    }
+   }
+  },
+  "intents": {
+   "all": [
+    "proactive",
+    "user_request",
+    "incident",
+    "existing_work_result",
+    "task_required"
+   ],
+   "exempt": [
+    "user_request",
+    "incident",
+    "existing_work_result",
+    "task_required"
+   ],
+   "proactive": "proactive"
+  },
+  "packaged_policy": {
+   "value": {
+    "digest": "42f4470980e1f2fd46c333875eb71a5b113d2aec99b28240ec9341485ab5de05",
+    "id": "discovery-pressure-001",
+    "input_max_age_seconds": 300,
+    "k_pause": 3,
+    "k_resume": 1,
+    "schema": "urn:zeus:discovery-pressure-policy:1",
+    "threshold_status": "suggested_unconfirmed"
+   }
+  },
+  "paused_exception": {
+   "decision": {
+    "decision": "hold",
+    "reason_code": "pressure_high"
+   },
+   "is_contract_error": true,
+   "message": "discovery paused: pressure_high",
+   "reason_code": "pressure_high"
+  },
+  "proactive_allowed": {
+   "artifact_puts": [
+    {
+     "chars": 103,
+     "sha256": "7c81b3ff041643f64ba6e7d88456339cdeefcc5d73b9440f63f92246b9ee44ed",
+     "source": "https://news.hada.io/rss/news"
+    }
+   ],
+   "fetch_calls": [
+    "https://news.hada.io/rss/news"
+   ],
+   "result": {
+    "value": {
+     "artifact": "sha256:7c81b3ff041643f64ba6e7d88456339cdeefcc5d73b9440f63f92246b9ee44ed",
+     "fetched_at": "2026-09-22T00:00:00+00:00",
+     "items": [
+      {
+       "summary": "",
+       "title": "t",
+       "url": "https://news.hada.io/topic?id=1"
+      }
+     ],
+     "source": "https://news.hada.io/rss/news"
+    }
+   }
+  },
+  "proactive_held_zero_fetch": {
+   "allow_flag_missing_geeknews": {
+    "artifact_puts": [],
+    "fetch_calls": [],
+    "pressure_calls": 2,
+    "result": {
+     "message": "discovery paused: pressure_unknown",
+     "raised": "DiscoveryPaused",
+     "reason_code": "pressure_unknown"
+    },
+    "stub_fetch_calls": 0
+   },
+   "allow_flag_missing_github": {
+    "artifact_puts": [],
+    "fetch_calls": [],
+    "pressure_calls": 1,
+    "result": {
+     "message": "discovery paused: None",
+     "raised": "DiscoveryPaused",
+     "reason_code": null
+    },
+    "stub_fetch_calls": 0
+   },
+   "evaluator_raises_geeknews": {
+    "artifact_puts": [],
+    "fetch_calls": [],
+    "pressure_calls": 2,
+    "result": {
+     "message": "discovery paused: pressure_unknown",
+     "raised": "DiscoveryPaused",
+     "reason_code": "pressure_unknown"
+    },
+    "stub_fetch_calls": 0
+   },
+   "evaluator_raises_github": {
+    "artifact_puts": [],
+    "fetch_calls": [],
+    "pressure_calls": 1,
+    "result": {
+     "message": "discovery paused: pressure_unknown",
+     "raised": "DiscoveryPaused",
+     "reason_code": "pressure_unknown"
+    },
+    "stub_fetch_calls": 0
+   },
+   "holding_evaluator_geeknews": {
+    "artifact_puts": [],
+    "fetch_calls": [],
+    "pressure_calls": 2,
+    "result": {
+     "message": "discovery paused: pressure_high",
+     "raised": "DiscoveryPaused",
+     "reason_code": "pressure_high"
+    },
+    "stub_fetch_calls": 0
+   },
+   "holding_evaluator_github": {
+    "artifact_puts": [],
+    "fetch_calls": [],
+    "pressure_calls": 1,
+    "result": {
+     "message": "discovery paused: pressure_high",
+     "raised": "DiscoveryPaused",
+     "reason_code": "pressure_high"
+    },
+    "stub_fetch_calls": 0
+   },
+   "no_evaluator_geeknews": {
+    "artifact_puts": [],
+    "fetch_calls": [],
+    "pressure_calls": null,
+    "result": {
+     "message": "discovery paused: pressure_unavailable",
+     "raised": "DiscoveryPaused",
+     "reason_code": "pressure_unavailable"
+    },
+    "stub_fetch_calls": 0
+   },
+   "no_evaluator_github": {
+    "artifact_puts": [],
+    "fetch_calls": [],
+    "pressure_calls": null,
+    "result": {
+     "message": "discovery paused: pressure_unavailable",
+     "raised": "DiscoveryPaused",
+     "reason_code": "pressure_unavailable"
+    },
+    "stub_fetch_calls": 0
+   },
+   "non_dict_decision_geeknews": {
+    "artifact_puts": [],
+    "fetch_calls": [],
+    "pressure_calls": 2,
+    "result": {
+     "message": "discovery paused: pressure_unknown",
+     "raised": "DiscoveryPaused",
+     "reason_code": "pressure_unknown"
+    },
+    "stub_fetch_calls": 0
+   },
+   "non_dict_decision_github": {
+    "artifact_puts": [],
+    "fetch_calls": [],
+    "pressure_calls": 1,
+    "result": {
+     "message": "discovery paused: pressure_unknown",
+     "raised": "DiscoveryPaused",
+     "reason_code": "pressure_unknown"
+    },
+    "stub_fetch_calls": 0
+   },
+   "none_decision_geeknews": {
+    "artifact_puts": [],
+    "fetch_calls": [],
+    "pressure_calls": 2,
+    "result": {
+     "message": "discovery paused: pressure_unknown",
+     "raised": "DiscoveryPaused",
+     "reason_code": "pressure_unknown"
+    },
+    "stub_fetch_calls": 0
+   },
+   "none_decision_github": {
+    "artifact_puts": [],
+    "fetch_calls": [],
+    "pressure_calls": 1,
+    "result": {
+     "message": "discovery paused: pressure_unknown",
+     "raised": "DiscoveryPaused",
+     "reason_code": "pressure_unknown"
+    },
+    "stub_fetch_calls": 0
+   },
+   "unknown_decision_value_geeknews": {
+    "artifact_puts": [],
+    "fetch_calls": [],
+    "pressure_calls": 2,
+    "result": {
+     "message": "discovery paused: pressure_unknown",
+     "raised": "DiscoveryPaused",
+     "reason_code": "pressure_unknown"
+    },
+    "stub_fetch_calls": 0
+   },
+   "unknown_decision_value_github": {
+    "artifact_puts": [],
+    "fetch_calls": [],
+    "pressure_calls": 1,
+    "result": {
+     "message": "discovery paused: x",
+     "raised": "DiscoveryPaused",
+     "reason_code": "x"
+    },
+    "stub_fetch_calls": 0
+   }
+  },
+  "real_evaluator_holds_before_fetch": {
+   "collect_live_proactive_high": {
+    "items": [],
+    "status": {
+     "geeknews": {
+      "artifact": null,
+      "code": "policy_paused",
+      "fetched_at": null,
+      "items": null,
+      "pressure": "pressure_high",
+      "status": "paused"
+     },
+     "github": {
+      "artifact": null,
+      "code": "policy_paused",
+      "fetched_at": null,
+      "items": null,
+      "pressure": "pressure_high",
+      "status": "paused"
+     }
+    },
+    "stub_fetch_calls": 0
+   },
+   "exempt_while_high": {
+    "artifact_puts": [
+     {
+      "chars": 103,
+      "sha256": "7c81b3ff041643f64ba6e7d88456339cdeefcc5d73b9440f63f92246b9ee44ed",
+      "source": "https://news.hada.io/rss/news"
+     }
+    ],
+    "fetch_calls": [
+     "https://news.hada.io/rss/news"
+    ],
+    "result": {
+     "value": {
+      "artifact": "sha256:7c81b3ff041643f64ba6e7d88456339cdeefcc5d73b9440f63f92246b9ee44ed",
+      "fetched_at": "2026-09-22T00:00:00+00:00",
+      "items": [
+       {
+        "summary": "",
+        "title": "t",
+        "url": "https://news.hada.io/topic?id=1"
+       }
+      ],
+      "source": "https://news.hada.io/rss/news"
+     }
+    },
+    "row_written": false,
+    "stub_fetch_calls": 1
+   },
+   "paused_fleet": {
+    "artifact_puts": [],
+    "fetch_calls": [],
+    "result": {
+     "message": "discovery paused: fleet_paused",
+     "raised": "DiscoveryPaused",
+     "reason_code": "fleet_paused"
+    },
+    "stub_fetch_calls": 0
+   },
+   "pressure_high": {
+    "artifact_puts": [],
+    "fetch_calls": [],
+    "result": {
+     "message": "discovery paused: pressure_high",
+     "raised": "DiscoveryPaused",
+     "reason_code": "pressure_high"
+    },
+    "stub_fetch_calls": 0
+   },
+   "pressure_ok": {
+    "artifact_puts": [
+     {
+      "chars": 103,
+      "sha256": "7c81b3ff041643f64ba6e7d88456339cdeefcc5d73b9440f63f92246b9ee44ed",
+      "source": "https://news.hada.io/rss/news"
+     }
+    ],
+    "fetch_calls": [
+     "https://news.hada.io/rss/news"
+    ],
+    "result": {
+     "value": {
+      "artifact": "sha256:7c81b3ff041643f64ba6e7d88456339cdeefcc5d73b9440f63f92246b9ee44ed",
+      "fetched_at": "2026-09-22T00:00:00+00:00",
+      "items": [
+       {
+        "summary": "",
+        "title": "t",
+        "url": "https://news.hada.io/topic?id=1"
+       }
+      ],
+      "source": "https://news.hada.io/rss/news"
+     }
+    },
+    "stub_fetch_calls": 1
+   },
+   "unregistered_fleet": {
+    "artifact_puts": [],
+    "fetch_calls": [],
+    "result": {
+     "message": "discovery paused: fleet_unregistered",
+     "raised": "DiscoveryPaused",
+     "reason_code": "fleet_unregistered"
+    },
+    "stub_fetch_calls": 0
+   }
+  },
+  "real_evaluator_zero_fetch_total": 0,
+  "sample_fresh": {
+   "backwards": {
+    "value": false
+   },
+   "both_naive": {
+    "value": false
+   },
+   "fresh": {
+    "value": true
+   },
+   "limit": {
+    "value": true
+   },
+   "mixed": {
+    "value": false
+   },
+   "none": {
+    "value": false
+   },
+   "offset": {
+    "value": true
+   },
+   "over_limit": {
+    "value": false
+   },
+   "unparseable": {
+    "value": false
+   }
+  },
+  "unrecorded_hold": {
+   "": {
+    "decision": "hold",
+    "detail": "",
+    "hysteresis_state": null,
+    "reason_code": "pressure_unknown",
+    "recorded": false,
+    "schema": "urn:zeus:discovery-pressure:1",
+    "waiting": null
+   },
+   "evaluation_failed": {
+    "decision": "hold",
+    "detail": "evaluation_failed",
+    "hysteresis_state": null,
+    "reason_code": "pressure_unknown",
+    "recorded": false,
+    "schema": "urn:zeus:discovery-pressure:1",
+    "waiting": null
+   },
+   "evaluation_invalid": {
+    "decision": "hold",
+    "detail": "evaluation_invalid",
+    "hysteresis_state": null,
+    "reason_code": "pressure_unknown",
+    "recorded": false,
+    "schema": "urn:zeus:discovery-pressure:1",
+    "waiting": null
+   }
+  },
+  "validate_intent": {
+   "empty": {
+    "artifact_puts": [],
+    "fetch_calls": [],
+    "pressure_calls": 0,
+    "result": {
+     "message": "discovery refused: discovery_intent_required",
+     "raised": "DiscoveryRefused",
+     "reason_code": "discovery_intent_required"
+    },
+    "validate_intent": {
+     "message": "discovery refused: discovery_intent_required",
+     "raised": "DiscoveryRefused",
+     "reason_code": "discovery_intent_required"
+    }
+   },
+   "none": {
+    "artifact_puts": [],
+    "fetch_calls": [],
+    "pressure_calls": 0,
+    "result": {
+     "message": "discovery refused: discovery_intent_required",
+     "raised": "DiscoveryRefused",
+     "reason_code": "discovery_intent_required"
+    },
+    "validate_intent": {
+     "message": "discovery refused: discovery_intent_required",
+     "raised": "DiscoveryRefused",
+     "reason_code": "discovery_intent_required"
+    }
+   },
+   "number": {
+    "artifact_puts": [],
+    "fetch_calls": [],
+    "pressure_calls": 0,
+    "result": {
+     "message": "discovery refused: discovery_intent_invalid",
+     "raised": "DiscoveryRefused",
+     "reason_code": "discovery_intent_invalid"
+    },
+    "validate_intent": {
+     "message": "discovery refused: discovery_intent_invalid",
+     "raised": "DiscoveryRefused",
+     "reason_code": "discovery_intent_invalid"
+    }
+   },
+   "unknown": {
+    "artifact_puts": [],
+    "fetch_calls": [],
+    "pressure_calls": 0,
+    "result": {
+     "message": "discovery refused: discovery_intent_invalid",
+     "raised": "DiscoveryRefused",
+     "reason_code": "discovery_intent_invalid"
+    },
+    "validate_intent": {
+     "message": "discovery refused: discovery_intent_invalid",
+     "raised": "DiscoveryRefused",
+     "reason_code": "discovery_intent_invalid"
+    }
+   },
+   "upper": {
+    "artifact_puts": [],
+    "fetch_calls": [],
+    "pressure_calls": 0,
+    "result": {
+     "message": "discovery refused: discovery_intent_invalid",
+     "raised": "DiscoveryRefused",
+     "reason_code": "discovery_intent_invalid"
+    },
+    "validate_intent": {
+     "message": "discovery refused: discovery_intent_invalid",
+     "raised": "DiscoveryRefused",
+     "reason_code": "discovery_intent_invalid"
+    }
+   },
+   "valid": {
+    "existing_work_result": {
+     "value": "existing_work_result"
+    },
+    "incident": {
+     "value": "incident"
+    },
+    "proactive": {
+     "value": "proactive"
+    },
+    "task_required": {
+     "value": "task_required"
+    },
+    "user_request": {
+     "value": "user_request"
+    }
+   }
+  },
+  "validate_policy": {
+   "bad_status": {
+    "message": "discovery refused: policy_invalid",
+    "raised": "DiscoveryRefused",
+    "reason_code": "policy_invalid"
+   },
+   "bool_age": {
+    "message": "discovery refused: policy_invalid",
+    "raised": "DiscoveryRefused",
+    "reason_code": "policy_invalid"
+   },
+   "bool_pause": {
+    "message": "discovery refused: policy_invalid",
+    "raised": "DiscoveryRefused",
+    "reason_code": "policy_invalid"
+   },
+   "confirmed": {
+    "value": {
+     "digest": "4252f9bdb44a4a5ea33b57bb011a4824bb1b4005f3df7b54bc32398eeefa5e20",
+     "id": "fixture-policy",
+     "input_max_age_seconds": 300,
+     "k_pause": 3,
+     "k_resume": 1,
+     "schema": "urn:zeus:discovery-pressure-policy:1",
+     "threshold_status": "confirmed"
+    }
+   },
+   "empty_id": {
+    "message": "discovery refused: policy_invalid",
+    "raised": "DiscoveryRefused",
+    "reason_code": "policy_invalid"
+   },
+   "extra_key": {
+    "message": "discovery refused: policy_invalid",
+    "raised": "DiscoveryRefused",
+    "reason_code": "policy_invalid"
+   },
+   "float_age": {
+    "message": "discovery refused: policy_invalid",
+    "raised": "DiscoveryRefused",
+    "reason_code": "policy_invalid"
+   },
+   "float_thresholds": {
+    "value": {
+     "digest": "2b64f954671b3289af177efc1e1cc940397b51e37253a51895b16da9fd444212",
+     "id": "fixture-policy",
+     "input_max_age_seconds": 300,
+     "k_pause": 2.5,
+     "k_resume": 0.5,
+     "schema": "urn:zeus:discovery-pressure-policy:1",
+     "threshold_status": "suggested_unconfirmed"
+    }
+   },
+   "inf_pause": {
+    "message": "discovery refused: policy_invalid",
+    "raised": "DiscoveryRefused",
+    "reason_code": "policy_invalid"
+   },
+   "int_id": {
+    "message": "discovery refused: policy_invalid",
+    "raised": "DiscoveryRefused",
+    "reason_code": "policy_invalid"
+   },
+   "missing_age": {
+    "message": "discovery refused: policy_invalid",
+    "raised": "DiscoveryRefused",
+    "reason_code": "policy_invalid"
+   },
+   "nan_pause": {
+    "message": "discovery refused: policy_invalid",
+    "raised": "DiscoveryRefused",
+    "reason_code": "policy_invalid"
+   },
+   "negative_resume": {
+    "message": "discovery refused: policy_invalid",
+    "raised": "DiscoveryRefused",
+    "reason_code": "policy_invalid"
+   },
+   "none": {
+    "message": "discovery refused: policy_invalid",
+    "raised": "DiscoveryRefused",
+    "reason_code": "policy_invalid"
+   },
+   "not_dict": {
+    "message": "discovery refused: policy_invalid",
+    "raised": "DiscoveryRefused",
+    "reason_code": "policy_invalid"
+   },
+   "resume_above_pause": {
+    "message": "discovery refused: policy_invalid",
+    "raised": "DiscoveryRefused",
+    "reason_code": "policy_invalid"
+   },
+   "resume_equals_pause": {
+    "message": "discovery refused: policy_invalid",
+    "raised": "DiscoveryRefused",
+    "reason_code": "policy_invalid"
+   },
+   "string_pause": {
+    "message": "discovery refused: policy_invalid",
+    "raised": "DiscoveryRefused",
+    "reason_code": "policy_invalid"
+   },
+   "valid": {
+    "value": {
+     "digest": "17149816dca7f5752c88b8c34937072dff5535ed79268e8b180d8c76238bb0b5",
+     "id": "fixture-policy",
+     "input_max_age_seconds": 300,
+     "k_pause": 3,
+     "k_resume": 1,
+     "schema": "urn:zeus:discovery-pressure-policy:1",
+     "threshold_status": "suggested_unconfirmed"
+    }
+   },
+   "wrong_schema": {
+    "message": "discovery refused: policy_invalid",
+    "raised": "DiscoveryRefused",
+    "reason_code": "policy_invalid"
+   },
+   "zero_age": {
+    "message": "discovery refused: policy_invalid",
+    "raised": "DiscoveryRefused",
+    "reason_code": "policy_invalid"
+   },
+   "zero_resume": {
+    "value": {
+     "digest": "2847319cc2dce67105c1527630735b941aa94667e5951044bd332e011107b4c0",
+     "id": "fixture-policy",
+     "input_max_age_seconds": 300,
+     "k_pause": 3,
+     "k_resume": 0,
+     "schema": "urn:zeus:discovery-pressure-policy:1",
+     "threshold_status": "suggested_unconfirmed"
+    }
+   }
+  },
+  "zero_fetch_proof": {
+   "artifact_puts_total": 0,
+   "cases": 14,
+   "stub_fetch_calls_total": 0
+  }
+ },
+ "proxy_independence": {
+  "environment_restored": true,
+  "equal": true,
+  "proxy_variables_set": {
+   "http_proxy": "http://127.0.0.1:9",
+   "https_proxy": "http://127.0.0.1:9"
+  },
+  "with_proxy": {
+   "collect": {
+    "artifact_puts": [
+     {
+      "chars": 2284,
+      "sha256": "2839123482f77c12b80dca3eb2e5f01e20c16751bd7158d2b172a349ed7e76d8",
+      "source": "https://news.hada.io/rss/news"
+     }
+    ],
+    "fetch_calls": [
+     "https://news.hada.io/rss/news"
+    ],
+    "result": {
+     "value": {
+      "artifact": "sha256:2839123482f77c12b80dca3eb2e5f01e20c16751bd7158d2b172a349ed7e76d8",
+      "fetched_at": "2026-09-22T00:00:00+00:00",
+      "items": [
+       {
+        "summary": "Locks everywhere",
+        "title": "Advisory lock patterns",
+        "url": "https://news.hada.io/topic?id=1"
+       },
+       {
+        "summary": "",
+        "title": "No description",
+        "url": "https://news.hada.io/topic?id=3"
+       },
+       {
+        "summary": "xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx",
+        "title": "Long",
+        "url": "https://news.hada.io/topic?id=4"
+       }
+      ],
+      "source": "https://news.hada.io/rss/news"
+     }
+    }
+   },
+   "detail": {
+    "artifact_puts": [
+     {
+      "chars": 18009,
+      "sha256": "dc6a6318086def22aed5f0684e76b294af549749d0aacd78cc6d56ecad014c6d",
+      "source": "https://github.com/acme/pgtool/blob/aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa/README.md"
+     }
+    ],
+    "fetch_calls": [
+     "https://api.github.com/repos/acme/pgtool",
+     "https://api.github.com/repos/acme/pgtool/commits/release%2F1.x",
+     "https://api.github.com/repos/acme/pgtool/readme?ref=aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa"
+    ],
+    "result": {
+     "value": {
+      "archived": false,
+      "default_branch": "release/1.x",
+      "description": "Postgres tooling",
+      "fetched_at": "2026-09-22T00:00:00+00:00",
+      "license": "MIT",
+      "pushed_at": "2028-01-01T00:00:00Z",
+      "readme_excerpt": {
+       "bytes": 9999,
+       "sha256": "5decb6f13908b03a110257a5d99720440eb598361e0a3136bb9620158391a25b"
+      },
+      "readme_ref": "sha256:dc6a6318086def22aed5f0684e76b294af549749d0aacd78cc6d56ecad014c6d",
+      "revision": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+      "url": "https://github.com/acme/pgtool"
+     }
+    }
+   },
+   "fetch_raises": {
+    "artifact_puts": [],
+    "fetch_calls": [
+     "https://github.com/trending"
+    ],
+    "result": {
+     "message": "fixture",
+     "raised": "OSError"
+    }
+   },
+   "github": {
+    "artifact_puts": [
+     {
+      "chars": 753,
+      "sha256": "560b5cb1383e28664d0a33e453a6e42abafaaaf0c2dc2fda4489fa78f875c164",
+      "source": "https://github.com/trending"
+     }
+    ],
+    "fetch_calls": [
+     "https://github.com/trending"
+    ],
+    "result": {
+     "value": {
+      "artifact": "sha256:560b5cb1383e28664d0a33e453a6e42abafaaaf0c2dc2fda4489fa78f875c164",
+      "fetched_at": "2026-09-22T00:00:00+00:00",
+      "items": [
+       {
+        "summary": "Postgres & advisory locks",
+        "title": "acme/pgtool",
+        "url": "https://github.com/acme/pgtool"
+       },
+       {
+        "summary": "",
+        "title": "org/repo.name-1",
+        "url": "https://github.com/org/repo.name-1"
+       }
+      ],
+      "source": "https://github.com/trending"
+     }
+    }
+   },
+   "held": {
+    "artifact_puts": [],
+    "fetch_calls": [],
+    "result": {
+     "message": "discovery paused: pressure_high",
+     "raised": "DiscoveryPaused",
+     "reason_code": "pressure_high"
+    }
+   },
+   "parse": [
+    {
+     "summary": "body one",
+     "title": "Atom one",
+     "url": "https://example.org/a1"
+    },
+    {
+     "summary": "",
+     "title": "Atom no content",
+     "url": "https://example.org/a3"
+    }
+   ]
+  },
+  "without_proxy": {
+   "collect": {
+    "artifact_puts": [
+     {
+      "chars": 2284,
+      "sha256": "2839123482f77c12b80dca3eb2e5f01e20c16751bd7158d2b172a349ed7e76d8",
+      "source": "https://news.hada.io/rss/news"
+     }
+    ],
+    "fetch_calls": [
+     "https://news.hada.io/rss/news"
+    ],
+    "result": {
+     "value": {
+      "artifact": "sha256:2839123482f77c12b80dca3eb2e5f01e20c16751bd7158d2b172a349ed7e76d8",
+      "fetched_at": "2026-09-22T00:00:00+00:00",
+      "items": [
+       {
+        "summary": "Locks everywhere",
+        "title": "Advisory lock patterns",
+        "url": "https://news.hada.io/topic?id=1"
+       },
+       {
+        "summary": "",
+        "title": "No description",
+        "url": "https://news.hada.io/topic?id=3"
+       },
+       {
+        "summary": "xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx",
+        "title": "Long",
+        "url": "https://news.hada.io/topic?id=4"
+       }
+      ],
+      "source": "https://news.hada.io/rss/news"
+     }
+    }
+   },
+   "detail": {
+    "artifact_puts": [
+     {
+      "chars": 18009,
+      "sha256": "dc6a6318086def22aed5f0684e76b294af549749d0aacd78cc6d56ecad014c6d",
+      "source": "https://github.com/acme/pgtool/blob/aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa/README.md"
+     }
+    ],
+    "fetch_calls": [
+     "https://api.github.com/repos/acme/pgtool",
+     "https://api.github.com/repos/acme/pgtool/commits/release%2F1.x",
+     "https://api.github.com/repos/acme/pgtool/readme?ref=aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa"
+    ],
+    "result": {
+     "value": {
+      "archived": false,
+      "default_branch": "release/1.x",
+      "description": "Postgres tooling",
+      "fetched_at": "2026-09-22T00:00:00+00:00",
+      "license": "MIT",
+      "pushed_at": "2028-01-01T00:00:00Z",
+      "readme_excerpt": {
+       "bytes": 9999,
+       "sha256": "5decb6f13908b03a110257a5d99720440eb598361e0a3136bb9620158391a25b"
+      },
+      "readme_ref": "sha256:dc6a6318086def22aed5f0684e76b294af549749d0aacd78cc6d56ecad014c6d",
+      "revision": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+      "url": "https://github.com/acme/pgtool"
+     }
+    }
+   },
+   "fetch_raises": {
+    "artifact_puts": [],
+    "fetch_calls": [
+     "https://github.com/trending"
+    ],
+    "result": {
+     "message": "fixture",
+     "raised": "OSError"
+    }
+   },
+   "github": {
+    "artifact_puts": [
+     {
+      "chars": 753,
+      "sha256": "560b5cb1383e28664d0a33e453a6e42abafaaaf0c2dc2fda4489fa78f875c164",
+      "source": "https://github.com/trending"
+     }
+    ],
+    "fetch_calls": [
+     "https://github.com/trending"
+    ],
+    "result": {
+     "value": {
+      "artifact": "sha256:560b5cb1383e28664d0a33e453a6e42abafaaaf0c2dc2fda4489fa78f875c164",
+      "fetched_at": "2026-09-22T00:00:00+00:00",
+      "items": [
+       {
+        "summary": "Postgres & advisory locks",
+        "title": "acme/pgtool",
+        "url": "https://github.com/acme/pgtool"
+       },
+       {
+        "summary": "",
+        "title": "org/repo.name-1",
+        "url": "https://github.com/org/repo.name-1"
+       }
+      ],
+      "source": "https://github.com/trending"
+     }
+    }
+   },
+   "held": {
+    "artifact_puts": [],
+    "fetch_calls": [],
+    "result": {
+     "message": "discovery paused: pressure_high",
+     "raised": "DiscoveryPaused",
+     "reason_code": "pressure_high"
+    }
+   },
+   "parse": [
+    {
+     "summary": "body one",
+     "title": "Atom one",
+     "url": "https://example.org/a1"
+    },
+    {
+     "summary": "",
+     "title": "Atom no content",
+     "url": "https://example.org/a3"
+    }
+   ]
+  }
+ },
+ "transport": {
+  "at_cap_2000000": {
+   "reads": [
+    [
+     2000001
+    ]
+   ],
+   "requests": [
+    {
+     "headers": [
+      [
+       "User-agent",
+       "codex-harness/0.1 (research)"
+      ]
+     ],
+     "method": "GET",
+     "timeout": 30,
+     "url": "https://example.invalid/feed"
+    }
+   ],
+   "result": {
+    "value": {
+     "chars": 2000000,
+     "sha256": "9a027c57aa1171b97d9a8f7329af7965ef8e9437e295a6106b15c4b734384c0b"
+    }
+   }
+  },
+  "collect_at_cap": {
+   "puts": [
+    {
+     "chars": 2000000,
+     "sha256": "9a027c57aa1171b97d9a8f7329af7965ef8e9437e295a6106b15c4b734384c0b",
+     "source": "https://news.hada.io/rss/news"
+    }
+   ],
+   "result": {
+    "value": {
+     "artifact": "sha256:9a027c57aa1171b97d9a8f7329af7965ef8e9437e295a6106b15c4b734384c0b",
+     "fetched_at": "2026-09-22T00:00:00+00:00",
+     "items": [
+      {
+       "summary": "",
+       "title": "t",
+       "url": "https://news.hada.io/topic?id=9"
+      }
+     ],
+     "source": "https://news.hada.io/rss/news"
+    }
+   },
+   "urls": [
+    "https://news.hada.io/rss/news"
+   ]
+  },
+  "collect_over_cap": {
+   "puts": [],
+   "result": {
+    "message": "Research response exceeds size budget",
+    "raised": "ContractError"
+   },
+   "urls": [
+    "https://news.hada.io/rss/news"
+   ]
+  },
+  "empty": {
+   "reads": [
+    [
+     2000001
+    ]
+   ],
+   "requests": [
+    {
+     "headers": [
+      [
+       "User-agent",
+       "codex-harness/0.1 (research)"
+      ]
+     ],
+     "method": "GET",
+     "timeout": 30,
+     "url": "https://example.invalid/feed"
+    }
+   ],
+   "result": {
+    "value": {
+     "chars": 0,
+     "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    }
+   }
+  },
+  "far_over_cap": {
+   "reads": [
+    [
+     2000001
+    ]
+   ],
+   "requests": [
+    {
+     "headers": [
+      [
+       "User-agent",
+       "codex-harness/0.1 (research)"
+      ]
+     ],
+     "method": "GET",
+     "timeout": 30,
+     "url": "https://example.invalid/feed"
+    }
+   ],
+   "result": {
+    "message": "Research response exceeds size budget",
+    "raised": "ContractError"
+   }
+  },
+  "http_error": {
+   "reads": [],
+   "requests": [
+    {
+     "headers": [
+      [
+       "User-agent",
+       "codex-harness/0.1 (research)"
+      ]
+     ],
+     "method": "GET",
+     "timeout": 30,
+     "url": "https://example.invalid/feed"
+    }
+   ],
+   "result": {
+    "message": "HTTP Error 500: boom",
+    "raised": "HTTPError"
+   }
+  },
+  "invalid_utf8_replaced": {
+   "reads": [
+    [
+     2000001
+    ]
+   ],
+   "requests": [
+    {
+     "headers": [
+      [
+       "User-agent",
+       "codex-harness/0.1 (research)"
+      ]
+     ],
+     "method": "GET",
+     "timeout": 30,
+     "url": "https://example.invalid/feed"
+    }
+   ],
+   "result": {
+    "value": {
+     "chars": 13,
+     "sha256": "7e84df983b0380a6cb4377337b7ac0c7d5b14d2e84135ff468e6899622acea37"
+    }
+   }
+  },
+  "multibyte": {
+   "reads": [
+    [
+     2000001
+    ]
+   ],
+   "requests": [
+    {
+     "headers": [
+      [
+       "User-agent",
+       "codex-harness/0.1 (research)"
+      ]
+     ],
+     "method": "GET",
+     "timeout": 30,
+     "url": "https://example.invalid/feed"
+    }
+   ],
+   "result": {
+    "value": {
+     "chars": 13,
+     "sha256": "0b99e94ba78067968939fd2612e22e844e378d21842813daa0cd1fb350f9fee4"
+    }
+   }
+  },
+  "os_error": {
+   "reads": [],
+   "requests": [
+    {
+     "headers": [
+      [
+       "User-agent",
+       "codex-harness/0.1 (research)"
+      ]
+     ],
+     "method": "GET",
+     "timeout": 30,
+     "url": "https://example.invalid/feed"
+    }
+   ],
+   "result": {
+    "message": "fixture unreachable",
+    "raised": "OSError"
+   }
+  },
+  "over_cap_2000001": {
+   "reads": [
+    [
+     2000001
+    ]
+   ],
+   "requests": [
+    {
+     "headers": [
+      [
+       "User-agent",
+       "codex-harness/0.1 (research)"
+      ]
+     ],
+     "method": "GET",
+     "timeout": 30,
+     "url": "https://example.invalid/feed"
+    }
+   ],
+   "result": {
+    "message": "Research response exceeds size budget",
+    "raised": "ContractError"
+   }
+  },
+  "small": {
+   "reads": [
+    [
+     2000001
+    ]
+   ],
+   "requests": [
+    {
+     "headers": [
+      [
+       "User-agent",
+       "codex-harness/0.1 (research)"
+      ]
+     ],
+     "method": "GET",
+     "timeout": 30,
+     "url": "https://example.invalid/feed"
+    }
+   ],
+   "result": {
+    "value": {
+     "chars": 103,
+     "sha256": "7c81b3ff041643f64ba6e7d88456339cdeefcc5d73b9440f63f92246b9ee44ed"
+    }
+   }
+  },
+  "timeout": {
+   "reads": [],
+   "requests": [
+    {
+     "headers": [
+      [
+       "User-agent",
+       "codex-harness/0.1 (research)"
+      ]
+     ],
+     "method": "GET",
+     "timeout": 30,
+     "url": "https://example.invalid/feed"
+    }
+   ],
+   "result": {
+    "message": "fixture timed out",
+    "raised": "TimeoutError"
+   }
+  }
+ }
+}

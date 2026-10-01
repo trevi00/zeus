@@ -1,0 +1,9 @@
+{
+ "family": "research.sources",
+ "description": "S8 research feed sources of M7 ResearchSources (collect, parse_github, parse_feed, github_detail, the real fetch over a labelled transport double) and the discovery-pressure hold before its fetch (adapters/discovery_pressure.py, application/discovery_pressure.py, domain/discovery_pressure.py: validate_intent, validate_policy, decide hysteresis, unrecorded_hold, sample_fresh, the census over labelled rows, the evaluator over a MemoryStore), characterized before the research sources move: recorded bodies (a trending-like page, RSS, Atom, malformed, exactly 2,000,001 bytes), the labelled Stub replacing fetch (zero fetch calls while a proactive intent is held), the swallowed exceptions of collect_live, and proxy independence; no network, the real urlopen is never called",
+ "reference_driver": "drivers/reference/s8_sources.py",
+ "target_driver": null,
+ "golden": "goldens/reference/research.sources.json",
+ "slice": "S8",
+ "target_status": "pending: S8 step 3"
+}
