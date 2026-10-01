@@ -2,8 +2,7 @@
  "family": "delivery.tooling",
  "description": "S7 delivery tooling characterized before its deploy move (DESIGN-s7 §0, §2 row delivery.tooling): the deploy/aibox Linux service tool (render with every refusal and the account database through a LABELLED pwd double, the static unit policy over every rendered unit and each weakened fleet unit, verify and systemd-analyze through LABELLED run doubles, launch_plan per role over a LABELLED control dir, release tree and machine-id file with every refusal, the fleet-owner and bootstrap-inactive rules, the start/exit journal, inspect and compare_network over a LABELLED proc root, cgroup tree and runner double, the parser, main for every subcommand and launch up to a sentinel os.execve that never execs) and the scripts/aibox_data CLI (every subcommand through data_main over fixture trees, manifests, exports and evidence: inventory, verify-manifest, verify-artifacts, scan-paths, stage with resume and every refusal, verify-staged, pg-inventory, compare-pg, compare-redis, pel-owners, plan-bindings, the R0/R1/C gates); the real systemd-analyze, the runner_state reader and the FileArtifacts writer are unreachable and named",
  "reference_driver": "drivers/reference/s7_tooling.py",
- "target_driver": null,
+ "target_driver": "drivers/target/s7_tooling.py",
  "golden": "goldens/reference/delivery.tooling.json",
- "slice": "S7",
- "target_status": "pending: S7 tooling copy"
+ "slice": "S7"
 }

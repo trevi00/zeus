@@ -14,7 +14,8 @@ composition would pass (DESIGN-s7 adapters-move §9.4), so the common module run
   ignores the `runner`/`proc` keywords the moved `switch_effect` passes to its default observer.
 - `checkout(path)` patches `PACKAGE_DIR` to `<path>/src/codex_harness` (the reference makes `adapter.codex_harness` a
   stand-in with that `__file__`), so `canonical_tool` resolves `<path>/scripts/aibox_data`.
-- `launcher` is the unchanged deploy/aibox launcher module, loaded from the SOURCE tree as the reference loads it.
+- `launcher` is the deploy/aibox launcher module, loaded from the target copy `target/deploy/aibox` (byte-identical to SOURCE's;
+  S7 `delivery.tooling`), as the reference loads SOURCE's.
 - `main` (the S10 CLI) is not part of the target api: its cases are `delivery.host_migration_cli`.
 
 The clock seam (as in pilot 43): the reference freezes time by installing its fake clock, so the digests of the fence
@@ -61,7 +62,7 @@ from codex_harness.storage.adapters.memory_store import MemoryStore  # noqa: E40
 SOURCE_ROOT = Path(os.environ["ZEUS_REBUILD_SOURCE_ROOT"]).resolve()
 TOOL_ROOT = Path(os.environ["ZEUS_REBUILD_TARGET_SRC"]).resolve().parent
 CLOCK = determinism.FakeClock()
-LAUNCHER_PATH = SOURCE_ROOT / "deploy" / "aibox" / "zeus_aibox_service.py"
+LAUNCHER_PATH = TOOL_ROOT / "deploy" / "aibox" / "zeus_aibox_service.py"
 _spec = importlib.util.spec_from_file_location("zeus_aibox_service_transfer", LAUNCHER_PATH)
 _launcher = importlib.util.module_from_spec(_spec)
 _spec.loader.exec_module(_launcher)
