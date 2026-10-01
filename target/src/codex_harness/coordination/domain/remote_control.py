@@ -7,8 +7,8 @@ Owns: `parse_command` (the fence and the §4.3 schema `urn:zeus:buzz-command:1`)
     (`next_transition`, `TERMINAL`), the work-state vocabulary and the refusal-code constants
 Does not own: the `RemoteControl.admit` use case, its transaction, the bridge fence and the bound-result reads (B3),
     the stores and buckets, signature verification (observation), the receipt event (observation `buzz_projection`)
-Entry points: parse_command, command_digest, owner_allowed, fresh_for_admission, next_transition, Refusal,
-    DISPOSITIONS, TERMINAL, WORK_STATES, OPS, REFUSAL_CODES
+Entry points: parse_command, extract_command, extract_command_id, command_digest, owner_allowed,
+    fresh_for_admission, next_transition, Refusal, DISPOSITIONS, TERMINAL, WORK_STATES, OPS, REFUSAL_CODES
 Contracts: Buzz DESIGN §4.3/§4.4 (command, receipt, dispositions), §6.2.2-§6.2.3 (owner filter, admission order,
     freshness for NEW admission only), §6.4 (refusal codes) in
     aibox-migration-001/evidence/buzz-zeus-localization-001/DESIGN.md; Batch B DESIGN-B §1-§2
@@ -161,16 +161,10 @@ def _check_desk(op: str, value: object) -> str | None:
     return None
 
 
-def parse_command(event_content: str, *, created_at: int) -> dict | Refusal:
-    """Extract and validate the `zeus:command` fence of a kind-9 content (§4.3). Returns the command dict or a Refusal.
-
-    `invalid_command`: no or several fences, malformed JSON, a missing/ill-typed field, an op-specific field set that
-    does not match the op, `issued_at` outside created_at ±5 s. `unsupported_version`: a well-formed schema URN
-    with another MAJOR. Unknown extra keys are kept (minor additions are optional fields, §4) and are part of the
-    digest.
-    """
-    if isinstance(created_at, bool) or not isinstance(created_at, int) or created_at < 0:
-        raise ContractError("remote control: created_at must be a non-negative integer")
+def _fence_object(event_content: object) -> dict | Refusal:
+    """The command object of exactly one `zeus:command` fence: the size bound, the fence, the duplicate-key and
+    non-finite refusals, canonical-JSON encodability and the object check, shared by `parse_command` and
+    `extract_command`."""
     if not isinstance(event_content, str):
         return _refuse(INVALID_COMMAND, "content must be a string")
     if len(event_content.encode("utf-8", "surrogatepass")) > MAX_COMMAND_CONTENT_BYTES:
@@ -185,6 +179,48 @@ def parse_command(event_content: str, *, created_at: int) -> dict | Refusal:
         return _refuse(INVALID_COMMAND, f"fence is not canonical JSON: {exc}")
     if not isinstance(command, dict):
         return _refuse(INVALID_COMMAND, "command must be a JSON object")
+    return command
+
+
+def _canonical_command_id(value: object) -> bool:
+    """REFUSE-READING: the canonical lowercase hyphenated uuid v4 only, so one id has one spelling."""
+    try:
+        parsed = uuid.UUID(value) if isinstance(value, str) else None
+    except ValueError:
+        parsed = None
+    return parsed is not None and parsed.version == 4 and parsed.variant == uuid.RFC_4122 and str(parsed) == value
+
+
+def extract_command(event_content: str) -> dict | None:
+    """The command object of exactly one fence whose `command_id` is a canonical uuid v4, else None.
+
+    Schema, op and field errors do not matter here: this is how a refusal (§6.4) finds the id it must bind (DESIGN-B R3).
+    """
+    command = _fence_object(event_content)
+    if isinstance(command, Refusal) or not _canonical_command_id(command.get("command_id")):
+        return None
+    return command
+
+
+def extract_command_id(event_content: str) -> str | None:
+    """The `command_id` `extract_command` finds, or None when no id is extractable."""
+    command = extract_command(event_content)
+    return None if command is None else command["command_id"]
+
+
+def parse_command(event_content: str, *, created_at: int) -> dict | Refusal:
+    """Extract and validate the `zeus:command` fence of a kind-9 content (§4.3). Returns the command dict or a Refusal.
+
+    `invalid_command`: no or several fences, malformed JSON, a missing/ill-typed field, an op-specific field set that
+    does not match the op, `issued_at` outside created_at ±5 s. `unsupported_version`: a well-formed schema URN
+    with another MAJOR. Unknown extra keys are kept (minor additions are optional fields, §4) and are part of the
+    digest.
+    """
+    if isinstance(created_at, bool) or not isinstance(created_at, int) or created_at < 0:
+        raise ContractError("remote control: created_at must be a non-negative integer")
+    command = _fence_object(event_content)
+    if isinstance(command, Refusal):
+        return command
 
     schema = command.get("schema")
     match = _SCHEMA.fullmatch(schema) if isinstance(schema, str) else None
@@ -193,13 +229,7 @@ def parse_command(event_content: str, *, created_at: int) -> dict | Refusal:
     if int(match.group(1)) != COMMAND_MAJOR:
         return _refuse(UNSUPPORTED_VERSION, f"unsupported command major {match.group(1)}")
 
-    command_id = command.get("command_id")
-    try:
-        parsed_id = uuid.UUID(command_id) if isinstance(command_id, str) else None
-    except ValueError:
-        parsed_id = None
-    # REFUSE-READING: the canonical lowercase hyphenated form only, so one id has one spelling.
-    if parsed_id is None or parsed_id.version != 4 or parsed_id.variant != uuid.RFC_4122 or str(parsed_id) != command_id:
+    if not _canonical_command_id(command.get("command_id")):
         return _refuse(INVALID_COMMAND, "command_id must be a canonical uuid v4")
 
     op = command.get("op")

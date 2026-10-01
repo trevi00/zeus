@@ -20,9 +20,6 @@ A lost bridge lease propagates unchanged (nothing commits, the inbox row stays p
 
 from __future__ import annotations
 
-import json
-import re
-import uuid
 from dataclasses import dataclass
 
 from codex_harness.coordination.application.bridge_lease import LOST
@@ -35,7 +32,6 @@ COMMANDS = "remote_commands"
 TRANSITIONS = "remote_command_transitions"
 ACTOR = "conductor"  # R8: the effects run as the conductor (the CLI cancels as the conductor)
 ADMITTED, REFUSED = "command_admitted", "command_refused"
-_FENCE = re.compile(r"```zeus:command[ \t]*\r?\n(.*?)```", re.DOTALL)  # the domain's fence, for R3's id extraction
 _MAX_OP_CHARS = 64
 
 
@@ -69,43 +65,6 @@ def _bound_result(row: dict) -> dict:
     return _result(outcome, row["command_id"], row["disposition"], row["reason_code"])
 
 
-def _extract(content: str) -> dict | None:
-    """R3: the command object of exactly one parsed fence whose `command_id` is a canonical uuid v4, else None."""
-    if len(content.encode("utf-8", "surrogatepass")) > rc.MAX_COMMAND_CONTENT_BYTES:
-        return None
-    fences = _FENCE.findall(content)
-    if len(fences) != 1:
-        return None
-
-    def no_duplicates(pairs):
-        out = {}
-        for key, value in pairs:
-            if key in out:
-                raise ValueError("duplicate key")
-            out[key] = value
-        return out
-
-    def reject(name):
-        raise ValueError(name)
-
-    try:
-        command = json.loads(fences[0], object_pairs_hook=no_duplicates, parse_constant=reject)
-        rc.command_digest(command)
-    except (ValueError, ContractError):
-        return None
-    if not isinstance(command, dict):
-        return None
-    command_id = command.get("command_id")
-    try:
-        parsed = uuid.UUID(command_id) if isinstance(command_id, str) else None
-    except ValueError:
-        parsed = None
-    # The domain's id rule (canonical lowercase hyphenated uuid v4): one spelling per id.
-    if parsed is None or parsed.version != 4 or parsed.variant != uuid.RFC_4122 or str(parsed) != command_id:
-        return None
-    return command
-
-
 class RemoteControl:
     def __init__(self, store, messages, fleet_pause, lease, owners, clock):
         self.store, self.messages, self.fleet_pause, self.lease = store, messages, fleet_pause, lease
@@ -118,7 +77,7 @@ class RemoteControl:
         content, created_at = inbox_row["event"]["content"], inbox_row["created_at"]
         parsed = rc.parse_command(content, created_at=created_at)  # (i) the schema
         refusal = parsed if isinstance(parsed, rc.Refusal) else None
-        command = _extract(content) if refusal is not None else parsed
+        command = rc.extract_command(content) if refusal is not None else parsed
         if command is None:  # R3: no extractable id, so nothing to bind
             return _result(REFUSED, None, None, refusal.code)
         intake = _Intake(command, refusal, inbox_row["event_id"], created_at, inbox_row["received_at"],
