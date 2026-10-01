@@ -732,6 +732,9 @@ def step_lease(ctx, rec):
         with store.transaction() as tx:  # expiry hands the lease over; the old generation is fenced out
             takeover = lease.acquire(tx, "bridge-B", now + 120, 60)
         assert takeover == generation + 1, f"takeover generation {takeover}"
+        # Owner fix after run 3: the takeover itself legitimately rewrites the lease row, so the old holder is
+        # compared against the store AFTER the takeover (before: it was blamed for B's own acquire).
+        committed = canonical(sorted(store.data.items(), key=str))
         try:
             holder.run(generation)
         except ContractError as exc:
