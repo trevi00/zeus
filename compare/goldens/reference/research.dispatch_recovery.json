@@ -1,0 +1,3042 @@
+{
+ "cases_per_group": {
+  "g1_recovery": 40,
+  "g2_revocation": 32,
+  "g3_successor": 26,
+  "g4_contract_successor": 32
+ },
+ "g1_recovery": {
+  "added_followup_strict_request": {
+   "empty": {
+    "canary_in_message": false,
+    "field": "root",
+    "nothing_written": true,
+    "raised": "ProgramRefused",
+    "reason_code": "followup_request_invalid",
+    "store_after": "1c0d4779366e3f6edacd7cbae0393a7c78e1721ec5943da63d4f91cf9694adcf",
+    "store_before": "1c0d4779366e3f6edacd7cbae0393a7c78e1721ec5943da63d4f91cf9694adcf"
+   },
+   "mode_only": {
+    "canary_in_message": false,
+    "field": "root",
+    "nothing_written": true,
+    "raised": "ProgramRefused",
+    "reason_code": "followup_request_invalid",
+    "store_after": "1c0d4779366e3f6edacd7cbae0393a7c78e1721ec5943da63d4f91cf9694adcf",
+    "store_before": "1c0d4779366e3f6edacd7cbae0393a7c78e1721ec5943da63d4f91cf9694adcf"
+   }
+  },
+  "added_scope_lineage_is_final": {
+   "scope_dispatch_revocation_mode": {
+    "canary_in_message": false,
+    "field": "investigation",
+    "nothing_written": true,
+    "raised": "ProgramRefused",
+    "reason_code": "attempt_scope_final",
+    "store_after": "bf927ee09882d422a68ea2cb873a202d9156d7a3abc99aa047c3c1c18ee2856f",
+    "store_before": "bf927ee09882d422a68ea2cb873a202d9156d7a3abc99aa047c3c1c18ee2856f"
+   },
+   "scope_dispatch_transport_mode": {
+    "canary_in_message": false,
+    "field": "investigation",
+    "nothing_written": true,
+    "raised": "ProgramRefused",
+    "reason_code": "attempt_scope_final",
+    "store_after": "bf927ee09882d422a68ea2cb873a202d9156d7a3abc99aa047c3c1c18ee2856f",
+    "store_before": "bf927ee09882d422a68ea2cb873a202d9156d7a3abc99aa047c3c1c18ee2856f"
+   },
+   "scope_identity_transport_mode": {
+    "canary_in_message": false,
+    "field": "investigation",
+    "nothing_written": true,
+    "raised": "ProgramRefused",
+    "reason_code": "attempt_scope_final",
+    "store_after": "da296bb37324a4d2b09b45b4428d049fcdd0466b24e4ec496686ce0c62731e45",
+    "store_before": "da296bb37324a4d2b09b45b4428d049fcdd0466b24e4ec496686ce0c62731e45"
+   },
+   "untouched": true
+  },
+  "m7_scope": {
+   "cli": "unreachable: CLI entry (S10)",
+   "identity": {
+    "schema": "urn:test:transport:1",
+    "storage": "token-a"
+   },
+   "investigation": "e22b6fca3d421d032a78b8c9e9ea1f6fb8ae0a99dd0fffacffe31b405e7a64ee",
+   "mirrors": "tests/test_research_recovery.py lines 196-760 (non-PG, non-CLI)",
+   "postgres": "unreachable: PostgreSQL (step 8 .pg units)",
+   "replacement_dispatch": "e22b6fca3d421d032a78b8c9e9ea1f6fb8ae0a99dd0fffacffe31b405e7a64ee.recovery-1",
+   "second_dispatch": "e22b6fca3d421d032a78b8c9e9ea1f6fb8ae0a99dd0fffacffe31b405e7a64ee.recovery-2",
+   "wiring": "unreachable: real bus/composition (S10)"
+  },
+  "test_a_changed_scope_foreign_digest_or_ticked_replacement_refuses": {
+   "foreign_digest": {
+    "canary_in_message": false,
+    "field": "replacement",
+    "nothing_written": true,
+    "raised": "ProgramRefused",
+    "reason_code": "recovery_replacement_mismatch",
+    "store_after": "9f077cf402c835e7294ff47b2f0ad155a1da997e814abc0682487965d0ae23e5",
+    "store_before": "9f077cf402c835e7294ff47b2f0ad155a1da997e814abc0682487965d0ae23e5"
+   },
+   "other_authority": {
+    "canary_in_message": false,
+    "field": "replacement",
+    "nothing_written": true,
+    "raised": "ProgramRefused",
+    "reason_code": "recovery_scope_changed",
+    "store_after": "49c64e935f55771f59526006cf104335de7647ef3e1c751ef19f85edef480312",
+    "store_before": "49c64e935f55771f59526006cf104335de7647ef3e1c751ef19f85edef480312"
+   },
+   "replacement_is_the_failed_program": {
+    "canary_in_message": false,
+    "field": "replacement.program",
+    "nothing_written": true,
+    "raised": "ProgramRefused",
+    "reason_code": "recovery_request_invalid",
+    "store_after": "5403f75da16baf93f44ff2aa7f9f51b3faae16d7a7de8b5899362056a55ce9f8",
+    "store_before": "5403f75da16baf93f44ff2aa7f9f51b3faae16d7a7de8b5899362056a55ce9f8"
+   },
+   "ticked_replacement": {
+    "canary_in_message": false,
+    "field": "replacement",
+    "nothing_written": true,
+    "raised": "ProgramRefused",
+    "reason_code": "recovery_replacement_not_fresh",
+    "store_after": "5403f75da16baf93f44ff2aa7f9f51b3faae16d7a7de8b5899362056a55ce9f8",
+    "store_before": "5403f75da16baf93f44ff2aa7f9f51b3faae16d7a7de8b5899362056a55ce9f8"
+   },
+   "untouched": true,
+   "widened": {
+    "canary_in_message": false,
+    "field": "replacement",
+    "nothing_written": true,
+    "raised": "ProgramRefused",
+    "reason_code": "recovery_scope_changed",
+    "store_after": "74d87ad3d6c2ce0a24e9294e0037dd0b1091c628bc965173165c8a9b7333ddb4",
+    "store_before": "74d87ad3d6c2ce0a24e9294e0037dd0b1091c628bc965173165c8a9b7333ddb4"
+   },
+   "widened_max_adoptions": 2
+  },
+  "test_a_failed_replacement_is_held_and_never_opens_a_second_recovery": {
+   "identical_request": "claimed",
+   "program_state": "blocked",
+   "second_recovery": {
+    "canary_in_message": false,
+    "field": null,
+    "nothing_written": true,
+    "raised": "ProgramRefused",
+    "reason_code": "recovery_conflict",
+    "store_after": "69eb9e3f28c3521ad9ce0e3e443e473a09d1b661dc73764f6ec833f205b1c48c",
+    "store_before": "69eb9e3f28c3521ad9ce0e3e443e473a09d1b661dc73764f6ec833f205b1c48c"
+   },
+   "tick": {
+    "investigation": "e22b6fca3d421d032a78b8c9e9ea1f6fb8ae0a99dd0fffacffe31b405e7a64ee",
+    "reason_code": "fixture_failed",
+    "result": "failed",
+    "run_id": "rp-002.c001",
+    "selected": "inv-e22b6fca3d421d032a78b8c9"
+   },
+   "views": {
+    "current": true,
+    "program": "rp-002",
+    "recovery": "e22b6fca3d421d032a78b8c9e9ea1f6fb8ae0a99dd0fffacffe31b405e7a64ee",
+    "result": "failed",
+    "run_id": "rp-002.c001"
+   }
+  },
+  "test_a_legacy_attempt_without_a_binding_refuses_as_unknown_and_writes_nothing": {
+   "attempt_has_transport": false,
+   "recover": {
+    "canary_in_message": false,
+    "field": "failed.run_id",
+    "nothing_written": true,
+    "raised": "ProgramRefused",
+    "reason_code": "recovery_transport_unbound",
+    "store_after": "a7b72cf0248b1a287da59ac3bf42b0031e6307ba85fd514bde9497b9d7fc21a7",
+    "store_before": "a7b72cf0248b1a287da59ac3bf42b0031e6307ba85fd514bde9497b9d7fc21a7"
+   },
+   "transport_calls": [],
+   "untouched": true
+  },
+  "test_a_message_present_on_the_transport_is_a_durable_refusal": {
+   "present": {
+    "canary_in_message": false,
+    "field": null,
+    "nothing_written": false,
+    "raised": "ProgramRefused",
+    "reason_code": "recovery_message_delivered",
+    "store_after": "482aa61f812aa03021e6ebdcad6edc477e7ba6b3f5ca9e32b8803ca1fb7fca10",
+    "store_before": "da296bb37324a4d2b09b45b4428d049fcdd0466b24e4ec496686ce0c62731e45"
+   },
+   "repeat": {
+    "canary_in_message": false,
+    "field": null,
+    "nothing_written": true,
+    "raised": "ProgramRefused",
+    "reason_code": "recovery_message_delivered",
+    "store_after": "482aa61f812aa03021e6ebdcad6edc477e7ba6b3f5ca9e32b8803ca1fb7fca10",
+    "store_before": "482aa61f812aa03021e6ebdcad6edc477e7ba6b3f5ca9e32b8803ca1fb7fca10"
+   },
+   "repeat_transport_calls": [],
+   "row": {
+    "outbox_fence": "quarantined",
+    "reason_code": "recovery_message_delivered",
+    "state": "refused"
+   }
+  },
+  "test_a_publication_change_after_the_fence_refuses_the_authorization": {
+   "lineage_state": "fenced",
+   "recover": {
+    "canary_in_message": false,
+    "field": "failed.run_id",
+    "nothing_written": false,
+    "raised": "ProgramRefused",
+    "reason_code": "recovery_message_delivered",
+    "store_after": "904d41bd49ae6b0c9be493a3fb617262334c437c39372bb06192f84ca8aff49a",
+    "store_before": "da296bb37324a4d2b09b45b4428d049fcdd0466b24e4ec496686ce0c62731e45"
+   }
+  },
+  "test_a_stale_owner_request_naming_another_attempt_refuses[cycle]": {
+   "recover": {
+    "canary_in_message": false,
+    "field": "failed",
+    "nothing_written": true,
+    "raised": "ProgramRefused",
+    "reason_code": "recovery_dispatch_mismatch",
+    "store_after": "da296bb37324a4d2b09b45b4428d049fcdd0466b24e4ec496686ce0c62731e45",
+    "store_before": "da296bb37324a4d2b09b45b4428d049fcdd0466b24e4ec496686ce0c62731e45"
+   },
+   "untouched": true
+  },
+  "test_a_stale_owner_request_naming_another_attempt_refuses[manifest_sha256]": {
+   "recover": {
+    "canary_in_message": false,
+    "field": "failed",
+    "nothing_written": true,
+    "raised": "ProgramRefused",
+    "reason_code": "recovery_dispatch_mismatch",
+    "store_after": "da296bb37324a4d2b09b45b4428d049fcdd0466b24e4ec496686ce0c62731e45",
+    "store_before": "da296bb37324a4d2b09b45b4428d049fcdd0466b24e4ec496686ce0c62731e45"
+   },
+   "untouched": true
+  },
+  "test_a_stale_owner_request_naming_another_attempt_refuses[run_id]": {
+   "recover": {
+    "canary_in_message": false,
+    "field": "failed",
+    "nothing_written": true,
+    "raised": "ProgramRefused",
+    "reason_code": "recovery_dispatch_mismatch",
+    "store_after": "da296bb37324a4d2b09b45b4428d049fcdd0466b24e4ec496686ce0c62731e45",
+    "store_before": "da296bb37324a4d2b09b45b4428d049fcdd0466b24e4ec496686ce0c62731e45"
+   },
+   "untouched": true
+  },
+  "test_a_stale_owner_request_naming_another_attempt_refuses[snapshot_sha256]": {
+   "recover": {
+    "canary_in_message": false,
+    "field": "failed",
+    "nothing_written": true,
+    "raised": "ProgramRefused",
+    "reason_code": "recovery_dispatch_mismatch",
+    "store_after": "da296bb37324a4d2b09b45b4428d049fcdd0466b24e4ec496686ce0c62731e45",
+    "store_before": "da296bb37324a4d2b09b45b4428d049fcdd0466b24e4ec496686ce0c62731e45"
+   },
+   "untouched": true
+  },
+  "test_absence_on_any_other_transport_refuses_keeps_the_fence_and_the_bound_one_authorizes_once[another_namespace]": {
+   "bound_transport": "authorized",
+   "history_untouched": true,
+   "lineage_state": "fenced",
+   "original_current": true,
+   "other": {
+    "canary_in_message": false,
+    "field": "transport",
+    "nothing_written": false,
+    "raised": "ProgramRefused",
+    "reason_code": "recovery_transport_changed",
+    "store_after": "20e503aa3f25dbc77cf8498007b86b15a76d182d994811f79b249f762dcb3535",
+    "store_before": "da296bb37324a4d2b09b45b4428d049fcdd0466b24e4ec496686ce0c62731e45"
+   },
+   "replacement_dispatch": null,
+   "unreadable": {
+    "canary_in_message": false,
+    "field": "transport",
+    "nothing_written": true,
+    "raised": "ProgramRefused",
+    "reason_code": "recovery_transport_unavailable",
+    "store_after": "20e503aa3f25dbc77cf8498007b86b15a76d182d994811f79b249f762dcb3535",
+    "store_before": "20e503aa3f25dbc77cf8498007b86b15a76d182d994811f79b249f762dcb3535"
+   }
+  },
+  "test_absence_on_any_other_transport_refuses_keeps_the_fence_and_the_bound_one_authorizes_once[another_server]": {
+   "bound_transport": "authorized",
+   "history_untouched": true,
+   "lineage_state": "fenced",
+   "original_current": true,
+   "other": {
+    "canary_in_message": false,
+    "field": "transport",
+    "nothing_written": false,
+    "raised": "ProgramRefused",
+    "reason_code": "recovery_transport_changed",
+    "store_after": "20e503aa3f25dbc77cf8498007b86b15a76d182d994811f79b249f762dcb3535",
+    "store_before": "da296bb37324a4d2b09b45b4428d049fcdd0466b24e4ec496686ce0c62731e45"
+   },
+   "replacement_dispatch": null,
+   "unreadable": {
+    "canary_in_message": false,
+    "field": "transport",
+    "nothing_written": true,
+    "raised": "ProgramRefused",
+    "reason_code": "recovery_transport_unavailable",
+    "store_after": "20e503aa3f25dbc77cf8498007b86b15a76d182d994811f79b249f762dcb3535",
+    "store_before": "20e503aa3f25dbc77cf8498007b86b15a76d182d994811f79b249f762dcb3535"
+   }
+  },
+  "test_absence_on_any_other_transport_refuses_keeps_the_fence_and_the_bound_one_authorizes_once[changed_during_read]": {
+   "bound_transport": "authorized",
+   "history_untouched": true,
+   "lineage_state": "fenced",
+   "original_current": true,
+   "other": {
+    "canary_in_message": false,
+    "field": "transport",
+    "nothing_written": false,
+    "raised": "ProgramRefused",
+    "reason_code": "recovery_transport_changed",
+    "store_after": "20e503aa3f25dbc77cf8498007b86b15a76d182d994811f79b249f762dcb3535",
+    "store_before": "da296bb37324a4d2b09b45b4428d049fcdd0466b24e4ec496686ce0c62731e45"
+   },
+   "replacement_dispatch": null,
+   "unreadable": {
+    "canary_in_message": false,
+    "field": "transport",
+    "nothing_written": true,
+    "raised": "ProgramRefused",
+    "reason_code": "recovery_transport_unavailable",
+    "store_after": "20e503aa3f25dbc77cf8498007b86b15a76d182d994811f79b249f762dcb3535",
+    "store_before": "20e503aa3f25dbc77cf8498007b86b15a76d182d994811f79b249f762dcb3535"
+   }
+  },
+  "test_absence_on_any_other_transport_refuses_keeps_the_fence_and_the_bound_one_authorizes_once[no_token]": {
+   "bound_transport": "authorized",
+   "history_untouched": true,
+   "lineage_state": "fenced",
+   "original_current": true,
+   "other": {
+    "canary_in_message": false,
+    "field": "transport",
+    "nothing_written": false,
+    "raised": "ProgramRefused",
+    "reason_code": "recovery_transport_changed",
+    "store_after": "20e503aa3f25dbc77cf8498007b86b15a76d182d994811f79b249f762dcb3535",
+    "store_before": "da296bb37324a4d2b09b45b4428d049fcdd0466b24e4ec496686ce0c62731e45"
+   },
+   "replacement_dispatch": null,
+   "unreadable": {
+    "canary_in_message": false,
+    "field": "transport",
+    "nothing_written": true,
+    "raised": "ProgramRefused",
+    "reason_code": "recovery_transport_unavailable",
+    "store_after": "20e503aa3f25dbc77cf8498007b86b15a76d182d994811f79b249f762dcb3535",
+    "store_before": "20e503aa3f25dbc77cf8498007b86b15a76d182d994811f79b249f762dcb3535"
+   }
+  },
+  "test_accepted_rejected_or_other_failed_councils_are_never_recoverable[accepted]": {
+   "recover": {
+    "canary_in_message": false,
+    "field": "failed",
+    "nothing_written": true,
+    "raised": "ProgramRefused",
+    "reason_code": "recovery_dispatch_not_failed",
+    "store_after": "727f1b15bf173def5ad2222717bb369b9057b3af75e003ec73f93064ce809d57",
+    "store_before": "727f1b15bf173def5ad2222717bb369b9057b3af75e003ec73f93064ce809d57"
+   },
+   "untouched": true
+  },
+  "test_accepted_rejected_or_other_failed_councils_are_never_recoverable[failed]": {
+   "recover": {
+    "canary_in_message": false,
+    "field": "failed",
+    "nothing_written": true,
+    "raised": "ProgramRefused",
+    "reason_code": "recovery_not_pre_provider",
+    "store_after": "6fe7357d05df60c8b4c67ad46b2da88b06cdb59ccb738198d73ecd70b0bf1b18",
+    "store_before": "6fe7357d05df60c8b4c67ad46b2da88b06cdb59ccb738198d73ecd70b0bf1b18"
+   },
+   "untouched": true
+  },
+  "test_accepted_rejected_or_other_failed_councils_are_never_recoverable[rejected]": {
+   "recover": {
+    "canary_in_message": false,
+    "field": "failed",
+    "nothing_written": true,
+    "raised": "ProgramRefused",
+    "reason_code": "recovery_dispatch_not_failed",
+    "store_after": "da5ba2f05bb00c0598d05b6c579d89f9417a3f7e12e5c1758f84eb12ae89451b",
+    "store_before": "da5ba2f05bb00c0598d05b6c579d89f9417a3f7e12e5c1758f84eb12ae89451b"
+   },
+   "untouched": true
+  },
+  "test_active_unknown_or_possibly_delivered_effects_refuse_and_write_nothing[disposition]": {
+   "recover": {
+    "canary_in_message": false,
+    "field": "investigation",
+    "nothing_written": true,
+    "raised": "ProgramRefused",
+    "reason_code": "recovery_investigation_changed",
+    "store_after": "24cf01bf243b9f6514653f5e7dc4d5413e223ec32a208f95fb28178301678b7a",
+    "store_before": "24cf01bf243b9f6514653f5e7dc4d5413e223ec32a208f95fb28178301678b7a"
+   },
+   "transport_calls": [],
+   "untouched": true
+  },
+  "test_active_unknown_or_possibly_delivered_effects_refuse_and_write_nothing[in_flight]": {
+   "recover": {
+    "canary_in_message": false,
+    "field": "failed.run_id",
+    "nothing_written": true,
+    "raised": "ProgramRefused",
+    "reason_code": "recovery_effect_unknown",
+    "store_after": "f561a6dea2685564a43e5a9a0cd8ce659b18c1ac77cdcaf8d85f172330dffd4a",
+    "store_before": "f561a6dea2685564a43e5a9a0cd8ce659b18c1ac77cdcaf8d85f172330dffd4a"
+   },
+   "transport_calls": [],
+   "untouched": true
+  },
+  "test_active_unknown_or_possibly_delivered_effects_refuse_and_write_nothing[invocation_exists]": {
+   "recover": {
+    "canary_in_message": false,
+    "field": "failed.run_id",
+    "nothing_written": true,
+    "raised": "ProgramRefused",
+    "reason_code": "recovery_invocation_exists",
+    "store_after": "35dcf51b6976c6506cec37f440e3b0f4807fae977cf975cb34b353c9162e52a3",
+    "store_before": "35dcf51b6976c6506cec37f440e3b0f4807fae977cf975cb34b353c9162e52a3"
+   },
+   "transport_calls": [],
+   "untouched": true
+  },
+  "test_active_unknown_or_possibly_delivered_effects_refuse_and_write_nothing[later_publication]": {
+   "recover": {
+    "canary_in_message": false,
+    "field": "failed.run_id",
+    "nothing_written": true,
+    "raised": "ProgramRefused",
+    "reason_code": "recovery_message_delivered",
+    "store_after": "bc4448b711e002e63f98f84ee4968dbefd302976f4fc331600a50098647caace",
+    "store_before": "bc4448b711e002e63f98f84ee4968dbefd302976f4fc331600a50098647caace"
+   },
+   "transport_calls": [],
+   "untouched": true
+  },
+  "test_active_unknown_or_possibly_delivered_effects_refuse_and_write_nothing[provider_slot]": {
+   "recover": {
+    "canary_in_message": false,
+    "field": "failed.run_id",
+    "nothing_written": true,
+    "raised": "ProgramRefused",
+    "reason_code": "recovery_provider_entered",
+    "store_after": "f6866f020851c9fabec0bd293c3b3db7c2481975f01c5693b50c9a74e590e511",
+    "store_before": "f6866f020851c9fabec0bd293c3b3db7c2481975f01c5693b50c9a74e590e511"
+   },
+   "transport_calls": [],
+   "untouched": true
+  },
+  "test_active_unknown_or_possibly_delivered_effects_refuse_and_write_nothing[residue]": {
+   "recover": {
+    "canary_in_message": false,
+    "field": "failed.run_id",
+    "nothing_written": true,
+    "raised": "ProgramRefused",
+    "reason_code": "recovery_residue",
+    "store_after": "c6c2a57cad805e138cca7a70ac0b0f781829459f7a1765c086a8cfde0bf2e7e2",
+    "store_before": "c6c2a57cad805e138cca7a70ac0b0f781829459f7a1765c086a8cfde0bf2e7e2"
+   },
+   "transport_calls": [],
+   "untouched": true
+  },
+  "test_active_unknown_or_possibly_delivered_effects_refuse_and_write_nothing[task_exists]": {
+   "recover": {
+    "canary_in_message": false,
+    "field": "failed.run_id",
+    "nothing_written": true,
+    "raised": "ProgramRefused",
+    "reason_code": "recovery_task_exists",
+    "store_after": "672250ce3351632472784079b14ac031bb8928190111a7d9cb0aa4843b1aeab3",
+    "store_before": "672250ce3351632472784079b14ac031bb8928190111a7d9cb0aa4843b1aeab3"
+   },
+   "transport_calls": [],
+   "untouched": true
+  },
+  "test_an_unavailable_transport_refuses_keeps_the_fence_and_a_later_proof_authorizes_once": {
+   "current_while_fenced": true,
+   "history_untouched": true,
+   "later_proof_after_the_replacement_ticked": {
+    "canary_in_message": false,
+    "field": "replacement",
+    "nothing_written": true,
+    "raised": "ProgramRefused",
+    "reason_code": "recovery_replacement_not_fresh",
+    "store_after": "d6c80ed78a58382819bc667769e829bcbe20e364601321e31541517770b3264c",
+    "store_before": "d6c80ed78a58382819bc667769e829bcbe20e364601321e31541517770b3264c"
+   },
+   "later_proof_authorizes": {
+    "cached": false,
+    "lineage": {
+     "dispatches": [
+      "e22b6fca3d421d032a78b8c9e9ea1f6fb8ae0a99dd0fffacffe31b405e7a64ee"
+     ],
+     "fences": 0,
+     "heads": [],
+     "quarantine": 1,
+     "recoveries": [
+      {
+       "id": "e22b6fca3d421d032a78b8c9e9ea1f6fb8ae0a99dd0fffacffe31b405e7a64ee",
+       "proof": "absent_on_bound_transport",
+       "reason_code": null,
+       "state": "authorized"
+      }
+     ],
+     "successors": []
+    },
+    "proof": "absent_on_bound_transport",
+    "state": "authorized"
+   },
+   "lineage_state": "fenced",
+   "replacement_dispatch_row": null,
+   "replacement_tick_selects_the_investigation": false,
+   "unavailable": {
+    "canary_in_message": false,
+    "field": null,
+    "nothing_written": false,
+    "raised": "ProgramRefused",
+    "reason_code": "recovery_transport_unavailable",
+    "store_after": "20e503aa3f25dbc77cf8498007b86b15a76d182d994811f79b249f762dcb3535",
+    "store_before": "da296bb37324a4d2b09b45b4428d049fcdd0466b24e4ec496686ce0c62731e45"
+   }
+  },
+  "test_attempts_on_two_different_transports_refuse_before_any_fence": {
+   "attempt_storages": [
+    "token-a",
+    "token-b"
+   ],
+   "first_binding_kept": true,
+   "recover": {
+    "canary_in_message": false,
+    "field": "failed.run_id",
+    "nothing_written": true,
+    "raised": "ProgramRefused",
+    "reason_code": "recovery_transport_changed",
+    "store_after": "e4bb64e6d70d530005625afa39de9d75c5f9ad0619fd1fc078b3dca94fc3f557",
+    "store_before": "e4bb64e6d70d530005625afa39de9d75c5f9ad0619fd1fc078b3dca94fc3f557"
+   },
+   "transport_calls": [],
+   "untouched": true
+  },
+  "test_concurrent_and_restarted_requests_and_ticks_create_one_replacement": {
+   "all_recovered": true,
+   "cached_flags": [
+    false,
+    true,
+    true,
+    true
+   ],
+   "claimed_ticks": 1,
+   "councils": 1,
+   "dispatch_ids": [
+    "e22b6fca3d421d032a78b8c9e9ea1f6fb8ae0a99dd0fffacffe31b405e7a64ee",
+    "e22b6fca3d421d032a78b8c9e9ea1f6fb8ae0a99dd0fffacffe31b405e7a64ee.recovery-1"
+   ],
+   "lineage": {
+    "dispatches": [
+     "e22b6fca3d421d032a78b8c9e9ea1f6fb8ae0a99dd0fffacffe31b405e7a64ee"
+    ],
+    "fences": 0,
+    "heads": [],
+    "quarantine": 1,
+    "recoveries": [
+     {
+      "id": "e22b6fca3d421d032a78b8c9e9ea1f6fb8ae0a99dd0fffacffe31b405e7a64ee",
+      "proof": "absent_on_bound_transport",
+      "reason_code": null,
+      "state": "authorized"
+     }
+    ],
+    "successors": []
+   },
+   "other_program_conflicts": {
+    "canary_in_message": false,
+    "field": null,
+    "nothing_written": true,
+    "raised": "ProgramRefused",
+    "reason_code": "recovery_conflict",
+    "store_after": "80f9c1868f79c4d7f1e710f53d58dd9f2dfebd1330366a760992834b363447d9",
+    "store_before": "80f9c1868f79c4d7f1e710f53d58dd9f2dfebd1330366a760992834b363447d9"
+   },
+   "restarted_cached": true,
+   "third_program_tick": {
+    "investigation": null,
+    "reason_code": "fixture_accepted",
+    "result": "accepted",
+    "run_id": "rp-003.c001",
+    "selected": "local-note"
+   },
+   "two_ticks": [
+    {
+     "investigation": "e22b6fca3d421d032a78b8c9e9ea1f6fb8ae0a99dd0fffacffe31b405e7a64ee",
+     "reason_code": "fixture_accepted",
+     "result": "accepted",
+     "run_id": "rp-002.c001",
+     "selected": "inv-e22b6fca3d421d032a78b8c9"
+    },
+    {
+     "investigation": null,
+     "reason_code": null,
+     "result": null,
+     "run_id": null,
+     "selected": null
+    }
+   ]
+  },
+  "test_domain_transport_rules_are_pure_and_fail_closed": {
+   "attempted_transport_no_binding": {
+    "field": "failed.run_id",
+    "message": "investigation source refused: recovery_transport_unbound (failed.run_id)",
+    "raised": "InvestigationRefused",
+    "reason_code": "recovery_transport_unbound"
+   },
+   "attempted_transport_tokenless_binding": {
+    "field": "failed.run_id",
+    "message": "investigation source refused: recovery_transport_unbound (failed.run_id)",
+    "raised": "InvestigationRefused",
+    "reason_code": "recovery_transport_unbound"
+   },
+   "attempted_transport_two_bindings": {
+    "field": "failed.run_id",
+    "message": "investigation source refused: recovery_transport_changed (failed.run_id)",
+    "raised": "InvestigationRefused",
+    "reason_code": "recovery_transport_changed"
+   },
+   "no_attempts": null,
+   "proof_absent": true,
+   "proof_absent_is_text": {
+    "field": "transport",
+    "message": "investigation source refused: recovery_transport_unavailable (transport)",
+    "raised": "InvestigationRefused",
+    "reason_code": "recovery_transport_unavailable"
+   },
+   "proof_another_transport": {
+    "field": "transport",
+    "message": "investigation source refused: recovery_transport_changed (transport)",
+    "raised": "InvestigationRefused",
+    "reason_code": "recovery_transport_changed"
+   },
+   "proof_none": {
+    "field": "transport",
+    "message": "investigation source refused: recovery_transport_unavailable (transport)",
+    "raised": "InvestigationRefused",
+    "reason_code": "recovery_transport_unavailable"
+   },
+   "proof_present": false,
+   "same_binding_twice": true,
+   "unbound_statuses": null
+  },
+  "test_no_publish_call_needs_no_probe": {
+   "attempt_statuses": [
+    "transport_unavailable"
+   ],
+   "publish_calls": 0,
+   "result": {
+    "authority": "owner-authorized replacement of one proven pre-provider dispatch failure; the failed dispatch, run and cycle are retained history, never accepted or deleted",
+    "authorized_at": "2028-01-01T00:00:00+00:00",
+    "cached": false,
+    "claimed_at": null,
+    "failed": {
+     "cycle": "rp-001:001",
+     "manifest_sha256": "7e56db9ace8f2ab6167fa650b55b8e4f07c3c7e4c3e26e829f8c0d7abd65143d",
+     "program": "rp-001",
+     "run_id": "rp-001.c001",
+     "snapshot_sha256": "3a8ead398c88e6d08125c762ef059aa1902a8fb30d49d51a16c6c7ac51098c96"
+    },
+    "fence": {
+     "attempts": 1,
+     "outbox": "5e8e1c66-3981-5e3d-b8e7-8b38b8e95e9d",
+     "reason": "ResearchDispatchSuperseded",
+     "source_hash": "5d5ce8198d88ff55f58e00492e1d6043225a7f79cd3497401ce7571da260f9e8",
+     "transport": null
+    },
+    "investigation": "e22b6fca3d421d032a78b8c9e9ea1f6fb8ae0a99dd0fffacffe31b405e7a64ee",
+    "mode": "transport_proof",
+    "proof": "no_publish_call",
+    "reason_code": null,
+    "recovered": true,
+    "replacement": {
+     "config_sha256": "f0233d88abd5b4d32c34ff1dcb674879fbe0ceba0a4f96607f47e75bee8f7f1e",
+     "cycle": null,
+     "dispatch": "e22b6fca3d421d032a78b8c9e9ea1f6fb8ae0a99dd0fffacffe31b405e7a64ee.recovery-1",
+     "program": "rp-002"
+    },
+    "request_sha256": "c56e5723103d11aa8145f69908ba846eb060ab345edc502d634fc8fa4ac5df2e",
+    "requested_at": "2028-01-01T00:00:00+00:00",
+    "revocation": null,
+    "state": "authorized",
+    "updated_at": "2028-01-01T00:00:00+00:00"
+   },
+   "transport_calls": []
+  },
+  "test_one_owner_request_fences_the_old_assignment_and_one_replacement_is_claimed_and_accepted": {
+   "fence": {
+    "attempts": 1,
+    "status": "quarantined"
+   },
+   "global_relay_after_the_fix": {
+    "bus_published": 0,
+    "published": 0,
+    "quarantined_existing": 1
+   },
+   "history_untouched_after_claim": true,
+   "history_untouched_after_fence": true,
+   "identical_request_again": {
+    "cached": true,
+    "councils": 1,
+    "dispatches": 2,
+    "state": "claimed"
+   },
+   "lineage_after_claim": {
+    "cycle": "rp-002:001",
+    "state": "claimed"
+   },
+   "message_id": "5e8e1c66-3981-5e3d-b8e7-8b38b8e95e9d",
+   "quarantine": {
+    "reason": "ResearchDispatchSuperseded",
+    "source_is_the_outbox_item": true
+   },
+   "replacement_tick": {
+    "investigation": "e22b6fca3d421d032a78b8c9e9ea1f6fb8ae0a99dd0fffacffe31b405e7a64ee",
+    "reason_code": "fixture_accepted",
+    "result": "accepted",
+    "run_id": "rp-002.c001",
+    "selected": "inv-e22b6fca3d421d032a78b8c9"
+   },
+   "result": {
+    "authority": "owner-authorized replacement of one proven pre-provider dispatch failure; the failed dispatch, run and cycle are retained history, never accepted or deleted",
+    "authorized_at": "2028-01-01T00:00:00+00:00",
+    "cached": false,
+    "claimed_at": null,
+    "failed": {
+     "cycle": "rp-001:001",
+     "manifest_sha256": "7e56db9ace8f2ab6167fa650b55b8e4f07c3c7e4c3e26e829f8c0d7abd65143d",
+     "program": "rp-001",
+     "run_id": "rp-001.c001",
+     "snapshot_sha256": "3a8ead398c88e6d08125c762ef059aa1902a8fb30d49d51a16c6c7ac51098c96"
+    },
+    "fence": {
+     "attempts": 1,
+     "outbox": "5e8e1c66-3981-5e3d-b8e7-8b38b8e95e9d",
+     "reason": "ResearchDispatchSuperseded",
+     "source_hash": "5d5ce8198d88ff55f58e00492e1d6043225a7f79cd3497401ce7571da260f9e8",
+     "transport": {
+      "schema": "urn:test:transport:1",
+      "storage": "token-a"
+     }
+    },
+    "investigation": "e22b6fca3d421d032a78b8c9e9ea1f6fb8ae0a99dd0fffacffe31b405e7a64ee",
+    "mode": "transport_proof",
+    "proof": "absent_on_bound_transport",
+    "reason_code": null,
+    "recovered": true,
+    "replacement": {
+     "config_sha256": "f0233d88abd5b4d32c34ff1dcb674879fbe0ceba0a4f96607f47e75bee8f7f1e",
+     "cycle": null,
+     "dispatch": "e22b6fca3d421d032a78b8c9e9ea1f6fb8ae0a99dd0fffacffe31b405e7a64ee.recovery-1",
+     "program": "rp-002"
+    },
+    "request_sha256": "c56e5723103d11aa8145f69908ba846eb060ab345edc502d634fc8fa4ac5df2e",
+    "requested_at": "2028-01-01T00:00:00+00:00",
+    "revocation": null,
+    "state": "authorized",
+    "updated_at": "2028-01-01T00:00:00+00:00"
+   },
+   "status_before_claim": {
+    "dispatches": {
+     "e22b6fca3d421d032a78b8c9e9ea1f6fb8ae0a99dd0fffacffe31b405e7a64ee": {
+      "current": false,
+      "program": "rp-001",
+      "recovery": null,
+      "result": "failed",
+      "run_id": "rp-001.c001"
+     }
+    },
+    "history_untouched": true,
+    "original_recovery_state": "authorized",
+    "replacement_state": "paused"
+   },
+   "status_counts": {
+    "rp-001_failed": 1,
+    "rp-002": {
+     "accepted": 1,
+     "dispatched": 1
+    }
+   },
+   "transport_calls": [
+    [
+     "lead:researcher",
+     "5e8e1c66-3981-5e3d-b8e7-8b38b8e95e9d"
+    ]
+   ],
+   "views_after_claim": {
+    "new": {
+     "current": true,
+     "program": "rp-002",
+     "recovery": "e22b6fca3d421d032a78b8c9e9ea1f6fb8ae0a99dd0fffacffe31b405e7a64ee",
+     "result": "accepted",
+     "run_id": "rp-002.c001"
+    },
+    "old": {
+     "current": false,
+     "program": "rp-001",
+     "result": "failed"
+    },
+    "supersedes_matches_failed_pins": true
+   }
+  },
+  "test_postgres_concurrent_requests_record_one_lineage_and_one_replacement": {
+   "unreachable": "unreachable: PostgreSQL (step 8 .pg units)"
+  },
+  "test_production_wiring_changed_database_namespace_server_or_storage_refuse_and_a_authorizes": {
+   "unreachable": "unreachable: real bus/composition (S10)"
+  },
+  "test_production_wiring_lost_reply_on_a_then_empty_b_refuses_before_any_replacement": {
+   "unreachable": "unreachable: real bus/composition (S10)"
+  },
+  "test_the_cli_entry_reads_the_owner_file_and_refuses_an_unreachable_bus": {
+   "unreachable": "unreachable: CLI entry (S10)"
+  },
+  "test_the_failed_attempt_committed_its_transport_and_the_fence_pins_it": {
+   "attempt": {
+    "status": "retry",
+    "transport": {
+     "schema": "urn:test:transport:1",
+     "storage": "token-a"
+    }
+   },
+   "fence_transport": {
+    "schema": "urn:test:transport:1",
+    "storage": "token-a"
+   },
+   "proof": "absent_on_bound_transport"
+  },
+  "test_the_fixture_is_a_real_pre_provider_publication_failure": {
+   "attempt_statuses": [
+    "retry"
+   ],
+   "bus_attempts": 1,
+   "dispatch": {
+    "result": "failed",
+    "result_reason": "publication_incomplete"
+   },
+   "outbox_sent": false,
+   "program_state": "blocked",
+   "reservations": 0,
+   "resume": {
+    "canary_in_message": false,
+    "field": null,
+    "nothing_written": true,
+    "raised": "ProgramRefused",
+    "reason_code": "program_blocked",
+    "store_after": "1c0d4779366e3f6edacd7cbae0393a7c78e1721ec5943da63d4f91cf9694adcf",
+    "store_before": "1c0d4779366e3f6edacd7cbae0393a7c78e1721ec5943da63d4f91cf9694adcf"
+   },
+   "run": {
+    "reason_code": "publication_incomplete",
+    "roles": {},
+    "stage": "research",
+    "starts": {
+     "reserved": 0,
+     "settled": 0,
+     "slots": []
+    },
+    "status": "failed"
+   },
+   "tasks": 0,
+   "tick": {
+    "investigation": "e22b6fca3d421d032a78b8c9e9ea1f6fb8ae0a99dd0fffacffe31b405e7a64ee",
+    "reason_code": "publication_incomplete",
+    "result": "failed",
+    "run_id": "rp-001.c001",
+    "selected": "inv-e22b6fca3d421d032a78b8c9"
+   }
+  },
+  "test_the_probe_reads_the_run_scoped_bus_only_when_that_run_owns_a_storage_token": {
+   "scoped": {
+    "absent": false,
+    "namespace": "ns:run:x"
+   },
+   "tokenless": {
+    "absent": true,
+    "reads_the_configured_bus": true
+   }
+  },
+  "test_the_transport_probe_reads_the_recipient_and_dead_letter_streams_completely_or_refuses": {
+   "empty": {
+    "absent": true,
+    "before_is_after_is_identity": true
+   },
+   "in_dead_letter": {
+    "absent": false,
+    "before_is_after_is_identity": true
+   },
+   "in_recipient_stream": {
+    "absent": false,
+    "before_is_after_is_identity": true
+   },
+   "other_message": {
+    "absent": true,
+    "before_is_after_is_identity": true
+   },
+   "redis_error": {
+    "raised": "ConnectionError"
+   },
+   "unbounded": {
+    "field": null,
+    "message": "research program refused: recovery_transport_unbounded",
+    "raised": "ProgramRefused",
+    "reason_code": "recovery_transport_unbounded"
+   }
+  }
+ },
+ "g2_revocation": {
+  "m7_scope": {
+   "mirrors": "tests/test_research_recovery.py lines 763-1103 (non-PG, non-CLI)"
+  },
+  "test_a_changed_message_refuses_before_any_fence[message_id]": {
+   "fence": null,
+   "revoke": {
+    "canary_in_message": false,
+    "field": "revoke",
+    "nothing_written": true,
+    "raised": "ProgramRefused",
+    "reason_code": "recovery_message_changed",
+    "store_after": "a7b72cf0248b1a287da59ac3bf42b0031e6307ba85fd514bde9497b9d7fc21a7",
+    "store_before": "a7b72cf0248b1a287da59ac3bf42b0031e6307ba85fd514bde9497b9d7fc21a7"
+   },
+   "untouched": true
+  },
+  "test_a_changed_message_refuses_before_any_fence[source_sha256]": {
+   "fence": null,
+   "revoke": {
+    "canary_in_message": false,
+    "field": "revoke",
+    "nothing_written": true,
+    "raised": "ProgramRefused",
+    "reason_code": "recovery_message_changed",
+    "store_after": "a7b72cf0248b1a287da59ac3bf42b0031e6307ba85fd514bde9497b9d7fc21a7",
+    "store_before": "a7b72cf0248b1a287da59ac3bf42b0031e6307ba85fd514bde9497b9d7fc21a7"
+   },
+   "untouched": true
+  },
+  "test_a_concurrent_race_between_admission_and_revocation_never_yields_both[admission_first]": {
+   "admitted": true,
+   "authorized": false,
+   "exactly_one_wins": true,
+   "lineage": {
+    "dispatches": [
+     "e22b6fca3d421d032a78b8c9e9ea1f6fb8ae0a99dd0fffacffe31b405e7a64ee"
+    ],
+    "fences": 0,
+    "heads": [],
+    "quarantine": 0,
+    "recoveries": [],
+    "successors": []
+   },
+   "revocation": "recovery_task_exists"
+  },
+  "test_a_concurrent_race_between_admission_and_revocation_never_yields_both[revocation_first]": {
+   "admitted": false,
+   "authorized": true,
+   "exactly_one_wins": true,
+   "lineage": {
+    "dispatches": [
+     "e22b6fca3d421d032a78b8c9e9ea1f6fb8ae0a99dd0fffacffe31b405e7a64ee"
+    ],
+    "fences": 1,
+    "heads": [],
+    "quarantine": 1,
+    "recoveries": [
+     {
+      "id": "e22b6fca3d421d032a78b8c9e9ea1f6fb8ae0a99dd0fffacffe31b405e7a64ee",
+      "proof": "execution_revoked",
+      "reason_code": null,
+      "state": "authorized"
+     }
+    ],
+    "successors": []
+   },
+   "revocation": "authorized"
+  },
+  "test_a_failed_replacement_after_revocation_is_held": {
+   "late_delivery": {
+    "refused": "ContractError",
+    "text": "Execution identity was used before; rows are never recreated",
+    "used_before": true
+   },
+   "no_execution": true,
+   "second_revocation": {
+    "canary_in_message": false,
+    "field": null,
+    "nothing_written": true,
+    "raised": "ProgramRefused",
+    "reason_code": "recovery_conflict",
+    "store_after": "3ae9d6950780529b988f83e82ad335814608d02a64c29c6ed0d6d538bd0f6b13",
+    "store_before": "3ae9d6950780529b988f83e82ad335814608d02a64c29c6ed0d6d538bd0f6b13"
+   },
+   "tick": {
+    "investigation": "e22b6fca3d421d032a78b8c9e9ea1f6fb8ae0a99dd0fffacffe31b405e7a64ee",
+    "reason_code": "fixture_failed",
+    "result": "failed",
+    "run_id": "rp-002.c001",
+    "selected": "inv-e22b6fca3d421d032a78b8c9"
+   }
+  },
+  "test_a_missing_changed_or_corrupt_retained_fence_holds_replay_and_the_replacement_claim[at]": {
+   "lineage_state": "authorized",
+   "no_claim_of_the_investigation": true,
+   "replacement_dispatch_row": null,
+   "replacement_tick": {
+    "investigation": null,
+    "reason_code": "fixture_accepted",
+    "result": "accepted",
+    "run_id": "rp-002.c001",
+    "selected": "local-note"
+   },
+   "replay": {
+    "canary_in_message": false,
+    "field": "revoke",
+    "nothing_written": true,
+    "raised": "ProgramRefused",
+    "reason_code": "recovery_revocation_fence_changed",
+    "store_after": "ef39e4c7e4cb9a3a33e35d241fc6f6cda5a5321c8ff227a9512a8b7e09cbafdc",
+    "store_before": "ef39e4c7e4cb9a3a33e35d241fc6f6cda5a5321c8ff227a9512a8b7e09cbafdc"
+   }
+  },
+  "test_a_missing_changed_or_corrupt_retained_fence_holds_replay_and_the_replacement_claim[corrupt_row]": {
+   "lineage_state": "authorized",
+   "no_claim_of_the_investigation": true,
+   "replacement_dispatch_row": null,
+   "replacement_tick": {
+    "investigation": null,
+    "reason_code": "fixture_accepted",
+    "result": "accepted",
+    "run_id": "rp-002.c001",
+    "selected": "local-note"
+   },
+   "replay": {
+    "canary_in_message": false,
+    "field": "revoke",
+    "nothing_written": true,
+    "raised": "ProgramRefused",
+    "reason_code": "recovery_revocation_corrupt",
+    "store_after": "f99ebe5c32ef46e90e76bc26a769fa3bf358311d335199d24469971bbf5f09bc",
+    "store_before": "f99ebe5c32ef46e90e76bc26a769fa3bf358311d335199d24469971bbf5f09bc"
+   }
+  },
+  "test_a_missing_changed_or_corrupt_retained_fence_holds_replay_and_the_replacement_claim[drop_fence]": {
+   "lineage_state": "authorized",
+   "no_claim_of_the_investigation": true,
+   "replacement_dispatch_row": null,
+   "replacement_tick": {
+    "investigation": null,
+    "reason_code": "fixture_accepted",
+    "result": "accepted",
+    "run_id": "rp-002.c001",
+    "selected": "local-note"
+   },
+   "replay": {
+    "canary_in_message": false,
+    "field": "revoke",
+    "nothing_written": true,
+    "raised": "ProgramRefused",
+    "reason_code": "recovery_revocation_fence_missing",
+    "store_after": "ddca92ee7feb0ca2d459285a650a6ca6648cfc31ab00527dc18631f20dbe2a95",
+    "store_before": "ddca92ee7feb0ca2d459285a650a6ca6648cfc31ab00527dc18631f20dbe2a95"
+   }
+  },
+  "test_a_missing_changed_or_corrupt_retained_fence_holds_replay_and_the_replacement_claim[generation]": {
+   "lineage_state": "authorized",
+   "no_claim_of_the_investigation": true,
+   "replacement_dispatch_row": null,
+   "replacement_tick": {
+    "investigation": null,
+    "reason_code": "fixture_accepted",
+    "result": "accepted",
+    "run_id": "rp-002.c001",
+    "selected": "local-note"
+   },
+   "replay": {
+    "canary_in_message": false,
+    "field": "revoke",
+    "nothing_written": true,
+    "raised": "ProgramRefused",
+    "reason_code": "recovery_revocation_fence_changed",
+    "store_after": "a4bcabc868c6e1403495ecdd9426bd406fa63e2edff2ddba49608203490054ad",
+    "store_before": "a4bcabc868c6e1403495ecdd9426bd406fa63e2edff2ddba49608203490054ad"
+   }
+  },
+  "test_a_missing_changed_or_corrupt_retained_fence_holds_replay_and_the_replacement_claim[moved_quarantine]": {
+   "lineage_state": "authorized",
+   "no_claim_of_the_investigation": true,
+   "replacement_dispatch_row": null,
+   "replacement_tick": {
+    "investigation": null,
+    "reason_code": "fixture_accepted",
+    "result": "accepted",
+    "run_id": "rp-002.c001",
+    "selected": "local-note"
+   },
+   "replay": {
+    "canary_in_message": false,
+    "field": "revoke",
+    "nothing_written": true,
+    "raised": "ProgramRefused",
+    "reason_code": "recovery_publication_changed",
+    "store_after": "e50ccdb3fd93533ddb52be7a71fbc38eb58436d472a62d32c21202d284fe03e2",
+    "store_before": "e50ccdb3fd93533ddb52be7a71fbc38eb58436d472a62d32c21202d284fe03e2"
+   }
+  },
+  "test_a_missing_changed_or_corrupt_retained_fence_holds_replay_and_the_replacement_claim[owner]": {
+   "lineage_state": "authorized",
+   "no_claim_of_the_investigation": true,
+   "replacement_dispatch_row": null,
+   "replacement_tick": {
+    "investigation": null,
+    "reason_code": "fixture_accepted",
+    "result": "accepted",
+    "run_id": "rp-002.c001",
+    "selected": "local-note"
+   },
+   "replay": {
+    "canary_in_message": false,
+    "field": "revoke",
+    "nothing_written": true,
+    "raised": "ProgramRefused",
+    "reason_code": "recovery_revocation_fence_changed",
+    "store_after": "11afdc6c84e08c55b2c4ad380ce2303f2d7ef34118d32abfabf4becf850e8037",
+    "store_before": "11afdc6c84e08c55b2c4ad380ce2303f2d7ef34118d32abfabf4becf850e8037"
+   }
+  },
+  "test_a_missing_changed_or_corrupt_retained_fence_holds_replay_and_the_replacement_claim[task_appeared]": {
+   "lineage_state": "authorized",
+   "no_claim_of_the_investigation": true,
+   "replacement_dispatch_row": null,
+   "replacement_tick": {
+    "investigation": null,
+    "reason_code": "fixture_accepted",
+    "result": "accepted",
+    "run_id": "rp-002.c001",
+    "selected": "local-note"
+   },
+   "replay": {
+    "canary_in_message": false,
+    "field": "revoke",
+    "nothing_written": true,
+    "raised": "ProgramRefused",
+    "reason_code": "recovery_revocation_breached",
+    "store_after": "7f8f1333589dd363adada42e93e335d65f1ef864fd03e02078652cdb57a467ff",
+    "store_before": "7f8f1333589dd363adada42e93e335d65f1ef864fd03e02078652cdb57a467ff"
+   }
+  },
+  "test_admission_first_refuses_the_revocation_and_authorizes_nothing": {
+   "admission_status": "queued",
+   "fence": null,
+   "revoke": {
+    "canary_in_message": false,
+    "field": "failed.run_id",
+    "nothing_written": true,
+    "raised": "ProgramRefused",
+    "reason_code": "recovery_task_exists",
+    "store_after": "46e0d73520e973411330fb31e4c31e4607f18366b125b21a6a6cf1e429526a82",
+    "store_before": "46e0d73520e973411330fb31e4c31e4607f18366b125b21a6a6cf1e429526a82"
+   },
+   "untouched": true
+  },
+  "test_an_accepted_original_or_a_changed_scope_refuses_revocation": {
+   "accepted_original": {
+    "canary_in_message": false,
+    "field": "failed",
+    "nothing_written": true,
+    "raised": "ProgramRefused",
+    "reason_code": "recovery_dispatch_not_failed",
+    "store_after": "727f1b15bf173def5ad2222717bb369b9057b3af75e003ec73f93064ce809d57",
+    "store_before": "727f1b15bf173def5ad2222717bb369b9057b3af75e003ec73f93064ce809d57"
+   },
+   "changed_scope": {
+    "canary_in_message": false,
+    "field": "replacement",
+    "nothing_written": true,
+    "raised": "ProgramRefused",
+    "reason_code": "recovery_scope_changed",
+    "store_after": "e4084d5b1a0ec619617d032d3bf2cb1b700e7d9f5a2476f893aae6407eae1165",
+    "store_before": "e4084d5b1a0ec619617d032d3bf2cb1b700e7d9f5a2476f893aae6407eae1165"
+   },
+   "fence": null,
+   "untouched": true
+  },
+  "test_an_existing_foreign_fence_is_not_this_revocation": {
+   "revoke": {
+    "canary_in_message": false,
+    "field": "revoke.message_id",
+    "nothing_written": true,
+    "raised": "ProgramRefused",
+    "reason_code": "recovery_fence_exists",
+    "store_after": "4232ed2c7fbcfcc6bab35fcebed3d678e5bf568988c3b8882ce61ab231d180ce",
+    "store_before": "4232ed2c7fbcfcc6bab35fcebed3d678e5bf568988c3b8882ce61ab231d180ce"
+   },
+   "untouched": true
+  },
+  "test_concurrent_and_restarted_revocations_record_one_lineage_one_fence_one_quarantine": {
+   "cached_flags": [
+    false,
+    true,
+    true,
+    true
+   ],
+   "lineage": {
+    "dispatches": [
+     "e22b6fca3d421d032a78b8c9e9ea1f6fb8ae0a99dd0fffacffe31b405e7a64ee"
+    ],
+    "fences": 1,
+    "heads": [],
+    "quarantine": 1,
+    "recoveries": [
+     {
+      "id": "e22b6fca3d421d032a78b8c9e9ea1f6fb8ae0a99dd0fffacffe31b405e7a64ee",
+      "proof": "execution_revoked",
+      "reason_code": null,
+      "state": "authorized"
+     }
+    ],
+    "successors": []
+   },
+   "restarted_cached": true
+  },
+  "test_explicit_revocation_blocks_the_late_original_and_authorizes_exactly_one_replacement": {
+   "attempt_has_transport": false,
+   "attempt_status": "retry",
+   "councils": 1,
+   "fence": {
+    "at": "2026-09-22T00:00:00.023000+00:00",
+    "generation": 1,
+    "owner": "research-dispatch-recovery:15cbbbdee29e8a227448b1b6c63a0d62d014e2bcbaa1a0ec85d89841d9774154"
+   },
+   "fence_before": null,
+   "fence_owner_matches_request": true,
+   "history_untouched": true,
+   "history_untouched_after_claim": true,
+   "late_delivery": {
+    "refused": "ContractError",
+    "text": "Execution identity was used before; rows are never recreated",
+    "used_before": true
+   },
+   "late_delivery_after_claim": {
+    "refused": "ContractError",
+    "text": "Execution identity was used before; rows are never recreated",
+    "used_before": true
+   },
+   "no_execution": true,
+   "no_execution_after_claim": true,
+   "old_mode_after_revocation": {
+    "canary_in_message": false,
+    "field": null,
+    "nothing_written": true,
+    "raised": "ProgramRefused",
+    "reason_code": "recovery_conflict",
+    "store_after": "2d50689ec87b074dd413a3a4061033f2deb2292b7ed592e08c0d1f0538e18b93",
+    "store_before": "2d50689ec87b074dd413a3a4061033f2deb2292b7ed592e08c0d1f0538e18b93"
+   },
+   "other_program_conflicts": {
+    "canary_in_message": false,
+    "field": null,
+    "nothing_written": true,
+    "raised": "ProgramRefused",
+    "reason_code": "recovery_conflict",
+    "store_after": "1e57edf4272e356cf5d8f737bc1c67319af333ef18ee4a4387f62173d4d70f13",
+    "store_before": "1e57edf4272e356cf5d8f737bc1c67319af333ef18ee4a4387f62173d4d70f13"
+   },
+   "relay_after_revocation": {
+    "bus_published": 0,
+    "published": 0,
+    "quarantined_existing": 1
+   },
+   "replacement_tick": {
+    "investigation": "e22b6fca3d421d032a78b8c9e9ea1f6fb8ae0a99dd0fffacffe31b405e7a64ee",
+    "reason_code": "fixture_accepted",
+    "result": "accepted",
+    "run_id": "rp-002.c001",
+    "selected": "inv-e22b6fca3d421d032a78b8c9"
+   },
+   "replay": {
+    "cached": true,
+    "fence_unchanged": true,
+    "state": "claimed"
+   },
+   "result": {
+    "authority": "owner-authorized replacement of one proven pre-provider dispatch failure; the failed dispatch, run and cycle are retained history, never accepted or deleted",
+    "authorized_at": "2028-01-01T00:00:00+00:00",
+    "cached": false,
+    "claimed_at": null,
+    "failed": {
+     "cycle": "rp-001:001",
+     "manifest_sha256": "7e56db9ace8f2ab6167fa650b55b8e4f07c3c7e4c3e26e829f8c0d7abd65143d",
+     "program": "rp-001",
+     "run_id": "rp-001.c001",
+     "snapshot_sha256": "3a8ead398c88e6d08125c762ef059aa1902a8fb30d49d51a16c6c7ac51098c96"
+    },
+    "fence": {
+     "attempts": 1,
+     "outbox": "5e8e1c66-3981-5e3d-b8e7-8b38b8e95e9d",
+     "reason": "ResearchDispatchSuperseded",
+     "source_hash": "5d5ce8198d88ff55f58e00492e1d6043225a7f79cd3497401ce7571da260f9e8",
+     "transport": null
+    },
+    "investigation": "e22b6fca3d421d032a78b8c9e9ea1f6fb8ae0a99dd0fffacffe31b405e7a64ee",
+    "mode": "execution_revocation",
+    "proof": "execution_revoked",
+    "reason_code": null,
+    "recovered": true,
+    "replacement": {
+     "config_sha256": "f0233d88abd5b4d32c34ff1dcb674879fbe0ceba0a4f96607f47e75bee8f7f1e",
+     "cycle": null,
+     "dispatch": "e22b6fca3d421d032a78b8c9e9ea1f6fb8ae0a99dd0fffacffe31b405e7a64ee.recovery-1",
+     "program": "rp-002"
+    },
+    "request_sha256": "15cbbbdee29e8a227448b1b6c63a0d62d014e2bcbaa1a0ec85d89841d9774154",
+    "requested_at": "2028-01-01T00:00:00+00:00",
+    "revocation": {
+     "authority": "execution authority of the named assignment revoked in this control store only; its historical delivery stays unknown and is never reported as not delivered",
+     "bucket": "tasks",
+     "delivery": "unknown",
+     "fenced_at": "2026-09-22T00:00:00.023000+00:00",
+     "generation": 1,
+     "message_sha256": "5d5ce8198d88ff55f58e00492e1d6043225a7f79cd3497401ce7571da260f9e8",
+     "owner": "research-dispatch-recovery:15cbbbdee29e8a227448b1b6c63a0d62d014e2bcbaa1a0ec85d89841d9774154",
+     "request_sha256": "15cbbbdee29e8a227448b1b6c63a0d62d014e2bcbaa1a0ec85d89841d9774154",
+     "row_id": "5e8e1c66-3981-5e3d-b8e7-8b38b8e95e9d"
+    },
+    "state": "authorized",
+    "updated_at": "2028-01-01T00:00:00+00:00"
+   },
+   "state_after_claim": "claimed",
+   "strict_mode_refuses": {
+    "canary_in_message": false,
+    "field": "failed.run_id",
+    "nothing_written": true,
+    "raised": "ProgramRefused",
+    "reason_code": "recovery_transport_unbound",
+    "store_after": "a7b72cf0248b1a287da59ac3bf42b0031e6307ba85fd514bde9497b9d7fc21a7",
+    "store_before": "a7b72cf0248b1a287da59ac3bf42b0031e6307ba85fd514bde9497b9d7fc21a7"
+   },
+   "transport_calls": [],
+   "untouched": true
+  },
+  "test_forced_interleavings_leave_exactly_one_winner[admission]": {
+   "admission_status": "queued",
+   "fence": null,
+   "recoveries": 0,
+   "revocation_reason": "recovery_task_exists",
+   "tasks": 1
+  },
+  "test_forced_interleavings_leave_exactly_one_winner[revocation]": {
+   "admission_refused": true,
+   "no_execution": true,
+   "recoveries": 1,
+   "revocation_state": "authorized",
+   "tasks": 0
+  },
+  "test_postgres_revocation_and_admission_serialize_to_one_winner": {
+   "unreachable": "unreachable: PostgreSQL (step 8 .pg units)"
+  },
+  "test_revocation_keeps_every_other_precondition[disposition]": {
+   "fence": null,
+   "revoke": {
+    "canary_in_message": false,
+    "field": "investigation",
+    "nothing_written": true,
+    "raised": "ProgramRefused",
+    "reason_code": "recovery_investigation_changed",
+    "store_after": "6dc1790de41d55019b7f24328131cd4ff1d5e6ac8629583c1a43bf6441a4c0fd",
+    "store_before": "6dc1790de41d55019b7f24328131cd4ff1d5e6ac8629583c1a43bf6441a4c0fd"
+   },
+   "untouched": true
+  },
+  "test_revocation_keeps_every_other_precondition[in_flight]": {
+   "fence": null,
+   "revoke": {
+    "canary_in_message": false,
+    "field": "failed.run_id",
+    "nothing_written": true,
+    "raised": "ProgramRefused",
+    "reason_code": "recovery_effect_unknown",
+    "store_after": "6207199814248fc8085879449f882701924ec740fa8c8a2383bb6dc8d1d78803",
+    "store_before": "6207199814248fc8085879449f882701924ec740fa8c8a2383bb6dc8d1d78803"
+   },
+   "untouched": true
+  },
+  "test_revocation_keeps_every_other_precondition[invocation_exists]": {
+   "fence": null,
+   "revoke": {
+    "canary_in_message": false,
+    "field": "failed.run_id",
+    "nothing_written": true,
+    "raised": "ProgramRefused",
+    "reason_code": "recovery_invocation_exists",
+    "store_after": "9abf26f8c7bab5aaff3852613b2ec45b7a877fa6380a548fa21caf7d0107b16f",
+    "store_before": "9abf26f8c7bab5aaff3852613b2ec45b7a877fa6380a548fa21caf7d0107b16f"
+   },
+   "untouched": true
+  },
+  "test_revocation_keeps_every_other_precondition[provider_slot]": {
+   "fence": null,
+   "revoke": {
+    "canary_in_message": false,
+    "field": "failed.run_id",
+    "nothing_written": true,
+    "raised": "ProgramRefused",
+    "reason_code": "recovery_provider_entered",
+    "store_after": "3338abe4cfb95e768b358c96475799a1da8bcd64a8039c1340fefda74fe206f1",
+    "store_before": "3338abe4cfb95e768b358c96475799a1da8bcd64a8039c1340fefda74fe206f1"
+   },
+   "untouched": true
+  },
+  "test_revocation_keeps_every_other_precondition[residue]": {
+   "fence": null,
+   "revoke": {
+    "canary_in_message": false,
+    "field": "failed.run_id",
+    "nothing_written": true,
+    "raised": "ProgramRefused",
+    "reason_code": "recovery_residue",
+    "store_after": "646874fc6a500a97a11fa5936a7a293698ef12072ec6ec1ece9ecdcc6787d2ba",
+    "store_before": "646874fc6a500a97a11fa5936a7a293698ef12072ec6ec1ece9ecdcc6787d2ba"
+   },
+   "untouched": true
+  },
+  "test_revocation_keeps_every_other_precondition[task_exists]": {
+   "fence": null,
+   "revoke": {
+    "canary_in_message": false,
+    "field": "failed.run_id",
+    "nothing_written": true,
+    "raised": "ProgramRefused",
+    "reason_code": "recovery_task_exists",
+    "store_after": "001186ce47a44e6f9ff09d0d4641bfc48bcd8bb919c4353f68d07f4a15abb3d9",
+    "store_before": "001186ce47a44e6f9ff09d0d4641bfc48bcd8bb919c4353f68d07f4a15abb3d9"
+   },
+   "untouched": true
+  },
+  "test_the_cli_revocation_builds_no_bus": {
+   "unreachable": "unreachable: CLI entry (S10)"
+  },
+  "test_the_revocation_request_is_strict[mode_transport_proof]": {
+   "revoke": {
+    "canary_in_message": false,
+    "field": "mode",
+    "nothing_written": true,
+    "raised": "ProgramRefused",
+    "reason_code": "recovery_request_invalid",
+    "store_after": "a7b72cf0248b1a287da59ac3bf42b0031e6307ba85fd514bde9497b9d7fc21a7",
+    "store_before": "a7b72cf0248b1a287da59ac3bf42b0031e6307ba85fd514bde9497b9d7fc21a7"
+   }
+  },
+  "test_the_revocation_request_is_strict[no_revoke]": {
+   "revoke": {
+    "canary_in_message": false,
+    "field": "root",
+    "nothing_written": true,
+    "raised": "ProgramRefused",
+    "reason_code": "recovery_request_invalid",
+    "store_after": "a7b72cf0248b1a287da59ac3bf42b0031e6307ba85fd514bde9497b9d7fc21a7",
+    "store_before": "a7b72cf0248b1a287da59ac3bf42b0031e6307ba85fd514bde9497b9d7fc21a7"
+   }
+  },
+  "test_the_revocation_request_is_strict[revoke_only_message_id]": {
+   "revoke": {
+    "canary_in_message": false,
+    "field": "revoke",
+    "nothing_written": true,
+    "raised": "ProgramRefused",
+    "reason_code": "recovery_request_invalid",
+    "store_after": "a7b72cf0248b1a287da59ac3bf42b0031e6307ba85fd514bde9497b9d7fc21a7",
+    "store_before": "a7b72cf0248b1a287da59ac3bf42b0031e6307ba85fd514bde9497b9d7fc21a7"
+   }
+  },
+  "test_the_revocation_request_is_strict[schema_v1]": {
+   "revoke": {
+    "canary_in_message": false,
+    "field": "root",
+    "nothing_written": true,
+    "raised": "ProgramRefused",
+    "reason_code": "recovery_request_invalid",
+    "store_after": "a7b72cf0248b1a287da59ac3bf42b0031e6307ba85fd514bde9497b9d7fc21a7",
+    "store_before": "a7b72cf0248b1a287da59ac3bf42b0031e6307ba85fd514bde9497b9d7fc21a7"
+   }
+  }
+ },
+ "g3_successor": {
+  "m7_scope": {
+   "mirrors": "tests/test_research_recovery.py lines 1106-1568 (non-PG, non-CLI)"
+  },
+  "test_a_broken_retained_chain_holds_replay_and_the_successor_claim[change_task]": {
+   "fence": [
+    {
+     "attempts": 0,
+     "outbox": "5eed0000-0000-4000-8000-00000000000e",
+     "outbox_is_the_unsent_report": true,
+     "source_hash": "a99f817152233a50004da2e9ca8baaa284db91ab64cdf740edd9b8c470896076"
+    }
+   ],
+   "relay_with_the_report_fenced": {
+    "bus_published": 0,
+    "published": 0,
+    "quarantined_existing": 2
+   },
+   "replay": {
+    "canary_in_message": false,
+    "field": "predecessor",
+    "nothing_written": true,
+    "raised": "ProgramRefused",
+    "reason_code": "recovery_successor_history_changed",
+    "store_after": "6e4f96616c816ef5af40d49e8595573de634bfa2f70d59fa43c6b919be4b7e2a",
+    "store_before": "6e4f96616c816ef5af40d49e8595573de634bfa2f70d59fa43c6b919be4b7e2a"
+   },
+   "successor_dispatch_row": null,
+   "successor_state": "authorized",
+   "successor_tick": {
+    "investigation": null,
+    "reason_code": "fixture_accepted",
+    "result": "accepted",
+    "run_id": "rp-003.c001",
+    "selected": "local-note"
+   }
+  },
+  "test_a_broken_retained_chain_holds_replay_and_the_successor_claim[corrupt_successor]": {
+   "fence": [
+    {
+     "attempts": 0,
+     "outbox": "5eed0000-0000-4000-8000-00000000000e",
+     "outbox_is_the_unsent_report": true,
+     "source_hash": "a99f817152233a50004da2e9ca8baaa284db91ab64cdf740edd9b8c470896076"
+    }
+   ],
+   "relay_with_the_report_fenced": {
+    "bus_published": 0,
+    "published": 0,
+    "quarantined_existing": 2
+   },
+   "replay": {
+    "canary_in_message": false,
+    "field": "predecessor",
+    "nothing_written": true,
+    "raised": "ProgramRefused",
+    "reason_code": "recovery_successor_corrupt",
+    "store_after": "ec61f43d2ec42d27a5594389c4b8fc13fa16eef51df1d8ffe75fd08906b38ba4",
+    "store_before": "ec61f43d2ec42d27a5594389c4b8fc13fa16eef51df1d8ffe75fd08906b38ba4"
+   },
+   "successor_dispatch_row": null,
+   "successor_state": "authorized",
+   "successor_tick": {
+    "investigation": null,
+    "reason_code": "fixture_accepted",
+    "result": "accepted",
+    "run_id": "rp-003.c001",
+    "selected": "local-note"
+   }
+  },
+  "test_a_broken_retained_chain_holds_replay_and_the_successor_claim[drop_head]": {
+   "fence": [
+    {
+     "attempts": 0,
+     "outbox": "5eed0000-0000-4000-8000-00000000000e",
+     "outbox_is_the_unsent_report": true,
+     "source_hash": "a99f817152233a50004da2e9ca8baaa284db91ab64cdf740edd9b8c470896076"
+    }
+   ],
+   "relay_with_the_report_fenced": {
+    "bus_published": 0,
+    "published": 0,
+    "quarantined_existing": 2
+   },
+   "replay": {
+    "canary_in_message": false,
+    "field": "predecessor",
+    "nothing_written": true,
+    "raised": "ProgramRefused",
+    "reason_code": "recovery_successor_corrupt",
+    "store_after": "b3fe5da78a3f406bc109f1c63b54b6455d660989aa9b4c4ef5bdfe60c4c9b14e",
+    "store_before": "b3fe5da78a3f406bc109f1c63b54b6455d660989aa9b4c4ef5bdfe60c4c9b14e"
+   },
+   "successor_dispatch_row": null,
+   "successor_state": "authorized",
+   "successor_tick": {
+    "investigation": null,
+    "reason_code": "fixture_accepted",
+    "result": "accepted",
+    "run_id": "rp-003.c001",
+    "selected": "local-note"
+   }
+  },
+  "test_a_broken_retained_chain_holds_replay_and_the_successor_claim[drop_original_fence]": {
+   "fence": [
+    {
+     "attempts": 0,
+     "outbox": "5eed0000-0000-4000-8000-00000000000e",
+     "outbox_is_the_unsent_report": true,
+     "source_hash": "a99f817152233a50004da2e9ca8baaa284db91ab64cdf740edd9b8c470896076"
+    }
+   ],
+   "relay_with_the_report_fenced": {
+    "bus_published": 0,
+    "published": 0,
+    "quarantined_existing": 2
+   },
+   "replay": {
+    "canary_in_message": false,
+    "field": "predecessor",
+    "nothing_written": true,
+    "raised": "ProgramRefused",
+    "reason_code": "recovery_revocation_fence_missing",
+    "store_after": "748a9dd14ca1f5b15ba9e9da5fff42cb9979d7f1c1a6831046505a731f5e655f",
+    "store_before": "748a9dd14ca1f5b15ba9e9da5fff42cb9979d7f1c1a6831046505a731f5e655f"
+   },
+   "successor_dispatch_row": null,
+   "successor_state": "authorized",
+   "successor_tick": {
+    "investigation": null,
+    "reason_code": "fixture_accepted",
+    "result": "accepted",
+    "run_id": "rp-003.c001",
+    "selected": "local-note"
+   }
+  },
+  "test_a_broken_retained_chain_holds_replay_and_the_successor_claim[move_quarantine]": {
+   "fence": [
+    {
+     "attempts": 0,
+     "outbox": "5eed0000-0000-4000-8000-00000000000e",
+     "outbox_is_the_unsent_report": true,
+     "source_hash": "a99f817152233a50004da2e9ca8baaa284db91ab64cdf740edd9b8c470896076"
+    }
+   ],
+   "relay_with_the_report_fenced": {
+    "bus_published": 0,
+    "published": 0,
+    "quarantined_existing": 2
+   },
+   "replay": {
+    "canary_in_message": false,
+    "field": "predecessor",
+    "nothing_written": true,
+    "raised": "ProgramRefused",
+    "reason_code": "recovery_publication_changed",
+    "store_after": "58dad784bf4995fcbbde07a1e0aa40d740f3cfecf72461a3184af66e276d9b5f",
+    "store_before": "58dad784bf4995fcbbde07a1e0aa40d740f3cfecf72461a3184af66e276d9b5f"
+   },
+   "successor_dispatch_row": null,
+   "successor_state": "authorized",
+   "successor_tick": {
+    "investigation": null,
+    "reason_code": "fixture_accepted",
+    "result": "accepted",
+    "run_id": "rp-003.c001",
+    "selected": "local-note"
+   }
+  },
+  "test_accepted_rejected_or_other_failed_predecessors_are_never_succeeded[accepted]": {
+   "no_successor": true,
+   "recover": {
+    "canary_in_message": false,
+    "field": "predecessor",
+    "nothing_written": true,
+    "raised": "ProgramRefused",
+    "reason_code": "recovery_dispatch_not_failed",
+    "store_after": "b682d7daf927a878b4f0ea844bd9763bf02fc30c0ce50caecccea54e865a1c94",
+    "store_before": "b682d7daf927a878b4f0ea844bd9763bf02fc30c0ce50caecccea54e865a1c94"
+   },
+   "tick_claimed": true
+  },
+  "test_accepted_rejected_or_other_failed_predecessors_are_never_succeeded[failed]": {
+   "no_successor": true,
+   "recover": {
+    "canary_in_message": false,
+    "field": "predecessor",
+    "nothing_written": true,
+    "raised": "ProgramRefused",
+    "reason_code": "recovery_not_settled_read_only",
+    "store_after": "44ea36a03cbaec45bbe7dafe90b46fe03ce96c0705115b7fd6669a76005ca906",
+    "store_before": "44ea36a03cbaec45bbe7dafe90b46fe03ce96c0705115b7fd6669a76005ca906"
+   },
+   "tick_claimed": true
+  },
+  "test_accepted_rejected_or_other_failed_predecessors_are_never_succeeded[rejected]": {
+   "no_successor": true,
+   "recover": {
+    "canary_in_message": false,
+    "field": "predecessor",
+    "nothing_written": true,
+    "raised": "ProgramRefused",
+    "reason_code": "recovery_dispatch_not_failed",
+    "store_after": "a6cb95e87db76aac192404c60a956771d9f5955bd02bed175b8a1a96bbb7d2a6",
+    "store_before": "a6cb95e87db76aac192404c60a956771d9f5955bd02bed175b8a1a96bbb7d2a6"
+   },
+   "tick_claimed": true
+  },
+  "test_concurrent_and_restarted_successor_requests_record_one_row_one_head": {
+   "cached_flags": [
+    false,
+    true,
+    true,
+    true
+   ],
+   "lineage": {
+    "dispatches": [
+     "e22b6fca3d421d032a78b8c9e9ea1f6fb8ae0a99dd0fffacffe31b405e7a64ee",
+     "e22b6fca3d421d032a78b8c9e9ea1f6fb8ae0a99dd0fffacffe31b405e7a64ee.recovery-1"
+    ],
+    "fences": 1,
+    "heads": [
+     {
+      "dispatch": "e22b6fca3d421d032a78b8c9e9ea1f6fb8ae0a99dd0fffacffe31b405e7a64ee.recovery-2",
+      "version": 2
+     }
+    ],
+    "quarantine": 2,
+    "recoveries": [
+     {
+      "id": "e22b6fca3d421d032a78b8c9e9ea1f6fb8ae0a99dd0fffacffe31b405e7a64ee",
+      "proof": "execution_revoked",
+      "reason_code": null,
+      "state": "claimed"
+     }
+    ],
+    "successors": [
+     {
+      "id": "e22b6fca3d421d032a78b8c9e9ea1f6fb8ae0a99dd0fffacffe31b405e7a64ee:2",
+      "proof": "settled_read_only",
+      "state": "authorized",
+      "version": 2
+     }
+    ]
+   },
+   "restarted_cached": true
+  },
+  "test_one_explicit_successor_of_the_exact_failed_head_is_claimed_once_and_history_is_kept": {
+   "another_for_the_same_head": {
+    "canary_in_message": false,
+    "field": null,
+    "nothing_written": true,
+    "raised": "ProgramRefused",
+    "reason_code": "recovery_conflict",
+    "store_after": "03df8e662486fd0afe7d98f79e5593e8c6e98f1cb00ad2fef0a558c8f6267beb",
+    "store_before": "03df8e662486fd0afe7d98f79e5593e8c6e98f1cb00ad2fef0a558c8f6267beb"
+   },
+   "councils": 1,
+   "current_flags": {
+    "e22b6fca3d421d032a78b8c9e9ea1f6fb8ae0a99dd0fffacffe31b405e7a64ee": false,
+    "e22b6fca3d421d032a78b8c9e9ea1f6fb8ae0a99dd0fffacffe31b405e7a64ee.recovery-1": false
+   },
+   "history_untouched": true,
+   "history_untouched_after_claim": true,
+   "identical_request": {
+    "cached": true,
+    "state": "claimed"
+   },
+   "original_recovery_state": "claimed",
+   "result": {
+    "authority": "owner-authorized successor of one failed dispatch whose council settled only read-only researcher/DBA executions; the predecessor's calls stay counted and its outputs are never reused as an accepted council",
+    "authorized_at": "2028-01-01T00:00:00+00:00",
+    "cached": false,
+    "claimed_at": null,
+    "evidence": {
+     "calls": {
+      "reservations": 2,
+      "reserved": 2,
+      "settled": 2
+     },
+     "executions": [
+      {
+       "agent": "lead:researcher",
+       "attempt": 1,
+       "execution_ref": "sha256:21e2758814f992aed7c13aefae2f9250d979cf1e2b42cbb3d489b93ce537ae8b",
+       "generation": 1,
+       "output_sha256": "661e70276ed2edcd36f465e73bc0d178957b5eef0e308f9bef1e2f1e1498cef4",
+       "reservation_id": "res-76066484-17e5-5f75-81db-2d31f684826e",
+       "role": "researcher",
+       "task_id": "76066484-17e5-5f75-81db-2d31f684826e"
+      },
+      {
+       "agent": "lead:dba",
+       "attempt": 1,
+       "execution_ref": "sha256:46e0df1fbfe10c1d76ad08c8dad117946ca984b327cf38c5e30e9fde03beda13",
+       "generation": 1,
+       "output_sha256": "5c4b030b97c47bef89c6d7dab532220a53bce3fe438f70b8314cfbb94bbe8bd2",
+       "reservation_id": "res-e1bbe9ca-d910-58f5-a281-e2f944ec0a6a",
+       "role": "dba",
+       "task_id": "e1bbe9ca-d910-58f5-a281-e2f944ec0a6a"
+      }
+     ]
+    },
+    "failure": null,
+    "fence": [],
+    "id": "e22b6fca3d421d032a78b8c9e9ea1f6fb8ae0a99dd0fffacffe31b405e7a64ee:2",
+    "investigation": "e22b6fca3d421d032a78b8c9e9ea1f6fb8ae0a99dd0fffacffe31b405e7a64ee",
+    "mode": "settled_read_only_successor",
+    "predecessor": {
+     "config_sha256": "f0233d88abd5b4d32c34ff1dcb674879fbe0ceba0a4f96607f47e75bee8f7f1e",
+     "cycle": "rp-002:001",
+     "dispatch": "e22b6fca3d421d032a78b8c9e9ea1f6fb8ae0a99dd0fffacffe31b405e7a64ee.recovery-1",
+     "lineage_request_sha256": "15cbbbdee29e8a227448b1b6c63a0d62d014e2bcbaa1a0ec85d89841d9774154",
+     "lineage_version": 1,
+     "manifest_sha256": "7fb5af9f659a2e1f58fba63695fd403b76137a99364f55184c75654b40cbe14f",
+     "program": "rp-002",
+     "run_id": "rp-002.c001",
+     "snapshot_sha256": "f255412960aecd2c69c384ec4b04f7c48488e586ad8aeb832f993f355d0845fd"
+    },
+    "proof": "settled_read_only",
+    "recovered": true,
+    "replacement": {
+     "config_sha256": "eb4b5a96427b37c4cebc0d1e2e40d7afc8b24fd9cbe89e546d2bac3ad90af4e0",
+     "cycle": null,
+     "dispatch": "e22b6fca3d421d032a78b8c9e9ea1f6fb8ae0a99dd0fffacffe31b405e7a64ee.recovery-2",
+     "program": "rp-003"
+    },
+    "request_sha256": "462bcdd12d15c2a352223c5dc88d849db2fb32d2e26ede041588e2186fa954c7",
+    "requested_at": "2028-01-01T00:00:00+00:00",
+    "state": "authorized",
+    "updated_at": "2028-01-01T00:00:00+00:00",
+    "version": 2
+   },
+   "status_current": [
+    {
+     "dispatch": "e22b6fca3d421d032a78b8c9e9ea1f6fb8ae0a99dd0fffacffe31b405e7a64ee.recovery-2",
+     "investigation": "e22b6fca3d421d032a78b8c9e9ea1f6fb8ae0a99dd0fffacffe31b405e7a64ee",
+     "previous": {
+      "dispatch": "e22b6fca3d421d032a78b8c9e9ea1f6fb8ae0a99dd0fffacffe31b405e7a64ee.recovery-1",
+      "request_sha256": "15cbbbdee29e8a227448b1b6c63a0d62d014e2bcbaa1a0ec85d89841d9774154",
+      "version": 1
+     },
+     "request_sha256": "462bcdd12d15c2a352223c5dc88d849db2fb32d2e26ede041588e2186fa954c7",
+     "successor": "e22b6fca3d421d032a78b8c9e9ea1f6fb8ae0a99dd0fffacffe31b405e7a64ee:2",
+     "updated_at": "2028-01-01T00:00:00+00:00",
+     "version": 2
+    }
+   ],
+   "status_successors": [
+    "e22b6fca3d421d032a78b8c9e9ea1f6fb8ae0a99dd0fffacffe31b405e7a64ee:2"
+   ],
+   "successor_of_the_accepted_successor": {
+    "canary_in_message": false,
+    "field": "predecessor",
+    "nothing_written": true,
+    "raised": "ProgramRefused",
+    "reason_code": "recovery_dispatch_not_failed",
+    "store_after": "03df8e662486fd0afe7d98f79e5593e8c6e98f1cb00ad2fef0a558c8f6267beb",
+    "store_before": "03df8e662486fd0afe7d98f79e5593e8c6e98f1cb00ad2fef0a558c8f6267beb"
+   },
+   "successor_state": "claimed",
+   "successor_tick": {
+    "investigation": "e22b6fca3d421d032a78b8c9e9ea1f6fb8ae0a99dd0fffacffe31b405e7a64ee",
+    "reason_code": "fixture_accepted",
+    "result": "accepted",
+    "run_id": "rp-003.c001",
+    "selected": "inv-e22b6fca3d421d032a78b8c9"
+   },
+   "views_after_claim": {
+    "ids": [
+     "e22b6fca3d421d032a78b8c9e9ea1f6fb8ae0a99dd0fffacffe31b405e7a64ee",
+     "e22b6fca3d421d032a78b8c9e9ea1f6fb8ae0a99dd0fffacffe31b405e7a64ee.recovery-1",
+     "e22b6fca3d421d032a78b8c9e9ea1f6fb8ae0a99dd0fffacffe31b405e7a64ee.recovery-2"
+    ],
+    "second_current": true,
+    "second_recovery": "e22b6fca3d421d032a78b8c9e9ea1f6fb8ae0a99dd0fffacffe31b405e7a64ee:2",
+    "supersedes": {
+     "cycle": "rp-002:001",
+     "dispatch": "e22b6fca3d421d032a78b8c9e9ea1f6fb8ae0a99dd0fffacffe31b405e7a64ee.recovery-1",
+     "manifest_sha256": "7fb5af9f659a2e1f58fba63695fd403b76137a99364f55184c75654b40cbe14f",
+     "program": "rp-002",
+     "run_id": "rp-002.c001",
+     "snapshot_sha256": "f255412960aecd2c69c384ec4b04f7c48488e586ad8aeb832f993f355d0845fd"
+    }
+   }
+  },
+  "test_postgres_successor_requests_serialize_to_one_authorization": {
+   "unreachable": "unreachable: PostgreSQL (step 8 .pg units)"
+  },
+  "test_the_cli_successor_reads_the_executor_artifact_store_and_builds_no_bus": {
+   "unreachable": "unreachable: CLI entry (S10)"
+  },
+  "test_the_fixture_is_the_real_shaped_settled_read_only_foreign_message_failure": {
+   "dispatch": {
+    "result": "failed",
+    "result_reason": "foreign_message"
+   },
+   "executor_calls": [
+    "lead:researcher",
+    "lead:dba"
+   ],
+   "program_state": "blocked",
+   "recovery_state": "claimed",
+   "reservation_statuses": [
+    "settled",
+    "settled"
+   ],
+   "resume": {
+    "canary_in_message": false,
+    "field": null,
+    "nothing_written": true,
+    "raised": "ProgramRefused",
+    "reason_code": "program_blocked",
+    "store_after": "7defaa70fd1bb2bee4eeb2f435d1f642e2b6e9cb85e04bca145691a6f14b6478",
+    "store_before": "7defaa70fd1bb2bee4eeb2f435d1f642e2b6e9cb85e04bca145691a6f14b6478"
+   },
+   "revocation_conflicts": {
+    "canary_in_message": false,
+    "field": null,
+    "nothing_written": true,
+    "raised": "ProgramRefused",
+    "reason_code": "recovery_conflict",
+    "store_after": "89ee085a4a4fc4c035b07d9e18d025350f079cbb82214cbdbdfa9525651fcf2e",
+    "store_before": "89ee085a4a4fc4c035b07d9e18d025350f079cbb82214cbdbdfa9525651fcf2e"
+   },
+   "roles": [
+    "dba",
+    "researcher"
+   ],
+   "run": {
+    "reason_code": "foreign_message",
+    "stage": "dba",
+    "status": "failed"
+   },
+   "starts": {
+    "reserved": 2,
+    "settled": 2
+   },
+   "task_statuses": [
+    "succeeded",
+    "succeeded"
+   ]
+  },
+  "test_unavailable_evidence_stale_pins_and_widened_scope_refuse_and_write_nothing": {
+   "empty_evidence": {
+    "canary_in_message": false,
+    "field": "predecessor.run_id",
+    "nothing_written": true,
+    "raised": "ProgramRefused",
+    "reason_code": "recovery_evidence_missing",
+    "store_after": "89ee085a4a4fc4c035b07d9e18d025350f079cbb82214cbdbdfa9525651fcf2e",
+    "store_before": "89ee085a4a4fc4c035b07d9e18d025350f079cbb82214cbdbdfa9525651fcf2e"
+   },
+   "no_evidence_port": {
+    "canary_in_message": false,
+    "field": "predecessor.run_id",
+    "nothing_written": true,
+    "raised": "ProgramRefused",
+    "reason_code": "recovery_evidence_unavailable",
+    "store_after": "89ee085a4a4fc4c035b07d9e18d025350f079cbb82214cbdbdfa9525651fcf2e",
+    "store_before": "89ee085a4a4fc4c035b07d9e18d025350f079cbb82214cbdbdfa9525651fcf2e"
+   },
+   "no_successor": true,
+   "not_a_head_dispatch_is_the_investigation": {
+    "canary_in_message": false,
+    "field": "predecessor.dispatch",
+    "nothing_written": true,
+    "raised": "ProgramRefused",
+    "reason_code": "recovery_request_invalid",
+    "store_after": "89ee085a4a4fc4c035b07d9e18d025350f079cbb82214cbdbdfa9525651fcf2e",
+    "store_before": "89ee085a4a4fc4c035b07d9e18d025350f079cbb82214cbdbdfa9525651fcf2e"
+   },
+   "not_a_head_lineage_version_2": {
+    "canary_in_message": false,
+    "field": "predecessor.dispatch",
+    "nothing_written": true,
+    "raised": "ProgramRefused",
+    "reason_code": "recovery_request_invalid",
+    "store_after": "89ee085a4a4fc4c035b07d9e18d025350f079cbb82214cbdbdfa9525651fcf2e",
+    "store_before": "89ee085a4a4fc4c035b07d9e18d025350f079cbb82214cbdbdfa9525651fcf2e"
+   },
+   "pin_config_sha256": {
+    "canary_in_message": false,
+    "field": "predecessor.program",
+    "nothing_written": true,
+    "raised": "ProgramRefused",
+    "reason_code": "recovery_dispatch_mismatch",
+    "store_after": "89ee085a4a4fc4c035b07d9e18d025350f079cbb82214cbdbdfa9525651fcf2e",
+    "store_before": "89ee085a4a4fc4c035b07d9e18d025350f079cbb82214cbdbdfa9525651fcf2e"
+   },
+   "pin_cycle": {
+    "canary_in_message": false,
+    "field": "predecessor",
+    "nothing_written": true,
+    "raised": "ProgramRefused",
+    "reason_code": "recovery_dispatch_mismatch",
+    "store_after": "89ee085a4a4fc4c035b07d9e18d025350f079cbb82214cbdbdfa9525651fcf2e",
+    "store_before": "89ee085a4a4fc4c035b07d9e18d025350f079cbb82214cbdbdfa9525651fcf2e"
+   },
+   "pin_lineage_request_sha256": {
+    "canary_in_message": false,
+    "field": "predecessor",
+    "nothing_written": true,
+    "raised": "ProgramRefused",
+    "reason_code": "recovery_successor_stale",
+    "store_after": "89ee085a4a4fc4c035b07d9e18d025350f079cbb82214cbdbdfa9525651fcf2e",
+    "store_before": "89ee085a4a4fc4c035b07d9e18d025350f079cbb82214cbdbdfa9525651fcf2e"
+   },
+   "pin_manifest_sha256": {
+    "canary_in_message": false,
+    "field": "predecessor",
+    "nothing_written": true,
+    "raised": "ProgramRefused",
+    "reason_code": "recovery_dispatch_mismatch",
+    "store_after": "89ee085a4a4fc4c035b07d9e18d025350f079cbb82214cbdbdfa9525651fcf2e",
+    "store_before": "89ee085a4a4fc4c035b07d9e18d025350f079cbb82214cbdbdfa9525651fcf2e"
+   },
+   "widened_scope": {
+    "canary_in_message": false,
+    "field": "replacement",
+    "nothing_written": true,
+    "raised": "ProgramRefused",
+    "reason_code": "recovery_scope_changed",
+    "store_after": "2a2aeee65d99751db0d7a175e57cc07b5379189f2cfdc9a2e1a0afd1db0f47bc",
+    "store_before": "2a2aeee65d99751db0d7a175e57cc07b5379189f2cfdc9a2e1a0afd1db0f47bc"
+   }
+  },
+  "test_unsettled_unknown_effectful_or_unproven_predecessors_refuse_and_write_nothing[answer_changed]": {
+   "no_successor": true,
+   "recover": {
+    "canary_in_message": false,
+    "field": "predecessor.run_id",
+    "nothing_written": true,
+    "raised": "ProgramRefused",
+    "reason_code": "recovery_evidence_mismatch",
+    "store_after": "6a7aa3b66cc796be338be9c6668d4644f349ea40eaf2463de6d25057a15c4469",
+    "store_before": "6a7aa3b66cc796be338be9c6668d4644f349ea40eaf2463de6d25057a15c4469"
+   }
+  },
+  "test_unsettled_unknown_effectful_or_unproven_predecessors_refuse_and_write_nothing[corrupt_artifact]": {
+   "no_successor": true,
+   "recover": {
+    "canary_in_message": false,
+    "field": "predecessor.run_id",
+    "nothing_written": true,
+    "raised": "ProgramRefused",
+    "reason_code": "recovery_evidence_corrupt",
+    "store_after": "89ee085a4a4fc4c035b07d9e18d025350f079cbb82214cbdbdfa9525651fcf2e",
+    "store_before": "89ee085a4a4fc4c035b07d9e18d025350f079cbb82214cbdbdfa9525651fcf2e"
+   }
+  },
+  "test_unsettled_unknown_effectful_or_unproven_predecessors_refuse_and_write_nothing[drop_fence]": {
+   "no_successor": true,
+   "recover": {
+    "canary_in_message": false,
+    "field": "predecessor",
+    "nothing_written": true,
+    "raised": "ProgramRefused",
+    "reason_code": "recovery_revocation_fence_missing",
+    "store_after": "43d558ac25590234178563d2bf0bf18e189785784e7793818df499b7e5fa128f",
+    "store_before": "43d558ac25590234178563d2bf0bf18e189785784e7793818df499b7e5fa128f"
+   }
+  },
+  "test_unsettled_unknown_effectful_or_unproven_predecessors_refuse_and_write_nothing[implementation_started]": {
+   "no_successor": true,
+   "recover": {
+    "canary_in_message": false,
+    "field": "predecessor.run_id",
+    "nothing_written": true,
+    "raised": "ProgramRefused",
+    "reason_code": "recovery_effect_outside_read_only",
+    "store_after": "c8ea33e7ec7c6b75c3c3356014ba4d2cf066bd5654923e3b2d44c3965dc98c1a",
+    "store_before": "c8ea33e7ec7c6b75c3c3356014ba4d2cf066bd5654923e3b2d44c3965dc98c1a"
+   }
+  },
+  "test_unsettled_unknown_effectful_or_unproven_predecessors_refuse_and_write_nothing[marked]": {
+   "no_successor": true,
+   "recover": {
+    "canary_in_message": false,
+    "field": "predecessor.run_id",
+    "nothing_written": true,
+    "raised": "ProgramRefused",
+    "reason_code": "recovery_effect_unknown",
+    "store_after": "0a9e3dcd4dfdaf1759c57bffa17849637c74e52995b25cb6c250b90e2482a31b",
+    "store_before": "0a9e3dcd4dfdaf1759c57bffa17849637c74e52995b25cb6c250b90e2482a31b"
+   }
+  },
+  "test_unsettled_unknown_effectful_or_unproven_predecessors_refuse_and_write_nothing[other_role]": {
+   "no_successor": true,
+   "recover": {
+    "canary_in_message": false,
+    "field": "predecessor.run_id",
+    "nothing_written": true,
+    "raised": "ProgramRefused",
+    "reason_code": "recovery_effect_outside_read_only",
+    "store_after": "cce43cc54d9fd2f458474c0d7e8a8d1911982e75ed3ebfd0fc98adeea4546311",
+    "store_before": "cce43cc54d9fd2f458474c0d7e8a8d1911982e75ed3ebfd0fc98adeea4546311"
+   }
+  },
+  "test_unsettled_unknown_effectful_or_unproven_predecessors_refuse_and_write_nothing[reservation_unknown]": {
+   "no_successor": true,
+   "recover": {
+    "canary_in_message": false,
+    "field": "predecessor.run_id",
+    "nothing_written": true,
+    "raised": "ProgramRefused",
+    "reason_code": "recovery_invocation_unsettled",
+    "store_after": "8e5bacf63545ba25c42c04e791515665c8fe2554962772e4f7373f34039ca8b4",
+    "store_before": "8e5bacf63545ba25c42c04e791515665c8fe2554962772e4f7373f34039ca8b4"
+   }
+  },
+  "test_unsettled_unknown_effectful_or_unproven_predecessors_refuse_and_write_nothing[task_failed]": {
+   "no_successor": true,
+   "recover": {
+    "canary_in_message": false,
+    "field": "predecessor.run_id",
+    "nothing_written": true,
+    "raised": "ProgramRefused",
+    "reason_code": "recovery_effect_unknown",
+    "store_after": "e55d1ed2767ec8e5f24086c72f7219eeb976165fe91e9596135c35b0dcd2a54c",
+    "store_before": "e55d1ed2767ec8e5f24086c72f7219eeb976165fe91e9596135c35b0dcd2a54c"
+   }
+  },
+  "test_unsettled_unknown_effectful_or_unproven_predecessors_refuse_and_write_nothing[task_running]": {
+   "no_successor": true,
+   "recover": {
+    "canary_in_message": false,
+    "field": "predecessor.run_id",
+    "nothing_written": true,
+    "raised": "ProgramRefused",
+    "reason_code": "recovery_predecessor_active",
+    "store_after": "32f4bed26c7867b097f9aa88e8aef336b8817685db2d35d2c6ed98cff18e4023",
+    "store_before": "32f4bed26c7867b097f9aa88e8aef336b8817685db2d35d2c6ed98cff18e4023"
+   }
+  },
+  "test_unsettled_unknown_effectful_or_unproven_predecessors_refuse_and_write_nothing[terminated]": {
+   "no_successor": true,
+   "recover": {
+    "canary_in_message": false,
+    "field": "predecessor.run_id",
+    "nothing_written": true,
+    "raised": "ProgramRefused",
+    "reason_code": "recovery_effect_unknown",
+    "store_after": "f22358e5a511c41457b2fb6e153b1dbc3a528894c564caa12cad5b223d8ccde3",
+    "store_before": "f22358e5a511c41457b2fb6e153b1dbc3a528894c564caa12cad5b223d8ccde3"
+   }
+  },
+  "test_unsettled_unknown_effectful_or_unproven_predecessors_refuse_and_write_nothing[unsent_foreign_role]": {
+   "no_successor": true,
+   "recover": {
+    "canary_in_message": false,
+    "field": "predecessor.run_id",
+    "nothing_written": true,
+    "raised": "ProgramRefused",
+    "reason_code": "recovery_effect_outside_read_only",
+    "store_after": "af17be5229377440f94e50c5be18cc0fdb3a34eca2af5b8d6541b0e50071e77a",
+    "store_before": "af17be5229377440f94e50c5be18cc0fdb3a34eca2af5b8d6541b0e50071e77a"
+   }
+  }
+ },
+ "g4_contract_successor": {
+  "m7_scope": {
+   "mirrors": "tests/test_research_recovery.py lines 1611-2069 (non-PG, non-CLI)"
+  },
+  "test_a_broken_retained_fence_holds_replay_the_claim_and_the_scoped_receipt_consumer": {
+   "relay_with_the_report_fenced": {
+    "bus_published": 0,
+    "published": 0,
+    "quarantined_existing": 1
+   },
+   "replay": {
+    "canary_in_message": false,
+    "field": "predecessor",
+    "nothing_written": true,
+    "raised": "ProgramRefused",
+    "reason_code": "recovery_publication_changed",
+    "store_after": "6bde247c6c5c41104f3b00ae1324060b98795febe6d2f6af472882bd0cca2c84",
+    "store_before": "6bde247c6c5c41104f3b00ae1324060b98795febe6d2f6af472882bd0cca2c84"
+   },
+   "report_is_fenced": true,
+   "scoped_receipt_consumer_held": "recovery_publication_changed",
+   "successor_dispatch_row": null,
+   "successor_state": "authorized",
+   "successor_tick": {
+    "investigation": null,
+    "reason_code": "fixture_accepted",
+    "result": "accepted",
+    "run_id": "rp-002.c001",
+    "selected": "local-note"
+   }
+  },
+  "test_a_failed_contract_successor_stays_held": {
+   "another_for_the_same_key": {
+    "canary_in_message": false,
+    "field": null,
+    "nothing_written": true,
+    "raised": "ProgramRefused",
+    "reason_code": "recovery_conflict",
+    "store_after": "753c0113787b111d025b99588989405d603b4f8179016de2ec06560fea92857b",
+    "store_before": "753c0113787b111d025b99588989405d603b4f8179016de2ec06560fea92857b"
+   },
+   "identical_request": "claimed",
+   "resume": {
+    "canary_in_message": false,
+    "field": null,
+    "nothing_written": true,
+    "raised": "ProgramRefused",
+    "reason_code": "program_blocked",
+    "store_after": "0257d143b04b146ab1dfe502368df19152b8165bba555d4896bfcd9ffd1f47b5",
+    "store_before": "0257d143b04b146ab1dfe502368df19152b8165bba555d4896bfcd9ffd1f47b5"
+   },
+   "second_result": "failed",
+   "successors": 1,
+   "tick": {
+    "investigation": "e22b6fca3d421d032a78b8c9e9ea1f6fb8ae0a99dd0fffacffe31b405e7a64ee",
+    "reason_code": "fixture_failed",
+    "result": "failed",
+    "run_id": "rp-002.c001",
+    "selected": "inv-e22b6fca3d421d032a78b8c9"
+   }
+  },
+  "test_a_wrong_failure_foreign_evidence_or_stale_pin_refuses_and_writes_nothing": {
+   "empty_evidence": {
+    "canary_in_message": false,
+    "field": "predecessor.run_id",
+    "nothing_written": true,
+    "raised": "ProgramRefused",
+    "reason_code": "recovery_evidence_missing",
+    "store_after": "5175266092757faf1390806208ca1c423e2f62553f915043aaf6e21af4fd0c65",
+    "store_before": "5175266092757faf1390806208ca1c423e2f62553f915043aaf6e21af4fd0c65"
+   },
+   "failure_dba_execution_ref": {
+    "canary_in_message": false,
+    "field": "failure",
+    "nothing_written": true,
+    "raised": "ProgramRefused",
+    "reason_code": "recovery_evidence_mismatch",
+    "store_after": "5175266092757faf1390806208ca1c423e2f62553f915043aaf6e21af4fd0c65",
+    "store_before": "5175266092757faf1390806208ca1c423e2f62553f915043aaf6e21af4fd0c65"
+   },
+   "failure_dba_task": {
+    "canary_in_message": false,
+    "field": "failure",
+    "nothing_written": true,
+    "raised": "ProgramRefused",
+    "reason_code": "recovery_evidence_mismatch",
+    "store_after": "5175266092757faf1390806208ca1c423e2f62553f915043aaf6e21af4fd0c65",
+    "store_before": "5175266092757faf1390806208ca1c423e2f62553f915043aaf6e21af4fd0c65"
+   },
+   "failure_rationale_too_long": {
+    "canary_in_message": false,
+    "field": "failure",
+    "nothing_written": true,
+    "raised": "ProgramRefused",
+    "reason_code": "recovery_failure_not_proven",
+    "store_after": "5175266092757faf1390806208ca1c423e2f62553f915043aaf6e21af4fd0c65",
+    "store_before": "5175266092757faf1390806208ca1c423e2f62553f915043aaf6e21af4fd0c65"
+   },
+   "failure_summary_empty": {
+    "canary_in_message": false,
+    "field": "failure",
+    "nothing_written": true,
+    "raised": "ProgramRefused",
+    "reason_code": "recovery_failure_not_proven",
+    "store_after": "5175266092757faf1390806208ca1c423e2f62553f915043aaf6e21af4fd0c65",
+    "store_before": "5175266092757faf1390806208ca1c423e2f62553f915043aaf6e21af4fd0c65"
+   },
+   "failure_unknown_execution_ref": {
+    "canary_in_message": false,
+    "field": "failure",
+    "nothing_written": true,
+    "raised": "ProgramRefused",
+    "reason_code": "recovery_evidence_mismatch",
+    "store_after": "5175266092757faf1390806208ca1c423e2f62553f915043aaf6e21af4fd0c65",
+    "store_before": "5175266092757faf1390806208ca1c423e2f62553f915043aaf6e21af4fd0c65"
+   },
+   "no_contract_successor": true,
+   "no_evidence_port": {
+    "canary_in_message": false,
+    "field": "predecessor.run_id",
+    "nothing_written": true,
+    "raised": "ProgramRefused",
+    "reason_code": "recovery_evidence_unavailable",
+    "store_after": "5175266092757faf1390806208ca1c423e2f62553f915043aaf6e21af4fd0c65",
+    "store_before": "5175266092757faf1390806208ca1c423e2f62553f915043aaf6e21af4fd0c65"
+   },
+   "pin_config_sha256": {
+    "canary_in_message": false,
+    "field": "predecessor.program",
+    "nothing_written": true,
+    "raised": "ProgramRefused",
+    "reason_code": "recovery_dispatch_mismatch",
+    "store_after": "5175266092757faf1390806208ca1c423e2f62553f915043aaf6e21af4fd0c65",
+    "store_before": "5175266092757faf1390806208ca1c423e2f62553f915043aaf6e21af4fd0c65"
+   },
+   "pin_cycle": {
+    "canary_in_message": false,
+    "field": "predecessor",
+    "nothing_written": true,
+    "raised": "ProgramRefused",
+    "reason_code": "recovery_dispatch_mismatch",
+    "store_after": "5175266092757faf1390806208ca1c423e2f62553f915043aaf6e21af4fd0c65",
+    "store_before": "5175266092757faf1390806208ca1c423e2f62553f915043aaf6e21af4fd0c65"
+   },
+   "pin_manifest_sha256": {
+    "canary_in_message": false,
+    "field": "predecessor",
+    "nothing_written": true,
+    "raised": "ProgramRefused",
+    "reason_code": "recovery_dispatch_mismatch",
+    "store_after": "5175266092757faf1390806208ca1c423e2f62553f915043aaf6e21af4fd0c65",
+    "store_before": "5175266092757faf1390806208ca1c423e2f62553f915043aaf6e21af4fd0c65"
+   },
+   "pin_run_id": {
+    "canary_in_message": false,
+    "field": "predecessor",
+    "nothing_written": true,
+    "raised": "ProgramRefused",
+    "reason_code": "recovery_dispatch_mismatch",
+    "store_after": "5175266092757faf1390806208ca1c423e2f62553f915043aaf6e21af4fd0c65",
+    "store_before": "5175266092757faf1390806208ca1c423e2f62553f915043aaf6e21af4fd0c65"
+   },
+   "widened_scope": {
+    "canary_in_message": false,
+    "field": "replacement",
+    "nothing_written": true,
+    "raised": "ProgramRefused",
+    "reason_code": "recovery_scope_changed",
+    "store_after": "783fca26bc00fde87887102c5f91a58c6cd000ee47060dd2f0130864eaea8c75",
+    "store_before": "783fca26bc00fde87887102c5f91a58c6cd000ee47060dd2f0130864eaea8c75"
+   }
+  },
+  "test_an_existing_lineage_current_dispatch_contract_failure_has_one_successor": {
+   "current_flags": {
+    "e22b6fca3d421d032a78b8c9e9ea1f6fb8ae0a99dd0fffacffe31b405e7a64ee": false,
+    "e22b6fca3d421d032a78b8c9e9ea1f6fb8ae0a99dd0fffacffe31b405e7a64ee.recovery-1": false,
+    "e22b6fca3d421d032a78b8c9e9ea1f6fb8ae0a99dd0fffacffe31b405e7a64ee.recovery-2": true
+   },
+   "history_untouched": true,
+   "original_recovery_state": "claimed",
+   "replacement_dispatch": "e22b6fca3d421d032a78b8c9e9ea1f6fb8ae0a99dd0fffacffe31b405e7a64ee.recovery-2",
+   "result": {
+    "cached": false,
+    "mode": "settled_contract_failure_successor",
+    "proof": "settled_contract_failure",
+    "recovered": true,
+    "state": "authorized",
+    "version": 2
+   },
+   "stale_initial_pin": {
+    "canary_in_message": false,
+    "field": "predecessor",
+    "nothing_written": true,
+    "raised": "ProgramRefused",
+    "reason_code": "recovery_successor_stale",
+    "store_after": "a6a373f04906430a52b6ded1cc8752321b186fdf680dc9c478bd4eea6066b654",
+    "store_before": "a6a373f04906430a52b6ded1cc8752321b186fdf680dc9c478bd4eea6066b654"
+   },
+   "successor_tick": {
+    "investigation": "e22b6fca3d421d032a78b8c9e9ea1f6fb8ae0a99dd0fffacffe31b405e7a64ee",
+    "reason_code": "fixture_accepted",
+    "result": "accepted",
+    "run_id": "rp-003.c001",
+    "selected": "inv-e22b6fca3d421d032a78b8c9"
+   }
+  },
+  "test_another_contract_error_or_a_read_only_failure_is_not_this_contract_failure": {
+   "no_contract_successor": true,
+   "read_only_predecessor": {
+    "canary_in_message": false,
+    "field": "predecessor",
+    "nothing_written": true,
+    "raised": "ProgramRefused",
+    "reason_code": "recovery_not_settled_read_only",
+    "store_after": "89ee085a4a4fc4c035b07d9e18d025350f079cbb82214cbdbdfa9525651fcf2e",
+    "store_before": "89ee085a4a4fc4c035b07d9e18d025350f079cbb82214cbdbdfa9525651fcf2e"
+   },
+   "recorded_reason": "debate_refused:ContractError",
+   "recover": {
+    "canary_in_message": false,
+    "field": "failure",
+    "nothing_written": true,
+    "raised": "ProgramRefused",
+    "reason_code": "recovery_failure_not_proven",
+    "store_after": "59463cd9dfc20df96ea5dae87d052b3f712c43ca229fd9695f2d5106d3e26720",
+    "store_before": "59463cd9dfc20df96ea5dae87d052b3f712c43ca229fd9695f2d5106d3e26720"
+   }
+  },
+  "test_concurrent_and_restarted_contract_requests_record_one_row_one_head": {
+   "cached_flags": [
+    false,
+    true,
+    true,
+    true
+   ],
+   "lineage": {
+    "dispatches": [
+     "e22b6fca3d421d032a78b8c9e9ea1f6fb8ae0a99dd0fffacffe31b405e7a64ee"
+    ],
+    "fences": 0,
+    "heads": [
+     {
+      "dispatch": "e22b6fca3d421d032a78b8c9e9ea1f6fb8ae0a99dd0fffacffe31b405e7a64ee.recovery-2",
+      "version": 2
+     }
+    ],
+    "quarantine": 0,
+    "recoveries": [],
+    "successors": [
+     {
+      "id": "e22b6fca3d421d032a78b8c9e9ea1f6fb8ae0a99dd0fffacffe31b405e7a64ee:2",
+      "proof": "settled_contract_failure",
+      "state": "authorized",
+      "version": 2
+     }
+    ]
+   },
+   "restarted_cached": true
+  },
+  "test_one_explicit_successor_of_the_initial_contract_failure_is_claimed_once_and_history_is_kept[current]": {
+   "another_for_the_same_head": {
+    "canary_in_message": false,
+    "field": null,
+    "nothing_written": true,
+    "raised": "ProgramRefused",
+    "reason_code": "recovery_conflict",
+    "store_after": "98c33e211f87054505185e41f8735186af291102958e737c00c266a26216b0a0",
+    "store_before": "98c33e211f87054505185e41f8735186af291102958e737c00c266a26216b0a0"
+   },
+   "councils": 1,
+   "head_previous": {
+    "dispatch": "e22b6fca3d421d032a78b8c9e9ea1f6fb8ae0a99dd0fffacffe31b405e7a64ee",
+    "request_sha256": null,
+    "version": 0
+   },
+   "history_untouched": true,
+   "history_untouched_after_claim": true,
+   "identical_request": true,
+   "output_sha256_is_the_artifact_digest": true,
+   "recovery_1_unused": true,
+   "recovery_held": null,
+   "result": {
+    "authority": "owner-authorized successor of one failed dispatch whose council settled only read-only role executions and refused a named output field; the predecessor's calls stay counted and its outputs are never rewritten or reused as an accepted council",
+    "authorized_at": "2028-01-01T00:00:00+00:00",
+    "cached": false,
+    "claimed_at": null,
+    "evidence": {
+     "calls": {
+      "reservations": 4,
+      "reserved": 4,
+      "settled": 4
+     },
+     "executions": [
+      {
+       "agent": "lead:dba",
+       "attempt": 1,
+       "execution_ref": "sha256:a154b3ba481aa7afc87d6ec372655e397590b38e1b0279804936703def6cd32f",
+       "generation": 1,
+       "output_sha256": "23a29ba8a192c5aac1a90130812e0a427bec4536e7645913484ffb8db47e3d9f",
+       "reservation_id": "res-0ef980d0-73e3-5fae-814d-3313096e2eae",
+       "role": "dba",
+       "task_id": "0ef980d0-73e3-5fae-814d-3313096e2eae"
+      },
+      {
+       "agent": "lead:improvement",
+       "attempt": 1,
+       "execution_ref": "sha256:657c43c60423acd747511091d52f8b73facbc4ba0b83b6e8f92f0ec0e28a41d2",
+       "generation": 1,
+       "output_sha256": "419ee0bc368ba49de45f32e1fa1af1a10e19e80ee7f660f1190ecad2682c6521",
+       "reservation_id": "res-29980bb2-c7d5-597e-a513-b0bf854d4eeb",
+       "role": "improvement_lead",
+       "task_id": "29980bb2-c7d5-597e-a513-b0bf854d4eeb"
+      },
+      {
+       "agent": "lead:researcher",
+       "attempt": 1,
+       "execution_ref": "sha256:f78a9de17b80f00cd000c14c2d3479bf858e99cd2f917c27de15b63fae032fcb",
+       "generation": 1,
+       "output_sha256": "bc55d6cb07e4aec25a4c9a4f99094319737a76e1d19e10e5c261e2150373ea23",
+       "reservation_id": "res-5e8e1c66-3981-5e3d-b8e7-8b38b8e95e9d",
+       "role": "researcher",
+       "task_id": "5e8e1c66-3981-5e3d-b8e7-8b38b8e95e9d"
+      },
+      {
+       "agent": "lead:research",
+       "attempt": 1,
+       "execution_ref": "sha256:e402a86655e6cbcfba540c1d98ca7369ea51a6f0ee66c47e5a10b7adbc8fe6c2",
+       "generation": 1,
+       "output_sha256": "0bb55c353f7f6e38ac66e762724f27823321c019742c888298f9ab44bf479b11",
+       "reservation_id": "res-cfa5a8b4-2593-509e-9d0a-1993605b3c7d",
+       "role": "research_lead",
+       "task_id": "cfa5a8b4-2593-509e-9d0a-1993605b3c7d"
+      }
+     ]
+    },
+    "failure": {
+     "check": "council_field_invalid:improvement_lead.summary:too_long",
+     "execution_ref": "sha256:657c43c60423acd747511091d52f8b73facbc4ba0b83b6e8f92f0ec0e28a41d2",
+     "output_sha256": "419ee0bc368ba49de45f32e1fa1af1a10e19e80ee7f660f1190ecad2682c6521",
+     "role": "improvement_lead",
+     "task_id": "29980bb2-c7d5-597e-a513-b0bf854d4eeb"
+    },
+    "fence": [],
+    "id": "e22b6fca3d421d032a78b8c9e9ea1f6fb8ae0a99dd0fffacffe31b405e7a64ee:2",
+    "investigation": "e22b6fca3d421d032a78b8c9e9ea1f6fb8ae0a99dd0fffacffe31b405e7a64ee",
+    "mode": "settled_contract_failure_successor",
+    "predecessor": {
+     "config_sha256": "fef7b83ff2175c127e8611b0ed1c8f93974865581f7c4b026a3ec78b523f46af",
+     "cycle": "rp-001:001",
+     "dispatch": "e22b6fca3d421d032a78b8c9e9ea1f6fb8ae0a99dd0fffacffe31b405e7a64ee",
+     "lineage_request_sha256": null,
+     "lineage_version": 0,
+     "manifest_sha256": "7e56db9ace8f2ab6167fa650b55b8e4f07c3c7e4c3e26e829f8c0d7abd65143d",
+     "program": "rp-001",
+     "run_id": "rp-001.c001",
+     "snapshot_sha256": "3a8ead398c88e6d08125c762ef059aa1902a8fb30d49d51a16c6c7ac51098c96"
+    },
+    "proof": "settled_contract_failure",
+    "recovered": true,
+    "replacement": {
+     "config_sha256": "f0233d88abd5b4d32c34ff1dcb674879fbe0ceba0a4f96607f47e75bee8f7f1e",
+     "cycle": null,
+     "dispatch": "e22b6fca3d421d032a78b8c9e9ea1f6fb8ae0a99dd0fffacffe31b405e7a64ee.recovery-2",
+     "program": "rp-002"
+    },
+    "request_sha256": "4cfcaf9e2b04a873d8160aad88a5c558d68db94969ee86e79bc97c7410ef5eb5",
+    "requested_at": "2028-01-01T00:00:00+00:00",
+    "state": "authorized",
+    "updated_at": "2028-01-01T00:00:00+00:00",
+    "version": 2
+   },
+   "secret_in_result": false,
+   "successor_tick": {
+    "investigation": "e22b6fca3d421d032a78b8c9e9ea1f6fb8ae0a99dd0fffacffe31b405e7a64ee",
+    "reason_code": "fixture_accepted",
+    "result": "accepted",
+    "run_id": "rp-002.c001",
+    "selected": "inv-e22b6fca3d421d032a78b8c9"
+   },
+   "summary_length": 6046,
+   "views_after_claim": {
+    "ids": [
+     "e22b6fca3d421d032a78b8c9e9ea1f6fb8ae0a99dd0fffacffe31b405e7a64ee",
+     "e22b6fca3d421d032a78b8c9e9ea1f6fb8ae0a99dd0fffacffe31b405e7a64ee.recovery-2"
+    ],
+    "initial_current": false,
+    "second_current": true,
+    "supersedes": {
+     "cycle": "rp-001:001",
+     "dispatch": "e22b6fca3d421d032a78b8c9e9ea1f6fb8ae0a99dd0fffacffe31b405e7a64ee",
+     "manifest_sha256": "7e56db9ace8f2ab6167fa650b55b8e4f07c3c7e4c3e26e829f8c0d7abd65143d",
+     "program": "rp-001",
+     "run_id": "rp-001.c001",
+     "snapshot_sha256": "3a8ead398c88e6d08125c762ef059aa1902a8fb30d49d51a16c6c7ac51098c96"
+    }
+   }
+  },
+  "test_one_explicit_successor_of_the_initial_contract_failure_is_claimed_once_and_history_is_kept[legacy]": {
+   "another_for_the_same_head": {
+    "canary_in_message": false,
+    "field": null,
+    "nothing_written": true,
+    "raised": "ProgramRefused",
+    "reason_code": "recovery_conflict",
+    "store_after": "87e9f130f4163a9a03b07475acaa3ee530df0948bb4c7fffd81dfe28a6f964dd",
+    "store_before": "87e9f130f4163a9a03b07475acaa3ee530df0948bb4c7fffd81dfe28a6f964dd"
+   },
+   "councils": 1,
+   "head_previous": {
+    "dispatch": "e22b6fca3d421d032a78b8c9e9ea1f6fb8ae0a99dd0fffacffe31b405e7a64ee",
+    "request_sha256": null,
+    "version": 0
+   },
+   "history_untouched": true,
+   "history_untouched_after_claim": true,
+   "identical_request": true,
+   "output_sha256_is_the_artifact_digest": true,
+   "recovery_1_unused": true,
+   "recovery_held": null,
+   "result": {
+    "authority": "owner-authorized successor of one failed dispatch whose council settled only read-only role executions and refused a named output field; the predecessor's calls stay counted and its outputs are never rewritten or reused as an accepted council",
+    "authorized_at": "2028-01-01T00:00:00+00:00",
+    "cached": false,
+    "claimed_at": null,
+    "evidence": {
+     "calls": {
+      "reservations": 4,
+      "reserved": 4,
+      "settled": 4
+     },
+     "executions": [
+      {
+       "agent": "lead:dba",
+       "attempt": 1,
+       "execution_ref": "sha256:a154b3ba481aa7afc87d6ec372655e397590b38e1b0279804936703def6cd32f",
+       "generation": 1,
+       "output_sha256": "23a29ba8a192c5aac1a90130812e0a427bec4536e7645913484ffb8db47e3d9f",
+       "reservation_id": "res-0ef980d0-73e3-5fae-814d-3313096e2eae",
+       "role": "dba",
+       "task_id": "0ef980d0-73e3-5fae-814d-3313096e2eae"
+      },
+      {
+       "agent": "lead:improvement",
+       "attempt": 1,
+       "execution_ref": "sha256:657c43c60423acd747511091d52f8b73facbc4ba0b83b6e8f92f0ec0e28a41d2",
+       "generation": 1,
+       "output_sha256": "419ee0bc368ba49de45f32e1fa1af1a10e19e80ee7f660f1190ecad2682c6521",
+       "reservation_id": "res-29980bb2-c7d5-597e-a513-b0bf854d4eeb",
+       "role": "improvement_lead",
+       "task_id": "29980bb2-c7d5-597e-a513-b0bf854d4eeb"
+      },
+      {
+       "agent": "lead:researcher",
+       "attempt": 1,
+       "execution_ref": "sha256:f78a9de17b80f00cd000c14c2d3479bf858e99cd2f917c27de15b63fae032fcb",
+       "generation": 1,
+       "output_sha256": "bc55d6cb07e4aec25a4c9a4f99094319737a76e1d19e10e5c261e2150373ea23",
+       "reservation_id": "res-5e8e1c66-3981-5e3d-b8e7-8b38b8e95e9d",
+       "role": "researcher",
+       "task_id": "5e8e1c66-3981-5e3d-b8e7-8b38b8e95e9d"
+      },
+      {
+       "agent": "lead:research",
+       "attempt": 1,
+       "execution_ref": "sha256:e402a86655e6cbcfba540c1d98ca7369ea51a6f0ee66c47e5a10b7adbc8fe6c2",
+       "generation": 1,
+       "output_sha256": "0bb55c353f7f6e38ac66e762724f27823321c019742c888298f9ab44bf479b11",
+       "reservation_id": "res-cfa5a8b4-2593-509e-9d0a-1993605b3c7d",
+       "role": "research_lead",
+       "task_id": "cfa5a8b4-2593-509e-9d0a-1993605b3c7d"
+      }
+     ]
+    },
+    "failure": {
+     "check": "council_field_invalid:improvement_lead.summary:too_long",
+     "execution_ref": "sha256:657c43c60423acd747511091d52f8b73facbc4ba0b83b6e8f92f0ec0e28a41d2",
+     "output_sha256": "419ee0bc368ba49de45f32e1fa1af1a10e19e80ee7f660f1190ecad2682c6521",
+     "role": "improvement_lead",
+     "task_id": "29980bb2-c7d5-597e-a513-b0bf854d4eeb"
+    },
+    "fence": [],
+    "id": "e22b6fca3d421d032a78b8c9e9ea1f6fb8ae0a99dd0fffacffe31b405e7a64ee:2",
+    "investigation": "e22b6fca3d421d032a78b8c9e9ea1f6fb8ae0a99dd0fffacffe31b405e7a64ee",
+    "mode": "settled_contract_failure_successor",
+    "predecessor": {
+     "config_sha256": "fef7b83ff2175c127e8611b0ed1c8f93974865581f7c4b026a3ec78b523f46af",
+     "cycle": "rp-001:001",
+     "dispatch": "e22b6fca3d421d032a78b8c9e9ea1f6fb8ae0a99dd0fffacffe31b405e7a64ee",
+     "lineage_request_sha256": null,
+     "lineage_version": 0,
+     "manifest_sha256": "7e56db9ace8f2ab6167fa650b55b8e4f07c3c7e4c3e26e829f8c0d7abd65143d",
+     "program": "rp-001",
+     "run_id": "rp-001.c001",
+     "snapshot_sha256": "3a8ead398c88e6d08125c762ef059aa1902a8fb30d49d51a16c6c7ac51098c96"
+    },
+    "proof": "settled_contract_failure",
+    "recovered": true,
+    "replacement": {
+     "config_sha256": "f0233d88abd5b4d32c34ff1dcb674879fbe0ceba0a4f96607f47e75bee8f7f1e",
+     "cycle": null,
+     "dispatch": "e22b6fca3d421d032a78b8c9e9ea1f6fb8ae0a99dd0fffacffe31b405e7a64ee.recovery-2",
+     "program": "rp-002"
+    },
+    "request_sha256": "4cfcaf9e2b04a873d8160aad88a5c558d68db94969ee86e79bc97c7410ef5eb5",
+    "requested_at": "2028-01-01T00:00:00+00:00",
+    "state": "authorized",
+    "updated_at": "2028-01-01T00:00:00+00:00",
+    "version": 2
+   },
+   "secret_in_result": false,
+   "successor_tick": {
+    "investigation": "e22b6fca3d421d032a78b8c9e9ea1f6fb8ae0a99dd0fffacffe31b405e7a64ee",
+    "reason_code": "fixture_accepted",
+    "result": "accepted",
+    "run_id": "rp-002.c001",
+    "selected": "inv-e22b6fca3d421d032a78b8c9"
+   },
+   "summary_length": 6046,
+   "views_after_claim": {
+    "ids": [
+     "e22b6fca3d421d032a78b8c9e9ea1f6fb8ae0a99dd0fffacffe31b405e7a64ee",
+     "e22b6fca3d421d032a78b8c9e9ea1f6fb8ae0a99dd0fffacffe31b405e7a64ee.recovery-2"
+    ],
+    "initial_current": false,
+    "second_current": true,
+    "supersedes": {
+     "cycle": "rp-001:001",
+     "dispatch": "e22b6fca3d421d032a78b8c9e9ea1f6fb8ae0a99dd0fffacffe31b405e7a64ee",
+     "manifest_sha256": "7e56db9ace8f2ab6167fa650b55b8e4f07c3c7e4c3e26e829f8c0d7abd65143d",
+     "program": "rp-001",
+     "run_id": "rp-001.c001",
+     "snapshot_sha256": "3a8ead398c88e6d08125c762ef059aa1902a8fb30d49d51a16c6c7ac51098c96"
+    }
+   }
+  },
+  "test_postgres_contract_successor_requests_serialize_to_one_authorization": {
+   "unreachable": "unreachable: PostgreSQL (step 8 .pg units)"
+  },
+  "test_the_cli_contract_successor_reads_the_artifact_store_and_builds_no_bus": {
+   "unreachable": "unreachable: CLI entry (S10)"
+  },
+  "test_the_contract_request_is_strict[check_dba_summary]": {
+   "no_contract_successor": true,
+   "recover": {
+    "canary_in_message": false,
+    "field": "failure.check",
+    "nothing_written": true,
+    "raised": "ProgramRefused",
+    "reason_code": "recovery_request_invalid",
+    "store_after": "5175266092757faf1390806208ca1c423e2f62553f915043aaf6e21af4fd0c65",
+    "store_before": "5175266092757faf1390806208ca1c423e2f62553f915043aaf6e21af4fd0c65"
+   }
+  },
+  "test_the_contract_request_is_strict[check_legacy_code]": {
+   "no_contract_successor": true,
+   "recover": {
+    "canary_in_message": false,
+    "field": "failure.check",
+    "nothing_written": true,
+    "raised": "ProgramRefused",
+    "reason_code": "recovery_request_invalid",
+    "store_after": "5175266092757faf1390806208ca1c423e2f62553f915043aaf6e21af4fd0c65",
+    "store_before": "5175266092757faf1390806208ca1c423e2f62553f915043aaf6e21af4fd0c65"
+   }
+  },
+  "test_the_contract_request_is_strict[execution_ref_not_a_ref]": {
+   "no_contract_successor": true,
+   "recover": {
+    "canary_in_message": false,
+    "field": "failure.execution_ref",
+    "nothing_written": true,
+    "raised": "ProgramRefused",
+    "reason_code": "recovery_request_invalid",
+    "store_after": "5175266092757faf1390806208ca1c423e2f62553f915043aaf6e21af4fd0c65",
+    "store_before": "5175266092757faf1390806208ca1c423e2f62553f915043aaf6e21af4fd0c65"
+   }
+  },
+  "test_the_contract_request_is_strict[failure_extra]": {
+   "no_contract_successor": true,
+   "recover": {
+    "canary_in_message": false,
+    "field": "failure",
+    "nothing_written": true,
+    "raised": "ProgramRefused",
+    "reason_code": "recovery_request_invalid",
+    "store_after": "5175266092757faf1390806208ca1c423e2f62553f915043aaf6e21af4fd0c65",
+    "store_before": "5175266092757faf1390806208ca1c423e2f62553f915043aaf6e21af4fd0c65"
+   }
+  },
+  "test_the_contract_request_is_strict[mode_read_only]": {
+   "no_contract_successor": true,
+   "recover": {
+    "canary_in_message": false,
+    "field": "mode",
+    "nothing_written": true,
+    "raised": "ProgramRefused",
+    "reason_code": "recovery_request_invalid",
+    "store_after": "5175266092757faf1390806208ca1c423e2f62553f915043aaf6e21af4fd0c65",
+    "store_before": "5175266092757faf1390806208ca1c423e2f62553f915043aaf6e21af4fd0c65"
+   }
+  },
+  "test_the_contract_request_is_strict[predecessor_dispatch_replacement]": {
+   "no_contract_successor": true,
+   "recover": {
+    "canary_in_message": false,
+    "field": "predecessor.dispatch",
+    "nothing_written": true,
+    "raised": "ProgramRefused",
+    "reason_code": "recovery_request_invalid",
+    "store_after": "5175266092757faf1390806208ca1c423e2f62553f915043aaf6e21af4fd0c65",
+    "store_before": "5175266092757faf1390806208ca1c423e2f62553f915043aaf6e21af4fd0c65"
+   }
+  },
+  "test_the_contract_request_is_strict[replacement_is_the_failed_program]": {
+   "no_contract_successor": true,
+   "recover": {
+    "canary_in_message": false,
+    "field": "replacement.program",
+    "nothing_written": true,
+    "raised": "ProgramRefused",
+    "reason_code": "recovery_request_invalid",
+    "store_after": "5175266092757faf1390806208ca1c423e2f62553f915043aaf6e21af4fd0c65",
+    "store_before": "5175266092757faf1390806208ca1c423e2f62553f915043aaf6e21af4fd0c65"
+   }
+  },
+  "test_the_contract_request_is_strict[role_conductor]": {
+   "no_contract_successor": true,
+   "recover": {
+    "canary_in_message": false,
+    "field": "failure.role",
+    "nothing_written": true,
+    "raised": "ProgramRefused",
+    "reason_code": "recovery_request_invalid",
+    "store_after": "5175266092757faf1390806208ca1c423e2f62553f915043aaf6e21af4fd0c65",
+    "store_before": "5175266092757faf1390806208ca1c423e2f62553f915043aaf6e21af4fd0c65"
+   }
+  },
+  "test_the_contract_request_is_strict[role_dba_check_dba]": {
+   "no_contract_successor": true,
+   "recover": {
+    "canary_in_message": false,
+    "field": "failure.role",
+    "nothing_written": true,
+    "raised": "ProgramRefused",
+    "reason_code": "recovery_request_invalid",
+    "store_after": "5175266092757faf1390806208ca1c423e2f62553f915043aaf6e21af4fd0c65",
+    "store_before": "5175266092757faf1390806208ca1c423e2f62553f915043aaf6e21af4fd0c65"
+   }
+  },
+  "test_the_contract_request_is_strict[version_0_with_lineage_sha]": {
+   "no_contract_successor": true,
+   "recover": {
+    "canary_in_message": false,
+    "field": "predecessor.lineage_request_sha256",
+    "nothing_written": true,
+    "raised": "ProgramRefused",
+    "reason_code": "recovery_request_invalid",
+    "store_after": "5175266092757faf1390806208ca1c423e2f62553f915043aaf6e21af4fd0c65",
+    "store_before": "5175266092757faf1390806208ca1c423e2f62553f915043aaf6e21af4fd0c65"
+   }
+  },
+  "test_the_fixture_is_the_actual_shaped_settled_four_role_contract_failure[current]": {
+   "dispatch": {
+    "result": "failed",
+    "result_reason": "council_field_invalid"
+   },
+   "executor_calls": [
+    "lead:researcher",
+    "lead:dba",
+    "lead:research",
+    "lead:improvement"
+   ],
+   "recovery": null,
+   "reservation_statuses": [
+    "settled",
+    "settled",
+    "settled",
+    "settled"
+   ],
+   "resume": {
+    "canary_in_message": false,
+    "field": null,
+    "nothing_written": true,
+    "raised": "ProgramRefused",
+    "reason_code": "program_blocked",
+    "store_after": "3f45f3fd57f9d667f7199968d252e32cfe5b5ed3be672928157ba3bd7c6ef60a",
+    "store_before": "3f45f3fd57f9d667f7199968d252e32cfe5b5ed3be672928157ba3bd7c6ef60a"
+   },
+   "roles": [
+    "dba",
+    "improvement_lead",
+    "research_lead",
+    "researcher"
+   ],
+   "run": {
+    "reason_code": "council_field_invalid:improvement_lead.summary:too_long",
+    "stage": "improvement_lead",
+    "status": "failed"
+   },
+   "session": {
+    "decision_event_id": null,
+    "version": 1
+   },
+   "starts": {
+    "reserved": 4,
+    "settled": 4
+   },
+   "strict_transport_mode": {
+    "canary_in_message": false,
+    "field": "failed",
+    "nothing_written": true,
+    "raised": "ProgramRefused",
+    "reason_code": "recovery_not_pre_provider",
+    "store_after": "5175266092757faf1390806208ca1c423e2f62553f915043aaf6e21af4fd0c65",
+    "store_before": "5175266092757faf1390806208ca1c423e2f62553f915043aaf6e21af4fd0c65"
+   },
+   "task_statuses": [
+    "succeeded",
+    "succeeded",
+    "succeeded",
+    "succeeded"
+   ]
+  },
+  "test_the_fixture_is_the_actual_shaped_settled_four_role_contract_failure[legacy]": {
+   "dispatch": {
+    "result": "failed",
+    "result_reason": "debate_refused"
+   },
+   "executor_calls": [
+    "lead:researcher",
+    "lead:dba",
+    "lead:research",
+    "lead:improvement"
+   ],
+   "recovery": null,
+   "reservation_statuses": [
+    "settled",
+    "settled",
+    "settled",
+    "settled"
+   ],
+   "resume": {
+    "canary_in_message": false,
+    "field": null,
+    "nothing_written": true,
+    "raised": "ProgramRefused",
+    "reason_code": "program_blocked",
+    "store_after": "d42290e7af1df9496d142b13ce70f84d1574e0f4d298c572337a7c4429494816",
+    "store_before": "d42290e7af1df9496d142b13ce70f84d1574e0f4d298c572337a7c4429494816"
+   },
+   "roles": [
+    "dba",
+    "improvement_lead",
+    "research_lead",
+    "researcher"
+   ],
+   "run": {
+    "reason_code": "debate_refused:ContractError",
+    "stage": "improvement_lead",
+    "status": "failed"
+   },
+   "session": {
+    "decision_event_id": null,
+    "version": 1
+   },
+   "starts": {
+    "reserved": 4,
+    "settled": 4
+   },
+   "strict_transport_mode": {
+    "canary_in_message": false,
+    "field": "failed",
+    "nothing_written": true,
+    "raised": "ProgramRefused",
+    "reason_code": "recovery_not_pre_provider",
+    "store_after": "4ccb82d835b6dbc4f2e568331f0c8265e8dd97d6e26e322d7e5c9757f6d79c49",
+    "store_before": "4ccb82d835b6dbc4f2e568331f0c8265e8dd97d6e26e322d7e5c9757f6d79c49"
+   },
+   "task_statuses": [
+    "succeeded",
+    "succeeded",
+    "succeeded",
+    "succeeded"
+   ]
+  },
+  "test_unsettled_unknown_effectful_or_unproven_contract_predecessors_refuse_and_write_nothing[conductor_entry]": {
+   "no_contract_successor": true,
+   "recover": {
+    "canary_in_message": false,
+    "field": "predecessor.run_id",
+    "nothing_written": true,
+    "raised": "ProgramRefused",
+    "reason_code": "recovery_effect_outside_read_only",
+    "store_after": "5d1b339af24ebb2d2a6e66cb1ab0412db81e3620c1414fa1c842f31d2b05e681",
+    "store_before": "5d1b339af24ebb2d2a6e66cb1ab0412db81e3620c1414fa1c842f31d2b05e681"
+   }
+  },
+  "test_unsettled_unknown_effectful_or_unproven_contract_predecessors_refuse_and_write_nothing[corrupt_artifact]": {
+   "no_contract_successor": true,
+   "recover": {
+    "canary_in_message": false,
+    "field": "predecessor.run_id",
+    "nothing_written": true,
+    "raised": "ProgramRefused",
+    "reason_code": "recovery_evidence_corrupt",
+    "store_after": "5175266092757faf1390806208ca1c423e2f62553f915043aaf6e21af4fd0c65",
+    "store_before": "5175266092757faf1390806208ca1c423e2f62553f915043aaf6e21af4fd0c65"
+   }
+  },
+  "test_unsettled_unknown_effectful_or_unproven_contract_predecessors_refuse_and_write_nothing[decision_recorded]": {
+   "no_contract_successor": true,
+   "recover": {
+    "canary_in_message": false,
+    "field": "predecessor.run_id",
+    "nothing_written": true,
+    "raised": "ProgramRefused",
+    "reason_code": "recovery_effect_outside_read_only",
+    "store_after": "2d29081cd9c3e801f457fd3a93f24f12533f2c5393143863577bfa3ce2036294",
+    "store_before": "2d29081cd9c3e801f457fd3a93f24f12533f2c5393143863577bfa3ce2036294"
+   }
+  },
+  "test_unsettled_unknown_effectful_or_unproven_contract_predecessors_refuse_and_write_nothing[missing_artifact]": {
+   "no_contract_successor": true,
+   "recover": {
+    "canary_in_message": false,
+    "field": "predecessor.run_id",
+    "nothing_written": true,
+    "raised": "ProgramRefused",
+    "reason_code": "recovery_evidence_unavailable",
+    "store_after": "5175266092757faf1390806208ca1c423e2f62553f915043aaf6e21af4fd0c65",
+    "store_before": "5175266092757faf1390806208ca1c423e2f62553f915043aaf6e21af4fd0c65"
+   }
+  },
+  "test_unsettled_unknown_effectful_or_unproven_contract_predecessors_refuse_and_write_nothing[reservation_unknown]": {
+   "no_contract_successor": true,
+   "recover": {
+    "canary_in_message": false,
+    "field": "predecessor.run_id",
+    "nothing_written": true,
+    "raised": "ProgramRefused",
+    "reason_code": "recovery_invocation_unsettled",
+    "store_after": "e9c70e7f28d51239e2051d5fa61f95d9e87414fc1199a13da3e270afddadcf5c",
+    "store_before": "e9c70e7f28d51239e2051d5fa61f95d9e87414fc1199a13da3e270afddadcf5c"
+   }
+  },
+  "test_unsettled_unknown_effectful_or_unproven_contract_predecessors_refuse_and_write_nothing[task_failed]": {
+   "no_contract_successor": true,
+   "recover": {
+    "canary_in_message": false,
+    "field": "predecessor.run_id",
+    "nothing_written": true,
+    "raised": "ProgramRefused",
+    "reason_code": "recovery_effect_unknown",
+    "store_after": "19eb696b49b192ac9440fb5f0b18dc7a2a704d42ab117dfba07dfb312388c59f",
+    "store_before": "19eb696b49b192ac9440fb5f0b18dc7a2a704d42ab117dfba07dfb312388c59f"
+   }
+  },
+  "test_unsettled_unknown_effectful_or_unproven_contract_predecessors_refuse_and_write_nothing[task_running]": {
+   "no_contract_successor": true,
+   "recover": {
+    "canary_in_message": false,
+    "field": "predecessor.run_id",
+    "nothing_written": true,
+    "raised": "ProgramRefused",
+    "reason_code": "recovery_predecessor_active",
+    "store_after": "082c79d99e91d1d2e881dd53694abcecab835dd35f2f116eae2f068c91d7fd2a",
+    "store_before": "082c79d99e91d1d2e881dd53694abcecab835dd35f2f116eae2f068c91d7fd2a"
+   }
+  },
+  "test_unsettled_unknown_effectful_or_unproven_contract_predecessors_refuse_and_write_nothing[terminated]": {
+   "no_contract_successor": true,
+   "recover": {
+    "canary_in_message": false,
+    "field": "predecessor.run_id",
+    "nothing_written": true,
+    "raised": "ProgramRefused",
+    "reason_code": "recovery_effect_unknown",
+    "store_after": "8ebf8020569006ec3051279519b91efb7fee52555d6e73e5008eb48c1ca88cfb",
+    "store_before": "8ebf8020569006ec3051279519b91efb7fee52555d6e73e5008eb48c1ca88cfb"
+   }
+  },
+  "test_unsettled_unknown_effectful_or_unproven_contract_predecessors_refuse_and_write_nothing[worker_entry]": {
+   "no_contract_successor": true,
+   "recover": {
+    "canary_in_message": false,
+    "field": "predecessor.run_id",
+    "nothing_written": true,
+    "raised": "ProgramRefused",
+    "reason_code": "recovery_effect_outside_read_only",
+    "store_after": "19215ecb2718b483fb95ce47168c4c5012edaf2d45eeb0d525a8e3966c8d65cc",
+    "store_before": "19215ecb2718b483fb95ce47168c4c5012edaf2d45eeb0d525a8e3966c8d65cc"
+   }
+  }
+ }
+}

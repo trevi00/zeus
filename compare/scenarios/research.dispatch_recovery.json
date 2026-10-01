@@ -1,0 +1,9 @@
+{
+ "family": "research.dispatch_recovery",
+ "description": "S8 failed-dispatch recovery of M7 ResearchProgram.recover_dispatch and its family (the owner request that fences the unsent assignment and authorizes one replacement, the explicit execution_revocation mode, the settled read-only successor and the settled contract-failure successor, _revoke_dispatch/_succeed_dispatch/_successor_replay/_recovery_check, _lineage/_authorized_successor/_revocation_held/_refuse_scope_lineage, the read-only TransportProbe and the domain transport rules), characterized before the research program move: every refusal with the store digest before and after, the cached replays, the held chains, the sequential forms of the concurrent M7 tests; the REAL CouncilRun, Workflow and outbox relay over MemoryStore, LABELLED doubles (s8_research_program and labelled transport/executor/evidence stand-ins), the PostgreSQL, CLI-entry and real-bus tests recorded as unreachable",
+ "reference_driver": "drivers/reference/s8_dispatch_recovery.py",
+ "target_driver": null,
+ "golden": "goldens/reference/research.dispatch_recovery.json",
+ "slice": "S8",
+ "target_status": "pending: S8 step 3 (research program move)"
+}
