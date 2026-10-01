@@ -100,14 +100,15 @@ S7_FAMILIES = {"review.releases_queue", "delivery.registry", "delivery.stages", 
                "delivery.host_migration_cli", "delivery.migration_evidence_cli",
                "delivery.fleet_recovery_collectors", "delivery.restore.pg", "delivery.tooling"}
 S8_FAMILIES = {"research.program_tick", "research.capture", "research.program_records", "research.dispatch_recovery", "research.sources",
-               "intake.portfolio", "research.dge", "evidence.inspections", "research.autonomous", "research.audit_core", "research.audit_progress", "research.program_records"}
+               "intake.portfolio", "research.dge", "evidence.inspections", "research.autonomous", "research.audit_core", "research.audit_progress"}
 S7_IMPLEMENTED = {"delivery.tooling", "delivery.restore.pg", "delivery.fleet_recovery_collectors", "delivery.release_runner", "delivery.canaries", "delivery.migration_evidence", "delivery.host_migration_transfer", "delivery.host_targets", "delivery.managed_runtime", "delivery.managed_systemd",
                   "review.releases_queue", "delivery.registry", "delivery.stages",
                   "delivery.owner_commands", "delivery.migration", "delivery.host_migrations",
                   "coordination.owner_actions_delivery", "coordination.owner_actions_canary",
                   "coordination.owner_actions_migration", "effects.delivery_units", "effects.delivery_units.pg"}
 S8_IMPLEMENTED = {"intake.portfolio", "research.dge", "evidence.inspections", "research.autonomous", "research.audit_core",
-                  "research.audit_progress"}
+                  "research.audit_progress",
+                  "research.program_records"}
 IMPLEMENTED = {**{f: "S1" for f in S1_FAMILIES}, **{f: "S2" for f in S2_FAMILIES},
                **{f: "S3" for f in S3_IMPLEMENTED}, **{f: "S4" for f in S4_IMPLEMENTED},
                **{f: "S5" for f in S5_IMPLEMENTED}, **{f: "S6" for f in S6_IMPLEMENTED},
