@@ -26,7 +26,10 @@ from codex_harness.coordination.application.decisions import PendingDecisions  #
 from codex_harness.coordination.application.outbox import Outbox  # noqa: E402
 from codex_harness.intake.application.portfolio import Portfolio  # noqa: E402
 from codex_harness.intake.application.progress_candidates import ProgressCandidates  # noqa: E402
-from codex_harness.intake.domain.portfolio import BUCKET_INVESTIGATIONS, RESEARCH_REQUIRED  # noqa: E402
+from codex_harness.intake.domain.portfolio import (  # noqa: E402
+    BUCKET_INVESTIGATIONS,
+    RESEARCH_REQUIRED,
+)
 from codex_harness.kernel import ids, message  # noqa: E402
 from codex_harness.kernel.errors import ContractError  # noqa: E402
 from codex_harness.kernel.ids import canonical, digest, utcnow  # noqa: E402
