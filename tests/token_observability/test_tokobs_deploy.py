@@ -160,8 +160,12 @@ def test_a55_grafana_service(compose):
     env = grafana["environment"]
     assert env["GF_SECURITY_ADMIN_PASSWORD"] == "$$__file{/run/secrets/grafana-admin.pass}"
     for key in ("GF_AUTH_ANONYMOUS_ENABLED", "GF_ANALYTICS_REPORTING_ENABLED", "GF_ANALYTICS_CHECK_FOR_UPDATES",
-                "GF_ANALYTICS_CHECK_FOR_PLUGIN_UPDATES", "GF_PLUGINS_PLUGIN_ADMIN_ENABLED"):
+                "GF_ANALYTICS_CHECK_FOR_PLUGIN_UPDATES", "GF_PLUGINS_PLUGIN_ADMIN_ENABLED",
+                "GF_PLUGINS_PREINSTALL_AUTO_UPDATE"):
         assert env[key] == "false", key
+    # A56 run 1: the default background installer updated the bundled plugins from grafana.com and broke the
+    # prometheus datasource on the read-only root; preinstall stays disabled.
+    assert env["GF_PLUGINS_PREINSTALL_DISABLED"] == "true"
     assert env["GF_LOG_MODE"] == "console"
     assert mounts(grafana) == [("tokobs-grafana", "/var/lib/grafana", False),
                                ("./grafana/provisioning", "/etc/grafana/provisioning", True),

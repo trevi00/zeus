@@ -122,6 +122,13 @@ services:
       GF_ANALYTICS_CHECK_FOR_UPDATES: "false"
       GF_ANALYTICS_CHECK_FOR_PLUGIN_UPDATES: "false"
       GF_PLUGINS_PLUGIN_ADMIN_ENABLED: "false"
+      # Owner fix after the first A56 run (2026-10-01): with the defaults of the pinned image (conf/defaults.ini:
+      # preinstall_auto_update = true), the background installer "updates" the bundled datasource plugins from
+      # grafana.com at startup. That defeats the image pin, needs egress, and on the read-only root it stopped the
+      # bundled prometheus plugin and then failed to unlink it ("Unable to find datasource plugin"). The bundled
+      # plugins load from plugins-bundled without the installer.
+      GF_PLUGINS_PREINSTALL_DISABLED: "true"
+      GF_PLUGINS_PREINSTALL_AUTO_UPDATE: "false"
       GF_LOG_MODE: console  # the read-only root filesystem forbids file logs
     volumes:
       - type: volume
