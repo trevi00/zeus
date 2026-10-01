@@ -943,11 +943,11 @@ def owner_qualified_canary(target: dict, descriptor: dict, startup: dict, *, pla
             "reason_code": None if receipt.get("passed") else "canary_owner_receipt_failed"}
 
 
-def canary_checks(store=None) -> dict:
+def canary_checks(store=None, *, facts=None) -> dict:
     """The fixed check id -> check map. A plan selects one by id and supplies nothing else."""
     return {CANARY_STARTUP: startup_identity_canary,
             CANARY_COLLECT: lambda target, descriptor, startup: collect_monitor_canary(
-                target, descriptor, startup, store=store),
+                target, descriptor, startup, store=store, facts=facts),
             CANARY_FLEET: owner_qualified_canary}
 
 
