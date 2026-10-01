@@ -101,3 +101,24 @@ Files: `deploy/observability/**`, `tools/token_observability/tokobs/deploy_lint.
 | A27 / A28 rules part | `test_a27_no_rule_combines_…`, `test_a28_no_charge_or_bill_metric_…`, `test_the_rule_file_matches_design_5_1` (dashboard part is W2b) | pytest |
 | A25, A26, A43, A29 | `deploy/observability/prometheus/rules/tokobs.test.yml` (A25 exporter-down and scan-stale, A26 ratio 0.25 + alert, A43 render-refused, A29 `ignoring(token_type) group_left` join) | owner-run: promtool — NOT run in this pilot |
 | A29 static config | `docker compose config`, `promtool check config`, `promtool check rules` | owner-run: promtool / docker compose config — NOT run in this pilot |
+
+## W2b (dashboards, runbook, A56 connectivity test)
+
+Files: `deploy/observability/grafana/dashboards/{zeus-llm-usage,zeus-tokobs-health}.json`, `docs/observability/RUNBOOK.md`,
+`tests/token_observability/test_tokobs_{dashboards_w2,runbook,conntest}.py`. `provider-windows.json` stays in
+`tools/token_observability/dashboards/` (A54, not provisioned); the usage dashboard embeds its four panels verbatim.
+The recording rule is DESIGN §5.1's `zeus:llm_unknown_ratio:1d` (EFFICIENCY §2's `…usage_unknown_ratio…` is a slip).
+
+| Row | Test or file | Status |
+|---|---|---|
+| A25 panels show No data, not 0 | `test_a25_no_vector_zero_and_no_numeric_novalue`, `test_a25_every_data_quality_panel_says_no_data` (dashboards_w2) | pytest |
+| A25 rules (exporter down, scan stale) | `deploy/observability/prometheus/rules/tokobs.test.yml` | owner-run: promtool — NOT run in this pilot |
+| A26 | `tokobs.test.yml` | owner-run: promtool |
+| A27 dashboards | `test_a27_no_expression_combines_a_provider_metric_with_a_token_metric`, `test_a27_the_provider_window_panels_equal_provider_windows_json` | pytest |
+| A28 dashboards | `test_a28_cost_panels_are_titled_as_estimates_and_nothing_says_charge_or_bill` | pytest |
+| A29 (dashboards part) | `test_every_expression_uses_a_rendered_metric_a_recording_rule_or_up`, `test_dashboard_identity_and_datasource`, `test_usage_variables_…`, `test_usage_rows_follow_design_section_6_order`, `test_dashboards_directory_holds_exactly_the_two_provisioned_files`; always-visible shares: `test_the_unattributed_and_ambiguous_shares_are_always_visible` | pytest; `docker compose config` / `promtool check` stay owner-run |
+| A30 isolated cleanup | `test_tokobs_runbook.py` (`test_a30_*`, 7 tests over the fenced blocks of RUNBOOK.md) | pytest |
+| A54 | `test_tokobs_dashboards.py` (W1c) | pytest; the same panels are re-linted inside the usage dashboard by A27 |
+| A55 | W2a deploy tests; the conntest step 3 re-checks the resolved config | pytest / owner-run |
+| A56 connectivity | `test_tokobs_conntest.py::test_a56_isolated_connectivity` (12 named steps) | owner-run: needs Docker, `TOKOBS_CONNTEST=1`; skipped by default, NOT run in this pilot |
+| A57 | W2a deploy tests; conntest steps 3 and 10 reuse `lint_compose`/`lint_inspect` | pytest / owner-run |
