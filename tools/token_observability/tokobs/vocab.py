@@ -69,6 +69,13 @@ _VARIANT = re.compile(r"\[[^\]]*\]$")
 _VERSION = re.compile(r"^(\d{1,4})\.(\d{1,4})\.(\d{1,4})$")
 # D2: before 2.1.277 a resumed process started its totals at zero.
 RESUME_CUMULATIVE_SINCE = (2, 1, 277)
+# §3.7 / F3: the (major, minor) families characterized for the cumulative semantics (2.1.284-2.1.286 were measured;
+# every 2.1.x from RESUME_CUMULATIVE_SINCE shares them). A new major/minor is accepted only after a characterization
+# fixture passes (A31): add it here together with that fixture. Parseable is not supported.
+CHARACTERIZED_FAMILIES = frozenset({(2, 1)})
+SEMANTICS_RESTART_ZERO = "restart_zero"
+SEMANTICS_CUMULATIVE = "cumulative"
+SEMANTICS_UNCHARACTERIZED = "uncharacterized"
 
 
 def strip_variant(model: str) -> str:
@@ -112,6 +119,16 @@ def parse_version(raw: object) -> tuple[int, int, int] | None:
         return None
     match = _VERSION.match(raw.strip())
     return tuple(int(part) for part in match.groups()) if match else None  # type: ignore[return-value]
+
+
+def version_semantics(version: tuple[int, int, int]) -> str:
+    """The one characterized-version policy: D2's restart-at-zero before 2.1.277, the measured cumulative semantics
+    for the characterized families from there on, and `uncharacterized` for any other parseable major/minor."""
+    if version < RESUME_CUMULATIVE_SINCE:
+        return SEMANTICS_RESTART_ZERO
+    if version[:2] in CHARACTERIZED_FAMILIES:
+        return SEMANTICS_CUMULATIVE
+    return SEMANTICS_UNCHARACTERIZED
 
 
 def primary_reason(reasons: set[str] | frozenset[str]) -> str | None:

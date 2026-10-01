@@ -48,11 +48,13 @@ from .publication import (
 from .vocab import (
     ADVISOR_STATES,
     EXECUTOR_ROLE,
-    RESUME_CUMULATIVE_SINCE,
+    SEMANTICS_RESTART_ZERO,
+    SEMANTICS_UNCHARACTERIZED,
     TOKEN_TYPES,
     is_model_mismatch,
     normalize_model,
     parse_version,
+    version_semantics,
 )
 from .windows import observe as observe_rate
 from .windows import parse_ts
@@ -602,16 +604,19 @@ def finalize_claude(scan: Scan, inv: dict, path: Path, state: StreamState, task_
     external: set[str] = set()
     baseline = Baseline("zero")
     pred_state = "none"
+    version = parse_version(inv["cli_version"])
+    semantics = version_semantics(version) if version is not None else None
+    if semantics == SEMANTICS_UNCHARACTERIZED:
+        external.add("unknown_version_semantics")  # F3, §3.7: parseable is not supported; M only, no remainder
     if inv["mode"] == "resumed" and inv["predecessor_id"]:
         pred = _predecessor(scan, inv)
         if pred is None:
             conn.execute("UPDATE invocations SET lifecycle_state='awaiting_predecessor' WHERE id=?", (inv["id"],))
             return False
         pred_state, pred_cum = pred
-        version = parse_version(inv["cli_version"])
         if version is None:
             external.add("unknown_version_semantics")  # §3.7: the main-loop M is still published
-        if version is not None and version < RESUME_CUMULATIVE_SINCE:
+        if semantics == SEMANTICS_RESTART_ZERO:
             baseline = Baseline("zero")  # D2: totals restart at zero for such resumed processes
         elif pred_state == "proven":
             baseline = Baseline("cumulative", pred_cum)
