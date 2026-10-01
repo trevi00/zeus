@@ -41,6 +41,7 @@ BINDINGS = "buzz_bindings"
 HEADS = "buzz_heads"
 FOREIGN_CORRECTED = "foreign_revision_corrected"
 UNVERIFIED = "unverified_foreign_revision"
+SKIP, RETRY, NORMAL = "skip", "retry", "normal"  # `_state_eligibility`
 PAGE = 500  # the page asked of `transitions_after`
 RENDERS_KEPT = 8  # rendering digests remembered per subject
 _UNSTABLE = frozenset({"version", "generated_at", "observed_at"})  # not part of "the rendering": see `_stable`
@@ -132,14 +133,11 @@ class BuzzProjection:
     def _plan_state(self, tx, ctx: _Context, state: _State, rows: list, probes: dict, counts: dict) -> bool:
         """False when the outbox deferred (stop planning states this pass)."""
         head = self._head(tx, state.subject, rows)
-        retry = False
-        if head["condition"] == UNVERIFIED:
-            current = probes.get(state.subject)
-            if current is None or current["id"] == head["foreign_head_id"]:
-                counts["unverified"] += 1  # Q1: not retried until the relay head changes
-                return True
-            head.update(condition=None, foreign_head_id=None)  # the head changed: say it again, even if unchanged
-            retry = True
+        eligibility = self._state_eligibility(head, probes.get(state.subject))
+        if eligibility == SKIP:
+            counts["unverified"] += 1  # Q1: not retried until the relay head changes
+            return True
+        retry = eligibility == RETRY
         latest = head["latest"]
         if not retry and latest is not None and head["renders"].get(str(latest["version"])) == state.stable:
             counts["unchanged"] += 1  # Q4: an unchanged rendering produces nothing
@@ -207,18 +205,33 @@ class BuzzProjection:
                            foreign_head_id=head_event["id"] if condition == FOREIGN_CORRECTED else head["foreign_head_id"])
         return {"version": version, "unsigned": unsigned}
 
+    @staticmethod
+    def _state_eligibility(head: dict, probe: dict | None) -> str:
+        """The ONE unverified-head rule of planning and regeneration (Q1, §6.1.5): SKIP while the subject is recorded
+        `unverified_foreign_revision` and the relay head is unknown or unchanged; RETRY (the condition is cleared on
+        `head`, so the next version is said again even if the rendering is unchanged) once the head positively
+        changed; NORMAL otherwise."""
+        if head["condition"] != UNVERIFIED:
+            return NORMAL
+        if probe is None or probe["id"] == head["foreign_head_id"]:
+            return SKIP
+        head.update(condition=None, foreign_head_id=None)
+        return RETRY
+
     # -- regenerate (Q5, Q6) ------------------------------------------------------------------------------
 
     def regenerate(self, cls: str, after: list | None) -> list[dict]:
         """The deferred work of `cls` after the outbox watermark `[subject, version]`, oldest first.
 
         Append: roots and receipts in the plan's global order, from the audit and the task rows. State: the org and
-        the cards of the current Zeus state, with no coalescing wait (this is catch-up) but with the unchanged rule.
+        the cards of the current Zeus state, with no coalescing wait (this is catch-up) but with the unchanged rule and
+        the same unverified-head rule as `plan` (the relay head is probed first, outside the transaction).
         """
         if self.generation is None or cls not in ("append", "state"):
             return []
         mark = after[0] if after else None
         out = []
+        probes = self._unverified_heads() if cls == "state" else {}  # relay calls stay outside the transaction
         with self.store.transaction() as tx:
             self.outbox.lease.require_current(tx, self.generation)
             ctx = self._context(tx)
@@ -238,8 +251,12 @@ class BuzzProjection:
             start = subjects.index(mark) + 1 if mark in subjects else 0
             for state in states[start:]:
                 head = self._head(tx, state.subject, index.get(state.subject, []))
+                eligibility = self._state_eligibility(head, probes.get(state.subject))
+                if eligibility == SKIP:
+                    continue  # Q1: no op and no render claim over an unverified head; later subjects stay recoverable
                 latest = head["latest"]
-                if latest is not None and head["renders"].get(str(latest["version"])) == state.stable:
+                if eligibility == NORMAL and latest is not None and head["renders"].get(
+                        str(latest["version"])) == state.stable:
                     continue
                 version, op, prev = self._next(head)
                 try:

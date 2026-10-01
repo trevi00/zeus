@@ -500,6 +500,95 @@ def test_m3_a_deferred_state_is_regenerated_after_capacity_frees(tmp_path):
     assert p.plan()["cards"] == 0  # the regenerated rendering is already queued: an unchanged state is nothing
 
 
+# ---- F1 (review round 1): deferred state recovery applies the unverified-head rule of normal planning -------------
+def unverified_world(p):
+    """org, t1 (unverified: a foreign delete, head unchanged) and t2, capacity 1: the org was planned and acknowledged,
+    t1 skipped and t2 deferred. Returns `(d_of_t1, the_foreign_head)`."""
+    d = lose_the_cas(p)
+    foreign = p.relay.heads[d] = p.foreign(d, "delete")
+    p.deliver()
+    assert p.head("task:t1")["condition"] == "unverified_foreign_revision"
+    p.models.views["t2"] = view("t2")
+    p.step()
+    p.plan()
+    p.deliver()
+    p.tick(10)
+    p.models.views["t2"] = view("t2", status="blocked", updated_at=p.now)
+    p.models.views["t1"] = view("t1", status="running", updated_at=p.now)
+    p.models.roles[0]["status"]["state"] = "busy"
+    p.outbox.outbox_max = 1
+    assert p.plan()["deferred"] == 1  # the org fits, t1 is skipped, t2 is deferred
+    p.deliver()  # the org is acknowledged: the slot is free
+    return d, foreign
+
+
+def test_f1_recovery_publishes_nothing_over_an_unverified_head_and_recovers_the_later_subject(p):
+    d, foreign = unverified_world(p)
+    before, published = p.head("task:t1"), len(p.relay.published)
+    assert p.outbox.recover_deferred(p.gen, p.proj.regenerate) == {"state": 1}
+    p.deliver()
+    assert not [e for e in p.relay.published[published:] if ["d", d] in e["tags"]]  # zero t1 events
+    assert [r["version"] for r in p.rows("task:t1")] == [1, 2]
+    assert p.head("task:t1") == before and p.head("task:t1")["condition"] == "unverified_foreign_revision"
+    assert [r["version"] for r in p.rows("task:t2")] == [1, 2] and p.row("task:t2", 2)["status"] == "acknowledged"
+    assert p.plan()["unverified"] == 1  # the next plan still refuses it (no render claim was recorded)
+
+
+@pytest.mark.parametrize("failure", ["error", "no_eose", "empty"])
+def test_f1_an_unreadable_or_empty_relay_head_is_unknown_so_recovery_skips_the_subject(p, failure):
+    d, foreign = unverified_world(p)
+    before = p.head("task:t1")
+    if failure == "error":
+        p.relay.query_error = True
+    elif failure == "no_eose":
+        p.relay.head_ended = "closed"
+    else:
+        del p.relay.heads[d]
+    assert p.outbox.recover_deferred(p.gen, p.proj.regenerate) == {"state": 1}
+    assert [r["version"] for r in p.rows("task:t1")] == [1, 2] and p.head("task:t1") == before
+    assert [r["version"] for r in p.rows("task:t2")] == [1, 2]
+
+
+def test_f1_a_positively_changed_head_re_enters_the_cas_path_in_recovery(p):
+    d, foreign = unverified_world(p)
+    changed = p.relay.heads[d] = p.foreign(d, "update", created_at=p.now + 1)
+    assert changed["id"] != foreign["id"]
+    assert p.outbox.recover_deferred(p.gen, p.proj.regenerate) == {"state": 1}  # t1 first (oldest); t2 stays deferred
+    v3 = p.row("task:t1", 3)
+    assert v3["status"] == "pending" and tags(v3, "prev") == [[p.row("task:t1", 1)["event_id"]]]
+    assert p.head("task:t1")["condition"] is None and p.row("task:t2", 2) is None
+
+
+def test_f1_a_stale_generation_regenerates_and_commits_nothing(p):
+    unverified_world(p)
+    with p.w.store.transaction() as tx:
+        assert p.w.lease.acquire(tx, "bridge-2", NOW + 10_000, 600) != p.gen
+    before = p.w.snapshot()
+    with pytest.raises(ContractError):
+        p.proj.regenerate("state", ["org", 1])
+    assert p.w.snapshot() == before
+
+
+def test_f1_ordinary_capacity_recovery_regenerates_the_eligible_subjects_oldest_first(tmp_path):
+    p = P(tmp_path)
+    p.models.views["t2"] = view("t2")
+    p.bind()
+    p.step()
+    p.deliver()
+    p.tick(10)
+    for name in ("t1", "t2"):
+        p.models.views[name] = view(name, status="blocked", updated_at=p.now)
+    p.models.roles[0]["status"]["state"] = "busy"
+    p.outbox.outbox_max = 1
+    assert p.plan()["deferred"] == 1  # the org fits; t1 and t2 wait
+    p.deliver()
+    assert p.outbox.recover_deferred(p.gen, p.proj.regenerate) == {"state": 1}
+    p.deliver()
+    assert p.row("task:t1", 2) is not None and p.row("task:t2", 2) is None
+    assert p.outbox.recover_deferred(p.gen, p.proj.regenerate) == {"state": 1}
+    assert p.row("task:t2", 2)["status"] == "pending" and p.rows(bucket="buzz_alerts")[0]["state"] == "resolved"
+
+
 # ---- m4 the canonical root P1 (Q3) ---------------------------------------------------------------------------------
 def test_m4_the_first_acknowledged_root_binds_a_later_attempt_is_an_alias_and_never_rebinds(p):
     p.models.roles = None  # no org snapshot competes for the scripted relay answers
