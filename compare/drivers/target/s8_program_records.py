@@ -51,7 +51,7 @@ from s1_target import PortClock  # noqa: E402
 CLOCK = determinism.FakeClock(datetime(2026, 9, 22, tzinfo=timezone.utc))
 IDS = determinism.FakeIds()
 ids.SYSTEM_CLOCK = PortClock(CLOCK)
-application.uuid4 = IDS.uuid4   # the default cycle owner token: the harness id source, as the reference run's `determinism.install`
+application.uuid4 = IDS.uuid4   # the default cycle owner token: the harness id source, as the reference run installed it
 
 
 class ResearchProgram(application.ResearchProgram):
