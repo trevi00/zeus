@@ -169,8 +169,16 @@ CREATE TABLE s9_sources(name TEXT PRIMARY KEY, ok INTEGER NOT NULL);
 ALTER TABLE tasks ADD COLUMN backfill INTEGER NOT NULL DEFAULT 0;
 """
 
-MIGRATIONS: tuple[tuple[int, str], ...] = ((1, _MIGRATION_1), (2, _MIGRATION_2))
-_APPEND_ONLY_BY_MIGRATION = {1: _APPEND_ONLY, 2: ("unbound_contributions", "reasoning_contributions")}
+# W1c (migration 3, F1): the parse state of an UNNAMED read alias that must survive between scans and restarts: the
+# Claude `init` session/model and the Codex thread. One row per read alias, written in the same transaction as the
+# alias's offset; a new read identity is a new alias row and therefore starts without it (DESIGN §3.1).
+_MIGRATION_3 = """
+CREATE TABLE alias_state(
+  alias_id INTEGER PRIMARY KEY REFERENCES stream_aliases(alias_id), session_id TEXT, model TEXT, thread_id TEXT);
+"""
+
+MIGRATIONS: tuple[tuple[int, str], ...] = ((1, _MIGRATION_1), (2, _MIGRATION_2), (3, _MIGRATION_3))
+_APPEND_ONLY_BY_MIGRATION = {1: _APPEND_ONLY, 2: ("unbound_contributions", "reasoning_contributions"), 3: ()}
 SCHEMA_VERSION = MIGRATIONS[-1][0]
 
 

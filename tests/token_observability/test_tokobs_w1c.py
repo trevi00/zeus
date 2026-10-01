@@ -3,6 +3,8 @@
 Each test here fails on 459dcd5. Every number is derived by hand in the test body.
 """
 
+import json
+
 import pytest
 from fixtures import (
     OPUS,
@@ -12,6 +14,9 @@ from fixtures import (
     assistant,
     claude_init,
     claude_result,
+    codex_thread_started,
+    codex_turn_completed,
+    codex_usage,
     entry,
     start_row,
     terminal_row,
@@ -138,3 +143,134 @@ def test_f3_one_policy_distinguishes_parseable_from_supported():
     assert version_semantics(parse_version("2.1.999")) == "cumulative"
     assert version_semantics(parse_version("2.2.0")) == "uncharacterized"
     assert version_semantics(parse_version("9.9.1")) == "uncharacterized"
+
+
+# ----------------------------------------------------------------------------- F1
+
+HORIZON = 14_400
+THREAD = "01a0e11e-synthetic-thread"
+CODEX_P0 = codex_usage(1000, 800, 100, 30)
+CODEX_P1 = codex_usage(1500, 1200, 160, 40)  # the unnamed stream's interval over P0: output 60
+CODEX_IDLE = 2 * 900 + 60
+
+
+def _append(path, *lines):
+    with path.open("a") as handle:
+        for line in lines:
+            handle.write(json.dumps(line, sort_keys=True) + "\n")
+
+
+def _claude_lines():
+    return (claude_init(model=SONNET), claude_result("x1", usage(0, 100, 0, 0), {SONNET: entry(0, 100, 0, 0)}))
+
+
+def _unbound_claude(rig):
+    return rig.sql("SELECT model, SUM(value) FROM unbound_contributions WHERE token_type='output' GROUP BY model")
+
+
+def test_f1_a_claude_alias_split_across_scans_publishes_the_fact_once_under_the_init_model(tmp_path):
+    rig = Rig(tmp_path)
+    init, result_line = _claude_lines()
+    path = rig.stream("fleet-split-events.jsonl", init)
+    rig.scan(advance=30)  # init only
+    rig.scan(advance=30)  # a collector restart: every scan opens the ledger anew
+    _append(path, result_line)
+    rig.touch(path)
+    rig.scan(advance=30)
+    whole = rig.stream("fleet-whole-events.jsonl", init, result_line)  # a renamed complete copy
+    rig.touch(whole)
+    prom = rig.scan(advance=HORIZON + 100)
+    assert prom.sum("zeus_llm_tokens_total", token_type="output", task_class="identity_unavailable") == 100
+    assert _unbound_claude(rig) == [(SONNET, 100)]  # not 100 under `other` plus 100 under Sonnet
+    assert rig.sql("SELECT COUNT(*) FROM invocations")[0][0] == 0
+    assert prom.sum("zeus_llm_unknown_invocations_total") == 0
+    assert prom.sum("zeus_llm_tokens_total", token_type="output", task_class="identity_unavailable") == \
+        rig.scan(advance=60).sum("zeus_llm_tokens_total", token_type="output", task_class="identity_unavailable")
+
+
+def test_f1_the_split_result_is_read_in_bounded_chunks_with_the_same_totals(tmp_path):
+    rig = Rig(tmp_path)
+    init, result_line = _claude_lines()
+    path = rig.stream("fleet-chunk-events.jsonl", init, result_line)
+    rig.touch(path)
+    for _ in range(12):  # a one-line chunk per scan: the init is read several scans before the result
+        rig.scan(advance=30, max_read_bytes=64)
+    prom = rig.scan(advance=HORIZON + 100, max_read_bytes=64)
+    assert _unbound_claude(rig) == [(SONNET, 100)]
+    assert prom.sum("zeus_llm_tokens_total", token_type="output", task_class="identity_unavailable") == 100
+
+
+def test_f1_two_unbound_copies_with_different_provisional_labels_publish_one_fact(tmp_path):
+    rig = Rig(tmp_path)
+    init, result_line = _claude_lines()
+    with_init = rig.stream("fleet-a-events.jsonl", init, result_line)
+    without_init = rig.stream("fleet-b-events.jsonl", result_line)  # no init: the provisional label is `other`
+    rig.touch(with_init)
+    rig.touch(without_init)
+    prom = rig.scan(advance=HORIZON + 100)
+    assert prom.sum("zeus_llm_tokens_total", token_type="output") == 100
+    assert rig.sql("SELECT COUNT(*) FROM unbound_contributions WHERE token_type='output'") == [(1,)]
+
+
+def test_f1_a_new_read_identity_does_not_inherit_the_previous_context(tmp_path):
+    rig = Rig(tmp_path)
+    init, result_line = _claude_lines()
+    path = rig.stream("fleet-rot-events.jsonl", init)
+    rig.scan(advance=30)
+    path.unlink()
+    rig.stream("fleet-rot-events.jsonl", claude_result("y1", usage(0, 7, 0, 0), {OPUS: entry(0, 7, 0, 0)}))
+    rig.scan(advance=30)
+    rig.scan(advance=HORIZON + 100)
+    assert rig.sql("SELECT model, SUM(value) FROM unbound_contributions WHERE token_type='output' GROUP BY model") \
+        == [("other", 7)]  # the rotated file has no init of its own
+
+
+def test_f1_canonical_arrival_after_a_split_alias_publishes_nothing_twice(tmp_path):
+    rig = Rig(tmp_path)
+    init, result_line = _claude_lines()
+    path = rig.stream("fleet-split-events.jsonl", init)
+    rig.scan(advance=30)
+    _append(path, result_line)
+    rig.touch(path)
+    rig.scan(advance=HORIZON + 100)
+    assert _unbound_claude(rig) == [(SONNET, 100)]
+    rig.record("late-task", start_row("late-task", 1, rig.now - 100, advisor=None),
+               terminal_row("finished", 1, rig.now))
+    rig.events("late-task", 1, init, result_line)
+    prom = rig.scan(advance=30)
+    assert prom.sum("zeus_llm_tokens_total", token_type="output") == 100
+    assert prom.sum("zeus_llm_invocations_total") == 1  # the canonical outcome exists once
+
+
+def _codex_total(prom):
+    return prom.sum("zeus_llm_tokens_total", token_type="output")
+
+
+def _codex_run_x(rig):
+    rig.codex_script("x", resume=False)
+    rig.codex_events("x", codex_thread_started(THREAD), codex_turn_completed(CODEX_P0))
+
+
+def test_f1_a_codex_alias_split_after_thread_started_keeps_its_point(tmp_path):
+    whole = Rig(tmp_path / "whole")
+    _codex_run_x(whole)
+    path = whole.codex_events("unnamed", codex_thread_started(THREAD), codex_turn_completed(CODEX_P1))
+    whole.touch(path)
+    expected = _codex_total(whole.scan(advance=CODEX_IDLE))
+    assert expected == 100 + 60  # the named run's P0 and the unnamed stream's interval
+
+    rig = Rig(tmp_path / "split")
+    _codex_run_x(rig)
+    path = rig.codex_events("unnamed", codex_thread_started(THREAD))
+    rig.scan(advance=30)  # thread.started only
+    rig.scan(advance=30)  # a restart between the scans
+    _append(path, codex_turn_completed(CODEX_P1))
+    rig.touch(path)
+    prom = rig.scan(advance=CODEX_IDLE)
+    assert rig.sql("SELECT COUNT(*) FROM alias_codex_points") == [(1,)]  # 0 on 459dcd5
+    assert _codex_total(prom) == expected
+    copy = rig.codex_events("renamed", codex_thread_started(THREAD), codex_turn_completed(CODEX_P1))
+    rig.touch(copy)
+    again = rig.scan(advance=CODEX_IDLE)
+    assert _codex_total(again) == expected  # a duplicate copy adds nothing before or after the horizon
+    assert rig.sql("SELECT COUNT(*) FROM invocations")[0][0] == 1  # only the named run

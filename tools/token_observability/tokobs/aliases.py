@@ -36,6 +36,22 @@ from .vocab import (
 PROVIDER = "anthropic"
 
 
+def _load_state(conn, alias_id: int) -> tuple[str | None, str | None, str | None]:
+    """F1: (session, model, thread) parsed from earlier batches of this read alias."""
+    row = conn.execute("SELECT session_id,model,thread_id FROM alias_state WHERE alias_id=?", (alias_id,)).fetchone()
+    return row if row else (None, None, None)
+
+
+def _save_state(conn, alias_id: int, *, session: str | None = None, model: str | None = None,
+                thread: str | None = None) -> None:
+    """Persisted in the batch's transaction, next to the offset (`save_progress`), so a restart between two scans
+    resumes with the same init/thread context. Only values known so far overwrite; none is ever cleared."""
+    conn.execute("INSERT INTO alias_state(alias_id,session_id,model,thread_id) VALUES(?,?,?,?) "
+                 "ON CONFLICT(alias_id) DO UPDATE SET session_id=COALESCE(excluded.session_id, session_id), "
+                 "model=COALESCE(excluded.model, model), thread_id=COALESCE(excluded.thread_id, thread_id)",
+                 (alias_id, session, model, thread))
+
+
 def scan_claude_alias(scan: Scan, path: Path, source: str) -> None:
     """Parse result keys and usage only; publish nothing here."""
     conn = scan.conn
@@ -48,15 +64,17 @@ def scan_claude_alias(scan: Scan, path: Path, source: str) -> None:
         if read is None:
             return
         alias_id, offset, complete, state = read
-        model = "other"
+        session, model, _thread = _load_state(conn, alias_id)
+        model = model or "other"
         for line_offset, raw in iter_lines(complete, offset):
             obj = parse_line(raw)
             if obj is None:
                 note_malformed(conn, path, line_offset, raw, "line", None, source)
             elif obj["type"] == "system" and obj.get("subtype") == "init" and safe_token(obj.get("model")):
                 model = normalize_model(obj["model"]).label
+                session = safe_token(obj.get("session_id")) or session
             elif obj["type"] == "result":
-                parsed = parse_result(obj, raw, None)
+                parsed = parse_result(obj, raw, session)
                 conn.execute("INSERT OR IGNORE INTO alias_facts(alias_id,session_id,uuid) VALUES(?,?,?)",
                              (alias_id, parsed.session_id, parsed.uuid))
                 if parsed.usage is not None and not parsed.zeroed:
@@ -64,6 +82,7 @@ def scan_claude_alias(scan: Scan, path: Path, source: str) -> None:
                                  "cache_read,cache_write) VALUES(?,?,?,?,?,?,?,?)",
                                  (alias_id, parsed.session_id, parsed.uuid, model, parsed.usage["input"],
                                   parsed.usage["output"], parsed.usage["cache_read"], parsed.usage["cache_write"]))
+        _save_state(conn, alias_id, session=session, model=model)
         save_progress(conn, path, alias_id, state.prefix_end, complete, first_chunk=offset == 0)
 
 
@@ -78,7 +97,7 @@ def scan_codex_alias(scan: Scan, path: Path) -> None:
         if read is None:
             return
         alias_id, offset, complete, state = read
-        thread = None
+        thread = _load_state(conn, alias_id)[2]
         for line_offset, raw in iter_lines(complete, offset):
             obj = parse_line(raw)
             if obj is None:
@@ -92,6 +111,7 @@ def scan_codex_alias(scan: Scan, path: Path) -> None:
                                  "cache_write,output,reasoning) VALUES(?,?,?,?,?,?,?)",
                                  (alias_id, point.thread, point.inp, point.cached, point.cw, point.out,
                                   point.reasoning))
+        _save_state(conn, alias_id, thread=thread)
         save_progress(conn, path, alias_id, state.prefix_end, complete, first_chunk=offset == 0)
 
 
@@ -147,10 +167,13 @@ def publish_unbound(scan: Scan) -> None:
                         "r.session_id=u.session_id AND r.uuid=u.uuid)", (alias_id,)).fetchall():
                     for tau, value in zip(TOKEN_TYPES, usage):
                         if value > 0:
+                            # F1: the id is the stable token fact (session, uuid, type), never the model label,
+                            # which is provisional until an `init` line has been seen: a copy that parsed another
+                            # label (or none) cannot publish the same fact a second time.
                             conn.execute(
                                 "INSERT OR IGNORE INTO unbound_contributions(id,provider,model,role,source,"
                                 "task_class,token_type,value,published_at,backfill) VALUES(?,?,?,?,?,?,?,?,?,?)",
-                                (f"{session}:{uuid}|{model}|{tau}", PROVIDER, model, EXECUTOR_ROLE[source], source,
+                                (f"{session}:{uuid}|unbound|{tau}", PROVIDER, model, EXECUTOR_ROLE[source], source,
                                  IDENTITY_UNAVAILABLE, tau, value, scan.now, int(history)))
             conn.execute("UPDATE stream_aliases SET binding='unbound' WHERE alias_id=? AND binding='alias_pending'",
                          (alias_id,))
