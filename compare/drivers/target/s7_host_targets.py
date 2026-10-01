@@ -25,8 +25,6 @@ driver.start("target")
 from types import SimpleNamespace  # noqa: E402
 
 import s7_host_targets  # noqa: E402
-
-import codex_harness  # noqa: E402
 from codex_harness.composition import configuration  # noqa: E402
 from codex_harness.context.adapters import worker_profile  # noqa: E402
 from codex_harness.delivery.adapters import host_delivery  # noqa: E402
@@ -35,6 +33,8 @@ from codex_harness.entry.processes import delivery_service  # noqa: E402
 from codex_harness.host_os.adapters import process_groups  # noqa: E402
 from codex_harness.host_os.adapters.git_workspace import MergeRefused  # noqa: E402
 from codex_harness.kernel.errors import ContractError  # noqa: E402
+
+import codex_harness  # noqa: E402
 
 
 class WiredProcessHostTarget(host_delivery.ProcessHostTarget):
