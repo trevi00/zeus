@@ -393,11 +393,12 @@ def finalize_run(scan: Scan, spec: RunSpec, state: StreamState, evidence: str) -
 
 
 def _sort_key(scan: Scan, spec: RunSpec):
-    row = scan.conn.execute("SELECT thread_id,input_tokens,output,cached,reasoning,cache_write FROM codex_runs r "
-                            "JOIN invocations i ON i.id=r.invocation_id WHERE r.invocation_id=?",
-                            (spec.inv_id,)).fetchone()
+    """Thread, then the cumulative tuple, then a fresh run before a resumed one that reports the same point, so
+    the file order never decides which run owns a shared point."""
+    row = scan.conn.execute("SELECT thread_id,input_tokens,output,cached,reasoning,cache_write,argv_mode "
+                            "FROM codex_runs WHERE invocation_id=?", (spec.inv_id,)).fetchone()
     point_key = (row[1], row[2], row[3], row[4], row[5]) if row[1] is not None else (1 << 62,) * 5
-    return (row[0] or "", point_key, spec.stem)
+    return (row[0] or "", point_key, 0 if row[6] == "fresh" else 1, spec.stem)
 
 
 def run_specs(scan: Scan) -> list[RunSpec]:
