@@ -5,7 +5,7 @@ not installed here and is neither imported nor bypassed: D-A4-1). The owner runs
 
     uv run --frozen python -B tests/fixtures/buzz_conntest/run_matrix.py [--report PATH] [--keep-on-failure]
 
-It starts `compose.yaml` beside it (relay pinned by digest, postgres, redis, minio; the relay published only on
+It starts `compose.yaml` beside it (relay, postgres, redis, all pinned by digest; the relay published only on
 127.0.0.1:<ephemeral port>), drives it with the A1-A3 modules (`BuzzRelayClient`, `NostrEventSigner`, `verify_event`,
 `TestRoleKeys`, `InboundPass`, `BuzzOutbox`) and writes a JSON report. Its working directory is
 `/home/trevi/workspaces/zeus/scratch/buzz-conntest/<UTC stamp>` (mode 0700; never /tmp). The explicit list of docker argv
@@ -23,20 +23,24 @@ Steps (A = asserted, R = recorded verbatim in the report; a failing step is name
  3 up + health    A: relay healthy within 180 s.
  4 bootstrap      A: owner AUTH + kind 9030 (conductor), kind 9007 (private channel), kind 9000 (conductor joins).
                      R: each relay answer.
- 5 negative       A: stranger publish -> `restricted:`, not stored. R: wire frames, number of EVENT sends.
+ 5 negative       A: stranger publish refused (never accepted), not stored; the client answered the AUTH challenge and
+                     the relay refused that AUTH with `restricted: not a relay member`. R: wire frames, EVENT sends.
  6 B1             A: same kind-9 event twice -> accepted, then `duplicate:`.
  7 B2             A: reconnect + `since` returns the event once. R: raw frame count.
  8 B3             A: graceful restart; a live subscribe ends with close code 1012; reconnect + `since` finds the event
                      published after the restart by a second client; no duplicate effect.
  9 B4             A: 45010 create / update(prev=head) accepted, stale prev refused, resubmitted create succeeds, the
                      `#d` query returns the head only (NIP-AR). R: every relay answer.
-10 B7             A: reconnect + query_all recovers every accepted event. R: what a non-reading subscriber saw
-                     (closed / frames dropped / all delivered) under the conntest relay's BUZZ_SEND_BUFFER=8.
+10 B7             A: after the slow subscriber is closed, a fresh connection (default recv_timeout) recovers every
+                     accepted event with query_all pages no larger than the send buffer. R: what a non-reading
+                     subscriber saw under BUZZ_SEND_BUFFER=8, and what one unpaged history query did (the relay aborts
+                     a REQ history at the first full buffer, no EOSE: req.rs:548 `if !conn.send(msg) { return false }`,
+                     connection.rs:254-276 try_send).
 11 drift          A: created_at = now - 1000 is refused with a timestamp message the outbox recognises; the A3b outbox
                      leaves the op `unknown` and reconciles by `ids` (nothing found). R: the message verbatim.
 12 EOSE-partial   A: the InboundPass interval is `gap_unknown`. R: whether EOSE arrived under a paused postgres.
 13 lease          A: two InboundPass on one MemoryStore: only the holder commits; the stale one commits nothing.
-14 hardening      A: every container: not privileged, not host network, no docker socket mount, no cap_add, ports
+14 hardening      A: exactly the compose file's services, one container each; every container: not privileged, not host network, no docker socket mount, no cap_add, ports
                      only on 127.0.0.1 (inspect with --format on those fields only: never the env).
 15 cleanup        A: `down -v` for this project, then no container, network or volume carries its label.
 
@@ -86,6 +90,7 @@ MAX_SIZE = 4 * 1024 * 1024
 HEALTH_SECONDS = 180
 PACE_SECONDS = 1.2  # <= 50 persistent publishes per minute per key: under the relay's 60/min human limit
 B7_EVENTS = 40
+B7_PAGE = 4  # query_all page size: a page plus EOSE fits BUZZ_SEND_BUFFER=8 (compose.yaml)
 STATE_FORMAT = "{{.State.Status}}/{{if .State.Health}}{{.State.Health.Status}}{{else}}none{{end}}"
 HARDENING_FORMAT = ("{{.Name}}|{{.HostConfig.Privileged}}|{{.HostConfig.NetworkMode}}|{{json .HostConfig.PortBindings}}"
                     "|{{json .HostConfig.CapAdd}}|{{json .Mounts}}")  # these fields only: never the env
@@ -97,6 +102,9 @@ SOURCE_REFS = [
     "relay_admin.rs:1-13 (9030 admin/owner adds the first p tag; processed directly, not stored)",
     "ingest.rs:2376 (invalid: event timestamp too far from server time)",
     "config.rs:712-728 (BUZZ_SEND_BUFFER default 1000, BUZZ_SLOW_CLIENT_GRACE_LIMIT default 15)",
+    "handlers/auth.rs:354-372 (a non-member's AUTH: OK false `restricted: not a relay member`, nothing stored)",
+    "handlers/req.rs:548-552 + connection.rs:254-276 (history uses try_send: a full send buffer aborts the REQ "
+    "without EOSE; BUZZ_SLOW_CLIENT_GRACE_LIMIT consecutive full events close the connection)",
     "docs/nips/NIP-AR.md (45010 create/update/prev, resubmission, current-state queries)",
 ]
 OWNER_DECISIONS = [
@@ -213,13 +221,13 @@ class Ctx:
 
     # -- relay clients -----------------------------------------------------------------------------------------
 
-    def client(self, role, *, recv_timeout=30, wire=None):
+    def client(self, role, *, recv_timeout=30, wire=None, page=1000):
         connect = None
         if wire is not None:
             def connect(url, **options):
                 return _Wire(ws_connect(url, **options), wire)
         return BuzzRelayClient(self.url, auth_signer=self.signer, auth_role=role, verifier=_Verifier(),
-                               connect=connect, max_size=MAX_SIZE, recv_timeout=recv_timeout)
+                               connect=connect, max_size=MAX_SIZE, recv_timeout=recv_timeout, page=page)
 
     def pace(self, role):
         wait = self.last_sent.get(role, -1e9) + PACE_SECONDS - time.monotonic()
@@ -414,9 +422,18 @@ def step_negative(ctx, rec):
     rec["answer"] = answer
     rec["wire"] = wire
     rec["event_sends"] = sum(1 for item in wire if item == ["send", "EVENT"])
-    assert answer["accepted"] is False and answer["prefix"] == "restricted", \
-        f"the stranger was not answered `restricted:`: {answer}"
-    assert rec["event_sends"] <= 2, "a restricted answer must be final (at most one auth-required retry)"
+    # Run 2 trace: EVENT -> OK false auth-required -> the client's AUTH -> OK false `restricted: not a relay member`
+    # (auth.rs:354-372). The client returns the first (auth-required) answer when its AUTH fails, so the relay's
+    # documented non-member verdict is read from the AUTH exchange on the wire.
+    assert answer["accepted"] is not True and answer["prefix"] in ("auth-required", "restricted"), \
+        f"the stranger's publish was not refused with auth-required/restricted: {answer}"
+    assert ["send", "AUTH"] in wire, "the client did not answer the AUTH challenge"
+    auth_answers = [item[1] for item in wire if item[0] == "recv" and isinstance(item[1], list) and item[1][0] == "OK"
+                    and item[1][2].startswith("restricted:")]
+    rec["auth_refusal"] = auth_answers
+    assert auth_answers == [["OK", False, "restricted: not a relay member"]], \
+        f"the relay did not refuse the stranger's AUTH as a non-member: {auth_answers}"
+    assert rec["event_sends"] == 1, "a refused AUTH must not be followed by an EVENT resend"
     with connected(ctx, "owner") as owner:
         rec["stored_copies"] = len(owner.query([{"ids": [event["id"]]}])["events"])
     assert rec["stored_copies"] == 0, "the stranger's event was stored"
@@ -424,7 +441,7 @@ def step_negative(ctx, rec):
 
 def step_b1(ctx, rec):
     with connected(ctx, "conductor") as conductor:
-        event, first = ctx.message(conductor, f"b1-{uuid.uuid4()}", "b1")
+        event, first = ctx.message(conductor, "conductor", f"b1-{uuid.uuid4()}", "b1")
         second = conductor.publish(event)
     rec["first"], rec["second"] = first, second
     assert first["accepted"] is True and first["prefix"] != "duplicate", f"first publish: {first}"
@@ -463,7 +480,7 @@ def step_b3(ctx, rec):
     thread.start()
     try:
         with connected(ctx, "owner") as owner:
-            sentinel, answer = ctx.message(owner, f"b3-sentinel-{uuid.uuid4()}", "b3_sentinel")
+            sentinel, answer = ctx.message(owner, "owner", f"b3-sentinel-{uuid.uuid4()}", "b3_sentinel")
         assert answer["accepted"] is True, f"sentinel publish: {answer}"
         deadline = time.monotonic() + 30
         while sentinel["id"] not in live["events"] and time.monotonic() < deadline:
@@ -480,7 +497,7 @@ def step_b3(ctx, rec):
         assert rec["reconnect_delay_for_1012"] is not None, "the client policy does not reconnect after 1012"
         rec["healthy_after_restart_seconds"] = ctx.wait_healthy()
         with connected(ctx, "owner") as second:  # a second client, after the restart
-            gap, answer = ctx.message(second, f"b3-gap-{uuid.uuid4()}", "b3_gap")
+            gap, answer = ctx.message(second, "owner", f"b3-gap-{uuid.uuid4()}", "b3_gap")
             rec["gap_publish"] = answer
             assert answer["accepted"] is True, f"gap publish: {answer}"
             replay = second.publish(gap)
@@ -598,10 +615,18 @@ def step_b7(ctx, rec):
     rec["content_bytes"] = size
     rec["refused_publishes"] = refused[:5]
     assert accepted, "no B7 event was accepted"
-    with connected(ctx, "conductor") as client:
-        recovered = client.query_all({"kinds": [9], "#h": [ctx.chan], "since": started})
+    history = {"kinds": [9], "#h": [ctx.chan], "since": started}
+    # R: one unpaged history query on a fresh connection. History is sent with try_send (req.rs:548): the first full
+    # buffer aborts the REQ without EOSE, so a timeout here is the relay's documented behaviour, not a client fault.
+    with connected(ctx, "conductor", recv_timeout=10) as probe:
+        unpaged = probe.query([{**history, "limit": 1000}])
+    rec["unpaged_history"] = {key: (len(value) if key == "events" else value) for key, value in unpaged.items()}
+    # A: the slow subscriber is closed; a fresh connection (default recv_timeout) pages within the send buffer.
+    with connected(ctx, "conductor", page=B7_PAGE) as client:
+        recovered = client.query_all(history)
     ids = {event["id"] for event in recovered["events"]}
     rec["recover"] = {key: (len(value) if key == "events" else value) for key, value in recovered.items()}
+    rec["recover"]["page"] = B7_PAGE
     assert recovered["ended"] == "eose", f"query_all ended {recovered['ended']}"
     assert set(accepted) <= ids, f"{len(set(accepted) - ids)} accepted events were not recovered"
 
@@ -684,7 +709,7 @@ def step_lease(ctx, rec):
             return tx.scan("remote_inbox")
 
     with connected(ctx, "conductor") as conductor_client, connected(ctx, "owner") as owner_client:
-        ctx.message(conductor_client, f"lease-{uuid.uuid4()}", "lease_probe")  # a fresh event inside the lookback
+        ctx.message(conductor_client, "conductor", f"lease-{uuid.uuid4()}", "lease_probe")  # a fresh event inside the lookback
         holder = InboundPass(store, conductor_client, inbox, lease, sink, [conductor], [ctx.chan], time.time)
         other = InboundPass(store, owner_client, inbox, lease, sink, [conductor], [ctx.chan], time.time)
         now = time.time()
@@ -720,9 +745,25 @@ def step_lease(ctx, rec):
         assert len(rows()) == before and second["inserted"] == 0, "the dedup of the inbox did not hold"
 
 
+def compose_services():
+    """The service names of compose.yaml: the two-space-indented keys under the top-level `services:`."""
+    names, inside = [], False
+    for line in COMPOSE.read_text(encoding="utf-8").splitlines():
+        if line.startswith("services:"):
+            inside = True
+        elif inside and line and not line.startswith((" ", "#")):
+            break
+        elif inside and line.startswith("  ") and not line.startswith("   ") and line.strip().endswith(":") \
+                and not line.strip().startswith("#"):
+            names.append(line.strip()[:-1])
+    assert names, "no service found in compose.yaml"
+    return names
+
+
 def step_hardening(ctx, rec):
+    services = compose_services()
     containers = ctx.compose("ps", "-a", "-q", timeout=60).stdout.split()
-    assert len(containers) >= 4, f"only {len(containers)} containers of the stack"
+    assert len(containers) == len(services), f"{len(containers)} containers for the services {services}"
     published = {}
     for cid in containers:
         name, privileged, mode, ports, cap_add, mounts = ctx.docker(["inspect", "--format", HARDENING_FORMAT, cid],
@@ -737,7 +778,11 @@ def step_hardening(ctx, rec):
         assert "docker.sock" not in mounts, f"{name} mounts the docker socket"
         assert set(host_ips) <= {"127.0.0.1"}, f"{name} publishes on {host_ips}"
     rec["containers"] = published
-    relay = next(value for key, value in published.items() if "relay" in key)
+    rec["services"] = services
+    for service in services:  # compose names: <project>-<service>-<n> (v2) or <project>_<service>_<n> (v1)
+        found = [key for key in published if key.startswith((f"{PROJECT}-{service}-", f"{PROJECT}_{service}_"))]
+        assert len(found) == 1, f"service {service} has {len(found)} containers: {sorted(published)}"
+    relay = next(value for key, value in published.items() if key.startswith((f"{PROJECT}-relay-", f"{PROJECT}_relay_")))
     assert relay["host_ips"] == ["127.0.0.1"], "the relay publishes no loopback port"
 
 
