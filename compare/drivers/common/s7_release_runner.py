@@ -53,6 +53,10 @@ Added here, each fixture-derived (the fixture learns the value from the very arg
   legacy container name `harness-canary-<12 hex>` (os.urandom) the fixture reads from `--name` → `<canary-name>`; both
   shapes are checked and recorded (`dir_prefix_ok`, `name_shape_ok`);
 - the canary token (os.urandom) the fixture reads from `input.txt` → `<token>`, and its sha256 → `<token-sha256>`;
+- git's own diagnostic after `Git operation failed (<op>, cwd=...): ` → `<git-diagnostic>`: its wording varies by git
+  version and sandbox mount layout (CI ubuntu-latest vs aibox bwrap, found 2026-10-01), and M7 truncates the message
+  at 200 characters BEFORE path normalization, so the cut moves with the scratch path length. The error type, the
+  git operation and the normalized cwd stay literal;
 - the controller's uid:gid in the handoff script (`chown -h UID:GID`) → `<uid>:<gid>`, and a recorded `uid`/`gid` that
   equals the controller's → `<controller-uid>`/`<controller-gid>`;
 - a release id (a digest of the candidate, which names temporary paths in the real-git cases) and its first 16
@@ -93,6 +97,7 @@ PASSTHROUGH = {"PATH", "SYSTEMROOT", "WINDIR", "COMSPEC", "PATHEXT", "TEMP", "TM
 COMPOSE_KEYS = {"HARNESS_CODEX_AUTH", "HARNESS_RUNTIME_DIR", "ZEUS_CODEX_AUTH", "ZEUS_RUNTIME_DIR"}
 REF = re.compile(r"sha256:[0-9a-f]{64}")
 CHOWN = re.compile(r"(?<=chown -h )\d+:\d+")
+GIT_DIAGNOSTIC = re.compile(r"(Git operation failed \([^)]*\): ).*", re.S)
 NAME_SHAPE = re.compile(r"harness-canary-[0-9a-f]{12}")
 REV_BASE, REV_CAND, REV_MAIN2, REV_EVAL = "b" * 40, "c" * 40, "d" * 40, "e" * 40
 TREE, DIFF = "a" * 40, "reviewed diff"
@@ -266,6 +271,7 @@ class World:
             for old, new in sorted(self.substitutions, key=lambda pair: -len(pair[0])):
                 value = value.replace(old, new)
             value = CHOWN.sub("<uid>:<gid>", value)
+            value = GIT_DIAGNOSTIC.sub(r"\1<git-diagnostic>", value)
             return REF.sub(lambda m: self.refs.get(m.group(0), m.group(0)), value)
         return value
 

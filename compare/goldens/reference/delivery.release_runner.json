@@ -499,7 +499,7 @@
        "cwd": "<root>/binding/plain",
        "dirty": null,
        "env_keys": null,
-       "error": "GitCommandError: Git operation failed (rev-parse, cwd=<root>/binding/plain): fatal: not a git repository (or any parent up to mount point /)\nStopping at filesystem boundary (GIT_DISCOVERY_ACRO",
+       "error": "GitCommandError: Git operation failed (rev-parse, cwd=<root>/binding/plain): <git-diagnostic>",
        "expected_revision": "7df673d530271d592bba04618bae350ea6e7ad0e",
        "observed_head": null
       },
@@ -510,14 +510,14 @@
        "cwd": "<root>/binding/plain",
        "dirty": null,
        "env_keys": null,
-       "error": "GitCommandError: Git operation failed (rev-parse, cwd=<root>/binding/plain): fatal: not a git repository (or any parent up to mount point /)\nStopping at filesystem boundary (GIT_DISCOVERY_ACRO",
+       "error": "GitCommandError: Git operation failed (rev-parse, cwd=<root>/binding/plain): <git-diagnostic>",
        "expected_revision": "7df673d530271d592bba04618bae350ea6e7ad0e",
        "observed_head": null
       },
       "evidence": "<ref:4>",
       "outcome": "observation_error",
       "passed": false,
-      "reason": "workspace revision could not be observed: GitCommandError: Git operation failed (rev-parse, cwd=<root>/binding/plain): fatal: not a git repository (or any parent up to mount point /)\nStopping at filesystem boundary (GIT_DISCOVERY_ACRO"
+      "reason": "workspace revision could not be observed: GitCommandError: Git operation failed (rev-parse, cwd=<root>/binding/plain): <git-diagnostic>"
      }
     },
     "other_revision": {
