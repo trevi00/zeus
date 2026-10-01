@@ -32,7 +32,6 @@ from types import SimpleNamespace  # noqa: E402
 
 import determinism  # noqa: E402
 import s7_fleet_recovery_collectors  # noqa: E402
-
 from codex_harness.composition import fleet_recovery as composition  # noqa: E402
 from codex_harness.coordination.adapters import fleet_recovery as adapter  # noqa: E402
 from codex_harness.coordination.domain import fleet_recovery as policy  # noqa: E402
