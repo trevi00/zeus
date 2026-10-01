@@ -3,6 +3,12 @@
 and its recheck, the PH4-13 comparison and the F1 typed output), recorded BEFORE the move (DESIGN-s7 §2 row
 `delivery.migration_evidence`; TRACE-s7 §5.6; INV-HOST-MIGRATION-001).
 
+**Split (S7 pilot 46, owner-authorized).** The 12 M7 tests whose cases call the in-process operator CLI
+(`main`, `cli_ports`, `parser`: the S10 carry) moved, whole, to the REFERENCE-ONLY family
+`delivery.migration_evidence_cli` (`s7_migration_evidence_cli.py`, which imports this module's fixtures and its `World`).
+This module keeps the other 34. The split is proven lossless by `split_check.py`; the CLI sentences below name the
+cases that moved.
+
 Seven case groups, each case labelled in the result and mirroring one M7 test (or one parametrization) of
 `tests/test_host_migration_evidence.py` (440-1753; the mapping is `mirrored_tests` in the result):
 - `capture`: a genuine launch and managed consumption (three bound receipts and the draft), the previous-instance
@@ -30,10 +36,8 @@ the test module is never imported).** One temporary `ZEUS_AIBOX_ROOT` per case w
 fixtures, a fixture `/proc` read through the accepted `HostFacts`, `MemoryStore` behind a read-only wrapper
 (`ReadOnly`), a fake `systemctl show`/`journalctl` runner (`Runner`: the recorded argv and environment) and a ticking
 `Clock` (the producer's clock; nothing reads the wall clock). The journal lines are produced by the unchanged
-deploy/aibox launcher's own `emit` (`api.launcher_emit`). The CLI is driven IN PROCESS through `api.main(argv)`
-with the doubles M7 supplies by monkeypatch, each supplied by an `api` hook and restored after the case:
-`api.patched(**attributes)` (attributes of the producer module), `api.environ(values)` (the process environment),
-`api.patch_connect(function)` (`psycopg.connect`) and `api.forbid_writer_store(record)` (the writer store constructor).
+deploy/aibox launcher's own `emit` (`api.launcher_emit`). The process environment is changed through `api.environ(values)`,
+restored after the case. (The CLI cases, driven in process through `api.main(argv)`, are `delivery.migration_evidence_cli`.)
 The fake monotonic clock of `determinism.install` freezes `bounded_run`'s deadline, so the one deadline case keeps
 it moving from a labelled helper thread (`api.advance(seconds)`). Only local interpreters (`sys.executable -c ...`)
 run as real children: no `systemctl`, `journalctl`, PostgreSQL, network or production `/proc` is ever used.
@@ -47,10 +51,10 @@ shape checks (`refused()`: failed receipts bound to the observation digest, no d
 digest that recomputes).
 
 `api` supplies: `observe`, `Ports`, `HostReader`, `bounded_run`, `boottime_offset_usec`, `Unreadable`,
-`validate_request`, `cli_ports`, `SYSTEMCTL`, `JOURNALCTL`, `COMMAND_ENV`, `MAX_COMMAND_BYTES` (the producer module),
-`main`, `parser`, `document_bytes` (M7 `host_migration._document_bytes`), `owner_qualified_canary`,
-`launcher_emit`, `launcher_path`, `MANIFEST_SCHEMA`, `HostFacts`, `MemoryStore`, `HostMigrations`, `LaneSnapshotStore`,
-`conninfo_to_dict`, `OperationalError`, `BUCKET`, `BUCKET_TARGETS`, `BUCKET_PLANS`, `BUCKET_INTENTS`,
+`validate_request`, `SYSTEMCTL`, `JOURNALCTL`, `COMMAND_ENV`, `MAX_COMMAND_BYTES` (the producer module),
+`document_bytes` (M7 `host_migration._document_bytes`), `owner_qualified_canary`,
+`launcher_emit`, `launcher_path`, `MANIFEST_SCHEMA`, `HostFacts`, `MemoryStore`, `HostMigrations`,
+`BUCKET`, `BUCKET_TARGETS`, `BUCKET_PLANS`, `BUCKET_INTENTS`,
 `BUCKET_DESCRIPTORS`, `policy` (M7 `domain.host_migration_evidence`: `CHECKS`, `SOURCES`, `OBSERVATION_FIELDS`,
 `STARTUP_DOCUMENT`, `HISTORY_ENTRY`, `UNAVAILABLE`, `DOCUMENT`, `LAUNCH`, `PROCESS`, `CONSUMPTION`, `CANARY`,
 `CHANGED`, `validate_observation`, `observation_digest`, `observation_receipts`, `transition_draft`),
@@ -89,7 +93,7 @@ else is masked. No secret-shaped test value is ever written to the result: each 
 run fails when one reaches the result (M7 test 1032 asserts the same of the output).
 
 Carried: none of the 46 M7 tests needs a real PostgreSQL connection, a real host command or the harness's own
-environment, so all 46 are mirrored (the CLI ones through the `api` hooks above). Unreachable without the real host
+environment, so all 46 are mirrored (34 here, the 12 CLI ones in `delivery.migration_evidence_cli`). Unreachable without the real host
 (recorded, never attempted): `unreachable.real_systemd` (the real `systemctl show` and `journalctl` answers),
 `unreachable.real_proc` (the `/proc` of a production process) and `unreachable.real_postgresql` (the real
 `LaneSnapshotStore` session).
@@ -689,35 +693,6 @@ class World:
         self.snapshots[id(result)] = (result, snap)
         return result
 
-    def cli_argv(self, *extra) -> list:
-        return ["observe-limited-active", "--migration-id", MID, "--expected-id", self.effective_id,
-                "--target-id", TARGET, "--plan-id", PLAN, "--actor", "claude-ph4", "--root", str(self.root),
-                "--schema", "zeus_aibox_migration", "--control-schema", "zeus_aibox_control", *extra]
-
-    def cli(self, *extra, ports=None, patches=None, env=None) -> dict:
-        """`main(argv)` in this process, its stdout and stderr captured, under the write guard."""
-        api, out, err = self.api, io.StringIO(), io.StringIO()
-        attributes = dict(patches or {})
-        if ports is not None:
-            attributes["cli_ports"] = lambda args: ports
-        with contextlib.ExitStack() as stack:
-            if attributes:
-                stack.enter_context(api.patched(**attributes))
-            if env is not None:
-                stack.enter_context(api.environ(env))
-            stack.enter_context(contextlib.redirect_stdout(out))
-            stack.enter_context(contextlib.redirect_stderr(err))
-            stack.enter_context(self.guard.active())
-            try:
-                code = api.main(self.cli_argv(*extra))
-            except SystemExit as exc:
-                code = ["exit", exc.code]
-        run = {"code": code, "stdout": out.getvalue(), "stderr": err.getvalue()}
-        body = printed(run)
-        if isinstance(body, dict) and "projections" in body:
-            self.learn(body)
-        return run
-
     # --- labels and normalization ---------------------------------------------------------------
     def scan(self) -> None:
         for path in sorted(self.tmp.rglob("*")):
@@ -934,13 +909,6 @@ def diff(left, right, path="") -> list:
     if isinstance(left, list) and isinstance(right, list) and len(left) == len(right):
         return [found for index, pair in enumerate(zip(left, right)) for found in diff(pair[0], pair[1], path + "/" + str(index))]
     return [] if left == right else [[path, left, right]]
-
-
-def printed(run: dict):
-    try:
-        return json.loads(run["stdout"])
-    except ValueError:
-        return None
 
 
 # ---- the case tables (M7 module tables, LABELLED) --------------------------------------------------------------------
@@ -1440,19 +1408,6 @@ def group_capture(lab: Lab) -> dict:
     (w.control / "host-activation.json").write_text(json.dumps(w.activation_document, separators=(",", ":")))
     put(lab, out, "capture", "test_activation_file_equality_is_as_an_object_not_as_bytes",
         "activation_file_equal_as_an_object", w.wrap(w.summary(w.observe())))
-
-    w = lab.world()
-    ports = w.ports()
-    run = w.cli(ports=ports)
-    body = printed(run)
-    first = {"code": run["code"], "keys_include": sorted({"observation", "evidence", "transition_draft"} & set(body)),
-             "ok": body["observation"]["ok"]}
-    w.edit(RECEIPT_NAME, instance_id=None)
-    ports = w.ports()
-    run = w.cli(ports=ports)
-    second = {"code": run["code"], "reason_code": printed(run)["observation"]["reason_code"]}
-    put(lab, out, "capture", "test_cli_prints_observation_evidence_and_draft_and_exits_by_ok",
-        "cli_prints_and_exits_by_ok", w.wrap({"success": first, "canary_failure": second}))
     return out
 
 
@@ -1535,19 +1490,6 @@ def group_refuse(lab: Lab) -> dict:
                   "no_store_transaction": all(store.transactions == 0 for store in w.stores.values())}
         put(lab, out, "refuse", "test_invalid_request_refuses_before_any_read", "invalid_request." + field,
             w.wrap(record))
-
-    for argv in (["--consumed", "true"], ["--passed", "true"], ["--receipt", "r.json"], ["--apply"]):
-        w = lab.world()
-        out_io, err_io = io.StringIO(), io.StringIO()
-        try:
-            with contextlib.redirect_stdout(out_io), contextlib.redirect_stderr(err_io):
-                api.parser().parse_args(w.cli_argv(*argv))
-            outcome = "accepted"
-        except SystemExit as exc:
-            outcome = {"exit": exc.code}
-        put(lab, out, "refuse", "test_cli_accepts_no_claim_substitute_receipt_or_apply_argument",
-            "cli_argument." + argv[0].lstrip("-"), w.wrap({"outcome": outcome,
-                                                          "printed_to_stdout": out_io.getvalue() != ""}))
     return out
 
 
@@ -1590,101 +1532,6 @@ def group_read_only(lab: Lab) -> dict:
             "missing_named_files": sorted(wanted - names),
             "every_open_nofollow_and_nonblock": all(flags == (True, True) for flags in opened.values()),
             "no_write_flag_or_attempt": w.guard.attempts == [], "opens": len(opened)}))
-
-    # The lane path: every store read through a read-only snapshot, exactly this SQL shape.
-    class Rows:
-        def __init__(self, rows):
-            self.rows = rows
-
-        def fetchone(self):
-            return self.rows[0] if self.rows else None
-
-        def fetchall(self):
-            return list(self.rows)
-
-    class Connection:
-        """A psycopg connection double serving the fixture store of the connection's search path."""
-
-        def __init__(self, stores, connection, kwargs, log):
-            options = api.conninfo_to_dict(connection)["options"]
-            assert options.startswith("-c search_path=")
-            self.schema = options.split("=", 1)[1]
-            self.store, self.statements = stores[self.schema], []
-            log.append({"schema": self.schema, "kwargs": kwargs, "statements": self.statements})
-
-        def __enter__(self):
-            return self
-
-        def __exit__(self, *exc):
-            return False
-
-        def execute(self, sql, params=()):
-            self.statements.append(sql)
-            if sql == "SELECT current_schema()":
-                return Rows([(self.schema,)])
-            if sql == "SELECT body FROM documents WHERE bucket=%s AND id=%s":
-                body = self.store.data.get(tuple(params))
-                return Rows([] if body is None else [(copy.deepcopy(body),)])
-            if sql == "SELECT body FROM documents WHERE bucket=%s ORDER BY id":
-                return Rows([(copy.deepcopy(body),) for (bucket, _), body in sorted(self.store.data.items())
-                             if bucket == params[0]])
-            return Rows([])
-
-    w = lab.world()
-    with w.control_store.transaction() as tx:
-        tx.put("fleet_registry", "fleet", {"id": "fleet", "config": {"lanes": [
-            {"id": "harness", "schema": "zeus_lane_harness"}, {"id": "other", "schema": "zeus_lane_other"}]}})
-    stores = {"zeus_aibox_migration": w.coordinator, "zeus_aibox_control": w.control_store,
-              "zeus_lane_harness": w.delivery}
-    before = {name: copy.deepcopy(store.data) for name, store in stores.items()}
-    log: list = []
-    host = w.host()
-    env = {"ZEUS_TEST_MIGRATION_DSN": "postgresql://zeus@127.0.0.1:1/zeus",
-           "ZEUS_TEST_CONTROL_DSN": "postgresql://zeus@127.0.0.1:1/zeus"}
-    with api.patch_connect(lambda connection, **kwargs: Connection(stores, connection, kwargs, log)):
-        run = w.cli("--dsn-env", "ZEUS_TEST_MIGRATION_DSN", "--control-dsn-env", "ZEUS_TEST_CONTROL_DSN",
-                    "--lane", "harness", patches={"HostReader": lambda **kwargs: host}, env=env)
-    body = printed(run)
-    connections = []
-    for entry in log:
-        statements = entry["statements"]
-        connections.append({
-            "schema": entry["schema"], "kwargs": entry["kwargs"], "head": statements[:3], "tail": statements[-1],
-            "statements": len(statements), "middle_only_selects": all(sql in (
-                "SELECT body FROM documents WHERE bucket=%s AND id=%s",
-                "SELECT body FROM documents WHERE bucket=%s ORDER BY id") for sql in statements[3:-1]),
-            "advisory_lock": any("pg_advisory" in sql.lower() for sql in statements)})
-    put(lab, out, "read_only", "test_lane_path_reads_every_store_through_read_only_snapshots_with_the_exact_sql_shape",
-        "lane_path_through_read_only_snapshots", w.wrap({
-            "code": run["code"], "ok": body["observation"]["ok"], "stderr_empty": run["stderr"] == "",
-            "schemas": sorted({entry["schema"] for entry in log}), "connections": connections,
-            "lane_reads": len([entry for entry in log if entry["schema"] == "zeus_lane_harness"]),
-            "stores_unchanged": {name: store.data for name, store in stores.items()} == before}))
-
-    w = lab.world()
-    connected = []
-    stored = []
-    with contextlib.ExitStack() as stack:
-        stack.enter_context(api.environ({"ZEUS_TEST_DSN": "postgresql://zeus@127.0.0.1:1/zeus"}))
-        stack.enter_context(api.patch_connect(lambda *a, **k: connected.append(1) or (_ for _ in ()).throw(
-            AssertionError("connected"))))
-        stack.enter_context(api.forbid_writer_store(stored))
-        args = api.parser().parse_args(["observe-limited-active", "--migration-id", MID, "--expected-id", "a" * 64,
-                                        "--target-id", TARGET, "--plan-id", PLAN, "--actor", "a", "--root", "/r",
-                                        "--dsn-env", "ZEUS_TEST_DSN", "--schema", "zeus_aibox_migration",
-                                        "--control-dsn-env", "ZEUS_TEST_DSN", "--control-schema",
-                                        "zeus_aibox_control"])
-        ports = api.cli_ports(args)
-        snapshot = {"coordinator_is_snapshot": isinstance(ports.coordinator, api.LaneSnapshotStore),
-                    "control_is_snapshot": isinstance(ports.control, api.LaneSnapshotStore),
-                    "schemas": [ports.coordinator.schema, ports.control.schema],
-                    "delivery_is_control": ports.delivery(ports.control) is ports.control}
-        args.schema = "public"
-        public = w.attempt(lambda: api.cli_ports(args))
-    put(lab, out, "read_only", "test_cli_ports_are_read_only_snapshots_and_connect_nothing",
-        "cli_ports_are_read_only_snapshots", w.wrap({
-            **snapshot, "public_schema": public, "connections_opened": len(connected),
-            "writer_store_constructed": len(stored)}))
     return out
 
 
@@ -1749,23 +1596,6 @@ def group_archive(lab: Lab) -> dict:
                   "no_store_transaction": all(store.transactions == 0 for store in w.stores.values())}
         put(lab, out, "archive", "test_ph4_13_an_archive_that_is_not_this_producers_complete_success_is_refused_before_any_read",
             "refused_archive." + case, w.wrap(record))
-
-    for content in (None, "{not json", "[]", "NaN"):
-        w = lab.world()
-        (w.tmp / "archive").mkdir()
-        path = w.tmp / "archive" / "archived-observation.json"
-        if content is not None:
-            path.write_text(content)
-        built = []
-        patches = {"cli_ports": lambda args: built.append(1) or (_ for _ in ()).throw(AssertionError("ports built"))}
-        first = w.cli("--expect", str(path), patches=patches)
-        second = w.cli("--expect", "relative/archive.json", patches=patches)
-        put(lab, out, "archive", "test_ph4_13_an_unreadable_archive_file_is_refused_naming_the_argument_only",
-            "unreadable_archive_file." + ("missing" if content is None else {"{not json": "not_json", "[]": "array",
-                                                                             "NaN": "nan"}[content]),
-            w.wrap({"absolute_path": {"code": first["code"], "printed": printed(first)},
-                    "relative_path": {"code": second["code"], "printed": printed(second)},
-                    "ports_built": len(built)}))
     return out
 
 
@@ -1859,25 +1689,6 @@ def group_host_reader(lab: Lab) -> dict:
     second = w.summary(w.observe(), code=P.PROCESS, detail="supervisor_start")
     put(lab, out, "host_reader", "test_process_starts_are_compared_on_the_monotonic_clock_after_a_suspend",
         "monotonic_comparison_after_a_suspend", w.wrap({"with_the_offset": first, "without_the_offset": second}))
-
-    for role in ("supervisor", "entry"):
-        w = lab.world()
-        secret = "--password=" + PW + "-argv-secret"
-        pid, ppid, ticks = (SUP_PID, 1, SUP_TICKS) if role == "supervisor" else (ENTRY_PID, SUP_PID, ENTRY_TICKS)
-        w.process(pid, ppid, ticks, ["/usr/bin/other-tool", secret])
-        ports = w.ports()
-        run = w.cli(ports=ports)
-        body = printed(run)
-        projection = body["projections"][role]
-        put(lab, out, "host_reader",
-            "test_a_reused_pid_keeps_only_an_argv_digest_and_its_arguments_never_reach_the_output",
-            "reused_pid_keeps_only_an_argv_digest." + role, w.wrap({
-                "code": run["code"], "argument_absent_from_output": PW not in run["stdout"] + run["stderr"],
-                "diagnostic": body["diagnostic"], "projection": projection,
-                "no_raw_argv": "argv" not in projection, "argv_match": projection["argv_match"],
-                "validated": projection["validated"],
-                "digest_is_the_cmdline_digest": projection["argv_sha256"] == hashlib.sha256(
-                    b"/usr/bin/other-tool\0" + secret.encode() + b"\0").hexdigest()}))
 
     # HostReader primitives (not M7 tests): `file`, `exists`, `current`, `release_present`.
     w = lab.world()
@@ -1975,74 +1786,12 @@ def group_ph4_13(lab: Lab) -> dict:
         result = w.observe(expect=w.archive, post_transition=True)
         put(lab, out, "ph4_13", "test_ph4_13_a_post_check_difference_is_refused", "post_check." + case,
             w.wrap(comparison(w, result, "post_transition", False, code, detail)))
-
-    w = lab.world()
-    ports = w.ports()
-    outcome = w.attempt(lambda: api.observe(w.request(), ports, post_transition=True))
-    built = []
-    run = w.cli("--post-transition", patches={
-        "cli_ports": lambda args: built.append(1) or (_ for _ in ()).throw(AssertionError("ports built"))})
-    put(lab, out, "ph4_13", "test_ph4_13_post_transition_without_an_archive_is_refused_before_any_read",
-        "post_transition_without_an_archive", w.wrap({
-            "outcome": outcome, "no_command_ran": w.runner.calls == [],
-            "no_store_transaction": all(store.transactions == 0 for store in w.stores.values()),
-            "cli": {"code": run["code"], "printed": printed(run), "ports_built": len(built)}}))
-
-    for post in (False, True):
-        w = lab.world()
-        archive = archived(w.observe())
-        (w.tmp / "archive").mkdir()
-        path = w.tmp / "archive" / "archived-observation.json"
-        path.write_text(json.dumps(archive, sort_keys=True, indent=2))
-        if post:
-            w.submit(archive)
-        ports = w.ports()
-        before = (tree(w.root, w.proc), copy.deepcopy(w.coordinator.data), copy.deepcopy(w.control_store.data),
-                  copy.deepcopy(w.delivery.data))
-        extra = ["--expect", str(path)] + (["--post-transition"] if post else [])
-        w.runner.calls.clear()
-        w.runner.envs.clear()
-        w.guard.os_opens.clear()
-        w.guard.opens.clear()
-        run = w.cli(*extra, ports=ports)
-        after = (tree(w.root, w.proc), w.coordinator.data, w.control_store.data, w.delivery.data)
-        body = printed(run)
-        record = {"code": run["code"], "no_draft_or_evidence": "transition_draft" not in body and "evidence" not in body,
-                  "post_check": body["comparison"]["post_check"], "comparison": body["comparison"],
-                  "no_write_attempt": w.guard.attempts == [], "no_store_put": all(s.puts == [] for s in w.stores.values()),
-                  "filesystem_and_stores_unchanged": after == before, "stderr_empty": run["stderr"] == ""}
-        w.learn(body)
-        ports = w.ports()
-        opposite = w.cli("--expect", str(path), *([] if post else ["--post-transition"]), ports=ports)
-        record["opposite_mode"] = {"code": opposite["code"],
-                                   "reason_code": printed(opposite)["comparison"]["reason_code"]}
-        put(lab, out, "ph4_13", "test_ph4_13_the_comparison_is_read_only_and_exits_by_its_verdict",
-            "cli_comparison_read_only." + ("post_transition" if post else "pre_submit"), w.wrap(record))
     return out
 
 
 def group_f1(lab: Lab) -> dict:
     api, out, T = lab.api, {}, tables(lab.api)
     P = api.policy
-
-    for case in sorted(T.leak):
-        mutate, code, detail = T.leak[case]
-        w = lab.world()
-        mutate(w)
-        result = w.observe()
-        record = refusal(lab, w, result, code, detail) if code is not None else w.wrap(w.summary(result))
-        record["marker_absent_from_the_result"] = MARKER not in json.dumps(result, sort_keys=True)
-        record["success_keeps_its_draft"] = (result["observation"]["ok"] is True
-                                             and result["transition_draft"] is not None) if code is None else None
-        ports = w.ports()
-        run = w.cli(ports=ports)
-        body = printed(run)
-        record["cli"] = {"code": run["code"], "exit_expected": run["code"] == (0 if code is None else 1),
-                         "marker_absent": MARKER not in run["stdout"] + run["stderr"], "stderr_empty": run["stderr"] == "",
-                         "same_digest": body["result_sha256"] == result["result_sha256"],
-                         "recomputes": w.recompute(body)}
-        put(lab, out, "f1", "test_f1_no_excluded_key_or_untyped_value_reaches_the_result_or_the_cli", "leak." + case,
-            w.n(record))
 
     w = lab.world()
     original = (w.state / "startup-receipt.json").read_bytes()
@@ -2131,55 +1880,6 @@ def group_f1(lab: Lab) -> dict:
             "last_transition_lineage_is_the_archive": last["lineage"] == archive["observation"]["lineage"]}
         put(lab, out, "f1", "test_f1_the_recorded_history_entry_reaches_the_post_check_only_through_its_allowlist",
             "history_entry_through_the_allowlist." + name, w.wrap(record))
-
-    # A credential typed where an environment name belongs, and a malformed DSN, are refused without its value.
-    for option in ("--dsn", "--dsn-env", "--control-dsn-env"):
-        w = lab.world()
-        secret = dsn(PW)
-        built = []
-        run = w.cli(option, secret, patches={"HostReader": lambda **kwargs: built.append(1) or (_ for _ in ()).throw(
-            AssertionError("host reader built"))}, env={"HARNESS_DATABASE_URL": "postgresql://zeus@127.0.0.1:1/zeus"})
-        put(lab, out, "f1", "test_a_credential_given_as_an_env_name_is_refused_and_never_echoed",
-            "credential_as_env_name." + option.lstrip("-"), w.wrap({
-                "code": run["code"], "secret_absent": PW not in run["stdout"] + run["stderr"],
-                "printed": printed(run), "host_reader_built": len(built)}))
-
-    values = {"malformed_percent_escape": "postgresql://zeus:" + "hun%zz" + "ter2@127.0.0.1/zeus",
-              "secret_token": "sk-live-" + PW + "-secret",
-              "unterminated_host": "postgresql://zeus:" + PW + "@[unterminated/zeus"}
-    for name, value in values.items():
-        for option in ("--dsn-env", "--control-dsn-env"):
-            w = lab.world()
-            built = []
-            other = "--control-dsn-env" if option == "--dsn-env" else "--dsn-env"
-            run = w.cli(option, "ZEUS_TEST_SECRET", other, "ZEUS_TEST_DSN", patches={
-                "HostReader": lambda **kwargs: built.append(1) or (_ for _ in ()).throw(AssertionError("built"))},
-                env={"ZEUS_TEST_DSN": "postgresql://zeus@127.0.0.1:1/zeus", "ZEUS_TEST_SECRET": value})
-            put(lab, out, "f1", "test_a_malformed_dsn_or_a_secret_variable_is_refused_without_its_value",
-                "malformed_dsn." + name + "." + option.lstrip("-"), w.wrap({
-                    "code": run["code"], "secret_absent": PW not in run["stdout"] + run["stderr"],
-                    "no_traceback": "Traceback" not in run["stderr"], "printed": printed(run),
-                    "host_reader_built": len(built)}))
-
-    # A store failure through the real snapshot store with a failing connection: no credential, no host command.
-    w = lab.world()
-    host_calls = []
-
-    def connect(connection, **kwargs):
-        raise api.OperationalError("connection to " + connection + " failed: password " + PW + "-credential")
-
-    with api.patch_connect(connect):
-        run = w.cli("--dsn-env", "ZEUS_TEST_MIGRATION_DSN", "--control-dsn-env", "ZEUS_TEST_CONTROL_DSN", "--lane",
-                    "harness", patches={"bounded_run": lambda *a, **k: host_calls.append(1) or (_ for _ in ()).throw(
-                        AssertionError("host command"))},
-                    env={"ZEUS_TEST_MIGRATION_DSN": dsn(PW + "-credential", "127.0.0.1:1/zeus"),
-                         "ZEUS_TEST_CONTROL_DSN": dsn(PW + "-credential", "127.0.0.1:1/zeus")})
-    body = printed(run)
-    put(lab, out, "f1", "test_cli_store_failure_leaks_no_credential_and_reads_no_host",
-        "cli_store_failure_leaks_no_credential", w.wrap({
-            "code": run["code"], "credential_absent": PW not in run["stdout"] + run["stderr"],
-            "diagnostic": body["diagnostic"], "draft_none": body["transition_draft"] is None,
-            "host_commands": len(host_calls)}))
     return out
 
 
@@ -2207,7 +1907,7 @@ RAW_DIGEST_COVERS = {
 GROUPS = (("capture", group_capture), ("refuse", group_refuse), ("read_only", group_read_only),
           ("archive", group_archive), ("host_reader", group_host_reader), ("ph4_13", group_ph4_13),
           ("f1", group_f1))
-M7_TESTS = 46
+M7_TESTS = 34   # 46 less the 12 CLI tests, split out to `delivery.migration_evidence_cli` (S7 pilot 46)
 
 
 def run(api) -> dict:

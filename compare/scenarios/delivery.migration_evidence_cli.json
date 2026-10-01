@@ -1,0 +1,9 @@
+{
+ "family": "delivery.migration_evidence_cli",
+ "description": "S7 M7 migration evidence in-process operator CLI, characterized before its move (INV-HOST-MIGRATION-001): main(argv) and its parser and cli_ports over the labelled store, /proc, runner and clock doubles of delivery.migration_evidence (the observation printed and its exit, the arguments the parser refuses, the read-only snapshot lane path and cli_ports, the archive file refusals, the PH4-13 comparison and its verdict exit, the F1 leak cases through the CLI, a credential given as an environment name or a malformed DSN, and a store failure); split out of delivery.migration_evidence (S7 pilot 46) because the CLI is the S10 carry, so this family is reference-only until S10",
+ "reference_driver": "drivers/reference/s7_migration_evidence_cli.py",
+ "target_driver": null,
+ "golden": "goldens/reference/delivery.migration_evidence_cli.json",
+ "slice": "S7",
+ "target_status": "pending: S10 operator CLI (host_migration_evidence main/cli_ports)"
+}
