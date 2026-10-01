@@ -594,6 +594,22 @@ def _results(conn: sqlite3.Connection, inv_id: str) -> list[ResultFacts]:
     return facts
 
 
+def version_semantics_of(inv: dict) -> str | None:
+    """The characterized-version policy applied to the invocation's init version (None = no parseable version)."""
+    version = parse_version(inv["cli_version"])
+    return version_semantics(version) if version is not None else None
+
+
+def resumed_baseline(inv: dict, pred_state: str, pred_cum: dict[str, dict[str, float]]) -> Baseline:
+    """The baseline of a resumed process with a named predecessor (§3.3, §3.7). Shared by the finalization and by the
+    unpublished refinement of a late predecessor (late.py), so both apply the same rule."""
+    if version_semantics_of(inv) == SEMANTICS_RESTART_ZERO:
+        return Baseline("zero")  # D2: totals restart at zero for such resumed processes
+    if pred_state == "proven":
+        return Baseline("cumulative", pred_cum)
+    return Baseline(pred_state)
+
+
 def finalize_claude(scan: Scan, inv: dict, path: Path, state: StreamState, task_class: str, *, evidence: str,
                     outcome: str, receipt: tuple[int | None, str | None, str | None] = (None, None, None),
                     terminal_kind: str = "record_row") -> bool:
@@ -604,9 +620,7 @@ def finalize_claude(scan: Scan, inv: dict, path: Path, state: StreamState, task_
     external: set[str] = set()
     baseline = Baseline("zero")
     pred_state = "none"
-    version = parse_version(inv["cli_version"])
-    semantics = version_semantics(version) if version is not None else None
-    if semantics == SEMANTICS_UNCHARACTERIZED:
+    if version_semantics_of(inv) == SEMANTICS_UNCHARACTERIZED:
         external.add("unknown_version_semantics")  # F3, §3.7: parseable is not supported; M only, no remainder
     if inv["mode"] == "resumed" and inv["predecessor_id"]:
         pred = _predecessor(scan, inv)
@@ -614,14 +628,9 @@ def finalize_claude(scan: Scan, inv: dict, path: Path, state: StreamState, task_
             conn.execute("UPDATE invocations SET lifecycle_state='awaiting_predecessor' WHERE id=?", (inv["id"],))
             return False
         pred_state, pred_cum = pred
-        if version is None:
+        if parse_version(inv["cli_version"]) is None:
             external.add("unknown_version_semantics")  # §3.7: the main-loop M is still published
-        if semantics == SEMANTICS_RESTART_ZERO:
-            baseline = Baseline("zero")  # D2: totals restart at zero for such resumed processes
-        elif pred_state == "proven":
-            baseline = Baseline("cumulative", pred_cum)
-        else:
-            baseline = Baseline(pred_state)
+        baseline = resumed_baseline(inv, pred_state, pred_cum)
     elif inv["mode"] in ("resumed", None):
         pred_state, baseline = "unproven", Baseline("unproven")
     results = _results(conn, inv["id"])
@@ -694,6 +703,9 @@ def _after_finalization(scan: Scan, inv: dict, attempt: Attempt, path: Path) -> 
         record_correction(scan.conn, kind="late_terminal", invocation_id=inv["id"], detail=attempt.terminal["event"],
                           dedupe_key=f"late_terminal:{inv['id']}", now=scan.now)
     late_tail_check(scan, inv, path)
+    from .late import record_late_facts  # late.py builds on this module's readers (F4)
+
+    record_late_facts(scan, inv, path)
 
 
 def process_attempt(scan: Scan, task_dir: Path, task_id: str, task_class: str, attempt: Attempt) -> None:

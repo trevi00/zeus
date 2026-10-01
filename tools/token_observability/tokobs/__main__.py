@@ -2,7 +2,7 @@
 
 Purpose: argparse entry that only invokes the use-case modules. Layer: tooling. Owns: exit codes (0 ok, 1 not found
 or refused input, 2 usage, 75 another collector holds the lock). Does-not-own: any policy.
-Implements: ACCEPTANCE A18; DESIGN §3.1 (`scan --data DIR --source-root A_ROOT`), §4 (`report --task`).
+Implements: ACCEPTANCE A18; DESIGN §3.1 (`scan --data DIR --source-root A_ROOT`), §4 (`report --task`, `report --invocation`).
 """
 
 from __future__ import annotations
@@ -16,7 +16,7 @@ from .collector import scan_once
 from .config import ConfigError, load_registry, validate_root
 from .ledger import EXIT_BUSY, CollectorBusy, LedgerError, collector_lock, open_ledger
 from .render import render
-from .report import render_report, task_report
+from .report import invocation_report, render_report, task_report
 from .s1_routine import parse_at
 
 
@@ -58,7 +58,9 @@ def main(argv: list[str] | None = None) -> int:
     rend.add_argument("--now")
     rep = sub.add_parser("report", help="print one task's invocations, contributions and corrections")
     rep.add_argument("--data", required=True, type=Path)
-    rep.add_argument("--task", required=True)
+    which = rep.add_mutually_exclusive_group(required=True)
+    which.add_argument("--task")
+    which.add_argument("--invocation", help="a canonical invocation ID or a Codex run stem (no task binding)")
     srv = sub.add_parser("serve", help="periodic scan under the flock + /metrics (DESIGN §3, §7)")
     srv.add_argument("--listen", required=True, help="ADDR:PORT, an IP address (never a hostname)")
     srv.add_argument("--data", type=Path)
@@ -94,11 +96,11 @@ def main(argv: list[str] | None = None) -> int:
         else:
             ledger = open_ledger(ns.data, create=False)
             try:
-                report = task_report(ledger, ns.task)
+                report = task_report(ledger, ns.task) if ns.task else invocation_report(ledger, ns.invocation)
             finally:
                 ledger.close()
             if report is None:
-                print("no such task", file=sys.stderr)
+                print("no such task" if ns.task else "no such invocation", file=sys.stderr)
                 return 1
             sys.stdout.write(render_report(report))
     except CollectorBusy:

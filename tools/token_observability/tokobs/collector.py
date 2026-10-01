@@ -18,6 +18,7 @@ from .aliases import scan_aliases
 from .backfill import ensure_live_since, record_ingest_lag
 from .config import TaskClassRegistry
 from .deferred import read_deferred_rows, read_s9
+from .late import link_late_predecessors
 from .ledger import Ledger, collector_lock, open_ledger
 from .s1_routine import MAX_READ_BYTES, Scan, scan_routine
 from .s2_streams import scan_s2
@@ -40,6 +41,8 @@ def scan_locked(ledger: Ledger, source_root: Path, *, now: int, registry: TaskCl
     aliases = scan_routine(scan)
     claude_aliases = aliases + scan_s2(scan)
     codex_aliases = scan_codex(scan)
+    with ledger.transaction():
+        link_late_predecessors(scan)
     scan_aliases(scan, claude_aliases, codex_aliases)
     ledger.before_commit = None
     with ledger.transaction():

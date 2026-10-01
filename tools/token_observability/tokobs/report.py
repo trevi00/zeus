@@ -3,8 +3,10 @@
 Purpose: operator inspection of the ledger for a single task. Layer: tooling. Owns: DESIGN §4 report shape
 (ids, enums and numbers only; no text field exists in the ledger to print). Does-not-own: any write.
 Implements: ACCEPTANCE A10/A11 (attempts, rework, task tokens), A24 (no text), §3.3 late-arrival visibility.
-Limit: Codex runs are not tasks, so the refined allocation of late Codex points is in the ledger (`codex_points`,
-`corrections`) and not in this per-task report.
+`report --invocation` looks up one canonical invocation (a Codex run, a lane or coordinator stream, or an attempt) by
+its canonical ID, or by a Codex run stem, WITHOUT a task binding: Codex runs and streams are not tasks, and none is
+invented. Both views carry the correction-only late facts and the refined or still-unknown allocation (F4); that
+refinement is computed from the ledger on request and is never a published contribution.
 """
 
 from __future__ import annotations
@@ -12,7 +14,63 @@ from __future__ import annotations
 import json
 import sqlite3
 
+from .late import late_results_facts, late_terminal_facts, refine_late_points, refine_successor
 from .ledger import Ledger
+
+
+def _invocation_section(conn: sqlite3.Connection, inv: dict) -> dict:
+    contributions = conn.execute(
+        "SELECT kind,provider,model,role,token_type,SUM(value) AS value FROM contributions "
+        "WHERE invocation_id=? GROUP BY kind,provider,model,role,token_type ORDER BY kind,model,role,token_type",
+        (inv["id"],)).fetchall()
+    corrections = conn.execute(
+        "SELECT kind,detail_enum,recorded_at,linked_ref FROM corrections WHERE invocation_id=? ORDER BY seq",
+        (inv["id"],)).fetchall()
+    shares = conn.execute("SELECT model,reason FROM unknown_shares WHERE invocation_id=? ORDER BY model",
+                          (inv["id"],)).fetchall()
+    costs = conn.execute("SELECT model,usd FROM cost_contributions WHERE invocation_id=? ORDER BY model",
+                         (inv["id"],)).fetchall()
+    section = {
+        **inv,
+        "consultations": conn.execute("SELECT COUNT(*) FROM advisor_consultations WHERE invocation_id=?",
+                                      (inv["id"],)).fetchone()[0],
+        "contributions": [dict(r) for r in contributions],
+        "estimated_cost_usd": [dict(r) for r in costs],
+        "unknown_shares": [dict(r) for r in shares],
+        "corrections": [dict(r) for r in corrections],
+    }
+    late: dict = {}
+    if refined := refine_successor(conn, inv):
+        late["refined_allocation"] = refined
+    if points := refine_late_points(conn, inv):
+        late["late_points"] = points
+    if terminal := late_terminal_facts(conn, inv["id"]):
+        late["late_terminal"] = terminal
+    if results := late_results_facts(conn, inv["id"]):
+        late["late_results"] = results
+    if inv["source"] == "codex_exec":
+        late["codex_run"] = _codex_run(conn, inv["id"])
+    if late:
+        section["late"] = late
+    return section
+
+
+def _codex_run(conn: sqlite3.Connection, inv_id: str) -> dict | None:
+    row = conn.execute("SELECT thread_id,argv_mode,turn,usage_state,input_tokens,cached,cache_write,output,reasoning "
+                       "FROM codex_runs WHERE invocation_id=?", (inv_id,)).fetchone()
+    return dict(row) if row else None
+
+
+def invocation_report(ledger: Ledger, ref: str) -> dict | None:
+    """One canonical invocation by ID (`codex:<stem>`, `lane:…`, `stream:…`, `routine:…`) or by a Codex run stem."""
+    conn = ledger.conn
+    conn.row_factory = sqlite3.Row
+    try:
+        row = conn.execute("SELECT * FROM invocations WHERE id=?", (ref,)).fetchone() \
+            or conn.execute("SELECT * FROM invocations WHERE id=?", (f"codex:{ref}",)).fetchone()
+        return None if row is None else {"invocation": _invocation_section(conn, dict(row))}
+    finally:
+        conn.row_factory = None
 
 
 def task_report(ledger: Ledger, task_id: str) -> dict | None:
@@ -30,26 +88,7 @@ def task_report(ledger: Ledger, task_id: str) -> dict | None:
             "invocations": [],
         }
         for inv in invocations:
-            contributions = conn.execute(
-                "SELECT kind,provider,model,role,token_type,SUM(value) AS value FROM contributions "
-                "WHERE invocation_id=? GROUP BY kind,provider,model,role,token_type ORDER BY kind,model,role,token_type",
-                (inv["id"],)).fetchall()
-            corrections = conn.execute(
-                "SELECT kind,detail_enum,recorded_at FROM corrections WHERE invocation_id=? ORDER BY seq",
-                (inv["id"],)).fetchall()
-            shares = conn.execute("SELECT model,reason FROM unknown_shares WHERE invocation_id=? ORDER BY model",
-                                  (inv["id"],)).fetchall()
-            costs = conn.execute("SELECT model,usd FROM cost_contributions WHERE invocation_id=? ORDER BY model",
-                                 (inv["id"],)).fetchall()
-            report["invocations"].append({
-                **dict(inv),
-                "consultations": conn.execute("SELECT COUNT(*) FROM advisor_consultations WHERE invocation_id=?",
-                                              (inv["id"],)).fetchone()[0],
-                "contributions": [dict(r) for r in contributions],
-                "estimated_cost_usd": [dict(r) for r in costs],
-                "unknown_shares": [dict(r) for r in shares],
-                "corrections": [dict(r) for r in corrections],
-            })
+            report["invocations"].append(_invocation_section(conn, dict(inv)))
         report["task_token_snapshot"] = [dict(r) for r in conn.execute(
             "SELECT role,token_type,value FROM task_token_snapshots WHERE task_id=? ORDER BY role,token_type",
             (task_id,))]

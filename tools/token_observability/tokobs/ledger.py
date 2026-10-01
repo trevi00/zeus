@@ -177,8 +177,36 @@ CREATE TABLE alias_state(
   alias_id INTEGER PRIMARY KEY REFERENCES stream_aliases(alias_id), session_id TEXT, model TEXT, thread_id TEXT);
 """
 
-MIGRATIONS: tuple[tuple[int, str], ...] = ((1, _MIGRATION_1), (2, _MIGRATION_2), (3, _MIGRATION_3))
-_APPEND_ONLY_BY_MIGRATION = {1: _APPEND_ONLY, 2: ("unbound_contributions", "reasoning_contributions"), 3: ()}
+# W1c (migration 4, F4): CORRECTION-ONLY late facts (DESIGN §3.3 late arrival, §3.6). Bounded: ids, enums and numbers,
+# never text. Nothing here is summed into a counter, a contribution or a finalized outcome; the report reads it to
+# show the refined or still-unknown allocation.
+#   late_results / late_result_models: a complete `result` line that arrived after its invocation finalized (a
+#     predecessor's events that appeared later, bytes past a settlement boundary); the cumulative of the newest one
+#     is the baseline a late predecessor offers its successor.
+#   late_codex_terminal: the Codex terminal line that arrived after a horizon finalization.
+#   corrections.linked_ref: the link of a correction (a predecessor invocation id, a stored point id).
+_MIGRATION_4 = """
+ALTER TABLE corrections ADD COLUMN linked_ref TEXT;
+CREATE TABLE late_results(
+  late_id INTEGER PRIMARY KEY AUTOINCREMENT, invocation_id TEXT NOT NULL REFERENCES invocations(id),
+  session_id TEXT NOT NULL, uuid TEXT NOT NULL, zeroed INTEGER NOT NULL, usage_ok INTEGER NOT NULL,
+  input INTEGER, output INTEGER, cache_read INTEGER, cache_write INTEGER, recorded_at INTEGER NOT NULL,
+  UNIQUE (session_id, uuid));
+CREATE TABLE late_result_models(
+  late_id INTEGER NOT NULL REFERENCES late_results(late_id), model TEXT NOT NULL,
+  input INTEGER NOT NULL, output INTEGER NOT NULL, cache_read INTEGER NOT NULL, cache_write INTEGER NOT NULL,
+  cost_usd REAL NOT NULL, PRIMARY KEY (late_id, model));
+CREATE TABLE late_codex_terminal(
+  invocation_id TEXT PRIMARY KEY REFERENCES invocations(id), turn TEXT NOT NULL CHECK (turn IN ('completed','failed')),
+  thread_id TEXT, usage_state TEXT NOT NULL CHECK (usage_state IN ('none','ok','bad')),
+  input_tokens INTEGER, cached INTEGER, cache_write INTEGER, output INTEGER, reasoning INTEGER,
+  recorded_at INTEGER NOT NULL);
+"""
+
+MIGRATIONS: tuple[tuple[int, str], ...] = ((1, _MIGRATION_1), (2, _MIGRATION_2), (3, _MIGRATION_3),
+                                           (4, _MIGRATION_4))
+_APPEND_ONLY_BY_MIGRATION = {1: _APPEND_ONLY, 2: ("unbound_contributions", "reasoning_contributions"), 3: (),
+                             4: ("late_results", "late_result_models", "late_codex_terminal")}
 SCHEMA_VERSION = MIGRATIONS[-1][0]
 
 

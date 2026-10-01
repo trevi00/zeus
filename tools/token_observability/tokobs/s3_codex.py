@@ -222,7 +222,7 @@ def place(conn, point: Point) -> Placement:
     if nxt is not None and not leq(point, _row_point(nxt)):
         return Placement("non_monotonic")
     if nxt is not None and nxt[8] == 1:
-        return Placement("late")  # a later neighbour was already published: stored, never re-published (§3.3)
+        return Placement("late", prev=prev)  # a later neighbour was already published: stored, never re-published (§3.3)
     return Placement("interval" if prev is not None else "anchor", prev=prev)
 
 
@@ -373,9 +373,11 @@ def finalize_run(scan: Scan, spec: RunSpec, state: StreamState, evidence: str) -
             share_reason = "non_monotonic"
             insert_point(conn, point, invocation_id=spec.inv_id, alias_id=None, published=-1)
         elif placed.kind == "late":
-            insert_point(conn, point, invocation_id=spec.inv_id, alias_id=None, published=1)
+            # F4: stored and LINKED (previous known point, correction -> stored point); never published (§3.3).
+            point_id = insert_point(conn, point, invocation_id=spec.inv_id, alias_id=None, published=1,
+                                    prev_id=placed.prev[0] if placed.prev else None)
             record_correction(conn, kind="late_point", invocation_id=spec.inv_id, detail="before_published_point",
-                              dedupe_key=f"late_point:{spec.inv_id}", now=scan.now)
+                              dedupe_key=f"late_point:{spec.inv_id}", now=scan.now, linked_ref=str(point_id))
         elif placed.kind == "anchor" and mode != "fresh":
             insert_point(conn, point, invocation_id=spec.inv_id, alias_id=None, published=1)
             reasons.add("no_baseline")  # §3.5: the first known point of a resumed thread is an anchor only
@@ -451,6 +453,9 @@ def scan_codex(scan: Scan) -> list[tuple[Path, str]]:
             inv = _ensure(scan, spec)
             if inv["lifecycle_state"] == "finalized":
                 late_tail_check(scan, inv, spec.path)
+                from .late import record_late_facts  # late.py builds on this module's readers (F4)
+
+                record_late_facts(scan, inv, spec.path)
                 continue
             state = ingest_run(scan, spec)
             turn = conn.execute("SELECT turn FROM codex_runs WHERE invocation_id=?", (spec.inv_id,)).fetchone()[0]

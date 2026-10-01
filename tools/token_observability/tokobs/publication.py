@@ -42,11 +42,12 @@ def unbound_published(conn: sqlite3.Connection, key: str) -> bool:
 
 
 def record_correction(conn: sqlite3.Connection, *, kind: str, invocation_id: str | None, detail: str,
-                      dedupe_key: str, now: int) -> bool:
-    """Ledger correction (§3.6): counted separately, never edits a contribution. Idempotent by `dedupe_key`."""
+                      dedupe_key: str, now: int, linked_ref: str | None = None) -> bool:
+    """Ledger correction (§3.6): counted separately, never edits a contribution. Idempotent by `dedupe_key`.
+    `linked_ref` is the link of a late fact: the arriving predecessor's invocation id, or a stored point id."""
     cursor = conn.execute(
-        "INSERT OR IGNORE INTO corrections(dedupe_key,kind,invocation_id,detail_enum,recorded_at) VALUES(?,?,?,?,?)",
-        (dedupe_key, kind, invocation_id, detail, now))
+        "INSERT OR IGNORE INTO corrections(dedupe_key,kind,invocation_id,detail_enum,recorded_at,linked_ref) "
+        "VALUES(?,?,?,?,?,?)", (dedupe_key, kind, invocation_id, detail, now, linked_ref))
     return cursor.rowcount == 1
 
 

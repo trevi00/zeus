@@ -19,6 +19,7 @@ from dataclasses import dataclass
 from pathlib import Path, PurePosixPath
 
 from .backfill import stream_is_history
+from .late import record_late_facts
 from .publication import record_correction
 from .s1_routine import (
     TASK_ID,
@@ -178,6 +179,7 @@ def process_stream(scan: Scan, spec: StreamSpec) -> None:
                 record_correction(conn, kind="late_terminal", invocation_id=inv["id"], detail=terminal[1],
                                   dedupe_key=f"late_terminal:{inv['id']}", now=scan.now)
             late_tail_check(scan, inv, spec.path)
+            record_late_facts(scan, inv, spec.path)
             return
         state = ingest_claude_events(scan, inv, spec.path, spec.task_class, provenance=spec.provenance,
                                      slot=spec.slot)
