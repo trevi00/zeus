@@ -2,21 +2,19 @@
 
 Layer: adapters
 Context: credentials
-Owns: `TestRoleKeys` (create/load a role's key in a directory, its x-only public key, signing a Nostr event;
-    the structural `EventSigner` implementation) and the private NIP-01 id serialization it signs over
-Does not own: the BIP-340 arithmetic (`credentials.domain.bip340_sign`), event shape validation and
-    verification (observation), the production signer (a Batch D entry condition)
+Owns: `TestRoleKeys` (create/load a role's key in a directory, its x-only public key, BIP-340 signing of a
+    32-byte event id)
+Does not own: the BIP-340 arithmetic (`credentials.domain.bip340_sign`), the NIP-01 id serialization, event
+    shape validation and verification (observation; `observation.adapters.event_signer` computes the id and
+    calls `sign_id`), the production signer (a Batch D entry condition)
 Entry points: TestRoleKeys
-Contracts: NIP-01 https://github.com/nostr-protocol/nips/blob/master/01.md (the id signed);
-    BIP-340 https://github.com/bitcoin/bips/blob/master/bip-0340.mediawiki; RESEARCH-A A3/A4
+Contracts: BIP-340 https://github.com/bitcoin/bips/blob/master/bip-0340.mediawiki; RESEARCH-A A3/A4
 
-credentials is a DAG root (it may import only the kernel), so the id preimage is serialized here with the same
-exact NIP-01 escape table as `observation.domain.nostr_event`; a test pins the two together.
+Custody signs an event ID (design §5): it never sees or serializes an event.
 """
 
 from __future__ import annotations
 
-import hashlib
 import os
 import re
 import secrets
@@ -27,32 +25,7 @@ from codex_harness.credentials.domain import bip340_sign
 from codex_harness.kernel.errors import ContractError
 
 _ROLE = re.compile(r"[a-z0-9][a-z0-9_-]{0,63}")
-_ESCAPES = {"\n": "\\n", '"': '\\"', "\\": "\\\\", "\r": "\\r", "\t": "\\t", "\b": "\\b", "\f": "\\f"}
-
-
-def _string(value: object) -> str:
-    if not isinstance(value, str):
-        raise ContractError("role keys: expected a string")
-    return '"' + "".join(_ESCAPES.get(ch, ch) for ch in value) + '"'
-
-
-def _count(value: object, name: str) -> str:
-    if isinstance(value, bool) or not isinstance(value, int) or value < 0:
-        raise ContractError(f"role keys: {name} must be a non-negative integer")
-    return str(value)
-
-
-def _event_id(pubkey: str, unsigned: dict) -> str:
-    tags = unsigned["tags"]
-    if not isinstance(tags, list) or any(not isinstance(tag, list) for tag in tags):
-        raise ContractError("role keys: tags must be a list of lists")
-    tag_text = "[" + ",".join("[" + ",".join(_string(item) for item in tag) + "]" for tag in tags) + "]"
-    text = "[0," + ",".join((_string(pubkey), _count(unsigned["created_at"], "created_at"),
-                             _count(unsigned["kind"], "kind"), tag_text, _string(unsigned["content"]))) + "]"
-    try:
-        return hashlib.sha256(text.encode("utf-8")).hexdigest()
-    except UnicodeEncodeError as exc:
-        raise ContractError("role keys: text is not valid Unicode") from exc
+_HEX64 = re.compile(r"[0-9a-f]{64}")
 
 
 class TestRoleKeys:
@@ -116,18 +89,8 @@ class TestRoleKeys:
         """The x-only public key as 64 lowercase hex characters."""
         return bip340_sign.xonly_pubkey(self._secret(role)).hex()
 
-    def sign(self, role: str, unsigned_event: dict) -> dict:
-        """Set pubkey, id and sig on an event that has kind, created_at, tags and content."""
-        if not isinstance(unsigned_event, dict) or not {"kind", "created_at", "tags", "content"} <= set(
-                unsigned_event) or set(unsigned_event) - {"kind", "created_at", "tags", "content", "pubkey"}:
-            raise ContractError("role keys: an unsigned event has kind, created_at, tags and content "
-                                "(and optionally this role's pubkey)")
-        secret = self._secret(role)
-        pubkey = bip340_sign.xonly_pubkey(secret).hex()
-        if unsigned_event.get("pubkey", pubkey) != pubkey:
-            raise ContractError("role keys: the event names another pubkey")
-        ident = _event_id(pubkey, unsigned_event)
-        sig = bip340_sign.sign(secret, bytes.fromhex(ident)).hex()
-        return {"id": ident, "pubkey": pubkey, "created_at": unsigned_event["created_at"],
-                "kind": unsigned_event["kind"], "tags": [list(tag) for tag in unsigned_event["tags"]],
-                "content": unsigned_event["content"], "sig": sig}
+    def sign_id(self, role: str, event_id_hex: str) -> str:
+        """BIP-340 signature (128 lowercase hex characters) over the 32-byte event id."""
+        if not isinstance(event_id_hex, str) or not _HEX64.fullmatch(event_id_hex):
+            raise ContractError("role keys: an event id is 64 lowercase hex characters")
+        return bip340_sign.sign(self._secret(role), bytes.fromhex(event_id_hex)).hex()
