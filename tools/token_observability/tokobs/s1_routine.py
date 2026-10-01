@@ -26,18 +26,27 @@ import time
 from dataclasses import dataclass, field
 from pathlib import Path
 
+from .backfill import attempt_is_history
 from .config import TaskClassRegistry
 from .ledger import Ledger
 from .partition import MODEL_USAGE_FIELDS, USAGE_FIELDS, Baseline, ResultFacts, plan_partition
-from .publication import finalize_invocation, publish_contribution, record_correction
+from .publication import (
+    finalize_invocation,
+    publish_contribution,
+    record_correction,
+    unbound_published,
+)
 from .vocab import (
     ADVISOR_STATES,
+    EXECUTOR_ROLE,
     RESUME_CUMULATIVE_SINCE,
     TOKEN_TYPES,
     is_model_mismatch,
     normalize_model,
     parse_version,
 )
+from .windows import observe as observe_rate
+from .windows import parse_ts
 
 SOURCE = "routine"
 PROVIDER = "anthropic"
@@ -48,6 +57,7 @@ HORIZON_SLACK_SECONDS = 600  # DESIGN §3.2: dispatched.at + timeout + 30 s kill
 FALLBACK_TIMEOUT_SECONDS = 14_400  # a start row without a usable timeout_seconds: the design's LANE_HORIZON bound
 MAX_READ_BYTES = 8 * 1024 * 1024  # one bounded chunk per stream per scan (§3.1)
 MAX_RECEIPT_BYTES = 2 * 1024 * 1024
+MAX_JSON_BYTES = 1024 * 1024
 TASK_ID = re.compile(r"^[A-Za-z0-9][A-Za-z0-9._-]{0,255}$")
 EVENTS_NAME = re.compile(r"^events-[A-Za-z0-9._-]+\.jsonl$")
 _AT = re.compile(r"^\d{4}-\d\d-\d\dT\d\d:\d\d:\d\dZ$")
@@ -65,6 +75,16 @@ def open_regular(path: Path):
     except BaseException:
         os.close(fd)
         raise
+
+
+def read_json(path: Path) -> dict | None:
+    try:
+        with open_regular(path) as handle:
+            raw = handle.read(MAX_JSON_BYTES + 1)
+        data = json.loads(raw) if len(raw) <= MAX_JSON_BYTES else None
+    except (OSError, ValueError, RecursionError):
+        return None
+    return data if isinstance(data, dict) else None
 
 
 def parse_at(value: object) -> int | None:
@@ -97,6 +117,7 @@ class Attempt:
     number: int
     start: dict
     terminal: dict | None = None
+    slot: str = "unknown"  # the `credential_selected` row's selection (§3.8, source-owned link)
 
 
 @dataclass
@@ -133,6 +154,8 @@ def parse_record(rows: list[dict]) -> TaskView:
     for row in rows:
         number = row.get("attempt")
         attempt = view.attempts.get(number) if isinstance(number, int) else None
+        if row["event"] == "credential_selected" and attempt is not None and attempt.slot == "unknown":
+            attempt.slot = row.get("selection") if row.get("selection") in ("primary", "secondary") else "unknown"
         if row["event"] in TERMINAL_EVENTS and attempt is not None and attempt.terminal is None:
             attempt.terminal = row
         elif row["event"] == "completed" and view.completed is None and row.get("outcome") in ("accepted", "abandoned"):
@@ -150,6 +173,8 @@ class Scan:
     now: int
     registry: TaskClassRegistry
     max_read_bytes: int = MAX_READ_BYTES
+    live_since: int | None = None  # §3.9 / C-W1-7: None = no backfill classification
+    codex_idle_seconds: int = 0
 
     @property
     def conn(self) -> sqlite3.Connection:
@@ -190,7 +215,8 @@ def _read_chunk(handle, offset: int, limit: int) -> tuple[bytes, int]:
     return data, os.fstat(handle.fileno()).st_size
 
 
-def read_stream(scan: Scan, path: Path, *, source_alias: tuple[str, str | None, str] | None):
+def read_stream(scan: Scan, path: Path, *, source_alias: tuple[str, str | None, str] | None,
+                source: str = SOURCE):
     """Open `path` and return (alias_id, offset, complete_bytes, state). `source_alias` is
     (binding, invocation_id, provenance) for a NEW read identity. A changed identity (inode, shrink, first-line
     hash) starts a new alias row and re-reads from 0; accounting keys absorb the replay (DESIGN §3.1)."""
@@ -214,7 +240,7 @@ def read_stream(scan: Scan, path: Path, *, source_alias: tuple[str, str | None, 
             cursor = conn.execute(
                 "INSERT INTO stream_aliases(path,dev,ino,head_sha256,source,binding,invocation_id,provenance,"
                 "first_seen) VALUES(?,?,?,?,?,?,?,?,?)",
-                (str(path), st.st_dev, st.st_ino, None, SOURCE, binding, inv_id, provenance, scan.now))
+                (str(path), st.st_dev, st.st_ino, None, source, binding, inv_id, provenance, scan.now))
             alias_id, offset = cursor.lastrowid, 0
             conn.execute(
                 "INSERT INTO read_state(path,alias_id,dev,ino,head_sha256,offset,closed_size) VALUES(?,?,?,?,NULL,0,NULL) "
@@ -260,10 +286,10 @@ def parse_line(raw: bytes) -> dict | None:
 
 
 def note_malformed(conn: sqlite3.Connection, path: Path, offset: int, raw: bytes, kind: str,
-                   invocation_id: str | None) -> None:
+                   invocation_id: str | None, source: str = SOURCE) -> None:
     conn.execute("INSERT OR IGNORE INTO malformed_lines(path,line_offset,line_sha256,source,kind,invocation_id) "
                  "VALUES(?,?,?,?,?,?)",
-                 (str(path), offset, hashlib.sha256(raw).hexdigest(), SOURCE, kind, invocation_id))
+                 (str(path), offset, hashlib.sha256(raw).hexdigest(), source, kind, invocation_id))
 
 
 # --------------------------------------------------------------------- result and event facts
@@ -356,14 +382,18 @@ def _ensure_invocation(scan: Scan, task_id: str, task_class: str, attempt: Attem
     resumed = start["event"] == "resumed"
     advisor = normalize_model(start.get("advisor")).label if isinstance(start.get("advisor"), str) else None
     timeout = _int(start.get("timeout_seconds"))
+    started = parse_at(start.get("at")) or scan.now
+    terminal_at = parse_at(attempt.terminal.get("at")) if attempt.terminal else None
+    history = attempt_is_history(scan.live_since, started, terminal_at,
+                                 (timeout or FALLBACK_TIMEOUT_SECONDS) + KILL_GRACE_SECONDS + HORIZON_SLACK_SECONDS)
     scan.conn.execute(
         "INSERT INTO invocations(id,source,provider,session_or_thread,task_id,attempt,mode,predecessor_id,"
-        "requested_model_raw,advisor_model,lifecycle_state,started_at,timeout_seconds,task_class) "
-        "VALUES(?,?,?,?,?,?,?,?,?,?,'open',?,?,?)",
+        "requested_model_raw,advisor_model,lifecycle_state,started_at,timeout_seconds,task_class,backfill) "
+        "VALUES(?,?,?,?,?,?,?,?,?,?,'open',?,?,?,?)",
         (inv_id, SOURCE, PROVIDER, safe_token(start.get("worker_session")), task_id, attempt.number,
          "resumed" if resumed else "fresh", invocation_id(task_id, attempt.number - 1) if resumed else None,
-         safe_token(start.get("model")), advisor, parse_at(start.get("at")) or scan.now,
-         timeout if timeout else FALLBACK_TIMEOUT_SECONDS, task_class))
+         safe_token(start.get("model")), advisor, started,
+         timeout if timeout else FALLBACK_TIMEOUT_SECONDS, task_class, int(history)))
     return _inv(scan.conn, inv_id)  # type: ignore[return-value]
 
 
@@ -435,29 +465,52 @@ def _apply_result(scan: Scan, inv: dict, obj: dict, raw: bytes, path: Path, offs
         _flag(conn, inv["id"], "unrecognized", name)
     if result.usage is not None and not result.zeroed:  # §3.6: a main_result publishes when its line commits
         executor = inv["executor_model"] or normalize_model(inv["requested_model_raw"]).label
+        key = f"{result.session_id}:{result.uuid}"
+        if unbound_published(conn, key):
+            # C-W1-2: an unbound alias already published these facts as identity_unavailable; a later canonical
+            # arrival keeps the result row (for M) but publishes nothing a second time.
+            record_correction(conn, kind="duplicate_after_publish", invocation_id=inv["id"],
+                              detail="published_as_identity_unavailable", dedupe_key=f"unb:{key}", now=scan.now)
+            return
         for tau in TOKEN_TYPES:
-            publish_contribution(conn, key=f"{result.session_id}:{result.uuid}", kind="main_result",
-                                 invocation_id=inv["id"], provider=PROVIDER, model=executor, role="implementer",
-                                 source=SOURCE, task_class=task_class, token_type=tau, value=result.usage[tau],
-                                 now=scan.now, backfill=inv["backfill"])
+            publish_contribution(conn, key=key, kind="main_result", invocation_id=inv["id"],
+                                 provider=inv["provider"], model=executor, role=EXECUTOR_ROLE[inv["source"]],
+                                 source=inv["source"], task_class=task_class, token_type=tau,
+                                 value=result.usage[tau], now=scan.now, backfill=inv["backfill"])
 
 
-def _ingest_events(scan: Scan, inv: dict, path: Path, task_class: str) -> StreamState:
-    """Read and apply the new complete lines of this attempt's canonical stream, inside the caller's transaction."""
-    read = read_stream(scan, path, source_alias=("canonical", inv["id"], "dispatch_record"))
+def ingest_claude_events(scan: Scan, inv: dict, path: Path, task_class: str, *, provenance: str,
+                         slot: str = "unknown") -> StreamState:
+    """Read and apply the new complete lines of a canonical Claude stream (S1 attempt, S2 lane or coordinator),
+    inside the caller's transaction. `rate_limit_event` lines become window markers (§3.8) with the nearest
+    preceding line timestamp as observation time."""
+    source = inv["source"]
+    read = read_stream(scan, path, source_alias=("canonical", inv["id"], provenance), source=source)
     if read is None:
         return StreamState(False, True)
     alias_id, offset, complete, state = read
+    clock = scan.conn.execute("SELECT last_ts FROM stream_clock WHERE alias_id=?", (alias_id,)).fetchone()
+    last_ts = clock[0] if clock else None
+    slot = slot if slot in ("primary", "secondary") else "unknown"
     for line_offset, raw in iter_lines(complete, offset):
         obj = parse_line(raw)
         if obj is None:
-            note_malformed(scan.conn, path, line_offset, raw, "line", inv["id"])
-        elif obj["type"] == "system" and obj.get("subtype") == "init":
+            note_malformed(scan.conn, path, line_offset, raw, "line", inv["id"], source)
+            continue
+        stamp = parse_ts(obj.get("timestamp"))
+        if obj["type"] == "system" and obj.get("subtype") == "init":
             _apply_init(scan, inv, obj)
         elif obj["type"] == "assistant":
             _apply_assistant(scan, inv, obj, raw)
         elif obj["type"] == "result":
             _apply_result(scan, inv, obj, raw, path, line_offset, task_class)
+        elif obj["type"] == "rate_limit_event":
+            observe_rate(scan.conn, slot=slot, stream=str(path), line_index=line_offset, obj=obj, raw=raw,
+                         observed_at=last_ts)
+        if stamp is not None:
+            last_ts = stamp
+    scan.conn.execute("INSERT INTO stream_clock(alias_id,last_ts) VALUES(?,?) ON CONFLICT(alias_id) DO UPDATE "
+                      "SET last_ts=excluded.last_ts", (alias_id, last_ts))
     save_progress(scan.conn, path, alias_id, state.prefix_end, complete, first_chunk=offset == 0)
     return state
 
@@ -518,14 +571,17 @@ def _results(conn: sqlite3.Connection, inv_id: str) -> list[ResultFacts]:
     return facts
 
 
-def _finalize(scan: Scan, inv: dict, attempt: Attempt, task_dir: Path, state: StreamState, task_class: str,
-              evidence: str) -> bool:
-    """Finalize one attempt. False (and `awaiting_predecessor`) while the predecessor is not finalized."""
+def finalize_claude(scan: Scan, inv: dict, path: Path, state: StreamState, task_class: str, *, evidence: str,
+                    outcome: str, receipt: tuple[int | None, str | None, str | None] = (None, None, None),
+                    terminal_kind: str = "record_row") -> bool:
+    """Finalize one Claude process (S1 attempt, S2 lane or coordinator stream). False (and `awaiting_predecessor`)
+    while a named predecessor is not finalized. `mode` None (no launcher metadata, §3.3) = continuity UNPROVEN, so
+    a resumed session's cumulative baseline is unknown and the remainder is withheld (`no_baseline`, C-W1-6)."""
     conn = scan.conn
     external: set[str] = set()
     baseline = Baseline("zero")
     pred_state = "none"
-    if inv["mode"] == "resumed":
+    if inv["mode"] == "resumed" and inv["predecessor_id"]:
         pred = _predecessor(scan, inv)
         if pred is None:
             conn.execute("UPDATE invocations SET lifecycle_state='awaiting_predecessor' WHERE id=?", (inv["id"],))
@@ -540,6 +596,8 @@ def _finalize(scan: Scan, inv: dict, attempt: Attempt, task_dir: Path, state: St
             baseline = Baseline("cumulative", pred_cum)
         else:
             baseline = Baseline(pred_state)
+    elif inv["mode"] in ("resumed", None):
+        pred_state, baseline = "unproven", Baseline("unproven")
     results = _results(conn, inv["id"])
     if not results:
         external.add("no_result")
@@ -550,35 +608,42 @@ def _finalize(scan: Scan, inv: dict, attempt: Attempt, task_dir: Path, state: St
         external.add("malformed")
     closed_size = state.size if state.exists else 0
     if state.tail:  # §3.2 step 2: settle the torn tail once, in this transaction
-        conn.execute("INSERT OR IGNORE INTO stream_settlements(alias_id,prefix_end_offset,tail_bytes,tail_sha256,"
-                     "settled_at) VALUES(?,?,?,?,?)",
-                     (state.alias_id, state.prefix_end, len(state.tail), hashlib.sha256(state.tail).hexdigest(),
-                      scan.now))
-        note_malformed(conn, task_dir / f"events-{attempt.number}.jsonl", state.prefix_end, state.tail, "tail",
-                       inv["id"])
+        settle_tail(conn, state, path, inv, scan.now)
         external.add("incomplete_tail")
     executor = inv["executor_model"] or normalize_model(inv["requested_model_raw"]).label
     consultations = conn.execute("SELECT COUNT(*) FROM advisor_consultations WHERE invocation_id=?",
                                  (inv["id"],)).fetchone()[0]
     plan = plan_partition(results, executor, inv["advisor_model"], consultations, baseline, external)
-    receipt_ok, status, advisor_state = _receipt_facts(task_dir / f"receipt-{attempt.number}.json",
-                                                       inv["advisor_model"] is not None)
-    outcome = attempt.terminal["event"] if attempt.terminal else "terminal_unproven"
-    conn.execute("UPDATE invocations SET predecessor_state=? WHERE id=?", (pred_state, inv["id"]))
-    finalize_invocation(conn, invocation_id=inv["id"], outcome=outcome, reasons=set(), plan=plan, source=SOURCE,
-                        task_class=task_class, terminal_evidence=evidence, advisor_state=advisor_state,
-                        receipt_ok=receipt_ok, worker_status=status, now=scan.now)
-    conn.execute("UPDATE read_state SET closed_size=? WHERE path=?", (closed_size, str(task_dir / f"events-{attempt.number}.jsonl")))
+    conn.execute("UPDATE invocations SET predecessor_state=?, terminal_kind=? WHERE id=?",
+                 (pred_state, terminal_kind, inv["id"]))
+    finalize_invocation(conn, invocation_id=inv["id"], outcome=outcome, reasons=set(), plan=plan, source=inv["source"],
+                        task_class=task_class, terminal_evidence=evidence, advisor_state=receipt[2],
+                        receipt_ok=receipt[0], worker_status=receipt[1], now=scan.now)
+    conn.execute("UPDATE read_state SET closed_size=? WHERE path=?", (closed_size, str(path)))
     return True
 
 
-def _after_finalization(scan: Scan, inv: dict, attempt: Attempt, path: Path) -> None:
-    """Facts arriving after finalization are corrections only (§3.2, §3.6): never a second finalization, a new
-    contribution or a changed outcome."""
+def settle_tail(conn: sqlite3.Connection, state: StreamState, path: Path, inv: dict, now: int) -> None:
+    """DESIGN §3.2 step 2: persist the settlement boundary (length and hash only) and count the tail once."""
+    assert state.tail is not None
+    conn.execute("INSERT OR IGNORE INTO stream_settlements(alias_id,prefix_end_offset,tail_bytes,tail_sha256,"
+                 "settled_at) VALUES(?,?,?,?,?)",
+                 (state.alias_id, state.prefix_end, len(state.tail), hashlib.sha256(state.tail).hexdigest(), now))
+    note_malformed(conn, path, state.prefix_end, state.tail, "tail", inv["id"], inv["source"])
+
+
+def _finalize(scan: Scan, inv: dict, attempt: Attempt, task_dir: Path, state: StreamState, task_class: str,
+              evidence: str) -> bool:
+    receipt_ok, status, advisor_state = _receipt_facts(task_dir / f"receipt-{attempt.number}.json",
+                                                       inv["advisor_model"] is not None)
+    outcome = attempt.terminal["event"] if attempt.terminal else "terminal_unproven"
+    return finalize_claude(scan, inv, task_dir / f"events-{attempt.number}.jsonl", state, task_class,
+                           evidence=evidence, outcome=outcome, receipt=(receipt_ok, status, advisor_state))
+
+
+def late_tail_check(scan: Scan, inv: dict, path: Path) -> None:
+    """Bytes past the settlement boundary are a `late_tail` correction, never parsed or published (§3.2 step 4)."""
     conn = scan.conn
-    if inv["terminal_evidence"] == "horizon" and attempt.terminal is not None:
-        record_correction(conn, kind="late_terminal", invocation_id=inv["id"], detail=attempt.terminal["event"],
-                          dedupe_key=f"late_terminal:{inv['id']}", now=scan.now)
     try:
         info = path.lstat()
     except OSError:
@@ -596,6 +661,15 @@ def _after_finalization(scan: Scan, inv: dict, attempt: Attempt, path: Path) -> 
             conn.execute("UPDATE read_state SET closed_size=? WHERE path=?", (size, str(path)))
 
 
+def _after_finalization(scan: Scan, inv: dict, attempt: Attempt, path: Path) -> None:
+    """Facts arriving after finalization are corrections only (§3.2, §3.6): never a second finalization, a new
+    contribution or a changed outcome."""
+    if inv["terminal_evidence"] == "horizon" and attempt.terminal is not None:
+        record_correction(scan.conn, kind="late_terminal", invocation_id=inv["id"], detail=attempt.terminal["event"],
+                          dedupe_key=f"late_terminal:{inv['id']}", now=scan.now)
+    late_tail_check(scan, inv, path)
+
+
 def process_attempt(scan: Scan, task_dir: Path, task_id: str, task_class: str, attempt: Attempt) -> None:
     """One transaction per attempt: stream batch, offsets, contributions and (when due) the finalization."""
     path = task_dir / f"events-{attempt.number}.jsonl"
@@ -604,7 +678,7 @@ def process_attempt(scan: Scan, task_dir: Path, task_id: str, task_class: str, a
         if inv["lifecycle_state"] == "finalized":
             _after_finalization(scan, inv, attempt, path)
             return
-        state = _ingest_events(scan, inv, path, task_class)
+        state = ingest_claude_events(scan, inv, path, task_class, provenance="dispatch_record", slot=attempt.slot)
         evidence = "record_row" if attempt.terminal else ("horizon" if horizon_passed(inv, scan.now) else None)
         if evidence is None:
             return
@@ -647,55 +721,16 @@ def _sync_task(scan: Scan, task_id: str, task_class: str, view: TaskView) -> Non
             (task_id, task_id))
 
 
-# --------------------------------------------------------------------- read aliases
-
-
-def _scan_alias(scan: Scan, path: Path) -> None:
-    """A stream no record row names: parse its complete lines for result keys only; publish nothing (DESIGN §3.3).
-    It binds to a canonical invocation when a fact equals one of that invocation's results."""
-    conn = scan.conn
-    with scan.ledger.transaction():
-        row = conn.execute("SELECT a.binding FROM read_state rs JOIN stream_aliases a USING(alias_id) "
-                           "WHERE rs.path=?", (str(path),)).fetchone()
-        if row and row[0] == "bound":
-            return
-        read = read_stream(scan, path, source_alias=("alias_pending", None, "none"))
-        if read is None:
-            return
-        alias_id, offset, complete, state = read
-        for line_offset, raw in iter_lines(complete, offset):
-            obj = parse_line(raw)
-            if obj is None:
-                note_malformed(conn, path, line_offset, raw, "line", None)
-            elif obj["type"] == "result":
-                parsed = parse_result(obj, raw, None)
-                conn.execute("INSERT OR IGNORE INTO alias_facts(alias_id,session_id,uuid) VALUES(?,?,?)",
-                             (alias_id, parsed.session_id, parsed.uuid))
-        save_progress(conn, path, alias_id, state.prefix_end, complete, first_chunk=offset == 0)
-
-
-def _bind_aliases(scan: Scan) -> None:
-    conn = scan.conn
-    with scan.ledger.transaction():
-        for (alias_id,) in conn.execute("SELECT alias_id FROM stream_aliases WHERE binding='alias_pending' "
-                                        "ORDER BY alias_id").fetchall():
-            match = conn.execute("SELECT MIN(r.invocation_id) FROM alias_facts f JOIN results r "
-                                 "ON r.session_id=f.session_id AND r.uuid=f.uuid WHERE f.alias_id=?",
-                                 (alias_id,)).fetchone()
-            if match and match[0]:
-                conn.execute("UPDATE stream_aliases SET binding='bound', invocation_id=?, bound_at=? WHERE alias_id=?",
-                             (match[0], scan.now, alias_id))
-
-
 # --------------------------------------------------------------------- entry point
 
 
-def scan_routine(scan: Scan) -> None:
-    """One bounded pass over `routine-runs`. Attempts of a task are processed strictly in attempt order."""
+def scan_routine(scan: Scan) -> list[tuple[Path, str]]:
+    """One bounded pass over `routine-runs`. Attempts of a task are processed strictly in attempt order. Returns
+    the (path, source) read-alias candidates (streams no record row names) for aliases.py."""
     runs = scan.source_root / "routine-runs"
     if not runs.is_dir():
         scan.ledger.set_meta("source_up.routine", 0)
-        return
+        return []
     scan.ledger.set_meta("source_up.routine", 1)
     canonical: set[Path] = set()
     candidates: list[Path] = []
@@ -712,7 +747,5 @@ def scan_routine(scan: Scan) -> None:
             canonical.add(task_dir / f"events-{number}.jsonl")
             process_attempt(scan, task_dir, task_dir.name, task_class, view.attempts[number])
         _sync_task(scan, task_dir.name, task_class, view)
-    for path in candidates:
-        if path not in canonical and EVENTS_NAME.match(path.name) and path.is_file() and not path.is_symlink():
-            _scan_alias(scan, path)
-    _bind_aliases(scan)
+    return [(path, SOURCE) for path in candidates
+            if path not in canonical and EVENTS_NAME.match(path.name) and path.is_file() and not path.is_symlink()]

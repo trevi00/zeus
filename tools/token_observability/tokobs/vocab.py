@@ -24,11 +24,21 @@ OUTCOMES = ("finished", "failed", "escalate", "blocked", "timed_out", "interrupt
 # DESIGN §3.6: primary reason precedence, strongest first.
 REASON_PRECEDENCE = ("no_result", "error_zeroed", "terminal_unproven", "incomplete_tail", "no_baseline",
                      "unknown_version_semantics", "non_monotonic", "inconsistent", "malformed")
+EXECUTOR_ROLE = {"routine": "implementer", "coordinator": "coordinator", "lane": "lane_worker",
+                 "codex_exec": "reviewer"}
+LANE_HORIZON_SECONDS = 14_400  # DESIGN §3.2 / C-W1-2: idle horizon of a stream without launcher metadata
+# DESIGN §3.2: S3 idle horizon = 2 x the policy `decision_seconds` (src/codex_harness/domain/policy.py). The
+# collector is stdlib-only and runs where that package is absent, so the value is mirrored here and a test
+# (test_tokobs_codex) asserts it still equals the policy field.
+CODEX_DECISION_SECONDS = 900
+CODEX_IDLE_SECONDS = 2 * CODEX_DECISION_SECONDS
+IDENTITY_UNAVAILABLE = "identity_unavailable"
 ADVISOR_STATES = ("enabled", "skipped", "unknown", "not_configured")
 CORRECTION_KINDS = ("late_point", "late_predecessor", "late_terminal", "late_tail", "duplicate_after_publish")
 OPEN_STATES = ("open", "terminal_observed_pending_eof", "awaiting_predecessor")
 FILE_STATES = ("open", "finalized", "alias_pending", "bound")
 TASK_OUTCOMES = ("accepted", "abandoned")
+WINDOW_STATES = ("current", "stale", "expired", "unavailable")
 
 MODEL_ALLOWLIST = ("claude-opus-5-5", "claude-sonnet-5-5", "claude-haiku-4-5", "gpt-6-astra")
 FAMILY_MODEL = {"opus": "claude-opus-5-5", "sonnet": "claude-sonnet-5-5", "haiku": "claude-haiku-4-5"}
@@ -44,7 +54,11 @@ LABEL_ALLOWLISTS = {
     "source": frozenset(SOURCES),
     "outcome": frozenset(OUTCOMES) | frozenset(TASK_OUTCOMES),
     "reason": frozenset(REASON_PRECEDENCE),
-    "state": frozenset(OPEN_STATES) | frozenset(ADVISOR_STATES) | frozenset(FILE_STATES),
+    "state": frozenset(OPEN_STATES) | frozenset(ADVISOR_STATES) | frozenset(FILE_STATES) | frozenset(WINDOW_STATES),
+    "slot": frozenset(("primary", "secondary", "unknown")),
+    "window": frozenset(("five_hour", "seven_day")),
+    "freshness": frozenset(("current", "stale")),
+    "provenance": frozenset(("stream_preceding_timestamp",)),
     "kind": frozenset(CORRECTION_KINDS),
     "first_pass": frozenset(("true", "false")),
 }

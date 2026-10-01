@@ -34,6 +34,13 @@ def publish_contribution(conn: sqlite3.Connection, *, key: str, kind: str, invoc
     return cursor.rowcount == 1
 
 
+def unbound_published(conn: sqlite3.Connection, key: str) -> bool:
+    """True when an unbound alias already published the facts of accounting key `key` (C-W1-2)."""
+    prefix = key + "|"
+    return conn.execute("SELECT 1 FROM unbound_contributions WHERE substr(id,1,?)=? LIMIT 1",
+                        (len(prefix), prefix)).fetchone() is not None
+
+
 def record_correction(conn: sqlite3.Connection, *, kind: str, invocation_id: str | None, detail: str,
                       dedupe_key: str, now: int) -> bool:
     """Ledger correction (§3.6): counted separately, never edits a contribution. Idempotent by `dedupe_key`."""
@@ -85,3 +92,14 @@ def finalize_invocation(conn: sqlite3.Connection, *, invocation_id: str, outcome
         "finalized_at=?, advisor_state=?, receipt_ok=?, worker_status=? WHERE id=?",
         (outcome, reason, terminal_evidence, now, advisor_state, receipt_ok, worker_status, invocation_id))
     return reason
+
+
+def close_invocation(conn: sqlite3.Connection, *, invocation_id: str, outcome: str, reason: str | None,
+                     terminal_evidence: str, terminal_kind: str, now: int) -> bool:
+    """Finalize a non-Claude invocation (Codex run): outcome, the one unknown reason and the lifecycle state in the
+    caller's single transaction. Exactly once: a finalized row is left untouched."""
+    cursor = conn.execute(
+        "UPDATE invocations SET lifecycle_state='finalized', outcome=?, unknown_reason=?, terminal_evidence=?, "
+        "terminal_kind=?, finalized_at=? WHERE id=? AND lifecycle_state!='finalized'",
+        (outcome, reason, terminal_evidence, terminal_kind, now, invocation_id))
+    return cursor.rowcount == 1

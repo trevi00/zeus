@@ -6,6 +6,7 @@ No file under `A/`, `/srv`, `~/.claude` or `~/.codex` is read; roots are always 
 from __future__ import annotations
 
 import json
+import os
 import re
 import sqlite3
 from pathlib import Path
@@ -100,6 +101,44 @@ def completed_row(outcome: str, at: int) -> dict:
     return {"event": "completed", "outcome": outcome, "at": iso(at), "note": RECORD_NOTE_SENTINEL}
 
 
+def iso_ms(epoch: float) -> str:
+    import time
+    return time.strftime("%Y-%m-%dT%H:%M:%S", time.gmtime(int(epoch))) + f".{int(round((epoch % 1) * 1000)):03d}Z"
+
+
+def user_line(ts: float, session: str = SESSION) -> dict:
+    """A timestamped non-event line: the bracket for a following `rate_limit_event` (SOURCE-MAP R6)."""
+    return {"type": "user", "session_id": session, "timestamp": iso_ms(ts), "uuid": f"u-{int(ts * 1000)}",
+            "message": {"role": "user", "content": [{"type": "text", "text": ASSISTANT_TEXT_SENTINEL}]}}
+
+
+def rate_limit(uuid: str, five_hour=None, seven_day=None, *, session: str = SESSION, status: str = "allowed") -> dict:
+    """`windows` values are (utilization, resetsAt) pairs, a raw dict, or None for an absent window."""
+    def window(value):
+        return {"utilization": value[0], "resetsAt": value[1]} if isinstance(value, tuple) else value
+
+    unified = {name: window(value) for name, value in (("five_hour", five_hour), ("seven_day", seven_day))
+               if value is not None}
+    return {"type": "rate_limit_event", "session_id": session, "uuid": uuid,
+            "rate_limit_info": {"status": status, "unifiedWindows": unified}}
+
+
+def codex_usage(inp: int, cached: int, out: int, reasoning: int = 0, cw: int | None = 0) -> dict:
+    usage = {"input_tokens": inp, "cached_input_tokens": cached, "output_tokens": out,
+             "reasoning_output_tokens": reasoning}
+    if cw is not None:
+        usage["cache_write_input_tokens"] = cw
+    return usage
+
+
+def codex_thread_started(thread: str) -> dict:
+    return {"type": "thread.started", "thread_id": thread}
+
+
+def codex_turn_completed(usage_value: dict) -> dict:
+    return {"type": "turn.completed", "usage": usage_value}
+
+
 def parse_prom(text: str) -> dict[tuple[str, tuple[tuple[str, str], ...]], float]:
     out = {}
     for line in text.splitlines():
@@ -172,6 +211,62 @@ class Rig:
         body = {"receipt_ok": ok, "worker_status": "done", "advisor_enabled": advisor_enabled,
                 "final_text": RECEIPT_TEXT_SENTINEL}
         (self.task_dir(task) / f"receipt-{attempt}.json").write_text(json.dumps(body))
+
+    # -- S2 / S3 sources ------------------------------------------------------
+    def stream(self, rel: str, *lines: dict, torn: str = "", touch: bool = True) -> Path:
+        """Append complete lines to a root-relative file; the mtime follows the rig clock (idle horizons)."""
+        path = self.root / rel
+        path.parent.mkdir(parents=True, exist_ok=True)
+        with path.open("a") as handle:
+            for line in lines:
+                handle.write(json.dumps(line, sort_keys=True) + "\n")
+            handle.write(torn)
+        if touch:
+            self.touch(path)
+        return path
+
+    def touch(self, path: Path, epoch: float | None = None) -> None:
+        stamp = self.now if epoch is None else epoch
+        os.utime(path, (stamp, stamp))
+
+    def credential_receipt(self, consumer: str, rel: str, selection: str = "primary", name: str | None = None) -> None:
+        """A credential-selection receipt; its `events` path carries a HOST prefix unlike the scan root."""
+        directory = self.root / "credential-selection"
+        directory.mkdir(parents=True, exist_ok=True)
+        body = {"consumer": consumer, "events": f"/host/zeus/artifacts/aibox/{rel}", "selection": selection,
+                "has_token": True, "reasons": [], "schema": "synthetic"}
+        (directory / (name or f"{len(list(directory.iterdir())):03d}.json")).write_text(json.dumps(body))
+
+    def lane_meta(self, lane: str, run_name: str = "run.json", **fields) -> Path:
+        body = {"session": SESSION, "selection": "primary", "model": "opus", "state": "started",
+                "started_at": "2026-10-01T05:12:33.123456+00:00", **fields}
+        path = self.root / "evidence" / lane / run_name
+        path.parent.mkdir(parents=True, exist_ok=True)
+        path.write_text(json.dumps(body))
+        return path
+
+    def codex_script(self, stem: str, *, resume: bool = True, model: str = "gpt-6-astra") -> None:
+        verb = "exec -s danger-full-access resume --json" if resume else "exec -s danger-full-access --json"
+        thread = " 01a0e11e-synthetic-thread" if resume else ""
+        text = ("set -euo pipefail\nM=/host/zeus/artifacts/aibox\nset -o noclobber\n"
+                f'codex -a never {verb} -m {model} -o "$M/{stem}-codex-final.md"{thread} - < "$M/{stem}-codex-task.md" '
+                f'> "$M/{stem}-codex-events.jsonl" 2> "$M/{stem}-codex-stderr.log"\n')
+        (self.root / f"{stem}-codex-run.sh").write_text(text)
+
+    def codex_events(self, stem: str, *lines: dict, torn: str = "") -> Path:
+        return self.stream(f"{stem}-codex-events.jsonl", *lines, torn=torn)
+
+    def codex_prestart(self, stem: str, thread: str, usage_value: dict) -> None:
+        (self.root / f"{stem}-codex-prestart.json").write_text(json.dumps({"thread_id": thread, "usage": usage_value}))
+
+    def inv(self, inv_id: str) -> dict:
+        conn = sqlite3.connect(self.data / "ledger.sqlite3")
+        conn.row_factory = sqlite3.Row
+        try:
+            row = conn.execute("SELECT * FROM invocations WHERE id=?", (inv_id,)).fetchone()
+            return dict(row) if row else {}
+        finally:
+            conn.close()
 
     # -- scanning -------------------------------------------------------------
     def scan(self, advance: int = 0, **kwargs) -> Prom:

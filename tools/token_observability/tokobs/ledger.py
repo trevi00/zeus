@@ -124,13 +124,57 @@ CREATE TABLE task_token_snapshots(
 """
 
 # Ordered migrations: (version, script). `schema_meta.version` records the applied level.
-MIGRATIONS: tuple[tuple[int, str], ...] = ((1, _MIGRATION_1),)
+# W1b (migration 2). `terminal_kind` names the evidence behind `terminal_evidence='record_row'` for sources that have no
+# record row (run metadata, a Codex turn line), because the migration-1 CHECK cannot be widened in place.
+_MIGRATION_2 = """
+ALTER TABLE invocations ADD COLUMN terminal_kind TEXT;
+CREATE TABLE stream_clock(alias_id INTEGER PRIMARY KEY REFERENCES stream_aliases(alias_id), last_ts REAL);
+CREATE TABLE alias_usage(
+  alias_id INTEGER NOT NULL REFERENCES stream_aliases(alias_id), session_id TEXT NOT NULL, uuid TEXT NOT NULL,
+  model TEXT NOT NULL, input INTEGER NOT NULL, output INTEGER NOT NULL, cache_read INTEGER NOT NULL,
+  cache_write INTEGER NOT NULL, PRIMARY KEY (alias_id, session_id, uuid));
+CREATE TABLE alias_codex_points(
+  alias_id INTEGER NOT NULL REFERENCES stream_aliases(alias_id), thread_id TEXT NOT NULL,
+  input_tokens INTEGER NOT NULL, cached INTEGER NOT NULL, cache_write INTEGER NOT NULL, output INTEGER NOT NULL,
+  reasoning INTEGER NOT NULL, PRIMARY KEY (alias_id, thread_id, input_tokens, cached, cache_write, output, reasoning));
+ALTER TABLE stream_aliases ADD COLUMN unbound_published INTEGER NOT NULL DEFAULT 0;
+CREATE TABLE unbound_contributions(
+  id TEXT PRIMARY KEY, provider TEXT NOT NULL, model TEXT NOT NULL, role TEXT NOT NULL, source TEXT NOT NULL,
+  task_class TEXT NOT NULL, token_type TEXT NOT NULL, value INTEGER NOT NULL CHECK (value > 0),
+  published_at INTEGER NOT NULL, backfill INTEGER NOT NULL DEFAULT 0);
+CREATE TABLE reasoning_contributions(
+  id TEXT PRIMARY KEY, invocation_id TEXT REFERENCES invocations(id), provider TEXT NOT NULL, model TEXT NOT NULL,
+  role TEXT NOT NULL, source TEXT NOT NULL, task_class TEXT NOT NULL, value INTEGER NOT NULL CHECK (value > 0),
+  published_at INTEGER NOT NULL, backfill INTEGER NOT NULL DEFAULT 0);
+-- cache_write = -1 when the point lacks `cache_write_input_tokens` (C-W1-3: unknown, never 0).
+CREATE TABLE codex_runs(
+  invocation_id TEXT PRIMARY KEY REFERENCES invocations(id), thread_id TEXT, argv_mode TEXT NOT NULL
+    CHECK (argv_mode IN ('fresh','resume','unknown')), turn TEXT CHECK (turn IN ('completed','failed') OR turn IS NULL),
+  usage_state TEXT NOT NULL DEFAULT 'none' CHECK (usage_state IN ('none','ok','bad')),
+  input_tokens INTEGER, cached INTEGER, cache_write INTEGER, output INTEGER, reasoning INTEGER, eof INTEGER NOT NULL DEFAULT 0);
+CREATE TABLE codex_points(
+  point_id INTEGER PRIMARY KEY AUTOINCREMENT, thread_id TEXT NOT NULL, input_tokens INTEGER NOT NULL,
+  cached INTEGER NOT NULL, cache_write INTEGER NOT NULL, output INTEGER NOT NULL, reasoning INTEGER NOT NULL,
+  invocation_id TEXT, alias_id INTEGER, published INTEGER NOT NULL DEFAULT 0, prev_point_id INTEGER,
+  UNIQUE (thread_id, input_tokens, cached, cache_write, output, reasoning));
+CREATE INDEX codex_points_thread ON codex_points(thread_id, input_tokens, output);
+CREATE TABLE rate_observations(
+  session_id TEXT NOT NULL, event_key TEXT NOT NULL, window TEXT NOT NULL CHECK (window IN ('five_hour','seven_day')),
+  provider TEXT NOT NULL, slot TEXT NOT NULL, marker TEXT NOT NULL CHECK (marker IN ('value','missing','invalid')),
+  utilization REAL, resets_at INTEGER, observed_at REAL, provenance TEXT NOT NULL, stream TEXT NOT NULL,
+  line_index INTEGER NOT NULL, PRIMARY KEY (session_id, event_key, window));
+CREATE INDEX rate_observations_slot ON rate_observations(provider, slot, window, observed_at);
+CREATE TABLE s9_sources(name TEXT PRIMARY KEY, ok INTEGER NOT NULL);
+"""
+
+MIGRATIONS: tuple[tuple[int, str], ...] = ((1, _MIGRATION_1), (2, _MIGRATION_2))
+_APPEND_ONLY_BY_MIGRATION = {1: _APPEND_ONLY, 2: ("unbound_contributions", "reasoning_contributions")}
 SCHEMA_VERSION = MIGRATIONS[-1][0]
 
 
-def _append_only_triggers() -> str:
+def _append_only_triggers(tables: tuple[str, ...] = _APPEND_ONLY) -> str:
     parts = []
-    for table in _APPEND_ONLY:
+    for table in tables:
         for verb in ("UPDATE", "DELETE"):
             parts.append(f"CREATE TRIGGER {table}_no_{verb.lower()} BEFORE {verb} ON {table} "
                          f"BEGIN SELECT RAISE(ABORT, '{table} is append-only'); END;")
@@ -225,9 +269,8 @@ def _migrate(ledger: Ledger) -> None:
             for statement in script.split(";\n"):
                 if statement.strip():
                     conn.execute(statement)
-            if target == 1:
-                for statement in _append_only_triggers().split("\n"):
-                    conn.execute(statement)
+            for statement in _append_only_triggers(_APPEND_ONLY_BY_MIGRATION[target]).split("\n"):
+                conn.execute(statement)
             conn.execute("INSERT INTO schema_meta(key,value) VALUES('version',?) "
                          "ON CONFLICT(key) DO UPDATE SET value=excluded.value", (str(target),))
 

@@ -15,8 +15,10 @@ from collections import defaultdict
 from dataclasses import dataclass, field
 from pathlib import Path
 
+from . import windows
 from .ledger import Ledger
 from .vocab import (
+    EXECUTOR_ROLE,
     FIXED_TASK_CLASSES,
     LABEL_ALLOWLISTS,
     LABEL_RE,
@@ -24,12 +26,11 @@ from .vocab import (
     MODEL_ALLOWLIST,
     OPEN_STATES,
     OTHER,
+    SOURCES,
 )
 
 MAX_SERIES = 5000
 ELAPSED_BUCKETS = (300, 900, 1800, 3600, 7200, 14400, 28800, 86400)
-EXECUTOR_ROLE = {"routine": "implementer", "coordinator": "coordinator", "lane": "lane_worker",
-                 "codex_exec": "reviewer"}
 OPEN_STATE_OF = {"open": "open", "terminal_observed": "terminal_observed_pending_eof",
                  "terminal_unavailable": "terminal_observed_pending_eof",
                  "awaiting_predecessor": "awaiting_predecessor"}
@@ -104,7 +105,7 @@ def _task_classes(conn) -> set[str]:
     return found
 
 
-def build_data(ledger: Ledger) -> tuple[str, int]:
+def build_data(ledger: Ledger, now: int = 0) -> tuple[str, int]:
     conn = ledger.conn
     label = Labeler(_task_classes(conn))
     m = {name: Metric(name, mtype, text) for name, mtype, text in (
@@ -122,6 +123,12 @@ def build_data(ledger: Ledger) -> tuple[str, int]:
         ("zeus_task_tokens_total", "counter", "Task contributions, added once at close"),
         ("zeus_task_unknown_invocations_total", "counter", "Unknown invocations of closed tasks"),
         ("zeus_task_attempts_total", "counter", "Attempts of closed tasks"),
+        ("zeus_task_review_rounds_total", "counter", "Review rounds of closed tasks; no source exists today (C-W1-5)"),
+        ("zeus_llm_reasoning_output_tokens_total", "counter", "Codex reasoning tokens, a subset of output"),
+        ("zeus_llm_provider_window_state", "gauge", "Provider window state, one-hot (DESIGN §3.8)"),
+        ("zeus_llm_provider_utilization_ratio", "gauge", "Provider-reported utilization; not derived from tokens"),
+        ("zeus_llm_provider_window_observed_timestamp_seconds", "gauge", "Bracketed observation time of the window"),
+        ("zeus_llm_provider_window_resets_timestamp_seconds", "gauge", "Provider-reported window reset time"),
         ("zeus_task_elapsed_seconds", "histogram", "First dispatch to close"),
         ("zeus_tokobs_ledger_corrections_total", "counter", "Late facts recorded as corrections"))}
     for provider, model, role, tau, source, task_class, value in conn.execute(
@@ -129,6 +136,16 @@ def build_data(ledger: Ledger) -> tuple[str, int]:
             "WHERE backfill=0 GROUP BY 1,2,3,4,5,6"):
         m["zeus_llm_tokens_total"].add(label(provider=provider, model=model, role=role, token_type=tau,
                                              source=source, task_class=task_class), value)
+    for provider, model, role, tau, source, task_class, value in conn.execute(
+            "SELECT provider,model,role,token_type,source,task_class,SUM(value) FROM unbound_contributions "
+            "WHERE backfill=0 GROUP BY 1,2,3,4,5,6"):  # C-W1-2: identity_unavailable, no invocation behind it
+        m["zeus_llm_tokens_total"].add(label(provider=provider, model=model, role=role, token_type=tau,
+                                             source=source, task_class=task_class), value)
+    for provider, model, role, source, task_class, value in conn.execute(
+            "SELECT provider,model,role,source,task_class,SUM(value) FROM reasoning_contributions "
+            "WHERE backfill=0 GROUP BY 1,2,3,4,5"):
+        m["zeus_llm_reasoning_output_tokens_total"].add(
+            label(provider=provider, model=model, role=role, source=source, task_class=task_class), value)
     for provider, model, source, outcome, count in conn.execute(
             "SELECT provider,COALESCE(executor_model,'other'),source,outcome,COUNT(*) FROM invocations "
             "WHERE lifecycle_state='finalized' AND backfill=0 GROUP BY 1,2,3,4"):
@@ -171,13 +188,16 @@ def build_data(ledger: Ledger) -> tuple[str, int]:
             "WHERE i.backfill=0 GROUP BY 1,2,3"):
         name = "zeus_llm_model_mismatch_total" if kind == "mismatch" else "zeus_llm_model_unrecognized_total"
         m[name].add(label(provider=provider, source=source), count)
-    for task_class, outcome, first_pass, attempts, unknown, elapsed in conn.execute(
-            "SELECT task_class,outcome,first_pass,attempts,unknown_invocations,closed_at-first_dispatch_at FROM tasks "
+    for task_class, outcome, first_pass, attempts, unknown, elapsed, review_rounds in conn.execute(
+            "SELECT task_class,outcome,first_pass,attempts,unknown_invocations,closed_at-first_dispatch_at,"
+            "review_rounds FROM tasks "
             "WHERE closed_at IS NOT NULL"):
         base = label(task_class=task_class, outcome=outcome)
         m["zeus_task_outcomes_total"].add({**base, **label(first_pass="true" if first_pass else "false")}, 1)
         m["zeus_task_unknown_invocations_total"].add(base, unknown)
         m["zeus_task_attempts_total"].add(base, attempts)
+        if review_rounds is not None:  # never inferred (C-W1-5): absent means no series
+            m["zeus_task_review_rounds_total"].add(base, review_rounds)
         hist = m["zeus_task_elapsed_seconds"]
         for bound in ELAPSED_BUCKETS:
             hist.add({**base, "le": str(bound)}, 1 if elapsed <= bound else 0, "_bucket")
@@ -191,7 +211,24 @@ def build_data(ledger: Ledger) -> tuple[str, int]:
     known = dict(conn.execute("SELECT kind,COUNT(*) FROM corrections GROUP BY 1").fetchall())
     for kind in LABEL_ALLOWLISTS["kind"]:
         m["zeus_tokobs_ledger_corrections_total"].add(label(kind=kind), known.get(kind, 0))
+    _window_metrics(conn, label, m, now)
     return _text(list(m.values()))
+
+
+def _window_metrics(conn, label, m, now: int) -> None:
+    """§3.8: one-hot state per (slot, window); utilization only for current/stale; never 0 for unknown."""
+    for (slot, window), row in windows.selected(conn).items():
+        state = windows.state_of(row, now)
+        base = label(provider=windows.PROVIDER, slot=slot, window=window)
+        for name in windows.STATES:
+            m["zeus_llm_provider_window_state"].add({**base, **label(state=name)}, 1 if name == state else 0)
+        if row is not None and row[0] == "value":
+            _marker, utilization, resets, observed = row
+            if state in ("current", "stale"):
+                m["zeus_llm_provider_utilization_ratio"].add({**base, **label(freshness=state)}, utilization)
+            m["zeus_llm_provider_window_observed_timestamp_seconds"].add(
+                {**base, **label(provenance=windows.PROVENANCE)}, observed)
+            m["zeus_llm_provider_window_resets_timestamp_seconds"].add(base, resets)
 
 
 def build_health(ledger: Ledger, *, refused: bool, series_count: int, now: int) -> str:
@@ -226,16 +263,35 @@ def build_health(ledger: Ledger, *, refused: bool, series_count: int, now: int) 
             "LEFT JOIN invocations i ON i.id=a.invocation_id"):
         state = "finalized" if lifecycle == "finalized" else "open" if binding == "canonical" else binding
         files[(source, state)] += 1
+    up = {k.split(".", 1)[1]: int(v) for k, v in conn.execute(
+        "SELECT key,value FROM meta WHERE key LIKE 'source_up.%'").fetchall()}
+    up_names = {"s2": ("coordinator", "lane"), "routine": ("routine",), "codex_exec": ("codex_exec",)}
     sources = sorted({"routine"} | set(malformed) | set(unbound) | {s for s, _ in files})
+    sources = [s for s in sources if s in SOURCES]
     gauge("zeus_tokobs_malformed_lines_total", "Complete malformed lines and settled torn tails",
           [({"source": s}, malformed.get(s, 0)) for s in sources], "counter")
     gauge("zeus_tokobs_unbound_streams", "Read aliases with no canonical invocation",
           [({"source": s}, unbound.get(s, 0)) for s in sources])
     gauge("zeus_tokobs_source_files", "Stream files by state",
           [({"source": s, "state": st}, files.get((s, st), 0)) for s in sources for st in ("open", "finalized", "alias_pending", "bound")])
-    up = ledger.meta("source_up.routine")
-    if up is not None:
-        gauge("zeus_tokobs_source_up", "1 when the source directory is readable", [({"source": "routine"}, int(up))])
+    samples = [({"source": name}, flag) for key, flag in sorted(up.items()) for name in up_names.get(key, ())]
+    if samples:
+        gauge("zeus_tokobs_source_up", "1 when the source directory is readable", samples)
+    lag = ledger.meta("ingest_lag_seconds")
+    if lag is not None:
+        gauge("zeus_tokobs_ingest_lag_seconds", "Unobserved window at the start of the last scan", [({}, int(lag))])
+    gauge("zeus_tokobs_backfill_invocations", "Invocations classified as history (excluded from counters)",
+          [({}, conn.execute("SELECT COUNT(*) FROM invocations WHERE backfill=1").fetchone()[0])])
+    deferred = ledger.meta("deferred_source_rows")
+    if deferred is not None:
+        gauge("zeus_tokobs_deferred_source_rows", "Rows of a configured deferred source; never ingested (§3.10)",
+              [({}, int(deferred))])
+    collected = ledger.meta("s9.collected_at")
+    if collected is not None:
+        gauge("zeus_s9_snapshot_collected_timestamp_seconds", "S9 monitoring.json collected_at", [({}, float(collected))])
+    s9 = conn.execute("SELECT name,ok FROM s9_sources ORDER BY name").fetchall()
+    if s9:
+        gauge("zeus_s9_source_ok", "1 when the S9 source status is ok", [({"s9_source": n}, ok) for n, ok in s9])
     return _text(rows)[0]
 
 
@@ -270,7 +326,7 @@ def render(ledger: Ledger, data_dir: Path, now: int, *, max_series: int = MAX_SE
     data_dir = Path(data_dir)
     refused = False
     try:
-        text, series = build_data(ledger)
+        text, series = build_data(ledger, now)
         refused = series > max_series
     except LabelViolation:
         text, series, refused = "", 0, True
