@@ -501,11 +501,12 @@ def segregated_pg(tmp_path):
     if os.environ.get("HARNESS_INTEGRATION") != "1":
         pytest.skip("Integration environment required")
     import psycopg
-    from m7_delivery import unavailable
+    from m7_delivery import PostgresStore, database_url
     from psycopg import sql
     from psycopg.conninfo import make_conninfo
-    lane_dsn = unavailable('S10', 'adapters.fleet_runtime.lane_dsn')
-    from m7_delivery import PostgresStore, database_url
+
+    # M7 `adapters.fleet_runtime.lane_dsn`: moved ahead in S7 (pilot 48) to coordination.adapters.fleet_runtime
+    from codex_harness.coordination.adapters.fleet_runtime import lane_dsn
 
     base = database_url()
     suffix = uuid4().hex[:12]
@@ -532,6 +533,7 @@ def segregated_pg(tmp_path):
                 connection.execute(sql.SQL("DROP SCHEMA IF EXISTS {} CASCADE").format(sql.Identifier(schema)))
 
 
+@pytest.mark.skip(reason='S10: the operator CLI / lane resolution (adapters.host_delivery)')
 def test_pg_lane_commands_write_only_the_lane_schema(segregated_pg, tmp_path, monkeypatch):
     service, host, stores = segregated_pg["service"], segregated_pg["host"], segregated_pg["stores"]
     monkeypatch.setattr(host_delivery, "_settings", lambda: dict(host))
@@ -551,6 +553,7 @@ def test_pg_lane_commands_write_only_the_lane_schema(segregated_pg, tmp_path, mo
     assert [row["id"] for row in rows(stores["harness"], BUCKET_TARGETS)] == ["aibox-managed-fleet"]
 
 
+@pytest.mark.skip(reason='S10: the operator CLI / lane resolution (adapters.host_delivery)')
 def test_pg_wrong_lanes_refuse_and_the_gate_reads_the_control_schema(segregated_pg):
     service, host, stores = segregated_pg["service"], segregated_pg["host"], segregated_pg["stores"]
     for lane_id, reason in (("ghost", "lane_schema_mismatch"), ("self", "lane_is_control"),

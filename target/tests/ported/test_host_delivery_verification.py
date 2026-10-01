@@ -791,6 +791,7 @@ def test_the_verification_fence_counts_a_failed_observation_as_unobserved_but_no
     assert unanswered.close() is True
 
 
+@pytest.mark.skip(reason='S8: the release evaluator and its fixtures (verification_fixtures.fake_docker; no ported module)')
 @pytest.mark.integration
 def test_a_blocked_postgres_heartbeat_is_bounded_by_the_fence_not_by_an_assumed_timeout(isolated_pgstore):
     """The real store: the controller advisory lock is held elsewhere, so the heartbeat blocks."""
@@ -822,6 +823,7 @@ def test_a_blocked_postgres_heartbeat_is_bounded_by_the_fence_not_by_an_assumed_
     fence()  # observable again once the store answers
 
 
+@pytest.mark.skip(reason='S8: the release evaluator and its fixtures (verification_fixtures.fake_docker; no ported module)')
 @pytest.mark.integration
 def test_a_blocked_postgres_store_returns_the_whole_tick_unsettled_well_before_lock_timeout(
         tmp_path, monkeypatch, isolated_pgstore):
@@ -856,6 +858,7 @@ def test_a_blocked_postgres_store_returns_the_whole_tick_unsettled_well_before_l
     assert disk_record(system, attempt["attempt_id"])["state"] == "resolved"
 
 
+@pytest.mark.skip(reason='S8: the release evaluator and its fixtures (verification_fixtures.fake_docker; no ported module)')
 @pytest.mark.integration
 def test_a_stop_while_a_blocked_postgres_heartbeat_times_out_settles_nothing(
         tmp_path, monkeypatch, isolated_pgstore):

@@ -4,7 +4,7 @@ Every assertion is M7's, unchanged. Adaptations, all construction, import and pa
 docstring names the routing): the moved adapters `adapter` / `producer` (`host_migration`, `host_migration_evidence`),
 `HostMigrations`, `HostFacts`, `MemoryStore`, `fleet_recovery` and the delivery names come from the shim over the S7
 objects; the domain names from `delivery.domain`, the BUCKET_* names from `delivery.application` and
-`coordination.application.fleet.state`, `canonical`/`digest` from `kernel.ids`. `Fleet` is the shim's (`m7_coordination.Fleet` plus M7's private `_repository_aliases`); `fleet_cli` (the operator CLI) is an S10 placeholder, and the pre-fix observer's `settings` is `composition.configuration.settings`. A test that needs a capability
+`coordination.application.fleet.state`, `canonical`/`digest` from `kernel.ids`. `Fleet` is the shim's (`m7_coordination.Fleet` plus M7's private `_repository_aliases`); `fleet_cli` (the operator CLI) is an S10 placeholder, and the pre-fix observer's `settings().get("HARNESS_DATABASE_URL")` read is the shim's `harness_database_url()` (M7's integration database under the target harness's `ZEUS_TEST_DSN` name). A test that needs a capability
 outside S7 (the operator CLI and `canonical_module`'s provider, S10) is kept WHOLE under `pytest.mark.skip` with the
 owning slice, never rewritten; a test that needs Redis/PostgreSQL keeps M7's own skip.
 
@@ -28,7 +28,15 @@ from contextlib import contextmanager
 from types import SimpleNamespace
 
 import pytest
-from m7_delivery import Fleet, MemoryStore, checkout_identity, fleet_cli, fleet_recovery, run_root
+from m7_delivery import (
+    Fleet,
+    MemoryStore,
+    checkout_identity,
+    fleet_cli,
+    fleet_recovery,
+    harness_database_url,
+    run_root,
+)
 
 from codex_harness.coordination.application.fleet.state import BUCKET_JOBS, BUCKET_REGISTRY
 from codex_harness.coordination.domain.fleet import (
@@ -311,13 +319,11 @@ def test_the_pre_fix_migrate_host_observation_reads_the_store_inside_the_commit(
 
 def nested_observer(state):
     """The PRE-FIX adapter callback (258336a): a primary-store job scan on every observation."""
-    from codex_harness.composition.configuration import settings
-
     def observe():
         with state["store"].transaction() as tx:
             jobs = tx.scan(BUCKET_JOBS)
         return fleet_recovery.collect_host_migration_proof(state["request"], jobs, journal=state["journal"],
-                                                           host_dsn=settings().get("HARNESS_DATABASE_URL") or "",
+                                                           host_dsn=harness_database_url(),
                                                            state=fault)
     return observe
 

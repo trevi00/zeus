@@ -190,6 +190,7 @@ from codex_harness.routing.adapters.organization_source import (
 )
 from codex_harness.storage.adapters.file_artifacts import FileArtifacts  # noqa: F401
 from codex_harness.storage.adapters.memory_store import MemoryStore  # noqa: F401
+from codex_harness.storage.adapters.postgres_store import PostgresStore  # noqa: F401
 
 aliases, read_env = configuration.aliases, configuration.read_env
 
@@ -300,6 +301,14 @@ def startup_receipt(descriptor):
 def database_url():
     """The DSN of the disposable database the target conftest's `isolated_pgstore` uses (M7 `bootstrap.database_url`)."""
     return os.environ["ZEUS_TEST_DSN"]
+
+
+def harness_database_url() -> str:
+    """M7's `settings().get("HARNESS_DATABASE_URL") or ""` as its suites read it. In M7's integration runs that variable IS
+    the disposable test database (M7 `bootstrap.database_url`); the target harness exports the same DSN as
+    `ZEUS_TEST_DSN` (R-X: production endpoint names are refused), so integration runs read that, and every other run
+    keeps M7's own reading (environment-naming adaptation, 2026-10-01: found by `compare/run.py target-integration`)."""
+    return os.environ.get("ZEUS_TEST_DSN") or configuration.settings().get("HARNESS_DATABASE_URL") or ""
 
 
 def delivery_facts(store):
