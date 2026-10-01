@@ -11,7 +11,8 @@ The API (plain M7 objects):
 - `HOST_MIGRATION_SCHEMA`;
 - adapters fleet_recovery: `checkout_identity`, `collect_host_migration_proof`, `run_root`;
 - `repository_aliases(fleet, tx)` (M7 `Fleet._repository_aliases`, as M7's rehearsal reads it);
-- `SOURCE_ROOT` (the SOURCE checkout the harness extracted);
+- `SOURCE_ROOT` (the SOURCE checkout the harness extracted) and `TOOL_ROOT` (the same root: the canonical tool is
+  SOURCE's `scripts/aibox_data`);
 - `checkout(path)`: it makes `adapter.codex_harness` a stand-in whose `__file__` is
   `<path>/src/codex_harness/__init__.py`, so `canonical_tool` resolves `<path>/scripts/aibox_data` (the wheel
   carries no `scripts`).
@@ -83,7 +84,7 @@ API = SimpleNamespace(
     resolve_repository=resolve_repository, validate_budget=validate_budget,
     HOST_MIGRATION_SCHEMA=HOST_MIGRATION_SCHEMA, checkout_identity=checkout_identity,
     collect_host_migration_proof=collect_host_migration_proof, run_root=run_root,
-    repository_aliases=lambda fleet, tx: fleet._repository_aliases(tx), SOURCE_ROOT=SOURCE_ROOT, checkout=checkout)
+    repository_aliases=lambda fleet, tx: fleet._repository_aliases(tx), SOURCE_ROOT=SOURCE_ROOT, TOOL_ROOT=SOURCE_ROOT, checkout=checkout)
 
 if __name__ == "__main__":
     driver.finish("reference", "delivery.restore.pg", s7_restore.run(API))

@@ -470,8 +470,17 @@ def run(record: bool, use_bwrap: bool, only: list[str], pg: bool = False,
                     extra["ZEUS_REBUILD_REDIS_URL"] = fixture.url
                 result = run_driver(python, COMPARE / scenario["reference_driver"], work / "reference-side",
                                     extra, use_bwrap, binds=[work])
-                if target_path is not None and target_path.exists():
+                if target_path is not None and target_path.exists() and not needs_pair:
                     target_result = run_target(target_path, work, extra, use_bwrap)
+            if needs_pair and target_path is not None and target_path.exists():
+                # A pair family's cases fix their database names "on a fresh pair per run" (S7 restore design §2):
+                # the target side gets its own fresh pair, started after the reference side's pair is removed.
+                side = work / "t"
+                side.mkdir()
+                (side / "dump").mkdir(mode=0o700)
+                with PostgresPair(side, side / "dump") as pair:
+                    target_result = run_target(target_path, work, {**extra, PG_PAIR_ENV: pair.description()},
+                                               use_bwrap)
         row = {"slice": scenario["slice"]}
         golden_path = COMPARE / scenario["golden"]
         if "error" in result:

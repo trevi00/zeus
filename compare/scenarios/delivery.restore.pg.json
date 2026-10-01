@@ -3,8 +3,7 @@
  "description": "M7 adapters/host_migration whole-database restore rehearsal (D1-D3, R1; INV-HOST-MIGRATION-001) on a labelled disposable PostgreSQL PAIR (superuser zeus, network none, a shared /dump): the seeded source catalog, one custom-format archive through docker exec pg_dump, the restore into a NEW dedicated database with the cached replay and target_occupied, the catalog comparison, the per-schema canonical documents ASSERTED equal with exact coverage, search_path/vector after the rename, the Fleet registry host migration and its exact changed rows, the reverse restore, and the failed/hollow restore refusals with explicit recovery",
  "reference_driver": "drivers/reference/s7_restore.py",
  "requires": "disposable-postgresql-pair",
- "target_driver": null,
- "target_status": "pending: S7 host migration move (V6)",
+ "target_driver": "drivers/target/s7_restore.py",
  "golden": "goldens/reference/delivery.restore.pg.json",
  "slice": "S7"
 }

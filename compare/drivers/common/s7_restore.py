@@ -19,8 +19,8 @@ fixtures, never imported):
   digest and rename-map refusals.
 
 Layer: harness (never shipped). The common module never imports `codex_harness`; `api` supplies the M7 names (see
-the reference driver's docstring) and `checkout(path)`, which makes the adapter's `canonical_tool` resolve
-`<path>/scripts/aibox_data`.
+the reference driver's docstring), `TOOL_ROOT` (the root whose `scripts/aibox_data` is the canonical tool) and
+`checkout(path)`, which makes the adapter's `canonical_tool` resolve `<path>/scripts/aibox_data`.
 
 **Normalization is explicit, done here and identical on both sides:**
 - this run's working root → `<root>`;
@@ -85,9 +85,10 @@ class Run:
         self.root = Path.cwd().resolve() / "restore"
         self.root.mkdir()
         self.host_dump = Path(PAIR["host_dump"])
-        # The canonical offline tool, COPIED from SOURCE into a labelled checkout layout.
+        # The canonical offline tool, COPIED from the side's TOOL_ROOT (SOURCE for the reference, `target/` for the
+        # target) into a labelled checkout layout.
         self.checkout = self.root / "checkout"
-        shutil.copytree(Path(api.SOURCE_ROOT) / "scripts" / "aibox_data", self.checkout / "scripts" / "aibox_data",
+        shutil.copytree(Path(api.TOOL_ROOT) / "scripts" / "aibox_data", self.checkout / "scripts" / "aibox_data",
                         ignore=shutil.ignore_patterns("__pycache__", "*.pyc"))
         (self.checkout / "src" / "codex_harness").mkdir(parents=True)
         self.labels = {}

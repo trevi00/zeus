@@ -99,7 +99,7 @@ S7_FAMILIES = {"review.releases_queue", "delivery.registry", "delivery.stages", 
                "delivery.canaries", "delivery.migration_evidence", "delivery.host_migration_transfer",
                "delivery.host_migration_cli", "delivery.migration_evidence_cli",
                "delivery.fleet_recovery_collectors", "delivery.restore.pg"}
-S7_IMPLEMENTED = {"delivery.fleet_recovery_collectors", "delivery.release_runner", "delivery.canaries", "delivery.migration_evidence", "delivery.host_migration_transfer", "delivery.host_targets", "delivery.managed_runtime", "delivery.managed_systemd",
+S7_IMPLEMENTED = {"delivery.restore.pg", "delivery.fleet_recovery_collectors", "delivery.release_runner", "delivery.canaries", "delivery.migration_evidence", "delivery.host_migration_transfer", "delivery.host_targets", "delivery.managed_runtime", "delivery.managed_systemd",
                   "review.releases_queue", "delivery.registry", "delivery.stages",
                   "delivery.owner_commands", "delivery.migration", "delivery.host_migrations",
                   "coordination.owner_actions_delivery", "coordination.owner_actions_canary",
@@ -233,3 +233,46 @@ def test_stale_or_invalid_declarations_are_problems():
                 {"path": "$.a.b", "op": "absent", "authority": ""}):            # no authority
         _, problems = run.apply_intended_differences(golden, [bad])
         assert problems, bad
+
+
+def test_a_pair_family_target_side_gets_its_own_fresh_pair(tmp_path, monkeypatch):
+    """The pair families fix their database names "on a fresh pair per run" (S7 restore design §2): the target side
+    runs on a NEW pair, started after the reference side's pair is removed, never on the pair the reference seeded."""
+    run = _run_module()
+    events = []
+
+    class Pair:
+        made = 0
+
+        def __init__(self, work, dump):
+            Pair.made += 1
+            self.n = Pair.made
+
+        def description(self):
+            return f"pair-{self.n}"
+
+        def __enter__(self):
+            events.append(("enter", self.n))
+            return self
+
+        def __exit__(self, *exc):
+            events.append(("exit", self.n))
+            return False
+
+    target, golden = tmp_path / "target_driver.py", tmp_path / "golden.json"
+    target.write_text("", encoding="utf-8")
+    golden.write_text("{}", encoding="utf-8")
+    (tmp_path / "venv-ref" / "bin").mkdir(parents=True)
+    (tmp_path / "venv-ref" / "bin" / "python").write_text("", encoding="utf-8")
+    scenario = {"family": "x.pair", "slice": "S7", "requires": "disposable-postgresql-pair",
+                "reference_driver": "unused.py", "target_driver": str(target), "golden": str(golden)}
+    monkeypatch.setattr(run, "scenarios", lambda: [scenario])
+    monkeypatch.setattr(run, "SCRATCH", tmp_path)
+    monkeypatch.setattr(run, "PostgresPair", Pair)
+    monkeypatch.setattr(run, "run_driver", lambda python, driver, work, extra, use_bwrap, binds=None: (
+        events.append(("reference", extra[run.PG_PAIR_ENV])) or {"origin": {}, "result": {}}))
+    monkeypatch.setattr(run, "run_target", lambda path, work, extra, use_bwrap: (
+        events.append(("target", extra[run.PG_PAIR_ENV])) or {"origin": {}, "result": {}, "side": "target"}))
+    run.run(False, False, [], pg=True)
+    assert events == [("enter", 1), ("reference", "pair-1"), ("exit", 1),
+                      ("enter", 2), ("target", "pair-2"), ("exit", 2)]
