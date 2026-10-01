@@ -11,6 +11,7 @@
 
 import os
 import sys
+import uuid
 from pathlib import Path
 
 import pytest
@@ -26,6 +27,8 @@ import provider_guard  # noqa: E402
 
 provider_guard.install()
 origin.install_import_audit(TARGET_SRC)
+
+from codex_harness.storage.adapters.postgres_store import PostgresStore  # noqa: E402
 
 PRODUCTION_PORTS = (":55432", ":56379")
 ENDPOINT_NAMES = ("ZEUS_DATABASE_URL", "HARNESS_DATABASE_URL", "DATABASE_URL", "ZEUS_REDIS_URL",
@@ -49,3 +52,24 @@ def pytest_sessionfinish(session, exitstatus):
 @pytest.fixture
 def child_env(tmp_path):
     return provider_guard.child_environment(tmp_path / "child")
+
+
+@pytest.fixture
+def isolated_pgstore():
+    dsn = os.environ.get("ZEUS_TEST_DSN")
+    if os.environ.get("HARNESS_INTEGRATION") != "1" or not dsn:
+        pytest.skip("Integration environment required (HARNESS_INTEGRATION=1 and a disposable ZEUS_TEST_DSN)")
+    import psycopg
+    from psycopg import sql
+    from psycopg.conninfo import make_conninfo
+
+    schema = "test_" + uuid.uuid4().hex
+    with psycopg.connect(dsn) as connection:
+        connection.execute(sql.SQL("CREATE SCHEMA {}").format(sql.Identifier(schema)))
+    try:
+        store = PostgresStore(make_conninfo(dsn, options=f"-c search_path={schema},public"))
+        store.migrate()
+        yield store
+    finally:
+        with psycopg.connect(dsn) as connection:
+            connection.execute(sql.SQL("DROP SCHEMA {} CASCADE").format(sql.Identifier(schema)))
