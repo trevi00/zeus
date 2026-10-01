@@ -293,3 +293,71 @@ def test_a10_attempt_waits_for_an_unfinalized_predecessor(tmp_path):
     prom = rig.scan(advance=3600 + 30 + 600)  # attempt 1 reaches its horizon, then attempt 2 follows
     assert prom.sum("zeus_llm_open_invocations", state="awaiting_predecessor") == 0
     assert prom.sum("zeus_llm_invocations_total") == 2
+
+
+def remainder(rig, task, attempt=1):
+    return sorted(rig.sql("SELECT model,role,token_type,value FROM contributions WHERE invocation_id=? "
+                          "AND kind='tree_remainder'", f"routine:{task}:{attempt}"))
+
+
+def test_c_w1_1_a07_crash_after_results_keeps_the_remainder_of_the_last_valid_result(tmp_path):
+    rig = Rig(tmp_path)
+    rig.record(TASK, start_row(TASK, 1, T0))
+    rig.events(TASK, 1, claude_init(), assistant(advisor_blocks=1),
+               claude_result("r1", usage(1, 10, 100, 5), {SONNET: entry(1, 10, 100, 5), OPUS: entry(4, 7, 0, 0)}),
+               claude_result("r2", usage(1, 20, 100, 5), {SONNET: entry(2, 30, 200, 10), OPUS: entry(4, 9, 0, 0)},
+                             index=1))
+    rig.events(TASK, 1, claude_result("crash", usage(), {}, index=2, is_error=True, subtype="error_during_execution"))
+    rig.record(TASK, terminal_row("failed", 1, T0 + 50))
+    prom = rig.scan(advance=100)
+    assert remainder(rig, TASK) == [(OPUS, "advisor", "input", 4), (OPUS, "advisor", "output", 9)]
+    assert prom.sum("zeus_llm_tokens_total", model=OPUS, role="advisor", token_type="output") == 9
+    assert rig.invocation(TASK, 1)["unknown_reason"] == "error_zeroed"
+    assert prom.sum("zeus_llm_unknown_invocations_total") == 1
+    assert prom.sum("zeus_llm_unknown_shares_total") == 0
+
+
+def test_c_w1_1_a41_horizon_publishes_remainder_of_second_result(tmp_path):
+    rig = Rig(tmp_path)
+    rig.record(TASK, start_row(TASK, 1, T0, timeout=100))
+    rig.events(TASK, 1, claude_init(),
+               claude_result("r1", usage(1, 10, 100, 5), {SONNET: entry(1, 12, 100, 5)}),
+               claude_result("r2", usage(1, 20, 100, 5), {SONNET: entry(2, 40, 200, 10)}, index=1))
+    prom = rig.scan(advance=100 + 30 + 600 + 1)
+    assert rig.invocation(TASK, 1)["unknown_reason"] == "terminal_unproven"
+    assert remainder(rig, TASK) == [(SONNET, "nested_unattributed", "output", 10)]  # T_e 40 - M 30
+    assert tokens(prom, token_type="output") == 40
+
+
+def test_c_w1_1_a58_torn_tail_settlement_publishes_remainder_of_last_complete_result(tmp_path):
+    rig = Rig(tmp_path)
+    rig.record(TASK, start_row(TASK, 1, T0))
+    rig.events(TASK, 1, claude_init(), claude_result("r1", usage(1, 10, 100, 5), {SONNET: entry(1, 25, 100, 5)}),
+               torn='{"type": "resu')
+    rig.scan(advance=10)
+    rig.record(TASK, terminal_row("finished", 1, T0 + 20))
+    prom = rig.scan(advance=10)
+    assert rig.invocation(TASK, 1)["unknown_reason"] == "incomplete_tail"
+    assert remainder(rig, TASK) == [(SONNET, "nested_unattributed", "output", 15)]
+    assert tokens(prom, token_type="output") == 25
+
+
+def test_c_w1_1_a08_a13_invalid_result_and_malformed_line_use_the_last_valid_result(tmp_path):
+    rig = Rig(tmp_path)
+    rig.record(TASK, start_row(TASK, 1, T0), terminal_row("finished", 1, T0 + 20))
+    rig.events(TASK, 1, claude_init(), claude_result("r1", usage(1, 10, 100, 5), {SONNET: entry(1, 18, 100, 5)}),
+               claude_result("bad", None, None, index=1))
+    rig.raw_events(TASK, 1, "not json\n")
+    prom = rig.scan(advance=60)
+    assert rig.invocation(TASK, 1)["unknown_reason"] == "malformed"
+    assert remainder(rig, TASK) == [(SONNET, "nested_unattributed", "output", 8)]
+    assert tokens(prom, token_type="output") == 18
+
+
+def test_c_w1_1_a09_no_result_publishes_nothing_beyond_m(tmp_path):
+    rig = Rig(tmp_path)
+    rig.record(TASK, start_row(TASK, 1, T0), terminal_row("timed_out", 1, T0 + 20))
+    rig.events(TASK, 1, claude_init())
+    prom = rig.scan(advance=60)
+    assert tokens(prom) == 0 and remainder(rig, TASK) == []
+    assert rig.invocation(TASK, 1)["unknown_reason"] == "no_result"

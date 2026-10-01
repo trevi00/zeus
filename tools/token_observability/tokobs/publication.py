@@ -49,15 +49,15 @@ def finalize_invocation(conn: sqlite3.Connection, *, invocation_id: str, outcome
     """Finalize exactly once: outcome, the one primary unknown reason, tree-remainder contributions, cost and
     share detail all commit in the caller's single transaction. Returns the primary reason (or None).
 
-    The remainder is published only when no reason applies (§3.4 step 6); otherwise only `main_result`
-    contributions exist and the remainder is the process's one unknown."""
+    The remainder is withheld only for the four accounting reasons (§3.4 step 6, C-W1-1); lifecycle reasons
+    leave the measured whole-tree delta published."""
     row = conn.execute("SELECT lifecycle_state, provider, backfill FROM invocations WHERE id=?",
                        (invocation_id,)).fetchone()
     if row is None or row[0] == "finalized":
         return None
     provider, backfill = row[1], row[2]
     reason = primary_reason(plan.reasons | reasons)
-    if reason is None:
+    if not plan.share_models:  # C-W1-1: only an accounting reason (share_models set) suppresses the remainder
         for model, role, tau, value in plan.remainder:
             publish_contribution(conn, key=invocation_id, kind="tree_remainder", invocation_id=invocation_id,
                                  provider=provider, model=model,

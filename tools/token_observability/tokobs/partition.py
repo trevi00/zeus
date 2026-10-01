@@ -8,7 +8,7 @@ Implements: ACCEPTANCE A01, A04, A31, A34, A35, A36, A37, A38, A42 (shares), A05
 
 Partition rules in one line: published(P) = M + N_e + sum over m != e of T_m = sum over m of T_m, where M is the
 sum of distinct `usage` (published per result, outside this module) and this module returns only the remainder.
-Unknown coverage (any reason) publishes M only; the remainder is then the process's one unknown (§3.4 step 6).
+Only the accounting reasons (baseline, version, non_monotonic, inconsistent) publish M only (§3.4 step 6, C-W1-1).
 """
 
 from __future__ import annotations
@@ -71,23 +71,32 @@ def advisor_role(model: str, advisor: str | None, consultations: int, nested: bo
     return "nested_unattributed"
 
 
+ACCOUNTING_REASONS = frozenset({"no_baseline", "unknown_version_semantics", "non_monotonic", "inconsistent"})
+
+
 def plan_partition(results: list[ResultFacts], executor: str, advisor: str | None, consultations: int,
                    baseline: Baseline, external_reasons: set[str]) -> Plan:
+    """C-W1-1: only the four accounting reasons (DESIGN §3.4 step 6) suppress the remainder. Lifecycle reasons
+    (no_result, error_zeroed, terminal_unproven, incomplete_tail, malformed) are coverage facts: the remainder is
+    evaluated against the last complete result with a valid modelUsage that is not a zeroed error result."""
     plan = Plan(reasons=set(external_reasons))
     if any(r.zeroed for r in results):
         plan.reasons.add("error_zeroed")
     if any(not r.usable for r in results):
-        plan.reasons.add("malformed")  # a result without usable usage: M is incomplete, so no remainder
+        plan.reasons.add("malformed")  # a result without usable usage contributes no M
     good = last_good(results)
     if good is None:
         if results and not plan.reasons:
             plan.reasons.add("malformed")  # results exist but none carries a modelUsage
         return plan
     plan.cumulative = good.models
+    accounting: set[str] = set()
+    if "unknown_version_semantics" in plan.reasons:
+        accounting.add("unknown_version_semantics")
     if baseline.kind == "unknown_version":
-        plan.reasons.add("unknown_version_semantics")
+        accounting.add("unknown_version_semantics")
     elif baseline.kind in ("missing", "unproven"):
-        plan.reasons.add("no_baseline")
+        accounting.add("no_baseline")
     base = baseline.models if baseline.kind == "cumulative" else {}
     deltas: dict[str, dict[str, int]] = {}
     if baseline.kind in ("zero", "cumulative"):
@@ -97,16 +106,16 @@ def plan_partition(results: list[ResultFacts], executor: str, advisor: str | Non
             for tau in TOKEN_TYPES:
                 delta = int(cum[tau]) - int(ref.get(tau, 0))
                 if delta < 0:
-                    plan.reasons.add("non_monotonic")  # step 2: never a negative contribution
+                    accounting.add("non_monotonic")  # step 2: never a negative contribution
                 deltas[model][tau] = delta
-    nested = any(r.nested for r in results)
-    if "non_monotonic" not in plan.reasons and deltas:
+    if "non_monotonic" not in accounting and deltas and "unknown_version_semantics" not in accounting:
         m_total = {tau: sum((r.usage or {}).get(tau, 0) for r in results if r.usable and not r.zeroed)
                    for tau in TOKEN_TYPES}
         exec_delta = deltas.get(executor, dict.fromkeys(TOKEN_TYPES, 0))
         if any(exec_delta[tau] - m_total[tau] < 0 for tau in TOKEN_TYPES):
-            plan.reasons.add("inconsistent")  # step 3: T_e < M
-        elif not plan.reasons:
+            accounting.add("inconsistent")  # step 3: T_e < M
+        else:
+            nested = any(r.nested for r in results)
             for tau in TOKEN_TYPES:
                 _push(plan, executor, "nested_unattributed", tau, exec_delta[tau] - m_total[tau])
             for model in sorted(deltas):
@@ -119,7 +128,8 @@ def plan_partition(results: list[ResultFacts], executor: str, advisor: str | Non
                 cost = float(good.models[model].get("cost_usd", 0.0)) - float(base.get(model, {}).get("cost_usd", 0.0))
                 if cost > COST_EPSILON:
                     plan.costs[model] = cost
-    if plan.reasons:
+    plan.reasons |= accounting
+    if accounting:
         plan.remainder.clear()
         plan.costs.clear()
         plan.share_models = sorted(good.models)

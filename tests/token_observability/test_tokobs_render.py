@@ -207,7 +207,9 @@ def test_report_shows_corrections_and_shares_without_text(tmp_path, capsys):
     (inv,) = json.loads(out)["invocations"]
     assert inv["unknown_reason"] == "terminal_unproven"
     assert [c["kind"] for c in inv["corrections"]] == ["late_terminal"]
-    assert {s["model"] for s in inv["unknown_shares"]} == {SONNET, OPUS}
+    assert inv["unknown_shares"] == []  # C-W1-1: a lifecycle reason keeps the measured remainder
+    assert {(c["kind"], c["model"], c["role"]) for c in inv["contributions"]} >= {
+        ("tree_remainder", OPUS, "nested_unattributed")}
     for needle in SENTINELS:
         assert needle not in out
     assert re.search(r'"outcome": "terminal_unproven"', out)
