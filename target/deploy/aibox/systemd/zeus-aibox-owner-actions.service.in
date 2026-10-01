@@ -1,0 +1,44 @@
+# zeus-aibox-owner-actions: the server-owned pending-action coordinator (aibox SPEC s14 G1/G2,
+# INV-OWNER-ACTIONS-001): scoped research acceptance, exact delivery-plan publication and the owner's
+# actual canary handoff. A gated wakeup loop: an idle tick calls no model, writes nothing and starts
+# nothing. It approves nothing itself. Installing, enabling or starting it is an owner action.
+[Unit]
+Description=Zeus aibox owner-action coordinator (research acceptance, plan and canary handoff)
+Documentation=file://@ZEUS_ROOT@/deploy/aibox/README.md
+PartOf=zeus-aibox.target
+After=network-online.target docker.service
+Wants=network-online.target
+StartLimitIntervalSec=600
+StartLimitBurst=3
+
+[Service]
+Type=exec
+User=@SERVICE_USER@
+Group=@SERVICE_GROUP@
+WorkingDirectory=@ZEUS_ROOT@/runtime/control
+Environment=PATH=@SERVICE_PATH@
+Environment=HOME=@SERVICE_HOME@
+Environment=LANG=C.UTF-8
+Environment=PYTHONUNBUFFERED=1
+Environment=ZEUS_AIBOX_ROOT=@ZEUS_ROOT@
+Environment=HARNESS_RUNTIME_DIR=@ZEUS_ROOT@/runtime/control
+# ZEUS_OWNER_ACTIONS_POLICY (the registered owner policy id) comes from the non-secret config file.
+EnvironmentFile=@CONFIG_ENV@
+EnvironmentFile=@SECRET_ENV@
+UMask=0027
+ExecStart=@PYTHON@ @TOOL@ launch --role owner-actions
+# A stop finishes the tick in flight; an assessment guardian it spawned is its own session and proves
+# its own cleanup (its evidence is reconciled by the next tick, never assumed).
+KillMode=control-group
+KillSignal=SIGTERM
+SendSIGKILL=yes
+TimeoutStartSec=60
+TimeoutStopSec=120
+Restart=on-failure
+RestartSec=30
+RestartPreventExitStatus=78
+NoNewPrivileges=yes
+ProtectSystem=full
+
+[Install]
+WantedBy=zeus-aibox.target

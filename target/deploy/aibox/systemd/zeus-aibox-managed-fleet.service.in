@@ -1,0 +1,52 @@
+# zeus-aibox-managed-fleet: the owner-fixed systemd owner of the managed Fleet target's guardian
+# (aibox SPEC s14 G3, INV-OWNER-ACTIONS-001). Its OWN control group holds the trusted launcher and the
+# sealed runtime child, independent of the delivery controller's service, with KillMode=control-group.
+# HostDelivery starts it (polkit: start of exactly this unit) after writing the launch request under
+# the target guard; it never stops it: a stop is the managed target's graceful pause/idle/stop file.
+# Rendered by `zeus_aibox_service.py render`; installing, enabling or starting it is an owner action.
+[Unit]
+Description=Zeus aibox managed Fleet runtime (single owner, sealed runtime)
+Documentation=file://@ZEUS_ROOT@/deploy/aibox/README.md
+PartOf=zeus-aibox.target
+After=network-online.target docker.service
+Wants=network-online.target docker.service
+# Bounded restart: at most 3 starts in 10 minutes, then the unit stays failed for a human.
+StartLimitIntervalSec=600
+StartLimitBurst=3
+
+[Service]
+# A non-template unit: systemd itself refuses a second concurrent instance of this owner.
+Type=exec
+User=@SERVICE_USER@
+Group=@SERVICE_GROUP@
+SupplementaryGroups=docker
+WorkingDirectory=@ZEUS_ROOT@/runtime/control
+Environment=PATH=@SERVICE_PATH@
+Environment=HOME=@SERVICE_HOME@
+Environment=LANG=C.UTF-8
+Environment=PYTHONUNBUFFERED=1
+Environment=ZEUS_AIBOX_ROOT=@ZEUS_ROOT@
+Environment=HARNESS_RUNTIME_DIR=@ZEUS_ROOT@/runtime/control
+EnvironmentFile=@CONFIG_ENV@
+EnvironmentFile=@SECRET_ENV@
+UMask=0027
+# The launcher re-checks the fence, the activation receipt, the recorded Fleet owner and that the
+# bootstrap Fleet unit is stopped; `supervise` then re-validates the persisted launch request, target,
+# descriptor, sealed runtime and settled Fleet debt before the incumbent owned launch.
+ExecStart=@PYTHON@ @TOOL@ launch --role managed-fleet
+KillMode=control-group
+KillSignal=SIGTERM
+SendSIGKILL=yes
+TimeoutStartSec=60
+TimeoutStopSec=180
+Restart=on-failure
+RestartSec=15
+# 78: the launcher's fail-closed refusal; 2: `supervise`/`launch` refused (request, descriptor,
+# sealed runtime or Fleet debt). Neither is restarted into a loop.
+RestartPreventExitStatus=78 2
+NoNewPrivileges=yes
+ProtectSystem=full
+LimitNOFILE=65536
+
+[Install]
+WantedBy=zeus-aibox.target

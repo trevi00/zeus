@@ -1,0 +1,9 @@
+# zeus-aibox.target groups the Zeus aibox services so `systemctl stop zeus-aibox.target` stops
+# them together (PartOf=). Enabling it is an owner action after the migration gates.
+[Unit]
+Description=Zeus aibox services
+Documentation=file://@ZEUS_ROOT@/deploy/aibox/README.md
+Wants=zeus-aibox-monitor-collect.service zeus-aibox-monitor-web.service zeus-aibox-fleet.service
+
+[Install]
+WantedBy=multi-user.target

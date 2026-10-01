@@ -1,0 +1,40 @@
+# zeus-aibox-monitor-collect: read-only monitoring collector on aibox. It runs without any
+# Windows host, SSH session or Codex desktop session (SPEC-retirement-update s2, B5).
+[Unit]
+Description=Zeus aibox monitor collector (read-only)
+Documentation=file://@ZEUS_ROOT@/deploy/aibox/README.md
+PartOf=zeus-aibox.target
+After=network-online.target docker.service
+Wants=network-online.target
+StartLimitIntervalSec=600
+StartLimitBurst=5
+
+[Service]
+Type=exec
+User=@SERVICE_USER@
+Group=@SERVICE_GROUP@
+SupplementaryGroups=docker
+WorkingDirectory=@ZEUS_ROOT@/runtime/control
+Environment=PATH=@SERVICE_PATH@
+Environment=HOME=@SERVICE_HOME@
+Environment=LANG=C.UTF-8
+Environment=PYTHONUNBUFFERED=1
+Environment=ZEUS_AIBOX_ROOT=@ZEUS_ROOT@
+Environment=HARNESS_RUNTIME_DIR=@ZEUS_ROOT@/runtime/control
+EnvironmentFile=@CONFIG_ENV@
+EnvironmentFile=@SECRET_ENV@
+UMask=0027
+ExecStart=@PYTHON@ @TOOL@ launch --role monitor-collect
+KillMode=control-group
+KillSignal=SIGTERM
+SendSIGKILL=yes
+TimeoutStartSec=60
+TimeoutStopSec=30
+Restart=on-failure
+RestartSec=10
+RestartPreventExitStatus=78
+NoNewPrivileges=yes
+ProtectSystem=full
+
+[Install]
+WantedBy=zeus-aibox.target
