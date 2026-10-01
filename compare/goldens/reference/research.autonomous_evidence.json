@@ -1,0 +1,1011 @@
+{
+ "branch_coverage": {
+  "EvidenceUnavailable.__init__": "s1_exception (every code, the arity, the base class)",
+  "ExecutionEvidence.__init__": "s2_document.returns_the_document.store_is_kept",
+  "ExecutionEvidence.document calls self.artifacts.document": "s2_document.returns_the_document, reference_passed_through_unchanged",
+  "ExecutionEvidence.document except (OSError, ValueError, UnicodeDecodeError) -> raise EvidenceUnavailable('evidence_corrupt')": "s3_failures.corrupt",
+  "ExecutionEvidence.document except ContractError -> raise EvidenceUnavailable(...)": "s3_failures.contract_errors: UNREACHABLE in M7 (ContractError is a ValueError, caught by the preceding except), so every ContractError message is evidence_corrupt; recorded as contract_error_is_a_value_error, evidence_invalid_is_never_produced",
+  "ExecutionEvidence.document except FileNotFoundError -> raise EvidenceUnavailable('evidence_missing')": "s3_failures.missing",
+  "ExecutionEvidence.document raise EvidenceUnavailable('evidence_missing') (non-str reference)": "s2_document.non_str_reference_is_missing_without_asking_the_store",
+  "an exception outside the three excepts propagates": "s3_failures.propagated"
+ },
+ "cases_per_group": {
+  "s1_exception": 11,
+  "s2_document": 10,
+  "s3_failures": 11
+ },
+ "s1_exception": {
+  "code_anything_else": {
+   "args": [
+    "execution evidence anything else"
+   ],
+   "cause_is_none": true,
+   "context_is_none": true,
+   "dict_keys": [
+    "reason_code"
+   ],
+   "is_contract_error": true,
+   "is_exception": true,
+   "is_value_error": true,
+   "message": "execution evidence anything else",
+   "reason_code": "anything else",
+   "repr": "EvidenceUnavailable('execution evidence anything else')"
+  },
+  "code_empty": {
+   "args": [
+    "execution evidence "
+   ],
+   "cause_is_none": true,
+   "context_is_none": true,
+   "dict_keys": [
+    "reason_code"
+   ],
+   "is_contract_error": true,
+   "is_exception": true,
+   "is_value_error": true,
+   "message": "execution evidence ",
+   "reason_code": "",
+   "repr": "EvidenceUnavailable('execution evidence ')"
+  },
+  "code_evidence_corrupt": {
+   "args": [
+    "execution evidence evidence_corrupt"
+   ],
+   "cause_is_none": true,
+   "context_is_none": true,
+   "dict_keys": [
+    "reason_code"
+   ],
+   "is_contract_error": true,
+   "is_exception": true,
+   "is_value_error": true,
+   "message": "execution evidence evidence_corrupt",
+   "reason_code": "evidence_corrupt",
+   "repr": "EvidenceUnavailable('execution evidence evidence_corrupt')"
+  },
+  "code_evidence_invalid": {
+   "args": [
+    "execution evidence evidence_invalid"
+   ],
+   "cause_is_none": true,
+   "context_is_none": true,
+   "dict_keys": [
+    "reason_code"
+   ],
+   "is_contract_error": true,
+   "is_exception": true,
+   "is_value_error": true,
+   "message": "execution evidence evidence_invalid",
+   "reason_code": "evidence_invalid",
+   "repr": "EvidenceUnavailable('execution evidence evidence_invalid')"
+  },
+  "code_evidence_missing": {
+   "args": [
+    "execution evidence evidence_missing"
+   ],
+   "cause_is_none": true,
+   "context_is_none": true,
+   "dict_keys": [
+    "reason_code"
+   ],
+   "is_contract_error": true,
+   "is_exception": true,
+   "is_value_error": true,
+   "message": "execution evidence evidence_missing",
+   "reason_code": "evidence_missing",
+   "repr": "EvidenceUnavailable('execution evidence evidence_missing')"
+  },
+  "code_xxx": {
+   "args": [
+    "execution evidence xxx"
+   ],
+   "cause_is_none": true,
+   "context_is_none": true,
+   "dict_keys": [
+    "reason_code"
+   ],
+   "is_contract_error": true,
+   "is_exception": true,
+   "is_value_error": true,
+   "message": "execution evidence xxx",
+   "reason_code": "xxx",
+   "repr": "EvidenceUnavailable('execution evidence xxx')"
+  },
+  "module_attribute": "EvidenceUnavailable",
+  "mro": [
+   "EvidenceUnavailable",
+   "ContractError",
+   "ValueError",
+   "Exception",
+   "BaseException",
+   "object"
+  ],
+  "non_string_code_is_a_type_error": {
+   "bytes": "TypeError",
+   "int": "TypeError",
+   "none": "TypeError"
+  },
+  "one_positional_argument_only": {
+   "keyword": [
+    "built",
+    "execution evidence evidence_missing",
+    "evidence_missing"
+   ],
+   "none": [
+    "TypeError"
+   ],
+   "two": [
+    "TypeError"
+   ]
+  },
+  "raises_and_catches_as_a_contract_error": [
+   "EvidenceUnavailable",
+   "execution evidence evidence_invalid"
+  ]
+ },
+ "s2_document": {
+  "a_store_fault_is_not_consulted_for_a_non_str_reference": {
+   "args": [
+    "execution evidence evidence_missing"
+   ],
+   "asked": [],
+   "asked_the_reference_unchanged": false,
+   "cause_is_the_fault": false,
+   "cause_type": null,
+   "code": "evidence_missing",
+   "context_type": null,
+   "is_contract_error": true,
+   "message": "execution evidence evidence_missing",
+   "outcome": "refused",
+   "store_is_kept": true,
+   "suppress_context": false
+  },
+  "a_str_subclass_reaches_the_store": {
+   "asked": [
+    "'sha256:subclass'"
+   ],
+   "asked_the_reference_unchanged": true,
+   "document": {
+    "answer": "ok",
+    "nested": {
+     "k": [
+      1,
+      2
+     ]
+    },
+    "stage": "executed"
+   },
+   "is_the_stored_object": true,
+   "outcome": "returned",
+   "store_is_kept": true
+  },
+  "empty_string_reference_reaches_the_store": {
+   "asked": [
+    "''"
+   ],
+   "asked_the_reference_unchanged": true,
+   "document": {
+    "answer": "ok",
+    "nested": {
+     "k": [
+      1,
+      2
+     ]
+    },
+    "stage": "executed"
+   },
+   "is_the_stored_object": true,
+   "outcome": "returned",
+   "store_is_kept": true
+  },
+  "non_str_reference_has_no_chain": true,
+  "non_str_reference_is_missing_without_asking_the_store": {
+   "bytearray": {
+    "args": [
+     "execution evidence evidence_missing"
+    ],
+    "asked": [],
+    "asked_the_reference_unchanged": false,
+    "cause_is_the_fault": false,
+    "cause_type": null,
+    "code": "evidence_missing",
+    "context_type": null,
+    "is_contract_error": true,
+    "message": "execution evidence evidence_missing",
+    "outcome": "refused",
+    "store_is_kept": true,
+    "suppress_context": false
+   },
+   "bytes": {
+    "args": [
+     "execution evidence evidence_missing"
+    ],
+    "asked": [],
+    "asked_the_reference_unchanged": false,
+    "cause_is_the_fault": false,
+    "cause_type": null,
+    "code": "evidence_missing",
+    "context_type": null,
+    "is_contract_error": true,
+    "message": "execution evidence evidence_missing",
+    "outcome": "refused",
+    "store_is_kept": true,
+    "suppress_context": false
+   },
+   "dict": {
+    "args": [
+     "execution evidence evidence_missing"
+    ],
+    "asked": [],
+    "asked_the_reference_unchanged": false,
+    "cause_is_the_fault": false,
+    "cause_type": null,
+    "code": "evidence_missing",
+    "context_type": null,
+    "is_contract_error": true,
+    "message": "execution evidence evidence_missing",
+    "outcome": "refused",
+    "store_is_kept": true,
+    "suppress_context": false
+   },
+   "float": {
+    "args": [
+     "execution evidence evidence_missing"
+    ],
+    "asked": [],
+    "asked_the_reference_unchanged": false,
+    "cause_is_the_fault": false,
+    "cause_type": null,
+    "code": "evidence_missing",
+    "context_type": null,
+    "is_contract_error": true,
+    "message": "execution evidence evidence_missing",
+    "outcome": "refused",
+    "store_is_kept": true,
+    "suppress_context": false
+   },
+   "int": {
+    "args": [
+     "execution evidence evidence_missing"
+    ],
+    "asked": [],
+    "asked_the_reference_unchanged": false,
+    "cause_is_the_fault": false,
+    "cause_type": null,
+    "code": "evidence_missing",
+    "context_type": null,
+    "is_contract_error": true,
+    "message": "execution evidence evidence_missing",
+    "outcome": "refused",
+    "store_is_kept": true,
+    "suppress_context": false
+   },
+   "list": {
+    "args": [
+     "execution evidence evidence_missing"
+    ],
+    "asked": [],
+    "asked_the_reference_unchanged": false,
+    "cause_is_the_fault": false,
+    "cause_type": null,
+    "code": "evidence_missing",
+    "context_type": null,
+    "is_contract_error": true,
+    "message": "execution evidence evidence_missing",
+    "outcome": "refused",
+    "store_is_kept": true,
+    "suppress_context": false
+   },
+   "none": {
+    "args": [
+     "execution evidence evidence_missing"
+    ],
+    "asked": [],
+    "asked_the_reference_unchanged": false,
+    "cause_is_the_fault": false,
+    "cause_type": null,
+    "code": "evidence_missing",
+    "context_type": null,
+    "is_contract_error": true,
+    "message": "execution evidence evidence_missing",
+    "outcome": "refused",
+    "store_is_kept": true,
+    "suppress_context": false
+   },
+   "object": {
+    "args": [
+     "execution evidence evidence_missing"
+    ],
+    "asked": [],
+    "asked_the_reference_unchanged": false,
+    "cause_is_the_fault": false,
+    "cause_type": null,
+    "code": "evidence_missing",
+    "context_type": null,
+    "is_contract_error": true,
+    "message": "execution evidence evidence_missing",
+    "outcome": "refused",
+    "store_is_kept": true,
+    "suppress_context": false
+   },
+   "true": {
+    "args": [
+     "execution evidence evidence_missing"
+    ],
+    "asked": [],
+    "asked_the_reference_unchanged": false,
+    "cause_is_the_fault": false,
+    "cause_type": null,
+    "code": "evidence_missing",
+    "context_type": null,
+    "is_contract_error": true,
+    "message": "execution evidence evidence_missing",
+    "outcome": "refused",
+    "store_is_kept": true,
+    "suppress_context": false
+   },
+   "tuple": {
+    "args": [
+     "execution evidence evidence_missing"
+    ],
+    "asked": [],
+    "asked_the_reference_unchanged": false,
+    "cause_is_the_fault": false,
+    "cause_type": null,
+    "code": "evidence_missing",
+    "context_type": null,
+    "is_contract_error": true,
+    "message": "execution evidence evidence_missing",
+    "outcome": "refused",
+    "store_is_kept": true,
+    "suppress_context": false
+   }
+  },
+  "reference_passed_through_unchanged": {
+   "asked": [
+    "'  odd ref/with spaces '"
+   ],
+   "asked_the_reference_unchanged": true,
+   "document": {
+    "answer": "ok",
+    "nested": {
+     "k": [
+      1,
+      2
+     ]
+    },
+    "stage": "executed"
+   },
+   "is_the_stored_object": true,
+   "outcome": "returned",
+   "store_is_kept": true
+  },
+  "returns_a_non_dict_unchanged": {
+   "asked": [
+    "'sha256:abababababababababababababababababababababababababababababababab'"
+   ],
+   "asked_the_reference_unchanged": true,
+   "document": [
+    "not",
+    "a",
+    "dict"
+   ],
+   "is_the_stored_object": true,
+   "outcome": "returned",
+   "store_is_kept": true
+  },
+  "returns_an_empty_document": {
+   "asked": [
+    "'sha256:abababababababababababababababababababababababababababababababab'"
+   ],
+   "asked_the_reference_unchanged": true,
+   "document": {},
+   "is_the_stored_object": true,
+   "outcome": "returned",
+   "store_is_kept": true
+  },
+  "returns_none_unchanged": {
+   "asked": [
+    "'sha256:abababababababababababababababababababababababababababababababab'"
+   ],
+   "asked_the_reference_unchanged": true,
+   "document": null,
+   "is_the_stored_object": true,
+   "outcome": "returned",
+   "store_is_kept": true
+  },
+  "returns_the_document": {
+   "asked": [
+    "'sha256:abababababababababababababababababababababababababababababababab'"
+   ],
+   "asked_the_reference_unchanged": true,
+   "document": {
+    "answer": "ok",
+    "nested": {
+     "k": [
+      1,
+      2
+     ]
+    },
+    "stage": "executed"
+   },
+   "is_the_stored_object": true,
+   "outcome": "returned",
+   "store_is_kept": true
+  }
+ },
+ "s3_failures": {
+  "a_raising_document_call_reference_is_unchanged": {
+   "args": [
+    "execution evidence evidence_corrupt"
+   ],
+   "asked": [
+    "'ref-A'"
+   ],
+   "asked_the_reference_unchanged": true,
+   "cause_is_the_fault": true,
+   "cause_type": "OSError",
+   "code": "evidence_corrupt",
+   "context_type": "OSError",
+   "is_contract_error": true,
+   "message": "execution evidence evidence_corrupt",
+   "outcome": "refused",
+   "store_is_kept": true,
+   "suppress_context": true
+  },
+  "an_evidence_unavailable_from_the_store_is_remapped": {
+   "args": [
+    "execution evidence evidence_corrupt"
+   ],
+   "asked": [
+    "'sha256:abababababababababababababababababababababababababababababababab'"
+   ],
+   "asked_the_reference_unchanged": true,
+   "cause_is_the_fault": true,
+   "cause_type": "EvidenceUnavailable",
+   "code": "evidence_corrupt",
+   "context_type": "EvidenceUnavailable",
+   "is_contract_error": true,
+   "message": "execution evidence evidence_corrupt",
+   "outcome": "refused",
+   "store_is_kept": true,
+   "suppress_context": true
+  },
+  "contract_error_is_a_value_error": true,
+  "contract_error_subclass_is_mapped_by_message": {
+   "args": [
+    "execution evidence evidence_corrupt"
+   ],
+   "asked": [
+    "'sha256:abababababababababababababababababababababababababababababababab'"
+   ],
+   "asked_the_reference_unchanged": true,
+   "cause_is_the_fault": true,
+   "cause_type": "Modified",
+   "code": "evidence_corrupt",
+   "context_type": "Modified",
+   "is_contract_error": true,
+   "message": "execution evidence evidence_corrupt",
+   "outcome": "refused",
+   "store_is_kept": true,
+   "suppress_context": true
+  },
+  "contract_errors": {
+   "empty_message": {
+    "args": [
+     "execution evidence evidence_corrupt"
+    ],
+    "asked": [
+     "'sha256:abababababababababababababababababababababababababababababababab'"
+    ],
+    "asked_the_reference_unchanged": true,
+    "cause_is_the_fault": true,
+    "cause_type": "ContractError",
+    "code": "evidence_corrupt",
+    "context_type": "ContractError",
+    "is_contract_error": true,
+    "message": "execution evidence evidence_corrupt",
+    "outcome": "refused",
+    "store_is_kept": true,
+    "suppress_context": true
+   },
+   "invalid_reference": {
+    "args": [
+     "execution evidence evidence_corrupt"
+    ],
+    "asked": [
+     "'sha256:abababababababababababababababababababababababababababababababab'"
+    ],
+    "asked_the_reference_unchanged": true,
+    "cause_is_the_fault": true,
+    "cause_type": "ContractError",
+    "code": "evidence_corrupt",
+    "context_type": "ContractError",
+    "is_contract_error": true,
+    "message": "execution evidence evidence_corrupt",
+    "outcome": "refused",
+    "store_is_kept": true,
+    "suppress_context": true
+   },
+   "modified": {
+    "args": [
+     "execution evidence evidence_corrupt"
+    ],
+    "asked": [
+     "'sha256:abababababababababababababababababababababababababababababababab'"
+    ],
+    "asked_the_reference_unchanged": true,
+    "cause_is_the_fault": true,
+    "cause_type": "ContractError",
+    "code": "evidence_corrupt",
+    "context_type": "ContractError",
+    "is_contract_error": true,
+    "message": "execution evidence evidence_corrupt",
+    "outcome": "refused",
+    "store_is_kept": true,
+    "suppress_context": true
+   },
+   "modified_in_the_middle": {
+    "args": [
+     "execution evidence evidence_corrupt"
+    ],
+    "asked": [
+     "'sha256:abababababababababababababababababababababababababababababababab'"
+    ],
+    "asked_the_reference_unchanged": true,
+    "cause_is_the_fault": true,
+    "cause_type": "ContractError",
+    "code": "evidence_corrupt",
+    "context_type": "ContractError",
+    "is_contract_error": true,
+    "message": "execution evidence evidence_corrupt",
+    "outcome": "refused",
+    "store_is_kept": true,
+    "suppress_context": true
+   },
+   "modified_lowercase_word_inside": {
+    "args": [
+     "execution evidence evidence_corrupt"
+    ],
+    "asked": [
+     "'sha256:abababababababababababababababababababababababababababababababab'"
+    ],
+    "asked_the_reference_unchanged": true,
+    "cause_is_the_fault": true,
+    "cause_type": "ContractError",
+    "code": "evidence_corrupt",
+    "context_type": "ContractError",
+    "is_contract_error": true,
+    "message": "execution evidence evidence_corrupt",
+    "outcome": "refused",
+    "store_is_kept": true,
+    "suppress_context": true
+   },
+   "modified_uppercase_is_not_matched": {
+    "args": [
+     "execution evidence evidence_corrupt"
+    ],
+    "asked": [
+     "'sha256:abababababababababababababababababababababababababababababababab'"
+    ],
+    "asked_the_reference_unchanged": true,
+    "cause_is_the_fault": true,
+    "cause_type": "ContractError",
+    "code": "evidence_corrupt",
+    "context_type": "ContractError",
+    "is_contract_error": true,
+    "message": "execution evidence evidence_corrupt",
+    "outcome": "refused",
+    "store_is_kept": true,
+    "suppress_context": true
+   },
+   "object_required": {
+    "args": [
+     "execution evidence evidence_corrupt"
+    ],
+    "asked": [
+     "'sha256:abababababababababababababababababababababababababababababababab'"
+    ],
+    "asked_the_reference_unchanged": true,
+    "cause_is_the_fault": true,
+    "cause_type": "ContractError",
+    "code": "evidence_corrupt",
+    "context_type": "ContractError",
+    "is_contract_error": true,
+    "message": "execution evidence evidence_corrupt",
+    "outcome": "refused",
+    "store_is_kept": true,
+    "suppress_context": true
+   },
+   "unmodified_contains_the_word": {
+    "args": [
+     "execution evidence evidence_corrupt"
+    ],
+    "asked": [
+     "'sha256:abababababababababababababababababababababababababababababababab'"
+    ],
+    "asked_the_reference_unchanged": true,
+    "cause_is_the_fault": true,
+    "cause_type": "ContractError",
+    "code": "evidence_corrupt",
+    "context_type": "ContractError",
+    "is_contract_error": true,
+    "message": "execution evidence evidence_corrupt",
+    "outcome": "refused",
+    "store_is_kept": true,
+    "suppress_context": true
+   },
+   "unrelated": {
+    "args": [
+     "execution evidence evidence_corrupt"
+    ],
+    "asked": [
+     "'sha256:abababababababababababababababababababababababababababababababab'"
+    ],
+    "asked_the_reference_unchanged": true,
+    "cause_is_the_fault": true,
+    "cause_type": "ContractError",
+    "code": "evidence_corrupt",
+    "context_type": "ContractError",
+    "is_contract_error": true,
+    "message": "execution evidence evidence_corrupt",
+    "outcome": "refused",
+    "store_is_kept": true,
+    "suppress_context": true
+   }
+  },
+  "corrupt": {
+   "is_a_directory": {
+    "args": [
+     "execution evidence evidence_corrupt"
+    ],
+    "asked": [
+     "'sha256:abababababababababababababababababababababababababababababababab'"
+    ],
+    "asked_the_reference_unchanged": true,
+    "cause_is_the_fault": true,
+    "cause_type": "IsADirectoryError",
+    "code": "evidence_corrupt",
+    "context_type": "IsADirectoryError",
+    "is_contract_error": true,
+    "message": "execution evidence evidence_corrupt",
+    "outcome": "refused",
+    "store_is_kept": true,
+    "suppress_context": true
+   },
+   "json_like_value_error": {
+    "args": [
+     "execution evidence evidence_corrupt"
+    ],
+    "asked": [
+     "'sha256:abababababababababababababababababababababababababababababababab'"
+    ],
+    "asked_the_reference_unchanged": true,
+    "cause_is_the_fault": true,
+    "cause_type": "ValueError",
+    "code": "evidence_corrupt",
+    "context_type": "ValueError",
+    "is_contract_error": true,
+    "message": "execution evidence evidence_corrupt",
+    "outcome": "refused",
+    "store_is_kept": true,
+    "suppress_context": true
+   },
+   "os_error": {
+    "args": [
+     "execution evidence evidence_corrupt"
+    ],
+    "asked": [
+     "'sha256:abababababababababababababababababababababababababababababababab'"
+    ],
+    "asked_the_reference_unchanged": true,
+    "cause_is_the_fault": true,
+    "cause_type": "OSError",
+    "code": "evidence_corrupt",
+    "context_type": "OSError",
+    "is_contract_error": true,
+    "message": "execution evidence evidence_corrupt",
+    "outcome": "refused",
+    "store_is_kept": true,
+    "suppress_context": true
+   },
+   "os_error_subclass": {
+    "args": [
+     "execution evidence evidence_corrupt"
+    ],
+    "asked": [
+     "'sha256:abababababababababababababababababababababababababababababababab'"
+    ],
+    "asked_the_reference_unchanged": true,
+    "cause_is_the_fault": true,
+    "cause_type": "Unreadable",
+    "code": "evidence_corrupt",
+    "context_type": "Unreadable",
+    "is_contract_error": true,
+    "message": "execution evidence evidence_corrupt",
+    "outcome": "refused",
+    "store_is_kept": true,
+    "suppress_context": true
+   },
+   "permission_error": {
+    "args": [
+     "execution evidence evidence_corrupt"
+    ],
+    "asked": [
+     "'sha256:abababababababababababababababababababababababababababababababab'"
+    ],
+    "asked_the_reference_unchanged": true,
+    "cause_is_the_fault": true,
+    "cause_type": "PermissionError",
+    "code": "evidence_corrupt",
+    "context_type": "PermissionError",
+    "is_contract_error": true,
+    "message": "execution evidence evidence_corrupt",
+    "outcome": "refused",
+    "store_is_kept": true,
+    "suppress_context": true
+   },
+   "timeout_error": {
+    "args": [
+     "execution evidence evidence_corrupt"
+    ],
+    "asked": [
+     "'sha256:abababababababababababababababababababababababababababababababab'"
+    ],
+    "asked_the_reference_unchanged": true,
+    "cause_is_the_fault": true,
+    "cause_type": "TimeoutError",
+    "code": "evidence_corrupt",
+    "context_type": "TimeoutError",
+    "is_contract_error": true,
+    "message": "execution evidence evidence_corrupt",
+    "outcome": "refused",
+    "store_is_kept": true,
+    "suppress_context": true
+   },
+   "unicode_decode_error": {
+    "args": [
+     "execution evidence evidence_corrupt"
+    ],
+    "asked": [
+     "'sha256:abababababababababababababababababababababababababababababababab'"
+    ],
+    "asked_the_reference_unchanged": true,
+    "cause_is_the_fault": true,
+    "cause_type": "UnicodeDecodeError",
+    "code": "evidence_corrupt",
+    "context_type": "UnicodeDecodeError",
+    "is_contract_error": true,
+    "message": "execution evidence evidence_corrupt",
+    "outcome": "refused",
+    "store_is_kept": true,
+    "suppress_context": true
+   },
+   "unicode_error_subclass_of_value_error": {
+    "args": [
+     "execution evidence evidence_corrupt"
+    ],
+    "asked": [
+     "'sha256:abababababababababababababababababababababababababababababababab'"
+    ],
+    "asked_the_reference_unchanged": true,
+    "cause_is_the_fault": true,
+    "cause_type": "UnicodeDecodeError",
+    "code": "evidence_corrupt",
+    "context_type": "UnicodeDecodeError",
+    "is_contract_error": true,
+    "message": "execution evidence evidence_corrupt",
+    "outcome": "refused",
+    "store_is_kept": true,
+    "suppress_context": true
+   },
+   "value_error": {
+    "args": [
+     "execution evidence evidence_corrupt"
+    ],
+    "asked": [
+     "'sha256:abababababababababababababababababababababababababababababababab'"
+    ],
+    "asked_the_reference_unchanged": true,
+    "cause_is_the_fault": true,
+    "cause_type": "ValueError",
+    "code": "evidence_corrupt",
+    "context_type": "ValueError",
+    "is_contract_error": true,
+    "message": "execution evidence evidence_corrupt",
+    "outcome": "refused",
+    "store_is_kept": true,
+    "suppress_context": true
+   }
+  },
+  "every_mapped_refusal_chains_from_the_fault": true,
+  "every_refusal_is_a_fixed_code": [
+   [
+    "evidence_corrupt",
+    "execution evidence evidence_corrupt"
+   ],
+   [
+    "evidence_missing",
+    "execution evidence evidence_missing"
+   ]
+  ],
+  "evidence_invalid_is_never_produced": true,
+  "missing": {
+   "file_not_found": {
+    "args": [
+     "execution evidence evidence_missing"
+    ],
+    "asked": [
+     "'sha256:abababababababababababababababababababababababababababababababab'"
+    ],
+    "asked_the_reference_unchanged": true,
+    "cause_is_the_fault": true,
+    "cause_type": "FileNotFoundError",
+    "code": "evidence_missing",
+    "context_type": "FileNotFoundError",
+    "is_contract_error": true,
+    "message": "execution evidence evidence_missing",
+    "outcome": "refused",
+    "store_is_kept": true,
+    "suppress_context": true
+   },
+   "file_not_found_subclass": {
+    "args": [
+     "execution evidence evidence_missing"
+    ],
+    "asked": [
+     "'sha256:abababababababababababababababababababababababababababababababab'"
+    ],
+    "asked_the_reference_unchanged": true,
+    "cause_is_the_fault": true,
+    "cause_type": "FileNotFound",
+    "code": "evidence_missing",
+    "context_type": "FileNotFound",
+    "is_contract_error": true,
+    "message": "execution evidence evidence_missing",
+    "outcome": "refused",
+    "store_is_kept": true,
+    "suppress_context": true
+   },
+   "file_not_found_with_message": {
+    "args": [
+     "execution evidence evidence_missing"
+    ],
+    "asked": [
+     "'sha256:abababababababababababababababababababababababababababababababab'"
+    ],
+    "asked_the_reference_unchanged": true,
+    "cause_is_the_fault": true,
+    "cause_type": "FileNotFoundError",
+    "code": "evidence_missing",
+    "context_type": "FileNotFoundError",
+    "is_contract_error": true,
+    "message": "execution evidence evidence_missing",
+    "outcome": "refused",
+    "store_is_kept": true,
+    "suppress_context": true
+   }
+  },
+  "propagated": {
+   "assertion_error": {
+    "asked": [
+     "'sha256:abababababababababababababababababababababababababababababababab'"
+    ],
+    "asked_the_reference_unchanged": true,
+    "cause_type": null,
+    "context_type": null,
+    "is_evidence_unavailable": false,
+    "is_the_fault": true,
+    "message": "x",
+    "outcome": "propagated",
+    "store_is_kept": true,
+    "type": "AssertionError"
+   },
+   "attribute_error": {
+    "asked": [
+     "'sha256:abababababababababababababababababababababababababababababababab'"
+    ],
+    "asked_the_reference_unchanged": true,
+    "cause_type": null,
+    "context_type": null,
+    "is_evidence_unavailable": false,
+    "is_the_fault": true,
+    "message": "a",
+    "outcome": "propagated",
+    "store_is_kept": true,
+    "type": "AttributeError"
+   },
+   "key_error": {
+    "asked": [
+     "'sha256:abababababababababababababababababababababababababababababababab'"
+    ],
+    "asked_the_reference_unchanged": true,
+    "cause_type": null,
+    "context_type": null,
+    "is_evidence_unavailable": false,
+    "is_the_fault": true,
+    "message": "'k'",
+    "outcome": "propagated",
+    "store_is_kept": true,
+    "type": "KeyError"
+   },
+   "keyboard_interrupt": {
+    "asked": [
+     "'sha256:abababababababababababababababababababababababababababababababab'"
+    ],
+    "asked_the_reference_unchanged": true,
+    "cause_type": null,
+    "context_type": null,
+    "is_evidence_unavailable": false,
+    "is_the_fault": true,
+    "message": "",
+    "outcome": "propagated",
+    "store_is_kept": true,
+    "type": "KeyboardInterrupt"
+   },
+   "lookup_error": {
+    "asked": [
+     "'sha256:abababababababababababababababababababababababababababababababab'"
+    ],
+    "asked_the_reference_unchanged": true,
+    "cause_type": null,
+    "context_type": null,
+    "is_evidence_unavailable": false,
+    "is_the_fault": true,
+    "message": "l",
+    "outcome": "propagated",
+    "store_is_kept": true,
+    "type": "LookupError"
+   },
+   "runtime_error": {
+    "asked": [
+     "'sha256:abababababababababababababababababababababababababababababababab'"
+    ],
+    "asked_the_reference_unchanged": true,
+    "cause_type": null,
+    "context_type": null,
+    "is_evidence_unavailable": false,
+    "is_the_fault": true,
+    "message": "boom",
+    "outcome": "propagated",
+    "store_is_kept": true,
+    "type": "RuntimeError"
+   },
+   "stop_iteration": {
+    "asked": [
+     "'sha256:abababababababababababababababababababababababababababababababab'"
+    ],
+    "asked_the_reference_unchanged": true,
+    "cause_type": null,
+    "context_type": null,
+    "is_evidence_unavailable": false,
+    "is_the_fault": true,
+    "message": "",
+    "outcome": "propagated",
+    "store_is_kept": true,
+    "type": "StopIteration"
+   },
+   "type_error": {
+    "asked": [
+     "'sha256:abababababababababababababababababababababababababababababababab'"
+    ],
+    "asked_the_reference_unchanged": true,
+    "cause_type": null,
+    "context_type": null,
+    "is_evidence_unavailable": false,
+    "is_the_fault": true,
+    "message": "t",
+    "outcome": "propagated",
+    "store_is_kept": true,
+    "type": "TypeError"
+   }
+  }
+ },
+ "s4_m7_tests": {
+  "tests/test_autonomous.py (EvidenceUnavailable('evidence_corrupt') as the FileArtifacts-backed port raises)": "s1_exception, s3_failures.corrupt",
+  "tests/test_continuation_research.py (the port is replaced by a forbidden double)": {
+   "unreachable": "a monkeypatch of the module attribute; the port itself is s2_document"
+  },
+  "tests/test_research_recovery.py (ExecutionEvidence over an empty LABELLED store: no such artifact)": "s3_failures.missing"
+ }
+}

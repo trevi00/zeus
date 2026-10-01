@@ -1,0 +1,8 @@
+{
+ "family": "research.autonomous_evidence",
+ "description": "S8 execution evidence port of M7 adapters/autonomous_evidence.py (EvidenceUnavailable; ExecutionEvidence.document: the document returned unchanged, the non-str reference refused before the store is asked, FileNotFoundError -> evidence_missing, OSError/ValueError/UnicodeDecodeError -> evidence_corrupt, the three ContractError messages, the unmapped faults that propagate, the cause/context facts of every refusal), characterized before the autonomous_evidence move; an injected LABELLED fake artifacts store, no FileArtifacts, no file, no database",
+ "reference_driver": "drivers/reference/s8_autonomous_evidence.py",
+ "target_driver": "drivers/target/s8_autonomous_evidence.py",
+ "golden": "goldens/reference/research.autonomous_evidence.json",
+ "slice": "S8"
+}
