@@ -2,13 +2,13 @@
 
 The API mirrors the reference driver's names over the target homes. `GitCapture` gets its two injected host_os ports (R-q2): the
 composition wiring `host_os.adapters.process_groups.run_process` and `host_os.adapters.git_source.GitSource`, each reached through a
-thin forwarder. `patch(name, value)` is the labelled fault seam: M7 replaced a module global of the adapter, and here the
+thin forwarder. The capture reads no clock and no id source (the fixture repositories pin their own `GIT_*` identity and dates), so
+the driver installs none. `patch(name, value)` is the labelled fault seam: M7 replaced a module global of the adapter, and here the
 forwarder reads the replacement from `PATCHED` at call time, so every labelled fault (the shifted read-back reader, the simulated
 Windows pipe) still reaches the exact call site it reached in M7 and no case is weakened or skipped."""
 
 import sys
 from contextlib import contextmanager
-from datetime import datetime, timezone
 from pathlib import Path
 from types import SimpleNamespace
 
@@ -19,17 +19,12 @@ import driver  # noqa: E402
 
 driver.start("target")
 
-import determinism  # noqa: E402
 import s8_capture  # noqa: E402
 from codex_harness.composition import research_program_adapters  # noqa: E402
 from codex_harness.host_os.adapters import git_source, process_groups  # noqa: E402
 from codex_harness.kernel.errors import ContractError  # noqa: E402
 from codex_harness.research.adapters import research_program as adapter  # noqa: E402
 from codex_harness.research.domain.research_program import CAPTURE_ROOT  # noqa: E402
-
-CLOCK = determinism.FakeClock(datetime(2026, 9, 22, tzinfo=timezone.utc))
-IDS = determinism.FakeIds()
-determinism.install(CLOCK, IDS)
 
 PATCHED = {}
 
