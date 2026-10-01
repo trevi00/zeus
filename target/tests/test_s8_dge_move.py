@@ -88,7 +88,8 @@ def test_bucket_and_schema_literals_equal_m7():
 def test_v4_research_owns_the_dge_buckets():
     from codex_harness.research import ports
 
-    assert ports.OWNED_BUCKETS == ("inbox", "incidents", "hooks", "research_programs", "dge_sessions", "dge_events")
+    # the first six are the S6/pilot 65 names; later V4 moves (pilot 70: the research_* audit buckets) append to the tuple
+    assert ports.OWNED_BUCKETS[:6] == ("inbox", "incidents", "hooks", "research_programs", "dge_sessions", "dge_events")
     app = importlib.import_module(APP)
     assert {app.SESSIONS, app.EVENTS} <= set(ports.OWNED_BUCKETS)
 
