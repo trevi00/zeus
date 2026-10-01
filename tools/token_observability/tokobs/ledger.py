@@ -77,7 +77,8 @@ CREATE INDEX invocations_task ON invocations(task_id);
 CREATE TABLE results(
   session_id TEXT NOT NULL, uuid TEXT NOT NULL, invocation_id TEXT NOT NULL REFERENCES invocations(id),
   seq INTEGER NOT NULL, result_index INTEGER, is_error INTEGER NOT NULL, subtype TEXT,
-  zeroed INTEGER NOT NULL, usage_ok INTEGER NOT NULL, models_ok INTEGER NOT NULL, nested INTEGER NOT NULL,
+  zeroed INTEGER NOT NULL, usage_ok INTEGER NOT NULL, models_ok INTEGER NOT NULL,
+  nested INTEGER NOT NULL, -- 0 explicit zero/zero counters, 1 nested agents reported, 2 unknown (F2)
   input INTEGER, output INTEGER, cache_read INTEGER, cache_write INTEGER,
   PRIMARY KEY (session_id, uuid));
 CREATE INDEX results_invocation ON results(invocation_id, seq);

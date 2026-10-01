@@ -29,7 +29,16 @@ from pathlib import Path
 from .backfill import attempt_is_history
 from .config import TaskClassRegistry
 from .ledger import Ledger
-from .partition import MODEL_USAGE_FIELDS, USAGE_FIELDS, Baseline, ResultFacts, plan_partition
+from .partition import (
+    MODEL_USAGE_FIELDS,
+    NESTED_NONE,
+    NESTED_PRESENT,
+    NESTED_UNKNOWN,
+    USAGE_FIELDS,
+    Baseline,
+    ResultFacts,
+    plan_partition,
+)
 from .publication import (
     finalize_invocation,
     publish_contribution,
@@ -338,8 +347,19 @@ class ParsedResult:
     zeroed: bool
     usage: dict[str, int] | None
     models: dict[str, dict[str, float]] | None
-    nested: bool
+    nested: str  # partition.NESTED_* (F2)
     unrecognized: set[str]
+
+
+def _nested_evidence(stats: object) -> str:
+    """DESIGN §3.4 step 4: `present` when a counter is > 0; `none` only when BOTH counters are non-negative integers
+    equal to 0; anything else (absent stats, a missing or wrong-typed field) is `unknown`, never zero."""
+    if not isinstance(stats, dict):
+        return NESTED_UNKNOWN
+    counters = [_int(stats.get(key)) for key in ("spawned", "spawned_by_subagents")]
+    if any(c is not None and c > 0 for c in counters):
+        return NESTED_PRESENT
+    return NESTED_NONE if all(c == 0 for c in counters) else NESTED_UNKNOWN
 
 
 def parse_result(obj: dict, raw: bytes, init_session: str | None) -> ParsedResult:
@@ -352,10 +372,7 @@ def parse_result(obj: dict, raw: bytes, init_session: str | None) -> ParsedResul
     usage_zero = raw_usage is None or (usage is not None and not any(usage.values()))
     models_zero = raw_models is None or (models is not None and not any(
         any(m[tau] for tau in TOKEN_TYPES) for m in models.values()))
-    stats = obj.get("subagent_stats")
-    nested = isinstance(stats, dict) and any(
-        isinstance(stats.get(key), int) and not isinstance(stats.get(key), bool) and stats[key] > 0
-        for key in ("spawned", "spawned_by_subagents"))
+    nested = _nested_evidence(obj.get("subagent_stats"))
     session = safe_token(obj.get("session_id")) or init_session or ""
     uuid = safe_token(obj.get("uuid")) or "sha256:" + hashlib.sha256(
         json.dumps(obj, sort_keys=True, separators=(",", ":")).encode()).hexdigest()
@@ -454,7 +471,7 @@ def _apply_result(scan: Scan, inv: dict, obj: dict, raw: bytes, path: Path, offs
         "INSERT INTO results(session_id,uuid,invocation_id,seq,result_index,is_error,subtype,zeroed,usage_ok,"
         "models_ok,nested,input,output,cache_read,cache_write) VALUES(?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)",
         (result.session_id, result.uuid, inv["id"], seq, result.result_index, int(result.is_error), result.subtype,
-         int(result.zeroed), int(result.usage is not None), int(result.models is not None), int(result.nested),
+         int(result.zeroed), int(result.usage is not None), int(result.models is not None), _NESTED_CODE[result.nested],
          usage.get("input"), usage.get("output"), usage.get("cache_read"), usage.get("cache_write")))
     for model, cum in sorted((result.models or {}).items()):
         conn.execute("INSERT INTO result_models(session_id,uuid,model,input,output,cache_read,cache_write,cost_usd) "
@@ -555,6 +572,10 @@ def _predecessor(scan: Scan, inv: dict) -> tuple[str, dict[str, dict[str, float]
                               "cost_usd": r[5]} for r in rows}
 
 
+_NESTED_CODE = {NESTED_NONE: 0, NESTED_PRESENT: 1, NESTED_UNKNOWN: 2}  # results.nested column (F2)
+_NESTED_NAME = {code: name for name, code in _NESTED_CODE.items()}
+
+
 def _results(conn: sqlite3.Connection, inv_id: str) -> list[ResultFacts]:
     facts = []
     for sid, uuid, is_error, zeroed, usage_ok, models_ok, nested, *usage in conn.execute(
@@ -567,7 +588,7 @@ def _results(conn: sqlite3.Connection, inv_id: str) -> list[ResultFacts]:
                 "SELECT model,input,output,cache_read,cache_write,cost_usd FROM result_models "
                 "WHERE session_id=? AND uuid=?", (sid, uuid)).fetchall()}
         facts.append(ResultFacts(dict(zip(TOKEN_TYPES, usage)) if usage_ok else None, models, bool(is_error),
-                                 bool(zeroed), bool(nested)))
+                                 bool(zeroed), _NESTED_NAME.get(nested, NESTED_UNKNOWN)))
     return facts
 
 

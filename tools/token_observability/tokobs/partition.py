@@ -23,6 +23,10 @@ USAGE_FIELDS = {"input": "input_tokens", "output": "output_tokens", "cache_read"
 MODEL_USAGE_FIELDS = {"input": "inputTokens", "output": "outputTokens", "cache_read": "cacheReadInputTokens",
                       "cache_write": "cacheCreationInputTokens"}
 COST_EPSILON = 1e-9
+# `subagent_stats` evidence of one result (DESIGN §3.4 step 4). Absent, partial or wrong-typed counters are NOT zero.
+NESTED_NONE = "none"  # both counters present as non-negative integers, both 0
+NESTED_PRESENT = "present"  # a counter reports nested agents (> 0)
+NESTED_UNKNOWN = "unknown"  # nested exclusivity cannot be established
 
 
 @dataclass(frozen=True)
@@ -32,7 +36,7 @@ class ResultFacts:
     models: dict[str, dict[str, float]] | None  # model label -> token_type/cost_usd; None when absent or invalid
     is_error: bool = False
     zeroed: bool = False
-    nested: bool = False  # subagent_stats.spawned or spawned_by_subagents > 0
+    nested: str = NESTED_UNKNOWN  # NESTED_NONE only on explicit zero/zero counters (DESIGN §3.4 step 4)
 
     @property
     def usable(self) -> bool:
@@ -64,10 +68,20 @@ def last_good(results: list[ResultFacts]) -> ResultFacts | None:
     return None
 
 
-def advisor_role(model: str, advisor: str | None, consultations: int, nested: bool) -> str:
-    """DESIGN §3.4 step 4: configuration alone never proves advisor use."""
+def nested_state(results: list[ResultFacts]) -> str:
+    """Process-level nested evidence: any reported nested agent wins; exclusivity needs explicit zero/zero counters
+    on EVERY result, otherwise it is unknown (F2: missing evidence never proves advisor exclusivity)."""
+    states = {r.nested for r in results}
+    if NESTED_PRESENT in states:
+        return NESTED_PRESENT
+    return NESTED_NONE if states == {NESTED_NONE} else NESTED_UNKNOWN
+
+
+def advisor_role(model: str, advisor: str | None, consultations: int, nested: str) -> str:
+    """DESIGN §3.4 step 4: configuration alone never proves advisor use; exclusive `advisor` additionally needs
+    explicit zero nested counters, else the ambiguous `advisor_or_nested`."""
     if advisor is not None and model == advisor and consultations >= 1:
-        return "advisor_or_nested" if nested else "advisor"
+        return "advisor" if nested == NESTED_NONE else "advisor_or_nested"
     return "nested_unattributed"
 
 
@@ -115,7 +129,7 @@ def plan_partition(results: list[ResultFacts], executor: str, advisor: str | Non
         if any(exec_delta[tau] - m_total[tau] < 0 for tau in TOKEN_TYPES):
             accounting.add("inconsistent")  # step 3: T_e < M
         else:
-            nested = any(r.nested for r in results)
+            nested = nested_state(results)
             for tau in TOKEN_TYPES:
                 _push(plan, executor, "nested_unattributed", tau, exec_delta[tau] - m_total[tau])
             for model in sorted(deltas):
