@@ -17,7 +17,9 @@ Delivery (§6.1 steps 3-4). Within the drift window the SAME signed event is res
 timestamp rejection, nothing is assumed: an empty, erroring or non-EOSE answer proves nothing, so the op stays
 `unknown` (P1). An append subject reconciles by its `zr-op` tag; a re-publication is a freshly signed copy of the same
 unsigned event (same tag, new `created_at`, since the old one is outside the relay's window), throttled to one per 3
-passes and 10 minutes. A state subject reconciles by `ids`; no positive match re-plans a NEW version.
+passes and 10 minutes. A state subject reconciles by `ids`; no positive match re-plans a NEW version, or the
+plan answers `{"superseded": True}` and the op is retired. A relay `conflict:` rejection of a state row (a lost CAS)
+ends its window like a timestamp rejection (§6.1.5).
 
 Capacity (§6.1 step 6, P6). `pending`, `in_flight` and `unknown` rows of every class count against `outbox_max`,
 checked in the transaction that would add a row. Over the bound the work is DEFERRED, never dropped: no row, a
@@ -47,6 +49,7 @@ REPUBLISH_PASSES = 3
 REPUBLISH_GAP = 600
 OP_TAG = "zr-op"
 PAYLOAD = ("event", "unsigned")
+CAS_CONFLICT = "conflict:"  # the relay's 45010 CAS rejection, `conflict: artifact head changed` (A4 run 5, step 8)
 TIMESTAMP_MARKS = ("timestamp", "creation date", "created_at", "too far")  # the relay's wording of F1
 
 
@@ -185,6 +188,8 @@ class BuzzOutbox:
                 body["status"] = "unknown"
             elif any(mark in str(message).lower() for mark in TIMESTAMP_MARKS):  # F1: a timestamp rejection ends the window for this event
                 body.update(status="unknown", reconcile=True)
+            elif row["cls"] == "state" and str(message).startswith(CAS_CONFLICT):  # §6.1.5 (DESIGN-B Q1): the CAS lost
+                body.update(status="unknown", reconcile=True)
 
         self._commit(generation, row["id"], apply)
         counts["acknowledged"] += accepted is True
@@ -235,6 +240,10 @@ class BuzzOutbox:
             counts["acknowledged"] += 1
             return
         plan = self.replan(row["subject"])
+        if plan and plan.get("superseded") is True:  # §6.1.5: the relay head already carries newer state (or nothing is
+            self._commit(generation, row["id"], lambda body: self._reclaim(body, "superseded"))  # to say over it)
+            counts["superseded"] += 1
+            return
         if not plan:  # nothing new to say: the op stays unknown
             self._commit(generation, row["id"], lambda body: body.update(status="unknown"))
             counts["unknown"] += 1

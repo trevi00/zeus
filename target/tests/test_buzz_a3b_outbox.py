@@ -450,3 +450,45 @@ def test_a3c_6_without_a_deferral_the_unknown_state_still_replans_and_delivers(t
     w.outbox.deliver(w.generation)
     w.outbox.deliver(w.generation)
     assert w.row("task:one", 1)["status"] == "superseded" and w.row("task:one", 2)["status"] == "acknowledged"
+
+
+# ---- B4 (DESIGN-B Q1): the CAS conflict of a state row, and a replan that answers `superseded` ---------------------
+CONFLICT = (False, "none", "conflict: artifact head changed")  # the relay's wording, A4 run 5 step 8
+
+
+def test_7a_a_conflict_rejection_of_a_state_row_ends_its_window_like_a_timestamp_rejection(w):
+    w.enqueue("task:t1", 1)
+    w.relay.script = [CONFLICT]
+    w.outbox.deliver(w.generation)
+    row = w.row("task:t1", 1)
+    assert (row["status"], row["reconcile"], row["relay_message"]) == ("unknown", True, "conflict: artifact head changed")
+    w.plan = {"version": 2, "unsigned": w.unsigned("task:t1@2")}
+    counts = w.outbox.deliver(w.generation)  # inside the window, yet it reconciles and re-plans (never a resend)
+    assert w.relay.published == [row["event"]] and w.replans == ["task:t1"] and counts["replanned"] == 1
+    assert w.row("task:t1", 1)["status"] == "superseded" and w.row("task:t1", 2)["status"] == "pending"
+
+
+def test_7b_other_explicit_rejections_and_append_rows_keep_the_existing_behaviour(w):
+    w.enqueue("task:t1", 1)
+    w.enqueue("receipt:c:1", 1, "append", tag="receipt:c:1")
+    w.relay.script = [CONFLICT, (False, "none", "blocked: not a member")]  # delivery order: the receipt, then the task
+    w.outbox.deliver(w.generation)
+    assert [w.row(s, 1)["status"] for s in ("task:t1", "receipt:c:1")] == ["pending", "pending"]
+    assert not any(w.row(s, 1)["reconcile"] for s in ("task:t1", "receipt:c:1"))
+    assert w.relay.queries == [] and w.replans == []
+
+
+def test_7c_a_replan_that_answers_superseded_retires_the_op_and_frees_its_capacity(tmp_path):
+    w = World(tmp_path, outbox_max=1)
+    w.enqueue("task:t1", 1)
+    w.relay.script = [CONFLICT]
+    w.outbox.deliver(w.generation)
+    original = w.row("task:t1", 1)["event_id"]
+    w.plan = {"superseded": True}
+    counts = w.outbox.deliver(w.generation)
+    row = w.row("task:t1", 1)
+    assert counts["superseded"] == 1 and counts["replanned"] == 0 and w.replans == ["task:t1"]
+    assert row["status"] == "superseded" and row["reclaimed"] and "event" not in row and "unsigned" not in row
+    assert row["event_id"] == original and w.relay.queries == [[{"ids": [original]}]]
+    assert w.enqueue("task:t2", 1)["status"] == "enqueued"  # a superseded row no longer counts against the bound
+    assert w.outbox.deliver(w.generation)["sent"] == 1  # and is never sent again
