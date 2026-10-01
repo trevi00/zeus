@@ -146,7 +146,7 @@ def parse_prom(text: str) -> dict[tuple[str, tuple[tuple[str, str], ...]], float
             continue
         match = re.match(r"^([a-zA-Z_:][a-zA-Z0-9_:]*)(?:\{(.*)\})? (\S+)$", line)
         assert match, line
-        labels = tuple(sorted(re.findall(r'([a-z_]+)="((?:[^"\\]|\\.)*)"', match.group(2) or "")))
+        labels = tuple(sorted(re.findall(r'([a-z0-9_]+)="((?:[^"\\]|\\.)*)"', match.group(2) or "")))
         out[(match.group(1), labels)] = float(match.group(3))
     return out
 

@@ -34,6 +34,7 @@ def main(argv: list[str] | None = None) -> int:
     scan.add_argument("--source-root", required=True)
     scan.add_argument("--task-classes", type=Path)
     scan.add_argument("--now")
+    scan.add_argument("--live-since", type=int, help="explicit §3.9 live_since (C-W1-7); stored once")
     rend = sub.add_parser("render", help="write data.prom and health.prom atomically")
     rend.add_argument("--data", required=True, type=Path)
     rend.add_argument("--now")
@@ -47,7 +48,8 @@ def main(argv: list[str] | None = None) -> int:
     try:
         if ns.cmd == "scan":
             validate_root(ns.source_root)
-            scan_once(ns.data, Path(ns.source_root), now=_now(ns.now), registry=load_registry(ns.task_classes))
+            scan_once(ns.data, Path(ns.source_root), now=_now(ns.now), registry=load_registry(ns.task_classes),
+                      live_since=ns.live_since)
         elif ns.cmd == "render":
             now = _now(ns.now)
             with collector_lock(ns.data):

@@ -165,6 +165,7 @@ CREATE TABLE rate_observations(
   line_index INTEGER NOT NULL, PRIMARY KEY (session_id, event_key, window));
 CREATE INDEX rate_observations_slot ON rate_observations(provider, slot, window, observed_at);
 CREATE TABLE s9_sources(name TEXT PRIMARY KEY, ok INTEGER NOT NULL);
+ALTER TABLE tasks ADD COLUMN backfill INTEGER NOT NULL DEFAULT 0;
 """
 
 MIGRATIONS: tuple[tuple[int, str], ...] = ((1, _MIGRATION_1), (2, _MIGRATION_2))

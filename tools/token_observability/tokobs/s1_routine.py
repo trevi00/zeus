@@ -710,10 +710,12 @@ def _sync_task(scan: Scan, task_id: str, task_class: str, view: TaskView) -> Non
         outcome = view.completed["outcome"]
         unknown = conn.execute("SELECT COUNT(*) FROM invocations WHERE task_id=? AND unknown_reason IS NOT NULL",
                                (task_id,)).fetchone()[0]
+        history = conn.execute("SELECT MIN(backfill) FROM invocations WHERE task_id=?", (task_id,)).fetchone()[0]
         conn.execute(
-            "UPDATE tasks SET outcome=?, closed_at=?, first_pass=?, unknown_invocations=? WHERE task_id=?",
+            "UPDATE tasks SET outcome=?, closed_at=?, first_pass=?, unknown_invocations=?, backfill=? "
+            "WHERE task_id=?",
             (outcome, parse_at(view.completed.get("at")) or scan.now,
-             int(outcome == "accepted" and len(view.attempts) == 1), unknown, task_id))
+             int(outcome == "accepted" and len(view.attempts) == 1), unknown, int(history or 0), task_id))
         conn.execute(
             "INSERT INTO task_token_snapshots(task_id,role,token_type,value) "
             "SELECT ?, c.role, c.token_type, SUM(c.value) FROM contributions c JOIN invocations i "

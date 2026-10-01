@@ -191,7 +191,7 @@ def build_data(ledger: Ledger, now: int = 0) -> tuple[str, int]:
     for task_class, outcome, first_pass, attempts, unknown, elapsed, review_rounds in conn.execute(
             "SELECT task_class,outcome,first_pass,attempts,unknown_invocations,closed_at-first_dispatch_at,"
             "review_rounds FROM tasks "
-            "WHERE closed_at IS NOT NULL"):
+            "WHERE closed_at IS NOT NULL AND backfill=0"):
         base = label(task_class=task_class, outcome=outcome)
         m["zeus_task_outcomes_total"].add({**base, **label(first_pass="true" if first_pass else "false")}, 1)
         m["zeus_task_unknown_invocations_total"].add(base, unknown)
@@ -206,7 +206,7 @@ def build_data(ledger: Ledger, now: int = 0) -> tuple[str, int]:
         hist.add(base, 1, "_count")
     for task_class, outcome, role, tau, value in conn.execute(
             "SELECT t.task_class,t.outcome,s.role,s.token_type,s.value FROM task_token_snapshots s "
-            "JOIN tasks t USING(task_id) WHERE t.closed_at IS NOT NULL"):
+            "JOIN tasks t USING(task_id) WHERE t.closed_at IS NOT NULL AND t.backfill=0"):
         m["zeus_task_tokens_total"].add(label(task_class=task_class, outcome=outcome, token_type=tau, role=role), value)
     known = dict(conn.execute("SELECT kind,COUNT(*) FROM corrections GROUP BY 1").fetchall())
     for kind in LABEL_ALLOWLISTS["kind"]:
