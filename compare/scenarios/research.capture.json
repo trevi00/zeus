@@ -2,8 +2,7 @@
  "family": "research.capture",
  "description": "S8 research capture of M7 GitCapture.capture, characterized before the research program move: the commit, tree, author and exact UTF-8 bytes, every refusal in the code's order (path, ref, size, base, path exists, ref exists, each git step, blob mismatch, read-back mismatch, ref failed), the create-only CAS (second capture, a ref planted between the probe and update-ref), the checkout never moved, exact bytes under a simulated Windows pipe, and T-ENV-1 (GIT_DIR planted in the process environment) recorded as observed; real temporary Git repositories under a pinned identity, labelled faults",
  "reference_driver": "drivers/reference/s8_capture.py",
- "target_driver": null,
+ "target_driver": "drivers/target/s8_capture.py",
  "golden": "goldens/reference/research.capture.json",
- "slice": "S8",
- "target_status": "pending: S8 step 3 (research program move)"
+ "slice": "S8"
 }
