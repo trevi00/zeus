@@ -9,6 +9,8 @@
 
 import json
 import os
+import shutil
+import subprocess
 import uuid
 from pathlib import Path
 
@@ -16,6 +18,8 @@ import pytest
 
 from codex_harness.kernel.ids import digest
 from codex_harness.storage.adapters.postgres_store import PostgresStore
+
+ATTESTED = {}  # the git-attested runtime root of the ported delivery suites, built before the first ported module is imported
 
 RESOURCES = Path(__file__).resolve().parents[2] / "src" / "codex_harness" / "resources"
 
@@ -50,3 +54,29 @@ def isolated_pgstore():
     finally:
         with psycopg.connect(dsn) as connection:
             connection.execute(sql.SQL("DROP SCHEMA {} CASCADE").format(sql.Identifier(schema)))
+
+
+GIT_FIXED = {"GIT_AUTHOR_NAME": "Zeus Fixture", "GIT_AUTHOR_EMAIL": "fixture@zeus.invalid",
+             "GIT_AUTHOR_DATE": "2026-09-22T00:00:00+00:00", "GIT_COMMITTER_NAME": "Zeus Fixture",
+             "GIT_COMMITTER_EMAIL": "fixture@zeus.invalid", "GIT_COMMITTER_DATE": "2026-09-22T00:00:00+00:00"}
+
+
+def pytest_collectstart(collector):
+    """LABELLED: `<basetemp>/attested-runtime` is a git repository holding a COPY of the target `src/codex_harness`
+    (no bytecode), committed once under a pinned identity, as `compare/drivers/common/s7_host_targets.attested_repository`
+    builds its root. The ported delivery suites bind it as their runtime root (m7_delivery.loaded_runtime)."""
+    if ATTESTED:
+        return
+    base = collector.config._tmp_path_factory.getbasetemp()
+    root = base / "attested-runtime"
+    shutil.copytree(Path(__file__).resolve().parents[2] / "src" / "codex_harness", root / "src" / "codex_harness",
+                    ignore=shutil.ignore_patterns("__pycache__", "*.pyc"))
+    empty = base / "empty-gitconfig"
+    empty.write_text("", encoding="utf-8")
+    environment = {**os.environ, **GIT_FIXED, "GIT_CONFIG_GLOBAL": str(empty), "GIT_CONFIG_SYSTEM": str(empty)}
+    for args in (("init", "-q", "-b", "main"), ("add", "--all"),
+                 ("commit", "-q", "--no-verify", "-m", "attested runtime fixture")):
+        done = subprocess.run(["git", "-c", "commit.gpgsign=false", *args], cwd=str(root), env=environment,
+                              capture_output=True, text=True, timeout=120)
+        assert done.returncode == 0, done.stderr[-500:]
+    ATTESTED["root"] = str(root)
