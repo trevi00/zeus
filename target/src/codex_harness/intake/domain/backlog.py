@@ -2,9 +2,9 @@
 
 Layer: domain
 Context: intake
-Owns: the runner-state vocabulary and safe error type of the fleet backlog (M7 `domain/fleet_backlog.py`, moved ahead in S5 verbatim)
+Owns: the runner-state vocabulary and safe error type of the fleet backlog (M7 `domain/fleet_backlog.py`, moved ahead in S5 verbatim), and its refusal BacklogRefused (moved ahead in S7 verbatim)
 Does not own: the rest of the backlog policy, plan and selection rules (S8 completes the module, TRACE C2)
-Entry points: runner_state, safe_error_type, RUNNER_OK, RUNNER_UNAVAILABLE, RUNNER_REFUSED, RUNNER_STATES
+Entry points: runner_state, safe_error_type, BacklogRefused, RUNNER_OK, RUNNER_UNAVAILABLE, RUNNER_REFUSED, RUNNER_STATES
 Contracts: INV-FLEET-001
 
 Partial move: S8 completes the module (C2). Only the names above and what they need transitively
@@ -14,6 +14,8 @@ are here; nothing imports coordination.
 from __future__ import annotations
 
 import re
+
+from codex_harness.kernel.errors import ContractError
 
 TOKEN = re.compile(r"^[A-Za-z0-9][A-Za-z0-9._-]{0,63}$")
 
@@ -45,3 +47,11 @@ def safe_error_type(value) -> str | None:
     if value is None:
         return None
     return value if _token(value) else "unknown"
+
+
+class BacklogRefused(ContractError):
+    """Refused; the message carries a fixed reason code and at most a field name, never a value."""
+
+    def __init__(self, reason_code: str, field: str | None = None):
+        super().__init__("fleet backlog refused: " + reason_code + (" (" + field + ")" if field else ""))
+        self.reason_code, self.field = reason_code, field

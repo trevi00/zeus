@@ -9,7 +9,7 @@ Owns: the Protocols only; `host_os.adapters.git_workspace.GitWorkspace` implemen
     chokepoint), both injected by composition (S3: the container adapters' docker/git calls, the
     staging export and the attached transports)
 Does not own: who may publish or merge (review), release policy, what a caller runs
-Entry points: Workspaces, CandidateInspection, Publication, ProcessRunner, ChildProcesses
+Entry points: Workspaces, CandidateInspection, Publication, ProcessRunner, ChildProcesses, GitBlobSource
 Contracts: INV-RELEASE-001, INV-SESSION-001
 
 Shared infrastructure ports (`SP` in the §3.6 table). The five unrelated M7 `SourceControl` methods
@@ -50,3 +50,10 @@ class ChildProcesses(Protocol):
 
     def run(self, argv: list, *, process_group: bool = False, **kwargs): ...
     def popen(self, argv: list, *, process_group: bool = False, **kwargs): ...
+
+
+class GitBlobSource(Protocol):
+    """Pinned bytes from Git (M7 `GitSource`): whether a commit exists, and the (mode, bytes) of a path at it."""
+
+    def commit_exists(self, revision: str) -> bool: ...
+    def blob(self, revision: str, path: str) -> tuple[str | None, bytes]: ...
