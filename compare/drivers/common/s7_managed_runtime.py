@@ -57,7 +57,10 @@ Seven case groups, each case labelled in the result and mirroring one M7 test of
 **Normalization is explicit, done here and identical on both sides** (the rules of `s7_host_targets`, extended):
 - `sys.executable` → `<python>`;
 - this run's temporary root → `<root>`;
-- the side's package directory → `<package>`, and the root its `loaded_runtime` derives from → `<package-root>`;
+- the side's package directory → `<package>`; its parent directory (M7 `launcher_environment`'s `PYTHONPATH`) →
+  `<package-parent>`; and the root its `loaded_runtime` derives from → `<package-root>`. In a wheel layout the
+  parent and the root are the same directory, and the parent label wins. In the target's `src` layout they differ;
+  the owner fixed this on 2026-10-01 after pilot 43 found the layout assumption;
 - pids (every key `pid` or ending in `pid`) → `<pid>`;
 - `instance_id`, and any 32-hex string or UUID → `<instance>`;
 - ISO times → `<time>`;
@@ -188,7 +191,7 @@ class Managed(ht.Fixture):
         loaded = Path(api.PACKAGE_DIR).resolve()
         loaded_root = loaded.parent.parent if loaded.parent.name == "src" else loaded.parent
         pairs = [(str(loaded), "<package>"), (str(api.PACKAGE_DIR), "<package>"), (PY, "<python>"),
-                 (str(loaded_root), "<package-root>"), (str(base), "<root>")]
+                 (str(loaded.parent), "<package-parent>"), (str(loaded_root), "<package-root>"), (str(base), "<root>")]
         self.substitutions = sorted(pairs, key=lambda pair: -len(pair[0]))
         self.profile = api.effective_profile_digest() or "e" * 64
         self.git_env = git_environment(base)

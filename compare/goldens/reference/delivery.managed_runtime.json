@@ -641,7 +641,7 @@
      "HARNESS_REPOSITORY": null,
      "PYTHONDONTWRITEBYTECODE": "1",
      "PYTHONNOUSERSITE": null,
-     "PYTHONPATH": "<package-root>",
+     "PYTHONPATH": "<package-parent>",
      "ZEUS_REPOSITORY": null
     },
     "own_group": true,
