@@ -46,8 +46,12 @@ import provider_guard  # noqa: E402
 
 # Every docker call of this runner passes the same default-deny guard as the tests (R-P, S0 F1).
 provider_guard.install()
-PG_IMAGE = "pgvector/pgvector:pg17"
-REDIS_IMAGE = "redis:7.4-alpine"
+# The disposable fixture images are pinned by DIGEST, not by moving tag: the recorded goldens capture the image's
+# own facts (delivery.restore.pg pins the pgvector extension version 0.8.6), and on 2026-10-01 the upstream
+# `pg17` tag moved to a newer pgvector, which failed exact-head CI on both sides. These are the digests the
+# goldens were recorded with (the pg17 index of 2026-08-13; redis 7.4-alpine).
+PG_IMAGE = "pgvector/pgvector@sha256:cf134a767f474095eeba57e0117be8e568e011a63f33fbf252f14c9b760f8e6f"
+REDIS_IMAGE = "redis@sha256:858f009f9709ce576febc734aa78b8f6d624b82571f9ddb6bda4377c833b3499"
 TARGET_PYTHON = ROOT / "target" / ".venv" / "bin" / "python"
 TARGET_SRC = ROOT / "target" / "src"
 
