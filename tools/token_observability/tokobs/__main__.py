@@ -1,19 +1,21 @@
-"""tokobs command line: `scan`, `render`, `report`, `serve`.
+"""tokobs command line: `scan`, `render`, `report`, `serve`, `lint-deploy`.
 
 Purpose: argparse entry that only invokes the use-case modules. Layer: tooling. Owns: exit codes (0 ok, 1 not found
 or refused input, 2 usage, 75 another collector holds the lock). Does-not-own: any policy.
-Implements: ACCEPTANCE A18; DESIGN §3.1 (`scan --data DIR --source-root A_ROOT`), §4 (`report --task`, `report --invocation`).
+Implements: ACCEPTANCE A18, A57 (`lint-deploy`: exit 0 clean, 1 violations, 2 unreadable or invalid JSON); DESIGN §3.1 (`scan --data DIR --source-root A_ROOT`), §4 (`report --task`, `report --invocation`).
 """
 
 from __future__ import annotations
 
 import argparse
+import json
 import sys
 import time
 from pathlib import Path
 
 from .collector import scan_once
 from .config import ConfigError, load_registry, validate_root
+from .deploy_lint import lint_compose, lint_inspect
 from .ledger import EXIT_BUSY, CollectorBusy, LedgerError, collector_lock, open_ledger
 from .render import render
 from .report import invocation_report, render_report, task_report
@@ -45,6 +47,26 @@ def _serve(ns: argparse.Namespace) -> int:
     return 0
 
 
+def _lint_deploy(ns: argparse.Namespace) -> int:
+    source = ns.compose_json or ns.inspect_json
+    try:
+        text = sys.stdin.read() if str(source) == "-" else Path(source).read_text(encoding="utf-8")
+        data = json.loads(text)
+    except (OSError, ValueError) as exc:  # unreadable file/stdin, invalid JSON or encoding
+        print(f"tokobs: {exc}", file=sys.stderr)
+        return 2
+    if ns.compose_json:
+        violations = lint_compose(data) if isinstance(data, dict) else None
+    else:
+        violations = lint_inspect(data) if isinstance(data, list) else None
+    if violations is None:
+        print("tokobs: JSON has the wrong top-level type", file=sys.stderr)
+        return 2
+    for line in violations:
+        print(line)
+    return 1 if violations else 0
+
+
 def main(argv: list[str] | None = None) -> int:
     parser = argparse.ArgumentParser(prog="tokobs")
     sub = parser.add_subparsers(dest="cmd", required=True)
@@ -72,10 +94,16 @@ def main(argv: list[str] | None = None) -> int:
     srv.add_argument("--deferred-file", type=Path, help="S4/OTel-shaped rows to count, never ingest (§3.10)")
     srv.add_argument("--live-since", type=int)
     srv.add_argument("--interval", type=float, default=float(SCAN_INTERVAL_SECONDS))
+    lint = sub.add_parser("lint-deploy", help="A57 static lint of compose or `docker inspect` JSON (- is stdin)")
+    which_json = lint.add_mutually_exclusive_group(required=True)
+    which_json.add_argument("--compose-json", type=Path)
+    which_json.add_argument("--inspect-json", type=Path)
     try:
         ns = parser.parse_args(argv)
     except SystemExit as exc:
         return 2 if exc.code else 0
+    if ns.cmd == "lint-deploy":
+        return _lint_deploy(ns)
     try:
         if ns.cmd == "scan":
             validate_root(ns.source_root)
