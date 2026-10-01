@@ -1,0 +1,9 @@
+{
+ "family": "research.program_tick",
+ "description": "S8 research program tick of M7 ProgramRunner.run/tick and the ResearchProgram calls it makes, characterized before the research program move: repository mismatch before any effect, not-reserved receipts, the run bounds (ticks_invalid, stops), the collection (degraded, policy-paused, evaluator failure, local verification, items, budget), no candidate, every capture refusal and unexpected exception, each pre-council stage failure with fail_cycle failing (recorded false, state unknown), every council outcome (raises before/after the row, rejected, accepted, unknown), the investigation candidate dispatch outcome, the report write failure, and the M7 two-tick and monitor tests; MemoryStore, a real temporary Git repository, LABELLED doubles (s8_research_program), the council a stand-in",
+ "reference_driver": "drivers/reference/s8_program_tick.py",
+ "target_driver": null,
+ "golden": "goldens/reference/research.program_tick.json",
+ "slice": "S8",
+ "target_status": "pending: S8 step 3 (research program move)"
+}

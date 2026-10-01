@@ -1,0 +1,4113 @@
+{
+ "c01_success": {
+  "base_by_HEAD": {
+   "checkout_unchanged": {
+    "branch": true,
+    "head": true,
+    "index": true,
+    "raw": true,
+    "status": true
+   },
+   "loose_objects_added": 7,
+   "parents_are_head": true,
+   "refs": {
+    "refs/zeus/research/rp-001/001": {
+     "commit": "494e09ce77d925dd468f0b42f4f83e343d36db01",
+     "files": [
+      "100644 blob 0a06f209c39ab30d137e8f09a825303ea42c7d38\tdocs/GOAL.md",
+      "100644 blob f4f5b24320278b1a9c09b41bfc483f4d1296b802\tdocs/research/note.md",
+      "100644 blob 7841404b5eee7389057f4dc674d5e274f98d19d0\tdocs/zeus/research-captures/rp-001/001.json"
+     ],
+     "identity": "Zeus Research Program <research-program@localhost> | Zeus Research Program <research-program@localhost> | 2026-01-01T00:00:00Z | 2026-01-01T00:00:00Z",
+     "parents": [
+      "7b3e24a3b49a660b8936d1d52c886c077b4cf40c"
+     ],
+     "subject": "zeus research capture docs/zeus/research-captures/rp-001/001.json",
+     "tree": "5db9df15e8c31cae6980c5d939a0795694896467",
+     "type": "commit"
+    }
+   },
+   "result": {
+    "value": {
+     "blob": "7841404b5eee7389057f4dc674d5e274f98d19d0",
+     "bytes": 82,
+     "path": "docs/zeus/research-captures/rp-001/001.json",
+     "ref": "refs/zeus/research/rp-001/001",
+     "revision": "494e09ce77d925dd468f0b42f4f83e343d36db01",
+     "sha256": "05ad28e84db139c61d257d701e6c4b0e14d7fdb538fa4ee417fd29dc670afe10",
+     "tree": "5db9df15e8c31cae6980c5d939a0795694896467"
+    }
+   },
+   "temporary_directories_left": []
+  },
+  "base_by_main": {
+   "checkout_unchanged": {
+    "branch": true,
+    "head": true,
+    "index": true,
+    "raw": true,
+    "status": true
+   },
+   "loose_objects_added": 7,
+   "parents_are_head": true,
+   "refs": {
+    "refs/zeus/research/rp-001/001": {
+     "commit": "494e09ce77d925dd468f0b42f4f83e343d36db01",
+     "files": [
+      "100644 blob 0a06f209c39ab30d137e8f09a825303ea42c7d38\tdocs/GOAL.md",
+      "100644 blob f4f5b24320278b1a9c09b41bfc483f4d1296b802\tdocs/research/note.md",
+      "100644 blob 7841404b5eee7389057f4dc674d5e274f98d19d0\tdocs/zeus/research-captures/rp-001/001.json"
+     ],
+     "identity": "Zeus Research Program <research-program@localhost> | Zeus Research Program <research-program@localhost> | 2026-01-01T00:00:00Z | 2026-01-01T00:00:00Z",
+     "parents": [
+      "7b3e24a3b49a660b8936d1d52c886c077b4cf40c"
+     ],
+     "subject": "zeus research capture docs/zeus/research-captures/rp-001/001.json",
+     "tree": "5db9df15e8c31cae6980c5d939a0795694896467",
+     "type": "commit"
+    }
+   },
+   "result": {
+    "value": {
+     "blob": "7841404b5eee7389057f4dc674d5e274f98d19d0",
+     "bytes": 82,
+     "path": "docs/zeus/research-captures/rp-001/001.json",
+     "ref": "refs/zeus/research/rp-001/001",
+     "revision": "494e09ce77d925dd468f0b42f4f83e343d36db01",
+     "sha256": "05ad28e84db139c61d257d701e6c4b0e14d7fdb538fa4ee417fd29dc670afe10",
+     "tree": "5db9df15e8c31cae6980c5d939a0795694896467"
+    }
+   },
+   "temporary_directories_left": []
+  },
+  "base_by_short_sha": {
+   "checkout_unchanged": {
+    "branch": true,
+    "head": true,
+    "index": true,
+    "raw": true,
+    "status": true
+   },
+   "loose_objects_added": 7,
+   "parents_are_head": true,
+   "refs": {
+    "refs/zeus/research/rp-001/001": {
+     "commit": "494e09ce77d925dd468f0b42f4f83e343d36db01",
+     "files": [
+      "100644 blob 0a06f209c39ab30d137e8f09a825303ea42c7d38\tdocs/GOAL.md",
+      "100644 blob f4f5b24320278b1a9c09b41bfc483f4d1296b802\tdocs/research/note.md",
+      "100644 blob 7841404b5eee7389057f4dc674d5e274f98d19d0\tdocs/zeus/research-captures/rp-001/001.json"
+     ],
+     "identity": "Zeus Research Program <research-program@localhost> | Zeus Research Program <research-program@localhost> | 2026-01-01T00:00:00Z | 2026-01-01T00:00:00Z",
+     "parents": [
+      "7b3e24a3b49a660b8936d1d52c886c077b4cf40c"
+     ],
+     "subject": "zeus research capture docs/zeus/research-captures/rp-001/001.json",
+     "tree": "5db9df15e8c31cae6980c5d939a0795694896467",
+     "type": "commit"
+    }
+   },
+   "result": {
+    "value": {
+     "blob": "7841404b5eee7389057f4dc674d5e274f98d19d0",
+     "bytes": 82,
+     "path": "docs/zeus/research-captures/rp-001/001.json",
+     "ref": "refs/zeus/research/rp-001/001",
+     "revision": "494e09ce77d925dd468f0b42f4f83e343d36db01",
+     "sha256": "05ad28e84db139c61d257d701e6c4b0e14d7fdb538fa4ee417fd29dc670afe10",
+     "tree": "5db9df15e8c31cae6980c5d939a0795694896467"
+    }
+   },
+   "temporary_directories_left": []
+  },
+  "body_at_limit": {
+   "checkout_unchanged": {
+    "branch": true,
+    "head": true,
+    "index": true,
+    "raw": true,
+    "status": true
+   },
+   "loose_objects_added": 7,
+   "refs": {
+    "refs/zeus/research/rp-001/001": {
+     "commit": "d8bfa51a721d62c6926e4d21a22d7e552d9f644b",
+     "files": [
+      "100644 blob 0a06f209c39ab30d137e8f09a825303ea42c7d38\tdocs/GOAL.md",
+      "100644 blob f4f5b24320278b1a9c09b41bfc483f4d1296b802\tdocs/research/note.md",
+      "100644 blob dbdcf4b7feebd9fab1c18b1b8c016c8e56f33962\tdocs/zeus/research-captures/rp-001/001.json"
+     ],
+     "identity": "Zeus Research Program <research-program@localhost> | Zeus Research Program <research-program@localhost> | 2026-01-01T00:00:00Z | 2026-01-01T00:00:00Z",
+     "parents": [
+      "7b3e24a3b49a660b8936d1d52c886c077b4cf40c"
+     ],
+     "subject": "zeus research capture docs/zeus/research-captures/rp-001/001.json",
+     "tree": "0fa54b4681131d6aea74ddd53f957b6b1caa9d7c",
+     "type": "commit"
+    }
+   },
+   "result": {
+    "value": {
+     "blob": "dbdcf4b7feebd9fab1c18b1b8c016c8e56f33962",
+     "bytes": 65536,
+     "path": "docs/zeus/research-captures/rp-001/001.json",
+     "ref": "refs/zeus/research/rp-001/001",
+     "revision": "d8bfa51a721d62c6926e4d21a22d7e552d9f644b",
+     "sha256": "bf718b6f653bebc184e1479f1935b8da974d701b893afcf49e701f3e2f9f9c5a",
+     "tree": "0fa54b4681131d6aea74ddd53f957b6b1caa9d7c",
+     "verified_bytes": true
+    }
+   },
+   "temporary_directories_left": []
+  },
+  "body_crlf": {
+   "checkout_unchanged": {
+    "branch": true,
+    "head": true,
+    "index": true,
+    "raw": true,
+    "status": true
+   },
+   "loose_objects_added": 7,
+   "refs": {
+    "refs/zeus/research/rp-001/001": {
+     "commit": "6c374575f207215ea33087005c2469ba42427c2e",
+     "files": [
+      "100644 blob 0a06f209c39ab30d137e8f09a825303ea42c7d38\tdocs/GOAL.md",
+      "100644 blob f4f5b24320278b1a9c09b41bfc483f4d1296b802\tdocs/research/note.md",
+      "100644 blob c30dea8a3641ea99b125d04d599d843712292759\tdocs/zeus/research-captures/rp-001/001.json"
+     ],
+     "identity": "Zeus Research Program <research-program@localhost> | Zeus Research Program <research-program@localhost> | 2026-01-01T00:00:00Z | 2026-01-01T00:00:00Z",
+     "parents": [
+      "7b3e24a3b49a660b8936d1d52c886c077b4cf40c"
+     ],
+     "subject": "zeus research capture docs/zeus/research-captures/rp-001/001.json",
+     "tree": "8ad6a065fd11be11c6a6ede6f187320d1230312f",
+     "type": "commit"
+    }
+   },
+   "result": {
+    "value": {
+     "blob": "c30dea8a3641ea99b125d04d599d843712292759",
+     "bytes": 6,
+     "path": "docs/zeus/research-captures/rp-001/001.json",
+     "ref": "refs/zeus/research/rp-001/001",
+     "revision": "6c374575f207215ea33087005c2469ba42427c2e",
+     "sha256": "58055bdcc73787eb88c78d36f0b4939e9c5dc1c3ad17e25cc85a6833cf1a0cab",
+     "tree": "8ad6a065fd11be11c6a6ede6f187320d1230312f",
+     "verified_bytes": true
+    }
+   },
+   "temporary_directories_left": []
+  },
+  "body_empty": {
+   "checkout_unchanged": {
+    "branch": true,
+    "head": true,
+    "index": true,
+    "raw": true,
+    "status": true
+   },
+   "loose_objects_added": 7,
+   "refs": {
+    "refs/zeus/research/rp-001/001": {
+     "commit": "939bd54fb1d71fcfd696f7591d1cf62c9b427dcf",
+     "files": [
+      "100644 blob 0a06f209c39ab30d137e8f09a825303ea42c7d38\tdocs/GOAL.md",
+      "100644 blob f4f5b24320278b1a9c09b41bfc483f4d1296b802\tdocs/research/note.md",
+      "100644 blob e69de29bb2d1d6434b8b29ae775ad8c2e48c5391\tdocs/zeus/research-captures/rp-001/001.json"
+     ],
+     "identity": "Zeus Research Program <research-program@localhost> | Zeus Research Program <research-program@localhost> | 2026-01-01T00:00:00Z | 2026-01-01T00:00:00Z",
+     "parents": [
+      "7b3e24a3b49a660b8936d1d52c886c077b4cf40c"
+     ],
+     "subject": "zeus research capture docs/zeus/research-captures/rp-001/001.json",
+     "tree": "f923f30b4e02d9f1943a53baabd055e77bcd427d",
+     "type": "commit"
+    }
+   },
+   "result": {
+    "value": {
+     "blob": "e69de29bb2d1d6434b8b29ae775ad8c2e48c5391",
+     "bytes": 0,
+     "path": "docs/zeus/research-captures/rp-001/001.json",
+     "ref": "refs/zeus/research/rp-001/001",
+     "revision": "939bd54fb1d71fcfd696f7591d1cf62c9b427dcf",
+     "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+     "tree": "f923f30b4e02d9f1943a53baabd055e77bcd427d",
+     "verified_bytes": true
+    }
+   },
+   "temporary_directories_left": []
+  },
+  "body_multibyte_at_limit": {
+   "checkout_unchanged": {
+    "branch": true,
+    "head": true,
+    "index": true,
+    "raw": true,
+    "status": true
+   },
+   "loose_objects_added": 7,
+   "refs": {
+    "refs/zeus/research/rp-001/001": {
+     "commit": "1ec203ec5b3206fd7ee2c1d28c15f652760eb746",
+     "files": [
+      "100644 blob 0a06f209c39ab30d137e8f09a825303ea42c7d38\tdocs/GOAL.md",
+      "100644 blob f4f5b24320278b1a9c09b41bfc483f4d1296b802\tdocs/research/note.md",
+      "100644 blob 5d29ed03402a7369422bdfa75fc17f34b70c99c6\tdocs/zeus/research-captures/rp-001/001.json"
+     ],
+     "identity": "Zeus Research Program <research-program@localhost> | Zeus Research Program <research-program@localhost> | 2026-01-01T00:00:00Z | 2026-01-01T00:00:00Z",
+     "parents": [
+      "7b3e24a3b49a660b8936d1d52c886c077b4cf40c"
+     ],
+     "subject": "zeus research capture docs/zeus/research-captures/rp-001/001.json",
+     "tree": "908f2932c33014674d20ead4fb0cb042dc719950",
+     "type": "commit"
+    }
+   },
+   "result": {
+    "value": {
+     "blob": "5d29ed03402a7369422bdfa75fc17f34b70c99c6",
+     "bytes": 65536,
+     "path": "docs/zeus/research-captures/rp-001/001.json",
+     "ref": "refs/zeus/research/rp-001/001",
+     "revision": "1ec203ec5b3206fd7ee2c1d28c15f652760eb746",
+     "sha256": "565da051dd1de9c74617ae94e040802c7fb387ca6366a844915b9e3cdb72f745",
+     "tree": "908f2932c33014674d20ead4fb0cb042dc719950",
+     "verified_bytes": true
+    }
+   },
+   "temporary_directories_left": []
+  },
+  "body_multibyte_over": {
+   "checkout_unchanged": {
+    "branch": true,
+    "head": true,
+    "index": true,
+    "raw": true,
+    "status": true
+   },
+   "loose_objects_added": 0,
+   "refs": {},
+   "result": {
+    "message": "capture refused: capture_too_large",
+    "raised": "CaptureError",
+    "reason_code": "capture_too_large"
+   },
+   "temporary_directories_left": []
+  },
+  "body_no_final_newline": {
+   "checkout_unchanged": {
+    "branch": true,
+    "head": true,
+    "index": true,
+    "raw": true,
+    "status": true
+   },
+   "loose_objects_added": 7,
+   "refs": {
+    "refs/zeus/research/rp-001/001": {
+     "commit": "f4822275ab83e5e8cca985ce8471c5a5eccccdc3",
+     "files": [
+      "100644 blob 0a06f209c39ab30d137e8f09a825303ea42c7d38\tdocs/GOAL.md",
+      "100644 blob f4f5b24320278b1a9c09b41bfc483f4d1296b802\tdocs/research/note.md",
+      "100644 blob 9e26dfeeb6e641a33dae4961196235bdb965b21b\tdocs/zeus/research-captures/rp-001/001.json"
+     ],
+     "identity": "Zeus Research Program <research-program@localhost> | Zeus Research Program <research-program@localhost> | 2026-01-01T00:00:00Z | 2026-01-01T00:00:00Z",
+     "parents": [
+      "7b3e24a3b49a660b8936d1d52c886c077b4cf40c"
+     ],
+     "subject": "zeus research capture docs/zeus/research-captures/rp-001/001.json",
+     "tree": "13dca1cbad7cc36a0316096b2288c5793edc3b05",
+     "type": "commit"
+    }
+   },
+   "result": {
+    "value": {
+     "blob": "9e26dfeeb6e641a33dae4961196235bdb965b21b",
+     "bytes": 2,
+     "path": "docs/zeus/research-captures/rp-001/001.json",
+     "ref": "refs/zeus/research/rp-001/001",
+     "revision": "f4822275ab83e5e8cca985ce8471c5a5eccccdc3",
+     "sha256": "44136fa355b3678a1146ad16f7e8649e94fb4fc21fe77e8310c060f61caaff8a",
+     "tree": "13dca1cbad7cc36a0316096b2288c5793edc3b05",
+     "verified_bytes": true
+    }
+   },
+   "temporary_directories_left": []
+  },
+  "body_nul_free_binaryish": {
+   "checkout_unchanged": {
+    "branch": true,
+    "head": true,
+    "index": true,
+    "raw": true,
+    "status": true
+   },
+   "loose_objects_added": 7,
+   "refs": {
+    "refs/zeus/research/rp-001/001": {
+     "commit": "732897f4189aabc09c7914fc6233fae65f39552c",
+     "files": [
+      "100644 blob 0a06f209c39ab30d137e8f09a825303ea42c7d38\tdocs/GOAL.md",
+      "100644 blob f4f5b24320278b1a9c09b41bfc483f4d1296b802\tdocs/research/note.md",
+      "100644 blob 71bd63e6202752b0f0052971c84168c139021759\tdocs/zeus/research-captures/rp-001/001.json"
+     ],
+     "identity": "Zeus Research Program <research-program@localhost> | Zeus Research Program <research-program@localhost> | 2026-01-01T00:00:00Z | 2026-01-01T00:00:00Z",
+     "parents": [
+      "7b3e24a3b49a660b8936d1d52c886c077b4cf40c"
+     ],
+     "subject": "zeus research capture docs/zeus/research-captures/rp-001/001.json",
+     "tree": "3b6eb2e27856577c53104c92f71cf3233da9338b",
+     "type": "commit"
+    }
+   },
+   "result": {
+    "value": {
+     "blob": "71bd63e6202752b0f0052971c84168c139021759",
+     "bytes": 2,
+     "path": "docs/zeus/research-captures/rp-001/001.json",
+     "ref": "refs/zeus/research/rp-001/001",
+     "revision": "732897f4189aabc09c7914fc6233fae65f39552c",
+     "sha256": "a12871fee210fb8619291eaea194581cbd2531e4b23759d225f6806923f63222",
+     "tree": "3b6eb2e27856577c53104c92f71cf3233da9338b",
+     "verified_bytes": true
+    }
+   },
+   "temporary_directories_left": []
+  },
+  "body_one_over": {
+   "checkout_unchanged": {
+    "branch": true,
+    "head": true,
+    "index": true,
+    "raw": true,
+    "status": true
+   },
+   "loose_objects_added": 0,
+   "refs": {},
+   "result": {
+    "message": "capture refused: capture_too_large",
+    "raised": "CaptureError",
+    "reason_code": "capture_too_large"
+   },
+   "temporary_directories_left": []
+  },
+  "chain": {
+   "first": {
+    "checkout_unchanged": {
+     "branch": true,
+     "head": true,
+     "index": true,
+     "raw": true,
+     "status": true
+    },
+    "loose_objects_added": 7,
+    "refs": {
+     "refs/zeus/research/rp-001/001": {
+      "commit": "494e09ce77d925dd468f0b42f4f83e343d36db01",
+      "files": [
+       "100644 blob 0a06f209c39ab30d137e8f09a825303ea42c7d38\tdocs/GOAL.md",
+       "100644 blob f4f5b24320278b1a9c09b41bfc483f4d1296b802\tdocs/research/note.md",
+       "100644 blob 7841404b5eee7389057f4dc674d5e274f98d19d0\tdocs/zeus/research-captures/rp-001/001.json"
+      ],
+      "identity": "Zeus Research Program <research-program@localhost> | Zeus Research Program <research-program@localhost> | 2026-01-01T00:00:00Z | 2026-01-01T00:00:00Z",
+      "parents": [
+       "7b3e24a3b49a660b8936d1d52c886c077b4cf40c"
+      ],
+      "subject": "zeus research capture docs/zeus/research-captures/rp-001/001.json",
+      "tree": "5db9df15e8c31cae6980c5d939a0795694896467",
+      "type": "commit"
+     }
+    },
+    "result": {
+     "value": {
+      "blob": "7841404b5eee7389057f4dc674d5e274f98d19d0",
+      "bytes": 82,
+      "path": "docs/zeus/research-captures/rp-001/001.json",
+      "ref": "refs/zeus/research/rp-001/001",
+      "revision": "494e09ce77d925dd468f0b42f4f83e343d36db01",
+      "sha256": "05ad28e84db139c61d257d701e6c4b0e14d7fdb538fa4ee417fd29dc670afe10",
+      "tree": "5db9df15e8c31cae6980c5d939a0795694896467"
+     }
+    },
+    "temporary_directories_left": []
+   },
+   "second": {
+    "checkout_unchanged": {
+     "branch": true,
+     "head": true,
+     "index": true,
+     "raw": true,
+     "status": true
+    },
+    "loose_objects_added": 7,
+    "refs": {
+     "refs/zeus/research/rp-001/001": {
+      "commit": "494e09ce77d925dd468f0b42f4f83e343d36db01",
+      "files": [
+       "100644 blob 0a06f209c39ab30d137e8f09a825303ea42c7d38\tdocs/GOAL.md",
+       "100644 blob f4f5b24320278b1a9c09b41bfc483f4d1296b802\tdocs/research/note.md",
+       "100644 blob 7841404b5eee7389057f4dc674d5e274f98d19d0\tdocs/zeus/research-captures/rp-001/001.json"
+      ],
+      "identity": "Zeus Research Program <research-program@localhost> | Zeus Research Program <research-program@localhost> | 2026-01-01T00:00:00Z | 2026-01-01T00:00:00Z",
+      "parents": [
+       "7b3e24a3b49a660b8936d1d52c886c077b4cf40c"
+      ],
+      "subject": "zeus research capture docs/zeus/research-captures/rp-001/001.json",
+      "tree": "5db9df15e8c31cae6980c5d939a0795694896467",
+      "type": "commit"
+     },
+     "refs/zeus/research/rp-001/002": {
+      "commit": "25361617150227f83ebfd4e7895571256f64da95",
+      "files": [
+       "100644 blob 0a06f209c39ab30d137e8f09a825303ea42c7d38\tdocs/GOAL.md",
+       "100644 blob f4f5b24320278b1a9c09b41bfc483f4d1296b802\tdocs/research/note.md",
+       "100644 blob 7841404b5eee7389057f4dc674d5e274f98d19d0\tdocs/zeus/research-captures/rp-001/001.json",
+       "100644 blob 9c6a5ddfe77e02b60d5c05dfed35bd0a2a78b635\tdocs/zeus/research-captures/rp-001/002.json"
+      ],
+      "identity": "Zeus Research Program <research-program@localhost> | Zeus Research Program <research-program@localhost> | 2026-01-01T00:00:00Z | 2026-01-01T00:00:00Z",
+      "parents": [
+       "494e09ce77d925dd468f0b42f4f83e343d36db01"
+      ],
+      "subject": "zeus research capture docs/zeus/research-captures/rp-001/002.json",
+      "tree": "d993d713c354fc5ea66d5099ee004c66496fe5bc",
+      "type": "commit"
+     }
+    },
+    "result": {
+     "value": {
+      "blob": "9c6a5ddfe77e02b60d5c05dfed35bd0a2a78b635",
+      "bytes": 83,
+      "path": "docs/zeus/research-captures/rp-001/002.json",
+      "ref": "refs/zeus/research/rp-001/002",
+      "revision": "25361617150227f83ebfd4e7895571256f64da95",
+      "sha256": "7ca5b5a02cc517d9500c5b1ed87855ed0ce8d2d9ef782b6c123a300d36960ccf",
+      "tree": "d993d713c354fc5ea66d5099ee004c66496fe5bc"
+     }
+    },
+    "temporary_directories_left": []
+   },
+   "second_changed_paths": [
+    "docs/zeus/research-captures/rp-001/001.json",
+    "docs/zeus/research-captures/rp-001/002.json"
+   ],
+   "second_parent_is_first": true
+  },
+  "dotted_name": {
+   "checkout_unchanged": {
+    "branch": true,
+    "head": true,
+    "index": true,
+    "raw": true,
+    "status": true
+   },
+   "loose_objects_added": 7,
+   "refs": {
+    "refs/zeus/research/x/dotted_name": {
+     "commit": "b243ccc8b33dbed0f0176cb2dd69154e19387026",
+     "files": [
+      "100644 blob 0a06f209c39ab30d137e8f09a825303ea42c7d38\tdocs/GOAL.md",
+      "100644 blob f4f5b24320278b1a9c09b41bfc483f4d1296b802\tdocs/research/note.md",
+      "100644 blob 7841404b5eee7389057f4dc674d5e274f98d19d0\tdocs/zeus/research-captures/rp.001/v1.2.json"
+     ],
+     "identity": "Zeus Research Program <research-program@localhost> | Zeus Research Program <research-program@localhost> | 2026-01-01T00:00:00Z | 2026-01-01T00:00:00Z",
+     "parents": [
+      "7b3e24a3b49a660b8936d1d52c886c077b4cf40c"
+     ],
+     "subject": "zeus research capture docs/zeus/research-captures/rp.001/v1.2.json",
+     "tree": "7ab3786ea16b61bfacd3b333e584f928424b84da",
+     "type": "commit"
+    }
+   },
+   "result": {
+    "value": {
+     "blob": "7841404b5eee7389057f4dc674d5e274f98d19d0",
+     "bytes": 82,
+     "path": "docs/zeus/research-captures/rp.001/v1.2.json",
+     "ref": "refs/zeus/research/x/dotted_name",
+     "revision": "b243ccc8b33dbed0f0176cb2dd69154e19387026",
+     "sha256": "05ad28e84db139c61d257d701e6c4b0e14d7fdb538fa4ee417fd29dc670afe10",
+     "tree": "7ab3786ea16b61bfacd3b333e584f928424b84da"
+    }
+   },
+   "temporary_directories_left": []
+  },
+  "hidden_dir": {
+   "checkout_unchanged": {
+    "branch": true,
+    "head": true,
+    "index": true,
+    "raw": true,
+    "status": true
+   },
+   "loose_objects_added": 7,
+   "refs": {
+    "refs/zeus/research/x/hidden_dir": {
+     "commit": "e5d4cb814eecc3cca9726553c4149eae6eb7083e",
+     "files": [
+      "100644 blob 0a06f209c39ab30d137e8f09a825303ea42c7d38\tdocs/GOAL.md",
+      "100644 blob f4f5b24320278b1a9c09b41bfc483f4d1296b802\tdocs/research/note.md",
+      "100644 blob 7841404b5eee7389057f4dc674d5e274f98d19d0\tdocs/zeus/research-captures/.hidden/1.json"
+     ],
+     "identity": "Zeus Research Program <research-program@localhost> | Zeus Research Program <research-program@localhost> | 2026-01-01T00:00:00Z | 2026-01-01T00:00:00Z",
+     "parents": [
+      "7b3e24a3b49a660b8936d1d52c886c077b4cf40c"
+     ],
+     "subject": "zeus research capture docs/zeus/research-captures/.hidden/1.json",
+     "tree": "704463779ca9aa4262accc56db4aa4f72d5a6a86",
+     "type": "commit"
+    }
+   },
+   "result": {
+    "value": {
+     "blob": "7841404b5eee7389057f4dc674d5e274f98d19d0",
+     "bytes": 82,
+     "path": "docs/zeus/research-captures/.hidden/1.json",
+     "ref": "refs/zeus/research/x/hidden_dir",
+     "revision": "e5d4cb814eecc3cca9726553c4149eae6eb7083e",
+     "sha256": "05ad28e84db139c61d257d701e6c4b0e14d7fdb538fa4ee417fd29dc670afe10",
+     "tree": "704463779ca9aa4262accc56db4aa4f72d5a6a86"
+    }
+   },
+   "temporary_directories_left": []
+  },
+  "m7_test": {
+   "author_constants": {
+    "GIT_AUTHOR_EMAIL": "research-program@localhost",
+    "GIT_AUTHOR_NAME": "Zeus Research Program",
+    "GIT_COMMITTER_EMAIL": "research-program@localhost",
+    "GIT_COMMITTER_NAME": "Zeus Research Program"
+   },
+   "changed_paths": [
+    "docs/zeus/research-captures/rp-001/001.json"
+   ],
+   "changed_status": [
+    "A\tdocs/zeus/research-captures/rp-001/001.json"
+   ],
+   "checkout_after": {
+    "branch": "refs/heads/main",
+    "head": "7b3e24a3b49a660b8936d1d52c886c077b4cf40c",
+    "index": "79b428b0226c6e44103d8e797c68cc1beb8f8940c94dd64d904b38039bc7ea92",
+    "status": [
+     "M docs/GOAL.md",
+     "?? dirty.txt"
+    ]
+   },
+   "checkout_before": {
+    "branch": "refs/heads/main",
+    "head": "7b3e24a3b49a660b8936d1d52c886c077b4cf40c",
+    "index": "79b428b0226c6e44103d8e797c68cc1beb8f8940c94dd64d904b38039bc7ea92",
+    "status": [
+     "M docs/GOAL.md",
+     "?? dirty.txt"
+    ]
+   },
+   "checkout_unchanged": {
+    "branch": true,
+    "head": true,
+    "index": true,
+    "raw": true,
+    "status": true
+   },
+   "goal_bytes_equal_base": true,
+   "head_is_base": true,
+   "loose_objects_added": 7,
+   "path_in_checkout": false,
+   "ref_names_revision": true,
+   "refs": {
+    "refs/zeus/research/rp-001/001": {
+     "commit": "494e09ce77d925dd468f0b42f4f83e343d36db01",
+     "files": [
+      "100644 blob 0a06f209c39ab30d137e8f09a825303ea42c7d38\tdocs/GOAL.md",
+      "100644 blob f4f5b24320278b1a9c09b41bfc483f4d1296b802\tdocs/research/note.md",
+      "100644 blob 7841404b5eee7389057f4dc674d5e274f98d19d0\tdocs/zeus/research-captures/rp-001/001.json"
+     ],
+     "identity": "Zeus Research Program <research-program@localhost> | Zeus Research Program <research-program@localhost> | 2026-01-01T00:00:00Z | 2026-01-01T00:00:00Z",
+     "parents": [
+      "7b3e24a3b49a660b8936d1d52c886c077b4cf40c"
+     ],
+     "subject": "zeus research capture docs/zeus/research-captures/rp-001/001.json",
+     "tree": "5db9df15e8c31cae6980c5d939a0795694896467",
+     "type": "commit"
+    }
+   },
+   "result": {
+    "value": {
+     "blob": "7841404b5eee7389057f4dc674d5e274f98d19d0",
+     "bytes": 82,
+     "path": "docs/zeus/research-captures/rp-001/001.json",
+     "ref": "refs/zeus/research/rp-001/001",
+     "revision": "494e09ce77d925dd468f0b42f4f83e343d36db01",
+     "sha256": "05ad28e84db139c61d257d701e6c4b0e14d7fdb538fa4ee417fd29dc670afe10",
+     "tree": "5db9df15e8c31cae6980c5d939a0795694896467"
+    }
+   },
+   "sha256_is_body": true,
+   "snapshot_equals_body": true,
+   "temporary_directories_left": []
+  },
+  "nested_path": {
+   "checkout_unchanged": {
+    "branch": true,
+    "head": true,
+    "index": true,
+    "raw": true,
+    "status": true
+   },
+   "loose_objects_added": 9,
+   "refs": {
+    "refs/zeus/research/x/nested_path": {
+     "commit": "8994de349da779a080429a3f4002738a539c6f25",
+     "files": [
+      "100644 blob 0a06f209c39ab30d137e8f09a825303ea42c7d38\tdocs/GOAL.md",
+      "100644 blob f4f5b24320278b1a9c09b41bfc483f4d1296b802\tdocs/research/note.md",
+      "100644 blob 7841404b5eee7389057f4dc674d5e274f98d19d0\tdocs/zeus/research-captures/a/b/c/d.json"
+     ],
+     "identity": "Zeus Research Program <research-program@localhost> | Zeus Research Program <research-program@localhost> | 2026-01-01T00:00:00Z | 2026-01-01T00:00:00Z",
+     "parents": [
+      "7b3e24a3b49a660b8936d1d52c886c077b4cf40c"
+     ],
+     "subject": "zeus research capture docs/zeus/research-captures/a/b/c/d.json",
+     "tree": "22147d6d8bb26a421bb1f8401b3fd9b74736a8e0",
+     "type": "commit"
+    }
+   },
+   "result": {
+    "value": {
+     "blob": "7841404b5eee7389057f4dc674d5e274f98d19d0",
+     "bytes": 82,
+     "path": "docs/zeus/research-captures/a/b/c/d.json",
+     "ref": "refs/zeus/research/x/nested_path",
+     "revision": "8994de349da779a080429a3f4002738a539c6f25",
+     "sha256": "05ad28e84db139c61d257d701e6c4b0e14d7fdb538fa4ee417fd29dc670afe10",
+     "tree": "22147d6d8bb26a421bb1f8401b3fd9b74736a8e0"
+    }
+   },
+   "temporary_directories_left": []
+  }
+ },
+ "c02_refusals": {
+  "base_revision_missing.abbreviated_ambiguous": {
+   "checkout_unchanged": {
+    "branch": true,
+    "head": true,
+    "index": true,
+    "raw": true,
+    "status": true
+   },
+   "loose_objects_added": 0,
+   "refs": {
+    "refs/zeus/research/path/bare_json_name": {
+     "commit": "63942307fda6127686e1fe1d2cd4f2439dba8392",
+     "files": [
+      "100644 blob 0a06f209c39ab30d137e8f09a825303ea42c7d38\tdocs/GOAL.md",
+      "100644 blob f4f5b24320278b1a9c09b41bfc483f4d1296b802\tdocs/research/note.md",
+      "100644 blob 7841404b5eee7389057f4dc674d5e274f98d19d0\tdocs/zeus/research-captures/.json"
+     ],
+     "identity": "Zeus Research Program <research-program@localhost> | Zeus Research Program <research-program@localhost> | 2026-01-01T00:00:00Z | 2026-01-01T00:00:00Z",
+     "parents": [
+      "7b3e24a3b49a660b8936d1d52c886c077b4cf40c"
+     ],
+     "subject": "zeus research capture docs/zeus/research-captures/.json",
+     "tree": "74bcf495a483909621e2c500c676248deab491d8",
+     "type": "commit"
+    },
+    "refs/zeus/research/path/trailing_dot_segment": {
+     "commit": "f8d6ba7a19bc1f6b44d92d4e3f49acc0cd29b5eb",
+     "files": [
+      "100644 blob 0a06f209c39ab30d137e8f09a825303ea42c7d38\tdocs/GOAL.md",
+      "100644 blob f4f5b24320278b1a9c09b41bfc483f4d1296b802\tdocs/research/note.md",
+      "100644 blob 7841404b5eee7389057f4dc674d5e274f98d19d0\tdocs/zeus/research-captures/x./1.json"
+     ],
+     "identity": "Zeus Research Program <research-program@localhost> | Zeus Research Program <research-program@localhost> | 2026-01-01T00:00:00Z | 2026-01-01T00:00:00Z",
+     "parents": [
+      "7b3e24a3b49a660b8936d1d52c886c077b4cf40c"
+     ],
+     "subject": "zeus research capture docs/zeus/research-captures/x./1.json",
+     "tree": "868e3c192060aca6c3f519a8c27e1cee6b411117",
+     "type": "commit"
+    }
+   },
+   "result": {
+    "message": "capture refused: base_revision_missing",
+    "raised": "CaptureError",
+    "reason_code": "base_revision_missing"
+   },
+   "temporary_directories_left": []
+  },
+  "base_revision_missing.blob_not_commit": {
+   "checkout_unchanged": {
+    "branch": true,
+    "head": true,
+    "index": true,
+    "raw": true,
+    "status": true
+   },
+   "loose_objects_added": 0,
+   "refs": {
+    "refs/zeus/research/path/bare_json_name": {
+     "commit": "63942307fda6127686e1fe1d2cd4f2439dba8392",
+     "files": [
+      "100644 blob 0a06f209c39ab30d137e8f09a825303ea42c7d38\tdocs/GOAL.md",
+      "100644 blob f4f5b24320278b1a9c09b41bfc483f4d1296b802\tdocs/research/note.md",
+      "100644 blob 7841404b5eee7389057f4dc674d5e274f98d19d0\tdocs/zeus/research-captures/.json"
+     ],
+     "identity": "Zeus Research Program <research-program@localhost> | Zeus Research Program <research-program@localhost> | 2026-01-01T00:00:00Z | 2026-01-01T00:00:00Z",
+     "parents": [
+      "7b3e24a3b49a660b8936d1d52c886c077b4cf40c"
+     ],
+     "subject": "zeus research capture docs/zeus/research-captures/.json",
+     "tree": "74bcf495a483909621e2c500c676248deab491d8",
+     "type": "commit"
+    },
+    "refs/zeus/research/path/trailing_dot_segment": {
+     "commit": "f8d6ba7a19bc1f6b44d92d4e3f49acc0cd29b5eb",
+     "files": [
+      "100644 blob 0a06f209c39ab30d137e8f09a825303ea42c7d38\tdocs/GOAL.md",
+      "100644 blob f4f5b24320278b1a9c09b41bfc483f4d1296b802\tdocs/research/note.md",
+      "100644 blob 7841404b5eee7389057f4dc674d5e274f98d19d0\tdocs/zeus/research-captures/x./1.json"
+     ],
+     "identity": "Zeus Research Program <research-program@localhost> | Zeus Research Program <research-program@localhost> | 2026-01-01T00:00:00Z | 2026-01-01T00:00:00Z",
+     "parents": [
+      "7b3e24a3b49a660b8936d1d52c886c077b4cf40c"
+     ],
+     "subject": "zeus research capture docs/zeus/research-captures/x./1.json",
+     "tree": "868e3c192060aca6c3f519a8c27e1cee6b411117",
+     "type": "commit"
+    }
+   },
+   "result": {
+    "message": "capture refused: base_revision_missing",
+    "raised": "CaptureError",
+    "reason_code": "base_revision_missing"
+   },
+   "temporary_directories_left": []
+  },
+  "base_revision_missing.cat_file_fails": {
+   "checkout_unchanged": {
+    "branch": true,
+    "head": true,
+    "index": true,
+    "raw": true,
+    "status": true
+   },
+   "loose_objects_added": 0,
+   "refs": {},
+   "result": {
+    "message": "capture refused: base_revision_missing",
+    "raised": "CaptureError",
+    "reason_code": "base_revision_missing"
+   },
+   "temporary_directories_left": []
+  },
+  "base_revision_missing.empty": {
+   "checkout_unchanged": {
+    "branch": true,
+    "head": true,
+    "index": true,
+    "raw": true,
+    "status": true
+   },
+   "loose_objects_added": 0,
+   "refs": {
+    "refs/zeus/research/path/bare_json_name": {
+     "commit": "63942307fda6127686e1fe1d2cd4f2439dba8392",
+     "files": [
+      "100644 blob 0a06f209c39ab30d137e8f09a825303ea42c7d38\tdocs/GOAL.md",
+      "100644 blob f4f5b24320278b1a9c09b41bfc483f4d1296b802\tdocs/research/note.md",
+      "100644 blob 7841404b5eee7389057f4dc674d5e274f98d19d0\tdocs/zeus/research-captures/.json"
+     ],
+     "identity": "Zeus Research Program <research-program@localhost> | Zeus Research Program <research-program@localhost> | 2026-01-01T00:00:00Z | 2026-01-01T00:00:00Z",
+     "parents": [
+      "7b3e24a3b49a660b8936d1d52c886c077b4cf40c"
+     ],
+     "subject": "zeus research capture docs/zeus/research-captures/.json",
+     "tree": "74bcf495a483909621e2c500c676248deab491d8",
+     "type": "commit"
+    },
+    "refs/zeus/research/path/trailing_dot_segment": {
+     "commit": "f8d6ba7a19bc1f6b44d92d4e3f49acc0cd29b5eb",
+     "files": [
+      "100644 blob 0a06f209c39ab30d137e8f09a825303ea42c7d38\tdocs/GOAL.md",
+      "100644 blob f4f5b24320278b1a9c09b41bfc483f4d1296b802\tdocs/research/note.md",
+      "100644 blob 7841404b5eee7389057f4dc674d5e274f98d19d0\tdocs/zeus/research-captures/x./1.json"
+     ],
+     "identity": "Zeus Research Program <research-program@localhost> | Zeus Research Program <research-program@localhost> | 2026-01-01T00:00:00Z | 2026-01-01T00:00:00Z",
+     "parents": [
+      "7b3e24a3b49a660b8936d1d52c886c077b4cf40c"
+     ],
+     "subject": "zeus research capture docs/zeus/research-captures/x./1.json",
+     "tree": "868e3c192060aca6c3f519a8c27e1cee6b411117",
+     "type": "commit"
+    }
+   },
+   "result": {
+    "message": "capture refused: base_revision_missing",
+    "raised": "CaptureError",
+    "reason_code": "base_revision_missing"
+   },
+   "temporary_directories_left": []
+  },
+  "base_revision_missing.not_a_revision": {
+   "checkout_unchanged": {
+    "branch": true,
+    "head": true,
+    "index": true,
+    "raw": true,
+    "status": true
+   },
+   "loose_objects_added": 0,
+   "refs": {
+    "refs/zeus/research/path/bare_json_name": {
+     "commit": "63942307fda6127686e1fe1d2cd4f2439dba8392",
+     "files": [
+      "100644 blob 0a06f209c39ab30d137e8f09a825303ea42c7d38\tdocs/GOAL.md",
+      "100644 blob f4f5b24320278b1a9c09b41bfc483f4d1296b802\tdocs/research/note.md",
+      "100644 blob 7841404b5eee7389057f4dc674d5e274f98d19d0\tdocs/zeus/research-captures/.json"
+     ],
+     "identity": "Zeus Research Program <research-program@localhost> | Zeus Research Program <research-program@localhost> | 2026-01-01T00:00:00Z | 2026-01-01T00:00:00Z",
+     "parents": [
+      "7b3e24a3b49a660b8936d1d52c886c077b4cf40c"
+     ],
+     "subject": "zeus research capture docs/zeus/research-captures/.json",
+     "tree": "74bcf495a483909621e2c500c676248deab491d8",
+     "type": "commit"
+    },
+    "refs/zeus/research/path/trailing_dot_segment": {
+     "commit": "f8d6ba7a19bc1f6b44d92d4e3f49acc0cd29b5eb",
+     "files": [
+      "100644 blob 0a06f209c39ab30d137e8f09a825303ea42c7d38\tdocs/GOAL.md",
+      "100644 blob f4f5b24320278b1a9c09b41bfc483f4d1296b802\tdocs/research/note.md",
+      "100644 blob 7841404b5eee7389057f4dc674d5e274f98d19d0\tdocs/zeus/research-captures/x./1.json"
+     ],
+     "identity": "Zeus Research Program <research-program@localhost> | Zeus Research Program <research-program@localhost> | 2026-01-01T00:00:00Z | 2026-01-01T00:00:00Z",
+     "parents": [
+      "7b3e24a3b49a660b8936d1d52c886c077b4cf40c"
+     ],
+     "subject": "zeus research capture docs/zeus/research-captures/x./1.json",
+     "tree": "868e3c192060aca6c3f519a8c27e1cee6b411117",
+     "type": "commit"
+    }
+   },
+   "result": {
+    "message": "capture refused: base_revision_missing",
+    "raised": "CaptureError",
+    "reason_code": "base_revision_missing"
+   },
+   "temporary_directories_left": []
+  },
+  "base_revision_missing.option_like": {
+   "checkout_unchanged": {
+    "branch": true,
+    "head": true,
+    "index": true,
+    "raw": true,
+    "status": true
+   },
+   "loose_objects_added": 0,
+   "refs": {
+    "refs/zeus/research/path/bare_json_name": {
+     "commit": "63942307fda6127686e1fe1d2cd4f2439dba8392",
+     "files": [
+      "100644 blob 0a06f209c39ab30d137e8f09a825303ea42c7d38\tdocs/GOAL.md",
+      "100644 blob f4f5b24320278b1a9c09b41bfc483f4d1296b802\tdocs/research/note.md",
+      "100644 blob 7841404b5eee7389057f4dc674d5e274f98d19d0\tdocs/zeus/research-captures/.json"
+     ],
+     "identity": "Zeus Research Program <research-program@localhost> | Zeus Research Program <research-program@localhost> | 2026-01-01T00:00:00Z | 2026-01-01T00:00:00Z",
+     "parents": [
+      "7b3e24a3b49a660b8936d1d52c886c077b4cf40c"
+     ],
+     "subject": "zeus research capture docs/zeus/research-captures/.json",
+     "tree": "74bcf495a483909621e2c500c676248deab491d8",
+     "type": "commit"
+    },
+    "refs/zeus/research/path/trailing_dot_segment": {
+     "commit": "f8d6ba7a19bc1f6b44d92d4e3f49acc0cd29b5eb",
+     "files": [
+      "100644 blob 0a06f209c39ab30d137e8f09a825303ea42c7d38\tdocs/GOAL.md",
+      "100644 blob f4f5b24320278b1a9c09b41bfc483f4d1296b802\tdocs/research/note.md",
+      "100644 blob 7841404b5eee7389057f4dc674d5e274f98d19d0\tdocs/zeus/research-captures/x./1.json"
+     ],
+     "identity": "Zeus Research Program <research-program@localhost> | Zeus Research Program <research-program@localhost> | 2026-01-01T00:00:00Z | 2026-01-01T00:00:00Z",
+     "parents": [
+      "7b3e24a3b49a660b8936d1d52c886c077b4cf40c"
+     ],
+     "subject": "zeus research capture docs/zeus/research-captures/x./1.json",
+     "tree": "868e3c192060aca6c3f519a8c27e1cee6b411117",
+     "type": "commit"
+    }
+   },
+   "result": {
+    "message": "capture refused: base_revision_missing",
+    "raised": "CaptureError",
+    "reason_code": "base_revision_missing"
+   },
+   "temporary_directories_left": []
+  },
+  "base_revision_missing.tree_not_commit": {
+   "checkout_unchanged": {
+    "branch": true,
+    "head": true,
+    "index": true,
+    "raw": true,
+    "status": true
+   },
+   "loose_objects_added": 0,
+   "refs": {
+    "refs/zeus/research/path/bare_json_name": {
+     "commit": "63942307fda6127686e1fe1d2cd4f2439dba8392",
+     "files": [
+      "100644 blob 0a06f209c39ab30d137e8f09a825303ea42c7d38\tdocs/GOAL.md",
+      "100644 blob f4f5b24320278b1a9c09b41bfc483f4d1296b802\tdocs/research/note.md",
+      "100644 blob 7841404b5eee7389057f4dc674d5e274f98d19d0\tdocs/zeus/research-captures/.json"
+     ],
+     "identity": "Zeus Research Program <research-program@localhost> | Zeus Research Program <research-program@localhost> | 2026-01-01T00:00:00Z | 2026-01-01T00:00:00Z",
+     "parents": [
+      "7b3e24a3b49a660b8936d1d52c886c077b4cf40c"
+     ],
+     "subject": "zeus research capture docs/zeus/research-captures/.json",
+     "tree": "74bcf495a483909621e2c500c676248deab491d8",
+     "type": "commit"
+    },
+    "refs/zeus/research/path/trailing_dot_segment": {
+     "commit": "f8d6ba7a19bc1f6b44d92d4e3f49acc0cd29b5eb",
+     "files": [
+      "100644 blob 0a06f209c39ab30d137e8f09a825303ea42c7d38\tdocs/GOAL.md",
+      "100644 blob f4f5b24320278b1a9c09b41bfc483f4d1296b802\tdocs/research/note.md",
+      "100644 blob 7841404b5eee7389057f4dc674d5e274f98d19d0\tdocs/zeus/research-captures/x./1.json"
+     ],
+     "identity": "Zeus Research Program <research-program@localhost> | Zeus Research Program <research-program@localhost> | 2026-01-01T00:00:00Z | 2026-01-01T00:00:00Z",
+     "parents": [
+      "7b3e24a3b49a660b8936d1d52c886c077b4cf40c"
+     ],
+     "subject": "zeus research capture docs/zeus/research-captures/x./1.json",
+     "tree": "868e3c192060aca6c3f519a8c27e1cee6b411117",
+     "type": "commit"
+    }
+   },
+   "result": {
+    "message": "capture refused: base_revision_missing",
+    "raised": "CaptureError",
+    "reason_code": "base_revision_missing"
+   },
+   "temporary_directories_left": []
+  },
+  "base_revision_missing.zeros": {
+   "checkout_unchanged": {
+    "branch": true,
+    "head": true,
+    "index": true,
+    "raw": true,
+    "status": true
+   },
+   "loose_objects_added": 0,
+   "refs": {
+    "refs/zeus/research/path/bare_json_name": {
+     "commit": "63942307fda6127686e1fe1d2cd4f2439dba8392",
+     "files": [
+      "100644 blob 0a06f209c39ab30d137e8f09a825303ea42c7d38\tdocs/GOAL.md",
+      "100644 blob f4f5b24320278b1a9c09b41bfc483f4d1296b802\tdocs/research/note.md",
+      "100644 blob 7841404b5eee7389057f4dc674d5e274f98d19d0\tdocs/zeus/research-captures/.json"
+     ],
+     "identity": "Zeus Research Program <research-program@localhost> | Zeus Research Program <research-program@localhost> | 2026-01-01T00:00:00Z | 2026-01-01T00:00:00Z",
+     "parents": [
+      "7b3e24a3b49a660b8936d1d52c886c077b4cf40c"
+     ],
+     "subject": "zeus research capture docs/zeus/research-captures/.json",
+     "tree": "74bcf495a483909621e2c500c676248deab491d8",
+     "type": "commit"
+    },
+    "refs/zeus/research/path/trailing_dot_segment": {
+     "commit": "f8d6ba7a19bc1f6b44d92d4e3f49acc0cd29b5eb",
+     "files": [
+      "100644 blob 0a06f209c39ab30d137e8f09a825303ea42c7d38\tdocs/GOAL.md",
+      "100644 blob f4f5b24320278b1a9c09b41bfc483f4d1296b802\tdocs/research/note.md",
+      "100644 blob 7841404b5eee7389057f4dc674d5e274f98d19d0\tdocs/zeus/research-captures/x./1.json"
+     ],
+     "identity": "Zeus Research Program <research-program@localhost> | Zeus Research Program <research-program@localhost> | 2026-01-01T00:00:00Z | 2026-01-01T00:00:00Z",
+     "parents": [
+      "7b3e24a3b49a660b8936d1d52c886c077b4cf40c"
+     ],
+     "subject": "zeus research capture docs/zeus/research-captures/x./1.json",
+     "tree": "868e3c192060aca6c3f519a8c27e1cee6b411117",
+     "type": "commit"
+    }
+   },
+   "result": {
+    "message": "capture refused: base_revision_missing",
+    "raised": "CaptureError",
+    "reason_code": "base_revision_missing"
+   },
+   "temporary_directories_left": []
+  },
+  "capture_blob_failed.hash_object_fails": {
+   "checkout_unchanged": {
+    "branch": true,
+    "head": true,
+    "index": true,
+    "raw": true,
+    "status": true
+   },
+   "loose_objects_added": 0,
+   "refs": {},
+   "result": {
+    "message": "capture refused: capture_blob_failed",
+    "raised": "CaptureError",
+    "reason_code": "capture_blob_failed"
+   },
+   "temporary_directories_left": []
+  },
+  "capture_blob_failed.hash_object_short": {
+   "checkout_unchanged": {
+    "branch": true,
+    "head": true,
+    "index": true,
+    "raw": true,
+    "status": true
+   },
+   "loose_objects_added": 0,
+   "refs": {},
+   "result": {
+    "message": "capture refused: capture_blob_failed",
+    "raised": "CaptureError",
+    "reason_code": "capture_blob_failed"
+   },
+   "temporary_directories_left": []
+  },
+  "capture_blob_mismatch": {
+   "checkout_unchanged": {
+    "branch": true,
+    "head": true,
+    "index": true,
+    "raw": true,
+    "status": true
+   },
+   "loose_objects_added": 0,
+   "refs": {},
+   "result": {
+    "message": "capture refused: capture_blob_mismatch",
+    "raised": "CaptureError",
+    "reason_code": "capture_blob_mismatch"
+   },
+   "temporary_directories_left": []
+  },
+  "capture_commit_failed.commit_tree_fails": {
+   "checkout_unchanged": {
+    "branch": true,
+    "head": true,
+    "index": true,
+    "raw": true,
+    "status": true
+   },
+   "loose_objects_added": 6,
+   "refs": {},
+   "result": {
+    "message": "capture refused: capture_commit_failed",
+    "raised": "CaptureError",
+    "reason_code": "capture_commit_failed"
+   },
+   "temporary_directories_left": []
+  },
+  "capture_commit_failed.commit_tree_short": {
+   "checkout_unchanged": {
+    "branch": true,
+    "head": true,
+    "index": true,
+    "raw": true,
+    "status": true
+   },
+   "loose_objects_added": 6,
+   "refs": {},
+   "result": {
+    "message": "capture refused: capture_commit_failed",
+    "raised": "CaptureError",
+    "reason_code": "capture_commit_failed"
+   },
+   "temporary_directories_left": []
+  },
+  "capture_index_failed": {
+   "checkout_unchanged": {
+    "branch": true,
+    "head": true,
+    "index": true,
+    "raw": true,
+    "status": true
+   },
+   "loose_objects_added": 1,
+   "refs": {},
+   "result": {
+    "message": "capture refused: capture_index_failed",
+    "raised": "CaptureError",
+    "reason_code": "capture_index_failed"
+   },
+   "temporary_directories_left": []
+  },
+  "capture_read_tree_failed": {
+   "checkout_unchanged": {
+    "branch": true,
+    "head": true,
+    "index": true,
+    "raw": true,
+    "status": true
+   },
+   "loose_objects_added": 0,
+   "refs": {},
+   "result": {
+    "message": "capture refused: capture_read_tree_failed",
+    "raised": "CaptureError",
+    "reason_code": "capture_read_tree_failed"
+   },
+   "temporary_directories_left": []
+  },
+  "capture_readback_mismatch.missing": {
+   "checkout_unchanged": {
+    "branch": true,
+    "head": true,
+    "index": true,
+    "raw": true,
+    "status": true
+   },
+   "loose_objects_added": 7,
+   "refs": {},
+   "result": {
+    "message": "capture refused: capture_readback_mismatch",
+    "raised": "CaptureError",
+    "reason_code": "capture_readback_mismatch"
+   },
+   "temporary_directories_left": []
+  },
+  "capture_readback_mismatch.wrong_bytes": {
+   "checkout_unchanged": {
+    "branch": true,
+    "head": true,
+    "index": true,
+    "raw": true,
+    "status": true
+   },
+   "loose_objects_added": 7,
+   "refs": {},
+   "result": {
+    "message": "capture refused: capture_readback_mismatch",
+    "raised": "CaptureError",
+    "reason_code": "capture_readback_mismatch"
+   },
+   "temporary_directories_left": []
+  },
+  "capture_readback_mismatch.wrong_mode": {
+   "checkout_unchanged": {
+    "branch": true,
+    "head": true,
+    "index": true,
+    "raw": true,
+    "status": true
+   },
+   "loose_objects_added": 7,
+   "refs": {},
+   "result": {
+    "message": "capture refused: capture_readback_mismatch",
+    "raised": "CaptureError",
+    "reason_code": "capture_readback_mismatch"
+   },
+   "temporary_directories_left": []
+  },
+  "capture_tree_failed.write_tree_fails": {
+   "checkout_unchanged": {
+    "branch": true,
+    "head": true,
+    "index": true,
+    "raw": true,
+    "status": true
+   },
+   "loose_objects_added": 1,
+   "refs": {},
+   "result": {
+    "message": "capture refused: capture_tree_failed",
+    "raised": "CaptureError",
+    "reason_code": "capture_tree_failed"
+   },
+   "temporary_directories_left": []
+  },
+  "capture_tree_failed.write_tree_short": {
+   "checkout_unchanged": {
+    "branch": true,
+    "head": true,
+    "index": true,
+    "raw": true,
+    "status": true
+   },
+   "loose_objects_added": 1,
+   "refs": {},
+   "result": {
+    "message": "capture refused: capture_tree_failed",
+    "raised": "CaptureError",
+    "reason_code": "capture_tree_failed"
+   },
+   "temporary_directories_left": []
+  },
+  "order.path_before_ref": {
+   "checkout_unchanged": {
+    "branch": true,
+    "head": true,
+    "index": true,
+    "raw": true,
+    "status": true
+   },
+   "loose_objects_added": 0,
+   "refs": {
+    "refs/zeus/research/path/bare_json_name": {
+     "commit": "63942307fda6127686e1fe1d2cd4f2439dba8392",
+     "files": [
+      "100644 blob 0a06f209c39ab30d137e8f09a825303ea42c7d38\tdocs/GOAL.md",
+      "100644 blob f4f5b24320278b1a9c09b41bfc483f4d1296b802\tdocs/research/note.md",
+      "100644 blob 7841404b5eee7389057f4dc674d5e274f98d19d0\tdocs/zeus/research-captures/.json"
+     ],
+     "identity": "Zeus Research Program <research-program@localhost> | Zeus Research Program <research-program@localhost> | 2026-01-01T00:00:00Z | 2026-01-01T00:00:00Z",
+     "parents": [
+      "7b3e24a3b49a660b8936d1d52c886c077b4cf40c"
+     ],
+     "subject": "zeus research capture docs/zeus/research-captures/.json",
+     "tree": "74bcf495a483909621e2c500c676248deab491d8",
+     "type": "commit"
+    },
+    "refs/zeus/research/path/trailing_dot_segment": {
+     "commit": "f8d6ba7a19bc1f6b44d92d4e3f49acc0cd29b5eb",
+     "files": [
+      "100644 blob 0a06f209c39ab30d137e8f09a825303ea42c7d38\tdocs/GOAL.md",
+      "100644 blob f4f5b24320278b1a9c09b41bfc483f4d1296b802\tdocs/research/note.md",
+      "100644 blob 7841404b5eee7389057f4dc674d5e274f98d19d0\tdocs/zeus/research-captures/x./1.json"
+     ],
+     "identity": "Zeus Research Program <research-program@localhost> | Zeus Research Program <research-program@localhost> | 2026-01-01T00:00:00Z | 2026-01-01T00:00:00Z",
+     "parents": [
+      "7b3e24a3b49a660b8936d1d52c886c077b4cf40c"
+     ],
+     "subject": "zeus research capture docs/zeus/research-captures/x./1.json",
+     "tree": "868e3c192060aca6c3f519a8c27e1cee6b411117",
+     "type": "commit"
+    }
+   },
+   "result": {
+    "message": "capture refused: capture_path_invalid",
+    "raised": "CaptureError",
+    "reason_code": "capture_path_invalid"
+   },
+   "temporary_directories_left": []
+  },
+  "order.ref_before_size": {
+   "checkout_unchanged": {
+    "branch": true,
+    "head": true,
+    "index": true,
+    "raw": true,
+    "status": true
+   },
+   "loose_objects_added": 0,
+   "refs": {
+    "refs/zeus/research/path/bare_json_name": {
+     "commit": "63942307fda6127686e1fe1d2cd4f2439dba8392",
+     "files": [
+      "100644 blob 0a06f209c39ab30d137e8f09a825303ea42c7d38\tdocs/GOAL.md",
+      "100644 blob f4f5b24320278b1a9c09b41bfc483f4d1296b802\tdocs/research/note.md",
+      "100644 blob 7841404b5eee7389057f4dc674d5e274f98d19d0\tdocs/zeus/research-captures/.json"
+     ],
+     "identity": "Zeus Research Program <research-program@localhost> | Zeus Research Program <research-program@localhost> | 2026-01-01T00:00:00Z | 2026-01-01T00:00:00Z",
+     "parents": [
+      "7b3e24a3b49a660b8936d1d52c886c077b4cf40c"
+     ],
+     "subject": "zeus research capture docs/zeus/research-captures/.json",
+     "tree": "74bcf495a483909621e2c500c676248deab491d8",
+     "type": "commit"
+    },
+    "refs/zeus/research/path/trailing_dot_segment": {
+     "commit": "f8d6ba7a19bc1f6b44d92d4e3f49acc0cd29b5eb",
+     "files": [
+      "100644 blob 0a06f209c39ab30d137e8f09a825303ea42c7d38\tdocs/GOAL.md",
+      "100644 blob f4f5b24320278b1a9c09b41bfc483f4d1296b802\tdocs/research/note.md",
+      "100644 blob 7841404b5eee7389057f4dc674d5e274f98d19d0\tdocs/zeus/research-captures/x./1.json"
+     ],
+     "identity": "Zeus Research Program <research-program@localhost> | Zeus Research Program <research-program@localhost> | 2026-01-01T00:00:00Z | 2026-01-01T00:00:00Z",
+     "parents": [
+      "7b3e24a3b49a660b8936d1d52c886c077b4cf40c"
+     ],
+     "subject": "zeus research capture docs/zeus/research-captures/x./1.json",
+     "tree": "868e3c192060aca6c3f519a8c27e1cee6b411117",
+     "type": "commit"
+    }
+   },
+   "result": {
+    "message": "capture refused: capture_ref_invalid",
+    "raised": "CaptureError",
+    "reason_code": "capture_ref_invalid"
+   },
+   "temporary_directories_left": []
+  },
+  "order.size_before_base": {
+   "checkout_unchanged": {
+    "branch": true,
+    "head": true,
+    "index": true,
+    "raw": true,
+    "status": true
+   },
+   "loose_objects_added": 0,
+   "refs": {
+    "refs/zeus/research/path/bare_json_name": {
+     "commit": "63942307fda6127686e1fe1d2cd4f2439dba8392",
+     "files": [
+      "100644 blob 0a06f209c39ab30d137e8f09a825303ea42c7d38\tdocs/GOAL.md",
+      "100644 blob f4f5b24320278b1a9c09b41bfc483f4d1296b802\tdocs/research/note.md",
+      "100644 blob 7841404b5eee7389057f4dc674d5e274f98d19d0\tdocs/zeus/research-captures/.json"
+     ],
+     "identity": "Zeus Research Program <research-program@localhost> | Zeus Research Program <research-program@localhost> | 2026-01-01T00:00:00Z | 2026-01-01T00:00:00Z",
+     "parents": [
+      "7b3e24a3b49a660b8936d1d52c886c077b4cf40c"
+     ],
+     "subject": "zeus research capture docs/zeus/research-captures/.json",
+     "tree": "74bcf495a483909621e2c500c676248deab491d8",
+     "type": "commit"
+    },
+    "refs/zeus/research/path/trailing_dot_segment": {
+     "commit": "f8d6ba7a19bc1f6b44d92d4e3f49acc0cd29b5eb",
+     "files": [
+      "100644 blob 0a06f209c39ab30d137e8f09a825303ea42c7d38\tdocs/GOAL.md",
+      "100644 blob f4f5b24320278b1a9c09b41bfc483f4d1296b802\tdocs/research/note.md",
+      "100644 blob 7841404b5eee7389057f4dc674d5e274f98d19d0\tdocs/zeus/research-captures/x./1.json"
+     ],
+     "identity": "Zeus Research Program <research-program@localhost> | Zeus Research Program <research-program@localhost> | 2026-01-01T00:00:00Z | 2026-01-01T00:00:00Z",
+     "parents": [
+      "7b3e24a3b49a660b8936d1d52c886c077b4cf40c"
+     ],
+     "subject": "zeus research capture docs/zeus/research-captures/x./1.json",
+     "tree": "868e3c192060aca6c3f519a8c27e1cee6b411117",
+     "type": "commit"
+    }
+   },
+   "result": {
+    "message": "capture refused: capture_too_large",
+    "raised": "CaptureError",
+    "reason_code": "capture_too_large"
+   },
+   "temporary_directories_left": []
+  },
+  "path_exists.capture_commit_as_base": {
+   "checkout_unchanged": {
+    "branch": true,
+    "head": true,
+    "index": true,
+    "raw": true,
+    "status": true
+   },
+   "loose_objects_added": 0,
+   "refs": {
+    "refs/zeus/research/rp-001/001": {
+     "commit": "494e09ce77d925dd468f0b42f4f83e343d36db01",
+     "files": [
+      "100644 blob 0a06f209c39ab30d137e8f09a825303ea42c7d38\tdocs/GOAL.md",
+      "100644 blob f4f5b24320278b1a9c09b41bfc483f4d1296b802\tdocs/research/note.md",
+      "100644 blob 7841404b5eee7389057f4dc674d5e274f98d19d0\tdocs/zeus/research-captures/rp-001/001.json"
+     ],
+     "identity": "Zeus Research Program <research-program@localhost> | Zeus Research Program <research-program@localhost> | 2026-01-01T00:00:00Z | 2026-01-01T00:00:00Z",
+     "parents": [
+      "7b3e24a3b49a660b8936d1d52c886c077b4cf40c"
+     ],
+     "subject": "zeus research capture docs/zeus/research-captures/rp-001/001.json",
+     "tree": "5db9df15e8c31cae6980c5d939a0795694896467",
+     "type": "commit"
+    }
+   },
+   "result": {
+    "message": "capture refused: capture_path_exists",
+    "raised": "CaptureError",
+    "reason_code": "capture_path_exists"
+   },
+   "temporary_directories_left": []
+  },
+  "path_exists.checked_before_ref": {
+   "checkout_unchanged": {
+    "branch": true,
+    "head": true,
+    "index": true,
+    "raw": true,
+    "status": true
+   },
+   "loose_objects_added": 0,
+   "refs": {
+    "refs/zeus/research/rp-001/001": {
+     "commit": "494e09ce77d925dd468f0b42f4f83e343d36db01",
+     "files": [
+      "100644 blob 0a06f209c39ab30d137e8f09a825303ea42c7d38\tdocs/GOAL.md",
+      "100644 blob f4f5b24320278b1a9c09b41bfc483f4d1296b802\tdocs/research/note.md",
+      "100644 blob 7841404b5eee7389057f4dc674d5e274f98d19d0\tdocs/zeus/research-captures/rp-001/001.json"
+     ],
+     "identity": "Zeus Research Program <research-program@localhost> | Zeus Research Program <research-program@localhost> | 2026-01-01T00:00:00Z | 2026-01-01T00:00:00Z",
+     "parents": [
+      "7b3e24a3b49a660b8936d1d52c886c077b4cf40c"
+     ],
+     "subject": "zeus research capture docs/zeus/research-captures/rp-001/001.json",
+     "tree": "5db9df15e8c31cae6980c5d939a0795694896467",
+     "type": "commit"
+    }
+   },
+   "result": {
+    "message": "capture refused: capture_path_exists",
+    "raised": "CaptureError",
+    "reason_code": "capture_path_exists"
+   },
+   "temporary_directories_left": []
+  },
+  "path_exists.committed_at_base": {
+   "checkout_unchanged": {
+    "branch": true,
+    "head": true,
+    "index": true,
+    "raw": true,
+    "status": true
+   },
+   "loose_objects_added": 0,
+   "refs": {
+    "refs/zeus/research/rp-001/001": {
+     "commit": "494e09ce77d925dd468f0b42f4f83e343d36db01",
+     "files": [
+      "100644 blob 0a06f209c39ab30d137e8f09a825303ea42c7d38\tdocs/GOAL.md",
+      "100644 blob f4f5b24320278b1a9c09b41bfc483f4d1296b802\tdocs/research/note.md",
+      "100644 blob 7841404b5eee7389057f4dc674d5e274f98d19d0\tdocs/zeus/research-captures/rp-001/001.json"
+     ],
+     "identity": "Zeus Research Program <research-program@localhost> | Zeus Research Program <research-program@localhost> | 2026-01-01T00:00:00Z | 2026-01-01T00:00:00Z",
+     "parents": [
+      "7b3e24a3b49a660b8936d1d52c886c077b4cf40c"
+     ],
+     "subject": "zeus research capture docs/zeus/research-captures/rp-001/001.json",
+     "tree": "5db9df15e8c31cae6980c5d939a0795694896467",
+     "type": "commit"
+    }
+   },
+   "result": {
+    "message": "capture refused: capture_path_exists",
+    "raised": "CaptureError",
+    "reason_code": "capture_path_exists"
+   },
+   "temporary_directories_left": []
+  },
+  "path_exists.ls_tree_fails": {
+   "checkout_unchanged": {
+    "branch": true,
+    "head": true,
+    "index": true,
+    "raw": true,
+    "status": true
+   },
+   "loose_objects_added": 0,
+   "refs": {},
+   "result": {
+    "message": "capture refused: capture_path_exists",
+    "raised": "CaptureError",
+    "reason_code": "capture_path_exists"
+   },
+   "temporary_directories_left": []
+  },
+  "path_invalid.absolute": {
+   "checkout_unchanged": {
+    "branch": true,
+    "head": true,
+    "index": true,
+    "raw": true,
+    "status": true
+   },
+   "loose_objects_added": 0,
+   "refs": {
+    "refs/zeus/research/path/bare_json_name": {
+     "commit": "63942307fda6127686e1fe1d2cd4f2439dba8392",
+     "files": [
+      "100644 blob 0a06f209c39ab30d137e8f09a825303ea42c7d38\tdocs/GOAL.md",
+      "100644 blob f4f5b24320278b1a9c09b41bfc483f4d1296b802\tdocs/research/note.md",
+      "100644 blob 7841404b5eee7389057f4dc674d5e274f98d19d0\tdocs/zeus/research-captures/.json"
+     ],
+     "identity": "Zeus Research Program <research-program@localhost> | Zeus Research Program <research-program@localhost> | 2026-01-01T00:00:00Z | 2026-01-01T00:00:00Z",
+     "parents": [
+      "7b3e24a3b49a660b8936d1d52c886c077b4cf40c"
+     ],
+     "subject": "zeus research capture docs/zeus/research-captures/.json",
+     "tree": "74bcf495a483909621e2c500c676248deab491d8",
+     "type": "commit"
+    }
+   },
+   "result": {
+    "message": "capture refused: capture_path_invalid",
+    "raised": "CaptureError",
+    "reason_code": "capture_path_invalid"
+   },
+   "temporary_directories_left": []
+  },
+  "path_invalid.backslash": {
+   "checkout_unchanged": {
+    "branch": true,
+    "head": true,
+    "index": true,
+    "raw": true,
+    "status": true
+   },
+   "loose_objects_added": 0,
+   "refs": {
+    "refs/zeus/research/path/bare_json_name": {
+     "commit": "63942307fda6127686e1fe1d2cd4f2439dba8392",
+     "files": [
+      "100644 blob 0a06f209c39ab30d137e8f09a825303ea42c7d38\tdocs/GOAL.md",
+      "100644 blob f4f5b24320278b1a9c09b41bfc483f4d1296b802\tdocs/research/note.md",
+      "100644 blob 7841404b5eee7389057f4dc674d5e274f98d19d0\tdocs/zeus/research-captures/.json"
+     ],
+     "identity": "Zeus Research Program <research-program@localhost> | Zeus Research Program <research-program@localhost> | 2026-01-01T00:00:00Z | 2026-01-01T00:00:00Z",
+     "parents": [
+      "7b3e24a3b49a660b8936d1d52c886c077b4cf40c"
+     ],
+     "subject": "zeus research capture docs/zeus/research-captures/.json",
+     "tree": "74bcf495a483909621e2c500c676248deab491d8",
+     "type": "commit"
+    }
+   },
+   "result": {
+    "message": "capture refused: capture_path_invalid",
+    "raised": "CaptureError",
+    "reason_code": "capture_path_invalid"
+   },
+   "temporary_directories_left": []
+  },
+  "path_invalid.bare_json_name": {
+   "checkout_unchanged": {
+    "branch": true,
+    "head": true,
+    "index": true,
+    "raw": true,
+    "status": true
+   },
+   "loose_objects_added": 6,
+   "refs": {
+    "refs/zeus/research/path/bare_json_name": {
+     "commit": "63942307fda6127686e1fe1d2cd4f2439dba8392",
+     "files": [
+      "100644 blob 0a06f209c39ab30d137e8f09a825303ea42c7d38\tdocs/GOAL.md",
+      "100644 blob f4f5b24320278b1a9c09b41bfc483f4d1296b802\tdocs/research/note.md",
+      "100644 blob 7841404b5eee7389057f4dc674d5e274f98d19d0\tdocs/zeus/research-captures/.json"
+     ],
+     "identity": "Zeus Research Program <research-program@localhost> | Zeus Research Program <research-program@localhost> | 2026-01-01T00:00:00Z | 2026-01-01T00:00:00Z",
+     "parents": [
+      "7b3e24a3b49a660b8936d1d52c886c077b4cf40c"
+     ],
+     "subject": "zeus research capture docs/zeus/research-captures/.json",
+     "tree": "74bcf495a483909621e2c500c676248deab491d8",
+     "type": "commit"
+    }
+   },
+   "result": {
+    "value": {
+     "blob": "7841404b5eee7389057f4dc674d5e274f98d19d0",
+     "bytes": 82,
+     "path": "docs/zeus/research-captures/.json",
+     "ref": "refs/zeus/research/path/bare_json_name",
+     "revision": "63942307fda6127686e1fe1d2cd4f2439dba8392",
+     "sha256": "05ad28e84db139c61d257d701e6c4b0e14d7fdb538fa4ee417fd29dc670afe10",
+     "tree": "74bcf495a483909621e2c500c676248deab491d8"
+    }
+   },
+   "temporary_directories_left": []
+  },
+  "path_invalid.dot_git_segment": {
+   "checkout_unchanged": {
+    "branch": true,
+    "head": true,
+    "index": true,
+    "raw": true,
+    "status": true
+   },
+   "loose_objects_added": 0,
+   "refs": {
+    "refs/zeus/research/path/bare_json_name": {
+     "commit": "63942307fda6127686e1fe1d2cd4f2439dba8392",
+     "files": [
+      "100644 blob 0a06f209c39ab30d137e8f09a825303ea42c7d38\tdocs/GOAL.md",
+      "100644 blob f4f5b24320278b1a9c09b41bfc483f4d1296b802\tdocs/research/note.md",
+      "100644 blob 7841404b5eee7389057f4dc674d5e274f98d19d0\tdocs/zeus/research-captures/.json"
+     ],
+     "identity": "Zeus Research Program <research-program@localhost> | Zeus Research Program <research-program@localhost> | 2026-01-01T00:00:00Z | 2026-01-01T00:00:00Z",
+     "parents": [
+      "7b3e24a3b49a660b8936d1d52c886c077b4cf40c"
+     ],
+     "subject": "zeus research capture docs/zeus/research-captures/.json",
+     "tree": "74bcf495a483909621e2c500c676248deab491d8",
+     "type": "commit"
+    }
+   },
+   "result": {
+    "message": "capture refused: capture_path_invalid",
+    "raised": "CaptureError",
+    "reason_code": "capture_path_invalid"
+   },
+   "temporary_directories_left": []
+  },
+  "path_invalid.dot_git_upper": {
+   "checkout_unchanged": {
+    "branch": true,
+    "head": true,
+    "index": true,
+    "raw": true,
+    "status": true
+   },
+   "loose_objects_added": 0,
+   "refs": {
+    "refs/zeus/research/path/bare_json_name": {
+     "commit": "63942307fda6127686e1fe1d2cd4f2439dba8392",
+     "files": [
+      "100644 blob 0a06f209c39ab30d137e8f09a825303ea42c7d38\tdocs/GOAL.md",
+      "100644 blob f4f5b24320278b1a9c09b41bfc483f4d1296b802\tdocs/research/note.md",
+      "100644 blob 7841404b5eee7389057f4dc674d5e274f98d19d0\tdocs/zeus/research-captures/.json"
+     ],
+     "identity": "Zeus Research Program <research-program@localhost> | Zeus Research Program <research-program@localhost> | 2026-01-01T00:00:00Z | 2026-01-01T00:00:00Z",
+     "parents": [
+      "7b3e24a3b49a660b8936d1d52c886c077b4cf40c"
+     ],
+     "subject": "zeus research capture docs/zeus/research-captures/.json",
+     "tree": "74bcf495a483909621e2c500c676248deab491d8",
+     "type": "commit"
+    }
+   },
+   "result": {
+    "message": "capture refused: capture_path_invalid",
+    "raised": "CaptureError",
+    "reason_code": "capture_path_invalid"
+   },
+   "temporary_directories_left": []
+  },
+  "path_invalid.empty": {
+   "checkout_unchanged": {
+    "branch": true,
+    "head": true,
+    "index": true,
+    "raw": true,
+    "status": true
+   },
+   "loose_objects_added": 0,
+   "refs": {
+    "refs/zeus/research/path/bare_json_name": {
+     "commit": "63942307fda6127686e1fe1d2cd4f2439dba8392",
+     "files": [
+      "100644 blob 0a06f209c39ab30d137e8f09a825303ea42c7d38\tdocs/GOAL.md",
+      "100644 blob f4f5b24320278b1a9c09b41bfc483f4d1296b802\tdocs/research/note.md",
+      "100644 blob 7841404b5eee7389057f4dc674d5e274f98d19d0\tdocs/zeus/research-captures/.json"
+     ],
+     "identity": "Zeus Research Program <research-program@localhost> | Zeus Research Program <research-program@localhost> | 2026-01-01T00:00:00Z | 2026-01-01T00:00:00Z",
+     "parents": [
+      "7b3e24a3b49a660b8936d1d52c886c077b4cf40c"
+     ],
+     "subject": "zeus research capture docs/zeus/research-captures/.json",
+     "tree": "74bcf495a483909621e2c500c676248deab491d8",
+     "type": "commit"
+    }
+   },
+   "result": {
+    "message": "capture refused: capture_path_invalid",
+    "raised": "CaptureError",
+    "reason_code": "capture_path_invalid"
+   },
+   "temporary_directories_left": []
+  },
+  "path_invalid.empty_segment": {
+   "checkout_unchanged": {
+    "branch": true,
+    "head": true,
+    "index": true,
+    "raw": true,
+    "status": true
+   },
+   "loose_objects_added": 0,
+   "refs": {
+    "refs/zeus/research/path/bare_json_name": {
+     "commit": "63942307fda6127686e1fe1d2cd4f2439dba8392",
+     "files": [
+      "100644 blob 0a06f209c39ab30d137e8f09a825303ea42c7d38\tdocs/GOAL.md",
+      "100644 blob f4f5b24320278b1a9c09b41bfc483f4d1296b802\tdocs/research/note.md",
+      "100644 blob 7841404b5eee7389057f4dc674d5e274f98d19d0\tdocs/zeus/research-captures/.json"
+     ],
+     "identity": "Zeus Research Program <research-program@localhost> | Zeus Research Program <research-program@localhost> | 2026-01-01T00:00:00Z | 2026-01-01T00:00:00Z",
+     "parents": [
+      "7b3e24a3b49a660b8936d1d52c886c077b4cf40c"
+     ],
+     "subject": "zeus research capture docs/zeus/research-captures/.json",
+     "tree": "74bcf495a483909621e2c500c676248deab491d8",
+     "type": "commit"
+    }
+   },
+   "result": {
+    "message": "capture refused: capture_path_invalid",
+    "raised": "CaptureError",
+    "reason_code": "capture_path_invalid"
+   },
+   "temporary_directories_left": []
+  },
+  "path_invalid.none": {
+   "checkout_unchanged": {
+    "branch": true,
+    "head": true,
+    "index": true,
+    "raw": true,
+    "status": true
+   },
+   "loose_objects_added": 0,
+   "refs": {
+    "refs/zeus/research/path/bare_json_name": {
+     "commit": "63942307fda6127686e1fe1d2cd4f2439dba8392",
+     "files": [
+      "100644 blob 0a06f209c39ab30d137e8f09a825303ea42c7d38\tdocs/GOAL.md",
+      "100644 blob f4f5b24320278b1a9c09b41bfc483f4d1296b802\tdocs/research/note.md",
+      "100644 blob 7841404b5eee7389057f4dc674d5e274f98d19d0\tdocs/zeus/research-captures/.json"
+     ],
+     "identity": "Zeus Research Program <research-program@localhost> | Zeus Research Program <research-program@localhost> | 2026-01-01T00:00:00Z | 2026-01-01T00:00:00Z",
+     "parents": [
+      "7b3e24a3b49a660b8936d1d52c886c077b4cf40c"
+     ],
+     "subject": "zeus research capture docs/zeus/research-captures/.json",
+     "tree": "74bcf495a483909621e2c500c676248deab491d8",
+     "type": "commit"
+    }
+   },
+   "result": {
+    "message": "capture refused: capture_path_invalid",
+    "raised": "CaptureError",
+    "reason_code": "capture_path_invalid"
+   },
+   "temporary_directories_left": []
+  },
+  "path_invalid.not_json": {
+   "checkout_unchanged": {
+    "branch": true,
+    "head": true,
+    "index": true,
+    "raw": true,
+    "status": true
+   },
+   "loose_objects_added": 0,
+   "refs": {},
+   "result": {
+    "message": "capture refused: capture_path_invalid",
+    "raised": "CaptureError",
+    "reason_code": "capture_path_invalid"
+   },
+   "temporary_directories_left": []
+  },
+  "path_invalid.outside_capture_root": {
+   "checkout_unchanged": {
+    "branch": true,
+    "head": true,
+    "index": true,
+    "raw": true,
+    "status": true
+   },
+   "loose_objects_added": 0,
+   "refs": {},
+   "result": {
+    "message": "capture refused: capture_path_invalid",
+    "raised": "CaptureError",
+    "reason_code": "capture_path_invalid"
+   },
+   "temporary_directories_left": []
+  },
+  "path_invalid.prefix_lookalike": {
+   "checkout_unchanged": {
+    "branch": true,
+    "head": true,
+    "index": true,
+    "raw": true,
+    "status": true
+   },
+   "loose_objects_added": 0,
+   "refs": {
+    "refs/zeus/research/path/bare_json_name": {
+     "commit": "63942307fda6127686e1fe1d2cd4f2439dba8392",
+     "files": [
+      "100644 blob 0a06f209c39ab30d137e8f09a825303ea42c7d38\tdocs/GOAL.md",
+      "100644 blob f4f5b24320278b1a9c09b41bfc483f4d1296b802\tdocs/research/note.md",
+      "100644 blob 7841404b5eee7389057f4dc674d5e274f98d19d0\tdocs/zeus/research-captures/.json"
+     ],
+     "identity": "Zeus Research Program <research-program@localhost> | Zeus Research Program <research-program@localhost> | 2026-01-01T00:00:00Z | 2026-01-01T00:00:00Z",
+     "parents": [
+      "7b3e24a3b49a660b8936d1d52c886c077b4cf40c"
+     ],
+     "subject": "zeus research capture docs/zeus/research-captures/.json",
+     "tree": "74bcf495a483909621e2c500c676248deab491d8",
+     "type": "commit"
+    },
+    "refs/zeus/research/path/trailing_dot_segment": {
+     "commit": "f8d6ba7a19bc1f6b44d92d4e3f49acc0cd29b5eb",
+     "files": [
+      "100644 blob 0a06f209c39ab30d137e8f09a825303ea42c7d38\tdocs/GOAL.md",
+      "100644 blob f4f5b24320278b1a9c09b41bfc483f4d1296b802\tdocs/research/note.md",
+      "100644 blob 7841404b5eee7389057f4dc674d5e274f98d19d0\tdocs/zeus/research-captures/x./1.json"
+     ],
+     "identity": "Zeus Research Program <research-program@localhost> | Zeus Research Program <research-program@localhost> | 2026-01-01T00:00:00Z | 2026-01-01T00:00:00Z",
+     "parents": [
+      "7b3e24a3b49a660b8936d1d52c886c077b4cf40c"
+     ],
+     "subject": "zeus research capture docs/zeus/research-captures/x./1.json",
+     "tree": "868e3c192060aca6c3f519a8c27e1cee6b411117",
+     "type": "commit"
+    }
+   },
+   "result": {
+    "message": "capture refused: capture_path_invalid",
+    "raised": "CaptureError",
+    "reason_code": "capture_path_invalid"
+   },
+   "temporary_directories_left": []
+  },
+  "path_invalid.root_itself": {
+   "checkout_unchanged": {
+    "branch": true,
+    "head": true,
+    "index": true,
+    "raw": true,
+    "status": true
+   },
+   "loose_objects_added": 0,
+   "refs": {},
+   "result": {
+    "message": "capture refused: capture_path_invalid",
+    "raised": "CaptureError",
+    "reason_code": "capture_path_invalid"
+   },
+   "temporary_directories_left": []
+  },
+  "path_invalid.root_with_slash_only": {
+   "checkout_unchanged": {
+    "branch": true,
+    "head": true,
+    "index": true,
+    "raw": true,
+    "status": true
+   },
+   "loose_objects_added": 0,
+   "refs": {},
+   "result": {
+    "message": "capture refused: capture_path_invalid",
+    "raised": "CaptureError",
+    "reason_code": "capture_path_invalid"
+   },
+   "temporary_directories_left": []
+  },
+  "path_invalid.space": {
+   "checkout_unchanged": {
+    "branch": true,
+    "head": true,
+    "index": true,
+    "raw": true,
+    "status": true
+   },
+   "loose_objects_added": 0,
+   "refs": {
+    "refs/zeus/research/path/bare_json_name": {
+     "commit": "63942307fda6127686e1fe1d2cd4f2439dba8392",
+     "files": [
+      "100644 blob 0a06f209c39ab30d137e8f09a825303ea42c7d38\tdocs/GOAL.md",
+      "100644 blob f4f5b24320278b1a9c09b41bfc483f4d1296b802\tdocs/research/note.md",
+      "100644 blob 7841404b5eee7389057f4dc674d5e274f98d19d0\tdocs/zeus/research-captures/.json"
+     ],
+     "identity": "Zeus Research Program <research-program@localhost> | Zeus Research Program <research-program@localhost> | 2026-01-01T00:00:00Z | 2026-01-01T00:00:00Z",
+     "parents": [
+      "7b3e24a3b49a660b8936d1d52c886c077b4cf40c"
+     ],
+     "subject": "zeus research capture docs/zeus/research-captures/.json",
+     "tree": "74bcf495a483909621e2c500c676248deab491d8",
+     "type": "commit"
+    }
+   },
+   "result": {
+    "message": "capture refused: capture_path_invalid",
+    "raised": "CaptureError",
+    "reason_code": "capture_path_invalid"
+   },
+   "temporary_directories_left": []
+  },
+  "path_invalid.too_long": {
+   "checkout_unchanged": {
+    "branch": true,
+    "head": true,
+    "index": true,
+    "raw": true,
+    "status": true
+   },
+   "loose_objects_added": 0,
+   "refs": {
+    "refs/zeus/research/path/bare_json_name": {
+     "commit": "63942307fda6127686e1fe1d2cd4f2439dba8392",
+     "files": [
+      "100644 blob 0a06f209c39ab30d137e8f09a825303ea42c7d38\tdocs/GOAL.md",
+      "100644 blob f4f5b24320278b1a9c09b41bfc483f4d1296b802\tdocs/research/note.md",
+      "100644 blob 7841404b5eee7389057f4dc674d5e274f98d19d0\tdocs/zeus/research-captures/.json"
+     ],
+     "identity": "Zeus Research Program <research-program@localhost> | Zeus Research Program <research-program@localhost> | 2026-01-01T00:00:00Z | 2026-01-01T00:00:00Z",
+     "parents": [
+      "7b3e24a3b49a660b8936d1d52c886c077b4cf40c"
+     ],
+     "subject": "zeus research capture docs/zeus/research-captures/.json",
+     "tree": "74bcf495a483909621e2c500c676248deab491d8",
+     "type": "commit"
+    }
+   },
+   "result": {
+    "message": "capture refused: capture_path_invalid",
+    "raised": "CaptureError",
+    "reason_code": "capture_path_invalid"
+   },
+   "temporary_directories_left": []
+  },
+  "path_invalid.trailing_dot_segment": {
+   "checkout_unchanged": {
+    "branch": true,
+    "head": true,
+    "index": true,
+    "raw": true,
+    "status": true
+   },
+   "loose_objects_added": 6,
+   "refs": {
+    "refs/zeus/research/path/bare_json_name": {
+     "commit": "63942307fda6127686e1fe1d2cd4f2439dba8392",
+     "files": [
+      "100644 blob 0a06f209c39ab30d137e8f09a825303ea42c7d38\tdocs/GOAL.md",
+      "100644 blob f4f5b24320278b1a9c09b41bfc483f4d1296b802\tdocs/research/note.md",
+      "100644 blob 7841404b5eee7389057f4dc674d5e274f98d19d0\tdocs/zeus/research-captures/.json"
+     ],
+     "identity": "Zeus Research Program <research-program@localhost> | Zeus Research Program <research-program@localhost> | 2026-01-01T00:00:00Z | 2026-01-01T00:00:00Z",
+     "parents": [
+      "7b3e24a3b49a660b8936d1d52c886c077b4cf40c"
+     ],
+     "subject": "zeus research capture docs/zeus/research-captures/.json",
+     "tree": "74bcf495a483909621e2c500c676248deab491d8",
+     "type": "commit"
+    },
+    "refs/zeus/research/path/trailing_dot_segment": {
+     "commit": "f8d6ba7a19bc1f6b44d92d4e3f49acc0cd29b5eb",
+     "files": [
+      "100644 blob 0a06f209c39ab30d137e8f09a825303ea42c7d38\tdocs/GOAL.md",
+      "100644 blob f4f5b24320278b1a9c09b41bfc483f4d1296b802\tdocs/research/note.md",
+      "100644 blob 7841404b5eee7389057f4dc674d5e274f98d19d0\tdocs/zeus/research-captures/x./1.json"
+     ],
+     "identity": "Zeus Research Program <research-program@localhost> | Zeus Research Program <research-program@localhost> | 2026-01-01T00:00:00Z | 2026-01-01T00:00:00Z",
+     "parents": [
+      "7b3e24a3b49a660b8936d1d52c886c077b4cf40c"
+     ],
+     "subject": "zeus research capture docs/zeus/research-captures/x./1.json",
+     "tree": "868e3c192060aca6c3f519a8c27e1cee6b411117",
+     "type": "commit"
+    }
+   },
+   "result": {
+    "value": {
+     "blob": "7841404b5eee7389057f4dc674d5e274f98d19d0",
+     "bytes": 82,
+     "path": "docs/zeus/research-captures/x./1.json",
+     "ref": "refs/zeus/research/path/trailing_dot_segment",
+     "revision": "f8d6ba7a19bc1f6b44d92d4e3f49acc0cd29b5eb",
+     "sha256": "05ad28e84db139c61d257d701e6c4b0e14d7fdb538fa4ee417fd29dc670afe10",
+     "tree": "868e3c192060aca6c3f519a8c27e1cee6b411117"
+    }
+   },
+   "temporary_directories_left": []
+  },
+  "path_invalid.traversal": {
+   "checkout_unchanged": {
+    "branch": true,
+    "head": true,
+    "index": true,
+    "raw": true,
+    "status": true
+   },
+   "loose_objects_added": 0,
+   "refs": {
+    "refs/zeus/research/path/bare_json_name": {
+     "commit": "63942307fda6127686e1fe1d2cd4f2439dba8392",
+     "files": [
+      "100644 blob 0a06f209c39ab30d137e8f09a825303ea42c7d38\tdocs/GOAL.md",
+      "100644 blob f4f5b24320278b1a9c09b41bfc483f4d1296b802\tdocs/research/note.md",
+      "100644 blob 7841404b5eee7389057f4dc674d5e274f98d19d0\tdocs/zeus/research-captures/.json"
+     ],
+     "identity": "Zeus Research Program <research-program@localhost> | Zeus Research Program <research-program@localhost> | 2026-01-01T00:00:00Z | 2026-01-01T00:00:00Z",
+     "parents": [
+      "7b3e24a3b49a660b8936d1d52c886c077b4cf40c"
+     ],
+     "subject": "zeus research capture docs/zeus/research-captures/.json",
+     "tree": "74bcf495a483909621e2c500c676248deab491d8",
+     "type": "commit"
+    }
+   },
+   "result": {
+    "message": "capture refused: capture_path_invalid",
+    "raised": "CaptureError",
+    "reason_code": "capture_path_invalid"
+   },
+   "temporary_directories_left": []
+  },
+  "path_invalid.wrong_case_root": {
+   "checkout_unchanged": {
+    "branch": true,
+    "head": true,
+    "index": true,
+    "raw": true,
+    "status": true
+   },
+   "loose_objects_added": 0,
+   "refs": {
+    "refs/zeus/research/path/bare_json_name": {
+     "commit": "63942307fda6127686e1fe1d2cd4f2439dba8392",
+     "files": [
+      "100644 blob 0a06f209c39ab30d137e8f09a825303ea42c7d38\tdocs/GOAL.md",
+      "100644 blob f4f5b24320278b1a9c09b41bfc483f4d1296b802\tdocs/research/note.md",
+      "100644 blob 7841404b5eee7389057f4dc674d5e274f98d19d0\tdocs/zeus/research-captures/.json"
+     ],
+     "identity": "Zeus Research Program <research-program@localhost> | Zeus Research Program <research-program@localhost> | 2026-01-01T00:00:00Z | 2026-01-01T00:00:00Z",
+     "parents": [
+      "7b3e24a3b49a660b8936d1d52c886c077b4cf40c"
+     ],
+     "subject": "zeus research capture docs/zeus/research-captures/.json",
+     "tree": "74bcf495a483909621e2c500c676248deab491d8",
+     "type": "commit"
+    }
+   },
+   "result": {
+    "message": "capture refused: capture_path_invalid",
+    "raised": "CaptureError",
+    "reason_code": "capture_path_invalid"
+   },
+   "temporary_directories_left": []
+  },
+  "ref_exists.planted": {
+   "checkout_unchanged": {
+    "branch": true,
+    "head": true,
+    "index": true,
+    "raw": true,
+    "status": true
+   },
+   "loose_objects_added": 0,
+   "refs": {
+    "refs/zeus/research/rp-001/001": {
+     "commit": "7b3e24a3b49a660b8936d1d52c886c077b4cf40c",
+     "files": [
+      "100644 blob 0a06f209c39ab30d137e8f09a825303ea42c7d38\tdocs/GOAL.md",
+      "100644 blob f4f5b24320278b1a9c09b41bfc483f4d1296b802\tdocs/research/note.md"
+     ],
+     "identity": "Fixture <fixture@localhost> | Fixture <fixture@localhost> | 2026-01-01T00:00:00Z | 2026-01-01T00:00:00Z",
+     "parents": [],
+     "subject": "base",
+     "tree": "1b4ab9384b7d267b20a07d4588548e211b81921d",
+     "type": "commit"
+    }
+   },
+   "result": {
+    "message": "capture refused: capture_ref_exists",
+    "raised": "CaptureError",
+    "reason_code": "capture_ref_exists"
+   },
+   "temporary_directories_left": []
+  },
+  "ref_exists.show_ref_says_zero": {
+   "checkout_unchanged": {
+    "branch": true,
+    "head": true,
+    "index": true,
+    "raw": true,
+    "status": true
+   },
+   "loose_objects_added": 0,
+   "refs": {
+    "refs/zeus/research/rp-001/001": {
+     "commit": "7b3e24a3b49a660b8936d1d52c886c077b4cf40c",
+     "files": [
+      "100644 blob 0a06f209c39ab30d137e8f09a825303ea42c7d38\tdocs/GOAL.md",
+      "100644 blob f4f5b24320278b1a9c09b41bfc483f4d1296b802\tdocs/research/note.md"
+     ],
+     "identity": "Fixture <fixture@localhost> | Fixture <fixture@localhost> | 2026-01-01T00:00:00Z | 2026-01-01T00:00:00Z",
+     "parents": [],
+     "subject": "base",
+     "tree": "1b4ab9384b7d267b20a07d4588548e211b81921d",
+     "type": "commit"
+    }
+   },
+   "result": {
+    "message": "capture refused: capture_ref_exists",
+    "raised": "CaptureError",
+    "reason_code": "capture_ref_exists"
+   },
+   "temporary_directories_left": []
+  },
+  "ref_failed.directory_file.directory_then_file": {
+   "first": {
+    "checkout_unchanged": {
+     "branch": true,
+     "head": true,
+     "index": true,
+     "raw": true,
+     "status": true
+    },
+    "loose_objects_added": 7,
+    "refs": {
+     "refs/zeus/research/p1/2": {
+      "commit": "494e09ce77d925dd468f0b42f4f83e343d36db01",
+      "files": [
+       "100644 blob 0a06f209c39ab30d137e8f09a825303ea42c7d38\tdocs/GOAL.md",
+       "100644 blob f4f5b24320278b1a9c09b41bfc483f4d1296b802\tdocs/research/note.md",
+       "100644 blob 7841404b5eee7389057f4dc674d5e274f98d19d0\tdocs/zeus/research-captures/rp-001/001.json"
+      ],
+      "identity": "Zeus Research Program <research-program@localhost> | Zeus Research Program <research-program@localhost> | 2026-01-01T00:00:00Z | 2026-01-01T00:00:00Z",
+      "parents": [
+       "7b3e24a3b49a660b8936d1d52c886c077b4cf40c"
+      ],
+      "subject": "zeus research capture docs/zeus/research-captures/rp-001/001.json",
+      "tree": "5db9df15e8c31cae6980c5d939a0795694896467",
+      "type": "commit"
+     }
+    },
+    "result": {
+     "value": {
+      "blob": "7841404b5eee7389057f4dc674d5e274f98d19d0",
+      "bytes": 82,
+      "path": "docs/zeus/research-captures/rp-001/001.json",
+      "ref": "refs/zeus/research/p1/2",
+      "revision": "494e09ce77d925dd468f0b42f4f83e343d36db01",
+      "sha256": "05ad28e84db139c61d257d701e6c4b0e14d7fdb538fa4ee417fd29dc670afe10",
+      "tree": "5db9df15e8c31cae6980c5d939a0795694896467"
+     }
+    },
+    "temporary_directories_left": []
+   },
+   "second": {
+    "checkout_unchanged": {
+     "branch": true,
+     "head": true,
+     "index": true,
+     "raw": true,
+     "status": true
+    },
+    "loose_objects_added": 0,
+    "refs": {
+     "refs/zeus/research/p1/2": {
+      "commit": "494e09ce77d925dd468f0b42f4f83e343d36db01",
+      "files": [
+       "100644 blob 0a06f209c39ab30d137e8f09a825303ea42c7d38\tdocs/GOAL.md",
+       "100644 blob f4f5b24320278b1a9c09b41bfc483f4d1296b802\tdocs/research/note.md",
+       "100644 blob 7841404b5eee7389057f4dc674d5e274f98d19d0\tdocs/zeus/research-captures/rp-001/001.json"
+      ],
+      "identity": "Zeus Research Program <research-program@localhost> | Zeus Research Program <research-program@localhost> | 2026-01-01T00:00:00Z | 2026-01-01T00:00:00Z",
+      "parents": [
+       "7b3e24a3b49a660b8936d1d52c886c077b4cf40c"
+      ],
+      "subject": "zeus research capture docs/zeus/research-captures/rp-001/001.json",
+      "tree": "5db9df15e8c31cae6980c5d939a0795694896467",
+      "type": "commit"
+     }
+    },
+    "result": {
+     "message": "capture refused: capture_ref_failed",
+     "raised": "CaptureError",
+     "reason_code": "capture_ref_failed"
+    },
+    "temporary_directories_left": []
+   }
+  },
+  "ref_failed.directory_file.file_then_directory": {
+   "first": {
+    "checkout_unchanged": {
+     "branch": true,
+     "head": true,
+     "index": true,
+     "raw": true,
+     "status": true
+    },
+    "loose_objects_added": 7,
+    "refs": {
+     "refs/zeus/research/p1": {
+      "commit": "494e09ce77d925dd468f0b42f4f83e343d36db01",
+      "files": [
+       "100644 blob 0a06f209c39ab30d137e8f09a825303ea42c7d38\tdocs/GOAL.md",
+       "100644 blob f4f5b24320278b1a9c09b41bfc483f4d1296b802\tdocs/research/note.md",
+       "100644 blob 7841404b5eee7389057f4dc674d5e274f98d19d0\tdocs/zeus/research-captures/rp-001/001.json"
+      ],
+      "identity": "Zeus Research Program <research-program@localhost> | Zeus Research Program <research-program@localhost> | 2026-01-01T00:00:00Z | 2026-01-01T00:00:00Z",
+      "parents": [
+       "7b3e24a3b49a660b8936d1d52c886c077b4cf40c"
+      ],
+      "subject": "zeus research capture docs/zeus/research-captures/rp-001/001.json",
+      "tree": "5db9df15e8c31cae6980c5d939a0795694896467",
+      "type": "commit"
+     }
+    },
+    "result": {
+     "value": {
+      "blob": "7841404b5eee7389057f4dc674d5e274f98d19d0",
+      "bytes": 82,
+      "path": "docs/zeus/research-captures/rp-001/001.json",
+      "ref": "refs/zeus/research/p1",
+      "revision": "494e09ce77d925dd468f0b42f4f83e343d36db01",
+      "sha256": "05ad28e84db139c61d257d701e6c4b0e14d7fdb538fa4ee417fd29dc670afe10",
+      "tree": "5db9df15e8c31cae6980c5d939a0795694896467"
+     }
+    },
+    "temporary_directories_left": []
+   },
+   "second": {
+    "checkout_unchanged": {
+     "branch": true,
+     "head": true,
+     "index": true,
+     "raw": true,
+     "status": true
+    },
+    "loose_objects_added": 0,
+    "refs": {
+     "refs/zeus/research/p1": {
+      "commit": "494e09ce77d925dd468f0b42f4f83e343d36db01",
+      "files": [
+       "100644 blob 0a06f209c39ab30d137e8f09a825303ea42c7d38\tdocs/GOAL.md",
+       "100644 blob f4f5b24320278b1a9c09b41bfc483f4d1296b802\tdocs/research/note.md",
+       "100644 blob 7841404b5eee7389057f4dc674d5e274f98d19d0\tdocs/zeus/research-captures/rp-001/001.json"
+      ],
+      "identity": "Zeus Research Program <research-program@localhost> | Zeus Research Program <research-program@localhost> | 2026-01-01T00:00:00Z | 2026-01-01T00:00:00Z",
+      "parents": [
+       "7b3e24a3b49a660b8936d1d52c886c077b4cf40c"
+      ],
+      "subject": "zeus research capture docs/zeus/research-captures/rp-001/001.json",
+      "tree": "5db9df15e8c31cae6980c5d939a0795694896467",
+      "type": "commit"
+     }
+    },
+    "result": {
+     "message": "capture refused: capture_ref_failed",
+     "raised": "CaptureError",
+     "reason_code": "capture_ref_failed"
+    },
+    "temporary_directories_left": []
+   }
+  },
+  "ref_failed.git_rejects_name.at_brace": {
+   "checkout_unchanged": {
+    "branch": true,
+    "head": true,
+    "index": true,
+    "raw": true,
+    "status": true
+   },
+   "loose_objects_added": 7,
+   "refs": {},
+   "result": {
+    "message": "capture refused: capture_ref_failed",
+    "raised": "CaptureError",
+    "reason_code": "capture_ref_failed"
+   },
+   "temporary_directories_left": []
+  },
+  "ref_failed.git_rejects_name.backslash": {
+   "checkout_unchanged": {
+    "branch": true,
+    "head": true,
+    "index": true,
+    "raw": true,
+    "status": true
+   },
+   "loose_objects_added": 7,
+   "refs": {},
+   "result": {
+    "message": "capture refused: capture_ref_failed",
+    "raised": "CaptureError",
+    "reason_code": "capture_ref_failed"
+   },
+   "temporary_directories_left": []
+  },
+  "ref_failed.git_rejects_name.bracket": {
+   "checkout_unchanged": {
+    "branch": true,
+    "head": true,
+    "index": true,
+    "raw": true,
+    "status": true
+   },
+   "loose_objects_added": 7,
+   "refs": {},
+   "result": {
+    "message": "capture refused: capture_ref_failed",
+    "raised": "CaptureError",
+    "reason_code": "capture_ref_failed"
+   },
+   "temporary_directories_left": []
+  },
+  "ref_failed.git_rejects_name.caret": {
+   "checkout_unchanged": {
+    "branch": true,
+    "head": true,
+    "index": true,
+    "raw": true,
+    "status": true
+   },
+   "loose_objects_added": 7,
+   "refs": {},
+   "result": {
+    "message": "capture refused: capture_ref_failed",
+    "raised": "CaptureError",
+    "reason_code": "capture_ref_failed"
+   },
+   "temporary_directories_left": []
+  },
+  "ref_failed.git_rejects_name.colon": {
+   "checkout_unchanged": {
+    "branch": true,
+    "head": true,
+    "index": true,
+    "raw": true,
+    "status": true
+   },
+   "loose_objects_added": 7,
+   "refs": {},
+   "result": {
+    "message": "capture refused: capture_ref_failed",
+    "raised": "CaptureError",
+    "reason_code": "capture_ref_failed"
+   },
+   "temporary_directories_left": []
+  },
+  "ref_failed.git_rejects_name.control_char": {
+   "checkout_unchanged": {
+    "branch": true,
+    "head": true,
+    "index": true,
+    "raw": true,
+    "status": true
+   },
+   "loose_objects_added": 7,
+   "refs": {},
+   "result": {
+    "message": "capture refused: capture_ref_failed",
+    "raised": "CaptureError",
+    "reason_code": "capture_ref_failed"
+   },
+   "temporary_directories_left": []
+  },
+  "ref_failed.git_rejects_name.double_dot": {
+   "checkout_unchanged": {
+    "branch": true,
+    "head": true,
+    "index": true,
+    "raw": true,
+    "status": true
+   },
+   "loose_objects_added": 7,
+   "refs": {},
+   "result": {
+    "message": "capture refused: capture_ref_failed",
+    "raised": "CaptureError",
+    "reason_code": "capture_ref_failed"
+   },
+   "temporary_directories_left": []
+  },
+  "ref_failed.git_rejects_name.leading_dot": {
+   "checkout_unchanged": {
+    "branch": true,
+    "head": true,
+    "index": true,
+    "raw": true,
+    "status": true
+   },
+   "loose_objects_added": 7,
+   "refs": {},
+   "result": {
+    "message": "capture refused: capture_ref_failed",
+    "raised": "CaptureError",
+    "reason_code": "capture_ref_failed"
+   },
+   "temporary_directories_left": []
+  },
+  "ref_failed.git_rejects_name.question": {
+   "checkout_unchanged": {
+    "branch": true,
+    "head": true,
+    "index": true,
+    "raw": true,
+    "status": true
+   },
+   "loose_objects_added": 7,
+   "refs": {},
+   "result": {
+    "message": "capture refused: capture_ref_failed",
+    "raised": "CaptureError",
+    "reason_code": "capture_ref_failed"
+   },
+   "temporary_directories_left": []
+  },
+  "ref_failed.git_rejects_name.space": {
+   "checkout_unchanged": {
+    "branch": true,
+    "head": true,
+    "index": true,
+    "raw": true,
+    "status": true
+   },
+   "loose_objects_added": 7,
+   "refs": {},
+   "result": {
+    "message": "capture refused: capture_ref_failed",
+    "raised": "CaptureError",
+    "reason_code": "capture_ref_failed"
+   },
+   "temporary_directories_left": []
+  },
+  "ref_failed.git_rejects_name.star": {
+   "checkout_unchanged": {
+    "branch": true,
+    "head": true,
+    "index": true,
+    "raw": true,
+    "status": true
+   },
+   "loose_objects_added": 7,
+   "refs": {},
+   "result": {
+    "message": "capture refused: capture_ref_failed",
+    "raised": "CaptureError",
+    "reason_code": "capture_ref_failed"
+   },
+   "temporary_directories_left": []
+  },
+  "ref_failed.git_rejects_name.tilde": {
+   "checkout_unchanged": {
+    "branch": true,
+    "head": true,
+    "index": true,
+    "raw": true,
+    "status": true
+   },
+   "loose_objects_added": 7,
+   "refs": {},
+   "result": {
+    "message": "capture refused: capture_ref_failed",
+    "raised": "CaptureError",
+    "reason_code": "capture_ref_failed"
+   },
+   "temporary_directories_left": []
+  },
+  "ref_failed.git_rejects_name.trailing_dot": {
+   "checkout_unchanged": {
+    "branch": true,
+    "head": true,
+    "index": true,
+    "raw": true,
+    "status": true
+   },
+   "loose_objects_added": 7,
+   "refs": {},
+   "result": {
+    "message": "capture refused: capture_ref_failed",
+    "raised": "CaptureError",
+    "reason_code": "capture_ref_failed"
+   },
+   "temporary_directories_left": []
+  },
+  "ref_failed.update_ref_fails": {
+   "checkout_unchanged": {
+    "branch": true,
+    "head": true,
+    "index": true,
+    "raw": true,
+    "status": true
+   },
+   "loose_objects_added": 7,
+   "refs": {},
+   "result": {
+    "message": "capture refused: capture_ref_failed",
+    "raised": "CaptureError",
+    "reason_code": "capture_ref_failed"
+   },
+   "temporary_directories_left": []
+  },
+  "ref_invalid.dot_segment": {
+   "checkout_unchanged": {
+    "branch": true,
+    "head": true,
+    "index": true,
+    "raw": true,
+    "status": true
+   },
+   "loose_objects_added": 0,
+   "refs": {
+    "refs/zeus/research/path/bare_json_name": {
+     "commit": "63942307fda6127686e1fe1d2cd4f2439dba8392",
+     "files": [
+      "100644 blob 0a06f209c39ab30d137e8f09a825303ea42c7d38\tdocs/GOAL.md",
+      "100644 blob f4f5b24320278b1a9c09b41bfc483f4d1296b802\tdocs/research/note.md",
+      "100644 blob 7841404b5eee7389057f4dc674d5e274f98d19d0\tdocs/zeus/research-captures/.json"
+     ],
+     "identity": "Zeus Research Program <research-program@localhost> | Zeus Research Program <research-program@localhost> | 2026-01-01T00:00:00Z | 2026-01-01T00:00:00Z",
+     "parents": [
+      "7b3e24a3b49a660b8936d1d52c886c077b4cf40c"
+     ],
+     "subject": "zeus research capture docs/zeus/research-captures/.json",
+     "tree": "74bcf495a483909621e2c500c676248deab491d8",
+     "type": "commit"
+    },
+    "refs/zeus/research/path/trailing_dot_segment": {
+     "commit": "f8d6ba7a19bc1f6b44d92d4e3f49acc0cd29b5eb",
+     "files": [
+      "100644 blob 0a06f209c39ab30d137e8f09a825303ea42c7d38\tdocs/GOAL.md",
+      "100644 blob f4f5b24320278b1a9c09b41bfc483f4d1296b802\tdocs/research/note.md",
+      "100644 blob 7841404b5eee7389057f4dc674d5e274f98d19d0\tdocs/zeus/research-captures/x./1.json"
+     ],
+     "identity": "Zeus Research Program <research-program@localhost> | Zeus Research Program <research-program@localhost> | 2026-01-01T00:00:00Z | 2026-01-01T00:00:00Z",
+     "parents": [
+      "7b3e24a3b49a660b8936d1d52c886c077b4cf40c"
+     ],
+     "subject": "zeus research capture docs/zeus/research-captures/x./1.json",
+     "tree": "868e3c192060aca6c3f519a8c27e1cee6b411117",
+     "type": "commit"
+    }
+   },
+   "result": {
+    "message": "capture refused: capture_ref_invalid",
+    "raised": "CaptureError",
+    "reason_code": "capture_ref_invalid"
+   },
+   "temporary_directories_left": []
+  },
+  "ref_invalid.dotdot_segment": {
+   "checkout_unchanged": {
+    "branch": true,
+    "head": true,
+    "index": true,
+    "raw": true,
+    "status": true
+   },
+   "loose_objects_added": 0,
+   "refs": {
+    "refs/zeus/research/path/bare_json_name": {
+     "commit": "63942307fda6127686e1fe1d2cd4f2439dba8392",
+     "files": [
+      "100644 blob 0a06f209c39ab30d137e8f09a825303ea42c7d38\tdocs/GOAL.md",
+      "100644 blob f4f5b24320278b1a9c09b41bfc483f4d1296b802\tdocs/research/note.md",
+      "100644 blob 7841404b5eee7389057f4dc674d5e274f98d19d0\tdocs/zeus/research-captures/.json"
+     ],
+     "identity": "Zeus Research Program <research-program@localhost> | Zeus Research Program <research-program@localhost> | 2026-01-01T00:00:00Z | 2026-01-01T00:00:00Z",
+     "parents": [
+      "7b3e24a3b49a660b8936d1d52c886c077b4cf40c"
+     ],
+     "subject": "zeus research capture docs/zeus/research-captures/.json",
+     "tree": "74bcf495a483909621e2c500c676248deab491d8",
+     "type": "commit"
+    },
+    "refs/zeus/research/path/trailing_dot_segment": {
+     "commit": "f8d6ba7a19bc1f6b44d92d4e3f49acc0cd29b5eb",
+     "files": [
+      "100644 blob 0a06f209c39ab30d137e8f09a825303ea42c7d38\tdocs/GOAL.md",
+      "100644 blob f4f5b24320278b1a9c09b41bfc483f4d1296b802\tdocs/research/note.md",
+      "100644 blob 7841404b5eee7389057f4dc674d5e274f98d19d0\tdocs/zeus/research-captures/x./1.json"
+     ],
+     "identity": "Zeus Research Program <research-program@localhost> | Zeus Research Program <research-program@localhost> | 2026-01-01T00:00:00Z | 2026-01-01T00:00:00Z",
+     "parents": [
+      "7b3e24a3b49a660b8936d1d52c886c077b4cf40c"
+     ],
+     "subject": "zeus research capture docs/zeus/research-captures/x./1.json",
+     "tree": "868e3c192060aca6c3f519a8c27e1cee6b411117",
+     "type": "commit"
+    }
+   },
+   "result": {
+    "message": "capture refused: capture_ref_invalid",
+    "raised": "CaptureError",
+    "reason_code": "capture_ref_invalid"
+   },
+   "temporary_directories_left": []
+  },
+  "ref_invalid.empty": {
+   "checkout_unchanged": {
+    "branch": true,
+    "head": true,
+    "index": true,
+    "raw": true,
+    "status": true
+   },
+   "loose_objects_added": 0,
+   "refs": {
+    "refs/zeus/research/path/bare_json_name": {
+     "commit": "63942307fda6127686e1fe1d2cd4f2439dba8392",
+     "files": [
+      "100644 blob 0a06f209c39ab30d137e8f09a825303ea42c7d38\tdocs/GOAL.md",
+      "100644 blob f4f5b24320278b1a9c09b41bfc483f4d1296b802\tdocs/research/note.md",
+      "100644 blob 7841404b5eee7389057f4dc674d5e274f98d19d0\tdocs/zeus/research-captures/.json"
+     ],
+     "identity": "Zeus Research Program <research-program@localhost> | Zeus Research Program <research-program@localhost> | 2026-01-01T00:00:00Z | 2026-01-01T00:00:00Z",
+     "parents": [
+      "7b3e24a3b49a660b8936d1d52c886c077b4cf40c"
+     ],
+     "subject": "zeus research capture docs/zeus/research-captures/.json",
+     "tree": "74bcf495a483909621e2c500c676248deab491d8",
+     "type": "commit"
+    },
+    "refs/zeus/research/path/trailing_dot_segment": {
+     "commit": "f8d6ba7a19bc1f6b44d92d4e3f49acc0cd29b5eb",
+     "files": [
+      "100644 blob 0a06f209c39ab30d137e8f09a825303ea42c7d38\tdocs/GOAL.md",
+      "100644 blob f4f5b24320278b1a9c09b41bfc483f4d1296b802\tdocs/research/note.md",
+      "100644 blob 7841404b5eee7389057f4dc674d5e274f98d19d0\tdocs/zeus/research-captures/x./1.json"
+     ],
+     "identity": "Zeus Research Program <research-program@localhost> | Zeus Research Program <research-program@localhost> | 2026-01-01T00:00:00Z | 2026-01-01T00:00:00Z",
+     "parents": [
+      "7b3e24a3b49a660b8936d1d52c886c077b4cf40c"
+     ],
+     "subject": "zeus research capture docs/zeus/research-captures/x./1.json",
+     "tree": "868e3c192060aca6c3f519a8c27e1cee6b411117",
+     "type": "commit"
+    }
+   },
+   "result": {
+    "message": "capture refused: capture_ref_invalid",
+    "raised": "CaptureError",
+    "reason_code": "capture_ref_invalid"
+   },
+   "temporary_directories_left": []
+  },
+  "ref_invalid.empty_segment": {
+   "checkout_unchanged": {
+    "branch": true,
+    "head": true,
+    "index": true,
+    "raw": true,
+    "status": true
+   },
+   "loose_objects_added": 0,
+   "refs": {
+    "refs/zeus/research/path/bare_json_name": {
+     "commit": "63942307fda6127686e1fe1d2cd4f2439dba8392",
+     "files": [
+      "100644 blob 0a06f209c39ab30d137e8f09a825303ea42c7d38\tdocs/GOAL.md",
+      "100644 blob f4f5b24320278b1a9c09b41bfc483f4d1296b802\tdocs/research/note.md",
+      "100644 blob 7841404b5eee7389057f4dc674d5e274f98d19d0\tdocs/zeus/research-captures/.json"
+     ],
+     "identity": "Zeus Research Program <research-program@localhost> | Zeus Research Program <research-program@localhost> | 2026-01-01T00:00:00Z | 2026-01-01T00:00:00Z",
+     "parents": [
+      "7b3e24a3b49a660b8936d1d52c886c077b4cf40c"
+     ],
+     "subject": "zeus research capture docs/zeus/research-captures/.json",
+     "tree": "74bcf495a483909621e2c500c676248deab491d8",
+     "type": "commit"
+    },
+    "refs/zeus/research/path/trailing_dot_segment": {
+     "commit": "f8d6ba7a19bc1f6b44d92d4e3f49acc0cd29b5eb",
+     "files": [
+      "100644 blob 0a06f209c39ab30d137e8f09a825303ea42c7d38\tdocs/GOAL.md",
+      "100644 blob f4f5b24320278b1a9c09b41bfc483f4d1296b802\tdocs/research/note.md",
+      "100644 blob 7841404b5eee7389057f4dc674d5e274f98d19d0\tdocs/zeus/research-captures/x./1.json"
+     ],
+     "identity": "Zeus Research Program <research-program@localhost> | Zeus Research Program <research-program@localhost> | 2026-01-01T00:00:00Z | 2026-01-01T00:00:00Z",
+     "parents": [
+      "7b3e24a3b49a660b8936d1d52c886c077b4cf40c"
+     ],
+     "subject": "zeus research capture docs/zeus/research-captures/x./1.json",
+     "tree": "868e3c192060aca6c3f519a8c27e1cee6b411117",
+     "type": "commit"
+    }
+   },
+   "result": {
+    "message": "capture refused: capture_ref_invalid",
+    "raised": "CaptureError",
+    "reason_code": "capture_ref_invalid"
+   },
+   "temporary_directories_left": []
+  },
+  "ref_invalid.head": {
+   "checkout_unchanged": {
+    "branch": true,
+    "head": true,
+    "index": true,
+    "raw": true,
+    "status": true
+   },
+   "loose_objects_added": 0,
+   "refs": {
+    "refs/zeus/research/path/bare_json_name": {
+     "commit": "63942307fda6127686e1fe1d2cd4f2439dba8392",
+     "files": [
+      "100644 blob 0a06f209c39ab30d137e8f09a825303ea42c7d38\tdocs/GOAL.md",
+      "100644 blob f4f5b24320278b1a9c09b41bfc483f4d1296b802\tdocs/research/note.md",
+      "100644 blob 7841404b5eee7389057f4dc674d5e274f98d19d0\tdocs/zeus/research-captures/.json"
+     ],
+     "identity": "Zeus Research Program <research-program@localhost> | Zeus Research Program <research-program@localhost> | 2026-01-01T00:00:00Z | 2026-01-01T00:00:00Z",
+     "parents": [
+      "7b3e24a3b49a660b8936d1d52c886c077b4cf40c"
+     ],
+     "subject": "zeus research capture docs/zeus/research-captures/.json",
+     "tree": "74bcf495a483909621e2c500c676248deab491d8",
+     "type": "commit"
+    },
+    "refs/zeus/research/path/trailing_dot_segment": {
+     "commit": "f8d6ba7a19bc1f6b44d92d4e3f49acc0cd29b5eb",
+     "files": [
+      "100644 blob 0a06f209c39ab30d137e8f09a825303ea42c7d38\tdocs/GOAL.md",
+      "100644 blob f4f5b24320278b1a9c09b41bfc483f4d1296b802\tdocs/research/note.md",
+      "100644 blob 7841404b5eee7389057f4dc674d5e274f98d19d0\tdocs/zeus/research-captures/x./1.json"
+     ],
+     "identity": "Zeus Research Program <research-program@localhost> | Zeus Research Program <research-program@localhost> | 2026-01-01T00:00:00Z | 2026-01-01T00:00:00Z",
+     "parents": [
+      "7b3e24a3b49a660b8936d1d52c886c077b4cf40c"
+     ],
+     "subject": "zeus research capture docs/zeus/research-captures/x./1.json",
+     "tree": "868e3c192060aca6c3f519a8c27e1cee6b411117",
+     "type": "commit"
+    }
+   },
+   "result": {
+    "message": "capture refused: capture_ref_invalid",
+    "raised": "CaptureError",
+    "reason_code": "capture_ref_invalid"
+   },
+   "temporary_directories_left": []
+  },
+  "ref_invalid.heads": {
+   "checkout_unchanged": {
+    "branch": true,
+    "head": true,
+    "index": true,
+    "raw": true,
+    "status": true
+   },
+   "loose_objects_added": 0,
+   "refs": {
+    "refs/zeus/research/path/bare_json_name": {
+     "commit": "63942307fda6127686e1fe1d2cd4f2439dba8392",
+     "files": [
+      "100644 blob 0a06f209c39ab30d137e8f09a825303ea42c7d38\tdocs/GOAL.md",
+      "100644 blob f4f5b24320278b1a9c09b41bfc483f4d1296b802\tdocs/research/note.md",
+      "100644 blob 7841404b5eee7389057f4dc674d5e274f98d19d0\tdocs/zeus/research-captures/.json"
+     ],
+     "identity": "Zeus Research Program <research-program@localhost> | Zeus Research Program <research-program@localhost> | 2026-01-01T00:00:00Z | 2026-01-01T00:00:00Z",
+     "parents": [
+      "7b3e24a3b49a660b8936d1d52c886c077b4cf40c"
+     ],
+     "subject": "zeus research capture docs/zeus/research-captures/.json",
+     "tree": "74bcf495a483909621e2c500c676248deab491d8",
+     "type": "commit"
+    },
+    "refs/zeus/research/path/trailing_dot_segment": {
+     "commit": "f8d6ba7a19bc1f6b44d92d4e3f49acc0cd29b5eb",
+     "files": [
+      "100644 blob 0a06f209c39ab30d137e8f09a825303ea42c7d38\tdocs/GOAL.md",
+      "100644 blob f4f5b24320278b1a9c09b41bfc483f4d1296b802\tdocs/research/note.md",
+      "100644 blob 7841404b5eee7389057f4dc674d5e274f98d19d0\tdocs/zeus/research-captures/x./1.json"
+     ],
+     "identity": "Zeus Research Program <research-program@localhost> | Zeus Research Program <research-program@localhost> | 2026-01-01T00:00:00Z | 2026-01-01T00:00:00Z",
+     "parents": [
+      "7b3e24a3b49a660b8936d1d52c886c077b4cf40c"
+     ],
+     "subject": "zeus research capture docs/zeus/research-captures/x./1.json",
+     "tree": "868e3c192060aca6c3f519a8c27e1cee6b411117",
+     "type": "commit"
+    }
+   },
+   "result": {
+    "message": "capture refused: capture_ref_invalid",
+    "raised": "CaptureError",
+    "reason_code": "capture_ref_invalid"
+   },
+   "temporary_directories_left": []
+  },
+  "ref_invalid.lock_in_middle": {
+   "checkout_unchanged": {
+    "branch": true,
+    "head": true,
+    "index": true,
+    "raw": true,
+    "status": true
+   },
+   "loose_objects_added": 0,
+   "refs": {
+    "refs/zeus/research/path/bare_json_name": {
+     "commit": "63942307fda6127686e1fe1d2cd4f2439dba8392",
+     "files": [
+      "100644 blob 0a06f209c39ab30d137e8f09a825303ea42c7d38\tdocs/GOAL.md",
+      "100644 blob f4f5b24320278b1a9c09b41bfc483f4d1296b802\tdocs/research/note.md",
+      "100644 blob 7841404b5eee7389057f4dc674d5e274f98d19d0\tdocs/zeus/research-captures/.json"
+     ],
+     "identity": "Zeus Research Program <research-program@localhost> | Zeus Research Program <research-program@localhost> | 2026-01-01T00:00:00Z | 2026-01-01T00:00:00Z",
+     "parents": [
+      "7b3e24a3b49a660b8936d1d52c886c077b4cf40c"
+     ],
+     "subject": "zeus research capture docs/zeus/research-captures/.json",
+     "tree": "74bcf495a483909621e2c500c676248deab491d8",
+     "type": "commit"
+    },
+    "refs/zeus/research/path/trailing_dot_segment": {
+     "commit": "f8d6ba7a19bc1f6b44d92d4e3f49acc0cd29b5eb",
+     "files": [
+      "100644 blob 0a06f209c39ab30d137e8f09a825303ea42c7d38\tdocs/GOAL.md",
+      "100644 blob f4f5b24320278b1a9c09b41bfc483f4d1296b802\tdocs/research/note.md",
+      "100644 blob 7841404b5eee7389057f4dc674d5e274f98d19d0\tdocs/zeus/research-captures/x./1.json"
+     ],
+     "identity": "Zeus Research Program <research-program@localhost> | Zeus Research Program <research-program@localhost> | 2026-01-01T00:00:00Z | 2026-01-01T00:00:00Z",
+     "parents": [
+      "7b3e24a3b49a660b8936d1d52c886c077b4cf40c"
+     ],
+     "subject": "zeus research capture docs/zeus/research-captures/x./1.json",
+     "tree": "868e3c192060aca6c3f519a8c27e1cee6b411117",
+     "type": "commit"
+    }
+   },
+   "result": {
+    "message": "capture refused: capture_ref_invalid",
+    "raised": "CaptureError",
+    "reason_code": "capture_ref_invalid"
+   },
+   "temporary_directories_left": []
+  },
+  "ref_invalid.lock_suffix": {
+   "checkout_unchanged": {
+    "branch": true,
+    "head": true,
+    "index": true,
+    "raw": true,
+    "status": true
+   },
+   "loose_objects_added": 0,
+   "refs": {
+    "refs/zeus/research/path/bare_json_name": {
+     "commit": "63942307fda6127686e1fe1d2cd4f2439dba8392",
+     "files": [
+      "100644 blob 0a06f209c39ab30d137e8f09a825303ea42c7d38\tdocs/GOAL.md",
+      "100644 blob f4f5b24320278b1a9c09b41bfc483f4d1296b802\tdocs/research/note.md",
+      "100644 blob 7841404b5eee7389057f4dc674d5e274f98d19d0\tdocs/zeus/research-captures/.json"
+     ],
+     "identity": "Zeus Research Program <research-program@localhost> | Zeus Research Program <research-program@localhost> | 2026-01-01T00:00:00Z | 2026-01-01T00:00:00Z",
+     "parents": [
+      "7b3e24a3b49a660b8936d1d52c886c077b4cf40c"
+     ],
+     "subject": "zeus research capture docs/zeus/research-captures/.json",
+     "tree": "74bcf495a483909621e2c500c676248deab491d8",
+     "type": "commit"
+    },
+    "refs/zeus/research/path/trailing_dot_segment": {
+     "commit": "f8d6ba7a19bc1f6b44d92d4e3f49acc0cd29b5eb",
+     "files": [
+      "100644 blob 0a06f209c39ab30d137e8f09a825303ea42c7d38\tdocs/GOAL.md",
+      "100644 blob f4f5b24320278b1a9c09b41bfc483f4d1296b802\tdocs/research/note.md",
+      "100644 blob 7841404b5eee7389057f4dc674d5e274f98d19d0\tdocs/zeus/research-captures/x./1.json"
+     ],
+     "identity": "Zeus Research Program <research-program@localhost> | Zeus Research Program <research-program@localhost> | 2026-01-01T00:00:00Z | 2026-01-01T00:00:00Z",
+     "parents": [
+      "7b3e24a3b49a660b8936d1d52c886c077b4cf40c"
+     ],
+     "subject": "zeus research capture docs/zeus/research-captures/x./1.json",
+     "tree": "868e3c192060aca6c3f519a8c27e1cee6b411117",
+     "type": "commit"
+    }
+   },
+   "result": {
+    "message": "capture refused: capture_ref_invalid",
+    "raised": "CaptureError",
+    "reason_code": "capture_ref_invalid"
+   },
+   "temporary_directories_left": []
+  },
+  "ref_invalid.prefix_lookalike": {
+   "checkout_unchanged": {
+    "branch": true,
+    "head": true,
+    "index": true,
+    "raw": true,
+    "status": true
+   },
+   "loose_objects_added": 0,
+   "refs": {
+    "refs/zeus/research/path/bare_json_name": {
+     "commit": "63942307fda6127686e1fe1d2cd4f2439dba8392",
+     "files": [
+      "100644 blob 0a06f209c39ab30d137e8f09a825303ea42c7d38\tdocs/GOAL.md",
+      "100644 blob f4f5b24320278b1a9c09b41bfc483f4d1296b802\tdocs/research/note.md",
+      "100644 blob 7841404b5eee7389057f4dc674d5e274f98d19d0\tdocs/zeus/research-captures/.json"
+     ],
+     "identity": "Zeus Research Program <research-program@localhost> | Zeus Research Program <research-program@localhost> | 2026-01-01T00:00:00Z | 2026-01-01T00:00:00Z",
+     "parents": [
+      "7b3e24a3b49a660b8936d1d52c886c077b4cf40c"
+     ],
+     "subject": "zeus research capture docs/zeus/research-captures/.json",
+     "tree": "74bcf495a483909621e2c500c676248deab491d8",
+     "type": "commit"
+    },
+    "refs/zeus/research/path/trailing_dot_segment": {
+     "commit": "f8d6ba7a19bc1f6b44d92d4e3f49acc0cd29b5eb",
+     "files": [
+      "100644 blob 0a06f209c39ab30d137e8f09a825303ea42c7d38\tdocs/GOAL.md",
+      "100644 blob f4f5b24320278b1a9c09b41bfc483f4d1296b802\tdocs/research/note.md",
+      "100644 blob 7841404b5eee7389057f4dc674d5e274f98d19d0\tdocs/zeus/research-captures/x./1.json"
+     ],
+     "identity": "Zeus Research Program <research-program@localhost> | Zeus Research Program <research-program@localhost> | 2026-01-01T00:00:00Z | 2026-01-01T00:00:00Z",
+     "parents": [
+      "7b3e24a3b49a660b8936d1d52c886c077b4cf40c"
+     ],
+     "subject": "zeus research capture docs/zeus/research-captures/x./1.json",
+     "tree": "868e3c192060aca6c3f519a8c27e1cee6b411117",
+     "type": "commit"
+    }
+   },
+   "result": {
+    "message": "capture refused: capture_ref_invalid",
+    "raised": "CaptureError",
+    "reason_code": "capture_ref_invalid"
+   },
+   "temporary_directories_left": []
+  },
+  "ref_invalid.prefix_only": {
+   "checkout_unchanged": {
+    "branch": true,
+    "head": true,
+    "index": true,
+    "raw": true,
+    "status": true
+   },
+   "loose_objects_added": 0,
+   "refs": {
+    "refs/zeus/research/path/bare_json_name": {
+     "commit": "63942307fda6127686e1fe1d2cd4f2439dba8392",
+     "files": [
+      "100644 blob 0a06f209c39ab30d137e8f09a825303ea42c7d38\tdocs/GOAL.md",
+      "100644 blob f4f5b24320278b1a9c09b41bfc483f4d1296b802\tdocs/research/note.md",
+      "100644 blob 7841404b5eee7389057f4dc674d5e274f98d19d0\tdocs/zeus/research-captures/.json"
+     ],
+     "identity": "Zeus Research Program <research-program@localhost> | Zeus Research Program <research-program@localhost> | 2026-01-01T00:00:00Z | 2026-01-01T00:00:00Z",
+     "parents": [
+      "7b3e24a3b49a660b8936d1d52c886c077b4cf40c"
+     ],
+     "subject": "zeus research capture docs/zeus/research-captures/.json",
+     "tree": "74bcf495a483909621e2c500c676248deab491d8",
+     "type": "commit"
+    },
+    "refs/zeus/research/path/trailing_dot_segment": {
+     "commit": "f8d6ba7a19bc1f6b44d92d4e3f49acc0cd29b5eb",
+     "files": [
+      "100644 blob 0a06f209c39ab30d137e8f09a825303ea42c7d38\tdocs/GOAL.md",
+      "100644 blob f4f5b24320278b1a9c09b41bfc483f4d1296b802\tdocs/research/note.md",
+      "100644 blob 7841404b5eee7389057f4dc674d5e274f98d19d0\tdocs/zeus/research-captures/x./1.json"
+     ],
+     "identity": "Zeus Research Program <research-program@localhost> | Zeus Research Program <research-program@localhost> | 2026-01-01T00:00:00Z | 2026-01-01T00:00:00Z",
+     "parents": [
+      "7b3e24a3b49a660b8936d1d52c886c077b4cf40c"
+     ],
+     "subject": "zeus research capture docs/zeus/research-captures/x./1.json",
+     "tree": "868e3c192060aca6c3f519a8c27e1cee6b411117",
+     "type": "commit"
+    }
+   },
+   "result": {
+    "message": "capture refused: capture_ref_invalid",
+    "raised": "CaptureError",
+    "reason_code": "capture_ref_invalid"
+   },
+   "temporary_directories_left": []
+  },
+  "ref_invalid.prefix_without_slash": {
+   "checkout_unchanged": {
+    "branch": true,
+    "head": true,
+    "index": true,
+    "raw": true,
+    "status": true
+   },
+   "loose_objects_added": 0,
+   "refs": {
+    "refs/zeus/research/path/bare_json_name": {
+     "commit": "63942307fda6127686e1fe1d2cd4f2439dba8392",
+     "files": [
+      "100644 blob 0a06f209c39ab30d137e8f09a825303ea42c7d38\tdocs/GOAL.md",
+      "100644 blob f4f5b24320278b1a9c09b41bfc483f4d1296b802\tdocs/research/note.md",
+      "100644 blob 7841404b5eee7389057f4dc674d5e274f98d19d0\tdocs/zeus/research-captures/.json"
+     ],
+     "identity": "Zeus Research Program <research-program@localhost> | Zeus Research Program <research-program@localhost> | 2026-01-01T00:00:00Z | 2026-01-01T00:00:00Z",
+     "parents": [
+      "7b3e24a3b49a660b8936d1d52c886c077b4cf40c"
+     ],
+     "subject": "zeus research capture docs/zeus/research-captures/.json",
+     "tree": "74bcf495a483909621e2c500c676248deab491d8",
+     "type": "commit"
+    },
+    "refs/zeus/research/path/trailing_dot_segment": {
+     "commit": "f8d6ba7a19bc1f6b44d92d4e3f49acc0cd29b5eb",
+     "files": [
+      "100644 blob 0a06f209c39ab30d137e8f09a825303ea42c7d38\tdocs/GOAL.md",
+      "100644 blob f4f5b24320278b1a9c09b41bfc483f4d1296b802\tdocs/research/note.md",
+      "100644 blob 7841404b5eee7389057f4dc674d5e274f98d19d0\tdocs/zeus/research-captures/x./1.json"
+     ],
+     "identity": "Zeus Research Program <research-program@localhost> | Zeus Research Program <research-program@localhost> | 2026-01-01T00:00:00Z | 2026-01-01T00:00:00Z",
+     "parents": [
+      "7b3e24a3b49a660b8936d1d52c886c077b4cf40c"
+     ],
+     "subject": "zeus research capture docs/zeus/research-captures/x./1.json",
+     "tree": "868e3c192060aca6c3f519a8c27e1cee6b411117",
+     "type": "commit"
+    }
+   },
+   "result": {
+    "message": "capture refused: capture_ref_invalid",
+    "raised": "CaptureError",
+    "reason_code": "capture_ref_invalid"
+   },
+   "temporary_directories_left": []
+  },
+  "ref_invalid.tags": {
+   "checkout_unchanged": {
+    "branch": true,
+    "head": true,
+    "index": true,
+    "raw": true,
+    "status": true
+   },
+   "loose_objects_added": 0,
+   "refs": {
+    "refs/zeus/research/path/bare_json_name": {
+     "commit": "63942307fda6127686e1fe1d2cd4f2439dba8392",
+     "files": [
+      "100644 blob 0a06f209c39ab30d137e8f09a825303ea42c7d38\tdocs/GOAL.md",
+      "100644 blob f4f5b24320278b1a9c09b41bfc483f4d1296b802\tdocs/research/note.md",
+      "100644 blob 7841404b5eee7389057f4dc674d5e274f98d19d0\tdocs/zeus/research-captures/.json"
+     ],
+     "identity": "Zeus Research Program <research-program@localhost> | Zeus Research Program <research-program@localhost> | 2026-01-01T00:00:00Z | 2026-01-01T00:00:00Z",
+     "parents": [
+      "7b3e24a3b49a660b8936d1d52c886c077b4cf40c"
+     ],
+     "subject": "zeus research capture docs/zeus/research-captures/.json",
+     "tree": "74bcf495a483909621e2c500c676248deab491d8",
+     "type": "commit"
+    },
+    "refs/zeus/research/path/trailing_dot_segment": {
+     "commit": "f8d6ba7a19bc1f6b44d92d4e3f49acc0cd29b5eb",
+     "files": [
+      "100644 blob 0a06f209c39ab30d137e8f09a825303ea42c7d38\tdocs/GOAL.md",
+      "100644 blob f4f5b24320278b1a9c09b41bfc483f4d1296b802\tdocs/research/note.md",
+      "100644 blob 7841404b5eee7389057f4dc674d5e274f98d19d0\tdocs/zeus/research-captures/x./1.json"
+     ],
+     "identity": "Zeus Research Program <research-program@localhost> | Zeus Research Program <research-program@localhost> | 2026-01-01T00:00:00Z | 2026-01-01T00:00:00Z",
+     "parents": [
+      "7b3e24a3b49a660b8936d1d52c886c077b4cf40c"
+     ],
+     "subject": "zeus research capture docs/zeus/research-captures/x./1.json",
+     "tree": "868e3c192060aca6c3f519a8c27e1cee6b411117",
+     "type": "commit"
+    }
+   },
+   "result": {
+    "message": "capture refused: capture_ref_invalid",
+    "raised": "CaptureError",
+    "reason_code": "capture_ref_invalid"
+   },
+   "temporary_directories_left": []
+  },
+  "ref_invalid.trailing_slash": {
+   "checkout_unchanged": {
+    "branch": true,
+    "head": true,
+    "index": true,
+    "raw": true,
+    "status": true
+   },
+   "loose_objects_added": 0,
+   "refs": {
+    "refs/zeus/research/path/bare_json_name": {
+     "commit": "63942307fda6127686e1fe1d2cd4f2439dba8392",
+     "files": [
+      "100644 blob 0a06f209c39ab30d137e8f09a825303ea42c7d38\tdocs/GOAL.md",
+      "100644 blob f4f5b24320278b1a9c09b41bfc483f4d1296b802\tdocs/research/note.md",
+      "100644 blob 7841404b5eee7389057f4dc674d5e274f98d19d0\tdocs/zeus/research-captures/.json"
+     ],
+     "identity": "Zeus Research Program <research-program@localhost> | Zeus Research Program <research-program@localhost> | 2026-01-01T00:00:00Z | 2026-01-01T00:00:00Z",
+     "parents": [
+      "7b3e24a3b49a660b8936d1d52c886c077b4cf40c"
+     ],
+     "subject": "zeus research capture docs/zeus/research-captures/.json",
+     "tree": "74bcf495a483909621e2c500c676248deab491d8",
+     "type": "commit"
+    },
+    "refs/zeus/research/path/trailing_dot_segment": {
+     "commit": "f8d6ba7a19bc1f6b44d92d4e3f49acc0cd29b5eb",
+     "files": [
+      "100644 blob 0a06f209c39ab30d137e8f09a825303ea42c7d38\tdocs/GOAL.md",
+      "100644 blob f4f5b24320278b1a9c09b41bfc483f4d1296b802\tdocs/research/note.md",
+      "100644 blob 7841404b5eee7389057f4dc674d5e274f98d19d0\tdocs/zeus/research-captures/x./1.json"
+     ],
+     "identity": "Zeus Research Program <research-program@localhost> | Zeus Research Program <research-program@localhost> | 2026-01-01T00:00:00Z | 2026-01-01T00:00:00Z",
+     "parents": [
+      "7b3e24a3b49a660b8936d1d52c886c077b4cf40c"
+     ],
+     "subject": "zeus research capture docs/zeus/research-captures/x./1.json",
+     "tree": "868e3c192060aca6c3f519a8c27e1cee6b411117",
+     "type": "commit"
+    }
+   },
+   "result": {
+    "message": "capture refused: capture_ref_invalid",
+    "raised": "CaptureError",
+    "reason_code": "capture_ref_invalid"
+   },
+   "temporary_directories_left": []
+  },
+  "ref_invalid.zeus_other": {
+   "checkout_unchanged": {
+    "branch": true,
+    "head": true,
+    "index": true,
+    "raw": true,
+    "status": true
+   },
+   "loose_objects_added": 0,
+   "refs": {
+    "refs/zeus/research/path/bare_json_name": {
+     "commit": "63942307fda6127686e1fe1d2cd4f2439dba8392",
+     "files": [
+      "100644 blob 0a06f209c39ab30d137e8f09a825303ea42c7d38\tdocs/GOAL.md",
+      "100644 blob f4f5b24320278b1a9c09b41bfc483f4d1296b802\tdocs/research/note.md",
+      "100644 blob 7841404b5eee7389057f4dc674d5e274f98d19d0\tdocs/zeus/research-captures/.json"
+     ],
+     "identity": "Zeus Research Program <research-program@localhost> | Zeus Research Program <research-program@localhost> | 2026-01-01T00:00:00Z | 2026-01-01T00:00:00Z",
+     "parents": [
+      "7b3e24a3b49a660b8936d1d52c886c077b4cf40c"
+     ],
+     "subject": "zeus research capture docs/zeus/research-captures/.json",
+     "tree": "74bcf495a483909621e2c500c676248deab491d8",
+     "type": "commit"
+    },
+    "refs/zeus/research/path/trailing_dot_segment": {
+     "commit": "f8d6ba7a19bc1f6b44d92d4e3f49acc0cd29b5eb",
+     "files": [
+      "100644 blob 0a06f209c39ab30d137e8f09a825303ea42c7d38\tdocs/GOAL.md",
+      "100644 blob f4f5b24320278b1a9c09b41bfc483f4d1296b802\tdocs/research/note.md",
+      "100644 blob 7841404b5eee7389057f4dc674d5e274f98d19d0\tdocs/zeus/research-captures/x./1.json"
+     ],
+     "identity": "Zeus Research Program <research-program@localhost> | Zeus Research Program <research-program@localhost> | 2026-01-01T00:00:00Z | 2026-01-01T00:00:00Z",
+     "parents": [
+      "7b3e24a3b49a660b8936d1d52c886c077b4cf40c"
+     ],
+     "subject": "zeus research capture docs/zeus/research-captures/x./1.json",
+     "tree": "868e3c192060aca6c3f519a8c27e1cee6b411117",
+     "type": "commit"
+    }
+   },
+   "result": {
+    "message": "capture refused: capture_ref_invalid",
+    "raised": "CaptureError",
+    "reason_code": "capture_ref_invalid"
+   },
+   "temporary_directories_left": []
+  },
+  "too_large.checked_before_any_git_call": {
+   "checkout_unchanged": {
+    "branch": true,
+    "head": true,
+    "index": true,
+    "raw": true,
+    "status": true
+   },
+   "loose_objects_added": 0,
+   "refs": {
+    "refs/zeus/research/path/bare_json_name": {
+     "commit": "63942307fda6127686e1fe1d2cd4f2439dba8392",
+     "files": [
+      "100644 blob 0a06f209c39ab30d137e8f09a825303ea42c7d38\tdocs/GOAL.md",
+      "100644 blob f4f5b24320278b1a9c09b41bfc483f4d1296b802\tdocs/research/note.md",
+      "100644 blob 7841404b5eee7389057f4dc674d5e274f98d19d0\tdocs/zeus/research-captures/.json"
+     ],
+     "identity": "Zeus Research Program <research-program@localhost> | Zeus Research Program <research-program@localhost> | 2026-01-01T00:00:00Z | 2026-01-01T00:00:00Z",
+     "parents": [
+      "7b3e24a3b49a660b8936d1d52c886c077b4cf40c"
+     ],
+     "subject": "zeus research capture docs/zeus/research-captures/.json",
+     "tree": "74bcf495a483909621e2c500c676248deab491d8",
+     "type": "commit"
+    },
+    "refs/zeus/research/path/trailing_dot_segment": {
+     "commit": "f8d6ba7a19bc1f6b44d92d4e3f49acc0cd29b5eb",
+     "files": [
+      "100644 blob 0a06f209c39ab30d137e8f09a825303ea42c7d38\tdocs/GOAL.md",
+      "100644 blob f4f5b24320278b1a9c09b41bfc483f4d1296b802\tdocs/research/note.md",
+      "100644 blob 7841404b5eee7389057f4dc674d5e274f98d19d0\tdocs/zeus/research-captures/x./1.json"
+     ],
+     "identity": "Zeus Research Program <research-program@localhost> | Zeus Research Program <research-program@localhost> | 2026-01-01T00:00:00Z | 2026-01-01T00:00:00Z",
+     "parents": [
+      "7b3e24a3b49a660b8936d1d52c886c077b4cf40c"
+     ],
+     "subject": "zeus research capture docs/zeus/research-captures/x./1.json",
+     "tree": "868e3c192060aca6c3f519a8c27e1cee6b411117",
+     "type": "commit"
+    }
+   },
+   "result": {
+    "message": "capture refused: capture_too_large",
+    "raised": "CaptureError",
+    "reason_code": "capture_too_large"
+   },
+   "temporary_directories_left": []
+  },
+  "too_large.multibyte": {
+   "checkout_unchanged": {
+    "branch": true,
+    "head": true,
+    "index": true,
+    "raw": true,
+    "status": true
+   },
+   "loose_objects_added": 0,
+   "refs": {
+    "refs/zeus/research/path/bare_json_name": {
+     "commit": "63942307fda6127686e1fe1d2cd4f2439dba8392",
+     "files": [
+      "100644 blob 0a06f209c39ab30d137e8f09a825303ea42c7d38\tdocs/GOAL.md",
+      "100644 blob f4f5b24320278b1a9c09b41bfc483f4d1296b802\tdocs/research/note.md",
+      "100644 blob 7841404b5eee7389057f4dc674d5e274f98d19d0\tdocs/zeus/research-captures/.json"
+     ],
+     "identity": "Zeus Research Program <research-program@localhost> | Zeus Research Program <research-program@localhost> | 2026-01-01T00:00:00Z | 2026-01-01T00:00:00Z",
+     "parents": [
+      "7b3e24a3b49a660b8936d1d52c886c077b4cf40c"
+     ],
+     "subject": "zeus research capture docs/zeus/research-captures/.json",
+     "tree": "74bcf495a483909621e2c500c676248deab491d8",
+     "type": "commit"
+    },
+    "refs/zeus/research/path/trailing_dot_segment": {
+     "commit": "f8d6ba7a19bc1f6b44d92d4e3f49acc0cd29b5eb",
+     "files": [
+      "100644 blob 0a06f209c39ab30d137e8f09a825303ea42c7d38\tdocs/GOAL.md",
+      "100644 blob f4f5b24320278b1a9c09b41bfc483f4d1296b802\tdocs/research/note.md",
+      "100644 blob 7841404b5eee7389057f4dc674d5e274f98d19d0\tdocs/zeus/research-captures/x./1.json"
+     ],
+     "identity": "Zeus Research Program <research-program@localhost> | Zeus Research Program <research-program@localhost> | 2026-01-01T00:00:00Z | 2026-01-01T00:00:00Z",
+     "parents": [
+      "7b3e24a3b49a660b8936d1d52c886c077b4cf40c"
+     ],
+     "subject": "zeus research capture docs/zeus/research-captures/x./1.json",
+     "tree": "868e3c192060aca6c3f519a8c27e1cee6b411117",
+     "type": "commit"
+    }
+   },
+   "result": {
+    "message": "capture refused: capture_too_large",
+    "raised": "CaptureError",
+    "reason_code": "capture_too_large"
+   },
+   "temporary_directories_left": []
+  },
+  "too_large.one_over": {
+   "checkout_unchanged": {
+    "branch": true,
+    "head": true,
+    "index": true,
+    "raw": true,
+    "status": true
+   },
+   "loose_objects_added": 0,
+   "refs": {
+    "refs/zeus/research/path/bare_json_name": {
+     "commit": "63942307fda6127686e1fe1d2cd4f2439dba8392",
+     "files": [
+      "100644 blob 0a06f209c39ab30d137e8f09a825303ea42c7d38\tdocs/GOAL.md",
+      "100644 blob f4f5b24320278b1a9c09b41bfc483f4d1296b802\tdocs/research/note.md",
+      "100644 blob 7841404b5eee7389057f4dc674d5e274f98d19d0\tdocs/zeus/research-captures/.json"
+     ],
+     "identity": "Zeus Research Program <research-program@localhost> | Zeus Research Program <research-program@localhost> | 2026-01-01T00:00:00Z | 2026-01-01T00:00:00Z",
+     "parents": [
+      "7b3e24a3b49a660b8936d1d52c886c077b4cf40c"
+     ],
+     "subject": "zeus research capture docs/zeus/research-captures/.json",
+     "tree": "74bcf495a483909621e2c500c676248deab491d8",
+     "type": "commit"
+    },
+    "refs/zeus/research/path/trailing_dot_segment": {
+     "commit": "f8d6ba7a19bc1f6b44d92d4e3f49acc0cd29b5eb",
+     "files": [
+      "100644 blob 0a06f209c39ab30d137e8f09a825303ea42c7d38\tdocs/GOAL.md",
+      "100644 blob f4f5b24320278b1a9c09b41bfc483f4d1296b802\tdocs/research/note.md",
+      "100644 blob 7841404b5eee7389057f4dc674d5e274f98d19d0\tdocs/zeus/research-captures/x./1.json"
+     ],
+     "identity": "Zeus Research Program <research-program@localhost> | Zeus Research Program <research-program@localhost> | 2026-01-01T00:00:00Z | 2026-01-01T00:00:00Z",
+     "parents": [
+      "7b3e24a3b49a660b8936d1d52c886c077b4cf40c"
+     ],
+     "subject": "zeus research capture docs/zeus/research-captures/x./1.json",
+     "tree": "868e3c192060aca6c3f519a8c27e1cee6b411117",
+     "type": "commit"
+    }
+   },
+   "result": {
+    "message": "capture refused: capture_too_large",
+    "raised": "CaptureError",
+    "reason_code": "capture_too_large"
+   },
+   "temporary_directories_left": []
+  }
+ },
+ "c03_create_only": {
+  "existing_ref_refused_before_objects": {
+   "checkout_unchanged": {
+    "branch": true,
+    "head": true,
+    "index": true,
+    "raw": true,
+    "status": true
+   },
+   "loose_objects_added": 0,
+   "refs": {
+    "refs/zeus/research/rp-001/001": {
+     "commit": "7b3e24a3b49a660b8936d1d52c886c077b4cf40c",
+     "files": [
+      "100644 blob 0a06f209c39ab30d137e8f09a825303ea42c7d38\tdocs/GOAL.md",
+      "100644 blob f4f5b24320278b1a9c09b41bfc483f4d1296b802\tdocs/research/note.md"
+     ],
+     "identity": "Fixture <fixture@localhost> | Fixture <fixture@localhost> | 2026-01-01T00:00:00Z | 2026-01-01T00:00:00Z",
+     "parents": [],
+     "subject": "base",
+     "tree": "1b4ab9384b7d267b20a07d4588548e211b81921d",
+     "type": "commit"
+    }
+   },
+   "result": {
+    "message": "capture refused: capture_ref_exists",
+    "raised": "CaptureError",
+    "reason_code": "capture_ref_exists"
+   },
+   "temporary_directories_left": []
+  },
+  "ref_planted_at_the_same_commit": {
+   "checkout_unchanged": {
+    "branch": true,
+    "head": true,
+    "index": true,
+    "raw": true,
+    "status": true
+   },
+   "loose_objects_added": 0,
+   "planted_ref_unchanged": true,
+   "refs": {
+    "refs/zeus/research/probe": {
+     "commit": "494e09ce77d925dd468f0b42f4f83e343d36db01",
+     "files": [
+      "100644 blob 0a06f209c39ab30d137e8f09a825303ea42c7d38\tdocs/GOAL.md",
+      "100644 blob f4f5b24320278b1a9c09b41bfc483f4d1296b802\tdocs/research/note.md",
+      "100644 blob 7841404b5eee7389057f4dc674d5e274f98d19d0\tdocs/zeus/research-captures/rp-001/001.json"
+     ],
+     "identity": "Zeus Research Program <research-program@localhost> | Zeus Research Program <research-program@localhost> | 2026-01-01T00:00:00Z | 2026-01-01T00:00:00Z",
+     "parents": [
+      "7b3e24a3b49a660b8936d1d52c886c077b4cf40c"
+     ],
+     "subject": "zeus research capture docs/zeus/research-captures/rp-001/001.json",
+     "tree": "5db9df15e8c31cae6980c5d939a0795694896467",
+     "type": "commit"
+    },
+    "refs/zeus/research/rp-001/001": {
+     "commit": "494e09ce77d925dd468f0b42f4f83e343d36db01",
+     "files": [
+      "100644 blob 0a06f209c39ab30d137e8f09a825303ea42c7d38\tdocs/GOAL.md",
+      "100644 blob f4f5b24320278b1a9c09b41bfc483f4d1296b802\tdocs/research/note.md",
+      "100644 blob 7841404b5eee7389057f4dc674d5e274f98d19d0\tdocs/zeus/research-captures/rp-001/001.json"
+     ],
+     "identity": "Zeus Research Program <research-program@localhost> | Zeus Research Program <research-program@localhost> | 2026-01-01T00:00:00Z | 2026-01-01T00:00:00Z",
+     "parents": [
+      "7b3e24a3b49a660b8936d1d52c886c077b4cf40c"
+     ],
+     "subject": "zeus research capture docs/zeus/research-captures/rp-001/001.json",
+     "tree": "5db9df15e8c31cae6980c5d939a0795694896467",
+     "type": "commit"
+    }
+   },
+   "result": {
+    "message": "capture refused: capture_ref_failed",
+    "raised": "CaptureError",
+    "reason_code": "capture_ref_failed"
+   },
+   "temporary_directories_left": []
+  },
+  "ref_planted_between_probe_and_update_ref": {
+   "checkout_unchanged": {
+    "branch": true,
+    "head": true,
+    "index": true,
+    "raw": true,
+    "status": true
+   },
+   "loose_objects_added": 7,
+   "planted_ref_unchanged": true,
+   "refs": {
+    "refs/zeus/research/rp-001/001": {
+     "commit": "7b3e24a3b49a660b8936d1d52c886c077b4cf40c",
+     "files": [
+      "100644 blob 0a06f209c39ab30d137e8f09a825303ea42c7d38\tdocs/GOAL.md",
+      "100644 blob f4f5b24320278b1a9c09b41bfc483f4d1296b802\tdocs/research/note.md"
+     ],
+     "identity": "Fixture <fixture@localhost> | Fixture <fixture@localhost> | 2026-01-01T00:00:00Z | 2026-01-01T00:00:00Z",
+     "parents": [],
+     "subject": "base",
+     "tree": "1b4ab9384b7d267b20a07d4588548e211b81921d",
+     "type": "commit"
+    }
+   },
+   "result": {
+    "message": "capture refused: capture_ref_failed",
+    "raised": "CaptureError",
+    "reason_code": "capture_ref_failed"
+   },
+   "temporary_directories_left": []
+  },
+  "same_content_two_refs": {
+   "one": {
+    "checkout_unchanged": {
+     "branch": true,
+     "head": true,
+     "index": true,
+     "raw": true,
+     "status": true
+    },
+    "loose_objects_added": 7,
+    "refs": {
+     "refs/zeus/research/a/1": {
+      "commit": "494e09ce77d925dd468f0b42f4f83e343d36db01",
+      "files": [
+       "100644 blob 0a06f209c39ab30d137e8f09a825303ea42c7d38\tdocs/GOAL.md",
+       "100644 blob f4f5b24320278b1a9c09b41bfc483f4d1296b802\tdocs/research/note.md",
+       "100644 blob 7841404b5eee7389057f4dc674d5e274f98d19d0\tdocs/zeus/research-captures/rp-001/001.json"
+      ],
+      "identity": "Zeus Research Program <research-program@localhost> | Zeus Research Program <research-program@localhost> | 2026-01-01T00:00:00Z | 2026-01-01T00:00:00Z",
+      "parents": [
+       "7b3e24a3b49a660b8936d1d52c886c077b4cf40c"
+      ],
+      "subject": "zeus research capture docs/zeus/research-captures/rp-001/001.json",
+      "tree": "5db9df15e8c31cae6980c5d939a0795694896467",
+      "type": "commit"
+     }
+    },
+    "result": {
+     "value": {
+      "blob": "7841404b5eee7389057f4dc674d5e274f98d19d0",
+      "bytes": 82,
+      "path": "docs/zeus/research-captures/rp-001/001.json",
+      "ref": "refs/zeus/research/a/1",
+      "revision": "494e09ce77d925dd468f0b42f4f83e343d36db01",
+      "sha256": "05ad28e84db139c61d257d701e6c4b0e14d7fdb538fa4ee417fd29dc670afe10",
+      "tree": "5db9df15e8c31cae6980c5d939a0795694896467"
+     }
+    },
+    "temporary_directories_left": []
+   },
+   "same_commit": true,
+   "two": {
+    "checkout_unchanged": {
+     "branch": true,
+     "head": true,
+     "index": true,
+     "raw": true,
+     "status": true
+    },
+    "loose_objects_added": 0,
+    "refs": {
+     "refs/zeus/research/a/1": {
+      "commit": "494e09ce77d925dd468f0b42f4f83e343d36db01",
+      "files": [
+       "100644 blob 0a06f209c39ab30d137e8f09a825303ea42c7d38\tdocs/GOAL.md",
+       "100644 blob f4f5b24320278b1a9c09b41bfc483f4d1296b802\tdocs/research/note.md",
+       "100644 blob 7841404b5eee7389057f4dc674d5e274f98d19d0\tdocs/zeus/research-captures/rp-001/001.json"
+      ],
+      "identity": "Zeus Research Program <research-program@localhost> | Zeus Research Program <research-program@localhost> | 2026-01-01T00:00:00Z | 2026-01-01T00:00:00Z",
+      "parents": [
+       "7b3e24a3b49a660b8936d1d52c886c077b4cf40c"
+      ],
+      "subject": "zeus research capture docs/zeus/research-captures/rp-001/001.json",
+      "tree": "5db9df15e8c31cae6980c5d939a0795694896467",
+      "type": "commit"
+     },
+     "refs/zeus/research/b/1": {
+      "commit": "494e09ce77d925dd468f0b42f4f83e343d36db01",
+      "files": [
+       "100644 blob 0a06f209c39ab30d137e8f09a825303ea42c7d38\tdocs/GOAL.md",
+       "100644 blob f4f5b24320278b1a9c09b41bfc483f4d1296b802\tdocs/research/note.md",
+       "100644 blob 7841404b5eee7389057f4dc674d5e274f98d19d0\tdocs/zeus/research-captures/rp-001/001.json"
+      ],
+      "identity": "Zeus Research Program <research-program@localhost> | Zeus Research Program <research-program@localhost> | 2026-01-01T00:00:00Z | 2026-01-01T00:00:00Z",
+      "parents": [
+       "7b3e24a3b49a660b8936d1d52c886c077b4cf40c"
+      ],
+      "subject": "zeus research capture docs/zeus/research-captures/rp-001/001.json",
+      "tree": "5db9df15e8c31cae6980c5d939a0795694896467",
+      "type": "commit"
+     }
+    },
+    "result": {
+     "value": {
+      "blob": "7841404b5eee7389057f4dc674d5e274f98d19d0",
+      "bytes": 82,
+      "path": "docs/zeus/research-captures/rp-001/001.json",
+      "ref": "refs/zeus/research/b/1",
+      "revision": "494e09ce77d925dd468f0b42f4f83e343d36db01",
+      "sha256": "05ad28e84db139c61d257d701e6c4b0e14d7fdb538fa4ee417fd29dc670afe10",
+      "tree": "5db9df15e8c31cae6980c5d939a0795694896467"
+     }
+    },
+    "temporary_directories_left": []
+   }
+  },
+  "second_capture_to_the_same_ref": {
+   "first": {
+    "checkout_unchanged": {
+     "branch": true,
+     "head": true,
+     "index": true,
+     "raw": true,
+     "status": true
+    },
+    "loose_objects_added": 7,
+    "refs": {
+     "refs/zeus/research/rp-001/001": {
+      "commit": "494e09ce77d925dd468f0b42f4f83e343d36db01",
+      "files": [
+       "100644 blob 0a06f209c39ab30d137e8f09a825303ea42c7d38\tdocs/GOAL.md",
+       "100644 blob f4f5b24320278b1a9c09b41bfc483f4d1296b802\tdocs/research/note.md",
+       "100644 blob 7841404b5eee7389057f4dc674d5e274f98d19d0\tdocs/zeus/research-captures/rp-001/001.json"
+      ],
+      "identity": "Zeus Research Program <research-program@localhost> | Zeus Research Program <research-program@localhost> | 2026-01-01T00:00:00Z | 2026-01-01T00:00:00Z",
+      "parents": [
+       "7b3e24a3b49a660b8936d1d52c886c077b4cf40c"
+      ],
+      "subject": "zeus research capture docs/zeus/research-captures/rp-001/001.json",
+      "tree": "5db9df15e8c31cae6980c5d939a0795694896467",
+      "type": "commit"
+     }
+    },
+    "result": {
+     "value": {
+      "blob": "7841404b5eee7389057f4dc674d5e274f98d19d0",
+      "bytes": 82,
+      "path": "docs/zeus/research-captures/rp-001/001.json",
+      "ref": "refs/zeus/research/rp-001/001",
+      "revision": "494e09ce77d925dd468f0b42f4f83e343d36db01",
+      "sha256": "05ad28e84db139c61d257d701e6c4b0e14d7fdb538fa4ee417fd29dc670afe10",
+      "tree": "5db9df15e8c31cae6980c5d939a0795694896467"
+     }
+    },
+    "temporary_directories_left": []
+   },
+   "ref_still_first": true,
+   "second": {
+    "checkout_unchanged": {
+     "branch": true,
+     "head": true,
+     "index": true,
+     "raw": true,
+     "status": true
+    },
+    "loose_objects_added": 0,
+    "refs": {
+     "refs/zeus/research/rp-001/001": {
+      "commit": "494e09ce77d925dd468f0b42f4f83e343d36db01",
+      "files": [
+       "100644 blob 0a06f209c39ab30d137e8f09a825303ea42c7d38\tdocs/GOAL.md",
+       "100644 blob f4f5b24320278b1a9c09b41bfc483f4d1296b802\tdocs/research/note.md",
+       "100644 blob 7841404b5eee7389057f4dc674d5e274f98d19d0\tdocs/zeus/research-captures/rp-001/001.json"
+      ],
+      "identity": "Zeus Research Program <research-program@localhost> | Zeus Research Program <research-program@localhost> | 2026-01-01T00:00:00Z | 2026-01-01T00:00:00Z",
+      "parents": [
+       "7b3e24a3b49a660b8936d1d52c886c077b4cf40c"
+      ],
+      "subject": "zeus research capture docs/zeus/research-captures/rp-001/001.json",
+      "tree": "5db9df15e8c31cae6980c5d939a0795694896467",
+      "type": "commit"
+     }
+    },
+    "result": {
+     "message": "capture refused: capture_ref_exists",
+     "raised": "CaptureError",
+     "reason_code": "capture_ref_exists"
+    },
+    "temporary_directories_left": []
+   }
+  }
+ },
+ "c04_checkout": {
+  "core_autocrlf_true": {
+   "checkout_unchanged": {
+    "branch": true,
+    "head": true,
+    "index": true,
+    "raw": true,
+    "status": true
+   },
+   "loose_objects_added": 7,
+   "refs": {
+    "refs/zeus/research/rp-001/001": {
+     "commit": "494e09ce77d925dd468f0b42f4f83e343d36db01",
+     "files": [
+      "100644 blob 0a06f209c39ab30d137e8f09a825303ea42c7d38\tdocs/GOAL.md",
+      "100644 blob f4f5b24320278b1a9c09b41bfc483f4d1296b802\tdocs/research/note.md",
+      "100644 blob 7841404b5eee7389057f4dc674d5e274f98d19d0\tdocs/zeus/research-captures/rp-001/001.json"
+     ],
+     "identity": "Zeus Research Program <research-program@localhost> | Zeus Research Program <research-program@localhost> | 2026-01-01T00:00:00Z | 2026-01-01T00:00:00Z",
+     "parents": [
+      "7b3e24a3b49a660b8936d1d52c886c077b4cf40c"
+     ],
+     "subject": "zeus research capture docs/zeus/research-captures/rp-001/001.json",
+     "tree": "5db9df15e8c31cae6980c5d939a0795694896467",
+     "type": "commit"
+    }
+   },
+   "result": {
+    "value": {
+     "blob": "7841404b5eee7389057f4dc674d5e274f98d19d0",
+     "bytes": 82,
+     "path": "docs/zeus/research-captures/rp-001/001.json",
+     "ref": "refs/zeus/research/rp-001/001",
+     "revision": "494e09ce77d925dd468f0b42f4f83e343d36db01",
+     "sha256": "05ad28e84db139c61d257d701e6c4b0e14d7fdb538fa4ee417fd29dc670afe10",
+     "tree": "5db9df15e8c31cae6980c5d939a0795694896467"
+    }
+   },
+   "temporary_directories_left": []
+  },
+  "detached_head": {
+   "before": {
+    "branch": null,
+    "head": "7b3e24a3b49a660b8936d1d52c886c077b4cf40c",
+    "index": "79b428b0226c6e44103d8e797c68cc1beb8f8940c94dd64d904b38039bc7ea92",
+    "status": [
+     "M docs/GOAL.md",
+     "?? dirty.txt"
+    ]
+   },
+   "checkout_unchanged": {
+    "branch": true,
+    "head": true,
+    "index": true,
+    "raw": true,
+    "status": true
+   },
+   "loose_objects_added": 7,
+   "refs": {
+    "refs/zeus/research/rp-001/001": {
+     "commit": "494e09ce77d925dd468f0b42f4f83e343d36db01",
+     "files": [
+      "100644 blob 0a06f209c39ab30d137e8f09a825303ea42c7d38\tdocs/GOAL.md",
+      "100644 blob f4f5b24320278b1a9c09b41bfc483f4d1296b802\tdocs/research/note.md",
+      "100644 blob 7841404b5eee7389057f4dc674d5e274f98d19d0\tdocs/zeus/research-captures/rp-001/001.json"
+     ],
+     "identity": "Zeus Research Program <research-program@localhost> | Zeus Research Program <research-program@localhost> | 2026-01-01T00:00:00Z | 2026-01-01T00:00:00Z",
+     "parents": [
+      "7b3e24a3b49a660b8936d1d52c886c077b4cf40c"
+     ],
+     "subject": "zeus research capture docs/zeus/research-captures/rp-001/001.json",
+     "tree": "5db9df15e8c31cae6980c5d939a0795694896467",
+     "type": "commit"
+    }
+   },
+   "result": {
+    "value": {
+     "blob": "7841404b5eee7389057f4dc674d5e274f98d19d0",
+     "bytes": 82,
+     "path": "docs/zeus/research-captures/rp-001/001.json",
+     "ref": "refs/zeus/research/rp-001/001",
+     "revision": "494e09ce77d925dd468f0b42f4f83e343d36db01",
+     "sha256": "05ad28e84db139c61d257d701e6c4b0e14d7fdb538fa4ee417fd29dc670afe10",
+     "tree": "5db9df15e8c31cae6980c5d939a0795694896467"
+    }
+   },
+   "temporary_directories_left": []
+  },
+  "dirty_tree": {
+   "after": {
+    "branch": "refs/heads/main",
+    "head": "7b3e24a3b49a660b8936d1d52c886c077b4cf40c",
+    "index": "79b428b0226c6e44103d8e797c68cc1beb8f8940c94dd64d904b38039bc7ea92",
+    "status": [
+     "M docs/GOAL.md",
+     "?? dirty.txt"
+    ]
+   },
+   "before": {
+    "branch": "refs/heads/main",
+    "head": "7b3e24a3b49a660b8936d1d52c886c077b4cf40c",
+    "index": "79b428b0226c6e44103d8e797c68cc1beb8f8940c94dd64d904b38039bc7ea92",
+    "status": [
+     "M docs/GOAL.md",
+     "?? dirty.txt"
+    ]
+   },
+   "checkout_unchanged": {
+    "branch": true,
+    "head": true,
+    "index": true,
+    "raw": true,
+    "status": true
+   },
+   "loose_objects_added": 7,
+   "refs": {
+    "refs/zeus/research/rp-001/001": {
+     "commit": "494e09ce77d925dd468f0b42f4f83e343d36db01",
+     "files": [
+      "100644 blob 0a06f209c39ab30d137e8f09a825303ea42c7d38\tdocs/GOAL.md",
+      "100644 blob f4f5b24320278b1a9c09b41bfc483f4d1296b802\tdocs/research/note.md",
+      "100644 blob 7841404b5eee7389057f4dc674d5e274f98d19d0\tdocs/zeus/research-captures/rp-001/001.json"
+     ],
+     "identity": "Zeus Research Program <research-program@localhost> | Zeus Research Program <research-program@localhost> | 2026-01-01T00:00:00Z | 2026-01-01T00:00:00Z",
+     "parents": [
+      "7b3e24a3b49a660b8936d1d52c886c077b4cf40c"
+     ],
+     "subject": "zeus research capture docs/zeus/research-captures/rp-001/001.json",
+     "tree": "5db9df15e8c31cae6980c5d939a0795694896467",
+     "type": "commit"
+    }
+   },
+   "result": {
+    "value": {
+     "blob": "7841404b5eee7389057f4dc674d5e274f98d19d0",
+     "bytes": 82,
+     "path": "docs/zeus/research-captures/rp-001/001.json",
+     "ref": "refs/zeus/research/rp-001/001",
+     "revision": "494e09ce77d925dd468f0b42f4f83e343d36db01",
+     "sha256": "05ad28e84db139c61d257d701e6c4b0e14d7fdb538fa4ee417fd29dc670afe10",
+     "tree": "5db9df15e8c31cae6980c5d939a0795694896467"
+    }
+   },
+   "temporary_directories_left": []
+  },
+  "gitattributes_eol_rule_does_not_change_the_bytes": {
+   "checkout_unchanged": {
+    "branch": true,
+    "head": true,
+    "index": true,
+    "raw": true,
+    "status": true
+   },
+   "loose_objects_added": 7,
+   "raw_blob_equals_body": true,
+   "refs": {
+    "refs/zeus/research/rp-001/001": {
+     "commit": "c44f8ff783aeec79f0274ba4b034ef4e31050a08",
+     "files": [
+      "100644 blob 86b6b939fe38c4803e9236563ed43b8d4fa711ed\t.gitattributes",
+      "100644 blob 0a06f209c39ab30d137e8f09a825303ea42c7d38\tdocs/GOAL.md",
+      "100644 blob f4f5b24320278b1a9c09b41bfc483f4d1296b802\tdocs/research/note.md",
+      "100644 blob 3c7924b86a7669095f4d5ae7cd908579ebb525db\tdocs/zeus/research-captures/rp-001/001.json"
+     ],
+     "identity": "Zeus Research Program <research-program@localhost> | Zeus Research Program <research-program@localhost> | 2026-01-01T00:00:00Z | 2026-01-01T00:00:00Z",
+     "parents": [
+      "d9bf60f0d51fbfcfc0b0649f293ca93b9087b151"
+     ],
+     "subject": "zeus research capture docs/zeus/research-captures/rp-001/001.json",
+     "tree": "91e9f611d144ce647b4ff1da92195370b99a54c6",
+     "type": "commit"
+    }
+   },
+   "result": {
+    "value": {
+     "blob": "3c7924b86a7669095f4d5ae7cd908579ebb525db",
+     "bytes": 11,
+     "path": "docs/zeus/research-captures/rp-001/001.json",
+     "ref": "refs/zeus/research/rp-001/001",
+     "revision": "c44f8ff783aeec79f0274ba4b034ef4e31050a08",
+     "sha256": "ec447e46155805787188d28ae198a8dd31ab8c9f06629772f48170fce1a132f8",
+     "tree": "91e9f611d144ce647b4ff1da92195370b99a54c6"
+    }
+   },
+   "temporary_directories_left": []
+  },
+  "other_branch_checked_out": {
+   "checkout_unchanged": {
+    "branch": true,
+    "head": true,
+    "index": true,
+    "raw": true,
+    "status": true
+   },
+   "loose_objects_added": 7,
+   "refs": {
+    "refs/zeus/research/rp-001/001": {
+     "commit": "494e09ce77d925dd468f0b42f4f83e343d36db01",
+     "files": [
+      "100644 blob 0a06f209c39ab30d137e8f09a825303ea42c7d38\tdocs/GOAL.md",
+      "100644 blob f4f5b24320278b1a9c09b41bfc483f4d1296b802\tdocs/research/note.md",
+      "100644 blob 7841404b5eee7389057f4dc674d5e274f98d19d0\tdocs/zeus/research-captures/rp-001/001.json"
+     ],
+     "identity": "Zeus Research Program <research-program@localhost> | Zeus Research Program <research-program@localhost> | 2026-01-01T00:00:00Z | 2026-01-01T00:00:00Z",
+     "parents": [
+      "7b3e24a3b49a660b8936d1d52c886c077b4cf40c"
+     ],
+     "subject": "zeus research capture docs/zeus/research-captures/rp-001/001.json",
+     "tree": "5db9df15e8c31cae6980c5d939a0795694896467",
+     "type": "commit"
+    }
+   },
+   "result": {
+    "value": {
+     "blob": "7841404b5eee7389057f4dc674d5e274f98d19d0",
+     "bytes": 82,
+     "path": "docs/zeus/research-captures/rp-001/001.json",
+     "ref": "refs/zeus/research/rp-001/001",
+     "revision": "494e09ce77d925dd468f0b42f4f83e343d36db01",
+     "sha256": "05ad28e84db139c61d257d701e6c4b0e14d7fdb538fa4ee417fd29dc670afe10",
+     "tree": "5db9df15e8c31cae6980c5d939a0795694896467"
+    }
+   },
+   "temporary_directories_left": []
+  },
+  "reference_transaction_hook_observed": {
+   "checkout_unchanged": {
+    "branch": true,
+    "head": true,
+    "index": true,
+    "raw": true,
+    "status": true
+   },
+   "loose_objects_added": 7,
+   "reference_transaction_hook_ran": true,
+   "refs": {
+    "refs/zeus/research/rp-001/001": {
+     "commit": "494e09ce77d925dd468f0b42f4f83e343d36db01",
+     "files": [
+      "100644 blob 0a06f209c39ab30d137e8f09a825303ea42c7d38\tdocs/GOAL.md",
+      "100644 blob f4f5b24320278b1a9c09b41bfc483f4d1296b802\tdocs/research/note.md",
+      "100644 blob 7841404b5eee7389057f4dc674d5e274f98d19d0\tdocs/zeus/research-captures/rp-001/001.json"
+     ],
+     "identity": "Zeus Research Program <research-program@localhost> | Zeus Research Program <research-program@localhost> | 2026-01-01T00:00:00Z | 2026-01-01T00:00:00Z",
+     "parents": [
+      "7b3e24a3b49a660b8936d1d52c886c077b4cf40c"
+     ],
+     "subject": "zeus research capture docs/zeus/research-captures/rp-001/001.json",
+     "tree": "5db9df15e8c31cae6980c5d939a0795694896467",
+     "type": "commit"
+    }
+   },
+   "result": {
+    "value": {
+     "blob": "7841404b5eee7389057f4dc674d5e274f98d19d0",
+     "bytes": 82,
+     "path": "docs/zeus/research-captures/rp-001/001.json",
+     "ref": "refs/zeus/research/rp-001/001",
+     "revision": "494e09ce77d925dd468f0b42f4f83e343d36db01",
+     "sha256": "05ad28e84db139c61d257d701e6c4b0e14d7fdb538fa4ee417fd29dc670afe10",
+     "tree": "5db9df15e8c31cae6980c5d939a0795694896467"
+    }
+   },
+   "temporary_directories_left": []
+  },
+  "staged_changes_are_not_captured": {
+   "before": "dirty.txt and staged-new.txt staged",
+   "capture_tree_files": [
+    "100644 blob 0a06f209c39ab30d137e8f09a825303ea42c7d38\tdocs/GOAL.md",
+    "100644 blob f4f5b24320278b1a9c09b41bfc483f4d1296b802\tdocs/research/note.md",
+    "100644 blob 7841404b5eee7389057f4dc674d5e274f98d19d0\tdocs/zeus/research-captures/rp-001/001.json"
+   ],
+   "checkout_unchanged": {
+    "branch": true,
+    "head": true,
+    "index": true,
+    "raw": true,
+    "status": true
+   },
+   "loose_objects_added": 7,
+   "refs": {
+    "refs/zeus/research/rp-001/001": {
+     "commit": "494e09ce77d925dd468f0b42f4f83e343d36db01",
+     "files": [
+      "100644 blob 0a06f209c39ab30d137e8f09a825303ea42c7d38\tdocs/GOAL.md",
+      "100644 blob f4f5b24320278b1a9c09b41bfc483f4d1296b802\tdocs/research/note.md",
+      "100644 blob 7841404b5eee7389057f4dc674d5e274f98d19d0\tdocs/zeus/research-captures/rp-001/001.json"
+     ],
+     "identity": "Zeus Research Program <research-program@localhost> | Zeus Research Program <research-program@localhost> | 2026-01-01T00:00:00Z | 2026-01-01T00:00:00Z",
+     "parents": [
+      "7b3e24a3b49a660b8936d1d52c886c077b4cf40c"
+     ],
+     "subject": "zeus research capture docs/zeus/research-captures/rp-001/001.json",
+     "tree": "5db9df15e8c31cae6980c5d939a0795694896467",
+     "type": "commit"
+    }
+   },
+   "result": {
+    "value": {
+     "blob": "7841404b5eee7389057f4dc674d5e274f98d19d0",
+     "bytes": 82,
+     "path": "docs/zeus/research-captures/rp-001/001.json",
+     "ref": "refs/zeus/research/rp-001/001",
+     "revision": "494e09ce77d925dd468f0b42f4f83e343d36db01",
+     "sha256": "05ad28e84db139c61d257d701e6c4b0e14d7fdb538fa4ee417fd29dc670afe10",
+     "tree": "5db9df15e8c31cae6980c5d939a0795694896467"
+    }
+   },
+   "status_after": [
+    "A  dirty.txt",
+    " M docs/GOAL.md",
+    "A  staged-new.txt"
+   ],
+   "temporary_directories_left": []
+  }
+ },
+ "c05_exact_bytes": {
+  "windows_pipe_simulated_and_autocrlf": {
+   "blob_id_is_the_content_address": true,
+   "body_has_cr": false,
+   "bytes": 53,
+   "checkout_unchanged": {
+    "branch": true,
+    "head": true,
+    "index": true,
+    "raw": true,
+    "status": true
+   },
+   "dirty_file_kept": true,
+   "head_unmoved": true,
+   "loose_objects_added": 7,
+   "more_bytes_than_characters": true,
+   "path_in_checkout": false,
+   "raw_blob_equals_utf8": true,
+   "reader_sees_the_same_bytes": true,
+   "ref_names_revision": true,
+   "refs": {
+    "refs/zeus/research/rp-001/001": {
+     "commit": "15d1270c78df9dfb966636c79b04490885bbf886",
+     "files": [
+      "100644 blob 0a06f209c39ab30d137e8f09a825303ea42c7d38\tdocs/GOAL.md",
+      "100644 blob f4f5b24320278b1a9c09b41bfc483f4d1296b802\tdocs/research/note.md",
+      "100644 blob 7be5d9d990ad2ac0b7add8541ce9db0606b68ad9\tdocs/zeus/research-captures/rp-001/001.json"
+     ],
+     "identity": "Zeus Research Program <research-program@localhost> | Zeus Research Program <research-program@localhost> | 2026-01-01T00:00:00Z | 2026-01-01T00:00:00Z",
+     "parents": [
+      "7b3e24a3b49a660b8936d1d52c886c077b4cf40c"
+     ],
+     "subject": "zeus research capture docs/zeus/research-captures/rp-001/001.json",
+     "tree": "92ee155de20a21c5a71d68b93e1b87c689c05eda",
+     "type": "commit"
+    }
+   },
+   "result": {
+    "value": {
+     "blob": "7be5d9d990ad2ac0b7add8541ce9db0606b68ad9",
+     "bytes": 53,
+     "path": "docs/zeus/research-captures/rp-001/001.json",
+     "ref": "refs/zeus/research/rp-001/001",
+     "revision": "15d1270c78df9dfb966636c79b04490885bbf886",
+     "sha256": "0a1c91f32cc07fa5368144c4efe1513c5b988b1ca3ec3aa0e504cb9e859a049e",
+     "tree": "92ee155de20a21c5a71d68b93e1b87c689c05eda"
+    }
+   },
+   "temporary_directories_left": []
+  },
+  "wrong_blob_id_before_any_commit_or_ref": {
+   "checkout_unchanged": {
+    "branch": true,
+    "head": true,
+    "index": true,
+    "raw": true,
+    "status": true
+   },
+   "loose_objects_added": 0,
+   "only_the_verified_ref_exists": true,
+   "refs": {
+    "refs/zeus/research/rp-001/001": {
+     "commit": "15d1270c78df9dfb966636c79b04490885bbf886",
+     "files": [
+      "100644 blob 0a06f209c39ab30d137e8f09a825303ea42c7d38\tdocs/GOAL.md",
+      "100644 blob f4f5b24320278b1a9c09b41bfc483f4d1296b802\tdocs/research/note.md",
+      "100644 blob 7be5d9d990ad2ac0b7add8541ce9db0606b68ad9\tdocs/zeus/research-captures/rp-001/001.json"
+     ],
+     "identity": "Zeus Research Program <research-program@localhost> | Zeus Research Program <research-program@localhost> | 2026-01-01T00:00:00Z | 2026-01-01T00:00:00Z",
+     "parents": [
+      "7b3e24a3b49a660b8936d1d52c886c077b4cf40c"
+     ],
+     "subject": "zeus research capture docs/zeus/research-captures/rp-001/001.json",
+     "tree": "92ee155de20a21c5a71d68b93e1b87c689c05eda",
+     "type": "commit"
+    }
+   },
+   "result": {
+    "message": "capture refused: capture_blob_mismatch",
+    "raised": "CaptureError",
+    "reason_code": "capture_blob_mismatch"
+   },
+   "temporary_directories_left": []
+  }
+ },
+ "c06_environment": {
+  "base_from_repository_a": {
+   "a_head_in_b": false,
+   "b_head_in_a": false,
+   "base_is_head_of": "a",
+   "capture_called_on": "repository A (GitCapture(A)) with GIT_DIR naming repository B",
+   "environment_restored": true,
+   "head_a_unchanged": true,
+   "head_b_unchanged": true,
+   "loose_objects_a": [
+    6,
+    6
+   ],
+   "loose_objects_b": [
+    6,
+    6
+   ],
+   "refs_in_a": {},
+   "refs_in_b": {},
+   "result": {
+    "message": "capture refused: base_revision_missing",
+    "raised": "CaptureError",
+    "reason_code": "base_revision_missing"
+   },
+   "temporary_directories_left": [],
+   "where_the_ref_landed": "neither"
+  },
+  "base_from_repository_b": {
+   "a_head_in_b": false,
+   "b_head_in_a": false,
+   "base_is_head_of": "b",
+   "capture_called_on": "repository A (GitCapture(A)) with GIT_DIR naming repository B",
+   "environment_restored": true,
+   "head_a_unchanged": true,
+   "head_b_unchanged": true,
+   "loose_objects_a": [
+    6,
+    6
+   ],
+   "loose_objects_b": [
+    6,
+    13
+   ],
+   "refs_in_a": {},
+   "refs_in_b": {
+    "refs/zeus/research/rp-001/001": {
+     "commit": "e1c8169774f6c270316b6b1c03c72e10f160fa50",
+     "files": [
+      "100644 blob 0a06f209c39ab30d137e8f09a825303ea42c7d38\tdocs/GOAL.md",
+      "100644 blob ccc3a1bbbd7faf18b28ee2aee212aa992e1d3ac7\tdocs/research/note.md",
+      "100644 blob 7841404b5eee7389057f4dc674d5e274f98d19d0\tdocs/zeus/research-captures/rp-001/001.json"
+     ],
+     "identity": "Zeus Research Program <research-program@localhost> | Zeus Research Program <research-program@localhost> | 2026-01-01T00:00:00Z | 2026-01-01T00:00:00Z",
+     "parents": [
+      "d1f0e9a4227b75db0da61e5e6cff73d33caac4da"
+     ],
+     "subject": "zeus research capture docs/zeus/research-captures/rp-001/001.json",
+     "tree": "befddd65f2ef356293a6a614288d1736c0cac024",
+     "type": "commit"
+    }
+   },
+   "result": {
+    "value": {
+     "blob": "7841404b5eee7389057f4dc674d5e274f98d19d0",
+     "bytes": 82,
+     "path": "docs/zeus/research-captures/rp-001/001.json",
+     "ref": "refs/zeus/research/rp-001/001",
+     "revision": "e1c8169774f6c270316b6b1c03c72e10f160fa50",
+     "sha256": "05ad28e84db139c61d257d701e6c4b0e14d7fdb538fa4ee417fd29dc670afe10",
+     "tree": "befddd65f2ef356293a6a614288d1736c0cac024"
+    }
+   },
+   "temporary_directories_left": [],
+   "where_the_ref_landed": "repository_b_only"
+  }
+ },
+ "cases_per_group": {
+  "c01_success": 16,
+  "c02_refusals": 80,
+  "c03_create_only": 5,
+  "c04_checkout": 7,
+  "c05_exact_bytes": 2,
+  "c06_environment": 2
+ },
+ "leftover_capture_directories": []
+}

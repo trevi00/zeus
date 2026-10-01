@@ -99,6 +99,7 @@ S7_FAMILIES = {"review.releases_queue", "delivery.registry", "delivery.stages", 
                "delivery.canaries", "delivery.migration_evidence", "delivery.host_migration_transfer",
                "delivery.host_migration_cli", "delivery.migration_evidence_cli",
                "delivery.fleet_recovery_collectors", "delivery.restore.pg", "delivery.tooling"}
+S8_FAMILIES = {"research.program_tick", "research.capture"}
 S7_IMPLEMENTED = {"delivery.tooling", "delivery.restore.pg", "delivery.fleet_recovery_collectors", "delivery.release_runner", "delivery.canaries", "delivery.migration_evidence", "delivery.host_migration_transfer", "delivery.host_targets", "delivery.managed_runtime", "delivery.managed_systemd",
                   "review.releases_queue", "delivery.registry", "delivery.stages",
                   "delivery.owner_commands", "delivery.migration", "delivery.host_migrations",
@@ -114,7 +115,7 @@ def test_every_scenario_has_a_reference_golden_and_only_implemented_slices_have_
     scenarios = [load(p) for p in sorted((COMPARE / "scenarios").glob("*.json"))]
     assert {s["family"] for s in scenarios} == (S0_FAMILIES | S1_FAMILIES | S2_FAMILIES | S3_FAMILIES
                                                 | S4_FAMILIES | S5_FAMILIES | S6_FAMILIES
-                                                | S7_FAMILIES)
+                                                | S7_FAMILIES | S8_FAMILIES)
     for s in scenarios:
         assert (COMPARE / s["reference_driver"]).is_file()
         assert (COMPARE / s["golden"]).is_file()
