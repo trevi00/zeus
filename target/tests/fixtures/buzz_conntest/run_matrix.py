@@ -677,7 +677,7 @@ def step_eose_partial(ctx, rec):
         store, lease, inbox = MemoryStore(), BridgeLease(), RemoteInbox()
         with store.transaction() as tx:
             generation = lease.acquire(tx, "conntest-eose", time.time(), 600)
-        inbound = InboundPass(store, client, inbox, lease, lambda event: "stub_recorded",
+        inbound = InboundPass(store, client, inbox, lease, lambda row, generation: "stub_recorded",
                               [ctx.keys.pubkey("conductor")], [ctx.chan], time.time)
         rec["inbound_pass"] = inbound.run(generation)[ctx.chan]
         with store.transaction() as tx:
@@ -700,8 +700,8 @@ def step_lease(ctx, rec):
     conductor = ctx.keys.pubkey("conductor")
     store, lease, inbox, seen = MemoryStore(), BridgeLease(), RemoteInbox(), []
 
-    def sink(event):
-        seen.append(event["id"])
+    def sink(row, generation):
+        seen.append(row["event"]["id"])
         return "stub_recorded"
 
     def rows():

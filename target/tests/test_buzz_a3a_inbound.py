@@ -48,10 +48,10 @@ class Sink:
     def __init__(self):
         self.seen, self.fail = [], False
 
-    def __call__(self, event):
+    def __call__(self, row, generation):
         if self.fail:
             raise RuntimeError("sink down")
-        self.seen.append(event["id"])
+        self.seen.append(row["event"]["id"])
         return "stub_recorded"
 
 

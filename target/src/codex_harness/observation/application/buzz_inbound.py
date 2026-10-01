@@ -11,7 +11,7 @@ Contracts: INV-OBSERVATION-001, INV-IDEMPOTENCY-001
 
 Every transaction re-reads the bridge lease generation first (buzz DESIGN §6.5), so a stale bridge commits nothing.
 Each event commits alone: lease check, idempotent `insert_pending` and, for a non-owner author, `ignored_not_owner`,
-together with the pass keyset. The owner sink runs AFTER that commit; a sink exception leaves the row `pending`
+together with the pass keyset. The owner sink runs AFTER that commit (`sink(row, generation)`: the inbox row and the lease generation, R1); a sink exception leaves the row `pending`
 and the next pass resumes it (F2). The cursor is written after the inbox commit and never moves backwards.
 
 The query lower bound is `min(cursor_time - LOOKBACK, now - LOOKBACK, every unretired pass's own_lower)` (§6.2.1, P1):
@@ -136,7 +136,7 @@ class InboundPass:
         processed = failed = 0
         for row in rows:
             try:
-                outcome = self.sink(row["event"])
+                outcome = self.sink(row, generation)
             except Exception:  # noqa: BLE001 - the row stays pending; the next pass resumes it (F2)
                 failed += 1
                 continue
