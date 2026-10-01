@@ -41,7 +41,9 @@ OWNED_BUCKETS = ("tasks", "decisions_pending", "outbox", "events", "execution_fe
                  "owner_action_policies", "owner_actions", "owner_action_migrations",
                  "continuation_effective_bindings",
                  # Buzz A3a (design §5, §6.5): the raw inbound event state and the single active bridge's lease.
-                 "remote_inbox", "bridge_owner")
+                 "remote_inbox", "bridge_owner",
+                 # Buzz B3 (design §5, §4.4): the immutable command binding and its immutable transition rows.
+                 "remote_commands", "remote_command_transitions")
 
 
 class TaskRunner(Protocol):
@@ -97,3 +99,18 @@ class ResearchPrograms(Protocol):
     """Research's program resume (S6 moved ahead: research.application.program_state.ProgramState), in its own unit."""
 
     def resume(self, program_id: str) -> dict: ...
+
+
+class DeskTurns(Protocol):
+    """The owner's desk conversation (Buzz DESIGN §4.3/§6.2.3; implemented by intake's DeskConversation in S8).
+
+    Declared only: until S8 moves FrontDesk, `RemoteControl` refuses every desk op `desk_not_migrated` and never
+    calls it (DESIGN-B §6 R9). `submit` is idempotent by `request_id` (= the command id)."""
+
+    def open_session(self, session_id: str, title: str | None) -> dict: ...
+
+    def submit(self, session_id: str, request_id: str, intent: str, text: str) -> dict: ...
+
+    def request(self, request_id: str) -> dict | None: ...
+
+    def session(self, session_id: str) -> dict | None: ...
