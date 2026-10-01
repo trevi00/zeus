@@ -1,0 +1,2 @@
+# The official vectors are kept byte-for-byte (provenance sha256 in PROVENANCE.md); no line-ending normalization.
+test-vectors.csv -text
