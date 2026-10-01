@@ -22,7 +22,9 @@ passes and 10 minutes. A state subject reconciles by `ids`; no positive match re
 Capacity (§6.1 step 6, P6). `pending`, `in_flight` and `unknown` rows of every class count against `outbox_max`,
 checked in the transaction that would add a row. Over the bound the work is DEFERRED, never dropped: no row, a
 per-class watermark (the last op enqueued before the first deferral), and one coalesced `outbox_capacity` alert.
-While a class has a deferral outstanding, its later enqueues defer too, so recovery stays oldest-first.
+While a class has a deferral outstanding, its later enqueues defer too, so recovery stays oldest-first; the one
+exception is the same-subject replacement of a resident state row by a strictly newer version (§6.1 step 4), which
+never exceeds the bound and neither advances nor clears the watermark.
 `acknowledged` and `superseded` rows keep only identity, status and times: the signed payload is reclaimed.
 """
 
@@ -87,7 +89,10 @@ class BuzzOutbox:
         retiring = {row["id"] for row in older}
         resident = sum(1 for row in rows if row["status"] in NONTERMINAL and row["id"] not in retiring)
         mark = tx.get(WATERMARKS, cls)
-        blocked = mark is not None and mark["deferred"] and not recovering
+        # §6.1 step 6: oldest-first holds for NEW work. A strictly newer version of the same subject that retires a
+        # resident row is a capacity-neutral replacement: it passes a standing deferral (the numeric bound below
+        # still applies) and leaves the watermark untouched.
+        blocked = mark is not None and mark["deferred"] and not recovering and not older
         if resident + 1 > self.outbox_max or blocked:
             self._defer(tx, cls, mark, subject, version)
             return {"status": "deferred", "op_id": op_id}

@@ -318,3 +318,135 @@ def test_9b_a_lease_lost_mid_pass_stops_before_committing_the_outcome(w):
     with pytest.raises(ContractError, match="bridge_lease_lost"):
         w.outbox.deliver(w.generation)
     assert w.row("task:t1", 1)["status"] == "pending"
+
+
+# -- A3c F1: a standing deferral must not block the capacity-neutral replacement of a resident state row --------
+
+def _full_unknown_with_a_deferral(tmp_path, outbox_max=1):
+    """task:one v1 is `unknown` (the relay timed out) and fills the outbox; task:two is deferred; the drift window passed."""
+    w = World(tmp_path, outbox_max=outbox_max)
+    w.relay.script = [(None, "unknown", "timeout")]
+    assert w.enqueue("task:one", 1)["status"] == "enqueued"
+    w.outbox.deliver(w.generation)
+    assert w.row("task:one", 1)["status"] == "unknown"
+    if outbox_max == 2:
+        assert w.enqueue("task:filler", 1)["status"] == "enqueued"
+    assert w.enqueue("task:two", 1)["status"] == "deferred"
+    w.now += 700
+    w.plan = {"version": 2, "unsigned": w.unsigned("task:one@2", created_at=w.now)}
+    w.outbox.replan = lambda subject: w.plan if subject == "task:one" else None  # nothing new for the filler
+    return w
+
+
+def _resident(w):
+    return [r for r in w.rows() if r["status"] in ("pending", "in_flight", "unknown")]
+
+
+def _state_mark(w):
+    [mark] = [m for m in w.rows("buzz_outbox_watermarks") if m["cls"] == "state"]
+    return mark
+
+
+def test_a3c_1_a_same_subject_replacement_passes_a_standing_deferral_within_capacity(tmp_path):
+    w = _full_unknown_with_a_deferral(tmp_path)
+    mark = _state_mark(w)
+    assert mark["deferred"] is True and mark["last"] == ["task:one", 1]
+    seen = []
+    real = w.relay.publish
+
+    def spying(event):
+        row = w.row("task:one", 2)  # what is durably stored at the moment of the send
+        seen.append((row["status"], row["event"]))
+        return real(event)
+
+    w.relay.publish = spying
+    counts = w.outbox.deliver(w.generation)  # v1 is unknown past the window: no match, so v2 replaces it
+    assert counts["replanned"] == 1 and counts["superseded"] == 1
+    assert [(r["subject"], r["version"], r["status"]) for r in _resident(w)] == [("task:one", 2, "pending")]
+    assert len(_resident(w)) <= w.outbox.outbox_max  # the replacement did not exceed the bound
+    assert w.row("task:one", 1)["status"] == "superseded" and w.row("task:one", 1)["reclaimed"] is True
+    assert _state_mark(w) == mark  # the watermark neither advanced nor cleared
+    assert w.relay.published == [w.relay.published[0]] and seen == []  # stored, not yet sent in that pass
+    w.outbox.deliver(w.generation)
+    assert seen == [("pending", w.relay.published[-1])] and w.relay.published[-1]["content"] == "task:one@2"
+    assert w.row("task:one", 2)["status"] == "acknowledged"
+    assert _state_mark(w) == mark and w.row("task:two", 1) is None  # deferred work is still only identified
+
+
+def test_a3c_2_after_the_replacement_the_deferred_subject_regenerates_oldest_first_without_duplicates(tmp_path):
+    w = _full_unknown_with_a_deferral(tmp_path)
+    w.outbox.deliver(w.generation)
+    w.outbox.deliver(w.generation)  # v2 acknowledged: capacity is free
+    calls = []
+
+    def regenerate(cls, after):
+        calls.append((cls, after))
+        if cls != "state":
+            return []
+        assert after == ["task:one", 1]  # the watermark still names the last op enqueued before the deferral
+        return [{"subject": "task:two", "version": 1, "unsigned": w.unsigned("task:two@1")}]
+
+    assert w.outbox.recover_deferred(w.generation, regenerate) == {"state": 1}
+    assert _state_mark(w)["deferred"] is False
+    w.outbox.deliver(w.generation)
+    assert w.row("task:two", 1)["status"] == "acknowledged"
+    assert w.relay.published[-1]["content"] == "task:two@1"
+    assert w.outbox.recover_deferred(w.generation, regenerate) == {}  # replay: nothing deferred, nothing repeated
+    for subject, version in (("task:one", 2), ("task:two", 1)):  # each logical subject was sent exactly once
+        assert sum(e["content"] == f"{subject}@{version}" for e in w.relay.published) == 1
+    assert sorted((r["subject"], r["version"]) for r in w.rows()) == [("task:one", 1), ("task:one", 2), ("task:two", 1)]
+
+
+def test_a3c_3_the_exception_is_a_replacement_not_admission_through_a_full_outbox(tmp_path):
+    w = _full_unknown_with_a_deferral(tmp_path, outbox_max=2)
+    w.outbox.deliver(w.generation)  # replaces task:one v1 (resident 2 -> 2)
+    assert sorted((r["subject"], r["version"]) for r in _resident(w)) == [("task:filler", 1), ("task:one", 2)]
+    assert w.enqueue("task:three", 1)["status"] == "deferred"  # an unrelated new subject stays deferred
+    assert w.enqueue("task:two", 1)["status"] == "deferred"
+    assert w.enqueue("task:one", 3)["status"] == "enqueued"  # the pending v2 is replaced by v3: still capacity-neutral
+    assert len(_resident(w)) == 2 and _state_mark(w)["deferred"] is True and _state_mark(w)["last"] == ["task:filler", 1]
+    assert w.enqueue("task:one", 0)["status"] == "stale"
+    assert w.row("task:three", 1) is None and w.row("task:two", 1) is None
+    assert w.outbox.outbox_max == 2
+
+
+def test_a3c_4_the_default_capacity_bound_still_applies_to_a_replacement(tmp_path):
+    w = World(tmp_path)  # the default bound
+    assert w.outbox.outbox_max == 2000
+    w.outbox.outbox_max = 2  # the same branch at a small bound: the resident count never exceeds it
+    w.relay.script = [(None, "unknown", "timeout")]
+    w.enqueue("task:one", 1)
+    w.outbox.deliver(w.generation)
+    w.enqueue("task:filler", 1)
+    assert w.enqueue("task:two", 1)["status"] == "deferred"
+    w.now += 700
+    w.outbox.replan = lambda subject: {"version": 2, "unsigned": w.unsigned("task:one@2", created_at=w.now)} \
+        if subject == "task:one" else None
+    w.outbox.deliver(w.generation)
+    assert sorted((r["subject"], r["version"]) for r in _resident(w)) == [("task:filler", 1), ("task:one", 2)]
+
+
+def test_a3c_5_a_replacement_under_a_stale_generation_commits_nothing(tmp_path):
+    w = _full_unknown_with_a_deferral(tmp_path)
+    with w.store.transaction() as tx:
+        w.lease.acquire(tx, "bridge-1", w.now + 1, 60)  # a restarted bridge fences its predecessor
+    before = w.digest()
+    with pytest.raises(ContractError, match="bridge_lease_lost"):
+        w.outbox.deliver(w.generation)
+    with pytest.raises(ContractError, match="bridge_lease_lost"):
+        with w.store.transaction() as tx:
+            w.outbox.enqueue(tx, w.generation, "task:one", 2, w.unsigned("task:one@2"), "state")
+    assert w.digest() == before and w.row("task:one", 2) is None
+    assert w.row("task:one", 1)["status"] == "unknown" and _state_mark(w)["deferred"] is True
+
+
+def test_a3c_6_without_a_deferral_the_unknown_state_still_replans_and_delivers(tmp_path):
+    w = World(tmp_path, outbox_max=1)  # the positive control: no deferral outstanding
+    w.relay.script = [(None, "unknown", "timeout")]
+    w.enqueue("task:one", 1)
+    w.outbox.deliver(w.generation)
+    w.now += 700
+    w.plan = {"version": 2, "unsigned": w.unsigned("task:one@2", created_at=w.now)}
+    w.outbox.deliver(w.generation)
+    w.outbox.deliver(w.generation)
+    assert w.row("task:one", 1)["status"] == "superseded" and w.row("task:one", 2)["status"] == "acknowledged"
