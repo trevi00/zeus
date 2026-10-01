@@ -1,0 +1,5802 @@
+{
+ "cases_per_group": {
+  "e1_forwards_progress": 18,
+  "e2_binding": 30,
+  "e3_inspect_identity": 53,
+  "e4_inspect_checks": 49,
+  "e5_fence_recording": 23,
+  "e6_require_all_checked": 32
+ },
+ "e1_forwards_progress": {
+  "bound_method_declared": {
+   "is_bool": true,
+   "value": true
+  },
+  "bound_method_keywords": {
+   "is_bool": true,
+   "value": true
+  },
+  "bound_method_legacy": {
+   "is_bool": true,
+   "value": false
+  },
+  "bound_method_profiled": {
+   "is_bool": true,
+   "value": true
+  },
+  "callable_instance_declared": {
+   "is_bool": true,
+   "value": true
+  },
+  "callable_instance_legacy": {
+   "is_bool": true,
+   "value": false
+  },
+  "declared": {
+   "is_bool": true,
+   "value": true
+  },
+  "invalid_signature_type_error": {
+   "is_bool": true,
+   "value": false
+  },
+  "keyword_only": {
+   "is_bool": true,
+   "value": true
+  },
+  "lambda_default": {
+   "is_bool": true,
+   "value": true
+  },
+  "legacy": {
+   "is_bool": true,
+   "value": false
+  },
+  "none": {
+   "is_bool": true,
+   "value": false
+  },
+  "not_callable": {
+   "is_bool": true,
+   "value": false
+  },
+  "other_name": {
+   "is_bool": true,
+   "value": false
+  },
+  "positional_only": {
+   "is_bool": true,
+   "value": true
+  },
+  "uninspectable_value_error": {
+   "is_bool": true,
+   "value": false
+  },
+  "var_keyword": {
+   "is_bool": true,
+   "value": true
+  },
+  "var_positional_only": {
+   "is_bool": true,
+   "value": false
+  }
+ },
+ "e2_binding": {
+  "binding_cwd_path_object": {
+   "after": {
+    "buckets": {
+     "evidence_inspection_notices": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945",
+     "evidence_inspections": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945"
+    },
+    "rows": {
+     "evidence_inspection_notices": 0,
+     "evidence_inspections": 0
+    },
+    "store": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945"
+   },
+   "before": {
+    "buckets": {
+     "evidence_inspection_notices": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945",
+     "evidence_inspections": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945"
+    },
+    "rows": {
+     "evidence_inspection_notices": 0,
+     "evidence_inspections": 0
+    },
+    "store": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945"
+   },
+   "leaks_canary": false,
+   "nothing_written": true,
+   "value": {
+    "attempt": 1,
+    "base": "bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb",
+    "generation": 1,
+    "owner": "owner-1",
+    "source_revision": "cccccccccccccccccccccccccccccccccccccccc",
+    "task_id": "task-1",
+    "tree": "dddddddddddddddddddddddddddddddddddddddd",
+    "workspace": "/fixture/p"
+   }
+  },
+  "binding_defaults": {
+   "after": {
+    "buckets": {
+     "evidence_inspection_notices": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945",
+     "evidence_inspections": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945"
+    },
+    "rows": {
+     "evidence_inspection_notices": 0,
+     "evidence_inspections": 0
+    },
+    "store": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945"
+   },
+   "before": {
+    "buckets": {
+     "evidence_inspection_notices": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945",
+     "evidence_inspections": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945"
+    },
+    "rows": {
+     "evidence_inspection_notices": 0,
+     "evidence_inspections": 0
+    },
+    "store": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945"
+   },
+   "leaks_canary": false,
+   "nothing_written": true,
+   "value": {
+    "attempt": 0,
+    "base": null,
+    "generation": 0,
+    "owner": null,
+    "source_revision": "cccccccccccccccccccccccccccccccccccccccc",
+    "task_id": "t",
+    "tree": null,
+    "workspace": "ws"
+   }
+  },
+  "binding_extra_keys_ignored": {
+   "after": {
+    "buckets": {
+     "evidence_inspection_notices": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945",
+     "evidence_inspections": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945"
+    },
+    "rows": {
+     "evidence_inspection_notices": 0,
+     "evidence_inspections": 0
+    },
+    "store": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945"
+   },
+   "before": {
+    "buckets": {
+     "evidence_inspection_notices": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945",
+     "evidence_inspections": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945"
+    },
+    "rows": {
+     "evidence_inspection_notices": 0,
+     "evidence_inspections": 0
+    },
+    "store": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945"
+   },
+   "leaks_canary": false,
+   "nothing_written": true,
+   "value": {
+    "attempt": 1,
+    "base": "bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb",
+    "generation": 1,
+    "owner": "owner-1",
+    "source_revision": "cccccccccccccccccccccccccccccccccccccccc",
+    "task_id": "task-1",
+    "tree": "dddddddddddddddddddddddddddddddddddddddd",
+    "workspace": "/fixture/ws"
+   }
+  },
+  "binding_through_the_instance": {
+   "after": {
+    "buckets": {
+     "evidence_inspection_notices": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945",
+     "evidence_inspections": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945"
+    },
+    "rows": {
+     "evidence_inspection_notices": 0,
+     "evidence_inspections": 0
+    },
+    "store": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945"
+   },
+   "before": {
+    "buckets": {
+     "evidence_inspection_notices": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945",
+     "evidence_inspections": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945"
+    },
+    "rows": {
+     "evidence_inspection_notices": 0,
+     "evidence_inspections": 0
+    },
+    "store": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945"
+   },
+   "leaks_canary": false,
+   "nothing_written": true,
+   "value": {
+    "attempt": 1,
+    "base": "bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb",
+    "generation": 1,
+    "owner": "owner-1",
+    "source_revision": "cccccccccccccccccccccccccccccccccccccccc",
+    "task_id": "task-1",
+    "tree": "dddddddddddddddddddddddddddddddddddddddd",
+    "workspace": "/fixture/ws"
+   }
+  },
+  "binding_valid": {
+   "after": {
+    "buckets": {
+     "evidence_inspection_notices": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945",
+     "evidence_inspections": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945"
+    },
+    "rows": {
+     "evidence_inspection_notices": 0,
+     "evidence_inspections": 0
+    },
+    "store": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945"
+   },
+   "before": {
+    "buckets": {
+     "evidence_inspection_notices": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945",
+     "evidence_inspections": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945"
+    },
+    "rows": {
+     "evidence_inspection_notices": 0,
+     "evidence_inspections": 0
+    },
+    "store": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945"
+   },
+   "leaks_canary": false,
+   "nothing_written": true,
+   "value": {
+    "attempt": 1,
+    "base": "bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb",
+    "generation": 1,
+    "owner": "owner-1",
+    "source_revision": "cccccccccccccccccccccccccccccccccccccccc",
+    "task_id": "task-1",
+    "tree": "dddddddddddddddddddddddddddddddddddddddd",
+    "workspace": "/fixture/ws"
+   }
+  },
+  "candidate_refused_empty": {
+   "after": {
+    "buckets": {
+     "evidence_inspection_notices": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945",
+     "evidence_inspections": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945"
+    },
+    "rows": {
+     "evidence_inspection_notices": 0,
+     "evidence_inspections": 0
+    },
+    "store": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945"
+   },
+   "before": {
+    "buckets": {
+     "evidence_inspection_notices": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945",
+     "evidence_inspections": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945"
+    },
+    "rows": {
+     "evidence_inspection_notices": 0,
+     "evidence_inspections": 0
+    },
+    "store": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945"
+   },
+   "leaks_canary": false,
+   "message": "Evidence inspection requires the captured candidate revision",
+   "nothing_written": true,
+   "raised": "ContractError"
+  },
+  "candidate_refused_none": {
+   "after": {
+    "buckets": {
+     "evidence_inspection_notices": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945",
+     "evidence_inspections": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945"
+    },
+    "rows": {
+     "evidence_inspection_notices": 0,
+     "evidence_inspections": 0
+    },
+    "store": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945"
+   },
+   "before": {
+    "buckets": {
+     "evidence_inspection_notices": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945",
+     "evidence_inspections": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945"
+    },
+    "rows": {
+     "evidence_inspection_notices": 0,
+     "evidence_inspections": 0
+    },
+    "store": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945"
+   },
+   "leaks_canary": false,
+   "message": "Evidence inspection requires the captured candidate revision",
+   "nothing_written": true,
+   "raised": "ContractError"
+  },
+  "candidate_refused_not_a_dict": {
+   "after": {
+    "buckets": {
+     "evidence_inspection_notices": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945",
+     "evidence_inspections": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945"
+    },
+    "rows": {
+     "evidence_inspection_notices": 0,
+     "evidence_inspections": 0
+    },
+    "store": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945"
+   },
+   "before": {
+    "buckets": {
+     "evidence_inspection_notices": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945",
+     "evidence_inspections": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945"
+    },
+    "rows": {
+     "evidence_inspection_notices": 0,
+     "evidence_inspections": 0
+    },
+    "store": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945"
+   },
+   "leaks_canary": false,
+   "message": "Evidence inspection requires the captured candidate revision",
+   "nothing_written": true,
+   "raised": "ContractError"
+  },
+  "candidate_refused_revision_bytes": {
+   "after": {
+    "buckets": {
+     "evidence_inspection_notices": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945",
+     "evidence_inspections": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945"
+    },
+    "rows": {
+     "evidence_inspection_notices": 0,
+     "evidence_inspections": 0
+    },
+    "store": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945"
+   },
+   "before": {
+    "buckets": {
+     "evidence_inspection_notices": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945",
+     "evidence_inspections": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945"
+    },
+    "rows": {
+     "evidence_inspection_notices": 0,
+     "evidence_inspections": 0
+    },
+    "store": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945"
+   },
+   "leaks_canary": false,
+   "message": "Evidence inspection requires the captured candidate revision",
+   "nothing_written": true,
+   "raised": "ContractError"
+  },
+  "candidate_refused_revision_empty": {
+   "after": {
+    "buckets": {
+     "evidence_inspection_notices": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945",
+     "evidence_inspections": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945"
+    },
+    "rows": {
+     "evidence_inspection_notices": 0,
+     "evidence_inspections": 0
+    },
+    "store": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945"
+   },
+   "before": {
+    "buckets": {
+     "evidence_inspection_notices": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945",
+     "evidence_inspections": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945"
+    },
+    "rows": {
+     "evidence_inspection_notices": 0,
+     "evidence_inspections": 0
+    },
+    "store": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945"
+   },
+   "leaks_canary": false,
+   "message": "Evidence inspection requires the captured candidate revision",
+   "nothing_written": true,
+   "raised": "ContractError"
+  },
+  "candidate_refused_revision_none": {
+   "after": {
+    "buckets": {
+     "evidence_inspection_notices": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945",
+     "evidence_inspections": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945"
+    },
+    "rows": {
+     "evidence_inspection_notices": 0,
+     "evidence_inspections": 0
+    },
+    "store": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945"
+   },
+   "before": {
+    "buckets": {
+     "evidence_inspection_notices": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945",
+     "evidence_inspections": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945"
+    },
+    "rows": {
+     "evidence_inspection_notices": 0,
+     "evidence_inspections": 0
+    },
+    "store": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945"
+   },
+   "leaks_canary": false,
+   "message": "Evidence inspection requires the captured candidate revision",
+   "nothing_written": true,
+   "raised": "ContractError"
+  },
+  "candidate_refused_revision_not_text": {
+   "after": {
+    "buckets": {
+     "evidence_inspection_notices": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945",
+     "evidence_inspections": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945"
+    },
+    "rows": {
+     "evidence_inspection_notices": 0,
+     "evidence_inspections": 0
+    },
+    "store": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945"
+   },
+   "before": {
+    "buckets": {
+     "evidence_inspection_notices": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945",
+     "evidence_inspections": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945"
+    },
+    "rows": {
+     "evidence_inspection_notices": 0,
+     "evidence_inspections": 0
+    },
+    "store": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945"
+   },
+   "leaks_canary": false,
+   "message": "Evidence inspection requires the captured candidate revision",
+   "nothing_written": true,
+   "raised": "ContractError"
+  },
+  "inspect_binding_refusal_after_progress_start": {
+   "after": {
+    "buckets": {
+     "evidence_inspection_notices": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945",
+     "evidence_inspections": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945"
+    },
+    "rows": {
+     "evidence_inspection_notices": 0,
+     "evidence_inspections": 0
+    },
+    "store": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945"
+   },
+   "before": {
+    "buckets": {
+     "evidence_inspection_notices": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945",
+     "evidence_inspections": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945"
+    },
+    "rows": {
+     "evidence_inspection_notices": 0,
+     "evidence_inspections": 0
+    },
+    "store": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945"
+   },
+   "inspector_calls": [
+    "progress"
+   ],
+   "leaks_canary": false,
+   "message": "Evidence inspection requires a typed execution lease",
+   "nothing_written": true,
+   "raised": "ContractError",
+   "transactions": 0
+  },
+  "inspect_binding_refusal_candidate": {
+   "after": {
+    "buckets": {
+     "evidence_inspection_notices": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945",
+     "evidence_inspections": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945"
+    },
+    "rows": {
+     "evidence_inspection_notices": 0,
+     "evidence_inspections": 0
+    },
+    "store": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945"
+   },
+   "before": {
+    "buckets": {
+     "evidence_inspection_notices": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945",
+     "evidence_inspections": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945"
+    },
+    "rows": {
+     "evidence_inspection_notices": 0,
+     "evidence_inspections": 0
+    },
+    "store": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945"
+   },
+   "inspector_calls": [],
+   "leaks_canary": false,
+   "message": "Evidence inspection requires the captured candidate revision",
+   "nothing_written": true,
+   "raised": "ContractError",
+   "transactions": 0
+  },
+  "inspect_binding_refusal_lease": {
+   "after": {
+    "buckets": {
+     "evidence_inspection_notices": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945",
+     "evidence_inspections": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945"
+    },
+    "rows": {
+     "evidence_inspection_notices": 0,
+     "evidence_inspections": 0
+    },
+    "store": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945"
+   },
+   "before": {
+    "buckets": {
+     "evidence_inspection_notices": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945",
+     "evidence_inspections": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945"
+    },
+    "rows": {
+     "evidence_inspection_notices": 0,
+     "evidence_inspections": 0
+    },
+    "store": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945"
+   },
+   "inspector_calls": [],
+   "leaks_canary": false,
+   "message": "Evidence inspection requires a typed execution lease",
+   "nothing_written": true,
+   "raised": "ContractError",
+   "transactions": 0
+  },
+  "lease_refused_attempt_bool": {
+   "after": {
+    "buckets": {
+     "evidence_inspection_notices": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945",
+     "evidence_inspections": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945"
+    },
+    "rows": {
+     "evidence_inspection_notices": 0,
+     "evidence_inspections": 0
+    },
+    "store": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945"
+   },
+   "before": {
+    "buckets": {
+     "evidence_inspection_notices": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945",
+     "evidence_inspections": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945"
+    },
+    "rows": {
+     "evidence_inspection_notices": 0,
+     "evidence_inspections": 0
+    },
+    "store": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945"
+   },
+   "leaks_canary": false,
+   "message": "Evidence inspection requires a typed execution lease",
+   "nothing_written": true,
+   "raised": "ContractError"
+  },
+  "lease_refused_attempt_text": {
+   "after": {
+    "buckets": {
+     "evidence_inspection_notices": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945",
+     "evidence_inspections": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945"
+    },
+    "rows": {
+     "evidence_inspection_notices": 0,
+     "evidence_inspections": 0
+    },
+    "store": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945"
+   },
+   "before": {
+    "buckets": {
+     "evidence_inspection_notices": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945",
+     "evidence_inspections": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945"
+    },
+    "rows": {
+     "evidence_inspection_notices": 0,
+     "evidence_inspections": 0
+    },
+    "store": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945"
+   },
+   "leaks_canary": false,
+   "message": "Evidence inspection requires a typed execution lease",
+   "nothing_written": true,
+   "raised": "ContractError"
+  },
+  "lease_refused_generation_bool": {
+   "after": {
+    "buckets": {
+     "evidence_inspection_notices": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945",
+     "evidence_inspections": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945"
+    },
+    "rows": {
+     "evidence_inspection_notices": 0,
+     "evidence_inspections": 0
+    },
+    "store": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945"
+   },
+   "before": {
+    "buckets": {
+     "evidence_inspection_notices": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945",
+     "evidence_inspections": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945"
+    },
+    "rows": {
+     "evidence_inspection_notices": 0,
+     "evidence_inspections": 0
+    },
+    "store": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945"
+   },
+   "leaks_canary": false,
+   "message": "Evidence inspection requires a typed execution lease",
+   "nothing_written": true,
+   "raised": "ContractError"
+  },
+  "lease_refused_generation_float": {
+   "after": {
+    "buckets": {
+     "evidence_inspection_notices": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945",
+     "evidence_inspections": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945"
+    },
+    "rows": {
+     "evidence_inspection_notices": 0,
+     "evidence_inspections": 0
+    },
+    "store": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945"
+   },
+   "before": {
+    "buckets": {
+     "evidence_inspection_notices": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945",
+     "evidence_inspections": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945"
+    },
+    "rows": {
+     "evidence_inspection_notices": 0,
+     "evidence_inspections": 0
+    },
+    "store": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945"
+   },
+   "leaks_canary": false,
+   "message": "Evidence inspection requires a typed execution lease",
+   "nothing_written": true,
+   "raised": "ContractError"
+  },
+  "lease_refused_generation_text": {
+   "after": {
+    "buckets": {
+     "evidence_inspection_notices": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945",
+     "evidence_inspections": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945"
+    },
+    "rows": {
+     "evidence_inspection_notices": 0,
+     "evidence_inspections": 0
+    },
+    "store": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945"
+   },
+   "before": {
+    "buckets": {
+     "evidence_inspection_notices": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945",
+     "evidence_inspections": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945"
+    },
+    "rows": {
+     "evidence_inspection_notices": 0,
+     "evidence_inspections": 0
+    },
+    "store": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945"
+   },
+   "leaks_canary": false,
+   "message": "Evidence inspection requires a typed execution lease",
+   "nothing_written": true,
+   "raised": "ContractError"
+  },
+  "lease_refused_id_none": {
+   "after": {
+    "buckets": {
+     "evidence_inspection_notices": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945",
+     "evidence_inspections": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945"
+    },
+    "rows": {
+     "evidence_inspection_notices": 0,
+     "evidence_inspections": 0
+    },
+    "store": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945"
+   },
+   "before": {
+    "buckets": {
+     "evidence_inspection_notices": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945",
+     "evidence_inspections": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945"
+    },
+    "rows": {
+     "evidence_inspection_notices": 0,
+     "evidence_inspections": 0
+    },
+    "store": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945"
+   },
+   "leaks_canary": false,
+   "message": "Evidence inspection requires a typed execution lease",
+   "nothing_written": true,
+   "raised": "ContractError"
+  },
+  "lease_refused_id_not_text": {
+   "after": {
+    "buckets": {
+     "evidence_inspection_notices": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945",
+     "evidence_inspections": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945"
+    },
+    "rows": {
+     "evidence_inspection_notices": 0,
+     "evidence_inspections": 0
+    },
+    "store": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945"
+   },
+   "before": {
+    "buckets": {
+     "evidence_inspection_notices": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945",
+     "evidence_inspections": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945"
+    },
+    "rows": {
+     "evidence_inspection_notices": 0,
+     "evidence_inspections": 0
+    },
+    "store": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945"
+   },
+   "leaks_canary": false,
+   "message": "Evidence inspection requires a typed execution lease",
+   "nothing_written": true,
+   "raised": "ContractError"
+  },
+  "lease_refused_m7_only_the_id": {
+   "after": {
+    "buckets": {
+     "evidence_inspection_notices": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945",
+     "evidence_inspections": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945"
+    },
+    "rows": {
+     "evidence_inspection_notices": 0,
+     "evidence_inspections": 0
+    },
+    "store": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945"
+   },
+   "before": {
+    "buckets": {
+     "evidence_inspection_notices": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945",
+     "evidence_inspections": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945"
+    },
+    "rows": {
+     "evidence_inspection_notices": 0,
+     "evidence_inspections": 0
+    },
+    "store": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945"
+   },
+   "leaks_canary": false,
+   "message": "Evidence inspection requires a typed execution lease",
+   "nothing_written": true,
+   "raised": "ContractError"
+  },
+  "lease_refused_no_attempt": {
+   "after": {
+    "buckets": {
+     "evidence_inspection_notices": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945",
+     "evidence_inspections": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945"
+    },
+    "rows": {
+     "evidence_inspection_notices": 0,
+     "evidence_inspections": 0
+    },
+    "store": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945"
+   },
+   "before": {
+    "buckets": {
+     "evidence_inspection_notices": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945",
+     "evidence_inspections": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945"
+    },
+    "rows": {
+     "evidence_inspection_notices": 0,
+     "evidence_inspections": 0
+    },
+    "store": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945"
+   },
+   "leaks_canary": false,
+   "message": "Evidence inspection requires a typed execution lease",
+   "nothing_written": true,
+   "raised": "ContractError"
+  },
+  "lease_refused_no_generation": {
+   "after": {
+    "buckets": {
+     "evidence_inspection_notices": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945",
+     "evidence_inspections": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945"
+    },
+    "rows": {
+     "evidence_inspection_notices": 0,
+     "evidence_inspections": 0
+    },
+    "store": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945"
+   },
+   "before": {
+    "buckets": {
+     "evidence_inspection_notices": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945",
+     "evidence_inspections": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945"
+    },
+    "rows": {
+     "evidence_inspection_notices": 0,
+     "evidence_inspections": 0
+    },
+    "store": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945"
+   },
+   "leaks_canary": false,
+   "message": "Evidence inspection requires a typed execution lease",
+   "nothing_written": true,
+   "raised": "ContractError"
+  },
+  "lease_refused_no_id": {
+   "after": {
+    "buckets": {
+     "evidence_inspection_notices": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945",
+     "evidence_inspections": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945"
+    },
+    "rows": {
+     "evidence_inspection_notices": 0,
+     "evidence_inspections": 0
+    },
+    "store": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945"
+   },
+   "before": {
+    "buckets": {
+     "evidence_inspection_notices": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945",
+     "evidence_inspections": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945"
+    },
+    "rows": {
+     "evidence_inspection_notices": 0,
+     "evidence_inspections": 0
+    },
+    "store": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945"
+   },
+   "leaks_canary": false,
+   "message": "Evidence inspection requires a typed execution lease",
+   "nothing_written": true,
+   "raised": "ContractError"
+  },
+  "lease_refused_none": {
+   "after": {
+    "buckets": {
+     "evidence_inspection_notices": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945",
+     "evidence_inspections": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945"
+    },
+    "rows": {
+     "evidence_inspection_notices": 0,
+     "evidence_inspections": 0
+    },
+    "store": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945"
+   },
+   "before": {
+    "buckets": {
+     "evidence_inspection_notices": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945",
+     "evidence_inspections": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945"
+    },
+    "rows": {
+     "evidence_inspection_notices": 0,
+     "evidence_inspections": 0
+    },
+    "store": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945"
+   },
+   "leaks_canary": false,
+   "message": "Evidence inspection requires a typed execution lease",
+   "nothing_written": true,
+   "raised": "ContractError"
+  },
+  "lease_refused_not_a_dict": {
+   "after": {
+    "buckets": {
+     "evidence_inspection_notices": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945",
+     "evidence_inspections": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945"
+    },
+    "rows": {
+     "evidence_inspection_notices": 0,
+     "evidence_inspections": 0
+    },
+    "store": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945"
+   },
+   "before": {
+    "buckets": {
+     "evidence_inspection_notices": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945",
+     "evidence_inspections": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945"
+    },
+    "rows": {
+     "evidence_inspection_notices": 0,
+     "evidence_inspections": 0
+    },
+    "store": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945"
+   },
+   "leaks_canary": false,
+   "message": "Evidence inspection requires a typed execution lease",
+   "nothing_written": true,
+   "raised": "ContractError"
+  },
+  "order_lease_before_candidate": {
+   "after": {
+    "buckets": {
+     "evidence_inspection_notices": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945",
+     "evidence_inspections": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945"
+    },
+    "rows": {
+     "evidence_inspection_notices": 0,
+     "evidence_inspections": 0
+    },
+    "store": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945"
+   },
+   "before": {
+    "buckets": {
+     "evidence_inspection_notices": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945",
+     "evidence_inspections": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945"
+    },
+    "rows": {
+     "evidence_inspection_notices": 0,
+     "evidence_inspections": 0
+    },
+    "store": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945"
+   },
+   "leaks_canary": false,
+   "message": "Evidence inspection requires a typed execution lease",
+   "nothing_written": true,
+   "raised": "ContractError"
+  },
+  "state_on_instance": {
+   "inspector_is_given": true,
+   "store_is_given": true
+  }
+ },
+ "e3_inspect_identity": {
+  "authority_text_has_no_canary": true,
+  "cache_hit_returns_the_stored_row": {
+   "equal": true,
+   "inspector_calls": [
+    "snapshot",
+    "inspect",
+    "snapshot"
+   ],
+   "transactions": 3,
+   "unchanged": true
+  },
+  "claims_tuple_stored_as_list": {
+   "equal": true,
+   "inspector_received": "list",
+   "same_id_as_list": true,
+   "type": "list"
+  },
+  "first_inspection": {
+   "calls": [
+    [
+     "snapshot",
+     "/fixture/ws"
+    ],
+    [
+     "inspect",
+     [
+      {
+       "argv": [
+        "python",
+        "-m",
+        "pytest",
+        "-q"
+       ],
+       "expected_exit": 0,
+       "id": "k1",
+       "kind": "command",
+       "origin": "free_text"
+      },
+      {
+       "id": "k2",
+       "kind": "file",
+       "origin": "structured",
+       "path": "docs/note.md",
+       "range": null,
+       "sha256": "ffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff"
+      }
+     ],
+     "/fixture/ws",
+     {
+      "attempt": 1,
+      "base": "bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb",
+      "generation": 1,
+      "owner": "owner-1",
+      "source_revision": "cccccccccccccccccccccccccccccccccccccccc",
+      "task_id": "task-1",
+      "tree": "dddddddddddddddddddddddddddddddddddddddd",
+      "workspace": "/fixture/ws"
+     },
+     {
+      "PATH": "/fixture/bin",
+      "PYTHONIOENCODING": "utf-8"
+     },
+     "/fixture/bin/python",
+     {}
+    ],
+    [
+     "snapshot",
+     "/fixture/ws"
+    ]
+   ],
+   "id_is_the_v4_key": true,
+   "inspector_calls": [
+    "snapshot",
+    "inspect"
+   ],
+   "row": {
+    "authority": "deterministic inspection of claims; not historical truth, semantic review or human acceptance",
+    "binding": {
+     "attempt": 1,
+     "base": "bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb",
+     "generation": 1,
+     "owner": "owner-1",
+     "source_revision": "cccccccccccccccccccccccccccccccccccccccc",
+     "task_id": "task-1",
+     "tree": "dddddddddddddddddddddddddddddddddddddddd",
+     "workspace": "/fixture/ws"
+    },
+    "claims": [
+     {
+      "argv": [
+       "python",
+       "-m",
+       "pytest",
+       "-q"
+      ],
+      "expected_exit": 0,
+      "id": "k1",
+      "kind": "command",
+      "origin": "free_text"
+     },
+     {
+      "id": "k2",
+      "kind": "file",
+      "origin": "structured",
+      "path": "docs/note.md",
+      "range": null,
+      "sha256": "ffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff"
+     }
+    ],
+    "context": {
+     "attempt": 1,
+     "base": "bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb",
+     "cwd": "/fixture/ws",
+     "environment": [
+      "PATH",
+      "PYTHONIOENCODING"
+     ],
+     "environment_digest": "eeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee",
+     "generation": 1,
+     "interpreter": "/fixture/bin/python",
+     "owner": "owner-1",
+     "python": "3.fixture",
+     "pythonpath": null,
+     "source_revision": "cccccccccccccccccccccccccccccccccccccccc",
+     "task_id": "task-1",
+     "tree": "dddddddddddddddddddddddddddddddddddddddd",
+     "workspace": "/fixture/ws"
+    },
+    "denominator": {
+     "checked": 2,
+     "claims": 2,
+     "error": 0,
+     "flake_pattern": 0,
+     "missing": 0,
+     "not_checked": 0,
+     "replay_failed": 0,
+     "unknown": 0,
+     "verified_mismatch": 0
+    },
+    "findings": [
+     {
+      "cause": "fixture checked",
+      "claim": {
+       "argv": [
+        "python",
+        "-m",
+        "pytest",
+        "-q"
+       ],
+       "expected_exit": 0,
+       "id": "k1",
+       "kind": "command",
+       "origin": "free_text"
+      },
+      "state": "checked"
+     },
+     {
+      "cause": "fixture checked",
+      "claim": {
+       "id": "k2",
+       "kind": "file",
+       "origin": "structured",
+       "path": "docs/note.md",
+       "range": null,
+       "sha256": "ffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff"
+      },
+      "state": "checked"
+     }
+    ],
+    "id": "7a324cd1f81eae65ea31ba0a4c31a01f3f0260fdc0258bc4e20f01c08294976b",
+    "inspector": {
+     "cwd": "/fixture/ws",
+     "environment_digest": "eeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee",
+     "environment_names": [
+      "PATH",
+      "PYTHONIOENCODING"
+     ],
+     "interpreter": "/fixture/bin/python",
+     "platform": "fixture-host",
+     "policy_hash": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+     "tool": {
+      "executable_digest": "xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx",
+      "implementation": "CPython",
+      "python": "3.fixture"
+     }
+    },
+    "policy_hash": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+    "recorded_at": "2026-09-22T00:00:00+00:00",
+    "verdict": "all_checked"
+   },
+   "state": {
+    "buckets": {
+     "evidence_inspection_notices": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945",
+     "evidence_inspections": "524a4acaee555278dd52de51d3541a896326e17faf72427428ac6113c5797292"
+    },
+    "rows": {
+     "evidence_inspection_notices": 0,
+     "evidence_inspections": 1
+    },
+    "store": "fc5af851c62390b44677d41eec69b7ec31a31c79d392372d95d8b8e26b507f58"
+   },
+   "stored_equals_row": true,
+   "transactions": 2
+  },
+  "identity_extra_identity_key": {
+   "inspector_in_row": true,
+   "is_the_v4_key": true,
+   "new_id": true
+  },
+  "identity_other_attempt": {
+   "is_the_v4_key": true,
+   "new_id": true
+  },
+  "identity_other_base": {
+   "is_the_v4_key": true,
+   "new_id": true
+  },
+  "identity_other_claims": {
+   "is_the_v4_key": true,
+   "new_id": true
+  },
+  "identity_other_cwd": {
+   "is_the_v4_key": true,
+   "new_id": true
+  },
+  "identity_other_cwd_in_identity": {
+   "inspector_in_row": true,
+   "is_the_v4_key": true,
+   "new_id": true
+  },
+  "identity_other_environment_digest": {
+   "inspector_in_row": true,
+   "is_the_v4_key": true,
+   "new_id": true
+  },
+  "identity_other_generation": {
+   "is_the_v4_key": true,
+   "new_id": true
+  },
+  "identity_other_interpreter": {
+   "inspector_in_row": true,
+   "is_the_v4_key": true,
+   "new_id": true
+  },
+  "identity_other_owner": {
+   "is_the_v4_key": true,
+   "new_id": true
+  },
+  "identity_other_platform": {
+   "inspector_in_row": true,
+   "is_the_v4_key": true,
+   "new_id": true
+  },
+  "identity_other_policy": {
+   "inspector_in_row": true,
+   "is_the_v4_key": true,
+   "new_id": true
+  },
+  "identity_other_revision": {
+   "is_the_v4_key": true,
+   "new_id": true
+  },
+  "identity_other_task": {
+   "is_the_v4_key": true,
+   "new_id": true
+  },
+  "identity_other_tool": {
+   "inspector_in_row": true,
+   "is_the_v4_key": true,
+   "new_id": true
+  },
+  "identity_other_tree": {
+   "is_the_v4_key": true,
+   "new_id": true
+  },
+  "identity_reordered_claims": {
+   "is_the_v4_key": true,
+   "new_id": true
+  },
+  "ids_distinct": true,
+  "other_cwd_keeps_the_older_row": {
+   "ids_differ": true,
+   "older_untouched": true,
+   "two_rows": true
+  },
+  "other_host_platform_recorded": {
+   "new_id": true,
+   "platform": "fixture-other-host"
+  },
+  "row_keys": [
+   "authority",
+   "binding",
+   "claims",
+   "context",
+   "denominator",
+   "findings",
+   "id",
+   "inspector",
+   "policy_hash",
+   "recorded_at",
+   "verdict"
+  ],
+  "snapshot_asked_once_with_the_cwd": {
+   "calls": [
+    [
+     "snapshot",
+     "/fixture/ws"
+    ],
+    [
+     "snapshot",
+     "/fixture/ws"
+    ]
+   ]
+  },
+  "snapshot_environment_digest_empty_passes_the_identity_check": {
+   "after": {
+    "buckets": {
+     "evidence_inspection_notices": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945",
+     "evidence_inspections": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945"
+    },
+    "rows": {
+     "evidence_inspection_notices": 0,
+     "evidence_inspections": 0
+    },
+    "store": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945"
+   },
+   "before": {
+    "buckets": {
+     "evidence_inspection_notices": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945",
+     "evidence_inspections": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945"
+    },
+    "rows": {
+     "evidence_inspection_notices": 0,
+     "evidence_inspections": 0
+    },
+    "store": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945"
+   },
+   "inspector_calls": [
+    "snapshot",
+    "inspect"
+   ],
+   "leaks_canary": false,
+   "message": "Inspector replayed under a different environment or interpreter than its identity",
+   "nothing_written": true,
+   "raised": "ContractError",
+   "transactions": 1
+  },
+  "snapshot_environment_digest_missing": {
+   "after": {
+    "buckets": {
+     "evidence_inspection_notices": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945",
+     "evidence_inspections": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945"
+    },
+    "rows": {
+     "evidence_inspection_notices": 0,
+     "evidence_inspections": 0
+    },
+    "store": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945"
+   },
+   "before": {
+    "buckets": {
+     "evidence_inspection_notices": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945",
+     "evidence_inspections": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945"
+    },
+    "rows": {
+     "evidence_inspection_notices": 0,
+     "evidence_inspections": 0
+    },
+    "store": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945"
+   },
+   "inspector_calls": [
+    "snapshot"
+   ],
+   "leaks_canary": false,
+   "message": "Inspector snapshot requires an identity with policy_hash, environment_digest and interpreter, and the environment values",
+   "nothing_written": true,
+   "raised": "ContractError",
+   "transactions": 0
+  },
+  "snapshot_environment_digest_not_text": {
+   "after": {
+    "buckets": {
+     "evidence_inspection_notices": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945",
+     "evidence_inspections": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945"
+    },
+    "rows": {
+     "evidence_inspection_notices": 0,
+     "evidence_inspections": 0
+    },
+    "store": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945"
+   },
+   "before": {
+    "buckets": {
+     "evidence_inspection_notices": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945",
+     "evidence_inspections": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945"
+    },
+    "rows": {
+     "evidence_inspection_notices": 0,
+     "evidence_inspections": 0
+    },
+    "store": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945"
+   },
+   "inspector_calls": [
+    "snapshot"
+   ],
+   "leaks_canary": false,
+   "message": "Inspector snapshot requires an identity with policy_hash, environment_digest and interpreter, and the environment values",
+   "nothing_written": true,
+   "raised": "ContractError",
+   "transactions": 0
+  },
+  "snapshot_environment_list": {
+   "after": {
+    "buckets": {
+     "evidence_inspection_notices": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945",
+     "evidence_inspections": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945"
+    },
+    "rows": {
+     "evidence_inspection_notices": 0,
+     "evidence_inspections": 0
+    },
+    "store": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945"
+   },
+   "before": {
+    "buckets": {
+     "evidence_inspection_notices": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945",
+     "evidence_inspections": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945"
+    },
+    "rows": {
+     "evidence_inspection_notices": 0,
+     "evidence_inspections": 0
+    },
+    "store": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945"
+   },
+   "inspector_calls": [
+    "snapshot"
+   ],
+   "leaks_canary": false,
+   "message": "Inspector snapshot requires an identity with policy_hash, environment_digest and interpreter, and the environment values",
+   "nothing_written": true,
+   "raised": "ContractError",
+   "transactions": 0
+  },
+  "snapshot_environment_none": {
+   "after": {
+    "buckets": {
+     "evidence_inspection_notices": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945",
+     "evidence_inspections": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945"
+    },
+    "rows": {
+     "evidence_inspection_notices": 0,
+     "evidence_inspections": 0
+    },
+    "store": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945"
+   },
+   "before": {
+    "buckets": {
+     "evidence_inspection_notices": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945",
+     "evidence_inspections": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945"
+    },
+    "rows": {
+     "evidence_inspection_notices": 0,
+     "evidence_inspections": 0
+    },
+    "store": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945"
+   },
+   "inspector_calls": [
+    "snapshot"
+   ],
+   "leaks_canary": false,
+   "message": "Inspector snapshot requires an identity with policy_hash, environment_digest and interpreter, and the environment values",
+   "nothing_written": true,
+   "raised": "ContractError",
+   "transactions": 0
+  },
+  "snapshot_identity_list": {
+   "after": {
+    "buckets": {
+     "evidence_inspection_notices": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945",
+     "evidence_inspections": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945"
+    },
+    "rows": {
+     "evidence_inspection_notices": 0,
+     "evidence_inspections": 0
+    },
+    "store": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945"
+   },
+   "before": {
+    "buckets": {
+     "evidence_inspection_notices": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945",
+     "evidence_inspections": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945"
+    },
+    "rows": {
+     "evidence_inspection_notices": 0,
+     "evidence_inspections": 0
+    },
+    "store": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945"
+   },
+   "inspector_calls": [
+    "snapshot"
+   ],
+   "leaks_canary": false,
+   "message": "Inspector snapshot requires an identity with policy_hash, environment_digest and interpreter, and the environment values",
+   "nothing_written": true,
+   "raised": "ContractError",
+   "transactions": 0
+  },
+  "snapshot_identity_missing": {
+   "after": {
+    "buckets": {
+     "evidence_inspection_notices": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945",
+     "evidence_inspections": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945"
+    },
+    "rows": {
+     "evidence_inspection_notices": 0,
+     "evidence_inspections": 0
+    },
+    "store": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945"
+   },
+   "before": {
+    "buckets": {
+     "evidence_inspection_notices": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945",
+     "evidence_inspections": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945"
+    },
+    "rows": {
+     "evidence_inspection_notices": 0,
+     "evidence_inspections": 0
+    },
+    "store": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945"
+   },
+   "inspector_calls": [
+    "snapshot"
+   ],
+   "leaks_canary": false,
+   "message": "'identity'",
+   "nothing_written": true,
+   "raised": "KeyError",
+   "transactions": 0
+  },
+  "snapshot_identity_none": {
+   "after": {
+    "buckets": {
+     "evidence_inspection_notices": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945",
+     "evidence_inspections": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945"
+    },
+    "rows": {
+     "evidence_inspection_notices": 0,
+     "evidence_inspections": 0
+    },
+    "store": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945"
+   },
+   "before": {
+    "buckets": {
+     "evidence_inspection_notices": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945",
+     "evidence_inspections": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945"
+    },
+    "rows": {
+     "evidence_inspection_notices": 0,
+     "evidence_inspections": 0
+    },
+    "store": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945"
+   },
+   "inspector_calls": [
+    "snapshot"
+   ],
+   "leaks_canary": false,
+   "message": "Inspector snapshot requires an identity with policy_hash, environment_digest and interpreter, and the environment values",
+   "nothing_written": true,
+   "raised": "ContractError",
+   "transactions": 0
+  },
+  "snapshot_interpreter_empty": {
+   "after": {
+    "buckets": {
+     "evidence_inspection_notices": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945",
+     "evidence_inspections": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945"
+    },
+    "rows": {
+     "evidence_inspection_notices": 0,
+     "evidence_inspections": 0
+    },
+    "store": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945"
+   },
+   "before": {
+    "buckets": {
+     "evidence_inspection_notices": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945",
+     "evidence_inspections": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945"
+    },
+    "rows": {
+     "evidence_inspection_notices": 0,
+     "evidence_inspections": 0
+    },
+    "store": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945"
+   },
+   "inspector_calls": [
+    "snapshot"
+   ],
+   "leaks_canary": false,
+   "message": "Inspector snapshot requires an identity with policy_hash, environment_digest and interpreter, and the environment values",
+   "nothing_written": true,
+   "raised": "ContractError",
+   "transactions": 0
+  },
+  "snapshot_interpreter_missing": {
+   "after": {
+    "buckets": {
+     "evidence_inspection_notices": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945",
+     "evidence_inspections": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945"
+    },
+    "rows": {
+     "evidence_inspection_notices": 0,
+     "evidence_inspections": 0
+    },
+    "store": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945"
+   },
+   "before": {
+    "buckets": {
+     "evidence_inspection_notices": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945",
+     "evidence_inspections": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945"
+    },
+    "rows": {
+     "evidence_inspection_notices": 0,
+     "evidence_inspections": 0
+    },
+    "store": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945"
+   },
+   "inspector_calls": [
+    "snapshot"
+   ],
+   "leaks_canary": false,
+   "message": "Inspector snapshot requires an identity with policy_hash, environment_digest and interpreter, and the environment values",
+   "nothing_written": true,
+   "raised": "ContractError",
+   "transactions": 0
+  },
+  "snapshot_interpreter_not_text": {
+   "after": {
+    "buckets": {
+     "evidence_inspection_notices": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945",
+     "evidence_inspections": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945"
+    },
+    "rows": {
+     "evidence_inspection_notices": 0,
+     "evidence_inspections": 0
+    },
+    "store": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945"
+   },
+   "before": {
+    "buckets": {
+     "evidence_inspection_notices": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945",
+     "evidence_inspections": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945"
+    },
+    "rows": {
+     "evidence_inspection_notices": 0,
+     "evidence_inspections": 0
+    },
+    "store": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945"
+   },
+   "inspector_calls": [
+    "snapshot"
+   ],
+   "leaks_canary": false,
+   "message": "Inspector snapshot requires an identity with policy_hash, environment_digest and interpreter, and the environment values",
+   "nothing_written": true,
+   "raised": "ContractError",
+   "transactions": 0
+  },
+  "snapshot_no_environment": {
+   "after": {
+    "buckets": {
+     "evidence_inspection_notices": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945",
+     "evidence_inspections": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945"
+    },
+    "rows": {
+     "evidence_inspection_notices": 0,
+     "evidence_inspections": 0
+    },
+    "store": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945"
+   },
+   "before": {
+    "buckets": {
+     "evidence_inspection_notices": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945",
+     "evidence_inspections": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945"
+    },
+    "rows": {
+     "evidence_inspection_notices": 0,
+     "evidence_inspections": 0
+    },
+    "store": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945"
+   },
+   "inspector_calls": [
+    "snapshot"
+   ],
+   "leaks_canary": false,
+   "message": "Inspector snapshot requires an identity with policy_hash, environment_digest and interpreter, and the environment values",
+   "nothing_written": true,
+   "raised": "ContractError",
+   "transactions": 0
+  },
+  "snapshot_os_error_propagates": {
+   "after": {
+    "buckets": {
+     "evidence_inspection_notices": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945",
+     "evidence_inspections": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945"
+    },
+    "rows": {
+     "evidence_inspection_notices": 0,
+     "evidence_inspections": 0
+    },
+    "store": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945"
+   },
+   "before": {
+    "buckets": {
+     "evidence_inspection_notices": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945",
+     "evidence_inspections": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945"
+    },
+    "rows": {
+     "evidence_inspection_notices": 0,
+     "evidence_inspections": 0
+    },
+    "store": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945"
+   },
+   "inspector_calls": [
+    "snapshot"
+   ],
+   "leaks_canary": false,
+   "message": "snapshot failed",
+   "nothing_written": true,
+   "raised": "OSError",
+   "transactions": 0
+  },
+  "snapshot_policy_hash_empty": {
+   "after": {
+    "buckets": {
+     "evidence_inspection_notices": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945",
+     "evidence_inspections": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945"
+    },
+    "rows": {
+     "evidence_inspection_notices": 0,
+     "evidence_inspections": 0
+    },
+    "store": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945"
+   },
+   "before": {
+    "buckets": {
+     "evidence_inspection_notices": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945",
+     "evidence_inspections": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945"
+    },
+    "rows": {
+     "evidence_inspection_notices": 0,
+     "evidence_inspections": 0
+    },
+    "store": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945"
+   },
+   "inspector_calls": [
+    "snapshot"
+   ],
+   "leaks_canary": false,
+   "message": "Inspector snapshot requires an identity with policy_hash, environment_digest and interpreter, and the environment values",
+   "nothing_written": true,
+   "raised": "ContractError",
+   "transactions": 0
+  },
+  "snapshot_policy_hash_missing": {
+   "after": {
+    "buckets": {
+     "evidence_inspection_notices": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945",
+     "evidence_inspections": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945"
+    },
+    "rows": {
+     "evidence_inspection_notices": 0,
+     "evidence_inspections": 0
+    },
+    "store": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945"
+   },
+   "before": {
+    "buckets": {
+     "evidence_inspection_notices": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945",
+     "evidence_inspections": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945"
+    },
+    "rows": {
+     "evidence_inspection_notices": 0,
+     "evidence_inspections": 0
+    },
+    "store": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945"
+   },
+   "inspector_calls": [
+    "snapshot"
+   ],
+   "leaks_canary": false,
+   "message": "Inspector snapshot requires an identity with policy_hash, environment_digest and interpreter, and the environment values",
+   "nothing_written": true,
+   "raised": "ContractError",
+   "transactions": 0
+  },
+  "snapshot_policy_hash_none": {
+   "after": {
+    "buckets": {
+     "evidence_inspection_notices": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945",
+     "evidence_inspections": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945"
+    },
+    "rows": {
+     "evidence_inspection_notices": 0,
+     "evidence_inspections": 0
+    },
+    "store": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945"
+   },
+   "before": {
+    "buckets": {
+     "evidence_inspection_notices": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945",
+     "evidence_inspections": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945"
+    },
+    "rows": {
+     "evidence_inspection_notices": 0,
+     "evidence_inspections": 0
+    },
+    "store": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945"
+   },
+   "inspector_calls": [
+    "snapshot"
+   ],
+   "leaks_canary": false,
+   "message": "Inspector snapshot requires an identity with policy_hash, environment_digest and interpreter, and the environment values",
+   "nothing_written": true,
+   "raised": "ContractError",
+   "transactions": 0
+  },
+  "snapshot_policy_hash_not_text": {
+   "after": {
+    "buckets": {
+     "evidence_inspection_notices": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945",
+     "evidence_inspections": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945"
+    },
+    "rows": {
+     "evidence_inspection_notices": 0,
+     "evidence_inspections": 0
+    },
+    "store": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945"
+   },
+   "before": {
+    "buckets": {
+     "evidence_inspection_notices": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945",
+     "evidence_inspections": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945"
+    },
+    "rows": {
+     "evidence_inspection_notices": 0,
+     "evidence_inspections": 0
+    },
+    "store": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945"
+   },
+   "inspector_calls": [
+    "snapshot"
+   ],
+   "leaks_canary": false,
+   "message": "Inspector snapshot requires an identity with policy_hash, environment_digest and interpreter, and the environment values",
+   "nothing_written": true,
+   "raised": "ContractError",
+   "transactions": 0
+  },
+  "snapshot_refusal_propagates_nothing_recorded": {
+   "after": {
+    "buckets": {
+     "evidence_inspection_notices": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945",
+     "evidence_inspections": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945"
+    },
+    "rows": {
+     "evidence_inspection_notices": 0,
+     "evidence_inspections": 0
+    },
+    "store": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945"
+   },
+   "before": {
+    "buckets": {
+     "evidence_inspection_notices": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945",
+     "evidence_inspections": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945"
+    },
+    "rows": {
+     "evidence_inspection_notices": 0,
+     "evidence_inspections": 0
+    },
+    "store": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945"
+   },
+   "inspector_calls": [
+    "snapshot"
+   ],
+   "leaks_canary": false,
+   "message": "Trusted replay interpreter is not a file: /fixture/missing",
+   "nothing_written": true,
+   "raised": "ContractError",
+   "transactions": 0
+  },
+  "snapshot_snapshot_empty_dict": {
+   "after": {
+    "buckets": {
+     "evidence_inspection_notices": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945",
+     "evidence_inspections": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945"
+    },
+    "rows": {
+     "evidence_inspection_notices": 0,
+     "evidence_inspections": 0
+    },
+    "store": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945"
+   },
+   "before": {
+    "buckets": {
+     "evidence_inspection_notices": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945",
+     "evidence_inspections": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945"
+    },
+    "rows": {
+     "evidence_inspection_notices": 0,
+     "evidence_inspections": 0
+    },
+    "store": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945"
+   },
+   "inspector_calls": [
+    "snapshot"
+   ],
+   "leaks_canary": false,
+   "message": "'identity'",
+   "nothing_written": true,
+   "raised": "KeyError",
+   "transactions": 0
+  },
+  "snapshot_snapshot_list": {
+   "after": {
+    "buckets": {
+     "evidence_inspection_notices": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945",
+     "evidence_inspections": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945"
+    },
+    "rows": {
+     "evidence_inspection_notices": 0,
+     "evidence_inspections": 0
+    },
+    "store": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945"
+   },
+   "before": {
+    "buckets": {
+     "evidence_inspection_notices": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945",
+     "evidence_inspections": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945"
+    },
+    "rows": {
+     "evidence_inspection_notices": 0,
+     "evidence_inspections": 0
+    },
+    "store": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945"
+   },
+   "inspector_calls": [
+    "snapshot"
+   ],
+   "leaks_canary": false,
+   "message": "Inspector snapshot requires an identity with policy_hash, environment_digest and interpreter, and the environment values",
+   "nothing_written": true,
+   "raised": "ContractError",
+   "transactions": 0
+  },
+  "snapshot_snapshot_none": {
+   "after": {
+    "buckets": {
+     "evidence_inspection_notices": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945",
+     "evidence_inspections": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945"
+    },
+    "rows": {
+     "evidence_inspection_notices": 0,
+     "evidence_inspections": 0
+    },
+    "store": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945"
+   },
+   "before": {
+    "buckets": {
+     "evidence_inspection_notices": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945",
+     "evidence_inspections": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945"
+    },
+    "rows": {
+     "evidence_inspection_notices": 0,
+     "evidence_inspections": 0
+    },
+    "store": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945"
+   },
+   "inspector_calls": [
+    "snapshot"
+   ],
+   "leaks_canary": false,
+   "message": "Inspector snapshot requires an identity with policy_hash, environment_digest and interpreter, and the environment values",
+   "nothing_written": true,
+   "raised": "ContractError",
+   "transactions": 0
+  },
+  "snapshot_snapshot_text": {
+   "after": {
+    "buckets": {
+     "evidence_inspection_notices": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945",
+     "evidence_inspections": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945"
+    },
+    "rows": {
+     "evidence_inspection_notices": 0,
+     "evidence_inspections": 0
+    },
+    "store": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945"
+   },
+   "before": {
+    "buckets": {
+     "evidence_inspection_notices": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945",
+     "evidence_inspections": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945"
+    },
+    "rows": {
+     "evidence_inspection_notices": 0,
+     "evidence_inspections": 0
+    },
+    "store": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945"
+   },
+   "inspector_calls": [
+    "snapshot"
+   ],
+   "leaks_canary": false,
+   "message": "Inspector snapshot requires an identity with policy_hash, environment_digest and interpreter, and the environment values",
+   "nothing_written": true,
+   "raised": "ContractError",
+   "transactions": 0
+  },
+  "verdict_all_checked": {
+   "denominator": {
+    "checked": 2,
+    "claims": 2,
+    "error": 0,
+    "flake_pattern": 0,
+    "missing": 0,
+    "not_checked": 0,
+    "replay_failed": 0,
+    "unknown": 0,
+    "verified_mismatch": 0
+   },
+   "verdict": "all_checked"
+  },
+  "verdict_flake_is_incomplete": "incomplete",
+  "verdict_incomplete_denominator": {
+   "denominator": {
+    "checked": 2,
+    "claims": 2,
+    "error": 0,
+    "flake_pattern": 0,
+    "missing": 0,
+    "not_checked": 0,
+    "replay_failed": 0,
+    "unknown": 0,
+    "verified_mismatch": 0
+   },
+   "verdict": "all_checked"
+  },
+  "verdict_incomplete_with_unchecked": {
+   "denominator": {
+    "checked": 1,
+    "claims": 2,
+    "error": 0,
+    "flake_pattern": 0,
+    "missing": 0,
+    "not_checked": 1,
+    "replay_failed": 0,
+    "unknown": 0,
+    "verified_mismatch": 0
+   },
+   "verdict": "incomplete"
+  },
+  "verdict_no_claims": {
+   "claims": [],
+   "denominator": {
+    "checked": 0,
+    "claims": 0,
+    "error": 0,
+    "flake_pattern": 0,
+    "missing": 0,
+    "not_checked": 0,
+    "replay_failed": 0,
+    "unknown": 0,
+    "verified_mismatch": 0
+   },
+   "verdict": "no_claims"
+  }
+ },
+ "e4_inspect_checks": {
+  "absent_cause_on_a_checked_first_finding_skips_too": {
+   "after": {
+    "buckets": {
+     "evidence_inspection_notices": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945",
+     "evidence_inspections": "fda76286fa90aa6efd59090f8b6101b216adf666a7d46b4bc843adae814d9769"
+    },
+    "rows": {
+     "evidence_inspection_notices": 0,
+     "evidence_inspections": 1
+    },
+    "store": "80cb3a58ebbbfa04be9e598468eaf5761bff8f00fa8c9c891e26842a6fa4e812"
+   },
+   "before": {
+    "buckets": {
+     "evidence_inspection_notices": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945",
+     "evidence_inspections": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945"
+    },
+    "rows": {
+     "evidence_inspection_notices": 0,
+     "evidence_inspections": 0
+    },
+    "store": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945"
+   },
+   "inspector_calls": [
+    "snapshot",
+    "inspect"
+   ],
+   "leaks_canary": false,
+   "nothing_written": false,
+   "transactions": 2,
+   "value": {
+    "authority": "deterministic inspection of claims; not historical truth, semantic review or human acceptance",
+    "binding": {
+     "attempt": 1,
+     "base": "bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb",
+     "generation": 1,
+     "owner": "owner-1",
+     "source_revision": "cccccccccccccccccccccccccccccccccccccccc",
+     "task_id": "task-1",
+     "tree": "dddddddddddddddddddddddddddddddddddddddd",
+     "workspace": "/fixture/ws"
+    },
+    "claims": [
+     {
+      "argv": [
+       "python",
+       "-m",
+       "pytest",
+       "-q"
+      ],
+      "expected_exit": 0,
+      "id": "k1",
+      "kind": "command",
+      "origin": "free_text"
+     },
+     {
+      "id": "k2",
+      "kind": "file",
+      "origin": "structured",
+      "path": "docs/note.md",
+      "range": null,
+      "sha256": "ffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff"
+     }
+    ],
+    "context": {
+     "attempt": 1,
+     "base": "bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb",
+     "cwd": "/fixture/ws",
+     "environment": [
+      "PATH",
+      "PYTHONIOENCODING"
+     ],
+     "environment_digest": "eeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee",
+     "generation": 1,
+     "interpreter": "/other/python",
+     "owner": "owner-1",
+     "python": "3.fixture",
+     "pythonpath": null,
+     "source_revision": "cccccccccccccccccccccccccccccccccccccccc",
+     "task_id": "task-1",
+     "tree": "dddddddddddddddddddddddddddddddddddddddd",
+     "workspace": "/fixture/ws"
+    },
+    "denominator": {
+     "checked": 2,
+     "claims": 2,
+     "error": 0,
+     "flake_pattern": 0,
+     "missing": 0,
+     "not_checked": 0,
+     "replay_failed": 0,
+     "unknown": 0,
+     "verified_mismatch": 0
+    },
+    "findings": [
+     {
+      "cause": "workspace directory does not exist",
+      "claim": {
+       "argv": [
+        "python",
+        "-m",
+        "pytest",
+        "-q"
+       ],
+       "expected_exit": 0,
+       "id": "k1",
+       "kind": "command",
+       "origin": "free_text"
+      },
+      "state": "checked"
+     },
+     {
+      "claim": {
+       "id": "k2",
+       "kind": "file",
+       "origin": "structured",
+       "path": "docs/note.md",
+       "range": null,
+       "sha256": "ffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff"
+      },
+      "state": "checked"
+     }
+    ],
+    "id": "7a324cd1f81eae65ea31ba0a4c31a01f3f0260fdc0258bc4e20f01c08294976b",
+    "inspector": {
+     "cwd": "/fixture/ws",
+     "environment_digest": "eeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee",
+     "environment_names": [
+      "PATH",
+      "PYTHONIOENCODING"
+     ],
+     "interpreter": "/fixture/bin/python",
+     "platform": "fixture-host",
+     "policy_hash": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+     "tool": {
+      "executable_digest": "xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx",
+      "implementation": "CPython",
+      "python": "3.fixture"
+     }
+    },
+    "policy_hash": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+    "recorded_at": "2026-09-22T00:00:00+00:00",
+    "verdict": "all_checked"
+   }
+  },
+  "absent_cause_only_counts_as_the_first_finding": {
+   "after": {
+    "buckets": {
+     "evidence_inspection_notices": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945",
+     "evidence_inspections": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945"
+    },
+    "rows": {
+     "evidence_inspection_notices": 0,
+     "evidence_inspections": 0
+    },
+    "store": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945"
+   },
+   "before": {
+    "buckets": {
+     "evidence_inspection_notices": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945",
+     "evidence_inspections": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945"
+    },
+    "rows": {
+     "evidence_inspection_notices": 0,
+     "evidence_inspections": 0
+    },
+    "store": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945"
+   },
+   "inspector_calls": [
+    "snapshot",
+    "inspect"
+   ],
+   "leaks_canary": false,
+   "message": "Inspector replayed under a different environment or interpreter than its identity",
+   "nothing_written": true,
+   "raised": "ContractError",
+   "transactions": 1
+  },
+  "absent_workspace_skips_environment_and_interpreter": {
+   "after": {
+    "buckets": {
+     "evidence_inspection_notices": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945",
+     "evidence_inspections": "73841ff3b9a205b1a836b6a35e10f13c8713ff4e7f4dc81b6688b263648e0e55"
+    },
+    "rows": {
+     "evidence_inspection_notices": 0,
+     "evidence_inspections": 1
+    },
+    "store": "888dc42e230f39e5d904800be5f6c9caedb0740c4214e322ea8ea9cfaeba2a25"
+   },
+   "before": {
+    "buckets": {
+     "evidence_inspection_notices": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945",
+     "evidence_inspections": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945"
+    },
+    "rows": {
+     "evidence_inspection_notices": 0,
+     "evidence_inspections": 0
+    },
+    "store": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945"
+   },
+   "inspector_calls": [
+    "snapshot",
+    "inspect"
+   ],
+   "leaks_canary": false,
+   "nothing_written": false,
+   "transactions": 2,
+   "value": {
+    "authority": "deterministic inspection of claims; not historical truth, semantic review or human acceptance",
+    "binding": {
+     "attempt": 1,
+     "base": "bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb",
+     "generation": 1,
+     "owner": "owner-1",
+     "source_revision": "cccccccccccccccccccccccccccccccccccccccc",
+     "task_id": "task-1",
+     "tree": "dddddddddddddddddddddddddddddddddddddddd",
+     "workspace": "/fixture/ws"
+    },
+    "claims": [
+     {
+      "argv": [
+       "python",
+       "-m",
+       "pytest",
+       "-q"
+      ],
+      "expected_exit": 0,
+      "id": "k1",
+      "kind": "command",
+      "origin": "free_text"
+     },
+     {
+      "id": "k2",
+      "kind": "file",
+      "origin": "structured",
+      "path": "docs/note.md",
+      "range": null,
+      "sha256": "ffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff"
+     }
+    ],
+    "context": {
+     "attempt": 1,
+     "base": "bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb",
+     "cwd": "/fixture/ws",
+     "environment": [
+      "PATH",
+      "PYTHONIOENCODING"
+     ],
+     "environment_digest": "ffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff",
+     "generation": 1,
+     "interpreter": "/other/python",
+     "owner": "owner-1",
+     "python": "3.fixture",
+     "pythonpath": null,
+     "source_revision": "cccccccccccccccccccccccccccccccccccccccc",
+     "task_id": "task-1",
+     "tree": "dddddddddddddddddddddddddddddddddddddddd",
+     "workspace": "/fixture/ws"
+    },
+    "denominator": {
+     "checked": 0,
+     "claims": 1,
+     "error": 1,
+     "flake_pattern": 0,
+     "missing": 0,
+     "not_checked": 0,
+     "replay_failed": 0,
+     "unknown": 0,
+     "verified_mismatch": 0
+    },
+    "findings": [
+     {
+      "cause": "workspace directory does not exist",
+      "claim": null,
+      "state": "error"
+     }
+    ],
+    "id": "7a324cd1f81eae65ea31ba0a4c31a01f3f0260fdc0258bc4e20f01c08294976b",
+    "inspector": {
+     "cwd": "/fixture/ws",
+     "environment_digest": "eeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee",
+     "environment_names": [
+      "PATH",
+      "PYTHONIOENCODING"
+     ],
+     "interpreter": "/fixture/bin/python",
+     "platform": "fixture-host",
+     "policy_hash": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+     "tool": {
+      "executable_digest": "xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx",
+      "implementation": "CPython",
+      "python": "3.fixture"
+     }
+    },
+    "policy_hash": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+    "recorded_at": "2026-09-22T00:00:00+00:00",
+    "verdict": "incomplete"
+   }
+  },
+  "absent_workspace_still_checks_policy": {
+   "after": {
+    "buckets": {
+     "evidence_inspection_notices": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945",
+     "evidence_inspections": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945"
+    },
+    "rows": {
+     "evidence_inspection_notices": 0,
+     "evidence_inspections": 0
+    },
+    "store": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945"
+   },
+   "before": {
+    "buckets": {
+     "evidence_inspection_notices": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945",
+     "evidence_inspections": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945"
+    },
+    "rows": {
+     "evidence_inspection_notices": 0,
+     "evidence_inspections": 0
+    },
+    "store": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945"
+   },
+   "inspector_calls": [
+    "snapshot",
+    "inspect"
+   ],
+   "leaks_canary": false,
+   "message": "Inspector reported a different policy than its identity",
+   "nothing_written": true,
+   "raised": "ContractError",
+   "transactions": 1
+  },
+  "another_error_cause_is_not_absent": {
+   "after": {
+    "buckets": {
+     "evidence_inspection_notices": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945",
+     "evidence_inspections": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945"
+    },
+    "rows": {
+     "evidence_inspection_notices": 0,
+     "evidence_inspections": 0
+    },
+    "store": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945"
+   },
+   "before": {
+    "buckets": {
+     "evidence_inspection_notices": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945",
+     "evidence_inspections": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945"
+    },
+    "rows": {
+     "evidence_inspection_notices": 0,
+     "evidence_inspections": 0
+    },
+    "store": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945"
+   },
+   "inspector_calls": [
+    "snapshot",
+    "inspect"
+   ],
+   "leaks_canary": false,
+   "message": "Inspector replayed under a different environment or interpreter than its identity",
+   "nothing_written": true,
+   "raised": "ContractError",
+   "transactions": 1
+  },
+  "concurrent_winner_is_returned_unchanged": {
+   "notices": 0,
+   "returned_is_the_winner": true,
+   "rows": 1,
+   "stored": {
+    "id": "7a324cd1f81eae65ea31ba0a4c31a01f3f0260fdc0258bc4e20f01c08294976b",
+    "marker": "winner",
+    "verdict": "all_checked"
+   }
+  },
+  "inspector_raises_contract_error": {
+   "after": {
+    "buckets": {
+     "evidence_inspection_notices": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945",
+     "evidence_inspections": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945"
+    },
+    "rows": {
+     "evidence_inspection_notices": 0,
+     "evidence_inspections": 0
+    },
+    "store": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945"
+   },
+   "before": {
+    "buckets": {
+     "evidence_inspection_notices": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945",
+     "evidence_inspections": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945"
+    },
+    "rows": {
+     "evidence_inspection_notices": 0,
+     "evidence_inspections": 0
+    },
+    "store": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945"
+   },
+   "inspector_calls": [
+    "snapshot",
+    "inspect"
+   ],
+   "leaks_canary": false,
+   "message": "replay refused",
+   "nothing_written": true,
+   "raised": "ContractError",
+   "transactions": 1
+  },
+  "inspector_raises_key_error": {
+   "after": {
+    "buckets": {
+     "evidence_inspection_notices": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945",
+     "evidence_inspections": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945"
+    },
+    "rows": {
+     "evidence_inspection_notices": 0,
+     "evidence_inspections": 0
+    },
+    "store": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945"
+   },
+   "before": {
+    "buckets": {
+     "evidence_inspection_notices": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945",
+     "evidence_inspections": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945"
+    },
+    "rows": {
+     "evidence_inspection_notices": 0,
+     "evidence_inspections": 0
+    },
+    "store": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945"
+   },
+   "inspector_calls": [
+    "snapshot",
+    "inspect"
+   ],
+   "leaks_canary": false,
+   "message": "'missing'",
+   "nothing_written": true,
+   "raised": "KeyError",
+   "transactions": 1
+  },
+  "inspector_raises_os_error": {
+   "after": {
+    "buckets": {
+     "evidence_inspection_notices": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945",
+     "evidence_inspections": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945"
+    },
+    "rows": {
+     "evidence_inspection_notices": 0,
+     "evidence_inspections": 0
+    },
+    "store": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945"
+   },
+   "before": {
+    "buckets": {
+     "evidence_inspection_notices": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945",
+     "evidence_inspections": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945"
+    },
+    "rows": {
+     "evidence_inspection_notices": 0,
+     "evidence_inspections": 0
+    },
+    "store": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945"
+   },
+   "inspector_calls": [
+    "snapshot",
+    "inspect"
+   ],
+   "leaks_canary": false,
+   "message": "boom",
+   "nothing_written": true,
+   "raised": "OSError",
+   "transactions": 1
+  },
+  "no_findings_with_claims_is_no_claims": {
+   "after": {
+    "buckets": {
+     "evidence_inspection_notices": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945",
+     "evidence_inspections": "2e11401ef9889187f49d453053cb528370bcf21229c2886102a5c23e1e845316"
+    },
+    "rows": {
+     "evidence_inspection_notices": 0,
+     "evidence_inspections": 1
+    },
+    "store": "79eb89e70f65944f54bec7140e0e3bd4cbf4c801bf31335d6a73c4935ecdcbce"
+   },
+   "before": {
+    "buckets": {
+     "evidence_inspection_notices": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945",
+     "evidence_inspections": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945"
+    },
+    "rows": {
+     "evidence_inspection_notices": 0,
+     "evidence_inspections": 0
+    },
+    "store": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945"
+   },
+   "inspector_calls": [
+    "snapshot",
+    "inspect"
+   ],
+   "leaks_canary": false,
+   "nothing_written": false,
+   "transactions": 2,
+   "value": {
+    "authority": "deterministic inspection of claims; not historical truth, semantic review or human acceptance",
+    "binding": {
+     "attempt": 1,
+     "base": "bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb",
+     "generation": 1,
+     "owner": "owner-1",
+     "source_revision": "cccccccccccccccccccccccccccccccccccccccc",
+     "task_id": "task-1",
+     "tree": "dddddddddddddddddddddddddddddddddddddddd",
+     "workspace": "/fixture/ws"
+    },
+    "claims": [
+     {
+      "argv": [
+       "python",
+       "-m",
+       "pytest",
+       "-q"
+      ],
+      "expected_exit": 0,
+      "id": "k1",
+      "kind": "command",
+      "origin": "free_text"
+     },
+     {
+      "id": "k2",
+      "kind": "file",
+      "origin": "structured",
+      "path": "docs/note.md",
+      "range": null,
+      "sha256": "ffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff"
+     }
+    ],
+    "context": {
+     "attempt": 1,
+     "base": "bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb",
+     "cwd": "/fixture/ws",
+     "environment": [
+      "PATH",
+      "PYTHONIOENCODING"
+     ],
+     "environment_digest": "eeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee",
+     "generation": 1,
+     "interpreter": "/fixture/bin/python",
+     "owner": "owner-1",
+     "python": "3.fixture",
+     "pythonpath": null,
+     "source_revision": "cccccccccccccccccccccccccccccccccccccccc",
+     "task_id": "task-1",
+     "tree": "dddddddddddddddddddddddddddddddddddddddd",
+     "workspace": "/fixture/ws"
+    },
+    "denominator": {
+     "checked": 0,
+     "claims": 0,
+     "error": 0,
+     "flake_pattern": 0,
+     "missing": 0,
+     "not_checked": 0,
+     "replay_failed": 0,
+     "unknown": 0,
+     "verified_mismatch": 0
+    },
+    "findings": [],
+    "id": "7a324cd1f81eae65ea31ba0a4c31a01f3f0260fdc0258bc4e20f01c08294976b",
+    "inspector": {
+     "cwd": "/fixture/ws",
+     "environment_digest": "eeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee",
+     "environment_names": [
+      "PATH",
+      "PYTHONIOENCODING"
+     ],
+     "interpreter": "/fixture/bin/python",
+     "platform": "fixture-host",
+     "policy_hash": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+     "tool": {
+      "executable_digest": "xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx",
+      "implementation": "CPython",
+      "python": "3.fixture"
+     }
+    },
+    "policy_hash": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+    "recorded_at": "2026-09-22T00:00:00+00:00",
+    "verdict": "no_claims"
+   }
+  },
+  "no_project_no_keyword": {
+   "call": [
+    "inspect",
+    [
+     {
+      "argv": [
+       "python",
+       "-m",
+       "pytest",
+       "-q"
+      ],
+      "expected_exit": 0,
+      "id": "k1",
+      "kind": "command",
+      "origin": "free_text"
+     },
+     {
+      "id": "k2",
+      "kind": "file",
+      "origin": "structured",
+      "path": "docs/note.md",
+      "range": null,
+      "sha256": "ffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff"
+     }
+    ],
+    "/fixture/ws",
+    {
+     "attempt": 1,
+     "base": "bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb",
+     "generation": 1,
+     "owner": "owner-1",
+     "source_revision": "cccccccccccccccccccccccccccccccccccccccc",
+     "task_id": "task-1",
+     "tree": "dddddddddddddddddddddddddddddddddddddddd",
+     "workspace": "/fixture/ws"
+    },
+    {
+     "PATH": "/fixture/bin",
+     "PYTHONIOENCODING": "utf-8"
+    },
+    "/fixture/bin/python",
+    {}
+   ]
+  },
+  "policy_before_project": {
+   "after": {
+    "buckets": {
+     "evidence_inspection_notices": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945",
+     "evidence_inspections": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945"
+    },
+    "rows": {
+     "evidence_inspection_notices": 0,
+     "evidence_inspections": 0
+    },
+    "store": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945"
+   },
+   "before": {
+    "buckets": {
+     "evidence_inspection_notices": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945",
+     "evidence_inspections": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945"
+    },
+    "rows": {
+     "evidence_inspection_notices": 0,
+     "evidence_inspections": 0
+    },
+    "store": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945"
+   },
+   "inspector_calls": [
+    "snapshot",
+    "inspect"
+   ],
+   "leaks_canary": false,
+   "message": "Inspector reported a different policy than its identity",
+   "nothing_written": true,
+   "raised": "ContractError",
+   "transactions": 1
+  },
+  "progress_base_exception_at_start": {
+   "after": {
+    "buckets": {
+     "evidence_inspection_notices": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945",
+     "evidence_inspections": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945"
+    },
+    "rows": {
+     "evidence_inspection_notices": 0,
+     "evidence_inspections": 0
+    },
+    "store": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945"
+   },
+   "before": {
+    "buckets": {
+     "evidence_inspection_notices": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945",
+     "evidence_inspections": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945"
+    },
+    "rows": {
+     "evidence_inspection_notices": 0,
+     "evidence_inspections": 0
+    },
+    "store": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945"
+   },
+   "inspector_calls": [],
+   "leaks_canary": false,
+   "marks": [
+    "inspection_start"
+   ],
+   "message": "cancelled",
+   "nothing_written": true,
+   "raised": "Stop",
+   "transactions": 0
+  },
+  "progress_declaring": {
+   "inspector_call": [
+    "inspect",
+    [
+     {
+      "argv": [
+       "python",
+       "-m",
+       "pytest",
+       "-q"
+      ],
+      "expected_exit": 0,
+      "id": "k1",
+      "kind": "command",
+      "origin": "free_text"
+     },
+     {
+      "id": "k2",
+      "kind": "file",
+      "origin": "structured",
+      "path": "docs/note.md",
+      "range": null,
+      "sha256": "ffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff"
+     }
+    ],
+    "/fixture/ws",
+    {
+     "attempt": 1,
+     "base": "bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb",
+     "generation": 1,
+     "owner": "owner-1",
+     "source_revision": "cccccccccccccccccccccccccccccccccccccccc",
+     "task_id": "task-1",
+     "tree": "dddddddddddddddddddddddddddddddddddddddd",
+     "workspace": "/fixture/ws"
+    },
+    {
+     "PATH": "/fixture/bin",
+     "PYTHONIOENCODING": "utf-8"
+    },
+    "/fixture/bin/python",
+    {
+     "progress": "<callable>"
+    }
+   ],
+   "marks": [
+    [
+     "inspection_start",
+     0,
+     0
+    ],
+    [
+     "inspection_end",
+     1,
+     2
+    ]
+   ],
+   "recorded": true
+  },
+  "progress_keywords": {
+   "inspector_call": [
+    "inspect",
+    [
+     {
+      "argv": [
+       "python",
+       "-m",
+       "pytest",
+       "-q"
+      ],
+      "expected_exit": 0,
+      "id": "k1",
+      "kind": "command",
+      "origin": "free_text"
+     },
+     {
+      "id": "k2",
+      "kind": "file",
+      "origin": "structured",
+      "path": "docs/note.md",
+      "range": null,
+      "sha256": "ffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff"
+     }
+    ],
+    "/fixture/ws",
+    {
+     "attempt": 1,
+     "base": "bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb",
+     "generation": 1,
+     "owner": "owner-1",
+     "source_revision": "cccccccccccccccccccccccccccccccccccccccc",
+     "task_id": "task-1",
+     "tree": "dddddddddddddddddddddddddddddddddddddddd",
+     "workspace": "/fixture/ws"
+    },
+    {
+     "PATH": "/fixture/bin",
+     "PYTHONIOENCODING": "utf-8"
+    },
+    "/fixture/bin/python",
+    {
+     "progress": "<callable>"
+    }
+   ],
+   "marks": [
+    [
+     "inspection_start",
+     0,
+     0
+    ],
+    [
+     "inspection_end",
+     1,
+     2
+    ]
+   ],
+   "recorded": true
+  },
+  "progress_legacy": {
+   "inspector_call": [
+    "inspect",
+    [
+     {
+      "argv": [
+       "python",
+       "-m",
+       "pytest",
+       "-q"
+      ],
+      "expected_exit": 0,
+      "id": "k1",
+      "kind": "command",
+      "origin": "free_text"
+     },
+     {
+      "id": "k2",
+      "kind": "file",
+      "origin": "structured",
+      "path": "docs/note.md",
+      "range": null,
+      "sha256": "ffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff"
+     }
+    ],
+    "/fixture/ws",
+    {
+     "attempt": 1,
+     "base": "bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb",
+     "generation": 1,
+     "owner": "owner-1",
+     "source_revision": "cccccccccccccccccccccccccccccccccccccccc",
+     "task_id": "task-1",
+     "tree": "dddddddddddddddddddddddddddddddddddddddd",
+     "workspace": "/fixture/ws"
+    },
+    {
+     "PATH": "/fixture/bin",
+     "PYTHONIOENCODING": "utf-8"
+    },
+    "/fixture/bin/python",
+    {}
+   ],
+   "marks": [
+    [
+     "inspection_start",
+     0,
+     0
+    ],
+    [
+     "inspection_end",
+     1,
+     2
+    ]
+   ],
+   "recorded": true
+  },
+  "progress_none_is_the_previous_behaviour": {
+   "inspector_call": [
+    "inspect",
+    [
+     {
+      "argv": [
+       "python",
+       "-m",
+       "pytest",
+       "-q"
+      ],
+      "expected_exit": 0,
+      "id": "k1",
+      "kind": "command",
+      "origin": "free_text"
+     },
+     {
+      "id": "k2",
+      "kind": "file",
+      "origin": "structured",
+      "path": "docs/note.md",
+      "range": null,
+      "sha256": "ffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff"
+     }
+    ],
+    "/fixture/ws",
+    {
+     "attempt": 1,
+     "base": "bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb",
+     "generation": 1,
+     "owner": "owner-1",
+     "source_revision": "cccccccccccccccccccccccccccccccccccccccc",
+     "task_id": "task-1",
+     "tree": "dddddddddddddddddddddddddddddddddddddddd",
+     "workspace": "/fixture/ws"
+    },
+    {
+     "PATH": "/fixture/bin",
+     "PYTHONIOENCODING": "utf-8"
+    },
+    "/fixture/bin/python",
+    {}
+   ]
+  },
+  "progress_on_a_cache_hit_is_start_only": {
+   "inspector_calls": [
+    "snapshot",
+    "inspect",
+    "snapshot"
+   ],
+   "marks": [
+    "inspection_start"
+   ]
+  },
+  "progress_profiled": {
+   "inspector_call": [
+    "inspect",
+    [
+     {
+      "argv": [
+       "python",
+       "-m",
+       "pytest",
+       "-q"
+      ],
+      "expected_exit": 0,
+      "id": "k1",
+      "kind": "command",
+      "origin": "free_text"
+     },
+     {
+      "id": "k2",
+      "kind": "file",
+      "origin": "structured",
+      "path": "docs/note.md",
+      "range": null,
+      "sha256": "ffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff"
+     }
+    ],
+    "/fixture/ws",
+    {
+     "attempt": 1,
+     "base": "bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb",
+     "generation": 1,
+     "owner": "owner-1",
+     "source_revision": "cccccccccccccccccccccccccccccccccccccccc",
+     "task_id": "task-1",
+     "tree": "dddddddddddddddddddddddddddddddddddddddd",
+     "workspace": "/fixture/ws"
+    },
+    {
+     "PATH": "/fixture/bin",
+     "PYTHONIOENCODING": "utf-8"
+    },
+    "/fixture/bin/python",
+    {
+     "progress": "<callable>"
+    }
+   ],
+   "marks": [
+    [
+     "inspection_start",
+     0,
+     0
+    ],
+    [
+     "inspection_end",
+     1,
+     2
+    ]
+   ],
+   "recorded": true
+  },
+  "progress_refusal_at_end": {
+   "after": {
+    "buckets": {
+     "evidence_inspection_notices": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945",
+     "evidence_inspections": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945"
+    },
+    "rows": {
+     "evidence_inspection_notices": 0,
+     "evidence_inspections": 0
+    },
+    "store": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945"
+   },
+   "before": {
+    "buckets": {
+     "evidence_inspection_notices": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945",
+     "evidence_inspections": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945"
+    },
+    "rows": {
+     "evidence_inspection_notices": 0,
+     "evidence_inspections": 0
+    },
+    "store": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945"
+   },
+   "inspector_calls": [
+    "snapshot",
+    "inspect"
+   ],
+   "leaks_canary": false,
+   "marks": [
+    [
+     "inspection_start",
+     0,
+     0
+    ],
+    [
+     "inspection_end",
+     1,
+     2
+    ]
+   ],
+   "message": "ownership lost at inspection_end",
+   "nothing_written": true,
+   "raised": "ContractError",
+   "transactions": 1
+  },
+  "progress_refusal_at_start": {
+   "after": {
+    "buckets": {
+     "evidence_inspection_notices": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945",
+     "evidence_inspections": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945"
+    },
+    "rows": {
+     "evidence_inspection_notices": 0,
+     "evidence_inspections": 0
+    },
+    "store": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945"
+   },
+   "before": {
+    "buckets": {
+     "evidence_inspection_notices": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945",
+     "evidence_inspections": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945"
+    },
+    "rows": {
+     "evidence_inspection_notices": 0,
+     "evidence_inspections": 0
+    },
+    "store": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945"
+   },
+   "inspector_calls": [],
+   "leaks_canary": false,
+   "marks": [
+    [
+     "inspection_start",
+     0,
+     0
+    ]
+   ],
+   "message": "ownership lost at inspection_start",
+   "nothing_written": true,
+   "raised": "ContractError",
+   "transactions": 0
+  },
+  "project_before_environment": {
+   "after": {
+    "buckets": {
+     "evidence_inspection_notices": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945",
+     "evidence_inspections": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945"
+    },
+    "rows": {
+     "evidence_inspection_notices": 0,
+     "evidence_inspections": 0
+    },
+    "store": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945"
+   },
+   "before": {
+    "buckets": {
+     "evidence_inspection_notices": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945",
+     "evidence_inspections": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945"
+    },
+    "rows": {
+     "evidence_inspection_notices": 0,
+     "evidence_inspections": 0
+    },
+    "store": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945"
+   },
+   "inspector_calls": [
+    "snapshot",
+    "inspect"
+   ],
+   "leaks_canary": false,
+   "message": "Inspector replayed under a different project context than its identity",
+   "nothing_written": true,
+   "raised": "ContractError",
+   "transactions": 1
+  },
+  "project_check_skipped_for_the_absent_workspace": {
+   "after": {
+    "buckets": {
+     "evidence_inspection_notices": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945",
+     "evidence_inspections": "196f383b3b7b1f813ad581f0f0853019a3c6d9944a46bc6acb7ae56df4c45245"
+    },
+    "rows": {
+     "evidence_inspection_notices": 0,
+     "evidence_inspections": 1
+    },
+    "store": "1b12b79aeb7027c3062e84c0b7e7b74b169cec6d8a5c16c6c0a7fad70c030474"
+   },
+   "before": {
+    "buckets": {
+     "evidence_inspection_notices": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945",
+     "evidence_inspections": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945"
+    },
+    "rows": {
+     "evidence_inspection_notices": 0,
+     "evidence_inspections": 0
+    },
+    "store": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945"
+   },
+   "inspector_calls": [
+    "snapshot",
+    "inspect"
+   ],
+   "leaks_canary": false,
+   "nothing_written": false,
+   "transactions": 2,
+   "value": {
+    "authority": "deterministic inspection of claims; not historical truth, semantic review or human acceptance",
+    "binding": {
+     "attempt": 1,
+     "base": "bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb",
+     "generation": 1,
+     "owner": "owner-1",
+     "source_revision": "cccccccccccccccccccccccccccccccccccccccc",
+     "task_id": "task-1",
+     "tree": "dddddddddddddddddddddddddddddddddddddddd",
+     "workspace": "/fixture/ws"
+    },
+    "claims": [
+     {
+      "argv": [
+       "python",
+       "-m",
+       "pytest",
+       "-q"
+      ],
+      "expected_exit": 0,
+      "id": "k1",
+      "kind": "command",
+      "origin": "free_text"
+     },
+     {
+      "id": "k2",
+      "kind": "file",
+      "origin": "structured",
+      "path": "docs/note.md",
+      "range": null,
+      "sha256": "ffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff"
+     }
+    ],
+    "context": {
+     "attempt": 1,
+     "base": "bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb",
+     "cwd": "/fixture/ws",
+     "environment": [
+      "PATH",
+      "PYTHONIOENCODING"
+     ],
+     "environment_digest": "eeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee",
+     "generation": 1,
+     "interpreter": "/fixture/bin/python",
+     "owner": "owner-1",
+     "project_digest": "8888888888888888888888888888888888888888888888888888888888888888",
+     "python": "3.fixture",
+     "pythonpath": null,
+     "source_revision": "cccccccccccccccccccccccccccccccccccccccc",
+     "task_id": "task-1",
+     "tree": "dddddddddddddddddddddddddddddddddddddddd",
+     "workspace": "/fixture/ws"
+    },
+    "denominator": {
+     "checked": 0,
+     "claims": 1,
+     "error": 1,
+     "flake_pattern": 0,
+     "missing": 0,
+     "not_checked": 0,
+     "replay_failed": 0,
+     "unknown": 0,
+     "verified_mismatch": 0
+    },
+    "findings": [
+     {
+      "cause": "workspace directory does not exist",
+      "claim": null,
+      "state": "error"
+     }
+    ],
+    "id": "79f3646c14d81e15b18f7f6f2f6671f087bd95aa12b30fe10b97e2fc304f1f84",
+    "inspector": {
+     "cwd": "/fixture/ws",
+     "environment_digest": "eeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee",
+     "environment_names": [
+      "PATH",
+      "PYTHONIOENCODING"
+     ],
+     "interpreter": "/fixture/bin/python",
+     "platform": "fixture-host",
+     "policy_hash": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+     "project": {
+      "digest": "9999999999999999999999999999999999999999999999999999999999999999"
+     },
+     "tool": {
+      "executable_digest": "xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx",
+      "implementation": "CPython",
+      "python": "3.fixture"
+     }
+    },
+    "policy_hash": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+    "recorded_at": "2026-09-22T00:00:00+00:00",
+    "verdict": "incomplete"
+   }
+  },
+  "project_digest_absent_from_the_report_context": {
+   "after": {
+    "buckets": {
+     "evidence_inspection_notices": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945",
+     "evidence_inspections": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945"
+    },
+    "rows": {
+     "evidence_inspection_notices": 0,
+     "evidence_inspections": 0
+    },
+    "store": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945"
+   },
+   "before": {
+    "buckets": {
+     "evidence_inspection_notices": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945",
+     "evidence_inspections": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945"
+    },
+    "rows": {
+     "evidence_inspection_notices": 0,
+     "evidence_inspections": 0
+    },
+    "store": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945"
+   },
+   "inspector_calls": [
+    "snapshot",
+    "inspect"
+   ],
+   "leaks_canary": false,
+   "message": "Inspector replayed under a different project context than its identity",
+   "nothing_written": true,
+   "raised": "ContractError",
+   "transactions": 1
+  },
+  "project_forwarded_exactly_as_keyed": {
+   "call": [
+    "inspect",
+    [
+     {
+      "argv": [
+       "python",
+       "-m",
+       "pytest",
+       "-q"
+      ],
+      "expected_exit": 0,
+      "id": "k1",
+      "kind": "command",
+      "origin": "free_text"
+     },
+     {
+      "id": "k2",
+      "kind": "file",
+      "origin": "structured",
+      "path": "docs/note.md",
+      "range": null,
+      "sha256": "ffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff"
+     }
+    ],
+    "/fixture/ws",
+    {
+     "attempt": 1,
+     "base": "bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb",
+     "generation": 1,
+     "owner": "owner-1",
+     "source_revision": "cccccccccccccccccccccccccccccccccccccccc",
+     "task_id": "task-1",
+     "tree": "dddddddddddddddddddddddddddddddddddddddd",
+     "workspace": "/fixture/ws"
+    },
+    {
+     "PATH": "/fixture/bin",
+     "PYTHONIOENCODING": "utf-8"
+    },
+    "/fixture/bin/python",
+    {
+     "project": {
+      "contexts": [
+       {
+        "cwd": "src",
+        "name": "app"
+       }
+      ],
+      "digest": "9999999999999999999999999999999999999999999999999999999999999999"
+     }
+    }
+   ],
+   "context_project_digest": "9999999999999999999999999999999999999999999999999999999999999999",
+   "id_is_the_v4_key": true,
+   "inspector_has_project": {
+    "digest": "9999999999999999999999999999999999999999999999999999999999999999"
+   }
+  },
+  "project_forwarded_to_a_keywords_adapter": {
+   "call": [
+    "inspect",
+    [
+     {
+      "argv": [
+       "python",
+       "-m",
+       "pytest",
+       "-q"
+      ],
+      "expected_exit": 0,
+      "id": "k1",
+      "kind": "command",
+      "origin": "free_text"
+     },
+     {
+      "id": "k2",
+      "kind": "file",
+      "origin": "structured",
+      "path": "docs/note.md",
+      "range": null,
+      "sha256": "ffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff"
+     }
+    ],
+    "/fixture/ws",
+    {
+     "attempt": 1,
+     "base": "bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb",
+     "generation": 1,
+     "owner": "owner-1",
+     "source_revision": "cccccccccccccccccccccccccccccccccccccccc",
+     "task_id": "task-1",
+     "tree": "dddddddddddddddddddddddddddddddddddddddd",
+     "workspace": "/fixture/ws"
+    },
+    {
+     "PATH": "/fixture/bin",
+     "PYTHONIOENCODING": "utf-8"
+    },
+    "/fixture/bin/python",
+    {
+     "project": {
+      "contexts": [
+       {
+        "cwd": "src",
+        "name": "app"
+       }
+      ],
+      "digest": "9999999999999999999999999999999999999999999999999999999999999999"
+     }
+    }
+   ]
+  },
+  "project_refused_identity_project_not_a_dict": {
+   "after": {
+    "buckets": {
+     "evidence_inspection_notices": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945",
+     "evidence_inspections": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945"
+    },
+    "rows": {
+     "evidence_inspection_notices": 0,
+     "evidence_inspections": 0
+    },
+    "store": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945"
+   },
+   "before": {
+    "buckets": {
+     "evidence_inspection_notices": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945",
+     "evidence_inspections": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945"
+    },
+    "rows": {
+     "evidence_inspection_notices": 0,
+     "evidence_inspections": 0
+    },
+    "store": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945"
+   },
+   "inspector_calls": [
+    "snapshot"
+   ],
+   "leaks_canary": false,
+   "message": "Inspector project snapshot is not the one its identity names",
+   "nothing_written": true,
+   "raised": "ContractError",
+   "transactions": 1
+  },
+  "project_refused_identity_project_without_digest": {
+   "after": {
+    "buckets": {
+     "evidence_inspection_notices": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945",
+     "evidence_inspections": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945"
+    },
+    "rows": {
+     "evidence_inspection_notices": 0,
+     "evidence_inspections": 0
+    },
+    "store": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945"
+   },
+   "before": {
+    "buckets": {
+     "evidence_inspection_notices": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945",
+     "evidence_inspections": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945"
+    },
+    "rows": {
+     "evidence_inspection_notices": 0,
+     "evidence_inspections": 0
+    },
+    "store": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945"
+   },
+   "inspector_calls": [
+    "snapshot"
+   ],
+   "leaks_canary": false,
+   "message": "Inspector project snapshot is not the one its identity names",
+   "nothing_written": true,
+   "raised": "ContractError",
+   "transactions": 1
+  },
+  "project_refused_project_digest_differs": {
+   "after": {
+    "buckets": {
+     "evidence_inspection_notices": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945",
+     "evidence_inspections": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945"
+    },
+    "rows": {
+     "evidence_inspection_notices": 0,
+     "evidence_inspections": 0
+    },
+    "store": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945"
+   },
+   "before": {
+    "buckets": {
+     "evidence_inspection_notices": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945",
+     "evidence_inspections": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945"
+    },
+    "rows": {
+     "evidence_inspection_notices": 0,
+     "evidence_inspections": 0
+    },
+    "store": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945"
+   },
+   "inspector_calls": [
+    "snapshot"
+   ],
+   "leaks_canary": false,
+   "message": "Inspector project snapshot is not the one its identity names",
+   "nothing_written": true,
+   "raised": "ContractError",
+   "transactions": 1
+  },
+  "project_refused_project_digest_not_text": {
+   "after": {
+    "buckets": {
+     "evidence_inspection_notices": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945",
+     "evidence_inspections": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945"
+    },
+    "rows": {
+     "evidence_inspection_notices": 0,
+     "evidence_inspections": 0
+    },
+    "store": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945"
+   },
+   "before": {
+    "buckets": {
+     "evidence_inspection_notices": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945",
+     "evidence_inspections": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945"
+    },
+    "rows": {
+     "evidence_inspection_notices": 0,
+     "evidence_inspections": 0
+    },
+    "store": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945"
+   },
+   "inspector_calls": [
+    "snapshot"
+   ],
+   "leaks_canary": false,
+   "message": "Inspector project snapshot is not the one its identity names",
+   "nothing_written": true,
+   "raised": "ContractError",
+   "transactions": 1
+  },
+  "project_refused_project_empty_dict": {
+   "after": {
+    "buckets": {
+     "evidence_inspection_notices": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945",
+     "evidence_inspections": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945"
+    },
+    "rows": {
+     "evidence_inspection_notices": 0,
+     "evidence_inspections": 0
+    },
+    "store": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945"
+   },
+   "before": {
+    "buckets": {
+     "evidence_inspection_notices": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945",
+     "evidence_inspections": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945"
+    },
+    "rows": {
+     "evidence_inspection_notices": 0,
+     "evidence_inspections": 0
+    },
+    "store": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945"
+   },
+   "inspector_calls": [
+    "snapshot"
+   ],
+   "leaks_canary": false,
+   "message": "Inspector project snapshot is not the one its identity names",
+   "nothing_written": true,
+   "raised": "ContractError",
+   "transactions": 1
+  },
+  "project_refused_project_not_a_dict": {
+   "after": {
+    "buckets": {
+     "evidence_inspection_notices": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945",
+     "evidence_inspections": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945"
+    },
+    "rows": {
+     "evidence_inspection_notices": 0,
+     "evidence_inspections": 0
+    },
+    "store": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945"
+   },
+   "before": {
+    "buckets": {
+     "evidence_inspection_notices": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945",
+     "evidence_inspections": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945"
+    },
+    "rows": {
+     "evidence_inspection_notices": 0,
+     "evidence_inspections": 0
+    },
+    "store": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945"
+   },
+   "inspector_calls": [
+    "snapshot"
+   ],
+   "leaks_canary": false,
+   "message": "Inspector project snapshot is not the one its identity names",
+   "nothing_written": true,
+   "raised": "ContractError",
+   "transactions": 1
+  },
+  "project_refused_project_without_digest": {
+   "after": {
+    "buckets": {
+     "evidence_inspection_notices": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945",
+     "evidence_inspections": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945"
+    },
+    "rows": {
+     "evidence_inspection_notices": 0,
+     "evidence_inspections": 0
+    },
+    "store": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945"
+   },
+   "before": {
+    "buckets": {
+     "evidence_inspection_notices": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945",
+     "evidence_inspections": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945"
+    },
+    "rows": {
+     "evidence_inspection_notices": 0,
+     "evidence_inspections": 0
+    },
+    "store": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945"
+   },
+   "inspector_calls": [
+    "snapshot"
+   ],
+   "leaks_canary": false,
+   "message": "Inspector project snapshot is not the one its identity names",
+   "nothing_written": true,
+   "raised": "ContractError",
+   "transactions": 1
+  },
+  "project_refused_project_without_identity_project": {
+   "after": {
+    "buckets": {
+     "evidence_inspection_notices": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945",
+     "evidence_inspections": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945"
+    },
+    "rows": {
+     "evidence_inspection_notices": 0,
+     "evidence_inspections": 0
+    },
+    "store": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945"
+   },
+   "before": {
+    "buckets": {
+     "evidence_inspection_notices": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945",
+     "evidence_inspections": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945"
+    },
+    "rows": {
+     "evidence_inspection_notices": 0,
+     "evidence_inspections": 0
+    },
+    "store": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945"
+   },
+   "inspector_calls": [
+    "snapshot"
+   ],
+   "leaks_canary": false,
+   "message": "Inspector project snapshot is not the one its identity names",
+   "nothing_written": true,
+   "raised": "ContractError",
+   "transactions": 1
+  },
+  "project_replayed_under_another_context": {
+   "after": {
+    "buckets": {
+     "evidence_inspection_notices": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945",
+     "evidence_inspections": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945"
+    },
+    "rows": {
+     "evidence_inspection_notices": 0,
+     "evidence_inspections": 0
+    },
+    "store": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945"
+   },
+   "before": {
+    "buckets": {
+     "evidence_inspection_notices": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945",
+     "evidence_inspections": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945"
+    },
+    "rows": {
+     "evidence_inspection_notices": 0,
+     "evidence_inspections": 0
+    },
+    "store": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945"
+   },
+   "inspector_calls": [
+    "snapshot",
+    "inspect"
+   ],
+   "leaks_canary": false,
+   "message": "Inspector replayed under a different project context than its identity",
+   "nothing_written": true,
+   "raised": "ContractError",
+   "transactions": 1
+  },
+  "project_with_an_adapter_that_does_not_take_it_is_a_type_error": {
+   "after": {
+    "buckets": {
+     "evidence_inspection_notices": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945",
+     "evidence_inspections": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945"
+    },
+    "rows": {
+     "evidence_inspection_notices": 0,
+     "evidence_inspections": 0
+    },
+    "store": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945"
+   },
+   "before": {
+    "buckets": {
+     "evidence_inspection_notices": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945",
+     "evidence_inspections": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945"
+    },
+    "rows": {
+     "evidence_inspection_notices": 0,
+     "evidence_inspections": 0
+    },
+    "store": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945"
+   },
+   "inspector_calls": [
+    "snapshot"
+   ],
+   "leaks_canary": false,
+   "message": "Legacy.inspect() got an unexpected keyword argument 'project'",
+   "nothing_written": true,
+   "raised": "TypeError",
+   "transactions": 1
+  },
+  "report_environment_and_interpreter_both_mismatch": {
+   "after": {
+    "buckets": {
+     "evidence_inspection_notices": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945",
+     "evidence_inspections": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945"
+    },
+    "rows": {
+     "evidence_inspection_notices": 0,
+     "evidence_inspections": 0
+    },
+    "store": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945"
+   },
+   "before": {
+    "buckets": {
+     "evidence_inspection_notices": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945",
+     "evidence_inspections": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945"
+    },
+    "rows": {
+     "evidence_inspection_notices": 0,
+     "evidence_inspections": 0
+    },
+    "store": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945"
+   },
+   "inspector_calls": [
+    "snapshot",
+    "inspect"
+   ],
+   "leaks_canary": false,
+   "message": "Inspector replayed under a different environment or interpreter than its identity",
+   "nothing_written": true,
+   "raised": "ContractError",
+   "transactions": 1
+  },
+  "report_environment_digest_absent_from_context": {
+   "after": {
+    "buckets": {
+     "evidence_inspection_notices": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945",
+     "evidence_inspections": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945"
+    },
+    "rows": {
+     "evidence_inspection_notices": 0,
+     "evidence_inspections": 0
+    },
+    "store": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945"
+   },
+   "before": {
+    "buckets": {
+     "evidence_inspection_notices": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945",
+     "evidence_inspections": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945"
+    },
+    "rows": {
+     "evidence_inspection_notices": 0,
+     "evidence_inspections": 0
+    },
+    "store": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945"
+   },
+   "inspector_calls": [
+    "snapshot",
+    "inspect"
+   ],
+   "leaks_canary": false,
+   "message": "Inspector replayed under a different environment or interpreter than its identity",
+   "nothing_written": true,
+   "raised": "ContractError",
+   "transactions": 1
+  },
+  "report_environment_digest_mismatch": {
+   "after": {
+    "buckets": {
+     "evidence_inspection_notices": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945",
+     "evidence_inspections": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945"
+    },
+    "rows": {
+     "evidence_inspection_notices": 0,
+     "evidence_inspections": 0
+    },
+    "store": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945"
+   },
+   "before": {
+    "buckets": {
+     "evidence_inspection_notices": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945",
+     "evidence_inspections": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945"
+    },
+    "rows": {
+     "evidence_inspection_notices": 0,
+     "evidence_inspections": 0
+    },
+    "store": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945"
+   },
+   "inspector_calls": [
+    "snapshot",
+    "inspect"
+   ],
+   "leaks_canary": false,
+   "message": "Inspector replayed under a different environment or interpreter than its identity",
+   "nothing_written": true,
+   "raised": "ContractError",
+   "transactions": 1
+  },
+  "report_interpreter_absent_from_context": {
+   "after": {
+    "buckets": {
+     "evidence_inspection_notices": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945",
+     "evidence_inspections": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945"
+    },
+    "rows": {
+     "evidence_inspection_notices": 0,
+     "evidence_inspections": 0
+    },
+    "store": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945"
+   },
+   "before": {
+    "buckets": {
+     "evidence_inspection_notices": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945",
+     "evidence_inspections": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945"
+    },
+    "rows": {
+     "evidence_inspection_notices": 0,
+     "evidence_inspections": 0
+    },
+    "store": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945"
+   },
+   "inspector_calls": [
+    "snapshot",
+    "inspect"
+   ],
+   "leaks_canary": false,
+   "message": "Inspector replayed under a different environment or interpreter than its identity",
+   "nothing_written": true,
+   "raised": "ContractError",
+   "transactions": 1
+  },
+  "report_interpreter_mismatch": {
+   "after": {
+    "buckets": {
+     "evidence_inspection_notices": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945",
+     "evidence_inspections": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945"
+    },
+    "rows": {
+     "evidence_inspection_notices": 0,
+     "evidence_inspections": 0
+    },
+    "store": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945"
+   },
+   "before": {
+    "buckets": {
+     "evidence_inspection_notices": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945",
+     "evidence_inspections": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945"
+    },
+    "rows": {
+     "evidence_inspection_notices": 0,
+     "evidence_inspections": 0
+    },
+    "store": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945"
+   },
+   "inspector_calls": [
+    "snapshot",
+    "inspect"
+   ],
+   "leaks_canary": false,
+   "message": "Inspector replayed under a different environment or interpreter than its identity",
+   "nothing_written": true,
+   "raised": "ContractError",
+   "transactions": 1
+  },
+  "report_policy_mismatch": {
+   "after": {
+    "buckets": {
+     "evidence_inspection_notices": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945",
+     "evidence_inspections": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945"
+    },
+    "rows": {
+     "evidence_inspection_notices": 0,
+     "evidence_inspections": 0
+    },
+    "store": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945"
+   },
+   "before": {
+    "buckets": {
+     "evidence_inspection_notices": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945",
+     "evidence_inspections": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945"
+    },
+    "rows": {
+     "evidence_inspection_notices": 0,
+     "evidence_inspections": 0
+    },
+    "store": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945"
+   },
+   "inspector_calls": [
+    "snapshot",
+    "inspect"
+   ],
+   "leaks_canary": false,
+   "message": "Inspector reported a different policy than its identity",
+   "nothing_written": true,
+   "raised": "ContractError",
+   "transactions": 1
+  },
+  "report_policy_mismatch_before_environment": {
+   "after": {
+    "buckets": {
+     "evidence_inspection_notices": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945",
+     "evidence_inspections": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945"
+    },
+    "rows": {
+     "evidence_inspection_notices": 0,
+     "evidence_inspections": 0
+    },
+    "store": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945"
+   },
+   "before": {
+    "buckets": {
+     "evidence_inspection_notices": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945",
+     "evidence_inspections": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945"
+    },
+    "rows": {
+     "evidence_inspection_notices": 0,
+     "evidence_inspections": 0
+    },
+    "store": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945"
+   },
+   "inspector_calls": [
+    "snapshot",
+    "inspect"
+   ],
+   "leaks_canary": false,
+   "message": "Inspector reported a different policy than its identity",
+   "nothing_written": true,
+   "raised": "ContractError",
+   "transactions": 1
+  },
+  "report_report_without_context": {
+   "after": {
+    "buckets": {
+     "evidence_inspection_notices": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945",
+     "evidence_inspections": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945"
+    },
+    "rows": {
+     "evidence_inspection_notices": 0,
+     "evidence_inspections": 0
+    },
+    "store": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945"
+   },
+   "before": {
+    "buckets": {
+     "evidence_inspection_notices": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945",
+     "evidence_inspections": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945"
+    },
+    "rows": {
+     "evidence_inspection_notices": 0,
+     "evidence_inspections": 0
+    },
+    "store": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945"
+   },
+   "inspector_calls": [
+    "snapshot",
+    "inspect"
+   ],
+   "leaks_canary": false,
+   "message": "'context'",
+   "nothing_written": true,
+   "raised": "KeyError",
+   "transactions": 1
+  },
+  "report_report_without_context_but_absent_workspace": {
+   "after": {
+    "buckets": {
+     "evidence_inspection_notices": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945",
+     "evidence_inspections": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945"
+    },
+    "rows": {
+     "evidence_inspection_notices": 0,
+     "evidence_inspections": 0
+    },
+    "store": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945"
+   },
+   "before": {
+    "buckets": {
+     "evidence_inspection_notices": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945",
+     "evidence_inspections": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945"
+    },
+    "rows": {
+     "evidence_inspection_notices": 0,
+     "evidence_inspections": 0
+    },
+    "store": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945"
+   },
+   "inspector_calls": [
+    "snapshot",
+    "inspect"
+   ],
+   "leaks_canary": false,
+   "message": "'context'",
+   "nothing_written": true,
+   "raised": "KeyError",
+   "transactions": 1
+  },
+  "report_report_without_findings": {
+   "after": {
+    "buckets": {
+     "evidence_inspection_notices": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945",
+     "evidence_inspections": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945"
+    },
+    "rows": {
+     "evidence_inspection_notices": 0,
+     "evidence_inspections": 0
+    },
+    "store": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945"
+   },
+   "before": {
+    "buckets": {
+     "evidence_inspection_notices": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945",
+     "evidence_inspections": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945"
+    },
+    "rows": {
+     "evidence_inspection_notices": 0,
+     "evidence_inspections": 0
+    },
+    "store": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945"
+   },
+   "inspector_calls": [
+    "snapshot",
+    "inspect"
+   ],
+   "leaks_canary": false,
+   "message": "'findings'",
+   "nothing_written": true,
+   "raised": "KeyError",
+   "transactions": 1
+  },
+  "report_report_without_policy_hash": {
+   "after": {
+    "buckets": {
+     "evidence_inspection_notices": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945",
+     "evidence_inspections": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945"
+    },
+    "rows": {
+     "evidence_inspection_notices": 0,
+     "evidence_inspections": 0
+    },
+    "store": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945"
+   },
+   "before": {
+    "buckets": {
+     "evidence_inspection_notices": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945",
+     "evidence_inspections": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945"
+    },
+    "rows": {
+     "evidence_inspection_notices": 0,
+     "evidence_inspections": 0
+    },
+    "store": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945"
+   },
+   "inspector_calls": [
+    "snapshot",
+    "inspect"
+   ],
+   "leaks_canary": false,
+   "message": "'policy_hash'",
+   "nothing_written": true,
+   "raised": "KeyError",
+   "transactions": 1
+  },
+  "report_unknown_state": {
+   "after": {
+    "buckets": {
+     "evidence_inspection_notices": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945",
+     "evidence_inspections": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945"
+    },
+    "rows": {
+     "evidence_inspection_notices": 0,
+     "evidence_inspections": 0
+    },
+    "store": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945"
+   },
+   "before": {
+    "buckets": {
+     "evidence_inspection_notices": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945",
+     "evidence_inspections": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945"
+    },
+    "rows": {
+     "evidence_inspection_notices": 0,
+     "evidence_inspections": 0
+    },
+    "store": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945"
+   },
+   "inspector_calls": [
+    "snapshot",
+    "inspect"
+   ],
+   "leaks_canary": false,
+   "message": "Unknown inspection state",
+   "nothing_written": true,
+   "raised": "ContractError",
+   "transactions": 1
+  },
+  "report_unknown_state_before_policy": {
+   "after": {
+    "buckets": {
+     "evidence_inspection_notices": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945",
+     "evidence_inspections": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945"
+    },
+    "rows": {
+     "evidence_inspection_notices": 0,
+     "evidence_inspections": 0
+    },
+    "store": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945"
+   },
+   "before": {
+    "buckets": {
+     "evidence_inspection_notices": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945",
+     "evidence_inspections": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945"
+    },
+    "rows": {
+     "evidence_inspection_notices": 0,
+     "evidence_inspections": 0
+    },
+    "store": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945"
+   },
+   "inspector_calls": [
+    "snapshot",
+    "inspect"
+   ],
+   "leaks_canary": false,
+   "message": "Unknown inspection state",
+   "nothing_written": true,
+   "raised": "ContractError",
+   "transactions": 1
+  }
+ },
+ "e5_fence_recording": {
+  "cache_read_failure_is_raw_not_a_notice": {
+   "after": {
+    "buckets": {
+     "evidence_inspection_notices": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945",
+     "evidence_inspections": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945"
+    },
+    "rows": {
+     "evidence_inspection_notices": 0,
+     "evidence_inspections": 0
+    },
+    "store": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945"
+   },
+   "before": {
+    "buckets": {
+     "evidence_inspection_notices": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945",
+     "evidence_inspections": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945"
+    },
+    "rows": {
+     "evidence_inspection_notices": 0,
+     "evidence_inspections": 0
+    },
+    "store": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945"
+   },
+   "inspector_calls": [
+    "snapshot"
+   ],
+   "leaks_canary": false,
+   "message": "store unavailable",
+   "nothing_written": true,
+   "notices": 0,
+   "raised": "OSError",
+   "transactions": 1
+  },
+  "guard_base_exception_before_the_write": {
+   "guard": [
+    {
+     "inspector_calls": 1,
+     "n": 1,
+     "rows_visible": 0,
+     "transactions_opened_so_far": 1
+    },
+    {
+     "inspector_calls": 2,
+     "n": 2,
+     "rows_visible": 0,
+     "transactions_opened_so_far": 2
+    }
+   ],
+   "inspector_calls": [
+    "snapshot",
+    "inspect"
+   ],
+   "raised": "Stop",
+   "rows": {
+    "evidence_inspection_notices": 0,
+    "evidence_inspections": 0
+   },
+   "same_object": true,
+   "transactions": 2
+  },
+  "guard_base_exception_on_the_cache_read": {
+   "guard": [
+    {
+     "inspector_calls": 1,
+     "n": 1,
+     "rows_visible": 0,
+     "transactions_opened_so_far": 1
+    }
+   ],
+   "inspector_calls": [
+    "snapshot"
+   ],
+   "raised": "Stop",
+   "rows": {
+    "evidence_inspection_notices": 0,
+    "evidence_inspections": 0
+   },
+   "same_object": true,
+   "transactions": 1
+  },
+  "guard_hit_called_once_before_the_cached_row": {
+   "guard": [
+    {
+     "inspector_calls": 3,
+     "n": 1,
+     "rows_visible": 1,
+     "transactions_opened_so_far": 3
+    }
+   ],
+   "inspector_calls": [
+    "snapshot",
+    "inspect",
+    "snapshot"
+   ],
+   "transactions": 3
+  },
+  "guard_miss_called_before_the_read_and_before_the_write": {
+   "guard": [
+    {
+     "inspector_calls": 1,
+     "n": 1,
+     "rows_visible": 0,
+     "transactions_opened_so_far": 1
+    },
+    {
+     "inspector_calls": 2,
+     "n": 2,
+     "rows_visible": 0,
+     "transactions_opened_so_far": 2
+    }
+   ],
+   "inspector_calls": [
+    "snapshot",
+    "inspect"
+   ],
+   "transactions": 2
+  },
+  "guard_refusal_beats_the_concurrent_winner": {
+   "after": {
+    "buckets": {
+     "evidence_inspection_notices": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945",
+     "evidence_inspections": "f17754306f9f77368d6bb2588d877f342c0a0bf9f1e87ccd324d521cd5ed88ea"
+    },
+    "rows": {
+     "evidence_inspection_notices": 0,
+     "evidence_inspections": 1
+    },
+    "store": "e509e3aec630df021286b4cc53f33b7ac6796a6bee88564f5e031b29b4734137"
+   },
+   "before": {
+    "buckets": {
+     "evidence_inspection_notices": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945",
+     "evidence_inspections": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945"
+    },
+    "rows": {
+     "evidence_inspection_notices": 0,
+     "evidence_inspections": 0
+    },
+    "store": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945"
+   },
+   "guard": [
+    {
+     "inspector_calls": 1,
+     "n": 1,
+     "rows_visible": 0,
+     "transactions_opened_so_far": 1
+    },
+    {
+     "inspector_calls": 2,
+     "n": 2,
+     "rows_visible": 1,
+     "transactions_opened_so_far": 2
+    }
+   ],
+   "leaks_canary": false,
+   "message": "lease lost while replaying",
+   "nothing_written": false,
+   "raised": "ContractError",
+   "winner_kept": "winner"
+  },
+  "guard_refusal_before_the_write": {
+   "guard": [
+    {
+     "inspector_calls": 1,
+     "n": 1,
+     "rows_visible": 0,
+     "transactions_opened_so_far": 1
+    },
+    {
+     "inspector_calls": 2,
+     "n": 2,
+     "rows_visible": 0,
+     "transactions_opened_so_far": 2
+    }
+   ],
+   "inspector_calls": [
+    "snapshot",
+    "inspect"
+   ],
+   "raised": "ContractError",
+   "rows": {
+    "evidence_inspection_notices": 0,
+    "evidence_inspections": 0
+   },
+   "same_object": true,
+   "transactions": 2,
+   "unchanged": true
+  },
+  "guard_refusal_on_a_cache_hit": {
+   "after": {
+    "buckets": {
+     "evidence_inspection_notices": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945",
+     "evidence_inspections": "524a4acaee555278dd52de51d3541a896326e17faf72427428ac6113c5797292"
+    },
+    "rows": {
+     "evidence_inspection_notices": 0,
+     "evidence_inspections": 1
+    },
+    "store": "fc5af851c62390b44677d41eec69b7ec31a31c79d392372d95d8b8e26b507f58"
+   },
+   "before": {
+    "buckets": {
+     "evidence_inspection_notices": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945",
+     "evidence_inspections": "524a4acaee555278dd52de51d3541a896326e17faf72427428ac6113c5797292"
+    },
+    "rows": {
+     "evidence_inspection_notices": 0,
+     "evidence_inspections": 1
+    },
+    "store": "fc5af851c62390b44677d41eec69b7ec31a31c79d392372d95d8b8e26b507f58"
+   },
+   "guard": [
+    {
+     "inspector_calls": 3,
+     "n": 1,
+     "rows_visible": 1,
+     "transactions_opened_so_far": 3
+    }
+   ],
+   "inspector_calls": [
+    "snapshot",
+    "inspect",
+    "snapshot"
+   ],
+   "leaks_canary": false,
+   "message": "lease no longer held on a hit",
+   "nothing_written": true,
+   "raised": "ContractError",
+   "transactions": 3,
+   "unchanged": true
+  },
+  "guard_refusal_on_the_cache_read": {
+   "guard": [
+    {
+     "inspector_calls": 1,
+     "n": 1,
+     "rows_visible": 0,
+     "transactions_opened_so_far": 1
+    }
+   ],
+   "inspector_calls": [
+    "snapshot"
+   ],
+   "raised": "ContractError",
+   "rows": {
+    "evidence_inspection_notices": 0,
+    "evidence_inspections": 0
+   },
+   "same_object": true,
+   "transactions": 1,
+   "unchanged": true
+  },
+  "guard_that_swallows_its_own_failure_passes": {
+   "calls": [
+    1,
+    2
+   ],
+   "recorded": true
+  },
+  "no_guard_hit_one_more_transaction": {
+   "inspector_calls": [
+    "snapshot",
+    "inspect",
+    "snapshot"
+   ],
+   "transactions": 3
+  },
+  "no_guard_miss_two_transactions": {
+   "inspector_calls": [
+    "snapshot",
+    "inspect"
+   ],
+   "transactions": 2
+  },
+  "notice_carries_the_verdict_and_denominator": {
+   "denominator": {
+    "checked": 1,
+    "claims": 2,
+    "error": 0,
+    "flake_pattern": 0,
+    "missing": 0,
+    "not_checked": 1,
+    "replay_failed": 0,
+    "unknown": 0,
+    "verified_mismatch": 0
+   },
+   "reason": "OSError: write failed",
+   "verdict": "incomplete"
+  },
+  "notice_write_failure_chain": {
+   "cause": "OSError",
+   "context": "OSError",
+   "raised": "ContractError"
+  },
+  "notice_write_failure_still_raises_the_contract_error": {
+   "after": {
+    "buckets": {
+     "evidence_inspection_notices": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945",
+     "evidence_inspections": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945"
+    },
+    "rows": {
+     "evidence_inspection_notices": 0,
+     "evidence_inspections": 0
+    },
+    "store": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945"
+   },
+   "before": {
+    "buckets": {
+     "evidence_inspection_notices": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945",
+     "evidence_inspections": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945"
+    },
+    "rows": {
+     "evidence_inspection_notices": 0,
+     "evidence_inspections": 0
+    },
+    "store": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945"
+   },
+   "inspector_calls": [
+    "snapshot",
+    "inspect"
+   ],
+   "leaks_canary": false,
+   "message": "Evidence inspection could not be recorded: OSError: ledger is down",
+   "nothing_written": true,
+   "notices": 0,
+   "raised": "ContractError",
+   "rows": 0,
+   "transactions": 3
+  },
+  "recording_failure_by_a_contract_error_is_a_notice_too": {
+   "after": {
+    "buckets": {
+     "evidence_inspection_notices": "daa9b192b360f333be659edb5d274436f6ab54d1e39d31bce8be35e2af139a45",
+     "evidence_inspections": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945"
+    },
+    "rows": {
+     "evidence_inspection_notices": 1,
+     "evidence_inspections": 0
+    },
+    "store": "e06824397a1f9f6c4a557b78f11766cfb1b0fa1817e2116dd8496dad85bacb04"
+   },
+   "before": {
+    "buckets": {
+     "evidence_inspection_notices": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945",
+     "evidence_inspections": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945"
+    },
+    "rows": {
+     "evidence_inspection_notices": 0,
+     "evidence_inspections": 0
+    },
+    "store": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945"
+   },
+   "leaks_canary": false,
+   "message": "Evidence inspection could not be recorded: ContractError: a ContractError from the store",
+   "nothing_written": false,
+   "notices": [
+    {
+     "at": "2026-09-22T00:00:00+00:00",
+     "denominator": {
+      "checked": 2,
+      "claims": 2,
+      "error": 0,
+      "flake_pattern": 0,
+      "missing": 0,
+      "not_checked": 0,
+      "replay_failed": 0,
+      "unknown": 0,
+      "verified_mismatch": 0
+     },
+     "id": "16da0a8c0f940d2a685ea6a1deaede9050c54652b6ccaf89f426c6c9d6ad89ef",
+     "inspection_id": "7a324cd1f81eae65ea31ba0a4c31a01f3f0260fdc0258bc4e20f01c08294976b",
+     "reason": "ContractError: a ContractError from the store",
+     "verdict": "all_checked"
+    }
+   ],
+   "raised": "ContractError"
+  },
+  "recording_failure_is_a_named_notice": {
+   "after": {
+    "buckets": {
+     "evidence_inspection_notices": "417396284497987cb0ead32d82ee283ef1f806ecd75ebbbcd3c8ed3ee1f7e290",
+     "evidence_inspections": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945"
+    },
+    "rows": {
+     "evidence_inspection_notices": 1,
+     "evidence_inspections": 0
+    },
+    "store": "aa3a2d974627828da41e859f0a805da4a9549e8eb518885b6588f9e933cbb3da"
+   },
+   "before": {
+    "buckets": {
+     "evidence_inspection_notices": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945",
+     "evidence_inspections": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945"
+    },
+    "rows": {
+     "evidence_inspection_notices": 0,
+     "evidence_inspections": 0
+    },
+    "store": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945"
+   },
+   "chained": {
+    "context": "OSError",
+    "type": "OSError"
+   },
+   "inspector_calls": [
+    "snapshot",
+    "inspect"
+   ],
+   "leaks_canary": false,
+   "message": "Evidence inspection could not be recorded: OSError: Explicit ledger write failure fixture",
+   "nothing_written": false,
+   "notice_id_is_the_digest": true,
+   "notices": [
+    {
+     "at": "2026-09-22T00:00:00+00:00",
+     "denominator": {
+      "checked": 2,
+      "claims": 2,
+      "error": 0,
+      "flake_pattern": 0,
+      "missing": 0,
+      "not_checked": 0,
+      "replay_failed": 0,
+      "unknown": 0,
+      "verified_mismatch": 0
+     },
+     "id": "16da0a8c0f940d2a685ea6a1deaede9050c54652b6ccaf89f426c6c9d6ad89ef",
+     "inspection_id": "7a324cd1f81eae65ea31ba0a4c31a01f3f0260fdc0258bc4e20f01c08294976b",
+     "reason": "OSError: Explicit ledger write failure fixture",
+     "verdict": "all_checked"
+    }
+   ],
+   "raised": "ContractError",
+   "rows": 0,
+   "transactions": 3
+  },
+  "recording_failure_reason_is_truncated": {
+   "after": {
+    "buckets": {
+     "evidence_inspection_notices": "3c947d70e0449b5ee2c109ce6422f58ca2c16b95f8a5a858711de07a18b86046",
+     "evidence_inspections": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945"
+    },
+    "rows": {
+     "evidence_inspection_notices": 1,
+     "evidence_inspections": 0
+    },
+    "store": "aee780818a4cf362c94e7d1907ebf7804b6c2a49982ed85c77144fc10e186c49"
+   },
+   "before": {
+    "buckets": {
+     "evidence_inspection_notices": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945",
+     "evidence_inspections": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945"
+    },
+    "rows": {
+     "evidence_inspection_notices": 0,
+     "evidence_inspections": 0
+    },
+    "store": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945"
+   },
+   "canary_in_notice": false,
+   "leaks_canary": false,
+   "message": "Evidence inspection could not be recorded: OSError: xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx",
+   "nothing_written": false,
+   "raised": "ContractError",
+   "reason_length": 309
+  },
+  "recording_failure_with_an_empty_message": {
+   "after": {
+    "buckets": {
+     "evidence_inspection_notices": "8e82133a9260c00f7bfab0705991a6ae4f19ed2150baab9b3580e8ce240fd4ff",
+     "evidence_inspections": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945"
+    },
+    "rows": {
+     "evidence_inspection_notices": 1,
+     "evidence_inspections": 0
+    },
+    "store": "7585599ec1168e6d50ea5326202f13309f0c14c4c9cd47772d5de0cd7b5e0412"
+   },
+   "before": {
+    "buckets": {
+     "evidence_inspection_notices": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945",
+     "evidence_inspections": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945"
+    },
+    "rows": {
+     "evidence_inspection_notices": 0,
+     "evidence_inspections": 0
+    },
+    "store": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945"
+   },
+   "leaks_canary": false,
+   "message": "Evidence inspection could not be recorded: ValueError: ",
+   "nothing_written": false,
+   "notices": [
+    {
+     "at": "2026-09-22T00:00:00+00:00",
+     "denominator": {
+      "checked": 2,
+      "claims": 2,
+      "error": 0,
+      "flake_pattern": 0,
+      "missing": 0,
+      "not_checked": 0,
+      "replay_failed": 0,
+      "unknown": 0,
+      "verified_mismatch": 0
+     },
+     "id": "16da0a8c0f940d2a685ea6a1deaede9050c54652b6ccaf89f426c6c9d6ad89ef",
+     "inspection_id": "7a324cd1f81eae65ea31ba0a4c31a01f3f0260fdc0258bc4e20f01c08294976b",
+     "reason": "ValueError: ",
+     "verdict": "all_checked"
+    }
+   ],
+   "raised": "ContractError"
+  },
+  "retry_after_a_recording_failure_records_the_row": {
+   "inspector_calls": [
+    "snapshot",
+    "inspect",
+    "snapshot",
+    "inspect"
+   ],
+   "notices_kept": 1,
+   "row_id_is_the_key": true,
+   "rows": 1,
+   "transactions": 5
+  },
+  "store_failure_with_a_guard_passing_is_a_notice": {
+   "after": {
+    "buckets": {
+     "evidence_inspection_notices": "e45411edd37cb8326dfeee292adfc0dd538f3a076323f4043eee9211f993b4f9",
+     "evidence_inspections": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945"
+    },
+    "rows": {
+     "evidence_inspection_notices": 1,
+     "evidence_inspections": 0
+    },
+    "store": "2548ae4b8d67f848bd064e6554ec1b2fc7493eac631b66e70bd6802e3f8056c0"
+   },
+   "before": {
+    "buckets": {
+     "evidence_inspection_notices": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945",
+     "evidence_inspections": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945"
+    },
+    "rows": {
+     "evidence_inspection_notices": 0,
+     "evidence_inspections": 0
+    },
+    "store": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945"
+   },
+   "guard": [
+    {
+     "inspector_calls": 1,
+     "n": 1,
+     "rows_visible": 0,
+     "transactions_opened_so_far": 1
+    }
+   ],
+   "leaks_canary": false,
+   "message": "Evidence inspection could not be recorded: OSError: write failed",
+   "nothing_written": false,
+   "raised": "ContractError"
+  },
+  "success_writes_one_row_and_no_notice": {
+   "notices": 0,
+   "rows": 1
+  },
+  "the_same_failure_twice_is_one_notice": {
+   "after": 1,
+   "first": 1
+  }
+ },
+ "e6_require_all_checked": {
+  "a_notice_is_not_an_inspection_row": {
+   "after": {
+    "buckets": {
+     "evidence_inspection_notices": "e45411edd37cb8326dfeee292adfc0dd538f3a076323f4043eee9211f993b4f9",
+     "evidence_inspections": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945"
+    },
+    "rows": {
+     "evidence_inspection_notices": 1,
+     "evidence_inspections": 0
+    },
+    "store": "2548ae4b8d67f848bd064e6554ec1b2fc7493eac631b66e70bd6802e3f8056c0"
+   },
+   "before": {
+    "buckets": {
+     "evidence_inspection_notices": "e45411edd37cb8326dfeee292adfc0dd538f3a076323f4043eee9211f993b4f9",
+     "evidence_inspections": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945"
+    },
+    "rows": {
+     "evidence_inspection_notices": 1,
+     "evidence_inspections": 0
+    },
+    "store": "2548ae4b8d67f848bd064e6554ec1b2fc7493eac631b66e70bd6802e3f8056c0"
+   },
+   "message": "Evidence inspection missing",
+   "nothing_written": true,
+   "raised": "ContractError"
+  },
+  "all_checked_returns_the_stored_row": {
+   "after": {
+    "buckets": {
+     "evidence_inspection_notices": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945",
+     "evidence_inspections": "524a4acaee555278dd52de51d3541a896326e17faf72427428ac6113c5797292"
+    },
+    "rows": {
+     "evidence_inspection_notices": 0,
+     "evidence_inspections": 1
+    },
+    "store": "fc5af851c62390b44677d41eec69b7ec31a31c79d392372d95d8b8e26b507f58"
+   },
+   "before": {
+    "buckets": {
+     "evidence_inspection_notices": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945",
+     "evidence_inspections": "524a4acaee555278dd52de51d3541a896326e17faf72427428ac6113c5797292"
+    },
+    "rows": {
+     "evidence_inspection_notices": 0,
+     "evidence_inspections": 1
+    },
+    "store": "fc5af851c62390b44677d41eec69b7ec31a31c79d392372d95d8b8e26b507f58"
+   },
+   "is_the_row": true,
+   "nothing_written": true,
+   "value": {
+    "authority": "deterministic inspection of claims; not historical truth, semantic review or human acceptance",
+    "binding": {
+     "attempt": 1,
+     "base": "bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb",
+     "generation": 1,
+     "owner": "owner-1",
+     "source_revision": "cccccccccccccccccccccccccccccccccccccccc",
+     "task_id": "task-1",
+     "tree": "dddddddddddddddddddddddddddddddddddddddd",
+     "workspace": "/fixture/ws"
+    },
+    "claims": [
+     {
+      "argv": [
+       "python",
+       "-m",
+       "pytest",
+       "-q"
+      ],
+      "expected_exit": 0,
+      "id": "k1",
+      "kind": "command",
+      "origin": "free_text"
+     },
+     {
+      "id": "k2",
+      "kind": "file",
+      "origin": "structured",
+      "path": "docs/note.md",
+      "range": null,
+      "sha256": "ffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff"
+     }
+    ],
+    "context": {
+     "attempt": 1,
+     "base": "bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb",
+     "cwd": "/fixture/ws",
+     "environment": [
+      "PATH",
+      "PYTHONIOENCODING"
+     ],
+     "environment_digest": "eeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee",
+     "generation": 1,
+     "interpreter": "/fixture/bin/python",
+     "owner": "owner-1",
+     "python": "3.fixture",
+     "pythonpath": null,
+     "source_revision": "cccccccccccccccccccccccccccccccccccccccc",
+     "task_id": "task-1",
+     "tree": "dddddddddddddddddddddddddddddddddddddddd",
+     "workspace": "/fixture/ws"
+    },
+    "denominator": {
+     "checked": 2,
+     "claims": 2,
+     "error": 0,
+     "flake_pattern": 0,
+     "missing": 0,
+     "not_checked": 0,
+     "replay_failed": 0,
+     "unknown": 0,
+     "verified_mismatch": 0
+    },
+    "findings": [
+     {
+      "cause": "fixture checked",
+      "claim": {
+       "argv": [
+        "python",
+        "-m",
+        "pytest",
+        "-q"
+       ],
+       "expected_exit": 0,
+       "id": "k1",
+       "kind": "command",
+       "origin": "free_text"
+      },
+      "state": "checked"
+     },
+     {
+      "cause": "fixture checked",
+      "claim": {
+       "id": "k2",
+       "kind": "file",
+       "origin": "structured",
+       "path": "docs/note.md",
+       "range": null,
+       "sha256": "ffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff"
+      },
+      "state": "checked"
+     }
+    ],
+    "id": "7a324cd1f81eae65ea31ba0a4c31a01f3f0260fdc0258bc4e20f01c08294976b",
+    "inspector": {
+     "cwd": "/fixture/ws",
+     "environment_digest": "eeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee",
+     "environment_names": [
+      "PATH",
+      "PYTHONIOENCODING"
+     ],
+     "interpreter": "/fixture/bin/python",
+     "platform": "fixture-host",
+     "policy_hash": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+     "tool": {
+      "executable_digest": "xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx",
+      "implementation": "CPython",
+      "python": "3.fixture"
+     }
+    },
+    "policy_hash": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+    "recorded_at": "2026-09-22T00:00:00+00:00",
+    "verdict": "all_checked"
+   }
+  },
+  "another_execution_or_revision": {
+   "after": {
+    "buckets": {
+     "evidence_inspection_notices": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945",
+     "evidence_inspections": "524a4acaee555278dd52de51d3541a896326e17faf72427428ac6113c5797292"
+    },
+    "rows": {
+     "evidence_inspection_notices": 0,
+     "evidence_inspections": 1
+    },
+    "store": "fc5af851c62390b44677d41eec69b7ec31a31c79d392372d95d8b8e26b507f58"
+   },
+   "before": {
+    "buckets": {
+     "evidence_inspection_notices": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945",
+     "evidence_inspections": "524a4acaee555278dd52de51d3541a896326e17faf72427428ac6113c5797292"
+    },
+    "rows": {
+     "evidence_inspection_notices": 0,
+     "evidence_inspections": 1
+    },
+    "store": "fc5af851c62390b44677d41eec69b7ec31a31c79d392372d95d8b8e26b507f58"
+   },
+   "message": "Evidence inspection is bound to another execution or revision",
+   "nothing_written": true,
+   "raised": "ContractError"
+  },
+  "another_policy": {
+   "after": {
+    "buckets": {
+     "evidence_inspection_notices": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945",
+     "evidence_inspections": "524a4acaee555278dd52de51d3541a896326e17faf72427428ac6113c5797292"
+    },
+    "rows": {
+     "evidence_inspection_notices": 0,
+     "evidence_inspections": 1
+    },
+    "store": "fc5af851c62390b44677d41eec69b7ec31a31c79d392372d95d8b8e26b507f58"
+   },
+   "before": {
+    "buckets": {
+     "evidence_inspection_notices": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945",
+     "evidence_inspections": "524a4acaee555278dd52de51d3541a896326e17faf72427428ac6113c5797292"
+    },
+    "rows": {
+     "evidence_inspection_notices": 0,
+     "evidence_inspections": 1
+    },
+    "store": "fc5af851c62390b44677d41eec69b7ec31a31c79d392372d95d8b8e26b507f58"
+   },
+   "message": "Evidence inspection was made under another policy",
+   "nothing_written": true,
+   "raised": "ContractError"
+  },
+  "binding_empty_dict_passes": {
+   "is_the_row": true
+  },
+  "binding_key_not_in_the_row": {
+   "after": {
+    "buckets": {
+     "evidence_inspection_notices": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945",
+     "evidence_inspections": "524a4acaee555278dd52de51d3541a896326e17faf72427428ac6113c5797292"
+    },
+    "rows": {
+     "evidence_inspection_notices": 0,
+     "evidence_inspections": 1
+    },
+    "store": "fc5af851c62390b44677d41eec69b7ec31a31c79d392372d95d8b8e26b507f58"
+   },
+   "before": {
+    "buckets": {
+     "evidence_inspection_notices": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945",
+     "evidence_inspections": "524a4acaee555278dd52de51d3541a896326e17faf72427428ac6113c5797292"
+    },
+    "rows": {
+     "evidence_inspection_notices": 0,
+     "evidence_inspections": 1
+    },
+    "store": "fc5af851c62390b44677d41eec69b7ec31a31c79d392372d95d8b8e26b507f58"
+   },
+   "message": "Evidence inspection is bound to another execution or revision",
+   "nothing_written": true,
+   "raised": "ContractError"
+  },
+  "binding_key_with_a_none_value_matches_an_absent_key": {
+   "after": {
+    "buckets": {
+     "evidence_inspection_notices": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945",
+     "evidence_inspections": "524a4acaee555278dd52de51d3541a896326e17faf72427428ac6113c5797292"
+    },
+    "rows": {
+     "evidence_inspection_notices": 0,
+     "evidence_inspections": 1
+    },
+    "store": "fc5af851c62390b44677d41eec69b7ec31a31c79d392372d95d8b8e26b507f58"
+   },
+   "before": {
+    "buckets": {
+     "evidence_inspection_notices": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945",
+     "evidence_inspections": "524a4acaee555278dd52de51d3541a896326e17faf72427428ac6113c5797292"
+    },
+    "rows": {
+     "evidence_inspection_notices": 0,
+     "evidence_inspections": 1
+    },
+    "store": "fc5af851c62390b44677d41eec69b7ec31a31c79d392372d95d8b8e26b507f58"
+   },
+   "nothing_written": true,
+   "value": {
+    "authority": "deterministic inspection of claims; not historical truth, semantic review or human acceptance",
+    "binding": {
+     "attempt": 1,
+     "base": "bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb",
+     "generation": 1,
+     "owner": "owner-1",
+     "source_revision": "cccccccccccccccccccccccccccccccccccccccc",
+     "task_id": "task-1",
+     "tree": "dddddddddddddddddddddddddddddddddddddddd",
+     "workspace": "/fixture/ws"
+    },
+    "claims": [
+     {
+      "argv": [
+       "python",
+       "-m",
+       "pytest",
+       "-q"
+      ],
+      "expected_exit": 0,
+      "id": "k1",
+      "kind": "command",
+      "origin": "free_text"
+     },
+     {
+      "id": "k2",
+      "kind": "file",
+      "origin": "structured",
+      "path": "docs/note.md",
+      "range": null,
+      "sha256": "ffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff"
+     }
+    ],
+    "context": {
+     "attempt": 1,
+     "base": "bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb",
+     "cwd": "/fixture/ws",
+     "environment": [
+      "PATH",
+      "PYTHONIOENCODING"
+     ],
+     "environment_digest": "eeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee",
+     "generation": 1,
+     "interpreter": "/fixture/bin/python",
+     "owner": "owner-1",
+     "python": "3.fixture",
+     "pythonpath": null,
+     "source_revision": "cccccccccccccccccccccccccccccccccccccccc",
+     "task_id": "task-1",
+     "tree": "dddddddddddddddddddddddddddddddddddddddd",
+     "workspace": "/fixture/ws"
+    },
+    "denominator": {
+     "checked": 2,
+     "claims": 2,
+     "error": 0,
+     "flake_pattern": 0,
+     "missing": 0,
+     "not_checked": 0,
+     "replay_failed": 0,
+     "unknown": 0,
+     "verified_mismatch": 0
+    },
+    "findings": [
+     {
+      "cause": "fixture checked",
+      "claim": {
+       "argv": [
+        "python",
+        "-m",
+        "pytest",
+        "-q"
+       ],
+       "expected_exit": 0,
+       "id": "k1",
+       "kind": "command",
+       "origin": "free_text"
+      },
+      "state": "checked"
+     },
+     {
+      "cause": "fixture checked",
+      "claim": {
+       "id": "k2",
+       "kind": "file",
+       "origin": "structured",
+       "path": "docs/note.md",
+       "range": null,
+       "sha256": "ffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff"
+      },
+      "state": "checked"
+     }
+    ],
+    "id": "7a324cd1f81eae65ea31ba0a4c31a01f3f0260fdc0258bc4e20f01c08294976b",
+    "inspector": {
+     "cwd": "/fixture/ws",
+     "environment_digest": "eeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee",
+     "environment_names": [
+      "PATH",
+      "PYTHONIOENCODING"
+     ],
+     "interpreter": "/fixture/bin/python",
+     "platform": "fixture-host",
+     "policy_hash": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+     "tool": {
+      "executable_digest": "xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx",
+      "implementation": "CPython",
+      "python": "3.fixture"
+     }
+    },
+    "policy_hash": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+    "recorded_at": "2026-09-22T00:00:00+00:00",
+    "verdict": "all_checked"
+   }
+  },
+  "binding_owner_none_matches": {
+   "is_the_row": true
+  },
+  "binding_partial_mismatch_among_matches": {
+   "after": {
+    "buckets": {
+     "evidence_inspection_notices": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945",
+     "evidence_inspections": "524a4acaee555278dd52de51d3541a896326e17faf72427428ac6113c5797292"
+    },
+    "rows": {
+     "evidence_inspection_notices": 0,
+     "evidence_inspections": 1
+    },
+    "store": "fc5af851c62390b44677d41eec69b7ec31a31c79d392372d95d8b8e26b507f58"
+   },
+   "before": {
+    "buckets": {
+     "evidence_inspection_notices": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945",
+     "evidence_inspections": "524a4acaee555278dd52de51d3541a896326e17faf72427428ac6113c5797292"
+    },
+    "rows": {
+     "evidence_inspection_notices": 0,
+     "evidence_inspections": 1
+    },
+    "store": "fc5af851c62390b44677d41eec69b7ec31a31c79d392372d95d8b8e26b507f58"
+   },
+   "message": "Evidence inspection is bound to another execution or revision",
+   "nothing_written": true,
+   "raised": "ContractError"
+  },
+  "incomplete_is_refused_with_the_counts": {
+   "after": {
+    "buckets": {
+     "evidence_inspection_notices": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945",
+     "evidence_inspections": "00b9c56a0606c672c9bead99fe0c20cf548c799b002e3f0d56980f4f6f2fb95d"
+    },
+    "rows": {
+     "evidence_inspection_notices": 0,
+     "evidence_inspections": 1
+    },
+    "store": "3f81a6a07d9b30758f35827b171c24ad99576ee5c44fd48e0b5f3df2ebca1882"
+   },
+   "before": {
+    "buckets": {
+     "evidence_inspection_notices": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945",
+     "evidence_inspections": "00b9c56a0606c672c9bead99fe0c20cf548c799b002e3f0d56980f4f6f2fb95d"
+    },
+    "rows": {
+     "evidence_inspection_notices": 0,
+     "evidence_inspections": 1
+    },
+    "store": "3f81a6a07d9b30758f35827b171c24ad99576ee5c44fd48e0b5f3df2ebca1882"
+   },
+   "message": "Evidence inspection is incomplete: checked=1, not_checked=1",
+   "nothing_written": true,
+   "raised": "ContractError"
+  },
+  "incomplete_with_matching_policy_and_binding": {
+   "after": {
+    "buckets": {
+     "evidence_inspection_notices": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945",
+     "evidence_inspections": "00b9c56a0606c672c9bead99fe0c20cf548c799b002e3f0d56980f4f6f2fb95d"
+    },
+    "rows": {
+     "evidence_inspection_notices": 0,
+     "evidence_inspections": 1
+    },
+    "store": "3f81a6a07d9b30758f35827b171c24ad99576ee5c44fd48e0b5f3df2ebca1882"
+   },
+   "before": {
+    "buckets": {
+     "evidence_inspection_notices": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945",
+     "evidence_inspections": "00b9c56a0606c672c9bead99fe0c20cf548c799b002e3f0d56980f4f6f2fb95d"
+    },
+    "rows": {
+     "evidence_inspection_notices": 0,
+     "evidence_inspections": 1
+    },
+    "store": "3f81a6a07d9b30758f35827b171c24ad99576ee5c44fd48e0b5f3df2ebca1882"
+   },
+   "message": "Evidence inspection is incomplete: checked=1, not_checked=1",
+   "nothing_written": true,
+   "raised": "ContractError"
+  },
+  "inspection_row_of_another_store_is_missing": {
+   "after": {
+    "buckets": {
+     "evidence_inspection_notices": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945",
+     "evidence_inspections": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945"
+    },
+    "rows": {
+     "evidence_inspection_notices": 0,
+     "evidence_inspections": 0
+    },
+    "store": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945"
+   },
+   "before": {
+    "buckets": {
+     "evidence_inspection_notices": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945",
+     "evidence_inspections": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945"
+    },
+    "rows": {
+     "evidence_inspection_notices": 0,
+     "evidence_inspections": 0
+    },
+    "store": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945"
+   },
+   "message": "Evidence inspection missing",
+   "nothing_written": true,
+   "raised": "ContractError"
+  },
+  "m7_tests": {
+   "test_a_missing_trusted_interpreter_is_refused_before_any_child_and_never_recorded_as_success": {
+    "unreachable": "the real EvidenceInspector and the executor (the adapter and executor families); the application side is e3 snapshot_refusal_propagates_nothing_recorded"
+   },
+   "test_command_claims_replay_only_by_policy_and_keep_raw_bytes": {
+    "unreachable": "EvidenceInspector.inspect_command (real child processes; the adapter family)"
+   },
+   "test_deadline_and_budgets_are_enforced_and_termination_is_recorded": {
+    "unreachable": "real child processes and deadlines (the adapter family)"
+   },
+   "test_executor_inspects_implementation_claims_in_the_workspace": {
+    "unreachable": "the executor family"
+   },
+   "test_file_claims_are_checked_against_the_workspace_never_the_inspector_cwd": {
+    "unreachable": "EvidenceInspector.inspect_file (real files; the adapter family)"
+   },
+   "test_ledger_binds_the_inspection_to_the_execution_and_never_records_a_failure_as_success": {
+    "unreachable": "its postgres parameter needs PostgreSQL (the disposable fixture) and the memory half drives the real adapter; the ledger half is e2/e3/e6"
+   },
+   "test_policy_and_claims_are_closed_and_typed": {
+    "unreachable": "the domain.evidence validators: S5 domain.evidence moves; the adapter policy is the adapter family"
+   },
+   "test_python_replays_run_the_trusted_interpreter_against_the_candidate_source": {
+    "unreachable": "real subprocess and the trusted interpreter (the adapter family); the snapshot identity is e3"
+   },
+   "test_read_only_runs_receive_a_host_composed_review_context_and_implementation_runs_do_not": {
+    "unreachable": "the executor family"
+   },
+   "test_real_capture_*": {
+    "unreachable": "ei._capture and ProcessTree (the adapter family)"
+   },
+   "test_recording_failure_is_a_named_notice_not_a_success": {
+    "unreachable": "drives the real adapter; the notice is e5 recording_failure_is_a_named_notice"
+   },
+   "test_the_profile_metadata_module_replays_only_as_its_exact_argv": {
+    "unreachable": "authorized() on the packaged policy and a real replay (the adapter family)"
+   }
+  },
+  "manual_all_checked_ignores_the_denominator": {
+   "is_the_row": true
+  },
+  "manual_all_checked_row_without_a_denominator_is_a_key_error": {
+   "message": "'denominator'",
+   "raised": "KeyError"
+  },
+  "manual_row_counts_in_row_order_and_claims_excluded": {
+   "after": {
+    "buckets": {
+     "evidence_inspection_notices": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945",
+     "evidence_inspections": "a9d906a346c23dfd91e6c2bb5996aaa1d37fbbb5484be175de6f30e1e07c1248"
+    },
+    "rows": {
+     "evidence_inspection_notices": 0,
+     "evidence_inspections": 2
+    },
+    "store": "fa0d5f7ec0ee092375cc015882fa1d5ecce093fa21d3a2183dfc94ab60c6d4f3"
+   },
+   "before": {
+    "buckets": {
+     "evidence_inspection_notices": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945",
+     "evidence_inspections": "a9d906a346c23dfd91e6c2bb5996aaa1d37fbbb5484be175de6f30e1e07c1248"
+    },
+    "rows": {
+     "evidence_inspection_notices": 0,
+     "evidence_inspections": 2
+    },
+    "store": "fa0d5f7ec0ee092375cc015882fa1d5ecce093fa21d3a2183dfc94ab60c6d4f3"
+   },
+   "message": "Evidence inspection is incomplete: missing=2, checked=1",
+   "nothing_written": true,
+   "raised": "ContractError"
+  },
+  "manual_row_with_only_zero_counts": {
+   "after": {
+    "buckets": {
+     "evidence_inspection_notices": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945",
+     "evidence_inspections": "088ae7576652197fbd1e74cb392d8d9a7587ff99dbc158c4a2cbad0780fccdaf"
+    },
+    "rows": {
+     "evidence_inspection_notices": 0,
+     "evidence_inspections": 1
+    },
+    "store": "fff36ebfa2ea5cb5a51cbbfb46e95e9fc312ca0923a1075c4b512a459362b9f8"
+   },
+   "before": {
+    "buckets": {
+     "evidence_inspection_notices": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945",
+     "evidence_inspections": "088ae7576652197fbd1e74cb392d8d9a7587ff99dbc158c4a2cbad0780fccdaf"
+    },
+    "rows": {
+     "evidence_inspection_notices": 0,
+     "evidence_inspections": 1
+    },
+    "store": "fff36ebfa2ea5cb5a51cbbfb46e95e9fc312ca0923a1075c4b512a459362b9f8"
+   },
+   "message": "Evidence inspection is incomplete: ",
+   "nothing_written": true,
+   "raised": "ContractError"
+  },
+  "manual_row_without_a_binding_is_a_key_error_only_when_one_is_named": {
+   "binding_named": {
+    "message": "'binding'",
+    "raised": "KeyError"
+   },
+   "no_binding_named": {
+    "value": {
+     "denominator": {},
+     "id": "manual5",
+     "policy_hash": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+     "verdict": "all_checked"
+    }
+   }
+  },
+  "manual_row_without_a_policy_hash": {
+   "no_check": {
+    "value": {
+     "denominator": {},
+     "id": "manual4",
+     "verdict": "all_checked"
+    }
+   },
+   "with_check": {
+    "message": "'policy_hash'",
+    "raised": "KeyError"
+   }
+  },
+  "manual_row_without_a_verdict_is_a_key_error": {
+   "message": "'verdict'",
+   "raised": "KeyError"
+  },
+  "missing_row": {
+   "after": {
+    "buckets": {
+     "evidence_inspection_notices": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945",
+     "evidence_inspections": "524a4acaee555278dd52de51d3541a896326e17faf72427428ac6113c5797292"
+    },
+    "rows": {
+     "evidence_inspection_notices": 0,
+     "evidence_inspections": 1
+    },
+    "store": "fc5af851c62390b44677d41eec69b7ec31a31c79d392372d95d8b8e26b507f58"
+   },
+   "before": {
+    "buckets": {
+     "evidence_inspection_notices": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945",
+     "evidence_inspections": "524a4acaee555278dd52de51d3541a896326e17faf72427428ac6113c5797292"
+    },
+    "rows": {
+     "evidence_inspection_notices": 0,
+     "evidence_inspections": 1
+    },
+    "store": "fc5af851c62390b44677d41eec69b7ec31a31c79d392372d95d8b8e26b507f58"
+   },
+   "message": "Evidence inspection missing",
+   "nothing_written": true,
+   "raised": "ContractError"
+  },
+  "no_inspector_is_needed": {
+   "is_the_row": true
+  },
+  "order_binding_before_verdict": {
+   "after": {
+    "buckets": {
+     "evidence_inspection_notices": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945",
+     "evidence_inspections": "00b9c56a0606c672c9bead99fe0c20cf548c799b002e3f0d56980f4f6f2fb95d"
+    },
+    "rows": {
+     "evidence_inspection_notices": 0,
+     "evidence_inspections": 1
+    },
+    "store": "3f81a6a07d9b30758f35827b171c24ad99576ee5c44fd48e0b5f3df2ebca1882"
+   },
+   "before": {
+    "buckets": {
+     "evidence_inspection_notices": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945",
+     "evidence_inspections": "00b9c56a0606c672c9bead99fe0c20cf548c799b002e3f0d56980f4f6f2fb95d"
+    },
+    "rows": {
+     "evidence_inspection_notices": 0,
+     "evidence_inspections": 1
+    },
+    "store": "3f81a6a07d9b30758f35827b171c24ad99576ee5c44fd48e0b5f3df2ebca1882"
+   },
+   "message": "Evidence inspection is bound to another execution or revision",
+   "nothing_written": true,
+   "raised": "ContractError"
+  },
+  "order_missing_before_policy": {
+   "after": {
+    "buckets": {
+     "evidence_inspection_notices": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945",
+     "evidence_inspections": "524a4acaee555278dd52de51d3541a896326e17faf72427428ac6113c5797292"
+    },
+    "rows": {
+     "evidence_inspection_notices": 0,
+     "evidence_inspections": 1
+    },
+    "store": "fc5af851c62390b44677d41eec69b7ec31a31c79d392372d95d8b8e26b507f58"
+   },
+   "before": {
+    "buckets": {
+     "evidence_inspection_notices": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945",
+     "evidence_inspections": "524a4acaee555278dd52de51d3541a896326e17faf72427428ac6113c5797292"
+    },
+    "rows": {
+     "evidence_inspection_notices": 0,
+     "evidence_inspections": 1
+    },
+    "store": "fc5af851c62390b44677d41eec69b7ec31a31c79d392372d95d8b8e26b507f58"
+   },
+   "message": "Evidence inspection missing",
+   "nothing_written": true,
+   "raised": "ContractError"
+  },
+  "order_policy_before_binding": {
+   "after": {
+    "buckets": {
+     "evidence_inspection_notices": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945",
+     "evidence_inspections": "524a4acaee555278dd52de51d3541a896326e17faf72427428ac6113c5797292"
+    },
+    "rows": {
+     "evidence_inspection_notices": 0,
+     "evidence_inspections": 1
+    },
+    "store": "fc5af851c62390b44677d41eec69b7ec31a31c79d392372d95d8b8e26b507f58"
+   },
+   "before": {
+    "buckets": {
+     "evidence_inspection_notices": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945",
+     "evidence_inspections": "524a4acaee555278dd52de51d3541a896326e17faf72427428ac6113c5797292"
+    },
+    "rows": {
+     "evidence_inspection_notices": 0,
+     "evidence_inspections": 1
+    },
+    "store": "fc5af851c62390b44677d41eec69b7ec31a31c79d392372d95d8b8e26b507f58"
+   },
+   "message": "Evidence inspection was made under another policy",
+   "nothing_written": true,
+   "raised": "ContractError"
+  },
+  "order_policy_before_verdict": {
+   "after": {
+    "buckets": {
+     "evidence_inspection_notices": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945",
+     "evidence_inspections": "00b9c56a0606c672c9bead99fe0c20cf548c799b002e3f0d56980f4f6f2fb95d"
+    },
+    "rows": {
+     "evidence_inspection_notices": 0,
+     "evidence_inspections": 1
+    },
+    "store": "3f81a6a07d9b30758f35827b171c24ad99576ee5c44fd48e0b5f3df2ebca1882"
+   },
+   "before": {
+    "buckets": {
+     "evidence_inspection_notices": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945",
+     "evidence_inspections": "00b9c56a0606c672c9bead99fe0c20cf548c799b002e3f0d56980f4f6f2fb95d"
+    },
+    "rows": {
+     "evidence_inspection_notices": 0,
+     "evidence_inspections": 1
+    },
+    "store": "3f81a6a07d9b30758f35827b171c24ad99576ee5c44fd48e0b5f3df2ebca1882"
+   },
+   "message": "Evidence inspection was made under another policy",
+   "nothing_written": true,
+   "raised": "ContractError"
+  },
+  "policy_and_binding_both_match": {
+   "after": {
+    "buckets": {
+     "evidence_inspection_notices": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945",
+     "evidence_inspections": "524a4acaee555278dd52de51d3541a896326e17faf72427428ac6113c5797292"
+    },
+    "rows": {
+     "evidence_inspection_notices": 0,
+     "evidence_inspections": 1
+    },
+    "store": "fc5af851c62390b44677d41eec69b7ec31a31c79d392372d95d8b8e26b507f58"
+   },
+   "before": {
+    "buckets": {
+     "evidence_inspection_notices": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945",
+     "evidence_inspections": "524a4acaee555278dd52de51d3541a896326e17faf72427428ac6113c5797292"
+    },
+    "rows": {
+     "evidence_inspection_notices": 0,
+     "evidence_inspections": 1
+    },
+    "store": "fc5af851c62390b44677d41eec69b7ec31a31c79d392372d95d8b8e26b507f58"
+   },
+   "nothing_written": true,
+   "value": {
+    "authority": "deterministic inspection of claims; not historical truth, semantic review or human acceptance",
+    "binding": {
+     "attempt": 1,
+     "base": "bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb",
+     "generation": 1,
+     "owner": "owner-1",
+     "source_revision": "cccccccccccccccccccccccccccccccccccccccc",
+     "task_id": "task-1",
+     "tree": "dddddddddddddddddddddddddddddddddddddddd",
+     "workspace": "/fixture/ws"
+    },
+    "claims": [
+     {
+      "argv": [
+       "python",
+       "-m",
+       "pytest",
+       "-q"
+      ],
+      "expected_exit": 0,
+      "id": "k1",
+      "kind": "command",
+      "origin": "free_text"
+     },
+     {
+      "id": "k2",
+      "kind": "file",
+      "origin": "structured",
+      "path": "docs/note.md",
+      "range": null,
+      "sha256": "ffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff"
+     }
+    ],
+    "context": {
+     "attempt": 1,
+     "base": "bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb",
+     "cwd": "/fixture/ws",
+     "environment": [
+      "PATH",
+      "PYTHONIOENCODING"
+     ],
+     "environment_digest": "eeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee",
+     "generation": 1,
+     "interpreter": "/fixture/bin/python",
+     "owner": "owner-1",
+     "python": "3.fixture",
+     "pythonpath": null,
+     "source_revision": "cccccccccccccccccccccccccccccccccccccccc",
+     "task_id": "task-1",
+     "tree": "dddddddddddddddddddddddddddddddddddddddd",
+     "workspace": "/fixture/ws"
+    },
+    "denominator": {
+     "checked": 2,
+     "claims": 2,
+     "error": 0,
+     "flake_pattern": 0,
+     "missing": 0,
+     "not_checked": 0,
+     "replay_failed": 0,
+     "unknown": 0,
+     "verified_mismatch": 0
+    },
+    "findings": [
+     {
+      "cause": "fixture checked",
+      "claim": {
+       "argv": [
+        "python",
+        "-m",
+        "pytest",
+        "-q"
+       ],
+       "expected_exit": 0,
+       "id": "k1",
+       "kind": "command",
+       "origin": "free_text"
+      },
+      "state": "checked"
+     },
+     {
+      "cause": "fixture checked",
+      "claim": {
+       "id": "k2",
+       "kind": "file",
+       "origin": "structured",
+       "path": "docs/note.md",
+       "range": null,
+       "sha256": "ffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff"
+      },
+      "state": "checked"
+     }
+    ],
+    "id": "7a324cd1f81eae65ea31ba0a4c31a01f3f0260fdc0258bc4e20f01c08294976b",
+    "inspector": {
+     "cwd": "/fixture/ws",
+     "environment_digest": "eeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee",
+     "environment_names": [
+      "PATH",
+      "PYTHONIOENCODING"
+     ],
+     "interpreter": "/fixture/bin/python",
+     "platform": "fixture-host",
+     "policy_hash": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+     "tool": {
+      "executable_digest": "xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx",
+      "implementation": "CPython",
+      "python": "3.fixture"
+     }
+    },
+    "policy_hash": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+    "recorded_at": "2026-09-22T00:00:00+00:00",
+    "verdict": "all_checked"
+   }
+  },
+  "policy_hash_is_keyword_only": {
+   "message": "EvidenceInspections.require_all_checked() takes 3 positional arguments but 4 were given",
+   "raised": "TypeError"
+  },
+  "policy_none_skips_the_policy_check": {
+   "is_the_row": true
+  },
+  "reads_the_owned_bucket_only": {
+   "bucket": "evidence_inspections",
+   "notices": "evidence_inspection_notices"
+  },
+  "unknown_keyword_is_refused": {
+   "message": "EvidenceInspections.require_all_checked() got an unexpected keyword argument 'policy'",
+   "raised": "TypeError"
+  },
+  "verdict_texts": {
+   "all_unchecked": {
+    "after": {
+     "buckets": {
+      "evidence_inspection_notices": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945",
+      "evidence_inspections": "989e9215c7da3a0aaa05c35e485d7552c19a22bcd9eedba758f354f44215161d"
+     },
+     "rows": {
+      "evidence_inspection_notices": 0,
+      "evidence_inspections": 1
+     },
+     "store": "1c5f63ea6503799552a4339f41166a7f20a17375cb7f011db225980d305de195"
+    },
+    "before": {
+     "buckets": {
+      "evidence_inspection_notices": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945",
+      "evidence_inspections": "989e9215c7da3a0aaa05c35e485d7552c19a22bcd9eedba758f354f44215161d"
+     },
+     "rows": {
+      "evidence_inspection_notices": 0,
+      "evidence_inspections": 1
+     },
+     "store": "1c5f63ea6503799552a4339f41166a7f20a17375cb7f011db225980d305de195"
+    },
+    "message": "Evidence inspection is incomplete: not_checked=2",
+    "nothing_written": true,
+    "raised": "ContractError",
+    "verdict": "incomplete"
+   },
+   "flake_only": {
+    "after": {
+     "buckets": {
+      "evidence_inspection_notices": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945",
+      "evidence_inspections": "c1572e430e2b476a63926b6d94774b3701f7da896c5794817cca81c952982cce"
+     },
+     "rows": {
+      "evidence_inspection_notices": 0,
+      "evidence_inspections": 1
+     },
+     "store": "7ce28edd4678e415efcb33834be3e1d085b42f5273827b64f329c14e3771ce9b"
+    },
+    "before": {
+     "buckets": {
+      "evidence_inspection_notices": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945",
+      "evidence_inspections": "c1572e430e2b476a63926b6d94774b3701f7da896c5794817cca81c952982cce"
+     },
+     "rows": {
+      "evidence_inspection_notices": 0,
+      "evidence_inspections": 1
+     },
+     "store": "7ce28edd4678e415efcb33834be3e1d085b42f5273827b64f329c14e3771ce9b"
+    },
+    "message": "Evidence inspection is incomplete: flake_pattern=1",
+    "nothing_written": true,
+    "raised": "ContractError",
+    "verdict": "incomplete"
+   },
+   "mixed_states": {
+    "after": {
+     "buckets": {
+      "evidence_inspection_notices": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945",
+      "evidence_inspections": "35d9186bd742a93c2375758fa01427c9345792071df80da1664d04f0b559fb6f"
+     },
+     "rows": {
+      "evidence_inspection_notices": 0,
+      "evidence_inspections": 1
+     },
+     "store": "b450a753f05f5e27b95af3405603d1ee52db42ad3acdce68a381f006ba3030af"
+    },
+    "before": {
+     "buckets": {
+      "evidence_inspection_notices": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945",
+      "evidence_inspections": "35d9186bd742a93c2375758fa01427c9345792071df80da1664d04f0b559fb6f"
+     },
+     "rows": {
+      "evidence_inspection_notices": 0,
+      "evidence_inspections": 1
+     },
+     "store": "b450a753f05f5e27b95af3405603d1ee52db42ad3acdce68a381f006ba3030af"
+    },
+    "message": "Evidence inspection is incomplete: checked=1, not_checked=1, missing=1, unknown=1, error=1, replay_failed=1, flake_pattern=1, verified_mismatch=1",
+    "nothing_written": true,
+    "raised": "ContractError",
+    "verdict": "incomplete"
+   },
+   "no_claims": {
+    "after": {
+     "buckets": {
+      "evidence_inspection_notices": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945",
+      "evidence_inspections": "b22ddbb59a558b90372003c602f7de890a70294f07d2be559fac6d8520b67a1a"
+     },
+     "rows": {
+      "evidence_inspection_notices": 0,
+      "evidence_inspections": 1
+     },
+     "store": "c1128a179408bc14c94e56f6c1103fa2c0e04d7b9bbb6e39ae8ca7fb1fc54990"
+    },
+    "before": {
+     "buckets": {
+      "evidence_inspection_notices": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945",
+      "evidence_inspections": "b22ddbb59a558b90372003c602f7de890a70294f07d2be559fac6d8520b67a1a"
+     },
+     "rows": {
+      "evidence_inspection_notices": 0,
+      "evidence_inspections": 1
+     },
+     "store": "c1128a179408bc14c94e56f6c1103fa2c0e04d7b9bbb6e39ae8ca7fb1fc54990"
+    },
+    "message": "Evidence inspection is no_claims: ",
+    "nothing_written": true,
+    "raised": "ContractError",
+    "verdict": "no_claims"
+   },
+   "one_missing": {
+    "after": {
+     "buckets": {
+      "evidence_inspection_notices": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945",
+      "evidence_inspections": "ae1f2fd46bee79dd022092645eb7501eba04ec8e25f31293f37eaa4e52cee6a6"
+     },
+     "rows": {
+      "evidence_inspection_notices": 0,
+      "evidence_inspections": 1
+     },
+     "store": "a13abd9314a182fdaa36d19fb660b80a60bc1bbd26f89c785415eb31f8cdd048"
+    },
+    "before": {
+     "buckets": {
+      "evidence_inspection_notices": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945",
+      "evidence_inspections": "ae1f2fd46bee79dd022092645eb7501eba04ec8e25f31293f37eaa4e52cee6a6"
+     },
+     "rows": {
+      "evidence_inspection_notices": 0,
+      "evidence_inspections": 1
+     },
+     "store": "a13abd9314a182fdaa36d19fb660b80a60bc1bbd26f89c785415eb31f8cdd048"
+    },
+    "message": "Evidence inspection is incomplete: missing=1",
+    "nothing_written": true,
+    "raised": "ContractError",
+    "verdict": "incomplete"
+   }
+  }
+ }
+}
