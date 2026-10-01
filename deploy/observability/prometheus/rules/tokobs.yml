@@ -1,0 +1,50 @@
+# DESIGN §5.1. No Alertmanager and no Discord: alerts are visible in Prometheus/Grafana only.
+groups:
+  - name: tokobs-recording
+    rules:
+      - record: zeus:llm_tokens:increase1d
+        expr: sum by (provider,model,role,token_type)(increase(zeus_llm_tokens_total[1d]))
+      - record: zeus:task_tokens_per_accepted:7d
+        expr: sum by (task_class,token_type)(increase(zeus_task_tokens_total{outcome="accepted"}[7d])) / ignoring(token_type) group_left sum by (task_class)(increase(zeus_task_outcomes_total{outcome="accepted"}[7d]))
+      - record: zeus:llm_unknown_ratio:1d
+        expr: sum(increase(zeus_llm_unknown_invocations_total[1d])) / sum(increase(zeus_llm_invocations_total[1d]))
+  - name: tokobs-alerts
+    rules:
+      - alert: TokObsExporterDown
+        expr: up{job="tokobs"} == 0
+        for: 5m
+        labels:
+          severity: warning
+        annotations:
+          summary: The tokobs collector exporter is not being scraped.
+      - alert: TokObsScanStale
+        expr: time() - zeus_tokobs_last_scan_success_timestamp_seconds > 300
+        labels:
+          severity: warning
+        annotations:
+          summary: The last successful tokobs scan is older than 300 s.
+      - alert: TokObsRenderRefused
+        expr: zeus_tokobs_render_refused == 1
+        labels:
+          severity: warning
+        annotations:
+          summary: A tokobs render was refused; data.prom is the last good render.
+      - alert: TokObsUnknownHigh
+        expr: zeus:llm_unknown_ratio:1d > 0.2
+        labels:
+          severity: warning
+        annotations:
+          summary: More than 20% of finalized invocations in the last day have unknown token usage.
+      - alert: TokObsS9SnapshotStale
+        expr: time() - zeus_s9_snapshot_collected_timestamp_seconds > 120
+        labels:
+          severity: warning
+        annotations:
+          summary: The S9 monitoring snapshot is older than 120 s.
+      - alert: TokObsWindowStale
+        expr: zeus_llm_provider_window_state{state=~"stale|expired|unavailable"} == 1
+        for: 1h
+        labels:
+          severity: info
+        annotations:
+          summary: A provider window observation has been stale, expired or unavailable for an hour.

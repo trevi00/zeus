@@ -1,0 +1,145 @@
+# token-observability W2 (DESIGN §7; ACCEPTANCE A55/A57). Three containers on a private internal network; only
+# Grafana is published, on host loopback. No privileged mode, host network/PID/IPC, added capabilities or Docker socket.
+# Code binds are relative to this file, i.e. the release checkout the file lives in. Bind sources are LONG syntax with
+# create_host_path: false so a missing host path is refused, never created as root.
+name: zeus-tokobs
+
+networks:
+  private:
+    driver: bridge
+    internal: true
+    driver_opts:
+      com.docker.network.bridge.gateway_mode_ipv4: isolated
+    enable_ipv6: false
+  edge:
+    driver: bridge
+
+volumes:
+  tokobs-prometheus: {}
+  tokobs-grafana: {}
+
+services:
+  collector:
+    image: python:3.13-slim-bookworm@sha256:2325bb286ec344af3e5898cc224b5844e2707ac6e26b1632516fd3edc84a5e26
+    user: "1000:1000"
+    read_only: true
+    cap_drop: [ALL]
+    security_opt: ["no-new-privileges:true"]
+    restart: unless-stopped
+    mem_limit: 128m
+    cpus: 0.1
+    pids_limit: 16
+    networks: [private]
+    tmpfs: ["/tmp:size=16m"]
+    environment:
+      PYTHONPATH: /opt/zeus/tools/token_observability:/opt/zeus/src
+      PYTHONDONTWRITEBYTECODE: "1"
+    command: ["python", "-B", "-m", "tokobs", "serve", "--listen", "0.0.0.0:9469", "--data", "/data",
+              "--source-root", "/input/artifacts", "--s9-dir", "/input/s9"]
+    volumes:
+      - type: bind
+        source: ../../tools/token_observability
+        target: /opt/zeus/tools/token_observability
+        read_only: true
+        bind: {create_host_path: false}
+      # C-W1-8: tokobs.vocab imports codex_harness.domain.policy from the same checkout's src.
+      - type: bind
+        source: ../../src
+        target: /opt/zeus/src
+        read_only: true
+        bind: {create_host_path: false}
+      - type: bind
+        source: /home/trevi/workspaces/zeus/artifacts/aibox-migration-001
+        target: /input/artifacts
+        read_only: true
+        bind: {create_host_path: false}
+      - type: bind
+        source: /srv/zeus/runtime/control
+        target: /input/s9
+        read_only: true
+        bind: {create_host_path: false}
+      - type: bind
+        source: /srv/zeus/runtime/tokobs
+        target: /data
+        read_only: false
+        bind: {create_host_path: false}
+
+  prometheus:
+    image: prom/prometheus:v3.15.0@sha256:efd719c99d83b060d9daefdcf00360461adf279f45ef5391f8d111892118753e
+    user: "1000:1000"
+    # The image's /prometheus is 65534:65534 mode 0775 and a fresh named volume copies that, so uid 1000 needs
+    # group 65534 to write the TSDB while keeping user 1000:1000 (measured by the owner).
+    group_add: ["65534"]
+    read_only: true
+    cap_drop: [ALL]
+    security_opt: ["no-new-privileges:true"]
+    restart: unless-stopped
+    mem_limit: 512m
+    cpus: 0.5
+    pids_limit: 64
+    networks: [private]
+    command: ["--config.file=/etc/prometheus/prometheus.yml", "--storage.tsdb.path=/prometheus",
+              "--storage.tsdb.retention.time=180d", "--storage.tsdb.retention.size=2GB"]
+    volumes:
+      - type: volume
+        source: tokobs-prometheus
+        target: /prometheus
+      - type: bind
+        source: ./prometheus/prometheus.yml
+        target: /etc/prometheus/prometheus.yml
+        read_only: true
+        bind: {create_host_path: false}
+      - type: bind
+        source: ./prometheus/rules
+        target: /etc/prometheus/rules
+        read_only: true
+        bind: {create_host_path: false}
+
+  grafana:
+    # Owner deviation from DESIGN §7's grafana/grafana-oss: observed 2026-10-01 grafana-oss:latest is 13.0.2
+    # (built 2026-06-02) while grafana/grafana is 13.2.3 (built 2026-09-28), and Grafana's current Docker install
+    # page names grafana/grafana as the open-source edition.
+    image: grafana/grafana:13.2.3@sha256:b28bae15e219c998fb0e0424ed724930cc61b1f61fb404d47c862f9a23f9e572
+    user: "1000:1000"
+    read_only: true
+    cap_drop: [ALL]
+    security_opt: ["no-new-privileges:true"]
+    restart: unless-stopped
+    mem_limit: 256m
+    cpus: 0.5
+    pids_limit: 128
+    tmpfs: ["/tmp:size=64m"]
+    networks:
+      private: {}
+      edge: {gw_priority: 1}
+    ports:
+      - {target: 3000, published: "3300", host_ip: 127.0.0.1, protocol: tcp}
+    environment:
+      # `$$` is Compose's escape for a literal `$`; without it Compose interpolates `$__file` to an empty string.
+      GF_SECURITY_ADMIN_PASSWORD: "$$__file{/run/secrets/grafana-admin.pass}"
+      GF_AUTH_ANONYMOUS_ENABLED: "false"
+      GF_ANALYTICS_REPORTING_ENABLED: "false"
+      GF_ANALYTICS_CHECK_FOR_UPDATES: "false"
+      GF_ANALYTICS_CHECK_FOR_PLUGIN_UPDATES: "false"
+      GF_PLUGINS_PLUGIN_ADMIN_ENABLED: "false"
+      GF_LOG_MODE: console  # the read-only root filesystem forbids file logs
+    volumes:
+      - type: volume
+        source: tokobs-grafana
+        target: /var/lib/grafana
+      - type: bind
+        source: ./grafana/provisioning
+        target: /etc/grafana/provisioning
+        read_only: true
+        bind: {create_host_path: false}
+      - type: bind
+        source: ./grafana/dashboards
+        target: /etc/grafana/dashboards
+        read_only: true
+        bind: {create_host_path: false}
+      # U3: the only secret, mounted in grafana only.
+      - type: bind
+        source: /srv/zeus/secrets/grafana-admin.pass
+        target: /run/secrets/grafana-admin.pass
+        read_only: true
+        bind: {create_host_path: false}

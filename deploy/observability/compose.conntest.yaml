@@ -1,0 +1,39 @@
+# A56 isolated connectivity override (DESIGN §7). Used as:
+#   TOKOBS_CONNTEST_DIR=<tmp dir> docker compose -p zeus-tokobs-conntest -f compose.yaml -f compose.conntest.yaml ...
+# The collector serves a static fixture and mounts no worker input and no /data. Prometheus is unchanged.
+services:
+  collector:
+    command: !override ["python", "-B", "-m", "tokobs", "serve", "--listen", "0.0.0.0:9469", "--fixture"]
+    volumes: !override
+      - type: bind
+        source: ../../tools/token_observability
+        target: /opt/zeus/tools/token_observability
+        read_only: true
+        bind: {create_host_path: false}
+      - type: bind
+        source: ../../src
+        target: /opt/zeus/src
+        read_only: true
+        bind: {create_host_path: false}
+  grafana:
+    ports: !override
+      - {target: 3000, published: "13300", host_ip: 127.0.0.1, protocol: tcp}
+    volumes: !override
+      - type: volume
+        source: tokobs-grafana
+        target: /var/lib/grafana
+      - type: bind
+        source: ./grafana/provisioning
+        target: /etc/grafana/provisioning
+        read_only: true
+        bind: {create_host_path: false}
+      - type: bind
+        source: ./grafana/dashboards
+        target: /etc/grafana/dashboards
+        read_only: true
+        bind: {create_host_path: false}
+      - type: bind
+        source: ${TOKOBS_CONNTEST_DIR:?}/grafana-admin.pass
+        target: /run/secrets/grafana-admin.pass
+        read_only: true
+        bind: {create_host_path: false}

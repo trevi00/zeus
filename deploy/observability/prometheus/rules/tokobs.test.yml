@@ -1,0 +1,98 @@
+# promtool test rules (ACCEPTANCE A25, A26, A43, A29). Run by the owner; not run by the W2a pilot.
+rule_files:
+  - tokobs.yml
+evaluation_interval: 1m
+
+tests:
+  - name: A25 exporter down after 5m
+    interval: 1m
+    input_series:
+      - series: 'up{job="tokobs",instance="collector:9469"}'
+        values: '0x10'
+    alert_rule_test:
+      - eval_time: 4m
+        alertname: TokObsExporterDown
+        exp_alerts: []
+      - eval_time: 6m
+        alertname: TokObsExporterDown
+        exp_alerts:
+          - exp_labels:
+              severity: warning
+              job: tokobs
+              instance: "collector:9469"
+            exp_annotations:
+              summary: The tokobs collector exporter is not being scraped.
+
+  - name: A25 scan stale after 300 s
+    interval: 1m
+    input_series:
+      - series: 'zeus_tokobs_last_scan_success_timestamp_seconds'
+        values: '0+0x10'
+    alert_rule_test:
+      - eval_time: 4m
+        alertname: TokObsScanStale
+        exp_alerts: []
+      - eval_time: 6m
+        alertname: TokObsScanStale
+        exp_alerts:
+          - exp_labels:
+              severity: warning
+            exp_annotations:
+              summary: The last successful tokobs scan is older than 300 s.
+
+  - name: A26 unknown ratio 0.25 fires TokObsUnknownHigh
+    interval: 1m
+    input_series:
+      - series: 'zeus_llm_invocations_total{provider="anthropic",model="m",role="implementer",source="routine",outcome="finished"}'
+        values: '0+4x30'
+      - series: 'zeus_llm_unknown_invocations_total{provider="anthropic",source="routine",reason="no_result"}'
+        values: '0+1x30'
+    promql_expr_test:
+      - expr: zeus:llm_unknown_ratio:1d
+        eval_time: 30m
+        exp_samples:
+          - labels: 'zeus:llm_unknown_ratio:1d'
+            value: 0.25
+    alert_rule_test:
+      - eval_time: 30m
+        alertname: TokObsUnknownHigh
+        exp_alerts:
+          - exp_labels:
+              severity: warning
+            exp_annotations:
+              summary: More than 20% of finalized invocations in the last day have unknown token usage.
+
+  - name: A43 render refused fires
+    interval: 1m
+    input_series:
+      - series: 'zeus_tokobs_render_refused'
+        values: '1x5'
+    alert_rule_test:
+      - eval_time: 2m
+        alertname: TokObsRenderRefused
+        exp_alerts:
+          - exp_labels:
+              severity: warning
+            exp_annotations:
+              summary: A tokobs render was refused; data.prom is the last good render.
+
+  - name: A29 task tokens per accepted joins ignoring token_type
+    interval: 1m
+    input_series:
+      - series: 'zeus_task_tokens_total{task_class="c1",outcome="accepted",token_type="input",role="implementer"}'
+        values: '0+10x30'
+      - series: 'zeus_task_tokens_total{task_class="c1",outcome="accepted",token_type="output",role="implementer"}'
+        values: '0+20x30'
+      - series: 'zeus_task_outcomes_total{task_class="c1",outcome="accepted",first_pass="true"}'
+        values: '0+1x30'
+    promql_expr_test:
+      - expr: zeus:task_tokens_per_accepted:7d{token_type="input"}
+        eval_time: 30m
+        exp_samples:
+          - labels: 'zeus:task_tokens_per_accepted:7d{task_class="c1",token_type="input"}'
+            value: 10
+      - expr: zeus:task_tokens_per_accepted:7d{token_type="output"}
+        eval_time: 30m
+        exp_samples:
+          - labels: 'zeus:task_tokens_per_accepted:7d{task_class="c1",token_type="output"}'
+            value: 20
