@@ -39,7 +39,9 @@ OWNED_BUCKETS = ("tasks", "decisions_pending", "outbox", "events", "execution_fe
                  "continuation_capacity_grants", "continuation_requalifications",
                  # S6 OwnerActions split (DESIGN-s6 §4 and §9).
                  "owner_action_policies", "owner_actions", "owner_action_migrations",
-                 "continuation_effective_bindings")
+                 "continuation_effective_bindings",
+                 # S8 pilot 68 (DESIGN-s8 §7 V12): the autonomous cycle is coordination's use case.
+                 "autonomous_runs")
 
 
 class TaskRunner(Protocol):
@@ -60,6 +62,25 @@ class EvidenceRecords(Protocol):
     """Evidence's read of one all_checked inspection bound to an execution (INV-EVIDENCE-001)."""
 
     def require_all_checked(self, tx, inspection_id: str, *, policy_hash=None, binding=None) -> dict: ...
+
+
+class DebateSessions(Protocol):
+    """Research's debate sessions (research.application.dge.DebateSessions; INV-DGE-001), built per run over the run's store and
+    clock: the autonomous cycle registers the frozen packet, submits each role's event and reads the status (S8 pilot 68, V12)."""
+
+    def register(self, packet: dict, repository: str, sources: list, *, origin: str = "operator_submitted", owner: str | None = None,
+                 binding: dict | None = None) -> dict: ...
+
+    def submit(self, session_id: str, document: dict, *, owner: str | None = None, binding: dict | None = None) -> dict: ...
+
+    def status(self, session_id: str) -> dict: ...
+
+
+class KnowledgePromotion(Protocol):
+    """Knowledge's promotion (the module knowledge.application.promotion satisfies this structurally; INV-AUTONOMOUS-001): write the
+    verified graph and the receipt in the CALLER's transaction (S8 pilot 68, V12)."""
+
+    def promote(self, tx, run_id: str, graph: dict, evidence: dict, clock=None) -> dict: ...
 
 
 class ThresholdReviewRecovery(Protocol):
