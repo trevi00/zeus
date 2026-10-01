@@ -24,8 +24,12 @@ complete forms are admitted:
   actual image operand is an allowed fixture image (never a prefix match on arbitrary tokens);
 - `build`: fixture tags only, `--network none`, the fixture label;
 - lifecycle `rm`/`stop`/`kill`/`inspect`/`logs`/`wait`: every operand is an owned fixture name;
-- `rmi`/`image inspect`: fixture images only; `version`/`info`.
-Everything else (`exec`, `cp`, `pull`, `compose`, `network`, `volume`, `system`, ...) is refused.
+- `rmi`/`image inspect`: fixture images only; `version`/`info`;
+- `exec`, ONLY with the second opt-in `ZEUS_TEST_DOCKER_PGEXEC=1` (set by the harness for the
+  `disposable-postgresql-pair` families alone, S7 restore design §2): no exec option at all, an owned fixture
+  container, and exactly the M7 host-migration tool forms `pg_dump|pg_restore -U <ident> -h /var/run/postgresql
+  ...` and `sha256sum /dump/<name>`, every path operand being `/var/run/postgresql` or `/dump/<name>`.
+Everything else (`cp`, `pull`, `compose`, `network`, `volume`, `system`, other `exec` forms, ...) is refused.
 """
 
 from __future__ import annotations
@@ -43,6 +47,11 @@ FIXTURE_DIR_ENV = "ZEUS_TEST_PROVIDER_FIXTURES"
 DOCKER_OPT_IN_ENV = "ZEUS_TEST_DOCKER"
 DOCKER_IMAGES_ENV = "ZEUS_TEST_DOCKER_FIXTURE_IMAGES"  # extra EXACT image refs, comma-separated
 DOCKER_BIND_ROOT_ENV = "ZEUS_TEST_DOCKER_BIND_ROOT"
+DOCKER_PGEXEC_ENV = "ZEUS_TEST_DOCKER_PGEXEC"  # second opt-in: the restore family's `docker exec` tool forms
+PG_TOOLS = frozenset({"pg_dump", "pg_restore"})
+PG_SOCKET_DIR = "/var/run/postgresql"
+DUMP_PATH = re.compile(r"^/dump/[A-Za-z0-9][A-Za-z0-9._-]{0,127}$")
+IDENT = re.compile(r"^[A-Za-z0-9][A-Za-z0-9_.-]{0,127}$")
 FIXTURE_LABEL = "zeus.test.fixture=1"
 FIXTURE_NAME_PREFIX = "zeus-test-fixture-"
 FIXTURE_IMAGE = re.compile(r"^zeus-test-fixture/[a-z0-9][a-z0-9._-]*(:[A-Za-z0-9._-]+)?$")
@@ -180,6 +189,31 @@ def _check_build(args: list[str], env) -> None:
         raise DockerRefused("build needs exactly one context operand")
 
 
+def _check_exec(args: list[str], env) -> None:
+    """The restore family's tool forms only (M7 host_migration `_docker_pg`/`_archive_facts`)."""
+    if ((env or {}).get(DOCKER_PGEXEC_ENV) or os.environ.get(DOCKER_PGEXEC_ENV)) != "1":
+        raise DockerRefused(f"docker exec needs {DOCKER_PGEXEC_ENV}=1")
+    if not args or args[0].startswith("-"):
+        raise DockerRefused("docker exec takes no option")
+    if not _owned(args[0]):
+        raise DockerRefused("docker exec may name owned fixture containers only")
+    program, rest = (args[1], args[2:]) if len(args) > 1 else (None, [])
+    if program == "sha256sum":
+        if len(rest) != 1 or not DUMP_PATH.match(rest[0]):
+            raise DockerRefused("docker exec sha256sum takes exactly one /dump/<name> operand")
+        return
+    if program not in PG_TOOLS:
+        raise DockerRefused(f"docker exec {program!r} is not a fixture tool form")
+    if len(rest) < 4 or rest[0] != "-U" or not IDENT.match(rest[1]) or rest[2:4] != ["-h", PG_SOCKET_DIR]:
+        raise DockerRefused("docker exec pg tool needs -U <ident> -h /var/run/postgresql first")
+    for token in rest[4:]:
+        value = token.partition("=")[2] if token.startswith("--") and "=" in token else token
+        if value.startswith("/") and not DUMP_PATH.match(value):
+            raise DockerRefused("docker exec pg tool paths must be /dump/<name>")
+        if ".." in value:
+            raise DockerRefused("docker exec pg tool arguments may not contain ..")
+
+
 def docker_policy(argv: list[str], env=None) -> str:
     """Return the normalized admitted subcommand, or raise DockerRefused (default-deny)."""
     if ((env or {}).get(DOCKER_OPT_IN_ENV) or os.environ.get(DOCKER_OPT_IN_ENV)) != "1":
@@ -190,6 +224,9 @@ def docker_policy(argv: list[str], env=None) -> str:
     command, rest = args[0], args[1:]
     if (command, rest[0] if rest else None) in DOCKER_ALIASES:
         command, rest = DOCKER_ALIASES[command, rest[0]], rest[1:]
+    if command == "exec":
+        _check_exec(rest, env)
+        return command
     if command not in DOCKER_TOP:
         raise DockerRefused(f"docker {command} is not a supported fixture form")
     if command in {"run", "create"}:

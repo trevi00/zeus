@@ -146,6 +146,11 @@ def scenarios() -> list[dict]:
 def run_driver(python: Path, driver: Path, work: Path, extra_env: dict, use_bwrap: bool,
                binds: list[Path] | None = None) -> dict:
     env = provider_guard.child_environment(work / "env", extra=extra_env)
+    if extra_env.get(PG_PAIR_ENV):
+        # The pair families run the M7 `docker exec` tool forms against their two owned fixtures: the fake
+        # `docker` gives way to the real client, and the guard admits exactly those forms (DOCKER_PGEXEC_ENV).
+        (work / "env" / "fakebin" / "docker").unlink(missing_ok=True)
+        env.update({provider_guard.DOCKER_OPT_IN_ENV: "1", provider_guard.DOCKER_PGEXEC_ENV: "1"})
     argv = [str(python), "-B", str(driver)]
     if use_bwrap:
         # The run root stays writable for both sides: the fixture sockets live beside their cwd.
@@ -158,6 +163,7 @@ def run_driver(python: Path, driver: Path, work: Path, extra_env: dict, use_bwra
 
 
 OWNER_KEY = "zeus.rebuild.owner"
+PG_PAIR_ENV = "ZEUS_REBUILD_PG_PAIR"
 
 
 class FixtureCleanupError(RuntimeError):
@@ -176,17 +182,25 @@ class DisposablePostgres:
     FixtureCleanupError when residue cannot be ruled out. A primary error is always preserved; a
     cleanup failure during it is reported as a note, without payloads."""
 
-    def __init__(self, work: Path):
-        self.socket = work / "pg-socket"
+    user, dump_dir = "postgres", None  # the single S0 fixture; a pair member sets both (see __init__)
+
+    def __init__(self, work: Path, *, role: str = "", user: str = "postgres", dump_dir: Path | None = None):
+        """`role`, `user` and `dump_dir` serve the `disposable-postgresql-pair` families (S7 restore design §2):
+        a named member of a pair, a superuser other than `postgres`, and a dump directory under this run's
+        root bind-mounted at `/dump` in both members. The defaults are the single S0 fixture, unchanged."""
+        suffix = f"-{role}" if role else ""
+        # A Unix socket path is limited to 107 bytes: a pair member's directory stays as short as the single one.
+        self.socket = work / (f"pg-{role}" if role else "pg-socket")
         self.socket.mkdir()
         self.socket.chmod(0o777)
-        self.name = f"{provider_guard.FIXTURE_NAME_PREFIX}s0-pg-{os.getpid()}"
+        self.name = f"{provider_guard.FIXTURE_NAME_PREFIX}s0-pg-{os.getpid()}{suffix}"
         self.owner_value = f"{os.getpid()}-{time.monotonic_ns()}"
         self.claimed = False
         self.container_id = ""
+        self.user, self.dump_dir = user, dump_dir
         self.env = {**os.environ, provider_guard.DOCKER_OPT_IN_ENV: "1",
                     provider_guard.DOCKER_BIND_ROOT_ENV: str(work)}
-        self.dsn = f"host={self.socket} port=5432 dbname=postgres user=postgres connect_timeout=5"
+        self.dsn = f"host={self.socket} port=5432 dbname=postgres user={user} connect_timeout=5"
 
     def docker(self, *args, timeout=60) -> subprocess.CompletedProcess:
         return subprocess.run(["docker", *args], env=self.env, capture_output=True, text=True,
@@ -235,7 +249,9 @@ class DisposablePostgres:
             "--label", "zeus.rebuild=s0", "--label", f"{OWNER_KEY}={self.owner_value}", "--name", self.name,
             "--user", f"{uid}:{gid}",
             "--mount", f"type=bind,src={self.socket},dst=/var/run/postgresql",
+            *(["--mount", f"type=bind,src={self.dump_dir},dst=/dump"] if self.dump_dir else []),
             "--tmpfs", f"/var/lib/postgresql/data:uid={uid},gid={gid},mode=0700",
+            *(["-e", f"POSTGRES_USER={self.user}"] if self.user != "postgres" else []),
             "-e", "POSTGRES_HOST_AUTH_METHOD=trust", PG_IMAGE,
             timeout=300)
         if started.returncode != 0:
@@ -273,6 +289,34 @@ class DisposablePostgres:
                 raise
             exc.add_note(f"cleanup: {uncertain}")
         return False
+
+
+class PostgresPair:
+    """The `disposable-postgresql-pair` fixture (S7 restore design §2): a source and a target DisposablePostgres
+    with superuser `zeus`, sharing one dump directory under this run's root, mounted at `/dump`. Each member keeps
+    the S0 ownership/cleanup rules; the pair removes both, the target first, even when one fails."""
+
+    def __init__(self, work: Path, dump: Path):
+        self.dump = dump
+        self.source = DisposablePostgres(work, role="source", user="zeus", dump_dir=dump)
+        self.target = DisposablePostgres(work, role="target", user="zeus", dump_dir=dump)
+        self.stack = contextlib.ExitStack()
+
+    def description(self) -> str:
+        return json.dumps({"user": "zeus", "dump": "/dump", "host_dump": str(self.dump),
+                           **{role: {"container": m.name, "socket": str(m.socket), "dsn": m.dsn}
+                              for role, m in (("source", self.source), ("target", self.target))}},
+                          sort_keys=True)
+
+    def __enter__(self):
+        with contextlib.ExitStack() as stack:
+            stack.enter_context(self.source)
+            stack.enter_context(self.target)
+            self.stack = stack.pop_all()
+        return self
+
+    def __exit__(self, exc_type, exc, tb):
+        return self.stack.__exit__(exc_type, exc, tb)
 
 
 class DisposableRedis(DisposablePostgres):
@@ -357,7 +401,8 @@ def run(record: bool, use_bwrap: bool, only: list[str], pg: bool = False,
         if only and family not in only:
             continue
         requires = scenario.get("requires")
-        needs_pg, needs_redis = requires == "disposable-postgresql", requires == "disposable-redis"
+        needs_pair = requires == "disposable-postgresql-pair"
+        needs_pg, needs_redis = requires == "disposable-postgresql" or needs_pair, requires == "disposable-redis"
         if (needs_pg and not pg) or (needs_redis and not redis):
             flag = "--pg: a labelled disposable PostgreSQL" if needs_pg else "--redis: a labelled disposable Redis"
             report["scenarios"][family] = {"slice": scenario["slice"], "reference": f"not requested (needs {flag})"}
@@ -369,9 +414,16 @@ def run(record: bool, use_bwrap: bool, only: list[str], pg: bool = False,
             work = Path(raw)
             (work / "reference-side").mkdir()
             extra = {"ZEUS_REBUILD_SOURCE_ROOT": str(SCRATCH / "source")}
-            fixture = DisposablePostgres(work) if needs_pg else DisposableRedis(work) if needs_redis else None
+            if needs_pair:
+                dump = work / "dump"
+                dump.mkdir(mode=0o700)
+                fixture = PostgresPair(work, dump)
+            else:
+                fixture = DisposablePostgres(work) if needs_pg else DisposableRedis(work) if needs_redis else None
             with fixture if fixture is not None else contextlib.nullcontext():
-                if needs_pg:
+                if needs_pair:
+                    extra[PG_PAIR_ENV] = fixture.description()
+                elif needs_pg:
                     extra["ZEUS_REBUILD_PG_DSN"] = fixture.dsn
                 if needs_redis:
                     extra["ZEUS_REBUILD_REDIS_URL"] = fixture.url

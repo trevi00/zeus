@@ -143,3 +143,94 @@ def test_fixture_forms_are_guard_admitted_and_ps_is_not(monkeypatch):
         GUARD.docker_policy(["docker", "ps", "-aq", "--filter", "label=x"], env)
     with pytest.raises(GUARD.DockerRefused):
         GUARD.docker_policy(["docker", "rm", "-f", "cid-1"], env)
+
+
+# ---- S7 restore design §2: the `disposable-postgresql-pair` fixture and the one narrow `docker exec` form ----
+PAIR_ENV = {GUARD.DOCKER_OPT_IN_ENV: "1", GUARD.DOCKER_PGEXEC_ENV: "1"}
+OWNED = f"{GUARD.FIXTURE_NAME_PREFIX}s0-pg-4242-source"
+PG = ["-U", "zeus", "-h", "/var/run/postgresql"]
+
+
+@pytest.mark.parametrize("argv", [
+    [OWNED, "pg_dump", *PG, "-d", "zeus", "-Fc", "-f", "/dump/zeus-ab12cd34.dump"],
+    [OWNED, "pg_restore", *PG, "-l", "/dump/zeus-ab12cd34.dump"],
+    [OWNED, "pg_restore", *PG, "--exit-on-error", "--single-transaction", "--no-owner", "-d", "zeus_target",
+     "/dump/zeus-ab12cd34.dump"],
+    [OWNED, "sha256sum", "/dump/zeus-ab12cd34.dump"],
+])
+def test_the_m7_restore_tool_forms_are_admitted_under_the_second_opt_in(argv):
+    assert GUARD.docker_policy(["docker", "exec", *argv], PAIR_ENV) == "exec"
+
+
+@pytest.mark.parametrize("env, argv, why", [
+    ({GUARD.DOCKER_OPT_IN_ENV: "1"}, [OWNED, "sha256sum", "/dump/x"], "needs ZEUS_TEST_DOCKER_PGEXEC"),
+    (PAIR_ENV, ["-u", "root", OWNED, "pg_dump", *PG], "takes no option"),
+    (PAIR_ENV, ["-i", OWNED, "pg_dump", *PG], "takes no option"),
+    (PAIR_ENV, ["--privileged", OWNED, "pg_dump", *PG], "takes no option"),
+    (PAIR_ENV, ["zeus-aibox-postgres", "pg_dump", *PG, "-d", "zeus"], "owned fixture containers only"),
+    (PAIR_ENV, [OWNED, "psql", *PG, "-c", "select 1"], "not a fixture tool form"),
+    (PAIR_ENV, [OWNED, "sh", "-c", "id"], "not a fixture tool form"),
+    (PAIR_ENV, [OWNED], "not a fixture tool form"),
+    (PAIR_ENV, [OWNED, "pg_dump", "-d", "zeus"], "-U <ident> -h /var/run/postgresql first"),
+    (PAIR_ENV, [OWNED, "pg_dump", "-U", "zeus;id", "-h", "/var/run/postgresql"], "-h /var/run/postgresql"),
+    (PAIR_ENV, [OWNED, "pg_dump", *PG, "-f", "/etc/passwd"], "paths must be /dump/<name>"),
+    (PAIR_ENV, [OWNED, "pg_dump", *PG, "--file=/tmp/x"], "paths must be /dump/<name>"),
+    (PAIR_ENV, [OWNED, "pg_restore", *PG, "-l", "/dump/../etc/passwd"], "/dump/<name>"),
+    (PAIR_ENV, [OWNED, "pg_restore", *PG, "-d", "x..y"], "may not contain .."),
+    (PAIR_ENV, [OWNED, "sha256sum", "/dump/a", "/dump/b"], "exactly one /dump/<name>"),
+    (PAIR_ENV, [OWNED, "sha256sum", "/srv/zeus/secrets/zeus-aibox.env"], "exactly one /dump/<name>"),
+])
+def test_every_other_exec_form_is_refused(env, argv, why):
+    with pytest.raises(GUARD.DockerRefused, match=why.replace("<", ".").replace(">", ".")):
+        GUARD.docker_policy(["docker", "exec", *argv], env)
+
+
+def test_a_pair_member_starts_with_its_user_and_dump_bind_through_admitted_forms_only(monkeypatch, tmp_path):
+    fake = FakeDocker()
+    dump = tmp_path / "dump"
+    dump.mkdir()
+    fx = _fixture(fake, monkeypatch, tmp_path)
+    fx.user, fx.dump_dir = "zeus", dump
+    with fx:
+        pass
+    run = next(c for c in fake.calls if c[0] == "run")
+    assert "POSTGRES_USER=zeus" in run and f"type=bind,src={dump},dst=/dump" in run
+    assert fake.by_name == {}
+
+
+def test_the_single_fixture_keeps_its_s0_form(monkeypatch, tmp_path):
+    fake = FakeDocker()
+    with _fixture(fake, monkeypatch, tmp_path):
+        pass
+    run = next(c for c in fake.calls if c[0] == "run")
+    assert not any(str(a).startswith("POSTGRES_USER=") or "dst=/dump" in str(a) for a in run)
+
+
+def test_a_pair_whose_target_fails_to_start_removes_the_started_source(monkeypatch, tmp_path):
+    started, removed = [], []
+
+    class Member:
+        def __init__(self, role, fail=False):
+            self.role, self.fail = role, fail
+
+        def __enter__(self):
+            if self.fail:
+                raise RuntimeError("target did not start")
+            started.append(self.role)
+            return self
+
+        def __exit__(self, *exc):
+            removed.append(self.role)
+            return False
+
+    pair = RUN.PostgresPair.__new__(RUN.PostgresPair)
+    pair.source, pair.target = Member("source"), Member("target", fail=True)
+    with pytest.raises(RuntimeError, match="target did not start"):
+        with pair:
+            pass
+    assert started == ["source"] and removed == ["source"]
+    pair.source, pair.target = Member("source"), Member("target")
+    started.clear(), removed.clear()
+    with pair:
+        pass
+    assert removed == ["target", "source"]  # both removed, the target first
