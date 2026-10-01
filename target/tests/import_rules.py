@@ -38,7 +38,9 @@ SHIMS = frozenset({"codex_harness.cli", "codex_harness.monitor", "codex_harness.
 PACKAGE_INITS = frozenset({"codex_harness.adapters", "codex_harness.resources"})
 RES = frozenset({"codex_harness.resources.worker_profile_hook"})
 SDK = frozenset({"psycopg", "redis", "tree_sitter", "tree_sitter_python", "jsonschema", "yaml",
-                 "filelock", "fastembed"})
+                 "filelock", "fastembed",
+                 # Buzz Batch A relay client (DESIGN-A §1; RESEARCH-A A5: websockets 17.x sync client, proxy=None).
+                 "websockets"})
 SUBP = frozenset({"subprocess"})
 EXCEPTIONS: tuple = ()  # §3.6: empty from the start; it may only shrink.
 MAX_PORT_METHODS = 6
