@@ -4,7 +4,7 @@ Layer: ports
 Context: observation
 Owns: OWNED_BUCKETS of the observation context; SpoolFull and ObservationSpool (M7 `ports.py`, moved ahead in S4
     unchanged: the append-only record store the Observer writes through)
-Also owns (Buzz A1, additive): the EventSigner, EventVerifier and RelayClient signatures (no implementation)
+Also owns (Buzz A1/A2, additive): the EventSigner, EventVerifier and RelayClient signatures (no implementation)
 Does not own: ObservationDirectory (9 methods, above the port-size limit: S9) and the other observation Protocols
     (PostgresFacts, RedisFacts, ...: S9)
 Entry points: OWNED_BUCKETS, SpoolFull, ObservationSpool, EventSigner, EventVerifier, RelayClient
@@ -46,9 +46,10 @@ class EventVerifier(Protocol):
 
 
 class RelayClient(Protocol):
-    """A Nostr relay connection: publish a signed event, query once, subscribe, close."""
+    """A Nostr relay connection: publish a signed event, query (one request or the whole keyset), subscribe, close."""
 
     def publish(self, event: dict) -> dict: ...
-    def query(self, filters: list[dict]) -> list[dict]: ...
+    def query(self, filters: list[dict]) -> dict: ...
+    def query_all(self, filter: dict, *, until: int | None = None) -> dict: ...
     def subscribe(self, sub_id: str, filters: list[dict]) -> Iterator[dict]: ...
     def close(self) -> None: ...
