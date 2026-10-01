@@ -1,0 +1,168 @@
+# Buzz Batch A4: the disposable relay stack for the owner-run runtime matrix (tests/test_buzz_a4_conntest.py).
+#
+# Derived from Buzz's own deploy/compose/compose.yml at d7a35afa (read only). Differences, all deliberate:
+# - project `zeus-buzz-conntest` (every resource carries com.docker.compose.project=zeus-buzz-conntest, which is
+#   the label the test's residue check and `down -v` use);
+# - the relay is published ONLY as 127.0.0.1:${BUZZ_CONNTEST_PORT}:3000 (long syntax, host_ip). A container that is
+#   attached only to an `internal: true` network cannot publish a port, so the relay is the one service that also
+#   joins the ordinary `edge` bridge; postgres, redis and minio never leave `internal`;
+# - RELAY_URL is the loopback authority the test connects to (A4-PREP Q-A4-1: the deployment community is bound to
+#   the authority of RELAY_URL, and requests bind by Host);
+# - a closed relay (BUZZ_REQUIRE_RELAY_MEMBERSHIP) with a signed auth token requirement, as DESIGN D5;
+# - every secret comes from the test-generated env file ${BUZZ_CONNTEST_ENV_FILE} (mode 0600, under the test's tmp
+#   dir) and `--env-file` of the same file; nothing is written in this file;
+# - restart: "no" (the test drives restarts) and stop_grace_period 45s, because the relay drains for up to 35 s
+#   after SIGTERM (5 s grace + 30 s) and `docker compose restart` sends SIGKILL after 10 s by default.
+# No privileged mode, no host network, no docker socket, no cap_add, no 0.0.0.0 publish. (BUZZ_BIND_ADDR below is the
+# address INSIDE the container; the host side is the loopback publish.)
+#
+# Digests: relay and minio are the digests given by the task / Buzz's compose. Buzz's compose names postgres and
+# redis by TAG only, so their digests are `__DIGEST_TBD__` placeholders: THE OWNER PINS THEM before the run (the
+# test refuses to start while a placeholder remains).
+name: zeus-buzz-conntest
+
+services:
+  relay:
+    image: ghcr.io/block/buzz@sha256:7049e2efaf59dd2501159e6103d27a6cce28e4a9012caa82d121a5a15308eddb
+    env_file:
+      # RELAY_OWNER_PUBKEY, BUZZ_RELAY_PRIVATE_KEY, BUZZ_GIT_HOOK_HMAC_SECRET (and the interpolation values).
+      - ${BUZZ_CONNTEST_ENV_FILE:?set by the test}
+    environment:
+      RELAY_URL: ws://127.0.0.1:${BUZZ_CONNTEST_PORT:?set by the test}
+      BUZZ_REQUIRE_RELAY_MEMBERSHIP: "true"
+      BUZZ_REQUIRE_AUTH_TOKEN: "true"
+      BUZZ_AUTO_MIGRATE: "true"
+      BUZZ_GIT_CONFORMANCE_PROBE: "true"
+      BUZZ_BIND_ADDR: 0.0.0.0:3000
+      BUZZ_HEALTH_PORT: "8080"
+      BUZZ_METRICS_PORT: "9102"
+      DATABASE_URL: postgres://buzz:${POSTGRES_PASSWORD:?set by the test}@postgres:5432/buzz
+      REDIS_URL: redis://:${REDIS_PASSWORD:?set by the test}@redis:6379
+      BUZZ_S3_ENDPOINT: http://minio:9000
+      BUZZ_S3_ADDRESSING_STYLE: path
+      BUZZ_S3_ACCESS_KEY: ${BUZZ_S3_ACCESS_KEY:?set by the test}
+      BUZZ_S3_SECRET_KEY: ${BUZZ_S3_SECRET_KEY:?set by the test}
+      BUZZ_S3_BUCKET: buzz-media
+      BUZZ_GIT_REPO_PATH: /data/git
+      RUST_LOG: buzz_relay=info,buzz_db=info,buzz_auth=info,buzz_pubsub=info,tower_http=info
+    ports:
+      - target: 3000
+        published: "${BUZZ_CONNTEST_PORT:?set by the test}"
+        host_ip: 127.0.0.1
+        protocol: tcp
+    volumes:
+      - buzz-git-data:/data/git
+    depends_on:
+      postgres:
+        condition: service_healthy
+      redis:
+        condition: service_healthy
+      minio:
+        condition: service_healthy
+      minio-init:
+        condition: service_completed_successfully
+    # The readiness healthcheck exactly as Buzz's compose: /_readiness over /dev/tcp (bash, no curl).
+    healthcheck:
+      test:
+        [
+          "CMD-SHELL",
+          "bash -ec 'exec 3<>/dev/tcp/127.0.0.1/8080; printf \"GET /_readiness HTTP/1.1\\r\\nHost: 127.0.0.1\\r\\nConnection: close\\r\\n\\r\\n\" >&3; grep -q \"200 OK\" <&3'",
+        ]
+      interval: 10s
+      timeout: 3s
+      retries: 12
+      start_period: 30s
+    stop_grace_period: 45s
+    restart: "no"
+    networks:
+      - internal
+      - edge
+
+  postgres:
+    # Buzz's compose pins the tag only: the owner replaces the placeholder with the digest of postgres:17-alpine.
+    image: postgres:17-alpine@sha256:__DIGEST_TBD__
+    environment:
+      POSTGRES_DB: buzz
+      POSTGRES_USER: buzz
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:?set by the test}
+      PGDATA: /var/lib/postgresql/data/pgdata
+    volumes:
+      - buzz-postgres-data:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U $${POSTGRES_USER} -d $${POSTGRES_DB}"]
+      interval: 5s
+      timeout: 5s
+      retries: 12
+      start_period: 10s
+    restart: "no"
+    networks:
+      - internal
+
+  redis:
+    # Buzz's compose pins the tag only: the owner replaces the placeholder with the digest of redis:7-alpine.
+    image: redis:7-alpine@sha256:__DIGEST_TBD__
+    command: ["redis-server", "--appendonly", "yes", "--requirepass", "${REDIS_PASSWORD:?set by the test}"]
+    environment:
+      REDIS_PASSWORD: ${REDIS_PASSWORD:?set by the test}
+    volumes:
+      - buzz-redis-data:/data
+    healthcheck:
+      test: ["CMD-SHELL", "redis-cli -a \"$${REDIS_PASSWORD}\" ping | grep -q PONG"]
+      interval: 5s
+      timeout: 3s
+      retries: 12
+      start_period: 5s
+    restart: "no"
+    networks:
+      - internal
+
+  minio:
+    image: quay.io/minio/minio:RELEASE.2025-09-07T16-13-09Z@sha256:14cea493d9a34af32f524e538b8346cf79f3321eff8e708c1e2960462bd8936e
+    command: server /data --console-address ":9001"
+    environment:
+      MINIO_ROOT_USER: ${BUZZ_S3_ACCESS_KEY:?set by the test}
+      MINIO_ROOT_PASSWORD: ${BUZZ_S3_SECRET_KEY:?set by the test}
+    volumes:
+      - buzz-minio-data:/data
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://127.0.0.1:9000/minio/health/live"]
+      interval: 5s
+      timeout: 5s
+      retries: 12
+      start_period: 10s
+    restart: "no"
+    networks:
+      - internal
+
+  minio-init:
+    image: quay.io/minio/mc:RELEASE.2025-08-13T08-35-41Z@sha256:a7fe349ef4bd8521fb8497f55c6042871b2ae640607cf99d9bede5e9bdf11727
+    depends_on:
+      minio:
+        condition: service_healthy
+    environment:
+      BUZZ_S3_ACCESS_KEY: ${BUZZ_S3_ACCESS_KEY:?set by the test}
+      BUZZ_S3_SECRET_KEY: ${BUZZ_S3_SECRET_KEY:?set by the test}
+      BUZZ_S3_BUCKET: buzz-media
+    entrypoint: >
+      /bin/sh -euc '
+        mc alias set local http://minio:9000 "$${BUZZ_S3_ACCESS_KEY}" "$${BUZZ_S3_SECRET_KEY}"
+        mc mb --ignore-existing "local/$${BUZZ_S3_BUCKET}"
+        mc anonymous set none "local/$${BUZZ_S3_BUCKET}"
+      '
+    restart: "no"
+    networks:
+      - internal
+
+volumes:
+  buzz-postgres-data:
+  buzz-redis-data:
+  buzz-minio-data:
+  buzz-git-data:
+
+networks:
+  # postgres, redis and minio live here only: no route out, no published port.
+  internal:
+    internal: true
+  # The relay's loopback publish needs a non-internal network.
+  edge:
+    driver: bridge
