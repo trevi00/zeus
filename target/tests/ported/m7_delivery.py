@@ -59,9 +59,39 @@ Named adaptations (each is a construction/import/patch-target adaptation, never 
   the facades: only tests skipped whole, with the owning slice, name them. `HostMigrations` is
   `delivery.application.host_migration`, `HostFacts` is `host_os.adapters.host_facts`.
 - `fleet_recovery` stands for M7 `adapters.fleet_recovery`: the moved `coordination.adapters.fleet_recovery` (its
-  `checkout_identity`, `collect_host_migration_proof` and `run_root` are also module names here) with
-  `state`, `run_records` and `git_source` supplied as `composition.fleet_recovery.collectors()` wires them (`budget`
-  is only `collect_recovery_proof`'s). `fleet_cli` (the operator CLI, S10) is an `unavailable` placeholder.
+  `checkout_identity`, `collect_recovery_proof`, `collect_relocation_proof`, `collect_host_migration_proof` and
+  `run_root` are also module names here) with `state` (a case's own wins), `run_records` and `git_source` supplied as
+  `composition.fleet_recovery.collectors()` wires them (`budget` is only `collect_recovery_proof`'s, a case's own);
+  `run_records` is the collectors' (M7 `adapters.isolated_worker.run_records`) and `run_process` is
+  `process_groups.run_process` (M7 `adapters.commands.run_process`). `fleet_cli` (the operator CLI, S10) is an `unavailable` placeholder.
+- Release runner (`test_file_canary`, `test_check_binding`, `test_release_runner`, `test_evaluator_code_guard`):
+  `ReleaseRunner(service, git, artifacts, auth, auto_merge=True, fence=None, verification_root=None)` is
+  `composition.release_verification.release_runner` with what M7's class built itself supplied as the delivery
+  driver does (`compare/drivers/target/s7_release_runner.py`): `runner` is a holder over `process_groups.run_process`,
+  `verification_services` and `request_rebase` are LABELLED refusals (their owners are S8 and S5) unless a case installs
+  its own double, and `release_suite` and `hooks` are LABELLED refusals (S8/S10: never reached by these suites). The
+  patch targets move with the collaborators: `deployment.run_process` (read/assigned) is the `runner` holder,
+  `deployment.VerificationServices` the `verification_services` holder, and `Workflow.request_rebase` the `request_rebase`
+  holder (called as M7 called it, `value(handler, task_id, base)`); `deployment` otherwise stands for the moved
+  `delivery.adapters.deployment`. `fake_verification_services` is M7 `tests/conftest.py`'s fixture over that holder.
+  `attempt_resources` closes over `ExecutionContainerNaming()`, the check_results names come from
+  `review.domain.check_results`, `Harness` is `m7_coordination.Harness`, `FileArtifacts(root)` the target's with its
+  default clock. The helpers of M7 modules whose suites are not ported (S8) that these suites import are labelled
+  VERBATIM copies here, only their imports (and the `git` helper's name, `_fixture_git`) differing: `source_repository`
+  (`verification_fixtures`), `candidate_runner` (`test_release_recovery`; it imports the ported `test_git_workspace`
+  lazily), `runner_for` and `reviewed_record` (`test_release_evaluator_migration`). None reaches `fake_docker`, `fake_uv`
+  or the real `ReleaseSuite`.
+- Managed runtime (`test_managed_runtime`, `test_managed_systemd`): `ManagedFleetTarget`, `SystemdManagedFleetTarget` and
+  `Materializer` are the moved adapters wired as composition wires them (`ChokepointProcesses()`, `configuration`,
+  `run_process`; `compare/drivers/target/s7_managed_composition.py`); each class also recognizes its unwired base in
+  `isinstance`, because `host_ports()` (`composition.delivery_hosts`) builds the base. `fixture_config`, `fixture_manifest`,
+  `supervise` (`launcher=launch`) are `composition.managed_runtime`'s, the domain/fleet names come from their target homes,
+  and `controller` (the production coordinator, S10) is an `unavailable`.
+- Tooling (`test_aibox_service_templates`, `test_aibox_data_manifest`): the suites' own path-based loads of
+  `deploy/aibox/zeus_aibox_service.py` and `scripts/aibox_data` are unchanged; only `ROOT`'s `parents[1]` is `parents[2]`
+  (the target tree holding `deploy/` and `scripts/`).
+- `database_url()` is the DSN of the disposable database the target conftest's `isolated_pgstore` uses (`ZEUS_TEST_DSN`;
+  M7 `bootstrap.database_url`).
 - `unavailable(slice_, name)` is `m7_coordination.unavailable`: a name whose owner is in a later slice imports as a
   placeholder that raises on use, and only tests skipped whole (with the owning slice) name it.
 """
@@ -69,22 +99,34 @@ Named adaptations (each is a construction/import/patch-target adaptation, never 
 from __future__ import annotations
 
 import inspect
+import os
+import subprocess
+from contextlib import nullcontext
+from pathlib import Path
+from types import SimpleNamespace
 
 import pytest
 from conftest import ATTESTED
 from m7_coordination import Fleet as _Fleet
-from m7_coordination import unavailable
+from m7_coordination import (
+    Harness,  # noqa: F401
+    unavailable,
+)
 
-from codex_harness.composition import configuration
+from codex_harness.composition import configuration, delivery_hosts
 from codex_harness.composition import fleet_recovery as _recovery_composition
+from codex_harness.composition import managed_runtime as _managed_composition
+from codex_harness.composition.release_verification import ExecutionContainerNaming, release_runner
 from codex_harness.context.adapters import worker_profile
 from codex_harness.coordination.adapters import fleet_recovery as _fleet_recovery
 from codex_harness.coordination.application import execution_fence
 from codex_harness.coordination.application.events import EventJournal
 from codex_harness.coordination.application.fleet.state import repository_aliases
+from codex_harness.delivery.adapters import deployment as _deployment
 from codex_harness.delivery.adapters import host_delivery as _adapter
 from codex_harness.delivery.adapters import host_migration as _migration
 from codex_harness.delivery.adapters import host_migration_evidence as _evidence
+from codex_harness.delivery.adapters import managed_runtime as _managed
 from codex_harness.delivery.adapters.host_delivery import (  # noqa: F401
     DESCRIPTOR_FILE,
     LOCK_DIR,
@@ -136,6 +178,7 @@ from codex_harness.observation.domain.observation import new_process_run_id  # n
 from codex_harness.research.application.hook_rollback import HookRollback
 from codex_harness.review.application.release_queue import ReleaseQueue as _ReleaseQueue
 from codex_harness.review.application.releases import Releases as _Releases
+from codex_harness.review.domain import check_results  # noqa: F401
 from codex_harness.routing.adapters.organization_source import (
     packaged_organization as organization,  # noqa: F401
 )
@@ -146,7 +189,8 @@ aliases, read_env = configuration.aliases, configuration.read_env
 
 
 class Fleet(_Fleet):
-    def _repository_aliases(self, tx):
+    @staticmethod
+    def _repository_aliases(tx):  # M7's was static: read on the class (`Fleet._repository_aliases(tx)`) and on an instance
         return repository_aliases(tx)
 
 
@@ -237,6 +281,11 @@ def startup_receipt(descriptor):
                                     profile_digest=effective_profile_digest())
 
 
+def database_url():
+    """The DSN of the disposable database the target conftest's `isolated_pgstore` uses (M7 `bootstrap.database_url`)."""
+    return os.environ["ZEUS_TEST_DSN"]
+
+
 def delivery_facts(store):
     """M7 `monitoring.host_delivery_facts`: the status projection of a HostDelivery over the store."""
     return HostDelivery(store, None).status()
@@ -315,9 +364,25 @@ def collect_host_migration_proof(request, jobs, *, journal, host_dsn, state=None
         run_records=wired.run_records, git_source=wired.git_source, **kwargs)
 
 
+def collect_recovery_proof(evidence, lane, *, reader, budget, state, clock=utcnow):
+    return _fleet_recovery.collect_recovery_proof(evidence, lane, reader=reader, budget=budget, state=state,
+                                                  run_records=_collected().run_records, clock=clock)
+
+
+def collect_relocation_proof(request, config, jobs, *, journal, state, clock=utcnow):
+    wired = _collected()
+    return _fleet_recovery.collect_relocation_proof(request, config, jobs, journal=journal, state=state,
+                                                    run_records=wired.run_records, git_source=wired.git_source,
+                                                    clock=clock)
+
+
 run_root = _fleet_recovery.run_root
+run_records = _collected().run_records
+run_process = process_groups.run_process
 fleet_recovery = _Facade(_fleet_recovery, checkout_identity=checkout_identity,
-                         collect_host_migration_proof=collect_host_migration_proof)
+                         collect_host_migration_proof=collect_host_migration_proof,
+                         collect_recovery_proof=collect_recovery_proof,
+                         collect_relocation_proof=collect_relocation_proof)
 fleet_cli = unavailable("S10", "adapters.fleet_cli")
 
 
@@ -408,3 +473,224 @@ class HostDelivery(metaclass=_Facade):
             setattr(obj, param, value)
 
 
+# ----- the release runner: the wiring composition passes, its carries as labelled refusals ----------------------
+class _Holder:
+    """A swappable collaborator: calls go to `value`, which a case installs through its patch target."""
+
+    def __init__(self, value):
+        self.value = value
+
+    def __call__(self, *args, **kwargs):
+        return self.value(*args, **kwargs)
+
+
+def _refusal(label):
+    def refuse(*args, **kwargs):
+        raise AssertionError("M7 shim: " + label)
+    return refuse
+
+
+_PROCESS = _Holder(process_groups.run_process)
+_SERVICES = _Holder(_refusal("VerificationServices reached without a case's own double (S8)"))
+_REBASE_DEFAULT = _refusal("request_rebase reached without a case's own double (S5)")
+_REBASE = _Holder(_REBASE_DEFAULT)
+_SUITE = _refusal("ReleaseSuite reached: its owner is S8")
+_HOOKS = _refusal("NativeHooks reached: its owner is S10")
+
+
+def ReleaseRunner(service, git, artifacts, auth, auto_merge=True, fence=None, verification_root=None):
+    handler = SimpleNamespace(store=service.store, org=service.org)  # the MessageHandler-shaped `self` of request_rebase
+    return release_runner(
+        service, git, artifacts, auth, auto_merge, fence, verification_root, runner=_PROCESS, release_suite=_SUITE,
+        verification_services=_SERVICES, hooks=_HOOKS,
+        request_rebase=lambda task_id, new_base: _REBASE.value(handler, task_id, new_base),
+        clock=SYSTEM_CLOCK, ids=SYSTEM_IDS)
+
+
+# The unbound staticmethod the controller cases call on the class.
+ReleaseRunner._require_controller_code = _deployment.ReleaseRunner._require_controller_code
+
+
+class _Rerouted:
+    """`deployment` as the M7 cases patched it: the moved module, with the names whose collaborators are injected
+    (`run_process`, `VerificationServices`) read from and assigned to their holders."""
+
+    _HOLDERS = {"run_process": _PROCESS, "VerificationServices": _SERVICES}
+
+    def __getattr__(self, name):
+        holder = self._HOLDERS.get(name)
+        return holder.value if holder is not None else getattr(_deployment, name)
+
+    def __setattr__(self, name, value):
+        holder = self._HOLDERS.get(name)
+        if holder is not None:
+            holder.value = value
+        else:
+            setattr(_deployment, name, value)
+
+
+deployment = _Rerouted()
+
+
+class _RebaseOwner(type):
+    def __getattr__(cls, name):
+        if name == "request_rebase":
+            return _REBASE.value
+        raise AttributeError(name)
+
+    def __setattr__(cls, name, value):
+        if name != "request_rebase":
+            raise AttributeError(name)
+        _REBASE.value = value
+
+    def __delattr__(cls, name):  # monkeypatch's undo of a class attribute that was not in the class dict
+        if name != "request_rebase":
+            raise AttributeError(name)
+        _REBASE.value = _REBASE_DEFAULT
+
+
+class Workflow(metaclass=_RebaseOwner):
+    """M7 `Workflow` as the release-runner cases use it: only `request_rebase` is patched on it (the S5 owner)."""
+
+
+@pytest.fixture
+def fake_verification_services(monkeypatch):
+    """M7 `tests/conftest.py`: unit release orchestration must not launch real infrastructure."""
+    monkeypatch.setattr(deployment, "VerificationServices",
+                        lambda *args: nullcontext({"database_url": "postgresql://fixture/isolated",
+                                                   "redis_url": "redis://fixture/0"}))
+
+
+# Helpers of M7 modules whose suites are not ported (S8), copied VERBATIM (labelled; only the imports and the git
+# helper's name differ) so the suites that import them run: `verification_fixtures.source_repository` and its `git`
+# (tests/verification_fixtures.py:235-266, e38aa722), `test_release_recovery.candidate_runner` (tests/test_release_recovery.py:17-34)
+# and `test_release_evaluator_migration.runner_for` / `reviewed_record` (tests/test_release_evaluator_migration.py:226-256).
+# None reaches `fake_docker`, `fake_uv` or the real `ReleaseSuite`.
+def _fixture_git(root, *argv) -> str:
+    return subprocess.run(["git", "-C", str(root), *argv], check=True, capture_output=True,
+                          text=True).stdout.strip()
+
+
+def source_repository(root: Path, *, failing_candidate: bool = False) -> dict:
+    """A real disposable repository: a base with a tiny real suite, and one candidate commit."""
+    root.mkdir(parents=True)
+    _fixture_git(root, "init", "-q", "-b", "main")
+    for key, value in (("core.autocrlf", "false"), ("user.name", "Fixture"),
+                       ("user.email", "fixture@localhost")):
+        _fixture_git(root, "config", "--local", key, value)
+    (root / "tests").mkdir()
+    # As in any real candidate repository, the evaluator's own venv is ignored; otherwise the
+    # evaluator correctly refuses the workspace as dirty.
+    (root / ".gitignore").write_text(".venv/\n__pycache__/\n.pytest_cache/\n", encoding="utf-8")
+    (root / "pyproject.toml").write_text('[project]\nname = "fixture-candidate"\nversion = "0"\n',
+                                         encoding="utf-8")
+    (root / "tests" / "test_fixture.py").write_text("def test_incumbent_fixture():\n    assert True\n",
+                                                   encoding="utf-8")
+    _fixture_git(root, "add", "-A")
+    _fixture_git(root, "commit", "-q", "-m", "base")
+    base = _fixture_git(root, "rev-parse", "HEAD")
+    (root / "feature.txt").write_text("candidate\n", encoding="utf-8")
+    if failing_candidate:
+        (root / "tests" / "test_candidate.py").write_text("def test_candidate():\n    assert False\n",
+                                                          encoding="utf-8")
+    _fixture_git(root, "add", "-A")
+    _fixture_git(root, "commit", "-q", "-m", "candidate")
+    revision = _fixture_git(root, "rev-parse", "HEAD")
+    _fixture_git(root, "checkout", "-q", "--detach", base)
+    return {"root": root, "base": base, "revision": revision,
+            "tree": _fixture_git(root, "rev-parse", revision + "^{tree}")}
+
+
+def candidate_runner(tmp_path, store=None, remote=None):
+    from test_git_workspace import repository  # the ported module (M7 imported it at module level)
+    root = repository(tmp_path)
+    # The target repository is part of the captured identity (FA-015), so it is fixed before capture.
+    adapter = GitWorkspace(str(root), str(tmp_path / "workspaces"), remote=remote)
+    workspace = adapter.prepare("candidate-task")
+    (Path(workspace["path"]) / "change.txt").write_text("candidate", encoding="utf-8")
+    candidate = adapter.capture(workspace)
+    service = Harness(store or MemoryStore(), organization())
+    runner = ReleaseRunner(service, adapter, FileArtifacts(tmp_path / "artifacts"), "unused")
+    release = runner.releases.propose(candidate, {"checks": ["tests"]})
+    for actor in ("lead:improvement", "conductor"):
+        runner.releases.review(release["id"], actor, candidate["revision"], True, "fixture:review")
+    runner.releases.verify(release["id"], candidate["revision"], release["policy_hash"],
+                           {"tests": {"passed": True, "evidence": "fixture:tests"}})
+    with service.store.transaction() as tx:
+        tx.put("images", release["id"], {"image": "sha256:fixture"})
+    return runner, release, root
+
+
+def runner_for(tmp_path, repo, release, monkeypatch):
+    store = MemoryStore()
+    with store.transaction() as tx:
+        tx.put("releases", release["id"], release)
+    service = SimpleNamespace(store=store, org=organization())
+    runner = ReleaseRunner(service, GitWorkspace(str(repo["root"]), str(tmp_path / "workspaces")),
+                           FileArtifacts(str(tmp_path / "artifacts")), str(tmp_path / "unused-auth"),
+                           verification_root=str(tmp_path / "verification"))
+    calls = []
+
+    def check(argv, cwd=None, **kwargs):  # labelled: install passes, the incumbent suite "fails"
+        calls.append({"argv": [str(a) for a in argv], "cwd": str(cwd)})
+        return {"passed": len(calls) == 1, "evidence": "fixture:check-" + str(len(calls))}
+
+    monkeypatch.setattr(runner, "_check", check)
+    return runner, calls
+
+
+def reviewed_record(repo, *, pin=None):
+    candidate = {"revision": repo["revision"], "base": repo["base"], "tree": repo["tree"],
+                 "author": "worker:implementation"}
+    policy = {"checks": ["tests", "cli_start", "cli_file_task"], "revision": repo["base"]}
+    record = {"id": "a" * 64, "candidate": candidate, "policy": policy, "status": "reviewed",
+              "reviews": [], "checks": {}}
+    if pin is not None:
+        record["policy"] = {**policy, "revision": pin["evaluator_revision"]}
+        record["evaluator_migration"] = {"source_release_id": "b" * 64, "base": repo["base"],
+                                         "evidence": "sha256:" + "c" * 64, "approved_by": "conductor",
+                                         **pin}
+    record["policy_hash"] = digest(record["policy"])
+    return record
+
+
+def attempt_resources(attempt_id):
+    return _deployment.attempt_resources(attempt_id, naming=ExecutionContainerNaming())
+
+
+canary_handoff_script = _deployment.canary_handoff_script
+EvaluatorCodeMismatch = _deployment.EvaluatorCodeMismatch
+controller_code_revision = _deployment.controller_code_revision
+
+
+# ----- the managed Fleet runtime, wired as composition wires it ------------------------------------------------
+class _Recognizes(type):
+    """A wired subclass that also recognizes its unwired base in `isinstance` (`host_ports()` builds the base)."""
+
+    def __instancecheck__(cls, obj):
+        base = next(b for b in cls.__mro__[1:] if type(b) is not _Recognizes)
+        return isinstance(obj, base)
+
+
+def _wired(base, **fixed):
+    def __init__(self, *args, **kwargs):
+        base.__init__(self, *args, **{**fixed, **kwargs})
+
+    return _Recognizes(base.__name__, (base,), {"__init__": __init__})
+
+
+ManagedFleetTarget = _wired(_managed.ManagedFleetTarget, processes=process_groups.ChokepointProcesses(),
+                            configuration=configuration)
+SystemdManagedFleetTarget = _wired(_managed.SystemdManagedFleetTarget, processes=process_groups.ChokepointProcesses(),
+                                   configuration=configuration, runner=process_groups.run_process)
+Materializer = _wired(_managed.Materializer, processes=process_groups.ChokepointProcesses())
+host_ports = delivery_hosts.host_ports
+controller = unavailable("S10", "adapters.host_delivery.controller (the production coordinator)")
+fixture_config, fixture_manifest = _managed_composition.fixture_config, _managed_composition.fixture_manifest
+supervise = _managed_composition.supervise
+scan, owner_target = _managed.scan, _managed.owner_target
+launcher_environment = _managed.launcher_environment
+validate_launch_request = _managed.validate_launch_request
+FIXTURE_JOBS_FILE, TARGET_FILE = _managed.FIXTURE_JOBS_FILE, _managed.TARGET_FILE
+LAUNCH_REQUEST_FILE, SUPERVISOR_JOURNAL = _managed.LAUNCH_REQUEST_FILE, _managed.SUPERVISOR_JOURNAL
+checkout_revision, _alive = _adapter.checkout_revision, _adapter._alive
