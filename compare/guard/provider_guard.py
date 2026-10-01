@@ -55,8 +55,11 @@ IDENT = re.compile(r"^[A-Za-z0-9][A-Za-z0-9_.-]{0,127}$")
 FIXTURE_LABEL = "zeus.test.fixture=1"
 FIXTURE_NAME_PREFIX = "zeus-test-fixture-"
 FIXTURE_IMAGE = re.compile(r"^zeus-test-fixture/[a-z0-9][a-z0-9._-]*(:[A-Za-z0-9._-]+)?$")
-# Exact refs of disposable service images the repository itself uses (compose.yaml postgres, redis).
-DEFAULT_FIXTURE_IMAGES = ("pgvector/pgvector:pg17", "redis:7.4-alpine")
+# Exact refs of disposable service images the repository itself uses (compose.yaml postgres, redis), and the
+# digest-pinned refs compare/run.py starts its fixtures from (the goldens record those images' facts).
+DEFAULT_FIXTURE_IMAGES = ("pgvector/pgvector:pg17", "redis:7.4-alpine",
+                          "pgvector/pgvector@sha256:cf134a767f474095eeba57e0117be8e568e011a63f33fbf252f14c9b760f8e6f",
+                          "redis@sha256:858f009f9709ce576febc734aa78b8f6d624b82571f9ddb6bda4377c833b3499")
 FAKE_EXIT = 97
 SHELLS = frozenset({"sh", "bash", "dash", "zsh", "ksh", "fish", "cmd", "powershell", "pwsh"})
 DOCKER_ALIASES = {("container", "run"): "run", ("container", "create"): "create",
