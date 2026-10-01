@@ -241,6 +241,30 @@ def _model_label(facts: ScriptFacts) -> str:
     return normalize_model(facts.model).label
 
 
+TAIL_PEEK_BYTES = 64 * 1024  # a terminal line is the last line of a run: only the stream's last bytes are inspected
+
+
+def has_terminal_line(path: Path) -> bool:
+    """F5: does the stream already carry its terminal evidence (a complete `turn.completed`/`turn.failed`/`error`
+    line)? Reads at most `TAIL_PEEK_BYTES` from the end; a read-only peek that never changes the read offset."""
+    try:
+        with open_regular(path) as handle:
+            size = handle.seek(0, 2)
+            start = max(size - TAIL_PEEK_BYTES, 0)
+            handle.seek(start)
+            data = handle.read(TAIL_PEEK_BYTES)
+    except OSError:
+        return False
+    lines = data.split(b"\n")[:-1]  # complete lines only
+    if start > 0:
+        lines = lines[1:]  # the first line of a mid-file window may be cut
+    for raw in lines:
+        obj = parse_line(raw)
+        if obj is not None and obj["type"] in TERMINAL_LINES:
+            return True
+    return False
+
+
 def _ensure(scan: Scan, spec: RunSpec) -> dict:
     existing = _inv(scan.conn, spec.inv_id)
     if existing:
@@ -249,7 +273,8 @@ def _ensure(scan: Scan, spec: RunSpec) -> dict:
         modified = spec.path.lstat().st_mtime
     except OSError:
         modified = None
-    history = stream_is_history(scan.live_since, modified)
+    history = stream_is_history(scan.live_since, modified, terminal=has_terminal_line(spec.path),
+                                horizon_seconds=scan.codex_idle_seconds)
     label = normalize_model(spec.facts.model)
     scan.conn.execute(
         "INSERT INTO invocations(id,source,provider,requested_model_raw,executor_model_raw,executor_model,"

@@ -14,9 +14,16 @@ from __future__ import annotations
 from .ledger import Ledger
 
 
-def stream_is_history(live_since: int | None, last_written: float | None) -> bool:
-    """S2/S3: a stream last written before `live_since` is history. mtime is idle-horizon evidence only (§3.1)."""
-    return live_since is not None and last_written is not None and last_written < live_since
+def stream_is_history(live_since: int | None, last_written: float | None, *, terminal: bool,
+                      horizon_seconds: int) -> bool:
+    """S2/S3 (F5): a stream is history only when it had ENDED before `live_since`: it carries terminal evidence
+    (the lane's `state=finished`, a Codex terminal line) and nothing was written at or after `live_since`, or its
+    own unavailability horizon had already passed AT `live_since`. A stream still in flight at the first start
+    (no terminal evidence, inside the horizon) stays live, whatever its last write; mtime is an upper bound for
+    the terminal write and an idle measure (§3.1), never proof of finalization on its own."""
+    if live_since is None or last_written is None or last_written >= live_since:
+        return False
+    return terminal or live_since - last_written > horizon_seconds
 
 
 def attempt_is_history(live_since: int | None, started_at: int, terminal_at: int | None, horizon_seconds: int) -> bool:

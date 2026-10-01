@@ -54,20 +54,81 @@ def test_a32_an_attempt_still_in_flight_at_live_since_is_live(tmp_path):
     assert rig.health().sum("zeus_tokobs_backfill_invocations") == 0
 
 
-def test_a32_streams_last_written_before_live_since_are_history(tmp_path):
+CODEX_TURN = {"type": "turn.completed", "usage": {
+    "input_tokens": 10, "cached_input_tokens": 0, "output_tokens": 4, "reasoning_output_tokens": 1,
+    "cache_write_input_tokens": 0}}
+
+
+def test_a32_streams_that_had_ended_before_live_since_are_history(tmp_path):
+    """F5: history is terminal evidence or an unavailability horizon already satisfied AT live_since. The last write
+    alone proves neither."""
     rig = Rig(tmp_path)
     rig.credential_receipt("coordinator:fleet", "fleet-old-events.jsonl")
     rig.stream("fleet-old-events.jsonl", claude_init(model="opus"), claude_result(
-        "o1", usage(0, 5, 0, 0), {OPUS: entry(0, 5, 0, 0)}))
+        "o1", usage(0, 5, 0, 0), {OPUS: entry(0, 5, 0, 0)}))  # no terminal evidence: needs the horizon
     rig.codex_script("old", resume=False)
-    rig.codex_events("old", {"type": "thread.started", "thread_id": "t"}, {"type": "turn.completed", "usage": {
-        "input_tokens": 10, "cached_input_tokens": 0, "output_tokens": 4, "reasoning_output_tokens": 1,
-        "cache_write_input_tokens": 0}})
-    rig.now = LIVE
-    prom = rig.scan(live_since=LIVE)
+    rig.codex_events("old", {"type": "thread.started", "thread_id": "t"}, CODEX_TURN)  # a terminal line
+    rig.now = T0 + 14_400 + 100  # the coordinator's horizon was already satisfied at live_since
+    prom = rig.scan(live_since=rig.now)
     assert prom.sum("zeus_llm_tokens_total") == 0 and prom.sum("zeus_llm_reasoning_output_tokens_total") == 0
     assert prom.sum("zeus_llm_invocations_total") == 0
     assert rig.health().sum("zeus_tokobs_backfill_invocations") == 2
+
+
+def test_a32_lane_with_finished_metadata_last_written_before_live_since_is_history(tmp_path):
+    rig = Rig(tmp_path)
+    rig.lane_meta("lane-old", state="finished", exit_code=0)
+    rig.stream("evidence/lane-old/events.jsonl", claude_init(model="opus"), claude_result(
+        "l1", usage(0, 5, 0, 0), {OPUS: entry(0, 5, 0, 0)}))
+    rig.now = LIVE
+    prom = rig.scan(live_since=LIVE)
+    assert prom.sum("zeus_llm_tokens_total") == 0
+    assert rig.health().sum("zeus_tokobs_backfill_invocations") == 1
+
+
+def test_f5_an_active_coordinator_at_first_start_counts_its_later_usage_as_live(tmp_path):
+    rig = Rig(tmp_path)
+    rig.credential_receipt("coordinator:fleet", "fleet-active-events.jsonl")
+    path = rig.stream("fleet-active-events.jsonl", claude_init(model="opus"))  # active: no result yet
+    rig.now = T0 + 60  # the collector first starts 60 s later, inside the 14,400 s horizon
+    rig.scan(live_since=rig.now)
+    assert rig.sql("SELECT backfill FROM invocations WHERE id LIKE 'stream:%'") == [(0,)]  # 1 on 459dcd5
+    rig.now += 30
+    with path.open("a") as handle:
+        handle.write(json.dumps(claude_result("a1", usage(0, 100, 0, 0), {OPUS: entry(0, 100, 0, 0)}),
+                                sort_keys=True) + "\n")
+    rig.touch(path)
+    prom = rig.scan()  # a later scan: the classification fixed at creation survives a restart
+    assert prom.sum("zeus_llm_tokens_total", token_type="output") == 100
+    assert rig.sql("SELECT COUNT(*) FROM contributions WHERE backfill=0 AND token_type='output'") == [(1,)]
+    assert rig.health().sum("zeus_tokobs_backfill_invocations") == 0
+
+
+def test_f5_an_active_codex_run_at_first_start_counts_its_terminal_usage_as_live(tmp_path):
+    rig = Rig(tmp_path)
+    rig.codex_script("active", resume=False)
+    path = rig.codex_events("active", {"type": "thread.started", "thread_id": "t"})  # in flight, no turn line yet
+    rig.now = T0 + 60
+    rig.scan(live_since=rig.now)
+    assert rig.sql("SELECT backfill FROM invocations WHERE id='codex:active'") == [(0,)]
+    rig.now += 30
+    with path.open("a") as handle:
+        handle.write(json.dumps(CODEX_TURN, sort_keys=True) + "\n")
+    rig.touch(path)
+    prom = rig.scan()
+    assert prom.sum("zeus_llm_tokens_total", token_type="output") == 4
+    assert prom.sum("zeus_llm_invocations_total", source="codex_exec") == 1
+    assert rig.health().sum("zeus_tokobs_backfill_invocations") == 0
+
+
+def test_f5_a_codex_run_finished_before_first_start_stays_history(tmp_path):
+    rig = Rig(tmp_path)
+    rig.codex_script("done", resume=False)
+    rig.codex_events("done", {"type": "thread.started", "thread_id": "t"}, CODEX_TURN)
+    rig.now = T0 + 60  # well inside the idle horizon, but the terminal evidence is already on disk
+    prom = rig.scan(live_since=rig.now)
+    assert prom.sum("zeus_llm_tokens_total") == 0
+    assert rig.health().sum("zeus_tokobs_backfill_invocations") == 1
 
 
 def test_a32_outage_catch_up_is_counted_at_ingest_time_and_lag_is_exported(tmp_path):
