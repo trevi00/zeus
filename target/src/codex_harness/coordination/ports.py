@@ -39,7 +39,9 @@ OWNED_BUCKETS = ("tasks", "decisions_pending", "outbox", "events", "execution_fe
                  "continuation_capacity_grants", "continuation_requalifications",
                  # S6 OwnerActions split (DESIGN-s6 §4 and §9).
                  "owner_action_policies", "owner_actions", "owner_action_migrations",
-                 "continuation_effective_bindings")
+                 "continuation_effective_bindings",
+                 # Buzz A3a (design §5, §6.5): the raw inbound event state and the single active bridge's lease.
+                 "remote_inbox", "bridge_owner")
 
 
 class TaskRunner(Protocol):
