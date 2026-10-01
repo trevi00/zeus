@@ -299,9 +299,8 @@ def test_10d_compaction_under_a_stale_generation_commits_nothing():
     assert w.digest() == before
 
 
-@pytest.mark.skip(reason="the labelled disposable-PG fixture is not provided to this worker; the owner runs integration")
-def test_pg_inbox_and_lease_idempotency():
-    raise AssertionError("runs against the labelled disposable PostgreSQL only")
+# The PG inbox/lease idempotency check (formerly a skipped placeholder here) is scenario a. of
+# test_buzz_b_pg.py: one function run on MemoryStore and on the disposable PostgreSQL, dumps compared.
 
 
 # -- A3c F2: a re-queried unresolved interval keeps its own bounds, so it retires on schedule ----------------------
