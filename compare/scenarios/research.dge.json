@@ -2,8 +2,7 @@
  "family": "research.dge",
  "description": "S8 research DGE of M7 application/dge.py (DebateSessions: register with _check_replacement, submit/_submit with _apply, status/_safe; DgeRefused, _by_status, design_gate), characterized before the dge move: every one of the 19 raises with the store digest before and after, the M7 tests/test_dge.py behaviours (the packet/event validators it exercises, the operator-submitted state machine, the carried findings, the round cap, the persisted expiry, the executor-owned session, the gate side of the claim tests); MemoryStore, LABELLED packets/events/clocks, no Operation/Harness, no PostgreSQL, no CLI",
  "reference_driver": "drivers/reference/s8_dge.py",
- "target_driver": null,
+ "target_driver": "drivers/target/s8_dge.py",
  "golden": "goldens/reference/research.dge.json",
- "slice": "S8",
- "target_status": "pending: S8 dge move"
+ "slice": "S8"
 }
