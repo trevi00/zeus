@@ -1,22 +1,23 @@
 """Buzz A4: the owner-run runtime matrix on the disposable relay stack (compose project `zeus-buzz-conntest`).
 
-SKIPPED unless BUZZ_CONNTEST=1 ("owner-run: needs Docker (Buzz Batch A4)"): workers have no Docker. The test starts
-`tests/fixtures/buzz_conntest/compose.yaml` (relay pinned by digest, postgres, redis, minio; the relay published only
-on 127.0.0.1:<ephemeral port>), drives it with the A1-A3 modules (`BuzzRelayClient`, `NostrEventSigner`,
-`verify_event`, `TestRoleKeys`, `InboundPass`, `BuzzOutbox`) and writes a JSON report (path printed at the end).
+A standalone runner, NOT collected by pytest (the name is not `test_*`; no conftest applies, so the R-P Docker guard is
+not installed here and is neither imported nor bypassed: D-A4-1). The owner runs it from `target/` with the target venv:
 
-Owner prerequisites (each is checked by step 1, which fails with a message naming the gap):
-- the `__DIGEST_TBD__` placeholders for postgres and redis in the compose file are pinned;
-- the R-P guard (`compare/guard/provider_guard.py`, installed by conftest in every pytest process) is default-deny for
-  docker and admits no `compose`/`pause`/`ps`/`volume`/`network` form and no `inspect` of a non-fixture name: the test
-  declares the exact argv forms it needs (`docker_forms`) and dry-checks each through `provider_guard.docker_policy`.
-  The owner must admit them (or run where the guard is not installed). The test never bypasses the guard.
+    uv run --frozen python -B tests/fixtures/buzz_conntest/run_matrix.py [--report PATH] [--keep-on-failure]
 
-Run: `BUZZ_CONNTEST=1 ZEUS_TEST_DOCKER=1 uv run pytest -s tests/test_buzz_a4_conntest.py` (`-s` shows the report path).
+It starts `compose.yaml` beside it (relay pinned by digest, postgres, redis, minio; the relay published only on
+127.0.0.1:<ephemeral port>), drives it with the A1-A3 modules (`BuzzRelayClient`, `NostrEventSigner`, `verify_event`,
+`TestRoleKeys`, `InboundPass`, `BuzzOutbox`) and writes a JSON report. Its working directory is
+`/home/trevi/workspaces/zeus/scratch/buzz-conntest/<UTC stamp>` (mode 0700; never /tmp). The explicit list of docker argv
+forms it uses (`docker_forms`) is printed in the report header and stored in the report for audit.
+
+Exit codes: 0 every asserted step passed; 1 a step failed (its name is printed); 2 a precondition refusal (step 1:
+foreign resources of the project exist, a placeholder digest, docker missing). Cleanup (`down -v` and the residue
+assertion, step 15) runs in `finally` unless `--keep-on-failure` is given and a step failed.
 
 Steps (A = asserted, R = recorded verbatim in the report; a failing step is named and the matrix goes on):
- 1 preconditions  A: digests pinned, docker forms admitted, no resource of this project exists (a foreign one is
-                     never cleaned), a free loopback port.
+ 1 preconditions  A: digests pinned, no resource of this project exists (a foreign one is never cleaned), a free
+                     loopback port.
  2 keys           A: owner, conductor, stranger and relay keys exist (0600, TestRoleKeys); the env file is 0600.
                      No key or password is printed or put in a message.
  3 up + health    A: relay healthy within 180 s.
@@ -30,7 +31,7 @@ Steps (A = asserted, R = recorded verbatim in the report; a failing step is name
  9 B4             A: 45010 create / update(prev=head) accepted, stale prev refused, resubmitted create succeeds, the
                      `#d` query returns the head only (NIP-AR). R: every relay answer.
 10 B7             A: reconnect + query_all recovers every accepted event. R: what a non-reading subscriber saw
-                     (closed / frames dropped / all delivered) under the relay's default buffer.
+                     (closed / frames dropped / all delivered) under the conntest relay's BUZZ_SEND_BUFFER=8.
 11 drift          A: created_at = now - 1000 is refused with a timestamp message the outbox recognises; the A3b outbox
                      leaves the op `unknown` and reconciles by `ids` (nothing found). R: the message verbatim.
 12 EOSE-partial   A: the InboundPass interval is `gap_unknown`. R: whether EOSE arrived under a paused postgres.
@@ -45,19 +46,21 @@ channel_type/about), 9000 (side_effects.rs:485, :1435 h + p tags), 9030 (relay_a
 refusal (ingest.rs:2376), the send buffer and its grace limit (config.rs:714-728), NIP-AR (docs/nips/NIP-AR.md).
 """
 
+import argparse
 import json
 import os
 import secrets
 import shutil
 import socket
 import subprocess
+import sys
 import threading
 import time
 import uuid
 from contextlib import contextmanager
+from datetime import UTC, datetime
 from pathlib import Path
 
-import pytest
 from websockets.exceptions import ConnectionClosed
 from websockets.sync.client import connect as ws_connect
 
@@ -74,17 +77,18 @@ from codex_harness.observation.application.buzz_outbox import TIMESTAMP_MARKS, B
 from codex_harness.observation.domain import nostr_event as ne
 from codex_harness.storage.adapters.memory_store import MemoryStore
 
-pytestmark = pytest.mark.skipif(os.environ.get("BUZZ_CONNTEST") != "1",
-                                reason="owner-run: needs Docker (Buzz Batch A4)")
-
 PROJECT = "zeus-buzz-conntest"
 LABEL = f"label=com.docker.compose.project={PROJECT}"
-COMPOSE = Path(__file__).resolve().parent / "fixtures" / "buzz_conntest" / "compose.yaml"
+COMPOSE = Path(__file__).resolve().parent / "compose.yaml"
+SCRATCH = Path("/home/trevi/workspaces/zeus/scratch/buzz-conntest")
 ROLES = ("owner", "conductor", "stranger", "relay")
 MAX_SIZE = 4 * 1024 * 1024
 HEALTH_SECONDS = 180
 PACE_SECONDS = 1.2  # <= 50 persistent publishes per minute per key: under the relay's 60/min human limit
 B7_EVENTS = 40
+STATE_FORMAT = "{{.State.Status}}/{{if .State.Health}}{{.State.Health.Status}}{{else}}none{{end}}"
+HARDENING_FORMAT = ("{{.Name}}|{{.HostConfig.Privileged}}|{{.HostConfig.NetworkMode}}|{{json .HostConfig.PortBindings}}"
+                    "|{{json .HostConfig.CapAdd}}|{{json .Mounts}}")  # these fields only: never the env
 STOP_TIMEOUT = 45  # the relay drains for up to 35 s after SIGTERM (A4-PREP fact 4)
 CHANNEL_NAME = "zeus-conntest"
 SOURCE_REFS = [
@@ -92,14 +96,13 @@ SOURCE_REFS = [
     "side_effects.rs:458,1912-1936 (9007 handler); side_effects.rs:485,1435 (9000 h + p tags)",
     "relay_admin.rs:1-13 (9030 admin/owner adds the first p tag; processed directly, not stored)",
     "ingest.rs:2376 (invalid: event timestamp too far from server time)",
-    "config.rs:714-728 (BUZZ_SEND_BUFFER default 1000, BUZZ_SLOW_CLIENT_GRACE_LIMIT default 15)",
+    "config.rs:712-728 (BUZZ_SEND_BUFFER default 1000, BUZZ_SLOW_CLIENT_GRACE_LIMIT default 15)",
     "docs/nips/NIP-AR.md (45010 create/update/prev, resubmission, current-state queries)",
 ]
 OWNER_DECISIONS = [
-    "pin the postgres:17-alpine and redis:7-alpine digests (compose placeholders)",
-    "admit the compose/pause/ps/network/volume/inspect docker forms to the R-P guard (see step 1)",
-    "B7 under the default BUZZ_SEND_BUFFER=1000 / grace 15 cannot be provoked within 60 messages/min per key: "
-    "decide whether to tune BUZZ_SEND_BUFFER and BUZZ_SLOW_CLIENT_GRACE_LIMIT for a drop/close measurement",
+    "D-A4-1: the matrix is an owner-run runner outside pytest; the R-P guard is untouched and never bypassed",
+    "D-A4-1 B7: the conntest relay sets the test-only BUZZ_SEND_BUFFER=8 (config.rs:712) to provoke the "
+    "slow-receiver drop within the rate limit; BUZZ_SLOW_CLIENT_GRACE_LIMIT stays at its default (15)",
 ]
 
 
@@ -110,8 +113,7 @@ def compose_tail(env_file, *tail):
 
 
 def docker_forms(env_file):
-    """Every docker argv shape the test uses (without the `docker` word); step 1 dry-checks each one."""
-    inspect_format = "{{.State.Status}}"
+    """Every docker argv shape the runner uses (without the `docker` word); printed in the report header."""
     return [
         compose_tail(env_file, "up", "-d"),
         compose_tail(env_file, "ps", "-q", "relay"),
@@ -124,8 +126,13 @@ def docker_forms(env_file):
         ["ps", "-a", "-q", "--filter", LABEL],
         ["network", "ls", "-q", "--filter", LABEL],
         ["volume", "ls", "-q", "--filter", LABEL],
-        ["inspect", "--format", inspect_format, f"{PROJECT}-relay-1"],
+        ["inspect", "--format", STATE_FORMAT, "<relay container id>"],
+        ["inspect", "--format", HARDENING_FORMAT, "<container id of each stack container>"],
     ]
+
+
+class Refusal(Exception):
+    """A precondition refusal: the run did not start (exit 2)."""
 
 
 class Ctx:
@@ -179,8 +186,7 @@ class Ctx:
         return cid
 
     def relay_state(self) -> str:
-        fmt = "{{.State.Status}}/{{if .State.Health}}{{.State.Health.Status}}{{else}}none{{end}}"
-        return self.docker(["inspect", "--format", fmt, self.relay_container()], 30).stdout.strip()
+        return self.docker(["inspect", "--format", STATE_FORMAT, self.relay_container()], 30).stdout.strip()
 
     def wait_healthy(self, seconds=HEALTH_SECONDS) -> float:
         started, state = time.monotonic(), "unknown"
@@ -287,11 +293,13 @@ def connected(ctx, role, **options):
 class Matrix:
     def __init__(self, ctx, path):
         self.ctx, self.path, self.steps, self.failed, self.aborted = ctx, path, [], [], False
+        self.forms = ["docker " + " ".join(form) for form in docker_forms(ctx.env_file)]
+        self.refused = False
         self.save()
 
     def save(self):
         body = {"project": PROJECT, "relay_url": self.ctx.url, "buzz_source": SOURCE_REFS,
-                "owner_decisions": OWNER_DECISIONS, "steps": self.steps}
+                "owner_decisions": OWNER_DECISIONS, "docker_forms": self.forms, "steps": self.steps}
         self.path.write_text(json.dumps(body, indent=2, default=str), encoding="utf-8")
 
     def step(self, name, asserts, fn, *, needs=True, fatal=False):
@@ -307,8 +315,9 @@ class Matrix:
             fn(record["records"])
             record["status"] = "pass"
         except Exception as exc:  # noqa: BLE001 - the matrix names the step and goes on
-            record["status"] = "FAIL"
+            record["status"] = "REFUSED" if isinstance(exc, Refusal) else "FAIL"
             record["error"] = self.ctx.scrub(f"{type(exc).__name__}: {exc}")[:800]
+            self.refused = self.refused or isinstance(exc, Refusal)
             self.failed.append(name)
             self.aborted = self.aborted or fatal
         record["seconds"] = round(time.monotonic() - started, 1)
@@ -329,28 +338,20 @@ def free_port():
 # -- steps -----------------------------------------------------------------------------------------------------
 
 def step_preconditions(ctx, rec):
-    assert shutil.which("docker"), "docker is not on PATH"
+    if not shutil.which("docker"):
+        raise Refusal("docker is not on PATH")
     text = COMPOSE.read_text(encoding="utf-8")
-    assert "__DIGEST_TBD__" not in text, "owner must pin the postgres/redis digests in the compose file"
-    import provider_guard  # compare/guard, put on sys.path by conftest
-
-    refused = []
-    for form in docker_forms(ctx.env_file):
-        try:
-            provider_guard.docker_policy(["docker", *form], os.environ)
-        except provider_guard.DockerRefused as exc:
-            refused.append(f"docker {ctx.verb(form)} ... ({exc})")
-    rec["guard_forms_checked"] = len(docker_forms(ctx.env_file))
-    assert not refused, ("R-P guard refuses docker forms this test needs; owner admission needed: "
-                         + "; ".join(sorted(set(refused))))
+    if "__DIGEST_TBD__" in text:
+        raise Refusal("owner must pin the postgres/redis digests in the compose file")
     residue = {
         "containers": ctx.docker(["ps", "-a", "-q", "--filter", LABEL], 60).stdout.split(),
         "networks": ctx.docker(["network", "ls", "-q", "--filter", LABEL], 60).stdout.split(),
         "volumes": ctx.docker(["volume", "ls", "-q", "--filter", LABEL], 60).stdout.split(),
     }
     rec["residue_before"] = {key: len(value) for key, value in residue.items()}
-    assert not any(residue.values()), ("a resource of project zeus-buzz-conntest already exists; it is foreign "
-                                       "to this run and is never cleaned")
+    if any(residue.values()):
+        raise Refusal("a resource of project zeus-buzz-conntest already exists; it is foreign to this run and "
+                      "is never cleaned")
     ctx.port = free_port()
     ctx.url = f"ws://127.0.0.1:{ctx.port}"
     rec["port"] = ctx.port
@@ -720,13 +721,11 @@ def step_lease(ctx, rec):
 
 
 def step_hardening(ctx, rec):
-    fmt = ("{{.Name}}|{{.HostConfig.Privileged}}|{{.HostConfig.NetworkMode}}|{{json .HostConfig.PortBindings}}"
-           "|{{json .HostConfig.CapAdd}}|{{json .Mounts}}")
     containers = ctx.compose("ps", "-a", "-q", timeout=60).stdout.split()
     assert len(containers) >= 4, f"only {len(containers)} containers of the stack"
     published = {}
     for cid in containers:
-        name, privileged, mode, ports, cap_add, mounts = ctx.docker(["inspect", "--format", fmt, cid],
+        name, privileged, mode, ports, cap_add, mounts = ctx.docker(["inspect", "--format", HARDENING_FORMAT, cid],
                                                                      30).stdout.strip().split("|", 5)
         bindings = json.loads(ports) or {}
         host_ips = sorted({b["HostIp"] for binds in bindings.values() for b in binds or []})
@@ -759,11 +758,14 @@ def step_cleanup(ctx, rec):
 
 # -- the matrix ------------------------------------------------------------------------------------------------
 
-def test_buzz_a4_runtime_matrix(tmp_path):
-    ctx = Ctx(tmp_path)
-    matrix = Matrix(ctx, tmp_path / "buzz_a4_report.json")
+def run(tmp, report, keep_on_failure):
+    ctx = Ctx(tmp)
+    matrix = Matrix(ctx, report)
+    print("docker argv forms used by this runner (the R-P guard is not involved):", flush=True)
+    for form in matrix.forms:
+        print(f"  {form}", flush=True)
     try:
-        matrix.step("1 preconditions", "digests pinned; docker forms admitted; no residue; free loopback port",
+        matrix.step("1 preconditions", "docker present; digests pinned; no foreign residue; free loopback port",
                     lambda rec: step_preconditions(ctx, rec), fatal=True)
         matrix.step("2 keys", "role keys and the 0600 env file; nothing printed",
                     lambda rec: step_keys(ctx, rec), fatal=True)
@@ -788,9 +790,37 @@ def test_buzz_a4_runtime_matrix(tmp_path):
         matrix.step("14 hardening", "no privileged, no host network, no socket, no cap_add, loopback ports only",
                     lambda rec: step_hardening(ctx, rec))
     finally:
-        if ctx.owned and ctx.started:
+        if ctx.owned and ctx.started and (matrix.failed and keep_on_failure):
+            print(f"--keep-on-failure: the stack is left running; remove it with: docker compose -p {PROJECT} "
+                  f"-f {COMPOSE} --env-file {ctx.env_file} down -v --remove-orphans", flush=True)
+        elif ctx.owned and ctx.started:
             matrix.aborted = False
             matrix.step("15 cleanup", "down -v for this project; zero labelled containers, networks, volumes",
                         lambda rec: step_cleanup(ctx, rec))
         print(f"BUZZ_A4_REPORT={matrix.path}", flush=True)
-    assert not matrix.failed, f"failed steps: {matrix.failed} (report: {matrix.path})"
+    if matrix.refused:
+        print(f"REFUSED: {matrix.steps[0]['error']}", flush=True)
+        return 2
+    if matrix.failed:
+        print(f"FAILED steps: {matrix.failed}", flush=True)
+        return 1
+    print("all asserted steps passed", flush=True)
+    return 0
+
+
+def main(argv=None):
+    parser = argparse.ArgumentParser(description="Owner-run Buzz A4 runtime matrix (needs Docker; never run by pytest)")
+    parser.add_argument("--report", type=Path, help="report path (default: <run dir>/buzz_a4_report.json)")
+    parser.add_argument("--keep-on-failure", action="store_true",
+                        help="on a failing step leave the stack running instead of `down -v`")
+    args = parser.parse_args(argv)
+    stamp = datetime.now(UTC).strftime("%Y%m%dT%H%M%SZ")
+    tmp = SCRATCH / stamp
+    tmp.mkdir(mode=0o700, parents=True)
+    tmp.chmod(0o700)
+    print(f"run directory: {tmp}", flush=True)
+    return run(tmp, args.report or tmp / "buzz_a4_report.json", args.keep_on_failure)
+
+
+if __name__ == "__main__":
+    sys.exit(main())

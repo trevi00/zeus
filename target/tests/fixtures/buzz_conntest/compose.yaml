@@ -1,4 +1,4 @@
-# Buzz Batch A4: the disposable relay stack for the owner-run runtime matrix (tests/test_buzz_a4_conntest.py).
+# Buzz Batch A4: the disposable relay stack for the owner-run runtime matrix (tests/fixtures/buzz_conntest/run_matrix.py).
 #
 # Derived from Buzz's own deploy/compose/compose.yml at d7a35afa (read only). Differences, all deliberate:
 # - project `zeus-buzz-conntest` (every resource carries com.docker.compose.project=zeus-buzz-conntest, which is
@@ -44,6 +44,8 @@ services:
       BUZZ_S3_SECRET_KEY: ${BUZZ_S3_SECRET_KEY:?set by the test}
       BUZZ_S3_BUCKET: buzz-media
       BUZZ_GIT_REPO_PATH: /data/git
+      # test-only: provoke the slow-receiver drop (B7) within the rate limit; never production
+      BUZZ_SEND_BUFFER: "8"
       RUST_LOG: buzz_relay=info,buzz_db=info,buzz_auth=info,buzz_pubsub=info,tower_http=info
     ports:
       - target: 3000
