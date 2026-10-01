@@ -36,9 +36,10 @@ from types import SimpleNamespace  # noqa: E402
 
 import determinism  # noqa: E402
 import s7_release_runner  # noqa: E402
-from s1_target import PortClock, PortIds  # noqa: E402
-
-from codex_harness.composition.release_verification import ExecutionContainerNaming, release_runner  # noqa: E402
+from codex_harness.composition.release_verification import (  # noqa: E402
+    ExecutionContainerNaming,
+    release_runner,
+)
 from codex_harness.delivery.adapters import deployment  # noqa: E402
 from codex_harness.host_os.adapters import process_groups  # noqa: E402
 from codex_harness.host_os.adapters.git_workspace import GitWorkspace  # noqa: E402
@@ -48,6 +49,7 @@ from codex_harness.review.domain import check_results  # noqa: E402
 from codex_harness.routing.adapters.organization_source import packaged_organization  # noqa: E402
 from codex_harness.storage.adapters.file_artifacts import FileArtifacts  # noqa: E402
 from codex_harness.storage.adapters.memory_store import MemoryStore  # noqa: E402
+from s1_target import PortClock, PortIds  # noqa: E402
 
 CLOCK, IDS = determinism.FakeClock(), determinism.FakeIds()
 PORT = PortClock(CLOCK)
