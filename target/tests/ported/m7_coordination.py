@@ -52,6 +52,12 @@ Named adaptations (each is a construction/import adaptation, never a behaviour c
   `launch_directory`), the composition's process-tree bindings `composition.guarded_launch` (`guard`, `main`,
   `spawn_guardian` = `guarded_spawn()`), and `ConductorProcesses` = `coordination.adapters.conductor_launch` with `spawn`
   defaulting to `spawn_guardian` (M7's default spawn). The lane environment is the caller's `environment=`, as in M7.
+- `OwnerActions` also routes M7's private `_advance_canary`, `_plan_binding`, `_discover`, `_recovery_lane` and `_take_slot` (read, and assignment
+  on the owner that calls it) and the one `clock` (read from the scheduler; an assignment replaces it in every split
+  object that holds one) to their split homes (the
+  canary family's `advance` and `_recovery_lane`, the migration family's `delivery_plan.plan_binding`, the scheduler's `_discover`, the requalify family's `_take_slot`), as the
+  `coordination.owner_actions_canary`/`_migration` target drivers' accessors do. The delivery routes (the S7 suites'
+  `deliveries=HostDelivery(...)`) are `m7_delivery.HostDelivery`, passed as the `deliveries` port.
 - `unavailable(slice_, name)` stands for a name whose owner is in a later slice (a Portfolio, a research program, a CLI):
   it imports as a placeholder class (subclassable at import) that raises on any use, and only skipped tests name it.
 - `organization()` is `routing.adapters.organization_source.packaged_organization` (M7 `bootstrap.organization`) and
@@ -333,6 +339,13 @@ class ResearchEvidence:
 
 OWNER_ROUTES = {"register": "scheduler", "status": "scheduler", "tick": "scheduler", "recover_canary": "canary",
                 "request_migration": "migration", "migration": "migration"}
+# M7's private methods the S7 suites call, at their split homes (as the `coordination.owner_actions_*` target drivers'
+# accessors do): name -> (the owner object's key, a path of attributes from it, the method).
+OWNER_PRIVATE = {"_advance_canary": ("canary", (), "advance"),
+                 "_plan_binding": ("migration", ("delivery_plan",), "plan_binding"),
+                 "_discover": ("scheduler", (), "_discover"),
+                 "_recovery_lane": ("canary", (), "_recovery_lane"),
+                 "_take_slot": ("scheduler", ("requalify_family",), "_take_slot")}
 
 
 class OwnerActions:
@@ -359,8 +372,35 @@ class OwnerActions:
                                          requalify_family=requalify_family, research_acceptance=research_acceptance,
                                          research_dispatch=research_dispatch)
         self.objects = {"scheduler": scheduler, "canary": canary, "migration": migration}
+        self.holders = [actions, research_acceptance, delivery_plan, canary, migration, requalify_family,
+                        research_dispatch, scheduler]
+
+    def _owner_of(self, name):
+        key, path, method = OWNER_PRIVATE[name]
+        target = self.objects[key]
+        for step in path:
+            target = getattr(target, step)
+        return target, method
+
+    def __setattr__(self, name, value):
+        # a case that replaces a private method (`owner._recovery_lane = racing`) replaces it on the owner that calls it
+        if name in OWNER_PRIVATE:
+            target, method = self._owner_of(name)
+            setattr(target, method, value)
+        elif name == "clock":
+            # M7's one object held ONE clock (`owner.clock = ...`): replace it in every split object that holds one
+            for holder in self.holders:
+                if "clock" in vars(holder):
+                    holder.clock = value
+        else:
+            super().__setattr__(name, value)
 
     def __getattr__(self, name):
+        if name == "clock":
+            return self.objects["scheduler"].clock
+        if name in OWNER_PRIVATE:
+            target, method = self._owner_of(name)
+            return getattr(target, method)
         owner = OWNER_ROUTES.get(name)
         if owner is None:
             raise AttributeError(name)

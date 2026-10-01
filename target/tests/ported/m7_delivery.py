@@ -92,6 +92,10 @@ Named adaptations (each is a construction/import/patch-target adaptation, never 
   (the target tree holding `deploy/` and `scripts/`).
 - `database_url()` is the DSN of the disposable database the target conftest's `isolated_pgstore` uses (`ZEUS_TEST_DSN`;
   M7 `bootstrap.database_url`).
+- Owner actions (`test_owner_actions_*`, `test_owner_canary_plan`, `test_owner_delivery`): `GitPlanPublisher(repository,
+  timeout=)` is the moved `coordination.adapters.owner_actions.GitPlanPublisher` with the wiring
+  `composition.owner_action_adapters.git_plan_publisher` closes over it (a named construction adaptation; subclassable),
+  and `TargetFiles` is `delivery.adapters.target_files.TargetFiles`.
 - `unavailable(slice_, name)` is `m7_coordination.unavailable`: a name whose owner is in a later slice imports as a
   placeholder that raises on use, and only tests skipped whole (with the owning slice) name it.
 """
@@ -116,6 +120,7 @@ from m7_coordination import (
 from codex_harness.composition import configuration, delivery_hosts
 from codex_harness.composition import fleet_recovery as _recovery_composition
 from codex_harness.composition import managed_runtime as _managed_composition
+from codex_harness.composition import owner_action_adapters as _owner_adapters
 from codex_harness.composition.release_verification import ExecutionContainerNaming, release_runner
 from codex_harness.context.adapters import worker_profile
 from codex_harness.coordination.adapters import fleet_recovery as _fleet_recovery
@@ -142,6 +147,7 @@ from codex_harness.delivery.adapters.host_delivery import (  # noqa: F401
     runtime_revision,
     startup_identity_canary,
 )
+from codex_harness.delivery.adapters.target_files import TargetFiles  # noqa: F401
 from codex_harness.delivery.application.host_delivery import state as delivery_state
 from codex_harness.delivery.application.host_delivery.controller import DeliveryController
 from codex_harness.delivery.application.host_delivery.migration import DeliveryMigration
@@ -223,6 +229,16 @@ class ProcessHostTarget(_adapter.ProcessHostTarget):
 class GitHubDelivery(_adapter.GitHubDelivery):
     def __init__(self, workspace, *, runner=process_groups.run_process, **kwargs):
         super().__init__(workspace, runner=runner, **kwargs)
+
+
+class GitPlanPublisher(_owner_adapters.GitPlanPublisher):
+    """M7 `GitPlanPublisher(repository, timeout=...)` with the production wiring closed over, as
+    `composition.owner_action_adapters.git_plan_publisher` wires it (runner, load_plan, git_source). Stays subclassable."""
+
+    def __init__(self, repository, *, timeout=_owner_adapters.GIT_TIMEOUT):
+        wired = _owner_adapters.git_plan_publisher(repository, timeout=timeout)
+        super().__init__(repository, timeout=timeout, runner=wired.runner, load_plan=wired.load_plan,
+                         git_source=wired.git_source)
 
 
 @pytest.fixture
