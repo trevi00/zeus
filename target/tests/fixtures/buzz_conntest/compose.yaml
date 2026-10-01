@@ -5,7 +5,7 @@
 #   the label the test's residue check and `down -v` use);
 # - the relay is published ONLY as 127.0.0.1:${BUZZ_CONNTEST_PORT}:3000 (long syntax, host_ip). A container that is
 #   attached only to an `internal: true` network cannot publish a port, so the relay is the one service that also
-#   joins the ordinary `edge` bridge; postgres, redis and minio never leave `internal`;
+#   joins the ordinary `edge` bridge; postgres and redis never leave `internal`;
 # - RELAY_URL is the loopback authority the test connects to (A4-PREP Q-A4-1: the deployment community is bound to
 #   the authority of RELAY_URL, and requests bind by Host);
 # - a closed relay (BUZZ_REQUIRE_RELAY_MEMBERSHIP) with a signed auth token requirement, as DESIGN D5;
@@ -16,7 +16,7 @@
 # No privileged mode, no host network, no docker socket, no cap_add, no 0.0.0.0 publish. (BUZZ_BIND_ADDR below is the
 # address INSIDE the container; the host side is the loopback publish.)
 #
-# Digests: relay and minio are the digests given by the task / Buzz's compose. Buzz's compose names postgres and
+# Digests: the relay is the digest given by the task / Buzz's compose. Buzz's compose names postgres and
 # redis by TAG only; the owner pinned them on 2026-10-01 from the registry index digests (postgres 17.11,
 # redis 7.4.11, each verified by running the image with network none).
 name: zeus-buzz-conntest
@@ -33,7 +33,7 @@ services:
       BUZZ_REQUIRE_AUTH_TOKEN: "true"
       BUZZ_AUTO_MIGRATE: "true"
       # Owner A4 run 2: the git object-store conformance probe is fatal without S3 (main.rs:698ff); A4 uses no git
-      # features and the MinIO images are not anonymously pullable (A4-PREP Run 1). Test-only; never production.
+      # or media features, so this stack runs no object store. Test-only; never production.
       BUZZ_GIT_CONFORMANCE_PROBE: "false"
       BUZZ_BIND_ADDR: 0.0.0.0:3000
       BUZZ_HEALTH_PORT: "8080"
@@ -122,7 +122,7 @@ volumes:
   buzz-git-data:
 
 networks:
-  # postgres, redis and minio live here only: no route out, no published port.
+  # postgres and redis live here only: no route out, no published port.
   internal:
     internal: true
   # The relay's loopback publish needs a non-internal network.
