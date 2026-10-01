@@ -6,9 +6,10 @@ Owns: DecisionOwnership (fence, validate, terminal record, notice, next message,
     (fail, time containment, rejection reconcile) over `decisions_pending`. These are the writes and fences that M7
     `Executor.decide_one/_commit_decision/_fail_decision/_lost_execution` performed inline with coordination's
     objects. Each delegates to the moved owner code unchanged, so the body bytes and fence placement stay M7's.
+    PendingDecisions (the idempotent queue write of a row another context builds; S8 pilot 70).
 Does not own: the decision verdict and its effects (review's ReviewDecisions); the claim (decision_claims);
     the clocks (injected)
-Entry points: DecisionOwnership, DecisionFailures
+Entry points: DecisionOwnership, DecisionFailures, PendingDecisions
 Contracts: INV-SESSION-001, INV-EXECUTION-IDENTITY-001, INV-RELEASE-001
 """
 
@@ -62,3 +63,14 @@ class DecisionFailures:
     def reconcile(self, lease: dict, error, rejection_error=None):
         return execution_rejections.reconcile(self.store, lease, error, rejection_error, clock=self.clock,
                                               monotonic=self.monotonic)
+
+
+class PendingDecisions:
+    """The queue write for a decision row another context builds (S8 pilot 70, R-r4). Stateless."""
+
+    def queue(self, tx, row: dict) -> bool:
+        # Moved from M7 `ResearchAudits._queue_review`: put iff the row is absent, in the caller's unit; True when put.
+        if tx.get(BUCKET, row["id"]):
+            return False
+        tx.put(BUCKET, row["id"], row)
+        return True
