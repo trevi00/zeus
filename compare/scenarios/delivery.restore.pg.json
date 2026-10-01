@@ -5,5 +5,126 @@
  "requires": "disposable-postgresql-pair",
  "target_driver": "drivers/target/s7_restore.py",
  "golden": "goldens/reference/delivery.restore.pg.json",
- "slice": "S7"
+ "slice": "S7",
+ "intended_differences": [
+  {
+   "path": "$.catalog.catalog_digest",
+   "op": "replace_value",
+   "from": "b6adbed2e4ebf761e0a8bad17f2be5ed4cb36308d97286991f54e27812bd4d65",
+   "to": "9b465498664830705f3c65b9a41bfc74165340b81e21a4d3e7725859ba004e19",
+   "authority": "Buzz DESIGN v3 §5 P2 + DESIGN-B §5 D-B2-1/D-B2-2 (owner, 2026-10-01T15:48:33Z): the seed's Fleet pause writes the P2 fleet_control/authority_version record, one more source row; discriminating check: the same head with the bump disabled is target-equal"
+  },
+  {
+   "path": "$.refuse_recover.other_recovered.result.renamed_catalog_sha256",
+   "op": "replace_value",
+   "from": "0c7c928a7011b3d25ebee414e4b53f6f93f3d032656f89ace0598a34213f7126",
+   "to": "5a89b7f745f36f4877ee1955d81a2ac7ce390b5ce93ad7764973fc50e8afc9eb",
+   "authority": "Buzz DESIGN v3 §5 P2 + DESIGN-B §5 D-B2-1/D-B2-2 (owner, 2026-10-01T15:48:33Z): the seed's Fleet pause writes the P2 fleet_control/authority_version record, one more source row; discriminating check: the same head with the bump disabled is target-equal"
+  },
+  {
+   "path": "$.refuse_recover.other_recovered.result.rows",
+   "op": "replace_value",
+   "from": 123,
+   "to": 124,
+   "authority": "Buzz DESIGN v3 §5 P2 + DESIGN-B §5 D-B2-1/D-B2-2 (owner, 2026-10-01T15:48:33Z): the seed's Fleet pause writes the P2 fleet_control/authority_version record, one more source row; discriminating check: the same head with the bump disabled is target-equal"
+  },
+  {
+   "path": "$.refuse_recover.other_recovered.result.source_catalog_sha256",
+   "op": "replace_value",
+   "from": "b6adbed2e4ebf761e0a8bad17f2be5ed4cb36308d97286991f54e27812bd4d65",
+   "to": "9b465498664830705f3c65b9a41bfc74165340b81e21a4d3e7725859ba004e19",
+   "authority": "Buzz DESIGN v3 §5 P2 + DESIGN-B §5 D-B2-1/D-B2-2 (owner, 2026-10-01T15:48:33Z): the seed's Fleet pause writes the P2 fleet_control/authority_version record, one more source row; discriminating check: the same head with the bump disabled is target-equal"
+  },
+  {
+   "path": "$.restore.catalog_match.rows",
+   "op": "replace_value",
+   "from": 123,
+   "to": 124,
+   "authority": "Buzz DESIGN v3 §5 P2 + DESIGN-B §5 D-B2-1/D-B2-2 (owner, 2026-10-01T15:48:33Z): the seed's Fleet pause writes the P2 fleet_control/authority_version record, one more source row; discriminating check: the same head with the bump disabled is target-equal"
+  },
+  {
+   "path": "$.restore.first.renamed_catalog_sha256",
+   "op": "replace_value",
+   "from": "0c7c928a7011b3d25ebee414e4b53f6f93f3d032656f89ace0598a34213f7126",
+   "to": "5a89b7f745f36f4877ee1955d81a2ac7ce390b5ce93ad7764973fc50e8afc9eb",
+   "authority": "Buzz DESIGN v3 §5 P2 + DESIGN-B §5 D-B2-1/D-B2-2 (owner, 2026-10-01T15:48:33Z): the seed's Fleet pause writes the P2 fleet_control/authority_version record, one more source row; discriminating check: the same head with the bump disabled is target-equal"
+  },
+  {
+   "path": "$.restore.first.rows",
+   "op": "replace_value",
+   "from": 123,
+   "to": 124,
+   "authority": "Buzz DESIGN v3 §5 P2 + DESIGN-B §5 D-B2-1/D-B2-2 (owner, 2026-10-01T15:48:33Z): the seed's Fleet pause writes the P2 fleet_control/authority_version record, one more source row; discriminating check: the same head with the bump disabled is target-equal"
+  },
+  {
+   "path": "$.restore.first.source_catalog_sha256",
+   "op": "replace_value",
+   "from": "b6adbed2e4ebf761e0a8bad17f2be5ed4cb36308d97286991f54e27812bd4d65",
+   "to": "9b465498664830705f3c65b9a41bfc74165340b81e21a4d3e7725859ba004e19",
+   "authority": "Buzz DESIGN v3 §5 P2 + DESIGN-B §5 D-B2-1/D-B2-2 (owner, 2026-10-01T15:48:33Z): the seed's Fleet pause writes the P2 fleet_control/authority_version record, one more source row; discriminating check: the same head with the bump disabled is target-equal"
+  },
+  {
+   "path": "$.restore.receipt_file.renamed_catalog_sha256",
+   "op": "replace_value",
+   "from": "0c7c928a7011b3d25ebee414e4b53f6f93f3d032656f89ace0598a34213f7126",
+   "to": "5a89b7f745f36f4877ee1955d81a2ac7ce390b5ce93ad7764973fc50e8afc9eb",
+   "authority": "Buzz DESIGN v3 §5 P2 + DESIGN-B §5 D-B2-1/D-B2-2 (owner, 2026-10-01T15:48:33Z): the seed's Fleet pause writes the P2 fleet_control/authority_version record, one more source row; discriminating check: the same head with the bump disabled is target-equal"
+  },
+  {
+   "path": "$.restore.receipt_file.rows",
+   "op": "replace_value",
+   "from": 123,
+   "to": 124,
+   "authority": "Buzz DESIGN v3 §5 P2 + DESIGN-B §5 D-B2-1/D-B2-2 (owner, 2026-10-01T15:48:33Z): the seed's Fleet pause writes the P2 fleet_control/authority_version record, one more source row; discriminating check: the same head with the bump disabled is target-equal"
+  },
+  {
+   "path": "$.restore.receipt_file.source_catalog_sha256",
+   "op": "replace_value",
+   "from": "b6adbed2e4ebf761e0a8bad17f2be5ed4cb36308d97286991f54e27812bd4d65",
+   "to": "9b465498664830705f3c65b9a41bfc74165340b81e21a4d3e7725859ba004e19",
+   "authority": "Buzz DESIGN v3 §5 P2 + DESIGN-B §5 D-B2-1/D-B2-2 (owner, 2026-10-01T15:48:33Z): the seed's Fleet pause writes the P2 fleet_control/authority_version record, one more source row; discriminating check: the same head with the bump disabled is target-equal"
+  },
+  {
+   "path": "$.restore.replay.renamed_catalog_sha256",
+   "op": "replace_value",
+   "from": "0c7c928a7011b3d25ebee414e4b53f6f93f3d032656f89ace0598a34213f7126",
+   "to": "5a89b7f745f36f4877ee1955d81a2ac7ce390b5ce93ad7764973fc50e8afc9eb",
+   "authority": "Buzz DESIGN v3 §5 P2 + DESIGN-B §5 D-B2-1/D-B2-2 (owner, 2026-10-01T15:48:33Z): the seed's Fleet pause writes the P2 fleet_control/authority_version record, one more source row; discriminating check: the same head with the bump disabled is target-equal"
+  },
+  {
+   "path": "$.restore.replay.rows",
+   "op": "replace_value",
+   "from": 123,
+   "to": 124,
+   "authority": "Buzz DESIGN v3 §5 P2 + DESIGN-B §5 D-B2-1/D-B2-2 (owner, 2026-10-01T15:48:33Z): the seed's Fleet pause writes the P2 fleet_control/authority_version record, one more source row; discriminating check: the same head with the bump disabled is target-equal"
+  },
+  {
+   "path": "$.restore.replay.source_catalog_sha256",
+   "op": "replace_value",
+   "from": "b6adbed2e4ebf761e0a8bad17f2be5ed4cb36308d97286991f54e27812bd4d65",
+   "to": "9b465498664830705f3c65b9a41bfc74165340b81e21a4d3e7725859ba004e19",
+   "authority": "Buzz DESIGN v3 §5 P2 + DESIGN-B §5 D-B2-1/D-B2-2 (owner, 2026-10-01T15:48:33Z): the seed's Fleet pause writes the P2 fleet_control/authority_version record, one more source row; discriminating check: the same head with the bump disabled is target-equal"
+  },
+  {
+   "path": "$.restore.target_catalog_digest",
+   "op": "replace_value",
+   "from": "0c7c928a7011b3d25ebee414e4b53f6f93f3d032656f89ace0598a34213f7126",
+   "to": "5a89b7f745f36f4877ee1955d81a2ac7ce390b5ce93ad7764973fc50e8afc9eb",
+   "authority": "Buzz DESIGN v3 §5 P2 + DESIGN-B §5 D-B2-1/D-B2-2 (owner, 2026-10-01T15:48:33Z): the seed's Fleet pause writes the P2 fleet_control/authority_version record, one more source row; discriminating check: the same head with the bump disabled is target-equal"
+  },
+  {
+   "path": "$.reverse.latest_vs_reversed.rows",
+   "op": "replace_value",
+   "from": 124,
+   "to": 125,
+   "authority": "Buzz DESIGN v3 §5 P2 + DESIGN-B §5 D-B2-1/D-B2-2 (owner, 2026-10-01T15:48:33Z): the seed's Fleet pause writes the P2 fleet_control/authority_version record, one more source row; discriminating check: the same head with the bump disabled is target-equal"
+  },
+  {
+   "path": "$.reverse.result.rows",
+   "op": "replace_value",
+   "from": 124,
+   "to": 125,
+   "authority": "Buzz DESIGN v3 §5 P2 + DESIGN-B §5 D-B2-1/D-B2-2 (owner, 2026-10-01T15:48:33Z): the seed's Fleet pause writes the P2 fleet_control/authority_version record, one more source row; discriminating check: the same head with the bump disabled is target-equal"
+  }
+ ]
 }

@@ -380,22 +380,27 @@ def differing_paths(expected, actual, path="$") -> list[str]:
     return [] if expected == actual else [path]
 
 
-INTENDED_OPS = frozenset({"absent", "remove_item", "insert_item"})
+INTENDED_OPS = frozenset({"absent", "remove_item", "insert_item", "replace_value"})
 
 
 def apply_intended_differences(golden, declarations) -> tuple[object, list[str]]:
     """The target's EXPECTED result: the reference golden with each declared, authorized intended difference applied.
 
-    A declaration is `{"path": "$.a.b", "op": "absent" | "remove_item" | "insert_item", "item": <for remove_item and
-    insert_item>, "index": <for insert_item>, "authority": "<who decided, where recorded>"}`. It is an ASSERTION,
-    not a mask:
+    A declaration is `{"path": "$.a.b", "op": "absent" | "remove_item" | "insert_item" | "replace_value", "item": <for
+    remove_item and insert_item>, "index": <for insert_item>, "from"/"to": <for replace_value>, "authority": "<who
+    decided, where recorded>"}`. It is an ASSERTION, not a mask:
     - the path must exist in the reference golden (a stale declaration is refused);
-    - the target must then differ in exactly that way (the key absent, exactly that one list item removed, or
-      exactly that one item inserted at `index`, 0 <= index <= len, into a list the golden holds);
+    - the target must then differ in exactly that way (the key absent, exactly that one list item removed, exactly
+      that one item inserted at `index`, 0 <= index <= len, into a list the golden holds, or the golden's exact
+      `from` value replaced by the exact `to` value);
     - every other byte must be equal.
 
+    `replace_value` exists for consequences that only an opaque value can show (a digest or a row count of a whole
+    database), so each one names the cause in its authority and is backed by a recorded discriminating check.
+
     Used only for retired behaviour (e.g. the W-B Windows branches the user retired on 2026-09-28, DESIGN-s7 §0) or
-    a design-authorized addition (e.g. the P2 control-version record, Buzz DESIGN-B §5 D-B2-1). Returns `(expected, problems)`; any problem makes the scenario fail."""
+    a design-authorized addition (e.g. the P2 control-version record, Buzz DESIGN-B §5 D-B2-1/D-B2-2). Returns
+    `(expected, problems)`; any problem makes the scenario fail."""
     expected = json.loads(json.dumps(golden))
     problems = []
     for index, declaration in enumerate(declarations or []):
@@ -423,6 +428,17 @@ def apply_intended_differences(golden, declarations) -> tuple[object, list[str]]
                 problems.append(f"intended_differences[{index}]: {path} insert index/item invalid for {len(value)} items")
                 continue
             value.insert(at, declaration["item"])
+        elif op == "replace_value":
+            if "from" not in declaration or "to" not in declaration:
+                problems.append(f"intended_differences[{index}]: {path} replace_value needs `from` and `to`")
+                continue
+            current, before, after = (json.dumps(v, sort_keys=True) for v in (node[last], declaration["from"],
+                                                                              declaration["to"]))
+            if current != before or before == after:
+                problems.append(f"intended_differences[{index}]: {path} does not hold `from` exactly (stale), "
+                                "or `from` equals `to`")
+                continue
+            node[last] = declaration["to"]
         else:
             value = node[last]
             if not isinstance(value, list) or value.count(declaration.get("item")) != 1:

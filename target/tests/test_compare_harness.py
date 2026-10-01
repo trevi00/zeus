@@ -262,6 +262,30 @@ def test_insert_item_refuses_stale_path_bad_index_and_non_list():
         assert problems, bad
 
 
+def test_replace_value_is_an_exact_from_to_assertion():
+    run = _run_module()
+    golden = {"a": {"rows": 123, "digest": "aa", "c": 5}}
+    declared = [{"path": "$.a.rows", "op": "replace_value", "from": 123, "to": 124, "authority": "x"},
+                {"path": "$.a.digest", "op": "replace_value", "from": "aa", "to": "bb", "authority": "x"}]
+    expected, problems = run.apply_intended_differences(golden, declared)
+    assert problems == [] and expected == {"a": {"rows": 124, "digest": "bb", "c": 5}}
+    assert golden == {"a": {"rows": 123, "digest": "aa", "c": 5}}  # the reference golden is never rewritten
+
+
+def test_replace_value_refuses_stale_from_identity_missing_fields_and_type_confusion():
+    run = _run_module()
+    golden = {"a": {"rows": 123, "flag": 1}}
+    for bad in ({"path": "$.a.rows", "op": "replace_value", "from": 122, "to": 124, "authority": "x"},   # stale from
+                {"path": "$.a.rows", "op": "replace_value", "from": 123, "to": 123, "authority": "x"},   # no change
+                {"path": "$.a.rows", "op": "replace_value", "to": 124, "authority": "x"},                # no from
+                {"path": "$.a.rows", "op": "replace_value", "from": 123, "authority": "x"},              # no to
+                {"path": "$.a.flag", "op": "replace_value", "from": True, "to": 2, "authority": "x"},    # 1 is not true
+                {"path": "$.a.gone", "op": "replace_value", "from": 1, "to": 2, "authority": "x"},       # stale path
+                {"path": "$.a.rows", "op": "replace_value", "from": 123, "to": 124, "authority": ""}):   # no authority
+        _, problems = run.apply_intended_differences(golden, [bad])
+        assert problems, bad
+
+
 def test_a_pair_family_target_side_gets_its_own_fresh_pair(tmp_path, monkeypatch):
     """The pair families fix their database names "on a fresh pair per run" (S7 restore design §2): the target side
     runs on a NEW pair, started after the reference side's pair is removed, never on the pair the reference seeded."""
