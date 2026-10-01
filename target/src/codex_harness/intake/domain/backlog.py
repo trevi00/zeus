@@ -4,7 +4,7 @@ Layer: domain
 Context: intake
 Owns: M7 `domain/fleet_backlog.py` complete (S8 step 1c): the plan and item validation, intents, selection, progress and the runner-state vocabulary; and `binding`, the one owner of what an identical enqueue must repeat exactly (M7 `domain/fleet.py`, V2f R-f2; coordination.domain.fleet imports it)
 Does not own: the Fleet job rows and admission (coordination.domain.fleet), the backlog stores and tick (intake application)
-Entry points: BacklogRefused, validate_pin, validate_plan, plan_digest, item_pin, intent_pin, item_scope, intent_scope, scope_reason, intent_key, new_intent, expected_binding, job_binding, job_matches, defer_ticks_for, deferred, link_state, runner_state, safe_error_type, reconcile_intent, item_progress, dependency_reason, select, item_next_action, plan_next_action, plan_status, binding, RUNNER_OK, RUNNER_UNAVAILABLE, RUNNER_REFUSED, RUNNER_STATES
+Entry points: BUCKET_PLANS, BUCKET_INTENTS, BacklogRefused, validate_pin, validate_plan, plan_digest, item_pin, intent_pin, item_scope, intent_scope, scope_reason, intent_key, new_intent, expected_binding, job_binding, job_matches, defer_ticks_for, deferred, link_state, runner_state, safe_error_type, reconcile_intent, item_progress, dependency_reason, select, item_next_action, plan_next_action, plan_status, binding, RUNNER_OK, RUNNER_UNAVAILABLE, RUNNER_REFUSED, RUNNER_STATES
 Contracts: INV-FLEET-001, INV-FLEET-BACKLOG-001
 
 Move status: complete (S8 step 1c). S5 and S7 moved the runner vocabulary and BacklogRefused ahead verbatim (the first 57 lines below are those bytes); S8 appended every other M7 definition verbatim in M7 order
@@ -17,6 +17,11 @@ import re
 
 from codex_harness.kernel.errors import ContractError
 from codex_harness.kernel.ids import digest, safe_relative_path
+
+# V15 (S8 pilot 76): the two backlog bucket names, moved ahead from M7 `application/fleet_backlog.py` (the later fleet_backlog app
+# move imports them from here); the coordination discovery-census reader scans them.
+BUCKET_PLANS = "fleet_backlog_plans"
+BUCKET_INTENTS = "fleet_backlog_intents"
 
 TOKEN = re.compile(r"^[A-Za-z0-9][A-Za-z0-9._-]{0,63}$")
 

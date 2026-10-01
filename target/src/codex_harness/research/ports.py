@@ -8,10 +8,11 @@ Owns: OWNED_BUCKETS of the research context; OutboxAppend and EventAppend, the c
     PendingDecisions.queue that ResearchAudits calls; InvestigationCandidates, the shape of intake's
     ProgressCandidates that AuditProgress calls (S8 pilot 72); ResearchLaunchFacts, ExecutionFences and
     OutboxQuarantine, the shapes of coordination's owner-action launch facts, execution fence and outbox quarantine
-    that ResearchProgram calls (S8 pilot 73)
+    that ResearchProgram calls (S8 pilot 73); DiscoveryCensus, the shape of coordination's
+    DiscoveryCensusReader that DiscoveryPressure calls (S8 pilot 76)
 Does not own: the outbox, events, decisions_pending and portfolio_investigations bucket bodies (coordination, intake)
 Entry points: OWNED_BUCKETS, OutboxAppend, EventAppend, AuditArtifacts, SourceVerifier, DecisionValidation,
-    PendingDecisions, InvestigationCandidates, ResearchLaunchFacts, ExecutionFences, OutboxQuarantine
+    PendingDecisions, InvestigationCandidates, ResearchLaunchFacts, ExecutionFences, OutboxQuarantine, DiscoveryCensus
 Contracts: INV-RECURRENCE-001, INV-MESSAGE-001
 """
 
@@ -33,7 +34,9 @@ OWNED_BUCKETS = ("inbox", "incidents", "hooks", "research_programs", "dge_sessio
                  # S8 pilot 73 (V4): the six buckets only research.application.research_program writes
                  # (research_programs is already listed above)
                  "research_program_candidates", "research_program_cycles", "research_investigation_dispatches",
-                 "research_dispatch_recoveries", "research_dispatch_successors", "research_dispatch_heads")
+                 "research_dispatch_recoveries", "research_dispatch_successors", "research_dispatch_heads",
+                 # S8 pilot 76 (V4): the one bucket only research.application.discovery_pressure writes
+                 "discovery_pressure")
 
 
 class OutboxAppend(Protocol):
@@ -79,3 +82,7 @@ class ExecutionFences(Protocol):
 
 class OutboxQuarantine(Protocol):
     def quarantine(self, tx, identity, item, source_hash, reason, delivery, audit=None): ...
+
+
+class DiscoveryCensus(Protocol):
+    def observe(self, tx, ledger) -> dict: ...
