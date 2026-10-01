@@ -25,7 +25,6 @@ import s7_managed_runtime  # noqa: E402
 from codex_harness.context.adapters import worker_profile  # noqa: E402
 from codex_harness.delivery.adapters import host_delivery  # noqa: E402
 
-
 IDS = s7_managed_runtime.SpreadIds()
 
 
