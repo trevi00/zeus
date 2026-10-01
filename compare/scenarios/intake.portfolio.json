@@ -2,8 +2,7 @@
  "family": "intake.portfolio",
  "description": "S8 intake portfolio of M7 application/portfolio.py (Portfolio and its module functions: validate_definitions/validate_evidence, bind, inherit_binding with LINEAGE_AUTHORITY, accept, follow_up, disposition, reconcile, family_id/classified_failure/failure_families, status_projection with job_entry/follow_up_view/project_activity/activity_mode) and adapters/portfolio.py (packaged_definitions, portfolio, portfolio_reconciler), characterized before the portfolio move: every refusal with the store digest before and after, the M7 tests/test_portfolio.py and tests/test_portfolio_followups.py behaviours, sampling and counting, the investigation kinds projected apart; MemoryStore, LABELLED synthetic Fleet rows, no Fleet/runner/monitor/PostgreSQL",
  "reference_driver": "drivers/reference/s8_portfolio.py",
- "target_driver": null,
+ "target_driver": "drivers/target/s8_portfolio.py",
  "golden": "goldens/reference/intake.portfolio.json",
- "slice": "S8",
- "target_status": "pending: S8 pilot 63 (portfolio move)"
+ "slice": "S8"
 }
