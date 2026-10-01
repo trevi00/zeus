@@ -1,0 +1,1213 @@
+{
+  "uid": "zeus-llm-usage",
+  "title": "zeus-llm-usage",
+  "description": "LLM token usage and task efficiency (DESIGN 6). Estimated cost is a client estimate, not a charge.",
+  "schemaVersion": 39,
+  "editable": false,
+  "tags": [
+    "zeus",
+    "tokobs"
+  ],
+  "timezone": "utc",
+  "refresh": "1m",
+  "time": {
+    "from": "now-24h",
+    "to": "now"
+  },
+  "graphTooltip": 1,
+  "templating": {
+    "list": [
+      {
+        "name": "provider",
+        "label": "provider",
+        "type": "query",
+        "datasource": {
+          "type": "prometheus",
+          "uid": "tokobs-prom"
+        },
+        "definition": "label_values(zeus_llm_tokens_total, provider)",
+        "query": {
+          "qryType": 1,
+          "query": "label_values(zeus_llm_tokens_total, provider)",
+          "refId": "tokobs-provider"
+        },
+        "refresh": 2,
+        "multi": true,
+        "includeAll": true,
+        "allValue": ".*",
+        "current": {
+          "selected": true,
+          "text": [
+            "All"
+          ],
+          "value": [
+            "$__all"
+          ]
+        },
+        "sort": 1,
+        "hide": 0
+      },
+      {
+        "name": "role",
+        "label": "role",
+        "type": "query",
+        "datasource": {
+          "type": "prometheus",
+          "uid": "tokobs-prom"
+        },
+        "definition": "label_values(zeus_llm_tokens_total, role)",
+        "query": {
+          "qryType": 1,
+          "query": "label_values(zeus_llm_tokens_total, role)",
+          "refId": "tokobs-role"
+        },
+        "refresh": 2,
+        "multi": true,
+        "includeAll": true,
+        "allValue": ".*",
+        "current": {
+          "selected": true,
+          "text": [
+            "All"
+          ],
+          "value": [
+            "$__all"
+          ]
+        },
+        "sort": 1,
+        "hide": 0
+      },
+      {
+        "name": "model",
+        "label": "model",
+        "type": "query",
+        "datasource": {
+          "type": "prometheus",
+          "uid": "tokobs-prom"
+        },
+        "definition": "label_values(zeus_llm_tokens_total, model)",
+        "query": {
+          "qryType": 1,
+          "query": "label_values(zeus_llm_tokens_total, model)",
+          "refId": "tokobs-model"
+        },
+        "refresh": 2,
+        "multi": true,
+        "includeAll": true,
+        "allValue": ".*",
+        "current": {
+          "selected": true,
+          "text": [
+            "All"
+          ],
+          "value": [
+            "$__all"
+          ]
+        },
+        "sort": 1,
+        "hide": 0
+      },
+      {
+        "name": "task_class",
+        "label": "task_class",
+        "type": "query",
+        "datasource": {
+          "type": "prometheus",
+          "uid": "tokobs-prom"
+        },
+        "definition": "label_values(zeus_llm_tokens_total, task_class)",
+        "query": {
+          "qryType": 1,
+          "query": "label_values(zeus_llm_tokens_total, task_class)",
+          "refId": "tokobs-task_class"
+        },
+        "refresh": 2,
+        "multi": true,
+        "includeAll": true,
+        "allValue": ".*",
+        "current": {
+          "selected": true,
+          "text": [
+            "All"
+          ],
+          "value": [
+            "$__all"
+          ]
+        },
+        "sort": 1,
+        "hide": 0
+      }
+    ]
+  },
+  "annotations": {
+    "list": []
+  },
+  "links": [],
+  "panels": [
+    {
+      "id": 1,
+      "type": "row",
+      "title": "Data quality",
+      "collapsed": false,
+      "datasource": {
+        "type": "prometheus",
+        "uid": "tokobs-prom"
+      },
+      "gridPos": {
+        "h": 1,
+        "w": 24,
+        "x": 0,
+        "y": 0
+      },
+      "panels": []
+    },
+    {
+      "id": 2,
+      "type": "stat",
+      "title": "Exporter up",
+      "datasource": {
+        "type": "prometheus",
+        "uid": "tokobs-prom"
+      },
+      "gridPos": {
+        "h": 4,
+        "w": 6,
+        "x": 0,
+        "y": 1
+      },
+      "description": "Prometheus scrape of the tokobs collector (DESIGN 5.1). No data is shown as No data, never 0.",
+      "targets": [
+        {
+          "refId": "A",
+          "datasource": {
+            "type": "prometheus",
+            "uid": "tokobs-prom"
+          },
+          "expr": "up{job=\"tokobs\"}",
+          "legendFormat": "exporter"
+        }
+      ],
+      "fieldConfig": {
+        "defaults": {
+          "noValue": "No data",
+          "mappings": [
+            {
+              "type": "value",
+              "options": {
+                "0": {
+                  "text": "Down",
+                  "color": "red",
+                  "index": 0
+                },
+                "1": {
+                  "text": "Up",
+                  "color": "green",
+                  "index": 1
+                }
+              }
+            }
+          ]
+        },
+        "overrides": []
+      }
+    },
+    {
+      "id": 3,
+      "type": "stat",
+      "title": "Scan age",
+      "datasource": {
+        "type": "prometheus",
+        "uid": "tokobs-prom"
+      },
+      "gridPos": {
+        "h": 4,
+        "w": 6,
+        "x": 6,
+        "y": 1
+      },
+      "description": "Seconds since the last successful scan; TokObsScanStale fires above 300 s.",
+      "targets": [
+        {
+          "refId": "A",
+          "datasource": {
+            "type": "prometheus",
+            "uid": "tokobs-prom"
+          },
+          "expr": "time() - zeus_tokobs_last_scan_success_timestamp_seconds",
+          "legendFormat": "age"
+        }
+      ],
+      "fieldConfig": {
+        "defaults": {
+          "noValue": "No data",
+          "unit": "s"
+        },
+        "overrides": []
+      }
+    },
+    {
+      "id": 4,
+      "type": "stat",
+      "title": "Render refused",
+      "datasource": {
+        "type": "prometheus",
+        "uid": "tokobs-prom"
+      },
+      "gridPos": {
+        "h": 4,
+        "w": 6,
+        "x": 12,
+        "y": 1
+      },
+      "description": "1 when the last render was refused (series cap or label check); data.prom is then the last good render.",
+      "targets": [
+        {
+          "refId": "A",
+          "datasource": {
+            "type": "prometheus",
+            "uid": "tokobs-prom"
+          },
+          "expr": "zeus_tokobs_render_refused",
+          "legendFormat": "refused"
+        }
+      ],
+      "fieldConfig": {
+        "defaults": {
+          "noValue": "No data",
+          "mappings": [
+            {
+              "type": "value",
+              "options": {
+                "0": {
+                  "text": "OK",
+                  "color": "green",
+                  "index": 0
+                },
+                "1": {
+                  "text": "Refused",
+                  "color": "red",
+                  "index": 1
+                }
+              }
+            }
+          ]
+        },
+        "overrides": []
+      }
+    },
+    {
+      "id": 5,
+      "type": "stat",
+      "title": "S9 age",
+      "datasource": {
+        "type": "prometheus",
+        "uid": "tokobs-prom"
+      },
+      "gridPos": {
+        "h": 4,
+        "w": 6,
+        "x": 18,
+        "y": 1
+      },
+      "description": "Seconds since the S9 monitoring snapshot was collected; TokObsS9SnapshotStale fires above 120 s.",
+      "targets": [
+        {
+          "refId": "A",
+          "datasource": {
+            "type": "prometheus",
+            "uid": "tokobs-prom"
+          },
+          "expr": "time() - zeus_s9_snapshot_collected_timestamp_seconds",
+          "legendFormat": "age"
+        }
+      ],
+      "fieldConfig": {
+        "defaults": {
+          "noValue": "No data",
+          "unit": "s"
+        },
+        "overrides": []
+      }
+    },
+    {
+      "id": 6,
+      "type": "timeseries",
+      "title": "Unknown invocations by reason (1d increase)",
+      "datasource": {
+        "type": "prometheus",
+        "uid": "tokobs-prom"
+      },
+      "gridPos": {
+        "h": 8,
+        "w": 8,
+        "x": 0,
+        "y": 5
+      },
+      "description": "Finalized invocations whose token usage is unknown, at most one per invocation, by reason.",
+      "targets": [
+        {
+          "refId": "A",
+          "datasource": {
+            "type": "prometheus",
+            "uid": "tokobs-prom"
+          },
+          "expr": "sum by (reason) (increase(zeus_llm_unknown_invocations_total{provider=~\"$provider\"}[1d]))",
+          "legendFormat": "{{reason}}"
+        }
+      ],
+      "fieldConfig": {
+        "defaults": {
+          "noValue": "No data"
+        },
+        "overrides": []
+      }
+    },
+    {
+      "id": 7,
+      "type": "stat",
+      "title": "Unknown ratio (1d)",
+      "datasource": {
+        "type": "prometheus",
+        "uid": "tokobs-prom"
+      },
+      "gridPos": {
+        "h": 8,
+        "w": 4,
+        "x": 8,
+        "y": 5
+      },
+      "description": "Recording rule zeus:llm_unknown_ratio:1d; TokObsUnknownHigh fires above 0.2.",
+      "targets": [
+        {
+          "refId": "A",
+          "datasource": {
+            "type": "prometheus",
+            "uid": "tokobs-prom"
+          },
+          "expr": "zeus:llm_unknown_ratio:1d",
+          "legendFormat": "unknown / finalized"
+        }
+      ],
+      "fieldConfig": {
+        "defaults": {
+          "noValue": "No data",
+          "unit": "percentunit"
+        },
+        "overrides": []
+      }
+    },
+    {
+      "id": 8,
+      "type": "timeseries",
+      "title": "Open invocations by state",
+      "datasource": {
+        "type": "prometheus",
+        "uid": "tokobs-prom"
+      },
+      "gridPos": {
+        "h": 8,
+        "w": 6,
+        "x": 12,
+        "y": 5
+      },
+      "description": "Invocations not yet finalized.",
+      "targets": [
+        {
+          "refId": "A",
+          "datasource": {
+            "type": "prometheus",
+            "uid": "tokobs-prom"
+          },
+          "expr": "sum by (state) (zeus_llm_open_invocations{provider=~\"$provider\"})",
+          "legendFormat": "{{state}}"
+        }
+      ],
+      "fieldConfig": {
+        "defaults": {
+          "noValue": "No data"
+        },
+        "overrides": []
+      }
+    },
+    {
+      "id": 9,
+      "type": "timeseries",
+      "title": "Corrections by kind",
+      "datasource": {
+        "type": "prometheus",
+        "uid": "tokobs-prom"
+      },
+      "gridPos": {
+        "h": 8,
+        "w": 6,
+        "x": 18,
+        "y": 5
+      },
+      "description": "Late facts recorded as corrections (DESIGN 3.6).",
+      "targets": [
+        {
+          "refId": "A",
+          "datasource": {
+            "type": "prometheus",
+            "uid": "tokobs-prom"
+          },
+          "expr": "sum by (kind) (zeus_tokobs_ledger_corrections_total)",
+          "legendFormat": "{{kind}}"
+        }
+      ],
+      "fieldConfig": {
+        "defaults": {
+          "noValue": "No data"
+        },
+        "overrides": []
+      }
+    },
+    {
+      "id": 10,
+      "type": "row",
+      "title": "Tokens by role and type",
+      "collapsed": false,
+      "datasource": {
+        "type": "prometheus",
+        "uid": "tokobs-prom"
+      },
+      "gridPos": {
+        "h": 1,
+        "w": 24,
+        "x": 0,
+        "y": 13
+      },
+      "panels": []
+    },
+    {
+      "id": 11,
+      "type": "timeseries",
+      "title": "Tokens by role and type (excluding cache_read)",
+      "datasource": {
+        "type": "prometheus",
+        "uid": "tokobs-prom"
+      },
+      "gridPos": {
+        "h": 8,
+        "w": 8,
+        "x": 0,
+        "y": 14
+      },
+      "description": "Measured tokens over the selected range; cache_read has its own panel.",
+      "targets": [
+        {
+          "refId": "A",
+          "datasource": {
+            "type": "prometheus",
+            "uid": "tokobs-prom"
+          },
+          "expr": "sum by (role, token_type) (increase(zeus_llm_tokens_total{provider=~\"$provider\",model=~\"$model\",role=~\"$role\",task_class=~\"$task_class\",token_type!=\"cache_read\"}[$__range]))",
+          "legendFormat": "{{role}} {{token_type}}"
+        }
+      ],
+      "fieldConfig": {
+        "defaults": {
+          "noValue": "No data"
+        },
+        "overrides": []
+      }
+    },
+    {
+      "id": 12,
+      "type": "timeseries",
+      "title": "cache_read tokens by role",
+      "datasource": {
+        "type": "prometheus",
+        "uid": "tokobs-prom"
+      },
+      "gridPos": {
+        "h": 8,
+        "w": 8,
+        "x": 8,
+        "y": 14
+      },
+      "description": "cache_read tokens are kept apart because they dwarf the other token types.",
+      "targets": [
+        {
+          "refId": "A",
+          "datasource": {
+            "type": "prometheus",
+            "uid": "tokobs-prom"
+          },
+          "expr": "sum by (role) (increase(zeus_llm_tokens_total{provider=~\"$provider\",model=~\"$model\",role=~\"$role\",task_class=~\"$task_class\",token_type=\"cache_read\"}[$__range]))",
+          "legendFormat": "{{role}}"
+        }
+      ],
+      "fieldConfig": {
+        "defaults": {
+          "noValue": "No data"
+        },
+        "overrides": []
+      }
+    },
+    {
+      "id": 13,
+      "type": "timeseries",
+      "title": "Unattributed and ambiguous shares",
+      "datasource": {
+        "type": "prometheus",
+        "uid": "tokobs-prom"
+      },
+      "gridPos": {
+        "h": 8,
+        "w": 8,
+        "x": 16,
+        "y": 14
+      },
+      "description": "Always visible and never folded into named roles: roles nested_unattributed and advisor_or_nested, task classes unattributed_interval and identity_unavailable. Not filtered by the dashboard variables.",
+      "targets": [
+        {
+          "refId": "A",
+          "datasource": {
+            "type": "prometheus",
+            "uid": "tokobs-prom"
+          },
+          "expr": "sum by (role, token_type) (increase(zeus_llm_tokens_total{role=~\"nested_unattributed|advisor_or_nested\"}[$__range]))",
+          "legendFormat": "role {{role}} {{token_type}}"
+        },
+        {
+          "refId": "B",
+          "datasource": {
+            "type": "prometheus",
+            "uid": "tokobs-prom"
+          },
+          "expr": "sum by (task_class, token_type) (increase(zeus_llm_tokens_total{task_class=~\"unattributed_interval|identity_unavailable\"}[$__range]))",
+          "legendFormat": "task_class {{task_class}} {{token_type}}"
+        }
+      ],
+      "fieldConfig": {
+        "defaults": {
+          "noValue": "No data"
+        },
+        "overrides": []
+      }
+    },
+    {
+      "id": 14,
+      "type": "row",
+      "title": "By model",
+      "collapsed": false,
+      "datasource": {
+        "type": "prometheus",
+        "uid": "tokobs-prom"
+      },
+      "gridPos": {
+        "h": 1,
+        "w": 24,
+        "x": 0,
+        "y": 22
+      },
+      "panels": []
+    },
+    {
+      "id": 15,
+      "type": "timeseries",
+      "title": "Tokens by model (excluding cache_read)",
+      "datasource": {
+        "type": "prometheus",
+        "uid": "tokobs-prom"
+      },
+      "gridPos": {
+        "h": 8,
+        "w": 12,
+        "x": 0,
+        "y": 23
+      },
+      "targets": [
+        {
+          "refId": "A",
+          "datasource": {
+            "type": "prometheus",
+            "uid": "tokobs-prom"
+          },
+          "expr": "sum by (model, token_type) (increase(zeus_llm_tokens_total{provider=~\"$provider\",model=~\"$model\",role=~\"$role\",task_class=~\"$task_class\",token_type!=\"cache_read\"}[$__range]))",
+          "legendFormat": "{{model}} {{token_type}}"
+        }
+      ],
+      "fieldConfig": {
+        "defaults": {
+          "noValue": "No data"
+        },
+        "overrides": []
+      }
+    },
+    {
+      "id": 16,
+      "type": "stat",
+      "title": "Advisor consultations per accepted task (7d)",
+      "datasource": {
+        "type": "prometheus",
+        "uid": "tokobs-prom"
+      },
+      "gridPos": {
+        "h": 8,
+        "w": 12,
+        "x": 12,
+        "y": 23
+      },
+      "description": "Observed advisor blocks divided by accepted tasks over seven days.",
+      "targets": [
+        {
+          "refId": "A",
+          "datasource": {
+            "type": "prometheus",
+            "uid": "tokobs-prom"
+          },
+          "expr": "sum(increase(zeus_llm_advisor_consultations_total{task_class=~\"$task_class\"}[7d])) / sum(increase(zeus_task_outcomes_total{outcome=\"accepted\",task_class=~\"$task_class\"}[7d]))",
+          "legendFormat": "per task"
+        }
+      ],
+      "fieldConfig": {
+        "defaults": {
+          "noValue": "No data"
+        },
+        "overrides": []
+      }
+    },
+    {
+      "id": 17,
+      "type": "row",
+      "title": "Provider windows",
+      "collapsed": false,
+      "datasource": {
+        "type": "prometheus",
+        "uid": "tokobs-prom"
+      },
+      "gridPos": {
+        "h": 1,
+        "w": 24,
+        "x": 0,
+        "y": 31
+      },
+      "panels": []
+    },
+    {
+      "id": 18,
+      "type": "stat",
+      "title": "Window state five_hour",
+      "description": "Reported by the provider; not derived from token counts. 1 current, 2 stale, 3 expired, 4 unavailable; an older valid value is never shown as current.",
+      "targets": [
+        {
+          "refId": "A",
+          "expr": "sum by (slot) (zeus_llm_provider_window_state{provider=\"anthropic\",window=\"five_hour\",state=\"current\"}) * 1 + sum by (slot) (zeus_llm_provider_window_state{provider=\"anthropic\",window=\"five_hour\",state=\"stale\"}) * 2 + sum by (slot) (zeus_llm_provider_window_state{provider=\"anthropic\",window=\"five_hour\",state=\"expired\"}) * 3 + sum by (slot) (zeus_llm_provider_window_state{provider=\"anthropic\",window=\"five_hour\",state=\"unavailable\"}) * 4",
+          "legendFormat": "{{slot}}",
+          "datasource": {
+            "type": "prometheus",
+            "uid": "tokobs-prom"
+          }
+        }
+      ],
+      "fieldConfig": {
+        "defaults": {
+          "mappings": [
+            {
+              "type": "value",
+              "options": {
+                "1": {
+                  "text": "Current",
+                  "color": "green",
+                  "index": 0
+                },
+                "2": {
+                  "text": "Stale: last observed {{time}}",
+                  "color": "orange",
+                  "index": 1
+                },
+                "3": {
+                  "text": "Expired",
+                  "color": "#9fa7b3",
+                  "index": 2
+                },
+                "4": {
+                  "text": "Unavailable: newest observation has no valid reading for this window",
+                  "color": "#5c6370",
+                  "index": 3
+                }
+              }
+            }
+          ],
+          "noValue": "No data"
+        },
+        "overrides": []
+      },
+      "gridPos": {
+        "h": 8,
+        "w": 12,
+        "x": 0,
+        "y": 32
+      },
+      "datasource": {
+        "type": "prometheus",
+        "uid": "tokobs-prom"
+      }
+    },
+    {
+      "id": 19,
+      "type": "gauge",
+      "title": "Window utilization five_hour",
+      "description": "Reported by the provider; not derived from token counts. Shown for current and stale windows only.",
+      "targets": [
+        {
+          "refId": "A",
+          "expr": "zeus_llm_provider_utilization_ratio{provider=\"anthropic\",window=\"five_hour\",freshness=~\"current|stale\"}",
+          "legendFormat": "{{slot}} {{freshness}}",
+          "datasource": {
+            "type": "prometheus",
+            "uid": "tokobs-prom"
+          }
+        },
+        {
+          "refId": "B",
+          "expr": "zeus_llm_provider_window_observed_timestamp_seconds{provider=\"anthropic\",window=\"five_hour\"} * 1000",
+          "legendFormat": "{{slot}} observed",
+          "datasource": {
+            "type": "prometheus",
+            "uid": "tokobs-prom"
+          }
+        }
+      ],
+      "fieldConfig": {
+        "defaults": {
+          "unit": "percentunit",
+          "noValue": "No data"
+        },
+        "overrides": []
+      },
+      "gridPos": {
+        "h": 8,
+        "w": 12,
+        "x": 12,
+        "y": 32
+      },
+      "datasource": {
+        "type": "prometheus",
+        "uid": "tokobs-prom"
+      }
+    },
+    {
+      "id": 20,
+      "type": "stat",
+      "title": "Window state seven_day",
+      "description": "Reported by the provider; not derived from token counts. 1 current, 2 stale, 3 expired, 4 unavailable; an older valid value is never shown as current.",
+      "targets": [
+        {
+          "refId": "A",
+          "expr": "sum by (slot) (zeus_llm_provider_window_state{provider=\"anthropic\",window=\"seven_day\",state=\"current\"}) * 1 + sum by (slot) (zeus_llm_provider_window_state{provider=\"anthropic\",window=\"seven_day\",state=\"stale\"}) * 2 + sum by (slot) (zeus_llm_provider_window_state{provider=\"anthropic\",window=\"seven_day\",state=\"expired\"}) * 3 + sum by (slot) (zeus_llm_provider_window_state{provider=\"anthropic\",window=\"seven_day\",state=\"unavailable\"}) * 4",
+          "legendFormat": "{{slot}}",
+          "datasource": {
+            "type": "prometheus",
+            "uid": "tokobs-prom"
+          }
+        }
+      ],
+      "fieldConfig": {
+        "defaults": {
+          "mappings": [
+            {
+              "type": "value",
+              "options": {
+                "1": {
+                  "text": "Current",
+                  "color": "green",
+                  "index": 0
+                },
+                "2": {
+                  "text": "Stale: last observed {{time}}",
+                  "color": "orange",
+                  "index": 1
+                },
+                "3": {
+                  "text": "Expired",
+                  "color": "#9fa7b3",
+                  "index": 2
+                },
+                "4": {
+                  "text": "Unavailable: newest observation has no valid reading for this window",
+                  "color": "#5c6370",
+                  "index": 3
+                }
+              }
+            }
+          ],
+          "noValue": "No data"
+        },
+        "overrides": []
+      },
+      "gridPos": {
+        "h": 8,
+        "w": 12,
+        "x": 0,
+        "y": 40
+      },
+      "datasource": {
+        "type": "prometheus",
+        "uid": "tokobs-prom"
+      }
+    },
+    {
+      "id": 21,
+      "type": "gauge",
+      "title": "Window utilization seven_day",
+      "description": "Reported by the provider; not derived from token counts. Shown for current and stale windows only.",
+      "targets": [
+        {
+          "refId": "A",
+          "expr": "zeus_llm_provider_utilization_ratio{provider=\"anthropic\",window=\"seven_day\",freshness=~\"current|stale\"}",
+          "legendFormat": "{{slot}} {{freshness}}",
+          "datasource": {
+            "type": "prometheus",
+            "uid": "tokobs-prom"
+          }
+        },
+        {
+          "refId": "B",
+          "expr": "zeus_llm_provider_window_observed_timestamp_seconds{provider=\"anthropic\",window=\"seven_day\"} * 1000",
+          "legendFormat": "{{slot}} observed",
+          "datasource": {
+            "type": "prometheus",
+            "uid": "tokobs-prom"
+          }
+        }
+      ],
+      "fieldConfig": {
+        "defaults": {
+          "unit": "percentunit",
+          "noValue": "No data"
+        },
+        "overrides": []
+      },
+      "gridPos": {
+        "h": 8,
+        "w": 12,
+        "x": 12,
+        "y": 40
+      },
+      "datasource": {
+        "type": "prometheus",
+        "uid": "tokobs-prom"
+      }
+    },
+    {
+      "id": 22,
+      "type": "row",
+      "title": "Estimated cost",
+      "collapsed": false,
+      "datasource": {
+        "type": "prometheus",
+        "uid": "tokobs-prom"
+      },
+      "gridPos": {
+        "h": 1,
+        "w": 24,
+        "x": 0,
+        "y": 48
+      },
+      "panels": []
+    },
+    {
+      "id": 23,
+      "type": "timeseries",
+      "title": "Estimated cost by model (client estimate)",
+      "datasource": {
+        "type": "prometheus",
+        "uid": "tokobs-prom"
+      },
+      "gridPos": {
+        "h": 8,
+        "w": 24,
+        "x": 0,
+        "y": 49
+      },
+      "description": "Client estimate, not a charge: computed from reported token usage and a price table.",
+      "targets": [
+        {
+          "refId": "A",
+          "datasource": {
+            "type": "prometheus",
+            "uid": "tokobs-prom"
+          },
+          "expr": "sum by (model) (increase(zeus_llm_estimated_cost_usd_total{provider=~\"$provider\",model=~\"$model\",task_class=~\"$task_class\"}[$__range]))",
+          "legendFormat": "{{model}}"
+        }
+      ],
+      "fieldConfig": {
+        "defaults": {
+          "noValue": "No data",
+          "unit": "currencyUSD"
+        },
+        "overrides": []
+      }
+    },
+    {
+      "id": 24,
+      "type": "row",
+      "title": "Task efficiency",
+      "collapsed": false,
+      "datasource": {
+        "type": "prometheus",
+        "uid": "tokobs-prom"
+      },
+      "gridPos": {
+        "h": 1,
+        "w": 24,
+        "x": 0,
+        "y": 57
+      },
+      "panels": []
+    },
+    {
+      "id": 25,
+      "type": "timeseries",
+      "title": "Tokens per accepted task (7d)",
+      "datasource": {
+        "type": "prometheus",
+        "uid": "tokobs-prom"
+      },
+      "gridPos": {
+        "h": 8,
+        "w": 8,
+        "x": 0,
+        "y": 58
+      },
+      "description": "Recording rule zeus:task_tokens_per_accepted:7d, per token type.",
+      "targets": [
+        {
+          "refId": "A",
+          "datasource": {
+            "type": "prometheus",
+            "uid": "tokobs-prom"
+          },
+          "expr": "zeus:task_tokens_per_accepted:7d{task_class=~\"$task_class\"}",
+          "legendFormat": "{{task_class}} {{token_type}}"
+        }
+      ],
+      "fieldConfig": {
+        "defaults": {
+          "noValue": "No data"
+        },
+        "overrides": []
+      }
+    },
+    {
+      "id": 26,
+      "type": "timeseries",
+      "title": "Fresh-work tokens per accepted task (input + output + cache_write)",
+      "datasource": {
+        "type": "prometheus",
+        "uid": "tokobs-prom"
+      },
+      "gridPos": {
+        "h": 8,
+        "w": 8,
+        "x": 8,
+        "y": 58
+      },
+      "targets": [
+        {
+          "refId": "A",
+          "datasource": {
+            "type": "prometheus",
+            "uid": "tokobs-prom"
+          },
+          "expr": "sum by (task_class) (zeus:task_tokens_per_accepted:7d{task_class=~\"$task_class\",token_type=~\"input|output|cache_write\"})",
+          "legendFormat": "{{task_class}} fresh work"
+        }
+      ],
+      "fieldConfig": {
+        "defaults": {
+          "noValue": "No data"
+        },
+        "overrides": []
+      }
+    },
+    {
+      "id": 27,
+      "type": "timeseries",
+      "title": "cache_read tokens per accepted task (beside fresh work)",
+      "datasource": {
+        "type": "prometheus",
+        "uid": "tokobs-prom"
+      },
+      "gridPos": {
+        "h": 8,
+        "w": 8,
+        "x": 16,
+        "y": 58
+      },
+      "targets": [
+        {
+          "refId": "A",
+          "datasource": {
+            "type": "prometheus",
+            "uid": "tokobs-prom"
+          },
+          "expr": "sum by (task_class) (zeus:task_tokens_per_accepted:7d{task_class=~\"$task_class\",token_type=\"cache_read\"})",
+          "legendFormat": "{{task_class}} cache_read"
+        }
+      ],
+      "fieldConfig": {
+        "defaults": {
+          "noValue": "No data"
+        },
+        "overrides": []
+      }
+    },
+    {
+      "id": 28,
+      "type": "stat",
+      "title": "First-pass rate (7d)",
+      "datasource": {
+        "type": "prometheus",
+        "uid": "tokobs-prom"
+      },
+      "gridPos": {
+        "h": 8,
+        "w": 6,
+        "x": 0,
+        "y": 66
+      },
+      "description": "Accepted with one implementation attempt and review accepted in round 1.",
+      "targets": [
+        {
+          "refId": "A",
+          "datasource": {
+            "type": "prometheus",
+            "uid": "tokobs-prom"
+          },
+          "expr": "sum(increase(zeus_task_outcomes_total{outcome=\"accepted\",first_pass=\"true\",task_class=~\"$task_class\"}[7d])) / sum(increase(zeus_task_outcomes_total{outcome=\"accepted\",task_class=~\"$task_class\"}[7d]))",
+          "legendFormat": "first pass"
+        }
+      ],
+      "fieldConfig": {
+        "defaults": {
+          "noValue": "No data",
+          "unit": "percentunit"
+        },
+        "overrides": []
+      }
+    },
+    {
+      "id": 29,
+      "type": "timeseries",
+      "title": "Rework: extra attempts and review rounds (7d)",
+      "datasource": {
+        "type": "prometheus",
+        "uid": "tokobs-prom"
+      },
+      "gridPos": {
+        "h": 8,
+        "w": 6,
+        "x": 6,
+        "y": 66
+      },
+      "description": "Attempts beyond the first per closed task, and review rounds (no source exists yet, C-W1-5, so it may show No data).",
+      "targets": [
+        {
+          "refId": "A",
+          "datasource": {
+            "type": "prometheus",
+            "uid": "tokobs-prom"
+          },
+          "expr": "sum(increase(zeus_task_attempts_total{task_class=~\"$task_class\"}[7d])) - sum(increase(zeus_task_outcomes_total{task_class=~\"$task_class\"}[7d]))",
+          "legendFormat": "extra attempts"
+        },
+        {
+          "refId": "B",
+          "datasource": {
+            "type": "prometheus",
+            "uid": "tokobs-prom"
+          },
+          "expr": "sum(increase(zeus_task_review_rounds_total{task_class=~\"$task_class\"}[7d]))",
+          "legendFormat": "review rounds"
+        }
+      ],
+      "fieldConfig": {
+        "defaults": {
+          "noValue": "No data"
+        },
+        "overrides": []
+      }
+    },
+    {
+      "id": 30,
+      "type": "timeseries",
+      "title": "Elapsed p50 / p90 (7d)",
+      "datasource": {
+        "type": "prometheus",
+        "uid": "tokobs-prom"
+      },
+      "gridPos": {
+        "h": 8,
+        "w": 6,
+        "x": 12,
+        "y": 66
+      },
+      "description": "First dispatch to close.",
+      "targets": [
+        {
+          "refId": "A",
+          "datasource": {
+            "type": "prometheus",
+            "uid": "tokobs-prom"
+          },
+          "expr": "histogram_quantile(0.5, sum by (le) (increase(zeus_task_elapsed_seconds_bucket{task_class=~\"$task_class\"}[7d])))",
+          "legendFormat": "p50"
+        },
+        {
+          "refId": "B",
+          "datasource": {
+            "type": "prometheus",
+            "uid": "tokobs-prom"
+          },
+          "expr": "histogram_quantile(0.9, sum by (le) (increase(zeus_task_elapsed_seconds_bucket{task_class=~\"$task_class\"}[7d])))",
+          "legendFormat": "p90"
+        }
+      ],
+      "fieldConfig": {
+        "defaults": {
+          "noValue": "No data",
+          "unit": "s"
+        },
+        "overrides": []
+      }
+    },
+    {
+      "id": 31,
+      "type": "timeseries",
+      "title": "Unknown invocations inside closed tasks (7d)",
+      "datasource": {
+        "type": "prometheus",
+        "uid": "tokobs-prom"
+      },
+      "gridPos": {
+        "h": 8,
+        "w": 6,
+        "x": 18,
+        "y": 66
+      },
+      "description": "Shown beside the token measures: tokens of these invocations are unknown, not zero.",
+      "targets": [
+        {
+          "refId": "A",
+          "datasource": {
+            "type": "prometheus",
+            "uid": "tokobs-prom"
+          },
+          "expr": "sum by (task_class) (increase(zeus_task_unknown_invocations_total{task_class=~\"$task_class\"}[7d]))",
+          "legendFormat": "{{task_class}}"
+        }
+      ],
+      "fieldConfig": {
+        "defaults": {
+          "noValue": "No data"
+        },
+        "overrides": []
+      }
+    }
+  ]
+}

@@ -1,0 +1,549 @@
+{
+  "uid": "zeus-tokobs-health",
+  "title": "zeus-tokobs-health",
+  "description": "tokobs collector health (DESIGN 6).",
+  "schemaVersion": 39,
+  "editable": false,
+  "tags": [
+    "zeus",
+    "tokobs"
+  ],
+  "timezone": "utc",
+  "refresh": "1m",
+  "time": {
+    "from": "now-24h",
+    "to": "now"
+  },
+  "graphTooltip": 1,
+  "templating": {
+    "list": []
+  },
+  "annotations": {
+    "list": []
+  },
+  "links": [],
+  "panels": [
+    {
+      "id": 1,
+      "type": "row",
+      "title": "Scan and render health",
+      "collapsed": false,
+      "datasource": {
+        "type": "prometheus",
+        "uid": "tokobs-prom"
+      },
+      "gridPos": {
+        "h": 1,
+        "w": 24,
+        "x": 0,
+        "y": 0
+      },
+      "panels": []
+    },
+    {
+      "id": 2,
+      "type": "stat",
+      "title": "Last scan success age",
+      "datasource": {
+        "type": "prometheus",
+        "uid": "tokobs-prom"
+      },
+      "gridPos": {
+        "h": 4,
+        "w": 6,
+        "x": 0,
+        "y": 1
+      },
+      "targets": [
+        {
+          "refId": "A",
+          "datasource": {
+            "type": "prometheus",
+            "uid": "tokobs-prom"
+          },
+          "expr": "time() - zeus_tokobs_last_scan_success_timestamp_seconds",
+          "legendFormat": "scan"
+        }
+      ],
+      "fieldConfig": {
+        "defaults": {
+          "noValue": "No data",
+          "unit": "s"
+        },
+        "overrides": []
+      }
+    },
+    {
+      "id": 3,
+      "type": "stat",
+      "title": "Last render success age",
+      "datasource": {
+        "type": "prometheus",
+        "uid": "tokobs-prom"
+      },
+      "gridPos": {
+        "h": 4,
+        "w": 6,
+        "x": 6,
+        "y": 1
+      },
+      "targets": [
+        {
+          "refId": "A",
+          "datasource": {
+            "type": "prometheus",
+            "uid": "tokobs-prom"
+          },
+          "expr": "time() - zeus_tokobs_last_render_success_timestamp_seconds",
+          "legendFormat": "render"
+        }
+      ],
+      "fieldConfig": {
+        "defaults": {
+          "noValue": "No data",
+          "unit": "s"
+        },
+        "overrides": []
+      }
+    },
+    {
+      "id": 4,
+      "type": "stat",
+      "title": "Render refused",
+      "datasource": {
+        "type": "prometheus",
+        "uid": "tokobs-prom"
+      },
+      "gridPos": {
+        "h": 4,
+        "w": 4,
+        "x": 12,
+        "y": 1
+      },
+      "targets": [
+        {
+          "refId": "A",
+          "datasource": {
+            "type": "prometheus",
+            "uid": "tokobs-prom"
+          },
+          "expr": "zeus_tokobs_render_refused",
+          "legendFormat": "refused"
+        }
+      ],
+      "fieldConfig": {
+        "defaults": {
+          "noValue": "No data",
+          "mappings": [
+            {
+              "type": "value",
+              "options": {
+                "0": {
+                  "text": "OK",
+                  "color": "green",
+                  "index": 0
+                },
+                "1": {
+                  "text": "Refused",
+                  "color": "red",
+                  "index": 1
+                }
+              }
+            }
+          ]
+        },
+        "overrides": []
+      }
+    },
+    {
+      "id": 5,
+      "type": "stat",
+      "title": "Series count",
+      "datasource": {
+        "type": "prometheus",
+        "uid": "tokobs-prom"
+      },
+      "gridPos": {
+        "h": 4,
+        "w": 4,
+        "x": 16,
+        "y": 1
+      },
+      "targets": [
+        {
+          "refId": "A",
+          "datasource": {
+            "type": "prometheus",
+            "uid": "tokobs-prom"
+          },
+          "expr": "zeus_tokobs_series_count",
+          "legendFormat": "series"
+        }
+      ],
+      "fieldConfig": {
+        "defaults": {
+          "noValue": "No data"
+        },
+        "overrides": []
+      }
+    },
+    {
+      "id": 6,
+      "type": "stat",
+      "title": "Scan duration",
+      "datasource": {
+        "type": "prometheus",
+        "uid": "tokobs-prom"
+      },
+      "gridPos": {
+        "h": 4,
+        "w": 4,
+        "x": 20,
+        "y": 1
+      },
+      "targets": [
+        {
+          "refId": "A",
+          "datasource": {
+            "type": "prometheus",
+            "uid": "tokobs-prom"
+          },
+          "expr": "zeus_tokobs_scan_duration_seconds",
+          "legendFormat": "scan"
+        }
+      ],
+      "fieldConfig": {
+        "defaults": {
+          "noValue": "No data",
+          "unit": "s"
+        },
+        "overrides": []
+      }
+    },
+    {
+      "id": 7,
+      "type": "row",
+      "title": "Sources",
+      "collapsed": false,
+      "datasource": {
+        "type": "prometheus",
+        "uid": "tokobs-prom"
+      },
+      "gridPos": {
+        "h": 1,
+        "w": 24,
+        "x": 0,
+        "y": 5
+      },
+      "panels": []
+    },
+    {
+      "id": 8,
+      "type": "timeseries",
+      "title": "Source files by source and state",
+      "datasource": {
+        "type": "prometheus",
+        "uid": "tokobs-prom"
+      },
+      "gridPos": {
+        "h": 8,
+        "w": 8,
+        "x": 0,
+        "y": 6
+      },
+      "targets": [
+        {
+          "refId": "A",
+          "datasource": {
+            "type": "prometheus",
+            "uid": "tokobs-prom"
+          },
+          "expr": "zeus_tokobs_source_files",
+          "legendFormat": "{{source}} {{state}}"
+        }
+      ],
+      "fieldConfig": {
+        "defaults": {
+          "noValue": "No data"
+        },
+        "overrides": []
+      }
+    },
+    {
+      "id": 9,
+      "type": "stat",
+      "title": "Source up",
+      "datasource": {
+        "type": "prometheus",
+        "uid": "tokobs-prom"
+      },
+      "gridPos": {
+        "h": 8,
+        "w": 8,
+        "x": 8,
+        "y": 6
+      },
+      "targets": [
+        {
+          "refId": "A",
+          "datasource": {
+            "type": "prometheus",
+            "uid": "tokobs-prom"
+          },
+          "expr": "zeus_tokobs_source_up",
+          "legendFormat": "{{source}}"
+        }
+      ],
+      "fieldConfig": {
+        "defaults": {
+          "noValue": "No data",
+          "mappings": [
+            {
+              "type": "value",
+              "options": {
+                "0": {
+                  "text": "Down",
+                  "color": "red",
+                  "index": 0
+                },
+                "1": {
+                  "text": "Up",
+                  "color": "green",
+                  "index": 1
+                }
+              }
+            }
+          ]
+        },
+        "overrides": []
+      }
+    },
+    {
+      "id": 10,
+      "type": "timeseries",
+      "title": "Ingest lag",
+      "datasource": {
+        "type": "prometheus",
+        "uid": "tokobs-prom"
+      },
+      "gridPos": {
+        "h": 8,
+        "w": 8,
+        "x": 16,
+        "y": 6
+      },
+      "targets": [
+        {
+          "refId": "A",
+          "datasource": {
+            "type": "prometheus",
+            "uid": "tokobs-prom"
+          },
+          "expr": "zeus_tokobs_ingest_lag_seconds",
+          "legendFormat": "lag"
+        }
+      ],
+      "fieldConfig": {
+        "defaults": {
+          "noValue": "No data",
+          "unit": "s"
+        },
+        "overrides": []
+      }
+    },
+    {
+      "id": 11,
+      "type": "timeseries",
+      "title": "Malformed lines",
+      "datasource": {
+        "type": "prometheus",
+        "uid": "tokobs-prom"
+      },
+      "gridPos": {
+        "h": 8,
+        "w": 6,
+        "x": 0,
+        "y": 14
+      },
+      "targets": [
+        {
+          "refId": "A",
+          "datasource": {
+            "type": "prometheus",
+            "uid": "tokobs-prom"
+          },
+          "expr": "zeus_tokobs_malformed_lines_total",
+          "legendFormat": "{{source}}"
+        }
+      ],
+      "fieldConfig": {
+        "defaults": {
+          "noValue": "No data"
+        },
+        "overrides": []
+      }
+    },
+    {
+      "id": 12,
+      "type": "timeseries",
+      "title": "Unbound streams",
+      "datasource": {
+        "type": "prometheus",
+        "uid": "tokobs-prom"
+      },
+      "gridPos": {
+        "h": 8,
+        "w": 6,
+        "x": 6,
+        "y": 14
+      },
+      "targets": [
+        {
+          "refId": "A",
+          "datasource": {
+            "type": "prometheus",
+            "uid": "tokobs-prom"
+          },
+          "expr": "zeus_tokobs_unbound_streams",
+          "legendFormat": "{{source}}"
+        }
+      ],
+      "fieldConfig": {
+        "defaults": {
+          "noValue": "No data"
+        },
+        "overrides": []
+      }
+    },
+    {
+      "id": 13,
+      "type": "stat",
+      "title": "Backfill invocations",
+      "datasource": {
+        "type": "prometheus",
+        "uid": "tokobs-prom"
+      },
+      "gridPos": {
+        "h": 8,
+        "w": 6,
+        "x": 12,
+        "y": 14
+      },
+      "targets": [
+        {
+          "refId": "A",
+          "datasource": {
+            "type": "prometheus",
+            "uid": "tokobs-prom"
+          },
+          "expr": "zeus_tokobs_backfill_invocations",
+          "legendFormat": "backfill"
+        }
+      ],
+      "fieldConfig": {
+        "defaults": {
+          "noValue": "No data"
+        },
+        "overrides": []
+      }
+    },
+    {
+      "id": 14,
+      "type": "stat",
+      "title": "Deferred source rows",
+      "datasource": {
+        "type": "prometheus",
+        "uid": "tokobs-prom"
+      },
+      "gridPos": {
+        "h": 8,
+        "w": 6,
+        "x": 18,
+        "y": 14
+      },
+      "targets": [
+        {
+          "refId": "A",
+          "datasource": {
+            "type": "prometheus",
+            "uid": "tokobs-prom"
+          },
+          "expr": "zeus_tokobs_deferred_source_rows",
+          "legendFormat": "deferred"
+        }
+      ],
+      "fieldConfig": {
+        "defaults": {
+          "noValue": "No data"
+        },
+        "overrides": []
+      }
+    },
+    {
+      "id": 15,
+      "type": "row",
+      "title": "S9",
+      "collapsed": false,
+      "datasource": {
+        "type": "prometheus",
+        "uid": "tokobs-prom"
+      },
+      "gridPos": {
+        "h": 1,
+        "w": 24,
+        "x": 0,
+        "y": 22
+      },
+      "panels": []
+    },
+    {
+      "id": 16,
+      "type": "stat",
+      "title": "S9 source ok",
+      "datasource": {
+        "type": "prometheus",
+        "uid": "tokobs-prom"
+      },
+      "gridPos": {
+        "h": 4,
+        "w": 24,
+        "x": 0,
+        "y": 23
+      },
+      "targets": [
+        {
+          "refId": "A",
+          "datasource": {
+            "type": "prometheus",
+            "uid": "tokobs-prom"
+          },
+          "expr": "zeus_s9_source_ok",
+          "legendFormat": "{{s9_source}}"
+        }
+      ],
+      "fieldConfig": {
+        "defaults": {
+          "noValue": "No data",
+          "mappings": [
+            {
+              "type": "value",
+              "options": {
+                "0": {
+                  "text": "Not ok",
+                  "color": "red",
+                  "index": 0
+                },
+                "1": {
+                  "text": "OK",
+                  "color": "green",
+                  "index": 1
+                }
+              }
+            }
+          ]
+        },
+        "overrides": []
+      }
+    }
+  ]
+}
