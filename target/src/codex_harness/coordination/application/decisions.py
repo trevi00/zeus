@@ -66,7 +66,11 @@ class DecisionFailures:
 
 
 class PendingDecisions:
-    """The queue write for a decision row another context builds (S8 pilot 70, R-r4). Stateless."""
+    """The queue write for a decision row another context builds (S8 pilot 70, R-r4'). Stateless."""
+
+    def exists(self, tx, key: str) -> bool:
+        # M7's presence test (`if tx.get('decisions_pending', key)`), asked of the owner before the caller builds its row.
+        return bool(tx.get(BUCKET, key))
 
     def queue(self, tx, row: dict) -> bool:
         # Moved from M7 `ResearchAudits._queue_review`: put iff the row is absent, in the caller's unit; True when put.

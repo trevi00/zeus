@@ -12,3 +12,11 @@ def test_queue_puts_once_and_leaves_an_existing_row_untouched():
     with store.transaction() as tx:
         assert queue.queue(tx, second) is False
         assert tx.get("decisions_pending", "k") == first
+
+
+def test_exists_is_the_presence_test_before_and_after_a_queue():
+    store, queue = MemoryStore(), PendingDecisions()
+    with store.transaction() as tx:
+        assert queue.exists(tx, "k") is False
+        queue.queue(tx, {"id": "k", "status": "pending"})
+        assert queue.exists(tx, "k") is True
