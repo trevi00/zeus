@@ -505,14 +505,14 @@ def run(record: bool, use_bwrap: bool, only: list[str], pg: bool = False,
             t_origin_ok = (t_origin.get("tree") == str(TARGET_SRC) and t_origin.get("modules_checked", 0) > 0
                            and target_result.get("side") == "target")
             declared = scenario.get("intended_differences") or []
-            expected, problems = apply_intended_differences(golden, declared) if golden is not None else (None, [])
-            equal = golden is not None and not problems and expected == target_result["result"]
+            target_expected, problems = apply_intended_differences(golden, declared) if golden is not None else (None, [])
+            equal = golden is not None and not problems and target_expected == target_result["result"]
             if declared:
                 row["intended_differences"] = len(declared)
             if problems:
                 row["intended_difference_problems"] = problems
-            if not equal and expected is not None:
-                row["target_differing_paths"] = differing_paths(expected, target_result["result"])[:20]
+            if not equal and target_expected is not None:
+                row["target_differing_paths"] = differing_paths(target_expected, target_result["result"])[:20]
             row.update(target="equal" if equal else "DIFFERENT", target_origin_ok=t_origin_ok,
                        target_origin={k: t_origin.get(k) for k in ("modules_checked", "python")})
             ok = ok and equal and t_origin_ok
