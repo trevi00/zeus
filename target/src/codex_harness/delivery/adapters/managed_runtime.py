@@ -160,8 +160,9 @@ def owner_target(target: dict) -> dict:
 class Materializer:
     """Seal one reviewed revision of the owner's source into its immutable runtime directory."""
 
-    def __init__(self, target: dict, *, processes=None, timeout: int = GIT_TIMEOUT):
+    def __init__(self, target: dict, *, processes=None, timeout: int = GIT_TIMEOUT, new_hex=None):
         self.target, self.processes, self.timeout = target, processes, timeout
+        self.new_hex = new_hex
 
     def _git(self, *args, stdin: bytes | None = None) -> subprocess.CompletedProcess:
         """Read-only Git in the owner's source repository: argv only, never a shell."""
@@ -257,7 +258,7 @@ class Materializer:
         manifest, listing = new_manifest(revision, tree, [(path, blob) for path, _, blob in rows],
                                          lock_sha256)
         final.parent.mkdir(parents=True, exist_ok=True)
-        stage = final.parent / (STAGE_PREFIX + revision + "-" + uuid.uuid4().hex[:8])
+        stage = final.parent / (STAGE_PREFIX + revision + "-" + (self.new_hex or (lambda: uuid.uuid4().hex))()[:8])
         stage.mkdir()
         for path, mode, _ in rows:
             destination = stage / path
