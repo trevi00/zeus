@@ -304,3 +304,19 @@ def test_bounded_reads_defer_finalization_until_the_stream_is_consumed(tmp_path)
     assert states[0] == 0 and states[-1] == 1
     assert tokens(prom, token_type="output") == 60
     assert rig.invocation(TASK, 1)["unknown_reason"] is None
+
+
+def test_symlinks_inside_the_tree_are_never_followed(tmp_path):
+    rig = Rig(tmp_path)
+    decoy = tmp_path / "decoy.jsonl"
+    decoy.write_text("SECRET-SHAPED-decoy-line-not-json\n" + json.dumps(result("d1", 99, 99)) + "\n")
+    rig.record(TASK, start_row(TASK, 1, T0), terminal_row("finished", 1, T0 + 10))
+    (rig.task_dir(TASK) / "events-1.jsonl").symlink_to(decoy)  # a canonical name that is a link
+    (rig.task_dir(TASK) / "events-5.jsonl").symlink_to(decoy)  # an alias name that is a link
+    (rig.runs / "linked-task").symlink_to(rig.task_dir(TASK), target_is_directory=True)
+    prom = rig.scan(advance=30)
+    assert tokens(prom) == 0
+    assert rig.sql("SELECT COUNT(*) FROM malformed_lines")[0][0] == 0
+    assert rig.sql("SELECT COUNT(*) FROM stream_aliases")[0][0] == 0
+    assert rig.invocation(TASK, 1)["unknown_reason"] == "no_result"
+    assert rig.sql("SELECT COUNT(*) FROM tasks WHERE task_id='linked-task'")[0][0] == 0

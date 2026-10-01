@@ -21,6 +21,7 @@ import json
 import os
 import re
 import sqlite3
+import stat
 import time
 from dataclasses import dataclass, field
 from pathlib import Path
@@ -51,6 +52,19 @@ TASK_ID = re.compile(r"^[A-Za-z0-9][A-Za-z0-9._-]{0,255}$")
 EVENTS_NAME = re.compile(r"^events-[A-Za-z0-9._-]+\.jsonl$")
 _AT = re.compile(r"^\d{4}-\d\d-\d\dT\d\d:\d\d:\d\dZ$")
 _SAFE = re.compile(r"^[A-Za-z0-9._:\[\]-]{1,64}$")
+
+
+def open_regular(path: Path):
+    """Open `path` read-only as a binary file object. A symlink or a non-regular file is refused (OSError), so a
+    planted link inside the allowlisted tree can never make the collector read something else (DESIGN §7, A57)."""
+    fd = os.open(path, os.O_RDONLY | os.O_NOFOLLOW | os.O_CLOEXEC | os.O_NONBLOCK)
+    try:
+        if not stat.S_ISREG(os.fstat(fd).st_mode):
+            raise OSError("not a regular file")
+        return os.fdopen(fd, "rb")
+    except BaseException:
+        os.close(fd)
+        raise
 
 
 def parse_at(value: object) -> int | None:
@@ -94,7 +108,8 @@ class TaskView:
 def read_record(path: Path) -> list[dict]:
     """Complete lines of record.jsonl that are JSON objects with a string `event`."""
     try:
-        data = path.read_bytes()
+        with open_regular(path) as handle:
+            data = handle.read()
     except OSError:
         return []
     rows = []
@@ -159,7 +174,7 @@ def _identity_changed(rs: sqlite3.Row | tuple, st: os.stat_result, head: str | N
 
 
 def _first_line_hash(path: Path) -> str | None:
-    with path.open("rb") as handle:
+    with open_regular(path) as handle:
         line = handle.readline()
     return hashlib.sha256(line).hexdigest() if line.endswith(b"\n") else None
 
@@ -181,7 +196,7 @@ def read_stream(scan: Scan, path: Path, *, source_alias: tuple[str, str | None, 
     hash) starts a new alias row and re-reads from 0; accounting keys absorb the replay (DESIGN §3.1)."""
     conn = scan.conn
     try:
-        handle = path.open("rb")
+        handle = open_regular(path)
     except OSError:
         return None
     with handle:
@@ -453,9 +468,11 @@ def _ingest_events(scan: Scan, inv: dict, path: Path, task_class: str) -> Stream
 def _receipt_facts(path: Path, configured: bool) -> tuple[int | None, str | None, str]:
     default = "unknown" if configured else "not_configured"
     try:
-        if path.stat().st_size > MAX_RECEIPT_BYTES:
+        with open_regular(path) as handle:
+            raw = handle.read(MAX_RECEIPT_BYTES + 1)
+        if len(raw) > MAX_RECEIPT_BYTES:
             return None, None, default
-        data = json.loads(path.read_bytes())
+        data = json.loads(raw)
     except (OSError, ValueError):
         return None, None, default
     if not isinstance(data, dict):
@@ -563,9 +580,12 @@ def _after_finalization(scan: Scan, inv: dict, attempt: Attempt, path: Path) -> 
         record_correction(conn, kind="late_terminal", invocation_id=inv["id"], detail=attempt.terminal["event"],
                           dedupe_key=f"late_terminal:{inv['id']}", now=scan.now)
     try:
-        size = path.stat().st_size
+        info = path.lstat()
     except OSError:
         return
+    if not stat.S_ISREG(info.st_mode):
+        return
+    size = info.st_size
     rs = conn.execute("SELECT closed_size FROM read_state WHERE path=?", (str(path),)).fetchone()
     closed = (rs[0] if rs and rs[0] is not None else 0)
     if size > closed:
@@ -679,7 +699,7 @@ def scan_routine(scan: Scan) -> None:
     scan.ledger.set_meta("source_up.routine", 1)
     canonical: set[Path] = set()
     candidates: list[Path] = []
-    for task_dir in sorted(p for p in runs.iterdir() if p.is_dir() and TASK_ID.match(p.name)):
+    for task_dir in sorted(p for p in runs.iterdir() if p.is_dir() and not p.is_symlink() and TASK_ID.match(p.name)):
         try:
             candidates += sorted(task_dir.glob("events-*.jsonl"))
         except OSError:
@@ -693,6 +713,6 @@ def scan_routine(scan: Scan) -> None:
             process_attempt(scan, task_dir, task_dir.name, task_class, view.attempts[number])
         _sync_task(scan, task_dir.name, task_class, view)
     for path in candidates:
-        if path not in canonical and EVENTS_NAME.match(path.name) and path.is_file():
+        if path not in canonical and EVENTS_NAME.match(path.name) and path.is_file() and not path.is_symlink():
             _scan_alias(scan, path)
     _bind_aliases(scan)
