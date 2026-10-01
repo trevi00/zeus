@@ -2,8 +2,7 @@
  "family": "research.program_records",
  "description": "S8 research program records of M7 ResearchProgram (register/config/pause/resume, reserve_cycle, record_collection with dedup, relevance, the claim and the adoption reservation, the scope-claim helpers and the investigations, audit_progress and attempt_scope bridges, record_capture/record_council_start/record_council_result with _record_dispatch_result, complete_cycle/fail_cycle/_close, status/candidates/monitor), characterized before the research program move: every refusal with the store digest before and after, the adoptions cap, a cycle that selects nothing never consuming its adoption, the counters that never reset; MemoryStore, LABELLED doubles (s8_research_program and labelled synthetic rows), no repository, no council",
  "reference_driver": "drivers/reference/s8_program_records.py",
- "target_driver": null,
+ "target_driver": "drivers/target/s8_program_records.py",
  "golden": "goldens/reference/research.program_records.json",
- "slice": "S8",
- "target_status": "pending: S8 step 3 (research program move)"
+ "slice": "S8"
 }
