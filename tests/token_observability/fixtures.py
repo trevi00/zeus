@@ -233,6 +233,6 @@ class Rig:
         try:
             tables = [r[0] for r in conn.execute("SELECT name FROM sqlite_master WHERE type='table' "
                                                  "AND name NOT LIKE 'sqlite_%' ORDER BY name")]
-            return {t: conn.execute(f"SELECT * FROM {t} ORDER BY 1,2,3").fetchall() for t in tables}
+            return {t: conn.execute(f"SELECT * FROM {t} ORDER BY rowid").fetchall() for t in tables}
         finally:
             conn.close()

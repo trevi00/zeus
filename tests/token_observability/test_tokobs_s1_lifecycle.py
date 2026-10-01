@@ -2,7 +2,6 @@
 
 from fixtures import (
     OPUS,
-    SESSION,
     SONNET,
     T0,
     Rig,
