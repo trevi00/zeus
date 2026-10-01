@@ -492,3 +492,39 @@ def test_7c_a_replan_that_answers_superseded_retires_the_op_and_frees_its_capaci
     assert row["event_id"] == original and w.relay.queries == [[{"ids": [original]}]]
     assert w.enqueue("task:t2", 1)["status"] == "enqueued"  # a superseded row no longer counts against the bound
     assert w.outbox.deliver(w.generation)["sent"] == 1  # and is never sent again
+
+
+def test_f2_every_positive_acknowledgement_commits_a_strictly_increasing_ordinal_in_its_own_transaction(w):
+    """B6 F2: `ack_seq` is assigned in `_commit`, so the resend, tag-reconciliation and `ids`-reconciliation
+    acknowledgements all carry one; an open row has none; the counter is its own bucket, never a `buzz_outbox` row."""
+    for subject, version, cls, tag in (("task:t1", 1, "state", None), ("task:t2", 1, "state", None)):
+        assert w.enqueue(subject, version, cls, tag=tag)["status"] == "enqueued"
+    w.outbox.deliver(w.generation)  # resend: acknowledged in (created_at, subject, version) order
+    assert [w.row(f"task:t{n}", 1)["ack_seq"] for n in (1, 2)] == [1, 2]
+    w.enqueue("root:t1", 1, "append", tag="op1")
+    w.enqueue("task:t3", 1, "state")
+    w.relay.script = [(None, "unknown", "timeout")] * 2
+    w.outbox.deliver(w.generation)
+    open_rows = [w.row("root:t1", 1), w.row("task:t3", 1)]
+    assert [r["status"] for r in open_rows] == ["unknown", "unknown"] and all("ack_seq" not in r for r in open_rows)
+    assert w.rows("buzz_outbox_acks") == [{"id": "seq", "seq": 2}]
+    w.now += 700
+    w.relay.answers = [[open_rows[0]["event"]], [open_rows[1]["event"]]]  # the `zr-op` tag, then the `ids` match
+    counts = w.outbox.deliver(w.generation)
+    assert counts["reconciled"] == 2
+    assert [w.row(*key)["ack_seq"] for key in (("root:t1", 1), ("task:t3", 1))] == [3, 4]
+    assert w.row("root:t1", 1)["reclaimed"] is True  # the ordinal survives the payload reclaim
+    assert w.rows("buzz_outbox_acks") == [{"id": "seq", "seq": 4}] and all("seq" not in r for r in w.rows())
+    before = w.digest()
+    w.outbox.deliver(w.generation)  # an acknowledged row is never numbered twice
+    assert w.digest() == before
+
+
+def test_f2_a_stale_bridge_advances_no_ordinal(w):
+    w.enqueue("task:t1", 1)
+    with w.store.transaction() as tx:
+        assert w.lease.acquire(tx, "bridge-2", NOW + 10_000, 60) is not None
+    before = w.digest()
+    with pytest.raises(ContractError):
+        w.outbox.deliver(w.generation)
+    assert w.digest() == before and w.rows("buzz_outbox_acks") == []

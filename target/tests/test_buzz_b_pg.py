@@ -406,3 +406,26 @@ def scenario_projection(store, keys):
 
 def test_d_projection_differential(request, tmp_path):
     differential(request, lambda store: scenario_projection(store, tmp_path))
+
+
+# ---- e. B6 F2: the acknowledgement order picks the canonical root -------------------------------------------------
+def scenario_root_order(store, keys):
+    """Root attempts A (v1) and B (v2) acknowledged B then A at one fixed clock value, before any binding: the
+    canonical root is B and A its alias, on both stores (the `ack_seq` ordinal and its counter bucket round-trip)."""
+    shutil.rmtree(keys / "keys", ignore_errors=True)
+    StoreWorld.store_under_test = store
+    try:
+        with mock.patch.object(b4, "World", StoreWorld):
+            p = b4.P(keys)
+            a, b = b4.acknowledge_two_root_attempts(p, "ba")
+            b4.reconstructed(p).plan(p.gen)
+            binding = p.binding("t1")
+            assert binding["canonical_root_event_id"] == b["event_id"] and binding["aliases"] == [a["event_id"]]
+            assert (p.row("root:t1", 2)["ack_seq"], p.row("root:t1", 1)["ack_seq"]) == (1, 2)
+            assert p.rows(bucket="buzz_outbox_acks") == [{"id": "seq", "seq": 2}]
+    finally:
+        StoreWorld.store_under_test = None
+
+
+def test_e_root_order_differential(request, tmp_path):
+    differential(request, lambda store: scenario_root_order(store, tmp_path))

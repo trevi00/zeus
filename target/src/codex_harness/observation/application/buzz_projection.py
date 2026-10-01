@@ -270,10 +270,14 @@ class BuzzProjection:
     # -- the canonical roots (Q3) -------------------------------------------------------------------------
 
     def _sync_roots(self, tx, ctx: _Context) -> None:
-        """Bind each task to the first acknowledged root attempt (once, never rebound); every other attempt is an alias."""
+        """Bind each task to the first acknowledged root attempt (once, never rebound); every other attempt is an alias.
+
+        "First" is the outbox's durable `ack_seq` (B6 F2, P1). A row acknowledged before the ordinal existed has none
+        and sorts after every sequenced row by the old key `(last_attempt_at, version, id)` (the legacy rule)."""
         rows = sorted((row for row in tx.scan(OUTBOX) if row["cls"] == "append" and row["subject"].startswith("root:")
                        and row["status"] == "acknowledged"),
-                      key=lambda row: (row["last_attempt_at"] or 0, row["version"], row["id"]))
+                      key=lambda row: (row.get("ack_seq") is None, row.get("ack_seq") or 0,
+                                       row["last_attempt_at"] or 0, row["version"], row["id"]))
         for row in rows:
             task_id = row["subject"][len("root:"):]
             canonical = row.get("canonical_event_id") or row["event_id"]

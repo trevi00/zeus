@@ -27,6 +27,8 @@ OWNED_BUCKETS = ("observation_audit", "observations", "observation_quarantine", 
                  "buzz_cursors", "buzz_passes",
                  # Buzz A3b (design §6.1): the signed outbound ops, the per-class deferral watermarks, one alert row.
                  "buzz_outbox", "buzz_outbox_watermarks", "buzz_alerts",
+                 # Buzz B6 (design §4.1 P1): the one-row acknowledgement ordinal counter, written only by the outbox.
+                 "buzz_outbox_acks",
                  # Buzz B4 (design §4.1, §6.1.5): the canonical task roots (P1) and the per-subject projection heads.
                  "buzz_bindings", "buzz_heads")
 

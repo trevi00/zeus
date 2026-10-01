@@ -2,7 +2,7 @@
 
 Layer: application
 Context: observation
-Owns: the `buzz_outbox`, `buzz_outbox_watermarks` and `buzz_alerts` buckets; the delivery pass and the capacity rule
+Owns: the `buzz_outbox`, `buzz_outbox_watermarks`, `buzz_outbox_acks` and `buzz_alerts` buckets; the delivery pass and the capacity rule
 Does not own: what to publish (BuzzProjection plan, replan and regenerate sources: Batch B, injected), the relay
     protocol (the injected RelayClient), the keys (the injected EventSigner), the bridge lease (coordination, reached
     through the injected port)
@@ -28,6 +28,11 @@ While a class has a deferral outstanding, its later enqueues defer too, so recov
 exception is the same-subject replacement of a resident state row by a strictly newer version (§6.1 step 4), which
 never exceeds the bound and neither advances nor clears the watermark.
 `acknowledged` and `superseded` rows keep only identity, status and times: the signed payload is reclaimed.
+
+Acknowledgement order (B6 F2, DESIGN §4.1 P1). Every positive acknowledgement (resend, tag or `ids` reconciliation)
+commits a strictly increasing `ack_seq` in the SAME transaction (`_commit`), from the counter row `seq` of
+`buzz_outbox_acks`: the integer-second `last_attempt_at` cannot order two acknowledgements of one second. A row
+acknowledged before this ordinal existed has no `ack_seq` (the projection orders it after every sequenced row).
 """
 
 from __future__ import annotations
@@ -40,6 +45,7 @@ from codex_harness.kernel.ids import digest
 OUTBOX = "buzz_outbox"
 WATERMARKS = "buzz_outbox_watermarks"
 ALERTS = "buzz_alerts"
+ACKS = "buzz_outbox_acks"  # one row, key `seq`: the last acknowledgement ordinal (B6 F2); never a `buzz_outbox` row
 ALERT_ID = "outbox_capacity"
 CLASSES = ("state", "append")
 NONTERMINAL = ("pending", "in_flight", "unknown")
@@ -282,6 +288,11 @@ class BuzzOutbox:
             if body is None or body["status"] not in ("pending", "unknown", "in_flight"):
                 return  # superseded meanwhile
             apply(body)
+            if body["status"] == "acknowledged" and "ack_seq" not in body:  # B6 F2: the order, in this transaction
+                counter = tx.get(ACKS, "seq") or {"id": "seq", "seq": 0}
+                counter["seq"] += 1
+                tx.put(ACKS, "seq", counter)
+                body["ack_seq"] = counter["seq"]
             tx.put(OUTBOX, op_id, body)
 
     # -- recovery ---------------------------------------------------------------------------------------

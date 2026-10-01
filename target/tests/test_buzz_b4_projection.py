@@ -640,6 +640,115 @@ def test_m4_a_root_found_by_its_tag_after_the_window_binds_that_attempt_and_alia
     assert binding["canonical_root_event_id"] == earlier["id"] and binding["aliases"] == [row["event_id"]]
 
 
+# ---- F2 (review round 1): the acknowledgement order, not the clock second, picks the canonical root ----------------
+def acknowledge_two_root_attempts(p, order):
+    """Root attempts A (v1) and B (v2) of t1, acknowledged in `order` ("ba" or "ab") at ONE fixed clock value and with
+    no plan between the acknowledgements. Returns `(a, b)`, the two outbox rows."""
+    p.models.roles = None  # no org snapshot competes for the scripted relay answers
+    p.models.views["t1"] = view("t1")
+    first_lost = order == "ba"
+    p.relay.script = [(None, "unknown", "timeout")] if first_lost else []
+    p.plan()
+    p.deliver()
+    second = bp.task_root(task_id="t1", title="Fix it", team="core", assignee="worker:implementation", channel="c1",
+                          created_at=p.now + 1)
+    with p.w.store.transaction() as tx:
+        assert p.outbox.enqueue(tx, p.gen, "root:t1", 2, second, "append")["status"] == "enqueued"
+    p.relay.script = [(None, "unknown", "timeout")] if first_lost else []
+    p.deliver()
+    if first_lost:
+        assert (p.row("root:t1", 1)["status"], p.row("root:t1", 2)["status"]) == ("unknown", "acknowledged")
+        p.deliver()  # A is acknowledged second, in the same clock second
+    a, b = p.row("root:t1", 1), p.row("root:t1", 2)
+    assert (a["status"], b["status"]) == ("acknowledged", "acknowledged")
+    assert a["last_attempt_at"] == b["last_attempt_at"] and p.binding("t1") is None
+    return a, b
+
+
+def reconstructed(p):
+    """A new projection over the same store, as after a restart before the binding was written."""
+    p.proj = BuzzProjection(p.w.store, p.outbox, p.models, p.relay, p.proj.signer_pubkeys, p.proj.channels,
+                            lambda: p.now)
+    return p.proj
+
+
+def test_f2_the_first_acknowledged_root_is_canonical_even_within_one_clock_second(p):
+    a, b = acknowledge_two_root_attempts(p, "ba")
+    p.plan()
+    binding = p.binding("t1")
+    assert binding["canonical_root_event_id"] == b["event_id"] and binding["aliases"] == [a["event_id"]]
+    assert p.row("root:t1", 2)["ack_seq"] < p.row("root:t1", 1)["ack_seq"]
+
+
+def test_f2_the_same_after_the_projection_is_reconstructed_from_the_store_before_binding(p):
+    a, b = acknowledge_two_root_attempts(p, "ba")
+    reconstructed(p).plan(p.gen)
+    binding = p.binding("t1")
+    assert binding["canonical_root_event_id"] == b["event_id"] and binding["aliases"] == [a["event_id"]]
+    assert p.binding("t1")["bound_op"] == b["id"]
+
+
+def test_f2_positive_control_the_reverse_order_binds_the_first_acknowledged_attempt(p):
+    a, b = acknowledge_two_root_attempts(p, "ab")
+    reconstructed(p).plan(p.gen)
+    binding = p.binding("t1")
+    assert binding["canonical_root_event_id"] == a["event_id"] and binding["aliases"] == [b["event_id"]]
+    assert p.row("root:t1", 1)["ack_seq"] < p.row("root:t1", 2)["ack_seq"]
+
+
+def test_f2_an_already_bound_root_is_never_rebound_by_a_later_acknowledgement(p):
+    a, b = acknowledge_two_root_attempts(p, "ba")
+    p.plan()
+    bound = p.binding("t1")
+    third = bp.task_root(task_id="t1", title="Fix it", team="core", assignee="worker:implementation", channel="c1",
+                         created_at=p.now + 2)
+    with p.w.store.transaction() as tx:
+        p.outbox.enqueue(tx, p.gen, "root:t1", 3, third, "append")
+    p.deliver()
+    reconstructed(p).plan(p.gen)
+    after = p.binding("t1")
+    assert after["canonical_root_event_id"] == b["event_id"] and after["bound_op"] == bound["bound_op"]
+    assert after["aliases"] == [a["event_id"], p.row("root:t1", 3)["event_id"]]
+    assert p.row("root:t1", 3)["ack_seq"] > p.row("root:t1", 1)["ack_seq"]
+
+
+def test_f2_a_row_acknowledged_before_the_ordinal_existed_sorts_after_every_sequenced_row(p):
+    """The documented legacy rule: no `ack_seq` means the old key `(last_attempt_at, version, id)`, after all others."""
+    a, b = acknowledge_two_root_attempts(p, "ba")
+    with p.w.store.transaction() as tx:
+        legacy = tx.get("buzz_outbox", a["id"])
+        del legacy["ack_seq"]
+        legacy["last_attempt_at"] = 1  # the oldest by the old key, still after the sequenced row
+        tx.put("buzz_outbox", legacy["id"], legacy)
+    p.plan()
+    binding = p.binding("t1")
+    assert binding["canonical_root_event_id"] == b["event_id"] and binding["aliases"] == [a["event_id"]]
+
+
+def test_f2_a_root_found_by_query_reconciliation_is_ordered_by_its_acknowledgement_too(p):
+    p.models.roles = None
+    p.models.views["t1"] = view("t1")
+    p.relay.script = [(None, "unknown", "timeout")]
+    p.plan()
+    p.deliver()
+    row = p.row("root:t1", 1)
+    earlier = p.signer.sign(ROLE, {**row["unsigned"], "created_at": 1})
+    second = bp.task_root(task_id="t1", title="Fix it", team="core", assignee="worker:implementation", channel="c1",
+                          created_at=p.now + 700)
+    p.tick(700)
+    with p.w.store.transaction() as tx:
+        p.outbox.enqueue(tx, p.gen, "root:t1", 2, second, "append")
+    p.relay.answers = [[earlier]]
+    p.deliver()  # row 1 reconciles by its tag first (older by `created_at`, so delivered first); row 2 then publishes
+    one, two = p.row("root:t1", 1), p.row("root:t1", 2)
+    assert one["canonical_event_id"] == earlier["id"]
+    reconstructed(p).plan(p.gen)
+    binding = p.binding("t1")
+    assert binding["canonical_root_event_id"] == earlier["id"]
+    assert binding["aliases"] == [row["event_id"], two["event_id"]]
+    assert one["ack_seq"] < two["ack_seq"]
+
+
 # ---- m5 regeneration from the transition rows only (Q5, P6) --------------------------------------------------------
 def cancel_world(tmp_path):
     p = P(tmp_path)
