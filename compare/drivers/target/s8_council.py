@@ -4,13 +4,12 @@ The API mirrors the reference driver's names over the target homes, wired as `s8
 M7's `Harness` is the S5 `Service`, M7's `Workflow` its `WorkflowAndMessages`, and the council run (like the plain autonomous run the
 scenario also builds) gets its four injected ports (R-c1): research's `DebateSessions` factory, evidence's `EvidenceRecords`,
 knowledge's promotion module and the S5 `Operation` composition (as `s5_operation.py` builds it, plus the observer and research's
-design gate). `EvidenceUnavailable` and `ReadOnlySnapshot`/`SnapshotUnavailable` are the scenario's LABELLED stand-ins for
-`adapters/autonomous_evidence` and `adapters/council_snapshot` (later families): the snapshot stand-in is M7's `ReadOnlySnapshot`
-over the same research domain functions, minus the `psycopg` default connect (the scenario always injects its fake `connect`).
+design gate). `ReadOnlySnapshot`/`SnapshotUnavailable` are the moved `research.adapters.council_snapshot` (S8 pilot 79; the
+scenario always injects its fake `connect`). `EvidenceUnavailable` is the scenario's LABELLED stand-in for `adapters/autonomous_evidence`
+(a later family; it stays until that adapter moves).
 The artifact store, executor, evidence source, clock and buses are the scenario's doubles."""
 
 import sys
-from contextlib import contextmanager
 from datetime import datetime, timezone
 from pathlib import Path
 from types import SimpleNamespace
@@ -30,18 +29,16 @@ from codex_harness.coordination.application.operation import Operation  # noqa: 
 from codex_harness.evidence.application.inspections import EvidenceRecords  # noqa: E402
 from codex_harness.kernel import ids, message  # noqa: E402
 from codex_harness.kernel.errors import ContractError  # noqa: E402
-from codex_harness.kernel.ids import canonical, digest, utcnow  # noqa: E402
+from codex_harness.kernel.ids import canonical  # noqa: E402
 from codex_harness.kernel.message import envelope  # noqa: E402
 from codex_harness.knowledge.application import promotion as knowledge_promotion  # noqa: E402
+from codex_harness.research.adapters.council_snapshot import (  # noqa: E402
+    ReadOnlySnapshot,
+    SnapshotUnavailable,
+)
 from codex_harness.research.application import dge  # noqa: E402
 from codex_harness.research.domain import autonomous as domain  # noqa: E402
-from codex_harness.research.domain.council import (  # noqa: E402
-    profile,
-    snapshot_envelope,
-    snapshot_records,
-    validate_council_manifest,
-    validate_current_state,
-)
+from codex_harness.research.domain.council import profile, validate_council_manifest  # noqa: E402
 from codex_harness.routing.adapters.provider_policy import packaged_policy  # noqa: E402
 from codex_harness.storage.adapters.memory_store import MemoryStore  # noqa: E402
 from codex_harness.storage.ports import MessageDeliveryError  # noqa: E402
@@ -54,73 +51,14 @@ EVIDENCE_RECORDS = EvidenceRecords()
 # name with the scripted clock's monotonic reading (the target's standard library is never patched), as `s8_autonomous` does.
 base_run.time = SimpleNamespace(monotonic=composition.CLOCK.monotonic)
 
-BEGIN = "BEGIN ISOLATION LEVEL REPEATABLE READ READ ONLY"
-IDENTITY = "SELECT current_database(), current_schema(), current_setting('server_version')"
-SELECT = ("SELECT s.bucket, s.id, d.body FROM unnest(%s::text[], %s::text[]) AS s(bucket, id) "
-          "JOIN documents d ON d.bucket = s.bucket AND d.id = s.id")
-
 
 class EvidenceUnavailable(ContractError):
-    """LABELLED stand-in for `adapters.autonomous_evidence.EvidenceUnavailable` (the adapter is a later family)."""
+    """LABELLED stand-in for `adapters.autonomous_evidence.EvidenceUnavailable` (the adapter is a later family): it stays until
+    `autonomous_evidence` moves; the snapshot port is no longer a stand-in (S8 pilot 79: `research.adapters.council_snapshot`)."""
 
     def __init__(self, reason_code: str):
         super().__init__("execution evidence " + reason_code)
         self.reason_code = reason_code
-
-
-class SnapshotUnavailable(ContractError):
-    """LABELLED stand-in for `adapters.council_snapshot.SnapshotUnavailable` (the adapter is a later family)."""
-
-    def __init__(self, reason_code: str):
-        super().__init__("council snapshot " + reason_code)
-        self.reason_code = reason_code
-
-
-class ReadOnlySnapshot:
-    """LABELLED stand-in for `adapters.council_snapshot.ReadOnlySnapshot`: M7's statements and error handling over the injected
-    `connect` (no `psycopg`; the scenario always injects it)."""
-
-    def __init__(self, dsn: str, *, connect=None, clock=utcnow, connect_timeout: int = 5, statement_timeout_ms: int = 5000):
-        if type(connect_timeout) is not int or connect_timeout <= 0 or type(statement_timeout_ms) is not int or statement_timeout_ms <= 0:
-            raise ContractError("Snapshot timeouts must be positive integers")
-        self.dsn, self.connect, self.clock = dsn, connect, clock
-        self.connect_timeout, self.statement_timeout_ms = connect_timeout, statement_timeout_ms
-
-    @contextmanager
-    def _session(self):
-        try:
-            conn = self.connect(self.dsn, connect_timeout=self.connect_timeout, autocommit=True)
-        except Exception:
-            conn = None
-        if conn is None:
-            raise SnapshotUnavailable("snapshot_unavailable")
-        with conn:
-            conn.execute(BEGIN)
-            try:
-                conn.execute("SET LOCAL statement_timeout = '%dms'" % self.statement_timeout_ms)
-                yield conn
-            finally:
-                conn.execute("ROLLBACK")
-
-    def observe(self, selection: list, *, topic: str, run_id: str, base_revision: str, max_age_seconds: int) -> dict:
-        records = validate_current_state({"records": selection, "max_age_seconds": max_age_seconds})["records"]
-        failed = False
-        try:
-            with self._session() as conn:
-                identity = conn.execute(IDENTITY).fetchone()
-                rows = conn.execute(SELECT, ([r["bucket"] for r in records], [r["id"] for r in records])).fetchall()
-                observed_at = self.clock()
-        except Exception:
-            failed = True
-        if failed:
-            raise SnapshotUnavailable("snapshot_unavailable")
-        if not (isinstance(identity, (tuple, list)) and len(identity) == 3 and all(isinstance(v, str) for v in identity)):
-            raise SnapshotUnavailable("snapshot_unavailable")
-        bodies = {(bucket, key): body for bucket, key, body in rows}
-        endpoint = digest({"database": identity[0], "schema": identity[1], "server_version": identity[2]})
-        return snapshot_envelope(topic=topic, run_id=run_id, base_revision=base_revision, selection=records,
-                                 records=snapshot_records(records, bodies), database_identity=endpoint,
-                                 observed_at=observed_at, max_age_seconds=max_age_seconds)
 
 
 def _ports(service):
