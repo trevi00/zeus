@@ -9,6 +9,7 @@ Contracts: INV-FLEET-001, INV-FLEET-BACKLOG-001
 
 Move status: complete (S8 step 1c). S5 and S7 moved the runner vocabulary and BacklogRefused ahead verbatim (the first 57 lines below are those bytes); S8 appended every other M7 definition verbatim in M7 order
 (SOURCE e38aa722, DESIGN-s8 V2f, A/evidence/rebuild/s8/domain-moves-c/transcribe.py). Changed only by named rules: the import lines, R-f1 (ACCEPTED and DEPENDENCY_BLOCKING declared as published-language constants read from coordination's Fleet, pinned equal by a test), R-f2 (`binding`, M7 `domain/fleet.py`, joins just before its first use) and `digest`/`safe_relative_path` from kernel.ids. Nothing imports coordination.
+S8 pilot 63 (A/evidence/rebuild/s8/portfolio-move/transcribe.py) adds R-p3 (DISPATCHING, EXHAUSTED, FAILED, QUEUED and REJECTED, published-language constants) and R-p4 (`SAFE_CODE` and `safe_code`, M7 `domain/fleet.py` verbatim, one owner here; coordination.domain.fleet imports them).
 """
 from __future__ import annotations
 
@@ -61,6 +62,18 @@ class BacklogRefused(ContractError):
 # test_s8_domain_moves_c pins them equal to coordination.domain.fleet.
 ACCEPTED = "accepted"
 DEPENDENCY_BLOCKING = frozenset({"rejected", "failed", "exhausted", "unknown"})
+
+# More published-language constants read from coordination's Fleet (DESIGN-s8 V9, pilot 63 R-p3);
+# test_s8_portfolio_move pins them equal to coordination.domain.fleet.
+DISPATCHING = "dispatching"
+EXHAUSTED = "exhausted"
+FAILED = "failed"
+QUEUED = "queued"
+REJECTED = "rejected"
+
+# `safe_code` and its pattern have one owner, intake.domain.backlog (DESIGN-s8 V9 R-p4, the `binding` precedent);
+# coordination.domain.fleet imports them. M7 `domain/fleet.py` verbatim.
+SAFE_CODE = re.compile(r"^[A-Za-z0-9_.:-]{1,80}$")
 
 PLAN_SCHEMA = "urn:zeus:fleet-backlog:1"
 STATUS_SCHEMA = "urn:zeus:fleet-backlog-status:1"
@@ -544,6 +557,15 @@ def plan_status(row: dict, intents: dict, jobs: dict, fleet_paused: bool) -> dic
             "outcome": decision["outcome"], "next_item": None if decision["item"] is None else decision["item"]["id"],
             "next_action": plan_next_action(decision["outcome"]), "blocked": dict(decision["blocked"]),
             "items": items, "counts": counts, "authority": AUTHORITY}
+
+
+def safe_code(reason) -> str:
+    """Only the finite head of a reason leaves; colon details may carry raw text."""
+    if not isinstance(reason, str):
+        return "unknown"
+    head, _, tail = reason.partition(":")
+    code = "exception:" + tail.split(":", 1)[0] if head == "exception" else head
+    return code if SAFE_CODE.fullmatch(code) else "unknown"
 
 
 __all__ = ["ACTION_ENQUEUE", "ACTION_LINK", "AUTHORITY", "BLOCKED", "CONFLICT", "ENQUEUED",

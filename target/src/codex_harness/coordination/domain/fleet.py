@@ -17,8 +17,9 @@ from __future__ import annotations
 import os
 import re
 
-# `binding` has one owner, intake.domain.backlog (DESIGN-s8 V2f R-f3); the name stays module-level here.
-from codex_harness.intake.domain.backlog import binding  # noqa: F401
+# `binding`, `SAFE_CODE` and `safe_code` have one owner, intake.domain.backlog (DESIGN-s8 V2f R-f3, V9 R-p4); the
+# names stay module-level here.
+from codex_harness.intake.domain.backlog import SAFE_CODE, binding, safe_code  # noqa: F401
 from codex_harness.kernel.errors import ContractError
 from codex_harness.kernel.ids import digest, safe_relative_path
 from codex_harness.kernel.usage import NUMERIC_FIELDS, UsagePolicyError, accounting_mode
@@ -36,7 +37,6 @@ TOKEN = re.compile(r"^[A-Za-z0-9][A-Za-z0-9._-]{0,63}$")
 # A PostgreSQL identifier that never needs quoting and can never name the public schema.
 SCHEMA_NAME = re.compile(r"^[a-z][a-z0-9_]{0,62}$")
 RESERVED_SCHEMAS = {"public", "information_schema"}
-SAFE_CODE = re.compile(r"^[A-Za-z0-9_.:-]{1,80}$")
 GLOB = frozenset("*?[]{}")
 
 QUEUED, DISPATCHING = "queued", "dispatching"
@@ -476,15 +476,6 @@ def unit_view(unit: dict) -> dict:
             "settlement": dict(unit["settlement"]) if isinstance(unit.get("settlement"), dict) else None,
             "next_action": ("settle only on a confirmed parent-and-tree cleanup receipt or a never-entered fence; "
                             "unknown cleanup keeps the slot until its named owner resolves it") if held else "none"}
-
-
-def safe_code(reason) -> str:
-    """Only the finite head of a reason leaves; colon details may carry raw text."""
-    if not isinstance(reason, str):
-        return "unknown"
-    head, _, tail = reason.partition(":")
-    code = "exception:" + tail.split(":", 1)[0] if head == "exception" else head
-    return code if SAFE_CODE.fullmatch(code) else "unknown"
 
 
 def classify_outcome(exit_code, receipt, job: dict, read_error: str | None = None) -> dict:

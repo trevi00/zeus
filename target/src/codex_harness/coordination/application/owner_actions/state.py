@@ -34,6 +34,9 @@ from codex_harness.delivery.domain.host_delivery import (
     MIGRATION_REGISTERED,
     migration_lineage_digest,
 )
+
+# `portfolio_investigations` has one owner, intake.domain.portfolio (DESIGN-s8 R-p1b); the name stays module-level here.
+from codex_harness.intake.domain.portfolio import BUCKET_INVESTIGATIONS  # noqa: F401
 from codex_harness.kernel.errors import ContractError
 from codex_harness.kernel.ids import canonical, digest
 
@@ -43,7 +46,6 @@ BUCKET_BINDINGS = 'portfolio_bindings'
 BUCKET_CYCLES = 'research_program_cycles'
 BUCKET_DISPATCHES = 'research_investigation_dispatches'
 BUCKET_HEADS = 'research_dispatch_heads'
-BUCKET_INVESTIGATIONS = 'portfolio_investigations'
 BUCKET_PROGRAMS = 'research_programs'
 BUCKET_RECOVERIES = 'research_dispatch_recoveries'
 BUCKET_SUCCESSORS = 'research_dispatch_successors'
