@@ -2,8 +2,7 @@
  "family": "delivery.host_targets",
  "description": "S7 M7 host targets, characterized before their move (INV-HOST-DELIVERY-001): the ProcessHostTarget descriptor switch (first, exact predecessor, wrong predecessor, a refusing fence), the per-target lifecycle guard (serialization, the lock timeout, another target, an unavailable fence), the one protected start (a real launched child with its receipt, the descriptor-foreign, unidentified, unauthorized and runtime-root refusals, recognition, replacement, resumption and a fence lost during the bounded stop over LABELLED sleeper children and hand-written receipts), stop and pid reaping (_reaped/_alive), drain, the observe/identity projections, the service child (serve and main in this process and as a child process) and GitHubDelivery over a LABELLED recording runner and workspace double; the children are real processes over a LABELLED runtime root linked to the side's own package",
  "reference_driver": "drivers/reference/s7_host_targets.py",
- "target_driver": null,
+ "target_driver": "drivers/target/s7_host_targets.py",
  "golden": "goldens/reference/delivery.host_targets.json",
- "slice": "S7",
- "target_status": "pending: S7 host targets move (V6)"
+ "slice": "S7"
 }
