@@ -2,8 +2,7 @@
  "family": "research.audit_core",
  "description": "S8 research audit core of M7 application/research.py (ResearchAudits: seed_backlog, import_audit, partition, _anchors, _claimed_evidence, checkpoint, _coverage, _observed, observe_assets, coverage, propose, execute, _queue_review, review, _eligible), characterized before the audit core move: every one of the 44 require/reject sites and the one raise (or its named unreachable reason), the M7 tests/test_research_audits.py and tests/test_audit_checkpoint_outcomes.py behaviours this module decides (the others named as other families), with the digests of the research_* buckets, decisions_pending and outbox before and after each refusal and write; LABELLED source verifier and runner, M7's own FileArtifacts over a run-scoped directory, MemoryStore, the audit_gate through M7, ExecutionRecovery.validate_decision as SOURCE runs it; no Git, Docker, model or PostgreSQL",
  "reference_driver": "drivers/reference/s8_audit_core.py",
- "target_driver": null,
- "target_status": "pending: S8 research app move (research.application.research)",
+ "target_driver": "drivers/target/s8_audit_core.py",
  "golden": "goldens/reference/research.audit_core.json",
  "slice": "S8"
 }
