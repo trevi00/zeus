@@ -13,7 +13,7 @@ Files: `tests/token_observability/test_tokobs_<s1_lifecycle|streams|partition|re
 | A22, A34-A38, A42 | W1a | partition `test_a22`, `test_a34`…`test_a38`, `test_a42` |
 | A23, A24 | W1a | render `test_a23_roots_validate_on_any_platform`, `test_a24_no_text_no_ids_and_every_label_is_bounded` |
 | A54 | W1c | dashboards `test_a54_*` lint `dashboards/provider-windows.json` (static panel mapping only; the collector's one-hot state tests in windows are not dashboard evidence) |
-| A25-A30, A55-A57 | W2 | not in this item (rules, dashboards, compose, runbook, connectivity) |
+| A25-A30, A55-A57 | W2 | W2a below (files, linter, static tests); dashboards, runbook and the A56 connectivity test are W2b |
 | A32, A33 | W1b | backfill `test_a32_*`, `test_a33_deferred_rows_are_counted_but_never_ingested` (the §3.10 common-ID `shadow` variant is a future fixture, not ingested in phase 1) |
 | A39 | W1a | s1_lifecycle `test_a03_a39_…` |
 | A41 | W1a (S1) + W1b (S2) | s1_lifecycle `test_c_w1_1_a41_…`; s2 `test_a41_coordinator_without_metadata_…`, `test_a41_lane_with_metadata_still_started_…` |
@@ -83,3 +83,21 @@ is the only source-supported terminal timestamp, Codex lines carry none):
 | Supported pre-cutoff terminal timestamp → history | `test_a32_lane_with_a_supported_pre_cutoff_terminal_timestamp_is_history` | 0 / 1 |
 | Horizon expired before the cutoff → history | `test_f5_a_horizon_already_expired_at_the_cutoff_is_history_without_a_terminal_timestamp`, `test_f5_a_codex_run_whose_idle_horizon_had_expired_at_first_start_is_history`, `test_a32_streams_that_had_ended_before_live_since_are_history` | 0 / 1; 0 / 1; 0 / 2 |
 | Controls kept: active S2/S3 and restart, routine A32, outage catch-up | `test_f5_an_active_coordinator_…`, `test_f5_an_active_codex_run_…`, `test_a32_evidence_older_than_live_since_…`, `test_a32_an_attempt_still_in_flight_…`, `test_a32_outage_catch_up_…` | unchanged |
+
+## W2a (deployment files, deploy linter, static lint tests)
+
+Files: `deploy/observability/**`, `tools/token_observability/tokobs/deploy_lint.py` (+ `lint-deploy` in `__main__.py`),
+`tests/token_observability/test_tokobs_deploy.py`. Owner-run checks are **NOT run in this pilot**: `docker compose config`,
+`promtool check config/rules`, `promtool test rules`, any Docker run.
+
+| Row | Test or file | Status |
+|---|---|---|
+| A55 compose structure | deploy tests `test_a55_networks_and_volumes`, `…_every_service_is_hardened_and_limited`, `…_networks_and_ports_per_service`, `…_collector_mounts_are_exactly_the_five_inputs`, `…_the_secret_path_appears_only_in_grafana`, `…_prometheus_service`, `…_grafana_service`, `…_every_bind_source_in_the_checkout_exists` | pytest |
+| A55 provisioning | `test_a55_prometheus_and_grafana_provisioning_are_static_and_consistent` (scrape target, datasource URL, rule/dashboard paths equal the mount targets, `allowUiUpdates` false) | pytest |
+| A55 conntest override | `test_a55_the_conntest_override_mounts_no_worker_input` (`!override` loaded by a SafeLoader subclass) | pytest |
+| A57 compose | `test_a57_the_production_compose_file_has_no_violations`, `…_each_denied_compose_configuration_is_rejected_with_exactly_its_violation[13 cases]`, `…_short_syntax_ports_are_parsed`, `…_the_normalized_long_syntax_form_passes_and_its_mutations_fail` | pytest |
+| A57 docker inspect, CLI | `test_a57_a_hardened_inspect_list_has_no_violations`, `…_each_denied_inspect_field_…[16 cases]`, `test_a57_cli_exit_codes`, `…_cli_reads_stdin_for_a_dash` | pytest |
+| A57 read allowlist | `test_a57_allowed_input_matches_segment_by_segment`; `test_a57_the_collector_opens_only_allowlisted_paths_decoys_never` (audit hook over one real `Service.scan_now`: every allowlist kind opened, 7 decoys and `other.json` never; the prestart sidecar opened) | pytest |
+| A27 / A28 rules part | `test_a27_no_rule_combines_…`, `test_a28_no_charge_or_bill_metric_…`, `test_the_rule_file_matches_design_5_1` (dashboard part is W2b) | pytest |
+| A25, A26, A43, A29 | `deploy/observability/prometheus/rules/tokobs.test.yml` (A25 exporter-down and scan-stale, A26 ratio 0.25 + alert, A43 render-refused, A29 `ignoring(token_type) group_left` join) | owner-run: promtool — NOT run in this pilot |
+| A29 static config | `docker compose config`, `promtool check config`, `promtool check rules` | owner-run: promtool / docker compose config — NOT run in this pilot |
