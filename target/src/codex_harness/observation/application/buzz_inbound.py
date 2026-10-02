@@ -24,8 +24,11 @@ EOSE and short pages are observations, never proof (§6.2 step 4): a finished pa
 
 A cooperative stop (D5 F1, DESIGN-D §2): `run(generation, stop=...)` reads `stop` before each channel and hands it to
 the relay's pager, which reads it before each page. Once it is true no further network work starts; the current atomic
-unit finishes (the event commit in flight completes, then the pending owner rows are sunk). A pass the pager ended with
-`stopped`, or that stopped between event commits, is NOT finished: it stays `running` with its keyset, so the next run resumes it from the first unread page.
+unit finishes (the event commit in flight completes; a sink already started finishes and settles its row). The stop is
+read again before EACH pending owner row (D6, round-2 F1): no further sink starts and the untouched rows stay `pending`
+for the next run, whose idempotent path sinks each exactly once. A pass the pager ended with `stopped`, that stopped
+between event commits or that left pending rows unsunk is NOT finished: it stays `running` with its keyset, so the next
+run resumes it from the first unread page.
 """
 
 from __future__ import annotations
@@ -80,7 +83,8 @@ class InboundPass:
                 break
             inserted += self._commit_event(channel, generation, key, event, now) == "inserted"
             self._advance_cursor(channel, generation, self._read_pass(key)["high"])
-        processed, failed = self._sink_pending(channel, generation)
+        processed, failed, deferred = self._sink_pending(channel, generation, stop)
+        halted = halted or deferred
         if halted:  # D5 F1: unfinished, not a gap observation; the next run resumes the keyset
             return {"ended": "stopped", "events": len(events), "inserted": inserted, "sunk": processed,
                     "sink_failed": failed, "lower": record["lower"], "pass": key}
@@ -152,11 +156,19 @@ class InboundPass:
                 tx.put(CURSORS, channel, {"id": channel, "channel": channel, "created_at": position[0],
                                           "event_id": position[1]})
 
-    def _sink_pending(self, channel: str, generation: int) -> tuple[int, int]:
+    def _sink_pending(self, channel: str, generation: int,
+                      stop: Callable[[], bool] | None = None) -> tuple[int, int, bool]:
+        """Sink the channel's pending owner rows: `(settled, failed, deferred)`.
+
+        `stop` is read BEFORE each unit (D6): once true no further sink starts, the unstarted rows stay `pending` and
+        `deferred` is True. A unit already started finishes (its row is marked processed only after its own sink).
+        """
         with self.store.transaction() as tx:
             rows = [row for row in self.inbox.pending(tx) if row["channel"] == channel and row["author"] in self.owners]
         processed = failed = 0
         for row in rows:
+            if stop is not None and stop():
+                return processed, failed, True
             try:
                 outcome = self.sink(row, generation)
             except Exception:  # noqa: BLE001 - the row stays pending; the next pass resumes it (F2)
@@ -166,4 +178,4 @@ class InboundPass:
                 self.lease.require_current(tx, generation)
                 self.inbox.mark_processed(tx, row["event_id"], outcome)
             processed += 1
-        return processed, failed
+        return processed, failed, False

@@ -506,3 +506,85 @@ def test_f2_the_refusal_during_recovery_exits_four_before_compaction(tmp_path):
     rt, calls = outbox_runtime(env, w, relay, max_seconds=100, recover_every=1)
     rt.outbox = Outbox()
     assert rt.run(lambda: False) == 4 and "compact" not in calls and env.slices == []
+
+
+# ---- D6 (round-2 closure) item 1: pending owner rows start no sink after a stop ------------------------------------------
+OWNER = "1" * 64
+
+
+def seed_pending(env, store, count):
+    """`count` crash-left pending owner rows on channel `a` (what an earlier run committed before its sink)."""
+    ids = [f"{index + 1:064x}" for index in range(count)]
+    with store.transaction() as tx:
+        for ident in ids:
+            RemoteInbox().insert_pending(tx, {"event_id": ident, "author": OWNER, "created_at": int(env.t) - 5,
+                                              "received_at": int(env.t) - 1, "channel": "a"})
+    return ids
+
+
+def pending_ids(store):
+    with store.transaction() as tx:
+        return sorted(row["event_id"] for row in RemoteInbox().pending(tx))
+
+
+def owner_runtime(env, relay, sink, *, store=None, **config):
+    rt, calls = compose(env, relay, ["a"], store=store, **config)
+    rt.inbound.owners, rt.inbound.sink = frozenset([OWNER]), sink
+    return rt, calls
+
+
+def test_d6_a_stop_during_the_first_query_starts_no_pending_sink_and_restart_settles_each_row_once():
+    env, flag, sunk = Env(), [], []
+    sock = Socket(env)
+    sock.on_recv = lambda: flag.append(True)  # SIGTERM arrives while the first query waits
+    rt, _ = owner_runtime(env, client(env, sock), lambda row, generation: sunk.append(row["event_id"]) or "command_admitted")
+    ids = seed_pending(env, rt.store, 4)
+    started = env.t
+    assert rt.run(lambda: bool(flag)) == 0
+    assert sunk == [] and pending_ids(rt.store) == ids and env.t - started <= OP  # no new unit began; rows stay pending
+    assert passes(rt.store, "a")[0]["state"] == "running"  # an unfinished pass, not a gap observation
+    rt2, _ = owner_runtime(env, client(env, Socket(env, relay_of([]))),
+                           lambda row, generation: sunk.append(row["event_id"]) or "command_admitted",
+                           store=rt.store, max_seconds=0)
+    assert rt2.run(lambda: False) == 0
+    assert sorted(sunk) == ids and pending_ids(rt.store) == []  # each exactly once
+    assert rt2.run(lambda: False) == 0 and sorted(sunk) == ids  # nothing replays once settled
+
+
+def test_d6_a_stop_during_the_first_started_sink_finishes_it_begins_no_second_and_restart_has_no_duplicate_effect():
+    env, flag, sunk = Env(), [], []
+
+    def sink(row, generation):
+        sunk.append(row["event_id"])
+        flag.append(True)  # SIGTERM arrives while the first unit runs
+        env.t += 8
+        return "command_admitted"
+
+    rt, _ = owner_runtime(env, client(env, Socket(env, relay_of([]))), sink)
+    ids = seed_pending(env, rt.store, 4)
+    assert rt.run(lambda: bool(flag)) == 0
+    assert sunk == ids[:1] and pending_ids(rt.store) == ids[1:]  # the started unit settled; none began after it
+    rt2, _ = owner_runtime(env, client(env, Socket(env, relay_of([]))),
+                           lambda row, generation: sunk.append(row["event_id"]) or "command_admitted",
+                           store=rt.store, max_seconds=0)
+    assert rt2.run(lambda: False) == 0
+    assert sunk == ids and pending_ids(rt.store) == []  # the settled row was not sunk again: one effect per row
+
+
+def test_d6_a_stop_during_recovery_starts_no_compaction_and_keeps_the_deferred_work(tmp_path):
+    env, w, flag = Env(), World(tmp_path, outbox_max=1), []
+    w.enqueue("s0", 1)
+    w.enqueue("s1", 1)  # deferred: capacity
+    w.outbox.deliver(w.generation)  # s0 is acknowledged: capacity frees, the class stays deferred until recovered
+    items = [{"subject": f"r{i}", "version": 1, "unsigned": w.unsigned(f"r{i}")} for i in range(3)]
+    rt, calls = outbox_runtime(env, w, w.relay, max_seconds=100, recover_every=1)
+    rt.projection.regenerate = lambda cls, after, *, stop=None: flag.append(True) or items  # the stop lands in recovery
+    before = len(w.rows())
+    assert rt.run(lambda: bool(flag)) == 0
+    assert flag and "compact" not in calls  # recovery ran (its regeneration set the stop); no compaction followed
+    assert w.rows("buzz_outbox_watermarks")[0]["deferred"] is True and len(w.rows()) == before  # nothing dropped
+    flag.clear()
+    rt2, calls2 = outbox_runtime(env, w, w.relay, recover_every=1)
+    rt2.projection.regenerate = lambda cls, after, *, stop=None: items[:1]  # one fits the freed capacity
+    assert rt2.run(lambda: False) == 0
+    assert "compact" in calls2 and w.rows("buzz_outbox_watermarks")[0]["deferred"] is False  # resumed and settled

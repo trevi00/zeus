@@ -342,7 +342,10 @@ class BridgeRuntime:
             return generation
 
     def _housekeeping(self, tick: _Tick, generation: int, number: int, stop: Callable[[], bool]) -> bool:
-        """Recovery and compaction; True when recovery met the relay's final AUTH refusal (compaction is skipped)."""
+        """Recovery and compaction; True when recovery met the relay's final AUTH refusal (compaction is skipped).
+
+        A stop (D6) also skips the compaction: it does no network I/O but is still a new unit of work after the flag.
+        """
         if number % self.config.recover_every == 0:
             def regenerate(cls, after):
                 return self.projection.regenerate(cls, after, stop=stop)
@@ -350,6 +353,8 @@ class BridgeRuntime:
             tick.steps["recover"] = self.outbox.recover_deferred(generation, regenerate, stop=stop)
             if self._refused():
                 return True
+        if stop():
+            return False
         if self._compacted_at is None or self.monotonic() - self._compacted_at >= COMPACT_EVERY_SECONDS:
             tick.steps["compact"] = self.inbound.compact(generation)  # first active tick, then hourly
             self._compacted_at = self.monotonic()
