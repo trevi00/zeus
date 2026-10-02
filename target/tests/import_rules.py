@@ -33,7 +33,9 @@ DAG = {
 SHIMS = frozenset({"codex_harness.cli", "codex_harness.monitor", "codex_harness.supervisor",
                    "codex_harness.adapters.isolated_worker_entry", "codex_harness.adapters.continuation_process",
                    "codex_harness.adapters.host_delivery", "codex_harness.adapters.managed_runtime",
-                   "codex_harness.adapters.worker_profile_metadata", "codex_harness.container_main"})
+                   "codex_harness.adapters.worker_profile_metadata", "codex_harness.container_main",
+                   # S9 U9 (OWNER-DECISIONS-S9 D3.1): the pinned `-m` argv of the frontend checks.
+                   "codex_harness.adapters.monitor_frontend_checks"})
 # Package __init__ modules that only hold shims/resources; they must not import anything.
 PACKAGE_INITS = frozenset({"codex_harness.adapters", "codex_harness.resources"})
 RES = frozenset({"codex_harness.resources.worker_profile_hook"})
