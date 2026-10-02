@@ -73,6 +73,19 @@ Batch P3 (research audits) adds, each a construction/import adaptation:
   `tests/test_audit_service.py`'s helper definitions, verbatim, labelled copies (that suite is S10-carried, so no ported module
   exists): `validate_message` is storage's, `Harness`/`Workflow` the `m7_coordination` ones, `Observer`, `MemorySpool` and
   `MemoryDirectory` observation's; `runner` builds `audit_service.AuditServiceRunner`, so it raises for S10 when used.
+Batch P4 (research council) adds, each a construction/import adaptation:
+- `AutonomousRun(service, executor=None, bus=None, workflow=None, budget=None, collector=None, verify_sources=None,
+  repository=None, observer=None, clock=utcnow, evidence=None)` is the target class with its four composition ports
+  (research's `DebateSessions`, evidence's `EvidenceRecords`, knowledge's `promotion`, the S5 `Operation` over the service as
+  `s8_autonomous.py` builds it), M7's positional arguments unchanged, with the SYSTEM clock and ids; `CouncilRun` (above) is
+  built the same way.
+- `Operation(service, executor=None, bus=None, workflow=None, budget=None, collector=None, observer=None)` is the S5 class built as
+  `m7_coordination.Operation` builds it, with research's `dge.design_gate` as its design gate (M7's Operation held the gate).
+- `load_isolation(settings)` is `execution.adapters.containers.owned_container.load_host_isolation` (the M7 `adapters.isolated_worker`
+  name, as the `m7_containers.iw` namespace binds it).
+- The council suites' executor is `m7_executor.Executor`; the artifact-reader and verdict-schema constants of M7 `adapters.executor`
+  are `execution.domain.output_contracts`'s; M7's `adapters.bus` names are `storage.adapters.redis_bus`'s, and a patch of its
+  `Redis` global targets that module.
 """
 
 from __future__ import annotations
@@ -89,6 +102,7 @@ from m7_coordination import Harness, Workflow, organization, packaged_policy, re
 from m7_coordination import OwnerActions as _OwnerActions
 from m7_delivery import Releases
 
+from codex_harness.coordination.application import autonomous as _autonomous
 from codex_harness.coordination.application import council as _council
 from codex_harness.coordination.application import (
     execution_fence,
@@ -99,10 +113,11 @@ from codex_harness.coordination.application import (
 from codex_harness.coordination.application.decisions import DecisionOwnership, PendingDecisions
 from codex_harness.coordination.application.events import EventJournal
 from codex_harness.coordination.application.fleet.state import BUCKET_JOBS
-from codex_harness.coordination.application.operation import Operation
+from codex_harness.coordination.application.operation import Operation as _Operation
 from codex_harness.coordination.application.outbox import Outbox
 from codex_harness.coordination.application.research_launch_facts import ResearchLaunchFacts
 from codex_harness.evidence.application.inspections import EvidenceRecords
+from codex_harness.execution.adapters.containers import owned_container
 from codex_harness.execution.adapters.providers.codex_app_server import AppServer
 from codex_harness.host_os.adapters import git_source, process_groups
 from codex_harness.intake.application.portfolio import Portfolio, family_id
@@ -128,10 +143,11 @@ from codex_harness.review.domain.check_results import classify_isolated_run
 from codex_harness.storage.adapters import maintenance as _maintenance
 from codex_harness.storage.adapters.message_schema import validate_message
 
-__all__ = ["AppServer", "ArtifactMaintenance", "AuditExecution", "AuditProgress", "AuditRepair", "AuditRunner", "CouncilRun",
+__all__ = ["AppServer", "ArtifactMaintenance", "AuditExecution", "AuditProgress", "AuditRepair", "AuditRunner", "AutonomousRun",
+           "CouncilRun",
            "DEFINITIONS", "DockerSourceRunner", "FAMILY", "FixtureBus", "FixtureExecutor", "GitCapture", "GitSource",
-           "GitSourceVerifier", "Harness", "INVESTIGATION", "JOBS", "OwnerActions", "ProgramRunner", "REVISION", "Releases",
-           "ResearchAudits", "ResearchProgram", "SOURCE", "Workflow", "audit_runner", "audit_service", "connected", "monitoring",
+           "GitSourceVerifier", "Harness", "INVESTIGATION", "JOBS", "Operation", "OwnerActions", "ProgramRunner", "REVISION", "Releases",
+           "ResearchAudits", "ResearchProgram", "SOURCE", "Workflow", "audit_runner", "audit_service", "connected", "load_isolation", "monitoring",
            "organization", "packaged_policy", "partitions_of", "portfolio", "relay", "repository_identity", "research_program",
            "runner", "schedule_audits", "source_execution", "spool_observer", "unavailable"]
 
@@ -169,10 +185,10 @@ def repository_identity(repository) -> str:
 class CouncilRun(_council.CouncilRun):
     def __init__(self, service, *args, **kwargs):
         def operation_factory(executor, bus, workflow, budget, collector, observer=None):
-            return Operation(service.store, service.org, flusher=service.flusher, incidents=service.record_incident,
-                             executor=executor, bus=bus, workflow=workflow, budget=budget, collector=collector,
-                             observer=observer, design_gate=SimpleNamespace(check=dge.design_gate),
-                             evidence_records=EvidenceRecords(), clock=SYSTEM_CLOCK, ids=SYSTEM_IDS)
+            return _Operation(service.store, service.org, flusher=service.flusher, incidents=service.record_incident,
+                              executor=executor, bus=bus, workflow=workflow, budget=budget, collector=collector,
+                              observer=observer, design_gate=SimpleNamespace(check=dge.design_gate),
+                              evidence_records=EvidenceRecords(), clock=SYSTEM_CLOCK, ids=SYSTEM_IDS)
         super().__init__(service, *args, sessions_factory=dge.DebateSessions, evidence_records=EvidenceRecords(),
                          promotion=knowledge_promotion, operation_factory=operation_factory, **kwargs)
 
@@ -406,3 +422,23 @@ def partitions_of(connected, audit_id=None):
     with connected.store.transaction() as tx:
         return [p for p in tx.scan("research_partitions")
                 if p["audit_id"] == (audit_id or connected.audit_id)]
+
+
+# ---- batch P4: research council -------------------------------------------------------------------------------------------
+class Operation(_Operation):
+    def __init__(self, service, executor=None, bus=None, workflow=None, budget=None, collector=None, observer=None):
+        super().__init__(service.store, service.org, flusher=service.flusher, incidents=service.record_incident,
+                         executor=executor, bus=bus, workflow=workflow, budget=budget, collector=collector,
+                         observer=observer, design_gate=SimpleNamespace(check=dge.design_gate),
+                         evidence_records=EvidenceRecords(), clock=SYSTEM_CLOCK, ids=SYSTEM_IDS)
+
+
+class AutonomousRun(_autonomous.AutonomousRun):
+    def __init__(self, service, *args, **kwargs):
+        def operation_factory(executor, bus, workflow, budget, collector, observer=None):
+            return Operation(service, executor, bus, workflow, budget, collector, observer)
+        super().__init__(service, *args, sessions_factory=dge.DebateSessions, evidence_records=EvidenceRecords(),
+                         promotion=knowledge_promotion, operation_factory=operation_factory, **kwargs)
+
+
+load_isolation = owned_container.load_host_isolation
