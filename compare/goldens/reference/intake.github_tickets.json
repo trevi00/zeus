@@ -1,0 +1,5401 @@
+{
+ "cases_per_group": {
+  "external": 25,
+  "lost_ack": 20,
+  "refusals": 29,
+  "repo_call_read": 44,
+  "state": 16,
+  "surface": 6,
+  "sync_create": 24
+ },
+ "external": {
+  "edit_readback_must_match_the_projection": {
+   "artifacts_added": 1,
+   "cause_type": null,
+   "counts_after": {
+    "ticket_github": 1,
+    "ticket_remote_creations": 1,
+    "ticket_remote_observations": 3,
+    "ticket_syncs": 1
+   },
+   "gh_verbs": [
+    "issue view",
+    "issue edit",
+    "issue view"
+   ],
+   "is_contract_error": true,
+   "message": "GitHub issue readback does not match the requested projection",
+   "outcome": "raised",
+   "store_after": "e31fff9237ecbae2",
+   "store_before": "57da20b74eff5b48",
+   "store_unchanged": false,
+   "type": "ContractError"
+  },
+  "edit_readback_rows": {
+   "ticket_github": [
+    {
+     "at": "2026-09-22T00:00:00+00:00",
+     "attempted_content_hash": "2f16861407b333f3e25b47fba02742fa10b2fd2258a0b1d5fc13796884595e01",
+     "attempted_revision": 1,
+     "body_hash": "d2ce17e0443b10d167d40acef7302f5f44c608733c65d73e8395b3d86f211ebd",
+     "content_hash": "2f16861407b333f3e25b47fba02742fa10b2fd2258a0b1d5fc13796884595e01",
+     "desired_state": "OPEN",
+     "error_type": "ContractError",
+     "id": "dc31691ee6dd5b8659b64a568f2a0ab18585a43b0cd95d3ee2f95487f5b4a65a",
+     "lifecycle_event": null,
+     "lifecycle_sequence": 0,
+     "number": 7,
+     "observation_id": "168b98ef95742df0c4df57261d57c4410f81657b75afcee625f968b800af2419",
+     "observation_ref": "sha256:2ffc031f767d6f1f0b74888e01bbe2e53bd5d78bdb8f8bcc8d95228c18bd1e05",
+     "observed_body_hash": "d2ce17e0443b10d167d40acef7302f5f44c608733c65d73e8395b3d86f211ebd",
+     "observed_state": "OPEN",
+     "observed_title_hash": "e28dea08fb589881cb05b8aedb1289c78615b30bd05a69de829e13a82278996c",
+     "projected_lifecycle_event": null,
+     "repository": "fixture/zeus",
+     "review_ids": [],
+     "status": "needs_attention",
+     "synced_revision": 1,
+     "ticket_id": "ZEUS-000000000001",
+     "title": "Independent services",
+     "title_hash": "e28dea08fb589881cb05b8aedb1289c78615b30bd05a69de829e13a82278996c",
+     "url": "https://github.com/fixture/zeus/issues/7"
+    }
+   ],
+   "ticket_remote_creations": [
+    {
+     "at": "2026-09-22T00:00:00+00:00",
+     "authority": "external_observation_only",
+     "claim_owner": "5eed0000-0000-4000-8000-000000000032",
+     "evidence_ref": "sha256:ca7cdb4bb25d35468ac02343c7037607577618e7e7cc6a52b07fed63cb065ef7",
+     "number": 7,
+     "repository": "fixture/zeus",
+     "ticket_id": "ZEUS-000000000001",
+     "url": "https://github.com/fixture/zeus/issues/7"
+    }
+   ],
+   "ticket_remote_observations": [
+    {
+     "at": "2026-09-22T00:00:00+00:00",
+     "authority": "external_observation_only",
+     "evidence_ref": "sha256:2ffc031f767d6f1f0b74888e01bbe2e53bd5d78bdb8f8bcc8d95228c18bd1e05",
+     "first_seen": "2026-09-22T00:00:00+00:00",
+     "id": "168b98ef95742df0c4df57261d57c4410f81657b75afcee625f968b800af2419",
+     "marker_present": true,
+     "number": 7,
+     "purpose": "post_write",
+     "repository": "fixture/zeus",
+     "sequence": 1,
+     "state": "OPEN",
+     "ticket_id": "ZEUS-000000000001",
+     "title": "Independent services",
+     "url": "https://github.com/fixture/zeus/issues/7"
+    },
+    {
+     "at": "2026-09-22T00:00:00+00:00",
+     "authority": "external_observation_only",
+     "evidence_ref": "sha256:2ffc031f767d6f1f0b74888e01bbe2e53bd5d78bdb8f8bcc8d95228c18bd1e05",
+     "first_seen": "2026-09-22T00:00:00+00:00",
+     "id": "fc98d62c57540e26fb08b14170e4261105d0f3995feee0c2356c6aeefecbd95c",
+     "marker_present": true,
+     "number": 7,
+     "purpose": "pre_write",
+     "repository": "fixture/zeus",
+     "sequence": 2,
+     "state": "OPEN",
+     "ticket_id": "ZEUS-000000000001",
+     "title": "Independent services",
+     "url": "https://github.com/fixture/zeus/issues/7"
+    },
+    {
+     "at": "2026-09-22T00:00:00+00:00",
+     "authority": "external_observation_only",
+     "evidence_ref": "sha256:b1447c2df1ec557b8ffe7e0e479fa4c848bca0b284031b1e597d55ba7c60313c",
+     "first_seen": "2026-09-22T00:00:00+00:00",
+     "id": "9e9f6fd78a0d36cea8eef9395d3e86e565ffeaed942f6fa71c5f5a0a5247757d",
+     "marker_present": true,
+     "number": 7,
+     "purpose": "post_write",
+     "repository": "fixture/zeus",
+     "sequence": 3,
+     "state": "OPEN",
+     "ticket_id": "ZEUS-000000000001",
+     "title": "Revised criteria",
+     "url": "https://github.com/fixture/zeus/issues/7"
+    }
+   ],
+   "ticket_syncs": [
+    {
+     "created_number": 7,
+     "creation_uncertain": false,
+     "error_type": "ContractError",
+     "id": "dc31691ee6dd5b8659b64a568f2a0ab18585a43b0cd95d3ee2f95487f5b4a65a",
+     "lease_until": "2026-09-22T00:05:00+00:00",
+     "observed_body_hash": "d2ce17e0443b10d167d40acef7302f5f44c608733c65d73e8395b3d86f211ebd",
+     "observed_title_hash": "e28dea08fb589881cb05b8aedb1289c78615b30bd05a69de829e13a82278996c",
+     "owner": null,
+     "pending_body_hash": "bdcaaa4e08267ef60d17a618793224acc1a7aebc6014a4732779ffc637eb50d5",
+     "pending_title_hash": "69a1a295f1a9eafcd523c19f6e5fe0630e1175ae5d34bfec10b858913419bb48",
+     "reconcile_observation": null,
+     "status": "needs_attention"
+    }
+   ]
+  },
+  "external_body_change_blocks_the_overwrite": {
+   "artifacts_added": 1,
+   "cause_type": null,
+   "counts_after": {
+    "ticket_github": 1,
+    "ticket_remote_creations": 1,
+    "ticket_remote_observations": 2,
+    "ticket_syncs": 1
+   },
+   "gh_verbs": [
+    "issue view"
+   ],
+   "is_contract_error": true,
+   "message": "GitHub issue body changed externally; pull and reconcile before syncing",
+   "outcome": "raised",
+   "store_after": "9e7d5f54b965dece",
+   "store_before": "be7f2e622eb87fe6",
+   "store_unchanged": false,
+   "type": "ContractError"
+  },
+  "external_body_change_rows": {
+   "ticket_github": [
+    {
+     "at": "2026-09-22T00:00:00+00:00",
+     "attempted_content_hash": "2f16861407b333f3e25b47fba02742fa10b2fd2258a0b1d5fc13796884595e01",
+     "attempted_revision": 1,
+     "body_hash": "d2ce17e0443b10d167d40acef7302f5f44c608733c65d73e8395b3d86f211ebd",
+     "content_hash": "2f16861407b333f3e25b47fba02742fa10b2fd2258a0b1d5fc13796884595e01",
+     "desired_state": "OPEN",
+     "error_type": "ContractError",
+     "id": "dc31691ee6dd5b8659b64a568f2a0ab18585a43b0cd95d3ee2f95487f5b4a65a",
+     "lifecycle_event": null,
+     "lifecycle_sequence": 0,
+     "number": 7,
+     "observation_id": "168b98ef95742df0c4df57261d57c4410f81657b75afcee625f968b800af2419",
+     "observation_ref": "sha256:2ffc031f767d6f1f0b74888e01bbe2e53bd5d78bdb8f8bcc8d95228c18bd1e05",
+     "observed_body_hash": "d2ce17e0443b10d167d40acef7302f5f44c608733c65d73e8395b3d86f211ebd",
+     "observed_state": "OPEN",
+     "observed_title_hash": "e28dea08fb589881cb05b8aedb1289c78615b30bd05a69de829e13a82278996c",
+     "projected_lifecycle_event": null,
+     "repository": "fixture/zeus",
+     "review_ids": [],
+     "status": "needs_attention",
+     "synced_revision": 1,
+     "ticket_id": "ZEUS-000000000001",
+     "title": "Independent services",
+     "title_hash": "e28dea08fb589881cb05b8aedb1289c78615b30bd05a69de829e13a82278996c",
+     "url": "https://github.com/fixture/zeus/issues/7"
+    }
+   ],
+   "ticket_remote_creations": [
+    {
+     "at": "2026-09-22T00:00:00+00:00",
+     "authority": "external_observation_only",
+     "claim_owner": "5eed0000-0000-4000-8000-000000000023",
+     "evidence_ref": "sha256:753e49ff12e52bc5698cf497ca20ddd3d3425b5de1b4701e10f949b3d011c19d",
+     "number": 7,
+     "repository": "fixture/zeus",
+     "ticket_id": "ZEUS-000000000001",
+     "url": "https://github.com/fixture/zeus/issues/7"
+    }
+   ],
+   "ticket_remote_observations": [
+    {
+     "at": "2026-09-22T00:00:00+00:00",
+     "authority": "external_observation_only",
+     "evidence_ref": "sha256:2ffc031f767d6f1f0b74888e01bbe2e53bd5d78bdb8f8bcc8d95228c18bd1e05",
+     "first_seen": "2026-09-22T00:00:00+00:00",
+     "id": "168b98ef95742df0c4df57261d57c4410f81657b75afcee625f968b800af2419",
+     "marker_present": true,
+     "number": 7,
+     "purpose": "post_write",
+     "repository": "fixture/zeus",
+     "sequence": 1,
+     "state": "OPEN",
+     "ticket_id": "ZEUS-000000000001",
+     "title": "Independent services",
+     "url": "https://github.com/fixture/zeus/issues/7"
+    },
+    {
+     "at": "2026-09-22T00:00:00+00:00",
+     "authority": "external_observation_only",
+     "evidence_ref": "sha256:562cd3a6b6c646f202d3805e8e8dc881532dc8de0501d195d8c09a0b174b7095",
+     "first_seen": "2026-09-22T00:00:00+00:00",
+     "id": "6a5591bd0ecd6be7db588ab1abda7a4fed1dc2c43fefa255b7f6197928e83ead",
+     "marker_present": false,
+     "number": 7,
+     "purpose": "pre_write",
+     "repository": "fixture/zeus",
+     "sequence": 2,
+     "state": "OPEN",
+     "ticket_id": "ZEUS-000000000001",
+     "title": "Independent services",
+     "url": "https://github.com/fixture/zeus/issues/7"
+    }
+   ],
+   "ticket_syncs": [
+    {
+     "created_number": 7,
+     "creation_uncertain": false,
+     "error_type": "ContractError",
+     "id": "dc31691ee6dd5b8659b64a568f2a0ab18585a43b0cd95d3ee2f95487f5b4a65a",
+     "lease_until": "2026-09-22T00:05:00+00:00",
+     "observed_body_hash": "d2ce17e0443b10d167d40acef7302f5f44c608733c65d73e8395b3d86f211ebd",
+     "observed_title_hash": "e28dea08fb589881cb05b8aedb1289c78615b30bd05a69de829e13a82278996c",
+     "owner": null,
+     "pending_body_hash": null,
+     "pending_title_hash": null,
+     "reconcile_observation": null,
+     "status": "needs_attention"
+    }
+   ]
+  },
+  "external_body_unchanged_remote": "An external edit\n",
+  "external_title_change_blocks_the_overwrite": {
+   "artifacts_added": 1,
+   "cause_type": null,
+   "counts_after": {
+    "ticket_github": 1,
+    "ticket_remote_creations": 1,
+    "ticket_remote_observations": 2,
+    "ticket_syncs": 1
+   },
+   "gh_verbs": [
+    "issue view"
+   ],
+   "is_contract_error": true,
+   "message": "GitHub issue title changed externally; pull and reconcile before syncing",
+   "outcome": "raised",
+   "store_after": "74c5feb89301f05c",
+   "store_before": "2d84f3039b572d7f",
+   "store_unchanged": false,
+   "type": "ContractError"
+  },
+  "external_title_rows": {
+   "ticket_github": [
+    {
+     "at": "2026-09-22T00:00:00+00:00",
+     "attempted_content_hash": "2f16861407b333f3e25b47fba02742fa10b2fd2258a0b1d5fc13796884595e01",
+     "attempted_revision": 1,
+     "body_hash": "d2ce17e0443b10d167d40acef7302f5f44c608733c65d73e8395b3d86f211ebd",
+     "content_hash": "2f16861407b333f3e25b47fba02742fa10b2fd2258a0b1d5fc13796884595e01",
+     "desired_state": "OPEN",
+     "error_type": "ContractError",
+     "id": "dc31691ee6dd5b8659b64a568f2a0ab18585a43b0cd95d3ee2f95487f5b4a65a",
+     "lifecycle_event": null,
+     "lifecycle_sequence": 0,
+     "number": 7,
+     "observation_id": "168b98ef95742df0c4df57261d57c4410f81657b75afcee625f968b800af2419",
+     "observation_ref": "sha256:2ffc031f767d6f1f0b74888e01bbe2e53bd5d78bdb8f8bcc8d95228c18bd1e05",
+     "observed_body_hash": "d2ce17e0443b10d167d40acef7302f5f44c608733c65d73e8395b3d86f211ebd",
+     "observed_state": "OPEN",
+     "observed_title_hash": "e28dea08fb589881cb05b8aedb1289c78615b30bd05a69de829e13a82278996c",
+     "projected_lifecycle_event": null,
+     "repository": "fixture/zeus",
+     "review_ids": [],
+     "status": "needs_attention",
+     "synced_revision": 1,
+     "ticket_id": "ZEUS-000000000001",
+     "title": "Independent services",
+     "title_hash": "e28dea08fb589881cb05b8aedb1289c78615b30bd05a69de829e13a82278996c",
+     "url": "https://github.com/fixture/zeus/issues/7"
+    }
+   ],
+   "ticket_remote_creations": [
+    {
+     "at": "2026-09-22T00:00:00+00:00",
+     "authority": "external_observation_only",
+     "claim_owner": "5eed0000-0000-4000-8000-00000000002a",
+     "evidence_ref": "sha256:d231728ae5b16ddedbbe898b3e12d1eb9c537e260da3dd87652834d3f1b4d1fe",
+     "number": 7,
+     "repository": "fixture/zeus",
+     "ticket_id": "ZEUS-000000000001",
+     "url": "https://github.com/fixture/zeus/issues/7"
+    }
+   ],
+   "ticket_remote_observations": [
+    {
+     "at": "2026-09-22T00:00:00+00:00",
+     "authority": "external_observation_only",
+     "evidence_ref": "sha256:01eae622974fe0598c8ba94a933fa5e7098809b3b4a47e51b4086956cc8f6fcc",
+     "first_seen": "2026-09-22T00:00:00+00:00",
+     "id": "9624199479b30f733d34646d8df0d91385708b8a6ae172a3225968deaded75fa",
+     "marker_present": true,
+     "number": 7,
+     "purpose": "pre_write",
+     "repository": "fixture/zeus",
+     "sequence": 2,
+     "state": "OPEN",
+     "ticket_id": "ZEUS-000000000001",
+     "title": "An external title",
+     "url": "https://github.com/fixture/zeus/issues/7"
+    },
+    {
+     "at": "2026-09-22T00:00:00+00:00",
+     "authority": "external_observation_only",
+     "evidence_ref": "sha256:2ffc031f767d6f1f0b74888e01bbe2e53bd5d78bdb8f8bcc8d95228c18bd1e05",
+     "first_seen": "2026-09-22T00:00:00+00:00",
+     "id": "168b98ef95742df0c4df57261d57c4410f81657b75afcee625f968b800af2419",
+     "marker_present": true,
+     "number": 7,
+     "purpose": "post_write",
+     "repository": "fixture/zeus",
+     "sequence": 1,
+     "state": "OPEN",
+     "ticket_id": "ZEUS-000000000001",
+     "title": "Independent services",
+     "url": "https://github.com/fixture/zeus/issues/7"
+    }
+   ],
+   "ticket_syncs": [
+    {
+     "created_number": 7,
+     "creation_uncertain": false,
+     "error_type": "ContractError",
+     "id": "dc31691ee6dd5b8659b64a568f2a0ab18585a43b0cd95d3ee2f95487f5b4a65a",
+     "lease_until": "2026-09-22T00:05:00+00:00",
+     "observed_body_hash": "d2ce17e0443b10d167d40acef7302f5f44c608733c65d73e8395b3d86f211ebd",
+     "observed_title_hash": "e28dea08fb589881cb05b8aedb1289c78615b30bd05a69de829e13a82278996c",
+     "owner": null,
+     "pending_body_hash": null,
+     "pending_title_hash": null,
+     "reconcile_observation": null,
+     "status": "needs_attention"
+    }
+   ]
+  },
+  "legacy_link_does_not_trust_an_arbitrary_observed_title": {
+   "artifacts_added": 1,
+   "counts_after": {
+    "ticket_github": 1,
+    "ticket_remote_creations": 1,
+    "ticket_remote_observations": 2,
+    "ticket_syncs": 1
+   },
+   "gh_verbs": [
+    "issue view",
+    "issue edit",
+    "issue view"
+   ],
+   "outcome": "returned",
+   "store_after": "423a19cc85817560",
+   "store_before": "39bcc49269bb0d6c",
+   "store_unchanged": false,
+   "value": {
+    "at": "2026-09-22T00:00:00+00:00",
+    "attempted_content_hash": "2f16861407b333f3e25b47fba02742fa10b2fd2258a0b1d5fc13796884595e01",
+    "attempted_revision": 1,
+    "body_hash": "d2ce17e0443b10d167d40acef7302f5f44c608733c65d73e8395b3d86f211ebd",
+    "content_hash": "2f16861407b333f3e25b47fba02742fa10b2fd2258a0b1d5fc13796884595e01",
+    "desired_state": "OPEN",
+    "id": "dc31691ee6dd5b8659b64a568f2a0ab18585a43b0cd95d3ee2f95487f5b4a65a",
+    "lifecycle_event": null,
+    "lifecycle_sequence": 0,
+    "number": 7,
+    "observation_id": "168b98ef95742df0c4df57261d57c4410f81657b75afcee625f968b800af2419",
+    "observation_ref": "sha256:2ffc031f767d6f1f0b74888e01bbe2e53bd5d78bdb8f8bcc8d95228c18bd1e05",
+    "observed_body_hash": "d2ce17e0443b10d167d40acef7302f5f44c608733c65d73e8395b3d86f211ebd",
+    "observed_state": "OPEN",
+    "observed_title_hash": "e28dea08fb589881cb05b8aedb1289c78615b30bd05a69de829e13a82278996c",
+    "projected_lifecycle_event": null,
+    "repository": "fixture/zeus",
+    "review_ids": [],
+    "status": "synced",
+    "synced_revision": 1,
+    "ticket_id": "ZEUS-000000000001",
+    "title": "Independent services",
+    "title_hash": "e28dea08fb589881cb05b8aedb1289c78615b30bd05a69de829e13a82278996c",
+    "url": "https://github.com/fixture/zeus/issues/7"
+   }
+  },
+  "legacy_link_uses_the_original_revision_title": {
+   "artifacts_added": 1,
+   "counts_after": {
+    "ticket_github": 1,
+    "ticket_remote_creations": 1,
+    "ticket_remote_observations": 3,
+    "ticket_syncs": 1
+   },
+   "gh_verbs": [
+    "issue view",
+    "issue edit",
+    "issue view"
+   ],
+   "outcome": "returned",
+   "store_after": "b87d786054e0375f",
+   "store_before": "da23c7d460819978",
+   "store_unchanged": false,
+   "value": {
+    "at": "2026-09-22T00:00:00+00:00",
+    "attempted_content_hash": "5edf1cb6056e5384e6bb8aedfae3f2c35c9a4f827d21457e09dd42ffa70e22c5",
+    "attempted_revision": 2,
+    "body_hash": "bdcaaa4e08267ef60d17a618793224acc1a7aebc6014a4732779ffc637eb50d5",
+    "content_hash": "5edf1cb6056e5384e6bb8aedfae3f2c35c9a4f827d21457e09dd42ffa70e22c5",
+    "desired_state": "OPEN",
+    "id": "dc31691ee6dd5b8659b64a568f2a0ab18585a43b0cd95d3ee2f95487f5b4a65a",
+    "lifecycle_event": null,
+    "lifecycle_sequence": 0,
+    "number": 7,
+    "observation_id": "f6a3fbe87b8f16492aeabebc21f901acccea99b5fd0e38ac73de664ac671e011",
+    "observation_ref": "sha256:a79a8298b4de7d818c71b16400875aff2fe04fc9cb6ac16b492b2ac0f782c97c",
+    "observed_body_hash": "bdcaaa4e08267ef60d17a618793224acc1a7aebc6014a4732779ffc637eb50d5",
+    "observed_state": "OPEN",
+    "observed_title_hash": "69a1a295f1a9eafcd523c19f6e5fe0630e1175ae5d34bfec10b858913419bb48",
+    "projected_lifecycle_event": null,
+    "repository": "fixture/zeus",
+    "review_ids": [],
+    "status": "synced",
+    "synced_revision": 2,
+    "ticket_id": "ZEUS-000000000001",
+    "title": "Revised criteria",
+    "title_hash": "69a1a295f1a9eafcd523c19f6e5fe0630e1175ae5d34bfec10b858913419bb48",
+    "url": "https://github.com/fixture/zeus/issues/7"
+   }
+  },
+  "local_change_before_the_write": {
+   "artifacts_added": 2,
+   "counts_after": {
+    "ticket_github": 1,
+    "ticket_remote_creations": 1,
+    "ticket_remote_observations": 1,
+    "ticket_syncs": 1
+   },
+   "gh_verbs": [
+    "issue list",
+    "issue create",
+    "issue view"
+   ],
+   "outcome": "returned",
+   "store_after": "457745fe327d19ba",
+   "store_before": "733694885361b642",
+   "store_unchanged": false,
+   "value": {
+    "at": "2026-09-22T00:00:00+00:00",
+    "attempted_content_hash": "2f16861407b333f3e25b47fba02742fa10b2fd2258a0b1d5fc13796884595e01",
+    "attempted_revision": 1,
+    "body_hash": "d2ce17e0443b10d167d40acef7302f5f44c608733c65d73e8395b3d86f211ebd",
+    "content_hash": "2f16861407b333f3e25b47fba02742fa10b2fd2258a0b1d5fc13796884595e01",
+    "desired_state": "OPEN",
+    "id": "dc31691ee6dd5b8659b64a568f2a0ab18585a43b0cd95d3ee2f95487f5b4a65a",
+    "lifecycle_event": null,
+    "lifecycle_sequence": 0,
+    "number": 7,
+    "observation_id": "168b98ef95742df0c4df57261d57c4410f81657b75afcee625f968b800af2419",
+    "observation_ref": "sha256:2ffc031f767d6f1f0b74888e01bbe2e53bd5d78bdb8f8bcc8d95228c18bd1e05",
+    "observed_body_hash": "d2ce17e0443b10d167d40acef7302f5f44c608733c65d73e8395b3d86f211ebd",
+    "observed_state": "OPEN",
+    "observed_title_hash": "e28dea08fb589881cb05b8aedb1289c78615b30bd05a69de829e13a82278996c",
+    "projected_lifecycle_event": null,
+    "repository": "fixture/zeus",
+    "review_ids": [],
+    "status": "outdated",
+    "synced_revision": 1,
+    "ticket_id": "ZEUS-000000000001",
+    "title": "Independent services",
+    "title_hash": "e28dea08fb589881cb05b8aedb1289c78615b30bd05a69de829e13a82278996c",
+    "url": "https://github.com/fixture/zeus/issues/7"
+   }
+  },
+  "local_revision_during_the_readback_is_outdated": {
+   "artifacts_added": 0,
+   "cause_type": null,
+   "counts_after": {
+    "ticket_github": 1,
+    "ticket_remote_creations": 1,
+    "ticket_remote_observations": 2,
+    "ticket_syncs": 1
+   },
+   "gh_verbs": [
+    "issue view"
+   ],
+   "is_contract_error": true,
+   "message": "Ticket changed before sync",
+   "outcome": "raised",
+   "store_after": "4e52ab1265e21ed1",
+   "store_before": "1d9ade5b4eee181c",
+   "store_unchanged": false,
+   "type": "ContractError"
+  },
+  "local_revision_rows": {
+   "ticket_github": [
+    {
+     "at": "2026-09-22T00:00:00+00:00",
+     "attempted_content_hash": "2f16861407b333f3e25b47fba02742fa10b2fd2258a0b1d5fc13796884595e01",
+     "attempted_revision": 1,
+     "body_hash": "d2ce17e0443b10d167d40acef7302f5f44c608733c65d73e8395b3d86f211ebd",
+     "content_hash": "2f16861407b333f3e25b47fba02742fa10b2fd2258a0b1d5fc13796884595e01",
+     "desired_state": "OPEN",
+     "error_type": "ContractError",
+     "id": "dc31691ee6dd5b8659b64a568f2a0ab18585a43b0cd95d3ee2f95487f5b4a65a",
+     "lifecycle_event": null,
+     "lifecycle_sequence": 0,
+     "number": 7,
+     "observation_id": "168b98ef95742df0c4df57261d57c4410f81657b75afcee625f968b800af2419",
+     "observation_ref": "sha256:2ffc031f767d6f1f0b74888e01bbe2e53bd5d78bdb8f8bcc8d95228c18bd1e05",
+     "observed_body_hash": "d2ce17e0443b10d167d40acef7302f5f44c608733c65d73e8395b3d86f211ebd",
+     "observed_state": "OPEN",
+     "observed_title_hash": "e28dea08fb589881cb05b8aedb1289c78615b30bd05a69de829e13a82278996c",
+     "projected_lifecycle_event": null,
+     "repository": "fixture/zeus",
+     "review_ids": [],
+     "status": "needs_attention",
+     "synced_revision": 1,
+     "ticket_id": "ZEUS-000000000001",
+     "title": "Independent services",
+     "title_hash": "e28dea08fb589881cb05b8aedb1289c78615b30bd05a69de829e13a82278996c",
+     "url": "https://github.com/fixture/zeus/issues/7"
+    }
+   ],
+   "ticket_remote_creations": [
+    {
+     "at": "2026-09-22T00:00:00+00:00",
+     "authority": "external_observation_only",
+     "claim_owner": "5eed0000-0000-4000-8000-000000000035",
+     "evidence_ref": "sha256:1836b627b9114cc9dcd94ebf9a18c5e3310853b42a13b1644c9c18d5e1cba4b5",
+     "number": 7,
+     "repository": "fixture/zeus",
+     "ticket_id": "ZEUS-000000000001",
+     "url": "https://github.com/fixture/zeus/issues/7"
+    }
+   ],
+   "ticket_remote_observations": [
+    {
+     "at": "2026-09-22T00:00:00+00:00",
+     "authority": "external_observation_only",
+     "evidence_ref": "sha256:2ffc031f767d6f1f0b74888e01bbe2e53bd5d78bdb8f8bcc8d95228c18bd1e05",
+     "first_seen": "2026-09-22T00:00:00+00:00",
+     "id": "168b98ef95742df0c4df57261d57c4410f81657b75afcee625f968b800af2419",
+     "marker_present": true,
+     "number": 7,
+     "purpose": "post_write",
+     "repository": "fixture/zeus",
+     "sequence": 1,
+     "state": "OPEN",
+     "ticket_id": "ZEUS-000000000001",
+     "title": "Independent services",
+     "url": "https://github.com/fixture/zeus/issues/7"
+    },
+    {
+     "at": "2026-09-22T00:00:00+00:00",
+     "authority": "external_observation_only",
+     "evidence_ref": "sha256:2ffc031f767d6f1f0b74888e01bbe2e53bd5d78bdb8f8bcc8d95228c18bd1e05",
+     "first_seen": "2026-09-22T00:00:00+00:00",
+     "id": "fc98d62c57540e26fb08b14170e4261105d0f3995feee0c2356c6aeefecbd95c",
+     "marker_present": true,
+     "number": 7,
+     "purpose": "pre_write",
+     "repository": "fixture/zeus",
+     "sequence": 2,
+     "state": "OPEN",
+     "ticket_id": "ZEUS-000000000001",
+     "title": "Independent services",
+     "url": "https://github.com/fixture/zeus/issues/7"
+    }
+   ],
+   "ticket_syncs": [
+    {
+     "created_number": 7,
+     "creation_uncertain": false,
+     "error_type": "ContractError",
+     "id": "dc31691ee6dd5b8659b64a568f2a0ab18585a43b0cd95d3ee2f95487f5b4a65a",
+     "lease_until": "2026-09-22T00:05:00+00:00",
+     "observed_body_hash": "d2ce17e0443b10d167d40acef7302f5f44c608733c65d73e8395b3d86f211ebd",
+     "observed_title_hash": "e28dea08fb589881cb05b8aedb1289c78615b30bd05a69de829e13a82278996c",
+     "owner": null,
+     "pending_body_hash": null,
+     "pending_title_hash": null,
+     "reconcile_observation": null,
+     "status": "needs_attention"
+    }
+   ]
+  },
+  "pull_records_the_foreign_body": {
+   "artifacts_added": 0,
+   "counts_after": {
+    "ticket_github": 1,
+    "ticket_remote_creations": 1,
+    "ticket_remote_observations": 3,
+    "ticket_syncs": 1
+   },
+   "gh_verbs": [
+    "issue view"
+   ],
+   "outcome": "returned",
+   "store_after": "070a293b2e26623c",
+   "store_before": "9e7d5f54b965dece",
+   "store_unchanged": false,
+   "value": {
+    "at": "2026-09-22T00:00:00+00:00",
+    "authority": "external_observation_only",
+    "evidence_ref": "sha256:562cd3a6b6c646f202d3805e8e8dc881532dc8de0501d195d8c09a0b174b7095",
+    "first_seen": "2026-09-22T00:00:00+00:00",
+    "id": "f4586b273bb6f6d6eab57e59735dc33da078c8bca737d9dea1d534f16fe384ab",
+    "marker_present": false,
+    "number": 7,
+    "purpose": "pull",
+    "repository": "fixture/zeus",
+    "sequence": 3,
+    "state": "OPEN",
+    "ticket_id": "ZEUS-000000000001",
+    "title": "Independent services",
+    "url": "https://github.com/fixture/zeus/issues/7"
+   }
+  },
+  "reconcile_after_the_remote_changed_again": {
+   "artifacts_added": 1,
+   "cause_type": null,
+   "counts_after": {
+    "ticket_github": 1,
+    "ticket_remote_creations": 1,
+    "ticket_remote_observations": 4,
+    "ticket_syncs": 1
+   },
+   "gh_verbs": [
+    "issue view"
+   ],
+   "is_contract_error": true,
+   "message": "Remote issue changed since reconciliation observation",
+   "outcome": "raised",
+   "store_after": "3e4e127677f5d09a",
+   "store_before": "33bb0bef57902236",
+   "store_unchanged": false,
+   "type": "ContractError"
+  },
+  "reconcile_failure_records_no_standing_grant": {
+   "syncs": [
+    {
+     "created_number": 7,
+     "creation_uncertain": false,
+     "error_type": "ContractError",
+     "id": "dc31691ee6dd5b8659b64a568f2a0ab18585a43b0cd95d3ee2f95487f5b4a65a",
+     "observed_body_hash": "bdcaaa4e08267ef60d17a618793224acc1a7aebc6014a4732779ffc637eb50d5",
+     "observed_title_hash": "69a1a295f1a9eafcd523c19f6e5fe0630e1175ae5d34bfec10b858913419bb48",
+     "owner": null,
+     "pending_body_hash": null,
+     "pending_title_hash": null,
+     "reconcile_observation": "6bd3eb07141a5a46420bd9290412a804a3c0880df06227aa12b24fd1f6610d78",
+     "status": "synced"
+    }
+   ]
+  },
+  "reconcile_needs_the_current_revision": {
+   "artifacts_added": 0,
+   "cause_type": null,
+   "counts_after": {
+    "ticket_github": 1,
+    "ticket_remote_creations": 1,
+    "ticket_remote_observations": 3,
+    "ticket_syncs": 1
+   },
+   "gh_verbs": [],
+   "is_contract_error": true,
+   "message": "Reconciliation requires the current ticket revision",
+   "outcome": "raised",
+   "store_after": "33bb0bef57902236",
+   "store_before": "33bb0bef57902236",
+   "store_unchanged": true,
+   "type": "ContractError"
+  },
+  "reconcile_observation_of_another_issue": {
+   "artifacts_added": 0,
+   "cause_type": null,
+   "counts_after": {
+    "ticket_github": 1,
+    "ticket_remote_creations": 1,
+    "ticket_remote_observations": 3,
+    "ticket_syncs": 1
+   },
+   "gh_verbs": [
+    "issue view"
+   ],
+   "is_contract_error": true,
+   "message": "Reconciliation observation belongs to another issue",
+   "outcome": "raised",
+   "store_after": "5b381d62e21c229d",
+   "store_before": "bdcf00ef9f2828f5",
+   "store_unchanged": false,
+   "type": "ContractError"
+  },
+  "reconcile_overwrites_the_observed_issue": {
+   "artifacts_added": 1,
+   "counts_after": {
+    "ticket_github": 1,
+    "ticket_remote_creations": 1,
+    "ticket_remote_observations": 6,
+    "ticket_syncs": 1
+   },
+   "gh_verbs": [
+    "issue view",
+    "issue edit",
+    "issue view"
+   ],
+   "outcome": "returned",
+   "store_after": "ed16d3375961db3b",
+   "store_before": "f0447c88f6338f5d",
+   "store_unchanged": false,
+   "value": {
+    "at": "2026-09-22T00:00:00+00:00",
+    "attempted_content_hash": "5edf1cb6056e5384e6bb8aedfae3f2c35c9a4f827d21457e09dd42ffa70e22c5",
+    "attempted_revision": 2,
+    "body_hash": "bdcaaa4e08267ef60d17a618793224acc1a7aebc6014a4732779ffc637eb50d5",
+    "content_hash": "5edf1cb6056e5384e6bb8aedfae3f2c35c9a4f827d21457e09dd42ffa70e22c5",
+    "desired_state": "OPEN",
+    "id": "dc31691ee6dd5b8659b64a568f2a0ab18585a43b0cd95d3ee2f95487f5b4a65a",
+    "lifecycle_event": null,
+    "lifecycle_sequence": 0,
+    "number": 7,
+    "observation_id": "f6a3fbe87b8f16492aeabebc21f901acccea99b5fd0e38ac73de664ac671e011",
+    "observation_ref": "sha256:a79a8298b4de7d818c71b16400875aff2fe04fc9cb6ac16b492b2ac0f782c97c",
+    "observed_body_hash": "bdcaaa4e08267ef60d17a618793224acc1a7aebc6014a4732779ffc637eb50d5",
+    "observed_state": "OPEN",
+    "observed_title_hash": "69a1a295f1a9eafcd523c19f6e5fe0630e1175ae5d34bfec10b858913419bb48",
+    "projected_lifecycle_event": null,
+    "repository": "fixture/zeus",
+    "review_ids": [],
+    "status": "synced",
+    "synced_revision": 2,
+    "ticket_id": "ZEUS-000000000001",
+    "title": "Revised criteria",
+    "title_hash": "69a1a295f1a9eafcd523c19f6e5fe0630e1175ae5d34bfec10b858913419bb48",
+    "url": "https://github.com/fixture/zeus/issues/7"
+   }
+  },
+  "reconcile_remote_after": "<!-- zeus-ticket:ZEUS-000000000001 -->",
+  "reconcile_rows": {
+   "ticket_github": [
+    {
+     "at": "2026-09-22T00:00:00+00:00",
+     "attempted_content_hash": "5edf1cb6056e5384e6bb8aedfae3f2c35c9a4f827d21457e09dd42ffa70e22c5",
+     "attempted_revision": 2,
+     "body_hash": "bdcaaa4e08267ef60d17a618793224acc1a7aebc6014a4732779ffc637eb50d5",
+     "content_hash": "5edf1cb6056e5384e6bb8aedfae3f2c35c9a4f827d21457e09dd42ffa70e22c5",
+     "desired_state": "OPEN",
+     "id": "dc31691ee6dd5b8659b64a568f2a0ab18585a43b0cd95d3ee2f95487f5b4a65a",
+     "lifecycle_event": null,
+     "lifecycle_sequence": 0,
+     "number": 7,
+     "observation_id": "f6a3fbe87b8f16492aeabebc21f901acccea99b5fd0e38ac73de664ac671e011",
+     "observation_ref": "sha256:a79a8298b4de7d818c71b16400875aff2fe04fc9cb6ac16b492b2ac0f782c97c",
+     "observed_body_hash": "bdcaaa4e08267ef60d17a618793224acc1a7aebc6014a4732779ffc637eb50d5",
+     "observed_state": "OPEN",
+     "observed_title_hash": "69a1a295f1a9eafcd523c19f6e5fe0630e1175ae5d34bfec10b858913419bb48",
+     "projected_lifecycle_event": null,
+     "repository": "fixture/zeus",
+     "review_ids": [],
+     "status": "synced",
+     "synced_revision": 2,
+     "ticket_id": "ZEUS-000000000001",
+     "title": "Revised criteria",
+     "title_hash": "69a1a295f1a9eafcd523c19f6e5fe0630e1175ae5d34bfec10b858913419bb48",
+     "url": "https://github.com/fixture/zeus/issues/7"
+    }
+   ],
+   "ticket_remote_creations": [
+    {
+     "at": "2026-09-22T00:00:00+00:00",
+     "authority": "external_observation_only",
+     "claim_owner": "5eed0000-0000-4000-8000-000000000023",
+     "evidence_ref": "sha256:753e49ff12e52bc5698cf497ca20ddd3d3425b5de1b4701e10f949b3d011c19d",
+     "number": 7,
+     "repository": "fixture/zeus",
+     "ticket_id": "ZEUS-000000000001",
+     "url": "https://github.com/fixture/zeus/issues/7"
+    }
+   ],
+   "ticket_remote_observations": [
+    {
+     "at": "2026-09-22T00:00:00+00:00",
+     "authority": "external_observation_only",
+     "evidence_ref": "sha256:2ffc031f767d6f1f0b74888e01bbe2e53bd5d78bdb8f8bcc8d95228c18bd1e05",
+     "first_seen": "2026-09-22T00:00:00+00:00",
+     "id": "168b98ef95742df0c4df57261d57c4410f81657b75afcee625f968b800af2419",
+     "marker_present": true,
+     "number": 7,
+     "purpose": "post_write",
+     "repository": "fixture/zeus",
+     "sequence": 1,
+     "state": "OPEN",
+     "ticket_id": "ZEUS-000000000001",
+     "title": "Independent services",
+     "url": "https://github.com/fixture/zeus/issues/7"
+    },
+    {
+     "at": "2026-09-22T00:00:00+00:00",
+     "authority": "external_observation_only",
+     "evidence_ref": "sha256:562cd3a6b6c646f202d3805e8e8dc881532dc8de0501d195d8c09a0b174b7095",
+     "first_seen": "2026-09-22T00:00:00+00:00",
+     "id": "6a5591bd0ecd6be7db588ab1abda7a4fed1dc2c43fefa255b7f6197928e83ead",
+     "marker_present": false,
+     "number": 7,
+     "purpose": "pre_write",
+     "repository": "fixture/zeus",
+     "sequence": 2,
+     "state": "OPEN",
+     "ticket_id": "ZEUS-000000000001",
+     "title": "Independent services",
+     "url": "https://github.com/fixture/zeus/issues/7"
+    },
+    {
+     "at": "2026-09-22T00:00:00+00:00",
+     "authority": "external_observation_only",
+     "evidence_ref": "sha256:562cd3a6b6c646f202d3805e8e8dc881532dc8de0501d195d8c09a0b174b7095",
+     "first_seen": "2026-09-22T00:00:00+00:00",
+     "id": "f4586b273bb6f6d6eab57e59735dc33da078c8bca737d9dea1d534f16fe384ab",
+     "marker_present": false,
+     "number": 7,
+     "purpose": "pull",
+     "repository": "fixture/zeus",
+     "sequence": 3,
+     "state": "OPEN",
+     "ticket_id": "ZEUS-000000000001",
+     "title": "Independent services",
+     "url": "https://github.com/fixture/zeus/issues/7"
+    },
+    {
+     "at": "2026-09-22T00:00:00+00:00",
+     "authority": "external_observation_only",
+     "evidence_ref": "sha256:9a3279590453b987c47ed5cfef5540d2626305be022c0703e1618f13453e8307",
+     "first_seen": "2026-09-22T00:00:00+00:00",
+     "id": "6bd3eb07141a5a46420bd9290412a804a3c0880df06227aa12b24fd1f6610d78",
+     "marker_present": false,
+     "number": 7,
+     "purpose": "pull",
+     "repository": "fixture/zeus",
+     "sequence": 5,
+     "state": "OPEN",
+     "ticket_id": "ZEUS-000000000001",
+     "title": "Independent services",
+     "url": "https://github.com/fixture/zeus/issues/7"
+    },
+    {
+     "at": "2026-09-22T00:00:00+00:00",
+     "authority": "external_observation_only",
+     "evidence_ref": "sha256:9a3279590453b987c47ed5cfef5540d2626305be022c0703e1618f13453e8307",
+     "first_seen": "2026-09-22T00:00:00+00:00",
+     "id": "8dfda931ea0d2a380aaed6ba590945c6636dae20bd1e9d879bc1ae6479a9efa9",
+     "marker_present": false,
+     "number": 7,
+     "purpose": "pre_write",
+     "repository": "fixture/zeus",
+     "sequence": 4,
+     "state": "OPEN",
+     "ticket_id": "ZEUS-000000000001",
+     "title": "Independent services",
+     "url": "https://github.com/fixture/zeus/issues/7"
+    },
+    {
+     "at": "2026-09-22T00:00:00+00:00",
+     "authority": "external_observation_only",
+     "evidence_ref": "sha256:a79a8298b4de7d818c71b16400875aff2fe04fc9cb6ac16b492b2ac0f782c97c",
+     "first_seen": "2026-09-22T00:00:00+00:00",
+     "id": "f6a3fbe87b8f16492aeabebc21f901acccea99b5fd0e38ac73de664ac671e011",
+     "marker_present": true,
+     "number": 7,
+     "purpose": "post_write",
+     "repository": "fixture/zeus",
+     "sequence": 6,
+     "state": "OPEN",
+     "ticket_id": "ZEUS-000000000001",
+     "title": "Revised criteria",
+     "url": "https://github.com/fixture/zeus/issues/7"
+    }
+   ],
+   "ticket_syncs": [
+    {
+     "created_number": 7,
+     "creation_uncertain": false,
+     "error_type": "ContractError",
+     "id": "dc31691ee6dd5b8659b64a568f2a0ab18585a43b0cd95d3ee2f95487f5b4a65a",
+     "lease_until": "2026-09-22T00:05:00+00:00",
+     "observed_body_hash": "bdcaaa4e08267ef60d17a618793224acc1a7aebc6014a4732779ffc637eb50d5",
+     "observed_title_hash": "69a1a295f1a9eafcd523c19f6e5fe0630e1175ae5d34bfec10b858913419bb48",
+     "owner": null,
+     "pending_body_hash": null,
+     "pending_title_hash": null,
+     "reconcile_observation": "6bd3eb07141a5a46420bd9290412a804a3c0880df06227aa12b24fd1f6610d78",
+     "status": "synced"
+    }
+   ]
+  },
+  "reconcile_with_a_stale_revision": {
+   "artifacts_added": 0,
+   "cause_type": null,
+   "counts_after": {
+    "ticket_github": 1,
+    "ticket_remote_creations": 1,
+    "ticket_remote_observations": 3,
+    "ticket_syncs": 1
+   },
+   "gh_verbs": [],
+   "is_contract_error": true,
+   "message": "Stale ticket sync revision",
+   "outcome": "raised",
+   "store_after": "33bb0bef57902236",
+   "store_before": "33bb0bef57902236",
+   "store_unchanged": true,
+   "type": "ContractError"
+  },
+  "reconcile_with_an_unknown_observation": {
+   "artifacts_added": 0,
+   "cause_type": null,
+   "counts_after": {
+    "ticket_github": 1,
+    "ticket_remote_creations": 1,
+    "ticket_remote_observations": 3,
+    "ticket_syncs": 1
+   },
+   "gh_verbs": [
+    "issue view"
+   ],
+   "is_contract_error": true,
+   "message": "Reconciliation observation belongs to another issue",
+   "outcome": "raised",
+   "store_after": "33bb0bef57902236",
+   "store_before": "33bb0bef57902236",
+   "store_unchanged": true,
+   "type": "ContractError"
+  },
+  "remote_manual_close_is_a_state_conflict": {
+   "artifacts_added": 1,
+   "counts_after": {
+    "ticket_github": 1,
+    "ticket_remote_creations": 1,
+    "ticket_remote_observations": 3,
+    "ticket_syncs": 1
+   },
+   "gh_verbs": [
+    "issue view",
+    "issue view"
+   ],
+   "outcome": "returned",
+   "store_after": "c292f593ac39fb70",
+   "store_before": "85751bd6f505c132",
+   "store_unchanged": false,
+   "value": {
+    "at": "2026-09-22T00:00:00+00:00",
+    "attempted_content_hash": "2f16861407b333f3e25b47fba02742fa10b2fd2258a0b1d5fc13796884595e01",
+    "attempted_revision": 1,
+    "body_hash": "d2ce17e0443b10d167d40acef7302f5f44c608733c65d73e8395b3d86f211ebd",
+    "content_hash": "2f16861407b333f3e25b47fba02742fa10b2fd2258a0b1d5fc13796884595e01",
+    "desired_state": "OPEN",
+    "id": "dc31691ee6dd5b8659b64a568f2a0ab18585a43b0cd95d3ee2f95487f5b4a65a",
+    "lifecycle_event": null,
+    "lifecycle_sequence": 0,
+    "number": 7,
+    "observation_id": "c607bbf0c80db71a094b7f9a8108fc91c9c2aa04a3fedaf24872442d0b1c6717",
+    "observation_ref": "sha256:8b658db487f433ba3007c04aba67829712950a2a077c0930744ba43cfac6adff",
+    "observed_body_hash": "d2ce17e0443b10d167d40acef7302f5f44c608733c65d73e8395b3d86f211ebd",
+    "observed_state": "CLOSED",
+    "observed_title_hash": "e28dea08fb589881cb05b8aedb1289c78615b30bd05a69de829e13a82278996c",
+    "projected_lifecycle_event": null,
+    "repository": "fixture/zeus",
+    "review_ids": [],
+    "status": "state_conflict",
+    "synced_revision": 1,
+    "ticket_id": "ZEUS-000000000001",
+    "title": "Independent services",
+    "title_hash": "e28dea08fb589881cb05b8aedb1289c78615b30bd05a69de829e13a82278996c",
+    "url": "https://github.com/fixture/zeus/issues/7"
+   }
+  },
+  "remote_manual_close_leaves_the_ticket_open": "open",
+  "remote_manual_close_rows": {
+   "ticket_github": [
+    {
+     "at": "2026-09-22T00:00:00+00:00",
+     "attempted_content_hash": "2f16861407b333f3e25b47fba02742fa10b2fd2258a0b1d5fc13796884595e01",
+     "attempted_revision": 1,
+     "body_hash": "d2ce17e0443b10d167d40acef7302f5f44c608733c65d73e8395b3d86f211ebd",
+     "content_hash": "2f16861407b333f3e25b47fba02742fa10b2fd2258a0b1d5fc13796884595e01",
+     "desired_state": "OPEN",
+     "id": "dc31691ee6dd5b8659b64a568f2a0ab18585a43b0cd95d3ee2f95487f5b4a65a",
+     "lifecycle_event": null,
+     "lifecycle_sequence": 0,
+     "number": 7,
+     "observation_id": "c607bbf0c80db71a094b7f9a8108fc91c9c2aa04a3fedaf24872442d0b1c6717",
+     "observation_ref": "sha256:8b658db487f433ba3007c04aba67829712950a2a077c0930744ba43cfac6adff",
+     "observed_body_hash": "d2ce17e0443b10d167d40acef7302f5f44c608733c65d73e8395b3d86f211ebd",
+     "observed_state": "CLOSED",
+     "observed_title_hash": "e28dea08fb589881cb05b8aedb1289c78615b30bd05a69de829e13a82278996c",
+     "projected_lifecycle_event": null,
+     "repository": "fixture/zeus",
+     "review_ids": [],
+     "status": "state_conflict",
+     "synced_revision": 1,
+     "ticket_id": "ZEUS-000000000001",
+     "title": "Independent services",
+     "title_hash": "e28dea08fb589881cb05b8aedb1289c78615b30bd05a69de829e13a82278996c",
+     "url": "https://github.com/fixture/zeus/issues/7"
+    }
+   ],
+   "ticket_remote_creations": [
+    {
+     "at": "2026-09-22T00:00:00+00:00",
+     "authority": "external_observation_only",
+     "claim_owner": "5eed0000-0000-4000-8000-00000000002c",
+     "evidence_ref": "sha256:8053a19edfd9b50d026afc7997ec0e9f994d8ed391a8cc196605197b7541e259",
+     "number": 7,
+     "repository": "fixture/zeus",
+     "ticket_id": "ZEUS-000000000001",
+     "url": "https://github.com/fixture/zeus/issues/7"
+    }
+   ],
+   "ticket_remote_observations": [
+    {
+     "at": "2026-09-22T00:00:00+00:00",
+     "authority": "external_observation_only",
+     "evidence_ref": "sha256:2ffc031f767d6f1f0b74888e01bbe2e53bd5d78bdb8f8bcc8d95228c18bd1e05",
+     "first_seen": "2026-09-22T00:00:00+00:00",
+     "id": "168b98ef95742df0c4df57261d57c4410f81657b75afcee625f968b800af2419",
+     "marker_present": true,
+     "number": 7,
+     "purpose": "post_write",
+     "repository": "fixture/zeus",
+     "sequence": 1,
+     "state": "OPEN",
+     "ticket_id": "ZEUS-000000000001",
+     "title": "Independent services",
+     "url": "https://github.com/fixture/zeus/issues/7"
+    },
+    {
+     "at": "2026-09-22T00:00:00+00:00",
+     "authority": "external_observation_only",
+     "evidence_ref": "sha256:8b658db487f433ba3007c04aba67829712950a2a077c0930744ba43cfac6adff",
+     "first_seen": "2026-09-22T00:00:00+00:00",
+     "id": "c607bbf0c80db71a094b7f9a8108fc91c9c2aa04a3fedaf24872442d0b1c6717",
+     "marker_present": true,
+     "number": 7,
+     "purpose": "post_write",
+     "repository": "fixture/zeus",
+     "sequence": 3,
+     "state": "CLOSED",
+     "ticket_id": "ZEUS-000000000001",
+     "title": "Independent services",
+     "url": "https://github.com/fixture/zeus/issues/7"
+    },
+    {
+     "at": "2026-09-22T00:00:00+00:00",
+     "authority": "external_observation_only",
+     "evidence_ref": "sha256:8b658db487f433ba3007c04aba67829712950a2a077c0930744ba43cfac6adff",
+     "first_seen": "2026-09-22T00:00:00+00:00",
+     "id": "f1827790f208b84846b4a8d773daf3c395756bac1f3365a9fe59ac668987d91a",
+     "marker_present": true,
+     "number": 7,
+     "purpose": "pre_write",
+     "repository": "fixture/zeus",
+     "sequence": 2,
+     "state": "CLOSED",
+     "ticket_id": "ZEUS-000000000001",
+     "title": "Independent services",
+     "url": "https://github.com/fixture/zeus/issues/7"
+    }
+   ],
+   "ticket_syncs": [
+    {
+     "created_number": 7,
+     "creation_uncertain": false,
+     "id": "dc31691ee6dd5b8659b64a568f2a0ab18585a43b0cd95d3ee2f95487f5b4a65a",
+     "lease_until": "2026-09-22T00:05:00+00:00",
+     "observed_body_hash": "d2ce17e0443b10d167d40acef7302f5f44c608733c65d73e8395b3d86f211ebd",
+     "observed_title_hash": "e28dea08fb589881cb05b8aedb1289c78615b30bd05a69de829e13a82278996c",
+     "owner": null,
+     "pending_body_hash": null,
+     "pending_title_hash": null,
+     "reconcile_observation": null,
+     "status": "state_conflict"
+    }
+   ]
+  }
+ },
+ "lost_ack": {
+  "create_ack_lost": {
+   "artifacts_added": 0,
+   "cause_type": null,
+   "counts_after": {
+    "ticket_github": 0,
+    "ticket_remote_creations": 0,
+    "ticket_remote_observations": 0,
+    "ticket_syncs": 1
+   },
+   "gh_verbs": [
+    "issue list",
+    "issue create"
+   ],
+   "is_contract_error": false,
+   "message": "fixture response lost after issue create",
+   "outcome": "raised",
+   "store_after": "9cd4dd26ae7f5ac2",
+   "store_before": "733694885361b642",
+   "store_unchanged": false,
+   "type": "TimeoutError"
+  },
+  "create_ack_lost_rows": {
+   "ticket_github": [],
+   "ticket_remote_creations": [],
+   "ticket_remote_observations": [],
+   "ticket_syncs": [
+    {
+     "creation_uncertain": true,
+     "error_type": "TimeoutError",
+     "id": "dc31691ee6dd5b8659b64a568f2a0ab18585a43b0cd95d3ee2f95487f5b4a65a",
+     "lease_until": "2026-09-22T00:05:00+00:00",
+     "observed_body_hash": null,
+     "observed_title_hash": null,
+     "owner": null,
+     "pending_body_hash": "d2ce17e0443b10d167d40acef7302f5f44c608733c65d73e8395b3d86f211ebd",
+     "pending_title_hash": "e28dea08fb589881cb05b8aedb1289c78615b30bd05a69de829e13a82278996c",
+     "reconcile_observation": null,
+     "status": "needs_attention"
+    }
+   ]
+  },
+  "creates": 1,
+  "edit_ack_lost": {
+   "artifacts_added": 0,
+   "cause_type": null,
+   "counts_after": {
+    "ticket_github": 1,
+    "ticket_remote_creations": 1,
+    "ticket_remote_observations": 2,
+    "ticket_syncs": 1
+   },
+   "gh_verbs": [
+    "issue view",
+    "issue edit"
+   ],
+   "is_contract_error": false,
+   "message": "fixture response lost after issue edit",
+   "outcome": "raised",
+   "store_after": "a32a8f0db88fdca0",
+   "store_before": "2e3487a8b99cd81c",
+   "store_unchanged": false,
+   "type": "TimeoutError"
+  },
+  "edit_ack_lost_again": {
+   "artifacts_added": 1,
+   "counts_after": {
+    "ticket_github": 1,
+    "ticket_remote_creations": 1,
+    "ticket_remote_observations": 4,
+    "ticket_syncs": 1
+   },
+   "gh_verbs": [
+    "issue view",
+    "issue view"
+   ],
+   "outcome": "returned",
+   "store_after": "aaf2aeeac00ed715",
+   "store_before": "a32a8f0db88fdca0",
+   "store_unchanged": false,
+   "value": {
+    "at": "2026-09-22T00:00:00+00:00",
+    "attempted_content_hash": "5edf1cb6056e5384e6bb8aedfae3f2c35c9a4f827d21457e09dd42ffa70e22c5",
+    "attempted_revision": 2,
+    "body_hash": "bdcaaa4e08267ef60d17a618793224acc1a7aebc6014a4732779ffc637eb50d5",
+    "content_hash": "5edf1cb6056e5384e6bb8aedfae3f2c35c9a4f827d21457e09dd42ffa70e22c5",
+    "desired_state": "OPEN",
+    "id": "dc31691ee6dd5b8659b64a568f2a0ab18585a43b0cd95d3ee2f95487f5b4a65a",
+    "lifecycle_event": null,
+    "lifecycle_sequence": 0,
+    "number": 7,
+    "observation_id": "f6a3fbe87b8f16492aeabebc21f901acccea99b5fd0e38ac73de664ac671e011",
+    "observation_ref": "sha256:a79a8298b4de7d818c71b16400875aff2fe04fc9cb6ac16b492b2ac0f782c97c",
+    "observed_body_hash": "bdcaaa4e08267ef60d17a618793224acc1a7aebc6014a4732779ffc637eb50d5",
+    "observed_state": "OPEN",
+    "observed_title_hash": "69a1a295f1a9eafcd523c19f6e5fe0630e1175ae5d34bfec10b858913419bb48",
+    "projected_lifecycle_event": null,
+    "repository": "fixture/zeus",
+    "review_ids": [],
+    "status": "synced",
+    "synced_revision": 2,
+    "ticket_id": "ZEUS-000000000001",
+    "title": "Revised criteria",
+    "title_hash": "69a1a295f1a9eafcd523c19f6e5fe0630e1175ae5d34bfec10b858913419bb48",
+    "url": "https://github.com/fixture/zeus/issues/7"
+   }
+  },
+  "edit_ack_lost_rows": {
+   "ticket_github": [
+    {
+     "at": "2026-09-22T00:00:00+00:00",
+     "attempted_content_hash": "5edf1cb6056e5384e6bb8aedfae3f2c35c9a4f827d21457e09dd42ffa70e22c5",
+     "attempted_revision": 2,
+     "body_hash": "bdcaaa4e08267ef60d17a618793224acc1a7aebc6014a4732779ffc637eb50d5",
+     "content_hash": "5edf1cb6056e5384e6bb8aedfae3f2c35c9a4f827d21457e09dd42ffa70e22c5",
+     "desired_state": "OPEN",
+     "id": "dc31691ee6dd5b8659b64a568f2a0ab18585a43b0cd95d3ee2f95487f5b4a65a",
+     "lifecycle_event": null,
+     "lifecycle_sequence": 0,
+     "number": 7,
+     "observation_id": "f6a3fbe87b8f16492aeabebc21f901acccea99b5fd0e38ac73de664ac671e011",
+     "observation_ref": "sha256:a79a8298b4de7d818c71b16400875aff2fe04fc9cb6ac16b492b2ac0f782c97c",
+     "observed_body_hash": "bdcaaa4e08267ef60d17a618793224acc1a7aebc6014a4732779ffc637eb50d5",
+     "observed_state": "OPEN",
+     "observed_title_hash": "69a1a295f1a9eafcd523c19f6e5fe0630e1175ae5d34bfec10b858913419bb48",
+     "projected_lifecycle_event": null,
+     "repository": "fixture/zeus",
+     "review_ids": [],
+     "status": "synced",
+     "synced_revision": 2,
+     "ticket_id": "ZEUS-000000000001",
+     "title": "Revised criteria",
+     "title_hash": "69a1a295f1a9eafcd523c19f6e5fe0630e1175ae5d34bfec10b858913419bb48",
+     "url": "https://github.com/fixture/zeus/issues/7"
+    }
+   ],
+   "ticket_remote_creations": [
+    {
+     "at": "2026-09-22T00:00:00+00:00",
+     "authority": "external_observation_only",
+     "claim_owner": "5eed0000-0000-4000-8000-00000000001d",
+     "evidence_ref": "sha256:dcb51cc6ed7aa8fe83027e8ef40b4fc027885626f19bfa0d6a1b900b22975a9a",
+     "number": 7,
+     "repository": "fixture/zeus",
+     "ticket_id": "ZEUS-000000000001",
+     "url": "https://github.com/fixture/zeus/issues/7"
+    }
+   ],
+   "ticket_remote_observations": [
+    {
+     "at": "2026-09-22T00:00:00+00:00",
+     "authority": "external_observation_only",
+     "evidence_ref": "sha256:2ffc031f767d6f1f0b74888e01bbe2e53bd5d78bdb8f8bcc8d95228c18bd1e05",
+     "first_seen": "2026-09-22T00:00:00+00:00",
+     "id": "168b98ef95742df0c4df57261d57c4410f81657b75afcee625f968b800af2419",
+     "marker_present": true,
+     "number": 7,
+     "purpose": "post_write",
+     "repository": "fixture/zeus",
+     "sequence": 1,
+     "state": "OPEN",
+     "ticket_id": "ZEUS-000000000001",
+     "title": "Independent services",
+     "url": "https://github.com/fixture/zeus/issues/7"
+    },
+    {
+     "at": "2026-09-22T00:00:00+00:00",
+     "authority": "external_observation_only",
+     "evidence_ref": "sha256:2ffc031f767d6f1f0b74888e01bbe2e53bd5d78bdb8f8bcc8d95228c18bd1e05",
+     "first_seen": "2026-09-22T00:00:00+00:00",
+     "id": "fc98d62c57540e26fb08b14170e4261105d0f3995feee0c2356c6aeefecbd95c",
+     "marker_present": true,
+     "number": 7,
+     "purpose": "pre_write",
+     "repository": "fixture/zeus",
+     "sequence": 2,
+     "state": "OPEN",
+     "ticket_id": "ZEUS-000000000001",
+     "title": "Independent services",
+     "url": "https://github.com/fixture/zeus/issues/7"
+    },
+    {
+     "at": "2026-09-22T00:00:00+00:00",
+     "authority": "external_observation_only",
+     "evidence_ref": "sha256:a79a8298b4de7d818c71b16400875aff2fe04fc9cb6ac16b492b2ac0f782c97c",
+     "first_seen": "2026-09-22T00:00:00+00:00",
+     "id": "276678212678c455d0b15be698e041ca4b3d11ffa15e48ef4973ccff55ef34d1",
+     "marker_present": true,
+     "number": 7,
+     "purpose": "pre_write",
+     "repository": "fixture/zeus",
+     "sequence": 3,
+     "state": "OPEN",
+     "ticket_id": "ZEUS-000000000001",
+     "title": "Revised criteria",
+     "url": "https://github.com/fixture/zeus/issues/7"
+    },
+    {
+     "at": "2026-09-22T00:00:00+00:00",
+     "authority": "external_observation_only",
+     "evidence_ref": "sha256:a79a8298b4de7d818c71b16400875aff2fe04fc9cb6ac16b492b2ac0f782c97c",
+     "first_seen": "2026-09-22T00:00:00+00:00",
+     "id": "f6a3fbe87b8f16492aeabebc21f901acccea99b5fd0e38ac73de664ac671e011",
+     "marker_present": true,
+     "number": 7,
+     "purpose": "post_write",
+     "repository": "fixture/zeus",
+     "sequence": 4,
+     "state": "OPEN",
+     "ticket_id": "ZEUS-000000000001",
+     "title": "Revised criteria",
+     "url": "https://github.com/fixture/zeus/issues/7"
+    }
+   ],
+   "ticket_syncs": [
+    {
+     "created_number": 7,
+     "creation_uncertain": false,
+     "error_type": "TimeoutError",
+     "id": "dc31691ee6dd5b8659b64a568f2a0ab18585a43b0cd95d3ee2f95487f5b4a65a",
+     "lease_until": "2026-09-22T00:05:00+00:00",
+     "observed_body_hash": "bdcaaa4e08267ef60d17a618793224acc1a7aebc6014a4732779ffc637eb50d5",
+     "observed_title_hash": "69a1a295f1a9eafcd523c19f6e5fe0630e1175ae5d34bfec10b858913419bb48",
+     "owner": null,
+     "pending_body_hash": null,
+     "pending_title_hash": null,
+     "reconcile_observation": null,
+     "status": "synced"
+    }
+   ]
+  },
+  "lease_expired_after_the_write": {
+   "artifacts_added": 2,
+   "cause_type": null,
+   "counts_after": {
+    "ticket_github": 0,
+    "ticket_remote_creations": 1,
+    "ticket_remote_observations": 1,
+    "ticket_syncs": 1
+   },
+   "gh_verbs": [
+    "issue list",
+    "issue create",
+    "issue view"
+   ],
+   "is_contract_error": true,
+   "message": "Stale ticket sync",
+   "outcome": "raised",
+   "store_after": "cd6809e91ea65b6c",
+   "store_before": "733694885361b642",
+   "store_unchanged": false,
+   "type": "ContractError"
+  },
+  "lease_expired_remote": true,
+  "lease_expired_rows": {
+   "ticket_github": [],
+   "ticket_remote_creations": [
+    {
+     "at": "2026-09-22T00:00:00+00:00",
+     "authority": "external_observation_only",
+     "claim_owner": "5eed0000-0000-4000-8000-000000000021",
+     "evidence_ref": "sha256:e4cdf042665cac4b42a1d83a93e33541ebce5cd92c098045ed485f06e3d2c2d1",
+     "number": 7,
+     "repository": "fixture/zeus",
+     "ticket_id": "ZEUS-000000000001",
+     "url": "https://github.com/fixture/zeus/issues/7"
+    }
+   ],
+   "ticket_remote_observations": [
+    {
+     "at": "2026-09-22T00:06:40+00:00",
+     "authority": "external_observation_only",
+     "evidence_ref": "sha256:2ffc031f767d6f1f0b74888e01bbe2e53bd5d78bdb8f8bcc8d95228c18bd1e05",
+     "first_seen": "2026-09-22T00:06:40+00:00",
+     "id": "168b98ef95742df0c4df57261d57c4410f81657b75afcee625f968b800af2419",
+     "marker_present": true,
+     "number": 7,
+     "purpose": "post_write",
+     "repository": "fixture/zeus",
+     "sequence": 1,
+     "state": "OPEN",
+     "ticket_id": "ZEUS-000000000001",
+     "title": "Independent services",
+     "url": "https://github.com/fixture/zeus/issues/7"
+    }
+   ],
+   "ticket_syncs": [
+    {
+     "created_number": 7,
+     "creation_uncertain": true,
+     "error_type": "ContractError",
+     "id": "dc31691ee6dd5b8659b64a568f2a0ab18585a43b0cd95d3ee2f95487f5b4a65a",
+     "lease_until": "2026-09-22T00:05:00+00:00",
+     "observed_body_hash": null,
+     "observed_title_hash": null,
+     "owner": null,
+     "pending_body_hash": "d2ce17e0443b10d167d40acef7302f5f44c608733c65d73e8395b3d86f211ebd",
+     "pending_title_hash": "e28dea08fb589881cb05b8aedb1289c78615b30bd05a69de829e13a82278996c",
+     "reconcile_observation": null,
+     "status": "needs_attention"
+    }
+   ]
+  },
+  "lease_expired_then_retry": {
+   "artifacts_added": 0,
+   "counts_after": {
+    "ticket_github": 1,
+    "ticket_remote_creations": 1,
+    "ticket_remote_observations": 2,
+    "ticket_syncs": 1
+   },
+   "gh_verbs": [
+    "issue view",
+    "issue view"
+   ],
+   "outcome": "returned",
+   "store_after": "64de1a9380f06b5a",
+   "store_before": "cd6809e91ea65b6c",
+   "store_unchanged": false,
+   "value": {
+    "at": "2026-09-22T00:06:40+00:00",
+    "attempted_content_hash": "2f16861407b333f3e25b47fba02742fa10b2fd2258a0b1d5fc13796884595e01",
+    "attempted_revision": 1,
+    "body_hash": "d2ce17e0443b10d167d40acef7302f5f44c608733c65d73e8395b3d86f211ebd",
+    "content_hash": "2f16861407b333f3e25b47fba02742fa10b2fd2258a0b1d5fc13796884595e01",
+    "desired_state": "OPEN",
+    "id": "dc31691ee6dd5b8659b64a568f2a0ab18585a43b0cd95d3ee2f95487f5b4a65a",
+    "lifecycle_event": null,
+    "lifecycle_sequence": 0,
+    "number": 7,
+    "observation_id": "168b98ef95742df0c4df57261d57c4410f81657b75afcee625f968b800af2419",
+    "observation_ref": "sha256:2ffc031f767d6f1f0b74888e01bbe2e53bd5d78bdb8f8bcc8d95228c18bd1e05",
+    "observed_body_hash": "d2ce17e0443b10d167d40acef7302f5f44c608733c65d73e8395b3d86f211ebd",
+    "observed_state": "OPEN",
+    "observed_title_hash": "e28dea08fb589881cb05b8aedb1289c78615b30bd05a69de829e13a82278996c",
+    "projected_lifecycle_event": null,
+    "repository": "fixture/zeus",
+    "review_ids": [],
+    "status": "synced",
+    "synced_revision": 1,
+    "ticket_id": "ZEUS-000000000001",
+    "title": "Independent services",
+    "title_hash": "e28dea08fb589881cb05b8aedb1289c78615b30bd05a69de829e13a82278996c",
+    "url": "https://github.com/fixture/zeus/issues/7"
+   }
+  },
+  "lease_expired_then_retry_rows": {
+   "ticket_github": [
+    {
+     "at": "2026-09-22T00:06:40+00:00",
+     "attempted_content_hash": "2f16861407b333f3e25b47fba02742fa10b2fd2258a0b1d5fc13796884595e01",
+     "attempted_revision": 1,
+     "body_hash": "d2ce17e0443b10d167d40acef7302f5f44c608733c65d73e8395b3d86f211ebd",
+     "content_hash": "2f16861407b333f3e25b47fba02742fa10b2fd2258a0b1d5fc13796884595e01",
+     "desired_state": "OPEN",
+     "id": "dc31691ee6dd5b8659b64a568f2a0ab18585a43b0cd95d3ee2f95487f5b4a65a",
+     "lifecycle_event": null,
+     "lifecycle_sequence": 0,
+     "number": 7,
+     "observation_id": "168b98ef95742df0c4df57261d57c4410f81657b75afcee625f968b800af2419",
+     "observation_ref": "sha256:2ffc031f767d6f1f0b74888e01bbe2e53bd5d78bdb8f8bcc8d95228c18bd1e05",
+     "observed_body_hash": "d2ce17e0443b10d167d40acef7302f5f44c608733c65d73e8395b3d86f211ebd",
+     "observed_state": "OPEN",
+     "observed_title_hash": "e28dea08fb589881cb05b8aedb1289c78615b30bd05a69de829e13a82278996c",
+     "projected_lifecycle_event": null,
+     "repository": "fixture/zeus",
+     "review_ids": [],
+     "status": "synced",
+     "synced_revision": 1,
+     "ticket_id": "ZEUS-000000000001",
+     "title": "Independent services",
+     "title_hash": "e28dea08fb589881cb05b8aedb1289c78615b30bd05a69de829e13a82278996c",
+     "url": "https://github.com/fixture/zeus/issues/7"
+    }
+   ],
+   "ticket_remote_creations": [
+    {
+     "at": "2026-09-22T00:00:00+00:00",
+     "authority": "external_observation_only",
+     "claim_owner": "5eed0000-0000-4000-8000-000000000021",
+     "evidence_ref": "sha256:e4cdf042665cac4b42a1d83a93e33541ebce5cd92c098045ed485f06e3d2c2d1",
+     "number": 7,
+     "repository": "fixture/zeus",
+     "ticket_id": "ZEUS-000000000001",
+     "url": "https://github.com/fixture/zeus/issues/7"
+    }
+   ],
+   "ticket_remote_observations": [
+    {
+     "at": "2026-09-22T00:06:40+00:00",
+     "authority": "external_observation_only",
+     "evidence_ref": "sha256:2ffc031f767d6f1f0b74888e01bbe2e53bd5d78bdb8f8bcc8d95228c18bd1e05",
+     "first_seen": "2026-09-22T00:06:40+00:00",
+     "id": "168b98ef95742df0c4df57261d57c4410f81657b75afcee625f968b800af2419",
+     "marker_present": true,
+     "number": 7,
+     "purpose": "post_write",
+     "repository": "fixture/zeus",
+     "sequence": 1,
+     "state": "OPEN",
+     "ticket_id": "ZEUS-000000000001",
+     "title": "Independent services",
+     "url": "https://github.com/fixture/zeus/issues/7"
+    },
+    {
+     "at": "2026-09-22T00:06:40+00:00",
+     "authority": "external_observation_only",
+     "evidence_ref": "sha256:2ffc031f767d6f1f0b74888e01bbe2e53bd5d78bdb8f8bcc8d95228c18bd1e05",
+     "first_seen": "2026-09-22T00:06:40+00:00",
+     "id": "fc98d62c57540e26fb08b14170e4261105d0f3995feee0c2356c6aeefecbd95c",
+     "marker_present": true,
+     "number": 7,
+     "purpose": "pre_write",
+     "repository": "fixture/zeus",
+     "sequence": 2,
+     "state": "OPEN",
+     "ticket_id": "ZEUS-000000000001",
+     "title": "Independent services",
+     "url": "https://github.com/fixture/zeus/issues/7"
+    }
+   ],
+   "ticket_syncs": [
+    {
+     "created_number": 7,
+     "creation_uncertain": false,
+     "error_type": "ContractError",
+     "id": "dc31691ee6dd5b8659b64a568f2a0ab18585a43b0cd95d3ee2f95487f5b4a65a",
+     "lease_until": "2026-09-22T00:11:40+00:00",
+     "observed_body_hash": "d2ce17e0443b10d167d40acef7302f5f44c608733c65d73e8395b3d86f211ebd",
+     "observed_title_hash": "e28dea08fb589881cb05b8aedb1289c78615b30bd05a69de829e13a82278996c",
+     "owner": null,
+     "pending_body_hash": null,
+     "pending_title_hash": null,
+     "reconcile_observation": null,
+     "status": "synced"
+    }
+   ]
+  },
+  "readback_failure_after_create": {
+   "artifacts_added": 1,
+   "cause_type": null,
+   "counts_after": {
+    "ticket_github": 0,
+    "ticket_remote_creations": 1,
+    "ticket_remote_observations": 0,
+    "ticket_syncs": 1
+   },
+   "gh_verbs": [
+    "issue list",
+    "issue create",
+    "issue view"
+   ],
+   "is_contract_error": false,
+   "message": "GitHub issue operation failed; local ticket retained",
+   "outcome": "raised",
+   "store_after": "c77cfbee2f12764e",
+   "store_before": "733694885361b642",
+   "store_unchanged": false,
+   "type": "RuntimeError"
+  },
+  "readback_failure_rows": {
+   "ticket_github": [],
+   "ticket_remote_creations": [
+    {
+     "at": "2026-09-22T00:00:00+00:00",
+     "authority": "external_observation_only",
+     "claim_owner": "5eed0000-0000-4000-8000-00000000001b",
+     "evidence_ref": "sha256:7d11228705fb32b1a3a89c80d7e2cc447c05d0ed6bdb2d94bd84948d2107c844",
+     "number": 7,
+     "repository": "fixture/zeus",
+     "ticket_id": "ZEUS-000000000001",
+     "url": "https://github.com/fixture/zeus/issues/7"
+    }
+   ],
+   "ticket_remote_observations": [],
+   "ticket_syncs": [
+    {
+     "created_number": 7,
+     "creation_uncertain": true,
+     "error_type": "RuntimeError",
+     "id": "dc31691ee6dd5b8659b64a568f2a0ab18585a43b0cd95d3ee2f95487f5b4a65a",
+     "lease_until": "2026-09-22T00:05:00+00:00",
+     "observed_body_hash": null,
+     "observed_title_hash": null,
+     "owner": null,
+     "pending_body_hash": "d2ce17e0443b10d167d40acef7302f5f44c608733c65d73e8395b3d86f211ebd",
+     "pending_title_hash": "e28dea08fb589881cb05b8aedb1289c78615b30bd05a69de829e13a82278996c",
+     "reconcile_observation": null,
+     "status": "needs_attention"
+    }
+   ]
+  },
+  "recovery_after_a_new_revision": {
+   "artifacts_added": 1,
+   "counts_after": {
+    "ticket_github": 1,
+    "ticket_remote_creations": 1,
+    "ticket_remote_observations": 5,
+    "ticket_syncs": 1
+   },
+   "gh_verbs": [
+    "issue view",
+    "issue edit",
+    "issue view"
+   ],
+   "outcome": "returned",
+   "store_after": "8e114b4231d3aaef",
+   "store_before": "212889742827052f",
+   "store_unchanged": false,
+   "value": {
+    "at": "2026-09-22T00:00:00+00:00",
+    "attempted_content_hash": "3674635a3dadbb8b07a47202ac6b73f68a3fadcf118c5ada03791206f3a5efa9",
+    "attempted_revision": 3,
+    "body_hash": "62fd029f061ce78e77100ef43f9e9612e28d00c8e89a3c7601109fd86eb78e3d",
+    "content_hash": "3674635a3dadbb8b07a47202ac6b73f68a3fadcf118c5ada03791206f3a5efa9",
+    "desired_state": "OPEN",
+    "id": "dc31691ee6dd5b8659b64a568f2a0ab18585a43b0cd95d3ee2f95487f5b4a65a",
+    "lifecycle_event": null,
+    "lifecycle_sequence": 0,
+    "number": 7,
+    "observation_id": "c85fa3f518d74a0f63a97b7bb58fab0593f9bdfcd3eec07e60e1092eb40917d9",
+    "observation_ref": "sha256:e4c55e9b4fbbc98adc89709b9fc1b8e1297d4e7a5268c66dca247c4c3d0cb9f0",
+    "observed_body_hash": "62fd029f061ce78e77100ef43f9e9612e28d00c8e89a3c7601109fd86eb78e3d",
+    "observed_state": "OPEN",
+    "observed_title_hash": "6e9a3aa30ff851c1be0d4da22247036ce422da2091653b3fd568072774917477",
+    "projected_lifecycle_event": null,
+    "repository": "fixture/zeus",
+    "review_ids": [],
+    "status": "synced",
+    "synced_revision": 3,
+    "ticket_id": "ZEUS-000000000001",
+    "title": "A third revision",
+    "title_hash": "6e9a3aa30ff851c1be0d4da22247036ce422da2091653b3fd568072774917477",
+    "url": "https://github.com/fixture/zeus/issues/7"
+   }
+  },
+  "recovery_rows": {
+   "ticket_github": [
+    {
+     "at": "2026-09-22T00:00:00+00:00",
+     "attempted_content_hash": "3674635a3dadbb8b07a47202ac6b73f68a3fadcf118c5ada03791206f3a5efa9",
+     "attempted_revision": 3,
+     "body_hash": "62fd029f061ce78e77100ef43f9e9612e28d00c8e89a3c7601109fd86eb78e3d",
+     "content_hash": "3674635a3dadbb8b07a47202ac6b73f68a3fadcf118c5ada03791206f3a5efa9",
+     "desired_state": "OPEN",
+     "id": "dc31691ee6dd5b8659b64a568f2a0ab18585a43b0cd95d3ee2f95487f5b4a65a",
+     "lifecycle_event": null,
+     "lifecycle_sequence": 0,
+     "number": 7,
+     "observation_id": "c85fa3f518d74a0f63a97b7bb58fab0593f9bdfcd3eec07e60e1092eb40917d9",
+     "observation_ref": "sha256:e4c55e9b4fbbc98adc89709b9fc1b8e1297d4e7a5268c66dca247c4c3d0cb9f0",
+     "observed_body_hash": "62fd029f061ce78e77100ef43f9e9612e28d00c8e89a3c7601109fd86eb78e3d",
+     "observed_state": "OPEN",
+     "observed_title_hash": "6e9a3aa30ff851c1be0d4da22247036ce422da2091653b3fd568072774917477",
+     "projected_lifecycle_event": null,
+     "repository": "fixture/zeus",
+     "review_ids": [],
+     "status": "synced",
+     "synced_revision": 3,
+     "ticket_id": "ZEUS-000000000001",
+     "title": "A third revision",
+     "title_hash": "6e9a3aa30ff851c1be0d4da22247036ce422da2091653b3fd568072774917477",
+     "url": "https://github.com/fixture/zeus/issues/7"
+    }
+   ],
+   "ticket_remote_creations": [
+    {
+     "at": "2026-09-22T00:00:00+00:00",
+     "authority": "external_observation_only",
+     "claim_owner": "5eed0000-0000-4000-8000-00000000001d",
+     "evidence_ref": "sha256:dcb51cc6ed7aa8fe83027e8ef40b4fc027885626f19bfa0d6a1b900b22975a9a",
+     "number": 7,
+     "repository": "fixture/zeus",
+     "ticket_id": "ZEUS-000000000001",
+     "url": "https://github.com/fixture/zeus/issues/7"
+    }
+   ],
+   "ticket_remote_observations": [
+    {
+     "at": "2026-09-22T00:00:00+00:00",
+     "authority": "external_observation_only",
+     "evidence_ref": "sha256:2ffc031f767d6f1f0b74888e01bbe2e53bd5d78bdb8f8bcc8d95228c18bd1e05",
+     "first_seen": "2026-09-22T00:00:00+00:00",
+     "id": "168b98ef95742df0c4df57261d57c4410f81657b75afcee625f968b800af2419",
+     "marker_present": true,
+     "number": 7,
+     "purpose": "post_write",
+     "repository": "fixture/zeus",
+     "sequence": 1,
+     "state": "OPEN",
+     "ticket_id": "ZEUS-000000000001",
+     "title": "Independent services",
+     "url": "https://github.com/fixture/zeus/issues/7"
+    },
+    {
+     "at": "2026-09-22T00:00:00+00:00",
+     "authority": "external_observation_only",
+     "evidence_ref": "sha256:2ffc031f767d6f1f0b74888e01bbe2e53bd5d78bdb8f8bcc8d95228c18bd1e05",
+     "first_seen": "2026-09-22T00:00:00+00:00",
+     "id": "fc98d62c57540e26fb08b14170e4261105d0f3995feee0c2356c6aeefecbd95c",
+     "marker_present": true,
+     "number": 7,
+     "purpose": "pre_write",
+     "repository": "fixture/zeus",
+     "sequence": 2,
+     "state": "OPEN",
+     "ticket_id": "ZEUS-000000000001",
+     "title": "Independent services",
+     "url": "https://github.com/fixture/zeus/issues/7"
+    },
+    {
+     "at": "2026-09-22T00:00:00+00:00",
+     "authority": "external_observation_only",
+     "evidence_ref": "sha256:a79a8298b4de7d818c71b16400875aff2fe04fc9cb6ac16b492b2ac0f782c97c",
+     "first_seen": "2026-09-22T00:00:00+00:00",
+     "id": "276678212678c455d0b15be698e041ca4b3d11ffa15e48ef4973ccff55ef34d1",
+     "marker_present": true,
+     "number": 7,
+     "purpose": "pre_write",
+     "repository": "fixture/zeus",
+     "sequence": 3,
+     "state": "OPEN",
+     "ticket_id": "ZEUS-000000000001",
+     "title": "Revised criteria",
+     "url": "https://github.com/fixture/zeus/issues/7"
+    },
+    {
+     "at": "2026-09-22T00:00:00+00:00",
+     "authority": "external_observation_only",
+     "evidence_ref": "sha256:a79a8298b4de7d818c71b16400875aff2fe04fc9cb6ac16b492b2ac0f782c97c",
+     "first_seen": "2026-09-22T00:00:00+00:00",
+     "id": "f6a3fbe87b8f16492aeabebc21f901acccea99b5fd0e38ac73de664ac671e011",
+     "marker_present": true,
+     "number": 7,
+     "purpose": "post_write",
+     "repository": "fixture/zeus",
+     "sequence": 4,
+     "state": "OPEN",
+     "ticket_id": "ZEUS-000000000001",
+     "title": "Revised criteria",
+     "url": "https://github.com/fixture/zeus/issues/7"
+    },
+    {
+     "at": "2026-09-22T00:00:00+00:00",
+     "authority": "external_observation_only",
+     "evidence_ref": "sha256:e4c55e9b4fbbc98adc89709b9fc1b8e1297d4e7a5268c66dca247c4c3d0cb9f0",
+     "first_seen": "2026-09-22T00:00:00+00:00",
+     "id": "c85fa3f518d74a0f63a97b7bb58fab0593f9bdfcd3eec07e60e1092eb40917d9",
+     "marker_present": true,
+     "number": 7,
+     "purpose": "post_write",
+     "repository": "fixture/zeus",
+     "sequence": 5,
+     "state": "OPEN",
+     "ticket_id": "ZEUS-000000000001",
+     "title": "A third revision",
+     "url": "https://github.com/fixture/zeus/issues/7"
+    }
+   ],
+   "ticket_syncs": [
+    {
+     "created_number": 7,
+     "creation_uncertain": false,
+     "error_type": "TimeoutError",
+     "id": "dc31691ee6dd5b8659b64a568f2a0ab18585a43b0cd95d3ee2f95487f5b4a65a",
+     "lease_until": "2026-09-22T00:05:00+00:00",
+     "observed_body_hash": "62fd029f061ce78e77100ef43f9e9612e28d00c8e89a3c7601109fd86eb78e3d",
+     "observed_title_hash": "6e9a3aa30ff851c1be0d4da22247036ce422da2091653b3fd568072774917477",
+     "owner": null,
+     "pending_body_hash": null,
+     "pending_title_hash": null,
+     "reconcile_observation": null,
+     "status": "synced"
+    }
+   ]
+  },
+  "retry_after_indexing_recovers_without_a_duplicate": {
+   "artifacts_added": 1,
+   "counts_after": {
+    "ticket_github": 1,
+    "ticket_remote_creations": 0,
+    "ticket_remote_observations": 2,
+    "ticket_syncs": 1
+   },
+   "gh_verbs": [
+    "issue list",
+    "issue view",
+    "issue view"
+   ],
+   "outcome": "returned",
+   "store_after": "22d8973cc0df2d5f",
+   "store_before": "bb33623b09618687",
+   "store_unchanged": false,
+   "value": {
+    "at": "2026-09-22T00:00:00+00:00",
+    "attempted_content_hash": "2f16861407b333f3e25b47fba02742fa10b2fd2258a0b1d5fc13796884595e01",
+    "attempted_revision": 1,
+    "body_hash": "d2ce17e0443b10d167d40acef7302f5f44c608733c65d73e8395b3d86f211ebd",
+    "content_hash": "2f16861407b333f3e25b47fba02742fa10b2fd2258a0b1d5fc13796884595e01",
+    "desired_state": "OPEN",
+    "id": "dc31691ee6dd5b8659b64a568f2a0ab18585a43b0cd95d3ee2f95487f5b4a65a",
+    "lifecycle_event": null,
+    "lifecycle_sequence": 0,
+    "number": 7,
+    "observation_id": "168b98ef95742df0c4df57261d57c4410f81657b75afcee625f968b800af2419",
+    "observation_ref": "sha256:2ffc031f767d6f1f0b74888e01bbe2e53bd5d78bdb8f8bcc8d95228c18bd1e05",
+    "observed_body_hash": "d2ce17e0443b10d167d40acef7302f5f44c608733c65d73e8395b3d86f211ebd",
+    "observed_state": "OPEN",
+    "observed_title_hash": "e28dea08fb589881cb05b8aedb1289c78615b30bd05a69de829e13a82278996c",
+    "projected_lifecycle_event": null,
+    "repository": "fixture/zeus",
+    "review_ids": [],
+    "status": "synced",
+    "synced_revision": 1,
+    "ticket_id": "ZEUS-000000000001",
+    "title": "Independent services",
+    "title_hash": "e28dea08fb589881cb05b8aedb1289c78615b30bd05a69de829e13a82278996c",
+    "url": "https://github.com/fixture/zeus/issues/7"
+   }
+  },
+  "retry_before_indexing_is_refused_as_uncertain": {
+   "artifacts_added": 0,
+   "cause_type": null,
+   "counts_after": {
+    "ticket_github": 0,
+    "ticket_remote_creations": 0,
+    "ticket_remote_observations": 0,
+    "ticket_syncs": 1
+   },
+   "gh_verbs": [
+    "issue list"
+   ],
+   "is_contract_error": true,
+   "message": "Remote creation is uncertain; retry discovery after GitHub indexing",
+   "outcome": "raised",
+   "store_after": "bb33623b09618687",
+   "store_before": "9cd4dd26ae7f5ac2",
+   "store_unchanged": false,
+   "type": "ContractError"
+  },
+  "retry_rows": {
+   "ticket_github": [],
+   "ticket_remote_creations": [],
+   "ticket_remote_observations": [],
+   "ticket_syncs": [
+    {
+     "creation_uncertain": true,
+     "error_type": "ContractError",
+     "id": "dc31691ee6dd5b8659b64a568f2a0ab18585a43b0cd95d3ee2f95487f5b4a65a",
+     "lease_until": "2026-09-22T00:05:00+00:00",
+     "observed_body_hash": null,
+     "observed_title_hash": null,
+     "owner": null,
+     "pending_body_hash": "d2ce17e0443b10d167d40acef7302f5f44c608733c65d73e8395b3d86f211ebd",
+     "pending_title_hash": "e28dea08fb589881cb05b8aedb1289c78615b30bd05a69de829e13a82278996c",
+     "reconcile_observation": null,
+     "status": "needs_attention"
+    }
+   ]
+  },
+  "retry_uses_the_created_number": {
+   "artifacts_added": 1,
+   "counts_after": {
+    "ticket_github": 1,
+    "ticket_remote_creations": 1,
+    "ticket_remote_observations": 2,
+    "ticket_syncs": 1
+   },
+   "gh_verbs": [
+    "issue view",
+    "issue view"
+   ],
+   "outcome": "returned",
+   "store_after": "1e73a121d0154a49",
+   "store_before": "c77cfbee2f12764e",
+   "store_unchanged": false,
+   "value": {
+    "at": "2026-09-22T00:00:00+00:00",
+    "attempted_content_hash": "2f16861407b333f3e25b47fba02742fa10b2fd2258a0b1d5fc13796884595e01",
+    "attempted_revision": 1,
+    "body_hash": "d2ce17e0443b10d167d40acef7302f5f44c608733c65d73e8395b3d86f211ebd",
+    "content_hash": "2f16861407b333f3e25b47fba02742fa10b2fd2258a0b1d5fc13796884595e01",
+    "desired_state": "OPEN",
+    "id": "dc31691ee6dd5b8659b64a568f2a0ab18585a43b0cd95d3ee2f95487f5b4a65a",
+    "lifecycle_event": null,
+    "lifecycle_sequence": 0,
+    "number": 7,
+    "observation_id": "168b98ef95742df0c4df57261d57c4410f81657b75afcee625f968b800af2419",
+    "observation_ref": "sha256:2ffc031f767d6f1f0b74888e01bbe2e53bd5d78bdb8f8bcc8d95228c18bd1e05",
+    "observed_body_hash": "d2ce17e0443b10d167d40acef7302f5f44c608733c65d73e8395b3d86f211ebd",
+    "observed_state": "OPEN",
+    "observed_title_hash": "e28dea08fb589881cb05b8aedb1289c78615b30bd05a69de829e13a82278996c",
+    "projected_lifecycle_event": null,
+    "repository": "fixture/zeus",
+    "review_ids": [],
+    "status": "synced",
+    "synced_revision": 1,
+    "ticket_id": "ZEUS-000000000001",
+    "title": "Independent services",
+    "title_hash": "e28dea08fb589881cb05b8aedb1289c78615b30bd05a69de829e13a82278996c",
+    "url": "https://github.com/fixture/zeus/issues/7"
+   }
+  },
+  "retry_uses_the_created_number_verbs": [
+   "issue list",
+   "issue create",
+   "issue view",
+   "issue view",
+   "issue view"
+  ]
+ },
+ "m7_tests": {
+  "covered": [
+   "test_sync_updates_same_issue_and_keeps_comments",
+   "test_lost_ack_does_not_create_duplicate_even_before_search_indexing",
+   "test_external_body_change_blocks_overwrite_and_pull_is_only_evidence",
+   "test_lost_ack_followed_by_new_revision_recovers_exact_pending_projection (the create and edit halves)",
+   "test_repeated_lost_ack_and_unreached_edit_retains_last_observed_body",
+   "test_remote_manual_close_is_a_conflict_not_local_acceptance",
+   "test_observations_read_back_in_the_order_they_were_made_even_within_one_clock_tick",
+   "test_external_title_change_is_preserved_and_invalidates_synced_status",
+   "test_successful_edit_response_requires_matching_remote_readback",
+   "test_reconciliation_is_bound_to_observed_issue_and_current_revision",
+   "test_legacy_link_uses_its_original_revision_title",
+   "test_created_number_survives_readback_failure_without_search_index",
+   "test_local_status_change_during_readback_cannot_be_synced",
+   "test_expired_lease_after_remote_write_cannot_record_success",
+   "test_identical_sync_observations_are_bounded_and_plain_revision_is_checked",
+   "test_legacy_link_does_not_trust_an_arbitrary_observed_title",
+   "test_create_ack_after_lease_expiry_is_retained_for_recovery",
+   "test_dispatch_bounds_external_observations_without_deleting_evidence (the observations; Tickets.dispatch is the intake.tickets family)",
+   "test_failed_reconcile_does_not_authorize_plain_retry_after_revision_change",
+   "test_closed_issue_reconciliation_does_not_trust_unwritten_foreign_content",
+   "test_closed_issue_readback_does_not_promote_new_external_content_to_trusted"
+  ],
+  "unreachable": {
+   "every [postgres] parametrization": "PostgreSQL",
+   "test_parallel_sync_claim_cannot_publish_twice": "a thread overlap (the claim refusal is a case, sequentially)",
+   "test_preview_is_pure_and_does_not_call_github": "the ticket CLI (S10)"
+  }
+ },
+ "refusals": {
+  "body_too_large": {
+   "artifacts_added": 0,
+   "cause_type": null,
+   "counts_after": {
+    "ticket_github": 0,
+    "ticket_remote_creations": 0,
+    "ticket_remote_observations": 0,
+    "ticket_syncs": 0
+   },
+   "gh_verbs": [],
+   "is_contract_error": true,
+   "message": "Ticket too large for GitHub; use evidence references",
+   "outcome": "raised",
+   "store_after": "ab491c40deb77a0d",
+   "store_before": "ab491c40deb77a0d",
+   "store_unchanged": true,
+   "type": "ContractError"
+  },
+  "body_too_large_called_no_gh": [],
+  "closed_without_lifecycle": {
+   "artifacts_added": 0,
+   "cause_type": null,
+   "counts_after": {
+    "ticket_github": 0,
+    "ticket_remote_creations": 0,
+    "ticket_remote_observations": 0,
+    "ticket_syncs": 1
+   },
+   "gh_verbs": [],
+   "is_contract_error": true,
+   "message": "Closure authority is required to project CLOSED",
+   "outcome": "raised",
+   "store_after": "e405fe9d877528ca",
+   "store_before": "c3df850032e94869",
+   "store_unchanged": false,
+   "type": "ContractError"
+  },
+  "closed_without_lifecycle_rows": {
+   "ticket_github": [],
+   "ticket_remote_creations": [],
+   "ticket_remote_observations": [],
+   "ticket_syncs": [
+    {
+     "error_type": "ContractError",
+     "id": "dc31691ee6dd5b8659b64a568f2a0ab18585a43b0cd95d3ee2f95487f5b4a65a",
+     "lease_until": "2026-09-22T00:05:01+00:00",
+     "owner": null,
+     "status": "needs_attention"
+    }
+   ]
+  },
+  "created_receipt_for_another_repository": {
+   "artifacts_added": 0,
+   "cause_type": null,
+   "counts_after": {
+    "ticket_github": 0,
+    "ticket_remote_creations": 0,
+    "ticket_remote_observations": 0,
+    "ticket_syncs": 1
+   },
+   "gh_verbs": [
+    "issue list",
+    "issue create"
+   ],
+   "is_contract_error": true,
+   "message": "Unrecognized created issue receipt; retry discovery",
+   "outcome": "raised",
+   "store_after": "bb33623b09618687",
+   "store_before": "733694885361b642",
+   "store_unchanged": false,
+   "type": "ContractError"
+  },
+  "created_receipt_number_zero": {
+   "artifacts_added": 0,
+   "cause_type": null,
+   "counts_after": {
+    "ticket_github": 0,
+    "ticket_remote_creations": 0,
+    "ticket_remote_observations": 0,
+    "ticket_syncs": 1
+   },
+   "gh_verbs": [
+    "issue list",
+    "issue create"
+   ],
+   "is_contract_error": true,
+   "message": "Unrecognized created issue receipt; retry discovery",
+   "outcome": "raised",
+   "store_after": "bb33623b09618687",
+   "store_before": "733694885361b642",
+   "store_unchanged": false,
+   "type": "ContractError"
+  },
+  "gh_failure_issue_create": {
+   "artifacts_added": 0,
+   "cause_type": null,
+   "counts_after": {
+    "ticket_github": 0,
+    "ticket_remote_creations": 0,
+    "ticket_remote_observations": 0,
+    "ticket_syncs": 1
+   },
+   "gh_verbs": [
+    "issue list",
+    "issue create"
+   ],
+   "is_contract_error": false,
+   "message": "GitHub issue operation failed; local ticket retained",
+   "outcome": "raised",
+   "store_after": "1f353b605ff90dea",
+   "store_before": "733694885361b642",
+   "store_unchanged": false,
+   "type": "RuntimeError"
+  },
+  "gh_failure_issue_create_rows": {
+   "ticket_github": [],
+   "ticket_remote_creations": [],
+   "ticket_remote_observations": [],
+   "ticket_syncs": [
+    {
+     "creation_uncertain": true,
+     "error_type": "RuntimeError",
+     "id": "dc31691ee6dd5b8659b64a568f2a0ab18585a43b0cd95d3ee2f95487f5b4a65a",
+     "lease_until": "2026-09-22T00:05:00+00:00",
+     "observed_body_hash": null,
+     "observed_title_hash": null,
+     "owner": null,
+     "pending_body_hash": "d2ce17e0443b10d167d40acef7302f5f44c608733c65d73e8395b3d86f211ebd",
+     "pending_title_hash": "e28dea08fb589881cb05b8aedb1289c78615b30bd05a69de829e13a82278996c",
+     "reconcile_observation": null,
+     "status": "needs_attention"
+    }
+   ],
+   "verbs": [
+    "issue list",
+    "issue create"
+   ]
+  },
+  "gh_failure_issue_edit": {
+   "artifacts_added": 0,
+   "cause_type": null,
+   "counts_after": {
+    "ticket_github": 1,
+    "ticket_remote_creations": 1,
+    "ticket_remote_observations": 2,
+    "ticket_syncs": 1
+   },
+   "gh_verbs": [
+    "issue view",
+    "issue edit"
+   ],
+   "is_contract_error": false,
+   "message": "GitHub issue operation failed; local ticket retained",
+   "outcome": "raised",
+   "store_after": "bb70c6359c82c4c4",
+   "store_before": "c3598a59ea273ad6",
+   "store_unchanged": false,
+   "type": "RuntimeError"
+  },
+  "gh_failure_issue_edit_rows": {
+   "ticket_github": [
+    {
+     "at": "2026-09-22T00:00:00+00:00",
+     "attempted_content_hash": "2f16861407b333f3e25b47fba02742fa10b2fd2258a0b1d5fc13796884595e01",
+     "attempted_revision": 1,
+     "body_hash": "d2ce17e0443b10d167d40acef7302f5f44c608733c65d73e8395b3d86f211ebd",
+     "content_hash": "2f16861407b333f3e25b47fba02742fa10b2fd2258a0b1d5fc13796884595e01",
+     "desired_state": "OPEN",
+     "error_type": "RuntimeError",
+     "id": "dc31691ee6dd5b8659b64a568f2a0ab18585a43b0cd95d3ee2f95487f5b4a65a",
+     "lifecycle_event": null,
+     "lifecycle_sequence": 0,
+     "number": 7,
+     "observation_id": "168b98ef95742df0c4df57261d57c4410f81657b75afcee625f968b800af2419",
+     "observation_ref": "sha256:2ffc031f767d6f1f0b74888e01bbe2e53bd5d78bdb8f8bcc8d95228c18bd1e05",
+     "observed_body_hash": "d2ce17e0443b10d167d40acef7302f5f44c608733c65d73e8395b3d86f211ebd",
+     "observed_state": "OPEN",
+     "observed_title_hash": "e28dea08fb589881cb05b8aedb1289c78615b30bd05a69de829e13a82278996c",
+     "projected_lifecycle_event": null,
+     "repository": "fixture/zeus",
+     "review_ids": [],
+     "status": "needs_attention",
+     "synced_revision": 1,
+     "ticket_id": "ZEUS-000000000001",
+     "title": "Independent services",
+     "title_hash": "e28dea08fb589881cb05b8aedb1289c78615b30bd05a69de829e13a82278996c",
+     "url": "https://github.com/fixture/zeus/issues/7"
+    }
+   ],
+   "ticket_remote_creations": [
+    {
+     "at": "2026-09-22T00:00:00+00:00",
+     "authority": "external_observation_only",
+     "claim_owner": "5eed0000-0000-4000-8000-000000000015",
+     "evidence_ref": "sha256:4f80f10e1809122f8109d9444a9d2b5b4224bff093dfd0522217efbc17526475",
+     "number": 7,
+     "repository": "fixture/zeus",
+     "ticket_id": "ZEUS-000000000001",
+     "url": "https://github.com/fixture/zeus/issues/7"
+    }
+   ],
+   "ticket_remote_observations": [
+    {
+     "at": "2026-09-22T00:00:00+00:00",
+     "authority": "external_observation_only",
+     "evidence_ref": "sha256:2ffc031f767d6f1f0b74888e01bbe2e53bd5d78bdb8f8bcc8d95228c18bd1e05",
+     "first_seen": "2026-09-22T00:00:00+00:00",
+     "id": "168b98ef95742df0c4df57261d57c4410f81657b75afcee625f968b800af2419",
+     "marker_present": true,
+     "number": 7,
+     "purpose": "post_write",
+     "repository": "fixture/zeus",
+     "sequence": 1,
+     "state": "OPEN",
+     "ticket_id": "ZEUS-000000000001",
+     "title": "Independent services",
+     "url": "https://github.com/fixture/zeus/issues/7"
+    },
+    {
+     "at": "2026-09-22T00:00:00+00:00",
+     "authority": "external_observation_only",
+     "evidence_ref": "sha256:2ffc031f767d6f1f0b74888e01bbe2e53bd5d78bdb8f8bcc8d95228c18bd1e05",
+     "first_seen": "2026-09-22T00:00:00+00:00",
+     "id": "fc98d62c57540e26fb08b14170e4261105d0f3995feee0c2356c6aeefecbd95c",
+     "marker_present": true,
+     "number": 7,
+     "purpose": "pre_write",
+     "repository": "fixture/zeus",
+     "sequence": 2,
+     "state": "OPEN",
+     "ticket_id": "ZEUS-000000000001",
+     "title": "Independent services",
+     "url": "https://github.com/fixture/zeus/issues/7"
+    }
+   ],
+   "ticket_syncs": [
+    {
+     "created_number": 7,
+     "creation_uncertain": false,
+     "error_type": "RuntimeError",
+     "id": "dc31691ee6dd5b8659b64a568f2a0ab18585a43b0cd95d3ee2f95487f5b4a65a",
+     "lease_until": "2026-09-22T00:05:00+00:00",
+     "observed_body_hash": "d2ce17e0443b10d167d40acef7302f5f44c608733c65d73e8395b3d86f211ebd",
+     "observed_title_hash": "e28dea08fb589881cb05b8aedb1289c78615b30bd05a69de829e13a82278996c",
+     "owner": null,
+     "pending_body_hash": "bdcaaa4e08267ef60d17a618793224acc1a7aebc6014a4732779ffc637eb50d5",
+     "pending_title_hash": "69a1a295f1a9eafcd523c19f6e5fe0630e1175ae5d34bfec10b858913419bb48",
+     "reconcile_observation": null,
+     "status": "needs_attention"
+    }
+   ]
+  },
+  "gh_failure_issue_list": {
+   "artifacts_added": 0,
+   "cause_type": null,
+   "counts_after": {
+    "ticket_github": 0,
+    "ticket_remote_creations": 0,
+    "ticket_remote_observations": 0,
+    "ticket_syncs": 1
+   },
+   "gh_verbs": [
+    "issue list"
+   ],
+   "is_contract_error": false,
+   "message": "GitHub issue operation failed; local ticket retained",
+   "outcome": "raised",
+   "store_after": "e72f71db7900962d",
+   "store_before": "733694885361b642",
+   "store_unchanged": false,
+   "type": "RuntimeError"
+  },
+  "gh_failure_issue_list_rows": {
+   "ticket_github": [],
+   "ticket_remote_creations": [],
+   "ticket_remote_observations": [],
+   "ticket_syncs": [
+    {
+     "error_type": "RuntimeError",
+     "id": "dc31691ee6dd5b8659b64a568f2a0ab18585a43b0cd95d3ee2f95487f5b4a65a",
+     "lease_until": "2026-09-22T00:05:00+00:00",
+     "owner": null,
+     "status": "needs_attention"
+    }
+   ],
+   "verbs": [
+    "issue list"
+   ]
+  },
+  "gh_failure_issue_view": {
+   "artifacts_added": 1,
+   "cause_type": null,
+   "counts_after": {
+    "ticket_github": 0,
+    "ticket_remote_creations": 1,
+    "ticket_remote_observations": 0,
+    "ticket_syncs": 1
+   },
+   "gh_verbs": [
+    "issue list",
+    "issue create",
+    "issue view"
+   ],
+   "is_contract_error": false,
+   "message": "GitHub issue operation failed; local ticket retained",
+   "outcome": "raised",
+   "store_after": "2f9e23207cab7eeb",
+   "store_before": "733694885361b642",
+   "store_unchanged": false,
+   "type": "RuntimeError"
+  },
+  "gh_failure_issue_view_rows": {
+   "ticket_github": [],
+   "ticket_remote_creations": [
+    {
+     "at": "2026-09-22T00:00:00+00:00",
+     "authority": "external_observation_only",
+     "claim_owner": "5eed0000-0000-4000-8000-000000000014",
+     "evidence_ref": "sha256:03fa90d9e4a84c4c6ab24df7f2a687ea453da5ebd507735073a57e0d9e9a1c94",
+     "number": 7,
+     "repository": "fixture/zeus",
+     "ticket_id": "ZEUS-000000000001",
+     "url": "https://github.com/fixture/zeus/issues/7"
+    }
+   ],
+   "ticket_remote_observations": [],
+   "ticket_syncs": [
+    {
+     "created_number": 7,
+     "creation_uncertain": true,
+     "error_type": "RuntimeError",
+     "id": "dc31691ee6dd5b8659b64a568f2a0ab18585a43b0cd95d3ee2f95487f5b4a65a",
+     "lease_until": "2026-09-22T00:05:00+00:00",
+     "observed_body_hash": null,
+     "observed_title_hash": null,
+     "owner": null,
+     "pending_body_hash": "d2ce17e0443b10d167d40acef7302f5f44c608733c65d73e8395b3d86f211ebd",
+     "pending_title_hash": "e28dea08fb589881cb05b8aedb1289c78615b30bd05a69de829e13a82278996c",
+     "reconcile_observation": null,
+     "status": "needs_attention"
+    }
+   ],
+   "verbs": [
+    "issue list",
+    "issue create",
+    "issue view"
+   ]
+  },
+  "gh_failure_then_a_plain_retry": {
+   "artifacts_added": 1,
+   "counts_after": {
+    "ticket_github": 1,
+    "ticket_remote_creations": 1,
+    "ticket_remote_observations": 3,
+    "ticket_syncs": 1
+   },
+   "gh_verbs": [
+    "issue view",
+    "issue edit",
+    "issue view"
+   ],
+   "outcome": "returned",
+   "store_after": "9243cffa367f0a81",
+   "store_before": "bb70c6359c82c4c4",
+   "store_unchanged": false,
+   "value": {
+    "at": "2026-09-22T00:00:00+00:00",
+    "attempted_content_hash": "5edf1cb6056e5384e6bb8aedfae3f2c35c9a4f827d21457e09dd42ffa70e22c5",
+    "attempted_revision": 2,
+    "body_hash": "bdcaaa4e08267ef60d17a618793224acc1a7aebc6014a4732779ffc637eb50d5",
+    "content_hash": "5edf1cb6056e5384e6bb8aedfae3f2c35c9a4f827d21457e09dd42ffa70e22c5",
+    "desired_state": "OPEN",
+    "id": "dc31691ee6dd5b8659b64a568f2a0ab18585a43b0cd95d3ee2f95487f5b4a65a",
+    "lifecycle_event": null,
+    "lifecycle_sequence": 0,
+    "number": 7,
+    "observation_id": "f6a3fbe87b8f16492aeabebc21f901acccea99b5fd0e38ac73de664ac671e011",
+    "observation_ref": "sha256:a79a8298b4de7d818c71b16400875aff2fe04fc9cb6ac16b492b2ac0f782c97c",
+    "observed_body_hash": "bdcaaa4e08267ef60d17a618793224acc1a7aebc6014a4732779ffc637eb50d5",
+    "observed_state": "OPEN",
+    "observed_title_hash": "69a1a295f1a9eafcd523c19f6e5fe0630e1175ae5d34bfec10b858913419bb48",
+    "projected_lifecycle_event": null,
+    "repository": "fixture/zeus",
+    "review_ids": [],
+    "status": "synced",
+    "synced_revision": 2,
+    "ticket_id": "ZEUS-000000000001",
+    "title": "Revised criteria",
+    "title_hash": "69a1a295f1a9eafcd523c19f6e5fe0630e1175ae5d34bfec10b858913419bb48",
+    "url": "https://github.com/fixture/zeus/issues/7"
+   }
+  },
+  "multiple_creation_receipts": {
+   "artifacts_added": 0,
+   "cause_type": null,
+   "counts_after": {
+    "ticket_github": 0,
+    "ticket_remote_creations": 2,
+    "ticket_remote_observations": 0,
+    "ticket_syncs": 1
+   },
+   "gh_verbs": [],
+   "is_contract_error": true,
+   "message": "Multiple remote creation receipts; reconcile before syncing",
+   "outcome": "raised",
+   "store_after": "1d0073755a0f5fe7",
+   "store_before": "ca7176aa464db44d",
+   "store_unchanged": false,
+   "type": "ContractError"
+  },
+  "multiple_creation_receipts_rows": {
+   "ticket_github": [],
+   "ticket_remote_creations": [
+    {
+     "id": "c1",
+     "number": 7,
+     "repository": "fixture/zeus",
+     "ticket_id": "ZEUS-000000000001"
+    },
+    {
+     "id": "c2",
+     "number": 8,
+     "repository": "fixture/zeus",
+     "ticket_id": "ZEUS-000000000001"
+    }
+   ],
+   "ticket_remote_observations": [],
+   "ticket_syncs": [
+    {
+     "error_type": "ContractError",
+     "id": "dc31691ee6dd5b8659b64a568f2a0ab18585a43b0cd95d3ee2f95487f5b4a65a",
+     "lease_until": "2026-09-22T00:05:00+00:00",
+     "owner": null,
+     "status": "needs_attention"
+    }
+   ]
+  },
+  "multiple_remote_tickets": {
+   "artifacts_added": 0,
+   "cause_type": null,
+   "counts_after": {
+    "ticket_github": 0,
+    "ticket_remote_creations": 0,
+    "ticket_remote_observations": 0,
+    "ticket_syncs": 1
+   },
+   "gh_verbs": [
+    "issue list"
+   ],
+   "is_contract_error": true,
+   "message": "Multiple remote tickets; reconcile before syncing",
+   "outcome": "raised",
+   "store_after": "242f87fd4daddcf4",
+   "store_before": "733694885361b642",
+   "store_unchanged": false,
+   "type": "ContractError"
+  },
+  "reconcile_an_undiscovered_issue": {
+   "artifacts_added": 0,
+   "cause_type": null,
+   "counts_after": {
+    "ticket_github": 0,
+    "ticket_remote_creations": 0,
+    "ticket_remote_observations": 0,
+    "ticket_syncs": 1
+   },
+   "gh_verbs": [
+    "issue list"
+   ],
+   "is_contract_error": true,
+   "message": "Cannot reconcile an undiscovered issue",
+   "outcome": "raised",
+   "store_after": "242f87fd4daddcf4",
+   "store_before": "733694885361b642",
+   "store_unchanged": false,
+   "type": "ContractError"
+  },
+  "reconcile_needs_the_revision": {
+   "artifacts_added": 0,
+   "cause_type": null,
+   "counts_after": {
+    "ticket_github": 0,
+    "ticket_remote_creations": 0,
+    "ticket_remote_observations": 0,
+    "ticket_syncs": 0
+   },
+   "gh_verbs": [],
+   "is_contract_error": true,
+   "message": "Reconciliation requires the current ticket revision",
+   "outcome": "raised",
+   "store_after": "733694885361b642",
+   "store_before": "733694885361b642",
+   "store_unchanged": true,
+   "type": "ContractError"
+  },
+  "refusals_called_no_gh": [
+   "issue list"
+  ],
+  "stale_expected_revision": {
+   "artifacts_added": 0,
+   "cause_type": null,
+   "counts_after": {
+    "ticket_github": 0,
+    "ticket_remote_creations": 0,
+    "ticket_remote_observations": 0,
+    "ticket_syncs": 0
+   },
+   "gh_verbs": [],
+   "is_contract_error": true,
+   "message": "Stale ticket sync revision",
+   "outcome": "raised",
+   "store_after": "733694885361b642",
+   "store_before": "733694885361b642",
+   "store_unchanged": true,
+   "type": "ContractError"
+  },
+  "sync_already_running": {
+   "artifacts_added": 0,
+   "cause_type": null,
+   "counts_after": {
+    "ticket_github": 0,
+    "ticket_remote_creations": 0,
+    "ticket_remote_observations": 0,
+    "ticket_syncs": 2
+   },
+   "gh_verbs": [],
+   "is_contract_error": true,
+   "message": "Ticket sync already running",
+   "outcome": "raised",
+   "store_after": "7e5cbbeaf592f3a4",
+   "store_before": "7e5cbbeaf592f3a4",
+   "store_unchanged": true,
+   "type": "ContractError"
+  },
+  "sync_over_an_expired_lease_takes_over": {
+   "artifacts_added": 2,
+   "counts_after": {
+    "ticket_github": 1,
+    "ticket_remote_creations": 1,
+    "ticket_remote_observations": 1,
+    "ticket_syncs": 2
+   },
+   "gh_verbs": [
+    "issue list",
+    "issue create",
+    "issue view"
+   ],
+   "outcome": "returned",
+   "store_after": "ada94323cc442e3e",
+   "store_before": "32831e31182dfc4c",
+   "store_unchanged": false,
+   "value": {
+    "at": "2026-09-22T00:00:00+00:00",
+    "attempted_content_hash": "2f16861407b333f3e25b47fba02742fa10b2fd2258a0b1d5fc13796884595e01",
+    "attempted_revision": 1,
+    "body_hash": "d2ce17e0443b10d167d40acef7302f5f44c608733c65d73e8395b3d86f211ebd",
+    "content_hash": "2f16861407b333f3e25b47fba02742fa10b2fd2258a0b1d5fc13796884595e01",
+    "desired_state": "OPEN",
+    "id": "dc31691ee6dd5b8659b64a568f2a0ab18585a43b0cd95d3ee2f95487f5b4a65a",
+    "lifecycle_event": null,
+    "lifecycle_sequence": 0,
+    "number": 7,
+    "observation_id": "168b98ef95742df0c4df57261d57c4410f81657b75afcee625f968b800af2419",
+    "observation_ref": "sha256:2ffc031f767d6f1f0b74888e01bbe2e53bd5d78bdb8f8bcc8d95228c18bd1e05",
+    "observed_body_hash": "d2ce17e0443b10d167d40acef7302f5f44c608733c65d73e8395b3d86f211ebd",
+    "observed_state": "OPEN",
+    "observed_title_hash": "e28dea08fb589881cb05b8aedb1289c78615b30bd05a69de829e13a82278996c",
+    "projected_lifecycle_event": null,
+    "repository": "fixture/zeus",
+    "review_ids": [],
+    "status": "synced",
+    "synced_revision": 1,
+    "ticket_id": "ZEUS-000000000001",
+    "title": "Independent services",
+    "title_hash": "e28dea08fb589881cb05b8aedb1289c78615b30bd05a69de829e13a82278996c",
+    "url": "https://github.com/fixture/zeus/issues/7"
+   }
+  },
+  "takeover_rows": {
+   "ticket_github": [
+    {
+     "at": "2026-09-22T00:00:00+00:00",
+     "attempted_content_hash": "2f16861407b333f3e25b47fba02742fa10b2fd2258a0b1d5fc13796884595e01",
+     "attempted_revision": 1,
+     "body_hash": "d2ce17e0443b10d167d40acef7302f5f44c608733c65d73e8395b3d86f211ebd",
+     "content_hash": "2f16861407b333f3e25b47fba02742fa10b2fd2258a0b1d5fc13796884595e01",
+     "desired_state": "OPEN",
+     "id": "dc31691ee6dd5b8659b64a568f2a0ab18585a43b0cd95d3ee2f95487f5b4a65a",
+     "lifecycle_event": null,
+     "lifecycle_sequence": 0,
+     "number": 7,
+     "observation_id": "168b98ef95742df0c4df57261d57c4410f81657b75afcee625f968b800af2419",
+     "observation_ref": "sha256:2ffc031f767d6f1f0b74888e01bbe2e53bd5d78bdb8f8bcc8d95228c18bd1e05",
+     "observed_body_hash": "d2ce17e0443b10d167d40acef7302f5f44c608733c65d73e8395b3d86f211ebd",
+     "observed_state": "OPEN",
+     "observed_title_hash": "e28dea08fb589881cb05b8aedb1289c78615b30bd05a69de829e13a82278996c",
+     "projected_lifecycle_event": null,
+     "repository": "fixture/zeus",
+     "review_ids": [],
+     "status": "synced",
+     "synced_revision": 1,
+     "ticket_id": "ZEUS-000000000001",
+     "title": "Independent services",
+     "title_hash": "e28dea08fb589881cb05b8aedb1289c78615b30bd05a69de829e13a82278996c",
+     "url": "https://github.com/fixture/zeus/issues/7"
+    }
+   ],
+   "ticket_remote_creations": [
+    {
+     "at": "2026-09-22T00:00:00+00:00",
+     "authority": "external_observation_only",
+     "claim_owner": "5eed0000-0000-4000-8000-00000000000a",
+     "evidence_ref": "sha256:3f76abbf323fa96c4494cbc1636b7ac39ade66affc3deabce7ee1d2d5afe77d9",
+     "number": 7,
+     "repository": "fixture/zeus",
+     "ticket_id": "ZEUS-000000000001",
+     "url": "https://github.com/fixture/zeus/issues/7"
+    }
+   ],
+   "ticket_remote_observations": [
+    {
+     "at": "2026-09-22T00:00:00+00:00",
+     "authority": "external_observation_only",
+     "evidence_ref": "sha256:2ffc031f767d6f1f0b74888e01bbe2e53bd5d78bdb8f8bcc8d95228c18bd1e05",
+     "first_seen": "2026-09-22T00:00:00+00:00",
+     "id": "168b98ef95742df0c4df57261d57c4410f81657b75afcee625f968b800af2419",
+     "marker_present": true,
+     "number": 7,
+     "purpose": "post_write",
+     "repository": "fixture/zeus",
+     "sequence": 1,
+     "state": "OPEN",
+     "ticket_id": "ZEUS-000000000001",
+     "title": "Independent services",
+     "url": "https://github.com/fixture/zeus/issues/7"
+    }
+   ],
+   "ticket_syncs": [
+    {
+     "created_number": 7,
+     "creation_uncertain": false,
+     "id": "dc31691ee6dd5b8659b64a568f2a0ab18585a43b0cd95d3ee2f95487f5b4a65a",
+     "lease_until": "2026-09-22T00:05:00+00:00",
+     "observed_body_hash": "d2ce17e0443b10d167d40acef7302f5f44c608733c65d73e8395b3d86f211ebd",
+     "observed_title_hash": "e28dea08fb589881cb05b8aedb1289c78615b30bd05a69de829e13a82278996c",
+     "owner": null,
+     "pending_body_hash": null,
+     "pending_title_hash": null,
+     "reconcile_observation": null,
+     "status": "synced"
+    },
+    {
+     "id": "x"
+    }
+   ]
+  },
+  "unknown_ticket": {
+   "artifacts_added": 0,
+   "cause_type": null,
+   "counts_after": {
+    "ticket_github": 0,
+    "ticket_remote_creations": 0,
+    "ticket_remote_observations": 0,
+    "ticket_syncs": 0
+   },
+   "gh_verbs": [],
+   "is_contract_error": true,
+   "message": "Ticket not found",
+   "outcome": "raised",
+   "store_after": "733694885361b642",
+   "store_before": "733694885361b642",
+   "store_unchanged": true,
+   "type": "ContractError"
+  },
+  "unrecognized_created_receipt": {
+   "artifacts_added": 0,
+   "cause_type": null,
+   "counts_after": {
+    "ticket_github": 0,
+    "ticket_remote_creations": 0,
+    "ticket_remote_observations": 0,
+    "ticket_syncs": 1
+   },
+   "gh_verbs": [
+    "issue list",
+    "issue create"
+   ],
+   "is_contract_error": true,
+   "message": "Unrecognized created issue receipt; retry discovery",
+   "outcome": "raised",
+   "store_after": "bb33623b09618687",
+   "store_before": "733694885361b642",
+   "store_unchanged": false,
+   "type": "ContractError"
+  },
+  "unrecognized_created_receipt_rows": {
+   "ticket_github": [],
+   "ticket_remote_creations": [],
+   "ticket_remote_observations": [],
+   "ticket_syncs": [
+    {
+     "creation_uncertain": true,
+     "error_type": "ContractError",
+     "id": "dc31691ee6dd5b8659b64a568f2a0ab18585a43b0cd95d3ee2f95487f5b4a65a",
+     "lease_until": "2026-09-22T00:05:00+00:00",
+     "observed_body_hash": null,
+     "observed_title_hash": null,
+     "owner": null,
+     "pending_body_hash": "d2ce17e0443b10d167d40acef7302f5f44c608733c65d73e8395b3d86f211ebd",
+     "pending_title_hash": "e28dea08fb589881cb05b8aedb1289c78615b30bd05a69de829e13a82278996c",
+     "reconcile_observation": null,
+     "status": "needs_attention"
+    }
+   ]
+  },
+  "unrelated_search_hits_are_ignored_and_the_issue_created": {
+   "artifacts_added": 2,
+   "counts_after": {
+    "ticket_github": 1,
+    "ticket_remote_creations": 1,
+    "ticket_remote_observations": 1,
+    "ticket_syncs": 1
+   },
+   "gh_verbs": [
+    "issue list",
+    "issue create",
+    "issue view"
+   ],
+   "outcome": "returned",
+   "store_after": "6e60693e0f5e6acd",
+   "store_before": "733694885361b642",
+   "store_unchanged": false,
+   "value": {
+    "at": "2026-09-22T00:00:00+00:00",
+    "attempted_content_hash": "2f16861407b333f3e25b47fba02742fa10b2fd2258a0b1d5fc13796884595e01",
+    "attempted_revision": 1,
+    "body_hash": "d2ce17e0443b10d167d40acef7302f5f44c608733c65d73e8395b3d86f211ebd",
+    "content_hash": "2f16861407b333f3e25b47fba02742fa10b2fd2258a0b1d5fc13796884595e01",
+    "desired_state": "OPEN",
+    "id": "dc31691ee6dd5b8659b64a568f2a0ab18585a43b0cd95d3ee2f95487f5b4a65a",
+    "lifecycle_event": null,
+    "lifecycle_sequence": 0,
+    "number": 7,
+    "observation_id": "168b98ef95742df0c4df57261d57c4410f81657b75afcee625f968b800af2419",
+    "observation_ref": "sha256:2ffc031f767d6f1f0b74888e01bbe2e53bd5d78bdb8f8bcc8d95228c18bd1e05",
+    "observed_body_hash": "d2ce17e0443b10d167d40acef7302f5f44c608733c65d73e8395b3d86f211ebd",
+    "observed_state": "OPEN",
+    "observed_title_hash": "e28dea08fb589881cb05b8aedb1289c78615b30bd05a69de829e13a82278996c",
+    "projected_lifecycle_event": null,
+    "repository": "fixture/zeus",
+    "review_ids": [],
+    "status": "synced",
+    "synced_revision": 1,
+    "ticket_id": "ZEUS-000000000001",
+    "title": "Independent services",
+    "title_hash": "e28dea08fb589881cb05b8aedb1289c78615b30bd05a69de829e13a82278996c",
+    "url": "https://github.com/fixture/zeus/issues/7"
+   }
+  }
+ },
+ "repo_call_read": {
+  "call_failure_is_a_runtime_error_without_the_detail": {
+   "artifacts_added": 0,
+   "cause_type": null,
+   "counts_after": {
+    "ticket_github": 0,
+    "ticket_remote_creations": 0,
+    "ticket_remote_observations": 0,
+    "ticket_syncs": 3
+   },
+   "gh_verbs": [
+    "issue view"
+   ],
+   "is_contract_error": false,
+   "message": "GitHub issue operation failed; local ticket retained",
+   "outcome": "raised",
+   "store_after": "f35e1a8c59546d29",
+   "store_before": "f35e1a8c59546d29",
+   "store_unchanged": true,
+   "type": "RuntimeError"
+  },
+  "call_ok": {
+   "artifacts_added": 0,
+   "counts_after": {
+    "ticket_github": 0,
+    "ticket_remote_creations": 0,
+    "ticket_remote_observations": 0,
+    "ticket_syncs": 3
+   },
+   "gh_verbs": [
+    "issue view"
+   ],
+   "outcome": "returned",
+   "store_after": "f35e1a8c59546d29",
+   "store_before": "f35e1a8c59546d29",
+   "store_unchanged": true,
+   "value": "{\"number\": 7, \"url\": \"https://github.com/fixture/zeus/issues/7\", \"body\": \"b\", \"title\": \"t\", \"state\": \"OPEN\", \"comments\": []}"
+  },
+  "call_runner_exception_propagates": {
+   "artifacts_added": 0,
+   "cause_type": null,
+   "counts_after": {
+    "ticket_github": 0,
+    "ticket_remote_creations": 0,
+    "ticket_remote_observations": 0,
+    "ticket_syncs": 3
+   },
+   "gh_verbs": [
+    "issue close"
+   ],
+   "is_contract_error": false,
+   "message": "fixture response lost after state change",
+   "outcome": "raised",
+   "store_after": "f35e1a8c59546d29",
+   "store_before": "f35e1a8c59546d29",
+   "store_unchanged": true,
+   "type": "TimeoutError"
+  },
+  "call_stdout_is_stripped": {
+   "artifacts_added": 0,
+   "counts_after": {
+    "ticket_github": 0,
+    "ticket_remote_creations": 0,
+    "ticket_remote_observations": 0,
+    "ticket_syncs": 3
+   },
+   "gh_verbs": [
+    "issue close"
+   ],
+   "outcome": "returned",
+   "store_after": "f35e1a8c59546d29",
+   "store_before": "f35e1a8c59546d29",
+   "store_unchanged": true,
+   "value": "https://github.com/fixture/zeus/issues/7"
+  },
+  "gh_calls": [
+   {
+    "args": [
+     "issue",
+     "list",
+     "--repo",
+     "a/b",
+     "--state",
+     "all",
+     "--search",
+     "\"zeus-ticket:ZEUS-000000000001\" in:body",
+     "--limit",
+     "100",
+     "--json",
+     "number,url,body"
+    ],
+    "body": null,
+    "cwd": null,
+    "env": null,
+    "input": null,
+    "timeout": 60,
+    "verb": "issue list"
+   },
+   {
+    "args": [
+     "issue",
+     "create",
+     "--repo",
+     "a/b",
+     "--title",
+     "Independent services",
+     "--body-file",
+     "<body-file:issue.md:True>"
+    ],
+    "body": "<!-- zeus-ticket:ZEUS-000000000001 -->\n\n# Independent services\n\nZeus `ZEUS-000000000001` · revision 1 · `2f16861407b333f3e25b47fba02742fa10b2fd2258a0b1d5fc13796884595e01`\n\n> Local ledger is authoritative. Reviews below are advisory, not deployment approval.\n\n## Problem\n\nServices share one failure domain.\n\n## Impact\n\nOne outage stops every review.\n\n## Rollback\n\nRevert the merge commit.\n\n## Evidence Refs\n\n- docs/evidence.md\n\n## Scope\n\n- split the queue\n- split the store\n\n## Acceptance Criteria\n\n- queue runs alone\n- store runs alone\n\n## Verification\n\n- run both\n\n## Reviewer findings\n\nNo review recorded for this revision.\n",
+    "cwd": null,
+    "env": null,
+    "input": null,
+    "timeout": 60,
+    "verb": "issue create"
+   },
+   {
+    "args": [
+     "issue",
+     "list",
+     "--repo",
+     "my-org.x/repo_1.2",
+     "--state",
+     "all",
+     "--search",
+     "\"zeus-ticket:ZEUS-000000000001\" in:body",
+     "--limit",
+     "100",
+     "--json",
+     "number,url,body"
+    ],
+    "body": null,
+    "cwd": null,
+    "env": null,
+    "input": null,
+    "timeout": 60,
+    "verb": "issue list"
+   },
+   {
+    "args": [
+     "issue",
+     "view",
+     "7",
+     "--repo",
+     "my-org.x/repo_1.2",
+     "--json",
+     "number,url,title,body,state,comments"
+    ],
+    "body": null,
+    "cwd": null,
+    "env": null,
+    "input": null,
+    "timeout": 60,
+    "verb": "issue view"
+   },
+   {
+    "args": [
+     "issue",
+     "list",
+     "--repo",
+     "ö/b",
+     "--state",
+     "all",
+     "--search",
+     "\"zeus-ticket:ZEUS-000000000001\" in:body",
+     "--limit",
+     "100",
+     "--json",
+     "number,url,body"
+    ],
+    "body": null,
+    "cwd": null,
+    "env": null,
+    "input": null,
+    "timeout": 60,
+    "verb": "issue list"
+   },
+   {
+    "args": [
+     "issue",
+     "view",
+     "7",
+     "--repo",
+     "ö/b",
+     "--json",
+     "number,url,title,body,state,comments"
+    ],
+    "body": null,
+    "cwd": null,
+    "env": null,
+    "input": null,
+    "timeout": 60,
+    "verb": "issue view"
+   },
+   {
+    "args": [
+     "issue",
+     "view",
+     "7",
+     "--repo",
+     "fixture/zeus"
+    ],
+    "body": null,
+    "cwd": null,
+    "env": null,
+    "input": null,
+    "timeout": 60,
+    "verb": "issue view"
+   },
+   {
+    "args": [
+     "issue",
+     "close",
+     "7",
+     "--repo",
+     "fixture/zeus"
+    ],
+    "body": null,
+    "cwd": null,
+    "env": null,
+    "input": null,
+    "timeout": 60,
+    "verb": "issue close"
+   },
+   {
+    "args": [
+     "issue",
+     "view",
+     "7",
+     "--repo",
+     "fixture/zeus"
+    ],
+    "body": null,
+    "cwd": null,
+    "env": null,
+    "input": null,
+    "timeout": 60,
+    "verb": "issue view"
+   },
+   {
+    "args": [
+     "issue",
+     "close",
+     "7",
+     "--repo",
+     "fixture/zeus"
+    ],
+    "body": null,
+    "cwd": null,
+    "env": null,
+    "input": null,
+    "timeout": 60,
+    "verb": "issue close"
+   }
+  ],
+  "read_argv": {
+   "args": [
+    "issue",
+    "view",
+    "7",
+    "--repo",
+    "fixture/zeus",
+    "--json",
+    "number,url,title,body,state,comments"
+   ],
+   "body": null,
+   "cwd": null,
+   "env": null,
+   "input": null,
+   "timeout": 60,
+   "verb": "issue view"
+  },
+  "read_gh_failure": {
+   "artifacts_added": 0,
+   "cause_type": null,
+   "counts_after": {
+    "ticket_github": 0,
+    "ticket_remote_creations": 0,
+    "ticket_remote_observations": 0,
+    "ticket_syncs": 0
+   },
+   "gh_verbs": [
+    "issue view"
+   ],
+   "is_contract_error": false,
+   "message": "GitHub issue operation failed; local ticket retained",
+   "outcome": "raised",
+   "store_after": "733694885361b642",
+   "store_before": "733694885361b642",
+   "store_unchanged": true,
+   "type": "RuntimeError"
+  },
+  "read_not_an_object": {
+   "artifacts_added": 0,
+   "cause_type": null,
+   "counts_after": {
+    "ticket_github": 0,
+    "ticket_remote_creations": 0,
+    "ticket_remote_observations": 0,
+    "ticket_syncs": 0
+   },
+   "gh_verbs": [
+    "issue view"
+   ],
+   "is_contract_error": false,
+   "message": "'list' object has no attribute 'get'",
+   "outcome": "raised",
+   "store_after": "733694885361b642",
+   "store_before": "733694885361b642",
+   "store_unchanged": true,
+   "type": "AttributeError"
+  },
+  "read_not_json": {
+   "artifacts_added": 0,
+   "cause_type": null,
+   "counts_after": {
+    "ticket_github": 0,
+    "ticket_remote_creations": 0,
+    "ticket_remote_observations": 0,
+    "ticket_syncs": 0
+   },
+   "gh_verbs": [
+    "issue view"
+   ],
+   "is_contract_error": false,
+   "message": "Expecting value: line 1 column 1 (char 0)",
+   "outcome": "raised",
+   "store_after": "733694885361b642",
+   "store_before": "733694885361b642",
+   "store_unchanged": true,
+   "type": "JSONDecodeError"
+  },
+  "read_number_bool": {
+   "artifacts_added": 0,
+   "cause_type": null,
+   "counts_after": {
+    "ticket_github": 0,
+    "ticket_remote_creations": 0,
+    "ticket_remote_observations": 0,
+    "ticket_syncs": 0
+   },
+   "gh_verbs": [],
+   "is_contract_error": true,
+   "message": "Invalid GitHub issue number",
+   "outcome": "raised",
+   "store_after": "733694885361b642",
+   "store_before": "733694885361b642",
+   "store_unchanged": true,
+   "type": "ContractError"
+  },
+  "read_number_float": {
+   "artifacts_added": 0,
+   "cause_type": null,
+   "counts_after": {
+    "ticket_github": 0,
+    "ticket_remote_creations": 0,
+    "ticket_remote_observations": 0,
+    "ticket_syncs": 0
+   },
+   "gh_verbs": [],
+   "is_contract_error": true,
+   "message": "Invalid GitHub issue number",
+   "outcome": "raised",
+   "store_after": "733694885361b642",
+   "store_before": "733694885361b642",
+   "store_unchanged": true,
+   "type": "ContractError"
+  },
+  "read_number_negative": {
+   "artifacts_added": 0,
+   "cause_type": null,
+   "counts_after": {
+    "ticket_github": 0,
+    "ticket_remote_creations": 0,
+    "ticket_remote_observations": 0,
+    "ticket_syncs": 0
+   },
+   "gh_verbs": [],
+   "is_contract_error": true,
+   "message": "Invalid GitHub issue number",
+   "outcome": "raised",
+   "store_after": "733694885361b642",
+   "store_before": "733694885361b642",
+   "store_unchanged": true,
+   "type": "ContractError"
+  },
+  "read_number_none": {
+   "artifacts_added": 0,
+   "cause_type": null,
+   "counts_after": {
+    "ticket_github": 0,
+    "ticket_remote_creations": 0,
+    "ticket_remote_observations": 0,
+    "ticket_syncs": 0
+   },
+   "gh_verbs": [],
+   "is_contract_error": true,
+   "message": "Invalid GitHub issue number",
+   "outcome": "raised",
+   "store_after": "733694885361b642",
+   "store_before": "733694885361b642",
+   "store_unchanged": true,
+   "type": "ContractError"
+  },
+  "read_number_string": {
+   "artifacts_added": 0,
+   "cause_type": null,
+   "counts_after": {
+    "ticket_github": 0,
+    "ticket_remote_creations": 0,
+    "ticket_remote_observations": 0,
+    "ticket_syncs": 0
+   },
+   "gh_verbs": [],
+   "is_contract_error": true,
+   "message": "Invalid GitHub issue number",
+   "outcome": "raised",
+   "store_after": "733694885361b642",
+   "store_before": "733694885361b642",
+   "store_unchanged": true,
+   "type": "ContractError"
+  },
+  "read_number_zero": {
+   "artifacts_added": 0,
+   "cause_type": null,
+   "counts_after": {
+    "ticket_github": 0,
+    "ticket_remote_creations": 0,
+    "ticket_remote_observations": 0,
+    "ticket_syncs": 0
+   },
+   "gh_verbs": [],
+   "is_contract_error": true,
+   "message": "Invalid GitHub issue number",
+   "outcome": "raised",
+   "store_after": "733694885361b642",
+   "store_before": "733694885361b642",
+   "store_unchanged": true,
+   "type": "ContractError"
+  },
+  "read_ok": {
+   "artifacts_added": 0,
+   "counts_after": {
+    "ticket_github": 0,
+    "ticket_remote_creations": 0,
+    "ticket_remote_observations": 0,
+    "ticket_syncs": 0
+   },
+   "gh_verbs": [
+    "issue view"
+   ],
+   "outcome": "returned",
+   "store_after": "733694885361b642",
+   "store_before": "733694885361b642",
+   "store_unchanged": true,
+   "value": {
+    "body": "b",
+    "comments": [],
+    "number": 7,
+    "state": "OPEN",
+    "title": "t",
+    "url": "https://github.com/fixture/zeus/issues/7"
+   }
+  },
+  "read_remote_body_not_text": {
+   "artifacts_added": 0,
+   "cause_type": null,
+   "counts_after": {
+    "ticket_github": 0,
+    "ticket_remote_creations": 0,
+    "ticket_remote_observations": 0,
+    "ticket_syncs": 0
+   },
+   "gh_verbs": [
+    "issue view"
+   ],
+   "is_contract_error": true,
+   "message": "Invalid GitHub issue readback",
+   "outcome": "raised",
+   "store_after": "733694885361b642",
+   "store_before": "733694885361b642",
+   "store_unchanged": true,
+   "type": "ContractError"
+  },
+  "read_remote_no_title": {
+   "artifacts_added": 0,
+   "cause_type": null,
+   "counts_after": {
+    "ticket_github": 0,
+    "ticket_remote_creations": 0,
+    "ticket_remote_observations": 0,
+    "ticket_syncs": 0
+   },
+   "gh_verbs": [
+    "issue view"
+   ],
+   "is_contract_error": true,
+   "message": "Invalid GitHub issue readback",
+   "outcome": "raised",
+   "store_after": "733694885361b642",
+   "store_before": "733694885361b642",
+   "store_unchanged": true,
+   "type": "ContractError"
+  },
+  "read_remote_other_number": {
+   "artifacts_added": 0,
+   "cause_type": null,
+   "counts_after": {
+    "ticket_github": 0,
+    "ticket_remote_creations": 0,
+    "ticket_remote_observations": 0,
+    "ticket_syncs": 0
+   },
+   "gh_verbs": [
+    "issue view"
+   ],
+   "is_contract_error": true,
+   "message": "Invalid GitHub issue readback",
+   "outcome": "raised",
+   "store_after": "733694885361b642",
+   "store_before": "733694885361b642",
+   "store_unchanged": true,
+   "type": "ContractError"
+  },
+  "read_remote_other_url": {
+   "artifacts_added": 0,
+   "cause_type": null,
+   "counts_after": {
+    "ticket_github": 0,
+    "ticket_remote_creations": 0,
+    "ticket_remote_observations": 0,
+    "ticket_syncs": 0
+   },
+   "gh_verbs": [
+    "issue view"
+   ],
+   "is_contract_error": true,
+   "message": "Invalid GitHub issue readback",
+   "outcome": "raised",
+   "store_after": "733694885361b642",
+   "store_before": "733694885361b642",
+   "store_unchanged": true,
+   "type": "ContractError"
+  },
+  "read_remote_state_closed_ok": {
+   "artifacts_added": 0,
+   "counts_after": {
+    "ticket_github": 0,
+    "ticket_remote_creations": 0,
+    "ticket_remote_observations": 0,
+    "ticket_syncs": 0
+   },
+   "gh_verbs": [
+    "issue view"
+   ],
+   "outcome": "returned",
+   "store_after": "733694885361b642",
+   "store_before": "733694885361b642",
+   "store_unchanged": true,
+   "value": {
+    "body": "b",
+    "comments": [],
+    "number": 7,
+    "state": "CLOSED",
+    "title": "t",
+    "url": "https://github.com/fixture/zeus/issues/7"
+   }
+  },
+  "read_remote_state_lowercase": {
+   "artifacts_added": 0,
+   "cause_type": null,
+   "counts_after": {
+    "ticket_github": 0,
+    "ticket_remote_creations": 0,
+    "ticket_remote_observations": 0,
+    "ticket_syncs": 0
+   },
+   "gh_verbs": [
+    "issue view"
+   ],
+   "is_contract_error": true,
+   "message": "Invalid GitHub issue readback",
+   "outcome": "raised",
+   "store_after": "733694885361b642",
+   "store_before": "733694885361b642",
+   "store_unchanged": true,
+   "type": "ContractError"
+  },
+  "read_remote_state_merged": {
+   "artifacts_added": 0,
+   "cause_type": null,
+   "counts_after": {
+    "ticket_github": 0,
+    "ticket_remote_creations": 0,
+    "ticket_remote_observations": 0,
+    "ticket_syncs": 0
+   },
+   "gh_verbs": [
+    "issue view"
+   ],
+   "is_contract_error": true,
+   "message": "Invalid GitHub issue readback",
+   "outcome": "raised",
+   "store_after": "733694885361b642",
+   "store_before": "733694885361b642",
+   "store_unchanged": true,
+   "type": "ContractError"
+  },
+  "read_remote_title_not_text": {
+   "artifacts_added": 0,
+   "cause_type": null,
+   "counts_after": {
+    "ticket_github": 0,
+    "ticket_remote_creations": 0,
+    "ticket_remote_observations": 0,
+    "ticket_syncs": 0
+   },
+   "gh_verbs": [
+    "issue view"
+   ],
+   "is_contract_error": true,
+   "message": "Invalid GitHub issue readback",
+   "outcome": "raised",
+   "store_after": "733694885361b642",
+   "store_before": "733694885361b642",
+   "store_unchanged": true,
+   "type": "ContractError"
+  },
+  "repo_dots_dashes": {
+   "artifacts_added": 0,
+   "counts_after": {
+    "ticket_github": 0,
+    "ticket_remote_creations": 0,
+    "ticket_remote_observations": 0,
+    "ticket_syncs": 1
+   },
+   "gh_verbs": [],
+   "outcome": "returned",
+   "store_after": "4625257659423d88",
+   "store_before": "4625257659423d88",
+   "store_unchanged": true,
+   "value": "my-org.x/repo_1.2"
+  },
+  "repo_empty": {
+   "artifacts_added": 0,
+   "cause_type": null,
+   "counts_after": {
+    "ticket_github": 0,
+    "ticket_remote_creations": 0,
+    "ticket_remote_observations": 0,
+    "ticket_syncs": 2
+   },
+   "gh_verbs": [],
+   "is_contract_error": true,
+   "message": "GitHub repository must be owner/name",
+   "outcome": "raised",
+   "store_after": "a4132fcbffb32cde",
+   "store_before": "a4132fcbffb32cde",
+   "store_unchanged": true,
+   "type": "ContractError"
+  },
+  "repo_no_slash": {
+   "artifacts_added": 0,
+   "cause_type": null,
+   "counts_after": {
+    "ticket_github": 0,
+    "ticket_remote_creations": 0,
+    "ticket_remote_observations": 0,
+    "ticket_syncs": 2
+   },
+   "gh_verbs": [],
+   "is_contract_error": true,
+   "message": "GitHub repository must be owner/name",
+   "outcome": "raised",
+   "store_after": "a4132fcbffb32cde",
+   "store_before": "a4132fcbffb32cde",
+   "store_unchanged": true,
+   "type": "ContractError"
+  },
+  "repo_none": {
+   "artifacts_added": 0,
+   "cause_type": null,
+   "counts_after": {
+    "ticket_github": 0,
+    "ticket_remote_creations": 0,
+    "ticket_remote_observations": 0,
+    "ticket_syncs": 2
+   },
+   "gh_verbs": [],
+   "is_contract_error": true,
+   "message": "GitHub repository must be owner/name",
+   "outcome": "raised",
+   "store_after": "a4132fcbffb32cde",
+   "store_before": "a4132fcbffb32cde",
+   "store_unchanged": true,
+   "type": "ContractError"
+  },
+  "repo_number": {
+   "artifacts_added": 0,
+   "cause_type": null,
+   "counts_after": {
+    "ticket_github": 0,
+    "ticket_remote_creations": 0,
+    "ticket_remote_observations": 0,
+    "ticket_syncs": 2
+   },
+   "gh_verbs": [],
+   "is_contract_error": true,
+   "message": "GitHub repository must be owner/name",
+   "outcome": "raised",
+   "store_after": "a4132fcbffb32cde",
+   "store_before": "a4132fcbffb32cde",
+   "store_unchanged": true,
+   "type": "ContractError"
+  },
+  "repo_owner_name": {
+   "artifacts_added": 0,
+   "counts_after": {
+    "ticket_github": 0,
+    "ticket_remote_creations": 0,
+    "ticket_remote_observations": 0,
+    "ticket_syncs": 0
+   },
+   "gh_verbs": [],
+   "outcome": "returned",
+   "store_after": "733694885361b642",
+   "store_before": "733694885361b642",
+   "store_unchanged": true,
+   "value": "a/b"
+  },
+  "repo_space": {
+   "artifacts_added": 0,
+   "cause_type": null,
+   "counts_after": {
+    "ticket_github": 0,
+    "ticket_remote_creations": 0,
+    "ticket_remote_observations": 0,
+    "ticket_syncs": 2
+   },
+   "gh_verbs": [],
+   "is_contract_error": true,
+   "message": "GitHub repository must be owner/name",
+   "outcome": "raised",
+   "store_after": "a4132fcbffb32cde",
+   "store_before": "a4132fcbffb32cde",
+   "store_unchanged": true,
+   "type": "ContractError"
+  },
+  "repo_trailing_newline": {
+   "artifacts_added": 0,
+   "cause_type": null,
+   "counts_after": {
+    "ticket_github": 0,
+    "ticket_remote_creations": 0,
+    "ticket_remote_observations": 0,
+    "ticket_syncs": 2
+   },
+   "gh_verbs": [],
+   "is_contract_error": true,
+   "message": "GitHub repository must be owner/name",
+   "outcome": "raised",
+   "store_after": "a4132fcbffb32cde",
+   "store_before": "a4132fcbffb32cde",
+   "store_unchanged": true,
+   "type": "ContractError"
+  },
+  "repo_two_slashes": {
+   "artifacts_added": 0,
+   "cause_type": null,
+   "counts_after": {
+    "ticket_github": 0,
+    "ticket_remote_creations": 0,
+    "ticket_remote_observations": 0,
+    "ticket_syncs": 2
+   },
+   "gh_verbs": [],
+   "is_contract_error": true,
+   "message": "GitHub repository must be owner/name",
+   "outcome": "raised",
+   "store_after": "a4132fcbffb32cde",
+   "store_before": "a4132fcbffb32cde",
+   "store_unchanged": true,
+   "type": "ContractError"
+  },
+  "repo_unicode": {
+   "artifacts_added": 0,
+   "counts_after": {
+    "ticket_github": 0,
+    "ticket_remote_creations": 0,
+    "ticket_remote_observations": 0,
+    "ticket_syncs": 2
+   },
+   "gh_verbs": [],
+   "outcome": "returned",
+   "store_after": "a4132fcbffb32cde",
+   "store_before": "a4132fcbffb32cde",
+   "store_unchanged": true,
+   "value": "ö/b"
+  },
+  "sync_repo_dots_dashes": {
+   "artifacts_added": 0,
+   "cause_type": null,
+   "counts_after": {
+    "ticket_github": 0,
+    "ticket_remote_creations": 0,
+    "ticket_remote_observations": 0,
+    "ticket_syncs": 2
+   },
+   "gh_verbs": [
+    "issue list",
+    "issue view"
+   ],
+   "is_contract_error": true,
+   "message": "Invalid GitHub issue readback",
+   "outcome": "raised",
+   "store_after": "a4132fcbffb32cde",
+   "store_before": "4625257659423d88",
+   "store_unchanged": false,
+   "type": "ContractError"
+  },
+  "sync_repo_empty": {
+   "artifacts_added": 0,
+   "cause_type": null,
+   "counts_after": {
+    "ticket_github": 0,
+    "ticket_remote_creations": 0,
+    "ticket_remote_observations": 0,
+    "ticket_syncs": 2
+   },
+   "gh_verbs": [],
+   "is_contract_error": true,
+   "message": "GitHub repository must be owner/name",
+   "outcome": "raised",
+   "store_after": "a4132fcbffb32cde",
+   "store_before": "a4132fcbffb32cde",
+   "store_unchanged": true,
+   "type": "ContractError"
+  },
+  "sync_repo_no_slash": {
+   "artifacts_added": 0,
+   "cause_type": null,
+   "counts_after": {
+    "ticket_github": 0,
+    "ticket_remote_creations": 0,
+    "ticket_remote_observations": 0,
+    "ticket_syncs": 2
+   },
+   "gh_verbs": [],
+   "is_contract_error": true,
+   "message": "GitHub repository must be owner/name",
+   "outcome": "raised",
+   "store_after": "a4132fcbffb32cde",
+   "store_before": "a4132fcbffb32cde",
+   "store_unchanged": true,
+   "type": "ContractError"
+  },
+  "sync_repo_none": {
+   "artifacts_added": 0,
+   "cause_type": null,
+   "counts_after": {
+    "ticket_github": 0,
+    "ticket_remote_creations": 0,
+    "ticket_remote_observations": 0,
+    "ticket_syncs": 2
+   },
+   "gh_verbs": [],
+   "is_contract_error": true,
+   "message": "GitHub repository must be owner/name",
+   "outcome": "raised",
+   "store_after": "a4132fcbffb32cde",
+   "store_before": "a4132fcbffb32cde",
+   "store_unchanged": true,
+   "type": "ContractError"
+  },
+  "sync_repo_number": {
+   "artifacts_added": 0,
+   "cause_type": null,
+   "counts_after": {
+    "ticket_github": 0,
+    "ticket_remote_creations": 0,
+    "ticket_remote_observations": 0,
+    "ticket_syncs": 2
+   },
+   "gh_verbs": [],
+   "is_contract_error": true,
+   "message": "GitHub repository must be owner/name",
+   "outcome": "raised",
+   "store_after": "a4132fcbffb32cde",
+   "store_before": "a4132fcbffb32cde",
+   "store_unchanged": true,
+   "type": "ContractError"
+  },
+  "sync_repo_owner_name": {
+   "artifacts_added": 0,
+   "cause_type": null,
+   "counts_after": {
+    "ticket_github": 0,
+    "ticket_remote_creations": 0,
+    "ticket_remote_observations": 0,
+    "ticket_syncs": 1
+   },
+   "gh_verbs": [
+    "issue list",
+    "issue create"
+   ],
+   "is_contract_error": true,
+   "message": "Unrecognized created issue receipt; retry discovery",
+   "outcome": "raised",
+   "store_after": "4625257659423d88",
+   "store_before": "733694885361b642",
+   "store_unchanged": false,
+   "type": "ContractError"
+  },
+  "sync_repo_space": {
+   "artifacts_added": 0,
+   "cause_type": null,
+   "counts_after": {
+    "ticket_github": 0,
+    "ticket_remote_creations": 0,
+    "ticket_remote_observations": 0,
+    "ticket_syncs": 2
+   },
+   "gh_verbs": [],
+   "is_contract_error": true,
+   "message": "GitHub repository must be owner/name",
+   "outcome": "raised",
+   "store_after": "a4132fcbffb32cde",
+   "store_before": "a4132fcbffb32cde",
+   "store_unchanged": true,
+   "type": "ContractError"
+  },
+  "sync_repo_trailing_newline": {
+   "artifacts_added": 0,
+   "cause_type": null,
+   "counts_after": {
+    "ticket_github": 0,
+    "ticket_remote_creations": 0,
+    "ticket_remote_observations": 0,
+    "ticket_syncs": 2
+   },
+   "gh_verbs": [],
+   "is_contract_error": true,
+   "message": "GitHub repository must be owner/name",
+   "outcome": "raised",
+   "store_after": "a4132fcbffb32cde",
+   "store_before": "a4132fcbffb32cde",
+   "store_unchanged": true,
+   "type": "ContractError"
+  },
+  "sync_repo_two_slashes": {
+   "artifacts_added": 0,
+   "cause_type": null,
+   "counts_after": {
+    "ticket_github": 0,
+    "ticket_remote_creations": 0,
+    "ticket_remote_observations": 0,
+    "ticket_syncs": 2
+   },
+   "gh_verbs": [],
+   "is_contract_error": true,
+   "message": "GitHub repository must be owner/name",
+   "outcome": "raised",
+   "store_after": "a4132fcbffb32cde",
+   "store_before": "a4132fcbffb32cde",
+   "store_unchanged": true,
+   "type": "ContractError"
+  },
+  "sync_repo_unicode": {
+   "artifacts_added": 0,
+   "cause_type": null,
+   "counts_after": {
+    "ticket_github": 0,
+    "ticket_remote_creations": 0,
+    "ticket_remote_observations": 0,
+    "ticket_syncs": 3
+   },
+   "gh_verbs": [
+    "issue list",
+    "issue view"
+   ],
+   "is_contract_error": true,
+   "message": "Invalid GitHub issue readback",
+   "outcome": "raised",
+   "store_after": "f35e1a8c59546d29",
+   "store_before": "a4132fcbffb32cde",
+   "store_unchanged": false,
+   "type": "ContractError"
+  }
+ },
+ "state": {
+  "already_closed_verbs": [
+   "issue list",
+   "issue create",
+   "issue view",
+   "issue view",
+   "issue view"
+  ],
+  "close_again_is_a_noop": {
+   "artifacts_added": 0,
+   "counts_after": {
+    "ticket_github": 1,
+    "ticket_remote_creations": 1,
+    "ticket_remote_observations": 4,
+    "ticket_syncs": 1
+   },
+   "gh_verbs": [
+    "issue view",
+    "issue view"
+   ],
+   "outcome": "returned",
+   "store_after": "27eb581a35f9797c",
+   "store_before": "a04f066021234d15",
+   "store_unchanged": false,
+   "value": {
+    "at": "2026-09-22T00:00:02+00:00",
+    "attempted_content_hash": "2f16861407b333f3e25b47fba02742fa10b2fd2258a0b1d5fc13796884595e01",
+    "attempted_revision": 1,
+    "body_hash": "d2ce17e0443b10d167d40acef7302f5f44c608733c65d73e8395b3d86f211ebd",
+    "content_hash": "2f16861407b333f3e25b47fba02742fa10b2fd2258a0b1d5fc13796884595e01",
+    "desired_state": "CLOSED",
+    "id": "dc31691ee6dd5b8659b64a568f2a0ab18585a43b0cd95d3ee2f95487f5b4a65a",
+    "lifecycle_event": "5cb7fd0c44e6ed92d06d4311acff4bc192235bcb58326cebc3cd48aa8029f007",
+    "lifecycle_sequence": 1,
+    "number": 7,
+    "observation_id": "c607bbf0c80db71a094b7f9a8108fc91c9c2aa04a3fedaf24872442d0b1c6717",
+    "observation_ref": "sha256:8b658db487f433ba3007c04aba67829712950a2a077c0930744ba43cfac6adff",
+    "observed_body_hash": "d2ce17e0443b10d167d40acef7302f5f44c608733c65d73e8395b3d86f211ebd",
+    "observed_state": "CLOSED",
+    "observed_title_hash": "e28dea08fb589881cb05b8aedb1289c78615b30bd05a69de829e13a82278996c",
+    "projected_lifecycle_event": "5cb7fd0c44e6ed92d06d4311acff4bc192235bcb58326cebc3cd48aa8029f007",
+    "repository": "fixture/zeus",
+    "review_ids": [],
+    "status": "synced",
+    "synced_revision": 1,
+    "ticket_id": "ZEUS-000000000001",
+    "title": "Independent services",
+    "title_hash": "e28dea08fb589881cb05b8aedb1289c78615b30bd05a69de829e13a82278996c",
+    "url": "https://github.com/fixture/zeus/issues/7"
+   }
+  },
+  "close_again_verbs": [
+   "issue view",
+   "issue view",
+   "issue view"
+  ],
+  "close_call": [
+   {
+    "args": [
+     "issue",
+     "close",
+     "7",
+     "--repo",
+     "fixture/zeus",
+     "--reason",
+     "completed"
+    ],
+    "body": null,
+    "cwd": null,
+    "env": null,
+    "input": null,
+    "timeout": 60,
+    "verb": "issue close"
+   }
+  ],
+  "close_remote_state": "CLOSED",
+  "close_rows": {
+   "ticket_github": [
+    {
+     "at": "2026-09-22T00:00:02+00:00",
+     "attempted_content_hash": "2f16861407b333f3e25b47fba02742fa10b2fd2258a0b1d5fc13796884595e01",
+     "attempted_revision": 1,
+     "body_hash": "d2ce17e0443b10d167d40acef7302f5f44c608733c65d73e8395b3d86f211ebd",
+     "content_hash": "2f16861407b333f3e25b47fba02742fa10b2fd2258a0b1d5fc13796884595e01",
+     "desired_state": "CLOSED",
+     "id": "dc31691ee6dd5b8659b64a568f2a0ab18585a43b0cd95d3ee2f95487f5b4a65a",
+     "lifecycle_event": "5cb7fd0c44e6ed92d06d4311acff4bc192235bcb58326cebc3cd48aa8029f007",
+     "lifecycle_sequence": 1,
+     "number": 7,
+     "observation_id": "c607bbf0c80db71a094b7f9a8108fc91c9c2aa04a3fedaf24872442d0b1c6717",
+     "observation_ref": "sha256:8b658db487f433ba3007c04aba67829712950a2a077c0930744ba43cfac6adff",
+     "observed_body_hash": "d2ce17e0443b10d167d40acef7302f5f44c608733c65d73e8395b3d86f211ebd",
+     "observed_state": "CLOSED",
+     "observed_title_hash": "e28dea08fb589881cb05b8aedb1289c78615b30bd05a69de829e13a82278996c",
+     "projected_lifecycle_event": "5cb7fd0c44e6ed92d06d4311acff4bc192235bcb58326cebc3cd48aa8029f007",
+     "repository": "fixture/zeus",
+     "review_ids": [],
+     "status": "synced",
+     "synced_revision": 1,
+     "ticket_id": "ZEUS-000000000001",
+     "title": "Independent services",
+     "title_hash": "e28dea08fb589881cb05b8aedb1289c78615b30bd05a69de829e13a82278996c",
+     "url": "https://github.com/fixture/zeus/issues/7"
+    }
+   ],
+   "ticket_remote_creations": [
+    {
+     "at": "2026-09-22T00:00:00+00:00",
+     "authority": "external_observation_only",
+     "claim_owner": "5eed0000-0000-4000-8000-000000000037",
+     "evidence_ref": "sha256:5784e61cfc50f23f3204e276e96b571c7091dec84251d76138f2b4a235666fe4",
+     "number": 7,
+     "repository": "fixture/zeus",
+     "ticket_id": "ZEUS-000000000001",
+     "url": "https://github.com/fixture/zeus/issues/7"
+    }
+   ],
+   "ticket_remote_observations": [
+    {
+     "at": "2026-09-22T00:00:00+00:00",
+     "authority": "external_observation_only",
+     "evidence_ref": "sha256:2ffc031f767d6f1f0b74888e01bbe2e53bd5d78bdb8f8bcc8d95228c18bd1e05",
+     "first_seen": "2026-09-22T00:00:00+00:00",
+     "id": "168b98ef95742df0c4df57261d57c4410f81657b75afcee625f968b800af2419",
+     "marker_present": true,
+     "number": 7,
+     "purpose": "post_write",
+     "repository": "fixture/zeus",
+     "sequence": 1,
+     "state": "OPEN",
+     "ticket_id": "ZEUS-000000000001",
+     "title": "Independent services",
+     "url": "https://github.com/fixture/zeus/issues/7"
+    },
+    {
+     "at": "2026-09-22T00:00:02+00:00",
+     "authority": "external_observation_only",
+     "evidence_ref": "sha256:2ffc031f767d6f1f0b74888e01bbe2e53bd5d78bdb8f8bcc8d95228c18bd1e05",
+     "first_seen": "2026-09-22T00:00:02+00:00",
+     "id": "fc98d62c57540e26fb08b14170e4261105d0f3995feee0c2356c6aeefecbd95c",
+     "marker_present": true,
+     "number": 7,
+     "purpose": "pre_write",
+     "repository": "fixture/zeus",
+     "sequence": 2,
+     "state": "OPEN",
+     "ticket_id": "ZEUS-000000000001",
+     "title": "Independent services",
+     "url": "https://github.com/fixture/zeus/issues/7"
+    },
+    {
+     "at": "2026-09-22T00:00:02+00:00",
+     "authority": "external_observation_only",
+     "evidence_ref": "sha256:8b658db487f433ba3007c04aba67829712950a2a077c0930744ba43cfac6adff",
+     "first_seen": "2026-09-22T00:00:02+00:00",
+     "id": "c607bbf0c80db71a094b7f9a8108fc91c9c2aa04a3fedaf24872442d0b1c6717",
+     "marker_present": true,
+     "number": 7,
+     "purpose": "post_write",
+     "repository": "fixture/zeus",
+     "sequence": 3,
+     "state": "CLOSED",
+     "ticket_id": "ZEUS-000000000001",
+     "title": "Independent services",
+     "url": "https://github.com/fixture/zeus/issues/7"
+    }
+   ],
+   "ticket_syncs": [
+    {
+     "created_number": 7,
+     "creation_uncertain": false,
+     "id": "dc31691ee6dd5b8659b64a568f2a0ab18585a43b0cd95d3ee2f95487f5b4a65a",
+     "lease_until": "2026-09-22T00:05:02+00:00",
+     "observed_body_hash": "d2ce17e0443b10d167d40acef7302f5f44c608733c65d73e8395b3d86f211ebd",
+     "observed_title_hash": "e28dea08fb589881cb05b8aedb1289c78615b30bd05a69de829e13a82278996c",
+     "owner": null,
+     "pending_body_hash": null,
+     "pending_title_hash": null,
+     "reconcile_observation": null,
+     "status": "synced"
+    }
+   ]
+  },
+  "closed_ticket_closes_the_issue": {
+   "artifacts_added": 1,
+   "counts_after": {
+    "ticket_github": 1,
+    "ticket_remote_creations": 1,
+    "ticket_remote_observations": 3,
+    "ticket_syncs": 1
+   },
+   "gh_verbs": [
+    "issue view",
+    "issue close",
+    "issue view"
+   ],
+   "outcome": "returned",
+   "store_after": "a04f066021234d15",
+   "store_before": "7868b9a30f2a9f83",
+   "store_unchanged": false,
+   "value": {
+    "at": "2026-09-22T00:00:02+00:00",
+    "attempted_content_hash": "2f16861407b333f3e25b47fba02742fa10b2fd2258a0b1d5fc13796884595e01",
+    "attempted_revision": 1,
+    "body_hash": "d2ce17e0443b10d167d40acef7302f5f44c608733c65d73e8395b3d86f211ebd",
+    "content_hash": "2f16861407b333f3e25b47fba02742fa10b2fd2258a0b1d5fc13796884595e01",
+    "desired_state": "CLOSED",
+    "id": "dc31691ee6dd5b8659b64a568f2a0ab18585a43b0cd95d3ee2f95487f5b4a65a",
+    "lifecycle_event": "5cb7fd0c44e6ed92d06d4311acff4bc192235bcb58326cebc3cd48aa8029f007",
+    "lifecycle_sequence": 1,
+    "number": 7,
+    "observation_id": "c607bbf0c80db71a094b7f9a8108fc91c9c2aa04a3fedaf24872442d0b1c6717",
+    "observation_ref": "sha256:8b658db487f433ba3007c04aba67829712950a2a077c0930744ba43cfac6adff",
+    "observed_body_hash": "d2ce17e0443b10d167d40acef7302f5f44c608733c65d73e8395b3d86f211ebd",
+    "observed_state": "CLOSED",
+    "observed_title_hash": "e28dea08fb589881cb05b8aedb1289c78615b30bd05a69de829e13a82278996c",
+    "projected_lifecycle_event": "5cb7fd0c44e6ed92d06d4311acff4bc192235bcb58326cebc3cd48aa8029f007",
+    "repository": "fixture/zeus",
+    "review_ids": [],
+    "status": "synced",
+    "synced_revision": 1,
+    "ticket_id": "ZEUS-000000000001",
+    "title": "Independent services",
+    "title_hash": "e28dea08fb589881cb05b8aedb1289c78615b30bd05a69de829e13a82278996c",
+    "url": "https://github.com/fixture/zeus/issues/7"
+   }
+  },
+  "closed_ticket_with_a_remote_already_closed": {
+   "artifacts_added": 1,
+   "counts_after": {
+    "ticket_github": 1,
+    "ticket_remote_creations": 1,
+    "ticket_remote_observations": 3,
+    "ticket_syncs": 1
+   },
+   "gh_verbs": [
+    "issue view",
+    "issue view"
+   ],
+   "outcome": "returned",
+   "store_after": "e55c83411992e29c",
+   "store_before": "c2c6fdd229f25d49",
+   "store_unchanged": false,
+   "value": {
+    "at": "2026-09-22T00:00:01+00:00",
+    "attempted_content_hash": "2f16861407b333f3e25b47fba02742fa10b2fd2258a0b1d5fc13796884595e01",
+    "attempted_revision": 1,
+    "body_hash": "d2ce17e0443b10d167d40acef7302f5f44c608733c65d73e8395b3d86f211ebd",
+    "content_hash": "2f16861407b333f3e25b47fba02742fa10b2fd2258a0b1d5fc13796884595e01",
+    "desired_state": "CLOSED",
+    "id": "dc31691ee6dd5b8659b64a568f2a0ab18585a43b0cd95d3ee2f95487f5b4a65a",
+    "lifecycle_event": "fc7b960c303d3f878bc932316e18e7324db52ebcae708c34d31881dedefabcbe",
+    "lifecycle_sequence": 1,
+    "number": 7,
+    "observation_id": "c607bbf0c80db71a094b7f9a8108fc91c9c2aa04a3fedaf24872442d0b1c6717",
+    "observation_ref": "sha256:8b658db487f433ba3007c04aba67829712950a2a077c0930744ba43cfac6adff",
+    "observed_body_hash": "d2ce17e0443b10d167d40acef7302f5f44c608733c65d73e8395b3d86f211ebd",
+    "observed_state": "CLOSED",
+    "observed_title_hash": "e28dea08fb589881cb05b8aedb1289c78615b30bd05a69de829e13a82278996c",
+    "projected_lifecycle_event": "fc7b960c303d3f878bc932316e18e7324db52ebcae708c34d31881dedefabcbe",
+    "repository": "fixture/zeus",
+    "review_ids": [],
+    "status": "synced",
+    "synced_revision": 1,
+    "ticket_id": "ZEUS-000000000001",
+    "title": "Independent services",
+    "title_hash": "e28dea08fb589881cb05b8aedb1289c78615b30bd05a69de829e13a82278996c",
+    "url": "https://github.com/fixture/zeus/issues/7"
+   }
+  },
+  "heartbeat_keeps_the_lease_alive": {
+   "artifacts_added": 1,
+   "counts_after": {
+    "ticket_github": 1,
+    "ticket_remote_creations": 1,
+    "ticket_remote_observations": 3,
+    "ticket_syncs": 1
+   },
+   "gh_verbs": [
+    "issue view",
+    "issue close",
+    "issue view"
+   ],
+   "outcome": "returned",
+   "store_after": "546c848da6ad78d8",
+   "store_before": "02c965c398a3737f",
+   "store_unchanged": false,
+   "value": {
+    "at": "2026-09-22T00:04:11+00:00",
+    "attempted_content_hash": "2f16861407b333f3e25b47fba02742fa10b2fd2258a0b1d5fc13796884595e01",
+    "attempted_revision": 1,
+    "body_hash": "d2ce17e0443b10d167d40acef7302f5f44c608733c65d73e8395b3d86f211ebd",
+    "content_hash": "2f16861407b333f3e25b47fba02742fa10b2fd2258a0b1d5fc13796884595e01",
+    "desired_state": "CLOSED",
+    "id": "dc31691ee6dd5b8659b64a568f2a0ab18585a43b0cd95d3ee2f95487f5b4a65a",
+    "lifecycle_event": "fc7b960c303d3f878bc932316e18e7324db52ebcae708c34d31881dedefabcbe",
+    "lifecycle_sequence": 1,
+    "number": 7,
+    "observation_id": "c607bbf0c80db71a094b7f9a8108fc91c9c2aa04a3fedaf24872442d0b1c6717",
+    "observation_ref": "sha256:8b658db487f433ba3007c04aba67829712950a2a077c0930744ba43cfac6adff",
+    "observed_body_hash": "d2ce17e0443b10d167d40acef7302f5f44c608733c65d73e8395b3d86f211ebd",
+    "observed_state": "CLOSED",
+    "observed_title_hash": "e28dea08fb589881cb05b8aedb1289c78615b30bd05a69de829e13a82278996c",
+    "projected_lifecycle_event": "fc7b960c303d3f878bc932316e18e7324db52ebcae708c34d31881dedefabcbe",
+    "repository": "fixture/zeus",
+    "review_ids": [],
+    "status": "synced",
+    "synced_revision": 1,
+    "ticket_id": "ZEUS-000000000001",
+    "title": "Independent services",
+    "title_hash": "e28dea08fb589881cb05b8aedb1289c78615b30bd05a69de829e13a82278996c",
+    "url": "https://github.com/fixture/zeus/issues/7"
+   }
+  },
+  "reopen_again_is_a_noop": {
+   "artifacts_added": 0,
+   "counts_after": {
+    "ticket_github": 1,
+    "ticket_remote_creations": 1,
+    "ticket_remote_observations": 4,
+    "ticket_syncs": 1
+   },
+   "gh_verbs": [
+    "issue view",
+    "issue view"
+   ],
+   "outcome": "returned",
+   "store_after": "c237c148bbf006e2",
+   "store_before": "82a1b6b3f5b246ab",
+   "store_unchanged": false,
+   "value": {
+    "at": "2026-09-22T00:00:03+00:00",
+    "attempted_content_hash": "2f16861407b333f3e25b47fba02742fa10b2fd2258a0b1d5fc13796884595e01",
+    "attempted_revision": 1,
+    "body_hash": "d2ce17e0443b10d167d40acef7302f5f44c608733c65d73e8395b3d86f211ebd",
+    "content_hash": "2f16861407b333f3e25b47fba02742fa10b2fd2258a0b1d5fc13796884595e01",
+    "desired_state": "OPEN",
+    "id": "dc31691ee6dd5b8659b64a568f2a0ab18585a43b0cd95d3ee2f95487f5b4a65a",
+    "lifecycle_event": "56ea26e554df3c080d81ad99b5cbabc669a06728cb6df9ba23c514d6e3490b34",
+    "lifecycle_sequence": 2,
+    "number": 7,
+    "observation_id": "168b98ef95742df0c4df57261d57c4410f81657b75afcee625f968b800af2419",
+    "observation_ref": "sha256:2ffc031f767d6f1f0b74888e01bbe2e53bd5d78bdb8f8bcc8d95228c18bd1e05",
+    "observed_body_hash": "d2ce17e0443b10d167d40acef7302f5f44c608733c65d73e8395b3d86f211ebd",
+    "observed_state": "OPEN",
+    "observed_title_hash": "e28dea08fb589881cb05b8aedb1289c78615b30bd05a69de829e13a82278996c",
+    "projected_lifecycle_event": "56ea26e554df3c080d81ad99b5cbabc669a06728cb6df9ba23c514d6e3490b34",
+    "repository": "fixture/zeus",
+    "review_ids": [],
+    "status": "synced",
+    "synced_revision": 1,
+    "ticket_id": "ZEUS-000000000001",
+    "title": "Independent services",
+    "title_hash": "e28dea08fb589881cb05b8aedb1289c78615b30bd05a69de829e13a82278996c",
+    "url": "https://github.com/fixture/zeus/issues/7"
+   }
+  },
+  "reopen_authority_with_a_wrong_sequence": {
+   "artifacts_added": 0,
+   "cause_type": null,
+   "counts_after": {
+    "ticket_github": 1,
+    "ticket_remote_creations": 1,
+    "ticket_remote_observations": 1,
+    "ticket_syncs": 1
+   },
+   "gh_verbs": [],
+   "is_contract_error": true,
+   "message": "Ticket lifecycle chain mismatch",
+   "outcome": "raised",
+   "store_after": "d59de97288e432f9",
+   "store_before": "b96c4f22721d421d",
+   "store_unchanged": false,
+   "type": "ContractError"
+  },
+  "reopen_call": [
+   {
+    "args": [
+     "issue",
+     "reopen",
+     "7",
+     "--repo",
+     "fixture/zeus"
+    ],
+    "body": null,
+    "cwd": null,
+    "env": null,
+    "input": null,
+    "timeout": 60,
+    "verb": "issue reopen"
+   }
+  ],
+  "reopen_remote_state": "OPEN",
+  "reopen_rows": {
+   "ticket_github": [
+    {
+     "at": "2026-09-22T00:00:03+00:00",
+     "attempted_content_hash": "2f16861407b333f3e25b47fba02742fa10b2fd2258a0b1d5fc13796884595e01",
+     "attempted_revision": 1,
+     "body_hash": "d2ce17e0443b10d167d40acef7302f5f44c608733c65d73e8395b3d86f211ebd",
+     "content_hash": "2f16861407b333f3e25b47fba02742fa10b2fd2258a0b1d5fc13796884595e01",
+     "desired_state": "OPEN",
+     "id": "dc31691ee6dd5b8659b64a568f2a0ab18585a43b0cd95d3ee2f95487f5b4a65a",
+     "lifecycle_event": "56ea26e554df3c080d81ad99b5cbabc669a06728cb6df9ba23c514d6e3490b34",
+     "lifecycle_sequence": 2,
+     "number": 7,
+     "observation_id": "168b98ef95742df0c4df57261d57c4410f81657b75afcee625f968b800af2419",
+     "observation_ref": "sha256:2ffc031f767d6f1f0b74888e01bbe2e53bd5d78bdb8f8bcc8d95228c18bd1e05",
+     "observed_body_hash": "d2ce17e0443b10d167d40acef7302f5f44c608733c65d73e8395b3d86f211ebd",
+     "observed_state": "OPEN",
+     "observed_title_hash": "e28dea08fb589881cb05b8aedb1289c78615b30bd05a69de829e13a82278996c",
+     "projected_lifecycle_event": "56ea26e554df3c080d81ad99b5cbabc669a06728cb6df9ba23c514d6e3490b34",
+     "repository": "fixture/zeus",
+     "review_ids": [],
+     "status": "synced",
+     "synced_revision": 1,
+     "ticket_id": "ZEUS-000000000001",
+     "title": "Independent services",
+     "title_hash": "e28dea08fb589881cb05b8aedb1289c78615b30bd05a69de829e13a82278996c",
+     "url": "https://github.com/fixture/zeus/issues/7"
+    }
+   ],
+   "ticket_remote_creations": [
+    {
+     "at": "2026-09-22T00:00:00+00:00",
+     "authority": "external_observation_only",
+     "claim_owner": "5eed0000-0000-4000-8000-000000000037",
+     "evidence_ref": "sha256:5784e61cfc50f23f3204e276e96b571c7091dec84251d76138f2b4a235666fe4",
+     "number": 7,
+     "repository": "fixture/zeus",
+     "ticket_id": "ZEUS-000000000001",
+     "url": "https://github.com/fixture/zeus/issues/7"
+    }
+   ],
+   "ticket_remote_observations": [
+    {
+     "at": "2026-09-22T00:00:02+00:00",
+     "authority": "external_observation_only",
+     "evidence_ref": "sha256:2ffc031f767d6f1f0b74888e01bbe2e53bd5d78bdb8f8bcc8d95228c18bd1e05",
+     "first_seen": "2026-09-22T00:00:02+00:00",
+     "id": "fc98d62c57540e26fb08b14170e4261105d0f3995feee0c2356c6aeefecbd95c",
+     "marker_present": true,
+     "number": 7,
+     "purpose": "pre_write",
+     "repository": "fixture/zeus",
+     "sequence": 2,
+     "state": "OPEN",
+     "ticket_id": "ZEUS-000000000001",
+     "title": "Independent services",
+     "url": "https://github.com/fixture/zeus/issues/7"
+    },
+    {
+     "at": "2026-09-22T00:00:02+00:00",
+     "authority": "external_observation_only",
+     "evidence_ref": "sha256:8b658db487f433ba3007c04aba67829712950a2a077c0930744ba43cfac6adff",
+     "first_seen": "2026-09-22T00:00:02+00:00",
+     "id": "c607bbf0c80db71a094b7f9a8108fc91c9c2aa04a3fedaf24872442d0b1c6717",
+     "marker_present": true,
+     "number": 7,
+     "purpose": "post_write",
+     "repository": "fixture/zeus",
+     "sequence": 3,
+     "state": "CLOSED",
+     "ticket_id": "ZEUS-000000000001",
+     "title": "Independent services",
+     "url": "https://github.com/fixture/zeus/issues/7"
+    },
+    {
+     "at": "2026-09-22T00:00:03+00:00",
+     "authority": "external_observation_only",
+     "evidence_ref": "sha256:2ffc031f767d6f1f0b74888e01bbe2e53bd5d78bdb8f8bcc8d95228c18bd1e05",
+     "first_seen": "2026-09-22T00:00:00+00:00",
+     "id": "168b98ef95742df0c4df57261d57c4410f81657b75afcee625f968b800af2419",
+     "marker_present": true,
+     "number": 7,
+     "purpose": "post_write",
+     "repository": "fixture/zeus",
+     "sequence": 1,
+     "state": "OPEN",
+     "ticket_id": "ZEUS-000000000001",
+     "title": "Independent services",
+     "url": "https://github.com/fixture/zeus/issues/7"
+    },
+    {
+     "at": "2026-09-22T00:00:03+00:00",
+     "authority": "external_observation_only",
+     "evidence_ref": "sha256:8b658db487f433ba3007c04aba67829712950a2a077c0930744ba43cfac6adff",
+     "first_seen": "2026-09-22T00:00:02+00:00",
+     "id": "f1827790f208b84846b4a8d773daf3c395756bac1f3365a9fe59ac668987d91a",
+     "marker_present": true,
+     "number": 7,
+     "purpose": "pre_write",
+     "repository": "fixture/zeus",
+     "sequence": 4,
+     "state": "CLOSED",
+     "ticket_id": "ZEUS-000000000001",
+     "title": "Independent services",
+     "url": "https://github.com/fixture/zeus/issues/7"
+    }
+   ],
+   "ticket_syncs": [
+    {
+     "created_number": 7,
+     "creation_uncertain": false,
+     "id": "dc31691ee6dd5b8659b64a568f2a0ab18585a43b0cd95d3ee2f95487f5b4a65a",
+     "lease_until": "2026-09-22T00:05:03+00:00",
+     "observed_body_hash": "d2ce17e0443b10d167d40acef7302f5f44c608733c65d73e8395b3d86f211ebd",
+     "observed_title_hash": "e28dea08fb589881cb05b8aedb1289c78615b30bd05a69de829e13a82278996c",
+     "owner": null,
+     "pending_body_hash": null,
+     "pending_title_hash": null,
+     "reconcile_observation": null,
+     "status": "synced"
+    }
+   ]
+  },
+  "reopen_wrong_sequence_rows": {
+   "ticket_github": [
+    {
+     "at": "2026-09-22T00:00:00+00:00",
+     "attempted_content_hash": "2f16861407b333f3e25b47fba02742fa10b2fd2258a0b1d5fc13796884595e01",
+     "attempted_revision": 1,
+     "body_hash": "d2ce17e0443b10d167d40acef7302f5f44c608733c65d73e8395b3d86f211ebd",
+     "content_hash": "2f16861407b333f3e25b47fba02742fa10b2fd2258a0b1d5fc13796884595e01",
+     "desired_state": "OPEN",
+     "error_type": "ContractError",
+     "id": "dc31691ee6dd5b8659b64a568f2a0ab18585a43b0cd95d3ee2f95487f5b4a65a",
+     "lifecycle_event": "db45cc0893a854551833f4e1b4487a76a65cef2eac6e63dbf3a58d8ac3587593",
+     "lifecycle_sequence": 0,
+     "number": 7,
+     "observation_id": "168b98ef95742df0c4df57261d57c4410f81657b75afcee625f968b800af2419",
+     "observation_ref": "sha256:2ffc031f767d6f1f0b74888e01bbe2e53bd5d78bdb8f8bcc8d95228c18bd1e05",
+     "observed_body_hash": "d2ce17e0443b10d167d40acef7302f5f44c608733c65d73e8395b3d86f211ebd",
+     "observed_state": "OPEN",
+     "observed_title_hash": "e28dea08fb589881cb05b8aedb1289c78615b30bd05a69de829e13a82278996c",
+     "projected_lifecycle_event": null,
+     "repository": "fixture/zeus",
+     "review_ids": [],
+     "status": "needs_attention",
+     "synced_revision": 1,
+     "ticket_id": "ZEUS-000000000001",
+     "title": "Independent services",
+     "title_hash": "e28dea08fb589881cb05b8aedb1289c78615b30bd05a69de829e13a82278996c",
+     "url": "https://github.com/fixture/zeus/issues/7"
+    }
+   ],
+   "ticket_remote_creations": [
+    {
+     "at": "2026-09-22T00:00:00+00:00",
+     "authority": "external_observation_only",
+     "claim_owner": "5eed0000-0000-4000-8000-00000000003c",
+     "evidence_ref": "sha256:bf1989d9e1d03bc8d025f9f179a0c440fd554b53f4bdccf8418aa6b002359fba",
+     "number": 7,
+     "repository": "fixture/zeus",
+     "ticket_id": "ZEUS-000000000001",
+     "url": "https://github.com/fixture/zeus/issues/7"
+    }
+   ],
+   "ticket_remote_observations": [
+    {
+     "at": "2026-09-22T00:00:00+00:00",
+     "authority": "external_observation_only",
+     "evidence_ref": "sha256:2ffc031f767d6f1f0b74888e01bbe2e53bd5d78bdb8f8bcc8d95228c18bd1e05",
+     "first_seen": "2026-09-22T00:00:00+00:00",
+     "id": "168b98ef95742df0c4df57261d57c4410f81657b75afcee625f968b800af2419",
+     "marker_present": true,
+     "number": 7,
+     "purpose": "post_write",
+     "repository": "fixture/zeus",
+     "sequence": 1,
+     "state": "OPEN",
+     "ticket_id": "ZEUS-000000000001",
+     "title": "Independent services",
+     "url": "https://github.com/fixture/zeus/issues/7"
+    }
+   ],
+   "ticket_syncs": [
+    {
+     "created_number": 7,
+     "creation_uncertain": false,
+     "error_type": "ContractError",
+     "id": "dc31691ee6dd5b8659b64a568f2a0ab18585a43b0cd95d3ee2f95487f5b4a65a",
+     "lease_until": "2026-09-22T00:05:01+00:00",
+     "observed_body_hash": "d2ce17e0443b10d167d40acef7302f5f44c608733c65d73e8395b3d86f211ebd",
+     "observed_title_hash": "e28dea08fb589881cb05b8aedb1289c78615b30bd05a69de829e13a82278996c",
+     "owner": null,
+     "pending_body_hash": null,
+     "pending_title_hash": null,
+     "reconcile_observation": null,
+     "status": "needs_attention"
+    }
+   ]
+  },
+  "reopened_ticket_reopens_the_issue": {
+   "artifacts_added": 0,
+   "counts_after": {
+    "ticket_github": 1,
+    "ticket_remote_creations": 1,
+    "ticket_remote_observations": 4,
+    "ticket_syncs": 1
+   },
+   "gh_verbs": [
+    "issue view",
+    "issue reopen",
+    "issue view"
+   ],
+   "outcome": "returned",
+   "store_after": "82a1b6b3f5b246ab",
+   "store_before": "7f7aff30a357c745",
+   "store_unchanged": false,
+   "value": {
+    "at": "2026-09-22T00:00:03+00:00",
+    "attempted_content_hash": "2f16861407b333f3e25b47fba02742fa10b2fd2258a0b1d5fc13796884595e01",
+    "attempted_revision": 1,
+    "body_hash": "d2ce17e0443b10d167d40acef7302f5f44c608733c65d73e8395b3d86f211ebd",
+    "content_hash": "2f16861407b333f3e25b47fba02742fa10b2fd2258a0b1d5fc13796884595e01",
+    "desired_state": "OPEN",
+    "id": "dc31691ee6dd5b8659b64a568f2a0ab18585a43b0cd95d3ee2f95487f5b4a65a",
+    "lifecycle_event": "56ea26e554df3c080d81ad99b5cbabc669a06728cb6df9ba23c514d6e3490b34",
+    "lifecycle_sequence": 2,
+    "number": 7,
+    "observation_id": "168b98ef95742df0c4df57261d57c4410f81657b75afcee625f968b800af2419",
+    "observation_ref": "sha256:2ffc031f767d6f1f0b74888e01bbe2e53bd5d78bdb8f8bcc8d95228c18bd1e05",
+    "observed_body_hash": "d2ce17e0443b10d167d40acef7302f5f44c608733c65d73e8395b3d86f211ebd",
+    "observed_state": "OPEN",
+    "observed_title_hash": "e28dea08fb589881cb05b8aedb1289c78615b30bd05a69de829e13a82278996c",
+    "projected_lifecycle_event": "56ea26e554df3c080d81ad99b5cbabc669a06728cb6df9ba23c514d6e3490b34",
+    "repository": "fixture/zeus",
+    "review_ids": [],
+    "status": "synced",
+    "synced_revision": 1,
+    "ticket_id": "ZEUS-000000000001",
+    "title": "Independent services",
+    "title_hash": "e28dea08fb589881cb05b8aedb1289c78615b30bd05a69de829e13a82278996c",
+    "url": "https://github.com/fixture/zeus/issues/7"
+   }
+  }
+ },
+ "surface": {
+  "__init__positional": [
+   "self",
+   "tickets",
+   "artifacts",
+   "lifecycle"
+  ],
+  "constructor": {
+   "artifacts": true,
+   "lifecycle": true,
+   "store_is_the_tickets_store": true,
+   "tickets": true
+  },
+  "lifecycle_defaults_to_none": true,
+  "methods": [
+   "__init__",
+   "_call",
+   "_claim",
+   "_observe",
+   "_owned",
+   "_read",
+   "_renew",
+   "_repo",
+   "pull",
+   "sync"
+  ],
+  "signatures": {
+   "_call": "(self, args)",
+   "_claim": "(self, key)",
+   "_observe": "(self, ticket_id, repository, remote, purpose)",
+   "_owned": "(tx, claim)",
+   "_read": "(self, repository, number)",
+   "_renew": "(self, claim)",
+   "_repo": "(repository)",
+   "pull": "(self, ticket_id, repository)",
+   "sync": "(self, ticket_id, repository, *, reconcile_observation=None, expected_revision=None)"
+  },
+  "static": {
+   "_call": false,
+   "_owned": true,
+   "_repo": true
+  }
+ },
+ "sync_create": {
+  "observations_order": [
+   [
+    1,
+    "post_write"
+   ],
+   [
+    2,
+    "pre_write"
+   ],
+   [
+    3,
+    "pre_write"
+   ],
+   [
+    4,
+    "post_write"
+   ],
+   [
+    5,
+    "pull"
+   ],
+   [
+    6,
+    "pull"
+   ]
+  ],
+  "pull_bad_repo": {
+   "artifacts_added": 0,
+   "cause_type": null,
+   "counts_after": {
+    "ticket_github": 1,
+    "ticket_remote_creations": 1,
+    "ticket_remote_observations": 5,
+    "ticket_syncs": 1
+   },
+   "gh_verbs": [],
+   "is_contract_error": true,
+   "message": "GitHub repository must be owner/name",
+   "outcome": "raised",
+   "store_after": "e77ad74d8ecd77ce",
+   "store_before": "e77ad74d8ecd77ce",
+   "store_unchanged": true,
+   "type": "ContractError"
+  },
+  "pull_observes_only": {
+   "artifacts_added": 0,
+   "counts_after": {
+    "ticket_github": 1,
+    "ticket_remote_creations": 1,
+    "ticket_remote_observations": 5,
+    "ticket_syncs": 1
+   },
+   "gh_verbs": [
+    "issue view"
+   ],
+   "outcome": "returned",
+   "store_after": "e77ad74d8ecd77ce",
+   "store_before": "5ba3e3bf273cad60",
+   "store_unchanged": false,
+   "value": {
+    "at": "2026-09-22T00:00:03+00:00",
+    "authority": "external_observation_only",
+    "evidence_ref": "sha256:549c4a342ef8c37834ac8fff7bb76fbbb270f5918664e6169577549552b877c8",
+    "first_seen": "2026-09-22T00:00:03+00:00",
+    "id": "4e18eaf1c22144c30d9ea88a946d9f3096eb069ebe34f9b1e108ebbec6d52538",
+    "marker_present": true,
+    "number": 7,
+    "purpose": "pull",
+    "repository": "fixture/zeus",
+    "sequence": 5,
+    "state": "OPEN",
+    "ticket_id": "ZEUS-000000000001",
+    "title": "Revised criteria",
+    "url": "https://github.com/fixture/zeus/issues/7"
+   }
+  },
+  "pull_other_repo_has_no_link": {
+   "artifacts_added": 0,
+   "cause_type": null,
+   "counts_after": {
+    "ticket_github": 1,
+    "ticket_remote_creations": 1,
+    "ticket_remote_observations": 5,
+    "ticket_syncs": 1
+   },
+   "gh_verbs": [],
+   "is_contract_error": true,
+   "message": "Ticket has no GitHub link",
+   "outcome": "raised",
+   "store_after": "e77ad74d8ecd77ce",
+   "store_before": "e77ad74d8ecd77ce",
+   "store_unchanged": true,
+   "type": "ContractError"
+  },
+  "pull_remote_without_marker": {
+   "artifacts_added": 1,
+   "counts_after": {
+    "ticket_github": 1,
+    "ticket_remote_creations": 1,
+    "ticket_remote_observations": 6,
+    "ticket_syncs": 1
+   },
+   "gh_verbs": [
+    "issue view"
+   ],
+   "outcome": "returned",
+   "store_after": "3b6292c82ce9c0fe",
+   "store_before": "e77ad74d8ecd77ce",
+   "store_unchanged": false,
+   "value": {
+    "at": "2026-09-22T00:00:03+00:00",
+    "authority": "external_observation_only",
+    "evidence_ref": "sha256:c14b12e15b5a52da7f4b92ebf090b4082d8c3dd7377dee182af54f6f665a791c",
+    "first_seen": "2026-09-22T00:00:03+00:00",
+    "id": "34283d1933e936501d579e0da6fc1a9167082eeb13f5b92c409e33f3a70c9f78",
+    "marker_present": false,
+    "number": 7,
+    "purpose": "pull",
+    "repository": "fixture/zeus",
+    "sequence": 6,
+    "state": "OPEN",
+    "ticket_id": "ZEUS-000000000001",
+    "title": "Revised criteria",
+    "url": "https://github.com/fixture/zeus/issues/7"
+   }
+  },
+  "pull_repeat_keeps_first_seen_and_sequence": {
+   "artifacts_added": 0,
+   "counts_after": {
+    "ticket_github": 1,
+    "ticket_remote_creations": 1,
+    "ticket_remote_observations": 5,
+    "ticket_syncs": 1
+   },
+   "gh_verbs": [
+    "issue view"
+   ],
+   "outcome": "returned",
+   "store_after": "e77ad74d8ecd77ce",
+   "store_before": "e77ad74d8ecd77ce",
+   "store_unchanged": true,
+   "value": {
+    "at": "2026-09-22T00:00:03+00:00",
+    "authority": "external_observation_only",
+    "evidence_ref": "sha256:549c4a342ef8c37834ac8fff7bb76fbbb270f5918664e6169577549552b877c8",
+    "first_seen": "2026-09-22T00:00:03+00:00",
+    "id": "4e18eaf1c22144c30d9ea88a946d9f3096eb069ebe34f9b1e108ebbec6d52538",
+    "marker_present": true,
+    "number": 7,
+    "purpose": "pull",
+    "repository": "fixture/zeus",
+    "sequence": 5,
+    "state": "OPEN",
+    "ticket_id": "ZEUS-000000000001",
+    "title": "Revised criteria",
+    "url": "https://github.com/fixture/zeus/issues/7"
+   }
+  },
+  "pull_unknown_link": {
+   "artifacts_added": 0,
+   "cause_type": null,
+   "counts_after": {
+    "ticket_github": 1,
+    "ticket_remote_creations": 1,
+    "ticket_remote_observations": 5,
+    "ticket_syncs": 1
+   },
+   "gh_verbs": [],
+   "is_contract_error": true,
+   "message": "Ticket has no GitHub link",
+   "outcome": "raised",
+   "store_after": "e77ad74d8ecd77ce",
+   "store_before": "e77ad74d8ecd77ce",
+   "store_unchanged": true,
+   "type": "ContractError"
+  },
+  "sync_after_a_revision_edits": {
+   "artifacts_added": 2,
+   "counts_after": {
+    "ticket_github": 1,
+    "ticket_remote_creations": 1,
+    "ticket_remote_observations": 4,
+    "ticket_syncs": 1
+   },
+   "gh_verbs": [
+    "issue view",
+    "issue edit",
+    "issue view"
+   ],
+   "outcome": "returned",
+   "store_after": "5ba3e3bf273cad60",
+   "store_before": "98b2849ed79eef5b",
+   "store_unchanged": false,
+   "value": {
+    "at": "2026-09-22T00:00:03+00:00",
+    "attempted_content_hash": "5edf1cb6056e5384e6bb8aedfae3f2c35c9a4f827d21457e09dd42ffa70e22c5",
+    "attempted_revision": 2,
+    "body_hash": "bdcaaa4e08267ef60d17a618793224acc1a7aebc6014a4732779ffc637eb50d5",
+    "content_hash": "5edf1cb6056e5384e6bb8aedfae3f2c35c9a4f827d21457e09dd42ffa70e22c5",
+    "desired_state": "OPEN",
+    "id": "dc31691ee6dd5b8659b64a568f2a0ab18585a43b0cd95d3ee2f95487f5b4a65a",
+    "lifecycle_event": null,
+    "lifecycle_sequence": 0,
+    "number": 7,
+    "observation_id": "87a61ad390adc6df25f34a6229df7514b1a671f1e6b4ebd4d547a94f0c16c68d",
+    "observation_ref": "sha256:549c4a342ef8c37834ac8fff7bb76fbbb270f5918664e6169577549552b877c8",
+    "observed_body_hash": "bdcaaa4e08267ef60d17a618793224acc1a7aebc6014a4732779ffc637eb50d5",
+    "observed_state": "OPEN",
+    "observed_title_hash": "69a1a295f1a9eafcd523c19f6e5fe0630e1175ae5d34bfec10b858913419bb48",
+    "projected_lifecycle_event": null,
+    "repository": "fixture/zeus",
+    "review_ids": [],
+    "status": "synced",
+    "synced_revision": 2,
+    "ticket_id": "ZEUS-000000000001",
+    "title": "Revised criteria",
+    "title_hash": "69a1a295f1a9eafcd523c19f6e5fe0630e1175ae5d34bfec10b858913419bb48",
+    "url": "https://github.com/fixture/zeus/issues/7"
+   }
+  },
+  "sync_after_a_revision_rows": {
+   "ticket_github": [
+    {
+     "at": "2026-09-22T00:00:03+00:00",
+     "attempted_content_hash": "5edf1cb6056e5384e6bb8aedfae3f2c35c9a4f827d21457e09dd42ffa70e22c5",
+     "attempted_revision": 2,
+     "body_hash": "bdcaaa4e08267ef60d17a618793224acc1a7aebc6014a4732779ffc637eb50d5",
+     "content_hash": "5edf1cb6056e5384e6bb8aedfae3f2c35c9a4f827d21457e09dd42ffa70e22c5",
+     "desired_state": "OPEN",
+     "id": "dc31691ee6dd5b8659b64a568f2a0ab18585a43b0cd95d3ee2f95487f5b4a65a",
+     "lifecycle_event": null,
+     "lifecycle_sequence": 0,
+     "number": 7,
+     "observation_id": "87a61ad390adc6df25f34a6229df7514b1a671f1e6b4ebd4d547a94f0c16c68d",
+     "observation_ref": "sha256:549c4a342ef8c37834ac8fff7bb76fbbb270f5918664e6169577549552b877c8",
+     "observed_body_hash": "bdcaaa4e08267ef60d17a618793224acc1a7aebc6014a4732779ffc637eb50d5",
+     "observed_state": "OPEN",
+     "observed_title_hash": "69a1a295f1a9eafcd523c19f6e5fe0630e1175ae5d34bfec10b858913419bb48",
+     "projected_lifecycle_event": null,
+     "repository": "fixture/zeus",
+     "review_ids": [],
+     "status": "synced",
+     "synced_revision": 2,
+     "ticket_id": "ZEUS-000000000001",
+     "title": "Revised criteria",
+     "title_hash": "69a1a295f1a9eafcd523c19f6e5fe0630e1175ae5d34bfec10b858913419bb48",
+     "url": "https://github.com/fixture/zeus/issues/7"
+    }
+   ],
+   "ticket_remote_creations": [
+    {
+     "at": "2026-09-22T00:00:01+00:00",
+     "authority": "external_observation_only",
+     "claim_owner": "5eed0000-0000-4000-8000-000000000004",
+     "evidence_ref": "sha256:08dfe79d6c808b8936a2caa8941ed1564295264063027a41e3119584b46432b2",
+     "number": 7,
+     "repository": "fixture/zeus",
+     "ticket_id": "ZEUS-000000000001",
+     "url": "https://github.com/fixture/zeus/issues/7"
+    }
+   ],
+   "ticket_remote_observations": [
+    {
+     "at": "2026-09-22T00:00:02+00:00",
+     "authority": "external_observation_only",
+     "evidence_ref": "sha256:2ffc031f767d6f1f0b74888e01bbe2e53bd5d78bdb8f8bcc8d95228c18bd1e05",
+     "first_seen": "2026-09-22T00:00:01+00:00",
+     "id": "168b98ef95742df0c4df57261d57c4410f81657b75afcee625f968b800af2419",
+     "marker_present": true,
+     "number": 7,
+     "purpose": "post_write",
+     "repository": "fixture/zeus",
+     "sequence": 1,
+     "state": "OPEN",
+     "ticket_id": "ZEUS-000000000001",
+     "title": "Independent services",
+     "url": "https://github.com/fixture/zeus/issues/7"
+    },
+    {
+     "at": "2026-09-22T00:00:02+00:00",
+     "authority": "external_observation_only",
+     "evidence_ref": "sha256:2ffc031f767d6f1f0b74888e01bbe2e53bd5d78bdb8f8bcc8d95228c18bd1e05",
+     "first_seen": "2026-09-22T00:00:02+00:00",
+     "id": "fc98d62c57540e26fb08b14170e4261105d0f3995feee0c2356c6aeefecbd95c",
+     "marker_present": true,
+     "number": 7,
+     "purpose": "pre_write",
+     "repository": "fixture/zeus",
+     "sequence": 2,
+     "state": "OPEN",
+     "ticket_id": "ZEUS-000000000001",
+     "title": "Independent services",
+     "url": "https://github.com/fixture/zeus/issues/7"
+    },
+    {
+     "at": "2026-09-22T00:00:03+00:00",
+     "authority": "external_observation_only",
+     "evidence_ref": "sha256:549c4a342ef8c37834ac8fff7bb76fbbb270f5918664e6169577549552b877c8",
+     "first_seen": "2026-09-22T00:00:03+00:00",
+     "id": "87a61ad390adc6df25f34a6229df7514b1a671f1e6b4ebd4d547a94f0c16c68d",
+     "marker_present": true,
+     "number": 7,
+     "purpose": "post_write",
+     "repository": "fixture/zeus",
+     "sequence": 4,
+     "state": "OPEN",
+     "ticket_id": "ZEUS-000000000001",
+     "title": "Revised criteria",
+     "url": "https://github.com/fixture/zeus/issues/7"
+    },
+    {
+     "at": "2026-09-22T00:00:03+00:00",
+     "authority": "external_observation_only",
+     "evidence_ref": "sha256:73e5d84d4e6cedbbfa73a0e51bd7e41def4f0fa6901d1259d3a7556bb5028a7b",
+     "first_seen": "2026-09-22T00:00:03+00:00",
+     "id": "7ad3a64ddce36169196f5b3e406fb49edd7bb90d45a1144a81eeb19ed7e04fba",
+     "marker_present": true,
+     "number": 7,
+     "purpose": "pre_write",
+     "repository": "fixture/zeus",
+     "sequence": 3,
+     "state": "OPEN",
+     "ticket_id": "ZEUS-000000000001",
+     "title": "Independent services",
+     "url": "https://github.com/fixture/zeus/issues/7"
+    }
+   ],
+   "ticket_syncs": [
+    {
+     "created_number": 7,
+     "creation_uncertain": false,
+     "id": "dc31691ee6dd5b8659b64a568f2a0ab18585a43b0cd95d3ee2f95487f5b4a65a",
+     "lease_until": "2026-09-22T00:05:03+00:00",
+     "observed_body_hash": "bdcaaa4e08267ef60d17a618793224acc1a7aebc6014a4732779ffc637eb50d5",
+     "observed_title_hash": "69a1a295f1a9eafcd523c19f6e5fe0630e1175ae5d34bfec10b858913419bb48",
+     "owner": null,
+     "pending_body_hash": null,
+     "pending_title_hash": null,
+     "reconcile_observation": null,
+     "status": "synced"
+    }
+   ]
+  },
+  "sync_body_is_the_projection": true,
+  "sync_comments_are_kept": [
+   {
+    "body": "External reviewer question"
+   }
+  ],
+  "sync_creates": {
+   "artifacts_added": 2,
+   "counts_after": {
+    "ticket_github": 1,
+    "ticket_remote_creations": 1,
+    "ticket_remote_observations": 1,
+    "ticket_syncs": 1
+   },
+   "gh_verbs": [
+    "issue list",
+    "issue create",
+    "issue view"
+   ],
+   "outcome": "returned",
+   "store_after": "bb0b3c83934d6da4",
+   "store_before": "733694885361b642",
+   "store_unchanged": false,
+   "value": {
+    "at": "2026-09-22T00:00:01+00:00",
+    "attempted_content_hash": "2f16861407b333f3e25b47fba02742fa10b2fd2258a0b1d5fc13796884595e01",
+    "attempted_revision": 1,
+    "body_hash": "d2ce17e0443b10d167d40acef7302f5f44c608733c65d73e8395b3d86f211ebd",
+    "content_hash": "2f16861407b333f3e25b47fba02742fa10b2fd2258a0b1d5fc13796884595e01",
+    "desired_state": "OPEN",
+    "id": "dc31691ee6dd5b8659b64a568f2a0ab18585a43b0cd95d3ee2f95487f5b4a65a",
+    "lifecycle_event": null,
+    "lifecycle_sequence": 0,
+    "number": 7,
+    "observation_id": "168b98ef95742df0c4df57261d57c4410f81657b75afcee625f968b800af2419",
+    "observation_ref": "sha256:2ffc031f767d6f1f0b74888e01bbe2e53bd5d78bdb8f8bcc8d95228c18bd1e05",
+    "observed_body_hash": "d2ce17e0443b10d167d40acef7302f5f44c608733c65d73e8395b3d86f211ebd",
+    "observed_state": "OPEN",
+    "observed_title_hash": "e28dea08fb589881cb05b8aedb1289c78615b30bd05a69de829e13a82278996c",
+    "projected_lifecycle_event": null,
+    "repository": "fixture/zeus",
+    "review_ids": [],
+    "status": "synced",
+    "synced_revision": 1,
+    "ticket_id": "ZEUS-000000000001",
+    "title": "Independent services",
+    "title_hash": "e28dea08fb589881cb05b8aedb1289c78615b30bd05a69de829e13a82278996c",
+    "url": "https://github.com/fixture/zeus/issues/7"
+   }
+  },
+  "sync_discovered_rows": {
+   "ticket_github": [
+    {
+     "at": "2026-09-22T00:00:00+00:00",
+     "attempted_content_hash": "2f16861407b333f3e25b47fba02742fa10b2fd2258a0b1d5fc13796884595e01",
+     "attempted_revision": 1,
+     "body_hash": "d2ce17e0443b10d167d40acef7302f5f44c608733c65d73e8395b3d86f211ebd",
+     "content_hash": "2f16861407b333f3e25b47fba02742fa10b2fd2258a0b1d5fc13796884595e01",
+     "desired_state": "OPEN",
+     "id": "dc31691ee6dd5b8659b64a568f2a0ab18585a43b0cd95d3ee2f95487f5b4a65a",
+     "lifecycle_event": null,
+     "lifecycle_sequence": 0,
+     "number": 7,
+     "observation_id": "168b98ef95742df0c4df57261d57c4410f81657b75afcee625f968b800af2419",
+     "observation_ref": "sha256:2ffc031f767d6f1f0b74888e01bbe2e53bd5d78bdb8f8bcc8d95228c18bd1e05",
+     "observed_body_hash": "d2ce17e0443b10d167d40acef7302f5f44c608733c65d73e8395b3d86f211ebd",
+     "observed_state": "OPEN",
+     "observed_title_hash": "e28dea08fb589881cb05b8aedb1289c78615b30bd05a69de829e13a82278996c",
+     "projected_lifecycle_event": null,
+     "repository": "fixture/zeus",
+     "review_ids": [],
+     "status": "synced",
+     "synced_revision": 1,
+     "ticket_id": "ZEUS-000000000001",
+     "title": "Independent services",
+     "title_hash": "e28dea08fb589881cb05b8aedb1289c78615b30bd05a69de829e13a82278996c",
+     "url": "https://github.com/fixture/zeus/issues/7"
+    }
+   ],
+   "ticket_remote_creations": [],
+   "ticket_remote_observations": [
+    {
+     "at": "2026-09-22T00:00:00+00:00",
+     "authority": "external_observation_only",
+     "evidence_ref": "sha256:2ffc031f767d6f1f0b74888e01bbe2e53bd5d78bdb8f8bcc8d95228c18bd1e05",
+     "first_seen": "2026-09-22T00:00:00+00:00",
+     "id": "168b98ef95742df0c4df57261d57c4410f81657b75afcee625f968b800af2419",
+     "marker_present": true,
+     "number": 7,
+     "purpose": "post_write",
+     "repository": "fixture/zeus",
+     "sequence": 2,
+     "state": "OPEN",
+     "ticket_id": "ZEUS-000000000001",
+     "title": "Independent services",
+     "url": "https://github.com/fixture/zeus/issues/7"
+    },
+    {
+     "at": "2026-09-22T00:00:00+00:00",
+     "authority": "external_observation_only",
+     "evidence_ref": "sha256:2ffc031f767d6f1f0b74888e01bbe2e53bd5d78bdb8f8bcc8d95228c18bd1e05",
+     "first_seen": "2026-09-22T00:00:00+00:00",
+     "id": "fc98d62c57540e26fb08b14170e4261105d0f3995feee0c2356c6aeefecbd95c",
+     "marker_present": true,
+     "number": 7,
+     "purpose": "pre_write",
+     "repository": "fixture/zeus",
+     "sequence": 1,
+     "state": "OPEN",
+     "ticket_id": "ZEUS-000000000001",
+     "title": "Independent services",
+     "url": "https://github.com/fixture/zeus/issues/7"
+    }
+   ],
+   "ticket_syncs": [
+    {
+     "creation_uncertain": false,
+     "id": "dc31691ee6dd5b8659b64a568f2a0ab18585a43b0cd95d3ee2f95487f5b4a65a",
+     "lease_until": "2026-09-22T00:05:00+00:00",
+     "observed_body_hash": "d2ce17e0443b10d167d40acef7302f5f44c608733c65d73e8395b3d86f211ebd",
+     "observed_title_hash": "e28dea08fb589881cb05b8aedb1289c78615b30bd05a69de829e13a82278996c",
+     "owner": null,
+     "pending_body_hash": null,
+     "pending_title_hash": null,
+     "reconcile_observation": null,
+     "status": "synced"
+    }
+   ]
+  },
+  "sync_discovered_verbs": [
+   "issue list",
+   "issue view",
+   "issue view"
+  ],
+  "sync_discovers_the_marked_issue": {
+   "artifacts_added": 1,
+   "counts_after": {
+    "ticket_github": 1,
+    "ticket_remote_creations": 0,
+    "ticket_remote_observations": 2,
+    "ticket_syncs": 1
+   },
+   "gh_verbs": [
+    "issue list",
+    "issue view",
+    "issue view"
+   ],
+   "outcome": "returned",
+   "store_after": "052ce65354f96903",
+   "store_before": "733694885361b642",
+   "store_unchanged": false,
+   "value": {
+    "at": "2026-09-22T00:00:00+00:00",
+    "attempted_content_hash": "2f16861407b333f3e25b47fba02742fa10b2fd2258a0b1d5fc13796884595e01",
+    "attempted_revision": 1,
+    "body_hash": "d2ce17e0443b10d167d40acef7302f5f44c608733c65d73e8395b3d86f211ebd",
+    "content_hash": "2f16861407b333f3e25b47fba02742fa10b2fd2258a0b1d5fc13796884595e01",
+    "desired_state": "OPEN",
+    "id": "dc31691ee6dd5b8659b64a568f2a0ab18585a43b0cd95d3ee2f95487f5b4a65a",
+    "lifecycle_event": null,
+    "lifecycle_sequence": 0,
+    "number": 7,
+    "observation_id": "168b98ef95742df0c4df57261d57c4410f81657b75afcee625f968b800af2419",
+    "observation_ref": "sha256:2ffc031f767d6f1f0b74888e01bbe2e53bd5d78bdb8f8bcc8d95228c18bd1e05",
+    "observed_body_hash": "d2ce17e0443b10d167d40acef7302f5f44c608733c65d73e8395b3d86f211ebd",
+    "observed_state": "OPEN",
+    "observed_title_hash": "e28dea08fb589881cb05b8aedb1289c78615b30bd05a69de829e13a82278996c",
+    "projected_lifecycle_event": null,
+    "repository": "fixture/zeus",
+    "review_ids": [],
+    "status": "synced",
+    "synced_revision": 1,
+    "ticket_id": "ZEUS-000000000001",
+    "title": "Independent services",
+    "title_hash": "e28dea08fb589881cb05b8aedb1289c78615b30bd05a69de829e13a82278996c",
+    "url": "https://github.com/fixture/zeus/issues/7"
+   }
+  },
+  "sync_edit_call": [
+   {
+    "args": [
+     "issue",
+     "edit",
+     "7",
+     "--repo",
+     "fixture/zeus",
+     "--title",
+     "Revised criteria",
+     "--body-file",
+     "<body-file:issue.md:True>"
+    ],
+    "body": "<!-- zeus-ticket:ZEUS-000000000001 -->\n\n# Revised criteria\n\nZeus `ZEUS-000000000001` · revision 2 · `5edf1cb6056e5384e6bb8aedfae3f2c35c9a4f827d21457e09dd42ffa70e22c5`\n\n> Local ledger is authoritative. Reviews below are advisory, not deployment approval.\n\n## Problem\n\nServices share one failure domain.\n\n## Impact\n\nOne outage stops every review.\n\n## Rollback\n\nRevert the merge commit.\n\n## Evidence Refs\n\n- docs/evidence.md\n\n## Scope\n\n- split the queue\n- split the store\n\n## Acceptance Criteria\n\n- queue runs alone\n- store runs alone\n\n## Verification\n\n- run both\n\n## Reviewer findings\n\nNo review recorded for this revision.\n",
+    "cwd": null,
+    "env": null,
+    "input": null,
+    "timeout": 60,
+    "verb": "issue edit"
+   }
+  ],
+  "sync_expected_revision_current_ok": {
+   "artifacts_added": 0,
+   "counts_after": {
+    "ticket_github": 1,
+    "ticket_remote_creations": 0,
+    "ticket_remote_observations": 2,
+    "ticket_syncs": 1
+   },
+   "gh_verbs": [
+    "issue view",
+    "issue view"
+   ],
+   "outcome": "returned",
+   "store_after": "052ce65354f96903",
+   "store_before": "052ce65354f96903",
+   "store_unchanged": true,
+   "value": {
+    "at": "2026-09-22T00:00:00+00:00",
+    "attempted_content_hash": "2f16861407b333f3e25b47fba02742fa10b2fd2258a0b1d5fc13796884595e01",
+    "attempted_revision": 1,
+    "body_hash": "d2ce17e0443b10d167d40acef7302f5f44c608733c65d73e8395b3d86f211ebd",
+    "content_hash": "2f16861407b333f3e25b47fba02742fa10b2fd2258a0b1d5fc13796884595e01",
+    "desired_state": "OPEN",
+    "id": "dc31691ee6dd5b8659b64a568f2a0ab18585a43b0cd95d3ee2f95487f5b4a65a",
+    "lifecycle_event": null,
+    "lifecycle_sequence": 0,
+    "number": 7,
+    "observation_id": "168b98ef95742df0c4df57261d57c4410f81657b75afcee625f968b800af2419",
+    "observation_ref": "sha256:2ffc031f767d6f1f0b74888e01bbe2e53bd5d78bdb8f8bcc8d95228c18bd1e05",
+    "observed_body_hash": "d2ce17e0443b10d167d40acef7302f5f44c608733c65d73e8395b3d86f211ebd",
+    "observed_state": "OPEN",
+    "observed_title_hash": "e28dea08fb589881cb05b8aedb1289c78615b30bd05a69de829e13a82278996c",
+    "projected_lifecycle_event": null,
+    "repository": "fixture/zeus",
+    "review_ids": [],
+    "status": "synced",
+    "synced_revision": 1,
+    "ticket_id": "ZEUS-000000000001",
+    "title": "Independent services",
+    "title_hash": "e28dea08fb589881cb05b8aedb1289c78615b30bd05a69de829e13a82278996c",
+    "url": "https://github.com/fixture/zeus/issues/7"
+   }
+  },
+  "sync_gh_calls": [
+   {
+    "args": [
+     "issue",
+     "list",
+     "--repo",
+     "fixture/zeus",
+     "--state",
+     "all",
+     "--search",
+     "\"zeus-ticket:ZEUS-000000000001\" in:body",
+     "--limit",
+     "100",
+     "--json",
+     "number,url,body"
+    ],
+    "body": null,
+    "cwd": null,
+    "env": null,
+    "input": null,
+    "timeout": 60,
+    "verb": "issue list"
+   },
+   {
+    "args": [
+     "issue",
+     "create",
+     "--repo",
+     "fixture/zeus",
+     "--title",
+     "Independent services",
+     "--body-file",
+     "<body-file:issue.md:True>"
+    ],
+    "body": "<!-- zeus-ticket:ZEUS-000000000001 -->\n\n# Independent services\n\nZeus `ZEUS-000000000001` · revision 1 · `2f16861407b333f3e25b47fba02742fa10b2fd2258a0b1d5fc13796884595e01`\n\n> Local ledger is authoritative. Reviews below are advisory, not deployment approval.\n\n## Problem\n\nServices share one failure domain.\n\n## Impact\n\nOne outage stops every review.\n\n## Rollback\n\nRevert the merge commit.\n\n## Evidence Refs\n\n- docs/evidence.md\n\n## Scope\n\n- split the queue\n- split the store\n\n## Acceptance Criteria\n\n- queue runs alone\n- store runs alone\n\n## Verification\n\n- run both\n\n## Reviewer findings\n\nNo review recorded for this revision.\n",
+    "cwd": null,
+    "env": null,
+    "input": null,
+    "timeout": 60,
+    "verb": "issue create"
+   },
+   {
+    "args": [
+     "issue",
+     "view",
+     "7",
+     "--repo",
+     "fixture/zeus",
+     "--json",
+     "number,url,title,body,state,comments"
+    ],
+    "body": null,
+    "cwd": null,
+    "env": null,
+    "input": null,
+    "timeout": 60,
+    "verb": "issue view"
+   },
+   {
+    "args": [
+     "issue",
+     "view",
+     "7",
+     "--repo",
+     "fixture/zeus",
+     "--json",
+     "number,url,title,body,state,comments"
+    ],
+    "body": null,
+    "cwd": null,
+    "env": null,
+    "input": null,
+    "timeout": 60,
+    "verb": "issue view"
+   },
+   {
+    "args": [
+     "issue",
+     "view",
+     "7",
+     "--repo",
+     "fixture/zeus",
+     "--json",
+     "number,url,title,body,state,comments"
+    ],
+    "body": null,
+    "cwd": null,
+    "env": null,
+    "input": null,
+    "timeout": 60,
+    "verb": "issue view"
+   },
+   {
+    "args": [
+     "issue",
+     "view",
+     "7",
+     "--repo",
+     "fixture/zeus",
+     "--json",
+     "number,url,title,body,state,comments"
+    ],
+    "body": null,
+    "cwd": null,
+    "env": null,
+    "input": null,
+    "timeout": 60,
+    "verb": "issue view"
+   },
+   {
+    "args": [
+     "issue",
+     "edit",
+     "7",
+     "--repo",
+     "fixture/zeus",
+     "--title",
+     "Revised criteria",
+     "--body-file",
+     "<body-file:issue.md:True>"
+    ],
+    "body": "<!-- zeus-ticket:ZEUS-000000000001 -->\n\n# Revised criteria\n\nZeus `ZEUS-000000000001` · revision 2 · `5edf1cb6056e5384e6bb8aedfae3f2c35c9a4f827d21457e09dd42ffa70e22c5`\n\n> Local ledger is authoritative. Reviews below are advisory, not deployment approval.\n\n## Problem\n\nServices share one failure domain.\n\n## Impact\n\nOne outage stops every review.\n\n## Rollback\n\nRevert the merge commit.\n\n## Evidence Refs\n\n- docs/evidence.md\n\n## Scope\n\n- split the queue\n- split the store\n\n## Acceptance Criteria\n\n- queue runs alone\n- store runs alone\n\n## Verification\n\n- run both\n\n## Reviewer findings\n\nNo review recorded for this revision.\n",
+    "cwd": null,
+    "env": null,
+    "input": null,
+    "timeout": 60,
+    "verb": "issue edit"
+   },
+   {
+    "args": [
+     "issue",
+     "view",
+     "7",
+     "--repo",
+     "fixture/zeus",
+     "--json",
+     "number,url,title,body,state,comments"
+    ],
+    "body": null,
+    "cwd": null,
+    "env": null,
+    "input": null,
+    "timeout": 60,
+    "verb": "issue view"
+   },
+   {
+    "args": [
+     "issue",
+     "view",
+     "7",
+     "--repo",
+     "fixture/zeus",
+     "--json",
+     "number,url,title,body,state,comments"
+    ],
+    "body": null,
+    "cwd": null,
+    "env": null,
+    "input": null,
+    "timeout": 60,
+    "verb": "issue view"
+   },
+   {
+    "args": [
+     "issue",
+     "view",
+     "7",
+     "--repo",
+     "fixture/zeus",
+     "--json",
+     "number,url,title,body,state,comments"
+    ],
+    "body": null,
+    "cwd": null,
+    "env": null,
+    "input": null,
+    "timeout": 60,
+    "verb": "issue view"
+   },
+   {
+    "args": [
+     "issue",
+     "view",
+     "7",
+     "--repo",
+     "fixture/zeus",
+     "--json",
+     "number,url,title,body,state,comments"
+    ],
+    "body": null,
+    "cwd": null,
+    "env": null,
+    "input": null,
+    "timeout": 60,
+    "verb": "issue view"
+   }
+  ],
+  "sync_remote_issue": {
+   "body": "an external body",
+   "comments": [
+    {
+     "body": "External reviewer question"
+    }
+   ],
+   "number": 7,
+   "state": "OPEN",
+   "title": "Revised criteria",
+   "url": "https://github.com/fixture/zeus/issues/7"
+  },
+  "sync_repeat_is_a_noop_write": {
+   "artifacts_added": 0,
+   "counts_after": {
+    "ticket_github": 1,
+    "ticket_remote_creations": 1,
+    "ticket_remote_observations": 2,
+    "ticket_syncs": 1
+   },
+   "gh_verbs": [
+    "issue view",
+    "issue view"
+   ],
+   "outcome": "returned",
+   "store_after": "d292cab754bce515",
+   "store_before": "bb0b3c83934d6da4",
+   "store_unchanged": false,
+   "value": {
+    "at": "2026-09-22T00:00:02+00:00",
+    "attempted_content_hash": "2f16861407b333f3e25b47fba02742fa10b2fd2258a0b1d5fc13796884595e01",
+    "attempted_revision": 1,
+    "body_hash": "d2ce17e0443b10d167d40acef7302f5f44c608733c65d73e8395b3d86f211ebd",
+    "content_hash": "2f16861407b333f3e25b47fba02742fa10b2fd2258a0b1d5fc13796884595e01",
+    "desired_state": "OPEN",
+    "id": "dc31691ee6dd5b8659b64a568f2a0ab18585a43b0cd95d3ee2f95487f5b4a65a",
+    "lifecycle_event": null,
+    "lifecycle_sequence": 0,
+    "number": 7,
+    "observation_id": "168b98ef95742df0c4df57261d57c4410f81657b75afcee625f968b800af2419",
+    "observation_ref": "sha256:2ffc031f767d6f1f0b74888e01bbe2e53bd5d78bdb8f8bcc8d95228c18bd1e05",
+    "observed_body_hash": "d2ce17e0443b10d167d40acef7302f5f44c608733c65d73e8395b3d86f211ebd",
+    "observed_state": "OPEN",
+    "observed_title_hash": "e28dea08fb589881cb05b8aedb1289c78615b30bd05a69de829e13a82278996c",
+    "projected_lifecycle_event": null,
+    "repository": "fixture/zeus",
+    "review_ids": [],
+    "status": "synced",
+    "synced_revision": 1,
+    "ticket_id": "ZEUS-000000000001",
+    "title": "Independent services",
+    "title_hash": "e28dea08fb589881cb05b8aedb1289c78615b30bd05a69de829e13a82278996c",
+    "url": "https://github.com/fixture/zeus/issues/7"
+   }
+  },
+  "sync_repeat_rows": {
+   "ticket_github": [
+    {
+     "at": "2026-09-22T00:00:02+00:00",
+     "attempted_content_hash": "2f16861407b333f3e25b47fba02742fa10b2fd2258a0b1d5fc13796884595e01",
+     "attempted_revision": 1,
+     "body_hash": "d2ce17e0443b10d167d40acef7302f5f44c608733c65d73e8395b3d86f211ebd",
+     "content_hash": "2f16861407b333f3e25b47fba02742fa10b2fd2258a0b1d5fc13796884595e01",
+     "desired_state": "OPEN",
+     "id": "dc31691ee6dd5b8659b64a568f2a0ab18585a43b0cd95d3ee2f95487f5b4a65a",
+     "lifecycle_event": null,
+     "lifecycle_sequence": 0,
+     "number": 7,
+     "observation_id": "168b98ef95742df0c4df57261d57c4410f81657b75afcee625f968b800af2419",
+     "observation_ref": "sha256:2ffc031f767d6f1f0b74888e01bbe2e53bd5d78bdb8f8bcc8d95228c18bd1e05",
+     "observed_body_hash": "d2ce17e0443b10d167d40acef7302f5f44c608733c65d73e8395b3d86f211ebd",
+     "observed_state": "OPEN",
+     "observed_title_hash": "e28dea08fb589881cb05b8aedb1289c78615b30bd05a69de829e13a82278996c",
+     "projected_lifecycle_event": null,
+     "repository": "fixture/zeus",
+     "review_ids": [],
+     "status": "synced",
+     "synced_revision": 1,
+     "ticket_id": "ZEUS-000000000001",
+     "title": "Independent services",
+     "title_hash": "e28dea08fb589881cb05b8aedb1289c78615b30bd05a69de829e13a82278996c",
+     "url": "https://github.com/fixture/zeus/issues/7"
+    }
+   ],
+   "ticket_remote_creations": [
+    {
+     "at": "2026-09-22T00:00:01+00:00",
+     "authority": "external_observation_only",
+     "claim_owner": "5eed0000-0000-4000-8000-000000000004",
+     "evidence_ref": "sha256:08dfe79d6c808b8936a2caa8941ed1564295264063027a41e3119584b46432b2",
+     "number": 7,
+     "repository": "fixture/zeus",
+     "ticket_id": "ZEUS-000000000001",
+     "url": "https://github.com/fixture/zeus/issues/7"
+    }
+   ],
+   "ticket_remote_observations": [
+    {
+     "at": "2026-09-22T00:00:02+00:00",
+     "authority": "external_observation_only",
+     "evidence_ref": "sha256:2ffc031f767d6f1f0b74888e01bbe2e53bd5d78bdb8f8bcc8d95228c18bd1e05",
+     "first_seen": "2026-09-22T00:00:01+00:00",
+     "id": "168b98ef95742df0c4df57261d57c4410f81657b75afcee625f968b800af2419",
+     "marker_present": true,
+     "number": 7,
+     "purpose": "post_write",
+     "repository": "fixture/zeus",
+     "sequence": 1,
+     "state": "OPEN",
+     "ticket_id": "ZEUS-000000000001",
+     "title": "Independent services",
+     "url": "https://github.com/fixture/zeus/issues/7"
+    },
+    {
+     "at": "2026-09-22T00:00:02+00:00",
+     "authority": "external_observation_only",
+     "evidence_ref": "sha256:2ffc031f767d6f1f0b74888e01bbe2e53bd5d78bdb8f8bcc8d95228c18bd1e05",
+     "first_seen": "2026-09-22T00:00:02+00:00",
+     "id": "fc98d62c57540e26fb08b14170e4261105d0f3995feee0c2356c6aeefecbd95c",
+     "marker_present": true,
+     "number": 7,
+     "purpose": "pre_write",
+     "repository": "fixture/zeus",
+     "sequence": 2,
+     "state": "OPEN",
+     "ticket_id": "ZEUS-000000000001",
+     "title": "Independent services",
+     "url": "https://github.com/fixture/zeus/issues/7"
+    }
+   ],
+   "ticket_syncs": [
+    {
+     "created_number": 7,
+     "creation_uncertain": false,
+     "id": "dc31691ee6dd5b8659b64a568f2a0ab18585a43b0cd95d3ee2f95487f5b4a65a",
+     "lease_until": "2026-09-22T00:05:02+00:00",
+     "observed_body_hash": "d2ce17e0443b10d167d40acef7302f5f44c608733c65d73e8395b3d86f211ebd",
+     "observed_title_hash": "e28dea08fb589881cb05b8aedb1289c78615b30bd05a69de829e13a82278996c",
+     "owner": null,
+     "pending_body_hash": null,
+     "pending_title_hash": null,
+     "reconcile_observation": null,
+     "status": "synced"
+    }
+   ]
+  },
+  "sync_repeat_verbs": [
+   "issue list",
+   "issue create",
+   "issue view",
+   "issue view",
+   "issue view"
+  ],
+  "sync_repeat_view_only_observation_sequence": [
+   1,
+   2
+  ],
+  "sync_rows": {
+   "ticket_github": [
+    {
+     "at": "2026-09-22T00:00:01+00:00",
+     "attempted_content_hash": "2f16861407b333f3e25b47fba02742fa10b2fd2258a0b1d5fc13796884595e01",
+     "attempted_revision": 1,
+     "body_hash": "d2ce17e0443b10d167d40acef7302f5f44c608733c65d73e8395b3d86f211ebd",
+     "content_hash": "2f16861407b333f3e25b47fba02742fa10b2fd2258a0b1d5fc13796884595e01",
+     "desired_state": "OPEN",
+     "id": "dc31691ee6dd5b8659b64a568f2a0ab18585a43b0cd95d3ee2f95487f5b4a65a",
+     "lifecycle_event": null,
+     "lifecycle_sequence": 0,
+     "number": 7,
+     "observation_id": "168b98ef95742df0c4df57261d57c4410f81657b75afcee625f968b800af2419",
+     "observation_ref": "sha256:2ffc031f767d6f1f0b74888e01bbe2e53bd5d78bdb8f8bcc8d95228c18bd1e05",
+     "observed_body_hash": "d2ce17e0443b10d167d40acef7302f5f44c608733c65d73e8395b3d86f211ebd",
+     "observed_state": "OPEN",
+     "observed_title_hash": "e28dea08fb589881cb05b8aedb1289c78615b30bd05a69de829e13a82278996c",
+     "projected_lifecycle_event": null,
+     "repository": "fixture/zeus",
+     "review_ids": [],
+     "status": "synced",
+     "synced_revision": 1,
+     "ticket_id": "ZEUS-000000000001",
+     "title": "Independent services",
+     "title_hash": "e28dea08fb589881cb05b8aedb1289c78615b30bd05a69de829e13a82278996c",
+     "url": "https://github.com/fixture/zeus/issues/7"
+    }
+   ],
+   "ticket_remote_creations": [
+    {
+     "at": "2026-09-22T00:00:01+00:00",
+     "authority": "external_observation_only",
+     "claim_owner": "5eed0000-0000-4000-8000-000000000004",
+     "evidence_ref": "sha256:08dfe79d6c808b8936a2caa8941ed1564295264063027a41e3119584b46432b2",
+     "number": 7,
+     "repository": "fixture/zeus",
+     "ticket_id": "ZEUS-000000000001",
+     "url": "https://github.com/fixture/zeus/issues/7"
+    }
+   ],
+   "ticket_remote_observations": [
+    {
+     "at": "2026-09-22T00:00:01+00:00",
+     "authority": "external_observation_only",
+     "evidence_ref": "sha256:2ffc031f767d6f1f0b74888e01bbe2e53bd5d78bdb8f8bcc8d95228c18bd1e05",
+     "first_seen": "2026-09-22T00:00:01+00:00",
+     "id": "168b98ef95742df0c4df57261d57c4410f81657b75afcee625f968b800af2419",
+     "marker_present": true,
+     "number": 7,
+     "purpose": "post_write",
+     "repository": "fixture/zeus",
+     "sequence": 1,
+     "state": "OPEN",
+     "ticket_id": "ZEUS-000000000001",
+     "title": "Independent services",
+     "url": "https://github.com/fixture/zeus/issues/7"
+    }
+   ],
+   "ticket_syncs": [
+    {
+     "created_number": 7,
+     "creation_uncertain": false,
+     "id": "dc31691ee6dd5b8659b64a568f2a0ab18585a43b0cd95d3ee2f95487f5b4a65a",
+     "lease_until": "2026-09-22T00:05:01+00:00",
+     "observed_body_hash": "d2ce17e0443b10d167d40acef7302f5f44c608733c65d73e8395b3d86f211ebd",
+     "observed_title_hash": "e28dea08fb589881cb05b8aedb1289c78615b30bd05a69de829e13a82278996c",
+     "owner": null,
+     "pending_body_hash": null,
+     "pending_title_hash": null,
+     "reconcile_observation": null,
+     "status": "synced"
+    }
+   ]
+  }
+ }
+}

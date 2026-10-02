@@ -1,0 +1,8 @@
+{
+ "family": "intake.github_tickets",
+ "description": "S8 batch B2 GitHub projection of M7 adapters/github_tickets.py (GitHubTickets: _repo, _call and its failure mapping, _read, sync (create, repeat, edit after a revision, discovery by marker, the lease and its takeover, the lost acknowledgement before and after search indexing, the external body and title change, reconciliation, the manual remote close, the legacy link, the closed and reopened projections through the real lifecycle), pull, every refusal), characterized before the move into intake (V30) in the sequences of tests/test_github_tickets.py: MemoryStore, the real Tickets and TicketLifecycle, a LABELLED fake run_process scripting the gh process (argv, 60 s timeout, the body file read at call time) and the lifecycle driver's labelled authority and artifact store, scripted clock and ids, the store digest around every call; no real gh, network, spawn or database",
+ "reference_driver": "drivers/reference/s8_github_tickets.py",
+ "target_driver": "drivers/target/s8_github_tickets.py",
+ "golden": "goldens/reference/intake.github_tickets.json",
+ "slice": "S8"
+}
