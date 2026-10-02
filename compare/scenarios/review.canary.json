@@ -1,0 +1,8 @@
+{
+ "family": "review.canary",
+ "description": "S8 (V18 R-cn0/R-cn1) M7 adapters/canary.py executable_canary over the real hook_apply and a labelled fake Codex probe (an alias rewriting codex.ps1 -> codex.cmd, one that does not, one that also rewrites a normal command, a native hook, another platform, refused specs; a probe that passes, fails, lacks an exit code, raises OSError/SubprocessError/TimeoutExpired/CalledProcessError/ValueError (unavailable) or RuntimeError/a missing key (propagates)), characterized before the move; no real Codex binary",
+ "reference_driver": "drivers/reference/s8_canary.py",
+ "target_driver": "drivers/target/s8_canary.py",
+ "golden": "goldens/reference/review.canary.json",
+ "slice": "S8"
+}

@@ -1,0 +1,395 @@
+{
+ "probes": {
+  "called_process_error": {
+   "probe_calls": 1,
+   "result": {
+    "checks": {
+     "cli_start": false,
+     "normal_case": true,
+     "reproduction": true
+    },
+    "probe": {
+     "passed": false,
+     "version": "unavailable"
+    },
+    "scope": "bootstrap-command-hook; not a release deployment canary"
+   }
+  },
+  "failed": {
+   "probe_calls": 1,
+   "result": {
+    "checks": {
+     "cli_start": false,
+     "normal_case": true,
+     "reproduction": true
+    },
+    "probe": {
+     "exit_code": 1,
+     "passed": false,
+     "version": ""
+    },
+    "scope": "bootstrap-command-hook; not a release deployment canary"
+   }
+  },
+  "missing_passed_key_propagates": {
+   "message": "'passed'",
+   "probe_calls": 1,
+   "raised": "KeyError"
+  },
+  "oserror": {
+   "probe_calls": 1,
+   "result": {
+    "checks": {
+     "cli_start": false,
+     "normal_case": true,
+     "reproduction": true
+    },
+    "probe": {
+     "passed": false,
+     "version": "unavailable"
+    },
+    "scope": "bootstrap-command-hook; not a release deployment canary"
+   }
+  },
+  "passed": {
+   "probe_calls": 1,
+   "result": {
+    "checks": {
+     "cli_start": true,
+     "normal_case": true,
+     "reproduction": true
+    },
+    "probe": {
+     "exit_code": 0,
+     "passed": true,
+     "version": "codex-cli 0.0.0"
+    },
+    "scope": "bootstrap-command-hook; not a release deployment canary"
+   }
+  },
+  "passed_without_exit_code": {
+   "probe_calls": 1,
+   "result": {
+    "checks": {
+     "cli_start": true,
+     "normal_case": true,
+     "reproduction": true
+    },
+    "probe": {
+     "passed": true,
+     "version": "v"
+    },
+    "scope": "bootstrap-command-hook; not a release deployment canary"
+   }
+  },
+  "runtimeerror_propagates": {
+   "message": "unexpected",
+   "probe_calls": 1,
+   "raised": "RuntimeError"
+  },
+  "subprocess_error": {
+   "probe_calls": 1,
+   "result": {
+    "checks": {
+     "cli_start": false,
+     "normal_case": true,
+     "reproduction": true
+    },
+    "probe": {
+     "passed": false,
+     "version": "unavailable"
+    },
+    "scope": "bootstrap-command-hook; not a release deployment canary"
+   }
+  },
+  "timeout_expired": {
+   "probe_calls": 1,
+   "result": {
+    "checks": {
+     "cli_start": false,
+     "normal_case": true,
+     "reproduction": true
+    },
+    "probe": {
+     "passed": false,
+     "version": "unavailable"
+    },
+    "scope": "bootstrap-command-hook; not a release deployment canary"
+   }
+  },
+  "valueerror": {
+   "probe_calls": 1,
+   "result": {
+    "checks": {
+     "cli_start": false,
+     "normal_case": true,
+     "reproduction": true
+    },
+    "probe": {
+     "passed": false,
+     "version": "unavailable"
+    },
+    "scope": "bootstrap-command-hook; not a release deployment canary"
+   }
+  }
+ },
+ "probes_with_failing_hook": {
+  "called_process_error": {
+   "probe_calls": 1,
+   "result": {
+    "checks": {
+     "cli_start": false,
+     "normal_case": false,
+     "reproduction": false
+    },
+    "probe": {
+     "passed": false,
+     "version": "unavailable"
+    },
+    "scope": "bootstrap-command-hook; not a release deployment canary"
+   }
+  },
+  "failed": {
+   "probe_calls": 1,
+   "result": {
+    "checks": {
+     "cli_start": false,
+     "normal_case": false,
+     "reproduction": false
+    },
+    "probe": {
+     "exit_code": 1,
+     "passed": false,
+     "version": ""
+    },
+    "scope": "bootstrap-command-hook; not a release deployment canary"
+   }
+  },
+  "missing_passed_key_propagates": {
+   "message": "'passed'",
+   "probe_calls": 1,
+   "raised": "KeyError"
+  },
+  "oserror": {
+   "probe_calls": 1,
+   "result": {
+    "checks": {
+     "cli_start": false,
+     "normal_case": false,
+     "reproduction": false
+    },
+    "probe": {
+     "passed": false,
+     "version": "unavailable"
+    },
+    "scope": "bootstrap-command-hook; not a release deployment canary"
+   }
+  },
+  "passed": {
+   "probe_calls": 1,
+   "result": {
+    "checks": {
+     "cli_start": true,
+     "normal_case": false,
+     "reproduction": false
+    },
+    "probe": {
+     "exit_code": 0,
+     "passed": true,
+     "version": "codex-cli 0.0.0"
+    },
+    "scope": "bootstrap-command-hook; not a release deployment canary"
+   }
+  },
+  "passed_without_exit_code": {
+   "probe_calls": 1,
+   "result": {
+    "checks": {
+     "cli_start": true,
+     "normal_case": false,
+     "reproduction": false
+    },
+    "probe": {
+     "passed": true,
+     "version": "v"
+    },
+    "scope": "bootstrap-command-hook; not a release deployment canary"
+   }
+  },
+  "runtimeerror_propagates": {
+   "message": "unexpected",
+   "probe_calls": 1,
+   "raised": "RuntimeError"
+  },
+  "subprocess_error": {
+   "probe_calls": 1,
+   "result": {
+    "checks": {
+     "cli_start": false,
+     "normal_case": false,
+     "reproduction": false
+    },
+    "probe": {
+     "passed": false,
+     "version": "unavailable"
+    },
+    "scope": "bootstrap-command-hook; not a release deployment canary"
+   }
+  },
+  "timeout_expired": {
+   "probe_calls": 1,
+   "result": {
+    "checks": {
+     "cli_start": false,
+     "normal_case": false,
+     "reproduction": false
+    },
+    "probe": {
+     "passed": false,
+     "version": "unavailable"
+    },
+    "scope": "bootstrap-command-hook; not a release deployment canary"
+   }
+  },
+  "valueerror": {
+   "probe_calls": 1,
+   "result": {
+    "checks": {
+     "cli_start": false,
+     "normal_case": false,
+     "reproduction": false
+    },
+    "probe": {
+     "passed": false,
+     "version": "unavailable"
+    },
+    "scope": "bootstrap-command-hook; not a release deployment canary"
+   }
+  }
+ },
+ "refused_specs": {
+  "refused_alias_missing_field": {
+   "message": "Invalid executable alias",
+   "probe_calls": 0,
+   "raised": "ContractError"
+  },
+  "refused_empty_spec": {
+   "message": "Unsupported hook kind",
+   "probe_calls": 0,
+   "raised": "ContractError"
+  },
+  "refused_native_absolute_script": {
+   "message": "Hook script must be repository relative",
+   "probe_calls": 0,
+   "raised": "ContractError"
+  },
+  "refused_native_bad_event": {
+   "message": "Unsupported hook event",
+   "probe_calls": 0,
+   "raised": "ContractError"
+  },
+  "refused_unknown_kind": {
+   "message": "Unsupported hook kind",
+   "probe_calls": 0,
+   "raised": "ContractError"
+  }
+ },
+ "specs": {
+  "alias_other_command": {
+   "probe_calls": 1,
+   "result": {
+    "checks": {
+     "cli_start": true,
+     "normal_case": true,
+     "reproduction": false
+    },
+    "probe": {
+     "exit_code": 0,
+     "passed": true,
+     "version": "codex-cli 0.0.0"
+    },
+    "scope": "bootstrap-command-hook; not a release deployment canary"
+   }
+  },
+  "alias_other_platform": {
+   "probe_calls": 1,
+   "result": {
+    "checks": {
+     "cli_start": true,
+     "normal_case": true,
+     "reproduction": false
+    },
+    "probe": {
+     "exit_code": 0,
+     "passed": true,
+     "version": "codex-cli 0.0.0"
+    },
+    "scope": "bootstrap-command-hook; not a release deployment canary"
+   }
+  },
+  "alias_ps1_to_cmd": {
+   "probe_calls": 1,
+   "result": {
+    "checks": {
+     "cli_start": true,
+     "normal_case": true,
+     "reproduction": true
+    },
+    "probe": {
+     "exit_code": 0,
+     "passed": true,
+     "version": "codex-cli 0.0.0"
+    },
+    "scope": "bootstrap-command-hook; not a release deployment canary"
+   }
+  },
+  "alias_rewrites_codex_on_linux": {
+   "probe_calls": 1,
+   "result": {
+    "checks": {
+     "cli_start": true,
+     "normal_case": false,
+     "reproduction": false
+    },
+    "probe": {
+     "exit_code": 0,
+     "passed": true,
+     "version": "codex-cli 0.0.0"
+    },
+    "scope": "bootstrap-command-hook; not a release deployment canary"
+   }
+  },
+  "alias_rewrites_git": {
+   "probe_calls": 1,
+   "result": {
+    "checks": {
+     "cli_start": true,
+     "normal_case": false,
+     "reproduction": false
+    },
+    "probe": {
+     "exit_code": 0,
+     "passed": true,
+     "version": "codex-cli 0.0.0"
+    },
+    "scope": "bootstrap-command-hook; not a release deployment canary"
+   }
+  },
+  "native_hook": {
+   "probe_calls": 1,
+   "result": {
+    "checks": {
+     "cli_start": true,
+     "normal_case": true,
+     "reproduction": false
+    },
+    "probe": {
+     "exit_code": 0,
+     "passed": true,
+     "version": "codex-cli 0.0.0"
+    },
+    "scope": "bootstrap-command-hook; not a release deployment canary"
+   }
+  }
+ }
+}
