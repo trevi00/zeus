@@ -1,0 +1,3133 @@
+{
+ "collection_facts": {
+  "all_keys": {
+   "value": {
+    "lag_seconds": 1.0,
+    "last": {
+     "confirmed_audits": 9,
+     "conflicts": 4,
+     "corrupt": 5,
+     "duplicates": 3,
+     "file": "a",
+     "inserted": 2,
+     "records": 1,
+     "refused": 6,
+     "truncated_tail": 7,
+     "unconfirmed_audits": 8
+    },
+    "last_at": "2026-09-18T11:59:59+00:00",
+    "receipts_with_time": 1
+   }
+  },
+  "aware_other_zone": {
+   "value": {
+    "lag_seconds": 60.0,
+    "last": {
+     "confirmed_audits": null,
+     "conflicts": null,
+     "corrupt": null,
+     "duplicates": null,
+     "file": null,
+     "inserted": null,
+     "records": null,
+     "refused": null,
+     "truncated_tail": null,
+     "unconfirmed_audits": null
+    },
+    "last_at": "2026-09-18T20:59:00+09:00",
+    "receipts_with_time": 1
+   }
+  },
+  "canary_leaked": false,
+  "credential_file": {
+   "value": {
+    "lag_seconds": 1.0,
+    "last": {
+     "confirmed_audits": null,
+     "conflicts": null,
+     "corrupt": null,
+     "duplicates": null,
+     "file": "password=[REDACTED credential]",
+     "inserted": null,
+     "records": null,
+     "refused": null,
+     "truncated_tail": null,
+     "unconfirmed_audits": null
+    },
+    "last_at": "2026-09-18T11:59:59+00:00",
+    "receipts_with_time": 1
+   }
+  },
+  "empty": {
+   "value": {
+    "lag_seconds": null,
+    "last": null,
+    "last_at": null,
+    "receipts_with_time": 0
+   }
+  },
+  "future_clamped": {
+   "value": {
+    "lag_seconds": 0.0,
+    "last": {
+     "confirmed_audits": null,
+     "conflicts": null,
+     "corrupt": null,
+     "duplicates": null,
+     "file": null,
+     "inserted": null,
+     "records": 9,
+     "refused": null,
+     "truncated_tail": null,
+     "unconfirmed_audits": null
+    },
+    "last_at": "2026-09-18T12:00:30+00:00",
+    "receipts_with_time": 1
+   }
+  },
+  "latest_of_three": {
+   "value": {
+    "lag_seconds": 90.0,
+    "last": {
+     "confirmed_audits": null,
+     "conflicts": null,
+     "corrupt": null,
+     "duplicates": 1,
+     "file": "a.jsonl",
+     "inserted": 2,
+     "records": 3,
+     "refused": null,
+     "truncated_tail": null,
+     "unconfirmed_audits": null
+    },
+    "last_at": "2026-09-18T11:58:30+00:00",
+    "receipts_with_time": 2
+   }
+  },
+  "long_file_bounded": {
+   "value": {
+    "lag_seconds": 1.0,
+    "last": {
+     "confirmed_audits": null,
+     "conflicts": null,
+     "corrupt": null,
+     "duplicates": null,
+     "file": "ffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff",
+     "inserted": null,
+     "records": 1,
+     "refused": null,
+     "truncated_tail": null,
+     "unconfirmed_audits": null
+    },
+    "last_at": "2026-09-18T11:59:59+00:00",
+    "receipts_with_time": 1
+   }
+  },
+  "naive_now": {
+   "message": "can't subtract offset-naive and offset-aware datetimes",
+   "refused": "TypeError"
+  },
+  "naive_now_no_receipts": {
+   "value": {
+    "lag_seconds": null,
+    "last": null,
+    "last_at": null,
+    "receipts_with_time": 0
+   }
+  },
+  "no_valid_time": {
+   "value": {
+    "lag_seconds": null,
+    "last": null,
+    "last_at": null,
+    "receipts_with_time": 0
+   }
+  },
+  "non_dict_receipt": {
+   "message": "'str' object has no attribute 'get'",
+   "refused": "AttributeError"
+  },
+  "non_string_file": {
+   "value": {
+    "lag_seconds": 1.0,
+    "last": {
+     "confirmed_audits": null,
+     "conflicts": null,
+     "corrupt": null,
+     "duplicates": null,
+     "file": null,
+     "inserted": null,
+     "records": null,
+     "refused": null,
+     "truncated_tail": null,
+     "unconfirmed_audits": null
+    },
+    "last_at": "2026-09-18T11:59:59+00:00",
+    "receipts_with_time": 1
+   }
+  },
+  "tie_keeps_first": {
+   "value": {
+    "lag_seconds": 5.0,
+    "last": {
+     "confirmed_audits": null,
+     "conflicts": null,
+     "corrupt": null,
+     "duplicates": null,
+     "file": null,
+     "inserted": null,
+     "records": 1,
+     "refused": null,
+     "truncated_tail": null,
+     "unconfirmed_audits": null
+    },
+    "last_at": "2026-09-18T11:59:55+00:00",
+    "receipts_with_time": 2
+   }
+  }
+ },
+ "local_facts": {
+  "as_string_equal": true,
+  "canary_leaked": false,
+  "directory_failures": {
+   "FileNotFoundError": {
+    "value": {
+     "reason": "FileNotFoundError",
+     "status": "unavailable"
+    }
+   },
+   "OSError": {
+    "value": {
+     "reason": "OSError",
+     "status": "unavailable"
+    }
+   },
+   "RuntimeError": {
+    "message": "other",
+    "refused": "RuntimeError"
+   },
+   "ValueError": {
+    "value": {
+     "reason": "ValueError",
+     "status": "unavailable"
+    }
+   },
+   "late_pending_terminations": {
+    "value": {
+     "reason": "OSError",
+     "status": "unavailable"
+    }
+   },
+   "late_read_health": {
+    "value": {
+     "reason": "OSError",
+     "status": "unavailable"
+    }
+   },
+   "late_read_pending_alerts": {
+    "value": {
+     "reason": "OSError",
+     "status": "unavailable"
+    }
+   },
+   "late_unacknowledged_bytes": {
+    "value": {
+     "reason": "OSError",
+     "status": "unavailable"
+    }
+   }
+  },
+  "empty_directory": {
+   "health": [],
+   "health_total": 0,
+   "pending_alert_files": {},
+   "pending_alerts": 0,
+   "pending_terminations": 0,
+   "segments": 0,
+   "status": "ok",
+   "unacknowledged_bytes": 0,
+   "unreadable_terminations": 0
+  },
+  "many": {
+   "health_first": {
+    "component": "many",
+    "dropped": {
+     "alerts_pending_dropped": null,
+     "dropped_run_refused": null,
+     "dropped_spool_full": null,
+     "refused": null,
+     "spool_failures": null
+    },
+    "last_defect": null,
+    "limit_bytes": null,
+    "pending_alerts": 0,
+    "process_run_id": "00000000000000000000000000000000",
+    "role": null,
+    "sink": "available",
+    "unacknowledged_bytes": null,
+    "unreadable": false,
+    "updated_at": "2026-09-18T12:00:00+00:00"
+   },
+   "health_len": 50,
+   "health_total": 63,
+   "pending_alert_files_len": 50,
+   "pending_alerts": 63,
+   "pending_terminations": 2,
+   "segments": 2,
+   "status": "ok",
+   "unacknowledged_bytes": 1124,
+   "unreadable_terminations": 1
+  },
+  "observations_is_a_file": {
+   "reason": "directory_missing",
+   "status": "unavailable"
+  },
+  "populated": {
+   "health": [
+    {
+     "component": "exec",
+     "dropped": {
+      "alerts_pending_dropped": 4,
+      "dropped_run_refused": 3,
+      "dropped_spool_full": 2,
+      "refused": 0,
+      "spool_failures": 1
+     },
+     "last_defect": "password=[REDACTED credential]",
+     "limit_bytes": 20,
+     "pending_alerts": 2,
+     "process_run_id": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+     "role": "worker",
+     "sink": "unavailable",
+     "unacknowledged_bytes": 10,
+     "unreadable": false,
+     "updated_at": "2026-09-18T12:00:00+00:00"
+    },
+    {
+     "component": "cccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccc",
+     "dropped": {
+      "alerts_pending_dropped": null,
+      "dropped_run_refused": null,
+      "dropped_spool_full": null,
+      "refused": null,
+      "spool_failures": null
+     },
+     "last_defect": null,
+     "limit_bytes": null,
+     "pending_alerts": 0,
+     "process_run_id": "bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb",
+     "role": null,
+     "sink": "available",
+     "unacknowledged_bytes": null,
+     "unreadable": false,
+     "updated_at": null
+    },
+    {
+     "component": null,
+     "dropped": {
+      "alerts_pending_dropped": null,
+      "dropped_run_refused": null,
+      "dropped_spool_full": null,
+      "refused": null,
+      "spool_failures": null
+     },
+     "last_defect": null,
+     "limit_bytes": null,
+     "pending_alerts": 0,
+     "process_run_id": "cccccccccccccccccccccccccccccccc",
+     "role": null,
+     "sink": null,
+     "unacknowledged_bytes": null,
+     "unreadable": true,
+     "updated_at": null
+    }
+   ],
+   "health_total": 3,
+   "pending_alert_files": {
+    "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa": 2,
+    "bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb": 1
+   },
+   "pending_alerts": 3,
+   "pending_terminations": 2,
+   "segments": 2,
+   "status": "ok",
+   "unacknowledged_bytes": 1124,
+   "unreadable_terminations": 1
+  },
+  "populated_read_only": true,
+  "root_missing": {
+   "reason": "directory_missing",
+   "status": "unavailable"
+  },
+  "runtime_as_string": {
+   "health": [],
+   "health_total": 0,
+   "pending_alert_files": {},
+   "pending_alerts": 0,
+   "pending_terminations": 0,
+   "segments": 0,
+   "status": "ok",
+   "unacknowledged_bytes": 0,
+   "unreadable_terminations": 0
+  },
+  "runtime_none": {
+   "reason": "runtime_not_configured",
+   "status": "unavailable"
+  }
+ },
+ "merge_events": {
+  "dup": {
+   "audit_confirmed": null,
+   "category": "general",
+   "collected_at": null,
+   "component": "unit",
+   "correlation_id": null,
+   "event_id": "dup",
+   "event_type": "general.fixture",
+   "evidence_refs": [
+    "sha256:bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb"
+   ],
+   "evidence_refs_total": 1,
+   "execution": {
+    "attempt": null,
+    "bucket": null,
+    "generation": null,
+    "invocation_id": null,
+    "kind": "system",
+    "process_run_id": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+    "role": null,
+    "task_id": null
+   },
+   "observed_at": "2026-09-18T11:57:00+00:00",
+   "observed_at_valid": true,
+   "occurred_at": null,
+   "outcome": "observed",
+   "reason_code": null,
+   "record_kind": "both",
+   "severity": "debug"
+  },
+  "empty": [
+   [],
+   {}
+  ],
+  "full_first": {
+   "audit_confirmed": null,
+   "category": "development",
+   "collected_at": null,
+   "component": "unit",
+   "correlation_id": null,
+   "event_id": "e2",
+   "event_type": "development.fixture",
+   "evidence_refs": [
+    "sha256:bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb"
+   ],
+   "evidence_refs_total": 1,
+   "execution": {
+    "attempt": null,
+    "bucket": null,
+    "generation": null,
+    "invocation_id": null,
+    "kind": "system",
+    "process_run_id": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+    "role": null,
+    "task_id": null
+   },
+   "observed_at": "2026-09-18T12:00:00+00:00",
+   "observed_at_valid": true,
+   "occurred_at": null,
+   "outcome": "observed",
+   "reason_code": null,
+   "record_kind": "collected",
+   "severity": "critical"
+  },
+  "kinds": {
+   "audit": 3,
+   "both": 2,
+   "collected": 4
+  },
+  "non_dict_row": {
+   "message": "'str' object has no attribute 'get'",
+   "refused": "AttributeError"
+  },
+  "only_audit": {
+   "kinds": {
+    "audit": 5
+   },
+   "order": [
+    "dup",
+    "naive",
+    "e1",
+    "a1",
+    "bad"
+   ]
+  },
+  "only_collected": {
+   "kinds": {
+    "collected": 6
+   },
+   "order": [
+    "e2",
+    "e4",
+    "e5",
+    "e3",
+    "e1",
+    "dup"
+   ]
+  },
+  "order": [
+   "e2",
+   "e4",
+   "e5",
+   "e3",
+   "naive",
+   "e1",
+   "a1",
+   "dup",
+   "bad"
+  ],
+  "sort_key_unknowns": [
+   [
+    1,
+    3,
+    true,
+    "",
+    "x"
+   ]
+  ],
+  "ties_by_event_id": [
+   "a",
+   "b",
+   "c"
+  ]
+ },
+ "observation_facts": {
+  "bounded_sample": {
+   "digest": "0b0150358c966a336380d78ee16361629d86f2f82f565b5e970de10b0412ac99",
+   "events": {
+    "by_category": {
+     "general": 2000,
+     "operations": 55
+    },
+    "by_outcome": {
+     "observed": 2055
+    },
+    "by_severity": {
+     "critical": 55,
+     "debug": 1714,
+     "error": 286
+    },
+    "high_severity": {
+     "digest": "1736b42ae31aaea8430c4f29724a28285f01aeef81a9df01f4362541d6fc4c04",
+     "first": [
+      {
+       "audit_confirmed": null,
+       "category": "operations",
+       "collected_at": null,
+       "component": "unit",
+       "correlation_id": null,
+       "event_id": "h0054",
+       "event_type": "operations.fixture",
+       "evidence_refs": [
+        "sha256:bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb"
+       ],
+       "evidence_refs_total": 1,
+       "execution": {
+        "attempt": null,
+        "bucket": null,
+        "generation": null,
+        "invocation_id": null,
+        "kind": "system",
+        "process_run_id": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+        "role": null,
+        "task_id": null
+       },
+       "observed_at": "2026-09-18T11:06:00+00:00",
+       "observed_at_valid": true,
+       "occurred_at": null,
+       "outcome": "observed",
+       "reason_code": null,
+       "record_kind": "audit",
+       "severity": "critical"
+      },
+      {
+       "audit_confirmed": null,
+       "category": "operations",
+       "collected_at": null,
+       "component": "unit",
+       "correlation_id": null,
+       "event_id": "h0053",
+       "event_type": "operations.fixture",
+       "evidence_refs": [
+        "sha256:bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb"
+       ],
+       "evidence_refs_total": 1,
+       "execution": {
+        "attempt": null,
+        "bucket": null,
+        "generation": null,
+        "invocation_id": null,
+        "kind": "system",
+        "process_run_id": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+        "role": null,
+        "task_id": null
+       },
+       "observed_at": "2026-09-18T11:07:00+00:00",
+       "observed_at_valid": true,
+       "occurred_at": null,
+       "outcome": "observed",
+       "reason_code": null,
+       "record_kind": "audit",
+       "severity": "critical"
+      },
+      {
+       "audit_confirmed": null,
+       "category": "operations",
+       "collected_at": null,
+       "component": "unit",
+       "correlation_id": null,
+       "event_id": "h0052",
+       "event_type": "operations.fixture",
+       "evidence_refs": [
+        "sha256:bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb"
+       ],
+       "evidence_refs_total": 1,
+       "execution": {
+        "attempt": null,
+        "bucket": null,
+        "generation": null,
+        "invocation_id": null,
+        "kind": "system",
+        "process_run_id": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+        "role": null,
+        "task_id": null
+       },
+       "observed_at": "2026-09-18T11:08:00+00:00",
+       "observed_at_valid": true,
+       "occurred_at": null,
+       "outcome": "observed",
+       "reason_code": null,
+       "record_kind": "audit",
+       "severity": "critical"
+      }
+     ],
+     "last": [
+      {
+       "audit_confirmed": null,
+       "category": "operations",
+       "collected_at": null,
+       "component": "unit",
+       "correlation_id": null,
+       "event_id": "h0007",
+       "event_type": "operations.fixture",
+       "evidence_refs": [
+        "sha256:bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb"
+       ],
+       "evidence_refs_total": 1,
+       "execution": {
+        "attempt": null,
+        "bucket": null,
+        "generation": null,
+        "invocation_id": null,
+        "kind": "system",
+        "process_run_id": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+        "role": null,
+        "task_id": null
+       },
+       "observed_at": "2026-09-18T11:53:00+00:00",
+       "observed_at_valid": true,
+       "occurred_at": null,
+       "outcome": "observed",
+       "reason_code": null,
+       "record_kind": "audit",
+       "severity": "critical"
+      },
+      {
+       "audit_confirmed": null,
+       "category": "operations",
+       "collected_at": null,
+       "component": "unit",
+       "correlation_id": null,
+       "event_id": "h0006",
+       "event_type": "operations.fixture",
+       "evidence_refs": [
+        "sha256:bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb"
+       ],
+       "evidence_refs_total": 1,
+       "execution": {
+        "attempt": null,
+        "bucket": null,
+        "generation": null,
+        "invocation_id": null,
+        "kind": "system",
+        "process_run_id": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+        "role": null,
+        "task_id": null
+       },
+       "observed_at": "2026-09-18T11:54:00+00:00",
+       "observed_at_valid": true,
+       "occurred_at": null,
+       "outcome": "observed",
+       "reason_code": null,
+       "record_kind": "audit",
+       "severity": "critical"
+      },
+      {
+       "audit_confirmed": null,
+       "category": "operations",
+       "collected_at": null,
+       "component": "unit",
+       "correlation_id": null,
+       "event_id": "h0005",
+       "event_type": "operations.fixture",
+       "evidence_refs": [
+        "sha256:bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb"
+       ],
+       "evidence_refs_total": 1,
+       "execution": {
+        "attempt": null,
+        "bucket": null,
+        "generation": null,
+        "invocation_id": null,
+        "kind": "system",
+        "process_run_id": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+        "role": null,
+        "task_id": null
+       },
+       "observed_at": "2026-09-18T11:55:00+00:00",
+       "observed_at_valid": true,
+       "occurred_at": null,
+       "outcome": "observed",
+       "reason_code": null,
+       "record_kind": "audit",
+       "severity": "critical"
+      }
+     ],
+     "len": 50
+    },
+    "high_severity_total": 341,
+    "record_kinds": {
+     "audit": 55,
+     "collected": 2000
+    },
+    "rows": {
+     "digest": "3038301a20fcbbce755e22fc8161605b1e28c98e97ef1823e6f6ff709c396604",
+     "first": [
+      {
+       "audit_confirmed": null,
+       "category": "operations",
+       "collected_at": null,
+       "component": "unit",
+       "correlation_id": null,
+       "event_id": "h0054",
+       "event_type": "operations.fixture",
+       "evidence_refs": [
+        "sha256:bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb"
+       ],
+       "evidence_refs_total": 1,
+       "execution": {
+        "attempt": null,
+        "bucket": null,
+        "generation": null,
+        "invocation_id": null,
+        "kind": "system",
+        "process_run_id": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+        "role": null,
+        "task_id": null
+       },
+       "observed_at": "2026-09-18T11:06:00+00:00",
+       "observed_at_valid": true,
+       "occurred_at": null,
+       "outcome": "observed",
+       "reason_code": null,
+       "record_kind": "audit",
+       "severity": "critical"
+      },
+      {
+       "audit_confirmed": null,
+       "category": "operations",
+       "collected_at": null,
+       "component": "unit",
+       "correlation_id": null,
+       "event_id": "h0053",
+       "event_type": "operations.fixture",
+       "evidence_refs": [
+        "sha256:bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb"
+       ],
+       "evidence_refs_total": 1,
+       "execution": {
+        "attempt": null,
+        "bucket": null,
+        "generation": null,
+        "invocation_id": null,
+        "kind": "system",
+        "process_run_id": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+        "role": null,
+        "task_id": null
+       },
+       "observed_at": "2026-09-18T11:07:00+00:00",
+       "observed_at_valid": true,
+       "occurred_at": null,
+       "outcome": "observed",
+       "reason_code": null,
+       "record_kind": "audit",
+       "severity": "critical"
+      },
+      {
+       "audit_confirmed": null,
+       "category": "operations",
+       "collected_at": null,
+       "component": "unit",
+       "correlation_id": null,
+       "event_id": "h0052",
+       "event_type": "operations.fixture",
+       "evidence_refs": [
+        "sha256:bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb"
+       ],
+       "evidence_refs_total": 1,
+       "execution": {
+        "attempt": null,
+        "bucket": null,
+        "generation": null,
+        "invocation_id": null,
+        "kind": "system",
+        "process_run_id": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+        "role": null,
+        "task_id": null
+       },
+       "observed_at": "2026-09-18T11:08:00+00:00",
+       "observed_at_valid": true,
+       "occurred_at": null,
+       "outcome": "observed",
+       "reason_code": null,
+       "record_kind": "audit",
+       "severity": "critical"
+      }
+     ],
+     "last": [
+      {
+       "audit_confirmed": null,
+       "category": "general",
+       "collected_at": null,
+       "component": "unit",
+       "correlation_id": null,
+       "event_id": "r00994",
+       "event_type": "general.fixture",
+       "evidence_refs": [
+        "sha256:bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb"
+       ],
+       "evidence_refs_total": 1,
+       "execution": {
+        "attempt": null,
+        "bucket": null,
+        "generation": null,
+        "invocation_id": null,
+        "kind": "system",
+        "process_run_id": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+        "role": null,
+        "task_id": null
+       },
+       "observed_at": "2026-09-18T12:00:00+00:00",
+       "observed_at_valid": true,
+       "occurred_at": null,
+       "outcome": "observed",
+       "reason_code": null,
+       "record_kind": "collected",
+       "severity": "error"
+      },
+      {
+       "audit_confirmed": null,
+       "category": "general",
+       "collected_at": null,
+       "component": "unit",
+       "correlation_id": null,
+       "event_id": "r01001",
+       "event_type": "general.fixture",
+       "evidence_refs": [
+        "sha256:bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb"
+       ],
+       "evidence_refs_total": 1,
+       "execution": {
+        "attempt": null,
+        "bucket": null,
+        "generation": null,
+        "invocation_id": null,
+        "kind": "system",
+        "process_run_id": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+        "role": null,
+        "task_id": null
+       },
+       "observed_at": "2026-09-18T12:00:00+00:00",
+       "observed_at_valid": true,
+       "occurred_at": null,
+       "outcome": "observed",
+       "reason_code": null,
+       "record_kind": "collected",
+       "severity": "error"
+      },
+      {
+       "audit_confirmed": null,
+       "category": "general",
+       "collected_at": null,
+       "component": "unit",
+       "correlation_id": null,
+       "event_id": "r01008",
+       "event_type": "general.fixture",
+       "evidence_refs": [
+        "sha256:bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb"
+       ],
+       "evidence_refs_total": 1,
+       "execution": {
+        "attempt": null,
+        "bucket": null,
+        "generation": null,
+        "invocation_id": null,
+        "kind": "system",
+        "process_run_id": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+        "role": null,
+        "task_id": null
+       },
+       "observed_at": "2026-09-18T12:00:00+00:00",
+       "observed_at_valid": true,
+       "occurred_at": null,
+       "outcome": "observed",
+       "reason_code": null,
+       "record_kind": "collected",
+       "severity": "error"
+      }
+     ],
+     "len": 200
+    },
+    "rows_limit": 200,
+    "rows_truncated": true,
+    "total": 2055,
+    "unknown": {
+     "category": 0,
+     "observed_at": 0,
+     "severity": 0
+    }
+   },
+   "operations": {
+    "by_status": {
+     "failed": 53,
+     "running": 52
+    },
+    "rows": {
+     "digest": "574839f77335ec5fd46cc633b9d97f2f455ae8e93c45730929f457b951354e4b",
+     "first": [
+      {
+       "correlation_id": null,
+       "criterion": "c",
+       "decision_id": null,
+       "id": "op0000",
+       "lead_accepted": null,
+       "reason_code": null,
+       "status": "failed",
+       "task_id": null
+      },
+      {
+       "correlation_id": null,
+       "criterion": "c",
+       "decision_id": null,
+       "id": "op0001",
+       "lead_accepted": null,
+       "reason_code": null,
+       "status": "running",
+       "task_id": null
+      },
+      {
+       "correlation_id": null,
+       "criterion": "c",
+       "decision_id": null,
+       "id": "op0002",
+       "lead_accepted": null,
+       "reason_code": null,
+       "status": "failed",
+       "task_id": null
+      }
+     ],
+     "last": [
+      {
+       "correlation_id": null,
+       "criterion": "c",
+       "decision_id": null,
+       "id": "op0097",
+       "lead_accepted": null,
+       "reason_code": null,
+       "status": "running",
+       "task_id": null
+      },
+      {
+       "correlation_id": null,
+       "criterion": "c",
+       "decision_id": null,
+       "id": "op0098",
+       "lead_accepted": null,
+       "reason_code": null,
+       "status": "failed",
+       "task_id": null
+      },
+      {
+       "correlation_id": null,
+       "criterion": "c",
+       "decision_id": null,
+       "id": "op0099",
+       "lead_accepted": null,
+       "reason_code": null,
+       "status": "running",
+       "task_id": null
+      }
+     ],
+     "len": 100
+    },
+    "rows_truncated": true,
+    "total": 105
+   },
+   "sample": {
+    "buckets": {
+     "observation_alerts": {
+      "limit": 2000,
+      "scanned": 0,
+      "truncated": false
+     },
+     "observation_audit": {
+      "limit": 2000,
+      "scanned": 55,
+      "truncated": false
+     },
+     "observation_collections": {
+      "limit": 2000,
+      "scanned": 0,
+      "truncated": false
+     },
+     "observation_quarantine": {
+      "limit": 2000,
+      "scanned": 0,
+      "truncated": false
+     },
+     "observation_terminations": {
+      "limit": 2000,
+      "scanned": 0,
+      "truncated": false
+     },
+     "observations": {
+      "limit": 2000,
+      "scanned": 2000,
+      "truncated": true
+     },
+     "operations": {
+      "limit": 2000,
+      "scanned": 105,
+      "truncated": false
+     }
+    },
+    "limit_per_bucket": 2000,
+    "note": "counts describe the sampled stored rows, not lifetime totals; stored rows do not prove every expected event was emitted",
+    "selection": "first rows in store id order",
+    "truncated": true
+   }
+  },
+  "default_now": {
+   "alerts": {
+    "by_status": {},
+    "recorded": 0
+   },
+   "authority": "informational_only",
+   "collection": {
+    "lag_seconds": null,
+    "last": null,
+    "last_at": null,
+    "receipts": 0,
+    "receipts_with_time": 0
+   },
+   "events": {
+    "by_category": {},
+    "by_outcome": {},
+    "by_severity": {},
+    "high_severity": [],
+    "high_severity_total": 0,
+    "record_kinds": {},
+    "rows": [],
+    "rows_limit": 200,
+    "rows_truncated": false,
+    "total": 0,
+    "unknown": {
+     "category": 0,
+     "observed_at": 0,
+     "severity": 0
+    }
+   },
+   "labels": {
+    "development": "개발",
+    "general": "일반·디버깅",
+    "operations": "운영"
+   },
+   "local": {
+    "reason": "runtime_not_configured",
+    "status": "unavailable"
+   },
+   "observed_at": "<utc-iso>",
+   "operations": {
+    "by_status": {},
+    "rows": [],
+    "rows_truncated": false,
+    "total": 0
+   },
+   "quarantine": {
+    "by_reason": {},
+    "total": 0
+   },
+   "sample": {
+    "buckets": {
+     "observation_alerts": {
+      "limit": 2000,
+      "scanned": 0,
+      "truncated": false
+     },
+     "observation_audit": {
+      "limit": 2000,
+      "scanned": 0,
+      "truncated": false
+     },
+     "observation_collections": {
+      "limit": 2000,
+      "scanned": 0,
+      "truncated": false
+     },
+     "observation_quarantine": {
+      "limit": 2000,
+      "scanned": 0,
+      "truncated": false
+     },
+     "observation_terminations": {
+      "limit": 2000,
+      "scanned": 0,
+      "truncated": false
+     },
+     "observations": {
+      "limit": 2000,
+      "scanned": 0,
+      "truncated": false
+     },
+     "operations": {
+      "limit": 2000,
+      "scanned": 0,
+      "truncated": false
+     }
+    },
+    "limit_per_bucket": 2000,
+    "note": "counts describe the sampled stored rows, not lifetime totals; stored rows do not prove every expected event was emitted",
+    "selection": "first rows in store id order",
+    "truncated": false
+   },
+   "schema": "harness-monitor-observations.v1",
+   "terminations": {
+    "by_status": {},
+    "pending": 0
+   }
+  },
+  "empty_store": {
+   "alerts": {
+    "by_status": {},
+    "recorded": 0
+   },
+   "authority": "informational_only",
+   "collection": {
+    "lag_seconds": null,
+    "last": null,
+    "last_at": null,
+    "receipts": 0,
+    "receipts_with_time": 0
+   },
+   "events": {
+    "by_category": {},
+    "by_outcome": {},
+    "by_severity": {},
+    "high_severity": [],
+    "high_severity_total": 0,
+    "record_kinds": {},
+    "rows": [],
+    "rows_limit": 200,
+    "rows_truncated": false,
+    "total": 0,
+    "unknown": {
+     "category": 0,
+     "observed_at": 0,
+     "severity": 0
+    }
+   },
+   "labels": {
+    "development": "개발",
+    "general": "일반·디버깅",
+    "operations": "운영"
+   },
+   "local": {
+    "reason": "runtime_not_configured",
+    "status": "unavailable"
+   },
+   "observed_at": "2026-09-18T12:00:00+00:00",
+   "operations": {
+    "by_status": {},
+    "rows": [],
+    "rows_truncated": false,
+    "total": 0
+   },
+   "quarantine": {
+    "by_reason": {},
+    "total": 0
+   },
+   "sample": {
+    "buckets": {
+     "observation_alerts": {
+      "limit": 2000,
+      "scanned": 0,
+      "truncated": false
+     },
+     "observation_audit": {
+      "limit": 2000,
+      "scanned": 0,
+      "truncated": false
+     },
+     "observation_collections": {
+      "limit": 2000,
+      "scanned": 0,
+      "truncated": false
+     },
+     "observation_quarantine": {
+      "limit": 2000,
+      "scanned": 0,
+      "truncated": false
+     },
+     "observation_terminations": {
+      "limit": 2000,
+      "scanned": 0,
+      "truncated": false
+     },
+     "observations": {
+      "limit": 2000,
+      "scanned": 0,
+      "truncated": false
+     },
+     "operations": {
+      "limit": 2000,
+      "scanned": 0,
+      "truncated": false
+     }
+    },
+    "limit_per_bucket": 2000,
+    "note": "counts describe the sampled stored rows, not lifetime totals; stored rows do not prove every expected event was emitted",
+    "selection": "first rows in store id order",
+    "truncated": false
+   },
+   "schema": "harness-monitor-observations.v1",
+   "terminations": {
+    "by_status": {},
+    "pending": 0
+   }
+  },
+  "naive_now_with_receipts": {
+   "message": "can't subtract offset-naive and offset-aware datetimes",
+   "refused": "TypeError"
+  },
+  "positional_runtime_none": true,
+  "priority_order": {
+   "canary_leaked": false,
+   "facts": {
+    "alerts": {
+     "by_status": {},
+     "recorded": 0
+    },
+    "authority": "informational_only",
+    "collection": {
+     "lag_seconds": null,
+     "last": null,
+     "last_at": null,
+     "receipts": 0,
+     "receipts_with_time": 0
+    },
+    "events": {
+     "by_category": {
+      "development": 1,
+      "general": 3,
+      "operations": 3,
+      "unknown": 1
+     },
+     "by_outcome": {
+      "observed": 8
+     },
+     "by_severity": {
+      "critical": 1,
+      "debug": 1,
+      "error": 3,
+      "info": 1,
+      "unknown": 1,
+      "warning": 1
+     },
+     "high_severity": [
+      {
+       "audit_confirmed": null,
+       "category": "development",
+       "collected_at": "2026-09-18T12:00:00+00:00",
+       "component": "unit",
+       "correlation_id": null,
+       "event_id": "e2",
+       "event_type": "development.fixture",
+       "evidence_refs": [
+        "sha256:bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb"
+       ],
+       "evidence_refs_total": 1,
+       "execution": {
+        "attempt": null,
+        "bucket": null,
+        "generation": null,
+        "invocation_id": null,
+        "kind": "system",
+        "process_run_id": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+        "role": null,
+        "task_id": null
+       },
+       "observed_at": "2026-09-18T12:00:00+00:00",
+       "observed_at_valid": true,
+       "occurred_at": null,
+       "outcome": "observed",
+       "reason_code": null,
+       "record_kind": "collected",
+       "severity": "critical"
+      },
+      {
+       "audit_confirmed": null,
+       "category": "operations",
+       "collected_at": "2026-09-18T12:00:00+00:00",
+       "component": "unit",
+       "correlation_id": null,
+       "event_id": "e4",
+       "event_type": "operations.fixture",
+       "evidence_refs": [
+        "sha256:bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb"
+       ],
+       "evidence_refs_total": 1,
+       "execution": {
+        "attempt": null,
+        "bucket": null,
+        "generation": null,
+        "invocation_id": null,
+        "kind": "system",
+        "process_run_id": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+        "role": null,
+        "task_id": null
+       },
+       "observed_at": "2026-09-18T11:59:00+00:00",
+       "observed_at_valid": true,
+       "occurred_at": null,
+       "outcome": "observed",
+       "reason_code": null,
+       "record_kind": "collected",
+       "severity": "error"
+      },
+      {
+       "audit_confirmed": null,
+       "category": "operations",
+       "collected_at": "2026-09-18T12:00:00+00:00",
+       "component": "unit",
+       "correlation_id": null,
+       "event_id": "e5",
+       "event_type": "operations.fixture",
+       "evidence_refs": [
+        "sha256:bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb"
+       ],
+       "evidence_refs_total": 1,
+       "execution": {
+        "attempt": null,
+        "bucket": null,
+        "generation": null,
+        "invocation_id": null,
+        "kind": "system",
+        "process_run_id": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+        "role": null,
+        "task_id": null
+       },
+       "observed_at": "2026-09-18T12:00:00+00:00",
+       "observed_at_valid": true,
+       "occurred_at": null,
+       "outcome": "observed",
+       "reason_code": null,
+       "record_kind": "collected",
+       "severity": "error"
+      },
+      {
+       "audit_confirmed": null,
+       "category": "general",
+       "collected_at": "2026-09-18T12:00:00+00:00",
+       "component": "unit",
+       "correlation_id": null,
+       "event_id": "e3",
+       "event_type": "general.fixture",
+       "evidence_refs": [
+        "sha256:bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb"
+       ],
+       "evidence_refs_total": 1,
+       "execution": {
+        "attempt": null,
+        "bucket": null,
+        "generation": null,
+        "invocation_id": null,
+        "kind": "system",
+        "process_run_id": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+        "role": null,
+        "task_id": null
+       },
+       "observed_at": "2026-09-18T11:55:00+00:00",
+       "observed_at_valid": true,
+       "occurred_at": null,
+       "outcome": "observed",
+       "reason_code": null,
+       "record_kind": "collected",
+       "severity": "error"
+      }
+     ],
+     "high_severity_total": 4,
+     "record_kinds": {
+      "audit": 3,
+      "both": 1,
+      "collected": 4
+     },
+     "rows": [
+      {
+       "audit_confirmed": null,
+       "category": "development",
+       "collected_at": "2026-09-18T12:00:00+00:00",
+       "component": "unit",
+       "correlation_id": null,
+       "event_id": "e2",
+       "event_type": "development.fixture",
+       "evidence_refs": [
+        "sha256:bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb"
+       ],
+       "evidence_refs_total": 1,
+       "execution": {
+        "attempt": null,
+        "bucket": null,
+        "generation": null,
+        "invocation_id": null,
+        "kind": "system",
+        "process_run_id": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+        "role": null,
+        "task_id": null
+       },
+       "observed_at": "2026-09-18T12:00:00+00:00",
+       "observed_at_valid": true,
+       "occurred_at": null,
+       "outcome": "observed",
+       "reason_code": null,
+       "record_kind": "collected",
+       "severity": "critical"
+      },
+      {
+       "audit_confirmed": null,
+       "category": "operations",
+       "collected_at": "2026-09-18T12:00:00+00:00",
+       "component": "unit",
+       "correlation_id": null,
+       "event_id": "e4",
+       "event_type": "operations.fixture",
+       "evidence_refs": [
+        "sha256:bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb"
+       ],
+       "evidence_refs_total": 1,
+       "execution": {
+        "attempt": null,
+        "bucket": null,
+        "generation": null,
+        "invocation_id": null,
+        "kind": "system",
+        "process_run_id": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+        "role": null,
+        "task_id": null
+       },
+       "observed_at": "2026-09-18T11:59:00+00:00",
+       "observed_at_valid": true,
+       "occurred_at": null,
+       "outcome": "observed",
+       "reason_code": null,
+       "record_kind": "collected",
+       "severity": "error"
+      },
+      {
+       "audit_confirmed": null,
+       "category": "operations",
+       "collected_at": "2026-09-18T12:00:00+00:00",
+       "component": "unit",
+       "correlation_id": null,
+       "event_id": "e5",
+       "event_type": "operations.fixture",
+       "evidence_refs": [
+        "sha256:bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb"
+       ],
+       "evidence_refs_total": 1,
+       "execution": {
+        "attempt": null,
+        "bucket": null,
+        "generation": null,
+        "invocation_id": null,
+        "kind": "system",
+        "process_run_id": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+        "role": null,
+        "task_id": null
+       },
+       "observed_at": "2026-09-18T12:00:00+00:00",
+       "observed_at_valid": true,
+       "occurred_at": null,
+       "outcome": "observed",
+       "reason_code": null,
+       "record_kind": "collected",
+       "severity": "error"
+      },
+      {
+       "audit_confirmed": null,
+       "category": "general",
+       "collected_at": "2026-09-18T12:00:00+00:00",
+       "component": "unit",
+       "correlation_id": null,
+       "event_id": "e3",
+       "event_type": "general.fixture",
+       "evidence_refs": [
+        "sha256:bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb"
+       ],
+       "evidence_refs_total": 1,
+       "execution": {
+        "attempt": null,
+        "bucket": null,
+        "generation": null,
+        "invocation_id": null,
+        "kind": "system",
+        "process_run_id": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+        "role": null,
+        "task_id": null
+       },
+       "observed_at": "2026-09-18T11:55:00+00:00",
+       "observed_at_valid": true,
+       "occurred_at": null,
+       "outcome": "observed",
+       "reason_code": null,
+       "record_kind": "collected",
+       "severity": "error"
+      },
+      {
+       "audit_confirmed": null,
+       "category": "general",
+       "collected_at": null,
+       "component": "unit",
+       "correlation_id": null,
+       "event_id": "naive",
+       "event_type": "general.fixture",
+       "evidence_refs": [
+        "sha256:bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb"
+       ],
+       "evidence_refs_total": 1,
+       "execution": {
+        "attempt": null,
+        "bucket": null,
+        "generation": null,
+        "invocation_id": null,
+        "kind": "system",
+        "process_run_id": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+        "role": null,
+        "task_id": null
+       },
+       "observed_at": null,
+       "observed_at_valid": false,
+       "occurred_at": null,
+       "outcome": "observed",
+       "reason_code": null,
+       "record_kind": "audit",
+       "severity": "warning"
+      },
+      {
+       "audit_confirmed": null,
+       "category": "operations",
+       "collected_at": "2026-09-18T12:00:00+00:00",
+       "component": "unit",
+       "correlation_id": null,
+       "event_id": "e1",
+       "event_type": "operations.fixture",
+       "evidence_refs": [
+        "sha256:bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb"
+       ],
+       "evidence_refs_total": 1,
+       "execution": {
+        "attempt": null,
+        "bucket": null,
+        "generation": null,
+        "invocation_id": null,
+        "kind": "system",
+        "process_run_id": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+        "role": null,
+        "task_id": null
+       },
+       "observed_at": "2026-09-18T12:00:00+00:00",
+       "observed_at_valid": true,
+       "occurred_at": null,
+       "outcome": "observed",
+       "reason_code": null,
+       "record_kind": "both",
+       "severity": "info"
+      },
+      {
+       "audit_confirmed": null,
+       "category": "general",
+       "collected_at": null,
+       "component": "unit",
+       "correlation_id": null,
+       "event_id": "a1",
+       "event_type": "general.fixture",
+       "evidence_refs": [
+        "sha256:bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb"
+       ],
+       "evidence_refs_total": 1,
+       "execution": {
+        "attempt": null,
+        "bucket": null,
+        "generation": null,
+        "invocation_id": null,
+        "kind": "system",
+        "process_run_id": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+        "role": null,
+        "task_id": null
+       },
+       "observed_at": "2026-09-18T11:51:00+00:00",
+       "observed_at_valid": true,
+       "occurred_at": null,
+       "outcome": "observed",
+       "reason_code": null,
+       "record_kind": "audit",
+       "severity": "debug"
+      },
+      {
+       "audit_confirmed": null,
+       "category": "unknown",
+       "collected_at": null,
+       "component": "unit",
+       "correlation_id": null,
+       "event_id": "bad",
+       "event_type": "weird.fixture",
+       "evidence_refs": [
+        "sha256:bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb"
+       ],
+       "evidence_refs_total": 1,
+       "execution": {
+        "attempt": null,
+        "bucket": null,
+        "generation": null,
+        "invocation_id": null,
+        "kind": "system",
+        "process_run_id": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+        "role": null,
+        "task_id": null
+       },
+       "observed_at": null,
+       "observed_at_valid": false,
+       "occurred_at": null,
+       "outcome": "observed",
+       "reason_code": null,
+       "record_kind": "audit",
+       "severity": "unknown"
+      }
+     ],
+     "rows_limit": 200,
+     "rows_truncated": false,
+     "total": 8,
+     "unknown": {
+      "category": 1,
+      "observed_at": 2,
+      "severity": 1
+     }
+    },
+    "labels": {
+     "development": "개발",
+     "general": "일반·디버깅",
+     "operations": "운영"
+    },
+    "local": {
+     "reason": "runtime_not_configured",
+     "status": "unavailable"
+    },
+    "observed_at": "2026-09-18T12:00:00+00:00",
+    "operations": {
+     "by_status": {},
+     "rows": [],
+     "rows_truncated": false,
+     "total": 0
+    },
+    "quarantine": {
+     "by_reason": {},
+     "total": 0
+    },
+    "sample": {
+     "buckets": {
+      "observation_alerts": {
+       "limit": 2000,
+       "scanned": 0,
+       "truncated": false
+      },
+      "observation_audit": {
+       "limit": 2000,
+       "scanned": 4,
+       "truncated": false
+      },
+      "observation_collections": {
+       "limit": 2000,
+       "scanned": 0,
+       "truncated": false
+      },
+      "observation_quarantine": {
+       "limit": 2000,
+       "scanned": 0,
+       "truncated": false
+      },
+      "observation_terminations": {
+       "limit": 2000,
+       "scanned": 0,
+       "truncated": false
+      },
+      "observations": {
+       "limit": 2000,
+       "scanned": 5,
+       "truncated": false
+      },
+      "operations": {
+       "limit": 2000,
+       "scanned": 0,
+       "truncated": false
+      }
+     },
+     "limit_per_bucket": 2000,
+     "note": "counts describe the sampled stored rows, not lifetime totals; stored rows do not prove every expected event was emitted",
+     "selection": "first rows in store id order",
+     "truncated": false
+    },
+    "schema": "harness-monitor-observations.v1",
+    "terminations": {
+     "by_status": {},
+     "pending": 0
+    }
+   },
+   "store_unchanged": true
+  },
+  "reads_only": true,
+  "runtime": {
+   "missing_dir": {
+    "reason": "directory_missing",
+    "status": "unavailable"
+   },
+   "none": {
+    "reason": "runtime_not_configured",
+    "status": "unavailable"
+   },
+   "populated": {
+    "health": [
+     {
+      "component": "exec",
+      "dropped": {
+       "alerts_pending_dropped": 4,
+       "dropped_run_refused": 3,
+       "dropped_spool_full": 2,
+       "refused": 0,
+       "spool_failures": 1
+      },
+      "last_defect": "password=[REDACTED credential]",
+      "limit_bytes": 20,
+      "pending_alerts": 2,
+      "process_run_id": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+      "role": "worker",
+      "sink": "unavailable",
+      "unacknowledged_bytes": 10,
+      "unreadable": false,
+      "updated_at": "2026-09-18T12:00:00+00:00"
+     },
+     {
+      "component": "cccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccc",
+      "dropped": {
+       "alerts_pending_dropped": null,
+       "dropped_run_refused": null,
+       "dropped_spool_full": null,
+       "refused": null,
+       "spool_failures": null
+      },
+      "last_defect": null,
+      "limit_bytes": null,
+      "pending_alerts": 0,
+      "process_run_id": "bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb",
+      "role": null,
+      "sink": "available",
+      "unacknowledged_bytes": null,
+      "unreadable": false,
+      "updated_at": null
+     },
+     {
+      "component": null,
+      "dropped": {
+       "alerts_pending_dropped": null,
+       "dropped_run_refused": null,
+       "dropped_spool_full": null,
+       "refused": null,
+       "spool_failures": null
+      },
+      "last_defect": null,
+      "limit_bytes": null,
+      "pending_alerts": 0,
+      "process_run_id": "cccccccccccccccccccccccccccccccc",
+      "role": null,
+      "sink": null,
+      "unacknowledged_bytes": null,
+      "unreadable": true,
+      "updated_at": null
+     }
+    ],
+    "health_total": 3,
+    "pending_alert_files": {
+     "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa": 2,
+     "bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb": 1
+    },
+    "pending_alerts": 3,
+    "pending_terminations": 2,
+    "segments": 2,
+    "status": "ok",
+    "unacknowledged_bytes": 1124,
+    "unreadable_terminations": 1
+   },
+   "populated_str": {
+    "health": [
+     {
+      "component": "exec",
+      "dropped": {
+       "alerts_pending_dropped": 4,
+       "dropped_run_refused": 3,
+       "dropped_spool_full": 2,
+       "refused": 0,
+       "spool_failures": 1
+      },
+      "last_defect": "password=[REDACTED credential]",
+      "limit_bytes": 20,
+      "pending_alerts": 2,
+      "process_run_id": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+      "role": "worker",
+      "sink": "unavailable",
+      "unacknowledged_bytes": 10,
+      "unreadable": false,
+      "updated_at": "2026-09-18T12:00:00+00:00"
+     },
+     {
+      "component": "cccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccc",
+      "dropped": {
+       "alerts_pending_dropped": null,
+       "dropped_run_refused": null,
+       "dropped_spool_full": null,
+       "refused": null,
+       "spool_failures": null
+      },
+      "last_defect": null,
+      "limit_bytes": null,
+      "pending_alerts": 0,
+      "process_run_id": "bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb",
+      "role": null,
+      "sink": "available",
+      "unacknowledged_bytes": null,
+      "unreadable": false,
+      "updated_at": null
+     },
+     {
+      "component": null,
+      "dropped": {
+       "alerts_pending_dropped": null,
+       "dropped_run_refused": null,
+       "dropped_spool_full": null,
+       "refused": null,
+       "spool_failures": null
+      },
+      "last_defect": null,
+      "limit_bytes": null,
+      "pending_alerts": 0,
+      "process_run_id": "cccccccccccccccccccccccccccccccc",
+      "role": null,
+      "sink": null,
+      "unacknowledged_bytes": null,
+      "unreadable": true,
+      "updated_at": null
+     }
+    ],
+    "health_total": 3,
+    "pending_alert_files": {
+     "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa": 2,
+     "bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb": 1
+    },
+    "pending_alerts": 3,
+    "pending_terminations": 2,
+    "segments": 2,
+    "status": "ok",
+    "unacknowledged_bytes": 1124,
+    "unreadable_terminations": 1
+   }
+  },
+  "separate_buckets": {
+   "canary_leaked": false,
+   "facts": {
+    "alerts": {
+     "by_status": {
+      "pending": 1,
+      "recorded": 1,
+      "unknown": 2
+     },
+     "recorded": 4
+    },
+    "authority": "informational_only",
+    "collection": {
+     "lag_seconds": 90.0,
+     "last": {
+      "confirmed_audits": null,
+      "conflicts": null,
+      "corrupt": null,
+      "duplicates": 1,
+      "file": "a.jsonl",
+      "inserted": 2,
+      "records": 3,
+      "refused": null,
+      "truncated_tail": null,
+      "unconfirmed_audits": null
+     },
+     "last_at": "2026-09-18T11:58:30+00:00",
+     "receipts": 3,
+     "receipts_with_time": 2
+    },
+    "events": {
+     "by_category": {},
+     "by_outcome": {},
+     "by_severity": {},
+     "high_severity": [],
+     "high_severity_total": 0,
+     "record_kinds": {},
+     "rows": [],
+     "rows_limit": 200,
+     "rows_truncated": false,
+     "total": 0,
+     "unknown": {
+      "category": 0,
+      "observed_at": 0,
+      "severity": 0
+     }
+    },
+    "labels": {
+     "development": "개발",
+     "general": "일반·디버깅",
+     "operations": "운영"
+    },
+    "local": {
+     "reason": "runtime_not_configured",
+     "status": "unavailable"
+    },
+    "observed_at": "2026-09-18T12:00:00+00:00",
+    "operations": {
+     "by_status": {
+      "failed": 1,
+      "unknown": 1
+     },
+     "rows": [
+      {
+       "correlation_id": null,
+       "criterion": "c",
+       "decision_id": null,
+       "id": "op",
+       "lead_accepted": null,
+       "reason_code": "evidence_gate_refused",
+       "status": "failed",
+       "task_id": "task"
+      },
+      {
+       "correlation_id": null,
+       "criterion": "token=[REDACTED credential] <img onerror=x>",
+       "decision_id": null,
+       "id": "op2",
+       "lead_accepted": null,
+       "reason_code": null,
+       "status": null,
+       "task_id": null
+      }
+     ],
+     "rows_truncated": false,
+     "total": 2
+    },
+    "quarantine": {
+     "by_reason": {
+      "corrupt_record": 1,
+      "unknown": 1
+     },
+     "total": 2
+    },
+    "sample": {
+     "buckets": {
+      "observation_alerts": {
+       "limit": 2000,
+       "scanned": 4,
+       "truncated": false
+      },
+      "observation_audit": {
+       "limit": 2000,
+       "scanned": 0,
+       "truncated": false
+      },
+      "observation_collections": {
+       "limit": 2000,
+       "scanned": 3,
+       "truncated": false
+      },
+      "observation_quarantine": {
+       "limit": 2000,
+       "scanned": 2,
+       "truncated": false
+      },
+      "observation_terminations": {
+       "limit": 2000,
+       "scanned": 4,
+       "truncated": false
+      },
+      "observations": {
+       "limit": 2000,
+       "scanned": 0,
+       "truncated": false
+      },
+      "operations": {
+       "limit": 2000,
+       "scanned": 2,
+       "truncated": false
+      }
+     },
+     "limit_per_bucket": 2000,
+     "note": "counts describe the sampled stored rows, not lifetime totals; stored rows do not prove every expected event was emitted",
+     "selection": "first rows in store id order",
+     "truncated": false
+    },
+    "schema": "harness-monitor-observations.v1",
+    "terminations": {
+     "by_status": {
+      "closed": 1,
+      "pending_reconciliation": 1,
+      "unconfirmed": 1,
+      "unknown": 1
+     },
+     "pending": 2
+    }
+   }
+  },
+  "store_failure": {
+   "message": "injected observation outage",
+   "refused": "RuntimeError"
+  }
+ },
+ "parse_time": [
+  {
+   "input": "'2026-09-18T12:00:00+00:00'",
+   "result": "2026-09-18T12:00:00+00:00",
+   "utcoffset": 0.0
+  },
+  {
+   "input": "'2026-09-18T12:00:00Z'",
+   "result": "2026-09-18T12:00:00+00:00",
+   "utcoffset": 0.0
+  },
+  {
+   "input": "'2026-09-18T21:00:00+09:00'",
+   "result": "2026-09-18T21:00:00+09:00",
+   "utcoffset": 32400.0
+  },
+  {
+   "input": "'2026-09-18T12:00:00.123456+00:00'",
+   "result": "2026-09-18T12:00:00.123456+00:00",
+   "utcoffset": 0.0
+  },
+  {
+   "input": "'2026-09-18T12:00:00'",
+   "result": null,
+   "utcoffset": null
+  },
+  {
+   "input": "'2026-09-18'",
+   "result": null,
+   "utcoffset": null
+  },
+  {
+   "input": "'20260918T120000+0000'",
+   "result": "2026-09-18T12:00:00+00:00",
+   "utcoffset": 0.0
+  },
+  {
+   "input": "'not-a-time'",
+   "result": null,
+   "utcoffset": null
+  },
+  {
+   "input": "''",
+   "result": null,
+   "utcoffset": null
+  },
+  {
+   "input": "None",
+   "result": null,
+   "utcoffset": null
+  },
+  {
+   "input": "5",
+   "result": null,
+   "utcoffset": null
+  },
+  {
+   "input": "5.5",
+   "result": null,
+   "utcoffset": null
+  },
+  {
+   "input": "['x']",
+   "result": null,
+   "utcoffset": null
+  },
+  {
+   "input": "{}",
+   "result": null,
+   "utcoffset": null
+  },
+  {
+   "input": "True",
+   "result": null,
+   "utcoffset": null
+  },
+  {
+   "input": "b'2026-09-18T12:00:00+00:00'",
+   "result": null,
+   "utcoffset": null
+  },
+  {
+   "input": "' 2026-09-18T12:00:00+00:00'",
+   "result": null,
+   "utcoffset": null
+  }
+ ],
+ "project_event": {
+  "audit_unconfirmed": {
+   "value": {
+    "audit_confirmed": false,
+    "category": "development",
+    "collected_at": null,
+    "component": "unit",
+    "correlation_id": null,
+    "event_id": "a",
+    "event_type": "development.fixture",
+    "evidence_refs": [
+     "sha256:bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb"
+    ],
+    "evidence_refs_total": 1,
+    "execution": {
+     "attempt": null,
+     "bucket": null,
+     "generation": null,
+     "invocation_id": null,
+     "kind": "system",
+     "process_run_id": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+     "role": null,
+     "task_id": null
+    },
+    "observed_at": "2026-09-18T12:00:00+00:00",
+    "observed_at_valid": true,
+    "occurred_at": null,
+    "outcome": "observed",
+    "reason_code": null,
+    "record_kind": "audit",
+    "severity": "info"
+   }
+  },
+  "bad_observed": {
+   "value": {
+    "audit_confirmed": null,
+    "category": "development",
+    "collected_at": null,
+    "component": "unit",
+    "correlation_id": null,
+    "event_id": "b",
+    "event_type": "development.fixture",
+    "evidence_refs": [
+     "sha256:bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb"
+    ],
+    "evidence_refs_total": 1,
+    "execution": {
+     "attempt": null,
+     "bucket": null,
+     "generation": null,
+     "invocation_id": null,
+     "kind": "system",
+     "process_run_id": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+     "role": null,
+     "task_id": null
+    },
+    "observed_at": null,
+    "observed_at_valid": false,
+    "occurred_at": null,
+    "outcome": "observed",
+    "reason_code": null,
+    "record_kind": "audit",
+    "severity": "info"
+   }
+  },
+  "bad_severity_category": {
+   "value": {
+    "audit_confirmed": null,
+    "category": "unknown",
+    "collected_at": null,
+    "component": "unit",
+    "correlation_id": null,
+    "event_id": "bad",
+    "event_type": "weird.fixture",
+    "evidence_refs": [
+     "sha256:bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb"
+    ],
+    "evidence_refs_total": 1,
+    "execution": {
+     "attempt": null,
+     "bucket": null,
+     "generation": null,
+     "invocation_id": null,
+     "kind": "system",
+     "process_run_id": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+     "role": null,
+     "task_id": null
+    },
+    "observed_at": "2026-09-18T12:00:00+00:00",
+    "observed_at_valid": true,
+    "occurred_at": null,
+    "outcome": "observed",
+    "reason_code": null,
+    "record_kind": "audit",
+    "severity": "unknown"
+   }
+  },
+  "bool_attempt": {
+   "value": {
+    "audit_confirmed": null,
+    "category": "development",
+    "collected_at": null,
+    "component": "unit",
+    "correlation_id": null,
+    "event_id": "t",
+    "event_type": "development.fixture",
+    "evidence_refs": [
+     "sha256:bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb"
+    ],
+    "evidence_refs_total": 1,
+    "execution": {
+     "attempt": null,
+     "bucket": "bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb",
+     "generation": null,
+     "invocation_id": null,
+     "kind": "kkkkkkkkkkkkkkkkkkkk",
+     "process_run_id": null,
+     "role": null,
+     "task_id": null
+    },
+    "observed_at": "2026-09-18T12:00:00+00:00",
+    "observed_at_valid": true,
+    "occurred_at": null,
+    "outcome": "observed",
+    "reason_code": null,
+    "record_kind": "audit",
+    "severity": "info"
+   }
+  },
+  "canary_leaked": false,
+  "credentials": {
+   "value": {
+    "audit_confirmed": null,
+    "category": "development",
+    "collected_at": null,
+    "component": "api_key=[REDACTED credential]",
+    "correlation_id": "token=[REDACTED credential]",
+    "event_id": "c",
+    "event_type": "development.fixture",
+    "evidence_refs": [
+     "sha256:bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb"
+    ],
+    "evidence_refs_total": 1,
+    "execution": {
+     "attempt": null,
+     "bucket": null,
+     "generation": null,
+     "invocation_id": null,
+     "kind": "system",
+     "process_run_id": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+     "role": null,
+     "task_id": null
+    },
+    "observed_at": "2026-09-18T12:00:00+00:00",
+    "observed_at_valid": true,
+    "occurred_at": null,
+    "outcome": "observed",
+    "reason_code": "password=[REDACTED credential]",
+    "record_kind": "audit",
+    "severity": "info"
+   }
+  },
+  "empty": {
+   "value": {
+    "audit_confirmed": null,
+    "category": "unknown",
+    "collected_at": null,
+    "component": null,
+    "correlation_id": null,
+    "event_id": null,
+    "event_type": null,
+    "evidence_refs": [],
+    "evidence_refs_total": 0,
+    "execution": {
+     "attempt": null,
+     "bucket": null,
+     "generation": null,
+     "invocation_id": null,
+     "kind": null,
+     "process_run_id": null,
+     "role": null,
+     "task_id": null
+    },
+    "observed_at": null,
+    "observed_at_valid": false,
+    "occurred_at": null,
+    "outcome": null,
+    "reason_code": null,
+    "record_kind": "audit",
+    "severity": "unknown"
+   }
+  },
+  "extra_keys_dropped": {
+   "value": {
+    "audit_confirmed": null,
+    "category": "development",
+    "collected_at": null,
+    "component": "unit",
+    "correlation_id": null,
+    "event_id": "x",
+    "event_type": "development.fixture",
+    "evidence_refs": [
+     "sha256:bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb"
+    ],
+    "evidence_refs_total": 1,
+    "execution": {
+     "attempt": null,
+     "bucket": null,
+     "generation": null,
+     "invocation_id": null,
+     "kind": "system",
+     "process_run_id": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+     "role": null,
+     "task_id": null
+    },
+    "observed_at": "2026-09-18T12:00:00+00:00",
+    "observed_at_valid": true,
+    "occurred_at": null,
+    "outcome": "observed",
+    "reason_code": null,
+    "record_kind": "audit",
+    "severity": "info"
+   }
+  },
+  "full": {
+   "value": {
+    "audit_confirmed": true,
+    "category": "operations",
+    "collected_at": "2026-09-18T12:00:00+00:00",
+    "component": "unit",
+    "correlation_id": "corr-1",
+    "event_id": "e1",
+    "event_type": "operations.fixture",
+    "evidence_refs": [
+     "sha256:bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb"
+    ],
+    "evidence_refs_total": 1,
+    "execution": {
+     "attempt": 2,
+     "bucket": "tasks",
+     "generation": 3,
+     "invocation_id": "inv",
+     "kind": "lease",
+     "process_run_id": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+     "role": "worker",
+     "task_id": "t1"
+    },
+    "observed_at": "2026-09-18T12:00:00+00:00",
+    "observed_at_valid": true,
+    "occurred_at": "2026-09-18T12:00:00+00:00",
+    "outcome": "observed",
+    "reason_code": "r",
+    "record_kind": "audit",
+    "severity": "error"
+   }
+  },
+  "kinds": {
+   "'audit'": "audit",
+   "'both'": "both",
+   "'collected'": "collected",
+   "'event'": "event",
+   "None": null
+  },
+  "long_text": {
+   "value": {
+    "audit_confirmed": null,
+    "category": "development",
+    "collected_at": null,
+    "component": "unit",
+    "correlation_id": "cccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccc",
+    "event_id": "llllllllllllllllllllllllllllllllllllllllllllllllllllllllllllllllllllllllllllllllllllllllllllllllllllllllllllllllllllllllllllllllllllllllllllllllllllllllllllllllllllllllllllllllllllllllllllllllllllllll",
+    "event_type": "development.fixture",
+    "evidence_refs": [
+     "sha256:bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb"
+    ],
+    "evidence_refs_total": 1,
+    "execution": {
+     "attempt": null,
+     "bucket": null,
+     "generation": null,
+     "invocation_id": null,
+     "kind": "system",
+     "process_run_id": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+     "role": null,
+     "task_id": null
+    },
+    "observed_at": "2026-09-18T12:00:00+00:00",
+    "observed_at_valid": true,
+    "occurred_at": null,
+    "outcome": "oooooooooooooooooooooooooooooooooooooooo",
+    "reason_code": "zzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzz",
+    "record_kind": "audit",
+    "severity": "info"
+   }
+  },
+  "missing_observed": {
+   "value": {
+    "audit_confirmed": null,
+    "category": "development",
+    "collected_at": null,
+    "component": "unit",
+    "correlation_id": null,
+    "event_id": "m",
+    "event_type": "development.fixture",
+    "evidence_refs": [
+     "sha256:bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb"
+    ],
+    "evidence_refs_total": 1,
+    "execution": {
+     "attempt": null,
+     "bucket": null,
+     "generation": null,
+     "invocation_id": null,
+     "kind": "system",
+     "process_run_id": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+     "role": null,
+     "task_id": null
+    },
+    "observed_at": null,
+    "observed_at_valid": false,
+    "occurred_at": null,
+    "outcome": "observed",
+    "reason_code": null,
+    "record_kind": "audit",
+    "severity": "info"
+   }
+  },
+  "naive_observed": {
+   "value": {
+    "audit_confirmed": null,
+    "category": "development",
+    "collected_at": null,
+    "component": "unit",
+    "correlation_id": null,
+    "event_id": "n",
+    "event_type": "development.fixture",
+    "evidence_refs": [
+     "sha256:bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb"
+    ],
+    "evidence_refs_total": 1,
+    "execution": {
+     "attempt": null,
+     "bucket": null,
+     "generation": null,
+     "invocation_id": null,
+     "kind": "system",
+     "process_run_id": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+     "role": null,
+     "task_id": null
+    },
+    "observed_at": null,
+    "observed_at_valid": false,
+    "occurred_at": null,
+    "outcome": "observed",
+    "reason_code": null,
+    "record_kind": "audit",
+    "severity": "info"
+   }
+  },
+  "non_dict_execution": {
+   "value": {
+    "audit_confirmed": null,
+    "category": "development",
+    "collected_at": null,
+    "component": null,
+    "correlation_id": null,
+    "event_id": "e",
+    "event_type": "development.fixture",
+    "evidence_refs": [
+     "sha256:bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb"
+    ],
+    "evidence_refs_total": 1,
+    "execution": {
+     "attempt": null,
+     "bucket": null,
+     "generation": null,
+     "invocation_id": null,
+     "kind": null,
+     "process_run_id": null,
+     "role": null,
+     "task_id": null
+    },
+    "observed_at": "2026-09-18T12:00:00+00:00",
+    "observed_at_valid": true,
+    "occurred_at": null,
+    "outcome": "observed",
+    "reason_code": null,
+    "record_kind": "audit",
+    "severity": "info"
+   }
+  },
+  "non_dict_row": [
+   {
+    "message": "'NoneType' object has no attribute 'get'",
+    "refused": "AttributeError"
+   },
+   {
+    "message": "'list' object has no attribute 'get'",
+    "refused": "AttributeError"
+   },
+   {
+    "message": "'str' object has no attribute 'get'",
+    "refused": "AttributeError"
+   },
+   {
+    "message": "'int' object has no attribute 'get'",
+    "refused": "AttributeError"
+   }
+  ],
+  "nothing_known": {
+   "value": {
+    "audit_confirmed": null,
+    "category": "unknown",
+    "collected_at": null,
+    "component": null,
+    "correlation_id": null,
+    "event_id": null,
+    "event_type": null,
+    "evidence_refs": [],
+    "evidence_refs_total": 0,
+    "execution": {
+     "attempt": null,
+     "bucket": null,
+     "generation": null,
+     "invocation_id": null,
+     "kind": null,
+     "process_run_id": null,
+     "role": null,
+     "task_id": null
+    },
+    "observed_at": null,
+    "observed_at_valid": false,
+    "occurred_at": null,
+    "outcome": null,
+    "reason_code": null,
+    "record_kind": "audit",
+    "severity": "unknown"
+   }
+  },
+  "occurred_collected_bad": {
+   "value": {
+    "audit_confirmed": null,
+    "category": "development",
+    "collected_at": null,
+    "component": "unit",
+    "correlation_id": null,
+    "event_id": "o",
+    "event_type": "development.fixture",
+    "evidence_refs": [
+     "sha256:bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb"
+    ],
+    "evidence_refs_total": 1,
+    "execution": {
+     "attempt": null,
+     "bucket": null,
+     "generation": null,
+     "invocation_id": null,
+     "kind": "system",
+     "process_run_id": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+     "role": null,
+     "task_id": null
+    },
+    "observed_at": "2026-09-18T12:00:00+00:00",
+    "observed_at_valid": true,
+    "occurred_at": null,
+    "outcome": "observed",
+    "reason_code": null,
+    "record_kind": "audit",
+    "severity": "info"
+   }
+  },
+  "refs_dict": {
+   "value": {
+    "audit_confirmed": null,
+    "category": "development",
+    "collected_at": null,
+    "component": "unit",
+    "correlation_id": null,
+    "event_id": "r4",
+    "event_type": "development.fixture",
+    "evidence_refs": [
+     "a"
+    ],
+    "evidence_refs_total": 1,
+    "execution": {
+     "attempt": null,
+     "bucket": null,
+     "generation": null,
+     "invocation_id": null,
+     "kind": "system",
+     "process_run_id": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+     "role": null,
+     "task_id": null
+    },
+    "observed_at": "2026-09-18T12:00:00+00:00",
+    "observed_at_valid": true,
+    "occurred_at": null,
+    "outcome": "observed",
+    "reason_code": null,
+    "record_kind": "audit",
+    "severity": "info"
+   }
+  },
+  "refs_empty": {
+   "value": {
+    "audit_confirmed": null,
+    "category": "development",
+    "collected_at": null,
+    "component": "unit",
+    "correlation_id": null,
+    "event_id": "r5",
+    "event_type": "development.fixture",
+    "evidence_refs": [],
+    "evidence_refs_total": 0,
+    "execution": {
+     "attempt": null,
+     "bucket": null,
+     "generation": null,
+     "invocation_id": null,
+     "kind": "system",
+     "process_run_id": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+     "role": null,
+     "task_id": null
+    },
+    "observed_at": "2026-09-18T12:00:00+00:00",
+    "observed_at_valid": true,
+    "occurred_at": null,
+    "outcome": "observed",
+    "reason_code": null,
+    "record_kind": "audit",
+    "severity": "info"
+   }
+  },
+  "refs_filtered": {
+   "value": {
+    "audit_confirmed": null,
+    "category": "development",
+    "collected_at": null,
+    "component": "unit",
+    "correlation_id": null,
+    "event_id": "r",
+    "event_type": "development.fixture",
+    "evidence_refs": [
+     "sha256:cccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccc",
+     "ok-ref",
+     "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+     "ref0",
+     "ref1",
+     "ref2",
+     "ref3",
+     "ref4"
+    ],
+    "evidence_refs_total": 15,
+    "execution": {
+     "attempt": null,
+     "bucket": null,
+     "generation": null,
+     "invocation_id": null,
+     "kind": "system",
+     "process_run_id": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+     "role": null,
+     "task_id": null
+    },
+    "observed_at": "2026-09-18T12:00:00+00:00",
+    "observed_at_valid": true,
+    "occurred_at": null,
+    "outcome": "observed",
+    "reason_code": null,
+    "record_kind": "audit",
+    "severity": "info"
+   }
+  },
+  "refs_none": {
+   "value": {
+    "audit_confirmed": null,
+    "category": "development",
+    "collected_at": null,
+    "component": "unit",
+    "correlation_id": null,
+    "event_id": "r2",
+    "event_type": "development.fixture",
+    "evidence_refs": [],
+    "evidence_refs_total": 0,
+    "execution": {
+     "attempt": null,
+     "bucket": null,
+     "generation": null,
+     "invocation_id": null,
+     "kind": "system",
+     "process_run_id": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+     "role": null,
+     "task_id": null
+    },
+    "observed_at": "2026-09-18T12:00:00+00:00",
+    "observed_at_valid": true,
+    "occurred_at": null,
+    "outcome": "observed",
+    "reason_code": null,
+    "record_kind": "audit",
+    "severity": "info"
+   }
+  },
+  "refs_string": {
+   "value": {
+    "audit_confirmed": null,
+    "category": "development",
+    "collected_at": null,
+    "component": "unit",
+    "correlation_id": null,
+    "event_id": "r3",
+    "event_type": "development.fixture",
+    "evidence_refs": [
+     "a",
+     "b",
+     "c"
+    ],
+    "evidence_refs_total": 3,
+    "execution": {
+     "attempt": null,
+     "bucket": null,
+     "generation": null,
+     "invocation_id": null,
+     "kind": "system",
+     "process_run_id": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+     "role": null,
+     "task_id": null
+    },
+    "observed_at": "2026-09-18T12:00:00+00:00",
+    "observed_at_valid": true,
+    "occurred_at": null,
+    "outcome": "observed",
+    "reason_code": null,
+    "record_kind": "audit",
+    "severity": "info"
+   }
+  },
+  "unhashable_severity": {
+   "value": {
+    "audit_confirmed": null,
+    "category": "general",
+    "collected_at": null,
+    "component": "unit",
+    "correlation_id": null,
+    "event_id": "u",
+    "event_type": "general.fixture",
+    "evidence_refs": [
+     "sha256:bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb"
+    ],
+    "evidence_refs_total": 1,
+    "execution": {
+     "attempt": null,
+     "bucket": null,
+     "generation": null,
+     "invocation_id": null,
+     "kind": "system",
+     "process_run_id": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+     "role": null,
+     "task_id": null
+    },
+    "observed_at": "2026-09-18T12:00:00+00:00",
+    "observed_at_valid": true,
+    "occurred_at": null,
+    "outcome": "observed",
+    "reason_code": null,
+    "record_kind": "audit",
+    "severity": "unknown"
+   }
+  }
+ },
+ "project_operation": {
+  "canary_leaked": false,
+  "credential": {
+   "value": {
+    "correlation_id": null,
+    "criterion": "token=[REDACTED credential] <img onerror=x>",
+    "decision_id": null,
+    "id": "o",
+    "lead_accepted": null,
+    "reason_code": null,
+    "status": null,
+    "task_id": null
+   }
+  },
+  "empty": {
+   "value": {
+    "correlation_id": null,
+    "criterion": null,
+    "decision_id": null,
+    "id": null,
+    "lead_accepted": null,
+    "reason_code": null,
+    "status": null,
+    "task_id": null
+   }
+  },
+  "full": {
+   "value": {
+    "correlation_id": "corr",
+    "criterion": "c",
+    "decision_id": "d",
+    "id": "op",
+    "lead_accepted": true,
+    "reason_code": "evidence_gate_refused",
+    "status": "failed",
+    "task_id": "task"
+   }
+  },
+  "lead_accepted_false": {
+   "value": {
+    "correlation_id": null,
+    "criterion": null,
+    "decision_id": null,
+    "id": "o",
+    "lead_accepted": false,
+    "reason_code": null,
+    "status": null,
+    "task_id": null
+   }
+  },
+  "long": {
+   "value": {
+    "correlation_id": null,
+    "criterion": "gggggggggggggggggggggggggggggggggggggggggggggggggggggggggggggggggggggggggggggggggggggggggggggggggggggggggggggggggggggggggggggggggggggggggggggggggggggggggggggggggggggggggggggggggggggggggggggggggggggggg",
+    "decision_id": null,
+    "id": "iiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiii",
+    "lead_accepted": null,
+    "reason_code": "rrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrr",
+    "status": "ssssssssssssssssssssssssssssssssssssssss",
+    "task_id": null
+   }
+  },
+  "non_dict_goal": {
+   "value": {
+    "correlation_id": null,
+    "criterion": null,
+    "decision_id": null,
+    "id": "o",
+    "lead_accepted": null,
+    "reason_code": null,
+    "status": null,
+    "task_id": null
+   }
+  },
+  "non_dict_row": [
+   {
+    "message": "'NoneType' object has no attribute 'get'",
+    "refused": "AttributeError"
+   },
+   {
+    "message": "'str' object has no attribute 'get'",
+    "refused": "AttributeError"
+   },
+   {
+    "message": "'list' object has no attribute 'get'",
+    "refused": "AttributeError"
+   }
+  ],
+  "non_string": {
+   "value": {
+    "correlation_id": null,
+    "criterion": null,
+    "decision_id": null,
+    "id": null,
+    "lead_accepted": null,
+    "reason_code": null,
+    "status": null,
+    "task_id": null
+   }
+  },
+  "none_goal": {
+   "value": {
+    "correlation_id": null,
+    "criterion": null,
+    "decision_id": null,
+    "id": "o",
+    "lead_accepted": null,
+    "reason_code": null,
+    "status": null,
+    "task_id": null
+   }
+  }
+ },
+ "scan_bounded": {
+  "default_big": {
+   "digest": "1ef46dec86216c09ea9344d836b5c16a1de9ce19047c5c7a1cf6715e0a451902",
+   "first": {
+    "n": 0
+   },
+   "last": {
+    "n": 1999
+   },
+   "len": 2000,
+   "meta": {
+    "limit": 2000,
+    "scanned": 2000,
+    "truncated": true
+   }
+  },
+  "empty": {
+   "meta": {
+    "limit": 5,
+    "scanned": 0,
+    "truncated": false
+   },
+   "n": []
+  },
+  "exactly_limit": {
+   "meta": {
+    "limit": 5,
+    "scanned": 5,
+    "truncated": false
+   },
+   "n": [
+    0,
+    1,
+    2,
+    3,
+    4
+   ]
+  },
+  "fewer_than_limit": {
+   "meta": {
+    "limit": 10,
+    "scanned": 5,
+    "truncated": false
+   },
+   "n": [
+    0,
+    1,
+    2,
+    3,
+    4
+   ]
+  },
+  "limit_one": {
+   "meta": {
+    "limit": 1,
+    "scanned": 1,
+    "truncated": true
+   },
+   "n": [
+    0
+   ]
+  },
+  "limit_plus_one": {
+   "meta": {
+    "limit": 6,
+    "scanned": 6,
+    "truncated": true
+   },
+   "n": [
+    0,
+    1,
+    2,
+    3,
+    4,
+    5
+   ]
+  },
+  "limit_plus_one_big_page": {
+   "meta": {
+    "limit": 6,
+    "scanned": 6,
+    "truncated": true
+   },
+   "n": [
+    0,
+    1,
+    2,
+    3,
+    4,
+    5
+   ]
+  },
+  "limit_zero": {
+   "meta": {
+    "limit": 0,
+    "scanned": 0,
+    "truncated": true
+   },
+   "n": []
+  },
+  "page_equals_limit": {
+   "meta": {
+    "limit": 4,
+    "scanned": 4,
+    "truncated": true
+   },
+   "n": [
+    0,
+    1,
+    2,
+    3
+   ]
+  },
+  "page_one": {
+   "meta": {
+    "limit": 3,
+    "scanned": 3,
+    "truncated": true
+   },
+   "n": [
+    0,
+    1,
+    2
+   ]
+  },
+  "page_zero": {
+   "message": "list index out of range",
+   "refused": "IndexError"
+  }
+ },
+ "text": {
+  "constants": {
+   "BUCKET_LIMIT": 2000,
+   "CATEGORY_LABELS": {
+    "development": "개발",
+    "general": "일반·디버깅",
+    "operations": "운영"
+   },
+   "CATEGORY_RANK": {
+    "development": 1,
+    "general": 2,
+    "operations": 0
+   },
+   "HIGH_LIMIT": 50,
+   "OPERATION_BUCKET": "operations",
+   "OPERATION_LIMIT": 100,
+   "PAGE": 500,
+   "PENDING_TERMINATION": [
+    "pending_reconciliation",
+    "unconfirmed"
+   ],
+   "REFS_LIMIT": 8,
+   "ROW_LIMIT": 200,
+   "SCHEMA": "harness-monitor-observations.v1",
+   "SEVERITY_RANK": {
+    "critical": 4,
+    "debug": 0,
+    "error": 3,
+    "info": 1,
+    "warning": 2
+   },
+   "TEXT_LIMIT": 200
+  },
+  "default_limit": [
+   {
+    "value": null
+   },
+   {
+    "value": null
+   },
+   {
+    "value": null
+   },
+   {
+    "value": null
+   },
+   {
+    "value": null
+   },
+   {
+    "value": null
+   },
+   {
+    "value": null
+   },
+   {
+    "value": ""
+   },
+   {
+    "value": "plain"
+   },
+   {
+    "value": "xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx"
+   },
+   {
+    "value": "token=[REDACTED credential]"
+   },
+   {
+    "value": "password=[REDACTED credential] tail"
+   },
+   {
+    "value": "[REDACTED token]"
+   },
+   {
+    "value": "한글 라벨 가가가가가가가가가가가가가가가가가가가가가가가가가가가가가가가가가가가가가가가가가가가가가가가가가가가가가가가가가가가가가가가가가가가가가가가가가가가가가가가가가가가가가가가가가가가가가가가가가가가가가가가가가가가가가가가가가가가가가가가가가가가가가가가가가가가가가가가가가가가가가가가가가가가가가가가가가가가가가가가가가가가가가가가가가가가가가가가가가가가가가가가가가가가가가가가가가가"
+   },
+   {
+    "value": "line1\nline2"
+   },
+   {
+    "value": "<script>alert(1)</script>"
+   }
+  ],
+  "limit_20": [
+   {
+    "value": "plain"
+   },
+   {
+    "value": "xxxxxxxxxxxxxxxxxxxx"
+   },
+   {
+    "value": "token=[REDACTED cred"
+   },
+   {
+    "value": "password=[REDACTED c"
+   }
+  ],
+  "limit_negative": {
+   "value": "abcd"
+  },
+  "limit_none": {
+   "value": "abc"
+  },
+  "limit_zero": {
+   "value": ""
+  },
+  "redaction_before_truncation": {
+   "value": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaapassword=C"
+  }
+ }
+}
