@@ -1,0 +1,5336 @@
+{
+ "branch_coverage": {
+  "KeyError/other faults propagate unchanged (no except in the module)": "s7_execute_role.not_mapped",
+  "_object, _enum, _limited, _limits, _listed, _claim, _question (one return each)": "s1_tables.helpers",
+  "admitted_delivery require(action == 'dge_role' and read_only is True)": "s4_admitted_delivery.wrong_action, not_read_only",
+  "admitted_delivery require(delivery == council_delivery(role, details))": "s4_admitted_delivery.delivery_of_another_role, trimmed_inline, foreign_task_details, inflated_inline, edited_wrapper",
+  "admitted_delivery require(role in COUNCIL_DEBATE_ROLES, 'names no debate role')": "s4_admitted_delivery.role_not_a_debate_role",
+  "admitted_delivery require(stage and agent agree)": "s4_admitted_delivery.stage_mismatch, agent_mismatch",
+  "admitted_delivery return admit_delivery(...)": "s4_admitted_delivery (accepted per role)",
+  "admitted_delivery role from a dict delivery with a dict inline, else None": "s4_admitted_delivery.no_role_not_a_dict, no_role_inline_not_a_dict, no_role_in_inline",
+  "council_delivery admit_delivery(...) (the typed needs_scope_split overflow)": "s3_council_delivery.over_budget_packet, over_budget_dba_report, over_budget_proposals, over_budget_wrapper, overflow_type",
+  "council_delivery require(isinstance(details, dict) and details.get('role') == role, ...)": "s3_council_delivery.details_role_mismatch, details_not_an_object, details_without_role",
+  "council_delivery require(not missing, 'Council delivery input missing: ...')": "s3_council_delivery.missing_one_input, missing_several_are_sorted",
+  "council_delivery require(packet and dba_report objects)": "s3_council_delivery.packet_not_an_object, dba_report_not_an_object",
+  "council_delivery require(role in COUNCIL_DEBATE_ROLES, ...)": "s3_council_delivery.not_a_debate_role",
+  "execute_role council_delivery for a debate role, else None": "s7_execute_role.debate_roles_succeed, v1_and_dba_roles_succeed, council_delivery_refusals",
+  "execute_role if role in DEBATE_ROLES: require(packet_digest == (packet_digest or ''))": "s7_execute_role.packet_digest_check",
+  "execute_role require(not status --porcelain, 'modified its checkout')": "s7_execute_role.refusals.modified_checkout, debate_role_modified_checkout",
+  "execute_role require(rev-parse HEAD == base) after the run": "s7_execute_role.refusals.changed_commit, debate_role_changed_commit",
+  "execute_role require(rev-parse HEAD == base) before the run": "s7_execute_role.refusals.checkout_not_at_base",
+  "execute_role require(role in AGENTS)": "s7_execute_role.refusals.unknown_role, missing_role",
+  "execute_role require(task agent == AGENTS[role])": "s7_execute_role.refusals.wrong_agent, agent_of_another_role",
+  "execute_role require(where.revision == base)": "s7_execute_role.refusals.base_mismatch, no_where_revision",
+  "execute_role the role_execution block (input_policy for a delivery, else None)": "s7_execute_role.debate_roles_succeed, v1_and_dba_roles_succeed",
+  "isolation_reference require(dict with a non-empty str digest)": "s5_isolation_context.missing_digest, empty_digest, non_string_digest, not_a_dict, empty_dict",
+  "isolation_reference return 1 (None)": "s5_isolation_context.none",
+  "isolation_reference return 2": "s5_isolation_context.valid",
+  "role_context": "s5_isolation_context.context_*",
+  "role_objective require(isinstance(details, dict), 'Role details must be an object')": "s2_objective.details_not_an_object",
+  "role_objective return 1 (no PRODUCED section: the static text)": "s2_objective (researcher, proposer, attacker, arbiter, conductor, static_roles_ignore_details)",
+  "role_objective return 2 (the allowance for a producer)": "s2_objective (dba, research_lead, improvement_lead), missing_earlier_payload",
+  "role_schema (non-criterion role)": "s6_role_schema (every role), other_roles_ignore_criteria",
+  "role_schema criterion enum for the criterion roles": "s6_role_schema.attacker/improvement_lead criterion, criteria_order_kept, two_executions_are_independent",
+  "role_schema require(criteria ...)": "s6_role_schema.refused_criteria"
+ },
+ "cases_per_group": {
+  "s1_tables": 18,
+  "s2_objective": 18,
+  "s3_council_delivery": 19,
+  "s4_admitted_delivery": 19,
+  "s5_isolation_context": 16,
+  "s6_role_schema": 18,
+  "s7_execute_role": 9
+ },
+ "s1_tables": {
+  "CONSUMER_ENUMS": "4b801958b7097419d04483d0f9417dcbfcb9dbfeaaba77fdef758bc0e226d62d",
+  "CONSUMER_ENUMS_keys": [
+   "claim.kind",
+   "question.status",
+   "ssot.decision",
+   "finding.severity",
+   "arbiter.verdict",
+   "disposition.decision"
+  ],
+  "DELIVERY_GUIDANCE": "e97848e2795c8b1e5c27988b3bffdff93feb90cd09daa3f6cf648f1388ffc1b0",
+  "OBJECTIVES": "a052c4dee4ec7d24253bb5765eb2f958f74dc313e5c283a46c5aab1b9815c986",
+  "PRODUCED": "e292740b16b0bdbeb312a2c8749c7feb3b7d2010c71f21d05eab900dfb0d92ca",
+  "PROPOSAL_DELIVERY": {
+   "conductor": [
+    "research_proposal",
+    "improvement_proposal"
+   ],
+   "improvement_lead": [
+    "research_proposal"
+   ],
+   "research_lead": []
+  },
+  "READING": "Read not_inline from the original external_context artifact: reader_argv_prefix plus operation; follow artifact_reader rules.",
+  "SCHEMAS": "bfc73fd1209ba3e31bce6e1b162b491e7ccaff7596633c19b247371888ce7b52",
+  "delivery_guidance_roles": [
+   "research_lead",
+   "improvement_lead",
+   "conductor"
+  ],
+  "fragments": {
+   "CLAIM": "7cecb9970b24f0551b437e2e6afa7897d67494c784c5b9535fc664fb4b225327",
+   "FINDING": "1fe6316a33504b753ccfbd6ab61ca86426ee3ff1a8bedbcdec82e550f7fa209d",
+   "IMPROVEMENT_TRANSITION": "d05bbb9cffa586d86efd739df1f3781b3a01ef53ab4ee8f7c3f311e327daf4c6",
+   "QUESTION": "5644c02367b581dc5aef10909c0cc51275165d9b6a6a647231586bebe66386cb",
+   "SOURCE": "e56aa9cb751f22ca4fde11ade107a6c043a11d1628b268ebfe8d2d4746575364",
+   "SSOT": "4c9fe6de2ab04c8394d058bb5dd042c1bbfbb2e329b5a06ab270ac49bc37224d",
+   "TRANSITION": "3daf8bcf455ca6bee7970aa92ea7fd0d74642803664e773a6bb87fcd71c40337"
+  },
+  "helpers": {
+   "_claim": "226acee955505fa4066968820627dafcab401e28e49453311417f3848198f8b3",
+   "_enum": {
+    "enum": [
+     "a",
+     "b",
+     "c"
+    ],
+    "type": "string"
+   },
+   "_limited": {
+    "description": "At most 4000 characters; a longer value is refused, never truncated.",
+    "type": "string"
+   },
+   "_limits": {
+    "dba": "Length contract: summary at most 4000 characters, unknowns at most 1024 characters (each value, after trimming); a longer value is refused, never truncated, so be concise.",
+    "improvement_lead": "Length contract: summary at most 4000 characters, rationale at most 4000 characters, transition.compatibility at most 4000 characters, transition.rollback at most 4000 characters, transition.retirement at most 4000 characters (each value, after trimming); a longer value is refused, never truncated, so be concise."
+   },
+   "_listed": "a/m/z",
+   "_object": {
+    "additionalProperties": false,
+    "properties": {
+     "a": {
+      "type": "string"
+     },
+     "b": {
+      "items": {
+       "type": "string"
+      },
+      "type": "array"
+     }
+    },
+    "required": [
+     "a",
+     "b"
+    ],
+    "type": "object"
+   },
+   "_question": "4570dee3f8f8b5eb2288bd1209883c02b6ecf93e8a830d0da91205d3561fd24f"
+  },
+  "module_docstring_first_line": "The `dge_role` executor action (INV-AUTONOMOUS-001): one read-only role execution in a clean",
+  "objective_roles": [
+   "researcher",
+   "proposer",
+   "attacker",
+   "arbiter",
+   "dba",
+   "research_lead",
+   "improvement_lead",
+   "conductor"
+  ],
+  "produced_sections": {
+   "dba": "dba_report",
+   "improvement_lead": "improvement_proposal",
+   "research_lead": "research_proposal"
+  },
+  "schema_roles": [
+   "researcher",
+   "proposer",
+   "attacker",
+   "arbiter",
+   "dba",
+   "research_lead",
+   "improvement_lead",
+   "conductor"
+  ],
+  "small_tables": {
+   "BOOLEAN": {
+    "type": "boolean"
+   },
+   "CITED": {
+    "items": {
+     "type": "string"
+    },
+    "minItems": 1,
+    "type": "array"
+   },
+   "NONBLOCKING": {
+    "enum": [
+     false
+    ],
+    "type": "boolean"
+   },
+   "NULLABLE_TEXT": {
+    "type": [
+     "string",
+     "null"
+    ]
+   },
+   "STRINGS": {
+    "items": {
+     "type": "string"
+    },
+    "type": "array"
+   },
+   "TEXT": {
+    "type": "string"
+   }
+  },
+  "texts": {
+   "ANSWERED_STATUSES": [
+    "answered"
+   ],
+   "SOURCED_KINDS": [
+    "fact",
+    "inference"
+   ],
+   "UNRESOLVED_STATUS": "unknown",
+   "UNSOURCED_KIND": "unknown"
+  },
+  "tuples": {
+   "COUNCIL_DEBATE_ROLES": [
+    "research_lead",
+    "improvement_lead",
+    "conductor"
+   ],
+   "CRITERION_ROLES": [
+    "attacker",
+    "improvement_lead"
+   ],
+   "INLINE_DELIVERY": [
+    "role",
+    "run_id",
+    "base_revision",
+    "round",
+    "packet",
+    "packet_digest",
+    "dba_report",
+    "snapshot_digest",
+    "report_digest",
+    "relay",
+    "acceptance_criteria",
+    "blocker_rule"
+   ],
+   "POINTER_DELIVERY": [
+    "ssot",
+    "prior_outputs"
+   ]
+  }
+ },
+ "s2_objective": {
+  "arbiter": {
+   "digest": "4b4b4c7131c02e9d22d88d9d5fb21407dd6acd8c988c04ed59a8ecffc853da3a",
+   "length": 373,
+   "produced": false,
+   "static": true,
+   "suffix": null
+  },
+  "attacker": {
+   "digest": "a5ea896c6fa2c0113db7e6d10fbb9339df1740a6206750391a2d3d7d38743cc9",
+   "length": 343,
+   "produced": false,
+   "static": true,
+   "suffix": null
+  },
+  "conductor": {
+   "digest": "14582a2af98723b2e8de1a4271e4ecba61fb0cd15c85b8dc8cd80cebe2ef6643",
+   "length": 275,
+   "produced": false,
+   "static": true,
+   "suffix": null
+  },
+  "dba": {
+   "digest": "82920fdaa742f9d1b2c05d3d5b59a5e2b2aaae16cad7673768a735ee2709cde9",
+   "length": 1182,
+   "produced": true,
+   "static": false,
+   "suffix": " Your report as the council normalizes it (snapshot_digest, summary, claim_ids, unknowns) is admitted only up to 20372 UTF-8 bytes of canonical JSON (escaping and multi-byte text count): the shared council pool of 32768 bytes minus 108 bytes committed by earlier stages and 12288 bytes reserved for later stages. The limit covers that normalized or derived value, not merely your raw prose; an oversized output stops the council. Be concise and factual, and keep every finding and unknown: never drop or relabel one to fit."
+  },
+  "details_not_an_object": {
+   "dba": {
+    "args": [
+     "'Role details must be an object'"
+    ],
+    "bases": [
+     "ContractError",
+     "ValueError",
+     "Exception",
+     "BaseException"
+    ],
+    "message": "Role details must be an object",
+    "raised": "ContractError"
+   },
+   "improvement_lead": {
+    "args": [
+     "'Role details must be an object'"
+    ],
+    "bases": [
+     "ContractError",
+     "ValueError",
+     "Exception",
+     "BaseException"
+    ],
+    "message": "Role details must be an object",
+    "raised": "ContractError"
+   },
+   "research_lead": {
+    "args": [
+     "'Role details must be an object'"
+    ],
+    "bases": [
+     "ContractError",
+     "ValueError",
+     "Exception",
+     "BaseException"
+    ],
+    "message": "Role details must be an object",
+    "raised": "ContractError"
+   }
+  },
+  "improvement_lead": {
+   "digest": "99e8e3930a6c46d012b99daf1c73b866f63d093a236e93134ccf5ad3b532df75",
+   "length": 1285,
+   "produced": true,
+   "static": false,
+   "suffix": " Your complete proposal as the council derives it, every finding included is admitted only up to 32297 UTF-8 bytes of canonical JSON (escaping and multi-byte text count): the shared council pool of 32768 bytes minus 471 bytes committed by earlier stages and 0 bytes reserved for later stages. The limit covers that normalized or derived value, not merely your raw prose; an oversized output stops the council. Be concise and factual, and keep every finding and unknown: never drop or relabel one to fit."
+  },
+  "missing_earlier_payload": {
+   "improvement_lead": {
+    "args": [
+     "'Council input for improvement_proposal needs exactly the earlier components: packet, dba_report, research_proposal'"
+    ],
+    "bases": [
+     "ContractError",
+     "ValueError",
+     "Exception",
+     "BaseException"
+    ],
+    "message": "Council input for improvement_proposal needs exactly the earlier components: packet, dba_report, research_proposal",
+    "raised": "ContractError"
+   },
+   "research_lead": {
+    "args": [
+     "'Council input for research_proposal needs exactly the earlier components: packet, dba_report'"
+    ],
+    "bases": [
+     "ContractError",
+     "ValueError",
+     "Exception",
+     "BaseException"
+    ],
+    "message": "Council input for research_proposal needs exactly the earlier components: packet, dba_report",
+    "raised": "ContractError"
+   }
+  },
+  "missing_research_proposal": {
+   "args": [
+    "'Council input for improvement_proposal needs exactly the earlier components: packet, dba_report, research_proposal'"
+   ],
+   "bases": [
+    "ContractError",
+    "ValueError",
+    "Exception",
+    "BaseException"
+   ],
+   "message": "Council input for improvement_proposal needs exactly the earlier components: packet, dba_report, research_proposal",
+   "raised": "ContractError"
+  },
+  "none_role": {
+   "args": [
+    "None"
+   ],
+   "bases": [
+    "KeyError",
+    "LookupError",
+    "Exception",
+    "BaseException"
+   ],
+   "message": "None",
+   "raised": "KeyError"
+  },
+  "producer_extra_details_ignored": true,
+  "producer_with_extra_details_only": {
+   "args": [
+    "'Council input for dba_report needs exactly the earlier components: packet'"
+   ],
+   "bases": [
+    "ContractError",
+    "ValueError",
+    "Exception",
+    "BaseException"
+   ],
+   "message": "Council input for dba_report needs exactly the earlier components: packet",
+   "raised": "ContractError"
+  },
+  "producer_with_smaller_details": {
+   "dba": "Interpret the frozen read-only database snapshot you were given against the research packet. Name the exact snapshot_digest, summarize what the selected records show (found/missing/unknown and their whitelisted status fields), cite only packet claim ids, and list unknowns. A missing key is absent at that snapshot in the explicit scope only; an unknown record is not a success. Your report is an interpretation, never a new Git-supported fact and never a substitute for the observation. Length contract: summary at most 4000 characters, unknowns at most 1024 characters (each value, after trimming); a longer value is refused, never truncated, so be concise. Your report as the council normalizes it (snapshot_digest, summary, claim_ids, unknowns) is admitted only up to 20372 UTF-8 bytes of canonical JSON (escaping and multi-byte text count): the shared council pool of 32768 bytes minus 108 bytes committed by earlier stages and 12288 bytes reserved for later stages. The limit covers that normalized or derived value, not merely your raw prose; an oversized output stops the council. Be concise and factual, and keep every finding and unknown: never drop or relabel one to fit.",
+   "improvement_lead": "Respond with a constructive alternative: summary, decision (improve/migrate/new/reuse), rationale, transition (compatibility, rollback, retirement for improve/migrate, null otherwise), claim ids, plus findings under the existing rule: only material blockers are critical (concrete reachable trigger, cited claims, exact fixed criterion, impact, minimal mitigation); everything else is minor, and no objection is compulsory. Echo the snapshot_digest and report_digest. Length contract: summary at most 4000 characters, rationale at most 4000 characters, transition.compatibility at most 4000 characters, transition.rollback at most 4000 characters, transition.retirement at most 4000 characters (each value, after trimming); a longer value is refused, never truncated, so be concise. Your complete proposal as the council derives it, every finding included is admitted only up to 32297 UTF-8 bytes of canonical JSON (escaping and multi-byte text count): the shared council pool of 32768 bytes minus 471 bytes committed by earlier stages and 0 bytes reserved for later stages. The limit covers that normalized or derived value, not merely your raw prose; an oversized output stops the council. Be concise and factual, and keep every finding and unknown: never drop or relabel one to fit.",
+   "research_lead": "Propose the design for the fixed plan from the packet AND the frozen DBA report, citing packet claims only; echo the snapshot_digest and report_digest you worked from; do not change the plan. Your complete proposal as the council derives it is admitted only up to 24324 UTF-8 bytes of canonical JSON (escaping and multi-byte text count): the shared council pool of 32768 bytes minus 252 bytes committed by earlier stages and 8192 bytes reserved for later stages. The limit covers that normalized or derived value, not merely your raw prose; an oversized output stops the council. Be concise and factual, and keep every finding and unknown: never drop or relabel one to fit."
+  },
+  "proposer": {
+   "digest": "fee8368091cc6d88b8e69656b6675b945017559e0a375a9ad3701669a6ba0de0",
+   "length": 88,
+   "produced": false,
+   "static": true,
+   "suffix": null
+  },
+  "research_lead": {
+   "digest": "b3cf0f7aa664dbd84c762709890e9b2eb800023c324c8d7a0571323d37771bd3",
+   "length": 673,
+   "produced": true,
+   "static": false,
+   "suffix": " Your complete proposal as the council derives it is admitted only up to 24324 UTF-8 bytes of canonical JSON (escaping and multi-byte text count): the shared council pool of 32768 bytes minus 252 bytes committed by earlier stages and 8192 bytes reserved for later stages. The limit covers that normalized or derived value, not merely your raw prose; an oversized output stops the council. Be concise and factual, and keep every finding and unknown: never drop or relabel one to fit."
+  },
+  "researcher": {
+   "digest": "48fac9c22332c3b781684d799c56275ba39522032d00519aa8ca2bf1cf83b599",
+   "length": 3260,
+   "produced": false,
+   "static": true,
+   "suffix": null
+  },
+  "researcher_tail_is_the_packet_allowance": true,
+  "static_roles_ignore_details": {
+   "arbiter": true,
+   "attacker": true,
+   "conductor": true,
+   "proposer": true,
+   "researcher": true
+  },
+  "unknown_role": {
+   "args": [
+    "'nobody'"
+   ],
+   "bases": [
+    "KeyError",
+    "LookupError",
+    "Exception",
+    "BaseException"
+   ],
+   "message": "'nobody'",
+   "raised": "KeyError"
+  }
+ },
+ "s3_council_delivery": {
+  "conductor": {
+   "admitted": {
+    "delivery_bytes": 1798,
+    "delivery_overhead_bytes": 1240,
+    "payload_bytes": 558,
+    "payload_pool": 32768,
+    "reserved_bytes": 0,
+    "role": "conductor",
+    "schema": "urn:zeus:council-input:2",
+    "sections": {
+     "dba_report": 144,
+     "improvement_proposal": 87,
+     "packet": 108,
+     "research_proposal": 219
+    },
+    "unit": "utf8_bytes_of_canonical_json"
+   },
+   "delivery": {
+    "guidance": "Packet, DBA report, research proposal and improvement alternative are complete inline: decide from them, keep unknowns as unknowns, and read the pointers only for a material gap.",
+    "inline": {
+     "acceptance_criteria": [
+      "crit-a",
+      "crit-b"
+     ],
+     "base_revision": "a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1",
+     "blocker_rule": "only material blockers are critical",
+     "dba_report": {
+      "claim_ids": [
+       "c1"
+      ],
+      "snapshot_digest": "sha256:d1d1d1d1d1d1d1d1d1d1d1d1d1d1d1d1d1d1d1d1d1d1d1d1d1d1d1d1d1d1d1d1",
+      "summary": "found",
+      "unknowns": []
+     },
+     "improvement_proposal": {
+      "claim_ids": [
+       "c1"
+      ],
+      "decision": "improve",
+      "findings": [],
+      "rationale": "r",
+      "summary": "alt"
+     },
+     "packet": {
+      "claims": [
+       {
+        "id": "c1",
+        "kind": "fact",
+        "source_ids": [
+         "s1"
+        ],
+        "text": "x"
+       }
+      ],
+      "questions": [],
+      "sources": [
+       {
+        "id": "s1"
+       }
+      ]
+     },
+     "packet_digest": "sha256:p1p1p1p1p1p1p1p1p1p1p1p1p1p1p1p1p1p1p1p1p1p1p1p1p1p1p1p1p1p1p1p1",
+     "relay": {
+      "from": "lead:dba"
+     },
+     "report_digest": "sha256:d2d2d2d2d2d2d2d2d2d2d2d2d2d2d2d2d2d2d2d2d2d2d2d2d2d2d2d2d2d2d2d2",
+     "research_proposal": {
+      "claim_ids": [
+       "c1"
+      ],
+      "report_digest": "sha256:d2d2d2d2d2d2d2d2d2d2d2d2d2d2d2d2d2d2d2d2d2d2d2d2d2d2d2d2d2d2d2d2",
+      "snapshot_digest": "sha256:d1d1d1d1d1d1d1d1d1d1d1d1d1d1d1d1d1d1d1d1d1d1d1d1d1d1d1d1d1d1d1d1",
+      "summary": "plan"
+     },
+     "role": "conductor",
+     "round": 1,
+     "run_id": "run-1",
+     "snapshot_digest": "sha256:d1d1d1d1d1d1d1d1d1d1d1d1d1d1d1d1d1d1d1d1d1d1d1d1d1d1d1d1d1d1d1d1"
+    },
+    "input_policy": "urn:zeus:council-input:2",
+    "not_inline": {
+     "prior_outputs": {
+      "operation": [
+       "pointer",
+       "--pointer",
+       "/prior_outputs",
+       "--cursor",
+       "0",
+       "--limit",
+       "8000"
+      ],
+      "pointer": "/prior_outputs"
+     },
+     "ssot": {
+      "operation": [
+       "pointer",
+       "--pointer",
+       "/ssot",
+       "--cursor",
+       "0",
+       "--limit",
+       "8000"
+      ],
+      "pointer": "/ssot"
+     }
+    },
+    "reading": "Read not_inline from the original external_context artifact: reader_argv_prefix plus operation; follow artifact_reader rules.",
+    "schema": "urn:zeus:council-delivery:1"
+   },
+   "details_unchanged": true,
+   "digest": "a97c7c32486b6736bb64bfb2cb405d4e833041e6c1470a5c4d0ca563529102ac",
+   "inline_keys": [
+    "role",
+    "run_id",
+    "base_revision",
+    "round",
+    "packet",
+    "packet_digest",
+    "dba_report",
+    "snapshot_digest",
+    "report_digest",
+    "relay",
+    "acceptance_criteria",
+    "blocker_rule",
+    "research_proposal",
+    "improvement_proposal"
+   ],
+   "inline_keys_expected": [
+    "role",
+    "run_id",
+    "base_revision",
+    "round",
+    "packet",
+    "packet_digest",
+    "dba_report",
+    "snapshot_digest",
+    "report_digest",
+    "relay",
+    "acceptance_criteria",
+    "blocker_rule",
+    "research_proposal",
+    "improvement_proposal"
+   ],
+   "inline_values_are_copies": true,
+   "inline_values_equal": true,
+   "not_inline": {
+    "prior_outputs": {
+     "operation": [
+      "pointer",
+      "--pointer",
+      "/prior_outputs",
+      "--cursor",
+      "0",
+      "--limit",
+      "8000"
+     ],
+     "pointer": "/prior_outputs"
+    },
+    "ssot": {
+     "operation": [
+      "pointer",
+      "--pointer",
+      "/ssot",
+      "--cursor",
+      "0",
+      "--limit",
+      "8000"
+     ],
+     "pointer": "/ssot"
+    }
+   }
+  },
+  "dba_report_not_an_object": {
+   "list": {
+    "args": [
+     "'Council delivery packet and dba_report must be objects'"
+    ],
+    "bases": [
+     "ContractError",
+     "ValueError",
+     "Exception",
+     "BaseException"
+    ],
+    "message": "Council delivery packet and dba_report must be objects",
+    "raised": "ContractError"
+   },
+   "none": {
+    "args": [
+     "'Council delivery packet and dba_report must be objects'"
+    ],
+    "bases": [
+     "ContractError",
+     "ValueError",
+     "Exception",
+     "BaseException"
+    ],
+    "message": "Council delivery packet and dba_report must be objects",
+    "raised": "ContractError"
+   },
+   "text": {
+    "args": [
+     "'Council delivery packet and dba_report must be objects'"
+    ],
+    "bases": [
+     "ContractError",
+     "ValueError",
+     "Exception",
+     "BaseException"
+    ],
+    "message": "Council delivery packet and dba_report must be objects",
+    "raised": "ContractError"
+   }
+  },
+  "details_not_an_object": {
+   "list": {
+    "args": [
+     "'Council delivery role mismatch'"
+    ],
+    "bases": [
+     "ContractError",
+     "ValueError",
+     "Exception",
+     "BaseException"
+    ],
+    "message": "Council delivery role mismatch",
+    "raised": "ContractError"
+   },
+   "none": {
+    "args": [
+     "'Council delivery role mismatch'"
+    ],
+    "bases": [
+     "ContractError",
+     "ValueError",
+     "Exception",
+     "BaseException"
+    ],
+    "message": "Council delivery role mismatch",
+    "raised": "ContractError"
+   },
+   "text": {
+    "args": [
+     "'Council delivery role mismatch'"
+    ],
+    "bases": [
+     "ContractError",
+     "ValueError",
+     "Exception",
+     "BaseException"
+    ],
+    "message": "Council delivery role mismatch",
+    "raised": "ContractError"
+   }
+  },
+  "details_role_mismatch": {
+   "conductor": {
+    "args": [
+     "'Council delivery role mismatch'"
+    ],
+    "bases": [
+     "ContractError",
+     "ValueError",
+     "Exception",
+     "BaseException"
+    ],
+    "message": "Council delivery role mismatch",
+    "raised": "ContractError"
+   },
+   "improvement_lead": {
+    "args": [
+     "'Council delivery role mismatch'"
+    ],
+    "bases": [
+     "ContractError",
+     "ValueError",
+     "Exception",
+     "BaseException"
+    ],
+    "message": "Council delivery role mismatch",
+    "raised": "ContractError"
+   },
+   "research_lead": {
+    "args": [
+     "'Council delivery role mismatch'"
+    ],
+    "bases": [
+     "ContractError",
+     "ValueError",
+     "Exception",
+     "BaseException"
+    ],
+    "message": "Council delivery role mismatch",
+    "raised": "ContractError"
+   }
+  },
+  "details_without_role": {
+   "args": [
+    "'Council delivery role mismatch'"
+   ],
+   "bases": [
+    "ContractError",
+    "ValueError",
+    "Exception",
+    "BaseException"
+   ],
+   "message": "Council delivery role mismatch",
+   "raised": "ContractError"
+  },
+  "extra_detail_not_inlined": {
+   "conductor": true,
+   "improvement_lead": true,
+   "research_lead": true
+  },
+  "improvement_lead": {
+   "admitted": {
+    "delivery_bytes": 1601,
+    "delivery_overhead_bytes": 1130,
+    "payload_bytes": 471,
+    "payload_pool": 32768,
+    "reserved_bytes": 8192,
+    "role": "improvement_lead",
+    "schema": "urn:zeus:council-input:2",
+    "sections": {
+     "dba_report": 144,
+     "packet": 108,
+     "research_proposal": 219
+    },
+    "unit": "utf8_bytes_of_canonical_json"
+   },
+   "delivery": {
+    "guidance": "Answer the inline research_proposal with the alternative; cite only packet claim ids.",
+    "inline": {
+     "acceptance_criteria": [
+      "crit-a",
+      "crit-b"
+     ],
+     "base_revision": "a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1",
+     "blocker_rule": "only material blockers are critical",
+     "dba_report": {
+      "claim_ids": [
+       "c1"
+      ],
+      "snapshot_digest": "sha256:d1d1d1d1d1d1d1d1d1d1d1d1d1d1d1d1d1d1d1d1d1d1d1d1d1d1d1d1d1d1d1d1",
+      "summary": "found",
+      "unknowns": []
+     },
+     "packet": {
+      "claims": [
+       {
+        "id": "c1",
+        "kind": "fact",
+        "source_ids": [
+         "s1"
+        ],
+        "text": "x"
+       }
+      ],
+      "questions": [],
+      "sources": [
+       {
+        "id": "s1"
+       }
+      ]
+     },
+     "packet_digest": "sha256:p1p1p1p1p1p1p1p1p1p1p1p1p1p1p1p1p1p1p1p1p1p1p1p1p1p1p1p1p1p1p1p1",
+     "relay": {
+      "from": "lead:dba"
+     },
+     "report_digest": "sha256:d2d2d2d2d2d2d2d2d2d2d2d2d2d2d2d2d2d2d2d2d2d2d2d2d2d2d2d2d2d2d2d2",
+     "research_proposal": {
+      "claim_ids": [
+       "c1"
+      ],
+      "report_digest": "sha256:d2d2d2d2d2d2d2d2d2d2d2d2d2d2d2d2d2d2d2d2d2d2d2d2d2d2d2d2d2d2d2d2",
+      "snapshot_digest": "sha256:d1d1d1d1d1d1d1d1d1d1d1d1d1d1d1d1d1d1d1d1d1d1d1d1d1d1d1d1d1d1d1d1",
+      "summary": "plan"
+     },
+     "role": "improvement_lead",
+     "round": 1,
+     "run_id": "run-1",
+     "snapshot_digest": "sha256:d1d1d1d1d1d1d1d1d1d1d1d1d1d1d1d1d1d1d1d1d1d1d1d1d1d1d1d1d1d1d1d1"
+    },
+    "input_policy": "urn:zeus:council-input:2",
+    "not_inline": {
+     "prior_outputs": {
+      "operation": [
+       "pointer",
+       "--pointer",
+       "/prior_outputs",
+       "--cursor",
+       "0",
+       "--limit",
+       "8000"
+      ],
+      "pointer": "/prior_outputs"
+     },
+     "ssot": {
+      "operation": [
+       "pointer",
+       "--pointer",
+       "/ssot",
+       "--cursor",
+       "0",
+       "--limit",
+       "8000"
+      ],
+      "pointer": "/ssot"
+     }
+    },
+    "reading": "Read not_inline from the original external_context artifact: reader_argv_prefix plus operation; follow artifact_reader rules.",
+    "schema": "urn:zeus:council-delivery:1"
+   },
+   "details_unchanged": true,
+   "digest": "3f48fffeace2d1fbbfe00a629fa776339a0b93b8b5bc8f0bee5fe79ef5e412ec",
+   "inline_keys": [
+    "role",
+    "run_id",
+    "base_revision",
+    "round",
+    "packet",
+    "packet_digest",
+    "dba_report",
+    "snapshot_digest",
+    "report_digest",
+    "relay",
+    "acceptance_criteria",
+    "blocker_rule",
+    "research_proposal"
+   ],
+   "inline_keys_expected": [
+    "role",
+    "run_id",
+    "base_revision",
+    "round",
+    "packet",
+    "packet_digest",
+    "dba_report",
+    "snapshot_digest",
+    "report_digest",
+    "relay",
+    "acceptance_criteria",
+    "blocker_rule",
+    "research_proposal"
+   ],
+   "inline_values_are_copies": true,
+   "inline_values_equal": true,
+   "not_inline": {
+    "prior_outputs": {
+     "operation": [
+      "pointer",
+      "--pointer",
+      "/prior_outputs",
+      "--cursor",
+      "0",
+      "--limit",
+      "8000"
+     ],
+     "pointer": "/prior_outputs"
+    },
+    "ssot": {
+     "operation": [
+      "pointer",
+      "--pointer",
+      "/ssot",
+      "--cursor",
+      "0",
+      "--limit",
+      "8000"
+     ],
+     "pointer": "/ssot"
+    }
+   }
+  },
+  "missing_one_input": {
+   "conductor": {
+    "acceptance_criteria": {
+     "args": [
+      "'Council delivery input missing: acceptance_criteria'"
+     ],
+     "bases": [
+      "ContractError",
+      "ValueError",
+      "Exception",
+      "BaseException"
+     ],
+     "message": "Council delivery input missing: acceptance_criteria",
+     "raised": "ContractError"
+    },
+    "base_revision": {
+     "args": [
+      "'Council delivery input missing: base_revision'"
+     ],
+     "bases": [
+      "ContractError",
+      "ValueError",
+      "Exception",
+      "BaseException"
+     ],
+     "message": "Council delivery input missing: base_revision",
+     "raised": "ContractError"
+    },
+    "blocker_rule": {
+     "args": [
+      "'Council delivery input missing: blocker_rule'"
+     ],
+     "bases": [
+      "ContractError",
+      "ValueError",
+      "Exception",
+      "BaseException"
+     ],
+     "message": "Council delivery input missing: blocker_rule",
+     "raised": "ContractError"
+    },
+    "dba_report": {
+     "args": [
+      "'Council delivery input missing: dba_report'"
+     ],
+     "bases": [
+      "ContractError",
+      "ValueError",
+      "Exception",
+      "BaseException"
+     ],
+     "message": "Council delivery input missing: dba_report",
+     "raised": "ContractError"
+    },
+    "improvement_proposal": {
+     "args": [
+      "'Council delivery input missing: improvement_proposal'"
+     ],
+     "bases": [
+      "ContractError",
+      "ValueError",
+      "Exception",
+      "BaseException"
+     ],
+     "message": "Council delivery input missing: improvement_proposal",
+     "raised": "ContractError"
+    },
+    "packet": {
+     "args": [
+      "'Council delivery input missing: packet'"
+     ],
+     "bases": [
+      "ContractError",
+      "ValueError",
+      "Exception",
+      "BaseException"
+     ],
+     "message": "Council delivery input missing: packet",
+     "raised": "ContractError"
+    },
+    "packet_digest": {
+     "args": [
+      "'Council delivery input missing: packet_digest'"
+     ],
+     "bases": [
+      "ContractError",
+      "ValueError",
+      "Exception",
+      "BaseException"
+     ],
+     "message": "Council delivery input missing: packet_digest",
+     "raised": "ContractError"
+    },
+    "prior_outputs": {
+     "args": [
+      "'Council delivery input missing: prior_outputs'"
+     ],
+     "bases": [
+      "ContractError",
+      "ValueError",
+      "Exception",
+      "BaseException"
+     ],
+     "message": "Council delivery input missing: prior_outputs",
+     "raised": "ContractError"
+    },
+    "relay": {
+     "args": [
+      "'Council delivery input missing: relay'"
+     ],
+     "bases": [
+      "ContractError",
+      "ValueError",
+      "Exception",
+      "BaseException"
+     ],
+     "message": "Council delivery input missing: relay",
+     "raised": "ContractError"
+    },
+    "report_digest": {
+     "args": [
+      "'Council delivery input missing: report_digest'"
+     ],
+     "bases": [
+      "ContractError",
+      "ValueError",
+      "Exception",
+      "BaseException"
+     ],
+     "message": "Council delivery input missing: report_digest",
+     "raised": "ContractError"
+    },
+    "research_proposal": {
+     "args": [
+      "'Council delivery input missing: research_proposal'"
+     ],
+     "bases": [
+      "ContractError",
+      "ValueError",
+      "Exception",
+      "BaseException"
+     ],
+     "message": "Council delivery input missing: research_proposal",
+     "raised": "ContractError"
+    },
+    "role": {
+     "args": [
+      "'Council delivery role mismatch'"
+     ],
+     "bases": [
+      "ContractError",
+      "ValueError",
+      "Exception",
+      "BaseException"
+     ],
+     "message": "Council delivery role mismatch",
+     "raised": "ContractError"
+    },
+    "round": {
+     "args": [
+      "'Council delivery input missing: round'"
+     ],
+     "bases": [
+      "ContractError",
+      "ValueError",
+      "Exception",
+      "BaseException"
+     ],
+     "message": "Council delivery input missing: round",
+     "raised": "ContractError"
+    },
+    "run_id": {
+     "args": [
+      "'Council delivery input missing: run_id'"
+     ],
+     "bases": [
+      "ContractError",
+      "ValueError",
+      "Exception",
+      "BaseException"
+     ],
+     "message": "Council delivery input missing: run_id",
+     "raised": "ContractError"
+    },
+    "snapshot_digest": {
+     "args": [
+      "'Council delivery input missing: snapshot_digest'"
+     ],
+     "bases": [
+      "ContractError",
+      "ValueError",
+      "Exception",
+      "BaseException"
+     ],
+     "message": "Council delivery input missing: snapshot_digest",
+     "raised": "ContractError"
+    },
+    "ssot": {
+     "args": [
+      "'Council delivery input missing: ssot'"
+     ],
+     "bases": [
+      "ContractError",
+      "ValueError",
+      "Exception",
+      "BaseException"
+     ],
+     "message": "Council delivery input missing: ssot",
+     "raised": "ContractError"
+    }
+   },
+   "improvement_lead": {
+    "acceptance_criteria": {
+     "args": [
+      "'Council delivery input missing: acceptance_criteria'"
+     ],
+     "bases": [
+      "ContractError",
+      "ValueError",
+      "Exception",
+      "BaseException"
+     ],
+     "message": "Council delivery input missing: acceptance_criteria",
+     "raised": "ContractError"
+    },
+    "base_revision": {
+     "args": [
+      "'Council delivery input missing: base_revision'"
+     ],
+     "bases": [
+      "ContractError",
+      "ValueError",
+      "Exception",
+      "BaseException"
+     ],
+     "message": "Council delivery input missing: base_revision",
+     "raised": "ContractError"
+    },
+    "blocker_rule": {
+     "args": [
+      "'Council delivery input missing: blocker_rule'"
+     ],
+     "bases": [
+      "ContractError",
+      "ValueError",
+      "Exception",
+      "BaseException"
+     ],
+     "message": "Council delivery input missing: blocker_rule",
+     "raised": "ContractError"
+    },
+    "dba_report": {
+     "args": [
+      "'Council delivery input missing: dba_report'"
+     ],
+     "bases": [
+      "ContractError",
+      "ValueError",
+      "Exception",
+      "BaseException"
+     ],
+     "message": "Council delivery input missing: dba_report",
+     "raised": "ContractError"
+    },
+    "packet": {
+     "args": [
+      "'Council delivery input missing: packet'"
+     ],
+     "bases": [
+      "ContractError",
+      "ValueError",
+      "Exception",
+      "BaseException"
+     ],
+     "message": "Council delivery input missing: packet",
+     "raised": "ContractError"
+    },
+    "packet_digest": {
+     "args": [
+      "'Council delivery input missing: packet_digest'"
+     ],
+     "bases": [
+      "ContractError",
+      "ValueError",
+      "Exception",
+      "BaseException"
+     ],
+     "message": "Council delivery input missing: packet_digest",
+     "raised": "ContractError"
+    },
+    "prior_outputs": {
+     "args": [
+      "'Council delivery input missing: prior_outputs'"
+     ],
+     "bases": [
+      "ContractError",
+      "ValueError",
+      "Exception",
+      "BaseException"
+     ],
+     "message": "Council delivery input missing: prior_outputs",
+     "raised": "ContractError"
+    },
+    "relay": {
+     "args": [
+      "'Council delivery input missing: relay'"
+     ],
+     "bases": [
+      "ContractError",
+      "ValueError",
+      "Exception",
+      "BaseException"
+     ],
+     "message": "Council delivery input missing: relay",
+     "raised": "ContractError"
+    },
+    "report_digest": {
+     "args": [
+      "'Council delivery input missing: report_digest'"
+     ],
+     "bases": [
+      "ContractError",
+      "ValueError",
+      "Exception",
+      "BaseException"
+     ],
+     "message": "Council delivery input missing: report_digest",
+     "raised": "ContractError"
+    },
+    "research_proposal": {
+     "args": [
+      "'Council delivery input missing: research_proposal'"
+     ],
+     "bases": [
+      "ContractError",
+      "ValueError",
+      "Exception",
+      "BaseException"
+     ],
+     "message": "Council delivery input missing: research_proposal",
+     "raised": "ContractError"
+    },
+    "role": {
+     "args": [
+      "'Council delivery role mismatch'"
+     ],
+     "bases": [
+      "ContractError",
+      "ValueError",
+      "Exception",
+      "BaseException"
+     ],
+     "message": "Council delivery role mismatch",
+     "raised": "ContractError"
+    },
+    "round": {
+     "args": [
+      "'Council delivery input missing: round'"
+     ],
+     "bases": [
+      "ContractError",
+      "ValueError",
+      "Exception",
+      "BaseException"
+     ],
+     "message": "Council delivery input missing: round",
+     "raised": "ContractError"
+    },
+    "run_id": {
+     "args": [
+      "'Council delivery input missing: run_id'"
+     ],
+     "bases": [
+      "ContractError",
+      "ValueError",
+      "Exception",
+      "BaseException"
+     ],
+     "message": "Council delivery input missing: run_id",
+     "raised": "ContractError"
+    },
+    "snapshot_digest": {
+     "args": [
+      "'Council delivery input missing: snapshot_digest'"
+     ],
+     "bases": [
+      "ContractError",
+      "ValueError",
+      "Exception",
+      "BaseException"
+     ],
+     "message": "Council delivery input missing: snapshot_digest",
+     "raised": "ContractError"
+    },
+    "ssot": {
+     "args": [
+      "'Council delivery input missing: ssot'"
+     ],
+     "bases": [
+      "ContractError",
+      "ValueError",
+      "Exception",
+      "BaseException"
+     ],
+     "message": "Council delivery input missing: ssot",
+     "raised": "ContractError"
+    }
+   },
+   "research_lead": {
+    "acceptance_criteria": {
+     "args": [
+      "'Council delivery input missing: acceptance_criteria'"
+     ],
+     "bases": [
+      "ContractError",
+      "ValueError",
+      "Exception",
+      "BaseException"
+     ],
+     "message": "Council delivery input missing: acceptance_criteria",
+     "raised": "ContractError"
+    },
+    "base_revision": {
+     "args": [
+      "'Council delivery input missing: base_revision'"
+     ],
+     "bases": [
+      "ContractError",
+      "ValueError",
+      "Exception",
+      "BaseException"
+     ],
+     "message": "Council delivery input missing: base_revision",
+     "raised": "ContractError"
+    },
+    "blocker_rule": {
+     "args": [
+      "'Council delivery input missing: blocker_rule'"
+     ],
+     "bases": [
+      "ContractError",
+      "ValueError",
+      "Exception",
+      "BaseException"
+     ],
+     "message": "Council delivery input missing: blocker_rule",
+     "raised": "ContractError"
+    },
+    "dba_report": {
+     "args": [
+      "'Council delivery input missing: dba_report'"
+     ],
+     "bases": [
+      "ContractError",
+      "ValueError",
+      "Exception",
+      "BaseException"
+     ],
+     "message": "Council delivery input missing: dba_report",
+     "raised": "ContractError"
+    },
+    "packet": {
+     "args": [
+      "'Council delivery input missing: packet'"
+     ],
+     "bases": [
+      "ContractError",
+      "ValueError",
+      "Exception",
+      "BaseException"
+     ],
+     "message": "Council delivery input missing: packet",
+     "raised": "ContractError"
+    },
+    "packet_digest": {
+     "args": [
+      "'Council delivery input missing: packet_digest'"
+     ],
+     "bases": [
+      "ContractError",
+      "ValueError",
+      "Exception",
+      "BaseException"
+     ],
+     "message": "Council delivery input missing: packet_digest",
+     "raised": "ContractError"
+    },
+    "prior_outputs": {
+     "args": [
+      "'Council delivery input missing: prior_outputs'"
+     ],
+     "bases": [
+      "ContractError",
+      "ValueError",
+      "Exception",
+      "BaseException"
+     ],
+     "message": "Council delivery input missing: prior_outputs",
+     "raised": "ContractError"
+    },
+    "relay": {
+     "args": [
+      "'Council delivery input missing: relay'"
+     ],
+     "bases": [
+      "ContractError",
+      "ValueError",
+      "Exception",
+      "BaseException"
+     ],
+     "message": "Council delivery input missing: relay",
+     "raised": "ContractError"
+    },
+    "report_digest": {
+     "args": [
+      "'Council delivery input missing: report_digest'"
+     ],
+     "bases": [
+      "ContractError",
+      "ValueError",
+      "Exception",
+      "BaseException"
+     ],
+     "message": "Council delivery input missing: report_digest",
+     "raised": "ContractError"
+    },
+    "role": {
+     "args": [
+      "'Council delivery role mismatch'"
+     ],
+     "bases": [
+      "ContractError",
+      "ValueError",
+      "Exception",
+      "BaseException"
+     ],
+     "message": "Council delivery role mismatch",
+     "raised": "ContractError"
+    },
+    "round": {
+     "args": [
+      "'Council delivery input missing: round'"
+     ],
+     "bases": [
+      "ContractError",
+      "ValueError",
+      "Exception",
+      "BaseException"
+     ],
+     "message": "Council delivery input missing: round",
+     "raised": "ContractError"
+    },
+    "run_id": {
+     "args": [
+      "'Council delivery input missing: run_id'"
+     ],
+     "bases": [
+      "ContractError",
+      "ValueError",
+      "Exception",
+      "BaseException"
+     ],
+     "message": "Council delivery input missing: run_id",
+     "raised": "ContractError"
+    },
+    "snapshot_digest": {
+     "args": [
+      "'Council delivery input missing: snapshot_digest'"
+     ],
+     "bases": [
+      "ContractError",
+      "ValueError",
+      "Exception",
+      "BaseException"
+     ],
+     "message": "Council delivery input missing: snapshot_digest",
+     "raised": "ContractError"
+    },
+    "ssot": {
+     "args": [
+      "'Council delivery input missing: ssot'"
+     ],
+     "bases": [
+      "ContractError",
+      "ValueError",
+      "Exception",
+      "BaseException"
+     ],
+     "message": "Council delivery input missing: ssot",
+     "raised": "ContractError"
+    }
+   }
+  },
+  "missing_several_are_sorted": {
+   "args": [
+    "'Council delivery input missing: packet, relay, ssot'"
+   ],
+   "bases": [
+    "ContractError",
+    "ValueError",
+    "Exception",
+    "BaseException"
+   ],
+   "message": "Council delivery input missing: packet, relay, ssot",
+   "raised": "ContractError"
+  },
+  "not_a_debate_role": {
+   "arbiter": {
+    "args": [
+     "'Council delivery is defined for the debate roles only'"
+    ],
+    "bases": [
+     "ContractError",
+     "ValueError",
+     "Exception",
+     "BaseException"
+    ],
+    "message": "Council delivery is defined for the debate roles only",
+    "raised": "ContractError"
+   },
+   "attacker": {
+    "args": [
+     "'Council delivery is defined for the debate roles only'"
+    ],
+    "bases": [
+     "ContractError",
+     "ValueError",
+     "Exception",
+     "BaseException"
+    ],
+    "message": "Council delivery is defined for the debate roles only",
+    "raised": "ContractError"
+   },
+   "dba": {
+    "args": [
+     "'Council delivery is defined for the debate roles only'"
+    ],
+    "bases": [
+     "ContractError",
+     "ValueError",
+     "Exception",
+     "BaseException"
+    ],
+    "message": "Council delivery is defined for the debate roles only",
+    "raised": "ContractError"
+   },
+   "nobody": {
+    "args": [
+     "'Council delivery is defined for the debate roles only'"
+    ],
+    "bases": [
+     "ContractError",
+     "ValueError",
+     "Exception",
+     "BaseException"
+    ],
+    "message": "Council delivery is defined for the debate roles only",
+    "raised": "ContractError"
+   },
+   "proposer": {
+    "args": [
+     "'Council delivery is defined for the debate roles only'"
+    ],
+    "bases": [
+     "ContractError",
+     "ValueError",
+     "Exception",
+     "BaseException"
+    ],
+    "message": "Council delivery is defined for the debate roles only",
+    "raised": "ContractError"
+   },
+   "researcher": {
+    "args": [
+     "'Council delivery is defined for the debate roles only'"
+    ],
+    "bases": [
+     "ContractError",
+     "ValueError",
+     "Exception",
+     "BaseException"
+    ],
+    "message": "Council delivery is defined for the debate roles only",
+    "raised": "ContractError"
+   }
+  },
+  "over_budget_dba_report": {
+   "conductor": {
+    "unexpectedly_returned": "4f1596222d86ade34dc9ff97aecd5312e0de2eaef630f8e65d510db6d19a2e98"
+   },
+   "improvement_lead": {
+    "unexpectedly_returned": "eb04dd78d3afbd81a6b3321d0c94cbc2a2a7ed6d1567dfa02248497531301684"
+   },
+   "research_lead": {
+    "unexpectedly_returned": "ed3ac24d0a0e5f97911d13085e6c53764619d6f3835a1f49c553db506646ba10"
+   }
+  },
+  "over_budget_packet": {
+   "conductor": {
+    "args": [
+     "'needs_scope_split:packet:26782/16384'"
+    ],
+    "bases": [
+     "CouncilInputOverflow",
+     "ContractError",
+     "ValueError",
+     "Exception"
+    ],
+    "message": "needs_scope_split:packet:26782/16384",
+    "raised": "CouncilInputOverflow"
+   },
+   "improvement_lead": {
+    "args": [
+     "'needs_scope_split:packet:26782/16384'"
+    ],
+    "bases": [
+     "CouncilInputOverflow",
+     "ContractError",
+     "ValueError",
+     "Exception"
+    ],
+    "message": "needs_scope_split:packet:26782/16384",
+    "raised": "CouncilInputOverflow"
+   },
+   "research_lead": {
+    "args": [
+     "'needs_scope_split:packet:26782/16384'"
+    ],
+    "bases": [
+     "CouncilInputOverflow",
+     "ContractError",
+     "ValueError",
+     "Exception"
+    ],
+    "message": "needs_scope_split:packet:26782/16384",
+    "raised": "CouncilInputOverflow"
+   }
+  },
+  "over_budget_proposals": {
+   "conductor_improvement_proposal": {
+    "unexpectedly_returned": "32039f904e638c09213146bf9ca0da563d2524877feb0a99a7c5644ab648ea94"
+   },
+   "improvement_lead_research_proposal": {
+    "unexpectedly_returned": "38804db445a60282ae9b7043a35925c15eedbb12b2ccaf8e6e6f838d09dc6bad"
+   }
+  },
+  "over_budget_wrapper": {
+   "conductor": {
+    "args": [
+     "'needs_scope_split:delivery_overhead:6232/4096'"
+    ],
+    "bases": [
+     "CouncilInputOverflow",
+     "ContractError",
+     "ValueError",
+     "Exception"
+    ],
+    "message": "needs_scope_split:delivery_overhead:6232/4096",
+    "raised": "CouncilInputOverflow"
+   },
+   "improvement_lead": {
+    "args": [
+     "'needs_scope_split:delivery_overhead:6122/4096'"
+    ],
+    "bases": [
+     "CouncilInputOverflow",
+     "ContractError",
+     "ValueError",
+     "Exception"
+    ],
+    "message": "needs_scope_split:delivery_overhead:6122/4096",
+    "raised": "CouncilInputOverflow"
+   },
+   "research_lead": {
+    "args": [
+     "'needs_scope_split:delivery_overhead:6087/4096'"
+    ],
+    "bases": [
+     "CouncilInputOverflow",
+     "ContractError",
+     "ValueError",
+     "Exception"
+    ],
+    "message": "needs_scope_split:delivery_overhead:6087/4096",
+    "raised": "CouncilInputOverflow"
+   }
+  },
+  "overflow_type": {
+   "conductor": "CouncilInputOverflow",
+   "improvement_lead": "CouncilInputOverflow",
+   "research_lead": "CouncilInputOverflow"
+  },
+  "packet_not_an_object": {
+   "list": {
+    "args": [
+     "'Council delivery packet and dba_report must be objects'"
+    ],
+    "bases": [
+     "ContractError",
+     "ValueError",
+     "Exception",
+     "BaseException"
+    ],
+    "message": "Council delivery packet and dba_report must be objects",
+    "raised": "ContractError"
+   },
+   "none": {
+    "args": [
+     "'Council delivery packet and dba_report must be objects'"
+    ],
+    "bases": [
+     "ContractError",
+     "ValueError",
+     "Exception",
+     "BaseException"
+    ],
+    "message": "Council delivery packet and dba_report must be objects",
+    "raised": "ContractError"
+   },
+   "text": {
+    "args": [
+     "'Council delivery packet and dba_report must be objects'"
+    ],
+    "bases": [
+     "ContractError",
+     "ValueError",
+     "Exception",
+     "BaseException"
+    ],
+    "message": "Council delivery packet and dba_report must be objects",
+    "raised": "ContractError"
+   }
+  },
+  "research_lead": {
+   "admitted": {
+    "delivery_bytes": 1347,
+    "delivery_overhead_bytes": 1095,
+    "payload_bytes": 252,
+    "payload_pool": 32768,
+    "reserved_bytes": 12288,
+    "role": "research_lead",
+    "schema": "urn:zeus:council-input:2",
+    "sections": {
+     "dba_report": 144,
+     "packet": 108
+    },
+    "unit": "utf8_bytes_of_canonical_json"
+   },
+   "delivery": {
+    "guidance": "Propose from the inline packet and DBA report; cite only packet claim ids.",
+    "inline": {
+     "acceptance_criteria": [
+      "crit-a",
+      "crit-b"
+     ],
+     "base_revision": "a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1",
+     "blocker_rule": "only material blockers are critical",
+     "dba_report": {
+      "claim_ids": [
+       "c1"
+      ],
+      "snapshot_digest": "sha256:d1d1d1d1d1d1d1d1d1d1d1d1d1d1d1d1d1d1d1d1d1d1d1d1d1d1d1d1d1d1d1d1",
+      "summary": "found",
+      "unknowns": []
+     },
+     "packet": {
+      "claims": [
+       {
+        "id": "c1",
+        "kind": "fact",
+        "source_ids": [
+         "s1"
+        ],
+        "text": "x"
+       }
+      ],
+      "questions": [],
+      "sources": [
+       {
+        "id": "s1"
+       }
+      ]
+     },
+     "packet_digest": "sha256:p1p1p1p1p1p1p1p1p1p1p1p1p1p1p1p1p1p1p1p1p1p1p1p1p1p1p1p1p1p1p1p1",
+     "relay": {
+      "from": "lead:dba"
+     },
+     "report_digest": "sha256:d2d2d2d2d2d2d2d2d2d2d2d2d2d2d2d2d2d2d2d2d2d2d2d2d2d2d2d2d2d2d2d2",
+     "role": "research_lead",
+     "round": 1,
+     "run_id": "run-1",
+     "snapshot_digest": "sha256:d1d1d1d1d1d1d1d1d1d1d1d1d1d1d1d1d1d1d1d1d1d1d1d1d1d1d1d1d1d1d1d1"
+    },
+    "input_policy": "urn:zeus:council-input:2",
+    "not_inline": {
+     "prior_outputs": {
+      "operation": [
+       "pointer",
+       "--pointer",
+       "/prior_outputs",
+       "--cursor",
+       "0",
+       "--limit",
+       "8000"
+      ],
+      "pointer": "/prior_outputs"
+     },
+     "ssot": {
+      "operation": [
+       "pointer",
+       "--pointer",
+       "/ssot",
+       "--cursor",
+       "0",
+       "--limit",
+       "8000"
+      ],
+      "pointer": "/ssot"
+     }
+    },
+    "reading": "Read not_inline from the original external_context artifact: reader_argv_prefix plus operation; follow artifact_reader rules.",
+    "schema": "urn:zeus:council-delivery:1"
+   },
+   "details_unchanged": true,
+   "digest": "5bcd65b033c25a41ebb1bffed7542fc51b90f522f8d8a2e51ead6d23d0ec2cd8",
+   "inline_keys": [
+    "role",
+    "run_id",
+    "base_revision",
+    "round",
+    "packet",
+    "packet_digest",
+    "dba_report",
+    "snapshot_digest",
+    "report_digest",
+    "relay",
+    "acceptance_criteria",
+    "blocker_rule"
+   ],
+   "inline_keys_expected": [
+    "role",
+    "run_id",
+    "base_revision",
+    "round",
+    "packet",
+    "packet_digest",
+    "dba_report",
+    "snapshot_digest",
+    "report_digest",
+    "relay",
+    "acceptance_criteria",
+    "blocker_rule"
+   ],
+   "inline_values_are_copies": true,
+   "inline_values_equal": true,
+   "not_inline": {
+    "prior_outputs": {
+     "operation": [
+      "pointer",
+      "--pointer",
+      "/prior_outputs",
+      "--cursor",
+      "0",
+      "--limit",
+      "8000"
+     ],
+     "pointer": "/prior_outputs"
+    },
+    "ssot": {
+     "operation": [
+      "pointer",
+      "--pointer",
+      "/ssot",
+      "--cursor",
+      "0",
+      "--limit",
+      "8000"
+     ],
+     "pointer": "/ssot"
+    }
+   }
+  },
+  "research_lead_does_not_inline_proposals": {
+   "improvement_proposal": false,
+   "research_proposal": false
+  },
+  "wrapper_just_inside": {
+   "conductor": true,
+   "improvement_lead": true,
+   "research_lead": true
+  }
+ },
+ "s4_admitted_delivery": {
+  "agent_mismatch": {
+   "''": {
+    "args": [
+     "'Council delivery role, stage and agent must agree'"
+    ],
+    "bases": [
+     "ContractError",
+     "ValueError",
+     "Exception",
+     "BaseException"
+    ],
+    "message": "Council delivery role, stage and agent must agree",
+    "raised": "ContractError"
+   },
+   "'conductor'": {
+    "args": [
+     "'Council delivery role, stage and agent must agree'"
+    ],
+    "bases": [
+     "ContractError",
+     "ValueError",
+     "Exception",
+     "BaseException"
+    ],
+    "message": "Council delivery role, stage and agent must agree",
+    "raised": "ContractError"
+   },
+   "'lead:improvement'": {
+    "args": [
+     "'Council delivery role, stage and agent must agree'"
+    ],
+    "bases": [
+     "ContractError",
+     "ValueError",
+     "Exception",
+     "BaseException"
+    ],
+    "message": "Council delivery role, stage and agent must agree",
+    "raised": "ContractError"
+   },
+   "None": {
+    "args": [
+     "'Council delivery role, stage and agent must agree'"
+    ],
+    "bases": [
+     "ContractError",
+     "ValueError",
+     "Exception",
+     "BaseException"
+    ],
+    "message": "Council delivery role, stage and agent must agree",
+    "raised": "ContractError"
+   }
+  },
+  "conductor": {
+   "accepted": {
+    "delivery_bytes": 1798,
+    "delivery_overhead_bytes": 1240,
+    "payload_bytes": 558,
+    "payload_pool": 32768,
+    "reserved_bytes": 0,
+    "role": "conductor",
+    "schema": "urn:zeus:council-input:2",
+    "sections": {
+     "dba_report": 144,
+     "improvement_proposal": 87,
+     "packet": 108,
+     "research_proposal": 219
+    },
+    "unit": "utf8_bytes_of_canonical_json"
+   },
+   "accepted_equals_admit": true,
+   "agent": "conductor"
+  },
+  "delivery_of_another_role": {
+   "args": [
+    "'Council delivery role, stage and agent must agree'"
+   ],
+   "bases": [
+    "ContractError",
+    "ValueError",
+    "Exception",
+    "BaseException"
+   ],
+   "message": "Council delivery role, stage and agent must agree",
+   "raised": "ContractError"
+  },
+  "details_missing_input_after_the_agreement": {
+   "args": [
+    "'Council delivery input missing: ssot'"
+   ],
+   "bases": [
+    "ContractError",
+    "ValueError",
+    "Exception",
+    "BaseException"
+   ],
+   "message": "Council delivery input missing: ssot",
+   "raised": "ContractError"
+  },
+  "details_role_mismatch_after_the_agreement": {
+   "args": [
+    "'Council delivery role mismatch'"
+   ],
+   "bases": [
+    "ContractError",
+    "ValueError",
+    "Exception",
+    "BaseException"
+   ],
+   "message": "Council delivery role mismatch",
+   "raised": "ContractError"
+  },
+  "edited_wrapper": {
+   "args": [
+    "'Council delivery is not the projection of this task'"
+   ],
+   "bases": [
+    "ContractError",
+    "ValueError",
+    "Exception",
+    "BaseException"
+   ],
+   "message": "Council delivery is not the projection of this task",
+   "raised": "ContractError"
+  },
+  "first_failure_wins": {
+   "action_before_role": {
+    "args": [
+     "'Council delivery requires a read-only dge_role execution'"
+    ],
+    "bases": [
+     "ContractError",
+     "ValueError",
+     "Exception",
+     "BaseException"
+    ],
+    "message": "Council delivery requires a read-only dge_role execution",
+    "raised": "ContractError"
+   },
+   "read_only_before_role": {
+    "args": [
+     "'Council delivery requires a read-only dge_role execution'"
+    ],
+    "bases": [
+     "ContractError",
+     "ValueError",
+     "Exception",
+     "BaseException"
+    ],
+    "message": "Council delivery requires a read-only dge_role execution",
+    "raised": "ContractError"
+   }
+  },
+  "foreign_task_details": {
+   "args": [
+    "'Council delivery is not the projection of this task'"
+   ],
+   "bases": [
+    "ContractError",
+    "ValueError",
+    "Exception",
+    "BaseException"
+   ],
+   "message": "Council delivery is not the projection of this task",
+   "raised": "ContractError"
+  },
+  "improvement_lead": {
+   "accepted": {
+    "delivery_bytes": 1601,
+    "delivery_overhead_bytes": 1130,
+    "payload_bytes": 471,
+    "payload_pool": 32768,
+    "reserved_bytes": 8192,
+    "role": "improvement_lead",
+    "schema": "urn:zeus:council-input:2",
+    "sections": {
+     "dba_report": 144,
+     "packet": 108,
+     "research_proposal": 219
+    },
+    "unit": "utf8_bytes_of_canonical_json"
+   },
+   "accepted_equals_admit": true,
+   "agent": "lead:improvement"
+  },
+  "inflated_inline": {
+   "args": [
+    "'Council delivery is not the projection of this task'"
+   ],
+   "bases": [
+    "ContractError",
+    "ValueError",
+    "Exception",
+    "BaseException"
+   ],
+   "message": "Council delivery is not the projection of this task",
+   "raised": "ContractError"
+  },
+  "no_role_in_inline": {
+   "args": [
+    "'Council delivery names no debate role'"
+   ],
+   "bases": [
+    "ContractError",
+    "ValueError",
+    "Exception",
+    "BaseException"
+   ],
+   "message": "Council delivery names no debate role",
+   "raised": "ContractError"
+  },
+  "no_role_inline_not_a_dict": {
+   "missing": {
+    "args": [
+     "'Council delivery names no debate role'"
+    ],
+    "bases": [
+     "ContractError",
+     "ValueError",
+     "Exception",
+     "BaseException"
+    ],
+    "message": "Council delivery names no debate role",
+    "raised": "ContractError"
+   },
+   "none": {
+    "args": [
+     "'Council delivery names no debate role'"
+    ],
+    "bases": [
+     "ContractError",
+     "ValueError",
+     "Exception",
+     "BaseException"
+    ],
+    "message": "Council delivery names no debate role",
+    "raised": "ContractError"
+   },
+   "text": {
+    "args": [
+     "'Council delivery names no debate role'"
+    ],
+    "bases": [
+     "ContractError",
+     "ValueError",
+     "Exception",
+     "BaseException"
+    ],
+    "message": "Council delivery names no debate role",
+    "raised": "ContractError"
+   }
+  },
+  "no_role_not_a_dict": {
+   "list": {
+    "args": [
+     "'Council delivery names no debate role'"
+    ],
+    "bases": [
+     "ContractError",
+     "ValueError",
+     "Exception",
+     "BaseException"
+    ],
+    "message": "Council delivery names no debate role",
+    "raised": "ContractError"
+   },
+   "none": {
+    "args": [
+     "'Council delivery names no debate role'"
+    ],
+    "bases": [
+     "ContractError",
+     "ValueError",
+     "Exception",
+     "BaseException"
+    ],
+    "message": "Council delivery names no debate role",
+    "raised": "ContractError"
+   },
+   "text": {
+    "args": [
+     "'Council delivery names no debate role'"
+    ],
+    "bases": [
+     "ContractError",
+     "ValueError",
+     "Exception",
+     "BaseException"
+    ],
+    "message": "Council delivery names no debate role",
+    "raised": "ContractError"
+   }
+  },
+  "not_read_only": {
+   "0": {
+    "args": [
+     "'Council delivery requires a read-only dge_role execution'"
+    ],
+    "bases": [
+     "ContractError",
+     "ValueError",
+     "Exception",
+     "BaseException"
+    ],
+    "message": "Council delivery requires a read-only dge_role execution",
+    "raised": "ContractError"
+   },
+   "1": {
+    "args": [
+     "'Council delivery requires a read-only dge_role execution'"
+    ],
+    "bases": [
+     "ContractError",
+     "ValueError",
+     "Exception",
+     "BaseException"
+    ],
+    "message": "Council delivery requires a read-only dge_role execution",
+    "raised": "ContractError"
+   },
+   "False": {
+    "args": [
+     "'Council delivery requires a read-only dge_role execution'"
+    ],
+    "bases": [
+     "ContractError",
+     "ValueError",
+     "Exception",
+     "BaseException"
+    ],
+    "message": "Council delivery requires a read-only dge_role execution",
+    "raised": "ContractError"
+   },
+   "None": {
+    "args": [
+     "'Council delivery requires a read-only dge_role execution'"
+    ],
+    "bases": [
+     "ContractError",
+     "ValueError",
+     "Exception",
+     "BaseException"
+    ],
+    "message": "Council delivery requires a read-only dge_role execution",
+    "raised": "ContractError"
+   },
+   "true": {
+    "args": [
+     "'Council delivery requires a read-only dge_role execution'"
+    ],
+    "bases": [
+     "ContractError",
+     "ValueError",
+     "Exception",
+     "BaseException"
+    ],
+    "message": "Council delivery requires a read-only dge_role execution",
+    "raised": "ContractError"
+   }
+  },
+  "research_lead": {
+   "accepted": {
+    "delivery_bytes": 1347,
+    "delivery_overhead_bytes": 1095,
+    "payload_bytes": 252,
+    "payload_pool": 32768,
+    "reserved_bytes": 12288,
+    "role": "research_lead",
+    "schema": "urn:zeus:council-input:2",
+    "sections": {
+     "dba_report": 144,
+     "packet": 108
+    },
+    "unit": "utf8_bytes_of_canonical_json"
+   },
+   "accepted_equals_admit": true,
+   "agent": "lead:research"
+  },
+  "role_not_a_debate_role": {
+   "attacker": {
+    "args": [
+     "'Council delivery names no debate role'"
+    ],
+    "bases": [
+     "ContractError",
+     "ValueError",
+     "Exception",
+     "BaseException"
+    ],
+    "message": "Council delivery names no debate role",
+    "raised": "ContractError"
+   },
+   "dba": {
+    "args": [
+     "'Council delivery names no debate role'"
+    ],
+    "bases": [
+     "ContractError",
+     "ValueError",
+     "Exception",
+     "BaseException"
+    ],
+    "message": "Council delivery names no debate role",
+    "raised": "ContractError"
+   },
+   "nobody": {
+    "args": [
+     "'Council delivery names no debate role'"
+    ],
+    "bases": [
+     "ContractError",
+     "ValueError",
+     "Exception",
+     "BaseException"
+    ],
+    "message": "Council delivery names no debate role",
+    "raised": "ContractError"
+   },
+   "researcher": {
+    "args": [
+     "'Council delivery names no debate role'"
+    ],
+    "bases": [
+     "ContractError",
+     "ValueError",
+     "Exception",
+     "BaseException"
+    ],
+    "message": "Council delivery names no debate role",
+    "raised": "ContractError"
+   }
+  },
+  "stage_mismatch": {
+   "''": {
+    "args": [
+     "'Council delivery role, stage and agent must agree'"
+    ],
+    "bases": [
+     "ContractError",
+     "ValueError",
+     "Exception",
+     "BaseException"
+    ],
+    "message": "Council delivery role, stage and agent must agree",
+    "raised": "ContractError"
+   },
+   "'dge:conductor'": {
+    "args": [
+     "'Council delivery role, stage and agent must agree'"
+    ],
+    "bases": [
+     "ContractError",
+     "ValueError",
+     "Exception",
+     "BaseException"
+    ],
+    "message": "Council delivery role, stage and agent must agree",
+    "raised": "ContractError"
+   },
+   "'dge_role'": {
+    "args": [
+     "'Council delivery role, stage and agent must agree'"
+    ],
+    "bases": [
+     "ContractError",
+     "ValueError",
+     "Exception",
+     "BaseException"
+    ],
+    "message": "Council delivery role, stage and agent must agree",
+    "raised": "ContractError"
+   },
+   "None": {
+    "args": [
+     "'Council delivery role, stage and agent must agree'"
+    ],
+    "bases": [
+     "ContractError",
+     "ValueError",
+     "Exception",
+     "BaseException"
+    ],
+    "message": "Council delivery role, stage and agent must agree",
+    "raised": "ContractError"
+   }
+  },
+  "trimmed_inline": {
+   "args": [
+    "'Council delivery is not the projection of this task'"
+   ],
+   "bases": [
+    "ContractError",
+    "ValueError",
+    "Exception",
+    "BaseException"
+   ],
+   "message": "Council delivery is not the projection of this task",
+   "raised": "ContractError"
+  },
+  "wrong_action": {
+   "": {
+    "args": [
+     "'Council delivery requires a read-only dge_role execution'"
+    ],
+    "bases": [
+     "ContractError",
+     "ValueError",
+     "Exception",
+     "BaseException"
+    ],
+    "message": "Council delivery requires a read-only dge_role execution",
+    "raised": "ContractError"
+   },
+   "None": {
+    "args": [
+     "'Council delivery requires a read-only dge_role execution'"
+    ],
+    "bases": [
+     "ContractError",
+     "ValueError",
+     "Exception",
+     "BaseException"
+    ],
+    "message": "Council delivery requires a read-only dge_role execution",
+    "raised": "ContractError"
+   },
+   "dge": {
+    "args": [
+     "'Council delivery requires a read-only dge_role execution'"
+    ],
+    "bases": [
+     "ContractError",
+     "ValueError",
+     "Exception",
+     "BaseException"
+    ],
+    "message": "Council delivery requires a read-only dge_role execution",
+    "raised": "ContractError"
+   },
+   "execute": {
+    "args": [
+     "'Council delivery requires a read-only dge_role execution'"
+    ],
+    "bases": [
+     "ContractError",
+     "ValueError",
+     "Exception",
+     "BaseException"
+    ],
+    "message": "Council delivery requires a read-only dge_role execution",
+    "raised": "ContractError"
+   }
+  }
+ },
+ "s5_isolation_context": {
+  "context_instruction_is_static": true,
+  "context_keys": [
+   "phase",
+   "isolation",
+   "instruction"
+  ],
+  "context_refuses_a_digestless_isolation": {
+   "args": [
+    "'Isolation configuration carries no digest'"
+   ],
+   "bases": [
+    "ContractError",
+    "ValueError",
+    "Exception",
+    "BaseException"
+   ],
+   "message": "Isolation configuration carries no digest",
+   "raised": "ContractError"
+  },
+  "context_with_isolation": {
+   "instruction": "Read-only at the pinned base; no candidate, worker or verifier has run. Do not execute code/tests/scripts or change files. Return structured output only.",
+   "isolation": {
+    "digest": "sha256:i1i1i1i1i1i1i1i1i1i1i1i1i1i1i1i1i1i1i1i1i1i1i1i1i1i1i1i1i1i1i1i1",
+    "mode": "container"
+   },
+   "phase": "pre_implementation"
+  },
+  "context_with_none": {
+   "instruction": "Read-only at the pinned base; no candidate, worker or verifier has run. Do not execute code/tests/scripts or change files. Return structured output only.",
+   "isolation": null,
+   "phase": "pre_implementation"
+  },
+  "context_without_isolation": {
+   "instruction": "Read-only at the pinned base; no candidate, worker or verifier has run. Do not execute code/tests/scripts or change files. Return structured output only.",
+   "isolation": null,
+   "phase": "pre_implementation"
+  },
+  "empty_dict": {
+   "args": [
+    "'Isolation configuration carries no digest'"
+   ],
+   "bases": [
+    "ContractError",
+    "ValueError",
+    "Exception",
+    "BaseException"
+   ],
+   "message": "Isolation configuration carries no digest",
+   "raised": "ContractError"
+  },
+  "empty_digest": {
+   "args": [
+    "'Isolation configuration carries no digest'"
+   ],
+   "bases": [
+    "ContractError",
+    "ValueError",
+    "Exception",
+    "BaseException"
+   ],
+   "message": "Isolation configuration carries no digest",
+   "raised": "ContractError"
+  },
+  "missing_digest": {
+   "args": [
+    "'Isolation configuration carries no digest'"
+   ],
+   "bases": [
+    "ContractError",
+    "ValueError",
+    "Exception",
+    "BaseException"
+   ],
+   "message": "Isolation configuration carries no digest",
+   "raised": "ContractError"
+  },
+  "missing_mode": {
+   "args": [
+    "'mode'"
+   ],
+   "bases": [
+    "KeyError",
+    "LookupError",
+    "Exception",
+    "BaseException"
+   ],
+   "message": "'mode'",
+   "raised": "KeyError"
+  },
+  "mode_is_not_checked": {
+   "digest": "d",
+   "mode": null
+  },
+  "non_string_digest": {
+   "int": {
+    "args": [
+     "'Isolation configuration carries no digest'"
+    ],
+    "bases": [
+     "ContractError",
+     "ValueError",
+     "Exception",
+     "BaseException"
+    ],
+    "message": "Isolation configuration carries no digest",
+    "raised": "ContractError"
+   },
+   "list": {
+    "args": [
+     "'Isolation configuration carries no digest'"
+    ],
+    "bases": [
+     "ContractError",
+     "ValueError",
+     "Exception",
+     "BaseException"
+    ],
+    "message": "Isolation configuration carries no digest",
+    "raised": "ContractError"
+   },
+   "none": {
+    "args": [
+     "'Isolation configuration carries no digest'"
+    ],
+    "bases": [
+     "ContractError",
+     "ValueError",
+     "Exception",
+     "BaseException"
+    ],
+    "message": "Isolation configuration carries no digest",
+    "raised": "ContractError"
+   }
+  },
+  "none": null,
+  "not_a_dict": {
+   "int": {
+    "args": [
+     "'Isolation configuration carries no digest'"
+    ],
+    "bases": [
+     "ContractError",
+     "ValueError",
+     "Exception",
+     "BaseException"
+    ],
+    "message": "Isolation configuration carries no digest",
+    "raised": "ContractError"
+   },
+   "list": {
+    "args": [
+     "'Isolation configuration carries no digest'"
+    ],
+    "bases": [
+     "ContractError",
+     "ValueError",
+     "Exception",
+     "BaseException"
+    ],
+    "message": "Isolation configuration carries no digest",
+    "raised": "ContractError"
+   },
+   "text": {
+    "args": [
+     "'Isolation configuration carries no digest'"
+    ],
+    "bases": [
+     "ContractError",
+     "ValueError",
+     "Exception",
+     "BaseException"
+    ],
+    "message": "Isolation configuration carries no digest",
+    "raised": "ContractError"
+   }
+  },
+  "valid": {
+   "digest": "sha256:i1i1i1i1i1i1i1i1i1i1i1i1i1i1i1i1i1i1i1i1i1i1i1i1i1i1i1i1i1i1i1i1",
+   "mode": "container"
+  },
+  "valid_keeps_only_mode_and_digest": [
+   "digest",
+   "mode"
+  ]
+ },
+ "s6_role_schema": {
+  "arbiter": {
+   "criterion_enum": false,
+   "digest": "38e18dc66080c97756e79626a8b360515e6e3bb67022f04462927e39905f9a5f",
+   "equals_static": true,
+   "is_a_copy": true,
+   "keys": [
+    "verdict",
+    "rationale",
+    "dispositions",
+    "research_question"
+   ]
+  },
+  "attacker": {
+   "criterion": {
+    "enum": [
+     "crit-a",
+     "crit-b"
+    ],
+    "type": "string"
+   },
+   "criterion_enum": true,
+   "digest": "f4382549d0006ad80963bf82739c53862caca4ed41bd19737cac61f1c0e8ac18",
+   "equals_static": false,
+   "is_a_copy": true,
+   "keys": [
+    "findings"
+   ]
+  },
+  "conductor": {
+   "criterion_enum": false,
+   "digest": "1d0da6bea49d8ff591fcf019c8e7e6984f2e1c249248af8693b7a44abf5959d2",
+   "equals_static": true,
+   "is_a_copy": true,
+   "keys": [
+    "verdict",
+    "rationale",
+    "dispositions",
+    "research_question",
+    "snapshot_digest",
+    "report_digest"
+   ]
+  },
+  "criteria_order_kept": {
+   "enum": [
+    "z",
+    "a",
+    "m"
+   ],
+   "type": "string"
+  },
+  "dba": {
+   "criterion_enum": false,
+   "digest": "aab2da2136387c7e2cfce69b815fd334566b98156a8992ef2e26654f20b143d1",
+   "equals_static": true,
+   "is_a_copy": true,
+   "keys": [
+    "snapshot_digest",
+    "summary",
+    "claim_ids",
+    "unknowns"
+   ]
+  },
+  "details_not_a_dict_for_a_criterion_role": {
+   "args": [
+    "\"'NoneType' object has no attribute 'get'\""
+   ],
+   "bases": [
+    "AttributeError",
+    "Exception",
+    "BaseException",
+    "object"
+   ],
+   "message": "'NoneType' object has no attribute 'get'",
+   "raised": "AttributeError"
+  },
+  "details_not_a_dict_for_another_role": true,
+  "improvement_lead": {
+   "criterion": {
+    "enum": [
+     "crit-a",
+     "crit-b"
+    ],
+    "type": "string"
+   },
+   "criterion_enum": true,
+   "digest": "e2e3a6468f9ec9b96b00bd277e9fe30a324aee8d16ea6d2813a2e12a12dfa674",
+   "equals_static": false,
+   "is_a_copy": true,
+   "keys": [
+    "summary",
+    "decision",
+    "rationale",
+    "transition",
+    "claim_ids",
+    "findings",
+    "snapshot_digest",
+    "report_digest"
+   ]
+  },
+  "other_roles_ignore_criteria": {
+   "arbiter": true,
+   "conductor": true,
+   "dba": true,
+   "proposer": true,
+   "research_lead": true,
+   "researcher": true
+  },
+  "proposer": {
+   "criterion_enum": false,
+   "digest": "b8476811333584f9b1ca09ea4864725bf8c17d4ee49e5b1cab07670cd72193bc",
+   "equals_static": true,
+   "is_a_copy": true,
+   "keys": [
+    "summary",
+    "claim_ids"
+   ]
+  },
+  "refused_criteria": {
+   "attacker": {
+    "duplicated": {
+     "args": [
+      "'Role details must carry the pinned plan acceptance_criteria'"
+     ],
+     "bases": [
+      "ContractError",
+      "ValueError",
+      "Exception",
+      "BaseException"
+     ],
+     "message": "Role details must carry the pinned plan acceptance_criteria",
+     "raised": "ContractError"
+    },
+    "empty": {
+     "args": [
+      "'Role details must carry the pinned plan acceptance_criteria'"
+     ],
+     "bases": [
+      "ContractError",
+      "ValueError",
+      "Exception",
+      "BaseException"
+     ],
+     "message": "Role details must carry the pinned plan acceptance_criteria",
+     "raised": "ContractError"
+    },
+    "empty_string": {
+     "args": [
+      "'Role details must carry the pinned plan acceptance_criteria'"
+     ],
+     "bases": [
+      "ContractError",
+      "ValueError",
+      "Exception",
+      "BaseException"
+     ],
+     "message": "Role details must carry the pinned plan acceptance_criteria",
+     "raised": "ContractError"
+    },
+    "missing": {
+     "args": [
+      "'Role details must carry the pinned plan acceptance_criteria'"
+     ],
+     "bases": [
+      "ContractError",
+      "ValueError",
+      "Exception",
+      "BaseException"
+     ],
+     "message": "Role details must carry the pinned plan acceptance_criteria",
+     "raised": "ContractError"
+    },
+    "non_string": {
+     "args": [
+      "'Role details must carry the pinned plan acceptance_criteria'"
+     ],
+     "bases": [
+      "ContractError",
+      "ValueError",
+      "Exception",
+      "BaseException"
+     ],
+     "message": "Role details must carry the pinned plan acceptance_criteria",
+     "raised": "ContractError"
+    },
+    "none": {
+     "args": [
+      "'Role details must carry the pinned plan acceptance_criteria'"
+     ],
+     "bases": [
+      "ContractError",
+      "ValueError",
+      "Exception",
+      "BaseException"
+     ],
+     "message": "Role details must carry the pinned plan acceptance_criteria",
+     "raised": "ContractError"
+    },
+    "none_member": {
+     "args": [
+      "'Role details must carry the pinned plan acceptance_criteria'"
+     ],
+     "bases": [
+      "ContractError",
+      "ValueError",
+      "Exception",
+      "BaseException"
+     ],
+     "message": "Role details must carry the pinned plan acceptance_criteria",
+     "raised": "ContractError"
+    },
+    "not_a_list": {
+     "args": [
+      "'Role details must carry the pinned plan acceptance_criteria'"
+     ],
+     "bases": [
+      "ContractError",
+      "ValueError",
+      "Exception",
+      "BaseException"
+     ],
+     "message": "Role details must carry the pinned plan acceptance_criteria",
+     "raised": "ContractError"
+    },
+    "str_subclass": {
+     "args": [
+      "'Role details must carry the pinned plan acceptance_criteria'"
+     ],
+     "bases": [
+      "ContractError",
+      "ValueError",
+      "Exception",
+      "BaseException"
+     ],
+     "message": "Role details must carry the pinned plan acceptance_criteria",
+     "raised": "ContractError"
+    },
+    "tuple": {
+     "args": [
+      "'Role details must carry the pinned plan acceptance_criteria'"
+     ],
+     "bases": [
+      "ContractError",
+      "ValueError",
+      "Exception",
+      "BaseException"
+     ],
+     "message": "Role details must carry the pinned plan acceptance_criteria",
+     "raised": "ContractError"
+    }
+   },
+   "improvement_lead": {
+    "duplicated": {
+     "args": [
+      "'Role details must carry the pinned plan acceptance_criteria'"
+     ],
+     "bases": [
+      "ContractError",
+      "ValueError",
+      "Exception",
+      "BaseException"
+     ],
+     "message": "Role details must carry the pinned plan acceptance_criteria",
+     "raised": "ContractError"
+    },
+    "empty": {
+     "args": [
+      "'Role details must carry the pinned plan acceptance_criteria'"
+     ],
+     "bases": [
+      "ContractError",
+      "ValueError",
+      "Exception",
+      "BaseException"
+     ],
+     "message": "Role details must carry the pinned plan acceptance_criteria",
+     "raised": "ContractError"
+    },
+    "empty_string": {
+     "args": [
+      "'Role details must carry the pinned plan acceptance_criteria'"
+     ],
+     "bases": [
+      "ContractError",
+      "ValueError",
+      "Exception",
+      "BaseException"
+     ],
+     "message": "Role details must carry the pinned plan acceptance_criteria",
+     "raised": "ContractError"
+    },
+    "missing": {
+     "args": [
+      "'Role details must carry the pinned plan acceptance_criteria'"
+     ],
+     "bases": [
+      "ContractError",
+      "ValueError",
+      "Exception",
+      "BaseException"
+     ],
+     "message": "Role details must carry the pinned plan acceptance_criteria",
+     "raised": "ContractError"
+    },
+    "non_string": {
+     "args": [
+      "'Role details must carry the pinned plan acceptance_criteria'"
+     ],
+     "bases": [
+      "ContractError",
+      "ValueError",
+      "Exception",
+      "BaseException"
+     ],
+     "message": "Role details must carry the pinned plan acceptance_criteria",
+     "raised": "ContractError"
+    },
+    "none": {
+     "args": [
+      "'Role details must carry the pinned plan acceptance_criteria'"
+     ],
+     "bases": [
+      "ContractError",
+      "ValueError",
+      "Exception",
+      "BaseException"
+     ],
+     "message": "Role details must carry the pinned plan acceptance_criteria",
+     "raised": "ContractError"
+    },
+    "none_member": {
+     "args": [
+      "'Role details must carry the pinned plan acceptance_criteria'"
+     ],
+     "bases": [
+      "ContractError",
+      "ValueError",
+      "Exception",
+      "BaseException"
+     ],
+     "message": "Role details must carry the pinned plan acceptance_criteria",
+     "raised": "ContractError"
+    },
+    "not_a_list": {
+     "args": [
+      "'Role details must carry the pinned plan acceptance_criteria'"
+     ],
+     "bases": [
+      "ContractError",
+      "ValueError",
+      "Exception",
+      "BaseException"
+     ],
+     "message": "Role details must carry the pinned plan acceptance_criteria",
+     "raised": "ContractError"
+    },
+    "str_subclass": {
+     "args": [
+      "'Role details must carry the pinned plan acceptance_criteria'"
+     ],
+     "bases": [
+      "ContractError",
+      "ValueError",
+      "Exception",
+      "BaseException"
+     ],
+     "message": "Role details must carry the pinned plan acceptance_criteria",
+     "raised": "ContractError"
+    },
+    "tuple": {
+     "args": [
+      "'Role details must carry the pinned plan acceptance_criteria'"
+     ],
+     "bases": [
+      "ContractError",
+      "ValueError",
+      "Exception",
+      "BaseException"
+     ],
+     "message": "Role details must carry the pinned plan acceptance_criteria",
+     "raised": "ContractError"
+    }
+   }
+  },
+  "research_lead": {
+   "criterion_enum": false,
+   "digest": "8509db019ea8f66c9995bc7f481f1066473d46eb02d75c8fd5770cbb4b5290f6",
+   "equals_static": true,
+   "is_a_copy": true,
+   "keys": [
+    "summary",
+    "claim_ids",
+    "snapshot_digest",
+    "report_digest"
+   ]
+  },
+  "researcher": {
+   "criterion_enum": false,
+   "digest": "c143379c0d9482157d6367ddd1138009a001695c890dcffa54b79d45f980c9c4",
+   "equals_static": true,
+   "is_a_copy": true,
+   "keys": [
+    "sources",
+    "claims",
+    "questions",
+    "ssot",
+    "needs_user",
+    "user_question"
+   ]
+  },
+  "single_criterion": {
+   "enum": [
+    "only"
+   ],
+   "type": "string"
+  },
+  "static_attacker_criterion_stays_text": {
+   "type": "string"
+  },
+  "static_schemas_unmodified": true,
+  "two_executions_are_independent": [
+   [
+    "one"
+   ],
+   [
+    "two"
+   ]
+  ],
+  "unknown_role": {
+   "args": [
+    "'nobody'"
+   ],
+   "bases": [
+    "KeyError",
+    "LookupError",
+    "Exception",
+    "BaseException"
+   ],
+   "message": "'nobody'",
+   "raised": "KeyError"
+  }
+ },
+ "s7_execute_role": {
+  "a_provided_result_is_mutated_in_place": {
+   "git_calls": [
+    [
+     "review_workspace",
+     "a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1",
+     "task-arbiter"
+    ],
+    [
+     "_git",
+     [
+      "rev-parse",
+      "HEAD"
+     ],
+     "/fake/review/task-arbiter"
+    ],
+    [
+     "_git",
+     [
+      "status",
+      "--porcelain"
+     ],
+     "/fake/review/task-arbiter"
+    ],
+    [
+     "_git",
+     [
+      "rev-parse",
+      "HEAD"
+     ],
+     "/fake/review/task-arbiter"
+    ]
+   ],
+   "outcome": "returned",
+   "result": {
+    "role_execution": {
+     "input_policy": null,
+     "provider_entries_cap": 1,
+     "read_only": true,
+     "role": "arbiter",
+     "stage": "dge:arbiter"
+    }
+   },
+   "result_is_the_run_result": true,
+   "run": {
+    "agent": "lead:arbiter",
+    "cwd": "/fake/review/task-arbiter",
+    "delivery_digest": null,
+    "delivery_is_council_delivery": null,
+    "delivery_is_none": true,
+    "details_is_the_task_details": true,
+    "heartbeat_is_passed": true,
+    "kwargs": {
+     "action": "dge_role",
+     "delivery": null,
+     "max_handoffs": 1,
+     "stage": "dge:arbiter",
+     "workload": "design"
+    },
+    "objective_digest": "4b4b4c7131c02e9d22d88d9d5fb21407dd6acd8c988c04ed59a8ecffc853da3a",
+    "objective_is_role_objective": true,
+    "read_only_flag": true,
+    "schema_digest": "38e18dc66080c97756e79626a8b360515e6e3bb67022f04462927e39905f9a5f",
+    "schema_is_role_schema": true,
+    "task_id": "task-arbiter",
+    "task_is_passed": true
+   },
+   "run_calls": 1,
+   "run_positional_count": 9
+  },
+  "council_delivery_refusals": {
+   "conductor_missing_improvement_proposal": {
+    "bases": [
+     "ContractError",
+     "ValueError",
+     "Exception",
+     "BaseException"
+    ],
+    "git_calls": [
+     [
+      "review_workspace",
+      "a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1",
+      "task-conductor"
+     ],
+     [
+      "_git",
+      [
+       "rev-parse",
+       "HEAD"
+      ],
+      "/fake/review/task-conductor"
+     ]
+    ],
+    "message": "Council delivery input missing: improvement_proposal",
+    "outcome": "ContractError",
+    "run_calls": 0
+   },
+   "conductor_missing_input_refused_before_the_provider": {
+    "bases": [
+     "ContractError",
+     "ValueError",
+     "Exception",
+     "BaseException"
+    ],
+    "git_calls": [
+     [
+      "review_workspace",
+      "a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1",
+      "task-conductor"
+     ],
+     [
+      "_git",
+      [
+       "rev-parse",
+       "HEAD"
+      ],
+      "/fake/review/task-conductor"
+     ]
+    ],
+    "message": "Council delivery input missing: ssot",
+    "outcome": "ContractError",
+    "run_calls": 0
+   },
+   "conductor_over_budget_refused_before_the_provider": {
+    "bases": [
+     "CouncilInputOverflow",
+     "ContractError",
+     "ValueError",
+     "Exception"
+    ],
+    "git_calls": [
+     [
+      "review_workspace",
+      "a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1",
+      "task-conductor"
+     ],
+     [
+      "_git",
+      [
+       "rev-parse",
+       "HEAD"
+      ],
+      "/fake/review/task-conductor"
+     ]
+    ],
+    "message": "needs_scope_split:packet:20015/16384",
+    "outcome": "CouncilInputOverflow",
+    "run_calls": 0
+   },
+   "improvement_lead_missing_input_refused_before_the_provider": {
+    "bases": [
+     "ContractError",
+     "ValueError",
+     "Exception",
+     "BaseException"
+    ],
+    "git_calls": [
+     [
+      "review_workspace",
+      "a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1",
+      "task-improvement_lead"
+     ],
+     [
+      "_git",
+      [
+       "rev-parse",
+       "HEAD"
+      ],
+      "/fake/review/task-improvement_lead"
+     ]
+    ],
+    "message": "Council delivery input missing: ssot",
+    "outcome": "ContractError",
+    "run_calls": 0
+   },
+   "improvement_lead_over_budget_refused_before_the_provider": {
+    "bases": [
+     "CouncilInputOverflow",
+     "ContractError",
+     "ValueError",
+     "Exception"
+    ],
+    "git_calls": [
+     [
+      "review_workspace",
+      "a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1",
+      "task-improvement_lead"
+     ],
+     [
+      "_git",
+      [
+       "rev-parse",
+       "HEAD"
+      ],
+      "/fake/review/task-improvement_lead"
+     ]
+    ],
+    "message": "needs_scope_split:packet:20015/16384",
+    "outcome": "CouncilInputOverflow",
+    "run_calls": 0
+   },
+   "research_lead_missing_dba_report": {
+    "bases": [
+     "ContractError",
+     "ValueError",
+     "Exception",
+     "BaseException"
+    ],
+    "git_calls": [
+     [
+      "review_workspace",
+      "a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1",
+      "task-research_lead"
+     ],
+     [
+      "_git",
+      [
+       "rev-parse",
+       "HEAD"
+      ],
+      "/fake/review/task-research_lead"
+     ]
+    ],
+    "message": "Council delivery input missing: dba_report",
+    "outcome": "ContractError",
+    "run_calls": 0
+   },
+   "research_lead_missing_input_refused_before_the_provider": {
+    "bases": [
+     "ContractError",
+     "ValueError",
+     "Exception",
+     "BaseException"
+    ],
+    "git_calls": [
+     [
+      "review_workspace",
+      "a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1",
+      "task-research_lead"
+     ],
+     [
+      "_git",
+      [
+       "rev-parse",
+       "HEAD"
+      ],
+      "/fake/review/task-research_lead"
+     ]
+    ],
+    "message": "Council delivery input missing: ssot",
+    "outcome": "ContractError",
+    "run_calls": 0
+   },
+   "research_lead_over_budget_refused_before_the_provider": {
+    "bases": [
+     "CouncilInputOverflow",
+     "ContractError",
+     "ValueError",
+     "Exception"
+    ],
+    "git_calls": [
+     [
+      "review_workspace",
+      "a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1",
+      "task-research_lead"
+     ],
+     [
+      "_git",
+      [
+       "rev-parse",
+       "HEAD"
+      ],
+      "/fake/review/task-research_lead"
+     ]
+    ],
+    "message": "needs_scope_split:packet:20015/16384",
+    "outcome": "CouncilInputOverflow",
+    "run_calls": 0
+   }
+  },
+  "debate_roles_succeed": {
+   "conductor": {
+    "git_calls": [
+     [
+      "review_workspace",
+      "a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1",
+      "task-conductor"
+     ],
+     [
+      "_git",
+      [
+       "rev-parse",
+       "HEAD"
+      ],
+      "/fake/review/task-conductor"
+     ],
+     [
+      "_git",
+      [
+       "status",
+       "--porcelain"
+      ],
+      "/fake/review/task-conductor"
+     ],
+     [
+      "_git",
+      [
+       "rev-parse",
+       "HEAD"
+      ],
+      "/fake/review/task-conductor"
+     ]
+    ],
+    "outcome": "returned",
+    "result": {
+     "output": {
+      "ok": true
+     },
+     "role_execution": {
+      "input_policy": "urn:zeus:council-input:2",
+      "provider_entries_cap": 1,
+      "read_only": true,
+      "role": "conductor",
+      "stage": "dge:conductor"
+     }
+    },
+    "result_is_the_run_result": true,
+    "run": {
+     "agent": "conductor",
+     "cwd": "/fake/review/task-conductor",
+     "delivery_digest": "a97c7c32486b6736bb64bfb2cb405d4e833041e6c1470a5c4d0ca563529102ac",
+     "delivery_is_council_delivery": true,
+     "delivery_is_none": false,
+     "details_is_the_task_details": true,
+     "heartbeat_is_passed": true,
+     "kwargs": {
+      "action": "dge_role",
+      "delivery": null,
+      "max_handoffs": 1,
+      "stage": "dge:conductor",
+      "workload": "design"
+     },
+     "objective_digest": "14582a2af98723b2e8de1a4271e4ecba61fb0cd15c85b8dc8cd80cebe2ef6643",
+     "objective_is_role_objective": true,
+     "read_only_flag": true,
+     "schema_digest": "1d0da6bea49d8ff591fcf019c8e7e6984f2e1c249248af8693b7a44abf5959d2",
+     "schema_is_role_schema": true,
+     "task_id": "task-conductor",
+     "task_is_passed": true
+    },
+    "run_calls": 1,
+    "run_positional_count": 9
+   },
+   "improvement_lead": {
+    "git_calls": [
+     [
+      "review_workspace",
+      "a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1",
+      "task-improvement_lead"
+     ],
+     [
+      "_git",
+      [
+       "rev-parse",
+       "HEAD"
+      ],
+      "/fake/review/task-improvement_lead"
+     ],
+     [
+      "_git",
+      [
+       "status",
+       "--porcelain"
+      ],
+      "/fake/review/task-improvement_lead"
+     ],
+     [
+      "_git",
+      [
+       "rev-parse",
+       "HEAD"
+      ],
+      "/fake/review/task-improvement_lead"
+     ]
+    ],
+    "outcome": "returned",
+    "result": {
+     "output": {
+      "ok": true
+     },
+     "role_execution": {
+      "input_policy": "urn:zeus:council-input:2",
+      "provider_entries_cap": 1,
+      "read_only": true,
+      "role": "improvement_lead",
+      "stage": "dge:improvement_lead"
+     }
+    },
+    "result_is_the_run_result": true,
+    "run": {
+     "agent": "lead:improvement",
+     "cwd": "/fake/review/task-improvement_lead",
+     "delivery_digest": "3f48fffeace2d1fbbfe00a629fa776339a0b93b8b5bc8f0bee5fe79ef5e412ec",
+     "delivery_is_council_delivery": true,
+     "delivery_is_none": false,
+     "details_is_the_task_details": true,
+     "heartbeat_is_passed": true,
+     "kwargs": {
+      "action": "dge_role",
+      "delivery": null,
+      "max_handoffs": 1,
+      "stage": "dge:improvement_lead",
+      "workload": "design"
+     },
+     "objective_digest": "99e8e3930a6c46d012b99daf1c73b866f63d093a236e93134ccf5ad3b532df75",
+     "objective_is_role_objective": true,
+     "read_only_flag": true,
+     "schema_digest": "e2e3a6468f9ec9b96b00bd277e9fe30a324aee8d16ea6d2813a2e12a12dfa674",
+     "schema_is_role_schema": true,
+     "task_id": "task-improvement_lead",
+     "task_is_passed": true
+    },
+    "run_calls": 1,
+    "run_positional_count": 9
+   },
+   "research_lead": {
+    "git_calls": [
+     [
+      "review_workspace",
+      "a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1",
+      "task-research_lead"
+     ],
+     [
+      "_git",
+      [
+       "rev-parse",
+       "HEAD"
+      ],
+      "/fake/review/task-research_lead"
+     ],
+     [
+      "_git",
+      [
+       "status",
+       "--porcelain"
+      ],
+      "/fake/review/task-research_lead"
+     ],
+     [
+      "_git",
+      [
+       "rev-parse",
+       "HEAD"
+      ],
+      "/fake/review/task-research_lead"
+     ]
+    ],
+    "outcome": "returned",
+    "result": {
+     "output": {
+      "ok": true
+     },
+     "role_execution": {
+      "input_policy": "urn:zeus:council-input:2",
+      "provider_entries_cap": 1,
+      "read_only": true,
+      "role": "research_lead",
+      "stage": "dge:research_lead"
+     }
+    },
+    "result_is_the_run_result": true,
+    "run": {
+     "agent": "lead:research",
+     "cwd": "/fake/review/task-research_lead",
+     "delivery_digest": "5bcd65b033c25a41ebb1bffed7542fc51b90f522f8d8a2e51ead6d23d0ec2cd8",
+     "delivery_is_council_delivery": true,
+     "delivery_is_none": false,
+     "details_is_the_task_details": true,
+     "heartbeat_is_passed": true,
+     "kwargs": {
+      "action": "dge_role",
+      "delivery": null,
+      "max_handoffs": 1,
+      "stage": "dge:research_lead",
+      "workload": "design"
+     },
+     "objective_digest": "b3cf0f7aa664dbd84c762709890e9b2eb800023c324c8d7a0571323d37771bd3",
+     "objective_is_role_objective": true,
+     "read_only_flag": true,
+     "schema_digest": "8509db019ea8f66c9995bc7f481f1066473d46eb02d75c8fd5770cbb4b5290f6",
+     "schema_is_role_schema": true,
+     "task_id": "task-research_lead",
+     "task_is_passed": true
+    },
+    "run_calls": 1,
+    "run_positional_count": 9
+   }
+  },
+  "details_without_a_role_objective_input": {
+   "dba": {
+    "bases": [
+     "ContractError",
+     "ValueError",
+     "Exception",
+     "BaseException"
+    ],
+    "git_calls": [
+     [
+      "review_workspace",
+      "a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1",
+      "task-dba"
+     ],
+     [
+      "_git",
+      [
+       "rev-parse",
+       "HEAD"
+      ],
+      "/fake/review/task-dba"
+     ]
+    ],
+    "message": "Council input for dba_report needs exactly the earlier components: packet",
+    "outcome": "ContractError",
+    "run_calls": 0
+   },
+   "research_lead": {
+    "bases": [
+     "ContractError",
+     "ValueError",
+     "Exception",
+     "BaseException"
+    ],
+    "git_calls": [
+     [
+      "review_workspace",
+      "a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1",
+      "task-research_lead"
+     ],
+     [
+      "_git",
+      [
+       "rev-parse",
+       "HEAD"
+      ],
+      "/fake/review/task-research_lead"
+     ]
+    ],
+    "message": "Council delivery input missing: packet",
+    "outcome": "ContractError",
+    "run_calls": 0
+   }
+  },
+  "distinct_run_results": {
+   "git_calls": [
+    [
+     "review_workspace",
+     "a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1",
+     "task-proposer"
+    ],
+    [
+     "_git",
+     [
+      "rev-parse",
+      "HEAD"
+     ],
+     "/fake/review/task-proposer"
+    ],
+    [
+     "_git",
+     [
+      "status",
+      "--porcelain"
+     ],
+     "/fake/review/task-proposer"
+    ],
+    [
+     "_git",
+     [
+      "rev-parse",
+      "HEAD"
+     ],
+     "/fake/review/task-proposer"
+    ]
+   ],
+   "outcome": "returned",
+   "result": {
+    "keep": [
+     1
+    ],
+    "output": {
+     "v": 1
+    },
+    "role_execution": {
+     "input_policy": null,
+     "provider_entries_cap": 1,
+     "read_only": true,
+     "role": "proposer",
+     "stage": "dge:proposer"
+    }
+   },
+   "result_is_the_run_result": true,
+   "run": {
+    "agent": "lead:proposer",
+    "cwd": "/fake/review/task-proposer",
+    "delivery_digest": null,
+    "delivery_is_council_delivery": null,
+    "delivery_is_none": true,
+    "details_is_the_task_details": true,
+    "heartbeat_is_passed": true,
+    "kwargs": {
+     "action": "dge_role",
+     "delivery": null,
+     "max_handoffs": 1,
+     "stage": "dge:proposer",
+     "workload": "design"
+    },
+    "objective_digest": "fee8368091cc6d88b8e69656b6675b945017559e0a375a9ad3701669a6ba0de0",
+    "objective_is_role_objective": true,
+    "read_only_flag": true,
+    "schema_digest": "b8476811333584f9b1ca09ea4864725bf8c17d4ee49e5b1cab07670cd72193bc",
+    "schema_is_role_schema": true,
+    "task_id": "task-proposer",
+    "task_is_passed": true
+   },
+   "run_calls": 1,
+   "run_positional_count": 9
+  },
+  "not_mapped": {
+   "agent_missing_from_task": {
+    "bases": [
+     "KeyError",
+     "LookupError",
+     "Exception",
+     "BaseException"
+    ],
+    "git_calls": [],
+    "message": "'agent'",
+    "outcome": "KeyError",
+    "run_calls": 0
+   },
+   "details_not_a_dict": {
+    "bases": [
+     "AttributeError",
+     "Exception",
+     "BaseException",
+     "object"
+    ],
+    "git_calls": [],
+    "message": "'list' object has no attribute 'get'",
+    "outcome": "AttributeError",
+    "run_calls": 0
+   },
+   "details_without_base_revision": {
+    "bases": [
+     "KeyError",
+     "LookupError",
+     "Exception",
+     "BaseException"
+    ],
+    "git_calls": [],
+    "message": "'base_revision'",
+    "outcome": "KeyError",
+    "run_calls": 0
+   },
+   "result_not_a_dict": {
+    "bases": [
+     "TypeError",
+     "Exception",
+     "BaseException",
+     "object"
+    ],
+    "git_calls": [
+     [
+      "review_workspace",
+      "a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1",
+      "task-proposer"
+     ],
+     [
+      "_git",
+      [
+       "rev-parse",
+       "HEAD"
+      ],
+      "/fake/review/task-proposer"
+     ],
+     [
+      "_git",
+      [
+       "status",
+       "--porcelain"
+      ],
+      "/fake/review/task-proposer"
+     ],
+     [
+      "_git",
+      [
+       "rev-parse",
+       "HEAD"
+      ],
+      "/fake/review/task-proposer"
+     ]
+    ],
+    "message": "list indices must be integers or slices, not str",
+    "outcome": "TypeError",
+    "run": {
+     "agent": "lead:proposer",
+     "cwd": "/fake/review/task-proposer",
+     "delivery_digest": null,
+     "delivery_is_council_delivery": null,
+     "delivery_is_none": true,
+     "details_is_the_task_details": true,
+     "heartbeat_is_passed": true,
+     "kwargs": {
+      "action": "dge_role",
+      "delivery": null,
+      "max_handoffs": 1,
+      "stage": "dge:proposer",
+      "workload": "design"
+     },
+     "objective_digest": "fee8368091cc6d88b8e69656b6675b945017559e0a375a9ad3701669a6ba0de0",
+     "objective_is_role_objective": true,
+     "read_only_flag": true,
+     "schema_digest": "b8476811333584f9b1ca09ea4864725bf8c17d4ee49e5b1cab07670cd72193bc",
+     "schema_is_role_schema": true,
+     "task_id": "task-proposer",
+     "task_is_passed": true
+    },
+    "run_calls": 1,
+    "run_positional_count": 9
+   },
+   "run_contract_error_is_not_remapped": {
+    "bases": [
+     "ContractError",
+     "ValueError",
+     "Exception",
+     "BaseException"
+    ],
+    "git_calls": [
+     [
+      "review_workspace",
+      "a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1",
+      "task-proposer"
+     ],
+     [
+      "_git",
+      [
+       "rev-parse",
+       "HEAD"
+      ],
+      "/fake/review/task-proposer"
+     ]
+    ],
+    "message": "Provider refused",
+    "outcome": "ContractError",
+    "run": {
+     "agent": "lead:proposer",
+     "cwd": "/fake/review/task-proposer",
+     "delivery_digest": null,
+     "delivery_is_council_delivery": null,
+     "delivery_is_none": true,
+     "details_is_the_task_details": true,
+     "heartbeat_is_passed": true,
+     "kwargs": {
+      "action": "dge_role",
+      "delivery": null,
+      "max_handoffs": 1,
+      "stage": "dge:proposer",
+      "workload": "design"
+     },
+     "objective_digest": "fee8368091cc6d88b8e69656b6675b945017559e0a375a9ad3701669a6ba0de0",
+     "objective_is_role_objective": true,
+     "read_only_flag": true,
+     "schema_digest": "b8476811333584f9b1ca09ea4864725bf8c17d4ee49e5b1cab07670cd72193bc",
+     "schema_is_role_schema": true,
+     "task_id": "task-proposer",
+     "task_is_passed": true
+    },
+    "run_calls": 1,
+    "run_positional_count": 9
+   },
+   "run_fault": {
+    "bases": [
+     "RuntimeError",
+     "Exception",
+     "BaseException",
+     "object"
+    ],
+    "git_calls": [
+     [
+      "review_workspace",
+      "a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1",
+      "task-proposer"
+     ],
+     [
+      "_git",
+      [
+       "rev-parse",
+       "HEAD"
+      ],
+      "/fake/review/task-proposer"
+     ]
+    ],
+    "message": "provider failed",
+    "outcome": "RuntimeError",
+    "run": {
+     "agent": "lead:proposer",
+     "cwd": "/fake/review/task-proposer",
+     "delivery_digest": null,
+     "delivery_is_council_delivery": null,
+     "delivery_is_none": true,
+     "details_is_the_task_details": true,
+     "heartbeat_is_passed": true,
+     "kwargs": {
+      "action": "dge_role",
+      "delivery": null,
+      "max_handoffs": 1,
+      "stage": "dge:proposer",
+      "workload": "design"
+     },
+     "objective_digest": "fee8368091cc6d88b8e69656b6675b945017559e0a375a9ad3701669a6ba0de0",
+     "objective_is_role_objective": true,
+     "read_only_flag": true,
+     "schema_digest": "b8476811333584f9b1ca09ea4864725bf8c17d4ee49e5b1cab07670cd72193bc",
+     "schema_is_role_schema": true,
+     "task_id": "task-proposer",
+     "task_is_passed": true
+    },
+    "run_calls": 1,
+    "run_positional_count": 9
+   },
+   "task_without_message": {
+    "bases": [
+     "KeyError",
+     "LookupError",
+     "Exception",
+     "BaseException"
+    ],
+    "git_calls": [],
+    "message": "'message'",
+    "outcome": "KeyError",
+    "run_calls": 0
+   },
+   "workspace_fault": {
+    "bases": [
+     "RuntimeError",
+     "Exception",
+     "BaseException",
+     "object"
+    ],
+    "git_calls": [
+     [
+      "review_workspace",
+      "a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1",
+      "task-proposer"
+     ]
+    ],
+    "message": "no workspace",
+    "outcome": "RuntimeError",
+    "run_calls": 0
+   }
+  },
+  "packet_digest_check": {
+   "dba_without_digest_is_not_checked": {
+    "git_calls": [
+     [
+      "review_workspace",
+      "a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1",
+      "task-dba"
+     ],
+     [
+      "_git",
+      [
+       "rev-parse",
+       "HEAD"
+      ],
+      "/fake/review/task-dba"
+     ],
+     [
+      "_git",
+      [
+       "status",
+       "--porcelain"
+      ],
+      "/fake/review/task-dba"
+     ],
+     [
+      "_git",
+      [
+       "rev-parse",
+       "HEAD"
+      ],
+      "/fake/review/task-dba"
+     ]
+    ],
+    "outcome": "returned",
+    "result": {
+     "output": {
+      "ok": true
+     },
+     "role_execution": {
+      "input_policy": null,
+      "provider_entries_cap": 1,
+      "read_only": true,
+      "role": "dba",
+      "stage": "dge:dba"
+     }
+    },
+    "result_is_the_run_result": true,
+    "run": {
+     "agent": "lead:dba",
+     "cwd": "/fake/review/task-dba",
+     "delivery_digest": null,
+     "delivery_is_council_delivery": null,
+     "delivery_is_none": true,
+     "details_is_the_task_details": true,
+     "heartbeat_is_passed": true,
+     "kwargs": {
+      "action": "dge_role",
+      "delivery": null,
+      "max_handoffs": 1,
+      "stage": "dge:dba",
+      "workload": "design"
+     },
+     "objective_digest": "82920fdaa742f9d1b2c05d3d5b59a5e2b2aaae16cad7673768a735ee2709cde9",
+     "objective_is_role_objective": true,
+     "read_only_flag": true,
+     "schema_digest": "aab2da2136387c7e2cfce69b815fd334566b98156a8992ef2e26654f20b143d1",
+     "schema_is_role_schema": true,
+     "task_id": "task-dba",
+     "task_is_passed": true
+    },
+    "run_calls": 1,
+    "run_positional_count": 9
+   },
+   "debate_empty": {
+    "git_calls": [
+     [
+      "review_workspace",
+      "a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1",
+      "task-proposer"
+     ],
+     [
+      "_git",
+      [
+       "rev-parse",
+       "HEAD"
+      ],
+      "/fake/review/task-proposer"
+     ],
+     [
+      "_git",
+      [
+       "status",
+       "--porcelain"
+      ],
+      "/fake/review/task-proposer"
+     ],
+     [
+      "_git",
+      [
+       "rev-parse",
+       "HEAD"
+      ],
+      "/fake/review/task-proposer"
+     ]
+    ],
+    "outcome": "returned",
+    "result": {
+     "output": {
+      "ok": true
+     },
+     "role_execution": {
+      "input_policy": null,
+      "provider_entries_cap": 1,
+      "read_only": true,
+      "role": "proposer",
+      "stage": "dge:proposer"
+     }
+    },
+    "result_is_the_run_result": true,
+    "run": {
+     "agent": "lead:proposer",
+     "cwd": "/fake/review/task-proposer",
+     "delivery_digest": null,
+     "delivery_is_council_delivery": null,
+     "delivery_is_none": true,
+     "details_is_the_task_details": true,
+     "heartbeat_is_passed": true,
+     "kwargs": {
+      "action": "dge_role",
+      "delivery": null,
+      "max_handoffs": 1,
+      "stage": "dge:proposer",
+      "workload": "design"
+     },
+     "objective_digest": "fee8368091cc6d88b8e69656b6675b945017559e0a375a9ad3701669a6ba0de0",
+     "objective_is_role_objective": true,
+     "read_only_flag": true,
+     "schema_digest": "b8476811333584f9b1ca09ea4864725bf8c17d4ee49e5b1cab07670cd72193bc",
+     "schema_is_role_schema": true,
+     "task_id": "task-proposer",
+     "task_is_passed": true
+    },
+    "run_calls": 1,
+    "run_positional_count": 9
+   },
+   "debate_missing": {
+    "bases": [
+     "ContractError",
+     "ValueError",
+     "Exception",
+     "BaseException"
+    ],
+    "git_calls": [
+     [
+      "review_workspace",
+      "a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1",
+      "task-proposer"
+     ],
+     [
+      "_git",
+      [
+       "rev-parse",
+       "HEAD"
+      ],
+      "/fake/review/task-proposer"
+     ],
+     [
+      "_git",
+      [
+       "status",
+       "--porcelain"
+      ],
+      "/fake/review/task-proposer"
+     ],
+     [
+      "_git",
+      [
+       "rev-parse",
+       "HEAD"
+      ],
+      "/fake/review/task-proposer"
+     ]
+    ],
+    "message": "Packet digest required",
+    "outcome": "ContractError",
+    "run": {
+     "agent": "lead:proposer",
+     "cwd": "/fake/review/task-proposer",
+     "delivery_digest": null,
+     "delivery_is_council_delivery": null,
+     "delivery_is_none": true,
+     "details_is_the_task_details": true,
+     "heartbeat_is_passed": true,
+     "kwargs": {
+      "action": "dge_role",
+      "delivery": null,
+      "max_handoffs": 1,
+      "stage": "dge:proposer",
+      "workload": "design"
+     },
+     "objective_digest": "fee8368091cc6d88b8e69656b6675b945017559e0a375a9ad3701669a6ba0de0",
+     "objective_is_role_objective": true,
+     "read_only_flag": true,
+     "schema_digest": "b8476811333584f9b1ca09ea4864725bf8c17d4ee49e5b1cab07670cd72193bc",
+     "schema_is_role_schema": true,
+     "task_id": "task-proposer",
+     "task_is_passed": true
+    },
+    "run_calls": 1,
+    "run_positional_count": 9
+   },
+   "debate_none_value": {
+    "bases": [
+     "ContractError",
+     "ValueError",
+     "Exception",
+     "BaseException"
+    ],
+    "git_calls": [
+     [
+      "review_workspace",
+      "a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1",
+      "task-attacker"
+     ],
+     [
+      "_git",
+      [
+       "rev-parse",
+       "HEAD"
+      ],
+      "/fake/review/task-attacker"
+     ],
+     [
+      "_git",
+      [
+       "status",
+       "--porcelain"
+      ],
+      "/fake/review/task-attacker"
+     ],
+     [
+      "_git",
+      [
+       "rev-parse",
+       "HEAD"
+      ],
+      "/fake/review/task-attacker"
+     ]
+    ],
+    "message": "Packet digest required",
+    "outcome": "ContractError",
+    "run": {
+     "agent": "lead:attacker",
+     "cwd": "/fake/review/task-attacker",
+     "delivery_digest": null,
+     "delivery_is_council_delivery": null,
+     "delivery_is_none": true,
+     "details_is_the_task_details": true,
+     "heartbeat_is_passed": true,
+     "kwargs": {
+      "action": "dge_role",
+      "delivery": null,
+      "max_handoffs": 1,
+      "stage": "dge:attacker",
+      "workload": "design"
+     },
+     "objective_digest": "a5ea896c6fa2c0113db7e6d10fbb9339df1740a6206750391a2d3d7d38743cc9",
+     "objective_is_role_objective": true,
+     "read_only_flag": true,
+     "schema_digest": "f4382549d0006ad80963bf82739c53862caca4ed41bd19737cac61f1c0e8ac18",
+     "schema_is_role_schema": true,
+     "task_id": "task-attacker",
+     "task_is_passed": true
+    },
+    "run_calls": 1,
+    "run_positional_count": 9
+   },
+   "debate_text": {
+    "git_calls": [
+     [
+      "review_workspace",
+      "a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1",
+      "task-proposer"
+     ],
+     [
+      "_git",
+      [
+       "rev-parse",
+       "HEAD"
+      ],
+      "/fake/review/task-proposer"
+     ],
+     [
+      "_git",
+      [
+       "status",
+       "--porcelain"
+      ],
+      "/fake/review/task-proposer"
+     ],
+     [
+      "_git",
+      [
+       "rev-parse",
+       "HEAD"
+      ],
+      "/fake/review/task-proposer"
+     ]
+    ],
+    "outcome": "returned",
+    "result": {
+     "output": {
+      "ok": true
+     },
+     "role_execution": {
+      "input_policy": null,
+      "provider_entries_cap": 1,
+      "read_only": true,
+      "role": "proposer",
+      "stage": "dge:proposer"
+     }
+    },
+    "result_is_the_run_result": true,
+    "run": {
+     "agent": "lead:proposer",
+     "cwd": "/fake/review/task-proposer",
+     "delivery_digest": null,
+     "delivery_is_council_delivery": null,
+     "delivery_is_none": true,
+     "details_is_the_task_details": true,
+     "heartbeat_is_passed": true,
+     "kwargs": {
+      "action": "dge_role",
+      "delivery": null,
+      "max_handoffs": 1,
+      "stage": "dge:proposer",
+      "workload": "design"
+     },
+     "objective_digest": "fee8368091cc6d88b8e69656b6675b945017559e0a375a9ad3701669a6ba0de0",
+     "objective_is_role_objective": true,
+     "read_only_flag": true,
+     "schema_digest": "b8476811333584f9b1ca09ea4864725bf8c17d4ee49e5b1cab07670cd72193bc",
+     "schema_is_role_schema": true,
+     "task_id": "task-proposer",
+     "task_is_passed": true
+    },
+    "run_calls": 1,
+    "run_positional_count": 9
+   },
+   "debate_zero_value": {
+    "bases": [
+     "ContractError",
+     "ValueError",
+     "Exception",
+     "BaseException"
+    ],
+    "git_calls": [
+     [
+      "review_workspace",
+      "a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1",
+      "task-arbiter"
+     ],
+     [
+      "_git",
+      [
+       "rev-parse",
+       "HEAD"
+      ],
+      "/fake/review/task-arbiter"
+     ],
+     [
+      "_git",
+      [
+       "status",
+       "--porcelain"
+      ],
+      "/fake/review/task-arbiter"
+     ],
+     [
+      "_git",
+      [
+       "rev-parse",
+       "HEAD"
+      ],
+      "/fake/review/task-arbiter"
+     ]
+    ],
+    "message": "Packet digest required",
+    "outcome": "ContractError",
+    "run": {
+     "agent": "lead:arbiter",
+     "cwd": "/fake/review/task-arbiter",
+     "delivery_digest": null,
+     "delivery_is_council_delivery": null,
+     "delivery_is_none": true,
+     "details_is_the_task_details": true,
+     "heartbeat_is_passed": true,
+     "kwargs": {
+      "action": "dge_role",
+      "delivery": null,
+      "max_handoffs": 1,
+      "stage": "dge:arbiter",
+      "workload": "design"
+     },
+     "objective_digest": "4b4b4c7131c02e9d22d88d9d5fb21407dd6acd8c988c04ed59a8ecffc853da3a",
+     "objective_is_role_objective": true,
+     "read_only_flag": true,
+     "schema_digest": "38e18dc66080c97756e79626a8b360515e6e3bb67022f04462927e39905f9a5f",
+     "schema_is_role_schema": true,
+     "task_id": "task-arbiter",
+     "task_is_passed": true
+    },
+    "run_calls": 1,
+    "run_positional_count": 9
+   },
+   "researcher_without_digest_is_not_checked": {
+    "git_calls": [
+     [
+      "review_workspace",
+      "a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1",
+      "task-researcher"
+     ],
+     [
+      "_git",
+      [
+       "rev-parse",
+       "HEAD"
+      ],
+      "/fake/review/task-researcher"
+     ],
+     [
+      "_git",
+      [
+       "status",
+       "--porcelain"
+      ],
+      "/fake/review/task-researcher"
+     ],
+     [
+      "_git",
+      [
+       "rev-parse",
+       "HEAD"
+      ],
+      "/fake/review/task-researcher"
+     ]
+    ],
+    "outcome": "returned",
+    "result": {
+     "output": {
+      "ok": true
+     },
+     "role_execution": {
+      "input_policy": null,
+      "provider_entries_cap": 1,
+      "read_only": true,
+      "role": "researcher",
+      "stage": "dge:researcher"
+     }
+    },
+    "result_is_the_run_result": true,
+    "run": {
+     "agent": "lead:researcher",
+     "cwd": "/fake/review/task-researcher",
+     "delivery_digest": null,
+     "delivery_is_council_delivery": null,
+     "delivery_is_none": true,
+     "details_is_the_task_details": true,
+     "heartbeat_is_passed": true,
+     "kwargs": {
+      "action": "dge_role",
+      "delivery": null,
+      "max_handoffs": 1,
+      "stage": "dge:researcher",
+      "workload": "design"
+     },
+     "objective_digest": "48fac9c22332c3b781684d799c56275ba39522032d00519aa8ca2bf1cf83b599",
+     "objective_is_role_objective": true,
+     "read_only_flag": true,
+     "schema_digest": "c143379c0d9482157d6367ddd1138009a001695c890dcffa54b79d45f980c9c4",
+     "schema_is_role_schema": true,
+     "task_id": "task-researcher",
+     "task_is_passed": true
+    },
+    "run_calls": 1,
+    "run_positional_count": 9
+   }
+  },
+  "refusals": {
+   "agent_of_another_role": {
+    "bases": [
+     "ContractError",
+     "ValueError",
+     "Exception",
+     "BaseException"
+    ],
+    "git_calls": [],
+    "message": "Role task assigned to the wrong agent",
+    "outcome": "ContractError",
+    "run_calls": 0
+   },
+   "base_mismatch": {
+    "bases": [
+     "ContractError",
+     "ValueError",
+     "Exception",
+     "BaseException"
+    ],
+    "git_calls": [],
+    "message": "Role base revision mismatch",
+    "outcome": "ContractError",
+    "run_calls": 0
+   },
+   "changed_commit": {
+    "bases": [
+     "ContractError",
+     "ValueError",
+     "Exception",
+     "BaseException"
+    ],
+    "git_calls": [
+     [
+      "review_workspace",
+      "a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1",
+      "task-proposer"
+     ],
+     [
+      "_git",
+      [
+       "rev-parse",
+       "HEAD"
+      ],
+      "/fake/review/task-proposer"
+     ],
+     [
+      "_git",
+      [
+       "status",
+       "--porcelain"
+      ],
+      "/fake/review/task-proposer"
+     ],
+     [
+      "_git",
+      [
+       "rev-parse",
+       "HEAD"
+      ],
+      "/fake/review/task-proposer"
+     ]
+    ],
+    "message": "Role execution changed its commit",
+    "outcome": "ContractError",
+    "run": {
+     "agent": "lead:proposer",
+     "cwd": "/fake/review/task-proposer",
+     "delivery_digest": null,
+     "delivery_is_council_delivery": null,
+     "delivery_is_none": true,
+     "details_is_the_task_details": true,
+     "heartbeat_is_passed": true,
+     "kwargs": {
+      "action": "dge_role",
+      "delivery": null,
+      "max_handoffs": 1,
+      "stage": "dge:proposer",
+      "workload": "design"
+     },
+     "objective_digest": "fee8368091cc6d88b8e69656b6675b945017559e0a375a9ad3701669a6ba0de0",
+     "objective_is_role_objective": true,
+     "read_only_flag": true,
+     "schema_digest": "b8476811333584f9b1ca09ea4864725bf8c17d4ee49e5b1cab07670cd72193bc",
+     "schema_is_role_schema": true,
+     "task_id": "task-proposer",
+     "task_is_passed": true
+    },
+    "run_calls": 1,
+    "run_positional_count": 9
+   },
+   "checkout_not_at_base": {
+    "bases": [
+     "ContractError",
+     "ValueError",
+     "Exception",
+     "BaseException"
+    ],
+    "git_calls": [
+     [
+      "review_workspace",
+      "a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1",
+      "task-proposer"
+     ],
+     [
+      "_git",
+      [
+       "rev-parse",
+       "HEAD"
+      ],
+      "/fake/review/task-proposer"
+     ]
+    ],
+    "message": "Role checkout is not at base",
+    "outcome": "ContractError",
+    "run_calls": 0
+   },
+   "debate_role_changed_commit": {
+    "bases": [
+     "ContractError",
+     "ValueError",
+     "Exception",
+     "BaseException"
+    ],
+    "git_calls": [
+     [
+      "review_workspace",
+      "a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1",
+      "task-research_lead"
+     ],
+     [
+      "_git",
+      [
+       "rev-parse",
+       "HEAD"
+      ],
+      "/fake/review/task-research_lead"
+     ],
+     [
+      "_git",
+      [
+       "status",
+       "--porcelain"
+      ],
+      "/fake/review/task-research_lead"
+     ],
+     [
+      "_git",
+      [
+       "rev-parse",
+       "HEAD"
+      ],
+      "/fake/review/task-research_lead"
+     ]
+    ],
+    "message": "Role execution changed its commit",
+    "outcome": "ContractError",
+    "run": {
+     "agent": "lead:research",
+     "cwd": "/fake/review/task-research_lead",
+     "delivery_digest": "5bcd65b033c25a41ebb1bffed7542fc51b90f522f8d8a2e51ead6d23d0ec2cd8",
+     "delivery_is_council_delivery": true,
+     "delivery_is_none": false,
+     "details_is_the_task_details": true,
+     "heartbeat_is_passed": true,
+     "kwargs": {
+      "action": "dge_role",
+      "delivery": null,
+      "max_handoffs": 1,
+      "stage": "dge:research_lead",
+      "workload": "design"
+     },
+     "objective_digest": "b3cf0f7aa664dbd84c762709890e9b2eb800023c324c8d7a0571323d37771bd3",
+     "objective_is_role_objective": true,
+     "read_only_flag": true,
+     "schema_digest": "8509db019ea8f66c9995bc7f481f1066473d46eb02d75c8fd5770cbb4b5290f6",
+     "schema_is_role_schema": true,
+     "task_id": "task-research_lead",
+     "task_is_passed": true
+    },
+    "run_calls": 1,
+    "run_positional_count": 9
+   },
+   "debate_role_modified_checkout": {
+    "bases": [
+     "ContractError",
+     "ValueError",
+     "Exception",
+     "BaseException"
+    ],
+    "git_calls": [
+     [
+      "review_workspace",
+      "a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1",
+      "task-conductor"
+     ],
+     [
+      "_git",
+      [
+       "rev-parse",
+       "HEAD"
+      ],
+      "/fake/review/task-conductor"
+     ],
+     [
+      "_git",
+      [
+       "status",
+       "--porcelain"
+      ],
+      "/fake/review/task-conductor"
+     ]
+    ],
+    "message": "Role execution modified its checkout",
+    "outcome": "ContractError",
+    "run": {
+     "agent": "conductor",
+     "cwd": "/fake/review/task-conductor",
+     "delivery_digest": "a97c7c32486b6736bb64bfb2cb405d4e833041e6c1470a5c4d0ca563529102ac",
+     "delivery_is_council_delivery": true,
+     "delivery_is_none": false,
+     "details_is_the_task_details": true,
+     "heartbeat_is_passed": true,
+     "kwargs": {
+      "action": "dge_role",
+      "delivery": null,
+      "max_handoffs": 1,
+      "stage": "dge:conductor",
+      "workload": "design"
+     },
+     "objective_digest": "14582a2af98723b2e8de1a4271e4ecba61fb0cd15c85b8dc8cd80cebe2ef6643",
+     "objective_is_role_objective": true,
+     "read_only_flag": true,
+     "schema_digest": "1d0da6bea49d8ff591fcf019c8e7e6984f2e1c249248af8693b7a44abf5959d2",
+     "schema_is_role_schema": true,
+     "task_id": "task-conductor",
+     "task_is_passed": true
+    },
+    "run_calls": 1,
+    "run_positional_count": 9
+   },
+   "missing_role": {
+    "bases": [
+     "ContractError",
+     "ValueError",
+     "Exception",
+     "BaseException"
+    ],
+    "git_calls": [],
+    "message": "Unknown autonomous role",
+    "outcome": "ContractError",
+    "run_calls": 0
+   },
+   "modified_and_changed_reports_the_modification": {
+    "bases": [
+     "ContractError",
+     "ValueError",
+     "Exception",
+     "BaseException"
+    ],
+    "git_calls": [
+     [
+      "review_workspace",
+      "a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1",
+      "task-proposer"
+     ],
+     [
+      "_git",
+      [
+       "rev-parse",
+       "HEAD"
+      ],
+      "/fake/review/task-proposer"
+     ],
+     [
+      "_git",
+      [
+       "status",
+       "--porcelain"
+      ],
+      "/fake/review/task-proposer"
+     ]
+    ],
+    "message": "Role execution modified its checkout",
+    "outcome": "ContractError",
+    "run": {
+     "agent": "lead:proposer",
+     "cwd": "/fake/review/task-proposer",
+     "delivery_digest": null,
+     "delivery_is_council_delivery": null,
+     "delivery_is_none": true,
+     "details_is_the_task_details": true,
+     "heartbeat_is_passed": true,
+     "kwargs": {
+      "action": "dge_role",
+      "delivery": null,
+      "max_handoffs": 1,
+      "stage": "dge:proposer",
+      "workload": "design"
+     },
+     "objective_digest": "fee8368091cc6d88b8e69656b6675b945017559e0a375a9ad3701669a6ba0de0",
+     "objective_is_role_objective": true,
+     "read_only_flag": true,
+     "schema_digest": "b8476811333584f9b1ca09ea4864725bf8c17d4ee49e5b1cab07670cd72193bc",
+     "schema_is_role_schema": true,
+     "task_id": "task-proposer",
+     "task_is_passed": true
+    },
+    "run_calls": 1,
+    "run_positional_count": 9
+   },
+   "modified_checkout": {
+    " M file.py": {
+     "bases": [
+      "ContractError",
+      "ValueError",
+      "Exception",
+      "BaseException"
+     ],
+     "git_calls": [
+      [
+       "review_workspace",
+       "a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1",
+       "task-proposer"
+      ],
+      [
+       "_git",
+       [
+        "rev-parse",
+        "HEAD"
+       ],
+       "/fake/review/task-proposer"
+      ],
+      [
+       "_git",
+       [
+        "status",
+        "--porcelain"
+       ],
+       "/fake/review/task-proposer"
+      ]
+     ],
+     "message": "Role execution modified its checkout",
+     "outcome": "ContractError",
+     "run": {
+      "agent": "lead:proposer",
+      "cwd": "/fake/review/task-proposer",
+      "delivery_digest": null,
+      "delivery_is_council_delivery": null,
+      "delivery_is_none": true,
+      "details_is_the_task_details": true,
+      "heartbeat_is_passed": true,
+      "kwargs": {
+       "action": "dge_role",
+       "delivery": null,
+       "max_handoffs": 1,
+       "stage": "dge:proposer",
+       "workload": "design"
+      },
+      "objective_digest": "fee8368091cc6d88b8e69656b6675b945017559e0a375a9ad3701669a6ba0de0",
+      "objective_is_role_objective": true,
+      "read_only_flag": true,
+      "schema_digest": "b8476811333584f9b1ca09ea4864725bf8c17d4ee49e5b1cab07670cd72193bc",
+      "schema_is_role_schema": true,
+      "task_id": "task-proposer",
+      "task_is_passed": true
+     },
+     "run_calls": 1,
+     "run_positional_count": 9
+    },
+    "?? new.txt": {
+     "bases": [
+      "ContractError",
+      "ValueError",
+      "Exception",
+      "BaseException"
+     ],
+     "git_calls": [
+      [
+       "review_workspace",
+       "a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1",
+       "task-proposer"
+      ],
+      [
+       "_git",
+       [
+        "rev-parse",
+        "HEAD"
+       ],
+       "/fake/review/task-proposer"
+      ],
+      [
+       "_git",
+       [
+        "status",
+        "--porcelain"
+       ],
+       "/fake/review/task-proposer"
+      ]
+     ],
+     "message": "Role execution modified its checkout",
+     "outcome": "ContractError",
+     "run": {
+      "agent": "lead:proposer",
+      "cwd": "/fake/review/task-proposer",
+      "delivery_digest": null,
+      "delivery_is_council_delivery": null,
+      "delivery_is_none": true,
+      "details_is_the_task_details": true,
+      "heartbeat_is_passed": true,
+      "kwargs": {
+       "action": "dge_role",
+       "delivery": null,
+       "max_handoffs": 1,
+       "stage": "dge:proposer",
+       "workload": "design"
+      },
+      "objective_digest": "fee8368091cc6d88b8e69656b6675b945017559e0a375a9ad3701669a6ba0de0",
+      "objective_is_role_objective": true,
+      "read_only_flag": true,
+      "schema_digest": "b8476811333584f9b1ca09ea4864725bf8c17d4ee49e5b1cab07670cd72193bc",
+      "schema_is_role_schema": true,
+      "task_id": "task-proposer",
+      "task_is_passed": true
+     },
+     "run_calls": 1,
+     "run_positional_count": 9
+    },
+    "x": {
+     "bases": [
+      "ContractError",
+      "ValueError",
+      "Exception",
+      "BaseException"
+     ],
+     "git_calls": [
+      [
+       "review_workspace",
+       "a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1",
+       "task-proposer"
+      ],
+      [
+       "_git",
+       [
+        "rev-parse",
+        "HEAD"
+       ],
+       "/fake/review/task-proposer"
+      ],
+      [
+       "_git",
+       [
+        "status",
+        "--porcelain"
+       ],
+       "/fake/review/task-proposer"
+      ]
+     ],
+     "message": "Role execution modified its checkout",
+     "outcome": "ContractError",
+     "run": {
+      "agent": "lead:proposer",
+      "cwd": "/fake/review/task-proposer",
+      "delivery_digest": null,
+      "delivery_is_council_delivery": null,
+      "delivery_is_none": true,
+      "details_is_the_task_details": true,
+      "heartbeat_is_passed": true,
+      "kwargs": {
+       "action": "dge_role",
+       "delivery": null,
+       "max_handoffs": 1,
+       "stage": "dge:proposer",
+       "workload": "design"
+      },
+      "objective_digest": "fee8368091cc6d88b8e69656b6675b945017559e0a375a9ad3701669a6ba0de0",
+      "objective_is_role_objective": true,
+      "read_only_flag": true,
+      "schema_digest": "b8476811333584f9b1ca09ea4864725bf8c17d4ee49e5b1cab07670cd72193bc",
+      "schema_is_role_schema": true,
+      "task_id": "task-proposer",
+      "task_is_passed": true
+     },
+     "run_calls": 1,
+     "run_positional_count": 9
+    }
+   },
+   "no_where_revision": {
+    "bases": [
+     "KeyError",
+     "LookupError",
+     "Exception",
+     "BaseException"
+    ],
+    "git_calls": [],
+    "message": "'revision'",
+    "outcome": "KeyError",
+    "run_calls": 0
+   },
+   "unknown_role": {
+    "bases": [
+     "ContractError",
+     "ValueError",
+     "Exception",
+     "BaseException"
+    ],
+    "git_calls": [],
+    "message": "Unknown autonomous role",
+    "outcome": "ContractError",
+    "run_calls": 0
+   },
+   "wrong_agent": {
+    "conductor": {
+     "bases": [
+      "ContractError",
+      "ValueError",
+      "Exception",
+      "BaseException"
+     ],
+     "git_calls": [],
+     "message": "Role task assigned to the wrong agent",
+     "outcome": "ContractError",
+     "run_calls": 0
+    },
+    "dba": {
+     "bases": [
+      "ContractError",
+      "ValueError",
+      "Exception",
+      "BaseException"
+     ],
+     "git_calls": [],
+     "message": "Role task assigned to the wrong agent",
+     "outcome": "ContractError",
+     "run_calls": 0
+    },
+    "researcher": {
+     "bases": [
+      "ContractError",
+      "ValueError",
+      "Exception",
+      "BaseException"
+     ],
+     "git_calls": [],
+     "message": "Role task assigned to the wrong agent",
+     "outcome": "ContractError",
+     "run_calls": 0
+    }
+   }
+  },
+  "v1_and_dba_roles_succeed": {
+   "arbiter": {
+    "git_calls": [
+     [
+      "review_workspace",
+      "a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1",
+      "task-arbiter"
+     ],
+     [
+      "_git",
+      [
+       "rev-parse",
+       "HEAD"
+      ],
+      "/fake/review/task-arbiter"
+     ],
+     [
+      "_git",
+      [
+       "status",
+       "--porcelain"
+      ],
+      "/fake/review/task-arbiter"
+     ],
+     [
+      "_git",
+      [
+       "rev-parse",
+       "HEAD"
+      ],
+      "/fake/review/task-arbiter"
+     ]
+    ],
+    "outcome": "returned",
+    "result": {
+     "output": {
+      "ok": true
+     },
+     "role_execution": {
+      "input_policy": null,
+      "provider_entries_cap": 1,
+      "read_only": true,
+      "role": "arbiter",
+      "stage": "dge:arbiter"
+     }
+    },
+    "result_is_the_run_result": true,
+    "run": {
+     "agent": "lead:arbiter",
+     "cwd": "/fake/review/task-arbiter",
+     "delivery_digest": null,
+     "delivery_is_council_delivery": null,
+     "delivery_is_none": true,
+     "details_is_the_task_details": true,
+     "heartbeat_is_passed": true,
+     "kwargs": {
+      "action": "dge_role",
+      "delivery": null,
+      "max_handoffs": 1,
+      "stage": "dge:arbiter",
+      "workload": "design"
+     },
+     "objective_digest": "4b4b4c7131c02e9d22d88d9d5fb21407dd6acd8c988c04ed59a8ecffc853da3a",
+     "objective_is_role_objective": true,
+     "read_only_flag": true,
+     "schema_digest": "38e18dc66080c97756e79626a8b360515e6e3bb67022f04462927e39905f9a5f",
+     "schema_is_role_schema": true,
+     "task_id": "task-arbiter",
+     "task_is_passed": true
+    },
+    "run_calls": 1,
+    "run_positional_count": 9
+   },
+   "attacker": {
+    "git_calls": [
+     [
+      "review_workspace",
+      "a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1",
+      "task-attacker"
+     ],
+     [
+      "_git",
+      [
+       "rev-parse",
+       "HEAD"
+      ],
+      "/fake/review/task-attacker"
+     ],
+     [
+      "_git",
+      [
+       "status",
+       "--porcelain"
+      ],
+      "/fake/review/task-attacker"
+     ],
+     [
+      "_git",
+      [
+       "rev-parse",
+       "HEAD"
+      ],
+      "/fake/review/task-attacker"
+     ]
+    ],
+    "outcome": "returned",
+    "result": {
+     "output": {
+      "ok": true
+     },
+     "role_execution": {
+      "input_policy": null,
+      "provider_entries_cap": 1,
+      "read_only": true,
+      "role": "attacker",
+      "stage": "dge:attacker"
+     }
+    },
+    "result_is_the_run_result": true,
+    "run": {
+     "agent": "lead:attacker",
+     "cwd": "/fake/review/task-attacker",
+     "delivery_digest": null,
+     "delivery_is_council_delivery": null,
+     "delivery_is_none": true,
+     "details_is_the_task_details": true,
+     "heartbeat_is_passed": true,
+     "kwargs": {
+      "action": "dge_role",
+      "delivery": null,
+      "max_handoffs": 1,
+      "stage": "dge:attacker",
+      "workload": "design"
+     },
+     "objective_digest": "a5ea896c6fa2c0113db7e6d10fbb9339df1740a6206750391a2d3d7d38743cc9",
+     "objective_is_role_objective": true,
+     "read_only_flag": true,
+     "schema_digest": "f4382549d0006ad80963bf82739c53862caca4ed41bd19737cac61f1c0e8ac18",
+     "schema_is_role_schema": true,
+     "task_id": "task-attacker",
+     "task_is_passed": true
+    },
+    "run_calls": 1,
+    "run_positional_count": 9
+   },
+   "dba": {
+    "git_calls": [
+     [
+      "review_workspace",
+      "a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1",
+      "task-dba"
+     ],
+     [
+      "_git",
+      [
+       "rev-parse",
+       "HEAD"
+      ],
+      "/fake/review/task-dba"
+     ],
+     [
+      "_git",
+      [
+       "status",
+       "--porcelain"
+      ],
+      "/fake/review/task-dba"
+     ],
+     [
+      "_git",
+      [
+       "rev-parse",
+       "HEAD"
+      ],
+      "/fake/review/task-dba"
+     ]
+    ],
+    "outcome": "returned",
+    "result": {
+     "output": {
+      "ok": true
+     },
+     "role_execution": {
+      "input_policy": null,
+      "provider_entries_cap": 1,
+      "read_only": true,
+      "role": "dba",
+      "stage": "dge:dba"
+     }
+    },
+    "result_is_the_run_result": true,
+    "run": {
+     "agent": "lead:dba",
+     "cwd": "/fake/review/task-dba",
+     "delivery_digest": null,
+     "delivery_is_council_delivery": null,
+     "delivery_is_none": true,
+     "details_is_the_task_details": true,
+     "heartbeat_is_passed": true,
+     "kwargs": {
+      "action": "dge_role",
+      "delivery": null,
+      "max_handoffs": 1,
+      "stage": "dge:dba",
+      "workload": "design"
+     },
+     "objective_digest": "82920fdaa742f9d1b2c05d3d5b59a5e2b2aaae16cad7673768a735ee2709cde9",
+     "objective_is_role_objective": true,
+     "read_only_flag": true,
+     "schema_digest": "aab2da2136387c7e2cfce69b815fd334566b98156a8992ef2e26654f20b143d1",
+     "schema_is_role_schema": true,
+     "task_id": "task-dba",
+     "task_is_passed": true
+    },
+    "run_calls": 1,
+    "run_positional_count": 9
+   },
+   "proposer": {
+    "git_calls": [
+     [
+      "review_workspace",
+      "a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1",
+      "task-proposer"
+     ],
+     [
+      "_git",
+      [
+       "rev-parse",
+       "HEAD"
+      ],
+      "/fake/review/task-proposer"
+     ],
+     [
+      "_git",
+      [
+       "status",
+       "--porcelain"
+      ],
+      "/fake/review/task-proposer"
+     ],
+     [
+      "_git",
+      [
+       "rev-parse",
+       "HEAD"
+      ],
+      "/fake/review/task-proposer"
+     ]
+    ],
+    "outcome": "returned",
+    "result": {
+     "output": {
+      "ok": true
+     },
+     "role_execution": {
+      "input_policy": null,
+      "provider_entries_cap": 1,
+      "read_only": true,
+      "role": "proposer",
+      "stage": "dge:proposer"
+     }
+    },
+    "result_is_the_run_result": true,
+    "run": {
+     "agent": "lead:proposer",
+     "cwd": "/fake/review/task-proposer",
+     "delivery_digest": null,
+     "delivery_is_council_delivery": null,
+     "delivery_is_none": true,
+     "details_is_the_task_details": true,
+     "heartbeat_is_passed": true,
+     "kwargs": {
+      "action": "dge_role",
+      "delivery": null,
+      "max_handoffs": 1,
+      "stage": "dge:proposer",
+      "workload": "design"
+     },
+     "objective_digest": "fee8368091cc6d88b8e69656b6675b945017559e0a375a9ad3701669a6ba0de0",
+     "objective_is_role_objective": true,
+     "read_only_flag": true,
+     "schema_digest": "b8476811333584f9b1ca09ea4864725bf8c17d4ee49e5b1cab07670cd72193bc",
+     "schema_is_role_schema": true,
+     "task_id": "task-proposer",
+     "task_is_passed": true
+    },
+    "run_calls": 1,
+    "run_positional_count": 9
+   },
+   "researcher": {
+    "git_calls": [
+     [
+      "review_workspace",
+      "a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1",
+      "task-researcher"
+     ],
+     [
+      "_git",
+      [
+       "rev-parse",
+       "HEAD"
+      ],
+      "/fake/review/task-researcher"
+     ],
+     [
+      "_git",
+      [
+       "status",
+       "--porcelain"
+      ],
+      "/fake/review/task-researcher"
+     ],
+     [
+      "_git",
+      [
+       "rev-parse",
+       "HEAD"
+      ],
+      "/fake/review/task-researcher"
+     ]
+    ],
+    "outcome": "returned",
+    "result": {
+     "output": {
+      "ok": true
+     },
+     "role_execution": {
+      "input_policy": null,
+      "provider_entries_cap": 1,
+      "read_only": true,
+      "role": "researcher",
+      "stage": "dge:researcher"
+     }
+    },
+    "result_is_the_run_result": true,
+    "run": {
+     "agent": "lead:researcher",
+     "cwd": "/fake/review/task-researcher",
+     "delivery_digest": null,
+     "delivery_is_council_delivery": null,
+     "delivery_is_none": true,
+     "details_is_the_task_details": true,
+     "heartbeat_is_passed": true,
+     "kwargs": {
+      "action": "dge_role",
+      "delivery": null,
+      "max_handoffs": 1,
+      "stage": "dge:researcher",
+      "workload": "design"
+     },
+     "objective_digest": "48fac9c22332c3b781684d799c56275ba39522032d00519aa8ca2bf1cf83b599",
+     "objective_is_role_objective": true,
+     "read_only_flag": true,
+     "schema_digest": "c143379c0d9482157d6367ddd1138009a001695c890dcffa54b79d45f980c9c4",
+     "schema_is_role_schema": true,
+     "task_id": "task-researcher",
+     "task_is_passed": true
+    },
+    "run_calls": 1,
+    "run_positional_count": 9
+   }
+  }
+ },
+ "s8_m7_tests": {
+  "tests/test_autonomous_roles.py (schema enums against the consumers, claim/question variants, objectives naming the finite values)": "s1_tables (the schema and objective digests; consumers are research.domain.dge and are goldened by research.dge)",
+  "tests/test_autonomous_roles.py::test_finding_criterion_is_the_exact_pinned_plan_enum_per_execution": "s6_role_schema",
+  "tests/test_council_*.py (council_delivery, admitted_delivery, role_context through the executor)": {
+   "unreachable": "the executor is not part of this family; the pure functions and execute_role over a fake executor are s3, s4, s5, s7"
+  }
+ }
+}

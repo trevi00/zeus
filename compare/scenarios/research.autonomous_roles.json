@@ -1,0 +1,8 @@
+{
+ "family": "research.autonomous_roles",
+ "description": "S8 dge_role executor action of M7 adapters/autonomous_roles.py (the output-schema, objective, delivery-guidance, consumer-enum and produced-section tables by digest; role_objective, council_delivery, admitted_delivery, isolation_reference, role_context and role_schema over representative and refusing inputs; execute_role over a LABELLED fake executor: v1 and debate success with the exact _run arguments and the role_execution block, every require refusal, the unmapped faults), characterized before the autonomous_roles move; no repository, provider, file or database",
+ "reference_driver": "drivers/reference/s8_autonomous_roles.py",
+ "target_driver": "drivers/target/s8_autonomous_roles.py",
+ "golden": "goldens/reference/research.autonomous_roles.json",
+ "slice": "S8"
+}
