@@ -1,0 +1,8 @@
+{
+ "family": "research.source_execution_adapter",
+ "description": "S8 (V18 R-se0..R-se2) M7 adapters/source_execution.py (SourceExecutionClient, bounded_command, DockerSourceRunner) characterized before the move: the two DockerSourceRunner tests of tests/test_research_audits.py (the run's argv and the staged inert source; the receipt and stored document over the fixture process output) plus labelled additions for every classification of a run (pytest verdicts, runner exit codes, oversized and surrogate output), every failure of the client and the rm, every refusal while the source is laid out or before the attempt starts, the explicit docker binary and attempt, run_one, the client polling its host queue, and bounded_command over a scripted child (completed, non-zero, non-UTF-8, oversized, timeout, other exceptions, the spawn call shape); the module's bounded_command/run_process/SourceExecutions/time are replaced by labelled fakes as M7's tests do, DRIVER_HASH/platform/uuid4 are pinned and the temporary source directory is normalized; no Docker, no real child, M7's FileArtifacts over a run-scoped directory",
+ "reference_driver": "drivers/reference/s8_source_execution_adapter.py",
+ "target_driver": "drivers/target/s8_source_execution_adapter.py",
+ "golden": "goldens/reference/research.source_execution_adapter.json",
+ "slice": "S8"
+}
