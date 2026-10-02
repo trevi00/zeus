@@ -1,0 +1,356 @@
+{
+ "an_executed_test_without_a_receipt_is_refused": {
+  "canary_in_the_result": false,
+  "inputs_unchanged": true,
+  "keys": [
+   "error_digest",
+   "error_type",
+   "refused"
+  ],
+  "result": {
+   "error_digest": "86124f9de536dc495720c2807346ea6896b0fe9f82ebff0a4066570a041b0222",
+   "error_type": "ContractError",
+   "refused": true
+  }
+ },
+ "answer_a_list_propagates": {
+  "inputs_unchanged": true,
+  "message": "'list' object has no attribute 'get'",
+  "raised": "AttributeError"
+ },
+ "answer_a_string_propagates": {
+  "inputs_unchanged": true,
+  "message": "'str' object has no attribute 'get'",
+  "raised": "AttributeError"
+ },
+ "answer_none_propagates": {
+  "inputs_unchanged": true,
+  "message": "'NoneType' object has no attribute 'get'",
+  "raised": "AttributeError"
+ },
+ "answer_paths_not_a_mapping": {
+  "canary_in_the_result": false,
+  "error_digest_is_the_digest_of": "Assigned output identities changed",
+  "inputs_unchanged": true,
+  "keys": [
+   "error_digest",
+   "error_type",
+   "refused"
+  ],
+  "result": {
+   "error_digest": "130904a67b79edb2e12303d0edf8b1afe17635d2bc5113377e1742e1e440f84e",
+   "error_type": "ContractError",
+   "refused": true
+  }
+ },
+ "cases": 33,
+ "clean_a_justified_unexecuted_subsystem": {
+  "canary_in_the_result": false,
+  "inputs_unchanged": true,
+  "keys": [
+   "error_digest",
+   "error_type",
+   "refused"
+  ],
+  "result": {
+   "error_digest": null,
+   "error_type": null,
+   "refused": false
+  }
+ },
+ "clean_all_null": {
+  "canary_in_the_result": false,
+  "inputs_unchanged": true,
+  "keys": [
+   "error_digest",
+   "error_type",
+   "refused"
+  ],
+  "result": {
+   "error_digest": null,
+   "error_type": null,
+   "refused": false
+  }
+ },
+ "clean_an_executed_test_with_a_receipt_id": {
+  "canary_in_the_result": false,
+  "inputs_unchanged": true,
+  "keys": [
+   "error_digest",
+   "error_type",
+   "refused"
+  ],
+  "result": {
+   "error_digest": null,
+   "error_type": null,
+   "refused": false
+  }
+ },
+ "clean_every_path_covered": {
+  "canary_in_the_result": false,
+  "inputs_unchanged": true,
+  "keys": [
+   "error_digest",
+   "error_type",
+   "refused"
+  ],
+  "result": {
+   "error_digest": null,
+   "error_type": null,
+   "refused": false
+  }
+ },
+ "clean_one_record": {
+  "canary_in_the_result": false,
+  "inputs_unchanged": true,
+  "keys": [
+   "error_digest",
+   "error_type",
+   "refused"
+  ],
+  "result": {
+   "error_digest": null,
+   "error_type": null,
+   "refused": false
+  }
+ },
+ "m7_tests": {
+  "tests/test_audit_repair.py": "`replay_decode` is the default `replay` of `owner(ctx)` and `enabled_owner(...)`, and `repair_adapter.replay_decode` is wrapped by `moving_replay` and `pausing_replay`: every such test drives the AuditRepair owner (family research.audit_repair, whose golden uses a scripted replay) over the real ResearchAudits, a promoted release and the real executor fixtures, so none is reproduced here; the function's own behaviour is the cases above",
+  "tests/test_audit_repair_cli.py, tests/test_scheduling.py": "import the fixtures of test_audit_repair.py only (the S10 CLI and the scheduling family)"
+ },
+ "partition_duplicate_paths": {
+  "inputs_unchanged": true,
+  "message": "Duplicate checkpoint coverage",
+  "raised": "ContractError"
+ },
+ "partition_empty_audit_id": {
+  "inputs_unchanged": true,
+  "message": "Invalid partition checkpoint",
+  "raised": "ContractError"
+ },
+ "partition_empty_cursor": {
+  "inputs_unchanged": true,
+  "message": "Invalid partition checkpoint",
+  "raised": "ContractError"
+ },
+ "partition_invalid_evidence_reference": {
+  "inputs_unchanged": true,
+  "message": "Invalid immutable evidence reference",
+  "raised": "ContractError"
+ },
+ "partition_missing_the_cursor": {
+  "inputs_unchanged": true,
+  "message": "PartitionCheckpoint.__init__() missing 1 required positional argument: 'cursor'",
+  "raised": "TypeError"
+ },
+ "partition_negative_generation": {
+  "inputs_unchanged": true,
+  "message": "Invalid partition checkpoint",
+  "raised": "ContractError"
+ },
+ "partition_not_a_mapping": {
+  "inputs_unchanged": true,
+  "message": "PartitionCheckpoint() argument after ** must be a mapping, not list",
+  "raised": "TypeError"
+ },
+ "partition_remaining_outside_its_scope": {
+  "inputs_unchanged": true,
+  "message": "Checkpoint scope changed",
+  "raised": "ContractError"
+ },
+ "partition_unsupported_version": {
+  "inputs_unchanged": true,
+  "message": "Invalid partition checkpoint",
+  "raised": "ContractError"
+ },
+ "partition_with_an_unknown_field": {
+  "inputs_unchanged": true,
+  "message": "PartitionCheckpoint.__init__() got an unexpected keyword argument 'extra'",
+  "raised": "TypeError"
+ },
+ "partition_without_fields": {
+  "inputs_unchanged": true,
+  "message": "PartitionCheckpoint.__init__() missing 10 required positional arguments: 'audit_id', 'partition_id', 'generation', 'paths', 'subsystems', 'evidence_refs', 'remaining_paths', 'remaining_subsystems', 'o",
+  "raised": "TypeError"
+ },
+ "refused_a_body_carrying_its_identity": {
+  "canary_in_the_result": false,
+  "error_digest_is_the_digest_of": "Invalid assigned output record",
+  "inputs_unchanged": true,
+  "keys": [
+   "error_digest",
+   "error_type",
+   "refused"
+  ],
+  "result": {
+   "error_digest": "05541f0ec7a8e5c875b4827c535a619c081c6080e5a89d6bab2a76c044c7dbab",
+   "error_type": "ContractError",
+   "refused": true
+  }
+ },
+ "refused_cursor_not_a_string": {
+  "canary_in_the_result": false,
+  "error_digest_is_the_digest_of": "Invalid analysis cursor",
+  "inputs_unchanged": true,
+  "keys": [
+   "error_digest",
+   "error_type",
+   "refused"
+  ],
+  "result": {
+   "error_digest": "eaebb801567bd5e78df29725adc0cd60b5b4f00ad6fe9b9c12a059bc8ff2dd83",
+   "error_type": "ContractError",
+   "refused": true
+  }
+ },
+ "refused_foreign_key": {
+  "canary_in_the_result": false,
+  "error_digest_is_the_digest_of": "Assigned output identities changed",
+  "inputs_unchanged": true,
+  "keys": [
+   "error_digest",
+   "error_type",
+   "refused"
+  ],
+  "result": {
+   "error_digest": "130904a67b79edb2e12303d0edf8b1afe17635d2bc5113377e1742e1e440f84e",
+   "error_type": "ContractError",
+   "refused": true
+  }
+ },
+ "refused_generated_path_without_a_link": {
+  "canary_in_the_result": false,
+  "error_digest_is_the_digest_of": "Missing generator/original link",
+  "inputs_unchanged": true,
+  "keys": [
+   "error_digest",
+   "error_type",
+   "refused"
+  ],
+  "result": {
+   "error_digest": "c293f24177e84fe75e1c27512df7c55b0432c2798a588fde4159ad32283928b2",
+   "error_type": "ContractError",
+   "refused": true
+  }
+ },
+ "refused_invalid_cursor": {
+  "canary_in_the_result": false,
+  "error_digest_is_the_digest_of": "Invalid partition checkpoint",
+  "inputs_unchanged": true,
+  "keys": [
+   "error_digest",
+   "error_type",
+   "refused"
+  ],
+  "result": {
+   "error_digest": "0ceb288c2b96765b976372141ec9190f12809615c376833995683dfcfb571609",
+   "error_type": "ContractError",
+   "refused": true
+  }
+ },
+ "refused_invalid_questions": {
+  "canary_in_the_result": false,
+  "error_digest_is_the_digest_of": "Invalid analysis open questions",
+  "inputs_unchanged": true,
+  "keys": [
+   "error_digest",
+   "error_type",
+   "refused"
+  ],
+  "result": {
+   "error_digest": "243d1c29bc1886c74567199bbfc85545b0944417506627eb4879bd3fa396a2d2",
+   "error_type": "ContractError",
+   "refused": true
+  }
+ },
+ "refused_missing_contracts": {
+  "canary_in_the_result": false,
+  "error_digest_is_the_digest_of": "Missing subsystem trace: contracts",
+  "inputs_unchanged": true,
+  "keys": [
+   "error_digest",
+   "error_type",
+   "refused"
+  ],
+  "result": {
+   "error_digest": "455d4f3f94b88a9162e977015831460b21120b8d4223f89d8ec7dfd19933a5a6",
+   "error_type": "ContractError",
+   "refused": true
+  }
+ },
+ "refused_missing_cursor": {
+  "canary_in_the_result": false,
+  "error_digest_is_the_digest_of": "Invalid analysis cursor",
+  "inputs_unchanged": true,
+  "keys": [
+   "error_digest",
+   "error_type",
+   "refused"
+  ],
+  "result": {
+   "error_digest": "eaebb801567bd5e78df29725adc0cd60b5b4f00ad6fe9b9c12a059bc8ff2dd83",
+   "error_type": "ContractError",
+   "refused": true
+  }
+ },
+ "refused_missing_identity": {
+  "canary_in_the_result": false,
+  "error_digest_is_the_digest_of": "Assigned output identities changed",
+  "inputs_unchanged": true,
+  "keys": [
+   "error_digest",
+   "error_type",
+   "refused"
+  ],
+  "result": {
+   "error_digest": "130904a67b79edb2e12303d0edf8b1afe17635d2bc5113377e1742e1e440f84e",
+   "error_type": "ContractError",
+   "refused": true
+  }
+ },
+ "refused_missing_test_disposition": {
+  "canary_in_the_result": false,
+  "error_digest_is_the_digest_of": "Missing subsystem trace: tests",
+  "inputs_unchanged": true,
+  "keys": [
+   "error_digest",
+   "error_type",
+   "refused"
+  ],
+  "result": {
+   "error_digest": "9456f7b883a2a1f448d141daee486aa14eedface1767e76c5c9a0cf0e82b9804",
+   "error_type": "ContractError",
+   "refused": true
+  }
+ },
+ "refused_unknown_disposition": {
+  "canary_in_the_result": false,
+  "error_digest_is_the_digest_of": "Unknown disposition",
+  "inputs_unchanged": true,
+  "keys": [
+   "error_digest",
+   "error_type",
+   "refused"
+  ],
+  "result": {
+   "error_digest": "61a5447ed571937b7018a07e94879bd21ee441a94cb00ada555e18d429d2e711",
+   "error_type": "ContractError",
+   "refused": true
+  }
+ },
+ "the_draft_text_never_leaves_the_function": {
+  "canary_in_the_result": false,
+  "error_digest_is_the_digest_of": "Missing generator/original link",
+  "inputs_unchanged": true,
+  "keys": [
+   "error_digest",
+   "error_type",
+   "refused"
+  ],
+  "result": {
+   "error_digest": "c293f24177e84fe75e1c27512df7c55b0432c2798a588fde4159ad32283928b2",
+   "error_type": "ContractError",
+   "refused": true
+  }
+ }
+}
