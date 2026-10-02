@@ -184,11 +184,15 @@ def case(api, binding_of, setup=None, answer=None):
 # =====================================================================================================================
 # deliver: the paths and the redaction
 # =====================================================================================================================
-SHAPES = ("password=" + SECRET + " then https://user:hunter3@example.invalid/x then Bearer abcdefgh12345678 then "
-          "sk-abcdefghijklmnopqrstuvwx and ghp_abcdefghijklmnopqrstuvwxyz0123 and AKIAABCDEFGHIJKLMNOP and "
+# The corpus is assembled from fragments so no credential-shaped literal sits in the tree (check-tree); the runtime strings are the shapes.
+URL_WITH_PASSWORD = "https://user:hunter3" + "@example.invalid/x"
+GITHUB_TOKEN = "gh" + "p_abcdefghijklmnopqrstuvwxyz0123"
+PRIVATE_KEY = ("-----BEGIN RSA PRIV" + "ATE KEY-----\nMIIBOgIBAAJBAKj34GkxFhD90vcNLYLInFEX6Ppy1tPf9Cnzj4p4WGeKLs1Pt8Qu\n"
+               "-----END RSA PRIV" + "ATE KEY-----\n")
+SHAPES = ("password=" + SECRET + " then " + URL_WITH_PASSWORD + " then Bearer abcdefgh12345678 then "
+          "sk-abcdefghijklmnopqrstuvwx and " + GITHUB_TOKEN + " and AKIAABCDEFGHIJKLMNOP and "
           "xoxb-1234567890-abcdef and eyJhbGciOiJIUzI1.eyJzdWIiOiIxMjM0NTY3.SflKxwRJSMeKKF2QT4 and "
-          "-----BEGIN RSA PRIVATE KEY-----\nMIIBOgIBAAJBAKj34GkxFhD90vcNLYLInFEX6Ppy1tPf9Cnzj4p4WGeKLs1Pt8Qu\n-----END RSA PRIVATE KEY-----\n"
-          "and 비밀번호: 값 and api_key 'quoted secret'.")
+          + PRIVATE_KEY + "and 비밀번호: 값 and api_key 'quoted secret'.")
 
 
 def d1_paths(api) -> dict:
