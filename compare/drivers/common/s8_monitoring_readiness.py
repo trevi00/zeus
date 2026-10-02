@@ -155,7 +155,7 @@ def s3_envelopes(api, scratch):
         "required_present": api.source_states({n: envelope(1.0) for n in REQUIRED}, NOW),
         "order_of_optional": list(api.source_states({n: envelope(1.0) for n in ("research_programs", "fleet", "observations", "redis")}, NOW)),
         "unknown_ignored": api.source_states({"zzz": envelope(1.0)}, NOW)}
-    secret = "postgresql://admin:s3cr3t@localhost/db"
+    secret = "dsn-admin-s3cr3t-localhost"
     body = document(NOW, ages={"docker": 1.0, "redis": 1.0})
     body["scope"]["label"] = secret
     body["sources"]["database"] = {"status": "unavailable", "error": secret, "data": None, "observed_at": "<script>alert(1)</script>"}
@@ -164,7 +164,7 @@ def s3_envelopes(api, scratch):
     reply = answer(api, scratch, body)
     text = json.dumps(reply)
     out["test_readiness_never_reflects_snapshot_values_keys_paths_or_errors"] = {
-        "answer": reply, "leaks": [w for w in ("s3cr3t", "postgresql", "script", "passwd", "RuntimeError", "monitoring-", NOW.isoformat()) if w in text]}
+        "answer": reply, "leaks": [w for w in ("s3cr3t", "dsn-admin", "script", "passwd", "RuntimeError", "monitoring-", NOW.isoformat()) if w in text]}
     return out
 
 
