@@ -1,0 +1,10 @@
+{
+  "agents": [
+    {"id": "conductor", "role": "conductor", "parent": null, "team": "control"},
+    {"id": "lead:alpha", "role": "lead", "parent": "conductor", "team": "alpha"},
+    {"id": "lead:beta", "role": "lead", "parent": "conductor", "team": "beta"},
+    {"id": "worker:alpha-1", "role": "worker", "parent": "lead:alpha", "team": "alpha"},
+    {"id": "worker:alpha-2", "role": "worker", "parent": "lead:alpha", "team": "alpha"},
+    {"id": "worker:beta-1", "role": "worker", "parent": "lead:beta", "team": "beta"}
+  ]
+}
