@@ -182,8 +182,10 @@ def test_v4_intake_owns_the_portfolio_buckets():
     from codex_harness.intake import ports
 
     portfolio = ("portfolio_bindings", "portfolio_acceptances", "portfolio_investigations", "portfolio_followups")
-    # S8 pilot 84 (V16) appends the four front-desk buckets after the portfolio ones
-    assert ports.OWNED_BUCKETS == portfolio + ("desk_sessions", "desk_requests", "desk_events", "desk_receipts")
+    # S8 pilot 84 (V16) appends the four front-desk buckets after the portfolio ones; pilot 98 (V11) the eight ticket buckets
+    tickets = ("tickets", "ticket_dispatches", "ticket_closures", "ticket_closure_sequences", "ticket_reopens", "ticket_github",
+               "ticket_lifecycle_events", "ticket_trust_anchors")
+    assert ports.OWNED_BUCKETS == portfolio + ("desk_sessions", "desk_requests", "desk_events", "desk_receipts") + tickets
     app = importlib.import_module(APP)
     assert {app.BUCKET_BINDINGS, app.BUCKET_ACCEPTANCES, app.BUCKET_INVESTIGATIONS, app.BUCKET_FOLLOWUPS} == set(portfolio)
 
