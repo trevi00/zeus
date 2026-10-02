@@ -1,0 +1,8 @@
+{
+ "family": "research.hook_lifecycle",
+ "description": "S8 rest of the M7 Harness hook lifecycle after S4 (pilot 82): get_hook, propose (non-worker, empty revision, bad spec, non-replaceable status), record_canary (wrong/extra/non-boolean checks, before review, stale revision/hash, a failing canary -> rejected), activate (not verified, spec changed after the canary, with a given transaction and in its own unit), rollback (empty reason, inactive hook, to previous_active, to rolled_back), active_hooks and prepare_command (the alias applied, other platform/executable, two conflicting active hooks), with the hook.proposed/hook.activated/hook.rolled_back events (ids and times), on MemoryStore with scripted clocks and ids",
+ "reference_driver": "drivers/reference/s8_hook_lifecycle.py",
+ "target_driver": "drivers/target/s8_hook_lifecycle.py",
+ "golden": "goldens/reference/research.hook_lifecycle.json",
+ "slice": "S8"
+}

@@ -1,0 +1,1275 @@
+{
+ "activate_a_again": {
+  "message": "Candidate not verified",
+  "refused": "ContractError"
+ },
+ "activate_a_given_transaction": {
+  "value": {
+   "author": "worker:implementation",
+   "canary": {
+    "checks": {
+     "cli_start": true,
+     "normal_case": true,
+     "reproduction": true
+    },
+    "revision": "rev-1",
+    "spec_hash": "16581b540a49af1b9baa436dc4be1406f18fcff1d9426371bf0f0f55c23c71b7"
+   },
+   "id": "hook-a",
+   "reviews": [
+    {
+     "actor": "lead:improvement",
+     "evidence_ref": "ev-lead",
+     "passed": true,
+     "revision": "rev-1",
+     "role": "lead",
+     "spec_hash": "16581b540a49af1b9baa436dc4be1406f18fcff1d9426371bf0f0f55c23c71b7"
+    },
+    {
+     "actor": "conductor",
+     "evidence_ref": "ev-conductor",
+     "passed": true,
+     "revision": "rev-1",
+     "role": "conductor",
+     "spec_hash": "16581b540a49af1b9baa436dc4be1406f18fcff1d9426371bf0f0f55c23c71b7"
+    }
+   ],
+   "revision": "rev-1",
+   "spec": {
+    "kind": "executable_alias",
+    "match": "python",
+    "platform": "windows",
+    "replacement": "py"
+   },
+   "status": "active",
+   "version": 4
+  }
+ },
+ "activate_h_own_unit": {
+  "value": {
+   "author": "worker:implementation",
+   "canary": {
+    "checks": {
+     "cli_start": true,
+     "normal_case": true,
+     "reproduction": true
+    },
+    "revision": "rev-1",
+    "spec_hash": "88475932fe24c5d2cb3c025b9b1fe15dbf591bd9567c7247349b45758058693d"
+   },
+   "id": "hook-h",
+   "reviews": [
+    {
+     "actor": "lead:improvement",
+     "evidence_ref": "ev-lead",
+     "passed": true,
+     "revision": "rev-1",
+     "role": "lead",
+     "spec_hash": "88475932fe24c5d2cb3c025b9b1fe15dbf591bd9567c7247349b45758058693d"
+    },
+    {
+     "actor": "conductor",
+     "evidence_ref": "ev-conductor",
+     "passed": true,
+     "revision": "rev-1",
+     "role": "conductor",
+     "spec_hash": "88475932fe24c5d2cb3c025b9b1fe15dbf591bd9567c7247349b45758058693d"
+    }
+   ],
+   "revision": "rev-1",
+   "spec": {
+    "kind": "executable_alias",
+    "match": "python",
+    "platform": "windows",
+    "replacement": "python3"
+   },
+   "status": "active",
+   "version": 2
+  }
+ },
+ "activate_not_verified_candidate": {
+  "message": "Candidate not verified",
+  "refused": "ContractError"
+ },
+ "activate_rejected_by_canary": {
+  "message": "Candidate not verified",
+  "refused": "ContractError"
+ },
+ "activate_spec_changed_after_canary": {
+  "message": "Artifact changed after canary",
+  "refused": "ContractError"
+ },
+ "activate_unknown": {
+  "message": "Candidate not verified",
+  "refused": "ContractError"
+ },
+ "active_hooks_after_rollback": {
+  "value": [
+   {
+    "author": "worker:implementation",
+    "canary": {
+     "checks": {
+      "cli_start": true,
+      "normal_case": true,
+      "reproduction": true
+     },
+     "revision": "rev-1",
+     "spec_hash": "16581b540a49af1b9baa436dc4be1406f18fcff1d9426371bf0f0f55c23c71b7"
+    },
+    "id": "hook-a",
+    "reviews": [
+     {
+      "actor": "lead:improvement",
+      "evidence_ref": "ev-lead",
+      "passed": true,
+      "revision": "rev-1",
+      "role": "lead",
+      "spec_hash": "16581b540a49af1b9baa436dc4be1406f18fcff1d9426371bf0f0f55c23c71b7"
+     },
+     {
+      "actor": "conductor",
+      "evidence_ref": "ev-conductor",
+      "passed": true,
+      "revision": "rev-1",
+      "role": "conductor",
+      "spec_hash": "16581b540a49af1b9baa436dc4be1406f18fcff1d9426371bf0f0f55c23c71b7"
+     }
+    ],
+    "revision": "rev-1",
+    "spec": {
+     "kind": "executable_alias",
+     "match": "python",
+     "platform": "windows",
+     "replacement": "py"
+    },
+    "status": "active",
+    "version": 4
+   },
+   {
+    "author": "worker:implementation",
+    "canary": null,
+    "id": "hook-act",
+    "reviews": [],
+    "revision": "rev-1",
+    "spec": {
+     "kind": "executable_alias",
+     "match": "node",
+     "platform": "windows",
+     "replacement": "nodejs"
+    },
+    "status": "active",
+    "version": 2
+   }
+  ]
+ },
+ "active_hooks_one_alias": {
+  "value": [
+   {
+    "author": "worker:implementation",
+    "canary": {
+     "checks": {
+      "cli_start": true,
+      "normal_case": true,
+      "reproduction": true
+     },
+     "revision": "rev-1",
+     "spec_hash": "16581b540a49af1b9baa436dc4be1406f18fcff1d9426371bf0f0f55c23c71b7"
+    },
+    "id": "hook-a",
+    "reviews": [
+     {
+      "actor": "lead:improvement",
+      "evidence_ref": "ev-lead",
+      "passed": true,
+      "revision": "rev-1",
+      "role": "lead",
+      "spec_hash": "16581b540a49af1b9baa436dc4be1406f18fcff1d9426371bf0f0f55c23c71b7"
+     },
+     {
+      "actor": "conductor",
+      "evidence_ref": "ev-conductor",
+      "passed": true,
+      "revision": "rev-1",
+      "role": "conductor",
+      "spec_hash": "16581b540a49af1b9baa436dc4be1406f18fcff1d9426371bf0f0f55c23c71b7"
+     }
+    ],
+    "revision": "rev-1",
+    "spec": {
+     "kind": "executable_alias",
+     "match": "python",
+     "platform": "windows",
+     "replacement": "py"
+    },
+    "status": "active",
+    "version": 4
+   },
+   {
+    "author": "worker:implementation",
+    "canary": null,
+    "id": "hook-act",
+    "reviews": [],
+    "revision": "rev-1",
+    "spec": {
+     "kind": "executable_alias",
+     "match": "node",
+     "platform": "windows",
+     "replacement": "nodejs"
+    },
+    "status": "active",
+    "version": 2
+   },
+   {
+    "author": "worker:implementation",
+    "canary": null,
+    "id": "hook-prev",
+    "previous_active": {
+     "author": "worker:implementation",
+     "canary": null,
+     "id": "hook-prev",
+     "reviews": [],
+     "revision": "rev-1",
+     "spec": {
+      "kind": "executable_alias",
+      "match": "npm",
+      "platform": "windows",
+      "replacement": "npm.cmd"
+     },
+     "status": "active",
+     "version": 3
+    },
+    "reviews": [],
+    "revision": "rev-2",
+    "spec": {
+     "kind": "executable_alias",
+     "match": "git",
+     "platform": "windows",
+     "replacement": "git.exe"
+    },
+    "status": "active",
+    "version": 4
+   }
+  ]
+ },
+ "canary_again_after_verified": {
+  "message": "Reviews must precede canary",
+  "refused": "ContractError"
+ },
+ "canary_before_review": {
+  "message": "Reviews must precede canary",
+  "refused": "ContractError"
+ },
+ "canary_extra_check": {
+  "message": "Canary needs reproduction, normal_case, cli_start booleans",
+  "refused": "ContractError"
+ },
+ "canary_fails_c": {
+  "value": {
+   "author": "worker:implementation",
+   "canary": {
+    "checks": {
+     "cli_start": true,
+     "normal_case": false,
+     "reproduction": true
+    },
+    "revision": "rev-1",
+    "spec_hash": "16581b540a49af1b9baa436dc4be1406f18fcff1d9426371bf0f0f55c23c71b7"
+   },
+   "id": "hook-c",
+   "reviews": [
+    {
+     "actor": "lead:improvement",
+     "evidence_ref": "ev-lead",
+     "passed": true,
+     "revision": "rev-1",
+     "role": "lead",
+     "spec_hash": "16581b540a49af1b9baa436dc4be1406f18fcff1d9426371bf0f0f55c23c71b7"
+    },
+    {
+     "actor": "conductor",
+     "evidence_ref": "ev-conductor",
+     "passed": true,
+     "revision": "rev-1",
+     "role": "conductor",
+     "spec_hash": "16581b540a49af1b9baa436dc4be1406f18fcff1d9426371bf0f0f55c23c71b7"
+    }
+   ],
+   "revision": "rev-1",
+   "spec": {
+    "kind": "executable_alias",
+    "match": "python",
+    "platform": "windows",
+    "replacement": "py"
+   },
+   "status": "rejected",
+   "version": 2
+  }
+ },
+ "canary_missing_check": {
+  "message": "Canary needs reproduction, normal_case, cli_start booleans",
+  "refused": "ContractError"
+ },
+ "canary_non_bool": {
+  "message": "Canary needs reproduction, normal_case, cli_start booleans",
+  "refused": "ContractError"
+ },
+ "canary_ok_a": {
+  "value": {
+   "author": "worker:implementation",
+   "canary": {
+    "checks": {
+     "cli_start": true,
+     "normal_case": true,
+     "reproduction": true
+    },
+    "revision": "rev-1",
+    "spec_hash": "16581b540a49af1b9baa436dc4be1406f18fcff1d9426371bf0f0f55c23c71b7"
+   },
+   "id": "hook-a",
+   "reviews": [
+    {
+     "actor": "lead:improvement",
+     "evidence_ref": "ev-lead",
+     "passed": true,
+     "revision": "rev-1",
+     "role": "lead",
+     "spec_hash": "16581b540a49af1b9baa436dc4be1406f18fcff1d9426371bf0f0f55c23c71b7"
+    },
+    {
+     "actor": "conductor",
+     "evidence_ref": "ev-conductor",
+     "passed": true,
+     "revision": "rev-1",
+     "role": "conductor",
+     "spec_hash": "16581b540a49af1b9baa436dc4be1406f18fcff1d9426371bf0f0f55c23c71b7"
+    }
+   ],
+   "revision": "rev-1",
+   "spec": {
+    "kind": "executable_alias",
+    "match": "python",
+    "platform": "windows",
+    "replacement": "py"
+   },
+   "status": "verified",
+   "version": 4
+  }
+ },
+ "canary_ok_g": {
+  "value": {
+   "author": "worker:implementation",
+   "canary": {
+    "checks": {
+     "cli_start": true,
+     "normal_case": true,
+     "reproduction": true
+    },
+    "revision": "rev-1",
+    "spec_hash": "16581b540a49af1b9baa436dc4be1406f18fcff1d9426371bf0f0f55c23c71b7"
+   },
+   "id": "hook-g",
+   "reviews": [
+    {
+     "actor": "lead:improvement",
+     "evidence_ref": "ev-lead",
+     "passed": true,
+     "revision": "rev-1",
+     "role": "lead",
+     "spec_hash": "16581b540a49af1b9baa436dc4be1406f18fcff1d9426371bf0f0f55c23c71b7"
+    },
+    {
+     "actor": "conductor",
+     "evidence_ref": "ev-conductor",
+     "passed": true,
+     "revision": "rev-1",
+     "role": "conductor",
+     "spec_hash": "16581b540a49af1b9baa436dc4be1406f18fcff1d9426371bf0f0f55c23c71b7"
+    }
+   ],
+   "revision": "rev-1",
+   "spec": {
+    "kind": "executable_alias",
+    "match": "python",
+    "platform": "windows",
+    "replacement": "py"
+   },
+   "status": "verified",
+   "version": 2
+  }
+ },
+ "canary_ok_h": {
+  "value": {
+   "author": "worker:implementation",
+   "canary": {
+    "checks": {
+     "cli_start": true,
+     "normal_case": true,
+     "reproduction": true
+    },
+    "revision": "rev-1",
+    "spec_hash": "88475932fe24c5d2cb3c025b9b1fe15dbf591bd9567c7247349b45758058693d"
+   },
+   "id": "hook-h",
+   "reviews": [
+    {
+     "actor": "lead:improvement",
+     "evidence_ref": "ev-lead",
+     "passed": true,
+     "revision": "rev-1",
+     "role": "lead",
+     "spec_hash": "88475932fe24c5d2cb3c025b9b1fe15dbf591bd9567c7247349b45758058693d"
+    },
+    {
+     "actor": "conductor",
+     "evidence_ref": "ev-conductor",
+     "passed": true,
+     "revision": "rev-1",
+     "role": "conductor",
+     "spec_hash": "88475932fe24c5d2cb3c025b9b1fe15dbf591bd9567c7247349b45758058693d"
+    }
+   ],
+   "revision": "rev-1",
+   "spec": {
+    "kind": "executable_alias",
+    "match": "python",
+    "platform": "windows",
+    "replacement": "python3"
+   },
+   "status": "verified",
+   "version": 2
+  }
+ },
+ "canary_stale_hash": {
+  "message": "Stale canary",
+  "refused": "ContractError"
+ },
+ "canary_stale_revision": {
+  "message": "Stale canary",
+  "refused": "ContractError"
+ },
+ "canary_unknown_hook": {
+  "message": "Reviews must precede canary",
+  "refused": "ContractError"
+ },
+ "events": [
+  [
+   "5eed0000-0000-4000-8000-000000000001",
+   {
+    "at": "2026-01-01T00:00:08+00:00",
+    "hook_id": "hook-a",
+    "revision": "rev-1",
+    "spec_hash": "16581b540a49af1b9baa436dc4be1406f18fcff1d9426371bf0f0f55c23c71b7",
+    "type": "hook.proposed"
+   }
+  ],
+  [
+   "5eed0000-0000-4000-8000-000000000002",
+   {
+    "at": "2026-01-01T00:00:09+00:00",
+    "hook_id": "hook-a",
+    "revision": "rev-1b",
+    "spec_hash": "16581b540a49af1b9baa436dc4be1406f18fcff1d9426371bf0f0f55c23c71b7",
+    "type": "hook.proposed"
+   }
+  ],
+  [
+   "5eed0000-0000-4000-8000-000000000003",
+   {
+    "at": "2026-01-01T00:00:10+00:00",
+    "hook_id": "hook-a",
+    "revision": "rev-1",
+    "spec_hash": "16581b540a49af1b9baa436dc4be1406f18fcff1d9426371bf0f0f55c23c71b7",
+    "type": "hook.proposed"
+   }
+  ],
+  [
+   "5eed0000-0000-4000-8000-000000000004",
+   {
+    "at": "2026-01-01T00:00:11+00:00",
+    "hook_id": "hook-b",
+    "revision": "rev-1",
+    "spec_hash": "16581b540a49af1b9baa436dc4be1406f18fcff1d9426371bf0f0f55c23c71b7",
+    "type": "hook.proposed"
+   }
+  ],
+  [
+   "5eed0000-0000-4000-8000-000000000005",
+   {
+    "at": "2026-01-01T00:00:12+00:00",
+    "hook_id": "hook-rej",
+    "revision": "rev-1",
+    "spec_hash": "16581b540a49af1b9baa436dc4be1406f18fcff1d9426371bf0f0f55c23c71b7",
+    "type": "hook.proposed"
+   }
+  ],
+  [
+   "5eed0000-0000-4000-8000-000000000006",
+   {
+    "at": "2026-01-01T00:00:13+00:00",
+    "hook_id": "hook-n",
+    "revision": "rev-1",
+    "spec_hash": "450bc26cb2593aa87364d25805645bffda6fa5223e8f7d8e04a18490b1c6fec2",
+    "type": "hook.proposed"
+   }
+  ],
+  [
+   "5eed0000-0000-4000-8000-000000000007",
+   {
+    "at": "2026-01-01T00:00:14+00:00",
+    "hook_id": "hook-c",
+    "revision": "rev-1",
+    "spec_hash": "16581b540a49af1b9baa436dc4be1406f18fcff1d9426371bf0f0f55c23c71b7",
+    "type": "hook.proposed"
+   }
+  ],
+  [
+   "5eed0000-0000-4000-8000-000000000008",
+   {
+    "at": "2026-01-01T00:00:14+00:00",
+    "hook_id": "hook-g",
+    "revision": "rev-1",
+    "spec_hash": "16581b540a49af1b9baa436dc4be1406f18fcff1d9426371bf0f0f55c23c71b7",
+    "type": "hook.proposed"
+   }
+  ],
+  [
+   "5eed0000-0000-4000-8000-000000000009",
+   {
+    "at": "2026-01-01T00:00:14+00:00",
+    "hook_id": "hook-h",
+    "revision": "rev-1",
+    "spec_hash": "88475932fe24c5d2cb3c025b9b1fe15dbf591bd9567c7247349b45758058693d",
+    "type": "hook.proposed"
+   }
+  ],
+  [
+   "5eed0000-0000-4000-8000-00000000000a",
+   {
+    "at": "2026-01-01T00:00:30+00:00",
+    "hook_id": "hook-a",
+    "revision": "rev-1",
+    "type": "hook.activated"
+   }
+  ],
+  [
+   "5eed0000-0000-4000-8000-00000000000b",
+   {
+    "at": "2026-01-01T00:00:39+00:00",
+    "hook_id": "hook-h",
+    "revision": "rev-1",
+    "type": "hook.activated"
+   }
+  ],
+  [
+   "5eed0000-0000-4000-8000-00000000000c",
+   {
+    "at": "2026-01-01T00:00:45+00:00",
+    "hook_id": "hook-h",
+    "reason": "conflict",
+    "type": "hook.rolled_back"
+   }
+  ],
+  [
+   "5eed0000-0000-4000-8000-00000000000d",
+   {
+    "at": "2026-01-01T00:00:46+00:00",
+    "hook_id": "hook-prev",
+    "reason": "regression",
+    "type": "hook.rolled_back"
+   }
+  ],
+  [
+   "5eed0000-0000-4000-8000-00000000000e",
+   {
+    "at": "2026-01-01T00:00:49+00:00",
+    "hook_id": "hook-prev",
+    "reason": "regression-2",
+    "type": "hook.rolled_back"
+   }
+  ]
+ ],
+ "get_hook_previous": {
+  "value": {
+   "author": "worker:implementation",
+   "canary": null,
+   "id": "hook-prev",
+   "reviews": [],
+   "revision": "rev-1",
+   "spec": {
+    "kind": "executable_alias",
+    "match": "npm",
+    "platform": "windows",
+    "replacement": "npm.cmd"
+   },
+   "status": "rolled_back",
+   "version": 3
+  }
+ },
+ "get_hook_required": {
+  "value": {
+   "author": null,
+   "canary": null,
+   "id": "hook-a",
+   "reviews": [],
+   "revision": null,
+   "spec": null,
+   "status": "required",
+   "version": 1
+  }
+ },
+ "get_hook_rolled_back": {
+  "value": {
+   "author": "worker:implementation",
+   "canary": {
+    "checks": {
+     "cli_start": true,
+     "normal_case": true,
+     "reproduction": true
+    },
+    "revision": "rev-1",
+    "spec_hash": "88475932fe24c5d2cb3c025b9b1fe15dbf591bd9567c7247349b45758058693d"
+   },
+   "id": "hook-h",
+   "reviews": [
+    {
+     "actor": "lead:improvement",
+     "evidence_ref": "ev-lead",
+     "passed": true,
+     "revision": "rev-1",
+     "role": "lead",
+     "spec_hash": "88475932fe24c5d2cb3c025b9b1fe15dbf591bd9567c7247349b45758058693d"
+    },
+    {
+     "actor": "conductor",
+     "evidence_ref": "ev-conductor",
+     "passed": true,
+     "revision": "rev-1",
+     "role": "conductor",
+     "spec_hash": "88475932fe24c5d2cb3c025b9b1fe15dbf591bd9567c7247349b45758058693d"
+    }
+   ],
+   "revision": "rev-1",
+   "spec": {
+    "kind": "executable_alias",
+    "match": "python",
+    "platform": "windows",
+    "replacement": "python3"
+   },
+   "status": "rolled_back",
+   "version": 2
+  }
+ },
+ "get_hook_unknown": {
+  "message": "Hook not found",
+  "refused": "ContractError"
+ },
+ "hooks": [
+  [
+   "hook-a",
+   {
+    "author": "worker:implementation",
+    "canary": {
+     "checks": {
+      "cli_start": true,
+      "normal_case": true,
+      "reproduction": true
+     },
+     "revision": "rev-1",
+     "spec_hash": "16581b540a49af1b9baa436dc4be1406f18fcff1d9426371bf0f0f55c23c71b7"
+    },
+    "id": "hook-a",
+    "reviews": [
+     {
+      "actor": "lead:improvement",
+      "evidence_ref": "ev-lead",
+      "passed": true,
+      "revision": "rev-1",
+      "role": "lead",
+      "spec_hash": "16581b540a49af1b9baa436dc4be1406f18fcff1d9426371bf0f0f55c23c71b7"
+     },
+     {
+      "actor": "conductor",
+      "evidence_ref": "ev-conductor",
+      "passed": true,
+      "revision": "rev-1",
+      "role": "conductor",
+      "spec_hash": "16581b540a49af1b9baa436dc4be1406f18fcff1d9426371bf0f0f55c23c71b7"
+     }
+    ],
+    "revision": "rev-1",
+    "spec": {
+     "kind": "executable_alias",
+     "match": "python",
+     "platform": "windows",
+     "replacement": "py"
+    },
+    "status": "active",
+    "version": 4
+   }
+  ],
+  [
+   "hook-act",
+   {
+    "author": "worker:implementation",
+    "canary": null,
+    "id": "hook-act",
+    "reviews": [],
+    "revision": "rev-1",
+    "spec": {
+     "kind": "executable_alias",
+     "match": "node",
+     "platform": "windows",
+     "replacement": "nodejs"
+    },
+    "status": "active",
+    "version": 2
+   }
+  ],
+  [
+   "hook-b",
+   {
+    "author": "worker:implementation",
+    "canary": null,
+    "id": "hook-b",
+    "reviews": [],
+    "revision": "rev-1",
+    "spec": {
+     "kind": "executable_alias",
+     "match": "python",
+     "platform": "windows",
+     "replacement": "py"
+    },
+    "status": "candidate",
+    "version": 2
+   }
+  ],
+  [
+   "hook-c",
+   {
+    "author": "worker:implementation",
+    "canary": {
+     "checks": {
+      "cli_start": true,
+      "normal_case": false,
+      "reproduction": true
+     },
+     "revision": "rev-1",
+     "spec_hash": "16581b540a49af1b9baa436dc4be1406f18fcff1d9426371bf0f0f55c23c71b7"
+    },
+    "id": "hook-c",
+    "reviews": [
+     {
+      "actor": "lead:improvement",
+      "evidence_ref": "ev-lead",
+      "passed": true,
+      "revision": "rev-1",
+      "role": "lead",
+      "spec_hash": "16581b540a49af1b9baa436dc4be1406f18fcff1d9426371bf0f0f55c23c71b7"
+     },
+     {
+      "actor": "conductor",
+      "evidence_ref": "ev-conductor",
+      "passed": true,
+      "revision": "rev-1",
+      "role": "conductor",
+      "spec_hash": "16581b540a49af1b9baa436dc4be1406f18fcff1d9426371bf0f0f55c23c71b7"
+     }
+    ],
+    "revision": "rev-1",
+    "spec": {
+     "kind": "executable_alias",
+     "match": "python",
+     "platform": "windows",
+     "replacement": "py"
+    },
+    "status": "rejected",
+    "version": 2
+   }
+  ],
+  [
+   "hook-d",
+   {
+    "author": null,
+    "canary": null,
+    "id": "hook-d",
+    "reviews": [],
+    "revision": null,
+    "spec": null,
+    "status": "required",
+    "version": 1
+   }
+  ],
+  [
+   "hook-g",
+   {
+    "author": "worker:implementation",
+    "canary": {
+     "checks": {
+      "cli_start": true,
+      "normal_case": true,
+      "reproduction": true
+     },
+     "revision": "rev-1",
+     "spec_hash": "16581b540a49af1b9baa436dc4be1406f18fcff1d9426371bf0f0f55c23c71b7"
+    },
+    "id": "hook-g",
+    "reviews": [
+     {
+      "actor": "lead:improvement",
+      "evidence_ref": "ev-lead",
+      "passed": true,
+      "revision": "rev-1",
+      "role": "lead",
+      "spec_hash": "16581b540a49af1b9baa436dc4be1406f18fcff1d9426371bf0f0f55c23c71b7"
+     },
+     {
+      "actor": "conductor",
+      "evidence_ref": "ev-conductor",
+      "passed": true,
+      "revision": "rev-1",
+      "role": "conductor",
+      "spec_hash": "16581b540a49af1b9baa436dc4be1406f18fcff1d9426371bf0f0f55c23c71b7"
+     }
+    ],
+    "revision": "rev-1",
+    "spec": {
+     "kind": "executable_alias",
+     "match": "python",
+     "platform": "windows",
+     "replacement": "py3"
+    },
+    "status": "verified",
+    "version": 2
+   }
+  ],
+  [
+   "hook-h",
+   {
+    "author": "worker:implementation",
+    "canary": {
+     "checks": {
+      "cli_start": true,
+      "normal_case": true,
+      "reproduction": true
+     },
+     "revision": "rev-1",
+     "spec_hash": "88475932fe24c5d2cb3c025b9b1fe15dbf591bd9567c7247349b45758058693d"
+    },
+    "id": "hook-h",
+    "reviews": [
+     {
+      "actor": "lead:improvement",
+      "evidence_ref": "ev-lead",
+      "passed": true,
+      "revision": "rev-1",
+      "role": "lead",
+      "spec_hash": "88475932fe24c5d2cb3c025b9b1fe15dbf591bd9567c7247349b45758058693d"
+     },
+     {
+      "actor": "conductor",
+      "evidence_ref": "ev-conductor",
+      "passed": true,
+      "revision": "rev-1",
+      "role": "conductor",
+      "spec_hash": "88475932fe24c5d2cb3c025b9b1fe15dbf591bd9567c7247349b45758058693d"
+     }
+    ],
+    "revision": "rev-1",
+    "spec": {
+     "kind": "executable_alias",
+     "match": "python",
+     "platform": "windows",
+     "replacement": "python3"
+    },
+    "status": "rolled_back",
+    "version": 2
+   }
+  ],
+  [
+   "hook-n",
+   {
+    "author": "worker:implementation",
+    "canary": null,
+    "id": "hook-n",
+    "reviews": [],
+    "revision": "rev-1",
+    "spec": {
+     "event": "Stop",
+     "kind": "native_hook",
+     "matcher": "*",
+     "script_path": "hooks/x.py",
+     "script_sha256": "0000000000000000000000000000000000000000000000000000000000000000"
+    },
+    "status": "candidate",
+    "version": 2
+   }
+  ],
+  [
+   "hook-prev",
+   {
+    "author": "worker:implementation",
+    "canary": null,
+    "id": "hook-prev",
+    "reviews": [],
+    "revision": "rev-1",
+    "spec": {
+     "kind": "executable_alias",
+     "match": "npm",
+     "platform": "windows",
+     "replacement": "npm.cmd"
+    },
+    "status": "rolled_back",
+    "version": 3
+   }
+  ],
+  [
+   "hook-rej",
+   {
+    "author": "worker:implementation",
+    "canary": null,
+    "id": "hook-rej",
+    "reviews": [],
+    "revision": "rev-1",
+    "spec": {
+     "kind": "executable_alias",
+     "match": "python",
+     "platform": "windows",
+     "replacement": "py"
+    },
+    "status": "candidate",
+    "version": 4
+   }
+  ]
+ ],
+ "prepare_active_git_alias": {
+  "value": [
+   "git.exe",
+   "status"
+  ]
+ },
+ "prepare_after_rollback": {
+  "value": [
+   "py",
+   "-V"
+  ]
+ },
+ "prepare_conflict_not_triggered": {
+  "value": [
+   "git.exe",
+   "status"
+  ]
+ },
+ "prepare_conflicting_active_hooks": {
+  "message": "Conflicting active hooks; explicit resolution required",
+  "refused": "ContractError"
+ },
+ "prepare_empty_argv": {
+  "value": []
+ },
+ "prepare_git_after_rollback_to_previous": {
+  "value": [
+   "git",
+   "status"
+  ]
+ },
+ "prepare_npm_after_rollback_to_previous": {
+  "value": [
+   "npm.cmd",
+   "ci"
+  ]
+ },
+ "prepare_other_executable": {
+  "value": [
+   "cargo",
+   "build"
+  ]
+ },
+ "prepare_other_platform": {
+  "value": [
+   "python",
+   "-V"
+  ]
+ },
+ "prepare_previous_active_npm_alias": {
+  "value": [
+   "npm",
+   "ci"
+  ]
+ },
+ "prepare_windows": {
+  "value": [
+   "py",
+   "-V"
+  ]
+ },
+ "propose_a": {
+  "value": {
+   "author": "worker:implementation",
+   "canary": null,
+   "id": "hook-a",
+   "reviews": [],
+   "revision": "rev-1",
+   "spec": {
+    "kind": "executable_alias",
+    "match": "python",
+    "platform": "windows",
+    "replacement": "py"
+   },
+   "status": "candidate",
+   "version": 2
+  }
+ },
+ "propose_a_back": {
+  "value": {
+   "author": "worker:implementation",
+   "canary": null,
+   "id": "hook-a",
+   "reviews": [],
+   "revision": "rev-1",
+   "spec": {
+    "kind": "executable_alias",
+    "match": "python",
+    "platform": "windows",
+    "replacement": "py"
+   },
+   "status": "candidate",
+   "version": 4
+  }
+ },
+ "propose_a_replaces_candidate": {
+  "value": {
+   "author": "worker:implementation",
+   "canary": null,
+   "id": "hook-a",
+   "reviews": [],
+   "revision": "rev-1b",
+   "spec": {
+    "kind": "executable_alias",
+    "match": "python",
+    "platform": "windows",
+    "replacement": "py"
+   },
+   "status": "candidate",
+   "version": 3
+  }
+ },
+ "propose_active_not_replaceable": {
+  "message": "Cannot replace this hook",
+  "refused": "ContractError"
+ },
+ "propose_b": {
+  "value": {
+   "author": "worker:implementation",
+   "canary": null,
+   "id": "hook-b",
+   "reviews": [],
+   "revision": "rev-1",
+   "spec": {
+    "kind": "executable_alias",
+    "match": "python",
+    "platform": "windows",
+    "replacement": "py"
+   },
+   "status": "candidate",
+   "version": 2
+  }
+ },
+ "propose_bad_spec": {
+  "message": "Unsupported hook kind",
+  "refused": "ContractError"
+ },
+ "propose_empty_revision": {
+  "message": "Candidate revision required",
+  "refused": "ContractError"
+ },
+ "propose_native_hook": {
+  "value": {
+   "author": "worker:implementation",
+   "canary": null,
+   "id": "hook-n",
+   "reviews": [],
+   "revision": "rev-1",
+   "spec": {
+    "event": "Stop",
+    "kind": "native_hook",
+    "matcher": "*",
+    "script_path": "hooks/x.py",
+    "script_sha256": "0000000000000000000000000000000000000000000000000000000000000000"
+   },
+   "status": "candidate",
+   "version": 2
+  }
+ },
+ "propose_non_worker": {
+  "message": "Actor lacks required role",
+  "refused": "ContractError"
+ },
+ "propose_rejected_replaced": {
+  "value": {
+   "author": "worker:implementation",
+   "canary": null,
+   "id": "hook-rej",
+   "reviews": [],
+   "revision": "rev-1",
+   "spec": {
+    "kind": "executable_alias",
+    "match": "python",
+    "platform": "windows",
+    "replacement": "py"
+   },
+   "status": "candidate",
+   "version": 4
+  }
+ },
+ "propose_unknown_actor": {
+  "message": "Unknown actor",
+  "refused": "ContractError"
+ },
+ "propose_unknown_hook": {
+  "message": "Cannot replace this hook",
+  "refused": "ContractError"
+ },
+ "records": [
+  [
+   "events",
+   "5eed0000-0000-4000-8000-000000000001",
+   "b1b8be1c23710b2c4ea327cc2a2dacc45ae9d6455c78f598df26fda0fa782184"
+  ],
+  [
+   "events",
+   "5eed0000-0000-4000-8000-000000000002",
+   "6bb5a07f33046fde0ac69ca2ae8361c09452795ac2b4a1b7acf1f1387d2514c8"
+  ],
+  [
+   "events",
+   "5eed0000-0000-4000-8000-000000000003",
+   "1f16558f4cdcbd4066d583fdcb699182ff709073b87c18b32b7051301f4ba85c"
+  ],
+  [
+   "events",
+   "5eed0000-0000-4000-8000-000000000004",
+   "e949a6f7aef37ccf4b5c1c2a038493eaf771fca323a59839120796157b157063"
+  ],
+  [
+   "events",
+   "5eed0000-0000-4000-8000-000000000005",
+   "70676a8e18cd6813e41412ecdb5b637d77b9504366131f0e16b730fb02aa0028"
+  ],
+  [
+   "events",
+   "5eed0000-0000-4000-8000-000000000006",
+   "10e9730f0c6260f4934f5f05d208baf35b4ce1da3774e51091be6eca33c2a669"
+  ],
+  [
+   "events",
+   "5eed0000-0000-4000-8000-000000000007",
+   "061930eb5683a41ba216174d092ba99977601071480b18a0dae6e00b2cde7550"
+  ],
+  [
+   "events",
+   "5eed0000-0000-4000-8000-000000000008",
+   "c0c0c762a27e798d2a17ac3ff29809270fb66361215bd21c4ab19ed531458061"
+  ],
+  [
+   "events",
+   "5eed0000-0000-4000-8000-000000000009",
+   "af60d4e2935d8cbfb250af2029a3aef3420c308dbd4aa3dae178a022d8750077"
+  ],
+  [
+   "events",
+   "5eed0000-0000-4000-8000-00000000000a",
+   "930e9fce137f9ace6e9213d5789691bf252b3f209c3e946b8ba3fc0aa4b3aa1f"
+  ],
+  [
+   "events",
+   "5eed0000-0000-4000-8000-00000000000b",
+   "c3163ca566fdfe12fa515d5843ef52b52cd419284557e810130ae90f99088535"
+  ],
+  [
+   "events",
+   "5eed0000-0000-4000-8000-00000000000c",
+   "01918f4f2be92ff14bd80920d15d6956f59f8b119c744077c6ab1cbf492cb6b8"
+  ],
+  [
+   "events",
+   "5eed0000-0000-4000-8000-00000000000d",
+   "3cbb3976909e18a235aac4b416681c0eff642eddb93ee6a1af6b61621529c6ce"
+  ],
+  [
+   "events",
+   "5eed0000-0000-4000-8000-00000000000e",
+   "ca4cc045874a0e18d987cb9212dce4ad7f80f4acd203812fe54f659083167f64"
+  ],
+  [
+   "hooks",
+   "hook-a",
+   "5923e70cf86c328249b9209db55b378e78b0247a11130d432aefa916fa04c1b7"
+  ],
+  [
+   "hooks",
+   "hook-act",
+   "8a8a523d791da5afc4b35d11f36076e5e2dc0a41305cb7c1e01156e6024d8354"
+  ],
+  [
+   "hooks",
+   "hook-b",
+   "04497e5efae07d4436658cdb5fe2c86805bbc3cad61c9dd9f36db3da753fb9d1"
+  ],
+  [
+   "hooks",
+   "hook-c",
+   "b78eb332adefcaf642377b6df51e97655a5f0c767c7173ac653fa1948130169f"
+  ],
+  [
+   "hooks",
+   "hook-d",
+   "b7bcfe0e1e75541a677351e6bc8b7224af74afdf55d72befefc3b54c02fbb99d"
+  ],
+  [
+   "hooks",
+   "hook-g",
+   "b28c2268b92321f93e9e71716c24105a8d272d18f3540c1776f90f0943bec829"
+  ],
+  [
+   "hooks",
+   "hook-h",
+   "1b75301a686530bf5dddf68182480ec5d59372e59d472a99650f273d3a3e0c76"
+  ],
+  [
+   "hooks",
+   "hook-n",
+   "a1515fbb1075c6674173612d6082cfe943467d2d8da88d15e93dda45a203d18e"
+  ],
+  [
+   "hooks",
+   "hook-prev",
+   "5228d9dabf2479dea43e76f8f1c92337e4014e3d51f655768f0b47f9e03be76e"
+  ],
+  [
+   "hooks",
+   "hook-rej",
+   "674dc6bf0f6adc0940159ba3e5bced349313ba3d71111af77a9e0518b0f2fbe1"
+  ]
+ ],
+ "rollback_empty_reason": {
+  "message": "Rollback requires reason",
+  "refused": "ContractError"
+ },
+ "rollback_inactive": {
+  "message": "Hook not active",
+  "refused": "ContractError"
+ },
+ "rollback_previous_again": {
+  "value": null
+ },
+ "rollback_to_previous_active": {
+  "value": null
+ },
+ "rollback_unknown": {
+  "message": "Hook not active",
+  "refused": "ContractError"
+ },
+ "rollback_without_previous": {
+  "value": null
+ }
+}
