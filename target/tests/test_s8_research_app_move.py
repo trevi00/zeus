@@ -171,7 +171,13 @@ def test_v4_research_owns_the_audit_buckets_and_only_this_module_writes_them():
                     writers.add(path.relative_to(SRC).as_posix())
                 elif isinstance(first, ast.Name) and first.id == "kind" and "research_paths" in text:
                     writers.add(path.relative_to(SRC).as_posix())  # the loop variable of checkpoint()
-    assert writers == {"research/application/research.py"}
+    # S8 batch B3 (V24): M7 `adapters/audit_execution.py` is the second research writer of `research_backlog` (the discovery mapping and the acquire
+    # update; `bucket-writers-m7.txt`: `adapters/audit_execution.py[research]; application/research.py[research]`) and of no other of the twelve.
+    assert writers == {"research/application/research.py", "research/adapters/audit_execution.py"}
+    from codex_harness.research.adapters import audit_execution
+    mine = {n.args[0].value for n in ast.walk(ast.parse(Path(audit_execution.__file__).read_text())) if isinstance(n, ast.Call)
+            and isinstance(n.func, ast.Attribute) and n.func.attr == "put" and n.args and isinstance(n.args[0], ast.Constant)} & set(BUCKETS)
+    assert mine == {"research_backlog"}
 
 
 def test_pending_decisions_queue_is_idempotent_and_exists_reports_it():
