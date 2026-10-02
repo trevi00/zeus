@@ -1,0 +1,2953 @@
+{
+ "i1_policy_and_helpers": {
+  "bounds": {
+   "cleanup": 10.0,
+   "poll": 0.5,
+   "reader_join": 5.0
+  },
+  "env_base": {
+   "HOME": "/h",
+   "LANG": "C",
+   "PATH": "/p",
+   "PYTHONIOENCODING": "utf-8",
+   "ProgramData": "pd",
+   "TEMP": "/t"
+  },
+  "env_default_has_no_secret": true,
+  "env_default_is_filtered_os_environ": true,
+  "env_empty_base": {
+   "PYTHONIOENCODING": "utf-8"
+  },
+  "env_no_src": {
+   "HOME": "/h",
+   "LANG": "C",
+   "PATH": "/p",
+   "PYTHONIOENCODING": "utf-8",
+   "ProgramData": "pd",
+   "TEMP": "/t"
+  },
+  "env_src_is_file": {
+   "HOME": "/h",
+   "LANG": "C",
+   "PATH": "/p",
+   "PYTHONIOENCODING": "utf-8",
+   "ProgramData": "pd",
+   "TEMP": "/t"
+  },
+  "env_with_src": {
+   "HOME": "/h",
+   "LANG": "C",
+   "PATH": "/p",
+   "PYTHONIOENCODING": "utf-8",
+   "PYTHONPATH": "<ROOT>/02-with-src/src",
+   "ProgramData": "pd",
+   "TEMP": "/t"
+  },
+  "keep_env": [
+   "PATH",
+   "SYSTEMROOT",
+   "SystemRoot",
+   "COMSPEC",
+   "TEMP",
+   "TMP",
+   "HOME",
+   "USERPROFILE",
+   "LANG",
+   "LC_ALL",
+   "PROGRAMDATA",
+   "ProgramData"
+  ],
+  "metadata_grant": {
+   "exact": true,
+   "other_module": false,
+   "with_arg": false
+  },
+  "packaged": {
+   "file_json_loads": true,
+   "files": {
+    "max_bytes": 8388608
+   },
+   "keys": [
+    "files",
+    "policy_hash",
+    "replay",
+    "version"
+   ],
+   "policy_file_is_file": true,
+   "policy_file_name": "evidence-policy.json",
+   "policy_hash": "5b447c2d2bb7d1383f64a5f99a26f743848e786b92fc5b713ad59dee03ce09ea",
+   "replay": {
+    "allowed_argv_prefixes": [
+     [
+      "python",
+      "-m",
+      "pytest"
+     ],
+     [
+      "uv",
+      "run",
+      "python",
+      "-m",
+      "pytest"
+     ],
+     [
+      "uv",
+      "run",
+      "pytest"
+     ],
+     [
+      "ruff",
+      "check"
+     ],
+     [
+      "uv",
+      "run",
+      "ruff",
+      "check"
+     ],
+     [
+      "python",
+      "-m",
+      "ruff",
+      "check"
+     ],
+     [
+      "python",
+      "-m",
+      "codex_harness.adapters.worker_profile_metadata"
+     ],
+     [
+      "python",
+      "-m",
+      "codex_harness.adapters.monitor_frontend_checks"
+     ]
+    ],
+    "max_claims": 32,
+    "max_output_bytes": 65536,
+    "per_command_seconds": 300,
+    "replays_per_claim": 2,
+    "total_seconds": 900
+   }
+  },
+  "packaged_authorizes": {
+   "pytest": true,
+   "python_c": false,
+   "rm": false,
+   "ruff": true
+  },
+  "policy_invalid_document": {
+   "error": "ContractError",
+   "message": "Evidence policy definition unavailable or invalid"
+  },
+  "policy_invalid_json": {
+   "error": "ContractError",
+   "message": "Evidence policy definition unavailable or invalid"
+  },
+  "policy_unreadable": {
+   "error": "ContractError",
+   "message": "Evidence policy definition unavailable or invalid"
+  },
+  "replay_argv": {
+   "copy": [
+    [
+     "python",
+     "-c",
+     "x"
+    ],
+    null
+   ],
+   "empty": [
+    [],
+    null
+   ],
+   "path_python": [
+    [
+     "/usr/bin/python",
+     "-m",
+     "x"
+    ],
+    null
+   ],
+   "python_alone": [
+    [
+     "python"
+    ],
+    null
+   ],
+   "python_m": [
+    [
+     "<TRUSTED>",
+     "-m",
+     "ruff",
+     "check",
+     "."
+    ],
+    "first token \"python\" replaced by the trusted host interpreter; authorization was decided on the original argv"
+   ],
+   "python_m_only": [
+    [
+     "<TRUSTED>",
+     "-m"
+    ],
+    "first token \"python\" replaced by the trusted host interpreter; authorization was decided on the original argv"
+   ],
+   "python_script": [
+    [
+     "python",
+     "script.py"
+    ],
+    null
+   ],
+   "uv_run": [
+    [
+     "uv",
+     "run",
+     "python",
+     "-m",
+     "pytest"
+    ],
+    null
+   ]
+  },
+  "trusted_default": true,
+  "trusted_explicit": true,
+  "trusted_refusals": {
+   "directory": {
+    "error": "ContractError",
+    "message": "Trusted replay interpreter is not a file: <ROOT>/05-a-directory"
+   },
+   "missing": {
+    "error": "ContractError",
+    "message": "Trusted replay interpreter is not a file: <ROOT>/missing-python"
+   },
+   "relative": {
+    "error": "ContractError",
+    "message": "Trusted replay interpreter is not a file: python3"
+   }
+  },
+  "trusted_type": "PosixPath"
+ },
+ "i2_file_claims": {
+  "claim_ids_are_digests": [
+   true,
+   true,
+   true,
+   true,
+   true,
+   true,
+   true,
+   true,
+   false,
+   true,
+   true,
+   true
+  ],
+  "context": {
+   "attempt": 1,
+   "cwd": "<ROOT>/06-files/ws",
+   "interpreter": "<TRUSTED>",
+   "pythonpath": "<ROOT>/06-files/ws/src",
+   "task_id": "t"
+  },
+  "findings": [
+   {
+    "bytes": 18,
+    "cause": "file present with the claimed hash",
+    "sha256": "66663af9c7aa341431a8ee2ff27b72abd06c9218f517bb6fef948e4803c19e03",
+    "state": "checked"
+   },
+   {
+    "bytes": 18,
+    "cause": "content hash differs from the claim",
+    "sha256": "66663af9c7aa341431a8ee2ff27b72abd06c9218f517bb6fef948e4803c19e03",
+    "state": "verified_mismatch"
+   },
+   {
+    "bytes": 18,
+    "cause": "range ends at line 9 but the file has 3",
+    "lines": 3,
+    "sha256": "66663af9c7aa341431a8ee2ff27b72abd06c9218f517bb6fef948e4803c19e03",
+    "state": "verified_mismatch"
+   },
+   {
+    "bytes": 18,
+    "cause": "file present; no hash was claimed, so only presence is checked",
+    "lines": 3,
+    "sha256": "66663af9c7aa341431a8ee2ff27b72abd06c9218f517bb6fef948e4803c19e03",
+    "state": "checked"
+   },
+   {
+    "bytes": 18,
+    "cause": "file present; no hash was claimed, so only presence is checked",
+    "sha256": "66663af9c7aa341431a8ee2ff27b72abd06c9218f517bb6fef948e4803c19e03",
+    "state": "checked"
+   },
+   {
+    "cause": "no such file under the workspace",
+    "state": "missing"
+   },
+   {
+    "cause": "a directory is not evidence",
+    "state": "missing"
+   },
+   {
+    "cause": "no such file under the workspace",
+    "state": "missing"
+   },
+   {
+    "cause": "File claim path must be relative and inside the workspace",
+    "state": "error"
+   },
+   {
+    "cause": "claim budget exhausted",
+    "state": "not_checked"
+   },
+   {
+    "cause": "claim budget exhausted",
+    "state": "not_checked"
+   },
+   {
+    "cause": "claim budget exhausted",
+    "state": "not_checked"
+   }
+  ],
+  "has_inspection_id": true,
+  "inspect_file_direct": {
+   "bytes": 18,
+   "cause": "file present with the claimed hash",
+   "lines": 3,
+   "sha256": "66663af9c7aa341431a8ee2ff27b72abd06c9218f517bb6fef948e4803c19e03",
+   "state": "checked"
+  },
+  "inspect_file_nul_path": {
+   "cause": "path cannot be resolved: ValueError",
+   "state": "error"
+  },
+  "over_budget": [
+   {
+    "bytes": 18,
+    "cause": "file of 18 bytes exceeds the inspection budget",
+    "state": "not_checked"
+   },
+   {
+    "bytes": 3,
+    "cause": "file present; no hash was claimed, so only presence is checked",
+    "sha256": "7e18f737311b2dc3b2f269dd78396b0351f14fb66efa879f768cb23181883c78",
+    "state": "checked"
+   }
+  ],
+  "policy_hash_equals_inspector": true,
+  "verdict": "incomplete"
+ },
+ "i3_command_claims": {
+  "archive_no_streams": true,
+  "archive_one_stream": {
+   "input_popped": true,
+   "keys": [
+    "returncode",
+    "stdout"
+   ],
+   "stdout_keys": [
+    "bytes",
+    "decoding",
+    "ref",
+    "sha256",
+    "truncated"
+   ]
+  },
+  "archive_pops_streams": true,
+  "denominator": {
+   "checked": 4,
+   "claims": 9,
+   "error": 0,
+   "flake_pattern": 1,
+   "missing": 0,
+   "not_checked": 2,
+   "replay_failed": 1,
+   "unknown": 0,
+   "verified_mismatch": 1
+  },
+  "environment_names": true,
+  "findings": [
+   {
+    "argv_identical": true,
+    "argv_transformation": null,
+    "cause": "exit 0 as claimed on 2 identical replay(s)",
+    "interpreter": "<TRUSTED>",
+    "original_argv": [
+     "<PY>",
+     "-c",
+     "import sys; sys.exit(0)"
+    ],
+    "replay_argv": [
+     "<PY>",
+     "-c",
+     "import sys; sys.exit(0)"
+    ],
+    "runs": [
+     {
+      "cleanup": {
+       "confirmed": true,
+       "error": null,
+       "readers_alive": [],
+       "reason": "exited",
+       "streams_closed": [
+        "stdout",
+        "stderr"
+       ],
+       "tree": {
+        "boundary": {
+         "group": "<pid>",
+         "kind": "process_group",
+         "limit": "a descendant that calls setsid leaves this group and cannot be proven gone from here",
+         "owned_from_spawn": true
+        },
+        "confirmed": true,
+        "note": "a terminated parent is not a terminated tree; acceptance needs both",
+        "parent": {
+         "already_exited": true,
+         "confirmed": true,
+         "ended_on_its_own": true,
+         "escalated": false,
+         "exit_code": 0,
+         "pid": "<pid>",
+         "signalled": null
+        },
+        "reason": "exited",
+        "tree": {
+         "confirmed": true,
+         "evidence": "signal zero to the group until no member answers",
+         "group": "<pid>",
+         "group_empty": true,
+         "method": "process_group"
+        }
+       }
+      },
+      "duration_seconds": "<duration>",
+      "failure": null,
+      "returncode": 0,
+      "stderr": {
+       "bytes": 0,
+       "decoding": "utf-8",
+       "ref": "sha256:40a7f21fd14936974072a6cf7f256544da5cbf338d56721f65ae7d80ed7b2e2a",
+       "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+       "stored": {
+        "bytes": 0,
+        "decoding": "utf-8",
+        "encoding": "latin-1 byte-preserving",
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+        "truncated": false
+       },
+       "stored_raw_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+       "truncated": false
+      },
+      "stdout": {
+       "bytes": 0,
+       "decoding": "utf-8",
+       "ref": "sha256:40a7f21fd14936974072a6cf7f256544da5cbf338d56721f65ae7d80ed7b2e2a",
+       "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+       "stored": {
+        "bytes": 0,
+        "decoding": "utf-8",
+        "encoding": "latin-1 byte-preserving",
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+        "truncated": false
+       },
+       "stored_raw_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+       "truncated": false
+      },
+      "terminated": false
+     },
+     {
+      "cleanup": {
+       "confirmed": true,
+       "error": null,
+       "readers_alive": [],
+       "reason": "exited",
+       "streams_closed": [
+        "stdout",
+        "stderr"
+       ],
+       "tree": {
+        "boundary": {
+         "group": "<pid>",
+         "kind": "process_group",
+         "limit": "a descendant that calls setsid leaves this group and cannot be proven gone from here",
+         "owned_from_spawn": true
+        },
+        "confirmed": true,
+        "note": "a terminated parent is not a terminated tree; acceptance needs both",
+        "parent": {
+         "already_exited": true,
+         "confirmed": true,
+         "ended_on_its_own": true,
+         "escalated": false,
+         "exit_code": 0,
+         "pid": "<pid>",
+         "signalled": null
+        },
+        "reason": "exited",
+        "tree": {
+         "confirmed": true,
+         "evidence": "signal zero to the group until no member answers",
+         "group": "<pid>",
+         "group_empty": true,
+         "method": "process_group"
+        }
+       }
+      },
+      "duration_seconds": "<duration>",
+      "failure": null,
+      "returncode": 0,
+      "stderr": {
+       "bytes": 0,
+       "decoding": "utf-8",
+       "ref": "sha256:40a7f21fd14936974072a6cf7f256544da5cbf338d56721f65ae7d80ed7b2e2a",
+       "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+       "stored": {
+        "bytes": 0,
+        "decoding": "utf-8",
+        "encoding": "latin-1 byte-preserving",
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+        "truncated": false
+       },
+       "stored_raw_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+       "truncated": false
+      },
+      "stdout": {
+       "bytes": 0,
+       "decoding": "utf-8",
+       "ref": "sha256:40a7f21fd14936974072a6cf7f256544da5cbf338d56721f65ae7d80ed7b2e2a",
+       "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+       "stored": {
+        "bytes": 0,
+        "decoding": "utf-8",
+        "encoding": "latin-1 byte-preserving",
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+        "truncated": false
+       },
+       "stored_raw_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+       "truncated": false
+      },
+      "terminated": false
+     }
+    ],
+    "state": "checked"
+   },
+   {
+    "argv_identical": true,
+    "argv_transformation": null,
+    "cause": "exit 3, claimed 0",
+    "interpreter": "<TRUSTED>",
+    "original_argv": [
+     "<PY>",
+     "-c",
+     "import sys; sys.exit(3)"
+    ],
+    "replay_argv": [
+     "<PY>",
+     "-c",
+     "import sys; sys.exit(3)"
+    ],
+    "runs": [
+     {
+      "cleanup": {
+       "confirmed": true,
+       "error": null,
+       "readers_alive": [],
+       "reason": "exited",
+       "streams_closed": [
+        "stdout",
+        "stderr"
+       ],
+       "tree": {
+        "boundary": {
+         "group": "<pid>",
+         "kind": "process_group",
+         "limit": "a descendant that calls setsid leaves this group and cannot be proven gone from here",
+         "owned_from_spawn": true
+        },
+        "confirmed": true,
+        "note": "a terminated parent is not a terminated tree; acceptance needs both",
+        "parent": {
+         "already_exited": true,
+         "confirmed": true,
+         "ended_on_its_own": true,
+         "escalated": false,
+         "exit_code": 3,
+         "pid": "<pid>",
+         "signalled": null
+        },
+        "reason": "exited",
+        "tree": {
+         "confirmed": true,
+         "evidence": "signal zero to the group until no member answers",
+         "group": "<pid>",
+         "group_empty": true,
+         "method": "process_group"
+        }
+       }
+      },
+      "duration_seconds": "<duration>",
+      "failure": null,
+      "returncode": 3,
+      "stderr": {
+       "bytes": 0,
+       "decoding": "utf-8",
+       "ref": "sha256:40a7f21fd14936974072a6cf7f256544da5cbf338d56721f65ae7d80ed7b2e2a",
+       "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+       "stored": {
+        "bytes": 0,
+        "decoding": "utf-8",
+        "encoding": "latin-1 byte-preserving",
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+        "truncated": false
+       },
+       "stored_raw_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+       "truncated": false
+      },
+      "stdout": {
+       "bytes": 0,
+       "decoding": "utf-8",
+       "ref": "sha256:40a7f21fd14936974072a6cf7f256544da5cbf338d56721f65ae7d80ed7b2e2a",
+       "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+       "stored": {
+        "bytes": 0,
+        "decoding": "utf-8",
+        "encoding": "latin-1 byte-preserving",
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+        "truncated": false
+       },
+       "stored_raw_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+       "truncated": false
+      },
+      "terminated": false
+     },
+     {
+      "cleanup": {
+       "confirmed": true,
+       "error": null,
+       "readers_alive": [],
+       "reason": "exited",
+       "streams_closed": [
+        "stdout",
+        "stderr"
+       ],
+       "tree": {
+        "boundary": {
+         "group": "<pid>",
+         "kind": "process_group",
+         "limit": "a descendant that calls setsid leaves this group and cannot be proven gone from here",
+         "owned_from_spawn": true
+        },
+        "confirmed": true,
+        "note": "a terminated parent is not a terminated tree; acceptance needs both",
+        "parent": {
+         "already_exited": true,
+         "confirmed": true,
+         "ended_on_its_own": true,
+         "escalated": false,
+         "exit_code": 3,
+         "pid": "<pid>",
+         "signalled": null
+        },
+        "reason": "exited",
+        "tree": {
+         "confirmed": true,
+         "evidence": "signal zero to the group until no member answers",
+         "group": "<pid>",
+         "group_empty": true,
+         "method": "process_group"
+        }
+       }
+      },
+      "duration_seconds": "<duration>",
+      "failure": null,
+      "returncode": 3,
+      "stderr": {
+       "bytes": 0,
+       "decoding": "utf-8",
+       "ref": "sha256:40a7f21fd14936974072a6cf7f256544da5cbf338d56721f65ae7d80ed7b2e2a",
+       "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+       "stored": {
+        "bytes": 0,
+        "decoding": "utf-8",
+        "encoding": "latin-1 byte-preserving",
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+        "truncated": false
+       },
+       "stored_raw_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+       "truncated": false
+      },
+      "stdout": {
+       "bytes": 0,
+       "decoding": "utf-8",
+       "ref": "sha256:40a7f21fd14936974072a6cf7f256544da5cbf338d56721f65ae7d80ed7b2e2a",
+       "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+       "stored": {
+        "bytes": 0,
+        "decoding": "utf-8",
+        "encoding": "latin-1 byte-preserving",
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+        "truncated": false
+       },
+       "stored_raw_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+       "truncated": false
+      },
+      "terminated": false
+     }
+    ],
+    "state": "verified_mismatch"
+   },
+   {
+    "argv_identical": true,
+    "argv_transformation": null,
+    "cause": "exit 0 as claimed on 2 identical replay(s)",
+    "interpreter": "<TRUSTED>",
+    "original_argv": [
+     "<PY>",
+     "-c",
+     "import sys; sys.stdout.buffer.write(b\"ok\\xff\\xfe\"); sys.exit(0)"
+    ],
+    "replay_argv": [
+     "<PY>",
+     "-c",
+     "import sys; sys.stdout.buffer.write(b\"ok\\xff\\xfe\"); sys.exit(0)"
+    ],
+    "runs": [
+     {
+      "cleanup": {
+       "confirmed": true,
+       "error": null,
+       "readers_alive": [],
+       "reason": "exited",
+       "streams_closed": [
+        "stdout",
+        "stderr"
+       ],
+       "tree": {
+        "boundary": {
+         "group": "<pid>",
+         "kind": "process_group",
+         "limit": "a descendant that calls setsid leaves this group and cannot be proven gone from here",
+         "owned_from_spawn": true
+        },
+        "confirmed": true,
+        "note": "a terminated parent is not a terminated tree; acceptance needs both",
+        "parent": {
+         "already_exited": true,
+         "confirmed": true,
+         "ended_on_its_own": true,
+         "escalated": false,
+         "exit_code": 0,
+         "pid": "<pid>",
+         "signalled": null
+        },
+        "reason": "exited",
+        "tree": {
+         "confirmed": true,
+         "evidence": "signal zero to the group until no member answers",
+         "group": "<pid>",
+         "group_empty": true,
+         "method": "process_group"
+        }
+       }
+      },
+      "duration_seconds": "<duration>",
+      "failure": null,
+      "returncode": 0,
+      "stderr": {
+       "bytes": 0,
+       "decoding": "utf-8",
+       "ref": "sha256:40a7f21fd14936974072a6cf7f256544da5cbf338d56721f65ae7d80ed7b2e2a",
+       "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+       "stored": {
+        "bytes": 0,
+        "decoding": "utf-8",
+        "encoding": "latin-1 byte-preserving",
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+        "truncated": false
+       },
+       "stored_raw_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+       "truncated": false
+      },
+      "stdout": {
+       "bytes": 4,
+       "decoding": "invalid_utf8: 'utf-8' codec can't decode byte 0xff in position 2: invalid start byte",
+       "ref": "sha256:8ea9af748d8f6236c7a7373fea07de4281affc0804e731a979e6f2551a276808",
+       "sha256": "8340ff27d79df370081b9e3187740c97f17a52a9626bf4448aa61a558bd0aaee",
+       "stored": {
+        "bytes": 4,
+        "decoding": "invalid_utf8: 'utf-8' codec can't decode byte 0xff in position 2: invalid start byte",
+        "encoding": "latin-1 byte-preserving",
+        "sha256": "8340ff27d79df370081b9e3187740c97f17a52a9626bf4448aa61a558bd0aaee",
+        "truncated": false
+       },
+       "stored_raw_sha256": "8340ff27d79df370081b9e3187740c97f17a52a9626bf4448aa61a558bd0aaee",
+       "truncated": false
+      },
+      "terminated": false
+     },
+     {
+      "cleanup": {
+       "confirmed": true,
+       "error": null,
+       "readers_alive": [],
+       "reason": "exited",
+       "streams_closed": [
+        "stdout",
+        "stderr"
+       ],
+       "tree": {
+        "boundary": {
+         "group": "<pid>",
+         "kind": "process_group",
+         "limit": "a descendant that calls setsid leaves this group and cannot be proven gone from here",
+         "owned_from_spawn": true
+        },
+        "confirmed": true,
+        "note": "a terminated parent is not a terminated tree; acceptance needs both",
+        "parent": {
+         "already_exited": true,
+         "confirmed": true,
+         "ended_on_its_own": true,
+         "escalated": false,
+         "exit_code": 0,
+         "pid": "<pid>",
+         "signalled": null
+        },
+        "reason": "exited",
+        "tree": {
+         "confirmed": true,
+         "evidence": "signal zero to the group until no member answers",
+         "group": "<pid>",
+         "group_empty": true,
+         "method": "process_group"
+        }
+       }
+      },
+      "duration_seconds": "<duration>",
+      "failure": null,
+      "returncode": 0,
+      "stderr": {
+       "bytes": 0,
+       "decoding": "utf-8",
+       "ref": "sha256:40a7f21fd14936974072a6cf7f256544da5cbf338d56721f65ae7d80ed7b2e2a",
+       "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+       "stored": {
+        "bytes": 0,
+        "decoding": "utf-8",
+        "encoding": "latin-1 byte-preserving",
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+        "truncated": false
+       },
+       "stored_raw_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+       "truncated": false
+      },
+      "stdout": {
+       "bytes": 4,
+       "decoding": "invalid_utf8: 'utf-8' codec can't decode byte 0xff in position 2: invalid start byte",
+       "ref": "sha256:8ea9af748d8f6236c7a7373fea07de4281affc0804e731a979e6f2551a276808",
+       "sha256": "8340ff27d79df370081b9e3187740c97f17a52a9626bf4448aa61a558bd0aaee",
+       "stored": {
+        "bytes": 4,
+        "decoding": "invalid_utf8: 'utf-8' codec can't decode byte 0xff in position 2: invalid start byte",
+        "encoding": "latin-1 byte-preserving",
+        "sha256": "8340ff27d79df370081b9e3187740c97f17a52a9626bf4448aa61a558bd0aaee",
+        "truncated": false
+       },
+       "stored_raw_sha256": "8340ff27d79df370081b9e3187740c97f17a52a9626bf4448aa61a558bd0aaee",
+       "truncated": false
+      },
+      "terminated": false
+     }
+    ],
+    "state": "checked"
+   },
+   {
+    "argv_identical": true,
+    "argv_transformation": null,
+    "cause": "attempt 1: executable_missing: [Errno 2] No such file or directory: 'definitely-not-an-executable-zeus'",
+    "interpreter": "<TRUSTED>",
+    "original_argv": [
+     "definitely-not-an-executable-zeus",
+     "--version"
+    ],
+    "replay_argv": [
+     "definitely-not-an-executable-zeus",
+     "--version"
+    ],
+    "runs": [
+     {
+      "cleanup": {
+       "confirmed": true,
+       "error": null,
+       "readers_alive": [],
+       "reason": "executable_missing",
+       "streams_closed": [],
+       "tree": null
+      },
+      "duration_seconds": "<duration>",
+      "failure": "executable_missing: [Errno 2] No such file or directory: 'definitely-not-an-executable-zeus'",
+      "returncode": null
+     }
+    ],
+    "state": "replay_failed"
+   },
+   {
+    "argv_identical": true,
+    "argv_transformation": null,
+    "cause": "exit statuses differ between identical replays: 0, 1",
+    "interpreter": "<TRUSTED>",
+    "original_argv": [
+     "<PY>",
+     "-c",
+     "import os,sys; p='<ROOT>/07-commands/ws/flake.txt'; n=os.path.exists(p); open(p,\"w\").close(); sys.exit(1 if n else 0)"
+    ],
+    "replay_argv": [
+     "<PY>",
+     "-c",
+     "import os,sys; p='<ROOT>/07-commands/ws/flake.txt'; n=os.path.exists(p); open(p,\"w\").close(); sys.exit(1 if n else 0)"
+    ],
+    "runs": [
+     {
+      "cleanup": {
+       "confirmed": true,
+       "error": null,
+       "readers_alive": [],
+       "reason": "exited",
+       "streams_closed": [
+        "stdout",
+        "stderr"
+       ],
+       "tree": {
+        "boundary": {
+         "group": "<pid>",
+         "kind": "process_group",
+         "limit": "a descendant that calls setsid leaves this group and cannot be proven gone from here",
+         "owned_from_spawn": true
+        },
+        "confirmed": true,
+        "note": "a terminated parent is not a terminated tree; acceptance needs both",
+        "parent": {
+         "already_exited": true,
+         "confirmed": true,
+         "ended_on_its_own": true,
+         "escalated": false,
+         "exit_code": 0,
+         "pid": "<pid>",
+         "signalled": null
+        },
+        "reason": "exited",
+        "tree": {
+         "confirmed": true,
+         "evidence": "signal zero to the group until no member answers",
+         "group": "<pid>",
+         "group_empty": true,
+         "method": "process_group"
+        }
+       }
+      },
+      "duration_seconds": "<duration>",
+      "failure": null,
+      "returncode": 0,
+      "stderr": {
+       "bytes": 0,
+       "decoding": "utf-8",
+       "ref": "sha256:40a7f21fd14936974072a6cf7f256544da5cbf338d56721f65ae7d80ed7b2e2a",
+       "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+       "stored": {
+        "bytes": 0,
+        "decoding": "utf-8",
+        "encoding": "latin-1 byte-preserving",
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+        "truncated": false
+       },
+       "stored_raw_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+       "truncated": false
+      },
+      "stdout": {
+       "bytes": 0,
+       "decoding": "utf-8",
+       "ref": "sha256:40a7f21fd14936974072a6cf7f256544da5cbf338d56721f65ae7d80ed7b2e2a",
+       "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+       "stored": {
+        "bytes": 0,
+        "decoding": "utf-8",
+        "encoding": "latin-1 byte-preserving",
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+        "truncated": false
+       },
+       "stored_raw_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+       "truncated": false
+      },
+      "terminated": false
+     },
+     {
+      "cleanup": {
+       "confirmed": true,
+       "error": null,
+       "readers_alive": [],
+       "reason": "exited",
+       "streams_closed": [
+        "stdout",
+        "stderr"
+       ],
+       "tree": {
+        "boundary": {
+         "group": "<pid>",
+         "kind": "process_group",
+         "limit": "a descendant that calls setsid leaves this group and cannot be proven gone from here",
+         "owned_from_spawn": true
+        },
+        "confirmed": true,
+        "note": "a terminated parent is not a terminated tree; acceptance needs both",
+        "parent": {
+         "already_exited": true,
+         "confirmed": true,
+         "ended_on_its_own": true,
+         "escalated": false,
+         "exit_code": 1,
+         "pid": "<pid>",
+         "signalled": null
+        },
+        "reason": "exited",
+        "tree": {
+         "confirmed": true,
+         "evidence": "signal zero to the group until no member answers",
+         "group": "<pid>",
+         "group_empty": true,
+         "method": "process_group"
+        }
+       }
+      },
+      "duration_seconds": "<duration>",
+      "failure": null,
+      "returncode": 1,
+      "stderr": {
+       "bytes": 0,
+       "decoding": "utf-8",
+       "ref": "sha256:40a7f21fd14936974072a6cf7f256544da5cbf338d56721f65ae7d80ed7b2e2a",
+       "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+       "stored": {
+        "bytes": 0,
+        "decoding": "utf-8",
+        "encoding": "latin-1 byte-preserving",
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+        "truncated": false
+       },
+       "stored_raw_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+       "truncated": false
+      },
+      "stdout": {
+       "bytes": 0,
+       "decoding": "utf-8",
+       "ref": "sha256:40a7f21fd14936974072a6cf7f256544da5cbf338d56721f65ae7d80ed7b2e2a",
+       "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+       "stored": {
+        "bytes": 0,
+        "decoding": "utf-8",
+        "encoding": "latin-1 byte-preserving",
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+        "truncated": false
+       },
+       "stored_raw_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+       "truncated": false
+      },
+      "terminated": false
+     }
+    ],
+    "state": "flake_pattern"
+   },
+   {
+    "cause": "command is not an authorized replay prefix; a claim is not authority",
+    "state": "not_checked"
+   },
+   {
+    "argv_identical": true,
+    "argv_transformation": null,
+    "cause": "exit 0 as claimed on 2 identical replay(s)",
+    "interpreter": "<TRUSTED>",
+    "original_argv": [
+     "<PY>",
+     "-c",
+     "import sys; sys.stdout.write(\"x\" * 10000); sys.exit(0)"
+    ],
+    "replay_argv": [
+     "<PY>",
+     "-c",
+     "import sys; sys.stdout.write(\"x\" * 10000); sys.exit(0)"
+    ],
+    "runs": [
+     {
+      "cleanup": {
+       "confirmed": true,
+       "error": null,
+       "readers_alive": [],
+       "reason": "exited",
+       "streams_closed": [
+        "stdout",
+        "stderr"
+       ],
+       "tree": {
+        "boundary": {
+         "group": "<pid>",
+         "kind": "process_group",
+         "limit": "a descendant that calls setsid leaves this group and cannot be proven gone from here",
+         "owned_from_spawn": true
+        },
+        "confirmed": true,
+        "note": "a terminated parent is not a terminated tree; acceptance needs both",
+        "parent": {
+         "already_exited": true,
+         "confirmed": true,
+         "ended_on_its_own": true,
+         "escalated": false,
+         "exit_code": 0,
+         "pid": "<pid>",
+         "signalled": null
+        },
+        "reason": "exited",
+        "tree": {
+         "confirmed": true,
+         "evidence": "signal zero to the group until no member answers",
+         "group": "<pid>",
+         "group_empty": true,
+         "method": "process_group"
+        }
+       }
+      },
+      "duration_seconds": "<duration>",
+      "failure": null,
+      "returncode": 0,
+      "stderr": {
+       "bytes": 0,
+       "decoding": "utf-8",
+       "ref": "sha256:40a7f21fd14936974072a6cf7f256544da5cbf338d56721f65ae7d80ed7b2e2a",
+       "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+       "stored": {
+        "bytes": 0,
+        "decoding": "utf-8",
+        "encoding": "latin-1 byte-preserving",
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+        "truncated": false
+       },
+       "stored_raw_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+       "truncated": false
+      },
+      "stdout": {
+       "bytes": 4096,
+       "decoding": "utf-8",
+       "ref": "sha256:7536bdc17f970388cb37d6de8f2a62a49f757e7ca9e1c060578adc06bece816c",
+       "sha256": "a2e659dacb4691e887ac0139f8893d04764ee197d70fb73d3190d56113d18e3e",
+       "stored": {
+        "bytes": 4096,
+        "decoding": "utf-8",
+        "encoding": "latin-1 byte-preserving",
+        "sha256": "a2e659dacb4691e887ac0139f8893d04764ee197d70fb73d3190d56113d18e3e",
+        "truncated": true
+       },
+       "stored_raw_sha256": "a2e659dacb4691e887ac0139f8893d04764ee197d70fb73d3190d56113d18e3e",
+       "truncated": true
+      },
+      "terminated": false
+     },
+     {
+      "cleanup": {
+       "confirmed": true,
+       "error": null,
+       "readers_alive": [],
+       "reason": "exited",
+       "streams_closed": [
+        "stdout",
+        "stderr"
+       ],
+       "tree": {
+        "boundary": {
+         "group": "<pid>",
+         "kind": "process_group",
+         "limit": "a descendant that calls setsid leaves this group and cannot be proven gone from here",
+         "owned_from_spawn": true
+        },
+        "confirmed": true,
+        "note": "a terminated parent is not a terminated tree; acceptance needs both",
+        "parent": {
+         "already_exited": true,
+         "confirmed": true,
+         "ended_on_its_own": true,
+         "escalated": false,
+         "exit_code": 0,
+         "pid": "<pid>",
+         "signalled": null
+        },
+        "reason": "exited",
+        "tree": {
+         "confirmed": true,
+         "evidence": "signal zero to the group until no member answers",
+         "group": "<pid>",
+         "group_empty": true,
+         "method": "process_group"
+        }
+       }
+      },
+      "duration_seconds": "<duration>",
+      "failure": null,
+      "returncode": 0,
+      "stderr": {
+       "bytes": 0,
+       "decoding": "utf-8",
+       "ref": "sha256:40a7f21fd14936974072a6cf7f256544da5cbf338d56721f65ae7d80ed7b2e2a",
+       "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+       "stored": {
+        "bytes": 0,
+        "decoding": "utf-8",
+        "encoding": "latin-1 byte-preserving",
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+        "truncated": false
+       },
+       "stored_raw_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+       "truncated": false
+      },
+      "stdout": {
+       "bytes": 4096,
+       "decoding": "utf-8",
+       "ref": "sha256:7536bdc17f970388cb37d6de8f2a62a49f757e7ca9e1c060578adc06bece816c",
+       "sha256": "a2e659dacb4691e887ac0139f8893d04764ee197d70fb73d3190d56113d18e3e",
+       "stored": {
+        "bytes": 4096,
+        "decoding": "utf-8",
+        "encoding": "latin-1 byte-preserving",
+        "sha256": "a2e659dacb4691e887ac0139f8893d04764ee197d70fb73d3190d56113d18e3e",
+        "truncated": true
+       },
+       "stored_raw_sha256": "a2e659dacb4691e887ac0139f8893d04764ee197d70fb73d3190d56113d18e3e",
+       "truncated": true
+      },
+      "terminated": false
+     }
+    ],
+    "state": "checked"
+   },
+   {
+    "argv_identical": true,
+    "argv_transformation": null,
+    "cause": "exit 2 as claimed on 2 identical replay(s)",
+    "interpreter": "<TRUSTED>",
+    "original_argv": [
+     "<PY>",
+     "-c",
+     "import sys; sys.stderr.write('only stderr'); sys.exit(2)"
+    ],
+    "replay_argv": [
+     "<PY>",
+     "-c",
+     "import sys; sys.stderr.write('only stderr'); sys.exit(2)"
+    ],
+    "runs": [
+     {
+      "cleanup": {
+       "confirmed": true,
+       "error": null,
+       "readers_alive": [],
+       "reason": "exited",
+       "streams_closed": [
+        "stdout",
+        "stderr"
+       ],
+       "tree": {
+        "boundary": {
+         "group": "<pid>",
+         "kind": "process_group",
+         "limit": "a descendant that calls setsid leaves this group and cannot be proven gone from here",
+         "owned_from_spawn": true
+        },
+        "confirmed": true,
+        "note": "a terminated parent is not a terminated tree; acceptance needs both",
+        "parent": {
+         "already_exited": true,
+         "confirmed": true,
+         "ended_on_its_own": true,
+         "escalated": false,
+         "exit_code": 2,
+         "pid": "<pid>",
+         "signalled": null
+        },
+        "reason": "exited",
+        "tree": {
+         "confirmed": true,
+         "evidence": "signal zero to the group until no member answers",
+         "group": "<pid>",
+         "group_empty": true,
+         "method": "process_group"
+        }
+       }
+      },
+      "duration_seconds": "<duration>",
+      "failure": null,
+      "returncode": 2,
+      "stderr": {
+       "bytes": 11,
+       "decoding": "utf-8",
+       "ref": "sha256:454738305232de7390b9c7fd69b192deb21bd163652cca439a774b04025915e4",
+       "sha256": "b3b912951749974d288b79e4b9295a10f61fc5ac32c8405d2b1f141e57616f31",
+       "stored": {
+        "bytes": 11,
+        "decoding": "utf-8",
+        "encoding": "latin-1 byte-preserving",
+        "sha256": "b3b912951749974d288b79e4b9295a10f61fc5ac32c8405d2b1f141e57616f31",
+        "truncated": false
+       },
+       "stored_raw_sha256": "b3b912951749974d288b79e4b9295a10f61fc5ac32c8405d2b1f141e57616f31",
+       "truncated": false
+      },
+      "stdout": {
+       "bytes": 0,
+       "decoding": "utf-8",
+       "ref": "sha256:40a7f21fd14936974072a6cf7f256544da5cbf338d56721f65ae7d80ed7b2e2a",
+       "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+       "stored": {
+        "bytes": 0,
+        "decoding": "utf-8",
+        "encoding": "latin-1 byte-preserving",
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+        "truncated": false
+       },
+       "stored_raw_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+       "truncated": false
+      },
+      "terminated": false
+     },
+     {
+      "cleanup": {
+       "confirmed": true,
+       "error": null,
+       "readers_alive": [],
+       "reason": "exited",
+       "streams_closed": [
+        "stdout",
+        "stderr"
+       ],
+       "tree": {
+        "boundary": {
+         "group": "<pid>",
+         "kind": "process_group",
+         "limit": "a descendant that calls setsid leaves this group and cannot be proven gone from here",
+         "owned_from_spawn": true
+        },
+        "confirmed": true,
+        "note": "a terminated parent is not a terminated tree; acceptance needs both",
+        "parent": {
+         "already_exited": true,
+         "confirmed": true,
+         "ended_on_its_own": true,
+         "escalated": false,
+         "exit_code": 2,
+         "pid": "<pid>",
+         "signalled": null
+        },
+        "reason": "exited",
+        "tree": {
+         "confirmed": true,
+         "evidence": "signal zero to the group until no member answers",
+         "group": "<pid>",
+         "group_empty": true,
+         "method": "process_group"
+        }
+       }
+      },
+      "duration_seconds": "<duration>",
+      "failure": null,
+      "returncode": 2,
+      "stderr": {
+       "bytes": 11,
+       "decoding": "utf-8",
+       "ref": "sha256:454738305232de7390b9c7fd69b192deb21bd163652cca439a774b04025915e4",
+       "sha256": "b3b912951749974d288b79e4b9295a10f61fc5ac32c8405d2b1f141e57616f31",
+       "stored": {
+        "bytes": 11,
+        "decoding": "utf-8",
+        "encoding": "latin-1 byte-preserving",
+        "sha256": "b3b912951749974d288b79e4b9295a10f61fc5ac32c8405d2b1f141e57616f31",
+        "truncated": false
+       },
+       "stored_raw_sha256": "b3b912951749974d288b79e4b9295a10f61fc5ac32c8405d2b1f141e57616f31",
+       "truncated": false
+      },
+      "stdout": {
+       "bytes": 0,
+       "decoding": "utf-8",
+       "ref": "sha256:40a7f21fd14936974072a6cf7f256544da5cbf338d56721f65ae7d80ed7b2e2a",
+       "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+       "stored": {
+        "bytes": 0,
+        "decoding": "utf-8",
+        "encoding": "latin-1 byte-preserving",
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+        "truncated": false
+       },
+       "stored_raw_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+       "truncated": false
+      },
+      "terminated": false
+     }
+    ],
+    "state": "checked"
+   },
+   {
+    "cause": "claim budget exhausted",
+    "state": "not_checked"
+   }
+  ],
+  "has_pythonioencoding": true,
+  "no_secret_names": true,
+  "pythonpath": null,
+  "raw_bytes_kept": {
+   "decoded": true,
+   "sha256_ok": true
+  },
+  "refs_are_sha256": true
+ },
+ "i4_python_replays": {
+  "checked": {
+   "argv_identical": false,
+   "argv_transformation": "first token \"python\" replaced by the trusted host interpreter; authorization was decided on the original argv",
+   "cause": "exit 0 as claimed on 1 identical replay(s)",
+   "interpreter": "<TRUSTED>",
+   "original_argv": [
+    "python",
+    "-m",
+    "zeus_candidate_probe"
+   ],
+   "replay_argv": [
+    "<TRUSTED>",
+    "-m",
+    "zeus_candidate_probe"
+   ],
+   "state": "checked"
+  },
+  "checked_run": {
+   "cleanup": {
+    "confirmed": true,
+    "error": null,
+    "readers_alive": [],
+    "reason": "exited",
+    "streams_closed": [
+     "stdout",
+     "stderr"
+    ],
+    "tree": {
+     "boundary": {
+      "group": "<pid>",
+      "kind": "process_group",
+      "limit": "a descendant that calls setsid leaves this group and cannot be proven gone from here",
+      "owned_from_spawn": true
+     },
+     "confirmed": true,
+     "note": "a terminated parent is not a terminated tree; acceptance needs both",
+     "parent": {
+      "already_exited": true,
+      "confirmed": true,
+      "ended_on_its_own": true,
+      "escalated": false,
+      "exit_code": 0,
+      "pid": "<pid>",
+      "signalled": null
+     },
+     "reason": "exited",
+     "tree": {
+      "confirmed": true,
+      "evidence": "signal zero to the group until no member answers",
+      "group": "<pid>",
+      "group_empty": true,
+      "method": "process_group"
+     }
+    }
+   },
+   "duration_seconds": "<duration>",
+   "failure": null,
+   "returncode": 0,
+   "terminated": false
+  },
+  "checked_stdout": "EXECUTABLE=<TRUSTED>\nMODULE=<ROOT>/08-probe/candidate ws/src/zeus_candidate_probe.py\nPYTHONPATH=<ROOT>/08-probe/candidate ws/src\n",
+  "context": {
+   "cwd": "<ROOT>/08-probe/candidate ws",
+   "interpreter": "<TRUSTED>",
+   "pythonpath": "<ROOT>/08-probe/candidate ws/src"
+  },
+  "no_leak_in_output": true,
+  "pytest_claim": {
+   "argv_identical": false,
+   "argv_transformation": "first token \"python\" replaced by the trusted host interpreter; authorization was decided on the original argv",
+   "cause": "exit 1, claimed 0",
+   "interpreter": "<TRUSTED>",
+   "original_argv": [
+    "python",
+    "-m",
+    "pytest",
+    "--version"
+   ],
+   "replay_argv": [
+    "<TRUSTED>",
+    "-m",
+    "pytest",
+    "--version"
+   ],
+   "state": "verified_mismatch"
+  },
+  "snapshot": {
+   "cwd": "<ROOT>/08-probe/candidate ws",
+   "interpreter_is_trusted": true,
+   "no_parent_leak": true,
+   "no_src_no_pythonpath": true,
+   "pythonpath": "<ROOT>/08-probe/candidate ws/src"
+  },
+  "widened": {
+   "cause": "command is not an authorized replay prefix; a claim is not authority",
+   "state": "not_checked"
+  }
+ },
+ "i5_interpreter_refusal": {
+  "directory": {
+   "error": "ContractError",
+   "message": "Trusted replay interpreter is not a file: <ROOT>/09-refusal"
+  },
+  "identity": {
+   "error": "ContractError",
+   "message": "Trusted replay interpreter is not a file: <ROOT>/09-refusal/missing-python"
+  },
+  "inspect": {
+   "error": "ContractError",
+   "message": "Trusted replay interpreter is not a file: <ROOT>/09-refusal/missing-python"
+  },
+  "inspect_command": {
+   "error": "ContractError",
+   "message": "Trusted replay interpreter is not a file: <ROOT>/09-refusal/missing-python"
+  },
+  "snapshot": {
+   "error": "ContractError",
+   "message": "Trusted replay interpreter is not a file: <ROOT>/09-refusal/missing-python"
+  },
+  "spawned": [],
+  "spawned_after": [],
+  "unauthorized_first": {
+   "cause": "command is not an authorized replay prefix; a claim is not authority",
+   "state": "not_checked"
+  }
+ },
+ "i6_deadlines_and_budgets": {
+  "absent_workspace": {
+   "context": {
+    "attempt": 1,
+    "cwd": "<ROOT>/11-deadlines/absent",
+    "task_id": "t"
+   },
+   "findings": [
+    {
+     "cause": "workspace directory does not exist",
+     "claim": null,
+     "state": "error"
+    }
+   ],
+   "policy_hash": "b3aa1c7a28ee48188ae5184007f8de3d6b4a4826c1dedd6dbecc0a7a9f405115"
+  },
+  "aggregate": [
+   {
+    "argv_identical": true,
+    "argv_transformation": null,
+    "cause": "attempt 1: timeout after <remaining>s; process tree terminated",
+    "interpreter": "<TRUSTED>",
+    "original_argv": [
+     "<PY>",
+     "-c",
+     "import time; time.sleep(5)"
+    ],
+    "replay_argv": [
+     "<PY>",
+     "-c",
+     "import time; time.sleep(5)"
+    ],
+    "runs": [
+     {
+      "cleanup": {
+       "confirmed": true,
+       "error": null,
+       "readers_alive": [],
+       "reason": "timeout",
+       "streams_closed": [
+        "stdout",
+        "stderr"
+       ],
+       "tree": {
+        "boundary": {
+         "group": "<pid>",
+         "kind": "process_group",
+         "limit": "a descendant that calls setsid leaves this group and cannot be proven gone from here",
+         "owned_from_spawn": true
+        },
+        "confirmed": true,
+        "note": "a terminated parent is not a terminated tree; acceptance needs both",
+        "parent": {
+         "already_exited": false,
+         "confirmed": true,
+         "escalated": false,
+         "exit_code": -15,
+         "pid": "<pid>",
+         "signalled": true
+        },
+        "reason": "timeout",
+        "tree": {
+         "confirmed": true,
+         "evidence": "signal zero to the group until no member answers",
+         "group": "<pid>",
+         "group_empty": true,
+         "method": "process_group"
+        }
+       }
+      },
+      "duration_seconds": "<duration>",
+      "failure": "timeout after <remaining>s; process tree terminated",
+      "returncode": -15,
+      "stderr": {
+       "bytes": 0,
+       "decoding": "utf-8",
+       "ref": "sha256:40a7f21fd14936974072a6cf7f256544da5cbf338d56721f65ae7d80ed7b2e2a",
+       "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+       "truncated": false
+      },
+      "stdout": {
+       "bytes": 0,
+       "decoding": "utf-8",
+       "ref": "sha256:40a7f21fd14936974072a6cf7f256544da5cbf338d56721f65ae7d80ed7b2e2a",
+       "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+       "truncated": false
+      },
+      "terminated": true
+     }
+    ],
+    "state": "replay_failed"
+   },
+   {
+    "cause": "aggregate replay budget exhausted",
+    "state": "not_checked"
+   }
+  ],
+  "fast_enough": true,
+  "findings": [
+   {
+    "argv_identical": true,
+    "argv_transformation": null,
+    "cause": "attempt 1: timeout after 1s; process tree terminated",
+    "interpreter": "<TRUSTED>",
+    "original_argv": [
+     "<PY>",
+     "-c",
+     "import time; time.sleep(30)"
+    ],
+    "replay_argv": [
+     "<PY>",
+     "-c",
+     "import time; time.sleep(30)"
+    ],
+    "runs": [
+     {
+      "cleanup": {
+       "confirmed": true,
+       "error": null,
+       "readers_alive": [],
+       "reason": "timeout",
+       "streams_closed": [
+        "stdout",
+        "stderr"
+       ],
+       "tree": {
+        "boundary": {
+         "group": "<pid>",
+         "kind": "process_group",
+         "limit": "a descendant that calls setsid leaves this group and cannot be proven gone from here",
+         "owned_from_spawn": true
+        },
+        "confirmed": true,
+        "note": "a terminated parent is not a terminated tree; acceptance needs both",
+        "parent": {
+         "already_exited": false,
+         "confirmed": true,
+         "escalated": false,
+         "exit_code": -15,
+         "pid": "<pid>",
+         "signalled": true
+        },
+        "reason": "timeout",
+        "tree": {
+         "confirmed": true,
+         "evidence": "signal zero to the group until no member answers",
+         "group": "<pid>",
+         "group_empty": true,
+         "method": "process_group"
+        }
+       }
+      },
+      "duration_seconds": "<duration>",
+      "failure": "timeout after 1s; process tree terminated",
+      "returncode": -15,
+      "stderr": {
+       "bytes": 0,
+       "decoding": "utf-8",
+       "ref": "sha256:40a7f21fd14936974072a6cf7f256544da5cbf338d56721f65ae7d80ed7b2e2a",
+       "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+       "truncated": false
+      },
+      "stdout": {
+       "bytes": 0,
+       "decoding": "utf-8",
+       "ref": "sha256:40a7f21fd14936974072a6cf7f256544da5cbf338d56721f65ae7d80ed7b2e2a",
+       "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+       "truncated": false
+      },
+      "terminated": true
+     }
+    ],
+    "state": "replay_failed"
+   },
+   {
+    "argv_identical": true,
+    "argv_transformation": null,
+    "cause": "exit 0 as claimed on 1 identical replay(s)",
+    "interpreter": "<TRUSTED>",
+    "original_argv": [
+     "<PY>",
+     "-c",
+     "import sys; sys.exit(0)"
+    ],
+    "replay_argv": [
+     "<PY>",
+     "-c",
+     "import sys; sys.exit(0)"
+    ],
+    "runs": [
+     {
+      "cleanup": {
+       "confirmed": true,
+       "error": null,
+       "readers_alive": [],
+       "reason": "exited",
+       "streams_closed": [
+        "stdout",
+        "stderr"
+       ],
+       "tree": {
+        "boundary": {
+         "group": "<pid>",
+         "kind": "process_group",
+         "limit": "a descendant that calls setsid leaves this group and cannot be proven gone from here",
+         "owned_from_spawn": true
+        },
+        "confirmed": true,
+        "note": "a terminated parent is not a terminated tree; acceptance needs both",
+        "parent": {
+         "already_exited": true,
+         "confirmed": true,
+         "ended_on_its_own": true,
+         "escalated": false,
+         "exit_code": 0,
+         "pid": "<pid>",
+         "signalled": null
+        },
+        "reason": "exited",
+        "tree": {
+         "confirmed": true,
+         "evidence": "signal zero to the group until no member answers",
+         "group": "<pid>",
+         "group_empty": true,
+         "method": "process_group"
+        }
+       }
+      },
+      "duration_seconds": "<duration>",
+      "failure": null,
+      "returncode": 0,
+      "stderr": {
+       "bytes": 0,
+       "decoding": "utf-8",
+       "ref": "sha256:40a7f21fd14936974072a6cf7f256544da5cbf338d56721f65ae7d80ed7b2e2a",
+       "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+       "truncated": false
+      },
+      "stdout": {
+       "bytes": 0,
+       "decoding": "utf-8",
+       "ref": "sha256:40a7f21fd14936974072a6cf7f256544da5cbf338d56721f65ae7d80ed7b2e2a",
+       "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+       "truncated": false
+      },
+      "terminated": false
+     }
+    ],
+    "state": "checked"
+   },
+   {
+    "cause": "claim budget exhausted",
+    "state": "not_checked"
+   }
+  ],
+  "negative_remaining": {
+   "cause": "aggregate replay budget exhausted",
+   "state": "not_checked"
+  },
+  "no_remaining_budget": {
+   "cause": "aggregate replay budget exhausted",
+   "state": "not_checked"
+  },
+  "stops_after_failure": {
+   "runs": 1,
+   "state": "replay_failed"
+  }
+ },
+ "i7_capture": {
+  "cap": {
+   "cleanup": {
+    "confirmed": true,
+    "error": null,
+    "readers_alive": [],
+    "reason": "exited",
+    "streams_closed": [
+     "stdout",
+     "stderr"
+    ],
+    "tree": {
+     "boundary": {
+      "group": "<pid>",
+      "kind": "process_group",
+      "limit": "a descendant that calls setsid leaves this group and cannot be proven gone from here",
+      "owned_from_spawn": true
+     },
+     "confirmed": true,
+     "note": "a terminated parent is not a terminated tree; acceptance needs both",
+     "parent": {
+      "already_exited": true,
+      "confirmed": true,
+      "ended_on_its_own": true,
+      "escalated": false,
+      "exit_code": 0,
+      "pid": "<pid>",
+      "signalled": null
+     },
+     "reason": "exited",
+     "tree": {
+      "confirmed": true,
+      "evidence": "signal zero to the group until no member answers",
+      "group": "<pid>",
+      "group_empty": true,
+      "method": "process_group"
+     }
+    }
+   },
+   "duration_seconds": "<duration>",
+   "failure": null,
+   "returncode": 0,
+   "stderr": {
+    "bytes": 3,
+    "decoding": "utf-8",
+    "raw": "zzz",
+    "sha256": "17f165d5a5ba695f27c023a83aa2b3463e23810e360b7517127e90161eebabda",
+    "truncated": false
+   },
+   "stdout": {
+    "bytes": 100,
+    "decoding": "utf-8",
+    "raw": "yyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyy",
+    "sha256": "56846f2db153afa893bd18d0c0bf6e026d9cd3fa0bfa941976b17ff14d3e217a",
+    "truncated": true
+   },
+   "terminated": false
+  },
+  "cwd_missing": {
+   "cleanup": {
+    "confirmed": true,
+    "error": null,
+    "readers_alive": [],
+    "reason": "executable_missing",
+    "streams_closed": [],
+    "tree": null
+   },
+   "duration_seconds": "<duration>",
+   "failure": "executable_missing: [Errno 2] No such file or directory: '<ROOT>/12-capture/no-such-cwd'",
+   "returncode": null
+  },
+  "executable_missing": {
+   "cleanup": {
+    "confirmed": true,
+    "error": null,
+    "readers_alive": [],
+    "reason": "executable_missing",
+    "streams_closed": [],
+    "tree": null
+   },
+   "duration_seconds": "<duration>",
+   "failure": "executable_missing: [Errno 2] No such file or directory: 'definitely-not-an-executable-zeus'",
+   "returncode": null
+  },
+  "inspector_ownership": {
+   "argv_identical": true,
+   "argv_transformation": null,
+   "cause": "attempt 1: spawn_error: TreeOwnershipError: no boundary",
+   "interpreter": "<TRUSTED>",
+   "original_argv": [
+    "<PY>",
+    "-c",
+    "pass"
+   ],
+   "replay_argv": [
+    "<PY>",
+    "-c",
+    "pass"
+   ],
+   "runs": [
+    {
+     "cleanup": {
+      "confirmed": true,
+      "error": null,
+      "readers_alive": [],
+      "reason": "spawn_error",
+      "streams_closed": [],
+      "tree": null
+     },
+     "duration_seconds": "<duration>",
+     "failure": "spawn_error: TreeOwnershipError: no boundary",
+     "returncode": null
+    }
+   ],
+   "state": "replay_failed"
+  },
+  "interrupted": {
+   "cleanup": {
+    "confirmed": true,
+    "error": null,
+    "readers_alive": [],
+    "reason": "KeyboardInterrupt",
+    "streams_closed": [
+     "stdout",
+     "stderr"
+    ],
+    "tree": {
+     "boundary": {
+      "group": "<pid>",
+      "kind": "process_group",
+      "limit": "a descendant that calls setsid leaves this group and cannot be proven gone from here",
+      "owned_from_spawn": true
+     },
+     "confirmed": true,
+     "note": "a terminated parent is not a terminated tree; acceptance needs both",
+     "parent": {
+      "already_exited": false,
+      "confirmed": true,
+      "escalated": false,
+      "exit_code": -15,
+      "pid": "<pid>",
+      "signalled": true
+     },
+     "reason": "KeyboardInterrupt",
+     "tree": {
+      "confirmed": true,
+      "evidence": "signal zero to the group until no member answers",
+      "group": "<pid>",
+      "group_empty": true,
+      "method": "process_group"
+     }
+    }
+   },
+   "fast_enough": true,
+   "process_ended": true,
+   "streams_closed": true,
+   "type": "KeyboardInterrupt",
+   "watchdog_fired": false
+  },
+  "invalid_utf8": {
+   "cleanup": {
+    "confirmed": true,
+    "error": null,
+    "readers_alive": [],
+    "reason": "exited",
+    "streams_closed": [
+     "stdout",
+     "stderr"
+    ],
+    "tree": {
+     "boundary": {
+      "group": "<pid>",
+      "kind": "process_group",
+      "limit": "a descendant that calls setsid leaves this group and cannot be proven gone from here",
+      "owned_from_spawn": true
+     },
+     "confirmed": true,
+     "note": "a terminated parent is not a terminated tree; acceptance needs both",
+     "parent": {
+      "already_exited": true,
+      "confirmed": true,
+      "ended_on_its_own": true,
+      "escalated": false,
+      "exit_code": 0,
+      "pid": "<pid>",
+      "signalled": null
+     },
+     "reason": "exited",
+     "tree": {
+      "confirmed": true,
+      "evidence": "signal zero to the group until no member answers",
+      "group": "<pid>",
+      "group_empty": true,
+      "method": "process_group"
+     }
+    }
+   },
+   "duration_seconds": "<duration>",
+   "failure": null,
+   "returncode": 0,
+   "stderr": {
+    "bytes": 0,
+    "decoding": "utf-8",
+    "raw": "",
+    "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "truncated": false
+   },
+   "stdout": {
+    "bytes": 3,
+    "decoding": "invalid_utf8: 'utf-8' codec can't decode byte 0xff in position 0: invalid start byte",
+    "raw": "ÿþ",
+    "sha256": "b632bfa9c60bc17f7fd78dba311fd3f5dfa66cb8c017a4278e2bae28d668844d",
+    "truncated": false
+   },
+   "terminated": false
+  },
+  "normal": {
+   "cleanup": {
+    "confirmed": true,
+    "error": null,
+    "readers_alive": [],
+    "reason": "exited",
+    "streams_closed": [
+     "stdout",
+     "stderr"
+    ],
+    "tree": {
+     "boundary": {
+      "group": "<pid>",
+      "kind": "process_group",
+      "limit": "a descendant that calls setsid leaves this group and cannot be proven gone from here",
+      "owned_from_spawn": true
+     },
+     "confirmed": true,
+     "note": "a terminated parent is not a terminated tree; acceptance needs both",
+     "parent": {
+      "already_exited": true,
+      "confirmed": true,
+      "ended_on_its_own": true,
+      "escalated": false,
+      "exit_code": 3,
+      "pid": "<pid>",
+      "signalled": null
+     },
+     "reason": "exited",
+     "tree": {
+      "confirmed": true,
+      "evidence": "signal zero to the group until no member answers",
+      "group": "<pid>",
+      "group_empty": true,
+      "method": "process_group"
+     }
+    }
+   },
+   "duration_seconds": "<duration>",
+   "failure": null,
+   "returncode": 3,
+   "stderr": {
+    "bytes": 3,
+    "decoding": "utf-8",
+    "raw": "err",
+    "sha256": "d9eb253e06987fa74a5d3189f73d9f7a8104cca786fafbb52bc9555972f5477f",
+    "truncated": false
+   },
+   "stdout": {
+    "bytes": 4,
+    "decoding": "utf-8",
+    "raw": "out\n",
+    "sha256": "54034ac5c6e9ea95734ec2b729fd6d62abf64af34a9f9ce5d466cb788191a73d",
+    "truncated": false
+   },
+   "terminated": false
+  },
+  "normal_flags": {
+   "cleanup_keys": [
+    "confirmed",
+    "error",
+    "readers_alive",
+    "reason",
+    "streams_closed",
+    "tree"
+   ],
+   "keys": [
+    "cleanup",
+    "duration_seconds",
+    "failure",
+    "returncode",
+    "stderr",
+    "stdout",
+    "terminated"
+   ],
+   "raw_ok": true,
+   "sha_ok": true
+  },
+  "ownership_classes": {
+   "error_base": "RuntimeError",
+   "error_name": "TreeOwnershipError",
+   "leak_base": "TreeOwnershipError",
+   "leak_is_error": true,
+   "leak_name": "TreeOwnershipLeak"
+  },
+  "permission_denied": {
+   "cleanup": {
+    "confirmed": true,
+    "error": null,
+    "readers_alive": [],
+    "reason": "permission_denied",
+    "streams_closed": [],
+    "tree": null
+   },
+   "duration_seconds": "<duration>",
+   "failure": "permission_denied: [Errno 13] Permission denied: '<ROOT>/12-capture/not-executable'",
+   "returncode": null
+  },
+  "progress_deadline": {
+   "cleanup": {
+    "confirmed": true,
+    "error": null,
+    "readers_alive": [],
+    "reason": "timeout",
+    "streams_closed": [
+     "stdout",
+     "stderr"
+    ],
+    "tree": {
+     "boundary": {
+      "group": "<pid>",
+      "kind": "process_group",
+      "limit": "a descendant that calls setsid leaves this group and cannot be proven gone from here",
+      "owned_from_spawn": true
+     },
+     "confirmed": true,
+     "note": "a terminated parent is not a terminated tree; acceptance needs both",
+     "parent": {
+      "already_exited": false,
+      "confirmed": true,
+      "escalated": false,
+      "exit_code": -15,
+      "pid": "<pid>",
+      "signalled": true
+     },
+     "reason": "timeout",
+     "tree": {
+      "confirmed": true,
+      "evidence": "signal zero to the group until no member answers",
+      "group": "<pid>",
+      "group_empty": true,
+      "method": "process_group"
+     }
+    }
+   },
+   "duration_seconds": "<duration>",
+   "failure": "timeout after 1s; process tree terminated",
+   "returncode": -15,
+   "stderr": {
+    "bytes": 0,
+    "decoding": "utf-8",
+    "raw": "",
+    "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "truncated": false
+   },
+   "stdout": {
+    "bytes": 8,
+    "decoding": "utf-8",
+    "raw": "started\n",
+    "sha256": "eff64b343dcb2b1dc113648e7089b9ce9f8a7f6c7808a03a2cffb4ad7302f606",
+    "truncated": false
+   },
+   "terminated": true
+  },
+  "progress_polls": {
+   "all_replay_wait": true,
+   "at_least_two": true,
+   "failure": null,
+   "returncode": 0
+  },
+  "progress_refusal": {
+   "cleanup": {
+    "confirmed": true,
+    "error": null,
+    "readers_alive": [],
+    "reason": "Refuse",
+    "streams_closed": [
+     "stdout",
+     "stderr"
+    ],
+    "tree": {
+     "boundary": {
+      "group": "<pid>",
+      "kind": "process_group",
+      "limit": "a descendant that calls setsid leaves this group and cannot be proven gone from here",
+      "owned_from_spawn": true
+     },
+     "confirmed": true,
+     "note": "a terminated parent is not a terminated tree; acceptance needs both",
+     "parent": {
+      "already_exited": false,
+      "confirmed": true,
+      "escalated": false,
+      "exit_code": -15,
+      "pid": "<pid>",
+      "signalled": true
+     },
+     "reason": "Refuse",
+     "tree": {
+      "confirmed": true,
+      "evidence": "signal zero to the group until no member answers",
+      "group": "<pid>",
+      "group_empty": true,
+      "method": "process_group"
+     }
+    }
+   },
+   "fast_enough": true,
+   "message": "lost ownership at replay_wait",
+   "type": "Refuse"
+  },
+  "spawn_leak": {
+   "cleanup": {
+    "confirmed": false,
+    "error": null,
+    "leak": {
+     "exit_code": null,
+     "reason": "injected leak"
+    },
+    "readers_alive": [],
+    "reason": "spawn_error",
+    "streams_closed": [],
+    "tree": null
+   },
+   "duration_seconds": "<duration>",
+   "failure": "spawn_error: TreeOwnershipLeak: a process was left behind",
+   "returncode": null
+  },
+  "spawn_oserror": {
+   "cleanup": {
+    "confirmed": true,
+    "error": null,
+    "readers_alive": [],
+    "reason": "spawn_error",
+    "streams_closed": [],
+    "tree": null
+   },
+   "duration_seconds": "<duration>",
+   "failure": "spawn_error: OSError: [Errno 7] injected oserror",
+   "returncode": null
+  },
+  "spawn_ownership": {
+   "cleanup": {
+    "confirmed": true,
+    "error": null,
+    "readers_alive": [],
+    "reason": "spawn_error",
+    "streams_closed": [],
+    "tree": null
+   },
+   "duration_seconds": "<duration>",
+   "failure": "spawn_error: TreeOwnershipError: the process could not be placed in its job object",
+   "returncode": null
+  },
+  "timeout": {
+   "cleanup": {
+    "confirmed": true,
+    "error": null,
+    "readers_alive": [],
+    "reason": "timeout",
+    "streams_closed": [
+     "stdout",
+     "stderr"
+    ],
+    "tree": {
+     "boundary": {
+      "group": "<pid>",
+      "kind": "process_group",
+      "limit": "a descendant that calls setsid leaves this group and cannot be proven gone from here",
+      "owned_from_spawn": true
+     },
+     "confirmed": true,
+     "note": "a terminated parent is not a terminated tree; acceptance needs both",
+     "parent": {
+      "already_exited": false,
+      "confirmed": true,
+      "escalated": false,
+      "exit_code": -15,
+      "pid": "<pid>",
+      "signalled": true
+     },
+     "reason": "timeout",
+     "tree": {
+      "confirmed": true,
+      "evidence": "signal zero to the group until no member answers",
+      "group": "<pid>",
+      "group_empty": true,
+      "method": "process_group"
+     }
+    }
+   },
+   "duration_seconds": "<duration>",
+   "failure": "timeout after 2s; process tree terminated",
+   "returncode": -15,
+   "stderr": {
+    "bytes": 0,
+    "decoding": "utf-8",
+    "raw": "",
+    "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "truncated": false
+   },
+   "stdout": {
+    "bytes": 8,
+    "decoding": "utf-8",
+    "raw": "started\n",
+    "sha256": "eff64b343dcb2b1dc113648e7089b9ce9f8a7f6c7808a03a2cffb4ad7302f606",
+    "truncated": false
+   },
+   "terminated": true
+  },
+  "timeout_fast_enough": true,
+  "unconfirmed": {
+   "fast_enough": true,
+   "replay_failed": "replay_failed",
+   "run": {
+    "cleanup": {
+     "confirmed": false,
+     "error": null,
+     "readers_alive": [
+      "stdout",
+      "stderr"
+     ],
+     "reason": "timeout",
+     "streams_closed": [],
+     "tree": {
+      "confirmed": false,
+      "injected": true,
+      "reason": "timeout"
+     }
+    },
+    "duration_seconds": "<duration>",
+    "failure": "timeout after 2s; process tree terminated; capture_cleanup_unconfirmed: readers still own stdout,stderr",
+    "returncode": null,
+    "stderr": {
+     "bytes": 0,
+     "decoding": "utf-8",
+     "raw": "",
+     "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+     "truncated": false
+    },
+    "stdout": {
+     "bytes": 0,
+     "decoding": "utf-8",
+     "raw": "",
+     "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+     "truncated": false
+    },
+    "terminated": true
+   },
+   "stdout_stream_left_open": true
+  },
+  "zero_cap": {
+   "cleanup": {
+    "confirmed": true,
+    "error": null,
+    "readers_alive": [],
+    "reason": "exited",
+    "streams_closed": [
+     "stdout",
+     "stderr"
+    ],
+    "tree": {
+     "boundary": {
+      "group": "<pid>",
+      "kind": "process_group",
+      "limit": "a descendant that calls setsid leaves this group and cannot be proven gone from here",
+      "owned_from_spawn": true
+     },
+     "confirmed": true,
+     "note": "a terminated parent is not a terminated tree; acceptance needs both",
+     "parent": {
+      "already_exited": true,
+      "confirmed": true,
+      "ended_on_its_own": true,
+      "escalated": false,
+      "exit_code": 0,
+      "pid": "<pid>",
+      "signalled": null
+     },
+     "reason": "exited",
+     "tree": {
+      "confirmed": true,
+      "evidence": "signal zero to the group until no member answers",
+      "group": "<pid>",
+      "group_empty": true,
+      "method": "process_group"
+     }
+    }
+   },
+   "duration_seconds": "<duration>",
+   "failure": null,
+   "returncode": 0,
+   "stderr": {
+    "bytes": 0,
+    "decoding": "utf-8",
+    "raw": "",
+    "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "truncated": false
+   },
+   "stdout": {
+    "bytes": 0,
+    "decoding": "utf-8",
+    "raw": "",
+    "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "truncated": true
+   },
+   "terminated": false
+  }
+ },
+ "i8_snapshot_identity": {
+  "none": {
+   "cwd": null,
+   "environment_digest_ok": true,
+   "environment_is_replay_environment": true,
+   "environment_names": true,
+   "executable_digest_ok": true,
+   "identity_equals_identity_method": true,
+   "identity_keys": [
+    "cwd",
+    "environment_digest",
+    "environment_names",
+    "interpreter",
+    "platform",
+    "policy_hash",
+    "tool"
+   ],
+   "implementation_ok": true,
+   "interpreter": [
+    "<TRUSTED>",
+    "<TRUSTED>"
+   ],
+   "keys": [
+    "environment",
+    "identity",
+    "interpreter"
+   ],
+   "platform_ok": true,
+   "policy_hash_ok": true,
+   "python_ok": true,
+   "pythonpath": null,
+   "tool_keys": [
+    "executable_digest",
+    "implementation",
+    "python"
+   ]
+  },
+  "other_interpreter": {
+   "digest_ok": true,
+   "interpreter": "<ROOT>/14-snapshot/other-python"
+  },
+  "plain": {
+   "cwd": "<ROOT>/14-snapshot/plain",
+   "environment_digest_ok": true,
+   "environment_is_replay_environment": true,
+   "environment_names": true,
+   "executable_digest_ok": true,
+   "identity_equals_identity_method": true,
+   "identity_keys": [
+    "cwd",
+    "environment_digest",
+    "environment_names",
+    "interpreter",
+    "platform",
+    "policy_hash",
+    "tool"
+   ],
+   "implementation_ok": true,
+   "interpreter": [
+    "<TRUSTED>",
+    "<TRUSTED>"
+   ],
+   "keys": [
+    "environment",
+    "identity",
+    "interpreter"
+   ],
+   "platform_ok": true,
+   "policy_hash_ok": true,
+   "python_ok": true,
+   "pythonpath": null,
+   "tool_keys": [
+    "executable_digest",
+    "implementation",
+    "python"
+   ]
+  },
+  "sensitivity": {
+   "cwd_changes_identity": true,
+   "default_policy_is_packaged": true,
+   "policy_changes_hash": true,
+   "src_changes_environment_digest": true
+  },
+  "with_src": {
+   "cwd": "<ROOT>/14-snapshot/with-src",
+   "environment_digest_ok": true,
+   "environment_is_replay_environment": true,
+   "environment_names": true,
+   "executable_digest_ok": true,
+   "identity_equals_identity_method": true,
+   "identity_keys": [
+    "cwd",
+    "environment_digest",
+    "environment_names",
+    "interpreter",
+    "platform",
+    "policy_hash",
+    "tool"
+   ],
+   "implementation_ok": true,
+   "interpreter": [
+    "<TRUSTED>",
+    "<TRUSTED>"
+   ],
+   "keys": [
+    "environment",
+    "identity",
+    "interpreter"
+   ],
+   "platform_ok": true,
+   "policy_hash_ok": true,
+   "python_ok": true,
+   "pythonpath": "<ROOT>/14-snapshot/with-src/src",
+   "tool_keys": [
+    "executable_digest",
+    "implementation",
+    "python"
+   ]
+  }
+ },
+ "i9_inspect_and_seams": {
+  "absent": {
+   "context": {
+    "cwd": "<ROOT>/15-aggregate/absent",
+    "task_id": "t"
+   },
+   "findings": [
+    {
+     "cause": "workspace directory does not exist",
+     "claim": null,
+     "state": "error"
+    }
+   ],
+   "policy_hash": "562615b9d638b6123078b758a544564cbc88fb44907c968fd0e7d42f59b2d857"
+  },
+  "absent_keys": [
+   "context",
+   "findings",
+   "policy_hash"
+  ],
+  "context": {
+   "attempt": 4,
+   "cwd": "<ROOT>/15-aggregate/ws",
+   "environment": [
+    "HOME",
+    "LANG",
+    "LC_ALL",
+    "PATH",
+    "PYTHONIOENCODING",
+    "PYTHONPATH"
+   ],
+   "interpreter": "<TRUSTED>",
+   "pythonpath": "<ROOT>/15-aggregate/ws/src",
+   "task_id": "t"
+  },
+  "context_ok": {
+   "digest": true,
+   "keys": [
+    "attempt",
+    "cwd",
+    "environment",
+    "environment_digest",
+    "interpreter",
+    "python",
+    "pythonpath",
+    "task_id"
+   ],
+   "python": true
+  },
+  "findings": [
+   {
+    "cause": "Empty command claim",
+    "claim": {
+     "raw": "''"
+    },
+    "state": "error"
+   },
+   {
+    "cause": "File claim path must be relative and inside the workspace",
+    "claim": {
+     "raw": "{'kind': 'file', 'path': '../x'}"
+    },
+    "state": "error"
+   },
+   {
+    "cause": "Evidence claim must name a kind",
+    "claim": {
+     "raw": "7"
+    },
+    "state": "error"
+   },
+   {
+    "argv_identical": true,
+    "argv_transformation": null,
+    "cause": "exit 0 as claimed on 1 identical replay(s)",
+    "claim": {
+     "argv": [
+      "<PY>",
+      "-c",
+      "import sys; sys.exit(0)"
+     ],
+     "expected_exit": 0,
+     "id": "09046f7449b3956cdb5ecf44399ac4082d99ca1fbb72bb2ac6eb5f315e537ce2",
+     "kind": "command",
+     "origin": "structured"
+    },
+    "interpreter": "<TRUSTED>",
+    "original_argv": [
+     "<PY>",
+     "-c",
+     "import sys; sys.exit(0)"
+    ],
+    "replay_argv": [
+     "<PY>",
+     "-c",
+     "import sys; sys.exit(0)"
+    ],
+    "state": "checked"
+   },
+   {
+    "cause": "a directory is not evidence",
+    "claim": {
+     "id": "3b861736bac512ed8c60f84a5c5ad4816e9dc0c363ad750eb510018f659b6f02",
+     "kind": "file",
+     "origin": "structured",
+     "path": "src",
+     "range": null,
+     "sha256": null
+    },
+    "state": "missing"
+   },
+   {
+    "cause": "claim budget exhausted",
+    "claim": {
+     "argv": [
+      "rm",
+      "-rf",
+      "/"
+     ],
+     "expected_exit": 0,
+     "id": "52d036b953dc2e36c56d7c82bb94feee1b36fcad0317a99e403bbe8ece13c0c8",
+     "kind": "command",
+     "origin": "free_text"
+    },
+    "state": "not_checked"
+   },
+   {
+    "cause": "claim budget exhausted",
+    "claim": {
+     "argv": [
+      "<PY>",
+      "-c",
+      "pass"
+     ],
+     "expected_exit": 0,
+     "id": "0a18e0cffa27cd74bf945c684aa9ba728ae2d407cb6a1334ea314cbaa64ed648",
+     "kind": "command",
+     "origin": "structured"
+    },
+    "state": "not_checked"
+   }
+  ],
+  "inspect_does_not_mutate_environment": true,
+  "inspection_id_recomputes": true,
+  "progress_labels": [
+   "replay_start",
+   "replay_end"
+  ],
+  "report_keys": [
+   "context",
+   "findings",
+   "inspection_id",
+   "policy_hash"
+  ],
+  "seam": {
+   "calls": [
+    [
+     "trusted",
+     "str",
+     "named-interpreter"
+    ],
+    [
+     "trusted",
+     "PosixPath",
+     "/fixture/python"
+    ],
+    [
+     "replay",
+     [
+      "/fixture/python",
+      "-m",
+      "pytest",
+      "-q"
+     ],
+     "<ROOT>/15-aggregate/ws",
+     20,
+     4096,
+     [
+      "HOME",
+      "LANG",
+      "LC_ALL",
+      "PATH",
+      "PYTHONIOENCODING",
+      "PYTHONPATH"
+     ],
+     true
+    ],
+    [
+     "replay",
+     [
+      "/fixture/python",
+      "-m",
+      "pytest",
+      "-q"
+     ],
+     "<ROOT>/15-aggregate/ws",
+     20,
+     4096,
+     [
+      "HOME",
+      "LANG",
+      "LC_ALL",
+      "PATH",
+      "PYTHONIOENCODING",
+      "PYTHONPATH"
+     ],
+     true
+    ],
+    [
+     "trusted",
+     "PosixPath",
+     "/fixture/python"
+    ],
+    [
+     "replay",
+     [
+      "<PY>",
+      "-c",
+      "pass"
+     ],
+     "<ROOT>/15-aggregate/ws",
+     20,
+     4096,
+     [
+      "HOME",
+      "LANG",
+      "LC_ALL",
+      "PATH",
+      "PYTHONIOENCODING",
+      "PYTHONPATH"
+     ],
+     true
+    ],
+    [
+     "replay",
+     [
+      "<PY>",
+      "-c",
+      "pass"
+     ],
+     "<ROOT>/15-aggregate/ws",
+     20,
+     4096,
+     [
+      "HOME",
+      "LANG",
+      "LC_ALL",
+      "PATH",
+      "PYTHONIOENCODING",
+      "PYTHONPATH"
+     ],
+     true
+    ]
+   ],
+   "context": {
+    "interpreter": "/fixture/python",
+    "python": "9.99.fixture"
+   },
+   "findings": [
+    {
+     "argv_identical": false,
+     "argv_transformation": "first token \"python\" replaced by the trusted host interpreter; authorization was decided on the original argv",
+     "cause": "exit 0 as claimed on 2 identical replay(s)",
+     "interpreter": "/fixture/python",
+     "original_argv": [
+      "python",
+      "-m",
+      "pytest",
+      "-q"
+     ],
+     "replay_argv": [
+      "/fixture/python",
+      "-m",
+      "pytest",
+      "-q"
+     ],
+     "runs": [
+      {
+       "cleanup": {
+        "confirmed": true
+       },
+       "duration_seconds": "<duration>",
+       "failure": null,
+       "returncode": 0,
+       "stderr": {
+        "bytes": 0,
+        "decoding": "utf-8",
+        "ref": "sha256:40a7f21fd14936974072a6cf7f256544da5cbf338d56721f65ae7d80ed7b2e2a",
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+        "truncated": false
+       },
+       "stdout": {
+        "bytes": 4,
+        "decoding": "utf-8",
+        "ref": "sha256:febdd509ef11a2dfd5646a2c2a96d2e9bd70aa17600f6afaf2955e30a042fae4",
+        "sha256": "00e987128dfe081a06deaf11dc1a4edd6020b43a0e2f51c5b0bb5bf3ed027574",
+        "truncated": false
+       },
+       "terminated": false
+      },
+      {
+       "cleanup": {
+        "confirmed": true
+       },
+       "duration_seconds": "<duration>",
+       "failure": null,
+       "returncode": 0,
+       "stderr": {
+        "bytes": 0,
+        "decoding": "utf-8",
+        "ref": "sha256:40a7f21fd14936974072a6cf7f256544da5cbf338d56721f65ae7d80ed7b2e2a",
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+        "truncated": false
+       },
+       "stdout": {
+        "bytes": 4,
+        "decoding": "utf-8",
+        "ref": "sha256:febdd509ef11a2dfd5646a2c2a96d2e9bd70aa17600f6afaf2955e30a042fae4",
+        "sha256": "00e987128dfe081a06deaf11dc1a4edd6020b43a0e2f51c5b0bb5bf3ed027574",
+        "truncated": false
+       },
+       "terminated": false
+      }
+     ],
+     "state": "checked"
+    },
+    {
+     "argv_identical": true,
+     "argv_transformation": null,
+     "cause": "exit 0 as claimed on 2 identical replay(s)",
+     "interpreter": "/fixture/python",
+     "original_argv": [
+      "<PY>",
+      "-c",
+      "pass"
+     ],
+     "replay_argv": [
+      "<PY>",
+      "-c",
+      "pass"
+     ],
+     "runs": [
+      {
+       "cleanup": {
+        "confirmed": true
+       },
+       "duration_seconds": "<duration>",
+       "failure": null,
+       "returncode": 0,
+       "stderr": {
+        "bytes": 0,
+        "decoding": "utf-8",
+        "ref": "sha256:40a7f21fd14936974072a6cf7f256544da5cbf338d56721f65ae7d80ed7b2e2a",
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+        "truncated": false
+       },
+       "stdout": {
+        "bytes": 4,
+        "decoding": "utf-8",
+        "ref": "sha256:febdd509ef11a2dfd5646a2c2a96d2e9bd70aa17600f6afaf2955e30a042fae4",
+        "sha256": "00e987128dfe081a06deaf11dc1a4edd6020b43a0e2f51c5b0bb5bf3ed027574",
+        "truncated": false
+       },
+       "terminated": false
+      },
+      {
+       "cleanup": {
+        "confirmed": true
+       },
+       "duration_seconds": "<duration>",
+       "failure": null,
+       "returncode": 0,
+       "stderr": {
+        "bytes": 0,
+        "decoding": "utf-8",
+        "ref": "sha256:40a7f21fd14936974072a6cf7f256544da5cbf338d56721f65ae7d80ed7b2e2a",
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+        "truncated": false
+       },
+       "stdout": {
+        "bytes": 4,
+        "decoding": "utf-8",
+        "ref": "sha256:febdd509ef11a2dfd5646a2c2a96d2e9bd70aa17600f6afaf2955e30a042fae4",
+        "sha256": "00e987128dfe081a06deaf11dc1a4edd6020b43a0e2f51c5b0bb5bf3ed027574",
+        "truncated": false
+       },
+       "terminated": false
+      }
+     ],
+     "state": "checked"
+    },
+    {
+     "cause": "command is not an authorized replay prefix; a claim is not authority",
+     "state": "not_checked"
+    }
+   ]
+  },
+  "seam_snapshot": {
+   "outcome": {
+    "error": "ContractError",
+    "message": "Trusted replay interpreter is not a file: named-interpreter"
+   },
+   "seam_calls": []
+  },
+  "supplied_environment": {
+   "context_environment": [
+    "PATH",
+    "ZEUS_MARK"
+   ],
+   "pythonpath": null,
+   "state": "checked"
+  }
+ }
+}

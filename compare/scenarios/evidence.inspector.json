@@ -1,0 +1,9 @@
+{
+ "family": "evidence.inspector",
+ "description": "S8 batch B5a (M7 adapters/evidence_inspection.py: EvidenceInspector, _capture, packaged_policy, replay_environment, trusted_interpreter, replay_argv), characterized before the move into evidence.adapters.evidence_inspection (DESIGN-s8 V26 rule E-4): the packaged policy and its failures, the replay environment and the trusted interpreter, file claims against the workspace, authorized and unauthorized command argv with the raw bytes archived, python -m claims run by the trusted interpreter against the candidate src, a missing interpreter refused before any child, deadlines and budgets, _capture over real children (stream receipts, the output cap, the timeout that terminates the tree, an interruption that reclaims it and re-raises, an unconfirmed termination, the progress polls and their refusal, the unspawned child: missing executable, permission denied, OSError, TreeOwnershipError and TreeOwnershipLeak from spawn), snapshot and identity, inspect aggregation and the injection seams a backend overrides; mirrors tests/test_evidence_inspection.py. Real children through the REAL ProcessTree on both sides. Masks declared in the scenario body: duration_seconds, elapsed seconds and OS pids; host roots become symbolic names; inspection ids are checked by recomputation; no store, provider, network or database",
+ "reference_driver": "drivers/reference/s8_evidence_inspector.py",
+ "target_driver": null,
+ "target_status": "pending: the target side is the S8 batch B5a move (target driver s8_evidence_inspector.py, added with the target driver)",
+ "golden": "goldens/reference/evidence.inspector.json",
+ "slice": "S8"
+}
