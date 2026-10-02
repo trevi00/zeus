@@ -1,0 +1,3829 @@
+{
+ "all_corrected": {
+  "admitted_total": 2,
+  "history_rows_of_successor": {
+   "core": true,
+   "other": true
+  },
+  "m7_test": "test_every_diagnosed_target_corrected_is_repaired_and_resumes_without_acceptance",
+  "partition_generation": 1,
+  "remaining_subsystems": [
+   "core",
+   "other"
+  ],
+  "settle": {
+   "store_after": "75c8660b7ed7b16b",
+   "store_before": "015faf260c0d723f",
+   "value": {
+    "audit_id": "audit-fixture-001",
+    "changed": [
+     {
+      "analysis_outcome": "analysis_checkpointed",
+      "attempts": 2,
+      "audit_id": "audit-fixture-001",
+      "checkpoint_generation": 1,
+      "corrected_subsystems": 2,
+      "correction_id": "repair-4bb8ba901c64bdb3a477abde",
+      "diagnosis": "missing_test_disposition",
+      "reason_code": "corrected",
+      "remaining_targets": 0,
+      "source_execution_ref": "sha256:00e238885cfeb8799f590a57da180fe160e768c803990d657e551f7f1057a58a",
+      "source_task_id": "5eed0000-0000-4000-8000-00000000002c",
+      "state": "repaired",
+      "successor_execution_ref": "sha256:73dfa883bb31e75d5ca1dbe7f8854b14c60a0e1ae4b11eeae21f631ca73480ab",
+      "successor_task_id": "5eed0000-0000-4000-8000-00000000002d",
+      "target_subsystems": 2
+     }
+    ],
+    "notices": [],
+    "settled": [
+     {
+      "analysis_outcome": "analysis_checkpointed",
+      "attempts": 2,
+      "audit_id": "audit-fixture-001",
+      "checkpoint_generation": 1,
+      "corrected_subsystems": 2,
+      "correction_id": "repair-4bb8ba901c64bdb3a477abde",
+      "diagnosis": "missing_test_disposition",
+      "reason_code": "corrected",
+      "remaining_targets": 0,
+      "source_execution_ref": "sha256:00e238885cfeb8799f590a57da180fe160e768c803990d657e551f7f1057a58a",
+      "source_task_id": "5eed0000-0000-4000-8000-00000000002c",
+      "state": "repaired",
+      "successor_execution_ref": "sha256:73dfa883bb31e75d5ca1dbe7f8854b14c60a0e1ae4b11eeae21f631ca73480ab",
+      "successor_task_id": "5eed0000-0000-4000-8000-00000000002d",
+      "target_subsystems": 2
+     }
+    ]
+   },
+   "wrote": true
+  },
+  "status": {
+   "store_after": "75c8660b7ed7b16b",
+   "store_before": "75c8660b7ed7b16b",
+   "value": {
+    "audit_id": "audit-fixture-001",
+    "corrections": [
+     {
+      "analysis_outcome": "analysis_checkpointed",
+      "attempts": 2,
+      "audit_id": "audit-fixture-001",
+      "checkpoint_generation": 1,
+      "corrected_subsystems": 2,
+      "created_at": "2026-09-22T00:00:00.096000+00:00",
+      "diagnosis": "missing_test_disposition",
+      "field": "tests",
+      "id": "repair-4bb8ba901c64bdb3a477abde",
+      "notice_id": null,
+      "notice_published": null,
+      "partition_generation": 0,
+      "partition_id": "partition-fixture-001",
+      "reason_code": "corrected",
+      "remaining_targets": 0,
+      "source_execution_ref": "sha256:00e238885cfeb8799f590a57da180fe160e768c803990d657e551f7f1057a58a",
+      "source_task_generation": 0,
+      "source_task_id": "5eed0000-0000-4000-8000-00000000002c",
+      "state": "repaired",
+      "subsystems_total": 2,
+      "successor_execution_ref": "sha256:73dfa883bb31e75d5ca1dbe7f8854b14c60a0e1ae4b11eeae21f631ca73480ab",
+      "successor_published": true,
+      "successor_schedule_key": "repair:repair-4bb8ba901c64bdb3a477abde",
+      "successor_task_id": "5eed0000-0000-4000-8000-00000000002d",
+      "target_subsystems": 2,
+      "updated_at": "2026-09-22T00:00:00.097000+00:00"
+     }
+    ],
+    "counts": {
+     "admitted": 0,
+     "attempted": 1,
+     "deferred": 0,
+     "reconciliation_required": 0,
+     "repaired": 1,
+     "research_required": 0
+    },
+    "enabled": true,
+    "operator": "owner-fixture",
+    "schema": "urn:zeus:audit-repair:1",
+    "scope": [
+     "5eed0000-0000-4000-8000-00000000002c"
+    ],
+    "updated_at": "2026-09-22T00:00:00.095000+00:00"
+   },
+   "wrote": false
+  }
+ },
+ "corrupt_moved_unpublished": {
+  "document": {
+   "admit": {
+    "store_after": "142d7891a03bb5df",
+    "store_before": "142d7891a03bb5df",
+    "value": {
+     "admitted": false,
+     "correction": null,
+     "correction_id": null,
+     "diagnosis": "missing_test_disposition",
+     "error_type": null,
+     "partition_generation": 0,
+     "partition_id": "partition-fixture-001",
+     "reason_code": "evidence_mismatch",
+     "source_task_id": "5eed0000-0000-4000-8000-000000000011",
+     "successor_task_id": null
+    },
+    "wrote": false
+   },
+   "artifact_reads": 1,
+   "replay_calls": [],
+   "state": {
+    "corrections": [],
+    "events": [],
+    "outbox": [],
+    "schedule": []
+   }
+  },
+  "evidence": {
+   "admit": {
+    "store_after": "bd5fd74a204d422e",
+    "store_before": "bd5fd74a204d422e",
+    "value": {
+     "admitted": false,
+     "correction": null,
+     "correction_id": null,
+     "diagnosis": "missing_test_disposition",
+     "error_type": "FileNotFoundError",
+     "partition_generation": 0,
+     "partition_id": "partition-fixture-001",
+     "reason_code": "evidence_missing",
+     "source_task_id": "5eed0000-0000-4000-8000-00000000000f",
+     "successor_task_id": null
+    },
+    "wrote": false
+   },
+   "artifact_reads": 1,
+   "replay_calls": [],
+   "state": {
+    "corrections": [],
+    "events": [],
+    "outbox": [],
+    "schedule": []
+   }
+  },
+  "foreign": {
+   "admit": {
+    "store_after": "df94697162cf9bba",
+    "store_before": "df94697162cf9bba",
+    "value": {
+     "admitted": false,
+     "correction": null,
+     "correction_id": null,
+     "diagnosis": null,
+     "error_type": null,
+     "partition_generation": 0,
+     "partition_id": "partition-fixture-001",
+     "reason_code": "foreign_partition",
+     "source_task_id": "5eed0000-0000-4000-8000-00000000000e",
+     "successor_task_id": null
+    },
+    "wrote": false
+   },
+   "artifact_reads": 0,
+   "replay_calls": [],
+   "state": {
+    "corrections": [],
+    "events": [],
+    "outbox": [],
+    "schedule": []
+   }
+  },
+  "generation": {
+   "admit": {
+    "store_after": "318b70d7275e3d0e",
+    "store_before": "318b70d7275e3d0e",
+    "value": {
+     "admitted": false,
+     "correction": null,
+     "correction_id": null,
+     "diagnosis": null,
+     "error_type": null,
+     "partition_generation": 0,
+     "partition_id": "partition-fixture-001",
+     "reason_code": "generation_changed",
+     "source_task_id": "5eed0000-0000-4000-8000-00000000000c",
+     "successor_task_id": null
+    },
+    "wrote": false
+   },
+   "artifact_reads": 0,
+   "replay_calls": [],
+   "state": {
+    "corrections": [],
+    "events": [],
+    "outbox": [],
+    "schedule": []
+   }
+  },
+  "m7_test": "test_corrupt_moved_or_unpublished_evidence_admits_nothing",
+  "modified": {
+   "admit": {
+    "store_after": "d8db8edad15f1152",
+    "store_before": "d8db8edad15f1152",
+    "value": {
+     "admitted": false,
+     "correction": null,
+     "correction_id": null,
+     "diagnosis": "missing_test_disposition",
+     "error_type": "ContractError",
+     "partition_generation": 0,
+     "partition_id": "partition-fixture-001",
+     "reason_code": "evidence_unreadable",
+     "source_task_id": "5eed0000-0000-4000-8000-000000000010",
+     "successor_task_id": null
+    },
+    "wrote": false
+   },
+   "artifact_reads": 1,
+   "replay_calls": [],
+   "state": {
+    "corrections": [],
+    "events": [],
+    "outbox": [],
+    "schedule": []
+   }
+  },
+  "partition": {
+   "admit": {
+    "store_after": "17364592fc69b297",
+    "store_before": "17364592fc69b297",
+    "value": {
+     "admitted": false,
+     "correction": null,
+     "correction_id": null,
+     "diagnosis": null,
+     "error_type": null,
+     "partition_generation": 0,
+     "partition_id": "partition-fixture-001",
+     "reason_code": "unknown_partition",
+     "source_task_id": "5eed0000-0000-4000-8000-00000000000d",
+     "successor_task_id": null
+    },
+    "wrote": false
+   },
+   "artifact_reads": 0,
+   "replay_calls": [],
+   "state": {
+    "corrections": [],
+    "events": [],
+    "outbox": [],
+    "schedule": []
+   }
+  },
+  "schedule_row_present": {
+   "admit": {
+    "store_after": "e71e7f2ad23d85b7",
+    "store_before": "e71e7f2ad23d85b7",
+    "value": {
+     "admitted": false,
+     "correction": null,
+     "correction_id": null,
+     "diagnosis": "missing_test_disposition",
+     "error_type": null,
+     "partition_generation": 0,
+     "partition_id": "partition-fixture-001",
+     "reason_code": "lineage_exists",
+     "source_task_id": "5eed0000-0000-4000-8000-000000000014",
+     "successor_task_id": null
+    },
+    "wrote": false
+   },
+   "artifact_reads": 1,
+   "replay_calls": [
+    {
+     "generation": 0,
+     "partition_id": "partition-fixture-001",
+     "subsystems": [
+      "core"
+     ]
+    }
+   ],
+   "state": {
+    "corrections": [],
+    "events": [],
+    "outbox": [],
+    "schedule": [
+     "repair:repair-0b1334186196ba56bd08827d"
+    ]
+   }
+  },
+  "unpublished": {
+   "admit": {
+    "store_after": "6dee70c732755294",
+    "store_before": "6dee70c732755294",
+    "value": {
+     "admitted": false,
+     "correction": null,
+     "correction_id": null,
+     "diagnosis": "missing_test_disposition",
+     "error_type": null,
+     "partition_generation": 0,
+     "partition_id": "partition-fixture-001",
+     "reason_code": "predecessor_unpublished",
+     "source_task_id": "5eed0000-0000-4000-8000-000000000012",
+     "successor_task_id": null
+    },
+    "wrote": false
+   },
+   "artifact_reads": 0,
+   "replay_calls": [],
+   "state": {
+    "corrections": [],
+    "events": [],
+    "outbox": [],
+    "schedule": []
+   }
+  }
+ },
+ "deferred_empty": {
+  "m7_test": "test_a_checkpoint_without_a_corrected_subsystem_is_deferred_not_repaired",
+  "settle": {
+   "store_after": "262d7dc855180dce",
+   "store_before": "16fb7c9361f6d0a8",
+   "value": {
+    "audit_id": "audit-fixture-001",
+    "changed": [
+     {
+      "analysis_outcome": "analysis_checkpointed",
+      "attempts": 2,
+      "audit_id": "audit-fixture-001",
+      "checkpoint_generation": 1,
+      "corrected_subsystems": 0,
+      "correction_id": "repair-ccdb7199a3aaef1f4bbe9aec",
+      "diagnosis": "missing_test_disposition",
+      "reason_code": "no_corrected_subsystem",
+      "remaining_targets": 1,
+      "source_execution_ref": "sha256:bf07fd59d39f46ae876f0993ed9dae873c1eeb62bae00989cd62a73b7e657d1f",
+      "source_task_id": "5eed0000-0000-4000-8000-000000000026",
+      "state": "deferred",
+      "successor_execution_ref": "sha256:73dfa883bb31e75d5ca1dbe7f8854b14c60a0e1ae4b11eeae21f631ca73480ab",
+      "successor_task_id": "5eed0000-0000-4000-8000-000000000027",
+      "target_subsystems": 1
+     }
+    ],
+    "notices": [],
+    "settled": [
+     {
+      "analysis_outcome": "analysis_checkpointed",
+      "attempts": 2,
+      "audit_id": "audit-fixture-001",
+      "checkpoint_generation": 1,
+      "corrected_subsystems": 0,
+      "correction_id": "repair-ccdb7199a3aaef1f4bbe9aec",
+      "diagnosis": "missing_test_disposition",
+      "reason_code": "no_corrected_subsystem",
+      "remaining_targets": 1,
+      "source_execution_ref": "sha256:bf07fd59d39f46ae876f0993ed9dae873c1eeb62bae00989cd62a73b7e657d1f",
+      "source_task_id": "5eed0000-0000-4000-8000-000000000026",
+      "state": "deferred",
+      "successor_execution_ref": "sha256:73dfa883bb31e75d5ca1dbe7f8854b14c60a0e1ae4b11eeae21f631ca73480ab",
+      "successor_task_id": "5eed0000-0000-4000-8000-000000000027",
+      "target_subsystems": 1
+     }
+    ]
+   },
+   "wrote": true
+  },
+  "status": {
+   "store_after": "262d7dc855180dce",
+   "store_before": "262d7dc855180dce",
+   "value": {
+    "audit_id": "audit-fixture-001",
+    "corrections": [
+     {
+      "analysis_outcome": "analysis_checkpointed",
+      "attempts": 2,
+      "audit_id": "audit-fixture-001",
+      "checkpoint_generation": 1,
+      "corrected_subsystems": 0,
+      "created_at": "2026-09-22T00:00:00.085000+00:00",
+      "diagnosis": "missing_test_disposition",
+      "field": "tests",
+      "id": "repair-ccdb7199a3aaef1f4bbe9aec",
+      "notice_id": null,
+      "notice_published": null,
+      "partition_generation": 0,
+      "partition_id": "partition-fixture-001",
+      "reason_code": "no_corrected_subsystem",
+      "remaining_targets": 1,
+      "source_execution_ref": "sha256:bf07fd59d39f46ae876f0993ed9dae873c1eeb62bae00989cd62a73b7e657d1f",
+      "source_task_generation": 0,
+      "source_task_id": "5eed0000-0000-4000-8000-000000000026",
+      "state": "deferred",
+      "subsystems_total": 1,
+      "successor_execution_ref": "sha256:73dfa883bb31e75d5ca1dbe7f8854b14c60a0e1ae4b11eeae21f631ca73480ab",
+      "successor_published": true,
+      "successor_schedule_key": "repair:repair-ccdb7199a3aaef1f4bbe9aec",
+      "successor_task_id": "5eed0000-0000-4000-8000-000000000027",
+      "target_subsystems": 1,
+      "updated_at": "2026-09-22T00:00:00.085000+00:00"
+     }
+    ],
+    "counts": {
+     "admitted": 0,
+     "attempted": 1,
+     "deferred": 1,
+     "reconciliation_required": 0,
+     "repaired": 0,
+     "research_required": 0
+    },
+    "enabled": true,
+    "operator": "owner-fixture",
+    "schema": "urn:zeus:audit-repair:1",
+    "scope": [
+     "5eed0000-0000-4000-8000-000000000026"
+    ],
+    "updated_at": "2026-09-22T00:00:00.084000+00:00"
+   },
+   "wrote": false
+  }
+ },
+ "disabling": {
+  "admit": {
+   "store_after": "295c77121128a9c9",
+   "store_before": "f4feb324cf4d5bbe",
+   "value": {
+    "admitted": true,
+    "correction": {
+     "analysis_outcome": null,
+     "attempts": 2,
+     "audit_id": "audit-fixture-001",
+     "checkpoint_generation": null,
+     "corrected_subsystems": null,
+     "created_at": "2026-09-22T00:00:00.017000+00:00",
+     "diagnosis": "missing_test_disposition",
+     "field": "tests",
+     "id": "repair-8422d84e899135b7b7793799",
+     "notice_id": null,
+     "notice_published": null,
+     "partition_generation": 0,
+     "partition_id": "partition-fixture-001",
+     "reason_code": "successor_not_submitted",
+     "remaining_targets": null,
+     "source_execution_ref": "sha256:bf07fd59d39f46ae876f0993ed9dae873c1eeb62bae00989cd62a73b7e657d1f",
+     "source_task_generation": 0,
+     "source_task_id": "5eed0000-0000-4000-8000-000000000008",
+     "state": "admitted",
+     "subsystems_total": 1,
+     "successor_execution_ref": null,
+     "successor_published": null,
+     "successor_schedule_key": "repair:repair-8422d84e899135b7b7793799",
+     "successor_task_id": "5eed0000-0000-4000-8000-000000000009",
+     "target_subsystems": null,
+     "updated_at": "2026-09-22T00:00:00.017000+00:00"
+    },
+    "correction_id": "repair-8422d84e899135b7b7793799",
+    "diagnosis": "missing_test_disposition",
+    "error_type": null,
+    "partition_generation": 0,
+    "partition_id": "partition-fixture-001",
+    "reason_code": null,
+    "source_task_id": "5eed0000-0000-4000-8000-000000000008",
+    "successor_task_id": "5eed0000-0000-4000-8000-000000000009"
+   },
+   "wrote": true
+  },
+  "after_disable": {
+   "store_after": "11017b03ac12a918",
+   "store_before": "11017b03ac12a918",
+   "value": {
+    "admitted": false,
+    "correction": null,
+    "correction_id": null,
+    "diagnosis": null,
+    "error_type": null,
+    "partition_generation": null,
+    "partition_id": null,
+    "reason_code": "not_enabled",
+    "source_task_id": null,
+    "successor_task_id": null
+   },
+   "wrote": false
+  },
+  "before_enable": {
+   "store_after": "69f8c010f05e9929",
+   "store_before": "69f8c010f05e9929",
+   "value": {
+    "admitted": false,
+    "correction": null,
+    "correction_id": null,
+    "diagnosis": null,
+    "error_type": null,
+    "partition_generation": null,
+    "partition_id": null,
+    "reason_code": "not_enabled",
+    "source_task_id": null,
+    "successor_task_id": null
+   },
+   "wrote": false
+  },
+  "disable": {
+   "store_after": "11017b03ac12a918",
+   "store_before": "295c77121128a9c9",
+   "value": {
+    "audit_id": "audit-fixture-001",
+    "enabled": false,
+    "scope": [
+     "5eed0000-0000-4000-8000-000000000008"
+    ]
+   },
+   "wrote": true
+  },
+  "disable_bad_operator": {
+   "message": "operator_invalid",
+   "reason_code": "operator_invalid",
+   "refused": "RepairRefused",
+   "store_after": "11017b03ac12a918",
+   "store_before": "11017b03ac12a918",
+   "wrote": false
+  },
+  "disable_unknown_audit": {
+   "message": "unknown_audit",
+   "reason_code": "unknown_audit",
+   "refused": "RepairRefused",
+   "store_after": "11017b03ac12a918",
+   "store_before": "11017b03ac12a918",
+   "wrote": false
+  },
+  "enable": {
+   "store_after": "f4feb324cf4d5bbe",
+   "store_before": "69f8c010f05e9929",
+   "value": {
+    "audit_id": "audit-fixture-001",
+    "enabled": true,
+    "scope": [
+     "5eed0000-0000-4000-8000-000000000008"
+    ]
+   },
+   "wrote": true
+  },
+  "m7_test": "test_disabling_prevents_new_admission_and_keeps_the_recorded_lineage",
+  "repair_view": {
+   "corrections": [
+    {
+     "analysis_outcome": null,
+     "attempts": 2,
+     "audit_id": "audit-fixture-001",
+     "checkpoint_generation": null,
+     "corrected_subsystems": null,
+     "created_at": "2026-09-22T00:00:00.017000+00:00",
+     "diagnosis": "missing_test_disposition",
+     "field": "tests",
+     "id": "repair-8422d84e899135b7b7793799",
+     "notice_id": null,
+     "notice_published": null,
+     "partition_generation": 0,
+     "partition_id": "partition-fixture-001",
+     "reason_code": "successor_not_submitted",
+     "remaining_targets": null,
+     "source_execution_ref": "sha256:bf07fd59d39f46ae876f0993ed9dae873c1eeb62bae00989cd62a73b7e657d1f",
+     "source_task_generation": 0,
+     "source_task_id": "5eed0000-0000-4000-8000-000000000008",
+     "state": "admitted",
+     "subsystems_total": 1,
+     "successor_execution_ref": null,
+     "successor_published": null,
+     "successor_schedule_key": "repair:repair-8422d84e899135b7b7793799",
+     "successor_task_id": "5eed0000-0000-4000-8000-000000000009",
+     "target_subsystems": null,
+     "updated_at": "2026-09-22T00:00:00.017000+00:00"
+    }
+   ],
+   "counts": {
+    "admitted": 1,
+    "attempted": 1,
+    "deferred": 0,
+    "reconciliation_required": 0,
+    "repaired": 0,
+    "research_required": 0
+   },
+   "enabled": false,
+   "operator": "owner-fixture",
+   "schema": "urn:zeus:audit-repair:1",
+   "scope": [
+    "5eed0000-0000-4000-8000-000000000008"
+   ],
+   "updated_at": "2026-09-22T00:00:00.018000+00:00"
+  },
+  "state_before": {
+   "corrections": [],
+   "events": [],
+   "outbox": [],
+   "schedule": []
+  },
+  "status": {
+   "store_after": "11017b03ac12a918",
+   "store_before": "11017b03ac12a918",
+   "value": {
+    "audit_id": "audit-fixture-001",
+    "corrections": [
+     {
+      "analysis_outcome": null,
+      "attempts": 2,
+      "audit_id": "audit-fixture-001",
+      "checkpoint_generation": null,
+      "corrected_subsystems": null,
+      "created_at": "2026-09-22T00:00:00.017000+00:00",
+      "diagnosis": "missing_test_disposition",
+      "field": "tests",
+      "id": "repair-8422d84e899135b7b7793799",
+      "notice_id": null,
+      "notice_published": null,
+      "partition_generation": 0,
+      "partition_id": "partition-fixture-001",
+      "reason_code": "successor_not_submitted",
+      "remaining_targets": null,
+      "source_execution_ref": "sha256:bf07fd59d39f46ae876f0993ed9dae873c1eeb62bae00989cd62a73b7e657d1f",
+      "source_task_generation": 0,
+      "source_task_id": "5eed0000-0000-4000-8000-000000000008",
+      "state": "admitted",
+      "subsystems_total": 1,
+      "successor_execution_ref": null,
+      "successor_published": null,
+      "successor_schedule_key": "repair:repair-8422d84e899135b7b7793799",
+      "successor_task_id": "5eed0000-0000-4000-8000-000000000009",
+      "target_subsystems": null,
+      "updated_at": "2026-09-22T00:00:00.017000+00:00"
+     }
+    ],
+    "counts": {
+     "admitted": 1,
+     "attempted": 1,
+     "deferred": 0,
+     "reconciliation_required": 0,
+     "repaired": 0,
+     "research_required": 0
+    },
+    "enabled": false,
+    "operator": "owner-fixture",
+    "schema": "urn:zeus:audit-repair:1",
+    "scope": [
+     "5eed0000-0000-4000-8000-000000000008"
+    ],
+    "updated_at": "2026-09-22T00:00:00.018000+00:00"
+   },
+   "wrote": false
+  }
+ },
+ "enable_refusals": {
+  "audit_id_invalid": {
+   "message": "audit_id_invalid",
+   "reason_code": "audit_id_invalid",
+   "refused": "RepairRefused",
+   "store_after": "bb3582fa0648420d",
+   "store_before": "bb3582fa0648420d",
+   "wrote": false
+  },
+  "m7_test": "test_enabling_requires_an_existing_rejected_task_of_this_audit",
+  "operator_invalid": {
+   "message": "operator_invalid",
+   "reason_code": "operator_invalid",
+   "refused": "RepairRefused",
+   "store_after": "bb3582fa0648420d",
+   "store_before": "bb3582fa0648420d",
+   "wrote": false
+  },
+  "operator_not_text": {
+   "message": "operator_invalid",
+   "reason_code": "operator_invalid",
+   "refused": "RepairRefused",
+   "store_after": "bb3582fa0648420d",
+   "store_before": "bb3582fa0648420d",
+   "wrote": false
+  },
+  "task_id_invalid": {
+   "message": "task_id_invalid",
+   "reason_code": "task_id_invalid",
+   "refused": "RepairRefused",
+   "store_after": "bb3582fa0648420d",
+   "store_before": "bb3582fa0648420d",
+   "wrote": false
+  },
+  "task_of_another_audit": {
+   "message": "unknown_task",
+   "reason_code": "unknown_task",
+   "refused": "RepairRefused",
+   "store_after": "3b7f8da185c9f24b",
+   "store_before": "3b7f8da185c9f24b",
+   "wrote": false
+  },
+  "unknown_audit": {
+   "message": "unknown_audit",
+   "reason_code": "unknown_audit",
+   "refused": "RepairRefused",
+   "store_after": "bb3582fa0648420d",
+   "store_before": "bb3582fa0648420d",
+   "wrote": false
+  },
+  "unknown_task": {
+   "message": "unknown_task",
+   "reason_code": "unknown_task",
+   "refused": "RepairRefused",
+   "store_after": "bb3582fa0648420d",
+   "store_before": "bb3582fa0648420d",
+   "wrote": false
+  }
+ },
+ "failed_successor": {
+  "family_closed": {
+   "store_after": "8946c68337483f38",
+   "store_before": "8946c68337483f38",
+   "value": {
+    "admitted": false,
+    "correction": {
+     "analysis_outcome": null,
+     "attempts": 2,
+     "audit_id": "audit-fixture-001",
+     "checkpoint_generation": null,
+     "corrected_subsystems": 0,
+     "created_at": "2026-09-22T00:00:00.125000+00:00",
+     "diagnosis": "missing_test_disposition",
+     "field": "tests",
+     "id": "repair-9adb356de9c8b60390fb64d9",
+     "notice_id": null,
+     "notice_published": null,
+     "partition_generation": 0,
+     "partition_id": "partition-fixture-001",
+     "reason_code": "execution_unresolved",
+     "remaining_targets": 1,
+     "source_execution_ref": "sha256:bf07fd59d39f46ae876f0993ed9dae873c1eeb62bae00989cd62a73b7e657d1f",
+     "source_task_generation": 0,
+     "source_task_id": "5eed0000-0000-4000-8000-00000000003a",
+     "state": "reconciliation_required",
+     "subsystems_total": 1,
+     "successor_execution_ref": null,
+     "successor_published": true,
+     "successor_schedule_key": "repair:repair-9adb356de9c8b60390fb64d9",
+     "successor_task_id": "5eed0000-0000-4000-8000-00000000003b",
+     "target_subsystems": 1,
+     "updated_at": "2026-09-22T00:00:00.125000+00:00"
+    },
+    "correction_id": "repair-9adb356de9c8b60390fb64d9",
+    "diagnosis": "missing_test_disposition",
+    "error_type": null,
+    "partition_generation": 0,
+    "partition_id": "partition-fixture-001",
+    "reason_code": "family_closed",
+    "source_task_id": "5eed0000-0000-4000-8000-00000000003a",
+    "successor_task_id": "5eed0000-0000-4000-8000-00000000003b"
+   },
+   "wrote": false
+  },
+  "m7_test": "test_a_failed_successor_is_reconciliation_required_and_never_a_strike",
+  "notices": 0,
+  "settle": {
+   "store_after": "8946c68337483f38",
+   "store_before": "ecd139a88c3d1f82",
+   "value": {
+    "audit_id": "audit-fixture-001",
+    "changed": [
+     {
+      "analysis_outcome": null,
+      "attempts": 2,
+      "audit_id": "audit-fixture-001",
+      "checkpoint_generation": null,
+      "corrected_subsystems": 0,
+      "correction_id": "repair-9adb356de9c8b60390fb64d9",
+      "diagnosis": "missing_test_disposition",
+      "reason_code": "execution_unresolved",
+      "remaining_targets": 1,
+      "source_execution_ref": "sha256:bf07fd59d39f46ae876f0993ed9dae873c1eeb62bae00989cd62a73b7e657d1f",
+      "source_task_id": "5eed0000-0000-4000-8000-00000000003a",
+      "state": "reconciliation_required",
+      "successor_execution_ref": null,
+      "successor_task_id": "5eed0000-0000-4000-8000-00000000003b",
+      "target_subsystems": 1
+     }
+    ],
+    "notices": [],
+    "settled": [
+     {
+      "analysis_outcome": null,
+      "attempts": 2,
+      "audit_id": "audit-fixture-001",
+      "checkpoint_generation": null,
+      "corrected_subsystems": 0,
+      "correction_id": "repair-9adb356de9c8b60390fb64d9",
+      "diagnosis": "missing_test_disposition",
+      "reason_code": "execution_unresolved",
+      "remaining_targets": 1,
+      "source_execution_ref": "sha256:bf07fd59d39f46ae876f0993ed9dae873c1eeb62bae00989cd62a73b7e657d1f",
+      "source_task_id": "5eed0000-0000-4000-8000-00000000003a",
+      "state": "reconciliation_required",
+      "successor_execution_ref": null,
+      "successor_task_id": "5eed0000-0000-4000-8000-00000000003b",
+      "target_subsystems": 1
+     }
+    ]
+   },
+   "wrote": true
+  }
+ },
+ "idempotent_settlement": {
+  "m7_test": "test_settlement_is_idempotent_and_a_live_successor_stays_admitted",
+  "pending": {
+   "store_after": "9130258a059fc85e",
+   "store_before": "9130258a059fc85e",
+   "value": {
+    "audit_id": "audit-fixture-001",
+    "changed": [],
+    "notices": [],
+    "settled": [
+     {
+      "analysis_outcome": null,
+      "attempts": 2,
+      "audit_id": "audit-fixture-001",
+      "checkpoint_generation": null,
+      "corrected_subsystems": 0,
+      "correction_id": "repair-0ce07ec6c19ef3441fce4634",
+      "diagnosis": "missing_test_disposition",
+      "reason_code": "successor_not_submitted",
+      "remaining_targets": 1,
+      "source_execution_ref": "sha256:bf07fd59d39f46ae876f0993ed9dae873c1eeb62bae00989cd62a73b7e657d1f",
+      "source_task_id": "5eed0000-0000-4000-8000-00000000003c",
+      "state": "admitted",
+      "successor_execution_ref": null,
+      "successor_task_id": "5eed0000-0000-4000-8000-00000000003d",
+      "target_subsystems": 1
+     }
+    ]
+   },
+   "wrote": false
+  },
+  "queued": {
+   "store_after": "83419910177dd555",
+   "store_before": "1c4a74e6c07f87bc",
+   "value": {
+    "audit_id": "audit-fixture-001",
+    "changed": [
+     {
+      "analysis_outcome": null,
+      "attempts": 2,
+      "audit_id": "audit-fixture-001",
+      "checkpoint_generation": null,
+      "corrected_subsystems": 0,
+      "correction_id": "repair-0ce07ec6c19ef3441fce4634",
+      "diagnosis": "missing_test_disposition",
+      "reason_code": "successor_pending",
+      "remaining_targets": 1,
+      "source_execution_ref": "sha256:bf07fd59d39f46ae876f0993ed9dae873c1eeb62bae00989cd62a73b7e657d1f",
+      "source_task_id": "5eed0000-0000-4000-8000-00000000003c",
+      "state": "admitted",
+      "successor_execution_ref": null,
+      "successor_task_id": "5eed0000-0000-4000-8000-00000000003d",
+      "target_subsystems": 1
+     }
+    ],
+    "notices": [],
+    "settled": [
+     {
+      "analysis_outcome": null,
+      "attempts": 2,
+      "audit_id": "audit-fixture-001",
+      "checkpoint_generation": null,
+      "corrected_subsystems": 0,
+      "correction_id": "repair-0ce07ec6c19ef3441fce4634",
+      "diagnosis": "missing_test_disposition",
+      "reason_code": "successor_pending",
+      "remaining_targets": 1,
+      "source_execution_ref": "sha256:bf07fd59d39f46ae876f0993ed9dae873c1eeb62bae00989cd62a73b7e657d1f",
+      "source_task_id": "5eed0000-0000-4000-8000-00000000003c",
+      "state": "admitted",
+      "successor_execution_ref": null,
+      "successor_task_id": "5eed0000-0000-4000-8000-00000000003d",
+      "target_subsystems": 1
+     }
+    ]
+   },
+   "wrote": true
+  },
+  "queued_again": {
+   "store_after": "83419910177dd555",
+   "store_before": "83419910177dd555",
+   "value": {
+    "audit_id": "audit-fixture-001",
+    "changed": [],
+    "notices": [],
+    "settled": [
+     {
+      "analysis_outcome": null,
+      "attempts": 2,
+      "audit_id": "audit-fixture-001",
+      "checkpoint_generation": null,
+      "corrected_subsystems": 0,
+      "correction_id": "repair-0ce07ec6c19ef3441fce4634",
+      "diagnosis": "missing_test_disposition",
+      "reason_code": "successor_pending",
+      "remaining_targets": 1,
+      "source_execution_ref": "sha256:bf07fd59d39f46ae876f0993ed9dae873c1eeb62bae00989cd62a73b7e657d1f",
+      "source_task_id": "5eed0000-0000-4000-8000-00000000003c",
+      "state": "admitted",
+      "successor_execution_ref": null,
+      "successor_task_id": "5eed0000-0000-4000-8000-00000000003d",
+      "target_subsystems": 1
+     }
+    ]
+   },
+   "wrote": false
+  },
+  "repaired": {
+   "store_after": "08130a3c5194999e",
+   "store_before": "84d25c7b7584251d",
+   "value": {
+    "audit_id": "audit-fixture-001",
+    "changed": [
+     {
+      "analysis_outcome": "analysis_checkpointed",
+      "attempts": 2,
+      "audit_id": "audit-fixture-001",
+      "checkpoint_generation": 1,
+      "corrected_subsystems": 1,
+      "correction_id": "repair-0ce07ec6c19ef3441fce4634",
+      "diagnosis": "missing_test_disposition",
+      "reason_code": "corrected",
+      "remaining_targets": 0,
+      "source_execution_ref": "sha256:bf07fd59d39f46ae876f0993ed9dae873c1eeb62bae00989cd62a73b7e657d1f",
+      "source_task_id": "5eed0000-0000-4000-8000-00000000003c",
+      "state": "repaired",
+      "successor_execution_ref": "sha256:73dfa883bb31e75d5ca1dbe7f8854b14c60a0e1ae4b11eeae21f631ca73480ab",
+      "successor_task_id": "5eed0000-0000-4000-8000-00000000003d",
+      "target_subsystems": 1
+     }
+    ],
+    "notices": [],
+    "settled": [
+     {
+      "analysis_outcome": "analysis_checkpointed",
+      "attempts": 2,
+      "audit_id": "audit-fixture-001",
+      "checkpoint_generation": 1,
+      "corrected_subsystems": 1,
+      "correction_id": "repair-0ce07ec6c19ef3441fce4634",
+      "diagnosis": "missing_test_disposition",
+      "reason_code": "corrected",
+      "remaining_targets": 0,
+      "source_execution_ref": "sha256:bf07fd59d39f46ae876f0993ed9dae873c1eeb62bae00989cd62a73b7e657d1f",
+      "source_task_id": "5eed0000-0000-4000-8000-00000000003c",
+      "state": "repaired",
+      "successor_execution_ref": "sha256:73dfa883bb31e75d5ca1dbe7f8854b14c60a0e1ae4b11eeae21f631ca73480ab",
+      "successor_task_id": "5eed0000-0000-4000-8000-00000000003d",
+      "target_subsystems": 1
+     }
+    ]
+   },
+   "wrote": true
+  },
+  "twice": {
+   "store_after": "08130a3c5194999e",
+   "store_before": "08130a3c5194999e",
+   "value": {
+    "audit_id": "audit-fixture-001",
+    "changed": [],
+    "notices": [],
+    "settled": [
+     {
+      "analysis_outcome": "analysis_checkpointed",
+      "attempts": 2,
+      "audit_id": "audit-fixture-001",
+      "checkpoint_generation": 1,
+      "corrected_subsystems": 1,
+      "correction_id": "repair-0ce07ec6c19ef3441fce4634",
+      "diagnosis": "missing_test_disposition",
+      "reason_code": "corrected",
+      "remaining_targets": 0,
+      "source_execution_ref": "sha256:bf07fd59d39f46ae876f0993ed9dae873c1eeb62bae00989cd62a73b7e657d1f",
+      "source_task_id": "5eed0000-0000-4000-8000-00000000003c",
+      "state": "repaired",
+      "successor_execution_ref": "sha256:73dfa883bb31e75d5ca1dbe7f8854b14c60a0e1ae4b11eeae21f631ca73480ab",
+      "successor_task_id": "5eed0000-0000-4000-8000-00000000003d",
+      "target_subsystems": 1
+     }
+    ]
+   },
+   "wrote": false
+  }
+ },
+ "inspection": {
+  "activation_row": null,
+  "buckets_unchanged": true,
+  "inspect": {
+   "store_after": "dbb48e8665182282",
+   "store_before": "dbb48e8665182282",
+   "value": {
+    "audit_id": "audit-fixture-001",
+    "candidates": [
+     {
+      "diagnosis": "missing_test_disposition",
+      "eligible": true,
+      "error_type": null,
+      "partition_generation": 0,
+      "partition_id": "partition-fixture-001",
+      "reason_code": null,
+      "source_execution_ref": "sha256:bf07fd59d39f46ae876f0993ed9dae873c1eeb62bae00989cd62a73b7e657d1f",
+      "source_task_id": "5eed0000-0000-4000-8000-000000000001",
+      "subsystems_total": 1
+     }
+    ],
+    "enabled": false,
+    "scope": []
+   },
+   "wrote": false
+  },
+  "inspect_absent_task": {
+   "store_after": "dbb48e8665182282",
+   "store_before": "dbb48e8665182282",
+   "value": {
+    "audit_id": "audit-fixture-001",
+    "candidates": [],
+    "enabled": false,
+    "scope": []
+   },
+   "wrote": false
+  },
+  "inspect_one_task": {
+   "store_after": "dbb48e8665182282",
+   "store_before": "dbb48e8665182282",
+   "value": {
+    "audit_id": "audit-fixture-001",
+    "candidates": [
+     {
+      "diagnosis": "missing_test_disposition",
+      "eligible": true,
+      "error_type": null,
+      "partition_generation": 0,
+      "partition_id": "partition-fixture-001",
+      "reason_code": null,
+      "source_execution_ref": "sha256:bf07fd59d39f46ae876f0993ed9dae873c1eeb62bae00989cd62a73b7e657d1f",
+      "source_task_id": "5eed0000-0000-4000-8000-000000000001",
+      "subsystems_total": 1
+     }
+    ],
+    "enabled": false,
+    "scope": []
+   },
+   "wrote": false
+  },
+  "m7_test": "test_inspection_diagnoses_without_creating_anything",
+  "replay_calls": [
+   {
+    "generation": 0,
+    "partition_id": "partition-fixture-001",
+    "subsystems": [
+     "core"
+    ]
+   },
+   {
+    "generation": 0,
+    "partition_id": "partition-fixture-001",
+    "subsystems": [
+     "core"
+    ]
+   }
+  ],
+  "secret_free": true,
+  "state": {
+   "corrections": [],
+   "events": [],
+   "outbox": [],
+   "schedule": []
+  }
+ },
+ "later_ordinary": {
+  "corrected_then_overwritten": {
+   "history_tasks": [
+    "000001",
+    "00002f"
+   ],
+   "settle": {
+    "store_after": "0a0f9e110cf8dd38",
+    "store_before": "1f37aa70c6a07c9f",
+    "value": {
+     "audit_id": "audit-fixture-001",
+     "changed": [
+      {
+       "analysis_outcome": "analysis_checkpointed",
+       "attempts": 2,
+       "audit_id": "audit-fixture-001",
+       "checkpoint_generation": 1,
+       "corrected_subsystems": 1,
+       "correction_id": "repair-1660d1f8256baaadb7ca796f",
+       "diagnosis": "missing_test_disposition",
+       "reason_code": "corrected",
+       "remaining_targets": 0,
+       "source_execution_ref": "sha256:bf07fd59d39f46ae876f0993ed9dae873c1eeb62bae00989cd62a73b7e657d1f",
+       "source_task_id": "5eed0000-0000-4000-8000-00000000002e",
+       "state": "repaired",
+       "successor_execution_ref": "sha256:73dfa883bb31e75d5ca1dbe7f8854b14c60a0e1ae4b11eeae21f631ca73480ab",
+       "successor_task_id": "5eed0000-0000-4000-8000-00000000002f",
+       "target_subsystems": 1
+      }
+     ],
+     "notices": [],
+     "settled": [
+      {
+       "analysis_outcome": "analysis_checkpointed",
+       "attempts": 2,
+       "audit_id": "audit-fixture-001",
+       "checkpoint_generation": 1,
+       "corrected_subsystems": 1,
+       "correction_id": "repair-1660d1f8256baaadb7ca796f",
+       "diagnosis": "missing_test_disposition",
+       "reason_code": "corrected",
+       "remaining_targets": 0,
+       "source_execution_ref": "sha256:bf07fd59d39f46ae876f0993ed9dae873c1eeb62bae00989cd62a73b7e657d1f",
+       "source_task_id": "5eed0000-0000-4000-8000-00000000002e",
+       "state": "repaired",
+       "successor_execution_ref": "sha256:73dfa883bb31e75d5ca1dbe7f8854b14c60a0e1ae4b11eeae21f631ca73480ab",
+       "successor_task_id": "5eed0000-0000-4000-8000-00000000002f",
+       "target_subsystems": 1
+      }
+     ]
+    },
+    "wrote": true
+   }
+  },
+  "m7_test": "test_a_later_ordinary_checkpoint_neither_erases_nor_lends_a_corrected_target; test_an_uncorrected_target_is_not_credited_to_a_later_ordinary_execution",
+  "uncorrected_later_credit": {
+   "history_tasks": [
+    "000001"
+   ],
+   "settle": {
+    "store_after": "ffa6cc72ec20c4f6",
+    "store_before": "24e8affc0fc6e8dc",
+    "value": {
+     "audit_id": "audit-fixture-001",
+     "changed": [
+      {
+       "analysis_outcome": "analysis_checkpointed",
+       "attempts": 2,
+       "audit_id": "audit-fixture-001",
+       "checkpoint_generation": 1,
+       "corrected_subsystems": 0,
+       "correction_id": "repair-8fde7b87bbf29064e9f91c8b",
+       "diagnosis": "missing_test_disposition",
+       "reason_code": "no_corrected_subsystem",
+       "remaining_targets": 1,
+       "source_execution_ref": "sha256:bf07fd59d39f46ae876f0993ed9dae873c1eeb62bae00989cd62a73b7e657d1f",
+       "source_task_id": "5eed0000-0000-4000-8000-000000000030",
+       "state": "deferred",
+       "successor_execution_ref": "sha256:73dfa883bb31e75d5ca1dbe7f8854b14c60a0e1ae4b11eeae21f631ca73480ab",
+       "successor_task_id": "5eed0000-0000-4000-8000-000000000031",
+       "target_subsystems": 1
+      }
+     ],
+     "notices": [],
+     "settled": [
+      {
+       "analysis_outcome": "analysis_checkpointed",
+       "attempts": 2,
+       "audit_id": "audit-fixture-001",
+       "checkpoint_generation": 1,
+       "corrected_subsystems": 0,
+       "correction_id": "repair-8fde7b87bbf29064e9f91c8b",
+       "diagnosis": "missing_test_disposition",
+       "reason_code": "no_corrected_subsystem",
+       "remaining_targets": 1,
+       "source_execution_ref": "sha256:bf07fd59d39f46ae876f0993ed9dae873c1eeb62bae00989cd62a73b7e657d1f",
+       "source_task_id": "5eed0000-0000-4000-8000-000000000030",
+       "state": "deferred",
+       "successor_execution_ref": "sha256:73dfa883bb31e75d5ca1dbe7f8854b14c60a0e1ae4b11eeae21f631ca73480ab",
+       "successor_task_id": "5eed0000-0000-4000-8000-000000000031",
+       "target_subsystems": 1
+      }
+     ]
+    },
+    "wrote": true
+   }
+  }
+ },
+ "not_a_candidate": {
+  "enable_checkpointed": {
+   "message": "unknown_task",
+   "reason_code": "unknown_task",
+   "refused": "RepairRefused",
+   "store_after": "977da95cd4915bba",
+   "store_before": "977da95cd4915bba",
+   "wrote": false
+  },
+  "enable_failed": {
+   "message": "unknown_task",
+   "reason_code": "unknown_task",
+   "refused": "RepairRefused",
+   "store_after": "941ddfc912d32c5d",
+   "store_before": "941ddfc912d32c5d",
+   "wrote": false
+  },
+  "enable_unclassified": {
+   "message": "unknown_task",
+   "reason_code": "unknown_task",
+   "refused": "RepairRefused",
+   "store_after": "4ea952e6a6474ce4",
+   "store_before": "4ea952e6a6474ce4",
+   "wrote": false
+  },
+  "inspect": {
+   "store_after": "941ddfc912d32c5d",
+   "store_before": "941ddfc912d32c5d",
+   "value": {
+    "audit_id": "audit-fixture-001",
+    "candidates": [
+     {
+      "diagnosis": "missing_test_disposition",
+      "eligible": true,
+      "error_type": null,
+      "partition_generation": 0,
+      "partition_id": "partition-fixture-001",
+      "reason_code": null,
+      "source_execution_ref": "sha256:bf07fd59d39f46ae876f0993ed9dae873c1eeb62bae00989cd62a73b7e657d1f",
+      "source_task_id": "5eed0000-0000-4000-8000-000000000003",
+      "subsystems_total": 1
+     }
+    ],
+    "enabled": false,
+    "scope": []
+   },
+   "wrote": false
+  },
+  "m7_test": "test_only_a_settled_rejected_execution_is_a_candidate"
+ },
+ "notice_quarantined": {
+  "again": {
+   "store_after": "94d856f1d907069e",
+   "store_before": "94d856f1d907069e",
+   "value": {
+    "audit_id": "audit-fixture-001",
+    "changed": [],
+    "notices": [],
+    "settled": [
+     {
+      "analysis_outcome": "analysis_rejected",
+      "attempts": 2,
+      "audit_id": "audit-fixture-001",
+      "checkpoint_generation": null,
+      "corrected_subsystems": 0,
+      "correction_id": "repair-d0e0aeecc7366d6aa4ac9ba2",
+      "diagnosis": "missing_test_disposition",
+      "reason_code": "content_rejected_again",
+      "remaining_targets": 1,
+      "source_execution_ref": "sha256:bf07fd59d39f46ae876f0993ed9dae873c1eeb62bae00989cd62a73b7e657d1f",
+      "source_task_id": "5eed0000-0000-4000-8000-000000000038",
+      "state": "research_required",
+      "successor_execution_ref": "sha256:73dfa883bb31e75d5ca1dbe7f8854b14c60a0e1ae4b11eeae21f631ca73480ab",
+      "successor_task_id": "5eed0000-0000-4000-8000-000000000039",
+      "target_subsystems": 1
+     }
+    ]
+   },
+   "wrote": false
+  },
+  "errors": [
+   {
+    "at": "2026-09-22T00:00:00.121000+00:00",
+    "bucket": "tasks",
+    "error_type": "ContractError",
+    "id": "e04ba808fc7372062c795fb988db4a9459e91b76257797c4997856dbad10a1e6",
+    "reason_code": "research_required",
+    "source": {
+     "agent": "worker:unknown",
+     "attempt": 1,
+     "completed_at": "2026-09-22T00:00:00.120000+00:00",
+     "created_at": "2026-09-22T00:00:00.120000+00:00",
+     "generation": 0,
+     "id": "5eed0000-0000-4000-8000-000000000039",
+     "message": {
+      "causation_id": null,
+      "correlation_id": "repair:repair-d0e0aeecc7366d6aa4ac9ba2",
+      "how": {
+       "acceptance_criteria": [
+        "Preserve normal behavior"
+       ],
+       "constraints": [],
+       "context_ref": null,
+       "result_schema": "six-w.v1"
+      },
+      "message_id": "5eed0000-0000-4000-8000-000000000039",
+      "schema_version": "1.0",
+      "type": "task.assign",
+      "what": {
+       "action": "audit_partition",
+       "details": {
+        "audit_id": "audit-fixture-001",
+        "generation": 0,
+        "partition_id": "partition-fixture-001",
+        "repair": {
+         "attempt": 2,
+         "authority": "one bounded correction of a refused draft; the existing validators remain the authority and a justified not-run fact is an accepted incomplete result",
+         "checklist": [
+          "Every returned subsystem record carries a non-empty tests or tests_not_run; both empty is refused as it was before.",
+          "A test in tests is the exact JSON argv string of a successful runner receipt supplied to THIS execution; source-list and source-read are inspection and never test execution.",
+          "An unexecuted test belongs in tests_not_run verbatim with reason and follow_up. A missing prerequisite is an explicit not-run fact, never a claimed or fabricated pass.",
+          "Return null for an assigned identity you did not analyze; a null identity stays remaining work and is not a failure."
+         ],
+         "correction_id": "repair-d0e0aeecc7366d6aa4ac9ba2",
+         "diagnosis": "missing_test_disposition",
+         "field": "tests",
+         "schema": "urn:zeus:audit-repair:1",
+         "source_execution_ref": "sha256:bf07fd59d39f46ae876f0993ed9dae873c1eeb62bae00989cd62a73b7e657d1f",
+         "source_partition_generation": 0,
+         "source_task_id": "5eed0000-0000-4000-8000-000000000038",
+         "subsystems": [
+          "core"
+         ],
+         "subsystems_total": 1,
+         "subsystems_truncated": false,
+         "version": 1
+        }
+       }
+      },
+      "when": {
+       "after": [],
+       "created_at": "2026-09-22T00:00:00.120000+00:00",
+       "deadline": null
+      },
+      "where": {
+       "allowed_paths": [],
+       "environment": "local",
+       "repository": "codex-harness",
+       "revision": "bootstrap"
+      },
+      "who": {
+       "owner": "worker:github",
+       "recipient": "worker:github",
+       "sender": "lead:research"
+      },
+      "why": {
+       "evidence_refs": [],
+       "objective": "Improve harness reliability from verified evidence"
+      }
+     },
+     "result": {
+      "analysis": {
+       "error_digest": "9456f7b883a2a1f448d141daee486aa14eedface1767e76c5c9a0cf0e82b9804",
+       "error_type": "ContractError",
+       "execution_ref": "sha256:73dfa883bb31e75d5ca1dbe7f8854b14c60a0e1ae4b11eeae21f631ca73480ab",
+       "outcome": "analysis_rejected",
+       "partition_generation": 0,
+       "reason_code": "analysis_content_rejected"
+      }
+     },
+     "status": "succeeded"
+    },
+    "status": "quarantined",
+    "transition_ref": "c5f821af313d32a6008dbfcf32913e053e78b365f6abd2f52223b1940d9e33d1"
+   }
+  ],
+  "events": [
+   "execution.notice_quarantined",
+   "audit.repair_admitted"
+  ],
+  "m7_test": "none",
+  "notice": {
+   "correlation_id": null,
+   "error_id": "e04ba808fc7372062c795fb988db4a9459e91b76257797c4997856dbad10a1e6",
+   "id": null,
+   "published": null
+  },
+  "notice_rows": 0,
+  "settle": {
+   "store_after": "94d856f1d907069e",
+   "store_before": "4f365fa5bea6d3d6",
+   "value": {
+    "audit_id": "audit-fixture-001",
+    "changed": [
+     {
+      "analysis_outcome": "analysis_rejected",
+      "attempts": 2,
+      "audit_id": "audit-fixture-001",
+      "checkpoint_generation": null,
+      "corrected_subsystems": 0,
+      "correction_id": "repair-d0e0aeecc7366d6aa4ac9ba2",
+      "diagnosis": "missing_test_disposition",
+      "reason_code": "content_rejected_again",
+      "remaining_targets": 1,
+      "source_execution_ref": "sha256:bf07fd59d39f46ae876f0993ed9dae873c1eeb62bae00989cd62a73b7e657d1f",
+      "source_task_id": "5eed0000-0000-4000-8000-000000000038",
+      "state": "research_required",
+      "successor_execution_ref": "sha256:73dfa883bb31e75d5ca1dbe7f8854b14c60a0e1ae4b11eeae21f631ca73480ab",
+      "successor_task_id": "5eed0000-0000-4000-8000-000000000039",
+      "target_subsystems": 1
+     }
+    ],
+    "notices": [],
+    "settled": [
+     {
+      "analysis_outcome": "analysis_rejected",
+      "attempts": 2,
+      "audit_id": "audit-fixture-001",
+      "checkpoint_generation": null,
+      "corrected_subsystems": 0,
+      "correction_id": "repair-d0e0aeecc7366d6aa4ac9ba2",
+      "diagnosis": "missing_test_disposition",
+      "reason_code": "content_rejected_again",
+      "remaining_targets": 1,
+      "source_execution_ref": "sha256:bf07fd59d39f46ae876f0993ed9dae873c1eeb62bae00989cd62a73b7e657d1f",
+      "source_task_id": "5eed0000-0000-4000-8000-000000000038",
+      "state": "research_required",
+      "successor_execution_ref": "sha256:73dfa883bb31e75d5ca1dbe7f8854b14c60a0e1ae4b11eeae21f631ca73480ab",
+      "successor_task_id": "5eed0000-0000-4000-8000-000000000039",
+      "target_subsystems": 1
+     }
+    ]
+   },
+   "wrote": true
+  },
+  "tick": {
+   "store_after": "94d856f1d907069e",
+   "store_before": "94d856f1d907069e",
+   "value": {
+    "admission": {
+     "admitted": false,
+     "correction": {
+      "analysis_outcome": "analysis_rejected",
+      "attempts": 2,
+      "audit_id": "audit-fixture-001",
+      "checkpoint_generation": null,
+      "corrected_subsystems": 0,
+      "created_at": "2026-09-22T00:00:00.120000+00:00",
+      "diagnosis": "missing_test_disposition",
+      "field": "tests",
+      "id": "repair-d0e0aeecc7366d6aa4ac9ba2",
+      "notice_id": null,
+      "notice_published": null,
+      "partition_generation": 0,
+      "partition_id": "partition-fixture-001",
+      "reason_code": "content_rejected_again",
+      "remaining_targets": 1,
+      "source_execution_ref": "sha256:bf07fd59d39f46ae876f0993ed9dae873c1eeb62bae00989cd62a73b7e657d1f",
+      "source_task_generation": 0,
+      "source_task_id": "5eed0000-0000-4000-8000-000000000038",
+      "state": "research_required",
+      "subsystems_total": 1,
+      "successor_execution_ref": "sha256:73dfa883bb31e75d5ca1dbe7f8854b14c60a0e1ae4b11eeae21f631ca73480ab",
+      "successor_published": true,
+      "successor_schedule_key": "repair:repair-d0e0aeecc7366d6aa4ac9ba2",
+      "successor_task_id": "5eed0000-0000-4000-8000-000000000039",
+      "target_subsystems": 1,
+      "updated_at": "2026-09-22T00:00:00.121000+00:00"
+     },
+     "correction_id": "repair-d0e0aeecc7366d6aa4ac9ba2",
+     "diagnosis": "missing_test_disposition",
+     "error_type": null,
+     "partition_generation": 0,
+     "partition_id": "partition-fixture-001",
+     "reason_code": "family_closed",
+     "source_task_id": "5eed0000-0000-4000-8000-000000000038",
+     "successor_task_id": "5eed0000-0000-4000-8000-000000000039"
+    },
+    "audit_id": "audit-fixture-001",
+    "notices": [],
+    "settled": []
+   },
+   "wrote": false
+  }
+ },
+ "one_admission": {
+  "activation": {
+   "audit_id": "audit-fixture-001",
+   "created_at": "2026-09-22T00:00:00.009000+00:00",
+   "id": "audit-fixture-001",
+   "operator": "owner-fixture",
+   "status": "enabled",
+   "task_ids": [
+    "5eed0000-0000-4000-8000-000000000004"
+   ],
+   "updated_at": "2026-09-22T00:00:00.009000+00:00"
+  },
+  "admit": {
+   "store_after": "c3aded61ddd72ea3",
+   "store_before": "d1607e63a31785a9",
+   "value": {
+    "admitted": true,
+    "correction": {
+     "analysis_outcome": null,
+     "attempts": 2,
+     "audit_id": "audit-fixture-001",
+     "checkpoint_generation": null,
+     "corrected_subsystems": null,
+     "created_at": "2026-09-22T00:00:00.010000+00:00",
+     "diagnosis": "missing_test_disposition",
+     "field": "tests",
+     "id": "repair-27859706023a2fca48928596",
+     "notice_id": null,
+     "notice_published": null,
+     "partition_generation": 0,
+     "partition_id": "partition-fixture-001",
+     "reason_code": "successor_not_submitted",
+     "remaining_targets": null,
+     "source_execution_ref": "sha256:bf07fd59d39f46ae876f0993ed9dae873c1eeb62bae00989cd62a73b7e657d1f",
+     "source_task_generation": 0,
+     "source_task_id": "5eed0000-0000-4000-8000-000000000004",
+     "state": "admitted",
+     "subsystems_total": 1,
+     "successor_execution_ref": null,
+     "successor_published": null,
+     "successor_schedule_key": "repair:repair-27859706023a2fca48928596",
+     "successor_task_id": "5eed0000-0000-4000-8000-000000000005",
+     "target_subsystems": null,
+     "updated_at": "2026-09-22T00:00:00.010000+00:00"
+    },
+    "correction_id": "repair-27859706023a2fca48928596",
+    "diagnosis": "missing_test_disposition",
+    "error_type": null,
+    "partition_generation": 0,
+    "partition_id": "partition-fixture-001",
+    "reason_code": null,
+    "source_task_id": "5eed0000-0000-4000-8000-000000000004",
+    "successor_task_id": "5eed0000-0000-4000-8000-000000000005"
+   },
+   "wrote": true
+  },
+  "artifact_unchanged": true,
+  "correction": {
+   "attempts": 2,
+   "audit_id": "audit-fixture-001",
+   "binding": "01a70e817b0103d138422cba773c2d2e3174f72fa2a84a2bc5cec1b2498561ef",
+   "created_at": "2026-09-22T00:00:00.010000+00:00",
+   "diagnosis": "missing_test_disposition",
+   "family": "27859706023a2fca48928596750f8ab70556505448c4fb92aaefa5b76c8f90d6",
+   "field": "tests",
+   "id": "repair-27859706023a2fca48928596",
+   "notice": null,
+   "partition_generation": 0,
+   "partition_id": "partition-fixture-001",
+   "reason_code": "successor_not_submitted",
+   "schema": "urn:zeus:audit-repair:1",
+   "settlement": null,
+   "source_attempt": 1,
+   "source_error_digest": "9456f7b883a2a1f448d141daee486aa14eedface1767e76c5c9a0cf0e82b9804",
+   "source_error_type": "ContractError",
+   "source_execution_ref": "sha256:bf07fd59d39f46ae876f0993ed9dae873c1eeb62bae00989cd62a73b7e657d1f",
+   "source_task_generation": 0,
+   "source_task_id": "5eed0000-0000-4000-8000-000000000004",
+   "state": "admitted",
+   "subsystems": [
+    "core"
+   ],
+   "subsystems_total": 1,
+   "successor": {
+    "assigned_at": "2026-09-22T00:00:00.010000+00:00",
+    "correlation_id": "repair:repair-27859706023a2fca48928596",
+    "published": null,
+    "schedule_key": "repair:repair-27859706023a2fca48928596",
+    "task_id": "5eed0000-0000-4000-8000-000000000005"
+   },
+   "targets": [
+    "core"
+   ],
+   "updated_at": "2026-09-22T00:00:00.010000+00:00",
+   "version": 1
+  },
+  "event": {
+   "at": "2026-09-22T00:00:00.010000+00:00",
+   "audit_id": "audit-fixture-001",
+   "correction_id": "repair-27859706023a2fca48928596",
+   "diagnosis": "missing_test_disposition",
+   "id": "repair-27859706023a2fca48928596",
+   "source_task_id": "5eed0000-0000-4000-8000-000000000004",
+   "successor_task_id": "5eed0000-0000-4000-8000-000000000005",
+   "type": "audit.repair_admitted"
+  },
+  "key_is_repair_prefixed": true,
+  "m7_test": "test_one_admission_creates_exactly_one_ordinary_successor_and_rewrites_nothing",
+  "message": {
+   "causation_id": null,
+   "correlation_id": "repair:repair-27859706023a2fca48928596",
+   "how": {
+    "acceptance_criteria": [
+     "Preserve normal behavior"
+    ],
+    "constraints": [],
+    "context_ref": null,
+    "result_schema": "six-w.v1"
+   },
+   "message_id": "5eed0000-0000-4000-8000-000000000005",
+   "schema_version": "1.0",
+   "type": "task.assign",
+   "what": {
+    "action": "audit_partition",
+    "details": {
+     "audit_id": "audit-fixture-001",
+     "generation": 0,
+     "partition_id": "partition-fixture-001",
+     "repair": {
+      "attempt": 2,
+      "authority": "one bounded correction of a refused draft; the existing validators remain the authority and a justified not-run fact is an accepted incomplete result",
+      "checklist": [
+       "Every returned subsystem record carries a non-empty tests or tests_not_run; both empty is refused as it was before.",
+       "A test in tests is the exact JSON argv string of a successful runner receipt supplied to THIS execution; source-list and source-read are inspection and never test execution.",
+       "An unexecuted test belongs in tests_not_run verbatim with reason and follow_up. A missing prerequisite is an explicit not-run fact, never a claimed or fabricated pass.",
+       "Return null for an assigned identity you did not analyze; a null identity stays remaining work and is not a failure."
+      ],
+      "correction_id": "repair-27859706023a2fca48928596",
+      "diagnosis": "missing_test_disposition",
+      "field": "tests",
+      "schema": "urn:zeus:audit-repair:1",
+      "source_execution_ref": "sha256:bf07fd59d39f46ae876f0993ed9dae873c1eeb62bae00989cd62a73b7e657d1f",
+      "source_partition_generation": 0,
+      "source_task_id": "5eed0000-0000-4000-8000-000000000004",
+      "subsystems": [
+       "core"
+      ],
+      "subsystems_total": 1,
+      "subsystems_truncated": false,
+      "version": 1
+     }
+    }
+   },
+   "when": {
+    "after": [],
+    "created_at": "2026-09-22T00:00:00.010000+00:00",
+    "deadline": null
+   },
+   "where": {
+    "allowed_paths": [],
+    "environment": "local",
+    "repository": "codex-harness",
+    "revision": "bootstrap"
+   },
+   "who": {
+    "owner": "worker:github",
+    "recipient": "worker:github",
+    "sender": "lead:research"
+   },
+   "why": {
+    "evidence_refs": [],
+    "objective": "Improve harness reliability from verified evidence"
+   }
+  },
+  "original_task_unchanged": true,
+  "outbox_record": {
+   "message": {
+    "causation_id": null,
+    "correlation_id": "repair:repair-27859706023a2fca48928596",
+    "how": {
+     "acceptance_criteria": [
+      "Preserve normal behavior"
+     ],
+     "constraints": [],
+     "context_ref": null,
+     "result_schema": "six-w.v1"
+    },
+    "message_id": "5eed0000-0000-4000-8000-000000000005",
+    "schema_version": "1.0",
+    "type": "task.assign",
+    "what": {
+     "action": "audit_partition",
+     "details": {
+      "audit_id": "audit-fixture-001",
+      "generation": 0,
+      "partition_id": "partition-fixture-001",
+      "repair": {
+       "attempt": 2,
+       "authority": "one bounded correction of a refused draft; the existing validators remain the authority and a justified not-run fact is an accepted incomplete result",
+       "checklist": [
+        "Every returned subsystem record carries a non-empty tests or tests_not_run; both empty is refused as it was before.",
+        "A test in tests is the exact JSON argv string of a successful runner receipt supplied to THIS execution; source-list and source-read are inspection and never test execution.",
+        "An unexecuted test belongs in tests_not_run verbatim with reason and follow_up. A missing prerequisite is an explicit not-run fact, never a claimed or fabricated pass.",
+        "Return null for an assigned identity you did not analyze; a null identity stays remaining work and is not a failure."
+       ],
+       "correction_id": "repair-27859706023a2fca48928596",
+       "diagnosis": "missing_test_disposition",
+       "field": "tests",
+       "schema": "urn:zeus:audit-repair:1",
+       "source_execution_ref": "sha256:bf07fd59d39f46ae876f0993ed9dae873c1eeb62bae00989cd62a73b7e657d1f",
+       "source_partition_generation": 0,
+       "source_task_id": "5eed0000-0000-4000-8000-000000000004",
+       "subsystems": [
+        "core"
+       ],
+       "subsystems_total": 1,
+       "subsystems_truncated": false,
+       "version": 1
+      }
+     }
+    },
+    "when": {
+     "after": [],
+     "created_at": "2026-09-22T00:00:00.010000+00:00",
+     "deadline": null
+    },
+    "where": {
+     "allowed_paths": [],
+     "environment": "local",
+     "repository": "codex-harness",
+     "revision": "bootstrap"
+    },
+    "who": {
+     "owner": "worker:github",
+     "recipient": "worker:github",
+     "sender": "lead:research"
+    },
+    "why": {
+     "evidence_refs": [],
+     "objective": "Improve harness reliability from verified evidence"
+    }
+   },
+   "sent": false
+  },
+  "rewrote_nothing": {
+   "research_checkpoints": true,
+   "research_evidence_history": true,
+   "research_partitions": true,
+   "research_paths": true,
+   "research_subsystems": true,
+   "tasks": true
+  },
+  "schedule": {
+   "at": "2026-09-22T00:00:00.010000+00:00",
+   "id": "repair:repair-27859706023a2fca48928596",
+   "partition_id": "partition-fixture-001",
+   "repair": "repair-27859706023a2fca48928596",
+   "task_id": "5eed0000-0000-4000-8000-000000000005"
+  },
+  "secret_free": true,
+  "sender_agent_action": [
+   "lead:research",
+   "worker:github",
+   "audit_partition"
+  ],
+  "state": {
+   "corrections": [
+    "repair-27859706023a2fca48928596"
+   ],
+   "events": [
+    "audit.repair_admitted"
+   ],
+   "outbox": [
+    "repair:repair-27859706023a2fca48928596"
+   ],
+   "schedule": [
+    "repair:repair-27859706023a2fca48928596"
+   ]
+  }
+ },
+ "one_lineage": {
+  "again": {
+   "store_after": "811a6892aad146fe",
+   "store_before": "811a6892aad146fe",
+   "value": {
+    "admitted": false,
+    "correction": {
+     "analysis_outcome": null,
+     "attempts": 2,
+     "audit_id": "audit-fixture-001",
+     "checkpoint_generation": null,
+     "corrected_subsystems": null,
+     "created_at": "2026-09-22T00:00:00.012000+00:00",
+     "diagnosis": "missing_test_disposition",
+     "field": "tests",
+     "id": "repair-116cdc9a9dd4b12c17d619dc",
+     "notice_id": null,
+     "notice_published": null,
+     "partition_generation": 0,
+     "partition_id": "partition-fixture-001",
+     "reason_code": "successor_not_submitted",
+     "remaining_targets": null,
+     "source_execution_ref": "sha256:bf07fd59d39f46ae876f0993ed9dae873c1eeb62bae00989cd62a73b7e657d1f",
+     "source_task_generation": 0,
+     "source_task_id": "5eed0000-0000-4000-8000-000000000006",
+     "state": "admitted",
+     "subsystems_total": 1,
+     "successor_execution_ref": null,
+     "successor_published": null,
+     "successor_schedule_key": "repair:repair-116cdc9a9dd4b12c17d619dc",
+     "successor_task_id": "5eed0000-0000-4000-8000-000000000007",
+     "target_subsystems": null,
+     "updated_at": "2026-09-22T00:00:00.012000+00:00"
+    },
+    "correction_id": "repair-116cdc9a9dd4b12c17d619dc",
+    "diagnosis": "missing_test_disposition",
+    "error_type": null,
+    "partition_generation": 0,
+    "partition_id": "partition-fixture-001",
+    "reason_code": "lineage_exists",
+    "source_task_id": "5eed0000-0000-4000-8000-000000000006",
+    "successor_task_id": "5eed0000-0000-4000-8000-000000000007"
+   },
+   "wrote": false
+  },
+  "assignments": [
+   "audit-partition-key-0",
+   "repair:repair-116cdc9a9dd4b12c17d619dc"
+  ],
+  "first": {
+   "store_after": "811a6892aad146fe",
+   "store_before": "ee17f2c2bee84681",
+   "value": {
+    "admitted": true,
+    "correction": {
+     "analysis_outcome": null,
+     "attempts": 2,
+     "audit_id": "audit-fixture-001",
+     "checkpoint_generation": null,
+     "corrected_subsystems": null,
+     "created_at": "2026-09-22T00:00:00.012000+00:00",
+     "diagnosis": "missing_test_disposition",
+     "field": "tests",
+     "id": "repair-116cdc9a9dd4b12c17d619dc",
+     "notice_id": null,
+     "notice_published": null,
+     "partition_generation": 0,
+     "partition_id": "partition-fixture-001",
+     "reason_code": "successor_not_submitted",
+     "remaining_targets": null,
+     "source_execution_ref": "sha256:bf07fd59d39f46ae876f0993ed9dae873c1eeb62bae00989cd62a73b7e657d1f",
+     "source_task_generation": 0,
+     "source_task_id": "5eed0000-0000-4000-8000-000000000006",
+     "state": "admitted",
+     "subsystems_total": 1,
+     "successor_execution_ref": null,
+     "successor_published": null,
+     "successor_schedule_key": "repair:repair-116cdc9a9dd4b12c17d619dc",
+     "successor_task_id": "5eed0000-0000-4000-8000-000000000007",
+     "target_subsystems": null,
+     "updated_at": "2026-09-22T00:00:00.012000+00:00"
+    },
+    "correction_id": "repair-116cdc9a9dd4b12c17d619dc",
+    "diagnosis": "missing_test_disposition",
+    "error_type": null,
+    "partition_generation": 0,
+    "partition_id": "partition-fixture-001",
+    "reason_code": null,
+    "source_task_id": "5eed0000-0000-4000-8000-000000000006",
+    "successor_task_id": "5eed0000-0000-4000-8000-000000000007"
+   },
+   "wrote": true
+  },
+  "m7_test": "test_a_repeated_tick_a_restart_and_a_concurrent_caller_share_one_lineage",
+  "state": {
+   "corrections": [
+    "repair-116cdc9a9dd4b12c17d619dc"
+   ],
+   "events": [
+    "audit.repair_admitted"
+   ],
+   "outbox": [
+    "repair:repair-116cdc9a9dd4b12c17d619dc"
+   ],
+   "schedule": [
+    "repair:repair-116cdc9a9dd4b12c17d619dc"
+   ]
+  },
+  "tick": {
+   "store_after": "811a6892aad146fe",
+   "store_before": "811a6892aad146fe",
+   "value": {
+    "admission": {
+     "admitted": false,
+     "correction": {
+      "analysis_outcome": null,
+      "attempts": 2,
+      "audit_id": "audit-fixture-001",
+      "checkpoint_generation": null,
+      "corrected_subsystems": null,
+      "created_at": "2026-09-22T00:00:00.012000+00:00",
+      "diagnosis": "missing_test_disposition",
+      "field": "tests",
+      "id": "repair-116cdc9a9dd4b12c17d619dc",
+      "notice_id": null,
+      "notice_published": null,
+      "partition_generation": 0,
+      "partition_id": "partition-fixture-001",
+      "reason_code": "successor_not_submitted",
+      "remaining_targets": null,
+      "source_execution_ref": "sha256:bf07fd59d39f46ae876f0993ed9dae873c1eeb62bae00989cd62a73b7e657d1f",
+      "source_task_generation": 0,
+      "source_task_id": "5eed0000-0000-4000-8000-000000000006",
+      "state": "admitted",
+      "subsystems_total": 1,
+      "successor_execution_ref": null,
+      "successor_published": null,
+      "successor_schedule_key": "repair:repair-116cdc9a9dd4b12c17d619dc",
+      "successor_task_id": "5eed0000-0000-4000-8000-000000000007",
+      "target_subsystems": null,
+      "updated_at": "2026-09-22T00:00:00.012000+00:00"
+     },
+     "correction_id": "repair-116cdc9a9dd4b12c17d619dc",
+     "diagnosis": "missing_test_disposition",
+     "error_type": null,
+     "partition_generation": 0,
+     "partition_id": "partition-fixture-001",
+     "reason_code": "lineage_exists",
+     "source_task_id": "5eed0000-0000-4000-8000-000000000006",
+     "successor_task_id": "5eed0000-0000-4000-8000-000000000007"
+    },
+    "audit_id": "audit-fixture-001",
+    "notices": [],
+    "settled": []
+   },
+   "wrote": false
+  }
+ },
+ "out_of_scope": {
+  "admit": {
+   "store_after": "e81feb9544bae3e5",
+   "store_before": "e81feb9544bae3e5",
+   "value": {
+    "admitted": false,
+    "correction": null,
+    "correction_id": null,
+    "diagnosis": null,
+    "error_type": null,
+    "partition_generation": null,
+    "partition_id": null,
+    "reason_code": "out_of_scope",
+    "source_task_id": null,
+    "successor_task_id": null
+   },
+   "wrote": false
+  },
+  "empty_scope_no_m7_test": {
+   "store_after": "9c5f5a13f9033c81",
+   "store_before": "9c5f5a13f9033c81",
+   "value": {
+    "admitted": false,
+    "correction": null,
+    "correction_id": null,
+    "diagnosis": null,
+    "error_type": null,
+    "partition_generation": null,
+    "partition_id": null,
+    "reason_code": "no_candidate",
+    "source_task_id": null,
+    "successor_task_id": null
+   },
+   "wrote": false
+  },
+  "m7_test": "test_an_out_of_scope_rejection_is_never_admitted",
+  "state": {
+   "corrections": [],
+   "events": [],
+   "outbox": [],
+   "schedule": []
+  },
+  "task_status": "succeeded"
+ },
+ "partially_corrected": {
+  "admitted_total": 2,
+  "history_rows_of_successor": {
+   "core": true
+  },
+  "m7_test": "test_a_partially_corrected_target_set_is_deferred_with_target_and_remaining_counts",
+  "partition_generation": 1,
+  "remaining_subsystems": [
+   "core",
+   "other"
+  ],
+  "settle": {
+   "store_after": "969d69735063943f",
+   "store_before": "7437f1d59c831478",
+   "value": {
+    "audit_id": "audit-fixture-001",
+    "changed": [
+     {
+      "analysis_outcome": "analysis_checkpointed",
+      "attempts": 2,
+      "audit_id": "audit-fixture-001",
+      "checkpoint_generation": 1,
+      "corrected_subsystems": 1,
+      "correction_id": "repair-13ecff3372674408f9642b1b",
+      "diagnosis": "missing_test_disposition",
+      "reason_code": "partially_corrected",
+      "remaining_targets": 1,
+      "source_execution_ref": "sha256:00e238885cfeb8799f590a57da180fe160e768c803990d657e551f7f1057a58a",
+      "source_task_id": "5eed0000-0000-4000-8000-00000000002a",
+      "state": "deferred",
+      "successor_execution_ref": "sha256:73dfa883bb31e75d5ca1dbe7f8854b14c60a0e1ae4b11eeae21f631ca73480ab",
+      "successor_task_id": "5eed0000-0000-4000-8000-00000000002b",
+      "target_subsystems": 2
+     }
+    ],
+    "notices": [],
+    "settled": [
+     {
+      "analysis_outcome": "analysis_checkpointed",
+      "attempts": 2,
+      "audit_id": "audit-fixture-001",
+      "checkpoint_generation": 1,
+      "corrected_subsystems": 1,
+      "correction_id": "repair-13ecff3372674408f9642b1b",
+      "diagnosis": "missing_test_disposition",
+      "reason_code": "partially_corrected",
+      "remaining_targets": 1,
+      "source_execution_ref": "sha256:00e238885cfeb8799f590a57da180fe160e768c803990d657e551f7f1057a58a",
+      "source_task_id": "5eed0000-0000-4000-8000-00000000002a",
+      "state": "deferred",
+      "successor_execution_ref": "sha256:73dfa883bb31e75d5ca1dbe7f8854b14c60a0e1ae4b11eeae21f631ca73480ab",
+      "successor_task_id": "5eed0000-0000-4000-8000-00000000002b",
+      "target_subsystems": 2
+     }
+    ]
+   },
+   "wrote": true
+  },
+  "status": {
+   "store_after": "969d69735063943f",
+   "store_before": "969d69735063943f",
+   "value": {
+    "audit_id": "audit-fixture-001",
+    "corrections": [
+     {
+      "analysis_outcome": "analysis_checkpointed",
+      "attempts": 2,
+      "audit_id": "audit-fixture-001",
+      "checkpoint_generation": 1,
+      "corrected_subsystems": 1,
+      "created_at": "2026-09-22T00:00:00.092000+00:00",
+      "diagnosis": "missing_test_disposition",
+      "field": "tests",
+      "id": "repair-13ecff3372674408f9642b1b",
+      "notice_id": null,
+      "notice_published": null,
+      "partition_generation": 0,
+      "partition_id": "partition-fixture-001",
+      "reason_code": "partially_corrected",
+      "remaining_targets": 1,
+      "source_execution_ref": "sha256:00e238885cfeb8799f590a57da180fe160e768c803990d657e551f7f1057a58a",
+      "source_task_generation": 0,
+      "source_task_id": "5eed0000-0000-4000-8000-00000000002a",
+      "state": "deferred",
+      "subsystems_total": 2,
+      "successor_execution_ref": "sha256:73dfa883bb31e75d5ca1dbe7f8854b14c60a0e1ae4b11eeae21f631ca73480ab",
+      "successor_published": true,
+      "successor_schedule_key": "repair:repair-13ecff3372674408f9642b1b",
+      "successor_task_id": "5eed0000-0000-4000-8000-00000000002b",
+      "target_subsystems": 2,
+      "updated_at": "2026-09-22T00:00:00.093000+00:00"
+     }
+    ],
+    "counts": {
+     "admitted": 0,
+     "attempted": 1,
+     "deferred": 1,
+     "reconciliation_required": 0,
+     "repaired": 0,
+     "research_required": 0
+    },
+    "enabled": true,
+    "operator": "owner-fixture",
+    "schema": "urn:zeus:audit-repair:1",
+    "scope": [
+     "5eed0000-0000-4000-8000-00000000002a"
+    ],
+    "updated_at": "2026-09-22T00:00:00.091000+00:00"
+   },
+   "wrote": false
+  }
+ },
+ "pause": {
+  "admit": {
+   "store_after": "2c1e3434da908ed5",
+   "store_before": "3f50d750c45137a3",
+   "value": {
+    "admitted": false,
+    "correction": null,
+    "correction_id": null,
+    "diagnosis": "missing_test_disposition",
+    "error_type": null,
+    "partition_generation": 0,
+    "partition_id": "partition-fixture-001",
+    "reason_code": "research_inactive",
+    "source_task_id": "5eed0000-0000-4000-8000-00000000001a",
+    "successor_task_id": null
+   },
+   "wrote": true
+  },
+  "control_absent": {
+   "admit": {
+    "store_after": "4bee0527738dc7c5",
+    "store_before": "4bee0527738dc7c5",
+    "value": {
+     "admitted": false,
+     "correction": null,
+     "correction_id": null,
+     "diagnosis": "missing_test_disposition",
+     "error_type": null,
+     "partition_generation": 0,
+     "partition_id": "partition-fixture-001",
+     "reason_code": "research_inactive",
+     "source_task_id": "5eed0000-0000-4000-8000-00000000001b",
+     "successor_task_id": null
+    },
+    "wrote": false
+   },
+   "nothing_was_queued": true
+  },
+  "control_not_object": {
+   "admit": {
+    "store_after": "fdcd18ad1a3339b8",
+    "store_before": "fdcd18ad1a3339b8",
+    "value": {
+     "admitted": false,
+     "correction": null,
+     "correction_id": null,
+     "diagnosis": "missing_test_disposition",
+     "error_type": null,
+     "partition_generation": 0,
+     "partition_id": "partition-fixture-001",
+     "reason_code": "research_inactive",
+     "source_task_id": "5eed0000-0000-4000-8000-00000000001c",
+     "successor_task_id": null
+    },
+    "wrote": false
+   },
+   "nothing_was_queued": true
+  },
+  "m7_test": "test_a_pause_observed_while_the_evidence_is_read_queues_no_successor",
+  "nothing_was_queued": true,
+  "state": {
+   "corrections": [],
+   "events": [],
+   "outbox": [],
+   "schedule": []
+  }
+ },
+ "repaired": {
+  "m7_test": "test_a_justified_not_run_disposition_repairs_and_resumes_the_partition",
+  "original_analysis_outcome": "analysis_rejected",
+  "partition_generation": 1,
+  "remaining_subsystems": [
+   "core"
+  ],
+  "secret_free": true,
+  "settle": {
+   "store_after": "32af5c984607b989",
+   "store_before": "886baa3776514cd1",
+   "value": {
+    "audit_id": "audit-fixture-001",
+    "changed": [
+     {
+      "analysis_outcome": "analysis_checkpointed",
+      "attempts": 2,
+      "audit_id": "audit-fixture-001",
+      "checkpoint_generation": 1,
+      "corrected_subsystems": 1,
+      "correction_id": "repair-f1fb90c50183e1b21740311d",
+      "diagnosis": "missing_test_disposition",
+      "reason_code": "corrected",
+      "remaining_targets": 0,
+      "source_execution_ref": "sha256:bf07fd59d39f46ae876f0993ed9dae873c1eeb62bae00989cd62a73b7e657d1f",
+      "source_task_id": "5eed0000-0000-4000-8000-000000000024",
+      "state": "repaired",
+      "successor_execution_ref": "sha256:73dfa883bb31e75d5ca1dbe7f8854b14c60a0e1ae4b11eeae21f631ca73480ab",
+      "successor_task_id": "5eed0000-0000-4000-8000-000000000025",
+      "target_subsystems": 1
+     }
+    ],
+    "notices": [],
+    "settled": [
+     {
+      "analysis_outcome": "analysis_checkpointed",
+      "attempts": 2,
+      "audit_id": "audit-fixture-001",
+      "checkpoint_generation": 1,
+      "corrected_subsystems": 1,
+      "correction_id": "repair-f1fb90c50183e1b21740311d",
+      "diagnosis": "missing_test_disposition",
+      "reason_code": "corrected",
+      "remaining_targets": 0,
+      "source_execution_ref": "sha256:bf07fd59d39f46ae876f0993ed9dae873c1eeb62bae00989cd62a73b7e657d1f",
+      "source_task_id": "5eed0000-0000-4000-8000-000000000024",
+      "state": "repaired",
+      "successor_execution_ref": "sha256:73dfa883bb31e75d5ca1dbe7f8854b14c60a0e1ae4b11eeae21f631ca73480ab",
+      "successor_task_id": "5eed0000-0000-4000-8000-000000000025",
+      "target_subsystems": 1
+     }
+    ]
+   },
+   "wrote": true
+  },
+  "settle_again": {
+   "store_after": "32af5c984607b989",
+   "store_before": "32af5c984607b989",
+   "value": {
+    "audit_id": "audit-fixture-001",
+    "changed": [],
+    "notices": [],
+    "settled": [
+     {
+      "analysis_outcome": "analysis_checkpointed",
+      "attempts": 2,
+      "audit_id": "audit-fixture-001",
+      "checkpoint_generation": 1,
+      "corrected_subsystems": 1,
+      "correction_id": "repair-f1fb90c50183e1b21740311d",
+      "diagnosis": "missing_test_disposition",
+      "reason_code": "corrected",
+      "remaining_targets": 0,
+      "source_execution_ref": "sha256:bf07fd59d39f46ae876f0993ed9dae873c1eeb62bae00989cd62a73b7e657d1f",
+      "source_task_id": "5eed0000-0000-4000-8000-000000000024",
+      "state": "repaired",
+      "successor_execution_ref": "sha256:73dfa883bb31e75d5ca1dbe7f8854b14c60a0e1ae4b11eeae21f631ca73480ab",
+      "successor_task_id": "5eed0000-0000-4000-8000-000000000025",
+      "target_subsystems": 1
+     }
+    ]
+   },
+   "wrote": false
+  },
+  "status": {
+   "store_after": "32af5c984607b989",
+   "store_before": "32af5c984607b989",
+   "value": {
+    "audit_id": "audit-fixture-001",
+    "corrections": [
+     {
+      "analysis_outcome": "analysis_checkpointed",
+      "attempts": 2,
+      "audit_id": "audit-fixture-001",
+      "checkpoint_generation": 1,
+      "corrected_subsystems": 1,
+      "created_at": "2026-09-22T00:00:00.080000+00:00",
+      "diagnosis": "missing_test_disposition",
+      "field": "tests",
+      "id": "repair-f1fb90c50183e1b21740311d",
+      "notice_id": null,
+      "notice_published": null,
+      "partition_generation": 0,
+      "partition_id": "partition-fixture-001",
+      "reason_code": "corrected",
+      "remaining_targets": 0,
+      "source_execution_ref": "sha256:bf07fd59d39f46ae876f0993ed9dae873c1eeb62bae00989cd62a73b7e657d1f",
+      "source_task_generation": 0,
+      "source_task_id": "5eed0000-0000-4000-8000-000000000024",
+      "state": "repaired",
+      "subsystems_total": 1,
+      "successor_execution_ref": "sha256:73dfa883bb31e75d5ca1dbe7f8854b14c60a0e1ae4b11eeae21f631ca73480ab",
+      "successor_published": true,
+      "successor_schedule_key": "repair:repair-f1fb90c50183e1b21740311d",
+      "successor_task_id": "5eed0000-0000-4000-8000-000000000025",
+      "target_subsystems": 1,
+      "updated_at": "2026-09-22T00:00:00.081000+00:00"
+     }
+    ],
+    "counts": {
+     "admitted": 0,
+     "attempted": 1,
+     "deferred": 0,
+     "reconciliation_required": 0,
+     "repaired": 1,
+     "research_required": 0
+    },
+    "enabled": true,
+    "operator": "owner-fixture",
+    "schema": "urn:zeus:audit-repair:1",
+    "scope": [
+     "5eed0000-0000-4000-8000-000000000024"
+    ],
+    "updated_at": "2026-09-22T00:00:00.079000+00:00"
+   },
+   "wrote": false
+  },
+  "successor_is_the_admitted_one": true
+ },
+ "repeated_notice": {
+  "again": {
+   "store_after": "46ef2c190b26cdc4",
+   "store_before": "46ef2c190b26cdc4",
+   "value": {
+    "audit_id": "audit-fixture-001",
+    "changed": [],
+    "notices": [
+     {
+      "correction_id": "repair-db27a09d4a3d937923ba4b35",
+      "correlation_id": "repair:repair-db27a09d4a3d937923ba4b35",
+      "notice_id": "5b3c99b23e5fde70cb0bea975271cdb4c8bbaea9bbd251aba3e9881e3a9e54df",
+      "published": false
+     }
+    ],
+    "settled": [
+     {
+      "analysis_outcome": "analysis_rejected",
+      "attempts": 2,
+      "audit_id": "audit-fixture-001",
+      "checkpoint_generation": null,
+      "corrected_subsystems": 0,
+      "correction_id": "repair-db27a09d4a3d937923ba4b35",
+      "diagnosis": "missing_test_disposition",
+      "reason_code": "content_rejected_again",
+      "remaining_targets": 1,
+      "source_execution_ref": "sha256:bf07fd59d39f46ae876f0993ed9dae873c1eeb62bae00989cd62a73b7e657d1f",
+      "source_task_id": "5eed0000-0000-4000-8000-000000000035",
+      "state": "research_required",
+      "successor_execution_ref": "sha256:73dfa883bb31e75d5ca1dbe7f8854b14c60a0e1ae4b11eeae21f631ca73480ab",
+      "successor_task_id": "5eed0000-0000-4000-8000-000000000036",
+      "target_subsystems": 1
+     }
+    ]
+   },
+   "wrote": false
+  },
+  "first": {
+   "store_after": "46ef2c190b26cdc4",
+   "store_before": "4ff4a16ede449ace",
+   "value": {
+    "audit_id": "audit-fixture-001",
+    "changed": [
+     {
+      "analysis_outcome": "analysis_rejected",
+      "attempts": 2,
+      "audit_id": "audit-fixture-001",
+      "checkpoint_generation": null,
+      "corrected_subsystems": 0,
+      "correction_id": "repair-db27a09d4a3d937923ba4b35",
+      "diagnosis": "missing_test_disposition",
+      "reason_code": "content_rejected_again",
+      "remaining_targets": 1,
+      "source_execution_ref": "sha256:bf07fd59d39f46ae876f0993ed9dae873c1eeb62bae00989cd62a73b7e657d1f",
+      "source_task_id": "5eed0000-0000-4000-8000-000000000035",
+      "state": "research_required",
+      "successor_execution_ref": "sha256:73dfa883bb31e75d5ca1dbe7f8854b14c60a0e1ae4b11eeae21f631ca73480ab",
+      "successor_task_id": "5eed0000-0000-4000-8000-000000000036",
+      "target_subsystems": 1
+     }
+    ],
+    "notices": [
+     {
+      "correction_id": "repair-db27a09d4a3d937923ba4b35",
+      "correlation_id": "repair:repair-db27a09d4a3d937923ba4b35",
+      "notice_id": "5b3c99b23e5fde70cb0bea975271cdb4c8bbaea9bbd251aba3e9881e3a9e54df",
+      "published": false
+     }
+    ],
+    "settled": [
+     {
+      "analysis_outcome": "analysis_rejected",
+      "attempts": 2,
+      "audit_id": "audit-fixture-001",
+      "checkpoint_generation": null,
+      "corrected_subsystems": 0,
+      "correction_id": "repair-db27a09d4a3d937923ba4b35",
+      "diagnosis": "missing_test_disposition",
+      "reason_code": "content_rejected_again",
+      "remaining_targets": 1,
+      "source_execution_ref": "sha256:bf07fd59d39f46ae876f0993ed9dae873c1eeb62bae00989cd62a73b7e657d1f",
+      "source_task_id": "5eed0000-0000-4000-8000-000000000035",
+      "state": "research_required",
+      "successor_execution_ref": "sha256:73dfa883bb31e75d5ca1dbe7f8854b14c60a0e1ae4b11eeae21f631ca73480ab",
+      "successor_task_id": "5eed0000-0000-4000-8000-000000000036",
+      "target_subsystems": 1
+     }
+    ]
+   },
+   "wrote": true
+  },
+  "m7_test": "test_a_repeated_settlement_or_restart_returns_the_same_notice_and_no_third_call (and the owner's own refresh of the publication state that test_a_failed_notice_publication_is_retried_and_a_duplicate_receive_adds_no_execution reads)",
+  "notice_outbox_rows": 1,
+  "notice_record_missing": {
+   "store_after": "c159aca3ae5a595c",
+   "store_before": "37734005117f3656",
+   "value": {
+    "audit_id": "audit-fixture-001",
+    "changed": [],
+    "notices": [
+     {
+      "correction_id": "repair-db27a09d4a3d937923ba4b35",
+      "correlation_id": "repair:repair-db27a09d4a3d937923ba4b35",
+      "notice_id": "5b3c99b23e5fde70cb0bea975271cdb4c8bbaea9bbd251aba3e9881e3a9e54df",
+      "published": null
+     }
+    ],
+    "settled": [
+     {
+      "analysis_outcome": "analysis_rejected",
+      "attempts": 2,
+      "audit_id": "audit-fixture-001",
+      "checkpoint_generation": null,
+      "corrected_subsystems": 0,
+      "correction_id": "repair-db27a09d4a3d937923ba4b35",
+      "diagnosis": "missing_test_disposition",
+      "reason_code": "content_rejected_again",
+      "remaining_targets": 1,
+      "source_execution_ref": "sha256:bf07fd59d39f46ae876f0993ed9dae873c1eeb62bae00989cd62a73b7e657d1f",
+      "source_task_id": "5eed0000-0000-4000-8000-000000000035",
+      "state": "research_required",
+      "successor_execution_ref": "sha256:73dfa883bb31e75d5ca1dbe7f8854b14c60a0e1ae4b11eeae21f631ca73480ab",
+      "successor_task_id": "5eed0000-0000-4000-8000-000000000036",
+      "target_subsystems": 1
+     }
+    ]
+   },
+   "wrote": true
+  },
+  "notice_rows": 1,
+  "published_refresh": {
+   "store_after": "d17cd2aea914111c",
+   "store_before": "8bdb6ac71bde526e",
+   "value": {
+    "audit_id": "audit-fixture-001",
+    "changed": [],
+    "notices": [
+     {
+      "correction_id": "repair-db27a09d4a3d937923ba4b35",
+      "correlation_id": "repair:repair-db27a09d4a3d937923ba4b35",
+      "notice_id": "5b3c99b23e5fde70cb0bea975271cdb4c8bbaea9bbd251aba3e9881e3a9e54df",
+      "published": true
+     }
+    ],
+    "settled": [
+     {
+      "analysis_outcome": "analysis_rejected",
+      "attempts": 2,
+      "audit_id": "audit-fixture-001",
+      "checkpoint_generation": null,
+      "corrected_subsystems": 0,
+      "correction_id": "repair-db27a09d4a3d937923ba4b35",
+      "diagnosis": "missing_test_disposition",
+      "reason_code": "content_rejected_again",
+      "remaining_targets": 1,
+      "source_execution_ref": "sha256:bf07fd59d39f46ae876f0993ed9dae873c1eeb62bae00989cd62a73b7e657d1f",
+      "source_task_id": "5eed0000-0000-4000-8000-000000000035",
+      "state": "research_required",
+      "successor_execution_ref": "sha256:73dfa883bb31e75d5ca1dbe7f8854b14c60a0e1ae4b11eeae21f631ca73480ab",
+      "successor_task_id": "5eed0000-0000-4000-8000-000000000036",
+      "target_subsystems": 1
+     }
+    ]
+   },
+   "wrote": true
+  },
+  "published_status": {
+   "store_after": "d17cd2aea914111c",
+   "store_before": "d17cd2aea914111c",
+   "value": {
+    "audit_id": "audit-fixture-001",
+    "corrections": [
+     {
+      "analysis_outcome": "analysis_rejected",
+      "attempts": 2,
+      "audit_id": "audit-fixture-001",
+      "checkpoint_generation": null,
+      "corrected_subsystems": 0,
+      "created_at": "2026-09-22T00:00:00.110000+00:00",
+      "diagnosis": "missing_test_disposition",
+      "field": "tests",
+      "id": "repair-db27a09d4a3d937923ba4b35",
+      "notice_id": "5b3c99b23e5fde70cb0bea975271cdb4c8bbaea9bbd251aba3e9881e3a9e54df",
+      "notice_published": true,
+      "partition_generation": 0,
+      "partition_id": "partition-fixture-001",
+      "reason_code": "content_rejected_again",
+      "remaining_targets": 1,
+      "source_execution_ref": "sha256:bf07fd59d39f46ae876f0993ed9dae873c1eeb62bae00989cd62a73b7e657d1f",
+      "source_task_generation": 0,
+      "source_task_id": "5eed0000-0000-4000-8000-000000000035",
+      "state": "research_required",
+      "subsystems_total": 1,
+      "successor_execution_ref": "sha256:73dfa883bb31e75d5ca1dbe7f8854b14c60a0e1ae4b11eeae21f631ca73480ab",
+      "successor_published": true,
+      "successor_schedule_key": "repair:repair-db27a09d4a3d937923ba4b35",
+      "successor_task_id": "5eed0000-0000-4000-8000-000000000036",
+      "target_subsystems": 1,
+      "updated_at": "2026-09-22T00:00:00.111000+00:00"
+     }
+    ],
+    "counts": {
+     "admitted": 0,
+     "attempted": 1,
+     "deferred": 0,
+     "reconciliation_required": 0,
+     "repaired": 0,
+     "research_required": 1
+    },
+    "enabled": true,
+    "operator": "owner-fixture",
+    "schema": "urn:zeus:audit-repair:1",
+    "scope": [
+     "5eed0000-0000-4000-8000-000000000035"
+    ],
+    "updated_at": "2026-09-22T00:00:00.109000+00:00"
+   },
+   "wrote": false
+  },
+  "repair_schedule_rows": 1,
+  "restarted": {
+   "store_after": "46ef2c190b26cdc4",
+   "store_before": "46ef2c190b26cdc4",
+   "value": {
+    "admission": {
+     "admitted": false,
+     "correction": {
+      "analysis_outcome": "analysis_rejected",
+      "attempts": 2,
+      "audit_id": "audit-fixture-001",
+      "checkpoint_generation": null,
+      "corrected_subsystems": 0,
+      "created_at": "2026-09-22T00:00:00.110000+00:00",
+      "diagnosis": "missing_test_disposition",
+      "field": "tests",
+      "id": "repair-db27a09d4a3d937923ba4b35",
+      "notice_id": "5b3c99b23e5fde70cb0bea975271cdb4c8bbaea9bbd251aba3e9881e3a9e54df",
+      "notice_published": false,
+      "partition_generation": 0,
+      "partition_id": "partition-fixture-001",
+      "reason_code": "content_rejected_again",
+      "remaining_targets": 1,
+      "source_execution_ref": "sha256:bf07fd59d39f46ae876f0993ed9dae873c1eeb62bae00989cd62a73b7e657d1f",
+      "source_task_generation": 0,
+      "source_task_id": "5eed0000-0000-4000-8000-000000000035",
+      "state": "research_required",
+      "subsystems_total": 1,
+      "successor_execution_ref": "sha256:73dfa883bb31e75d5ca1dbe7f8854b14c60a0e1ae4b11eeae21f631ca73480ab",
+      "successor_published": true,
+      "successor_schedule_key": "repair:repair-db27a09d4a3d937923ba4b35",
+      "successor_task_id": "5eed0000-0000-4000-8000-000000000036",
+      "target_subsystems": 1,
+      "updated_at": "2026-09-22T00:00:00.111000+00:00"
+     },
+     "correction_id": "repair-db27a09d4a3d937923ba4b35",
+     "diagnosis": "missing_test_disposition",
+     "error_type": null,
+     "partition_generation": 0,
+     "partition_id": "partition-fixture-001",
+     "reason_code": "family_closed",
+     "source_task_id": "5eed0000-0000-4000-8000-000000000035",
+     "successor_task_id": "5eed0000-0000-4000-8000-000000000036"
+    },
+    "audit_id": "audit-fixture-001",
+    "notices": [
+     {
+      "correction_id": "repair-db27a09d4a3d937923ba4b35",
+      "correlation_id": "repair:repair-db27a09d4a3d937923ba4b35",
+      "notice_id": "5b3c99b23e5fde70cb0bea975271cdb4c8bbaea9bbd251aba3e9881e3a9e54df",
+      "published": false
+     }
+    ],
+    "settled": []
+   },
+   "wrote": false
+  },
+  "status": {
+   "store_after": "46ef2c190b26cdc4",
+   "store_before": "46ef2c190b26cdc4",
+   "value": {
+    "audit_id": "audit-fixture-001",
+    "corrections": [
+     {
+      "analysis_outcome": "analysis_rejected",
+      "attempts": 2,
+      "audit_id": "audit-fixture-001",
+      "checkpoint_generation": null,
+      "corrected_subsystems": 0,
+      "created_at": "2026-09-22T00:00:00.110000+00:00",
+      "diagnosis": "missing_test_disposition",
+      "field": "tests",
+      "id": "repair-db27a09d4a3d937923ba4b35",
+      "notice_id": "5b3c99b23e5fde70cb0bea975271cdb4c8bbaea9bbd251aba3e9881e3a9e54df",
+      "notice_published": false,
+      "partition_generation": 0,
+      "partition_id": "partition-fixture-001",
+      "reason_code": "content_rejected_again",
+      "remaining_targets": 1,
+      "source_execution_ref": "sha256:bf07fd59d39f46ae876f0993ed9dae873c1eeb62bae00989cd62a73b7e657d1f",
+      "source_task_generation": 0,
+      "source_task_id": "5eed0000-0000-4000-8000-000000000035",
+      "state": "research_required",
+      "subsystems_total": 1,
+      "successor_execution_ref": "sha256:73dfa883bb31e75d5ca1dbe7f8854b14c60a0e1ae4b11eeae21f631ca73480ab",
+      "successor_published": true,
+      "successor_schedule_key": "repair:repair-db27a09d4a3d937923ba4b35",
+      "successor_task_id": "5eed0000-0000-4000-8000-000000000036",
+      "target_subsystems": 1,
+      "updated_at": "2026-09-22T00:00:00.111000+00:00"
+     }
+    ],
+    "counts": {
+     "admitted": 0,
+     "attempted": 1,
+     "deferred": 0,
+     "reconciliation_required": 0,
+     "repaired": 0,
+     "research_required": 1
+    },
+    "enabled": true,
+    "operator": "owner-fixture",
+    "schema": "urn:zeus:audit-repair:1",
+    "scope": [
+     "5eed0000-0000-4000-8000-000000000035"
+    ],
+    "updated_at": "2026-09-22T00:00:00.109000+00:00"
+   },
+   "wrote": false
+  },
+  "unpublished_again": {
+   "store_after": "46ef2c190b26cdc4",
+   "store_before": "918850dac42ca3f1",
+   "value": {
+    "audit_id": "audit-fixture-001",
+    "changed": [],
+    "notices": [
+     {
+      "correction_id": "repair-db27a09d4a3d937923ba4b35",
+      "correlation_id": "repair:repair-db27a09d4a3d937923ba4b35",
+      "notice_id": "5b3c99b23e5fde70cb0bea975271cdb4c8bbaea9bbd251aba3e9881e3a9e54df",
+      "published": false
+     }
+    ],
+    "settled": [
+     {
+      "analysis_outcome": "analysis_rejected",
+      "attempts": 2,
+      "audit_id": "audit-fixture-001",
+      "checkpoint_generation": null,
+      "corrected_subsystems": 0,
+      "correction_id": "repair-db27a09d4a3d937923ba4b35",
+      "diagnosis": "missing_test_disposition",
+      "reason_code": "content_rejected_again",
+      "remaining_targets": 1,
+      "source_execution_ref": "sha256:bf07fd59d39f46ae876f0993ed9dae873c1eeb62bae00989cd62a73b7e657d1f",
+      "source_task_id": "5eed0000-0000-4000-8000-000000000035",
+      "state": "research_required",
+      "successor_execution_ref": "sha256:73dfa883bb31e75d5ca1dbe7f8854b14c60a0e1ae4b11eeae21f631ca73480ab",
+      "successor_task_id": "5eed0000-0000-4000-8000-000000000036",
+      "target_subsystems": 1
+     }
+    ]
+   },
+   "wrote": true
+  }
+ },
+ "replay_unknown": {
+  "m7_test": "test_an_unavailable_or_disagreeing_replay_is_unknown_not_permission",
+  "no_correctable_identity": {
+   "admit": {
+    "store_after": "41192ac5ed017ec4",
+    "store_before": "41192ac5ed017ec4",
+    "value": {
+     "admitted": false,
+     "correction": null,
+     "correction_id": null,
+     "diagnosis": "missing_test_disposition",
+     "error_type": null,
+     "partition_generation": 0,
+     "partition_id": "partition-fixture-001",
+     "reason_code": "no_correctable_identity",
+     "source_task_id": "5eed0000-0000-4000-8000-000000000016",
+     "successor_task_id": null
+    },
+    "wrote": false
+   },
+   "state": {
+    "corrections": [],
+    "events": [],
+    "outbox": [],
+    "schedule": []
+   }
+  },
+  "replay_absent": {
+   "store_after": "dc04765d0cfb19ae",
+   "store_before": "dc04765d0cfb19ae",
+   "value": {
+    "admitted": false,
+    "correction": null,
+    "correction_id": null,
+    "diagnosis": "missing_test_disposition",
+    "error_type": null,
+    "partition_generation": 0,
+    "partition_id": "partition-fixture-001",
+    "reason_code": "replay_unavailable",
+    "source_task_id": "5eed0000-0000-4000-8000-000000000015",
+    "successor_task_id": null
+   },
+   "wrote": false
+  },
+  "replay_not_refused": {
+   "store_after": "dc04765d0cfb19ae",
+   "store_before": "dc04765d0cfb19ae",
+   "value": {
+    "admitted": false,
+    "correction": null,
+    "correction_id": null,
+    "diagnosis": "missing_test_disposition",
+    "error_type": null,
+    "partition_generation": 0,
+    "partition_id": "partition-fixture-001",
+    "reason_code": "replay_mismatch",
+    "source_task_id": "5eed0000-0000-4000-8000-000000000015",
+    "successor_task_id": null
+   },
+   "wrote": false
+  },
+  "replay_other_digest": {
+   "store_after": "dc04765d0cfb19ae",
+   "store_before": "dc04765d0cfb19ae",
+   "value": {
+    "admitted": false,
+    "correction": null,
+    "correction_id": null,
+    "diagnosis": "missing_test_disposition",
+    "error_type": null,
+    "partition_generation": 0,
+    "partition_id": "partition-fixture-001",
+    "reason_code": "replay_mismatch",
+    "source_task_id": "5eed0000-0000-4000-8000-000000000015",
+    "successor_task_id": null
+   },
+   "wrote": false
+  },
+  "replay_other_type": {
+   "store_after": "dc04765d0cfb19ae",
+   "store_before": "dc04765d0cfb19ae",
+   "value": {
+    "admitted": false,
+    "correction": null,
+    "correction_id": null,
+    "diagnosis": "missing_test_disposition",
+    "error_type": null,
+    "partition_generation": 0,
+    "partition_id": "partition-fixture-001",
+    "reason_code": "replay_mismatch",
+    "source_task_id": "5eed0000-0000-4000-8000-000000000015",
+    "successor_task_id": null
+   },
+   "wrote": false
+  },
+  "replay_raises": {
+   "store_after": "dc04765d0cfb19ae",
+   "store_before": "dc04765d0cfb19ae",
+   "value": {
+    "admitted": false,
+    "correction": null,
+    "correction_id": null,
+    "diagnosis": "missing_test_disposition",
+    "error_type": "RuntimeError",
+    "partition_generation": 0,
+    "partition_id": "partition-fixture-001",
+    "reason_code": "replay_unavailable",
+    "source_task_id": "5eed0000-0000-4000-8000-000000000015",
+    "successor_task_id": null
+   },
+   "wrote": false
+  },
+  "state": {
+   "corrections": [],
+   "events": [],
+   "outbox": [],
+   "schedule": []
+  }
+ },
+ "second_refusal": {
+  "correction": {
+   "attempts": 2,
+   "audit_id": "audit-fixture-001",
+   "binding": "20a125aa1bc859ad2ec285577435b4ae835ea1d909eac56479ac80af230ffc3a",
+   "created_at": "2026-09-22T00:00:00.104000+00:00",
+   "diagnosis": "missing_test_disposition",
+   "family": "7212bdcb98e34ce50cf7fb16d83f000804c9b2f751ec6efc04d1ce2bcd55c9a9",
+   "field": "tests",
+   "id": "repair-7212bdcb98e34ce50cf7fb16",
+   "notice": {
+    "at": "2026-09-22T00:00:00.105000+00:00",
+    "correlation_id": "repair:repair-7212bdcb98e34ce50cf7fb16",
+    "error_id": null,
+    "id": "13d9803ec523a7ec3ceffe54e119226e73f2cd57d274b6e5536756f885bb679f",
+    "published": false
+   },
+   "partition_generation": 0,
+   "partition_id": "partition-fixture-001",
+   "reason_code": "content_rejected_again",
+   "schema": "urn:zeus:audit-repair:1",
+   "settlement": {
+    "analysis_outcome": "analysis_rejected",
+    "attempts": 2,
+    "audit_id": "audit-fixture-001",
+    "checkpoint_generation": null,
+    "corrected_subsystems": 0,
+    "correction_id": "repair-7212bdcb98e34ce50cf7fb16",
+    "diagnosis": "missing_test_disposition",
+    "reason_code": "content_rejected_again",
+    "remaining_targets": 1,
+    "source_execution_ref": "sha256:bf07fd59d39f46ae876f0993ed9dae873c1eeb62bae00989cd62a73b7e657d1f",
+    "source_task_id": "5eed0000-0000-4000-8000-000000000032",
+    "state": "research_required",
+    "successor_execution_ref": "sha256:73dfa883bb31e75d5ca1dbe7f8854b14c60a0e1ae4b11eeae21f631ca73480ab",
+    "successor_task_id": "5eed0000-0000-4000-8000-000000000033",
+    "target_subsystems": 1
+   },
+   "source_attempt": 1,
+   "source_error_digest": "9456f7b883a2a1f448d141daee486aa14eedface1767e76c5c9a0cf0e82b9804",
+   "source_error_type": "ContractError",
+   "source_execution_ref": "sha256:bf07fd59d39f46ae876f0993ed9dae873c1eeb62bae00989cd62a73b7e657d1f",
+   "source_task_generation": 0,
+   "source_task_id": "5eed0000-0000-4000-8000-000000000032",
+   "state": "research_required",
+   "subsystems": [
+    "core"
+   ],
+   "subsystems_total": 1,
+   "successor": {
+    "assigned_at": "2026-09-22T00:00:00.104000+00:00",
+    "correlation_id": "repair:repair-7212bdcb98e34ce50cf7fb16",
+    "published": true,
+    "schedule_key": "repair:repair-7212bdcb98e34ce50cf7fb16",
+    "task_id": "5eed0000-0000-4000-8000-000000000033"
+   },
+   "targets": [
+    "core"
+   ],
+   "updated_at": "2026-09-22T00:00:00.105000+00:00",
+   "version": 1
+  },
+  "corrections": 1,
+  "evidence_refs_in_order": true,
+  "family_closed": {
+   "store_after": "03053017c33fb607",
+   "store_before": "03053017c33fb607",
+   "value": {
+    "admitted": false,
+    "correction": {
+     "analysis_outcome": "analysis_rejected",
+     "attempts": 2,
+     "audit_id": "audit-fixture-001",
+     "checkpoint_generation": null,
+     "corrected_subsystems": 0,
+     "created_at": "2026-09-22T00:00:00.104000+00:00",
+     "diagnosis": "missing_test_disposition",
+     "field": "tests",
+     "id": "repair-7212bdcb98e34ce50cf7fb16",
+     "notice_id": "13d9803ec523a7ec3ceffe54e119226e73f2cd57d274b6e5536756f885bb679f",
+     "notice_published": false,
+     "partition_generation": 0,
+     "partition_id": "partition-fixture-001",
+     "reason_code": "content_rejected_again",
+     "remaining_targets": 1,
+     "source_execution_ref": "sha256:bf07fd59d39f46ae876f0993ed9dae873c1eeb62bae00989cd62a73b7e657d1f",
+     "source_task_generation": 0,
+     "source_task_id": "5eed0000-0000-4000-8000-000000000032",
+     "state": "research_required",
+     "subsystems_total": 1,
+     "successor_execution_ref": "sha256:73dfa883bb31e75d5ca1dbe7f8854b14c60a0e1ae4b11eeae21f631ca73480ab",
+     "successor_published": true,
+     "successor_schedule_key": "repair:repair-7212bdcb98e34ce50cf7fb16",
+     "successor_task_id": "5eed0000-0000-4000-8000-000000000033",
+     "target_subsystems": 1,
+     "updated_at": "2026-09-22T00:00:00.105000+00:00"
+    },
+    "correction_id": "repair-7212bdcb98e34ce50cf7fb16",
+    "diagnosis": "missing_test_disposition",
+    "error_type": null,
+    "partition_generation": 0,
+    "partition_id": "partition-fixture-001",
+    "reason_code": "family_closed",
+    "source_task_id": "5eed0000-0000-4000-8000-000000000032",
+    "successor_task_id": "5eed0000-0000-4000-8000-000000000033"
+   },
+   "wrote": false
+  },
+  "m7_test": "test_a_second_refused_draft_records_research_required_and_starts_no_third_call; test_a_second_rejection_atomically_records_one_proof_bound_lead_notice",
+  "notice_id_is_digest_of_transition": true,
+  "notice_outbox_record": {
+   "message": {
+    "causation_id": "5eed0000-0000-4000-8000-000000000033",
+    "correlation_id": "repair:repair-7212bdcb98e34ce50cf7fb16",
+    "how": {
+     "acceptance_criteria": [
+      "Preserve normal behavior"
+     ],
+     "constraints": [],
+     "context_ref": null,
+     "result_schema": "six-w.v1"
+    },
+    "message_id": "13d9803ec523a7ec3ceffe54e119226e73f2cd57d274b6e5536756f885bb679f",
+    "schema_version": "1.0",
+    "type": "execution.notice",
+    "what": {
+     "action": "observe_execution",
+     "details": {
+      "attempt": 1,
+      "bucket": "tasks",
+      "generation": 0,
+      "notice_id": "13d9803ec523a7ec3ceffe54e119226e73f2cd57d274b6e5536756f885bb679f",
+      "reason_code": "research_required",
+      "recovery_sequence": 0,
+      "status": "succeeded",
+      "task_id": "5eed0000-0000-4000-8000-000000000033",
+      "transition_ref": "8a85239eed2e6bc5f480680679637e9c2d894fd03f91db5a66a290f942210816",
+      "version": 1
+     }
+    },
+    "when": {
+     "after": [],
+     "created_at": "2026-09-22T00:00:00.105000+00:00",
+     "deadline": null
+    },
+    "where": {
+     "allowed_paths": [],
+     "environment": "local",
+     "repository": "codex-harness",
+     "revision": "bootstrap"
+    },
+    "who": {
+     "owner": "lead:research",
+     "recipient": "lead:research",
+     "sender": "worker:github"
+    },
+    "why": {
+     "evidence_refs": [
+      "sha256:bf07fd59d39f46ae876f0993ed9dae873c1eeb62bae00989cd62a73b7e657d1f",
+      "sha256:73dfa883bb31e75d5ca1dbe7f8854b14c60a0e1ae4b11eeae21f631ca73480ab"
+     ],
+     "objective": "Observe a persisted execution transition without granting workflow authority"
+    }
+   },
+   "sent": false
+  },
+  "notices": [
+   {
+    "at": "2026-09-22T00:00:00.105000+00:00",
+    "authority": "informational_only",
+    "id": "13d9803ec523a7ec3ceffe54e119226e73f2cd57d274b6e5536756f885bb679f",
+    "message": {
+     "causation_id": "5eed0000-0000-4000-8000-000000000033",
+     "correlation_id": "repair:repair-7212bdcb98e34ce50cf7fb16",
+     "how": {
+      "acceptance_criteria": [
+       "Preserve normal behavior"
+      ],
+      "constraints": [],
+      "context_ref": null,
+      "result_schema": "six-w.v1"
+     },
+     "message_id": "13d9803ec523a7ec3ceffe54e119226e73f2cd57d274b6e5536756f885bb679f",
+     "schema_version": "1.0",
+     "type": "execution.notice",
+     "what": {
+      "action": "observe_execution",
+      "details": {
+       "attempt": 1,
+       "bucket": "tasks",
+       "generation": 0,
+       "notice_id": "13d9803ec523a7ec3ceffe54e119226e73f2cd57d274b6e5536756f885bb679f",
+       "reason_code": "research_required",
+       "recovery_sequence": 0,
+       "status": "succeeded",
+       "task_id": "5eed0000-0000-4000-8000-000000000033",
+       "transition_ref": "8a85239eed2e6bc5f480680679637e9c2d894fd03f91db5a66a290f942210816",
+       "version": 1
+      }
+     },
+     "when": {
+      "after": [],
+      "created_at": "2026-09-22T00:00:00.105000+00:00",
+      "deadline": null
+     },
+     "where": {
+      "allowed_paths": [],
+      "environment": "local",
+      "repository": "codex-harness",
+      "revision": "bootstrap"
+     },
+     "who": {
+      "owner": "lead:research",
+      "recipient": "lead:research",
+      "sender": "worker:github"
+     },
+     "why": {
+      "evidence_refs": [
+       "sha256:bf07fd59d39f46ae876f0993ed9dae873c1eeb62bae00989cd62a73b7e657d1f",
+       "sha256:73dfa883bb31e75d5ca1dbe7f8854b14c60a0e1ae4b11eeae21f631ca73480ab"
+      ],
+      "objective": "Observe a persisted execution transition without granting workflow authority"
+     }
+    },
+    "observer": "workflow_controller",
+    "source_hash": "7043ab758254abfabd033829d293e7d69f474b7a65ed09360e8192abf22f86c2",
+    "transition": {
+     "attempt": 1,
+     "bucket": "tasks",
+     "generation": 0,
+     "reason_code": "research_required",
+     "recovery_sequence": 0,
+     "status": "succeeded",
+     "task_id": "5eed0000-0000-4000-8000-000000000033",
+     "transition_ref": "8a85239eed2e6bc5f480680679637e9c2d894fd03f91db5a66a290f942210816",
+     "version": 1
+    }
+   }
+  ],
+  "partition_generation": 0,
+  "partition_tasks": 2,
+  "secret_free": true,
+  "settle": {
+   "store_after": "03053017c33fb607",
+   "store_before": "c08b2027a2e99194",
+   "value": {
+    "audit_id": "audit-fixture-001",
+    "changed": [
+     {
+      "analysis_outcome": "analysis_rejected",
+      "attempts": 2,
+      "audit_id": "audit-fixture-001",
+      "checkpoint_generation": null,
+      "corrected_subsystems": 0,
+      "correction_id": "repair-7212bdcb98e34ce50cf7fb16",
+      "diagnosis": "missing_test_disposition",
+      "reason_code": "content_rejected_again",
+      "remaining_targets": 1,
+      "source_execution_ref": "sha256:bf07fd59d39f46ae876f0993ed9dae873c1eeb62bae00989cd62a73b7e657d1f",
+      "source_task_id": "5eed0000-0000-4000-8000-000000000032",
+      "state": "research_required",
+      "successor_execution_ref": "sha256:73dfa883bb31e75d5ca1dbe7f8854b14c60a0e1ae4b11eeae21f631ca73480ab",
+      "successor_task_id": "5eed0000-0000-4000-8000-000000000033",
+      "target_subsystems": 1
+     }
+    ],
+    "notices": [
+     {
+      "correction_id": "repair-7212bdcb98e34ce50cf7fb16",
+      "correlation_id": "repair:repair-7212bdcb98e34ce50cf7fb16",
+      "notice_id": "13d9803ec523a7ec3ceffe54e119226e73f2cd57d274b6e5536756f885bb679f",
+      "published": false
+     }
+    ],
+    "settled": [
+     {
+      "analysis_outcome": "analysis_rejected",
+      "attempts": 2,
+      "audit_id": "audit-fixture-001",
+      "checkpoint_generation": null,
+      "corrected_subsystems": 0,
+      "correction_id": "repair-7212bdcb98e34ce50cf7fb16",
+      "diagnosis": "missing_test_disposition",
+      "reason_code": "content_rejected_again",
+      "remaining_targets": 1,
+      "source_execution_ref": "sha256:bf07fd59d39f46ae876f0993ed9dae873c1eeb62bae00989cd62a73b7e657d1f",
+      "source_task_id": "5eed0000-0000-4000-8000-000000000032",
+      "state": "research_required",
+      "successor_execution_ref": "sha256:73dfa883bb31e75d5ca1dbe7f8854b14c60a0e1ae4b11eeae21f631ca73480ab",
+      "successor_task_id": "5eed0000-0000-4000-8000-000000000033",
+      "target_subsystems": 1
+     }
+    ]
+   },
+   "wrote": true
+  },
+  "status": {
+   "store_after": "03053017c33fb607",
+   "store_before": "03053017c33fb607",
+   "value": {
+    "audit_id": "audit-fixture-001",
+    "corrections": [
+     {
+      "analysis_outcome": "analysis_rejected",
+      "attempts": 2,
+      "audit_id": "audit-fixture-001",
+      "checkpoint_generation": null,
+      "corrected_subsystems": 0,
+      "created_at": "2026-09-22T00:00:00.104000+00:00",
+      "diagnosis": "missing_test_disposition",
+      "field": "tests",
+      "id": "repair-7212bdcb98e34ce50cf7fb16",
+      "notice_id": "13d9803ec523a7ec3ceffe54e119226e73f2cd57d274b6e5536756f885bb679f",
+      "notice_published": false,
+      "partition_generation": 0,
+      "partition_id": "partition-fixture-001",
+      "reason_code": "content_rejected_again",
+      "remaining_targets": 1,
+      "source_execution_ref": "sha256:bf07fd59d39f46ae876f0993ed9dae873c1eeb62bae00989cd62a73b7e657d1f",
+      "source_task_generation": 0,
+      "source_task_id": "5eed0000-0000-4000-8000-000000000032",
+      "state": "research_required",
+      "subsystems_total": 1,
+      "successor_execution_ref": "sha256:73dfa883bb31e75d5ca1dbe7f8854b14c60a0e1ae4b11eeae21f631ca73480ab",
+      "successor_published": true,
+      "successor_schedule_key": "repair:repair-7212bdcb98e34ce50cf7fb16",
+      "successor_task_id": "5eed0000-0000-4000-8000-000000000033",
+      "target_subsystems": 1,
+      "updated_at": "2026-09-22T00:00:00.105000+00:00"
+     }
+    ],
+    "counts": {
+     "admitted": 0,
+     "attempted": 1,
+     "deferred": 0,
+     "reconciliation_required": 0,
+     "repaired": 0,
+     "research_required": 1
+    },
+    "enabled": true,
+    "operator": "owner-fixture",
+    "schema": "urn:zeus:audit-repair:1",
+    "scope": [
+     "5eed0000-0000-4000-8000-000000000032"
+    ],
+    "updated_at": "2026-09-22T00:00:00.103000+00:00"
+   },
+   "wrote": false
+  },
+  "tick": {
+   "store_after": "03053017c33fb607",
+   "store_before": "03053017c33fb607",
+   "value": {
+    "admission": {
+     "admitted": false,
+     "correction": {
+      "analysis_outcome": "analysis_rejected",
+      "attempts": 2,
+      "audit_id": "audit-fixture-001",
+      "checkpoint_generation": null,
+      "corrected_subsystems": 0,
+      "created_at": "2026-09-22T00:00:00.104000+00:00",
+      "diagnosis": "missing_test_disposition",
+      "field": "tests",
+      "id": "repair-7212bdcb98e34ce50cf7fb16",
+      "notice_id": "13d9803ec523a7ec3ceffe54e119226e73f2cd57d274b6e5536756f885bb679f",
+      "notice_published": false,
+      "partition_generation": 0,
+      "partition_id": "partition-fixture-001",
+      "reason_code": "content_rejected_again",
+      "remaining_targets": 1,
+      "source_execution_ref": "sha256:bf07fd59d39f46ae876f0993ed9dae873c1eeb62bae00989cd62a73b7e657d1f",
+      "source_task_generation": 0,
+      "source_task_id": "5eed0000-0000-4000-8000-000000000032",
+      "state": "research_required",
+      "subsystems_total": 1,
+      "successor_execution_ref": "sha256:73dfa883bb31e75d5ca1dbe7f8854b14c60a0e1ae4b11eeae21f631ca73480ab",
+      "successor_published": true,
+      "successor_schedule_key": "repair:repair-7212bdcb98e34ce50cf7fb16",
+      "successor_task_id": "5eed0000-0000-4000-8000-000000000033",
+      "target_subsystems": 1,
+      "updated_at": "2026-09-22T00:00:00.105000+00:00"
+     },
+     "correction_id": "repair-7212bdcb98e34ce50cf7fb16",
+     "diagnosis": "missing_test_disposition",
+     "error_type": null,
+     "partition_generation": 0,
+     "partition_id": "partition-fixture-001",
+     "reason_code": "family_closed",
+     "source_task_id": "5eed0000-0000-4000-8000-000000000032",
+     "successor_task_id": "5eed0000-0000-4000-8000-000000000033"
+    },
+    "audit_id": "audit-fixture-001",
+    "notices": [
+     {
+      "correction_id": "repair-7212bdcb98e34ce50cf7fb16",
+      "correlation_id": "repair:repair-7212bdcb98e34ce50cf7fb16",
+      "notice_id": "13d9803ec523a7ec3ceffe54e119226e73f2cd57d274b6e5536756f885bb679f",
+      "published": false
+     }
+    ],
+    "settled": []
+   },
+   "wrote": false
+  },
+  "transition_ref_is_digest_of_proof": true
+ },
+ "settlement_branches": {
+  "m7_test": "none",
+  "settle_unknown_audit": {
+   "store_after": "c2b7fd0cb1d4cd61",
+   "store_before": "c2b7fd0cb1d4cd61",
+   "value": {
+    "audit_id": "absent-audit",
+    "changed": [],
+    "notices": [],
+    "settled": []
+   },
+   "wrote": false
+  },
+  "settle_without_lineage": {
+   "store_after": "c2b7fd0cb1d4cd61",
+   "store_before": "c2b7fd0cb1d4cd61",
+   "value": {
+    "audit_id": "audit-fixture-001",
+    "changed": [],
+    "notices": [],
+    "settled": []
+   },
+   "wrote": false
+  },
+  "status_unknown_audit": {
+   "store_after": "c2b7fd0cb1d4cd61",
+   "store_before": "c2b7fd0cb1d4cd61",
+   "value": {
+    "audit_id": "absent-audit",
+    "corrections": [],
+    "counts": {
+     "admitted": 0,
+     "attempted": 0,
+     "deferred": 0,
+     "reconciliation_required": 0,
+     "repaired": 0,
+     "research_required": 0
+    },
+    "enabled": false,
+    "operator": null,
+    "schema": "urn:zeus:audit-repair:1",
+    "scope": [],
+    "updated_at": null
+   },
+   "wrote": false
+  },
+  "status_without_lineage": {
+   "store_after": "c2b7fd0cb1d4cd61",
+   "store_before": "c2b7fd0cb1d4cd61",
+   "value": {
+    "audit_id": "audit-fixture-001",
+    "corrections": [],
+    "counts": {
+     "admitted": 0,
+     "attempted": 0,
+     "deferred": 0,
+     "reconciliation_required": 0,
+     "repaired": 0,
+     "research_required": 0
+    },
+    "enabled": true,
+    "operator": "owner-fixture",
+    "schema": "urn:zeus:audit-repair:1",
+    "scope": [
+     "5eed0000-0000-4000-8000-000000000042"
+    ],
+    "updated_at": "2026-09-22T00:00:00.138000+00:00"
+   },
+   "wrote": false
+  },
+  "unbound": {
+   "store_after": "89195c6438bc3158",
+   "store_before": "ce2e9dc79099231b",
+   "value": {
+    "audit_id": "audit-fixture-001",
+    "changed": [
+     {
+      "analysis_outcome": null,
+      "attempts": 2,
+      "audit_id": "audit-fixture-001",
+      "checkpoint_generation": null,
+      "corrected_subsystems": 0,
+      "correction_id": "repair-7957a0bb04e4c6239a424df1",
+      "diagnosis": "missing_test_disposition",
+      "reason_code": "successor_unbound",
+      "remaining_targets": 1,
+      "source_execution_ref": "sha256:bf07fd59d39f46ae876f0993ed9dae873c1eeb62bae00989cd62a73b7e657d1f",
+      "source_task_id": "5eed0000-0000-4000-8000-00000000003e",
+      "state": "reconciliation_required",
+      "successor_execution_ref": null,
+      "successor_task_id": "5eed0000-0000-4000-8000-00000000003f",
+      "target_subsystems": 1
+     }
+    ],
+    "notices": [],
+    "settled": [
+     {
+      "analysis_outcome": null,
+      "attempts": 2,
+      "audit_id": "audit-fixture-001",
+      "checkpoint_generation": null,
+      "corrected_subsystems": 0,
+      "correction_id": "repair-7957a0bb04e4c6239a424df1",
+      "diagnosis": "missing_test_disposition",
+      "reason_code": "successor_unbound",
+      "remaining_targets": 1,
+      "source_execution_ref": "sha256:bf07fd59d39f46ae876f0993ed9dae873c1eeb62bae00989cd62a73b7e657d1f",
+      "source_task_id": "5eed0000-0000-4000-8000-00000000003e",
+      "state": "reconciliation_required",
+      "successor_execution_ref": null,
+      "successor_task_id": "5eed0000-0000-4000-8000-00000000003f",
+      "target_subsystems": 1
+     }
+    ]
+   },
+   "wrote": true
+  },
+  "unclassified": {
+   "store_after": "8df4a718600c5097",
+   "store_before": "aaec8e3202ff8254",
+   "value": {
+    "audit_id": "audit-fixture-001",
+    "changed": [
+     {
+      "analysis_outcome": "analysis_unclassified",
+      "attempts": 2,
+      "audit_id": "audit-fixture-001",
+      "checkpoint_generation": 0,
+      "corrected_subsystems": 0,
+      "correction_id": "repair-0fcfbe414580050a65bb38b8",
+      "diagnosis": "missing_test_disposition",
+      "reason_code": "unclassified_result",
+      "remaining_targets": 1,
+      "source_execution_ref": "sha256:bf07fd59d39f46ae876f0993ed9dae873c1eeb62bae00989cd62a73b7e657d1f",
+      "source_task_id": "5eed0000-0000-4000-8000-000000000040",
+      "state": "deferred",
+      "successor_execution_ref": "sha256:73dfa883bb31e75d5ca1dbe7f8854b14c60a0e1ae4b11eeae21f631ca73480ab",
+      "successor_task_id": "5eed0000-0000-4000-8000-000000000041",
+      "target_subsystems": 1
+     }
+    ],
+    "notices": [],
+    "settled": [
+     {
+      "analysis_outcome": "analysis_unclassified",
+      "attempts": 2,
+      "audit_id": "audit-fixture-001",
+      "checkpoint_generation": 0,
+      "corrected_subsystems": 0,
+      "correction_id": "repair-0fcfbe414580050a65bb38b8",
+      "diagnosis": "missing_test_disposition",
+      "reason_code": "unclassified_result",
+      "remaining_targets": 1,
+      "source_execution_ref": "sha256:bf07fd59d39f46ae876f0993ed9dae873c1eeb62bae00989cd62a73b7e657d1f",
+      "source_task_id": "5eed0000-0000-4000-8000-000000000040",
+      "state": "deferred",
+      "successor_execution_ref": "sha256:73dfa883bb31e75d5ca1dbe7f8854b14c60a0e1ae4b11eeae21f631ca73480ab",
+      "successor_task_id": "5eed0000-0000-4000-8000-000000000041",
+      "target_subsystems": 1
+     }
+    ]
+   },
+   "wrote": true
+  }
+ },
+ "state_change": {
+  "admit": {
+   "store_after": "313ca592acab452d",
+   "store_before": "552bf412dbf0956a",
+   "value": {
+    "admitted": false,
+    "correction": null,
+    "correction_id": null,
+    "diagnosis": "missing_test_disposition",
+    "error_type": null,
+    "partition_generation": 0,
+    "partition_id": "partition-fixture-001",
+    "reason_code": "binding_changed",
+    "source_task_id": "5eed0000-0000-4000-8000-000000000017",
+    "successor_task_id": null
+   },
+   "wrote": true
+  },
+  "disabled_meanwhile": {
+   "admit": {
+    "store_after": "c9f093741f06297a",
+    "store_before": "8e57d158d36f9d23",
+    "value": {
+     "admitted": false,
+     "correction": null,
+     "correction_id": null,
+     "diagnosis": "missing_test_disposition",
+     "error_type": null,
+     "partition_generation": 0,
+     "partition_id": "partition-fixture-001",
+     "reason_code": "not_enabled",
+     "source_task_id": "5eed0000-0000-4000-8000-000000000019",
+     "successor_task_id": null
+    },
+    "wrote": true
+   },
+   "state": {
+    "corrections": [],
+    "events": [],
+    "outbox": [],
+    "schedule": []
+   }
+  },
+  "m7_test": "test_a_state_change_between_the_diagnosis_and_the_commit_admits_nothing",
+  "replay_calls": [
+   {
+    "generation": 0,
+    "partition_id": "partition-fixture-001",
+    "subsystems": [
+     "core"
+    ]
+   }
+  ],
+  "state": {
+   "corrections": [],
+   "events": [],
+   "outbox": [],
+   "schedule": []
+  },
+  "task_changed": {
+   "admit": {
+    "store_after": "a97374b033c9beb9",
+    "store_before": "3eb1c56f31e4fb18",
+    "value": {
+     "admitted": false,
+     "correction": null,
+     "correction_id": null,
+     "diagnosis": "missing_test_disposition",
+     "error_type": null,
+     "partition_generation": 0,
+     "partition_id": "partition-fixture-001",
+     "reason_code": "binding_changed",
+     "source_task_id": "5eed0000-0000-4000-8000-000000000018",
+     "successor_task_id": null
+    },
+    "wrote": true
+   },
+   "state": {
+    "corrections": [],
+    "events": [],
+    "outbox": [],
+    "schedule": []
+   }
+  }
+ },
+ "termination_markers": {
+  "m7_test": "test_an_unresolved_termination_marker_of_the_source_execution_admits_nothing",
+  "pending_reconciliation": {
+   "after_resolved_and_other": {
+    "store_after": "f18e1cbfb33ba2d9",
+    "store_before": "be1af3178397139f",
+    "value": {
+     "admitted": true,
+     "correction": {
+      "analysis_outcome": null,
+      "attempts": 2,
+      "audit_id": "audit-fixture-001",
+      "checkpoint_generation": null,
+      "corrected_subsystems": null,
+      "created_at": "2026-09-22T00:00:00.073000+00:00",
+      "diagnosis": "missing_test_disposition",
+      "field": "tests",
+      "id": "repair-09da56341a99355659edce11",
+      "notice_id": null,
+      "notice_published": null,
+      "partition_generation": 0,
+      "partition_id": "partition-fixture-001",
+      "reason_code": "successor_not_submitted",
+      "remaining_targets": null,
+      "source_execution_ref": "sha256:bf07fd59d39f46ae876f0993ed9dae873c1eeb62bae00989cd62a73b7e657d1f",
+      "source_task_generation": 0,
+      "source_task_id": "5eed0000-0000-4000-8000-00000000001f",
+      "state": "admitted",
+      "subsystems_total": 1,
+      "successor_execution_ref": null,
+      "successor_published": null,
+      "successor_schedule_key": "repair:repair-09da56341a99355659edce11",
+      "successor_task_id": "5eed0000-0000-4000-8000-000000000020",
+      "target_subsystems": null,
+      "updated_at": "2026-09-22T00:00:00.073000+00:00"
+     },
+     "correction_id": "repair-09da56341a99355659edce11",
+     "diagnosis": "missing_test_disposition",
+     "error_type": null,
+     "partition_generation": 0,
+     "partition_id": "partition-fixture-001",
+     "reason_code": null,
+     "source_task_id": "5eed0000-0000-4000-8000-00000000001f",
+     "successor_task_id": "5eed0000-0000-4000-8000-000000000020"
+    },
+    "wrote": true
+   },
+   "blocked": {
+    "store_after": "af4c5f71223bc33a",
+    "store_before": "af4c5f71223bc33a",
+    "value": {
+     "admitted": false,
+     "correction": null,
+     "correction_id": null,
+     "diagnosis": "missing_test_disposition",
+     "error_type": null,
+     "partition_generation": 0,
+     "partition_id": "partition-fixture-001",
+     "reason_code": "unresolved_termination",
+     "source_task_id": "5eed0000-0000-4000-8000-00000000001f",
+     "successor_task_id": null
+    },
+    "wrote": false
+   },
+   "nothing_was_queued": true,
+   "state": {
+    "corrections": [
+     "repair-09da56341a99355659edce11"
+    ],
+    "events": [
+     "audit.repair_admitted"
+    ],
+    "outbox": [
+     "repair:repair-09da56341a99355659edce11"
+    ],
+    "schedule": [
+     "repair:repair-09da56341a99355659edce11"
+    ]
+   }
+  },
+  "unconfirmed": {
+   "after_resolved_and_other": {
+    "store_after": "7907e2cda9ecf64c",
+    "store_before": "fd05ee6bd89034d7",
+    "value": {
+     "admitted": true,
+     "correction": {
+      "analysis_outcome": null,
+      "attempts": 2,
+      "audit_id": "audit-fixture-001",
+      "checkpoint_generation": null,
+      "corrected_subsystems": null,
+      "created_at": "2026-09-22T00:00:00.070000+00:00",
+      "diagnosis": "missing_test_disposition",
+      "field": "tests",
+      "id": "repair-d3781f64c36aece3eccc2c33",
+      "notice_id": null,
+      "notice_published": null,
+      "partition_generation": 0,
+      "partition_id": "partition-fixture-001",
+      "reason_code": "successor_not_submitted",
+      "remaining_targets": null,
+      "source_execution_ref": "sha256:bf07fd59d39f46ae876f0993ed9dae873c1eeb62bae00989cd62a73b7e657d1f",
+      "source_task_generation": 0,
+      "source_task_id": "5eed0000-0000-4000-8000-00000000001d",
+      "state": "admitted",
+      "subsystems_total": 1,
+      "successor_execution_ref": null,
+      "successor_published": null,
+      "successor_schedule_key": "repair:repair-d3781f64c36aece3eccc2c33",
+      "successor_task_id": "5eed0000-0000-4000-8000-00000000001e",
+      "target_subsystems": null,
+      "updated_at": "2026-09-22T00:00:00.070000+00:00"
+     },
+     "correction_id": "repair-d3781f64c36aece3eccc2c33",
+     "diagnosis": "missing_test_disposition",
+     "error_type": null,
+     "partition_generation": 0,
+     "partition_id": "partition-fixture-001",
+     "reason_code": null,
+     "source_task_id": "5eed0000-0000-4000-8000-00000000001d",
+     "successor_task_id": "5eed0000-0000-4000-8000-00000000001e"
+    },
+    "wrote": true
+   },
+   "blocked": {
+    "store_after": "8b75cfbeeb6ac786",
+    "store_before": "8b75cfbeeb6ac786",
+    "value": {
+     "admitted": false,
+     "correction": null,
+     "correction_id": null,
+     "diagnosis": "missing_test_disposition",
+     "error_type": null,
+     "partition_generation": 0,
+     "partition_id": "partition-fixture-001",
+     "reason_code": "unresolved_termination",
+     "source_task_id": "5eed0000-0000-4000-8000-00000000001d",
+     "successor_task_id": null
+    },
+    "wrote": false
+   },
+   "nothing_was_queued": true,
+   "state": {
+    "corrections": [
+     "repair-d3781f64c36aece3eccc2c33"
+    ],
+    "events": [
+     "audit.repair_admitted"
+    ],
+    "outbox": [
+     "repair:repair-d3781f64c36aece3eccc2c33"
+    ],
+    "schedule": [
+     "repair:repair-d3781f64c36aece3eccc2c33"
+    ]
+   }
+  }
+ },
+ "unreadable_control": {
+  "blind": {
+   "store_after": "49b790c9efa6f3b3",
+   "store_before": "49b790c9efa6f3b3",
+   "value": {
+    "admitted": false,
+    "correction": null,
+    "correction_id": null,
+    "diagnosis": "missing_test_disposition",
+    "error_type": null,
+    "partition_generation": 0,
+    "partition_id": "partition-fixture-001",
+    "reason_code": "control_unavailable",
+    "source_task_id": "5eed0000-0000-4000-8000-000000000021",
+    "successor_task_id": null
+   },
+   "wrote": false
+  },
+  "blind_terminations": {
+   "admit": {
+    "store_after": "ec91b88868e5d367",
+    "store_before": "ec91b88868e5d367",
+    "value": {
+     "admitted": false,
+     "correction": null,
+     "correction_id": null,
+     "diagnosis": "missing_test_disposition",
+     "error_type": null,
+     "partition_generation": 0,
+     "partition_id": "partition-fixture-001",
+     "reason_code": "control_unavailable",
+     "source_task_id": "5eed0000-0000-4000-8000-000000000023",
+     "successor_task_id": null
+    },
+    "wrote": false
+   },
+   "nothing_was_queued": true
+  },
+  "m7_test": "test_an_unreadable_control_row_is_unknown_and_never_permission",
+  "nothing_was_queued": true,
+  "state": {
+   "corrections": [
+    "repair-48d1614adde9b7e99276a405"
+   ],
+   "events": [
+    "audit.repair_admitted"
+   ],
+   "outbox": [
+    "repair:repair-48d1614adde9b7e99276a405"
+   ],
+   "schedule": [
+    "repair:repair-48d1614adde9b7e99276a405"
+   ]
+  },
+  "then_ordinary": {
+   "store_after": "5cce663f3eccfce8",
+   "store_before": "49b790c9efa6f3b3",
+   "value": {
+    "admitted": true,
+    "correction": {
+     "analysis_outcome": null,
+     "attempts": 2,
+     "audit_id": "audit-fixture-001",
+     "checkpoint_generation": null,
+     "corrected_subsystems": null,
+     "created_at": "2026-09-22T00:00:00.076000+00:00",
+     "diagnosis": "missing_test_disposition",
+     "field": "tests",
+     "id": "repair-48d1614adde9b7e99276a405",
+     "notice_id": null,
+     "notice_published": null,
+     "partition_generation": 0,
+     "partition_id": "partition-fixture-001",
+     "reason_code": "successor_not_submitted",
+     "remaining_targets": null,
+     "source_execution_ref": "sha256:bf07fd59d39f46ae876f0993ed9dae873c1eeb62bae00989cd62a73b7e657d1f",
+     "source_task_generation": 0,
+     "source_task_id": "5eed0000-0000-4000-8000-000000000021",
+     "state": "admitted",
+     "subsystems_total": 1,
+     "successor_execution_ref": null,
+     "successor_published": null,
+     "successor_schedule_key": "repair:repair-48d1614adde9b7e99276a405",
+     "successor_task_id": "5eed0000-0000-4000-8000-000000000022",
+     "target_subsystems": null,
+     "updated_at": "2026-09-22T00:00:00.076000+00:00"
+    },
+    "correction_id": "repair-48d1614adde9b7e99276a405",
+    "diagnosis": "missing_test_disposition",
+    "error_type": null,
+    "partition_generation": 0,
+    "partition_id": "partition-fixture-001",
+    "reason_code": null,
+    "source_task_id": "5eed0000-0000-4000-8000-000000000021",
+    "successor_task_id": "5eed0000-0000-4000-8000-000000000022"
+   },
+   "wrote": true
+  }
+ },
+ "unrelated_corrected": {
+  "admitted_total": 1,
+  "history_rows_of_successor": {
+   "other": true
+  },
+  "m7_test": "test_valid_work_outside_the_diagnosed_targets_is_deferred_not_a_repair",
+  "partition_generation": 1,
+  "remaining_subsystems": [
+   "core",
+   "other"
+  ],
+  "settle": {
+   "store_after": "466fd8287f7de42a",
+   "store_before": "834be5d037e93b48",
+   "value": {
+    "audit_id": "audit-fixture-001",
+    "changed": [
+     {
+      "analysis_outcome": "analysis_checkpointed",
+      "attempts": 2,
+      "audit_id": "audit-fixture-001",
+      "checkpoint_generation": 1,
+      "corrected_subsystems": 0,
+      "correction_id": "repair-cf69b56887959aeb96e908bc",
+      "diagnosis": "missing_test_disposition",
+      "reason_code": "no_corrected_subsystem",
+      "remaining_targets": 1,
+      "source_execution_ref": "sha256:b418d1c601ed0e4deeb753b7d9c91c1d1af65fde915dd77ae58c99ee8471396d",
+      "source_task_id": "5eed0000-0000-4000-8000-000000000028",
+      "state": "deferred",
+      "successor_execution_ref": "sha256:73dfa883bb31e75d5ca1dbe7f8854b14c60a0e1ae4b11eeae21f631ca73480ab",
+      "successor_task_id": "5eed0000-0000-4000-8000-000000000029",
+      "target_subsystems": 1
+     }
+    ],
+    "notices": [],
+    "settled": [
+     {
+      "analysis_outcome": "analysis_checkpointed",
+      "attempts": 2,
+      "audit_id": "audit-fixture-001",
+      "checkpoint_generation": 1,
+      "corrected_subsystems": 0,
+      "correction_id": "repair-cf69b56887959aeb96e908bc",
+      "diagnosis": "missing_test_disposition",
+      "reason_code": "no_corrected_subsystem",
+      "remaining_targets": 1,
+      "source_execution_ref": "sha256:b418d1c601ed0e4deeb753b7d9c91c1d1af65fde915dd77ae58c99ee8471396d",
+      "source_task_id": "5eed0000-0000-4000-8000-000000000028",
+      "state": "deferred",
+      "successor_execution_ref": "sha256:73dfa883bb31e75d5ca1dbe7f8854b14c60a0e1ae4b11eeae21f631ca73480ab",
+      "successor_task_id": "5eed0000-0000-4000-8000-000000000029",
+      "target_subsystems": 1
+     }
+    ]
+   },
+   "wrote": true
+  },
+  "status": {
+   "store_after": "466fd8287f7de42a",
+   "store_before": "466fd8287f7de42a",
+   "value": {
+    "audit_id": "audit-fixture-001",
+    "corrections": [
+     {
+      "analysis_outcome": "analysis_checkpointed",
+      "attempts": 2,
+      "audit_id": "audit-fixture-001",
+      "checkpoint_generation": 1,
+      "corrected_subsystems": 0,
+      "created_at": "2026-09-22T00:00:00.088000+00:00",
+      "diagnosis": "missing_test_disposition",
+      "field": "tests",
+      "id": "repair-cf69b56887959aeb96e908bc",
+      "notice_id": null,
+      "notice_published": null,
+      "partition_generation": 0,
+      "partition_id": "partition-fixture-001",
+      "reason_code": "no_corrected_subsystem",
+      "remaining_targets": 1,
+      "source_execution_ref": "sha256:b418d1c601ed0e4deeb753b7d9c91c1d1af65fde915dd77ae58c99ee8471396d",
+      "source_task_generation": 0,
+      "source_task_id": "5eed0000-0000-4000-8000-000000000028",
+      "state": "deferred",
+      "subsystems_total": 1,
+      "successor_execution_ref": "sha256:73dfa883bb31e75d5ca1dbe7f8854b14c60a0e1ae4b11eeae21f631ca73480ab",
+      "successor_published": true,
+      "successor_schedule_key": "repair:repair-cf69b56887959aeb96e908bc",
+      "successor_task_id": "5eed0000-0000-4000-8000-000000000029",
+      "target_subsystems": 1,
+      "updated_at": "2026-09-22T00:00:00.089000+00:00"
+     }
+    ],
+    "counts": {
+     "admitted": 0,
+     "attempted": 1,
+     "deferred": 1,
+     "reconciliation_required": 0,
+     "repaired": 0,
+     "research_required": 0
+    },
+    "enabled": true,
+    "operator": "owner-fixture",
+    "schema": "urn:zeus:audit-repair:1",
+    "scope": [
+     "5eed0000-0000-4000-8000-000000000028"
+    ],
+    "updated_at": "2026-09-22T00:00:00.087000+00:00"
+   },
+   "wrote": false
+  }
+ },
+ "unsupported_diagnosis": {
+  "admit": {
+   "store_after": "5ebfbb3278574dd9",
+   "store_before": "5ebfbb3278574dd9",
+   "value": {
+    "admitted": false,
+    "correction": null,
+    "correction_id": null,
+    "diagnosis": null,
+    "error_type": null,
+    "partition_generation": 0,
+    "partition_id": "partition-fixture-001",
+    "reason_code": "unsupported_diagnosis",
+    "source_task_id": "5eed0000-0000-4000-8000-000000000002",
+    "successor_task_id": null
+   },
+   "wrote": false
+  },
+  "m7_test": "test_another_refusal_shape_is_read_but_never_diagnosed",
+  "replay_calls": [],
+  "state": {
+   "corrections": [],
+   "events": [],
+   "outbox": [],
+   "schedule": []
+  }
+ }
+}
