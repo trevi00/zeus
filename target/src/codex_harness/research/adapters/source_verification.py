@@ -3,11 +3,11 @@
 Layer: adapters
 Context: research
 Owns: GitSourceVerifier, the inventory and verification of a pinned source commit read through Git objects only (no checkout, no upstream code executed), with every blob retained as a content-addressed envelope
-Does not own: the console-window suppression (host_os's no_console_kwargs, injected as `console_kwargs` by composition), the artifact store (storage, behind research.ports.AuditArtifacts), the audit application that calls it (research.application.research)
+Does not own: the child-process creation and console-window suppression (host_os's ChildProcesses, injected as `processes` by composition), the artifact store (storage, behind research.ports.AuditArtifacts), the audit application that calls it (research.application.research)
 Entry points: GitSourceVerifier
 Contracts: INV-RESEARCH-001, INV-GRAPH-001
 
-Moved from M7 `adapters/source_verification.py` (SOURCE e38aa722) through named rules (DESIGN-s8 §13 V18, A/evidence/rebuild/s8/hostos-adapters-move/transcribe.py): R-sv0 (each name from the target home of the module that defines it; the `no_console_kwargs` import is removed), R-sv1 (`console_kwargs` is an injected keyword-only port of `GitSourceVerifier`, checked by one added `require` at its first use in `git`); every other statement is M7's. The first paragraph is M7's module docstring.
+Moved from M7 `adapters/source_verification.py` (SOURCE e38aa722) through named rules (DESIGN-s8 §13 V18, A/evidence/rebuild/s8/hostos-adapters-move/transcribe.py): R-sv0 (each name from the target home of the module that defines it; the `no_console_kwargs` import is removed), R-sv2 (host_os's `ChildProcesses` is an injected keyword-only port `processes` of `GitSourceVerifier`, checked by one added `require` at its first use in `git`; its `run` applies the no-console kwargs, so the call drops `**no_console_kwargs()`); every other statement is M7's. The first paragraph is M7's module docstring.
 """
 from __future__ import annotations
 
@@ -23,16 +23,15 @@ from codex_harness.research.domain.research import InventoryEntry, SourceIdentit
 
 
 class GitSourceVerifier:
-    def __init__(self, repository, artifacts, *, console_kwargs=None):
+    def __init__(self, repository, artifacts, *, processes=None):
         self.repository, self.artifacts = str(repository), artifacts
-        # V18 port (keyword-only): host_os's `no_console_kwargs`, wired by composition (R-sv1)
-        self.console_kwargs = console_kwargs
+        # V18 port (keyword-only): host_os's `ChildProcesses` (`run` applies the no-console kwargs), wired by composition (R-sv2)
+        self.processes = processes
 
     def git(self, *args):
-        require(self.console_kwargs is not None, 'console_kwargs is not wired')
-        result = subprocess.run(['git', '--no-replace-objects', '-C', self.repository, *args],
-                                stdout=subprocess.PIPE, stderr=subprocess.PIPE, timeout=60,
-                                **self.console_kwargs())
+        require(self.processes is not None, 'processes is not wired')
+        result = self.processes.run(['git', '--no-replace-objects', '-C', self.repository, *args],
+                                stdout=subprocess.PIPE, stderr=subprocess.PIPE, timeout=60)
         require(result.returncode == 0, 'Source Git inspection failed: '
                 + result.stderr.decode('utf-8', errors='replace'))
         return result.stdout

@@ -1,10 +1,10 @@
-"""Target driver: `research.source_verification` on the target tree (S8 pilot 91: ``research.adapters.source_verification` (V18 R-sv1: `console_kwargs` is an injected keyword-only port)`).
+"""Target driver: `research.source_verification` on the target tree (S8 pilot 91: `research.adapters.source_verification`, V18 R-sv2: host_os's
+`ChildProcesses` is an injected keyword-only port `processes`).
 
-`verifier(repository, artifacts, run)` injects the scenario's LABELLED console-kwargs fake as `console_kwargs=` and binds the same fake
-`subprocess.run` the reference binds (the target's standard library is never otherwise patched)."""
+`verifier(repository, artifacts, run)` injects a LABELLED `ChildProcesses` double whose `run` calls the scenario's fake `subprocess.run` with the
+no-console keywords the reference's patched `no_console_kwargs` returns (what `ChokepointProcesses.run` does with the real ones); nothing in the
+standard library is patched."""
 
-import contextlib
-import subprocess
 import sys
 from pathlib import Path
 from types import SimpleNamespace
@@ -23,39 +23,18 @@ from codex_harness.research.domain.research import InventoryEntry, SourceIdentit
 from codex_harness.storage.adapters.file_artifacts import FileArtifacts  # noqa: E402
 
 
-@contextlib.contextmanager
-def fake_run(run):
-    """The stdlib `subprocess.run` the verifier calls, replaced by the scenario's LABELLED fake for one call."""
-    saved = subprocess.run
-    subprocess.run = run
-    try:
-        yield
-    finally:
-        subprocess.run = saved
+class Processes:
+    """LABELLED double of `host_os.ports.ChildProcesses`: `run` applies the (fake) no-console keywords itself, as the chokepoint implementation does."""
 
+    def __init__(self, run):
+        self.fake = run
 
-class Bound:
-    """The verifier under the fake `subprocess.run`: every method runs inside `fake_run`."""
-
-    def __init__(self, verifier, run):
-        self.verifier, self.run = verifier, run
-        self.repository, self.artifacts = verifier.repository, verifier.artifacts
-
-    def git(self, *args):
-        with fake_run(self.run):
-            return self.verifier.git(*args)
-
-    def inventory(self, source):
-        with fake_run(self.run):
-            return self.verifier.inventory(source)
-
-    def verify(self, source, entries):
-        with fake_run(self.run):
-            return self.verifier.verify(source, entries)
+    def run(self, argv, *, process_group=False, **kwargs):
+        return self.fake(argv, **kwargs, **common.CONSOLE_MARK)
 
 
 def verifier(repository, artifacts, run):
-    return Bound(module.GitSourceVerifier(repository, artifacts, console_kwargs=lambda: dict(common.CONSOLE_MARK)), run)
+    return module.GitSourceVerifier(repository, artifacts, processes=Processes(run))
 
 
 API = SimpleNamespace(verifier=verifier, FileArtifacts=FileArtifacts, SourceIdentity=SourceIdentity, InventoryEntry=InventoryEntry, canonical=canonical)

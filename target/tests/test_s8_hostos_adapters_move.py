@@ -1,5 +1,5 @@
 """S8 pilot 91 (DESIGN-s8 §13 V18): three small M7 research adapters moved with host_os ports injected: `research.adapters.decision_feedback`
-(R-df1), `research.adapters.reverse_source` (R-rs1) and `research.adapters.source_verification` (R-sv1). Everything but the named rules is M7's
+(R-df1), `research.adapters.reverse_source` (R-rs1) and `research.adapters.source_verification` (R-sv2). Everything but the named rules is M7's
 (A/evidence/rebuild/s8/hostos-adapters-move/transcribe.py).
 
 M7 is read only as text through `git show e38aa722:...` and compared by AST (never imported: both packages are named `codex_harness`). Behaviour is
@@ -32,7 +32,7 @@ HOMES = {
 }
 REWRITTEN = {"decision_feedback": "load_registry", "reverse_source": "observe_source", "source_verification": "GitSourceVerifier"}
 UNWIRED_RUN = "run_process is not wired"
-UNWIRED_CONSOLE = "console_kwargs is not wired"
+UNWIRED_PROCESSES = "processes is not wired"
 
 
 def m7_text(name):
@@ -118,19 +118,23 @@ def test_r_rs1_run_process_is_a_keyword_only_port_checked_once_before_the_try():
     assert "run_process" not in imported("reverse_source").get("codex_harness.adapters.commands", [])
 
 
-def test_r_sv1_console_kwargs_is_a_keyword_only_port_checked_once_in_git():
+def test_r_sv2_processes_is_a_keyword_only_port_checked_once_in_git():
     ref = function(m7_text("source_verification"), "GitSourceVerifier")
     ours = function(target_text("source_verification"), "GitSourceVerifier")
     init_m, init_t = function(ours, "__init__"), function(ref, "__init__")
-    assert [a.arg for a in init_m.args.args] == ["self", "repository", "artifacts"] and [a.arg for a in init_m.args.kwonlyargs] == ["console_kwargs"]
+    assert [a.arg for a in init_m.args.args] == ["self", "repository", "artifacts"] and [a.arg for a in init_m.args.kwonlyargs] == ["processes"]
     assert [ast.unparse(d) for d in init_m.args.kw_defaults] == ["None"]
-    assert dumped(init_m.body[:1]) == dumped(init_t.body) and ast.unparse(init_m.body[1]) == "self.console_kwargs = console_kwargs"
+    assert dumped(init_m.body[:1]) == dumped(init_t.body) and ast.unparse(init_m.body[1]) == "self.processes = processes"
     git_m, git_t = function(ours, "git"), function(ref, "git")
-    assert ast.dump(git_m.body[0]) == ast.dump(ast.parse(f"require(self.console_kwargs is not None, {UNWIRED_CONSOLE!r})").body[0])
-    assert [ast.unparse(n).replace("self.console_kwargs()", "no_console_kwargs()") for n in git_m.body[1:]] == [ast.unparse(n) for n in git_t.body]
+    assert ast.dump(git_m.body[0]) == ast.dump(ast.parse(f"require(self.processes is not None, {UNWIRED_PROCESSES!r})").body[0])
+    assert [ast.unparse(n) for n in git_m.body[1:]] == [
+        ast.unparse(n).replace("subprocess.run(", "self.processes.run(").replace(", **no_console_kwargs()", "") for n in git_t.body]
     for method in ("inventory", "verify"):
         assert ast.dump(function(ours, method)) == ast.dump(function(ref, method)), method
-    assert "no_console_kwargs" not in {n.id for n in ast.walk(ast.parse(target_text("source_verification"))) if isinstance(n, ast.Name)}
+    names = {n.id for n in ast.walk(ast.parse(target_text("source_verification"))) if isinstance(n, ast.Name)}
+    assert "no_console_kwargs" not in names
+    # the chokepoint rule: no direct process creation outside host_os
+    assert not any(isinstance(n, ast.Call) and ast.unparse(n.func) == "subprocess.run" for n in ast.walk(ast.parse(target_text("source_verification"))))
 
 
 STDLIB = {"decision_feedback": {"hashlib": ["hashlib"], "json": ["json"]}, "reverse_source": {},
@@ -152,7 +156,7 @@ def test_headers_name_context_layer_the_move_and_the_rules(name):
     for needle in ("Layer: adapters", "Context: research", "Owns:", "Does not own:", "Entry points:", "Contracts: INV-", "Moved from M7 `adapters/" + name + ".py`",
                    "SOURCE e38aa722", "V18", "A/evidence/rebuild/s8/hostos-adapters-move/transcribe.py"):
         assert needle in header, needle
-    assert {"decision_feedback": "R-df1", "reverse_source": "R-rs1", "source_verification": "R-sv1"}[name] in header
+    assert {"decision_feedback": "R-df1", "reverse_source": "R-rs1", "source_verification": "R-sv2"}[name] in header
 
 
 def test_the_module_surface_is_m7s():
@@ -220,38 +224,44 @@ def test_a_failing_injected_run_process_is_still_an_unknown_observation(tmp_path
                                                                                     "reason": "OSError"}
 
 
-def test_source_verifier_passes_the_injected_console_kwargs_to_the_one_git_spawn(tmp_path, monkeypatch):
+def test_source_verifier_spawns_through_the_injected_processes_port_only(tmp_path, monkeypatch):
     calls = []
 
-    def fake_run(argv, **kwargs):
-        calls.append((argv, kwargs))
-        return SimpleNamespace(returncode=0, stdout=b"out", stderr=b"")
+    class Processes:
+        def run(self, argv, *, process_group=False, **kwargs):
+            calls.append((argv, process_group, kwargs))
+            return SimpleNamespace(returncode=0, stdout=b"out", stderr=b"")
 
-    monkeypatch.setattr(module("source_verification").subprocess, "run", fake_run)
-    verifier = module("source_verification").GitSourceVerifier(tmp_path, "artifacts", console_kwargs=lambda: {"creationflags": 7})
+    def spawn(*args, **kwargs):
+        raise AssertionError("the verifier must not create a process itself")
+
+    monkeypatch.setattr(subprocess, "run", spawn)
+    verifier = module("source_verification").GitSourceVerifier(tmp_path, "artifacts", processes=Processes())
     assert verifier.repository == str(tmp_path) and verifier.artifacts == "artifacts"
     assert verifier.git("rev-parse", "HEAD") == b"out"
-    (argv, kwargs), = calls
-    assert argv == ["git", "--no-replace-objects", "-C", str(tmp_path), "rev-parse", "HEAD"]
-    assert kwargs == {"stdout": subprocess.PIPE, "stderr": subprocess.PIPE, "timeout": 60, "creationflags": 7}
+    (argv, process_group, kwargs), = calls
+    assert argv == ["git", "--no-replace-objects", "-C", str(tmp_path), "rev-parse", "HEAD"] and process_group is False
+    assert kwargs == {"stdout": subprocess.PIPE, "stderr": subprocess.PIPE, "timeout": 60}
     with pytest.raises(TypeError):
-        module("source_verification").GitSourceVerifier(tmp_path, "artifacts", lambda: {})
+        module("source_verification").GitSourceVerifier(tmp_path, "artifacts", Processes())
 
 
-def test_r_sv1_git_without_console_kwargs_is_refused_before_any_process_is_spawned(tmp_path, monkeypatch):
+def test_r_sv2_git_without_processes_is_refused_before_any_process_is_spawned(tmp_path, monkeypatch):
     def spawn(*args, **kwargs):
-        raise AssertionError("no process may start without the console kwargs port")
+        raise AssertionError("no process may start without the processes port")
 
-    monkeypatch.setattr(module("source_verification").subprocess, "run", spawn)
+    monkeypatch.setattr(subprocess, "run", spawn)
     verifier = module("source_verification").GitSourceVerifier(tmp_path, None)
-    assert verifier.console_kwargs is None
-    with pytest.raises(ContractError, match=UNWIRED_CONSOLE):
+    assert verifier.processes is None
+    with pytest.raises(ContractError, match=UNWIRED_PROCESSES):
         verifier.git("rev-parse", "HEAD")
-    with pytest.raises(ContractError, match=UNWIRED_CONSOLE):
+    with pytest.raises(ContractError, match=UNWIRED_PROCESSES):
         verifier.inventory(SimpleNamespace(validate=lambda: None))
 
 
 def test_the_host_os_ports_the_composition_will_pass_exist_with_the_injected_shapes():
     from codex_harness.host_os.adapters import process_groups
+    from codex_harness.host_os.ports import ChildProcesses
     assert list(inspect.signature(process_groups.run_process).parameters)[:3] == ["argv", "cwd", "timeout"]
-    assert process_groups.no_console_kwargs() == {} or isinstance(process_groups.no_console_kwargs(), dict)
+    assert list(inspect.signature(ChildProcesses.run).parameters) == ["self", "argv", "process_group", "kwargs"]
+    assert list(inspect.signature(process_groups.ChokepointProcesses.run).parameters) == ["self", "argv", "process_group", "kwargs"]
