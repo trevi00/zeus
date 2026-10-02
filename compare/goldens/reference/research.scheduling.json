@@ -1,0 +1,3268 @@
+{
+ "acquire": {
+  "first": {
+   "added": [
+    "acquire:b-one",
+    "acquire:b-three",
+    "acquire:b-two"
+   ],
+   "store_after": "5b30eb70391519ab",
+   "store_before": "cdc85d6e6d02e296",
+   "value": 3,
+   "wrote": true
+  },
+  "m7_test": "none",
+  "repeat": {
+   "added": [],
+   "store_after": "5b30eb70391519ab",
+   "store_before": "5b30eb70391519ab",
+   "value": 0,
+   "wrote": false
+  },
+  "view": {
+   "outbox": [
+    {
+     "message": {
+      "causation_id": null,
+      "correlation_id": "acquire:b-one",
+      "how": {
+       "acceptance_criteria": [
+        "Preserve normal behavior"
+       ],
+       "constraints": [],
+       "context_ref": null,
+       "result_schema": "six-w.v1"
+      },
+      "message_id": "5eed0000-0000-4000-8000-00000000000f",
+      "schema_version": "1.0",
+      "type": "task.assign",
+      "what": {
+       "action": "audit_acquire",
+       "details": {
+        "backlog_id": "b-one",
+        "commit": "cccccccccccccccccccccccccccccccccccccccc",
+        "repository": "https://example.invalid/source/b-one"
+       }
+      },
+      "when": {
+       "after": [],
+       "created_at": "2026-09-22T00:00:00.016000+00:00",
+       "deadline": null
+      },
+      "where": {
+       "allowed_paths": [],
+       "environment": "local",
+       "repository": "codex-harness",
+       "revision": "bootstrap"
+      },
+      "who": {
+       "owner": "worker:github",
+       "recipient": "worker:github",
+       "sender": "lead:research"
+      },
+      "why": {
+       "evidence_refs": [],
+       "objective": "Improve harness reliability from verified evidence"
+      }
+     },
+     "message_id": "5eed0000-0000-4000-8000-00000000000f",
+     "sent": false
+    },
+    {
+     "message": {
+      "causation_id": null,
+      "correlation_id": "acquire:b-two",
+      "how": {
+       "acceptance_criteria": [
+        "Preserve normal behavior"
+       ],
+       "constraints": [],
+       "context_ref": null,
+       "result_schema": "six-w.v1"
+      },
+      "message_id": "5eed0000-0000-4000-8000-000000000010",
+      "schema_version": "1.0",
+      "type": "task.assign",
+      "what": {
+       "action": "audit_acquire",
+       "details": {
+        "backlog_id": "b-two",
+        "commit": "cccccccccccccccccccccccccccccccccccccccc",
+        "repository": "https://example.invalid/source/b-two"
+       }
+      },
+      "when": {
+       "after": [],
+       "created_at": "2026-09-22T00:00:00.016000+00:00",
+       "deadline": null
+      },
+      "where": {
+       "allowed_paths": [],
+       "environment": "local",
+       "repository": "codex-harness",
+       "revision": "bootstrap"
+      },
+      "who": {
+       "owner": "worker:github",
+       "recipient": "worker:github",
+       "sender": "lead:research"
+      },
+      "why": {
+       "evidence_refs": [],
+       "objective": "Improve harness reliability from verified evidence"
+      }
+     },
+     "message_id": "5eed0000-0000-4000-8000-000000000010",
+     "sent": false
+    },
+    {
+     "message": {
+      "causation_id": null,
+      "correlation_id": "acquire:b-three",
+      "how": {
+       "acceptance_criteria": [
+        "Preserve normal behavior"
+       ],
+       "constraints": [],
+       "context_ref": null,
+       "result_schema": "six-w.v1"
+      },
+      "message_id": "5eed0000-0000-4000-8000-000000000011",
+      "schema_version": "1.0",
+      "type": "task.assign",
+      "what": {
+       "action": "audit_acquire",
+       "details": {
+        "backlog_id": "b-three",
+        "commit": "cccccccccccccccccccccccccccccccccccccccc",
+        "repository": "https://example.invalid/source/b-three"
+       }
+      },
+      "when": {
+       "after": [],
+       "created_at": "2026-09-22T00:00:00.016000+00:00",
+       "deadline": null
+      },
+      "where": {
+       "allowed_paths": [],
+       "environment": "local",
+       "repository": "codex-harness",
+       "revision": "bootstrap"
+      },
+      "who": {
+       "owner": "worker:github",
+       "recipient": "worker:github",
+       "sender": "lead:research"
+      },
+      "why": {
+       "evidence_refs": [],
+       "objective": "Improve harness reliability from verified evidence"
+      }
+     },
+     "message_id": "5eed0000-0000-4000-8000-000000000011",
+     "sent": false
+    }
+   ],
+   "schedule": [
+    {
+     "at": "2026-09-22T00:00:00.016000+00:00",
+     "id": "acquire:b-one",
+     "task_id": "5eed0000-0000-4000-8000-00000000000f"
+    },
+    {
+     "at": "2026-09-22T00:00:00.016000+00:00",
+     "id": "acquire:b-three",
+     "task_id": "5eed0000-0000-4000-8000-000000000011"
+    },
+    {
+     "at": "2026-09-22T00:00:00.016000+00:00",
+     "id": "acquire:b-two",
+     "task_id": "5eed0000-0000-4000-8000-000000000010"
+    }
+   ]
+  }
+ },
+ "adopt": {
+  "blocked_inspection": {
+   "binding": "0facd319744eaa8ffdbf64aa46185911ef1e1e11688a0c8924909e7cfc35003d",
+   "pass": {
+    "added": [
+     "propose:2c30bc72bb7b889ef3deb1a6ad9cf7b6011018471911ba408488f4e4e8bef640"
+    ],
+    "store_after": "df86b0a72caa72ad",
+    "store_before": "112bae23cf74a656",
+    "value": 1,
+    "wrote": true
+   },
+   "repeat": {
+    "added": [],
+    "store_after": "df86b0a72caa72ad",
+    "store_before": "df86b0a72caa72ad",
+    "value": 0,
+    "wrote": false
+   }
+  },
+  "changed_review": {
+   "binding": "9bd61b1bb0f39d077b3c2378dddb99291d3b15398e3e70f480816ac367cf60c8",
+   "pass": {
+    "added": [
+     "propose:2c30bc72bb7b889ef3deb1a6ad9cf7b6011018471911ba408488f4e4e8bef640"
+    ],
+    "store_after": "6e9096d06660665c",
+    "store_before": "60c91af5df923029",
+    "value": 1,
+    "wrote": true
+   },
+   "repeat": {
+    "added": [],
+    "store_after": "6e9096d06660665c",
+    "store_before": "6e9096d06660665c",
+    "value": 0,
+    "wrote": false
+   }
+  },
+  "control_of_another_release": {
+   "added": [
+    "propose:2c30bc72bb7b889ef3deb1a6ad9cf7b6011018471911ba408488f4e4e8bef640"
+   ],
+   "store_after": "ecaa4bdcd1a6fe03",
+   "store_before": "6452515444ff7933",
+   "value": 1,
+   "wrote": true
+  },
+  "good": {
+   "binding": "e9c7c350362bdaea6d709c18b02d8aec9e8c2a9fb2bb6327a8c00b608414d8b4",
+   "pass": {
+    "added": [
+     "adopt:e9c7c350362bdaea6d709c18b02d8aec9e8c2a9fb2bb6327a8c00b608414d8b4",
+     "propose:2c30bc72bb7b889ef3deb1a6ad9cf7b6011018471911ba408488f4e4e8bef640"
+    ],
+    "store_after": "df6b1320181de758",
+    "store_before": "7e0d6cbb7733235f",
+    "value": 2,
+    "wrote": true
+   },
+   "repeat": {
+    "added": [],
+    "store_after": "df6b1320181de758",
+    "store_before": "df6b1320181de758",
+    "value": 0,
+    "wrote": false
+   }
+  },
+  "m7_test": "none",
+  "no_reviews": {
+   "binding": "7f7cc7155a49149d875cfab84fd000c95f99b224bfb50d7b1b93cf90a4bb1520",
+   "pass": {
+    "added": [
+     "propose:2c30bc72bb7b889ef3deb1a6ad9cf7b6011018471911ba408488f4e4e8bef640"
+    ],
+    "store_after": "584e243d19dc09c7",
+    "store_before": "b2c495b226700a5e",
+    "value": 1,
+    "wrote": true
+   },
+   "repeat": {
+    "added": [],
+    "store_after": "584e243d19dc09c7",
+    "store_before": "584e243d19dc09c7",
+    "value": 0,
+    "wrote": false
+   }
+  },
+  "one_actor": {
+   "binding": "0d588980d2c2fcd1e908fdb6d8f8262fd25c16f339cc8180a3cf3c4b50dd4029",
+   "pass": {
+    "added": [
+     "propose:2c30bc72bb7b889ef3deb1a6ad9cf7b6011018471911ba408488f4e4e8bef640"
+    ],
+    "store_after": "dc0629f4b2cf99e2",
+    "store_before": "8e3d4f1927334249",
+    "value": 1,
+    "wrote": true
+   },
+   "repeat": {
+    "added": [],
+    "store_after": "dc0629f4b2cf99e2",
+    "store_before": "dc0629f4b2cf99e2",
+    "value": 0,
+    "wrote": false
+   }
+  },
+  "rejected_later": {
+   "binding": "db2e1d30174e946ac76734a040cf564a5f06412ee52d7280569ba250f81da477",
+   "pass": {
+    "added": [
+     "propose:2c30bc72bb7b889ef3deb1a6ad9cf7b6011018471911ba408488f4e4e8bef640"
+    ],
+    "store_after": "ef12c56b319bbd03",
+    "store_before": "c55ced7d9d578624",
+    "value": 1,
+    "wrote": true
+   },
+   "repeat": {
+    "added": [],
+    "store_after": "ef12c56b319bbd03",
+    "store_before": "ef12c56b319bbd03",
+    "value": 0,
+    "wrote": false
+   }
+  },
+  "revoked": {
+   "binding": "d611c36839534799fe3f415ad948bb0062bbc021d7c42d353064caebdfa4ab88",
+   "pass": {
+    "added": [
+     "propose:2c30bc72bb7b889ef3deb1a6ad9cf7b6011018471911ba408488f4e4e8bef640"
+    ],
+    "store_after": "c012056182632b21",
+    "store_before": "6379e001deeb9710",
+    "value": 1,
+    "wrote": true
+   },
+   "repeat": {
+    "added": [],
+    "store_after": "c012056182632b21",
+    "store_before": "c012056182632b21",
+    "value": 0,
+    "wrote": false
+   }
+  },
+  "stale_binding": {
+   "added": [
+    "propose:47132fe145bdc1ad83c2e474957bba11619f8a35d4b799b154a3050a9e584626"
+   ],
+   "store_after": "ba98bc5b3b7429f3",
+   "store_before": "ce8e948ce94e549c",
+   "value": 1,
+   "wrote": true
+  },
+  "two_approvals": {
+   "first": {
+    "added": [
+     "adopt:3457f17e7a4f52a387fc927b6d94b4b84fcfc6460a9292a13dacc60179cc2eb9",
+     "adopt:598dd168622f9261a3f6289f8e1601840b3278cd606dd40d17b66d0c71af2c73",
+     "propose:2c30bc72bb7b889ef3deb1a6ad9cf7b6011018471911ba408488f4e4e8bef640"
+    ],
+    "store_after": "24a20c2a07af2879",
+    "store_before": "934cee1ae986483a",
+    "value": 3,
+    "wrote": true
+   },
+   "repeat": {
+    "added": [],
+    "store_after": "24a20c2a07af2879",
+    "store_before": "24a20c2a07af2879",
+    "value": 0,
+    "wrote": false
+   },
+   "view": {
+    "outbox": [
+     {
+      "message": {
+       "causation_id": null,
+       "correlation_id": "propose:2c30bc72bb7b889ef3deb1a6ad9cf7b6011018471911ba408488f4e4e8bef640",
+       "how": {
+        "acceptance_criteria": [
+         "Preserve normal behavior"
+        ],
+        "constraints": [],
+        "context_ref": null,
+        "result_schema": "six-w.v1"
+       },
+       "message_id": "5eed0000-0000-4000-8000-000000000024",
+       "schema_version": "1.0",
+       "type": "task.assign",
+       "what": {
+        "action": "audit_propose",
+        "details": {
+         "audit_id": "a1"
+        }
+       },
+       "when": {
+        "after": [],
+        "created_at": "2026-09-22T00:00:00.043000+00:00",
+        "deadline": null
+       },
+       "where": {
+        "allowed_paths": [],
+        "environment": "local",
+        "repository": "codex-harness",
+        "revision": "bootstrap"
+       },
+       "who": {
+        "owner": "worker:github",
+        "recipient": "worker:github",
+        "sender": "lead:research"
+       },
+       "why": {
+        "evidence_refs": [],
+        "objective": "Improve harness reliability from verified evidence"
+       }
+      },
+      "message_id": "5eed0000-0000-4000-8000-000000000024",
+      "sent": false
+     },
+     {
+      "message": {
+       "causation_id": null,
+       "correlation_id": "adopt:3457f17e7a4f52a387fc927b6d94b4b84fcfc6460a9292a13dacc60179cc2eb9",
+       "how": {
+        "acceptance_criteria": [
+         "Preserve normal behavior"
+        ],
+        "constraints": [],
+        "context_ref": null,
+        "result_schema": "six-w.v1"
+       },
+       "message_id": "5eed0000-0000-4000-8000-000000000025",
+       "schema_version": "1.0",
+       "type": "task.assign",
+       "what": {
+        "action": "plan",
+        "details": {
+         "audit_approval": "3457f17e7a4f52a387fc927b6d94b4b84fcfc6460a9292a13dacc60179cc2eb9",
+         "audit_id": "a1",
+         "importance": "important",
+         "proposal": {
+          "name": "proposal-two",
+          "source": {
+           "commit": "cccccccccccccccccccccccccccccccccccccccc",
+           "repository": "https://example.invalid/source"
+          }
+         }
+        }
+       },
+       "when": {
+        "after": [],
+        "created_at": "2026-09-22T00:00:00.043000+00:00",
+        "deadline": null
+       },
+       "where": {
+        "allowed_paths": [],
+        "environment": "local",
+        "repository": "codex-harness",
+        "revision": "bootstrap"
+       },
+       "who": {
+        "owner": "lead:improvement",
+        "recipient": "lead:improvement",
+        "sender": "conductor"
+       },
+       "why": {
+        "evidence_refs": [],
+        "objective": "Improve harness reliability from verified evidence"
+       }
+      },
+      "message_id": "5eed0000-0000-4000-8000-000000000025",
+      "sent": false
+     },
+     {
+      "message": {
+       "causation_id": null,
+       "correlation_id": "adopt:598dd168622f9261a3f6289f8e1601840b3278cd606dd40d17b66d0c71af2c73",
+       "how": {
+        "acceptance_criteria": [
+         "Preserve normal behavior"
+        ],
+        "constraints": [],
+        "context_ref": null,
+        "result_schema": "six-w.v1"
+       },
+       "message_id": "5eed0000-0000-4000-8000-000000000026",
+       "schema_version": "1.0",
+       "type": "task.assign",
+       "what": {
+        "action": "plan",
+        "details": {
+         "audit_approval": "598dd168622f9261a3f6289f8e1601840b3278cd606dd40d17b66d0c71af2c73",
+         "audit_id": "a1",
+         "importance": "important",
+         "proposal": {
+          "name": "proposal-one",
+          "source": {
+           "commit": "cccccccccccccccccccccccccccccccccccccccc",
+           "repository": "https://example.invalid/source"
+          }
+         }
+        }
+       },
+       "when": {
+        "after": [],
+        "created_at": "2026-09-22T00:00:00.043000+00:00",
+        "deadline": null
+       },
+       "where": {
+        "allowed_paths": [],
+        "environment": "local",
+        "repository": "codex-harness",
+        "revision": "bootstrap"
+       },
+       "who": {
+        "owner": "lead:improvement",
+        "recipient": "lead:improvement",
+        "sender": "conductor"
+       },
+       "why": {
+        "evidence_refs": [],
+        "objective": "Improve harness reliability from verified evidence"
+       }
+      },
+      "message_id": "5eed0000-0000-4000-8000-000000000026",
+      "sent": false
+     }
+    ],
+    "schedule": [
+     {
+      "at": "2026-09-22T00:00:00.043000+00:00",
+      "id": "adopt:3457f17e7a4f52a387fc927b6d94b4b84fcfc6460a9292a13dacc60179cc2eb9",
+      "task_id": "5eed0000-0000-4000-8000-000000000025"
+     },
+     {
+      "at": "2026-09-22T00:00:00.043000+00:00",
+      "id": "adopt:598dd168622f9261a3f6289f8e1601840b3278cd606dd40d17b66d0c71af2c73",
+      "task_id": "5eed0000-0000-4000-8000-000000000026"
+     },
+     {
+      "at": "2026-09-22T00:00:00.043000+00:00",
+      "id": "propose:2c30bc72bb7b889ef3deb1a6ad9cf7b6011018471911ba408488f4e4e8bef640",
+      "task_id": "5eed0000-0000-4000-8000-000000000024"
+     }
+    ]
+   }
+  }
+ },
+ "audit_narrowed": {
+  "a1": {
+   "added": [
+    "adopt:d9870f3ab796657890442956483ad8c1566da9785ef9a466b8c2d8e40ce70c15",
+    "audit:788eea25820608270052adec9b06bbd2b2267e48146d9969d2e124b10a315cd3"
+   ],
+   "store_after": "16758a142050d721",
+   "store_before": "5b33cdc0cd9e5465",
+   "value": 2,
+   "wrote": true
+  },
+  "a1_repeat": {
+   "added": [],
+   "store_after": "16758a142050d721",
+   "store_before": "16758a142050d721",
+   "value": 0,
+   "wrote": false
+  },
+  "a2": {
+   "added": [
+    "adopt:282e3e41a3a3b190c56eee43c9464416c85659128081fcbf14b48d4d871aafc5",
+    "propose:73df8f30a1cca9b4e3411d5b0db353d04dbf97618140137fa4a147a0d699b345"
+   ],
+   "store_after": "74f46b0a60bd53b1",
+   "store_before": "16758a142050d721",
+   "value": 2,
+   "wrote": true
+  },
+  "global": {
+   "added": [
+    "acquire:b1",
+    "map:d1"
+   ],
+   "store_after": "f9bff8895319f154",
+   "store_before": "74f46b0a60bd53b1",
+   "value": 2,
+   "wrote": true
+  },
+  "global_repeat": {
+   "added": [],
+   "store_after": "f9bff8895319f154",
+   "store_before": "f9bff8895319f154",
+   "value": 0,
+   "wrote": false
+  },
+  "m7_test": "none",
+  "unknown": {
+   "added": [],
+   "store_after": "16758a142050d721",
+   "store_before": "16758a142050d721",
+   "value": 0,
+   "wrote": false
+  },
+  "view": {
+   "outbox": [
+    {
+     "message": {
+      "causation_id": null,
+      "correlation_id": "audit:788eea25820608270052adec9b06bbd2b2267e48146d9969d2e124b10a315cd3",
+      "how": {
+       "acceptance_criteria": [
+        "Preserve normal behavior"
+       ],
+       "constraints": [],
+       "context_ref": null,
+       "result_schema": "six-w.v1"
+      },
+      "message_id": "5eed0000-0000-4000-8000-000000000027",
+      "schema_version": "1.0",
+      "type": "task.assign",
+      "what": {
+       "action": "audit_partition",
+       "details": {
+        "audit_id": "a1",
+        "generation": 0,
+        "partition_id": "p-a1-open"
+       }
+      },
+      "when": {
+       "after": [],
+       "created_at": "2026-09-22T00:00:00.045000+00:00",
+       "deadline": null
+      },
+      "where": {
+       "allowed_paths": [],
+       "environment": "local",
+       "repository": "codex-harness",
+       "revision": "bootstrap"
+      },
+      "who": {
+       "owner": "worker:github",
+       "recipient": "worker:github",
+       "sender": "lead:research"
+      },
+      "why": {
+       "evidence_refs": [],
+       "objective": "Improve harness reliability from verified evidence"
+      }
+     },
+     "message_id": "5eed0000-0000-4000-8000-000000000027",
+     "sent": false
+    },
+    {
+     "message": {
+      "causation_id": null,
+      "correlation_id": "adopt:d9870f3ab796657890442956483ad8c1566da9785ef9a466b8c2d8e40ce70c15",
+      "how": {
+       "acceptance_criteria": [
+        "Preserve normal behavior"
+       ],
+       "constraints": [],
+       "context_ref": null,
+       "result_schema": "six-w.v1"
+      },
+      "message_id": "5eed0000-0000-4000-8000-000000000028",
+      "schema_version": "1.0",
+      "type": "task.assign",
+      "what": {
+       "action": "plan",
+       "details": {
+        "audit_approval": "d9870f3ab796657890442956483ad8c1566da9785ef9a466b8c2d8e40ce70c15",
+        "audit_id": "a1",
+        "importance": "important",
+        "proposal": {
+         "name": "proposal-a1",
+         "source": {
+          "commit": "cccccccccccccccccccccccccccccccccccccccc",
+          "repository": "https://example.invalid/source"
+         }
+        }
+       }
+      },
+      "when": {
+       "after": [],
+       "created_at": "2026-09-22T00:00:00.045000+00:00",
+       "deadline": null
+      },
+      "where": {
+       "allowed_paths": [],
+       "environment": "local",
+       "repository": "codex-harness",
+       "revision": "bootstrap"
+      },
+      "who": {
+       "owner": "lead:improvement",
+       "recipient": "lead:improvement",
+       "sender": "conductor"
+      },
+      "why": {
+       "evidence_refs": [],
+       "objective": "Improve harness reliability from verified evidence"
+      }
+     },
+     "message_id": "5eed0000-0000-4000-8000-000000000028",
+     "sent": false
+    },
+    {
+     "message": {
+      "causation_id": null,
+      "correlation_id": "propose:73df8f30a1cca9b4e3411d5b0db353d04dbf97618140137fa4a147a0d699b345",
+      "how": {
+       "acceptance_criteria": [
+        "Preserve normal behavior"
+       ],
+       "constraints": [],
+       "context_ref": null,
+       "result_schema": "six-w.v1"
+      },
+      "message_id": "5eed0000-0000-4000-8000-000000000029",
+      "schema_version": "1.0",
+      "type": "task.assign",
+      "what": {
+       "action": "audit_propose",
+       "details": {
+        "audit_id": "a2"
+       }
+      },
+      "when": {
+       "after": [],
+       "created_at": "2026-09-22T00:00:00.048000+00:00",
+       "deadline": null
+      },
+      "where": {
+       "allowed_paths": [],
+       "environment": "local",
+       "repository": "codex-harness",
+       "revision": "bootstrap"
+      },
+      "who": {
+       "owner": "worker:github",
+       "recipient": "worker:github",
+       "sender": "lead:research"
+      },
+      "why": {
+       "evidence_refs": [],
+       "objective": "Improve harness reliability from verified evidence"
+      }
+     },
+     "message_id": "5eed0000-0000-4000-8000-000000000029",
+     "sent": false
+    },
+    {
+     "message": {
+      "causation_id": null,
+      "correlation_id": "adopt:282e3e41a3a3b190c56eee43c9464416c85659128081fcbf14b48d4d871aafc5",
+      "how": {
+       "acceptance_criteria": [
+        "Preserve normal behavior"
+       ],
+       "constraints": [],
+       "context_ref": null,
+       "result_schema": "six-w.v1"
+      },
+      "message_id": "5eed0000-0000-4000-8000-00000000002a",
+      "schema_version": "1.0",
+      "type": "task.assign",
+      "what": {
+       "action": "plan",
+       "details": {
+        "audit_approval": "282e3e41a3a3b190c56eee43c9464416c85659128081fcbf14b48d4d871aafc5",
+        "audit_id": "a2",
+        "importance": "important",
+        "proposal": {
+         "name": "proposal-a2",
+         "source": {
+          "commit": "cccccccccccccccccccccccccccccccccccccccc",
+          "repository": "https://example.invalid/source"
+         }
+        }
+       }
+      },
+      "when": {
+       "after": [],
+       "created_at": "2026-09-22T00:00:00.048000+00:00",
+       "deadline": null
+      },
+      "where": {
+       "allowed_paths": [],
+       "environment": "local",
+       "repository": "codex-harness",
+       "revision": "bootstrap"
+      },
+      "who": {
+       "owner": "lead:improvement",
+       "recipient": "lead:improvement",
+       "sender": "conductor"
+      },
+      "why": {
+       "evidence_refs": [],
+       "objective": "Improve harness reliability from verified evidence"
+      }
+     },
+     "message_id": "5eed0000-0000-4000-8000-00000000002a",
+     "sent": false
+    },
+    {
+     "message": {
+      "causation_id": null,
+      "correlation_id": "map:d1",
+      "how": {
+       "acceptance_criteria": [
+        "Preserve normal behavior"
+       ],
+       "constraints": [],
+       "context_ref": null,
+       "result_schema": "six-w.v1"
+      },
+      "message_id": "5eed0000-0000-4000-8000-00000000002b",
+      "schema_version": "1.0",
+      "type": "task.assign",
+      "what": {
+       "action": "audit_discovery",
+       "details": {
+        "discovery_id": "d1"
+       }
+      },
+      "when": {
+       "after": [],
+       "created_at": "2026-09-22T00:00:00.049000+00:00",
+       "deadline": null
+      },
+      "where": {
+       "allowed_paths": [],
+       "environment": "local",
+       "repository": "codex-harness",
+       "revision": "bootstrap"
+      },
+      "who": {
+       "owner": "worker:github",
+       "recipient": "worker:github",
+       "sender": "lead:research"
+      },
+      "why": {
+       "evidence_refs": [],
+       "objective": "Improve harness reliability from verified evidence"
+      }
+     },
+     "message_id": "5eed0000-0000-4000-8000-00000000002b",
+     "sent": false
+    },
+    {
+     "message": {
+      "causation_id": null,
+      "correlation_id": "acquire:b1",
+      "how": {
+       "acceptance_criteria": [
+        "Preserve normal behavior"
+       ],
+       "constraints": [],
+       "context_ref": null,
+       "result_schema": "six-w.v1"
+      },
+      "message_id": "5eed0000-0000-4000-8000-00000000002c",
+      "schema_version": "1.0",
+      "type": "task.assign",
+      "what": {
+       "action": "audit_acquire",
+       "details": {
+        "backlog_id": "b1",
+        "commit": "cccccccccccccccccccccccccccccccccccccccc",
+        "repository": "https://example.invalid/source/b1"
+       }
+      },
+      "when": {
+       "after": [],
+       "created_at": "2026-09-22T00:00:00.049000+00:00",
+       "deadline": null
+      },
+      "where": {
+       "allowed_paths": [],
+       "environment": "local",
+       "repository": "codex-harness",
+       "revision": "bootstrap"
+      },
+      "who": {
+       "owner": "worker:github",
+       "recipient": "worker:github",
+       "sender": "lead:research"
+      },
+      "why": {
+       "evidence_refs": [],
+       "objective": "Improve harness reliability from verified evidence"
+      }
+     },
+     "message_id": "5eed0000-0000-4000-8000-00000000002c",
+     "sent": false
+    }
+   ],
+   "schedule": [
+    {
+     "at": "2026-09-22T00:00:00.049000+00:00",
+     "id": "acquire:b1",
+     "task_id": "5eed0000-0000-4000-8000-00000000002c"
+    },
+    {
+     "at": "2026-09-22T00:00:00.048000+00:00",
+     "id": "adopt:282e3e41a3a3b190c56eee43c9464416c85659128081fcbf14b48d4d871aafc5",
+     "task_id": "5eed0000-0000-4000-8000-00000000002a"
+    },
+    {
+     "at": "2026-09-22T00:00:00.045000+00:00",
+     "id": "adopt:d9870f3ab796657890442956483ad8c1566da9785ef9a466b8c2d8e40ce70c15",
+     "task_id": "5eed0000-0000-4000-8000-000000000028"
+    },
+    {
+     "at": "2026-09-22T00:00:00.045000+00:00",
+     "id": "audit:788eea25820608270052adec9b06bbd2b2267e48146d9969d2e124b10a315cd3",
+     "partition_id": "p-a1-open",
+     "task_id": "5eed0000-0000-4000-8000-000000000027"
+    },
+    {
+     "at": "2026-09-22T00:00:00.049000+00:00",
+     "id": "map:d1",
+     "task_id": "5eed0000-0000-4000-8000-00000000002b"
+    },
+    {
+     "at": "2026-09-22T00:00:00.048000+00:00",
+     "id": "propose:73df8f30a1cca9b4e3411d5b0db353d04dbf97618140137fa4a147a0d699b345",
+     "task_id": "5eed0000-0000-4000-8000-000000000029"
+    }
+   ]
+  }
+ },
+ "control": {
+  "absent": {
+   "added": [],
+   "store_after": "d222b51db97071b5",
+   "store_before": "d222b51db97071b5",
+   "value": 0,
+   "wrote": false
+  },
+  "empty_control_row": {
+   "added": [],
+   "store_after": "2905cabc055509af",
+   "store_before": "2905cabc055509af",
+   "value": 0,
+   "wrote": false
+  },
+  "inactive": {
+   "added": [],
+   "store_after": "c27a836fd281a69b",
+   "store_before": "c27a836fd281a69b",
+   "value": 0,
+   "wrote": false
+  },
+  "m7_test": "none",
+  "paused": {
+   "added": [],
+   "store_after": "22e7b7c88ef98083",
+   "store_before": "22e7b7c88ef98083",
+   "value": 0,
+   "wrote": false
+  },
+  "rolled_back": {
+   "added": [],
+   "store_after": "bc4cfe9ae8eb6700",
+   "store_before": "bc4cfe9ae8eb6700",
+   "value": 0,
+   "wrote": false
+  }
+ },
+ "discovery": {
+  "added_discovery": {
+   "added": [
+    "map:d-c"
+   ],
+   "store_after": "8e8032d031a01e62",
+   "store_before": "635793191192f327",
+   "value": 1,
+   "wrote": true
+  },
+  "first": {
+   "added": [
+    "map:d-a",
+    "map:d-b"
+   ],
+   "store_after": "79029562600ac252",
+   "store_before": "bb3837c319f4799b",
+   "value": 2,
+   "wrote": true
+  },
+  "m7_test": "none",
+  "repeat": {
+   "added": [],
+   "store_after": "79029562600ac252",
+   "store_before": "79029562600ac252",
+   "value": 0,
+   "wrote": false
+  },
+  "view": {
+   "outbox": [
+    {
+     "message": {
+      "causation_id": null,
+      "correlation_id": "map:d-a",
+      "how": {
+       "acceptance_criteria": [
+        "Preserve normal behavior"
+       ],
+       "constraints": [],
+       "context_ref": null,
+       "result_schema": "six-w.v1"
+      },
+      "message_id": "5eed0000-0000-4000-8000-00000000000c",
+      "schema_version": "1.0",
+      "type": "task.assign",
+      "what": {
+       "action": "audit_discovery",
+       "details": {
+        "discovery_id": "d-a"
+       }
+      },
+      "when": {
+       "after": [],
+       "created_at": "2026-09-22T00:00:00.013000+00:00",
+       "deadline": null
+      },
+      "where": {
+       "allowed_paths": [],
+       "environment": "local",
+       "repository": "codex-harness",
+       "revision": "bootstrap"
+      },
+      "who": {
+       "owner": "worker:github",
+       "recipient": "worker:github",
+       "sender": "lead:research"
+      },
+      "why": {
+       "evidence_refs": [],
+       "objective": "Improve harness reliability from verified evidence"
+      }
+     },
+     "message_id": "5eed0000-0000-4000-8000-00000000000c",
+     "sent": false
+    },
+    {
+     "message": {
+      "causation_id": null,
+      "correlation_id": "map:d-b",
+      "how": {
+       "acceptance_criteria": [
+        "Preserve normal behavior"
+       ],
+       "constraints": [],
+       "context_ref": null,
+       "result_schema": "six-w.v1"
+      },
+      "message_id": "5eed0000-0000-4000-8000-00000000000d",
+      "schema_version": "1.0",
+      "type": "task.assign",
+      "what": {
+       "action": "audit_discovery",
+       "details": {
+        "discovery_id": "d-b"
+       }
+      },
+      "when": {
+       "after": [],
+       "created_at": "2026-09-22T00:00:00.013000+00:00",
+       "deadline": null
+      },
+      "where": {
+       "allowed_paths": [],
+       "environment": "local",
+       "repository": "codex-harness",
+       "revision": "bootstrap"
+      },
+      "who": {
+       "owner": "worker:github",
+       "recipient": "worker:github",
+       "sender": "lead:research"
+      },
+      "why": {
+       "evidence_refs": [],
+       "objective": "Improve harness reliability from verified evidence"
+      }
+     },
+     "message_id": "5eed0000-0000-4000-8000-00000000000d",
+     "sent": false
+    },
+    {
+     "message": {
+      "causation_id": null,
+      "correlation_id": "map:d-c",
+      "how": {
+       "acceptance_criteria": [
+        "Preserve normal behavior"
+       ],
+       "constraints": [],
+       "context_ref": null,
+       "result_schema": "six-w.v1"
+      },
+      "message_id": "5eed0000-0000-4000-8000-00000000000e",
+      "schema_version": "1.0",
+      "type": "task.assign",
+      "what": {
+       "action": "audit_discovery",
+       "details": {
+        "discovery_id": "d-c"
+       }
+      },
+      "when": {
+       "after": [],
+       "created_at": "2026-09-22T00:00:00.015000+00:00",
+       "deadline": null
+      },
+      "where": {
+       "allowed_paths": [],
+       "environment": "local",
+       "repository": "codex-harness",
+       "revision": "bootstrap"
+      },
+      "who": {
+       "owner": "worker:github",
+       "recipient": "worker:github",
+       "sender": "lead:research"
+      },
+      "why": {
+       "evidence_refs": [],
+       "objective": "Improve harness reliability from verified evidence"
+      }
+     },
+     "message_id": "5eed0000-0000-4000-8000-00000000000e",
+     "sent": false
+    }
+   ],
+   "schedule": [
+    {
+     "at": "2026-09-22T00:00:00.013000+00:00",
+     "id": "map:d-a",
+     "task_id": "5eed0000-0000-4000-8000-00000000000c"
+    },
+    {
+     "at": "2026-09-22T00:00:00.013000+00:00",
+     "id": "map:d-b",
+     "task_id": "5eed0000-0000-4000-8000-00000000000d"
+    },
+    {
+     "at": "2026-09-22T00:00:00.015000+00:00",
+     "id": "map:d-c",
+     "task_id": "5eed0000-0000-4000-8000-00000000000e"
+    }
+   ]
+  }
+ },
+ "idempotence": {
+  "audits_0": {
+   "added": [],
+   "store_after": "85c41eea281c6f0e",
+   "store_before": "85c41eea281c6f0e",
+   "value": 0,
+   "wrote": false
+  },
+  "audits_1": {
+   "added": [],
+   "store_after": "85c41eea281c6f0e",
+   "store_before": "85c41eea281c6f0e",
+   "value": 0,
+   "wrote": false
+  },
+  "audits_2": {
+   "added": [],
+   "store_after": "85c41eea281c6f0e",
+   "store_before": "85c41eea281c6f0e",
+   "value": 0,
+   "wrote": false
+  },
+  "keys_by_kind": {
+   "acquire": 1,
+   "adopt": 1,
+   "audit": 1,
+   "map": 1,
+   "propose": 1,
+   "research": 2
+  },
+  "m7_test": "none",
+  "research": {
+   "added": [
+    "acquire:b1",
+    "adopt:d39fb97b4a2da73f8f5c70310c6daaf669102810c8d1b7f601975d911611338b",
+    "audit:6d4d9f0577e5e6c297654f223c2fc0c904f7c3472f73de07ccaab13dd0e56ebb",
+    "map:d1",
+    "propose:e5a5d0be52a65f2bcda2a5ee48d887e2d94572344441e53e782ce47bd232074c",
+    "research:geeknews:83333",
+    "research:github:83333"
+   ],
+   "store_after": "85c41eea281c6f0e",
+   "store_before": "45fe99e28b3ad75a",
+   "value": 7,
+   "wrote": true
+  },
+  "research_again": {
+   "added": [],
+   "store_after": "85c41eea281c6f0e",
+   "store_before": "85c41eea281c6f0e",
+   "value": 0,
+   "wrote": false
+  },
+  "stable": true,
+  "view": {
+   "outbox": [
+    {
+     "message": {
+      "causation_id": null,
+      "correlation_id": "research:github:83333",
+      "how": {
+       "acceptance_criteria": [
+        "Preserve normal behavior"
+       ],
+       "constraints": [],
+       "context_ref": null,
+       "result_schema": "six-w.v1"
+      },
+      "message_id": "5eed0000-0000-4000-8000-000000000034",
+      "schema_version": "1.0",
+      "type": "task.assign",
+      "what": {
+       "action": "research",
+       "details": {
+        "intent": "proactive",
+        "source": "github"
+       }
+      },
+      "when": {
+       "after": [],
+       "created_at": "2026-09-22T00:00:00.069000+00:00",
+       "deadline": null
+      },
+      "where": {
+       "allowed_paths": [],
+       "environment": "local",
+       "repository": "codex-harness",
+       "revision": "bootstrap"
+      },
+      "who": {
+       "owner": "worker:github",
+       "recipient": "worker:github",
+       "sender": "lead:research"
+      },
+      "why": {
+       "evidence_refs": [],
+       "objective": "Improve harness reliability from verified evidence"
+      }
+     },
+     "message_id": "5eed0000-0000-4000-8000-000000000034",
+     "sent": false
+    },
+    {
+     "message": {
+      "causation_id": null,
+      "correlation_id": "research:geeknews:83333",
+      "how": {
+       "acceptance_criteria": [
+        "Preserve normal behavior"
+       ],
+       "constraints": [],
+       "context_ref": null,
+       "result_schema": "six-w.v1"
+      },
+      "message_id": "5eed0000-0000-4000-8000-000000000035",
+      "schema_version": "1.0",
+      "type": "task.assign",
+      "what": {
+       "action": "research",
+       "details": {
+        "intent": "proactive",
+        "source": "geeknews"
+       }
+      },
+      "when": {
+       "after": [],
+       "created_at": "2026-09-22T00:00:00.069000+00:00",
+       "deadline": null
+      },
+      "where": {
+       "allowed_paths": [],
+       "environment": "local",
+       "repository": "codex-harness",
+       "revision": "bootstrap"
+      },
+      "who": {
+       "owner": "worker:geeknews",
+       "recipient": "worker:geeknews",
+       "sender": "lead:research"
+      },
+      "why": {
+       "evidence_refs": [],
+       "objective": "Improve harness reliability from verified evidence"
+      }
+     },
+     "message_id": "5eed0000-0000-4000-8000-000000000035",
+     "sent": false
+    },
+    {
+     "message": {
+      "causation_id": null,
+      "correlation_id": "map:d1",
+      "how": {
+       "acceptance_criteria": [
+        "Preserve normal behavior"
+       ],
+       "constraints": [],
+       "context_ref": null,
+       "result_schema": "six-w.v1"
+      },
+      "message_id": "5eed0000-0000-4000-8000-000000000036",
+      "schema_version": "1.0",
+      "type": "task.assign",
+      "what": {
+       "action": "audit_discovery",
+       "details": {
+        "discovery_id": "d1"
+       }
+      },
+      "when": {
+       "after": [],
+       "created_at": "2026-09-22T00:00:00.069000+00:00",
+       "deadline": null
+      },
+      "where": {
+       "allowed_paths": [],
+       "environment": "local",
+       "repository": "codex-harness",
+       "revision": "bootstrap"
+      },
+      "who": {
+       "owner": "worker:github",
+       "recipient": "worker:github",
+       "sender": "lead:research"
+      },
+      "why": {
+       "evidence_refs": [],
+       "objective": "Improve harness reliability from verified evidence"
+      }
+     },
+     "message_id": "5eed0000-0000-4000-8000-000000000036",
+     "sent": false
+    },
+    {
+     "message": {
+      "causation_id": null,
+      "correlation_id": "acquire:b1",
+      "how": {
+       "acceptance_criteria": [
+        "Preserve normal behavior"
+       ],
+       "constraints": [],
+       "context_ref": null,
+       "result_schema": "six-w.v1"
+      },
+      "message_id": "5eed0000-0000-4000-8000-000000000037",
+      "schema_version": "1.0",
+      "type": "task.assign",
+      "what": {
+       "action": "audit_acquire",
+       "details": {
+        "backlog_id": "b1",
+        "commit": "cccccccccccccccccccccccccccccccccccccccc",
+        "repository": "https://example.invalid/source/b1"
+       }
+      },
+      "when": {
+       "after": [],
+       "created_at": "2026-09-22T00:00:00.069000+00:00",
+       "deadline": null
+      },
+      "where": {
+       "allowed_paths": [],
+       "environment": "local",
+       "repository": "codex-harness",
+       "revision": "bootstrap"
+      },
+      "who": {
+       "owner": "worker:github",
+       "recipient": "worker:github",
+       "sender": "lead:research"
+      },
+      "why": {
+       "evidence_refs": [],
+       "objective": "Improve harness reliability from verified evidence"
+      }
+     },
+     "message_id": "5eed0000-0000-4000-8000-000000000037",
+     "sent": false
+    },
+    {
+     "message": {
+      "causation_id": null,
+      "correlation_id": "audit:6d4d9f0577e5e6c297654f223c2fc0c904f7c3472f73de07ccaab13dd0e56ebb",
+      "how": {
+       "acceptance_criteria": [
+        "Preserve normal behavior"
+       ],
+       "constraints": [],
+       "context_ref": null,
+       "result_schema": "six-w.v1"
+      },
+      "message_id": "5eed0000-0000-4000-8000-000000000038",
+      "schema_version": "1.0",
+      "type": "task.assign",
+      "what": {
+       "action": "audit_partition",
+       "details": {
+        "audit_id": "a1",
+        "generation": 0,
+        "partition_id": "p-a1"
+       }
+      },
+      "when": {
+       "after": [],
+       "created_at": "2026-09-22T00:00:00.069000+00:00",
+       "deadline": null
+      },
+      "where": {
+       "allowed_paths": [],
+       "environment": "local",
+       "repository": "codex-harness",
+       "revision": "bootstrap"
+      },
+      "who": {
+       "owner": "worker:github",
+       "recipient": "worker:github",
+       "sender": "lead:research"
+      },
+      "why": {
+       "evidence_refs": [],
+       "objective": "Improve harness reliability from verified evidence"
+      }
+     },
+     "message_id": "5eed0000-0000-4000-8000-000000000038",
+     "sent": false
+    },
+    {
+     "message": {
+      "causation_id": null,
+      "correlation_id": "propose:e5a5d0be52a65f2bcda2a5ee48d887e2d94572344441e53e782ce47bd232074c",
+      "how": {
+       "acceptance_criteria": [
+        "Preserve normal behavior"
+       ],
+       "constraints": [],
+       "context_ref": null,
+       "result_schema": "six-w.v1"
+      },
+      "message_id": "5eed0000-0000-4000-8000-000000000039",
+      "schema_version": "1.0",
+      "type": "task.assign",
+      "what": {
+       "action": "audit_propose",
+       "details": {
+        "audit_id": "a2"
+       }
+      },
+      "when": {
+       "after": [],
+       "created_at": "2026-09-22T00:00:00.069000+00:00",
+       "deadline": null
+      },
+      "where": {
+       "allowed_paths": [],
+       "environment": "local",
+       "repository": "codex-harness",
+       "revision": "bootstrap"
+      },
+      "who": {
+       "owner": "worker:github",
+       "recipient": "worker:github",
+       "sender": "lead:research"
+      },
+      "why": {
+       "evidence_refs": [],
+       "objective": "Improve harness reliability from verified evidence"
+      }
+     },
+     "message_id": "5eed0000-0000-4000-8000-000000000039",
+     "sent": false
+    },
+    {
+     "message": {
+      "causation_id": null,
+      "correlation_id": "adopt:d39fb97b4a2da73f8f5c70310c6daaf669102810c8d1b7f601975d911611338b",
+      "how": {
+       "acceptance_criteria": [
+        "Preserve normal behavior"
+       ],
+       "constraints": [],
+       "context_ref": null,
+       "result_schema": "six-w.v1"
+      },
+      "message_id": "5eed0000-0000-4000-8000-00000000003a",
+      "schema_version": "1.0",
+      "type": "task.assign",
+      "what": {
+       "action": "plan",
+       "details": {
+        "audit_approval": "d39fb97b4a2da73f8f5c70310c6daaf669102810c8d1b7f601975d911611338b",
+        "audit_id": "a2",
+        "importance": "important",
+        "proposal": {
+         "name": "proposal-a2",
+         "source": {
+          "commit": "cccccccccccccccccccccccccccccccccccccccc",
+          "repository": "https://example.invalid/source"
+         }
+        }
+       }
+      },
+      "when": {
+       "after": [],
+       "created_at": "2026-09-22T00:00:00.069000+00:00",
+       "deadline": null
+      },
+      "where": {
+       "allowed_paths": [],
+       "environment": "local",
+       "repository": "codex-harness",
+       "revision": "bootstrap"
+      },
+      "who": {
+       "owner": "lead:improvement",
+       "recipient": "lead:improvement",
+       "sender": "conductor"
+      },
+      "why": {
+       "evidence_refs": [],
+       "objective": "Improve harness reliability from verified evidence"
+      }
+     },
+     "message_id": "5eed0000-0000-4000-8000-00000000003a",
+     "sent": false
+    }
+   ],
+   "schedule": [
+    {
+     "at": "2026-09-22T00:00:00.069000+00:00",
+     "id": "acquire:b1",
+     "task_id": "5eed0000-0000-4000-8000-000000000037"
+    },
+    {
+     "at": "2026-09-22T00:00:00.069000+00:00",
+     "id": "adopt:d39fb97b4a2da73f8f5c70310c6daaf669102810c8d1b7f601975d911611338b",
+     "task_id": "5eed0000-0000-4000-8000-00000000003a"
+    },
+    {
+     "at": "2026-09-22T00:00:00.069000+00:00",
+     "id": "audit:6d4d9f0577e5e6c297654f223c2fc0c904f7c3472f73de07ccaab13dd0e56ebb",
+     "partition_id": "p-a1",
+     "task_id": "5eed0000-0000-4000-8000-000000000038"
+    },
+    {
+     "at": "2026-09-22T00:00:00.069000+00:00",
+     "id": "map:d1",
+     "task_id": "5eed0000-0000-4000-8000-000000000036"
+    },
+    {
+     "at": "2026-09-22T00:00:00.069000+00:00",
+     "id": "propose:e5a5d0be52a65f2bcda2a5ee48d887e2d94572344441e53e782ce47bd232074c",
+     "task_id": "5eed0000-0000-4000-8000-000000000039"
+    },
+    {
+     "at": "2026-09-22T00:00:00.069000+00:00",
+     "id": "research:geeknews:83333"
+    },
+    {
+     "at": "2026-09-22T00:00:00.069000+00:00",
+     "id": "research:github:83333"
+    }
+   ]
+  }
+ },
+ "m7_correction_interactions": {
+  "test_a_queued_correction_blocks_a_second_assignment_for_its_partition": {
+   "m7_test": "test_a_queued_correction_blocks_a_second_assignment_for_its_partition",
+   "pass": {
+    "added": [],
+    "store_after": "dedd5d8542f36143",
+    "store_before": "dedd5d8542f36143",
+    "value": 0,
+    "wrote": false
+   },
+   "view": [
+    {
+     "id": "correction:c1",
+     "partition_id": "p1",
+     "task_id": "t-correction"
+    }
+   ]
+  },
+  "test_the_ordinary_continuation_resumes_after_the_correction_checkpoints": {
+   "m7_test": "test_the_ordinary_continuation_resumes_after_the_correction_checkpoints",
+   "pass": {
+    "added": [
+     "audit:569c9b4d91f3ab346a4818a706e37fedcdd46feb0785823dd3be4448b320b7b0"
+    ],
+    "store_after": "0f590c5370adecbe",
+    "store_before": "5769e9e629107cb5",
+    "value": 1,
+    "wrote": true
+   },
+   "view": {
+    "outbox": [
+     {
+      "message": {
+       "causation_id": null,
+       "correlation_id": "audit:569c9b4d91f3ab346a4818a706e37fedcdd46feb0785823dd3be4448b320b7b0",
+       "how": {
+        "acceptance_criteria": [
+         "Preserve normal behavior"
+        ],
+        "constraints": [],
+        "context_ref": null,
+        "result_schema": "six-w.v1"
+       },
+       "message_id": "5eed0000-0000-4000-8000-00000000002d",
+       "schema_version": "1.0",
+       "type": "task.assign",
+       "what": {
+        "action": "audit_partition",
+        "details": {
+         "audit_id": "a1",
+         "generation": 1,
+         "partition_id": "p1"
+        }
+       },
+       "when": {
+        "after": [],
+        "created_at": "2026-09-22T00:00:00.053000+00:00",
+        "deadline": null
+       },
+       "where": {
+        "allowed_paths": [],
+        "environment": "local",
+        "repository": "codex-harness",
+        "revision": "bootstrap"
+       },
+       "who": {
+        "owner": "worker:github",
+        "recipient": "worker:github",
+        "sender": "lead:research"
+       },
+       "why": {
+        "evidence_refs": [],
+        "objective": "Improve harness reliability from verified evidence"
+       }
+      },
+      "message_id": "5eed0000-0000-4000-8000-00000000002d",
+      "sent": false
+     }
+    ],
+    "schedule": [
+     {
+      "at": "2026-09-22T00:00:00.053000+00:00",
+      "id": "audit:569c9b4d91f3ab346a4818a706e37fedcdd46feb0785823dd3be4448b320b7b0",
+      "partition_id": "p1",
+      "task_id": "5eed0000-0000-4000-8000-00000000002d"
+     },
+     {
+      "id": "audit:9c0e983c8c4d96b57eb1395b6c31f38ee7bfba4edf1907287059aace2624ca92",
+      "partition_id": "p1",
+      "task_id": "t-rejected"
+     },
+     {
+      "id": "correction:c1",
+      "partition_id": "p1",
+      "task_id": "t-correction"
+     }
+    ]
+   }
+  },
+  "test_the_rejected_generation_is_never_resubmitted_by_the_scheduler": {
+   "m7_test": "test_the_rejected_generation_is_never_resubmitted_by_the_scheduler",
+   "pass": {
+    "added": [],
+    "store_after": "ed043aa0e6a4bbd9",
+    "store_before": "ed043aa0e6a4bbd9",
+    "value": 0,
+    "wrote": false
+   },
+   "view": [
+    {
+     "id": "audit:9c0e983c8c4d96b57eb1395b6c31f38ee7bfba4edf1907287059aace2624ca92",
+     "partition_id": "p1",
+     "task_id": "t-rejected"
+    }
+   ]
+  }
+ },
+ "partition": {
+  "after_running_repeat": {
+   "added": [],
+   "store_after": "919fbb857a0c52f1",
+   "store_before": "919fbb857a0c52f1",
+   "value": 0,
+   "wrote": false
+  },
+  "after_running_succeeds": {
+   "added": [
+    "audit:562bb8b66605e684b5d2ad87af731120c87093299a13e3db087c0996e095769f"
+   ],
+   "store_after": "919fbb857a0c52f1",
+   "store_before": "e09ce3e862bdaab2",
+   "value": 1,
+   "wrote": true
+  },
+  "first": {
+   "added": [
+    "audit:0417829f50e8c544a998b5860f92ddae453eb82f02e50be3c8ce741d4dddff07",
+    "audit:35d43ce1324960fe137081f1cc1be03bcc5171376823c310e1f121b3b364a5d2",
+    "audit:f17fdf389616af01a65232721ab0767d4e5c3227ed86ccd658323a185d033f4d"
+   ],
+   "store_after": "c3099fbc530c19d3",
+   "store_before": "9f2c676780e0c8c6",
+   "value": 3,
+   "wrote": true
+  },
+  "generation_bump_after_succeeded": {
+   "added": [
+    "audit:23f1557115b525ada2e613f44ff49d5098175a27074b1a27c6ba3f3e45eb80c0"
+   ],
+   "store_after": "379bdefbc4107bf9",
+   "store_before": "7860053969664391",
+   "value": 1,
+   "wrote": true
+  },
+  "generation_bump_blocked_by_new_assignment": {
+   "added": [],
+   "store_after": "9dcf065744c9b88b",
+   "store_before": "9dcf065744c9b88b",
+   "value": 0,
+   "wrote": false
+  },
+  "m7_test": "none",
+  "repeat": {
+   "added": [],
+   "store_after": "c3099fbc530c19d3",
+   "store_before": "c3099fbc530c19d3",
+   "value": 0,
+   "wrote": false
+  },
+  "view": {
+   "outbox": [
+    {
+     "message": {
+      "causation_id": null,
+      "correlation_id": "audit:0417829f50e8c544a998b5860f92ddae453eb82f02e50be3c8ce741d4dddff07",
+      "how": {
+       "acceptance_criteria": [
+        "Preserve normal behavior"
+       ],
+       "constraints": [],
+       "context_ref": null,
+       "result_schema": "six-w.v1"
+      },
+      "message_id": "5eed0000-0000-4000-8000-000000000012",
+      "schema_version": "1.0",
+      "type": "task.assign",
+      "what": {
+       "action": "audit_partition",
+       "details": {
+        "audit_id": "a1",
+        "generation": 0,
+        "partition_id": "p-done"
+       }
+      },
+      "when": {
+       "after": [],
+       "created_at": "2026-09-22T00:00:00.018000+00:00",
+       "deadline": null
+      },
+      "where": {
+       "allowed_paths": [],
+       "environment": "local",
+       "repository": "codex-harness",
+       "revision": "bootstrap"
+      },
+      "who": {
+       "owner": "worker:github",
+       "recipient": "worker:github",
+       "sender": "lead:research"
+      },
+      "why": {
+       "evidence_refs": [],
+       "objective": "Improve harness reliability from verified evidence"
+      }
+     },
+     "message_id": "5eed0000-0000-4000-8000-000000000012",
+     "sent": false
+    },
+    {
+     "message": {
+      "causation_id": null,
+      "correlation_id": "audit:f17fdf389616af01a65232721ab0767d4e5c3227ed86ccd658323a185d033f4d",
+      "how": {
+       "acceptance_criteria": [
+        "Preserve normal behavior"
+       ],
+       "constraints": [],
+       "context_ref": null,
+       "result_schema": "six-w.v1"
+      },
+      "message_id": "5eed0000-0000-4000-8000-000000000013",
+      "schema_version": "1.0",
+      "type": "task.assign",
+      "what": {
+       "action": "audit_partition",
+       "details": {
+        "audit_id": "a1",
+        "generation": 0,
+        "partition_id": "p-free"
+       }
+      },
+      "when": {
+       "after": [],
+       "created_at": "2026-09-22T00:00:00.018000+00:00",
+       "deadline": null
+      },
+      "where": {
+       "allowed_paths": [],
+       "environment": "local",
+       "repository": "codex-harness",
+       "revision": "bootstrap"
+      },
+      "who": {
+       "owner": "worker:github",
+       "recipient": "worker:github",
+       "sender": "lead:research"
+      },
+      "why": {
+       "evidence_refs": [],
+       "objective": "Improve harness reliability from verified evidence"
+      }
+     },
+     "message_id": "5eed0000-0000-4000-8000-000000000013",
+     "sent": false
+    },
+    {
+     "message": {
+      "causation_id": null,
+      "correlation_id": "audit:35d43ce1324960fe137081f1cc1be03bcc5171376823c310e1f121b3b364a5d2",
+      "how": {
+       "acceptance_criteria": [
+        "Preserve normal behavior"
+       ],
+       "constraints": [],
+       "context_ref": null,
+       "result_schema": "six-w.v1"
+      },
+      "message_id": "5eed0000-0000-4000-8000-000000000014",
+      "schema_version": "1.0",
+      "type": "task.assign",
+      "what": {
+       "action": "audit_partition",
+       "details": {
+        "audit_id": "a1",
+        "generation": 0,
+        "partition_id": "p-questions"
+       }
+      },
+      "when": {
+       "after": [],
+       "created_at": "2026-09-22T00:00:00.018000+00:00",
+       "deadline": null
+      },
+      "where": {
+       "allowed_paths": [],
+       "environment": "local",
+       "repository": "codex-harness",
+       "revision": "bootstrap"
+      },
+      "who": {
+       "owner": "worker:github",
+       "recipient": "worker:github",
+       "sender": "lead:research"
+      },
+      "why": {
+       "evidence_refs": [],
+       "objective": "Improve harness reliability from verified evidence"
+      }
+     },
+     "message_id": "5eed0000-0000-4000-8000-000000000014",
+     "sent": false
+    },
+    {
+     "message": {
+      "causation_id": null,
+      "correlation_id": "audit:562bb8b66605e684b5d2ad87af731120c87093299a13e3db087c0996e095769f",
+      "how": {
+       "acceptance_criteria": [
+        "Preserve normal behavior"
+       ],
+       "constraints": [],
+       "context_ref": null,
+       "result_schema": "six-w.v1"
+      },
+      "message_id": "5eed0000-0000-4000-8000-000000000015",
+      "schema_version": "1.0",
+      "type": "task.assign",
+      "what": {
+       "action": "audit_partition",
+       "details": {
+        "audit_id": "a1",
+        "generation": 0,
+        "partition_id": "p-running"
+       }
+      },
+      "when": {
+       "after": [],
+       "created_at": "2026-09-22T00:00:00.020000+00:00",
+       "deadline": null
+      },
+      "where": {
+       "allowed_paths": [],
+       "environment": "local",
+       "repository": "codex-harness",
+       "revision": "bootstrap"
+      },
+      "who": {
+       "owner": "worker:github",
+       "recipient": "worker:github",
+       "sender": "lead:research"
+      },
+      "why": {
+       "evidence_refs": [],
+       "objective": "Improve harness reliability from verified evidence"
+      }
+     },
+     "message_id": "5eed0000-0000-4000-8000-000000000015",
+     "sent": false
+    },
+    {
+     "message": {
+      "causation_id": null,
+      "correlation_id": "audit:23f1557115b525ada2e613f44ff49d5098175a27074b1a27c6ba3f3e45eb80c0",
+      "how": {
+       "acceptance_criteria": [
+        "Preserve normal behavior"
+       ],
+       "constraints": [],
+       "context_ref": null,
+       "result_schema": "six-w.v1"
+      },
+      "message_id": "5eed0000-0000-4000-8000-000000000016",
+      "schema_version": "1.0",
+      "type": "task.assign",
+      "what": {
+       "action": "audit_partition",
+       "details": {
+        "audit_id": "a1",
+        "generation": 1,
+        "partition_id": "p-running"
+       }
+      },
+      "when": {
+       "after": [],
+       "created_at": "2026-09-22T00:00:00.023000+00:00",
+       "deadline": null
+      },
+      "where": {
+       "allowed_paths": [],
+       "environment": "local",
+       "repository": "codex-harness",
+       "revision": "bootstrap"
+      },
+      "who": {
+       "owner": "worker:github",
+       "recipient": "worker:github",
+       "sender": "lead:research"
+      },
+      "why": {
+       "evidence_refs": [],
+       "objective": "Improve harness reliability from verified evidence"
+      }
+     },
+     "message_id": "5eed0000-0000-4000-8000-000000000016",
+     "sent": false
+    }
+   ],
+   "schedule": [
+    {
+     "at": "2026-09-22T00:00:00.018000+00:00",
+     "id": "audit:0417829f50e8c544a998b5860f92ddae453eb82f02e50be3c8ce741d4dddff07",
+     "partition_id": "p-done",
+     "task_id": "5eed0000-0000-4000-8000-000000000012"
+    },
+    {
+     "at": "2026-09-22T00:00:00.023000+00:00",
+     "id": "audit:23f1557115b525ada2e613f44ff49d5098175a27074b1a27c6ba3f3e45eb80c0",
+     "partition_id": "p-running",
+     "task_id": "5eed0000-0000-4000-8000-000000000016"
+    },
+    {
+     "at": "2026-09-22T00:00:00.018000+00:00",
+     "id": "audit:35d43ce1324960fe137081f1cc1be03bcc5171376823c310e1f121b3b364a5d2",
+     "partition_id": "p-questions",
+     "task_id": "5eed0000-0000-4000-8000-000000000014"
+    },
+    {
+     "at": "2026-09-22T00:00:00.020000+00:00",
+     "id": "audit:562bb8b66605e684b5d2ad87af731120c87093299a13e3db087c0996e095769f",
+     "partition_id": "p-running",
+     "task_id": "5eed0000-0000-4000-8000-000000000015"
+    },
+    {
+     "at": "2026-09-22T00:00:00.018000+00:00",
+     "id": "audit:f17fdf389616af01a65232721ab0767d4e5c3227ed86ccd658323a185d033f4d",
+     "partition_id": "p-free",
+     "task_id": "5eed0000-0000-4000-8000-000000000013"
+    },
+    {
+     "id": "prior-done",
+     "partition_id": "p-done",
+     "task_id": "t-done"
+    },
+    {
+     "id": "prior-queued",
+     "partition_id": "p-queued",
+     "task_id": "t-absent"
+    },
+    {
+     "id": "prior-retry",
+     "partition_id": "p-retry",
+     "task_id": "t-retry"
+    },
+    {
+     "id": "prior-running",
+     "partition_id": "p-running",
+     "task_id": "t-running"
+    }
+   ]
+  }
+ },
+ "propose": {
+  "changed_partition": {
+   "added": [
+    "propose:6a80f7abf6ad5f07f92e5616d1471de181d316e351dc98c8e47f5f1aa9f4ab5a"
+   ],
+   "store_after": "2b1b4641fabab7d9",
+   "store_before": "09df5b1f22799055",
+   "value": 1,
+   "wrote": true
+  },
+  "first": {
+   "added": [
+    "audit:1a4da212bd883f2130340cc3f652f6b389ec835b46e1c3ed4c100d5e92dbc3bd",
+    "propose:3775711f05d688f099b7e346bf6e42929065991371908a0f047c5594e01a5188"
+   ],
+   "store_after": "2e0650f89bb4127d",
+   "store_before": "ee94122244d6802d",
+   "value": 2,
+   "wrote": true
+  },
+  "m7_test": "none",
+  "repeat": {
+   "added": [],
+   "store_after": "2e0650f89bb4127d",
+   "store_before": "2e0650f89bb4127d",
+   "value": 0,
+   "wrote": false
+  },
+  "view": {
+   "outbox": [
+    {
+     "message": {
+      "causation_id": null,
+      "correlation_id": "audit:1a4da212bd883f2130340cc3f652f6b389ec835b46e1c3ed4c100d5e92dbc3bd",
+      "how": {
+       "acceptance_criteria": [
+        "Preserve normal behavior"
+       ],
+       "constraints": [],
+       "context_ref": null,
+       "result_schema": "six-w.v1"
+      },
+      "message_id": "5eed0000-0000-4000-8000-000000000017",
+      "schema_version": "1.0",
+      "type": "task.assign",
+      "what": {
+       "action": "audit_partition",
+       "details": {
+        "audit_id": "a-open",
+        "generation": 0,
+        "partition_id": "p-open-2"
+       }
+      },
+      "when": {
+       "after": [],
+       "created_at": "2026-09-22T00:00:00.024000+00:00",
+       "deadline": null
+      },
+      "where": {
+       "allowed_paths": [],
+       "environment": "local",
+       "repository": "codex-harness",
+       "revision": "bootstrap"
+      },
+      "who": {
+       "owner": "worker:github",
+       "recipient": "worker:github",
+       "sender": "lead:research"
+      },
+      "why": {
+       "evidence_refs": [],
+       "objective": "Improve harness reliability from verified evidence"
+      }
+     },
+     "message_id": "5eed0000-0000-4000-8000-000000000017",
+     "sent": false
+    },
+    {
+     "message": {
+      "causation_id": null,
+      "correlation_id": "propose:3775711f05d688f099b7e346bf6e42929065991371908a0f047c5594e01a5188",
+      "how": {
+       "acceptance_criteria": [
+        "Preserve normal behavior"
+       ],
+       "constraints": [],
+       "context_ref": null,
+       "result_schema": "six-w.v1"
+      },
+      "message_id": "5eed0000-0000-4000-8000-000000000018",
+      "schema_version": "1.0",
+      "type": "task.assign",
+      "what": {
+       "action": "audit_propose",
+       "details": {
+        "audit_id": "a-ready"
+       }
+      },
+      "when": {
+       "after": [],
+       "created_at": "2026-09-22T00:00:00.024000+00:00",
+       "deadline": null
+      },
+      "where": {
+       "allowed_paths": [],
+       "environment": "local",
+       "repository": "codex-harness",
+       "revision": "bootstrap"
+      },
+      "who": {
+       "owner": "worker:github",
+       "recipient": "worker:github",
+       "sender": "lead:research"
+      },
+      "why": {
+       "evidence_refs": [],
+       "objective": "Improve harness reliability from verified evidence"
+      }
+     },
+     "message_id": "5eed0000-0000-4000-8000-000000000018",
+     "sent": false
+    },
+    {
+     "message": {
+      "causation_id": null,
+      "correlation_id": "propose:6a80f7abf6ad5f07f92e5616d1471de181d316e351dc98c8e47f5f1aa9f4ab5a",
+      "how": {
+       "acceptance_criteria": [
+        "Preserve normal behavior"
+       ],
+       "constraints": [],
+       "context_ref": null,
+       "result_schema": "six-w.v1"
+      },
+      "message_id": "5eed0000-0000-4000-8000-000000000019",
+      "schema_version": "1.0",
+      "type": "task.assign",
+      "what": {
+       "action": "audit_propose",
+       "details": {
+        "audit_id": "a-ready"
+       }
+      },
+      "when": {
+       "after": [],
+       "created_at": "2026-09-22T00:00:00.026000+00:00",
+       "deadline": null
+      },
+      "where": {
+       "allowed_paths": [],
+       "environment": "local",
+       "repository": "codex-harness",
+       "revision": "bootstrap"
+      },
+      "who": {
+       "owner": "worker:github",
+       "recipient": "worker:github",
+       "sender": "lead:research"
+      },
+      "why": {
+       "evidence_refs": [],
+       "objective": "Improve harness reliability from verified evidence"
+      }
+     },
+     "message_id": "5eed0000-0000-4000-8000-000000000019",
+     "sent": false
+    }
+   ],
+   "schedule": [
+    {
+     "at": "2026-09-22T00:00:00.024000+00:00",
+     "id": "audit:1a4da212bd883f2130340cc3f652f6b389ec835b46e1c3ed4c100d5e92dbc3bd",
+     "partition_id": "p-open-2",
+     "task_id": "5eed0000-0000-4000-8000-000000000017"
+    },
+    {
+     "at": "2026-09-22T00:00:00.024000+00:00",
+     "id": "propose:3775711f05d688f099b7e346bf6e42929065991371908a0f047c5594e01a5188",
+     "task_id": "5eed0000-0000-4000-8000-000000000018"
+    },
+    {
+     "at": "2026-09-22T00:00:00.026000+00:00",
+     "id": "propose:6a80f7abf6ad5f07f92e5616d1471de181d316e351dc98c8e47f5f1aa9f4ab5a",
+     "task_id": "5eed0000-0000-4000-8000-000000000019"
+    }
+   ]
+  }
+ },
+ "reconcile": {
+  "activates": {
+   "control": {
+    "release_id": "release-0001",
+    "revision": "rev-0001",
+    "status": "active"
+   },
+   "graph": {
+    "organization": "5d89f6853ccfa6f7ec772e171c3207c2bfb8f54235c506f99e77d9097918fb29",
+    "revision": "rev-0001",
+    "tree": "fixture-tree"
+   },
+   "pass": {
+    "added": [
+     "map:d1"
+    ],
+    "store_after": "70bb99cb4353c5de",
+    "store_before": "4baf3b8004938b23",
+    "value": 1,
+    "wrote": true
+   },
+   "repeat": {
+    "added": [],
+    "store_after": "70bb99cb4353c5de",
+    "store_before": "70bb99cb4353c5de",
+    "value": 0,
+    "wrote": false
+   },
+   "view": {
+    "outbox": [
+     {
+      "message": {
+       "causation_id": null,
+       "correlation_id": "map:d1",
+       "how": {
+        "acceptance_criteria": [
+         "Preserve normal behavior"
+        ],
+        "constraints": [],
+        "context_ref": null,
+        "result_schema": "six-w.v1"
+       },
+       "message_id": "5eed0000-0000-4000-8000-00000000002e",
+       "schema_version": "1.0",
+       "type": "task.assign",
+       "what": {
+        "action": "audit_discovery",
+        "details": {
+         "discovery_id": "d1"
+        }
+       },
+       "when": {
+        "after": [],
+        "created_at": "2026-09-22T00:00:00.054000+00:00",
+        "deadline": null
+       },
+       "where": {
+        "allowed_paths": [],
+        "environment": "local",
+        "repository": "codex-harness",
+        "revision": "bootstrap"
+       },
+       "who": {
+        "owner": "worker:github",
+        "recipient": "worker:github",
+        "sender": "lead:research"
+       },
+       "why": {
+        "evidence_refs": [],
+        "objective": "Improve harness reliability from verified evidence"
+       }
+      },
+      "message_id": "5eed0000-0000-4000-8000-00000000002e",
+      "sent": false
+     }
+    ],
+    "schedule": [
+     {
+      "at": "2026-09-22T00:00:00.054000+00:00",
+      "id": "map:d1",
+      "task_id": "5eed0000-0000-4000-8000-00000000002e"
+     }
+    ]
+   }
+  },
+  "activates_from_schedule_research": {
+   "control": {
+    "release_id": "release-0001",
+    "revision": "rev-0001",
+    "status": "active"
+   },
+   "pass": {
+    "added": [
+     "map:d1",
+     "research:geeknews:83333",
+     "research:github:83333"
+    ],
+    "store_after": "04df4117f7b9b424",
+    "store_before": "4baf3b8004938b23",
+    "value": 3,
+    "wrote": true
+   },
+   "view": {
+    "outbox": [
+     {
+      "message": {
+       "causation_id": null,
+       "correlation_id": "research:github:83333",
+       "how": {
+        "acceptance_criteria": [
+         "Preserve normal behavior"
+        ],
+        "constraints": [],
+        "context_ref": null,
+        "result_schema": "six-w.v1"
+       },
+       "message_id": "5eed0000-0000-4000-8000-00000000002f",
+       "schema_version": "1.0",
+       "type": "task.assign",
+       "what": {
+        "action": "research",
+        "details": {
+         "intent": "proactive",
+         "source": "github"
+        }
+       },
+       "when": {
+        "after": [],
+        "created_at": "2026-09-22T00:00:00.056000+00:00",
+        "deadline": null
+       },
+       "where": {
+        "allowed_paths": [],
+        "environment": "local",
+        "repository": "codex-harness",
+        "revision": "bootstrap"
+       },
+       "who": {
+        "owner": "worker:github",
+        "recipient": "worker:github",
+        "sender": "lead:research"
+       },
+       "why": {
+        "evidence_refs": [],
+        "objective": "Improve harness reliability from verified evidence"
+       }
+      },
+      "message_id": "5eed0000-0000-4000-8000-00000000002f",
+      "sent": false
+     },
+     {
+      "message": {
+       "causation_id": null,
+       "correlation_id": "research:geeknews:83333",
+       "how": {
+        "acceptance_criteria": [
+         "Preserve normal behavior"
+        ],
+        "constraints": [],
+        "context_ref": null,
+        "result_schema": "six-w.v1"
+       },
+       "message_id": "5eed0000-0000-4000-8000-000000000030",
+       "schema_version": "1.0",
+       "type": "task.assign",
+       "what": {
+        "action": "research",
+        "details": {
+         "intent": "proactive",
+         "source": "geeknews"
+        }
+       },
+       "when": {
+        "after": [],
+        "created_at": "2026-09-22T00:00:00.056000+00:00",
+        "deadline": null
+       },
+       "where": {
+        "allowed_paths": [],
+        "environment": "local",
+        "repository": "codex-harness",
+        "revision": "bootstrap"
+       },
+       "who": {
+        "owner": "worker:geeknews",
+        "recipient": "worker:geeknews",
+        "sender": "lead:research"
+       },
+       "why": {
+        "evidence_refs": [],
+        "objective": "Improve harness reliability from verified evidence"
+       }
+      },
+      "message_id": "5eed0000-0000-4000-8000-000000000030",
+      "sent": false
+     },
+     {
+      "message": {
+       "causation_id": null,
+       "correlation_id": "map:d1",
+       "how": {
+        "acceptance_criteria": [
+         "Preserve normal behavior"
+        ],
+        "constraints": [],
+        "context_ref": null,
+        "result_schema": "six-w.v1"
+       },
+       "message_id": "5eed0000-0000-4000-8000-000000000031",
+       "schema_version": "1.0",
+       "type": "task.assign",
+       "what": {
+        "action": "audit_discovery",
+        "details": {
+         "discovery_id": "d1"
+        }
+       },
+       "when": {
+        "after": [],
+        "created_at": "2026-09-22T00:00:00.056000+00:00",
+        "deadline": null
+       },
+       "where": {
+        "allowed_paths": [],
+        "environment": "local",
+        "repository": "codex-harness",
+        "revision": "bootstrap"
+       },
+       "who": {
+        "owner": "worker:github",
+        "recipient": "worker:github",
+        "sender": "lead:research"
+       },
+       "why": {
+        "evidence_refs": [],
+        "objective": "Improve harness reliability from verified evidence"
+       }
+      },
+      "message_id": "5eed0000-0000-4000-8000-000000000031",
+      "sent": false
+     }
+    ],
+    "schedule": [
+     {
+      "at": "2026-09-22T00:00:00.056000+00:00",
+      "id": "map:d1",
+      "task_id": "5eed0000-0000-4000-8000-000000000031"
+     },
+     {
+      "at": "2026-09-22T00:00:00.056000+00:00",
+      "id": "research:geeknews:83333"
+     },
+     {
+      "at": "2026-09-22T00:00:00.056000+00:00",
+      "id": "research:github:83333"
+     }
+    ]
+   }
+  },
+  "checks_incomplete": {
+   "control": null,
+   "pass": {
+    "added": [],
+    "message": "Audit checks incomplete",
+    "refused": "ContractError",
+    "store_after": "4829f814384c2dc8",
+    "store_before": "4829f814384c2dc8",
+    "wrote": false
+   },
+   "view": []
+  },
+  "invalid_release_after_research_slot": {
+   "pass": {
+    "added": [
+     "research:geeknews:83333",
+     "research:github:83333"
+    ],
+    "message": "Invalid active audit release",
+    "refused": "ContractError",
+    "store_after": "ed8492219cea7517",
+    "store_before": "36e3fc61da4c261f",
+    "wrote": true
+   },
+   "view": {
+    "outbox": [
+     {
+      "message": {
+       "causation_id": null,
+       "correlation_id": "research:github:83333",
+       "how": {
+        "acceptance_criteria": [
+         "Preserve normal behavior"
+        ],
+        "constraints": [],
+        "context_ref": null,
+        "result_schema": "six-w.v1"
+       },
+       "message_id": "5eed0000-0000-4000-8000-000000000032",
+       "schema_version": "1.0",
+       "type": "task.assign",
+       "what": {
+        "action": "research",
+        "details": {
+         "intent": "proactive",
+         "source": "github"
+        }
+       },
+       "when": {
+        "after": [],
+        "created_at": "2026-09-22T00:00:00.067000+00:00",
+        "deadline": null
+       },
+       "where": {
+        "allowed_paths": [],
+        "environment": "local",
+        "repository": "codex-harness",
+        "revision": "bootstrap"
+       },
+       "who": {
+        "owner": "worker:github",
+        "recipient": "worker:github",
+        "sender": "lead:research"
+       },
+       "why": {
+        "evidence_refs": [],
+        "objective": "Improve harness reliability from verified evidence"
+       }
+      },
+      "message_id": "5eed0000-0000-4000-8000-000000000032",
+      "sent": false
+     },
+     {
+      "message": {
+       "causation_id": null,
+       "correlation_id": "research:geeknews:83333",
+       "how": {
+        "acceptance_criteria": [
+         "Preserve normal behavior"
+        ],
+        "constraints": [],
+        "context_ref": null,
+        "result_schema": "six-w.v1"
+       },
+       "message_id": "5eed0000-0000-4000-8000-000000000033",
+       "schema_version": "1.0",
+       "type": "task.assign",
+       "what": {
+        "action": "research",
+        "details": {
+         "intent": "proactive",
+         "source": "geeknews"
+        }
+       },
+       "when": {
+        "after": [],
+        "created_at": "2026-09-22T00:00:00.067000+00:00",
+        "deadline": null
+       },
+       "where": {
+        "allowed_paths": [],
+        "environment": "local",
+        "repository": "codex-harness",
+        "revision": "bootstrap"
+       },
+       "who": {
+        "owner": "worker:geeknews",
+        "recipient": "worker:geeknews",
+        "sender": "lead:research"
+       },
+       "why": {
+        "evidence_refs": [],
+        "objective": "Improve harness reliability from verified evidence"
+       }
+      },
+      "message_id": "5eed0000-0000-4000-8000-000000000033",
+      "sent": false
+     }
+    ],
+    "schedule": [
+     {
+      "at": "2026-09-22T00:00:00.067000+00:00",
+      "id": "research:geeknews:83333"
+     },
+     {
+      "at": "2026-09-22T00:00:00.067000+00:00",
+      "id": "research:github:83333"
+     }
+    ]
+   }
+  },
+  "m7_test": "none",
+  "no_audit_lifecycle_version": {
+   "control": null,
+   "pass": {
+    "added": [],
+    "store_after": "10b36683fe73d32f",
+    "store_before": "10b36683fe73d32f",
+    "value": 0,
+    "wrote": false
+   }
+  },
+  "no_deployment": {
+   "control": null,
+   "pass": {
+    "added": [],
+    "store_after": "4f53cda18c2baa0c",
+    "store_before": "4f53cda18c2baa0c",
+    "value": 0,
+    "wrote": false
+   }
+  },
+  "other_lifecycle_version": {
+   "control": null,
+   "pass": {
+    "added": [],
+    "store_after": "1e349a1aedeb7fb9",
+    "store_before": "1e349a1aedeb7fb9",
+    "value": 0,
+    "wrote": false
+   }
+  },
+  "paused": {
+   "control": {
+    "release_id": "release-other",
+    "revision": "rev-0001",
+    "status": "paused"
+   },
+   "graph": null,
+   "pass": {
+    "added": [],
+    "store_after": "4b8874eddf25f16b",
+    "store_before": "4b8874eddf25f16b",
+    "value": 0,
+    "wrote": false
+   }
+  },
+  "policy_hash_changed": {
+   "control": null,
+   "pass": {
+    "added": [],
+    "message": "Invalid active audit release",
+    "refused": "ContractError",
+    "store_after": "36e3fc61da4c261f",
+    "store_before": "36e3fc61da4c261f",
+    "wrote": false
+   },
+   "view": []
+  },
+  "release_not_active": {
+   "control": null,
+   "pass": {
+    "added": [],
+    "store_after": "fbe2dd8c32b84025",
+    "store_before": "fbe2dd8c32b84025",
+    "value": 0,
+    "wrote": false
+   }
+  },
+  "reviews_incomplete": {
+   "control": null,
+   "pass": {
+    "added": [],
+    "message": "Audit reviews incomplete",
+    "refused": "ContractError",
+    "store_after": "b8d9cb1729610791",
+    "store_before": "b8d9cb1729610791",
+    "wrote": false
+   },
+   "view": []
+  },
+  "revision_differs_from_the_deployment": {
+   "control": null,
+   "pass": {
+    "added": [],
+    "message": "Invalid active audit release",
+    "refused": "ContractError",
+    "store_after": "c0770217d89d4049",
+    "store_before": "c0770217d89d4049",
+    "wrote": false
+   }
+  },
+  "rolled_back_release": {
+   "control": {
+    "rolled_back_release": "release-0001",
+    "status": "inactive"
+   },
+   "graph": null,
+   "pass": {
+    "added": [],
+    "store_after": "7cdef6ee172e42f6",
+    "store_before": "7cdef6ee172e42f6",
+    "value": 0,
+    "wrote": false
+   }
+  },
+  "same_release": {
+   "control": {
+    "release_id": "release-0001",
+    "revision": "rev-0001",
+    "status": "inactive"
+   },
+   "graph": null,
+   "pass": {
+    "added": [],
+    "store_after": "a4b8b58ce26605b3",
+    "store_before": "a4b8b58ce26605b3",
+    "value": 0,
+    "wrote": false
+   }
+  }
+ },
+ "research_slot": {
+  "first": {
+   "added": [
+    "research:geeknews:83333",
+    "research:github:83333"
+   ],
+   "store_after": "29b97351fab1ec3d",
+   "store_before": "accbe15873e0a965",
+   "value": 2,
+   "wrote": true
+  },
+  "later_in_slot": {
+   "added": [],
+   "store_after": "29b97351fab1ec3d",
+   "store_before": "29b97351fab1ec3d",
+   "value": 0,
+   "wrote": false
+  },
+  "m7_test": "none",
+  "next_slot": {
+   "added": [
+    "research:geeknews:83334",
+    "research:github:83334"
+   ],
+   "store_after": "8a8c48a369818db8",
+   "store_before": "29b97351fab1ec3d",
+   "value": 2,
+   "wrote": true
+  },
+  "no_control": {
+   "added": [
+    "research:geeknews:83333",
+    "research:github:83333"
+   ],
+   "store_after": "ee36913c9ff38bf8",
+   "store_before": "4f53cda18c2baa0c",
+   "value": 2,
+   "wrote": true
+  },
+  "paused_control": {
+   "added": [
+    "research:geeknews:83333",
+    "research:github:83333"
+   ],
+   "store_after": "6d2689673e135b67",
+   "store_before": "4ec95957113d7701",
+   "value": 2,
+   "wrote": true
+  },
+  "paused_view": {
+   "outbox": [
+    {
+     "message": {
+      "causation_id": null,
+      "correlation_id": "research:github:83333",
+      "how": {
+       "acceptance_criteria": [
+        "Preserve normal behavior"
+       ],
+       "constraints": [],
+       "context_ref": null,
+       "result_schema": "six-w.v1"
+      },
+      "message_id": "5eed0000-0000-4000-8000-000000000005",
+      "schema_version": "1.0",
+      "type": "task.assign",
+      "what": {
+       "action": "research",
+       "details": {
+        "intent": "proactive",
+        "source": "github"
+       }
+      },
+      "when": {
+       "after": [],
+       "created_at": "2026-09-22T00:00:00.004000+00:00",
+       "deadline": null
+      },
+      "where": {
+       "allowed_paths": [],
+       "environment": "local",
+       "repository": "codex-harness",
+       "revision": "bootstrap"
+      },
+      "who": {
+       "owner": "worker:github",
+       "recipient": "worker:github",
+       "sender": "lead:research"
+      },
+      "why": {
+       "evidence_refs": [],
+       "objective": "Improve harness reliability from verified evidence"
+      }
+     },
+     "message_id": "5eed0000-0000-4000-8000-000000000005",
+     "sent": false
+    },
+    {
+     "message": {
+      "causation_id": null,
+      "correlation_id": "research:geeknews:83333",
+      "how": {
+       "acceptance_criteria": [
+        "Preserve normal behavior"
+       ],
+       "constraints": [],
+       "context_ref": null,
+       "result_schema": "six-w.v1"
+      },
+      "message_id": "5eed0000-0000-4000-8000-000000000006",
+      "schema_version": "1.0",
+      "type": "task.assign",
+      "what": {
+       "action": "research",
+       "details": {
+        "intent": "proactive",
+        "source": "geeknews"
+       }
+      },
+      "when": {
+       "after": [],
+       "created_at": "2026-09-22T00:00:00.004000+00:00",
+       "deadline": null
+      },
+      "where": {
+       "allowed_paths": [],
+       "environment": "local",
+       "repository": "codex-harness",
+       "revision": "bootstrap"
+      },
+      "who": {
+       "owner": "worker:geeknews",
+       "recipient": "worker:geeknews",
+       "sender": "lead:research"
+      },
+      "why": {
+       "evidence_refs": [],
+       "objective": "Improve harness reliability from verified evidence"
+      }
+     },
+     "message_id": "5eed0000-0000-4000-8000-000000000006",
+     "sent": false
+    }
+   ],
+   "schedule": [
+    {
+     "at": "2026-09-22T00:00:00.004000+00:00",
+     "id": "research:geeknews:83333"
+    },
+    {
+     "at": "2026-09-22T00:00:00.004000+00:00",
+     "id": "research:github:83333"
+    }
+   ]
+  },
+  "repeat_same_slot": {
+   "added": [],
+   "store_after": "29b97351fab1ec3d",
+   "store_before": "29b97351fab1ec3d",
+   "value": 0,
+   "wrote": false
+  },
+  "view": {
+   "outbox": [
+    {
+     "message": {
+      "causation_id": null,
+      "correlation_id": "research:github:83333",
+      "how": {
+       "acceptance_criteria": [
+        "Preserve normal behavior"
+       ],
+       "constraints": [],
+       "context_ref": null,
+       "result_schema": "six-w.v1"
+      },
+      "message_id": "5eed0000-0000-4000-8000-000000000001",
+      "schema_version": "1.0",
+      "type": "task.assign",
+      "what": {
+       "action": "research",
+       "details": {
+        "intent": "proactive",
+        "source": "github"
+       }
+      },
+      "when": {
+       "after": [],
+       "created_at": "2026-09-22T00:00:00+00:00",
+       "deadline": null
+      },
+      "where": {
+       "allowed_paths": [],
+       "environment": "local",
+       "repository": "codex-harness",
+       "revision": "bootstrap"
+      },
+      "who": {
+       "owner": "worker:github",
+       "recipient": "worker:github",
+       "sender": "lead:research"
+      },
+      "why": {
+       "evidence_refs": [],
+       "objective": "Improve harness reliability from verified evidence"
+      }
+     },
+     "message_id": "5eed0000-0000-4000-8000-000000000001",
+     "sent": false
+    },
+    {
+     "message": {
+      "causation_id": null,
+      "correlation_id": "research:geeknews:83333",
+      "how": {
+       "acceptance_criteria": [
+        "Preserve normal behavior"
+       ],
+       "constraints": [],
+       "context_ref": null,
+       "result_schema": "six-w.v1"
+      },
+      "message_id": "5eed0000-0000-4000-8000-000000000002",
+      "schema_version": "1.0",
+      "type": "task.assign",
+      "what": {
+       "action": "research",
+       "details": {
+        "intent": "proactive",
+        "source": "geeknews"
+       }
+      },
+      "when": {
+       "after": [],
+       "created_at": "2026-09-22T00:00:00+00:00",
+       "deadline": null
+      },
+      "where": {
+       "allowed_paths": [],
+       "environment": "local",
+       "repository": "codex-harness",
+       "revision": "bootstrap"
+      },
+      "who": {
+       "owner": "worker:geeknews",
+       "recipient": "worker:geeknews",
+       "sender": "lead:research"
+      },
+      "why": {
+       "evidence_refs": [],
+       "objective": "Improve harness reliability from verified evidence"
+      }
+     },
+     "message_id": "5eed0000-0000-4000-8000-000000000002",
+     "sent": false
+    },
+    {
+     "message": {
+      "causation_id": null,
+      "correlation_id": "research:github:83334",
+      "how": {
+       "acceptance_criteria": [
+        "Preserve normal behavior"
+       ],
+       "constraints": [],
+       "context_ref": null,
+       "result_schema": "six-w.v1"
+      },
+      "message_id": "5eed0000-0000-4000-8000-000000000003",
+      "schema_version": "1.0",
+      "type": "task.assign",
+      "what": {
+       "action": "research",
+       "details": {
+        "intent": "proactive",
+        "source": "github"
+       }
+      },
+      "when": {
+       "after": [],
+       "created_at": "2026-09-22T00:00:00.003000+00:00",
+       "deadline": null
+      },
+      "where": {
+       "allowed_paths": [],
+       "environment": "local",
+       "repository": "codex-harness",
+       "revision": "bootstrap"
+      },
+      "who": {
+       "owner": "worker:github",
+       "recipient": "worker:github",
+       "sender": "lead:research"
+      },
+      "why": {
+       "evidence_refs": [],
+       "objective": "Improve harness reliability from verified evidence"
+      }
+     },
+     "message_id": "5eed0000-0000-4000-8000-000000000003",
+     "sent": false
+    },
+    {
+     "message": {
+      "causation_id": null,
+      "correlation_id": "research:geeknews:83334",
+      "how": {
+       "acceptance_criteria": [
+        "Preserve normal behavior"
+       ],
+       "constraints": [],
+       "context_ref": null,
+       "result_schema": "six-w.v1"
+      },
+      "message_id": "5eed0000-0000-4000-8000-000000000004",
+      "schema_version": "1.0",
+      "type": "task.assign",
+      "what": {
+       "action": "research",
+       "details": {
+        "intent": "proactive",
+        "source": "geeknews"
+       }
+      },
+      "when": {
+       "after": [],
+       "created_at": "2026-09-22T00:00:00.003000+00:00",
+       "deadline": null
+      },
+      "where": {
+       "allowed_paths": [],
+       "environment": "local",
+       "repository": "codex-harness",
+       "revision": "bootstrap"
+      },
+      "who": {
+       "owner": "worker:geeknews",
+       "recipient": "worker:geeknews",
+       "sender": "lead:research"
+      },
+      "why": {
+       "evidence_refs": [],
+       "objective": "Improve harness reliability from verified evidence"
+      }
+     },
+     "message_id": "5eed0000-0000-4000-8000-000000000004",
+     "sent": false
+    }
+   ],
+   "schedule": [
+    {
+     "at": "2026-09-22T00:00:00+00:00",
+     "id": "research:geeknews:83333"
+    },
+    {
+     "at": "2026-09-22T00:00:00.003000+00:00",
+     "id": "research:geeknews:83334"
+    },
+    {
+     "at": "2026-09-22T00:00:00+00:00",
+     "id": "research:github:83333"
+    },
+    {
+     "at": "2026-09-22T00:00:00.003000+00:00",
+     "id": "research:github:83334"
+    }
+   ]
+  },
+  "with_discovery": {
+   "added": [
+    "map:d1",
+    "research:geeknews:83333",
+    "research:github:83333"
+   ],
+   "store_after": "72b935e7f9fb0f97",
+   "store_before": "bbb031295e71cde3",
+   "value": 3,
+   "wrote": true
+  },
+  "with_discovery_repeat": {
+   "added": [],
+   "store_after": "72b935e7f9fb0f97",
+   "store_before": "72b935e7f9fb0f97",
+   "value": 0,
+   "wrote": false
+  },
+  "with_discovery_view": {
+   "outbox": [
+    {
+     "message": {
+      "causation_id": null,
+      "correlation_id": "research:github:83333",
+      "how": {
+       "acceptance_criteria": [
+        "Preserve normal behavior"
+       ],
+       "constraints": [],
+       "context_ref": null,
+       "result_schema": "six-w.v1"
+      },
+      "message_id": "5eed0000-0000-4000-8000-000000000009",
+      "schema_version": "1.0",
+      "type": "task.assign",
+      "what": {
+       "action": "research",
+       "details": {
+        "intent": "proactive",
+        "source": "github"
+       }
+      },
+      "when": {
+       "after": [],
+       "created_at": "2026-09-22T00:00:00.006000+00:00",
+       "deadline": null
+      },
+      "where": {
+       "allowed_paths": [],
+       "environment": "local",
+       "repository": "codex-harness",
+       "revision": "bootstrap"
+      },
+      "who": {
+       "owner": "worker:github",
+       "recipient": "worker:github",
+       "sender": "lead:research"
+      },
+      "why": {
+       "evidence_refs": [],
+       "objective": "Improve harness reliability from verified evidence"
+      }
+     },
+     "message_id": "5eed0000-0000-4000-8000-000000000009",
+     "sent": false
+    },
+    {
+     "message": {
+      "causation_id": null,
+      "correlation_id": "research:geeknews:83333",
+      "how": {
+       "acceptance_criteria": [
+        "Preserve normal behavior"
+       ],
+       "constraints": [],
+       "context_ref": null,
+       "result_schema": "six-w.v1"
+      },
+      "message_id": "5eed0000-0000-4000-8000-00000000000a",
+      "schema_version": "1.0",
+      "type": "task.assign",
+      "what": {
+       "action": "research",
+       "details": {
+        "intent": "proactive",
+        "source": "geeknews"
+       }
+      },
+      "when": {
+       "after": [],
+       "created_at": "2026-09-22T00:00:00.006000+00:00",
+       "deadline": null
+      },
+      "where": {
+       "allowed_paths": [],
+       "environment": "local",
+       "repository": "codex-harness",
+       "revision": "bootstrap"
+      },
+      "who": {
+       "owner": "worker:geeknews",
+       "recipient": "worker:geeknews",
+       "sender": "lead:research"
+      },
+      "why": {
+       "evidence_refs": [],
+       "objective": "Improve harness reliability from verified evidence"
+      }
+     },
+     "message_id": "5eed0000-0000-4000-8000-00000000000a",
+     "sent": false
+    },
+    {
+     "message": {
+      "causation_id": null,
+      "correlation_id": "map:d1",
+      "how": {
+       "acceptance_criteria": [
+        "Preserve normal behavior"
+       ],
+       "constraints": [],
+       "context_ref": null,
+       "result_schema": "six-w.v1"
+      },
+      "message_id": "5eed0000-0000-4000-8000-00000000000b",
+      "schema_version": "1.0",
+      "type": "task.assign",
+      "what": {
+       "action": "audit_discovery",
+       "details": {
+        "discovery_id": "d1"
+       }
+      },
+      "when": {
+       "after": [],
+       "created_at": "2026-09-22T00:00:00.006000+00:00",
+       "deadline": null
+      },
+      "where": {
+       "allowed_paths": [],
+       "environment": "local",
+       "repository": "codex-harness",
+       "revision": "bootstrap"
+      },
+      "who": {
+       "owner": "worker:github",
+       "recipient": "worker:github",
+       "sender": "lead:research"
+      },
+      "why": {
+       "evidence_refs": [],
+       "objective": "Improve harness reliability from verified evidence"
+      }
+     },
+     "message_id": "5eed0000-0000-4000-8000-00000000000b",
+     "sent": false
+    }
+   ],
+   "schedule": [
+    {
+     "at": "2026-09-22T00:00:00.006000+00:00",
+     "id": "map:d1",
+     "task_id": "5eed0000-0000-4000-8000-00000000000b"
+    },
+    {
+     "at": "2026-09-22T00:00:00.006000+00:00",
+     "id": "research:geeknews:83333"
+    },
+    {
+     "at": "2026-09-22T00:00:00.006000+00:00",
+     "id": "research:github:83333"
+    }
+   ]
+  }
+ }
+}
