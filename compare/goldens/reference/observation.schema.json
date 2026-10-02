@@ -1,0 +1,706 @@
+{
+ "canary_absent": {
+  "canary_in_any_message": false,
+  "messages_checked": 68
+ },
+ "cap_and_order": {
+  "eight_violations": {
+   "message": "['category']: enum; ['event_id']: pattern; ['event_type']: pattern; ['execution', 'process_run_id']: pattern; ['observed_at']: format",
+   "refused": "ContractError"
+  },
+  "max_entries": 5
+ },
+ "missing_each_required_field": {
+  "attributes": {
+   "message": "[]: required",
+   "refused": "ContractError"
+  },
+  "category": {
+   "message": "[]: required",
+   "refused": "ContractError"
+  },
+  "causation_id": {
+   "message": "[]: required",
+   "refused": "ContractError"
+  },
+  "correlation_id": {
+   "message": "[]: required",
+   "refused": "ContractError"
+  },
+  "event_id": {
+   "message": "[]: required",
+   "refused": "ContractError"
+  },
+  "event_type": {
+   "message": "[]: required",
+   "refused": "ContractError"
+  },
+  "evidence_refs": {
+   "message": "[]: required",
+   "refused": "ContractError"
+  },
+  "execution": {
+   "message": "[]: required",
+   "refused": "ContractError"
+  },
+  "observed_at": {
+   "message": "[]: required",
+   "refused": "ContractError"
+  },
+  "occurred_at": {
+   "message": "[]: required",
+   "refused": "ContractError"
+  },
+  "outcome": {
+   "message": "[]: required",
+   "refused": "ContractError"
+  },
+  "reason_code": {
+   "message": "[]: required",
+   "refused": "ContractError"
+  },
+  "redaction": {
+   "message": "[]: required",
+   "refused": "ContractError"
+  },
+  "schema_version": {
+   "message": "[]: required",
+   "refused": "ContractError"
+  },
+  "sequence": {
+   "message": "[]: required",
+   "refused": "ContractError"
+  },
+  "severity": {
+   "message": "[]: required",
+   "refused": "ContractError"
+  },
+  "source": {
+   "message": "[]: required",
+   "refused": "ContractError"
+  }
+ },
+ "non_objects": {
+  "empty_object": {
+   "message": "[]: required; []: required; []: required; []: required; []: required",
+   "refused": "ContractError"
+  },
+  "integer": {
+   "message": "[]: type",
+   "refused": "ContractError"
+  },
+  "list": {
+   "message": "[]: type",
+   "refused": "ContractError"
+  },
+  "none": {
+   "message": "[]: type",
+   "refused": "ContractError"
+  },
+  "string": {
+   "message": "[]: type",
+   "refused": "ContractError"
+  }
+ },
+ "refused": {
+  "attributes_wrong_type": {
+   "message": "['attributes']: type",
+   "refused": "ContractError"
+  },
+  "category_not_in_enum": {
+   "message": "['category']: enum",
+   "refused": "ContractError"
+  },
+  "causation_id_wrong_type": {
+   "message": "['causation_id']: type",
+   "refused": "ContractError"
+  },
+  "correlation_id_empty": {
+   "message": "['correlation_id']: minLength",
+   "refused": "ContractError"
+  },
+  "correlation_id_too_long": {
+   "message": "['correlation_id']: maxLength",
+   "refused": "ContractError"
+  },
+  "event_id_not_hex": {
+   "message": "['event_id']: pattern",
+   "refused": "ContractError"
+  },
+  "event_id_wrong_type": {
+   "message": "['event_id']: type",
+   "refused": "ContractError"
+  },
+  "event_type_pattern": {
+   "message": "['event_type']: pattern",
+   "refused": "ContractError"
+  },
+  "evidence_refs_item_empty": {
+   "message": "['evidence_refs', 1]: minLength",
+   "refused": "ContractError"
+  },
+  "evidence_refs_too_many": {
+   "message": "['evidence_refs']: maxItems",
+   "refused": "ContractError"
+  },
+  "evidence_refs_wrong_type": {
+   "message": "['evidence_refs']: type",
+   "refused": "ContractError"
+  },
+  "execution_branch_attempt_wrong_type": {
+   "message": "['execution', 'attempt']: type; ['execution', 'attempt']: type",
+   "refused": "ContractError"
+  },
+  "execution_branch_bucket_null": {
+   "message": "['execution', 'bucket']: enum",
+   "refused": "ContractError"
+  },
+  "execution_branch_generation_null": {
+   "message": "['execution', 'generation']: type",
+   "refused": "ContractError"
+  },
+  "execution_branch_role_null": {
+   "message": "['execution', 'role']: type",
+   "refused": "ContractError"
+  },
+  "execution_branch_task_id_null": {
+   "message": "['execution', 'task_id']: type",
+   "refused": "ContractError"
+  },
+  "execution_bucket_not_in_enum": {
+   "message": "['execution', 'bucket']: enum; ['execution', 'bucket']: type",
+   "refused": "ContractError"
+  },
+  "execution_extra_property": {
+   "message": "['execution']: additionalProperties",
+   "refused": "ContractError"
+  },
+  "execution_generation_wrong_type": {
+   "message": "['execution', 'generation']: type; ['execution', 'generation']: type",
+   "refused": "ContractError"
+  },
+  "execution_kind_not_in_enum": {
+   "message": "['execution', 'kind']: enum",
+   "refused": "ContractError"
+  },
+  "execution_process_run_id_pattern": {
+   "message": "['execution', 'process_run_id']: pattern",
+   "refused": "ContractError"
+  },
+  "extra_property_nested_object": {
+   "message": "[]: additionalProperties",
+   "refused": "ContractError"
+  },
+  "extra_property_summary": {
+   "message": "[]: additionalProperties",
+   "refused": "ContractError"
+  },
+  "missing_schema_version": {
+   "message": "[]: required",
+   "refused": "ContractError"
+  },
+  "observed_at_not_a_time": {
+   "message": "['observed_at']: format",
+   "refused": "ContractError"
+  },
+  "observed_at_wrong_type": {
+   "message": "['observed_at']: type",
+   "refused": "ContractError"
+  },
+  "occurred_at_not_a_time": {
+   "message": "['occurred_at']: format",
+   "refused": "ContractError"
+  },
+  "outcome_not_in_enum": {
+   "message": "['outcome']: enum",
+   "refused": "ContractError"
+  },
+  "reason_code_pattern": {
+   "message": "['reason_code']: pattern",
+   "refused": "ContractError"
+  },
+  "redaction_applied_false": {
+   "message": "['redaction', 'applied']: const",
+   "refused": "ContractError"
+  },
+  "redaction_extra_property": {
+   "message": "['redaction']: additionalProperties",
+   "refused": "ContractError"
+  },
+  "redaction_findings_negative": {
+   "message": "['redaction', 'findings']: minimum",
+   "refused": "ContractError"
+  },
+  "schema_version_other": {
+   "message": "['schema_version']: const",
+   "refused": "ContractError"
+  },
+  "sequence_basis_not_in_enum": {
+   "message": "['sequence', 'basis']: enum",
+   "refused": "ContractError"
+  },
+  "sequence_number_zero": {
+   "message": "['sequence', 'number']: minimum",
+   "refused": "ContractError"
+  },
+  "sequence_process_run_id_pattern": {
+   "message": "['sequence', 'process_run_id']: pattern",
+   "refused": "ContractError"
+  },
+  "severity_not_in_enum": {
+   "message": "['severity']: enum",
+   "refused": "ContractError"
+  },
+  "source_component_empty": {
+   "message": "['source', 'component']: minLength",
+   "refused": "ContractError"
+  },
+  "source_component_wrong_type": {
+   "message": "['source', 'component']: type",
+   "refused": "ContractError"
+  },
+  "source_extra_property": {
+   "message": "['source']: additionalProperties",
+   "refused": "ContractError"
+  },
+  "source_pid_negative": {
+   "message": "['source', 'pid']: minimum",
+   "refused": "ContractError"
+  },
+  "system_branch_bucket_not_null": {
+   "message": "['execution', 'bucket']: type",
+   "refused": "ContractError"
+  },
+  "system_branch_generation_not_null": {
+   "message": "['execution', 'generation']: type",
+   "refused": "ContractError"
+  },
+  "system_branch_session_id_not_null": {
+   "message": "['execution', 'session_id']: type",
+   "refused": "ContractError"
+  },
+  "system_branch_task_id_not_null": {
+   "message": "['execution', 'task_id']: type",
+   "refused": "ContractError"
+  }
+ },
+ "registry_size": 66,
+ "registry_valid": {
+  "development.backlog_item_admitted": {
+   "accepted": true,
+   "digest": "a84bddab689517597feb96228ab09e759a4e3c587adca44c68d21e83ce64ea85",
+   "same_object": true
+  },
+  "development.checkpoint_recorded": {
+   "accepted": true,
+   "digest": "a21c1d5b49232dc136ce6b8bc05423e4c8c9bc42afe04e703f91d3c5f68295a8",
+   "same_object": true
+  },
+  "development.delivery_check_observed": {
+   "accepted": true,
+   "digest": "b7f2d86978c647525eb5f5cc97a2b51ff1a82eca097f5652a02e6ecbf6a150a4",
+   "same_object": true
+  },
+  "development.evidence_inspection_finished": {
+   "accepted": true,
+   "digest": "32cf753be9c6ab989af294d01995d192b1e51acfa931180c8516fc477d5ba16c",
+   "same_object": true
+  },
+  "development.evidence_inspection_started": {
+   "accepted": true,
+   "digest": "3137c601e62857567b5d902e1865d08a868a0b6d23dca30f01babaa32c2ef456",
+   "same_object": true
+  },
+  "development.invocation_abandoned": {
+   "accepted": true,
+   "digest": "67f2ddf7fe75f5da711ddb948d07da28b91269d439d095612c0beadce420510c",
+   "same_object": true
+  },
+  "development.invocation_reserved": {
+   "accepted": true,
+   "digest": "dd8faeb851e5702cbae3293b6d25907f6c7535310ed038d5febae9961fb72a99",
+   "same_object": true
+  },
+  "development.invocation_settled": {
+   "accepted": true,
+   "digest": "8e8971e0790a963d5e4584397e35a3c6eb10608a76fada5a88d9c36ca1e8583d",
+   "same_object": true
+  },
+  "development.output_evaluated": {
+   "accepted": true,
+   "digest": "66b08e3b706aa34c439e3e646a586852596860fe8dc754b6f2fce5169b44c872",
+   "same_object": true
+  },
+  "development.progress_recorded": {
+   "accepted": true,
+   "digest": "373ae27d6109e81d06555f12b6f7e5d5aa115d0b67504ce784c3aaebb5a38335",
+   "same_object": true
+  },
+  "development.provider_failed": {
+   "accepted": true,
+   "digest": "b7298db14d067555665d94a868ddce949e0c77fd8b7307289cd5b94268ae747e",
+   "same_object": true
+  },
+  "development.provider_finished": {
+   "accepted": true,
+   "digest": "be073d30e43a8f254c4e63dd9764ad8cbb23b2a2ce78cc560764245f1bd25749",
+   "same_object": true
+  },
+  "development.provider_started": {
+   "accepted": true,
+   "digest": "fb188cec6d7653c55d60dbda1c1b811c4a4362bd156b27169664b4180978a343",
+   "same_object": true
+  },
+  "development.reconciliation_required": {
+   "accepted": true,
+   "digest": "7468b409e22e6d563f01e62230ebbf6e3ad62422fe5a2d7c44e2f79740f37883",
+   "same_object": true
+  },
+  "development.reconciliation_resolved": {
+   "accepted": true,
+   "digest": "ed870748717f697fee2ac3cfbfcbc883b34adce56ba0f8d2b1ec01bbf31ad198",
+   "same_object": true
+  },
+  "development.task_completed": {
+   "accepted": true,
+   "digest": "dd49c31e59184997ca9aaabffa183f87857c66d0c23d9727bb92deaab1590aa9",
+   "same_object": true
+  },
+  "development.task_failed": {
+   "accepted": true,
+   "digest": "6b28136bc844a9c3a4be2c9f09c3e3973efc898c822766492fd8def0dea7c1e0",
+   "same_object": true
+  },
+  "development.termination_recorded": {
+   "accepted": true,
+   "digest": "e5286b2d1ddae049084595a83b993992f25c3151ada40c698973dd73490a3dfc",
+   "same_object": true
+  },
+  "development.worker_session_transition": {
+   "accepted": true,
+   "digest": "7e4de1a2d9c97d5fee8424d40fd0a782d1959e764ea903ebef3204df6ecd0e53",
+   "same_object": true
+  },
+  "general.delivery_stage_entered": {
+   "accepted": true,
+   "digest": "3a92f6966da59c7ea4e2a6a44ffce189a9a35d0b850d13caa43b9c9203fbbbb2",
+   "same_object": true
+  },
+  "general.message_accepted": {
+   "accepted": true,
+   "digest": "de0a9a7b85cc7bff0d921518ea4a4e31a6da68e341afb69de0ad822e0e5d5b93",
+   "same_object": true
+  },
+  "general.message_acknowledged": {
+   "accepted": true,
+   "digest": "6521d91bde764e92c32b68c3dbf8e7fca22f2f2b8d437c5c426e22ed28ab40ff",
+   "same_object": true
+  },
+  "general.message_delivery_error": {
+   "accepted": true,
+   "digest": "316f63f1049214284b11765ce3c01ba87b3817d6492e4291de0f2cc9a8ec5ce7",
+   "same_object": true
+  },
+  "general.message_delivery_retry": {
+   "accepted": true,
+   "digest": "84c719b37d93002801b16753594cb2b3307c920da57918323f59b1c0d58bfbd3",
+   "same_object": true
+  },
+  "general.message_published": {
+   "accepted": true,
+   "digest": "eec28feaf955e2da40965132cd6618746782da6e43280c2c8b7af54d00f23db5",
+   "same_object": true
+  },
+  "general.message_quarantined": {
+   "accepted": true,
+   "digest": "311ddb05ca37e8cc653bee00a27d9229e693098fe9ac4e34a4c3422d081806bb",
+   "same_object": true
+  },
+  "general.message_received": {
+   "accepted": true,
+   "digest": "79a665a7cec21363968941994bd2eb58953be70e769e87a167e70535f180a00c",
+   "same_object": true
+  },
+  "general.message_rejected": {
+   "accepted": true,
+   "digest": "48eba03c79a7d6cda62f1f027098d008ee611bc6addac9aa68fad9adfb90c816",
+   "same_object": true
+  },
+  "general.process_idle_exit": {
+   "accepted": true,
+   "digest": "333a6ea6199da672de994d0a7bdb221e458f685be6e39aeee5e3f0c424f450f2",
+   "same_object": true
+  },
+  "general.process_started": {
+   "accepted": true,
+   "digest": "bf5b8deb474c5db90286ff1c80a4a2ac66c32d86cde61f54d28f2d28b83d0642",
+   "same_object": true
+  },
+  "operations.alert_pending": {
+   "accepted": true,
+   "digest": "b08be42fde42bd6b282bc2c238ce6a1117c99a8f07abfeb4880874860b49300c",
+   "same_object": true
+  },
+  "operations.alert_suppressed": {
+   "accepted": true,
+   "digest": "b6ca037dc4d2177c380809e6b1a6e9d14de083d296de64cf6ab351315e363d82",
+   "same_object": true
+  },
+  "operations.audit_progress_observed": {
+   "accepted": true,
+   "digest": "4789c38ef04234b5ca5f6b6a48e2b564518a1fb2e781a0fed9f7adc22f74d887",
+   "same_object": true
+  },
+  "operations.audit_repair_admitted": {
+   "accepted": true,
+   "digest": "88e234ff23de76e4c3fba388847b3227278eb48b1f88bbf53d6c1fb2c16a3d29",
+   "same_object": true
+  },
+  "operations.audit_repair_settled": {
+   "accepted": true,
+   "digest": "76e786a3f0c21bbf4ffa191d823944257d0c580a85f758ab77a156a1876efb00",
+   "same_object": true
+  },
+  "operations.audit_service_scheduled": {
+   "accepted": true,
+   "digest": "efbc8fa01faceea1ec7358e96a113e320c31649a47ea68402fd936ed327b5a3e",
+   "same_object": true
+  },
+  "operations.audit_service_started": {
+   "accepted": true,
+   "digest": "d055021b9cf97e4d87bfe50cf1e87f6b93ff6121840d5384bcad35cfb6ee717b",
+   "same_object": true
+  },
+  "operations.audit_service_stopped": {
+   "accepted": true,
+   "digest": "74d067f4adef15cea7bf0cd250b8e239e7e95387e81d0cd2315641674a4804ea",
+   "same_object": true
+  },
+  "operations.audit_service_task": {
+   "accepted": true,
+   "digest": "d860c8876d44a2b13c2543ee9e4ef868d3d7d0c370d0083d4ef063e205d23c5e",
+   "same_object": true
+  },
+  "operations.autonomous_stage": {
+   "accepted": true,
+   "digest": "2703cd8e9928c549d758ec3841ff766275c5068ff0c3bf4089187fd910f49ad6",
+   "same_object": true
+  },
+  "operations.backlog_item_refused": {
+   "accepted": true,
+   "digest": "3ca446750e5364b21891a43db5fc03ebc9015bfef45465a40ade7daaab07c2bb",
+   "same_object": true
+  },
+  "operations.backlog_observed": {
+   "accepted": true,
+   "digest": "7156b1e62a35b6519004e9369e80272ed4f65ccd0a5d91bf0b13572bfbfb5518",
+   "same_object": true
+  },
+  "operations.backlog_recovered": {
+   "accepted": true,
+   "digest": "1f88b4dda77d2ebc95cc2ea27529bb85dbfca2c214f049353c887051e202a75f",
+   "same_object": true
+  },
+  "operations.backlog_unavailable": {
+   "accepted": true,
+   "digest": "793bd04ae5e920b60b434e9894af4831ce4086e4d0212da1c01779d2d7490a2b",
+   "same_object": true
+  },
+  "operations.collection_completed": {
+   "accepted": true,
+   "digest": "3272b8a08151caded82c038297e0970a1d5db1494a442094897cc67d0bf6a5b1",
+   "same_object": true
+  },
+  "operations.continuation_blocked": {
+   "accepted": true,
+   "digest": "78dc61fb7669f3da162c235d4b2908e2d56ff3f58267105fa733210bf5a58a25",
+   "same_object": true
+  },
+  "operations.continuation_transition": {
+   "accepted": true,
+   "digest": "5ebee5c567697fe6dcd6982c1ebb8227fa4290b3a16df047fffa5a9f6b8d282b",
+   "same_object": true
+  },
+  "operations.delivery_blocked": {
+   "accepted": true,
+   "digest": "6206295c45bd2f608885c39aeba1eafe8e90e127cc3b5eb2b06bdafe909626c0",
+   "same_object": true
+  },
+  "operations.delivery_rollback": {
+   "accepted": true,
+   "digest": "53f0f89db4f53e8d210f951d67aefc1e950d5b1cb42432a45835446310883610",
+   "same_object": true
+  },
+  "operations.delivery_switched": {
+   "accepted": true,
+   "digest": "6c05a7e75a3ce1e301878c6b1a0f88873ca2359a579fa79455d23371ee7ed25a",
+   "same_object": true
+  },
+  "operations.discovery_pressure_changed": {
+   "accepted": true,
+   "digest": "f7d7d39104cea0945a73e03f2b0b72ca6b92875e9bfc540759a7046f99bfec65",
+   "same_object": true
+  },
+  "operations.lease_renewed": {
+   "accepted": true,
+   "digest": "fba73656008d6f227512b6374a9ae64a4da7f5a76f57297e14e8684bdd9cc377",
+   "same_object": true
+  },
+  "operations.maintenance_job": {
+   "accepted": true,
+   "digest": "0c13ef28d4ec2995049914d8adc407339c38403da8b8bb639fe26e30eaf3c5d9",
+   "same_object": true
+  },
+  "operations.observation_conflict": {
+   "accepted": true,
+   "digest": "46f0a1e6f2a1a42075c073fe3d6f008da5047a336d547485614e8e6feb1bf3a4",
+   "same_object": true
+  },
+  "operations.observation_refused": {
+   "accepted": true,
+   "digest": "8397c8bcc2a50410d2b8b8d9627b6a50adc63d99b9466b68a7ad7fe9f0db8031",
+   "same_object": true
+  },
+  "operations.operation_finalized": {
+   "accepted": true,
+   "digest": "9ebddc780d58659282182ecbcb32a05067ba4884cc732c6ac403d666030a3f8e",
+   "same_object": true
+  },
+  "operations.operation_message_parked": {
+   "accepted": true,
+   "digest": "d0ab3d094dc87c10c81e48a587fd0a89fa764a1b034bcc0d7c532a087319a8e0",
+   "same_object": true
+  },
+  "operations.sink_recovered": {
+   "accepted": true,
+   "digest": "e87afae9864b54a4d70fa76475c3dfbe533d7a523f65f8a433086e30a8d30134",
+   "same_object": true
+  },
+  "operations.sink_unavailable": {
+   "accepted": true,
+   "digest": "b930db4df0ae9a36f5a1099017838e9803d51fb601cbd82fde166fa5cae9cbc8",
+   "same_object": true
+  },
+  "operations.spool_append_failed": {
+   "accepted": true,
+   "digest": "83a5876f1aeff6ddd6ac073cba00ad01e4e481c59cb7504e1e5b7876d7366415",
+   "same_object": true
+  },
+  "operations.spool_saturated": {
+   "accepted": true,
+   "digest": "6abd349ce00c1ceb24d02839331af7786afcc23c94e7d5e23f8fbbe25daceea4",
+   "same_object": true
+  },
+  "operations.supervisor_error": {
+   "accepted": true,
+   "digest": "b12870747a13c0f4adb58b9f3ec62314d69e2759bff2352e82a11a6ed1f7c791",
+   "same_object": true
+  },
+  "operations.supervisor_tick": {
+   "accepted": true,
+   "digest": "8801d6902a40b5bb85c9ec11d876bf03b25b675e98d2e3d0636723e003c09d9b",
+   "same_object": true
+  },
+  "operations.worker_replace_requested": {
+   "accepted": true,
+   "digest": "b2eef9eb04917ae72ea98087b18a8550ebcccdf1b508c64b1893b7a9512b7059",
+   "same_object": true
+  },
+  "operations.worker_session_blocked": {
+   "accepted": true,
+   "digest": "d47e18acd1798ff4d9d93a47849fb4ae8c728faee1bd8940dce0b7965a1f47aa",
+   "same_object": true
+  },
+  "operations.worker_wake_requested": {
+   "accepted": true,
+   "digest": "647ef25c3aeace22444931f5b364f2dbf2641fd995128746e27bc9d47473aa9f",
+   "same_object": true
+  }
+ },
+ "valid": {
+  "decisions_pending_unassigned": {
+   "accepted": true,
+   "digest": "d951577e81add6538296c1094cc9e4f9919a8a46b2f432b7fc0b736b7d6dce0a",
+   "same_object": true
+  },
+  "every_outcome": {
+   "aborted": {
+    "accepted": true,
+    "digest": "b17fdefd566bf8d80f9855a5a2e81a086c47b3c622caa67c693c822bc5319f26",
+    "same_object": true
+   },
+   "blocked": {
+    "accepted": true,
+    "digest": "21ca73aa084cd59ab6532ab2e1260c7d0006da1fc84499f7ea589a54e02fc824",
+    "same_object": true
+   },
+   "failed": {
+    "accepted": true,
+    "digest": "45ed0dfa2b5ed7862a419507b25fda1b723e33fe5f134ba1b9361faccb3afde2",
+    "same_object": true
+   },
+   "observed": {
+    "accepted": true,
+    "digest": "31226db80fd65a39db544ff151e71df374fc4a6884eb5e40c98ce4f0327052ce",
+    "same_object": true
+   },
+   "started": {
+    "accepted": true,
+    "digest": "c3a31d654458beae4ac2578394e60240f3f8b28b6e3a996b865837ae823d890a",
+    "same_object": true
+   },
+   "succeeded": {
+    "accepted": true,
+    "digest": "95d005e29cc2d11bef443fd66129759d5ee9fcc7011bf608f88cf6dfd5be32c9",
+    "same_object": true
+   },
+   "unknown": {
+    "accepted": true,
+    "digest": "738ccb6ae0f4dd9d02edfff35abfd097b9b3f05c5d76cdeae1803f2fcbdab41f",
+    "same_object": true
+   }
+  },
+  "every_severity": {
+   "critical": {
+    "accepted": true,
+    "digest": "58100f404a3ce67302cf53f7df492655aabe0e88e63973f31d5cc19c62019918",
+    "same_object": true
+   },
+   "debug": {
+    "accepted": true,
+    "digest": "88950f1d9e1f7961a1dc5f4ca52d4460929c4a1093a0ef46b757710bec964d01",
+    "same_object": true
+   },
+   "error": {
+    "accepted": true,
+    "digest": "0cad0cc3d996a6ef081e395daf669f661d2a8d81d284cf883870f1bd6ca3e65c",
+    "same_object": true
+   },
+   "info": {
+    "accepted": true,
+    "digest": "c3a31d654458beae4ac2578394e60240f3f8b28b6e3a996b865837ae823d890a",
+    "same_object": true
+   },
+   "warning": {
+    "accepted": true,
+    "digest": "3ee0e360d9fc7800e311828f874a4e2635878a177f90d1d3a251e7191aae3597",
+    "same_object": true
+   }
+  },
+  "execution": {
+   "accepted": true,
+   "digest": "0683cd32351b6341368a5622e3af5c3c7c93b6e6ce8bb7b21134abe45258cd45",
+   "same_object": true
+  },
+  "oversize_attributes_are_not_bounded_by_the_schema": {
+   "accepted": true,
+   "digest": "c0dbdff6f334a37e0a59058051061b55cb3d7638a28dcb41f467b5d88e7f37f6",
+   "same_object": true
+  },
+  "system": {
+   "accepted": true,
+   "digest": "c3a31d654458beae4ac2578394e60240f3f8b28b6e3a996b865837ae823d890a",
+   "same_object": true
+  }
+ }
+}
