@@ -1,0 +1,1598 @@
+{
+ "reconcile_activates": {
+  "control": {
+   "release_id": "release-0001",
+   "revision": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+   "status": "active"
+  },
+  "first": {
+   "store_after": "e27bb962cd8d4d7c",
+   "store_before": "a411174b3b6beb2a",
+   "value": {
+    "release_id": "release-0001",
+    "revision": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+    "status": "active"
+   },
+   "wrote": true
+  },
+  "graph": {
+   "organization": "5d89f6853ccfa6f7ec772e171c3207c2bfb8f54235c506f99e77d9097918fb29",
+   "revision": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+   "tree": "fixture-tree"
+  },
+  "m7_test": "test_research_audits.py (reconcile_audits returns the activation)",
+  "second": {
+   "store_after": "e27bb962cd8d4d7c",
+   "store_before": "e27bb962cd8d4d7c",
+   "value": {
+    "release_id": "release-0001",
+    "revision": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+    "status": "active"
+   },
+   "wrote": false
+  },
+  "stale_graph_row_is_rewritten": {
+   "call": {
+    "store_after": "e27bb962cd8d4d7c",
+    "store_before": "baec96dbe2c5d4d9",
+    "value": {
+     "release_id": "release-0001",
+     "revision": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+     "status": "active"
+    },
+    "wrote": true
+   },
+   "graph": {
+    "organization": "5d89f6853ccfa6f7ec772e171c3207c2bfb8f54235c506f99e77d9097918fb29",
+    "revision": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+    "tree": "fixture-tree"
+   }
+  },
+  "third": {
+   "store_after": "e27bb962cd8d4d7c",
+   "store_before": "e27bb962cd8d4d7c",
+   "value": {
+    "release_id": "release-0001",
+    "revision": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+    "status": "active"
+   },
+   "wrote": false
+  }
+ },
+ "reconcile_kept": {
+  "empty_control_row_is_replaced": {
+   "call": {
+    "store_after": "e27bb962cd8d4d7c",
+    "store_before": "acce2d5599b7435b",
+    "value": {
+     "release_id": "release-0001",
+     "revision": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+     "status": "active"
+    },
+    "wrote": true
+   },
+   "control": {
+    "release_id": "release-0001",
+    "revision": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+    "status": "active"
+   }
+  },
+  "m7_test": "test_research_audits.py (reconcile_audits pause/rollback cases)",
+  "other_release_active_is_replaced": {
+   "call": {
+    "store_after": "e27bb962cd8d4d7c",
+    "store_before": "f9c491470a690d7e",
+    "value": {
+     "release_id": "release-0001",
+     "revision": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+     "status": "active"
+    },
+    "wrote": true
+   },
+   "control": {
+    "release_id": "release-0001",
+    "revision": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+    "status": "active"
+   },
+   "graph": {
+    "organization": "5d89f6853ccfa6f7ec772e171c3207c2bfb8f54235c506f99e77d9097918fb29",
+    "revision": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+    "tree": "fixture-tree"
+   }
+  },
+  "paused_other_release:invalid_record": {
+   "call": {
+    "store_after": "3da8351d97b68a32",
+    "store_before": "3da8351d97b68a32",
+    "value": {
+     "release_id": "release-other",
+     "revision": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+     "status": "paused"
+    },
+    "wrote": false
+   },
+   "control": {
+    "release_id": "release-other",
+    "revision": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+    "status": "paused"
+   },
+   "graph": null
+  },
+  "paused_other_release:valid": {
+   "call": {
+    "store_after": "afd8a07be7e8815a",
+    "store_before": "afd8a07be7e8815a",
+    "value": {
+     "release_id": "release-other",
+     "revision": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+     "status": "paused"
+    },
+    "wrote": false
+   },
+   "control": {
+    "release_id": "release-other",
+    "revision": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+    "status": "paused"
+   },
+   "graph": null
+  },
+  "paused_same_release:invalid_record": {
+   "call": {
+    "store_after": "efc864465e22b11a",
+    "store_before": "efc864465e22b11a",
+    "value": {
+     "release_id": "release-0001",
+     "revision": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+     "status": "paused"
+    },
+    "wrote": false
+   },
+   "control": {
+    "release_id": "release-0001",
+    "revision": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+    "status": "paused"
+   },
+   "graph": null
+  },
+  "paused_same_release:valid": {
+   "call": {
+    "store_after": "49140ed781855a25",
+    "store_before": "49140ed781855a25",
+    "value": {
+     "release_id": "release-0001",
+     "revision": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+     "status": "paused"
+    },
+    "wrote": false
+   },
+   "control": {
+    "release_id": "release-0001",
+    "revision": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+    "status": "paused"
+   },
+   "graph": null
+  },
+  "rolled_back_legacy:invalid_record": {
+   "call": {
+    "store_after": "d81b7949c2256cd1",
+    "store_before": "d81b7949c2256cd1",
+    "value": {
+     "rolled_back_release": "release-0001",
+     "status": "inactive"
+    },
+    "wrote": false
+   },
+   "control": {
+    "rolled_back_release": "release-0001",
+    "status": "inactive"
+   },
+   "graph": null
+  },
+  "rolled_back_legacy:valid": {
+   "call": {
+    "store_after": "3ad8c5d435c2fed8",
+    "store_before": "3ad8c5d435c2fed8",
+    "value": {
+     "rolled_back_release": "release-0001",
+     "status": "inactive"
+    },
+    "wrote": false
+   },
+   "control": {
+    "rolled_back_release": "release-0001",
+    "status": "inactive"
+   },
+   "graph": null
+  },
+  "rolled_back_with_release:invalid_record": {
+   "call": {
+    "store_after": "0f70124a40d760c8",
+    "store_before": "0f70124a40d760c8",
+    "value": {
+     "release_id": "release-other",
+     "rolled_back_release": "release-0001",
+     "status": "rolled_back"
+    },
+    "wrote": false
+   },
+   "control": {
+    "release_id": "release-other",
+    "rolled_back_release": "release-0001",
+    "status": "rolled_back"
+   },
+   "graph": null
+  },
+  "rolled_back_with_release:valid": {
+   "call": {
+    "store_after": "a01ed037f3bbfd71",
+    "store_before": "a01ed037f3bbfd71",
+    "value": {
+     "release_id": "release-other",
+     "rolled_back_release": "release-0001",
+     "status": "rolled_back"
+    },
+    "wrote": false
+   },
+   "control": {
+    "release_id": "release-other",
+    "rolled_back_release": "release-0001",
+    "status": "rolled_back"
+   },
+   "graph": null
+  },
+  "same_release_active:invalid_record": {
+   "call": {
+    "store_after": "cd68a0cd4af09f02",
+    "store_before": "cd68a0cd4af09f02",
+    "value": {
+     "release_id": "release-0001",
+     "revision": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+     "status": "active"
+    },
+    "wrote": false
+   },
+   "control": {
+    "release_id": "release-0001",
+    "revision": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+    "status": "active"
+   },
+   "graph": null
+  },
+  "same_release_active:valid": {
+   "call": {
+    "store_after": "254548548824948b",
+    "store_before": "254548548824948b",
+    "value": {
+     "release_id": "release-0001",
+     "revision": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+     "status": "active"
+    },
+    "wrote": false
+   },
+   "control": {
+    "release_id": "release-0001",
+    "revision": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+    "status": "active"
+   },
+   "graph": null
+  },
+  "same_release_inactive:invalid_record": {
+   "call": {
+    "store_after": "ddd607e2bcde9393",
+    "store_before": "ddd607e2bcde9393",
+    "value": {
+     "release_id": "release-0001",
+     "revision": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+     "status": "inactive"
+    },
+    "wrote": false
+   },
+   "control": {
+    "release_id": "release-0001",
+    "revision": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+    "status": "inactive"
+   },
+   "graph": null
+  },
+  "same_release_inactive:valid": {
+   "call": {
+    "store_after": "a58e97b5924fb2bb",
+    "store_before": "a58e97b5924fb2bb",
+    "value": {
+     "release_id": "release-0001",
+     "revision": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+     "status": "inactive"
+    },
+    "wrote": false
+   },
+   "control": {
+    "release_id": "release-0001",
+    "revision": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+    "status": "inactive"
+   },
+   "graph": null
+  }
+ },
+ "reconcile_nothing": {
+  "deployment_without_record": {
+   "store_after": "82bb143e3b778cba",
+   "store_before": "82bb143e3b778cba",
+   "value": null,
+   "wrote": false
+  },
+  "m7_test": "none",
+  "no_audit_lifecycle_version": {
+   "call": {
+    "store_after": "24b8de0d42316b97",
+    "store_before": "24b8de0d42316b97",
+    "value": null,
+    "wrote": false
+   },
+   "control": null,
+   "graph": null
+  },
+  "no_deployment": {
+   "store_after": "4f53cda18c2baa0c",
+   "store_before": "4f53cda18c2baa0c",
+   "value": null,
+   "wrote": false
+  },
+  "other_lifecycle_version": {
+   "call": {
+    "store_after": "c0da1fe286a0aa62",
+    "store_before": "c0da1fe286a0aa62",
+    "value": null,
+    "wrote": false
+   },
+   "control": null,
+   "graph": null
+  },
+  "status_candidate": {
+   "call": {
+    "store_after": "81c0aed532c03036",
+    "store_before": "81c0aed532c03036",
+    "value": null,
+    "wrote": false
+   },
+   "control": null,
+   "graph": null
+  },
+  "status_rejected": {
+   "call": {
+    "store_after": "d14288dd8ab1d078",
+    "store_before": "d14288dd8ab1d078",
+    "value": null,
+    "wrote": false
+   },
+   "control": null,
+   "graph": null
+  },
+  "status_superseded": {
+   "call": {
+    "store_after": "30c8c5fa0c04073b",
+    "store_before": "30c8c5fa0c04073b",
+    "value": null,
+    "wrote": false
+   },
+   "control": null,
+   "graph": null
+  }
+ },
+ "reconcile_refused": {
+  "author_not_a_worker": {
+   "again": {
+    "message": "Actor lacks required role",
+    "refused": "ContractError",
+    "store_after": "9573da6c54f3abb6",
+    "store_before": "9573da6c54f3abb6",
+    "wrote": false
+   },
+   "call": {
+    "message": "Actor lacks required role",
+    "refused": "ContractError",
+    "store_after": "9573da6c54f3abb6",
+    "store_before": "9573da6c54f3abb6",
+    "wrote": false
+   },
+   "control": null,
+   "graph": null
+  },
+  "author_unknown": {
+   "again": {
+    "message": "Unknown actor",
+    "refused": "ContractError",
+    "store_after": "768f01e565a7e68f",
+    "store_before": "768f01e565a7e68f",
+    "wrote": false
+   },
+   "call": {
+    "message": "Unknown actor",
+    "refused": "ContractError",
+    "store_after": "768f01e565a7e68f",
+    "store_before": "768f01e565a7e68f",
+    "wrote": false
+   },
+   "control": null,
+   "graph": null
+  },
+  "checks_failed": {
+   "again": {
+    "message": "Audit checks incomplete",
+    "refused": "ContractError",
+    "store_after": "b4b11e04073b7b92",
+    "store_before": "b4b11e04073b7b92",
+    "wrote": false
+   },
+   "call": {
+    "message": "Audit checks incomplete",
+    "refused": "ContractError",
+    "store_after": "b4b11e04073b7b92",
+    "store_before": "b4b11e04073b7b92",
+    "wrote": false
+   },
+   "control": null,
+   "graph": null
+  },
+  "checks_missing": {
+   "again": {
+    "message": "Audit checks incomplete",
+    "refused": "ContractError",
+    "store_after": "816c555869c8b208",
+    "store_before": "816c555869c8b208",
+    "wrote": false
+   },
+   "call": {
+    "message": "Audit checks incomplete",
+    "refused": "ContractError",
+    "store_after": "816c555869c8b208",
+    "store_before": "816c555869c8b208",
+    "wrote": false
+   },
+   "control": null,
+   "graph": null
+  },
+  "checks_without_evidence": {
+   "again": {
+    "message": "Audit checks incomplete",
+    "refused": "ContractError",
+    "store_after": "259b05e8080be8b8",
+    "store_before": "259b05e8080be8b8",
+    "wrote": false
+   },
+   "call": {
+    "message": "Audit checks incomplete",
+    "refused": "ContractError",
+    "store_after": "259b05e8080be8b8",
+    "store_before": "259b05e8080be8b8",
+    "wrote": false
+   },
+   "control": null,
+   "graph": null
+  },
+  "m7_test": "none",
+  "policy_check_without_result": {
+   "call": {
+    "message": "Audit checks incomplete",
+    "refused": "ContractError",
+    "store_after": "bd8b408862d8f86d",
+    "store_before": "bd8b408862d8f86d",
+    "wrote": false
+   },
+   "control": null
+  },
+  "policy_hash_differs": {
+   "again": {
+    "message": "Invalid active audit release",
+    "refused": "ContractError",
+    "store_after": "5dc061b281f7f5d3",
+    "store_before": "5dc061b281f7f5d3",
+    "wrote": false
+   },
+   "call": {
+    "message": "Invalid active audit release",
+    "refused": "ContractError",
+    "store_after": "5dc061b281f7f5d3",
+    "store_before": "5dc061b281f7f5d3",
+    "wrote": false
+   },
+   "control": null,
+   "graph": null
+  },
+  "reviews_for_another_revision": {
+   "again": {
+    "message": "Audit reviews incomplete",
+    "refused": "ContractError",
+    "store_after": "9470b3df945b7d6b",
+    "store_before": "9470b3df945b7d6b",
+    "wrote": false
+   },
+   "call": {
+    "message": "Audit reviews incomplete",
+    "refused": "ContractError",
+    "store_after": "9470b3df945b7d6b",
+    "store_before": "9470b3df945b7d6b",
+    "wrote": false
+   },
+   "control": null,
+   "graph": null
+  },
+  "reviews_missing_conductor": {
+   "again": {
+    "message": "Audit reviews incomplete",
+    "refused": "ContractError",
+    "store_after": "958c3caf89ebd221",
+    "store_before": "958c3caf89ebd221",
+    "wrote": false
+   },
+   "call": {
+    "message": "Audit reviews incomplete",
+    "refused": "ContractError",
+    "store_after": "958c3caf89ebd221",
+    "store_before": "958c3caf89ebd221",
+    "wrote": false
+   },
+   "control": null,
+   "graph": null
+  },
+  "reviews_not_accepted": {
+   "again": {
+    "message": "Audit reviews incomplete",
+    "refused": "ContractError",
+    "store_after": "c49f88425bdd6ee4",
+    "store_before": "c49f88425bdd6ee4",
+    "wrote": false
+   },
+   "call": {
+    "message": "Audit reviews incomplete",
+    "refused": "ContractError",
+    "store_after": "c49f88425bdd6ee4",
+    "store_before": "c49f88425bdd6ee4",
+    "wrote": false
+   },
+   "control": null,
+   "graph": null
+  },
+  "reviews_without_evidence": {
+   "again": {
+    "message": "Audit reviews incomplete",
+    "refused": "ContractError",
+    "store_after": "463ce4b48bc89125",
+    "store_before": "463ce4b48bc89125",
+    "wrote": false
+   },
+   "call": {
+    "message": "Audit reviews incomplete",
+    "refused": "ContractError",
+    "store_after": "463ce4b48bc89125",
+    "store_before": "463ce4b48bc89125",
+    "wrote": false
+   },
+   "control": null,
+   "graph": null
+  },
+  "revision_differs_from_deployment": {
+   "again": {
+    "message": "Invalid active audit release",
+    "refused": "ContractError",
+    "store_after": "ebe4f2c63f97befe",
+    "store_before": "ebe4f2c63f97befe",
+    "wrote": false
+   },
+   "call": {
+    "message": "Invalid active audit release",
+    "refused": "ContractError",
+    "store_after": "ebe4f2c63f97befe",
+    "store_before": "ebe4f2c63f97befe",
+    "wrote": false
+   },
+   "control": null,
+   "graph": null
+  }
+ },
+ "reverify_arguments": {
+  "empty_actor": {
+   "message": "Unknown actor",
+   "refused": "ContractError",
+   "store_after": "b7fd79e8847c0b7c",
+   "store_before": "b7fd79e8847c0b7c",
+   "wrote": false
+  },
+  "evidence_blank": {
+   "message": "Reverification reason and evidence required",
+   "refused": "ContractError",
+   "store_after": "b7fd79e8847c0b7c",
+   "store_before": "b7fd79e8847c0b7c",
+   "wrote": false
+  },
+  "evidence_empty": {
+   "message": "Reverification reason and evidence required",
+   "refused": "ContractError",
+   "store_after": "b7fd79e8847c0b7c",
+   "store_before": "b7fd79e8847c0b7c",
+   "wrote": false
+  },
+  "evidence_none": {
+   "message": "Reverification reason and evidence required",
+   "refused": "ContractError",
+   "store_after": "b7fd79e8847c0b7c",
+   "store_before": "b7fd79e8847c0b7c",
+   "wrote": false
+  },
+  "lead": {
+   "message": "Actor lacks required role",
+   "refused": "ContractError",
+   "store_after": "b7fd79e8847c0b7c",
+   "store_before": "b7fd79e8847c0b7c",
+   "wrote": false
+  },
+  "m7_test": "test_actor_must_be_conductor_and_request_must_be_explained",
+  "nothing_written": {
+   "events": [],
+   "successor": null
+  },
+  "reason_blank": {
+   "message": "Reverification reason and evidence required",
+   "refused": "ContractError",
+   "store_after": "b7fd79e8847c0b7c",
+   "store_before": "b7fd79e8847c0b7c",
+   "wrote": false
+  },
+  "reason_empty": {
+   "message": "Reverification reason and evidence required",
+   "refused": "ContractError",
+   "store_after": "b7fd79e8847c0b7c",
+   "store_before": "b7fd79e8847c0b7c",
+   "wrote": false
+  },
+  "reason_none": {
+   "message": "Reverification reason and evidence required",
+   "refused": "ContractError",
+   "store_after": "b7fd79e8847c0b7c",
+   "store_before": "b7fd79e8847c0b7c",
+   "wrote": false
+  },
+  "reason_not_text": {
+   "message": "Reverification reason and evidence required",
+   "refused": "ContractError",
+   "store_after": "b7fd79e8847c0b7c",
+   "store_before": "b7fd79e8847c0b7c",
+   "wrote": false
+  },
+  "release_not_found": {
+   "message": "Release not found",
+   "refused": "ContractError",
+   "store_after": "b7fd79e8847c0b7c",
+   "store_before": "b7fd79e8847c0b7c",
+   "wrote": false
+  },
+  "unknown_actor": {
+   "message": "Unknown actor",
+   "refused": "ContractError",
+   "store_after": "b7fd79e8847c0b7c",
+   "store_before": "b7fd79e8847c0b7c",
+   "wrote": false
+  },
+  "worker": {
+   "message": "Actor lacks required role",
+   "refused": "ContractError",
+   "store_after": "b7fd79e8847c0b7c",
+   "store_before": "b7fd79e8847c0b7c",
+   "wrote": false
+  }
+ },
+ "reverify_blocked": {
+  "environment_successor_blocks": {
+   "message": "Release already has an environment reverification successor",
+   "refused": "ContractError",
+   "store_after": "80aaad57c17cfdd9",
+   "store_before": "80aaad57c17cfdd9",
+   "wrote": false
+  },
+  "environment_view": {
+   "events": [],
+   "successor": null
+  },
+  "evaluator_successor_blocks": {
+   "message": "Release already has an evaluator migration successor",
+   "refused": "ContractError",
+   "store_after": "fcca1c494d7958cf",
+   "store_before": "fcca1c494d7958cf",
+   "wrote": false
+  },
+  "m7_test": "none",
+  "migrated_before_existing_successor": {
+   "call": {
+    "message": "unsupported_evaluator_reverification: release is an evaluator-migrated successor",
+    "refused": "UnsupportedEvaluatorReverification",
+    "store_after": "7718ced6b42101fc",
+    "store_before": "7718ced6b42101fc",
+    "wrote": false
+   }
+  },
+  "migrated_by_policy_revision": {
+   "message": "unsupported_evaluator_reverification: release is an evaluator-migrated successor",
+   "refused": "UnsupportedEvaluatorReverification",
+   "store_after": "4dd60ea13656e8cb",
+   "store_before": "4dd60ea13656e8cb",
+   "wrote": false
+  },
+  "migrated_by_receipt": {
+   "message": "unsupported_evaluator_reverification: release is an evaluator-migrated successor",
+   "refused": "UnsupportedEvaluatorReverification",
+   "store_after": "1b5a4b834161af5d",
+   "store_before": "1b5a4b834161af5d",
+   "wrote": false
+  }
+ },
+ "reverify_replay": {
+  "after_conflicts": {
+   "events": [
+    "release.reverification_requested:8651aaaaeb56af4712c0c45aa45bd7431ae24808ad5b558be8f640e03f68474f"
+   ],
+   "successor_unchanged": true
+  },
+  "conflict_evidence": {
+   "message": "Conflicting reverification request",
+   "refused": "ContractError",
+   "store_after": "7b6be3ff6b478de7",
+   "store_before": "7b6be3ff6b478de7",
+   "wrote": false
+  },
+  "conflict_expected_revision": {
+   "message": "Conflicting reverification request",
+   "refused": "ContractError",
+   "store_after": "7b6be3ff6b478de7",
+   "store_before": "7b6be3ff6b478de7",
+   "wrote": false
+  },
+  "conflict_policy_hash": {
+   "message": "Conflicting reverification request",
+   "refused": "ContractError",
+   "store_after": "7b6be3ff6b478de7",
+   "store_before": "7b6be3ff6b478de7",
+   "wrote": false
+  },
+  "conflict_reason": {
+   "message": "Conflicting reverification request",
+   "refused": "ContractError",
+   "store_after": "7b6be3ff6b478de7",
+   "store_before": "7b6be3ff6b478de7",
+   "wrote": false
+  },
+  "first": {
+   "store_after": "7b6be3ff6b478de7",
+   "store_before": "b7fd79e8847c0b7c",
+   "value": {
+    "candidate": {
+     "author": "worker:implementation",
+     "base": "base",
+     "revision": "candidate",
+     "tree": "tree"
+    },
+    "checks": {},
+    "created_at": "2026-09-22T12:00:00+00:00",
+    "id": "8651aaaaeb56af4712c0c45aa45bd7431ae24808ad5b558be8f640e03f68474f",
+    "inherited_reviews": {
+     "digest": "d702f89f68c2f31242b00351ab0704add6bf85bb4d243536de6a281de108fe12",
+     "release_id": "release-0001"
+    },
+    "policy": {
+     "checks": [
+      "tests",
+      "cli_start",
+      "cli_file_task"
+     ]
+    },
+    "policy_hash": "d92deb256a139465f152d86d596a0de988f84a2ce51278c94c322ae4b2401349",
+    "reverification": {
+     "actor": "conductor",
+     "at": "2026-09-22T12:00:00+00:00",
+     "evidence": "fixture:diagnosis-receipt",
+     "expected_policy_hash": "d92deb256a139465f152d86d596a0de988f84a2ce51278c94c322ae4b2401349",
+     "expected_revision": "candidate",
+     "reason": "fixture: short TEMP diagnosis",
+     "source_checks_digest": "821bdfe8f4ef0b9686a16fc8492f7b032874c165bb7b0e4f4f797a0683222f23",
+     "source_digest": "47fb39eda753a2f77d13344aae04aea1e63fa53ccd7f1e72833cbbf313c0e8e0"
+    },
+    "reverify_of": "release-0001",
+    "reviews": [
+     {
+      "accepted": true,
+      "actor": "lead:improvement",
+      "evidence": "fixture:review",
+      "revision": "candidate"
+     },
+     {
+      "accepted": true,
+      "actor": "conductor",
+      "evidence": "fixture:review",
+      "revision": "candidate"
+     }
+    ],
+    "status": "reviewed"
+   },
+   "wrote": true
+  },
+  "m7_test": "test_replay_is_idempotent_and_conflicting_request_refuses",
+  "replay": {
+   "store_after": "7b6be3ff6b478de7",
+   "store_before": "7b6be3ff6b478de7",
+   "value": {
+    "candidate": {
+     "author": "worker:implementation",
+     "base": "base",
+     "revision": "candidate",
+     "tree": "tree"
+    },
+    "checks": {},
+    "created_at": "2026-09-22T12:00:00+00:00",
+    "id": "8651aaaaeb56af4712c0c45aa45bd7431ae24808ad5b558be8f640e03f68474f",
+    "inherited_reviews": {
+     "digest": "d702f89f68c2f31242b00351ab0704add6bf85bb4d243536de6a281de108fe12",
+     "release_id": "release-0001"
+    },
+    "policy": {
+     "checks": [
+      "tests",
+      "cli_start",
+      "cli_file_task"
+     ]
+    },
+    "policy_hash": "d92deb256a139465f152d86d596a0de988f84a2ce51278c94c322ae4b2401349",
+    "reverification": {
+     "actor": "conductor",
+     "at": "2026-09-22T12:00:00+00:00",
+     "evidence": "fixture:diagnosis-receipt",
+     "expected_policy_hash": "d92deb256a139465f152d86d596a0de988f84a2ce51278c94c322ae4b2401349",
+     "expected_revision": "candidate",
+     "reason": "fixture: short TEMP diagnosis",
+     "source_checks_digest": "821bdfe8f4ef0b9686a16fc8492f7b032874c165bb7b0e4f4f797a0683222f23",
+     "source_digest": "47fb39eda753a2f77d13344aae04aea1e63fa53ccd7f1e72833cbbf313c0e8e0"
+    },
+    "reverify_of": "release-0001",
+    "reviews": [
+     {
+      "accepted": true,
+      "actor": "lead:improvement",
+      "evidence": "fixture:review",
+      "revision": "candidate"
+     },
+     {
+      "accepted": true,
+      "actor": "conductor",
+      "evidence": "fixture:review",
+      "revision": "candidate"
+     }
+    ],
+    "status": "reviewed"
+   },
+   "wrote": false
+  },
+  "replay_default_clock": {
+   "store_after": "7b6be3ff6b478de7",
+   "store_before": "7b6be3ff6b478de7",
+   "value": {
+    "candidate": {
+     "author": "worker:implementation",
+     "base": "base",
+     "revision": "candidate",
+     "tree": "tree"
+    },
+    "checks": {},
+    "created_at": "2026-09-22T12:00:00+00:00",
+    "id": "8651aaaaeb56af4712c0c45aa45bd7431ae24808ad5b558be8f640e03f68474f",
+    "inherited_reviews": {
+     "digest": "d702f89f68c2f31242b00351ab0704add6bf85bb4d243536de6a281de108fe12",
+     "release_id": "release-0001"
+    },
+    "policy": {
+     "checks": [
+      "tests",
+      "cli_start",
+      "cli_file_task"
+     ]
+    },
+    "policy_hash": "d92deb256a139465f152d86d596a0de988f84a2ce51278c94c322ae4b2401349",
+    "reverification": {
+     "actor": "conductor",
+     "at": "2026-09-22T12:00:00+00:00",
+     "evidence": "fixture:diagnosis-receipt",
+     "expected_policy_hash": "d92deb256a139465f152d86d596a0de988f84a2ce51278c94c322ae4b2401349",
+     "expected_revision": "candidate",
+     "reason": "fixture: short TEMP diagnosis",
+     "source_checks_digest": "821bdfe8f4ef0b9686a16fc8492f7b032874c165bb7b0e4f4f797a0683222f23",
+     "source_digest": "47fb39eda753a2f77d13344aae04aea1e63fa53ccd7f1e72833cbbf313c0e8e0"
+    },
+    "reverify_of": "release-0001",
+    "reviews": [
+     {
+      "accepted": true,
+      "actor": "lead:improvement",
+      "evidence": "fixture:review",
+      "revision": "candidate"
+     },
+     {
+      "accepted": true,
+      "actor": "conductor",
+      "evidence": "fixture:review",
+      "revision": "candidate"
+     }
+    ],
+    "status": "reviewed"
+   },
+   "wrote": false
+  },
+  "replay_later_now": {
+   "store_after": "7b6be3ff6b478de7",
+   "store_before": "7b6be3ff6b478de7",
+   "value": {
+    "candidate": {
+     "author": "worker:implementation",
+     "base": "base",
+     "revision": "candidate",
+     "tree": "tree"
+    },
+    "checks": {},
+    "created_at": "2026-09-22T12:00:00+00:00",
+    "id": "8651aaaaeb56af4712c0c45aa45bd7431ae24808ad5b558be8f640e03f68474f",
+    "inherited_reviews": {
+     "digest": "d702f89f68c2f31242b00351ab0704add6bf85bb4d243536de6a281de108fe12",
+     "release_id": "release-0001"
+    },
+    "policy": {
+     "checks": [
+      "tests",
+      "cli_start",
+      "cli_file_task"
+     ]
+    },
+    "policy_hash": "d92deb256a139465f152d86d596a0de988f84a2ce51278c94c322ae4b2401349",
+    "reverification": {
+     "actor": "conductor",
+     "at": "2026-09-22T12:00:00+00:00",
+     "evidence": "fixture:diagnosis-receipt",
+     "expected_policy_hash": "d92deb256a139465f152d86d596a0de988f84a2ce51278c94c322ae4b2401349",
+     "expected_revision": "candidate",
+     "reason": "fixture: short TEMP diagnosis",
+     "source_checks_digest": "821bdfe8f4ef0b9686a16fc8492f7b032874c165bb7b0e4f4f797a0683222f23",
+     "source_digest": "47fb39eda753a2f77d13344aae04aea1e63fa53ccd7f1e72833cbbf313c0e8e0"
+    },
+    "reverify_of": "release-0001",
+    "reviews": [
+     {
+      "accepted": true,
+      "actor": "lead:improvement",
+      "evidence": "fixture:review",
+      "revision": "candidate"
+     },
+     {
+      "accepted": true,
+      "actor": "conductor",
+      "evidence": "fixture:review",
+      "revision": "candidate"
+     }
+    ],
+    "status": "reviewed"
+   },
+   "wrote": false
+  },
+  "replay_returns_the_first_successor": true,
+  "successor_row_of_another_source": {
+   "message": "Conflicting reverification request",
+   "refused": "ContractError",
+   "store_after": "2979c9ec3f2199fe",
+   "store_before": "2979c9ec3f2199fe",
+   "wrote": false
+  },
+  "successor_row_without_receipt": {
+   "message": "Conflicting reverification request",
+   "refused": "ContractError",
+   "store_after": "f5176c1b4eae6749",
+   "store_before": "f5176c1b4eae6749",
+   "wrote": false
+  }
+ },
+ "reverify_source": {
+  "another_deployed_release_allowed": {
+   "store_after": "e7616315023fc828",
+   "store_before": "029b286dce127b2e",
+   "value": {
+    "candidate": {
+     "author": "worker:implementation",
+     "base": "base",
+     "revision": "candidate",
+     "tree": "tree"
+    },
+    "checks": {},
+    "created_at": "2026-09-22T12:00:00+00:00",
+    "id": "8651aaaaeb56af4712c0c45aa45bd7431ae24808ad5b558be8f640e03f68474f",
+    "inherited_reviews": {
+     "digest": "d702f89f68c2f31242b00351ab0704add6bf85bb4d243536de6a281de108fe12",
+     "release_id": "release-0001"
+    },
+    "policy": {
+     "checks": [
+      "tests",
+      "cli_start",
+      "cli_file_task"
+     ]
+    },
+    "policy_hash": "d92deb256a139465f152d86d596a0de988f84a2ce51278c94c322ae4b2401349",
+    "reverification": {
+     "actor": "conductor",
+     "at": "2026-09-22T12:00:00+00:00",
+     "evidence": "fixture:diagnosis-receipt",
+     "expected_policy_hash": "d92deb256a139465f152d86d596a0de988f84a2ce51278c94c322ae4b2401349",
+     "expected_revision": "candidate",
+     "reason": "fixture: short TEMP diagnosis",
+     "source_checks_digest": "821bdfe8f4ef0b9686a16fc8492f7b032874c165bb7b0e4f4f797a0683222f23",
+     "source_digest": "47fb39eda753a2f77d13344aae04aea1e63fa53ccd7f1e72833cbbf313c0e8e0"
+    },
+    "reverify_of": "release-0001",
+    "reviews": [
+     {
+      "accepted": true,
+      "actor": "lead:improvement",
+      "evidence": "fixture:review",
+      "revision": "candidate"
+     },
+     {
+      "accepted": true,
+      "actor": "conductor",
+      "evidence": "fixture:review",
+      "revision": "candidate"
+     }
+    ],
+    "status": "reviewed"
+   },
+   "wrote": true
+  },
+  "author_unknown": {
+   "message": "Unknown actor",
+   "refused": "ContractError",
+   "store_after": "26860ab66c6455aa",
+   "store_before": "26860ab66c6455aa",
+   "wrote": false
+  },
+  "check_missing": {
+   "message": "Rejection check evidence incomplete",
+   "refused": "ContractError",
+   "store_after": "d0692b50d3180e6c",
+   "store_before": "d0692b50d3180e6c",
+   "wrote": false
+  },
+  "check_without_evidence": {
+   "message": "Rejection check evidence incomplete",
+   "refused": "ContractError",
+   "store_after": "886af1cda483c33f",
+   "store_before": "886af1cda483c33f",
+   "wrote": false
+  },
+  "deployed_release": {
+   "message": "Promotion effects exist for the release",
+   "refused": "ContractError",
+   "store_after": "c0e2f6a15228cd3b",
+   "store_before": "c0e2f6a15228cd3b",
+   "wrote": false
+  },
+  "evaluator_changed": {
+   "message": "Evaluator changed",
+   "refused": "ContractError",
+   "store_after": "64cce28dcdb44b1e",
+   "store_before": "64cce28dcdb44b1e",
+   "wrote": false
+  },
+  "every_check_passed": {
+   "message": "No executed failed check",
+   "refused": "ContractError",
+   "store_after": "9d6f0778bc770690",
+   "store_before": "9d6f0778bc770690",
+   "wrote": false
+  },
+  "lease_active": {
+   "message": "Release controller still running",
+   "refused": "ContractError",
+   "store_after": "9eb932147960b943",
+   "store_before": "9eb932147960b943",
+   "wrote": false
+  },
+  "lease_expired_allowed": {
+   "store_after": "8bfbe57af159fcf1",
+   "store_before": "1965eb1840f970ba",
+   "value": {
+    "candidate": {
+     "author": "worker:implementation",
+     "base": "base",
+     "revision": "candidate",
+     "tree": "tree"
+    },
+    "checks": {},
+    "created_at": "2026-09-22T12:00:00+00:00",
+    "id": "8651aaaaeb56af4712c0c45aa45bd7431ae24808ad5b558be8f640e03f68474f",
+    "inherited_reviews": {
+     "digest": "d702f89f68c2f31242b00351ab0704add6bf85bb4d243536de6a281de108fe12",
+     "release_id": "release-0001"
+    },
+    "policy": {
+     "checks": [
+      "tests",
+      "cli_start",
+      "cli_file_task"
+     ]
+    },
+    "policy_hash": "d92deb256a139465f152d86d596a0de988f84a2ce51278c94c322ae4b2401349",
+    "reverification": {
+     "actor": "conductor",
+     "at": "2026-09-22T12:00:00+00:00",
+     "evidence": "fixture:diagnosis-receipt",
+     "expected_policy_hash": "d92deb256a139465f152d86d596a0de988f84a2ce51278c94c322ae4b2401349",
+     "expected_revision": "candidate",
+     "reason": "fixture: short TEMP diagnosis",
+     "source_checks_digest": "821bdfe8f4ef0b9686a16fc8492f7b032874c165bb7b0e4f4f797a0683222f23",
+     "source_digest": "47fb39eda753a2f77d13344aae04aea1e63fa53ccd7f1e72833cbbf313c0e8e0"
+    },
+    "reverify_of": "release-0001",
+    "reviews": [
+     {
+      "accepted": true,
+      "actor": "lead:improvement",
+      "evidence": "fixture:review",
+      "revision": "candidate"
+     },
+     {
+      "accepted": true,
+      "actor": "conductor",
+      "evidence": "fixture:review",
+      "revision": "candidate"
+     }
+    ],
+    "status": "reviewed"
+   },
+   "wrote": true
+  },
+  "m7_test": "test_ineligible_source_refuses_without_writes, test_review_rejected_release_is_not_reverifiable, test_active_lease_or_promotion_effect_refuses_without_writes",
+  "no_executed_failed_check": {
+   "message": "No executed failed check",
+   "refused": "ContractError",
+   "store_after": "ea71d6ee72df6d0e",
+   "store_before": "ea71d6ee72df6d0e",
+   "wrote": false
+  },
+  "promotion_intent": {
+   "message": "Promotion effects exist for the release",
+   "refused": "ContractError",
+   "store_after": "0e4f15d4ad399468",
+   "store_before": "0e4f15d4ad399468",
+   "wrote": false
+  },
+  "queue_done_allowed": {
+   "store_after": "a4d3b74e43f24f64",
+   "store_before": "140ea0d2d140f8c2",
+   "value": {
+    "candidate": {
+     "author": "worker:implementation",
+     "base": "base",
+     "revision": "candidate",
+     "tree": "tree"
+    },
+    "checks": {},
+    "created_at": "2026-09-22T12:00:00+00:00",
+    "id": "8651aaaaeb56af4712c0c45aa45bd7431ae24808ad5b558be8f640e03f68474f",
+    "inherited_reviews": {
+     "digest": "d702f89f68c2f31242b00351ab0704add6bf85bb4d243536de6a281de108fe12",
+     "release_id": "release-0001"
+    },
+    "policy": {
+     "checks": [
+      "tests",
+      "cli_start",
+      "cli_file_task"
+     ]
+    },
+    "policy_hash": "d92deb256a139465f152d86d596a0de988f84a2ce51278c94c322ae4b2401349",
+    "reverification": {
+     "actor": "conductor",
+     "at": "2026-09-22T12:00:00+00:00",
+     "evidence": "fixture:diagnosis-receipt",
+     "expected_policy_hash": "d92deb256a139465f152d86d596a0de988f84a2ce51278c94c322ae4b2401349",
+     "expected_revision": "candidate",
+     "reason": "fixture: short TEMP diagnosis",
+     "source_checks_digest": "821bdfe8f4ef0b9686a16fc8492f7b032874c165bb7b0e4f4f797a0683222f23",
+     "source_digest": "47fb39eda753a2f77d13344aae04aea1e63fa53ccd7f1e72833cbbf313c0e8e0"
+    },
+    "reverify_of": "release-0001",
+    "reviews": [
+     {
+      "accepted": true,
+      "actor": "lead:improvement",
+      "evidence": "fixture:review",
+      "revision": "candidate"
+     },
+     {
+      "accepted": true,
+      "actor": "conductor",
+      "evidence": "fixture:review",
+      "revision": "candidate"
+     }
+    ],
+    "status": "reviewed"
+   },
+   "wrote": true
+  },
+  "queue_running": {
+   "message": "Release controller still running",
+   "refused": "ContractError",
+   "store_after": "299cad21abb145ab",
+   "store_before": "299cad21abb145ab",
+   "wrote": false
+  },
+  "review_rejected": {
+   "message": "Release review rejected",
+   "refused": "ContractError",
+   "store_after": "a62ae1ff48727e35",
+   "store_before": "a62ae1ff48727e35",
+   "wrote": false
+  },
+  "reviews_for_another_revision": {
+   "message": "Release reviews incomplete",
+   "refused": "ContractError",
+   "store_after": "8179860e18caf1ab",
+   "store_before": "8179860e18caf1ab",
+   "wrote": false
+  },
+  "reviews_missing_conductor": {
+   "message": "Release reviews incomplete",
+   "refused": "ContractError",
+   "store_after": "d5f9e9356a91a527",
+   "store_before": "d5f9e9356a91a527",
+   "wrote": false
+  },
+  "stale_policy_hash": {
+   "message": "Stale candidate or evaluator",
+   "refused": "ContractError",
+   "store_after": "b7fd79e8847c0b7c",
+   "store_before": "b7fd79e8847c0b7c",
+   "wrote": false
+  },
+  "stale_revision": {
+   "message": "Stale candidate or evaluator",
+   "refused": "ContractError",
+   "store_after": "b7fd79e8847c0b7c",
+   "store_before": "b7fd79e8847c0b7c",
+   "wrote": false
+  },
+  "status_active": {
+   "message": "Release is not check-rejected",
+   "refused": "ContractError",
+   "store_after": "ab6b9df41c9b9998",
+   "store_before": "ab6b9df41c9b9998",
+   "wrote": false
+  },
+  "status_cancelled": {
+   "message": "Release is not check-rejected",
+   "refused": "ContractError",
+   "store_after": "737ef3f8b1aa6732",
+   "store_before": "737ef3f8b1aa6732",
+   "wrote": false
+  },
+  "status_candidate": {
+   "message": "Release is not check-rejected",
+   "refused": "ContractError",
+   "store_after": "ceab029510739e33",
+   "store_before": "ceab029510739e33",
+   "wrote": false
+  },
+  "status_reviewed": {
+   "message": "Release is not check-rejected",
+   "refused": "ContractError",
+   "store_after": "7ae275aa22b28a19",
+   "store_before": "7ae275aa22b28a19",
+   "wrote": false
+  },
+  "status_superseded_by_ticket_revision": {
+   "message": "Release is not check-rejected",
+   "refused": "ContractError",
+   "store_after": "dcb8f476a2460286",
+   "store_before": "dcb8f476a2460286",
+   "wrote": false
+  },
+  "status_verified": {
+   "message": "Release is not check-rejected",
+   "refused": "ContractError",
+   "store_after": "b556a7d9d5203ec4",
+   "store_before": "b556a7d9d5203ec4",
+   "wrote": false
+  }
+ },
+ "reverify_written": {
+  "call": {
+   "store_after": "7b6be3ff6b478de7",
+   "store_before": "b7fd79e8847c0b7c",
+   "value": {
+    "candidate": {
+     "author": "worker:implementation",
+     "base": "base",
+     "revision": "candidate",
+     "tree": "tree"
+    },
+    "checks": {},
+    "created_at": "2026-09-22T12:00:00+00:00",
+    "id": "8651aaaaeb56af4712c0c45aa45bd7431ae24808ad5b558be8f640e03f68474f",
+    "inherited_reviews": {
+     "digest": "d702f89f68c2f31242b00351ab0704add6bf85bb4d243536de6a281de108fe12",
+     "release_id": "release-0001"
+    },
+    "policy": {
+     "checks": [
+      "tests",
+      "cli_start",
+      "cli_file_task"
+     ]
+    },
+    "policy_hash": "d92deb256a139465f152d86d596a0de988f84a2ce51278c94c322ae4b2401349",
+    "reverification": {
+     "actor": "conductor",
+     "at": "2026-09-22T12:00:00+00:00",
+     "evidence": "fixture:diagnosis-receipt",
+     "expected_policy_hash": "d92deb256a139465f152d86d596a0de988f84a2ce51278c94c322ae4b2401349",
+     "expected_revision": "candidate",
+     "reason": "fixture: short TEMP diagnosis",
+     "source_checks_digest": "821bdfe8f4ef0b9686a16fc8492f7b032874c165bb7b0e4f4f797a0683222f23",
+     "source_digest": "47fb39eda753a2f77d13344aae04aea1e63fa53ccd7f1e72833cbbf313c0e8e0"
+    },
+    "reverify_of": "release-0001",
+    "reviews": [
+     {
+      "accepted": true,
+      "actor": "lead:improvement",
+      "evidence": "fixture:review",
+      "revision": "candidate"
+     },
+     {
+      "accepted": true,
+      "actor": "conductor",
+      "evidence": "fixture:review",
+      "revision": "candidate"
+     }
+    ],
+    "status": "reviewed"
+   },
+   "wrote": true
+  },
+  "default_clock": {
+   "store_after": "2bb3493b12c3dbd1",
+   "store_before": "b7fd79e8847c0b7c",
+   "value": {
+    "candidate": {
+     "author": "worker:implementation",
+     "base": "base",
+     "revision": "candidate",
+     "tree": "tree"
+    },
+    "checks": {},
+    "created_at": "2026-09-22T00:00:00.061000+00:00",
+    "id": "8651aaaaeb56af4712c0c45aa45bd7431ae24808ad5b558be8f640e03f68474f",
+    "inherited_reviews": {
+     "digest": "d702f89f68c2f31242b00351ab0704add6bf85bb4d243536de6a281de108fe12",
+     "release_id": "release-0001"
+    },
+    "policy": {
+     "checks": [
+      "tests",
+      "cli_start",
+      "cli_file_task"
+     ]
+    },
+    "policy_hash": "d92deb256a139465f152d86d596a0de988f84a2ce51278c94c322ae4b2401349",
+    "reverification": {
+     "actor": "conductor",
+     "at": "2026-09-22T00:00:00.061000+00:00",
+     "evidence": "fixture:diagnosis-receipt",
+     "expected_policy_hash": "d92deb256a139465f152d86d596a0de988f84a2ce51278c94c322ae4b2401349",
+     "expected_revision": "candidate",
+     "reason": "fixture: short TEMP diagnosis",
+     "source_checks_digest": "821bdfe8f4ef0b9686a16fc8492f7b032874c165bb7b0e4f4f797a0683222f23",
+     "source_digest": "47fb39eda753a2f77d13344aae04aea1e63fa53ccd7f1e72833cbbf313c0e8e0"
+    },
+    "reverify_of": "release-0001",
+    "reviews": [
+     {
+      "accepted": true,
+      "actor": "lead:improvement",
+      "evidence": "fixture:review",
+      "revision": "candidate"
+     },
+     {
+      "accepted": true,
+      "actor": "conductor",
+      "evidence": "fixture:review",
+      "revision": "candidate"
+     }
+    ],
+    "status": "reviewed"
+   },
+   "wrote": true
+  },
+  "default_clock_event": {
+   "actor": "conductor",
+   "at": "2026-09-22T00:00:00.061000+00:00",
+   "release_id": "8651aaaaeb56af4712c0c45aa45bd7431ae24808ad5b558be8f640e03f68474f",
+   "reverify_of": "release-0001",
+   "type": "release.reverification_requested"
+  },
+  "default_clock_successor": {
+   "candidate": {
+    "author": "worker:implementation",
+    "base": "base",
+    "revision": "candidate",
+    "tree": "tree"
+   },
+   "checks": {},
+   "created_at": "2026-09-22T00:00:00.061000+00:00",
+   "id": "8651aaaaeb56af4712c0c45aa45bd7431ae24808ad5b558be8f640e03f68474f",
+   "inherited_reviews": {
+    "digest": "d702f89f68c2f31242b00351ab0704add6bf85bb4d243536de6a281de108fe12",
+    "release_id": "release-0001"
+   },
+   "policy": {
+    "checks": [
+     "tests",
+     "cli_start",
+     "cli_file_task"
+    ]
+   },
+   "policy_hash": "d92deb256a139465f152d86d596a0de988f84a2ce51278c94c322ae4b2401349",
+   "reverification": {
+    "actor": "conductor",
+    "at": "2026-09-22T00:00:00.061000+00:00",
+    "evidence": "fixture:diagnosis-receipt",
+    "expected_policy_hash": "d92deb256a139465f152d86d596a0de988f84a2ce51278c94c322ae4b2401349",
+    "expected_revision": "candidate",
+    "reason": "fixture: short TEMP diagnosis",
+    "source_checks_digest": "821bdfe8f4ef0b9686a16fc8492f7b032874c165bb7b0e4f4f797a0683222f23",
+    "source_digest": "47fb39eda753a2f77d13344aae04aea1e63fa53ccd7f1e72833cbbf313c0e8e0"
+   },
+   "reverify_of": "release-0001",
+   "reviews": [
+    {
+     "accepted": true,
+     "actor": "lead:improvement",
+     "evidence": "fixture:review",
+     "revision": "candidate"
+    },
+    {
+     "accepted": true,
+     "actor": "conductor",
+     "evidence": "fixture:review",
+     "revision": "candidate"
+    }
+   ],
+   "status": "reviewed"
+  },
+  "duplicate_review_refused": {
+   "message": "Release reviews incomplete",
+   "refused": "ContractError",
+   "store_after": "eb24eeb8e76fd7f1",
+   "store_before": "eb24eeb8e76fd7f1",
+   "wrote": false
+  },
+  "event": {
+   "actor": "conductor",
+   "at": "2026-09-22T12:00:00+00:00",
+   "release_id": "8651aaaaeb56af4712c0c45aa45bd7431ae24808ad5b558be8f640e03f68474f",
+   "reverify_of": "release-0001",
+   "type": "release.reverification_requested"
+  },
+  "events": [
+   "release.reverification_requested:8651aaaaeb56af4712c0c45aa45bd7431ae24808ad5b558be8f640e03f68474f"
+  ],
+  "m7_test": "test_check_rejected_release_gets_one_reviewed_successor_and_history_is_unchanged",
+  "policy_revision_equal_to_base": {
+   "store_after": "6a7e62fe3de329ea",
+   "store_before": "59032c0e2e412b29",
+   "value": {
+    "candidate": {
+     "author": "worker:implementation",
+     "base": "base",
+     "revision": "candidate",
+     "tree": "tree"
+    },
+    "checks": {},
+    "created_at": "2026-09-22T12:00:00+00:00",
+    "id": "8651aaaaeb56af4712c0c45aa45bd7431ae24808ad5b558be8f640e03f68474f",
+    "inherited_reviews": {
+     "digest": "d702f89f68c2f31242b00351ab0704add6bf85bb4d243536de6a281de108fe12",
+     "release_id": "release-0001"
+    },
+    "policy": {
+     "checks": [
+      "tests",
+      "cli_start",
+      "cli_file_task"
+     ],
+     "revision": "base"
+    },
+    "policy_hash": "aa0043708e6dc195ebb6ba1815b4df4f1ab92aa4001b061e4b5835cd56eae0a3",
+    "reverification": {
+     "actor": "conductor",
+     "at": "2026-09-22T12:00:00+00:00",
+     "evidence": "fixture:diagnosis-receipt",
+     "expected_policy_hash": "aa0043708e6dc195ebb6ba1815b4df4f1ab92aa4001b061e4b5835cd56eae0a3",
+     "expected_revision": "candidate",
+     "reason": "fixture: short TEMP diagnosis",
+     "source_checks_digest": "821bdfe8f4ef0b9686a16fc8492f7b032874c165bb7b0e4f4f797a0683222f23",
+     "source_digest": "660a16ae0787a835ff3c8d0d77e9209b7736db7cf2c1f960b9f4c5ce95cfc86e"
+    },
+    "reverify_of": "release-0001",
+    "reviews": [
+     {
+      "accepted": true,
+      "actor": "lead:improvement",
+      "evidence": "fixture:review",
+      "revision": "candidate"
+     },
+     {
+      "accepted": true,
+      "actor": "conductor",
+      "evidence": "fixture:review",
+      "revision": "candidate"
+     }
+    ],
+    "status": "reviewed"
+   },
+   "wrote": true
+  },
+  "source_digest": "47fb39eda753a2f77d13344aae04aea1e63fa53ccd7f1e72833cbbf313c0e8e0",
+  "source_unchanged": true,
+  "successor": {
+   "candidate": {
+    "author": "worker:implementation",
+    "base": "base",
+    "revision": "candidate",
+    "tree": "tree"
+   },
+   "checks": {},
+   "created_at": "2026-09-22T12:00:00+00:00",
+   "id": "8651aaaaeb56af4712c0c45aa45bd7431ae24808ad5b558be8f640e03f68474f",
+   "inherited_reviews": {
+    "digest": "d702f89f68c2f31242b00351ab0704add6bf85bb4d243536de6a281de108fe12",
+    "release_id": "release-0001"
+   },
+   "policy": {
+    "checks": [
+     "tests",
+     "cli_start",
+     "cli_file_task"
+    ]
+   },
+   "policy_hash": "d92deb256a139465f152d86d596a0de988f84a2ce51278c94c322ae4b2401349",
+   "reverification": {
+    "actor": "conductor",
+    "at": "2026-09-22T12:00:00+00:00",
+    "evidence": "fixture:diagnosis-receipt",
+    "expected_policy_hash": "d92deb256a139465f152d86d596a0de988f84a2ce51278c94c322ae4b2401349",
+    "expected_revision": "candidate",
+    "reason": "fixture: short TEMP diagnosis",
+    "source_checks_digest": "821bdfe8f4ef0b9686a16fc8492f7b032874c165bb7b0e4f4f797a0683222f23",
+    "source_digest": "47fb39eda753a2f77d13344aae04aea1e63fa53ccd7f1e72833cbbf313c0e8e0"
+   },
+   "reverify_of": "release-0001",
+   "reviews": [
+    {
+     "accepted": true,
+     "actor": "lead:improvement",
+     "evidence": "fixture:review",
+     "revision": "candidate"
+    },
+    {
+     "accepted": true,
+     "actor": "conductor",
+     "evidence": "fixture:review",
+     "revision": "candidate"
+    }
+   ],
+   "status": "reviewed"
+  },
+  "successor_id_is_the_reverify_of_digest": true
+ }
+}

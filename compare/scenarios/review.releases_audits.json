@@ -1,0 +1,9 @@
+{
+ "family": "review.releases_audits",
+ "description": "S8 M7 Releases.reconcile_audits and Releases.request_reverification, characterized before the move at application level over a MemoryStore with PLANTED releases (active audit-lifecycle and check-rejected), deployment, research_control, release_queue, deployment_locks and promotion_intents rows, the packaged organization and the harness clock: reconcile_audits with no active release, an inactive or legacy record, a paused, same-release and rolled-back control kept, an invalid active release, incomplete reviews and incomplete checks refused, the activation written with its graph row, idempotence; request_reverification with a missing reason or evidence, a non-conductor, an unknown release, an evaluator-migrated source, the written successor with its event, a replay and a conflicting replay, an existing evaluator or environment successor, and every non-rejected or ineligible source refused via _check_rejected_source; the whole-store digest before and after every call; no Git, Docker, model, provider or PostgreSQL",
+ "reference_driver": "drivers/reference/s8_releases_audits.py",
+ "target_driver": null,
+ "golden": "goldens/reference/review.releases_audits.json",
+ "slice": "S8",
+ "target_status": "pending: S8 releases audits move"
+}
