@@ -2,8 +2,7 @@
  "family": "research.audit_execution",
  "description": "S8 batch B3 (V24 R-ae1..R-ae5) M7 adapters/audit_execution.py AuditExecution (execute: audit_discovery mapped/replayed/unmapped/unknown/lost lease, audit_acquire with the runner's acquire and the backlog update, audit_propose, the default partition analysis with the accepted checkpoint, the retained refused draft, every failure that is not converted, a returned inspection refusal and a repair context; review: accepted, rejected, blocked inspection, a model-reported block, redelivery and failures; the static typed_schema, partition_schema, decode_assigned, proposed_checkpoint, refused_execution, evidence_ref and analysis_binding), characterized before the move into research: a LABELLED executor with scripted answers (M7 reads service.store, artifacts and workflow from it; the target RunTask has none of them), the pilot 70 labelled runner and verifier, the product's own FileArtifacts over a run-scoped directory, the harness clock; the whole-store digest around every call; the M7 tests that need the real service executor, PostgreSQL or AppServer are listed in m7_tests; no model, provider, Git, network or database",
  "reference_driver": "drivers/reference/s8_audit_execution.py",
- "target_driver": null,
+ "target_driver": "drivers/target/s8_audit_execution.py",
  "golden": "goldens/reference/research.audit_execution.json",
- "slice": "S8",
- "target_status": "pending: S8 batch B3 move"
+ "slice": "S8"
 }
