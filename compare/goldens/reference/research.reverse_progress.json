@@ -1,0 +1,4354 @@
+{
+ "branch_coverage": {
+  "ReverseProgress.__init__": "build",
+  "_source require clean": "p3 record_unknown/dirty; p6 source_dirty, source_unknown",
+  "_source require commit and tree format": "p6 source_commit_*, source_tree_*",
+  "_source require dict": "p3 status_not_a_dict_*; p6 source_not_a_dict, source_none_value",
+  "_source require one hash format": "p6 source_mixed_formats_*; p3 status_clean_mixed_hash_formats; source_both_sha256_is_pinned",
+  "_source require repository identity": "p6 source_repository_empty/int/missing",
+  "_source returns only repository, commit, tree": "p6 source_extra_keys_are_not_pinned, pinned_source_of_the_extra_keys",
+  "record artifacts.inspect of the references": "p1 missing_artifact_refused, invalid_reference_refused; p5 own_reference_missing_checked_before_the_transaction",
+  "record idempotent replay": "p2 replay_is_the_original, replay_after_later_progress, refs_sorted_is_the_same_request",
+  "record predecessor artifacts.inspect": "p5 missing_predecessor, modified_predecessor, metadata_*",
+  "record require artifact reference list": "p6 refs_*",
+  "record require conflicting request": "p2 conflict_*",
+  "record require expected generation": "p6 generation_*",
+  "record require generation": "p6 stale_generation_*; p7 writer_b_stale; p2 other_rid_same_command_is_stale",
+  "record require no rebaseline without a change": "p3 rebaseline_without_change",
+  "record require predecessor complete": "p4 skip_ahead, skip_to_last, third_over_a_partial_predecessor, final_stage_over_partial",
+  "record require project": "p6 project_*",
+  "record require rebaseline and first stage on a changed source": "p3 moved_without_rebaseline, moved_rebaseline_not_first_stage, rebaseline_restart",
+  "record require rebaseline boolean": "p6 rebaseline_*",
+  "record require request identity": "p6 request_*",
+  "record require retained artifacts for complete": "p1 empty_complete_refused; p6 complete_without_refs; partial/pending without refs are allowed",
+  "record require stage and status": "p6 stage_*, status_*",
+  "record require stage not complete (immutable)": "p4 downgrade_completed, rewrite_completed, pending_after_complete",
+  "record writes progress, history and request": "p1 final, history_generations, requests; p3 history_after_rebaseline; p7 integration",
+  "status clean + ContractError -> unknown": "p3 status_clean_*",
+  "status dirty -> dirty, other not clean -> unknown": "p3 status_not_started_dirty, status_unknown/dirty/weird_status/status_missing/status_none",
+  "status not a dict -> unknown": "p3 status_not_a_dict_*",
+  "status not_started / unchanged / changed": "p3 status_not_started, status_unchanged, status_changed_commit/repository"
+ },
+ "cases_per_group": {
+  "p1_test_four_stages_across_usecase_instances_require_real_artifacts": 12,
+  "p2_test_retry_is_idempotent_but_conflicting_request_rejected": 19,
+  "p3_test_unknown_dirty_and_moved_sources_do_not_inherit_completion": 36,
+  "p4_test_stage_order_and_completed_stage_immutability": 14,
+  "p5_predecessor_evidence": 16,
+  "p6_argument_requires": 81,
+  "p7_racing_writers_and_integration_replay": 16
+ },
+ "constants": {
+  "STAGES": [
+   "1-A",
+   "1-B",
+   "1-C",
+   "2"
+  ],
+  "STATUSES": [
+   "pending",
+   "partial",
+   "complete"
+  ]
+ },
+ "m7_tests": {
+  "test_artifact_metadata_counts_utf8_bytes": "p5_predecessor_evidence",
+  "test_bad_receipt_metadata_blocks_continuation": "p5_predecessor_evidence (absent, list, wrong_ref, negative_bytes)",
+  "test_four_stages_across_usecase_instances_require_real_artifacts": "p1_test_four_stages_across_usecase_instances_require_real_artifacts",
+  "test_git_observation_detects_dirty_and_unknown_sources": {
+   "unreachable": "exercises adapters.reverse_source.observe_source over a real git repository, not this module"
+  },
+  "test_missing_predecessor_evidence_blocks_continuation": "p5_predecessor_evidence",
+  "test_modified_predecessor_blocks_continuation": "p5_predecessor_evidence",
+  "test_racing_writers_cannot_lose_a_checkpoint": {
+   "p7_racing_writers_and_integration_replay": "the part the application decides, as two sequential writers; threads are not a scenario step"
+  },
+  "test_retry_is_idempotent_but_conflicting_request_rejected": "p2_test_retry_is_idempotent_but_conflicting_request_rejected",
+  "test_stage_order_and_completed_stage_immutability": "p4_test_stage_order_and_completed_stage_immutability",
+  "test_tree_is_resolved_from_captured_commit": {
+   "unreachable": "exercises adapters.reverse_source.observe_source, not this module"
+  },
+  "test_unknown_dirty_and_moved_sources_do_not_inherit_completion": "p3_test_unknown_dirty_and_moved_sources_do_not_inherit_completion",
+  "tests/test_integration.py::test_postgres_reverse_progress_concurrency_replay_and_history": {
+   "p7_racing_writers_and_integration_replay": "the sequential part over MemoryStore; threads and PostgreSQL are not scenario steps"
+  }
+ },
+ "p1_test_four_stages_across_usecase_instances_require_real_artifacts": {
+  "empty_complete_refused": {
+   "after": {
+    "all": "82913b2385c6df87",
+    "reverse_history": "4:423780127ba65a80",
+    "reverse_progress": "1:0f3b75281b331bee",
+    "reverse_requests": "4:b24107d74abe7c35"
+   },
+   "before": {
+    "all": "82913b2385c6df87",
+    "reverse_history": "4:423780127ba65a80",
+    "reverse_progress": "1:0f3b75281b331bee",
+    "reverse_requests": "4:b24107d74abe7c35"
+   },
+   "changed": [],
+   "is_contract_error": true,
+   "message": "Complete stage requires retained artifacts",
+   "refused": "ContractError"
+  },
+  "final": {
+   "generation": 4,
+   "source": {
+    "commit": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+    "repository": "source-project",
+    "tree": "bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb"
+   },
+   "stages": [
+    "1-A",
+    "1-B",
+    "1-C",
+    "2"
+   ]
+  },
+  "history_generations": [
+   1,
+   2,
+   3,
+   4
+  ],
+  "invalid_reference_refused": {
+   "after": {
+    "all": "82913b2385c6df87",
+    "reverse_history": "4:423780127ba65a80",
+    "reverse_progress": "1:0f3b75281b331bee",
+    "reverse_requests": "4:b24107d74abe7c35"
+   },
+   "before": {
+    "all": "82913b2385c6df87",
+    "reverse_history": "4:423780127ba65a80",
+    "reverse_progress": "1:0f3b75281b331bee",
+    "reverse_requests": "4:b24107d74abe7c35"
+   },
+   "changed": [],
+   "is_contract_error": true,
+   "message": "Invalid artifact reference",
+   "refused": "ContractError"
+  },
+  "missing_artifact_refused": {
+   "after": {
+    "all": "82913b2385c6df87",
+    "reverse_history": "4:423780127ba65a80",
+    "reverse_progress": "1:0f3b75281b331bee",
+    "reverse_requests": "4:b24107d74abe7c35"
+   },
+   "before": {
+    "all": "82913b2385c6df87",
+    "reverse_history": "4:423780127ba65a80",
+    "reverse_progress": "1:0f3b75281b331bee",
+    "reverse_requests": "4:b24107d74abe7c35"
+   },
+   "changed": [],
+   "is_contract_error": false,
+   "refused": "FileNotFoundError"
+  },
+  "record_1-A": {
+   "after": {
+    "all": "14c6a21336daf5cc",
+    "reverse_history": "1:b0e05ff5ddb114c6",
+    "reverse_progress": "1:c10e2417a26763ed",
+    "reverse_requests": "1:38a66ac3e990112d"
+   },
+   "before": {
+    "all": "4f53cda18c2baa0c",
+    "reverse_history": "0:4f53cda18c2baa0c",
+    "reverse_progress": "0:4f53cda18c2baa0c",
+    "reverse_requests": "0:4f53cda18c2baa0c"
+   },
+   "changed": [
+    "reverse_requests",
+    "reverse_progress",
+    "reverse_history",
+    "all"
+   ],
+   "value": "017869d3de8df68f57de0a20d625943f5117f57406c87fc14a7dc63f1e6d83fc",
+   "view": {
+    "generation": 1,
+    "project": "p",
+    "releases": {
+     "1-A": [
+      "complete",
+      1
+     ]
+    },
+    "source": {
+     "commit": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+     "repository": "source-project",
+     "tree": "bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb"
+    }
+   }
+  },
+  "record_1-B": {
+   "after": {
+    "all": "66b0aaf5ccabdde3",
+    "reverse_history": "2:063346fe0ca6672e",
+    "reverse_progress": "1:1c3c993300a7a064",
+    "reverse_requests": "2:40417258db2f3205"
+   },
+   "before": {
+    "all": "14c6a21336daf5cc",
+    "reverse_history": "1:b0e05ff5ddb114c6",
+    "reverse_progress": "1:c10e2417a26763ed",
+    "reverse_requests": "1:38a66ac3e990112d"
+   },
+   "changed": [
+    "reverse_requests",
+    "reverse_progress",
+    "reverse_history",
+    "all"
+   ],
+   "value": "caf55b29417ad34572eb165f8f69ff5624cc5f600072d3f3d05a7245382c9c80",
+   "view": {
+    "generation": 2,
+    "project": "p",
+    "releases": {
+     "1-A": [
+      "complete",
+      1
+     ],
+     "1-B": [
+      "complete",
+      1
+     ]
+    },
+    "source": {
+     "commit": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+     "repository": "source-project",
+     "tree": "bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb"
+    }
+   }
+  },
+  "record_1-C": {
+   "after": {
+    "all": "6fd3545f01152228",
+    "reverse_history": "3:94eb61eb8df40e0a",
+    "reverse_progress": "1:580957b3b6b581e9",
+    "reverse_requests": "3:db53e13f97e76c06"
+   },
+   "before": {
+    "all": "66b0aaf5ccabdde3",
+    "reverse_history": "2:063346fe0ca6672e",
+    "reverse_progress": "1:1c3c993300a7a064",
+    "reverse_requests": "2:40417258db2f3205"
+   },
+   "changed": [
+    "reverse_requests",
+    "reverse_progress",
+    "reverse_history",
+    "all"
+   ],
+   "value": "9df70236e9a8062aacc2fe7e8e28c424308f1ababd0d5bfacada955243f813a2",
+   "view": {
+    "generation": 3,
+    "project": "p",
+    "releases": {
+     "1-A": [
+      "complete",
+      1
+     ],
+     "1-B": [
+      "complete",
+      1
+     ],
+     "1-C": [
+      "complete",
+      1
+     ]
+    },
+    "source": {
+     "commit": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+     "repository": "source-project",
+     "tree": "bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb"
+    }
+   }
+  },
+  "record_2": {
+   "after": {
+    "all": "82913b2385c6df87",
+    "reverse_history": "4:423780127ba65a80",
+    "reverse_progress": "1:0f3b75281b331bee",
+    "reverse_requests": "4:b24107d74abe7c35"
+   },
+   "before": {
+    "all": "6fd3545f01152228",
+    "reverse_history": "3:94eb61eb8df40e0a",
+    "reverse_progress": "1:580957b3b6b581e9",
+    "reverse_requests": "3:db53e13f97e76c06"
+   },
+   "changed": [
+    "reverse_requests",
+    "reverse_progress",
+    "reverse_history",
+    "all"
+   ],
+   "value": "12a5879e9b58da2bc294310f8f3518ffc3a12a5b269ea909f6f2d7aa73eb3659",
+   "view": {
+    "generation": 4,
+    "project": "p",
+    "releases": {
+     "1-A": [
+      "complete",
+      1
+     ],
+     "1-B": [
+      "complete",
+      1
+     ],
+     "1-C": [
+      "complete",
+      1
+     ],
+     "2": [
+      "complete",
+      1
+     ]
+    },
+    "source": {
+     "commit": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+     "repository": "source-project",
+     "tree": "bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb"
+    }
+   }
+  },
+  "requests": 4,
+  "status_other_project_unstarted": {
+   "after": {
+    "all": "82913b2385c6df87",
+    "reverse_history": "4:423780127ba65a80",
+    "reverse_progress": "1:0f3b75281b331bee",
+    "reverse_requests": "4:b24107d74abe7c35"
+   },
+   "before": {
+    "all": "82913b2385c6df87",
+    "reverse_history": "4:423780127ba65a80",
+    "reverse_progress": "1:0f3b75281b331bee",
+    "reverse_requests": "4:b24107d74abe7c35"
+   },
+   "changed": [],
+   "value": "223ac16aa777f271bd8af4436db1915ee9197bc88467b8030469ceef97826f6d",
+   "view": {
+    "progress": null,
+    "project": "other",
+    "source_state": "not_started"
+   }
+  },
+  "status_unchanged": {
+   "after": {
+    "all": "82913b2385c6df87",
+    "reverse_history": "4:423780127ba65a80",
+    "reverse_progress": "1:0f3b75281b331bee",
+    "reverse_requests": "4:b24107d74abe7c35"
+   },
+   "before": {
+    "all": "82913b2385c6df87",
+    "reverse_history": "4:423780127ba65a80",
+    "reverse_progress": "1:0f3b75281b331bee",
+    "reverse_requests": "4:b24107d74abe7c35"
+   },
+   "changed": [],
+   "value": "eecfa3fafd39bdbf206c4a4eec1ea3486a8c1a90898c33d91c4ef1aca777648d",
+   "view": {
+    "progress": {
+     "at": "2026-09-22T00:00:00.003000+00:00",
+     "generation": 4,
+     "project": "p",
+     "releases": {
+      "1-A": {
+       "artifact_refs": [
+        "sha256:db793d1770390e694894e2018e2bdcddbe7f19a3b135ad5c2f8933e2d92451b9"
+       ],
+       "at": "2026-09-22T00:00:00+00:00",
+       "status": "complete"
+      },
+      "1-B": {
+       "artifact_refs": [
+        "sha256:db793d1770390e694894e2018e2bdcddbe7f19a3b135ad5c2f8933e2d92451b9"
+       ],
+       "at": "2026-09-22T00:00:00.001000+00:00",
+       "status": "complete"
+      },
+      "1-C": {
+       "artifact_refs": [
+        "sha256:db793d1770390e694894e2018e2bdcddbe7f19a3b135ad5c2f8933e2d92451b9"
+       ],
+       "at": "2026-09-22T00:00:00.002000+00:00",
+       "status": "complete"
+      },
+      "2": {
+       "artifact_refs": [
+        "sha256:db793d1770390e694894e2018e2bdcddbe7f19a3b135ad5c2f8933e2d92451b9"
+       ],
+       "at": "2026-09-22T00:00:00.003000+00:00",
+       "status": "complete"
+      }
+     },
+     "source": {
+      "commit": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+      "repository": "source-project",
+      "tree": "bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb"
+     }
+    },
+    "project": "p",
+    "source_state": "unchanged"
+   }
+  }
+ },
+ "p2_test_retry_is_idempotent_but_conflicting_request_rejected": {
+  "conflict_generation": {
+   "after": {
+    "all": "87e00febe4f54c51",
+    "reverse_history": "1:69b001e5d5d7276f",
+    "reverse_progress": "1:d76ee1f880ab8fcb",
+    "reverse_requests": "1:c603a6434a805ba3"
+   },
+   "before": {
+    "all": "87e00febe4f54c51",
+    "reverse_history": "1:69b001e5d5d7276f",
+    "reverse_progress": "1:d76ee1f880ab8fcb",
+    "reverse_requests": "1:c603a6434a805ba3"
+   },
+   "changed": [],
+   "is_contract_error": true,
+   "message": "Conflicting reverse request",
+   "refused": "ContractError"
+  },
+  "conflict_rebaseline": {
+   "after": {
+    "all": "87e00febe4f54c51",
+    "reverse_history": "1:69b001e5d5d7276f",
+    "reverse_progress": "1:d76ee1f880ab8fcb",
+    "reverse_requests": "1:c603a6434a805ba3"
+   },
+   "before": {
+    "all": "87e00febe4f54c51",
+    "reverse_history": "1:69b001e5d5d7276f",
+    "reverse_progress": "1:d76ee1f880ab8fcb",
+    "reverse_requests": "1:c603a6434a805ba3"
+   },
+   "changed": [],
+   "is_contract_error": true,
+   "message": "Conflicting reverse request",
+   "refused": "ContractError"
+  },
+  "conflict_refs": {
+   "after": {
+    "all": "87e00febe4f54c51",
+    "reverse_history": "1:69b001e5d5d7276f",
+    "reverse_progress": "1:d76ee1f880ab8fcb",
+    "reverse_requests": "1:c603a6434a805ba3"
+   },
+   "before": {
+    "all": "87e00febe4f54c51",
+    "reverse_history": "1:69b001e5d5d7276f",
+    "reverse_progress": "1:d76ee1f880ab8fcb",
+    "reverse_requests": "1:c603a6434a805ba3"
+   },
+   "changed": [],
+   "is_contract_error": true,
+   "message": "Conflicting reverse request",
+   "refused": "ContractError"
+  },
+  "conflict_source": {
+   "after": {
+    "all": "87e00febe4f54c51",
+    "reverse_history": "1:69b001e5d5d7276f",
+    "reverse_progress": "1:d76ee1f880ab8fcb",
+    "reverse_requests": "1:c603a6434a805ba3"
+   },
+   "before": {
+    "all": "87e00febe4f54c51",
+    "reverse_history": "1:69b001e5d5d7276f",
+    "reverse_progress": "1:d76ee1f880ab8fcb",
+    "reverse_requests": "1:c603a6434a805ba3"
+   },
+   "changed": [],
+   "is_contract_error": true,
+   "message": "Conflicting reverse request",
+   "refused": "ContractError"
+  },
+  "conflict_stage": {
+   "after": {
+    "all": "87e00febe4f54c51",
+    "reverse_history": "1:69b001e5d5d7276f",
+    "reverse_progress": "1:d76ee1f880ab8fcb",
+    "reverse_requests": "1:c603a6434a805ba3"
+   },
+   "before": {
+    "all": "87e00febe4f54c51",
+    "reverse_history": "1:69b001e5d5d7276f",
+    "reverse_progress": "1:d76ee1f880ab8fcb",
+    "reverse_requests": "1:c603a6434a805ba3"
+   },
+   "changed": [],
+   "is_contract_error": true,
+   "message": "Conflicting reverse request",
+   "refused": "ContractError"
+  },
+  "conflict_status": {
+   "after": {
+    "all": "87e00febe4f54c51",
+    "reverse_history": "1:69b001e5d5d7276f",
+    "reverse_progress": "1:d76ee1f880ab8fcb",
+    "reverse_requests": "1:c603a6434a805ba3"
+   },
+   "before": {
+    "all": "87e00febe4f54c51",
+    "reverse_history": "1:69b001e5d5d7276f",
+    "reverse_progress": "1:d76ee1f880ab8fcb",
+    "reverse_requests": "1:c603a6434a805ba3"
+   },
+   "changed": [],
+   "is_contract_error": true,
+   "message": "Conflicting reverse request",
+   "refused": "ContractError"
+  },
+  "history_after_later_progress": [
+   1,
+   2
+  ],
+  "history_rows": [
+   1
+  ],
+  "next_stage": {
+   "after": {
+    "all": "5cf2ea171fcf47e6",
+    "reverse_history": "2:74478b4c5badff6b",
+    "reverse_progress": "1:658f48de2b442b20",
+    "reverse_requests": "2:38de0a22843ce8a4"
+   },
+   "before": {
+    "all": "87e00febe4f54c51",
+    "reverse_history": "1:69b001e5d5d7276f",
+    "reverse_progress": "1:d76ee1f880ab8fcb",
+    "reverse_requests": "1:c603a6434a805ba3"
+   },
+   "changed": [
+    "reverse_requests",
+    "reverse_progress",
+    "reverse_history",
+    "all"
+   ],
+   "value": "9fab3673b904f06e9631837d1c54958fd5bc03320263c09e9b4ab6005a75f895",
+   "view": {
+    "generation": 2,
+    "project": "p",
+    "releases": {
+     "1-A": [
+      "complete",
+      1
+     ],
+     "1-B": [
+      "complete",
+      1
+     ]
+    },
+    "source": {
+     "commit": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+     "repository": "source-project",
+     "tree": "bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb"
+    }
+   }
+  },
+  "original": {
+   "after": {
+    "all": "87e00febe4f54c51",
+    "reverse_history": "1:69b001e5d5d7276f",
+    "reverse_progress": "1:d76ee1f880ab8fcb",
+    "reverse_requests": "1:c603a6434a805ba3"
+   },
+   "before": {
+    "all": "4f53cda18c2baa0c",
+    "reverse_history": "0:4f53cda18c2baa0c",
+    "reverse_progress": "0:4f53cda18c2baa0c",
+    "reverse_requests": "0:4f53cda18c2baa0c"
+   },
+   "changed": [
+    "reverse_requests",
+    "reverse_progress",
+    "reverse_history",
+    "all"
+   ],
+   "value": "2b829ee5e480bd9d08d5530ac002818d2b50888b5e9001268096b9e7d4135a38",
+   "view": {
+    "generation": 1,
+    "project": "p",
+    "releases": {
+     "1-A": [
+      "complete",
+      1
+     ]
+    },
+    "source": {
+     "commit": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+     "repository": "source-project",
+     "tree": "bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb"
+    }
+   }
+  },
+  "other_rid_same_command_is_stale": {
+   "after": {
+    "all": "aa1bc75e5881bf01",
+    "reverse_history": "3:b8a131478da93463",
+    "reverse_progress": "2:1153f0127e449969",
+    "reverse_requests": "3:4cfa686757694440"
+   },
+   "before": {
+    "all": "aa1bc75e5881bf01",
+    "reverse_history": "3:b8a131478da93463",
+    "reverse_progress": "2:1153f0127e449969",
+    "reverse_requests": "3:4cfa686757694440"
+   },
+   "changed": [],
+   "is_contract_error": true,
+   "message": "Stale reverse progress",
+   "refused": "ContractError"
+  },
+  "refs_sorted_is_the_same_request": {
+   "after": {
+    "all": "f417d04c121b3cd5",
+    "reverse_history": "1:298d771429c0f1e9",
+    "reverse_progress": "1:6dddc9c79f9f0282",
+    "reverse_requests": "1:f2d3e70195573e99"
+   },
+   "before": {
+    "all": "f417d04c121b3cd5",
+    "reverse_history": "1:298d771429c0f1e9",
+    "reverse_progress": "1:6dddc9c79f9f0282",
+    "reverse_requests": "1:f2d3e70195573e99"
+   },
+   "changed": [],
+   "value": "e4b27f3a33bf51ed46a88cbd39a18e33cc527fa750d4fe129b405327b2973d48",
+   "view": {
+    "generation": 1,
+    "project": "p",
+    "releases": {
+     "1-A": [
+      "partial",
+      2
+     ]
+    },
+    "source": {
+     "commit": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+     "repository": "source-project",
+     "tree": "bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb"
+    }
+   }
+  },
+  "refs_sorted_stored": true,
+  "refs_unsorted_duplicated": {
+   "after": {
+    "all": "f417d04c121b3cd5",
+    "reverse_history": "1:298d771429c0f1e9",
+    "reverse_progress": "1:6dddc9c79f9f0282",
+    "reverse_requests": "1:f2d3e70195573e99"
+   },
+   "before": {
+    "all": "4f53cda18c2baa0c",
+    "reverse_history": "0:4f53cda18c2baa0c",
+    "reverse_progress": "0:4f53cda18c2baa0c",
+    "reverse_requests": "0:4f53cda18c2baa0c"
+   },
+   "changed": [
+    "reverse_requests",
+    "reverse_progress",
+    "reverse_history",
+    "all"
+   ],
+   "value": "e4b27f3a33bf51ed46a88cbd39a18e33cc527fa750d4fe129b405327b2973d48",
+   "view": {
+    "generation": 1,
+    "project": "p",
+    "releases": {
+     "1-A": [
+      "partial",
+      2
+     ]
+    },
+    "source": {
+     "commit": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+     "repository": "source-project",
+     "tree": "bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb"
+    }
+   }
+  },
+  "replay_after_later_progress": {
+   "after": {
+    "all": "5cf2ea171fcf47e6",
+    "reverse_history": "2:74478b4c5badff6b",
+    "reverse_progress": "1:658f48de2b442b20",
+    "reverse_requests": "2:38de0a22843ce8a4"
+   },
+   "before": {
+    "all": "5cf2ea171fcf47e6",
+    "reverse_history": "2:74478b4c5badff6b",
+    "reverse_progress": "1:658f48de2b442b20",
+    "reverse_requests": "2:38de0a22843ce8a4"
+   },
+   "changed": [],
+   "value": "2b829ee5e480bd9d08d5530ac002818d2b50888b5e9001268096b9e7d4135a38",
+   "view": {
+    "generation": 1,
+    "project": "p",
+    "releases": {
+     "1-A": [
+      "complete",
+      1
+     ]
+    },
+    "source": {
+     "commit": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+     "repository": "source-project",
+     "tree": "bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb"
+    }
+   }
+  },
+  "replay_is_the_original": {
+   "after": {
+    "all": "87e00febe4f54c51",
+    "reverse_history": "1:69b001e5d5d7276f",
+    "reverse_progress": "1:d76ee1f880ab8fcb",
+    "reverse_requests": "1:c603a6434a805ba3"
+   },
+   "before": {
+    "all": "87e00febe4f54c51",
+    "reverse_history": "1:69b001e5d5d7276f",
+    "reverse_progress": "1:d76ee1f880ab8fcb",
+    "reverse_requests": "1:c603a6434a805ba3"
+   },
+   "changed": [],
+   "value": "2b829ee5e480bd9d08d5530ac002818d2b50888b5e9001268096b9e7d4135a38",
+   "view": {
+    "generation": 1,
+    "project": "p",
+    "releases": {
+     "1-A": [
+      "complete",
+      1
+     ]
+    },
+    "source": {
+     "commit": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+     "repository": "source-project",
+     "tree": "bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb"
+    }
+   }
+  },
+  "replay_returns_the_stored_result": true,
+  "request_rows": 3,
+  "same_rid_other_project": {
+   "after": {
+    "all": "aa1bc75e5881bf01",
+    "reverse_history": "3:b8a131478da93463",
+    "reverse_progress": "2:1153f0127e449969",
+    "reverse_requests": "3:4cfa686757694440"
+   },
+   "before": {
+    "all": "5cf2ea171fcf47e6",
+    "reverse_history": "2:74478b4c5badff6b",
+    "reverse_progress": "1:658f48de2b442b20",
+    "reverse_requests": "2:38de0a22843ce8a4"
+   },
+   "changed": [
+    "reverse_requests",
+    "reverse_progress",
+    "reverse_history",
+    "all"
+   ],
+   "value": "01cb715aeee909dad1c3370434bda485e4b901bc334ac6c10967c99b348b7d80",
+   "view": {
+    "generation": 1,
+    "project": "q",
+    "releases": {
+     "1-A": [
+      "complete",
+      1
+     ]
+    },
+    "source": {
+     "commit": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+     "repository": "source-project",
+     "tree": "bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb"
+    }
+   }
+  }
+ },
+ "p3_test_unknown_dirty_and_moved_sources_do_not_inherit_completion": {
+  "first": {
+   "after": {
+    "all": "03b2eab2d489bca7",
+    "reverse_history": "1:f224e6d7df34d76c",
+    "reverse_progress": "1:5387fccbfbc0e820",
+    "reverse_requests": "1:779bb80d0d62a58c"
+   },
+   "before": {
+    "all": "4f53cda18c2baa0c",
+    "reverse_history": "0:4f53cda18c2baa0c",
+    "reverse_progress": "0:4f53cda18c2baa0c",
+    "reverse_requests": "0:4f53cda18c2baa0c"
+   },
+   "changed": [
+    "reverse_requests",
+    "reverse_progress",
+    "reverse_history",
+    "all"
+   ],
+   "value": "7466e3688d1f68a7d3e81a27f34e884d1be1af0ee270371faf9b81eb441f63b1",
+   "view": {
+    "generation": 1,
+    "project": "p",
+    "releases": {
+     "1-A": [
+      "complete",
+      1
+     ]
+    },
+    "source": {
+     "commit": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+     "repository": "source-project",
+     "tree": "bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb"
+    }
+   }
+  },
+  "history_after_rebaseline": [
+   1,
+   2
+  ],
+  "moved_rebaseline_not_first_stage": {
+   "after": {
+    "all": "03b2eab2d489bca7",
+    "reverse_history": "1:f224e6d7df34d76c",
+    "reverse_progress": "1:5387fccbfbc0e820",
+    "reverse_requests": "1:779bb80d0d62a58c"
+   },
+   "before": {
+    "all": "03b2eab2d489bca7",
+    "reverse_history": "1:f224e6d7df34d76c",
+    "reverse_progress": "1:5387fccbfbc0e820",
+    "reverse_requests": "1:779bb80d0d62a58c"
+   },
+   "changed": [],
+   "is_contract_error": true,
+   "message": "Source changed; rebaseline required",
+   "refused": "ContractError"
+  },
+  "moved_without_rebaseline": {
+   "after": {
+    "all": "03b2eab2d489bca7",
+    "reverse_history": "1:f224e6d7df34d76c",
+    "reverse_progress": "1:5387fccbfbc0e820",
+    "reverse_requests": "1:779bb80d0d62a58c"
+   },
+   "before": {
+    "all": "03b2eab2d489bca7",
+    "reverse_history": "1:f224e6d7df34d76c",
+    "reverse_progress": "1:5387fccbfbc0e820",
+    "reverse_requests": "1:779bb80d0d62a58c"
+   },
+   "changed": [],
+   "is_contract_error": true,
+   "message": "Source changed; rebaseline required",
+   "refused": "ContractError"
+  },
+  "progress_after_rebaseline": {
+   "generation": 2,
+   "project": "p",
+   "releases": {
+    "1-A": [
+     "partial",
+     "no-refs"
+    ]
+   },
+   "source": {
+    "commit": "cccccccccccccccccccccccccccccccccccccccc",
+    "repository": "source-project",
+    "tree": "bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb"
+   }
+  },
+  "rebaseline_over_a_complete_first_stage": {
+   "after": {
+    "all": "4319981eda7f19f1",
+    "reverse_history": "3:3fd282f8fbbb4bf7",
+    "reverse_progress": "1:533c1e4430db12d4",
+    "reverse_requests": "3:1f7783f5b9550bde"
+   },
+   "before": {
+    "all": "a60b06acd47c4681",
+    "reverse_history": "2:4e60a454c7f977c0",
+    "reverse_progress": "1:23393aea4673c12e",
+    "reverse_requests": "2:6bc0a472772f5f20"
+   },
+   "changed": [
+    "reverse_requests",
+    "reverse_progress",
+    "reverse_history",
+    "all"
+   ],
+   "value": "2b34cb00cf1938e8c70ca35f63f81af450c8150c62b73122b9d45682bdc64a45",
+   "view": {
+    "generation": 3,
+    "project": "p",
+    "releases": {
+     "1-A": [
+      "partial",
+      "no-refs"
+     ]
+    },
+    "source": {
+     "commit": "dddddddddddddddddddddddddddddddddddddddd",
+     "repository": "source-project",
+     "tree": "bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb"
+    }
+   }
+  },
+  "rebaseline_restart": {
+   "after": {
+    "all": "a60b06acd47c4681",
+    "reverse_history": "2:4e60a454c7f977c0",
+    "reverse_progress": "1:23393aea4673c12e",
+    "reverse_requests": "2:6bc0a472772f5f20"
+   },
+   "before": {
+    "all": "03b2eab2d489bca7",
+    "reverse_history": "1:f224e6d7df34d76c",
+    "reverse_progress": "1:5387fccbfbc0e820",
+    "reverse_requests": "1:779bb80d0d62a58c"
+   },
+   "changed": [
+    "reverse_requests",
+    "reverse_progress",
+    "reverse_history",
+    "all"
+   ],
+   "value": "83c781921b042ab84f2b1f7da26c7cc703075501dd0830258e89361b759e5883",
+   "view": {
+    "generation": 2,
+    "project": "p",
+    "releases": {
+     "1-A": [
+      "partial",
+      "no-refs"
+     ]
+    },
+    "source": {
+     "commit": "cccccccccccccccccccccccccccccccccccccccc",
+     "repository": "source-project",
+     "tree": "bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb"
+    }
+   }
+  },
+  "rebaseline_without_change": {
+   "after": {
+    "all": "03b2eab2d489bca7",
+    "reverse_history": "1:f224e6d7df34d76c",
+    "reverse_progress": "1:5387fccbfbc0e820",
+    "reverse_requests": "1:779bb80d0d62a58c"
+   },
+   "before": {
+    "all": "03b2eab2d489bca7",
+    "reverse_history": "1:f224e6d7df34d76c",
+    "reverse_progress": "1:5387fccbfbc0e820",
+    "reverse_requests": "1:779bb80d0d62a58c"
+   },
+   "changed": [],
+   "is_contract_error": true,
+   "message": "Rebaseline requires a changed source",
+   "refused": "ContractError"
+  },
+  "record_dirty": {
+   "after": {
+    "all": "03b2eab2d489bca7",
+    "reverse_history": "1:f224e6d7df34d76c",
+    "reverse_progress": "1:5387fccbfbc0e820",
+    "reverse_requests": "1:779bb80d0d62a58c"
+   },
+   "before": {
+    "all": "03b2eab2d489bca7",
+    "reverse_history": "1:f224e6d7df34d76c",
+    "reverse_progress": "1:5387fccbfbc0e820",
+    "reverse_requests": "1:779bb80d0d62a58c"
+   },
+   "changed": [],
+   "is_contract_error": true,
+   "message": "Source is dirty or unknown",
+   "refused": "ContractError"
+  },
+  "record_unknown": {
+   "after": {
+    "all": "03b2eab2d489bca7",
+    "reverse_history": "1:f224e6d7df34d76c",
+    "reverse_progress": "1:5387fccbfbc0e820",
+    "reverse_requests": "1:779bb80d0d62a58c"
+   },
+   "before": {
+    "all": "03b2eab2d489bca7",
+    "reverse_history": "1:f224e6d7df34d76c",
+    "reverse_progress": "1:5387fccbfbc0e820",
+    "reverse_requests": "1:779bb80d0d62a58c"
+   },
+   "changed": [],
+   "is_contract_error": true,
+   "message": "Source is dirty or unknown",
+   "refused": "ContractError"
+  },
+  "status_after_rebaseline_new_source": {
+   "after": {
+    "all": "a60b06acd47c4681",
+    "reverse_history": "2:4e60a454c7f977c0",
+    "reverse_progress": "1:23393aea4673c12e",
+    "reverse_requests": "2:6bc0a472772f5f20"
+   },
+   "before": {
+    "all": "a60b06acd47c4681",
+    "reverse_history": "2:4e60a454c7f977c0",
+    "reverse_progress": "1:23393aea4673c12e",
+    "reverse_requests": "2:6bc0a472772f5f20"
+   },
+   "changed": [],
+   "value": "7c21c0c6b8623ad50d9c755cfd16c48bdfd4b4e0f35b1e918155646408f61785",
+   "view": {
+    "progress": {
+     "at": "2026-09-22T00:00:00.053000+00:00",
+     "generation": 2,
+     "project": "p",
+     "releases": {
+      "1-A": {
+       "artifact_refs": [],
+       "at": "2026-09-22T00:00:00.053000+00:00",
+       "status": "partial"
+      }
+     },
+     "source": {
+      "commit": "cccccccccccccccccccccccccccccccccccccccc",
+      "repository": "source-project",
+      "tree": "bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb"
+     }
+    },
+    "project": "p",
+    "source_state": "unchanged"
+   }
+  },
+  "status_after_rebaseline_old_source": {
+   "after": {
+    "all": "a60b06acd47c4681",
+    "reverse_history": "2:4e60a454c7f977c0",
+    "reverse_progress": "1:23393aea4673c12e",
+    "reverse_requests": "2:6bc0a472772f5f20"
+   },
+   "before": {
+    "all": "a60b06acd47c4681",
+    "reverse_history": "2:4e60a454c7f977c0",
+    "reverse_progress": "1:23393aea4673c12e",
+    "reverse_requests": "2:6bc0a472772f5f20"
+   },
+   "changed": [],
+   "value": "aa7923e202ceb96d5569ed5c7a347a04f22c975f49c9dcc28c6f8d6156c58920",
+   "view": {
+    "progress": {
+     "at": "2026-09-22T00:00:00.053000+00:00",
+     "generation": 2,
+     "project": "p",
+     "releases": {
+      "1-A": {
+       "artifact_refs": [],
+       "at": "2026-09-22T00:00:00.053000+00:00",
+       "status": "partial"
+      }
+     },
+     "source": {
+      "commit": "cccccccccccccccccccccccccccccccccccccccc",
+      "repository": "source-project",
+      "tree": "bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb"
+     }
+    },
+    "project": "p",
+    "source_state": "changed"
+   }
+  },
+  "status_changed_commit": {
+   "after": {
+    "all": "03b2eab2d489bca7",
+    "reverse_history": "1:f224e6d7df34d76c",
+    "reverse_progress": "1:5387fccbfbc0e820",
+    "reverse_requests": "1:779bb80d0d62a58c"
+   },
+   "before": {
+    "all": "03b2eab2d489bca7",
+    "reverse_history": "1:f224e6d7df34d76c",
+    "reverse_progress": "1:5387fccbfbc0e820",
+    "reverse_requests": "1:779bb80d0d62a58c"
+   },
+   "changed": [],
+   "value": "48070c4e7a442ed7b899f566936b350fc22dc9dee55dc71cbe8cee4443cb402f",
+   "view": {
+    "progress": {
+     "at": "2026-09-22T00:00:00.025000+00:00",
+     "generation": 1,
+     "project": "p",
+     "releases": {
+      "1-A": {
+       "artifact_refs": [
+        "sha256:db793d1770390e694894e2018e2bdcddbe7f19a3b135ad5c2f8933e2d92451b9"
+       ],
+       "at": "2026-09-22T00:00:00.025000+00:00",
+       "status": "complete"
+      }
+     },
+     "source": {
+      "commit": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+      "repository": "source-project",
+      "tree": "bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb"
+     }
+    },
+    "project": "p",
+    "source_state": "changed"
+   }
+  },
+  "status_changed_repository": {
+   "after": {
+    "all": "03b2eab2d489bca7",
+    "reverse_history": "1:f224e6d7df34d76c",
+    "reverse_progress": "1:5387fccbfbc0e820",
+    "reverse_requests": "1:779bb80d0d62a58c"
+   },
+   "before": {
+    "all": "03b2eab2d489bca7",
+    "reverse_history": "1:f224e6d7df34d76c",
+    "reverse_progress": "1:5387fccbfbc0e820",
+    "reverse_requests": "1:779bb80d0d62a58c"
+   },
+   "changed": [],
+   "value": "48070c4e7a442ed7b899f566936b350fc22dc9dee55dc71cbe8cee4443cb402f",
+   "view": {
+    "progress": {
+     "at": "2026-09-22T00:00:00.025000+00:00",
+     "generation": 1,
+     "project": "p",
+     "releases": {
+      "1-A": {
+       "artifact_refs": [
+        "sha256:db793d1770390e694894e2018e2bdcddbe7f19a3b135ad5c2f8933e2d92451b9"
+       ],
+       "at": "2026-09-22T00:00:00.025000+00:00",
+       "status": "complete"
+      }
+     },
+     "source": {
+      "commit": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+      "repository": "source-project",
+      "tree": "bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb"
+     }
+    },
+    "project": "p",
+    "source_state": "changed"
+   }
+  },
+  "status_clean_commit_missing": {
+   "after": {
+    "all": "03b2eab2d489bca7",
+    "reverse_history": "1:f224e6d7df34d76c",
+    "reverse_progress": "1:5387fccbfbc0e820",
+    "reverse_requests": "1:779bb80d0d62a58c"
+   },
+   "before": {
+    "all": "03b2eab2d489bca7",
+    "reverse_history": "1:f224e6d7df34d76c",
+    "reverse_progress": "1:5387fccbfbc0e820",
+    "reverse_requests": "1:779bb80d0d62a58c"
+   },
+   "changed": [],
+   "value": "7ac286397758e0f6cf9d2d04d28a1309f7ec2d076ffd012e2c0054932dbd7491",
+   "view": {
+    "progress": {
+     "at": "2026-09-22T00:00:00.025000+00:00",
+     "generation": 1,
+     "project": "p",
+     "releases": {
+      "1-A": {
+       "artifact_refs": [
+        "sha256:db793d1770390e694894e2018e2bdcddbe7f19a3b135ad5c2f8933e2d92451b9"
+       ],
+       "at": "2026-09-22T00:00:00.025000+00:00",
+       "status": "complete"
+      }
+     },
+     "source": {
+      "commit": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+      "repository": "source-project",
+      "tree": "bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb"
+     }
+    },
+    "project": "p",
+    "source_state": "unknown"
+   }
+  },
+  "status_clean_commit_short": {
+   "after": {
+    "all": "03b2eab2d489bca7",
+    "reverse_history": "1:f224e6d7df34d76c",
+    "reverse_progress": "1:5387fccbfbc0e820",
+    "reverse_requests": "1:779bb80d0d62a58c"
+   },
+   "before": {
+    "all": "03b2eab2d489bca7",
+    "reverse_history": "1:f224e6d7df34d76c",
+    "reverse_progress": "1:5387fccbfbc0e820",
+    "reverse_requests": "1:779bb80d0d62a58c"
+   },
+   "changed": [],
+   "value": "7ac286397758e0f6cf9d2d04d28a1309f7ec2d076ffd012e2c0054932dbd7491",
+   "view": {
+    "progress": {
+     "at": "2026-09-22T00:00:00.025000+00:00",
+     "generation": 1,
+     "project": "p",
+     "releases": {
+      "1-A": {
+       "artifact_refs": [
+        "sha256:db793d1770390e694894e2018e2bdcddbe7f19a3b135ad5c2f8933e2d92451b9"
+       ],
+       "at": "2026-09-22T00:00:00.025000+00:00",
+       "status": "complete"
+      }
+     },
+     "source": {
+      "commit": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+      "repository": "source-project",
+      "tree": "bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb"
+     }
+    },
+    "project": "p",
+    "source_state": "unknown"
+   }
+  },
+  "status_clean_commit_upper": {
+   "after": {
+    "all": "03b2eab2d489bca7",
+    "reverse_history": "1:f224e6d7df34d76c",
+    "reverse_progress": "1:5387fccbfbc0e820",
+    "reverse_requests": "1:779bb80d0d62a58c"
+   },
+   "before": {
+    "all": "03b2eab2d489bca7",
+    "reverse_history": "1:f224e6d7df34d76c",
+    "reverse_progress": "1:5387fccbfbc0e820",
+    "reverse_requests": "1:779bb80d0d62a58c"
+   },
+   "changed": [],
+   "value": "7ac286397758e0f6cf9d2d04d28a1309f7ec2d076ffd012e2c0054932dbd7491",
+   "view": {
+    "progress": {
+     "at": "2026-09-22T00:00:00.025000+00:00",
+     "generation": 1,
+     "project": "p",
+     "releases": {
+      "1-A": {
+       "artifact_refs": [
+        "sha256:db793d1770390e694894e2018e2bdcddbe7f19a3b135ad5c2f8933e2d92451b9"
+       ],
+       "at": "2026-09-22T00:00:00.025000+00:00",
+       "status": "complete"
+      }
+     },
+     "source": {
+      "commit": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+      "repository": "source-project",
+      "tree": "bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb"
+     }
+    },
+    "project": "p",
+    "source_state": "unknown"
+   }
+  },
+  "status_clean_extra_keys_ignored": {
+   "after": {
+    "all": "03b2eab2d489bca7",
+    "reverse_history": "1:f224e6d7df34d76c",
+    "reverse_progress": "1:5387fccbfbc0e820",
+    "reverse_requests": "1:779bb80d0d62a58c"
+   },
+   "before": {
+    "all": "03b2eab2d489bca7",
+    "reverse_history": "1:f224e6d7df34d76c",
+    "reverse_progress": "1:5387fccbfbc0e820",
+    "reverse_requests": "1:779bb80d0d62a58c"
+   },
+   "changed": [],
+   "value": "660112dcd143b23e041cba9d564f728cdc92b9ad5775bb6da159b7e4c5ae9870",
+   "view": {
+    "progress": {
+     "at": "2026-09-22T00:00:00.025000+00:00",
+     "generation": 1,
+     "project": "p",
+     "releases": {
+      "1-A": {
+       "artifact_refs": [
+        "sha256:db793d1770390e694894e2018e2bdcddbe7f19a3b135ad5c2f8933e2d92451b9"
+       ],
+       "at": "2026-09-22T00:00:00.025000+00:00",
+       "status": "complete"
+      }
+     },
+     "source": {
+      "commit": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+      "repository": "source-project",
+      "tree": "bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb"
+     }
+    },
+    "project": "p",
+    "source_state": "unchanged"
+   }
+  },
+  "status_clean_mixed_hash_formats": {
+   "after": {
+    "all": "03b2eab2d489bca7",
+    "reverse_history": "1:f224e6d7df34d76c",
+    "reverse_progress": "1:5387fccbfbc0e820",
+    "reverse_requests": "1:779bb80d0d62a58c"
+   },
+   "before": {
+    "all": "03b2eab2d489bca7",
+    "reverse_history": "1:f224e6d7df34d76c",
+    "reverse_progress": "1:5387fccbfbc0e820",
+    "reverse_requests": "1:779bb80d0d62a58c"
+   },
+   "changed": [],
+   "value": "7ac286397758e0f6cf9d2d04d28a1309f7ec2d076ffd012e2c0054932dbd7491",
+   "view": {
+    "progress": {
+     "at": "2026-09-22T00:00:00.025000+00:00",
+     "generation": 1,
+     "project": "p",
+     "releases": {
+      "1-A": {
+       "artifact_refs": [
+        "sha256:db793d1770390e694894e2018e2bdcddbe7f19a3b135ad5c2f8933e2d92451b9"
+       ],
+       "at": "2026-09-22T00:00:00.025000+00:00",
+       "status": "complete"
+      }
+     },
+     "source": {
+      "commit": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+      "repository": "source-project",
+      "tree": "bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb"
+     }
+    },
+    "project": "p",
+    "source_state": "unknown"
+   }
+  },
+  "status_clean_repository_int": {
+   "after": {
+    "all": "03b2eab2d489bca7",
+    "reverse_history": "1:f224e6d7df34d76c",
+    "reverse_progress": "1:5387fccbfbc0e820",
+    "reverse_requests": "1:779bb80d0d62a58c"
+   },
+   "before": {
+    "all": "03b2eab2d489bca7",
+    "reverse_history": "1:f224e6d7df34d76c",
+    "reverse_progress": "1:5387fccbfbc0e820",
+    "reverse_requests": "1:779bb80d0d62a58c"
+   },
+   "changed": [],
+   "value": "7ac286397758e0f6cf9d2d04d28a1309f7ec2d076ffd012e2c0054932dbd7491",
+   "view": {
+    "progress": {
+     "at": "2026-09-22T00:00:00.025000+00:00",
+     "generation": 1,
+     "project": "p",
+     "releases": {
+      "1-A": {
+       "artifact_refs": [
+        "sha256:db793d1770390e694894e2018e2bdcddbe7f19a3b135ad5c2f8933e2d92451b9"
+       ],
+       "at": "2026-09-22T00:00:00.025000+00:00",
+       "status": "complete"
+      }
+     },
+     "source": {
+      "commit": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+      "repository": "source-project",
+      "tree": "bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb"
+     }
+    },
+    "project": "p",
+    "source_state": "unknown"
+   }
+  },
+  "status_clean_sha256_pair": {
+   "after": {
+    "all": "03b2eab2d489bca7",
+    "reverse_history": "1:f224e6d7df34d76c",
+    "reverse_progress": "1:5387fccbfbc0e820",
+    "reverse_requests": "1:779bb80d0d62a58c"
+   },
+   "before": {
+    "all": "03b2eab2d489bca7",
+    "reverse_history": "1:f224e6d7df34d76c",
+    "reverse_progress": "1:5387fccbfbc0e820",
+    "reverse_requests": "1:779bb80d0d62a58c"
+   },
+   "changed": [],
+   "value": "48070c4e7a442ed7b899f566936b350fc22dc9dee55dc71cbe8cee4443cb402f",
+   "view": {
+    "progress": {
+     "at": "2026-09-22T00:00:00.025000+00:00",
+     "generation": 1,
+     "project": "p",
+     "releases": {
+      "1-A": {
+       "artifact_refs": [
+        "sha256:db793d1770390e694894e2018e2bdcddbe7f19a3b135ad5c2f8933e2d92451b9"
+       ],
+       "at": "2026-09-22T00:00:00.025000+00:00",
+       "status": "complete"
+      }
+     },
+     "source": {
+      "commit": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+      "repository": "source-project",
+      "tree": "bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb"
+     }
+    },
+    "project": "p",
+    "source_state": "changed"
+   }
+  },
+  "status_clean_tree_int": {
+   "after": {
+    "all": "03b2eab2d489bca7",
+    "reverse_history": "1:f224e6d7df34d76c",
+    "reverse_progress": "1:5387fccbfbc0e820",
+    "reverse_requests": "1:779bb80d0d62a58c"
+   },
+   "before": {
+    "all": "03b2eab2d489bca7",
+    "reverse_history": "1:f224e6d7df34d76c",
+    "reverse_progress": "1:5387fccbfbc0e820",
+    "reverse_requests": "1:779bb80d0d62a58c"
+   },
+   "changed": [],
+   "value": "7ac286397758e0f6cf9d2d04d28a1309f7ec2d076ffd012e2c0054932dbd7491",
+   "view": {
+    "progress": {
+     "at": "2026-09-22T00:00:00.025000+00:00",
+     "generation": 1,
+     "project": "p",
+     "releases": {
+      "1-A": {
+       "artifact_refs": [
+        "sha256:db793d1770390e694894e2018e2bdcddbe7f19a3b135ad5c2f8933e2d92451b9"
+       ],
+       "at": "2026-09-22T00:00:00.025000+00:00",
+       "status": "complete"
+      }
+     },
+     "source": {
+      "commit": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+      "repository": "source-project",
+      "tree": "bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb"
+     }
+    },
+    "project": "p",
+    "source_state": "unknown"
+   }
+  },
+  "status_clean_tree_trailing_newline": {
+   "after": {
+    "all": "03b2eab2d489bca7",
+    "reverse_history": "1:f224e6d7df34d76c",
+    "reverse_progress": "1:5387fccbfbc0e820",
+    "reverse_requests": "1:779bb80d0d62a58c"
+   },
+   "before": {
+    "all": "03b2eab2d489bca7",
+    "reverse_history": "1:f224e6d7df34d76c",
+    "reverse_progress": "1:5387fccbfbc0e820",
+    "reverse_requests": "1:779bb80d0d62a58c"
+   },
+   "changed": [],
+   "value": "7ac286397758e0f6cf9d2d04d28a1309f7ec2d076ffd012e2c0054932dbd7491",
+   "view": {
+    "progress": {
+     "at": "2026-09-22T00:00:00.025000+00:00",
+     "generation": 1,
+     "project": "p",
+     "releases": {
+      "1-A": {
+       "artifact_refs": [
+        "sha256:db793d1770390e694894e2018e2bdcddbe7f19a3b135ad5c2f8933e2d92451b9"
+       ],
+       "at": "2026-09-22T00:00:00.025000+00:00",
+       "status": "complete"
+      }
+     },
+     "source": {
+      "commit": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+      "repository": "source-project",
+      "tree": "bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb"
+     }
+    },
+    "project": "p",
+    "source_state": "unknown"
+   }
+  },
+  "status_clean_without_repository": {
+   "after": {
+    "all": "03b2eab2d489bca7",
+    "reverse_history": "1:f224e6d7df34d76c",
+    "reverse_progress": "1:5387fccbfbc0e820",
+    "reverse_requests": "1:779bb80d0d62a58c"
+   },
+   "before": {
+    "all": "03b2eab2d489bca7",
+    "reverse_history": "1:f224e6d7df34d76c",
+    "reverse_progress": "1:5387fccbfbc0e820",
+    "reverse_requests": "1:779bb80d0d62a58c"
+   },
+   "changed": [],
+   "value": "7ac286397758e0f6cf9d2d04d28a1309f7ec2d076ffd012e2c0054932dbd7491",
+   "view": {
+    "progress": {
+     "at": "2026-09-22T00:00:00.025000+00:00",
+     "generation": 1,
+     "project": "p",
+     "releases": {
+      "1-A": {
+       "artifact_refs": [
+        "sha256:db793d1770390e694894e2018e2bdcddbe7f19a3b135ad5c2f8933e2d92451b9"
+       ],
+       "at": "2026-09-22T00:00:00.025000+00:00",
+       "status": "complete"
+      }
+     },
+     "source": {
+      "commit": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+      "repository": "source-project",
+      "tree": "bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb"
+     }
+    },
+    "project": "p",
+    "source_state": "unknown"
+   }
+  },
+  "status_dirty": {
+   "after": {
+    "all": "03b2eab2d489bca7",
+    "reverse_history": "1:f224e6d7df34d76c",
+    "reverse_progress": "1:5387fccbfbc0e820",
+    "reverse_requests": "1:779bb80d0d62a58c"
+   },
+   "before": {
+    "all": "03b2eab2d489bca7",
+    "reverse_history": "1:f224e6d7df34d76c",
+    "reverse_progress": "1:5387fccbfbc0e820",
+    "reverse_requests": "1:779bb80d0d62a58c"
+   },
+   "changed": [],
+   "value": "8b0c1fa98f02794cd8716da21fef3033466f6d0ccfc2f336662e7a440a0d8b29",
+   "view": {
+    "progress": {
+     "at": "2026-09-22T00:00:00.025000+00:00",
+     "generation": 1,
+     "project": "p",
+     "releases": {
+      "1-A": {
+       "artifact_refs": [
+        "sha256:db793d1770390e694894e2018e2bdcddbe7f19a3b135ad5c2f8933e2d92451b9"
+       ],
+       "at": "2026-09-22T00:00:00.025000+00:00",
+       "status": "complete"
+      }
+     },
+     "source": {
+      "commit": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+      "repository": "source-project",
+      "tree": "bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb"
+     }
+    },
+    "project": "p",
+    "source_state": "dirty"
+   }
+  },
+  "status_not_a_dict_list": {
+   "after": {
+    "all": "03b2eab2d489bca7",
+    "reverse_history": "1:f224e6d7df34d76c",
+    "reverse_progress": "1:5387fccbfbc0e820",
+    "reverse_requests": "1:779bb80d0d62a58c"
+   },
+   "before": {
+    "all": "03b2eab2d489bca7",
+    "reverse_history": "1:f224e6d7df34d76c",
+    "reverse_progress": "1:5387fccbfbc0e820",
+    "reverse_requests": "1:779bb80d0d62a58c"
+   },
+   "changed": [],
+   "value": "7ac286397758e0f6cf9d2d04d28a1309f7ec2d076ffd012e2c0054932dbd7491",
+   "view": {
+    "progress": {
+     "at": "2026-09-22T00:00:00.025000+00:00",
+     "generation": 1,
+     "project": "p",
+     "releases": {
+      "1-A": {
+       "artifact_refs": [
+        "sha256:db793d1770390e694894e2018e2bdcddbe7f19a3b135ad5c2f8933e2d92451b9"
+       ],
+       "at": "2026-09-22T00:00:00.025000+00:00",
+       "status": "complete"
+      }
+     },
+     "source": {
+      "commit": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+      "repository": "source-project",
+      "tree": "bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb"
+     }
+    },
+    "project": "p",
+    "source_state": "unknown"
+   }
+  },
+  "status_not_a_dict_none": {
+   "after": {
+    "all": "03b2eab2d489bca7",
+    "reverse_history": "1:f224e6d7df34d76c",
+    "reverse_progress": "1:5387fccbfbc0e820",
+    "reverse_requests": "1:779bb80d0d62a58c"
+   },
+   "before": {
+    "all": "03b2eab2d489bca7",
+    "reverse_history": "1:f224e6d7df34d76c",
+    "reverse_progress": "1:5387fccbfbc0e820",
+    "reverse_requests": "1:779bb80d0d62a58c"
+   },
+   "changed": [],
+   "value": "7ac286397758e0f6cf9d2d04d28a1309f7ec2d076ffd012e2c0054932dbd7491",
+   "view": {
+    "progress": {
+     "at": "2026-09-22T00:00:00.025000+00:00",
+     "generation": 1,
+     "project": "p",
+     "releases": {
+      "1-A": {
+       "artifact_refs": [
+        "sha256:db793d1770390e694894e2018e2bdcddbe7f19a3b135ad5c2f8933e2d92451b9"
+       ],
+       "at": "2026-09-22T00:00:00.025000+00:00",
+       "status": "complete"
+      }
+     },
+     "source": {
+      "commit": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+      "repository": "source-project",
+      "tree": "bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb"
+     }
+    },
+    "project": "p",
+    "source_state": "unknown"
+   }
+  },
+  "status_not_a_dict_str": {
+   "after": {
+    "all": "03b2eab2d489bca7",
+    "reverse_history": "1:f224e6d7df34d76c",
+    "reverse_progress": "1:5387fccbfbc0e820",
+    "reverse_requests": "1:779bb80d0d62a58c"
+   },
+   "before": {
+    "all": "03b2eab2d489bca7",
+    "reverse_history": "1:f224e6d7df34d76c",
+    "reverse_progress": "1:5387fccbfbc0e820",
+    "reverse_requests": "1:779bb80d0d62a58c"
+   },
+   "changed": [],
+   "value": "7ac286397758e0f6cf9d2d04d28a1309f7ec2d076ffd012e2c0054932dbd7491",
+   "view": {
+    "progress": {
+     "at": "2026-09-22T00:00:00.025000+00:00",
+     "generation": 1,
+     "project": "p",
+     "releases": {
+      "1-A": {
+       "artifact_refs": [
+        "sha256:db793d1770390e694894e2018e2bdcddbe7f19a3b135ad5c2f8933e2d92451b9"
+       ],
+       "at": "2026-09-22T00:00:00.025000+00:00",
+       "status": "complete"
+      }
+     },
+     "source": {
+      "commit": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+      "repository": "source-project",
+      "tree": "bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb"
+     }
+    },
+    "project": "p",
+    "source_state": "unknown"
+   }
+  },
+  "status_not_started": {
+   "after": {
+    "all": "4f53cda18c2baa0c",
+    "reverse_history": "0:4f53cda18c2baa0c",
+    "reverse_progress": "0:4f53cda18c2baa0c",
+    "reverse_requests": "0:4f53cda18c2baa0c"
+   },
+   "before": {
+    "all": "4f53cda18c2baa0c",
+    "reverse_history": "0:4f53cda18c2baa0c",
+    "reverse_progress": "0:4f53cda18c2baa0c",
+    "reverse_requests": "0:4f53cda18c2baa0c"
+   },
+   "changed": [],
+   "value": "e0326b0f991079e59906372201eba42ada95617a9ebb17fccffd0a04543244e0",
+   "view": {
+    "progress": null,
+    "project": "p",
+    "source_state": "not_started"
+   }
+  },
+  "status_not_started_dirty": {
+   "after": {
+    "all": "4f53cda18c2baa0c",
+    "reverse_history": "0:4f53cda18c2baa0c",
+    "reverse_progress": "0:4f53cda18c2baa0c",
+    "reverse_requests": "0:4f53cda18c2baa0c"
+   },
+   "before": {
+    "all": "4f53cda18c2baa0c",
+    "reverse_history": "0:4f53cda18c2baa0c",
+    "reverse_progress": "0:4f53cda18c2baa0c",
+    "reverse_requests": "0:4f53cda18c2baa0c"
+   },
+   "changed": [],
+   "value": "e7e38888b335541a03e8e6bc77e416d289ae2f39cbdc50af80e0a70060e54cde",
+   "view": {
+    "progress": null,
+    "project": "p",
+    "source_state": "dirty"
+   }
+  },
+  "status_other_project": {
+   "after": {
+    "all": "03b2eab2d489bca7",
+    "reverse_history": "1:f224e6d7df34d76c",
+    "reverse_progress": "1:5387fccbfbc0e820",
+    "reverse_requests": "1:779bb80d0d62a58c"
+   },
+   "before": {
+    "all": "03b2eab2d489bca7",
+    "reverse_history": "1:f224e6d7df34d76c",
+    "reverse_progress": "1:5387fccbfbc0e820",
+    "reverse_requests": "1:779bb80d0d62a58c"
+   },
+   "changed": [],
+   "value": "223ac16aa777f271bd8af4436db1915ee9197bc88467b8030469ceef97826f6d",
+   "view": {
+    "progress": null,
+    "project": "other",
+    "source_state": "not_started"
+   }
+  },
+  "status_status_missing": {
+   "after": {
+    "all": "03b2eab2d489bca7",
+    "reverse_history": "1:f224e6d7df34d76c",
+    "reverse_progress": "1:5387fccbfbc0e820",
+    "reverse_requests": "1:779bb80d0d62a58c"
+   },
+   "before": {
+    "all": "03b2eab2d489bca7",
+    "reverse_history": "1:f224e6d7df34d76c",
+    "reverse_progress": "1:5387fccbfbc0e820",
+    "reverse_requests": "1:779bb80d0d62a58c"
+   },
+   "changed": [],
+   "value": "7ac286397758e0f6cf9d2d04d28a1309f7ec2d076ffd012e2c0054932dbd7491",
+   "view": {
+    "progress": {
+     "at": "2026-09-22T00:00:00.025000+00:00",
+     "generation": 1,
+     "project": "p",
+     "releases": {
+      "1-A": {
+       "artifact_refs": [
+        "sha256:db793d1770390e694894e2018e2bdcddbe7f19a3b135ad5c2f8933e2d92451b9"
+       ],
+       "at": "2026-09-22T00:00:00.025000+00:00",
+       "status": "complete"
+      }
+     },
+     "source": {
+      "commit": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+      "repository": "source-project",
+      "tree": "bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb"
+     }
+    },
+    "project": "p",
+    "source_state": "unknown"
+   }
+  },
+  "status_status_none": {
+   "after": {
+    "all": "03b2eab2d489bca7",
+    "reverse_history": "1:f224e6d7df34d76c",
+    "reverse_progress": "1:5387fccbfbc0e820",
+    "reverse_requests": "1:779bb80d0d62a58c"
+   },
+   "before": {
+    "all": "03b2eab2d489bca7",
+    "reverse_history": "1:f224e6d7df34d76c",
+    "reverse_progress": "1:5387fccbfbc0e820",
+    "reverse_requests": "1:779bb80d0d62a58c"
+   },
+   "changed": [],
+   "value": "7ac286397758e0f6cf9d2d04d28a1309f7ec2d076ffd012e2c0054932dbd7491",
+   "view": {
+    "progress": {
+     "at": "2026-09-22T00:00:00.025000+00:00",
+     "generation": 1,
+     "project": "p",
+     "releases": {
+      "1-A": {
+       "artifact_refs": [
+        "sha256:db793d1770390e694894e2018e2bdcddbe7f19a3b135ad5c2f8933e2d92451b9"
+       ],
+       "at": "2026-09-22T00:00:00.025000+00:00",
+       "status": "complete"
+      }
+     },
+     "source": {
+      "commit": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+      "repository": "source-project",
+      "tree": "bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb"
+     }
+    },
+    "project": "p",
+    "source_state": "unknown"
+   }
+  },
+  "status_unchanged": {
+   "after": {
+    "all": "03b2eab2d489bca7",
+    "reverse_history": "1:f224e6d7df34d76c",
+    "reverse_progress": "1:5387fccbfbc0e820",
+    "reverse_requests": "1:779bb80d0d62a58c"
+   },
+   "before": {
+    "all": "03b2eab2d489bca7",
+    "reverse_history": "1:f224e6d7df34d76c",
+    "reverse_progress": "1:5387fccbfbc0e820",
+    "reverse_requests": "1:779bb80d0d62a58c"
+   },
+   "changed": [],
+   "value": "660112dcd143b23e041cba9d564f728cdc92b9ad5775bb6da159b7e4c5ae9870",
+   "view": {
+    "progress": {
+     "at": "2026-09-22T00:00:00.025000+00:00",
+     "generation": 1,
+     "project": "p",
+     "releases": {
+      "1-A": {
+       "artifact_refs": [
+        "sha256:db793d1770390e694894e2018e2bdcddbe7f19a3b135ad5c2f8933e2d92451b9"
+       ],
+       "at": "2026-09-22T00:00:00.025000+00:00",
+       "status": "complete"
+      }
+     },
+     "source": {
+      "commit": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+      "repository": "source-project",
+      "tree": "bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb"
+     }
+    },
+    "project": "p",
+    "source_state": "unchanged"
+   }
+  },
+  "status_unknown": {
+   "after": {
+    "all": "03b2eab2d489bca7",
+    "reverse_history": "1:f224e6d7df34d76c",
+    "reverse_progress": "1:5387fccbfbc0e820",
+    "reverse_requests": "1:779bb80d0d62a58c"
+   },
+   "before": {
+    "all": "03b2eab2d489bca7",
+    "reverse_history": "1:f224e6d7df34d76c",
+    "reverse_progress": "1:5387fccbfbc0e820",
+    "reverse_requests": "1:779bb80d0d62a58c"
+   },
+   "changed": [],
+   "value": "7ac286397758e0f6cf9d2d04d28a1309f7ec2d076ffd012e2c0054932dbd7491",
+   "view": {
+    "progress": {
+     "at": "2026-09-22T00:00:00.025000+00:00",
+     "generation": 1,
+     "project": "p",
+     "releases": {
+      "1-A": {
+       "artifact_refs": [
+        "sha256:db793d1770390e694894e2018e2bdcddbe7f19a3b135ad5c2f8933e2d92451b9"
+       ],
+       "at": "2026-09-22T00:00:00.025000+00:00",
+       "status": "complete"
+      }
+     },
+     "source": {
+      "commit": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+      "repository": "source-project",
+      "tree": "bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb"
+     }
+    },
+    "project": "p",
+    "source_state": "unknown"
+   }
+  },
+  "status_weird_status": {
+   "after": {
+    "all": "03b2eab2d489bca7",
+    "reverse_history": "1:f224e6d7df34d76c",
+    "reverse_progress": "1:5387fccbfbc0e820",
+    "reverse_requests": "1:779bb80d0d62a58c"
+   },
+   "before": {
+    "all": "03b2eab2d489bca7",
+    "reverse_history": "1:f224e6d7df34d76c",
+    "reverse_progress": "1:5387fccbfbc0e820",
+    "reverse_requests": "1:779bb80d0d62a58c"
+   },
+   "changed": [],
+   "value": "7ac286397758e0f6cf9d2d04d28a1309f7ec2d076ffd012e2c0054932dbd7491",
+   "view": {
+    "progress": {
+     "at": "2026-09-22T00:00:00.025000+00:00",
+     "generation": 1,
+     "project": "p",
+     "releases": {
+      "1-A": {
+       "artifact_refs": [
+        "sha256:db793d1770390e694894e2018e2bdcddbe7f19a3b135ad5c2f8933e2d92451b9"
+       ],
+       "at": "2026-09-22T00:00:00.025000+00:00",
+       "status": "complete"
+      }
+     },
+     "source": {
+      "commit": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+      "repository": "source-project",
+      "tree": "bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb"
+     }
+    },
+    "project": "p",
+    "source_state": "unknown"
+   }
+  }
+ },
+ "p4_test_stage_order_and_completed_stage_immutability": {
+  "downgrade_completed": {
+   "after": {
+    "all": "1364e2f8bed18553",
+    "reverse_history": "1:40119d88f9bb0f8f",
+    "reverse_progress": "1:8b6f5947ee8e3239",
+    "reverse_requests": "1:21432ab2dc95c4fb"
+   },
+   "before": {
+    "all": "1364e2f8bed18553",
+    "reverse_history": "1:40119d88f9bb0f8f",
+    "reverse_progress": "1:8b6f5947ee8e3239",
+    "reverse_requests": "1:21432ab2dc95c4fb"
+   },
+   "changed": [],
+   "is_contract_error": true,
+   "message": "Completed stage is immutable",
+   "refused": "ContractError"
+  },
+  "final_stage_over_partial": {
+   "after": {
+    "all": "ccfd6bb137530515",
+    "reverse_history": "5:903202cb8c509f5b",
+    "reverse_progress": "1:6ad8c283cae97b65",
+    "reverse_requests": "5:83cbcf4309779605"
+   },
+   "before": {
+    "all": "ccfd6bb137530515",
+    "reverse_history": "5:903202cb8c509f5b",
+    "reverse_progress": "1:6ad8c283cae97b65",
+    "reverse_requests": "5:83cbcf4309779605"
+   },
+   "changed": [],
+   "is_contract_error": true,
+   "message": "Previous reverse stage is incomplete",
+   "refused": "ContractError"
+  },
+  "first": {
+   "after": {
+    "all": "1364e2f8bed18553",
+    "reverse_history": "1:40119d88f9bb0f8f",
+    "reverse_progress": "1:8b6f5947ee8e3239",
+    "reverse_requests": "1:21432ab2dc95c4fb"
+   },
+   "before": {
+    "all": "4f53cda18c2baa0c",
+    "reverse_history": "0:4f53cda18c2baa0c",
+    "reverse_progress": "0:4f53cda18c2baa0c",
+    "reverse_requests": "0:4f53cda18c2baa0c"
+   },
+   "changed": [
+    "reverse_requests",
+    "reverse_progress",
+    "reverse_history",
+    "all"
+   ],
+   "value": "119f1e6551e812ae3d43216e2711d0c956930a30c65b7352fec7304da4f1ad3e",
+   "view": {
+    "generation": 1,
+    "project": "p",
+    "releases": {
+     "1-A": [
+      "complete",
+      1
+     ]
+    },
+    "source": {
+     "commit": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+     "repository": "source-project",
+     "tree": "bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb"
+    }
+   }
+  },
+  "history": [
+   1,
+   2,
+   3,
+   4,
+   5
+  ],
+  "partial_second_stage": {
+   "after": {
+    "all": "583fdac28c80a9b7",
+    "reverse_history": "2:350d14a7256abfba",
+    "reverse_progress": "1:81508c4570de3098",
+    "reverse_requests": "2:32812ebb1ea7e8ec"
+   },
+   "before": {
+    "all": "1364e2f8bed18553",
+    "reverse_history": "1:40119d88f9bb0f8f",
+    "reverse_progress": "1:8b6f5947ee8e3239",
+    "reverse_requests": "1:21432ab2dc95c4fb"
+   },
+   "changed": [
+    "reverse_requests",
+    "reverse_progress",
+    "reverse_history",
+    "all"
+   ],
+   "value": "e86253b8cc17df8f214ba24dc4a4d80627f83a6a6756b9df8942c7c57ce3b2ea",
+   "view": {
+    "generation": 2,
+    "project": "p",
+    "releases": {
+     "1-A": [
+      "complete",
+      1
+     ],
+     "1-B": [
+      "partial",
+      "no-refs"
+     ]
+    },
+    "source": {
+     "commit": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+     "repository": "source-project",
+     "tree": "bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb"
+    }
+   }
+  },
+  "partial_to_complete": {
+   "after": {
+    "all": "9f16f4631c52914d",
+    "reverse_history": "3:621d888429dc787c",
+    "reverse_progress": "1:cfe35eb9929a95d7",
+    "reverse_requests": "3:6e6f4ac888910755"
+   },
+   "before": {
+    "all": "583fdac28c80a9b7",
+    "reverse_history": "2:350d14a7256abfba",
+    "reverse_progress": "1:81508c4570de3098",
+    "reverse_requests": "2:32812ebb1ea7e8ec"
+   },
+   "changed": [
+    "reverse_requests",
+    "reverse_progress",
+    "reverse_history",
+    "all"
+   ],
+   "value": "6ce40c0064df568071d149120489f63e1a910ed4571ec83ca4e2c3c026ecc4aa",
+   "view": {
+    "generation": 3,
+    "project": "p",
+    "releases": {
+     "1-A": [
+      "complete",
+      1
+     ],
+     "1-B": [
+      "complete",
+      1
+     ]
+    },
+    "source": {
+     "commit": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+     "repository": "source-project",
+     "tree": "bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb"
+    }
+   }
+  },
+  "pending_after_complete": {
+   "after": {
+    "all": "9f16f4631c52914d",
+    "reverse_history": "3:621d888429dc787c",
+    "reverse_progress": "1:cfe35eb9929a95d7",
+    "reverse_requests": "3:6e6f4ac888910755"
+   },
+   "before": {
+    "all": "9f16f4631c52914d",
+    "reverse_history": "3:621d888429dc787c",
+    "reverse_progress": "1:cfe35eb9929a95d7",
+    "reverse_requests": "3:6e6f4ac888910755"
+   },
+   "changed": [],
+   "is_contract_error": true,
+   "message": "Completed stage is immutable",
+   "refused": "ContractError"
+  },
+  "progress": {
+   "generation": 5,
+   "project": "p",
+   "releases": {
+    "1-A": [
+     "complete",
+     1
+    ],
+    "1-B": [
+     "complete",
+     1
+    ],
+    "1-C": [
+     "partial",
+     "no-refs"
+    ]
+   },
+   "source": {
+    "commit": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+    "repository": "source-project",
+    "tree": "bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb"
+   }
+  },
+  "rewrite_completed": {
+   "after": {
+    "all": "1364e2f8bed18553",
+    "reverse_history": "1:40119d88f9bb0f8f",
+    "reverse_progress": "1:8b6f5947ee8e3239",
+    "reverse_requests": "1:21432ab2dc95c4fb"
+   },
+   "before": {
+    "all": "1364e2f8bed18553",
+    "reverse_history": "1:40119d88f9bb0f8f",
+    "reverse_progress": "1:8b6f5947ee8e3239",
+    "reverse_requests": "1:21432ab2dc95c4fb"
+   },
+   "changed": [],
+   "is_contract_error": true,
+   "message": "Completed stage is immutable",
+   "refused": "ContractError"
+  },
+  "skip_ahead": {
+   "after": {
+    "all": "4f53cda18c2baa0c",
+    "reverse_history": "0:4f53cda18c2baa0c",
+    "reverse_progress": "0:4f53cda18c2baa0c",
+    "reverse_requests": "0:4f53cda18c2baa0c"
+   },
+   "before": {
+    "all": "4f53cda18c2baa0c",
+    "reverse_history": "0:4f53cda18c2baa0c",
+    "reverse_progress": "0:4f53cda18c2baa0c",
+    "reverse_requests": "0:4f53cda18c2baa0c"
+   },
+   "changed": [],
+   "is_contract_error": true,
+   "message": "Previous reverse stage is incomplete",
+   "refused": "ContractError"
+  },
+  "skip_to_last": {
+   "after": {
+    "all": "4f53cda18c2baa0c",
+    "reverse_history": "0:4f53cda18c2baa0c",
+    "reverse_progress": "0:4f53cda18c2baa0c",
+    "reverse_requests": "0:4f53cda18c2baa0c"
+   },
+   "before": {
+    "all": "4f53cda18c2baa0c",
+    "reverse_history": "0:4f53cda18c2baa0c",
+    "reverse_progress": "0:4f53cda18c2baa0c",
+    "reverse_requests": "0:4f53cda18c2baa0c"
+   },
+   "changed": [],
+   "is_contract_error": true,
+   "message": "Previous reverse stage is incomplete",
+   "refused": "ContractError"
+  },
+  "third": {
+   "after": {
+    "all": "e5fad620e3e9b2d3",
+    "reverse_history": "4:f2e3143275184bf6",
+    "reverse_progress": "1:67f99c3b59b448a2",
+    "reverse_requests": "4:c33d29f21c285a2c"
+   },
+   "before": {
+    "all": "9f16f4631c52914d",
+    "reverse_history": "3:621d888429dc787c",
+    "reverse_progress": "1:cfe35eb9929a95d7",
+    "reverse_requests": "3:6e6f4ac888910755"
+   },
+   "changed": [
+    "reverse_requests",
+    "reverse_progress",
+    "reverse_history",
+    "all"
+   ],
+   "value": "bdfb0a268fd3f106de506ff61c0ac33b2f97500c60e51820966d5b61726ea827",
+   "view": {
+    "generation": 4,
+    "project": "p",
+    "releases": {
+     "1-A": [
+      "complete",
+      1
+     ],
+     "1-B": [
+      "complete",
+      1
+     ],
+     "1-C": [
+      "pending",
+      "no-refs"
+     ]
+    },
+    "source": {
+     "commit": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+     "repository": "source-project",
+     "tree": "bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb"
+    }
+   }
+  },
+  "third_over_a_partial_predecessor": {
+   "after": {
+    "all": "583fdac28c80a9b7",
+    "reverse_history": "2:350d14a7256abfba",
+    "reverse_progress": "1:81508c4570de3098",
+    "reverse_requests": "2:32812ebb1ea7e8ec"
+   },
+   "before": {
+    "all": "583fdac28c80a9b7",
+    "reverse_history": "2:350d14a7256abfba",
+    "reverse_progress": "1:81508c4570de3098",
+    "reverse_requests": "2:32812ebb1ea7e8ec"
+   },
+   "changed": [],
+   "is_contract_error": true,
+   "message": "Previous reverse stage is incomplete",
+   "refused": "ContractError"
+  },
+  "third_pending_to_partial": {
+   "after": {
+    "all": "ccfd6bb137530515",
+    "reverse_history": "5:903202cb8c509f5b",
+    "reverse_progress": "1:6ad8c283cae97b65",
+    "reverse_requests": "5:83cbcf4309779605"
+   },
+   "before": {
+    "all": "e5fad620e3e9b2d3",
+    "reverse_history": "4:f2e3143275184bf6",
+    "reverse_progress": "1:67f99c3b59b448a2",
+    "reverse_requests": "4:c33d29f21c285a2c"
+   },
+   "changed": [
+    "reverse_requests",
+    "reverse_progress",
+    "reverse_history",
+    "all"
+   ],
+   "value": "893a8ba7c06177cbecce2cd51e11e714954087064ce881ba1b953503fb82da19",
+   "view": {
+    "generation": 5,
+    "project": "p",
+    "releases": {
+     "1-A": [
+      "complete",
+      1
+     ],
+     "1-B": [
+      "complete",
+      1
+     ],
+     "1-C": [
+      "partial",
+      "no-refs"
+     ]
+    },
+    "source": {
+     "commit": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+     "repository": "source-project",
+     "tree": "bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb"
+    }
+   }
+  }
+ },
+ "p5_predecessor_evidence": {
+  "metadata_absent": {
+   "after": {
+    "all": "75a13ca5fdda48c9",
+    "reverse_history": "1:89134aa008de9908",
+    "reverse_progress": "1:eed2ef50c201cb21",
+    "reverse_requests": "1:d227fc445abfa3fe"
+   },
+   "before": {
+    "all": "75a13ca5fdda48c9",
+    "reverse_history": "1:89134aa008de9908",
+    "reverse_progress": "1:eed2ef50c201cb21",
+    "reverse_requests": "1:d227fc445abfa3fe"
+   },
+   "cause": "FileNotFoundError",
+   "changed": [],
+   "is_contract_error": true,
+   "message": "Artifact metadata unavailable or invalid",
+   "refused": "ContractError"
+  },
+  "metadata_bool_bytes": {
+   "after": {
+    "all": "30ebcfbbdc082684",
+    "reverse_history": "1:00972e48e975813f",
+    "reverse_progress": "1:d74c86930de96a1b",
+    "reverse_requests": "1:13f0a55f92c2a0c5"
+   },
+   "before": {
+    "all": "30ebcfbbdc082684",
+    "reverse_history": "1:00972e48e975813f",
+    "reverse_progress": "1:d74c86930de96a1b",
+    "reverse_requests": "1:13f0a55f92c2a0c5"
+   },
+   "changed": [],
+   "is_contract_error": true,
+   "message": "Artifact metadata byte count mismatch",
+   "refused": "ContractError"
+  },
+  "metadata_list": {
+   "after": {
+    "all": "6d33433610c53be7",
+    "reverse_history": "1:f863f34867b8ea0f",
+    "reverse_progress": "1:f19f5f4d2a59f491",
+    "reverse_requests": "1:b5412fedf85977fb"
+   },
+   "before": {
+    "all": "6d33433610c53be7",
+    "reverse_history": "1:f863f34867b8ea0f",
+    "reverse_progress": "1:f19f5f4d2a59f491",
+    "reverse_requests": "1:b5412fedf85977fb"
+   },
+   "changed": [],
+   "is_contract_error": true,
+   "message": "Artifact metadata must be an object",
+   "refused": "ContractError"
+  },
+  "metadata_negative_bytes": {
+   "after": {
+    "all": "0a64e5fa43fa6cb1",
+    "reverse_history": "1:4b88fe12a2ceecc3",
+    "reverse_progress": "1:fcf37e1d287cd7c8",
+    "reverse_requests": "1:14899f5397fc2894"
+   },
+   "before": {
+    "all": "0a64e5fa43fa6cb1",
+    "reverse_history": "1:4b88fe12a2ceecc3",
+    "reverse_progress": "1:fcf37e1d287cd7c8",
+    "reverse_requests": "1:14899f5397fc2894"
+   },
+   "changed": [],
+   "is_contract_error": true,
+   "message": "Artifact metadata byte count mismatch",
+   "refused": "ContractError"
+  },
+  "metadata_not_json": {
+   "after": {
+    "all": "27e74ed27517dba8",
+    "reverse_history": "1:785c1926c64196c3",
+    "reverse_progress": "1:e7fc5ab2aedcbab6",
+    "reverse_requests": "1:e300d36a2976e5f9"
+   },
+   "before": {
+    "all": "27e74ed27517dba8",
+    "reverse_history": "1:785c1926c64196c3",
+    "reverse_progress": "1:e7fc5ab2aedcbab6",
+    "reverse_requests": "1:e300d36a2976e5f9"
+   },
+   "cause": "JSONDecodeError",
+   "changed": [],
+   "is_contract_error": true,
+   "message": "Artifact metadata unavailable or invalid",
+   "refused": "ContractError"
+  },
+  "metadata_wrong_bytes": {
+   "after": {
+    "all": "9d9819ecce4ef061",
+    "reverse_history": "1:ddeed8410304d535",
+    "reverse_progress": "1:c64efa79b9b032e2",
+    "reverse_requests": "1:16a1b46cc46fe90d"
+   },
+   "before": {
+    "all": "9d9819ecce4ef061",
+    "reverse_history": "1:ddeed8410304d535",
+    "reverse_progress": "1:c64efa79b9b032e2",
+    "reverse_requests": "1:16a1b46cc46fe90d"
+   },
+   "changed": [],
+   "is_contract_error": true,
+   "message": "Artifact metadata byte count mismatch",
+   "refused": "ContractError"
+  },
+  "metadata_wrong_ref": {
+   "after": {
+    "all": "574f33c9f14edfa3",
+    "reverse_history": "1:00e19ab854c02554",
+    "reverse_progress": "1:ea204a5a25a04f29",
+    "reverse_requests": "1:d5e3fff4e0571eb9"
+   },
+   "before": {
+    "all": "574f33c9f14edfa3",
+    "reverse_history": "1:00e19ab854c02554",
+    "reverse_progress": "1:ea204a5a25a04f29",
+    "reverse_requests": "1:d5e3fff4e0571eb9"
+   },
+   "changed": [],
+   "is_contract_error": true,
+   "message": "Artifact metadata reference mismatch",
+   "refused": "ContractError"
+  },
+  "missing_first_stage_replay_of_the_same_request": {
+   "after": {
+    "all": "1105070d8f759914",
+    "reverse_history": "1:35ed72ac56604733",
+    "reverse_progress": "1:4ad49508c65206d2",
+    "reverse_requests": "1:17d9a64d9ebedcaf"
+   },
+   "before": {
+    "all": "1105070d8f759914",
+    "reverse_history": "1:35ed72ac56604733",
+    "reverse_progress": "1:4ad49508c65206d2",
+    "reverse_requests": "1:17d9a64d9ebedcaf"
+   },
+   "changed": [],
+   "is_contract_error": false,
+   "refused": "FileNotFoundError"
+  },
+  "missing_predecessor": {
+   "after": {
+    "all": "1105070d8f759914",
+    "reverse_history": "1:35ed72ac56604733",
+    "reverse_progress": "1:4ad49508c65206d2",
+    "reverse_requests": "1:17d9a64d9ebedcaf"
+   },
+   "before": {
+    "all": "1105070d8f759914",
+    "reverse_history": "1:35ed72ac56604733",
+    "reverse_progress": "1:4ad49508c65206d2",
+    "reverse_requests": "1:17d9a64d9ebedcaf"
+   },
+   "changed": [],
+   "is_contract_error": false,
+   "refused": "FileNotFoundError"
+  },
+  "modified_own_reference": {
+   "after": {
+    "all": "3093814518d9decf",
+    "reverse_history": "1:c6e163b9dc1d5c49",
+    "reverse_progress": "1:1989a297e9c2c95d",
+    "reverse_requests": "1:bffefd1ce1872e7c"
+   },
+   "before": {
+    "all": "3093814518d9decf",
+    "reverse_history": "1:c6e163b9dc1d5c49",
+    "reverse_progress": "1:1989a297e9c2c95d",
+    "reverse_requests": "1:bffefd1ce1872e7c"
+   },
+   "changed": [],
+   "is_contract_error": true,
+   "message": "Artifact modified",
+   "refused": "ContractError"
+  },
+  "modified_predecessor": {
+   "after": {
+    "all": "3093814518d9decf",
+    "reverse_history": "1:c6e163b9dc1d5c49",
+    "reverse_progress": "1:1989a297e9c2c95d",
+    "reverse_requests": "1:bffefd1ce1872e7c"
+   },
+   "before": {
+    "all": "3093814518d9decf",
+    "reverse_history": "1:c6e163b9dc1d5c49",
+    "reverse_progress": "1:1989a297e9c2c95d",
+    "reverse_requests": "1:bffefd1ce1872e7c"
+   },
+   "changed": [],
+   "is_contract_error": true,
+   "message": "Artifact modified",
+   "refused": "ContractError"
+  },
+  "own_reference_missing_checked_before_the_transaction": {
+   "after": {
+    "all": "4f53cda18c2baa0c",
+    "reverse_history": "0:4f53cda18c2baa0c",
+    "reverse_progress": "0:4f53cda18c2baa0c",
+    "reverse_requests": "0:4f53cda18c2baa0c"
+   },
+   "before": {
+    "all": "4f53cda18c2baa0c",
+    "reverse_history": "0:4f53cda18c2baa0c",
+    "reverse_progress": "0:4f53cda18c2baa0c",
+    "reverse_requests": "0:4f53cda18c2baa0c"
+   },
+   "changed": [],
+   "is_contract_error": false,
+   "refused": "FileNotFoundError"
+  },
+  "partial_with_a_retained_artifact_is_checked": {
+   "after": {
+    "all": "974fdf5d4981f9a3",
+    "reverse_history": "1:4d2e058f499de614",
+    "reverse_progress": "1:7f52404f394699e5",
+    "reverse_requests": "1:16953414fec31eb4"
+   },
+   "before": {
+    "all": "4f53cda18c2baa0c",
+    "reverse_history": "0:4f53cda18c2baa0c",
+    "reverse_progress": "0:4f53cda18c2baa0c",
+    "reverse_requests": "0:4f53cda18c2baa0c"
+   },
+   "changed": [
+    "reverse_requests",
+    "reverse_progress",
+    "reverse_history",
+    "all"
+   ],
+   "value": "26bd5a76e1656881f480b5db8425839d7790d6b71b6ff4276229c060643e96e1",
+   "view": {
+    "generation": 1,
+    "project": "p",
+    "releases": {
+     "1-A": [
+      "partial",
+      1
+     ]
+    },
+    "source": {
+     "commit": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+     "repository": "source-project",
+     "tree": "bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb"
+    }
+   }
+  },
+  "progress_survives": 1,
+  "utf8_artifact_is_accepted": {
+   "after": {
+    "all": "c7f04a43e7ddd0e3",
+    "reverse_history": "1:f21447c61c2b0591",
+    "reverse_progress": "1:be462bdeb5afc783",
+    "reverse_requests": "1:a9ba7057f6515fb9"
+   },
+   "before": {
+    "all": "4f53cda18c2baa0c",
+    "reverse_history": "0:4f53cda18c2baa0c",
+    "reverse_progress": "0:4f53cda18c2baa0c",
+    "reverse_requests": "0:4f53cda18c2baa0c"
+   },
+   "changed": [
+    "reverse_requests",
+    "reverse_progress",
+    "reverse_history",
+    "all"
+   ],
+   "value": "53de44c2a90b6e4f150d7fe51f24d86e1999aa14271dec768e66180865e40549",
+   "view": {
+    "generation": 1,
+    "project": "p",
+    "releases": {
+     "1-A": [
+      "complete",
+      1
+     ]
+    },
+    "source": {
+     "commit": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+     "repository": "source-project",
+     "tree": "bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb"
+    }
+   }
+  },
+  "utf8_bytes_are_counted": 6
+ },
+ "p6_argument_requires": {
+  "complete_without_refs": {
+   "after": {
+    "all": "d8fc00222c66298c",
+    "reverse_history": "1:157884d205a21798",
+    "reverse_progress": "1:ccad9d8e420fe1e9",
+    "reverse_requests": "1:cbfac27aaa2971a5"
+   },
+   "before": {
+    "all": "d8fc00222c66298c",
+    "reverse_history": "1:157884d205a21798",
+    "reverse_progress": "1:ccad9d8e420fe1e9",
+    "reverse_requests": "1:cbfac27aaa2971a5"
+   },
+   "changed": [],
+   "is_contract_error": true,
+   "message": "Complete stage requires retained artifacts",
+   "refused": "ContractError"
+  },
+  "generation_float": {
+   "after": {
+    "all": "4f53cda18c2baa0c",
+    "reverse_history": "0:4f53cda18c2baa0c",
+    "reverse_progress": "0:4f53cda18c2baa0c",
+    "reverse_requests": "0:4f53cda18c2baa0c"
+   },
+   "before": {
+    "all": "4f53cda18c2baa0c",
+    "reverse_history": "0:4f53cda18c2baa0c",
+    "reverse_progress": "0:4f53cda18c2baa0c",
+    "reverse_requests": "0:4f53cda18c2baa0c"
+   },
+   "changed": [],
+   "is_contract_error": true,
+   "message": "Invalid expected generation",
+   "refused": "ContractError"
+  },
+  "generation_negative": {
+   "after": {
+    "all": "4f53cda18c2baa0c",
+    "reverse_history": "0:4f53cda18c2baa0c",
+    "reverse_progress": "0:4f53cda18c2baa0c",
+    "reverse_requests": "0:4f53cda18c2baa0c"
+   },
+   "before": {
+    "all": "4f53cda18c2baa0c",
+    "reverse_history": "0:4f53cda18c2baa0c",
+    "reverse_progress": "0:4f53cda18c2baa0c",
+    "reverse_requests": "0:4f53cda18c2baa0c"
+   },
+   "changed": [],
+   "is_contract_error": true,
+   "message": "Invalid expected generation",
+   "refused": "ContractError"
+  },
+  "generation_none": {
+   "after": {
+    "all": "4f53cda18c2baa0c",
+    "reverse_history": "0:4f53cda18c2baa0c",
+    "reverse_progress": "0:4f53cda18c2baa0c",
+    "reverse_requests": "0:4f53cda18c2baa0c"
+   },
+   "before": {
+    "all": "4f53cda18c2baa0c",
+    "reverse_history": "0:4f53cda18c2baa0c",
+    "reverse_progress": "0:4f53cda18c2baa0c",
+    "reverse_requests": "0:4f53cda18c2baa0c"
+   },
+   "changed": [],
+   "is_contract_error": true,
+   "message": "Invalid expected generation",
+   "refused": "ContractError"
+  },
+  "generation_str": {
+   "after": {
+    "all": "4f53cda18c2baa0c",
+    "reverse_history": "0:4f53cda18c2baa0c",
+    "reverse_progress": "0:4f53cda18c2baa0c",
+    "reverse_requests": "0:4f53cda18c2baa0c"
+   },
+   "before": {
+    "all": "4f53cda18c2baa0c",
+    "reverse_history": "0:4f53cda18c2baa0c",
+    "reverse_progress": "0:4f53cda18c2baa0c",
+    "reverse_requests": "0:4f53cda18c2baa0c"
+   },
+   "changed": [],
+   "is_contract_error": true,
+   "message": "Invalid expected generation",
+   "refused": "ContractError"
+  },
+  "generation_true": {
+   "after": {
+    "all": "4f53cda18c2baa0c",
+    "reverse_history": "0:4f53cda18c2baa0c",
+    "reverse_progress": "0:4f53cda18c2baa0c",
+    "reverse_requests": "0:4f53cda18c2baa0c"
+   },
+   "before": {
+    "all": "4f53cda18c2baa0c",
+    "reverse_history": "0:4f53cda18c2baa0c",
+    "reverse_progress": "0:4f53cda18c2baa0c",
+    "reverse_requests": "0:4f53cda18c2baa0c"
+   },
+   "changed": [],
+   "is_contract_error": true,
+   "message": "Invalid expected generation",
+   "refused": "ContractError"
+  },
+  "order_completeness_before_artifact_inspection": {
+   "after": {
+    "all": "bace0b0f0eaf989b",
+    "reverse_history": "3:489c607ce5c3db87",
+    "reverse_progress": "3:d48a2f329df322e5",
+    "reverse_requests": "3:244c02eddb2e604b"
+   },
+   "before": {
+    "all": "bace0b0f0eaf989b",
+    "reverse_history": "3:489c607ce5c3db87",
+    "reverse_progress": "3:d48a2f329df322e5",
+    "reverse_requests": "3:244c02eddb2e604b"
+   },
+   "changed": [],
+   "is_contract_error": true,
+   "message": "Complete stage requires retained artifacts",
+   "refused": "ContractError"
+  },
+  "order_generation_before_rebaseline": {
+   "after": {
+    "all": "bace0b0f0eaf989b",
+    "reverse_history": "3:489c607ce5c3db87",
+    "reverse_progress": "3:d48a2f329df322e5",
+    "reverse_requests": "3:244c02eddb2e604b"
+   },
+   "before": {
+    "all": "bace0b0f0eaf989b",
+    "reverse_history": "3:489c607ce5c3db87",
+    "reverse_progress": "3:d48a2f329df322e5",
+    "reverse_requests": "3:244c02eddb2e604b"
+   },
+   "changed": [],
+   "is_contract_error": true,
+   "message": "Invalid expected generation",
+   "refused": "ContractError"
+  },
+  "order_inspection_before_the_transaction": {
+   "after": {
+    "all": "bace0b0f0eaf989b",
+    "reverse_history": "3:489c607ce5c3db87",
+    "reverse_progress": "3:d48a2f329df322e5",
+    "reverse_requests": "3:244c02eddb2e604b"
+   },
+   "before": {
+    "all": "bace0b0f0eaf989b",
+    "reverse_history": "3:489c607ce5c3db87",
+    "reverse_progress": "3:d48a2f329df322e5",
+    "reverse_requests": "3:244c02eddb2e604b"
+   },
+   "changed": [],
+   "is_contract_error": false,
+   "refused": "FileNotFoundError"
+  },
+  "order_project_before_stage": {
+   "after": {
+    "all": "bace0b0f0eaf989b",
+    "reverse_history": "3:489c607ce5c3db87",
+    "reverse_progress": "3:d48a2f329df322e5",
+    "reverse_requests": "3:244c02eddb2e604b"
+   },
+   "before": {
+    "all": "bace0b0f0eaf989b",
+    "reverse_history": "3:489c607ce5c3db87",
+    "reverse_progress": "3:d48a2f329df322e5",
+    "reverse_requests": "3:244c02eddb2e604b"
+   },
+   "changed": [],
+   "is_contract_error": true,
+   "message": "Project identity required",
+   "refused": "ContractError"
+  },
+  "order_rebaseline_before_source": {
+   "after": {
+    "all": "bace0b0f0eaf989b",
+    "reverse_history": "3:489c607ce5c3db87",
+    "reverse_progress": "3:d48a2f329df322e5",
+    "reverse_requests": "3:244c02eddb2e604b"
+   },
+   "before": {
+    "all": "bace0b0f0eaf989b",
+    "reverse_history": "3:489c607ce5c3db87",
+    "reverse_progress": "3:d48a2f329df322e5",
+    "reverse_requests": "3:244c02eddb2e604b"
+   },
+   "changed": [],
+   "is_contract_error": true,
+   "message": "Rebaseline must be boolean",
+   "refused": "ContractError"
+  },
+  "order_references_before_completeness": {
+   "after": {
+    "all": "bace0b0f0eaf989b",
+    "reverse_history": "3:489c607ce5c3db87",
+    "reverse_progress": "3:d48a2f329df322e5",
+    "reverse_requests": "3:244c02eddb2e604b"
+   },
+   "before": {
+    "all": "bace0b0f0eaf989b",
+    "reverse_history": "3:489c607ce5c3db87",
+    "reverse_progress": "3:d48a2f329df322e5",
+    "reverse_requests": "3:244c02eddb2e604b"
+   },
+   "changed": [],
+   "is_contract_error": true,
+   "message": "Artifact references must be strings",
+   "refused": "ContractError"
+  },
+  "order_request_before_generation": {
+   "after": {
+    "all": "bace0b0f0eaf989b",
+    "reverse_history": "3:489c607ce5c3db87",
+    "reverse_progress": "3:d48a2f329df322e5",
+    "reverse_requests": "3:244c02eddb2e604b"
+   },
+   "before": {
+    "all": "bace0b0f0eaf989b",
+    "reverse_history": "3:489c607ce5c3db87",
+    "reverse_progress": "3:d48a2f329df322e5",
+    "reverse_requests": "3:244c02eddb2e604b"
+   },
+   "changed": [],
+   "is_contract_error": true,
+   "message": "Request identity required",
+   "refused": "ContractError"
+  },
+  "order_source_before_references": {
+   "after": {
+    "all": "bace0b0f0eaf989b",
+    "reverse_history": "3:489c607ce5c3db87",
+    "reverse_progress": "3:d48a2f329df322e5",
+    "reverse_requests": "3:244c02eddb2e604b"
+   },
+   "before": {
+    "all": "bace0b0f0eaf989b",
+    "reverse_history": "3:489c607ce5c3db87",
+    "reverse_progress": "3:d48a2f329df322e5",
+    "reverse_requests": "3:244c02eddb2e604b"
+   },
+   "changed": [],
+   "is_contract_error": true,
+   "message": "Source is dirty or unknown",
+   "refused": "ContractError"
+  },
+  "order_stage_before_request": {
+   "after": {
+    "all": "bace0b0f0eaf989b",
+    "reverse_history": "3:489c607ce5c3db87",
+    "reverse_progress": "3:d48a2f329df322e5",
+    "reverse_requests": "3:244c02eddb2e604b"
+   },
+   "before": {
+    "all": "bace0b0f0eaf989b",
+    "reverse_history": "3:489c607ce5c3db87",
+    "reverse_progress": "3:d48a2f329df322e5",
+    "reverse_requests": "3:244c02eddb2e604b"
+   },
+   "changed": [],
+   "is_contract_error": true,
+   "message": "Unknown reverse stage or status",
+   "refused": "ContractError"
+  },
+  "partial_without_refs": {
+   "after": {
+    "all": "3676384a3cb1ba95",
+    "reverse_history": "2:9ef561eea330e904",
+    "reverse_progress": "2:982ba151cdb96d57",
+    "reverse_requests": "2:9c3db75490c7811d"
+   },
+   "before": {
+    "all": "d8fc00222c66298c",
+    "reverse_history": "1:157884d205a21798",
+    "reverse_progress": "1:ccad9d8e420fe1e9",
+    "reverse_requests": "1:cbfac27aaa2971a5"
+   },
+   "changed": [
+    "reverse_requests",
+    "reverse_progress",
+    "reverse_history",
+    "all"
+   ],
+   "value": "ded74892e597a9d55bca2b9d1b91d12691353aafe78a21fe43c73b163eea4eab",
+   "view": {
+    "generation": 1,
+    "project": "p",
+    "releases": {
+     "1-A": [
+      "partial",
+      "no-refs"
+     ]
+    },
+    "source": {
+     "commit": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+     "repository": "source-project",
+     "tree": "bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb"
+    }
+   }
+  },
+  "pending_without_refs": {
+   "after": {
+    "all": "bace0b0f0eaf989b",
+    "reverse_history": "3:489c607ce5c3db87",
+    "reverse_progress": "3:d48a2f329df322e5",
+    "reverse_requests": "3:244c02eddb2e604b"
+   },
+   "before": {
+    "all": "3676384a3cb1ba95",
+    "reverse_history": "2:9ef561eea330e904",
+    "reverse_progress": "2:982ba151cdb96d57",
+    "reverse_requests": "2:9c3db75490c7811d"
+   },
+   "changed": [
+    "reverse_requests",
+    "reverse_progress",
+    "reverse_history",
+    "all"
+   ],
+   "value": "ff8a77c6d396b29cff680a2177cc8d0a6f962bf318594ccca640c861522419c8",
+   "view": {
+    "generation": 1,
+    "project": "pend",
+    "releases": {
+     "1-A": [
+      "pending",
+      "no-refs"
+     ]
+    },
+    "source": {
+     "commit": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+     "repository": "source-project",
+     "tree": "bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb"
+    }
+   }
+  },
+  "pinned_source_of_the_extra_keys": {
+   "commit": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+   "repository": "source-project",
+   "tree": "bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb"
+  },
+  "project_empty": {
+   "after": {
+    "all": "4f53cda18c2baa0c",
+    "reverse_history": "0:4f53cda18c2baa0c",
+    "reverse_progress": "0:4f53cda18c2baa0c",
+    "reverse_requests": "0:4f53cda18c2baa0c"
+   },
+   "before": {
+    "all": "4f53cda18c2baa0c",
+    "reverse_history": "0:4f53cda18c2baa0c",
+    "reverse_progress": "0:4f53cda18c2baa0c",
+    "reverse_requests": "0:4f53cda18c2baa0c"
+   },
+   "changed": [],
+   "is_contract_error": true,
+   "message": "Project identity required",
+   "refused": "ContractError"
+  },
+  "project_int": {
+   "after": {
+    "all": "4f53cda18c2baa0c",
+    "reverse_history": "0:4f53cda18c2baa0c",
+    "reverse_progress": "0:4f53cda18c2baa0c",
+    "reverse_requests": "0:4f53cda18c2baa0c"
+   },
+   "before": {
+    "all": "4f53cda18c2baa0c",
+    "reverse_history": "0:4f53cda18c2baa0c",
+    "reverse_progress": "0:4f53cda18c2baa0c",
+    "reverse_requests": "0:4f53cda18c2baa0c"
+   },
+   "changed": [],
+   "is_contract_error": true,
+   "message": "Project identity required",
+   "refused": "ContractError"
+  },
+  "project_list": {
+   "after": {
+    "all": "4f53cda18c2baa0c",
+    "reverse_history": "0:4f53cda18c2baa0c",
+    "reverse_progress": "0:4f53cda18c2baa0c",
+    "reverse_requests": "0:4f53cda18c2baa0c"
+   },
+   "before": {
+    "all": "4f53cda18c2baa0c",
+    "reverse_history": "0:4f53cda18c2baa0c",
+    "reverse_progress": "0:4f53cda18c2baa0c",
+    "reverse_requests": "0:4f53cda18c2baa0c"
+   },
+   "changed": [],
+   "is_contract_error": true,
+   "message": "Project identity required",
+   "refused": "ContractError"
+  },
+  "project_none": {
+   "after": {
+    "all": "4f53cda18c2baa0c",
+    "reverse_history": "0:4f53cda18c2baa0c",
+    "reverse_progress": "0:4f53cda18c2baa0c",
+    "reverse_requests": "0:4f53cda18c2baa0c"
+   },
+   "before": {
+    "all": "4f53cda18c2baa0c",
+    "reverse_history": "0:4f53cda18c2baa0c",
+    "reverse_progress": "0:4f53cda18c2baa0c",
+    "reverse_requests": "0:4f53cda18c2baa0c"
+   },
+   "changed": [],
+   "is_contract_error": true,
+   "message": "Project identity required",
+   "refused": "ContractError"
+  },
+  "rebaseline_int": {
+   "after": {
+    "all": "4f53cda18c2baa0c",
+    "reverse_history": "0:4f53cda18c2baa0c",
+    "reverse_progress": "0:4f53cda18c2baa0c",
+    "reverse_requests": "0:4f53cda18c2baa0c"
+   },
+   "before": {
+    "all": "4f53cda18c2baa0c",
+    "reverse_history": "0:4f53cda18c2baa0c",
+    "reverse_progress": "0:4f53cda18c2baa0c",
+    "reverse_requests": "0:4f53cda18c2baa0c"
+   },
+   "changed": [],
+   "is_contract_error": true,
+   "message": "Rebaseline must be boolean",
+   "refused": "ContractError"
+  },
+  "rebaseline_none": {
+   "after": {
+    "all": "4f53cda18c2baa0c",
+    "reverse_history": "0:4f53cda18c2baa0c",
+    "reverse_progress": "0:4f53cda18c2baa0c",
+    "reverse_requests": "0:4f53cda18c2baa0c"
+   },
+   "before": {
+    "all": "4f53cda18c2baa0c",
+    "reverse_history": "0:4f53cda18c2baa0c",
+    "reverse_progress": "0:4f53cda18c2baa0c",
+    "reverse_requests": "0:4f53cda18c2baa0c"
+   },
+   "changed": [],
+   "is_contract_error": true,
+   "message": "Rebaseline must be boolean",
+   "refused": "ContractError"
+  },
+  "rebaseline_str": {
+   "after": {
+    "all": "4f53cda18c2baa0c",
+    "reverse_history": "0:4f53cda18c2baa0c",
+    "reverse_progress": "0:4f53cda18c2baa0c",
+    "reverse_requests": "0:4f53cda18c2baa0c"
+   },
+   "before": {
+    "all": "4f53cda18c2baa0c",
+    "reverse_history": "0:4f53cda18c2baa0c",
+    "reverse_progress": "0:4f53cda18c2baa0c",
+    "reverse_requests": "0:4f53cda18c2baa0c"
+   },
+   "changed": [],
+   "is_contract_error": true,
+   "message": "Rebaseline must be boolean",
+   "refused": "ContractError"
+  },
+  "rebaseline_zero": {
+   "after": {
+    "all": "4f53cda18c2baa0c",
+    "reverse_history": "0:4f53cda18c2baa0c",
+    "reverse_progress": "0:4f53cda18c2baa0c",
+    "reverse_requests": "0:4f53cda18c2baa0c"
+   },
+   "before": {
+    "all": "4f53cda18c2baa0c",
+    "reverse_history": "0:4f53cda18c2baa0c",
+    "reverse_progress": "0:4f53cda18c2baa0c",
+    "reverse_requests": "0:4f53cda18c2baa0c"
+   },
+   "changed": [],
+   "is_contract_error": true,
+   "message": "Rebaseline must be boolean",
+   "refused": "ContractError"
+  },
+  "refs_bytes_item": {
+   "after": {
+    "all": "d8fc00222c66298c",
+    "reverse_history": "1:157884d205a21798",
+    "reverse_progress": "1:ccad9d8e420fe1e9",
+    "reverse_requests": "1:cbfac27aaa2971a5"
+   },
+   "before": {
+    "all": "d8fc00222c66298c",
+    "reverse_history": "1:157884d205a21798",
+    "reverse_progress": "1:ccad9d8e420fe1e9",
+    "reverse_requests": "1:cbfac27aaa2971a5"
+   },
+   "changed": [],
+   "is_contract_error": true,
+   "message": "Artifact references must be strings",
+   "refused": "ContractError"
+  },
+  "refs_dict": {
+   "after": {
+    "all": "d8fc00222c66298c",
+    "reverse_history": "1:157884d205a21798",
+    "reverse_progress": "1:ccad9d8e420fe1e9",
+    "reverse_requests": "1:cbfac27aaa2971a5"
+   },
+   "before": {
+    "all": "d8fc00222c66298c",
+    "reverse_history": "1:157884d205a21798",
+    "reverse_progress": "1:ccad9d8e420fe1e9",
+    "reverse_requests": "1:cbfac27aaa2971a5"
+   },
+   "changed": [],
+   "is_contract_error": true,
+   "message": "Artifact references must be strings",
+   "refused": "ContractError"
+  },
+  "refs_int_item": {
+   "after": {
+    "all": "d8fc00222c66298c",
+    "reverse_history": "1:157884d205a21798",
+    "reverse_progress": "1:ccad9d8e420fe1e9",
+    "reverse_requests": "1:cbfac27aaa2971a5"
+   },
+   "before": {
+    "all": "d8fc00222c66298c",
+    "reverse_history": "1:157884d205a21798",
+    "reverse_progress": "1:ccad9d8e420fe1e9",
+    "reverse_requests": "1:cbfac27aaa2971a5"
+   },
+   "changed": [],
+   "is_contract_error": true,
+   "message": "Artifact references must be strings",
+   "refused": "ContractError"
+  },
+  "refs_mixed": {
+   "after": {
+    "all": "d8fc00222c66298c",
+    "reverse_history": "1:157884d205a21798",
+    "reverse_progress": "1:ccad9d8e420fe1e9",
+    "reverse_requests": "1:cbfac27aaa2971a5"
+   },
+   "before": {
+    "all": "d8fc00222c66298c",
+    "reverse_history": "1:157884d205a21798",
+    "reverse_progress": "1:ccad9d8e420fe1e9",
+    "reverse_requests": "1:cbfac27aaa2971a5"
+   },
+   "changed": [],
+   "is_contract_error": true,
+   "message": "Artifact references must be strings",
+   "refused": "ContractError"
+  },
+  "refs_none": {
+   "after": {
+    "all": "d8fc00222c66298c",
+    "reverse_history": "1:157884d205a21798",
+    "reverse_progress": "1:ccad9d8e420fe1e9",
+    "reverse_requests": "1:cbfac27aaa2971a5"
+   },
+   "before": {
+    "all": "d8fc00222c66298c",
+    "reverse_history": "1:157884d205a21798",
+    "reverse_progress": "1:ccad9d8e420fe1e9",
+    "reverse_requests": "1:cbfac27aaa2971a5"
+   },
+   "changed": [],
+   "is_contract_error": true,
+   "message": "Artifact references must be strings",
+   "refused": "ContractError"
+  },
+  "refs_none_item": {
+   "after": {
+    "all": "d8fc00222c66298c",
+    "reverse_history": "1:157884d205a21798",
+    "reverse_progress": "1:ccad9d8e420fe1e9",
+    "reverse_requests": "1:cbfac27aaa2971a5"
+   },
+   "before": {
+    "all": "d8fc00222c66298c",
+    "reverse_history": "1:157884d205a21798",
+    "reverse_progress": "1:ccad9d8e420fe1e9",
+    "reverse_requests": "1:cbfac27aaa2971a5"
+   },
+   "changed": [],
+   "is_contract_error": true,
+   "message": "Artifact references must be strings",
+   "refused": "ContractError"
+  },
+  "refs_str": {
+   "after": {
+    "all": "d8fc00222c66298c",
+    "reverse_history": "1:157884d205a21798",
+    "reverse_progress": "1:ccad9d8e420fe1e9",
+    "reverse_requests": "1:cbfac27aaa2971a5"
+   },
+   "before": {
+    "all": "d8fc00222c66298c",
+    "reverse_history": "1:157884d205a21798",
+    "reverse_progress": "1:ccad9d8e420fe1e9",
+    "reverse_requests": "1:cbfac27aaa2971a5"
+   },
+   "changed": [],
+   "is_contract_error": true,
+   "message": "Artifact references must be strings",
+   "refused": "ContractError"
+  },
+  "refs_tuple": {
+   "after": {
+    "all": "d8fc00222c66298c",
+    "reverse_history": "1:157884d205a21798",
+    "reverse_progress": "1:ccad9d8e420fe1e9",
+    "reverse_requests": "1:cbfac27aaa2971a5"
+   },
+   "before": {
+    "all": "d8fc00222c66298c",
+    "reverse_history": "1:157884d205a21798",
+    "reverse_progress": "1:ccad9d8e420fe1e9",
+    "reverse_requests": "1:cbfac27aaa2971a5"
+   },
+   "changed": [],
+   "is_contract_error": true,
+   "message": "Artifact references must be strings",
+   "refused": "ContractError"
+  },
+  "request_bytes": {
+   "after": {
+    "all": "4f53cda18c2baa0c",
+    "reverse_history": "0:4f53cda18c2baa0c",
+    "reverse_progress": "0:4f53cda18c2baa0c",
+    "reverse_requests": "0:4f53cda18c2baa0c"
+   },
+   "before": {
+    "all": "4f53cda18c2baa0c",
+    "reverse_history": "0:4f53cda18c2baa0c",
+    "reverse_progress": "0:4f53cda18c2baa0c",
+    "reverse_requests": "0:4f53cda18c2baa0c"
+   },
+   "changed": [],
+   "is_contract_error": true,
+   "message": "Request identity required",
+   "refused": "ContractError"
+  },
+  "request_empty": {
+   "after": {
+    "all": "4f53cda18c2baa0c",
+    "reverse_history": "0:4f53cda18c2baa0c",
+    "reverse_progress": "0:4f53cda18c2baa0c",
+    "reverse_requests": "0:4f53cda18c2baa0c"
+   },
+   "before": {
+    "all": "4f53cda18c2baa0c",
+    "reverse_history": "0:4f53cda18c2baa0c",
+    "reverse_progress": "0:4f53cda18c2baa0c",
+    "reverse_requests": "0:4f53cda18c2baa0c"
+   },
+   "changed": [],
+   "is_contract_error": true,
+   "message": "Request identity required",
+   "refused": "ContractError"
+  },
+  "request_int": {
+   "after": {
+    "all": "4f53cda18c2baa0c",
+    "reverse_history": "0:4f53cda18c2baa0c",
+    "reverse_progress": "0:4f53cda18c2baa0c",
+    "reverse_requests": "0:4f53cda18c2baa0c"
+   },
+   "before": {
+    "all": "4f53cda18c2baa0c",
+    "reverse_history": "0:4f53cda18c2baa0c",
+    "reverse_progress": "0:4f53cda18c2baa0c",
+    "reverse_requests": "0:4f53cda18c2baa0c"
+   },
+   "changed": [],
+   "is_contract_error": true,
+   "message": "Request identity required",
+   "refused": "ContractError"
+  },
+  "request_none": {
+   "after": {
+    "all": "4f53cda18c2baa0c",
+    "reverse_history": "0:4f53cda18c2baa0c",
+    "reverse_progress": "0:4f53cda18c2baa0c",
+    "reverse_requests": "0:4f53cda18c2baa0c"
+   },
+   "before": {
+    "all": "4f53cda18c2baa0c",
+    "reverse_history": "0:4f53cda18c2baa0c",
+    "reverse_progress": "0:4f53cda18c2baa0c",
+    "reverse_requests": "0:4f53cda18c2baa0c"
+   },
+   "changed": [],
+   "is_contract_error": true,
+   "message": "Request identity required",
+   "refused": "ContractError"
+  },
+  "source_both_sha256_is_pinned": {
+   "after": {
+    "all": "4f53cda18c2baa0c",
+    "reverse_history": "0:4f53cda18c2baa0c",
+    "reverse_progress": "0:4f53cda18c2baa0c",
+    "reverse_requests": "0:4f53cda18c2baa0c"
+   },
+   "before": {
+    "all": "4f53cda18c2baa0c",
+    "reverse_history": "0:4f53cda18c2baa0c",
+    "reverse_progress": "0:4f53cda18c2baa0c",
+    "reverse_requests": "0:4f53cda18c2baa0c"
+   },
+   "changed": [],
+   "is_contract_error": true,
+   "message": "Invalid source commit",
+   "refused": "ContractError"
+  },
+  "source_commit_int": {
+   "after": {
+    "all": "4f53cda18c2baa0c",
+    "reverse_history": "0:4f53cda18c2baa0c",
+    "reverse_progress": "0:4f53cda18c2baa0c",
+    "reverse_requests": "0:4f53cda18c2baa0c"
+   },
+   "before": {
+    "all": "4f53cda18c2baa0c",
+    "reverse_history": "0:4f53cda18c2baa0c",
+    "reverse_progress": "0:4f53cda18c2baa0c",
+    "reverse_requests": "0:4f53cda18c2baa0c"
+   },
+   "changed": [],
+   "is_contract_error": true,
+   "message": "Invalid source commit",
+   "refused": "ContractError"
+  },
+  "source_commit_long": {
+   "after": {
+    "all": "4f53cda18c2baa0c",
+    "reverse_history": "0:4f53cda18c2baa0c",
+    "reverse_progress": "0:4f53cda18c2baa0c",
+    "reverse_requests": "0:4f53cda18c2baa0c"
+   },
+   "before": {
+    "all": "4f53cda18c2baa0c",
+    "reverse_history": "0:4f53cda18c2baa0c",
+    "reverse_progress": "0:4f53cda18c2baa0c",
+    "reverse_requests": "0:4f53cda18c2baa0c"
+   },
+   "changed": [],
+   "is_contract_error": true,
+   "message": "Invalid source commit",
+   "refused": "ContractError"
+  },
+  "source_commit_missing": {
+   "after": {
+    "all": "4f53cda18c2baa0c",
+    "reverse_history": "0:4f53cda18c2baa0c",
+    "reverse_progress": "0:4f53cda18c2baa0c",
+    "reverse_requests": "0:4f53cda18c2baa0c"
+   },
+   "before": {
+    "all": "4f53cda18c2baa0c",
+    "reverse_history": "0:4f53cda18c2baa0c",
+    "reverse_progress": "0:4f53cda18c2baa0c",
+    "reverse_requests": "0:4f53cda18c2baa0c"
+   },
+   "changed": [],
+   "is_contract_error": true,
+   "message": "Invalid source commit",
+   "refused": "ContractError"
+  },
+  "source_commit_non_hex": {
+   "after": {
+    "all": "4f53cda18c2baa0c",
+    "reverse_history": "0:4f53cda18c2baa0c",
+    "reverse_progress": "0:4f53cda18c2baa0c",
+    "reverse_requests": "0:4f53cda18c2baa0c"
+   },
+   "before": {
+    "all": "4f53cda18c2baa0c",
+    "reverse_history": "0:4f53cda18c2baa0c",
+    "reverse_progress": "0:4f53cda18c2baa0c",
+    "reverse_requests": "0:4f53cda18c2baa0c"
+   },
+   "changed": [],
+   "is_contract_error": true,
+   "message": "Invalid source commit",
+   "refused": "ContractError"
+  },
+  "source_commit_none": {
+   "after": {
+    "all": "4f53cda18c2baa0c",
+    "reverse_history": "0:4f53cda18c2baa0c",
+    "reverse_progress": "0:4f53cda18c2baa0c",
+    "reverse_requests": "0:4f53cda18c2baa0c"
+   },
+   "before": {
+    "all": "4f53cda18c2baa0c",
+    "reverse_history": "0:4f53cda18c2baa0c",
+    "reverse_progress": "0:4f53cda18c2baa0c",
+    "reverse_requests": "0:4f53cda18c2baa0c"
+   },
+   "changed": [],
+   "is_contract_error": true,
+   "message": "Invalid source commit",
+   "refused": "ContractError"
+  },
+  "source_commit_sha1_64_mix": {
+   "after": {
+    "all": "4f53cda18c2baa0c",
+    "reverse_history": "0:4f53cda18c2baa0c",
+    "reverse_progress": "0:4f53cda18c2baa0c",
+    "reverse_requests": "0:4f53cda18c2baa0c"
+   },
+   "before": {
+    "all": "4f53cda18c2baa0c",
+    "reverse_history": "0:4f53cda18c2baa0c",
+    "reverse_progress": "0:4f53cda18c2baa0c",
+    "reverse_requests": "0:4f53cda18c2baa0c"
+   },
+   "changed": [],
+   "is_contract_error": true,
+   "message": "Invalid source commit",
+   "refused": "ContractError"
+  },
+  "source_commit_short": {
+   "after": {
+    "all": "4f53cda18c2baa0c",
+    "reverse_history": "0:4f53cda18c2baa0c",
+    "reverse_progress": "0:4f53cda18c2baa0c",
+    "reverse_requests": "0:4f53cda18c2baa0c"
+   },
+   "before": {
+    "all": "4f53cda18c2baa0c",
+    "reverse_history": "0:4f53cda18c2baa0c",
+    "reverse_progress": "0:4f53cda18c2baa0c",
+    "reverse_requests": "0:4f53cda18c2baa0c"
+   },
+   "changed": [],
+   "is_contract_error": true,
+   "message": "Invalid source commit",
+   "refused": "ContractError"
+  },
+  "source_commit_trailing_newline": {
+   "after": {
+    "all": "4f53cda18c2baa0c",
+    "reverse_history": "0:4f53cda18c2baa0c",
+    "reverse_progress": "0:4f53cda18c2baa0c",
+    "reverse_requests": "0:4f53cda18c2baa0c"
+   },
+   "before": {
+    "all": "4f53cda18c2baa0c",
+    "reverse_history": "0:4f53cda18c2baa0c",
+    "reverse_progress": "0:4f53cda18c2baa0c",
+    "reverse_requests": "0:4f53cda18c2baa0c"
+   },
+   "changed": [],
+   "is_contract_error": true,
+   "message": "Invalid source commit",
+   "refused": "ContractError"
+  },
+  "source_commit_upper": {
+   "after": {
+    "all": "4f53cda18c2baa0c",
+    "reverse_history": "0:4f53cda18c2baa0c",
+    "reverse_progress": "0:4f53cda18c2baa0c",
+    "reverse_requests": "0:4f53cda18c2baa0c"
+   },
+   "before": {
+    "all": "4f53cda18c2baa0c",
+    "reverse_history": "0:4f53cda18c2baa0c",
+    "reverse_progress": "0:4f53cda18c2baa0c",
+    "reverse_requests": "0:4f53cda18c2baa0c"
+   },
+   "changed": [],
+   "is_contract_error": true,
+   "message": "Invalid source commit",
+   "refused": "ContractError"
+  },
+  "source_dirty": {
+   "after": {
+    "all": "4f53cda18c2baa0c",
+    "reverse_history": "0:4f53cda18c2baa0c",
+    "reverse_progress": "0:4f53cda18c2baa0c",
+    "reverse_requests": "0:4f53cda18c2baa0c"
+   },
+   "before": {
+    "all": "4f53cda18c2baa0c",
+    "reverse_history": "0:4f53cda18c2baa0c",
+    "reverse_progress": "0:4f53cda18c2baa0c",
+    "reverse_requests": "0:4f53cda18c2baa0c"
+   },
+   "changed": [],
+   "is_contract_error": true,
+   "message": "Source is dirty or unknown",
+   "refused": "ContractError"
+  },
+  "source_extra_keys_are_not_pinned": {
+   "after": {
+    "all": "d8fc00222c66298c",
+    "reverse_history": "1:157884d205a21798",
+    "reverse_progress": "1:ccad9d8e420fe1e9",
+    "reverse_requests": "1:cbfac27aaa2971a5"
+   },
+   "before": {
+    "all": "4f53cda18c2baa0c",
+    "reverse_history": "0:4f53cda18c2baa0c",
+    "reverse_progress": "0:4f53cda18c2baa0c",
+    "reverse_requests": "0:4f53cda18c2baa0c"
+   },
+   "changed": [
+    "reverse_requests",
+    "reverse_progress",
+    "reverse_history",
+    "all"
+   ],
+   "value": "d9d842a1ce24aa29a734ca2dce265529b9a4f96cfeb51cecf9e7491cf3a9eb83",
+   "view": {
+    "generation": 1,
+    "project": "extra",
+    "releases": {
+     "1-A": [
+      "complete",
+      1
+     ]
+    },
+    "source": {
+     "commit": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+     "repository": "source-project",
+     "tree": "bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb"
+    }
+   }
+  },
+  "source_mixed_formats_commit_sha256": {
+   "after": {
+    "all": "4f53cda18c2baa0c",
+    "reverse_history": "0:4f53cda18c2baa0c",
+    "reverse_progress": "0:4f53cda18c2baa0c",
+    "reverse_requests": "0:4f53cda18c2baa0c"
+   },
+   "before": {
+    "all": "4f53cda18c2baa0c",
+    "reverse_history": "0:4f53cda18c2baa0c",
+    "reverse_progress": "0:4f53cda18c2baa0c",
+    "reverse_requests": "0:4f53cda18c2baa0c"
+   },
+   "changed": [],
+   "is_contract_error": true,
+   "message": "Invalid source commit",
+   "refused": "ContractError"
+  },
+  "source_mixed_formats_tree_sha256": {
+   "after": {
+    "all": "4f53cda18c2baa0c",
+    "reverse_history": "0:4f53cda18c2baa0c",
+    "reverse_progress": "0:4f53cda18c2baa0c",
+    "reverse_requests": "0:4f53cda18c2baa0c"
+   },
+   "before": {
+    "all": "4f53cda18c2baa0c",
+    "reverse_history": "0:4f53cda18c2baa0c",
+    "reverse_progress": "0:4f53cda18c2baa0c",
+    "reverse_requests": "0:4f53cda18c2baa0c"
+   },
+   "changed": [],
+   "is_contract_error": true,
+   "message": "Mixed source hash formats",
+   "refused": "ContractError"
+  },
+  "source_none_value": {
+   "after": {
+    "all": "4f53cda18c2baa0c",
+    "reverse_history": "0:4f53cda18c2baa0c",
+    "reverse_progress": "0:4f53cda18c2baa0c",
+    "reverse_requests": "0:4f53cda18c2baa0c"
+   },
+   "before": {
+    "all": "4f53cda18c2baa0c",
+    "reverse_history": "0:4f53cda18c2baa0c",
+    "reverse_progress": "0:4f53cda18c2baa0c",
+    "reverse_requests": "0:4f53cda18c2baa0c"
+   },
+   "changed": [],
+   "is_contract_error": true,
+   "message": "Source observation required",
+   "refused": "ContractError"
+  },
+  "source_not_a_dict": {
+   "after": {
+    "all": "4f53cda18c2baa0c",
+    "reverse_history": "0:4f53cda18c2baa0c",
+    "reverse_progress": "0:4f53cda18c2baa0c",
+    "reverse_requests": "0:4f53cda18c2baa0c"
+   },
+   "before": {
+    "all": "4f53cda18c2baa0c",
+    "reverse_history": "0:4f53cda18c2baa0c",
+    "reverse_progress": "0:4f53cda18c2baa0c",
+    "reverse_requests": "0:4f53cda18c2baa0c"
+   },
+   "changed": [],
+   "is_contract_error": true,
+   "message": "Source observation required",
+   "refused": "ContractError"
+  },
+  "source_only_a_status": {
+   "after": {
+    "all": "4f53cda18c2baa0c",
+    "reverse_history": "0:4f53cda18c2baa0c",
+    "reverse_progress": "0:4f53cda18c2baa0c",
+    "reverse_requests": "0:4f53cda18c2baa0c"
+   },
+   "before": {
+    "all": "4f53cda18c2baa0c",
+    "reverse_history": "0:4f53cda18c2baa0c",
+    "reverse_progress": "0:4f53cda18c2baa0c",
+    "reverse_requests": "0:4f53cda18c2baa0c"
+   },
+   "changed": [],
+   "is_contract_error": true,
+   "message": "Source repository identity required",
+   "refused": "ContractError"
+  },
+  "source_repository_empty": {
+   "after": {
+    "all": "4f53cda18c2baa0c",
+    "reverse_history": "0:4f53cda18c2baa0c",
+    "reverse_progress": "0:4f53cda18c2baa0c",
+    "reverse_requests": "0:4f53cda18c2baa0c"
+   },
+   "before": {
+    "all": "4f53cda18c2baa0c",
+    "reverse_history": "0:4f53cda18c2baa0c",
+    "reverse_progress": "0:4f53cda18c2baa0c",
+    "reverse_requests": "0:4f53cda18c2baa0c"
+   },
+   "changed": [],
+   "is_contract_error": true,
+   "message": "Source repository identity required",
+   "refused": "ContractError"
+  },
+  "source_repository_int": {
+   "after": {
+    "all": "4f53cda18c2baa0c",
+    "reverse_history": "0:4f53cda18c2baa0c",
+    "reverse_progress": "0:4f53cda18c2baa0c",
+    "reverse_requests": "0:4f53cda18c2baa0c"
+   },
+   "before": {
+    "all": "4f53cda18c2baa0c",
+    "reverse_history": "0:4f53cda18c2baa0c",
+    "reverse_progress": "0:4f53cda18c2baa0c",
+    "reverse_requests": "0:4f53cda18c2baa0c"
+   },
+   "changed": [],
+   "is_contract_error": true,
+   "message": "Source repository identity required",
+   "refused": "ContractError"
+  },
+  "source_repository_missing": {
+   "after": {
+    "all": "4f53cda18c2baa0c",
+    "reverse_history": "0:4f53cda18c2baa0c",
+    "reverse_progress": "0:4f53cda18c2baa0c",
+    "reverse_requests": "0:4f53cda18c2baa0c"
+   },
+   "before": {
+    "all": "4f53cda18c2baa0c",
+    "reverse_history": "0:4f53cda18c2baa0c",
+    "reverse_progress": "0:4f53cda18c2baa0c",
+    "reverse_requests": "0:4f53cda18c2baa0c"
+   },
+   "changed": [],
+   "is_contract_error": true,
+   "message": "Source repository identity required",
+   "refused": "ContractError"
+  },
+  "source_tree_int": {
+   "after": {
+    "all": "4f53cda18c2baa0c",
+    "reverse_history": "0:4f53cda18c2baa0c",
+    "reverse_progress": "0:4f53cda18c2baa0c",
+    "reverse_requests": "0:4f53cda18c2baa0c"
+   },
+   "before": {
+    "all": "4f53cda18c2baa0c",
+    "reverse_history": "0:4f53cda18c2baa0c",
+    "reverse_progress": "0:4f53cda18c2baa0c",
+    "reverse_requests": "0:4f53cda18c2baa0c"
+   },
+   "changed": [],
+   "is_contract_error": true,
+   "message": "Invalid source tree",
+   "refused": "ContractError"
+  },
+  "source_tree_long": {
+   "after": {
+    "all": "4f53cda18c2baa0c",
+    "reverse_history": "0:4f53cda18c2baa0c",
+    "reverse_progress": "0:4f53cda18c2baa0c",
+    "reverse_requests": "0:4f53cda18c2baa0c"
+   },
+   "before": {
+    "all": "4f53cda18c2baa0c",
+    "reverse_history": "0:4f53cda18c2baa0c",
+    "reverse_progress": "0:4f53cda18c2baa0c",
+    "reverse_requests": "0:4f53cda18c2baa0c"
+   },
+   "changed": [],
+   "is_contract_error": true,
+   "message": "Invalid source tree",
+   "refused": "ContractError"
+  },
+  "source_tree_missing": {
+   "after": {
+    "all": "4f53cda18c2baa0c",
+    "reverse_history": "0:4f53cda18c2baa0c",
+    "reverse_progress": "0:4f53cda18c2baa0c",
+    "reverse_requests": "0:4f53cda18c2baa0c"
+   },
+   "before": {
+    "all": "4f53cda18c2baa0c",
+    "reverse_history": "0:4f53cda18c2baa0c",
+    "reverse_progress": "0:4f53cda18c2baa0c",
+    "reverse_requests": "0:4f53cda18c2baa0c"
+   },
+   "changed": [],
+   "is_contract_error": true,
+   "message": "Invalid source tree",
+   "refused": "ContractError"
+  },
+  "source_tree_non_hex": {
+   "after": {
+    "all": "4f53cda18c2baa0c",
+    "reverse_history": "0:4f53cda18c2baa0c",
+    "reverse_progress": "0:4f53cda18c2baa0c",
+    "reverse_requests": "0:4f53cda18c2baa0c"
+   },
+   "before": {
+    "all": "4f53cda18c2baa0c",
+    "reverse_history": "0:4f53cda18c2baa0c",
+    "reverse_progress": "0:4f53cda18c2baa0c",
+    "reverse_requests": "0:4f53cda18c2baa0c"
+   },
+   "changed": [],
+   "is_contract_error": true,
+   "message": "Invalid source tree",
+   "refused": "ContractError"
+  },
+  "source_tree_none": {
+   "after": {
+    "all": "4f53cda18c2baa0c",
+    "reverse_history": "0:4f53cda18c2baa0c",
+    "reverse_progress": "0:4f53cda18c2baa0c",
+    "reverse_requests": "0:4f53cda18c2baa0c"
+   },
+   "before": {
+    "all": "4f53cda18c2baa0c",
+    "reverse_history": "0:4f53cda18c2baa0c",
+    "reverse_progress": "0:4f53cda18c2baa0c",
+    "reverse_requests": "0:4f53cda18c2baa0c"
+   },
+   "changed": [],
+   "is_contract_error": true,
+   "message": "Invalid source tree",
+   "refused": "ContractError"
+  },
+  "source_tree_sha1_64_mix": {
+   "after": {
+    "all": "4f53cda18c2baa0c",
+    "reverse_history": "0:4f53cda18c2baa0c",
+    "reverse_progress": "0:4f53cda18c2baa0c",
+    "reverse_requests": "0:4f53cda18c2baa0c"
+   },
+   "before": {
+    "all": "4f53cda18c2baa0c",
+    "reverse_history": "0:4f53cda18c2baa0c",
+    "reverse_progress": "0:4f53cda18c2baa0c",
+    "reverse_requests": "0:4f53cda18c2baa0c"
+   },
+   "changed": [],
+   "is_contract_error": true,
+   "message": "Invalid source tree",
+   "refused": "ContractError"
+  },
+  "source_tree_short": {
+   "after": {
+    "all": "4f53cda18c2baa0c",
+    "reverse_history": "0:4f53cda18c2baa0c",
+    "reverse_progress": "0:4f53cda18c2baa0c",
+    "reverse_requests": "0:4f53cda18c2baa0c"
+   },
+   "before": {
+    "all": "4f53cda18c2baa0c",
+    "reverse_history": "0:4f53cda18c2baa0c",
+    "reverse_progress": "0:4f53cda18c2baa0c",
+    "reverse_requests": "0:4f53cda18c2baa0c"
+   },
+   "changed": [],
+   "is_contract_error": true,
+   "message": "Invalid source tree",
+   "refused": "ContractError"
+  },
+  "source_tree_trailing_newline": {
+   "after": {
+    "all": "4f53cda18c2baa0c",
+    "reverse_history": "0:4f53cda18c2baa0c",
+    "reverse_progress": "0:4f53cda18c2baa0c",
+    "reverse_requests": "0:4f53cda18c2baa0c"
+   },
+   "before": {
+    "all": "4f53cda18c2baa0c",
+    "reverse_history": "0:4f53cda18c2baa0c",
+    "reverse_progress": "0:4f53cda18c2baa0c",
+    "reverse_requests": "0:4f53cda18c2baa0c"
+   },
+   "changed": [],
+   "is_contract_error": true,
+   "message": "Invalid source tree",
+   "refused": "ContractError"
+  },
+  "source_tree_upper": {
+   "after": {
+    "all": "4f53cda18c2baa0c",
+    "reverse_history": "0:4f53cda18c2baa0c",
+    "reverse_progress": "0:4f53cda18c2baa0c",
+    "reverse_requests": "0:4f53cda18c2baa0c"
+   },
+   "before": {
+    "all": "4f53cda18c2baa0c",
+    "reverse_history": "0:4f53cda18c2baa0c",
+    "reverse_progress": "0:4f53cda18c2baa0c",
+    "reverse_requests": "0:4f53cda18c2baa0c"
+   },
+   "changed": [],
+   "is_contract_error": true,
+   "message": "Invalid source tree",
+   "refused": "ContractError"
+  },
+  "source_unknown": {
+   "after": {
+    "all": "4f53cda18c2baa0c",
+    "reverse_history": "0:4f53cda18c2baa0c",
+    "reverse_progress": "0:4f53cda18c2baa0c",
+    "reverse_requests": "0:4f53cda18c2baa0c"
+   },
+   "before": {
+    "all": "4f53cda18c2baa0c",
+    "reverse_history": "0:4f53cda18c2baa0c",
+    "reverse_progress": "0:4f53cda18c2baa0c",
+    "reverse_requests": "0:4f53cda18c2baa0c"
+   },
+   "changed": [],
+   "is_contract_error": true,
+   "message": "Source is dirty or unknown",
+   "refused": "ContractError"
+  },
+  "stage_empty": {
+   "after": {
+    "all": "4f53cda18c2baa0c",
+    "reverse_history": "0:4f53cda18c2baa0c",
+    "reverse_progress": "0:4f53cda18c2baa0c",
+    "reverse_requests": "0:4f53cda18c2baa0c"
+   },
+   "before": {
+    "all": "4f53cda18c2baa0c",
+    "reverse_history": "0:4f53cda18c2baa0c",
+    "reverse_progress": "0:4f53cda18c2baa0c",
+    "reverse_requests": "0:4f53cda18c2baa0c"
+   },
+   "changed": [],
+   "is_contract_error": true,
+   "message": "Unknown reverse stage or status",
+   "refused": "ContractError"
+  },
+  "stage_list": {
+   "after": {
+    "all": "4f53cda18c2baa0c",
+    "reverse_history": "0:4f53cda18c2baa0c",
+    "reverse_progress": "0:4f53cda18c2baa0c",
+    "reverse_requests": "0:4f53cda18c2baa0c"
+   },
+   "before": {
+    "all": "4f53cda18c2baa0c",
+    "reverse_history": "0:4f53cda18c2baa0c",
+    "reverse_progress": "0:4f53cda18c2baa0c",
+    "reverse_requests": "0:4f53cda18c2baa0c"
+   },
+   "changed": [],
+   "is_contract_error": true,
+   "message": "Unknown reverse stage or status",
+   "refused": "ContractError"
+  },
+  "stage_lower": {
+   "after": {
+    "all": "4f53cda18c2baa0c",
+    "reverse_history": "0:4f53cda18c2baa0c",
+    "reverse_progress": "0:4f53cda18c2baa0c",
+    "reverse_requests": "0:4f53cda18c2baa0c"
+   },
+   "before": {
+    "all": "4f53cda18c2baa0c",
+    "reverse_history": "0:4f53cda18c2baa0c",
+    "reverse_progress": "0:4f53cda18c2baa0c",
+    "reverse_requests": "0:4f53cda18c2baa0c"
+   },
+   "changed": [],
+   "is_contract_error": true,
+   "message": "Unknown reverse stage or status",
+   "refused": "ContractError"
+  },
+  "stage_none": {
+   "after": {
+    "all": "4f53cda18c2baa0c",
+    "reverse_history": "0:4f53cda18c2baa0c",
+    "reverse_progress": "0:4f53cda18c2baa0c",
+    "reverse_requests": "0:4f53cda18c2baa0c"
+   },
+   "before": {
+    "all": "4f53cda18c2baa0c",
+    "reverse_history": "0:4f53cda18c2baa0c",
+    "reverse_progress": "0:4f53cda18c2baa0c",
+    "reverse_requests": "0:4f53cda18c2baa0c"
+   },
+   "changed": [],
+   "is_contract_error": true,
+   "message": "Unknown reverse stage or status",
+   "refused": "ContractError"
+  },
+  "stage_unknown": {
+   "after": {
+    "all": "4f53cda18c2baa0c",
+    "reverse_history": "0:4f53cda18c2baa0c",
+    "reverse_progress": "0:4f53cda18c2baa0c",
+    "reverse_requests": "0:4f53cda18c2baa0c"
+   },
+   "before": {
+    "all": "4f53cda18c2baa0c",
+    "reverse_history": "0:4f53cda18c2baa0c",
+    "reverse_progress": "0:4f53cda18c2baa0c",
+    "reverse_requests": "0:4f53cda18c2baa0c"
+   },
+   "changed": [],
+   "is_contract_error": true,
+   "message": "Unknown reverse stage or status",
+   "refused": "ContractError"
+  },
+  "stale_generation_after_the_conflict_check": {
+   "after": {
+    "all": "bace0b0f0eaf989b",
+    "reverse_history": "3:489c607ce5c3db87",
+    "reverse_progress": "3:d48a2f329df322e5",
+    "reverse_requests": "3:244c02eddb2e604b"
+   },
+   "before": {
+    "all": "bace0b0f0eaf989b",
+    "reverse_history": "3:489c607ce5c3db87",
+    "reverse_progress": "3:d48a2f329df322e5",
+    "reverse_requests": "3:244c02eddb2e604b"
+   },
+   "changed": [],
+   "is_contract_error": true,
+   "message": "Stale reverse progress",
+   "refused": "ContractError"
+  },
+  "stale_generation_ahead": {
+   "after": {
+    "all": "bace0b0f0eaf989b",
+    "reverse_history": "3:489c607ce5c3db87",
+    "reverse_progress": "3:d48a2f329df322e5",
+    "reverse_requests": "3:244c02eddb2e604b"
+   },
+   "before": {
+    "all": "bace0b0f0eaf989b",
+    "reverse_history": "3:489c607ce5c3db87",
+    "reverse_progress": "3:d48a2f329df322e5",
+    "reverse_requests": "3:244c02eddb2e604b"
+   },
+   "changed": [],
+   "is_contract_error": true,
+   "message": "Stale reverse progress",
+   "refused": "ContractError"
+  },
+  "stale_generation_behind": {
+   "after": {
+    "all": "bace0b0f0eaf989b",
+    "reverse_history": "3:489c607ce5c3db87",
+    "reverse_progress": "3:d48a2f329df322e5",
+    "reverse_requests": "3:244c02eddb2e604b"
+   },
+   "before": {
+    "all": "bace0b0f0eaf989b",
+    "reverse_history": "3:489c607ce5c3db87",
+    "reverse_progress": "3:d48a2f329df322e5",
+    "reverse_requests": "3:244c02eddb2e604b"
+   },
+   "changed": [],
+   "is_contract_error": true,
+   "message": "Stale reverse progress",
+   "refused": "ContractError"
+  },
+  "status_empty": {
+   "after": {
+    "all": "4f53cda18c2baa0c",
+    "reverse_history": "0:4f53cda18c2baa0c",
+    "reverse_progress": "0:4f53cda18c2baa0c",
+    "reverse_requests": "0:4f53cda18c2baa0c"
+   },
+   "before": {
+    "all": "4f53cda18c2baa0c",
+    "reverse_history": "0:4f53cda18c2baa0c",
+    "reverse_progress": "0:4f53cda18c2baa0c",
+    "reverse_requests": "0:4f53cda18c2baa0c"
+   },
+   "changed": [],
+   "is_contract_error": true,
+   "message": "Unknown reverse stage or status",
+   "refused": "ContractError"
+  },
+  "status_none": {
+   "after": {
+    "all": "4f53cda18c2baa0c",
+    "reverse_history": "0:4f53cda18c2baa0c",
+    "reverse_progress": "0:4f53cda18c2baa0c",
+    "reverse_requests": "0:4f53cda18c2baa0c"
+   },
+   "before": {
+    "all": "4f53cda18c2baa0c",
+    "reverse_history": "0:4f53cda18c2baa0c",
+    "reverse_progress": "0:4f53cda18c2baa0c",
+    "reverse_requests": "0:4f53cda18c2baa0c"
+   },
+   "changed": [],
+   "is_contract_error": true,
+   "message": "Unknown reverse stage or status",
+   "refused": "ContractError"
+  },
+  "status_true": {
+   "after": {
+    "all": "4f53cda18c2baa0c",
+    "reverse_history": "0:4f53cda18c2baa0c",
+    "reverse_progress": "0:4f53cda18c2baa0c",
+    "reverse_requests": "0:4f53cda18c2baa0c"
+   },
+   "before": {
+    "all": "4f53cda18c2baa0c",
+    "reverse_history": "0:4f53cda18c2baa0c",
+    "reverse_progress": "0:4f53cda18c2baa0c",
+    "reverse_requests": "0:4f53cda18c2baa0c"
+   },
+   "changed": [],
+   "is_contract_error": true,
+   "message": "Unknown reverse stage or status",
+   "refused": "ContractError"
+  },
+  "status_unknown": {
+   "after": {
+    "all": "4f53cda18c2baa0c",
+    "reverse_history": "0:4f53cda18c2baa0c",
+    "reverse_progress": "0:4f53cda18c2baa0c",
+    "reverse_requests": "0:4f53cda18c2baa0c"
+   },
+   "before": {
+    "all": "4f53cda18c2baa0c",
+    "reverse_history": "0:4f53cda18c2baa0c",
+    "reverse_progress": "0:4f53cda18c2baa0c",
+    "reverse_requests": "0:4f53cda18c2baa0c"
+   },
+   "changed": [],
+   "is_contract_error": true,
+   "message": "Unknown reverse stage or status",
+   "refused": "ContractError"
+  },
+  "status_upper": {
+   "after": {
+    "all": "4f53cda18c2baa0c",
+    "reverse_history": "0:4f53cda18c2baa0c",
+    "reverse_progress": "0:4f53cda18c2baa0c",
+    "reverse_requests": "0:4f53cda18c2baa0c"
+   },
+   "before": {
+    "all": "4f53cda18c2baa0c",
+    "reverse_history": "0:4f53cda18c2baa0c",
+    "reverse_progress": "0:4f53cda18c2baa0c",
+    "reverse_requests": "0:4f53cda18c2baa0c"
+   },
+   "changed": [],
+   "is_contract_error": true,
+   "message": "Unknown reverse stage or status",
+   "refused": "ContractError"
+  }
+ },
+ "p7_racing_writers_and_integration_replay": {
+  "constants": {
+   "STAGES": [
+    "1-A",
+    "1-B",
+    "1-C",
+    "2"
+   ],
+   "STATUSES": [
+    "pending",
+    "partial",
+    "complete"
+   ]
+  },
+  "first": {
+   "after": {
+    "all": "0991d20586806b92",
+    "reverse_history": "1:a0f6c6e0a4e8660d",
+    "reverse_progress": "1:970e0f3e455c69dc",
+    "reverse_requests": "1:e4d87ff7de607f5a"
+   },
+   "before": {
+    "all": "4f53cda18c2baa0c",
+    "reverse_history": "0:4f53cda18c2baa0c",
+    "reverse_progress": "0:4f53cda18c2baa0c",
+    "reverse_requests": "0:4f53cda18c2baa0c"
+   },
+   "changed": [
+    "reverse_requests",
+    "reverse_progress",
+    "reverse_history",
+    "all"
+   ],
+   "value": "c521275a9d9b099243386f76339f29576a35f249f802c270c24335a6eea54355",
+   "view": {
+    "generation": 1,
+    "project": "p",
+    "releases": {
+     "1-A": [
+      "complete",
+      1
+     ]
+    },
+    "source": {
+     "commit": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+     "repository": "source-project",
+     "tree": "bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb"
+    }
+   }
+  },
+  "generation_2_release_1B": "complete",
+  "generation_3_releases": [
+   "1-A"
+  ],
+  "history_generations": [
+   1,
+   2,
+   3
+  ],
+  "history_rows_are_the_results": true,
+  "next": {
+   "after": {
+    "all": "32c0dbca2aa477ea",
+    "reverse_history": "2:9638a5c6e2ad2ca6",
+    "reverse_progress": "1:ce71860822f3dca5",
+    "reverse_requests": "2:f8fe28e22842bab9"
+   },
+   "before": {
+    "all": "0991d20586806b92",
+    "reverse_history": "1:a0f6c6e0a4e8660d",
+    "reverse_progress": "1:970e0f3e455c69dc",
+    "reverse_requests": "1:e4d87ff7de607f5a"
+   },
+   "changed": [
+    "reverse_requests",
+    "reverse_progress",
+    "reverse_history",
+    "all"
+   ],
+   "value": "3c36208128bcef87a4af7cabe6916726c699b26cdeb715d0cce6aba7582ec887",
+   "view": {
+    "generation": 2,
+    "project": "p",
+    "releases": {
+     "1-A": [
+      "complete",
+      1
+     ],
+     "1-B": [
+      "complete",
+      1
+     ]
+    },
+    "source": {
+     "commit": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+     "repository": "source-project",
+     "tree": "bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb"
+    }
+   }
+  },
+  "one_checkpoint": 1,
+  "one_history_row": [
+   1
+  ],
+  "progress_source_commit": "cccccccccccccccccccccccccccccccccccccccc",
+  "rebaseline": {
+   "after": {
+    "all": "e06eabfe4c60b6ac",
+    "reverse_history": "3:47eb6f0f3741f50b",
+    "reverse_progress": "1:d60481b38d454b3f",
+    "reverse_requests": "3:88d06856b6342887"
+   },
+   "before": {
+    "all": "32c0dbca2aa477ea",
+    "reverse_history": "2:9638a5c6e2ad2ca6",
+    "reverse_progress": "1:ce71860822f3dca5",
+    "reverse_requests": "2:f8fe28e22842bab9"
+   },
+   "changed": [
+    "reverse_requests",
+    "reverse_progress",
+    "reverse_history",
+    "all"
+   ],
+   "value": "ed31b3f80be67f5c4210030d30aba2453e23c9c2d78959647a340dd4ff9696e9",
+   "view": {
+    "generation": 3,
+    "project": "p",
+    "releases": {
+     "1-A": [
+      "partial",
+      "no-refs"
+     ]
+    },
+    "source": {
+     "commit": "cccccccccccccccccccccccccccccccccccccccc",
+     "repository": "source-project",
+     "tree": "bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb"
+    }
+   }
+  },
+  "reconnected_replay": {
+   "after": {
+    "all": "0991d20586806b92",
+    "reverse_history": "1:a0f6c6e0a4e8660d",
+    "reverse_progress": "1:970e0f3e455c69dc",
+    "reverse_requests": "1:e4d87ff7de607f5a"
+   },
+   "before": {
+    "all": "0991d20586806b92",
+    "reverse_history": "1:a0f6c6e0a4e8660d",
+    "reverse_progress": "1:970e0f3e455c69dc",
+    "reverse_requests": "1:e4d87ff7de607f5a"
+   },
+   "changed": [],
+   "value": "c521275a9d9b099243386f76339f29576a35f249f802c270c24335a6eea54355",
+   "view": {
+    "generation": 1,
+    "project": "p",
+    "releases": {
+     "1-A": [
+      "complete",
+      1
+     ]
+    },
+    "source": {
+     "commit": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+     "repository": "source-project",
+     "tree": "bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb"
+    }
+   }
+  },
+  "reconnected_replay_returns_the_first": true,
+  "second_stale": {
+   "after": {
+    "all": "0991d20586806b92",
+    "reverse_history": "1:a0f6c6e0a4e8660d",
+    "reverse_progress": "1:970e0f3e455c69dc",
+    "reverse_requests": "1:e4d87ff7de607f5a"
+   },
+   "before": {
+    "all": "0991d20586806b92",
+    "reverse_history": "1:a0f6c6e0a4e8660d",
+    "reverse_progress": "1:970e0f3e455c69dc",
+    "reverse_requests": "1:e4d87ff7de607f5a"
+   },
+   "changed": [],
+   "is_contract_error": true,
+   "message": "Stale reverse progress",
+   "refused": "ContractError"
+  },
+  "writer_a": {
+   "after": {
+    "all": "02510df44b5af2fe",
+    "reverse_history": "1:9943e66f2c1f7792",
+    "reverse_progress": "1:eabafffc12a4ecce",
+    "reverse_requests": "1:2ba2458a45e20b8c"
+   },
+   "before": {
+    "all": "4f53cda18c2baa0c",
+    "reverse_history": "0:4f53cda18c2baa0c",
+    "reverse_progress": "0:4f53cda18c2baa0c",
+    "reverse_requests": "0:4f53cda18c2baa0c"
+   },
+   "changed": [
+    "reverse_requests",
+    "reverse_progress",
+    "reverse_history",
+    "all"
+   ],
+   "value": "6a38922f44ff1e75fb263dba653bfe8f06635714c7006319a6b72c5c7afe082d",
+   "view": {
+    "generation": 1,
+    "project": "p",
+    "releases": {
+     "1-A": [
+      "partial",
+      "no-refs"
+     ]
+    },
+    "source": {
+     "commit": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+     "repository": "source-project",
+     "tree": "bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb"
+    }
+   }
+  },
+  "writer_b_stale": {
+   "after": {
+    "all": "02510df44b5af2fe",
+    "reverse_history": "1:9943e66f2c1f7792",
+    "reverse_progress": "1:eabafffc12a4ecce",
+    "reverse_requests": "1:2ba2458a45e20b8c"
+   },
+   "before": {
+    "all": "02510df44b5af2fe",
+    "reverse_history": "1:9943e66f2c1f7792",
+    "reverse_progress": "1:eabafffc12a4ecce",
+    "reverse_requests": "1:2ba2458a45e20b8c"
+   },
+   "changed": [],
+   "is_contract_error": true,
+   "message": "Stale reverse progress",
+   "refused": "ContractError"
+  }
+ }
+}

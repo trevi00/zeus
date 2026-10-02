@@ -1,0 +1,8 @@
+{
+ "family": "research.source_execution",
+ "description": "S8 source execution requests of M7 application/source_execution.py (SourceExecutions: _validate, request, claim, result, complete), characterized before the move: the five SourceExecutions tests of tests/test_research_audits.py (request deduplication and the cross-source refusal, the host result under an invalidated authority (pause, lease, deployment), the pause that cancels pending requests, the deployment recheck on consumption, the restart that reclaims an expired runner and fences its late result) plus labelled additions for every require, except and branch of the module (the malformed sources and commands, every authority of _validate, the statuses a claim skips, the expiry boundary, every refusal of the verified execution image, the receipt validation and binding, the missing and not-running rows), with the digests of source_execution_requests, source_execution_history and the whole store before and after every call; MemoryStore, the real Workflow over the packaged organization, scripted ids and clock, planted audit, release and image rows, no Docker, no PostgreSQL",
+ "reference_driver": "drivers/reference/s8_source_execution.py",
+ "target_driver": "drivers/target/s8_source_execution.py",
+ "golden": "goldens/reference/research.source_execution.json",
+ "slice": "S8"
+}

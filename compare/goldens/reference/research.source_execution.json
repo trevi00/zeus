@@ -1,0 +1,3102 @@
+{
+ "branch_coverage": {
+  "SourceExecutions.__init__": "build",
+  "_validate Workflow._owned": "e1 unknown_task, stale_generation, other_owner, lease_generation_changed_in_the_store, task_no_longer_running, lease_expired",
+  "_validate require activation active": "e1 paused_*, activation_*; e2 paused_cancels_pending; e3 result_when_paused",
+  "_validate require audit exists and has the request's source": "e1 cross_source_mismatch, other_*_mismatch, audit_missing, audit_has_another_source, audit_without_source_field, task_input_without_an_audit_id_looks_up_the_empty_id",
+  "_validate task input before the message details": "e1 task_input_is_read_before_the_message_details, empty_task_input_falls_back_to_the_message_details",
+  "claim except ContractError -> cancelled with the reason": "e2 paused_cancels_pending, cancelled_*, one_invalid_one_valid, paused_cancels_an_expired_running_row",
+  "claim reclaims an expired running row": "e2 running_one_microsecond_past_the_limit_is_reclaimed, restart_reclaims",
+  "claim require the verified execution image": "e2 image_*, cancel_then_refuse_rolls_back",
+  "claim returns None": "e2 nothing_pending, no_request_yet, second_claim_is_empty, claim_again_after_cancel",
+  "claim running row + owner + image + release": "e2 claim, claim_row_after, claim_uses_the_active_deployment",
+  "claim skips a running row inside its limit": "e2 running_exactly_at_the_limit_is_kept, running_inside_the_limit_is_kept, running_not_reclaimed",
+  "claim skips other statuses": "e2 skipped_statuses",
+  "complete except ContractError -> cancelled": "e4 invalidated_by_*, deployment_gone_cancels",
+  "complete fenced late result returns": "e4 late_result_*, row_missing_*, not_running_*, queued_row_without_an_owner_raises",
+  "complete history row always": "e4 history, late_result_of_the_replaced_runner, row_missing_keeps_the_evidence, not_running_keeps_the_evidence_only",
+  "complete receipt.validate": "e4 receipt_*",
+  "complete require the binding": "e4 binding_*",
+  "complete succeeded": "e4 complete, completed_row, the_new_runner_completes",
+  "request idempotent replay": "e1 replay, replay_returns_the_stored_row, active_again_replays",
+  "request put queued row": "e1 request, stored_rows",
+  "request require command": "e1 command_*, order_source_before_command, order_command_before_authority",
+  "request source.validate": "e1 invalid_source_*",
+  "result _validate": "e3 result_when_*",
+  "result require the owner": "e3 unknown_request, empty_request_id, other_task, other_generation, owner_checked_before_authority",
+  "result returns the row": "e3 queued_result, running_result, succeeded_result, cancelled_row_is_returned_without_a_deployment_check",
+  "result succeeded requires the deployed release": "e3 superseded_before_consumption, superseded_by_an_empty_deployment, superseded_by_no_deployment"
+ },
+ "cases_per_group": {
+  "e1_test_host_request_deduplicates_and_rejects_cross_source": 50,
+  "e2_test_host_queue_pause_cancels_pending_without_execution": 51,
+  "e3_test_completed_host_receipt_rechecks_deployment_on_consumption": 15,
+  "e4_test_host_result_preserves_evidence_but_cannot_cross_invalidated_authority": 55
+ },
+ "constants": {
+  "source_execution_seconds": 120,
+  "task_lease_seconds": 600
+ },
+ "e1_test_host_request_deduplicates_and_rejects_cross_source": {
+  "activation_absent": {
+   "after": {
+    "all": "ddee7f81e87bc3fa",
+    "source_execution_history": "0:4f53cda18c2baa0c",
+    "source_execution_requests": "0:4f53cda18c2baa0c"
+   },
+   "before": {
+    "all": "ddee7f81e87bc3fa",
+    "source_execution_history": "0:4f53cda18c2baa0c",
+    "source_execution_requests": "0:4f53cda18c2baa0c"
+   },
+   "changed": [],
+   "is_contract_error": true,
+   "message": "Source execution paused",
+   "refused": "ContractError"
+  },
+  "activation_draining": {
+   "after": {
+    "all": "6fe33ce32db10ae4",
+    "source_execution_history": "0:4f53cda18c2baa0c",
+    "source_execution_requests": "0:4f53cda18c2baa0c"
+   },
+   "before": {
+    "all": "6fe33ce32db10ae4",
+    "source_execution_history": "0:4f53cda18c2baa0c",
+    "source_execution_requests": "0:4f53cda18c2baa0c"
+   },
+   "changed": [],
+   "is_contract_error": true,
+   "message": "Source execution paused",
+   "refused": "ContractError"
+  },
+  "activation_status_missing": {
+   "after": {
+    "all": "77c4c0dedd7411fe",
+    "source_execution_history": "0:4f53cda18c2baa0c",
+    "source_execution_requests": "0:4f53cda18c2baa0c"
+   },
+   "before": {
+    "all": "77c4c0dedd7411fe",
+    "source_execution_history": "0:4f53cda18c2baa0c",
+    "source_execution_requests": "0:4f53cda18c2baa0c"
+   },
+   "changed": [],
+   "is_contract_error": true,
+   "message": "Source execution paused",
+   "refused": "ContractError"
+  },
+  "activation_status_none": {
+   "after": {
+    "all": "52aae4ad00cc3b9c",
+    "source_execution_history": "0:4f53cda18c2baa0c",
+    "source_execution_requests": "0:4f53cda18c2baa0c"
+   },
+   "before": {
+    "all": "52aae4ad00cc3b9c",
+    "source_execution_history": "0:4f53cda18c2baa0c",
+    "source_execution_requests": "0:4f53cda18c2baa0c"
+   },
+   "changed": [],
+   "is_contract_error": true,
+   "message": "Source execution paused",
+   "refused": "ContractError"
+  },
+  "activation_status_upper": {
+   "after": {
+    "all": "b60958e7ce1368d4",
+    "source_execution_history": "0:4f53cda18c2baa0c",
+    "source_execution_requests": "0:4f53cda18c2baa0c"
+   },
+   "before": {
+    "all": "b60958e7ce1368d4",
+    "source_execution_history": "0:4f53cda18c2baa0c",
+    "source_execution_requests": "0:4f53cda18c2baa0c"
+   },
+   "changed": [],
+   "is_contract_error": true,
+   "message": "Source execution paused",
+   "refused": "ContractError"
+  },
+  "active_again_replays": {
+   "after": {
+    "all": "6608519109585a43",
+    "source_execution_history": "0:4f53cda18c2baa0c",
+    "source_execution_requests": "5:f7cd7a1dcdef61a4"
+   },
+   "before": {
+    "all": "6608519109585a43",
+    "source_execution_history": "0:4f53cda18c2baa0c",
+    "source_execution_requests": "5:f7cd7a1dcdef61a4"
+   },
+   "changed": [],
+   "value": "40aca236663b4f8e0c0d1a54d2947a6ae7d2318668a860dc45ee959a4bfe0061",
+   "view": {
+    "at": "2026-09-22T00:00:00+00:00",
+    "command": [
+     "python",
+     "--version"
+    ],
+    "id": "9328fbd8e29942e8bd056d9395d2bf8dda69f36aa70f1375b7b4334cc1d900bd",
+    "source": {
+     "commit": "1111111111111111111111111111111111111111",
+     "manifest_ref": "sha256:0000000000000000000000000000000000000000000000000000000000000000",
+     "repository": "https://github.com/fixture/repo",
+     "tree": "2222222222222222222222222222222222222222",
+     "version": 1
+    },
+    "status": "queued",
+    "task": [
+     "5eed0000-0000-4000-8000-000000000001",
+     1
+    ]
+   }
+  },
+  "audit_has_another_source": {
+   "after": {
+    "all": "43ef210c22cc0da2",
+    "source_execution_history": "0:4f53cda18c2baa0c",
+    "source_execution_requests": "0:4f53cda18c2baa0c"
+   },
+   "before": {
+    "all": "43ef210c22cc0da2",
+    "source_execution_history": "0:4f53cda18c2baa0c",
+    "source_execution_requests": "0:4f53cda18c2baa0c"
+   },
+   "changed": [],
+   "is_contract_error": true,
+   "message": "Source execution assignment mismatch",
+   "refused": "ContractError"
+  },
+  "audit_missing": {
+   "after": {
+    "all": "2645a3bc0ed1be2b",
+    "source_execution_history": "0:4f53cda18c2baa0c",
+    "source_execution_requests": "0:4f53cda18c2baa0c"
+   },
+   "before": {
+    "all": "2645a3bc0ed1be2b",
+    "source_execution_history": "0:4f53cda18c2baa0c",
+    "source_execution_requests": "0:4f53cda18c2baa0c"
+   },
+   "changed": [],
+   "is_contract_error": true,
+   "message": "Source execution assignment mismatch",
+   "refused": "ContractError"
+  },
+  "audit_without_source_field": {
+   "after": {
+    "all": "dfc4cbf59e71b47b",
+    "source_execution_history": "0:4f53cda18c2baa0c",
+    "source_execution_requests": "0:4f53cda18c2baa0c"
+   },
+   "before": {
+    "all": "dfc4cbf59e71b47b",
+    "source_execution_history": "0:4f53cda18c2baa0c",
+    "source_execution_requests": "0:4f53cda18c2baa0c"
+   },
+   "changed": [],
+   "is_contract_error": false,
+   "message": "'source'",
+   "refused": "KeyError"
+  },
+  "command_bytes_arg": {
+   "after": {
+    "all": "b92dea94ff838985",
+    "source_execution_history": "0:4f53cda18c2baa0c",
+    "source_execution_requests": "2:71ef9cafbe9334f9"
+   },
+   "before": {
+    "all": "b92dea94ff838985",
+    "source_execution_history": "0:4f53cda18c2baa0c",
+    "source_execution_requests": "2:71ef9cafbe9334f9"
+   },
+   "changed": [],
+   "is_contract_error": true,
+   "message": "Invalid command",
+   "refused": "ContractError"
+  },
+  "command_dict_is_iterated": {
+   "after": {
+    "all": "7a0b07738bc9274a",
+    "source_execution_history": "0:4f53cda18c2baa0c",
+    "source_execution_requests": "5:f7cd7a1dcdef61a4"
+   },
+   "before": {
+    "all": "fbb89769862249b4",
+    "source_execution_history": "0:4f53cda18c2baa0c",
+    "source_execution_requests": "4:dc018adf658b41d6"
+   },
+   "changed": [
+    "source_execution_requests",
+    "all"
+   ],
+   "value": "d8bb7d29ecbb09782f209b5b38c9aa7408ccf158fac5be39a1f47ed5a8cd55b2",
+   "view": {
+    "at": "2026-09-22T00:00:00.023000+00:00",
+    "command": {
+     "a": 1
+    },
+    "id": "2c500404b84a8789518859bca8d9fc5bfad085947a8fe83533b481f0555490e3",
+    "source": {
+     "commit": "1111111111111111111111111111111111111111",
+     "manifest_ref": "sha256:0000000000000000000000000000000000000000000000000000000000000000",
+     "repository": "https://github.com/fixture/repo",
+     "tree": "2222222222222222222222222222222222222222",
+     "version": 1
+    },
+    "status": "queued",
+    "task": [
+     "5eed0000-0000-4000-8000-000000000001",
+     1
+    ]
+   }
+  },
+  "command_empty": {
+   "after": {
+    "all": "b92dea94ff838985",
+    "source_execution_history": "0:4f53cda18c2baa0c",
+    "source_execution_requests": "2:71ef9cafbe9334f9"
+   },
+   "before": {
+    "all": "b92dea94ff838985",
+    "source_execution_history": "0:4f53cda18c2baa0c",
+    "source_execution_requests": "2:71ef9cafbe9334f9"
+   },
+   "changed": [],
+   "is_contract_error": true,
+   "message": "Invalid command",
+   "refused": "ContractError"
+  },
+  "command_empty_arg": {
+   "after": {
+    "all": "b92dea94ff838985",
+    "source_execution_history": "0:4f53cda18c2baa0c",
+    "source_execution_requests": "2:71ef9cafbe9334f9"
+   },
+   "before": {
+    "all": "b92dea94ff838985",
+    "source_execution_history": "0:4f53cda18c2baa0c",
+    "source_execution_requests": "2:71ef9cafbe9334f9"
+   },
+   "changed": [],
+   "is_contract_error": true,
+   "message": "Invalid command",
+   "refused": "ContractError"
+  },
+  "command_empty_string": {
+   "after": {
+    "all": "b92dea94ff838985",
+    "source_execution_history": "0:4f53cda18c2baa0c",
+    "source_execution_requests": "2:71ef9cafbe9334f9"
+   },
+   "before": {
+    "all": "b92dea94ff838985",
+    "source_execution_history": "0:4f53cda18c2baa0c",
+    "source_execution_requests": "2:71ef9cafbe9334f9"
+   },
+   "changed": [],
+   "is_contract_error": true,
+   "message": "Invalid command",
+   "refused": "ContractError"
+  },
+  "command_int_arg": {
+   "after": {
+    "all": "b92dea94ff838985",
+    "source_execution_history": "0:4f53cda18c2baa0c",
+    "source_execution_requests": "2:71ef9cafbe9334f9"
+   },
+   "before": {
+    "all": "b92dea94ff838985",
+    "source_execution_history": "0:4f53cda18c2baa0c",
+    "source_execution_requests": "2:71ef9cafbe9334f9"
+   },
+   "changed": [],
+   "is_contract_error": true,
+   "message": "Invalid command",
+   "refused": "ContractError"
+  },
+  "command_none": {
+   "after": {
+    "all": "b92dea94ff838985",
+    "source_execution_history": "0:4f53cda18c2baa0c",
+    "source_execution_requests": "2:71ef9cafbe9334f9"
+   },
+   "before": {
+    "all": "b92dea94ff838985",
+    "source_execution_history": "0:4f53cda18c2baa0c",
+    "source_execution_requests": "2:71ef9cafbe9334f9"
+   },
+   "changed": [],
+   "is_contract_error": true,
+   "message": "Invalid command",
+   "refused": "ContractError"
+  },
+  "command_none_arg": {
+   "after": {
+    "all": "b92dea94ff838985",
+    "source_execution_history": "0:4f53cda18c2baa0c",
+    "source_execution_requests": "2:71ef9cafbe9334f9"
+   },
+   "before": {
+    "all": "b92dea94ff838985",
+    "source_execution_history": "0:4f53cda18c2baa0c",
+    "source_execution_requests": "2:71ef9cafbe9334f9"
+   },
+   "changed": [],
+   "is_contract_error": true,
+   "message": "Invalid command",
+   "refused": "ContractError"
+  },
+  "command_second_empty": {
+   "after": {
+    "all": "b92dea94ff838985",
+    "source_execution_history": "0:4f53cda18c2baa0c",
+    "source_execution_requests": "2:71ef9cafbe9334f9"
+   },
+   "before": {
+    "all": "b92dea94ff838985",
+    "source_execution_history": "0:4f53cda18c2baa0c",
+    "source_execution_requests": "2:71ef9cafbe9334f9"
+   },
+   "changed": [],
+   "is_contract_error": true,
+   "message": "Invalid command",
+   "refused": "ContractError"
+  },
+  "command_string_is_iterated": {
+   "after": {
+    "all": "23880a4fe6749440",
+    "source_execution_history": "0:4f53cda18c2baa0c",
+    "source_execution_requests": "3:85b38ef8e5bd8ede"
+   },
+   "before": {
+    "all": "b92dea94ff838985",
+    "source_execution_history": "0:4f53cda18c2baa0c",
+    "source_execution_requests": "2:71ef9cafbe9334f9"
+   },
+   "changed": [
+    "source_execution_requests",
+    "all"
+   ],
+   "value": "ed5a9d313d853bb733ac704b9bfb6314471a3e313a830b6d14b4bcb0b4e08f31",
+   "view": {
+    "at": "2026-09-22T00:00:00.021000+00:00",
+    "command": "ls",
+    "id": "14c4af5c2e51d1993b6ec07a418d5963f61ae6ebbec594f77de643ae8bc6d226",
+    "source": {
+     "commit": "1111111111111111111111111111111111111111",
+     "manifest_ref": "sha256:0000000000000000000000000000000000000000000000000000000000000000",
+     "repository": "https://github.com/fixture/repo",
+     "tree": "2222222222222222222222222222222222222222",
+     "version": 1
+    },
+    "status": "queued",
+    "task": [
+     "5eed0000-0000-4000-8000-000000000001",
+     1
+    ]
+   }
+  },
+  "command_tuple_is_accepted": {
+   "after": {
+    "all": "fbb89769862249b4",
+    "source_execution_history": "0:4f53cda18c2baa0c",
+    "source_execution_requests": "4:dc018adf658b41d6"
+   },
+   "before": {
+    "all": "23880a4fe6749440",
+    "source_execution_history": "0:4f53cda18c2baa0c",
+    "source_execution_requests": "3:85b38ef8e5bd8ede"
+   },
+   "changed": [
+    "source_execution_requests",
+    "all"
+   ],
+   "value": "851342c170d25ef25932ee80afc40ef6cc28d6ce37140aed8d7648a53d57689c",
+   "view": {
+    "at": "2026-09-22T00:00:00.022000+00:00",
+    "command": [
+     "true",
+     "-v"
+    ],
+    "id": "c50d6f51fc9b5f24dfac539c78e7ec1c593d56369c205e80545625bd0064e2cd",
+    "source": {
+     "commit": "1111111111111111111111111111111111111111",
+     "manifest_ref": "sha256:0000000000000000000000000000000000000000000000000000000000000000",
+     "repository": "https://github.com/fixture/repo",
+     "tree": "2222222222222222222222222222222222222222",
+     "version": 1
+    },
+    "status": "queued",
+    "task": [
+     "5eed0000-0000-4000-8000-000000000001",
+     1
+    ]
+   }
+  },
+  "cross_source_mismatch": {
+   "after": {
+    "all": "b92dea94ff838985",
+    "source_execution_history": "0:4f53cda18c2baa0c",
+    "source_execution_requests": "2:71ef9cafbe9334f9"
+   },
+   "before": {
+    "all": "b92dea94ff838985",
+    "source_execution_history": "0:4f53cda18c2baa0c",
+    "source_execution_requests": "2:71ef9cafbe9334f9"
+   },
+   "changed": [],
+   "is_contract_error": true,
+   "message": "Source execution assignment mismatch",
+   "refused": "ContractError"
+  },
+  "empty_task_input_falls_back_to_the_message_details": {
+   "after": {
+    "all": "19e8927aa2bcdd65",
+    "source_execution_history": "0:4f53cda18c2baa0c",
+    "source_execution_requests": "1:c062d55dfa204a8e"
+   },
+   "before": {
+    "all": "809aa4e7700ea222",
+    "source_execution_history": "0:4f53cda18c2baa0c",
+    "source_execution_requests": "0:4f53cda18c2baa0c"
+   },
+   "changed": [
+    "source_execution_requests",
+    "all"
+   ],
+   "value": "436f27e5172a2d2fc33c267a797fc319e1d27d8d316a4abffc79a59b6e38b67d",
+   "view": {
+    "at": "2026-09-22T00:00:00.039000+00:00",
+    "command": [
+     "python",
+     "--version"
+    ],
+    "id": "d719ac2d0036a535921a6a5865997a6fded66f570572d70f4f34826596d57435",
+    "source": {
+     "commit": "1111111111111111111111111111111111111111",
+     "manifest_ref": "sha256:0000000000000000000000000000000000000000000000000000000000000000",
+     "repository": "https://github.com/fixture/repo",
+     "tree": "2222222222222222222222222222222222222222",
+     "version": 1
+    },
+    "status": "queued",
+    "task": [
+     "5eed0000-0000-4000-8000-00000000000b",
+     1
+    ]
+   }
+  },
+  "invalid_source_commit_short": {
+   "after": {
+    "all": "b92dea94ff838985",
+    "source_execution_history": "0:4f53cda18c2baa0c",
+    "source_execution_requests": "2:71ef9cafbe9334f9"
+   },
+   "before": {
+    "all": "b92dea94ff838985",
+    "source_execution_history": "0:4f53cda18c2baa0c",
+    "source_execution_requests": "2:71ef9cafbe9334f9"
+   },
+   "changed": [],
+   "is_contract_error": true,
+   "message": "Invalid Git identity",
+   "refused": "ContractError"
+  },
+  "invalid_source_manifest_ref": {
+   "after": {
+    "all": "b92dea94ff838985",
+    "source_execution_history": "0:4f53cda18c2baa0c",
+    "source_execution_requests": "2:71ef9cafbe9334f9"
+   },
+   "before": {
+    "all": "b92dea94ff838985",
+    "source_execution_history": "0:4f53cda18c2baa0c",
+    "source_execution_requests": "2:71ef9cafbe9334f9"
+   },
+   "changed": [],
+   "is_contract_error": true,
+   "message": "Invalid immutable evidence reference",
+   "refused": "ContractError"
+  },
+  "invalid_source_repository": {
+   "after": {
+    "all": "b92dea94ff838985",
+    "source_execution_history": "0:4f53cda18c2baa0c",
+    "source_execution_requests": "2:71ef9cafbe9334f9"
+   },
+   "before": {
+    "all": "b92dea94ff838985",
+    "source_execution_history": "0:4f53cda18c2baa0c",
+    "source_execution_requests": "2:71ef9cafbe9334f9"
+   },
+   "changed": [],
+   "is_contract_error": true,
+   "message": "Noncanonical repository identity",
+   "refused": "ContractError"
+  },
+  "invalid_source_repository_git_suffix": {
+   "after": {
+    "all": "b92dea94ff838985",
+    "source_execution_history": "0:4f53cda18c2baa0c",
+    "source_execution_requests": "2:71ef9cafbe9334f9"
+   },
+   "before": {
+    "all": "b92dea94ff838985",
+    "source_execution_history": "0:4f53cda18c2baa0c",
+    "source_execution_requests": "2:71ef9cafbe9334f9"
+   },
+   "changed": [],
+   "is_contract_error": true,
+   "message": "Noncanonical repository identity",
+   "refused": "ContractError"
+  },
+  "invalid_source_tree_upper": {
+   "after": {
+    "all": "b92dea94ff838985",
+    "source_execution_history": "0:4f53cda18c2baa0c",
+    "source_execution_requests": "2:71ef9cafbe9334f9"
+   },
+   "before": {
+    "all": "b92dea94ff838985",
+    "source_execution_history": "0:4f53cda18c2baa0c",
+    "source_execution_requests": "2:71ef9cafbe9334f9"
+   },
+   "changed": [],
+   "is_contract_error": true,
+   "message": "Invalid Git identity",
+   "refused": "ContractError"
+  },
+  "invalid_source_version": {
+   "after": {
+    "all": "b92dea94ff838985",
+    "source_execution_history": "0:4f53cda18c2baa0c",
+    "source_execution_requests": "2:71ef9cafbe9334f9"
+   },
+   "before": {
+    "all": "b92dea94ff838985",
+    "source_execution_history": "0:4f53cda18c2baa0c",
+    "source_execution_requests": "2:71ef9cafbe9334f9"
+   },
+   "changed": [],
+   "is_contract_error": true,
+   "message": "Unsupported audit version",
+   "refused": "ContractError"
+  },
+  "lease_expired": {
+   "after": {
+    "all": "687f5b22e4fe62af",
+    "source_execution_history": "0:4f53cda18c2baa0c",
+    "source_execution_requests": "0:4f53cda18c2baa0c"
+   },
+   "before": {
+    "all": "687f5b22e4fe62af",
+    "source_execution_history": "0:4f53cda18c2baa0c",
+    "source_execution_requests": "0:4f53cda18c2baa0c"
+   },
+   "changed": [],
+   "is_contract_error": true,
+   "message": "Stale or expired task execution",
+   "refused": "ContractError"
+  },
+  "lease_generation_changed_in_the_store": {
+   "after": {
+    "all": "0b607f8842815f2d",
+    "source_execution_history": "0:4f53cda18c2baa0c",
+    "source_execution_requests": "0:4f53cda18c2baa0c"
+   },
+   "before": {
+    "all": "0b607f8842815f2d",
+    "source_execution_history": "0:4f53cda18c2baa0c",
+    "source_execution_requests": "0:4f53cda18c2baa0c"
+   },
+   "changed": [],
+   "is_contract_error": true,
+   "message": "Stale or expired task execution",
+   "refused": "ContractError"
+  },
+  "order_command_before_authority": {
+   "after": {
+    "all": "7a0b07738bc9274a",
+    "source_execution_history": "0:4f53cda18c2baa0c",
+    "source_execution_requests": "5:f7cd7a1dcdef61a4"
+   },
+   "before": {
+    "all": "7a0b07738bc9274a",
+    "source_execution_history": "0:4f53cda18c2baa0c",
+    "source_execution_requests": "5:f7cd7a1dcdef61a4"
+   },
+   "changed": [],
+   "is_contract_error": true,
+   "message": "Invalid command",
+   "refused": "ContractError"
+  },
+  "order_source_before_command": {
+   "after": {
+    "all": "7a0b07738bc9274a",
+    "source_execution_history": "0:4f53cda18c2baa0c",
+    "source_execution_requests": "5:f7cd7a1dcdef61a4"
+   },
+   "before": {
+    "all": "7a0b07738bc9274a",
+    "source_execution_history": "0:4f53cda18c2baa0c",
+    "source_execution_requests": "5:f7cd7a1dcdef61a4"
+   },
+   "changed": [],
+   "is_contract_error": true,
+   "message": "Unsupported audit version",
+   "refused": "ContractError"
+  },
+  "other_command_is_another_request": {
+   "after": {
+    "all": "b92dea94ff838985",
+    "source_execution_history": "0:4f53cda18c2baa0c",
+    "source_execution_requests": "2:71ef9cafbe9334f9"
+   },
+   "before": {
+    "all": "3729bade5718307f",
+    "source_execution_history": "0:4f53cda18c2baa0c",
+    "source_execution_requests": "1:f1fb83f78d899e04"
+   },
+   "changed": [
+    "source_execution_requests",
+    "all"
+   ],
+   "value": "8f23cb208853663b04586a95bd2e6a220f296eecc1dd036c513de8120c0e09a3",
+   "view": {
+    "at": "2026-09-22T00:00:00.002000+00:00",
+    "command": [
+     "true"
+    ],
+    "id": "1be0f3ff35f0b1895188c4d727b14dbf67b5a72bd209b73315fc22a14fab0562",
+    "source": {
+     "commit": "1111111111111111111111111111111111111111",
+     "manifest_ref": "sha256:0000000000000000000000000000000000000000000000000000000000000000",
+     "repository": "https://github.com/fixture/repo",
+     "tree": "2222222222222222222222222222222222222222",
+     "version": 1
+    },
+    "status": "queued",
+    "task": [
+     "5eed0000-0000-4000-8000-000000000001",
+     1
+    ]
+   }
+  },
+  "other_command_other_id": true,
+  "other_commit_mismatch": {
+   "after": {
+    "all": "b92dea94ff838985",
+    "source_execution_history": "0:4f53cda18c2baa0c",
+    "source_execution_requests": "2:71ef9cafbe9334f9"
+   },
+   "before": {
+    "all": "b92dea94ff838985",
+    "source_execution_history": "0:4f53cda18c2baa0c",
+    "source_execution_requests": "2:71ef9cafbe9334f9"
+   },
+   "changed": [],
+   "is_contract_error": true,
+   "message": "Source execution assignment mismatch",
+   "refused": "ContractError"
+  },
+  "other_manifest_mismatch": {
+   "after": {
+    "all": "b92dea94ff838985",
+    "source_execution_history": "0:4f53cda18c2baa0c",
+    "source_execution_requests": "2:71ef9cafbe9334f9"
+   },
+   "before": {
+    "all": "b92dea94ff838985",
+    "source_execution_history": "0:4f53cda18c2baa0c",
+    "source_execution_requests": "2:71ef9cafbe9334f9"
+   },
+   "changed": [],
+   "is_contract_error": true,
+   "message": "Source execution assignment mismatch",
+   "refused": "ContractError"
+  },
+  "other_owner": {
+   "after": {
+    "all": "7e1e29970956aa15",
+    "source_execution_history": "0:4f53cda18c2baa0c",
+    "source_execution_requests": "0:4f53cda18c2baa0c"
+   },
+   "before": {
+    "all": "7e1e29970956aa15",
+    "source_execution_history": "0:4f53cda18c2baa0c",
+    "source_execution_requests": "0:4f53cda18c2baa0c"
+   },
+   "changed": [],
+   "is_contract_error": true,
+   "message": "Stale or expired task execution",
+   "refused": "ContractError"
+  },
+  "other_tree_mismatch": {
+   "after": {
+    "all": "b92dea94ff838985",
+    "source_execution_history": "0:4f53cda18c2baa0c",
+    "source_execution_requests": "2:71ef9cafbe9334f9"
+   },
+   "before": {
+    "all": "b92dea94ff838985",
+    "source_execution_history": "0:4f53cda18c2baa0c",
+    "source_execution_requests": "2:71ef9cafbe9334f9"
+   },
+   "changed": [],
+   "is_contract_error": true,
+   "message": "Source execution assignment mismatch",
+   "refused": "ContractError"
+  },
+  "paused_refuses_a_new_request": {
+   "after": {
+    "all": "f84efb011e259a9e",
+    "source_execution_history": "0:4f53cda18c2baa0c",
+    "source_execution_requests": "5:f7cd7a1dcdef61a4"
+   },
+   "before": {
+    "all": "f84efb011e259a9e",
+    "source_execution_history": "0:4f53cda18c2baa0c",
+    "source_execution_requests": "5:f7cd7a1dcdef61a4"
+   },
+   "changed": [],
+   "is_contract_error": true,
+   "message": "Source execution paused",
+   "refused": "ContractError"
+  },
+  "paused_refuses_a_queued_replay": {
+   "after": {
+    "all": "f84efb011e259a9e",
+    "source_execution_history": "0:4f53cda18c2baa0c",
+    "source_execution_requests": "5:f7cd7a1dcdef61a4"
+   },
+   "before": {
+    "all": "f84efb011e259a9e",
+    "source_execution_history": "0:4f53cda18c2baa0c",
+    "source_execution_requests": "5:f7cd7a1dcdef61a4"
+   },
+   "changed": [],
+   "is_contract_error": true,
+   "message": "Source execution paused",
+   "refused": "ContractError"
+  },
+  "replay": {
+   "after": {
+    "all": "3729bade5718307f",
+    "source_execution_history": "0:4f53cda18c2baa0c",
+    "source_execution_requests": "1:f1fb83f78d899e04"
+   },
+   "before": {
+    "all": "3729bade5718307f",
+    "source_execution_history": "0:4f53cda18c2baa0c",
+    "source_execution_requests": "1:f1fb83f78d899e04"
+   },
+   "changed": [],
+   "value": "40aca236663b4f8e0c0d1a54d2947a6ae7d2318668a860dc45ee959a4bfe0061",
+   "view": {
+    "at": "2026-09-22T00:00:00+00:00",
+    "command": [
+     "python",
+     "--version"
+    ],
+    "id": "9328fbd8e29942e8bd056d9395d2bf8dda69f36aa70f1375b7b4334cc1d900bd",
+    "source": {
+     "commit": "1111111111111111111111111111111111111111",
+     "manifest_ref": "sha256:0000000000000000000000000000000000000000000000000000000000000000",
+     "repository": "https://github.com/fixture/repo",
+     "tree": "2222222222222222222222222222222222222222",
+     "version": 1
+    },
+    "status": "queued",
+    "task": [
+     "5eed0000-0000-4000-8000-000000000001",
+     1
+    ]
+   }
+  },
+  "replay_returns_the_stored_row": true,
+  "request": {
+   "after": {
+    "all": "3729bade5718307f",
+    "source_execution_history": "0:4f53cda18c2baa0c",
+    "source_execution_requests": "1:f1fb83f78d899e04"
+   },
+   "before": {
+    "all": "ace175d06be744ac",
+    "source_execution_history": "0:4f53cda18c2baa0c",
+    "source_execution_requests": "0:4f53cda18c2baa0c"
+   },
+   "changed": [
+    "source_execution_requests",
+    "all"
+   ],
+   "value": "40aca236663b4f8e0c0d1a54d2947a6ae7d2318668a860dc45ee959a4bfe0061",
+   "view": {
+    "at": "2026-09-22T00:00:00+00:00",
+    "command": [
+     "python",
+     "--version"
+    ],
+    "id": "9328fbd8e29942e8bd056d9395d2bf8dda69f36aa70f1375b7b4334cc1d900bd",
+    "source": {
+     "commit": "1111111111111111111111111111111111111111",
+     "manifest_ref": "sha256:0000000000000000000000000000000000000000000000000000000000000000",
+     "repository": "https://github.com/fixture/repo",
+     "tree": "2222222222222222222222222222222222222222",
+     "version": 1
+    },
+    "status": "queued",
+    "task": [
+     "5eed0000-0000-4000-8000-000000000001",
+     1
+    ]
+   }
+  },
+  "rows_after_three_calls": 2,
+  "stale_generation": {
+   "after": {
+    "all": "7e1e29970956aa15",
+    "source_execution_history": "0:4f53cda18c2baa0c",
+    "source_execution_requests": "0:4f53cda18c2baa0c"
+   },
+   "before": {
+    "all": "7e1e29970956aa15",
+    "source_execution_history": "0:4f53cda18c2baa0c",
+    "source_execution_requests": "0:4f53cda18c2baa0c"
+   },
+   "changed": [],
+   "is_contract_error": true,
+   "message": "Stale or expired task execution",
+   "refused": "ContractError"
+  },
+  "stored_rows": [
+   {
+    "at": "2026-09-22T00:00:00+00:00",
+    "command": [
+     "python",
+     "--version"
+    ],
+    "id": "9328fbd8e29942e8bd056d9395d2bf8dda69f36aa70f1375b7b4334cc1d900bd",
+    "source": {
+     "commit": "1111111111111111111111111111111111111111",
+     "manifest_ref": "sha256:0000000000000000000000000000000000000000000000000000000000000000",
+     "repository": "https://github.com/fixture/repo",
+     "tree": "2222222222222222222222222222222222222222",
+     "version": 1
+    },
+    "status": "queued",
+    "task": [
+     "5eed0000-0000-4000-8000-000000000001",
+     1
+    ]
+   }
+  ],
+  "task_input_is_read_before_the_message_details": {
+   "after": {
+    "all": "9991f53a63c1ba72",
+    "source_execution_history": "0:4f53cda18c2baa0c",
+    "source_execution_requests": "0:4f53cda18c2baa0c"
+   },
+   "before": {
+    "all": "9991f53a63c1ba72",
+    "source_execution_history": "0:4f53cda18c2baa0c",
+    "source_execution_requests": "0:4f53cda18c2baa0c"
+   },
+   "changed": [],
+   "is_contract_error": true,
+   "message": "Source execution assignment mismatch",
+   "refused": "ContractError"
+  },
+  "task_input_without_an_audit_id_looks_up_the_empty_id": {
+   "after": {
+    "all": "033276c7c79a54ab",
+    "source_execution_history": "0:4f53cda18c2baa0c",
+    "source_execution_requests": "0:4f53cda18c2baa0c"
+   },
+   "before": {
+    "all": "033276c7c79a54ab",
+    "source_execution_history": "0:4f53cda18c2baa0c",
+    "source_execution_requests": "0:4f53cda18c2baa0c"
+   },
+   "changed": [],
+   "is_contract_error": true,
+   "message": "Source execution assignment mismatch",
+   "refused": "ContractError"
+  },
+  "task_no_longer_running": {
+   "after": {
+    "all": "a9428bed422bbd7b",
+    "source_execution_history": "0:4f53cda18c2baa0c",
+    "source_execution_requests": "0:4f53cda18c2baa0c"
+   },
+   "before": {
+    "all": "a9428bed422bbd7b",
+    "source_execution_history": "0:4f53cda18c2baa0c",
+    "source_execution_requests": "0:4f53cda18c2baa0c"
+   },
+   "changed": [],
+   "is_contract_error": true,
+   "message": "Stale or expired task execution",
+   "refused": "ContractError"
+  },
+  "unknown_task": {
+   "after": {
+    "all": "7e1e29970956aa15",
+    "source_execution_history": "0:4f53cda18c2baa0c",
+    "source_execution_requests": "0:4f53cda18c2baa0c"
+   },
+   "before": {
+    "all": "7e1e29970956aa15",
+    "source_execution_history": "0:4f53cda18c2baa0c",
+    "source_execution_requests": "0:4f53cda18c2baa0c"
+   },
+   "changed": [],
+   "is_contract_error": true,
+   "message": "Stale or expired task execution",
+   "refused": "ContractError"
+  }
+ },
+ "e2_test_host_queue_pause_cancels_pending_without_execution": {
+  "cancel_then_refuse_first_is_audit_1": false,
+  "cancel_then_refuse_rolls_back": {
+   "after": {
+    "all": "c44c6a16f2bb1103",
+    "source_execution_history": "0:4f53cda18c2baa0c",
+    "source_execution_requests": "2:6d627eb8eb282410"
+   },
+   "before": {
+    "all": "c44c6a16f2bb1103",
+    "source_execution_history": "0:4f53cda18c2baa0c",
+    "source_execution_requests": "2:6d627eb8eb282410"
+   },
+   "changed": [],
+   "is_contract_error": true,
+   "message": "Verified execution image unavailable",
+   "refused": "ContractError"
+  },
+  "cancel_then_refuse_rows": [
+   "queued",
+   "queued"
+  ],
+  "cancelled_audit_missing": {
+   "after": {
+    "all": "bdb69d7ef7e354e0",
+    "source_execution_history": "0:4f53cda18c2baa0c",
+    "source_execution_requests": "1:4a9af117aeba5cc7"
+   },
+   "before": {
+    "all": "9443578b6450ffc4",
+    "source_execution_history": "0:4f53cda18c2baa0c",
+    "source_execution_requests": "1:ceb4053edf0a4861"
+   },
+   "changed": [
+    "source_execution_requests",
+    "all"
+   ],
+   "value": "74234e98afe7498fb5daf1f36ac2d78acc339464f950703b8c019892f982b90b",
+   "view": null
+  },
+  "cancelled_audit_missing_rows": [
+   {
+    "at": "2026-09-22T00:10:05.073000+00:00",
+    "command": [
+     "python",
+     "--version"
+    ],
+    "id": "efaf26dbbd7a56e576e13d78781d7bd5aacc7476b25f3856b45c2bad8ff606ee",
+    "reason": "Source execution assignment mismatch",
+    "source": {
+     "commit": "1111111111111111111111111111111111111111",
+     "manifest_ref": "sha256:0000000000000000000000000000000000000000000000000000000000000000",
+     "repository": "https://github.com/fixture/repo",
+     "tree": "2222222222222222222222222222222222222222",
+     "version": 1
+    },
+    "status": "cancelled",
+    "task": [
+     "5eed0000-0000-4000-8000-000000000024",
+     1
+    ]
+   }
+  ],
+  "cancelled_audit_source": {
+   "after": {
+    "all": "67289d7973174598",
+    "source_execution_history": "0:4f53cda18c2baa0c",
+    "source_execution_requests": "1:45b0bb846f93cd6b"
+   },
+   "before": {
+    "all": "63061ad694d53c1e",
+    "source_execution_history": "0:4f53cda18c2baa0c",
+    "source_execution_requests": "1:a6d8088c54fd83cc"
+   },
+   "changed": [
+    "source_execution_requests",
+    "all"
+   ],
+   "value": "74234e98afe7498fb5daf1f36ac2d78acc339464f950703b8c019892f982b90b",
+   "view": null
+  },
+  "cancelled_audit_source_rows": [
+   {
+    "at": "2026-09-22T00:10:05.071000+00:00",
+    "command": [
+     "python",
+     "--version"
+    ],
+    "id": "c8e62c6e50f7afb6e8ba5bc509b7d897946dbec42f8df5fec4eeccb1909ccddd",
+    "reason": "Source execution assignment mismatch",
+    "source": {
+     "commit": "1111111111111111111111111111111111111111",
+     "manifest_ref": "sha256:0000000000000000000000000000000000000000000000000000000000000000",
+     "repository": "https://github.com/fixture/repo",
+     "tree": "2222222222222222222222222222222222222222",
+     "version": 1
+    },
+    "status": "cancelled",
+    "task": [
+     "5eed0000-0000-4000-8000-000000000023",
+     1
+    ]
+   }
+  ],
+  "cancelled_lease_generation": {
+   "after": {
+    "all": "4272276eaa47e55c",
+    "source_execution_history": "0:4f53cda18c2baa0c",
+    "source_execution_requests": "1:bb9eba7c321d1aa4"
+   },
+   "before": {
+    "all": "92a2b00d90ab6a2b",
+    "source_execution_history": "0:4f53cda18c2baa0c",
+    "source_execution_requests": "1:abb8dbfe52bb7b97"
+   },
+   "changed": [
+    "source_execution_requests",
+    "all"
+   ],
+   "value": "74234e98afe7498fb5daf1f36ac2d78acc339464f950703b8c019892f982b90b",
+   "view": null
+  },
+  "cancelled_lease_generation_rows": [
+   {
+    "at": "2026-09-22T00:10:05.069000+00:00",
+    "command": [
+     "python",
+     "--version"
+    ],
+    "id": "bfe35fb00ea6d5955d73ba8e6dcea7b9566ba043a176923f2e7ec47c5cdcdd8b",
+    "reason": "Stale or expired task execution",
+    "source": {
+     "commit": "1111111111111111111111111111111111111111",
+     "manifest_ref": "sha256:0000000000000000000000000000000000000000000000000000000000000000",
+     "repository": "https://github.com/fixture/repo",
+     "tree": "2222222222222222222222222222222222222222",
+     "version": 1
+    },
+    "status": "cancelled",
+    "task": [
+     "5eed0000-0000-4000-8000-000000000022",
+     1
+    ]
+   }
+  ],
+  "claim": {
+   "after": {
+    "all": "9c26c6a9c3d3916c",
+    "source_execution_history": "0:4f53cda18c2baa0c",
+    "source_execution_requests": "1:cc69596097c9051a"
+   },
+   "before": {
+    "all": "65458234ab95a0fa",
+    "source_execution_history": "0:4f53cda18c2baa0c",
+    "source_execution_requests": "1:e8d97a581ce8bd8b"
+   },
+   "changed": [
+    "source_execution_requests",
+    "all"
+   ],
+   "value": "8adbf04e1e3f78771da2c6b2c772a40dc29bfa1cae6ad43e722c5a76805db718",
+   "view": {
+    "at": "2026-09-22T00:10:05.048000+00:00",
+    "command": [
+     "python",
+     "--version"
+    ],
+    "id": "27e7a1ed06e501e43df6ef97a22e0da7e5dec294d391b49cda49ce32397546ed",
+    "image": "sha256:aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+    "owner": "5eed0000-0000-4000-8000-000000000011",
+    "release_id": "rel-1",
+    "source": {
+     "commit": "1111111111111111111111111111111111111111",
+     "manifest_ref": "sha256:0000000000000000000000000000000000000000000000000000000000000000",
+     "repository": "https://github.com/fixture/repo",
+     "tree": "2222222222222222222222222222222222222222",
+     "version": 1
+    },
+    "started_at": "2026-09-22T00:10:05.049000+00:00",
+    "status": "running",
+    "task": [
+     "5eed0000-0000-4000-8000-000000000010",
+     1
+    ]
+   }
+  },
+  "claim_again_after_cancel": {
+   "after": {
+    "all": "d204dc281491b371",
+    "source_execution_history": "0:4f53cda18c2baa0c",
+    "source_execution_requests": "1:d0d43894e3c3257c"
+   },
+   "before": {
+    "all": "d204dc281491b371",
+    "source_execution_history": "0:4f53cda18c2baa0c",
+    "source_execution_requests": "1:d0d43894e3c3257c"
+   },
+   "changed": [],
+   "value": "74234e98afe7498fb5daf1f36ac2d78acc339464f950703b8c019892f982b90b",
+   "view": null
+  },
+  "claim_row_after": [
+   {
+    "at": "2026-09-22T00:10:05.048000+00:00",
+    "command": [
+     "python",
+     "--version"
+    ],
+    "id": "27e7a1ed06e501e43df6ef97a22e0da7e5dec294d391b49cda49ce32397546ed",
+    "image": "sha256:aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+    "owner": "5eed0000-0000-4000-8000-000000000011",
+    "release_id": "rel-1",
+    "source": {
+     "commit": "1111111111111111111111111111111111111111",
+     "manifest_ref": "sha256:0000000000000000000000000000000000000000000000000000000000000000",
+     "repository": "https://github.com/fixture/repo",
+     "tree": "2222222222222222222222222222222222222222",
+     "version": 1
+    },
+    "started_at": "2026-09-22T00:10:05.049000+00:00",
+    "status": "running",
+    "task": [
+     "5eed0000-0000-4000-8000-000000000010",
+     1
+    ]
+   }
+  ],
+  "claim_uses_the_active_deployment": {
+   "after": {
+    "all": "9a105772fe2e6ab5",
+    "source_execution_history": "0:4f53cda18c2baa0c",
+    "source_execution_requests": "1:309d11bc304ea6e5"
+   },
+   "before": {
+    "all": "6c2f48b169f623c7",
+    "source_execution_history": "0:4f53cda18c2baa0c",
+    "source_execution_requests": "1:2846309d37369e7b"
+   },
+   "changed": [
+    "source_execution_requests",
+    "all"
+   ],
+   "value": "b48ea170c8324bddfef9900e2cb207436d2b9a8bdca3e1a94c4ec7e1ad828445",
+   "view": {
+    "at": "2026-09-22T00:10:05.110000+00:00",
+    "command": [
+     "python",
+     "--version"
+    ],
+    "id": "b69832f973ebd408d01418b88acd7d44f096e86c92bfda7f07e98d37eca3de24",
+    "image": "sha256:bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb",
+    "owner": "5eed0000-0000-4000-8000-00000000003a",
+    "release_id": "rel-2",
+    "source": {
+     "commit": "1111111111111111111111111111111111111111",
+     "manifest_ref": "sha256:0000000000000000000000000000000000000000000000000000000000000000",
+     "repository": "https://github.com/fixture/repo",
+     "tree": "2222222222222222222222222222222222222222",
+     "version": 1
+    },
+    "started_at": "2026-09-22T00:10:05.111000+00:00",
+    "status": "running",
+    "task": [
+     "5eed0000-0000-4000-8000-000000000039",
+     1
+    ]
+   }
+  },
+  "constants": {
+   "source_execution_seconds": 120
+  },
+  "image_deployment_empty": {
+   "after": {
+    "all": "cdb9a336f3d3ad33",
+    "source_execution_history": "0:4f53cda18c2baa0c",
+    "source_execution_requests": "1:a7377c7fab5b77f2"
+   },
+   "before": {
+    "all": "cdb9a336f3d3ad33",
+    "source_execution_history": "0:4f53cda18c2baa0c",
+    "source_execution_requests": "1:a7377c7fab5b77f2"
+   },
+   "changed": [],
+   "is_contract_error": true,
+   "message": "Verified execution image unavailable",
+   "refused": "ContractError"
+  },
+  "image_deployment_release_other": {
+   "after": {
+    "all": "382f06f9ec9ecce2",
+    "source_execution_history": "0:4f53cda18c2baa0c",
+    "source_execution_requests": "1:41ab34d3633e05f7"
+   },
+   "before": {
+    "all": "382f06f9ec9ecce2",
+    "source_execution_history": "0:4f53cda18c2baa0c",
+    "source_execution_requests": "1:41ab34d3633e05f7"
+   },
+   "changed": [],
+   "is_contract_error": true,
+   "message": "Verified execution image unavailable",
+   "refused": "ContractError"
+  },
+  "image_deployment_revision_differs": {
+   "after": {
+    "all": "2b6ed43f4235bd9f",
+    "source_execution_history": "0:4f53cda18c2baa0c",
+    "source_execution_requests": "1:909a63feec769f7c"
+   },
+   "before": {
+    "all": "2b6ed43f4235bd9f",
+    "source_execution_history": "0:4f53cda18c2baa0c",
+    "source_execution_requests": "1:909a63feec769f7c"
+   },
+   "changed": [],
+   "is_contract_error": true,
+   "message": "Verified execution image unavailable",
+   "refused": "ContractError"
+  },
+  "image_deployment_revision_missing": {
+   "after": {
+    "all": "8b7263a2141a31ea",
+    "source_execution_history": "0:4f53cda18c2baa0c",
+    "source_execution_requests": "1:b8abd7d02b6900a6"
+   },
+   "before": {
+    "all": "8b7263a2141a31ea",
+    "source_execution_history": "0:4f53cda18c2baa0c",
+    "source_execution_requests": "1:b8abd7d02b6900a6"
+   },
+   "changed": [],
+   "is_contract_error": false,
+   "message": "'revision'",
+   "refused": "KeyError"
+  },
+  "image_deployment_without_release": {
+   "after": {
+    "all": "fbd1dce80fe4a35b",
+    "source_execution_history": "0:4f53cda18c2baa0c",
+    "source_execution_requests": "1:a499f90b6469346d"
+   },
+   "before": {
+    "all": "fbd1dce80fe4a35b",
+    "source_execution_history": "0:4f53cda18c2baa0c",
+    "source_execution_requests": "1:a499f90b6469346d"
+   },
+   "changed": [],
+   "is_contract_error": true,
+   "message": "Verified execution image unavailable",
+   "refused": "ContractError"
+  },
+  "image_image_empty": {
+   "after": {
+    "all": "c67c34e951d74142",
+    "source_execution_history": "0:4f53cda18c2baa0c",
+    "source_execution_requests": "1:86c659093ac9d93f"
+   },
+   "before": {
+    "all": "c67c34e951d74142",
+    "source_execution_history": "0:4f53cda18c2baa0c",
+    "source_execution_requests": "1:86c659093ac9d93f"
+   },
+   "changed": [],
+   "is_contract_error": true,
+   "message": "Verified execution image unavailable",
+   "refused": "ContractError"
+  },
+  "image_image_not_a_digest": {
+   "after": {
+    "all": "aa611a6fe29509c4",
+    "source_execution_history": "0:4f53cda18c2baa0c",
+    "source_execution_requests": "1:c7a9a8b65b49c93c"
+   },
+   "before": {
+    "all": "aa611a6fe29509c4",
+    "source_execution_history": "0:4f53cda18c2baa0c",
+    "source_execution_requests": "1:c7a9a8b65b49c93c"
+   },
+   "changed": [],
+   "is_contract_error": true,
+   "message": "Verified execution image unavailable",
+   "refused": "ContractError"
+  },
+  "image_image_not_text": {
+   "after": {
+    "all": "93ba143f464abae4",
+    "source_execution_history": "0:4f53cda18c2baa0c",
+    "source_execution_requests": "1:7b9fb53b66ac43ac"
+   },
+   "before": {
+    "all": "93ba143f464abae4",
+    "source_execution_history": "0:4f53cda18c2baa0c",
+    "source_execution_requests": "1:7b9fb53b66ac43ac"
+   },
+   "changed": [],
+   "is_contract_error": false,
+   "message": "'int' object has no attribute 'startswith'",
+   "refused": "AttributeError"
+  },
+  "image_image_revision_differs": {
+   "after": {
+    "all": "61cb50dc66c123e6",
+    "source_execution_history": "0:4f53cda18c2baa0c",
+    "source_execution_requests": "1:6fae14a21cc1f55f"
+   },
+   "before": {
+    "all": "61cb50dc66c123e6",
+    "source_execution_history": "0:4f53cda18c2baa0c",
+    "source_execution_requests": "1:6fae14a21cc1f55f"
+   },
+   "changed": [],
+   "is_contract_error": true,
+   "message": "Verified execution image unavailable",
+   "refused": "ContractError"
+  },
+  "image_image_row_empty": {
+   "after": {
+    "all": "44d37ef5f3efad37",
+    "source_execution_history": "0:4f53cda18c2baa0c",
+    "source_execution_requests": "1:b69e4ca30d1ba3a7"
+   },
+   "before": {
+    "all": "44d37ef5f3efad37",
+    "source_execution_history": "0:4f53cda18c2baa0c",
+    "source_execution_requests": "1:b69e4ca30d1ba3a7"
+   },
+   "changed": [],
+   "is_contract_error": true,
+   "message": "Verified execution image unavailable",
+   "refused": "ContractError"
+  },
+  "image_no_deployment_row": {
+   "after": {
+    "all": "783a4c56d00c139f",
+    "source_execution_history": "0:4f53cda18c2baa0c",
+    "source_execution_requests": "1:9c2a28ab34cf6e11"
+   },
+   "before": {
+    "all": "783a4c56d00c139f",
+    "source_execution_history": "0:4f53cda18c2baa0c",
+    "source_execution_requests": "1:9c2a28ab34cf6e11"
+   },
+   "changed": [],
+   "is_contract_error": true,
+   "message": "Verified execution image unavailable",
+   "refused": "ContractError"
+  },
+  "image_no_image_row": {
+   "after": {
+    "all": "ffb76a41a409294e",
+    "source_execution_history": "0:4f53cda18c2baa0c",
+    "source_execution_requests": "1:b392d109e5f669d0"
+   },
+   "before": {
+    "all": "ffb76a41a409294e",
+    "source_execution_history": "0:4f53cda18c2baa0c",
+    "source_execution_requests": "1:b392d109e5f669d0"
+   },
+   "changed": [],
+   "is_contract_error": true,
+   "message": "Verified execution image unavailable",
+   "refused": "ContractError"
+  },
+  "image_release_missing": {
+   "after": {
+    "all": "1917f705499914e0",
+    "source_execution_history": "0:4f53cda18c2baa0c",
+    "source_execution_requests": "1:a78d36a97bef81a2"
+   },
+   "before": {
+    "all": "1917f705499914e0",
+    "source_execution_history": "0:4f53cda18c2baa0c",
+    "source_execution_requests": "1:a78d36a97bef81a2"
+   },
+   "changed": [],
+   "is_contract_error": true,
+   "message": "Verified execution image unavailable",
+   "refused": "ContractError"
+  },
+  "image_release_status_missing": {
+   "after": {
+    "all": "420ded44dee5c11d",
+    "source_execution_history": "0:4f53cda18c2baa0c",
+    "source_execution_requests": "1:13625bdbab6441b2"
+   },
+   "before": {
+    "all": "420ded44dee5c11d",
+    "source_execution_history": "0:4f53cda18c2baa0c",
+    "source_execution_requests": "1:13625bdbab6441b2"
+   },
+   "changed": [],
+   "is_contract_error": false,
+   "message": "'status'",
+   "refused": "KeyError"
+  },
+  "image_release_superseded": {
+   "after": {
+    "all": "aedea260cc7a1942",
+    "source_execution_history": "0:4f53cda18c2baa0c",
+    "source_execution_requests": "1:e6d4a7e947abf0cb"
+   },
+   "before": {
+    "all": "aedea260cc7a1942",
+    "source_execution_history": "0:4f53cda18c2baa0c",
+    "source_execution_requests": "1:e6d4a7e947abf0cb"
+   },
+   "changed": [],
+   "is_contract_error": true,
+   "message": "Verified execution image unavailable",
+   "refused": "ContractError"
+  },
+  "no_request_yet": {
+   "after": {
+    "all": "16f1a0c1fed9d31e",
+    "source_execution_history": "0:4f53cda18c2baa0c",
+    "source_execution_requests": "0:4f53cda18c2baa0c"
+   },
+   "before": {
+    "all": "16f1a0c1fed9d31e",
+    "source_execution_history": "0:4f53cda18c2baa0c",
+    "source_execution_requests": "0:4f53cda18c2baa0c"
+   },
+   "changed": [],
+   "value": "74234e98afe7498fb5daf1f36ac2d78acc339464f950703b8c019892f982b90b",
+   "view": null
+  },
+  "nothing_pending": {
+   "after": {
+    "all": "3ffe748972bb1cf5",
+    "source_execution_history": "0:4f53cda18c2baa0c",
+    "source_execution_requests": "0:4f53cda18c2baa0c"
+   },
+   "before": {
+    "all": "3ffe748972bb1cf5",
+    "source_execution_history": "0:4f53cda18c2baa0c",
+    "source_execution_requests": "0:4f53cda18c2baa0c"
+   },
+   "changed": [],
+   "value": "74234e98afe7498fb5daf1f36ac2d78acc339464f950703b8c019892f982b90b",
+   "view": null
+  },
+  "one_invalid_one_valid": {
+   "after": {
+    "all": "bfcfa70ad6d8251d",
+    "source_execution_history": "0:4f53cda18c2baa0c",
+    "source_execution_requests": "2:b63e21fddcf7b9de"
+   },
+   "before": {
+    "all": "0361021806124cc2",
+    "source_execution_history": "0:4f53cda18c2baa0c",
+    "source_execution_requests": "2:1e9b2a7c9bca89b6"
+   },
+   "changed": [
+    "source_execution_requests",
+    "all"
+   ],
+   "value": "c61ff590277d32f8ffe26b154553ae97321f90d09621ad562433ea5667a15682",
+   "view": {
+    "at": "2026-09-22T00:10:05.076000+00:00",
+    "command": [
+     "other"
+    ],
+    "id": "70cb80fa2a5bf426e8ba42bd83faef84988c7b0c2c9a29ac2ebb845889da22b1",
+    "image": "sha256:aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+    "owner": "5eed0000-0000-4000-8000-000000000027",
+    "release_id": "rel-1",
+    "source": {
+     "commit": "1111111111111111111111111111111111111111",
+     "manifest_ref": "sha256:0000000000000000000000000000000000000000000000000000000000000000",
+     "repository": "https://github.com/fixture/repo",
+     "tree": "2222222222222222222222222222222222222222",
+     "version": 1
+    },
+    "started_at": "2026-09-22T00:10:05.076000+00:00",
+    "status": "running",
+    "task": [
+     "5eed0000-0000-4000-8000-000000000026",
+     1
+    ]
+   }
+  },
+  "one_invalid_one_valid_rows": [
+   [
+    false,
+    "cancelled",
+    "Source execution assignment mismatch"
+   ],
+   [
+    true,
+    "running",
+    ""
+   ]
+  ],
+  "paused_cancels_an_expired_running_row": {
+   "after": {
+    "all": "fa41f4e7f94a60f4",
+    "source_execution_history": "0:4f53cda18c2baa0c",
+    "source_execution_requests": "1:8cdbf9ba07a15105"
+   },
+   "before": {
+    "all": "34819372f6e9a0eb",
+    "source_execution_history": "0:4f53cda18c2baa0c",
+    "source_execution_requests": "1:d7ef3ec42a076dac"
+   },
+   "changed": [
+    "source_execution_requests",
+    "all"
+   ],
+   "value": "74234e98afe7498fb5daf1f36ac2d78acc339464f950703b8c019892f982b90b",
+   "view": null
+  },
+  "paused_cancels_pending": {
+   "after": {
+    "all": "d204dc281491b371",
+    "source_execution_history": "0:4f53cda18c2baa0c",
+    "source_execution_requests": "1:d0d43894e3c3257c"
+   },
+   "before": {
+    "all": "a6f4c02bfa3750d6",
+    "source_execution_history": "0:4f53cda18c2baa0c",
+    "source_execution_requests": "1:3d1cb9141370bfed"
+   },
+   "changed": [
+    "source_execution_requests",
+    "all"
+   ],
+   "value": "74234e98afe7498fb5daf1f36ac2d78acc339464f950703b8c019892f982b90b",
+   "view": null
+  },
+  "paused_row": [
+   {
+    "at": "2026-09-22T00:10:05.064000+00:00",
+    "command": [
+     "python",
+     "--version"
+    ],
+    "id": "7feb83d8b30e5047674f2ec942621275487b5fa827e41b1affa8db42d092eb38",
+    "reason": "Source execution paused",
+    "source": {
+     "commit": "1111111111111111111111111111111111111111",
+     "manifest_ref": "sha256:0000000000000000000000000000000000000000000000000000000000000000",
+     "repository": "https://github.com/fixture/repo",
+     "tree": "2222222222222222222222222222222222222222",
+     "version": 1
+    },
+    "status": "cancelled",
+    "task": [
+     "5eed0000-0000-4000-8000-00000000001f",
+     1
+    ]
+   }
+  ],
+  "paused_running_row": [
+   {
+    "at": "2026-09-22T00:10:05.067000+00:00",
+    "command": [
+     "python",
+     "--version"
+    ],
+    "id": "d98ad8746f1c4dec8ff25116b1b8ebe20e41c7bb8d7acf9a6018daffdf80d92d",
+    "image": "sha256:aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+    "owner": "5eed0000-0000-4000-8000-000000000021",
+    "reason": "Source execution paused",
+    "release_id": "rel-1",
+    "source": {
+     "commit": "1111111111111111111111111111111111111111",
+     "manifest_ref": "sha256:0000000000000000000000000000000000000000000000000000000000000000",
+     "repository": "https://github.com/fixture/repo",
+     "tree": "2222222222222222222222222222222222222222",
+     "version": 1
+    },
+    "started_at": "2026-09-22T00:06:25.068000+00:00",
+    "status": "cancelled",
+    "task": [
+     "5eed0000-0000-4000-8000-000000000020",
+     1
+    ]
+   }
+  ],
+  "reclaimed_owner_differs": true,
+  "restart_image_and_release_kept": [
+   "sha256:aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+   "rel-1",
+   "running"
+  ],
+  "restart_owners_differ": true,
+  "restart_reclaims": {
+   "after": {
+    "all": "2c527d106b7c477d",
+    "source_execution_history": "0:4f53cda18c2baa0c",
+    "source_execution_requests": "1:00dad6e5045e6108"
+   },
+   "before": {
+    "all": "b58fddf6fbc4a2a6",
+    "source_execution_history": "0:4f53cda18c2baa0c",
+    "source_execution_requests": "1:bcf595edcbb85d1a"
+   },
+   "changed": [
+    "source_execution_requests",
+    "all"
+   ],
+   "value": "cc11892ccefebfd56c9565d3ea960fee959d03d91b8ae9c8ed315d763f1cc004",
+   "view": {
+    "at": "2026-09-22T00:10:05.058000+00:00",
+    "command": [
+     "python",
+     "--version"
+    ],
+    "id": "b2e0f39f57940b07385330c8e180c2ab4fe5dfc3a51934a0362be05c1a8157f7",
+    "image": "sha256:aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+    "owner": "5eed0000-0000-4000-8000-00000000001a",
+    "release_id": "rel-1",
+    "source": {
+     "commit": "1111111111111111111111111111111111111111",
+     "manifest_ref": "sha256:0000000000000000000000000000000000000000000000000000000000000000",
+     "repository": "https://github.com/fixture/repo",
+     "tree": "2222222222222222222222222222222222222222",
+     "version": 1
+    },
+    "started_at": "2026-09-22T00:10:05.059000+00:00",
+    "status": "running",
+    "task": [
+     "5eed0000-0000-4000-8000-000000000018",
+     1
+    ]
+   }
+  },
+  "running_exactly_at_the_limit_is_kept": {
+   "after": {
+    "all": "68dd30138cf9d33a",
+    "source_execution_history": "0:4f53cda18c2baa0c",
+    "source_execution_requests": "1:817b3332aaddf53a"
+   },
+   "before": {
+    "all": "68dd30138cf9d33a",
+    "source_execution_history": "0:4f53cda18c2baa0c",
+    "source_execution_requests": "1:817b3332aaddf53a"
+   },
+   "changed": [],
+   "value": "74234e98afe7498fb5daf1f36ac2d78acc339464f950703b8c019892f982b90b",
+   "view": null
+  },
+  "running_inside_the_limit_is_kept": {
+   "after": {
+    "all": "7e76a12d8f4455fa",
+    "source_execution_history": "0:4f53cda18c2baa0c",
+    "source_execution_requests": "1:5667b4f8849dedf5"
+   },
+   "before": {
+    "all": "7e76a12d8f4455fa",
+    "source_execution_history": "0:4f53cda18c2baa0c",
+    "source_execution_requests": "1:5667b4f8849dedf5"
+   },
+   "changed": [],
+   "value": "74234e98afe7498fb5daf1f36ac2d78acc339464f950703b8c019892f982b90b",
+   "view": null
+  },
+  "running_not_reclaimed": [
+   {
+    "at": "2026-09-22T00:10:05.048000+00:00",
+    "command": [
+     "python",
+     "--version"
+    ],
+    "id": "27e7a1ed06e501e43df6ef97a22e0da7e5dec294d391b49cda49ce32397546ed",
+    "image": "sha256:aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+    "owner": "5eed0000-0000-4000-8000-000000000011",
+    "release_id": "rel-1",
+    "source": {
+     "commit": "1111111111111111111111111111111111111111",
+     "manifest_ref": "sha256:0000000000000000000000000000000000000000000000000000000000000000",
+     "repository": "https://github.com/fixture/repo",
+     "tree": "2222222222222222222222222222222222222222",
+     "version": 1
+    },
+    "started_at": "2026-09-22T00:10:05.049000+00:00",
+    "status": "running",
+    "task": [
+     "5eed0000-0000-4000-8000-000000000010",
+     1
+    ]
+   }
+  ],
+  "running_one_microsecond_past_the_limit_is_reclaimed": {
+   "after": {
+    "all": "d07761f311465cb2",
+    "source_execution_history": "0:4f53cda18c2baa0c",
+    "source_execution_requests": "1:27bf1be5a823f4e6"
+   },
+   "before": {
+    "all": "c304e7a6292d4e5a",
+    "source_execution_history": "0:4f53cda18c2baa0c",
+    "source_execution_requests": "1:2c5cc8920c01c0c2"
+   },
+   "changed": [
+    "source_execution_requests",
+    "all"
+   ],
+   "value": "fe062ec16de74fcdc0d33a77e49e91be68a193c10ff7a9a22bcc4054133dc6fc",
+   "view": {
+    "at": "2026-09-22T00:10:05.053000+00:00",
+    "command": [
+     "python",
+     "--version"
+    ],
+    "id": "f02738993828c164ae159a65eda2dd37dc827a76c3729688bd5a5ada89475e4a",
+    "image": "sha256:aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+    "owner": "5eed0000-0000-4000-8000-000000000015",
+    "release_id": "rel-1",
+    "source": {
+     "commit": "1111111111111111111111111111111111111111",
+     "manifest_ref": "sha256:0000000000000000000000000000000000000000000000000000000000000000",
+     "repository": "https://github.com/fixture/repo",
+     "tree": "2222222222222222222222222222222222222222",
+     "version": 1
+    },
+    "started_at": "2026-09-22T00:10:05.055000+00:00",
+    "status": "running",
+    "task": [
+     "5eed0000-0000-4000-8000-000000000013",
+     1
+    ]
+   }
+  },
+  "running_with_an_unparsable_started_at": {
+   "after": {
+    "all": "e9950a1982de72ca",
+    "source_execution_history": "0:4f53cda18c2baa0c",
+    "source_execution_requests": "1:810781b291b47a47"
+   },
+   "before": {
+    "all": "e9950a1982de72ca",
+    "source_execution_history": "0:4f53cda18c2baa0c",
+    "source_execution_requests": "1:810781b291b47a47"
+   },
+   "changed": [],
+   "is_contract_error": false,
+   "message": "Invalid isoformat string: 'yesterday'",
+   "refused": "ValueError"
+  },
+  "running_without_started_at": {
+   "after": {
+    "all": "bbdb3f37e0442955",
+    "source_execution_history": "0:4f53cda18c2baa0c",
+    "source_execution_requests": "1:ef6336a9d219aaa2"
+   },
+   "before": {
+    "all": "bbdb3f37e0442955",
+    "source_execution_history": "0:4f53cda18c2baa0c",
+    "source_execution_requests": "1:ef6336a9d219aaa2"
+   },
+   "changed": [],
+   "is_contract_error": false,
+   "message": "'started_at'",
+   "refused": "KeyError"
+  },
+  "second_claim_is_empty": {
+   "after": {
+    "all": "9c26c6a9c3d3916c",
+    "source_execution_history": "0:4f53cda18c2baa0c",
+    "source_execution_requests": "1:cc69596097c9051a"
+   },
+   "before": {
+    "all": "9c26c6a9c3d3916c",
+    "source_execution_history": "0:4f53cda18c2baa0c",
+    "source_execution_requests": "1:cc69596097c9051a"
+   },
+   "changed": [],
+   "value": "74234e98afe7498fb5daf1f36ac2d78acc339464f950703b8c019892f982b90b",
+   "view": null
+  },
+  "skipped_statuses": {
+   "after": {
+    "all": "42469344610263d3",
+    "source_execution_history": "0:4f53cda18c2baa0c",
+    "source_execution_requests": "6:31a711f40dfdee18"
+   },
+   "before": {
+    "all": "42469344610263d3",
+    "source_execution_history": "0:4f53cda18c2baa0c",
+    "source_execution_requests": "6:31a711f40dfdee18"
+   },
+   "changed": [],
+   "value": "74234e98afe7498fb5daf1f36ac2d78acc339464f950703b8c019892f982b90b",
+   "view": null
+  },
+  "the_first_row_is_the_task_of_audit_1": true,
+  "the_valid_one_is_next": {
+   "after": {
+    "all": "bfcfa70ad6d8251d",
+    "source_execution_history": "0:4f53cda18c2baa0c",
+    "source_execution_requests": "2:b63e21fddcf7b9de"
+   },
+   "before": {
+    "all": "bfcfa70ad6d8251d",
+    "source_execution_history": "0:4f53cda18c2baa0c",
+    "source_execution_requests": "2:b63e21fddcf7b9de"
+   },
+   "changed": [],
+   "value": "74234e98afe7498fb5daf1f36ac2d78acc339464f950703b8c019892f982b90b",
+   "view": null
+  }
+ },
+ "e3_test_completed_host_receipt_rechecks_deployment_on_consumption": {
+  "cancelled_row_is_returned_without_a_deployment_check": {
+   "after": {
+    "all": "b4456bf057222630",
+    "source_execution_history": "0:4f53cda18c2baa0c",
+    "source_execution_requests": "1:2f1ab6da12d52a43"
+   },
+   "before": {
+    "all": "b4456bf057222630",
+    "source_execution_history": "0:4f53cda18c2baa0c",
+    "source_execution_requests": "1:2f1ab6da12d52a43"
+   },
+   "changed": [],
+   "value": "dbd8c6ffeac15da4ee43d6e273681b34a85cfe280cce70344df736f9fc4243e0",
+   "view": {
+    "at": "2026-09-22T00:10:05.131000+00:00",
+    "command": [
+     "python",
+     "--version"
+    ],
+    "id": "6fb5d924ef523683d341b09ede7f7a2dab9db856bd0754b3cb66629bf296f383",
+    "image": "sha256:aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+    "owner": "5eed0000-0000-4000-8000-000000000042",
+    "reason": "planted",
+    "release_id": "rel-1",
+    "source": {
+     "commit": "1111111111111111111111111111111111111111",
+     "manifest_ref": "sha256:0000000000000000000000000000000000000000000000000000000000000000",
+     "repository": "https://github.com/fixture/repo",
+     "tree": "2222222222222222222222222222222222222222",
+     "version": 1
+    },
+    "started_at": "2026-09-22T00:10:05.132000+00:00",
+    "status": "cancelled",
+    "task": [
+     "5eed0000-0000-4000-8000-000000000041",
+     1
+    ]
+   }
+  },
+  "empty_request_id": {
+   "after": {
+    "all": "057e8c294e0571d8",
+    "source_execution_history": "0:4f53cda18c2baa0c",
+    "source_execution_requests": "1:ef805442db7b96cf"
+   },
+   "before": {
+    "all": "057e8c294e0571d8",
+    "source_execution_history": "0:4f53cda18c2baa0c",
+    "source_execution_requests": "1:ef805442db7b96cf"
+   },
+   "changed": [],
+   "is_contract_error": true,
+   "message": "Source request owner mismatch",
+   "refused": "ContractError"
+  },
+  "other_generation": {
+   "after": {
+    "all": "057e8c294e0571d8",
+    "source_execution_history": "0:4f53cda18c2baa0c",
+    "source_execution_requests": "1:ef805442db7b96cf"
+   },
+   "before": {
+    "all": "057e8c294e0571d8",
+    "source_execution_history": "0:4f53cda18c2baa0c",
+    "source_execution_requests": "1:ef805442db7b96cf"
+   },
+   "changed": [],
+   "is_contract_error": true,
+   "message": "Source request owner mismatch",
+   "refused": "ContractError"
+  },
+  "other_task": {
+   "after": {
+    "all": "057e8c294e0571d8",
+    "source_execution_history": "0:4f53cda18c2baa0c",
+    "source_execution_requests": "1:ef805442db7b96cf"
+   },
+   "before": {
+    "all": "057e8c294e0571d8",
+    "source_execution_history": "0:4f53cda18c2baa0c",
+    "source_execution_requests": "1:ef805442db7b96cf"
+   },
+   "changed": [],
+   "is_contract_error": true,
+   "message": "Source request owner mismatch",
+   "refused": "ContractError"
+  },
+  "owner_checked_before_authority": {
+   "after": {
+    "all": "057e8c294e0571d8",
+    "source_execution_history": "0:4f53cda18c2baa0c",
+    "source_execution_requests": "1:ef805442db7b96cf"
+   },
+   "before": {
+    "all": "057e8c294e0571d8",
+    "source_execution_history": "0:4f53cda18c2baa0c",
+    "source_execution_requests": "1:ef805442db7b96cf"
+   },
+   "changed": [],
+   "is_contract_error": true,
+   "message": "Source request owner mismatch",
+   "refused": "ContractError"
+  },
+  "queued_result": {
+   "after": {
+    "all": "d84d68584076832d",
+    "source_execution_history": "0:4f53cda18c2baa0c",
+    "source_execution_requests": "1:0be417964bce73a0"
+   },
+   "before": {
+    "all": "d84d68584076832d",
+    "source_execution_history": "0:4f53cda18c2baa0c",
+    "source_execution_requests": "1:0be417964bce73a0"
+   },
+   "changed": [],
+   "value": "e53b7462f190e49980a825f276e938eb88bf34fd1ffa19ed221a95584fdc6d3b",
+   "view": {
+    "at": "2026-09-22T00:10:05.112000+00:00",
+    "command": [
+     "python",
+     "--version"
+    ],
+    "id": "95659a1c134804588b807128b9108f01b17be447c12a0bc25ecfab5df5ea64cd",
+    "source": {
+     "commit": "1111111111111111111111111111111111111111",
+     "manifest_ref": "sha256:0000000000000000000000000000000000000000000000000000000000000000",
+     "repository": "https://github.com/fixture/repo",
+     "tree": "2222222222222222222222222222222222222222",
+     "version": 1
+    },
+    "status": "queued",
+    "task": [
+     "5eed0000-0000-4000-8000-00000000003b",
+     1
+    ]
+   }
+  },
+  "result_when_audit_changed": {
+   "after": {
+    "all": "e8b632c491000816",
+    "source_execution_history": "0:4f53cda18c2baa0c",
+    "source_execution_requests": "1:d0bef9895bcbc60a"
+   },
+   "before": {
+    "all": "e8b632c491000816",
+    "source_execution_history": "0:4f53cda18c2baa0c",
+    "source_execution_requests": "1:d0bef9895bcbc60a"
+   },
+   "changed": [],
+   "is_contract_error": true,
+   "message": "Source execution assignment mismatch",
+   "refused": "ContractError"
+  },
+  "result_when_lease_changed": {
+   "after": {
+    "all": "ac30ad10676bcf66",
+    "source_execution_history": "0:4f53cda18c2baa0c",
+    "source_execution_requests": "1:b6fc31cd689cb542"
+   },
+   "before": {
+    "all": "ac30ad10676bcf66",
+    "source_execution_history": "0:4f53cda18c2baa0c",
+    "source_execution_requests": "1:b6fc31cd689cb542"
+   },
+   "changed": [],
+   "is_contract_error": true,
+   "message": "Stale or expired task execution",
+   "refused": "ContractError"
+  },
+  "result_when_paused": {
+   "after": {
+    "all": "b1c49641fcc54eb3",
+    "source_execution_history": "0:4f53cda18c2baa0c",
+    "source_execution_requests": "1:e4dd7e45b12ace28"
+   },
+   "before": {
+    "all": "b1c49641fcc54eb3",
+    "source_execution_history": "0:4f53cda18c2baa0c",
+    "source_execution_requests": "1:e4dd7e45b12ace28"
+   },
+   "changed": [],
+   "is_contract_error": true,
+   "message": "Source execution paused",
+   "refused": "ContractError"
+  },
+  "running_result": {
+   "after": {
+    "all": "48d045c7fab417b9",
+    "source_execution_history": "0:4f53cda18c2baa0c",
+    "source_execution_requests": "1:2f95ca28c989d068"
+   },
+   "before": {
+    "all": "48d045c7fab417b9",
+    "source_execution_history": "0:4f53cda18c2baa0c",
+    "source_execution_requests": "1:2f95ca28c989d068"
+   },
+   "changed": [],
+   "value": "0122c51386e1a9f60659c35c9402d17916d392b88a08536c42b1cbf2f5d2aa3c",
+   "view": {
+    "at": "2026-09-22T00:10:05.112000+00:00",
+    "command": [
+     "python",
+     "--version"
+    ],
+    "id": "95659a1c134804588b807128b9108f01b17be447c12a0bc25ecfab5df5ea64cd",
+    "image": "sha256:aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+    "owner": "5eed0000-0000-4000-8000-00000000003c",
+    "release_id": "rel-1",
+    "source": {
+     "commit": "1111111111111111111111111111111111111111",
+     "manifest_ref": "sha256:0000000000000000000000000000000000000000000000000000000000000000",
+     "repository": "https://github.com/fixture/repo",
+     "tree": "2222222222222222222222222222222222222222",
+     "version": 1
+    },
+    "started_at": "2026-09-22T00:10:05.114000+00:00",
+    "status": "running",
+    "task": [
+     "5eed0000-0000-4000-8000-00000000003b",
+     1
+    ]
+   }
+  },
+  "succeeded_result": {
+   "after": {
+    "all": "25dddb65a7f13099",
+    "source_execution_history": "1:9c0e7235fac8a8de",
+    "source_execution_requests": "1:79a051111d49c800"
+   },
+   "before": {
+    "all": "25dddb65a7f13099",
+    "source_execution_history": "1:9c0e7235fac8a8de",
+    "source_execution_requests": "1:79a051111d49c800"
+   },
+   "changed": [],
+   "value": "5bb9266c63ab52897f1a434dc7fc9cc3e2bec1b8bda71a32044551cfc523996c",
+   "view": {
+    "at": "2026-09-22T00:10:05.112000+00:00",
+    "command": [
+     "python",
+     "--version"
+    ],
+    "completed_at": "2026-09-22T00:10:05.115000+00:00",
+    "id": "95659a1c134804588b807128b9108f01b17be447c12a0bc25ecfab5df5ea64cd",
+    "image": "sha256:aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+    "owner": "5eed0000-0000-4000-8000-00000000003c",
+    "receipt": {
+     "exit_status": 0,
+     "outcome": "executed",
+     "output_ref": "sha256:eeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee",
+     "passed": true,
+     "runner_id": "fixture-runner"
+    },
+    "release_id": "rel-1",
+    "source": {
+     "commit": "1111111111111111111111111111111111111111",
+     "manifest_ref": "sha256:0000000000000000000000000000000000000000000000000000000000000000",
+     "repository": "https://github.com/fixture/repo",
+     "tree": "2222222222222222222222222222222222222222",
+     "version": 1
+    },
+    "started_at": "2026-09-22T00:10:05.114000+00:00",
+    "status": "succeeded",
+    "task": [
+     "5eed0000-0000-4000-8000-00000000003b",
+     1
+    ]
+   }
+  },
+  "superseded_before_consumption": {
+   "after": {
+    "all": "7ab66ef17b9b097b",
+    "source_execution_history": "1:9c0e7235fac8a8de",
+    "source_execution_requests": "1:79a051111d49c800"
+   },
+   "before": {
+    "all": "7ab66ef17b9b097b",
+    "source_execution_history": "1:9c0e7235fac8a8de",
+    "source_execution_requests": "1:79a051111d49c800"
+   },
+   "changed": [],
+   "is_contract_error": true,
+   "message": "Execution image superseded before consumption",
+   "refused": "ContractError"
+  },
+  "superseded_by_an_empty_deployment": {
+   "after": {
+    "all": "6b7b31b084f7c8c6",
+    "source_execution_history": "1:9c0e7235fac8a8de",
+    "source_execution_requests": "1:79a051111d49c800"
+   },
+   "before": {
+    "all": "6b7b31b084f7c8c6",
+    "source_execution_history": "1:9c0e7235fac8a8de",
+    "source_execution_requests": "1:79a051111d49c800"
+   },
+   "changed": [],
+   "is_contract_error": true,
+   "message": "Execution image superseded before consumption",
+   "refused": "ContractError"
+  },
+  "superseded_by_no_deployment": {
+   "after": {
+    "all": "ba30afe3c5d38002",
+    "source_execution_history": "1:9c0e7235fac8a8de",
+    "source_execution_requests": "1:79a051111d49c800"
+   },
+   "before": {
+    "all": "ba30afe3c5d38002",
+    "source_execution_history": "1:9c0e7235fac8a8de",
+    "source_execution_requests": "1:79a051111d49c800"
+   },
+   "changed": [],
+   "is_contract_error": true,
+   "message": "Execution image superseded before consumption",
+   "refused": "ContractError"
+  },
+  "unknown_request": {
+   "after": {
+    "all": "057e8c294e0571d8",
+    "source_execution_history": "0:4f53cda18c2baa0c",
+    "source_execution_requests": "1:ef805442db7b96cf"
+   },
+   "before": {
+    "all": "057e8c294e0571d8",
+    "source_execution_history": "0:4f53cda18c2baa0c",
+    "source_execution_requests": "1:ef805442db7b96cf"
+   },
+   "changed": [],
+   "is_contract_error": true,
+   "message": "Source request owner mismatch",
+   "refused": "ContractError"
+  }
+ },
+ "e4_test_host_result_preserves_evidence_but_cannot_cross_invalidated_authority": {
+  "binding_command_extended": {
+   "after": {
+    "all": "746fa6470232a35c",
+    "source_execution_history": "1:07f24e54a774c9e3",
+    "source_execution_requests": "1:590c11e3d73c1c80"
+   },
+   "before": {
+    "all": "746fa6470232a35c",
+    "source_execution_history": "1:07f24e54a774c9e3",
+    "source_execution_requests": "1:590c11e3d73c1c80"
+   },
+   "changed": [],
+   "is_contract_error": true,
+   "message": "Source receipt binding mismatch",
+   "refused": "ContractError"
+  },
+  "binding_other_command": {
+   "after": {
+    "all": "746fa6470232a35c",
+    "source_execution_history": "1:07f24e54a774c9e3",
+    "source_execution_requests": "1:590c11e3d73c1c80"
+   },
+   "before": {
+    "all": "746fa6470232a35c",
+    "source_execution_history": "1:07f24e54a774c9e3",
+    "source_execution_requests": "1:590c11e3d73c1c80"
+   },
+   "changed": [],
+   "is_contract_error": true,
+   "message": "Source receipt binding mismatch",
+   "refused": "ContractError"
+  },
+  "binding_other_commit": {
+   "after": {
+    "all": "746fa6470232a35c",
+    "source_execution_history": "1:07f24e54a774c9e3",
+    "source_execution_requests": "1:590c11e3d73c1c80"
+   },
+   "before": {
+    "all": "746fa6470232a35c",
+    "source_execution_history": "1:07f24e54a774c9e3",
+    "source_execution_requests": "1:590c11e3d73c1c80"
+   },
+   "changed": [],
+   "is_contract_error": true,
+   "message": "Source receipt binding mismatch",
+   "refused": "ContractError"
+  },
+  "binding_other_repository": {
+   "after": {
+    "all": "746fa6470232a35c",
+    "source_execution_history": "1:07f24e54a774c9e3",
+    "source_execution_requests": "1:590c11e3d73c1c80"
+   },
+   "before": {
+    "all": "746fa6470232a35c",
+    "source_execution_history": "1:07f24e54a774c9e3",
+    "source_execution_requests": "1:590c11e3d73c1c80"
+   },
+   "changed": [],
+   "is_contract_error": true,
+   "message": "Source receipt binding mismatch",
+   "refused": "ContractError"
+  },
+  "complete": {
+   "after": {
+    "all": "b09d65d891a59dbe",
+    "source_execution_history": "1:6c9e5d4e2df5bdc0",
+    "source_execution_requests": "1:21dc8cdc1b4b2af0"
+   },
+   "before": {
+    "all": "b208b7fdbbdf650b",
+    "source_execution_history": "0:4f53cda18c2baa0c",
+    "source_execution_requests": "1:023d1bf72ee734b0"
+   },
+   "changed": [
+    "source_execution_requests",
+    "source_execution_history",
+    "all"
+   ],
+   "value": "74234e98afe7498fb5daf1f36ac2d78acc339464f950703b8c019892f982b90b",
+   "view": null
+  },
+  "completed_by_the_second_owner": [
+   {
+    "at": "2026-09-22T00:10:05.169000+00:00",
+    "command": [
+     "true"
+    ],
+    "completed_at": "2026-09-22T00:10:05.171000+00:00",
+    "id": "4252424a9af417368c797f961d2864f564778c92d71f78b7e658df60af42fedb",
+    "image": "sha256:aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+    "owner": "5eed0000-0000-4000-8000-000000000055",
+    "receipt": {
+     "exit_status": 0,
+     "outcome": "executed",
+     "output_ref": "sha256:eeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee",
+     "passed": true,
+     "runner_id": "second-runner"
+    },
+    "release_id": "rel-1",
+    "source": {
+     "commit": "1111111111111111111111111111111111111111",
+     "manifest_ref": "sha256:0000000000000000000000000000000000000000000000000000000000000000",
+     "repository": "https://github.com/fixture/repo",
+     "tree": "2222222222222222222222222222222222222222",
+     "version": 1
+    },
+    "started_at": "2026-09-22T00:10:05.170000+00:00",
+    "status": "succeeded",
+    "task": [
+     "5eed0000-0000-4000-8000-000000000053",
+     1
+    ]
+   }
+  ],
+  "completed_row": [
+   {
+    "at": "2026-09-22T00:10:05.133000+00:00",
+    "command": [
+     "python",
+     "--version"
+    ],
+    "completed_at": "2026-09-22T00:10:05.134000+00:00",
+    "id": "407414951db96cae600f1746b0fd2252b875cdf93e5dbd318b775573ea51b3ae",
+    "image": "sha256:aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+    "owner": "5eed0000-0000-4000-8000-000000000044",
+    "receipt": {
+     "exit_status": 0,
+     "outcome": "executed",
+     "output_ref": "sha256:eeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee",
+     "passed": true,
+     "runner_id": "fixture-runner"
+    },
+    "release_id": "rel-1",
+    "source": {
+     "commit": "1111111111111111111111111111111111111111",
+     "manifest_ref": "sha256:0000000000000000000000000000000000000000000000000000000000000000",
+     "repository": "https://github.com/fixture/repo",
+     "tree": "2222222222222222222222222222222222222222",
+     "version": 1
+    },
+    "started_at": "2026-09-22T00:10:05.134000+00:00",
+    "status": "succeeded",
+    "task": [
+     "5eed0000-0000-4000-8000-000000000043",
+     1
+    ]
+   }
+  ],
+  "deployment_gone_cancels": {
+   "after": {
+    "all": "5046419e557794a8",
+    "source_execution_history": "1:ced6096bb09815f4",
+    "source_execution_requests": "1:3476fc5cc40904c6"
+   },
+   "before": {
+    "all": "ac468b704436e68c",
+    "source_execution_history": "0:4f53cda18c2baa0c",
+    "source_execution_requests": "1:cb4c8ed8afe7eda8"
+   },
+   "changed": [
+    "source_execution_requests",
+    "source_execution_history",
+    "all"
+   ],
+   "value": "74234e98afe7498fb5daf1f36ac2d78acc339464f950703b8c019892f982b90b",
+   "view": null
+  },
+  "deployment_gone_row": [
+   {
+    "at": "2026-09-22T00:10:05.146000+00:00",
+    "command": [
+     "python",
+     "--version"
+    ],
+    "completed_at": "2026-09-22T00:10:05.147000+00:00",
+    "id": "4e76994da4545ef302d1dcd0f3ff52b9691c777be5742430d3262666f6bdeca4",
+    "image": "sha256:aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+    "owner": "5eed0000-0000-4000-8000-000000000050",
+    "receipt": {
+     "exit_status": 0,
+     "outcome": "executed",
+     "output_ref": "sha256:eeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee",
+     "passed": true,
+     "runner_id": "fixture-runner"
+    },
+    "release_id": "rel-1",
+    "source": {
+     "commit": "1111111111111111111111111111111111111111",
+     "manifest_ref": "sha256:0000000000000000000000000000000000000000000000000000000000000000",
+     "repository": "https://github.com/fixture/repo",
+     "tree": "2222222222222222222222222222222222222222",
+     "version": 1
+    },
+    "started_at": "2026-09-22T00:10:05.147000+00:00",
+    "status": "cancelled",
+    "task": [
+     "5eed0000-0000-4000-8000-00000000004f",
+     1
+    ]
+   }
+  ],
+  "history": [
+   {
+    "at": "2026-09-22T00:10:05.134000+00:00",
+    "receipt_output": "sha256:eeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee",
+    "request_matches": "407414951db96cae600f1746b0fd2252b875cdf93e5dbd318b775573ea51b3ae"
+   }
+  ],
+  "history_keeps_both_receipts": [
+   [
+    {
+     "at": "2026-09-22T00:10:05.170000+00:00",
+     "receipt_output": "sha256:eeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee",
+     "request_matches": "4252424a9af417368c797f961d2864f564778c92d71f78b7e658df60af42fedb"
+    },
+    {
+     "at": "2026-09-22T00:10:05.171000+00:00",
+     "receipt_output": "sha256:eeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee",
+     "request_matches": "4252424a9af417368c797f961d2864f564778c92d71f78b7e658df60af42fedb"
+    }
+   ],
+   2
+  ],
+  "history_key_is_the_request_and_the_owner": true,
+  "invalidated_by_audit_missing": {
+   "after": {
+    "all": "09684aae2042dc74",
+    "source_execution_history": "1:703e2676bb98a7ad",
+    "source_execution_requests": "1:57be4caf0f93a6da"
+   },
+   "before": {
+    "all": "c7d7b6e7d3906a48",
+    "source_execution_history": "0:4f53cda18c2baa0c",
+    "source_execution_requests": "1:6ba8bcdb36dcf23d"
+   },
+   "changed": [
+    "source_execution_requests",
+    "source_execution_history",
+    "all"
+   ],
+   "value": "74234e98afe7498fb5daf1f36ac2d78acc339464f950703b8c019892f982b90b",
+   "view": null
+  },
+  "invalidated_by_audit_missing_row": [
+   {
+    "at": "2026-09-22T00:10:05.144000+00:00",
+    "command": [
+     "python",
+     "--version"
+    ],
+    "completed_at": "2026-09-22T00:10:05.145000+00:00",
+    "id": "0ed1c9af5cae1fe3d390ee824dac058bc95314635b5d6c23aad38c616ef55f21",
+    "image": "sha256:aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+    "owner": "5eed0000-0000-4000-8000-00000000004e",
+    "receipt": {
+     "exit_status": 0,
+     "outcome": "executed",
+     "output_ref": "sha256:eeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee",
+     "passed": true,
+     "runner_id": "fixture-runner"
+    },
+    "release_id": "rel-1",
+    "source": {
+     "commit": "1111111111111111111111111111111111111111",
+     "manifest_ref": "sha256:0000000000000000000000000000000000000000000000000000000000000000",
+     "repository": "https://github.com/fixture/repo",
+     "tree": "2222222222222222222222222222222222222222",
+     "version": 1
+    },
+    "started_at": "2026-09-22T00:10:05.145000+00:00",
+    "status": "cancelled",
+    "task": [
+     "5eed0000-0000-4000-8000-00000000004d",
+     1
+    ]
+   }
+  ],
+  "invalidated_by_audit_source": {
+   "after": {
+    "all": "874b251d6ff92e3f",
+    "source_execution_history": "1:cc9f5e46c069900a",
+    "source_execution_requests": "1:e3883cbd71da0dcf"
+   },
+   "before": {
+    "all": "a3532efb35449522",
+    "source_execution_history": "0:4f53cda18c2baa0c",
+    "source_execution_requests": "1:5623e5361b6a71a4"
+   },
+   "changed": [
+    "source_execution_requests",
+    "source_execution_history",
+    "all"
+   ],
+   "value": "74234e98afe7498fb5daf1f36ac2d78acc339464f950703b8c019892f982b90b",
+   "view": null
+  },
+  "invalidated_by_audit_source_row": [
+   {
+    "at": "2026-09-22T00:10:05.142000+00:00",
+    "command": [
+     "python",
+     "--version"
+    ],
+    "completed_at": "2026-09-22T00:10:05.143000+00:00",
+    "id": "914af33b848ac3a0c2cefb7253ce2b193bb63098f8ab494c8e1b6538fe5cb975",
+    "image": "sha256:aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+    "owner": "5eed0000-0000-4000-8000-00000000004c",
+    "receipt": {
+     "exit_status": 0,
+     "outcome": "executed",
+     "output_ref": "sha256:eeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee",
+     "passed": true,
+     "runner_id": "fixture-runner"
+    },
+    "release_id": "rel-1",
+    "source": {
+     "commit": "1111111111111111111111111111111111111111",
+     "manifest_ref": "sha256:0000000000000000000000000000000000000000000000000000000000000000",
+     "repository": "https://github.com/fixture/repo",
+     "tree": "2222222222222222222222222222222222222222",
+     "version": 1
+    },
+    "started_at": "2026-09-22T00:10:05.143000+00:00",
+    "status": "cancelled",
+    "task": [
+     "5eed0000-0000-4000-8000-00000000004b",
+     1
+    ]
+   }
+  ],
+  "invalidated_by_deployment": {
+   "after": {
+    "all": "ee71ae495b259c5e",
+    "source_execution_history": "1:56c51d6803cb987e",
+    "source_execution_requests": "1:2548d1430b584f87"
+   },
+   "before": {
+    "all": "2a1d21821c9d10db",
+    "source_execution_history": "0:4f53cda18c2baa0c",
+    "source_execution_requests": "1:4b87cec7e1ed827b"
+   },
+   "changed": [
+    "source_execution_requests",
+    "source_execution_history",
+    "all"
+   ],
+   "value": "74234e98afe7498fb5daf1f36ac2d78acc339464f950703b8c019892f982b90b",
+   "view": null
+  },
+  "invalidated_by_deployment_history": [
+   {
+    "at": "2026-09-22T00:10:05.141000+00:00",
+    "receipt_output": "sha256:eeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee",
+    "request_matches": "7025353e85cb0bffb0ff7785ca9beefdacf0eb352b71c16a045c4e25060c093c"
+   }
+  ],
+  "invalidated_by_deployment_row": [
+   "cancelled",
+   true,
+   true
+  ],
+  "invalidated_by_lease": {
+   "after": {
+    "all": "073aa88a45b3d845",
+    "source_execution_history": "1:c9a7f244fae1c3c0",
+    "source_execution_requests": "1:083f1dbd900e5441"
+   },
+   "before": {
+    "all": "76fa0fb37fddc49a",
+    "source_execution_history": "0:4f53cda18c2baa0c",
+    "source_execution_requests": "1:290d2fc6a6ebeeef"
+   },
+   "changed": [
+    "source_execution_requests",
+    "source_execution_history",
+    "all"
+   ],
+   "value": "74234e98afe7498fb5daf1f36ac2d78acc339464f950703b8c019892f982b90b",
+   "view": null
+  },
+  "invalidated_by_lease_history": [
+   {
+    "at": "2026-09-22T00:10:05.139000+00:00",
+    "receipt_output": "sha256:eeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee",
+    "request_matches": "1e2ee693b7634c7034ed29971db6e16c1d6957e44c271c2a33a885bc87ca7e4b"
+   }
+  ],
+  "invalidated_by_lease_row": [
+   "cancelled",
+   true,
+   true
+  ],
+  "invalidated_by_pause": {
+   "after": {
+    "all": "e0a39eca03bed19a",
+    "source_execution_history": "1:0e5f4d7dc69ba737",
+    "source_execution_requests": "1:d0a8182392792d64"
+   },
+   "before": {
+    "all": "4a8b3affaac88af3",
+    "source_execution_history": "0:4f53cda18c2baa0c",
+    "source_execution_requests": "1:3b94281ade4931a0"
+   },
+   "changed": [
+    "source_execution_requests",
+    "source_execution_history",
+    "all"
+   ],
+   "value": "74234e98afe7498fb5daf1f36ac2d78acc339464f950703b8c019892f982b90b",
+   "view": null
+  },
+  "invalidated_by_pause_history": [
+   {
+    "at": "2026-09-22T00:10:05.137000+00:00",
+    "receipt_output": "sha256:eeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee",
+    "request_matches": "e6e905c704a7e2600b283b10ca82a298573837411d15b0754999798134a178aa"
+   }
+  ],
+  "invalidated_by_pause_row": [
+   "cancelled",
+   true,
+   true
+  ],
+  "late_result_history": 1,
+  "late_result_of_the_replaced_runner": {
+   "after": {
+    "all": "7c9a6783206fe180",
+    "source_execution_history": "1:e734c317075ebb49",
+    "source_execution_requests": "1:c3b519cb98398964"
+   },
+   "before": {
+    "all": "d853ee29e4b1abd4",
+    "source_execution_history": "0:4f53cda18c2baa0c",
+    "source_execution_requests": "1:c3b519cb98398964"
+   },
+   "changed": [
+    "source_execution_history",
+    "all"
+   ],
+   "value": "74234e98afe7498fb5daf1f36ac2d78acc339464f950703b8c019892f982b90b",
+   "view": null
+  },
+  "late_result_row": [
+   true,
+   true,
+   "running",
+   false
+  ],
+  "not_running_keeps_the_evidence_only": {
+   "after": {
+    "all": "1ffe35ca6736d2c1",
+    "source_execution_history": "1:7dc94f0a8d050290",
+    "source_execution_requests": "1:86ceaedfb8b9a3d7"
+   },
+   "before": {
+    "all": "d8ad03368aa92738",
+    "source_execution_history": "0:4f53cda18c2baa0c",
+    "source_execution_requests": "1:86ceaedfb8b9a3d7"
+   },
+   "changed": [
+    "source_execution_history",
+    "all"
+   ],
+   "value": "74234e98afe7498fb5daf1f36ac2d78acc339464f950703b8c019892f982b90b",
+   "view": null
+  },
+  "not_running_rows": [
+   {
+    "at": "2026-09-22T00:10:05.177000+00:00",
+    "command": [
+     "python",
+     "--version"
+    ],
+    "id": "bd99da855103bf652eb9bf111b46a28d4eeeffd9f7e85f5b4a6aacfbfa2306d1",
+    "image": "sha256:aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+    "owner": "5eed0000-0000-4000-8000-00000000005a",
+    "reason": "planted",
+    "release_id": "rel-1",
+    "source": {
+     "commit": "1111111111111111111111111111111111111111",
+     "manifest_ref": "sha256:0000000000000000000000000000000000000000000000000000000000000000",
+     "repository": "https://github.com/fixture/repo",
+     "tree": "2222222222222222222222222222222222222222",
+     "version": 1
+    },
+    "started_at": "2026-09-22T00:10:05.178000+00:00",
+    "status": "cancelled",
+    "task": [
+     "5eed0000-0000-4000-8000-000000000059",
+     1
+    ]
+   }
+  ],
+  "queued_row_without_an_owner_raises": {
+   "after": {
+    "all": "c4266686db141a7f",
+    "source_execution_history": "0:4f53cda18c2baa0c",
+    "source_execution_requests": "1:f8caf113d366c9cf"
+   },
+   "before": {
+    "all": "c4266686db141a7f",
+    "source_execution_history": "0:4f53cda18c2baa0c",
+    "source_execution_requests": "1:f8caf113d366c9cf"
+   },
+   "changed": [],
+   "is_contract_error": false,
+   "message": "'owner'",
+   "refused": "KeyError"
+  },
+  "receipt_blocked_but_valid": {
+   "after": {
+    "all": "f44624be2b5acc42",
+    "source_execution_history": "1:07f24e54a774c9e3",
+    "source_execution_requests": "1:ac6681653b259dd2"
+   },
+   "before": {
+    "all": "86943e4d77546d0a",
+    "source_execution_history": "1:42bae81de6b8ab36",
+    "source_execution_requests": "1:07f8f14d8641d7de"
+   },
+   "changed": [
+    "source_execution_requests",
+    "source_execution_history",
+    "all"
+   ],
+   "value": "74234e98afe7498fb5daf1f36ac2d78acc339464f950703b8c019892f982b90b",
+   "view": null
+  },
+  "receipt_command_empty": {
+   "after": {
+    "all": "7d33bb8f437dd069",
+    "source_execution_history": "0:4f53cda18c2baa0c",
+    "source_execution_requests": "1:d0b9cfe141f26bd8"
+   },
+   "before": {
+    "all": "7d33bb8f437dd069",
+    "source_execution_history": "0:4f53cda18c2baa0c",
+    "source_execution_requests": "1:d0b9cfe141f26bd8"
+   },
+   "changed": [],
+   "is_contract_error": true,
+   "message": "Incomplete execution receipt",
+   "refused": "ContractError"
+  },
+  "receipt_environment_empty": {
+   "after": {
+    "all": "7d33bb8f437dd069",
+    "source_execution_history": "0:4f53cda18c2baa0c",
+    "source_execution_requests": "1:d0b9cfe141f26bd8"
+   },
+   "before": {
+    "all": "7d33bb8f437dd069",
+    "source_execution_history": "0:4f53cda18c2baa0c",
+    "source_execution_requests": "1:d0b9cfe141f26bd8"
+   },
+   "changed": [],
+   "is_contract_error": true,
+   "message": "Incomplete execution receipt",
+   "refused": "ContractError"
+  },
+  "receipt_exit_status_text": {
+   "after": {
+    "all": "7d33bb8f437dd069",
+    "source_execution_history": "0:4f53cda18c2baa0c",
+    "source_execution_requests": "1:d0b9cfe141f26bd8"
+   },
+   "before": {
+    "all": "7d33bb8f437dd069",
+    "source_execution_history": "0:4f53cda18c2baa0c",
+    "source_execution_requests": "1:d0b9cfe141f26bd8"
+   },
+   "changed": [],
+   "is_contract_error": true,
+   "message": "Invalid execution status",
+   "refused": "ContractError"
+  },
+  "receipt_failed_but_valid": {
+   "after": {
+    "all": "b10e3c43b1bc7a88",
+    "source_execution_history": "1:42bae81de6b8ab36",
+    "source_execution_requests": "1:0f028e3096ef63bf"
+   },
+   "before": {
+    "all": "7d33bb8f437dd069",
+    "source_execution_history": "0:4f53cda18c2baa0c",
+    "source_execution_requests": "1:d0b9cfe141f26bd8"
+   },
+   "changed": [
+    "source_execution_requests",
+    "source_execution_history",
+    "all"
+   ],
+   "value": "74234e98afe7498fb5daf1f36ac2d78acc339464f950703b8c019892f982b90b",
+   "view": null
+  },
+  "receipt_isolation_empty": {
+   "after": {
+    "all": "7d33bb8f437dd069",
+    "source_execution_history": "0:4f53cda18c2baa0c",
+    "source_execution_requests": "1:d0b9cfe141f26bd8"
+   },
+   "before": {
+    "all": "7d33bb8f437dd069",
+    "source_execution_history": "0:4f53cda18c2baa0c",
+    "source_execution_requests": "1:d0b9cfe141f26bd8"
+   },
+   "changed": [],
+   "is_contract_error": true,
+   "message": "Incomplete execution receipt",
+   "refused": "ContractError"
+  },
+  "receipt_outcome_empty": {
+   "after": {
+    "all": "7d33bb8f437dd069",
+    "source_execution_history": "0:4f53cda18c2baa0c",
+    "source_execution_requests": "1:d0b9cfe141f26bd8"
+   },
+   "before": {
+    "all": "7d33bb8f437dd069",
+    "source_execution_history": "0:4f53cda18c2baa0c",
+    "source_execution_requests": "1:d0b9cfe141f26bd8"
+   },
+   "changed": [],
+   "is_contract_error": true,
+   "message": "Execution receipt requires its verdict",
+   "refused": "ContractError"
+  },
+  "receipt_outcome_not_text": {
+   "after": {
+    "all": "7d33bb8f437dd069",
+    "source_execution_history": "0:4f53cda18c2baa0c",
+    "source_execution_requests": "1:d0b9cfe141f26bd8"
+   },
+   "before": {
+    "all": "7d33bb8f437dd069",
+    "source_execution_history": "0:4f53cda18c2baa0c",
+    "source_execution_requests": "1:d0b9cfe141f26bd8"
+   },
+   "changed": [],
+   "is_contract_error": true,
+   "message": "Execution receipt requires its verdict",
+   "refused": "ContractError"
+  },
+  "receipt_output_ref_invalid": {
+   "after": {
+    "all": "7d33bb8f437dd069",
+    "source_execution_history": "0:4f53cda18c2baa0c",
+    "source_execution_requests": "1:d0b9cfe141f26bd8"
+   },
+   "before": {
+    "all": "7d33bb8f437dd069",
+    "source_execution_history": "0:4f53cda18c2baa0c",
+    "source_execution_requests": "1:d0b9cfe141f26bd8"
+   },
+   "changed": [],
+   "is_contract_error": true,
+   "message": "Invalid immutable evidence reference",
+   "refused": "ContractError"
+  },
+  "receipt_output_ref_none": {
+   "after": {
+    "all": "7d33bb8f437dd069",
+    "source_execution_history": "0:4f53cda18c2baa0c",
+    "source_execution_requests": "1:d0b9cfe141f26bd8"
+   },
+   "before": {
+    "all": "7d33bb8f437dd069",
+    "source_execution_history": "0:4f53cda18c2baa0c",
+    "source_execution_requests": "1:d0b9cfe141f26bd8"
+   },
+   "changed": [],
+   "is_contract_error": true,
+   "message": "Invalid immutable evidence reference",
+   "refused": "ContractError"
+  },
+  "receipt_passed_not_bool": {
+   "after": {
+    "all": "7d33bb8f437dd069",
+    "source_execution_history": "0:4f53cda18c2baa0c",
+    "source_execution_requests": "1:d0b9cfe141f26bd8"
+   },
+   "before": {
+    "all": "7d33bb8f437dd069",
+    "source_execution_history": "0:4f53cda18c2baa0c",
+    "source_execution_requests": "1:d0b9cfe141f26bd8"
+   },
+   "changed": [],
+   "is_contract_error": true,
+   "message": "Execution receipt requires its verdict",
+   "refused": "ContractError"
+  },
+  "receipt_passed_while_blocked": {
+   "after": {
+    "all": "7d33bb8f437dd069",
+    "source_execution_history": "0:4f53cda18c2baa0c",
+    "source_execution_requests": "1:d0b9cfe141f26bd8"
+   },
+   "before": {
+    "all": "7d33bb8f437dd069",
+    "source_execution_history": "0:4f53cda18c2baa0c",
+    "source_execution_requests": "1:d0b9cfe141f26bd8"
+   },
+   "changed": [],
+   "is_contract_error": true,
+   "message": "A blocked or non-zero execution cannot be passed",
+   "refused": "ContractError"
+  },
+  "receipt_passed_with_exit_status": {
+   "after": {
+    "all": "7d33bb8f437dd069",
+    "source_execution_history": "0:4f53cda18c2baa0c",
+    "source_execution_requests": "1:d0b9cfe141f26bd8"
+   },
+   "before": {
+    "all": "7d33bb8f437dd069",
+    "source_execution_history": "0:4f53cda18c2baa0c",
+    "source_execution_requests": "1:d0b9cfe141f26bd8"
+   },
+   "changed": [],
+   "is_contract_error": true,
+   "message": "A blocked or non-zero execution cannot be passed",
+   "refused": "ContractError"
+  },
+  "receipt_runner_empty": {
+   "after": {
+    "all": "7d33bb8f437dd069",
+    "source_execution_history": "0:4f53cda18c2baa0c",
+    "source_execution_requests": "1:d0b9cfe141f26bd8"
+   },
+   "before": {
+    "all": "7d33bb8f437dd069",
+    "source_execution_history": "0:4f53cda18c2baa0c",
+    "source_execution_requests": "1:d0b9cfe141f26bd8"
+   },
+   "changed": [],
+   "is_contract_error": true,
+   "message": "Incomplete execution receipt",
+   "refused": "ContractError"
+  },
+  "receipt_source_repository_invalid": {
+   "after": {
+    "all": "7d33bb8f437dd069",
+    "source_execution_history": "0:4f53cda18c2baa0c",
+    "source_execution_requests": "1:d0b9cfe141f26bd8"
+   },
+   "before": {
+    "all": "7d33bb8f437dd069",
+    "source_execution_history": "0:4f53cda18c2baa0c",
+    "source_execution_requests": "1:d0b9cfe141f26bd8"
+   },
+   "changed": [],
+   "is_contract_error": true,
+   "message": "Noncanonical repository identity",
+   "refused": "ContractError"
+  },
+  "receipt_source_version": {
+   "after": {
+    "all": "7d33bb8f437dd069",
+    "source_execution_history": "0:4f53cda18c2baa0c",
+    "source_execution_requests": "1:d0b9cfe141f26bd8"
+   },
+   "before": {
+    "all": "7d33bb8f437dd069",
+    "source_execution_history": "0:4f53cda18c2baa0c",
+    "source_execution_requests": "1:d0b9cfe141f26bd8"
+   },
+   "changed": [],
+   "is_contract_error": true,
+   "message": "Unsupported audit version",
+   "refused": "ContractError"
+  },
+  "repeat_complete_keeps_the_succeeded_row": {
+   "after": {
+    "all": "ec7c73fa94221dbc",
+    "source_execution_history": "1:44d92f4463ee7a8f",
+    "source_execution_requests": "1:21dc8cdc1b4b2af0"
+   },
+   "before": {
+    "all": "b09d65d891a59dbe",
+    "source_execution_history": "1:6c9e5d4e2df5bdc0",
+    "source_execution_requests": "1:21dc8cdc1b4b2af0"
+   },
+   "changed": [
+    "source_execution_history",
+    "all"
+   ],
+   "value": "74234e98afe7498fb5daf1f36ac2d78acc339464f950703b8c019892f982b90b",
+   "view": null
+  },
+  "repeat_history": [
+   {
+    "at": "2026-09-22T00:10:05.135000+00:00",
+    "receipt_output": "sha256:eeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee",
+    "request_matches": "407414951db96cae600f1746b0fd2252b875cdf93e5dbd318b775573ea51b3ae"
+   }
+  ],
+  "repeat_rows": [
+   {
+    "at": "2026-09-22T00:10:05.133000+00:00",
+    "command": [
+     "python",
+     "--version"
+    ],
+    "completed_at": "2026-09-22T00:10:05.134000+00:00",
+    "id": "407414951db96cae600f1746b0fd2252b875cdf93e5dbd318b775573ea51b3ae",
+    "image": "sha256:aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+    "owner": "5eed0000-0000-4000-8000-000000000044",
+    "receipt": {
+     "exit_status": 0,
+     "outcome": "executed",
+     "output_ref": "sha256:eeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee",
+     "passed": true,
+     "runner_id": "fixture-runner"
+    },
+    "release_id": "rel-1",
+    "source": {
+     "commit": "1111111111111111111111111111111111111111",
+     "manifest_ref": "sha256:0000000000000000000000000000000000000000000000000000000000000000",
+     "repository": "https://github.com/fixture/repo",
+     "tree": "2222222222222222222222222222222222222222",
+     "version": 1
+    },
+    "started_at": "2026-09-22T00:10:05.134000+00:00",
+    "status": "succeeded",
+    "task": [
+     "5eed0000-0000-4000-8000-000000000043",
+     1
+    ]
+   }
+  ],
+  "row_missing_history": 1,
+  "row_missing_keeps_the_evidence": {
+   "after": {
+    "all": "9d8d352b3c595d1e",
+    "source_execution_history": "1:c294977295093c4c",
+    "source_execution_requests": "1:3057740cb5436bc4"
+   },
+   "before": {
+    "all": "2ee12f2998d0b5c2",
+    "source_execution_history": "0:4f53cda18c2baa0c",
+    "source_execution_requests": "1:3057740cb5436bc4"
+   },
+   "changed": [
+    "source_execution_history",
+    "all"
+   ],
+   "value": "74234e98afe7498fb5daf1f36ac2d78acc339464f950703b8c019892f982b90b",
+   "view": null
+  },
+  "row_missing_other_owner_history_rows": 2,
+  "row_missing_other_owner_is_fenced": {
+   "after": {
+    "all": "e50f1892eb50055b",
+    "source_execution_history": "2:22c8c6c5a6e34476",
+    "source_execution_requests": "1:3057740cb5436bc4"
+   },
+   "before": {
+    "all": "9d8d352b3c595d1e",
+    "source_execution_history": "1:c294977295093c4c",
+    "source_execution_requests": "1:3057740cb5436bc4"
+   },
+   "changed": [
+    "source_execution_history",
+    "all"
+   ],
+   "value": "74234e98afe7498fb5daf1f36ac2d78acc339464f950703b8c019892f982b90b",
+   "view": null
+  },
+  "the_new_runner_completes": {
+   "after": {
+    "all": "9fa0277dde1c3bfa",
+    "source_execution_history": "2:f202778e9eb677ce",
+    "source_execution_requests": "1:441cf953bfd75826"
+   },
+   "before": {
+    "all": "7c9a6783206fe180",
+    "source_execution_history": "1:e734c317075ebb49",
+    "source_execution_requests": "1:c3b519cb98398964"
+   },
+   "changed": [
+    "source_execution_requests",
+    "source_execution_history",
+    "all"
+   ],
+   "value": "74234e98afe7498fb5daf1f36ac2d78acc339464f950703b8c019892f982b90b",
+   "view": null
+  }
+ },
+ "m7_tests": {
+  "test_completed_host_receipt_rechecks_deployment_on_consumption": "e3_test_completed_host_receipt_rechecks_deployment_on_consumption",
+  "test_docker_source_runner_uses_only_inert_source_and_immutable_image": {
+   "unreachable": "exercises adapters.source_execution (the Docker runner, a later layer), not this module"
+  },
+  "test_host_queue_pause_cancels_pending_without_execution": "e2_test_host_queue_pause_cancels_pending_without_execution (paused_cancels_pending)",
+  "test_host_request_deduplicates_and_rejects_cross_source": "e1_test_host_request_deduplicates_and_rejects_cross_source (request, replay, cross source; the claim: e2 claim)",
+  "test_host_restart_reclaims_expired_runner_and_fences_late_result": "e2 restart_reclaims; e4 late_result_of_the_replaced_runner",
+  "test_host_result_preserves_evidence_but_cannot_cross_invalidated_authority": "e4_test_host_result_preserves_evidence_but_cannot_cross_invalidated_authority (pause, lease, deployment)",
+  "test_inventory_receipt_cannot_clear_claimed_test_coverage": {
+   "unreachable": "exercises application.research and adapters.audit_runner, not this module"
+  }
+ }
+}

@@ -1,0 +1,8 @@
+{
+ "family": "research.reverse_progress",
+ "description": "S8 reverse progress of M7 application/reverse_progress.py (ReverseProgress: _source, status, record), characterized before the move: the eight tests of tests/test_reverse_progress.py that exercise this module (four stages across use-case instances, the idempotent and conflicting retry, unknown/dirty/moved sources and the rebaseline, stage order and the immutable completed stage, the missing/modified/badly described predecessor artifacts, UTF-8 byte counts) and the reverse case of tests/test_integration.py (sequential parts of the racing writers and the replay over a second instance), plus labelled additions for every require and branch of the module (every precondition of record in its order, every source observation of status, the sorted and de-duplicated references), with the digests of reverse_requests, reverse_progress, reverse_history and the whole store before and after every call; MemoryStore, M7's own FileArtifacts over a run-scoped directory, scripted clock, no git, no PostgreSQL",
+ "reference_driver": "drivers/reference/s8_reverse_progress.py",
+ "target_driver": "drivers/target/s8_reverse_progress.py",
+ "golden": "goldens/reference/research.reverse_progress.json",
+ "slice": "S8"
+}
