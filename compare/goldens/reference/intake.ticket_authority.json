@@ -1,0 +1,8066 @@
+{
+ "cases_per_group": {
+  "merged": 7,
+  "policy": 75,
+  "surface": 5,
+  "trust": 11,
+  "verify": 54
+ },
+ "m7_tests": {
+  "covered": [
+   "test_signed_close_reopen_and_new_cycle_invalidate_old_work (the TicketAuthority.verify acceptance, through a labelled runner)",
+   "test_closure_rejects_missing_failed_stale_or_unsigned_evidence (the authority halves: unsigned, wrong namespace/principal, stale policy)",
+   "test_signature_authority_is_not_an_actor_string",
+   "test_repo_commit_cannot_replace_anchored_signers (the trust commit anchor)",
+   "test_invalid_or_untrusted_policy_cannot_authorize_close (policy refusals: missing, invalid, non-regular, oversize, schema)",
+   "test_crlf_signature_armor_and_explicit_required_signers_receipt (CRLF armor normalised, the receipt fields)",
+   "test_slow_verification_renews_owned_lease_between_bounded_operations (the heartbeats)"
+  ],
+  "unreachable": {
+   "the lifecycle, GitHub and CLI halves of the 22 tests": "other families (intake.ticket_lifecycle) and S10",
+   "the real git trust repository (git init, commit, ls-tree)": "labelled FakeGit scripts the replies",
+   "the real ssh-keygen -Y sign/verify and the real key": "no real signer or key in a characterization"
+  }
+ },
+ "merged": {
+  "git_fault": {
+   "artifact_reads": 0,
+   "cause_type": null,
+   "git_calls": [
+    [
+     [
+      "merge-base",
+      "bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb",
+      "HEAD"
+     ],
+     null,
+     true
+    ]
+   ],
+   "heartbeats": 0,
+   "is_contract_error": false,
+   "message": "merge-base failed",
+   "outcome": "raised",
+   "runner_calls": [],
+   "type": "Boom"
+  },
+  "invalid_none": {
+   "artifact_reads": 0,
+   "cause_type": null,
+   "git_calls": [],
+   "heartbeats": 0,
+   "is_contract_error": true,
+   "message": "Full solution commit required",
+   "outcome": "raised",
+   "runner_calls": [],
+   "type": "ContractError"
+  },
+  "invalid_not_text": {
+   "artifact_reads": 0,
+   "cause_type": null,
+   "git_calls": [],
+   "heartbeats": 0,
+   "is_contract_error": true,
+   "message": "Full solution commit required",
+   "outcome": "raised",
+   "runner_calls": [],
+   "type": "ContractError"
+  },
+  "invalid_short": {
+   "artifact_reads": 0,
+   "cause_type": null,
+   "git_calls": [],
+   "heartbeats": 0,
+   "is_contract_error": true,
+   "message": "Full solution commit required",
+   "outcome": "raised",
+   "runner_calls": [],
+   "type": "ContractError"
+  },
+  "invalid_upper": {
+   "artifact_reads": 0,
+   "cause_type": null,
+   "git_calls": [],
+   "heartbeats": 0,
+   "is_contract_error": true,
+   "message": "Full solution commit required",
+   "outcome": "raised",
+   "runner_calls": [],
+   "type": "ContractError"
+  },
+  "merged": {
+   "artifact_reads": 0,
+   "git_calls": [
+    [
+     [
+      "merge-base",
+      "bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb",
+      "HEAD"
+     ],
+     null,
+     true
+    ]
+   ],
+   "heartbeats": 0,
+   "outcome": "returned",
+   "runner_calls": [],
+   "value": null
+  },
+  "not_merged": {
+   "artifact_reads": 0,
+   "cause_type": null,
+   "git_calls": [
+    [
+     [
+      "merge-base",
+      "bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb",
+      "HEAD"
+     ],
+     null,
+     true
+    ]
+   ],
+   "heartbeats": 0,
+   "is_contract_error": true,
+   "message": "Solution commit must be merged into the configured repository HEAD",
+   "outcome": "raised",
+   "runner_calls": [],
+   "type": "ContractError"
+  }
+ },
+ "policy": {
+  "anchor_git_fault": {
+   "artifact_reads": 0,
+   "cause_type": null,
+   "git_calls": [
+    [
+     [
+      "rev-parse",
+      "--verify",
+      "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa^{commit}"
+     ],
+     null,
+     true
+    ]
+   ],
+   "heartbeats": 1,
+   "is_contract_error": false,
+   "message": "rev-parse failed",
+   "outcome": "raised",
+   "runner_calls": [],
+   "type": "Boom"
+  },
+  "anchor_unavailable": {
+   "artifact_reads": 0,
+   "cause_type": null,
+   "git_calls": [
+    [
+     [
+      "rev-parse",
+      "--verify",
+      "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa^{commit}"
+     ],
+     null,
+     true
+    ]
+   ],
+   "heartbeats": 1,
+   "is_contract_error": true,
+   "message": "Trust anchor commit unavailable",
+   "outcome": "raised",
+   "runner_calls": [],
+   "type": "ContractError"
+  },
+  "budget_65537_refused": {
+   "artifact_reads": 0,
+   "cause_type": null,
+   "git_calls": [
+    [
+     [
+      "rev-parse",
+      "--verify",
+      "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa^{commit}"
+     ],
+     null,
+     true
+    ],
+    [
+     [
+      "ls-tree",
+      "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+      "--",
+      ".zeus/ticket-trust.json"
+     ],
+     null,
+     true
+    ],
+    [
+     [
+      "show",
+      "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa:.zeus/ticket-trust.json"
+     ],
+     null,
+     false
+    ]
+   ],
+   "heartbeats": 3,
+   "is_contract_error": true,
+   "message": "Trust policy exceeds budget",
+   "outcome": "raised",
+   "runner_calls": [],
+   "type": "ContractError"
+  },
+  "budget_counts_bytes_not_characters": {
+   "artifact_reads": 0,
+   "cause_type": null,
+   "git_calls": [
+    [
+     [
+      "rev-parse",
+      "--verify",
+      "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa^{commit}"
+     ],
+     null,
+     true
+    ],
+    [
+     [
+      "ls-tree",
+      "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+      "--",
+      ".zeus/ticket-trust.json"
+     ],
+     null,
+     true
+    ],
+    [
+     [
+      "show",
+      "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa:.zeus/ticket-trust.json"
+     ],
+     null,
+     false
+    ]
+   ],
+   "heartbeats": 3,
+   "is_contract_error": true,
+   "message": "Trust policy exceeds budget",
+   "outcome": "raised",
+   "runner_calls": [],
+   "type": "ContractError"
+  },
+  "budget_exact_65536_accepted": {
+   "artifact_reads": 0,
+   "git_calls": [
+    [
+     [
+      "rev-parse",
+      "--verify",
+      "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa^{commit}"
+     ],
+     null,
+     true
+    ],
+    [
+     [
+      "ls-tree",
+      "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+      "--",
+      ".zeus/ticket-trust.json"
+     ],
+     null,
+     true
+    ],
+    [
+     [
+      "show",
+      "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa:.zeus/ticket-trust.json"
+     ],
+     null,
+     false
+    ]
+   ],
+   "heartbeats": 3,
+   "outcome": "returned",
+   "runner_calls": [],
+   "value": {
+    "definition": {
+     "max_evidence_age_seconds": 86400,
+     "required_human_signers": [
+      "alice@zeus.invalid"
+     ],
+     "required_signers": [
+      "alice@zeus.invalid",
+      "bot@zeus.invalid"
+     ],
+     "revoked": [
+      "old@zeus.invalid"
+     ],
+     "scope": "test-only-ticket-authority",
+     "signers": [
+      {
+       "principal": "alice@zeus.invalid",
+       "public_key": "ssh-ed25519 AQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQE=",
+       "role": "human",
+       "valid_after": "2020-01-01T00:00:00+00:00",
+       "valid_before": "2099-01-01T00:00:00+00:00"
+      },
+      {
+       "principal": "bot@zeus.invalid",
+       "public_key": "ssh-ed25519 AgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgI=",
+       "role": "automation",
+       "valid_after": "2020-01-01T00:00:00+00:00",
+       "valid_before": "2099-01-01T00:00:00+00:00"
+      },
+      {
+       "principal": "old@zeus.invalid",
+       "public_key": "ssh-ed25519 AwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwM=",
+       "role": "automation",
+       "valid_after": "2020-01-01T00:00:00+00:00",
+       "valid_before": "2099-01-01T00:00:00+00:00"
+      }
+     ],
+     "version": 1
+    },
+    "enrolled": {
+     "alice@zeus.invalid": {
+      "principal": "alice@zeus.invalid",
+      "public_key": "ssh-ed25519 AQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQE=",
+      "role": "human",
+      "valid_after": "2020-01-01T00:00:00+00:00",
+      "valid_before": "2099-01-01T00:00:00+00:00"
+     },
+     "bot@zeus.invalid": {
+      "principal": "bot@zeus.invalid",
+      "public_key": "ssh-ed25519 AgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgI=",
+      "role": "automation",
+      "valid_after": "2020-01-01T00:00:00+00:00",
+      "valid_before": "2099-01-01T00:00:00+00:00"
+     },
+     "old@zeus.invalid": {
+      "principal": "old@zeus.invalid",
+      "public_key": "ssh-ed25519 AwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwM=",
+      "role": "automation",
+      "valid_after": "2020-01-01T00:00:00+00:00",
+      "valid_before": "2099-01-01T00:00:00+00:00"
+     }
+    },
+    "policy_commit": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+    "policy_hash": "e6d1835c238c5292c3ead8061e4c7572ddb698860197ddf974b92f79b4bed627",
+    "scope": "test-only-ticket-authority"
+   }
+  },
+  "json_duplicate_key": {
+   "artifact_reads": 0,
+   "cause_type": null,
+   "git_calls": [
+    [
+     [
+      "rev-parse",
+      "--verify",
+      "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa^{commit}"
+     ],
+     null,
+     true
+    ],
+    [
+     [
+      "ls-tree",
+      "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+      "--",
+      ".zeus/ticket-trust.json"
+     ],
+     null,
+     true
+    ],
+    [
+     [
+      "show",
+      "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa:.zeus/ticket-trust.json"
+     ],
+     null,
+     false
+    ]
+   ],
+   "heartbeats": 3,
+   "is_contract_error": true,
+   "message": "Duplicate JSON key: version",
+   "outcome": "raised",
+   "runner_calls": [],
+   "type": "ContractError"
+  },
+  "json_empty": {
+   "artifact_reads": 0,
+   "cause_type": null,
+   "git_calls": [
+    [
+     [
+      "rev-parse",
+      "--verify",
+      "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa^{commit}"
+     ],
+     null,
+     true
+    ],
+    [
+     [
+      "ls-tree",
+      "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+      "--",
+      ".zeus/ticket-trust.json"
+     ],
+     null,
+     true
+    ],
+    [
+     [
+      "show",
+      "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa:.zeus/ticket-trust.json"
+     ],
+     null,
+     false
+    ]
+   ],
+   "heartbeats": 3,
+   "is_contract_error": false,
+   "message": "Expecting value: line 1 column 1 (char 0)",
+   "outcome": "raised",
+   "runner_calls": [],
+   "type": "JSONDecodeError"
+  },
+  "json_invalid": {
+   "artifact_reads": 0,
+   "cause_type": null,
+   "git_calls": [
+    [
+     [
+      "rev-parse",
+      "--verify",
+      "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa^{commit}"
+     ],
+     null,
+     true
+    ],
+    [
+     [
+      "ls-tree",
+      "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+      "--",
+      ".zeus/ticket-trust.json"
+     ],
+     null,
+     true
+    ],
+    [
+     [
+      "show",
+      "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa:.zeus/ticket-trust.json"
+     ],
+     null,
+     false
+    ]
+   ],
+   "heartbeats": 3,
+   "is_contract_error": false,
+   "message": "Expecting property name enclosed in double quotes: line 1 column 2 (char 1)",
+   "outcome": "raised",
+   "runner_calls": [],
+   "type": "JSONDecodeError"
+  },
+  "json_not_an_object": {
+   "artifact_reads": 0,
+   "cause_type": null,
+   "git_calls": [
+    [
+     [
+      "rev-parse",
+      "--verify",
+      "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa^{commit}"
+     ],
+     null,
+     true
+    ],
+    [
+     [
+      "ls-tree",
+      "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+      "--",
+      ".zeus/ticket-trust.json"
+     ],
+     null,
+     true
+    ],
+    [
+     [
+      "show",
+      "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa:.zeus/ticket-trust.json"
+     ],
+     null,
+     false
+    ]
+   ],
+   "heartbeats": 3,
+   "is_contract_error": true,
+   "message": "Invalid ticket trust policy",
+   "outcome": "raised",
+   "runner_calls": [],
+   "type": "ContractError"
+  },
+  "ls_tree_empty": {
+   "artifact_reads": 0,
+   "cause_type": null,
+   "git_calls": [
+    [
+     [
+      "rev-parse",
+      "--verify",
+      "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa^{commit}"
+     ],
+     null,
+     true
+    ],
+    [
+     [
+      "ls-tree",
+      "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+      "--",
+      ".zeus/ticket-trust.json"
+     ],
+     null,
+     true
+    ]
+   ],
+   "heartbeats": 2,
+   "is_contract_error": true,
+   "message": "Trust policy must be a regular Git file",
+   "outcome": "raised",
+   "runner_calls": [],
+   "type": "ContractError"
+  },
+  "ls_tree_mode_040000": {
+   "artifact_reads": 0,
+   "cause_type": null,
+   "git_calls": [
+    [
+     [
+      "rev-parse",
+      "--verify",
+      "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa^{commit}"
+     ],
+     null,
+     true
+    ],
+    [
+     [
+      "ls-tree",
+      "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+      "--",
+      ".zeus/ticket-trust.json"
+     ],
+     null,
+     true
+    ]
+   ],
+   "heartbeats": 2,
+   "is_contract_error": true,
+   "message": "Trust policy must be a regular Git file",
+   "outcome": "raised",
+   "runner_calls": [],
+   "type": "ContractError"
+  },
+  "ls_tree_mode_100755": {
+   "artifact_reads": 0,
+   "cause_type": null,
+   "git_calls": [
+    [
+     [
+      "rev-parse",
+      "--verify",
+      "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa^{commit}"
+     ],
+     null,
+     true
+    ],
+    [
+     [
+      "ls-tree",
+      "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+      "--",
+      ".zeus/ticket-trust.json"
+     ],
+     null,
+     true
+    ]
+   ],
+   "heartbeats": 2,
+   "is_contract_error": true,
+   "message": "Trust policy must be a regular Git file",
+   "outcome": "raised",
+   "runner_calls": [],
+   "type": "ContractError"
+  },
+  "ls_tree_mode_120000": {
+   "artifact_reads": 0,
+   "cause_type": null,
+   "git_calls": [
+    [
+     [
+      "rev-parse",
+      "--verify",
+      "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa^{commit}"
+     ],
+     null,
+     true
+    ],
+    [
+     [
+      "ls-tree",
+      "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+      "--",
+      ".zeus/ticket-trust.json"
+     ],
+     null,
+     true
+    ]
+   ],
+   "heartbeats": 2,
+   "is_contract_error": true,
+   "message": "Trust policy must be a regular Git file",
+   "outcome": "raised",
+   "runner_calls": [],
+   "type": "ContractError"
+  },
+  "ls_tree_mode_160000": {
+   "artifact_reads": 0,
+   "cause_type": null,
+   "git_calls": [
+    [
+     [
+      "rev-parse",
+      "--verify",
+      "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa^{commit}"
+     ],
+     null,
+     true
+    ],
+    [
+     [
+      "ls-tree",
+      "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+      "--",
+      ".zeus/ticket-trust.json"
+     ],
+     null,
+     true
+    ]
+   ],
+   "heartbeats": 2,
+   "is_contract_error": true,
+   "message": "Trust policy must be a regular Git file",
+   "outcome": "raised",
+   "runner_calls": [],
+   "type": "ContractError"
+  },
+  "schema_age_59": {
+   "artifact_reads": 0,
+   "cause_type": null,
+   "git_calls": [
+    [
+     [
+      "rev-parse",
+      "--verify",
+      "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa^{commit}"
+     ],
+     null,
+     true
+    ],
+    [
+     [
+      "ls-tree",
+      "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+      "--",
+      ".zeus/ticket-trust.json"
+     ],
+     null,
+     true
+    ],
+    [
+     [
+      "show",
+      "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa:.zeus/ticket-trust.json"
+     ],
+     null,
+     false
+    ]
+   ],
+   "heartbeats": 3,
+   "is_contract_error": true,
+   "message": "Evidence maximum age must be 60..86400 seconds",
+   "outcome": "raised",
+   "runner_calls": [],
+   "type": "ContractError"
+  },
+  "schema_age_60": {
+   "artifact_reads": 0,
+   "git_calls": [
+    [
+     [
+      "rev-parse",
+      "--verify",
+      "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa^{commit}"
+     ],
+     null,
+     true
+    ],
+    [
+     [
+      "ls-tree",
+      "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+      "--",
+      ".zeus/ticket-trust.json"
+     ],
+     null,
+     true
+    ],
+    [
+     [
+      "show",
+      "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa:.zeus/ticket-trust.json"
+     ],
+     null,
+     false
+    ]
+   ],
+   "heartbeats": 3,
+   "outcome": "returned",
+   "runner_calls": [],
+   "value": {
+    "definition": {
+     "max_evidence_age_seconds": 60,
+     "required_human_signers": [
+      "alice@zeus.invalid"
+     ],
+     "required_signers": [
+      "alice@zeus.invalid",
+      "bot@zeus.invalid"
+     ],
+     "revoked": [
+      "old@zeus.invalid"
+     ],
+     "scope": "test-only-ticket-authority",
+     "signers": [
+      {
+       "principal": "alice@zeus.invalid",
+       "public_key": "ssh-ed25519 AQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQE=",
+       "role": "human",
+       "valid_after": "2020-01-01T00:00:00+00:00",
+       "valid_before": "2099-01-01T00:00:00+00:00"
+      },
+      {
+       "principal": "bot@zeus.invalid",
+       "public_key": "ssh-ed25519 AgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgI=",
+       "role": "automation",
+       "valid_after": "2020-01-01T00:00:00+00:00",
+       "valid_before": "2099-01-01T00:00:00+00:00"
+      },
+      {
+       "principal": "old@zeus.invalid",
+       "public_key": "ssh-ed25519 AwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwM=",
+       "role": "automation",
+       "valid_after": "2020-01-01T00:00:00+00:00",
+       "valid_before": "2099-01-01T00:00:00+00:00"
+      }
+     ],
+     "version": 1
+    },
+    "enrolled": {
+     "alice@zeus.invalid": {
+      "principal": "alice@zeus.invalid",
+      "public_key": "ssh-ed25519 AQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQE=",
+      "role": "human",
+      "valid_after": "2020-01-01T00:00:00+00:00",
+      "valid_before": "2099-01-01T00:00:00+00:00"
+     },
+     "bot@zeus.invalid": {
+      "principal": "bot@zeus.invalid",
+      "public_key": "ssh-ed25519 AgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgI=",
+      "role": "automation",
+      "valid_after": "2020-01-01T00:00:00+00:00",
+      "valid_before": "2099-01-01T00:00:00+00:00"
+     },
+     "old@zeus.invalid": {
+      "principal": "old@zeus.invalid",
+      "public_key": "ssh-ed25519 AwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwM=",
+      "role": "automation",
+      "valid_after": "2020-01-01T00:00:00+00:00",
+      "valid_before": "2099-01-01T00:00:00+00:00"
+     }
+    },
+    "policy_commit": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+    "policy_hash": "edf63c53db359500bd2db017273248ed121e790f5de91f77b2fc03c824527ac0",
+    "scope": "test-only-ticket-authority"
+   }
+  },
+  "schema_age_86400": {
+   "artifact_reads": 0,
+   "git_calls": [
+    [
+     [
+      "rev-parse",
+      "--verify",
+      "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa^{commit}"
+     ],
+     null,
+     true
+    ],
+    [
+     [
+      "ls-tree",
+      "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+      "--",
+      ".zeus/ticket-trust.json"
+     ],
+     null,
+     true
+    ],
+    [
+     [
+      "show",
+      "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa:.zeus/ticket-trust.json"
+     ],
+     null,
+     false
+    ]
+   ],
+   "heartbeats": 3,
+   "outcome": "returned",
+   "runner_calls": [],
+   "value": {
+    "definition": {
+     "max_evidence_age_seconds": 86400,
+     "required_human_signers": [
+      "alice@zeus.invalid"
+     ],
+     "required_signers": [
+      "alice@zeus.invalid",
+      "bot@zeus.invalid"
+     ],
+     "revoked": [
+      "old@zeus.invalid"
+     ],
+     "scope": "test-only-ticket-authority",
+     "signers": [
+      {
+       "principal": "alice@zeus.invalid",
+       "public_key": "ssh-ed25519 AQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQE=",
+       "role": "human",
+       "valid_after": "2020-01-01T00:00:00+00:00",
+       "valid_before": "2099-01-01T00:00:00+00:00"
+      },
+      {
+       "principal": "bot@zeus.invalid",
+       "public_key": "ssh-ed25519 AgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgI=",
+       "role": "automation",
+       "valid_after": "2020-01-01T00:00:00+00:00",
+       "valid_before": "2099-01-01T00:00:00+00:00"
+      },
+      {
+       "principal": "old@zeus.invalid",
+       "public_key": "ssh-ed25519 AwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwM=",
+       "role": "automation",
+       "valid_after": "2020-01-01T00:00:00+00:00",
+       "valid_before": "2099-01-01T00:00:00+00:00"
+      }
+     ],
+     "version": 1
+    },
+    "enrolled": {
+     "alice@zeus.invalid": {
+      "principal": "alice@zeus.invalid",
+      "public_key": "ssh-ed25519 AQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQE=",
+      "role": "human",
+      "valid_after": "2020-01-01T00:00:00+00:00",
+      "valid_before": "2099-01-01T00:00:00+00:00"
+     },
+     "bot@zeus.invalid": {
+      "principal": "bot@zeus.invalid",
+      "public_key": "ssh-ed25519 AgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgI=",
+      "role": "automation",
+      "valid_after": "2020-01-01T00:00:00+00:00",
+      "valid_before": "2099-01-01T00:00:00+00:00"
+     },
+     "old@zeus.invalid": {
+      "principal": "old@zeus.invalid",
+      "public_key": "ssh-ed25519 AwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwM=",
+      "role": "automation",
+      "valid_after": "2020-01-01T00:00:00+00:00",
+      "valid_before": "2099-01-01T00:00:00+00:00"
+     }
+    },
+    "policy_commit": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+    "policy_hash": "e6d1835c238c5292c3ead8061e4c7572ddb698860197ddf974b92f79b4bed627",
+    "scope": "test-only-ticket-authority"
+   }
+  },
+  "schema_age_86401": {
+   "artifact_reads": 0,
+   "cause_type": null,
+   "git_calls": [
+    [
+     [
+      "rev-parse",
+      "--verify",
+      "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa^{commit}"
+     ],
+     null,
+     true
+    ],
+    [
+     [
+      "ls-tree",
+      "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+      "--",
+      ".zeus/ticket-trust.json"
+     ],
+     null,
+     true
+    ],
+    [
+     [
+      "show",
+      "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa:.zeus/ticket-trust.json"
+     ],
+     null,
+     false
+    ]
+   ],
+   "heartbeats": 3,
+   "is_contract_error": true,
+   "message": "Evidence maximum age must be 60..86400 seconds",
+   "outcome": "raised",
+   "runner_calls": [],
+   "type": "ContractError"
+  },
+  "schema_age_bool": {
+   "artifact_reads": 0,
+   "cause_type": null,
+   "git_calls": [
+    [
+     [
+      "rev-parse",
+      "--verify",
+      "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa^{commit}"
+     ],
+     null,
+     true
+    ],
+    [
+     [
+      "ls-tree",
+      "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+      "--",
+      ".zeus/ticket-trust.json"
+     ],
+     null,
+     true
+    ],
+    [
+     [
+      "show",
+      "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa:.zeus/ticket-trust.json"
+     ],
+     null,
+     false
+    ]
+   ],
+   "heartbeats": 3,
+   "is_contract_error": true,
+   "message": "Evidence maximum age must be 60..86400 seconds",
+   "outcome": "raised",
+   "runner_calls": [],
+   "type": "ContractError"
+  },
+  "schema_age_float": {
+   "artifact_reads": 0,
+   "cause_type": null,
+   "git_calls": [
+    [
+     [
+      "rev-parse",
+      "--verify",
+      "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa^{commit}"
+     ],
+     null,
+     true
+    ],
+    [
+     [
+      "ls-tree",
+      "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+      "--",
+      ".zeus/ticket-trust.json"
+     ],
+     null,
+     true
+    ],
+    [
+     [
+      "show",
+      "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa:.zeus/ticket-trust.json"
+     ],
+     null,
+     false
+    ]
+   ],
+   "heartbeats": 3,
+   "is_contract_error": true,
+   "message": "Evidence maximum age must be 60..86400 seconds",
+   "outcome": "raised",
+   "runner_calls": [],
+   "type": "ContractError"
+  },
+  "schema_extra_field": {
+   "artifact_reads": 0,
+   "cause_type": null,
+   "git_calls": [
+    [
+     [
+      "rev-parse",
+      "--verify",
+      "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa^{commit}"
+     ],
+     null,
+     true
+    ],
+    [
+     [
+      "ls-tree",
+      "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+      "--",
+      ".zeus/ticket-trust.json"
+     ],
+     null,
+     true
+    ],
+    [
+     [
+      "show",
+      "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa:.zeus/ticket-trust.json"
+     ],
+     null,
+     false
+    ]
+   ],
+   "heartbeats": 3,
+   "is_contract_error": true,
+   "message": "Invalid ticket trust policy",
+   "outcome": "raised",
+   "runner_calls": [],
+   "type": "ContractError"
+  },
+  "schema_human_empty_ok": {
+   "artifact_reads": 0,
+   "git_calls": [
+    [
+     [
+      "rev-parse",
+      "--verify",
+      "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa^{commit}"
+     ],
+     null,
+     true
+    ],
+    [
+     [
+      "ls-tree",
+      "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+      "--",
+      ".zeus/ticket-trust.json"
+     ],
+     null,
+     true
+    ],
+    [
+     [
+      "show",
+      "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa:.zeus/ticket-trust.json"
+     ],
+     null,
+     false
+    ]
+   ],
+   "heartbeats": 3,
+   "outcome": "returned",
+   "runner_calls": [],
+   "value": {
+    "definition": {
+     "max_evidence_age_seconds": 86400,
+     "required_human_signers": [],
+     "required_signers": [
+      "alice@zeus.invalid",
+      "bot@zeus.invalid"
+     ],
+     "revoked": [
+      "old@zeus.invalid"
+     ],
+     "scope": "test-only-ticket-authority",
+     "signers": [
+      {
+       "principal": "alice@zeus.invalid",
+       "public_key": "ssh-ed25519 AQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQE=",
+       "role": "human",
+       "valid_after": "2020-01-01T00:00:00+00:00",
+       "valid_before": "2099-01-01T00:00:00+00:00"
+      },
+      {
+       "principal": "bot@zeus.invalid",
+       "public_key": "ssh-ed25519 AgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgI=",
+       "role": "automation",
+       "valid_after": "2020-01-01T00:00:00+00:00",
+       "valid_before": "2099-01-01T00:00:00+00:00"
+      },
+      {
+       "principal": "old@zeus.invalid",
+       "public_key": "ssh-ed25519 AwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwM=",
+       "role": "automation",
+       "valid_after": "2020-01-01T00:00:00+00:00",
+       "valid_before": "2099-01-01T00:00:00+00:00"
+      }
+     ],
+     "version": 1
+    },
+    "enrolled": {
+     "alice@zeus.invalid": {
+      "principal": "alice@zeus.invalid",
+      "public_key": "ssh-ed25519 AQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQE=",
+      "role": "human",
+      "valid_after": "2020-01-01T00:00:00+00:00",
+      "valid_before": "2099-01-01T00:00:00+00:00"
+     },
+     "bot@zeus.invalid": {
+      "principal": "bot@zeus.invalid",
+      "public_key": "ssh-ed25519 AgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgI=",
+      "role": "automation",
+      "valid_after": "2020-01-01T00:00:00+00:00",
+      "valid_before": "2099-01-01T00:00:00+00:00"
+     },
+     "old@zeus.invalid": {
+      "principal": "old@zeus.invalid",
+      "public_key": "ssh-ed25519 AwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwM=",
+      "role": "automation",
+      "valid_after": "2020-01-01T00:00:00+00:00",
+      "valid_before": "2099-01-01T00:00:00+00:00"
+     }
+    },
+    "policy_commit": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+    "policy_hash": "2690786f5d82025df1dbd9417a6e4489a2ad1560121f313b417f45e223a7bc01",
+    "scope": "test-only-ticket-authority"
+   }
+  },
+  "schema_human_is_automation": {
+   "artifact_reads": 0,
+   "cause_type": null,
+   "git_calls": [
+    [
+     [
+      "rev-parse",
+      "--verify",
+      "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa^{commit}"
+     ],
+     null,
+     true
+    ],
+    [
+     [
+      "ls-tree",
+      "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+      "--",
+      ".zeus/ticket-trust.json"
+     ],
+     null,
+     true
+    ],
+    [
+     [
+      "show",
+      "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa:.zeus/ticket-trust.json"
+     ],
+     null,
+     false
+    ]
+   ],
+   "heartbeats": 3,
+   "is_contract_error": true,
+   "message": "Required human signers must be enrolled humans and required signers",
+   "outcome": "raised",
+   "runner_calls": [],
+   "type": "ContractError"
+  },
+  "schema_human_not_required": {
+   "artifact_reads": 0,
+   "cause_type": null,
+   "git_calls": [
+    [
+     [
+      "rev-parse",
+      "--verify",
+      "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa^{commit}"
+     ],
+     null,
+     true
+    ],
+    [
+     [
+      "ls-tree",
+      "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+      "--",
+      ".zeus/ticket-trust.json"
+     ],
+     null,
+     true
+    ],
+    [
+     [
+      "show",
+      "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa:.zeus/ticket-trust.json"
+     ],
+     null,
+     false
+    ]
+   ],
+   "heartbeats": 3,
+   "is_contract_error": true,
+   "message": "Required human signers must be enrolled humans and required signers",
+   "outcome": "raised",
+   "runner_calls": [],
+   "type": "ContractError"
+  },
+  "schema_human_unenrolled": {
+   "artifact_reads": 0,
+   "cause_type": null,
+   "git_calls": [
+    [
+     [
+      "rev-parse",
+      "--verify",
+      "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa^{commit}"
+     ],
+     null,
+     true
+    ],
+    [
+     [
+      "ls-tree",
+      "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+      "--",
+      ".zeus/ticket-trust.json"
+     ],
+     null,
+     true
+    ],
+    [
+     [
+      "show",
+      "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa:.zeus/ticket-trust.json"
+     ],
+     null,
+     false
+    ]
+   ],
+   "heartbeats": 3,
+   "is_contract_error": true,
+   "message": "Invalid required_human_signers",
+   "outcome": "raised",
+   "runner_calls": [],
+   "type": "ContractError"
+  },
+  "schema_key_base64_invalid": {
+   "artifact_reads": 0,
+   "cause_type": null,
+   "git_calls": [
+    [
+     [
+      "rev-parse",
+      "--verify",
+      "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa^{commit}"
+     ],
+     null,
+     true
+    ],
+    [
+     [
+      "ls-tree",
+      "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+      "--",
+      ".zeus/ticket-trust.json"
+     ],
+     null,
+     true
+    ],
+    [
+     [
+      "show",
+      "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa:.zeus/ticket-trust.json"
+     ],
+     null,
+     false
+    ]
+   ],
+   "heartbeats": 3,
+   "is_contract_error": false,
+   "message": "Only base64 data is allowed",
+   "outcome": "raised",
+   "runner_calls": [],
+   "type": "Error"
+  },
+  "schema_key_cr": {
+   "artifact_reads": 0,
+   "cause_type": null,
+   "git_calls": [
+    [
+     [
+      "rev-parse",
+      "--verify",
+      "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa^{commit}"
+     ],
+     null,
+     true
+    ],
+    [
+     [
+      "ls-tree",
+      "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+      "--",
+      ".zeus/ticket-trust.json"
+     ],
+     null,
+     true
+    ],
+    [
+     [
+      "show",
+      "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa:.zeus/ticket-trust.json"
+     ],
+     null,
+     false
+    ]
+   ],
+   "heartbeats": 3,
+   "is_contract_error": true,
+   "message": "Invalid public key",
+   "outcome": "raised",
+   "runner_calls": [],
+   "type": "ContractError"
+  },
+  "schema_key_duplicate": {
+   "artifact_reads": 0,
+   "cause_type": null,
+   "git_calls": [
+    [
+     [
+      "rev-parse",
+      "--verify",
+      "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa^{commit}"
+     ],
+     null,
+     true
+    ],
+    [
+     [
+      "ls-tree",
+      "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+      "--",
+      ".zeus/ticket-trust.json"
+     ],
+     null,
+     true
+    ],
+    [
+     [
+      "show",
+      "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa:.zeus/ticket-trust.json"
+     ],
+     null,
+     false
+    ]
+   ],
+   "heartbeats": 3,
+   "is_contract_error": true,
+   "message": "Duplicate signer public key",
+   "outcome": "raised",
+   "runner_calls": [],
+   "type": "ContractError"
+  },
+  "schema_key_newline": {
+   "artifact_reads": 0,
+   "cause_type": null,
+   "git_calls": [
+    [
+     [
+      "rev-parse",
+      "--verify",
+      "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa^{commit}"
+     ],
+     null,
+     true
+    ],
+    [
+     [
+      "ls-tree",
+      "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+      "--",
+      ".zeus/ticket-trust.json"
+     ],
+     null,
+     true
+    ],
+    [
+     [
+      "show",
+      "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa:.zeus/ticket-trust.json"
+     ],
+     null,
+     false
+    ]
+   ],
+   "heartbeats": 3,
+   "is_contract_error": true,
+   "message": "Invalid public key",
+   "outcome": "raised",
+   "runner_calls": [],
+   "type": "ContractError"
+  },
+  "schema_key_not_text": {
+   "artifact_reads": 0,
+   "cause_type": null,
+   "git_calls": [
+    [
+     [
+      "rev-parse",
+      "--verify",
+      "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa^{commit}"
+     ],
+     null,
+     true
+    ],
+    [
+     [
+      "ls-tree",
+      "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+      "--",
+      ".zeus/ticket-trust.json"
+     ],
+     null,
+     true
+    ],
+    [
+     [
+      "show",
+      "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa:.zeus/ticket-trust.json"
+     ],
+     null,
+     false
+    ]
+   ],
+   "heartbeats": 3,
+   "is_contract_error": true,
+   "message": "Invalid public key",
+   "outcome": "raised",
+   "runner_calls": [],
+   "type": "ContractError"
+  },
+  "schema_key_one_part": {
+   "artifact_reads": 0,
+   "cause_type": null,
+   "git_calls": [
+    [
+     [
+      "rev-parse",
+      "--verify",
+      "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa^{commit}"
+     ],
+     null,
+     true
+    ],
+    [
+     [
+      "ls-tree",
+      "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+      "--",
+      ".zeus/ticket-trust.json"
+     ],
+     null,
+     true
+    ],
+    [
+     [
+      "show",
+      "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa:.zeus/ticket-trust.json"
+     ],
+     null,
+     false
+    ]
+   ],
+   "heartbeats": 3,
+   "is_contract_error": true,
+   "message": "Unsupported signer public key",
+   "outcome": "raised",
+   "runner_calls": [],
+   "type": "ContractError"
+  },
+  "schema_key_rsa_type": {
+   "artifact_reads": 0,
+   "git_calls": [
+    [
+     [
+      "rev-parse",
+      "--verify",
+      "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa^{commit}"
+     ],
+     null,
+     true
+    ],
+    [
+     [
+      "ls-tree",
+      "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+      "--",
+      ".zeus/ticket-trust.json"
+     ],
+     null,
+     true
+    ],
+    [
+     [
+      "show",
+      "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa:.zeus/ticket-trust.json"
+     ],
+     null,
+     false
+    ]
+   ],
+   "heartbeats": 3,
+   "outcome": "returned",
+   "runner_calls": [],
+   "value": {
+    "definition": {
+     "max_evidence_age_seconds": 86400,
+     "required_human_signers": [
+      "alice@zeus.invalid"
+     ],
+     "required_signers": [
+      "alice@zeus.invalid",
+      "bot@zeus.invalid"
+     ],
+     "revoked": [
+      "old@zeus.invalid"
+     ],
+     "scope": "test-only-ticket-authority",
+     "signers": [
+      {
+       "principal": "alice@zeus.invalid",
+       "public_key": "ssh-ed25519 AQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQE=",
+       "role": "human",
+       "valid_after": "2020-01-01T00:00:00+00:00",
+       "valid_before": "2099-01-01T00:00:00+00:00"
+      },
+      {
+       "principal": "bot@zeus.invalid",
+       "public_key": "ssh-rsa AgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgI=",
+       "role": "automation",
+       "valid_after": "2020-01-01T00:00:00+00:00",
+       "valid_before": "2099-01-01T00:00:00+00:00"
+      },
+      {
+       "principal": "old@zeus.invalid",
+       "public_key": "ssh-ed25519 AwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwM=",
+       "role": "automation",
+       "valid_after": "2020-01-01T00:00:00+00:00",
+       "valid_before": "2099-01-01T00:00:00+00:00"
+      }
+     ],
+     "version": 1
+    },
+    "enrolled": {
+     "alice@zeus.invalid": {
+      "principal": "alice@zeus.invalid",
+      "public_key": "ssh-ed25519 AQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQE=",
+      "role": "human",
+      "valid_after": "2020-01-01T00:00:00+00:00",
+      "valid_before": "2099-01-01T00:00:00+00:00"
+     },
+     "bot@zeus.invalid": {
+      "principal": "bot@zeus.invalid",
+      "public_key": "ssh-rsa AgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgI=",
+      "role": "automation",
+      "valid_after": "2020-01-01T00:00:00+00:00",
+      "valid_before": "2099-01-01T00:00:00+00:00"
+     },
+     "old@zeus.invalid": {
+      "principal": "old@zeus.invalid",
+      "public_key": "ssh-ed25519 AwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwM=",
+      "role": "automation",
+      "valid_after": "2020-01-01T00:00:00+00:00",
+      "valid_before": "2099-01-01T00:00:00+00:00"
+     }
+    },
+    "policy_commit": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+    "policy_hash": "a151952982bed05546725efe17f45984b27e24693cd81ff22226cc703a3eedf3",
+    "scope": "test-only-ticket-authority"
+   }
+  },
+  "schema_key_sk_type": {
+   "artifact_reads": 0,
+   "git_calls": [
+    [
+     [
+      "rev-parse",
+      "--verify",
+      "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa^{commit}"
+     ],
+     null,
+     true
+    ],
+    [
+     [
+      "ls-tree",
+      "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+      "--",
+      ".zeus/ticket-trust.json"
+     ],
+     null,
+     true
+    ],
+    [
+     [
+      "show",
+      "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa:.zeus/ticket-trust.json"
+     ],
+     null,
+     false
+    ]
+   ],
+   "heartbeats": 3,
+   "outcome": "returned",
+   "runner_calls": [],
+   "value": {
+    "definition": {
+     "max_evidence_age_seconds": 86400,
+     "required_human_signers": [
+      "alice@zeus.invalid"
+     ],
+     "required_signers": [
+      "alice@zeus.invalid",
+      "bot@zeus.invalid"
+     ],
+     "revoked": [
+      "old@zeus.invalid"
+     ],
+     "scope": "test-only-ticket-authority",
+     "signers": [
+      {
+       "principal": "alice@zeus.invalid",
+       "public_key": "ssh-ed25519 AQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQE=",
+       "role": "human",
+       "valid_after": "2020-01-01T00:00:00+00:00",
+       "valid_before": "2099-01-01T00:00:00+00:00"
+      },
+      {
+       "principal": "bot@zeus.invalid",
+       "public_key": "sk-ssh-ed25519@openssh.com AgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgI=",
+       "role": "automation",
+       "valid_after": "2020-01-01T00:00:00+00:00",
+       "valid_before": "2099-01-01T00:00:00+00:00"
+      },
+      {
+       "principal": "old@zeus.invalid",
+       "public_key": "ssh-ed25519 AwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwM=",
+       "role": "automation",
+       "valid_after": "2020-01-01T00:00:00+00:00",
+       "valid_before": "2099-01-01T00:00:00+00:00"
+      }
+     ],
+     "version": 1
+    },
+    "enrolled": {
+     "alice@zeus.invalid": {
+      "principal": "alice@zeus.invalid",
+      "public_key": "ssh-ed25519 AQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQE=",
+      "role": "human",
+      "valid_after": "2020-01-01T00:00:00+00:00",
+      "valid_before": "2099-01-01T00:00:00+00:00"
+     },
+     "bot@zeus.invalid": {
+      "principal": "bot@zeus.invalid",
+      "public_key": "sk-ssh-ed25519@openssh.com AgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgI=",
+      "role": "automation",
+      "valid_after": "2020-01-01T00:00:00+00:00",
+      "valid_before": "2099-01-01T00:00:00+00:00"
+     },
+     "old@zeus.invalid": {
+      "principal": "old@zeus.invalid",
+      "public_key": "ssh-ed25519 AwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwM=",
+      "role": "automation",
+      "valid_after": "2020-01-01T00:00:00+00:00",
+      "valid_before": "2099-01-01T00:00:00+00:00"
+     }
+    },
+    "policy_commit": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+    "policy_hash": "f5b5f948913d43bea52bacdf644b9143bb5c4093103fc017c8da7a04142d75d6",
+    "scope": "test-only-ticket-authority"
+   }
+  },
+  "schema_key_three_parts": {
+   "artifact_reads": 0,
+   "cause_type": null,
+   "git_calls": [
+    [
+     [
+      "rev-parse",
+      "--verify",
+      "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa^{commit}"
+     ],
+     null,
+     true
+    ],
+    [
+     [
+      "ls-tree",
+      "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+      "--",
+      ".zeus/ticket-trust.json"
+     ],
+     null,
+     true
+    ],
+    [
+     [
+      "show",
+      "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa:.zeus/ticket-trust.json"
+     ],
+     null,
+     false
+    ]
+   ],
+   "heartbeats": 3,
+   "is_contract_error": true,
+   "message": "Unsupported signer public key",
+   "outcome": "raised",
+   "runner_calls": [],
+   "type": "ContractError"
+  },
+  "schema_key_type_unsupported": {
+   "artifact_reads": 0,
+   "cause_type": null,
+   "git_calls": [
+    [
+     [
+      "rev-parse",
+      "--verify",
+      "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa^{commit}"
+     ],
+     null,
+     true
+    ],
+    [
+     [
+      "ls-tree",
+      "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+      "--",
+      ".zeus/ticket-trust.json"
+     ],
+     null,
+     true
+    ],
+    [
+     [
+      "show",
+      "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa:.zeus/ticket-trust.json"
+     ],
+     null,
+     false
+    ]
+   ],
+   "heartbeats": 3,
+   "is_contract_error": true,
+   "message": "Unsupported signer public key",
+   "outcome": "raised",
+   "runner_calls": [],
+   "type": "ContractError"
+  },
+  "schema_missing_field": {
+   "artifact_reads": 0,
+   "cause_type": null,
+   "git_calls": [
+    [
+     [
+      "rev-parse",
+      "--verify",
+      "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa^{commit}"
+     ],
+     null,
+     true
+    ],
+    [
+     [
+      "ls-tree",
+      "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+      "--",
+      ".zeus/ticket-trust.json"
+     ],
+     null,
+     true
+    ],
+    [
+     [
+      "show",
+      "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa:.zeus/ticket-trust.json"
+     ],
+     null,
+     false
+    ]
+   ],
+   "heartbeats": 3,
+   "is_contract_error": true,
+   "message": "Invalid ticket trust policy",
+   "outcome": "raised",
+   "runner_calls": [],
+   "type": "ContractError"
+  },
+  "schema_principal_100": {
+   "artifact_reads": 0,
+   "git_calls": [
+    [
+     [
+      "rev-parse",
+      "--verify",
+      "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa^{commit}"
+     ],
+     null,
+     true
+    ],
+    [
+     [
+      "ls-tree",
+      "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+      "--",
+      ".zeus/ticket-trust.json"
+     ],
+     null,
+     true
+    ],
+    [
+     [
+      "show",
+      "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa:.zeus/ticket-trust.json"
+     ],
+     null,
+     false
+    ]
+   ],
+   "heartbeats": 3,
+   "outcome": "returned",
+   "runner_calls": [],
+   "value": {
+    "definition": {
+     "max_evidence_age_seconds": 86400,
+     "required_human_signers": [
+      "alice@zeus.invalid"
+     ],
+     "required_signers": [
+      "alice@zeus.invalid",
+      "bot@zeus.invalid"
+     ],
+     "revoked": [
+      "pppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppp"
+     ],
+     "scope": "test-only-ticket-authority",
+     "signers": [
+      {
+       "principal": "alice@zeus.invalid",
+       "public_key": "ssh-ed25519 AQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQE=",
+       "role": "human",
+       "valid_after": "2020-01-01T00:00:00+00:00",
+       "valid_before": "2099-01-01T00:00:00+00:00"
+      },
+      {
+       "principal": "bot@zeus.invalid",
+       "public_key": "ssh-ed25519 AgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgI=",
+       "role": "automation",
+       "valid_after": "2020-01-01T00:00:00+00:00",
+       "valid_before": "2099-01-01T00:00:00+00:00"
+      },
+      {
+       "principal": "pppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppp",
+       "public_key": "ssh-ed25519 AwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwM=",
+       "role": "automation",
+       "valid_after": "2020-01-01T00:00:00+00:00",
+       "valid_before": "2099-01-01T00:00:00+00:00"
+      }
+     ],
+     "version": 1
+    },
+    "enrolled": {
+     "alice@zeus.invalid": {
+      "principal": "alice@zeus.invalid",
+      "public_key": "ssh-ed25519 AQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQE=",
+      "role": "human",
+      "valid_after": "2020-01-01T00:00:00+00:00",
+      "valid_before": "2099-01-01T00:00:00+00:00"
+     },
+     "bot@zeus.invalid": {
+      "principal": "bot@zeus.invalid",
+      "public_key": "ssh-ed25519 AgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgI=",
+      "role": "automation",
+      "valid_after": "2020-01-01T00:00:00+00:00",
+      "valid_before": "2099-01-01T00:00:00+00:00"
+     },
+     "pppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppp": {
+      "principal": "pppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppp",
+      "public_key": "ssh-ed25519 AwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwM=",
+      "role": "automation",
+      "valid_after": "2020-01-01T00:00:00+00:00",
+      "valid_before": "2099-01-01T00:00:00+00:00"
+     }
+    },
+    "policy_commit": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+    "policy_hash": "7c18e3c5cfca23ab230be036d0e6fdf6c01fba221be6ad8e0fea12feae238f6c",
+    "scope": "test-only-ticket-authority"
+   }
+  },
+  "schema_principal_101": {
+   "artifact_reads": 0,
+   "cause_type": null,
+   "git_calls": [
+    [
+     [
+      "rev-parse",
+      "--verify",
+      "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa^{commit}"
+     ],
+     null,
+     true
+    ],
+    [
+     [
+      "ls-tree",
+      "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+      "--",
+      ".zeus/ticket-trust.json"
+     ],
+     null,
+     true
+    ],
+    [
+     [
+      "show",
+      "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa:.zeus/ticket-trust.json"
+     ],
+     null,
+     false
+    ]
+   ],
+   "heartbeats": 3,
+   "is_contract_error": true,
+   "message": "Invalid or duplicate signer principal",
+   "outcome": "raised",
+   "runner_calls": [],
+   "type": "ContractError"
+  },
+  "schema_principal_duplicate": {
+   "artifact_reads": 0,
+   "cause_type": null,
+   "git_calls": [
+    [
+     [
+      "rev-parse",
+      "--verify",
+      "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa^{commit}"
+     ],
+     null,
+     true
+    ],
+    [
+     [
+      "ls-tree",
+      "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+      "--",
+      ".zeus/ticket-trust.json"
+     ],
+     null,
+     true
+    ],
+    [
+     [
+      "show",
+      "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa:.zeus/ticket-trust.json"
+     ],
+     null,
+     false
+    ]
+   ],
+   "heartbeats": 3,
+   "is_contract_error": true,
+   "message": "Invalid or duplicate signer principal",
+   "outcome": "raised",
+   "runner_calls": [],
+   "type": "ContractError"
+  },
+  "schema_principal_invalid_start": {
+   "artifact_reads": 0,
+   "cause_type": null,
+   "git_calls": [
+    [
+     [
+      "rev-parse",
+      "--verify",
+      "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa^{commit}"
+     ],
+     null,
+     true
+    ],
+    [
+     [
+      "ls-tree",
+      "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+      "--",
+      ".zeus/ticket-trust.json"
+     ],
+     null,
+     true
+    ],
+    [
+     [
+      "show",
+      "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa:.zeus/ticket-trust.json"
+     ],
+     null,
+     false
+    ]
+   ],
+   "heartbeats": 3,
+   "is_contract_error": true,
+   "message": "Invalid or duplicate signer principal",
+   "outcome": "raised",
+   "runner_calls": [],
+   "type": "ContractError"
+  },
+  "schema_principal_not_text": {
+   "artifact_reads": 0,
+   "cause_type": null,
+   "git_calls": [
+    [
+     [
+      "rev-parse",
+      "--verify",
+      "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa^{commit}"
+     ],
+     null,
+     true
+    ],
+    [
+     [
+      "ls-tree",
+      "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+      "--",
+      ".zeus/ticket-trust.json"
+     ],
+     null,
+     true
+    ],
+    [
+     [
+      "show",
+      "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa:.zeus/ticket-trust.json"
+     ],
+     null,
+     false
+    ]
+   ],
+   "heartbeats": 3,
+   "is_contract_error": true,
+   "message": "Invalid or duplicate signer principal",
+   "outcome": "raised",
+   "runner_calls": [],
+   "type": "ContractError"
+  },
+  "schema_principal_space": {
+   "artifact_reads": 0,
+   "cause_type": null,
+   "git_calls": [
+    [
+     [
+      "rev-parse",
+      "--verify",
+      "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa^{commit}"
+     ],
+     null,
+     true
+    ],
+    [
+     [
+      "ls-tree",
+      "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+      "--",
+      ".zeus/ticket-trust.json"
+     ],
+     null,
+     true
+    ],
+    [
+     [
+      "show",
+      "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa:.zeus/ticket-trust.json"
+     ],
+     null,
+     false
+    ]
+   ],
+   "heartbeats": 3,
+   "is_contract_error": true,
+   "message": "Invalid or duplicate signer principal",
+   "outcome": "raised",
+   "runner_calls": [],
+   "type": "ContractError"
+  },
+  "schema_required_duplicate": {
+   "artifact_reads": 0,
+   "cause_type": null,
+   "git_calls": [
+    [
+     [
+      "rev-parse",
+      "--verify",
+      "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa^{commit}"
+     ],
+     null,
+     true
+    ],
+    [
+     [
+      "ls-tree",
+      "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+      "--",
+      ".zeus/ticket-trust.json"
+     ],
+     null,
+     true
+    ],
+    [
+     [
+      "show",
+      "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa:.zeus/ticket-trust.json"
+     ],
+     null,
+     false
+    ]
+   ],
+   "heartbeats": 3,
+   "is_contract_error": true,
+   "message": "Invalid required_signers",
+   "outcome": "raised",
+   "runner_calls": [],
+   "type": "ContractError"
+  },
+  "schema_required_empty": {
+   "artifact_reads": 0,
+   "cause_type": null,
+   "git_calls": [
+    [
+     [
+      "rev-parse",
+      "--verify",
+      "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa^{commit}"
+     ],
+     null,
+     true
+    ],
+    [
+     [
+      "ls-tree",
+      "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+      "--",
+      ".zeus/ticket-trust.json"
+     ],
+     null,
+     true
+    ],
+    [
+     [
+      "show",
+      "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa:.zeus/ticket-trust.json"
+     ],
+     null,
+     false
+    ]
+   ],
+   "heartbeats": 3,
+   "is_contract_error": true,
+   "message": "Required human signers must be enrolled humans and required signers",
+   "outcome": "raised",
+   "runner_calls": [],
+   "type": "ContractError"
+  },
+  "schema_required_not_list": {
+   "artifact_reads": 0,
+   "cause_type": null,
+   "git_calls": [
+    [
+     [
+      "rev-parse",
+      "--verify",
+      "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa^{commit}"
+     ],
+     null,
+     true
+    ],
+    [
+     [
+      "ls-tree",
+      "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+      "--",
+      ".zeus/ticket-trust.json"
+     ],
+     null,
+     true
+    ],
+    [
+     [
+      "show",
+      "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa:.zeus/ticket-trust.json"
+     ],
+     null,
+     false
+    ]
+   ],
+   "heartbeats": 3,
+   "is_contract_error": true,
+   "message": "Invalid required_signers",
+   "outcome": "raised",
+   "runner_calls": [],
+   "type": "ContractError"
+  },
+  "schema_required_not_text": {
+   "artifact_reads": 0,
+   "cause_type": null,
+   "git_calls": [
+    [
+     [
+      "rev-parse",
+      "--verify",
+      "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa^{commit}"
+     ],
+     null,
+     true
+    ],
+    [
+     [
+      "ls-tree",
+      "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+      "--",
+      ".zeus/ticket-trust.json"
+     ],
+     null,
+     true
+    ],
+    [
+     [
+      "show",
+      "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa:.zeus/ticket-trust.json"
+     ],
+     null,
+     false
+    ]
+   ],
+   "heartbeats": 3,
+   "is_contract_error": true,
+   "message": "Invalid required_signers",
+   "outcome": "raised",
+   "runner_calls": [],
+   "type": "ContractError"
+  },
+  "schema_required_unenrolled": {
+   "artifact_reads": 0,
+   "cause_type": null,
+   "git_calls": [
+    [
+     [
+      "rev-parse",
+      "--verify",
+      "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa^{commit}"
+     ],
+     null,
+     true
+    ],
+    [
+     [
+      "ls-tree",
+      "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+      "--",
+      ".zeus/ticket-trust.json"
+     ],
+     null,
+     true
+    ],
+    [
+     [
+      "show",
+      "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa:.zeus/ticket-trust.json"
+     ],
+     null,
+     false
+    ]
+   ],
+   "heartbeats": 3,
+   "is_contract_error": true,
+   "message": "Invalid required_signers",
+   "outcome": "raised",
+   "runner_calls": [],
+   "type": "ContractError"
+  },
+  "schema_revoked_duplicate": {
+   "artifact_reads": 0,
+   "cause_type": null,
+   "git_calls": [
+    [
+     [
+      "rev-parse",
+      "--verify",
+      "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa^{commit}"
+     ],
+     null,
+     true
+    ],
+    [
+     [
+      "ls-tree",
+      "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+      "--",
+      ".zeus/ticket-trust.json"
+     ],
+     null,
+     true
+    ],
+    [
+     [
+      "show",
+      "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa:.zeus/ticket-trust.json"
+     ],
+     null,
+     false
+    ]
+   ],
+   "heartbeats": 3,
+   "is_contract_error": true,
+   "message": "Invalid revoked",
+   "outcome": "raised",
+   "runner_calls": [],
+   "type": "ContractError"
+  },
+  "schema_revoked_empty_ok": {
+   "artifact_reads": 0,
+   "git_calls": [
+    [
+     [
+      "rev-parse",
+      "--verify",
+      "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa^{commit}"
+     ],
+     null,
+     true
+    ],
+    [
+     [
+      "ls-tree",
+      "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+      "--",
+      ".zeus/ticket-trust.json"
+     ],
+     null,
+     true
+    ],
+    [
+     [
+      "show",
+      "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa:.zeus/ticket-trust.json"
+     ],
+     null,
+     false
+    ]
+   ],
+   "heartbeats": 3,
+   "outcome": "returned",
+   "runner_calls": [],
+   "value": {
+    "definition": {
+     "max_evidence_age_seconds": 86400,
+     "required_human_signers": [
+      "alice@zeus.invalid"
+     ],
+     "required_signers": [
+      "alice@zeus.invalid",
+      "bot@zeus.invalid"
+     ],
+     "revoked": [],
+     "scope": "test-only-ticket-authority",
+     "signers": [
+      {
+       "principal": "alice@zeus.invalid",
+       "public_key": "ssh-ed25519 AQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQE=",
+       "role": "human",
+       "valid_after": "2020-01-01T00:00:00+00:00",
+       "valid_before": "2099-01-01T00:00:00+00:00"
+      },
+      {
+       "principal": "bot@zeus.invalid",
+       "public_key": "ssh-ed25519 AgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgI=",
+       "role": "automation",
+       "valid_after": "2020-01-01T00:00:00+00:00",
+       "valid_before": "2099-01-01T00:00:00+00:00"
+      },
+      {
+       "principal": "old@zeus.invalid",
+       "public_key": "ssh-ed25519 AwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwM=",
+       "role": "automation",
+       "valid_after": "2020-01-01T00:00:00+00:00",
+       "valid_before": "2099-01-01T00:00:00+00:00"
+      }
+     ],
+     "version": 1
+    },
+    "enrolled": {
+     "alice@zeus.invalid": {
+      "principal": "alice@zeus.invalid",
+      "public_key": "ssh-ed25519 AQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQE=",
+      "role": "human",
+      "valid_after": "2020-01-01T00:00:00+00:00",
+      "valid_before": "2099-01-01T00:00:00+00:00"
+     },
+     "bot@zeus.invalid": {
+      "principal": "bot@zeus.invalid",
+      "public_key": "ssh-ed25519 AgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgI=",
+      "role": "automation",
+      "valid_after": "2020-01-01T00:00:00+00:00",
+      "valid_before": "2099-01-01T00:00:00+00:00"
+     },
+     "old@zeus.invalid": {
+      "principal": "old@zeus.invalid",
+      "public_key": "ssh-ed25519 AwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwM=",
+      "role": "automation",
+      "valid_after": "2020-01-01T00:00:00+00:00",
+      "valid_before": "2099-01-01T00:00:00+00:00"
+     }
+    },
+    "policy_commit": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+    "policy_hash": "4d81c4a5a33f34fa93fff1c023f873302d060084b52c492807959d977c1303c1",
+    "scope": "test-only-ticket-authority"
+   }
+  },
+  "schema_revoked_not_list": {
+   "artifact_reads": 0,
+   "cause_type": null,
+   "git_calls": [
+    [
+     [
+      "rev-parse",
+      "--verify",
+      "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa^{commit}"
+     ],
+     null,
+     true
+    ],
+    [
+     [
+      "ls-tree",
+      "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+      "--",
+      ".zeus/ticket-trust.json"
+     ],
+     null,
+     true
+    ],
+    [
+     [
+      "show",
+      "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa:.zeus/ticket-trust.json"
+     ],
+     null,
+     false
+    ]
+   ],
+   "heartbeats": 3,
+   "is_contract_error": true,
+   "message": "Invalid revoked",
+   "outcome": "raised",
+   "runner_calls": [],
+   "type": "ContractError"
+  },
+  "schema_revoked_required": {
+   "artifact_reads": 0,
+   "cause_type": null,
+   "git_calls": [
+    [
+     [
+      "rev-parse",
+      "--verify",
+      "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa^{commit}"
+     ],
+     null,
+     true
+    ],
+    [
+     [
+      "ls-tree",
+      "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+      "--",
+      ".zeus/ticket-trust.json"
+     ],
+     null,
+     true
+    ],
+    [
+     [
+      "show",
+      "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa:.zeus/ticket-trust.json"
+     ],
+     null,
+     false
+    ]
+   ],
+   "heartbeats": 3,
+   "is_contract_error": true,
+   "message": "Required signer is revoked; policy is unusable",
+   "outcome": "raised",
+   "runner_calls": [],
+   "type": "ContractError"
+  },
+  "schema_revoked_unenrolled": {
+   "artifact_reads": 0,
+   "cause_type": null,
+   "git_calls": [
+    [
+     [
+      "rev-parse",
+      "--verify",
+      "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa^{commit}"
+     ],
+     null,
+     true
+    ],
+    [
+     [
+      "ls-tree",
+      "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+      "--",
+      ".zeus/ticket-trust.json"
+     ],
+     null,
+     true
+    ],
+    [
+     [
+      "show",
+      "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa:.zeus/ticket-trust.json"
+     ],
+     null,
+     false
+    ]
+   ],
+   "heartbeats": 3,
+   "is_contract_error": true,
+   "message": "Invalid revoked",
+   "outcome": "raised",
+   "runner_calls": [],
+   "type": "ContractError"
+  },
+  "schema_role_invalid": {
+   "artifact_reads": 0,
+   "cause_type": null,
+   "git_calls": [
+    [
+     [
+      "rev-parse",
+      "--verify",
+      "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa^{commit}"
+     ],
+     null,
+     true
+    ],
+    [
+     [
+      "ls-tree",
+      "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+      "--",
+      ".zeus/ticket-trust.json"
+     ],
+     null,
+     true
+    ],
+    [
+     [
+      "show",
+      "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa:.zeus/ticket-trust.json"
+     ],
+     null,
+     false
+    ]
+   ],
+   "heartbeats": 3,
+   "is_contract_error": true,
+   "message": "Invalid signer role",
+   "outcome": "raised",
+   "runner_calls": [],
+   "type": "ContractError"
+  },
+  "schema_scope_200": {
+   "artifact_reads": 0,
+   "git_calls": [
+    [
+     [
+      "rev-parse",
+      "--verify",
+      "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa^{commit}"
+     ],
+     null,
+     true
+    ],
+    [
+     [
+      "ls-tree",
+      "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+      "--",
+      ".zeus/ticket-trust.json"
+     ],
+     null,
+     true
+    ],
+    [
+     [
+      "show",
+      "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa:.zeus/ticket-trust.json"
+     ],
+     null,
+     false
+    ]
+   ],
+   "heartbeats": 3,
+   "outcome": "returned",
+   "runner_calls": [],
+   "value": {
+    "definition": {
+     "max_evidence_age_seconds": 86400,
+     "required_human_signers": [
+      "alice@zeus.invalid"
+     ],
+     "required_signers": [
+      "alice@zeus.invalid",
+      "bot@zeus.invalid"
+     ],
+     "revoked": [
+      "old@zeus.invalid"
+     ],
+     "scope": "ssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssss",
+     "signers": [
+      {
+       "principal": "alice@zeus.invalid",
+       "public_key": "ssh-ed25519 AQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQE=",
+       "role": "human",
+       "valid_after": "2020-01-01T00:00:00+00:00",
+       "valid_before": "2099-01-01T00:00:00+00:00"
+      },
+      {
+       "principal": "bot@zeus.invalid",
+       "public_key": "ssh-ed25519 AgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgI=",
+       "role": "automation",
+       "valid_after": "2020-01-01T00:00:00+00:00",
+       "valid_before": "2099-01-01T00:00:00+00:00"
+      },
+      {
+       "principal": "old@zeus.invalid",
+       "public_key": "ssh-ed25519 AwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwM=",
+       "role": "automation",
+       "valid_after": "2020-01-01T00:00:00+00:00",
+       "valid_before": "2099-01-01T00:00:00+00:00"
+      }
+     ],
+     "version": 1
+    },
+    "enrolled": {
+     "alice@zeus.invalid": {
+      "principal": "alice@zeus.invalid",
+      "public_key": "ssh-ed25519 AQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQE=",
+      "role": "human",
+      "valid_after": "2020-01-01T00:00:00+00:00",
+      "valid_before": "2099-01-01T00:00:00+00:00"
+     },
+     "bot@zeus.invalid": {
+      "principal": "bot@zeus.invalid",
+      "public_key": "ssh-ed25519 AgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgI=",
+      "role": "automation",
+      "valid_after": "2020-01-01T00:00:00+00:00",
+      "valid_before": "2099-01-01T00:00:00+00:00"
+     },
+     "old@zeus.invalid": {
+      "principal": "old@zeus.invalid",
+      "public_key": "ssh-ed25519 AwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwM=",
+      "role": "automation",
+      "valid_after": "2020-01-01T00:00:00+00:00",
+      "valid_before": "2099-01-01T00:00:00+00:00"
+     }
+    },
+    "policy_commit": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+    "policy_hash": "ba36b9ed91af8ccf370492651b22861a1c073ac2a34f7c260bf2a3ce9ca1963f",
+    "scope": "ssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssss"
+   }
+  },
+  "schema_scope_201": {
+   "artifact_reads": 0,
+   "cause_type": null,
+   "git_calls": [
+    [
+     [
+      "rev-parse",
+      "--verify",
+      "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa^{commit}"
+     ],
+     null,
+     true
+    ],
+    [
+     [
+      "ls-tree",
+      "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+      "--",
+      ".zeus/ticket-trust.json"
+     ],
+     null,
+     true
+    ],
+    [
+     [
+      "show",
+      "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa:.zeus/ticket-trust.json"
+     ],
+     null,
+     false
+    ]
+   ],
+   "heartbeats": 3,
+   "is_contract_error": true,
+   "message": "Trust scope required",
+   "outcome": "raised",
+   "runner_calls": [],
+   "type": "ContractError"
+  },
+  "schema_scope_empty": {
+   "artifact_reads": 0,
+   "cause_type": null,
+   "git_calls": [
+    [
+     [
+      "rev-parse",
+      "--verify",
+      "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa^{commit}"
+     ],
+     null,
+     true
+    ],
+    [
+     [
+      "ls-tree",
+      "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+      "--",
+      ".zeus/ticket-trust.json"
+     ],
+     null,
+     true
+    ],
+    [
+     [
+      "show",
+      "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa:.zeus/ticket-trust.json"
+     ],
+     null,
+     false
+    ]
+   ],
+   "heartbeats": 3,
+   "is_contract_error": true,
+   "message": "Trust scope required",
+   "outcome": "raised",
+   "runner_calls": [],
+   "type": "ContractError"
+  },
+  "schema_scope_not_text": {
+   "artifact_reads": 0,
+   "cause_type": null,
+   "git_calls": [
+    [
+     [
+      "rev-parse",
+      "--verify",
+      "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa^{commit}"
+     ],
+     null,
+     true
+    ],
+    [
+     [
+      "ls-tree",
+      "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+      "--",
+      ".zeus/ticket-trust.json"
+     ],
+     null,
+     true
+    ],
+    [
+     [
+      "show",
+      "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa:.zeus/ticket-trust.json"
+     ],
+     null,
+     false
+    ]
+   ],
+   "heartbeats": 3,
+   "is_contract_error": true,
+   "message": "Trust scope required",
+   "outcome": "raised",
+   "runner_calls": [],
+   "type": "ContractError"
+  },
+  "schema_signer_extra": {
+   "artifact_reads": 0,
+   "cause_type": null,
+   "git_calls": [
+    [
+     [
+      "rev-parse",
+      "--verify",
+      "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa^{commit}"
+     ],
+     null,
+     true
+    ],
+    [
+     [
+      "ls-tree",
+      "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+      "--",
+      ".zeus/ticket-trust.json"
+     ],
+     null,
+     true
+    ],
+    [
+     [
+      "show",
+      "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa:.zeus/ticket-trust.json"
+     ],
+     null,
+     false
+    ]
+   ],
+   "heartbeats": 3,
+   "is_contract_error": true,
+   "message": "Invalid enrolled signer",
+   "outcome": "raised",
+   "runner_calls": [],
+   "type": "ContractError"
+  },
+  "schema_signer_missing": {
+   "artifact_reads": 0,
+   "cause_type": null,
+   "git_calls": [
+    [
+     [
+      "rev-parse",
+      "--verify",
+      "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa^{commit}"
+     ],
+     null,
+     true
+    ],
+    [
+     [
+      "ls-tree",
+      "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+      "--",
+      ".zeus/ticket-trust.json"
+     ],
+     null,
+     true
+    ],
+    [
+     [
+      "show",
+      "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa:.zeus/ticket-trust.json"
+     ],
+     null,
+     false
+    ]
+   ],
+   "heartbeats": 3,
+   "is_contract_error": true,
+   "message": "Invalid enrolled signer",
+   "outcome": "raised",
+   "runner_calls": [],
+   "type": "ContractError"
+  },
+  "schema_signer_not_dict": {
+   "artifact_reads": 0,
+   "cause_type": null,
+   "git_calls": [
+    [
+     [
+      "rev-parse",
+      "--verify",
+      "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa^{commit}"
+     ],
+     null,
+     true
+    ],
+    [
+     [
+      "ls-tree",
+      "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+      "--",
+      ".zeus/ticket-trust.json"
+     ],
+     null,
+     true
+    ],
+    [
+     [
+      "show",
+      "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa:.zeus/ticket-trust.json"
+     ],
+     null,
+     false
+    ]
+   ],
+   "heartbeats": 3,
+   "is_contract_error": true,
+   "message": "Invalid enrolled signer",
+   "outcome": "raised",
+   "runner_calls": [],
+   "type": "ContractError"
+  },
+  "schema_signers_21": {
+   "artifact_reads": 0,
+   "cause_type": null,
+   "git_calls": [
+    [
+     [
+      "rev-parse",
+      "--verify",
+      "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa^{commit}"
+     ],
+     null,
+     true
+    ],
+    [
+     [
+      "ls-tree",
+      "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+      "--",
+      ".zeus/ticket-trust.json"
+     ],
+     null,
+     true
+    ],
+    [
+     [
+      "show",
+      "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa:.zeus/ticket-trust.json"
+     ],
+     null,
+     false
+    ]
+   ],
+   "heartbeats": 3,
+   "is_contract_error": true,
+   "message": "Enrolled signers required",
+   "outcome": "raised",
+   "runner_calls": [],
+   "type": "ContractError"
+  },
+  "schema_signers_empty": {
+   "artifact_reads": 0,
+   "cause_type": null,
+   "git_calls": [
+    [
+     [
+      "rev-parse",
+      "--verify",
+      "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa^{commit}"
+     ],
+     null,
+     true
+    ],
+    [
+     [
+      "ls-tree",
+      "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+      "--",
+      ".zeus/ticket-trust.json"
+     ],
+     null,
+     true
+    ],
+    [
+     [
+      "show",
+      "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa:.zeus/ticket-trust.json"
+     ],
+     null,
+     false
+    ]
+   ],
+   "heartbeats": 3,
+   "is_contract_error": true,
+   "message": "Enrolled signers required",
+   "outcome": "raised",
+   "runner_calls": [],
+   "type": "ContractError"
+  },
+  "schema_signers_not_list": {
+   "artifact_reads": 0,
+   "cause_type": null,
+   "git_calls": [
+    [
+     [
+      "rev-parse",
+      "--verify",
+      "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa^{commit}"
+     ],
+     null,
+     true
+    ],
+    [
+     [
+      "ls-tree",
+      "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+      "--",
+      ".zeus/ticket-trust.json"
+     ],
+     null,
+     true
+    ],
+    [
+     [
+      "show",
+      "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa:.zeus/ticket-trust.json"
+     ],
+     null,
+     false
+    ]
+   ],
+   "heartbeats": 3,
+   "is_contract_error": true,
+   "message": "Enrolled signers required",
+   "outcome": "raised",
+   "runner_calls": [],
+   "type": "ContractError"
+  },
+  "schema_validity_equal": {
+   "artifact_reads": 0,
+   "cause_type": null,
+   "git_calls": [
+    [
+     [
+      "rev-parse",
+      "--verify",
+      "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa^{commit}"
+     ],
+     null,
+     true
+    ],
+    [
+     [
+      "ls-tree",
+      "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+      "--",
+      ".zeus/ticket-trust.json"
+     ],
+     null,
+     true
+    ],
+    [
+     [
+      "show",
+      "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa:.zeus/ticket-trust.json"
+     ],
+     null,
+     false
+    ]
+   ],
+   "heartbeats": 3,
+   "is_contract_error": true,
+   "message": "Invalid signer validity",
+   "outcome": "raised",
+   "runner_calls": [],
+   "type": "ContractError"
+  },
+  "schema_validity_naive": {
+   "artifact_reads": 0,
+   "cause_type": null,
+   "git_calls": [
+    [
+     [
+      "rev-parse",
+      "--verify",
+      "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa^{commit}"
+     ],
+     null,
+     true
+    ],
+    [
+     [
+      "ls-tree",
+      "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+      "--",
+      ".zeus/ticket-trust.json"
+     ],
+     null,
+     true
+    ],
+    [
+     [
+      "show",
+      "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa:.zeus/ticket-trust.json"
+     ],
+     null,
+     false
+    ]
+   ],
+   "heartbeats": 3,
+   "is_contract_error": true,
+   "message": "Timestamp must include timezone",
+   "outcome": "raised",
+   "runner_calls": [],
+   "type": "ContractError"
+  },
+  "schema_validity_not_iso": {
+   "artifact_reads": 0,
+   "cause_type": "ValueError",
+   "git_calls": [
+    [
+     [
+      "rev-parse",
+      "--verify",
+      "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa^{commit}"
+     ],
+     null,
+     true
+    ],
+    [
+     [
+      "ls-tree",
+      "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+      "--",
+      ".zeus/ticket-trust.json"
+     ],
+     null,
+     true
+    ],
+    [
+     [
+      "show",
+      "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa:.zeus/ticket-trust.json"
+     ],
+     null,
+     false
+    ]
+   ],
+   "heartbeats": 3,
+   "is_contract_error": true,
+   "message": "Invalid lifecycle timestamp",
+   "outcome": "raised",
+   "runner_calls": [],
+   "type": "ContractError"
+  },
+  "schema_validity_not_text": {
+   "artifact_reads": 0,
+   "cause_type": null,
+   "git_calls": [
+    [
+     [
+      "rev-parse",
+      "--verify",
+      "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa^{commit}"
+     ],
+     null,
+     true
+    ],
+    [
+     [
+      "ls-tree",
+      "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+      "--",
+      ".zeus/ticket-trust.json"
+     ],
+     null,
+     true
+    ],
+    [
+     [
+      "show",
+      "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa:.zeus/ticket-trust.json"
+     ],
+     null,
+     false
+    ]
+   ],
+   "heartbeats": 3,
+   "is_contract_error": true,
+   "message": "Timestamp required",
+   "outcome": "raised",
+   "runner_calls": [],
+   "type": "ContractError"
+  },
+  "schema_validity_reversed": {
+   "artifact_reads": 0,
+   "cause_type": null,
+   "git_calls": [
+    [
+     [
+      "rev-parse",
+      "--verify",
+      "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa^{commit}"
+     ],
+     null,
+     true
+    ],
+    [
+     [
+      "ls-tree",
+      "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+      "--",
+      ".zeus/ticket-trust.json"
+     ],
+     null,
+     true
+    ],
+    [
+     [
+      "show",
+      "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa:.zeus/ticket-trust.json"
+     ],
+     null,
+     false
+    ]
+   ],
+   "heartbeats": 3,
+   "is_contract_error": true,
+   "message": "Invalid signer validity",
+   "outcome": "raised",
+   "runner_calls": [],
+   "type": "ContractError"
+  },
+  "schema_version_2": {
+   "artifact_reads": 0,
+   "cause_type": null,
+   "git_calls": [
+    [
+     [
+      "rev-parse",
+      "--verify",
+      "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa^{commit}"
+     ],
+     null,
+     true
+    ],
+    [
+     [
+      "ls-tree",
+      "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+      "--",
+      ".zeus/ticket-trust.json"
+     ],
+     null,
+     true
+    ],
+    [
+     [
+      "show",
+      "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa:.zeus/ticket-trust.json"
+     ],
+     null,
+     false
+    ]
+   ],
+   "heartbeats": 3,
+   "is_contract_error": true,
+   "message": "Invalid ticket trust policy",
+   "outcome": "raised",
+   "runner_calls": [],
+   "type": "ContractError"
+  },
+  "schema_version_string": {
+   "artifact_reads": 0,
+   "cause_type": null,
+   "git_calls": [
+    [
+     [
+      "rev-parse",
+      "--verify",
+      "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa^{commit}"
+     ],
+     null,
+     true
+    ],
+    [
+     [
+      "ls-tree",
+      "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+      "--",
+      ".zeus/ticket-trust.json"
+     ],
+     null,
+     true
+    ],
+    [
+     [
+      "show",
+      "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa:.zeus/ticket-trust.json"
+     ],
+     null,
+     false
+    ]
+   ],
+   "heartbeats": 3,
+   "is_contract_error": true,
+   "message": "Invalid ticket trust policy",
+   "outcome": "raised",
+   "runner_calls": [],
+   "type": "ContractError"
+  },
+  "schema_version_true": {
+   "artifact_reads": 0,
+   "cause_type": null,
+   "git_calls": [
+    [
+     [
+      "rev-parse",
+      "--verify",
+      "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa^{commit}"
+     ],
+     null,
+     true
+    ],
+    [
+     [
+      "ls-tree",
+      "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+      "--",
+      ".zeus/ticket-trust.json"
+     ],
+     null,
+     true
+    ],
+    [
+     [
+      "show",
+      "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa:.zeus/ticket-trust.json"
+     ],
+     null,
+     false
+    ]
+   ],
+   "heartbeats": 3,
+   "is_contract_error": true,
+   "message": "Invalid ticket trust policy",
+   "outcome": "raised",
+   "runner_calls": [],
+   "type": "ContractError"
+  },
+  "show_fault": {
+   "artifact_reads": 0,
+   "cause_type": null,
+   "git_calls": [
+    [
+     [
+      "rev-parse",
+      "--verify",
+      "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa^{commit}"
+     ],
+     null,
+     true
+    ],
+    [
+     [
+      "ls-tree",
+      "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+      "--",
+      ".zeus/ticket-trust.json"
+     ],
+     null,
+     true
+    ],
+    [
+     [
+      "show",
+      "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa:.zeus/ticket-trust.json"
+     ],
+     null,
+     false
+    ]
+   ],
+   "heartbeats": 3,
+   "is_contract_error": false,
+   "message": "show failed",
+   "outcome": "raised",
+   "runner_calls": [],
+   "type": "Boom"
+  },
+  "valid": {
+   "artifact_reads": 0,
+   "git_calls": [
+    [
+     [
+      "rev-parse",
+      "--verify",
+      "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa^{commit}"
+     ],
+     null,
+     true
+    ],
+    [
+     [
+      "ls-tree",
+      "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+      "--",
+      ".zeus/ticket-trust.json"
+     ],
+     null,
+     true
+    ],
+    [
+     [
+      "show",
+      "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa:.zeus/ticket-trust.json"
+     ],
+     null,
+     false
+    ]
+   ],
+   "heartbeats": 3,
+   "outcome": "returned",
+   "runner_calls": [],
+   "value": {
+    "definition": {
+     "max_evidence_age_seconds": 86400,
+     "required_human_signers": [
+      "alice@zeus.invalid"
+     ],
+     "required_signers": [
+      "alice@zeus.invalid",
+      "bot@zeus.invalid"
+     ],
+     "revoked": [
+      "old@zeus.invalid"
+     ],
+     "scope": "test-only-ticket-authority",
+     "signers": [
+      {
+       "principal": "alice@zeus.invalid",
+       "public_key": "ssh-ed25519 AQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQE=",
+       "role": "human",
+       "valid_after": "2020-01-01T00:00:00+00:00",
+       "valid_before": "2099-01-01T00:00:00+00:00"
+      },
+      {
+       "principal": "bot@zeus.invalid",
+       "public_key": "ssh-ed25519 AgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgI=",
+       "role": "automation",
+       "valid_after": "2020-01-01T00:00:00+00:00",
+       "valid_before": "2099-01-01T00:00:00+00:00"
+      },
+      {
+       "principal": "old@zeus.invalid",
+       "public_key": "ssh-ed25519 AwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwM=",
+       "role": "automation",
+       "valid_after": "2020-01-01T00:00:00+00:00",
+       "valid_before": "2099-01-01T00:00:00+00:00"
+      }
+     ],
+     "version": 1
+    },
+    "enrolled": {
+     "alice@zeus.invalid": {
+      "principal": "alice@zeus.invalid",
+      "public_key": "ssh-ed25519 AQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQE=",
+      "role": "human",
+      "valid_after": "2020-01-01T00:00:00+00:00",
+      "valid_before": "2099-01-01T00:00:00+00:00"
+     },
+     "bot@zeus.invalid": {
+      "principal": "bot@zeus.invalid",
+      "public_key": "ssh-ed25519 AgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgI=",
+      "role": "automation",
+      "valid_after": "2020-01-01T00:00:00+00:00",
+      "valid_before": "2099-01-01T00:00:00+00:00"
+     },
+     "old@zeus.invalid": {
+      "principal": "old@zeus.invalid",
+      "public_key": "ssh-ed25519 AwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwM=",
+      "role": "automation",
+      "valid_after": "2020-01-01T00:00:00+00:00",
+      "valid_before": "2099-01-01T00:00:00+00:00"
+     }
+    },
+    "policy_commit": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+    "policy_hash": "e6d1835c238c5292c3ead8061e4c7572ddb698860197ddf974b92f79b4bed627",
+    "scope": "test-only-ticket-authority"
+   }
+  },
+  "valid_is_stable": [
+   true,
+   true,
+   true,
+   [
+    "alice@zeus.invalid",
+    "bot@zeus.invalid",
+    "old@zeus.invalid"
+   ]
+  ],
+  "valid_without_heartbeat": {
+   "artifact_reads": 0,
+   "git_calls": [
+    [
+     [
+      "rev-parse",
+      "--verify",
+      "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa^{commit}"
+     ],
+     null,
+     true
+    ],
+    [
+     [
+      "ls-tree",
+      "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+      "--",
+      ".zeus/ticket-trust.json"
+     ],
+     null,
+     true
+    ],
+    [
+     [
+      "show",
+      "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa:.zeus/ticket-trust.json"
+     ],
+     null,
+     false
+    ]
+   ],
+   "heartbeats": 0,
+   "outcome": "returned",
+   "runner_calls": [],
+   "value": {
+    "definition": {
+     "max_evidence_age_seconds": 86400,
+     "required_human_signers": [
+      "alice@zeus.invalid"
+     ],
+     "required_signers": [
+      "alice@zeus.invalid",
+      "bot@zeus.invalid"
+     ],
+     "revoked": [
+      "old@zeus.invalid"
+     ],
+     "scope": "test-only-ticket-authority",
+     "signers": [
+      {
+       "principal": "alice@zeus.invalid",
+       "public_key": "ssh-ed25519 AQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQE=",
+       "role": "human",
+       "valid_after": "2020-01-01T00:00:00+00:00",
+       "valid_before": "2099-01-01T00:00:00+00:00"
+      },
+      {
+       "principal": "bot@zeus.invalid",
+       "public_key": "ssh-ed25519 AgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgI=",
+       "role": "automation",
+       "valid_after": "2020-01-01T00:00:00+00:00",
+       "valid_before": "2099-01-01T00:00:00+00:00"
+      },
+      {
+       "principal": "old@zeus.invalid",
+       "public_key": "ssh-ed25519 AwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwM=",
+       "role": "automation",
+       "valid_after": "2020-01-01T00:00:00+00:00",
+       "valid_before": "2099-01-01T00:00:00+00:00"
+      }
+     ],
+     "version": 1
+    },
+    "enrolled": {
+     "alice@zeus.invalid": {
+      "principal": "alice@zeus.invalid",
+      "public_key": "ssh-ed25519 AQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQE=",
+      "role": "human",
+      "valid_after": "2020-01-01T00:00:00+00:00",
+      "valid_before": "2099-01-01T00:00:00+00:00"
+     },
+     "bot@zeus.invalid": {
+      "principal": "bot@zeus.invalid",
+      "public_key": "ssh-ed25519 AgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgI=",
+      "role": "automation",
+      "valid_after": "2020-01-01T00:00:00+00:00",
+      "valid_before": "2099-01-01T00:00:00+00:00"
+     },
+     "old@zeus.invalid": {
+      "principal": "old@zeus.invalid",
+      "public_key": "ssh-ed25519 AwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwM=",
+      "role": "automation",
+      "valid_after": "2020-01-01T00:00:00+00:00",
+      "valid_before": "2099-01-01T00:00:00+00:00"
+     }
+    },
+    "policy_commit": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+    "policy_hash": "e6d1835c238c5292c3ead8061e4c7572ddb698860197ddf974b92f79b4bed627",
+    "scope": "test-only-ticket-authority"
+   }
+  }
+ },
+ "surface": {
+  "attributes": {
+   "artifacts": true,
+   "git": true,
+   "trust_commit": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa"
+  },
+  "constants": {
+   "POLICY_PATH": ".zeus/ticket-trust.json",
+   "PRINCIPAL": "[A-Za-z0-9][A-Za-z0-9_.@-]{0,99}"
+  },
+  "constructor_positional": [
+   "self",
+   "git",
+   "artifacts",
+   "trust_commit"
+  ],
+  "constructor_trust_commit_default": null,
+  "methods": {
+   "policy": "(self, heartbeat=None)",
+   "require_merged": "(self, commit)",
+   "verify": "(self, packet_ref, packet, signatures, *, at=None, heartbeat=None)"
+  }
+ },
+ "trust": {
+  "absent": {
+   "policy": {
+    "artifact_reads": 0,
+    "cause_type": null,
+    "git_calls": [],
+    "heartbeats": 0,
+    "is_contract_error": true,
+    "message": "Out-of-band ZEUS_TICKET_TRUST_COMMIT is required",
+    "outcome": "raised",
+    "runner_calls": [],
+    "type": "ContractError"
+   },
+   "trust_commit": null
+  },
+  "env_invalid": {
+   "policy": {
+    "artifact_reads": 0,
+    "cause_type": null,
+    "git_calls": [],
+    "heartbeats": 0,
+    "is_contract_error": true,
+    "message": "Out-of-band ZEUS_TICKET_TRUST_COMMIT is required",
+    "outcome": "raised",
+    "runner_calls": [],
+    "type": "ContractError"
+   },
+   "trust_commit": "xyz"
+  },
+  "env_only": {
+   "policy": {
+    "artifact_reads": 0,
+    "git_calls": [
+     [
+      [
+       "rev-parse",
+       "--verify",
+       "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa^{commit}"
+      ],
+      null,
+      true
+     ],
+     [
+      [
+       "ls-tree",
+       "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+       "--",
+       ".zeus/ticket-trust.json"
+      ],
+      null,
+      true
+     ],
+     [
+      [
+       "show",
+       "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa:.zeus/ticket-trust.json"
+      ],
+      null,
+      false
+     ]
+    ],
+    "heartbeats": 0,
+    "outcome": "returned",
+    "runner_calls": [],
+    "value": {
+     "definition": {
+      "max_evidence_age_seconds": 86400,
+      "required_human_signers": [
+       "alice@zeus.invalid"
+      ],
+      "required_signers": [
+       "alice@zeus.invalid",
+       "bot@zeus.invalid"
+      ],
+      "revoked": [
+       "old@zeus.invalid"
+      ],
+      "scope": "test-only-ticket-authority",
+      "signers": [
+       {
+        "principal": "alice@zeus.invalid",
+        "public_key": "ssh-ed25519 AQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQE=",
+        "role": "human",
+        "valid_after": "2020-01-01T00:00:00+00:00",
+        "valid_before": "2099-01-01T00:00:00+00:00"
+       },
+       {
+        "principal": "bot@zeus.invalid",
+        "public_key": "ssh-ed25519 AgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgI=",
+        "role": "automation",
+        "valid_after": "2020-01-01T00:00:00+00:00",
+        "valid_before": "2099-01-01T00:00:00+00:00"
+       },
+       {
+        "principal": "old@zeus.invalid",
+        "public_key": "ssh-ed25519 AwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwM=",
+        "role": "automation",
+        "valid_after": "2020-01-01T00:00:00+00:00",
+        "valid_before": "2099-01-01T00:00:00+00:00"
+       }
+      ],
+      "version": 1
+     },
+     "enrolled": {
+      "alice@zeus.invalid": {
+       "principal": "alice@zeus.invalid",
+       "public_key": "ssh-ed25519 AQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQE=",
+       "role": "human",
+       "valid_after": "2020-01-01T00:00:00+00:00",
+       "valid_before": "2099-01-01T00:00:00+00:00"
+      },
+      "bot@zeus.invalid": {
+       "principal": "bot@zeus.invalid",
+       "public_key": "ssh-ed25519 AgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgI=",
+       "role": "automation",
+       "valid_after": "2020-01-01T00:00:00+00:00",
+       "valid_before": "2099-01-01T00:00:00+00:00"
+      },
+      "old@zeus.invalid": {
+       "principal": "old@zeus.invalid",
+       "public_key": "ssh-ed25519 AwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwM=",
+       "role": "automation",
+       "valid_after": "2020-01-01T00:00:00+00:00",
+       "valid_before": "2099-01-01T00:00:00+00:00"
+      }
+     },
+     "policy_commit": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+     "policy_hash": "e6d1835c238c5292c3ead8061e4c7572ddb698860197ddf974b92f79b4bed627",
+     "scope": "test-only-ticket-authority"
+    }
+   },
+   "trust_commit": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa"
+  },
+  "explicit": {
+   "policy": {
+    "artifact_reads": 0,
+    "git_calls": [
+     [
+      [
+       "rev-parse",
+       "--verify",
+       "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa^{commit}"
+      ],
+      null,
+      true
+     ],
+     [
+      [
+       "ls-tree",
+       "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+       "--",
+       ".zeus/ticket-trust.json"
+      ],
+      null,
+      true
+     ],
+     [
+      [
+       "show",
+       "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa:.zeus/ticket-trust.json"
+      ],
+      null,
+      false
+     ]
+    ],
+    "heartbeats": 0,
+    "outcome": "returned",
+    "runner_calls": [],
+    "value": {
+     "definition": {
+      "max_evidence_age_seconds": 86400,
+      "required_human_signers": [
+       "alice@zeus.invalid"
+      ],
+      "required_signers": [
+       "alice@zeus.invalid",
+       "bot@zeus.invalid"
+      ],
+      "revoked": [
+       "old@zeus.invalid"
+      ],
+      "scope": "test-only-ticket-authority",
+      "signers": [
+       {
+        "principal": "alice@zeus.invalid",
+        "public_key": "ssh-ed25519 AQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQE=",
+        "role": "human",
+        "valid_after": "2020-01-01T00:00:00+00:00",
+        "valid_before": "2099-01-01T00:00:00+00:00"
+       },
+       {
+        "principal": "bot@zeus.invalid",
+        "public_key": "ssh-ed25519 AgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgI=",
+        "role": "automation",
+        "valid_after": "2020-01-01T00:00:00+00:00",
+        "valid_before": "2099-01-01T00:00:00+00:00"
+       },
+       {
+        "principal": "old@zeus.invalid",
+        "public_key": "ssh-ed25519 AwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwM=",
+        "role": "automation",
+        "valid_after": "2020-01-01T00:00:00+00:00",
+        "valid_before": "2099-01-01T00:00:00+00:00"
+       }
+      ],
+      "version": 1
+     },
+     "enrolled": {
+      "alice@zeus.invalid": {
+       "principal": "alice@zeus.invalid",
+       "public_key": "ssh-ed25519 AQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQE=",
+       "role": "human",
+       "valid_after": "2020-01-01T00:00:00+00:00",
+       "valid_before": "2099-01-01T00:00:00+00:00"
+      },
+      "bot@zeus.invalid": {
+       "principal": "bot@zeus.invalid",
+       "public_key": "ssh-ed25519 AgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgI=",
+       "role": "automation",
+       "valid_after": "2020-01-01T00:00:00+00:00",
+       "valid_before": "2099-01-01T00:00:00+00:00"
+      },
+      "old@zeus.invalid": {
+       "principal": "old@zeus.invalid",
+       "public_key": "ssh-ed25519 AwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwM=",
+       "role": "automation",
+       "valid_after": "2020-01-01T00:00:00+00:00",
+       "valid_before": "2099-01-01T00:00:00+00:00"
+      }
+     },
+     "policy_commit": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+     "policy_hash": "e6d1835c238c5292c3ead8061e4c7572ddb698860197ddf974b92f79b4bed627",
+     "scope": "test-only-ticket-authority"
+    }
+   },
+   "trust_commit": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa"
+  },
+  "explicit_41": {
+   "policy": {
+    "artifact_reads": 0,
+    "cause_type": null,
+    "git_calls": [],
+    "heartbeats": 0,
+    "is_contract_error": true,
+    "message": "Out-of-band ZEUS_TICKET_TRUST_COMMIT is required",
+    "outcome": "raised",
+    "runner_calls": [],
+    "type": "ContractError"
+   },
+   "trust_commit": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa"
+  },
+  "explicit_beats_env": {
+   "policy": {
+    "artifact_reads": 0,
+    "git_calls": [
+     [
+      [
+       "rev-parse",
+       "--verify",
+       "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa^{commit}"
+      ],
+      null,
+      true
+     ],
+     [
+      [
+       "ls-tree",
+       "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+       "--",
+       ".zeus/ticket-trust.json"
+      ],
+      null,
+      true
+     ],
+     [
+      [
+       "show",
+       "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa:.zeus/ticket-trust.json"
+      ],
+      null,
+      false
+     ]
+    ],
+    "heartbeats": 0,
+    "outcome": "returned",
+    "runner_calls": [],
+    "value": {
+     "definition": {
+      "max_evidence_age_seconds": 86400,
+      "required_human_signers": [
+       "alice@zeus.invalid"
+      ],
+      "required_signers": [
+       "alice@zeus.invalid",
+       "bot@zeus.invalid"
+      ],
+      "revoked": [
+       "old@zeus.invalid"
+      ],
+      "scope": "test-only-ticket-authority",
+      "signers": [
+       {
+        "principal": "alice@zeus.invalid",
+        "public_key": "ssh-ed25519 AQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQE=",
+        "role": "human",
+        "valid_after": "2020-01-01T00:00:00+00:00",
+        "valid_before": "2099-01-01T00:00:00+00:00"
+       },
+       {
+        "principal": "bot@zeus.invalid",
+        "public_key": "ssh-ed25519 AgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgI=",
+        "role": "automation",
+        "valid_after": "2020-01-01T00:00:00+00:00",
+        "valid_before": "2099-01-01T00:00:00+00:00"
+       },
+       {
+        "principal": "old@zeus.invalid",
+        "public_key": "ssh-ed25519 AwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwM=",
+        "role": "automation",
+        "valid_after": "2020-01-01T00:00:00+00:00",
+        "valid_before": "2099-01-01T00:00:00+00:00"
+       }
+      ],
+      "version": 1
+     },
+     "enrolled": {
+      "alice@zeus.invalid": {
+       "principal": "alice@zeus.invalid",
+       "public_key": "ssh-ed25519 AQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQE=",
+       "role": "human",
+       "valid_after": "2020-01-01T00:00:00+00:00",
+       "valid_before": "2099-01-01T00:00:00+00:00"
+      },
+      "bot@zeus.invalid": {
+       "principal": "bot@zeus.invalid",
+       "public_key": "ssh-ed25519 AgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgI=",
+       "role": "automation",
+       "valid_after": "2020-01-01T00:00:00+00:00",
+       "valid_before": "2099-01-01T00:00:00+00:00"
+      },
+      "old@zeus.invalid": {
+       "principal": "old@zeus.invalid",
+       "public_key": "ssh-ed25519 AwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwM=",
+       "role": "automation",
+       "valid_after": "2020-01-01T00:00:00+00:00",
+       "valid_before": "2099-01-01T00:00:00+00:00"
+      }
+     },
+     "policy_commit": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+     "policy_hash": "e6d1835c238c5292c3ead8061e4c7572ddb698860197ddf974b92f79b4bed627",
+     "scope": "test-only-ticket-authority"
+    }
+   },
+   "trust_commit": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa"
+  },
+  "explicit_empty_does_not_fall_back": {
+   "policy": {
+    "artifact_reads": 0,
+    "cause_type": null,
+    "git_calls": [],
+    "heartbeats": 0,
+    "is_contract_error": true,
+    "message": "Out-of-band ZEUS_TICKET_TRUST_COMMIT is required",
+    "outcome": "raised",
+    "runner_calls": [],
+    "type": "ContractError"
+   },
+   "trust_commit": ""
+  },
+  "explicit_non_hex": {
+   "policy": {
+    "artifact_reads": 0,
+    "cause_type": null,
+    "git_calls": [],
+    "heartbeats": 0,
+    "is_contract_error": true,
+    "message": "Out-of-band ZEUS_TICKET_TRUST_COMMIT is required",
+    "outcome": "raised",
+    "runner_calls": [],
+    "type": "ContractError"
+   },
+   "trust_commit": "gggggggggggggggggggggggggggggggggggggggg"
+  },
+  "explicit_not_text": {
+   "policy": {
+    "artifact_reads": 0,
+    "cause_type": null,
+    "git_calls": [],
+    "heartbeats": 0,
+    "is_contract_error": true,
+    "message": "Out-of-band ZEUS_TICKET_TRUST_COMMIT is required",
+    "outcome": "raised",
+    "runner_calls": [],
+    "type": "ContractError"
+   },
+   "trust_commit": 5
+  },
+  "explicit_short": {
+   "policy": {
+    "artifact_reads": 0,
+    "cause_type": null,
+    "git_calls": [],
+    "heartbeats": 0,
+    "is_contract_error": true,
+    "message": "Out-of-band ZEUS_TICKET_TRUST_COMMIT is required",
+    "outcome": "raised",
+    "runner_calls": [],
+    "type": "ContractError"
+   },
+   "trust_commit": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa"
+  },
+  "explicit_upper": {
+   "policy": {
+    "artifact_reads": 0,
+    "cause_type": null,
+    "git_calls": [],
+    "heartbeats": 0,
+    "is_contract_error": true,
+    "message": "Out-of-band ZEUS_TICKET_TRUST_COMMIT is required",
+    "outcome": "raised",
+    "runner_calls": [],
+    "type": "ContractError"
+   },
+   "trust_commit": "AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA"
+  }
+ },
+ "verify": {
+  "accepted": {
+   "artifact_reads": 3,
+   "dirs_removed": [
+    true,
+    true
+   ],
+   "git_calls": [
+    [
+     [
+      "rev-parse",
+      "--verify",
+      "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa^{commit}"
+     ],
+     null,
+     true
+    ],
+    [
+     [
+      "ls-tree",
+      "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+      "--",
+      ".zeus/ticket-trust.json"
+     ],
+     null,
+     true
+    ],
+    [
+     [
+      "show",
+      "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa:.zeus/ticket-trust.json"
+     ],
+     null,
+     false
+    ],
+    [
+     [
+      "merge-base",
+      "bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb",
+      "HEAD"
+     ],
+     null,
+     true
+    ]
+   ],
+   "heartbeats": 6,
+   "mask_replacements": 4,
+   "outcome": "returned",
+   "runner_calls": [
+    {
+     "allowed_name": "allowed_signers",
+     "allowed_signers": "alice@zeus.invalid ssh-ed25519 AQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQE=\n",
+     "argv": [
+      "ssh-keygen",
+      "-Y",
+      "verify",
+      "-f",
+      "<verify-dir>/allowed_signers",
+      "-I",
+      "alice@zeus.invalid",
+      "-n",
+      "zeus-ticket-close-v1",
+      "-s",
+      "<verify-dir>/packet.sig"
+     ],
+     "cwd": null,
+     "env_extra_keys": [],
+     "env_keys_subset": true,
+     "files_existed": [
+      true,
+      true
+     ],
+     "home_is_the_verify_dir": true,
+     "home_is_userprofile": true,
+     "input_len": 323,
+     "input_sha": "b94bdb3d9400300e",
+     "sentinel_filtered": true,
+     "signature_name": "packet.sig",
+     "signature_text": "SIGNATURE:alice@zeus.invalid:sha256:749819e633a00b4c38ccb28991a3baabb9d4a5f95c3ad6e28b2ce63492f0807c\n",
+     "timeout": 30
+    },
+    {
+     "allowed_name": "allowed_signers",
+     "allowed_signers": "bot@zeus.invalid ssh-ed25519 AgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgI=\n",
+     "argv": [
+      "ssh-keygen",
+      "-Y",
+      "verify",
+      "-f",
+      "<verify-dir>/allowed_signers",
+      "-I",
+      "bot@zeus.invalid",
+      "-n",
+      "zeus-ticket-close-v1",
+      "-s",
+      "<verify-dir>/packet.sig"
+     ],
+     "cwd": null,
+     "env_extra_keys": [],
+     "env_keys_subset": true,
+     "files_existed": [
+      true,
+      true
+     ],
+     "home_is_the_verify_dir": true,
+     "home_is_userprofile": true,
+     "input_len": 323,
+     "input_sha": "b94bdb3d9400300e",
+     "sentinel_filtered": true,
+     "signature_name": "packet.sig",
+     "signature_text": "SIGNATURE:bot@zeus.invalid:sha256:749819e633a00b4c38ccb28991a3baabb9d4a5f95c3ad6e28b2ce63492f0807c\n",
+     "timeout": 30
+    }
+   ],
+   "value": {
+    "attestation_scope": "configured_key_authority_only",
+    "packet_ref": "sha256:749819e633a00b4c38ccb28991a3baabb9d4a5f95c3ad6e28b2ce63492f0807c",
+    "physical_human_presence_verified": false,
+    "policy_commit": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+    "policy_hash": "e6d1835c238c5292c3ead8061e4c7572ddb698860197ddf974b92f79b4bed627",
+    "required_human_signers": [
+     "alice@zeus.invalid"
+    ],
+    "required_signers": [
+     "alice@zeus.invalid",
+     "bot@zeus.invalid"
+    ],
+    "scope": "test-only-ticket-authority",
+    "signatures": [
+     {
+      "principal": "alice@zeus.invalid",
+      "public_key_hash": "35760fccacbe580e62710a533c8a46ceefa26345c3e7eb885e4e117b4abd1e02",
+      "role": "human",
+      "signature_ref": "sha256:62c144113862e9c719abe858832f3cf64513357ab8652f049bcf9d6ab3464fbf"
+     },
+     {
+      "principal": "bot@zeus.invalid",
+      "public_key_hash": "1e94ce1cda6d76a74a0d588ee3c38dbc8b272d31116826d98ca0fa4341386db0",
+      "role": "automation",
+      "signature_ref": "sha256:c6bcbcda9ae9f985f7e0168dd8918c33bad47057e4b75e46b699f8f1c438a6d8"
+     }
+    ],
+    "verified_at": "2026-09-22T00:00:00+00:00"
+   }
+  },
+  "accepted_clock_later": {
+   "artifact_reads": 3,
+   "dirs_removed": [
+    true,
+    true
+   ],
+   "git_calls": [
+    [
+     [
+      "rev-parse",
+      "--verify",
+      "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa^{commit}"
+     ],
+     null,
+     true
+    ],
+    [
+     [
+      "ls-tree",
+      "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+      "--",
+      ".zeus/ticket-trust.json"
+     ],
+     null,
+     true
+    ],
+    [
+     [
+      "show",
+      "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa:.zeus/ticket-trust.json"
+     ],
+     null,
+     false
+    ],
+    [
+     [
+      "merge-base",
+      "bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb",
+      "HEAD"
+     ],
+     null,
+     true
+    ]
+   ],
+   "heartbeats": 6,
+   "mask_replacements": 4,
+   "outcome": "returned",
+   "runner_calls": [
+    {
+     "allowed_name": "allowed_signers",
+     "allowed_signers": "alice@zeus.invalid ssh-ed25519 AQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQE=\n",
+     "argv": [
+      "ssh-keygen",
+      "-Y",
+      "verify",
+      "-f",
+      "<verify-dir>/allowed_signers",
+      "-I",
+      "alice@zeus.invalid",
+      "-n",
+      "zeus-ticket-close-v1",
+      "-s",
+      "<verify-dir>/packet.sig"
+     ],
+     "cwd": null,
+     "env_extra_keys": [],
+     "env_keys_subset": true,
+     "files_existed": [
+      true,
+      true
+     ],
+     "home_is_the_verify_dir": true,
+     "home_is_userprofile": true,
+     "input_len": 323,
+     "input_sha": "b94bdb3d9400300e",
+     "sentinel_filtered": true,
+     "signature_name": "packet.sig",
+     "signature_text": "SIGNATURE:alice@zeus.invalid:sha256:749819e633a00b4c38ccb28991a3baabb9d4a5f95c3ad6e28b2ce63492f0807c\n",
+     "timeout": 30
+    },
+    {
+     "allowed_name": "allowed_signers",
+     "allowed_signers": "bot@zeus.invalid ssh-ed25519 AgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgI=\n",
+     "argv": [
+      "ssh-keygen",
+      "-Y",
+      "verify",
+      "-f",
+      "<verify-dir>/allowed_signers",
+      "-I",
+      "bot@zeus.invalid",
+      "-n",
+      "zeus-ticket-close-v1",
+      "-s",
+      "<verify-dir>/packet.sig"
+     ],
+     "cwd": null,
+     "env_extra_keys": [],
+     "env_keys_subset": true,
+     "files_existed": [
+      true,
+      true
+     ],
+     "home_is_the_verify_dir": true,
+     "home_is_userprofile": true,
+     "input_len": 323,
+     "input_sha": "b94bdb3d9400300e",
+     "sentinel_filtered": true,
+     "signature_name": "packet.sig",
+     "signature_text": "SIGNATURE:bot@zeus.invalid:sha256:749819e633a00b4c38ccb28991a3baabb9d4a5f95c3ad6e28b2ce63492f0807c\n",
+     "timeout": 30
+    }
+   ],
+   "value": {
+    "attestation_scope": "configured_key_authority_only",
+    "packet_ref": "sha256:749819e633a00b4c38ccb28991a3baabb9d4a5f95c3ad6e28b2ce63492f0807c",
+    "physical_human_presence_verified": false,
+    "policy_commit": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+    "policy_hash": "e6d1835c238c5292c3ead8061e4c7572ddb698860197ddf974b92f79b4bed627",
+    "required_human_signers": [
+     "alice@zeus.invalid"
+    ],
+    "required_signers": [
+     "alice@zeus.invalid",
+     "bot@zeus.invalid"
+    ],
+    "scope": "test-only-ticket-authority",
+    "signatures": [
+     {
+      "principal": "alice@zeus.invalid",
+      "public_key_hash": "35760fccacbe580e62710a533c8a46ceefa26345c3e7eb885e4e117b4abd1e02",
+      "role": "human",
+      "signature_ref": "sha256:62c144113862e9c719abe858832f3cf64513357ab8652f049bcf9d6ab3464fbf"
+     },
+     {
+      "principal": "bot@zeus.invalid",
+      "public_key_hash": "1e94ce1cda6d76a74a0d588ee3c38dbc8b272d31116826d98ca0fa4341386db0",
+      "role": "automation",
+      "signature_ref": "sha256:c6bcbcda9ae9f985f7e0168dd8918c33bad47057e4b75e46b699f8f1c438a6d8"
+     }
+    ],
+    "verified_at": "2026-09-22T01:00:00+00:00"
+   }
+  },
+  "accepted_crlf_signature_armor": {
+   "artifact_reads": 3,
+   "dirs_removed": [
+    true,
+    true
+   ],
+   "git_calls": [
+    [
+     [
+      "rev-parse",
+      "--verify",
+      "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa^{commit}"
+     ],
+     null,
+     true
+    ],
+    [
+     [
+      "ls-tree",
+      "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+      "--",
+      ".zeus/ticket-trust.json"
+     ],
+     null,
+     true
+    ],
+    [
+     [
+      "show",
+      "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa:.zeus/ticket-trust.json"
+     ],
+     null,
+     false
+    ],
+    [
+     [
+      "merge-base",
+      "bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb",
+      "HEAD"
+     ],
+     null,
+     true
+    ]
+   ],
+   "heartbeats": 6,
+   "mask_replacements": 4,
+   "outcome": "returned",
+   "runner_calls": [
+    {
+     "allowed_name": "allowed_signers",
+     "allowed_signers": "alice@zeus.invalid ssh-ed25519 AQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQE=\n",
+     "argv": [
+      "ssh-keygen",
+      "-Y",
+      "verify",
+      "-f",
+      "<verify-dir>/allowed_signers",
+      "-I",
+      "alice@zeus.invalid",
+      "-n",
+      "zeus-ticket-close-v1",
+      "-s",
+      "<verify-dir>/packet.sig"
+     ],
+     "cwd": null,
+     "env_extra_keys": [],
+     "env_keys_subset": true,
+     "files_existed": [
+      true,
+      true
+     ],
+     "home_is_the_verify_dir": true,
+     "home_is_userprofile": true,
+     "input_len": 323,
+     "input_sha": "b94bdb3d9400300e",
+     "sentinel_filtered": true,
+     "signature_name": "packet.sig",
+     "signature_text": "SIGNATURE:alice@zeus.invalid:sha256:749819e633a00b4c38ccb28991a3baabb9d4a5f95c3ad6e28b2ce63492f0807c\n",
+     "timeout": 30
+    },
+    {
+     "allowed_name": "allowed_signers",
+     "allowed_signers": "bot@zeus.invalid ssh-ed25519 AgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgI=\n",
+     "argv": [
+      "ssh-keygen",
+      "-Y",
+      "verify",
+      "-f",
+      "<verify-dir>/allowed_signers",
+      "-I",
+      "bot@zeus.invalid",
+      "-n",
+      "zeus-ticket-close-v1",
+      "-s",
+      "<verify-dir>/packet.sig"
+     ],
+     "cwd": null,
+     "env_extra_keys": [],
+     "env_keys_subset": true,
+     "files_existed": [
+      true,
+      true
+     ],
+     "home_is_the_verify_dir": true,
+     "home_is_userprofile": true,
+     "input_len": 323,
+     "input_sha": "b94bdb3d9400300e",
+     "sentinel_filtered": true,
+     "signature_name": "packet.sig",
+     "signature_text": "SIGNATURE:bot@zeus.invalid:sha256:749819e633a00b4c38ccb28991a3baabb9d4a5f95c3ad6e28b2ce63492f0807c\n",
+     "timeout": 30
+    }
+   ],
+   "value": {
+    "attestation_scope": "configured_key_authority_only",
+    "packet_ref": "sha256:749819e633a00b4c38ccb28991a3baabb9d4a5f95c3ad6e28b2ce63492f0807c",
+    "physical_human_presence_verified": false,
+    "policy_commit": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+    "policy_hash": "e6d1835c238c5292c3ead8061e4c7572ddb698860197ddf974b92f79b4bed627",
+    "required_human_signers": [
+     "alice@zeus.invalid"
+    ],
+    "required_signers": [
+     "alice@zeus.invalid",
+     "bot@zeus.invalid"
+    ],
+    "scope": "test-only-ticket-authority",
+    "signatures": [
+     {
+      "principal": "alice@zeus.invalid",
+      "public_key_hash": "35760fccacbe580e62710a533c8a46ceefa26345c3e7eb885e4e117b4abd1e02",
+      "role": "human",
+      "signature_ref": "sha256:62c144113862e9c719abe858832f3cf64513357ab8652f049bcf9d6ab3464fbf"
+     },
+     {
+      "principal": "bot@zeus.invalid",
+      "public_key_hash": "1e94ce1cda6d76a74a0d588ee3c38dbc8b272d31116826d98ca0fa4341386db0",
+      "role": "automation",
+      "signature_ref": "sha256:c6bcbcda9ae9f985f7e0168dd8918c33bad47057e4b75e46b699f8f1c438a6d8"
+     }
+    ],
+    "verified_at": "2026-09-22T00:00:00+00:00"
+   }
+  },
+  "accepted_extra_unrequired_signer": {
+   "artifact_reads": 4,
+   "dirs_removed": [
+    true,
+    true,
+    true
+   ],
+   "git_calls": [
+    [
+     [
+      "rev-parse",
+      "--verify",
+      "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa^{commit}"
+     ],
+     null,
+     true
+    ],
+    [
+     [
+      "ls-tree",
+      "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+      "--",
+      ".zeus/ticket-trust.json"
+     ],
+     null,
+     true
+    ],
+    [
+     [
+      "show",
+      "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa:.zeus/ticket-trust.json"
+     ],
+     null,
+     false
+    ],
+    [
+     [
+      "merge-base",
+      "bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb",
+      "HEAD"
+     ],
+     null,
+     true
+    ]
+   ],
+   "heartbeats": 7,
+   "mask_replacements": 6,
+   "outcome": "returned",
+   "runner_calls": [
+    {
+     "allowed_name": "allowed_signers",
+     "allowed_signers": "alice@zeus.invalid ssh-ed25519 AQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQE=\n",
+     "argv": [
+      "ssh-keygen",
+      "-Y",
+      "verify",
+      "-f",
+      "<verify-dir>/allowed_signers",
+      "-I",
+      "alice@zeus.invalid",
+      "-n",
+      "zeus-ticket-close-v1",
+      "-s",
+      "<verify-dir>/packet.sig"
+     ],
+     "cwd": null,
+     "env_extra_keys": [],
+     "env_keys_subset": true,
+     "files_existed": [
+      true,
+      true
+     ],
+     "home_is_the_verify_dir": true,
+     "home_is_userprofile": true,
+     "input_len": 323,
+     "input_sha": "b4282c8b72cf068d",
+     "sentinel_filtered": true,
+     "signature_name": "packet.sig",
+     "signature_text": "SIGNATURE:alice@zeus.invalid:sha256:c44915a26acbabf354e0f4ad6fca6ab89109ed502854a0304eead8f88475a3a0\n",
+     "timeout": 30
+    },
+    {
+     "allowed_name": "allowed_signers",
+     "allowed_signers": "bot@zeus.invalid ssh-ed25519 AgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgI=\n",
+     "argv": [
+      "ssh-keygen",
+      "-Y",
+      "verify",
+      "-f",
+      "<verify-dir>/allowed_signers",
+      "-I",
+      "bot@zeus.invalid",
+      "-n",
+      "zeus-ticket-close-v1",
+      "-s",
+      "<verify-dir>/packet.sig"
+     ],
+     "cwd": null,
+     "env_extra_keys": [],
+     "env_keys_subset": true,
+     "files_existed": [
+      true,
+      true
+     ],
+     "home_is_the_verify_dir": true,
+     "home_is_userprofile": true,
+     "input_len": 323,
+     "input_sha": "b4282c8b72cf068d",
+     "sentinel_filtered": true,
+     "signature_name": "packet.sig",
+     "signature_text": "SIGNATURE:bot@zeus.invalid:sha256:c44915a26acbabf354e0f4ad6fca6ab89109ed502854a0304eead8f88475a3a0\n",
+     "timeout": 30
+    },
+    {
+     "allowed_name": "allowed_signers",
+     "allowed_signers": "old@zeus.invalid ssh-ed25519 AwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwM=\n",
+     "argv": [
+      "ssh-keygen",
+      "-Y",
+      "verify",
+      "-f",
+      "<verify-dir>/allowed_signers",
+      "-I",
+      "old@zeus.invalid",
+      "-n",
+      "zeus-ticket-close-v1",
+      "-s",
+      "<verify-dir>/packet.sig"
+     ],
+     "cwd": null,
+     "env_extra_keys": [],
+     "env_keys_subset": true,
+     "files_existed": [
+      true,
+      true
+     ],
+     "home_is_the_verify_dir": true,
+     "home_is_userprofile": true,
+     "input_len": 323,
+     "input_sha": "b4282c8b72cf068d",
+     "sentinel_filtered": true,
+     "signature_name": "packet.sig",
+     "signature_text": "SIGNATURE:old@zeus.invalid:sha256:c44915a26acbabf354e0f4ad6fca6ab89109ed502854a0304eead8f88475a3a0\n",
+     "timeout": 30
+    }
+   ],
+   "value": {
+    "attestation_scope": "configured_key_authority_only",
+    "packet_ref": "sha256:c44915a26acbabf354e0f4ad6fca6ab89109ed502854a0304eead8f88475a3a0",
+    "physical_human_presence_verified": false,
+    "policy_commit": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+    "policy_hash": "4d81c4a5a33f34fa93fff1c023f873302d060084b52c492807959d977c1303c1",
+    "required_human_signers": [
+     "alice@zeus.invalid"
+    ],
+    "required_signers": [
+     "alice@zeus.invalid",
+     "bot@zeus.invalid"
+    ],
+    "scope": "test-only-ticket-authority",
+    "signatures": [
+     {
+      "principal": "alice@zeus.invalid",
+      "public_key_hash": "35760fccacbe580e62710a533c8a46ceefa26345c3e7eb885e4e117b4abd1e02",
+      "role": "human",
+      "signature_ref": "sha256:68d409ab06d4b47a0ce882f44503e86aa13c42f93e261e020661087e4f530e03"
+     },
+     {
+      "principal": "bot@zeus.invalid",
+      "public_key_hash": "1e94ce1cda6d76a74a0d588ee3c38dbc8b272d31116826d98ca0fa4341386db0",
+      "role": "automation",
+      "signature_ref": "sha256:a645ef21ad844b59936c17d133a806264a05bbea796cf8b5fda32ca2bf0c1cc8"
+     },
+     {
+      "principal": "old@zeus.invalid",
+      "public_key_hash": "1c30577368ed0bba62f4c95fb1912cb6c0836b4b1f6ad27b6feb3d0f67bc8418",
+      "role": "automation",
+      "signature_ref": "sha256:463baa107f86a39250e3da320ab54bbb896b6b1b6d93b2810ca498ac44a220eb"
+     }
+    ],
+    "verified_at": "2026-09-22T00:00:00+00:00"
+   }
+  },
+  "accepted_human_only_required": {
+   "artifact_reads": 2,
+   "dirs_removed": [
+    true
+   ],
+   "git_calls": [
+    [
+     [
+      "rev-parse",
+      "--verify",
+      "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa^{commit}"
+     ],
+     null,
+     true
+    ],
+    [
+     [
+      "ls-tree",
+      "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+      "--",
+      ".zeus/ticket-trust.json"
+     ],
+     null,
+     true
+    ],
+    [
+     [
+      "show",
+      "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa:.zeus/ticket-trust.json"
+     ],
+     null,
+     false
+    ],
+    [
+     [
+      "merge-base",
+      "bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb",
+      "HEAD"
+     ],
+     null,
+     true
+    ]
+   ],
+   "heartbeats": 5,
+   "mask_replacements": 2,
+   "outcome": "returned",
+   "runner_calls": [
+    {
+     "allowed_name": "allowed_signers",
+     "allowed_signers": "alice@zeus.invalid ssh-ed25519 AQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQE=\n",
+     "argv": [
+      "ssh-keygen",
+      "-Y",
+      "verify",
+      "-f",
+      "<verify-dir>/allowed_signers",
+      "-I",
+      "alice@zeus.invalid",
+      "-n",
+      "zeus-ticket-close-v1",
+      "-s",
+      "<verify-dir>/packet.sig"
+     ],
+     "cwd": null,
+     "env_extra_keys": [],
+     "env_keys_subset": true,
+     "files_existed": [
+      true,
+      true
+     ],
+     "home_is_the_verify_dir": true,
+     "home_is_userprofile": true,
+     "input_len": 323,
+     "input_sha": "a9928ec54fe4bae6",
+     "sentinel_filtered": true,
+     "signature_name": "packet.sig",
+     "signature_text": "SIGNATURE:alice@zeus.invalid:sha256:c4413d775d0e50413c49e13944d9b9bb077662c180b195023ed42aa68ced500f\n",
+     "timeout": 30
+    }
+   ],
+   "value": {
+    "attestation_scope": "configured_key_authority_only",
+    "packet_ref": "sha256:c4413d775d0e50413c49e13944d9b9bb077662c180b195023ed42aa68ced500f",
+    "physical_human_presence_verified": false,
+    "policy_commit": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+    "policy_hash": "5551d555fff9ca2981f7777c4e003e324ffeae94d07d99109c0ebf8d9121a2a9",
+    "required_human_signers": [
+     "alice@zeus.invalid"
+    ],
+    "required_signers": [
+     "alice@zeus.invalid"
+    ],
+    "scope": "test-only-ticket-authority",
+    "signatures": [
+     {
+      "principal": "alice@zeus.invalid",
+      "public_key_hash": "35760fccacbe580e62710a533c8a46ceefa26345c3e7eb885e4e117b4abd1e02",
+      "role": "human",
+      "signature_ref": "sha256:e330304fe455ed6599fff66926cc66ecc7923c519494128468d54147289861e7"
+     }
+    ],
+    "verified_at": "2026-09-22T00:00:00+00:00"
+   }
+  },
+  "accepted_without_heartbeat": {
+   "artifact_reads": 3,
+   "dirs_removed": [
+    true,
+    true
+   ],
+   "git_calls": [
+    [
+     [
+      "rev-parse",
+      "--verify",
+      "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa^{commit}"
+     ],
+     null,
+     true
+    ],
+    [
+     [
+      "ls-tree",
+      "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+      "--",
+      ".zeus/ticket-trust.json"
+     ],
+     null,
+     true
+    ],
+    [
+     [
+      "show",
+      "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa:.zeus/ticket-trust.json"
+     ],
+     null,
+     false
+    ],
+    [
+     [
+      "merge-base",
+      "bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb",
+      "HEAD"
+     ],
+     null,
+     true
+    ]
+   ],
+   "heartbeats": 0,
+   "mask_replacements": 4,
+   "outcome": "returned",
+   "runner_calls": [
+    {
+     "allowed_name": "allowed_signers",
+     "allowed_signers": "alice@zeus.invalid ssh-ed25519 AQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQE=\n",
+     "argv": [
+      "ssh-keygen",
+      "-Y",
+      "verify",
+      "-f",
+      "<verify-dir>/allowed_signers",
+      "-I",
+      "alice@zeus.invalid",
+      "-n",
+      "zeus-ticket-close-v1",
+      "-s",
+      "<verify-dir>/packet.sig"
+     ],
+     "cwd": null,
+     "env_extra_keys": [],
+     "env_keys_subset": true,
+     "files_existed": [
+      true,
+      true
+     ],
+     "home_is_the_verify_dir": true,
+     "home_is_userprofile": true,
+     "input_len": 323,
+     "input_sha": "b94bdb3d9400300e",
+     "sentinel_filtered": true,
+     "signature_name": "packet.sig",
+     "signature_text": "SIGNATURE:alice@zeus.invalid:sha256:749819e633a00b4c38ccb28991a3baabb9d4a5f95c3ad6e28b2ce63492f0807c\n",
+     "timeout": 30
+    },
+    {
+     "allowed_name": "allowed_signers",
+     "allowed_signers": "bot@zeus.invalid ssh-ed25519 AgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgI=\n",
+     "argv": [
+      "ssh-keygen",
+      "-Y",
+      "verify",
+      "-f",
+      "<verify-dir>/allowed_signers",
+      "-I",
+      "bot@zeus.invalid",
+      "-n",
+      "zeus-ticket-close-v1",
+      "-s",
+      "<verify-dir>/packet.sig"
+     ],
+     "cwd": null,
+     "env_extra_keys": [],
+     "env_keys_subset": true,
+     "files_existed": [
+      true,
+      true
+     ],
+     "home_is_the_verify_dir": true,
+     "home_is_userprofile": true,
+     "input_len": 323,
+     "input_sha": "b94bdb3d9400300e",
+     "sentinel_filtered": true,
+     "signature_name": "packet.sig",
+     "signature_text": "SIGNATURE:bot@zeus.invalid:sha256:749819e633a00b4c38ccb28991a3baabb9d4a5f95c3ad6e28b2ce63492f0807c\n",
+     "timeout": 30
+    }
+   ],
+   "value": {
+    "attestation_scope": "configured_key_authority_only",
+    "packet_ref": "sha256:749819e633a00b4c38ccb28991a3baabb9d4a5f95c3ad6e28b2ce63492f0807c",
+    "physical_human_presence_verified": false,
+    "policy_commit": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+    "policy_hash": "e6d1835c238c5292c3ead8061e4c7572ddb698860197ddf974b92f79b4bed627",
+    "required_human_signers": [
+     "alice@zeus.invalid"
+    ],
+    "required_signers": [
+     "alice@zeus.invalid",
+     "bot@zeus.invalid"
+    ],
+    "scope": "test-only-ticket-authority",
+    "signatures": [
+     {
+      "principal": "alice@zeus.invalid",
+      "public_key_hash": "35760fccacbe580e62710a533c8a46ceefa26345c3e7eb885e4e117b4abd1e02",
+      "role": "human",
+      "signature_ref": "sha256:62c144113862e9c719abe858832f3cf64513357ab8652f049bcf9d6ab3464fbf"
+     },
+     {
+      "principal": "bot@zeus.invalid",
+      "public_key_hash": "1e94ce1cda6d76a74a0d588ee3c38dbc8b272d31116826d98ca0fa4341386db0",
+      "role": "automation",
+      "signature_ref": "sha256:c6bcbcda9ae9f985f7e0168dd8918c33bad47057e4b75e46b699f8f1c438a6d8"
+     }
+    ],
+    "verified_at": "2026-09-22T00:00:00+00:00"
+   }
+  },
+  "at_before_issue": {
+   "artifact_reads": 1,
+   "cause_type": null,
+   "dirs_removed": [],
+   "git_calls": [
+    [
+     [
+      "rev-parse",
+      "--verify",
+      "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa^{commit}"
+     ],
+     null,
+     true
+    ],
+    [
+     [
+      "ls-tree",
+      "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+      "--",
+      ".zeus/ticket-trust.json"
+     ],
+     null,
+     true
+    ],
+    [
+     [
+      "show",
+      "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa:.zeus/ticket-trust.json"
+     ],
+     null,
+     false
+    ]
+   ],
+   "heartbeats": 4,
+   "is_contract_error": true,
+   "mask_replacements": 0,
+   "message": "Signer outside validity window",
+   "outcome": "raised",
+   "runner_calls": [],
+   "type": "ContractError"
+  },
+  "at_equal_to_issue_accepted": {
+   "artifact_reads": 3,
+   "dirs_removed": [
+    true,
+    true
+   ],
+   "git_calls": [
+    [
+     [
+      "rev-parse",
+      "--verify",
+      "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa^{commit}"
+     ],
+     null,
+     true
+    ],
+    [
+     [
+      "ls-tree",
+      "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+      "--",
+      ".zeus/ticket-trust.json"
+     ],
+     null,
+     true
+    ],
+    [
+     [
+      "show",
+      "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa:.zeus/ticket-trust.json"
+     ],
+     null,
+     false
+    ],
+    [
+     [
+      "merge-base",
+      "bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb",
+      "HEAD"
+     ],
+     null,
+     true
+    ]
+   ],
+   "heartbeats": 6,
+   "mask_replacements": 4,
+   "outcome": "returned",
+   "runner_calls": [
+    {
+     "allowed_name": "allowed_signers",
+     "allowed_signers": "alice@zeus.invalid ssh-ed25519 AQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQE=\n",
+     "argv": [
+      "ssh-keygen",
+      "-Y",
+      "verify",
+      "-f",
+      "<verify-dir>/allowed_signers",
+      "-I",
+      "alice@zeus.invalid",
+      "-n",
+      "zeus-ticket-close-v1",
+      "-s",
+      "<verify-dir>/packet.sig"
+     ],
+     "cwd": null,
+     "env_extra_keys": [],
+     "env_keys_subset": true,
+     "files_existed": [
+      true,
+      true
+     ],
+     "home_is_the_verify_dir": true,
+     "home_is_userprofile": true,
+     "input_len": 323,
+     "input_sha": "b94bdb3d9400300e",
+     "sentinel_filtered": true,
+     "signature_name": "packet.sig",
+     "signature_text": "SIGNATURE:alice@zeus.invalid:sha256:749819e633a00b4c38ccb28991a3baabb9d4a5f95c3ad6e28b2ce63492f0807c\n",
+     "timeout": 30
+    },
+    {
+     "allowed_name": "allowed_signers",
+     "allowed_signers": "bot@zeus.invalid ssh-ed25519 AgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgI=\n",
+     "argv": [
+      "ssh-keygen",
+      "-Y",
+      "verify",
+      "-f",
+      "<verify-dir>/allowed_signers",
+      "-I",
+      "bot@zeus.invalid",
+      "-n",
+      "zeus-ticket-close-v1",
+      "-s",
+      "<verify-dir>/packet.sig"
+     ],
+     "cwd": null,
+     "env_extra_keys": [],
+     "env_keys_subset": true,
+     "files_existed": [
+      true,
+      true
+     ],
+     "home_is_the_verify_dir": true,
+     "home_is_userprofile": true,
+     "input_len": 323,
+     "input_sha": "b94bdb3d9400300e",
+     "sentinel_filtered": true,
+     "signature_name": "packet.sig",
+     "signature_text": "SIGNATURE:bot@zeus.invalid:sha256:749819e633a00b4c38ccb28991a3baabb9d4a5f95c3ad6e28b2ce63492f0807c\n",
+     "timeout": 30
+    }
+   ],
+   "value": {
+    "attestation_scope": "configured_key_authority_only",
+    "packet_ref": "sha256:749819e633a00b4c38ccb28991a3baabb9d4a5f95c3ad6e28b2ce63492f0807c",
+    "physical_human_presence_verified": false,
+    "policy_commit": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+    "policy_hash": "e6d1835c238c5292c3ead8061e4c7572ddb698860197ddf974b92f79b4bed627",
+    "required_human_signers": [
+     "alice@zeus.invalid"
+    ],
+    "required_signers": [
+     "alice@zeus.invalid",
+     "bot@zeus.invalid"
+    ],
+    "scope": "test-only-ticket-authority",
+    "signatures": [
+     {
+      "principal": "alice@zeus.invalid",
+      "public_key_hash": "35760fccacbe580e62710a533c8a46ceefa26345c3e7eb885e4e117b4abd1e02",
+      "role": "human",
+      "signature_ref": "sha256:62c144113862e9c719abe858832f3cf64513357ab8652f049bcf9d6ab3464fbf"
+     },
+     {
+      "principal": "bot@zeus.invalid",
+      "public_key_hash": "1e94ce1cda6d76a74a0d588ee3c38dbc8b272d31116826d98ca0fa4341386db0",
+      "role": "automation",
+      "signature_ref": "sha256:c6bcbcda9ae9f985f7e0168dd8918c33bad47057e4b75e46b699f8f1c438a6d8"
+     }
+    ],
+    "verified_at": "2026-09-22T00:00:00+00:00"
+   }
+  },
+  "at_equal_to_valid_before_refused": {
+   "artifact_reads": 2,
+   "cause_type": null,
+   "dirs_removed": [
+    true
+   ],
+   "git_calls": [
+    [
+     [
+      "rev-parse",
+      "--verify",
+      "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa^{commit}"
+     ],
+     null,
+     true
+    ],
+    [
+     [
+      "ls-tree",
+      "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+      "--",
+      ".zeus/ticket-trust.json"
+     ],
+     null,
+     true
+    ],
+    [
+     [
+      "show",
+      "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa:.zeus/ticket-trust.json"
+     ],
+     null,
+     false
+    ]
+   ],
+   "heartbeats": 5,
+   "is_contract_error": true,
+   "mask_replacements": 2,
+   "message": "Signer outside validity window",
+   "outcome": "raised",
+   "runner_calls": [
+    {
+     "allowed_name": "allowed_signers",
+     "allowed_signers": "alice@zeus.invalid ssh-ed25519 AQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQE=\n",
+     "argv": [
+      "ssh-keygen",
+      "-Y",
+      "verify",
+      "-f",
+      "<verify-dir>/allowed_signers",
+      "-I",
+      "alice@zeus.invalid",
+      "-n",
+      "zeus-ticket-close-v1",
+      "-s",
+      "<verify-dir>/packet.sig"
+     ],
+     "cwd": null,
+     "env_extra_keys": [],
+     "env_keys_subset": true,
+     "files_existed": [
+      true,
+      true
+     ],
+     "home_is_the_verify_dir": true,
+     "home_is_userprofile": true,
+     "input_len": 323,
+     "input_sha": "f4abac8549eb84e2",
+     "sentinel_filtered": true,
+     "signature_name": "packet.sig",
+     "signature_text": "SIGNATURE:alice@zeus.invalid:sha256:5210dc033da0494040084235ed3bdc9840c5f158a92c255bf2824cc9bf271b21\n",
+     "timeout": 30
+    }
+   ],
+   "type": "ContractError"
+  },
+  "duplicate_principal": {
+   "artifact_reads": 2,
+   "cause_type": null,
+   "dirs_removed": [
+    true
+   ],
+   "git_calls": [
+    [
+     [
+      "rev-parse",
+      "--verify",
+      "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa^{commit}"
+     ],
+     null,
+     true
+    ],
+    [
+     [
+      "ls-tree",
+      "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+      "--",
+      ".zeus/ticket-trust.json"
+     ],
+     null,
+     true
+    ],
+    [
+     [
+      "show",
+      "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa:.zeus/ticket-trust.json"
+     ],
+     null,
+     false
+    ]
+   ],
+   "heartbeats": 5,
+   "is_contract_error": true,
+   "mask_replacements": 2,
+   "message": "Unenrolled or duplicate signature principal",
+   "outcome": "raised",
+   "runner_calls": [
+    {
+     "allowed_name": "allowed_signers",
+     "allowed_signers": "alice@zeus.invalid ssh-ed25519 AQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQE=\n",
+     "argv": [
+      "ssh-keygen",
+      "-Y",
+      "verify",
+      "-f",
+      "<verify-dir>/allowed_signers",
+      "-I",
+      "alice@zeus.invalid",
+      "-n",
+      "zeus-ticket-close-v1",
+      "-s",
+      "<verify-dir>/packet.sig"
+     ],
+     "cwd": null,
+     "env_extra_keys": [],
+     "env_keys_subset": true,
+     "files_existed": [
+      true,
+      true
+     ],
+     "home_is_the_verify_dir": true,
+     "home_is_userprofile": true,
+     "input_len": 323,
+     "input_sha": "b94bdb3d9400300e",
+     "sentinel_filtered": true,
+     "signature_name": "packet.sig",
+     "signature_text": "SIGNATURE:alice@zeus.invalid:sha256:749819e633a00b4c38ccb28991a3baabb9d4a5f95c3ad6e28b2ce63492f0807c\n",
+     "timeout": 30
+    }
+   ],
+   "type": "ContractError"
+  },
+  "envelope_extra_key": {
+   "artifact_reads": 1,
+   "cause_type": null,
+   "dirs_removed": [],
+   "git_calls": [
+    [
+     [
+      "rev-parse",
+      "--verify",
+      "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa^{commit}"
+     ],
+     null,
+     true
+    ],
+    [
+     [
+      "ls-tree",
+      "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+      "--",
+      ".zeus/ticket-trust.json"
+     ],
+     null,
+     true
+    ],
+    [
+     [
+      "show",
+      "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa:.zeus/ticket-trust.json"
+     ],
+     null,
+     false
+    ]
+   ],
+   "heartbeats": 4,
+   "is_contract_error": true,
+   "mask_replacements": 0,
+   "message": "Invalid signature envelope",
+   "outcome": "raised",
+   "runner_calls": [],
+   "type": "ContractError"
+  },
+  "envelope_missing_key": {
+   "artifact_reads": 1,
+   "cause_type": null,
+   "dirs_removed": [],
+   "git_calls": [
+    [
+     [
+      "rev-parse",
+      "--verify",
+      "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa^{commit}"
+     ],
+     null,
+     true
+    ],
+    [
+     [
+      "ls-tree",
+      "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+      "--",
+      ".zeus/ticket-trust.json"
+     ],
+     null,
+     true
+    ],
+    [
+     [
+      "show",
+      "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa:.zeus/ticket-trust.json"
+     ],
+     null,
+     false
+    ]
+   ],
+   "heartbeats": 4,
+   "is_contract_error": true,
+   "mask_replacements": 0,
+   "message": "Invalid signature envelope",
+   "outcome": "raised",
+   "runner_calls": [],
+   "type": "ContractError"
+  },
+  "envelope_not_a_dict": {
+   "artifact_reads": 1,
+   "cause_type": null,
+   "dirs_removed": [],
+   "git_calls": [
+    [
+     [
+      "rev-parse",
+      "--verify",
+      "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa^{commit}"
+     ],
+     null,
+     true
+    ],
+    [
+     [
+      "ls-tree",
+      "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+      "--",
+      ".zeus/ticket-trust.json"
+     ],
+     null,
+     true
+    ],
+    [
+     [
+      "show",
+      "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa:.zeus/ticket-trust.json"
+     ],
+     null,
+     false
+    ]
+   ],
+   "heartbeats": 4,
+   "is_contract_error": true,
+   "mask_replacements": 0,
+   "message": "Invalid signature envelope",
+   "outcome": "raised",
+   "runner_calls": [],
+   "type": "ContractError"
+  },
+  "envelope_principal_not_text": {
+   "artifact_reads": 1,
+   "cause_type": null,
+   "dirs_removed": [],
+   "git_calls": [
+    [
+     [
+      "rev-parse",
+      "--verify",
+      "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa^{commit}"
+     ],
+     null,
+     true
+    ],
+    [
+     [
+      "ls-tree",
+      "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+      "--",
+      ".zeus/ticket-trust.json"
+     ],
+     null,
+     true
+    ],
+    [
+     [
+      "show",
+      "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa:.zeus/ticket-trust.json"
+     ],
+     null,
+     false
+    ]
+   ],
+   "heartbeats": 4,
+   "is_contract_error": true,
+   "mask_replacements": 0,
+   "message": "Unenrolled or duplicate signature principal",
+   "outcome": "raised",
+   "runner_calls": [],
+   "type": "ContractError"
+  },
+  "envelope_ref_invalid": {
+   "artifact_reads": 1,
+   "cause_type": null,
+   "dirs_removed": [],
+   "git_calls": [
+    [
+     [
+      "rev-parse",
+      "--verify",
+      "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa^{commit}"
+     ],
+     null,
+     true
+    ],
+    [
+     [
+      "ls-tree",
+      "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+      "--",
+      ".zeus/ticket-trust.json"
+     ],
+     null,
+     true
+    ],
+    [
+     [
+      "show",
+      "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa:.zeus/ticket-trust.json"
+     ],
+     null,
+     false
+    ]
+   ],
+   "heartbeats": 4,
+   "is_contract_error": true,
+   "mask_replacements": 0,
+   "message": "Immutable signature reference required",
+   "outcome": "raised",
+   "runner_calls": [],
+   "type": "ContractError"
+  },
+  "envelope_ref_not_text": {
+   "artifact_reads": 1,
+   "cause_type": null,
+   "dirs_removed": [],
+   "git_calls": [
+    [
+     [
+      "rev-parse",
+      "--verify",
+      "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa^{commit}"
+     ],
+     null,
+     true
+    ],
+    [
+     [
+      "ls-tree",
+      "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+      "--",
+      ".zeus/ticket-trust.json"
+     ],
+     null,
+     true
+    ],
+    [
+     [
+      "show",
+      "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa:.zeus/ticket-trust.json"
+     ],
+     null,
+     false
+    ]
+   ],
+   "heartbeats": 4,
+   "is_contract_error": true,
+   "mask_replacements": 0,
+   "message": "Immutable signature reference required",
+   "outcome": "raised",
+   "runner_calls": [],
+   "type": "ContractError"
+  },
+  "git_fault_in_policy": {
+   "artifact_reads": 0,
+   "cause_type": null,
+   "dirs_removed": [],
+   "git_calls": [
+    [
+     [
+      "rev-parse",
+      "--verify",
+      "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa^{commit}"
+     ],
+     null,
+     true
+    ],
+    [
+     [
+      "ls-tree",
+      "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+      "--",
+      ".zeus/ticket-trust.json"
+     ],
+     null,
+     true
+    ]
+   ],
+   "heartbeats": 2,
+   "is_contract_error": false,
+   "mask_replacements": 0,
+   "message": "ls-tree failed",
+   "outcome": "raised",
+   "runner_calls": [],
+   "type": "Boom"
+  },
+  "incomplete_human_missing": {
+   "artifact_reads": 3,
+   "cause_type": null,
+   "dirs_removed": [
+    true,
+    true
+   ],
+   "git_calls": [
+    [
+     [
+      "rev-parse",
+      "--verify",
+      "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa^{commit}"
+     ],
+     null,
+     true
+    ],
+    [
+     [
+      "ls-tree",
+      "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+      "--",
+      ".zeus/ticket-trust.json"
+     ],
+     null,
+     true
+    ],
+    [
+     [
+      "show",
+      "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa:.zeus/ticket-trust.json"
+     ],
+     null,
+     false
+    ]
+   ],
+   "heartbeats": 5,
+   "is_contract_error": true,
+   "mask_replacements": 4,
+   "message": "Incomplete required signature set",
+   "outcome": "raised",
+   "runner_calls": [
+    {
+     "allowed_name": "allowed_signers",
+     "allowed_signers": "bot@zeus.invalid ssh-ed25519 AgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgI=\n",
+     "argv": [
+      "ssh-keygen",
+      "-Y",
+      "verify",
+      "-f",
+      "<verify-dir>/allowed_signers",
+      "-I",
+      "bot@zeus.invalid",
+      "-n",
+      "zeus-ticket-close-v1",
+      "-s",
+      "<verify-dir>/packet.sig"
+     ],
+     "cwd": null,
+     "env_extra_keys": [],
+     "env_keys_subset": true,
+     "files_existed": [
+      true,
+      true
+     ],
+     "home_is_the_verify_dir": true,
+     "home_is_userprofile": true,
+     "input_len": 323,
+     "input_sha": "b4282c8b72cf068d",
+     "sentinel_filtered": true,
+     "signature_name": "packet.sig",
+     "signature_text": "SIGNATURE:bot@zeus.invalid:sha256:c44915a26acbabf354e0f4ad6fca6ab89109ed502854a0304eead8f88475a3a0\n",
+     "timeout": 30
+    },
+    {
+     "allowed_name": "allowed_signers",
+     "allowed_signers": "old@zeus.invalid ssh-ed25519 AwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwM=\n",
+     "argv": [
+      "ssh-keygen",
+      "-Y",
+      "verify",
+      "-f",
+      "<verify-dir>/allowed_signers",
+      "-I",
+      "old@zeus.invalid",
+      "-n",
+      "zeus-ticket-close-v1",
+      "-s",
+      "<verify-dir>/packet.sig"
+     ],
+     "cwd": null,
+     "env_extra_keys": [],
+     "env_keys_subset": true,
+     "files_existed": [
+      true,
+      true
+     ],
+     "home_is_the_verify_dir": true,
+     "home_is_userprofile": true,
+     "input_len": 323,
+     "input_sha": "b4282c8b72cf068d",
+     "sentinel_filtered": true,
+     "signature_name": "packet.sig",
+     "signature_text": "SIGNATURE:old@zeus.invalid:sha256:c44915a26acbabf354e0f4ad6fca6ab89109ed502854a0304eead8f88475a3a0\n",
+     "timeout": 30
+    }
+   ],
+   "type": "ContractError"
+  },
+  "incomplete_signer_set": {
+   "artifact_reads": 2,
+   "cause_type": null,
+   "dirs_removed": [
+    true
+   ],
+   "git_calls": [
+    [
+     [
+      "rev-parse",
+      "--verify",
+      "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa^{commit}"
+     ],
+     null,
+     true
+    ],
+    [
+     [
+      "ls-tree",
+      "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+      "--",
+      ".zeus/ticket-trust.json"
+     ],
+     null,
+     true
+    ],
+    [
+     [
+      "show",
+      "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa:.zeus/ticket-trust.json"
+     ],
+     null,
+     false
+    ]
+   ],
+   "heartbeats": 4,
+   "is_contract_error": true,
+   "mask_replacements": 2,
+   "message": "Incomplete required signature set",
+   "outcome": "raised",
+   "runner_calls": [
+    {
+     "allowed_name": "allowed_signers",
+     "allowed_signers": "bot@zeus.invalid ssh-ed25519 AgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgI=\n",
+     "argv": [
+      "ssh-keygen",
+      "-Y",
+      "verify",
+      "-f",
+      "<verify-dir>/allowed_signers",
+      "-I",
+      "bot@zeus.invalid",
+      "-n",
+      "zeus-ticket-close-v1",
+      "-s",
+      "<verify-dir>/packet.sig"
+     ],
+     "cwd": null,
+     "env_extra_keys": [],
+     "env_keys_subset": true,
+     "files_existed": [
+      true,
+      true
+     ],
+     "home_is_the_verify_dir": true,
+     "home_is_userprofile": true,
+     "input_len": 323,
+     "input_sha": "b94bdb3d9400300e",
+     "sentinel_filtered": true,
+     "signature_name": "packet.sig",
+     "signature_text": "SIGNATURE:bot@zeus.invalid:sha256:749819e633a00b4c38ccb28991a3baabb9d4a5f95c3ad6e28b2ce63492f0807c\n",
+     "timeout": 30
+    }
+   ],
+   "type": "ContractError"
+  },
+  "merge_base_fault": {
+   "artifact_reads": 3,
+   "cause_type": null,
+   "dirs_removed": [
+    true,
+    true
+   ],
+   "git_calls": [
+    [
+     [
+      "rev-parse",
+      "--verify",
+      "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa^{commit}"
+     ],
+     null,
+     true
+    ],
+    [
+     [
+      "ls-tree",
+      "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+      "--",
+      ".zeus/ticket-trust.json"
+     ],
+     null,
+     true
+    ],
+    [
+     [
+      "show",
+      "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa:.zeus/ticket-trust.json"
+     ],
+     null,
+     false
+    ],
+    [
+     [
+      "merge-base",
+      "bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb",
+      "HEAD"
+     ],
+     null,
+     true
+    ]
+   ],
+   "heartbeats": 6,
+   "is_contract_error": false,
+   "mask_replacements": 4,
+   "message": "merge-base failed",
+   "outcome": "raised",
+   "runner_calls": [
+    {
+     "allowed_name": "allowed_signers",
+     "allowed_signers": "alice@zeus.invalid ssh-ed25519 AQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQE=\n",
+     "argv": [
+      "ssh-keygen",
+      "-Y",
+      "verify",
+      "-f",
+      "<verify-dir>/allowed_signers",
+      "-I",
+      "alice@zeus.invalid",
+      "-n",
+      "zeus-ticket-close-v1",
+      "-s",
+      "<verify-dir>/packet.sig"
+     ],
+     "cwd": null,
+     "env_extra_keys": [],
+     "env_keys_subset": true,
+     "files_existed": [
+      true,
+      true
+     ],
+     "home_is_the_verify_dir": true,
+     "home_is_userprofile": true,
+     "input_len": 323,
+     "input_sha": "b94bdb3d9400300e",
+     "sentinel_filtered": true,
+     "signature_name": "packet.sig",
+     "signature_text": "SIGNATURE:alice@zeus.invalid:sha256:749819e633a00b4c38ccb28991a3baabb9d4a5f95c3ad6e28b2ce63492f0807c\n",
+     "timeout": 30
+    },
+    {
+     "allowed_name": "allowed_signers",
+     "allowed_signers": "bot@zeus.invalid ssh-ed25519 AgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgI=\n",
+     "argv": [
+      "ssh-keygen",
+      "-Y",
+      "verify",
+      "-f",
+      "<verify-dir>/allowed_signers",
+      "-I",
+      "bot@zeus.invalid",
+      "-n",
+      "zeus-ticket-close-v1",
+      "-s",
+      "<verify-dir>/packet.sig"
+     ],
+     "cwd": null,
+     "env_extra_keys": [],
+     "env_keys_subset": true,
+     "files_existed": [
+      true,
+      true
+     ],
+     "home_is_the_verify_dir": true,
+     "home_is_userprofile": true,
+     "input_len": 323,
+     "input_sha": "b94bdb3d9400300e",
+     "sentinel_filtered": true,
+     "signature_name": "packet.sig",
+     "signature_text": "SIGNATURE:bot@zeus.invalid:sha256:749819e633a00b4c38ccb28991a3baabb9d4a5f95c3ad6e28b2ce63492f0807c\n",
+     "timeout": 30
+    }
+   ],
+   "type": "Boom"
+  },
+  "packet_artifact_missing": {
+   "artifact_reads": 1,
+   "cause_type": null,
+   "dirs_removed": [],
+   "git_calls": [
+    [
+     [
+      "rev-parse",
+      "--verify",
+      "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa^{commit}"
+     ],
+     null,
+     true
+    ],
+    [
+     [
+      "ls-tree",
+      "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+      "--",
+      ".zeus/ticket-trust.json"
+     ],
+     null,
+     true
+    ],
+    [
+     [
+      "show",
+      "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa:.zeus/ticket-trust.json"
+     ],
+     null,
+     false
+    ]
+   ],
+   "heartbeats": 3,
+   "is_contract_error": false,
+   "mask_replacements": 0,
+   "message": "sha256:8888888888888888888888888888888888888888888888888888888888888888",
+   "outcome": "raised",
+   "runner_calls": [],
+   "type": "FileNotFoundError"
+  },
+  "packet_artifact_oversize": {
+   "artifact_reads": 1,
+   "cause_type": null,
+   "dirs_removed": [],
+   "git_calls": [
+    [
+     [
+      "rev-parse",
+      "--verify",
+      "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa^{commit}"
+     ],
+     null,
+     true
+    ],
+    [
+     [
+      "ls-tree",
+      "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+      "--",
+      ".zeus/ticket-trust.json"
+     ],
+     null,
+     true
+    ],
+    [
+     [
+      "show",
+      "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa:.zeus/ticket-trust.json"
+     ],
+     null,
+     false
+    ]
+   ],
+   "heartbeats": 3,
+   "is_contract_error": true,
+   "mask_replacements": 0,
+   "message": "Artifact exceeds text budget",
+   "outcome": "raised",
+   "runner_calls": [],
+   "type": "ContractError"
+  },
+  "packet_changed_after_signing": {
+   "artifact_reads": 1,
+   "cause_type": null,
+   "git_calls": [
+    [
+     [
+      "rev-parse",
+      "--verify",
+      "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa^{commit}"
+     ],
+     null,
+     true
+    ],
+    [
+     [
+      "ls-tree",
+      "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+      "--",
+      ".zeus/ticket-trust.json"
+     ],
+     null,
+     true
+    ],
+    [
+     [
+      "show",
+      "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa:.zeus/ticket-trust.json"
+     ],
+     null,
+     false
+    ]
+   ],
+   "heartbeats": 0,
+   "is_contract_error": true,
+   "message": "Sign exact canonical packet bytes, excluding signature envelope",
+   "outcome": "raised",
+   "runner_calls": [],
+   "type": "ContractError"
+  },
+  "packet_issued_at_in_the_future": {
+   "artifact_reads": 1,
+   "cause_type": null,
+   "git_calls": [
+    [
+     [
+      "rev-parse",
+      "--verify",
+      "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa^{commit}"
+     ],
+     null,
+     true
+    ],
+    [
+     [
+      "ls-tree",
+      "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+      "--",
+      ".zeus/ticket-trust.json"
+     ],
+     null,
+     true
+    ],
+    [
+     [
+      "show",
+      "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa:.zeus/ticket-trust.json"
+     ],
+     null,
+     false
+    ]
+   ],
+   "heartbeats": 0,
+   "is_contract_error": true,
+   "message": "Signer outside validity window",
+   "outcome": "raised",
+   "runner_calls": [],
+   "type": "ContractError"
+  },
+  "packet_issued_at_invalid": {
+   "artifact_reads": 1,
+   "cause_type": "ValueError",
+   "git_calls": [
+    [
+     [
+      "rev-parse",
+      "--verify",
+      "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa^{commit}"
+     ],
+     null,
+     true
+    ],
+    [
+     [
+      "ls-tree",
+      "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+      "--",
+      ".zeus/ticket-trust.json"
+     ],
+     null,
+     true
+    ],
+    [
+     [
+      "show",
+      "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa:.zeus/ticket-trust.json"
+     ],
+     null,
+     false
+    ]
+   ],
+   "heartbeats": 0,
+   "is_contract_error": true,
+   "message": "Invalid lifecycle timestamp",
+   "outcome": "raised",
+   "runner_calls": [],
+   "type": "ContractError"
+  },
+  "packet_issued_at_naive": {
+   "artifact_reads": 1,
+   "cause_type": null,
+   "git_calls": [
+    [
+     [
+      "rev-parse",
+      "--verify",
+      "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa^{commit}"
+     ],
+     null,
+     true
+    ],
+    [
+     [
+      "ls-tree",
+      "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+      "--",
+      ".zeus/ticket-trust.json"
+     ],
+     null,
+     true
+    ],
+    [
+     [
+      "show",
+      "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa:.zeus/ticket-trust.json"
+     ],
+     null,
+     false
+    ]
+   ],
+   "heartbeats": 0,
+   "is_contract_error": true,
+   "message": "Timestamp must include timezone",
+   "outcome": "raised",
+   "runner_calls": [],
+   "type": "ContractError"
+  },
+  "packet_issued_at_not_text": {
+   "artifact_reads": 1,
+   "cause_type": null,
+   "git_calls": [
+    [
+     [
+      "rev-parse",
+      "--verify",
+      "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa^{commit}"
+     ],
+     null,
+     true
+    ],
+    [
+     [
+      "ls-tree",
+      "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+      "--",
+      ".zeus/ticket-trust.json"
+     ],
+     null,
+     true
+    ],
+    [
+     [
+      "show",
+      "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa:.zeus/ticket-trust.json"
+     ],
+     null,
+     false
+    ]
+   ],
+   "heartbeats": 0,
+   "is_contract_error": true,
+   "message": "Timestamp required",
+   "outcome": "raised",
+   "runner_calls": [],
+   "type": "ContractError"
+  },
+  "packet_missing_issued_at": {
+   "artifact_reads": 1,
+   "cause_type": null,
+   "git_calls": [
+    [
+     [
+      "rev-parse",
+      "--verify",
+      "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa^{commit}"
+     ],
+     null,
+     true
+    ],
+    [
+     [
+      "ls-tree",
+      "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+      "--",
+      ".zeus/ticket-trust.json"
+     ],
+     null,
+     true
+    ],
+    [
+     [
+      "show",
+      "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa:.zeus/ticket-trust.json"
+     ],
+     null,
+     false
+    ]
+   ],
+   "heartbeats": 0,
+   "is_contract_error": false,
+   "message": "'issued_at'",
+   "outcome": "raised",
+   "runner_calls": [],
+   "type": "KeyError"
+  },
+  "packet_missing_policy_field": {
+   "artifact_reads": 0,
+   "cause_type": null,
+   "git_calls": [
+    [
+     [
+      "rev-parse",
+      "--verify",
+      "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa^{commit}"
+     ],
+     null,
+     true
+    ],
+    [
+     [
+      "ls-tree",
+      "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+      "--",
+      ".zeus/ticket-trust.json"
+     ],
+     null,
+     true
+    ],
+    [
+     [
+      "show",
+      "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa:.zeus/ticket-trust.json"
+     ],
+     null,
+     false
+    ]
+   ],
+   "heartbeats": 0,
+   "is_contract_error": false,
+   "message": "'scope'",
+   "outcome": "raised",
+   "runner_calls": [],
+   "type": "KeyError"
+  },
+  "packet_not_canonical_bytes": {
+   "artifact_reads": 1,
+   "cause_type": null,
+   "dirs_removed": [],
+   "git_calls": [
+    [
+     [
+      "rev-parse",
+      "--verify",
+      "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa^{commit}"
+     ],
+     null,
+     true
+    ],
+    [
+     [
+      "ls-tree",
+      "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+      "--",
+      ".zeus/ticket-trust.json"
+     ],
+     null,
+     true
+    ],
+    [
+     [
+      "show",
+      "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa:.zeus/ticket-trust.json"
+     ],
+     null,
+     false
+    ]
+   ],
+   "heartbeats": 3,
+   "is_contract_error": true,
+   "mask_replacements": 0,
+   "message": "Sign exact canonical packet bytes, excluding signature envelope",
+   "outcome": "raised",
+   "runner_calls": [],
+   "type": "ContractError"
+  },
+  "policy_changed_after_packet": {
+   "artifact_reads": 0,
+   "cause_type": null,
+   "dirs_removed": [],
+   "git_calls": [
+    [
+     [
+      "rev-parse",
+      "--verify",
+      "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa^{commit}"
+     ],
+     null,
+     true
+    ]
+   ],
+   "heartbeats": 1,
+   "is_contract_error": true,
+   "mask_replacements": 0,
+   "message": "Trust anchor commit unavailable",
+   "outcome": "raised",
+   "runner_calls": [],
+   "type": "ContractError"
+  },
+  "rejected_empty_stderr": {
+   "artifact_reads": 3,
+   "cause_type": null,
+   "dirs_removed": [
+    true,
+    true
+   ],
+   "git_calls": [
+    [
+     [
+      "rev-parse",
+      "--verify",
+      "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa^{commit}"
+     ],
+     null,
+     true
+    ],
+    [
+     [
+      "ls-tree",
+      "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+      "--",
+      ".zeus/ticket-trust.json"
+     ],
+     null,
+     true
+    ],
+    [
+     [
+      "show",
+      "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa:.zeus/ticket-trust.json"
+     ],
+     null,
+     false
+    ]
+   ],
+   "heartbeats": 5,
+   "is_contract_error": true,
+   "mask_replacements": 4,
+   "message": "Signature rejected; require OpenSSH 8.2+ and enrolled signing key: ",
+   "outcome": "raised",
+   "runner_calls": [
+    {
+     "allowed_name": "allowed_signers",
+     "allowed_signers": "alice@zeus.invalid ssh-ed25519 AQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQE=\n",
+     "argv": [
+      "ssh-keygen",
+      "-Y",
+      "verify",
+      "-f",
+      "<verify-dir>/allowed_signers",
+      "-I",
+      "alice@zeus.invalid",
+      "-n",
+      "zeus-ticket-close-v1",
+      "-s",
+      "<verify-dir>/packet.sig"
+     ],
+     "cwd": null,
+     "env_extra_keys": [],
+     "env_keys_subset": true,
+     "files_existed": [
+      true,
+      true
+     ],
+     "home_is_the_verify_dir": true,
+     "home_is_userprofile": true,
+     "input_len": 323,
+     "input_sha": "b94bdb3d9400300e",
+     "sentinel_filtered": true,
+     "signature_name": "packet.sig",
+     "signature_text": "SIGNATURE:alice@zeus.invalid:sha256:749819e633a00b4c38ccb28991a3baabb9d4a5f95c3ad6e28b2ce63492f0807c\n",
+     "timeout": 30
+    },
+    {
+     "allowed_name": "allowed_signers",
+     "allowed_signers": "bot@zeus.invalid ssh-ed25519 AgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgI=\n",
+     "argv": [
+      "ssh-keygen",
+      "-Y",
+      "verify",
+      "-f",
+      "<verify-dir>/allowed_signers",
+      "-I",
+      "bot@zeus.invalid",
+      "-n",
+      "zeus-ticket-close-v1",
+      "-s",
+      "<verify-dir>/packet.sig"
+     ],
+     "cwd": null,
+     "env_extra_keys": [],
+     "env_keys_subset": true,
+     "files_existed": [
+      true,
+      true
+     ],
+     "home_is_the_verify_dir": true,
+     "home_is_userprofile": true,
+     "input_len": 323,
+     "input_sha": "b94bdb3d9400300e",
+     "sentinel_filtered": true,
+     "signature_name": "packet.sig",
+     "signature_text": "SIGNATURE:bot@zeus.invalid:sha256:749819e633a00b4c38ccb28991a3baabb9d4a5f95c3ad6e28b2ce63492f0807c\n",
+     "timeout": 30
+    }
+   ],
+   "type": "ContractError"
+  },
+  "rejected_first_signer_stops_the_rest": {
+   "artifact_reads": 2,
+   "cause_type": null,
+   "dirs_removed": [
+    true
+   ],
+   "git_calls": [
+    [
+     [
+      "rev-parse",
+      "--verify",
+      "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa^{commit}"
+     ],
+     null,
+     true
+    ],
+    [
+     [
+      "ls-tree",
+      "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+      "--",
+      ".zeus/ticket-trust.json"
+     ],
+     null,
+     true
+    ],
+    [
+     [
+      "show",
+      "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa:.zeus/ticket-trust.json"
+     ],
+     null,
+     false
+    ]
+   ],
+   "heartbeats": 4,
+   "is_contract_error": true,
+   "mask_replacements": 2,
+   "message": "Signature rejected; require OpenSSH 8.2+ and enrolled signing key: no matching principal",
+   "outcome": "raised",
+   "runner_calls": [
+    {
+     "allowed_name": "allowed_signers",
+     "allowed_signers": "alice@zeus.invalid ssh-ed25519 AQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQE=\n",
+     "argv": [
+      "ssh-keygen",
+      "-Y",
+      "verify",
+      "-f",
+      "<verify-dir>/allowed_signers",
+      "-I",
+      "alice@zeus.invalid",
+      "-n",
+      "zeus-ticket-close-v1",
+      "-s",
+      "<verify-dir>/packet.sig"
+     ],
+     "cwd": null,
+     "env_extra_keys": [],
+     "env_keys_subset": true,
+     "files_existed": [
+      true,
+      true
+     ],
+     "home_is_the_verify_dir": true,
+     "home_is_userprofile": true,
+     "input_len": 323,
+     "input_sha": "b94bdb3d9400300e",
+     "sentinel_filtered": true,
+     "signature_name": "packet.sig",
+     "signature_text": "SIGNATURE:alice@zeus.invalid:sha256:749819e633a00b4c38ccb28991a3baabb9d4a5f95c3ad6e28b2ce63492f0807c\n",
+     "timeout": 30
+    }
+   ],
+   "type": "ContractError"
+  },
+  "rejected_one_signer": {
+   "artifact_reads": 3,
+   "cause_type": null,
+   "dirs_removed": [
+    true,
+    true
+   ],
+   "git_calls": [
+    [
+     [
+      "rev-parse",
+      "--verify",
+      "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa^{commit}"
+     ],
+     null,
+     true
+    ],
+    [
+     [
+      "ls-tree",
+      "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+      "--",
+      ".zeus/ticket-trust.json"
+     ],
+     null,
+     true
+    ],
+    [
+     [
+      "show",
+      "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa:.zeus/ticket-trust.json"
+     ],
+     null,
+     false
+    ]
+   ],
+   "heartbeats": 5,
+   "is_contract_error": true,
+   "mask_replacements": 4,
+   "message": "Signature rejected; require OpenSSH 8.2+ and enrolled signing key: xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxtail of the verifier error",
+   "outcome": "raised",
+   "runner_calls": [
+    {
+     "allowed_name": "allowed_signers",
+     "allowed_signers": "alice@zeus.invalid ssh-ed25519 AQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQE=\n",
+     "argv": [
+      "ssh-keygen",
+      "-Y",
+      "verify",
+      "-f",
+      "<verify-dir>/allowed_signers",
+      "-I",
+      "alice@zeus.invalid",
+      "-n",
+      "zeus-ticket-close-v1",
+      "-s",
+      "<verify-dir>/packet.sig"
+     ],
+     "cwd": null,
+     "env_extra_keys": [],
+     "env_keys_subset": true,
+     "files_existed": [
+      true,
+      true
+     ],
+     "home_is_the_verify_dir": true,
+     "home_is_userprofile": true,
+     "input_len": 323,
+     "input_sha": "b94bdb3d9400300e",
+     "sentinel_filtered": true,
+     "signature_name": "packet.sig",
+     "signature_text": "SIGNATURE:alice@zeus.invalid:sha256:749819e633a00b4c38ccb28991a3baabb9d4a5f95c3ad6e28b2ce63492f0807c\n",
+     "timeout": 30
+    },
+    {
+     "allowed_name": "allowed_signers",
+     "allowed_signers": "bot@zeus.invalid ssh-ed25519 AgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgI=\n",
+     "argv": [
+      "ssh-keygen",
+      "-Y",
+      "verify",
+      "-f",
+      "<verify-dir>/allowed_signers",
+      "-I",
+      "bot@zeus.invalid",
+      "-n",
+      "zeus-ticket-close-v1",
+      "-s",
+      "<verify-dir>/packet.sig"
+     ],
+     "cwd": null,
+     "env_extra_keys": [],
+     "env_keys_subset": true,
+     "files_existed": [
+      true,
+      true
+     ],
+     "home_is_the_verify_dir": true,
+     "home_is_userprofile": true,
+     "input_len": 323,
+     "input_sha": "b94bdb3d9400300e",
+     "sentinel_filtered": true,
+     "signature_name": "packet.sig",
+     "signature_text": "SIGNATURE:bot@zeus.invalid:sha256:749819e633a00b4c38ccb28991a3baabb9d4a5f95c3ad6e28b2ce63492f0807c\n",
+     "timeout": 30
+    }
+   ],
+   "type": "ContractError"
+  },
+  "rejected_short_stderr": {
+   "artifact_reads": 3,
+   "cause_type": null,
+   "dirs_removed": [
+    true,
+    true
+   ],
+   "git_calls": [
+    [
+     [
+      "rev-parse",
+      "--verify",
+      "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa^{commit}"
+     ],
+     null,
+     true
+    ],
+    [
+     [
+      "ls-tree",
+      "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+      "--",
+      ".zeus/ticket-trust.json"
+     ],
+     null,
+     true
+    ],
+    [
+     [
+      "show",
+      "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa:.zeus/ticket-trust.json"
+     ],
+     null,
+     false
+    ]
+   ],
+   "heartbeats": 5,
+   "is_contract_error": true,
+   "mask_replacements": 4,
+   "message": "Signature rejected; require OpenSSH 8.2+ and enrolled signing key: short",
+   "outcome": "raised",
+   "runner_calls": [
+    {
+     "allowed_name": "allowed_signers",
+     "allowed_signers": "alice@zeus.invalid ssh-ed25519 AQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQE=\n",
+     "argv": [
+      "ssh-keygen",
+      "-Y",
+      "verify",
+      "-f",
+      "<verify-dir>/allowed_signers",
+      "-I",
+      "alice@zeus.invalid",
+      "-n",
+      "zeus-ticket-close-v1",
+      "-s",
+      "<verify-dir>/packet.sig"
+     ],
+     "cwd": null,
+     "env_extra_keys": [],
+     "env_keys_subset": true,
+     "files_existed": [
+      true,
+      true
+     ],
+     "home_is_the_verify_dir": true,
+     "home_is_userprofile": true,
+     "input_len": 323,
+     "input_sha": "b94bdb3d9400300e",
+     "sentinel_filtered": true,
+     "signature_name": "packet.sig",
+     "signature_text": "SIGNATURE:alice@zeus.invalid:sha256:749819e633a00b4c38ccb28991a3baabb9d4a5f95c3ad6e28b2ce63492f0807c\n",
+     "timeout": 30
+    },
+    {
+     "allowed_name": "allowed_signers",
+     "allowed_signers": "bot@zeus.invalid ssh-ed25519 AgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgI=\n",
+     "argv": [
+      "ssh-keygen",
+      "-Y",
+      "verify",
+      "-f",
+      "<verify-dir>/allowed_signers",
+      "-I",
+      "bot@zeus.invalid",
+      "-n",
+      "zeus-ticket-close-v1",
+      "-s",
+      "<verify-dir>/packet.sig"
+     ],
+     "cwd": null,
+     "env_extra_keys": [],
+     "env_keys_subset": true,
+     "files_existed": [
+      true,
+      true
+     ],
+     "home_is_the_verify_dir": true,
+     "home_is_userprofile": true,
+     "input_len": 323,
+     "input_sha": "b94bdb3d9400300e",
+     "sentinel_filtered": true,
+     "signature_name": "packet.sig",
+     "signature_text": "SIGNATURE:bot@zeus.invalid:sha256:749819e633a00b4c38ccb28991a3baabb9d4a5f95c3ad6e28b2ce63492f0807c\n",
+     "timeout": 30
+    }
+   ],
+   "type": "ContractError"
+  },
+  "revoked_signer": {
+   "artifact_reads": 3,
+   "cause_type": null,
+   "dirs_removed": [
+    true,
+    true
+   ],
+   "git_calls": [
+    [
+     [
+      "rev-parse",
+      "--verify",
+      "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa^{commit}"
+     ],
+     null,
+     true
+    ],
+    [
+     [
+      "ls-tree",
+      "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+      "--",
+      ".zeus/ticket-trust.json"
+     ],
+     null,
+     true
+    ],
+    [
+     [
+      "show",
+      "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa:.zeus/ticket-trust.json"
+     ],
+     null,
+     false
+    ]
+   ],
+   "heartbeats": 6,
+   "is_contract_error": true,
+   "mask_replacements": 4,
+   "message": "Signer revoked",
+   "outcome": "raised",
+   "runner_calls": [
+    {
+     "allowed_name": "allowed_signers",
+     "allowed_signers": "alice@zeus.invalid ssh-ed25519 AQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQE=\n",
+     "argv": [
+      "ssh-keygen",
+      "-Y",
+      "verify",
+      "-f",
+      "<verify-dir>/allowed_signers",
+      "-I",
+      "alice@zeus.invalid",
+      "-n",
+      "zeus-ticket-close-v1",
+      "-s",
+      "<verify-dir>/packet.sig"
+     ],
+     "cwd": null,
+     "env_extra_keys": [],
+     "env_keys_subset": true,
+     "files_existed": [
+      true,
+      true
+     ],
+     "home_is_the_verify_dir": true,
+     "home_is_userprofile": true,
+     "input_len": 323,
+     "input_sha": "b94bdb3d9400300e",
+     "sentinel_filtered": true,
+     "signature_name": "packet.sig",
+     "signature_text": "SIGNATURE:alice@zeus.invalid:sha256:749819e633a00b4c38ccb28991a3baabb9d4a5f95c3ad6e28b2ce63492f0807c\n",
+     "timeout": 30
+    },
+    {
+     "allowed_name": "allowed_signers",
+     "allowed_signers": "bot@zeus.invalid ssh-ed25519 AgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgI=\n",
+     "argv": [
+      "ssh-keygen",
+      "-Y",
+      "verify",
+      "-f",
+      "<verify-dir>/allowed_signers",
+      "-I",
+      "bot@zeus.invalid",
+      "-n",
+      "zeus-ticket-close-v1",
+      "-s",
+      "<verify-dir>/packet.sig"
+     ],
+     "cwd": null,
+     "env_extra_keys": [],
+     "env_keys_subset": true,
+     "files_existed": [
+      true,
+      true
+     ],
+     "home_is_the_verify_dir": true,
+     "home_is_userprofile": true,
+     "input_len": 323,
+     "input_sha": "b94bdb3d9400300e",
+     "sentinel_filtered": true,
+     "signature_name": "packet.sig",
+     "signature_text": "SIGNATURE:bot@zeus.invalid:sha256:749819e633a00b4c38ccb28991a3baabb9d4a5f95c3ad6e28b2ce63492f0807c\n",
+     "timeout": 30
+    }
+   ],
+   "type": "ContractError"
+  },
+  "runner_other_fault_propagates": {
+   "artifact_reads": 2,
+   "cause_type": null,
+   "dirs_removed": [
+    true
+   ],
+   "git_calls": [
+    [
+     [
+      "rev-parse",
+      "--verify",
+      "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa^{commit}"
+     ],
+     null,
+     true
+    ],
+    [
+     [
+      "ls-tree",
+      "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+      "--",
+      ".zeus/ticket-trust.json"
+     ],
+     null,
+     true
+    ],
+    [
+     [
+      "show",
+      "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa:.zeus/ticket-trust.json"
+     ],
+     null,
+     false
+    ]
+   ],
+   "heartbeats": 4,
+   "is_contract_error": false,
+   "mask_replacements": 2,
+   "message": "runner failed",
+   "outcome": "raised",
+   "runner_calls": [
+    {
+     "allowed_name": "allowed_signers",
+     "allowed_signers": "alice@zeus.invalid ssh-ed25519 AQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQE=\n",
+     "argv": [
+      "ssh-keygen",
+      "-Y",
+      "verify",
+      "-f",
+      "<verify-dir>/allowed_signers",
+      "-I",
+      "alice@zeus.invalid",
+      "-n",
+      "zeus-ticket-close-v1",
+      "-s",
+      "<verify-dir>/packet.sig"
+     ],
+     "cwd": null,
+     "env_extra_keys": [],
+     "env_keys_subset": true,
+     "files_existed": [
+      true,
+      true
+     ],
+     "home_is_the_verify_dir": true,
+     "home_is_userprofile": true,
+     "input_len": 323,
+     "input_sha": "b94bdb3d9400300e",
+     "sentinel_filtered": true,
+     "signature_name": "packet.sig",
+     "signature_text": "SIGNATURE:alice@zeus.invalid:sha256:749819e633a00b4c38ccb28991a3baabb9d4a5f95c3ad6e28b2ce63492f0807c\n",
+     "timeout": 30
+    }
+   ],
+   "type": "Boom"
+  },
+  "runner_timeout_propagates": {
+   "artifact_reads": 2,
+   "cause_type": null,
+   "dirs_removed": [
+    true
+   ],
+   "git_calls": [
+    [
+     [
+      "rev-parse",
+      "--verify",
+      "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa^{commit}"
+     ],
+     null,
+     true
+    ],
+    [
+     [
+      "ls-tree",
+      "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+      "--",
+      ".zeus/ticket-trust.json"
+     ],
+     null,
+     true
+    ],
+    [
+     [
+      "show",
+      "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa:.zeus/ticket-trust.json"
+     ],
+     null,
+     false
+    ]
+   ],
+   "heartbeats": 4,
+   "is_contract_error": false,
+   "mask_replacements": 2,
+   "message": "timed out",
+   "outcome": "raised",
+   "runner_calls": [
+    {
+     "allowed_name": "allowed_signers",
+     "allowed_signers": "alice@zeus.invalid ssh-ed25519 AQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQE=\n",
+     "argv": [
+      "ssh-keygen",
+      "-Y",
+      "verify",
+      "-f",
+      "<verify-dir>/allowed_signers",
+      "-I",
+      "alice@zeus.invalid",
+      "-n",
+      "zeus-ticket-close-v1",
+      "-s",
+      "<verify-dir>/packet.sig"
+     ],
+     "cwd": null,
+     "env_extra_keys": [],
+     "env_keys_subset": true,
+     "files_existed": [
+      true,
+      true
+     ],
+     "home_is_the_verify_dir": true,
+     "home_is_userprofile": true,
+     "input_len": 323,
+     "input_sha": "b94bdb3d9400300e",
+     "sentinel_filtered": true,
+     "signature_name": "packet.sig",
+     "signature_text": "SIGNATURE:alice@zeus.invalid:sha256:749819e633a00b4c38ccb28991a3baabb9d4a5f95c3ad6e28b2ce63492f0807c\n",
+     "timeout": 30
+    }
+   ],
+   "type": "TimeoutError"
+  },
+  "signature_artifact_missing": {
+   "artifact_reads": 2,
+   "cause_type": null,
+   "dirs_removed": [],
+   "git_calls": [
+    [
+     [
+      "rev-parse",
+      "--verify",
+      "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa^{commit}"
+     ],
+     null,
+     true
+    ],
+    [
+     [
+      "ls-tree",
+      "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+      "--",
+      ".zeus/ticket-trust.json"
+     ],
+     null,
+     true
+    ],
+    [
+     [
+      "show",
+      "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa:.zeus/ticket-trust.json"
+     ],
+     null,
+     false
+    ]
+   ],
+   "heartbeats": 4,
+   "is_contract_error": false,
+   "mask_replacements": 0,
+   "message": "sha256:9999999999999999999999999999999999999999999999999999999999999999",
+   "outcome": "raised",
+   "runner_calls": [],
+   "type": "FileNotFoundError"
+  },
+  "signatures_21": {
+   "artifact_reads": 1,
+   "cause_type": null,
+   "dirs_removed": [],
+   "git_calls": [
+    [
+     [
+      "rev-parse",
+      "--verify",
+      "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa^{commit}"
+     ],
+     null,
+     true
+    ],
+    [
+     [
+      "ls-tree",
+      "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+      "--",
+      ".zeus/ticket-trust.json"
+     ],
+     null,
+     true
+    ],
+    [
+     [
+      "show",
+      "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa:.zeus/ticket-trust.json"
+     ],
+     null,
+     false
+    ]
+   ],
+   "heartbeats": 3,
+   "is_contract_error": true,
+   "mask_replacements": 0,
+   "message": "Complete signature set required",
+   "outcome": "raised",
+   "runner_calls": [],
+   "type": "ContractError"
+  },
+  "signatures_empty": {
+   "artifact_reads": 1,
+   "cause_type": null,
+   "dirs_removed": [],
+   "git_calls": [
+    [
+     [
+      "rev-parse",
+      "--verify",
+      "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa^{commit}"
+     ],
+     null,
+     true
+    ],
+    [
+     [
+      "ls-tree",
+      "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+      "--",
+      ".zeus/ticket-trust.json"
+     ],
+     null,
+     true
+    ],
+    [
+     [
+      "show",
+      "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa:.zeus/ticket-trust.json"
+     ],
+     null,
+     false
+    ]
+   ],
+   "heartbeats": 3,
+   "is_contract_error": true,
+   "mask_replacements": 0,
+   "message": "Complete signature set required",
+   "outcome": "raised",
+   "runner_calls": [],
+   "type": "ContractError"
+  },
+  "signatures_not_a_list": {
+   "artifact_reads": 1,
+   "cause_type": null,
+   "dirs_removed": [],
+   "git_calls": [
+    [
+     [
+      "rev-parse",
+      "--verify",
+      "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa^{commit}"
+     ],
+     null,
+     true
+    ],
+    [
+     [
+      "ls-tree",
+      "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+      "--",
+      ".zeus/ticket-trust.json"
+     ],
+     null,
+     true
+    ],
+    [
+     [
+      "show",
+      "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa:.zeus/ticket-trust.json"
+     ],
+     null,
+     false
+    ]
+   ],
+   "heartbeats": 3,
+   "is_contract_error": true,
+   "mask_replacements": 0,
+   "message": "Complete signature set required",
+   "outcome": "raised",
+   "runner_calls": [],
+   "type": "ContractError"
+  },
+  "signer_expired_at_the_given_time": {
+   "artifact_reads": 1,
+   "cause_type": null,
+   "dirs_removed": [],
+   "git_calls": [
+    [
+     [
+      "rev-parse",
+      "--verify",
+      "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa^{commit}"
+     ],
+     null,
+     true
+    ],
+    [
+     [
+      "ls-tree",
+      "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+      "--",
+      ".zeus/ticket-trust.json"
+     ],
+     null,
+     true
+    ],
+    [
+     [
+      "show",
+      "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa:.zeus/ticket-trust.json"
+     ],
+     null,
+     false
+    ]
+   ],
+   "heartbeats": 4,
+   "is_contract_error": true,
+   "mask_replacements": 0,
+   "message": "Signer outside validity window",
+   "outcome": "raised",
+   "runner_calls": [],
+   "type": "ContractError"
+  },
+  "signer_expires_during_verification": {
+   "artifact_reads": 3,
+   "cause_type": null,
+   "dirs_removed": [
+    true,
+    true
+   ],
+   "git_calls": [
+    [
+     [
+      "rev-parse",
+      "--verify",
+      "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa^{commit}"
+     ],
+     null,
+     true
+    ],
+    [
+     [
+      "ls-tree",
+      "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+      "--",
+      ".zeus/ticket-trust.json"
+     ],
+     null,
+     true
+    ],
+    [
+     [
+      "show",
+      "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa:.zeus/ticket-trust.json"
+     ],
+     null,
+     false
+    ],
+    [
+     [
+      "merge-base",
+      "bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb",
+      "HEAD"
+     ],
+     null,
+     true
+    ]
+   ],
+   "heartbeats": 6,
+   "is_contract_error": true,
+   "mask_replacements": 4,
+   "message": "Signer expired during verification",
+   "outcome": "raised",
+   "runner_calls": [
+    {
+     "allowed_name": "allowed_signers",
+     "allowed_signers": "alice@zeus.invalid ssh-ed25519 AQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQE=\n",
+     "argv": [
+      "ssh-keygen",
+      "-Y",
+      "verify",
+      "-f",
+      "<verify-dir>/allowed_signers",
+      "-I",
+      "alice@zeus.invalid",
+      "-n",
+      "zeus-ticket-close-v1",
+      "-s",
+      "<verify-dir>/packet.sig"
+     ],
+     "cwd": null,
+     "env_extra_keys": [],
+     "env_keys_subset": true,
+     "files_existed": [
+      true,
+      true
+     ],
+     "home_is_the_verify_dir": true,
+     "home_is_userprofile": true,
+     "input_len": 323,
+     "input_sha": "a47f677d914925a2",
+     "sentinel_filtered": true,
+     "signature_name": "packet.sig",
+     "signature_text": "SIGNATURE:alice@zeus.invalid:sha256:068570d646811707e2c214e90c9d1ad6763ee4635de280ac5765c8e14cdc6fe0\n",
+     "timeout": 30
+    },
+    {
+     "allowed_name": "allowed_signers",
+     "allowed_signers": "bot@zeus.invalid ssh-ed25519 AgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgI=\n",
+     "argv": [
+      "ssh-keygen",
+      "-Y",
+      "verify",
+      "-f",
+      "<verify-dir>/allowed_signers",
+      "-I",
+      "bot@zeus.invalid",
+      "-n",
+      "zeus-ticket-close-v1",
+      "-s",
+      "<verify-dir>/packet.sig"
+     ],
+     "cwd": null,
+     "env_extra_keys": [],
+     "env_keys_subset": true,
+     "files_existed": [
+      true,
+      true
+     ],
+     "home_is_the_verify_dir": true,
+     "home_is_userprofile": true,
+     "input_len": 323,
+     "input_sha": "a47f677d914925a2",
+     "sentinel_filtered": true,
+     "signature_name": "packet.sig",
+     "signature_text": "SIGNATURE:bot@zeus.invalid:sha256:068570d646811707e2c214e90c9d1ad6763ee4635de280ac5765c8e14cdc6fe0\n",
+     "timeout": 30
+    }
+   ],
+   "type": "ContractError"
+  },
+  "signer_not_yet_valid_at_issue": {
+   "artifact_reads": 2,
+   "cause_type": null,
+   "dirs_removed": [
+    true
+   ],
+   "git_calls": [
+    [
+     [
+      "rev-parse",
+      "--verify",
+      "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa^{commit}"
+     ],
+     null,
+     true
+    ],
+    [
+     [
+      "ls-tree",
+      "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+      "--",
+      ".zeus/ticket-trust.json"
+     ],
+     null,
+     true
+    ],
+    [
+     [
+      "show",
+      "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa:.zeus/ticket-trust.json"
+     ],
+     null,
+     false
+    ]
+   ],
+   "heartbeats": 5,
+   "is_contract_error": true,
+   "mask_replacements": 2,
+   "message": "Signer outside validity window",
+   "outcome": "raised",
+   "runner_calls": [
+    {
+     "allowed_name": "allowed_signers",
+     "allowed_signers": "alice@zeus.invalid ssh-ed25519 AQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQE=\n",
+     "argv": [
+      "ssh-keygen",
+      "-Y",
+      "verify",
+      "-f",
+      "<verify-dir>/allowed_signers",
+      "-I",
+      "alice@zeus.invalid",
+      "-n",
+      "zeus-ticket-close-v1",
+      "-s",
+      "<verify-dir>/packet.sig"
+     ],
+     "cwd": null,
+     "env_extra_keys": [],
+     "env_keys_subset": true,
+     "files_existed": [
+      true,
+      true
+     ],
+     "home_is_the_verify_dir": true,
+     "home_is_userprofile": true,
+     "input_len": 323,
+     "input_sha": "f8073d657affd17f",
+     "sentinel_filtered": true,
+     "signature_name": "packet.sig",
+     "signature_text": "SIGNATURE:alice@zeus.invalid:sha256:2d85fadcc82adad9048cd80b2545af0ceb0826c20c7579d14e413982202b293f\n",
+     "timeout": 30
+    }
+   ],
+   "type": "ContractError"
+  },
+  "solution_commit_invalid": {
+   "artifact_reads": 3,
+   "cause_type": null,
+   "dirs_removed": [
+    true,
+    true
+   ],
+   "git_calls": [
+    [
+     [
+      "rev-parse",
+      "--verify",
+      "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa^{commit}"
+     ],
+     null,
+     true
+    ],
+    [
+     [
+      "ls-tree",
+      "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+      "--",
+      ".zeus/ticket-trust.json"
+     ],
+     null,
+     true
+    ],
+    [
+     [
+      "show",
+      "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa:.zeus/ticket-trust.json"
+     ],
+     null,
+     false
+    ]
+   ],
+   "heartbeats": 6,
+   "is_contract_error": true,
+   "mask_replacements": 4,
+   "message": "Full solution commit required",
+   "outcome": "raised",
+   "runner_calls": [
+    {
+     "allowed_name": "allowed_signers",
+     "allowed_signers": "alice@zeus.invalid ssh-ed25519 AQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQE=\n",
+     "argv": [
+      "ssh-keygen",
+      "-Y",
+      "verify",
+      "-f",
+      "<verify-dir>/allowed_signers",
+      "-I",
+      "alice@zeus.invalid",
+      "-n",
+      "zeus-ticket-close-v1",
+      "-s",
+      "<verify-dir>/packet.sig"
+     ],
+     "cwd": null,
+     "env_extra_keys": [],
+     "env_keys_subset": true,
+     "files_existed": [
+      true,
+      true
+     ],
+     "home_is_the_verify_dir": true,
+     "home_is_userprofile": true,
+     "input_len": 288,
+     "input_sha": "8c3151e72f2b40fc",
+     "sentinel_filtered": true,
+     "signature_name": "packet.sig",
+     "signature_text": "SIGNATURE:alice@zeus.invalid:sha256:8ad312d0312318c5664e07a366c958bd52927bdf0d86e3863d8ae804cf332084\n",
+     "timeout": 30
+    },
+    {
+     "allowed_name": "allowed_signers",
+     "allowed_signers": "bot@zeus.invalid ssh-ed25519 AgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgI=\n",
+     "argv": [
+      "ssh-keygen",
+      "-Y",
+      "verify",
+      "-f",
+      "<verify-dir>/allowed_signers",
+      "-I",
+      "bot@zeus.invalid",
+      "-n",
+      "zeus-ticket-close-v1",
+      "-s",
+      "<verify-dir>/packet.sig"
+     ],
+     "cwd": null,
+     "env_extra_keys": [],
+     "env_keys_subset": true,
+     "files_existed": [
+      true,
+      true
+     ],
+     "home_is_the_verify_dir": true,
+     "home_is_userprofile": true,
+     "input_len": 288,
+     "input_sha": "8c3151e72f2b40fc",
+     "sentinel_filtered": true,
+     "signature_name": "packet.sig",
+     "signature_text": "SIGNATURE:bot@zeus.invalid:sha256:8ad312d0312318c5664e07a366c958bd52927bdf0d86e3863d8ae804cf332084\n",
+     "timeout": 30
+    }
+   ],
+   "type": "ContractError"
+  },
+  "solution_commit_missing": {
+   "artifact_reads": 3,
+   "cause_type": null,
+   "dirs_removed": [
+    true,
+    true
+   ],
+   "git_calls": [
+    [
+     [
+      "rev-parse",
+      "--verify",
+      "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa^{commit}"
+     ],
+     null,
+     true
+    ],
+    [
+     [
+      "ls-tree",
+      "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+      "--",
+      ".zeus/ticket-trust.json"
+     ],
+     null,
+     true
+    ],
+    [
+     [
+      "show",
+      "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa:.zeus/ticket-trust.json"
+     ],
+     null,
+     false
+    ]
+   ],
+   "heartbeats": 6,
+   "is_contract_error": true,
+   "mask_replacements": 4,
+   "message": "Full solution commit required",
+   "outcome": "raised",
+   "runner_calls": [
+    {
+     "allowed_name": "allowed_signers",
+     "allowed_signers": "alice@zeus.invalid ssh-ed25519 AQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQE=\n",
+     "argv": [
+      "ssh-keygen",
+      "-Y",
+      "verify",
+      "-f",
+      "<verify-dir>/allowed_signers",
+      "-I",
+      "alice@zeus.invalid",
+      "-n",
+      "zeus-ticket-close-v1",
+      "-s",
+      "<verify-dir>/packet.sig"
+     ],
+     "cwd": null,
+     "env_extra_keys": [],
+     "env_keys_subset": true,
+     "files_existed": [
+      true,
+      true
+     ],
+     "home_is_the_verify_dir": true,
+     "home_is_userprofile": true,
+     "input_len": 285,
+     "input_sha": "1536a7307d54dfb0",
+     "sentinel_filtered": true,
+     "signature_name": "packet.sig",
+     "signature_text": "SIGNATURE:alice@zeus.invalid:sha256:4bbd8b438e12566ccbcdbb7a57edf70004cddfc7b7b03668017d3ee44120e62d\n",
+     "timeout": 30
+    },
+    {
+     "allowed_name": "allowed_signers",
+     "allowed_signers": "bot@zeus.invalid ssh-ed25519 AgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgI=\n",
+     "argv": [
+      "ssh-keygen",
+      "-Y",
+      "verify",
+      "-f",
+      "<verify-dir>/allowed_signers",
+      "-I",
+      "bot@zeus.invalid",
+      "-n",
+      "zeus-ticket-close-v1",
+      "-s",
+      "<verify-dir>/packet.sig"
+     ],
+     "cwd": null,
+     "env_extra_keys": [],
+     "env_keys_subset": true,
+     "files_existed": [
+      true,
+      true
+     ],
+     "home_is_the_verify_dir": true,
+     "home_is_userprofile": true,
+     "input_len": 285,
+     "input_sha": "1536a7307d54dfb0",
+     "sentinel_filtered": true,
+     "signature_name": "packet.sig",
+     "signature_text": "SIGNATURE:bot@zeus.invalid:sha256:4bbd8b438e12566ccbcdbb7a57edf70004cddfc7b7b03668017d3ee44120e62d\n",
+     "timeout": 30
+    }
+   ],
+   "type": "ContractError"
+  },
+  "ssh_keygen_missing": {
+   "artifact_reads": 2,
+   "cause_type": "FileNotFoundError",
+   "dirs_removed": [
+    true
+   ],
+   "git_calls": [
+    [
+     [
+      "rev-parse",
+      "--verify",
+      "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa^{commit}"
+     ],
+     null,
+     true
+    ],
+    [
+     [
+      "ls-tree",
+      "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+      "--",
+      ".zeus/ticket-trust.json"
+     ],
+     null,
+     true
+    ],
+    [
+     [
+      "show",
+      "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa:.zeus/ticket-trust.json"
+     ],
+     null,
+     false
+    ]
+   ],
+   "heartbeats": 4,
+   "is_contract_error": false,
+   "mask_replacements": 2,
+   "message": "OpenSSH 8.2+ ssh-keygen with -Y verify is required",
+   "outcome": "raised",
+   "runner_calls": [
+    {
+     "allowed_name": "allowed_signers",
+     "allowed_signers": "alice@zeus.invalid ssh-ed25519 AQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQE=\n",
+     "argv": [
+      "ssh-keygen",
+      "-Y",
+      "verify",
+      "-f",
+      "<verify-dir>/allowed_signers",
+      "-I",
+      "alice@zeus.invalid",
+      "-n",
+      "zeus-ticket-close-v1",
+      "-s",
+      "<verify-dir>/packet.sig"
+     ],
+     "cwd": null,
+     "env_extra_keys": [],
+     "env_keys_subset": true,
+     "files_existed": [
+      true,
+      true
+     ],
+     "home_is_the_verify_dir": true,
+     "home_is_userprofile": true,
+     "input_len": 323,
+     "input_sha": "b94bdb3d9400300e",
+     "sentinel_filtered": true,
+     "signature_name": "packet.sig",
+     "signature_text": "SIGNATURE:alice@zeus.invalid:sha256:749819e633a00b4c38ccb28991a3baabb9d4a5f95c3ad6e28b2ce63492f0807c\n",
+     "timeout": 30
+    }
+   ],
+   "type": "RuntimeError"
+  },
+  "stale_policy_commit": {
+   "artifact_reads": 0,
+   "cause_type": null,
+   "dirs_removed": [],
+   "git_calls": [
+    [
+     [
+      "rev-parse",
+      "--verify",
+      "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa^{commit}"
+     ],
+     null,
+     true
+    ],
+    [
+     [
+      "ls-tree",
+      "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+      "--",
+      ".zeus/ticket-trust.json"
+     ],
+     null,
+     true
+    ],
+    [
+     [
+      "show",
+      "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa:.zeus/ticket-trust.json"
+     ],
+     null,
+     false
+    ]
+   ],
+   "heartbeats": 3,
+   "is_contract_error": true,
+   "mask_replacements": 0,
+   "message": "Stale signing policy",
+   "outcome": "raised",
+   "runner_calls": [],
+   "type": "ContractError"
+  },
+  "stale_policy_hash": {
+   "artifact_reads": 0,
+   "cause_type": null,
+   "dirs_removed": [],
+   "git_calls": [
+    [
+     [
+      "rev-parse",
+      "--verify",
+      "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa^{commit}"
+     ],
+     null,
+     true
+    ],
+    [
+     [
+      "ls-tree",
+      "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+      "--",
+      ".zeus/ticket-trust.json"
+     ],
+     null,
+     true
+    ],
+    [
+     [
+      "show",
+      "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa:.zeus/ticket-trust.json"
+     ],
+     null,
+     false
+    ]
+   ],
+   "heartbeats": 3,
+   "is_contract_error": true,
+   "mask_replacements": 0,
+   "message": "Stale signing policy",
+   "outcome": "raised",
+   "runner_calls": [],
+   "type": "ContractError"
+  },
+  "stale_policy_scope": {
+   "artifact_reads": 0,
+   "cause_type": null,
+   "dirs_removed": [],
+   "git_calls": [
+    [
+     [
+      "rev-parse",
+      "--verify",
+      "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa^{commit}"
+     ],
+     null,
+     true
+    ],
+    [
+     [
+      "ls-tree",
+      "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+      "--",
+      ".zeus/ticket-trust.json"
+     ],
+     null,
+     true
+    ],
+    [
+     [
+      "show",
+      "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa:.zeus/ticket-trust.json"
+     ],
+     null,
+     false
+    ]
+   ],
+   "heartbeats": 3,
+   "is_contract_error": true,
+   "mask_replacements": 0,
+   "message": "Stale signing policy",
+   "outcome": "raised",
+   "runner_calls": [],
+   "type": "ContractError"
+  },
+  "unenrolled_principal": {
+   "artifact_reads": 1,
+   "cause_type": null,
+   "dirs_removed": [],
+   "git_calls": [
+    [
+     [
+      "rev-parse",
+      "--verify",
+      "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa^{commit}"
+     ],
+     null,
+     true
+    ],
+    [
+     [
+      "ls-tree",
+      "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+      "--",
+      ".zeus/ticket-trust.json"
+     ],
+     null,
+     true
+    ],
+    [
+     [
+      "show",
+      "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa:.zeus/ticket-trust.json"
+     ],
+     null,
+     false
+    ]
+   ],
+   "heartbeats": 4,
+   "is_contract_error": true,
+   "mask_replacements": 0,
+   "message": "Unenrolled or duplicate signature principal",
+   "outcome": "raised",
+   "runner_calls": [],
+   "type": "ContractError"
+  },
+  "unmerged_solution_commit": {
+   "artifact_reads": 3,
+   "cause_type": null,
+   "dirs_removed": [
+    true,
+    true
+   ],
+   "git_calls": [
+    [
+     [
+      "rev-parse",
+      "--verify",
+      "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa^{commit}"
+     ],
+     null,
+     true
+    ],
+    [
+     [
+      "ls-tree",
+      "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+      "--",
+      ".zeus/ticket-trust.json"
+     ],
+     null,
+     true
+    ],
+    [
+     [
+      "show",
+      "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa:.zeus/ticket-trust.json"
+     ],
+     null,
+     false
+    ],
+    [
+     [
+      "merge-base",
+      "bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb",
+      "HEAD"
+     ],
+     null,
+     true
+    ]
+   ],
+   "heartbeats": 6,
+   "is_contract_error": true,
+   "mask_replacements": 4,
+   "message": "Solution commit must be merged into the configured repository HEAD",
+   "outcome": "raised",
+   "runner_calls": [
+    {
+     "allowed_name": "allowed_signers",
+     "allowed_signers": "alice@zeus.invalid ssh-ed25519 AQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQE=\n",
+     "argv": [
+      "ssh-keygen",
+      "-Y",
+      "verify",
+      "-f",
+      "<verify-dir>/allowed_signers",
+      "-I",
+      "alice@zeus.invalid",
+      "-n",
+      "zeus-ticket-close-v1",
+      "-s",
+      "<verify-dir>/packet.sig"
+     ],
+     "cwd": null,
+     "env_extra_keys": [],
+     "env_keys_subset": true,
+     "files_existed": [
+      true,
+      true
+     ],
+     "home_is_the_verify_dir": true,
+     "home_is_userprofile": true,
+     "input_len": 323,
+     "input_sha": "b94bdb3d9400300e",
+     "sentinel_filtered": true,
+     "signature_name": "packet.sig",
+     "signature_text": "SIGNATURE:alice@zeus.invalid:sha256:749819e633a00b4c38ccb28991a3baabb9d4a5f95c3ad6e28b2ce63492f0807c\n",
+     "timeout": 30
+    },
+    {
+     "allowed_name": "allowed_signers",
+     "allowed_signers": "bot@zeus.invalid ssh-ed25519 AgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgI=\n",
+     "argv": [
+      "ssh-keygen",
+      "-Y",
+      "verify",
+      "-f",
+      "<verify-dir>/allowed_signers",
+      "-I",
+      "bot@zeus.invalid",
+      "-n",
+      "zeus-ticket-close-v1",
+      "-s",
+      "<verify-dir>/packet.sig"
+     ],
+     "cwd": null,
+     "env_extra_keys": [],
+     "env_keys_subset": true,
+     "files_existed": [
+      true,
+      true
+     ],
+     "home_is_the_verify_dir": true,
+     "home_is_userprofile": true,
+     "input_len": 323,
+     "input_sha": "b94bdb3d9400300e",
+     "sentinel_filtered": true,
+     "signature_name": "packet.sig",
+     "signature_text": "SIGNATURE:bot@zeus.invalid:sha256:749819e633a00b4c38ccb28991a3baabb9d4a5f95c3ad6e28b2ce63492f0807c\n",
+     "timeout": 30
+    }
+   ],
+   "type": "ContractError"
+  },
+  "valid_before_a_second_after_issue": {
+   "artifact_reads": 3,
+   "dirs_removed": [
+    true,
+    true
+   ],
+   "git_calls": [
+    [
+     [
+      "rev-parse",
+      "--verify",
+      "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa^{commit}"
+     ],
+     null,
+     true
+    ],
+    [
+     [
+      "ls-tree",
+      "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+      "--",
+      ".zeus/ticket-trust.json"
+     ],
+     null,
+     true
+    ],
+    [
+     [
+      "show",
+      "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa:.zeus/ticket-trust.json"
+     ],
+     null,
+     false
+    ],
+    [
+     [
+      "merge-base",
+      "bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb",
+      "HEAD"
+     ],
+     null,
+     true
+    ]
+   ],
+   "heartbeats": 6,
+   "mask_replacements": 4,
+   "outcome": "returned",
+   "runner_calls": [
+    {
+     "allowed_name": "allowed_signers",
+     "allowed_signers": "alice@zeus.invalid ssh-ed25519 AQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQE=\n",
+     "argv": [
+      "ssh-keygen",
+      "-Y",
+      "verify",
+      "-f",
+      "<verify-dir>/allowed_signers",
+      "-I",
+      "alice@zeus.invalid",
+      "-n",
+      "zeus-ticket-close-v1",
+      "-s",
+      "<verify-dir>/packet.sig"
+     ],
+     "cwd": null,
+     "env_extra_keys": [],
+     "env_keys_subset": true,
+     "files_existed": [
+      true,
+      true
+     ],
+     "home_is_the_verify_dir": true,
+     "home_is_userprofile": true,
+     "input_len": 323,
+     "input_sha": "196ecd42f2c88e9d",
+     "sentinel_filtered": true,
+     "signature_name": "packet.sig",
+     "signature_text": "SIGNATURE:alice@zeus.invalid:sha256:26f3b81b6248ad23f9f6df5a673f37c73f1cc11e4e8de6332d5225d897f9227f\n",
+     "timeout": 30
+    },
+    {
+     "allowed_name": "allowed_signers",
+     "allowed_signers": "bot@zeus.invalid ssh-ed25519 AgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgI=\n",
+     "argv": [
+      "ssh-keygen",
+      "-Y",
+      "verify",
+      "-f",
+      "<verify-dir>/allowed_signers",
+      "-I",
+      "bot@zeus.invalid",
+      "-n",
+      "zeus-ticket-close-v1",
+      "-s",
+      "<verify-dir>/packet.sig"
+     ],
+     "cwd": null,
+     "env_extra_keys": [],
+     "env_keys_subset": true,
+     "files_existed": [
+      true,
+      true
+     ],
+     "home_is_the_verify_dir": true,
+     "home_is_userprofile": true,
+     "input_len": 323,
+     "input_sha": "196ecd42f2c88e9d",
+     "sentinel_filtered": true,
+     "signature_name": "packet.sig",
+     "signature_text": "SIGNATURE:bot@zeus.invalid:sha256:26f3b81b6248ad23f9f6df5a673f37c73f1cc11e4e8de6332d5225d897f9227f\n",
+     "timeout": 30
+    }
+   ],
+   "value": {
+    "attestation_scope": "configured_key_authority_only",
+    "packet_ref": "sha256:26f3b81b6248ad23f9f6df5a673f37c73f1cc11e4e8de6332d5225d897f9227f",
+    "physical_human_presence_verified": false,
+    "policy_commit": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+    "policy_hash": "43173bdc315a8f9c16eca2ef97415db13177b0e1b24b249a524753753c4d35d5",
+    "required_human_signers": [
+     "alice@zeus.invalid"
+    ],
+    "required_signers": [
+     "alice@zeus.invalid",
+     "bot@zeus.invalid"
+    ],
+    "scope": "test-only-ticket-authority",
+    "signatures": [
+     {
+      "principal": "alice@zeus.invalid",
+      "public_key_hash": "35760fccacbe580e62710a533c8a46ceefa26345c3e7eb885e4e117b4abd1e02",
+      "role": "human",
+      "signature_ref": "sha256:398b3a2bca1306c11e8c0b2d1de1dd1511df632f00ec61046db28bf5e8e3a989"
+     },
+     {
+      "principal": "bot@zeus.invalid",
+      "public_key_hash": "1e94ce1cda6d76a74a0d588ee3c38dbc8b272d31116826d98ca0fa4341386db0",
+      "role": "automation",
+      "signature_ref": "sha256:2470004696384b65badd03fee4d5d9f5692a66171168b39f2cfec24ddff47a15"
+     }
+    ],
+    "verified_at": "2026-09-22T00:00:00+00:00"
+   }
+  }
+ }
+}

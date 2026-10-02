@@ -1,0 +1,9 @@
+{
+ "family": "intake.ticket_authority",
+ "description": "S8 batch B1 ticket authority of M7 adapters/ticket_authority.py (TicketAuthority: policy() over a scripted git: a missing or invalid trust commit, the environment anchor, an unavailable anchor, a non-regular policy file, the 65536-byte budget, invalid JSON/schema, every signer, list and validity rule, a valid policy; verify(): the signature accepted and rejected, an incomplete signer set, a revoked, expired, not-yet-valid, duplicate or unenrolled signer, every envelope shape, a stale policy, a non-canonical packet, an unmerged solution commit, a signer expiring during verification, the missing ssh-keygen; require_merged), characterized before the move into intake (R-ta1 injected run_process, R-ta2 injected clock) in the sequences of the TicketAuthority cases of tests/test_ticket_lifecycle.py: LABELLED git, artifact store and runner (the reference patches the SOURCE module's run_process and datetime, the target injects the same fakes), scripted clock; the only masked text is the temporary verify directory in the recorded runner argv/files, counted; no real ssh-keygen, key, git repository, network or database",
+ "reference_driver": "drivers/reference/s8_ticket_authority.py",
+ "target_driver": null,
+ "target_status": "pending: S8 batch B1 ticket_authority move",
+ "golden": "goldens/reference/intake.ticket_authority.json",
+ "slice": "S8"
+}
