@@ -122,7 +122,7 @@ S8_IMPLEMENTED = {"intake.portfolio", "research.dge", "evidence.inspections", "r
                   "research.source_verification", "research.runtime_thresholds", "research.threshold_replay", "research.threshold_proposals",
                   "research.correction_feedback", "review.release_suite",
                   "research.source_execution_adapter", "coordination.fleet_backlog", "intake.ticket_lifecycle", "review.canary", "research.audit_repair",
-                  "research.threshold_reviews", "review.releases_audits", "research.scheduling", "intake.goal_progress"}
+                  "research.threshold_reviews", "review.releases_audits", "research.scheduling", "intake.goal_progress", "intake.ticket_authority"}
 IMPLEMENTED = {**{f: "S1" for f in S1_FAMILIES}, **{f: "S2" for f in S2_FAMILIES},
                **{f: "S3" for f in S3_IMPLEMENTED}, **{f: "S4" for f in S4_IMPLEMENTED},
                **{f: "S5" for f in S5_IMPLEMENTED}, **{f: "S6" for f in S6_IMPLEMENTED},
