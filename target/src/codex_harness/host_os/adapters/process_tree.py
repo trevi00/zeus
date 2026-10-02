@@ -27,7 +27,8 @@ Context: host_os
 Owns: one owned process tree from spawn to its two-part termination receipt
 Does not own: the Windows job-object primitives (host_os.adapters.windows.job_objects), process
 creation itself (host_os.adapters.process_groups.popen, the one spawn chokepoint)
-Entry points: ProcessTree.spawn, ProcessTree.terminate, ProcessTree.close, TreeOwnershipError,
+Entry points: ProcessTree.spawn, ProcessTree.terminate, ProcessTree.close, TreeOwnershipError (defined in
+host_os.ports, S8 V26 E-4a; imported here, so `process_tree.TreeOwnershipError is ports.TreeOwnershipError`),
 TreeOwnershipLeak
 """
 from __future__ import annotations
@@ -38,13 +39,10 @@ import subprocess
 import time
 
 from codex_harness.host_os.adapters.process_groups import no_console_kwargs, popen
+from codex_harness.host_os.ports import TreeOwnershipError
 
 if os.name == "nt":  # pragma: no cover - exercised on Windows hosts
     from codex_harness.host_os.adapters.windows import job_objects
-
-
-class TreeOwnershipError(RuntimeError):
-    """The boundary could not be established, and nothing this harness created is still there."""
 
 
 class TreeOwnershipLeak(TreeOwnershipError):

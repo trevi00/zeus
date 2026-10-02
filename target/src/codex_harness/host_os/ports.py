@@ -3,8 +3,11 @@ and the bounded process runner other contexts use instead of creating processes 
 
 Layer: ports
 Context: host_os
-Owns: the Protocols only, and `ProcessCancelled` (the one exception class a logged child's owner-cancellation
-    raises; a value other contexts catch, defined here so they need not import an adapter, S8 V19);
+Owns: the Protocols only, `ProcessCancelled` (the one exception class a logged child's owner-cancellation
+    raises; a value other contexts catch, defined here so they need not import an adapter, S8 V19) and
+    `TreeOwnershipError` (the one exception class `host_os.adapters.process_tree.ProcessTree.spawn` raises when no owned
+    boundary could be established, moved here verbatim so `evidence` can catch it without importing an adapter,
+    S8 V26 rule E-4a; `TreeOwnershipLeak` stays in the adapter);
     `host_os.adapters.git_workspace.GitWorkspace` implements the first three;
     `ProcessRunner` is implemented by `host_os.adapters.process_groups.run_process`,
     `LoggedProcessRunner` by `host_os.adapters.process_groups.run_logged_process` and
@@ -12,7 +15,7 @@ Owns: the Protocols only, and `ProcessCancelled` (the one exception class a logg
     chokepoint), both injected by composition (S3: the container adapters' docker/git calls, the
     staging export and the attached transports)
 Does not own: who may publish or merge (review), release policy, what a caller runs
-Entry points: Workspaces, CandidateInspection, Publication, ProcessRunner, LoggedProcessRunner, ProcessCancelled, ChildProcesses, GitBlobSource
+Entry points: Workspaces, CandidateInspection, Publication, ProcessRunner, LoggedProcessRunner, ProcessCancelled, TreeOwnershipError, ChildProcesses, GitBlobSource
 Contracts: INV-RELEASE-001, INV-SESSION-001
 
 Shared infrastructure ports (`SP` in the §3.6 table). The five unrelated M7 `SourceControl` methods
@@ -52,6 +55,10 @@ class ProcessCancelled(KeyboardInterrupt):
     def __init__(self, observation: dict):
         super().__init__("process cancelled")
         self.observation = observation
+
+
+class TreeOwnershipError(RuntimeError):
+    """The boundary could not be established, and nothing this harness created is still there."""
 
 
 class LoggedProcessRunner(Protocol):
