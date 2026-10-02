@@ -56,7 +56,9 @@ OWNED_BUCKETS = ("inbox", "incidents", "hooks", "research_programs", "dge_sessio
                  "threshold_review_requests",
                  # S8 batch B4 (V25 R-df2): the five buckets only research.application.decision_feedback writes
                  "decision_observations", "decision_feedback_groups", "recurring_work_candidates",
-                 "decision_feedback_conflicts", "decision_feedback_collections")
+                 "decision_feedback_conflicts", "decision_feedback_collections",
+                 # S8 batch B3 (V24 R-ae5): the bucket only research.adapters.audit_execution writes (M7 left it undeclared)
+                 "research_proposal_runs")
 
 
 class OutboxAppend(Protocol):
