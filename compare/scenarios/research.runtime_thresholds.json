@@ -2,8 +2,7 @@
  "family": "research.runtime_thresholds",
  "description": "S8 (V18 R-t0) M7 adapters/runtime_thresholds.py (resolve_policy, effective_policy over the packaged definition, the native default drift), characterized before the move; no real git, no process",
  "reference_driver": "drivers/reference/s8_runtime_thresholds.py",
- "target_driver": null,
+ "target_driver": "drivers/target/s8_runtime_thresholds.py",
  "golden": "goldens/reference/research.runtime_thresholds.json",
- "slice": "S8",
- "target_status": "pending S8 pilot 92 (V18): the module moves with its injected rule"
+ "slice": "S8"
 }
