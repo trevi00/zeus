@@ -151,6 +151,7 @@ def test_v11_intake_owns_the_eight_ticket_buckets_and_the_source_writers_write_t
     tickets_module = "intake/application/tickets.py"
     expected = {bucket: {lifecycle} for bucket in BUCKETS}
     expected["tickets"] = expected["ticket_dispatches"] = {lifecycle, tickets_module}
+    expected["ticket_github"] = {lifecycle, "intake/adapters/github_tickets.py"}
     assert {bucket: writers((bucket,)) for bucket in BUCKETS} == expected
 
 
