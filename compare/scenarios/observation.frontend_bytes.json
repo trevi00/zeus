@@ -2,8 +2,7 @@
  "family": "observation.frontend_bytes",
  "description": "S9 unit U10 (static; design §3.1 'unchanged bytes; built assets packaged as target resources'): the sha256 and size of every file under frontend/monitor/ (the 52 SOURCE-tracked files, 38 of them ledger rows) and of the five packaged resources (resources/monitor.html, resources/observatory/**), read from the SOURCE archive tree and never executed or built; the target driver hashes the same paths at the head (frontend/monitor/** at the repository root, target/src/codex_harness/resources/...); no mask",
  "reference_driver": "drivers/reference/s9_frontend_bytes.py",
- "target_driver": null,
- "target_status": "pending: the target side is the S9 unit U10 byte-equality check (target driver s9_frontend_bytes.py, added with the target drivers)",
+ "target_driver": "drivers/target/s9_frontend_bytes.py",
  "golden": "goldens/reference/observation.frontend_bytes.json",
  "slice": "S9"
 }

@@ -125,10 +125,11 @@ S8_IMPLEMENTED = {"intake.portfolio", "research.dge", "evidence.inspections", "r
                   "research.correction_feedback", "review.release_suite",
                   "research.source_execution_adapter", "coordination.fleet_backlog", "intake.ticket_lifecycle", "review.canary", "research.audit_repair",
                   "research.threshold_reviews", "review.releases_audits", "research.scheduling", "intake.goal_progress", "intake.ticket_authority", "research.decision_feedback", "review.sdd", "research.audit_execution", "research.audit_runner", "research.audit_repair_replay"}
+S9_IMPLEMENTED = {"observation.schema", "observation.file_spool", "observation.frontend_bytes"}
 IMPLEMENTED = {**{f: "S1" for f in S1_FAMILIES}, **{f: "S2" for f in S2_FAMILIES},
                **{f: "S3" for f in S3_IMPLEMENTED}, **{f: "S4" for f in S4_IMPLEMENTED},
                **{f: "S5" for f in S5_IMPLEMENTED}, **{f: "S6" for f in S6_IMPLEMENTED},
-               **{f: "S7" for f in S7_IMPLEMENTED}, **{f: "S8" for f in S8_IMPLEMENTED}}
+               **{f: "S7" for f in S7_IMPLEMENTED}, **{f: "S8" for f in S8_IMPLEMENTED}, **{f: "S9" for f in S9_IMPLEMENTED}}
 
 
 def test_every_scenario_has_a_reference_golden_and_only_implemented_slices_have_a_target():
