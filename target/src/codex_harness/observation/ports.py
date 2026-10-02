@@ -3,10 +3,11 @@
 Layer: ports
 Context: observation
 Owns: OWNED_BUCKETS of the observation context; SpoolFull and ObservationSpool (M7 `ports.py`, moved ahead in S4
-    unchanged: the append-only record store the Observer writes through)
+    unchanged: the append-only record store the Observer writes through); DeskHttp, the desk routes the viewer
+    serves only when a desk is injected (S9 U8, OWNER-DECISIONS-S9 D2.1; S10 passes `entry.http.desk` itself)
 Does not own: ObservationDirectory (9 methods, above the port-size limit: S9) and the other observation Protocols
     (PostgresFacts, RedisFacts, ...: S9)
-Entry points: OWNED_BUCKETS, SpoolFull, ObservationSpool
+Entry points: OWNED_BUCKETS, SpoolFull, ObservationSpool, DeskHttp
 Contracts: INV-OBSERVATION-001
 """
 
@@ -30,3 +31,18 @@ class ObservationSpool(Protocol):
 
     def append(self, kind: str, event: dict) -> int: ...
     def close(self) -> None: ...
+
+
+class DeskHttp(Protocol):
+    """The desk routes of M7 `adapters/frontdesk_http.py`, as the viewer calls them (S9 U8, OWNER-DECISIONS-S9 D2.1).
+
+    The viewer reads it only when a desk service is injected; a module satisfies it structurally."""
+    JSON: str
+    READ_TIMEOUT_SECONDS: float
+    ROUTES_POST: set
+
+    def handle_get(self, desk, path: str): ...
+    def check_intent(self, handler, authority: str): ...
+    def read_body(self, handler): ...
+    def handle_post(self, desk, path: str, document: dict): ...
+    def error(self, code: str) -> bytes: ...
