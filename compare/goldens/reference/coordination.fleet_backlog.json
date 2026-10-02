@@ -1,0 +1,3052 @@
+{
+ "cases_per_group": {
+  "conflict": 16,
+  "deferral": 33,
+  "link": 27,
+  "plan": 45,
+  "status_observe": 14,
+  "surface": 12,
+  "tick": 40
+ },
+ "conflict": {
+  "binding_conflict_digest_before_after": [
+   "d0eee858a6adfb02ad4ae5884f3fdda9f6cb3c9cf5484e7b3544af3d8318d2d9",
+   "614e22b498933936c5fd57208b63c5203c425966b59d3200ee50cd6e286dbcb3"
+  ],
+  "binding_conflict_intent": {
+   "attempts": 0,
+   "base_revision": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+   "created_at": "2026-09-22T00:00:00.000002+00:00",
+   "criterion_id": "verified-loop",
+   "defer_ticks": 0,
+   "deferrals": 0,
+   "dependencies": [],
+   "enqueued_at": null,
+   "error_type": null,
+   "goal_sha256": "bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb",
+   "id": "plan-1:one",
+   "item_id": "one",
+   "job_binding": {
+    "dependencies": [],
+    "goal": {
+     "base_revision": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+     "criterion": "c",
+     "path": "docs/GOAL.md",
+     "sha256": "bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb"
+    },
+    "lane": "a",
+    "manifest_sha256": "e9494cbcf588d4180257eeab36fa8c0d2b48337d13b8f5405ee6e6825b0e34f1",
+    "repository": "bb3f0442185b0d95a4c573782557b9190a020fb02a9b26d4ea64a3a8a56823d9"
+   },
+   "job_id": "op-one",
+   "job_manifest_sha256": "e9494cbcf588d4180257eeab36fa8c0d2b48337d13b8f5405ee6e6825b0e34f1",
+   "lane": "a",
+   "link_reason": null,
+   "link_state": "pending",
+   "linked_at": null,
+   "manifest_path": "docs/zeus/manifests/one.json",
+   "manifest_revision": "dddddddddddddddddddddddddddddddddddddddd",
+   "manifest_sha256": "7692c3ad3540bb803c020b3aee66cd8887123234ea0c6e7143c0add73ff431ed",
+   "plan_id": "plan-1",
+   "project_id": "research-improvement",
+   "reason_code": "binding_conflict",
+   "state": "conflict",
+   "updated_at": "2026-09-22T00:00:00.000004+00:00"
+  },
+  "binding_conflict_job_unchanged": true,
+  "binding_conflict_moved": {
+   "at": "2026-09-22T00:00:00.000005+00:00",
+   "authority": "backlog_selection; an accepted job means an accepted lane operation only, never a review verdict, a merge, a release or a deployment",
+   "blocked": {
+    "one": "binding_conflict"
+   },
+   "cached": false,
+   "deferrals": null,
+   "error_type": null,
+   "item_id": "other",
+   "item_state": null,
+   "job_id": "op-other",
+   "job_status": "queued",
+   "lane": "a",
+   "link_state": "linked",
+   "linked": true,
+   "next_action": "owner_review",
+   "outcome": "enqueued",
+   "plan_id": "plan-1",
+   "reason_code": null,
+   "schema": "urn:zeus:fleet-backlog-tick:1"
+  },
+  "binding_conflict_tick": {
+   "at": "2026-09-22T00:00:00.000002+00:00",
+   "authority": "backlog_selection; an accepted job means an accepted lane operation only, never a review verdict, a merge, a release or a deployment",
+   "blocked": {},
+   "cached": null,
+   "deferrals": null,
+   "error_type": null,
+   "item_id": "one",
+   "item_state": "conflict",
+   "job_id": "op-one",
+   "job_status": null,
+   "lane": "a",
+   "link_state": null,
+   "linked": null,
+   "next_action": "owner_review",
+   "outcome": "conflict",
+   "plan_id": "plan-1",
+   "reason_code": "binding_conflict",
+   "schema": "urn:zeus:fleet-backlog-tick:1"
+  },
+  "foreign_another_frozen_manifest": {
+   "intent_keys": [
+    "plan-1:one"
+   ],
+   "intent_state": "conflict",
+   "jobs": [
+    "op-one"
+   ],
+   "tick": {
+    "at": "2026-09-22T00:00:00.000002+00:00",
+    "authority": "backlog_selection; an accepted job means an accepted lane operation only, never a review verdict, a merge, a release or a deployment",
+    "blocked": {
+     "one": "job_binding_conflict",
+     "two": "dependency_conflict"
+    },
+    "cached": null,
+    "deferrals": null,
+    "error_type": null,
+    "item_id": null,
+    "item_state": null,
+    "job_id": null,
+    "job_status": null,
+    "lane": null,
+    "link_state": null,
+    "linked": null,
+    "next_action": "owner_review",
+    "outcome": "blocked",
+    "plan_id": "plan-1",
+    "reason_code": null,
+    "schema": "urn:zeus:fleet-backlog-tick:1"
+   }
+  },
+  "foreign_another_lane_and_repository": {
+   "intent_keys": [
+    "plan-1:one"
+   ],
+   "intent_state": "conflict",
+   "jobs": [
+    "op-one"
+   ],
+   "tick": {
+    "at": "2026-09-22T00:00:00.000002+00:00",
+    "authority": "backlog_selection; an accepted job means an accepted lane operation only, never a review verdict, a merge, a release or a deployment",
+    "blocked": {
+     "one": "job_binding_conflict",
+     "two": "dependency_conflict"
+    },
+    "cached": null,
+    "deferrals": null,
+    "error_type": null,
+    "item_id": null,
+    "item_state": null,
+    "job_id": null,
+    "job_status": null,
+    "lane": null,
+    "link_state": null,
+    "linked": null,
+    "next_action": "owner_review",
+    "outcome": "blocked",
+    "plan_id": "plan-1",
+    "reason_code": null,
+    "schema": "urn:zeus:fleet-backlog-tick:1"
+   }
+  },
+  "foreign_another_repository_alone": {
+   "intent_keys": [
+    "plan-1:one"
+   ],
+   "intent_state": "conflict",
+   "jobs": [
+    "op-one"
+   ],
+   "tick": {
+    "at": "2026-09-22T00:00:00.000002+00:00",
+    "authority": "backlog_selection; an accepted job means an accepted lane operation only, never a review verdict, a merge, a release or a deployment",
+    "blocked": {
+     "one": "job_binding_conflict",
+     "two": "dependency_conflict"
+    },
+    "cached": null,
+    "deferrals": null,
+    "error_type": null,
+    "item_id": null,
+    "item_state": null,
+    "job_id": null,
+    "job_status": null,
+    "lane": null,
+    "link_state": null,
+    "linked": null,
+    "next_action": "owner_review",
+    "outcome": "blocked",
+    "plan_id": "plan-1",
+    "reason_code": null,
+    "schema": "urn:zeus:fleet-backlog-tick:1"
+   }
+  },
+  "intent_identity_intent": {
+   "attempts": 0,
+   "base_revision": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+   "created_at": "2026-09-22T00:00:00.000002+00:00",
+   "criterion_id": "verified-loop",
+   "defer_ticks": 0,
+   "deferrals": 0,
+   "dependencies": [],
+   "enqueued_at": "2026-09-22T00:00:00.000004+00:00",
+   "error_type": null,
+   "goal_sha256": "bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb",
+   "id": "plan-1:one",
+   "item_id": "one",
+   "job_binding": {
+    "dependencies": [],
+    "goal": {
+     "base_revision": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+     "criterion": "c",
+     "path": "docs/GOAL.md",
+     "sha256": "bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb"
+    },
+    "lane": "a",
+    "manifest_sha256": "e9494cbcf588d4180257eeab36fa8c0d2b48337d13b8f5405ee6e6825b0e34f1",
+    "repository": "bb3f0442185b0d95a4c573782557b9190a020fb02a9b26d4ea64a3a8a56823d9"
+   },
+   "job_id": "op-recorded-other",
+   "job_manifest_sha256": "e9494cbcf588d4180257eeab36fa8c0d2b48337d13b8f5405ee6e6825b0e34f1",
+   "lane": "a",
+   "link_reason": null,
+   "link_state": "linked",
+   "linked_at": "2026-09-22T00:00:00.000005+00:00",
+   "manifest_path": "docs/zeus/manifests/one.json",
+   "manifest_revision": "dddddddddddddddddddddddddddddddddddddddd",
+   "manifest_sha256": "7692c3ad3540bb803c020b3aee66cd8887123234ea0c6e7143c0add73ff431ed",
+   "plan_id": "plan-1",
+   "project_id": "research-improvement",
+   "reason_code": "intent_identity_conflict",
+   "state": "conflict",
+   "updated_at": "2026-09-22T00:00:00.000007+00:00"
+  },
+  "intent_identity_tick": {
+   "at": "2026-09-22T00:00:00.000006+00:00",
+   "authority": "backlog_selection; an accepted job means an accepted lane operation only, never a review verdict, a merge, a release or a deployment",
+   "blocked": {},
+   "cached": null,
+   "deferrals": null,
+   "error_type": null,
+   "item_id": "one",
+   "item_state": "conflict",
+   "job_id": "op-recorded-other",
+   "job_status": null,
+   "lane": "a",
+   "link_state": null,
+   "linked": null,
+   "next_action": "owner_review",
+   "outcome": "conflict",
+   "plan_id": "plan-1",
+   "reason_code": "intent_identity_conflict",
+   "schema": "urn:zeus:fleet-backlog-tick:1"
+  },
+  "job_missing_intent": {
+   "attempts": 0,
+   "base_revision": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+   "created_at": "2026-09-22T00:00:00.000002+00:00",
+   "criterion_id": "verified-loop",
+   "defer_ticks": 0,
+   "deferrals": 0,
+   "dependencies": [],
+   "enqueued_at": null,
+   "error_type": null,
+   "goal_sha256": "bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb",
+   "id": "plan-1:one",
+   "item_id": "one",
+   "job_binding": {
+    "dependencies": [],
+    "goal": {
+     "base_revision": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+     "criterion": "c",
+     "path": "docs/GOAL.md",
+     "sha256": "bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb"
+    },
+    "lane": "a",
+    "manifest_sha256": "e9494cbcf588d4180257eeab36fa8c0d2b48337d13b8f5405ee6e6825b0e34f1",
+    "repository": "bb3f0442185b0d95a4c573782557b9190a020fb02a9b26d4ea64a3a8a56823d9"
+   },
+   "job_id": "op-one",
+   "job_manifest_sha256": "e9494cbcf588d4180257eeab36fa8c0d2b48337d13b8f5405ee6e6825b0e34f1",
+   "lane": "a",
+   "link_reason": null,
+   "link_state": "pending",
+   "linked_at": null,
+   "manifest_path": "docs/zeus/manifests/one.json",
+   "manifest_revision": "dddddddddddddddddddddddddddddddddddddddd",
+   "manifest_sha256": "7692c3ad3540bb803c020b3aee66cd8887123234ea0c6e7143c0add73ff431ed",
+   "plan_id": "plan-1",
+   "project_id": "research-improvement",
+   "reason_code": "job_missing",
+   "state": "conflict",
+   "updated_at": "2026-09-22T00:00:00.000004+00:00"
+  },
+  "job_missing_tick": {
+   "at": "2026-09-22T00:00:00.000002+00:00",
+   "authority": "backlog_selection; an accepted job means an accepted lane operation only, never a review verdict, a merge, a release or a deployment",
+   "blocked": {},
+   "cached": null,
+   "deferrals": null,
+   "error_type": null,
+   "item_id": "one",
+   "item_state": "conflict",
+   "job_id": "op-one",
+   "job_status": null,
+   "lane": "a",
+   "link_state": null,
+   "linked": null,
+   "next_action": "owner_review",
+   "outcome": "conflict",
+   "plan_id": "plan-1",
+   "reason_code": "job_missing",
+   "schema": "urn:zeus:fleet-backlog-tick:1"
+  },
+  "no_binding_intent_state": "conflict",
+  "no_binding_tick": {
+   "at": "2026-09-22T00:00:00.000002+00:00",
+   "authority": "backlog_selection; an accepted job means an accepted lane operation only, never a review verdict, a merge, a release or a deployment",
+   "blocked": {
+    "one": "job_binding_conflict"
+   },
+   "cached": null,
+   "deferrals": null,
+   "error_type": null,
+   "item_id": null,
+   "item_state": null,
+   "job_id": null,
+   "job_status": null,
+   "lane": null,
+   "link_state": null,
+   "linked": null,
+   "next_action": "owner_review",
+   "outcome": "blocked",
+   "plan_id": "plan-1",
+   "reason_code": null,
+   "schema": "urn:zeus:fleet-backlog-tick:1"
+  },
+  "other_goal_state": "conflict",
+  "other_goal_tick": {
+   "at": "2026-09-22T00:00:00.000006+00:00",
+   "authority": "backlog_selection; an accepted job means an accepted lane operation only, never a review verdict, a merge, a release or a deployment",
+   "blocked": {
+    "one": "job_binding_conflict"
+   },
+   "cached": null,
+   "deferrals": null,
+   "error_type": null,
+   "item_id": null,
+   "item_state": null,
+   "job_id": null,
+   "job_status": null,
+   "lane": null,
+   "link_state": null,
+   "linked": null,
+   "next_action": "owner_review",
+   "outcome": "blocked",
+   "plan_id": "plan-1",
+   "reason_code": null,
+   "schema": "urn:zeus:fleet-backlog-tick:1"
+  }
+ },
+ "deferral": {
+  "attempts_after": 0,
+  "countdown": 0,
+  "dependency_job_missing": {
+   "at": "2026-09-22T00:00:00.000006+00:00",
+   "authority": "backlog_selection; an accepted job means an accepted lane operation only, never a review verdict, a merge, a release or a deployment",
+   "blocked": {
+    "one": "job_missing",
+    "two": "dependency_unknown"
+   },
+   "cached": null,
+   "deferrals": null,
+   "error_type": null,
+   "item_id": null,
+   "item_state": null,
+   "job_id": null,
+   "job_status": null,
+   "lane": null,
+   "link_state": null,
+   "linked": null,
+   "next_action": "owner_review",
+   "outcome": "blocked",
+   "plan_id": "plan-1",
+   "reason_code": null,
+   "schema": "urn:zeus:fleet-backlog-tick:1"
+  },
+  "enqueue_refused": {
+   "at": "2026-09-22T00:00:00.000002+00:00",
+   "attempts": 1,
+   "authority": "backlog_selection; an accepted job means an accepted lane operation only, never a review verdict, a merge, a release or a deployment",
+   "blocked": {},
+   "cached": null,
+   "deferrals": null,
+   "error_type": null,
+   "item_id": "one",
+   "item_state": "intended",
+   "job_id": null,
+   "job_status": null,
+   "lane": "zzz",
+   "link_state": null,
+   "linked": null,
+   "next_action": "owner_review",
+   "outcome": "refused",
+   "plan_id": "plan-1",
+   "reason_code": "enqueue_lane_unknown",
+   "schema": "urn:zeus:fleet-backlog-tick:1"
+  },
+  "enqueue_refused_attempts": 1,
+  "enqueue_refused_jobs": [],
+  "first_intent": {
+   "attempts": 0,
+   "defer_ticks": 1,
+   "deferrals": 1,
+   "error_type": "RuntimeError",
+   "reason_code": "input_unavailable",
+   "state": "selected"
+  },
+  "first_outage": {
+   "at": "2026-09-22T00:00:00.000002+00:00",
+   "authority": "backlog_selection; an accepted job means an accepted lane operation only, never a review verdict, a merge, a release or a deployment",
+   "blocked": {},
+   "cached": null,
+   "deferrals": 1,
+   "error_type": "RuntimeError",
+   "item_id": "one",
+   "item_state": "selected",
+   "job_id": null,
+   "job_status": null,
+   "lane": "a",
+   "link_state": "pending",
+   "linked": false,
+   "next_action": "owner_review",
+   "outcome": "unavailable",
+   "plan_id": "plan-1",
+   "reason_code": "input_unavailable",
+   "schema": "urn:zeus:fleet-backlog-tick:1"
+  },
+  "independent_moves": {
+   "at": "2026-09-22T00:00:00.000004+00:00",
+   "authority": "backlog_selection; an accepted job means an accepted lane operation only, never a review verdict, a merge, a release or a deployment",
+   "blocked": {
+    "one": "deferred_input_unavailable"
+   },
+   "cached": false,
+   "deferrals": null,
+   "error_type": null,
+   "item_id": "independent",
+   "item_state": null,
+   "job_id": "op-independent",
+   "job_status": "queued",
+   "lane": "b",
+   "link_state": "linked",
+   "linked": true,
+   "next_action": "owner_review",
+   "outcome": "enqueued",
+   "plan_id": "plan-1",
+   "reason_code": null,
+   "schema": "urn:zeus:fleet-backlog-tick:1"
+  },
+  "job_one_absent": [],
+  "permanent_events": [
+   {
+    "attributes": {
+     "deferrals": 1,
+     "error_type": "RuntimeError",
+     "exhausted": false,
+     "item_id": "one",
+     "lane": "a",
+     "plan_id": "plan-1"
+    },
+    "event": "operations.backlog_unavailable",
+    "outcome": "unknown",
+    "reason_code": "input_unavailable",
+    "severity": "warning"
+   },
+   {
+    "attributes": {
+     "cached": false,
+     "item_id": "independent",
+     "job_id": "op-independent",
+     "lane": "b",
+     "linked": true,
+     "plan_id": "plan-1"
+    },
+    "event": "development.backlog_item_admitted",
+    "outcome": "succeeded",
+    "reason_code": null,
+    "severity": null
+   },
+   {
+    "attributes": {
+     "deferrals": 5,
+     "error_type": "RuntimeError",
+     "exhausted": true,
+     "item_id": "one",
+     "lane": "a",
+     "plan_id": "plan-1"
+    },
+    "event": "operations.backlog_unavailable",
+    "outcome": "unknown",
+    "reason_code": "input_unavailable",
+    "severity": "warning"
+   }
+  ],
+  "permanent_independent_admitted": true,
+  "permanent_last": {
+   "at": "2026-09-22T00:00:00.000040+00:00",
+   "authority": "backlog_selection; an accepted job means an accepted lane operation only, never a review verdict, a merge, a release or a deployment",
+   "blocked": {
+    "one": "input_unavailable",
+    "two": "dependency_blocked"
+   },
+   "cached": null,
+   "deferrals": null,
+   "error_type": null,
+   "item_id": null,
+   "item_state": null,
+   "job_id": null,
+   "job_status": null,
+   "lane": null,
+   "link_state": null,
+   "linked": null,
+   "next_action": "owner_review",
+   "outcome": "blocked",
+   "plan_id": "plan-1",
+   "reason_code": null,
+   "schema": "urn:zeus:fleet-backlog-tick:1"
+  },
+  "permanent_outcomes": {
+   "max_deferrals": 5,
+   "sequence": [
+    "unavailable",
+    "enqueued",
+    "unavailable",
+    "blocked",
+    "blocked",
+    "unavailable",
+    "blocked",
+    "blocked",
+    "blocked",
+    "blocked",
+    "unavailable",
+    "blocked",
+    "blocked",
+    "blocked",
+    "blocked",
+    "blocked",
+    "blocked",
+    "blocked",
+    "blocked",
+    "unavailable",
+    "blocked",
+    "blocked",
+    "blocked",
+    "blocked",
+    "blocked",
+    "blocked",
+    "blocked",
+    "blocked",
+    "blocked",
+    "blocked"
+   ],
+   "unavailable": 5
+  },
+  "permanent_row": {
+   "deferrals": 5,
+   "error_type": "RuntimeError",
+   "reason_code": "input_unavailable",
+   "state": "blocked"
+  },
+  "permanent_view": [
+   {
+    "attempts": 0,
+    "criterion_id": "verified-loop",
+    "deferrals": 5,
+    "dependencies": [],
+    "item_id": "one",
+    "job_id": null,
+    "job_status": null,
+    "lane": "a",
+    "link_reason": null,
+    "link_state": "pending",
+    "next_action": "owner_review",
+    "pin": {
+     "path": "docs/zeus/manifests/one.json",
+     "revision": "dddddddddddddddddddddddddddddddddddddddd",
+     "sha256": "7692c3ad3540bb803c020b3aee66cd8887123234ea0c6e7143c0add73ff431ed"
+    },
+    "priority": 10,
+    "project_id": "research-improvement",
+    "reason_code": "input_unavailable",
+    "state": "blocked"
+   }
+  ],
+  "records": [
+   [
+    "fleet_backlog_intents",
+    "plan-1:independent",
+    "dd6d200c82f26aaa6022cb04c2bad8a0c6a50857cb8d2665e8b486d041b76ee5"
+   ],
+   [
+    "fleet_backlog_intents",
+    "plan-1:one",
+    "9018b8ee1ba010769dd6076eb446cbb74b646198ea1bf6eafe90ccd4a893f1c0"
+   ],
+   [
+    "fleet_backlog_plans",
+    "plan-1",
+    "cf5ac0a5af51dbbe543f0f57210443e735f2fc23c45f962ccbb8236d7ec11014"
+   ],
+   [
+    "fleet_control",
+    "admission",
+    "5479ac128c7a90b84837e005de176794973c8a6db26805d409cc5a420a34cb1f"
+   ],
+   [
+    "fleet_jobs",
+    "op-independent",
+    "e6b3262ccc73931cafe98dcbb21ecf9ff13284d497e2a3a53aaf4fb0d88258ef"
+   ],
+   [
+    "fleet_jobs",
+    "op-one",
+    "c86a45e5a9d4d039d4648b6f5a631b5e7c889a5aa36c865352f4a40a24aa1b1f"
+   ],
+   [
+    "fleet_registry",
+    "fleet-1",
+    "c78086f09a51e2d77624bc467e4b2f5a76e1239a07484a257975bc97d5554614"
+   ]
+  ],
+  "recovered": {
+   "at": "2026-09-23T00:00:00.000003+00:00",
+   "authority": "backlog_selection; an accepted job means an accepted lane operation only, never a review verdict, a merge, a release or a deployment",
+   "blocked": {},
+   "cached": false,
+   "deferrals": null,
+   "error_type": null,
+   "item_id": "one",
+   "item_state": null,
+   "job_id": "op-one",
+   "job_status": "queued",
+   "lane": "a",
+   "link_state": "linked",
+   "linked": true,
+   "next_action": "owner_review",
+   "outcome": "enqueued",
+   "plan_id": "plan-1",
+   "reason_code": null,
+   "schema": "urn:zeus:fleet-backlog-tick:1"
+  },
+  "recovered_intent": [
+   0,
+   0
+  ],
+  "recovered_jobs": [
+   "op-independent",
+   "op-one"
+  ],
+  "refused_admitted": {
+   "at": "2026-09-22T00:00:00.000011+00:00",
+   "authority": "backlog_selection; an accepted job means an accepted lane operation only, never a review verdict, a merge, a release or a deployment",
+   "blocked": {
+    "one": "manifest_pin_mismatch"
+   },
+   "cached": false,
+   "deferrals": null,
+   "error_type": null,
+   "item_id": "one-fixed",
+   "item_state": null,
+   "job_id": "op-one-fixed",
+   "job_status": "queued",
+   "lane": "a",
+   "link_state": "linked",
+   "linked": true,
+   "next_action": "owner_review",
+   "outcome": "enqueued",
+   "plan_id": "plan-1",
+   "reason_code": null,
+   "schema": "urn:zeus:fleet-backlog-tick:1"
+  },
+  "refused_corrected_register": {
+   "value": {
+    "authority": "backlog_selection; an accepted job means an accepted lane operation only, never a review verdict, a merge, a release or a deployment",
+    "cached": false,
+    "enabled": true,
+    "items": 3,
+    "pin": {
+     "path": "docs/zeus/backlog.json",
+     "revision": "9999999999999999999999999999999999999999",
+     "sha256": "eeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee"
+    },
+    "plan_id": "plan-1",
+    "plan_sha256": "08ef210f344671039d7eb88e2267ca8090ee0d3ac733c42362749a866490acac",
+    "registered": true
+   }
+  },
+  "refused_first": {
+   "at": "2026-09-22T00:00:00.000002+00:00",
+   "attempts": 1,
+   "authority": "backlog_selection; an accepted job means an accepted lane operation only, never a review verdict, a merge, a release or a deployment",
+   "blocked": {},
+   "cached": null,
+   "deferrals": null,
+   "error_type": null,
+   "item_id": "one",
+   "item_state": "selected",
+   "job_id": null,
+   "job_status": null,
+   "lane": "a",
+   "link_state": null,
+   "linked": null,
+   "next_action": "owner_review",
+   "outcome": "refused",
+   "plan_id": "plan-1",
+   "reason_code": "manifest_pin_mismatch",
+   "schema": "urn:zeus:fleet-backlog-tick:1"
+  },
+  "refused_history": [
+   "blocked",
+   "manifest_pin_mismatch"
+  ],
+  "refused_moved": {
+   "at": "2026-09-22T00:00:00.000006+00:00",
+   "authority": "backlog_selection; an accepted job means an accepted lane operation only, never a review verdict, a merge, a release or a deployment",
+   "blocked": {
+    "one": "manifest_pin_mismatch"
+   },
+   "cached": false,
+   "deferrals": null,
+   "error_type": null,
+   "item_id": "other",
+   "item_state": null,
+   "job_id": "op-other",
+   "job_status": "queued",
+   "lane": "a",
+   "link_state": "linked",
+   "linked": true,
+   "next_action": "owner_review",
+   "outcome": "enqueued",
+   "plan_id": "plan-1",
+   "reason_code": null,
+   "schema": "urn:zeus:fleet-backlog-tick:1"
+  },
+  "refused_second": {
+   "at": "2026-09-22T00:00:00.000004+00:00",
+   "attempts": 2,
+   "authority": "backlog_selection; an accepted job means an accepted lane operation only, never a review verdict, a merge, a release or a deployment",
+   "blocked": {},
+   "cached": null,
+   "deferrals": null,
+   "error_type": null,
+   "item_id": "one",
+   "item_state": "blocked",
+   "job_id": null,
+   "job_status": null,
+   "lane": "a",
+   "link_state": null,
+   "linked": null,
+   "next_action": "owner_review",
+   "outcome": "refused",
+   "plan_id": "plan-1",
+   "reason_code": "manifest_pin_mismatch",
+   "schema": "urn:zeus:fleet-backlog-tick:1"
+  },
+  "refused_state": "blocked",
+  "repository_identity_empty": {
+   "at": "2026-09-22T00:00:00.000002+00:00",
+   "attempts": 1,
+   "authority": "backlog_selection; an accepted job means an accepted lane operation only, never a review verdict, a merge, a release or a deployment",
+   "blocked": {},
+   "cached": null,
+   "deferrals": null,
+   "error_type": null,
+   "item_id": "one",
+   "item_state": "selected",
+   "job_id": null,
+   "job_status": null,
+   "lane": "a",
+   "link_state": null,
+   "linked": null,
+   "next_action": "owner_review",
+   "outcome": "refused",
+   "plan_id": "plan-1",
+   "reason_code": "repository_identity_missing",
+   "schema": "urn:zeus:fleet-backlog-tick:1"
+  },
+  "repository_identity_none": {
+   "at": "2026-09-22T00:00:00.000002+00:00",
+   "attempts": 1,
+   "authority": "backlog_selection; an accepted job means an accepted lane operation only, never a review verdict, a merge, a release or a deployment",
+   "blocked": {},
+   "cached": null,
+   "deferrals": null,
+   "error_type": null,
+   "item_id": "one",
+   "item_state": "selected",
+   "job_id": null,
+   "job_status": null,
+   "lane": "a",
+   "link_state": null,
+   "linked": null,
+   "next_action": "owner_review",
+   "outcome": "refused",
+   "plan_id": "plan-1",
+   "reason_code": "repository_identity_missing",
+   "schema": "urn:zeus:fleet-backlog-tick:1"
+  },
+  "repository_identity_not_str": {
+   "at": "2026-09-22T00:00:00.000002+00:00",
+   "attempts": 1,
+   "authority": "backlog_selection; an accepted job means an accepted lane operation only, never a review verdict, a merge, a release or a deployment",
+   "blocked": {},
+   "cached": null,
+   "deferrals": null,
+   "error_type": null,
+   "item_id": "one",
+   "item_state": "selected",
+   "job_id": null,
+   "job_status": null,
+   "lane": "a",
+   "link_state": null,
+   "linked": null,
+   "next_action": "owner_review",
+   "outcome": "refused",
+   "plan_id": "plan-1",
+   "reason_code": "repository_identity_missing",
+   "schema": "urn:zeus:fleet-backlog-tick:1"
+  },
+  "restart_ticks": [
+   "blocked",
+   "blocked"
+  ],
+  "retried_after_wait": {
+   "at": "2026-09-22T00:00:00.000008+00:00",
+   "authority": "backlog_selection; an accepted job means an accepted lane operation only, never a review verdict, a merge, a release or a deployment",
+   "blocked": {},
+   "cached": null,
+   "deferrals": 2,
+   "error_type": "RuntimeError",
+   "item_id": "one",
+   "item_state": "selected",
+   "job_id": null,
+   "job_status": null,
+   "lane": "a",
+   "link_state": "pending",
+   "linked": false,
+   "next_action": "owner_review",
+   "outcome": "unavailable",
+   "plan_id": "plan-1",
+   "reason_code": "input_unavailable",
+   "schema": "urn:zeus:fleet-backlog-tick:1"
+  },
+  "unsafe_error_type": {
+   "at": "2026-09-22T00:00:00.000002+00:00",
+   "authority": "backlog_selection; an accepted job means an accepted lane operation only, never a review verdict, a merge, a release or a deployment",
+   "blocked": {},
+   "cached": null,
+   "deferrals": 1,
+   "error_type": "unknown",
+   "item_id": "one",
+   "item_state": "selected",
+   "job_id": null,
+   "job_status": null,
+   "lane": "a",
+   "link_state": "pending",
+   "linked": false,
+   "next_action": "owner_review",
+   "outcome": "unavailable",
+   "plan_id": "plan-1",
+   "reason_code": "input_unavailable",
+   "schema": "urn:zeus:fleet-backlog-tick:1"
+  }
+ },
+ "link": {
+  "absent_again": {
+   "at": "2026-09-22T00:00:00.000006+00:00",
+   "authority": "backlog_selection; an accepted job means an accepted lane operation only, never a review verdict, a merge, a release or a deployment",
+   "blocked": {
+    "one": "deferred_binding_owner_absent"
+   },
+   "cached": null,
+   "deferrals": null,
+   "error_type": null,
+   "item_id": null,
+   "item_state": null,
+   "job_id": null,
+   "job_status": null,
+   "lane": null,
+   "link_state": null,
+   "linked": null,
+   "next_action": "owner_review",
+   "outcome": "blocked",
+   "plan_id": "plan-1",
+   "reason_code": null,
+   "schema": "urn:zeus:fleet-backlog-tick:1"
+  },
+  "absent_intent": {
+   "defer_ticks": 0,
+   "deferrals": 1,
+   "link_reason": "binding_owner_absent",
+   "link_state": "pending"
+  },
+  "absent_jobs": [
+   "op-one"
+  ],
+  "absent_tick": {
+   "at": "2026-09-22T00:00:00.000002+00:00",
+   "authority": "backlog_selection; an accepted job means an accepted lane operation only, never a review verdict, a merge, a release or a deployment",
+   "blocked": {},
+   "cached": false,
+   "deferrals": 1,
+   "error_type": null,
+   "item_id": "one",
+   "item_state": "enqueued",
+   "job_id": "op-one",
+   "job_status": "queued",
+   "lane": "a",
+   "link_state": "pending",
+   "linked": false,
+   "next_action": "owner_review",
+   "outcome": "unavailable",
+   "plan_id": "plan-1",
+   "reason_code": "binding_owner_absent",
+   "schema": "urn:zeus:fleet-backlog-tick:1"
+  },
+  "accepted_but_unlinked": {
+   "at": "2026-09-22T00:00:00.000006+00:00",
+   "authority": "backlog_selection; an accepted job means an accepted lane operation only, never a review verdict, a merge, a release or a deployment",
+   "blocked": {
+    "one": "deferred_binding_unavailable",
+    "two": "dependency_unlinked"
+   },
+   "cached": null,
+   "deferrals": null,
+   "error_type": null,
+   "item_id": null,
+   "item_state": null,
+   "job_id": null,
+   "job_status": null,
+   "lane": null,
+   "link_state": null,
+   "linked": null,
+   "next_action": "owner_review",
+   "outcome": "blocked",
+   "plan_id": "plan-1",
+   "reason_code": null,
+   "schema": "urn:zeus:fleet-backlog-tick:1"
+  },
+  "conflict_calls": [
+   [
+    "op-one",
+    "research-improvement",
+    "verified-loop",
+    "conflict"
+   ],
+   [
+    "op-other",
+    "research-improvement",
+    "verified-loop",
+    "ok"
+   ]
+  ],
+  "conflict_moved": {
+   "at": "2026-09-22T00:00:00.000006+00:00",
+   "authority": "backlog_selection; an accepted job means an accepted lane operation only, never a review verdict, a merge, a release or a deployment",
+   "blocked": {
+    "one": "portfolio_binding_conflict"
+   },
+   "cached": false,
+   "deferrals": null,
+   "error_type": null,
+   "item_id": "other",
+   "item_state": null,
+   "job_id": "op-other",
+   "job_status": "queued",
+   "lane": "b",
+   "link_state": "linked",
+   "linked": true,
+   "next_action": "owner_review",
+   "outcome": "enqueued",
+   "plan_id": "plan-1",
+   "reason_code": null,
+   "schema": "urn:zeus:fleet-backlog-tick:1"
+  },
+  "conflict_tick": {
+   "at": "2026-09-22T00:00:00.000002+00:00",
+   "authority": "backlog_selection; an accepted job means an accepted lane operation only, never a review verdict, a merge, a release or a deployment",
+   "blocked": {},
+   "cached": false,
+   "deferrals": null,
+   "error_type": null,
+   "item_id": "one",
+   "item_state": null,
+   "job_id": "op-one",
+   "job_status": "queued",
+   "lane": "a",
+   "link_state": "conflict",
+   "linked": false,
+   "next_action": "owner_review",
+   "outcome": "conflict",
+   "plan_id": "plan-1",
+   "reason_code": "portfolio_binding_conflict",
+   "schema": "urn:zeus:fleet-backlog-tick:1"
+  },
+  "conflict_view": [
+   {
+    "attempts": 0,
+    "criterion_id": "verified-loop",
+    "deferrals": 0,
+    "dependencies": [],
+    "item_id": "one",
+    "job_id": "op-one",
+    "job_status": "queued",
+    "lane": "a",
+    "link_reason": "portfolio_binding_conflict",
+    "link_state": "conflict",
+    "next_action": "owner_review",
+    "pin": {
+     "path": "docs/zeus/manifests/one.json",
+     "revision": "dddddddddddddddddddddddddddddddddddddddd",
+     "sha256": "7692c3ad3540bb803c020b3aee66cd8887123234ea0c6e7143c0add73ff431ed"
+    },
+    "priority": 10,
+    "project_id": "research-improvement",
+    "reason_code": null,
+    "state": "enqueued"
+   }
+  ],
+  "link_after_exhaustion": {
+   "at": "2026-09-22T00:00:00.000049+00:00",
+   "authority": "backlog_selection; an accepted job means an accepted lane operation only, never a review verdict, a merge, a release or a deployment",
+   "blocked": {
+    "one": "binding_unavailable"
+   },
+   "cached": null,
+   "deferrals": null,
+   "error_type": null,
+   "item_id": null,
+   "item_state": null,
+   "job_id": null,
+   "job_status": null,
+   "lane": null,
+   "link_state": null,
+   "linked": null,
+   "next_action": "owner_review",
+   "outcome": "blocked",
+   "plan_id": "plan-1",
+   "reason_code": null,
+   "schema": "urn:zeus:fleet-backlog-tick:1"
+  },
+  "link_exhaustion": {
+   "intent": {
+    "defer_ticks": 0,
+    "deferrals": 5,
+    "link_reason": "binding_unavailable",
+    "link_state": "blocked",
+    "state": "enqueued"
+   },
+   "outcomes": [
+    "unavailable",
+    "blocked",
+    "unavailable",
+    "blocked",
+    "blocked",
+    "unavailable",
+    "blocked",
+    "blocked",
+    "blocked",
+    "blocked",
+    "unavailable",
+    "blocked",
+    "blocked",
+    "blocked",
+    "blocked",
+    "blocked",
+    "blocked",
+    "blocked",
+    "blocked",
+    "unavailable",
+    "blocked",
+    "blocked",
+    "blocked",
+    "blocked",
+    "blocked",
+    "blocked",
+    "blocked",
+    "blocked",
+    "blocked",
+    "blocked",
+    "blocked",
+    "blocked",
+    "blocked",
+    "blocked",
+    "blocked",
+    "blocked",
+    "blocked",
+    "blocked",
+    "blocked",
+    "blocked"
+   ]
+  },
+  "linked_again": {
+   "at": "2026-09-22T00:00:00.000006+00:00",
+   "authority": "backlog_selection; an accepted job means an accepted lane operation only, never a review verdict, a merge, a release or a deployment",
+   "blocked": {},
+   "cached": null,
+   "deferrals": null,
+   "error_type": null,
+   "item_id": null,
+   "item_state": null,
+   "job_id": null,
+   "job_status": null,
+   "lane": null,
+   "link_state": null,
+   "linked": null,
+   "next_action": "idle",
+   "outcome": "backlog_exhausted",
+   "plan_id": "plan-1",
+   "reason_code": null,
+   "schema": "urn:zeus:fleet-backlog-tick:1"
+  },
+  "linked_bindings": {
+   "op-one": [
+    "research-improvement",
+    "verified-loop"
+   ],
+   "op-two": [
+    "research-improvement",
+    "verified-loop"
+   ]
+  },
+  "linked_calls_after": [
+   [
+    "op-one",
+    "research-improvement",
+    "verified-loop",
+    "ok"
+   ]
+  ],
+  "linked_calls_first": [
+   [
+    "op-one",
+    "research-improvement",
+    "verified-loop",
+    "ok"
+   ]
+  ],
+  "linked_jobs": [
+   "op-one"
+  ],
+  "linked_tick": {
+   "at": "2026-09-23T00:00:00.000001+00:00",
+   "authority": "backlog_selection; an accepted job means an accepted lane operation only, never a review verdict, a merge, a release or a deployment",
+   "blocked": {
+    "two": "dependency_unlinked"
+   },
+   "cached": true,
+   "deferrals": null,
+   "error_type": null,
+   "item_id": "one",
+   "item_state": null,
+   "job_id": "op-one",
+   "job_status": null,
+   "lane": "a",
+   "link_state": "linked",
+   "linked": true,
+   "next_action": "owner_review",
+   "outcome": "enqueued",
+   "plan_id": "plan-1",
+   "reason_code": null,
+   "schema": "urn:zeus:fleet-backlog-tick:1"
+  },
+  "outage_bindings": {},
+  "outage_jobs": [
+   "op-one"
+  ],
+  "outage_tick": {
+   "at": "2026-09-22T00:00:00.000002+00:00",
+   "authority": "backlog_selection; an accepted job means an accepted lane operation only, never a review verdict, a merge, a release or a deployment",
+   "blocked": {
+    "two": "dependency_waiting"
+   },
+   "cached": false,
+   "deferrals": 1,
+   "error_type": "RuntimeError",
+   "item_id": "one",
+   "item_state": "enqueued",
+   "job_id": "op-one",
+   "job_status": "queued",
+   "lane": "a",
+   "link_state": "pending",
+   "linked": false,
+   "next_action": "owner_review",
+   "outcome": "unavailable",
+   "plan_id": "plan-1",
+   "reason_code": "binding_unavailable",
+   "schema": "urn:zeus:fleet-backlog-tick:1"
+  },
+  "refused_next": {
+   "at": "2026-09-22T00:00:00.000006+00:00",
+   "authority": "backlog_selection; an accepted job means an accepted lane operation only, never a review verdict, a merge, a release or a deployment",
+   "blocked": {
+    "one": "binding_criterion_unknown"
+   },
+   "cached": false,
+   "deferrals": null,
+   "error_type": null,
+   "item_id": "other",
+   "item_state": null,
+   "job_id": "op-other",
+   "job_status": "queued",
+   "lane": "b",
+   "link_state": "blocked",
+   "linked": false,
+   "next_action": "owner_review",
+   "outcome": "refused",
+   "plan_id": "plan-1",
+   "reason_code": "binding_criterion_unknown",
+   "schema": "urn:zeus:fleet-backlog-tick:1"
+  },
+  "refused_records": [
+   [
+    "fleet_backlog_intents",
+    "plan-1:one",
+    "274077ef1b918738e819297d44e5d60e9dcea6fc98c69e1de540fa5353d8b919"
+   ],
+   [
+    "fleet_backlog_intents",
+    "plan-1:other",
+    "e71ffeadc8575c2bc98874bed69553cffed313e221b7743c469f4c1a6f4fd150"
+   ],
+   [
+    "fleet_backlog_plans",
+    "plan-1",
+    "6a47d74fde8f4d33d81c531b9bbd325ea92d3c7c5c61b5bd911a748e43189091"
+   ],
+   [
+    "fleet_control",
+    "admission",
+    "5479ac128c7a90b84837e005de176794973c8a6db26805d409cc5a420a34cb1f"
+   ],
+   [
+    "fleet_jobs",
+    "op-one",
+    "a76f949d135153844bed3d62022f4ac4b49cdbeec3003964d3660708f8bba949"
+   ],
+   [
+    "fleet_jobs",
+    "op-other",
+    "ffa81bdbbe11323428359527c9baed033962430e917c0a531f30eebeee88bf27"
+   ],
+   [
+    "fleet_registry",
+    "fleet-1",
+    "c78086f09a51e2d77624bc467e4b2f5a76e1239a07484a257975bc97d5554614"
+   ]
+  ],
+  "refused_tick": {
+   "at": "2026-09-22T00:00:00.000002+00:00",
+   "authority": "backlog_selection; an accepted job means an accepted lane operation only, never a review verdict, a merge, a release or a deployment",
+   "blocked": {},
+   "cached": false,
+   "deferrals": null,
+   "error_type": null,
+   "item_id": "one",
+   "item_state": null,
+   "job_id": "op-one",
+   "job_status": "queued",
+   "lane": "a",
+   "link_state": "blocked",
+   "linked": false,
+   "next_action": "owner_review",
+   "outcome": "refused",
+   "plan_id": "plan-1",
+   "reason_code": "binding_criterion_unknown",
+   "schema": "urn:zeus:fleet-backlog-tick:1"
+  },
+  "refused_view": [
+   {
+    "attempts": 0,
+    "criterion_id": "verified-loop",
+    "deferrals": 0,
+    "dependencies": [],
+    "item_id": "one",
+    "job_id": "op-one",
+    "job_status": "queued",
+    "lane": "a",
+    "link_reason": "binding_criterion_unknown",
+    "link_state": "blocked",
+    "next_action": "owner_review",
+    "pin": {
+     "path": "docs/zeus/manifests/one.json",
+     "revision": "dddddddddddddddddddddddddddddddddddddddd",
+     "sha256": "7692c3ad3540bb803c020b3aee66cd8887123234ea0c6e7143c0add73ff431ed"
+    },
+    "priority": 10,
+    "project_id": "research-improvement",
+    "reason_code": null,
+    "state": "enqueued"
+   }
+  ],
+  "successor_tick": {
+   "at": "2026-09-23T00:00:00.000003+00:00",
+   "authority": "backlog_selection; an accepted job means an accepted lane operation only, never a review verdict, a merge, a release or a deployment",
+   "blocked": {},
+   "cached": false,
+   "deferrals": null,
+   "error_type": null,
+   "item_id": "two",
+   "item_state": null,
+   "job_id": "op-two",
+   "job_status": "queued",
+   "lane": "a",
+   "link_state": "linked",
+   "linked": true,
+   "next_action": "owner_review",
+   "outcome": "enqueued",
+   "plan_id": "plan-1",
+   "reason_code": null,
+   "schema": "urn:zeus:fleet-backlog-tick:1"
+  },
+  "unlinked_counts": {
+   "accepted": 1,
+   "blocked": 0,
+   "conflict": 0,
+   "enqueued": 1,
+   "open": 0,
+   "pending": 1,
+   "unknown": 0,
+   "unlinked": 1
+  },
+  "unlinked_view": [
+   {
+    "attempts": 0,
+    "criterion_id": "verified-loop",
+    "deferrals": 1,
+    "dependencies": [],
+    "item_id": "one",
+    "job_id": "op-one",
+    "job_status": "accepted",
+    "lane": "a",
+    "link_reason": "binding_unavailable",
+    "link_state": "pending",
+    "next_action": "complete_binding",
+    "pin": {
+     "path": "docs/zeus/manifests/one.json",
+     "revision": "dddddddddddddddddddddddddddddddddddddddd",
+     "sha256": "7692c3ad3540bb803c020b3aee66cd8887123234ea0c6e7143c0add73ff431ed"
+    },
+    "priority": 10,
+    "project_id": "research-improvement",
+    "reason_code": "lead_accepted",
+    "state": "enqueued"
+   }
+  ]
+ },
+ "m7_tests": {
+  "covered": [
+   "test_plan_validation_refuses_unknown_fields_duplicates_cycles_and_foreign_pins",
+   "test_a_valid_plan_admits_one_eligible_item_into_the_existing_fleet_exactly_once",
+   "test_the_recorded_identity_is_the_complete_binding_of_the_authoritative_job_row",
+   "test_an_exhausted_backlog_is_idle_and_writes_nothing_on_a_repeated_poll",
+   "test_a_lost_response_and_a_restart_keep_exactly_one_durable_identity",
+   "test_an_equal_job_id_with_another_binding_is_a_conflict_not_a_successful_enqueue",
+   "test_a_crash_before_the_enqueue_cannot_adopt_a_foreign_job_or_unlock_a_successor",
+   "test_an_intent_without_a_complete_recorded_binding_reconciles_nothing",
+   "test_a_job_row_carrying_another_goal_settles_the_open_intent_as_a_conflict",
+   "test_a_registration_that_moves_a_selected_item_is_refused_without_side_effects",
+   "test_the_frozen_scope_also_holds_for_an_item_whose_job_was_already_accepted",
+   "test_a_stale_pin_recorded_on_an_intent_refuses_that_item_at_selection",
+   "test_a_paused_plan_and_a_paused_fleet_are_distinct_recorded_outcomes",
+   "test_an_unregistered_plan_is_refused_without_side_effects",
+   "test_a_failed_dependency_blocks_only_its_dependents",
+   "test_a_repeatedly_unavailable_item_is_deferred_and_never_starves_an_eligible_one",
+   "test_a_permanently_unavailable_item_stops_being_retried_and_is_handed_to_the_owner",
+   "test_two_definite_refusals_block_the_item_and_never_retry_forever",
+   "test_a_fleet_refusal_of_the_enqueue_is_recorded_and_corrupts_no_queued_job",
+   "test_a_binding_outage_leaves_a_durable_pending_linkage_that_resumes_and_unlocks_nothing",
+   "test_an_existing_different_binding_is_a_conflict_and_is_never_rewritten",
+   "test_without_a_binding_owner_no_tick_reports_a_linked_success",
+   "test_status_separates_accepted_implementation_from_release_and_deployment",
+   "test_transitions_are_logged_with_identities_only_and_never_carry_goal_or_manifest_text",
+   "test_the_fixed_structured_transitions_reach_the_existing_observation_port",
+   "test_no_store_transaction_is_ever_opened_inside_another_one"
+  ],
+  "unreachable": {
+   "test_a_backlog_outage_is_reported_and_never_blocks_unrelated_admission": "FleetRunner family",
+   "test_a_plan_registers_and_admits_over_a_real_isolated_postgres_store": "needs a real database",
+   "test_a_returned_failure_is_a_failed_tick_not_an_ok_one": "FleetRunner family",
+   "test_concurrent_ticks_cannot_double_enqueue_one_item": "threads race the store lock; nondeterministic order",
+   "test_the_runner_backlog_is_disabled_by_default_and_opt_in_continues_successors": "FleetRunner family"
+  }
+ },
+ "plan": {
+  "canonical": {
+   "enabled": true,
+   "first_item_sorted": true,
+   "plan": {
+    "enabled": true,
+    "items": [
+     {
+      "criterion_id": "verified-loop",
+      "dependencies": [],
+      "id": "one",
+      "lane": "a",
+      "manifest_path": "docs/zeus/manifests/one.json",
+      "manifest_revision": "dddddddddddddddddddddddddddddddddddddddd",
+      "manifest_sha256": "7692c3ad3540bb803c020b3aee66cd8887123234ea0c6e7143c0add73ff431ed",
+      "priority": 10,
+      "project_id": "research-improvement"
+     },
+     {
+      "criterion_id": "verified-loop",
+      "dependencies": [
+       "one"
+      ],
+      "id": "two",
+      "lane": "a",
+      "manifest_path": "docs/zeus/manifests/two.json",
+      "manifest_revision": "dddddddddddddddddddddddddddddddddddddddd",
+      "manifest_sha256": "3fc4ccfe745870e2c0d99f71f30ff0656c8dedd41cc1d7d3d376b0dbe685e2f3",
+      "priority": 20,
+      "project_id": "research-improvement"
+     }
+    ],
+    "plan_id": "plan-1",
+    "repository": "bb3f0442185b0d95a4c573782557b9190a020fb02a9b26d4ea64a3a8a56823d9",
+    "schema": "urn:zeus:fleet-backlog:1"
+   },
+   "plan_id": "plan-1"
+  },
+  "disabled_plan": {
+   "enabled": false
+  },
+  "frozen_after_accepted": {
+   "canary_or_root_in_message": false,
+   "field": "items[].project_id",
+   "message": "fleet backlog refused: item_scope_changed (items[].project_id)",
+   "reason_code": "item_scope_changed",
+   "refused": "BacklogRefused",
+   "store_digest_after": "4c23f9d55023553a3992d432cdee6ce2c5024357cb9d26246cb6bb84f7b76032",
+   "store_digest_before": "4c23f9d55023553a3992d432cdee6ce2c5024357cb9d26246cb6bb84f7b76032",
+   "store_unchanged": true
+  },
+  "frozen_criterion": {
+   "canary_or_root_in_message": false,
+   "field": "items[].project_id",
+   "message": "fleet backlog refused: item_scope_changed (items[].project_id)",
+   "reason_code": "item_scope_changed",
+   "refused": "BacklogRefused",
+   "store_digest_after": "f03f7f6262ecba2a47036d2718f89c5791cd5e2a47d2571cd7068241ef91591e",
+   "store_digest_before": "f03f7f6262ecba2a47036d2718f89c5791cd5e2a47d2571cd7068241ef91591e",
+   "store_unchanged": true
+  },
+  "frozen_dependency": {
+   "canary_or_root_in_message": false,
+   "field": "items[].project_id",
+   "message": "fleet backlog refused: item_scope_changed (items[].project_id)",
+   "reason_code": "item_scope_changed",
+   "refused": "BacklogRefused",
+   "store_digest_after": "f03f7f6262ecba2a47036d2718f89c5791cd5e2a47d2571cd7068241ef91591e",
+   "store_digest_before": "f03f7f6262ecba2a47036d2718f89c5791cd5e2a47d2571cd7068241ef91591e",
+   "store_unchanged": true
+  },
+  "frozen_item_removed": {
+   "canary_or_root_in_message": false,
+   "field": "items[].id",
+   "message": "fleet backlog refused: item_removed (items[].id)",
+   "reason_code": "item_removed",
+   "refused": "BacklogRefused",
+   "store_digest_after": "f03f7f6262ecba2a47036d2718f89c5791cd5e2a47d2571cd7068241ef91591e",
+   "store_digest_before": "f03f7f6262ecba2a47036d2718f89c5791cd5e2a47d2571cd7068241ef91591e",
+   "store_unchanged": true
+  },
+  "frozen_lane": {
+   "canary_or_root_in_message": false,
+   "field": "items[].manifest_revision",
+   "message": "fleet backlog refused: item_pin_changed (items[].manifest_revision)",
+   "reason_code": "item_pin_changed",
+   "refused": "BacklogRefused",
+   "store_digest_after": "f03f7f6262ecba2a47036d2718f89c5791cd5e2a47d2571cd7068241ef91591e",
+   "store_digest_before": "f03f7f6262ecba2a47036d2718f89c5791cd5e2a47d2571cd7068241ef91591e",
+   "store_unchanged": true
+  },
+  "frozen_pin_revision": {
+   "canary_or_root_in_message": false,
+   "field": "items[].manifest_revision",
+   "message": "fleet backlog refused: item_pin_changed (items[].manifest_revision)",
+   "reason_code": "item_pin_changed",
+   "refused": "BacklogRefused",
+   "store_digest_after": "f03f7f6262ecba2a47036d2718f89c5791cd5e2a47d2571cd7068241ef91591e",
+   "store_digest_before": "f03f7f6262ecba2a47036d2718f89c5791cd5e2a47d2571cd7068241ef91591e",
+   "store_unchanged": true
+  },
+  "frozen_project": {
+   "canary_or_root_in_message": false,
+   "field": "items[].project_id",
+   "message": "fleet backlog refused: item_scope_changed (items[].project_id)",
+   "reason_code": "item_scope_changed",
+   "refused": "BacklogRefused",
+   "store_digest_after": "f03f7f6262ecba2a47036d2718f89c5791cd5e2a47d2571cd7068241ef91591e",
+   "store_digest_before": "f03f7f6262ecba2a47036d2718f89c5791cd5e2a47d2571cd7068241ef91591e",
+   "store_unchanged": true
+  },
+  "frozen_repository_conflict": {
+   "canary_or_root_in_message": false,
+   "field": "repository",
+   "message": "fleet backlog refused: repository_conflict (repository)",
+   "reason_code": "repository_conflict",
+   "refused": "BacklogRefused",
+   "store_digest_after": "f03f7f6262ecba2a47036d2718f89c5791cd5e2a47d2571cd7068241ef91591e",
+   "store_digest_before": "f03f7f6262ecba2a47036d2718f89c5791cd5e2a47d2571cd7068241ef91591e",
+   "store_unchanged": true
+  },
+  "frozen_store_untouched": true,
+  "grown": {
+   "value": {
+    "authority": "backlog_selection; an accepted job means an accepted lane operation only, never a review verdict, a merge, a release or a deployment",
+    "cached": false,
+    "enabled": true,
+    "items": 3,
+    "pin": {
+     "path": "docs/zeus/backlog.json",
+     "revision": "9999999999999999999999999999999999999999",
+     "sha256": "eeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee"
+    },
+    "plan_id": "plan-1",
+    "plan_sha256": "106d8b2b9e33e5be62ff05e79d04b27bc145cb6fbca1b81d7f85992feb2d6d77",
+    "registered": true
+   }
+  },
+  "paused_registration": {
+   "value": {
+    "authority": "backlog_selection; an accepted job means an accepted lane operation only, never a review verdict, a merge, a release or a deployment",
+    "cached": false,
+    "enabled": false,
+    "items": 2,
+    "pin": {
+     "path": "docs/zeus/backlog.json",
+     "revision": "8888888888888888888888888888888888888888",
+     "sha256": "eeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee"
+    },
+    "plan_id": "plan-1",
+    "plan_sha256": "046ff4f75bd136d2ae5a7bc1151de7a8300058e05592d2578cf117465dc6a0f2",
+    "registered": true
+   }
+  },
+  "pin_extra": {
+   "canary_or_root_in_message": false,
+   "field": "pin",
+   "message": "fleet backlog refused: plan_fields (pin)",
+   "reason_code": "plan_fields",
+   "refused": "BacklogRefused"
+  },
+  "pin_not_dict": {
+   "canary_or_root_in_message": false,
+   "field": "pin",
+   "message": "fleet backlog refused: plan_invalid (pin)",
+   "reason_code": "plan_invalid",
+   "refused": "BacklogRefused"
+  },
+  "pin_path_outside": {
+   "canary_or_root_in_message": false,
+   "field": "pin.path",
+   "message": "fleet backlog refused: pin_invalid (pin.path)",
+   "reason_code": "pin_invalid",
+   "refused": "BacklogRefused"
+  },
+  "pin_short_revision": {
+   "canary_or_root_in_message": false,
+   "field": "pin.revision",
+   "message": "fleet backlog refused: pin_invalid (pin.revision)",
+   "reason_code": "pin_invalid",
+   "refused": "BacklogRefused"
+  },
+  "pin_stale_register_second_plan": {
+   "value": {
+    "authority": "backlog_selection; an accepted job means an accepted lane operation only, never a review verdict, a merge, a release or a deployment",
+    "cached": false,
+    "enabled": true,
+    "items": 1,
+    "pin": {
+     "path": "docs/zeus/backlog.json",
+     "revision": "cccccccccccccccccccccccccccccccccccccccc",
+     "sha256": "eeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee"
+    },
+    "plan_id": "plan-2",
+    "plan_sha256": "2ecf84e61c7bd5ad5b9f3ce2882551d5fb956cc4cfeedbe96cd283c423e8b1e0",
+    "registered": true
+   }
+  },
+  "pin_valid": {
+   "value": {
+    "path": "docs/zeus/backlog.json",
+    "revision": "cccccccccccccccccccccccccccccccccccccccc",
+    "sha256": "eeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee"
+   }
+  },
+  "plan_other": {
+   "value": null
+  },
+  "plan_row": {
+   "value": {
+    "id": "plan-1",
+    "pin": {
+     "path": "docs/zeus/backlog.json",
+     "revision": "cccccccccccccccccccccccccccccccccccccccc",
+     "sha256": "eeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee"
+    },
+    "plan": {
+     "enabled": true,
+     "items": [
+      {
+       "criterion_id": "verified-loop",
+       "dependencies": [],
+       "id": "one",
+       "lane": "a",
+       "manifest_path": "docs/zeus/manifests/one.json",
+       "manifest_revision": "dddddddddddddddddddddddddddddddddddddddd",
+       "manifest_sha256": "7692c3ad3540bb803c020b3aee66cd8887123234ea0c6e7143c0add73ff431ed",
+       "priority": 10,
+       "project_id": "research-improvement"
+      },
+      {
+       "criterion_id": "verified-loop",
+       "dependencies": [],
+       "id": "later",
+       "lane": "a",
+       "manifest_path": "docs/zeus/manifests/later.json",
+       "manifest_revision": "dddddddddddddddddddddddddddddddddddddddd",
+       "manifest_sha256": "1d9283d848ea941ace1fe0d2378ef8b70056a0d4d1648b95a322d90163e78285",
+       "priority": 90,
+       "project_id": "research-improvement"
+      }
+     ],
+     "plan_id": "plan-1",
+     "repository": "bb3f0442185b0d95a4c573782557b9190a020fb02a9b26d4ea64a3a8a56823d9",
+     "schema": "urn:zeus:fleet-backlog:1"
+    },
+    "plan_id": "plan-1",
+    "plan_sha256": "61beef9acbdfc419475a7af3f271ee99d5df66883cd3ee3119bdec6b66c9697a",
+    "registered_at": "2026-09-22T00:00:00.000001+00:00",
+    "repository": "bb3f0442185b0d95a4c573782557b9190a020fb02a9b26d4ea64a3a8a56823d9",
+    "updated_at": "2026-09-22T00:00:00.000001+00:00"
+   }
+  },
+  "plan_row_after": {
+   "value": {
+    "id": "plan-1",
+    "pin": {
+     "path": "docs/zeus/backlog.json",
+     "revision": "8888888888888888888888888888888888888888",
+     "sha256": "eeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee"
+    },
+    "plan": {
+     "enabled": false,
+     "items": [
+      {
+       "criterion_id": "verified-loop",
+       "dependencies": [],
+       "id": "one",
+       "lane": "a",
+       "manifest_path": "docs/zeus/manifests/one.json",
+       "manifest_revision": "dddddddddddddddddddddddddddddddddddddddd",
+       "manifest_sha256": "7692c3ad3540bb803c020b3aee66cd8887123234ea0c6e7143c0add73ff431ed",
+       "priority": 10,
+       "project_id": "research-improvement"
+      },
+      {
+       "criterion_id": "verified-loop",
+       "dependencies": [],
+       "id": "later",
+       "lane": "a",
+       "manifest_path": "docs/zeus/manifests/later.json",
+       "manifest_revision": "dddddddddddddddddddddddddddddddddddddddd",
+       "manifest_sha256": "1d9283d848ea941ace1fe0d2378ef8b70056a0d4d1648b95a322d90163e78285",
+       "priority": 90,
+       "project_id": "research-improvement"
+      }
+     ],
+     "plan_id": "plan-1",
+     "repository": "bb3f0442185b0d95a4c573782557b9190a020fb02a9b26d4ea64a3a8a56823d9",
+     "schema": "urn:zeus:fleet-backlog:1"
+    },
+    "plan_id": "plan-1",
+    "plan_sha256": "046ff4f75bd136d2ae5a7bc1151de7a8300058e05592d2578cf117465dc6a0f2",
+    "registered_at": "2026-09-22T00:00:00.000001+00:00",
+    "repository": "bb3f0442185b0d95a4c573782557b9190a020fb02a9b26d4ea64a3a8a56823d9",
+    "updated_at": "2026-09-22T00:00:00.000015+00:00"
+   }
+  },
+  "refuse_dependency_cycle": {
+   "canary_or_root_in_message": false,
+   "field": "items[].dependencies",
+   "message": "fleet backlog refused: dependency_cycle (items[].dependencies)",
+   "reason_code": "dependency_cycle",
+   "refused": "BacklogRefused"
+  },
+  "refuse_dependency_self": {
+   "canary_or_root_in_message": false,
+   "field": "items[].dependencies",
+   "message": "fleet backlog refused: dependency_self (items[].dependencies)",
+   "reason_code": "dependency_self",
+   "refused": "BacklogRefused"
+  },
+  "refuse_dependency_unknown": {
+   "canary_or_root_in_message": false,
+   "field": "items[].dependencies",
+   "message": "fleet backlog refused: dependency_unknown (items[].dependencies)",
+   "reason_code": "dependency_unknown",
+   "refused": "BacklogRefused"
+  },
+  "refuse_item_extra_command": {
+   "canary_or_root_in_message": false,
+   "field": "items[0]",
+   "message": "fleet backlog refused: plan_fields (items[0])",
+   "reason_code": "plan_fields",
+   "refused": "BacklogRefused"
+  },
+  "refuse_item_lane_invalid": {
+   "canary_or_root_in_message": false,
+   "field": "items[0].lane",
+   "message": "fleet backlog refused: item_invalid (items[0].lane)",
+   "reason_code": "item_invalid",
+   "refused": "BacklogRefused"
+  },
+  "refuse_item_path_not_json": {
+   "canary_or_root_in_message": false,
+   "field": "items[0].manifest_path",
+   "message": "fleet backlog refused: item_invalid (items[0].manifest_path)",
+   "reason_code": "item_invalid",
+   "refused": "BacklogRefused"
+  },
+  "refuse_item_path_outside": {
+   "canary_or_root_in_message": false,
+   "field": "items[0].manifest_path",
+   "message": "fleet backlog refused: item_invalid (items[0].manifest_path)",
+   "reason_code": "item_invalid",
+   "refused": "BacklogRefused"
+  },
+  "refuse_item_priority_bool": {
+   "canary_or_root_in_message": false,
+   "field": "items[0].priority",
+   "message": "fleet backlog refused: item_invalid (items[0].priority)",
+   "reason_code": "item_invalid",
+   "refused": "BacklogRefused"
+  },
+  "refuse_item_priority_negative": {
+   "canary_or_root_in_message": false,
+   "field": "items[0].priority",
+   "message": "fleet backlog refused: item_invalid (items[0].priority)",
+   "reason_code": "item_invalid",
+   "refused": "BacklogRefused"
+  },
+  "refuse_item_revision_short": {
+   "canary_or_root_in_message": false,
+   "field": "items[0].manifest_revision",
+   "message": "fleet backlog refused: item_invalid (items[0].manifest_revision)",
+   "reason_code": "item_invalid",
+   "refused": "BacklogRefused"
+  },
+  "refuse_item_sha_not_hex": {
+   "canary_or_root_in_message": false,
+   "field": "items[0].manifest_sha256",
+   "message": "fleet backlog refused: item_invalid (items[0].manifest_sha256)",
+   "reason_code": "item_invalid",
+   "refused": "BacklogRefused"
+  },
+  "refuse_plan_duplicate": {
+   "canary_or_root_in_message": false,
+   "field": "items[].id",
+   "message": "fleet backlog refused: plan_duplicate (items[].id)",
+   "reason_code": "plan_duplicate",
+   "refused": "BacklogRefused"
+  },
+  "refuse_plan_fields": {
+   "canary_or_root_in_message": false,
+   "field": "root",
+   "message": "fleet backlog refused: plan_fields (root)",
+   "reason_code": "plan_fields",
+   "refused": "BacklogRefused"
+  },
+  "refuse_plan_invalid_enabled": {
+   "canary_or_root_in_message": false,
+   "field": "enabled",
+   "message": "fleet backlog refused: plan_invalid (enabled)",
+   "reason_code": "plan_invalid",
+   "refused": "BacklogRefused"
+  },
+  "refuse_plan_invalid_id": {
+   "canary_or_root_in_message": false,
+   "field": "plan_id",
+   "message": "fleet backlog refused: plan_invalid (plan_id)",
+   "reason_code": "plan_invalid",
+   "refused": "BacklogRefused"
+  },
+  "refuse_plan_invalid_items": {
+   "canary_or_root_in_message": false,
+   "field": "items",
+   "message": "fleet backlog refused: plan_invalid (items)",
+   "reason_code": "plan_invalid",
+   "refused": "BacklogRefused"
+  },
+  "refuse_plan_invalid_repository": {
+   "canary_or_root_in_message": false,
+   "field": "repository",
+   "message": "fleet backlog refused: plan_invalid (repository)",
+   "reason_code": "plan_invalid",
+   "refused": "BacklogRefused"
+  },
+  "refuse_plan_schema": {
+   "canary_or_root_in_message": false,
+   "field": null,
+   "message": "fleet backlog refused: plan_schema",
+   "reason_code": "plan_schema",
+   "refused": "BacklogRefused"
+  },
+  "register_cached": {
+   "value": {
+    "authority": "backlog_selection; an accepted job means an accepted lane operation only, never a review verdict, a merge, a release or a deployment",
+    "cached": true,
+    "enabled": true,
+    "items": 2,
+    "pin": {
+     "path": "docs/zeus/backlog.json",
+     "revision": "cccccccccccccccccccccccccccccccccccccccc",
+     "sha256": "eeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee"
+    },
+    "plan_id": "plan-1",
+    "plan_sha256": "61beef9acbdfc419475a7af3f271ee99d5df66883cd3ee3119bdec6b66c9697a",
+    "registered": true
+   }
+  },
+  "register_invalid_pin": {
+   "canary_or_root_in_message": false,
+   "field": "pin",
+   "message": "fleet backlog refused: plan_fields (pin)",
+   "reason_code": "plan_fields",
+   "refused": "BacklogRefused",
+   "store_digest_after": "14843d2cc08fcb9b3e092395253e78e0609ebf44ea964b10070cddc4a4d90a4a",
+   "store_digest_before": "14843d2cc08fcb9b3e092395253e78e0609ebf44ea964b10070cddc4a4d90a4a",
+   "store_unchanged": true
+  },
+  "register_invalid_plan": {
+   "canary_or_root_in_message": false,
+   "field": null,
+   "message": "fleet backlog refused: plan_schema",
+   "reason_code": "plan_schema",
+   "refused": "BacklogRefused",
+   "store_digest_after": "14843d2cc08fcb9b3e092395253e78e0609ebf44ea964b10070cddc4a4d90a4a",
+   "store_digest_before": "14843d2cc08fcb9b3e092395253e78e0609ebf44ea964b10070cddc4a4d90a4a",
+   "store_unchanged": true
+  },
+  "status_two_plans": {
+   "value": {
+    "authority": "backlog_selection; an accepted job means an accepted lane operation only, never a review verdict, a merge, a release or a deployment",
+    "fleet_paused": false,
+    "plans": [
+     {
+      "authority": "backlog_selection; an accepted job means an accepted lane operation only, never a review verdict, a merge, a release or a deployment",
+      "blocked": {},
+      "counts": {
+       "accepted": 1,
+       "blocked": 0,
+       "conflict": 0,
+       "enqueued": 1,
+       "open": 0,
+       "pending": 0,
+       "unknown": 0,
+       "unlinked": 0
+      },
+      "enabled": true,
+      "fleet_paused": false,
+      "items": [
+       {
+        "attempts": 0,
+        "criterion_id": "verified-loop",
+        "deferrals": 0,
+        "dependencies": [],
+        "item_id": "one",
+        "job_id": "op-one",
+        "job_status": "accepted",
+        "lane": "a",
+        "link_reason": null,
+        "link_state": "linked",
+        "next_action": "owner_release_decision",
+        "pin": {
+         "path": "docs/zeus/manifests/one.json",
+         "revision": "dddddddddddddddddddddddddddddddddddddddd",
+         "sha256": "7692c3ad3540bb803c020b3aee66cd8887123234ea0c6e7143c0add73ff431ed"
+        },
+        "priority": 10,
+        "project_id": "research-improvement",
+        "reason_code": "lead_accepted",
+        "state": "enqueued"
+       }
+      ],
+      "next_action": "idle",
+      "next_item": null,
+      "outcome": "backlog_exhausted",
+      "pin": {
+       "path": "docs/zeus/backlog.json",
+       "revision": "cccccccccccccccccccccccccccccccccccccccc",
+       "sha256": "eeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee"
+      },
+      "plan_id": "plan-1",
+      "plan_sha256": "92774b85676830f91082bb71cfe2470a9ba7dc1071e2fe98389264c5fa76f542",
+      "registered": true,
+      "repository": "bb3f0442185b0d95a4c573782557b9190a020fb02a9b26d4ea64a3a8a56823d9",
+      "schema": "urn:zeus:fleet-backlog-status:1"
+     },
+     {
+      "authority": "backlog_selection; an accepted job means an accepted lane operation only, never a review verdict, a merge, a release or a deployment",
+      "blocked": {},
+      "counts": {
+       "accepted": 0,
+       "blocked": 0,
+       "conflict": 0,
+       "enqueued": 0,
+       "open": 0,
+       "pending": 1,
+       "unknown": 0,
+       "unlinked": 0
+      },
+      "enabled": true,
+      "fleet_paused": false,
+      "items": [
+       {
+        "attempts": 0,
+        "criterion_id": "verified-loop",
+        "deferrals": 0,
+        "dependencies": [],
+        "item_id": "x1",
+        "job_id": null,
+        "job_status": null,
+        "lane": "a",
+        "link_reason": null,
+        "link_state": "pending",
+        "next_action": "await_selection",
+        "pin": {
+         "path": "docs/zeus/manifests/x1.json",
+         "revision": "dddddddddddddddddddddddddddddddddddddddd",
+         "sha256": "ec31682fde561917952ff78a7a8adeffd0febc372dd26871916c46c630381b45"
+        },
+        "priority": 10,
+        "project_id": "research-improvement",
+        "reason_code": null,
+        "state": "pending"
+       }
+      ],
+      "next_action": "tick",
+      "next_item": "x1",
+      "outcome": "selected",
+      "pin": {
+       "path": "docs/zeus/backlog.json",
+       "revision": "cccccccccccccccccccccccccccccccccccccccc",
+       "sha256": "eeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee"
+      },
+      "plan_id": "plan-2",
+      "plan_sha256": "2ecf84e61c7bd5ad5b9f3ce2882551d5fb956cc4cfeedbe96cd283c423e8b1e0",
+      "registered": true,
+      "repository": "bb3f0442185b0d95a4c573782557b9190a020fb02a9b26d4ea64a3a8a56823d9",
+      "schema": "urn:zeus:fleet-backlog-status:1"
+     }
+    ],
+    "registered": true,
+    "schema": "urn:zeus:fleet-backlog-status:1"
+   }
+  },
+  "tick_plan_paused": {
+   "at": "2026-09-22T00:00:00.000016+00:00",
+   "authority": "backlog_selection; an accepted job means an accepted lane operation only, never a review verdict, a merge, a release or a deployment",
+   "blocked": {},
+   "cached": null,
+   "deferrals": null,
+   "error_type": null,
+   "item_id": null,
+   "item_state": null,
+   "job_id": null,
+   "job_status": null,
+   "lane": null,
+   "link_state": null,
+   "linked": null,
+   "next_action": "enable_plan",
+   "outcome": "plan_paused",
+   "plan_id": "plan-1",
+   "reason_code": null,
+   "schema": "urn:zeus:fleet-backlog-tick:1"
+  }
+ },
+ "status_observe": {
+  "log_lines": [
+   [
+    "INFO",
+    "fleet backlog admitted plan=plan-1 item=one job=op-one lane=a cached=False"
+   ],
+   [
+    "INFO",
+    "fleet backlog linked plan=plan-1 item=one job=op-one project=research-improvement criterion=verified-loop cached=False"
+   ],
+   [
+    "WARNING",
+    "fleet backlog item refused plan=plan-1 item=two reason=manifest_refused attempts=1 state=selected"
+   ],
+   [
+    "WARNING",
+    "fleet backlog item refused plan=plan-1 item=two reason=manifest_refused attempts=2 state=blocked"
+   ]
+  ],
+  "log_no_leak": true,
+  "no_nested_transaction": {
+   "depth": 0,
+   "transactions_over_six": true
+  },
+  "observe_binding_conflict": [
+   {
+    "attributes": {
+     "attempts": 0,
+     "item_id": "one",
+     "item_state": "conflict",
+     "job_id": "op-one",
+     "lane": "a",
+     "outcome": "conflict",
+     "plan_id": "plan-1"
+    },
+    "event": "operations.backlog_item_refused",
+    "outcome": "blocked",
+    "reason_code": "binding_conflict",
+    "severity": "warning"
+   }
+  ],
+  "observe_events": [
+   {
+    "attributes": {
+     "cached": false,
+     "item_id": "one",
+     "job_id": "op-one",
+     "lane": "a",
+     "linked": true,
+     "plan_id": "plan-1"
+    },
+    "event": "development.backlog_item_admitted",
+    "outcome": "succeeded",
+    "reason_code": null,
+    "severity": null
+   },
+   {
+    "attributes": {
+     "deferrals": 1,
+     "error_type": "RuntimeError",
+     "exhausted": false,
+     "item_id": "outage",
+     "lane": "b",
+     "plan_id": "plan-1"
+    },
+    "event": "operations.backlog_unavailable",
+    "outcome": "unknown",
+    "reason_code": "input_unavailable",
+    "severity": "warning"
+   },
+   {
+    "attributes": {
+     "attempts": 1,
+     "item_id": "bad",
+     "item_state": "selected",
+     "job_id": null,
+     "lane": "a",
+     "outcome": "refused",
+     "plan_id": "plan-1"
+    },
+    "event": "operations.backlog_item_refused",
+    "outcome": "blocked",
+    "reason_code": "manifest_refused",
+    "severity": "warning"
+   },
+   {
+    "attributes": {
+     "cached": false,
+     "item_id": "bad",
+     "job_id": "op-bad",
+     "lane": "a",
+     "linked": true,
+     "plan_id": "plan-1"
+    },
+    "event": "development.backlog_item_admitted",
+    "outcome": "succeeded",
+    "reason_code": null,
+    "severity": null
+   },
+   {
+    "attributes": {
+     "cached": false,
+     "item_id": "outage",
+     "job_id": "op-outage",
+     "lane": "b",
+     "linked": true,
+     "plan_id": "plan-1"
+    },
+    "event": "development.backlog_item_admitted",
+    "outcome": "succeeded",
+    "reason_code": null,
+    "severity": null
+   },
+   {
+    "attributes": {
+     "deferrals": 2,
+     "item_id": "outage",
+     "lane": "b",
+     "plan_id": "plan-1"
+    },
+    "event": "operations.backlog_recovered",
+    "outcome": "succeeded",
+    "reason_code": null,
+    "severity": null
+   }
+  ],
+  "observe_leak": false,
+  "observe_link_conflict": [
+   {
+    "attributes": {
+     "attempts": 0,
+     "item_id": "one",
+     "item_state": "conflict",
+     "job_id": "op-one",
+     "lane": "a",
+     "outcome": "conflict",
+     "plan_id": "plan-1"
+    },
+    "event": "operations.backlog_item_refused",
+    "outcome": "blocked",
+    "reason_code": "portfolio_binding_conflict",
+    "severity": "warning"
+   }
+  ],
+  "observe_steps": [
+   [
+    "admitted",
+    "enqueued",
+    "one",
+    1
+   ],
+   [
+    "outage_unavailable",
+    "unavailable",
+    "outage",
+    2
+   ],
+   [
+    "bad_refused",
+    "refused",
+    "bad",
+    3
+   ],
+   [
+    "outage_again_silent",
+    "unavailable",
+    "outage",
+    3
+   ],
+   [
+    "bad_admitted",
+    "enqueued",
+    "bad",
+    4
+   ],
+   [
+    "deferred_wait_silent",
+    "blocked",
+    null,
+    4
+   ],
+   [
+    "outage_recovered",
+    "enqueued",
+    "outage",
+    6
+   ],
+   [
+    "exhausted_silent",
+    "backlog_exhausted",
+    null,
+    6
+   ]
+  ],
+  "status_all": {
+   "authority": "backlog_selection; an accepted job means an accepted lane operation only, never a review verdict, a merge, a release or a deployment",
+   "fleet_paused": false,
+   "plans": [
+    {
+     "authority": "backlog_selection; an accepted job means an accepted lane operation only, never a review verdict, a merge, a release or a deployment",
+     "blocked": {},
+     "counts": {
+      "accepted": 1,
+      "blocked": 0,
+      "conflict": 0,
+      "enqueued": 2,
+      "open": 0,
+      "pending": 0,
+      "unknown": 0,
+      "unlinked": 0
+     },
+     "enabled": true,
+     "fleet_paused": false,
+     "items": [
+      {
+       "attempts": 0,
+       "criterion_id": "verified-loop",
+       "deferrals": 0,
+       "dependencies": [],
+       "item_id": "one",
+       "job_id": "op-one",
+       "job_status": "accepted",
+       "lane": "a",
+       "link_reason": null,
+       "link_state": "linked",
+       "next_action": "owner_release_decision",
+       "pin": {
+        "path": "docs/zeus/manifests/one.json",
+        "revision": "dddddddddddddddddddddddddddddddddddddddd",
+        "sha256": "7692c3ad3540bb803c020b3aee66cd8887123234ea0c6e7143c0add73ff431ed"
+       },
+       "priority": 10,
+       "project_id": "research-improvement",
+       "reason_code": "lead_accepted",
+       "state": "enqueued"
+      },
+      {
+       "attempts": 0,
+       "criterion_id": "verified-loop",
+       "deferrals": 0,
+       "dependencies": [
+        "one"
+       ],
+       "item_id": "two",
+       "job_id": "op-two",
+       "job_status": "queued",
+       "lane": "a",
+       "link_reason": null,
+       "link_state": "linked",
+       "next_action": "await_fleet",
+       "pin": {
+        "path": "docs/zeus/manifests/two.json",
+        "revision": "dddddddddddddddddddddddddddddddddddddddd",
+        "sha256": "3fc4ccfe745870e2c0d99f71f30ff0656c8dedd41cc1d7d3d376b0dbe685e2f3"
+       },
+       "priority": 20,
+       "project_id": "research-improvement",
+       "reason_code": null,
+       "state": "enqueued"
+      }
+     ],
+     "next_action": "idle",
+     "next_item": null,
+     "outcome": "backlog_exhausted",
+     "pin": {
+      "path": "docs/zeus/backlog.json",
+      "revision": "cccccccccccccccccccccccccccccccccccccccc",
+      "sha256": "eeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee"
+     },
+     "plan_id": "plan-1",
+     "plan_sha256": "d805d0da35b2e54f3d437d89e92adb6fac8f93354acb98c2551246400919d75e",
+     "registered": true,
+     "repository": "bb3f0442185b0d95a4c573782557b9190a020fb02a9b26d4ea64a3a8a56823d9",
+     "schema": "urn:zeus:fleet-backlog-status:1"
+    }
+   ],
+   "registered": true,
+   "schema": "urn:zeus:fleet-backlog-status:1"
+  },
+  "status_item_keys": [
+   "attempts",
+   "criterion_id",
+   "deferrals",
+   "dependencies",
+   "item_id",
+   "job_id",
+   "job_status",
+   "lane",
+   "link_reason",
+   "link_state",
+   "next_action",
+   "pin",
+   "priority",
+   "project_id",
+   "reason_code",
+   "state"
+  ],
+  "status_no_delivery_claim": true,
+  "status_no_leak": true,
+  "status_plan": {
+   "authority": "backlog_selection; an accepted job means an accepted lane operation only, never a review verdict, a merge, a release or a deployment",
+   "fleet_paused": false,
+   "plans": [
+    {
+     "authority": "backlog_selection; an accepted job means an accepted lane operation only, never a review verdict, a merge, a release or a deployment",
+     "blocked": {},
+     "counts": {
+      "accepted": 1,
+      "blocked": 0,
+      "conflict": 0,
+      "enqueued": 2,
+      "open": 0,
+      "pending": 0,
+      "unknown": 0,
+      "unlinked": 0
+     },
+     "enabled": true,
+     "fleet_paused": false,
+     "items": [
+      {
+       "attempts": 0,
+       "criterion_id": "verified-loop",
+       "deferrals": 0,
+       "dependencies": [],
+       "item_id": "one",
+       "job_id": "op-one",
+       "job_status": "accepted",
+       "lane": "a",
+       "link_reason": null,
+       "link_state": "linked",
+       "next_action": "owner_release_decision",
+       "pin": {
+        "path": "docs/zeus/manifests/one.json",
+        "revision": "dddddddddddddddddddddddddddddddddddddddd",
+        "sha256": "7692c3ad3540bb803c020b3aee66cd8887123234ea0c6e7143c0add73ff431ed"
+       },
+       "priority": 10,
+       "project_id": "research-improvement",
+       "reason_code": "lead_accepted",
+       "state": "enqueued"
+      },
+      {
+       "attempts": 0,
+       "criterion_id": "verified-loop",
+       "deferrals": 0,
+       "dependencies": [
+        "one"
+       ],
+       "item_id": "two",
+       "job_id": "op-two",
+       "job_status": "queued",
+       "lane": "a",
+       "link_reason": null,
+       "link_state": "linked",
+       "next_action": "await_fleet",
+       "pin": {
+        "path": "docs/zeus/manifests/two.json",
+        "revision": "dddddddddddddddddddddddddddddddddddddddd",
+        "sha256": "3fc4ccfe745870e2c0d99f71f30ff0656c8dedd41cc1d7d3d376b0dbe685e2f3"
+       },
+       "priority": 20,
+       "project_id": "research-improvement",
+       "reason_code": null,
+       "state": "enqueued"
+      }
+     ],
+     "next_action": "idle",
+     "next_item": null,
+     "outcome": "backlog_exhausted",
+     "pin": {
+      "path": "docs/zeus/backlog.json",
+      "revision": "cccccccccccccccccccccccccccccccccccccccc",
+      "sha256": "eeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee"
+     },
+     "plan_id": "plan-1",
+     "plan_sha256": "d805d0da35b2e54f3d437d89e92adb6fac8f93354acb98c2551246400919d75e",
+     "registered": true,
+     "repository": "bb3f0442185b0d95a4c573782557b9190a020fb02a9b26d4ea64a3a8a56823d9",
+     "schema": "urn:zeus:fleet-backlog-status:1"
+    }
+   ],
+   "registered": true,
+   "schema": "urn:zeus:fleet-backlog-status:1"
+  },
+  "status_unregistered": {
+   "store_digest_after": "956303d8b87f5f2e2a087e7eca974b9c43a0be2bdb3ee6181545adee01cef3fd",
+   "store_digest_before": "956303d8b87f5f2e2a087e7eca974b9c43a0be2bdb3ee6181545adee01cef3fd",
+   "store_unchanged": true,
+   "value": {
+    "authority": "backlog_selection; an accepted job means an accepted lane operation only, never a review verdict, a merge, a release or a deployment",
+    "fleet_paused": false,
+    "next_action": "register_plan",
+    "outcome": "plan_unregistered",
+    "plan_id": "plan-other",
+    "plans": [],
+    "registered": false,
+    "schema": "urn:zeus:fleet-backlog-status:1"
+   }
+  }
+ },
+ "surface": {
+  "all": [
+   "BUCKET_INTENTS",
+   "BUCKET_PLANS",
+   "OBSERVED_OUTCOMES",
+   "FleetBacklog",
+   "LOGGER"
+  ],
+  "buckets": [
+   "fleet_backlog_plans",
+   "fleet_backlog_intents"
+  ],
+  "default_fleet_is_built": true,
+  "default_portfolio_observer": [
+   null,
+   null
+  ],
+  "explicit_fleet_is_kept": true,
+  "limits": {
+   "MAX_ATTEMPTS": 2,
+   "MAX_DEFERRALS": 5
+  },
+  "logger": "zeus.fleet.backlog",
+  "observed_outcomes": [
+   "conflict",
+   "enqueued",
+   "refused",
+   "unavailable"
+  ],
+  "plan_unregistered": {
+   "store_digest_after": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945",
+   "store_digest_before": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945",
+   "store_unchanged": true,
+   "value": null
+  },
+  "status_empty_all": {
+   "store_digest_after": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945",
+   "store_digest_before": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945",
+   "store_unchanged": true,
+   "value": {
+    "authority": "backlog_selection; an accepted job means an accepted lane operation only, never a review verdict, a merge, a release or a deployment",
+    "fleet_paused": false,
+    "plans": [],
+    "registered": false,
+    "schema": "urn:zeus:fleet-backlog-status:1"
+   }
+  },
+  "status_empty_named": {
+   "store_digest_after": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945",
+   "store_digest_before": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945",
+   "store_unchanged": true,
+   "value": {
+    "authority": "backlog_selection; an accepted job means an accepted lane operation only, never a review verdict, a merge, a release or a deployment",
+    "fleet_paused": false,
+    "next_action": "register_plan",
+    "outcome": "plan_unregistered",
+    "plan_id": "plan-1",
+    "plans": [],
+    "registered": false,
+    "schema": "urn:zeus:fleet-backlog-status:1"
+   }
+  },
+  "tick_unregistered": {
+   "store_digest_after": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945",
+   "store_digest_before": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945",
+   "store_unchanged": true,
+   "value": {
+    "at": "2026-01-01T00:00:00+00:00",
+    "authority": "backlog_selection; an accepted job means an accepted lane operation only, never a review verdict, a merge, a release or a deployment",
+    "blocked": {},
+    "cached": null,
+    "deferrals": null,
+    "error_type": null,
+    "item_id": null,
+    "item_state": null,
+    "job_id": null,
+    "job_status": null,
+    "lane": null,
+    "link_state": null,
+    "linked": null,
+    "next_action": "register_plan",
+    "outcome": "plan_unregistered",
+    "plan_id": "plan-1",
+    "reason_code": null,
+    "schema": "urn:zeus:fleet-backlog-tick:1"
+   }
+  }
+ },
+ "tick": {
+  "after_resume": "enqueued",
+  "bindings_after_first": {
+   "op-one": [
+    "research-improvement",
+    "verified-loop"
+   ],
+   "op-two": [
+    "research-improvement",
+    "verified-loop"
+   ]
+  },
+  "canary_or_root_in_second": false,
+  "failed_dep_blocked": {
+   "at": "2026-09-22T00:00:00.000010+00:00",
+   "authority": "backlog_selection; an accepted job means an accepted lane operation only, never a review verdict, a merge, a release or a deployment",
+   "blocked": {
+    "two": "dependency_failed"
+   },
+   "cached": null,
+   "deferrals": null,
+   "error_type": null,
+   "item_id": null,
+   "item_state": null,
+   "job_id": null,
+   "job_status": null,
+   "lane": null,
+   "link_state": null,
+   "linked": null,
+   "next_action": "owner_review",
+   "outcome": "blocked",
+   "plan_id": "plan-1",
+   "reason_code": null,
+   "schema": "urn:zeus:fleet-backlog-tick:1"
+  },
+  "failed_dep_first": "one",
+  "failed_dep_jobs": [
+   "op-independent",
+   "op-one"
+  ],
+  "failed_dep_moved": {
+   "at": "2026-09-22T00:00:00.000006+00:00",
+   "authority": "backlog_selection; an accepted job means an accepted lane operation only, never a review verdict, a merge, a release or a deployment",
+   "blocked": {
+    "two": "dependency_failed"
+   },
+   "cached": false,
+   "deferrals": null,
+   "error_type": null,
+   "item_id": "independent",
+   "item_state": null,
+   "job_id": "op-independent",
+   "job_status": "queued",
+   "lane": "b",
+   "link_state": "linked",
+   "linked": true,
+   "next_action": "owner_review",
+   "outcome": "enqueued",
+   "plan_id": "plan-1",
+   "reason_code": null,
+   "schema": "urn:zeus:fleet-backlog-tick:1"
+  },
+  "failed_dep_status": {
+   "authority": "backlog_selection; an accepted job means an accepted lane operation only, never a review verdict, a merge, a release or a deployment",
+   "fleet_paused": false,
+   "plans": [
+    {
+     "authority": "backlog_selection; an accepted job means an accepted lane operation only, never a review verdict, a merge, a release or a deployment",
+     "blocked": {
+      "two": "dependency_failed"
+     },
+     "counts": {
+      "accepted": 0,
+      "blocked": 0,
+      "conflict": 0,
+      "enqueued": 2,
+      "open": 0,
+      "pending": 1,
+      "unknown": 0,
+      "unlinked": 0
+     },
+     "enabled": true,
+     "fleet_paused": false,
+     "items": [
+      {
+       "attempts": 0,
+       "criterion_id": "verified-loop",
+       "deferrals": 0,
+       "dependencies": [],
+       "item_id": "one",
+       "job_id": "op-one",
+       "job_status": "failed",
+       "lane": "a",
+       "link_reason": null,
+       "link_state": "linked",
+       "next_action": "owner_review",
+       "pin": {
+        "path": "docs/zeus/manifests/one.json",
+        "revision": "dddddddddddddddddddddddddddddddddddddddd",
+        "sha256": "7692c3ad3540bb803c020b3aee66cd8887123234ea0c6e7143c0add73ff431ed"
+       },
+       "priority": 10,
+       "project_id": "research-improvement",
+       "reason_code": "child_refused",
+       "state": "enqueued"
+      },
+      {
+       "attempts": 0,
+       "criterion_id": "verified-loop",
+       "deferrals": 0,
+       "dependencies": [
+        "one"
+       ],
+       "item_id": "two",
+       "job_id": null,
+       "job_status": null,
+       "lane": "a",
+       "link_reason": null,
+       "link_state": "pending",
+       "next_action": "await_selection",
+       "pin": {
+        "path": "docs/zeus/manifests/two.json",
+        "revision": "dddddddddddddddddddddddddddddddddddddddd",
+        "sha256": "3fc4ccfe745870e2c0d99f71f30ff0656c8dedd41cc1d7d3d376b0dbe685e2f3"
+       },
+       "priority": 20,
+       "project_id": "research-improvement",
+       "reason_code": null,
+       "state": "pending"
+      },
+      {
+       "attempts": 0,
+       "criterion_id": "verified-loop",
+       "deferrals": 0,
+       "dependencies": [],
+       "item_id": "independent",
+       "job_id": "op-independent",
+       "job_status": "queued",
+       "lane": "b",
+       "link_reason": null,
+       "link_state": "linked",
+       "next_action": "await_fleet",
+       "pin": {
+        "path": "docs/zeus/manifests/independent.json",
+        "revision": "dddddddddddddddddddddddddddddddddddddddd",
+        "sha256": "0275fca08c216c77b2a122787b6491a6796ab293e4097e5d62162c0ed4910f08"
+       },
+       "priority": 30,
+       "project_id": "research-improvement",
+       "reason_code": null,
+       "state": "enqueued"
+      }
+     ],
+     "next_action": "owner_review",
+     "next_item": null,
+     "outcome": "blocked",
+     "pin": {
+      "path": "docs/zeus/backlog.json",
+      "revision": "cccccccccccccccccccccccccccccccccccccccc",
+      "sha256": "eeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee"
+     },
+     "plan_id": "plan-1",
+     "plan_sha256": "283682b3d5ddfe596e25c593daf01c59b645e6596365cde79413600b91078c6c",
+     "registered": true,
+     "repository": "bb3f0442185b0d95a4c573782557b9190a020fb02a9b26d4ea64a3a8a56823d9",
+     "schema": "urn:zeus:fleet-backlog-status:1"
+    }
+   ],
+   "registered": true,
+   "schema": "urn:zeus:fleet-backlog-status:1"
+  },
+  "fleet_jobs_after_first": [
+   "op-one"
+  ],
+  "fleet_paused": {
+   "at": "2026-09-22T00:00:00.000004+00:00",
+   "authority": "backlog_selection; an accepted job means an accepted lane operation only, never a review verdict, a merge, a release or a deployment",
+   "blocked": {},
+   "cached": null,
+   "deferrals": null,
+   "error_type": null,
+   "item_id": null,
+   "item_state": null,
+   "job_id": null,
+   "job_status": null,
+   "lane": null,
+   "link_state": null,
+   "linked": null,
+   "next_action": "resume_fleet",
+   "outcome": "fleet_paused",
+   "plan_id": "plan-1",
+   "reason_code": null,
+   "schema": "urn:zeus:fleet-backlog-tick:1"
+  },
+  "fleet_paused_jobs": [],
+  "identity": {
+   "one": {
+    "equals_binding_of_job_row": true,
+    "keys": [
+     "dependencies",
+     "goal",
+     "lane",
+     "manifest_sha256",
+     "repository"
+    ]
+   },
+   "two": {
+    "equals_binding_of_job_row": true,
+    "keys": [
+     "dependencies",
+     "goal",
+     "lane",
+     "manifest_sha256",
+     "repository"
+    ]
+   }
+  },
+  "idle_polls": {
+   "outcomes": [
+    "backlog_exhausted",
+    "backlog_exhausted",
+    "backlog_exhausted"
+   ],
+   "store_unchanged": true
+  },
+  "intent_keys": [
+   "plan-1:one",
+   "plan-1:two"
+  ],
+  "job_one_status_waiting": "queued",
+  "job_two_dependencies": [
+   "op-one"
+  ],
+  "lost_first": "op-one",
+  "lost_records": [
+   [
+    "fleet_backlog_intents",
+    "plan-1:one",
+    "39bf756937e1c6a118fa759f5e66d657b1c8220f87d4b149913369e1e7a84f0f"
+   ],
+   [
+    "fleet_backlog_plans",
+    "plan-1",
+    "70ca32e4e94a39a50f66715321ab37579376cce99317615fd3fbcebdd3b08112"
+   ],
+   [
+    "fleet_control",
+    "admission",
+    "5479ac128c7a90b84837e005de176794973c8a6db26805d409cc5a420a34cb1f"
+   ],
+   [
+    "fleet_jobs",
+    "op-one",
+    "c86a45e5a9d4d039d4648b6f5a631b5e7c889a5aa36c865352f4a40a24aa1b1f"
+   ],
+   [
+    "fleet_registry",
+    "fleet-1",
+    "c78086f09a51e2d77624bc467e4b2f5a76e1239a07484a257975bc97d5554614"
+   ]
+  ],
+  "lost_replay": {
+   "at": "2026-09-22T00:00:00.000006+00:00",
+   "authority": "backlog_selection; an accepted job means an accepted lane operation only, never a review verdict, a merge, a release or a deployment",
+   "blocked": {},
+   "cached": null,
+   "deferrals": null,
+   "error_type": null,
+   "item_id": null,
+   "item_state": null,
+   "job_id": null,
+   "job_status": null,
+   "lane": null,
+   "link_state": null,
+   "linked": null,
+   "next_action": "idle",
+   "outcome": "backlog_exhausted",
+   "plan_id": "plan-1",
+   "reason_code": null,
+   "schema": "urn:zeus:fleet-backlog-tick:1"
+  },
+  "lost_replay_jobs": [
+   "op-one"
+  ],
+  "lost_replay_state": "enqueued",
+  "lost_settled": {
+   "job_id": "op-one",
+   "state": "enqueued"
+  },
+  "plan_paused": {
+   "at": "2026-09-22T00:00:00.000002+00:00",
+   "authority": "backlog_selection; an accepted job means an accepted lane operation only, never a review verdict, a merge, a release or a deployment",
+   "blocked": {},
+   "cached": null,
+   "deferrals": null,
+   "error_type": null,
+   "item_id": null,
+   "item_state": null,
+   "job_id": null,
+   "job_status": null,
+   "lane": null,
+   "link_state": null,
+   "linked": null,
+   "next_action": "enable_plan",
+   "outcome": "plan_paused",
+   "plan_id": "plan-1",
+   "reason_code": null,
+   "schema": "urn:zeus:fleet-backlog-tick:1"
+  },
+  "plan_paused_intents": [],
+  "portfolio_calls": [
+   [
+    "op-one",
+    "research-improvement",
+    "verified-loop",
+    "ok"
+   ],
+   [
+    "op-two",
+    "research-improvement",
+    "verified-loop",
+    "ok"
+   ]
+  ],
+  "records": [
+   [
+    "fleet_backlog_intents",
+    "plan-1:one",
+    "de6cb7c8f6d1f0a3bc7ac1d80653c765646a27e63d5fc9a54bb0d457c3d85e33"
+   ],
+   [
+    "fleet_backlog_intents",
+    "plan-1:two",
+    "1466e1ac0dc8a3a2cb1d830a7455a1fcef77a97c4e7e37beeaee34f0cbf517a0"
+   ],
+   [
+    "fleet_backlog_plans",
+    "plan-1",
+    "02b8fc291ff6b136c22a98494f9d036b6c574e141494cc7b9c87e2d252731e05"
+   ],
+   [
+    "fleet_control",
+    "admission",
+    "5479ac128c7a90b84837e005de176794973c8a6db26805d409cc5a420a34cb1f"
+   ],
+   [
+    "fleet_jobs",
+    "op-one",
+    "5261cea7520ff95380821ffe07cfa4f3e3ce8c141d44f81058fbd44a497c7915"
+   ],
+   [
+    "fleet_jobs",
+    "op-two",
+    "67b3e46204471bd532b146e236aba1de22335b4195f40df17fa3fb738c87308f"
+   ],
+   [
+    "fleet_registry",
+    "fleet-1",
+    "c78086f09a51e2d77624bc467e4b2f5a76e1239a07484a257975bc97d5554614"
+   ]
+  ],
+  "restart_before_enqueue": {
+   "at": "2026-09-23T00:00:00.000001+00:00",
+   "authority": "backlog_selection; an accepted job means an accepted lane operation only, never a review verdict, a merge, a release or a deployment",
+   "blocked": {},
+   "cached": false,
+   "deferrals": null,
+   "error_type": null,
+   "item_id": "one",
+   "item_state": null,
+   "job_id": "op-one",
+   "job_status": "queued",
+   "lane": "a",
+   "link_state": "linked",
+   "linked": true,
+   "next_action": "owner_review",
+   "outcome": "enqueued",
+   "plan_id": "plan-1",
+   "reason_code": null,
+   "schema": "urn:zeus:fleet-backlog-tick:1"
+  },
+  "restart_before_enqueue_jobs": [
+   "op-one"
+  ],
+  "restart_before_read": {
+   "at": "2026-09-23T00:00:00.000001+00:00",
+   "authority": "backlog_selection; an accepted job means an accepted lane operation only, never a review verdict, a merge, a release or a deployment",
+   "blocked": {},
+   "cached": true,
+   "deferrals": null,
+   "error_type": null,
+   "item_id": "one",
+   "item_state": null,
+   "job_id": "op-one",
+   "job_status": "queued",
+   "lane": "a",
+   "link_state": "linked",
+   "linked": true,
+   "next_action": "owner_review",
+   "outcome": "enqueued",
+   "plan_id": "plan-1",
+   "reason_code": null,
+   "schema": "urn:zeus:fleet-backlog-tick:1"
+  },
+  "restart_before_read_intent": [
+   "enqueued",
+   "linked"
+  ],
+  "restart_before_read_jobs": [
+   "op-one"
+  ],
+  "settle_one": {
+   "calls": {
+    "reserved": 2,
+    "settled": 2
+   },
+   "created_at": "2026-09-18T00:00:00.000003+00:00",
+   "dependencies": [],
+   "dispatched_at": "2026-09-18T00:00:00.000004+00:00",
+   "error_type": null,
+   "exit_code": 0,
+   "finished_at": "2026-09-18T00:00:00.000005+00:00",
+   "goal": {
+    "base_revision": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+    "criterion": "c",
+    "path": "docs/GOAL.md",
+    "sha256": "bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb"
+   },
+   "id": "op-one",
+   "lane": "a",
+   "manifest_sha256": "e9494cbcf588d4180257eeab36fa8c0d2b48337d13b8f5405ee6e6825b0e34f1",
+   "operation_id": "op-one",
+   "owner_handoff": null,
+   "reason_code": "lead_accepted",
+   "status": "accepted",
+   "team": "alpha",
+   "updated_at": "2026-09-18T00:00:00.000005+00:00"
+  },
+  "stale_pin_tick": {
+   "at": "2026-09-22T00:00:00.000006+00:00",
+   "authority": "backlog_selection; an accepted job means an accepted lane operation only, never a review verdict, a merge, a release or a deployment",
+   "blocked": {
+    "one": "pin_changed"
+   },
+   "cached": false,
+   "deferrals": null,
+   "error_type": null,
+   "item_id": "other",
+   "item_state": null,
+   "job_id": "op-other",
+   "job_status": "queued",
+   "lane": "a",
+   "link_state": "linked",
+   "linked": true,
+   "next_action": "owner_review",
+   "outcome": "enqueued",
+   "plan_id": "plan-1",
+   "reason_code": null,
+   "schema": "urn:zeus:fleet-backlog-tick:1"
+  },
+  "stale_pin_view": [
+   {
+    "attempts": 0,
+    "criterion_id": "verified-loop",
+    "deferrals": 0,
+    "dependencies": [],
+    "item_id": "one",
+    "job_id": "op-one",
+    "job_status": null,
+    "lane": "a",
+    "link_reason": null,
+    "link_state": "linked",
+    "next_action": "owner_review",
+    "pin": {
+     "path": "docs/zeus/manifests/one.json",
+     "revision": "dddddddddddddddddddddddddddddddddddddddd",
+     "sha256": "7692c3ad3540bb803c020b3aee66cd8887123234ea0c6e7143c0add73ff431ed"
+    },
+    "priority": 10,
+    "project_id": "research-improvement",
+    "reason_code": "pin_changed",
+    "state": "conflict"
+   }
+  ],
+  "status_fleet_paused": true,
+  "status_view_omits_repository": true,
+  "tick_exhausted": {
+   "at": "2026-09-22T00:00:00.000011+00:00",
+   "authority": "backlog_selection; an accepted job means an accepted lane operation only, never a review verdict, a merge, a release or a deployment",
+   "blocked": {},
+   "cached": null,
+   "deferrals": null,
+   "error_type": null,
+   "item_id": null,
+   "item_state": null,
+   "job_id": null,
+   "job_status": null,
+   "lane": null,
+   "link_state": null,
+   "linked": null,
+   "next_action": "idle",
+   "outcome": "backlog_exhausted",
+   "plan_id": "plan-1",
+   "reason_code": null,
+   "schema": "urn:zeus:fleet-backlog-tick:1"
+  },
+  "tick_first": {
+   "at": "2026-09-22T00:00:00.000002+00:00",
+   "authority": "backlog_selection; an accepted job means an accepted lane operation only, never a review verdict, a merge, a release or a deployment",
+   "blocked": {
+    "two": "dependency_waiting"
+   },
+   "cached": false,
+   "deferrals": null,
+   "error_type": null,
+   "item_id": "one",
+   "item_state": null,
+   "job_id": "op-one",
+   "job_status": "queued",
+   "lane": "a",
+   "link_state": "linked",
+   "linked": true,
+   "next_action": "owner_review",
+   "outcome": "enqueued",
+   "plan_id": "plan-1",
+   "reason_code": null,
+   "schema": "urn:zeus:fleet-backlog-tick:1"
+  },
+  "tick_second": {
+   "at": "2026-09-22T00:00:00.000007+00:00",
+   "authority": "backlog_selection; an accepted job means an accepted lane operation only, never a review verdict, a merge, a release or a deployment",
+   "blocked": {},
+   "cached": false,
+   "deferrals": null,
+   "error_type": null,
+   "item_id": "two",
+   "item_state": null,
+   "job_id": "op-two",
+   "job_status": "queued",
+   "lane": "a",
+   "link_state": "linked",
+   "linked": true,
+   "next_action": "owner_review",
+   "outcome": "enqueued",
+   "plan_id": "plan-1",
+   "reason_code": null,
+   "schema": "urn:zeus:fleet-backlog-tick:1"
+  },
+  "tick_waiting": {
+   "at": "2026-09-22T00:00:00.000006+00:00",
+   "authority": "backlog_selection; an accepted job means an accepted lane operation only, never a review verdict, a merge, a release or a deployment",
+   "blocked": {
+    "two": "dependency_waiting"
+   },
+   "cached": null,
+   "deferrals": null,
+   "error_type": null,
+   "item_id": null,
+   "item_state": null,
+   "job_id": null,
+   "job_status": null,
+   "lane": null,
+   "link_state": null,
+   "linked": null,
+   "next_action": "owner_review",
+   "outcome": "blocked",
+   "plan_id": "plan-1",
+   "reason_code": null,
+   "schema": "urn:zeus:fleet-backlog-tick:1"
+  }
+ }
+}

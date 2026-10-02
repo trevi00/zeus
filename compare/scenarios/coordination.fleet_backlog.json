@@ -1,0 +1,8 @@
+{
+ "family": "coordination.fleet_backlog",
+ "description": "S8 coordination fleet_backlog of M7 application/fleet_backlog.py (FleetBacklog: register, plan, tick = select/resolve/enqueue/confirm/link, deferral and MAX_DEFERRALS, conflicts, refused enqueue, link pending/refused, status, logged and observed transitions), characterized before the move into coordination (V21) in the sequences of tests/test_fleet_backlog.py: MemoryStore behind SerialStore, the real Fleet, a LABELLED loader, portfolio and observer, scripted clocks and tokens, the store digest before and after every refusal; no runner, thread race or PostgreSQL",
+ "reference_driver": "drivers/reference/s8_fleet_backlog.py",
+ "target_driver": "drivers/target/s8_fleet_backlog.py",
+ "golden": "goldens/reference/coordination.fleet_backlog.json",
+ "slice": "S8"
+}
