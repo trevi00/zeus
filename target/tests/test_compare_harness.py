@@ -109,6 +109,7 @@ S8_FAMILIES = {"research.program_tick", "research.capture", "research.program_re
                "research.correction_feedback", "review.release_suite", "research.source_execution_adapter", "coordination.fleet_backlog", "intake.ticket_lifecycle", "review.canary", "research.audit_repair",
                "research.threshold_reviews", "research.scheduling", "review.releases_audits", "intake.goal_progress", "intake.ticket_authority",
                "research.decision_feedback", "review.sdd", "research.audit_execution", "research.audit_runner", "research.audit_repair_replay"}
+S9_FAMILIES = {"observation.schema"}
 S7_IMPLEMENTED = {"delivery.tooling", "delivery.restore.pg", "delivery.fleet_recovery_collectors", "delivery.release_runner", "delivery.canaries", "delivery.migration_evidence", "delivery.host_migration_transfer", "delivery.host_targets", "delivery.managed_runtime", "delivery.managed_systemd",
                   "review.releases_queue", "delivery.registry", "delivery.stages",
                   "delivery.owner_commands", "delivery.migration", "delivery.host_migrations",
@@ -134,7 +135,7 @@ def test_every_scenario_has_a_reference_golden_and_only_implemented_slices_have_
     scenarios = [load(p) for p in sorted((COMPARE / "scenarios").glob("*.json"))]
     assert {s["family"] for s in scenarios} == (S0_FAMILIES | S1_FAMILIES | S2_FAMILIES | S3_FAMILIES
                                                 | S4_FAMILIES | S5_FAMILIES | S6_FAMILIES
-                                                | S7_FAMILIES | S8_FAMILIES)
+                                                | S7_FAMILIES | S8_FAMILIES | S9_FAMILIES)
     for s in scenarios:
         assert (COMPARE / s["reference_driver"]).is_file()
         assert (COMPARE / s["golden"]).is_file()

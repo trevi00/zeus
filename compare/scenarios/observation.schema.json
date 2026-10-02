@@ -1,0 +1,9 @@
+{
+ "family": "observation.schema",
+ "description": "S9 unit U1 (M7 adapters/contracts.py::validate_observation, INV-OBSERVATION-001), characterized before the move into observation.adapters.observation_schema: valid events built by the side's own observation domain (every registry event type as a system event, an execution-branch event, a decisions_pending unassigned-sequence event, every severity and outcome, an oversize attributes object the schema does not bound); every refusal by its exact ContractError text (path and failed keyword only: a CANARY-123 planted in each refused field appears in no message), each missing required field, non-object inputs, and the five-error cap with the sorted-path order over eight simultaneous violations; no mask, no device, provider, network or database",
+ "reference_driver": "drivers/reference/s9_schema.py",
+ "target_driver": null,
+ "target_status": "pending: the target side is the S9 unit U1 move (observation.adapters.observation_schema)",
+ "golden": "goldens/reference/observation.schema.json",
+ "slice": "S9"
+}
