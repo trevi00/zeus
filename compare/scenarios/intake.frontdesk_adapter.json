@@ -2,8 +2,19 @@
  "family": "intake.frontdesk_adapter",
  "description": "S8 (V17 P-b) the front door's adapter half, M7 adapters/frontdesk.py (execute_frontdesk over a fake executor with an explicit snapshot, clean_checkout refusals, the desk output schema and prompt, and the monitoring evidence builder monitoring_facts/monitoring_evidence over snapshot files in the scenario temp dir with a fixed clock: fresh, stale, future, missing, oversized, 22 malformed payloads, the accounting modes, every fleet/observation branch), characterized before the split move; plus the M7 self-read through the default snapshot_path (snapshot=None, monitoring_evidence() with no path), recorded as M7 behaviour for the declared intended differences",
  "reference_driver": "drivers/reference/s8_frontdesk_adapter.py",
- "target_driver": null,
- "target_status": "pending: S8 pilot 90 (the split move follows the golden)",
+ "target_driver": "drivers/target/s8_frontdesk_adapter.py",
  "golden": "goldens/reference/intake.frontdesk_adapter.json",
- "slice": "S8"
+ "slice": "S8",
+ "intended_differences": [
+  {
+   "path": "$.s6_snapshot_none",
+   "op": "absent",
+   "authority": "V17 (DESIGN-s8 section 12.1, owner decision 2026-10-02T03:21:07Z; pilot 90 transcribe.py A/evidence/rebuild/s8/frontdesk-adapter-move): R-f1: execute_frontdesk(snapshot=None) is refused on the target ('desk monitoring evidence must be supplied') instead of M7's self-read of the runtime capture through the default snapshot_path(); composition always passes the evidence (desk_monitoring.monitoring_evidence(runtime_dir()/MONITORING_FILE)). The harness supports only absent/remove_item, so M7's self-read group is declared absent and the refusal is pinned by target/tests/test_s8_frontdesk_adapter_move.py"
+  },
+  {
+   "path": "$.s7_default_path",
+   "op": "absent",
+   "authority": "V17 (DESIGN-s8 section 12.1, owner decision 2026-10-02T03:21:07Z; pilot 90 transcribe.py A/evidence/rebuild/s8/frontdesk-adapter-move): R-m1: snapshot_path() (which read composition.configuration.runtime_dir) is removed and monitoring_evidence(path, now=None) requires the path; composition owns runtime_dir and passes the path. The target's required path is pinned by target/tests/test_s8_frontdesk_adapter_move.py"
+  }
+ ]
 }
