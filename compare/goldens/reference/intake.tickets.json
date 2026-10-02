@@ -1,0 +1,3221 @@
+{
+ "binding": {
+  "bound": {
+   "outcome": "returned",
+   "store_after": "7690e472aeb1ad6a",
+   "store_before": "7690e472aeb1ad6a",
+   "store_unchanged": true,
+   "value": {
+    "content_hash": "c5c76cce6c67a9181467adae5c467dc8303dd81d0868555fd0030800f203b6e6",
+    "id": "ZEUS-5eed00000001",
+    "revision": 1
+   }
+  },
+  "closed": {
+   "is_contract_error": true,
+   "message": "Ticket closed; downstream work stopped",
+   "outcome": "raised",
+   "store_after": "0058d243bd87c003",
+   "store_before": "0058d243bd87c003",
+   "store_unchanged": true,
+   "type": "TicketClosed"
+  },
+  "conflicting": {
+   "is_contract_error": true,
+   "message": "Conflicting ticket revisions",
+   "outcome": "raised",
+   "store_after": "7690e472aeb1ad6a",
+   "store_before": "7690e472aeb1ad6a",
+   "store_unchanged": true,
+   "type": "ContractError"
+  },
+  "hash_mismatch": {
+   "is_contract_error": true,
+   "message": "Ticket changed; reassessment required",
+   "outcome": "raised",
+   "store_after": "7690e472aeb1ad6a",
+   "store_before": "7690e472aeb1ad6a",
+   "store_unchanged": true,
+   "type": "TicketSuperseded"
+  },
+  "invalid_shape": {
+   "is_contract_error": true,
+   "message": "Invalid Zeus ticket binding",
+   "outcome": "raised",
+   "store_after": "7690e472aeb1ad6a",
+   "store_before": "7690e472aeb1ad6a",
+   "store_unchanged": true,
+   "type": "ContractError"
+  },
+  "lifecycle_sequence_bool": {
+   "is_contract_error": true,
+   "message": "Ticket lifecycle changed; old work cannot resume",
+   "outcome": "raised",
+   "store_after": "7690e472aeb1ad6a",
+   "store_before": "7690e472aeb1ad6a",
+   "store_unchanged": true,
+   "type": "TicketSuperseded"
+  },
+  "lifecycle_sequence_mismatch": {
+   "is_contract_error": true,
+   "message": "Ticket lifecycle changed; old work cannot resume",
+   "outcome": "raised",
+   "store_after": "7690e472aeb1ad6a",
+   "store_before": "7690e472aeb1ad6a",
+   "store_unchanged": true,
+   "type": "TicketSuperseded"
+  },
+  "missing_ticket": {
+   "is_contract_error": true,
+   "message": "Ticket missing",
+   "outcome": "raised",
+   "store_after": "7690e472aeb1ad6a",
+   "store_before": "7690e472aeb1ad6a",
+   "store_unchanged": true,
+   "type": "ContractError"
+  },
+  "nested_and_repeated": {
+   "outcome": "returned",
+   "store_after": "7690e472aeb1ad6a",
+   "store_before": "7690e472aeb1ad6a",
+   "store_unchanged": true,
+   "value": {
+    "content_hash": "c5c76cce6c67a9181467adae5c467dc8303dd81d0868555fd0030800f203b6e6",
+    "id": "ZEUS-5eed00000001",
+    "revision": 1
+   }
+  },
+  "no_binding": {
+   "outcome": "returned",
+   "store_after": "7690e472aeb1ad6a",
+   "store_before": "7690e472aeb1ad6a",
+   "store_unchanged": true,
+   "value": null
+  },
+  "not_a_dict_binding": {
+   "is_contract_error": true,
+   "message": "Invalid Zeus ticket binding",
+   "outcome": "raised",
+   "store_after": "7690e472aeb1ad6a",
+   "store_before": "7690e472aeb1ad6a",
+   "store_unchanged": true,
+   "type": "ContractError"
+  },
+  "revision_mismatch": {
+   "is_contract_error": true,
+   "message": "Ticket changed; reassessment required",
+   "outcome": "raised",
+   "store_after": "7690e472aeb1ad6a",
+   "store_before": "7690e472aeb1ad6a",
+   "store_unchanged": true,
+   "type": "TicketSuperseded"
+  },
+  "superseded_after_update": {
+   "is_contract_error": true,
+   "message": "Ticket changed; reassessment required",
+   "outcome": "raised",
+   "store_after": "daf3da8c322b5825",
+   "store_before": "daf3da8c322b5825",
+   "store_unchanged": true,
+   "type": "TicketSuperseded"
+  },
+  "superseded_error_type": [
+   "TicketSuperseded",
+   true
+  ]
+ },
+ "cases_per_group": {
+  "binding": 14,
+  "create": 15,
+  "dispatch": 35,
+  "get_list": 14,
+  "render": 10,
+  "review": 28,
+  "surface": 6,
+  "update": 21,
+  "validate_content": 67
+ },
+ "create": {
+  "author_blank": {
+   "is_contract_error": true,
+   "message": "Ticket author required",
+   "outcome": "raised",
+   "store_after": "40020310e7b883ed",
+   "store_before": "40020310e7b883ed",
+   "store_unchanged": true,
+   "type": "ContractError"
+  },
+  "author_empty": {
+   "is_contract_error": true,
+   "message": "Ticket author required",
+   "outcome": "raised",
+   "store_after": "40020310e7b883ed",
+   "store_before": "40020310e7b883ed",
+   "store_unchanged": true,
+   "type": "ContractError"
+  },
+  "author_none": {
+   "is_contract_error": true,
+   "message": "Ticket author required",
+   "outcome": "raised",
+   "store_after": "40020310e7b883ed",
+   "store_before": "40020310e7b883ed",
+   "store_unchanged": true,
+   "type": "ContractError"
+  },
+  "author_number": {
+   "is_contract_error": true,
+   "message": "Ticket author required",
+   "outcome": "raised",
+   "store_after": "40020310e7b883ed",
+   "store_before": "40020310e7b883ed",
+   "store_unchanged": true,
+   "type": "ContractError"
+  },
+  "create": {
+   "outcome": "returned",
+   "store_after": "7690e472aeb1ad6a",
+   "store_before": "4f53cda18c2baa0c",
+   "store_unchanged": false,
+   "value": {
+    "content_hash": "c5c76cce6c67a9181467adae5c467dc8303dd81d0868555fd0030800f203b6e6",
+    "created_at": "2026-09-22T00:00:01+00:00",
+    "id": "ZEUS-5eed00000001",
+    "revision": 1,
+    "status": "open"
+   }
+  },
+  "create_author_recorded": "reviewer-1",
+  "create_hash_is_the_content_digest": true,
+  "create_row_keys": [
+   "content_hash",
+   "created_at",
+   "id",
+   "revision",
+   "status"
+  ],
+  "create_rows": {
+   "counts": {
+    "ticket_revisions": 1,
+    "tickets": 1
+   },
+   "ticket_revisions": [
+    {
+     "claimed_author": "operator",
+     "content": {
+      "acceptance_criteria": [
+       "Independent services"
+      ],
+      "evidence_refs": [
+       "fixture:source-inspection"
+      ],
+      "impact": "Potential contention",
+      "problem": "Production and tests share endpoints",
+      "rollback": "Restore verified image",
+      "scope": [
+       "deployment"
+      ],
+      "title": "검증 환경 격리",
+      "verification": [
+       "Run isolated service integration test"
+      ]
+     },
+     "content_hash": "c5c76cce6c67a9181467adae5c467dc8303dd81d0868555fd0030800f203b6e6",
+     "created_at": "2026-09-22T00:00:01+00:00",
+     "id": "ZEUS-5eed00000001",
+     "reason": "created",
+     "revision": 1,
+     "status": "open"
+    }
+   ],
+   "tickets": [
+    {
+     "content_hash": "c5c76cce6c67a9181467adae5c467dc8303dd81d0868555fd0030800f203b6e6",
+     "created_at": "2026-09-22T00:00:01+00:00",
+     "id": "ZEUS-5eed00000001",
+     "revision": 1,
+     "status": "open"
+    }
+   ]
+  },
+  "create_second_id_differs": true,
+  "create_with_author": {
+   "outcome": "returned",
+   "store_after": "40020310e7b883ed",
+   "store_before": "7690e472aeb1ad6a",
+   "store_unchanged": false,
+   "value": {
+    "content_hash": "a65a5a7320b2822cb2db51ae4e868923242af3073a4ab20f1ca981eefa9a780d",
+    "created_at": "2026-09-22T00:00:01+00:00",
+    "id": "ZEUS-5eed00000002",
+    "revision": 1,
+    "status": "open"
+   }
+  },
+  "identical_content_is_a_second_ticket": {
+   "outcome": "returned",
+   "store_after": "04d660dcb18123a9",
+   "store_before": "40020310e7b883ed",
+   "store_unchanged": false,
+   "value": {
+    "content_hash": "c5c76cce6c67a9181467adae5c467dc8303dd81d0868555fd0030800f203b6e6",
+    "created_at": "2026-09-22T00:00:01+00:00",
+    "id": "ZEUS-5eed00000003",
+    "revision": 1,
+    "status": "open"
+   }
+  },
+  "invalid_content": {
+   "is_contract_error": true,
+   "message": "Ticket needs title, problem, impact, rollback, evidence_refs, scope, acceptance_criteria, verification",
+   "outcome": "raised",
+   "store_after": "40020310e7b883ed",
+   "store_before": "40020310e7b883ed",
+   "store_unchanged": true,
+   "type": "ContractError"
+  },
+  "invalid_content_before_author": {
+   "is_contract_error": true,
+   "message": "Ticket needs title, problem, impact, rollback, evidence_refs, scope, acceptance_criteria, verification",
+   "outcome": "raised",
+   "store_after": "40020310e7b883ed",
+   "store_before": "40020310e7b883ed",
+   "store_unchanged": true,
+   "type": "ContractError"
+  },
+  "rows_after": {
+   "ticket_revisions": 3,
+   "tickets": 3
+  }
+ },
+ "dispatch": {
+  "blank_criterion": {
+   "is_contract_error": true,
+   "message": "Goal criterion id required",
+   "outcome": "raised",
+   "store_after": "6e991d8caeb95531",
+   "store_before": "6e991d8caeb95531",
+   "store_unchanged": true,
+   "type": "ContractError"
+  },
+  "closed_ticket_dispatch": {
+   "is_contract_error": true,
+   "message": "Ticket closed; downstream work stopped",
+   "outcome": "raised",
+   "store_after": "8f81b6de97a230b8",
+   "store_before": "8f81b6de97a230b8",
+   "store_unchanged": true,
+   "type": "TicketClosed"
+  },
+  "closed_ticket_error_classes": [
+   true
+  ],
+  "criterion_bound_to_another_hash": {
+   "is_contract_error": true,
+   "message": "Dispatch ticket does not match the goal criterion binding",
+   "outcome": "raised",
+   "store_after": "6e991d8caeb95531",
+   "store_before": "6e991d8caeb95531",
+   "store_unchanged": true,
+   "type": "ContractError"
+  },
+  "criterion_bound_to_another_revision": {
+   "is_contract_error": true,
+   "message": "Dispatch ticket does not match the goal criterion binding",
+   "outcome": "raised",
+   "store_after": "6e991d8caeb95531",
+   "store_before": "6e991d8caeb95531",
+   "store_unchanged": true,
+   "type": "ContractError"
+  },
+  "criterion_bound_to_another_ticket": {
+   "is_contract_error": true,
+   "message": "Dispatch ticket does not match the goal criterion binding",
+   "outcome": "raised",
+   "store_after": "6e991d8caeb95531",
+   "store_before": "6e991d8caeb95531",
+   "store_unchanged": true,
+   "type": "ContractError"
+  },
+  "criterion_without_manifest": {
+   "is_contract_error": true,
+   "message": "Goal manifest and criterion are required together",
+   "outcome": "raised",
+   "store_after": "6e991d8caeb95531",
+   "store_before": "6e991d8caeb95531",
+   "store_unchanged": true,
+   "type": "ContractError"
+  },
+  "dispatch": {
+   "outcome": "returned",
+   "store_after": "4c05c72434bb5cb8",
+   "store_before": "6e991d8caeb95531",
+   "store_unchanged": false,
+   "value": {
+    "id": "42196353f861ad830c9a74b92bc38178f03e3b552eb72aefa7614d4c204afb14",
+    "message_id": "5eed0000-0003-4000-8000-000000000000",
+    "revision": 1,
+    "status": "queued_for_planning",
+    "ticket_id": "ZEUS-5eed00000001"
+   }
+  },
+  "dispatch_after_update": {
+   "outcome": "returned",
+   "store_after": "e34d162910c2dfa2",
+   "store_before": "5e9b90ea4992a04a",
+   "store_unchanged": false,
+   "value": {
+    "id": "b4c8d41ac8e25e97a3f0cdef2d543a6457dcc0db284b6ffd3b0a2b4215fadc30",
+    "message_id": "5eed0000-0004-4000-8000-000000000000",
+    "revision": 2,
+    "status": "queued_for_planning",
+    "ticket_id": "ZEUS-5eed00000001"
+   }
+  },
+  "dispatch_key_is_the_binding_digest": true,
+  "dispatch_replay_returns_the_stored_result": {
+   "outcome": "returned",
+   "store_after": "4c05c72434bb5cb8",
+   "store_before": "4c05c72434bb5cb8",
+   "store_unchanged": true,
+   "value": {
+    "id": "42196353f861ad830c9a74b92bc38178f03e3b552eb72aefa7614d4c204afb14",
+    "message_id": "5eed0000-0003-4000-8000-000000000000",
+    "revision": 1,
+    "status": "queued_for_planning",
+    "ticket_id": "ZEUS-5eed00000001"
+   }
+  },
+  "dispatch_rows": {
+   "counts": {
+    "outbox": 1,
+    "ticket_dispatches": 1,
+    "ticket_reviews": 1,
+    "ticket_revisions": 1,
+    "tickets": 1
+   },
+   "outbox": [
+    {
+     "message": {
+      "causation_id": null,
+      "correlation_id": "ticket:ZEUS-5eed00000001:1",
+      "how": {
+       "acceptance_criteria": [
+        "Independent services"
+       ],
+       "constraints": [],
+       "context_ref": null,
+       "result_schema": "six-w.v1"
+      },
+      "message_id": "5eed0000-0003-4000-8000-000000000000",
+      "schema_version": "1.0",
+      "type": "task.assign",
+      "what": {
+       "action": "plan",
+       "details": {
+        "acceptance_criteria": [
+         "Independent services"
+        ],
+        "external_ticket_observations": [],
+        "external_ticket_observations_omitted": 0,
+        "external_ticket_observations_total": 0,
+        "objective": "검증 환경 격리\nProduction and tests share endpoints",
+        "ticket_context": {
+         "acceptance_criteria": [
+          "Independent services"
+         ],
+         "evidence_refs": [
+          "fixture:source-inspection"
+         ],
+         "impact": "Potential contention",
+         "problem": "Production and tests share endpoints",
+         "rollback": "Restore verified image",
+         "scope": [
+          "deployment"
+         ],
+         "title": "검증 환경 격리",
+         "verification": [
+          "Run isolated service integration test"
+         ]
+        },
+        "ticket_reviews": [
+         {
+          "at": "2026-09-22T00:00:01+00:00",
+          "authority": "advisory_only",
+          "claimed_provider": "codex",
+          "claimed_reviewer": "Codex",
+          "content_hash": "c5c76cce6c67a9181467adae5c467dc8303dd81d0868555fd0030800f203b6e6",
+          "evidence_refs": [
+           "fixture:review"
+          ],
+          "id": "5be7f12c00bc3f290f1219731eb997a296662c5cad5b45557d50f8536ca1cfe7",
+          "revision": 1,
+          "summary": "Advisory only",
+          "ticket_id": "ZEUS-5eed00000001",
+          "verdict": "support"
+         }
+        ],
+        "zeus_ticket": {
+         "content_hash": "c5c76cce6c67a9181467adae5c467dc8303dd81d0868555fd0030800f203b6e6",
+         "id": "ZEUS-5eed00000001",
+         "revision": 1
+        }
+       }
+      },
+      "when": {
+       "after": [],
+       "created_at": "2026-09-22T00:00:03+00:00",
+       "deadline": null
+      },
+      "where": {
+       "allowed_paths": [],
+       "environment": "local",
+       "repository": "codex-harness",
+       "revision": "repository-commit"
+      },
+      "who": {
+       "owner": "lead:improvement",
+       "recipient": "lead:improvement",
+       "sender": "conductor"
+      },
+      "why": {
+       "evidence_refs": [],
+       "objective": "Improve harness reliability from verified evidence"
+      }
+     },
+     "sent": false
+    }
+   ],
+   "ticket_dispatches": [
+    {
+     "id": "42196353f861ad830c9a74b92bc38178f03e3b552eb72aefa7614d4c204afb14",
+     "message_id": "5eed0000-0003-4000-8000-000000000000",
+     "revision": 1,
+     "status": "queued_for_planning",
+     "ticket_id": "ZEUS-5eed00000001"
+    }
+   ],
+   "tickets": [
+    {
+     "content_hash": "c5c76cce6c67a9181467adae5c467dc8303dd81d0868555fd0030800f203b6e6",
+     "created_at": "2026-09-22T00:00:01+00:00",
+     "id": "ZEUS-5eed00000001",
+     "revision": 1,
+     "status": "dispatched"
+    }
+   ]
+  },
+  "dispatch_rows_after_both": {
+   "outbox": 2,
+   "ticket_dispatches": 2,
+   "ticket_revisions": 1,
+   "tickets": 1
+  },
+  "dispatches_after_update": [
+   {
+    "id": "42196353f861ad830c9a74b92bc38178f03e3b552eb72aefa7614d4c204afb14",
+    "message_id": "5eed0000-0003-4000-8000-000000000000",
+    "revision": 1,
+    "status": "superseded",
+    "superseded_by_revision": 2,
+    "ticket_id": "ZEUS-5eed00000001"
+   },
+   {
+    "id": "b4c8d41ac8e25e97a3f0cdef2d543a6457dcc0db284b6ffd3b0a2b4215fadc30",
+    "message_id": "5eed0000-0004-4000-8000-000000000000",
+    "revision": 2,
+    "status": "queued_for_planning",
+    "ticket_id": "ZEUS-5eed00000001"
+   }
+  ],
+  "goal_and_plain_dispatch_are_distinct": {
+   "outcome": "returned",
+   "store_after": "48d9369c86fd5a3f",
+   "store_before": "117bcc5877d9627d",
+   "store_unchanged": false,
+   "value": {
+    "id": "42196353f861ad830c9a74b92bc38178f03e3b552eb72aefa7614d4c204afb14",
+    "message_id": "5eed0000-0003-4000-8000-000000000000",
+    "revision": 1,
+    "status": "queued_for_planning",
+    "ticket_id": "ZEUS-5eed00000001"
+   }
+  },
+  "goal_dispatch": {
+   "outcome": "returned",
+   "store_after": "117bcc5877d9627d",
+   "store_before": "7690e472aeb1ad6a",
+   "store_unchanged": false,
+   "value": {
+    "goal_binding": {
+     "criterion_id": "c1",
+     "definition_hash": "3891fe50b2e1a877ee636108bfd70671494249ff6aec763a342033e8b43a6f1c",
+     "id": "goal-1"
+    },
+    "id": "6fc464355a7b58324950c4c4f5584cde57cc9db35a09ceeb7350af24f700e2ef",
+    "message_id": "5eed0000-0002-4000-8000-000000000000",
+    "revision": 1,
+    "status": "queued_for_planning",
+    "ticket_id": "ZEUS-5eed00000001"
+   }
+  },
+  "goal_dispatch_key_includes_the_goal": true,
+  "goal_dispatch_replay": {
+   "outcome": "returned",
+   "store_after": "117bcc5877d9627d",
+   "store_before": "117bcc5877d9627d",
+   "store_unchanged": true,
+   "value": {
+    "goal_binding": {
+     "criterion_id": "c1",
+     "definition_hash": "3891fe50b2e1a877ee636108bfd70671494249ff6aec763a342033e8b43a6f1c",
+     "id": "goal-1"
+    },
+    "id": "6fc464355a7b58324950c4c4f5584cde57cc9db35a09ceeb7350af24f700e2ef",
+    "message_id": "5eed0000-0002-4000-8000-000000000000",
+    "revision": 1,
+    "status": "queued_for_planning",
+    "ticket_id": "ZEUS-5eed00000001"
+   }
+  },
+  "goal_dispatch_rows": {
+   "outbox": [
+    {
+     "message": {
+      "causation_id": null,
+      "correlation_id": "ticket:ZEUS-5eed00000001:1",
+      "how": {
+       "acceptance_criteria": [
+        "Independent services"
+       ],
+       "constraints": [],
+       "context_ref": null,
+       "result_schema": "six-w.v1"
+      },
+      "message_id": "5eed0000-0002-4000-8000-000000000000",
+      "schema_version": "1.0",
+      "type": "task.assign",
+      "what": {
+       "action": "plan",
+       "details": {
+        "acceptance_criteria": [
+         "Independent services"
+        ],
+        "external_ticket_observations": [],
+        "external_ticket_observations_omitted": 0,
+        "external_ticket_observations_total": 0,
+        "goal_binding": {
+         "criterion_id": "c1",
+         "definition_hash": "3891fe50b2e1a877ee636108bfd70671494249ff6aec763a342033e8b43a6f1c",
+         "id": "goal-1"
+        },
+        "objective": "검증 환경 격리\nProduction and tests share endpoints",
+        "ticket_context": {
+         "acceptance_criteria": [
+          "Independent services"
+         ],
+         "evidence_refs": [
+          "fixture:source-inspection"
+         ],
+         "impact": "Potential contention",
+         "problem": "Production and tests share endpoints",
+         "rollback": "Restore verified image",
+         "scope": [
+          "deployment"
+         ],
+         "title": "검증 환경 격리",
+         "verification": [
+          "Run isolated service integration test"
+         ]
+        },
+        "ticket_reviews": [],
+        "zeus_ticket": {
+         "content_hash": "c5c76cce6c67a9181467adae5c467dc8303dd81d0868555fd0030800f203b6e6",
+         "id": "ZEUS-5eed00000001",
+         "revision": 1
+        }
+       }
+      },
+      "when": {
+       "after": [],
+       "created_at": "2026-09-22T00:00:01+00:00",
+       "deadline": null
+      },
+      "where": {
+       "allowed_paths": [],
+       "environment": "local",
+       "repository": "codex-harness",
+       "revision": "base"
+      },
+      "who": {
+       "owner": "lead:improvement",
+       "recipient": "lead:improvement",
+       "sender": "conductor"
+      },
+      "why": {
+       "evidence_refs": [],
+       "objective": "Improve harness reliability from verified evidence"
+      }
+     },
+     "sent": false
+    }
+   ],
+   "ticket_dispatches": [
+    {
+     "goal_binding": {
+      "criterion_id": "c1",
+      "definition_hash": "3891fe50b2e1a877ee636108bfd70671494249ff6aec763a342033e8b43a6f1c",
+      "id": "goal-1"
+     },
+     "id": "6fc464355a7b58324950c4c4f5584cde57cc9db35a09ceeb7350af24f700e2ef",
+     "message_id": "5eed0000-0002-4000-8000-000000000000",
+     "revision": 1,
+     "status": "queued_for_planning",
+     "ticket_id": "ZEUS-5eed00000001"
+    }
+   ]
+  },
+  "invalid_manifest": {
+   "is_contract_error": true,
+   "message": "Goal manifest needs version, id, objective, non_goals and criteria",
+   "outcome": "raised",
+   "store_after": "6e991d8caeb95531",
+   "store_before": "6e991d8caeb95531",
+   "store_unchanged": true,
+   "type": "ContractError"
+  },
+  "lifecycle_sequence_dispatch": {
+   "outcome": "returned",
+   "store_after": "99d1dcd3c59b3934",
+   "store_before": "05afb34085dd645b",
+   "store_unchanged": false,
+   "value": {
+    "id": "f689b5c2c3e071c2192cdb8f957efe479ea50ff98003f49197754ddfc4718e48",
+    "message_id": "5eed0000-0002-4000-8000-000000000000",
+    "revision": 1,
+    "status": "queued_for_planning",
+    "ticket_id": "ZEUS-5eed00000001"
+   }
+  },
+  "lifecycle_sequence_in_the_message": {
+   "content_hash": "c5c76cce6c67a9181467adae5c467dc8303dd81d0868555fd0030800f203b6e6",
+   "id": "ZEUS-5eed00000001",
+   "lifecycle_sequence": 2,
+   "revision": 1
+  },
+  "manifest_without_criterion": {
+   "is_contract_error": true,
+   "message": "Goal manifest and criterion are required together",
+   "outcome": "raised",
+   "store_after": "6e991d8caeb95531",
+   "store_before": "6e991d8caeb95531",
+   "store_unchanged": true,
+   "type": "ContractError"
+  },
+  "observations_bounded": {
+   "kept": [
+    "obs-03",
+    "obs-04",
+    "obs-05",
+    "obs-06",
+    "obs-07",
+    "obs-08",
+    "obs-09",
+    "obs-10",
+    "obs-11",
+    "obs-12"
+   ],
+   "omitted": 3,
+   "total": 13
+  },
+  "observations_dispatch": {
+   "outcome": "returned",
+   "store_after": "bd3f0528c3d76d23",
+   "store_before": "0bebf5e6c49c12d0",
+   "store_unchanged": false,
+   "value": {
+    "id": "42196353f861ad830c9a74b92bc38178f03e3b552eb72aefa7614d4c204afb14",
+    "message_id": "5eed0000-0002-4000-8000-000000000000",
+    "revision": 1,
+    "status": "queued_for_planning",
+    "ticket_id": "ZEUS-5eed00000001"
+   }
+  },
+  "organization_refuses_the_assignment": {
+   "is_contract_error": true,
+   "message": "Unknown actor",
+   "outcome": "raised",
+   "store_after": "7690e472aeb1ad6a",
+   "store_before": "7690e472aeb1ad6a",
+   "store_unchanged": true,
+   "type": "ContractError"
+  },
+  "replay_added_no_outbox_row": 1,
+  "repository_blank": {
+   "is_contract_error": true,
+   "message": "Repository revision required",
+   "outcome": "raised",
+   "store_after": "6e991d8caeb95531",
+   "store_before": "6e991d8caeb95531",
+   "store_unchanged": true,
+   "type": "ContractError"
+  },
+  "repository_none": {
+   "is_contract_error": true,
+   "message": "Repository revision required",
+   "outcome": "raised",
+   "store_after": "6e991d8caeb95531",
+   "store_before": "6e991d8caeb95531",
+   "store_unchanged": true,
+   "type": "ContractError"
+  },
+  "rows_before_the_first_dispatch": {
+   "ticket_reviews": 1,
+   "ticket_revisions": 1,
+   "tickets": 1
+  },
+  "stale_after_dispatch": {
+   "is_contract_error": true,
+   "message": "Stale ticket dispatch",
+   "outcome": "raised",
+   "store_after": "4c05c72434bb5cb8",
+   "store_before": "4c05c72434bb5cb8",
+   "store_unchanged": true,
+   "type": "ContractError"
+  },
+  "stale_revision": {
+   "is_contract_error": true,
+   "message": "Stale ticket dispatch",
+   "outcome": "raised",
+   "store_after": "6e991d8caeb95531",
+   "store_before": "6e991d8caeb95531",
+   "store_unchanged": true,
+   "type": "ContractError"
+  },
+  "tampered_revision_dispatch": {
+   "is_contract_error": true,
+   "message": "Ticket revision corrupted",
+   "outcome": "raised",
+   "store_after": "9d9f4083f01ad070",
+   "store_before": "9d9f4083f01ad070",
+   "store_unchanged": true,
+   "type": "ContractError"
+  },
+  "unknown_criterion": {
+   "is_contract_error": true,
+   "message": "Goal criterion not in manifest",
+   "outcome": "raised",
+   "store_after": "6e991d8caeb95531",
+   "store_before": "6e991d8caeb95531",
+   "store_unchanged": true,
+   "type": "ContractError"
+  },
+  "unknown_ticket": {
+   "is_contract_error": true,
+   "message": "Stale ticket dispatch",
+   "outcome": "raised",
+   "store_after": "6e991d8caeb95531",
+   "store_before": "6e991d8caeb95531",
+   "store_unchanged": true,
+   "type": "ContractError"
+  }
+ },
+ "get_list": {
+  "get_corrupted_revision": {
+   "is_contract_error": true,
+   "message": "Ticket revision unavailable or corrupted",
+   "outcome": "raised",
+   "store_after": "eb1b15ef8be306ad",
+   "store_before": "eb1b15ef8be306ad",
+   "store_unchanged": true,
+   "type": "ContractError"
+  },
+  "get_current": {
+   "outcome": "returned",
+   "store_after": "88bfd38a9d44c5ed",
+   "store_before": "88bfd38a9d44c5ed",
+   "store_unchanged": true,
+   "value": {
+    "claimed_author": "operator",
+    "content": {
+     "acceptance_criteria": [
+      "Independent services"
+     ],
+     "evidence_refs": [
+      "fixture:source-inspection"
+     ],
+     "impact": "Potential contention",
+     "problem": "Production and tests share endpoints",
+     "rollback": "Restore verified image",
+     "scope": [
+      "deployment"
+     ],
+     "title": "First",
+     "verification": [
+      "Run isolated service integration test"
+     ]
+    },
+    "content_hash": "ad86d1dc36d78d822088cd9c9b4a9c218565bc26036877a6b137b43ca1b978e3",
+    "created_at": "2026-09-22T00:00:01+00:00",
+    "current_revision": 1,
+    "external_observations": [],
+    "github": [],
+    "id": "ZEUS-5eed00000001",
+    "lifecycle_event": null,
+    "lifecycle_history": [],
+    "lifecycle_sequence": 0,
+    "reason": "created",
+    "reviews": [],
+    "revision": 1,
+    "status": "open",
+    "updated_at": "2026-09-22T00:00:01+00:00"
+   }
+  },
+  "get_current_after_update_has_no_reviews": {
+   "outcome": "returned",
+   "store_after": "d4aacf9afc454374",
+   "store_before": "d4aacf9afc454374",
+   "store_unchanged": true,
+   "value": {
+    "claimed_author": "operator",
+    "content": {
+     "acceptance_criteria": [
+      "Independent services"
+     ],
+     "evidence_refs": [
+      "fixture:source-inspection"
+     ],
+     "impact": "Potential contention",
+     "problem": "Production and tests share endpoints",
+     "rollback": "Restore verified image",
+     "scope": [
+      "deployment"
+     ],
+     "title": "First, revised",
+     "verification": [
+      "Run isolated service integration test"
+     ]
+    },
+    "content_hash": "b136104c9dd0f52a1ae1f3baeacd7570b1821bdff4099e22780d0d2e6048182b",
+    "created_at": "2026-09-22T00:00:01+00:00",
+    "current_revision": 2,
+    "external_observations": [
+     {
+      "at": "2026-09-22T00:00:00+00:00",
+      "id": "obs-nosequence",
+      "ticket_id": "ZEUS-5eed00000001"
+     },
+     {
+      "at": "2026-09-22T00:00:01+00:00",
+      "id": "obs-0",
+      "sequence": 0,
+      "ticket_id": "ZEUS-5eed00000001"
+     },
+     {
+      "at": "2026-09-22T00:00:09+00:00",
+      "id": "obs-1",
+      "sequence": 1,
+      "ticket_id": "ZEUS-5eed00000001"
+     },
+     {
+      "at": "2026-09-22T00:00:09+00:00",
+      "id": "obs-2",
+      "sequence": 2,
+      "ticket_id": "ZEUS-5eed00000001"
+     }
+    ],
+    "github": [
+     {
+      "id": "link-0",
+      "number": 2,
+      "status": "synced",
+      "ticket_id": "ZEUS-5eed00000001"
+     },
+     {
+      "id": "link-1",
+      "number": 3,
+      "status": "synced",
+      "ticket_id": "ZEUS-5eed00000001"
+     }
+    ],
+    "id": "ZEUS-5eed00000001",
+    "lifecycle_event": null,
+    "lifecycle_history": [
+     {
+      "id": "event-1",
+      "sequence": 1,
+      "ticket_id": "ZEUS-5eed00000001"
+     },
+     {
+      "id": "event-2",
+      "sequence": 2,
+      "ticket_id": "ZEUS-5eed00000001"
+     }
+    ],
+    "lifecycle_sequence": 0,
+    "reason": "Revise",
+    "reviews": [],
+    "revision": 2,
+    "status": "open",
+    "updated_at": "2026-09-22T00:00:09+00:00"
+   }
+  },
+  "get_missing": {
+   "is_contract_error": true,
+   "message": "Ticket not found",
+   "outcome": "raised",
+   "store_after": "88bfd38a9d44c5ed",
+   "store_before": "88bfd38a9d44c5ed",
+   "store_unchanged": true,
+   "type": "ContractError"
+  },
+  "get_revision_one_after_update": {
+   "outcome": "returned",
+   "store_after": "d4aacf9afc454374",
+   "store_before": "d4aacf9afc454374",
+   "store_unchanged": true,
+   "value": {
+    "claimed_author": "operator",
+    "content": {
+     "acceptance_criteria": [
+      "Independent services"
+     ],
+     "evidence_refs": [
+      "fixture:source-inspection"
+     ],
+     "impact": "Potential contention",
+     "problem": "Production and tests share endpoints",
+     "rollback": "Restore verified image",
+     "scope": [
+      "deployment"
+     ],
+     "title": "First",
+     "verification": [
+      "Run isolated service integration test"
+     ]
+    },
+    "content_hash": "ad86d1dc36d78d822088cd9c9b4a9c218565bc26036877a6b137b43ca1b978e3",
+    "created_at": "2026-09-22T00:00:01+00:00",
+    "current_revision": 2,
+    "external_observations": [
+     {
+      "at": "2026-09-22T00:00:00+00:00",
+      "id": "obs-nosequence",
+      "ticket_id": "ZEUS-5eed00000001"
+     },
+     {
+      "at": "2026-09-22T00:00:01+00:00",
+      "id": "obs-0",
+      "sequence": 0,
+      "ticket_id": "ZEUS-5eed00000001"
+     },
+     {
+      "at": "2026-09-22T00:00:09+00:00",
+      "id": "obs-1",
+      "sequence": 1,
+      "ticket_id": "ZEUS-5eed00000001"
+     },
+     {
+      "at": "2026-09-22T00:00:09+00:00",
+      "id": "obs-2",
+      "sequence": 2,
+      "ticket_id": "ZEUS-5eed00000001"
+     }
+    ],
+    "github": [
+     {
+      "id": "link-0",
+      "number": 2,
+      "status": "synced",
+      "ticket_id": "ZEUS-5eed00000001"
+     },
+     {
+      "id": "link-1",
+      "number": 3,
+      "status": "synced",
+      "ticket_id": "ZEUS-5eed00000001"
+     }
+    ],
+    "id": "ZEUS-5eed00000001",
+    "lifecycle_event": null,
+    "lifecycle_history": [
+     {
+      "id": "event-1",
+      "sequence": 1,
+      "ticket_id": "ZEUS-5eed00000001"
+     },
+     {
+      "id": "event-2",
+      "sequence": 2,
+      "ticket_id": "ZEUS-5eed00000001"
+     }
+    ],
+    "lifecycle_sequence": 0,
+    "reason": "created",
+    "reviews": [
+     {
+      "at": "2026-09-22T00:00:07+00:00",
+      "authority": "advisory_only",
+      "claimed_provider": "claude",
+      "claimed_reviewer": "Claude",
+      "content_hash": "ad86d1dc36d78d822088cd9c9b4a9c218565bc26036877a6b137b43ca1b978e3",
+      "evidence_refs": [
+       "fixture:a"
+      ],
+      "id": "9fdb2d92eafa560714dfca8370744a14dd7ff4eb1659e54be847a052b58b14e3",
+      "revision": 1,
+      "summary": "Looks fine",
+      "ticket_id": "ZEUS-5eed00000001",
+      "verdict": "support"
+     },
+     {
+      "at": "2026-09-22T00:00:08+00:00",
+      "authority": "advisory_only",
+      "claimed_provider": "codex",
+      "claimed_reviewer": "Codex",
+      "content_hash": "ad86d1dc36d78d822088cd9c9b4a9c218565bc26036877a6b137b43ca1b978e3",
+      "evidence_refs": [
+       "fixture:b"
+      ],
+      "id": "2710d90fa45de3feb63f1d67cab8228bfd6487019fb8d7d5bc5688b29da3ff50",
+      "revision": 1,
+      "summary": "Why?",
+      "ticket_id": "ZEUS-5eed00000001",
+      "verdict": "question"
+     }
+    ],
+    "revision": 1,
+    "status": "open",
+    "updated_at": "2026-09-22T00:00:09+00:00"
+   }
+  },
+  "get_unknown_revision": {
+   "is_contract_error": true,
+   "message": "Ticket revision unavailable or corrupted",
+   "outcome": "raised",
+   "store_after": "88bfd38a9d44c5ed",
+   "store_before": "88bfd38a9d44c5ed",
+   "store_unchanged": true,
+   "type": "ContractError"
+  },
+  "get_with_reviews_links_observations_events": {
+   "outcome": "returned",
+   "store_after": "0f638f1b344d7cc5",
+   "store_before": "0f638f1b344d7cc5",
+   "store_unchanged": true,
+   "value": {
+    "claimed_author": "operator",
+    "content": {
+     "acceptance_criteria": [
+      "Independent services"
+     ],
+     "evidence_refs": [
+      "fixture:source-inspection"
+     ],
+     "impact": "Potential contention",
+     "problem": "Production and tests share endpoints",
+     "rollback": "Restore verified image",
+     "scope": [
+      "deployment"
+     ],
+     "title": "First",
+     "verification": [
+      "Run isolated service integration test"
+     ]
+    },
+    "content_hash": "ad86d1dc36d78d822088cd9c9b4a9c218565bc26036877a6b137b43ca1b978e3",
+    "created_at": "2026-09-22T00:00:01+00:00",
+    "current_revision": 1,
+    "external_observations": [
+     {
+      "at": "2026-09-22T00:00:00+00:00",
+      "id": "obs-nosequence",
+      "ticket_id": "ZEUS-5eed00000001"
+     },
+     {
+      "at": "2026-09-22T00:00:01+00:00",
+      "id": "obs-0",
+      "sequence": 0,
+      "ticket_id": "ZEUS-5eed00000001"
+     },
+     {
+      "at": "2026-09-22T00:00:09+00:00",
+      "id": "obs-1",
+      "sequence": 1,
+      "ticket_id": "ZEUS-5eed00000001"
+     },
+     {
+      "at": "2026-09-22T00:00:09+00:00",
+      "id": "obs-2",
+      "sequence": 2,
+      "ticket_id": "ZEUS-5eed00000001"
+     }
+    ],
+    "github": [
+     {
+      "id": "link-0",
+      "number": 2,
+      "status": "synced",
+      "ticket_id": "ZEUS-5eed00000001"
+     },
+     {
+      "id": "link-1",
+      "number": 3,
+      "status": "synced",
+      "ticket_id": "ZEUS-5eed00000001"
+     }
+    ],
+    "id": "ZEUS-5eed00000001",
+    "lifecycle_event": null,
+    "lifecycle_history": [
+     {
+      "id": "event-1",
+      "sequence": 1,
+      "ticket_id": "ZEUS-5eed00000001"
+     },
+     {
+      "id": "event-2",
+      "sequence": 2,
+      "ticket_id": "ZEUS-5eed00000001"
+     }
+    ],
+    "lifecycle_sequence": 0,
+    "reason": "created",
+    "reviews": [
+     {
+      "at": "2026-09-22T00:00:07+00:00",
+      "authority": "advisory_only",
+      "claimed_provider": "claude",
+      "claimed_reviewer": "Claude",
+      "content_hash": "ad86d1dc36d78d822088cd9c9b4a9c218565bc26036877a6b137b43ca1b978e3",
+      "evidence_refs": [
+       "fixture:a"
+      ],
+      "id": "9fdb2d92eafa560714dfca8370744a14dd7ff4eb1659e54be847a052b58b14e3",
+      "revision": 1,
+      "summary": "Looks fine",
+      "ticket_id": "ZEUS-5eed00000001",
+      "verdict": "support"
+     },
+     {
+      "at": "2026-09-22T00:00:08+00:00",
+      "authority": "advisory_only",
+      "claimed_provider": "codex",
+      "claimed_reviewer": "Codex",
+      "content_hash": "ad86d1dc36d78d822088cd9c9b4a9c218565bc26036877a6b137b43ca1b978e3",
+      "evidence_refs": [
+       "fixture:b"
+      ],
+      "id": "2710d90fa45de3feb63f1d67cab8228bfd6487019fb8d7d5bc5688b29da3ff50",
+      "revision": 1,
+      "summary": "Why?",
+      "ticket_id": "ZEUS-5eed00000001",
+      "verdict": "question"
+     }
+    ],
+    "revision": 1,
+    "status": "open",
+    "updated_at": "2026-09-22T00:00:01+00:00"
+   }
+  },
+  "get_without_a_revision_row": {
+   "is_contract_error": true,
+   "message": "Ticket revision unavailable or corrupted",
+   "outcome": "raised",
+   "store_after": "d62f28cd095a9f1a",
+   "store_before": "d62f28cd095a9f1a",
+   "store_unchanged": true,
+   "type": "ContractError"
+  },
+  "list": {
+   "outcome": "returned",
+   "store_after": "d4aacf9afc454374",
+   "store_before": "d4aacf9afc454374",
+   "store_unchanged": true,
+   "value": [
+    {
+     "claimed_author": "operator",
+     "content": {
+      "acceptance_criteria": [
+       "Independent services"
+      ],
+      "evidence_refs": [
+       "fixture:source-inspection"
+      ],
+      "impact": "Potential contention",
+      "problem": "Production and tests share endpoints",
+      "rollback": "Restore verified image",
+      "scope": [
+       "deployment"
+      ],
+      "title": "First, revised",
+      "verification": [
+       "Run isolated service integration test"
+      ]
+     },
+     "content_hash": "b136104c9dd0f52a1ae1f3baeacd7570b1821bdff4099e22780d0d2e6048182b",
+     "created_at": "2026-09-22T00:00:01+00:00",
+     "current_revision": 2,
+     "external_observations": [
+      {
+       "at": "2026-09-22T00:00:00+00:00",
+       "id": "obs-nosequence",
+       "ticket_id": "ZEUS-5eed00000001"
+      },
+      {
+       "at": "2026-09-22T00:00:01+00:00",
+       "id": "obs-0",
+       "sequence": 0,
+       "ticket_id": "ZEUS-5eed00000001"
+      },
+      {
+       "at": "2026-09-22T00:00:09+00:00",
+       "id": "obs-1",
+       "sequence": 1,
+       "ticket_id": "ZEUS-5eed00000001"
+      },
+      {
+       "at": "2026-09-22T00:00:09+00:00",
+       "id": "obs-2",
+       "sequence": 2,
+       "ticket_id": "ZEUS-5eed00000001"
+      }
+     ],
+     "github": [
+      {
+       "id": "link-0",
+       "number": 2,
+       "status": "synced",
+       "ticket_id": "ZEUS-5eed00000001"
+      },
+      {
+       "id": "link-1",
+       "number": 3,
+       "status": "synced",
+       "ticket_id": "ZEUS-5eed00000001"
+      }
+     ],
+     "id": "ZEUS-5eed00000001",
+     "lifecycle_event": null,
+     "lifecycle_history": [
+      {
+       "id": "event-1",
+       "sequence": 1,
+       "ticket_id": "ZEUS-5eed00000001"
+      },
+      {
+       "id": "event-2",
+       "sequence": 2,
+       "ticket_id": "ZEUS-5eed00000001"
+      }
+     ],
+     "lifecycle_sequence": 0,
+     "reason": "Revise",
+     "reviews": [],
+     "revision": 2,
+     "status": "open",
+     "updated_at": "2026-09-22T00:00:09+00:00"
+    },
+    {
+     "claimed_author": "operator",
+     "content": {
+      "acceptance_criteria": [
+       "Independent services"
+      ],
+      "evidence_refs": [
+       "fixture:source-inspection"
+      ],
+      "impact": "Potential contention",
+      "problem": "Production and tests share endpoints",
+      "rollback": "Restore verified image",
+      "scope": [
+       "deployment"
+      ],
+      "title": "Second",
+      "verification": [
+       "Run isolated service integration test"
+      ]
+     },
+     "content_hash": "a65a5a7320b2822cb2db51ae4e868923242af3073a4ab20f1ca981eefa9a780d",
+     "created_at": "2026-09-22T00:00:07+00:00",
+     "current_revision": 1,
+     "external_observations": [],
+     "github": [
+      {
+       "id": "link-x",
+       "number": 9,
+       "status": "synced",
+       "ticket_id": "ZEUS-5eed00000002"
+      }
+     ],
+     "id": "ZEUS-5eed00000002",
+     "lifecycle_event": null,
+     "lifecycle_history": [],
+     "lifecycle_sequence": 0,
+     "reason": "created",
+     "reviews": [],
+     "revision": 1,
+     "status": "open",
+     "updated_at": "2026-09-22T00:00:07+00:00"
+    }
+   ]
+  },
+  "list_empty": {
+   "outcome": "returned",
+   "store_after": "4f53cda18c2baa0c",
+   "store_before": "4f53cda18c2baa0c",
+   "store_unchanged": true,
+   "value": []
+  },
+  "list_order_by_created_at": true,
+  "list_with_a_corrupted_revision": {
+   "is_contract_error": true,
+   "message": "Ticket revision unavailable or corrupted",
+   "outcome": "raised",
+   "store_after": "eb1b15ef8be306ad",
+   "store_before": "eb1b15ef8be306ad",
+   "store_unchanged": true,
+   "type": "ContractError"
+  },
+  "review_row_replayed_equal": true,
+  "revision_zero_is_the_current_one": {
+   "outcome": "returned",
+   "store_after": "d4aacf9afc454374",
+   "store_before": "d4aacf9afc454374",
+   "store_unchanged": true,
+   "value": {
+    "claimed_author": "operator",
+    "content": {
+     "acceptance_criteria": [
+      "Independent services"
+     ],
+     "evidence_refs": [
+      "fixture:source-inspection"
+     ],
+     "impact": "Potential contention",
+     "problem": "Production and tests share endpoints",
+     "rollback": "Restore verified image",
+     "scope": [
+      "deployment"
+     ],
+     "title": "First, revised",
+     "verification": [
+      "Run isolated service integration test"
+     ]
+    },
+    "content_hash": "b136104c9dd0f52a1ae1f3baeacd7570b1821bdff4099e22780d0d2e6048182b",
+    "created_at": "2026-09-22T00:00:01+00:00",
+    "current_revision": 2,
+    "external_observations": [
+     {
+      "at": "2026-09-22T00:00:00+00:00",
+      "id": "obs-nosequence",
+      "ticket_id": "ZEUS-5eed00000001"
+     },
+     {
+      "at": "2026-09-22T00:00:01+00:00",
+      "id": "obs-0",
+      "sequence": 0,
+      "ticket_id": "ZEUS-5eed00000001"
+     },
+     {
+      "at": "2026-09-22T00:00:09+00:00",
+      "id": "obs-1",
+      "sequence": 1,
+      "ticket_id": "ZEUS-5eed00000001"
+     },
+     {
+      "at": "2026-09-22T00:00:09+00:00",
+      "id": "obs-2",
+      "sequence": 2,
+      "ticket_id": "ZEUS-5eed00000001"
+     }
+    ],
+    "github": [
+     {
+      "id": "link-0",
+      "number": 2,
+      "status": "synced",
+      "ticket_id": "ZEUS-5eed00000001"
+     },
+     {
+      "id": "link-1",
+      "number": 3,
+      "status": "synced",
+      "ticket_id": "ZEUS-5eed00000001"
+     }
+    ],
+    "id": "ZEUS-5eed00000001",
+    "lifecycle_event": null,
+    "lifecycle_history": [
+     {
+      "id": "event-1",
+      "sequence": 1,
+      "ticket_id": "ZEUS-5eed00000001"
+     },
+     {
+      "id": "event-2",
+      "sequence": 2,
+      "ticket_id": "ZEUS-5eed00000001"
+     }
+    ],
+    "lifecycle_sequence": 0,
+    "reason": "Revise",
+    "reviews": [],
+    "revision": 2,
+    "status": "open",
+    "updated_at": "2026-09-22T00:00:09+00:00"
+   }
+  }
+ },
+ "m7_tests": {
+  "covered": [
+   "test_ticket_revisions_are_immutable_and_reviews_bound_to_current_content (create, review replay, update, stale review/update, get by revision)",
+   "test_dispatch_is_durable_idempotent_and_stale_ticket_blocks_old_task (the dispatch, its replay, the outbox row, the stale dispatch)",
+   "test_nested_binding_and_export_do_not_change_authority (render_ticket; ticket_binding through the dispatch)",
+   "test_goal_progress.py row4 (the Tickets.dispatch half: goal-bound dispatch, its refusals before any write)"
+  ],
+  "unreachable": {
+   "test_dispatch_and_outbox_roll_back_together": "the PostgreSQL store (the rollback of a raised dispatch is shown on the MemoryStore by the unchanged store digest)",
+   "test_dispatch_is_durable_idempotent_and_stale_ticket_blocks_old_task (the Workflow.submit/claim half)": "Workflow (S5)",
+   "test_github_tickets.py (the Tickets half)": "the GitHub fixture; batch B2's intake.github_tickets family covers GitHubTickets",
+   "test_ticket_execution.py": "the Harness service, Workflow, canary and promotion",
+   "test_ticket_revisions_are_immutable_and_reviews_bound_to_current_content[postgres]": "PostgreSQL",
+   "test_topic_change_during_execution_cannot_complete_or_promote": "Workflow and Releases"
+  }
+ },
+ "render": {
+  "bytes": 748,
+  "digest": "d18b9a44937372314c884f073a0771b44cd959ef9846d8495aaf646f91bfe998",
+  "ends_with_one_newline": true,
+  "first_line_is_the_marker": true,
+  "lists_render_as_bullets": true,
+  "missing_content_key": {
+   "type": "KeyError"
+  },
+  "no_review_marker": true,
+  "no_reviews": "<!-- zeus-ticket:ZEUS-5eed00000001 -->\n\n# 검증 환경 격리\n\nZeus `ZEUS-5eed00000001` · revision 1 · `c5c76cce6c67a9181467adae5c467dc8303dd81d0868555fd0030800f203b6e6`\n\n> Local ledger is authoritative. Reviews below are advisory, not deployment approval.\n\n## Problem\n\nProduction and tests share endpoints\n\n## Impact\n\nPotential contention\n\n## Rollback\n\nRestore verified image\n\n## Evidence Refs\n\n- fixture:source-inspection\n\n## Scope\n\n- deployment\n\n## Acceptance Criteria\n\n- Independent services\n\n## Verification\n\n- Run isolated service integration test\n\n## Reviewer findings\n\nNo review recorded for this revision.\n",
+  "pure": [
+   true,
+   true
+  ],
+  "reviewed": "<!-- zeus-ticket:ZEUS-5eed00000001 -->\n\n# 검증 환경 격리\n\nZeus `ZEUS-5eed00000001` · revision 1 · `c5c76cce6c67a9181467adae5c467dc8303dd81d0868555fd0030800f203b6e6`\n\n> Local ledger is authoritative. Reviews below are advisory, not deployment approval.\n\n## Problem\n\nProduction and tests share endpoints\n\n## Impact\n\nPotential contention\n\n## Rollback\n\nRestore verified image\n\n## Evidence Refs\n\n- fixture:source-inspection\n\n## Scope\n\n- deployment\n\n## Acceptance Criteria\n\n- Independent services\n\n## Verification\n\n- Run isolated service integration test\n\n## Reviewer findings\n\n### Claude (claude) — question\n\nHow is rollback tested?\n\nEvidence: fixture:review, fixture:two\n\n### Codex (codex) — support\n\nAdvisory only\n\nEvidence: fixture:three\n"
+ },
+ "review": {
+  "budget": {
+   "reviews_for_revision": 20,
+   "rows_after": 20,
+   "rows_before": 5
+  },
+  "budget_exhausted": {
+   "is_contract_error": true,
+   "message": "Ticket revision review budget exhausted",
+   "outcome": "raised",
+   "store_after": "ca5eef6fa3a9d30e",
+   "store_before": "ca5eef6fa3a9d30e",
+   "store_unchanged": true,
+   "type": "ContractError"
+  },
+  "budget_replay_still_returns": {
+   "outcome": "returned",
+   "store_after": "ca5eef6fa3a9d30e",
+   "store_before": "ca5eef6fa3a9d30e",
+   "store_unchanged": true,
+   "value": {
+    "at": "2026-09-22T00:00:01+00:00",
+    "authority": "advisory_only",
+    "claimed_provider": "claude",
+    "claimed_reviewer": "Claude",
+    "content_hash": "c5c76cce6c67a9181467adae5c467dc8303dd81d0868555fd0030800f203b6e6",
+    "evidence_refs": [
+     "fixture:review"
+    ],
+    "id": "a3a238abf7cc958502ae79f73b957599c594cf4577d6a8e5dffe25b775c2bd4a",
+    "revision": 1,
+    "summary": "How is rollback tested?",
+    "ticket_id": "ZEUS-5eed00000001",
+    "verdict": "question"
+   }
+  },
+  "evidence_blank_item": {
+   "is_contract_error": true,
+   "message": "Review evidence required",
+   "outcome": "raised",
+   "store_after": "e0e9368585f6122f",
+   "store_before": "e0e9368585f6122f",
+   "store_unchanged": true,
+   "type": "ContractError"
+  },
+  "evidence_empty": {
+   "is_contract_error": true,
+   "message": "Review evidence required",
+   "outcome": "raised",
+   "store_after": "e0e9368585f6122f",
+   "store_before": "e0e9368585f6122f",
+   "store_unchanged": true,
+   "type": "ContractError"
+  },
+  "evidence_none": {
+   "is_contract_error": true,
+   "message": "Review evidence required",
+   "outcome": "raised",
+   "store_after": "e0e9368585f6122f",
+   "store_before": "e0e9368585f6122f",
+   "store_unchanged": true,
+   "type": "ContractError"
+  },
+  "evidence_number_item": {
+   "is_contract_error": true,
+   "message": "Review evidence required",
+   "outcome": "raised",
+   "store_after": "e0e9368585f6122f",
+   "store_before": "e0e9368585f6122f",
+   "store_unchanged": true,
+   "type": "ContractError"
+  },
+  "evidence_string": {
+   "is_contract_error": true,
+   "message": "Review evidence required",
+   "outcome": "raised",
+   "store_after": "e0e9368585f6122f",
+   "store_before": "e0e9368585f6122f",
+   "store_unchanged": true,
+   "type": "ContractError"
+  },
+  "new_revision_has_its_own_budget": {
+   "outcome": "returned",
+   "store_after": "a7ef47c2b7b5e976",
+   "store_before": "2a1fc0022e93efac",
+   "store_unchanged": false,
+   "value": {
+    "at": "2026-09-22T00:00:04+00:00",
+    "authority": "advisory_only",
+    "claimed_provider": "claude",
+    "claimed_reviewer": "Claude",
+    "content_hash": "f3ead7c57bab3870682bdae6780e23c6a032b8334421509eb957989cab16a4bc",
+    "evidence_refs": [
+     "e"
+    ],
+    "id": "8dc516316a2a72d5e55184990cd7bf1d734de72e53c5d0fb5593a17755394061",
+    "revision": 2,
+    "summary": "s",
+    "ticket_id": "ZEUS-5eed00000001",
+    "verdict": "support"
+   }
+  },
+  "provider_blank": {
+   "is_contract_error": true,
+   "message": "Reviewer, provider and findings required",
+   "outcome": "raised",
+   "store_after": "e0e9368585f6122f",
+   "store_before": "e0e9368585f6122f",
+   "store_unchanged": true,
+   "type": "ContractError"
+  },
+  "review": {
+   "outcome": "returned",
+   "store_after": "2932c8c183b0879e",
+   "store_before": "7690e472aeb1ad6a",
+   "store_unchanged": false,
+   "value": {
+    "at": "2026-09-22T00:00:01+00:00",
+    "authority": "advisory_only",
+    "claimed_provider": "claude",
+    "claimed_reviewer": "Claude",
+    "content_hash": "c5c76cce6c67a9181467adae5c467dc8303dd81d0868555fd0030800f203b6e6",
+    "evidence_refs": [
+     "fixture:review"
+    ],
+    "id": "a3a238abf7cc958502ae79f73b957599c594cf4577d6a8e5dffe25b775c2bd4a",
+    "revision": 1,
+    "summary": "How is rollback tested?",
+    "ticket_id": "ZEUS-5eed00000001",
+    "verdict": "question"
+   }
+  },
+  "review_replay_added_no_row": 1,
+  "review_replay_returns_the_existing_row": {
+   "outcome": "returned",
+   "store_after": "2932c8c183b0879e",
+   "store_before": "2932c8c183b0879e",
+   "store_unchanged": true,
+   "value": {
+    "at": "2026-09-22T00:00:01+00:00",
+    "authority": "advisory_only",
+    "claimed_provider": "claude",
+    "claimed_reviewer": "Claude",
+    "content_hash": "c5c76cce6c67a9181467adae5c467dc8303dd81d0868555fd0030800f203b6e6",
+    "evidence_refs": [
+     "fixture:review"
+    ],
+    "id": "a3a238abf7cc958502ae79f73b957599c594cf4577d6a8e5dffe25b775c2bd4a",
+    "revision": 1,
+    "summary": "How is rollback tested?",
+    "ticket_id": "ZEUS-5eed00000001",
+    "verdict": "question"
+   }
+  },
+  "review_row_is_advisory": [
+   {
+    "at": "2026-09-22T00:00:01+00:00",
+    "authority": "advisory_only",
+    "claimed_provider": "claude",
+    "claimed_reviewer": "Claude",
+    "content_hash": "c5c76cce6c67a9181467adae5c467dc8303dd81d0868555fd0030800f203b6e6",
+    "evidence_refs": [
+     "fixture:review"
+    ],
+    "id": "a3a238abf7cc958502ae79f73b957599c594cf4577d6a8e5dffe25b775c2bd4a",
+    "revision": 1,
+    "summary": "How is rollback tested?",
+    "ticket_id": "ZEUS-5eed00000001",
+    "verdict": "question"
+   }
+  ],
+  "reviewer_12001": {
+   "is_contract_error": true,
+   "message": "Reviewer, provider and findings required",
+   "outcome": "raised",
+   "store_after": "e0e9368585f6122f",
+   "store_before": "e0e9368585f6122f",
+   "store_unchanged": true,
+   "type": "ContractError"
+  },
+  "reviewer_blank": {
+   "is_contract_error": true,
+   "message": "Reviewer, provider and findings required",
+   "outcome": "raised",
+   "store_after": "e0e9368585f6122f",
+   "store_before": "e0e9368585f6122f",
+   "store_unchanged": true,
+   "type": "ContractError"
+  },
+  "reviewer_not_text": {
+   "is_contract_error": true,
+   "message": "Reviewer, provider and findings required",
+   "outcome": "raised",
+   "store_after": "e0e9368585f6122f",
+   "store_before": "e0e9368585f6122f",
+   "store_unchanged": true,
+   "type": "ContractError"
+  },
+  "same_reviewer_other_verdict": {
+   "outcome": "returned",
+   "store_after": "3f023252b0224801",
+   "store_before": "2932c8c183b0879e",
+   "store_unchanged": false,
+   "value": {
+    "at": "2026-09-22T00:00:01+00:00",
+    "authority": "advisory_only",
+    "claimed_provider": "claude",
+    "claimed_reviewer": "Claude",
+    "content_hash": "c5c76cce6c67a9181467adae5c467dc8303dd81d0868555fd0030800f203b6e6",
+    "evidence_refs": [
+     "fixture:review"
+    ],
+    "id": "8a987cf34cd76583bfb60c3f1c06869d52130ca9f36df27fb45875db1695a94d",
+    "revision": 1,
+    "summary": "Fine",
+    "ticket_id": "ZEUS-5eed00000001",
+    "verdict": "support"
+   }
+  },
+  "stale_revision": {
+   "is_contract_error": true,
+   "message": "Stale ticket review",
+   "outcome": "raised",
+   "store_after": "e0e9368585f6122f",
+   "store_before": "e0e9368585f6122f",
+   "store_unchanged": true,
+   "type": "ContractError"
+  },
+  "summary_12001": {
+   "is_contract_error": true,
+   "message": "Reviewer, provider and findings required",
+   "outcome": "raised",
+   "store_after": "e0e9368585f6122f",
+   "store_before": "e0e9368585f6122f",
+   "store_unchanged": true,
+   "type": "ContractError"
+  },
+  "summary_blank": {
+   "is_contract_error": true,
+   "message": "Reviewer, provider and findings required",
+   "outcome": "raised",
+   "store_after": "e0e9368585f6122f",
+   "store_before": "e0e9368585f6122f",
+   "store_unchanged": true,
+   "type": "ContractError"
+  },
+  "unknown_ticket": {
+   "is_contract_error": true,
+   "message": "Stale ticket review",
+   "outcome": "raised",
+   "store_after": "e0e9368585f6122f",
+   "store_before": "e0e9368585f6122f",
+   "store_unchanged": true,
+   "type": "ContractError"
+  },
+  "verdict_": {
+   "is_contract_error": true,
+   "message": "Invalid advisory verdict",
+   "outcome": "raised",
+   "store_after": "e0e9368585f6122f",
+   "store_before": "e0e9368585f6122f",
+   "store_unchanged": true,
+   "type": "ContractError"
+  },
+  "verdict_None": {
+   "is_contract_error": true,
+   "message": "Invalid advisory verdict",
+   "outcome": "raised",
+   "store_after": "e0e9368585f6122f",
+   "store_before": "e0e9368585f6122f",
+   "store_unchanged": true,
+   "type": "ContractError"
+  },
+  "verdict_approve": {
+   "is_contract_error": true,
+   "message": "Invalid advisory verdict",
+   "outcome": "raised",
+   "store_after": "e0e9368585f6122f",
+   "store_before": "e0e9368585f6122f",
+   "store_unchanged": true,
+   "type": "ContractError"
+  },
+  "verdict_changes_requested": {
+   "outcome": "returned",
+   "store_after": "1dd9d538a1f95a13",
+   "store_before": "8e478295c5fd6a69",
+   "store_unchanged": false,
+   "value": {
+    "at": "2026-09-22T00:00:01+00:00",
+    "authority": "advisory_only",
+    "claimed_provider": "p",
+    "claimed_reviewer": "R-changes_requested",
+    "content_hash": "c5c76cce6c67a9181467adae5c467dc8303dd81d0868555fd0030800f203b6e6",
+    "evidence_refs": [
+     "e"
+    ],
+    "id": "eb610e91cd99768edfeba6198791be691fcdf2bdf49d3f1de84b728a3cdedc44",
+    "revision": 1,
+    "summary": "s",
+    "ticket_id": "ZEUS-5eed00000001",
+    "verdict": "changes_requested"
+   }
+  },
+  "verdict_question": {
+   "outcome": "returned",
+   "store_after": "e0e9368585f6122f",
+   "store_before": "1dd9d538a1f95a13",
+   "store_unchanged": false,
+   "value": {
+    "at": "2026-09-22T00:00:01+00:00",
+    "authority": "advisory_only",
+    "claimed_provider": "p",
+    "claimed_reviewer": "R-question",
+    "content_hash": "c5c76cce6c67a9181467adae5c467dc8303dd81d0868555fd0030800f203b6e6",
+    "evidence_refs": [
+     "e"
+    ],
+    "id": "620aebcf2950ddb21983e0513afc73f3b0ccbad929abf3bf7f3def660adb3f27",
+    "revision": 1,
+    "summary": "s",
+    "ticket_id": "ZEUS-5eed00000001",
+    "verdict": "question"
+   }
+  },
+  "verdict_support": {
+   "outcome": "returned",
+   "store_after": "8e478295c5fd6a69",
+   "store_before": "3f023252b0224801",
+   "store_unchanged": false,
+   "value": {
+    "at": "2026-09-22T00:00:01+00:00",
+    "authority": "advisory_only",
+    "claimed_provider": "p",
+    "claimed_reviewer": "R-support",
+    "content_hash": "c5c76cce6c67a9181467adae5c467dc8303dd81d0868555fd0030800f203b6e6",
+    "evidence_refs": [
+     "e"
+    ],
+    "id": "4d6693569d741bfdb2dbbf6257949ee8006404380ccfb3cd49e69b661434f736",
+    "revision": 1,
+    "summary": "s",
+    "ticket_id": "ZEUS-5eed00000001",
+    "verdict": "support"
+   }
+  }
+ },
+ "surface": {
+  "Tickets_defaults": {
+   "create": {
+    "author": "'operator'"
+   },
+   "dispatch": {
+    "criterion_id": "None",
+    "goal_manifest": "None"
+   },
+   "get": {
+    "revision": "None"
+   },
+   "review": {},
+   "update": {
+    "author": "'operator'"
+   }
+  },
+  "Tickets_positional": {
+   "__init__": [
+    "self",
+    "store",
+    "organization"
+   ],
+   "create": [
+    "self",
+    "content",
+    "author"
+   ],
+   "dispatch": [
+    "self",
+    "ticket_id",
+    "expected_revision",
+    "repository_revision",
+    "goal_manifest",
+    "criterion_id"
+   ],
+   "get": [
+    "self",
+    "ticket_id",
+    "revision"
+   ],
+   "list": [
+    "self"
+   ],
+   "review": [
+    "self",
+    "ticket_id",
+    "revision",
+    "reviewer",
+    "claimed_provider",
+    "verdict",
+    "summary",
+    "evidence_refs"
+   ],
+   "update": [
+    "self",
+    "ticket_id",
+    "expected_revision",
+    "content",
+    "reason",
+    "author"
+   ]
+  },
+  "constants": {
+   "LIST_FIELDS": [
+    "evidence_refs",
+    "scope",
+    "acceptance_criteria",
+    "verification"
+   ],
+   "TEXT_FIELDS": [
+    "title",
+    "problem",
+    "impact",
+    "rollback"
+   ]
+  },
+  "constructor": {
+   "organization_is_kept": true,
+   "store_is_kept": true
+  },
+  "error_classes": {
+   "TicketClosed_is_TicketSuperseded": true,
+   "TicketSuperseded_is_ContractError": true
+  },
+  "signatures": {
+   "render_ticket": "(ticket)",
+   "ticket_binding": "(tx, value)",
+   "validate_content": "(content)"
+  }
+ },
+ "update": {
+  "author_blank": {
+   "is_contract_error": true,
+   "message": "Ticket author required",
+   "outcome": "raised",
+   "store_after": "f72c7700e0edbbe1",
+   "store_before": "f72c7700e0edbbe1",
+   "store_unchanged": true,
+   "type": "ContractError"
+  },
+  "author_none": {
+   "is_contract_error": true,
+   "message": "Ticket author required",
+   "outcome": "raised",
+   "store_after": "f72c7700e0edbbe1",
+   "store_before": "f72c7700e0edbbe1",
+   "store_unchanged": true,
+   "type": "ContractError"
+  },
+  "closed_ticket": {
+   "is_contract_error": true,
+   "message": "Reopen the closed ticket before editing",
+   "outcome": "raised",
+   "store_after": "a01e365b07a18317",
+   "store_before": "a01e365b07a18317",
+   "store_unchanged": true,
+   "type": "ContractError"
+  },
+  "dispatches_before": [
+   {
+    "id": "42196353f861ad830c9a74b92bc38178f03e3b552eb72aefa7614d4c204afb14",
+    "message_id": "5eed0000-0003-4000-8000-000000000000",
+    "revision": 1,
+    "status": "queued_for_planning",
+    "ticket_id": "ZEUS-5eed00000001"
+   }
+  ],
+  "invalid_content": {
+   "is_contract_error": true,
+   "message": "Ticket needs title, problem, impact, rollback, evidence_refs, scope, acceptance_criteria, verification",
+   "outcome": "raised",
+   "store_after": "f72c7700e0edbbe1",
+   "store_before": "f72c7700e0edbbe1",
+   "store_unchanged": true,
+   "type": "ContractError"
+  },
+  "old_revision_kept": true,
+  "other_ticket_dispatch_untouched": [
+   "open"
+  ],
+  "promotion_failed": {
+   "is_contract_error": true,
+   "message": "Ticket promotion unresolved; resume release or release-abandon before editing",
+   "outcome": "raised",
+   "store_after": "59f44e6f2056c1a4",
+   "store_before": "59f44e6f2056c1a4",
+   "store_unchanged": true,
+   "type": "ContractError"
+  },
+  "promotion_pending": {
+   "is_contract_error": true,
+   "message": "Ticket promotion unresolved; resume release or release-abandon before editing",
+   "outcome": "raised",
+   "store_after": "631400a521aa6f1b",
+   "store_before": "631400a521aa6f1b",
+   "store_unchanged": true,
+   "type": "ContractError"
+  },
+  "promotion_resolved_and_foreign_pass": {
+   "outcome": "returned",
+   "store_after": "6fe4dd5a3cc18c5c",
+   "store_before": "0f2c6d2ede675d82",
+   "store_unchanged": false,
+   "value": {
+    "content_hash": "75cc3e2f089cb14d2b0f8af0bbb3fa6cfbad682501a78801426577d5f586ab98",
+    "created_at": "2026-09-22T00:00:08+00:00",
+    "id": "ZEUS-5eed00000004",
+    "revision": 2,
+    "status": "open",
+    "updated_at": "2026-09-22T00:00:08+00:00"
+   }
+  },
+  "promotion_running": {
+   "is_contract_error": true,
+   "message": "Ticket promotion unresolved; resume release or release-abandon before editing",
+   "outcome": "raised",
+   "store_after": "f1fffe19f4f66918",
+   "store_before": "f1fffe19f4f66918",
+   "store_unchanged": true,
+   "type": "ContractError"
+  },
+  "reason_blank": {
+   "is_contract_error": true,
+   "message": "Revision reason required",
+   "outcome": "raised",
+   "store_after": "f72c7700e0edbbe1",
+   "store_before": "f72c7700e0edbbe1",
+   "store_unchanged": true,
+   "type": "ContractError"
+  },
+  "reason_empty": {
+   "is_contract_error": true,
+   "message": "Revision reason required",
+   "outcome": "raised",
+   "store_after": "f72c7700e0edbbe1",
+   "store_before": "f72c7700e0edbbe1",
+   "store_unchanged": true,
+   "type": "ContractError"
+  },
+  "reason_none": {
+   "is_contract_error": true,
+   "message": "Revision reason required",
+   "outcome": "raised",
+   "store_after": "f72c7700e0edbbe1",
+   "store_before": "f72c7700e0edbbe1",
+   "store_unchanged": true,
+   "type": "ContractError"
+  },
+  "reason_number": {
+   "is_contract_error": true,
+   "message": "Revision reason required",
+   "outcome": "raised",
+   "store_after": "f72c7700e0edbbe1",
+   "store_before": "f72c7700e0edbbe1",
+   "store_unchanged": true,
+   "type": "ContractError"
+  },
+  "second_update": {
+   "outcome": "returned",
+   "store_after": "88bddbfbe3750ac6",
+   "store_before": "e82bf4dc36c17ddd",
+   "store_unchanged": false,
+   "value": {
+    "content_hash": "a6c07216e88e24293a44604744d7ec635decad0371f43010b26b5640be0819df",
+    "created_at": "2026-09-22T00:00:01+00:00",
+    "id": "ZEUS-5eed00000001",
+    "revision": 3,
+    "status": "open",
+    "updated_at": "2026-09-22T00:00:07+00:00"
+   }
+  },
+  "stale_revision": {
+   "is_contract_error": true,
+   "message": "Stale ticket edit",
+   "outcome": "raised",
+   "store_after": "f72c7700e0edbbe1",
+   "store_before": "f72c7700e0edbbe1",
+   "store_unchanged": true,
+   "type": "ContractError"
+  },
+  "unchanged_content": {
+   "is_contract_error": true,
+   "message": "Ticket content unchanged",
+   "outcome": "raised",
+   "store_after": "f72c7700e0edbbe1",
+   "store_before": "f72c7700e0edbbe1",
+   "store_unchanged": true,
+   "type": "ContractError"
+  },
+  "unknown_ticket": {
+   "is_contract_error": true,
+   "message": "Stale ticket edit",
+   "outcome": "raised",
+   "store_after": "f72c7700e0edbbe1",
+   "store_before": "f72c7700e0edbbe1",
+   "store_unchanged": true,
+   "type": "ContractError"
+  },
+  "update": {
+   "outcome": "returned",
+   "store_after": "e82bf4dc36c17ddd",
+   "store_before": "f72c7700e0edbbe1",
+   "store_unchanged": false,
+   "value": {
+    "content_hash": "b141626122d9b47e77342e48721295804ba525e4ac99020472806cea4bc01278",
+    "created_at": "2026-09-22T00:00:01+00:00",
+    "id": "ZEUS-5eed00000001",
+    "revision": 2,
+    "status": "open",
+    "updated_at": "2026-09-22T00:00:07+00:00"
+   }
+  },
+  "update_rows": {
+   "dispatches_after": [
+    {
+     "id": "42196353f861ad830c9a74b92bc38178f03e3b552eb72aefa7614d4c204afb14",
+     "message_id": "5eed0000-0003-4000-8000-000000000000",
+     "revision": 1,
+     "status": "superseded",
+     "superseded_by_revision": 2,
+     "ticket_id": "ZEUS-5eed00000001"
+    }
+   ],
+   "ticket_revisions": [
+    {
+     "claimed_author": "operator",
+     "content": {
+      "acceptance_criteria": [
+       "Independent services"
+      ],
+      "evidence_refs": [
+       "fixture:source-inspection"
+      ],
+      "impact": "Potential contention",
+      "problem": "Production and tests share endpoints",
+      "rollback": "Restore verified image",
+      "scope": [
+       "deployment"
+      ],
+      "title": "검증 환경 격리",
+      "verification": [
+       "Run isolated service integration test"
+      ]
+     },
+     "content_hash": "c5c76cce6c67a9181467adae5c467dc8303dd81d0868555fd0030800f203b6e6",
+     "created_at": "2026-09-22T00:00:01+00:00",
+     "id": "ZEUS-5eed00000001",
+     "reason": "created",
+     "revision": 1,
+     "status": "open"
+    },
+    {
+     "claimed_author": "editor",
+     "content": {
+      "acceptance_criteria": [
+       "Independent services"
+      ],
+      "evidence_refs": [
+       "fixture:source-inspection"
+      ],
+      "impact": "Potential contention",
+      "problem": "Production and tests share endpoints",
+      "rollback": "Restore verified image",
+      "scope": [
+       "deployment"
+      ],
+      "title": "Updated scope",
+      "verification": [
+       "Run isolated service integration test"
+      ]
+     },
+     "content_hash": "b141626122d9b47e77342e48721295804ba525e4ac99020472806cea4bc01278",
+     "created_at": "2026-09-22T00:00:01+00:00",
+     "id": "ZEUS-5eed00000001",
+     "reason": "Clarify acceptance",
+     "revision": 2,
+     "status": "open",
+     "updated_at": "2026-09-22T00:00:07+00:00"
+    },
+    {
+     "claimed_author": "operator",
+     "content": {
+      "acceptance_criteria": [
+       "Independent services"
+      ],
+      "evidence_refs": [
+       "fixture:source-inspection"
+      ],
+      "impact": "Potential contention",
+      "problem": "Production and tests share endpoints",
+      "rollback": "Restore verified image",
+      "scope": [
+       "deployment"
+      ],
+      "title": "Another topic",
+      "verification": [
+       "Run isolated service integration test"
+      ]
+     },
+     "content_hash": "b867486d9fa573cca55d250ec2a9f25b11dc3048db8e89efcdf8608af240d36f",
+     "created_at": "2026-09-22T00:00:02+00:00",
+     "id": "ZEUS-5eed00000002",
+     "reason": "created",
+     "revision": 1,
+     "status": "open"
+    }
+   ],
+   "tickets": [
+    {
+     "content_hash": "b141626122d9b47e77342e48721295804ba525e4ac99020472806cea4bc01278",
+     "created_at": "2026-09-22T00:00:01+00:00",
+     "id": "ZEUS-5eed00000001",
+     "revision": 2,
+     "status": "open",
+     "updated_at": "2026-09-22T00:00:07+00:00"
+    },
+    {
+     "content_hash": "b867486d9fa573cca55d250ec2a9f25b11dc3048db8e89efcdf8608af240d36f",
+     "created_at": "2026-09-22T00:00:02+00:00",
+     "id": "ZEUS-5eed00000002",
+     "revision": 1,
+     "status": "open"
+    }
+   ]
+  }
+ },
+ "validate_content": {
+  "mutation_acceptance_criteria_50": {
+   "outcome": "returned",
+   "store_after": "4f53cda18c2baa0c",
+   "store_before": "4f53cda18c2baa0c",
+   "store_unchanged": true,
+   "value": {
+    "acceptance_criteria": [
+     "x",
+     "x",
+     "x",
+     "x",
+     "x",
+     "x",
+     "x",
+     "x",
+     "x",
+     "x",
+     "x",
+     "x",
+     "x",
+     "x",
+     "x",
+     "x",
+     "x",
+     "x",
+     "x",
+     "x",
+     "x",
+     "x",
+     "x",
+     "x",
+     "x",
+     "x",
+     "x",
+     "x",
+     "x",
+     "x",
+     "x",
+     "x",
+     "x",
+     "x",
+     "x",
+     "x",
+     "x",
+     "x",
+     "x",
+     "x",
+     "x",
+     "x",
+     "x",
+     "x",
+     "x",
+     "x",
+     "x",
+     "x",
+     "x",
+     "x"
+    ],
+    "evidence_refs": [
+     "fixture:source-inspection"
+    ],
+    "impact": "Potential contention",
+    "problem": "Production and tests share endpoints",
+    "rollback": "Restore verified image",
+    "scope": [
+     "deployment"
+    ],
+    "title": "검증 환경 격리",
+    "verification": [
+     "Run isolated service integration test"
+    ]
+   }
+  },
+  "mutation_acceptance_criteria_51": {
+   "is_contract_error": true,
+   "message": "Invalid ticket acceptance_criteria",
+   "outcome": "raised",
+   "store_after": "4f53cda18c2baa0c",
+   "store_before": "4f53cda18c2baa0c",
+   "store_unchanged": true,
+   "type": "ContractError"
+  },
+  "mutation_acceptance_criteria_empty": {
+   "is_contract_error": true,
+   "message": "Invalid ticket acceptance_criteria",
+   "outcome": "raised",
+   "store_after": "4f53cda18c2baa0c",
+   "store_before": "4f53cda18c2baa0c",
+   "store_unchanged": true,
+   "type": "ContractError"
+  },
+  "mutation_acceptance_criteria_item_4000": {
+   "outcome": "returned",
+   "store_after": "4f53cda18c2baa0c",
+   "store_before": "4f53cda18c2baa0c",
+   "store_unchanged": true,
+   "value": {
+    "acceptance_criteria": [
+     "xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx"
+    ],
+    "evidence_refs": [
+     "fixture:source-inspection"
+    ],
+    "impact": "Potential contention",
+    "problem": "Production and tests share endpoints",
+    "rollback": "Restore verified image",
+    "scope": [
+     "deployment"
+    ],
+    "title": "검증 환경 격리",
+    "verification": [
+     "Run isolated service integration test"
+    ]
+   }
+  },
+  "mutation_acceptance_criteria_item_4001": {
+   "is_contract_error": true,
+   "message": "Invalid ticket acceptance_criteria",
+   "outcome": "raised",
+   "store_after": "4f53cda18c2baa0c",
+   "store_before": "4f53cda18c2baa0c",
+   "store_unchanged": true,
+   "type": "ContractError"
+  },
+  "mutation_acceptance_criteria_item_blank": {
+   "is_contract_error": true,
+   "message": "Invalid ticket acceptance_criteria",
+   "outcome": "raised",
+   "store_after": "4f53cda18c2baa0c",
+   "store_before": "4f53cda18c2baa0c",
+   "store_unchanged": true,
+   "type": "ContractError"
+  },
+  "mutation_acceptance_criteria_item_number": {
+   "is_contract_error": true,
+   "message": "Invalid ticket acceptance_criteria",
+   "outcome": "raised",
+   "store_after": "4f53cda18c2baa0c",
+   "store_before": "4f53cda18c2baa0c",
+   "store_unchanged": true,
+   "type": "ContractError"
+  },
+  "mutation_acceptance_criteria_string": {
+   "is_contract_error": true,
+   "message": "Invalid ticket acceptance_criteria",
+   "outcome": "raised",
+   "store_after": "4f53cda18c2baa0c",
+   "store_before": "4f53cda18c2baa0c",
+   "store_unchanged": true,
+   "type": "ContractError"
+  },
+  "mutation_acceptance_criteria_tuple": {
+   "is_contract_error": true,
+   "message": "Invalid ticket acceptance_criteria",
+   "outcome": "raised",
+   "store_after": "4f53cda18c2baa0c",
+   "store_before": "4f53cda18c2baa0c",
+   "store_unchanged": true,
+   "type": "ContractError"
+  },
+  "mutation_empty": {
+   "is_contract_error": true,
+   "message": "Ticket needs title, problem, impact, rollback, evidence_refs, scope, acceptance_criteria, verification",
+   "outcome": "raised",
+   "store_after": "4f53cda18c2baa0c",
+   "store_before": "4f53cda18c2baa0c",
+   "store_unchanged": true,
+   "type": "ContractError"
+  },
+  "mutation_evidence_refs_50": {
+   "outcome": "returned",
+   "store_after": "4f53cda18c2baa0c",
+   "store_before": "4f53cda18c2baa0c",
+   "store_unchanged": true,
+   "value": {
+    "acceptance_criteria": [
+     "Independent services"
+    ],
+    "evidence_refs": [
+     "x",
+     "x",
+     "x",
+     "x",
+     "x",
+     "x",
+     "x",
+     "x",
+     "x",
+     "x",
+     "x",
+     "x",
+     "x",
+     "x",
+     "x",
+     "x",
+     "x",
+     "x",
+     "x",
+     "x",
+     "x",
+     "x",
+     "x",
+     "x",
+     "x",
+     "x",
+     "x",
+     "x",
+     "x",
+     "x",
+     "x",
+     "x",
+     "x",
+     "x",
+     "x",
+     "x",
+     "x",
+     "x",
+     "x",
+     "x",
+     "x",
+     "x",
+     "x",
+     "x",
+     "x",
+     "x",
+     "x",
+     "x",
+     "x",
+     "x"
+    ],
+    "impact": "Potential contention",
+    "problem": "Production and tests share endpoints",
+    "rollback": "Restore verified image",
+    "scope": [
+     "deployment"
+    ],
+    "title": "검증 환경 격리",
+    "verification": [
+     "Run isolated service integration test"
+    ]
+   }
+  },
+  "mutation_evidence_refs_51": {
+   "is_contract_error": true,
+   "message": "Invalid ticket evidence_refs",
+   "outcome": "raised",
+   "store_after": "4f53cda18c2baa0c",
+   "store_before": "4f53cda18c2baa0c",
+   "store_unchanged": true,
+   "type": "ContractError"
+  },
+  "mutation_evidence_refs_empty": {
+   "is_contract_error": true,
+   "message": "Invalid ticket evidence_refs",
+   "outcome": "raised",
+   "store_after": "4f53cda18c2baa0c",
+   "store_before": "4f53cda18c2baa0c",
+   "store_unchanged": true,
+   "type": "ContractError"
+  },
+  "mutation_evidence_refs_item_4000": {
+   "outcome": "returned",
+   "store_after": "4f53cda18c2baa0c",
+   "store_before": "4f53cda18c2baa0c",
+   "store_unchanged": true,
+   "value": {
+    "acceptance_criteria": [
+     "Independent services"
+    ],
+    "evidence_refs": [
+     "xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx"
+    ],
+    "impact": "Potential contention",
+    "problem": "Production and tests share endpoints",
+    "rollback": "Restore verified image",
+    "scope": [
+     "deployment"
+    ],
+    "title": "검증 환경 격리",
+    "verification": [
+     "Run isolated service integration test"
+    ]
+   }
+  },
+  "mutation_evidence_refs_item_4001": {
+   "is_contract_error": true,
+   "message": "Invalid ticket evidence_refs",
+   "outcome": "raised",
+   "store_after": "4f53cda18c2baa0c",
+   "store_before": "4f53cda18c2baa0c",
+   "store_unchanged": true,
+   "type": "ContractError"
+  },
+  "mutation_evidence_refs_item_blank": {
+   "is_contract_error": true,
+   "message": "Invalid ticket evidence_refs",
+   "outcome": "raised",
+   "store_after": "4f53cda18c2baa0c",
+   "store_before": "4f53cda18c2baa0c",
+   "store_unchanged": true,
+   "type": "ContractError"
+  },
+  "mutation_evidence_refs_item_number": {
+   "is_contract_error": true,
+   "message": "Invalid ticket evidence_refs",
+   "outcome": "raised",
+   "store_after": "4f53cda18c2baa0c",
+   "store_before": "4f53cda18c2baa0c",
+   "store_unchanged": true,
+   "type": "ContractError"
+  },
+  "mutation_evidence_refs_string": {
+   "is_contract_error": true,
+   "message": "Invalid ticket evidence_refs",
+   "outcome": "raised",
+   "store_after": "4f53cda18c2baa0c",
+   "store_before": "4f53cda18c2baa0c",
+   "store_unchanged": true,
+   "type": "ContractError"
+  },
+  "mutation_evidence_refs_tuple": {
+   "is_contract_error": true,
+   "message": "Invalid ticket evidence_refs",
+   "outcome": "raised",
+   "store_after": "4f53cda18c2baa0c",
+   "store_before": "4f53cda18c2baa0c",
+   "store_unchanged": true,
+   "type": "ContractError"
+  },
+  "mutation_extra_field": {
+   "is_contract_error": true,
+   "message": "Ticket needs title, problem, impact, rollback, evidence_refs, scope, acceptance_criteria, verification",
+   "outcome": "raised",
+   "store_after": "4f53cda18c2baa0c",
+   "store_before": "4f53cda18c2baa0c",
+   "store_unchanged": true,
+   "type": "ContractError"
+  },
+  "mutation_impact_12000": {
+   "outcome": "returned",
+   "store_after": "4f53cda18c2baa0c",
+   "store_before": "4f53cda18c2baa0c",
+   "store_unchanged": true,
+   "value": {
+    "acceptance_criteria": [
+     "Independent services"
+    ],
+    "evidence_refs": [
+     "fixture:source-inspection"
+    ],
+    "impact": "xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx",
+    "problem": "Production and tests share endpoints",
+    "rollback": "Restore verified image",
+    "scope": [
+     "deployment"
+    ],
+    "title": "검증 환경 격리",
+    "verification": [
+     "Run isolated service integration test"
+    ]
+   }
+  },
+  "mutation_impact_12001": {
+   "is_contract_error": true,
+   "message": "Invalid ticket impact",
+   "outcome": "raised",
+   "store_after": "4f53cda18c2baa0c",
+   "store_before": "4f53cda18c2baa0c",
+   "store_unchanged": true,
+   "type": "ContractError"
+  },
+  "mutation_impact_blank": {
+   "is_contract_error": true,
+   "message": "Invalid ticket impact",
+   "outcome": "raised",
+   "store_after": "4f53cda18c2baa0c",
+   "store_before": "4f53cda18c2baa0c",
+   "store_unchanged": true,
+   "type": "ContractError"
+  },
+  "mutation_impact_not_text": {
+   "is_contract_error": true,
+   "message": "Invalid ticket impact",
+   "outcome": "raised",
+   "store_after": "4f53cda18c2baa0c",
+   "store_before": "4f53cda18c2baa0c",
+   "store_unchanged": true,
+   "type": "ContractError"
+  },
+  "mutation_missing_acceptance_criteria": {
+   "is_contract_error": true,
+   "message": "Ticket needs title, problem, impact, rollback, evidence_refs, scope, acceptance_criteria, verification",
+   "outcome": "raised",
+   "store_after": "4f53cda18c2baa0c",
+   "store_before": "4f53cda18c2baa0c",
+   "store_unchanged": true,
+   "type": "ContractError"
+  },
+  "mutation_missing_evidence_refs": {
+   "is_contract_error": true,
+   "message": "Ticket needs title, problem, impact, rollback, evidence_refs, scope, acceptance_criteria, verification",
+   "outcome": "raised",
+   "store_after": "4f53cda18c2baa0c",
+   "store_before": "4f53cda18c2baa0c",
+   "store_unchanged": true,
+   "type": "ContractError"
+  },
+  "mutation_missing_impact": {
+   "is_contract_error": true,
+   "message": "Ticket needs title, problem, impact, rollback, evidence_refs, scope, acceptance_criteria, verification",
+   "outcome": "raised",
+   "store_after": "4f53cda18c2baa0c",
+   "store_before": "4f53cda18c2baa0c",
+   "store_unchanged": true,
+   "type": "ContractError"
+  },
+  "mutation_missing_problem": {
+   "is_contract_error": true,
+   "message": "Ticket needs title, problem, impact, rollback, evidence_refs, scope, acceptance_criteria, verification",
+   "outcome": "raised",
+   "store_after": "4f53cda18c2baa0c",
+   "store_before": "4f53cda18c2baa0c",
+   "store_unchanged": true,
+   "type": "ContractError"
+  },
+  "mutation_missing_rollback": {
+   "is_contract_error": true,
+   "message": "Ticket needs title, problem, impact, rollback, evidence_refs, scope, acceptance_criteria, verification",
+   "outcome": "raised",
+   "store_after": "4f53cda18c2baa0c",
+   "store_before": "4f53cda18c2baa0c",
+   "store_unchanged": true,
+   "type": "ContractError"
+  },
+  "mutation_missing_scope": {
+   "is_contract_error": true,
+   "message": "Ticket needs title, problem, impact, rollback, evidence_refs, scope, acceptance_criteria, verification",
+   "outcome": "raised",
+   "store_after": "4f53cda18c2baa0c",
+   "store_before": "4f53cda18c2baa0c",
+   "store_unchanged": true,
+   "type": "ContractError"
+  },
+  "mutation_missing_title": {
+   "is_contract_error": true,
+   "message": "Ticket needs title, problem, impact, rollback, evidence_refs, scope, acceptance_criteria, verification",
+   "outcome": "raised",
+   "store_after": "4f53cda18c2baa0c",
+   "store_before": "4f53cda18c2baa0c",
+   "store_unchanged": true,
+   "type": "ContractError"
+  },
+  "mutation_missing_verification": {
+   "is_contract_error": true,
+   "message": "Ticket needs title, problem, impact, rollback, evidence_refs, scope, acceptance_criteria, verification",
+   "outcome": "raised",
+   "store_after": "4f53cda18c2baa0c",
+   "store_before": "4f53cda18c2baa0c",
+   "store_unchanged": true,
+   "type": "ContractError"
+  },
+  "mutation_none": {
+   "is_contract_error": true,
+   "message": "Ticket needs title, problem, impact, rollback, evidence_refs, scope, acceptance_criteria, verification",
+   "outcome": "raised",
+   "store_after": "4f53cda18c2baa0c",
+   "store_before": "4f53cda18c2baa0c",
+   "store_unchanged": true,
+   "type": "ContractError"
+  },
+  "mutation_not_a_dict": {
+   "is_contract_error": true,
+   "message": "Ticket needs title, problem, impact, rollback, evidence_refs, scope, acceptance_criteria, verification",
+   "outcome": "raised",
+   "store_after": "4f53cda18c2baa0c",
+   "store_before": "4f53cda18c2baa0c",
+   "store_unchanged": true,
+   "type": "ContractError"
+  },
+  "mutation_problem_12000": {
+   "outcome": "returned",
+   "store_after": "4f53cda18c2baa0c",
+   "store_before": "4f53cda18c2baa0c",
+   "store_unchanged": true,
+   "value": {
+    "acceptance_criteria": [
+     "Independent services"
+    ],
+    "evidence_refs": [
+     "fixture:source-inspection"
+    ],
+    "impact": "Potential contention",
+    "problem": "xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx",
+    "rollback": "Restore verified image",
+    "scope": [
+     "deployment"
+    ],
+    "title": "검증 환경 격리",
+    "verification": [
+     "Run isolated service integration test"
+    ]
+   }
+  },
+  "mutation_problem_12001": {
+   "is_contract_error": true,
+   "message": "Invalid ticket problem",
+   "outcome": "raised",
+   "store_after": "4f53cda18c2baa0c",
+   "store_before": "4f53cda18c2baa0c",
+   "store_unchanged": true,
+   "type": "ContractError"
+  },
+  "mutation_problem_blank": {
+   "is_contract_error": true,
+   "message": "Invalid ticket problem",
+   "outcome": "raised",
+   "store_after": "4f53cda18c2baa0c",
+   "store_before": "4f53cda18c2baa0c",
+   "store_unchanged": true,
+   "type": "ContractError"
+  },
+  "mutation_problem_not_text": {
+   "is_contract_error": true,
+   "message": "Invalid ticket problem",
+   "outcome": "raised",
+   "store_after": "4f53cda18c2baa0c",
+   "store_before": "4f53cda18c2baa0c",
+   "store_unchanged": true,
+   "type": "ContractError"
+  },
+  "mutation_rollback_12000": {
+   "outcome": "returned",
+   "store_after": "4f53cda18c2baa0c",
+   "store_before": "4f53cda18c2baa0c",
+   "store_unchanged": true,
+   "value": {
+    "acceptance_criteria": [
+     "Independent services"
+    ],
+    "evidence_refs": [
+     "fixture:source-inspection"
+    ],
+    "impact": "Potential contention",
+    "problem": "Production and tests share endpoints",
+    "rollback": "xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx",
+    "scope": [
+     "deployment"
+    ],
+    "title": "검증 환경 격리",
+    "verification": [
+     "Run isolated service integration test"
+    ]
+   }
+  },
+  "mutation_rollback_12001": {
+   "is_contract_error": true,
+   "message": "Invalid ticket rollback",
+   "outcome": "raised",
+   "store_after": "4f53cda18c2baa0c",
+   "store_before": "4f53cda18c2baa0c",
+   "store_unchanged": true,
+   "type": "ContractError"
+  },
+  "mutation_rollback_blank": {
+   "is_contract_error": true,
+   "message": "Invalid ticket rollback",
+   "outcome": "raised",
+   "store_after": "4f53cda18c2baa0c",
+   "store_before": "4f53cda18c2baa0c",
+   "store_unchanged": true,
+   "type": "ContractError"
+  },
+  "mutation_rollback_not_text": {
+   "is_contract_error": true,
+   "message": "Invalid ticket rollback",
+   "outcome": "raised",
+   "store_after": "4f53cda18c2baa0c",
+   "store_before": "4f53cda18c2baa0c",
+   "store_unchanged": true,
+   "type": "ContractError"
+  },
+  "mutation_scope_50": {
+   "outcome": "returned",
+   "store_after": "4f53cda18c2baa0c",
+   "store_before": "4f53cda18c2baa0c",
+   "store_unchanged": true,
+   "value": {
+    "acceptance_criteria": [
+     "Independent services"
+    ],
+    "evidence_refs": [
+     "fixture:source-inspection"
+    ],
+    "impact": "Potential contention",
+    "problem": "Production and tests share endpoints",
+    "rollback": "Restore verified image",
+    "scope": [
+     "x",
+     "x",
+     "x",
+     "x",
+     "x",
+     "x",
+     "x",
+     "x",
+     "x",
+     "x",
+     "x",
+     "x",
+     "x",
+     "x",
+     "x",
+     "x",
+     "x",
+     "x",
+     "x",
+     "x",
+     "x",
+     "x",
+     "x",
+     "x",
+     "x",
+     "x",
+     "x",
+     "x",
+     "x",
+     "x",
+     "x",
+     "x",
+     "x",
+     "x",
+     "x",
+     "x",
+     "x",
+     "x",
+     "x",
+     "x",
+     "x",
+     "x",
+     "x",
+     "x",
+     "x",
+     "x",
+     "x",
+     "x",
+     "x",
+     "x"
+    ],
+    "title": "검증 환경 격리",
+    "verification": [
+     "Run isolated service integration test"
+    ]
+   }
+  },
+  "mutation_scope_51": {
+   "is_contract_error": true,
+   "message": "Invalid ticket scope",
+   "outcome": "raised",
+   "store_after": "4f53cda18c2baa0c",
+   "store_before": "4f53cda18c2baa0c",
+   "store_unchanged": true,
+   "type": "ContractError"
+  },
+  "mutation_scope_empty": {
+   "is_contract_error": true,
+   "message": "Invalid ticket scope",
+   "outcome": "raised",
+   "store_after": "4f53cda18c2baa0c",
+   "store_before": "4f53cda18c2baa0c",
+   "store_unchanged": true,
+   "type": "ContractError"
+  },
+  "mutation_scope_item_4000": {
+   "outcome": "returned",
+   "store_after": "4f53cda18c2baa0c",
+   "store_before": "4f53cda18c2baa0c",
+   "store_unchanged": true,
+   "value": {
+    "acceptance_criteria": [
+     "Independent services"
+    ],
+    "evidence_refs": [
+     "fixture:source-inspection"
+    ],
+    "impact": "Potential contention",
+    "problem": "Production and tests share endpoints",
+    "rollback": "Restore verified image",
+    "scope": [
+     "xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx"
+    ],
+    "title": "검증 환경 격리",
+    "verification": [
+     "Run isolated service integration test"
+    ]
+   }
+  },
+  "mutation_scope_item_4001": {
+   "is_contract_error": true,
+   "message": "Invalid ticket scope",
+   "outcome": "raised",
+   "store_after": "4f53cda18c2baa0c",
+   "store_before": "4f53cda18c2baa0c",
+   "store_unchanged": true,
+   "type": "ContractError"
+  },
+  "mutation_scope_item_blank": {
+   "is_contract_error": true,
+   "message": "Invalid ticket scope",
+   "outcome": "raised",
+   "store_after": "4f53cda18c2baa0c",
+   "store_before": "4f53cda18c2baa0c",
+   "store_unchanged": true,
+   "type": "ContractError"
+  },
+  "mutation_scope_item_number": {
+   "is_contract_error": true,
+   "message": "Invalid ticket scope",
+   "outcome": "raised",
+   "store_after": "4f53cda18c2baa0c",
+   "store_before": "4f53cda18c2baa0c",
+   "store_unchanged": true,
+   "type": "ContractError"
+  },
+  "mutation_scope_string": {
+   "is_contract_error": true,
+   "message": "Invalid ticket scope",
+   "outcome": "raised",
+   "store_after": "4f53cda18c2baa0c",
+   "store_before": "4f53cda18c2baa0c",
+   "store_unchanged": true,
+   "type": "ContractError"
+  },
+  "mutation_scope_tuple": {
+   "is_contract_error": true,
+   "message": "Invalid ticket scope",
+   "outcome": "raised",
+   "store_after": "4f53cda18c2baa0c",
+   "store_before": "4f53cda18c2baa0c",
+   "store_unchanged": true,
+   "type": "ContractError"
+  },
+  "mutation_title_12000": {
+   "outcome": "returned",
+   "store_after": "4f53cda18c2baa0c",
+   "store_before": "4f53cda18c2baa0c",
+   "store_unchanged": true,
+   "value": {
+    "acceptance_criteria": [
+     "Independent services"
+    ],
+    "evidence_refs": [
+     "fixture:source-inspection"
+    ],
+    "impact": "Potential contention",
+    "problem": "Production and tests share endpoints",
+    "rollback": "Restore verified image",
+    "scope": [
+     "deployment"
+    ],
+    "title": "xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx",
+    "verification": [
+     "Run isolated service integration test"
+    ]
+   }
+  },
+  "mutation_title_12001": {
+   "is_contract_error": true,
+   "message": "Invalid ticket title",
+   "outcome": "raised",
+   "store_after": "4f53cda18c2baa0c",
+   "store_before": "4f53cda18c2baa0c",
+   "store_unchanged": true,
+   "type": "ContractError"
+  },
+  "mutation_title_blank": {
+   "is_contract_error": true,
+   "message": "Invalid ticket title",
+   "outcome": "raised",
+   "store_after": "4f53cda18c2baa0c",
+   "store_before": "4f53cda18c2baa0c",
+   "store_unchanged": true,
+   "type": "ContractError"
+  },
+  "mutation_title_not_text": {
+   "is_contract_error": true,
+   "message": "Invalid ticket title",
+   "outcome": "raised",
+   "store_after": "4f53cda18c2baa0c",
+   "store_before": "4f53cda18c2baa0c",
+   "store_unchanged": true,
+   "type": "ContractError"
+  },
+  "mutation_verification_50": {
+   "outcome": "returned",
+   "store_after": "4f53cda18c2baa0c",
+   "store_before": "4f53cda18c2baa0c",
+   "store_unchanged": true,
+   "value": {
+    "acceptance_criteria": [
+     "Independent services"
+    ],
+    "evidence_refs": [
+     "fixture:source-inspection"
+    ],
+    "impact": "Potential contention",
+    "problem": "Production and tests share endpoints",
+    "rollback": "Restore verified image",
+    "scope": [
+     "deployment"
+    ],
+    "title": "검증 환경 격리",
+    "verification": [
+     "x",
+     "x",
+     "x",
+     "x",
+     "x",
+     "x",
+     "x",
+     "x",
+     "x",
+     "x",
+     "x",
+     "x",
+     "x",
+     "x",
+     "x",
+     "x",
+     "x",
+     "x",
+     "x",
+     "x",
+     "x",
+     "x",
+     "x",
+     "x",
+     "x",
+     "x",
+     "x",
+     "x",
+     "x",
+     "x",
+     "x",
+     "x",
+     "x",
+     "x",
+     "x",
+     "x",
+     "x",
+     "x",
+     "x",
+     "x",
+     "x",
+     "x",
+     "x",
+     "x",
+     "x",
+     "x",
+     "x",
+     "x",
+     "x",
+     "x"
+    ]
+   }
+  },
+  "mutation_verification_51": {
+   "is_contract_error": true,
+   "message": "Invalid ticket verification",
+   "outcome": "raised",
+   "store_after": "4f53cda18c2baa0c",
+   "store_before": "4f53cda18c2baa0c",
+   "store_unchanged": true,
+   "type": "ContractError"
+  },
+  "mutation_verification_empty": {
+   "is_contract_error": true,
+   "message": "Invalid ticket verification",
+   "outcome": "raised",
+   "store_after": "4f53cda18c2baa0c",
+   "store_before": "4f53cda18c2baa0c",
+   "store_unchanged": true,
+   "type": "ContractError"
+  },
+  "mutation_verification_item_4000": {
+   "outcome": "returned",
+   "store_after": "4f53cda18c2baa0c",
+   "store_before": "4f53cda18c2baa0c",
+   "store_unchanged": true,
+   "value": {
+    "acceptance_criteria": [
+     "Independent services"
+    ],
+    "evidence_refs": [
+     "fixture:source-inspection"
+    ],
+    "impact": "Potential contention",
+    "problem": "Production and tests share endpoints",
+    "rollback": "Restore verified image",
+    "scope": [
+     "deployment"
+    ],
+    "title": "검증 환경 격리",
+    "verification": [
+     "xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx"
+    ]
+   }
+  },
+  "mutation_verification_item_4001": {
+   "is_contract_error": true,
+   "message": "Invalid ticket verification",
+   "outcome": "raised",
+   "store_after": "4f53cda18c2baa0c",
+   "store_before": "4f53cda18c2baa0c",
+   "store_unchanged": true,
+   "type": "ContractError"
+  },
+  "mutation_verification_item_blank": {
+   "is_contract_error": true,
+   "message": "Invalid ticket verification",
+   "outcome": "raised",
+   "store_after": "4f53cda18c2baa0c",
+   "store_before": "4f53cda18c2baa0c",
+   "store_unchanged": true,
+   "type": "ContractError"
+  },
+  "mutation_verification_item_number": {
+   "is_contract_error": true,
+   "message": "Invalid ticket verification",
+   "outcome": "raised",
+   "store_after": "4f53cda18c2baa0c",
+   "store_before": "4f53cda18c2baa0c",
+   "store_unchanged": true,
+   "type": "ContractError"
+  },
+  "mutation_verification_string": {
+   "is_contract_error": true,
+   "message": "Invalid ticket verification",
+   "outcome": "raised",
+   "store_after": "4f53cda18c2baa0c",
+   "store_before": "4f53cda18c2baa0c",
+   "store_unchanged": true,
+   "type": "ContractError"
+  },
+  "mutation_verification_tuple": {
+   "is_contract_error": true,
+   "message": "Invalid ticket verification",
+   "outcome": "raised",
+   "store_after": "4f53cda18c2baa0c",
+   "store_before": "4f53cda18c2baa0c",
+   "store_unchanged": true,
+   "type": "ContractError"
+  },
+  "unicode_title_kept": true,
+  "valid": {
+   "outcome": "returned",
+   "store_after": "4f53cda18c2baa0c",
+   "store_before": "4f53cda18c2baa0c",
+   "store_unchanged": true,
+   "value": {
+    "acceptance_criteria": [
+     "Independent services"
+    ],
+    "evidence_refs": [
+     "fixture:source-inspection"
+    ],
+    "impact": "Potential contention",
+    "problem": "Production and tests share endpoints",
+    "rollback": "Restore verified image",
+    "scope": [
+     "deployment"
+    ],
+    "title": "검증 환경 격리",
+    "verification": [
+     "Run isolated service integration test"
+    ]
+   }
+  },
+  "valid_is_a_deep_copy": [
+   true,
+   true,
+   true
+  ]
+ }
+}

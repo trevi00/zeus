@@ -1,0 +1,8 @@
+{
+ "family": "intake.tickets",
+ "description": "S8 batch B2 tickets of M7 application/tickets.py (validate_content and every refusal, Tickets.create, update, get, list, review and dispatch with and without a goal manifest (the B1 goal_progress), the outbox assignment, replay, the stale, closed and tampered refusals, ticket_binding with TicketClosed/TicketSuperseded, render_ticket), characterized before the move of the rest of the module into intake (V30), at module level over tests/test_tickets.py and the Tickets halves of test_goal_progress.py: MemoryStore, the packaged organization, scripted clock and ids, the whole-store digest before and after every call; no Workflow, Releases, GitHub or database",
+ "reference_driver": "drivers/reference/s8_tickets.py",
+ "target_driver": "drivers/target/s8_tickets.py",
+ "golden": "goldens/reference/intake.tickets.json",
+ "slice": "S8"
+}
