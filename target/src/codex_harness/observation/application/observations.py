@@ -1,4 +1,4 @@
-"""The Observer write path (INV-OBSERVATION-001), moved ahead in S4 unchanged.
+"""The Observer write path (S4) and the Collector with its reports (S9) of the observation log (INV-OBSERVATION-001).
 
 Layer: application
 Context: observation
@@ -8,13 +8,22 @@ Owns: the bucket names, and the whole Observer class with its helpers (M7 `appli
     correlation, emit/_append/_refused, audit/audit_system, alert/health and their sink bookkeeping,
     record_termination/pending_terminations/resolve_termination and close; ReconciliationRequired,
     PostExecutionRecordFailure, MemoryDirectory, MAX_REASON_CHARS and the text helpers (_error_text, _label,
-    _free_text, _record_id_ok)
-Does not own: Collector, orphan_report and status_report (S9), and FileSpool/SpoolDirectory (S9)
+    _free_text, _record_id_ok); and, moved in S9 batch L2-B4 unchanged, the Collector (spool -> sink ->
+    acknowledgement -> reclamation, `replay_pending_alerts`, `collect`, the sink and quarantine steps),
+    `orphan_report` and `status_report`
+Does not own: FileSpool/SpoolDirectory (`observation.adapters.observation_spool`; the Collector, `status_report`
+    and the Observer take the directory untyped, as M7 does, and the composition root passes it), the observation
+    validator (`observation.adapters.observation_schema`, passed in as `validate`), the monitor's read-only
+    projection of these buckets (`observation.adapters.monitoring_observations`)
 Entry points: Observer, Observer.emit, Observer.audit, Observer.alert, Observer.record_termination,
     Observer.pending_terminations, Observer.resolve_termination, Observer.termination_id,
     Observer.mark_unconfirmed, Observer.close_unconfirmed, Observer.guard_reservation, ReconciliationRequired,
-    PostExecutionRecordFailure, MemoryDirectory, BUCKETS, TERMINATION_BUCKET
+    PostExecutionRecordFailure, MemoryDirectory, BUCKETS, TERMINATION_BUCKET, Collector, Collector.collect,
+    Collector.replay_pending_alerts, orphan_report, status_report
 Contracts: INV-OBSERVATION-001
+
+The Collector half (S9 batch L2-B4, A/evidence/rebuild/s9/l2-b4/transcribe.py) is M7's text from `class Collector:` on, appended
+after the S4 part in M7's order; only this import block and this header differ from M7.
 
 Observer, collector and reports for the three-category log contract (INV-OBSERVATION-001).
 
@@ -50,6 +59,7 @@ import sys
 import threading
 import time
 from collections import Counter
+from datetime import datetime
 
 from codex_harness.kernel.errors import ContractError, require
 from codex_harness.kernel.ids import digest, utcnow
@@ -59,6 +69,7 @@ from codex_harness.observation.domain.observation import (
     build_event,
     content_hash,
     execution_identity,
+    is_business_message,
     lease_identity,
     opaque_identifier,
     redact_text,
@@ -716,3 +727,220 @@ class Observer:
 
 def _record_id_ok(value) -> bool:
     return type(value) is str and REFERENCE.fullmatch(value) is not None and len(value) <= 200
+
+
+class Collector:
+    """Spool → sink → acknowledgement → reclamation. Ordered by offset, deduplicated by id and content."""
+
+    def __init__(self, store, directory, *, validate, observer: Observer | None = None,
+                 batch: int = POLICY.observation_collect_batch, clock=utcnow):
+        require(callable(validate), "Collector needs the observation validator")
+        require(type(batch) is int and batch > 0, "Collection batch must be positive")
+        self.store, self.directory, self.validate = store, directory, validate
+        self.observer, self.batch, self.clock = observer, batch, clock
+
+    def replay_pending_alerts(self) -> int:
+        """Replay pending alerts in their own transaction, independent of any spool record.
+
+        The alerts that matter most are the ones raised when the spool itself could not be
+        written; they exist only in the pending files, so their replay cannot wait for a spool row.
+        """
+        if self.observer is None:
+            return 0
+        self.observer.refresh_inherited_alerts()
+        if not self.observer.pending_alerts and not self.observer.inherited_pending:
+            return 0
+        try:
+            with self.store.transaction() as tx:
+                flushed = self.observer._flush_pending(tx)
+        except Exception as exc:
+            self.observer.last_defect = _error_text(exc)
+            self.observer._sink("unavailable", exc)
+            return 0
+        # The recovery event is emitted at the end of the pass, after acknowledgement and
+        # reclamation, so it does not land on a still-saturated spool.
+        return self.observer._flushed(flushed)
+
+    def collect(self, prune: bool = True) -> dict:
+        counts = Counter()
+        files = []
+        counts["alerts_replayed"] = self.replay_pending_alerts()
+        replayed_ok = counts["alerts_replayed"] > 0
+        for path in self.directory.spool_files():
+            offset = self.directory.acknowledged(path)
+            rows, end, tail = [], offset, False
+            for start, stop, status, kind, event, defect in self.directory.read(path, offset):
+                if status == "truncated_tail":
+                    tail = True
+                    run = path.name.split(".")[0]
+                    if self.directory.run_finished(run):
+                        # The writer is gone for good: the partial tail is final and is quarantined
+                        # as corrupt so the segment can be acknowledged and reclaimed.
+                        rows.append(("corrupt", start, stop, kind, None, "truncated tail of a finished run"))
+                        end = stop
+                        tail = False
+                    break
+                rows.append((status, start, stop, kind, event, defect))
+                end = stop
+                if len(rows) >= self.batch:
+                    break
+            counts["files"] += 1
+            counts["truncated_tail"] += int(tail)
+            if not rows:
+                if not tail and self.directory.reclaim(path):
+                    counts["reclaimed_segments"] += 1
+                continue
+            flushed = []
+            try:
+                with self.store.transaction() as tx:
+                    result = self._sink(tx, path, rows)
+                    receipt = {"id": digest([path.name, offset, end, self.clock()]), "file": path.name,
+                               "from_offset": offset, "to_offset": end, **result, "at": self.clock()}
+                    tx.put(COLLECTION_BUCKET, receipt["id"], receipt)
+                    if self.observer is not None:
+                        flushed = self.observer._flush_pending(tx)
+            except Exception as exc:
+                counts["sink_failures"] += 1
+                if self.observer is not None:
+                    self.observer.last_defect = _error_text(exc)
+                    self.observer._sink("unavailable", exc)
+                break
+            self.directory.acknowledge(path, end, len(rows))
+            counts.update(result)
+            files.append({"file": path.name, "from_offset": offset, "to_offset": end, **result})
+            if not tail and len(rows) < self.batch and self.directory.reclaim(path):
+                counts["reclaimed_segments"] += 1
+            if self.observer is not None:
+                # Acknowledge and reclaim first: the recovery event itself must find room in the spool.
+                self.observer._flushed(flushed)
+                self.observer._sink("available")
+        if prune:
+            try:
+                pruned = self.directory.prune()
+            except Exception as exc:
+                pruned = {"error": type(exc).__name__}
+            counts["pruned_runs"] = pruned.get("runs", 0)
+            counts["pruned_files"] = pruned.get("segments", 0) + pruned.get("files", 0)
+        if replayed_ok and self.observer is not None and not counts.get("sink_failures"):
+            self.observer._sink("available")
+        summary = {**{key: 0 for key in ("files", "records", "inserted", "duplicates", "conflicts", "corrupt",
+                                         "refused", "truncated_tail", "unconfirmed_audits", "confirmed_audits",
+                                         "sink_failures", "reclaimed_segments", "pruned_runs", "pruned_files",
+                                         "alerts_replayed")},
+                   **counts, "per_file": files}
+        if self.observer is not None and (summary["records"] or summary["truncated_tail"]):
+            self.observer.emit("operations.collection_completed", "observed",
+                               attributes={key: int(summary[key]) for key in
+                                           ("files", "records", "inserted", "duplicates", "conflicts", "corrupt",
+                                            "truncated_tail", "unconfirmed_audits")})
+        return summary
+
+    def _sink(self, tx, path, rows) -> dict:
+        result = Counter()
+        for status, start, stop, kind, event, defect in rows:
+            result["records"] += 1
+            if status == "corrupt":
+                self._quarantine(tx, "corrupt_record", {"file": path.name, "offset": start, "end": stop,
+                                                        "defect": defect, "kind": kind})
+                result["corrupt"] += 1
+                continue
+            if is_business_message(event):
+                self._quarantine(tx, "business_message_shape", {"file": path.name, "offset": start,
+                                                                "keys": sorted(map(str, event))[:20]})
+                result["refused"] += 1
+                continue
+            try:
+                self.validate(event)
+            except ContractError as exc:
+                # The validator names paths and keywords only; the refused bytes stay in the spool.
+                event_id = event.get("event_id")
+                self._quarantine(tx, "schema_refused", {"file": path.name, "offset": start, "defect": str(exc)[:600],
+                                                        "event_id": event_id if type(event_id) is str
+                                                        and REFERENCE.fullmatch(event_id) else None})
+                result["refused"] += 1
+                continue
+            digest_value = content_hash(event)
+            existing = tx.get(EVENT_BUCKET, event["event_id"])
+            if existing is None:
+                confirmed = None
+                if kind == "audit":
+                    confirmed = tx.get(AUDIT_BUCKET, event["event_id"]) is not None
+                    result["confirmed_audits" if confirmed else "unconfirmed_audits"] += 1
+                tx.put(EVENT_BUCKET, event["event_id"], {**event, "payload_hash": digest_value, "record_kind": kind,
+                       "audit_confirmed": confirmed, "collected_at": self.clock(),
+                       "spool": {"file": path.name, "offset": start}, "authority": "informational_only"})
+                result["inserted"] += 1
+            elif existing.get("payload_hash") == digest_value:
+                result["duplicates"] += 1
+            else:
+                quarantine_id = self._quarantine(tx, "conflicting_content", {
+                    "file": path.name, "offset": start, "event_id": event["event_id"],
+                    "expected_hash": existing.get("payload_hash"), "observed_hash": digest_value, "source": event})
+                result["conflicts"] += 1
+                if self.observer is not None:
+                    self.observer.alert("observation_conflict", event["event_id"], severity="error", tx=tx,
+                                        attributes={"conflicting_event_id": event["event_id"],
+                                                    "expected_hash": existing.get("payload_hash"),
+                                                    "observed_hash": digest_value, "quarantine_id": quarantine_id})
+        return dict(result)
+
+    def _quarantine(self, tx, reason, detail) -> str:
+        identity = digest(["observation_quarantine", reason, detail.get("file"), detail.get("offset"),
+                           detail.get("event_id"), detail.get("observed_hash")])
+        if tx.get(QUARANTINE_BUCKET, identity) is None:
+            tx.put(QUARANTINE_BUCKET, identity, {"id": identity, "reason": reason, **detail, "at": self.clock()})
+        return identity
+
+
+def orphan_report(tx, now: str | None = None) -> dict:
+    """Reserved invocations whose execution still heartbeats versus ones whose lease is gone.
+
+    The criteria are the invocation ledger's own (same attempt, running, same owner, live lease);
+    this report never mutates the reservation, so it is safe to run from a read-only status.
+    """
+    moment = datetime.fromisoformat(now or utcnow())
+    rows = {"in_progress": [], "orphan": []}
+    for row in tx.scan("invocation_reservations"):
+        if row.get("status") != "reserved":
+            continue
+        task = tx.get(row["bucket"], row["task_id"])
+        same_attempt = task is not None and (task.get("generation"), task.get("attempt")) == (row["generation"], row["attempt"])
+        lease_until = task.get("lease_until") if task else None
+        try:
+            lease_live = isinstance(lease_until, str) and datetime.fromisoformat(lease_until) > moment
+        except ValueError:
+            lease_live = False
+        alive = same_attempt and task.get("status") == "running" and task.get("lease_owner") == row.get("owner") and lease_live
+        reason = None if alive else ("execution_missing" if task is None else "execution_superseded" if not same_attempt
+                                     else "execution_lease_expired" if task.get("status") == "running"
+                                     else "execution_" + str(task.get("status")))
+        rows["in_progress" if alive else "orphan"].append({"reservation_id": row["id"], "bucket": row["bucket"],
+            "task_id": row["task_id"], "generation": row["generation"], "attempt": row["attempt"],
+            "reserved_at": row.get("reserved_at"), "lease_until": lease_until, "reason": reason})
+    return {"as_of": moment.isoformat(), **rows, "note": "orphan means reserved without a live lease; it is an observation, "
+            "the invocation ledger's reclaim closes it as unsettled_unknown"}
+
+
+def status_report(store, directory, observer: Observer | None = None) -> dict:
+    with store.transaction() as tx:
+        counts = {bucket: len(tx.scan(bucket)) for bucket in BUCKETS}
+        pending = [row for row in tx.scan(TERMINATION_BUCKET)
+                   if row.get("status") in {"pending_reconciliation", "unconfirmed"}]
+        alerts = tx.scan(ALERT_BUCKET)
+        orphans = orphan_report(tx)
+    return {"buckets": counts, "spool_files": [path.name for path in directory.spool_files()],
+            "spool_unacknowledged_bytes": directory.unacknowledged_bytes(),
+            "runtime_directory_bytes": directory.total_bytes(),
+            "live_writer_runs": directory.live_runs() if hasattr(directory, "live_runs") else [],
+            "limits": {"per_run_unacknowledged_bytes": POLICY.observation_spool_bytes,
+                       "segment_bytes": POLICY.observation_segment_bytes,
+                       "finished_run_retention_seconds": POLICY.observation_retention_seconds,
+                       "note": "the per-run limit bounds live producers; the directory total is the sum over "
+                               "producers plus finished runs inside the retention window, not a hard cap"},
+            "process_health": directory.read_health(),
+            "pending_alert_files": {run: len(rows) for run, rows in directory.read_pending_alerts().items()},
+            "pending_terminations": {"local": directory.pending_terminations(), "sink": pending},
+            "alerts": {"recorded": len(alerts),
+                       "pending_locally": len(observer.pending_alerts) if observer else None},
+            "orphans": orphans, "observer": observer.health() if observer else None,
+            "authority": "informational_only"}
