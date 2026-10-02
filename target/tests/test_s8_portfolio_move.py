@@ -185,7 +185,9 @@ def test_v4_intake_owns_the_portfolio_buckets():
     # S8 pilot 84 (V16) appends the four front-desk buckets after the portfolio ones; pilot 98 (V11) the eight ticket buckets
     tickets = ("tickets", "ticket_dispatches", "ticket_closures", "ticket_closure_sequences", "ticket_reopens", "ticket_github",
                "ticket_lifecycle_events", "ticket_trust_anchors")
-    assert ports.OWNED_BUCKETS == portfolio + ("desk_sessions", "desk_requests", "desk_events", "desk_receipts") + tickets
+    # S8 batch B2 (V30 R-tk3) appends the five buckets of `Tickets` and `GitHubTickets`
+    batch_b2 = ("ticket_reviews", "ticket_revisions", "ticket_remote_creations", "ticket_remote_observations", "ticket_syncs")
+    assert ports.OWNED_BUCKETS == portfolio + ("desk_sessions", "desk_requests", "desk_events", "desk_receipts") + tickets + batch_b2
     app = importlib.import_module(APP)
     assert {app.BUCKET_BINDINGS, app.BUCKET_ACCEPTANCES, app.BUCKET_INVESTIGATIONS, app.BUCKET_FOLLOWUPS} == set(portfolio)
 

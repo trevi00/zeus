@@ -1,24 +1,26 @@
-"""Ticket provenance binding: find and validate the same ticket revision across plan/rework/review (INV-TICKET-001).
+"""Versioned review topics. Ticket feedback is advisory, never release authority.
 
 Layer: application
 Context: intake
-Owns: TicketSuperseded, TicketClosed, ticket_binding (M7 `application/tickets.py`, moved ahead in S4 unchanged:
-    lead decision Option A, an owner operation the S4 units call)
-Does not own: the rest of M7 `application/tickets.py` (validate_content, Tickets: S8), the ticket rows'
-    writers (S8)
-Entry points: TicketSuperseded, TicketClosed, ticket_binding
-Contracts: INV-TICKET-001
+Owns: TEXT_FIELDS, LIST_FIELDS, TicketSuperseded, TicketClosed, ticket_binding (moved ahead in S4 unchanged: lead decision Option A, an owner operation the S4 units call), validate_content, Tickets (create, update, get, list, review, dispatch), render_ticket; the writer of the buckets ticket_revisions and ticket_reviews, and with `TicketLifecycle` of tickets and ticket_dispatches
+Does not own: the outbox (coordination's `Outbox.append`, injected as `outbox`, intake.ports.OutboxAppend), the clock (kernel `Clock`, injected as `clock`), the organization graph (routing), the goal manifest and its admission (intake.application.goal_progress), the lifecycle decisions and the GitHub link rows (TicketLifecycle, GitHubTickets), the ticket CLI (S10)
+Entry points: TicketSuperseded, TicketClosed, ticket_binding, validate_content, Tickets, render_ticket
+Contracts: INV-TICKET-001, INV-GOAL-PROGRESS-001
 
 Other contexts reach `ticket_binding` through an injected callable (§2.4: no other application imports it).
-Ticket feedback is advisory, never release authority.
+
+Moved from M7 `application/tickets.py` (SOURCE e38aa722; the S4 move-ahead names are M7's text unchanged) through named rules (S8 batch B2, DESIGN-s8 §25 V30, A/evidence/rebuild/s8/batch-b2-move/transcribe.py): R-tk0 (each name from the target home of the module that defines it), R-tk1 (the merge: the rest of the module is inserted verbatim at M7's relative positions), R-tk2 (the coordination outbox put is the injected keyword-only port `outbox`, intake.ports.OutboxAppend, checked by one separate `require` before it; the keyword-only `clock` replaces the process clock of `utcnow`); every other statement is M7's. The first paragraph is M7's module docstring.
 """
-
-from __future__ import annotations
-
 from copy import deepcopy
+from uuid import uuid4
 
+from codex_harness.intake.application.goal_progress import admit_dispatch, validate_manifest
 from codex_harness.kernel.errors import ContractError, require
-from codex_harness.kernel.ids import digest
+from codex_harness.kernel.ids import digest, utcnow
+from codex_harness.kernel.message import envelope
+
+TEXT_FIELDS = ("title", "problem", "impact", "rollback")
+LIST_FIELDS = ("evidence_refs", "scope", "acceptance_criteria", "verification")
 
 
 class TicketSuperseded(ContractError):
@@ -27,6 +29,19 @@ class TicketSuperseded(ContractError):
 
 class TicketClosed(TicketSuperseded):
     """Acceptance ended this work cycle; preserve results and stop downstream work."""
+
+
+def validate_content(content):
+    require(isinstance(content, dict) and set(content) == set(TEXT_FIELDS + LIST_FIELDS),
+            "Ticket needs title, problem, impact, rollback, evidence_refs, scope, acceptance_criteria, verification")
+    for name in TEXT_FIELDS:
+        require(isinstance(content[name], str) and 0 < len(content[name].strip()) <= 12000,
+                "Invalid ticket " + name)
+    for name in LIST_FIELDS:
+        require(isinstance(content[name], list) and 0 < len(content[name]) <= 50
+                and all(isinstance(item, str) and 0 < len(item.strip()) <= 4000 for item in content[name]),
+                "Invalid ticket " + name)
+    return deepcopy(content)
 
 
 def ticket_binding(tx, value):
@@ -63,3 +78,155 @@ def ticket_binding(tx, value):
     revision = tx.get("ticket_revisions", f'{bound["id"]}:{bound["revision"]}')
     require(revision and digest(revision["content"]) == bound["content_hash"], "Ticket revision corrupted")
     return deepcopy(bound)
+
+
+class Tickets:
+    def __init__(self, store, organization, *, outbox=None, clock=None):
+        self.store, self.org = store, organization
+        self.outbox, self.clock = outbox, clock
+
+    def create(self, content, author="operator"):
+        content = validate_content(content)
+        require(isinstance(author, str) and bool(author.strip()), "Ticket author required")
+        row = {"id": "ZEUS-" + uuid4().hex[:12], "revision": 1,
+               "content_hash": digest(content), "status": "open", "created_at": utcnow(self.clock)}
+        with self.store.transaction() as tx:
+            tx.put("tickets", row["id"], row)
+            tx.put("ticket_revisions", row["id"] + ":1", {**row, "content": content,
+                    "claimed_author": author, "reason": "created"})
+        return row
+
+    def update(self, ticket_id, expected_revision, content, reason, author="operator"):
+        content = validate_content(content)
+        require(isinstance(reason, str) and bool(reason.strip()), "Revision reason required")
+        require(isinstance(author, str) and bool(author.strip()), "Ticket author required")
+        with self.store.transaction() as tx:
+            row = tx.get("tickets", ticket_id)
+            require(row and row["revision"] == expected_revision, "Stale ticket edit")
+            require(row["status"] != "closed", "Reopen the closed ticket before editing")
+            for intent in tx.scan("promotion_intents"):
+                if intent.get("candidate", {}).get("zeus_ticket", {}).get("id") == ticket_id:
+                    require(intent["status"] in {"completed", "abandoned"},
+                            "Ticket promotion unresolved; resume release or release-abandon before editing")
+            require(row["content_hash"] != digest(content), "Ticket content unchanged")
+            row.update(revision=row["revision"] + 1, content_hash=digest(content),
+                       status="open", updated_at=utcnow(self.clock))
+            tx.put("tickets", ticket_id, row)
+            tx.put("ticket_revisions", f'{ticket_id}:{row["revision"]}',
+                   {**row, "content": content, "claimed_author": author, "reason": reason})
+            for dispatch in tx.scan("ticket_dispatches"):
+                if dispatch["ticket_id"] == ticket_id and dispatch["status"] != "superseded":
+                    tx.put("ticket_dispatches", dispatch["id"], {**dispatch, "status": "superseded",
+                        "superseded_by_revision": row["revision"]})
+            return row
+
+    def get(self, ticket_id, revision=None):
+        with self.store.transaction() as tx:
+            current = tx.get("tickets", ticket_id)
+            require(current is not None, "Ticket not found")
+            row = tx.get("ticket_revisions", f'{ticket_id}:{revision or current["revision"]}')
+            require(row and digest(row["content"]) == row["content_hash"], "Ticket revision unavailable or corrupted")
+            reviews = [r for r in tx.scan("ticket_reviews") if r["ticket_id"] == ticket_id
+                       and r["revision"] == row["revision"]]
+            links = [r for r in tx.scan("ticket_github") if r["ticket_id"] == ticket_id]
+            observations = [r for r in tx.scan("ticket_remote_observations") if r["ticket_id"] == ticket_id]
+            lifecycle = [r for r in tx.scan("ticket_lifecycle_events") if r["ticket_id"] == ticket_id]
+        return {**row, "current_revision": current["revision"], "status": current["status"],
+                "updated_at": current.get("updated_at", current["created_at"]),
+                "lifecycle_sequence": current.get("lifecycle_sequence", 0),
+                "lifecycle_event": current.get("lifecycle_event"),
+                "lifecycle_history": sorted(lifecycle, key=lambda r: r["sequence"]),
+                "reviews": sorted(reviews, key=lambda r: (r["at"], r["id"])),
+                "github": sorted(links, key=lambda r: r["id"]),
+                "external_observations": sorted(observations, key=lambda r: (r.get("sequence", 0), r["at"], r["id"]))}
+
+    def list(self):
+        with self.store.transaction() as tx:
+            rows = tx.scan("tickets")
+        return [self.get(row["id"]) for row in sorted(rows, key=lambda row: row["created_at"])]
+
+    def review(self, ticket_id, revision, reviewer, claimed_provider, verdict, summary, evidence_refs):
+        require(verdict in {"support", "changes_requested", "question"}, "Invalid advisory verdict")
+        require(all(isinstance(v, str) and 0 < len(v.strip()) <= 12000 for v in
+                    (reviewer, claimed_provider, summary)), "Reviewer, provider and findings required")
+        require(isinstance(evidence_refs, list) and evidence_refs
+                and all(isinstance(v, str) and v.strip() for v in evidence_refs), "Review evidence required")
+        with self.store.transaction() as tx:
+            ticket = tx.get("tickets", ticket_id)
+            require(ticket and ticket["revision"] == revision, "Stale ticket review")
+            row = {"ticket_id": ticket_id, "revision": revision, "content_hash": ticket["content_hash"],
+                   "claimed_reviewer": reviewer, "claimed_provider": claimed_provider, "verdict": verdict,
+                   "summary": summary, "evidence_refs": evidence_refs, "authority": "advisory_only"}
+            identity = digest(row)
+            existing = tx.get("ticket_reviews", identity)
+            if existing:
+                return existing
+            require(sum(r["ticket_id"] == ticket_id and r["revision"] == revision
+                        for r in tx.scan("ticket_reviews")) < 20, "Ticket revision review budget exhausted")
+            row.update(id=identity, at=utcnow(self.clock))
+            tx.put("ticket_reviews", identity, row)
+            return row
+
+    def dispatch(self, ticket_id, expected_revision, repository_revision, goal_manifest=None, criterion_id=None):
+        require(bool(repository_revision), "Repository revision required")
+        # INV-GOAL-PROGRESS-001: goal binding is opt-in; unbound dispatch keeps its key and output.
+        require((goal_manifest is None) == (criterion_id is None), "Goal manifest and criterion are required together")
+        goal = validate_manifest(goal_manifest) if goal_manifest is not None else None
+        with self.store.transaction() as tx:
+            ticket = tx.get("tickets", ticket_id)
+            require(ticket and ticket["revision"] == expected_revision, "Stale ticket dispatch")
+            bound = {key: ticket[key] for key in ("id", "revision", "content_hash")}
+            if ticket.get("lifecycle_sequence", 0):
+                bound["lifecycle_sequence"] = ticket["lifecycle_sequence"]
+            ticket_binding(tx, {"zeus_ticket": bound})
+            goal_binding = admit_dispatch(tx, goal, criterion_id, bound) if goal is not None else None
+            key = digest(bound) if goal_binding is None else digest({"zeus_ticket": bound, "goal_binding": goal_binding})
+            previous = tx.get("ticket_dispatches", key)
+            if previous:
+                return previous
+            content = tx.get("ticket_revisions", f'{ticket_id}:{expected_revision}')["content"]
+            reviews = [r for r in tx.scan("ticket_reviews") if r["ticket_id"] == ticket_id
+                       and r["revision"] == expected_revision]
+            details = {"objective": content["title"] + "\n" + content["problem"],
+                       "acceptance_criteria": content["acceptance_criteria"], "zeus_ticket": bound,
+                       "ticket_context": content, "ticket_reviews": reviews}
+            if goal_binding is not None:
+                details["goal_binding"] = goal_binding
+            observations = sorted((r for r in tx.scan("ticket_remote_observations")
+                                   if r["ticket_id"] == ticket_id), key=lambda r: (r["at"], r["id"]))
+            details["external_ticket_observations"] = observations[-10:]
+            details["external_ticket_observations_total"] = len(observations)
+            details["external_ticket_observations_omitted"] = max(0, len(observations) - 10)
+            message = envelope("task.assign", "conductor", "lead:improvement", "plan", details,
+                               "ticket:" + ticket_id + ":" + str(expected_revision))
+            message["where"]["revision"] = repository_revision
+            message["how"]["acceptance_criteria"] = content["acceptance_criteria"]
+            self.org.authorize(message)
+            require(self.outbox is not None, "Outbox is not wired")
+            self.outbox.append(tx, message)
+            result = {"id": key, "ticket_id": ticket_id, "revision": expected_revision,
+                      "message_id": message["message_id"], "status": "queued_for_planning"}
+            if goal_binding is not None:
+                result["goal_binding"] = goal_binding
+            tx.put("ticket_dispatches", key, result)
+            tx.put("tickets", ticket_id, {**ticket, "status": "dispatched"})
+            return result
+
+
+def render_ticket(ticket):
+    content = ticket["content"]
+    sections = [f'<!-- zeus-ticket:{ticket["id"]} -->',
+                f'# {content["title"]}',
+                f'Zeus `{ticket["id"]}` · revision {ticket["revision"]} · `{ticket["content_hash"]}`',
+                '> Local ledger is authoritative. Reviews below are advisory, not deployment approval.']
+    for name in TEXT_FIELDS[1:] + LIST_FIELDS:
+        value = content[name]
+        sections.append("## " + name.replace("_", " ").title() + "\n\n" +
+                        ("\n".join("- " + line for line in value) if isinstance(value, list) else value))
+    sections.append("## Reviewer findings")
+    for row in ticket["reviews"]:
+        sections.append(f'### {row["claimed_reviewer"]} ({row["claimed_provider"]}) — {row["verdict"]}\n\n'
+                        + row["summary"] + "\n\nEvidence: " + ", ".join(row["evidence_refs"]))
+    if not ticket["reviews"]:
+        sections.append("No review recorded for this revision.")
+    return "\n\n".join(sections) + "\n"

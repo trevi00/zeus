@@ -129,21 +129,29 @@ def test_the_collaborators_are_injected_not_imported_the_call_signature_audit():
 
 
 # ---- the buckets: one declaration, one writer --------------------------------------------------------------------------
-def test_v11_intake_owns_the_eight_ticket_buckets_and_only_this_module_writes_them():
+def test_v11_intake_owns_the_eight_ticket_buckets_and_the_source_writers_write_them():
     from codex_harness.intake import ports
 
     for bucket in BUCKETS:
         assert ports.OWNED_BUCKETS.count(bucket) == 1, bucket
     assert ports.OWNED_BUCKETS[:8] == ("portfolio_bindings", "portfolio_acceptances", "portfolio_investigations", "portfolio_followups",
                                        "desk_sessions", "desk_requests", "desk_events", "desk_receipts")
-    assert ports.OWNED_BUCKETS[8:] == BUCKETS
+    # S8 batch B2 (V30 R-tk3) appends the five buckets `Tickets` and `GitHubTickets` write after these eight
+    assert ports.OWNED_BUCKETS[8:16] == BUCKETS
     for path in sorted(SRC.glob("*/ports.py")):
         if path.parent.name != "intake":
             owned = getattr(importlib.import_module(f"codex_harness.{path.parent.name}.ports"), "OWNED_BUCKETS", ())
             assert not set(BUCKETS) & set(owned), path
     assert put_literals(target_text()) == set(BUCKETS)
     assert put_literals(m7_text()) == set(BUCKETS)
-    assert writers(BUCKETS) == {"intake/application/ticket_lifecycle.py"}
+    # V30 R-tk4: the SOURCE writer set per bucket. The lifecycle is the only writer of the six decision, closure, reopen, event and pin buckets;
+    # in SOURCE `Tickets` (application/tickets.py) also writes `tickets` and `ticket_dispatches`, and `GitHubTickets` (adapters/github_tickets.py)
+    # `ticket_github` (the b8b582d9 lesson: a single-writer pin names every writer SOURCE has).
+    lifecycle = "intake/application/ticket_lifecycle.py"
+    tickets_module = "intake/application/tickets.py"
+    expected = {bucket: {lifecycle} for bucket in BUCKETS}
+    expected["tickets"] = expected["ticket_dispatches"] = {lifecycle, tickets_module}
+    assert {bucket: writers((bucket,)) for bucket in BUCKETS} == expected
 
 
 # ---- the target behaviour, against literals ----------------------------------------------------------------------------
