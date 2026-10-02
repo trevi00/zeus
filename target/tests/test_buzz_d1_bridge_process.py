@@ -26,7 +26,8 @@ SCHEME = "postgresql" + "://"  # split: the tree check flags credential-shaped l
 
 def document(**extra):
     base = {"relay_url": "ws://127.0.0.1:1", "channels": ["c1"], "owners": [HEX], "custody_dir": "/nonexistent",
-            "store_dsn_file": "/nonexistent"}
+            "store_dsn_file": "/nonexistent", "commander_channel": "c1", "org_d": "4f1b7c52-9c0e-4f5a-8d1e-6a2b3c4d5e6f",
+            "team_channels": {"core": "c1"}}
     return {**base, **extra}
 
 
@@ -286,7 +287,8 @@ def test_config_refuses_bad_documents(bad, match):
         BridgeConfig.parse({**document(), **bad})
 
 
-@pytest.mark.parametrize("key", ["relay_url", "channels", "owners", "custody_dir", "store_dsn_file"])
+@pytest.mark.parametrize("key", ["relay_url", "channels", "owners", "custody_dir", "store_dsn_file", "commander_channel",
+                                 "org_d", "team_channels"])
 def test_config_refuses_a_missing_key(key):
     doc = document()
     del doc[key]

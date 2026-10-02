@@ -44,15 +44,19 @@ from codex_harness.observation.adapters.nostr_verify import verify_event
 from codex_harness.observation.application.buzz_inbound import InboundPass
 from codex_harness.observation.application.buzz_outbox import BuzzOutbox
 from codex_harness.observation.application.buzz_projection import BuzzProjection
+from codex_harness.routing.adapters.organization_source import packaged_organization
+from codex_harness.routing.domain.organization import Agent, Organization
 
 EXIT_OK, EXIT_NO_RECONNECT, EXIT_RESTRICTED, EXIT_STORE = 0, 3, 4, 5
 SLICE_SECONDS = 0.5
 COMPACT_EVERY_SECONDS = 3600
 SIGNING_ROLE = "conductor"  # the outbox's role, as the B tests wire it
 AUTH_ROLE = "bridge"  # the NIP-42 identity, as the A2 tests wire it
-_REQUIRED = ("relay_url", "channels", "owners", "custody_dir", "store_dsn_file")
+_REQUIRED = ("relay_url", "channels", "owners", "custody_dir", "store_dsn_file", "commander_channel", "org_d",
+             "team_channels")
 _OPTIONAL = {"tick_seconds": 5, "lease_ttl_seconds": 30, "recv_timeout": 10, "max_seconds": 900, "recover_every": 12,
              "store_fail_limit": 12, "max_size": 1 << 20}
+_STRINGS = ("relay_url", "custody_dir", "store_dsn_file", "commander_channel", "org_d")
 _HEX64 = frozenset("0123456789abcdef")
 _last_owner_ns = 0
 
@@ -78,6 +82,10 @@ class BridgeConfig:
     owners: tuple
     custody_dir: str
     store_dsn_file: str
+    commander_channel: str
+    org_d: str
+    team_channels: dict
+    organization_file: str | None = None
     tick_seconds: float = 5
     lease_ttl_seconds: float = 30
     recv_timeout: float = 10
@@ -90,12 +98,19 @@ class BridgeConfig:
     def parse(cls, document: dict) -> BridgeConfig:
         """The config, or `ContractError`: an unknown or missing key, a bad value, a ttl not above three ticks."""
         require(isinstance(document, dict), "buzz bridge config: a JSON object is required")
-        unknown = sorted(set(document) - set(_REQUIRED) - set(_OPTIONAL))
+        unknown = sorted(set(document) - set(_REQUIRED) - set(_OPTIONAL) - {"organization_file"})
         require(not unknown, f"buzz bridge config: unknown keys {unknown}")
         missing = [key for key in _REQUIRED if key not in document]
         require(not missing, f"buzz bridge config: missing keys {missing}")
-        for key in ("relay_url", "custody_dir", "store_dsn_file"):
+        for key in _STRINGS:
             require(isinstance(document[key], str) and document[key], f"buzz bridge config: {key} is a non-empty string")
+        teams = document["team_channels"]
+        require(isinstance(teams, dict) and teams and all(isinstance(team, str) and team and isinstance(channel, str)
+                                                          and channel for team, channel in teams.items()),
+                "buzz bridge config: team_channels is a non-empty {team: channel} object of strings")
+        organization_file = document.get("organization_file")
+        require(organization_file is None or (isinstance(organization_file, str) and organization_file),
+                "buzz bridge config: organization_file is a non-empty string")
         for key in ("channels", "owners"):
             require(isinstance(document[key], list) and document[key]
                     and all(isinstance(item, str) and item for item in document[key]),
@@ -103,14 +118,19 @@ class BridgeConfig:
         for index, owner in enumerate(document["owners"]):
             require(len(owner) == 64 and set(owner) <= _HEX64,
                     f"buzz bridge config: owners[{index}] is not 64 lowercase hex characters (length {len(owner)})")
+        unbound = sorted({document["commander_channel"], *teams.values()} - set(document["channels"]))
+        require(not unbound, f"buzz bridge config: channels must include the commander and every team channel {unbound}")
         tick = _number(document, "tick_seconds", 1, 60)
         ttl = _number(document, "lease_ttl_seconds", 0)
         require(ttl > 3 * tick, "buzz bridge config: lease_ttl_seconds must exceed three ticks")
-        return cls(document["relay_url"], tuple(document["channels"]), tuple(document["owners"]),
-                   document["custody_dir"], document["store_dsn_file"], tick, ttl,
-                   _number(document, "recv_timeout", 0.001), _number(document, "max_seconds", 0),
-                   _whole(document, "recover_every", 1), _whole(document, "store_fail_limit", 1),
-                   _whole(document, "max_size", 1))
+        config = cls(document["relay_url"], tuple(document["channels"]), tuple(document["owners"]),
+                     document["custody_dir"], document["store_dsn_file"], document["commander_channel"],
+                     document["org_d"], dict(teams), organization_file, tick, ttl,
+                     _number(document, "recv_timeout", 0.001), _number(document, "max_seconds", 0),
+                     _whole(document, "recover_every", 1), _whole(document, "store_fail_limit", 1),
+                     _whole(document, "max_size", 1))
+        config.load_organization()  # an unreadable or invalid organization file is refused with the config
+        return config
 
     @classmethod
     def from_file(cls, path: str | os.PathLike) -> BridgeConfig:
@@ -119,6 +139,18 @@ class BridgeConfig:
         except (OSError, ValueError) as exc:
             raise ContractError(f"buzz bridge config: {type(exc).__name__} reading the config file") from None
         return cls.parse(document)
+
+    def load_organization(self) -> Organization:
+        """The validated organization: `organization_file` (the packaged document's shape) or the packaged one."""
+        if self.organization_file is None:
+            return packaged_organization()
+        try:
+            data = json.loads(Path(self.organization_file).read_text(encoding="utf-8"))
+            organization = Organization({a["id"]: Agent(**a) for a in data["agents"]})
+        except (OSError, ValueError, KeyError, TypeError, AttributeError) as exc:
+            raise ContractError(f"buzz bridge config: {type(exc).__name__} reading organization_file") from None
+        organization.validate()
+        return organization
 
     def read_dsn(self) -> str:
         """The store DSN from its 0600 file (never from argv or the config text)."""
