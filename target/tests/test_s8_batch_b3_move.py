@@ -417,3 +417,39 @@ def test_execute_with_both_ports_reaches_the_command_validation(tmp_path):
     runner = ar.AuditRunner(tmp_path / "runner", None, run_process=lambda argv, timeout: None, classify=lambda **kwargs: {})
     with pytest.raises(ContractError, match="Invalid inspection command"):
         runner.execute(SimpleNamespace(), [])
+
+
+# ----- audit_repair: replay_decode alone (DESIGN-s8 §28.1 R-rd1) ----------------------------------------------------------------------------
+RD_M7 = "src/codex_harness/adapters/audit_repair.py"
+
+
+def test_r_rd1_the_module_holds_replay_decode_verbatim_and_nothing_else():
+    from codex_harness.research.adapters import audit_repair as rd
+    text = text_of(rd)
+    ours, theirs = statements(text), statements(m7_text(RD_M7))
+    assert list(ours) == ["__all__", "replay_decode"] and list(theirs) == ["__all__", "replay_decode", "build_repair"]
+    assert ast.literal_eval(ours["__all__"].value) == ["replay_decode"]
+    expected = ast.parse(m7_text(RD_M7).replace("from codex_harness.adapters.audit_execution import AuditExecution",
+                                                "from codex_harness.research.adapters.audit_execution import AuditExecution")).body
+    function = next(n for n in expected if isinstance(n, ast.FunctionDef) and n.name == "replay_decode")
+    assert ast.dump(ours["replay_decode"]) == ast.dump(function)
+    code = {n.id for n in ast.walk(ast.parse(text)) if isinstance(n, ast.Name)} | {n.attr for n in ast.walk(ast.parse(text)) if isinstance(n, ast.Attribute)}
+    assert not ({"build_repair", "AuditRepair", "FileArtifacts", "runtime_dir"} & code)
+    assert import_modules(text) == ["__future__", "codex_harness.kernel.errors", "codex_harness.kernel.ids", "codex_harness.research.adapters.audit_execution",
+                                    "codex_harness.research.domain.research"]
+    doc = ast.get_docstring(ast.parse(text))
+    assert "Layer: adapters\nContext: research\n" in doc and "Contracts: INV-AUDIT-REPAIR-001" in doc and "R-rd1" in doc
+    assert spawn_calls(text) == [] and put_buckets(text) == []
+
+
+def test_replay_decode_is_the_moved_pure_decode_and_returns_only_a_type_and_a_digest():
+    from codex_harness.kernel.ids import digest
+    from codex_harness.research.adapters.audit_repair import replay_decode
+    part = {"audit_id": "a", "partition_id": "p", "generation": 0, "paths": ["cGF0aA=="], "subsystems": [], "evidence_refs": [], "remaining_paths": ["cGF0aA=="],
+            "remaining_subsystems": [], "open_questions": [], "cursor": "start", "version": 1}
+    refused = replay_decode(part, {"paths": {"Zm9yZWlnbg==": None}, "subsystems": {}, "open_questions": [], "cursor": "c"})
+    assert refused == {"refused": True, "error_type": "ContractError", "error_digest": digest("Assigned output identities changed")}
+    assert replay_decode(part, {"paths": {"cGF0aA==": None}, "subsystems": {}, "open_questions": [], "cursor": "c"}) == {
+        "refused": False, "error_type": None, "error_digest": None}
+    with pytest.raises(ContractError):   # an invalid trusted partition is raised, not returned as a diagnosis
+        replay_decode({**part, "cursor": ""}, {})
