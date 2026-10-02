@@ -1,0 +1,9 @@
+{
+ "family": "research.correction_feedback",
+ "description": "S8 (V18 R-cf1/R-cf2) M7 adapters/correction_feedback.py deliver and require_context over a MemoryStore lane and a labelled fake artifact store (no binding, other routes, correction with the secret-shaped findings redacted and counted, conductor rejection, the research handoff alone and beside the findings, every predecessor/decision/artifact/research refusal, the bounds, require_context, the refusal class), characterized before the move; no provider, no real artifact store",
+ "reference_driver": "drivers/reference/s8_correction_feedback.py",
+ "target_driver": null,
+ "golden": "goldens/reference/research.correction_feedback.json",
+ "slice": "S8",
+ "target_status": "pending S8 pilot 93 (V18): the module moves with its injected redaction rule"
+}
