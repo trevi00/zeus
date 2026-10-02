@@ -1,0 +1,9 @@
+{
+ "family": "research.threshold_proposals",
+ "description": "S8 (V18 R-t0/R-t1) M7 application/threshold_proposals.py (ThresholdProposals.collect: every require, the idempotent basis, the native evaluator, legacy provenance, non-finite evidence, the concurrent first-commit-wins branches, the three owned buckets), characterized before the move; MemoryStore, a labelled artifacts fake, scripted clock, no database",
+ "reference_driver": "drivers/reference/s8_threshold_proposals.py",
+ "target_driver": null,
+ "golden": "goldens/reference/research.threshold_proposals.json",
+ "slice": "S8",
+ "target_status": "pending S8 pilot 92 (V18): the module moves with its injected rule"
+}

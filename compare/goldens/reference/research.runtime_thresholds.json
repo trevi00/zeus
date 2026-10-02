@@ -1,0 +1,323 @@
+{
+ "cases_per_group": {
+  "t1_resolve": 26,
+  "t2_native_drift": 3,
+  "t3_effective": 6
+ },
+ "constants": {
+  "NATIVE_DEFAULTS": {
+   "skill_match.FULL_BODY_MIN_SCORE": 3
+  },
+  "policy_file_name": "threshold-policy.json",
+  "policy_parent_name": "resources",
+  "registry_default": 3,
+  "registry_names": [
+   "handoff_resume.STALE_DAYS_THRESHOLD",
+   "ratio_tracker.WARN_THRESHOLD",
+   "skill_candidate_detector._THRESHOLD",
+   "skill_match.FULL_BODY_MIN_SCORE",
+   "skill_telemetry_audit.FP_THIN_RATE"
+  ]
+ },
+ "m7_tests": {
+  "test_invalid_or_unwired_policy_cannot_be_loaded": "t1_resolve (the eight listed texts plus labelled additions)",
+  "test_native_default_drift_is_detected": "t2_native_drift",
+  "test_packaged_override_changes_actual_router_and_git_proposer_together": "unreachable here: a real git repository and two real child processes"
+ },
+ "t1_resolve": [
+  {
+   "case": "empty_object",
+   "cause": null,
+   "message": "Invalid threshold policy schema",
+   "refused": "ContractError"
+  },
+  {
+   "case": "version_true",
+   "cause": null,
+   "message": "Invalid threshold policy schema",
+   "refused": "ContractError"
+  },
+  {
+   "case": "duplicate_key",
+   "cause": "ContractError",
+   "message": "Invalid threshold policy JSON",
+   "refused": "ContractError"
+  },
+  {
+   "case": "override_bool",
+   "cause": null,
+   "message": "Threshold value must be finite numeric",
+   "refused": "ContractError"
+  },
+  {
+   "case": "override_nan",
+   "cause": null,
+   "message": "Threshold value must be finite numeric",
+   "refused": "ContractError"
+  },
+  {
+   "case": "override_infinity",
+   "cause": null,
+   "message": "Threshold value must be finite numeric",
+   "refused": "ContractError"
+  },
+  {
+   "case": "override_other_registry_entry",
+   "cause": null,
+   "message": "Unsupported native threshold",
+   "refused": "ContractError"
+  },
+  {
+   "case": "override_ratio",
+   "cause": null,
+   "message": "Unsupported native threshold",
+   "refused": "ContractError"
+  },
+  {
+   "case": "override_string",
+   "cause": null,
+   "message": "Threshold value must be finite numeric",
+   "refused": "ContractError"
+  },
+  {
+   "case": "override_null",
+   "cause": null,
+   "message": "Threshold value must be finite numeric",
+   "refused": "ContractError"
+  },
+  {
+   "case": "override_huge_int",
+   "cause": null,
+   "message": "Threshold value must be finite numeric",
+   "refused": "ContractError"
+  },
+  {
+   "case": "version_float",
+   "cause": null,
+   "message": "Invalid threshold policy schema",
+   "refused": "ContractError"
+  },
+  {
+   "case": "version_two",
+   "cause": null,
+   "message": "Invalid threshold policy schema",
+   "refused": "ContractError"
+  },
+  {
+   "case": "extra_key",
+   "cause": null,
+   "message": "Invalid threshold policy schema",
+   "refused": "ContractError"
+  },
+  {
+   "case": "overrides_list",
+   "cause": null,
+   "message": "Invalid threshold policy schema",
+   "refused": "ContractError"
+  },
+  {
+   "case": "not_json",
+   "cause": "JSONDecodeError",
+   "message": "Invalid threshold policy JSON",
+   "refused": "ContractError"
+  },
+  {
+   "case": "bytes_not_text",
+   "cause": "TypeError",
+   "message": "Invalid threshold policy JSON",
+   "refused": "ContractError"
+  },
+  {
+   "case": "json_list",
+   "cause": null,
+   "message": "Invalid threshold policy schema",
+   "refused": "ContractError"
+  },
+  {
+   "case": "json_null",
+   "cause": null,
+   "message": "Invalid threshold policy schema",
+   "refused": "ContractError"
+  },
+  {
+   "case": "empty_text",
+   "cause": "JSONDecodeError",
+   "message": "Invalid threshold policy JSON",
+   "refused": "ContractError"
+  },
+  {
+   "case": "valid:{\"version\":1,\"overrides\":{}}",
+   "returned": {
+    "definition": {
+     "overrides": {},
+     "version": 1
+    },
+    "definition_hash": "7bc90b982e8923c1a8b939a60a6bce52b71ae3066472e57786348097d6163908",
+    "values": {
+     "skill_match.FULL_BODY_MIN_SCORE": 3
+    }
+   }
+  },
+  {
+   "case": "valid:{\"version\":1,\"overrides\":{\"skill_match.FULL_BODY_MIN_SCORE\":4}}",
+   "returned": {
+    "definition": {
+     "overrides": {
+      "skill_match.FULL_BODY_MIN_SCORE": 4
+     },
+     "version": 1
+    },
+    "definition_hash": "cc7017fcee19d6c8ca684a21db41f8c28acbc3f3adebebcf4fa95e4876f3b281",
+    "values": {
+     "skill_match.FULL_BODY_MIN_SCORE": 4
+    }
+   }
+  },
+  {
+   "case": "valid:{\"version\":1,\"overrides\":{\"skill_match.FULL_BODY_MIN_SCORE\":3.5}}",
+   "returned": {
+    "definition": {
+     "overrides": {
+      "skill_match.FULL_BODY_MIN_SCORE": 3.5
+     },
+     "version": 1
+    },
+    "definition_hash": "1d4886a800f09f2a3415937fd0d6cd562655aadcb483b8bbf1d7d298914f4e52",
+    "values": {
+     "skill_match.FULL_BODY_MIN_SCORE": 3.5
+    }
+   }
+  },
+  {
+   "case": "valid:{\"version\":1,\"overrides\":{\"skill_match.FULL_BODY_MIN_SCORE\":-1}}",
+   "returned": {
+    "definition": {
+     "overrides": {
+      "skill_match.FULL_BODY_MIN_SCORE": -1
+     },
+     "version": 1
+    },
+    "definition_hash": "3c27ae37142b7fc6b74bc9f8d1d739fa7ad000eb1b0d24cc85f8a92b9f46f393",
+    "values": {
+     "skill_match.FULL_BODY_MIN_SCORE": -1
+    }
+   }
+  },
+  {
+   "case": "valid:{\"version\":1,\"overrides\":{\"skill_match.FULL_BODY_MIN_SCORE\":0}}",
+   "returned": {
+    "definition": {
+     "overrides": {
+      "skill_match.FULL_BODY_MIN_SCORE": 0
+     },
+     "version": 1
+    },
+    "definition_hash": "4c8cf0c6facf05687f08de30a8793de6cb0ff9e7429672e71a752f4a9504fa0e",
+    "values": {
+     "skill_match.FULL_BODY_MIN_SCORE": 0
+    }
+   }
+  },
+  {
+   "case": "valid:{ \"version\" : 1 , \"overrides\" : { } }",
+   "returned": {
+    "definition": {
+     "overrides": {},
+     "version": 1
+    },
+    "definition_hash": "35b19a967074141121f0541d905d7588fbd1bb632b2f0b7c2d5b57e18ed9c9e8",
+    "values": {
+     "skill_match.FULL_BODY_MIN_SCORE": 3
+    }
+   }
+  }
+ ],
+ "t2_native_drift": [
+  {
+   "case": "default_drifts_from_registry",
+   "cause": null,
+   "message": "Native threshold default differs from registry",
+   "refused": "ContractError"
+  },
+  {
+   "case": "default_not_in_registry",
+   "cause": null,
+   "message": "Native threshold default differs from registry",
+   "refused": "ContractError"
+  },
+  {
+   "case": "restored",
+   "returned": {
+    "definition": {
+     "overrides": {},
+     "version": 1
+    },
+    "definition_hash": "7bc90b982e8923c1a8b939a60a6bce52b71ae3066472e57786348097d6163908",
+    "values": {
+     "skill_match.FULL_BODY_MIN_SCORE": 3
+    }
+   }
+  }
+ ],
+ "t3_effective": [
+  {
+   "case": "packaged",
+   "returned": {
+    "definition": {
+     "overrides": {},
+     "version": 1
+    },
+    "definition_hash": "9598313535b9a3b22ebc36e378c07a1ee1d65fd3eb3dd133941f9a9ac6e1f35c",
+    "values": {
+     "skill_match.FULL_BODY_MIN_SCORE": 3
+    }
+   }
+  },
+  {
+   "case": "definition_unavailable",
+   "cause": "FileNotFoundError",
+   "message": "Native threshold definition unavailable",
+   "refused": "ContractError"
+  },
+  {
+   "case": "override_file",
+   "returned": {
+    "definition": {
+     "overrides": {
+      "skill_match.FULL_BODY_MIN_SCORE": 5
+     },
+     "version": 1
+    },
+    "definition_hash": "dc028b8434e176b4e10fdb29b2ed3d67ffe28b79fabd53613df61158575396bd",
+    "values": {
+     "skill_match.FULL_BODY_MIN_SCORE": 5
+    }
+   }
+  },
+  {
+   "case": "invalid_file",
+   "cause": null,
+   "message": "Threshold value must be finite numeric",
+   "refused": "ContractError"
+  },
+  {
+   "case": "directory_is_oserror",
+   "cause": "IsADirectoryError",
+   "message": "Native threshold definition unavailable",
+   "refused": "ContractError"
+  },
+  {
+   "case": "restored",
+   "returned": {
+    "definition": {
+     "overrides": {},
+     "version": 1
+    },
+    "definition_hash": "9598313535b9a3b22ebc36e378c07a1ee1d65fd3eb3dd133941f9a9ac6e1f35c",
+    "values": {
+     "skill_match.FULL_BODY_MIN_SCORE": 3
+    }
+   }
+  }
+ ]
+}

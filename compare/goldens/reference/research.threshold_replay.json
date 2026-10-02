@@ -1,0 +1,2465 @@
+{
+ "cases_per_group": {
+  "r1_replay": 22
+ },
+ "m7_tests": {
+  "test_cli_preserves_corpus_and_never_writes_policy": "the CLI adapter (threshold_replay.main) is out of scope; r1_replay no_write for the use case",
+  "test_import_to_replay_and_proposal_preserves_legacy_provenance": "r1_replay legacy_source (the import is another module)"
+ },
+ "r1_replay": [
+  {
+   "case": "native_history",
+   "returned": {
+    "corpus_hash": "ede516d01e2ff1c5d9fc3d425559fdf47dec1f1c5c199e3562aad1dcaa4437ac",
+    "events": [
+     {
+      "at": "2026-01-01T00:00:00Z",
+      "top": [
+       {
+        "body_chars": 500,
+        "score": 3
+       },
+       {
+        "body_chars": 500,
+        "score": 5
+       }
+      ]
+     },
+     {
+      "at": "2026-01-01T00:00:01Z",
+      "top": [
+       {
+        "body_chars": 500,
+        "score": 3
+       },
+       {
+        "body_chars": 500,
+        "score": 5
+       }
+      ]
+     },
+     {
+      "at": "2026-01-01T00:00:02Z",
+      "top": [
+       {
+        "body_chars": 500,
+        "score": 3
+       },
+       {
+        "body_chars": 500,
+        "score": 5
+       }
+      ]
+     },
+     {
+      "at": "2026-01-01T00:00:03Z",
+      "top": [
+       {
+        "body_chars": 500,
+        "score": 3
+       },
+       {
+        "body_chars": 500,
+        "score": 5
+       }
+      ]
+     },
+     {
+      "at": "2026-01-01T00:00:04Z",
+      "top": [
+       {
+        "body_chars": 500,
+        "score": 3
+       },
+       {
+        "body_chars": 500,
+        "score": 5
+       }
+      ]
+     },
+     {
+      "at": "2026-01-01T00:00:05Z",
+      "top": [
+       {
+        "body_chars": 500,
+        "score": 3
+       },
+       {
+        "body_chars": 500,
+        "score": 5
+       }
+      ]
+     },
+     {
+      "at": "2026-01-01T00:00:06Z",
+      "top": [
+       {
+        "body_chars": 500,
+        "score": 3
+       },
+       {
+        "body_chars": 500,
+        "score": 5
+       }
+      ]
+     },
+     {
+      "at": "2026-01-01T00:00:07Z",
+      "top": [
+       {
+        "body_chars": 500,
+        "score": 3
+       },
+       {
+        "body_chars": 500,
+        "score": 5
+       }
+      ]
+     },
+     {
+      "at": "2026-01-01T00:00:08Z",
+      "top": [
+       {
+        "body_chars": 500,
+        "score": 3
+       },
+       {
+        "body_chars": 500,
+        "score": 5
+       }
+      ]
+     },
+     {
+      "at": "2026-01-01T00:00:09Z",
+      "top": [
+       {
+        "body_chars": 500,
+        "score": 3
+       },
+       {
+        "body_chars": 500,
+        "score": 5
+       }
+      ]
+     },
+     {
+      "at": "2026-01-01T00:00:10Z",
+      "top": [
+       {
+        "body_chars": 500,
+        "score": 3
+       },
+       {
+        "body_chars": 500,
+        "score": 5
+       }
+      ]
+     },
+     {
+      "at": "2026-01-01T00:00:11Z",
+      "top": [
+       {
+        "body_chars": 500,
+        "score": 3
+       },
+       {
+        "body_chars": 500,
+        "score": 5
+       }
+      ]
+     },
+     {
+      "at": "2026-01-01T00:00:12Z",
+      "top": [
+       {
+        "body_chars": 500,
+        "score": 3
+       },
+       {
+        "body_chars": 500,
+        "score": 5
+       }
+      ]
+     },
+     {
+      "at": "2026-01-01T00:00:13Z",
+      "top": [
+       {
+        "body_chars": 500,
+        "score": 3
+       },
+       {
+        "body_chars": 500,
+        "score": 5
+       }
+      ]
+     },
+     {
+      "at": "2026-01-01T00:00:14Z",
+      "top": [
+       {
+        "body_chars": 500,
+        "score": 3
+       },
+       {
+        "body_chars": 500,
+        "score": 5
+       }
+      ]
+     },
+     {
+      "at": "2026-01-01T00:00:15Z",
+      "top": [
+       {
+        "body_chars": 500,
+        "score": 3
+       },
+       {
+        "body_chars": 500,
+        "score": 5
+       }
+      ]
+     },
+     {
+      "at": "2026-01-01T00:00:16Z",
+      "top": [
+       {
+        "body_chars": 500,
+        "score": 3
+       },
+       {
+        "body_chars": 500,
+        "score": 5
+       }
+      ]
+     },
+     {
+      "at": "2026-01-01T00:00:17Z",
+      "top": [
+       {
+        "body_chars": 500,
+        "score": 3
+       },
+       {
+        "body_chars": 500,
+        "score": 5
+       }
+      ]
+     },
+     {
+      "at": "2026-01-01T00:00:18Z",
+      "top": [
+       {
+        "body_chars": 500,
+        "score": 3
+       },
+       {
+        "body_chars": 500,
+        "score": 5
+       }
+      ]
+     },
+     {
+      "at": "2026-01-01T00:00:19Z",
+      "top": [
+       {
+        "body_chars": 500,
+        "score": 3
+       },
+       {
+        "body_chars": 500,
+        "score": 5
+       }
+      ]
+     },
+     {
+      "at": "2026-01-01T00:00:20Z",
+      "top": [
+       {
+        "body_chars": 500,
+        "score": 3
+       },
+       {
+        "body_chars": 500,
+        "score": 5
+       }
+      ]
+     },
+     {
+      "at": "2026-01-01T00:00:21Z",
+      "top": [
+       {
+        "body_chars": 500,
+        "score": 3
+       },
+       {
+        "body_chars": 500,
+        "score": 5
+       }
+      ]
+     },
+     {
+      "at": "2026-01-01T00:00:22Z",
+      "top": [
+       {
+        "body_chars": 500,
+        "score": 3
+       },
+       {
+        "body_chars": 500,
+        "score": 5
+       }
+      ]
+     },
+     {
+      "at": "2026-01-01T00:00:23Z",
+      "top": [
+       {
+        "body_chars": 500,
+        "score": 3
+       },
+       {
+        "body_chars": 500,
+        "score": 5
+       }
+      ]
+     },
+     {
+      "at": "2026-01-01T00:00:24Z",
+      "top": [
+       {
+        "body_chars": 500,
+        "score": 3
+       },
+       {
+        "body_chars": 500,
+        "score": 5
+       }
+      ]
+     },
+     {
+      "at": "2026-01-01T00:00:25Z",
+      "top": [
+       {
+        "body_chars": 500,
+        "score": 3
+       },
+       {
+        "body_chars": 500,
+        "score": 5
+       }
+      ]
+     },
+     {
+      "at": "2026-01-01T00:00:26Z",
+      "top": [
+       {
+        "body_chars": 500,
+        "score": 3
+       },
+       {
+        "body_chars": 500,
+        "score": 5
+       }
+      ]
+     },
+     {
+      "at": "2026-01-01T00:00:27Z",
+      "top": [
+       {
+        "body_chars": 500,
+        "score": 3
+       },
+       {
+        "body_chars": 500,
+        "score": 5
+       }
+      ]
+     },
+     {
+      "at": "2026-01-01T00:00:28Z",
+      "top": [
+       {
+        "body_chars": 500,
+        "score": 3
+       },
+       {
+        "body_chars": 500,
+        "score": 5
+       }
+      ]
+     },
+     {
+      "at": "2026-01-01T00:00:29Z",
+      "top": [
+       {
+        "body_chars": 500,
+        "score": 3
+       },
+       {
+        "body_chars": 500,
+        "score": 5
+       }
+      ]
+     },
+     {
+      "at": "2026-01-01T00:00:30Z",
+      "top": [
+       {
+        "body_chars": 500,
+        "score": 3
+       },
+       {
+        "body_chars": 500,
+        "score": 5
+       }
+      ]
+     },
+     {
+      "at": "2026-01-01T00:00:31Z",
+      "top": [
+       {
+        "body_chars": 500,
+        "score": 3
+       },
+       {
+        "body_chars": 500,
+        "score": 5
+       }
+      ]
+     },
+     {
+      "at": "2026-01-01T00:00:32Z",
+      "top": [
+       {
+        "body_chars": 500,
+        "score": 3
+       },
+       {
+        "body_chars": 500,
+        "score": 5
+       }
+      ]
+     },
+     {
+      "at": "2026-01-01T00:00:33Z",
+      "top": [
+       {
+        "body_chars": 500,
+        "score": 3
+       },
+       {
+        "body_chars": 500,
+        "score": 5
+       }
+      ]
+     },
+     {
+      "at": "2026-01-01T00:00:34Z",
+      "top": [
+       {
+        "body_chars": 500,
+        "score": 3
+       },
+       {
+        "body_chars": 500,
+        "score": 5
+       }
+      ]
+     },
+     {
+      "at": "2026-01-01T00:00:35Z",
+      "top": [
+       {
+        "body_chars": 500,
+        "score": 3
+       },
+       {
+        "body_chars": 500,
+        "score": 5
+       }
+      ]
+     },
+     {
+      "at": "2026-01-01T00:00:36Z",
+      "top": [
+       {
+        "body_chars": 500,
+        "score": 3
+       },
+       {
+        "body_chars": 500,
+        "score": 5
+       }
+      ]
+     },
+     {
+      "at": "2026-01-01T00:00:37Z",
+      "top": [
+       {
+        "body_chars": 500,
+        "score": 3
+       },
+       {
+        "body_chars": 500,
+        "score": 5
+       }
+      ]
+     },
+     {
+      "at": "2026-01-01T00:00:38Z",
+      "top": [
+       {
+        "body_chars": 500,
+        "score": 3
+       },
+       {
+        "body_chars": 500,
+        "score": 5
+       }
+      ]
+     },
+     {
+      "at": "2026-01-01T00:00:39Z",
+      "top": [
+       {
+        "body_chars": 500,
+        "score": 3
+       },
+       {
+        "body_chars": 500,
+        "score": 5
+       }
+      ]
+     }
+    ],
+    "legacy_source": null,
+    "options": {
+     "holdout_boundary": "2026-01-01T00:00:28Z",
+     "old_value": 3,
+     "proposed_value": 4
+    },
+    "project_key": "project",
+    "report": {
+     "advisory_only": true,
+     "entries": 80,
+     "gate": {
+      "accept": true,
+      "guard_delta": 0.0,
+      "reason": "accept: target improves on held-out, guard not regressed",
+      "target_delta_holdout": 0.5
+     },
+     "guard_partially_sized_events": 0,
+     "guard_skipped_events": 0,
+     "guard_usable_events": 40,
+     "limitations": [
+      "Total scores, not native base-score admission.",
+      "The target is a score-margin statistic, not admission quality or task success.",
+      "Target deltas use holdout; guard deltas use the complete corpus, including training.",
+      "Raw character sum, not per-body reduction or the final UTF-8 context compiler.",
+      "Only recorded top matches are available; lowering thresholds can undercount admissions and pressure.",
+      "The pinned precision scores an empty admission as 1.0; the gate rejects such a value as empty_admission.",
+      "Reference guard skips unsized entries; acceptance is not a coverage guarantee."
+     ],
+     "missing_or_invalid_sizes": 0,
+     "observations": 40,
+     "partitions": {
+      "holdout": {
+       "current_admitted_entries": 24,
+       "current_admitted_events": 12,
+       "events": 12,
+       "proposed_admitted_entries": 12,
+       "proposed_admitted_events": 12
+      },
+      "trailing": {
+       "current_admitted_entries": 56,
+       "current_admitted_events": 28,
+       "events": 28,
+       "proposed_admitted_entries": 28,
+       "proposed_admitted_events": 28
+      }
+     },
+     "policy_changed": false,
+     "reference_model": "baldrix-b9586c59-total-score-raw-body",
+     "sized_entries": 80,
+     "unknown_timestamps": 0
+    },
+    "source_ref": null
+   },
+   "store_after": {
+    "digest": "5a180237af5992a1",
+    "keys": [
+     [
+      "skill_history",
+      "project"
+     ]
+    ]
+   },
+   "store_before": {
+    "digest": "5a180237af5992a1",
+    "keys": [
+     [
+      "skill_history",
+      "project"
+     ]
+    ]
+   }
+  },
+  {
+   "case": "native_history_no_options",
+   "cause": null,
+   "message": "evaluate_threshold_change() missing 3 required keyword-only arguments: 'old_value', 'proposed_value', and 'holdout_boundary'",
+   "refused": "TypeError",
+   "store_after": {
+    "digest": "5a180237af5992a1",
+    "keys": [
+     [
+      "skill_history",
+      "project"
+     ]
+    ]
+   },
+   "store_before": {
+    "digest": "5a180237af5992a1",
+    "keys": [
+     [
+      "skill_history",
+      "project"
+     ]
+    ]
+   }
+  },
+  {
+   "case": "missing_project_is_empty",
+   "returned": {
+    "corpus_hash": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945",
+    "events": [],
+    "legacy_source": null,
+    "options": {
+     "holdout_boundary": "2026-01-01T00:00:28Z",
+     "old_value": 3,
+     "proposed_value": 4
+    },
+    "project_key": "other",
+    "report": {
+     "advisory_only": true,
+     "entries": 0,
+     "gate": {
+      "accept": false,
+      "guard_delta": null,
+      "reason": "corpus_too_small",
+      "target_delta_holdout": null
+     },
+     "guard_partially_sized_events": 0,
+     "guard_skipped_events": 0,
+     "guard_usable_events": 0,
+     "limitations": [
+      "Total scores, not native base-score admission.",
+      "The target is a score-margin statistic, not admission quality or task success.",
+      "Target deltas use holdout; guard deltas use the complete corpus, including training.",
+      "Raw character sum, not per-body reduction or the final UTF-8 context compiler.",
+      "Only recorded top matches are available; lowering thresholds can undercount admissions and pressure.",
+      "The pinned precision scores an empty admission as 1.0; the gate rejects such a value as empty_admission.",
+      "Reference guard skips unsized entries; acceptance is not a coverage guarantee."
+     ],
+     "missing_or_invalid_sizes": 0,
+     "observations": 0,
+     "partitions": {
+      "holdout": {
+       "current_admitted_entries": 0,
+       "current_admitted_events": 0,
+       "events": 0,
+       "proposed_admitted_entries": 0,
+       "proposed_admitted_events": 0
+      },
+      "trailing": {
+       "current_admitted_entries": 0,
+       "current_admitted_events": 0,
+       "events": 0,
+       "proposed_admitted_entries": 0,
+       "proposed_admitted_events": 0
+      }
+     },
+     "policy_changed": false,
+     "reference_model": "baldrix-b9586c59-total-score-raw-body",
+     "sized_entries": 0,
+     "unknown_timestamps": 0
+    },
+    "source_ref": null
+   },
+   "store_after": {
+    "digest": "5a180237af5992a1",
+    "keys": [
+     [
+      "skill_history",
+      "project"
+     ]
+    ]
+   },
+   "store_before": {
+    "digest": "5a180237af5992a1",
+    "keys": [
+     [
+      "skill_history",
+      "project"
+     ]
+    ]
+   }
+  },
+  {
+   "case": "invalid_option_value",
+   "returned": {
+    "corpus_hash": "ede516d01e2ff1c5d9fc3d425559fdf47dec1f1c5c199e3562aad1dcaa4437ac",
+    "events": [
+     {
+      "at": "2026-01-01T00:00:00Z",
+      "top": [
+       {
+        "body_chars": 500,
+        "score": 3
+       },
+       {
+        "body_chars": 500,
+        "score": 5
+       }
+      ]
+     },
+     {
+      "at": "2026-01-01T00:00:01Z",
+      "top": [
+       {
+        "body_chars": 500,
+        "score": 3
+       },
+       {
+        "body_chars": 500,
+        "score": 5
+       }
+      ]
+     },
+     {
+      "at": "2026-01-01T00:00:02Z",
+      "top": [
+       {
+        "body_chars": 500,
+        "score": 3
+       },
+       {
+        "body_chars": 500,
+        "score": 5
+       }
+      ]
+     },
+     {
+      "at": "2026-01-01T00:00:03Z",
+      "top": [
+       {
+        "body_chars": 500,
+        "score": 3
+       },
+       {
+        "body_chars": 500,
+        "score": 5
+       }
+      ]
+     },
+     {
+      "at": "2026-01-01T00:00:04Z",
+      "top": [
+       {
+        "body_chars": 500,
+        "score": 3
+       },
+       {
+        "body_chars": 500,
+        "score": 5
+       }
+      ]
+     },
+     {
+      "at": "2026-01-01T00:00:05Z",
+      "top": [
+       {
+        "body_chars": 500,
+        "score": 3
+       },
+       {
+        "body_chars": 500,
+        "score": 5
+       }
+      ]
+     },
+     {
+      "at": "2026-01-01T00:00:06Z",
+      "top": [
+       {
+        "body_chars": 500,
+        "score": 3
+       },
+       {
+        "body_chars": 500,
+        "score": 5
+       }
+      ]
+     },
+     {
+      "at": "2026-01-01T00:00:07Z",
+      "top": [
+       {
+        "body_chars": 500,
+        "score": 3
+       },
+       {
+        "body_chars": 500,
+        "score": 5
+       }
+      ]
+     },
+     {
+      "at": "2026-01-01T00:00:08Z",
+      "top": [
+       {
+        "body_chars": 500,
+        "score": 3
+       },
+       {
+        "body_chars": 500,
+        "score": 5
+       }
+      ]
+     },
+     {
+      "at": "2026-01-01T00:00:09Z",
+      "top": [
+       {
+        "body_chars": 500,
+        "score": 3
+       },
+       {
+        "body_chars": 500,
+        "score": 5
+       }
+      ]
+     },
+     {
+      "at": "2026-01-01T00:00:10Z",
+      "top": [
+       {
+        "body_chars": 500,
+        "score": 3
+       },
+       {
+        "body_chars": 500,
+        "score": 5
+       }
+      ]
+     },
+     {
+      "at": "2026-01-01T00:00:11Z",
+      "top": [
+       {
+        "body_chars": 500,
+        "score": 3
+       },
+       {
+        "body_chars": 500,
+        "score": 5
+       }
+      ]
+     },
+     {
+      "at": "2026-01-01T00:00:12Z",
+      "top": [
+       {
+        "body_chars": 500,
+        "score": 3
+       },
+       {
+        "body_chars": 500,
+        "score": 5
+       }
+      ]
+     },
+     {
+      "at": "2026-01-01T00:00:13Z",
+      "top": [
+       {
+        "body_chars": 500,
+        "score": 3
+       },
+       {
+        "body_chars": 500,
+        "score": 5
+       }
+      ]
+     },
+     {
+      "at": "2026-01-01T00:00:14Z",
+      "top": [
+       {
+        "body_chars": 500,
+        "score": 3
+       },
+       {
+        "body_chars": 500,
+        "score": 5
+       }
+      ]
+     },
+     {
+      "at": "2026-01-01T00:00:15Z",
+      "top": [
+       {
+        "body_chars": 500,
+        "score": 3
+       },
+       {
+        "body_chars": 500,
+        "score": 5
+       }
+      ]
+     },
+     {
+      "at": "2026-01-01T00:00:16Z",
+      "top": [
+       {
+        "body_chars": 500,
+        "score": 3
+       },
+       {
+        "body_chars": 500,
+        "score": 5
+       }
+      ]
+     },
+     {
+      "at": "2026-01-01T00:00:17Z",
+      "top": [
+       {
+        "body_chars": 500,
+        "score": 3
+       },
+       {
+        "body_chars": 500,
+        "score": 5
+       }
+      ]
+     },
+     {
+      "at": "2026-01-01T00:00:18Z",
+      "top": [
+       {
+        "body_chars": 500,
+        "score": 3
+       },
+       {
+        "body_chars": 500,
+        "score": 5
+       }
+      ]
+     },
+     {
+      "at": "2026-01-01T00:00:19Z",
+      "top": [
+       {
+        "body_chars": 500,
+        "score": 3
+       },
+       {
+        "body_chars": 500,
+        "score": 5
+       }
+      ]
+     },
+     {
+      "at": "2026-01-01T00:00:20Z",
+      "top": [
+       {
+        "body_chars": 500,
+        "score": 3
+       },
+       {
+        "body_chars": 500,
+        "score": 5
+       }
+      ]
+     },
+     {
+      "at": "2026-01-01T00:00:21Z",
+      "top": [
+       {
+        "body_chars": 500,
+        "score": 3
+       },
+       {
+        "body_chars": 500,
+        "score": 5
+       }
+      ]
+     },
+     {
+      "at": "2026-01-01T00:00:22Z",
+      "top": [
+       {
+        "body_chars": 500,
+        "score": 3
+       },
+       {
+        "body_chars": 500,
+        "score": 5
+       }
+      ]
+     },
+     {
+      "at": "2026-01-01T00:00:23Z",
+      "top": [
+       {
+        "body_chars": 500,
+        "score": 3
+       },
+       {
+        "body_chars": 500,
+        "score": 5
+       }
+      ]
+     },
+     {
+      "at": "2026-01-01T00:00:24Z",
+      "top": [
+       {
+        "body_chars": 500,
+        "score": 3
+       },
+       {
+        "body_chars": 500,
+        "score": 5
+       }
+      ]
+     },
+     {
+      "at": "2026-01-01T00:00:25Z",
+      "top": [
+       {
+        "body_chars": 500,
+        "score": 3
+       },
+       {
+        "body_chars": 500,
+        "score": 5
+       }
+      ]
+     },
+     {
+      "at": "2026-01-01T00:00:26Z",
+      "top": [
+       {
+        "body_chars": 500,
+        "score": 3
+       },
+       {
+        "body_chars": 500,
+        "score": 5
+       }
+      ]
+     },
+     {
+      "at": "2026-01-01T00:00:27Z",
+      "top": [
+       {
+        "body_chars": 500,
+        "score": 3
+       },
+       {
+        "body_chars": 500,
+        "score": 5
+       }
+      ]
+     },
+     {
+      "at": "2026-01-01T00:00:28Z",
+      "top": [
+       {
+        "body_chars": 500,
+        "score": 3
+       },
+       {
+        "body_chars": 500,
+        "score": 5
+       }
+      ]
+     },
+     {
+      "at": "2026-01-01T00:00:29Z",
+      "top": [
+       {
+        "body_chars": 500,
+        "score": 3
+       },
+       {
+        "body_chars": 500,
+        "score": 5
+       }
+      ]
+     },
+     {
+      "at": "2026-01-01T00:00:30Z",
+      "top": [
+       {
+        "body_chars": 500,
+        "score": 3
+       },
+       {
+        "body_chars": 500,
+        "score": 5
+       }
+      ]
+     },
+     {
+      "at": "2026-01-01T00:00:31Z",
+      "top": [
+       {
+        "body_chars": 500,
+        "score": 3
+       },
+       {
+        "body_chars": 500,
+        "score": 5
+       }
+      ]
+     },
+     {
+      "at": "2026-01-01T00:00:32Z",
+      "top": [
+       {
+        "body_chars": 500,
+        "score": 3
+       },
+       {
+        "body_chars": 500,
+        "score": 5
+       }
+      ]
+     },
+     {
+      "at": "2026-01-01T00:00:33Z",
+      "top": [
+       {
+        "body_chars": 500,
+        "score": 3
+       },
+       {
+        "body_chars": 500,
+        "score": 5
+       }
+      ]
+     },
+     {
+      "at": "2026-01-01T00:00:34Z",
+      "top": [
+       {
+        "body_chars": 500,
+        "score": 3
+       },
+       {
+        "body_chars": 500,
+        "score": 5
+       }
+      ]
+     },
+     {
+      "at": "2026-01-01T00:00:35Z",
+      "top": [
+       {
+        "body_chars": 500,
+        "score": 3
+       },
+       {
+        "body_chars": 500,
+        "score": 5
+       }
+      ]
+     },
+     {
+      "at": "2026-01-01T00:00:36Z",
+      "top": [
+       {
+        "body_chars": 500,
+        "score": 3
+       },
+       {
+        "body_chars": 500,
+        "score": 5
+       }
+      ]
+     },
+     {
+      "at": "2026-01-01T00:00:37Z",
+      "top": [
+       {
+        "body_chars": 500,
+        "score": 3
+       },
+       {
+        "body_chars": 500,
+        "score": 5
+       }
+      ]
+     },
+     {
+      "at": "2026-01-01T00:00:38Z",
+      "top": [
+       {
+        "body_chars": 500,
+        "score": 3
+       },
+       {
+        "body_chars": 500,
+        "score": 5
+       }
+      ]
+     },
+     {
+      "at": "2026-01-01T00:00:39Z",
+      "top": [
+       {
+        "body_chars": 500,
+        "score": 3
+       },
+       {
+        "body_chars": 500,
+        "score": 5
+       }
+      ]
+     }
+    ],
+    "legacy_source": null,
+    "options": {
+     "holdout_boundary": "unknown",
+     "old_value": 3,
+     "proposed_value": 4
+    },
+    "project_key": "project",
+    "report": {
+     "advisory_only": true,
+     "entries": 80,
+     "gate": {
+      "accept": false,
+      "guard_delta": null,
+      "reason": "split_error:ContractError",
+      "target_delta_holdout": null
+     },
+     "guard_partially_sized_events": 0,
+     "guard_skipped_events": 0,
+     "guard_usable_events": 40,
+     "limitations": [
+      "Total scores, not native base-score admission.",
+      "The target is a score-margin statistic, not admission quality or task success.",
+      "Target deltas use holdout; guard deltas use the complete corpus, including training.",
+      "Raw character sum, not per-body reduction or the final UTF-8 context compiler.",
+      "Only recorded top matches are available; lowering thresholds can undercount admissions and pressure.",
+      "The pinned precision scores an empty admission as 1.0; the gate rejects such a value as empty_admission.",
+      "Reference guard skips unsized entries; acceptance is not a coverage guarantee."
+     ],
+     "missing_or_invalid_sizes": 0,
+     "observations": 40,
+     "partitions": null,
+     "policy_changed": false,
+     "reference_model": "baldrix-b9586c59-total-score-raw-body",
+     "sized_entries": 80,
+     "unknown_timestamps": 0
+    },
+    "source_ref": null
+   },
+   "store_after": {
+    "digest": "5a180237af5992a1",
+    "keys": [
+     [
+      "skill_history",
+      "project"
+     ]
+    ]
+   },
+   "store_before": {
+    "digest": "5a180237af5992a1",
+    "keys": [
+     [
+      "skill_history",
+      "project"
+     ]
+    ]
+   }
+  },
+  {
+   "case": "unexpected_option",
+   "cause": null,
+   "message": "evaluate_threshold_change() got an unexpected keyword argument 'bogus'",
+   "refused": "TypeError",
+   "store_after": {
+    "digest": "5a180237af5992a1",
+    "keys": [
+     [
+      "skill_history",
+      "project"
+     ]
+    ]
+   },
+   "store_before": {
+    "digest": "5a180237af5992a1",
+    "keys": [
+     [
+      "skill_history",
+      "project"
+     ]
+    ]
+   }
+  },
+  {
+   "case": "legacy_source",
+   "returned": {
+    "corpus_hash": "ede516d01e2ff1c5d9fc3d425559fdf47dec1f1c5c199e3562aad1dcaa4437ac",
+    "events": [
+     {
+      "at": "2026-01-01T00:00:00Z",
+      "top": [
+       {
+        "body_chars": 500,
+        "score": 3
+       },
+       {
+        "body_chars": 500,
+        "score": 5
+       }
+      ]
+     },
+     {
+      "at": "2026-01-01T00:00:01Z",
+      "top": [
+       {
+        "body_chars": 500,
+        "score": 3
+       },
+       {
+        "body_chars": 500,
+        "score": 5
+       }
+      ]
+     },
+     {
+      "at": "2026-01-01T00:00:02Z",
+      "top": [
+       {
+        "body_chars": 500,
+        "score": 3
+       },
+       {
+        "body_chars": 500,
+        "score": 5
+       }
+      ]
+     },
+     {
+      "at": "2026-01-01T00:00:03Z",
+      "top": [
+       {
+        "body_chars": 500,
+        "score": 3
+       },
+       {
+        "body_chars": 500,
+        "score": 5
+       }
+      ]
+     },
+     {
+      "at": "2026-01-01T00:00:04Z",
+      "top": [
+       {
+        "body_chars": 500,
+        "score": 3
+       },
+       {
+        "body_chars": 500,
+        "score": 5
+       }
+      ]
+     },
+     {
+      "at": "2026-01-01T00:00:05Z",
+      "top": [
+       {
+        "body_chars": 500,
+        "score": 3
+       },
+       {
+        "body_chars": 500,
+        "score": 5
+       }
+      ]
+     },
+     {
+      "at": "2026-01-01T00:00:06Z",
+      "top": [
+       {
+        "body_chars": 500,
+        "score": 3
+       },
+       {
+        "body_chars": 500,
+        "score": 5
+       }
+      ]
+     },
+     {
+      "at": "2026-01-01T00:00:07Z",
+      "top": [
+       {
+        "body_chars": 500,
+        "score": 3
+       },
+       {
+        "body_chars": 500,
+        "score": 5
+       }
+      ]
+     },
+     {
+      "at": "2026-01-01T00:00:08Z",
+      "top": [
+       {
+        "body_chars": 500,
+        "score": 3
+       },
+       {
+        "body_chars": 500,
+        "score": 5
+       }
+      ]
+     },
+     {
+      "at": "2026-01-01T00:00:09Z",
+      "top": [
+       {
+        "body_chars": 500,
+        "score": 3
+       },
+       {
+        "body_chars": 500,
+        "score": 5
+       }
+      ]
+     },
+     {
+      "at": "2026-01-01T00:00:10Z",
+      "top": [
+       {
+        "body_chars": 500,
+        "score": 3
+       },
+       {
+        "body_chars": 500,
+        "score": 5
+       }
+      ]
+     },
+     {
+      "at": "2026-01-01T00:00:11Z",
+      "top": [
+       {
+        "body_chars": 500,
+        "score": 3
+       },
+       {
+        "body_chars": 500,
+        "score": 5
+       }
+      ]
+     },
+     {
+      "at": "2026-01-01T00:00:12Z",
+      "top": [
+       {
+        "body_chars": 500,
+        "score": 3
+       },
+       {
+        "body_chars": 500,
+        "score": 5
+       }
+      ]
+     },
+     {
+      "at": "2026-01-01T00:00:13Z",
+      "top": [
+       {
+        "body_chars": 500,
+        "score": 3
+       },
+       {
+        "body_chars": 500,
+        "score": 5
+       }
+      ]
+     },
+     {
+      "at": "2026-01-01T00:00:14Z",
+      "top": [
+       {
+        "body_chars": 500,
+        "score": 3
+       },
+       {
+        "body_chars": 500,
+        "score": 5
+       }
+      ]
+     },
+     {
+      "at": "2026-01-01T00:00:15Z",
+      "top": [
+       {
+        "body_chars": 500,
+        "score": 3
+       },
+       {
+        "body_chars": 500,
+        "score": 5
+       }
+      ]
+     },
+     {
+      "at": "2026-01-01T00:00:16Z",
+      "top": [
+       {
+        "body_chars": 500,
+        "score": 3
+       },
+       {
+        "body_chars": 500,
+        "score": 5
+       }
+      ]
+     },
+     {
+      "at": "2026-01-01T00:00:17Z",
+      "top": [
+       {
+        "body_chars": 500,
+        "score": 3
+       },
+       {
+        "body_chars": 500,
+        "score": 5
+       }
+      ]
+     },
+     {
+      "at": "2026-01-01T00:00:18Z",
+      "top": [
+       {
+        "body_chars": 500,
+        "score": 3
+       },
+       {
+        "body_chars": 500,
+        "score": 5
+       }
+      ]
+     },
+     {
+      "at": "2026-01-01T00:00:19Z",
+      "top": [
+       {
+        "body_chars": 500,
+        "score": 3
+       },
+       {
+        "body_chars": 500,
+        "score": 5
+       }
+      ]
+     },
+     {
+      "at": "2026-01-01T00:00:20Z",
+      "top": [
+       {
+        "body_chars": 500,
+        "score": 3
+       },
+       {
+        "body_chars": 500,
+        "score": 5
+       }
+      ]
+     },
+     {
+      "at": "2026-01-01T00:00:21Z",
+      "top": [
+       {
+        "body_chars": 500,
+        "score": 3
+       },
+       {
+        "body_chars": 500,
+        "score": 5
+       }
+      ]
+     },
+     {
+      "at": "2026-01-01T00:00:22Z",
+      "top": [
+       {
+        "body_chars": 500,
+        "score": 3
+       },
+       {
+        "body_chars": 500,
+        "score": 5
+       }
+      ]
+     },
+     {
+      "at": "2026-01-01T00:00:23Z",
+      "top": [
+       {
+        "body_chars": 500,
+        "score": 3
+       },
+       {
+        "body_chars": 500,
+        "score": 5
+       }
+      ]
+     },
+     {
+      "at": "2026-01-01T00:00:24Z",
+      "top": [
+       {
+        "body_chars": 500,
+        "score": 3
+       },
+       {
+        "body_chars": 500,
+        "score": 5
+       }
+      ]
+     },
+     {
+      "at": "2026-01-01T00:00:25Z",
+      "top": [
+       {
+        "body_chars": 500,
+        "score": 3
+       },
+       {
+        "body_chars": 500,
+        "score": 5
+       }
+      ]
+     },
+     {
+      "at": "2026-01-01T00:00:26Z",
+      "top": [
+       {
+        "body_chars": 500,
+        "score": 3
+       },
+       {
+        "body_chars": 500,
+        "score": 5
+       }
+      ]
+     },
+     {
+      "at": "2026-01-01T00:00:27Z",
+      "top": [
+       {
+        "body_chars": 500,
+        "score": 3
+       },
+       {
+        "body_chars": 500,
+        "score": 5
+       }
+      ]
+     },
+     {
+      "at": "2026-01-01T00:00:28Z",
+      "top": [
+       {
+        "body_chars": 500,
+        "score": 3
+       },
+       {
+        "body_chars": 500,
+        "score": 5
+       }
+      ]
+     },
+     {
+      "at": "2026-01-01T00:00:29Z",
+      "top": [
+       {
+        "body_chars": 500,
+        "score": 3
+       },
+       {
+        "body_chars": 500,
+        "score": 5
+       }
+      ]
+     },
+     {
+      "at": "2026-01-01T00:00:30Z",
+      "top": [
+       {
+        "body_chars": 500,
+        "score": 3
+       },
+       {
+        "body_chars": 500,
+        "score": 5
+       }
+      ]
+     },
+     {
+      "at": "2026-01-01T00:00:31Z",
+      "top": [
+       {
+        "body_chars": 500,
+        "score": 3
+       },
+       {
+        "body_chars": 500,
+        "score": 5
+       }
+      ]
+     },
+     {
+      "at": "2026-01-01T00:00:32Z",
+      "top": [
+       {
+        "body_chars": 500,
+        "score": 3
+       },
+       {
+        "body_chars": 500,
+        "score": 5
+       }
+      ]
+     },
+     {
+      "at": "2026-01-01T00:00:33Z",
+      "top": [
+       {
+        "body_chars": 500,
+        "score": 3
+       },
+       {
+        "body_chars": 500,
+        "score": 5
+       }
+      ]
+     },
+     {
+      "at": "2026-01-01T00:00:34Z",
+      "top": [
+       {
+        "body_chars": 500,
+        "score": 3
+       },
+       {
+        "body_chars": 500,
+        "score": 5
+       }
+      ]
+     },
+     {
+      "at": "2026-01-01T00:00:35Z",
+      "top": [
+       {
+        "body_chars": 500,
+        "score": 3
+       },
+       {
+        "body_chars": 500,
+        "score": 5
+       }
+      ]
+     },
+     {
+      "at": "2026-01-01T00:00:36Z",
+      "top": [
+       {
+        "body_chars": 500,
+        "score": 3
+       },
+       {
+        "body_chars": 500,
+        "score": 5
+       }
+      ]
+     },
+     {
+      "at": "2026-01-01T00:00:37Z",
+      "top": [
+       {
+        "body_chars": 500,
+        "score": 3
+       },
+       {
+        "body_chars": 500,
+        "score": 5
+       }
+      ]
+     },
+     {
+      "at": "2026-01-01T00:00:38Z",
+      "top": [
+       {
+        "body_chars": 500,
+        "score": 3
+       },
+       {
+        "body_chars": 500,
+        "score": 5
+       }
+      ]
+     },
+     {
+      "at": "2026-01-01T00:00:39Z",
+      "top": [
+       {
+        "body_chars": 500,
+        "score": 3
+       },
+       {
+        "body_chars": 500,
+        "score": 5
+       }
+      ]
+     }
+    ],
+    "legacy_source": "segment",
+    "options": {
+     "holdout_boundary": "2026-01-01T00:00:28Z",
+     "old_value": 3,
+     "proposed_value": 4
+    },
+    "project_key": "project",
+    "report": {
+     "advisory_only": true,
+     "entries": 80,
+     "gate": {
+      "accept": true,
+      "guard_delta": 0.0,
+      "reason": "accept: target improves on held-out, guard not regressed",
+      "target_delta_holdout": 0.5
+     },
+     "guard_partially_sized_events": 0,
+     "guard_skipped_events": 0,
+     "guard_usable_events": 40,
+     "limitations": [
+      "Total scores, not native base-score admission.",
+      "The target is a score-margin statistic, not admission quality or task success.",
+      "Target deltas use holdout; guard deltas use the complete corpus, including training.",
+      "Raw character sum, not per-body reduction or the final UTF-8 context compiler.",
+      "Only recorded top matches are available; lowering thresholds can undercount admissions and pressure.",
+      "The pinned precision scores an empty admission as 1.0; the gate rejects such a value as empty_admission.",
+      "Reference guard skips unsized entries; acceptance is not a coverage guarantee."
+     ],
+     "missing_or_invalid_sizes": 0,
+     "observations": 40,
+     "partitions": {
+      "holdout": {
+       "current_admitted_entries": 24,
+       "current_admitted_events": 12,
+       "events": 12,
+       "proposed_admitted_entries": 12,
+       "proposed_admitted_events": 12
+      },
+      "trailing": {
+       "current_admitted_entries": 56,
+       "current_admitted_events": 28,
+       "events": 28,
+       "proposed_admitted_entries": 28,
+       "proposed_admitted_events": 28
+      }
+     },
+     "policy_changed": false,
+     "reference_model": "baldrix-b9586c59-total-score-raw-body",
+     "sized_entries": 80,
+     "unknown_timestamps": 0
+    },
+    "source_ref": "sha256:5555555555555555555555555555555555555555555555555555555555555555"
+   },
+   "store_after": {
+    "digest": "fa9486af633e3cea",
+    "keys": [
+     [
+      "legacy_skill_imports",
+      "82a4f91aa4313888b79600342b118af286f863775325c1f42fa20353370b50f7"
+     ]
+    ]
+   },
+   "store_before": {
+    "digest": "fa9486af633e3cea",
+    "keys": [
+     [
+      "legacy_skill_imports",
+      "82a4f91aa4313888b79600342b118af286f863775325c1f42fa20353370b50f7"
+     ]
+    ]
+   }
+  },
+  {
+   "case": "legacy_source_absent_segment",
+   "returned": {
+    "corpus_hash": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945",
+    "events": [],
+    "legacy_source": "absent",
+    "options": {
+     "holdout_boundary": "2026-01-01T00:00:28Z",
+     "old_value": 3,
+     "proposed_value": 4
+    },
+    "project_key": "project",
+    "report": {
+     "advisory_only": true,
+     "entries": 0,
+     "gate": {
+      "accept": false,
+      "guard_delta": null,
+      "reason": "corpus_too_small",
+      "target_delta_holdout": null
+     },
+     "guard_partially_sized_events": 0,
+     "guard_skipped_events": 0,
+     "guard_usable_events": 0,
+     "limitations": [
+      "Total scores, not native base-score admission.",
+      "The target is a score-margin statistic, not admission quality or task success.",
+      "Target deltas use holdout; guard deltas use the complete corpus, including training.",
+      "Raw character sum, not per-body reduction or the final UTF-8 context compiler.",
+      "Only recorded top matches are available; lowering thresholds can undercount admissions and pressure.",
+      "The pinned precision scores an empty admission as 1.0; the gate rejects such a value as empty_admission.",
+      "Reference guard skips unsized entries; acceptance is not a coverage guarantee."
+     ],
+     "missing_or_invalid_sizes": 0,
+     "observations": 0,
+     "partitions": {
+      "holdout": {
+       "current_admitted_entries": 0,
+       "current_admitted_events": 0,
+       "events": 0,
+       "proposed_admitted_entries": 0,
+       "proposed_admitted_events": 0
+      },
+      "trailing": {
+       "current_admitted_entries": 0,
+       "current_admitted_events": 0,
+       "events": 0,
+       "proposed_admitted_entries": 0,
+       "proposed_admitted_events": 0
+      }
+     },
+     "policy_changed": false,
+     "reference_model": "baldrix-b9586c59-total-score-raw-body",
+     "sized_entries": 0,
+     "unknown_timestamps": 0
+    },
+    "source_ref": null
+   },
+   "store_after": {
+    "digest": "fa9486af633e3cea",
+    "keys": [
+     [
+      "legacy_skill_imports",
+      "82a4f91aa4313888b79600342b118af286f863775325c1f42fa20353370b50f7"
+     ]
+    ]
+   },
+   "store_before": {
+    "digest": "fa9486af633e3cea",
+    "keys": [
+     [
+      "legacy_skill_imports",
+      "82a4f91aa4313888b79600342b118af286f863775325c1f42fa20353370b50f7"
+     ]
+    ]
+   }
+  },
+  {
+   "case": "legacy_source_does_not_read_native",
+   "returned": {
+    "corpus_hash": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945",
+    "events": [],
+    "legacy_source": "segment",
+    "options": {
+     "holdout_boundary": "2026-01-01T00:00:28Z",
+     "old_value": 3,
+     "proposed_value": 4
+    },
+    "project_key": "project",
+    "report": {
+     "advisory_only": true,
+     "entries": 0,
+     "gate": {
+      "accept": false,
+      "guard_delta": null,
+      "reason": "corpus_too_small",
+      "target_delta_holdout": null
+     },
+     "guard_partially_sized_events": 0,
+     "guard_skipped_events": 0,
+     "guard_usable_events": 0,
+     "limitations": [
+      "Total scores, not native base-score admission.",
+      "The target is a score-margin statistic, not admission quality or task success.",
+      "Target deltas use holdout; guard deltas use the complete corpus, including training.",
+      "Raw character sum, not per-body reduction or the final UTF-8 context compiler.",
+      "Only recorded top matches are available; lowering thresholds can undercount admissions and pressure.",
+      "The pinned precision scores an empty admission as 1.0; the gate rejects such a value as empty_admission.",
+      "Reference guard skips unsized entries; acceptance is not a coverage guarantee."
+     ],
+     "missing_or_invalid_sizes": 0,
+     "observations": 0,
+     "partitions": {
+      "holdout": {
+       "current_admitted_entries": 0,
+       "current_admitted_events": 0,
+       "events": 0,
+       "proposed_admitted_entries": 0,
+       "proposed_admitted_events": 0
+      },
+      "trailing": {
+       "current_admitted_entries": 0,
+       "current_admitted_events": 0,
+       "events": 0,
+       "proposed_admitted_entries": 0,
+       "proposed_admitted_events": 0
+      }
+     },
+     "policy_changed": false,
+     "reference_model": "baldrix-b9586c59-total-score-raw-body",
+     "sized_entries": 0,
+     "unknown_timestamps": 0
+    },
+    "source_ref": null
+   },
+   "store_after": {
+    "digest": "5a180237af5992a1",
+    "keys": [
+     [
+      "skill_history",
+      "project"
+     ]
+    ]
+   },
+   "store_before": {
+    "digest": "5a180237af5992a1",
+    "keys": [
+     [
+      "skill_history",
+      "project"
+     ]
+    ]
+   }
+  },
+  {
+   "case": "invalid_source:bad_id_punctuation",
+   "cause": null,
+   "message": "Source ID must identify one append-only log segment",
+   "refused": "ContractError",
+   "store_after": {
+    "digest": "fa9486af633e3cea",
+    "keys": [
+     [
+      "legacy_skill_imports",
+      "82a4f91aa4313888b79600342b118af286f863775325c1f42fa20353370b50f7"
+     ]
+    ]
+   },
+   "store_before": {
+    "digest": "fa9486af633e3cea",
+    "keys": [
+     [
+      "legacy_skill_imports",
+      "82a4f91aa4313888b79600342b118af286f863775325c1f42fa20353370b50f7"
+     ]
+    ]
+   }
+  },
+  {
+   "case": "invalid_source:empty",
+   "cause": null,
+   "message": "Source ID must identify one append-only log segment",
+   "refused": "ContractError",
+   "store_after": {
+    "digest": "fa9486af633e3cea",
+    "keys": [
+     [
+      "legacy_skill_imports",
+      "82a4f91aa4313888b79600342b118af286f863775325c1f42fa20353370b50f7"
+     ]
+    ]
+   },
+   "store_before": {
+    "digest": "fa9486af633e3cea",
+    "keys": [
+     [
+      "legacy_skill_imports",
+      "82a4f91aa4313888b79600342b118af286f863775325c1f42fa20353370b50f7"
+     ]
+    ]
+   }
+  },
+  {
+   "case": "invalid_source:leading_dot",
+   "cause": null,
+   "message": "Source ID must identify one append-only log segment",
+   "refused": "ContractError",
+   "store_after": {
+    "digest": "fa9486af633e3cea",
+    "keys": [
+     [
+      "legacy_skill_imports",
+      "82a4f91aa4313888b79600342b118af286f863775325c1f42fa20353370b50f7"
+     ]
+    ]
+   },
+   "store_before": {
+    "digest": "fa9486af633e3cea",
+    "keys": [
+     [
+      "legacy_skill_imports",
+      "82a4f91aa4313888b79600342b118af286f863775325c1f42fa20353370b50f7"
+     ]
+    ]
+   }
+  },
+  {
+   "case": "invalid_source:too_long",
+   "cause": null,
+   "message": "Source ID must identify one append-only log segment",
+   "refused": "ContractError",
+   "store_after": {
+    "digest": "fa9486af633e3cea",
+    "keys": [
+     [
+      "legacy_skill_imports",
+      "82a4f91aa4313888b79600342b118af286f863775325c1f42fa20353370b50f7"
+     ]
+    ]
+   },
+   "store_before": {
+    "digest": "fa9486af633e3cea",
+    "keys": [
+     [
+      "legacy_skill_imports",
+      "82a4f91aa4313888b79600342b118af286f863775325c1f42fa20353370b50f7"
+     ]
+    ]
+   }
+  },
+  {
+   "case": "invalid_source:integer",
+   "cause": null,
+   "message": "Source ID must identify one append-only log segment",
+   "refused": "ContractError",
+   "store_after": {
+    "digest": "fa9486af633e3cea",
+    "keys": [
+     [
+      "legacy_skill_imports",
+      "82a4f91aa4313888b79600342b118af286f863775325c1f42fa20353370b50f7"
+     ]
+    ]
+   },
+   "store_before": {
+    "digest": "fa9486af633e3cea",
+    "keys": [
+     [
+      "legacy_skill_imports",
+      "82a4f91aa4313888b79600342b118af286f863775325c1f42fa20353370b50f7"
+     ]
+    ]
+   }
+  },
+  {
+   "case": "invalid_source:slash",
+   "cause": null,
+   "message": "Source ID must identify one append-only log segment",
+   "refused": "ContractError",
+   "store_after": {
+    "digest": "fa9486af633e3cea",
+    "keys": [
+     [
+      "legacy_skill_imports",
+      "82a4f91aa4313888b79600342b118af286f863775325c1f42fa20353370b50f7"
+     ]
+    ]
+   },
+   "store_before": {
+    "digest": "fa9486af633e3cea",
+    "keys": [
+     [
+      "legacy_skill_imports",
+      "82a4f91aa4313888b79600342b118af286f863775325c1f42fa20353370b50f7"
+     ]
+    ]
+   }
+  },
+  {
+   "case": "invalid_source:bytes",
+   "cause": null,
+   "message": "Source ID must identify one append-only log segment",
+   "refused": "ContractError",
+   "store_after": {
+    "digest": "fa9486af633e3cea",
+    "keys": [
+     [
+      "legacy_skill_imports",
+      "82a4f91aa4313888b79600342b118af286f863775325c1f42fa20353370b50f7"
+     ]
+    ]
+   },
+   "store_before": {
+    "digest": "fa9486af633e3cea",
+    "keys": [
+     [
+      "legacy_skill_imports",
+      "82a4f91aa4313888b79600342b118af286f863775325c1f42fa20353370b50f7"
+     ]
+    ]
+   }
+  },
+  {
+   "case": "invalid_source:unicode",
+   "cause": null,
+   "message": "Source ID must identify one append-only log segment",
+   "refused": "ContractError",
+   "store_after": {
+    "digest": "fa9486af633e3cea",
+    "keys": [
+     [
+      "legacy_skill_imports",
+      "82a4f91aa4313888b79600342b118af286f863775325c1f42fa20353370b50f7"
+     ]
+    ]
+   },
+   "store_before": {
+    "digest": "fa9486af633e3cea",
+    "keys": [
+     [
+      "legacy_skill_imports",
+      "82a4f91aa4313888b79600342b118af286f863775325c1f42fa20353370b50f7"
+     ]
+    ]
+   }
+  },
+  {
+   "case": "invalid_source:trailing_newline",
+   "cause": null,
+   "message": "Source ID must identify one append-only log segment",
+   "refused": "ContractError",
+   "store_after": {
+    "digest": "fa9486af633e3cea",
+    "keys": [
+     [
+      "legacy_skill_imports",
+      "82a4f91aa4313888b79600342b118af286f863775325c1f42fa20353370b50f7"
+     ]
+    ]
+   },
+   "store_before": {
+    "digest": "fa9486af633e3cea",
+    "keys": [
+     [
+      "legacy_skill_imports",
+      "82a4f91aa4313888b79600342b118af286f863775325c1f42fa20353370b50f7"
+     ]
+    ]
+   }
+  },
+  {
+   "case": "longest_valid_source",
+   "returned": {
+    "corpus_hash": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945",
+    "events": [],
+    "legacy_source": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+    "options": {
+     "holdout_boundary": "2026-01-01T00:00:28Z",
+     "old_value": 3,
+     "proposed_value": 4
+    },
+    "project_key": "project",
+    "report": {
+     "advisory_only": true,
+     "entries": 0,
+     "gate": {
+      "accept": false,
+      "guard_delta": null,
+      "reason": "corpus_too_small",
+      "target_delta_holdout": null
+     },
+     "guard_partially_sized_events": 0,
+     "guard_skipped_events": 0,
+     "guard_usable_events": 0,
+     "limitations": [
+      "Total scores, not native base-score admission.",
+      "The target is a score-margin statistic, not admission quality or task success.",
+      "Target deltas use holdout; guard deltas use the complete corpus, including training.",
+      "Raw character sum, not per-body reduction or the final UTF-8 context compiler.",
+      "Only recorded top matches are available; lowering thresholds can undercount admissions and pressure.",
+      "The pinned precision scores an empty admission as 1.0; the gate rejects such a value as empty_admission.",
+      "Reference guard skips unsized entries; acceptance is not a coverage guarantee."
+     ],
+     "missing_or_invalid_sizes": 0,
+     "observations": 0,
+     "partitions": {
+      "holdout": {
+       "current_admitted_entries": 0,
+       "current_admitted_events": 0,
+       "events": 0,
+       "proposed_admitted_entries": 0,
+       "proposed_admitted_events": 0
+      },
+      "trailing": {
+       "current_admitted_entries": 0,
+       "current_admitted_events": 0,
+       "events": 0,
+       "proposed_admitted_entries": 0,
+       "proposed_admitted_events": 0
+      }
+     },
+     "policy_changed": false,
+     "reference_model": "baldrix-b9586c59-total-score-raw-body",
+     "sized_entries": 0,
+     "unknown_timestamps": 0
+    },
+    "source_ref": null
+   },
+   "store_after": {
+    "digest": "fa9486af633e3cea",
+    "keys": [
+     [
+      "legacy_skill_imports",
+      "82a4f91aa4313888b79600342b118af286f863775325c1f42fa20353370b50f7"
+     ]
+    ]
+   },
+   "store_before": {
+    "digest": "fa9486af633e3cea",
+    "keys": [
+     [
+      "legacy_skill_imports",
+      "82a4f91aa4313888b79600342b118af286f863775325c1f42fa20353370b50f7"
+     ]
+    ]
+   }
+  },
+  {
+   "case": "valid_source_charset",
+   "returned": {
+    "corpus_hash": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945",
+    "events": [],
+    "legacy_source": "A0_.-z",
+    "options": {
+     "holdout_boundary": "2026-01-01T00:00:28Z",
+     "old_value": 3,
+     "proposed_value": 4
+    },
+    "project_key": "project",
+    "report": {
+     "advisory_only": true,
+     "entries": 0,
+     "gate": {
+      "accept": false,
+      "guard_delta": null,
+      "reason": "corpus_too_small",
+      "target_delta_holdout": null
+     },
+     "guard_partially_sized_events": 0,
+     "guard_skipped_events": 0,
+     "guard_usable_events": 0,
+     "limitations": [
+      "Total scores, not native base-score admission.",
+      "The target is a score-margin statistic, not admission quality or task success.",
+      "Target deltas use holdout; guard deltas use the complete corpus, including training.",
+      "Raw character sum, not per-body reduction or the final UTF-8 context compiler.",
+      "Only recorded top matches are available; lowering thresholds can undercount admissions and pressure.",
+      "The pinned precision scores an empty admission as 1.0; the gate rejects such a value as empty_admission.",
+      "Reference guard skips unsized entries; acceptance is not a coverage guarantee."
+     ],
+     "missing_or_invalid_sizes": 0,
+     "observations": 0,
+     "partitions": {
+      "holdout": {
+       "current_admitted_entries": 0,
+       "current_admitted_events": 0,
+       "events": 0,
+       "proposed_admitted_entries": 0,
+       "proposed_admitted_events": 0
+      },
+      "trailing": {
+       "current_admitted_entries": 0,
+       "current_admitted_events": 0,
+       "events": 0,
+       "proposed_admitted_entries": 0,
+       "proposed_admitted_events": 0
+      }
+     },
+     "policy_changed": false,
+     "reference_model": "baldrix-b9586c59-total-score-raw-body",
+     "sized_entries": 0,
+     "unknown_timestamps": 0
+    },
+    "source_ref": null
+   },
+   "store_after": {
+    "digest": "fa9486af633e3cea",
+    "keys": [
+     [
+      "legacy_skill_imports",
+      "82a4f91aa4313888b79600342b118af286f863775325c1f42fa20353370b50f7"
+     ]
+    ]
+   },
+   "store_before": {
+    "digest": "fa9486af633e3cea",
+    "keys": [
+     [
+      "legacy_skill_imports",
+      "82a4f91aa4313888b79600342b118af286f863775325c1f42fa20353370b50f7"
+     ]
+    ]
+   }
+  },
+  {
+   "case": "corpus_is_the_last_max_events",
+   "corpus_hash": "58929117a6507b7029e75986b86d8620f7b8f1dbc4fb7be96707624a60535cdc",
+   "events": 4000,
+   "first_id": "5",
+   "last_id": "4004",
+   "max_events": 4000,
+   "report_digest": "b0223590bf6f8f8f"
+  },
+  {
+   "case": "exactly_max_events_kept_whole",
+   "corpus_hash": "4a0245435d59b90b96d484ecfdbaeba00c5932dc977a6c667b77551cc049ba42",
+   "events": 4000
+  },
+  {
+   "case": "no_write",
+   "store": {
+    "digest": "5a180237af5992a1",
+    "keys": [
+     [
+      "skill_history",
+      "project"
+     ]
+    ]
+   }
+  }
+ ]
+}
