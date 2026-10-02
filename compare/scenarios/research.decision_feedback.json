@@ -1,0 +1,8 @@
+{
+ "family": "research.decision_feedback",
+ "description": "S8 batch B4 (V25 R-df1/R-df2) M7 application/decision_feedback.py DecisionFeedback (collect/status/report over PLANTED autonomous_runs, dge_sessions, dge_events, tasks and invocation_reservations rows in the shape a finished council run leaves, a LABELLED execution-evidence port and a scripted clock: the pure contracts, one run without a candidate, two runs with one candidate and idempotent re-collection, the narrowed window, other contract/v1/foreign repository, pending/terminal/conflict/stale/unavailable outcomes, every unproven decision identity and artifact refusal, bounded scans and pins, store failures, concurrent collectors, status/report), characterized before the move into research; the whole-store digest around every call; no model, provider, network or database",
+ "reference_driver": "drivers/reference/s8_decision_feedback.py",
+ "target_driver": "drivers/target/s8_decision_feedback.py",
+ "golden": "goldens/reference/research.decision_feedback.json",
+ "slice": "S8"
+}
