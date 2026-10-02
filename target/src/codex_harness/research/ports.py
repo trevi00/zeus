@@ -11,11 +11,12 @@ Owns: OWNED_BUCKETS of the research context; OutboxAppend and EventAppend, the c
     that ResearchProgram calls (S8 pilot 73); DiscoveryCensus, the shape of coordination's
     DiscoveryCensusReader that DiscoveryPressure calls (S8 pilot 76); GitBlobSource, the consumer shape of host_os's
     GitSource that the pinned registry reader load_registry calls (S8 pilot 91, V18 R-df1); ExecutionNotices, the shape of
-    coordination's execution_notices.record that AuditRepair calls (S8 pilot 100, V18 R-ar1)
+    coordination's execution_notices.record that AuditRepair calls (S8 pilot 100, V18 R-ar1); DecisionRecord, the shape of
+    coordination's DecisionOwnership.record that ThresholdReviews calls (S8 pilot 101, V22 R-tr2)
 Does not own: the outbox, events, decisions_pending and portfolio_investigations bucket bodies (coordination, intake)
 Entry points: OWNED_BUCKETS, OutboxAppend, EventAppend, AuditArtifacts, SourceVerifier, DecisionValidation,
     PendingDecisions, InvestigationCandidates, ResearchLaunchFacts, ExecutionFences, OutboxQuarantine, DiscoveryCensus,
-    GitBlobSource, ExecutionNotices
+    GitBlobSource, ExecutionNotices, DecisionRecord
 Contracts: INV-RECURRENCE-001, INV-MESSAGE-001
 """
 
@@ -50,7 +51,9 @@ OWNED_BUCKETS = ("inbox", "incidents", "hooks", "research_programs", "dge_sessio
                  "threshold_collection_inputs", "threshold_proposal_runs", "threshold_proposals",
                  # S8 pilot 100 (V4): the three buckets only research.application.audit_repair writes (`schedule`: M7's other
                  # writer, application/scheduling.py, is research's and not moved yet)
-                 "audit_repair_activation", "audit_repair_corrections", "schedule")
+                 "audit_repair_activation", "audit_repair_corrections", "schedule",
+                 # S8 pilot 101 (V4): the bucket only research.application.threshold_reviews writes (restore: V22 R-tr3)
+                 "threshold_review_requests")
 
 
 class OutboxAppend(Protocol):
@@ -110,3 +113,7 @@ class GitBlobSource(Protocol):
 class ExecutionNotices(Protocol):
     def record(self, tx, org, row: dict, bucket: str, reason_code: str, at: str, transition_ref=None, *,
                proof=None, evidence_refs=()): ...
+
+
+class DecisionRecord(Protocol):
+    def record(self, tx, current: dict) -> None: ...
