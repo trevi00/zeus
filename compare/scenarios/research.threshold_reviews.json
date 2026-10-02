@@ -1,0 +1,9 @@
+{
+ "family": "research.threshold_reviews",
+ "description": "S8 research threshold-review owner of M7 application/threshold_reviews.py (ThresholdReviews: request, _row, _queue, _prepare, prepare, complete, exhausted), characterized before the move at application level: the cases of M7 tests/test_threshold_reviews.py that run this module (labelled by test name) over a MemoryStore with a PLANTED calculated proposal, its run and evidence document, leases from the ordinary decision claim of each side, scripted fake artifacts (receipt, packet, evidence) built as the executor leaves them and the packaged organization, with the whole-store digest before and after every call; the executor-subject tests are left out and named in the move report; no Git, Docker, model, provider or PostgreSQL",
+ "reference_driver": "drivers/reference/s8_threshold_reviews.py",
+ "target_driver": null,
+ "golden": "goldens/reference/research.threshold_reviews.json",
+ "slice": "S8",
+ "target_status": "pending: S8 threshold_reviews move"
+}

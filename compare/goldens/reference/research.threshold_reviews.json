@@ -1,0 +1,5981 @@
+{
+ "attempt_exhaustion": {
+  "claim": {
+   "claim_wrote": true,
+   "lease": null,
+   "state": {
+    "conductor": null,
+    "decisions": [
+     [
+      "lead:improvement",
+      "failed"
+     ]
+    ],
+    "lead": {
+     "actor": "lead:improvement",
+     "attempt": 3,
+     "completed_at": null,
+     "error": "attempt budget exhausted",
+     "execution_deadline": null,
+     "generation": null,
+     "lease_owner": null,
+     "lease_until": null,
+     "owner": null,
+     "phase": "threshold_review",
+     "result": null,
+     "retry_budget": {
+      "max_attempts": 3,
+      "version": 1
+     },
+     "status": "failed"
+    },
+    "no_effects": false,
+    "request": {
+     "activation_ready": false,
+     "completed_at": "2026-09-22T00:00:00.068000+00:00",
+     "created_at": "2026-09-22T00:00:00.067000+00:00",
+     "failed_decision": "32befb3817d8cfffe0d66e5e3583a120074544109ea2a596e99b665cc4dc7498",
+     "failure": "decision_attempt_budget_exhausted",
+     "reviews": [],
+     "scope": "assessment_only_no_dispatch_or_activation",
+     "status": "failed"
+    },
+    "store": "7db0fa0d917d5dba"
+   }
+  },
+  "m7_test": "test_attempt_exhaustion_is_visible_on_request",
+  "request_again": {
+   "store_after": "7db0fa0d917d5dba",
+   "store_before": "7db0fa0d917d5dba",
+   "value": {
+    "activation_ready": false,
+    "binding": "c3fe471007df0a23b40290acba102f3df91b323058141937569f0ef78f43006b",
+    "completed_at": "2026-09-22T00:00:00.068000+00:00",
+    "created_at": "2026-09-22T00:00:00.067000+00:00",
+    "failed_decision": "32befb3817d8cfffe0d66e5e3583a120074544109ea2a596e99b665cc4dc7498",
+    "failure": "decision_attempt_budget_exhausted",
+    "id": "43c9265dd33fa99b94c62fd71bd965f5b014e7f327dae323cee10f0fcfe479cf",
+    "reviews": [],
+    "row_id": "3ac9ee975d10e3094e9f1589d7c4476cbaa48dad4140d6cb1674554984d8a47c",
+    "scope": "assessment_only_no_dispatch_or_activation",
+    "status": "failed"
+   },
+   "wrote": false
+  }
+ },
+ "blockage_and_interruption": {
+  "inspection_blocked": {
+   "claim_wrote": true,
+   "complete": {
+    "store_after": "79725b008032f340",
+    "store_before": "3700a0ce99e83b01",
+    "value": {
+     "actor": "lead:improvement",
+     "attempt": 1,
+     "completed_at": "2026-09-22T00:00:00.041000+00:00",
+     "execution_clock": {
+      "deadline_remaining": 2700.0,
+      "domain": "00000000-0000-4000-8000-00000000a0d2",
+      "lease_seconds": 1200.0,
+      "monotonic": 1000.039,
+      "version": 1,
+      "wall": "2026-09-22T00:00:00.039000+00:00"
+     },
+     "execution_deadline": "2026-09-22T00:45:00.039000+00:00",
+     "generation": 1,
+     "id": "32befb3817d8cfffe0d66e5e3583a120074544109ea2a596e99b665cc4dc7498",
+     "input": {
+      "request_id": "43c9265dd33fa99b94c62fd71bd965f5b014e7f327dae323cee10f0fcfe479cf"
+     },
+     "lease_owner": "5eed0000-0000-4000-8000-000000000017",
+     "lease_until": "2026-09-22T00:20:00.039000+00:00",
+     "message": {
+      "causation_id": null,
+      "correlation_id": "43c9265dd33fa99b94c62fd71bd965f5b014e7f327dae323cee10f0fcfe479cf",
+      "how": {
+       "acceptance_criteria": [
+        "Preserve normal behavior"
+       ],
+       "constraints": [],
+       "context_ref": null,
+       "result_schema": "six-w.v1"
+      },
+      "message_id": "5eed0000-0000-4000-8000-000000000016",
+      "schema_version": "1.0",
+      "type": "task.assign",
+      "what": {
+       "action": "assess_threshold",
+       "details": {
+        "binding": "c3fe471007df0a23b40290acba102f3df91b323058141937569f0ef78f43006b",
+        "request_id": "43c9265dd33fa99b94c62fd71bd965f5b014e7f327dae323cee10f0fcfe479cf"
+       }
+      },
+      "when": {
+       "after": [],
+       "created_at": "2026-09-22T00:00:00.038000+00:00",
+       "deadline": null
+      },
+      "where": {
+       "allowed_paths": [],
+       "environment": "local",
+       "repository": "codex-harness",
+       "revision": "bootstrap"
+      },
+      "who": {
+       "owner": "lead:improvement",
+       "recipient": "lead:improvement",
+       "sender": "conductor"
+      },
+      "why": {
+       "evidence_refs": [],
+       "objective": "Improve harness reliability from verified evidence"
+      }
+     },
+     "owner": "5eed0000-0000-4000-8000-000000000017",
+     "phase": "threshold_review",
+     "result": {
+      "accepted": false,
+      "arc42_assessment": "fixture",
+      "basis_revision": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+      "blocked": false,
+      "execution_ref": "sha256:9343466fddb401ea1fcd6107e53ce419b0fd1f9e905b19a640d423f1ccd3c5cd",
+      "inspection_blocked": true,
+      "reason": "fixture assessment",
+      "risks": [],
+      "sre_assessment": "fixture"
+     },
+     "retry_budget": {
+      "bound_at": "2026-09-22T00:00:00.039000+00:00",
+      "max_attempts": 3,
+      "origin": "first_claim",
+      "version": 1
+     },
+     "status": "blocked"
+    },
+    "wrote": true
+   },
+   "conductor_claim": {
+    "claim_wrote": false,
+    "lease": null,
+    "state": {
+     "conductor": null,
+     "decisions": [
+      [
+       "lead:improvement",
+       "blocked"
+      ]
+     ],
+     "lead": {
+      "actor": "lead:improvement",
+      "attempt": 1,
+      "completed_at": "2026-09-22T00:00:00.041000+00:00",
+      "error": null,
+      "execution_deadline": "2026-09-22T00:45:00.039000+00:00",
+      "generation": 1,
+      "lease_owner": "5eed0000-0000-4000-8000-000000000017",
+      "lease_until": "2026-09-22T00:20:00.039000+00:00",
+      "owner": "5eed0000-0000-4000-8000-000000000017",
+      "phase": "threshold_review",
+      "result": {
+       "accepted": false,
+       "arc42_assessment": "fixture",
+       "basis_revision": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+       "blocked": false,
+       "execution_ref": "sha256:9343466fddb401ea1fcd6107e53ce419b0fd1f9e905b19a640d423f1ccd3c5cd",
+       "inspection_blocked": true,
+       "reason": "fixture assessment",
+       "risks": [],
+       "sre_assessment": "fixture"
+      },
+      "retry_budget": {
+       "bound_at": "2026-09-22T00:00:00.039000+00:00",
+       "max_attempts": 3,
+       "origin": "first_claim",
+       "version": 1
+      },
+      "status": "blocked"
+     },
+     "no_effects": true,
+     "request": {
+      "activation_ready": false,
+      "completed_at": null,
+      "created_at": "2026-09-22T00:00:00.038000+00:00",
+      "failed_decision": null,
+      "failure": null,
+      "reviews": [
+       {
+        "accepted": false,
+        "actor": "lead:improvement",
+        "at": "2026-09-22T00:00:00.041000+00:00",
+        "decision_id": "32befb3817d8cfffe0d66e5e3583a120074544109ea2a596e99b665cc4dc7498",
+        "generation": 1
+       }
+      ],
+      "scope": "assessment_only_no_dispatch_or_activation",
+      "status": "blocked"
+     },
+     "store": "79725b008032f340"
+    }
+   },
+   "lease": {
+    "_bucket": "decisions_pending",
+    "actor": "lead:improvement",
+    "attempt": 1,
+    "generation": 1,
+    "id": "32befb3817d8cfffe0d66e5e3583a120074544109ea2a596e99b665cc4dc7498",
+    "lease_until": "2026-09-22T00:20:00.039000+00:00",
+    "owner": "5eed0000-0000-4000-8000-000000000017",
+    "phase": "threshold_review",
+    "status": "running"
+   },
+   "prepare": {
+    "store_after": "3700a0ce99e83b01",
+    "store_before": "3700a0ce99e83b01",
+    "value": {
+     "binding": "c3fe471007df0a23b40290acba102f3df91b323058141937569f0ef78f43006b",
+     "execution": {
+      "decision_id": "32befb3817d8cfffe0d66e5e3583a120074544109ea2a596e99b665cc4dc7498",
+      "generation": 1
+     },
+     "prior_reviews": [],
+     "record": {
+      "activation_blockers": [
+       "native_task_success_and_release_review_required"
+      ],
+      "activation_ready": false,
+      "evidence_ref": "sha256:47d567320085c7610c523f4488d7e1344def106dede4d24363f788f24c70187f",
+      "id": "3ac9ee975d10e3094e9f1589d7c4476cbaa48dad4140d6cb1674554984d8a47c",
+      "project_key": "project",
+      "proposal": {
+       "corpus_hash": "corpus-1",
+       "current": 3,
+       "id": "proposal-1",
+       "name": "skill_match.FULL_BODY_MIN_SCORE",
+       "policy_revision": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+       "suggested": 4
+      },
+      "run_id": "dc9a22136a4d39a60c60a3bfa6d902a8838876a303d03d42af8f77be333a046e",
+      "status": "calculated"
+     },
+     "request_id": "43c9265dd33fa99b94c62fd71bd965f5b014e7f327dae323cee10f0fcfe479cf",
+     "scope": "assessment_only_no_dispatch_or_activation"
+    },
+    "wrote": false
+   },
+   "state": {
+    "conductor": null,
+    "decisions": [
+     [
+      "lead:improvement",
+      "blocked"
+     ]
+    ],
+    "lead": {
+     "actor": "lead:improvement",
+     "attempt": 1,
+     "completed_at": "2026-09-22T00:00:00.041000+00:00",
+     "error": null,
+     "execution_deadline": "2026-09-22T00:45:00.039000+00:00",
+     "generation": 1,
+     "lease_owner": "5eed0000-0000-4000-8000-000000000017",
+     "lease_until": "2026-09-22T00:20:00.039000+00:00",
+     "owner": "5eed0000-0000-4000-8000-000000000017",
+     "phase": "threshold_review",
+     "result": {
+      "accepted": false,
+      "arc42_assessment": "fixture",
+      "basis_revision": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+      "blocked": false,
+      "execution_ref": "sha256:9343466fddb401ea1fcd6107e53ce419b0fd1f9e905b19a640d423f1ccd3c5cd",
+      "inspection_blocked": true,
+      "reason": "fixture assessment",
+      "risks": [],
+      "sre_assessment": "fixture"
+     },
+     "retry_budget": {
+      "bound_at": "2026-09-22T00:00:00.039000+00:00",
+      "max_attempts": 3,
+      "origin": "first_claim",
+      "version": 1
+     },
+     "status": "blocked"
+    },
+    "no_effects": true,
+    "request": {
+     "activation_ready": false,
+     "completed_at": null,
+     "created_at": "2026-09-22T00:00:00.038000+00:00",
+     "failed_decision": null,
+     "failure": null,
+     "reviews": [
+      {
+       "accepted": false,
+       "actor": "lead:improvement",
+       "at": "2026-09-22T00:00:00.041000+00:00",
+       "decision_id": "32befb3817d8cfffe0d66e5e3583a120074544109ea2a596e99b665cc4dc7498",
+       "generation": 1
+      }
+     ],
+     "scope": "assessment_only_no_dispatch_or_activation",
+     "status": "blocked"
+    },
+    "store": "79725b008032f340"
+   }
+  },
+  "inspection_blocked_interrupted": {
+   "claim_wrote": true,
+   "complete": {
+    "store_after": "55c588d1ac3d43fa",
+    "store_before": "f3355357109ab11f",
+    "value": {
+     "actor": "lead:improvement",
+     "attempt": 1,
+     "completed_at": "2026-09-22T00:00:00.046000+00:00",
+     "execution_clock": {
+      "deadline_remaining": 2700.0,
+      "domain": "00000000-0000-4000-8000-00000000a0d2",
+      "lease_seconds": 1200.0,
+      "monotonic": 1000.044,
+      "version": 1,
+      "wall": "2026-09-22T00:00:00.044000+00:00"
+     },
+     "execution_deadline": "2026-09-22T00:45:00.044000+00:00",
+     "generation": 1,
+     "id": "32befb3817d8cfffe0d66e5e3583a120074544109ea2a596e99b665cc4dc7498",
+     "input": {
+      "request_id": "43c9265dd33fa99b94c62fd71bd965f5b014e7f327dae323cee10f0fcfe479cf"
+     },
+     "lease_owner": "5eed0000-0000-4000-8000-00000000001a",
+     "lease_until": "2026-09-22T00:20:00.044000+00:00",
+     "message": {
+      "causation_id": null,
+      "correlation_id": "43c9265dd33fa99b94c62fd71bd965f5b014e7f327dae323cee10f0fcfe479cf",
+      "how": {
+       "acceptance_criteria": [
+        "Preserve normal behavior"
+       ],
+       "constraints": [],
+       "context_ref": null,
+       "result_schema": "six-w.v1"
+      },
+      "message_id": "5eed0000-0000-4000-8000-000000000019",
+      "schema_version": "1.0",
+      "type": "task.assign",
+      "what": {
+       "action": "assess_threshold",
+       "details": {
+        "binding": "c3fe471007df0a23b40290acba102f3df91b323058141937569f0ef78f43006b",
+        "request_id": "43c9265dd33fa99b94c62fd71bd965f5b014e7f327dae323cee10f0fcfe479cf"
+       }
+      },
+      "when": {
+       "after": [],
+       "created_at": "2026-09-22T00:00:00.043000+00:00",
+       "deadline": null
+      },
+      "where": {
+       "allowed_paths": [],
+       "environment": "local",
+       "repository": "codex-harness",
+       "revision": "bootstrap"
+      },
+      "who": {
+       "owner": "lead:improvement",
+       "recipient": "lead:improvement",
+       "sender": "conductor"
+      },
+      "why": {
+       "evidence_refs": [],
+       "objective": "Improve harness reliability from verified evidence"
+      }
+     },
+     "owner": "5eed0000-0000-4000-8000-00000000001a",
+     "phase": "threshold_review",
+     "result": {
+      "accepted": false,
+      "arc42_assessment": "fixture",
+      "basis_revision": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+      "blocked": false,
+      "execution_ref": "sha256:6d57dd6cea38b5887ca9bb81ccfd812bbd7394ed9694473435faeefd1c450f0d",
+      "inspection_blocked": true,
+      "reason": "fixture assessment",
+      "risks": [],
+      "sre_assessment": "fixture"
+     },
+     "retry_budget": {
+      "bound_at": "2026-09-22T00:00:00.044000+00:00",
+      "max_attempts": 3,
+      "origin": "first_claim",
+      "version": 1
+     },
+     "status": "blocked"
+    },
+    "wrote": true
+   },
+   "conductor_claim": {
+    "claim_wrote": false,
+    "lease": null,
+    "state": {
+     "conductor": null,
+     "decisions": [
+      [
+       "lead:improvement",
+       "blocked"
+      ]
+     ],
+     "lead": {
+      "actor": "lead:improvement",
+      "attempt": 1,
+      "completed_at": "2026-09-22T00:00:00.046000+00:00",
+      "error": null,
+      "execution_deadline": "2026-09-22T00:45:00.044000+00:00",
+      "generation": 1,
+      "lease_owner": "5eed0000-0000-4000-8000-00000000001a",
+      "lease_until": "2026-09-22T00:20:00.044000+00:00",
+      "owner": "5eed0000-0000-4000-8000-00000000001a",
+      "phase": "threshold_review",
+      "result": {
+       "accepted": false,
+       "arc42_assessment": "fixture",
+       "basis_revision": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+       "blocked": false,
+       "execution_ref": "sha256:6d57dd6cea38b5887ca9bb81ccfd812bbd7394ed9694473435faeefd1c450f0d",
+       "inspection_blocked": true,
+       "reason": "fixture assessment",
+       "risks": [],
+       "sre_assessment": "fixture"
+      },
+      "retry_budget": {
+       "bound_at": "2026-09-22T00:00:00.044000+00:00",
+       "max_attempts": 3,
+       "origin": "first_claim",
+       "version": 1
+      },
+      "status": "blocked"
+     },
+     "no_effects": true,
+     "request": {
+      "activation_ready": false,
+      "completed_at": null,
+      "created_at": "2026-09-22T00:00:00.043000+00:00",
+      "failed_decision": null,
+      "failure": null,
+      "reviews": [
+       {
+        "accepted": false,
+        "actor": "lead:improvement",
+        "at": "2026-09-22T00:00:00.046000+00:00",
+        "decision_id": "32befb3817d8cfffe0d66e5e3583a120074544109ea2a596e99b665cc4dc7498",
+        "generation": 1
+       }
+      ],
+      "scope": "assessment_only_no_dispatch_or_activation",
+      "status": "blocked"
+     },
+     "store": "55c588d1ac3d43fa"
+    }
+   },
+   "lease": {
+    "_bucket": "decisions_pending",
+    "actor": "lead:improvement",
+    "attempt": 1,
+    "generation": 1,
+    "id": "32befb3817d8cfffe0d66e5e3583a120074544109ea2a596e99b665cc4dc7498",
+    "lease_until": "2026-09-22T00:20:00.044000+00:00",
+    "owner": "5eed0000-0000-4000-8000-00000000001a",
+    "phase": "threshold_review",
+    "status": "running"
+   },
+   "prepare": {
+    "store_after": "f3355357109ab11f",
+    "store_before": "f3355357109ab11f",
+    "value": {
+     "binding": "c3fe471007df0a23b40290acba102f3df91b323058141937569f0ef78f43006b",
+     "execution": {
+      "decision_id": "32befb3817d8cfffe0d66e5e3583a120074544109ea2a596e99b665cc4dc7498",
+      "generation": 1
+     },
+     "prior_reviews": [],
+     "record": {
+      "activation_blockers": [
+       "native_task_success_and_release_review_required"
+      ],
+      "activation_ready": false,
+      "evidence_ref": "sha256:47d567320085c7610c523f4488d7e1344def106dede4d24363f788f24c70187f",
+      "id": "3ac9ee975d10e3094e9f1589d7c4476cbaa48dad4140d6cb1674554984d8a47c",
+      "project_key": "project",
+      "proposal": {
+       "corpus_hash": "corpus-1",
+       "current": 3,
+       "id": "proposal-1",
+       "name": "skill_match.FULL_BODY_MIN_SCORE",
+       "policy_revision": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+       "suggested": 4
+      },
+      "run_id": "dc9a22136a4d39a60c60a3bfa6d902a8838876a303d03d42af8f77be333a046e",
+      "status": "calculated"
+     },
+     "request_id": "43c9265dd33fa99b94c62fd71bd965f5b014e7f327dae323cee10f0fcfe479cf",
+     "scope": "assessment_only_no_dispatch_or_activation"
+    },
+    "wrote": false
+   },
+   "state": {
+    "conductor": null,
+    "decisions": [
+     [
+      "lead:improvement",
+      "blocked"
+     ]
+    ],
+    "lead": {
+     "actor": "lead:improvement",
+     "attempt": 1,
+     "completed_at": "2026-09-22T00:00:00.046000+00:00",
+     "error": null,
+     "execution_deadline": "2026-09-22T00:45:00.044000+00:00",
+     "generation": 1,
+     "lease_owner": "5eed0000-0000-4000-8000-00000000001a",
+     "lease_until": "2026-09-22T00:20:00.044000+00:00",
+     "owner": "5eed0000-0000-4000-8000-00000000001a",
+     "phase": "threshold_review",
+     "result": {
+      "accepted": false,
+      "arc42_assessment": "fixture",
+      "basis_revision": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+      "blocked": false,
+      "execution_ref": "sha256:6d57dd6cea38b5887ca9bb81ccfd812bbd7394ed9694473435faeefd1c450f0d",
+      "inspection_blocked": true,
+      "reason": "fixture assessment",
+      "risks": [],
+      "sre_assessment": "fixture"
+     },
+     "retry_budget": {
+      "bound_at": "2026-09-22T00:00:00.044000+00:00",
+      "max_attempts": 3,
+      "origin": "first_claim",
+      "version": 1
+     },
+     "status": "blocked"
+    },
+    "no_effects": true,
+    "request": {
+     "activation_ready": false,
+     "completed_at": null,
+     "created_at": "2026-09-22T00:00:00.043000+00:00",
+     "failed_decision": null,
+     "failure": null,
+     "reviews": [
+      {
+       "accepted": false,
+       "actor": "lead:improvement",
+       "at": "2026-09-22T00:00:00.046000+00:00",
+       "decision_id": "32befb3817d8cfffe0d66e5e3583a120074544109ea2a596e99b665cc4dc7498",
+       "generation": 1
+      }
+     ],
+     "scope": "assessment_only_no_dispatch_or_activation",
+     "status": "blocked"
+    },
+    "store": "55c588d1ac3d43fa"
+   }
+  },
+  "interrupted": {
+   "claim_wrote": true,
+   "complete": {
+    "message": "Interrupted threshold review cannot complete",
+    "refused": "ContractError",
+    "store_after": "e43ad5f6c6225a81",
+    "store_before": "e43ad5f6c6225a81",
+    "wrote": false
+   },
+   "conductor_claim": {
+    "claim_wrote": false,
+    "lease": null,
+    "state": {
+     "conductor": null,
+     "decisions": [
+      [
+       "lead:improvement",
+       "running"
+      ]
+     ],
+     "lead": {
+      "actor": "lead:improvement",
+      "attempt": 1,
+      "completed_at": null,
+      "error": null,
+      "execution_deadline": "2026-09-22T00:45:00.049000+00:00",
+      "generation": 1,
+      "lease_owner": "5eed0000-0000-4000-8000-00000000001d",
+      "lease_until": "2026-09-22T00:20:00.049000+00:00",
+      "owner": "5eed0000-0000-4000-8000-00000000001d",
+      "phase": "threshold_review",
+      "result": null,
+      "retry_budget": {
+       "bound_at": "2026-09-22T00:00:00.049000+00:00",
+       "max_attempts": 3,
+       "origin": "first_claim",
+       "version": 1
+      },
+      "status": "running"
+     },
+     "no_effects": true,
+     "request": {
+      "activation_ready": false,
+      "completed_at": null,
+      "created_at": "2026-09-22T00:00:00.048000+00:00",
+      "failed_decision": null,
+      "failure": null,
+      "reviews": [],
+      "scope": "assessment_only_no_dispatch_or_activation",
+      "status": "awaiting_lead"
+     },
+     "store": "e43ad5f6c6225a81"
+    }
+   },
+   "lease": {
+    "_bucket": "decisions_pending",
+    "actor": "lead:improvement",
+    "attempt": 1,
+    "generation": 1,
+    "id": "32befb3817d8cfffe0d66e5e3583a120074544109ea2a596e99b665cc4dc7498",
+    "lease_until": "2026-09-22T00:20:00.049000+00:00",
+    "owner": "5eed0000-0000-4000-8000-00000000001d",
+    "phase": "threshold_review",
+    "status": "running"
+   },
+   "prepare": {
+    "store_after": "e43ad5f6c6225a81",
+    "store_before": "e43ad5f6c6225a81",
+    "value": {
+     "binding": "c3fe471007df0a23b40290acba102f3df91b323058141937569f0ef78f43006b",
+     "execution": {
+      "decision_id": "32befb3817d8cfffe0d66e5e3583a120074544109ea2a596e99b665cc4dc7498",
+      "generation": 1
+     },
+     "prior_reviews": [],
+     "record": {
+      "activation_blockers": [
+       "native_task_success_and_release_review_required"
+      ],
+      "activation_ready": false,
+      "evidence_ref": "sha256:47d567320085c7610c523f4488d7e1344def106dede4d24363f788f24c70187f",
+      "id": "3ac9ee975d10e3094e9f1589d7c4476cbaa48dad4140d6cb1674554984d8a47c",
+      "project_key": "project",
+      "proposal": {
+       "corpus_hash": "corpus-1",
+       "current": 3,
+       "id": "proposal-1",
+       "name": "skill_match.FULL_BODY_MIN_SCORE",
+       "policy_revision": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+       "suggested": 4
+      },
+      "run_id": "dc9a22136a4d39a60c60a3bfa6d902a8838876a303d03d42af8f77be333a046e",
+      "status": "calculated"
+     },
+     "request_id": "43c9265dd33fa99b94c62fd71bd965f5b014e7f327dae323cee10f0fcfe479cf",
+     "scope": "assessment_only_no_dispatch_or_activation"
+    },
+    "wrote": false
+   },
+   "state": {
+    "conductor": null,
+    "decisions": [
+     [
+      "lead:improvement",
+      "running"
+     ]
+    ],
+    "lead": {
+     "actor": "lead:improvement",
+     "attempt": 1,
+     "completed_at": null,
+     "error": null,
+     "execution_deadline": "2026-09-22T00:45:00.049000+00:00",
+     "generation": 1,
+     "lease_owner": "5eed0000-0000-4000-8000-00000000001d",
+     "lease_until": "2026-09-22T00:20:00.049000+00:00",
+     "owner": "5eed0000-0000-4000-8000-00000000001d",
+     "phase": "threshold_review",
+     "result": null,
+     "retry_budget": {
+      "bound_at": "2026-09-22T00:00:00.049000+00:00",
+      "max_attempts": 3,
+      "origin": "first_claim",
+      "version": 1
+     },
+     "status": "running"
+    },
+    "no_effects": true,
+    "request": {
+     "activation_ready": false,
+     "completed_at": null,
+     "created_at": "2026-09-22T00:00:00.048000+00:00",
+     "failed_decision": null,
+     "failure": null,
+     "reviews": [],
+     "scope": "assessment_only_no_dispatch_or_activation",
+     "status": "awaiting_lead"
+    },
+    "store": "e43ad5f6c6225a81"
+   }
+  },
+  "m7_test": "test_execution_blockage_and_interruption_are_taken_from_receipt",
+  "spoof_blockage": {
+   "claim_wrote": true,
+   "complete": {
+    "message": "Threshold inspection status differs from execution",
+    "refused": "ContractError",
+    "store_after": "db93a87ff46714a1",
+    "store_before": "db93a87ff46714a1",
+    "wrote": false
+   },
+   "conductor_claim": {
+    "claim_wrote": false,
+    "lease": null,
+    "state": {
+     "conductor": null,
+     "decisions": [
+      [
+       "lead:improvement",
+       "running"
+      ]
+     ],
+     "lead": {
+      "actor": "lead:improvement",
+      "attempt": 1,
+      "completed_at": null,
+      "error": null,
+      "execution_deadline": "2026-09-22T00:45:00.054000+00:00",
+      "generation": 1,
+      "lease_owner": "5eed0000-0000-4000-8000-000000000020",
+      "lease_until": "2026-09-22T00:20:00.054000+00:00",
+      "owner": "5eed0000-0000-4000-8000-000000000020",
+      "phase": "threshold_review",
+      "result": null,
+      "retry_budget": {
+       "bound_at": "2026-09-22T00:00:00.054000+00:00",
+       "max_attempts": 3,
+       "origin": "first_claim",
+       "version": 1
+      },
+      "status": "running"
+     },
+     "no_effects": true,
+     "request": {
+      "activation_ready": false,
+      "completed_at": null,
+      "created_at": "2026-09-22T00:00:00.053000+00:00",
+      "failed_decision": null,
+      "failure": null,
+      "reviews": [],
+      "scope": "assessment_only_no_dispatch_or_activation",
+      "status": "awaiting_lead"
+     },
+     "store": "db93a87ff46714a1"
+    }
+   },
+   "lease": {
+    "_bucket": "decisions_pending",
+    "actor": "lead:improvement",
+    "attempt": 1,
+    "generation": 1,
+    "id": "32befb3817d8cfffe0d66e5e3583a120074544109ea2a596e99b665cc4dc7498",
+    "lease_until": "2026-09-22T00:20:00.054000+00:00",
+    "owner": "5eed0000-0000-4000-8000-000000000020",
+    "phase": "threshold_review",
+    "status": "running"
+   },
+   "prepare": {
+    "store_after": "db93a87ff46714a1",
+    "store_before": "db93a87ff46714a1",
+    "value": {
+     "binding": "c3fe471007df0a23b40290acba102f3df91b323058141937569f0ef78f43006b",
+     "execution": {
+      "decision_id": "32befb3817d8cfffe0d66e5e3583a120074544109ea2a596e99b665cc4dc7498",
+      "generation": 1
+     },
+     "prior_reviews": [],
+     "record": {
+      "activation_blockers": [
+       "native_task_success_and_release_review_required"
+      ],
+      "activation_ready": false,
+      "evidence_ref": "sha256:47d567320085c7610c523f4488d7e1344def106dede4d24363f788f24c70187f",
+      "id": "3ac9ee975d10e3094e9f1589d7c4476cbaa48dad4140d6cb1674554984d8a47c",
+      "project_key": "project",
+      "proposal": {
+       "corpus_hash": "corpus-1",
+       "current": 3,
+       "id": "proposal-1",
+       "name": "skill_match.FULL_BODY_MIN_SCORE",
+       "policy_revision": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+       "suggested": 4
+      },
+      "run_id": "dc9a22136a4d39a60c60a3bfa6d902a8838876a303d03d42af8f77be333a046e",
+      "status": "calculated"
+     },
+     "request_id": "43c9265dd33fa99b94c62fd71bd965f5b014e7f327dae323cee10f0fcfe479cf",
+     "scope": "assessment_only_no_dispatch_or_activation"
+    },
+    "wrote": false
+   },
+   "state": {
+    "conductor": null,
+    "decisions": [
+     [
+      "lead:improvement",
+      "running"
+     ]
+    ],
+    "lead": {
+     "actor": "lead:improvement",
+     "attempt": 1,
+     "completed_at": null,
+     "error": null,
+     "execution_deadline": "2026-09-22T00:45:00.054000+00:00",
+     "generation": 1,
+     "lease_owner": "5eed0000-0000-4000-8000-000000000020",
+     "lease_until": "2026-09-22T00:20:00.054000+00:00",
+     "owner": "5eed0000-0000-4000-8000-000000000020",
+     "phase": "threshold_review",
+     "result": null,
+     "retry_budget": {
+      "bound_at": "2026-09-22T00:00:00.054000+00:00",
+      "max_attempts": 3,
+      "origin": "first_claim",
+      "version": 1
+     },
+     "status": "running"
+    },
+    "no_effects": true,
+    "request": {
+     "activation_ready": false,
+     "completed_at": null,
+     "created_at": "2026-09-22T00:00:00.053000+00:00",
+     "failed_decision": null,
+     "failure": null,
+     "reviews": [],
+     "scope": "assessment_only_no_dispatch_or_activation",
+     "status": "awaiting_lead"
+    },
+    "store": "db93a87ff46714a1"
+   }
+  }
+ },
+ "changed_basis_or_lease": {
+  "lease": {
+   "claim_wrote": true,
+   "complete": {
+    "message": "Stale or expired task execution",
+    "refused": "ContractError",
+    "store_after": "64c244664a639fc5",
+    "store_before": "64c244664a639fc5",
+    "wrote": false
+   },
+   "conductor_rows": [],
+   "lease": {
+    "_bucket": "decisions_pending",
+    "actor": "lead:improvement",
+    "attempt": 1,
+    "generation": 1,
+    "id": "32befb3817d8cfffe0d66e5e3583a120074544109ea2a596e99b665cc4dc7498",
+    "lease_until": "2026-09-22T00:20:00.027000+00:00",
+    "owner": "5eed0000-0000-4000-8000-000000000011",
+    "phase": "threshold_review",
+    "status": "running"
+   },
+   "prepare": {
+    "store_after": "a5565fd7cf01b84c",
+    "store_before": "a5565fd7cf01b84c",
+    "value": {
+     "binding": "c3fe471007df0a23b40290acba102f3df91b323058141937569f0ef78f43006b",
+     "execution": {
+      "decision_id": "32befb3817d8cfffe0d66e5e3583a120074544109ea2a596e99b665cc4dc7498",
+      "generation": 1
+     },
+     "prior_reviews": [],
+     "record": {
+      "activation_blockers": [
+       "native_task_success_and_release_review_required"
+      ],
+      "activation_ready": false,
+      "evidence_ref": "sha256:47d567320085c7610c523f4488d7e1344def106dede4d24363f788f24c70187f",
+      "id": "3ac9ee975d10e3094e9f1589d7c4476cbaa48dad4140d6cb1674554984d8a47c",
+      "project_key": "project",
+      "proposal": {
+       "corpus_hash": "corpus-1",
+       "current": 3,
+       "id": "proposal-1",
+       "name": "skill_match.FULL_BODY_MIN_SCORE",
+       "policy_revision": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+       "suggested": 4
+      },
+      "run_id": "dc9a22136a4d39a60c60a3bfa6d902a8838876a303d03d42af8f77be333a046e",
+      "status": "calculated"
+     },
+     "request_id": "43c9265dd33fa99b94c62fd71bd965f5b014e7f327dae323cee10f0fcfe479cf",
+     "scope": "assessment_only_no_dispatch_or_activation"
+    },
+    "wrote": false
+   },
+   "state": {
+    "conductor": null,
+    "decisions": [
+     [
+      "lead:improvement",
+      "running"
+     ]
+    ],
+    "lead": {
+     "actor": "lead:improvement",
+     "attempt": 1,
+     "completed_at": null,
+     "error": null,
+     "execution_deadline": "2026-09-22T00:45:00.027000+00:00",
+     "generation": 2,
+     "lease_owner": "other",
+     "lease_until": "2026-09-22T00:20:00.027000+00:00",
+     "owner": "other",
+     "phase": "threshold_review",
+     "result": null,
+     "retry_budget": {
+      "bound_at": "2026-09-22T00:00:00.027000+00:00",
+      "max_attempts": 3,
+      "origin": "first_claim",
+      "version": 1
+     },
+     "status": "running"
+    },
+    "no_effects": true,
+    "request": {
+     "activation_ready": false,
+     "completed_at": null,
+     "created_at": "2026-09-22T00:00:00.026000+00:00",
+     "failed_decision": null,
+     "failure": null,
+     "reviews": [],
+     "scope": "assessment_only_no_dispatch_or_activation",
+     "status": "awaiting_lead"
+    },
+    "store": "64c244664a639fc5"
+   }
+  },
+  "m7_test": "test_changed_basis_or_lease_during_execution_cannot_commit",
+  "policy": {
+   "claim_wrote": true,
+   "complete": {
+    "message": "Threshold execution receipt mismatch",
+    "refused": "ContractError",
+    "store_after": "c9d2ecce672a9f82",
+    "store_before": "c9d2ecce672a9f82",
+    "wrote": false
+   },
+   "conductor_rows": [],
+   "lease": {
+    "_bucket": "decisions_pending",
+    "actor": "lead:improvement",
+    "attempt": 1,
+    "generation": 1,
+    "id": "32befb3817d8cfffe0d66e5e3583a120074544109ea2a596e99b665cc4dc7498",
+    "lease_until": "2026-09-22T00:20:00.035000+00:00",
+    "owner": "5eed0000-0000-4000-8000-000000000015",
+    "phase": "threshold_review",
+    "status": "running"
+   },
+   "prepare": {
+    "store_after": "c9d2ecce672a9f82",
+    "store_before": "c9d2ecce672a9f82",
+    "value": {
+     "binding": "c3fe471007df0a23b40290acba102f3df91b323058141937569f0ef78f43006b",
+     "execution": {
+      "decision_id": "32befb3817d8cfffe0d66e5e3583a120074544109ea2a596e99b665cc4dc7498",
+      "generation": 1
+     },
+     "prior_reviews": [],
+     "record": {
+      "activation_blockers": [
+       "native_task_success_and_release_review_required"
+      ],
+      "activation_ready": false,
+      "evidence_ref": "sha256:47d567320085c7610c523f4488d7e1344def106dede4d24363f788f24c70187f",
+      "id": "3ac9ee975d10e3094e9f1589d7c4476cbaa48dad4140d6cb1674554984d8a47c",
+      "project_key": "project",
+      "proposal": {
+       "corpus_hash": "corpus-1",
+       "current": 3,
+       "id": "proposal-1",
+       "name": "skill_match.FULL_BODY_MIN_SCORE",
+       "policy_revision": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+       "suggested": 4
+      },
+      "run_id": "dc9a22136a4d39a60c60a3bfa6d902a8838876a303d03d42af8f77be333a046e",
+      "status": "calculated"
+     },
+     "request_id": "43c9265dd33fa99b94c62fd71bd965f5b014e7f327dae323cee10f0fcfe479cf",
+     "scope": "assessment_only_no_dispatch_or_activation"
+    },
+    "wrote": false
+   },
+   "state": {
+    "conductor": null,
+    "decisions": [
+     [
+      "lead:improvement",
+      "running"
+     ]
+    ],
+    "lead": {
+     "actor": "lead:improvement",
+     "attempt": 1,
+     "completed_at": null,
+     "error": null,
+     "execution_deadline": "2026-09-22T00:45:00.035000+00:00",
+     "generation": 1,
+     "lease_owner": "5eed0000-0000-4000-8000-000000000015",
+     "lease_until": "2026-09-22T00:20:00.035000+00:00",
+     "owner": "5eed0000-0000-4000-8000-000000000015",
+     "phase": "threshold_review",
+     "result": null,
+     "retry_budget": {
+      "bound_at": "2026-09-22T00:00:00.035000+00:00",
+      "max_attempts": 3,
+      "origin": "first_claim",
+      "version": 1
+     },
+     "status": "running"
+    },
+    "no_effects": true,
+    "request": {
+     "activation_ready": false,
+     "completed_at": null,
+     "created_at": "2026-09-22T00:00:00.034000+00:00",
+     "failed_decision": null,
+     "failure": null,
+     "reviews": [],
+     "scope": "assessment_only_no_dispatch_or_activation",
+     "status": "awaiting_lead"
+    },
+    "store": "c9d2ecce672a9f82"
+   }
+  },
+  "record": {
+   "claim_wrote": true,
+   "complete": {
+    "message": "Threshold row is not bound to its collection run",
+    "refused": "ContractError",
+    "store_after": "587f393fb804a2a6",
+    "store_before": "587f393fb804a2a6",
+    "wrote": false
+   },
+   "conductor_rows": [],
+   "lease": {
+    "_bucket": "decisions_pending",
+    "actor": "lead:improvement",
+    "attempt": 1,
+    "generation": 1,
+    "id": "32befb3817d8cfffe0d66e5e3583a120074544109ea2a596e99b665cc4dc7498",
+    "lease_until": "2026-09-22T00:20:00.031000+00:00",
+    "owner": "5eed0000-0000-4000-8000-000000000013",
+    "phase": "threshold_review",
+    "status": "running"
+   },
+   "prepare": {
+    "store_after": "4407dcc57f162015",
+    "store_before": "4407dcc57f162015",
+    "value": {
+     "binding": "c3fe471007df0a23b40290acba102f3df91b323058141937569f0ef78f43006b",
+     "execution": {
+      "decision_id": "32befb3817d8cfffe0d66e5e3583a120074544109ea2a596e99b665cc4dc7498",
+      "generation": 1
+     },
+     "prior_reviews": [],
+     "record": {
+      "activation_blockers": [
+       "native_task_success_and_release_review_required"
+      ],
+      "activation_ready": false,
+      "evidence_ref": "sha256:47d567320085c7610c523f4488d7e1344def106dede4d24363f788f24c70187f",
+      "id": "3ac9ee975d10e3094e9f1589d7c4476cbaa48dad4140d6cb1674554984d8a47c",
+      "project_key": "project",
+      "proposal": {
+       "corpus_hash": "corpus-1",
+       "current": 3,
+       "id": "proposal-1",
+       "name": "skill_match.FULL_BODY_MIN_SCORE",
+       "policy_revision": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+       "suggested": 4
+      },
+      "run_id": "dc9a22136a4d39a60c60a3bfa6d902a8838876a303d03d42af8f77be333a046e",
+      "status": "calculated"
+     },
+     "request_id": "43c9265dd33fa99b94c62fd71bd965f5b014e7f327dae323cee10f0fcfe479cf",
+     "scope": "assessment_only_no_dispatch_or_activation"
+    },
+    "wrote": false
+   },
+   "state": {
+    "conductor": null,
+    "decisions": [
+     [
+      "lead:improvement",
+      "running"
+     ]
+    ],
+    "lead": {
+     "actor": "lead:improvement",
+     "attempt": 1,
+     "completed_at": null,
+     "error": null,
+     "execution_deadline": "2026-09-22T00:45:00.031000+00:00",
+     "generation": 1,
+     "lease_owner": "5eed0000-0000-4000-8000-000000000013",
+     "lease_until": "2026-09-22T00:20:00.031000+00:00",
+     "owner": "5eed0000-0000-4000-8000-000000000013",
+     "phase": "threshold_review",
+     "result": null,
+     "retry_budget": {
+      "bound_at": "2026-09-22T00:00:00.031000+00:00",
+      "max_attempts": 3,
+      "origin": "first_claim",
+      "version": 1
+     },
+     "status": "running"
+    },
+    "no_effects": true,
+    "request": {
+     "activation_ready": false,
+     "completed_at": null,
+     "created_at": "2026-09-22T00:00:00.030000+00:00",
+     "failed_decision": null,
+     "failure": null,
+     "reviews": [],
+     "scope": "assessment_only_no_dispatch_or_activation",
+     "status": "awaiting_lead"
+    },
+    "store": "587f393fb804a2a6"
+   }
+  }
+ },
+ "complete_refusals": {
+  "answer_not_dict": {
+   "claim_wrote": true,
+   "complete": {
+    "message": "Threshold execution verdict missing",
+    "refused": "ContractError",
+    "store_after": "ee787bd724616db3",
+    "store_before": "ee787bd724616db3",
+    "wrote": false
+   },
+   "lease": {
+    "_bucket": "decisions_pending",
+    "actor": "lead:improvement",
+    "attempt": 1,
+    "generation": 1,
+    "id": "32befb3817d8cfffe0d66e5e3583a120074544109ea2a596e99b665cc4dc7498",
+    "lease_until": "2026-09-22T00:20:00.177000+00:00",
+    "owner": "5eed0000-0000-4000-8000-00000000005e",
+    "phase": "threshold_review",
+    "status": "running"
+   },
+   "prepare": {
+    "store_after": "ee787bd724616db3",
+    "store_before": "ee787bd724616db3",
+    "value": {
+     "binding": "c3fe471007df0a23b40290acba102f3df91b323058141937569f0ef78f43006b",
+     "execution": {
+      "decision_id": "32befb3817d8cfffe0d66e5e3583a120074544109ea2a596e99b665cc4dc7498",
+      "generation": 1
+     },
+     "prior_reviews": [],
+     "record": {
+      "activation_blockers": [
+       "native_task_success_and_release_review_required"
+      ],
+      "activation_ready": false,
+      "evidence_ref": "sha256:47d567320085c7610c523f4488d7e1344def106dede4d24363f788f24c70187f",
+      "id": "3ac9ee975d10e3094e9f1589d7c4476cbaa48dad4140d6cb1674554984d8a47c",
+      "project_key": "project",
+      "proposal": {
+       "corpus_hash": "corpus-1",
+       "current": 3,
+       "id": "proposal-1",
+       "name": "skill_match.FULL_BODY_MIN_SCORE",
+       "policy_revision": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+       "suggested": 4
+      },
+      "run_id": "dc9a22136a4d39a60c60a3bfa6d902a8838876a303d03d42af8f77be333a046e",
+      "status": "calculated"
+     },
+     "request_id": "43c9265dd33fa99b94c62fd71bd965f5b014e7f327dae323cee10f0fcfe479cf",
+     "scope": "assessment_only_no_dispatch_or_activation"
+    },
+    "wrote": false
+   },
+   "state": {
+    "conductor": null,
+    "decisions": [
+     [
+      "lead:improvement",
+      "running"
+     ]
+    ],
+    "lead": {
+     "actor": "lead:improvement",
+     "attempt": 1,
+     "completed_at": null,
+     "error": null,
+     "execution_deadline": "2026-09-22T00:45:00.177000+00:00",
+     "generation": 1,
+     "lease_owner": "5eed0000-0000-4000-8000-00000000005e",
+     "lease_until": "2026-09-22T00:20:00.177000+00:00",
+     "owner": "5eed0000-0000-4000-8000-00000000005e",
+     "phase": "threshold_review",
+     "result": null,
+     "retry_budget": {
+      "bound_at": "2026-09-22T00:00:00.177000+00:00",
+      "max_attempts": 3,
+      "origin": "first_claim",
+      "version": 1
+     },
+     "status": "running"
+    },
+    "no_effects": true,
+    "request": {
+     "activation_ready": false,
+     "completed_at": null,
+     "created_at": "2026-09-22T00:00:00.176000+00:00",
+     "failed_decision": null,
+     "failure": null,
+     "reviews": [],
+     "scope": "assessment_only_no_dispatch_or_activation",
+     "status": "awaiting_lead"
+    },
+    "store": "ee787bd724616db3"
+   }
+  },
+  "answer_without_blocked": {
+   "claim_wrote": true,
+   "complete": {
+    "message": "Threshold execution verdict missing",
+    "refused": "ContractError",
+    "store_after": "458b48d3becddce4",
+    "store_before": "458b48d3becddce4",
+    "wrote": false
+   },
+   "lease": {
+    "_bucket": "decisions_pending",
+    "actor": "lead:improvement",
+    "attempt": 1,
+    "generation": 1,
+    "id": "32befb3817d8cfffe0d66e5e3583a120074544109ea2a596e99b665cc4dc7498",
+    "lease_until": "2026-09-22T00:20:00.173000+00:00",
+    "owner": "5eed0000-0000-4000-8000-00000000005c",
+    "phase": "threshold_review",
+    "status": "running"
+   },
+   "prepare": {
+    "store_after": "458b48d3becddce4",
+    "store_before": "458b48d3becddce4",
+    "value": {
+     "binding": "c3fe471007df0a23b40290acba102f3df91b323058141937569f0ef78f43006b",
+     "execution": {
+      "decision_id": "32befb3817d8cfffe0d66e5e3583a120074544109ea2a596e99b665cc4dc7498",
+      "generation": 1
+     },
+     "prior_reviews": [],
+     "record": {
+      "activation_blockers": [
+       "native_task_success_and_release_review_required"
+      ],
+      "activation_ready": false,
+      "evidence_ref": "sha256:47d567320085c7610c523f4488d7e1344def106dede4d24363f788f24c70187f",
+      "id": "3ac9ee975d10e3094e9f1589d7c4476cbaa48dad4140d6cb1674554984d8a47c",
+      "project_key": "project",
+      "proposal": {
+       "corpus_hash": "corpus-1",
+       "current": 3,
+       "id": "proposal-1",
+       "name": "skill_match.FULL_BODY_MIN_SCORE",
+       "policy_revision": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+       "suggested": 4
+      },
+      "run_id": "dc9a22136a4d39a60c60a3bfa6d902a8838876a303d03d42af8f77be333a046e",
+      "status": "calculated"
+     },
+     "request_id": "43c9265dd33fa99b94c62fd71bd965f5b014e7f327dae323cee10f0fcfe479cf",
+     "scope": "assessment_only_no_dispatch_or_activation"
+    },
+    "wrote": false
+   },
+   "state": {
+    "conductor": null,
+    "decisions": [
+     [
+      "lead:improvement",
+      "running"
+     ]
+    ],
+    "lead": {
+     "actor": "lead:improvement",
+     "attempt": 1,
+     "completed_at": null,
+     "error": null,
+     "execution_deadline": "2026-09-22T00:45:00.173000+00:00",
+     "generation": 1,
+     "lease_owner": "5eed0000-0000-4000-8000-00000000005c",
+     "lease_until": "2026-09-22T00:20:00.173000+00:00",
+     "owner": "5eed0000-0000-4000-8000-00000000005c",
+     "phase": "threshold_review",
+     "result": null,
+     "retry_budget": {
+      "bound_at": "2026-09-22T00:00:00.173000+00:00",
+      "max_attempts": 3,
+      "origin": "first_claim",
+      "version": 1
+     },
+     "status": "running"
+    },
+    "no_effects": true,
+    "request": {
+     "activation_ready": false,
+     "completed_at": null,
+     "created_at": "2026-09-22T00:00:00.172000+00:00",
+     "failed_decision": null,
+     "failure": null,
+     "reviews": [],
+     "scope": "assessment_only_no_dispatch_or_activation",
+     "status": "awaiting_lead"
+    },
+    "store": "458b48d3becddce4"
+   }
+  },
+  "assessment_differs": {
+   "claim_wrote": true,
+   "complete": {
+    "message": "Threshold assessment differs from execution",
+    "refused": "ContractError",
+    "store_after": "eaa3295c2a623880",
+    "store_before": "eaa3295c2a623880",
+    "wrote": false
+   },
+   "lease": {
+    "_bucket": "decisions_pending",
+    "actor": "lead:improvement",
+    "attempt": 1,
+    "generation": 1,
+    "id": "32befb3817d8cfffe0d66e5e3583a120074544109ea2a596e99b665cc4dc7498",
+    "lease_until": "2026-09-22T00:20:00.181000+00:00",
+    "owner": "5eed0000-0000-4000-8000-000000000060",
+    "phase": "threshold_review",
+    "status": "running"
+   },
+   "prepare": {
+    "store_after": "eaa3295c2a623880",
+    "store_before": "eaa3295c2a623880",
+    "value": {
+     "binding": "c3fe471007df0a23b40290acba102f3df91b323058141937569f0ef78f43006b",
+     "execution": {
+      "decision_id": "32befb3817d8cfffe0d66e5e3583a120074544109ea2a596e99b665cc4dc7498",
+      "generation": 1
+     },
+     "prior_reviews": [],
+     "record": {
+      "activation_blockers": [
+       "native_task_success_and_release_review_required"
+      ],
+      "activation_ready": false,
+      "evidence_ref": "sha256:47d567320085c7610c523f4488d7e1344def106dede4d24363f788f24c70187f",
+      "id": "3ac9ee975d10e3094e9f1589d7c4476cbaa48dad4140d6cb1674554984d8a47c",
+      "project_key": "project",
+      "proposal": {
+       "corpus_hash": "corpus-1",
+       "current": 3,
+       "id": "proposal-1",
+       "name": "skill_match.FULL_BODY_MIN_SCORE",
+       "policy_revision": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+       "suggested": 4
+      },
+      "run_id": "dc9a22136a4d39a60c60a3bfa6d902a8838876a303d03d42af8f77be333a046e",
+      "status": "calculated"
+     },
+     "request_id": "43c9265dd33fa99b94c62fd71bd965f5b014e7f327dae323cee10f0fcfe479cf",
+     "scope": "assessment_only_no_dispatch_or_activation"
+    },
+    "wrote": false
+   },
+   "state": {
+    "conductor": null,
+    "decisions": [
+     [
+      "lead:improvement",
+      "running"
+     ]
+    ],
+    "lead": {
+     "actor": "lead:improvement",
+     "attempt": 1,
+     "completed_at": null,
+     "error": null,
+     "execution_deadline": "2026-09-22T00:45:00.181000+00:00",
+     "generation": 1,
+     "lease_owner": "5eed0000-0000-4000-8000-000000000060",
+     "lease_until": "2026-09-22T00:20:00.181000+00:00",
+     "owner": "5eed0000-0000-4000-8000-000000000060",
+     "phase": "threshold_review",
+     "result": null,
+     "retry_budget": {
+      "bound_at": "2026-09-22T00:00:00.181000+00:00",
+      "max_attempts": 3,
+      "origin": "first_claim",
+      "version": 1
+     },
+     "status": "running"
+    },
+    "no_effects": true,
+    "request": {
+     "activation_ready": false,
+     "completed_at": null,
+     "created_at": "2026-09-22T00:00:00.180000+00:00",
+     "failed_decision": null,
+     "failure": null,
+     "reviews": [],
+     "scope": "assessment_only_no_dispatch_or_activation",
+     "status": "awaiting_lead"
+    },
+    "store": "eaa3295c2a623880"
+   }
+  },
+  "basis_revision_differs": {
+   "claim_wrote": true,
+   "complete": {
+    "message": "Threshold execution receipt mismatch",
+    "refused": "ContractError",
+    "store_after": "8bc02a355602b0e0",
+    "store_before": "8bc02a355602b0e0",
+    "wrote": false
+   },
+   "lease": {
+    "_bucket": "decisions_pending",
+    "actor": "lead:improvement",
+    "attempt": 1,
+    "generation": 1,
+    "id": "32befb3817d8cfffe0d66e5e3583a120074544109ea2a596e99b665cc4dc7498",
+    "lease_until": "2026-09-22T00:20:00.157000+00:00",
+    "owner": "5eed0000-0000-4000-8000-000000000054",
+    "phase": "threshold_review",
+    "status": "running"
+   },
+   "prepare": {
+    "store_after": "8bc02a355602b0e0",
+    "store_before": "8bc02a355602b0e0",
+    "value": {
+     "binding": "c3fe471007df0a23b40290acba102f3df91b323058141937569f0ef78f43006b",
+     "execution": {
+      "decision_id": "32befb3817d8cfffe0d66e5e3583a120074544109ea2a596e99b665cc4dc7498",
+      "generation": 1
+     },
+     "prior_reviews": [],
+     "record": {
+      "activation_blockers": [
+       "native_task_success_and_release_review_required"
+      ],
+      "activation_ready": false,
+      "evidence_ref": "sha256:47d567320085c7610c523f4488d7e1344def106dede4d24363f788f24c70187f",
+      "id": "3ac9ee975d10e3094e9f1589d7c4476cbaa48dad4140d6cb1674554984d8a47c",
+      "project_key": "project",
+      "proposal": {
+       "corpus_hash": "corpus-1",
+       "current": 3,
+       "id": "proposal-1",
+       "name": "skill_match.FULL_BODY_MIN_SCORE",
+       "policy_revision": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+       "suggested": 4
+      },
+      "run_id": "dc9a22136a4d39a60c60a3bfa6d902a8838876a303d03d42af8f77be333a046e",
+      "status": "calculated"
+     },
+     "request_id": "43c9265dd33fa99b94c62fd71bd965f5b014e7f327dae323cee10f0fcfe479cf",
+     "scope": "assessment_only_no_dispatch_or_activation"
+    },
+    "wrote": false
+   },
+   "state": {
+    "conductor": null,
+    "decisions": [
+     [
+      "lead:improvement",
+      "running"
+     ]
+    ],
+    "lead": {
+     "actor": "lead:improvement",
+     "attempt": 1,
+     "completed_at": null,
+     "error": null,
+     "execution_deadline": "2026-09-22T00:45:00.157000+00:00",
+     "generation": 1,
+     "lease_owner": "5eed0000-0000-4000-8000-000000000054",
+     "lease_until": "2026-09-22T00:20:00.157000+00:00",
+     "owner": "5eed0000-0000-4000-8000-000000000054",
+     "phase": "threshold_review",
+     "result": null,
+     "retry_budget": {
+      "bound_at": "2026-09-22T00:00:00.157000+00:00",
+      "max_attempts": 3,
+      "origin": "first_claim",
+      "version": 1
+     },
+     "status": "running"
+    },
+    "no_effects": true,
+    "request": {
+     "activation_ready": false,
+     "completed_at": null,
+     "created_at": "2026-09-22T00:00:00.156000+00:00",
+     "failed_decision": null,
+     "failure": null,
+     "reviews": [],
+     "scope": "assessment_only_no_dispatch_or_activation",
+     "status": "awaiting_lead"
+    },
+    "store": "8bc02a355602b0e0"
+   }
+  },
+  "blocked_accepts": {
+   "claim_wrote": true,
+   "complete": {
+    "message": "Blocked threshold review cannot accept",
+    "refused": "ContractError",
+    "store_after": "272aa5f5b9b0d1a1",
+    "store_before": "272aa5f5b9b0d1a1",
+    "wrote": false
+   },
+   "lease": {
+    "_bucket": "decisions_pending",
+    "actor": "lead:improvement",
+    "attempt": 1,
+    "generation": 1,
+    "id": "32befb3817d8cfffe0d66e5e3583a120074544109ea2a596e99b665cc4dc7498",
+    "lease_until": "2026-09-22T00:20:00.185000+00:00",
+    "owner": "5eed0000-0000-4000-8000-000000000062",
+    "phase": "threshold_review",
+    "status": "running"
+   },
+   "prepare": {
+    "store_after": "272aa5f5b9b0d1a1",
+    "store_before": "272aa5f5b9b0d1a1",
+    "value": {
+     "binding": "c3fe471007df0a23b40290acba102f3df91b323058141937569f0ef78f43006b",
+     "execution": {
+      "decision_id": "32befb3817d8cfffe0d66e5e3583a120074544109ea2a596e99b665cc4dc7498",
+      "generation": 1
+     },
+     "prior_reviews": [],
+     "record": {
+      "activation_blockers": [
+       "native_task_success_and_release_review_required"
+      ],
+      "activation_ready": false,
+      "evidence_ref": "sha256:47d567320085c7610c523f4488d7e1344def106dede4d24363f788f24c70187f",
+      "id": "3ac9ee975d10e3094e9f1589d7c4476cbaa48dad4140d6cb1674554984d8a47c",
+      "project_key": "project",
+      "proposal": {
+       "corpus_hash": "corpus-1",
+       "current": 3,
+       "id": "proposal-1",
+       "name": "skill_match.FULL_BODY_MIN_SCORE",
+       "policy_revision": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+       "suggested": 4
+      },
+      "run_id": "dc9a22136a4d39a60c60a3bfa6d902a8838876a303d03d42af8f77be333a046e",
+      "status": "calculated"
+     },
+     "request_id": "43c9265dd33fa99b94c62fd71bd965f5b014e7f327dae323cee10f0fcfe479cf",
+     "scope": "assessment_only_no_dispatch_or_activation"
+    },
+    "wrote": false
+   },
+   "state": {
+    "conductor": null,
+    "decisions": [
+     [
+      "lead:improvement",
+      "running"
+     ]
+    ],
+    "lead": {
+     "actor": "lead:improvement",
+     "attempt": 1,
+     "completed_at": null,
+     "error": null,
+     "execution_deadline": "2026-09-22T00:45:00.185000+00:00",
+     "generation": 1,
+     "lease_owner": "5eed0000-0000-4000-8000-000000000062",
+     "lease_until": "2026-09-22T00:20:00.185000+00:00",
+     "owner": "5eed0000-0000-4000-8000-000000000062",
+     "phase": "threshold_review",
+     "result": null,
+     "retry_budget": {
+      "bound_at": "2026-09-22T00:00:00.185000+00:00",
+      "max_attempts": 3,
+      "origin": "first_claim",
+      "version": 1
+     },
+     "status": "running"
+    },
+    "no_effects": true,
+    "request": {
+     "activation_ready": false,
+     "completed_at": null,
+     "created_at": "2026-09-22T00:00:00.184000+00:00",
+     "failed_decision": null,
+     "failure": null,
+     "reviews": [],
+     "scope": "assessment_only_no_dispatch_or_activation",
+     "status": "awaiting_lead"
+    },
+    "store": "272aa5f5b9b0d1a1"
+   }
+  },
+  "blocked_by_result": {
+   "claim_wrote": true,
+   "complete": {
+    "message": "Threshold assessment differs from execution",
+    "refused": "ContractError",
+    "store_after": "e7ec05d3d328af57",
+    "store_before": "e7ec05d3d328af57",
+    "wrote": false
+   },
+   "lease": {
+    "_bucket": "decisions_pending",
+    "actor": "lead:improvement",
+    "attempt": 1,
+    "generation": 1,
+    "id": "32befb3817d8cfffe0d66e5e3583a120074544109ea2a596e99b665cc4dc7498",
+    "lease_until": "2026-09-22T00:20:00.189000+00:00",
+    "owner": "5eed0000-0000-4000-8000-000000000064",
+    "phase": "threshold_review",
+    "status": "running"
+   },
+   "prepare": {
+    "store_after": "e7ec05d3d328af57",
+    "store_before": "e7ec05d3d328af57",
+    "value": {
+     "binding": "c3fe471007df0a23b40290acba102f3df91b323058141937569f0ef78f43006b",
+     "execution": {
+      "decision_id": "32befb3817d8cfffe0d66e5e3583a120074544109ea2a596e99b665cc4dc7498",
+      "generation": 1
+     },
+     "prior_reviews": [],
+     "record": {
+      "activation_blockers": [
+       "native_task_success_and_release_review_required"
+      ],
+      "activation_ready": false,
+      "evidence_ref": "sha256:47d567320085c7610c523f4488d7e1344def106dede4d24363f788f24c70187f",
+      "id": "3ac9ee975d10e3094e9f1589d7c4476cbaa48dad4140d6cb1674554984d8a47c",
+      "project_key": "project",
+      "proposal": {
+       "corpus_hash": "corpus-1",
+       "current": 3,
+       "id": "proposal-1",
+       "name": "skill_match.FULL_BODY_MIN_SCORE",
+       "policy_revision": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+       "suggested": 4
+      },
+      "run_id": "dc9a22136a4d39a60c60a3bfa6d902a8838876a303d03d42af8f77be333a046e",
+      "status": "calculated"
+     },
+     "request_id": "43c9265dd33fa99b94c62fd71bd965f5b014e7f327dae323cee10f0fcfe479cf",
+     "scope": "assessment_only_no_dispatch_or_activation"
+    },
+    "wrote": false
+   },
+   "state": {
+    "conductor": null,
+    "decisions": [
+     [
+      "lead:improvement",
+      "running"
+     ]
+    ],
+    "lead": {
+     "actor": "lead:improvement",
+     "attempt": 1,
+     "completed_at": null,
+     "error": null,
+     "execution_deadline": "2026-09-22T00:45:00.189000+00:00",
+     "generation": 1,
+     "lease_owner": "5eed0000-0000-4000-8000-000000000064",
+     "lease_until": "2026-09-22T00:20:00.189000+00:00",
+     "owner": "5eed0000-0000-4000-8000-000000000064",
+     "phase": "threshold_review",
+     "result": null,
+     "retry_budget": {
+      "bound_at": "2026-09-22T00:00:00.189000+00:00",
+      "max_attempts": 3,
+      "origin": "first_claim",
+      "version": 1
+     },
+     "status": "running"
+    },
+    "no_effects": true,
+    "request": {
+     "activation_ready": false,
+     "completed_at": null,
+     "created_at": "2026-09-22T00:00:00.188000+00:00",
+     "failed_decision": null,
+     "failure": null,
+     "reviews": [],
+     "scope": "assessment_only_no_dispatch_or_activation",
+     "status": "awaiting_lead"
+    },
+    "store": "e7ec05d3d328af57"
+   }
+  },
+  "blocked_execution_approves": {
+   "claim_wrote": true,
+   "complete": {
+    "message": "Blocked threshold execution cannot approve",
+    "refused": "ContractError",
+    "store_after": "b1873540a3d115be",
+    "store_before": "b1873540a3d115be",
+    "wrote": false
+   },
+   "lease": {
+    "_bucket": "decisions_pending",
+    "actor": "lead:improvement",
+    "attempt": 1,
+    "generation": 1,
+    "id": "32befb3817d8cfffe0d66e5e3583a120074544109ea2a596e99b665cc4dc7498",
+    "lease_until": "2026-09-22T00:20:00.169000+00:00",
+    "owner": "5eed0000-0000-4000-8000-00000000005a",
+    "phase": "threshold_review",
+    "status": "running"
+   },
+   "prepare": {
+    "store_after": "b1873540a3d115be",
+    "store_before": "b1873540a3d115be",
+    "value": {
+     "binding": "c3fe471007df0a23b40290acba102f3df91b323058141937569f0ef78f43006b",
+     "execution": {
+      "decision_id": "32befb3817d8cfffe0d66e5e3583a120074544109ea2a596e99b665cc4dc7498",
+      "generation": 1
+     },
+     "prior_reviews": [],
+     "record": {
+      "activation_blockers": [
+       "native_task_success_and_release_review_required"
+      ],
+      "activation_ready": false,
+      "evidence_ref": "sha256:47d567320085c7610c523f4488d7e1344def106dede4d24363f788f24c70187f",
+      "id": "3ac9ee975d10e3094e9f1589d7c4476cbaa48dad4140d6cb1674554984d8a47c",
+      "project_key": "project",
+      "proposal": {
+       "corpus_hash": "corpus-1",
+       "current": 3,
+       "id": "proposal-1",
+       "name": "skill_match.FULL_BODY_MIN_SCORE",
+       "policy_revision": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+       "suggested": 4
+      },
+      "run_id": "dc9a22136a4d39a60c60a3bfa6d902a8838876a303d03d42af8f77be333a046e",
+      "status": "calculated"
+     },
+     "request_id": "43c9265dd33fa99b94c62fd71bd965f5b014e7f327dae323cee10f0fcfe479cf",
+     "scope": "assessment_only_no_dispatch_or_activation"
+    },
+    "wrote": false
+   },
+   "state": {
+    "conductor": null,
+    "decisions": [
+     [
+      "lead:improvement",
+      "running"
+     ]
+    ],
+    "lead": {
+     "actor": "lead:improvement",
+     "attempt": 1,
+     "completed_at": null,
+     "error": null,
+     "execution_deadline": "2026-09-22T00:45:00.169000+00:00",
+     "generation": 1,
+     "lease_owner": "5eed0000-0000-4000-8000-00000000005a",
+     "lease_until": "2026-09-22T00:20:00.169000+00:00",
+     "owner": "5eed0000-0000-4000-8000-00000000005a",
+     "phase": "threshold_review",
+     "result": null,
+     "retry_budget": {
+      "bound_at": "2026-09-22T00:00:00.169000+00:00",
+      "max_attempts": 3,
+      "origin": "first_claim",
+      "version": 1
+     },
+     "status": "running"
+    },
+    "no_effects": true,
+    "request": {
+     "activation_ready": false,
+     "completed_at": null,
+     "created_at": "2026-09-22T00:00:00.168000+00:00",
+     "failed_decision": null,
+     "failure": null,
+     "reviews": [],
+     "scope": "assessment_only_no_dispatch_or_activation",
+     "status": "awaiting_lead"
+    },
+    "store": "b1873540a3d115be"
+   }
+  },
+  "bundle_basis_changed": {
+   "complete": {
+    "message": "Threshold review basis changed",
+    "refused": "ContractError",
+    "store_after": "75909b1a1090ad13",
+    "store_before": "75909b1a1090ad13",
+    "wrote": false
+   },
+   "state": {
+    "conductor": null,
+    "decisions": [
+     [
+      "lead:improvement",
+      "running"
+     ]
+    ],
+    "lead": {
+     "actor": "lead:improvement",
+     "attempt": 1,
+     "completed_at": null,
+     "error": null,
+     "execution_deadline": "2026-09-22T00:45:00.193000+00:00",
+     "generation": 1,
+     "lease_owner": "5eed0000-0000-4000-8000-000000000066",
+     "lease_until": "2026-09-22T00:20:00.193000+00:00",
+     "owner": "5eed0000-0000-4000-8000-000000000066",
+     "phase": "threshold_review",
+     "result": null,
+     "retry_budget": {
+      "bound_at": "2026-09-22T00:00:00.193000+00:00",
+      "max_attempts": 3,
+      "origin": "first_claim",
+      "version": 1
+     },
+     "status": "running"
+    },
+    "no_effects": true,
+    "request": {
+     "activation_ready": false,
+     "completed_at": null,
+     "created_at": "2026-09-22T00:00:00.192000+00:00",
+     "failed_decision": null,
+     "failure": null,
+     "reviews": [],
+     "scope": "assessment_only_no_dispatch_or_activation",
+     "status": "awaiting_lead"
+    },
+    "store": "75909b1a1090ad13"
+   }
+  },
+  "evidence_review_differs": {
+   "claim_wrote": true,
+   "complete": {
+    "message": "Threshold execution receipt mismatch",
+    "refused": "ContractError",
+    "store_after": "933a3a8eaa98c54d",
+    "store_before": "933a3a8eaa98c54d",
+    "wrote": false
+   },
+   "lease": {
+    "_bucket": "decisions_pending",
+    "actor": "lead:improvement",
+    "attempt": 1,
+    "generation": 1,
+    "id": "32befb3817d8cfffe0d66e5e3583a120074544109ea2a596e99b665cc4dc7498",
+    "lease_until": "2026-09-22T00:20:00.153000+00:00",
+    "owner": "5eed0000-0000-4000-8000-000000000052",
+    "phase": "threshold_review",
+    "status": "running"
+   },
+   "prepare": {
+    "store_after": "933a3a8eaa98c54d",
+    "store_before": "933a3a8eaa98c54d",
+    "value": {
+     "binding": "c3fe471007df0a23b40290acba102f3df91b323058141937569f0ef78f43006b",
+     "execution": {
+      "decision_id": "32befb3817d8cfffe0d66e5e3583a120074544109ea2a596e99b665cc4dc7498",
+      "generation": 1
+     },
+     "prior_reviews": [],
+     "record": {
+      "activation_blockers": [
+       "native_task_success_and_release_review_required"
+      ],
+      "activation_ready": false,
+      "evidence_ref": "sha256:47d567320085c7610c523f4488d7e1344def106dede4d24363f788f24c70187f",
+      "id": "3ac9ee975d10e3094e9f1589d7c4476cbaa48dad4140d6cb1674554984d8a47c",
+      "project_key": "project",
+      "proposal": {
+       "corpus_hash": "corpus-1",
+       "current": 3,
+       "id": "proposal-1",
+       "name": "skill_match.FULL_BODY_MIN_SCORE",
+       "policy_revision": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+       "suggested": 4
+      },
+      "run_id": "dc9a22136a4d39a60c60a3bfa6d902a8838876a303d03d42af8f77be333a046e",
+      "status": "calculated"
+     },
+     "request_id": "43c9265dd33fa99b94c62fd71bd965f5b014e7f327dae323cee10f0fcfe479cf",
+     "scope": "assessment_only_no_dispatch_or_activation"
+    },
+    "wrote": false
+   },
+   "state": {
+    "conductor": null,
+    "decisions": [
+     [
+      "lead:improvement",
+      "running"
+     ]
+    ],
+    "lead": {
+     "actor": "lead:improvement",
+     "attempt": 1,
+     "completed_at": null,
+     "error": null,
+     "execution_deadline": "2026-09-22T00:45:00.153000+00:00",
+     "generation": 1,
+     "lease_owner": "5eed0000-0000-4000-8000-000000000052",
+     "lease_until": "2026-09-22T00:20:00.153000+00:00",
+     "owner": "5eed0000-0000-4000-8000-000000000052",
+     "phase": "threshold_review",
+     "result": null,
+     "retry_budget": {
+      "bound_at": "2026-09-22T00:00:00.153000+00:00",
+      "max_attempts": 3,
+      "origin": "first_claim",
+      "version": 1
+     },
+     "status": "running"
+    },
+    "no_effects": true,
+    "request": {
+     "activation_ready": false,
+     "completed_at": null,
+     "created_at": "2026-09-22T00:00:00.152000+00:00",
+     "failed_decision": null,
+     "failure": null,
+     "reviews": [],
+     "scope": "assessment_only_no_dispatch_or_activation",
+     "status": "awaiting_lead"
+    },
+    "store": "933a3a8eaa98c54d"
+   }
+  },
+  "inspection_status_differs": {
+   "claim_wrote": true,
+   "complete": {
+    "message": "Threshold inspection status differs from execution",
+    "refused": "ContractError",
+    "store_after": "3395af69dfd4397d",
+    "store_before": "3395af69dfd4397d",
+    "wrote": false
+   },
+   "lease": {
+    "_bucket": "decisions_pending",
+    "actor": "lead:improvement",
+    "attempt": 1,
+    "generation": 1,
+    "id": "32befb3817d8cfffe0d66e5e3583a120074544109ea2a596e99b665cc4dc7498",
+    "lease_until": "2026-09-22T00:20:00.161000+00:00",
+    "owner": "5eed0000-0000-4000-8000-000000000056",
+    "phase": "threshold_review",
+    "status": "running"
+   },
+   "prepare": {
+    "store_after": "3395af69dfd4397d",
+    "store_before": "3395af69dfd4397d",
+    "value": {
+     "binding": "c3fe471007df0a23b40290acba102f3df91b323058141937569f0ef78f43006b",
+     "execution": {
+      "decision_id": "32befb3817d8cfffe0d66e5e3583a120074544109ea2a596e99b665cc4dc7498",
+      "generation": 1
+     },
+     "prior_reviews": [],
+     "record": {
+      "activation_blockers": [
+       "native_task_success_and_release_review_required"
+      ],
+      "activation_ready": false,
+      "evidence_ref": "sha256:47d567320085c7610c523f4488d7e1344def106dede4d24363f788f24c70187f",
+      "id": "3ac9ee975d10e3094e9f1589d7c4476cbaa48dad4140d6cb1674554984d8a47c",
+      "project_key": "project",
+      "proposal": {
+       "corpus_hash": "corpus-1",
+       "current": 3,
+       "id": "proposal-1",
+       "name": "skill_match.FULL_BODY_MIN_SCORE",
+       "policy_revision": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+       "suggested": 4
+      },
+      "run_id": "dc9a22136a4d39a60c60a3bfa6d902a8838876a303d03d42af8f77be333a046e",
+      "status": "calculated"
+     },
+     "request_id": "43c9265dd33fa99b94c62fd71bd965f5b014e7f327dae323cee10f0fcfe479cf",
+     "scope": "assessment_only_no_dispatch_or_activation"
+    },
+    "wrote": false
+   },
+   "state": {
+    "conductor": null,
+    "decisions": [
+     [
+      "lead:improvement",
+      "running"
+     ]
+    ],
+    "lead": {
+     "actor": "lead:improvement",
+     "attempt": 1,
+     "completed_at": null,
+     "error": null,
+     "execution_deadline": "2026-09-22T00:45:00.161000+00:00",
+     "generation": 1,
+     "lease_owner": "5eed0000-0000-4000-8000-000000000056",
+     "lease_until": "2026-09-22T00:20:00.161000+00:00",
+     "owner": "5eed0000-0000-4000-8000-000000000056",
+     "phase": "threshold_review",
+     "result": null,
+     "retry_budget": {
+      "bound_at": "2026-09-22T00:00:00.161000+00:00",
+      "max_attempts": 3,
+      "origin": "first_claim",
+      "version": 1
+     },
+     "status": "running"
+    },
+    "no_effects": true,
+    "request": {
+     "activation_ready": false,
+     "completed_at": null,
+     "created_at": "2026-09-22T00:00:00.160000+00:00",
+     "failed_decision": null,
+     "failure": null,
+     "reviews": [],
+     "scope": "assessment_only_no_dispatch_or_activation",
+     "status": "awaiting_lead"
+    },
+    "store": "3395af69dfd4397d"
+   }
+  },
+  "interrupted": {
+   "claim_wrote": true,
+   "complete": {
+    "message": "Interrupted threshold review cannot complete",
+    "refused": "ContractError",
+    "store_after": "9858b4c5ad885cfa",
+    "store_before": "9858b4c5ad885cfa",
+    "wrote": false
+   },
+   "lease": {
+    "_bucket": "decisions_pending",
+    "actor": "lead:improvement",
+    "attempt": 1,
+    "generation": 1,
+    "id": "32befb3817d8cfffe0d66e5e3583a120074544109ea2a596e99b665cc4dc7498",
+    "lease_until": "2026-09-22T00:20:00.165000+00:00",
+    "owner": "5eed0000-0000-4000-8000-000000000058",
+    "phase": "threshold_review",
+    "status": "running"
+   },
+   "prepare": {
+    "store_after": "9858b4c5ad885cfa",
+    "store_before": "9858b4c5ad885cfa",
+    "value": {
+     "binding": "c3fe471007df0a23b40290acba102f3df91b323058141937569f0ef78f43006b",
+     "execution": {
+      "decision_id": "32befb3817d8cfffe0d66e5e3583a120074544109ea2a596e99b665cc4dc7498",
+      "generation": 1
+     },
+     "prior_reviews": [],
+     "record": {
+      "activation_blockers": [
+       "native_task_success_and_release_review_required"
+      ],
+      "activation_ready": false,
+      "evidence_ref": "sha256:47d567320085c7610c523f4488d7e1344def106dede4d24363f788f24c70187f",
+      "id": "3ac9ee975d10e3094e9f1589d7c4476cbaa48dad4140d6cb1674554984d8a47c",
+      "project_key": "project",
+      "proposal": {
+       "corpus_hash": "corpus-1",
+       "current": 3,
+       "id": "proposal-1",
+       "name": "skill_match.FULL_BODY_MIN_SCORE",
+       "policy_revision": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+       "suggested": 4
+      },
+      "run_id": "dc9a22136a4d39a60c60a3bfa6d902a8838876a303d03d42af8f77be333a046e",
+      "status": "calculated"
+     },
+     "request_id": "43c9265dd33fa99b94c62fd71bd965f5b014e7f327dae323cee10f0fcfe479cf",
+     "scope": "assessment_only_no_dispatch_or_activation"
+    },
+    "wrote": false
+   },
+   "state": {
+    "conductor": null,
+    "decisions": [
+     [
+      "lead:improvement",
+      "running"
+     ]
+    ],
+    "lead": {
+     "actor": "lead:improvement",
+     "attempt": 1,
+     "completed_at": null,
+     "error": null,
+     "execution_deadline": "2026-09-22T00:45:00.165000+00:00",
+     "generation": 1,
+     "lease_owner": "5eed0000-0000-4000-8000-000000000058",
+     "lease_until": "2026-09-22T00:20:00.165000+00:00",
+     "owner": "5eed0000-0000-4000-8000-000000000058",
+     "phase": "threshold_review",
+     "result": null,
+     "retry_budget": {
+      "bound_at": "2026-09-22T00:00:00.165000+00:00",
+      "max_attempts": 3,
+      "origin": "first_claim",
+      "version": 1
+     },
+     "status": "running"
+    },
+    "no_effects": true,
+    "request": {
+     "activation_ready": false,
+     "completed_at": null,
+     "created_at": "2026-09-22T00:00:00.164000+00:00",
+     "failed_decision": null,
+     "failure": null,
+     "reviews": [],
+     "scope": "assessment_only_no_dispatch_or_activation",
+     "status": "awaiting_lead"
+    },
+    "store": "9858b4c5ad885cfa"
+   }
+  },
+  "m7_test": "none",
+  "result_no_reason": {
+   "claim_wrote": true,
+   "complete": {
+    "message": "Invalid threshold assessment",
+    "refused": "ContractError",
+    "store_after": "305fa629527f350a",
+    "store_before": "305fa629527f350a",
+    "wrote": false
+   },
+   "lease": {
+    "_bucket": "decisions_pending",
+    "actor": "lead:improvement",
+    "attempt": 1,
+    "generation": 1,
+    "id": "32befb3817d8cfffe0d66e5e3583a120074544109ea2a596e99b665cc4dc7498",
+    "lease_until": "2026-09-22T00:20:00.149000+00:00",
+    "owner": "5eed0000-0000-4000-8000-000000000050",
+    "phase": "threshold_review",
+    "status": "running"
+   },
+   "prepare": {
+    "store_after": "305fa629527f350a",
+    "store_before": "305fa629527f350a",
+    "value": {
+     "binding": "c3fe471007df0a23b40290acba102f3df91b323058141937569f0ef78f43006b",
+     "execution": {
+      "decision_id": "32befb3817d8cfffe0d66e5e3583a120074544109ea2a596e99b665cc4dc7498",
+      "generation": 1
+     },
+     "prior_reviews": [],
+     "record": {
+      "activation_blockers": [
+       "native_task_success_and_release_review_required"
+      ],
+      "activation_ready": false,
+      "evidence_ref": "sha256:47d567320085c7610c523f4488d7e1344def106dede4d24363f788f24c70187f",
+      "id": "3ac9ee975d10e3094e9f1589d7c4476cbaa48dad4140d6cb1674554984d8a47c",
+      "project_key": "project",
+      "proposal": {
+       "corpus_hash": "corpus-1",
+       "current": 3,
+       "id": "proposal-1",
+       "name": "skill_match.FULL_BODY_MIN_SCORE",
+       "policy_revision": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+       "suggested": 4
+      },
+      "run_id": "dc9a22136a4d39a60c60a3bfa6d902a8838876a303d03d42af8f77be333a046e",
+      "status": "calculated"
+     },
+     "request_id": "43c9265dd33fa99b94c62fd71bd965f5b014e7f327dae323cee10f0fcfe479cf",
+     "scope": "assessment_only_no_dispatch_or_activation"
+    },
+    "wrote": false
+   },
+   "state": {
+    "conductor": null,
+    "decisions": [
+     [
+      "lead:improvement",
+      "running"
+     ]
+    ],
+    "lead": {
+     "actor": "lead:improvement",
+     "attempt": 1,
+     "completed_at": null,
+     "error": null,
+     "execution_deadline": "2026-09-22T00:45:00.149000+00:00",
+     "generation": 1,
+     "lease_owner": "5eed0000-0000-4000-8000-000000000050",
+     "lease_until": "2026-09-22T00:20:00.149000+00:00",
+     "owner": "5eed0000-0000-4000-8000-000000000050",
+     "phase": "threshold_review",
+     "result": null,
+     "retry_budget": {
+      "bound_at": "2026-09-22T00:00:00.149000+00:00",
+      "max_attempts": 3,
+      "origin": "first_claim",
+      "version": 1
+     },
+     "status": "running"
+    },
+    "no_effects": true,
+    "request": {
+     "activation_ready": false,
+     "completed_at": null,
+     "created_at": "2026-09-22T00:00:00.148000+00:00",
+     "failed_decision": null,
+     "failure": null,
+     "reviews": [],
+     "scope": "assessment_only_no_dispatch_or_activation",
+     "status": "awaiting_lead"
+    },
+    "store": "305fa629527f350a"
+   }
+  },
+  "result_not_bool": {
+   "claim_wrote": true,
+   "complete": {
+    "message": "Invalid threshold assessment",
+    "refused": "ContractError",
+    "store_after": "ab9a68496c759f63",
+    "store_before": "ab9a68496c759f63",
+    "wrote": false
+   },
+   "lease": {
+    "_bucket": "decisions_pending",
+    "actor": "lead:improvement",
+    "attempt": 1,
+    "generation": 1,
+    "id": "32befb3817d8cfffe0d66e5e3583a120074544109ea2a596e99b665cc4dc7498",
+    "lease_until": "2026-09-22T00:20:00.145000+00:00",
+    "owner": "5eed0000-0000-4000-8000-00000000004e",
+    "phase": "threshold_review",
+    "status": "running"
+   },
+   "prepare": {
+    "store_after": "ab9a68496c759f63",
+    "store_before": "ab9a68496c759f63",
+    "value": {
+     "binding": "c3fe471007df0a23b40290acba102f3df91b323058141937569f0ef78f43006b",
+     "execution": {
+      "decision_id": "32befb3817d8cfffe0d66e5e3583a120074544109ea2a596e99b665cc4dc7498",
+      "generation": 1
+     },
+     "prior_reviews": [],
+     "record": {
+      "activation_blockers": [
+       "native_task_success_and_release_review_required"
+      ],
+      "activation_ready": false,
+      "evidence_ref": "sha256:47d567320085c7610c523f4488d7e1344def106dede4d24363f788f24c70187f",
+      "id": "3ac9ee975d10e3094e9f1589d7c4476cbaa48dad4140d6cb1674554984d8a47c",
+      "project_key": "project",
+      "proposal": {
+       "corpus_hash": "corpus-1",
+       "current": 3,
+       "id": "proposal-1",
+       "name": "skill_match.FULL_BODY_MIN_SCORE",
+       "policy_revision": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+       "suggested": 4
+      },
+      "run_id": "dc9a22136a4d39a60c60a3bfa6d902a8838876a303d03d42af8f77be333a046e",
+      "status": "calculated"
+     },
+     "request_id": "43c9265dd33fa99b94c62fd71bd965f5b014e7f327dae323cee10f0fcfe479cf",
+     "scope": "assessment_only_no_dispatch_or_activation"
+    },
+    "wrote": false
+   },
+   "state": {
+    "conductor": null,
+    "decisions": [
+     [
+      "lead:improvement",
+      "running"
+     ]
+    ],
+    "lead": {
+     "actor": "lead:improvement",
+     "attempt": 1,
+     "completed_at": null,
+     "error": null,
+     "execution_deadline": "2026-09-22T00:45:00.145000+00:00",
+     "generation": 1,
+     "lease_owner": "5eed0000-0000-4000-8000-00000000004e",
+     "lease_until": "2026-09-22T00:20:00.145000+00:00",
+     "owner": "5eed0000-0000-4000-8000-00000000004e",
+     "phase": "threshold_review",
+     "result": null,
+     "retry_budget": {
+      "bound_at": "2026-09-22T00:00:00.145000+00:00",
+      "max_attempts": 3,
+      "origin": "first_claim",
+      "version": 1
+     },
+     "status": "running"
+    },
+    "no_effects": true,
+    "request": {
+     "activation_ready": false,
+     "completed_at": null,
+     "created_at": "2026-09-22T00:00:00.144000+00:00",
+     "failed_decision": null,
+     "failure": null,
+     "reviews": [],
+     "scope": "assessment_only_no_dispatch_or_activation",
+     "status": "awaiting_lead"
+    },
+    "store": "ab9a68496c759f63"
+   }
+  }
+ },
+ "conductor_rejection": {
+  "conductor": {
+   "claim_wrote": true,
+   "complete": {
+    "store_after": "c42be9d2d0dbd04f",
+    "store_before": "dbb840c7abfa780d",
+    "value": {
+     "actor": "conductor",
+     "attempt": 1,
+     "completed_at": "2026-09-22T00:00:00.064000+00:00",
+     "execution_clock": {
+      "deadline_remaining": 2700.0,
+      "domain": "00000000-0000-4000-8000-00000000a0d2",
+      "lease_seconds": 1200.0,
+      "monotonic": 1000.062,
+      "version": 1,
+      "wall": "2026-09-22T00:00:00.062000+00:00"
+     },
+     "execution_deadline": "2026-09-22T00:45:00.062000+00:00",
+     "generation": 1,
+     "id": "3056a550ebae157b7df1eeb8b4862fc9b2f27d5b5c6baf45428cabe28fc500aa",
+     "input": {
+      "request_id": "43c9265dd33fa99b94c62fd71bd965f5b014e7f327dae323cee10f0fcfe479cf"
+     },
+     "lease_owner": "5eed0000-0000-4000-8000-000000000025",
+     "lease_until": "2026-09-22T00:20:00.062000+00:00",
+     "message": {
+      "causation_id": null,
+      "correlation_id": "43c9265dd33fa99b94c62fd71bd965f5b014e7f327dae323cee10f0fcfe479cf",
+      "how": {
+       "acceptance_criteria": [
+        "Preserve normal behavior"
+       ],
+       "constraints": [],
+       "context_ref": null,
+       "result_schema": "six-w.v1"
+      },
+      "message_id": "5eed0000-0000-4000-8000-000000000024",
+      "schema_version": "1.0",
+      "type": "review.result",
+      "what": {
+       "action": "assess_threshold",
+       "details": {
+        "binding": "c3fe471007df0a23b40290acba102f3df91b323058141937569f0ef78f43006b",
+        "request_id": "43c9265dd33fa99b94c62fd71bd965f5b014e7f327dae323cee10f0fcfe479cf"
+       }
+      },
+      "when": {
+       "after": [],
+       "created_at": "2026-09-22T00:00:00.061000+00:00",
+       "deadline": null
+      },
+      "where": {
+       "allowed_paths": [],
+       "environment": "local",
+       "repository": "codex-harness",
+       "revision": "bootstrap"
+      },
+      "who": {
+       "owner": "conductor",
+       "recipient": "conductor",
+       "sender": "lead:improvement"
+      },
+      "why": {
+       "evidence_refs": [],
+       "objective": "Improve harness reliability from verified evidence"
+      }
+     },
+     "owner": "5eed0000-0000-4000-8000-000000000025",
+     "phase": "threshold_review",
+     "result": {
+      "accepted": false,
+      "arc42_assessment": "fixture",
+      "basis_revision": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+      "blocked": false,
+      "execution_ref": "sha256:2a70441ba1c5382f1bfe119c8662b6ab528aa7b916fe6e2035ee6186b86dbbf9",
+      "reason": "fixture assessment",
+      "risks": [],
+      "sre_assessment": "fixture"
+     },
+     "retry_budget": {
+      "bound_at": "2026-09-22T00:00:00.062000+00:00",
+      "max_attempts": 3,
+      "origin": "first_claim",
+      "version": 1
+     },
+     "status": "succeeded"
+    },
+    "wrote": true
+   },
+   "lease": {
+    "_bucket": "decisions_pending",
+    "actor": "conductor",
+    "attempt": 1,
+    "generation": 1,
+    "id": "3056a550ebae157b7df1eeb8b4862fc9b2f27d5b5c6baf45428cabe28fc500aa",
+    "lease_until": "2026-09-22T00:20:00.062000+00:00",
+    "owner": "5eed0000-0000-4000-8000-000000000025",
+    "phase": "threshold_review",
+    "status": "running"
+   },
+   "prepare": {
+    "store_after": "dbb840c7abfa780d",
+    "store_before": "dbb840c7abfa780d",
+    "value": {
+     "binding": "c3fe471007df0a23b40290acba102f3df91b323058141937569f0ef78f43006b",
+     "execution": {
+      "decision_id": "3056a550ebae157b7df1eeb8b4862fc9b2f27d5b5c6baf45428cabe28fc500aa",
+      "generation": 1
+     },
+     "prior_reviews": [
+      {
+       "actor": "lead:improvement",
+       "at": "2026-09-22T00:00:00.061000+00:00",
+       "decision_id": "32befb3817d8cfffe0d66e5e3583a120074544109ea2a596e99b665cc4dc7498",
+       "generation": 1,
+       "result": {
+        "accepted": true,
+        "arc42_assessment": "fixture",
+        "basis_revision": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+        "blocked": false,
+        "execution_ref": "sha256:cd3ada27de1f678b6101b722d213ed5f9955c9f38802e5f6ca428d699df879b4",
+        "reason": "fixture assessment",
+        "risks": [],
+        "sre_assessment": "fixture"
+       }
+      }
+     ],
+     "record": {
+      "activation_blockers": [
+       "native_task_success_and_release_review_required"
+      ],
+      "activation_ready": false,
+      "evidence_ref": "sha256:47d567320085c7610c523f4488d7e1344def106dede4d24363f788f24c70187f",
+      "id": "3ac9ee975d10e3094e9f1589d7c4476cbaa48dad4140d6cb1674554984d8a47c",
+      "project_key": "project",
+      "proposal": {
+       "corpus_hash": "corpus-1",
+       "current": 3,
+       "id": "proposal-1",
+       "name": "skill_match.FULL_BODY_MIN_SCORE",
+       "policy_revision": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+       "suggested": 4
+      },
+      "run_id": "dc9a22136a4d39a60c60a3bfa6d902a8838876a303d03d42af8f77be333a046e",
+      "status": "calculated"
+     },
+     "request_id": "43c9265dd33fa99b94c62fd71bd965f5b014e7f327dae323cee10f0fcfe479cf",
+     "scope": "assessment_only_no_dispatch_or_activation"
+    },
+    "wrote": false
+   },
+   "state": {
+    "conductor": {
+     "actor": "conductor",
+     "attempt": 1,
+     "completed_at": "2026-09-22T00:00:00.064000+00:00",
+     "error": null,
+     "execution_deadline": "2026-09-22T00:45:00.062000+00:00",
+     "generation": 1,
+     "lease_owner": "5eed0000-0000-4000-8000-000000000025",
+     "lease_until": "2026-09-22T00:20:00.062000+00:00",
+     "owner": "5eed0000-0000-4000-8000-000000000025",
+     "phase": "threshold_review",
+     "result": {
+      "accepted": false,
+      "arc42_assessment": "fixture",
+      "basis_revision": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+      "blocked": false,
+      "execution_ref": "sha256:2a70441ba1c5382f1bfe119c8662b6ab528aa7b916fe6e2035ee6186b86dbbf9",
+      "reason": "fixture assessment",
+      "risks": [],
+      "sre_assessment": "fixture"
+     },
+     "retry_budget": {
+      "bound_at": "2026-09-22T00:00:00.062000+00:00",
+      "max_attempts": 3,
+      "origin": "first_claim",
+      "version": 1
+     },
+     "status": "succeeded"
+    },
+    "decisions": [
+     [
+      "conductor",
+      "succeeded"
+     ],
+     [
+      "lead:improvement",
+      "succeeded"
+     ]
+    ],
+    "lead": {
+     "actor": "lead:improvement",
+     "attempt": 1,
+     "completed_at": "2026-09-22T00:00:00.061000+00:00",
+     "error": null,
+     "execution_deadline": "2026-09-22T00:45:00.059000+00:00",
+     "generation": 1,
+     "lease_owner": "5eed0000-0000-4000-8000-000000000023",
+     "lease_until": "2026-09-22T00:20:00.059000+00:00",
+     "owner": "5eed0000-0000-4000-8000-000000000023",
+     "phase": "threshold_review",
+     "result": {
+      "accepted": true,
+      "arc42_assessment": "fixture",
+      "basis_revision": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+      "blocked": false,
+      "execution_ref": "sha256:cd3ada27de1f678b6101b722d213ed5f9955c9f38802e5f6ca428d699df879b4",
+      "reason": "fixture assessment",
+      "risks": [],
+      "sre_assessment": "fixture"
+     },
+     "retry_budget": {
+      "bound_at": "2026-09-22T00:00:00.059000+00:00",
+      "max_attempts": 3,
+      "origin": "first_claim",
+      "version": 1
+     },
+     "status": "succeeded"
+    },
+    "no_effects": true,
+    "request": {
+     "activation_ready": false,
+     "completed_at": null,
+     "created_at": "2026-09-22T00:00:00.058000+00:00",
+     "failed_decision": null,
+     "failure": null,
+     "reviews": [
+      {
+       "accepted": true,
+       "actor": "lead:improvement",
+       "at": "2026-09-22T00:00:00.061000+00:00",
+       "decision_id": "32befb3817d8cfffe0d66e5e3583a120074544109ea2a596e99b665cc4dc7498",
+       "generation": 1
+      },
+      {
+       "accepted": false,
+       "actor": "conductor",
+       "at": "2026-09-22T00:00:00.064000+00:00",
+       "decision_id": "3056a550ebae157b7df1eeb8b4862fc9b2f27d5b5c6baf45428cabe28fc500aa",
+       "generation": 1
+      }
+     ],
+     "scope": "assessment_only_no_dispatch_or_activation",
+     "status": "rejected"
+    },
+    "store": "c42be9d2d0dbd04f"
+   }
+  },
+  "lead": {
+   "claim_wrote": true,
+   "complete": {
+    "store_after": "f3dcf59bb2c56615",
+    "store_before": "b14222a553c4dad1",
+    "value": {
+     "actor": "lead:improvement",
+     "attempt": 1,
+     "completed_at": "2026-09-22T00:00:00.061000+00:00",
+     "execution_clock": {
+      "deadline_remaining": 2700.0,
+      "domain": "00000000-0000-4000-8000-00000000a0d2",
+      "lease_seconds": 1200.0,
+      "monotonic": 1000.059,
+      "version": 1,
+      "wall": "2026-09-22T00:00:00.059000+00:00"
+     },
+     "execution_deadline": "2026-09-22T00:45:00.059000+00:00",
+     "generation": 1,
+     "id": "32befb3817d8cfffe0d66e5e3583a120074544109ea2a596e99b665cc4dc7498",
+     "input": {
+      "request_id": "43c9265dd33fa99b94c62fd71bd965f5b014e7f327dae323cee10f0fcfe479cf"
+     },
+     "lease_owner": "5eed0000-0000-4000-8000-000000000023",
+     "lease_until": "2026-09-22T00:20:00.059000+00:00",
+     "message": {
+      "causation_id": null,
+      "correlation_id": "43c9265dd33fa99b94c62fd71bd965f5b014e7f327dae323cee10f0fcfe479cf",
+      "how": {
+       "acceptance_criteria": [
+        "Preserve normal behavior"
+       ],
+       "constraints": [],
+       "context_ref": null,
+       "result_schema": "six-w.v1"
+      },
+      "message_id": "5eed0000-0000-4000-8000-000000000022",
+      "schema_version": "1.0",
+      "type": "task.assign",
+      "what": {
+       "action": "assess_threshold",
+       "details": {
+        "binding": "c3fe471007df0a23b40290acba102f3df91b323058141937569f0ef78f43006b",
+        "request_id": "43c9265dd33fa99b94c62fd71bd965f5b014e7f327dae323cee10f0fcfe479cf"
+       }
+      },
+      "when": {
+       "after": [],
+       "created_at": "2026-09-22T00:00:00.058000+00:00",
+       "deadline": null
+      },
+      "where": {
+       "allowed_paths": [],
+       "environment": "local",
+       "repository": "codex-harness",
+       "revision": "bootstrap"
+      },
+      "who": {
+       "owner": "lead:improvement",
+       "recipient": "lead:improvement",
+       "sender": "conductor"
+      },
+      "why": {
+       "evidence_refs": [],
+       "objective": "Improve harness reliability from verified evidence"
+      }
+     },
+     "owner": "5eed0000-0000-4000-8000-000000000023",
+     "phase": "threshold_review",
+     "result": {
+      "accepted": true,
+      "arc42_assessment": "fixture",
+      "basis_revision": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+      "blocked": false,
+      "execution_ref": "sha256:cd3ada27de1f678b6101b722d213ed5f9955c9f38802e5f6ca428d699df879b4",
+      "reason": "fixture assessment",
+      "risks": [],
+      "sre_assessment": "fixture"
+     },
+     "retry_budget": {
+      "bound_at": "2026-09-22T00:00:00.059000+00:00",
+      "max_attempts": 3,
+      "origin": "first_claim",
+      "version": 1
+     },
+     "status": "succeeded"
+    },
+    "wrote": true
+   },
+   "lease": {
+    "_bucket": "decisions_pending",
+    "actor": "lead:improvement",
+    "attempt": 1,
+    "generation": 1,
+    "id": "32befb3817d8cfffe0d66e5e3583a120074544109ea2a596e99b665cc4dc7498",
+    "lease_until": "2026-09-22T00:20:00.059000+00:00",
+    "owner": "5eed0000-0000-4000-8000-000000000023",
+    "phase": "threshold_review",
+    "status": "running"
+   },
+   "prepare": {
+    "store_after": "b14222a553c4dad1",
+    "store_before": "b14222a553c4dad1",
+    "value": {
+     "binding": "c3fe471007df0a23b40290acba102f3df91b323058141937569f0ef78f43006b",
+     "execution": {
+      "decision_id": "32befb3817d8cfffe0d66e5e3583a120074544109ea2a596e99b665cc4dc7498",
+      "generation": 1
+     },
+     "prior_reviews": [],
+     "record": {
+      "activation_blockers": [
+       "native_task_success_and_release_review_required"
+      ],
+      "activation_ready": false,
+      "evidence_ref": "sha256:47d567320085c7610c523f4488d7e1344def106dede4d24363f788f24c70187f",
+      "id": "3ac9ee975d10e3094e9f1589d7c4476cbaa48dad4140d6cb1674554984d8a47c",
+      "project_key": "project",
+      "proposal": {
+       "corpus_hash": "corpus-1",
+       "current": 3,
+       "id": "proposal-1",
+       "name": "skill_match.FULL_BODY_MIN_SCORE",
+       "policy_revision": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+       "suggested": 4
+      },
+      "run_id": "dc9a22136a4d39a60c60a3bfa6d902a8838876a303d03d42af8f77be333a046e",
+      "status": "calculated"
+     },
+     "request_id": "43c9265dd33fa99b94c62fd71bd965f5b014e7f327dae323cee10f0fcfe479cf",
+     "scope": "assessment_only_no_dispatch_or_activation"
+    },
+    "wrote": false
+   },
+   "state": {
+    "conductor": {
+     "actor": "conductor",
+     "attempt": 0,
+     "completed_at": null,
+     "error": null,
+     "execution_deadline": null,
+     "generation": null,
+     "lease_owner": null,
+     "lease_until": null,
+     "owner": null,
+     "phase": "threshold_review",
+     "result": null,
+     "retry_budget": null,
+     "status": "pending"
+    },
+    "decisions": [
+     [
+      "conductor",
+      "pending"
+     ],
+     [
+      "lead:improvement",
+      "succeeded"
+     ]
+    ],
+    "lead": {
+     "actor": "lead:improvement",
+     "attempt": 1,
+     "completed_at": "2026-09-22T00:00:00.061000+00:00",
+     "error": null,
+     "execution_deadline": "2026-09-22T00:45:00.059000+00:00",
+     "generation": 1,
+     "lease_owner": "5eed0000-0000-4000-8000-000000000023",
+     "lease_until": "2026-09-22T00:20:00.059000+00:00",
+     "owner": "5eed0000-0000-4000-8000-000000000023",
+     "phase": "threshold_review",
+     "result": {
+      "accepted": true,
+      "arc42_assessment": "fixture",
+      "basis_revision": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+      "blocked": false,
+      "execution_ref": "sha256:cd3ada27de1f678b6101b722d213ed5f9955c9f38802e5f6ca428d699df879b4",
+      "reason": "fixture assessment",
+      "risks": [],
+      "sre_assessment": "fixture"
+     },
+     "retry_budget": {
+      "bound_at": "2026-09-22T00:00:00.059000+00:00",
+      "max_attempts": 3,
+      "origin": "first_claim",
+      "version": 1
+     },
+     "status": "succeeded"
+    },
+    "no_effects": true,
+    "request": {
+     "activation_ready": false,
+     "completed_at": null,
+     "created_at": "2026-09-22T00:00:00.058000+00:00",
+     "failed_decision": null,
+     "failure": null,
+     "reviews": [
+      {
+       "accepted": true,
+       "actor": "lead:improvement",
+       "at": "2026-09-22T00:00:00.061000+00:00",
+       "decision_id": "32befb3817d8cfffe0d66e5e3583a120074544109ea2a596e99b665cc4dc7498",
+       "generation": 1
+      }
+     ],
+     "scope": "assessment_only_no_dispatch_or_activation",
+     "status": "awaiting_conductor"
+    },
+    "store": "f3dcf59bb2c56615"
+   }
+  },
+  "lead_claim": {
+   "claim_wrote": false,
+   "lease": null,
+   "state": {
+    "conductor": {
+     "actor": "conductor",
+     "attempt": 1,
+     "completed_at": "2026-09-22T00:00:00.064000+00:00",
+     "error": null,
+     "execution_deadline": "2026-09-22T00:45:00.062000+00:00",
+     "generation": 1,
+     "lease_owner": "5eed0000-0000-4000-8000-000000000025",
+     "lease_until": "2026-09-22T00:20:00.062000+00:00",
+     "owner": "5eed0000-0000-4000-8000-000000000025",
+     "phase": "threshold_review",
+     "result": {
+      "accepted": false,
+      "arc42_assessment": "fixture",
+      "basis_revision": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+      "blocked": false,
+      "execution_ref": "sha256:2a70441ba1c5382f1bfe119c8662b6ab528aa7b916fe6e2035ee6186b86dbbf9",
+      "reason": "fixture assessment",
+      "risks": [],
+      "sre_assessment": "fixture"
+     },
+     "retry_budget": {
+      "bound_at": "2026-09-22T00:00:00.062000+00:00",
+      "max_attempts": 3,
+      "origin": "first_claim",
+      "version": 1
+     },
+     "status": "succeeded"
+    },
+    "decisions": [
+     [
+      "conductor",
+      "succeeded"
+     ],
+     [
+      "lead:improvement",
+      "succeeded"
+     ]
+    ],
+    "lead": {
+     "actor": "lead:improvement",
+     "attempt": 1,
+     "completed_at": "2026-09-22T00:00:00.061000+00:00",
+     "error": null,
+     "execution_deadline": "2026-09-22T00:45:00.059000+00:00",
+     "generation": 1,
+     "lease_owner": "5eed0000-0000-4000-8000-000000000023",
+     "lease_until": "2026-09-22T00:20:00.059000+00:00",
+     "owner": "5eed0000-0000-4000-8000-000000000023",
+     "phase": "threshold_review",
+     "result": {
+      "accepted": true,
+      "arc42_assessment": "fixture",
+      "basis_revision": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+      "blocked": false,
+      "execution_ref": "sha256:cd3ada27de1f678b6101b722d213ed5f9955c9f38802e5f6ca428d699df879b4",
+      "reason": "fixture assessment",
+      "risks": [],
+      "sre_assessment": "fixture"
+     },
+     "retry_budget": {
+      "bound_at": "2026-09-22T00:00:00.059000+00:00",
+      "max_attempts": 3,
+      "origin": "first_claim",
+      "version": 1
+     },
+     "status": "succeeded"
+    },
+    "no_effects": true,
+    "request": {
+     "activation_ready": false,
+     "completed_at": null,
+     "created_at": "2026-09-22T00:00:00.058000+00:00",
+     "failed_decision": null,
+     "failure": null,
+     "reviews": [
+      {
+       "accepted": true,
+       "actor": "lead:improvement",
+       "at": "2026-09-22T00:00:00.061000+00:00",
+       "decision_id": "32befb3817d8cfffe0d66e5e3583a120074544109ea2a596e99b665cc4dc7498",
+       "generation": 1
+      },
+      {
+       "accepted": false,
+       "actor": "conductor",
+       "at": "2026-09-22T00:00:00.064000+00:00",
+       "decision_id": "3056a550ebae157b7df1eeb8b4862fc9b2f27d5b5c6baf45428cabe28fc500aa",
+       "generation": 1
+      }
+     ],
+     "scope": "assessment_only_no_dispatch_or_activation",
+     "status": "rejected"
+    },
+    "store": "c42be9d2d0dbd04f"
+   }
+  },
+  "m7_test": "test_conductor_rejection_and_terminal_request_idempotence",
+  "terminal_request": {
+   "store_after": "c42be9d2d0dbd04f",
+   "store_before": "c42be9d2d0dbd04f",
+   "value": {
+    "activation_ready": false,
+    "binding": "c3fe471007df0a23b40290acba102f3df91b323058141937569f0ef78f43006b",
+    "created_at": "2026-09-22T00:00:00.058000+00:00",
+    "id": "43c9265dd33fa99b94c62fd71bd965f5b014e7f327dae323cee10f0fcfe479cf",
+    "reviews": [
+     {
+      "actor": "lead:improvement",
+      "at": "2026-09-22T00:00:00.061000+00:00",
+      "decision_id": "32befb3817d8cfffe0d66e5e3583a120074544109ea2a596e99b665cc4dc7498",
+      "generation": 1,
+      "result": {
+       "accepted": true,
+       "arc42_assessment": "fixture",
+       "basis_revision": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+       "blocked": false,
+       "execution_ref": "sha256:cd3ada27de1f678b6101b722d213ed5f9955c9f38802e5f6ca428d699df879b4",
+       "reason": "fixture assessment",
+       "risks": [],
+       "sre_assessment": "fixture"
+      }
+     },
+     {
+      "actor": "conductor",
+      "at": "2026-09-22T00:00:00.064000+00:00",
+      "decision_id": "3056a550ebae157b7df1eeb8b4862fc9b2f27d5b5c6baf45428cabe28fc500aa",
+      "generation": 1,
+      "result": {
+       "accepted": false,
+       "arc42_assessment": "fixture",
+       "basis_revision": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+       "blocked": false,
+       "execution_ref": "sha256:2a70441ba1c5382f1bfe119c8662b6ab528aa7b916fe6e2035ee6186b86dbbf9",
+       "reason": "fixture assessment",
+       "risks": [],
+       "sre_assessment": "fixture"
+      }
+     }
+    ],
+    "row_id": "3ac9ee975d10e3094e9f1589d7c4476cbaa48dad4140d6cb1674554984d8a47c",
+    "scope": "assessment_only_no_dispatch_or_activation",
+    "status": "rejected"
+   },
+   "wrote": false
+  }
+ },
+ "empty_answer": {
+  "complete": {
+   "message": "Threshold execution verdict missing",
+   "refused": "ContractError",
+   "store_after": "24934ae2a3d9d0ec",
+   "store_before": "24934ae2a3d9d0ec",
+   "wrote": false
+  },
+  "m7_test": "test_empty_execution_answer_cannot_satisfy_assessment",
+  "prepare": {
+   "store_after": "24934ae2a3d9d0ec",
+   "store_before": "24934ae2a3d9d0ec",
+   "value": {
+    "binding": "c3fe471007df0a23b40290acba102f3df91b323058141937569f0ef78f43006b",
+    "execution": {
+     "decision_id": "32befb3817d8cfffe0d66e5e3583a120074544109ea2a596e99b665cc4dc7498",
+     "generation": 1
+    },
+    "prior_reviews": [],
+    "record": {
+     "activation_blockers": [
+      "native_task_success_and_release_review_required"
+     ],
+     "activation_ready": false,
+     "evidence_ref": "sha256:47d567320085c7610c523f4488d7e1344def106dede4d24363f788f24c70187f",
+     "id": "3ac9ee975d10e3094e9f1589d7c4476cbaa48dad4140d6cb1674554984d8a47c",
+     "project_key": "project",
+     "proposal": {
+      "corpus_hash": "corpus-1",
+      "current": 3,
+      "id": "proposal-1",
+      "name": "skill_match.FULL_BODY_MIN_SCORE",
+      "policy_revision": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+      "suggested": 4
+     },
+     "run_id": "dc9a22136a4d39a60c60a3bfa6d902a8838876a303d03d42af8f77be333a046e",
+     "status": "calculated"
+    },
+    "request_id": "43c9265dd33fa99b94c62fd71bd965f5b014e7f327dae323cee10f0fcfe479cf",
+    "scope": "assessment_only_no_dispatch_or_activation"
+   },
+   "wrote": false
+  },
+  "state": {
+   "conductor": null,
+   "decisions": [
+    [
+     "lead:improvement",
+     "running"
+    ]
+   ],
+   "lead": {
+    "actor": "lead:improvement",
+    "attempt": 1,
+    "completed_at": null,
+    "error": null,
+    "execution_deadline": "2026-09-22T00:45:00.093000+00:00",
+    "generation": 1,
+    "lease_owner": "5eed0000-0000-4000-8000-000000000037",
+    "lease_until": "2026-09-22T00:20:00.093000+00:00",
+    "owner": "5eed0000-0000-4000-8000-000000000037",
+    "phase": "threshold_review",
+    "result": null,
+    "retry_budget": {
+     "bound_at": "2026-09-22T00:00:00.093000+00:00",
+     "max_attempts": 3,
+     "origin": "first_claim",
+     "version": 1
+    },
+    "status": "running"
+   },
+   "no_effects": true,
+   "request": {
+    "activation_ready": false,
+    "completed_at": null,
+    "created_at": "2026-09-22T00:00:00.092000+00:00",
+    "failed_decision": null,
+    "failure": null,
+    "reviews": [],
+    "scope": "assessment_only_no_dispatch_or_activation",
+    "status": "awaiting_lead"
+   },
+   "store": "24934ae2a3d9d0ec"
+  }
+ },
+ "exhausted": {
+  "conductor_exhausted": {
+   "store_after": "08191d00dea6b4f8",
+   "store_before": "ee61fdde3ca6c19c",
+   "value": null,
+   "wrote": true
+  },
+  "conductor_exhausted_again": {
+   "store_after": "08191d00dea6b4f8",
+   "store_before": "08191d00dea6b4f8",
+   "value": null,
+   "wrote": false
+  },
+  "lead": {
+   "claim_wrote": true,
+   "complete": {
+    "store_after": "ee61fdde3ca6c19c",
+    "store_before": "c2c5a1a57f388d76",
+    "value": {
+     "actor": "lead:improvement",
+     "attempt": 1,
+     "completed_at": "2026-09-22T00:00:00.101000+00:00",
+     "execution_clock": {
+      "deadline_remaining": 2700.0,
+      "domain": "00000000-0000-4000-8000-00000000a0d2",
+      "lease_seconds": 1200.0,
+      "monotonic": 1000.099,
+      "version": 1,
+      "wall": "2026-09-22T00:00:00.099000+00:00"
+     },
+     "execution_deadline": "2026-09-22T00:45:00.099000+00:00",
+     "generation": 1,
+     "id": "32befb3817d8cfffe0d66e5e3583a120074544109ea2a596e99b665cc4dc7498",
+     "input": {
+      "request_id": "43c9265dd33fa99b94c62fd71bd965f5b014e7f327dae323cee10f0fcfe479cf"
+     },
+     "lease_owner": "5eed0000-0000-4000-8000-00000000003a",
+     "lease_until": "2026-09-22T00:20:00.099000+00:00",
+     "message": {
+      "causation_id": null,
+      "correlation_id": "43c9265dd33fa99b94c62fd71bd965f5b014e7f327dae323cee10f0fcfe479cf",
+      "how": {
+       "acceptance_criteria": [
+        "Preserve normal behavior"
+       ],
+       "constraints": [],
+       "context_ref": null,
+       "result_schema": "six-w.v1"
+      },
+      "message_id": "5eed0000-0000-4000-8000-000000000039",
+      "schema_version": "1.0",
+      "type": "task.assign",
+      "what": {
+       "action": "assess_threshold",
+       "details": {
+        "binding": "c3fe471007df0a23b40290acba102f3df91b323058141937569f0ef78f43006b",
+        "request_id": "43c9265dd33fa99b94c62fd71bd965f5b014e7f327dae323cee10f0fcfe479cf"
+       }
+      },
+      "when": {
+       "after": [],
+       "created_at": "2026-09-22T00:00:00.098000+00:00",
+       "deadline": null
+      },
+      "where": {
+       "allowed_paths": [],
+       "environment": "local",
+       "repository": "codex-harness",
+       "revision": "bootstrap"
+      },
+      "who": {
+       "owner": "lead:improvement",
+       "recipient": "lead:improvement",
+       "sender": "conductor"
+      },
+      "why": {
+       "evidence_refs": [],
+       "objective": "Improve harness reliability from verified evidence"
+      }
+     },
+     "owner": "5eed0000-0000-4000-8000-00000000003a",
+     "phase": "threshold_review",
+     "result": {
+      "accepted": true,
+      "arc42_assessment": "fixture",
+      "basis_revision": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+      "blocked": false,
+      "execution_ref": "sha256:cd3ada27de1f678b6101b722d213ed5f9955c9f38802e5f6ca428d699df879b4",
+      "reason": "fixture assessment",
+      "risks": [],
+      "sre_assessment": "fixture"
+     },
+     "retry_budget": {
+      "bound_at": "2026-09-22T00:00:00.099000+00:00",
+      "max_attempts": 3,
+      "origin": "first_claim",
+      "version": 1
+     },
+     "status": "succeeded"
+    },
+    "wrote": true
+   },
+   "lease": {
+    "_bucket": "decisions_pending",
+    "actor": "lead:improvement",
+    "attempt": 1,
+    "generation": 1,
+    "id": "32befb3817d8cfffe0d66e5e3583a120074544109ea2a596e99b665cc4dc7498",
+    "lease_until": "2026-09-22T00:20:00.099000+00:00",
+    "owner": "5eed0000-0000-4000-8000-00000000003a",
+    "phase": "threshold_review",
+    "status": "running"
+   },
+   "prepare": {
+    "store_after": "c2c5a1a57f388d76",
+    "store_before": "c2c5a1a57f388d76",
+    "value": {
+     "binding": "c3fe471007df0a23b40290acba102f3df91b323058141937569f0ef78f43006b",
+     "execution": {
+      "decision_id": "32befb3817d8cfffe0d66e5e3583a120074544109ea2a596e99b665cc4dc7498",
+      "generation": 1
+     },
+     "prior_reviews": [],
+     "record": {
+      "activation_blockers": [
+       "native_task_success_and_release_review_required"
+      ],
+      "activation_ready": false,
+      "evidence_ref": "sha256:47d567320085c7610c523f4488d7e1344def106dede4d24363f788f24c70187f",
+      "id": "3ac9ee975d10e3094e9f1589d7c4476cbaa48dad4140d6cb1674554984d8a47c",
+      "project_key": "project",
+      "proposal": {
+       "corpus_hash": "corpus-1",
+       "current": 3,
+       "id": "proposal-1",
+       "name": "skill_match.FULL_BODY_MIN_SCORE",
+       "policy_revision": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+       "suggested": 4
+      },
+      "run_id": "dc9a22136a4d39a60c60a3bfa6d902a8838876a303d03d42af8f77be333a046e",
+      "status": "calculated"
+     },
+     "request_id": "43c9265dd33fa99b94c62fd71bd965f5b014e7f327dae323cee10f0fcfe479cf",
+     "scope": "assessment_only_no_dispatch_or_activation"
+    },
+    "wrote": false
+   },
+   "state": {
+    "conductor": {
+     "actor": "conductor",
+     "attempt": 0,
+     "completed_at": null,
+     "error": null,
+     "execution_deadline": null,
+     "generation": null,
+     "lease_owner": null,
+     "lease_until": null,
+     "owner": null,
+     "phase": "threshold_review",
+     "result": null,
+     "retry_budget": null,
+     "status": "pending"
+    },
+    "decisions": [
+     [
+      "conductor",
+      "pending"
+     ],
+     [
+      "lead:improvement",
+      "succeeded"
+     ]
+    ],
+    "lead": {
+     "actor": "lead:improvement",
+     "attempt": 1,
+     "completed_at": "2026-09-22T00:00:00.101000+00:00",
+     "error": null,
+     "execution_deadline": "2026-09-22T00:45:00.099000+00:00",
+     "generation": 1,
+     "lease_owner": "5eed0000-0000-4000-8000-00000000003a",
+     "lease_until": "2026-09-22T00:20:00.099000+00:00",
+     "owner": "5eed0000-0000-4000-8000-00000000003a",
+     "phase": "threshold_review",
+     "result": {
+      "accepted": true,
+      "arc42_assessment": "fixture",
+      "basis_revision": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+      "blocked": false,
+      "execution_ref": "sha256:cd3ada27de1f678b6101b722d213ed5f9955c9f38802e5f6ca428d699df879b4",
+      "reason": "fixture assessment",
+      "risks": [],
+      "sre_assessment": "fixture"
+     },
+     "retry_budget": {
+      "bound_at": "2026-09-22T00:00:00.099000+00:00",
+      "max_attempts": 3,
+      "origin": "first_claim",
+      "version": 1
+     },
+     "status": "succeeded"
+    },
+    "no_effects": true,
+    "request": {
+     "activation_ready": false,
+     "completed_at": null,
+     "created_at": "2026-09-22T00:00:00.098000+00:00",
+     "failed_decision": null,
+     "failure": null,
+     "reviews": [
+      {
+       "accepted": true,
+       "actor": "lead:improvement",
+       "at": "2026-09-22T00:00:00.101000+00:00",
+       "decision_id": "32befb3817d8cfffe0d66e5e3583a120074544109ea2a596e99b665cc4dc7498",
+       "generation": 1
+      }
+     ],
+     "scope": "assessment_only_no_dispatch_or_activation",
+     "status": "awaiting_conductor"
+    },
+    "store": "ee61fdde3ca6c19c"
+   }
+  },
+  "lead_exhausted": {
+   "store_after": "b0e6559f59673ae0",
+   "store_before": "4e915559b1e247a7",
+   "value": null,
+   "wrote": true
+  },
+  "m7_test": "test_post_commit_error_does_not_rewrite_success (module half)",
+  "other_decision": {
+   "store_after": "4e915559b1e247a7",
+   "store_before": "4e915559b1e247a7",
+   "value": null,
+   "wrote": false
+  },
+  "request_absent": {
+   "store_after": "08191d00dea6b4f8",
+   "store_before": "08191d00dea6b4f8",
+   "value": null,
+   "wrote": false
+  },
+  "stale_lead": {
+   "store_after": "ee61fdde3ca6c19c",
+   "store_before": "ee61fdde3ca6c19c",
+   "value": null,
+   "wrote": false
+  },
+  "state_after_conductor": {
+   "conductor": {
+    "actor": "conductor",
+    "attempt": 0,
+    "completed_at": null,
+    "error": null,
+    "execution_deadline": null,
+    "generation": null,
+    "lease_owner": null,
+    "lease_until": null,
+    "owner": null,
+    "phase": "threshold_review",
+    "result": null,
+    "retry_budget": null,
+    "status": "pending"
+   },
+   "decisions": [
+    [
+     "conductor",
+     "pending"
+    ],
+    [
+     "lead:improvement",
+     "succeeded"
+    ]
+   ],
+   "lead": {
+    "actor": "lead:improvement",
+    "attempt": 1,
+    "completed_at": "2026-09-22T00:00:00.101000+00:00",
+    "error": null,
+    "execution_deadline": "2026-09-22T00:45:00.099000+00:00",
+    "generation": 1,
+    "lease_owner": "5eed0000-0000-4000-8000-00000000003a",
+    "lease_until": "2026-09-22T00:20:00.099000+00:00",
+    "owner": "5eed0000-0000-4000-8000-00000000003a",
+    "phase": "threshold_review",
+    "result": {
+     "accepted": true,
+     "arc42_assessment": "fixture",
+     "basis_revision": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+     "blocked": false,
+     "execution_ref": "sha256:cd3ada27de1f678b6101b722d213ed5f9955c9f38802e5f6ca428d699df879b4",
+     "reason": "fixture assessment",
+     "risks": [],
+     "sre_assessment": "fixture"
+    },
+    "retry_budget": {
+     "bound_at": "2026-09-22T00:00:00.099000+00:00",
+     "max_attempts": 3,
+     "origin": "first_claim",
+     "version": 1
+    },
+    "status": "succeeded"
+   },
+   "no_effects": true,
+   "request": {
+    "activation_ready": false,
+    "completed_at": "2026-09-22T00:00:00.103000+00:00",
+    "created_at": "2026-09-22T00:00:00.098000+00:00",
+    "failed_decision": "3056a550ebae157b7df1eeb8b4862fc9b2f27d5b5c6baf45428cabe28fc500aa",
+    "failure": "decision_attempt_budget_exhausted",
+    "reviews": [
+     {
+      "accepted": true,
+      "actor": "lead:improvement",
+      "at": "2026-09-22T00:00:00.101000+00:00",
+      "decision_id": "32befb3817d8cfffe0d66e5e3583a120074544109ea2a596e99b665cc4dc7498",
+      "generation": 1
+     }
+    ],
+    "scope": "assessment_only_no_dispatch_or_activation",
+    "status": "failed"
+   },
+   "store": "08191d00dea6b4f8"
+  },
+  "state_after_stale": {
+   "conductor": {
+    "actor": "conductor",
+    "attempt": 0,
+    "completed_at": null,
+    "error": null,
+    "execution_deadline": null,
+    "generation": null,
+    "lease_owner": null,
+    "lease_until": null,
+    "owner": null,
+    "phase": "threshold_review",
+    "result": null,
+    "retry_budget": null,
+    "status": "pending"
+   },
+   "decisions": [
+    [
+     "conductor",
+     "pending"
+    ],
+    [
+     "lead:improvement",
+     "succeeded"
+    ]
+   ],
+   "lead": {
+    "actor": "lead:improvement",
+    "attempt": 1,
+    "completed_at": "2026-09-22T00:00:00.101000+00:00",
+    "error": null,
+    "execution_deadline": "2026-09-22T00:45:00.099000+00:00",
+    "generation": 1,
+    "lease_owner": "5eed0000-0000-4000-8000-00000000003a",
+    "lease_until": "2026-09-22T00:20:00.099000+00:00",
+    "owner": "5eed0000-0000-4000-8000-00000000003a",
+    "phase": "threshold_review",
+    "result": {
+     "accepted": true,
+     "arc42_assessment": "fixture",
+     "basis_revision": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+     "blocked": false,
+     "execution_ref": "sha256:cd3ada27de1f678b6101b722d213ed5f9955c9f38802e5f6ca428d699df879b4",
+     "reason": "fixture assessment",
+     "risks": [],
+     "sre_assessment": "fixture"
+    },
+    "retry_budget": {
+     "bound_at": "2026-09-22T00:00:00.099000+00:00",
+     "max_attempts": 3,
+     "origin": "first_claim",
+     "version": 1
+    },
+    "status": "succeeded"
+   },
+   "no_effects": true,
+   "request": {
+    "activation_ready": false,
+    "completed_at": null,
+    "created_at": "2026-09-22T00:00:00.098000+00:00",
+    "failed_decision": null,
+    "failure": null,
+    "reviews": [
+     {
+      "accepted": true,
+      "actor": "lead:improvement",
+      "at": "2026-09-22T00:00:00.101000+00:00",
+      "decision_id": "32befb3817d8cfffe0d66e5e3583a120074544109ea2a596e99b665cc4dc7498",
+      "generation": 1
+     }
+    ],
+    "scope": "assessment_only_no_dispatch_or_activation",
+    "status": "awaiting_conductor"
+   },
+   "store": "ee61fdde3ca6c19c"
+  },
+  "state_lead_exhausted": {
+   "conductor": null,
+   "decisions": [
+    [
+     "lead:improvement",
+     "pending"
+    ]
+   ],
+   "lead": {
+    "actor": "lead:improvement",
+    "attempt": 0,
+    "completed_at": null,
+    "error": null,
+    "execution_deadline": null,
+    "generation": null,
+    "lease_owner": null,
+    "lease_until": null,
+    "owner": null,
+    "phase": "threshold_review",
+    "result": null,
+    "retry_budget": null,
+    "status": "pending"
+   },
+   "no_effects": true,
+   "request": {
+    "activation_ready": false,
+    "completed_at": "2026-09-22T00:00:00.108000+00:00",
+    "created_at": "2026-09-22T00:00:00.106000+00:00",
+    "failed_decision": "cfec6ce23cfc5e7d63b8a9a974699ec5763c0c2632a7142be667453a80338c95",
+    "failure": "decision_attempt_budget_exhausted",
+    "reviews": [],
+    "scope": "assessment_only_no_dispatch_or_activation",
+    "status": "failed"
+   },
+   "store": "b0e6559f59673ae0"
+  }
+ },
+ "lease_actor_or_aggregate": {
+  "actor": {
+   "forged": {
+    "message": "Stale or expired task execution",
+    "refused": "ContractError",
+    "store_after": "babc979ffbd1f3df",
+    "store_before": "babc979ffbd1f3df",
+    "wrote": false
+   },
+   "honest": {
+    "complete": {
+     "store_after": "6329cdc3afbc4bf8",
+     "store_before": "babc979ffbd1f3df",
+     "value": {
+      "actor": "lead:improvement",
+      "attempt": 1,
+      "completed_at": "2026-09-22T00:00:00.081000+00:00",
+      "execution_clock": {
+       "deadline_remaining": 2700.0,
+       "domain": "00000000-0000-4000-8000-00000000a0d2",
+       "lease_seconds": 1200.0,
+       "monotonic": 1000.078,
+       "version": 1,
+       "wall": "2026-09-22T00:00:00.078000+00:00"
+      },
+      "execution_deadline": "2026-09-22T00:45:00.078000+00:00",
+      "generation": 1,
+      "id": "32befb3817d8cfffe0d66e5e3583a120074544109ea2a596e99b665cc4dc7498",
+      "input": {
+       "request_id": "43c9265dd33fa99b94c62fd71bd965f5b014e7f327dae323cee10f0fcfe479cf"
+      },
+      "lease_owner": "5eed0000-0000-4000-8000-00000000002e",
+      "lease_until": "2026-09-22T00:20:00.078000+00:00",
+      "message": {
+       "causation_id": null,
+       "correlation_id": "43c9265dd33fa99b94c62fd71bd965f5b014e7f327dae323cee10f0fcfe479cf",
+       "how": {
+        "acceptance_criteria": [
+         "Preserve normal behavior"
+        ],
+        "constraints": [],
+        "context_ref": null,
+        "result_schema": "six-w.v1"
+       },
+       "message_id": "5eed0000-0000-4000-8000-00000000002d",
+       "schema_version": "1.0",
+       "type": "task.assign",
+       "what": {
+        "action": "assess_threshold",
+        "details": {
+         "binding": "c3fe471007df0a23b40290acba102f3df91b323058141937569f0ef78f43006b",
+         "request_id": "43c9265dd33fa99b94c62fd71bd965f5b014e7f327dae323cee10f0fcfe479cf"
+        }
+       },
+       "when": {
+        "after": [],
+        "created_at": "2026-09-22T00:00:00.077000+00:00",
+        "deadline": null
+       },
+       "where": {
+        "allowed_paths": [],
+        "environment": "local",
+        "repository": "codex-harness",
+        "revision": "bootstrap"
+       },
+       "who": {
+        "owner": "lead:improvement",
+        "recipient": "lead:improvement",
+        "sender": "conductor"
+       },
+       "why": {
+        "evidence_refs": [],
+        "objective": "Improve harness reliability from verified evidence"
+       }
+      },
+      "owner": "5eed0000-0000-4000-8000-00000000002e",
+      "phase": "threshold_review",
+      "result": {
+       "accepted": true,
+       "arc42_assessment": "fixture",
+       "basis_revision": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+       "blocked": false,
+       "execution_ref": "sha256:cd3ada27de1f678b6101b722d213ed5f9955c9f38802e5f6ca428d699df879b4",
+       "reason": "fixture assessment",
+       "risks": [],
+       "sre_assessment": "fixture"
+      },
+      "retry_budget": {
+       "bound_at": "2026-09-22T00:00:00.078000+00:00",
+       "max_attempts": 3,
+       "origin": "first_claim",
+       "version": 1
+      },
+      "status": "succeeded"
+     },
+     "wrote": true
+    },
+    "prepare": {
+     "store_after": "babc979ffbd1f3df",
+     "store_before": "babc979ffbd1f3df",
+     "value": {
+      "binding": "c3fe471007df0a23b40290acba102f3df91b323058141937569f0ef78f43006b",
+      "execution": {
+       "decision_id": "32befb3817d8cfffe0d66e5e3583a120074544109ea2a596e99b665cc4dc7498",
+       "generation": 1
+      },
+      "prior_reviews": [],
+      "record": {
+       "activation_blockers": [
+        "native_task_success_and_release_review_required"
+       ],
+       "activation_ready": false,
+       "evidence_ref": "sha256:47d567320085c7610c523f4488d7e1344def106dede4d24363f788f24c70187f",
+       "id": "3ac9ee975d10e3094e9f1589d7c4476cbaa48dad4140d6cb1674554984d8a47c",
+       "project_key": "project",
+       "proposal": {
+        "corpus_hash": "corpus-1",
+        "current": 3,
+        "id": "proposal-1",
+        "name": "skill_match.FULL_BODY_MIN_SCORE",
+        "policy_revision": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+        "suggested": 4
+       },
+       "run_id": "dc9a22136a4d39a60c60a3bfa6d902a8838876a303d03d42af8f77be333a046e",
+       "status": "calculated"
+      },
+      "request_id": "43c9265dd33fa99b94c62fd71bd965f5b014e7f327dae323cee10f0fcfe479cf",
+      "scope": "assessment_only_no_dispatch_or_activation"
+     },
+     "wrote": false
+    },
+    "state": {
+     "conductor": {
+      "actor": "conductor",
+      "attempt": 0,
+      "completed_at": null,
+      "error": null,
+      "execution_deadline": null,
+      "generation": null,
+      "lease_owner": null,
+      "lease_until": null,
+      "owner": null,
+      "phase": "threshold_review",
+      "result": null,
+      "retry_budget": null,
+      "status": "pending"
+     },
+     "decisions": [
+      [
+       "conductor",
+       "pending"
+      ],
+      [
+       "lead:improvement",
+       "succeeded"
+      ]
+     ],
+     "lead": {
+      "actor": "lead:improvement",
+      "attempt": 1,
+      "completed_at": "2026-09-22T00:00:00.081000+00:00",
+      "error": null,
+      "execution_deadline": "2026-09-22T00:45:00.078000+00:00",
+      "generation": 1,
+      "lease_owner": "5eed0000-0000-4000-8000-00000000002e",
+      "lease_until": "2026-09-22T00:20:00.078000+00:00",
+      "owner": "5eed0000-0000-4000-8000-00000000002e",
+      "phase": "threshold_review",
+      "result": {
+       "accepted": true,
+       "arc42_assessment": "fixture",
+       "basis_revision": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+       "blocked": false,
+       "execution_ref": "sha256:cd3ada27de1f678b6101b722d213ed5f9955c9f38802e5f6ca428d699df879b4",
+       "reason": "fixture assessment",
+       "risks": [],
+       "sre_assessment": "fixture"
+      },
+      "retry_budget": {
+       "bound_at": "2026-09-22T00:00:00.078000+00:00",
+       "max_attempts": 3,
+       "origin": "first_claim",
+       "version": 1
+      },
+      "status": "succeeded"
+     },
+     "no_effects": true,
+     "request": {
+      "activation_ready": false,
+      "completed_at": null,
+      "created_at": "2026-09-22T00:00:00.077000+00:00",
+      "failed_decision": null,
+      "failure": null,
+      "reviews": [
+       {
+        "accepted": true,
+        "actor": "lead:improvement",
+        "at": "2026-09-22T00:00:00.081000+00:00",
+        "decision_id": "32befb3817d8cfffe0d66e5e3583a120074544109ea2a596e99b665cc4dc7498",
+        "generation": 1
+       }
+      ],
+      "scope": "assessment_only_no_dispatch_or_activation",
+      "status": "awaiting_conductor"
+     },
+     "store": "6329cdc3afbc4bf8"
+    }
+   }
+  },
+  "bucket_tasks": {
+   "forged": {
+    "message": "Threshold decision lease required",
+    "refused": "ContractError",
+    "store_after": "1a7b84f81f3e6990",
+    "store_before": "1a7b84f81f3e6990",
+    "wrote": false
+   },
+   "honest": {
+    "complete": {
+     "store_after": "cfc3bcde39d7d91f",
+     "store_before": "1a7b84f81f3e6990",
+     "value": {
+      "actor": "lead:improvement",
+      "attempt": 1,
+      "completed_at": "2026-09-22T00:00:00.086000+00:00",
+      "execution_clock": {
+       "deadline_remaining": 2700.0,
+       "domain": "00000000-0000-4000-8000-00000000a0d2",
+       "lease_seconds": 1200.0,
+       "monotonic": 1000.083,
+       "version": 1,
+       "wall": "2026-09-22T00:00:00.083000+00:00"
+      },
+      "execution_deadline": "2026-09-22T00:45:00.083000+00:00",
+      "generation": 1,
+      "id": "32befb3817d8cfffe0d66e5e3583a120074544109ea2a596e99b665cc4dc7498",
+      "input": {
+       "request_id": "43c9265dd33fa99b94c62fd71bd965f5b014e7f327dae323cee10f0fcfe479cf"
+      },
+      "lease_owner": "5eed0000-0000-4000-8000-000000000031",
+      "lease_until": "2026-09-22T00:20:00.083000+00:00",
+      "message": {
+       "causation_id": null,
+       "correlation_id": "43c9265dd33fa99b94c62fd71bd965f5b014e7f327dae323cee10f0fcfe479cf",
+       "how": {
+        "acceptance_criteria": [
+         "Preserve normal behavior"
+        ],
+        "constraints": [],
+        "context_ref": null,
+        "result_schema": "six-w.v1"
+       },
+       "message_id": "5eed0000-0000-4000-8000-000000000030",
+       "schema_version": "1.0",
+       "type": "task.assign",
+       "what": {
+        "action": "assess_threshold",
+        "details": {
+         "binding": "c3fe471007df0a23b40290acba102f3df91b323058141937569f0ef78f43006b",
+         "request_id": "43c9265dd33fa99b94c62fd71bd965f5b014e7f327dae323cee10f0fcfe479cf"
+        }
+       },
+       "when": {
+        "after": [],
+        "created_at": "2026-09-22T00:00:00.082000+00:00",
+        "deadline": null
+       },
+       "where": {
+        "allowed_paths": [],
+        "environment": "local",
+        "repository": "codex-harness",
+        "revision": "bootstrap"
+       },
+       "who": {
+        "owner": "lead:improvement",
+        "recipient": "lead:improvement",
+        "sender": "conductor"
+       },
+       "why": {
+        "evidence_refs": [],
+        "objective": "Improve harness reliability from verified evidence"
+       }
+      },
+      "owner": "5eed0000-0000-4000-8000-000000000031",
+      "phase": "threshold_review",
+      "result": {
+       "accepted": true,
+       "arc42_assessment": "fixture",
+       "basis_revision": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+       "blocked": false,
+       "execution_ref": "sha256:cd3ada27de1f678b6101b722d213ed5f9955c9f38802e5f6ca428d699df879b4",
+       "reason": "fixture assessment",
+       "risks": [],
+       "sre_assessment": "fixture"
+      },
+      "retry_budget": {
+       "bound_at": "2026-09-22T00:00:00.083000+00:00",
+       "max_attempts": 3,
+       "origin": "first_claim",
+       "version": 1
+      },
+      "status": "succeeded"
+     },
+     "wrote": true
+    },
+    "prepare": {
+     "store_after": "1a7b84f81f3e6990",
+     "store_before": "1a7b84f81f3e6990",
+     "value": {
+      "binding": "c3fe471007df0a23b40290acba102f3df91b323058141937569f0ef78f43006b",
+      "execution": {
+       "decision_id": "32befb3817d8cfffe0d66e5e3583a120074544109ea2a596e99b665cc4dc7498",
+       "generation": 1
+      },
+      "prior_reviews": [],
+      "record": {
+       "activation_blockers": [
+        "native_task_success_and_release_review_required"
+       ],
+       "activation_ready": false,
+       "evidence_ref": "sha256:47d567320085c7610c523f4488d7e1344def106dede4d24363f788f24c70187f",
+       "id": "3ac9ee975d10e3094e9f1589d7c4476cbaa48dad4140d6cb1674554984d8a47c",
+       "project_key": "project",
+       "proposal": {
+        "corpus_hash": "corpus-1",
+        "current": 3,
+        "id": "proposal-1",
+        "name": "skill_match.FULL_BODY_MIN_SCORE",
+        "policy_revision": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+        "suggested": 4
+       },
+       "run_id": "dc9a22136a4d39a60c60a3bfa6d902a8838876a303d03d42af8f77be333a046e",
+       "status": "calculated"
+      },
+      "request_id": "43c9265dd33fa99b94c62fd71bd965f5b014e7f327dae323cee10f0fcfe479cf",
+      "scope": "assessment_only_no_dispatch_or_activation"
+     },
+     "wrote": false
+    },
+    "state": {
+     "conductor": {
+      "actor": "conductor",
+      "attempt": 0,
+      "completed_at": null,
+      "error": null,
+      "execution_deadline": null,
+      "generation": null,
+      "lease_owner": null,
+      "lease_until": null,
+      "owner": null,
+      "phase": "threshold_review",
+      "result": null,
+      "retry_budget": null,
+      "status": "pending"
+     },
+     "decisions": [
+      [
+       "conductor",
+       "pending"
+      ],
+      [
+       "lead:improvement",
+       "succeeded"
+      ]
+     ],
+     "lead": {
+      "actor": "lead:improvement",
+      "attempt": 1,
+      "completed_at": "2026-09-22T00:00:00.086000+00:00",
+      "error": null,
+      "execution_deadline": "2026-09-22T00:45:00.083000+00:00",
+      "generation": 1,
+      "lease_owner": "5eed0000-0000-4000-8000-000000000031",
+      "lease_until": "2026-09-22T00:20:00.083000+00:00",
+      "owner": "5eed0000-0000-4000-8000-000000000031",
+      "phase": "threshold_review",
+      "result": {
+       "accepted": true,
+       "arc42_assessment": "fixture",
+       "basis_revision": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+       "blocked": false,
+       "execution_ref": "sha256:cd3ada27de1f678b6101b722d213ed5f9955c9f38802e5f6ca428d699df879b4",
+       "reason": "fixture assessment",
+       "risks": [],
+       "sre_assessment": "fixture"
+      },
+      "retry_budget": {
+       "bound_at": "2026-09-22T00:00:00.083000+00:00",
+       "max_attempts": 3,
+       "origin": "first_claim",
+       "version": 1
+      },
+      "status": "succeeded"
+     },
+     "no_effects": true,
+     "request": {
+      "activation_ready": false,
+      "completed_at": null,
+      "created_at": "2026-09-22T00:00:00.082000+00:00",
+      "failed_decision": null,
+      "failure": null,
+      "reviews": [
+       {
+        "accepted": true,
+        "actor": "lead:improvement",
+        "at": "2026-09-22T00:00:00.086000+00:00",
+        "decision_id": "32befb3817d8cfffe0d66e5e3583a120074544109ea2a596e99b665cc4dc7498",
+        "generation": 1
+       }
+      ],
+      "scope": "assessment_only_no_dispatch_or_activation",
+      "status": "awaiting_conductor"
+     },
+     "store": "cfc3bcde39d7d91f"
+    }
+   }
+  },
+  "m7_test": "test_caller_cannot_change_lease_actor_or_aggregate",
+  "no_bucket": {
+   "forged": {
+    "message": "Threshold decision lease required",
+    "refused": "ContractError",
+    "store_after": "534bf801a5dc16a4",
+    "store_before": "534bf801a5dc16a4",
+    "wrote": false
+   },
+   "honest": {
+    "complete": {
+     "store_after": "2ad90ff15ea7ca21",
+     "store_before": "534bf801a5dc16a4",
+     "value": {
+      "actor": "lead:improvement",
+      "attempt": 1,
+      "completed_at": "2026-09-22T00:00:00.091000+00:00",
+      "execution_clock": {
+       "deadline_remaining": 2700.0,
+       "domain": "00000000-0000-4000-8000-00000000a0d2",
+       "lease_seconds": 1200.0,
+       "monotonic": 1000.088,
+       "version": 1,
+       "wall": "2026-09-22T00:00:00.088000+00:00"
+      },
+      "execution_deadline": "2026-09-22T00:45:00.088000+00:00",
+      "generation": 1,
+      "id": "32befb3817d8cfffe0d66e5e3583a120074544109ea2a596e99b665cc4dc7498",
+      "input": {
+       "request_id": "43c9265dd33fa99b94c62fd71bd965f5b014e7f327dae323cee10f0fcfe479cf"
+      },
+      "lease_owner": "5eed0000-0000-4000-8000-000000000034",
+      "lease_until": "2026-09-22T00:20:00.088000+00:00",
+      "message": {
+       "causation_id": null,
+       "correlation_id": "43c9265dd33fa99b94c62fd71bd965f5b014e7f327dae323cee10f0fcfe479cf",
+       "how": {
+        "acceptance_criteria": [
+         "Preserve normal behavior"
+        ],
+        "constraints": [],
+        "context_ref": null,
+        "result_schema": "six-w.v1"
+       },
+       "message_id": "5eed0000-0000-4000-8000-000000000033",
+       "schema_version": "1.0",
+       "type": "task.assign",
+       "what": {
+        "action": "assess_threshold",
+        "details": {
+         "binding": "c3fe471007df0a23b40290acba102f3df91b323058141937569f0ef78f43006b",
+         "request_id": "43c9265dd33fa99b94c62fd71bd965f5b014e7f327dae323cee10f0fcfe479cf"
+        }
+       },
+       "when": {
+        "after": [],
+        "created_at": "2026-09-22T00:00:00.087000+00:00",
+        "deadline": null
+       },
+       "where": {
+        "allowed_paths": [],
+        "environment": "local",
+        "repository": "codex-harness",
+        "revision": "bootstrap"
+       },
+       "who": {
+        "owner": "lead:improvement",
+        "recipient": "lead:improvement",
+        "sender": "conductor"
+       },
+       "why": {
+        "evidence_refs": [],
+        "objective": "Improve harness reliability from verified evidence"
+       }
+      },
+      "owner": "5eed0000-0000-4000-8000-000000000034",
+      "phase": "threshold_review",
+      "result": {
+       "accepted": true,
+       "arc42_assessment": "fixture",
+       "basis_revision": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+       "blocked": false,
+       "execution_ref": "sha256:cd3ada27de1f678b6101b722d213ed5f9955c9f38802e5f6ca428d699df879b4",
+       "reason": "fixture assessment",
+       "risks": [],
+       "sre_assessment": "fixture"
+      },
+      "retry_budget": {
+       "bound_at": "2026-09-22T00:00:00.088000+00:00",
+       "max_attempts": 3,
+       "origin": "first_claim",
+       "version": 1
+      },
+      "status": "succeeded"
+     },
+     "wrote": true
+    },
+    "prepare": {
+     "store_after": "534bf801a5dc16a4",
+     "store_before": "534bf801a5dc16a4",
+     "value": {
+      "binding": "c3fe471007df0a23b40290acba102f3df91b323058141937569f0ef78f43006b",
+      "execution": {
+       "decision_id": "32befb3817d8cfffe0d66e5e3583a120074544109ea2a596e99b665cc4dc7498",
+       "generation": 1
+      },
+      "prior_reviews": [],
+      "record": {
+       "activation_blockers": [
+        "native_task_success_and_release_review_required"
+       ],
+       "activation_ready": false,
+       "evidence_ref": "sha256:47d567320085c7610c523f4488d7e1344def106dede4d24363f788f24c70187f",
+       "id": "3ac9ee975d10e3094e9f1589d7c4476cbaa48dad4140d6cb1674554984d8a47c",
+       "project_key": "project",
+       "proposal": {
+        "corpus_hash": "corpus-1",
+        "current": 3,
+        "id": "proposal-1",
+        "name": "skill_match.FULL_BODY_MIN_SCORE",
+        "policy_revision": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+        "suggested": 4
+       },
+       "run_id": "dc9a22136a4d39a60c60a3bfa6d902a8838876a303d03d42af8f77be333a046e",
+       "status": "calculated"
+      },
+      "request_id": "43c9265dd33fa99b94c62fd71bd965f5b014e7f327dae323cee10f0fcfe479cf",
+      "scope": "assessment_only_no_dispatch_or_activation"
+     },
+     "wrote": false
+    },
+    "state": {
+     "conductor": {
+      "actor": "conductor",
+      "attempt": 0,
+      "completed_at": null,
+      "error": null,
+      "execution_deadline": null,
+      "generation": null,
+      "lease_owner": null,
+      "lease_until": null,
+      "owner": null,
+      "phase": "threshold_review",
+      "result": null,
+      "retry_budget": null,
+      "status": "pending"
+     },
+     "decisions": [
+      [
+       "conductor",
+       "pending"
+      ],
+      [
+       "lead:improvement",
+       "succeeded"
+      ]
+     ],
+     "lead": {
+      "actor": "lead:improvement",
+      "attempt": 1,
+      "completed_at": "2026-09-22T00:00:00.091000+00:00",
+      "error": null,
+      "execution_deadline": "2026-09-22T00:45:00.088000+00:00",
+      "generation": 1,
+      "lease_owner": "5eed0000-0000-4000-8000-000000000034",
+      "lease_until": "2026-09-22T00:20:00.088000+00:00",
+      "owner": "5eed0000-0000-4000-8000-000000000034",
+      "phase": "threshold_review",
+      "result": {
+       "accepted": true,
+       "arc42_assessment": "fixture",
+       "basis_revision": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+       "blocked": false,
+       "execution_ref": "sha256:cd3ada27de1f678b6101b722d213ed5f9955c9f38802e5f6ca428d699df879b4",
+       "reason": "fixture assessment",
+       "risks": [],
+       "sre_assessment": "fixture"
+      },
+      "retry_budget": {
+       "bound_at": "2026-09-22T00:00:00.088000+00:00",
+       "max_attempts": 3,
+       "origin": "first_claim",
+       "version": 1
+      },
+      "status": "succeeded"
+     },
+     "no_effects": true,
+     "request": {
+      "activation_ready": false,
+      "completed_at": null,
+      "created_at": "2026-09-22T00:00:00.087000+00:00",
+      "failed_decision": null,
+      "failure": null,
+      "reviews": [
+       {
+        "accepted": true,
+        "actor": "lead:improvement",
+        "at": "2026-09-22T00:00:00.091000+00:00",
+        "decision_id": "32befb3817d8cfffe0d66e5e3583a120074544109ea2a596e99b665cc4dc7498",
+        "generation": 1
+       }
+      ],
+      "scope": "assessment_only_no_dispatch_or_activation",
+      "status": "awaiting_conductor"
+     },
+     "store": "2ad90ff15ea7ca21"
+    }
+   }
+  }
+ },
+ "ordering": {
+  "conductor": {
+   "claim_wrote": true,
+   "complete": {
+    "store_after": "20e69370fad72a0c",
+    "store_before": "f8f21ede922f7454",
+    "value": {
+     "actor": "conductor",
+     "attempt": 1,
+     "completed_at": "2026-09-22T00:00:00.008000+00:00",
+     "execution_clock": {
+      "deadline_remaining": 2700.0,
+      "domain": "00000000-0000-4000-8000-00000000a0d2",
+      "lease_seconds": 1200.0,
+      "monotonic": 1000.006,
+      "version": 1,
+      "wall": "2026-09-22T00:00:00.006000+00:00"
+     },
+     "execution_deadline": "2026-09-22T00:45:00.006000+00:00",
+     "generation": 1,
+     "id": "3056a550ebae157b7df1eeb8b4862fc9b2f27d5b5c6baf45428cabe28fc500aa",
+     "input": {
+      "request_id": "43c9265dd33fa99b94c62fd71bd965f5b014e7f327dae323cee10f0fcfe479cf"
+     },
+     "lease_owner": "5eed0000-0000-4000-8000-000000000005",
+     "lease_until": "2026-09-22T00:20:00.006000+00:00",
+     "message": {
+      "causation_id": null,
+      "correlation_id": "43c9265dd33fa99b94c62fd71bd965f5b014e7f327dae323cee10f0fcfe479cf",
+      "how": {
+       "acceptance_criteria": [
+        "Preserve normal behavior"
+       ],
+       "constraints": [],
+       "context_ref": null,
+       "result_schema": "six-w.v1"
+      },
+      "message_id": "5eed0000-0000-4000-8000-000000000004",
+      "schema_version": "1.0",
+      "type": "review.result",
+      "what": {
+       "action": "assess_threshold",
+       "details": {
+        "binding": "c3fe471007df0a23b40290acba102f3df91b323058141937569f0ef78f43006b",
+        "request_id": "43c9265dd33fa99b94c62fd71bd965f5b014e7f327dae323cee10f0fcfe479cf"
+       }
+      },
+      "when": {
+       "after": [],
+       "created_at": "2026-09-22T00:00:00.005000+00:00",
+       "deadline": null
+      },
+      "where": {
+       "allowed_paths": [],
+       "environment": "local",
+       "repository": "codex-harness",
+       "revision": "bootstrap"
+      },
+      "who": {
+       "owner": "conductor",
+       "recipient": "conductor",
+       "sender": "lead:improvement"
+      },
+      "why": {
+       "evidence_refs": [],
+       "objective": "Improve harness reliability from verified evidence"
+      }
+     },
+     "owner": "5eed0000-0000-4000-8000-000000000005",
+     "phase": "threshold_review",
+     "result": {
+      "accepted": true,
+      "arc42_assessment": "fixture",
+      "basis_revision": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+      "blocked": false,
+      "execution_ref": "sha256:f6d8c2aea23924d8d1877dc5e47b39a669b31d6aa83a89ca726d13999cb42fb2",
+      "reason": "fixture assessment",
+      "risks": [],
+      "sre_assessment": "fixture"
+     },
+     "retry_budget": {
+      "bound_at": "2026-09-22T00:00:00.006000+00:00",
+      "max_attempts": 3,
+      "origin": "first_claim",
+      "version": 1
+     },
+     "status": "succeeded"
+    },
+    "wrote": true
+   },
+   "lease": {
+    "_bucket": "decisions_pending",
+    "actor": "conductor",
+    "attempt": 1,
+    "generation": 1,
+    "id": "3056a550ebae157b7df1eeb8b4862fc9b2f27d5b5c6baf45428cabe28fc500aa",
+    "lease_until": "2026-09-22T00:20:00.006000+00:00",
+    "owner": "5eed0000-0000-4000-8000-000000000005",
+    "phase": "threshold_review",
+    "status": "running"
+   },
+   "prepare": {
+    "store_after": "f8f21ede922f7454",
+    "store_before": "f8f21ede922f7454",
+    "value": {
+     "binding": "c3fe471007df0a23b40290acba102f3df91b323058141937569f0ef78f43006b",
+     "execution": {
+      "decision_id": "3056a550ebae157b7df1eeb8b4862fc9b2f27d5b5c6baf45428cabe28fc500aa",
+      "generation": 1
+     },
+     "prior_reviews": [
+      {
+       "actor": "lead:improvement",
+       "at": "2026-09-22T00:00:00.005000+00:00",
+       "decision_id": "32befb3817d8cfffe0d66e5e3583a120074544109ea2a596e99b665cc4dc7498",
+       "generation": 1,
+       "result": {
+        "accepted": true,
+        "arc42_assessment": "fixture",
+        "basis_revision": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+        "blocked": false,
+        "execution_ref": "sha256:cd3ada27de1f678b6101b722d213ed5f9955c9f38802e5f6ca428d699df879b4",
+        "reason": "fixture assessment",
+        "risks": [],
+        "sre_assessment": "fixture"
+       }
+      }
+     ],
+     "record": {
+      "activation_blockers": [
+       "native_task_success_and_release_review_required"
+      ],
+      "activation_ready": false,
+      "evidence_ref": "sha256:47d567320085c7610c523f4488d7e1344def106dede4d24363f788f24c70187f",
+      "id": "3ac9ee975d10e3094e9f1589d7c4476cbaa48dad4140d6cb1674554984d8a47c",
+      "project_key": "project",
+      "proposal": {
+       "corpus_hash": "corpus-1",
+       "current": 3,
+       "id": "proposal-1",
+       "name": "skill_match.FULL_BODY_MIN_SCORE",
+       "policy_revision": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+       "suggested": 4
+      },
+      "run_id": "dc9a22136a4d39a60c60a3bfa6d902a8838876a303d03d42af8f77be333a046e",
+      "status": "calculated"
+     },
+     "request_id": "43c9265dd33fa99b94c62fd71bd965f5b014e7f327dae323cee10f0fcfe479cf",
+     "scope": "assessment_only_no_dispatch_or_activation"
+    },
+    "wrote": false
+   },
+   "state": {
+    "conductor": {
+     "actor": "conductor",
+     "attempt": 1,
+     "completed_at": "2026-09-22T00:00:00.008000+00:00",
+     "error": null,
+     "execution_deadline": "2026-09-22T00:45:00.006000+00:00",
+     "generation": 1,
+     "lease_owner": "5eed0000-0000-4000-8000-000000000005",
+     "lease_until": "2026-09-22T00:20:00.006000+00:00",
+     "owner": "5eed0000-0000-4000-8000-000000000005",
+     "phase": "threshold_review",
+     "result": {
+      "accepted": true,
+      "arc42_assessment": "fixture",
+      "basis_revision": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+      "blocked": false,
+      "execution_ref": "sha256:f6d8c2aea23924d8d1877dc5e47b39a669b31d6aa83a89ca726d13999cb42fb2",
+      "reason": "fixture assessment",
+      "risks": [],
+      "sre_assessment": "fixture"
+     },
+     "retry_budget": {
+      "bound_at": "2026-09-22T00:00:00.006000+00:00",
+      "max_attempts": 3,
+      "origin": "first_claim",
+      "version": 1
+     },
+     "status": "succeeded"
+    },
+    "decisions": [
+     [
+      "conductor",
+      "succeeded"
+     ],
+     [
+      "lead:improvement",
+      "succeeded"
+     ]
+    ],
+    "lead": {
+     "actor": "lead:improvement",
+     "attempt": 1,
+     "completed_at": "2026-09-22T00:00:00.005000+00:00",
+     "error": null,
+     "execution_deadline": "2026-09-22T00:45:00.003000+00:00",
+     "generation": 1,
+     "lease_owner": "5eed0000-0000-4000-8000-000000000003",
+     "lease_until": "2026-09-22T00:20:00.003000+00:00",
+     "owner": "5eed0000-0000-4000-8000-000000000003",
+     "phase": "threshold_review",
+     "result": {
+      "accepted": true,
+      "arc42_assessment": "fixture",
+      "basis_revision": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+      "blocked": false,
+      "execution_ref": "sha256:cd3ada27de1f678b6101b722d213ed5f9955c9f38802e5f6ca428d699df879b4",
+      "reason": "fixture assessment",
+      "risks": [],
+      "sre_assessment": "fixture"
+     },
+     "retry_budget": {
+      "bound_at": "2026-09-22T00:00:00.003000+00:00",
+      "max_attempts": 3,
+      "origin": "first_claim",
+      "version": 1
+     },
+     "status": "succeeded"
+    },
+    "no_effects": true,
+    "request": {
+     "activation_ready": false,
+     "completed_at": null,
+     "created_at": "2026-09-22T00:00:00+00:00",
+     "failed_decision": null,
+     "failure": null,
+     "reviews": [
+      {
+       "accepted": true,
+       "actor": "lead:improvement",
+       "at": "2026-09-22T00:00:00.005000+00:00",
+       "decision_id": "32befb3817d8cfffe0d66e5e3583a120074544109ea2a596e99b665cc4dc7498",
+       "generation": 1
+      },
+      {
+       "accepted": true,
+       "actor": "conductor",
+       "at": "2026-09-22T00:00:00.008000+00:00",
+       "decision_id": "3056a550ebae157b7df1eeb8b4862fc9b2f27d5b5c6baf45428cabe28fc500aa",
+       "generation": 1
+      }
+     ],
+     "scope": "assessment_only_no_dispatch_or_activation",
+     "status": "assessed"
+    },
+    "store": "20e69370fad72a0c"
+   }
+  },
+  "conductor_again": {
+   "claim_wrote": false,
+   "lease": null,
+   "state": {
+    "conductor": {
+     "actor": "conductor",
+     "attempt": 1,
+     "completed_at": "2026-09-22T00:00:00.008000+00:00",
+     "error": null,
+     "execution_deadline": "2026-09-22T00:45:00.006000+00:00",
+     "generation": 1,
+     "lease_owner": "5eed0000-0000-4000-8000-000000000005",
+     "lease_until": "2026-09-22T00:20:00.006000+00:00",
+     "owner": "5eed0000-0000-4000-8000-000000000005",
+     "phase": "threshold_review",
+     "result": {
+      "accepted": true,
+      "arc42_assessment": "fixture",
+      "basis_revision": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+      "blocked": false,
+      "execution_ref": "sha256:f6d8c2aea23924d8d1877dc5e47b39a669b31d6aa83a89ca726d13999cb42fb2",
+      "reason": "fixture assessment",
+      "risks": [],
+      "sre_assessment": "fixture"
+     },
+     "retry_budget": {
+      "bound_at": "2026-09-22T00:00:00.006000+00:00",
+      "max_attempts": 3,
+      "origin": "first_claim",
+      "version": 1
+     },
+     "status": "succeeded"
+    },
+    "decisions": [
+     [
+      "conductor",
+      "succeeded"
+     ],
+     [
+      "lead:improvement",
+      "succeeded"
+     ]
+    ],
+    "lead": {
+     "actor": "lead:improvement",
+     "attempt": 1,
+     "completed_at": "2026-09-22T00:00:00.005000+00:00",
+     "error": null,
+     "execution_deadline": "2026-09-22T00:45:00.003000+00:00",
+     "generation": 1,
+     "lease_owner": "5eed0000-0000-4000-8000-000000000003",
+     "lease_until": "2026-09-22T00:20:00.003000+00:00",
+     "owner": "5eed0000-0000-4000-8000-000000000003",
+     "phase": "threshold_review",
+     "result": {
+      "accepted": true,
+      "arc42_assessment": "fixture",
+      "basis_revision": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+      "blocked": false,
+      "execution_ref": "sha256:cd3ada27de1f678b6101b722d213ed5f9955c9f38802e5f6ca428d699df879b4",
+      "reason": "fixture assessment",
+      "risks": [],
+      "sre_assessment": "fixture"
+     },
+     "retry_budget": {
+      "bound_at": "2026-09-22T00:00:00.003000+00:00",
+      "max_attempts": 3,
+      "origin": "first_claim",
+      "version": 1
+     },
+     "status": "succeeded"
+    },
+    "no_effects": true,
+    "request": {
+     "activation_ready": false,
+     "completed_at": null,
+     "created_at": "2026-09-22T00:00:00+00:00",
+     "failed_decision": null,
+     "failure": null,
+     "reviews": [
+      {
+       "accepted": true,
+       "actor": "lead:improvement",
+       "at": "2026-09-22T00:00:00.005000+00:00",
+       "decision_id": "32befb3817d8cfffe0d66e5e3583a120074544109ea2a596e99b665cc4dc7498",
+       "generation": 1
+      },
+      {
+       "accepted": true,
+       "actor": "conductor",
+       "at": "2026-09-22T00:00:00.008000+00:00",
+       "decision_id": "3056a550ebae157b7df1eeb8b4862fc9b2f27d5b5c6baf45428cabe28fc500aa",
+       "generation": 1
+      }
+     ],
+     "scope": "assessment_only_no_dispatch_or_activation",
+     "status": "assessed"
+    },
+    "store": "20e69370fad72a0c"
+   }
+  },
+  "conductor_first": {
+   "claim_wrote": false,
+   "lease": null,
+   "state": {
+    "conductor": null,
+    "decisions": [
+     [
+      "lead:improvement",
+      "pending"
+     ]
+    ],
+    "lead": {
+     "actor": "lead:improvement",
+     "attempt": 0,
+     "completed_at": null,
+     "error": null,
+     "execution_deadline": null,
+     "generation": null,
+     "lease_owner": null,
+     "lease_until": null,
+     "owner": null,
+     "phase": "threshold_review",
+     "result": null,
+     "retry_budget": null,
+     "status": "pending"
+    },
+    "no_effects": true,
+    "request": {
+     "activation_ready": false,
+     "completed_at": null,
+     "created_at": "2026-09-22T00:00:00+00:00",
+     "failed_decision": null,
+     "failure": null,
+     "reviews": [],
+     "scope": "assessment_only_no_dispatch_or_activation",
+     "status": "awaiting_lead"
+    },
+    "store": "60da1bc3aa764e05"
+   }
+  },
+  "conductor_saw_lead_first": true,
+  "lead": {
+   "claim_wrote": true,
+   "complete": {
+    "store_after": "2581368e26dfd7f4",
+    "store_before": "a9d2ae3d8edb8551",
+    "value": {
+     "actor": "lead:improvement",
+     "attempt": 1,
+     "completed_at": "2026-09-22T00:00:00.005000+00:00",
+     "execution_clock": {
+      "deadline_remaining": 2700.0,
+      "domain": "00000000-0000-4000-8000-00000000a0d2",
+      "lease_seconds": 1200.0,
+      "monotonic": 1000.003,
+      "version": 1,
+      "wall": "2026-09-22T00:00:00.003000+00:00"
+     },
+     "execution_deadline": "2026-09-22T00:45:00.003000+00:00",
+     "generation": 1,
+     "id": "32befb3817d8cfffe0d66e5e3583a120074544109ea2a596e99b665cc4dc7498",
+     "input": {
+      "request_id": "43c9265dd33fa99b94c62fd71bd965f5b014e7f327dae323cee10f0fcfe479cf"
+     },
+     "lease_owner": "5eed0000-0000-4000-8000-000000000003",
+     "lease_until": "2026-09-22T00:20:00.003000+00:00",
+     "message": {
+      "causation_id": null,
+      "correlation_id": "43c9265dd33fa99b94c62fd71bd965f5b014e7f327dae323cee10f0fcfe479cf",
+      "how": {
+       "acceptance_criteria": [
+        "Preserve normal behavior"
+       ],
+       "constraints": [],
+       "context_ref": null,
+       "result_schema": "six-w.v1"
+      },
+      "message_id": "5eed0000-0000-4000-8000-000000000001",
+      "schema_version": "1.0",
+      "type": "task.assign",
+      "what": {
+       "action": "assess_threshold",
+       "details": {
+        "binding": "c3fe471007df0a23b40290acba102f3df91b323058141937569f0ef78f43006b",
+        "request_id": "43c9265dd33fa99b94c62fd71bd965f5b014e7f327dae323cee10f0fcfe479cf"
+       }
+      },
+      "when": {
+       "after": [],
+       "created_at": "2026-09-22T00:00:00+00:00",
+       "deadline": null
+      },
+      "where": {
+       "allowed_paths": [],
+       "environment": "local",
+       "repository": "codex-harness",
+       "revision": "bootstrap"
+      },
+      "who": {
+       "owner": "lead:improvement",
+       "recipient": "lead:improvement",
+       "sender": "conductor"
+      },
+      "why": {
+       "evidence_refs": [],
+       "objective": "Improve harness reliability from verified evidence"
+      }
+     },
+     "owner": "5eed0000-0000-4000-8000-000000000003",
+     "phase": "threshold_review",
+     "result": {
+      "accepted": true,
+      "arc42_assessment": "fixture",
+      "basis_revision": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+      "blocked": false,
+      "execution_ref": "sha256:cd3ada27de1f678b6101b722d213ed5f9955c9f38802e5f6ca428d699df879b4",
+      "reason": "fixture assessment",
+      "risks": [],
+      "sre_assessment": "fixture"
+     },
+     "retry_budget": {
+      "bound_at": "2026-09-22T00:00:00.003000+00:00",
+      "max_attempts": 3,
+      "origin": "first_claim",
+      "version": 1
+     },
+     "status": "succeeded"
+    },
+    "wrote": true
+   },
+   "lease": {
+    "_bucket": "decisions_pending",
+    "actor": "lead:improvement",
+    "attempt": 1,
+    "generation": 1,
+    "id": "32befb3817d8cfffe0d66e5e3583a120074544109ea2a596e99b665cc4dc7498",
+    "lease_until": "2026-09-22T00:20:00.003000+00:00",
+    "owner": "5eed0000-0000-4000-8000-000000000003",
+    "phase": "threshold_review",
+    "status": "running"
+   },
+   "prepare": {
+    "store_after": "a9d2ae3d8edb8551",
+    "store_before": "a9d2ae3d8edb8551",
+    "value": {
+     "binding": "c3fe471007df0a23b40290acba102f3df91b323058141937569f0ef78f43006b",
+     "execution": {
+      "decision_id": "32befb3817d8cfffe0d66e5e3583a120074544109ea2a596e99b665cc4dc7498",
+      "generation": 1
+     },
+     "prior_reviews": [],
+     "record": {
+      "activation_blockers": [
+       "native_task_success_and_release_review_required"
+      ],
+      "activation_ready": false,
+      "evidence_ref": "sha256:47d567320085c7610c523f4488d7e1344def106dede4d24363f788f24c70187f",
+      "id": "3ac9ee975d10e3094e9f1589d7c4476cbaa48dad4140d6cb1674554984d8a47c",
+      "project_key": "project",
+      "proposal": {
+       "corpus_hash": "corpus-1",
+       "current": 3,
+       "id": "proposal-1",
+       "name": "skill_match.FULL_BODY_MIN_SCORE",
+       "policy_revision": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+       "suggested": 4
+      },
+      "run_id": "dc9a22136a4d39a60c60a3bfa6d902a8838876a303d03d42af8f77be333a046e",
+      "status": "calculated"
+     },
+     "request_id": "43c9265dd33fa99b94c62fd71bd965f5b014e7f327dae323cee10f0fcfe479cf",
+     "scope": "assessment_only_no_dispatch_or_activation"
+    },
+    "wrote": false
+   },
+   "state": {
+    "conductor": {
+     "actor": "conductor",
+     "attempt": 0,
+     "completed_at": null,
+     "error": null,
+     "execution_deadline": null,
+     "generation": null,
+     "lease_owner": null,
+     "lease_until": null,
+     "owner": null,
+     "phase": "threshold_review",
+     "result": null,
+     "retry_budget": null,
+     "status": "pending"
+    },
+    "decisions": [
+     [
+      "conductor",
+      "pending"
+     ],
+     [
+      "lead:improvement",
+      "succeeded"
+     ]
+    ],
+    "lead": {
+     "actor": "lead:improvement",
+     "attempt": 1,
+     "completed_at": "2026-09-22T00:00:00.005000+00:00",
+     "error": null,
+     "execution_deadline": "2026-09-22T00:45:00.003000+00:00",
+     "generation": 1,
+     "lease_owner": "5eed0000-0000-4000-8000-000000000003",
+     "lease_until": "2026-09-22T00:20:00.003000+00:00",
+     "owner": "5eed0000-0000-4000-8000-000000000003",
+     "phase": "threshold_review",
+     "result": {
+      "accepted": true,
+      "arc42_assessment": "fixture",
+      "basis_revision": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+      "blocked": false,
+      "execution_ref": "sha256:cd3ada27de1f678b6101b722d213ed5f9955c9f38802e5f6ca428d699df879b4",
+      "reason": "fixture assessment",
+      "risks": [],
+      "sre_assessment": "fixture"
+     },
+     "retry_budget": {
+      "bound_at": "2026-09-22T00:00:00.003000+00:00",
+      "max_attempts": 3,
+      "origin": "first_claim",
+      "version": 1
+     },
+     "status": "succeeded"
+    },
+    "no_effects": true,
+    "request": {
+     "activation_ready": false,
+     "completed_at": null,
+     "created_at": "2026-09-22T00:00:00+00:00",
+     "failed_decision": null,
+     "failure": null,
+     "reviews": [
+      {
+       "accepted": true,
+       "actor": "lead:improvement",
+       "at": "2026-09-22T00:00:00.005000+00:00",
+       "decision_id": "32befb3817d8cfffe0d66e5e3583a120074544109ea2a596e99b665cc4dc7498",
+       "generation": 1
+      }
+     ],
+     "scope": "assessment_only_no_dispatch_or_activation",
+     "status": "awaiting_conductor"
+    },
+    "store": "2581368e26dfd7f4"
+   }
+  },
+  "lead_again": {
+   "claim_wrote": false,
+   "lease": null,
+   "state": {
+    "conductor": {
+     "actor": "conductor",
+     "attempt": 1,
+     "completed_at": "2026-09-22T00:00:00.008000+00:00",
+     "error": null,
+     "execution_deadline": "2026-09-22T00:45:00.006000+00:00",
+     "generation": 1,
+     "lease_owner": "5eed0000-0000-4000-8000-000000000005",
+     "lease_until": "2026-09-22T00:20:00.006000+00:00",
+     "owner": "5eed0000-0000-4000-8000-000000000005",
+     "phase": "threshold_review",
+     "result": {
+      "accepted": true,
+      "arc42_assessment": "fixture",
+      "basis_revision": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+      "blocked": false,
+      "execution_ref": "sha256:f6d8c2aea23924d8d1877dc5e47b39a669b31d6aa83a89ca726d13999cb42fb2",
+      "reason": "fixture assessment",
+      "risks": [],
+      "sre_assessment": "fixture"
+     },
+     "retry_budget": {
+      "bound_at": "2026-09-22T00:00:00.006000+00:00",
+      "max_attempts": 3,
+      "origin": "first_claim",
+      "version": 1
+     },
+     "status": "succeeded"
+    },
+    "decisions": [
+     [
+      "conductor",
+      "succeeded"
+     ],
+     [
+      "lead:improvement",
+      "succeeded"
+     ]
+    ],
+    "lead": {
+     "actor": "lead:improvement",
+     "attempt": 1,
+     "completed_at": "2026-09-22T00:00:00.005000+00:00",
+     "error": null,
+     "execution_deadline": "2026-09-22T00:45:00.003000+00:00",
+     "generation": 1,
+     "lease_owner": "5eed0000-0000-4000-8000-000000000003",
+     "lease_until": "2026-09-22T00:20:00.003000+00:00",
+     "owner": "5eed0000-0000-4000-8000-000000000003",
+     "phase": "threshold_review",
+     "result": {
+      "accepted": true,
+      "arc42_assessment": "fixture",
+      "basis_revision": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+      "blocked": false,
+      "execution_ref": "sha256:cd3ada27de1f678b6101b722d213ed5f9955c9f38802e5f6ca428d699df879b4",
+      "reason": "fixture assessment",
+      "risks": [],
+      "sre_assessment": "fixture"
+     },
+     "retry_budget": {
+      "bound_at": "2026-09-22T00:00:00.003000+00:00",
+      "max_attempts": 3,
+      "origin": "first_claim",
+      "version": 1
+     },
+     "status": "succeeded"
+    },
+    "no_effects": true,
+    "request": {
+     "activation_ready": false,
+     "completed_at": null,
+     "created_at": "2026-09-22T00:00:00+00:00",
+     "failed_decision": null,
+     "failure": null,
+     "reviews": [
+      {
+       "accepted": true,
+       "actor": "lead:improvement",
+       "at": "2026-09-22T00:00:00.005000+00:00",
+       "decision_id": "32befb3817d8cfffe0d66e5e3583a120074544109ea2a596e99b665cc4dc7498",
+       "generation": 1
+      },
+      {
+       "accepted": true,
+       "actor": "conductor",
+       "at": "2026-09-22T00:00:00.008000+00:00",
+       "decision_id": "3056a550ebae157b7df1eeb8b4862fc9b2f27d5b5c6baf45428cabe28fc500aa",
+       "generation": 1
+      }
+     ],
+     "scope": "assessment_only_no_dispatch_or_activation",
+     "status": "assessed"
+    },
+    "store": "20e69370fad72a0c"
+   }
+  },
+  "m7_test": "test_executor_orders_independent_assessments_without_dispatch_or_activation",
+  "request": {
+   "store_after": "60da1bc3aa764e05",
+   "store_before": "93c2a28415d7d3d4",
+   "value": {
+    "activation_ready": false,
+    "binding": "c3fe471007df0a23b40290acba102f3df91b323058141937569f0ef78f43006b",
+    "created_at": "2026-09-22T00:00:00+00:00",
+    "id": "43c9265dd33fa99b94c62fd71bd965f5b014e7f327dae323cee10f0fcfe479cf",
+    "reviews": [],
+    "row_id": "3ac9ee975d10e3094e9f1589d7c4476cbaa48dad4140d6cb1674554984d8a47c",
+    "scope": "assessment_only_no_dispatch_or_activation",
+    "status": "awaiting_lead"
+   },
+   "wrote": true
+  },
+  "request_again": {
+   "store_after": "60da1bc3aa764e05",
+   "store_before": "60da1bc3aa764e05",
+   "value": {
+    "activation_ready": false,
+    "binding": "c3fe471007df0a23b40290acba102f3df91b323058141937569f0ef78f43006b",
+    "created_at": "2026-09-22T00:00:00+00:00",
+    "id": "43c9265dd33fa99b94c62fd71bd965f5b014e7f327dae323cee10f0fcfe479cf",
+    "reviews": [],
+    "row_id": "3ac9ee975d10e3094e9f1589d7c4476cbaa48dad4140d6cb1674554984d8a47c",
+    "scope": "assessment_only_no_dispatch_or_activation",
+    "status": "awaiting_lead"
+   },
+   "wrote": false
+  },
+  "request_terminal": {
+   "store_after": "20e69370fad72a0c",
+   "store_before": "20e69370fad72a0c",
+   "value": {
+    "activation_ready": false,
+    "binding": "c3fe471007df0a23b40290acba102f3df91b323058141937569f0ef78f43006b",
+    "created_at": "2026-09-22T00:00:00+00:00",
+    "id": "43c9265dd33fa99b94c62fd71bd965f5b014e7f327dae323cee10f0fcfe479cf",
+    "reviews": [
+     {
+      "actor": "lead:improvement",
+      "at": "2026-09-22T00:00:00.005000+00:00",
+      "decision_id": "32befb3817d8cfffe0d66e5e3583a120074544109ea2a596e99b665cc4dc7498",
+      "generation": 1,
+      "result": {
+       "accepted": true,
+       "arc42_assessment": "fixture",
+       "basis_revision": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+       "blocked": false,
+       "execution_ref": "sha256:cd3ada27de1f678b6101b722d213ed5f9955c9f38802e5f6ca428d699df879b4",
+       "reason": "fixture assessment",
+       "risks": [],
+       "sre_assessment": "fixture"
+      }
+     },
+     {
+      "actor": "conductor",
+      "at": "2026-09-22T00:00:00.008000+00:00",
+      "decision_id": "3056a550ebae157b7df1eeb8b4862fc9b2f27d5b5c6baf45428cabe28fc500aa",
+      "generation": 1,
+      "result": {
+       "accepted": true,
+       "arc42_assessment": "fixture",
+       "basis_revision": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+       "blocked": false,
+       "execution_ref": "sha256:f6d8c2aea23924d8d1877dc5e47b39a669b31d6aa83a89ca726d13999cb42fb2",
+       "reason": "fixture assessment",
+       "risks": [],
+       "sre_assessment": "fixture"
+      }
+     }
+    ],
+    "row_id": "3ac9ee975d10e3094e9f1589d7c4476cbaa48dad4140d6cb1674554984d8a47c",
+    "scope": "assessment_only_no_dispatch_or_activation",
+    "status": "assessed"
+   },
+   "wrote": false
+  },
+  "state_requested": {
+   "conductor": null,
+   "decisions": [
+    [
+     "lead:improvement",
+     "pending"
+    ]
+   ],
+   "lead": {
+    "actor": "lead:improvement",
+    "attempt": 0,
+    "completed_at": null,
+    "error": null,
+    "execution_deadline": null,
+    "generation": null,
+    "lease_owner": null,
+    "lease_until": null,
+    "owner": null,
+    "phase": "threshold_review",
+    "result": null,
+    "retry_budget": null,
+    "status": "pending"
+   },
+   "no_effects": true,
+   "request": {
+    "activation_ready": false,
+    "completed_at": null,
+    "created_at": "2026-09-22T00:00:00+00:00",
+    "failed_decision": null,
+    "failure": null,
+    "reviews": [],
+    "scope": "assessment_only_no_dispatch_or_activation",
+    "status": "awaiting_lead"
+   },
+   "store": "60da1bc3aa764e05"
+  }
+ },
+ "prepare_refusals": {
+  "conductor_order": {
+   "message": "Threshold review order changed",
+   "refused": "ContractError",
+   "store_after": "e83225e3f2f8c30a",
+   "store_before": "e83225e3f2f8c30a",
+   "wrote": false
+  },
+  "identity": {
+   "message": "Threshold decision identity mismatch",
+   "refused": "ContractError",
+   "store_after": "393c32dc915f6bec",
+   "store_before": "393c32dc915f6bec",
+   "wrote": false
+  },
+  "input_changed": {
+   "message": "Threshold review input changed",
+   "refused": "ContractError",
+   "store_after": "7bd537e6e87dc396",
+   "store_before": "7bd537e6e87dc396",
+   "wrote": false
+  },
+  "m7_test": "none",
+  "order": {
+   "message": "Threshold review order changed",
+   "refused": "ContractError",
+   "store_after": "3484c6ff5bf7b2b1",
+   "store_before": "3484c6ff5bf7b2b1",
+   "wrote": false
+  },
+  "request_missing": {
+   "message": "Threshold review request missing",
+   "refused": "ContractError",
+   "store_after": "73cacde3095f83fd",
+   "store_before": "73cacde3095f83fd",
+   "wrote": false
+  },
+  "row_changed": {
+   "message": "Threshold review input changed",
+   "refused": "ContractError",
+   "store_after": "c286c22125b931e2",
+   "store_before": "c286c22125b931e2",
+   "wrote": false
+  },
+  "wrong_actor": {
+   "message": "Stale or expired task execution",
+   "refused": "ContractError",
+   "store_after": "b0d6a0aa5c7e33a8",
+   "store_before": "b0d6a0aa5c7e33a8",
+   "wrote": false
+  },
+  "wrong_phase": {
+   "message": "Wrong threshold decision phase",
+   "refused": "ContractError",
+   "store_after": "007ecbe32a442ba6",
+   "store_before": "007ecbe32a442ba6",
+   "wrote": false
+  }
+ },
+ "previous_generation_receipt": {
+  "first_complete": {
+   "message": "Stale or expired task execution",
+   "refused": "ContractError",
+   "store_after": "e8fec7b5126cd4b2",
+   "store_before": "e8fec7b5126cd4b2",
+   "wrote": false
+  },
+  "first_lease": {
+   "_bucket": "decisions_pending",
+   "actor": "lead:improvement",
+   "attempt": 1,
+   "generation": 1,
+   "id": "32befb3817d8cfffe0d66e5e3583a120074544109ea2a596e99b665cc4dc7498",
+   "lease_until": "2026-09-22T00:20:00.071000+00:00",
+   "owner": "5eed0000-0000-4000-8000-00000000002b",
+   "phase": "threshold_review",
+   "status": "running"
+  },
+  "first_prepare": {
+   "store_after": "d2d974a6a07d2ca7",
+   "store_before": "d2d974a6a07d2ca7",
+   "value": {
+    "binding": "c3fe471007df0a23b40290acba102f3df91b323058141937569f0ef78f43006b",
+    "execution": {
+     "decision_id": "32befb3817d8cfffe0d66e5e3583a120074544109ea2a596e99b665cc4dc7498",
+     "generation": 1
+    },
+    "prior_reviews": [],
+    "record": {
+     "activation_blockers": [
+      "native_task_success_and_release_review_required"
+     ],
+     "activation_ready": false,
+     "evidence_ref": "sha256:47d567320085c7610c523f4488d7e1344def106dede4d24363f788f24c70187f",
+     "id": "3ac9ee975d10e3094e9f1589d7c4476cbaa48dad4140d6cb1674554984d8a47c",
+     "project_key": "project",
+     "proposal": {
+      "corpus_hash": "corpus-1",
+      "current": 3,
+      "id": "proposal-1",
+      "name": "skill_match.FULL_BODY_MIN_SCORE",
+      "policy_revision": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+      "suggested": 4
+     },
+     "run_id": "dc9a22136a4d39a60c60a3bfa6d902a8838876a303d03d42af8f77be333a046e",
+     "status": "calculated"
+    },
+    "request_id": "43c9265dd33fa99b94c62fd71bd965f5b014e7f327dae323cee10f0fcfe479cf",
+    "scope": "assessment_only_no_dispatch_or_activation"
+   },
+   "wrote": false
+  },
+  "m7_test": "test_receipt_from_previous_generation_is_not_reused",
+  "second_complete": {
+   "message": "Threshold execution receipt mismatch",
+   "refused": "ContractError",
+   "store_after": "c05948ae49fc2012",
+   "store_before": "c05948ae49fc2012",
+   "wrote": false
+  },
+  "second_lease": {
+   "_bucket": "decisions_pending",
+   "actor": "lead:improvement",
+   "attempt": 2,
+   "generation": 3,
+   "id": "32befb3817d8cfffe0d66e5e3583a120074544109ea2a596e99b665cc4dc7498",
+   "lease_until": "2026-09-22T00:20:00.074000+00:00",
+   "owner": "5eed0000-0000-4000-8000-00000000002c",
+   "phase": "threshold_review",
+   "status": "running"
+  },
+  "second_prepare": {
+   "store_after": "c05948ae49fc2012",
+   "store_before": "c05948ae49fc2012",
+   "value": {
+    "binding": "c3fe471007df0a23b40290acba102f3df91b323058141937569f0ef78f43006b",
+    "execution": {
+     "decision_id": "32befb3817d8cfffe0d66e5e3583a120074544109ea2a596e99b665cc4dc7498",
+     "generation": 3
+    },
+    "prior_reviews": [],
+    "record": {
+     "activation_blockers": [
+      "native_task_success_and_release_review_required"
+     ],
+     "activation_ready": false,
+     "evidence_ref": "sha256:47d567320085c7610c523f4488d7e1344def106dede4d24363f788f24c70187f",
+     "id": "3ac9ee975d10e3094e9f1589d7c4476cbaa48dad4140d6cb1674554984d8a47c",
+     "project_key": "project",
+     "proposal": {
+      "corpus_hash": "corpus-1",
+      "current": 3,
+      "id": "proposal-1",
+      "name": "skill_match.FULL_BODY_MIN_SCORE",
+      "policy_revision": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+      "suggested": 4
+     },
+     "run_id": "dc9a22136a4d39a60c60a3bfa6d902a8838876a303d03d42af8f77be333a046e",
+     "status": "calculated"
+    },
+    "request_id": "43c9265dd33fa99b94c62fd71bd965f5b014e7f327dae323cee10f0fcfe479cf",
+    "scope": "assessment_only_no_dispatch_or_activation"
+   },
+   "wrote": false
+  },
+  "state": {
+   "conductor": null,
+   "decisions": [
+    [
+     "lead:improvement",
+     "running"
+    ]
+   ],
+   "lead": {
+    "actor": "lead:improvement",
+    "attempt": 2,
+    "completed_at": null,
+    "error": null,
+    "execution_deadline": "2026-09-22T00:45:00.071000+00:00",
+    "generation": 3,
+    "lease_owner": "5eed0000-0000-4000-8000-00000000002c",
+    "lease_until": "2026-09-22T00:20:00.074000+00:00",
+    "owner": "5eed0000-0000-4000-8000-00000000002c",
+    "phase": "threshold_review",
+    "result": null,
+    "retry_budget": {
+     "bound_at": "2026-09-22T00:00:00.071000+00:00",
+     "max_attempts": 3,
+     "origin": "first_claim",
+     "version": 1
+    },
+    "status": "running"
+   },
+   "no_effects": true,
+   "request": {
+    "activation_ready": false,
+    "completed_at": null,
+    "created_at": "2026-09-22T00:00:00.070000+00:00",
+    "failed_decision": null,
+    "failure": null,
+    "reviews": [],
+    "scope": "assessment_only_no_dispatch_or_activation",
+    "status": "awaiting_lead"
+   },
+   "store": "c05948ae49fc2012"
+  }
+ },
+ "records": {
+  "m7_test": "none",
+  "restore": {
+   "store_after": "920ec0a2831eadc2",
+   "store_before": "93c2a28415d7d3d4",
+   "value": null,
+   "wrote": true
+  },
+  "restore_again": {
+   "store_after": "920ec0a2831eadc2",
+   "store_before": "920ec0a2831eadc2",
+   "value": null,
+   "wrote": false
+  },
+  "restore_changed": {
+   "store_after": "db855ce230d323e7",
+   "store_before": "920ec0a2831eadc2",
+   "value": null,
+   "wrote": true
+  },
+  "restore_without_id": {
+   "message": "'id'",
+   "refused": "KeyError",
+   "store_after": "db855ce230d323e7",
+   "store_before": "db855ce230d323e7",
+   "wrote": false
+  },
+  "restored": {
+   "binding": "c3fe471007df0a23b40290acba102f3df91b323058141937569f0ef78f43006b",
+   "id": "request-1",
+   "reviews": [],
+   "row_id": "3ac9ee975d10e3094e9f1589d7c4476cbaa48dad4140d6cb1674554984d8a47c",
+   "status": "failed"
+  },
+  "restored_changed": {
+   "binding": "c3fe471007df0a23b40290acba102f3df91b323058141937569f0ef78f43006b",
+   "id": "request-1",
+   "reviews": [],
+   "row_id": "3ac9ee975d10e3094e9f1589d7c4476cbaa48dad4140d6cb1674554984d8a47c",
+   "status": "awaiting_lead"
+  },
+  "row": {
+   "store_after": "93c2a28415d7d3d4",
+   "store_before": "93c2a28415d7d3d4",
+   "value": {
+    "activation_blockers": [
+     "native_task_success_and_release_review_required"
+    ],
+    "activation_ready": false,
+    "evidence_ref": "sha256:47d567320085c7610c523f4488d7e1344def106dede4d24363f788f24c70187f",
+    "id": "3ac9ee975d10e3094e9f1589d7c4476cbaa48dad4140d6cb1674554984d8a47c",
+    "project_key": "project",
+    "proposal": {
+     "corpus_hash": "corpus-1",
+     "current": 3,
+     "id": "proposal-1",
+     "name": "skill_match.FULL_BODY_MIN_SCORE",
+     "policy_revision": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+     "suggested": 4
+    },
+    "run_id": "dc9a22136a4d39a60c60a3bfa6d902a8838876a303d03d42af8f77be333a046e",
+    "status": "calculated"
+   },
+   "wrote": false
+  },
+  "row_absent": {
+   "message": "Calculated threshold record required",
+   "refused": "ContractError",
+   "store_after": "93c2a28415d7d3d4",
+   "store_before": "93c2a28415d7d3d4",
+   "wrote": false
+  }
+ },
+ "rejection_or_blockage": {
+  "blocked": {
+   "claim_wrote": true,
+   "complete": {
+    "store_after": "a6cb25fe8c327c47",
+    "store_before": "c995f37a1c6aa4a4",
+    "value": {
+     "actor": "lead:improvement",
+     "attempt": 1,
+     "completed_at": "2026-09-22T00:00:00.020000+00:00",
+     "execution_clock": {
+      "deadline_remaining": 2700.0,
+      "domain": "00000000-0000-4000-8000-00000000a0d2",
+      "lease_seconds": 1200.0,
+      "monotonic": 1000.018,
+      "version": 1,
+      "wall": "2026-09-22T00:00:00.018000+00:00"
+     },
+     "execution_deadline": "2026-09-22T00:45:00.018000+00:00",
+     "generation": 1,
+     "id": "32befb3817d8cfffe0d66e5e3583a120074544109ea2a596e99b665cc4dc7498",
+     "input": {
+      "request_id": "43c9265dd33fa99b94c62fd71bd965f5b014e7f327dae323cee10f0fcfe479cf"
+     },
+     "lease_owner": "5eed0000-0000-4000-8000-00000000000c",
+     "lease_until": "2026-09-22T00:20:00.018000+00:00",
+     "message": {
+      "causation_id": null,
+      "correlation_id": "43c9265dd33fa99b94c62fd71bd965f5b014e7f327dae323cee10f0fcfe479cf",
+      "how": {
+       "acceptance_criteria": [
+        "Preserve normal behavior"
+       ],
+       "constraints": [],
+       "context_ref": null,
+       "result_schema": "six-w.v1"
+      },
+      "message_id": "5eed0000-0000-4000-8000-00000000000b",
+      "schema_version": "1.0",
+      "type": "task.assign",
+      "what": {
+       "action": "assess_threshold",
+       "details": {
+        "binding": "c3fe471007df0a23b40290acba102f3df91b323058141937569f0ef78f43006b",
+        "request_id": "43c9265dd33fa99b94c62fd71bd965f5b014e7f327dae323cee10f0fcfe479cf"
+       }
+      },
+      "when": {
+       "after": [],
+       "created_at": "2026-09-22T00:00:00.017000+00:00",
+       "deadline": null
+      },
+      "where": {
+       "allowed_paths": [],
+       "environment": "local",
+       "repository": "codex-harness",
+       "revision": "bootstrap"
+      },
+      "who": {
+       "owner": "lead:improvement",
+       "recipient": "lead:improvement",
+       "sender": "conductor"
+      },
+      "why": {
+       "evidence_refs": [],
+       "objective": "Improve harness reliability from verified evidence"
+      }
+     },
+     "owner": "5eed0000-0000-4000-8000-00000000000c",
+     "phase": "threshold_review",
+     "result": {
+      "accepted": false,
+      "arc42_assessment": "fixture",
+      "basis_revision": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+      "blocked": true,
+      "execution_ref": "sha256:36b6bfea2d565908f62b084ccd61f608b0384595bdb0e93e89d2b698d754ac4a",
+      "reason": "fixture assessment",
+      "risks": [],
+      "sre_assessment": "fixture"
+     },
+     "retry_budget": {
+      "bound_at": "2026-09-22T00:00:00.018000+00:00",
+      "max_attempts": 3,
+      "origin": "first_claim",
+      "version": 1
+     },
+     "status": "blocked"
+    },
+    "wrote": true
+   },
+   "conductor_claim": {
+    "claim_wrote": false,
+    "lease": null,
+    "state": {
+     "conductor": null,
+     "decisions": [
+      [
+       "lead:improvement",
+       "blocked"
+      ]
+     ],
+     "lead": {
+      "actor": "lead:improvement",
+      "attempt": 1,
+      "completed_at": "2026-09-22T00:00:00.020000+00:00",
+      "error": null,
+      "execution_deadline": "2026-09-22T00:45:00.018000+00:00",
+      "generation": 1,
+      "lease_owner": "5eed0000-0000-4000-8000-00000000000c",
+      "lease_until": "2026-09-22T00:20:00.018000+00:00",
+      "owner": "5eed0000-0000-4000-8000-00000000000c",
+      "phase": "threshold_review",
+      "result": {
+       "accepted": false,
+       "arc42_assessment": "fixture",
+       "basis_revision": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+       "blocked": true,
+       "execution_ref": "sha256:36b6bfea2d565908f62b084ccd61f608b0384595bdb0e93e89d2b698d754ac4a",
+       "reason": "fixture assessment",
+       "risks": [],
+       "sre_assessment": "fixture"
+      },
+      "retry_budget": {
+       "bound_at": "2026-09-22T00:00:00.018000+00:00",
+       "max_attempts": 3,
+       "origin": "first_claim",
+       "version": 1
+      },
+      "status": "blocked"
+     },
+     "no_effects": true,
+     "request": {
+      "activation_ready": false,
+      "completed_at": null,
+      "created_at": "2026-09-22T00:00:00.017000+00:00",
+      "failed_decision": null,
+      "failure": null,
+      "reviews": [
+       {
+        "accepted": false,
+        "actor": "lead:improvement",
+        "at": "2026-09-22T00:00:00.020000+00:00",
+        "decision_id": "32befb3817d8cfffe0d66e5e3583a120074544109ea2a596e99b665cc4dc7498",
+        "generation": 1
+       }
+      ],
+      "scope": "assessment_only_no_dispatch_or_activation",
+      "status": "blocked"
+     },
+     "store": "a6cb25fe8c327c47"
+    }
+   },
+   "lease": {
+    "_bucket": "decisions_pending",
+    "actor": "lead:improvement",
+    "attempt": 1,
+    "generation": 1,
+    "id": "32befb3817d8cfffe0d66e5e3583a120074544109ea2a596e99b665cc4dc7498",
+    "lease_until": "2026-09-22T00:20:00.018000+00:00",
+    "owner": "5eed0000-0000-4000-8000-00000000000c",
+    "phase": "threshold_review",
+    "status": "running"
+   },
+   "prepare": {
+    "store_after": "c995f37a1c6aa4a4",
+    "store_before": "c995f37a1c6aa4a4",
+    "value": {
+     "binding": "c3fe471007df0a23b40290acba102f3df91b323058141937569f0ef78f43006b",
+     "execution": {
+      "decision_id": "32befb3817d8cfffe0d66e5e3583a120074544109ea2a596e99b665cc4dc7498",
+      "generation": 1
+     },
+     "prior_reviews": [],
+     "record": {
+      "activation_blockers": [
+       "native_task_success_and_release_review_required"
+      ],
+      "activation_ready": false,
+      "evidence_ref": "sha256:47d567320085c7610c523f4488d7e1344def106dede4d24363f788f24c70187f",
+      "id": "3ac9ee975d10e3094e9f1589d7c4476cbaa48dad4140d6cb1674554984d8a47c",
+      "project_key": "project",
+      "proposal": {
+       "corpus_hash": "corpus-1",
+       "current": 3,
+       "id": "proposal-1",
+       "name": "skill_match.FULL_BODY_MIN_SCORE",
+       "policy_revision": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+       "suggested": 4
+      },
+      "run_id": "dc9a22136a4d39a60c60a3bfa6d902a8838876a303d03d42af8f77be333a046e",
+      "status": "calculated"
+     },
+     "request_id": "43c9265dd33fa99b94c62fd71bd965f5b014e7f327dae323cee10f0fcfe479cf",
+     "scope": "assessment_only_no_dispatch_or_activation"
+    },
+    "wrote": false
+   },
+   "state": {
+    "conductor": null,
+    "decisions": [
+     [
+      "lead:improvement",
+      "blocked"
+     ]
+    ],
+    "lead": {
+     "actor": "lead:improvement",
+     "attempt": 1,
+     "completed_at": "2026-09-22T00:00:00.020000+00:00",
+     "error": null,
+     "execution_deadline": "2026-09-22T00:45:00.018000+00:00",
+     "generation": 1,
+     "lease_owner": "5eed0000-0000-4000-8000-00000000000c",
+     "lease_until": "2026-09-22T00:20:00.018000+00:00",
+     "owner": "5eed0000-0000-4000-8000-00000000000c",
+     "phase": "threshold_review",
+     "result": {
+      "accepted": false,
+      "arc42_assessment": "fixture",
+      "basis_revision": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+      "blocked": true,
+      "execution_ref": "sha256:36b6bfea2d565908f62b084ccd61f608b0384595bdb0e93e89d2b698d754ac4a",
+      "reason": "fixture assessment",
+      "risks": [],
+      "sre_assessment": "fixture"
+     },
+     "retry_budget": {
+      "bound_at": "2026-09-22T00:00:00.018000+00:00",
+      "max_attempts": 3,
+      "origin": "first_claim",
+      "version": 1
+     },
+     "status": "blocked"
+    },
+    "no_effects": true,
+    "request": {
+     "activation_ready": false,
+     "completed_at": null,
+     "created_at": "2026-09-22T00:00:00.017000+00:00",
+     "failed_decision": null,
+     "failure": null,
+     "reviews": [
+      {
+       "accepted": false,
+       "actor": "lead:improvement",
+       "at": "2026-09-22T00:00:00.020000+00:00",
+       "decision_id": "32befb3817d8cfffe0d66e5e3583a120074544109ea2a596e99b665cc4dc7498",
+       "generation": 1
+      }
+     ],
+     "scope": "assessment_only_no_dispatch_or_activation",
+     "status": "blocked"
+    },
+    "store": "a6cb25fe8c327c47"
+   }
+  },
+  "m7_test": "test_rejection_or_blockage_cannot_queue_conductor",
+  "rejected": {
+   "claim_wrote": true,
+   "complete": {
+    "store_after": "4db4ded8224cad52",
+    "store_before": "257c8e7e1f30cd1f",
+    "value": {
+     "actor": "lead:improvement",
+     "attempt": 1,
+     "completed_at": "2026-09-22T00:00:00.015000+00:00",
+     "execution_clock": {
+      "deadline_remaining": 2700.0,
+      "domain": "00000000-0000-4000-8000-00000000a0d2",
+      "lease_seconds": 1200.0,
+      "monotonic": 1000.013,
+      "version": 1,
+      "wall": "2026-09-22T00:00:00.013000+00:00"
+     },
+     "execution_deadline": "2026-09-22T00:45:00.013000+00:00",
+     "generation": 1,
+     "id": "32befb3817d8cfffe0d66e5e3583a120074544109ea2a596e99b665cc4dc7498",
+     "input": {
+      "request_id": "43c9265dd33fa99b94c62fd71bd965f5b014e7f327dae323cee10f0fcfe479cf"
+     },
+     "lease_owner": "5eed0000-0000-4000-8000-000000000009",
+     "lease_until": "2026-09-22T00:20:00.013000+00:00",
+     "message": {
+      "causation_id": null,
+      "correlation_id": "43c9265dd33fa99b94c62fd71bd965f5b014e7f327dae323cee10f0fcfe479cf",
+      "how": {
+       "acceptance_criteria": [
+        "Preserve normal behavior"
+       ],
+       "constraints": [],
+       "context_ref": null,
+       "result_schema": "six-w.v1"
+      },
+      "message_id": "5eed0000-0000-4000-8000-000000000008",
+      "schema_version": "1.0",
+      "type": "task.assign",
+      "what": {
+       "action": "assess_threshold",
+       "details": {
+        "binding": "c3fe471007df0a23b40290acba102f3df91b323058141937569f0ef78f43006b",
+        "request_id": "43c9265dd33fa99b94c62fd71bd965f5b014e7f327dae323cee10f0fcfe479cf"
+       }
+      },
+      "when": {
+       "after": [],
+       "created_at": "2026-09-22T00:00:00.012000+00:00",
+       "deadline": null
+      },
+      "where": {
+       "allowed_paths": [],
+       "environment": "local",
+       "repository": "codex-harness",
+       "revision": "bootstrap"
+      },
+      "who": {
+       "owner": "lead:improvement",
+       "recipient": "lead:improvement",
+       "sender": "conductor"
+      },
+      "why": {
+       "evidence_refs": [],
+       "objective": "Improve harness reliability from verified evidence"
+      }
+     },
+     "owner": "5eed0000-0000-4000-8000-000000000009",
+     "phase": "threshold_review",
+     "result": {
+      "accepted": false,
+      "arc42_assessment": "fixture",
+      "basis_revision": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+      "blocked": false,
+      "execution_ref": "sha256:295433c3212e8b7098bb7219481402728fea9914208094b58d1a6cf1100c78ab",
+      "reason": "fixture assessment",
+      "risks": [],
+      "sre_assessment": "fixture"
+     },
+     "retry_budget": {
+      "bound_at": "2026-09-22T00:00:00.013000+00:00",
+      "max_attempts": 3,
+      "origin": "first_claim",
+      "version": 1
+     },
+     "status": "succeeded"
+    },
+    "wrote": true
+   },
+   "conductor_claim": {
+    "claim_wrote": false,
+    "lease": null,
+    "state": {
+     "conductor": null,
+     "decisions": [
+      [
+       "lead:improvement",
+       "succeeded"
+      ]
+     ],
+     "lead": {
+      "actor": "lead:improvement",
+      "attempt": 1,
+      "completed_at": "2026-09-22T00:00:00.015000+00:00",
+      "error": null,
+      "execution_deadline": "2026-09-22T00:45:00.013000+00:00",
+      "generation": 1,
+      "lease_owner": "5eed0000-0000-4000-8000-000000000009",
+      "lease_until": "2026-09-22T00:20:00.013000+00:00",
+      "owner": "5eed0000-0000-4000-8000-000000000009",
+      "phase": "threshold_review",
+      "result": {
+       "accepted": false,
+       "arc42_assessment": "fixture",
+       "basis_revision": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+       "blocked": false,
+       "execution_ref": "sha256:295433c3212e8b7098bb7219481402728fea9914208094b58d1a6cf1100c78ab",
+       "reason": "fixture assessment",
+       "risks": [],
+       "sre_assessment": "fixture"
+      },
+      "retry_budget": {
+       "bound_at": "2026-09-22T00:00:00.013000+00:00",
+       "max_attempts": 3,
+       "origin": "first_claim",
+       "version": 1
+      },
+      "status": "succeeded"
+     },
+     "no_effects": true,
+     "request": {
+      "activation_ready": false,
+      "completed_at": null,
+      "created_at": "2026-09-22T00:00:00.012000+00:00",
+      "failed_decision": null,
+      "failure": null,
+      "reviews": [
+       {
+        "accepted": false,
+        "actor": "lead:improvement",
+        "at": "2026-09-22T00:00:00.015000+00:00",
+        "decision_id": "32befb3817d8cfffe0d66e5e3583a120074544109ea2a596e99b665cc4dc7498",
+        "generation": 1
+       }
+      ],
+      "scope": "assessment_only_no_dispatch_or_activation",
+      "status": "rejected"
+     },
+     "store": "4db4ded8224cad52"
+    }
+   },
+   "lease": {
+    "_bucket": "decisions_pending",
+    "actor": "lead:improvement",
+    "attempt": 1,
+    "generation": 1,
+    "id": "32befb3817d8cfffe0d66e5e3583a120074544109ea2a596e99b665cc4dc7498",
+    "lease_until": "2026-09-22T00:20:00.013000+00:00",
+    "owner": "5eed0000-0000-4000-8000-000000000009",
+    "phase": "threshold_review",
+    "status": "running"
+   },
+   "prepare": {
+    "store_after": "257c8e7e1f30cd1f",
+    "store_before": "257c8e7e1f30cd1f",
+    "value": {
+     "binding": "c3fe471007df0a23b40290acba102f3df91b323058141937569f0ef78f43006b",
+     "execution": {
+      "decision_id": "32befb3817d8cfffe0d66e5e3583a120074544109ea2a596e99b665cc4dc7498",
+      "generation": 1
+     },
+     "prior_reviews": [],
+     "record": {
+      "activation_blockers": [
+       "native_task_success_and_release_review_required"
+      ],
+      "activation_ready": false,
+      "evidence_ref": "sha256:47d567320085c7610c523f4488d7e1344def106dede4d24363f788f24c70187f",
+      "id": "3ac9ee975d10e3094e9f1589d7c4476cbaa48dad4140d6cb1674554984d8a47c",
+      "project_key": "project",
+      "proposal": {
+       "corpus_hash": "corpus-1",
+       "current": 3,
+       "id": "proposal-1",
+       "name": "skill_match.FULL_BODY_MIN_SCORE",
+       "policy_revision": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+       "suggested": 4
+      },
+      "run_id": "dc9a22136a4d39a60c60a3bfa6d902a8838876a303d03d42af8f77be333a046e",
+      "status": "calculated"
+     },
+     "request_id": "43c9265dd33fa99b94c62fd71bd965f5b014e7f327dae323cee10f0fcfe479cf",
+     "scope": "assessment_only_no_dispatch_or_activation"
+    },
+    "wrote": false
+   },
+   "state": {
+    "conductor": null,
+    "decisions": [
+     [
+      "lead:improvement",
+      "succeeded"
+     ]
+    ],
+    "lead": {
+     "actor": "lead:improvement",
+     "attempt": 1,
+     "completed_at": "2026-09-22T00:00:00.015000+00:00",
+     "error": null,
+     "execution_deadline": "2026-09-22T00:45:00.013000+00:00",
+     "generation": 1,
+     "lease_owner": "5eed0000-0000-4000-8000-000000000009",
+     "lease_until": "2026-09-22T00:20:00.013000+00:00",
+     "owner": "5eed0000-0000-4000-8000-000000000009",
+     "phase": "threshold_review",
+     "result": {
+      "accepted": false,
+      "arc42_assessment": "fixture",
+      "basis_revision": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+      "blocked": false,
+      "execution_ref": "sha256:295433c3212e8b7098bb7219481402728fea9914208094b58d1a6cf1100c78ab",
+      "reason": "fixture assessment",
+      "risks": [],
+      "sre_assessment": "fixture"
+     },
+     "retry_budget": {
+      "bound_at": "2026-09-22T00:00:00.013000+00:00",
+      "max_attempts": 3,
+      "origin": "first_claim",
+      "version": 1
+     },
+     "status": "succeeded"
+    },
+    "no_effects": true,
+    "request": {
+     "activation_ready": false,
+     "completed_at": null,
+     "created_at": "2026-09-22T00:00:00.012000+00:00",
+     "failed_decision": null,
+     "failure": null,
+     "reviews": [
+      {
+       "accepted": false,
+       "actor": "lead:improvement",
+       "at": "2026-09-22T00:00:00.015000+00:00",
+       "decision_id": "32befb3817d8cfffe0d66e5e3583a120074544109ea2a596e99b665cc4dc7498",
+       "generation": 1
+      }
+     ],
+     "scope": "assessment_only_no_dispatch_or_activation",
+     "status": "rejected"
+    },
+    "store": "4db4ded8224cad52"
+   }
+  }
+ },
+ "request_refusals": {
+  "absent_row": {
+   "message": "Calculated threshold record required",
+   "refused": "ContractError",
+   "store_after": "504c304f1d7c96e2",
+   "store_before": "504c304f1d7c96e2",
+   "wrote": false
+  },
+  "activation_ready": {
+   "message": "Calculated threshold record required",
+   "refused": "ContractError",
+   "store_after": "99e945d954e2fe59",
+   "store_before": "99e945d954e2fe59",
+   "wrote": false
+  },
+  "artifact_project": {
+   "message": "Threshold artifact binding changed",
+   "refused": "ContractError",
+   "store_after": "93c2a28415d7d3d4",
+   "store_before": "93c2a28415d7d3d4",
+   "wrote": false
+  },
+  "artifact_proposal": {
+   "message": "Threshold artifact binding changed",
+   "refused": "ContractError",
+   "store_after": "93c2a28415d7d3d4",
+   "store_before": "93c2a28415d7d3d4",
+   "wrote": false
+  },
+  "blocker_missing": {
+   "message": "Calculated threshold record required",
+   "refused": "ContractError",
+   "store_after": "715dfeda673275ec",
+   "store_before": "715dfeda673275ec",
+   "wrote": false
+  },
+  "m7_test": "none",
+  "not_calculated": {
+   "message": "Calculated threshold record required",
+   "refused": "ContractError",
+   "store_after": "07394549f7de5413",
+   "store_before": "07394549f7de5413",
+   "wrote": false
+  },
+  "row_identity": {
+   "message": "Threshold record identity changed",
+   "refused": "ContractError",
+   "store_after": "7cf661bb6f3dba41",
+   "store_before": "7cf661bb6f3dba41",
+   "wrote": false
+  },
+  "row_not_in_run": {
+   "message": "Threshold row is not bound to its collection run",
+   "refused": "ContractError",
+   "store_after": "4f90680d0988e5a7",
+   "store_before": "4f90680d0988e5a7",
+   "wrote": false
+  },
+  "run_activation_ready": {
+   "message": "Threshold row is not bound to its collection run",
+   "refused": "ContractError",
+   "store_after": "0671c9f3c54d5d99",
+   "store_before": "0671c9f3c54d5d99",
+   "wrote": false
+  },
+  "run_identity": {
+   "message": "Threshold record identity changed",
+   "refused": "ContractError",
+   "store_after": "7322e6e161f405a1",
+   "store_before": "7322e6e161f405a1",
+   "wrote": false
+  },
+  "run_missing": {
+   "message": "Threshold row is not bound to its collection run",
+   "refused": "ContractError",
+   "store_after": "e81e34d32c0aa79e",
+   "store_before": "e81e34d32c0aa79e",
+   "wrote": false
+  }
+ },
+ "run_membership": {
+  "again": {
+   "message": "Threshold row is not bound to its collection run",
+   "refused": "ContractError",
+   "store_after": "b2a8e231735799b6",
+   "store_before": "b2a8e231735799b6",
+   "wrote": false
+  },
+  "first": {
+   "store_after": "304e63227ad9e353",
+   "store_before": "93c2a28415d7d3d4",
+   "value": {
+    "activation_ready": false,
+    "binding": "c3fe471007df0a23b40290acba102f3df91b323058141937569f0ef78f43006b",
+    "created_at": "2026-09-22T00:00:00.096000+00:00",
+    "id": "43c9265dd33fa99b94c62fd71bd965f5b014e7f327dae323cee10f0fcfe479cf",
+    "reviews": [],
+    "row_id": "3ac9ee975d10e3094e9f1589d7c4476cbaa48dad4140d6cb1674554984d8a47c",
+    "scope": "assessment_only_no_dispatch_or_activation",
+    "status": "awaiting_lead"
+   },
+   "wrote": true
+  },
+  "m7_test": "test_collection_run_membership_is_required",
+  "state": {
+   "conductor": null,
+   "decisions": [
+    [
+     "lead:improvement",
+     "pending"
+    ]
+   ],
+   "lead": {
+    "actor": "lead:improvement",
+    "attempt": 0,
+    "completed_at": null,
+    "error": null,
+    "execution_deadline": null,
+    "generation": null,
+    "lease_owner": null,
+    "lease_until": null,
+    "owner": null,
+    "phase": "threshold_review",
+    "result": null,
+    "retry_budget": null,
+    "status": "pending"
+   },
+   "no_effects": true,
+   "request": {
+    "activation_ready": false,
+    "completed_at": null,
+    "created_at": "2026-09-22T00:00:00.096000+00:00",
+    "failed_decision": null,
+    "failure": null,
+    "reviews": [],
+    "scope": "assessment_only_no_dispatch_or_activation",
+    "status": "awaiting_lead"
+   },
+   "store": "b2a8e231735799b6"
+  }
+ },
+ "wrong_receipt_identity": {
+  "m7_test": "test_wrong_receipt_identity_cannot_complete_review",
+  "run": {
+   "claim_wrote": true,
+   "complete": {
+    "message": "Threshold execution receipt mismatch",
+    "refused": "ContractError",
+    "store_after": "28775d9aa58a17fd",
+    "store_before": "28775d9aa58a17fd",
+    "wrote": false
+   },
+   "lease": {
+    "_bucket": "decisions_pending",
+    "actor": "lead:improvement",
+    "attempt": 1,
+    "generation": 1,
+    "id": "32befb3817d8cfffe0d66e5e3583a120074544109ea2a596e99b665cc4dc7498",
+    "lease_until": "2026-09-22T00:20:00.023000+00:00",
+    "owner": "5eed0000-0000-4000-8000-00000000000f",
+    "phase": "threshold_review",
+    "status": "running"
+   },
+   "prepare": {
+    "store_after": "28775d9aa58a17fd",
+    "store_before": "28775d9aa58a17fd",
+    "value": {
+     "binding": "c3fe471007df0a23b40290acba102f3df91b323058141937569f0ef78f43006b",
+     "execution": {
+      "decision_id": "32befb3817d8cfffe0d66e5e3583a120074544109ea2a596e99b665cc4dc7498",
+      "generation": 1
+     },
+     "prior_reviews": [],
+     "record": {
+      "activation_blockers": [
+       "native_task_success_and_release_review_required"
+      ],
+      "activation_ready": false,
+      "evidence_ref": "sha256:47d567320085c7610c523f4488d7e1344def106dede4d24363f788f24c70187f",
+      "id": "3ac9ee975d10e3094e9f1589d7c4476cbaa48dad4140d6cb1674554984d8a47c",
+      "project_key": "project",
+      "proposal": {
+       "corpus_hash": "corpus-1",
+       "current": 3,
+       "id": "proposal-1",
+       "name": "skill_match.FULL_BODY_MIN_SCORE",
+       "policy_revision": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+       "suggested": 4
+      },
+      "run_id": "dc9a22136a4d39a60c60a3bfa6d902a8838876a303d03d42af8f77be333a046e",
+      "status": "calculated"
+     },
+     "request_id": "43c9265dd33fa99b94c62fd71bd965f5b014e7f327dae323cee10f0fcfe479cf",
+     "scope": "assessment_only_no_dispatch_or_activation"
+    },
+    "wrote": false
+   },
+   "state": {
+    "conductor": null,
+    "decisions": [
+     [
+      "lead:improvement",
+      "running"
+     ]
+    ],
+    "lead": {
+     "actor": "lead:improvement",
+     "attempt": 1,
+     "completed_at": null,
+     "error": null,
+     "execution_deadline": "2026-09-22T00:45:00.023000+00:00",
+     "generation": 1,
+     "lease_owner": "5eed0000-0000-4000-8000-00000000000f",
+     "lease_until": "2026-09-22T00:20:00.023000+00:00",
+     "owner": "5eed0000-0000-4000-8000-00000000000f",
+     "phase": "threshold_review",
+     "result": null,
+     "retry_budget": {
+      "bound_at": "2026-09-22T00:00:00.023000+00:00",
+      "max_attempts": 3,
+      "origin": "first_claim",
+      "version": 1
+     },
+     "status": "running"
+    },
+    "no_effects": true,
+    "request": {
+     "activation_ready": false,
+     "completed_at": null,
+     "created_at": "2026-09-22T00:00:00.022000+00:00",
+     "failed_decision": null,
+     "failure": null,
+     "reviews": [],
+     "scope": "assessment_only_no_dispatch_or_activation",
+     "status": "awaiting_lead"
+    },
+    "store": "28775d9aa58a17fd"
+   }
+  }
+ }
+}
