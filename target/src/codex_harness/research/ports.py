@@ -9,10 +9,12 @@ Owns: OWNED_BUCKETS of the research context; OutboxAppend and EventAppend, the c
     ProgressCandidates that AuditProgress calls (S8 pilot 72); ResearchLaunchFacts, ExecutionFences and
     OutboxQuarantine, the shapes of coordination's owner-action launch facts, execution fence and outbox quarantine
     that ResearchProgram calls (S8 pilot 73); DiscoveryCensus, the shape of coordination's
-    DiscoveryCensusReader that DiscoveryPressure calls (S8 pilot 76)
+    DiscoveryCensusReader that DiscoveryPressure calls (S8 pilot 76); GitBlobSource, the consumer shape of host_os's
+    GitSource that the pinned registry reader load_registry calls (S8 pilot 91, V18 R-df1)
 Does not own: the outbox, events, decisions_pending and portfolio_investigations bucket bodies (coordination, intake)
 Entry points: OWNED_BUCKETS, OutboxAppend, EventAppend, AuditArtifacts, SourceVerifier, DecisionValidation,
-    PendingDecisions, InvestigationCandidates, ResearchLaunchFacts, ExecutionFences, OutboxQuarantine, DiscoveryCensus
+    PendingDecisions, InvestigationCandidates, ResearchLaunchFacts, ExecutionFences, OutboxQuarantine, DiscoveryCensus,
+    GitBlobSource
 Contracts: INV-RECURRENCE-001, INV-MESSAGE-001
 """
 
@@ -92,3 +94,8 @@ class OutboxQuarantine(Protocol):
 
 class DiscoveryCensus(Protocol):
     def observe(self, tx, ledger) -> dict: ...
+
+
+class GitBlobSource(Protocol):
+    def commit_exists(self, revision: str) -> bool: ...
+    def blob(self, revision: str, path: str) -> tuple[str | None, bytes]: ...
