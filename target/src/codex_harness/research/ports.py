@@ -10,11 +10,12 @@ Owns: OWNED_BUCKETS of the research context; OutboxAppend and EventAppend, the c
     OutboxQuarantine, the shapes of coordination's owner-action launch facts, execution fence and outbox quarantine
     that ResearchProgram calls (S8 pilot 73); DiscoveryCensus, the shape of coordination's
     DiscoveryCensusReader that DiscoveryPressure calls (S8 pilot 76); GitBlobSource, the consumer shape of host_os's
-    GitSource that the pinned registry reader load_registry calls (S8 pilot 91, V18 R-df1)
+    GitSource that the pinned registry reader load_registry calls (S8 pilot 91, V18 R-df1); ExecutionNotices, the shape of
+    coordination's execution_notices.record that AuditRepair calls (S8 pilot 100, V18 R-ar1)
 Does not own: the outbox, events, decisions_pending and portfolio_investigations bucket bodies (coordination, intake)
 Entry points: OWNED_BUCKETS, OutboxAppend, EventAppend, AuditArtifacts, SourceVerifier, DecisionValidation,
     PendingDecisions, InvestigationCandidates, ResearchLaunchFacts, ExecutionFences, OutboxQuarantine, DiscoveryCensus,
-    GitBlobSource
+    GitBlobSource, ExecutionNotices
 Contracts: INV-RECURRENCE-001, INV-MESSAGE-001
 """
 
@@ -46,7 +47,10 @@ OWNED_BUCKETS = ("inbox", "incidents", "hooks", "research_programs", "dge_sessio
                  "reverse_requests", "reverse_progress", "reverse_history",
                  "source_execution_requests", "source_execution_history",
                  # S8 pilot 92 (V4): the three buckets only research.application.threshold_proposals writes
-                 "threshold_collection_inputs", "threshold_proposal_runs", "threshold_proposals")
+                 "threshold_collection_inputs", "threshold_proposal_runs", "threshold_proposals",
+                 # S8 pilot 100 (V4): the three buckets only research.application.audit_repair writes (`schedule`: M7's other
+                 # writer, application/scheduling.py, is research's and not moved yet)
+                 "audit_repair_activation", "audit_repair_corrections", "schedule")
 
 
 class OutboxAppend(Protocol):
@@ -101,3 +105,8 @@ class DiscoveryCensus(Protocol):
 class GitBlobSource(Protocol):
     def commit_exists(self, revision: str) -> bool: ...
     def blob(self, revision: str, path: str) -> tuple[str | None, bytes]: ...
+
+
+class ExecutionNotices(Protocol):
+    def record(self, tx, org, row: dict, bucket: str, reason_code: str, at: str, transition_ref=None, *,
+               proof=None, evidence_refs=()): ...
