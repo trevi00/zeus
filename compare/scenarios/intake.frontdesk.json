@@ -2,8 +2,7 @@
  "family": "intake.frontdesk",
  "description": "S8 local front door of M7 application/frontdesk.py (pilot 84, characterized before the V16 split-move: FrontDesk to intake, DeskRunner to coordination): the 34 FrontDesk/DeskRunner tests of test_frontdesk.py (idempotent sessions, bounded submissions, the turn and its assignment in one transaction, replay/conflict/busy/full, evidence, claim/finalize, the turn over the real Workflow, failures, settlement, foreign and missing stream entries, restart and recovery, collection, the bounded loop summary, the stop) plus labelled additions (_classify_result, _bound_execution, the unpublished assignment/result, a runner without a bus, the storage stops, the receipt never rewritten), over MemoryStore with scripted ids and clock and labelled executor/bus/collector doubles, the store digest before and after every refusal; the 28 adapter/CLI/monitoring tests recorded as unreachable (S10)",
  "reference_driver": "drivers/reference/s8_frontdesk.py",
- "target_driver": null,
+ "target_driver": "drivers/target/s8_frontdesk.py",
  "golden": "goldens/reference/intake.frontdesk.json",
- "slice": "S8",
- "target_status": "pending: S8 pilot 84 (the V16 split move)"
+ "slice": "S8"
 }
