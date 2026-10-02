@@ -1,0 +1,8 @@
+{
+ "family": "effects.s8_units",
+ "description": "§2.9 S8 units on MemoryStore (DESIGN-s8 §2 row effects.s8_units, V8): ResearchProgram.record_collection (the candidate rows, the claim and the adoption reservation, the cycle and program rows), ResearchProgram.fail_cycle with its recovery (the failure record, the failed dispatch row, _close), FrontDesk.submit (the request, session, outbox and intake event rows) and the release evaluator's completion unit (releases.promote, the hook activation and the promotion intent set to completed, the merge at depth 0); (a) injected failure at the unit's last write -> nothing of the unit remains, (b) stale writer (owner, cycle state, active cycle, a rival turn, the active pointer, the release or the intent moved between the reads and the unit) -> nothing commits, (c) same-key replay -> no authority write, (d) the merge entered at transaction depth 0 (research and intake units have no external effect: not_applicable naming the M7 lines); LABELLED doubles of the reused worlds (s8_program_records, s8_frontdesk, s7_release_runner) plus the hook activation and the fixture main moving to the merged candidate",
+ "reference_driver": "drivers/reference/s8_units.py",
+ "target_driver": "drivers/target/s8_units.py",
+ "golden": "goldens/reference/effects.s8_units.json",
+ "slice": "S8"
+}
