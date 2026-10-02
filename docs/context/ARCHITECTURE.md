@@ -136,10 +136,11 @@ Kept unconditionally, as at most 10-line target modules delegating to `entry`:
 `codex_harness.adapters.isolated_worker_entry`, `codex_harness.adapters.worker_profile_metadata`,
 `codex_harness.container_main` (until U6b), the packaged `codex_harness.resources.worker_profile_hook`,
 and `src/zeus`. The conditional set follows the S0 pinned-argv scan of tracked sources
-(`compare/goldens/reference/static.source.json`, `shims.conditional`): kept for
-`continuation_process`, `host_delivery`, `host_migration`, `managed_runtime`, `migrations`,
-`monitor_frontend_checks`; no tracked pin found for `artifact_reader`, `experience`,
-`isolated_worker`, `observed_assets`, `service_entry`. Reconciliation with argv persisted in records
+(`compare/goldens/reference/static.source.json`, `shims.conditional`): kept for `artifact_reader`
+(the multi-line reader argv of M7 `executor.py:252-253`, which the target's
+`context.domain.composition.artifact_reader_handle` emits too), `continuation_process`, `host_delivery`,
+`host_migration`, `managed_runtime`, `migrations`, `monitor_frontend_checks`; no tracked pin found for
+`experience`, `isolated_worker`, `observed_assets`, `service_entry`. Reconciliation with argv persisted in records
 is pending the disposable rehearsal (R2); until then no shim is dropped.
 
 ## Named changes and bugs not retained

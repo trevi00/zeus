@@ -176,6 +176,17 @@ def test_reference_goldens_hold_the_f3_and_f2_expectations():
     assert parser["node_count"] == 152 and parser["root_count"] == 51
 
 
+def test_the_pinned_argv_scan_sees_a_multi_line_argv_display():
+    # OWNER-DECISIONS-S11 #11: the S0 line test missed `"-m",` and the module on adjacent lines (M7 executor.py
+    # artifact_reader_handle), so the scan once said no shim was needed for a module the target still emits.
+    shims = load(COMPARE / "goldens/reference/static.source.json")["shims"]["conditional"]
+    reader = shims["codex_harness.adapters.artifact_reader"]
+    assert reader["keep_shim"] is True
+    assert "src/codex_harness/adapters/executor.py:253" in reader["pinning_references"]
+    composition = (ROOT / "target/src/codex_harness/context/domain/composition.py").read_text(encoding="utf-8")
+    assert '"-m", "codex_harness.adapters.artifact_reader"' in composition
+
+
 def test_import_audit_refuses_a_codex_harness_origin_outside_the_target(tmp_path):
     foreign = tmp_path / "codex_harness"
     foreign.mkdir()

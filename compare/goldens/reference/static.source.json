@@ -3539,11 +3539,14 @@
  "shims": {
   "conditional": {
    "codex_harness.adapters.artifact_reader": {
-    "keep_shim": false,
-    "pinning_references": [],
+    "keep_shim": true,
+    "pinning_references": [
+     "src/codex_harness/adapters/executor.py:253"
+    ],
     "references_by_class": {
      "docs_history": 4,
-     "tests": 2
+     "src": 1,
+     "tests": 3
     }
    },
    "codex_harness.adapters.continuation_process": {

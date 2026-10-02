@@ -140,6 +140,22 @@ def path_class(path: str) -> str:
             "docs": "docs_history"}.get(top, "other")
 
 
+def argv_display_pins(text: str):
+    """(conditional module name, line) for each `"-m", "codex_harness.adapters.<name>"` constant pair that is
+    adjacent in a list or tuple display, whatever lines the two elements sit on."""
+    try:
+        tree = ast.parse(text)
+    except SyntaxError:
+        return
+    modules = {"codex_harness.adapters." + name: name for name in SHIMS_CONDITIONAL}
+    for node in ast.walk(tree):
+        if isinstance(node, (ast.List, ast.Tuple)):
+            for flag, module in zip(node.elts, node.elts[1:]):
+                if (isinstance(flag, ast.Constant) and flag.value == "-m" and isinstance(module, ast.Constant)
+                        and module.value in modules):
+                    yield modules[module.value], module.lineno
+
+
 def shim_inventory() -> dict:
     patterns = {name: re.compile(r"codex_harness[./]adapters[./]" + name + r"\b")
                 for name in SHIMS_CONDITIONAL}
@@ -157,6 +173,17 @@ def shim_inventory() -> dict:
                     continue
                 if pattern.search(line) and ("-m" in line or '"-m"' in line or "'-m'" in line):
                     hits[name].setdefault(path_class(r), []).append(f"{r}:{lineno}")
+        # A multi-line argv display puts "-m" and the module on different lines, which the line test above
+        # cannot see: SOURCE executor.py:252-253 (`artifact_reader_handle`) was missed until the S11 owner
+        # recheck (2026-10-02, OWNER-DECISIONS-S11 #11). Adjacent "-m", "<module>" constants in a list or
+        # tuple display are a pin as well; a reference found both ways is counted once.
+        if r.endswith(".py"):
+            for name, lineno in argv_display_pins(text):
+                if r in own and r.endswith("/" + name + ".py"):
+                    continue
+                refs = hits[name].setdefault(path_class(r), [])
+                if f"{r}:{lineno}" not in refs:
+                    refs.append(f"{r}:{lineno}")
     for name in SHIMS_CONDITIONAL:
         # The module's own code (not its docstring) naming itself as a child argv is a pin too.
         path = PKG / "adapters" / (name + ".py")
