@@ -25,6 +25,9 @@ MODULES = {
     "ticket_lifecycle": "codex_harness.intake.domain.ticket_lifecycle",
     "frontdesk": "codex_harness.intake.domain.frontdesk",
 }
+# Names moved ahead into a module by a later design decision (never M7 domain definitions): V16 (S8 pilot 84) moves the front-desk
+# application constants `CONDUCTOR, LEAD` here, so intake and coordination share one owner.
+MOVED_AHEAD = {"frontdesk": {"CONDUCTOR", "LEAD"}}
 
 
 def m7_text(path):
@@ -57,8 +60,9 @@ def definitions(src):
 def test_module_imports_and_names_equal_m7(m7name):
     module = importlib.import_module(MODULES[m7name])
     ref = m7_text(M7 + m7name + ".py")
-    assert top_names(target_text(MODULES[m7name])) == top_names(ref)
-    assert all(hasattr(module, name) for name in top_names(ref))
+    ahead = MOVED_AHEAD.get(m7name, set())
+    assert top_names(target_text(MODULES[m7name])) - ahead == top_names(ref)
+    assert all(hasattr(module, name) for name in top_names(ref) | ahead)
 
 
 @pytest.mark.parametrize("m7name", MODULES)

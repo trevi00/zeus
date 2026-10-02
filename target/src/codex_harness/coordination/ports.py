@@ -116,3 +116,19 @@ class ResearchPrograms(Protocol):
     """Research's program resume (S6 moved ahead: research.application.program_state.ProgramState), in its own unit."""
 
     def resume(self, program_id: str) -> dict: ...
+
+
+class DeskQueue(Protocol):
+    """Intake's front-desk queue (intake.application.frontdesk.FrontDesk), exactly the methods coordination's `DeskRunner` calls on its
+    `desk` (V16 R-d1, AST-derived): the claim, the terminal write, the accounting receipt and the startup reads."""
+
+    def claim_next(self) -> dict | None: ...
+
+    def dispatching(self) -> list[dict]: ...
+
+    def finalize(self, request_id: str, owner_token: str, status: str, reason_code=None, answer=None, task_id=None,
+                 execution_ref=None) -> dict: ...
+
+    def record_receipt(self, row: dict, task_id, slots: list[dict], published: bool) -> dict: ...
+
+    def receipt(self, request_id: str) -> dict | None: ...

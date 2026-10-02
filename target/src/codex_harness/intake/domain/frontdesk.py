@@ -4,10 +4,10 @@ Layer: domain
 Context: intake
 Owns: the local front-door identity grammar, input bounds, request lifecycle and wire projections
 Does not own: any store, process, git or provider access
-Entry points: DeskRefused, safe_code, identifier, revision, title, text, intent, session_document, message_document, new_session, new_request, submission_binding, bounded_list, validate_answer, slot_view, new_receipt, receipt_proves, prior_turns, session_view, request_view, sessions_projection, session_projection
+Entry points: CONDUCTOR, LEAD, DeskRefused, safe_code, identifier, revision, title, text, intent, session_document, message_document, new_session, new_request, submission_binding, bounded_list, validate_answer, slot_view, new_receipt, receipt_proves, prior_turns, session_view, request_view, sessions_projection, session_projection
 Contracts: local-operations-desk-001 (part B)
 
-Moved from M7 `domain/frontdesk.py` (SOURCE e38aa722) through named rules (DESIGN-s8 §3 step 1, A/evidence/rebuild/s8/domain-moves-a/transcribe.py); only the import lines and this header differ, every body is M7's. M7 module docstring:
+Moved from M7 `domain/frontdesk.py` (SOURCE e38aa722) through named rules (DESIGN-s8 §3 step 1, A/evidence/rebuild/s8/domain-moves-a/transcribe.py); only the import lines and this header differ, every body is M7's; V16 (S8 pilot 84) added `CONDUCTOR, LEAD`, moved ahead from M7 `application/frontdesk.py`. M7 module docstring:
 Local front-door conversation definitions and bounds (local-operations-desk-001, part B).
 
 Pure policy over dictionaries: identity grammar, input bounds, the durable request lifecycle and
@@ -36,6 +36,11 @@ OPEN = frozenset({QUEUED, DISPATCHING})
 # The successful result of each intent: a consultation is answered, a request is an accepted
 # proposal that still needs an owner-fixed specification. Neither is a dispatched implementation.
 SUCCESS_STATE = {CONSULT: ANSWERED, REQUEST: NEEDS_SPEC}
+
+# V16 (S8 pilot 84): moved ahead from M7 `application/frontdesk.py` (one owner; `intake.application.frontdesk.FrontDesk` and
+# coordination's `DeskRunner` import them from here). `lead:frontdesk` is a lead of the conductor in the packaged organization:
+# the intake is a normal reporting-edge assignment, not a new authority and not autonomous conductor reasoning.
+CONDUCTOR, LEAD = "conductor", "lead:frontdesk"
 
 TEXT_MIN, TEXT_MAX = 1, 6000
 TITLE_MAX = 200
