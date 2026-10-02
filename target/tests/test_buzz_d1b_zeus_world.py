@@ -4,6 +4,7 @@ MemoryStore plus the target `Workflow`, `FleetPause` and `RemoteControl`; no net
 Contracts: Buzz DESIGN v3 §4.2, §4.4, §4.5; DESIGN-D §2b.
 """
 import json
+import re
 import time
 from datetime import datetime, timezone
 
@@ -12,7 +13,7 @@ from test_buzz_b3_remote_control import NOW, OWNER, World, command, fence, inbox
 from test_buzz_b4_projection import D_ORG, HeadRelay, P
 
 from codex_harness.composition import buzz_world as bw
-from codex_harness.composition.buzz_bridge import BridgeConfig
+from codex_harness.composition.buzz_bridge import BridgeConfig, build_runtime, custody_name
 from codex_harness.composition.buzz_world import TERMINAL_STATUSES, UNSOURCED, ZeusReads, zeus_world
 from codex_harness.coordination.application.fleet import state
 from codex_harness.credentials.adapters.role_keys import TestRoleKeys
@@ -358,10 +359,12 @@ class QuietRelay(HeadRelay):
         return {"events": [], "ended": "eose", "pages": 1, "unverified": 0}
 
 
-def test_main_with_a_complete_config_builds_the_real_world_without_an_injected_factory(tmp_path, capsys):
-    org_file = legal_org_file(tmp_path)
+@pytest.mark.parametrize("packaged", [False, True])
+def test_main_with_a_complete_config_builds_the_real_world_without_an_injected_factory(tmp_path, capsys, packaged):
+    org_file = None if packaged else legal_org_file(tmp_path)
+    roles = packaged_organization().agents if packaged else ("lead-improvement", "worker-impl")
     keys = TestRoleKeys(tmp_path / "keys")
-    for name in dict.fromkeys(("conductor", "bridge", "lead-improvement", "worker-impl")):
+    for name in dict.fromkeys(("conductor", "bridge", *map(custody_name, roles))):
         keys.create(name)
     dsn = tmp_path / "dsn"
     dsn.write_text(SCHEME + "u:pw@h/db")
@@ -371,7 +374,7 @@ def test_main_with_a_complete_config_builds_the_real_world_without_an_injected_f
         "relay_url": "ws://127.0.0.1:1", "channels": ["cmd", "c-improvement"], "owners": [OWNER],
         "custody_dir": str(tmp_path / "keys"), "store_dsn_file": str(dsn), "commander_channel": "cmd",
         "org_d": D_ORG, "team_channels": {"improvement": "c-improvement"}, "max_seconds": 0,
-        "organization_file": str(org_file)}))
+        **({} if org_file is None else {"organization_file": str(org_file)})}))
     store, seen = MemoryStore(), []
 
     def store_factory(text):
@@ -388,3 +391,52 @@ def test_main_with_a_complete_config_builds_the_real_world_without_an_injected_f
         assert tx.scan("buzz_outbox")  # the org snapshot was planned from the real read models
         subjects = {row["subject"] for row in tx.scan("buzz_outbox")}
     assert "org" in subjects
+
+
+# ---- custody naming (v2): an injective role id -> key name map ----------------------------------------------------
+def test_the_packaged_ids_map_injectively_and_legal_ids_map_to_themselves():
+    ids = list(packaged_organization().agents)
+    names = [custody_name(i) for i in ids]
+    assert len(set(names)) == len(ids)
+    assert custody_name("conductor") == "conductor" and custody_name("lead-improvement") == "lead-improvement"
+    assert custody_name("lead:frontdesk") == "x-" + b"lead:frontdesk".hex()
+    assert all(re.fullmatch(r"[a-z0-9][a-z0-9_-]{0,63}", n) for n in names)
+
+
+def test_an_x_prefixed_legal_id_is_refused_and_so_is_a_world_that_lists_one(tmp_path):
+    with pytest.raises(ContractError, match="escape prefix"):
+        custody_name("x-6162")
+    path = tmp_path / "org.json"
+    path.write_text(json.dumps({"agents": [{"id": "conductor", "role": "conductor", "parent": None, "team": "t"},
+                                           {"id": "x-6162", "role": "lead", "parent": "conductor", "team": "t"}]}))
+    with pytest.raises(ContractError, match="escape prefix"):
+        zeus_world(MemoryStore(), config(organization_file=str(path)), clock=lambda: NOW)
+
+
+def test_distinct_ids_never_share_a_custody_name():
+    ids = set(packaged_organization().agents) | {"a", "a:b", "a-b", "a_b", "A", "a b", "é", "lead:x", "lead-x", "x",
+                                                 "x:", "x-", "xx", "0", ":", "::", "conductor:"}
+    names = {}
+    for role_id in ids:
+        try:
+            name = custody_name(role_id)
+        except ContractError:
+            continue  # only the reserved `x-` legal ids are refused
+        assert names.setdefault(name, role_id) == role_id, (name, role_id, names[name])
+
+
+def test_build_runtime_with_the_packaged_org_looks_up_every_key_by_custody_name(tmp_path):
+    org = packaged_organization()
+    keys = TestRoleKeys(tmp_path / "keys")
+    for name in dict.fromkeys(("conductor", "bridge", *map(custody_name, org.agents))):
+        keys.create(name)
+    dsn = tmp_path / "dsn"
+    dsn.write_text(SCHEME + "u:pw@h/db")
+    dsn.chmod(0o600)
+    cfg = config(custody_dir=str(tmp_path / "keys"), store_dsn_file=str(dsn))
+    runtime = build_runtime(cfg, world_factory=lambda store: zeus_world(store, cfg, clock=lambda: NOW),
+                            store_factory=lambda text: MemoryStore(), relay_factory=lambda c, signer: QuietRelay())
+    pubkeys = runtime.projection.signer_pubkeys
+    assert set(pubkeys) == {"conductor", *org.agents}
+    assert pubkeys["lead:frontdesk"] == keys.pubkey(custody_name("lead:frontdesk"))
+    assert pubkeys["conductor"] == keys.pubkey("conductor")

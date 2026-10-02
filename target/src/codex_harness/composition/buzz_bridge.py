@@ -25,6 +25,7 @@ from __future__ import annotations
 
 import json
 import os
+import re
 import socket
 import stat
 import sys
@@ -58,7 +59,24 @@ _OPTIONAL = {"tick_seconds": 5, "lease_ttl_seconds": 30, "recv_timeout": 10, "ma
              "store_fail_limit": 12, "max_size": 1 << 20}
 _STRINGS = ("relay_url", "custody_dir", "store_dsn_file", "commander_channel", "org_d")
 _HEX64 = frozenset("0123456789abcdef")
+_CUSTODY_LEGAL = re.compile(r"[a-z0-9_-]+")
+CUSTODY_ESCAPE = "x-"
 _last_owner_ns = 0
+
+
+def custody_name(role_id: str) -> str:
+    """The key-custody name of an organization role id (injective; `TestRoleKeys` accepts only `[a-z0-9_-]`).
+
+    A legal id is its own name (so `conductor` keeps the bridge's signing key the client pins); any other id (the
+    packaged `lead:frontdesk`) becomes `x-` plus the hex of its UTF-8 bytes. A legal id that starts with `x-` is
+    refused, so an escaped name can never equal a legal one: the mapping is injective. The D2 runner creates keys
+    with the same names."""
+    require(isinstance(role_id, str) and bool(role_id), "buzz bridge: a role id is a non-empty string")
+    if _CUSTODY_LEGAL.fullmatch(role_id):
+        require(not role_id.startswith(CUSTODY_ESCAPE),
+                f"buzz bridge: role id {role_id!r} collides with the custody escape prefix {CUSTODY_ESCAPE!r}")
+        return role_id
+    return CUSTODY_ESCAPE + role_id.encode("utf-8").hex()
 
 
 def _number(document: dict, key: str, low: float, high: float | None = None) -> float:
@@ -355,13 +373,14 @@ def build_runtime(config: BridgeConfig, *, world_factory: Callable[[object], Zeu
     store = store_factory(config.read_dsn())
     world = world_factory(store)
     keys = TestRoleKeys(config.custody_dir)
-    signer = NostrEventSigner(keys.pubkey, keys.sign_id)
+    signer = NostrEventSigner(lambda role: keys.pubkey(custody_name(role)),
+                              lambda role, event_id: keys.sign_id(custody_name(role), event_id))
     relay = relay_factory(config, signer)
     lease = BridgeLease()
     projection_box = []
     outbox = BuzzOutbox(store, relay, signer, lease, clock, role=SIGNING_ROLE,
                         replan=lambda subject: projection_box[0].replan(subject))
-    pubkeys = {name: keys.pubkey(name) for name in dict.fromkeys((SIGNING_ROLE, *world.roles))}
+    pubkeys = {name: keys.pubkey(custody_name(name)) for name in dict.fromkeys((SIGNING_ROLE, *world.roles))}
     projection = BuzzProjection(store, outbox, world.read_models, relay, pubkeys, world.channels, clock)
     projection_box.append(projection)
     remote = RemoteControl(store, world.messages, world.fleet_pause, lease, config.owners, clock)

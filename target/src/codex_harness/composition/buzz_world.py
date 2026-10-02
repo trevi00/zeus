@@ -19,7 +19,7 @@ import re
 from collections.abc import Callable
 from datetime import datetime, timezone
 
-from codex_harness.composition.buzz_bridge import BridgeConfig, ZeusWorld
+from codex_harness.composition.buzz_bridge import BridgeConfig, ZeusWorld, custody_name
 from codex_harness.coordination.application.fleet import state
 from codex_harness.coordination.application.fleet.pause import FleetPause
 from codex_harness.coordination.application.messages import MessageHandler
@@ -140,6 +140,8 @@ class ZeusReads:
 def zeus_world(store, config: BridgeConfig, *, clock: Callable[[], float]) -> ZeusWorld:
     """The bridge's ports, read models and channel map over `store`, from the config's organization and channels."""
     organization = config.load_organization()
+    for role_id in organization.agents:
+        custody_name(role_id)  # a role id that cannot map injectively is refused when the world is built
     workflow = Workflow(store, organization, ticket_binding=tickets.ticket_binding,
                         TicketSuperseded=tickets.TicketSuperseded, adoption=require_adoption, park_terminal=park,
                         clock=SYSTEM_CLOCK, ids=SYSTEM_IDS)
