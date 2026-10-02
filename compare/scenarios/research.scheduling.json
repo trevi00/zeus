@@ -2,8 +2,7 @@
  "family": "research.scheduling",
  "description": "S8 research scheduler of M7 application/scheduling.py (schedule_research, schedule_audits), characterized before the move at application level over a MemoryStore with PLANTED research_control, research_discoveries, research_backlog, research_partitions, research_audits, research_approvals (bound by the gate's own binding, with their reviews and receipts), tasks, schedule, deployment and releases rows, a labelled SimpleNamespace(store, org) service, the packaged organization, a fixed now and the harness clock and ids: the research slot per source, the closed control, discovery, acquire, partition (overlap guard), propose and adopt assignments with every require_adoption refusal as a skip, the audit_id-narrowed pass, the three tests of M7 tests/test_scheduling.py over planted rows, the reconcile_audits effect on a recorded active release, and every key's repeated-call idempotence, with the whole-store digest before and after every call; no Git, Docker, model, provider or PostgreSQL",
  "reference_driver": "drivers/reference/s8_scheduling.py",
- "target_driver": null,
+ "target_driver": "drivers/target/s8_scheduling.py",
  "golden": "goldens/reference/research.scheduling.json",
- "slice": "S8",
- "target_status": "pending: S8 scheduling move"
+ "slice": "S8"
 }
