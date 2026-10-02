@@ -1,0 +1,1919 @@
+{
+ "collect": {
+  "all_refs_equal": true,
+  "artifact_file_names_are_the_ref": true,
+  "artifact_files": [
+   ".json",
+   ".txt"
+  ],
+  "later_collect_refs_differ": true,
+  "later_collect_rows": 9,
+  "promotion_approval": [
+   false,
+   false,
+   false
+  ],
+  "replayed_value": {
+   "denominator": 1,
+   "metric_id": "task_first_attempt_success",
+   "numerator": 1,
+   "observational": true,
+   "reason": "undefined target; observational only",
+   "sample_count": 1,
+   "status": "unknown",
+   "value": 1.0
+  },
+  "results": [
+   {
+    "baseline_value": null,
+    "candidate_value": null,
+    "definition": {
+     "denominator": "Resolved first attempts",
+     "direction": null,
+     "freshness_seconds": 120,
+     "metric_id": "task_first_attempt_success",
+     "minimum_samples": 1,
+     "numerator": "First attempts succeeded",
+     "population": "Tasks created in [start,end), first attempt resolved",
+     "query_version": 1,
+     "target": null,
+     "unit": "ratio",
+     "version": 1,
+     "window_seconds": 86400
+    },
+    "definition_hash": "364548e4e4a26972bad3a28b88b9a48c0cf90222095fa99570929d3d9497ea65",
+    "denominator": 1,
+    "evidence_refs": [
+     "sha256:dab4c7a2064ef5b8a48d34781320562997db6a129c17e3beac7fc75a0083f609"
+    ],
+    "metric_id": "task_first_attempt_success",
+    "numerator": 1,
+    "observational": true,
+    "observed_at": "2026-09-07T00:00:00+00:00",
+    "promotion_approval": false,
+    "reason": "undefined target; observational only",
+    "repository_revision": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+    "sample_count": 1,
+    "status": "unknown",
+    "uncertainty": "No comparative baseline or production SLO inference",
+    "value": 1.0,
+    "window_end": "2026-09-07T00:00:00+00:00",
+    "window_start": "2026-09-06T00:00:00+00:00"
+   },
+   {
+    "baseline_value": null,
+    "candidate_value": null,
+    "definition": {
+     "denominator": "Succeeded, failed, cancelled and expired logical tasks",
+     "direction": null,
+     "freshness_seconds": 120,
+     "metric_id": "terminal_logical_task_success",
+     "minimum_samples": 1,
+     "numerator": "Succeeded logical tasks",
+     "population": "Tasks created in [start,end), terminal at observation",
+     "query_version": 1,
+     "target": null,
+     "unit": "ratio",
+     "version": 1,
+     "window_seconds": 86400
+    },
+    "definition_hash": "d6a1a3b26398e9812893c30b6f66bbae950a13279979df09e91200e45936dac7",
+    "denominator": 1,
+    "evidence_refs": [
+     "sha256:dab4c7a2064ef5b8a48d34781320562997db6a129c17e3beac7fc75a0083f609"
+    ],
+    "metric_id": "terminal_logical_task_success",
+    "numerator": 1,
+    "observational": true,
+    "observed_at": "2026-09-07T00:00:00+00:00",
+    "promotion_approval": false,
+    "reason": "undefined target; observational only",
+    "repository_revision": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+    "sample_count": 1,
+    "status": "unknown",
+    "uncertainty": "No comparative baseline or production SLO inference",
+    "value": 1.0,
+    "window_end": "2026-09-07T00:00:00+00:00",
+    "window_start": "2026-09-06T00:00:00+00:00"
+   },
+   {
+    "baseline_value": null,
+    "candidate_value": null,
+    "definition": {
+     "denominator": "Not applicable: instantaneous gauge",
+     "direction": "at_most",
+     "freshness_seconds": 120,
+     "metric_id": "active_execution_capacity",
+     "minimum_samples": 1,
+     "numerator": "Live leased executions",
+     "population": "All tasks and decisions with running status and live lease",
+     "query_version": 1,
+     "target": 2,
+     "unit": "executions",
+     "version": 1,
+     "window_seconds": 0
+    },
+    "definition_hash": "f268d2be5aa279cf45eebc82b286155f46047069bf72af06a616b2680b6c1c9f",
+    "denominator": null,
+    "evidence_refs": [
+     "sha256:dab4c7a2064ef5b8a48d34781320562997db6a129c17e3beac7fc75a0083f609"
+    ],
+    "metric_id": "active_execution_capacity",
+    "numerator": 0,
+    "observational": false,
+    "observed_at": "2026-09-07T00:00:00+00:00",
+    "promotion_approval": false,
+    "reason": "existing policy capacity; leased records, not OS process telemetry",
+    "repository_revision": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+    "sample_count": 1,
+    "status": "pass",
+    "uncertainty": "No comparative baseline or production SLO inference",
+    "value": 0,
+    "window_end": "2026-09-07T00:00:00+00:00",
+    "window_start": "2026-09-07T00:00:00+00:00"
+   }
+  ],
+  "row_keys_by_metric": [
+   "active_execution_capacity",
+   "task_first_attempt_success",
+   "terminal_logical_task_success"
+  ],
+  "rows": [
+   {
+    "baseline_value": null,
+    "candidate_value": null,
+    "definition": {
+     "denominator": "Succeeded, failed, cancelled and expired logical tasks",
+     "direction": null,
+     "freshness_seconds": 120,
+     "metric_id": "terminal_logical_task_success",
+     "minimum_samples": 1,
+     "numerator": "Succeeded logical tasks",
+     "population": "Tasks created in [start,end), terminal at observation",
+     "query_version": 1,
+     "target": null,
+     "unit": "ratio",
+     "version": 1,
+     "window_seconds": 86400
+    },
+    "definition_hash": "d6a1a3b26398e9812893c30b6f66bbae950a13279979df09e91200e45936dac7",
+    "denominator": 1,
+    "evidence_refs": [
+     "sha256:dab4c7a2064ef5b8a48d34781320562997db6a129c17e3beac7fc75a0083f609"
+    ],
+    "id": "42f266f8ad5e30af62d57ce553793f70b2369c055be86c38d3f14ff5ff2b026e",
+    "metric_id": "terminal_logical_task_success",
+    "numerator": 1,
+    "observational": true,
+    "observed_at": "2026-09-07T00:00:00+00:00",
+    "promotion_approval": false,
+    "reason": "undefined target; observational only",
+    "repository_revision": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+    "sample_count": 1,
+    "status": "unknown",
+    "uncertainty": "No comparative baseline or production SLO inference",
+    "value": 1.0,
+    "window_end": "2026-09-07T00:00:00+00:00",
+    "window_start": "2026-09-06T00:00:00+00:00"
+   },
+   {
+    "baseline_value": null,
+    "candidate_value": null,
+    "definition": {
+     "denominator": "Not applicable: instantaneous gauge",
+     "direction": "at_most",
+     "freshness_seconds": 120,
+     "metric_id": "active_execution_capacity",
+     "minimum_samples": 1,
+     "numerator": "Live leased executions",
+     "population": "All tasks and decisions with running status and live lease",
+     "query_version": 1,
+     "target": 2,
+     "unit": "executions",
+     "version": 1,
+     "window_seconds": 0
+    },
+    "definition_hash": "f268d2be5aa279cf45eebc82b286155f46047069bf72af06a616b2680b6c1c9f",
+    "denominator": null,
+    "evidence_refs": [
+     "sha256:dab4c7a2064ef5b8a48d34781320562997db6a129c17e3beac7fc75a0083f609"
+    ],
+    "id": "914824f565f2f4b8bc15f40d0729181d1a3e7a22f4d199f5b0b98b3d5b80a4f8",
+    "metric_id": "active_execution_capacity",
+    "numerator": 0,
+    "observational": false,
+    "observed_at": "2026-09-07T00:00:00+00:00",
+    "promotion_approval": false,
+    "reason": "existing policy capacity; leased records, not OS process telemetry",
+    "repository_revision": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+    "sample_count": 1,
+    "status": "pass",
+    "uncertainty": "No comparative baseline or production SLO inference",
+    "value": 0,
+    "window_end": "2026-09-07T00:00:00+00:00",
+    "window_start": "2026-09-07T00:00:00+00:00"
+   },
+   {
+    "baseline_value": null,
+    "candidate_value": null,
+    "definition": {
+     "denominator": "Resolved first attempts",
+     "direction": null,
+     "freshness_seconds": 120,
+     "metric_id": "task_first_attempt_success",
+     "minimum_samples": 1,
+     "numerator": "First attempts succeeded",
+     "population": "Tasks created in [start,end), first attempt resolved",
+     "query_version": 1,
+     "target": null,
+     "unit": "ratio",
+     "version": 1,
+     "window_seconds": 86400
+    },
+    "definition_hash": "364548e4e4a26972bad3a28b88b9a48c0cf90222095fa99570929d3d9497ea65",
+    "denominator": 1,
+    "evidence_refs": [
+     "sha256:dab4c7a2064ef5b8a48d34781320562997db6a129c17e3beac7fc75a0083f609"
+    ],
+    "id": "d4f96e029ea05297d7368140d56b186c018b3b25f96daa6fba0349a1aae8c31f",
+    "metric_id": "task_first_attempt_success",
+    "numerator": 1,
+    "observational": true,
+    "observed_at": "2026-09-07T00:00:00+00:00",
+    "promotion_approval": false,
+    "reason": "undefined target; observational only",
+    "repository_revision": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+    "sample_count": 1,
+    "status": "unknown",
+    "uncertainty": "No comparative baseline or production SLO inference",
+    "value": 1.0,
+    "window_end": "2026-09-07T00:00:00+00:00",
+    "window_start": "2026-09-06T00:00:00+00:00"
+   }
+  ],
+  "rows_after_task_change": 3,
+  "second_collect_new_rows": 6,
+  "second_collect_same_ref": false,
+  "snapshot": {
+   "decisions": [],
+   "definitions": [
+    {
+     "denominator": "Resolved first attempts",
+     "direction": null,
+     "freshness_seconds": 120,
+     "metric_id": "task_first_attempt_success",
+     "minimum_samples": 1,
+     "numerator": "First attempts succeeded",
+     "population": "Tasks created in [start,end), first attempt resolved",
+     "query_version": 1,
+     "target": null,
+     "unit": "ratio",
+     "version": 1,
+     "window_seconds": 86400
+    },
+    {
+     "denominator": "Succeeded, failed, cancelled and expired logical tasks",
+     "direction": null,
+     "freshness_seconds": 120,
+     "metric_id": "terminal_logical_task_success",
+     "minimum_samples": 1,
+     "numerator": "Succeeded logical tasks",
+     "population": "Tasks created in [start,end), terminal at observation",
+     "query_version": 1,
+     "target": null,
+     "unit": "ratio",
+     "version": 1,
+     "window_seconds": 86400
+    },
+    {
+     "denominator": "Not applicable: instantaneous gauge",
+     "direction": "at_most",
+     "freshness_seconds": 120,
+     "metric_id": "active_execution_capacity",
+     "minimum_samples": 1,
+     "numerator": "Live leased executions",
+     "population": "All tasks and decisions with running status and live lease",
+     "query_version": 1,
+     "target": 2,
+     "unit": "executions",
+     "version": 1,
+     "window_seconds": 0
+    }
+   ],
+   "observed_at": "2026-09-07T00:00:00+00:00",
+   "repository_revision": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+   "tasks": [
+    {
+     "attempt": 1,
+     "attempt_outcomes": [
+      {
+       "at": "2026-09-06T23:59:00+00:00",
+       "attempt": 1,
+       "status": "succeeded"
+      }
+     ],
+     "created_at": "2026-09-06T23:00:00+00:00",
+     "id": "one",
+     "status": "succeeded"
+    }
+   ]
+  },
+  "snapshot_unchanged": true
+ },
+ "collect_default_now": {
+  "aware_utc": true,
+  "count": 3,
+  "one_instant": true,
+  "window_end_is_observed_at": true,
+  "window_starts": [
+   [
+    "active_execution_capacity",
+    0.0
+   ],
+   [
+    "task_first_attempt_success",
+    86400.0
+   ],
+   [
+    "terminal_logical_task_success",
+    86400.0
+   ]
+  ]
+ },
+ "collect_populated": {
+  "results": [
+   {
+    "baseline_value": null,
+    "candidate_value": null,
+    "definition": {
+     "denominator": "Resolved first attempts",
+     "direction": null,
+     "freshness_seconds": 120,
+     "metric_id": "task_first_attempt_success",
+     "minimum_samples": 1,
+     "numerator": "First attempts succeeded",
+     "population": "Tasks created in [start,end), first attempt resolved",
+     "query_version": 1,
+     "target": null,
+     "unit": "ratio",
+     "version": 1,
+     "window_seconds": 86400
+    },
+    "definition_hash": "364548e4e4a26972bad3a28b88b9a48c0cf90222095fa99570929d3d9497ea65",
+    "denominator": 3,
+    "evidence_refs": [
+     "sha256:32f1f8c309decf3b1e5d5fe4856567744a00792be9275d431af968441e595101"
+    ],
+    "metric_id": "task_first_attempt_success",
+    "numerator": 2,
+    "observational": true,
+    "observed_at": "2026-09-07T00:00:00+00:00",
+    "promotion_approval": false,
+    "reason": "undefined target; observational only",
+    "repository_revision": "bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb",
+    "sample_count": 3,
+    "status": "unknown",
+    "uncertainty": "No comparative baseline or production SLO inference",
+    "value": 0.6666666666666666,
+    "window_end": "2026-09-07T00:00:00+00:00",
+    "window_start": "2026-09-06T00:00:00+00:00"
+   },
+   {
+    "baseline_value": null,
+    "candidate_value": null,
+    "definition": {
+     "denominator": "Succeeded, failed, cancelled and expired logical tasks",
+     "direction": null,
+     "freshness_seconds": 120,
+     "metric_id": "terminal_logical_task_success",
+     "minimum_samples": 1,
+     "numerator": "Succeeded logical tasks",
+     "population": "Tasks created in [start,end), terminal at observation",
+     "query_version": 1,
+     "target": null,
+     "unit": "ratio",
+     "version": 1,
+     "window_seconds": 86400
+    },
+    "definition_hash": "d6a1a3b26398e9812893c30b6f66bbae950a13279979df09e91200e45936dac7",
+    "denominator": 2,
+    "evidence_refs": [
+     "sha256:32f1f8c309decf3b1e5d5fe4856567744a00792be9275d431af968441e595101"
+    ],
+    "metric_id": "terminal_logical_task_success",
+    "numerator": 1,
+    "observational": true,
+    "observed_at": "2026-09-07T00:00:00+00:00",
+    "promotion_approval": false,
+    "reason": "undefined target; observational only",
+    "repository_revision": "bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb",
+    "sample_count": 2,
+    "status": "unknown",
+    "uncertainty": "No comparative baseline or production SLO inference",
+    "value": 0.5,
+    "window_end": "2026-09-07T00:00:00+00:00",
+    "window_start": "2026-09-06T00:00:00+00:00"
+   },
+   {
+    "baseline_value": null,
+    "candidate_value": null,
+    "definition": {
+     "denominator": "Not applicable: instantaneous gauge",
+     "direction": "at_most",
+     "freshness_seconds": 120,
+     "metric_id": "active_execution_capacity",
+     "minimum_samples": 1,
+     "numerator": "Live leased executions",
+     "population": "All tasks and decisions with running status and live lease",
+     "query_version": 1,
+     "target": 2,
+     "unit": "executions",
+     "version": 1,
+     "window_seconds": 0
+    },
+    "definition_hash": "f268d2be5aa279cf45eebc82b286155f46047069bf72af06a616b2680b6c1c9f",
+    "denominator": null,
+    "evidence_refs": [
+     "sha256:32f1f8c309decf3b1e5d5fe4856567744a00792be9275d431af968441e595101"
+    ],
+    "metric_id": "active_execution_capacity",
+    "numerator": 2,
+    "observational": false,
+    "observed_at": "2026-09-07T00:00:00+00:00",
+    "promotion_approval": false,
+    "reason": "existing policy capacity; leased records, not OS process telemetry",
+    "repository_revision": "bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb",
+    "sample_count": 1,
+    "status": "pass",
+    "uncertainty": "No comparative baseline or production SLO inference",
+    "value": 2,
+    "window_end": "2026-09-07T00:00:00+00:00",
+    "window_start": "2026-09-07T00:00:00+00:00"
+   }
+  ],
+  "snapshot": {
+   "decisions": [
+    {
+     "id": "d1",
+     "lease_until": "2026-09-07T00:05:00+00:00",
+     "status": "running"
+    },
+    {
+     "id": "d2",
+     "status": "pending"
+    }
+   ],
+   "definitions": [
+    {
+     "denominator": "Resolved first attempts",
+     "direction": null,
+     "freshness_seconds": 120,
+     "metric_id": "task_first_attempt_success",
+     "minimum_samples": 1,
+     "numerator": "First attempts succeeded",
+     "population": "Tasks created in [start,end), first attempt resolved",
+     "query_version": 1,
+     "target": null,
+     "unit": "ratio",
+     "version": 1,
+     "window_seconds": 86400
+    },
+    {
+     "denominator": "Succeeded, failed, cancelled and expired logical tasks",
+     "direction": null,
+     "freshness_seconds": 120,
+     "metric_id": "terminal_logical_task_success",
+     "minimum_samples": 1,
+     "numerator": "Succeeded logical tasks",
+     "population": "Tasks created in [start,end), terminal at observation",
+     "query_version": 1,
+     "target": null,
+     "unit": "ratio",
+     "version": 1,
+     "window_seconds": 86400
+    },
+    {
+     "denominator": "Not applicable: instantaneous gauge",
+     "direction": "at_most",
+     "freshness_seconds": 120,
+     "metric_id": "active_execution_capacity",
+     "minimum_samples": 1,
+     "numerator": "Live leased executions",
+     "population": "All tasks and decisions with running status and live lease",
+     "query_version": 1,
+     "target": 2,
+     "unit": "executions",
+     "version": 1,
+     "window_seconds": 0
+    }
+   ],
+   "observed_at": "2026-09-07T00:00:00+00:00",
+   "repository_revision": "bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb",
+   "tasks": [
+    {
+     "attempt": 1,
+     "attempt_outcomes": [
+      {
+       "at": "2026-09-06T23:59:00+00:00",
+       "attempt": 1,
+       "status": "succeeded"
+      }
+     ],
+     "created_at": "2026-09-06T23:00:00+00:00",
+     "id": "t1",
+     "status": "succeeded"
+    },
+    {
+     "attempt": 1,
+     "attempt_outcomes": [
+      {
+       "at": "2026-09-06T23:59:00+00:00",
+       "attempt": 1,
+       "status": "succeeded"
+      }
+     ],
+     "created_at": "2026-09-06T23:00:00+00:00",
+     "id": "t2",
+     "lease_until": "2026-09-07T00:05:00+00:00",
+     "status": "running"
+    },
+    {
+     "attempt": 1,
+     "attempt_outcomes": [
+      {
+       "at": "2026-09-06T23:59:00+00:00",
+       "attempt": 1,
+       "status": "failed"
+      }
+     ],
+     "created_at": "2026-09-06T23:00:00+00:00",
+     "id": "t3",
+     "status": "failed"
+    }
+   ]
+  }
+ },
+ "collect_refusals": {
+  "empty": {
+   "artifact_files": [],
+   "outcome": {
+    "message": "Measurement repository revision required",
+    "refused": "ContractError"
+   },
+   "store_data": {}
+  },
+  "none": {
+   "artifact_files": [],
+   "outcome": {
+    "message": "Measurement repository revision required",
+    "refused": "ContractError"
+   },
+   "store_data": {}
+  }
+ },
+ "definitions": {
+  "count": 3,
+  "documents": [
+   {
+    "denominator": "Resolved first attempts",
+    "direction": null,
+    "freshness_seconds": 120,
+    "metric_id": "task_first_attempt_success",
+    "minimum_samples": 1,
+    "numerator": "First attempts succeeded",
+    "population": "Tasks created in [start,end), first attempt resolved",
+    "query_version": 1,
+    "target": null,
+    "unit": "ratio",
+    "version": 1,
+    "window_seconds": 86400
+   },
+   {
+    "denominator": "Succeeded, failed, cancelled and expired logical tasks",
+    "direction": null,
+    "freshness_seconds": 120,
+    "metric_id": "terminal_logical_task_success",
+    "minimum_samples": 1,
+    "numerator": "Succeeded logical tasks",
+    "population": "Tasks created in [start,end), terminal at observation",
+    "query_version": 1,
+    "target": null,
+    "unit": "ratio",
+    "version": 1,
+    "window_seconds": 86400
+   },
+   {
+    "denominator": "Not applicable: instantaneous gauge",
+    "direction": "at_most",
+    "freshness_seconds": 120,
+    "metric_id": "active_execution_capacity",
+    "minimum_samples": 1,
+    "numerator": "Live leased executions",
+    "population": "All tasks and decisions with running status and live lease",
+    "query_version": 1,
+    "target": 2,
+    "unit": "executions",
+    "version": 1,
+    "window_seconds": 0
+   }
+  ],
+  "frozen": {
+   "message": "cannot assign to field 'metric_id'",
+   "refused": "FrozenInstanceError"
+  },
+  "terminal": [
+   "cancelled",
+   "expired",
+   "failed",
+   "succeeded"
+  ]
+ },
+ "evaluate": {
+  "bad_created": {
+   "value": {
+    "denominator": null,
+    "metric_id": "terminal_logical_task_success",
+    "numerator": null,
+    "observational": true,
+    "reason": "invalid evidence",
+    "sample_count": 0,
+    "status": "unknown",
+    "value": null
+   }
+  },
+  "capacity": {
+   "at_target": {
+    "value": {
+     "denominator": null,
+     "metric_id": "active_execution_capacity",
+     "numerator": 2,
+     "observational": false,
+     "reason": "existing policy capacity; leased records, not OS process telemetry",
+     "sample_count": 1,
+     "status": "pass",
+     "value": 2
+    }
+   },
+   "decision_status_blocked": {
+    "value": {
+     "denominator": null,
+     "metric_id": "active_execution_capacity",
+     "numerator": 0,
+     "observational": false,
+     "reason": "existing policy capacity; leased records, not OS process telemetry",
+     "sample_count": 1,
+     "status": "pass",
+     "value": 0
+    }
+   },
+   "duplicate_ids": {
+    "value": {
+     "denominator": null,
+     "metric_id": "active_execution_capacity",
+     "numerator": null,
+     "observational": true,
+     "reason": "invalid execution status",
+     "sample_count": 0,
+     "status": "unknown",
+     "value": null
+    }
+   },
+   "empty": {
+    "value": {
+     "denominator": null,
+     "metric_id": "active_execution_capacity",
+     "numerator": 0,
+     "observational": false,
+     "reason": "existing policy capacity; leased records, not OS process telemetry",
+     "sample_count": 1,
+     "status": "pass",
+     "value": 0
+    }
+   },
+   "invalid_status": {
+    "value": {
+     "denominator": null,
+     "metric_id": "active_execution_capacity",
+     "numerator": null,
+     "observational": true,
+     "reason": "invalid execution status",
+     "sample_count": 0,
+     "status": "unknown",
+     "value": null
+    }
+   },
+   "lease_at_observed": {
+    "value": {
+     "denominator": null,
+     "metric_id": "active_execution_capacity",
+     "numerator": 0,
+     "observational": false,
+     "reason": "existing policy capacity; leased records, not OS process telemetry",
+     "sample_count": 1,
+     "status": "pass",
+     "value": 0
+    }
+   },
+   "null_lease": {
+    "value": {
+     "denominator": null,
+     "metric_id": "active_execution_capacity",
+     "numerator": null,
+     "observational": true,
+     "reason": "invalid evidence",
+     "sample_count": 0,
+     "status": "unknown",
+     "value": null
+    }
+   },
+   "one_expired": {
+    "value": {
+     "denominator": null,
+     "metric_id": "active_execution_capacity",
+     "numerator": 2,
+     "observational": false,
+     "reason": "existing policy capacity; leased records, not OS process telemetry",
+     "sample_count": 1,
+     "status": "pass",
+     "value": 2
+    }
+   },
+   "over_target": {
+    "value": {
+     "denominator": null,
+     "metric_id": "active_execution_capacity",
+     "numerator": 3,
+     "observational": false,
+     "reason": "existing policy capacity; leased records, not OS process telemetry",
+     "sample_count": 1,
+     "status": "fail",
+     "value": 3
+    }
+   },
+   "task_status_pending_invalid": {
+    "value": {
+     "denominator": null,
+     "metric_id": "active_execution_capacity",
+     "numerator": null,
+     "observational": true,
+     "reason": "invalid execution status",
+     "sample_count": 0,
+     "status": "unknown",
+     "value": null
+    }
+   },
+   "tasks_and_decisions": {
+    "value": {
+     "denominator": null,
+     "metric_id": "active_execution_capacity",
+     "numerator": 2,
+     "observational": false,
+     "reason": "existing policy capacity; leased records, not OS process telemetry",
+     "sample_count": 1,
+     "status": "pass",
+     "value": 2
+    }
+   },
+   "three_leased": {
+    "value": {
+     "denominator": null,
+     "metric_id": "active_execution_capacity",
+     "numerator": 3,
+     "observational": false,
+     "reason": "existing policy capacity; leased records, not OS process telemetry",
+     "sample_count": 1,
+     "status": "fail",
+     "value": 3
+    }
+   }
+  },
+  "evidence_shapes": {
+   "bad_observed": {
+    "value": {
+     "denominator": null,
+     "metric_id": "task_first_attempt_success",
+     "numerator": null,
+     "observational": true,
+     "reason": "invalid evidence",
+     "sample_count": 0,
+     "status": "unknown",
+     "value": null
+    }
+   },
+   "empty": {
+    "value": {
+     "denominator": null,
+     "metric_id": "task_first_attempt_success",
+     "numerator": null,
+     "observational": true,
+     "reason": "invalid evidence",
+     "sample_count": 0,
+     "status": "unknown",
+     "value": null
+    }
+   },
+   "empty_id": {
+    "value": {
+     "denominator": null,
+     "metric_id": "task_first_attempt_success",
+     "numerator": null,
+     "observational": true,
+     "reason": "invalid or duplicate population",
+     "sample_count": 0,
+     "status": "unknown",
+     "value": null
+    }
+   },
+   "int_id": {
+    "value": {
+     "denominator": null,
+     "metric_id": "task_first_attempt_success",
+     "numerator": null,
+     "observational": true,
+     "reason": "invalid or duplicate population",
+     "sample_count": 0,
+     "status": "unknown",
+     "value": null
+    }
+   },
+   "naive_observed": {
+    "value": {
+     "denominator": null,
+     "metric_id": "task_first_attempt_success",
+     "numerator": null,
+     "observational": true,
+     "reason": "invalid evidence",
+     "sample_count": 0,
+     "status": "unknown",
+     "value": null
+    }
+   },
+   "no_decisions": {
+    "value": {
+     "denominator": null,
+     "metric_id": "task_first_attempt_success",
+     "numerator": null,
+     "observational": true,
+     "reason": "invalid evidence",
+     "sample_count": 0,
+     "status": "unknown",
+     "value": null
+    }
+   },
+   "no_rows": {
+    "value": {
+     "denominator": 0,
+     "metric_id": "task_first_attempt_success",
+     "numerator": 0,
+     "observational": true,
+     "reason": "insufficient samples (including zero population)",
+     "sample_count": 0,
+     "status": "unknown",
+     "value": null
+    }
+   },
+   "none": {
+    "value": {
+     "denominator": null,
+     "metric_id": "task_first_attempt_success",
+     "numerator": null,
+     "observational": true,
+     "reason": "missing evidence",
+     "sample_count": 0,
+     "status": "unknown",
+     "value": null
+    }
+   },
+   "tasks_not_list": {
+    "value": {
+     "denominator": null,
+     "metric_id": "task_first_attempt_success",
+     "numerator": null,
+     "observational": true,
+     "reason": "invalid or duplicate population",
+     "sample_count": 0,
+     "status": "unknown",
+     "value": null
+    }
+   },
+   "two_same_id": {
+    "value": {
+     "denominator": null,
+     "metric_id": "task_first_attempt_success",
+     "numerator": null,
+     "observational": true,
+     "reason": "invalid or duplicate population",
+     "sample_count": 0,
+     "status": "unknown",
+     "value": null
+    }
+   }
+  },
+  "freshness": {
+   "-1": [
+    {
+     "value": {
+      "denominator": null,
+      "metric_id": "task_first_attempt_success",
+      "numerator": null,
+      "observational": true,
+      "reason": "future-dated evidence",
+      "sample_count": 0,
+      "status": "unknown",
+      "value": null
+     }
+    },
+    {
+     "value": {
+      "denominator": null,
+      "metric_id": "terminal_logical_task_success",
+      "numerator": null,
+      "observational": true,
+      "reason": "future-dated evidence",
+      "sample_count": 0,
+      "status": "unknown",
+      "value": null
+     }
+    },
+    {
+     "value": {
+      "denominator": null,
+      "metric_id": "active_execution_capacity",
+      "numerator": null,
+      "observational": true,
+      "reason": "future-dated evidence",
+      "sample_count": 0,
+      "status": "unknown",
+      "value": null
+     }
+    }
+   ],
+   "0": [
+    {
+     "value": {
+      "denominator": 1,
+      "metric_id": "task_first_attempt_success",
+      "numerator": 1,
+      "observational": true,
+      "reason": "undefined target; observational only",
+      "sample_count": 1,
+      "status": "unknown",
+      "value": 1.0
+     }
+    },
+    {
+     "value": {
+      "denominator": 1,
+      "metric_id": "terminal_logical_task_success",
+      "numerator": 1,
+      "observational": true,
+      "reason": "undefined target; observational only",
+      "sample_count": 1,
+      "status": "unknown",
+      "value": 1.0
+     }
+    },
+    {
+     "value": {
+      "denominator": null,
+      "metric_id": "active_execution_capacity",
+      "numerator": 0,
+      "observational": false,
+      "reason": "existing policy capacity; leased records, not OS process telemetry",
+      "sample_count": 1,
+      "status": "pass",
+      "value": 0
+     }
+    }
+   ],
+   "120": [
+    {
+     "value": {
+      "denominator": null,
+      "metric_id": "task_first_attempt_success",
+      "numerator": null,
+      "observational": true,
+      "reason": "invalid attempt history",
+      "sample_count": 0,
+      "status": "unknown",
+      "value": null
+     }
+    },
+    {
+     "value": {
+      "denominator": 1,
+      "metric_id": "terminal_logical_task_success",
+      "numerator": 1,
+      "observational": true,
+      "reason": "undefined target; observational only",
+      "sample_count": 1,
+      "status": "unknown",
+      "value": 1.0
+     }
+    },
+    {
+     "value": {
+      "denominator": null,
+      "metric_id": "active_execution_capacity",
+      "numerator": 0,
+      "observational": false,
+      "reason": "existing policy capacity; leased records, not OS process telemetry",
+      "sample_count": 1,
+      "status": "pass",
+      "value": 0
+     }
+    }
+   ],
+   "121": [
+    {
+     "value": {
+      "denominator": null,
+      "metric_id": "task_first_attempt_success",
+      "numerator": null,
+      "observational": true,
+      "reason": "stale evidence",
+      "sample_count": 0,
+      "status": "unknown",
+      "value": null
+     }
+    },
+    {
+     "value": {
+      "denominator": null,
+      "metric_id": "terminal_logical_task_success",
+      "numerator": null,
+      "observational": true,
+      "reason": "stale evidence",
+      "sample_count": 0,
+      "status": "unknown",
+      "value": null
+     }
+    },
+    {
+     "value": {
+      "denominator": null,
+      "metric_id": "active_execution_capacity",
+      "numerator": null,
+      "observational": true,
+      "reason": "stale evidence",
+      "sample_count": 0,
+      "status": "unknown",
+      "value": null
+     }
+    }
+   ]
+  },
+  "legacy_history": {
+   "value": {
+    "denominator": null,
+    "metric_id": "task_first_attempt_success",
+    "numerator": null,
+    "observational": true,
+    "reason": "missing attempt history; legacy outcomes not reconstructed",
+    "sample_count": 0,
+    "status": "unknown",
+    "value": null
+   }
+  },
+  "minimum_samples": [
+   {
+    "value": {
+     "denominator": 1,
+     "metric_id": "task_first_attempt_success",
+     "numerator": 1,
+     "observational": true,
+     "reason": "undefined target; observational only",
+     "sample_count": 1,
+     "status": "unknown",
+     "value": 1.0
+    }
+   },
+   {
+    "value": {
+     "denominator": 1,
+     "metric_id": "task_first_attempt_success",
+     "numerator": 1,
+     "observational": true,
+     "reason": "undefined target; observational only",
+     "sample_count": 1,
+     "status": "unknown",
+     "value": 1.0
+    }
+   },
+   {
+    "value": {
+     "denominator": 1,
+     "metric_id": "task_first_attempt_success",
+     "numerator": 1,
+     "observational": true,
+     "reason": "insufficient samples (including zero population)",
+     "sample_count": 1,
+     "status": "unknown",
+     "value": null
+    }
+   }
+  ],
+  "mixed_population": [
+   {
+    "value": {
+     "denominator": 2,
+     "metric_id": "task_first_attempt_success",
+     "numerator": 1,
+     "observational": true,
+     "reason": "undefined target; observational only",
+     "sample_count": 2,
+     "status": "unknown",
+     "value": 0.5
+    }
+   },
+   {
+    "value": {
+     "denominator": 2,
+     "metric_id": "terminal_logical_task_success",
+     "numerator": 1,
+     "observational": true,
+     "reason": "undefined target; observational only",
+     "sample_count": 2,
+     "status": "unknown",
+     "value": 0.5
+    }
+   }
+  ],
+  "retries_do_not_improve_first_attempt": [
+   {
+    "value": {
+     "denominator": 2,
+     "metric_id": "task_first_attempt_success",
+     "numerator": 1,
+     "observational": true,
+     "reason": "undefined target; observational only",
+     "sample_count": 2,
+     "status": "unknown",
+     "value": 0.5
+    }
+   },
+   {
+    "value": {
+     "denominator": 4,
+     "metric_id": "terminal_logical_task_success",
+     "numerator": 2,
+     "observational": true,
+     "reason": "undefined target; observational only",
+     "sample_count": 4,
+     "status": "unknown",
+     "value": 0.5
+    }
+   }
+  ],
+  "short_window": [
+   {
+    "value": {
+     "denominator": 0,
+     "metric_id": "task_first_attempt_success",
+     "numerator": 0,
+     "observational": true,
+     "reason": "insufficient samples (including zero population)",
+     "sample_count": 0,
+     "status": "unknown",
+     "value": null
+    }
+   },
+   {
+    "value": {
+     "denominator": 0,
+     "metric_id": "terminal_logical_task_success",
+     "numerator": 0,
+     "observational": true,
+     "reason": "insufficient samples (including zero population)",
+     "sample_count": 0,
+     "status": "unknown",
+     "value": null
+    }
+   }
+  ],
+  "task_changes": {
+   "attempt_negative": [
+    {
+     "value": {
+      "denominator": null,
+      "metric_id": "task_first_attempt_success",
+      "numerator": null,
+      "observational": true,
+      "reason": "invalid attempt count",
+      "sample_count": 0,
+      "status": "unknown",
+      "value": null
+     }
+    },
+    {
+     "value": {
+      "denominator": null,
+      "metric_id": "terminal_logical_task_success",
+      "numerator": null,
+      "observational": true,
+      "reason": "invalid attempt count",
+      "sample_count": 0,
+      "status": "unknown",
+      "value": null
+     }
+    }
+   ],
+   "attempt_str": [
+    {
+     "value": {
+      "denominator": null,
+      "metric_id": "task_first_attempt_success",
+      "numerator": null,
+      "observational": true,
+      "reason": "invalid attempt count",
+      "sample_count": 0,
+      "status": "unknown",
+      "value": null
+     }
+    },
+    {
+     "value": {
+      "denominator": null,
+      "metric_id": "terminal_logical_task_success",
+      "numerator": null,
+      "observational": true,
+      "reason": "invalid attempt count",
+      "sample_count": 0,
+      "status": "unknown",
+      "value": null
+     }
+    }
+   ],
+   "attempt_true": [
+    {
+     "value": {
+      "denominator": null,
+      "metric_id": "task_first_attempt_success",
+      "numerator": null,
+      "observational": true,
+      "reason": "invalid attempt count",
+      "sample_count": 0,
+      "status": "unknown",
+      "value": null
+     }
+    },
+    {
+     "value": {
+      "denominator": null,
+      "metric_id": "terminal_logical_task_success",
+      "numerator": null,
+      "observational": true,
+      "reason": "invalid attempt count",
+      "sample_count": 0,
+      "status": "unknown",
+      "value": null
+     }
+    }
+   ],
+   "attempt_zero": [
+    {
+     "value": {
+      "denominator": null,
+      "metric_id": "task_first_attempt_success",
+      "numerator": null,
+      "observational": true,
+      "reason": "success without an attempt",
+      "sample_count": 0,
+      "status": "unknown",
+      "value": null
+     }
+    },
+    {
+     "value": {
+      "denominator": null,
+      "metric_id": "terminal_logical_task_success",
+      "numerator": null,
+      "observational": true,
+      "reason": "success without an attempt",
+      "sample_count": 0,
+      "status": "unknown",
+      "value": null
+     }
+    }
+   ],
+   "completed_before_created": [
+    {
+     "value": {
+      "denominator": null,
+      "metric_id": "task_first_attempt_success",
+      "numerator": null,
+      "observational": true,
+      "reason": "invalid or future-dated completion",
+      "sample_count": 0,
+      "status": "unknown",
+      "value": null
+     }
+    },
+    {
+     "value": {
+      "denominator": null,
+      "metric_id": "terminal_logical_task_success",
+      "numerator": null,
+      "observational": true,
+      "reason": "invalid or future-dated completion",
+      "sample_count": 0,
+      "status": "unknown",
+      "value": null
+     }
+    }
+   ],
+   "completed_null": [
+    {
+     "value": {
+      "denominator": 1,
+      "metric_id": "task_first_attempt_success",
+      "numerator": 1,
+      "observational": true,
+      "reason": "undefined target; observational only",
+      "sample_count": 1,
+      "status": "unknown",
+      "value": 1.0
+     }
+    },
+    {
+     "value": {
+      "denominator": 1,
+      "metric_id": "terminal_logical_task_success",
+      "numerator": 1,
+      "observational": true,
+      "reason": "undefined target; observational only",
+      "sample_count": 1,
+      "status": "unknown",
+      "value": 1.0
+     }
+    }
+   ],
+   "completed_ok": [
+    {
+     "value": {
+      "denominator": 1,
+      "metric_id": "task_first_attempt_success",
+      "numerator": 1,
+      "observational": true,
+      "reason": "undefined target; observational only",
+      "sample_count": 1,
+      "status": "unknown",
+      "value": 1.0
+     }
+    },
+    {
+     "value": {
+      "denominator": 1,
+      "metric_id": "terminal_logical_task_success",
+      "numerator": 1,
+      "observational": true,
+      "reason": "undefined target; observational only",
+      "sample_count": 1,
+      "status": "unknown",
+      "value": 1.0
+     }
+    }
+   ],
+   "created_at_observed": [
+    {
+     "value": {
+      "denominator": 0,
+      "metric_id": "task_first_attempt_success",
+      "numerator": 0,
+      "observational": true,
+      "reason": "insufficient samples (including zero population)",
+      "sample_count": 0,
+      "status": "unknown",
+      "value": null
+     }
+    },
+    {
+     "value": {
+      "denominator": 0,
+      "metric_id": "terminal_logical_task_success",
+      "numerator": 0,
+      "observational": true,
+      "reason": "insufficient samples (including zero population)",
+      "sample_count": 0,
+      "status": "unknown",
+      "value": null
+     }
+    }
+   ],
+   "duplicate_attempt": [
+    {
+     "value": {
+      "denominator": null,
+      "metric_id": "task_first_attempt_success",
+      "numerator": null,
+      "observational": true,
+      "reason": "invalid attempt history",
+      "sample_count": 0,
+      "status": "unknown",
+      "value": null
+     }
+    },
+    {
+     "value": {
+      "denominator": 1,
+      "metric_id": "terminal_logical_task_success",
+      "numerator": 1,
+      "observational": true,
+      "reason": "undefined target; observational only",
+      "sample_count": 1,
+      "status": "unknown",
+      "value": 1.0
+     }
+    }
+   ],
+   "failed": [
+    {
+     "value": {
+      "denominator": 1,
+      "metric_id": "task_first_attempt_success",
+      "numerator": 0,
+      "observational": true,
+      "reason": "undefined target; observational only",
+      "sample_count": 1,
+      "status": "unknown",
+      "value": 0.0
+     }
+    },
+    {
+     "value": {
+      "denominator": 1,
+      "metric_id": "terminal_logical_task_success",
+      "numerator": 0,
+      "observational": true,
+      "reason": "undefined target; observational only",
+      "sample_count": 1,
+      "status": "unknown",
+      "value": 0.0
+     }
+    }
+   ],
+   "future_completed": [
+    {
+     "value": {
+      "denominator": null,
+      "metric_id": "task_first_attempt_success",
+      "numerator": null,
+      "observational": true,
+      "reason": "invalid or future-dated completion",
+      "sample_count": 0,
+      "status": "unknown",
+      "value": null
+     }
+    },
+    {
+     "value": {
+      "denominator": null,
+      "metric_id": "terminal_logical_task_success",
+      "numerator": null,
+      "observational": true,
+      "reason": "invalid or future-dated completion",
+      "sample_count": 0,
+      "status": "unknown",
+      "value": null
+     }
+    }
+   ],
+   "future_created": [
+    {
+     "value": {
+      "denominator": null,
+      "metric_id": "task_first_attempt_success",
+      "numerator": null,
+      "observational": true,
+      "reason": "future-dated task",
+      "sample_count": 0,
+      "status": "unknown",
+      "value": null
+     }
+    },
+    {
+     "value": {
+      "denominator": null,
+      "metric_id": "terminal_logical_task_success",
+      "numerator": null,
+      "observational": true,
+      "reason": "future-dated task",
+      "sample_count": 0,
+      "status": "unknown",
+      "value": null
+     }
+    }
+   ],
+   "lease_expired_outcome": [
+    {
+     "value": {
+      "denominator": 1,
+      "metric_id": "task_first_attempt_success",
+      "numerator": 0,
+      "observational": true,
+      "reason": "undefined target; observational only",
+      "sample_count": 1,
+      "status": "unknown",
+      "value": 0.0
+     }
+    },
+    {
+     "value": {
+      "denominator": 0,
+      "metric_id": "terminal_logical_task_success",
+      "numerator": 0,
+      "observational": true,
+      "reason": "insufficient samples (including zero population)",
+      "sample_count": 0,
+      "status": "unknown",
+      "value": null
+     }
+    }
+   ],
+   "missing_status": [
+    {
+     "value": {
+      "denominator": null,
+      "metric_id": "task_first_attempt_success",
+      "numerator": null,
+      "observational": true,
+      "reason": "invalid task status",
+      "sample_count": 0,
+      "status": "unknown",
+      "value": null
+     }
+    },
+    {
+     "value": {
+      "denominator": null,
+      "metric_id": "terminal_logical_task_success",
+      "numerator": null,
+      "observational": true,
+      "reason": "invalid task status",
+      "sample_count": 0,
+      "status": "unknown",
+      "value": null
+     }
+    }
+   ],
+   "no_outcomes_running_attempt1": [
+    {
+     "value": {
+      "denominator": 0,
+      "metric_id": "task_first_attempt_success",
+      "numerator": 0,
+      "observational": true,
+      "reason": "insufficient samples (including zero population)",
+      "sample_count": 0,
+      "status": "unknown",
+      "value": null
+     }
+    },
+    {
+     "value": {
+      "denominator": 0,
+      "metric_id": "terminal_logical_task_success",
+      "numerator": 0,
+      "observational": true,
+      "reason": "insufficient samples (including zero population)",
+      "sample_count": 0,
+      "status": "unknown",
+      "value": null
+     }
+    }
+   ],
+   "no_outcomes_succeeded": [
+    {
+     "value": {
+      "denominator": null,
+      "metric_id": "task_first_attempt_success",
+      "numerator": null,
+      "observational": true,
+      "reason": "missing attempt history; legacy outcomes not reconstructed",
+      "sample_count": 0,
+      "status": "unknown",
+      "value": null
+     }
+    },
+    {
+     "value": {
+      "denominator": 1,
+      "metric_id": "terminal_logical_task_success",
+      "numerator": 1,
+      "observational": true,
+      "reason": "undefined target; observational only",
+      "sample_count": 1,
+      "status": "unknown",
+      "value": 1.0
+     }
+    }
+   ],
+   "not_in_window": [
+    {
+     "value": {
+      "denominator": 0,
+      "metric_id": "task_first_attempt_success",
+      "numerator": 0,
+      "observational": true,
+      "reason": "insufficient samples (including zero population)",
+      "sample_count": 0,
+      "status": "unknown",
+      "value": null
+     }
+    },
+    {
+     "value": {
+      "denominator": 0,
+      "metric_id": "terminal_logical_task_success",
+      "numerator": 0,
+      "observational": true,
+      "reason": "insufficient samples (including zero population)",
+      "sample_count": 0,
+      "status": "unknown",
+      "value": null
+     }
+    }
+   ],
+   "outcome_attempt_beyond": [
+    {
+     "value": {
+      "denominator": null,
+      "metric_id": "task_first_attempt_success",
+      "numerator": null,
+      "observational": true,
+      "reason": "invalid attempt history",
+      "sample_count": 0,
+      "status": "unknown",
+      "value": null
+     }
+    },
+    {
+     "value": {
+      "denominator": 1,
+      "metric_id": "terminal_logical_task_success",
+      "numerator": 1,
+      "observational": true,
+      "reason": "undefined target; observational only",
+      "sample_count": 1,
+      "status": "unknown",
+      "value": 1.0
+     }
+    }
+   ],
+   "outcome_bad_status": [
+    {
+     "value": {
+      "denominator": null,
+      "metric_id": "task_first_attempt_success",
+      "numerator": null,
+      "observational": true,
+      "reason": "invalid attempt history",
+      "sample_count": 0,
+      "status": "unknown",
+      "value": null
+     }
+    },
+    {
+     "value": {
+      "denominator": 1,
+      "metric_id": "terminal_logical_task_success",
+      "numerator": 1,
+      "observational": true,
+      "reason": "undefined target; observational only",
+      "sample_count": 1,
+      "status": "unknown",
+      "value": 1.0
+     }
+    }
+   ],
+   "outcome_before_created": [
+    {
+     "value": {
+      "denominator": null,
+      "metric_id": "task_first_attempt_success",
+      "numerator": null,
+      "observational": true,
+      "reason": "invalid attempt history",
+      "sample_count": 0,
+      "status": "unknown",
+      "value": null
+     }
+    },
+    {
+     "value": {
+      "denominator": 1,
+      "metric_id": "terminal_logical_task_success",
+      "numerator": 1,
+      "observational": true,
+      "reason": "undefined target; observational only",
+      "sample_count": 1,
+      "status": "unknown",
+      "value": 1.0
+     }
+    }
+   ],
+   "outcome_future": [
+    {
+     "value": {
+      "denominator": null,
+      "metric_id": "task_first_attempt_success",
+      "numerator": null,
+      "observational": true,
+      "reason": "invalid attempt history",
+      "sample_count": 0,
+      "status": "unknown",
+      "value": null
+     }
+    },
+    {
+     "value": {
+      "denominator": 1,
+      "metric_id": "terminal_logical_task_success",
+      "numerator": 1,
+      "observational": true,
+      "reason": "undefined target; observational only",
+      "sample_count": 1,
+      "status": "unknown",
+      "value": 1.0
+     }
+    }
+   ],
+   "outcome_missing_key": [
+    {
+     "value": {
+      "denominator": null,
+      "metric_id": "task_first_attempt_success",
+      "numerator": null,
+      "observational": true,
+      "reason": "invalid evidence",
+      "sample_count": 0,
+      "status": "unknown",
+      "value": null
+     }
+    },
+    {
+     "value": {
+      "denominator": 1,
+      "metric_id": "terminal_logical_task_success",
+      "numerator": 1,
+      "observational": true,
+      "reason": "undefined target; observational only",
+      "sample_count": 1,
+      "status": "unknown",
+      "value": 1.0
+     }
+    }
+   ],
+   "queued": [
+    {
+     "value": {
+      "denominator": null,
+      "metric_id": "task_first_attempt_success",
+      "numerator": null,
+      "observational": true,
+      "reason": "invalid attempt history",
+      "sample_count": 0,
+      "status": "unknown",
+      "value": null
+     }
+    },
+    {
+     "value": {
+      "denominator": 0,
+      "metric_id": "terminal_logical_task_success",
+      "numerator": 0,
+      "observational": true,
+      "reason": "insufficient samples (including zero population)",
+      "sample_count": 0,
+      "status": "unknown",
+      "value": null
+     }
+    }
+   ],
+   "running": [
+    {
+     "value": {
+      "denominator": 1,
+      "metric_id": "task_first_attempt_success",
+      "numerator": 1,
+      "observational": true,
+      "reason": "undefined target; observational only",
+      "sample_count": 1,
+      "status": "unknown",
+      "value": 1.0
+     }
+    },
+    {
+     "value": {
+      "denominator": 0,
+      "metric_id": "terminal_logical_task_success",
+      "numerator": 0,
+      "observational": true,
+      "reason": "insufficient samples (including zero population)",
+      "sample_count": 0,
+      "status": "unknown",
+      "value": null
+     }
+    }
+   ],
+   "status_made_up": [
+    {
+     "value": {
+      "denominator": null,
+      "metric_id": "task_first_attempt_success",
+      "numerator": null,
+      "observational": true,
+      "reason": "invalid task status",
+      "sample_count": 0,
+      "status": "unknown",
+      "value": null
+     }
+    },
+    {
+     "value": {
+      "denominator": null,
+      "metric_id": "terminal_logical_task_success",
+      "numerator": null,
+      "observational": true,
+      "reason": "invalid task status",
+      "sample_count": 0,
+      "status": "unknown",
+      "value": null
+     }
+    }
+   ],
+   "success_without_attempt": [
+    {
+     "value": {
+      "denominator": null,
+      "metric_id": "task_first_attempt_success",
+      "numerator": null,
+      "observational": true,
+      "reason": "success without an attempt",
+      "sample_count": 0,
+      "status": "unknown",
+      "value": null
+     }
+    },
+    {
+     "value": {
+      "denominator": null,
+      "metric_id": "terminal_logical_task_success",
+      "numerator": null,
+      "observational": true,
+      "reason": "success without an attempt",
+      "sample_count": 0,
+      "status": "unknown",
+      "value": null
+     }
+    }
+   ],
+   "window_start_inclusive": [
+    {
+     "value": {
+      "denominator": 1,
+      "metric_id": "task_first_attempt_success",
+      "numerator": 1,
+      "observational": true,
+      "reason": "undefined target; observational only",
+      "sample_count": 1,
+      "status": "unknown",
+      "value": 1.0
+     }
+    },
+    {
+     "value": {
+      "denominator": 1,
+      "metric_id": "terminal_logical_task_success",
+      "numerator": 1,
+      "observational": true,
+      "reason": "undefined target; observational only",
+      "sample_count": 1,
+      "status": "unknown",
+      "value": 1.0
+     }
+    }
+   ]
+  }
+ },
+ "timestamp": {
+  "aware": {
+   "value": "2026-09-07T00:00:00+00:00"
+  },
+  "bad": {
+   "message": "Invalid isoformat string: 'nope'",
+   "refused": "ValueError"
+  },
+  "naive": {
+   "message": "Naive timestamp",
+   "refused": "ValueError"
+  },
+  "none": {
+   "message": "fromisoformat: argument must be str",
+   "refused": "TypeError"
+  },
+  "offset": {
+   "value": "2026-09-07T09:00:00+09:00"
+  }
+ }
+}

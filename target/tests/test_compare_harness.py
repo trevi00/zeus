@@ -109,7 +109,7 @@ S8_FAMILIES = {"research.program_tick", "research.capture", "research.program_re
                "research.correction_feedback", "review.release_suite", "research.source_execution_adapter", "coordination.fleet_backlog", "intake.ticket_lifecycle", "review.canary", "research.audit_repair",
                "research.threshold_reviews", "research.scheduling", "review.releases_audits", "intake.goal_progress", "intake.ticket_authority",
                "research.decision_feedback", "review.sdd", "research.audit_execution", "research.audit_runner", "research.audit_repair_replay"}
-S9_FAMILIES = {"observation.schema", "observation.file_spool", "observation.frontend_bytes"}
+S9_FAMILIES = {"observation.schema", "observation.file_spool", "observation.frontend_bytes", "observation.measurements"}
 S7_IMPLEMENTED = {"delivery.tooling", "delivery.restore.pg", "delivery.fleet_recovery_collectors", "delivery.release_runner", "delivery.canaries", "delivery.migration_evidence", "delivery.host_migration_transfer", "delivery.host_targets", "delivery.managed_runtime", "delivery.managed_systemd",
                   "review.releases_queue", "delivery.registry", "delivery.stages",
                   "delivery.owner_commands", "delivery.migration", "delivery.host_migrations",

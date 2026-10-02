@@ -1,0 +1,9 @@
+{
+ "family": "observation.measurements",
+ "description": "S9 unit U4 (M7 domain/measurements.py and application/measurements.py, INV-METRIC-001), characterized before the move into observation.domain.measurements and observation.application.measurements: the definitions and their documents, timestamp, evaluate over every population shape (a ratio only from valid evidence; unknown and no value for missing, stale, future-dated, duplicate, malformed and out-of-window evidence; every attempt-history refusal; the window bounds; minimum samples; the capacity gauge, its status vocabulary and its threshold), and Measurements.collect over a MemoryStore and M7's FileArtifacts with a fixed now (one artifact body and receipt, one metric_observations row per definition, byte-equal reproduction, idempotent re-collection, a later now, a populated store, now=None, and the refusal of an empty or missing revision with no artifact and no row); mirrors tests/test_measurements.py. The receipt's wall-clock at is never reported and the temporary directory never appears; no mask, no device, provider, network or database",
+ "reference_driver": "drivers/reference/s9_measurements.py",
+ "target_driver": null,
+ "target_status": "pending: the target side is the S9 unit U4 move (target driver s9_measurements.py, added with the target drivers)",
+ "golden": "goldens/reference/observation.measurements.json",
+ "slice": "S9"
+}
