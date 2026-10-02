@@ -24,6 +24,7 @@ import s8_frontdesk  # noqa: E402
 
 from codex_harness.adapters.contracts import validate_message  # noqa: E402
 from codex_harness.adapters.store import MemoryStore  # noqa: E402
+from codex_harness.application import execution_time  # noqa: E402,F401
 from codex_harness.application import frontdesk as application  # noqa: E402
 from codex_harness.application.service import Harness  # noqa: E402
 from codex_harness.application.workflow import ClaimGuardRefused, Workflow  # noqa: E402
@@ -33,7 +34,9 @@ from codex_harness.domain.model import canonical  # noqa: E402
 from codex_harness.ports import MessageDeliveryError  # noqa: E402
 
 CLOCK, IDS = determinism.FakeClock(), determinism.FakeIds()
-determinism.install(CLOCK, IDS)
+# M7 draws `execution_time.DOMAIN` (this process's clock-domain identity, recorded on every task) at import: pin it, as the S5 target pins its own
+determinism.install(CLOCK, IDS, constants={
+    "codex_harness.application.execution_time": {"DOMAIN": "00000000-0000-4000-8000-00000000e5e5"}})
 
 
 def reset():

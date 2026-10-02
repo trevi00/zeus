@@ -1424,7 +1424,7 @@
       "error": "injected failure",
       "execution_clock": {
        "deadline_remaining": 180.0,
-       "domain": "9bdd47c4-9778-427c-99cc-dbe6d1c65731",
+       "domain": "00000000-0000-4000-8000-00000000e5e5",
        "lease_seconds": 180.0,
        "monotonic": 1037.0,
        "version": 1,
@@ -1573,7 +1573,7 @@
       "error": "injected failure",
       "execution_clock": {
        "deadline_remaining": 180.0,
-       "domain": "9bdd47c4-9778-427c-99cc-dbe6d1c65731",
+       "domain": "00000000-0000-4000-8000-00000000e5e5",
        "lease_seconds": 180.0,
        "monotonic": 1040.0,
        "version": 1,
@@ -1719,7 +1719,7 @@
      "error": null,
      "execution_clock": {
       "deadline_remaining": 180.0,
-      "domain": "9bdd47c4-9778-427c-99cc-dbe6d1c65731",
+      "domain": "00000000-0000-4000-8000-00000000e5e5",
       "lease_seconds": 180.0,
       "monotonic": 1043.0,
       "version": 1,
@@ -2201,7 +2201,7 @@
       "error": null,
       "execution_clock": {
        "deadline_remaining": 180.0,
-       "domain": "9bdd47c4-9778-427c-99cc-dbe6d1c65731",
+       "domain": "00000000-0000-4000-8000-00000000e5e5",
        "lease_seconds": 180.0,
        "monotonic": 1028.0,
        "version": 1,
@@ -2655,7 +2655,7 @@
       "error": null,
       "execution_clock": {
        "deadline_remaining": 180.0,
-       "domain": "9bdd47c4-9778-427c-99cc-dbe6d1c65731",
+       "domain": "00000000-0000-4000-8000-00000000e5e5",
        "lease_seconds": 180.0,
        "monotonic": 1031.0,
        "version": 1,
@@ -2902,7 +2902,7 @@
      "error": null,
      "execution_clock": {
       "deadline_remaining": 180.0,
-      "domain": "9bdd47c4-9778-427c-99cc-dbe6d1c65731",
+      "domain": "00000000-0000-4000-8000-00000000e5e5",
       "lease_seconds": 180.0,
       "monotonic": 1067.0,
       "version": 1,
