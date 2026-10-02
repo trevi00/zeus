@@ -2,8 +2,7 @@
  "family": "observation.local_facts",
  "description": "S9 unit U5b (M7 adapters/monitoring_observations.py, the read-only observation projection for the monitor, INV-OBSERVATION-001), characterized before the move into observation.adapters.monitoring_observations: text (redaction before truncation, non-strings, limits), parse_time (aware, naive, malformed, non-strings), scan_bounded over a MemoryStore (page/limit boundaries, truncation), project_event (every field shape, unknown severity/category, the evidence-reference filter and cap, redaction), merge_events (audit-only, collected-wins, non-string ids, ordering ties), collection_facts, project_operation, local_facts over a REAL runtime directory written through the spool directory's own methods (missing, empty, populated, read-only: the tree is listed before and after, the 50-row bounds, and the (OSError, ValueError) catch with the lazily imported SpoolDirectory replaced by raising subclasses) and observation_facts over a MemoryStore with and without a runtime, all with a fixed now (the one default-now call has its observed_at proven ISO-8601 UTC and reported as <utc-iso>); mirrors the projection tests of tests/test_monitoring_observations.py. Declared nondeterministic fields are normalized inside the driver, not by the mask list: the temporary root (<root>) and the default-now observed_at. No network, container, thread, child process or database",
  "reference_driver": "drivers/reference/s9_local_facts.py",
- "target_driver": null,
- "target_status": "pending: the target side is the S9 unit U5b move (target driver s9_local_facts.py, added with the target drivers)",
+ "target_driver": "drivers/target/s9_local_facts.py",
  "golden": "goldens/reference/observation.local_facts.json",
  "slice": "S9"
 }
