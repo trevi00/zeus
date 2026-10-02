@@ -284,7 +284,7 @@ def k2_resolution(ctx):
                                     "rules_wildcard_free": all(rule.startswith("Bash(") and "*" not in rule for rule in delivery["permissions_allow"]),
                                     "parts_removed": all("parts" not in entry for entry in delivery["commands"])}
     two = ctx.parsed(ctx.document([check("probe", PROBE), check("second", FAILING, 1)]))
-    out["worker_delivery_two_checks"] = ctx.show(api.worker_delivery(two, implementation))
+    out["worker_delivery_two_checks"] = ctx.show(api.worker_delivery(two, implementation), "profile_digest")
     out["resolved_argument"] = {"same": api.worker_delivery(profile, implementation, resolved=api.resolve_profile(profile, implementation)) == delivery}
     out["shell_command"] = {
         "quoted": ctx.show(api.shell_command({"cwd": "/tmp/a b", "interpreter": "/usr/bin/python3", "environment": {"PYTHONPATH": "/x y"}},
@@ -509,7 +509,7 @@ def k4_host_route(ctx):
         clock, given, pending = Clock(), [], list(durations)
         insp.clock = clock
 
-        def capture(argv, cwd, timeout, max_bytes, env, progress=None):
+        def capture(argv, cwd, timeout, max_bytes, env, progress=None, process_tree=None):  # E-4d: the host route passes its port
             given.append(timeout)
             clock.now += pending.pop(0)
             return {"failure": None, "terminated": False, "returncode": 0, "duration_seconds": 0.0}

@@ -2,8 +2,7 @@
  "family": "evidence.isolated_inspector",
  "description": "S8 batch B5b (M7 adapters/isolated_evidence.py: DockerEvidenceInspector, IsolatedProjectEvidenceInspector, CONTAINER_ENVIRONMENT, container_environment), characterized before the move into evidence.adapters.isolated_evidence with its container replay in execution.adapters.containers.evidence_replay (DESIGN-s8 V26 rules E-1..E-3): the container identity, the unauthorized argv that never reaches docker, the prepared/created/start_requested/stop_confirmed/evidence_retained/removed lifecycle over a scripted docker and an injected capture, the progress callback forwarded as given, interruptions and a progress refusal that stop and retire the exact container, an unconfirmed stop that leaves a recovery record and refuses the next replay until reconciled, an unreclaimed capture debt, an unwritten observation, an unavailable or refused container, a capture failure, the REAL _capture over real local children through the REAL ProcessTree (normal exit, timeout, unconfirmed cleanup, interruption in wait, a missing or malformed proof), and the project checks replayed in their own container contexts through the evidence ledger; mirrors tests/test_isolated_evidence.py and tests/test_isolated_project_evidence.py (the IsolatedWorker, entry, bootstrap and executor tests are S3/S10 composition). Masks declared in the scenario body: durations, OS pids, record timestamps and the inspection id; host roots become symbolic names; the isolation driver_sha256 is a fixed value; no real docker, registry, network, store server or provider",
  "reference_driver": "drivers/reference/s8_isolated_inspector.py",
- "target_driver": null,
- "target_status": "pending: the target side is the S8 batch B5b move (target driver s8_isolated_inspector.py, added with the target driver)",
+ "target_driver": "drivers/target/s8_isolated_inspector.py",
  "golden": "goldens/reference/evidence.isolated_inspector.json",
  "slice": "S8"
 }

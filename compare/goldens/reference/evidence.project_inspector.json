@@ -288,7 +288,7 @@
     "Bash(cd <ROOT>/02-resolution/implementation/backend && PYTHONPATH=<ROOT>/02-resolution/implementation/backend/src PYTHONDONTWRITEBYTECODE=1 <PY> -m pytest probes/test_zeus_backend_failing.py -q -p no:cacheprovider)",
     "Bash(PYTHONPATH=<ROOT>/02-resolution/implementation/backend/src PYTHONDONTWRITEBYTECODE=1 <PY> -m pytest probes/test_zeus_backend_failing.py -q -p no:cacheprovider)"
    ],
-   "profile_digest": "8a124a1c018ef5463c654755d180d4b8011976b738a236afbb1386f82937da35",
+   "profile_digest": "<host digest>",
    "project_digest": "<host digest>",
    "workspace": "<ROOT>/02-resolution/implementation"
   },
