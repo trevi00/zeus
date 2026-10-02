@@ -547,6 +547,8 @@ def driver_hash_shape(real_hash) -> dict:
 # =====================================================================================================================
 def source_execution_adapter(api) -> dict:
     ws = R.Workspace()
+    # The golden records staged directory modes; pin the umask (restored below) so the family does not depend on the shell's.
+    previous_umask = os.umask(0o022)
     try:
         groups = {"c_client": c_client(api, ws), "b_bounded": b_bounded(api, ws),
                   "e1_test_docker_source_runner_uses_only_inert_source_and_immutable_image": e1(api, ws),
@@ -555,4 +557,5 @@ def source_execution_adapter(api) -> dict:
                   "o_other": o_other(api, ws), "r_run_one": run_one_cases(api, ws)}
         return {**groups, "m7_tests": M7_TESTS, "nt_branch": NT_BRANCH, "cases_per_group": {k: len(v) for k, v in groups.items()}}
     finally:
+        os.umask(previous_umask)
         ws.close()
