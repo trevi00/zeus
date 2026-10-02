@@ -1,0 +1,1896 @@
+{
+ "branch_coverage": {
+  "canonical(value) / canonical(packet) (byte counts and the exact signing JSON)": "s1_page.full_review.body; s4_malformed.non_json_document",
+  "criteria rows (the index, the evidence refs)": "s1_page.full_review, empty_lists, negative_criterion_index_wraps; s4_malformed.criterion_index_out_of_range",
+  "document: clipped -> the notice; not clipped -> no notice": "s3_preview.every_document_small_leaves_no_notice, s1_page.full_review",
+  "document: ref not in documents / value without observed_at / not a mapping": "s4_malformed.an_evidence_reference_not_in_documents, wrong_types",
+  "document: the multi-byte cut (errors='ignore')": "s3_preview.multi_byte_text_cut_at_the_budget",
+  "document: the preview loop within the per-document and total budgets": "s3_preview (the budgets, the exact cut, the total exhausted, a repeated reference)",
+  "humans empty / non-empty": "s1_page.test_review_cli_reads, human_signers_are_joined",
+  "render_ticket_review: esc (html.escape(str(value), quote=True))": "s2_escaping (every field, the quotes, non-ASCII), s1_page.values_pass_through_str",
+  "signers: next() without a match (StopIteration inside the generator)": "s4_malformed.a_required_signer_without_a_role_entry",
+  "the page template (CSP, header, grid, sections, the signing identity, the exact JSON)": "s1_page.full_review.body, s1_page.document_frame",
+  "time_message: expired / future / recheck_at_close / any other (KeyError)": "s1_page.time_status; s4_malformed.unknown_time_status"
+ },
+ "cases_per_group": {
+  "s1_page": 14,
+  "s2_escaping": 7,
+  "s3_preview": 11,
+  "s4_malformed": 16
+ },
+ "s1_page": {
+  "a_review_of_a_different_ticket_changes_only_its_own_fields": {
+   "bytes": 6956,
+   "chars": 6234,
+   "criteria": 2,
+   "details": 4,
+   "is_str": true,
+   "outcome": "rendered",
+   "pre_bytes": [
+    86,
+    86,
+    85,
+    663
+   ],
+   "pre_tails": [
+    "\n    \"queue\": \"ok\"\n  }\n}",
+    "\n    \"store\": \"ok\"\n  }\n}",
+    "{\n    \"host\": \"ci\"\n  }\n}"
+   ],
+   "review_unchanged": true,
+   "sha256": "250532c2539d26235e8bbec245c7b55c40f1c93622c3cbac04405fe46f35107b",
+   "truncated_notices": 0
+  },
+  "document_frame": {
+   "csp_present": true,
+   "ends_with": "\n</main></body></html>",
+   "starts_with_doctype": true,
+   "style_bytes": 1983,
+   "title": "Zeus 종료 검토 · Independent services"
+  },
+  "empty_lists": {
+   "criteria": {
+    "body": "<main>\n<header><div class=\"eyebrow\">ZEUS · 종료 전 검토</div><h1>Independent services</h1>\n<p>이 화면을 열거나 읽어도 승인·종료되지 않습니다. 기준 원문과 실제 관측 내용을 비교한 뒤 원본 패킷을 서명하세요.</p>\n<p class=\"notice\">저장된 검토 화면입니다. 종료 요청 시 시각·개정·서명을 다시 검증합니다.</p>\n<p class=\"hash\">TKT-0001 · 개정 2 · 작업 주기 3</p></header>\n<div class=\"grid\"><section><h2>무엇을 해결했는가</h2><p>Services share one failure domain.</p>\n<h3>영향</h3><p>One outage stops every review.</p><h3>범위</h3><ul><li>split the queue</li><li>split the store</li></ul>\n<h3>종료 요청 사유</h3><p>All criteria observed.</p></section>\n<section><h2>필요한 승인</h2><p class=\"notice\">alice</p><ul><li>alice <span class=\"muted\">· owner</span></li><li>robot <span class=\"muted\">· automation</span></li></ul>\n<p class=\"muted\">서명 검증은 이 화면에서 실행하지 않습니다. 등록된 키의 권한과 실제 사람의 현장 확인은 별개입니다.</p>\n<dl><dt>발행</dt><dd>2026-09-22T00:00:00+00:00</dd><dt>서명 기한</dt><dd>2026-09-23T00:00:00+00:00</dd>\n<dt>해결 커밋</dt><dd class=\"hash\">aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa</dd></dl></section></div>\n<section><h2>인수 기준과 증거 · 0개</h2><p class=\"muted\">‘통과’는 제출된 관측 결과입니다. 원문 기준을 충족하는지 검토자의 판단이 필요합니다.</p></section>\n<section><h2>환경 확인</h2><details><summary>증거 내용 보기 · 67 bytes</summary><p class=\"hash\">sha256:e1e1e1e1e1e1e1e1e1e1e1e1e1e1e1e1e1e1e1e1e1e1e1e1e1e1e1e1e1e1e1e1</p><p>관측 시각: 2026-09-22T00:00:01+00:00</p><pre>{\n  &quot;observed_at&quot;: &quot;2026-09-22T00:00:01+00:00&quot;,\n  &quot;details&quot;: {\n    &quot;host&quot;: &quot;ci&quot;\n  }\n}</pre></details></section>\n<section><h2>되돌리기</h2><p>Revert the merge commit.</p></section>\n<section><h2>서명할 원본 식별</h2><p>HTML이나 화면 복사본이 아닌 원본 JSON 파일을 서명하세요.</p>\n<dl><dt>원본 파일</dt><dd class=\"hash\">packet.json</dd><dt>원본 SHA-256 · 456 bytes</dt>\n<dd class=\"hash\">sha256:9a9a9a9a9a9a9a9a9a9a9a9a9a9a9a9a9a9a9a9a9a9a9a9a9a9a9a9a9a9a9a9a</dd><dt>신뢰 정책 커밋</dt><dd class=\"hash\">bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb</dd>\n<dt>정책 해시</dt><dd class=\"hash\">sha256:d4d4d4d4d4d4d4d4d4d4d4d4d4d4d4d4d4d4d4d4d4d4d4d4d4d4d4d4d4d4d4d4</dd></dl>\n<details><summary>정확한 서명 대상 JSON 보기</summary><pre>{&quot;criteria&quot;:[],&quot;environment_ref&quot;:&quot;sha256:e1e1e1e1e1e1e1e1e1e1e1e1e1e1e1e1e1e1e1e1e1e1e1e1e1e1e1e1e1e1e1e1&quot;,&quot;expires_at&quot;:&quot;2026-09-23T00:00:00+00:00&quot;,&quot;issued_at&quot;:&quot;2026-09-22T00:00:00+00:00&quot;,&quot;policy_commit&quot;:&quot;bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb&quot;,&quot;policy_hash&quot;:&quot;sha256:d4d4d4d4d4d4d4d4d4d4d4d4d4d4d4d4d4d4d4d4d4d4d4d4d4d4d4d4d4d4d4d4&quot;,&quot;reason&quot;:&quot;All criteria observed.&quot;,&quot;revision&quot;:2,&quot;sequence&quot;:3,&quot;solution_commit&quot;:&quot;aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa&quot;}</pre></details></section>\n</main></body></html>",
+    "bytes": 5597,
+    "chars": 5027,
+    "criteria": 0,
+    "details": 2,
+    "is_str": true,
+    "outcome": "rendered",
+    "pre_bytes": [
+     85,
+     456
+    ],
+    "pre_tails": [
+     "{\n    \"host\": \"ci\"\n  }\n}"
+    ],
+    "review_unchanged": true,
+    "sha256": "0a5aa469fce9f090ad701c7f118495427a808125513b015472c0cf2cfcc05399",
+    "truncated_notices": 0
+   },
+   "evidence_refs": {
+    "body": "<main>\n<header><div class=\"eyebrow\">ZEUS · 종료 전 검토</div><h1>Independent services</h1>\n<p>이 화면을 열거나 읽어도 승인·종료되지 않습니다. 기준 원문과 실제 관측 내용을 비교한 뒤 원본 패킷을 서명하세요.</p>\n<p class=\"notice\">저장된 검토 화면입니다. 종료 요청 시 시각·개정·서명을 다시 검증합니다.</p>\n<p class=\"hash\">TKT-0001 · 개정 2 · 작업 주기 3</p></header>\n<div class=\"grid\"><section><h2>무엇을 해결했는가</h2><p>Services share one failure domain.</p>\n<h3>영향</h3><p>One outage stops every review.</p><h3>범위</h3><ul><li>split the queue</li><li>split the store</li></ul>\n<h3>종료 요청 사유</h3><p>All criteria observed.</p></section>\n<section><h2>필요한 승인</h2><p class=\"notice\">alice</p><ul><li>alice <span class=\"muted\">· owner</span></li><li>robot <span class=\"muted\">· automation</span></li></ul>\n<p class=\"muted\">서명 검증은 이 화면에서 실행하지 않습니다. 등록된 키의 권한과 실제 사람의 현장 확인은 별개입니다.</p>\n<dl><dt>발행</dt><dd>2026-09-22T00:00:00+00:00</dd><dt>서명 기한</dt><dd>2026-09-23T00:00:00+00:00</dd>\n<dt>해결 커밋</dt><dd class=\"hash\">aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa</dd></dl></section></div>\n<section><h2>인수 기준과 증거 · 1개</h2><p class=\"muted\">‘통과’는 제출된 관측 결과입니다. 원문 기준을 충족하는지 검토자의 판단이 필요합니다.</p><article class=\"criterion\"><div class=\"eyebrow\">인수 기준 1</div><h3>queue runs alone</h3><p class=\"claim\">제출 결과: 통과 · 사람의 승인 여부는 확인되지 않았습니다.</p></article></section>\n<section><h2>환경 확인</h2><details><summary>증거 내용 보기 · 67 bytes</summary><p class=\"hash\">sha256:e1e1e1e1e1e1e1e1e1e1e1e1e1e1e1e1e1e1e1e1e1e1e1e1e1e1e1e1e1e1e1e1</p><p>관측 시각: 2026-09-22T00:00:01+00:00</p><pre>{\n  &quot;observed_at&quot;: &quot;2026-09-22T00:00:01+00:00&quot;,\n  &quot;details&quot;: {\n    &quot;host&quot;: &quot;ci&quot;\n  }\n}</pre></details></section>\n<section><h2>되돌리기</h2><p>Revert the merge commit.</p></section>\n<section><h2>서명할 원본 식별</h2><p>HTML이나 화면 복사본이 아닌 원본 JSON 파일을 서명하세요.</p>\n<dl><dt>원본 파일</dt><dd class=\"hash\">packet.json</dd><dt>원본 SHA-256 · 486 bytes</dt>\n<dd class=\"hash\">sha256:9a9a9a9a9a9a9a9a9a9a9a9a9a9a9a9a9a9a9a9a9a9a9a9a9a9a9a9a9a9a9a9a</dd><dt>신뢰 정책 커밋</dt><dd class=\"hash\">bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb</dd>\n<dt>정책 해시</dt><dd class=\"hash\">sha256:d4d4d4d4d4d4d4d4d4d4d4d4d4d4d4d4d4d4d4d4d4d4d4d4d4d4d4d4d4d4d4d4</dd></dl>\n<details><summary>정확한 서명 대상 JSON 보기</summary><pre>{&quot;criteria&quot;:[{&quot;evidence_refs&quot;:[],&quot;index&quot;:0}],&quot;environment_ref&quot;:&quot;sha256:e1e1e1e1e1e1e1e1e1e1e1e1e1e1e1e1e1e1e1e1e1e1e1e1e1e1e1e1e1e1e1e1&quot;,&quot;expires_at&quot;:&quot;2026-09-23T00:00:00+00:00&quot;,&quot;issued_at&quot;:&quot;2026-09-22T00:00:00+00:00&quot;,&quot;policy_commit&quot;:&quot;bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb&quot;,&quot;policy_hash&quot;:&quot;sha256:d4d4d4d4d4d4d4d4d4d4d4d4d4d4d4d4d4d4d4d4d4d4d4d4d4d4d4d4d4d4d4d4&quot;,&quot;reason&quot;:&quot;All criteria observed.&quot;,&quot;revision&quot;:2,&quot;sequence&quot;:3,&quot;solution_commit&quot;:&quot;aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa&quot;}</pre></details></section>\n</main></body></html>",
+    "bytes": 5853,
+    "chars": 5228,
+    "criteria": 1,
+    "details": 2,
+    "is_str": true,
+    "outcome": "rendered",
+    "pre_bytes": [
+     85,
+     486
+    ],
+    "pre_tails": [
+     "{\n    \"host\": \"ci\"\n  }\n}"
+    ],
+    "review_unchanged": true,
+    "sha256": "dac3860881f960606b46ca77c45a7c3e1245003307bd2fda72e11a4930b0a87f",
+    "truncated_notices": 0
+   },
+   "scope": {
+    "body": "<main>\n<header><div class=\"eyebrow\">ZEUS · 종료 전 검토</div><h1>Independent services</h1>\n<p>이 화면을 열거나 읽어도 승인·종료되지 않습니다. 기준 원문과 실제 관측 내용을 비교한 뒤 원본 패킷을 서명하세요.</p>\n<p class=\"notice\">저장된 검토 화면입니다. 종료 요청 시 시각·개정·서명을 다시 검증합니다.</p>\n<p class=\"hash\">TKT-0001 · 개정 2 · 작업 주기 3</p></header>\n<div class=\"grid\"><section><h2>무엇을 해결했는가</h2><p>Services share one failure domain.</p>\n<h3>영향</h3><p>One outage stops every review.</p><h3>범위</h3><ul></ul>\n<h3>종료 요청 사유</h3><p>All criteria observed.</p></section>\n<section><h2>필요한 승인</h2><p class=\"notice\">alice</p><ul><li>alice <span class=\"muted\">· owner</span></li><li>robot <span class=\"muted\">· automation</span></li></ul>\n<p class=\"muted\">서명 검증은 이 화면에서 실행하지 않습니다. 등록된 키의 권한과 실제 사람의 현장 확인은 별개입니다.</p>\n<dl><dt>발행</dt><dd>2026-09-22T00:00:00+00:00</dd><dt>서명 기한</dt><dd>2026-09-23T00:00:00+00:00</dd>\n<dt>해결 커밋</dt><dd class=\"hash\">aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa</dd></dl></section></div>\n<section><h2>인수 기준과 증거 · 2개</h2><p class=\"muted\">‘통과’는 제출된 관측 결과입니다. 원문 기준을 충족하는지 검토자의 판단이 필요합니다.</p><article class=\"criterion\"><div class=\"eyebrow\">인수 기준 1</div><h3>queue runs alone</h3><p class=\"claim\">제출 결과: 통과 · 사람의 승인 여부는 확인되지 않았습니다.</p><details><summary>증거 내용 보기 · 68 bytes</summary><p class=\"hash\">sha256:c1c1c1c1c1c1c1c1c1c1c1c1c1c1c1c1c1c1c1c1c1c1c1c1c1c1c1c1c1c1c1c1</p><p>관측 시각: 2026-09-22T00:00:02+00:00</p><pre>{\n  &quot;observed_at&quot;: &quot;2026-09-22T00:00:02+00:00&quot;,\n  &quot;details&quot;: {\n    &quot;queue&quot;: &quot;ok&quot;\n  }\n}</pre></details></article><article class=\"criterion\"><div class=\"eyebrow\">인수 기준 2</div><h3>store runs alone</h3><p class=\"claim\">제출 결과: 통과 · 사람의 승인 여부는 확인되지 않았습니다.</p><details><summary>증거 내용 보기 · 68 bytes</summary><p class=\"hash\">sha256:c2c2c2c2c2c2c2c2c2c2c2c2c2c2c2c2c2c2c2c2c2c2c2c2c2c2c2c2c2c2c2c2</p><p>관측 시각: 2026-09-22T00:00:03+00:00</p><pre>{\n  &quot;observed_at&quot;: &quot;2026-09-22T00:00:03+00:00&quot;,\n  &quot;details&quot;: {\n    &quot;store&quot;: &quot;ok&quot;\n  }\n}</pre></details></article></section>\n<section><h2>환경 확인</h2><details><summary>증거 내용 보기 · 67 bytes</summary><p class=\"hash\">sha256:e1e1e1e1e1e1e1e1e1e1e1e1e1e1e1e1e1e1e1e1e1e1e1e1e1e1e1e1e1e1e1e1</p><p>관측 시각: 2026-09-22T00:00:01+00:00</p><pre>{\n  &quot;observed_at&quot;: &quot;2026-09-22T00:00:01+00:00&quot;,\n  &quot;details&quot;: {\n    &quot;host&quot;: &quot;ci&quot;\n  }\n}</pre></details></section>\n<section><h2>되돌리기</h2><p>Revert the merge commit.</p></section>\n<section><h2>서명할 원본 식별</h2><p>HTML이나 화면 복사본이 아닌 원본 JSON 파일을 서명하세요.</p>\n<dl><dt>원본 파일</dt><dd class=\"hash\">packet.json</dd><dt>원본 SHA-256 · 663 bytes</dt>\n<dd class=\"hash\">sha256:9a9a9a9a9a9a9a9a9a9a9a9a9a9a9a9a9a9a9a9a9a9a9a9a9a9a9a9a9a9a9a9a</dd><dt>신뢰 정책 커밋</dt><dd class=\"hash\">bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb</dd>\n<dt>정책 해시</dt><dd class=\"hash\">sha256:d4d4d4d4d4d4d4d4d4d4d4d4d4d4d4d4d4d4d4d4d4d4d4d4d4d4d4d4d4d4d4d4</dd></dl>\n<details><summary>정확한 서명 대상 JSON 보기</summary><pre>{&quot;criteria&quot;:[{&quot;evidence_refs&quot;:[&quot;sha256:c1c1c1c1c1c1c1c1c1c1c1c1c1c1c1c1c1c1c1c1c1c1c1c1c1c1c1c1c1c1c1c1&quot;],&quot;index&quot;:0},{&quot;evidence_refs&quot;:[&quot;sha256:c2c2c2c2c2c2c2c2c2c2c2c2c2c2c2c2c2c2c2c2c2c2c2c2c2c2c2c2c2c2c2c2&quot;],&quot;index&quot;:1}],&quot;environment_ref&quot;:&quot;sha256:e1e1e1e1e1e1e1e1e1e1e1e1e1e1e1e1e1e1e1e1e1e1e1e1e1e1e1e1e1e1e1e1&quot;,&quot;expires_at&quot;:&quot;2026-09-23T00:00:00+00:00&quot;,&quot;issued_at&quot;:&quot;2026-09-22T00:00:00+00:00&quot;,&quot;policy_commit&quot;:&quot;bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb&quot;,&quot;policy_hash&quot;:&quot;sha256:d4d4d4d4d4d4d4d4d4d4d4d4d4d4d4d4d4d4d4d4d4d4d4d4d4d4d4d4d4d4d4d4&quot;,&quot;reason&quot;:&quot;All criteria observed.&quot;,&quot;revision&quot;:2,&quot;sequence&quot;:3,&quot;solution_commit&quot;:&quot;aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa&quot;}</pre></details></section>\n</main></body></html>",
+    "bytes": 6938,
+    "chars": 6216,
+    "criteria": 2,
+    "details": 4,
+    "is_str": true,
+    "outcome": "rendered",
+    "pre_bytes": [
+     86,
+     86,
+     85,
+     663
+    ],
+    "pre_tails": [
+     "\n    \"queue\": \"ok\"\n  }\n}",
+     "\n    \"store\": \"ok\"\n  }\n}",
+     "{\n    \"host\": \"ci\"\n  }\n}"
+    ],
+    "review_unchanged": true,
+    "sha256": "3b45d94da317c57e095122db3541dc53d07c795efd68718085acef3b38902606",
+    "truncated_notices": 0
+   },
+   "signers": {
+    "body": "<main>\n<header><div class=\"eyebrow\">ZEUS · 종료 전 검토</div><h1>Independent services</h1>\n<p>이 화면을 열거나 읽어도 승인·종료되지 않습니다. 기준 원문과 실제 관측 내용을 비교한 뒤 원본 패킷을 서명하세요.</p>\n<p class=\"notice\">저장된 검토 화면입니다. 종료 요청 시 시각·개정·서명을 다시 검증합니다.</p>\n<p class=\"hash\">TKT-0001 · 개정 2 · 작업 주기 3</p></header>\n<div class=\"grid\"><section><h2>무엇을 해결했는가</h2><p>Services share one failure domain.</p>\n<h3>영향</h3><p>One outage stops every review.</p><h3>범위</h3><ul><li>split the queue</li><li>split the store</li></ul>\n<h3>종료 요청 사유</h3><p>All criteria observed.</p></section>\n<section><h2>필요한 승인</h2><p class=\"notice\">alice</p><ul></ul>\n<p class=\"muted\">서명 검증은 이 화면에서 실행하지 않습니다. 등록된 키의 권한과 실제 사람의 현장 확인은 별개입니다.</p>\n<dl><dt>발행</dt><dd>2026-09-22T00:00:00+00:00</dd><dt>서명 기한</dt><dd>2026-09-23T00:00:00+00:00</dd>\n<dt>해결 커밋</dt><dd class=\"hash\">aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa</dd></dl></section></div>\n<section><h2>인수 기준과 증거 · 2개</h2><p class=\"muted\">‘통과’는 제출된 관측 결과입니다. 원문 기준을 충족하는지 검토자의 판단이 필요합니다.</p><article class=\"criterion\"><div class=\"eyebrow\">인수 기준 1</div><h3>queue runs alone</h3><p class=\"claim\">제출 결과: 통과 · 사람의 승인 여부는 확인되지 않았습니다.</p><details><summary>증거 내용 보기 · 68 bytes</summary><p class=\"hash\">sha256:c1c1c1c1c1c1c1c1c1c1c1c1c1c1c1c1c1c1c1c1c1c1c1c1c1c1c1c1c1c1c1c1</p><p>관측 시각: 2026-09-22T00:00:02+00:00</p><pre>{\n  &quot;observed_at&quot;: &quot;2026-09-22T00:00:02+00:00&quot;,\n  &quot;details&quot;: {\n    &quot;queue&quot;: &quot;ok&quot;\n  }\n}</pre></details></article><article class=\"criterion\"><div class=\"eyebrow\">인수 기준 2</div><h3>store runs alone</h3><p class=\"claim\">제출 결과: 통과 · 사람의 승인 여부는 확인되지 않았습니다.</p><details><summary>증거 내용 보기 · 68 bytes</summary><p class=\"hash\">sha256:c2c2c2c2c2c2c2c2c2c2c2c2c2c2c2c2c2c2c2c2c2c2c2c2c2c2c2c2c2c2c2c2</p><p>관측 시각: 2026-09-22T00:00:03+00:00</p><pre>{\n  &quot;observed_at&quot;: &quot;2026-09-22T00:00:03+00:00&quot;,\n  &quot;details&quot;: {\n    &quot;store&quot;: &quot;ok&quot;\n  }\n}</pre></details></article></section>\n<section><h2>환경 확인</h2><details><summary>증거 내용 보기 · 67 bytes</summary><p class=\"hash\">sha256:e1e1e1e1e1e1e1e1e1e1e1e1e1e1e1e1e1e1e1e1e1e1e1e1e1e1e1e1e1e1e1e1</p><p>관측 시각: 2026-09-22T00:00:01+00:00</p><pre>{\n  &quot;observed_at&quot;: &quot;2026-09-22T00:00:01+00:00&quot;,\n  &quot;details&quot;: {\n    &quot;host&quot;: &quot;ci&quot;\n  }\n}</pre></details></section>\n<section><h2>되돌리기</h2><p>Revert the merge commit.</p></section>\n<section><h2>서명할 원본 식별</h2><p>HTML이나 화면 복사본이 아닌 원본 JSON 파일을 서명하세요.</p>\n<dl><dt>원본 파일</dt><dd class=\"hash\">packet.json</dd><dt>원본 SHA-256 · 663 bytes</dt>\n<dd class=\"hash\">sha256:9a9a9a9a9a9a9a9a9a9a9a9a9a9a9a9a9a9a9a9a9a9a9a9a9a9a9a9a9a9a9a9a</dd><dt>신뢰 정책 커밋</dt><dd class=\"hash\">bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb</dd>\n<dt>정책 해시</dt><dd class=\"hash\">sha256:d4d4d4d4d4d4d4d4d4d4d4d4d4d4d4d4d4d4d4d4d4d4d4d4d4d4d4d4d4d4d4d4</dd></dl>\n<details><summary>정확한 서명 대상 JSON 보기</summary><pre>{&quot;criteria&quot;:[{&quot;evidence_refs&quot;:[&quot;sha256:c1c1c1c1c1c1c1c1c1c1c1c1c1c1c1c1c1c1c1c1c1c1c1c1c1c1c1c1c1c1c1c1&quot;],&quot;index&quot;:0},{&quot;evidence_refs&quot;:[&quot;sha256:c2c2c2c2c2c2c2c2c2c2c2c2c2c2c2c2c2c2c2c2c2c2c2c2c2c2c2c2c2c2c2c2&quot;],&quot;index&quot;:1}],&quot;environment_ref&quot;:&quot;sha256:e1e1e1e1e1e1e1e1e1e1e1e1e1e1e1e1e1e1e1e1e1e1e1e1e1e1e1e1e1e1e1e1&quot;,&quot;expires_at&quot;:&quot;2026-09-23T00:00:00+00:00&quot;,&quot;issued_at&quot;:&quot;2026-09-22T00:00:00+00:00&quot;,&quot;policy_commit&quot;:&quot;bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb&quot;,&quot;policy_hash&quot;:&quot;sha256:d4d4d4d4d4d4d4d4d4d4d4d4d4d4d4d4d4d4d4d4d4d4d4d4d4d4d4d4d4d4d4d4&quot;,&quot;reason&quot;:&quot;All criteria observed.&quot;,&quot;revision&quot;:2,&quot;sequence&quot;:3,&quot;solution_commit&quot;:&quot;aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa&quot;}</pre></details></section>\n</main></body></html>",
+    "bytes": 6881,
+    "chars": 6161,
+    "criteria": 2,
+    "details": 4,
+    "is_str": true,
+    "outcome": "rendered",
+    "pre_bytes": [
+     86,
+     86,
+     85,
+     663
+    ],
+    "pre_tails": [
+     "\n    \"queue\": \"ok\"\n  }\n}",
+     "\n    \"store\": \"ok\"\n  }\n}",
+     "{\n    \"host\": \"ci\"\n  }\n}"
+    ],
+    "review_unchanged": true,
+    "sha256": "7c1484ea342227d774ef7adbbcf668e37dd5db5f0f9c3776663863724730a17d",
+    "truncated_notices": 0
+   }
+  },
+  "extra_keys_are_ignored": {
+   "bytes": 7006,
+   "chars": 6284,
+   "criteria": 2,
+   "details": 4,
+   "is_str": true,
+   "outcome": "rendered",
+   "pre_bytes": [
+    86,
+    86,
+    85,
+    673
+   ],
+   "pre_tails": [
+    "\n    \"queue\": \"ok\"\n  }\n}",
+    "\n    \"store\": \"ok\"\n  }\n}",
+    "{\n    \"host\": \"ci\"\n  }\n}"
+   ],
+   "review_unchanged": true,
+   "sha256": "d55980a334955efc7cfb762455a7175d6854cfee909815ca62507f720aac18ca",
+   "truncated_notices": 0
+  },
+  "full_review": {
+   "body": "<main>\n<header><div class=\"eyebrow\">ZEUS · 종료 전 검토</div><h1>Independent services</h1>\n<p>이 화면을 열거나 읽어도 승인·종료되지 않습니다. 기준 원문과 실제 관측 내용을 비교한 뒤 원본 패킷을 서명하세요.</p>\n<p class=\"notice\">저장된 검토 화면입니다. 종료 요청 시 시각·개정·서명을 다시 검증합니다.</p>\n<p class=\"hash\">TKT-0001 · 개정 2 · 작업 주기 3</p></header>\n<div class=\"grid\"><section><h2>무엇을 해결했는가</h2><p>Services share one failure domain.</p>\n<h3>영향</h3><p>One outage stops every review.</p><h3>범위</h3><ul><li>split the queue</li><li>split the store</li></ul>\n<h3>종료 요청 사유</h3><p>All criteria observed.</p></section>\n<section><h2>필요한 승인</h2><p class=\"notice\">alice</p><ul><li>alice <span class=\"muted\">· owner</span></li><li>robot <span class=\"muted\">· automation</span></li></ul>\n<p class=\"muted\">서명 검증은 이 화면에서 실행하지 않습니다. 등록된 키의 권한과 실제 사람의 현장 확인은 별개입니다.</p>\n<dl><dt>발행</dt><dd>2026-09-22T00:00:00+00:00</dd><dt>서명 기한</dt><dd>2026-09-23T00:00:00+00:00</dd>\n<dt>해결 커밋</dt><dd class=\"hash\">aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa</dd></dl></section></div>\n<section><h2>인수 기준과 증거 · 2개</h2><p class=\"muted\">‘통과’는 제출된 관측 결과입니다. 원문 기준을 충족하는지 검토자의 판단이 필요합니다.</p><article class=\"criterion\"><div class=\"eyebrow\">인수 기준 1</div><h3>queue runs alone</h3><p class=\"claim\">제출 결과: 통과 · 사람의 승인 여부는 확인되지 않았습니다.</p><details><summary>증거 내용 보기 · 68 bytes</summary><p class=\"hash\">sha256:c1c1c1c1c1c1c1c1c1c1c1c1c1c1c1c1c1c1c1c1c1c1c1c1c1c1c1c1c1c1c1c1</p><p>관측 시각: 2026-09-22T00:00:02+00:00</p><pre>{\n  &quot;observed_at&quot;: &quot;2026-09-22T00:00:02+00:00&quot;,\n  &quot;details&quot;: {\n    &quot;queue&quot;: &quot;ok&quot;\n  }\n}</pre></details></article><article class=\"criterion\"><div class=\"eyebrow\">인수 기준 2</div><h3>store runs alone</h3><p class=\"claim\">제출 결과: 통과 · 사람의 승인 여부는 확인되지 않았습니다.</p><details><summary>증거 내용 보기 · 68 bytes</summary><p class=\"hash\">sha256:c2c2c2c2c2c2c2c2c2c2c2c2c2c2c2c2c2c2c2c2c2c2c2c2c2c2c2c2c2c2c2c2</p><p>관측 시각: 2026-09-22T00:00:03+00:00</p><pre>{\n  &quot;observed_at&quot;: &quot;2026-09-22T00:00:03+00:00&quot;,\n  &quot;details&quot;: {\n    &quot;store&quot;: &quot;ok&quot;\n  }\n}</pre></details></article></section>\n<section><h2>환경 확인</h2><details><summary>증거 내용 보기 · 67 bytes</summary><p class=\"hash\">sha256:e1e1e1e1e1e1e1e1e1e1e1e1e1e1e1e1e1e1e1e1e1e1e1e1e1e1e1e1e1e1e1e1</p><p>관측 시각: 2026-09-22T00:00:01+00:00</p><pre>{\n  &quot;observed_at&quot;: &quot;2026-09-22T00:00:01+00:00&quot;,\n  &quot;details&quot;: {\n    &quot;host&quot;: &quot;ci&quot;\n  }\n}</pre></details></section>\n<section><h2>되돌리기</h2><p>Revert the merge commit.</p></section>\n<section><h2>서명할 원본 식별</h2><p>HTML이나 화면 복사본이 아닌 원본 JSON 파일을 서명하세요.</p>\n<dl><dt>원본 파일</dt><dd class=\"hash\">packet.json</dd><dt>원본 SHA-256 · 663 bytes</dt>\n<dd class=\"hash\">sha256:9a9a9a9a9a9a9a9a9a9a9a9a9a9a9a9a9a9a9a9a9a9a9a9a9a9a9a9a9a9a9a9a</dd><dt>신뢰 정책 커밋</dt><dd class=\"hash\">bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb</dd>\n<dt>정책 해시</dt><dd class=\"hash\">sha256:d4d4d4d4d4d4d4d4d4d4d4d4d4d4d4d4d4d4d4d4d4d4d4d4d4d4d4d4d4d4d4d4</dd></dl>\n<details><summary>정확한 서명 대상 JSON 보기</summary><pre>{&quot;criteria&quot;:[{&quot;evidence_refs&quot;:[&quot;sha256:c1c1c1c1c1c1c1c1c1c1c1c1c1c1c1c1c1c1c1c1c1c1c1c1c1c1c1c1c1c1c1c1&quot;],&quot;index&quot;:0},{&quot;evidence_refs&quot;:[&quot;sha256:c2c2c2c2c2c2c2c2c2c2c2c2c2c2c2c2c2c2c2c2c2c2c2c2c2c2c2c2c2c2c2c2&quot;],&quot;index&quot;:1}],&quot;environment_ref&quot;:&quot;sha256:e1e1e1e1e1e1e1e1e1e1e1e1e1e1e1e1e1e1e1e1e1e1e1e1e1e1e1e1e1e1e1e1&quot;,&quot;expires_at&quot;:&quot;2026-09-23T00:00:00+00:00&quot;,&quot;issued_at&quot;:&quot;2026-09-22T00:00:00+00:00&quot;,&quot;policy_commit&quot;:&quot;bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb&quot;,&quot;policy_hash&quot;:&quot;sha256:d4d4d4d4d4d4d4d4d4d4d4d4d4d4d4d4d4d4d4d4d4d4d4d4d4d4d4d4d4d4d4d4&quot;,&quot;reason&quot;:&quot;All criteria observed.&quot;,&quot;revision&quot;:2,&quot;sequence&quot;:3,&quot;solution_commit&quot;:&quot;aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa&quot;}</pre></details></section>\n</main></body></html>",
+   "bytes": 6986,
+   "chars": 6264,
+   "criteria": 2,
+   "details": 4,
+   "is_str": true,
+   "outcome": "rendered",
+   "pre_bytes": [
+    86,
+    86,
+    85,
+    663
+   ],
+   "pre_tails": [
+    "\n    \"queue\": \"ok\"\n  }\n}",
+    "\n    \"store\": \"ok\"\n  }\n}",
+    "{\n    \"host\": \"ci\"\n  }\n}"
+   ],
+   "review_unchanged": true,
+   "sha256": "d686632af7919a4222d2b7376dc71dc53d0d3b9ec63be9696b0a2a4209184d81",
+   "truncated_notices": 0
+  },
+  "human_signers_are_joined": {
+   "body": "<main>\n<header><div class=\"eyebrow\">ZEUS · 종료 전 검토</div><h1>Independent services</h1>\n<p>이 화면을 열거나 읽어도 승인·종료되지 않습니다. 기준 원문과 실제 관측 내용을 비교한 뒤 원본 패킷을 서명하세요.</p>\n<p class=\"notice\">저장된 검토 화면입니다. 종료 요청 시 시각·개정·서명을 다시 검증합니다.</p>\n<p class=\"hash\">TKT-0001 · 개정 2 · 작업 주기 3</p></header>\n<div class=\"grid\"><section><h2>무엇을 해결했는가</h2><p>Services share one failure domain.</p>\n<h3>영향</h3><p>One outage stops every review.</p><h3>범위</h3><ul><li>split the queue</li><li>split the store</li></ul>\n<h3>종료 요청 사유</h3><p>All criteria observed.</p></section>\n<section><h2>필요한 승인</h2><p class=\"notice\">alice, bob</p><ul><li>alice <span class=\"muted\">· owner</span></li></ul>\n<p class=\"muted\">서명 검증은 이 화면에서 실행하지 않습니다. 등록된 키의 권한과 실제 사람의 현장 확인은 별개입니다.</p>\n<dl><dt>발행</dt><dd>2026-09-22T00:00:00+00:00</dd><dt>서명 기한</dt><dd>2026-09-23T00:00:00+00:00</dd>\n<dt>해결 커밋</dt><dd class=\"hash\">aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa</dd></dl></section></div>\n<section><h2>인수 기준과 증거 · 2개</h2><p class=\"muted\">‘통과’는 제출된 관측 결과입니다. 원문 기준을 충족하는지 검토자의 판단이 필요합니다.</p><article class=\"criterion\"><div class=\"eyebrow\">인수 기준 1</div><h3>queue runs alone</h3><p class=\"claim\">제출 결과: 통과 · 사람의 승인 여부는 확인되지 않았습니다.</p><details><summary>증거 내용 보기 · 68 bytes</summary><p class=\"hash\">sha256:c1c1c1c1c1c1c1c1c1c1c1c1c1c1c1c1c1c1c1c1c1c1c1c1c1c1c1c1c1c1c1c1</p><p>관측 시각: 2026-09-22T00:00:02+00:00</p><pre>{\n  &quot;observed_at&quot;: &quot;2026-09-22T00:00:02+00:00&quot;,\n  &quot;details&quot;: {\n    &quot;queue&quot;: &quot;ok&quot;\n  }\n}</pre></details></article><article class=\"criterion\"><div class=\"eyebrow\">인수 기준 2</div><h3>store runs alone</h3><p class=\"claim\">제출 결과: 통과 · 사람의 승인 여부는 확인되지 않았습니다.</p><details><summary>증거 내용 보기 · 68 bytes</summary><p class=\"hash\">sha256:c2c2c2c2c2c2c2c2c2c2c2c2c2c2c2c2c2c2c2c2c2c2c2c2c2c2c2c2c2c2c2c2</p><p>관측 시각: 2026-09-22T00:00:03+00:00</p><pre>{\n  &quot;observed_at&quot;: &quot;2026-09-22T00:00:03+00:00&quot;,\n  &quot;details&quot;: {\n    &quot;store&quot;: &quot;ok&quot;\n  }\n}</pre></details></article></section>\n<section><h2>환경 확인</h2><details><summary>증거 내용 보기 · 67 bytes</summary><p class=\"hash\">sha256:e1e1e1e1e1e1e1e1e1e1e1e1e1e1e1e1e1e1e1e1e1e1e1e1e1e1e1e1e1e1e1e1</p><p>관측 시각: 2026-09-22T00:00:01+00:00</p><pre>{\n  &quot;observed_at&quot;: &quot;2026-09-22T00:00:01+00:00&quot;,\n  &quot;details&quot;: {\n    &quot;host&quot;: &quot;ci&quot;\n  }\n}</pre></details></section>\n<section><h2>되돌리기</h2><p>Revert the merge commit.</p></section>\n<section><h2>서명할 원본 식별</h2><p>HTML이나 화면 복사본이 아닌 원본 JSON 파일을 서명하세요.</p>\n<dl><dt>원본 파일</dt><dd class=\"hash\">packet.json</dd><dt>원본 SHA-256 · 663 bytes</dt>\n<dd class=\"hash\">sha256:9a9a9a9a9a9a9a9a9a9a9a9a9a9a9a9a9a9a9a9a9a9a9a9a9a9a9a9a9a9a9a9a</dd><dt>신뢰 정책 커밋</dt><dd class=\"hash\">bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb</dd>\n<dt>정책 해시</dt><dd class=\"hash\">sha256:d4d4d4d4d4d4d4d4d4d4d4d4d4d4d4d4d4d4d4d4d4d4d4d4d4d4d4d4d4d4d4d4</dd></dl>\n<details><summary>정확한 서명 대상 JSON 보기</summary><pre>{&quot;criteria&quot;:[{&quot;evidence_refs&quot;:[&quot;sha256:c1c1c1c1c1c1c1c1c1c1c1c1c1c1c1c1c1c1c1c1c1c1c1c1c1c1c1c1c1c1c1c1&quot;],&quot;index&quot;:0},{&quot;evidence_refs&quot;:[&quot;sha256:c2c2c2c2c2c2c2c2c2c2c2c2c2c2c2c2c2c2c2c2c2c2c2c2c2c2c2c2c2c2c2c2&quot;],&quot;index&quot;:1}],&quot;environment_ref&quot;:&quot;sha256:e1e1e1e1e1e1e1e1e1e1e1e1e1e1e1e1e1e1e1e1e1e1e1e1e1e1e1e1e1e1e1e1&quot;,&quot;expires_at&quot;:&quot;2026-09-23T00:00:00+00:00&quot;,&quot;issued_at&quot;:&quot;2026-09-22T00:00:00+00:00&quot;,&quot;policy_commit&quot;:&quot;bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb&quot;,&quot;policy_hash&quot;:&quot;sha256:d4d4d4d4d4d4d4d4d4d4d4d4d4d4d4d4d4d4d4d4d4d4d4d4d4d4d4d4d4d4d4d4&quot;,&quot;reason&quot;:&quot;All criteria observed.&quot;,&quot;revision&quot;:2,&quot;sequence&quot;:3,&quot;solution_commit&quot;:&quot;aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa&quot;}</pre></details></section>\n</main></body></html>",
+   "bytes": 6936,
+   "chars": 6215,
+   "criteria": 2,
+   "details": 4,
+   "is_str": true,
+   "outcome": "rendered",
+   "pre_bytes": [
+    86,
+    86,
+    85,
+    663
+   ],
+   "pre_tails": [
+    "\n    \"queue\": \"ok\"\n  }\n}",
+    "\n    \"store\": \"ok\"\n  }\n}",
+    "{\n    \"host\": \"ci\"\n  }\n}"
+   ],
+   "review_unchanged": true,
+   "sha256": "fe05e294d07d6f5df0d9091dd28dc5823de087727c67c9e63b9f421e095eaddb",
+   "truncated_notices": 0
+  },
+  "negative_criterion_index_wraps": {
+   "body": "<main>\n<header><div class=\"eyebrow\">ZEUS · 종료 전 검토</div><h1>Independent services</h1>\n<p>이 화면을 열거나 읽어도 승인·종료되지 않습니다. 기준 원문과 실제 관측 내용을 비교한 뒤 원본 패킷을 서명하세요.</p>\n<p class=\"notice\">저장된 검토 화면입니다. 종료 요청 시 시각·개정·서명을 다시 검증합니다.</p>\n<p class=\"hash\">TKT-0001 · 개정 2 · 작업 주기 3</p></header>\n<div class=\"grid\"><section><h2>무엇을 해결했는가</h2><p>Services share one failure domain.</p>\n<h3>영향</h3><p>One outage stops every review.</p><h3>범위</h3><ul><li>split the queue</li><li>split the store</li></ul>\n<h3>종료 요청 사유</h3><p>All criteria observed.</p></section>\n<section><h2>필요한 승인</h2><p class=\"notice\">alice</p><ul><li>alice <span class=\"muted\">· owner</span></li><li>robot <span class=\"muted\">· automation</span></li></ul>\n<p class=\"muted\">서명 검증은 이 화면에서 실행하지 않습니다. 등록된 키의 권한과 실제 사람의 현장 확인은 별개입니다.</p>\n<dl><dt>발행</dt><dd>2026-09-22T00:00:00+00:00</dd><dt>서명 기한</dt><dd>2026-09-23T00:00:00+00:00</dd>\n<dt>해결 커밋</dt><dd class=\"hash\">aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa</dd></dl></section></div>\n<section><h2>인수 기준과 증거 · 1개</h2><p class=\"muted\">‘통과’는 제출된 관측 결과입니다. 원문 기준을 충족하는지 검토자의 판단이 필요합니다.</p><article class=\"criterion\"><div class=\"eyebrow\">인수 기준 0</div><h3>store runs alone</h3><p class=\"claim\">제출 결과: 통과 · 사람의 승인 여부는 확인되지 않았습니다.</p><details><summary>증거 내용 보기 · 68 bytes</summary><p class=\"hash\">sha256:c1c1c1c1c1c1c1c1c1c1c1c1c1c1c1c1c1c1c1c1c1c1c1c1c1c1c1c1c1c1c1c1</p><p>관측 시각: 2026-09-22T00:00:02+00:00</p><pre>{\n  &quot;observed_at&quot;: &quot;2026-09-22T00:00:02+00:00&quot;,\n  &quot;details&quot;: {\n    &quot;queue&quot;: &quot;ok&quot;\n  }\n}</pre></details></article></section>\n<section><h2>환경 확인</h2><details><summary>증거 내용 보기 · 67 bytes</summary><p class=\"hash\">sha256:e1e1e1e1e1e1e1e1e1e1e1e1e1e1e1e1e1e1e1e1e1e1e1e1e1e1e1e1e1e1e1e1</p><p>관측 시각: 2026-09-22T00:00:01+00:00</p><pre>{\n  &quot;observed_at&quot;: &quot;2026-09-22T00:00:01+00:00&quot;,\n  &quot;details&quot;: {\n    &quot;host&quot;: &quot;ci&quot;\n  }\n}</pre></details></section>\n<section><h2>되돌리기</h2><p>Revert the merge commit.</p></section>\n<section><h2>서명할 원본 식별</h2><p>HTML이나 화면 복사본이 아닌 원본 JSON 파일을 서명하세요.</p>\n<dl><dt>원본 파일</dt><dd class=\"hash\">packet.json</dd><dt>원본 SHA-256 · 560 bytes</dt>\n<dd class=\"hash\">sha256:9a9a9a9a9a9a9a9a9a9a9a9a9a9a9a9a9a9a9a9a9a9a9a9a9a9a9a9a9a9a9a9a</dd><dt>신뢰 정책 커밋</dt><dd class=\"hash\">bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb</dd>\n<dt>정책 해시</dt><dd class=\"hash\">sha256:d4d4d4d4d4d4d4d4d4d4d4d4d4d4d4d4d4d4d4d4d4d4d4d4d4d4d4d4d4d4d4d4</dd></dl>\n<details><summary>정확한 서명 대상 JSON 보기</summary><pre>{&quot;criteria&quot;:[{&quot;evidence_refs&quot;:[&quot;sha256:c1c1c1c1c1c1c1c1c1c1c1c1c1c1c1c1c1c1c1c1c1c1c1c1c1c1c1c1c1c1c1c1&quot;],&quot;index&quot;:-1}],&quot;environment_ref&quot;:&quot;sha256:e1e1e1e1e1e1e1e1e1e1e1e1e1e1e1e1e1e1e1e1e1e1e1e1e1e1e1e1e1e1e1e1&quot;,&quot;expires_at&quot;:&quot;2026-09-23T00:00:00+00:00&quot;,&quot;issued_at&quot;:&quot;2026-09-22T00:00:00+00:00&quot;,&quot;policy_commit&quot;:&quot;bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb&quot;,&quot;policy_hash&quot;:&quot;sha256:d4d4d4d4d4d4d4d4d4d4d4d4d4d4d4d4d4d4d4d4d4d4d4d4d4d4d4d4d4d4d4d4&quot;,&quot;reason&quot;:&quot;All criteria observed.&quot;,&quot;revision&quot;:2,&quot;sequence&quot;:3,&quot;solution_commit&quot;:&quot;aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa&quot;}</pre></details></section>\n</main></body></html>",
+   "bytes": 6292,
+   "chars": 5646,
+   "criteria": 1,
+   "details": 3,
+   "is_str": true,
+   "outcome": "rendered",
+   "pre_bytes": [
+    86,
+    85,
+    560
+   ],
+   "pre_tails": [
+    "\n    \"queue\": \"ok\"\n  }\n}",
+    "{\n    \"host\": \"ci\"\n  }\n}"
+   ],
+   "review_unchanged": true,
+   "sha256": "b110d7dc4fd0e0bb6d6b7691cb1260a5994919a287c91550896db99cb10f88c4",
+   "truncated_notices": 0
+  },
+  "repeated_evidence_reference": {
+   "body": "<main>\n<header><div class=\"eyebrow\">ZEUS · 종료 전 검토</div><h1>Independent services</h1>\n<p>이 화면을 열거나 읽어도 승인·종료되지 않습니다. 기준 원문과 실제 관측 내용을 비교한 뒤 원본 패킷을 서명하세요.</p>\n<p class=\"notice\">저장된 검토 화면입니다. 종료 요청 시 시각·개정·서명을 다시 검증합니다.</p>\n<p class=\"hash\">TKT-0001 · 개정 2 · 작업 주기 3</p></header>\n<div class=\"grid\"><section><h2>무엇을 해결했는가</h2><p>Services share one failure domain.</p>\n<h3>영향</h3><p>One outage stops every review.</p><h3>범위</h3><ul><li>split the queue</li><li>split the store</li></ul>\n<h3>종료 요청 사유</h3><p>All criteria observed.</p></section>\n<section><h2>필요한 승인</h2><p class=\"notice\">alice</p><ul><li>alice <span class=\"muted\">· owner</span></li><li>robot <span class=\"muted\">· automation</span></li></ul>\n<p class=\"muted\">서명 검증은 이 화면에서 실행하지 않습니다. 등록된 키의 권한과 실제 사람의 현장 확인은 별개입니다.</p>\n<dl><dt>발행</dt><dd>2026-09-22T00:00:00+00:00</dd><dt>서명 기한</dt><dd>2026-09-23T00:00:00+00:00</dd>\n<dt>해결 커밋</dt><dd class=\"hash\">aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa</dd></dl></section></div>\n<section><h2>인수 기준과 증거 · 1개</h2><p class=\"muted\">‘통과’는 제출된 관측 결과입니다. 원문 기준을 충족하는지 검토자의 판단이 필요합니다.</p><article class=\"criterion\"><div class=\"eyebrow\">인수 기준 1</div><h3>queue runs alone</h3><p class=\"claim\">제출 결과: 통과 · 사람의 승인 여부는 확인되지 않았습니다.</p><details><summary>증거 내용 보기 · 68 bytes</summary><p class=\"hash\">sha256:c1c1c1c1c1c1c1c1c1c1c1c1c1c1c1c1c1c1c1c1c1c1c1c1c1c1c1c1c1c1c1c1</p><p>관측 시각: 2026-09-22T00:00:02+00:00</p><pre>{\n  &quot;observed_at&quot;: &quot;2026-09-22T00:00:02+00:00&quot;,\n  &quot;details&quot;: {\n    &quot;queue&quot;: &quot;ok&quot;\n  }\n}</pre></details><details><summary>증거 내용 보기 · 68 bytes</summary><p class=\"hash\">sha256:c1c1c1c1c1c1c1c1c1c1c1c1c1c1c1c1c1c1c1c1c1c1c1c1c1c1c1c1c1c1c1c1</p><p>관측 시각: 2026-09-22T00:00:02+00:00</p><pre>{\n  &quot;observed_at&quot;: &quot;2026-09-22T00:00:02+00:00&quot;,\n  &quot;details&quot;: {\n    &quot;queue&quot;: &quot;ok&quot;\n  }\n}</pre></details></article></section>\n<section><h2>환경 확인</h2><details><summary>증거 내용 보기 · 67 bytes</summary><p class=\"hash\">sha256:e1e1e1e1e1e1e1e1e1e1e1e1e1e1e1e1e1e1e1e1e1e1e1e1e1e1e1e1e1e1e1e1</p><p>관측 시각: 2026-09-22T00:00:01+00:00</p><pre>{\n  &quot;observed_at&quot;: &quot;2026-09-22T00:00:01+00:00&quot;,\n  &quot;details&quot;: {\n    &quot;host&quot;: &quot;ci&quot;\n  }\n}</pre></details></section>\n<section><h2>되돌리기</h2><p>Revert the merge commit.</p></section>\n<section><h2>서명할 원본 식별</h2><p>HTML이나 화면 복사본이 아닌 원본 JSON 파일을 서명하세요.</p>\n<dl><dt>원본 파일</dt><dd class=\"hash\">packet.json</dd><dt>원본 SHA-256 · 633 bytes</dt>\n<dd class=\"hash\">sha256:9a9a9a9a9a9a9a9a9a9a9a9a9a9a9a9a9a9a9a9a9a9a9a9a9a9a9a9a9a9a9a9a</dd><dt>신뢰 정책 커밋</dt><dd class=\"hash\">bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb</dd>\n<dt>정책 해시</dt><dd class=\"hash\">sha256:d4d4d4d4d4d4d4d4d4d4d4d4d4d4d4d4d4d4d4d4d4d4d4d4d4d4d4d4d4d4d4d4</dd></dl>\n<details><summary>정확한 서명 대상 JSON 보기</summary><pre>{&quot;criteria&quot;:[{&quot;evidence_refs&quot;:[&quot;sha256:c1c1c1c1c1c1c1c1c1c1c1c1c1c1c1c1c1c1c1c1c1c1c1c1c1c1c1c1c1c1c1c1&quot;,&quot;sha256:c1c1c1c1c1c1c1c1c1c1c1c1c1c1c1c1c1c1c1c1c1c1c1c1c1c1c1c1c1c1c1c1&quot;],&quot;index&quot;:0}],&quot;environment_ref&quot;:&quot;sha256:e1e1e1e1e1e1e1e1e1e1e1e1e1e1e1e1e1e1e1e1e1e1e1e1e1e1e1e1e1e1e1e1&quot;,&quot;expires_at&quot;:&quot;2026-09-23T00:00:00+00:00&quot;,&quot;issued_at&quot;:&quot;2026-09-22T00:00:00+00:00&quot;,&quot;policy_commit&quot;:&quot;bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb&quot;,&quot;policy_hash&quot;:&quot;sha256:d4d4d4d4d4d4d4d4d4d4d4d4d4d4d4d4d4d4d4d4d4d4d4d4d4d4d4d4d4d4d4d4&quot;,&quot;reason&quot;:&quot;All criteria observed.&quot;,&quot;revision&quot;:2,&quot;sequence&quot;:3,&quot;solution_commit&quot;:&quot;aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa&quot;}</pre></details></section>\n</main></body></html>",
+   "bytes": 6730,
+   "chars": 6063,
+   "criteria": 1,
+   "details": 4,
+   "is_str": true,
+   "outcome": "rendered",
+   "pre_bytes": [
+    86,
+    86,
+    85,
+    633
+   ],
+   "pre_tails": [
+    "\n    \"queue\": \"ok\"\n  }\n}",
+    "\n    \"queue\": \"ok\"\n  }\n}",
+    "{\n    \"host\": \"ci\"\n  }\n}"
+   ],
+   "review_unchanged": true,
+   "sha256": "7a5eb8912be150e27c4510ea443a451950d622fb3b1e1135d076011fc5534204",
+   "truncated_notices": 0
+  },
+  "same_page_for_equal_reviews": true,
+  "same_review_twice_is_identical": true,
+  "test_expired_packet_can_be_inspected": true,
+  "test_review_cli_reads: page names the ticket text and the packet_ref, no human approval, the signing deadline": {
+   "automation_only": {
+    "body": "<main>\n<header><div class=\"eyebrow\">ZEUS · 종료 전 검토</div><h1>Independent services</h1>\n<p>이 화면을 열거나 읽어도 승인·종료되지 않습니다. 기준 원문과 실제 관측 내용을 비교한 뒤 원본 패킷을 서명하세요.</p>\n<p class=\"notice\">저장된 검토 화면입니다. 종료 요청 시 시각·개정·서명을 다시 검증합니다.</p>\n<p class=\"hash\">TKT-0001 · 개정 2 · 작업 주기 3</p></header>\n<div class=\"grid\"><section><h2>무엇을 해결했는가</h2><p>Services share one failure domain.</p>\n<h3>영향</h3><p>One outage stops every review.</p><h3>범위</h3><ul><li>split the queue</li><li>split the store</li></ul>\n<h3>종료 요청 사유</h3><p>All criteria observed.</p></section>\n<section><h2>필요한 승인</h2><p class=\"notice\">사람 승인 요구 없음 — 이 정책은 자동화 서명만으로 종료할 수 있습니다.</p><ul><li>robot <span class=\"muted\">· automation</span></li></ul>\n<p class=\"muted\">서명 검증은 이 화면에서 실행하지 않습니다. 등록된 키의 권한과 실제 사람의 현장 확인은 별개입니다.</p>\n<dl><dt>발행</dt><dd>2026-09-22T00:00:00+00:00</dd><dt>서명 기한</dt><dd>2026-09-23T00:00:00+00:00</dd>\n<dt>해결 커밋</dt><dd class=\"hash\">aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa</dd></dl></section></div>\n<section><h2>인수 기준과 증거 · 2개</h2><p class=\"muted\">‘통과’는 제출된 관측 결과입니다. 원문 기준을 충족하는지 검토자의 판단이 필요합니다.</p><article class=\"criterion\"><div class=\"eyebrow\">인수 기준 1</div><h3>queue runs alone</h3><p class=\"claim\">제출 결과: 통과 · 사람의 승인 여부는 확인되지 않았습니다.</p><details><summary>증거 내용 보기 · 68 bytes</summary><p class=\"hash\">sha256:c1c1c1c1c1c1c1c1c1c1c1c1c1c1c1c1c1c1c1c1c1c1c1c1c1c1c1c1c1c1c1c1</p><p>관측 시각: 2026-09-22T00:00:02+00:00</p><pre>{\n  &quot;observed_at&quot;: &quot;2026-09-22T00:00:02+00:00&quot;,\n  &quot;details&quot;: {\n    &quot;queue&quot;: &quot;ok&quot;\n  }\n}</pre></details></article><article class=\"criterion\"><div class=\"eyebrow\">인수 기준 2</div><h3>store runs alone</h3><p class=\"claim\">제출 결과: 통과 · 사람의 승인 여부는 확인되지 않았습니다.</p><details><summary>증거 내용 보기 · 68 bytes</summary><p class=\"hash\">sha256:c2c2c2c2c2c2c2c2c2c2c2c2c2c2c2c2c2c2c2c2c2c2c2c2c2c2c2c2c2c2c2c2</p><p>관측 시각: 2026-09-22T00:00:03+00:00</p><pre>{\n  &quot;observed_at&quot;: &quot;2026-09-22T00:00:03+00:00&quot;,\n  &quot;details&quot;: {\n    &quot;store&quot;: &quot;ok&quot;\n  }\n}</pre></details></article></section>\n<section><h2>환경 확인</h2><details><summary>증거 내용 보기 · 67 bytes</summary><p class=\"hash\">sha256:e1e1e1e1e1e1e1e1e1e1e1e1e1e1e1e1e1e1e1e1e1e1e1e1e1e1e1e1e1e1e1e1</p><p>관측 시각: 2026-09-22T00:00:01+00:00</p><pre>{\n  &quot;observed_at&quot;: &quot;2026-09-22T00:00:01+00:00&quot;,\n  &quot;details&quot;: {\n    &quot;host&quot;: &quot;ci&quot;\n  }\n}</pre></details></section>\n<section><h2>되돌리기</h2><p>Revert the merge commit.</p></section>\n<section><h2>서명할 원본 식별</h2><p>HTML이나 화면 복사본이 아닌 원본 JSON 파일을 서명하세요.</p>\n<dl><dt>원본 파일</dt><dd class=\"hash\">packet.json</dd><dt>원본 SHA-256 · 663 bytes</dt>\n<dd class=\"hash\">sha256:9a9a9a9a9a9a9a9a9a9a9a9a9a9a9a9a9a9a9a9a9a9a9a9a9a9a9a9a9a9a9a9a</dd><dt>신뢰 정책 커밋</dt><dd class=\"hash\">bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb</dd>\n<dt>정책 해시</dt><dd class=\"hash\">sha256:d4d4d4d4d4d4d4d4d4d4d4d4d4d4d4d4d4d4d4d4d4d4d4d4d4d4d4d4d4d4d4d4</dd></dl>\n<details><summary>정확한 서명 대상 JSON 보기</summary><pre>{&quot;criteria&quot;:[{&quot;evidence_refs&quot;:[&quot;sha256:c1c1c1c1c1c1c1c1c1c1c1c1c1c1c1c1c1c1c1c1c1c1c1c1c1c1c1c1c1c1c1c1&quot;],&quot;index&quot;:0},{&quot;evidence_refs&quot;:[&quot;sha256:c2c2c2c2c2c2c2c2c2c2c2c2c2c2c2c2c2c2c2c2c2c2c2c2c2c2c2c2c2c2c2c2&quot;],&quot;index&quot;:1}],&quot;environment_ref&quot;:&quot;sha256:e1e1e1e1e1e1e1e1e1e1e1e1e1e1e1e1e1e1e1e1e1e1e1e1e1e1e1e1e1e1e1e1&quot;,&quot;expires_at&quot;:&quot;2026-09-23T00:00:00+00:00&quot;,&quot;issued_at&quot;:&quot;2026-09-22T00:00:00+00:00&quot;,&quot;policy_commit&quot;:&quot;bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb&quot;,&quot;policy_hash&quot;:&quot;sha256:d4d4d4d4d4d4d4d4d4d4d4d4d4d4d4d4d4d4d4d4d4d4d4d4d4d4d4d4d4d4d4d4&quot;,&quot;reason&quot;:&quot;All criteria observed.&quot;,&quot;revision&quot;:2,&quot;sequence&quot;:3,&quot;solution_commit&quot;:&quot;aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa&quot;}</pre></details></section>\n</main></body></html>",
+    "bytes": 7030,
+    "chars": 6251,
+    "criteria": 2,
+    "details": 4,
+    "is_str": true,
+    "outcome": "rendered",
+    "pre_bytes": [
+     86,
+     86,
+     85,
+     663
+    ],
+    "pre_tails": [
+     "\n    \"queue\": \"ok\"\n  }\n}",
+     "\n    \"store\": \"ok\"\n  }\n}",
+     "{\n    \"host\": \"ci\"\n  }\n}"
+    ],
+    "review_unchanged": true,
+    "sha256": "6fb27fe2f45201a58f12386432b7de1abdca4e20244ea7a8203fe56e6b0962f3",
+    "truncated_notices": 0
+   },
+   "mentions": [
+    true,
+    true,
+    true
+   ]
+  },
+  "time_status": {
+   "expired": {
+    "body": "<main>\n<header><div class=\"eyebrow\">ZEUS · 종료 전 검토</div><h1>Independent services</h1>\n<p>이 화면을 열거나 읽어도 승인·종료되지 않습니다. 기준 원문과 실제 관측 내용을 비교한 뒤 원본 패킷을 서명하세요.</p>\n<p class=\"notice\">서명 기한이 지났습니다. 새 패킷을 준비해야 종료할 수 있습니다.</p>\n<p class=\"hash\">TKT-0001 · 개정 2 · 작업 주기 3</p></header>\n<div class=\"grid\"><section><h2>무엇을 해결했는가</h2><p>Services share one failure domain.</p>\n<h3>영향</h3><p>One outage stops every review.</p><h3>범위</h3><ul><li>split the queue</li><li>split the store</li></ul>\n<h3>종료 요청 사유</h3><p>All criteria observed.</p></section>\n<section><h2>필요한 승인</h2><p class=\"notice\">alice</p><ul><li>alice <span class=\"muted\">· owner</span></li><li>robot <span class=\"muted\">· automation</span></li></ul>\n<p class=\"muted\">서명 검증은 이 화면에서 실행하지 않습니다. 등록된 키의 권한과 실제 사람의 현장 확인은 별개입니다.</p>\n<dl><dt>발행</dt><dd>2026-09-22T00:00:00+00:00</dd><dt>서명 기한</dt><dd>2026-09-23T00:00:00+00:00</dd>\n<dt>해결 커밋</dt><dd class=\"hash\">aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa</dd></dl></section></div>\n<section><h2>인수 기준과 증거 · 2개</h2><p class=\"muted\">‘통과’는 제출된 관측 결과입니다. 원문 기준을 충족하는지 검토자의 판단이 필요합니다.</p><article class=\"criterion\"><div class=\"eyebrow\">인수 기준 1</div><h3>queue runs alone</h3><p class=\"claim\">제출 결과: 통과 · 사람의 승인 여부는 확인되지 않았습니다.</p><details><summary>증거 내용 보기 · 68 bytes</summary><p class=\"hash\">sha256:c1c1c1c1c1c1c1c1c1c1c1c1c1c1c1c1c1c1c1c1c1c1c1c1c1c1c1c1c1c1c1c1</p><p>관측 시각: 2026-09-22T00:00:02+00:00</p><pre>{\n  &quot;observed_at&quot;: &quot;2026-09-22T00:00:02+00:00&quot;,\n  &quot;details&quot;: {\n    &quot;queue&quot;: &quot;ok&quot;\n  }\n}</pre></details></article><article class=\"criterion\"><div class=\"eyebrow\">인수 기준 2</div><h3>store runs alone</h3><p class=\"claim\">제출 결과: 통과 · 사람의 승인 여부는 확인되지 않았습니다.</p><details><summary>증거 내용 보기 · 68 bytes</summary><p class=\"hash\">sha256:c2c2c2c2c2c2c2c2c2c2c2c2c2c2c2c2c2c2c2c2c2c2c2c2c2c2c2c2c2c2c2c2</p><p>관측 시각: 2026-09-22T00:00:03+00:00</p><pre>{\n  &quot;observed_at&quot;: &quot;2026-09-22T00:00:03+00:00&quot;,\n  &quot;details&quot;: {\n    &quot;store&quot;: &quot;ok&quot;\n  }\n}</pre></details></article></section>\n<section><h2>환경 확인</h2><details><summary>증거 내용 보기 · 67 bytes</summary><p class=\"hash\">sha256:e1e1e1e1e1e1e1e1e1e1e1e1e1e1e1e1e1e1e1e1e1e1e1e1e1e1e1e1e1e1e1e1</p><p>관측 시각: 2026-09-22T00:00:01+00:00</p><pre>{\n  &quot;observed_at&quot;: &quot;2026-09-22T00:00:01+00:00&quot;,\n  &quot;details&quot;: {\n    &quot;host&quot;: &quot;ci&quot;\n  }\n}</pre></details></section>\n<section><h2>되돌리기</h2><p>Revert the merge commit.</p></section>\n<section><h2>서명할 원본 식별</h2><p>HTML이나 화면 복사본이 아닌 원본 JSON 파일을 서명하세요.</p>\n<dl><dt>원본 파일</dt><dd class=\"hash\">packet.json</dd><dt>원본 SHA-256 · 663 bytes</dt>\n<dd class=\"hash\">sha256:9a9a9a9a9a9a9a9a9a9a9a9a9a9a9a9a9a9a9a9a9a9a9a9a9a9a9a9a9a9a9a9a</dd><dt>신뢰 정책 커밋</dt><dd class=\"hash\">bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb</dd>\n<dt>정책 해시</dt><dd class=\"hash\">sha256:d4d4d4d4d4d4d4d4d4d4d4d4d4d4d4d4d4d4d4d4d4d4d4d4d4d4d4d4d4d4d4d4</dd></dl>\n<details><summary>정확한 서명 대상 JSON 보기</summary><pre>{&quot;criteria&quot;:[{&quot;evidence_refs&quot;:[&quot;sha256:c1c1c1c1c1c1c1c1c1c1c1c1c1c1c1c1c1c1c1c1c1c1c1c1c1c1c1c1c1c1c1c1&quot;],&quot;index&quot;:0},{&quot;evidence_refs&quot;:[&quot;sha256:c2c2c2c2c2c2c2c2c2c2c2c2c2c2c2c2c2c2c2c2c2c2c2c2c2c2c2c2c2c2c2c2&quot;],&quot;index&quot;:1}],&quot;environment_ref&quot;:&quot;sha256:e1e1e1e1e1e1e1e1e1e1e1e1e1e1e1e1e1e1e1e1e1e1e1e1e1e1e1e1e1e1e1e1&quot;,&quot;expires_at&quot;:&quot;2026-09-23T00:00:00+00:00&quot;,&quot;issued_at&quot;:&quot;2026-09-22T00:00:00+00:00&quot;,&quot;policy_commit&quot;:&quot;bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb&quot;,&quot;policy_hash&quot;:&quot;sha256:d4d4d4d4d4d4d4d4d4d4d4d4d4d4d4d4d4d4d4d4d4d4d4d4d4d4d4d4d4d4d4d4&quot;,&quot;reason&quot;:&quot;All criteria observed.&quot;,&quot;revision&quot;:2,&quot;sequence&quot;:3,&quot;solution_commit&quot;:&quot;aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa&quot;}</pre></details></section>\n</main></body></html>",
+    "bytes": 6973,
+    "chars": 6259,
+    "criteria": 2,
+    "details": 4,
+    "is_str": true,
+    "outcome": "rendered",
+    "pre_bytes": [
+     86,
+     86,
+     85,
+     663
+    ],
+    "pre_tails": [
+     "\n    \"queue\": \"ok\"\n  }\n}",
+     "\n    \"store\": \"ok\"\n  }\n}",
+     "{\n    \"host\": \"ci\"\n  }\n}"
+    ],
+    "review_unchanged": true,
+    "sha256": "ab738564e228ba0f99546f1e3b6e38748dd012cfe00190be3388838ddf459688",
+    "truncated_notices": 0
+   },
+   "future": {
+    "body": "<main>\n<header><div class=\"eyebrow\">ZEUS · 종료 전 검토</div><h1>Independent services</h1>\n<p>이 화면을 열거나 읽어도 승인·종료되지 않습니다. 기준 원문과 실제 관측 내용을 비교한 뒤 원본 패킷을 서명하세요.</p>\n<p class=\"notice\">패킷 발행 시각이 미래입니다. 현재 종료 요청에 사용할 수 없습니다.</p>\n<p class=\"hash\">TKT-0001 · 개정 2 · 작업 주기 3</p></header>\n<div class=\"grid\"><section><h2>무엇을 해결했는가</h2><p>Services share one failure domain.</p>\n<h3>영향</h3><p>One outage stops every review.</p><h3>범위</h3><ul><li>split the queue</li><li>split the store</li></ul>\n<h3>종료 요청 사유</h3><p>All criteria observed.</p></section>\n<section><h2>필요한 승인</h2><p class=\"notice\">alice</p><ul><li>alice <span class=\"muted\">· owner</span></li><li>robot <span class=\"muted\">· automation</span></li></ul>\n<p class=\"muted\">서명 검증은 이 화면에서 실행하지 않습니다. 등록된 키의 권한과 실제 사람의 현장 확인은 별개입니다.</p>\n<dl><dt>발행</dt><dd>2026-09-22T00:00:00+00:00</dd><dt>서명 기한</dt><dd>2026-09-23T00:00:00+00:00</dd>\n<dt>해결 커밋</dt><dd class=\"hash\">aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa</dd></dl></section></div>\n<section><h2>인수 기준과 증거 · 2개</h2><p class=\"muted\">‘통과’는 제출된 관측 결과입니다. 원문 기준을 충족하는지 검토자의 판단이 필요합니다.</p><article class=\"criterion\"><div class=\"eyebrow\">인수 기준 1</div><h3>queue runs alone</h3><p class=\"claim\">제출 결과: 통과 · 사람의 승인 여부는 확인되지 않았습니다.</p><details><summary>증거 내용 보기 · 68 bytes</summary><p class=\"hash\">sha256:c1c1c1c1c1c1c1c1c1c1c1c1c1c1c1c1c1c1c1c1c1c1c1c1c1c1c1c1c1c1c1c1</p><p>관측 시각: 2026-09-22T00:00:02+00:00</p><pre>{\n  &quot;observed_at&quot;: &quot;2026-09-22T00:00:02+00:00&quot;,\n  &quot;details&quot;: {\n    &quot;queue&quot;: &quot;ok&quot;\n  }\n}</pre></details></article><article class=\"criterion\"><div class=\"eyebrow\">인수 기준 2</div><h3>store runs alone</h3><p class=\"claim\">제출 결과: 통과 · 사람의 승인 여부는 확인되지 않았습니다.</p><details><summary>증거 내용 보기 · 68 bytes</summary><p class=\"hash\">sha256:c2c2c2c2c2c2c2c2c2c2c2c2c2c2c2c2c2c2c2c2c2c2c2c2c2c2c2c2c2c2c2c2</p><p>관측 시각: 2026-09-22T00:00:03+00:00</p><pre>{\n  &quot;observed_at&quot;: &quot;2026-09-22T00:00:03+00:00&quot;,\n  &quot;details&quot;: {\n    &quot;store&quot;: &quot;ok&quot;\n  }\n}</pre></details></article></section>\n<section><h2>환경 확인</h2><details><summary>증거 내용 보기 · 67 bytes</summary><p class=\"hash\">sha256:e1e1e1e1e1e1e1e1e1e1e1e1e1e1e1e1e1e1e1e1e1e1e1e1e1e1e1e1e1e1e1e1</p><p>관측 시각: 2026-09-22T00:00:01+00:00</p><pre>{\n  &quot;observed_at&quot;: &quot;2026-09-22T00:00:01+00:00&quot;,\n  &quot;details&quot;: {\n    &quot;host&quot;: &quot;ci&quot;\n  }\n}</pre></details></section>\n<section><h2>되돌리기</h2><p>Revert the merge commit.</p></section>\n<section><h2>서명할 원본 식별</h2><p>HTML이나 화면 복사본이 아닌 원본 JSON 파일을 서명하세요.</p>\n<dl><dt>원본 파일</dt><dd class=\"hash\">packet.json</dd><dt>원본 SHA-256 · 663 bytes</dt>\n<dd class=\"hash\">sha256:9a9a9a9a9a9a9a9a9a9a9a9a9a9a9a9a9a9a9a9a9a9a9a9a9a9a9a9a9a9a9a9a</dd><dt>신뢰 정책 커밋</dt><dd class=\"hash\">bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb</dd>\n<dt>정책 해시</dt><dd class=\"hash\">sha256:d4d4d4d4d4d4d4d4d4d4d4d4d4d4d4d4d4d4d4d4d4d4d4d4d4d4d4d4d4d4d4d4</dd></dl>\n<details><summary>정확한 서명 대상 JSON 보기</summary><pre>{&quot;criteria&quot;:[{&quot;evidence_refs&quot;:[&quot;sha256:c1c1c1c1c1c1c1c1c1c1c1c1c1c1c1c1c1c1c1c1c1c1c1c1c1c1c1c1c1c1c1c1&quot;],&quot;index&quot;:0},{&quot;evidence_refs&quot;:[&quot;sha256:c2c2c2c2c2c2c2c2c2c2c2c2c2c2c2c2c2c2c2c2c2c2c2c2c2c2c2c2c2c2c2c2&quot;],&quot;index&quot;:1}],&quot;environment_ref&quot;:&quot;sha256:e1e1e1e1e1e1e1e1e1e1e1e1e1e1e1e1e1e1e1e1e1e1e1e1e1e1e1e1e1e1e1e1&quot;,&quot;expires_at&quot;:&quot;2026-09-23T00:00:00+00:00&quot;,&quot;issued_at&quot;:&quot;2026-09-22T00:00:00+00:00&quot;,&quot;policy_commit&quot;:&quot;bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb&quot;,&quot;policy_hash&quot;:&quot;sha256:d4d4d4d4d4d4d4d4d4d4d4d4d4d4d4d4d4d4d4d4d4d4d4d4d4d4d4d4d4d4d4d4&quot;,&quot;reason&quot;:&quot;All criteria observed.&quot;,&quot;revision&quot;:2,&quot;sequence&quot;:3,&quot;solution_commit&quot;:&quot;aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa&quot;}</pre></details></section>\n</main></body></html>",
+    "bytes": 6977,
+    "chars": 6261,
+    "criteria": 2,
+    "details": 4,
+    "is_str": true,
+    "outcome": "rendered",
+    "pre_bytes": [
+     86,
+     86,
+     85,
+     663
+    ],
+    "pre_tails": [
+     "\n    \"queue\": \"ok\"\n  }\n}",
+     "\n    \"store\": \"ok\"\n  }\n}",
+     "{\n    \"host\": \"ci\"\n  }\n}"
+    ],
+    "review_unchanged": true,
+    "sha256": "94e634df1b3d555964751174f7fe490e8014db7323afddcce71a8e21cfad5cb5",
+    "truncated_notices": 0
+   },
+   "recheck_at_close": {
+    "body": "<main>\n<header><div class=\"eyebrow\">ZEUS · 종료 전 검토</div><h1>Independent services</h1>\n<p>이 화면을 열거나 읽어도 승인·종료되지 않습니다. 기준 원문과 실제 관측 내용을 비교한 뒤 원본 패킷을 서명하세요.</p>\n<p class=\"notice\">저장된 검토 화면입니다. 종료 요청 시 시각·개정·서명을 다시 검증합니다.</p>\n<p class=\"hash\">TKT-0001 · 개정 2 · 작업 주기 3</p></header>\n<div class=\"grid\"><section><h2>무엇을 해결했는가</h2><p>Services share one failure domain.</p>\n<h3>영향</h3><p>One outage stops every review.</p><h3>범위</h3><ul><li>split the queue</li><li>split the store</li></ul>\n<h3>종료 요청 사유</h3><p>All criteria observed.</p></section>\n<section><h2>필요한 승인</h2><p class=\"notice\">alice</p><ul><li>alice <span class=\"muted\">· owner</span></li><li>robot <span class=\"muted\">· automation</span></li></ul>\n<p class=\"muted\">서명 검증은 이 화면에서 실행하지 않습니다. 등록된 키의 권한과 실제 사람의 현장 확인은 별개입니다.</p>\n<dl><dt>발행</dt><dd>2026-09-22T00:00:00+00:00</dd><dt>서명 기한</dt><dd>2026-09-23T00:00:00+00:00</dd>\n<dt>해결 커밋</dt><dd class=\"hash\">aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa</dd></dl></section></div>\n<section><h2>인수 기준과 증거 · 2개</h2><p class=\"muted\">‘통과’는 제출된 관측 결과입니다. 원문 기준을 충족하는지 검토자의 판단이 필요합니다.</p><article class=\"criterion\"><div class=\"eyebrow\">인수 기준 1</div><h3>queue runs alone</h3><p class=\"claim\">제출 결과: 통과 · 사람의 승인 여부는 확인되지 않았습니다.</p><details><summary>증거 내용 보기 · 68 bytes</summary><p class=\"hash\">sha256:c1c1c1c1c1c1c1c1c1c1c1c1c1c1c1c1c1c1c1c1c1c1c1c1c1c1c1c1c1c1c1c1</p><p>관측 시각: 2026-09-22T00:00:02+00:00</p><pre>{\n  &quot;observed_at&quot;: &quot;2026-09-22T00:00:02+00:00&quot;,\n  &quot;details&quot;: {\n    &quot;queue&quot;: &quot;ok&quot;\n  }\n}</pre></details></article><article class=\"criterion\"><div class=\"eyebrow\">인수 기준 2</div><h3>store runs alone</h3><p class=\"claim\">제출 결과: 통과 · 사람의 승인 여부는 확인되지 않았습니다.</p><details><summary>증거 내용 보기 · 68 bytes</summary><p class=\"hash\">sha256:c2c2c2c2c2c2c2c2c2c2c2c2c2c2c2c2c2c2c2c2c2c2c2c2c2c2c2c2c2c2c2c2</p><p>관측 시각: 2026-09-22T00:00:03+00:00</p><pre>{\n  &quot;observed_at&quot;: &quot;2026-09-22T00:00:03+00:00&quot;,\n  &quot;details&quot;: {\n    &quot;store&quot;: &quot;ok&quot;\n  }\n}</pre></details></article></section>\n<section><h2>환경 확인</h2><details><summary>증거 내용 보기 · 67 bytes</summary><p class=\"hash\">sha256:e1e1e1e1e1e1e1e1e1e1e1e1e1e1e1e1e1e1e1e1e1e1e1e1e1e1e1e1e1e1e1e1</p><p>관측 시각: 2026-09-22T00:00:01+00:00</p><pre>{\n  &quot;observed_at&quot;: &quot;2026-09-22T00:00:01+00:00&quot;,\n  &quot;details&quot;: {\n    &quot;host&quot;: &quot;ci&quot;\n  }\n}</pre></details></section>\n<section><h2>되돌리기</h2><p>Revert the merge commit.</p></section>\n<section><h2>서명할 원본 식별</h2><p>HTML이나 화면 복사본이 아닌 원본 JSON 파일을 서명하세요.</p>\n<dl><dt>원본 파일</dt><dd class=\"hash\">packet.json</dd><dt>원본 SHA-256 · 663 bytes</dt>\n<dd class=\"hash\">sha256:9a9a9a9a9a9a9a9a9a9a9a9a9a9a9a9a9a9a9a9a9a9a9a9a9a9a9a9a9a9a9a9a</dd><dt>신뢰 정책 커밋</dt><dd class=\"hash\">bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb</dd>\n<dt>정책 해시</dt><dd class=\"hash\">sha256:d4d4d4d4d4d4d4d4d4d4d4d4d4d4d4d4d4d4d4d4d4d4d4d4d4d4d4d4d4d4d4d4</dd></dl>\n<details><summary>정확한 서명 대상 JSON 보기</summary><pre>{&quot;criteria&quot;:[{&quot;evidence_refs&quot;:[&quot;sha256:c1c1c1c1c1c1c1c1c1c1c1c1c1c1c1c1c1c1c1c1c1c1c1c1c1c1c1c1c1c1c1c1&quot;],&quot;index&quot;:0},{&quot;evidence_refs&quot;:[&quot;sha256:c2c2c2c2c2c2c2c2c2c2c2c2c2c2c2c2c2c2c2c2c2c2c2c2c2c2c2c2c2c2c2c2&quot;],&quot;index&quot;:1}],&quot;environment_ref&quot;:&quot;sha256:e1e1e1e1e1e1e1e1e1e1e1e1e1e1e1e1e1e1e1e1e1e1e1e1e1e1e1e1e1e1e1e1&quot;,&quot;expires_at&quot;:&quot;2026-09-23T00:00:00+00:00&quot;,&quot;issued_at&quot;:&quot;2026-09-22T00:00:00+00:00&quot;,&quot;policy_commit&quot;:&quot;bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb&quot;,&quot;policy_hash&quot;:&quot;sha256:d4d4d4d4d4d4d4d4d4d4d4d4d4d4d4d4d4d4d4d4d4d4d4d4d4d4d4d4d4d4d4d4&quot;,&quot;reason&quot;:&quot;All criteria observed.&quot;,&quot;revision&quot;:2,&quot;sequence&quot;:3,&quot;solution_commit&quot;:&quot;aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa&quot;}</pre></details></section>\n</main></body></html>",
+    "bytes": 6986,
+    "chars": 6264,
+    "criteria": 2,
+    "details": 4,
+    "is_str": true,
+    "outcome": "rendered",
+    "pre_bytes": [
+     86,
+     86,
+     85,
+     663
+    ],
+    "pre_tails": [
+     "\n    \"queue\": \"ok\"\n  }\n}",
+     "\n    \"store\": \"ok\"\n  }\n}",
+     "{\n    \"host\": \"ci\"\n  }\n}"
+    ],
+    "review_unchanged": true,
+    "sha256": "d686632af7919a4222d2b7376dc71dc53d0d3b9ec63be9696b0a2a4209184d81",
+    "truncated_notices": 0
+   }
+  },
+  "values_pass_through_str": {
+   "message": "Object of type bytes is not JSON serializable",
+   "outcome": "refused",
+   "review_unchanged": true,
+   "type": "TypeError"
+  }
+ },
+ "s2_escaping": {
+  "document_preview_is_escaped_and_not_ascii_escaped": {
+   "body": "<main>\n<header><div class=\"eyebrow\">ZEUS · 종료 전 검토</div><h1>Independent services</h1>\n<p>이 화면을 열거나 읽어도 승인·종료되지 않습니다. 기준 원문과 실제 관측 내용을 비교한 뒤 원본 패킷을 서명하세요.</p>\n<p class=\"notice\">저장된 검토 화면입니다. 종료 요청 시 시각·개정·서명을 다시 검증합니다.</p>\n<p class=\"hash\">TKT-0001 · 개정 2 · 작업 주기 3</p></header>\n<div class=\"grid\"><section><h2>무엇을 해결했는가</h2><p>Services share one failure domain.</p>\n<h3>영향</h3><p>One outage stops every review.</p><h3>범위</h3><ul><li>split the queue</li><li>split the store</li></ul>\n<h3>종료 요청 사유</h3><p>All criteria observed.</p></section>\n<section><h2>필요한 승인</h2><p class=\"notice\">alice</p><ul><li>alice <span class=\"muted\">· owner</span></li><li>robot <span class=\"muted\">· automation</span></li></ul>\n<p class=\"muted\">서명 검증은 이 화면에서 실행하지 않습니다. 등록된 키의 권한과 실제 사람의 현장 확인은 별개입니다.</p>\n<dl><dt>발행</dt><dd>2026-09-22T00:00:00+00:00</dd><dt>서명 기한</dt><dd>2026-09-23T00:00:00+00:00</dd>\n<dt>해결 커밋</dt><dd class=\"hash\">aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa</dd></dl></section></div>\n<section><h2>인수 기준과 증거 · 2개</h2><p class=\"muted\">‘통과’는 제출된 관측 결과입니다. 원문 기준을 충족하는지 검토자의 판단이 필요합니다.</p><article class=\"criterion\"><div class=\"eyebrow\">인수 기준 1</div><h3>queue runs alone</h3><p class=\"claim\">제출 결과: 통과 · 사람의 승인 여부는 확인되지 않았습니다.</p><details><summary>증거 내용 보기 · 119 bytes</summary><p class=\"hash\">sha256:c1c1c1c1c1c1c1c1c1c1c1c1c1c1c1c1c1c1c1c1c1c1c1c1c1c1c1c1c1c1c1c1</p><p>관측 시각: t</p><pre>{\n  &quot;observed_at&quot;: &quot;t&quot;,\n  &quot;details&quot;: {\n    &quot;note&quot;: &quot;한글 \\&quot;q\\&quot; &#x27;a&#x27; &lt;i&gt;x&lt;/i&gt; &amp; é 😀&quot;,\n    &quot;n&quot;: [\n      1,\n      2.5,\n      null,\n      true\n    ],\n    &quot;nested&quot;: {\n      &quot;k&quot;: &quot;&lt;v&gt;&quot;\n    }\n  }\n}</pre></details></article><article class=\"criterion\"><div class=\"eyebrow\">인수 기준 2</div><h3>store runs alone</h3><p class=\"claim\">제출 결과: 통과 · 사람의 승인 여부는 확인되지 않았습니다.</p><details><summary>증거 내용 보기 · 119 bytes</summary><p class=\"hash\">sha256:c2c2c2c2c2c2c2c2c2c2c2c2c2c2c2c2c2c2c2c2c2c2c2c2c2c2c2c2c2c2c2c2</p><p>관측 시각: t</p><pre>{\n  &quot;observed_at&quot;: &quot;t&quot;,\n  &quot;details&quot;: {\n    &quot;note&quot;: &quot;한글 \\&quot;q\\&quot; &#x27;a&#x27; &lt;i&gt;x&lt;/i&gt; &amp; é 😀&quot;,\n    &quot;n&quot;: [\n      1,\n      2.5,\n      null,\n      true\n    ],\n    &quot;nested&quot;: {\n      &quot;k&quot;: &quot;&lt;v&gt;&quot;\n    }\n  }\n}</pre></details></article></section>\n<section><h2>환경 확인</h2><details><summary>증거 내용 보기 · 119 bytes</summary><p class=\"hash\">sha256:e1e1e1e1e1e1e1e1e1e1e1e1e1e1e1e1e1e1e1e1e1e1e1e1e1e1e1e1e1e1e1e1</p><p>관측 시각: t</p><pre>{\n  &quot;observed_at&quot;: &quot;t&quot;,\n  &quot;details&quot;: {\n    &quot;note&quot;: &quot;한글 \\&quot;q\\&quot; &#x27;a&#x27; &lt;i&gt;x&lt;/i&gt; &amp; é 😀&quot;,\n    &quot;n&quot;: [\n      1,\n      2.5,\n      null,\n      true\n    ],\n    &quot;nested&quot;: {\n      &quot;k&quot;: &quot;&lt;v&gt;&quot;\n    }\n  }\n}</pre></details></section>\n<section><h2>되돌리기</h2><p>Revert the merge commit.</p></section>\n<section><h2>서명할 원본 식별</h2><p>HTML이나 화면 복사본이 아닌 원본 JSON 파일을 서명하세요.</p>\n<dl><dt>원본 파일</dt><dd class=\"hash\">packet.json</dd><dt>원본 SHA-256 · 663 bytes</dt>\n<dd class=\"hash\">sha256:9a9a9a9a9a9a9a9a9a9a9a9a9a9a9a9a9a9a9a9a9a9a9a9a9a9a9a9a9a9a9a9a</dd><dt>신뢰 정책 커밋</dt><dd class=\"hash\">bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb</dd>\n<dt>정책 해시</dt><dd class=\"hash\">sha256:d4d4d4d4d4d4d4d4d4d4d4d4d4d4d4d4d4d4d4d4d4d4d4d4d4d4d4d4d4d4d4d4</dd></dl>\n<details><summary>정확한 서명 대상 JSON 보기</summary><pre>{&quot;criteria&quot;:[{&quot;evidence_refs&quot;:[&quot;sha256:c1c1c1c1c1c1c1c1c1c1c1c1c1c1c1c1c1c1c1c1c1c1c1c1c1c1c1c1c1c1c1c1&quot;],&quot;index&quot;:0},{&quot;evidence_refs&quot;:[&quot;sha256:c2c2c2c2c2c2c2c2c2c2c2c2c2c2c2c2c2c2c2c2c2c2c2c2c2c2c2c2c2c2c2c2&quot;],&quot;index&quot;:1}],&quot;environment_ref&quot;:&quot;sha256:e1e1e1e1e1e1e1e1e1e1e1e1e1e1e1e1e1e1e1e1e1e1e1e1e1e1e1e1e1e1e1e1&quot;,&quot;expires_at&quot;:&quot;2026-09-23T00:00:00+00:00&quot;,&quot;issued_at&quot;:&quot;2026-09-22T00:00:00+00:00&quot;,&quot;policy_commit&quot;:&quot;bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb&quot;,&quot;policy_hash&quot;:&quot;sha256:d4d4d4d4d4d4d4d4d4d4d4d4d4d4d4d4d4d4d4d4d4d4d4d4d4d4d4d4d4d4d4d4&quot;,&quot;reason&quot;:&quot;All criteria observed.&quot;,&quot;revision&quot;:2,&quot;sequence&quot;:3,&quot;solution_commit&quot;:&quot;aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa&quot;}</pre></details></section>\n</main></body></html>",
+   "bytes": 7491,
+   "chars": 6745,
+   "criteria": 2,
+   "details": 4,
+   "is_str": true,
+   "outcome": "rendered",
+   "pre_bytes": [
+    195,
+    195,
+    195,
+    663
+   ],
+   "pre_tails": [
+    "  \"k\": \"<v>\"\n    }\n  }\n}",
+    "  \"k\": \"<v>\"\n    }\n  }\n}",
+    "  \"k\": \"<v>\"\n    }\n  }\n}"
+   ],
+   "review_unchanged": true,
+   "sha256": "219bd1cbdceb6fc49ca2066c7419ea9d14429bdafebae1ad9bb4dda24d9c3708",
+   "truncated_notices": 0
+  },
+  "hostile_page_body": {
+   "body": "<main>\n<header><div class=\"eyebrow\">ZEUS · 종료 전 검토</div><h1>&lt;script src=&quot;https://invalid.example/x&quot;&gt;&lt;/script&gt;&lt;img src=x onerror=&quot;alert(1)&quot;&gt;</h1>\n<p>이 화면을 열거나 읽어도 승인·종료되지 않습니다. 기준 원문과 실제 관측 내용을 비교한 뒤 원본 패킷을 서명하세요.</p>\n<p class=\"notice\">저장된 검토 화면입니다. 종료 요청 시 시각·개정·서명을 다시 검증합니다.</p>\n<p class=\"hash\">&lt;script src=&quot;https://invalid.example/x&quot;&gt;&lt;/script&gt;&lt;img src=x onerror=&quot;alert(1)&quot;&gt; · 개정 2 · 작업 주기 3</p></header>\n<div class=\"grid\"><section><h2>무엇을 해결했는가</h2><p>&lt;script src=&quot;https://invalid.example/x&quot;&gt;&lt;/script&gt;&lt;img src=x onerror=&quot;alert(1)&quot;&gt;</p>\n<h3>영향</h3><p>&lt;script src=&quot;https://invalid.example/x&quot;&gt;&lt;/script&gt;&lt;img src=x onerror=&quot;alert(1)&quot;&gt;</p><h3>범위</h3><ul><li>&lt;script src=&quot;https://invalid.example/x&quot;&gt;&lt;/script&gt;&lt;img src=x onerror=&quot;alert(1)&quot;&gt;</li></ul>\n<h3>종료 요청 사유</h3><p>&lt;script src=&quot;https://invalid.example/x&quot;&gt;&lt;/script&gt;&lt;img src=x onerror=&quot;alert(1)&quot;&gt;</p></section>\n<section><h2>필요한 승인</h2><p class=\"notice\">&lt;script src=&quot;https://invalid.example/x&quot;&gt;&lt;/script&gt;&lt;img src=x onerror=&quot;alert(1)&quot;&gt;</p><ul><li>&lt;script src=&quot;https://invalid.example/x&quot;&gt;&lt;/script&gt;&lt;img src=x onerror=&quot;alert(1)&quot;&gt; <span class=\"muted\">· &lt;script src=&quot;https://invalid.example/x&quot;&gt;&lt;/script&gt;&lt;img src=x onerror=&quot;alert(1)&quot;&gt;</span></li></ul>\n<p class=\"muted\">서명 검증은 이 화면에서 실행하지 않습니다. 등록된 키의 권한과 실제 사람의 현장 확인은 별개입니다.</p>\n<dl><dt>발행</dt><dd>&lt;script src=&quot;https://invalid.example/x&quot;&gt;&lt;/script&gt;&lt;img src=x onerror=&quot;alert(1)&quot;&gt;</dd><dt>서명 기한</dt><dd>&lt;script src=&quot;https://invalid.example/x&quot;&gt;&lt;/script&gt;&lt;img src=x onerror=&quot;alert(1)&quot;&gt;</dd>\n<dt>해결 커밋</dt><dd class=\"hash\">&lt;script src=&quot;https://invalid.example/x&quot;&gt;&lt;/script&gt;&lt;img src=x onerror=&quot;alert(1)&quot;&gt;</dd></dl></section></div>\n<section><h2>인수 기준과 증거 · 2개</h2><p class=\"muted\">‘통과’는 제출된 관측 결과입니다. 원문 기준을 충족하는지 검토자의 판단이 필요합니다.</p><article class=\"criterion\"><div class=\"eyebrow\">인수 기준 1</div><h3>&lt;script src=&quot;https://invalid.example/x&quot;&gt;&lt;/script&gt;&lt;img src=x onerror=&quot;alert(1)&quot;&gt;</h3><p class=\"claim\">제출 결과: 통과 · 사람의 승인 여부는 확인되지 않았습니다.</p><details><summary>증거 내용 보기 · 68 bytes</summary><p class=\"hash\">sha256:c1c1c1c1c1c1c1c1c1c1c1c1c1c1c1c1c1c1c1c1c1c1c1c1c1c1c1c1c1c1c1c1</p><p>관측 시각: 2026-09-22T00:00:02+00:00</p><pre>{\n  &quot;observed_at&quot;: &quot;2026-09-22T00:00:02+00:00&quot;,\n  &quot;details&quot;: {\n    &quot;queue&quot;: &quot;ok&quot;\n  }\n}</pre></details></article><article class=\"criterion\"><div class=\"eyebrow\">인수 기준 2</div><h3>&lt;script src=&quot;https://invalid.example/x&quot;&gt;&lt;/script&gt;&lt;img src=x onerror=&quot;alert(1)&quot;&gt;</h3><p class=\"claim\">제출 결과: 통과 · 사람의 승인 여부는 확인되지 않았습니다.</p><details><summary>증거 내용 보기 · 68 bytes</summary><p class=\"hash\">sha256:c2c2c2c2c2c2c2c2c2c2c2c2c2c2c2c2c2c2c2c2c2c2c2c2c2c2c2c2c2c2c2c2</p><p>관측 시각: 2026-09-22T00:00:03+00:00</p><pre>{\n  &quot;observed_at&quot;: &quot;2026-09-22T00:00:03+00:00&quot;,\n  &quot;details&quot;: {\n    &quot;store&quot;: &quot;ok&quot;\n  }\n}</pre></details></article></section>\n<section><h2>환경 확인</h2><details><summary>증거 내용 보기 · 285 bytes</summary><p class=\"hash\">sha256:e1e1e1e1e1e1e1e1e1e1e1e1e1e1e1e1e1e1e1e1e1e1e1e1e1e1e1e1e1e1e1e1</p><p>관측 시각: &lt;script src=&quot;https://invalid.example/x&quot;&gt;&lt;/script&gt;&lt;img src=x onerror=&quot;alert(1)&quot;&gt;</p><pre>{\n  &quot;observed_at&quot;: &quot;&lt;script src=\\&quot;https://invalid.example/x\\&quot;&gt;&lt;/script&gt;&lt;img src=x onerror=\\&quot;alert(1)\\&quot;&gt;&quot;,\n  &quot;details&quot;: {\n    &quot;&lt;script src=\\&quot;https://invalid.example/x\\&quot;&gt;&lt;/script&gt;&lt;img src=x onerror=\\&quot;alert(1)\\&quot;&gt;&quot;: &quot;&lt;script src=\\&quot;https://invalid.example/x\\&quot;&gt;&lt;/script&gt;&lt;img src=x onerror=\\&quot;alert(1)\\&quot;&gt;&quot;\n  }\n}</pre></details></section>\n<section><h2>되돌리기</h2><p>&lt;script src=&quot;https://invalid.example/x&quot;&gt;&lt;/script&gt;&lt;img src=x onerror=&quot;alert(1)&quot;&gt;</p></section>\n<section><h2>서명할 원본 식별</h2><p>HTML이나 화면 복사본이 아닌 원본 JSON 파일을 서명하세요.</p>\n<dl><dt>원본 파일</dt><dd class=\"hash\">&lt;script src=&quot;https://invalid.example/x&quot;&gt;&lt;/script&gt;&lt;img src=x onerror=&quot;alert(1)&quot;&gt;</dd><dt>원본 SHA-256 · 938 bytes</dt>\n<dd class=\"hash\">&lt;script src=&quot;https://invalid.example/x&quot;&gt;&lt;/script&gt;&lt;img src=x onerror=&quot;alert(1)&quot;&gt;</dd><dt>신뢰 정책 커밋</dt><dd class=\"hash\">&lt;script src=&quot;https://invalid.example/x&quot;&gt;&lt;/script&gt;&lt;img src=x onerror=&quot;alert(1)&quot;&gt;</dd>\n<dt>정책 해시</dt><dd class=\"hash\">&lt;script src=&quot;https://invalid.example/x&quot;&gt;&lt;/script&gt;&lt;img src=x onerror=&quot;alert(1)&quot;&gt;</dd></dl>\n<details><summary>정확한 서명 대상 JSON 보기</summary><pre>{&quot;criteria&quot;:[{&quot;evidence_refs&quot;:[&quot;sha256:c1c1c1c1c1c1c1c1c1c1c1c1c1c1c1c1c1c1c1c1c1c1c1c1c1c1c1c1c1c1c1c1&quot;],&quot;index&quot;:0},{&quot;evidence_refs&quot;:[&quot;sha256:c2c2c2c2c2c2c2c2c2c2c2c2c2c2c2c2c2c2c2c2c2c2c2c2c2c2c2c2c2c2c2c2&quot;],&quot;index&quot;:1}],&quot;environment_ref&quot;:&quot;sha256:e1e1e1e1e1e1e1e1e1e1e1e1e1e1e1e1e1e1e1e1e1e1e1e1e1e1e1e1e1e1e1e1&quot;,&quot;expires_at&quot;:&quot;&lt;script src=\\&quot;https://invalid.example/x\\&quot;&gt;&lt;/script&gt;&lt;img src=x onerror=\\&quot;alert(1)\\&quot;&gt;&quot;,&quot;issued_at&quot;:&quot;&lt;script src=\\&quot;https://invalid.example/x\\&quot;&gt;&lt;/script&gt;&lt;img src=x onerror=\\&quot;alert(1)\\&quot;&gt;&quot;,&quot;policy_commit&quot;:&quot;&lt;script src=\\&quot;https://invalid.example/x\\&quot;&gt;&lt;/script&gt;&lt;img src=x onerror=\\&quot;alert(1)\\&quot;&gt;&quot;,&quot;policy_hash&quot;:&quot;&lt;script src=\\&quot;https://invalid.example/x\\&quot;&gt;&lt;/script&gt;&lt;img src=x onerror=\\&quot;alert(1)\\&quot;&gt;&quot;,&quot;reason&quot;:&quot;&lt;script src=\\&quot;https://invalid.example/x\\&quot;&gt;&lt;/script&gt;&lt;img src=x onerror=\\&quot;alert(1)\\&quot;&gt;&quot;,&quot;revision&quot;:2,&quot;sequence&quot;:3,&quot;solution_commit&quot;:&quot;&lt;script src=\\&quot;https://invalid.example/x\\&quot;&gt;&lt;/script&gt;&lt;img src=x onerror=\\&quot;alert(1)\\&quot;&gt;&quot;}</pre></details></section>\n</main></body></html>",
+   "bytes": 9672,
+   "chars": 8951,
+   "criteria": 2,
+   "details": 4,
+   "is_str": true,
+   "outcome": "rendered",
+   "pre_bytes": [
+    86,
+    86,
+    303,
+    938
+   ],
+   "pre_tails": [
+    "\n    \"queue\": \"ok\"\n  }\n}",
+    "\n    \"store\": \"ok\"\n  }\n}",
+    "ror=\\\"alert(1)\\\">\"\n  }\n}"
+   ],
+   "review_unchanged": true,
+   "sha256": "9a544a3a71e303aa64ca045a7d25e4138d2e7b911ae29ae6375928ea87955b0c",
+   "truncated_notices": 0
+  },
+  "observed_at_is_escaped": {
+   "bytes": 6690,
+   "chars": 5968,
+   "criteria": 2,
+   "details": 4,
+   "is_str": true,
+   "outcome": "rendered",
+   "pre_bytes": [
+    24,
+    24,
+    30,
+    663
+   ],
+   "pre_tails": [
+    "{\n  \"observed_at\": \"x\"\n}",
+    "{\n  \"observed_at\": \"y\"\n}",
+    "bserved_at\": \"<b>&\\\"'\"\n}"
+   ],
+   "review_unchanged": true,
+   "sha256": "675dd54a54f08201d90a580c5448830a193de13a92ce65e1c56125e3ac362e9c",
+   "truncated_notices": 0
+  },
+  "packet_path_variants": {
+   "angle": {
+    "bytes": 6984,
+    "chars": 6262,
+    "criteria": 2,
+    "details": 4,
+    "is_str": true,
+    "outcome": "rendered",
+    "path_in_page": true,
+    "pre_bytes": [
+     86,
+     86,
+     85,
+     663
+    ],
+    "pre_tails": [
+     "\n    \"queue\": \"ok\"\n  }\n}",
+     "\n    \"store\": \"ok\"\n  }\n}",
+     "{\n    \"host\": \"ci\"\n  }\n}"
+    ],
+    "review_unchanged": true,
+    "sha256": "b44a50a59bd5802afa659ccd068204cc252b61c1b29e473402e2fa666923efb2",
+    "truncated_notices": 0
+   },
+   "apostrophe": {
+    "bytes": 6983,
+    "chars": 6261,
+    "criteria": 2,
+    "details": 4,
+    "is_str": true,
+    "outcome": "rendered",
+    "path_in_page": true,
+    "pre_bytes": [
+     86,
+     86,
+     85,
+     663
+    ],
+    "pre_tails": [
+     "\n    \"queue\": \"ok\"\n  }\n}",
+     "\n    \"store\": \"ok\"\n  }\n}",
+     "{\n    \"host\": \"ci\"\n  }\n}"
+    ],
+    "review_unchanged": true,
+    "sha256": "81533d56d85bd9bf2965db0c5d955627f377914bafe76fbdf6990fb461e5b056",
+    "truncated_notices": 0
+   },
+   "empty": {
+    "bytes": 6975,
+    "chars": 6253,
+    "criteria": 2,
+    "details": 4,
+    "is_str": true,
+    "outcome": "rendered",
+    "path_in_page": true,
+    "pre_bytes": [
+     86,
+     86,
+     85,
+     663
+    ],
+    "pre_tails": [
+     "\n    \"queue\": \"ok\"\n  }\n}",
+     "\n    \"store\": \"ok\"\n  }\n}",
+     "{\n    \"host\": \"ci\"\n  }\n}"
+    ],
+    "review_unchanged": true,
+    "sha256": "c7bc355ba2054411b9f0fa383eb277c8dc37663ec94aeba32cfde5c17f553605",
+    "truncated_notices": 0
+   },
+   "int": {
+    "bytes": 6976,
+    "chars": 6254,
+    "criteria": 2,
+    "details": 4,
+    "is_str": true,
+    "outcome": "rendered",
+    "path_in_page": true,
+    "pre_bytes": [
+     86,
+     86,
+     85,
+     663
+    ],
+    "pre_tails": [
+     "\n    \"queue\": \"ok\"\n  }\n}",
+     "\n    \"store\": \"ok\"\n  }\n}",
+     "{\n    \"host\": \"ci\"\n  }\n}"
+    ],
+    "review_unchanged": true,
+    "sha256": "69d0ae8021622a5c3b418ceb3fac584454bb7181ee558608275cce3c212c32b1",
+    "truncated_notices": 0
+   },
+   "korean": {
+    "bytes": 6986,
+    "chars": 6260,
+    "criteria": 2,
+    "details": 4,
+    "is_str": true,
+    "outcome": "rendered",
+    "path_in_page": true,
+    "pre_bytes": [
+     86,
+     86,
+     85,
+     663
+    ],
+    "pre_tails": [
+     "\n    \"queue\": \"ok\"\n  }\n}",
+     "\n    \"store\": \"ok\"\n  }\n}",
+     "{\n    \"host\": \"ci\"\n  }\n}"
+    ],
+    "review_unchanged": true,
+    "sha256": "b72e746c5d673cd518968d74275673eea0c563c32cbae068c982754397dcb5fc",
+    "truncated_notices": 0
+   },
+   "long": {
+    "bytes": 11975,
+    "chars": 11253,
+    "criteria": 2,
+    "details": 4,
+    "is_str": true,
+    "outcome": "rendered",
+    "path_in_page": true,
+    "pre_bytes": [
+     86,
+     86,
+     85,
+     663
+    ],
+    "pre_tails": [
+     "\n    \"queue\": \"ok\"\n  }\n}",
+     "\n    \"store\": \"ok\"\n  }\n}",
+     "{\n    \"host\": \"ci\"\n  }\n}"
+    ],
+    "review_unchanged": true,
+    "sha256": "7a0979a315fb3572baae3b16ff65617c4c2470cd1b430c3e37f983a916877fb0",
+    "truncated_notices": 0
+   },
+   "none": {
+    "bytes": 6979,
+    "chars": 6257,
+    "criteria": 2,
+    "details": 4,
+    "is_str": true,
+    "outcome": "rendered",
+    "path_in_page": true,
+    "pre_bytes": [
+     86,
+     86,
+     85,
+     663
+    ],
+    "pre_tails": [
+     "\n    \"queue\": \"ok\"\n  }\n}",
+     "\n    \"store\": \"ok\"\n  }\n}",
+     "{\n    \"host\": \"ci\"\n  }\n}"
+    ],
+    "review_unchanged": true,
+    "sha256": "89eb5841612a33f186912816e77a8610f097828aba3b281b3d5d34545ce6c90a",
+    "truncated_notices": 0
+   },
+   "quote": {
+    "bytes": 6983,
+    "chars": 6261,
+    "criteria": 2,
+    "details": 4,
+    "is_str": true,
+    "outcome": "rendered",
+    "path_in_page": true,
+    "pre_bytes": [
+     86,
+     86,
+     85,
+     663
+    ],
+    "pre_tails": [
+     "\n    \"queue\": \"ok\"\n  }\n}",
+     "\n    \"store\": \"ok\"\n  }\n}",
+     "{\n    \"host\": \"ci\"\n  }\n}"
+    ],
+    "review_unchanged": true,
+    "sha256": "c8778a9ad27f5d6e7c75e124192267b1798351b13d787c1e75bb5b5b7def33a2",
+    "truncated_notices": 0
+   },
+   "windows": {
+    "bytes": 6997,
+    "chars": 6275,
+    "criteria": 2,
+    "details": 4,
+    "is_str": true,
+    "outcome": "rendered",
+    "path_in_page": true,
+    "pre_bytes": [
+     86,
+     86,
+     85,
+     663
+    ],
+    "pre_tails": [
+     "\n    \"queue\": \"ok\"\n  }\n}",
+     "\n    \"store\": \"ok\"\n  }\n}",
+     "{\n    \"host\": \"ci\"\n  }\n}"
+    ],
+    "review_unchanged": true,
+    "sha256": "d9bb7edf93c05fc7afece5a252c69fa95fec5351828c5d961c5a53d9f9c64ee5",
+    "truncated_notices": 0
+   }
+  },
+  "quotes_ampersands_non_ascii_in_every_field": {
+   "body": "<main>\n<header><div class=\"eyebrow\">ZEUS · 종료 전 검토</div><h1>He said &quot;hi&quot; &amp; &#x27;bye&#x27; &lt;b&gt;bold&lt;/b&gt; 한글 ünïcode 😀 \u0000 \t \\ /</h1>\n<p>이 화면을 열거나 읽어도 승인·종료되지 않습니다. 기준 원문과 실제 관측 내용을 비교한 뒤 원본 패킷을 서명하세요.</p>\n<p class=\"notice\">저장된 검토 화면입니다. 종료 요청 시 시각·개정·서명을 다시 검증합니다.</p>\n<p class=\"hash\">TKT-0001 · 개정 2 · 작업 주기 3</p></header>\n<div class=\"grid\"><section><h2>무엇을 해결했는가</h2><p>He said &quot;hi&quot; &amp; &#x27;bye&#x27; &lt;b&gt;bold&lt;/b&gt; 한글 ünïcode 😀 \u0000 \t \\ /</p>\n<h3>영향</h3><p>He said &quot;hi&quot; &amp; &#x27;bye&#x27; &lt;b&gt;bold&lt;/b&gt; 한글 ünïcode 😀 \u0000 \t \\ /</p><h3>범위</h3><ul><li>He said &quot;hi&quot; &amp; &#x27;bye&#x27; &lt;b&gt;bold&lt;/b&gt; 한글 ünïcode 😀 \u0000 \t \\ /</li></ul>\n<h3>종료 요청 사유</h3><p>He said &quot;hi&quot; &amp; &#x27;bye&#x27; &lt;b&gt;bold&lt;/b&gt; 한글 ünïcode 😀 \u0000 \t \\ /</p></section>\n<section><h2>필요한 승인</h2><p class=\"notice\">alice</p><ul><li>alice <span class=\"muted\">· owner</span></li><li>robot <span class=\"muted\">· automation</span></li></ul>\n<p class=\"muted\">서명 검증은 이 화면에서 실행하지 않습니다. 등록된 키의 권한과 실제 사람의 현장 확인은 별개입니다.</p>\n<dl><dt>발행</dt><dd>2026-09-22T00:00:00+00:00</dd><dt>서명 기한</dt><dd>2026-09-23T00:00:00+00:00</dd>\n<dt>해결 커밋</dt><dd class=\"hash\">aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa</dd></dl></section></div>\n<section><h2>인수 기준과 증거 · 2개</h2><p class=\"muted\">‘통과’는 제출된 관측 결과입니다. 원문 기준을 충족하는지 검토자의 판단이 필요합니다.</p><article class=\"criterion\"><div class=\"eyebrow\">인수 기준 1</div><h3>He said &quot;hi&quot; &amp; &#x27;bye&#x27; &lt;b&gt;bold&lt;/b&gt; 한글 ünïcode 😀 \u0000 \t \\ /</h3><p class=\"claim\">제출 결과: 통과 · 사람의 승인 여부는 확인되지 않았습니다.</p><details><summary>증거 내용 보기 · 68 bytes</summary><p class=\"hash\">sha256:c1c1c1c1c1c1c1c1c1c1c1c1c1c1c1c1c1c1c1c1c1c1c1c1c1c1c1c1c1c1c1c1</p><p>관측 시각: 2026-09-22T00:00:02+00:00</p><pre>{\n  &quot;observed_at&quot;: &quot;2026-09-22T00:00:02+00:00&quot;,\n  &quot;details&quot;: {\n    &quot;queue&quot;: &quot;ok&quot;\n  }\n}</pre></details></article><article class=\"criterion\"><div class=\"eyebrow\">인수 기준 2</div><h3>He said &quot;hi&quot; &amp; &#x27;bye&#x27; &lt;b&gt;bold&lt;/b&gt; 한글 ünïcode 😀 \u0000 \t \\ /</h3><p class=\"claim\">제출 결과: 통과 · 사람의 승인 여부는 확인되지 않았습니다.</p><details><summary>증거 내용 보기 · 68 bytes</summary><p class=\"hash\">sha256:c2c2c2c2c2c2c2c2c2c2c2c2c2c2c2c2c2c2c2c2c2c2c2c2c2c2c2c2c2c2c2c2</p><p>관측 시각: 2026-09-22T00:00:03+00:00</p><pre>{\n  &quot;observed_at&quot;: &quot;2026-09-22T00:00:03+00:00&quot;,\n  &quot;details&quot;: {\n    &quot;store&quot;: &quot;ok&quot;\n  }\n}</pre></details></article></section>\n<section><h2>환경 확인</h2><details><summary>증거 내용 보기 · 67 bytes</summary><p class=\"hash\">sha256:e1e1e1e1e1e1e1e1e1e1e1e1e1e1e1e1e1e1e1e1e1e1e1e1e1e1e1e1e1e1e1e1</p><p>관측 시각: 2026-09-22T00:00:01+00:00</p><pre>{\n  &quot;observed_at&quot;: &quot;2026-09-22T00:00:01+00:00&quot;,\n  &quot;details&quot;: {\n    &quot;host&quot;: &quot;ci&quot;\n  }\n}</pre></details></section>\n<section><h2>되돌리기</h2><p>He said &quot;hi&quot; &amp; &#x27;bye&#x27; &lt;b&gt;bold&lt;/b&gt; 한글 ünïcode 😀 \u0000 \t \\ /</p></section>\n<section><h2>서명할 원본 식별</h2><p>HTML이나 화면 복사본이 아닌 원본 JSON 파일을 서명하세요.</p>\n<dl><dt>원본 파일</dt><dd class=\"hash\">He said &quot;hi&quot; &amp; &#x27;bye&#x27; &lt;b&gt;bold&lt;/b&gt; 한글 ünïcode 😀 \u0000 \t \\ /</dd><dt>원본 SHA-256 · 712 bytes</dt>\n<dd class=\"hash\">He said &quot;hi&quot; &amp; &#x27;bye&#x27; &lt;b&gt;bold&lt;/b&gt; 한글 ünïcode 😀 \u0000 \t \\ /</dd><dt>신뢰 정책 커밋</dt><dd class=\"hash\">bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb</dd>\n<dt>정책 해시</dt><dd class=\"hash\">sha256:d4d4d4d4d4d4d4d4d4d4d4d4d4d4d4d4d4d4d4d4d4d4d4d4d4d4d4d4d4d4d4d4</dd></dl>\n<details><summary>정확한 서명 대상 JSON 보기</summary><pre>{&quot;criteria&quot;:[{&quot;evidence_refs&quot;:[&quot;sha256:c1c1c1c1c1c1c1c1c1c1c1c1c1c1c1c1c1c1c1c1c1c1c1c1c1c1c1c1c1c1c1c1&quot;],&quot;index&quot;:0},{&quot;evidence_refs&quot;:[&quot;sha256:c2c2c2c2c2c2c2c2c2c2c2c2c2c2c2c2c2c2c2c2c2c2c2c2c2c2c2c2c2c2c2c2&quot;],&quot;index&quot;:1}],&quot;environment_ref&quot;:&quot;sha256:e1e1e1e1e1e1e1e1e1e1e1e1e1e1e1e1e1e1e1e1e1e1e1e1e1e1e1e1e1e1e1e1&quot;,&quot;expires_at&quot;:&quot;2026-09-23T00:00:00+00:00&quot;,&quot;issued_at&quot;:&quot;2026-09-22T00:00:00+00:00&quot;,&quot;policy_commit&quot;:&quot;bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb&quot;,&quot;policy_hash&quot;:&quot;sha256:d4d4d4d4d4d4d4d4d4d4d4d4d4d4d4d4d4d4d4d4d4d4d4d4d4d4d4d4d4d4d4d4&quot;,&quot;reason&quot;:&quot;He said \\&quot;hi\\&quot; &amp; &#x27;bye&#x27; &lt;b&gt;bold&lt;/b&gt; 한글 ünïcode 😀 \\u0000 \\t \\\\ /&quot;,&quot;revision&quot;:2,&quot;sequence&quot;:3,&quot;solution_commit&quot;:&quot;aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa&quot;}</pre></details></section>\n</main></body></html>",
+   "bytes": 7846,
+   "chars": 7016,
+   "criteria": 2,
+   "details": 4,
+   "is_str": true,
+   "outcome": "rendered",
+   "pre_bytes": [
+    86,
+    86,
+    85,
+    712
+   ],
+   "pre_tails": [
+    "\n    \"queue\": \"ok\"\n  }\n}",
+    "\n    \"store\": \"ok\"\n  }\n}",
+    "{\n    \"host\": \"ci\"\n  }\n}"
+   ],
+   "review_unchanged": true,
+   "sha256": "af8b7a2d6dc1054be207292224cca1014c17afa271953ac75dd9996df7bec0f1",
+   "truncated_notices": 0
+  },
+  "test_review_escapes_active_content_in_every_displayed_input": {
+   "attribute_names": [
+    "charset",
+    "class",
+    "content",
+    "http-equiv",
+    "lang",
+    "name"
+   ],
+   "csp_script_none": true,
+   "escaped_script_present": true,
+   "forbidden_tags_present": [],
+   "on_attributes": [],
+   "page": {
+    "bytes": 9672,
+    "chars": 8951,
+    "criteria": 2,
+    "details": 4,
+    "pre_bytes": [
+     86,
+     86,
+     303,
+     938
+    ],
+    "pre_tails": [
+     "\n    \"queue\": \"ok\"\n  }\n}",
+     "\n    \"store\": \"ok\"\n  }\n}",
+     "ror=\\\"alert(1)\\\">\"\n  }\n}"
+    ],
+    "sha256": "9a544a3a71e303aa64ca045a7d25e4138d2e7b911ae29ae6375928ea87955b0c",
+    "truncated_notices": 0
+   },
+   "tags": [
+    "article",
+    "body",
+    "dd",
+    "details",
+    "div",
+    "dl",
+    "dt",
+    "h1",
+    "h2",
+    "h3",
+    "head",
+    "header",
+    "html",
+    "li",
+    "main",
+    "meta",
+    "p",
+    "pre",
+    "section",
+    "span",
+    "style",
+    "summary",
+    "title",
+    "ul"
+   ],
+   "unescaped_markup_count": 0
+  },
+  "title_with_newlines_is_kept": {
+   "bytes": 6996,
+   "chars": 6274,
+   "criteria": 2,
+   "details": 4,
+   "is_str": true,
+   "outcome": "rendered",
+   "pre_bytes": [
+    86,
+    86,
+    85,
+    663
+   ],
+   "pre_tails": [
+    "\n    \"queue\": \"ok\"\n  }\n}",
+    "\n    \"store\": \"ok\"\n  }\n}",
+    "{\n    \"host\": \"ci\"\n  }\n}"
+   ],
+   "review_unchanged": true,
+   "sha256": "aa18b5272088d5db478325f462029a99e3812f561b61ba571839128a7308d18a",
+   "truncated_notices": 0
+  }
+ },
+ "s3_preview": {
+  "a_document_exactly_at_the_per_document_budget": {
+   "65450": {
+    "bytes": 72455,
+    "chars": 71733,
+    "criteria": 2,
+    "details": 4,
+    "is_str": true,
+    "outcome": "rendered",
+    "pre_bytes": [
+     94,
+     94,
+     65534,
+     663
+    ],
+    "pre_tails": [
+     "rge\": \"bbbbbbbbbb\"\n  }\n}",
+     "rge\": \"cccccccccc\"\n  }\n}",
+     "aaaaaaaaaaaaaaaaa\"\n  }\n}"
+    ],
+    "review_unchanged": true,
+    "sha256": "ab2a88926284d3b244e9faa8ffc932dbcab4f34cdfbfe6bb5cbc1d6bf9838f84",
+    "truncated_notices": 0
+   },
+   "65480": {
+    "bytes": 72550,
+    "chars": 71783,
+    "criteria": 2,
+    "details": 4,
+    "is_str": true,
+    "outcome": "rendered",
+    "pre_bytes": [
+     94,
+     94,
+     65536,
+     663
+    ],
+    "pre_tails": [
+     "rge\": \"bbbbbbbbbb\"\n  }\n}",
+     "rge\": \"cccccccccc\"\n  }\n}",
+     "aaaaaaaaaaaaaaaaaaaaaaaa"
+    ],
+    "review_unchanged": true,
+    "sha256": "74996a86d8736cd8fc414837ace8ad6f2249c153ff1c412914e49a60d11e21ab",
+    "truncated_notices": 1
+   },
+   "65481": {
+    "bytes": 72550,
+    "chars": 71783,
+    "criteria": 2,
+    "details": 4,
+    "is_str": true,
+    "outcome": "rendered",
+    "pre_bytes": [
+     94,
+     94,
+     65536,
+     663
+    ],
+    "pre_tails": [
+     "rge\": \"bbbbbbbbbb\"\n  }\n}",
+     "rge\": \"cccccccccc\"\n  }\n}",
+     "aaaaaaaaaaaaaaaaaaaaaaaa"
+    ],
+    "review_unchanged": true,
+    "sha256": "76dc73f9a293c535728798253d5759106ce73ed1d88e6603ea891069984cbb0a",
+    "truncated_notices": 1
+   },
+   "65482": {
+    "bytes": 72550,
+    "chars": 71783,
+    "criteria": 2,
+    "details": 4,
+    "is_str": true,
+    "outcome": "rendered",
+    "pre_bytes": [
+     94,
+     94,
+     65536,
+     663
+    ],
+    "pre_tails": [
+     "rge\": \"bbbbbbbbbb\"\n  }\n}",
+     "rge\": \"cccccccccc\"\n  }\n}",
+     "aaaaaaaaaaaaaaaaaaaaaaaa"
+    ],
+    "review_unchanged": true,
+    "sha256": "40a06187b2b67453bce9c6e5c47028813d3aad30c34fb69e11e67a18a6257e68",
+    "truncated_notices": 1
+   },
+   "65483": {
+    "bytes": 72550,
+    "chars": 71783,
+    "criteria": 2,
+    "details": 4,
+    "is_str": true,
+    "outcome": "rendered",
+    "pre_bytes": [
+     94,
+     94,
+     65536,
+     663
+    ],
+    "pre_tails": [
+     "rge\": \"bbbbbbbbbb\"\n  }\n}",
+     "rge\": \"cccccccccc\"\n  }\n}",
+     "aaaaaaaaaaaaaaaaaaaaaaaa"
+    ],
+    "review_unchanged": true,
+    "sha256": "7a997e1fe639e7d8176a9c1e7da466e20a4201b1b4d384aee0297c03254ed32f",
+    "truncated_notices": 1
+   },
+   "65484": {
+    "bytes": 72550,
+    "chars": 71783,
+    "criteria": 2,
+    "details": 4,
+    "is_str": true,
+    "outcome": "rendered",
+    "pre_bytes": [
+     94,
+     94,
+     65536,
+     663
+    ],
+    "pre_tails": [
+     "rge\": \"bbbbbbbbbb\"\n  }\n}",
+     "rge\": \"cccccccccc\"\n  }\n}",
+     "aaaaaaaaaaaaaaaaaaaaaaaa"
+    ],
+    "review_unchanged": true,
+    "sha256": "0db839e3b53597a40700d69e186a63287a019a11e7698917f00a50567dbd3286",
+    "truncated_notices": 1
+   },
+   "65600": {
+    "bytes": 72550,
+    "chars": 71783,
+    "criteria": 2,
+    "details": 4,
+    "is_str": true,
+    "outcome": "rendered",
+    "pre_bytes": [
+     94,
+     94,
+     65536,
+     663
+    ],
+    "pre_tails": [
+     "rge\": \"bbbbbbbbbb\"\n  }\n}",
+     "rge\": \"cccccccccc\"\n  }\n}",
+     "aaaaaaaaaaaaaaaaaaaaaaaa"
+    ],
+    "review_unchanged": true,
+    "sha256": "0c1cc0a1950b45ea960434c0af852757c2bb67285a91744518d12cc9aa76a158",
+    "truncated_notices": 1
+   }
+  },
+  "a_document_just_under_the_per_document_budget": {
+   "bytes": 72005,
+   "chars": 71283,
+   "criteria": 2,
+   "details": 4,
+   "is_str": true,
+   "outcome": "rendered",
+   "pre_bytes": [
+    94,
+    94,
+    65084,
+    663
+   ],
+   "pre_tails": [
+    "rge\": \"bbbbbbbbbb\"\n  }\n}",
+    "rge\": \"cccccccccc\"\n  }\n}",
+    "aaaaaaaaaaaaaaaaa\"\n  }\n}"
+   ],
+   "review_unchanged": true,
+   "sha256": "88ef80bab6175b7941affe40a540b898c6ac616f1d8cf88db8de32f97b5acfb8",
+   "truncated_notices": 0
+  },
+  "a_document_with_a_huge_scalar_key": {
+   "bytes": 72488,
+   "chars": 71721,
+   "criteria": 2,
+   "details": 4,
+   "is_str": true,
+   "outcome": "rendered",
+   "pre_bytes": [
+    85,
+    85,
+    65536,
+    663
+   ],
+   "pre_tails": [
+    "{\n    \"large\": \"b\"\n  }\n}",
+    "{\n    \"large\": \"c\"\n  }\n}",
+    "kkkkkkkkkkkkkkkkkkkkkkkk"
+   ],
+   "review_unchanged": true,
+   "sha256": "d626466a7aaf773148179ac03a832163d8819ebb0ae1b2d1aa20eebaa31c5fef",
+   "truncated_notices": 1
+  },
+  "a_second_document_after_the_first_used_the_budget": {
+   "bytes": 203628,
+   "chars": 202771,
+   "criteria": 2,
+   "details": 4,
+   "is_str": true,
+   "outcome": "rendered",
+   "pre_bytes": [
+    65536,
+    65536,
+    65536,
+    663
+   ],
+   "pre_tails": [
+    "bbbbbbbbbbbbbbbbbbbbbbbb",
+    "cccccccccccccccccccccccc",
+    "aaaaaaaaaaaaaaaaaaaaaaaa"
+   ],
+   "review_unchanged": true,
+   "sha256": "a9ffdc4c4e919e5e41cfec3e710119433f6872c66f6bba92ee88db22cd614530",
+   "truncated_notices": 3
+  },
+  "environment_first_then_criteria_in_order": {
+   "bytes": 7425,
+   "chars": 6682,
+   "criteria": 2,
+   "details": 5,
+   "is_str": true,
+   "order": [
+    "sha256:c2c2",
+    "sha256:c1c1",
+    "sha256:c1c1",
+    "sha256:e1e1",
+    "sha256:c2c2",
+    "sha256:c1c1",
+    "sha256:c1c1",
+    "sha256:e1e1"
+   ],
+   "outcome": "rendered",
+   "pre_bytes": [
+    86,
+    86,
+    86,
+    85,
+    737
+   ],
+   "pre_tails": [
+    "\n    \"store\": \"ok\"\n  }\n}",
+    "\n    \"queue\": \"ok\"\n  }\n}",
+    "\n    \"queue\": \"ok\"\n  }\n}",
+    "{\n    \"host\": \"ci\"\n  }\n}"
+   ],
+   "review_unchanged": true,
+   "sha256": "3509406fb3801229db495206700540f50ce39b08d931d0c17f81317d0cb60d43",
+   "truncated_notices": 0
+  },
+  "every_document_small_leaves_no_notice": 0,
+  "multi_byte_text_cut_at_the_budget": {
+   "emoji": {
+    "bytes": 72548,
+    "chars": 22689,
+    "criteria": 2,
+    "details": 4,
+    "is_str": true,
+    "outcome": "rendered",
+    "pre_bytes": [
+     94,
+     94,
+     65533,
+     663
+    ],
+    "pre_tails": [
+     "rge\": \"bbbbbbbbbb\"\n  }\n}",
+     "rge\": \"cccccccccc\"\n  }\n}",
+     "😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀"
+    ],
+    "review_unchanged": true,
+    "sha256": "c9e255a84397b684e9cdea6541aa17dfe476cefee8c3267bfb39e6a99e1ea175",
+    "truncated_notices": 1
+   },
+   "hangul": {
+    "bytes": 72549,
+    "chars": 28144,
+    "criteria": 2,
+    "details": 4,
+    "is_str": true,
+    "outcome": "rendered",
+    "pre_bytes": [
+     94,
+     94,
+     65534,
+     663
+    ],
+    "pre_tails": [
+     "rge\": \"bbbbbbbbbb\"\n  }\n}",
+     "rge\": \"cccccccccc\"\n  }\n}",
+     "한한한한한한한한한한한한한한한한한한한한한한한한"
+    ],
+    "review_unchanged": true,
+    "sha256": "4e50fe9cfaff7f0e05de1986eb50bef46959d8ed1d7a77f668c9e09d558016c6",
+    "truncated_notices": 1
+   },
+   "mixed_accent": {
+    "bytes": 72549,
+    "chars": 39053,
+    "criteria": 2,
+    "details": 4,
+    "is_str": true,
+    "outcome": "rendered",
+    "pre_bytes": [
+     94,
+     94,
+     65535,
+     663
+    ],
+    "pre_tails": [
+     "rge\": \"bbbbbbbbbb\"\n  }\n}",
+     "rge\": \"cccccccccc\"\n  }\n}",
+     "éééééééééééééééééééééééé"
+    ],
+    "review_unchanged": true,
+    "sha256": "3edf8791848bac76786ec46d17dd69bbc2659a39f61aee776ecbc3d075370dcd",
+    "truncated_notices": 1
+   }
+  },
+  "test_environment_preview_survives_exhausted_criterion_budget": {
+   "bytes": 270779,
+   "chars": 269703,
+   "criteria": 2,
+   "details": 8,
+   "is_str": true,
+   "marker_visible": true,
+   "notice_shown": true,
+   "outcome": "rendered",
+   "pre_bytes": [
+    65536,
+    65536,
+    65536,
+    65414,
+    0,
+    0,
+    122,
+    959
+   ],
+   "pre_tails": [
+    "xxxxxxxxxxxxxxxxxxxxxxxx",
+    "xxxxxxxxxxxxxxxxxxxxxxxx",
+    "xxxxxxxxxxxxxxxxxxxxxxxx",
+    "xxxxxxxxxxxxxxxxxxxxxxxx",
+    "",
+    "",
+    "ENT_STILL_VISIBLE\"\n  }\n}"
+   ],
+   "review_unchanged": true,
+   "sha256": "19920e30b29d65648c401a22d769414323595fc5ef6faa8ad1cc8317618833a7",
+   "truncated_notices": 6
+  },
+  "test_large_evidence_preview_is_bounded_and_truncation_visible": {
+   "bytes": 268912,
+   "chars": 268145,
+   "criteria": 2,
+   "details": 4,
+   "environment_ref_in_page": true,
+   "is_str": true,
+   "outcome": "rendered",
+   "pre_bytes": [
+    86,
+    86,
+    65536,
+    663
+   ],
+   "pre_tails": [
+    "\n    \"queue\": \"ok\"\n  }\n}",
+    "\n    \"store\": \"ok\"\n  }\n}",
+    "<<<<<<<<<<<<<<<<<<<<<<<<"
+   ],
+   "review_unchanged": true,
+   "sha256": "ff69d439a81f5172ec828af083af7fd95eb0d4d43d7f98155ed936039800e12e",
+   "truncated_notices": 1,
+   "under_400000": true
+  },
+  "the_size_line_counts_the_whole_document_not_the_preview": [
+   "68",
+   "68",
+   "300,066"
+  ],
+  "the_total_budget_is_exhausted_after_four_documents": {
+   "bytes": 270573,
+   "chars": 269507,
+   "criteria": 1,
+   "details": 8,
+   "is_str": true,
+   "outcome": "rendered",
+   "pre_bytes": [
+    65536,
+    65536,
+    65536,
+    0,
+    0,
+    0,
+    65536,
+    929
+   ],
+   "pre_tails": [
+    "aaaaaaaaaaaaaaaaaaaaaaaa",
+    "aaaaaaaaaaaaaaaaaaaaaaaa",
+    "aaaaaaaaaaaaaaaaaaaaaaaa",
+    "",
+    "",
+    "",
+    "eeeeeeeeeeeeeeeeeeeeeeee"
+   ],
+   "review_unchanged": true,
+   "sha256": "bc7ed543080282f3ea133b4c8483cfb32ff92bd1d8405f77dc3d647b2b967d42",
+   "truncated_notices": 7
+  }
+ },
+ "s4_malformed": {
+  "a_required_signer_without_a_role_entry": {
+   "message": "generator raised StopIteration",
+   "outcome": "refused",
+   "review_unchanged": true,
+   "type": "RuntimeError"
+  },
+  "a_signer_entry_without_principal": {
+   "message": "'principal'",
+   "outcome": "refused",
+   "review_unchanged": true,
+   "type": "KeyError"
+  },
+  "a_signer_entry_without_role": {
+   "message": "'role'",
+   "outcome": "refused",
+   "review_unchanged": true,
+   "type": "KeyError"
+  },
+  "a_signer_with_two_roles_uses_the_first": {
+   "bytes": 6986,
+   "chars": 6264,
+   "criteria": 2,
+   "details": 4,
+   "is_str": true,
+   "outcome": "rendered",
+   "pre_bytes": [
+    86,
+    86,
+    85,
+    663
+   ],
+   "pre_tails": [
+    "\n    \"queue\": \"ok\"\n  }\n}",
+    "\n    \"store\": \"ok\"\n  }\n}",
+    "{\n    \"host\": \"ci\"\n  }\n}"
+   ],
+   "review_unchanged": true,
+   "sha256": "657cd5000196cf54034c7287e907d90d3e0cf0fbc67e40faaac51c4caec86c8f",
+   "truncated_notices": 0
+  },
+  "an_evidence_reference_not_in_documents": {
+   "message": "'sha256:missing'",
+   "outcome": "refused",
+   "review_unchanged": true,
+   "type": "KeyError"
+  },
+  "criterion_index_out_of_range": {
+   "-3": {
+    "message": "list index out of range",
+    "outcome": "refused",
+    "review_unchanged": true,
+    "type": "IndexError"
+   },
+   "100": {
+    "message": "list index out of range",
+    "outcome": "refused",
+    "review_unchanged": true,
+    "type": "IndexError"
+   },
+   "2": {
+    "message": "list index out of range",
+    "outcome": "refused",
+    "review_unchanged": true,
+    "type": "IndexError"
+   },
+   "5": {
+    "message": "list index out of range",
+    "outcome": "refused",
+    "review_unchanged": true,
+    "type": "IndexError"
+   }
+  },
+  "missing_key": {
+   "documents": {
+    "message": "'documents'",
+    "outcome": "refused",
+    "review_unchanged": true,
+    "type": "KeyError"
+   },
+   "packet": {
+    "message": "'packet'",
+    "outcome": "refused",
+    "review_unchanged": true,
+    "type": "KeyError"
+   },
+   "packet__criteria": {
+    "message": "'criteria'",
+    "outcome": "refused",
+    "review_unchanged": true,
+    "type": "KeyError"
+   },
+   "packet__environment_ref": {
+    "message": "'environment_ref'",
+    "outcome": "refused",
+    "review_unchanged": true,
+    "type": "KeyError"
+   },
+   "packet__expires_at": {
+    "message": "'expires_at'",
+    "outcome": "refused",
+    "review_unchanged": true,
+    "type": "KeyError"
+   },
+   "packet__issued_at": {
+    "message": "'issued_at'",
+    "outcome": "refused",
+    "review_unchanged": true,
+    "type": "KeyError"
+   },
+   "packet__policy_commit": {
+    "message": "'policy_commit'",
+    "outcome": "refused",
+    "review_unchanged": true,
+    "type": "KeyError"
+   },
+   "packet__policy_hash": {
+    "message": "'policy_hash'",
+    "outcome": "refused",
+    "review_unchanged": true,
+    "type": "KeyError"
+   },
+   "packet__reason": {
+    "message": "'reason'",
+    "outcome": "refused",
+    "review_unchanged": true,
+    "type": "KeyError"
+   },
+   "packet__revision": {
+    "message": "'revision'",
+    "outcome": "refused",
+    "review_unchanged": true,
+    "type": "KeyError"
+   },
+   "packet__sequence": {
+    "message": "'sequence'",
+    "outcome": "refused",
+    "review_unchanged": true,
+    "type": "KeyError"
+   },
+   "packet__solution_commit": {
+    "message": "'solution_commit'",
+    "outcome": "refused",
+    "review_unchanged": true,
+    "type": "KeyError"
+   },
+   "packet_ref": {
+    "message": "'packet_ref'",
+    "outcome": "refused",
+    "review_unchanged": true,
+    "type": "KeyError"
+   },
+   "policy": {
+    "message": "'policy'",
+    "outcome": "refused",
+    "review_unchanged": true,
+    "type": "KeyError"
+   },
+   "policy__required_human_signers": {
+    "message": "'required_human_signers'",
+    "outcome": "refused",
+    "review_unchanged": true,
+    "type": "KeyError"
+   },
+   "policy__required_signers": {
+    "message": "'required_signers'",
+    "outcome": "refused",
+    "review_unchanged": true,
+    "type": "KeyError"
+   },
+   "policy__signers": {
+    "message": "'signers'",
+    "outcome": "refused",
+    "review_unchanged": true,
+    "type": "KeyError"
+   },
+   "ticket": {
+    "message": "'ticket'",
+    "outcome": "refused",
+    "review_unchanged": true,
+    "type": "KeyError"
+   },
+   "ticket__content": {
+    "message": "'content'",
+    "outcome": "refused",
+    "review_unchanged": true,
+    "type": "KeyError"
+   },
+   "ticket__content__acceptance_criteria": {
+    "message": "'acceptance_criteria'",
+    "outcome": "refused",
+    "review_unchanged": true,
+    "type": "KeyError"
+   },
+   "ticket__content__impact": {
+    "message": "'impact'",
+    "outcome": "refused",
+    "review_unchanged": true,
+    "type": "KeyError"
+   },
+   "ticket__content__problem": {
+    "message": "'problem'",
+    "outcome": "refused",
+    "review_unchanged": true,
+    "type": "KeyError"
+   },
+   "ticket__content__rollback": {
+    "message": "'rollback'",
+    "outcome": "refused",
+    "review_unchanged": true,
+    "type": "KeyError"
+   },
+   "ticket__content__scope": {
+    "message": "'scope'",
+    "outcome": "refused",
+    "review_unchanged": true,
+    "type": "KeyError"
+   },
+   "ticket__content__title": {
+    "message": "'title'",
+    "outcome": "refused",
+    "review_unchanged": true,
+    "type": "KeyError"
+   },
+   "ticket__id": {
+    "message": "'id'",
+    "outcome": "refused",
+    "review_unchanged": true,
+    "type": "KeyError"
+   },
+   "time_status": {
+    "message": "'time_status'",
+    "outcome": "refused",
+    "review_unchanged": true,
+    "type": "KeyError"
+   }
+  },
+  "non_json_document": {
+   "bytes": {
+    "message": "Object of type bytes is not JSON serializable",
+    "outcome": "refused",
+    "review_unchanged": true,
+    "type": "TypeError"
+   },
+   "infinity": {
+    "bytes": 6672,
+    "chars": 5950,
+    "criteria": 2,
+    "details": 4,
+    "is_str": true,
+    "outcome": "rendered",
+    "pre_bytes": [
+     24,
+     24,
+     47,
+     663
+    ],
+    "pre_tails": [
+     "{\n  \"observed_at\": \"t\"\n}",
+     "{\n  \"observed_at\": \"t\"\n}",
+     "\n  \"details\": Infinity\n}"
+    ],
+    "review_unchanged": true,
+    "sha256": "3992157e8fd78b0dbf0cff6e575b02464b647e2bd5093f5137a9994d8c613a78",
+    "truncated_notices": 0
+   },
+   "int_keys_are_stringified": {
+    "bytes": 6736,
+    "chars": 6014,
+    "criteria": 2,
+    "details": 4,
+    "is_str": true,
+    "outcome": "rendered",
+    "pre_bytes": [
+     24,
+     24,
+     71,
+     663
+    ],
+    "pre_tails": [
+     "{\n  \"observed_at\": \"t\"\n}",
+     "{\n  \"observed_at\": \"t\"\n}",
+     " \"a\",\n    \"2\": \"b\"\n  }\n}"
+    ],
+    "review_unchanged": true,
+    "sha256": "fa94bb73e0abde48992e268f3f41a1379d334a0c818601516f46cd2feb97aff7",
+    "truncated_notices": 0
+   },
+   "lone_surrogate": {
+    "message": "'utf-8' codec can't encode character '\\ud800' in position 1: surrogates not allowed",
+    "outcome": "refused",
+    "review_unchanged": true,
+    "type": "UnicodeEncodeError"
+   },
+   "lone_surrogate_in_title": {
+    "bytes": 6952,
+    "chars": 6226,
+    "criteria": 2,
+    "details": 4,
+    "is_str": true,
+    "outcome": "rendered",
+    "pre_bytes": [
+     86,
+     86,
+     85,
+     663
+    ],
+    "pre_tails": [
+     "\n    \"queue\": \"ok\"\n  }\n}",
+     "\n    \"store\": \"ok\"\n  }\n}",
+     "{\n    \"host\": \"ci\"\n  }\n}"
+    ],
+    "review_unchanged": true,
+    "sha256": "f6c03793b359b49af4e8ff5dc0aee945a9fc6736f7c9b25a739a646b9bf63a46",
+    "truncated_notices": 0
+   },
+   "nan": {
+    "bytes": 6667,
+    "chars": 5945,
+    "criteria": 2,
+    "details": 4,
+    "is_str": true,
+    "outcome": "rendered",
+    "pre_bytes": [
+     24,
+     24,
+     42,
+     663
+    ],
+    "pre_tails": [
+     "{\n  \"observed_at\": \"t\"\n}",
+     "{\n  \"observed_at\": \"t\"\n}",
+     " \"t\",\n  \"details\": NaN\n}"
+    ],
+    "review_unchanged": true,
+    "sha256": "09ff1c147e132acb1bcd67c55a25d59ff4df30f8ddb5c38d8724f8e62a98bf85",
+    "truncated_notices": 0
+   },
+   "object": {
+    "message": "Object of type NotJson is not JSON serializable",
+    "outcome": "refused",
+    "review_unchanged": false,
+    "type": "TypeError"
+   },
+   "set": {
+    "message": "Object of type set is not JSON serializable",
+    "outcome": "refused",
+    "review_unchanged": true,
+    "type": "TypeError"
+   },
+   "tuple_key": {
+    "message": "keys must be str, int, float, bool or None, not tuple",
+    "outcome": "refused",
+    "review_unchanged": true,
+    "type": "TypeError"
+   }
+  },
+  "review_empty_dict": {
+   "message": "'ticket'",
+   "outcome": "refused",
+   "review_unchanged": true,
+   "type": "KeyError"
+  },
+  "review_int": {
+   "message": "'int' object is not subscriptable",
+   "outcome": "refused",
+   "review_unchanged": true,
+   "type": "TypeError"
+  },
+  "review_list": {
+   "message": "list indices must be integers or slices, not str",
+   "outcome": "refused",
+   "review_unchanged": true,
+   "type": "TypeError"
+  },
+  "review_not_a_mapping_none": {
+   "message": "'NoneType' object is not subscriptable",
+   "outcome": "refused",
+   "review_unchanged": true,
+   "type": "TypeError"
+  },
+  "review_str": {
+   "message": "string indices must be integers, not 'str'",
+   "outcome": "refused",
+   "review_unchanged": true,
+   "type": "TypeError"
+  },
+  "the_environment_reference_not_in_documents": {
+   "message": "'sha256:missing'",
+   "outcome": "refused",
+   "review_unchanged": true,
+   "type": "KeyError"
+  },
+  "unknown_time_status": {
+   "": {
+    "message": "''",
+    "outcome": "refused",
+    "review_unchanged": true,
+    "type": "KeyError"
+   },
+   "Expired": {
+    "message": "'Expired'",
+    "outcome": "refused",
+    "review_unchanged": true,
+    "type": "KeyError"
+   },
+   "RECHECK_AT_CLOSE": {
+    "message": "'RECHECK_AT_CLOSE'",
+    "outcome": "refused",
+    "review_unchanged": true,
+    "type": "KeyError"
+   },
+   "closed": {
+    "message": "'closed'",
+    "outcome": "refused",
+    "review_unchanged": true,
+    "type": "KeyError"
+   }
+  },
+  "wrong_types": {
+   "acceptance_criteria_dict": {
+    "bytes": 6956,
+    "chars": 6234,
+    "criteria": 2,
+    "details": 4,
+    "is_str": true,
+    "outcome": "rendered",
+    "pre_bytes": [
+     86,
+     86,
+     85,
+     663
+    ],
+    "pre_tails": [
+     "\n    \"queue\": \"ok\"\n  }\n}",
+     "\n    \"store\": \"ok\"\n  }\n}",
+     "{\n    \"host\": \"ci\"\n  }\n}"
+    ],
+    "review_unchanged": true,
+    "sha256": "0787c5b44d88031f15cf6c355a8bc08b0e45159cd13834b0de359722cb9dd95c",
+    "truncated_notices": 0
+   },
+   "acceptance_criteria_none": {
+    "message": "'NoneType' object is not subscriptable",
+    "outcome": "refused",
+    "review_unchanged": true,
+    "type": "TypeError"
+   },
+   "content_list": {
+    "message": "list indices must be integers or slices, not str",
+    "outcome": "refused",
+    "review_unchanged": true,
+    "type": "TypeError"
+   },
+   "criteria_int": {
+    "message": "'int' object is not iterable",
+    "outcome": "refused",
+    "review_unchanged": true,
+    "type": "TypeError"
+   },
+   "criteria_item_none": {
+    "message": "'NoneType' object is not subscriptable",
+    "outcome": "refused",
+    "review_unchanged": true,
+    "type": "TypeError"
+   },
+   "criteria_none": {
+    "message": "'NoneType' object is not iterable",
+    "outcome": "refused",
+    "review_unchanged": true,
+    "type": "TypeError"
+   },
+   "criterion_index_is_float": {
+    "message": "list indices must be integers or slices, not float",
+    "outcome": "refused",
+    "review_unchanged": true,
+    "type": "TypeError"
+   },
+   "criterion_index_is_str": {
+    "message": "can only concatenate str (not \"int\") to str",
+    "outcome": "refused",
+    "review_unchanged": true,
+    "type": "TypeError"
+   },
+   "criterion_index_is_true": {
+    "bytes": 5856,
+    "chars": 5231,
+    "criteria": 1,
+    "details": 2,
+    "is_str": true,
+    "outcome": "rendered",
+    "pre_bytes": [
+     85,
+     489
+    ],
+    "pre_tails": [
+     "{\n    \"host\": \"ci\"\n  }\n}"
+    ],
+    "review_unchanged": true,
+    "sha256": "08bba42ce1b47ef1e34720d088d718e26ea948260eaf9f30b868131ddca96675",
+    "truncated_notices": 0
+   },
+   "criterion_is_a_list": {
+    "message": "list indices must be integers or slices, not str",
+    "outcome": "refused",
+    "review_unchanged": true,
+    "type": "TypeError"
+   },
+   "criterion_without_evidence_refs": {
+    "message": "'evidence_refs'",
+    "outcome": "refused",
+    "review_unchanged": true,
+    "type": "KeyError"
+   },
+   "criterion_without_index": {
+    "message": "'index'",
+    "outcome": "refused",
+    "review_unchanged": true,
+    "type": "KeyError"
+   },
+   "document_is_list": {
+    "message": "list indices must be integers or slices, not str",
+    "outcome": "refused",
+    "review_unchanged": true,
+    "type": "TypeError"
+   },
+   "document_is_none": {
+    "message": "'NoneType' object is not subscriptable",
+    "outcome": "refused",
+    "review_unchanged": true,
+    "type": "TypeError"
+   },
+   "document_without_observed_at": {
+    "message": "'observed_at'",
+    "outcome": "refused",
+    "review_unchanged": true,
+    "type": "KeyError"
+   },
+   "documents_list": {
+    "message": "list indices must be integers or slices, not str",
+    "outcome": "refused",
+    "review_unchanged": true,
+    "type": "TypeError"
+   },
+   "environment_ref_unhashable": {
+    "message": "unhashable type: 'list'",
+    "outcome": "refused",
+    "review_unchanged": true,
+    "type": "TypeError"
+   },
+   "evidence_refs_none": {
+    "message": "'NoneType' object is not iterable",
+    "outcome": "refused",
+    "review_unchanged": true,
+    "type": "TypeError"
+   },
+   "human_signers_none": {
+    "bytes": 7080,
+    "chars": 6300,
+    "criteria": 2,
+    "details": 4,
+    "is_str": true,
+    "outcome": "rendered",
+    "pre_bytes": [
+     86,
+     86,
+     85,
+     663
+    ],
+    "pre_tails": [
+     "\n    \"queue\": \"ok\"\n  }\n}",
+     "\n    \"store\": \"ok\"\n  }\n}",
+     "{\n    \"host\": \"ci\"\n  }\n}"
+    ],
+    "review_unchanged": true,
+    "sha256": "5048be6eb01e3a3bd14d4e8101fb39431e2570ca3d05e9529e42eefda56ca0f9",
+    "truncated_notices": 0
+   },
+   "human_signers_str": {
+    "bytes": 6994,
+    "chars": 6272,
+    "criteria": 2,
+    "details": 4,
+    "is_str": true,
+    "outcome": "rendered",
+    "pre_bytes": [
+     86,
+     86,
+     85,
+     663
+    ],
+    "pre_tails": [
+     "\n    \"queue\": \"ok\"\n  }\n}",
+     "\n    \"store\": \"ok\"\n  }\n}",
+     "{\n    \"host\": \"ci\"\n  }\n}"
+    ],
+    "review_unchanged": true,
+    "sha256": "86f3d7219a608467a6eaa5e9bcec7af11b474a69d1641230904acb0ad924fc06",
+    "truncated_notices": 0
+   },
+   "human_signers_with_non_str": {
+    "message": "sequence item 1: expected str instance, int found",
+    "outcome": "refused",
+    "review_unchanged": true,
+    "type": "TypeError"
+   },
+   "required_signers_str_iterates_characters": {
+    "message": "generator raised StopIteration",
+    "outcome": "refused",
+    "review_unchanged": true,
+    "type": "RuntimeError"
+   },
+   "revision_missing_format_is_plain": {
+    "bytes": 6992,
+    "chars": 6270,
+    "criteria": 2,
+    "details": 4,
+    "is_str": true,
+    "outcome": "rendered",
+    "pre_bytes": [
+     86,
+     86,
+     85,
+     666
+    ],
+    "pre_tails": [
+     "\n    \"queue\": \"ok\"\n  }\n}",
+     "\n    \"store\": \"ok\"\n  }\n}",
+     "{\n    \"host\": \"ci\"\n  }\n}"
+    ],
+    "review_unchanged": true,
+    "sha256": "d76e7112ccc86a99c90f54f8c9f6ef58ebd0b4a500357a7a5b7c74bed49ee04e",
+    "truncated_notices": 0
+   },
+   "scope_int": {
+    "message": "'int' object is not iterable",
+    "outcome": "refused",
+    "review_unchanged": true,
+    "type": "TypeError"
+   },
+   "scope_none": {
+    "message": "'NoneType' object is not iterable",
+    "outcome": "refused",
+    "review_unchanged": true,
+    "type": "TypeError"
+   },
+   "scope_str_is_iterated_by_character": {
+    "bytes": 6958,
+    "chars": 6236,
+    "criteria": 2,
+    "details": 4,
+    "is_str": true,
+    "outcome": "rendered",
+    "pre_bytes": [
+     86,
+     86,
+     85,
+     663
+    ],
+    "pre_tails": [
+     "\n    \"queue\": \"ok\"\n  }\n}",
+     "\n    \"store\": \"ok\"\n  }\n}",
+     "{\n    \"host\": \"ci\"\n  }\n}"
+    ],
+    "review_unchanged": true,
+    "sha256": "0d323f2837731807c3765fe96dda2b8a83e7f053c784be6c137af69c20172557",
+    "truncated_notices": 0
+   },
+   "signers_none": {
+    "message": "'NoneType' object is not iterable",
+    "outcome": "refused",
+    "review_unchanged": true,
+    "type": "TypeError"
+   },
+   "ticket_none": {
+    "message": "'NoneType' object is not subscriptable",
+    "outcome": "refused",
+    "review_unchanged": true,
+    "type": "TypeError"
+   },
+   "time_status_list_is_unhashable": {
+    "message": "unhashable type: 'list'",
+    "outcome": "refused",
+    "review_unchanged": true,
+    "type": "TypeError"
+   },
+   "time_status_none": {
+    "message": "None",
+    "outcome": "refused",
+    "review_unchanged": true,
+    "type": "KeyError"
+   },
+   "title_non_str_is_str_converted": {
+    "bytes": 6948,
+    "chars": 6226,
+    "criteria": 2,
+    "details": 4,
+    "is_str": true,
+    "outcome": "rendered",
+    "pre_bytes": [
+     86,
+     86,
+     85,
+     663
+    ],
+    "pre_tails": [
+     "\n    \"queue\": \"ok\"\n  }\n}",
+     "\n    \"store\": \"ok\"\n  }\n}",
+     "{\n    \"host\": \"ci\"\n  }\n}"
+    ],
+    "review_unchanged": true,
+    "sha256": "f89c370c695818a60a2f6e16be49dbd992b19fe78e0dfa47857fcec9f2804c88",
+    "truncated_notices": 0
+   }
+  }
+ },
+ "s5_m7_tests": {
+  "tests/test_ticket_review.py::test_environment_preview_survives_exhausted_criterion_budget": "s3_preview.test_environment_preview_survives_exhausted_criterion_budget",
+  "tests/test_ticket_review.py::test_expired_packet_can_be_inspected_but_cannot_be_closed": {
+   "rendered": "s1_page.test_expired_packet_can_be_inspected",
+   "unreachable": "the close refusal belongs to TicketLifecycle.close (S10)"
+  },
+  "tests/test_ticket_review.py::test_large_evidence_preview_is_bounded_and_truncation_visible": "s3_preview.test_large_evidence_preview_is_bounded_and_truncation_visible",
+  "tests/test_ticket_review.py::test_review_cli_is_read_only_and_preserves_canonical_signing_file": {
+   "unreachable": "the ticket CLI, the artifact store and the lifecycle (S10); the page contents it asserts are s1_page.test_review_cli_reads"
+  },
+  "tests/test_ticket_review.py::test_review_escapes_active_content_in_every_displayed_input": "s2_escaping.test_review_escapes_active_content_in_every_displayed_input",
+  "tests/test_ticket_review.py::test_review_rejects_an_existing_unmerged_solution_commit": {
+   "unreachable": "TicketLifecycle.review over a real git object (S10)"
+  },
+  "tests/test_ticket_review.py::test_review_rejects_stale_ticket_and_corrupted_evidence": {
+   "unreachable": "TicketLifecycle.review (S10), not the renderer"
+  }
+ }
+}

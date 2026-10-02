@@ -1,0 +1,8 @@
+{
+ "family": "intake.ticket_review",
+ "description": "S8 closure review page of M7 adapters/ticket_review.py (render_ticket_review(review, packet_path): the inert self-contained HTML, every time_status message, humans/automation-only policy, HTML escaping of every displayed input incl. markup, quotes, ampersands and non-ASCII, the per-document 65536-byte and total 256 KiB preview budgets with the truncation notice and the environment document drawn first, the multi-byte cut, and the exceptions of a malformed review), mirroring the 7 tests of test_ticket_review.py (the lifecycle/CLI ones recorded as unreachable, S10), characterized before the ticket_review move; built literal reviews, no file, no database",
+ "reference_driver": "drivers/reference/s8_ticket_review.py",
+ "target_driver": "drivers/target/s8_ticket_review.py",
+ "golden": "goldens/reference/intake.ticket_review.json",
+ "slice": "S8"
+}
