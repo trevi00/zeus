@@ -103,7 +103,7 @@ S8_FAMILIES = {"research.program_tick", "research.capture", "research.program_re
                "intake.portfolio", "research.dge", "evidence.inspections", "research.autonomous", "research.audit_core", "research.audit_progress",
                "research.council", "research.council_snapshot", "research.autonomous_evidence", "research.autonomous_roles",
                "research.hook_lifecycle", "intake.frontdesk", "evidence.completion",
-               "research.threshold_approvals", "intake.ticket_review", "research.reverse_progress", "research.source_execution"}
+               "research.threshold_approvals", "intake.ticket_review", "research.reverse_progress", "research.source_execution", "observation.monitoring_readiness"}
 S7_IMPLEMENTED = {"delivery.tooling", "delivery.restore.pg", "delivery.fleet_recovery_collectors", "delivery.release_runner", "delivery.canaries", "delivery.migration_evidence", "delivery.host_migration_transfer", "delivery.host_targets", "delivery.managed_runtime", "delivery.managed_systemd",
                   "review.releases_queue", "delivery.registry", "delivery.stages",
                   "delivery.owner_commands", "delivery.migration", "delivery.host_migrations",

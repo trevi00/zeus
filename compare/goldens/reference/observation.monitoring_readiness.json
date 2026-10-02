@@ -1,0 +1,1961 @@
+{
+ "cases_per_group": {
+  "s1_constants": 13,
+  "s2_freshness": 6,
+  "s3_envelopes": 4,
+  "s4_snapshot_files": 11,
+  "s5_now": 6
+ },
+ "s1_constants": {
+  "BASIS": "observation_freshness",
+  "FRESH_SECONDS": 20,
+  "FUTURE_TOLERANCE_SECONDS": 5,
+  "MAX_SNAPSHOT_BYTES": 5000000,
+  "OPTIONAL_SOURCES": [
+   "observations",
+   "fleet",
+   "research_programs"
+  ],
+  "REQUIRED_SOURCES": [
+   "database",
+   "docker",
+   "redis"
+  ],
+  "SCHEMA": "urn:zeus:monitor-readiness:1",
+  "SERVICE": "harness-monitor",
+  "SNAPSHOT_REASONS": [
+   "current",
+   "older_than_window",
+   "timestamp_missing",
+   "timestamp_unparsable",
+   "timestamp_naive",
+   "timestamp_in_future",
+   "file_missing",
+   "file_unreadable",
+   "too_large",
+   "undecodable",
+   "not_an_object",
+   "schema_unexpected",
+   "sources_unexpected"
+  ],
+  "SNAPSHOT_SCHEMA": "harness-monitor.v1",
+  "SOURCE_REASONS": [
+   "current",
+   "older_than_window",
+   "timestamp_missing",
+   "timestamp_unparsable",
+   "timestamp_naive",
+   "timestamp_in_future",
+   "envelope_missing",
+   "envelope_invalid",
+   "collection_failed"
+  ],
+  "state": {
+   "age_seconds": 1.5,
+   "reason": "current",
+   "state": "fresh"
+  },
+  "state_default_age": {
+   "age_seconds": null,
+   "reason": "file_missing",
+   "state": "unavailable"
+  }
+ },
+ "s2_freshness": {
+  "elapsed_directly": {
+   "bool": [
+    "invalid",
+    "timestamp_missing",
+    null
+   ],
+   "date_only": [
+    "invalid",
+    "timestamp_naive",
+    null
+   ],
+   "empty": [
+    "invalid",
+    "timestamp_missing",
+    null
+   ],
+   "exact_20": [
+    "stale",
+    "older_than_window",
+    20.0
+   ],
+   "float": [
+    "invalid",
+    "timestamp_missing",
+    null
+   ],
+   "future_bad": [
+    "invalid",
+    "timestamp_in_future",
+    null
+   ],
+   "future_ok": [
+    "fresh",
+    "current",
+    0.0
+   ],
+   "int": [
+    "invalid",
+    "timestamp_missing",
+    null
+   ],
+   "list": [
+    "invalid",
+    "timestamp_missing",
+    null
+   ],
+   "microsecond": [
+    "fresh",
+    "current",
+    19.999999
+   ],
+   "naive": [
+    "invalid",
+    "timestamp_naive",
+    null
+   ],
+   "none": [
+    "invalid",
+    "timestamp_missing",
+    null
+   ],
+   "offset": [
+    "fresh",
+    "current",
+    1.0
+   ],
+   "stale": [
+    "stale",
+    "older_than_window",
+    3600.0
+   ],
+   "year_1": [
+    "stale",
+    "older_than_window",
+    63925416000.0
+   ],
+   "year_9999": [
+    "invalid",
+    "timestamp_in_future",
+    null
+   ],
+   "yesterday": [
+    "invalid",
+    "timestamp_unparsable",
+    null
+   ],
+   "z": [
+    "fresh",
+    "current",
+    1.0
+   ]
+  },
+  "test_collector_and_source_freshness_are_independent": {
+   "collector_stale": {
+    "basis": "observation_freshness",
+    "checked_at": "2026-09-19T12:00:00+00:00",
+    "freshness_seconds": 20,
+    "future_tolerance_seconds": 5,
+    "ready": false,
+    "schema": "urn:zeus:monitor-readiness:1",
+    "service": "harness-monitor",
+    "snapshot": {
+     "age_seconds": 300.0,
+     "reason": "older_than_window",
+     "state": "stale"
+    },
+    "sources": {
+     "database": {
+      "age_seconds": 1.0,
+      "reason": "current",
+      "state": "fresh"
+     },
+     "docker": {
+      "age_seconds": 1.0,
+      "reason": "current",
+      "state": "fresh"
+     },
+     "redis": {
+      "age_seconds": 1.0,
+      "reason": "current",
+      "state": "fresh"
+     }
+    }
+   },
+   "docker_stale": {
+    "basis": "observation_freshness",
+    "checked_at": "2026-09-19T12:00:00+00:00",
+    "freshness_seconds": 20,
+    "future_tolerance_seconds": 5,
+    "ready": false,
+    "schema": "urn:zeus:monitor-readiness:1",
+    "service": "harness-monitor",
+    "snapshot": {
+     "age_seconds": 1.0,
+     "reason": "current",
+     "state": "fresh"
+    },
+    "sources": {
+     "database": {
+      "age_seconds": 1.0,
+      "reason": "current",
+      "state": "fresh"
+     },
+     "docker": {
+      "age_seconds": 45.0,
+      "reason": "older_than_window",
+      "state": "stale"
+     },
+     "redis": {
+      "age_seconds": 1.0,
+      "reason": "current",
+      "state": "fresh"
+     }
+    }
+   }
+  },
+  "test_fresh_snapshot_is_ready": {
+   "basis": "observation_freshness",
+   "checked_at": "2026-09-19T12:00:00+00:00",
+   "freshness_seconds": 20,
+   "future_tolerance_seconds": 5,
+   "ready": true,
+   "schema": "urn:zeus:monitor-readiness:1",
+   "service": "harness-monitor",
+   "snapshot": {
+    "age_seconds": 1.0,
+    "reason": "current",
+    "state": "fresh"
+   },
+   "sources": {
+    "database": {
+     "age_seconds": 1.0,
+     "reason": "current",
+     "state": "fresh"
+    },
+    "docker": {
+     "age_seconds": 1.0,
+     "reason": "current",
+     "state": "fresh"
+    },
+    "redis": {
+     "age_seconds": 1.0,
+     "reason": "current",
+     "state": "fresh"
+    }
+   }
+  },
+  "test_freshness_and_future_boundaries_are_exact": {
+   "19.999": {
+    "basis": "observation_freshness",
+    "checked_at": "2026-09-19T12:00:00+00:00",
+    "freshness_seconds": 20,
+    "future_tolerance_seconds": 5,
+    "ready": true,
+    "schema": "urn:zeus:monitor-readiness:1",
+    "service": "harness-monitor",
+    "snapshot": {
+     "age_seconds": 19.999,
+     "reason": "current",
+     "state": "fresh"
+    },
+    "sources": {
+     "database": {
+      "age_seconds": 19.999,
+      "reason": "current",
+      "state": "fresh"
+     },
+     "docker": {
+      "age_seconds": 19.999,
+      "reason": "current",
+      "state": "fresh"
+     },
+     "redis": {
+      "age_seconds": 19.999,
+      "reason": "current",
+      "state": "fresh"
+     }
+    }
+   },
+   "19.9996": {
+    "basis": "observation_freshness",
+    "checked_at": "2026-09-19T12:00:00+00:00",
+    "freshness_seconds": 20,
+    "future_tolerance_seconds": 5,
+    "ready": true,
+    "schema": "urn:zeus:monitor-readiness:1",
+    "service": "harness-monitor",
+    "snapshot": {
+     "age_seconds": 19.9996,
+     "reason": "current",
+     "state": "fresh"
+    },
+    "sources": {
+     "database": {
+      "age_seconds": 19.9996,
+      "reason": "current",
+      "state": "fresh"
+     },
+     "docker": {
+      "age_seconds": 19.9996,
+      "reason": "current",
+      "state": "fresh"
+     },
+     "redis": {
+      "age_seconds": 19.9996,
+      "reason": "current",
+      "state": "fresh"
+     }
+    }
+   },
+   "19.999999": {
+    "basis": "observation_freshness",
+    "checked_at": "2026-09-19T12:00:00+00:00",
+    "freshness_seconds": 20,
+    "future_tolerance_seconds": 5,
+    "ready": true,
+    "schema": "urn:zeus:monitor-readiness:1",
+    "service": "harness-monitor",
+    "snapshot": {
+     "age_seconds": 19.999999,
+     "reason": "current",
+     "state": "fresh"
+    },
+    "sources": {
+     "database": {
+      "age_seconds": 19.999999,
+      "reason": "current",
+      "state": "fresh"
+     },
+     "docker": {
+      "age_seconds": 19.999999,
+      "reason": "current",
+      "state": "fresh"
+     },
+     "redis": {
+      "age_seconds": 19.999999,
+      "reason": "current",
+      "state": "fresh"
+     }
+    }
+   },
+   "20": {
+    "basis": "observation_freshness",
+    "checked_at": "2026-09-19T12:00:00+00:00",
+    "freshness_seconds": 20,
+    "future_tolerance_seconds": 5,
+    "ready": false,
+    "schema": "urn:zeus:monitor-readiness:1",
+    "service": "harness-monitor",
+    "snapshot": {
+     "age_seconds": 20.0,
+     "reason": "older_than_window",
+     "state": "stale"
+    },
+    "sources": {
+     "database": {
+      "age_seconds": 20.0,
+      "reason": "older_than_window",
+      "state": "stale"
+     },
+     "docker": {
+      "age_seconds": 20.0,
+      "reason": "older_than_window",
+      "state": "stale"
+     },
+     "redis": {
+      "age_seconds": 20.0,
+      "reason": "older_than_window",
+      "state": "stale"
+     }
+    }
+   },
+   "20.001": {
+    "basis": "observation_freshness",
+    "checked_at": "2026-09-19T12:00:00+00:00",
+    "freshness_seconds": 20,
+    "future_tolerance_seconds": 5,
+    "ready": false,
+    "schema": "urn:zeus:monitor-readiness:1",
+    "service": "harness-monitor",
+    "snapshot": {
+     "age_seconds": 20.001,
+     "reason": "older_than_window",
+     "state": "stale"
+    },
+    "sources": {
+     "database": {
+      "age_seconds": 20.001,
+      "reason": "older_than_window",
+      "state": "stale"
+     },
+     "docker": {
+      "age_seconds": 20.001,
+      "reason": "older_than_window",
+      "state": "stale"
+     },
+     "redis": {
+      "age_seconds": 20.001,
+      "reason": "older_than_window",
+      "state": "stale"
+     }
+    }
+   },
+   "minus_5.001": {
+    "basis": "observation_freshness",
+    "checked_at": "2026-09-19T12:00:00+00:00",
+    "freshness_seconds": 20,
+    "future_tolerance_seconds": 5,
+    "ready": false,
+    "schema": "urn:zeus:monitor-readiness:1",
+    "service": "harness-monitor",
+    "snapshot": {
+     "age_seconds": null,
+     "reason": "timestamp_in_future",
+     "state": "invalid"
+    },
+    "sources": {
+     "database": {
+      "age_seconds": null,
+      "reason": "timestamp_in_future",
+      "state": "invalid"
+     },
+     "docker": {
+      "age_seconds": null,
+      "reason": "timestamp_in_future",
+      "state": "invalid"
+     },
+     "redis": {
+      "age_seconds": null,
+      "reason": "timestamp_in_future",
+      "state": "invalid"
+     }
+    }
+   },
+   "minus_tolerance": {
+    "basis": "observation_freshness",
+    "checked_at": "2026-09-19T12:00:00+00:00",
+    "freshness_seconds": 20,
+    "future_tolerance_seconds": 5,
+    "ready": true,
+    "schema": "urn:zeus:monitor-readiness:1",
+    "service": "harness-monitor",
+    "snapshot": {
+     "age_seconds": 0.0,
+     "reason": "current",
+     "state": "fresh"
+    },
+    "sources": {
+     "database": {
+      "age_seconds": 0.0,
+      "reason": "current",
+      "state": "fresh"
+     },
+     "docker": {
+      "age_seconds": 0.0,
+      "reason": "current",
+      "state": "fresh"
+     },
+     "redis": {
+      "age_seconds": 0.0,
+      "reason": "current",
+      "state": "fresh"
+     }
+    }
+   }
+  },
+  "test_payload_content_is_never_read_as_health": {
+   "basis": "observation_freshness",
+   "checked_at": "2026-09-19T12:00:00+00:00",
+   "freshness_seconds": 20,
+   "future_tolerance_seconds": 5,
+   "ready": true,
+   "schema": "urn:zeus:monitor-readiness:1",
+   "service": "harness-monitor",
+   "snapshot": {
+    "age_seconds": 1.0,
+    "reason": "current",
+    "state": "fresh"
+   },
+   "sources": {
+    "database": {
+     "age_seconds": 1.0,
+     "reason": "current",
+     "state": "fresh"
+    },
+    "docker": {
+     "age_seconds": 1.0,
+     "reason": "current",
+     "state": "fresh"
+    },
+    "fleet": {
+     "age_seconds": 1.0,
+     "reason": "current",
+     "state": "fresh"
+    },
+    "redis": {
+     "age_seconds": 1.0,
+     "reason": "current",
+     "state": "fresh"
+    }
+   }
+  },
+  "test_present_optional_envelopes_are_assessed_and_absent_ones_omitted": {
+   "all_optional_fresh": {
+    "basis": "observation_freshness",
+    "checked_at": "2026-09-19T12:00:00+00:00",
+    "freshness_seconds": 20,
+    "future_tolerance_seconds": 5,
+    "ready": true,
+    "schema": "urn:zeus:monitor-readiness:1",
+    "service": "harness-monitor",
+    "snapshot": {
+     "age_seconds": 1.0,
+     "reason": "current",
+     "state": "fresh"
+    },
+    "sources": {
+     "database": {
+      "age_seconds": 1.0,
+      "reason": "current",
+      "state": "fresh"
+     },
+     "docker": {
+      "age_seconds": 1.0,
+      "reason": "current",
+      "state": "fresh"
+     },
+     "fleet": {
+      "age_seconds": 1.0,
+      "reason": "current",
+      "state": "fresh"
+     },
+     "observations": {
+      "age_seconds": 1.0,
+      "reason": "current",
+      "state": "fresh"
+     },
+     "redis": {
+      "age_seconds": 1.0,
+      "reason": "current",
+      "state": "fresh"
+     },
+     "research_programs": {
+      "age_seconds": 1.0,
+      "reason": "current",
+      "state": "fresh"
+     }
+    }
+   },
+   "fleet_stale": {
+    "basis": "observation_freshness",
+    "checked_at": "2026-09-19T12:00:00+00:00",
+    "freshness_seconds": 20,
+    "future_tolerance_seconds": 5,
+    "ready": false,
+    "schema": "urn:zeus:monitor-readiness:1",
+    "service": "harness-monitor",
+    "snapshot": {
+     "age_seconds": 1.0,
+     "reason": "current",
+     "state": "fresh"
+    },
+    "sources": {
+     "database": {
+      "age_seconds": 1.0,
+      "reason": "current",
+      "state": "fresh"
+     },
+     "docker": {
+      "age_seconds": 1.0,
+      "reason": "current",
+      "state": "fresh"
+     },
+     "fleet": {
+      "age_seconds": 60.0,
+      "reason": "older_than_window",
+      "state": "stale"
+     },
+     "redis": {
+      "age_seconds": 1.0,
+      "reason": "current",
+      "state": "fresh"
+     }
+    }
+   },
+   "only_observations": {
+    "basis": "observation_freshness",
+    "checked_at": "2026-09-19T12:00:00+00:00",
+    "freshness_seconds": 20,
+    "future_tolerance_seconds": 5,
+    "ready": true,
+    "schema": "urn:zeus:monitor-readiness:1",
+    "service": "harness-monitor",
+    "snapshot": {
+     "age_seconds": 1.0,
+     "reason": "current",
+     "state": "fresh"
+    },
+    "sources": {
+     "database": {
+      "age_seconds": 1.0,
+      "reason": "current",
+      "state": "fresh"
+     },
+     "docker": {
+      "age_seconds": 1.0,
+      "reason": "current",
+      "state": "fresh"
+     },
+     "observations": {
+      "age_seconds": 1.0,
+      "reason": "current",
+      "state": "fresh"
+     },
+     "redis": {
+      "age_seconds": 1.0,
+      "reason": "current",
+      "state": "fresh"
+     }
+    }
+   },
+   "research_programs_failed": {
+    "basis": "observation_freshness",
+    "checked_at": "2026-09-19T12:00:00+00:00",
+    "freshness_seconds": 20,
+    "future_tolerance_seconds": 5,
+    "ready": false,
+    "schema": "urn:zeus:monitor-readiness:1",
+    "service": "harness-monitor",
+    "snapshot": {
+     "age_seconds": 1.0,
+     "reason": "current",
+     "state": "fresh"
+    },
+    "sources": {
+     "database": {
+      "age_seconds": 1.0,
+      "reason": "current",
+      "state": "fresh"
+     },
+     "docker": {
+      "age_seconds": 1.0,
+      "reason": "current",
+      "state": "fresh"
+     },
+     "redis": {
+      "age_seconds": 1.0,
+      "reason": "current",
+      "state": "fresh"
+     },
+     "research_programs": {
+      "age_seconds": null,
+      "reason": "collection_failed",
+      "state": "unavailable"
+     }
+    }
+   },
+   "unknown_name_ignored": {
+    "basis": "observation_freshness",
+    "checked_at": "2026-09-19T12:00:00+00:00",
+    "freshness_seconds": 20,
+    "future_tolerance_seconds": 5,
+    "ready": true,
+    "schema": "urn:zeus:monitor-readiness:1",
+    "service": "harness-monitor",
+    "snapshot": {
+     "age_seconds": 1.0,
+     "reason": "current",
+     "state": "fresh"
+    },
+    "sources": {
+     "database": {
+      "age_seconds": 1.0,
+      "reason": "current",
+      "state": "fresh"
+     },
+     "docker": {
+      "age_seconds": 1.0,
+      "reason": "current",
+      "state": "fresh"
+     },
+     "redis": {
+      "age_seconds": 1.0,
+      "reason": "current",
+      "state": "fresh"
+     }
+    }
+   }
+  }
+ },
+ "s3_envelopes": {
+  "envelope_state_directly": {
+   "dict_failed": {
+    "age_seconds": null,
+    "reason": "collection_failed",
+    "state": "unavailable"
+   },
+   "dict_ok": {
+    "age_seconds": 0.0,
+    "reason": "current",
+    "state": "fresh"
+   },
+   "list": {
+    "age_seconds": null,
+    "reason": "envelope_invalid",
+    "state": "unavailable"
+   },
+   "not_present": {
+    "age_seconds": null,
+    "reason": "envelope_missing",
+    "state": "unavailable"
+   },
+   "present_but_not_a_dict_with_present_false": {
+    "age_seconds": null,
+    "reason": "envelope_missing",
+    "state": "unavailable"
+   },
+   "present_none": {
+    "age_seconds": null,
+    "reason": "envelope_invalid",
+    "state": "unavailable"
+   }
+  },
+  "source_states_directly": {
+   "empty": {
+    "database": {
+     "age_seconds": null,
+     "reason": "envelope_missing",
+     "state": "unavailable"
+    },
+    "docker": {
+     "age_seconds": null,
+     "reason": "envelope_missing",
+     "state": "unavailable"
+    },
+    "redis": {
+     "age_seconds": null,
+     "reason": "envelope_missing",
+     "state": "unavailable"
+    }
+   },
+   "order_of_optional": [
+    "database",
+    "docker",
+    "redis",
+    "observations",
+    "fleet",
+    "research_programs"
+   ],
+   "required_present": {
+    "database": {
+     "age_seconds": 1.0,
+     "reason": "current",
+     "state": "fresh"
+    },
+    "docker": {
+     "age_seconds": 1.0,
+     "reason": "current",
+     "state": "fresh"
+    },
+    "redis": {
+     "age_seconds": 1.0,
+     "reason": "current",
+     "state": "fresh"
+    }
+   },
+   "unknown_ignored": {
+    "database": {
+     "age_seconds": null,
+     "reason": "envelope_missing",
+     "state": "unavailable"
+    },
+    "docker": {
+     "age_seconds": null,
+     "reason": "envelope_missing",
+     "state": "unavailable"
+    },
+    "redis": {
+     "age_seconds": null,
+     "reason": "envelope_missing",
+     "state": "unavailable"
+    }
+   }
+  },
+  "test_broken_required_envelopes_are_named_without_echoing_them": {
+   "date_only": {
+    "basis": "observation_freshness",
+    "checked_at": "2026-09-19T12:00:00+00:00",
+    "freshness_seconds": 20,
+    "future_tolerance_seconds": 5,
+    "ready": false,
+    "schema": "urn:zeus:monitor-readiness:1",
+    "service": "harness-monitor",
+    "snapshot": {
+     "age_seconds": 1.0,
+     "reason": "current",
+     "state": "fresh"
+    },
+    "sources": {
+     "database": {
+      "age_seconds": null,
+      "reason": "timestamp_naive",
+      "state": "invalid"
+     },
+     "docker": {
+      "age_seconds": 1.0,
+      "reason": "current",
+      "state": "fresh"
+     },
+     "redis": {
+      "age_seconds": 1.0,
+      "reason": "current",
+      "state": "fresh"
+     }
+    }
+   },
+   "empty_observed_at": {
+    "basis": "observation_freshness",
+    "checked_at": "2026-09-19T12:00:00+00:00",
+    "freshness_seconds": 20,
+    "future_tolerance_seconds": 5,
+    "ready": false,
+    "schema": "urn:zeus:monitor-readiness:1",
+    "service": "harness-monitor",
+    "snapshot": {
+     "age_seconds": 1.0,
+     "reason": "current",
+     "state": "fresh"
+    },
+    "sources": {
+     "database": {
+      "age_seconds": null,
+      "reason": "timestamp_missing",
+      "state": "invalid"
+     },
+     "docker": {
+      "age_seconds": 1.0,
+      "reason": "current",
+      "state": "fresh"
+     },
+     "redis": {
+      "age_seconds": 1.0,
+      "reason": "current",
+      "state": "fresh"
+     }
+    }
+   },
+   "failed": {
+    "basis": "observation_freshness",
+    "checked_at": "2026-09-19T12:00:00+00:00",
+    "freshness_seconds": 20,
+    "future_tolerance_seconds": 5,
+    "ready": false,
+    "schema": "urn:zeus:monitor-readiness:1",
+    "service": "harness-monitor",
+    "snapshot": {
+     "age_seconds": 1.0,
+     "reason": "current",
+     "state": "fresh"
+    },
+    "sources": {
+     "database": {
+      "age_seconds": null,
+      "reason": "collection_failed",
+      "state": "unavailable"
+     },
+     "docker": {
+      "age_seconds": 1.0,
+      "reason": "current",
+      "state": "fresh"
+     },
+     "redis": {
+      "age_seconds": 1.0,
+      "reason": "current",
+      "state": "fresh"
+     }
+    }
+   },
+   "int_observed_at": {
+    "basis": "observation_freshness",
+    "checked_at": "2026-09-19T12:00:00+00:00",
+    "freshness_seconds": 20,
+    "future_tolerance_seconds": 5,
+    "ready": false,
+    "schema": "urn:zeus:monitor-readiness:1",
+    "service": "harness-monitor",
+    "snapshot": {
+     "age_seconds": 1.0,
+     "reason": "current",
+     "state": "fresh"
+    },
+    "sources": {
+     "database": {
+      "age_seconds": null,
+      "reason": "timestamp_missing",
+      "state": "invalid"
+     },
+     "docker": {
+      "age_seconds": 1.0,
+      "reason": "current",
+      "state": "fresh"
+     },
+     "redis": {
+      "age_seconds": 1.0,
+      "reason": "current",
+      "state": "fresh"
+     }
+    }
+   },
+   "list": {
+    "basis": "observation_freshness",
+    "checked_at": "2026-09-19T12:00:00+00:00",
+    "freshness_seconds": 20,
+    "future_tolerance_seconds": 5,
+    "ready": false,
+    "schema": "urn:zeus:monitor-readiness:1",
+    "service": "harness-monitor",
+    "snapshot": {
+     "age_seconds": 1.0,
+     "reason": "current",
+     "state": "fresh"
+    },
+    "sources": {
+     "database": {
+      "age_seconds": null,
+      "reason": "envelope_invalid",
+      "state": "unavailable"
+     },
+     "docker": {
+      "age_seconds": 1.0,
+      "reason": "current",
+      "state": "fresh"
+     },
+     "redis": {
+      "age_seconds": 1.0,
+      "reason": "current",
+      "state": "fresh"
+     }
+    }
+   },
+   "missing": {
+    "basis": "observation_freshness",
+    "checked_at": "2026-09-19T12:00:00+00:00",
+    "freshness_seconds": 20,
+    "future_tolerance_seconds": 5,
+    "ready": false,
+    "schema": "urn:zeus:monitor-readiness:1",
+    "service": "harness-monitor",
+    "snapshot": {
+     "age_seconds": 1.0,
+     "reason": "current",
+     "state": "fresh"
+    },
+    "sources": {
+     "database": {
+      "age_seconds": null,
+      "reason": "envelope_missing",
+      "state": "unavailable"
+     },
+     "docker": {
+      "age_seconds": 1.0,
+      "reason": "current",
+      "state": "fresh"
+     },
+     "redis": {
+      "age_seconds": 1.0,
+      "reason": "current",
+      "state": "fresh"
+     }
+    }
+   },
+   "naive": {
+    "basis": "observation_freshness",
+    "checked_at": "2026-09-19T12:00:00+00:00",
+    "freshness_seconds": 20,
+    "future_tolerance_seconds": 5,
+    "ready": false,
+    "schema": "urn:zeus:monitor-readiness:1",
+    "service": "harness-monitor",
+    "snapshot": {
+     "age_seconds": 1.0,
+     "reason": "current",
+     "state": "fresh"
+    },
+    "sources": {
+     "database": {
+      "age_seconds": null,
+      "reason": "timestamp_naive",
+      "state": "invalid"
+     },
+     "docker": {
+      "age_seconds": 1.0,
+      "reason": "current",
+      "state": "fresh"
+     },
+     "redis": {
+      "age_seconds": 1.0,
+      "reason": "current",
+      "state": "fresh"
+     }
+    }
+   },
+   "no_observed_at": {
+    "basis": "observation_freshness",
+    "checked_at": "2026-09-19T12:00:00+00:00",
+    "freshness_seconds": 20,
+    "future_tolerance_seconds": 5,
+    "ready": false,
+    "schema": "urn:zeus:monitor-readiness:1",
+    "service": "harness-monitor",
+    "snapshot": {
+     "age_seconds": 1.0,
+     "reason": "current",
+     "state": "fresh"
+    },
+    "sources": {
+     "database": {
+      "age_seconds": null,
+      "reason": "timestamp_missing",
+      "state": "invalid"
+     },
+     "docker": {
+      "age_seconds": 1.0,
+      "reason": "current",
+      "state": "fresh"
+     },
+     "redis": {
+      "age_seconds": 1.0,
+      "reason": "current",
+      "state": "fresh"
+     }
+    }
+   },
+   "null_value": {
+    "basis": "observation_freshness",
+    "checked_at": "2026-09-19T12:00:00+00:00",
+    "freshness_seconds": 20,
+    "future_tolerance_seconds": 5,
+    "ready": false,
+    "schema": "urn:zeus:monitor-readiness:1",
+    "service": "harness-monitor",
+    "snapshot": {
+     "age_seconds": 1.0,
+     "reason": "current",
+     "state": "fresh"
+    },
+    "sources": {
+     "database": {
+      "age_seconds": null,
+      "reason": "envelope_invalid",
+      "state": "unavailable"
+     },
+     "docker": {
+      "age_seconds": 1.0,
+      "reason": "current",
+      "state": "fresh"
+     },
+     "redis": {
+      "age_seconds": 1.0,
+      "reason": "current",
+      "state": "fresh"
+     }
+    }
+   },
+   "number": {
+    "basis": "observation_freshness",
+    "checked_at": "2026-09-19T12:00:00+00:00",
+    "freshness_seconds": 20,
+    "future_tolerance_seconds": 5,
+    "ready": false,
+    "schema": "urn:zeus:monitor-readiness:1",
+    "service": "harness-monitor",
+    "snapshot": {
+     "age_seconds": 1.0,
+     "reason": "current",
+     "state": "fresh"
+    },
+    "sources": {
+     "database": {
+      "age_seconds": null,
+      "reason": "envelope_invalid",
+      "state": "unavailable"
+     },
+     "docker": {
+      "age_seconds": 1.0,
+      "reason": "current",
+      "state": "fresh"
+     },
+     "redis": {
+      "age_seconds": 1.0,
+      "reason": "current",
+      "state": "fresh"
+     }
+    }
+   },
+   "ok_fresh": {
+    "basis": "observation_freshness",
+    "checked_at": "2026-09-19T12:00:00+00:00",
+    "freshness_seconds": 20,
+    "future_tolerance_seconds": 5,
+    "ready": true,
+    "schema": "urn:zeus:monitor-readiness:1",
+    "service": "harness-monitor",
+    "snapshot": {
+     "age_seconds": 1.0,
+     "reason": "current",
+     "state": "fresh"
+    },
+    "sources": {
+     "database": {
+      "age_seconds": 0.0,
+      "reason": "current",
+      "state": "fresh"
+     },
+     "docker": {
+      "age_seconds": 1.0,
+      "reason": "current",
+      "state": "fresh"
+     },
+     "redis": {
+      "age_seconds": 1.0,
+      "reason": "current",
+      "state": "fresh"
+     }
+    }
+   },
+   "status_absent": {
+    "basis": "observation_freshness",
+    "checked_at": "2026-09-19T12:00:00+00:00",
+    "freshness_seconds": 20,
+    "future_tolerance_seconds": 5,
+    "ready": false,
+    "schema": "urn:zeus:monitor-readiness:1",
+    "service": "harness-monitor",
+    "snapshot": {
+     "age_seconds": 1.0,
+     "reason": "current",
+     "state": "fresh"
+    },
+    "sources": {
+     "database": {
+      "age_seconds": null,
+      "reason": "collection_failed",
+      "state": "unavailable"
+     },
+     "docker": {
+      "age_seconds": 1.0,
+      "reason": "current",
+      "state": "fresh"
+     },
+     "redis": {
+      "age_seconds": 1.0,
+      "reason": "current",
+      "state": "fresh"
+     }
+    }
+   },
+   "status_not_a_string": {
+    "basis": "observation_freshness",
+    "checked_at": "2026-09-19T12:00:00+00:00",
+    "freshness_seconds": 20,
+    "future_tolerance_seconds": 5,
+    "ready": false,
+    "schema": "urn:zeus:monitor-readiness:1",
+    "service": "harness-monitor",
+    "snapshot": {
+     "age_seconds": 1.0,
+     "reason": "current",
+     "state": "fresh"
+    },
+    "sources": {
+     "database": {
+      "age_seconds": null,
+      "reason": "collection_failed",
+      "state": "unavailable"
+     },
+     "docker": {
+      "age_seconds": 1.0,
+      "reason": "current",
+      "state": "fresh"
+     },
+     "redis": {
+      "age_seconds": 1.0,
+      "reason": "current",
+      "state": "fresh"
+     }
+    }
+   },
+   "string": {
+    "basis": "observation_freshness",
+    "checked_at": "2026-09-19T12:00:00+00:00",
+    "freshness_seconds": 20,
+    "future_tolerance_seconds": 5,
+    "ready": false,
+    "schema": "urn:zeus:monitor-readiness:1",
+    "service": "harness-monitor",
+    "snapshot": {
+     "age_seconds": 1.0,
+     "reason": "current",
+     "state": "fresh"
+    },
+    "sources": {
+     "database": {
+      "age_seconds": null,
+      "reason": "envelope_invalid",
+      "state": "unavailable"
+     },
+     "docker": {
+      "age_seconds": 1.0,
+      "reason": "current",
+      "state": "fresh"
+     },
+     "redis": {
+      "age_seconds": 1.0,
+      "reason": "current",
+      "state": "fresh"
+     }
+    }
+   },
+   "yesterday": {
+    "basis": "observation_freshness",
+    "checked_at": "2026-09-19T12:00:00+00:00",
+    "freshness_seconds": 20,
+    "future_tolerance_seconds": 5,
+    "ready": false,
+    "schema": "urn:zeus:monitor-readiness:1",
+    "service": "harness-monitor",
+    "snapshot": {
+     "age_seconds": 1.0,
+     "reason": "current",
+     "state": "fresh"
+    },
+    "sources": {
+     "database": {
+      "age_seconds": null,
+      "reason": "timestamp_unparsable",
+      "state": "invalid"
+     },
+     "docker": {
+      "age_seconds": 1.0,
+      "reason": "current",
+      "state": "fresh"
+     },
+     "redis": {
+      "age_seconds": 1.0,
+      "reason": "current",
+      "state": "fresh"
+     }
+    }
+   }
+  },
+  "test_readiness_never_reflects_snapshot_values_keys_paths_or_errors": {
+   "answer": {
+    "basis": "observation_freshness",
+    "checked_at": "2026-09-19T12:00:00+00:00",
+    "freshness_seconds": 20,
+    "future_tolerance_seconds": 5,
+    "ready": false,
+    "schema": "urn:zeus:monitor-readiness:1",
+    "service": "harness-monitor",
+    "snapshot": {
+     "age_seconds": 1.0,
+     "reason": "current",
+     "state": "fresh"
+    },
+    "sources": {
+     "database": {
+      "age_seconds": null,
+      "reason": "collection_failed",
+      "state": "unavailable"
+     },
+     "docker": {
+      "age_seconds": 1.0,
+      "reason": "current",
+      "state": "fresh"
+     },
+     "redis": {
+      "age_seconds": 1.0,
+      "reason": "current",
+      "state": "fresh"
+     }
+    }
+   },
+   "leaks": [
+    "2026-09-19T12:00:00+00:00"
+   ]
+  }
+ },
+ "s4_snapshot_files": {
+  "collected_at_future": {
+   "basis": "observation_freshness",
+   "checked_at": "2026-09-19T12:00:00+00:00",
+   "freshness_seconds": 20,
+   "future_tolerance_seconds": 5,
+   "ready": false,
+   "schema": "urn:zeus:monitor-readiness:1",
+   "service": "harness-monitor",
+   "snapshot": {
+    "age_seconds": null,
+    "reason": "timestamp_in_future",
+    "state": "invalid"
+   },
+   "sources": {
+    "database": {
+     "age_seconds": 1.0,
+     "reason": "current",
+     "state": "fresh"
+    },
+    "docker": {
+     "age_seconds": 1.0,
+     "reason": "current",
+     "state": "fresh"
+    },
+    "redis": {
+     "age_seconds": 1.0,
+     "reason": "current",
+     "state": "fresh"
+    }
+   }
+  },
+  "collected_at_missing": {
+   "basis": "observation_freshness",
+   "checked_at": "2026-09-19T12:00:00+00:00",
+   "freshness_seconds": 20,
+   "future_tolerance_seconds": 5,
+   "ready": false,
+   "schema": "urn:zeus:monitor-readiness:1",
+   "service": "harness-monitor",
+   "snapshot": {
+    "age_seconds": null,
+    "reason": "timestamp_missing",
+    "state": "invalid"
+   },
+   "sources": {
+    "database": {
+     "age_seconds": 1.0,
+     "reason": "current",
+     "state": "fresh"
+    },
+    "docker": {
+     "age_seconds": 1.0,
+     "reason": "current",
+     "state": "fresh"
+    },
+    "redis": {
+     "age_seconds": 1.0,
+     "reason": "current",
+     "state": "fresh"
+    }
+   }
+  },
+  "collected_at_not_a_string": {
+   "basis": "observation_freshness",
+   "checked_at": "2026-09-19T12:00:00+00:00",
+   "freshness_seconds": 20,
+   "future_tolerance_seconds": 5,
+   "ready": false,
+   "schema": "urn:zeus:monitor-readiness:1",
+   "service": "harness-monitor",
+   "snapshot": {
+    "age_seconds": null,
+    "reason": "timestamp_missing",
+    "state": "invalid"
+   },
+   "sources": {
+    "database": {
+     "age_seconds": 1.0,
+     "reason": "current",
+     "state": "fresh"
+    },
+    "docker": {
+     "age_seconds": 1.0,
+     "reason": "current",
+     "state": "fresh"
+    },
+    "redis": {
+     "age_seconds": 1.0,
+     "reason": "current",
+     "state": "fresh"
+    }
+   }
+  },
+  "collected_at_unparsable": {
+   "basis": "observation_freshness",
+   "checked_at": "2026-09-19T12:00:00+00:00",
+   "freshness_seconds": 20,
+   "future_tolerance_seconds": 5,
+   "ready": false,
+   "schema": "urn:zeus:monitor-readiness:1",
+   "service": "harness-monitor",
+   "snapshot": {
+    "age_seconds": null,
+    "reason": "timestamp_unparsable",
+    "state": "invalid"
+   },
+   "sources": {
+    "database": {
+     "age_seconds": 1.0,
+     "reason": "current",
+     "state": "fresh"
+    },
+    "docker": {
+     "age_seconds": 1.0,
+     "reason": "current",
+     "state": "fresh"
+    },
+    "redis": {
+     "age_seconds": 1.0,
+     "reason": "current",
+     "state": "fresh"
+    }
+   }
+  },
+  "parse_directly": {
+   "bom": [
+    "raised",
+    "JSONDecodeError",
+    "Unexpected UTF-8 BOM (decode using utf-8-sig): line 1 column 1 (char 0)",
+    false,
+    true
+   ],
+   "deep": [
+    "raised",
+    "RecursionError",
+    null,
+    false,
+    false
+   ],
+   "duplicate": [
+    "raised",
+    "ValueError",
+    "Duplicate JSON key",
+    false,
+    true
+   ],
+   "empty": [
+    "raised",
+    "JSONDecodeError",
+    "Expecting value: line 1 column 1 (char 0)",
+    false,
+    true
+   ],
+   "infinity": [
+    "raised",
+    "ValueError",
+    "Non-finite JSON number",
+    false,
+    true
+   ],
+   "invalid_utf8": [
+    "raised",
+    "UnicodeDecodeError",
+    null,
+    true,
+    true
+   ],
+   "list": [
+    "parsed",
+    [
+     1,
+     2
+    ]
+   ],
+   "nan": [
+    "raised",
+    "ValueError",
+    "Non-finite JSON number",
+    false,
+    true
+   ],
+   "nested_duplicate": [
+    "raised",
+    "ValueError",
+    "Duplicate JSON key",
+    false,
+    true
+   ],
+   "object": [
+    "parsed",
+    {
+     "a": 1
+    }
+   ],
+   "scalar": [
+    "parsed",
+    3
+   ],
+   "trailing": [
+    "raised",
+    "JSONDecodeError",
+    "Extra data: line 1 column 4 (char 3)",
+    false,
+    true
+   ]
+  },
+  "snapshot_state_directly": {
+   "fresh": [
+    {
+     "age_seconds": 1.0,
+     "reason": "current",
+     "state": "fresh"
+    },
+    {
+     "database": {
+      "age_seconds": 1.0,
+      "reason": "current",
+      "state": "fresh"
+     },
+     "docker": {
+      "age_seconds": 1.0,
+      "reason": "current",
+      "state": "fresh"
+     },
+     "redis": {
+      "age_seconds": 1.0,
+      "reason": "current",
+      "state": "fresh"
+     }
+    }
+   ]
+  },
+  "test_missing_and_unreadable_snapshot_paths_are_unavailable": {
+   "file_missing": {
+    "basis": "observation_freshness",
+    "checked_at": "2026-09-19T12:00:00+00:00",
+    "freshness_seconds": 20,
+    "future_tolerance_seconds": 5,
+    "ready": false,
+    "schema": "urn:zeus:monitor-readiness:1",
+    "service": "harness-monitor",
+    "snapshot": {
+     "age_seconds": null,
+     "reason": "file_missing",
+     "state": "unavailable"
+    },
+    "sources": {}
+   },
+   "file_unreadable_directory": {
+    "basis": "observation_freshness",
+    "checked_at": "2026-09-19T12:00:00+00:00",
+    "freshness_seconds": 20,
+    "future_tolerance_seconds": 5,
+    "ready": false,
+    "schema": "urn:zeus:monitor-readiness:1",
+    "service": "harness-monitor",
+    "snapshot": {
+     "age_seconds": null,
+     "reason": "file_unreadable",
+     "state": "unavailable"
+    },
+    "sources": {}
+   },
+   "path_as_str": {
+    "basis": "observation_freshness",
+    "checked_at": "2026-09-19T12:00:00+00:00",
+    "freshness_seconds": 20,
+    "future_tolerance_seconds": 5,
+    "ready": false,
+    "schema": "urn:zeus:monitor-readiness:1",
+    "service": "harness-monitor",
+    "snapshot": {
+     "age_seconds": null,
+     "reason": "file_missing",
+     "state": "unavailable"
+    },
+    "sources": {}
+   },
+   "snapshot_state_missing": [
+    {
+     "age_seconds": null,
+     "reason": "file_missing",
+     "state": "unavailable"
+    },
+    {}
+   ]
+  },
+  "test_oversized_snapshot_is_refused_before_parsing": {
+   "at_limit": {
+    "age_seconds": null,
+    "reason": "undecodable",
+    "state": "invalid"
+   },
+   "at_limit_valid_json": {
+    "age_seconds": null,
+    "reason": "timestamp_missing",
+    "state": "invalid"
+   },
+   "limit_plus_one": {
+    "age_seconds": null,
+    "reason": "too_large",
+    "state": "invalid"
+   },
+   "limit_plus_one_valid_json_prefix": {
+    "age_seconds": null,
+    "reason": "too_large",
+    "state": "invalid"
+   }
+  },
+  "test_readiness_writes_nothing_and_creates_no_file": {
+   "names_unchanged": true,
+   "unchanged": true
+  },
+  "test_structurally_valid_snapshot_with_broken_collected_at_still_assesses_envelopes": {
+   "basis": "observation_freshness",
+   "checked_at": "2026-09-19T12:00:00+00:00",
+   "freshness_seconds": 20,
+   "future_tolerance_seconds": 5,
+   "ready": false,
+   "schema": "urn:zeus:monitor-readiness:1",
+   "service": "harness-monitor",
+   "snapshot": {
+    "age_seconds": null,
+    "reason": "timestamp_naive",
+    "state": "invalid"
+   },
+   "sources": {
+    "database": {
+     "age_seconds": 1.0,
+     "reason": "current",
+     "state": "fresh"
+    },
+    "docker": {
+     "age_seconds": 1.0,
+     "reason": "current",
+     "state": "fresh"
+    },
+    "redis": {
+     "age_seconds": 1.0,
+     "reason": "current",
+     "state": "fresh"
+    }
+   }
+  },
+  "test_undecodable_snapshots_answer_503_with_no_sources_and_no_crash": {
+   "bom": {
+    "ready": false,
+    "snapshot": {
+     "age_seconds": null,
+     "reason": "undecodable",
+     "state": "invalid"
+    },
+    "sources": {}
+   },
+   "deep_nesting": {
+    "ready": false,
+    "snapshot": {
+     "age_seconds": null,
+     "reason": "undecodable",
+     "state": "invalid"
+    },
+    "sources": {}
+   },
+   "deep_nesting_root": {
+    "ready": false,
+    "snapshot": {
+     "age_seconds": null,
+     "reason": "undecodable",
+     "state": "invalid"
+    },
+    "sources": {}
+   },
+   "duplicate_key": {
+    "ready": false,
+    "snapshot": {
+     "age_seconds": null,
+     "reason": "undecodable",
+     "state": "invalid"
+    },
+    "sources": {}
+   },
+   "empty": {
+    "ready": false,
+    "snapshot": {
+     "age_seconds": null,
+     "reason": "undecodable",
+     "state": "invalid"
+    },
+    "sources": {}
+   },
+   "infinity": {
+    "ready": false,
+    "snapshot": {
+     "age_seconds": null,
+     "reason": "undecodable",
+     "state": "invalid"
+    },
+    "sources": {}
+   },
+   "invalid_utf8": {
+    "ready": false,
+    "snapshot": {
+     "age_seconds": null,
+     "reason": "undecodable",
+     "state": "invalid"
+    },
+    "sources": {}
+   },
+   "minus_infinity": {
+    "ready": false,
+    "snapshot": {
+     "age_seconds": null,
+     "reason": "undecodable",
+     "state": "invalid"
+    },
+    "sources": {}
+   },
+   "nan": {
+    "ready": false,
+    "snapshot": {
+     "age_seconds": null,
+     "reason": "undecodable",
+     "state": "invalid"
+    },
+    "sources": {}
+   },
+   "root_array": {
+    "ready": false,
+    "snapshot": {
+     "age_seconds": null,
+     "reason": "not_an_object",
+     "state": "invalid"
+    },
+    "sources": {}
+   },
+   "root_null": {
+    "ready": false,
+    "snapshot": {
+     "age_seconds": null,
+     "reason": "not_an_object",
+     "state": "invalid"
+    },
+    "sources": {}
+   },
+   "root_number": {
+    "ready": false,
+    "snapshot": {
+     "age_seconds": null,
+     "reason": "not_an_object",
+     "state": "invalid"
+    },
+    "sources": {}
+   },
+   "root_string": {
+    "ready": false,
+    "snapshot": {
+     "age_seconds": null,
+     "reason": "not_an_object",
+     "state": "invalid"
+    },
+    "sources": {}
+   },
+   "schema_absent": {
+    "ready": false,
+    "snapshot": {
+     "age_seconds": null,
+     "reason": "schema_unexpected",
+     "state": "invalid"
+    },
+    "sources": {}
+   },
+   "schema_list": {
+    "ready": false,
+    "snapshot": {
+     "age_seconds": null,
+     "reason": "schema_unexpected",
+     "state": "invalid"
+    },
+    "sources": {}
+   },
+   "schema_other": {
+    "ready": false,
+    "snapshot": {
+     "age_seconds": null,
+     "reason": "schema_unexpected",
+     "state": "invalid"
+    },
+    "sources": {}
+   },
+   "sources_absent": {
+    "ready": false,
+    "snapshot": {
+     "age_seconds": null,
+     "reason": "sources_unexpected",
+     "state": "invalid"
+    },
+    "sources": {}
+   },
+   "sources_array": {
+    "ready": false,
+    "snapshot": {
+     "age_seconds": null,
+     "reason": "sources_unexpected",
+     "state": "invalid"
+    },
+    "sources": {}
+   },
+   "sources_empty_ok": {
+    "ready": false,
+    "snapshot": {
+     "age_seconds": null,
+     "reason": "timestamp_missing",
+     "state": "invalid"
+    },
+    "sources": {
+     "database": {
+      "age_seconds": null,
+      "reason": "envelope_missing",
+      "state": "unavailable"
+     },
+     "docker": {
+      "age_seconds": null,
+      "reason": "envelope_missing",
+      "state": "unavailable"
+     },
+     "redis": {
+      "age_seconds": null,
+      "reason": "envelope_missing",
+      "state": "unavailable"
+     }
+    }
+   },
+   "sources_empty_with_collected_at": {
+    "ready": false,
+    "snapshot": {
+     "age_seconds": 1.0,
+     "reason": "current",
+     "state": "fresh"
+    },
+    "sources": {
+     "database": {
+      "age_seconds": null,
+      "reason": "envelope_missing",
+      "state": "unavailable"
+     },
+     "docker": {
+      "age_seconds": null,
+      "reason": "envelope_missing",
+      "state": "unavailable"
+     },
+     "redis": {
+      "age_seconds": null,
+      "reason": "envelope_missing",
+      "state": "unavailable"
+     }
+    }
+   },
+   "sources_null": {
+    "ready": false,
+    "snapshot": {
+     "age_seconds": null,
+     "reason": "sources_unexpected",
+     "state": "invalid"
+    },
+    "sources": {}
+   },
+   "sources_string": {
+    "ready": false,
+    "snapshot": {
+     "age_seconds": null,
+     "reason": "sources_unexpected",
+     "state": "invalid"
+    },
+    "sources": {}
+   },
+   "trailing_garbage": {
+    "ready": false,
+    "snapshot": {
+     "age_seconds": null,
+     "reason": "undecodable",
+     "state": "invalid"
+    },
+    "sources": {}
+   },
+   "truncated": {
+    "ready": false,
+    "snapshot": {
+     "age_seconds": null,
+     "reason": "undecodable",
+     "state": "invalid"
+    },
+    "sources": {}
+   },
+   "whitespace_only": {
+    "ready": false,
+    "snapshot": {
+     "age_seconds": null,
+     "reason": "undecodable",
+     "state": "invalid"
+    },
+    "sources": {}
+   }
+  }
+ },
+ "s5_now": {
+  "checked_at_is_utc_isoformat": "2026-09-19T12:00:00+00:00",
+  "naive_now": [
+   "ValueError",
+   "readiness(now=...) requires a timezone-aware datetime"
+  ],
+  "not_a_datetime_int": [
+   "ValueError",
+   "readiness(now=...) requires a timezone-aware datetime"
+  ],
+  "not_a_datetime_string": [
+   "ValueError",
+   "readiness(now=...) requires a timezone-aware datetime"
+  ],
+  "now_default_shape": {
+   "checked_at_aware": true,
+   "keys": [
+    "basis",
+    "checked_at",
+    "freshness_seconds",
+    "future_tolerance_seconds",
+    "ready",
+    "schema",
+    "service",
+    "snapshot",
+    "sources"
+   ],
+   "snapshot_reason": "older_than_window",
+   "snapshot_state": "stale"
+  },
+  "offset_now_ready": {
+   "checked_at": "2026-09-19T12:00:00+00:00",
+   "ready": true
+  }
+ },
+ "s6_m7_tests": {
+  "test_broken_required_envelopes_are_named_without_echoing_them": "s3_envelopes (same name, 10 cases and 5 more)",
+  "test_collector_and_source_freshness_are_independent": "s2_freshness (same name)",
+  "test_each_request_is_one_complete_view_or_a_refused_open_while_the_file_is_replaced": {
+   "unreachable": "concurrent HTTP replacement; atomic publication is the writer's, not this module's"
+  },
+  "test_fresh_snapshot_is_ready_over_http_with_the_fixed_contract": "s2_freshness.test_fresh_snapshot_is_ready",
+  "test_freshness_and_future_boundaries_are_exact": "s2_freshness (same name, 7 ages)",
+  "test_host_guard_and_read_only_refusal_cover_the_new_route": {
+   "unreachable": "HTTP guard of monitoring_web (S9/S10)"
+  },
+  "test_liveness_and_snapshot_api_keep_their_own_contracts": {
+   "unreachable": "HTTP routes of monitoring_web (S9/S10)"
+  },
+  "test_missing_and_unreadable_snapshot_paths_are_unavailable": "s4_snapshot_files (same name)",
+  "test_naive_now_is_a_caller_error_not_a_snapshot_state": "s5_now (same name)",
+  "test_oversized_snapshot_is_refused_before_parsing": "s4_snapshot_files (same name)",
+  "test_payload_content_is_never_read_as_health": "s2_freshness (same name)",
+  "test_present_optional_envelopes_are_assessed_and_absent_ones_omitted": "s2_freshness (same name)",
+  "test_readiness_never_reflects_snapshot_values_keys_paths_or_errors": "s3_envelopes (same name)",
+  "test_readiness_writes_nothing_and_creates_no_file": "s4_snapshot_files (same name)",
+  "test_stale_snapshot_recovers_on_the_same_server_without_restart": {
+   "unreachable": "a running server; readiness itself retains nothing (each call a fresh file in s2_freshness)"
+  },
+  "test_structurally_valid_snapshot_with_broken_collected_at_still_assesses_envelopes": "s4_snapshot_files (same name)",
+  "test_undecodable_snapshots_answer_503_with_no_sources_and_no_crash": "s4_snapshot_files (same name; HTTP status is monitoring_web's)"
+ },
+ "temp_path_replacements": 0
+}

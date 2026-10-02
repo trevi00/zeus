@@ -1,0 +1,8 @@
+{
+ "family": "observation.monitoring_readiness",
+ "description": "S8 (V17 P-a, an S9 row moved ahead) readiness of the monitor's observation delivery, M7 adapters/monitoring_readiness.py (readiness over one snapshot file: every snapshot and source state/reason code, the freshness and future boundaries, the 25 malformed payloads, missing/unreadable/oversized files, naive now; parse, elapsed, envelope_state, source_states, snapshot_state directly), characterized before the move; real files in the scenario temp dir, the clock passed explicitly",
+ "reference_driver": "drivers/reference/s8_monitoring_readiness.py",
+ "target_driver": "drivers/target/s8_monitoring_readiness.py",
+ "golden": "goldens/reference/observation.monitoring_readiness.json",
+ "slice": "S8"
+}
