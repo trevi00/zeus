@@ -1,0 +1,548 @@
+{
+ "cases_per_group": {
+  "d1_registry_cases": 32
+ },
+ "constants": {
+  "MAX_REGISTRY_BYTES": 262144,
+  "REGULAR_BLOB": "100644"
+ },
+ "d1_registry_cases": {
+  "blob_missing_at_revision": {
+   "calls": [
+    [
+     "commit_exists",
+     "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa"
+    ],
+    [
+     "blob",
+     "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+     "docs/zeus/missing.json"
+    ]
+   ],
+   "message": "decision feedback refused: registry_missing_at_revision",
+   "reason_code": "registry_missing_at_revision",
+   "refused": "DecisionFeedbackError"
+  },
+  "commit_checked_before_blob": {
+   "calls": [
+    [
+     "commit_exists",
+     "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa"
+    ]
+   ],
+   "message": "decision feedback refused: registry_revision_missing",
+   "reason_code": "registry_revision_missing",
+   "refused": "DecisionFeedbackError"
+  },
+  "commit_missing": {
+   "calls": [
+    [
+     "commit_exists",
+     "0000000000000000000000000000000000000000"
+    ]
+   ],
+   "message": "decision feedback refused: registry_revision_missing",
+   "reason_code": "registry_revision_missing",
+   "refused": "DecisionFeedbackError"
+  },
+  "duplicate_entry_ids": {
+   "calls": [
+    [
+     "commit_exists",
+     "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa"
+    ],
+    [
+     "blob",
+     "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+     "docs/zeus/procedures.json"
+    ]
+   ],
+   "message": "Procedure registry entry ids must be distinct safe tokens",
+   "reason_code": null,
+   "refused": "RegistryError"
+  },
+  "duplicate_keys": {
+   "calls": [
+    [
+     "commit_exists",
+     "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa"
+    ],
+    [
+     "blob",
+     "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+     "docs/zeus/procedures.json"
+    ]
+   ],
+   "message": "Procedure registry has a duplicate JSON key",
+   "reason_code": null,
+   "refused": "RegistryError"
+  },
+  "duplicate_nested_keys": {
+   "calls": [
+    [
+     "commit_exists",
+     "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa"
+    ],
+    [
+     "blob",
+     "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+     "docs/zeus/procedures.json"
+    ]
+   ],
+   "message": "Procedure registry has a duplicate JSON key",
+   "reason_code": null,
+   "refused": "RegistryError"
+  },
+  "empty_entries": {
+   "calls": [
+    [
+     "commit_exists",
+     "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa"
+    ],
+    [
+     "blob",
+     "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+     "docs/zeus/procedures.json"
+    ]
+   ],
+   "message": "Procedure registry entries must be a non-empty list",
+   "reason_code": null,
+   "refused": "RegistryError"
+  },
+  "empty_file": {
+   "calls": [
+    [
+     "commit_exists",
+     "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa"
+    ],
+    [
+     "blob",
+     "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+     "docs/zeus/procedures.json"
+    ]
+   ],
+   "message": "Procedure registry is not valid JSON",
+   "reason_code": null,
+   "refused": "RegistryError"
+  },
+  "exactly_at_limit_is_parsed": {
+   "calls": [
+    [
+     "commit_exists",
+     "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa"
+    ],
+    [
+     "blob",
+     "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+     "docs/zeus/procedures.json"
+    ]
+   ],
+   "message": "Procedure registry is not valid JSON",
+   "reason_code": null,
+   "refused": "RegistryError"
+  },
+  "history_stays_readable_other_commit": {
+   "calls": [
+    [
+     "commit_exists",
+     "dddddddddddddddddddddddddddddddddddddddd"
+    ],
+    [
+     "blob",
+     "dddddddddddddddddddddddddddddddddddddddd",
+     "docs/zeus/procedures.json"
+    ]
+   ],
+   "returned": {
+    "bytes": 410,
+    "digest": "44579186c231c723d2c93ff796554197d4315f2ee1b03a494af24c4857a8f9ae",
+    "entries": 1,
+    "path": "docs/zeus/procedures.json",
+    "registry": {
+     "entries": [
+      {
+       "acceptance_criteria_sha256": "cccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccc",
+       "allowed_paths": [
+        "docs/a.md",
+        "docs/b.md"
+       ],
+       "id": "edited",
+       "remediation": "existing_owner_review",
+       "repository": "repo-identity",
+       "source_kind": "council"
+      }
+     ],
+     "schema": "urn:zeus:procedure-registry:1",
+     "version": 1
+    },
+    "revision": "dddddddddddddddddddddddddddddddddddddddd",
+    "sha256": "15c5103eea34df9c1b177437ea634f84c8da7cac2eddee5b467e07f5b96335ec"
+   }
+  },
+  "invalid_json_canary_not_echoed": {
+   "calls": [
+    [
+     "commit_exists",
+     "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa"
+    ],
+    [
+     "blob",
+     "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+     "docs/zeus/procedures.json"
+    ]
+   ],
+   "message": "Procedure registry is not valid JSON",
+   "reason_code": null,
+   "refused": "RegistryError"
+  },
+  "invalid_pin_reads_nothing": {
+   "calls": [],
+   "message": "decision feedback refused: registry_revision_invalid",
+   "reason_code": "registry_revision_invalid",
+   "refused": "DecisionFeedbackError"
+  },
+  "invalid_utf8": {
+   "calls": [
+    [
+     "commit_exists",
+     "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa"
+    ],
+    [
+     "blob",
+     "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+     "docs/zeus/procedures.json"
+    ]
+   ],
+   "message": "Procedure registry is not valid JSON",
+   "reason_code": null,
+   "refused": "RegistryError"
+  },
+  "missing_field": {
+   "calls": [
+    [
+     "commit_exists",
+     "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa"
+    ],
+    [
+     "blob",
+     "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+     "docs/zeus/procedures.json"
+    ]
+   ],
+   "message": "Procedure registry entry has unknown or missing fields: -remediation",
+   "reason_code": null,
+   "refused": "RegistryError"
+  },
+  "not_an_object": {
+   "calls": [
+    [
+     "commit_exists",
+     "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa"
+    ],
+    [
+     "blob",
+     "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+     "docs/zeus/procedures.json"
+    ]
+   ],
+   "message": "Procedure registry must be an object",
+   "reason_code": null,
+   "refused": "RegistryError"
+  },
+  "not_regular_directory": {
+   "calls": [
+    [
+     "commit_exists",
+     "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa"
+    ],
+    [
+     "blob",
+     "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+     "docs/zeus/procedures.json"
+    ]
+   ],
+   "message": "decision feedback refused: registry_not_regular",
+   "reason_code": "registry_not_regular",
+   "refused": "DecisionFeedbackError"
+  },
+  "not_regular_executable": {
+   "calls": [
+    [
+     "commit_exists",
+     "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa"
+    ],
+    [
+     "blob",
+     "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+     "docs/zeus/procedures.json"
+    ]
+   ],
+   "message": "decision feedback refused: registry_not_regular",
+   "reason_code": "registry_not_regular",
+   "refused": "DecisionFeedbackError"
+  },
+  "not_regular_submodule": {
+   "calls": [
+    [
+     "commit_exists",
+     "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa"
+    ],
+    [
+     "blob",
+     "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+     "docs/zeus/procedures.json"
+    ]
+   ],
+   "message": "decision feedback refused: registry_not_regular",
+   "reason_code": "registry_not_regular",
+   "refused": "DecisionFeedbackError"
+  },
+  "not_regular_symlink": {
+   "calls": [
+    [
+     "commit_exists",
+     "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa"
+    ],
+    [
+     "blob",
+     "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+     "docs/zeus/procedures.json"
+    ]
+   ],
+   "message": "decision feedback refused: registry_not_regular",
+   "reason_code": "registry_not_regular",
+   "refused": "DecisionFeedbackError"
+  },
+  "path_invalid_nested_parent": {
+   "calls": [],
+   "message": "decision feedback refused: registry_path_invalid",
+   "reason_code": "registry_path_invalid",
+   "refused": "DecisionFeedbackError"
+  },
+  "path_invalid_parent": {
+   "calls": [],
+   "message": "decision feedback refused: registry_path_invalid",
+   "reason_code": "registry_path_invalid",
+   "refused": "DecisionFeedbackError"
+  },
+  "revision_invalid_head": {
+   "calls": [],
+   "message": "decision feedback refused: registry_revision_invalid",
+   "reason_code": "registry_revision_invalid",
+   "refused": "DecisionFeedbackError"
+  },
+  "revision_invalid_short": {
+   "calls": [],
+   "message": "decision feedback refused: registry_revision_invalid",
+   "reason_code": "registry_revision_invalid",
+   "refused": "DecisionFeedbackError"
+  },
+  "revision_not_a_string": {
+   "calls": [],
+   "message": "decision feedback refused: registry_revision_invalid",
+   "reason_code": "registry_revision_invalid",
+   "refused": "DecisionFeedbackError"
+  },
+  "too_large_over_limit": {
+   "calls": [
+    [
+     "commit_exists",
+     "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa"
+    ],
+    [
+     "blob",
+     "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+     "docs/zeus/procedures.json"
+    ]
+   ],
+   "message": "decision feedback refused: registry_too_large",
+   "reason_code": "registry_too_large",
+   "refused": "DecisionFeedbackError"
+  },
+  "unknown_schema": {
+   "calls": [
+    [
+     "commit_exists",
+     "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa"
+    ],
+    [
+     "blob",
+     "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+     "docs/zeus/procedures.json"
+    ]
+   ],
+   "message": "Procedure registry schema is not urn:zeus:procedure-registry:1",
+   "reason_code": null,
+   "refused": "RegistryError"
+  },
+  "unknown_source_kind": {
+   "calls": [
+    [
+     "commit_exists",
+     "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa"
+    ],
+    [
+     "blob",
+     "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+     "docs/zeus/procedures.json"
+    ]
+   ],
+   "message": "Procedure registry entry source_kind must be one of council",
+   "reason_code": null,
+   "refused": "RegistryError"
+  },
+  "unknown_version": {
+   "calls": [
+    [
+     "commit_exists",
+     "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa"
+    ],
+    [
+     "blob",
+     "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+     "docs/zeus/procedures.json"
+    ]
+   ],
+   "message": "Procedure registry version must be 1",
+   "reason_code": null,
+   "refused": "RegistryError"
+  },
+  "valid_entries_sorted_and_two_entries": {
+   "calls": [
+    [
+     "commit_exists",
+     "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa"
+    ],
+    [
+     "blob",
+     "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+     "docs/zeus/procedures.json"
+    ]
+   ],
+   "returned": {
+    "bytes": 739,
+    "digest": "785cd6e6750c17bf89cca49a530b55fe3169a15c313950ae0aef4f5f766c424e",
+    "entries": 2,
+    "path": "docs/zeus/procedures.json",
+    "registry": {
+     "entries": [
+      {
+       "acceptance_criteria_sha256": "cccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccc",
+       "allowed_paths": [
+        "docs/a.md",
+        "docs/b.md"
+       ],
+       "id": "a-first",
+       "remediation": "existing_owner_review",
+       "repository": "repo-identity",
+       "source_kind": "council"
+      },
+      {
+       "acceptance_criteria_sha256": "cccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccc",
+       "allowed_paths": [
+        "docs/a.md",
+        "docs/b.md"
+       ],
+       "id": "z-last",
+       "remediation": "existing_owner_review",
+       "repository": "repo-identity",
+       "source_kind": "council"
+      }
+     ],
+     "schema": "urn:zeus:procedure-registry:1",
+     "version": 1
+    },
+    "revision": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+    "sha256": "ddac273c3a4c77652962db4344e71e9666f70ebb53cde358764d923f454351f3"
+   }
+  },
+  "valid_registry": {
+   "calls": [
+    [
+     "commit_exists",
+     "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa"
+    ],
+    [
+     "blob",
+     "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+     "docs/zeus/procedures.json"
+    ]
+   ],
+   "returned": {
+    "bytes": 416,
+    "digest": "3ab96a587a45410624253a74bde187b63004e3f5ca7bfa1a28b807893cefa8f1",
+    "entries": 1,
+    "path": "docs/zeus/procedures.json",
+    "registry": {
+     "entries": [
+      {
+       "acceptance_criteria_sha256": "cccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccc",
+       "allowed_paths": [
+        "docs/a.md",
+        "docs/b.md"
+       ],
+       "id": "runbook-note",
+       "remediation": "existing_owner_review",
+       "repository": "repo-identity",
+       "source_kind": "council"
+      }
+     ],
+     "schema": "urn:zeus:procedure-registry:1",
+     "version": 1
+    },
+    "revision": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+    "sha256": "7e3b3caee0d9d24480f02642ab1ccd78e66895b214d1f504fafbaf58f4041e54"
+   }
+  },
+  "valid_registry_sha_and_bytes": {
+   "bytes": 416,
+   "sha256": "7e3b3caee0d9d24480f02642ab1ccd78e66895b214d1f504fafbaf58f4041e54"
+  },
+  "valid_with_bom": {
+   "calls": [
+    [
+     "commit_exists",
+     "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa"
+    ],
+    [
+     "blob",
+     "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+     "docs/zeus/procedures.json"
+    ]
+   ],
+   "returned": {
+    "bytes": 419,
+    "digest": "3ab96a587a45410624253a74bde187b63004e3f5ca7bfa1a28b807893cefa8f1",
+    "entries": 1,
+    "path": "docs/zeus/procedures.json",
+    "registry": {
+     "entries": [
+      {
+       "acceptance_criteria_sha256": "cccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccc",
+       "allowed_paths": [
+        "docs/a.md",
+        "docs/b.md"
+       ],
+       "id": "runbook-note",
+       "remediation": "existing_owner_review",
+       "repository": "repo-identity",
+       "source_kind": "council"
+      }
+     ],
+     "schema": "urn:zeus:procedure-registry:1",
+     "version": 1
+    },
+    "revision": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+    "sha256": "8dba8e915addcf3de8a997a325f3c3324488e645472f0b29842d26c615f6583d"
+   }
+  }
+ },
+ "m7_tests": {
+  "test_a_non_regular_oversized_malformed_or_invalid_registry_is_refused": {
+   "d1_registry_cases": "not_regular_*, invalid_json_canary_not_echoed, duplicate_keys, unknown_source_kind, too_large_over_limit"
+  },
+  "test_the_registry_is_read_at_the_pinned_commit_and_never_from_the_working_tree": {
+   "d1_registry_cases": "valid_registry, history_stays_readable_other_commit, blob_missing_at_revision, commit_missing, revision_invalid_*, path_invalid_*; the working-tree edit needs a real repository (unreachable: the fake has no work tree)"
+  }
+ }
+}

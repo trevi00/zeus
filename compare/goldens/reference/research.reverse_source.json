@@ -1,0 +1,1006 @@
+{
+ "cases_per_group": {
+  "r1_observations": 17
+ },
+ "m7_tests": {
+  "test_git_observation_detects_dirty_and_unknown_sources": {
+   "r1_observations": "clean, dirty, missing_path_with_failing_git, nested_directory_is_not_the_root",
+   "unreachable": "the real git process, the invalid fsmonitor helper that must not run (the argv prefix is pinned by every call)"
+  },
+  "test_tree_is_resolved_from_captured_commit": {
+   "r1_observations": "tree_is_resolved_from_captured_commit"
+  }
+ },
+ "r1_observations": {
+  "clean": {
+   "calls": [
+    {
+     "args": [
+      "rev-parse",
+      "--show-toplevel"
+     ],
+     "prefix": [
+      "git",
+      "--no-optional-locks",
+      "-c",
+      "core.fsmonitor=false",
+      "-c",
+      "core.untrackedCache=false"
+     ],
+     "root": "<root>/c001-clean",
+     "timeout": 15
+    },
+    {
+     "args": [
+      "rev-parse",
+      "HEAD"
+     ],
+     "prefix": [
+      "git",
+      "--no-optional-locks",
+      "-c",
+      "core.fsmonitor=false",
+      "-c",
+      "core.untrackedCache=false"
+     ],
+     "root": "<root>/c001-clean",
+     "timeout": 15
+    },
+    {
+     "args": [
+      "rev-parse",
+      "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa^{tree}"
+     ],
+     "prefix": [
+      "git",
+      "--no-optional-locks",
+      "-c",
+      "core.fsmonitor=false",
+      "-c",
+      "core.untrackedCache=false"
+     ],
+     "root": "<root>/c001-clean",
+     "timeout": 15
+    },
+    {
+     "args": [
+      "status",
+      "--porcelain=v1",
+      "--untracked-files=all",
+      "--ignore-submodules=none"
+     ],
+     "prefix": [
+      "git",
+      "--no-optional-locks",
+      "-c",
+      "core.fsmonitor=false",
+      "-c",
+      "core.untrackedCache=false"
+     ],
+     "root": "<root>/c001-clean",
+     "timeout": 15
+    },
+    {
+     "args": [
+      "rev-parse",
+      "HEAD"
+     ],
+     "prefix": [
+      "git",
+      "--no-optional-locks",
+      "-c",
+      "core.fsmonitor=false",
+      "-c",
+      "core.untrackedCache=false"
+     ],
+     "root": "<root>/c001-clean",
+     "timeout": 15
+    }
+   ],
+   "returned": {
+    "commit": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+    "repository": "<root>/c001-clean",
+    "status": "clean",
+    "tree": "bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb"
+   }
+  },
+  "dirty": {
+   "calls": [
+    {
+     "args": [
+      "rev-parse",
+      "--show-toplevel"
+     ],
+     "prefix": [
+      "git",
+      "--no-optional-locks",
+      "-c",
+      "core.fsmonitor=false",
+      "-c",
+      "core.untrackedCache=false"
+     ],
+     "root": "<root>/c002-dirty",
+     "timeout": 15
+    },
+    {
+     "args": [
+      "rev-parse",
+      "HEAD"
+     ],
+     "prefix": [
+      "git",
+      "--no-optional-locks",
+      "-c",
+      "core.fsmonitor=false",
+      "-c",
+      "core.untrackedCache=false"
+     ],
+     "root": "<root>/c002-dirty",
+     "timeout": 15
+    },
+    {
+     "args": [
+      "rev-parse",
+      "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa^{tree}"
+     ],
+     "prefix": [
+      "git",
+      "--no-optional-locks",
+      "-c",
+      "core.fsmonitor=false",
+      "-c",
+      "core.untrackedCache=false"
+     ],
+     "root": "<root>/c002-dirty",
+     "timeout": 15
+    },
+    {
+     "args": [
+      "status",
+      "--porcelain=v1",
+      "--untracked-files=all",
+      "--ignore-submodules=none"
+     ],
+     "prefix": [
+      "git",
+      "--no-optional-locks",
+      "-c",
+      "core.fsmonitor=false",
+      "-c",
+      "core.untrackedCache=false"
+     ],
+     "root": "<root>/c002-dirty",
+     "timeout": 15
+    },
+    {
+     "args": [
+      "rev-parse",
+      "HEAD"
+     ],
+     "prefix": [
+      "git",
+      "--no-optional-locks",
+      "-c",
+      "core.fsmonitor=false",
+      "-c",
+      "core.untrackedCache=false"
+     ],
+     "root": "<root>/c002-dirty",
+     "timeout": 15
+    }
+   ],
+   "returned": {
+    "commit": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+    "repository": "<root>/c002-dirty",
+    "status": "dirty",
+    "tree": "bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb"
+   }
+  },
+  "dirty_tracked_change": {
+   "calls": [
+    {
+     "args": [
+      "rev-parse",
+      "--show-toplevel"
+     ],
+     "prefix": [
+      "git",
+      "--no-optional-locks",
+      "-c",
+      "core.fsmonitor=false",
+      "-c",
+      "core.untrackedCache=false"
+     ],
+     "root": "<root>/c003-dirty-tracked",
+     "timeout": 15
+    },
+    {
+     "args": [
+      "rev-parse",
+      "HEAD"
+     ],
+     "prefix": [
+      "git",
+      "--no-optional-locks",
+      "-c",
+      "core.fsmonitor=false",
+      "-c",
+      "core.untrackedCache=false"
+     ],
+     "root": "<root>/c003-dirty-tracked",
+     "timeout": 15
+    },
+    {
+     "args": [
+      "rev-parse",
+      "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa^{tree}"
+     ],
+     "prefix": [
+      "git",
+      "--no-optional-locks",
+      "-c",
+      "core.fsmonitor=false",
+      "-c",
+      "core.untrackedCache=false"
+     ],
+     "root": "<root>/c003-dirty-tracked",
+     "timeout": 15
+    },
+    {
+     "args": [
+      "status",
+      "--porcelain=v1",
+      "--untracked-files=all",
+      "--ignore-submodules=none"
+     ],
+     "prefix": [
+      "git",
+      "--no-optional-locks",
+      "-c",
+      "core.fsmonitor=false",
+      "-c",
+      "core.untrackedCache=false"
+     ],
+     "root": "<root>/c003-dirty-tracked",
+     "timeout": 15
+    },
+    {
+     "args": [
+      "rev-parse",
+      "HEAD"
+     ],
+     "prefix": [
+      "git",
+      "--no-optional-locks",
+      "-c",
+      "core.fsmonitor=false",
+      "-c",
+      "core.untrackedCache=false"
+     ],
+     "root": "<root>/c003-dirty-tracked",
+     "timeout": 15
+    }
+   ],
+   "returned": {
+    "commit": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+    "repository": "<root>/c003-dirty-tracked",
+    "status": "dirty",
+    "tree": "bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb"
+   }
+  },
+  "git_failure_is_unknown_head": {
+   "calls": [
+    {
+     "args": [
+      "rev-parse",
+      "--show-toplevel"
+     ],
+     "prefix": [
+      "git",
+      "--no-optional-locks",
+      "-c",
+      "core.fsmonitor=false",
+      "-c",
+      "core.untrackedCache=false"
+     ],
+     "root": "<root>/c009-fail-head",
+     "timeout": 15
+    },
+    {
+     "args": [
+      "rev-parse",
+      "HEAD"
+     ],
+     "prefix": [
+      "git",
+      "--no-optional-locks",
+      "-c",
+      "core.fsmonitor=false",
+      "-c",
+      "core.untrackedCache=false"
+     ],
+     "root": "<root>/c009-fail-head",
+     "timeout": 15
+    }
+   ],
+   "returned": {
+    "reason": "ValueError",
+    "repository": "<root>/c009-fail-head",
+    "status": "unknown"
+   }
+  },
+  "git_failure_is_unknown_second_head": {
+   "calls": [
+    {
+     "args": [
+      "rev-parse",
+      "--show-toplevel"
+     ],
+     "prefix": [
+      "git",
+      "--no-optional-locks",
+      "-c",
+      "core.fsmonitor=false",
+      "-c",
+      "core.untrackedCache=false"
+     ],
+     "root": "<root>/c012-fail-after",
+     "timeout": 15
+    },
+    {
+     "args": [
+      "rev-parse",
+      "HEAD"
+     ],
+     "prefix": [
+      "git",
+      "--no-optional-locks",
+      "-c",
+      "core.fsmonitor=false",
+      "-c",
+      "core.untrackedCache=false"
+     ],
+     "root": "<root>/c012-fail-after",
+     "timeout": 15
+    },
+    {
+     "args": [
+      "rev-parse",
+      "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa^{tree}"
+     ],
+     "prefix": [
+      "git",
+      "--no-optional-locks",
+      "-c",
+      "core.fsmonitor=false",
+      "-c",
+      "core.untrackedCache=false"
+     ],
+     "root": "<root>/c012-fail-after",
+     "timeout": 15
+    },
+    {
+     "args": [
+      "status",
+      "--porcelain=v1",
+      "--untracked-files=all",
+      "--ignore-submodules=none"
+     ],
+     "prefix": [
+      "git",
+      "--no-optional-locks",
+      "-c",
+      "core.fsmonitor=false",
+      "-c",
+      "core.untrackedCache=false"
+     ],
+     "root": "<root>/c012-fail-after",
+     "timeout": 15
+    },
+    {
+     "args": [
+      "rev-parse",
+      "HEAD"
+     ],
+     "prefix": [
+      "git",
+      "--no-optional-locks",
+      "-c",
+      "core.fsmonitor=false",
+      "-c",
+      "core.untrackedCache=false"
+     ],
+     "root": "<root>/c012-fail-after",
+     "timeout": 15
+    }
+   ],
+   "returned": {
+    "reason": "ValueError",
+    "repository": "<root>/c012-fail-after",
+    "status": "unknown"
+   }
+  },
+  "git_failure_is_unknown_status": {
+   "calls": [
+    {
+     "args": [
+      "rev-parse",
+      "--show-toplevel"
+     ],
+     "prefix": [
+      "git",
+      "--no-optional-locks",
+      "-c",
+      "core.fsmonitor=false",
+      "-c",
+      "core.untrackedCache=false"
+     ],
+     "root": "<root>/c011-fail-status",
+     "timeout": 15
+    },
+    {
+     "args": [
+      "rev-parse",
+      "HEAD"
+     ],
+     "prefix": [
+      "git",
+      "--no-optional-locks",
+      "-c",
+      "core.fsmonitor=false",
+      "-c",
+      "core.untrackedCache=false"
+     ],
+     "root": "<root>/c011-fail-status",
+     "timeout": 15
+    },
+    {
+     "args": [
+      "rev-parse",
+      "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa^{tree}"
+     ],
+     "prefix": [
+      "git",
+      "--no-optional-locks",
+      "-c",
+      "core.fsmonitor=false",
+      "-c",
+      "core.untrackedCache=false"
+     ],
+     "root": "<root>/c011-fail-status",
+     "timeout": 15
+    },
+    {
+     "args": [
+      "status",
+      "--porcelain=v1",
+      "--untracked-files=all",
+      "--ignore-submodules=none"
+     ],
+     "prefix": [
+      "git",
+      "--no-optional-locks",
+      "-c",
+      "core.fsmonitor=false",
+      "-c",
+      "core.untrackedCache=false"
+     ],
+     "root": "<root>/c011-fail-status",
+     "timeout": 15
+    }
+   ],
+   "returned": {
+    "reason": "ValueError",
+    "repository": "<root>/c011-fail-status",
+    "status": "unknown"
+   }
+  },
+  "git_failure_is_unknown_toplevel": {
+   "calls": [
+    {
+     "args": [
+      "rev-parse",
+      "--show-toplevel"
+     ],
+     "prefix": [
+      "git",
+      "--no-optional-locks",
+      "-c",
+      "core.fsmonitor=false",
+      "-c",
+      "core.untrackedCache=false"
+     ],
+     "root": "<root>/c008-fail-top",
+     "timeout": 15
+    }
+   ],
+   "returned": {
+    "reason": "ValueError",
+    "repository": "<root>/c008-fail-top",
+    "status": "unknown"
+   }
+  },
+  "git_failure_is_unknown_tree": {
+   "calls": [
+    {
+     "args": [
+      "rev-parse",
+      "--show-toplevel"
+     ],
+     "prefix": [
+      "git",
+      "--no-optional-locks",
+      "-c",
+      "core.fsmonitor=false",
+      "-c",
+      "core.untrackedCache=false"
+     ],
+     "root": "<root>/c010-fail-tree",
+     "timeout": 15
+    },
+    {
+     "args": [
+      "rev-parse",
+      "HEAD"
+     ],
+     "prefix": [
+      "git",
+      "--no-optional-locks",
+      "-c",
+      "core.fsmonitor=false",
+      "-c",
+      "core.untrackedCache=false"
+     ],
+     "root": "<root>/c010-fail-tree",
+     "timeout": 15
+    },
+    {
+     "args": [
+      "rev-parse",
+      "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa^{tree}"
+     ],
+     "prefix": [
+      "git",
+      "--no-optional-locks",
+      "-c",
+      "core.fsmonitor=false",
+      "-c",
+      "core.untrackedCache=false"
+     ],
+     "root": "<root>/c010-fail-tree",
+     "timeout": 15
+    }
+   ],
+   "returned": {
+    "reason": "ValueError",
+    "repository": "<root>/c010-fail-tree",
+    "status": "unknown"
+   }
+  },
+  "head_changed_during_observation": {
+   "calls": [
+    {
+     "args": [
+      "rev-parse",
+      "--show-toplevel"
+     ],
+     "prefix": [
+      "git",
+      "--no-optional-locks",
+      "-c",
+      "core.fsmonitor=false",
+      "-c",
+      "core.untrackedCache=false"
+     ],
+     "root": "<root>/c006-moved",
+     "timeout": 15
+    },
+    {
+     "args": [
+      "rev-parse",
+      "HEAD"
+     ],
+     "prefix": [
+      "git",
+      "--no-optional-locks",
+      "-c",
+      "core.fsmonitor=false",
+      "-c",
+      "core.untrackedCache=false"
+     ],
+     "root": "<root>/c006-moved",
+     "timeout": 15
+    },
+    {
+     "args": [
+      "rev-parse",
+      "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa^{tree}"
+     ],
+     "prefix": [
+      "git",
+      "--no-optional-locks",
+      "-c",
+      "core.fsmonitor=false",
+      "-c",
+      "core.untrackedCache=false"
+     ],
+     "root": "<root>/c006-moved",
+     "timeout": 15
+    },
+    {
+     "args": [
+      "status",
+      "--porcelain=v1",
+      "--untracked-files=all",
+      "--ignore-submodules=none"
+     ],
+     "prefix": [
+      "git",
+      "--no-optional-locks",
+      "-c",
+      "core.fsmonitor=false",
+      "-c",
+      "core.untrackedCache=false"
+     ],
+     "root": "<root>/c006-moved",
+     "timeout": 15
+    },
+    {
+     "args": [
+      "rev-parse",
+      "HEAD"
+     ],
+     "prefix": [
+      "git",
+      "--no-optional-locks",
+      "-c",
+      "core.fsmonitor=false",
+      "-c",
+      "core.untrackedCache=false"
+     ],
+     "root": "<root>/c006-moved",
+     "timeout": 15
+    }
+   ],
+   "returned": {
+    "reason": "HEAD changed during observation",
+    "repository": "<root>/c006-moved",
+    "status": "unknown"
+   }
+  },
+  "missing_path_with_failing_git": {
+   "calls": [
+    {
+     "args": [
+      "rev-parse",
+      "--show-toplevel"
+     ],
+     "prefix": [
+      "git",
+      "--no-optional-locks",
+      "-c",
+      "core.fsmonitor=false",
+      "-c",
+      "core.untrackedCache=false"
+     ],
+     "root": "<root>/c015-missing/missing",
+     "timeout": 15
+    }
+   ],
+   "returned": {
+    "reason": "ValueError",
+    "repository": "<root>/c015-missing/missing",
+    "status": "unknown"
+   }
+  },
+  "nested_directory_is_not_the_root": {
+   "calls": [
+    {
+     "args": [
+      "rev-parse",
+      "--show-toplevel"
+     ],
+     "prefix": [
+      "git",
+      "--no-optional-locks",
+      "-c",
+      "core.fsmonitor=false",
+      "-c",
+      "core.untrackedCache=false"
+     ],
+     "root": "<root>/c016-nested/nested",
+     "timeout": 15
+    }
+   ],
+   "returned": {
+    "reason": "Source must identify the Git worktree root",
+    "repository": "<root>/c016-nested",
+    "status": "unknown"
+   }
+  },
+  "not_the_worktree_root": {
+   "calls": [
+    {
+     "args": [
+      "rev-parse",
+      "--show-toplevel"
+     ],
+     "prefix": [
+      "git",
+      "--no-optional-locks",
+      "-c",
+      "core.fsmonitor=false",
+      "-c",
+      "core.untrackedCache=false"
+     ],
+     "root": "<root>/c004-not-root",
+     "timeout": 15
+    }
+   ],
+   "returned": {
+    "reason": "Source must identify the Git worktree root",
+    "repository": "<root>/c004-not-root/..",
+    "status": "unknown"
+   }
+  },
+  "not_the_worktree_root_elsewhere": {
+   "calls": [
+    {
+     "args": [
+      "rev-parse",
+      "--show-toplevel"
+     ],
+     "prefix": [
+      "git",
+      "--no-optional-locks",
+      "-c",
+      "core.fsmonitor=false",
+      "-c",
+      "core.untrackedCache=false"
+     ],
+     "root": "<root>/c005-elsewhere",
+     "timeout": 15
+    }
+   ],
+   "returned": {
+    "reason": "Source must identify the Git worktree root",
+    "repository": "/some/other/place",
+    "status": "unknown"
+   }
+  },
+  "output_is_stripped": {
+   "calls": [
+    {
+     "args": [
+      "rev-parse",
+      "--show-toplevel"
+     ],
+     "prefix": [
+      "git",
+      "--no-optional-locks",
+      "-c",
+      "core.fsmonitor=false",
+      "-c",
+      "core.untrackedCache=false"
+     ],
+     "root": "<root>/c017-strip",
+     "timeout": 15
+    },
+    {
+     "args": [
+      "rev-parse",
+      "HEAD"
+     ],
+     "prefix": [
+      "git",
+      "--no-optional-locks",
+      "-c",
+      "core.fsmonitor=false",
+      "-c",
+      "core.untrackedCache=false"
+     ],
+     "root": "<root>/c017-strip",
+     "timeout": 15
+    },
+    {
+     "args": [
+      "rev-parse",
+      "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa^{tree}"
+     ],
+     "prefix": [
+      "git",
+      "--no-optional-locks",
+      "-c",
+      "core.fsmonitor=false",
+      "-c",
+      "core.untrackedCache=false"
+     ],
+     "root": "<root>/c017-strip",
+     "timeout": 15
+    },
+    {
+     "args": [
+      "status",
+      "--porcelain=v1",
+      "--untracked-files=all",
+      "--ignore-submodules=none"
+     ],
+     "prefix": [
+      "git",
+      "--no-optional-locks",
+      "-c",
+      "core.fsmonitor=false",
+      "-c",
+      "core.untrackedCache=false"
+     ],
+     "root": "<root>/c017-strip",
+     "timeout": 15
+    },
+    {
+     "args": [
+      "rev-parse",
+      "HEAD"
+     ],
+     "prefix": [
+      "git",
+      "--no-optional-locks",
+      "-c",
+      "core.fsmonitor=false",
+      "-c",
+      "core.untrackedCache=false"
+     ],
+     "root": "<root>/c017-strip",
+     "timeout": 15
+    }
+   ],
+   "returned": {
+    "commit": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+    "repository": "<root>/c017-strip",
+    "status": "clean",
+    "tree": "bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb"
+   }
+  },
+  "runner_raises_oserror": {
+   "calls": [
+    {
+     "args": [
+      "rev-parse",
+      "--show-toplevel"
+     ],
+     "prefix": [
+      "git",
+      "--no-optional-locks",
+      "-c",
+      "core.fsmonitor=false",
+      "-c",
+      "core.untrackedCache=false"
+     ],
+     "root": "<root>/c013-oserror",
+     "timeout": 15
+    }
+   ],
+   "returned": {
+    "reason": "OSError",
+    "repository": "<root>/c013-oserror",
+    "status": "unknown"
+   }
+  },
+  "runner_raises_timeout": {
+   "calls": [
+    {
+     "args": [
+      "rev-parse",
+      "--show-toplevel"
+     ],
+     "prefix": [
+      "git",
+      "--no-optional-locks",
+      "-c",
+      "core.fsmonitor=false",
+      "-c",
+      "core.untrackedCache=false"
+     ],
+     "root": "<root>/c014-timeout",
+     "timeout": 15
+    }
+   ],
+   "returned": {
+    "reason": "TimeoutError",
+    "repository": "<root>/c014-timeout",
+    "status": "unknown"
+   }
+  },
+  "tree_is_resolved_from_captured_commit": {
+   "calls": [
+    {
+     "args": [
+      "rev-parse",
+      "--show-toplevel"
+     ],
+     "prefix": [
+      "git",
+      "--no-optional-locks",
+      "-c",
+      "core.fsmonitor=false",
+      "-c",
+      "core.untrackedCache=false"
+     ],
+     "root": "<root>/c007-tree",
+     "timeout": 15
+    },
+    {
+     "args": [
+      "rev-parse",
+      "HEAD"
+     ],
+     "prefix": [
+      "git",
+      "--no-optional-locks",
+      "-c",
+      "core.fsmonitor=false",
+      "-c",
+      "core.untrackedCache=false"
+     ],
+     "root": "<root>/c007-tree",
+     "timeout": 15
+    },
+    {
+     "args": [
+      "rev-parse",
+      "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa^{tree}"
+     ],
+     "prefix": [
+      "git",
+      "--no-optional-locks",
+      "-c",
+      "core.fsmonitor=false",
+      "-c",
+      "core.untrackedCache=false"
+     ],
+     "root": "<root>/c007-tree",
+     "timeout": 15
+    },
+    {
+     "args": [
+      "status",
+      "--porcelain=v1",
+      "--untracked-files=all",
+      "--ignore-submodules=none"
+     ],
+     "prefix": [
+      "git",
+      "--no-optional-locks",
+      "-c",
+      "core.fsmonitor=false",
+      "-c",
+      "core.untrackedCache=false"
+     ],
+     "root": "<root>/c007-tree",
+     "timeout": 15
+    },
+    {
+     "args": [
+      "rev-parse",
+      "HEAD"
+     ],
+     "prefix": [
+      "git",
+      "--no-optional-locks",
+      "-c",
+      "core.fsmonitor=false",
+      "-c",
+      "core.untrackedCache=false"
+     ],
+     "root": "<root>/c007-tree",
+     "timeout": 15
+    }
+   ],
+   "returned": {
+    "commit": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+    "repository": "<root>/c007-tree",
+    "status": "clean",
+    "tree": "bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb"
+   }
+  }
+ }
+}

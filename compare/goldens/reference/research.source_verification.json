@@ -1,0 +1,884 @@
+{
+ "cases_per_group": {
+  "s1_inventory": 14,
+  "s2_verify": 11,
+  "s3_console_kwargs": 5
+ },
+ "m7_tests": {
+  "test_git_inventory_preserves_raw_paths_binary_and_symlink": {
+   "s1_inventory": "inventory_blob_symlink_raw_path_submodule"
+  },
+  "test_piped_git_docker_and_probe_children_are_silent[source_verification] (tests/test_background_processes.py)": {
+   "s3_console_kwargs": "the helper's kwargs reach subprocess.run unchanged; the real silent spawn is unreachable"
+  },
+  "verifier cases of test_research_audits.py (cross repository, commit, tree, manifest, incomplete inventory)": {
+   "s1_inventory, s2_verify": "cross_repository_refused, source_is_not_a_commit, changed_tree_binding, verify_*"
+  }
+ },
+ "s1_inventory": {
+  "changed_tree_binding": {
+   "calls": 3,
+   "first_call": {
+    "argv": [
+     "git",
+     "--no-replace-objects",
+     "-C",
+     "<root>/repo",
+     "config",
+     "--get",
+     "remote.origin.url"
+    ],
+    "kwargs": {
+     "fake_console_kwarg": "console",
+     "stderr": "-1",
+     "stdout": "-1",
+     "timeout": 60
+    }
+   },
+   "message": "Changed commit/tree binding",
+   "reason_code": null,
+   "refused": "ContractError",
+   "subcommands": [
+    [
+     "config",
+     "--get"
+    ],
+    [
+     "cat-file",
+     "-t"
+    ],
+    [
+     "rev-parse",
+     "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa^{tree}"
+    ]
+   ]
+  },
+  "cross_repository_refused": {
+   "calls": 1,
+   "first_call": {
+    "argv": [
+     "git",
+     "--no-replace-objects",
+     "-C",
+     "<root>/repo",
+     "config",
+     "--get",
+     "remote.origin.url"
+    ],
+    "kwargs": {
+     "fake_console_kwarg": "console",
+     "stderr": "-1",
+     "stdout": "-1",
+     "timeout": 60
+    }
+   },
+   "message": "Cross-repository source binding",
+   "reason_code": null,
+   "refused": "ContractError",
+   "subcommands": [
+    [
+     "config",
+     "--get"
+    ]
+   ]
+  },
+  "git_call_shape": {
+   "calls": 1,
+   "first_call": {
+    "argv": [
+     "git",
+     "--no-replace-objects",
+     "-C",
+     "<root>/repo",
+     "rev-parse",
+     "HEAD"
+    ],
+    "kwargs": {
+     "fake_console_kwarg": "console",
+     "stderr": "-1",
+     "stdout": "-1",
+     "timeout": 60
+    }
+   },
+   "returned": {
+    "bytes_sha256": "139f49a833f8c70158db3bc5b9c9693b6bc9a02a46fe833743ff3cd6e57eb7ea",
+    "length": 41
+   },
+   "subcommands": [
+    [
+     "rev-parse",
+     "HEAD"
+    ]
+   ]
+  },
+  "git_failure_on_blob": {
+   "calls": 5,
+   "first_call": {
+    "argv": [
+     "git",
+     "--no-replace-objects",
+     "-C",
+     "<root>/repo",
+     "config",
+     "--get",
+     "remote.origin.url"
+    ],
+    "kwargs": {
+     "fake_console_kwarg": "console",
+     "stderr": "-1",
+     "stdout": "-1",
+     "timeout": 60
+    }
+   },
+   "message": "Source Git inspection failed: fatal: scripted failure �",
+   "reason_code": null,
+   "refused": "ContractError",
+   "subcommands": [
+    [
+     "config",
+     "--get"
+    ],
+    [
+     "cat-file",
+     "-t"
+    ],
+    [
+     "rev-parse",
+     "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa^{tree}"
+    ],
+    [
+     "ls-tree",
+     "-r"
+    ],
+    [
+     "cat-file",
+     "blob"
+    ]
+   ]
+  },
+  "git_failure_reports_stderr": {
+   "calls": 1,
+   "first_call": {
+    "argv": [
+     "git",
+     "--no-replace-objects",
+     "-C",
+     "<root>/repo",
+     "config",
+     "--get",
+     "remote.origin.url"
+    ],
+    "kwargs": {
+     "fake_console_kwarg": "console",
+     "stderr": "-1",
+     "stdout": "-1",
+     "timeout": 60
+    }
+   },
+   "message": "Source Git inspection failed: fatal: scripted failure �",
+   "reason_code": null,
+   "refused": "ContractError",
+   "subcommands": [
+    [
+     "config",
+     "--get"
+    ]
+   ]
+  },
+  "invalid_path_is_refused_by_the_entry": {
+   "calls": 5,
+   "first_call": {
+    "argv": [
+     "git",
+     "--no-replace-objects",
+     "-C",
+     "<root>/repo",
+     "config",
+     "--get",
+     "remote.origin.url"
+    ],
+    "kwargs": {
+     "fake_console_kwarg": "console",
+     "stderr": "-1",
+     "stdout": "-1",
+     "timeout": 60
+    }
+   },
+   "message": "Invalid Git path",
+   "reason_code": null,
+   "refused": "ContractError",
+   "subcommands": [
+    [
+     "config",
+     "--get"
+    ],
+    [
+     "cat-file",
+     "-t"
+    ],
+    [
+     "rev-parse",
+     "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa^{tree}"
+    ],
+    [
+     "ls-tree",
+     "-r"
+    ],
+    [
+     "cat-file",
+     "blob"
+    ]
+   ]
+  },
+  "invalid_source_identity_is_refused_first": {
+   "calls": 0,
+   "first_call": null,
+   "message": "Noncanonical repository identity",
+   "reason_code": null,
+   "refused": "ContractError",
+   "subcommands": []
+  },
+  "invalid_submodule_object": {
+   "calls": 4,
+   "first_call": {
+    "argv": [
+     "git",
+     "--no-replace-objects",
+     "-C",
+     "<root>/repo",
+     "config",
+     "--get",
+     "remote.origin.url"
+    ],
+    "kwargs": {
+     "fake_console_kwarg": "console",
+     "stderr": "-1",
+     "stdout": "-1",
+     "timeout": 60
+    }
+   },
+   "message": "Invalid submodule object",
+   "reason_code": null,
+   "refused": "ContractError",
+   "subcommands": [
+    [
+     "config",
+     "--get"
+    ],
+    [
+     "cat-file",
+     "-t"
+    ],
+    [
+     "rev-parse",
+     "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa^{tree}"
+    ],
+    [
+     "ls-tree",
+     "-r"
+    ]
+   ]
+  },
+  "inventory_blob_symlink_raw_path_submodule": {
+   "calls": 7,
+   "first_call": {
+    "argv": [
+     "git",
+     "--no-replace-objects",
+     "-C",
+     "<root>/repo",
+     "config",
+     "--get",
+     "remote.origin.url"
+    ],
+    "kwargs": {
+     "fake_console_kwarg": "console",
+     "stderr": "-1",
+     "stdout": "-1",
+     "timeout": 60
+    }
+   },
+   "returned": [
+    {
+     "artifact_ref": "sha256:d82dbdb3bbabaedd7c81d2cea6aeaac158c243ae16106498f100dd2316ac7421",
+     "mode": "100644",
+     "object_id": "1111111111111111111111111111111111111111",
+     "path": "bm9ybWFs",
+     "size": 6
+    },
+    {
+     "artifact_ref": "sha256:47d36a60134671c86bdf7fb6897a29c97f176e2f2624da85ca135edbf20b3a8f",
+     "mode": "120000",
+     "object_id": "2222222222222222222222222222222222222222",
+     "path": "bGluaw==",
+     "size": 6
+    },
+    {
+     "artifact_ref": "sha256:00b0ae17309b65efb24828e06256c986734fa2cbadb0e233771b10abc6344862",
+     "mode": "100644",
+     "object_id": "3333333333333333333333333333333333333333",
+     "path": "c3BhY2UJYW5kCm5ld2xpbmU=",
+     "size": 3
+    },
+    {
+     "artifact_ref": null,
+     "mode": "160000",
+     "object_id": "4444444444444444444444444444444444444444",
+     "path": "dmVuZG9yL3N1Yg==",
+     "size": null
+    }
+   ],
+   "subcommands": [
+    [
+     "config",
+     "--get"
+    ],
+    [
+     "cat-file",
+     "-t"
+    ],
+    [
+     "rev-parse",
+     "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa^{tree}"
+    ],
+    [
+     "ls-tree",
+     "-r"
+    ],
+    [
+     "cat-file",
+     "blob"
+    ],
+    [
+     "cat-file",
+     "blob"
+    ],
+    [
+     "cat-file",
+     "blob"
+    ]
+   ]
+  },
+  "inventory_empty_tree": {
+   "calls": 4,
+   "first_call": {
+    "argv": [
+     "git",
+     "--no-replace-objects",
+     "-C",
+     "<root>/repo",
+     "config",
+     "--get",
+     "remote.origin.url"
+    ],
+    "kwargs": {
+     "fake_console_kwarg": "console",
+     "stderr": "-1",
+     "stdout": "-1",
+     "timeout": 60
+    }
+   },
+   "returned": [],
+   "subcommands": [
+    [
+     "config",
+     "--get"
+    ],
+    [
+     "cat-file",
+     "-t"
+    ],
+    [
+     "rev-parse",
+     "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa^{tree}"
+    ],
+    [
+     "ls-tree",
+     "-r"
+    ]
+   ]
+  },
+  "inventory_origin_without_git_suffix": {
+   "calls": 7,
+   "first_call": {
+    "argv": [
+     "git",
+     "--no-replace-objects",
+     "-C",
+     "<root>/repo",
+     "config",
+     "--get",
+     "remote.origin.url"
+    ],
+    "kwargs": {
+     "fake_console_kwarg": "console",
+     "stderr": "-1",
+     "stdout": "-1",
+     "timeout": 60
+    }
+   },
+   "returned": [
+    {
+     "artifact_ref": "sha256:d82dbdb3bbabaedd7c81d2cea6aeaac158c243ae16106498f100dd2316ac7421",
+     "mode": "100644",
+     "object_id": "1111111111111111111111111111111111111111",
+     "path": "bm9ybWFs",
+     "size": 6
+    },
+    {
+     "artifact_ref": "sha256:47d36a60134671c86bdf7fb6897a29c97f176e2f2624da85ca135edbf20b3a8f",
+     "mode": "120000",
+     "object_id": "2222222222222222222222222222222222222222",
+     "path": "bGluaw==",
+     "size": 6
+    },
+    {
+     "artifact_ref": "sha256:00b0ae17309b65efb24828e06256c986734fa2cbadb0e233771b10abc6344862",
+     "mode": "100644",
+     "object_id": "3333333333333333333333333333333333333333",
+     "path": "c3BhY2UJYW5kCm5ld2xpbmU=",
+     "size": 3
+    },
+    {
+     "artifact_ref": null,
+     "mode": "160000",
+     "object_id": "4444444444444444444444444444444444444444",
+     "path": "dmVuZG9yL3N1Yg==",
+     "size": null
+    }
+   ],
+   "subcommands": [
+    [
+     "config",
+     "--get"
+    ],
+    [
+     "cat-file",
+     "-t"
+    ],
+    [
+     "rev-parse",
+     "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa^{tree}"
+    ],
+    [
+     "ls-tree",
+     "-r"
+    ],
+    [
+     "cat-file",
+     "blob"
+    ],
+    [
+     "cat-file",
+     "blob"
+    ],
+    [
+     "cat-file",
+     "blob"
+    ]
+   ]
+  },
+  "source_is_not_a_commit": {
+   "calls": 2,
+   "first_call": {
+    "argv": [
+     "git",
+     "--no-replace-objects",
+     "-C",
+     "<root>/repo",
+     "config",
+     "--get",
+     "remote.origin.url"
+    ],
+    "kwargs": {
+     "fake_console_kwarg": "console",
+     "stderr": "-1",
+     "stdout": "-1",
+     "timeout": 60
+    }
+   },
+   "message": "Source is not a commit",
+   "reason_code": null,
+   "refused": "ContractError",
+   "subcommands": [
+    [
+     "config",
+     "--get"
+    ],
+    [
+     "cat-file",
+     "-t"
+    ]
+   ]
+  },
+  "unsupported_mode_is_refused_by_the_entry": {
+   "calls": 5,
+   "first_call": {
+    "argv": [
+     "git",
+     "--no-replace-objects",
+     "-C",
+     "<root>/repo",
+     "config",
+     "--get",
+     "remote.origin.url"
+    ],
+    "kwargs": {
+     "fake_console_kwarg": "console",
+     "stderr": "-1",
+     "stdout": "-1",
+     "timeout": 60
+    }
+   },
+   "message": "Unsupported Git mode",
+   "reason_code": null,
+   "refused": "ContractError",
+   "subcommands": [
+    [
+     "config",
+     "--get"
+    ],
+    [
+     "cat-file",
+     "-t"
+    ],
+    [
+     "rev-parse",
+     "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa^{tree}"
+    ],
+    [
+     "ls-tree",
+     "-r"
+    ],
+    [
+     "cat-file",
+     "blob"
+    ]
+   ]
+  },
+  "unsupported_tracked_object": {
+   "calls": 4,
+   "first_call": {
+    "argv": [
+     "git",
+     "--no-replace-objects",
+     "-C",
+     "<root>/repo",
+     "config",
+     "--get",
+     "remote.origin.url"
+    ],
+    "kwargs": {
+     "fake_console_kwarg": "console",
+     "stderr": "-1",
+     "stdout": "-1",
+     "timeout": 60
+    }
+   },
+   "message": "Unsupported tracked object",
+   "reason_code": null,
+   "refused": "ContractError",
+   "subcommands": [
+    [
+     "config",
+     "--get"
+    ],
+    [
+     "cat-file",
+     "-t"
+    ],
+    [
+     "rev-parse",
+     "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa^{tree}"
+    ],
+    [
+     "ls-tree",
+     "-r"
+    ]
+   ]
+  }
+ },
+ "s2_verify": {
+  "verify_changed_blob_bytes_same_oid": {
+   "calls": 7,
+   "message": "Incomplete or changed source inventory",
+   "reason_code": null,
+   "refused": "ContractError",
+   "subcommands": [
+    [
+     "config",
+     "--get"
+    ],
+    [
+     "cat-file",
+     "-t"
+    ],
+    [
+     "rev-parse",
+     "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa^{tree}"
+    ],
+    [
+     "ls-tree",
+     "-r"
+    ],
+    [
+     "cat-file",
+     "blob"
+    ],
+    [
+     "cat-file",
+     "blob"
+    ],
+    [
+     "cat-file",
+     "blob"
+    ]
+   ]
+  },
+  "verify_complete_inventory": {
+   "calls": 7,
+   "returned": {
+    "commit": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+    "entries": [
+     {
+      "artifact_ref": "sha256:d82dbdb3bbabaedd7c81d2cea6aeaac158c243ae16106498f100dd2316ac7421",
+      "mode": "100644",
+      "object_id": "1111111111111111111111111111111111111111",
+      "path": "bm9ybWFs",
+      "size": 6
+     },
+     {
+      "artifact_ref": "sha256:47d36a60134671c86bdf7fb6897a29c97f176e2f2624da85ca135edbf20b3a8f",
+      "mode": "120000",
+      "object_id": "2222222222222222222222222222222222222222",
+      "path": "bGluaw==",
+      "size": 6
+     },
+     {
+      "artifact_ref": "sha256:00b0ae17309b65efb24828e06256c986734fa2cbadb0e233771b10abc6344862",
+      "mode": "100644",
+      "object_id": "3333333333333333333333333333333333333333",
+      "path": "c3BhY2UJYW5kCm5ld2xpbmU=",
+      "size": 3
+     },
+     {
+      "artifact_ref": null,
+      "mode": "160000",
+      "object_id": "4444444444444444444444444444444444444444",
+      "path": "dmVuZG9yL3N1Yg==",
+      "size": null
+     }
+    ],
+    "repository": "https://github.com/fixture/repo",
+    "tree": "bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb",
+    "version": 1
+   },
+   "subcommands": [
+    [
+     "config",
+     "--get"
+    ],
+    [
+     "cat-file",
+     "-t"
+    ],
+    [
+     "rev-parse",
+     "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa^{tree}"
+    ],
+    [
+     "ls-tree",
+     "-r"
+    ],
+    [
+     "cat-file",
+     "blob"
+    ],
+    [
+     "cat-file",
+     "blob"
+    ],
+    [
+     "cat-file",
+     "blob"
+    ]
+   ]
+  },
+  "verify_duplicate_inventory_path": {
+   "calls": 0,
+   "message": "Duplicate inventory path",
+   "reason_code": null,
+   "refused": "ContractError",
+   "subcommands": []
+  },
+  "verify_empty_inventory": {
+   "calls": 4,
+   "returned": {
+    "commit": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+    "entries": [],
+    "repository": "https://github.com/fixture/repo",
+    "tree": "bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb",
+    "version": 1
+   },
+   "subcommands": [
+    [
+     "config",
+     "--get"
+    ],
+    [
+     "cat-file",
+     "-t"
+    ],
+    [
+     "rev-parse",
+     "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa^{tree}"
+    ],
+    [
+     "ls-tree",
+     "-r"
+    ]
+   ]
+  },
+  "verify_git_failure_during_inventory": {
+   "calls": 4,
+   "message": "Source Git inspection failed: fatal: scripted failure �",
+   "reason_code": null,
+   "refused": "ContractError",
+   "subcommands": [
+    [
+     "config",
+     "--get"
+    ],
+    [
+     "cat-file",
+     "-t"
+    ],
+    [
+     "rev-parse",
+     "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa^{tree}"
+    ],
+    [
+     "ls-tree",
+     "-r"
+    ]
+   ]
+  },
+  "verify_incomplete_or_changed_inventory": {
+   "calls": 6,
+   "message": "Incomplete or changed source inventory",
+   "reason_code": null,
+   "refused": "ContractError",
+   "subcommands": [
+    [
+     "config",
+     "--get"
+    ],
+    [
+     "cat-file",
+     "-t"
+    ],
+    [
+     "rev-parse",
+     "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa^{tree}"
+    ],
+    [
+     "ls-tree",
+     "-r"
+    ],
+    [
+     "cat-file",
+     "blob"
+    ],
+    [
+     "cat-file",
+     "blob"
+    ]
+   ]
+  },
+  "verify_invalid_entry_is_refused_before_any_git": {
+   "calls": 0,
+   "message": "Unsupported Git mode",
+   "reason_code": null,
+   "refused": "ContractError",
+   "subcommands": []
+  },
+  "verify_invalid_source_is_refused_before_any_git": {
+   "calls": 0,
+   "message": "Noncanonical repository identity",
+   "reason_code": null,
+   "refused": "ContractError",
+   "subcommands": []
+  },
+  "verify_manifest_source_mismatch": {
+   "calls": 0,
+   "message": "Manifest/source mismatch",
+   "reason_code": null,
+   "refused": "ContractError",
+   "subcommands": []
+  },
+  "verify_missing_manifest_artifact": {
+   "calls": 0,
+   "message": "[Errno 2] No such file or directory: '<root>/c022-manifest/artifacts/eeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee.txt'",
+   "reason_code": null,
+   "refused": "FileNotFoundError",
+   "subcommands": []
+  },
+  "verify_modified_original_envelope": {
+   "calls": 5,
+   "message": "Artifact integrity failure",
+   "reason_code": null,
+   "refused": "ContractError",
+   "subcommands": [
+    [
+     "config",
+     "--get"
+    ],
+    [
+     "cat-file",
+     "-t"
+    ],
+    [
+     "rev-parse",
+     "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa^{tree}"
+    ],
+    [
+     "ls-tree",
+     "-r"
+    ],
+    [
+     "cat-file",
+     "blob"
+    ]
+   ]
+  }
+ },
+ "s3_console_kwargs": {
+  "artifacts_is_given": true,
+  "call": [
+   {
+    "argv": [
+     "git",
+     "--no-replace-objects",
+     "-C",
+     "<root>/repo",
+     "rev-parse",
+     "HEAD"
+    ],
+    "kwargs": {
+     "fake_console_kwarg": "console",
+     "stderr": "-1",
+     "stdout": "-1",
+     "timeout": 60
+    }
+   }
+  ],
+  "console_marker": {
+   "fake_console_kwarg": "console"
+  },
+  "repository": "<root>/repo",
+  "returned": {
+   "bytes_sha256": "139f49a833f8c70158db3bc5b9c9693b6bc9a02a46fe833743ff3cd6e57eb7ea",
+   "length": 41
+  }
+ }
+}
