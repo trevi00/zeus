@@ -18,7 +18,10 @@ from typing import Protocol
 
 OWNED_BUCKETS = ("releases", "release_queue", "improvement_loops",  # improvement_loops: named correction (S4)
                  # S7 (DESIGN-s7 V3): the rows the moved-ahead Releases/ReleaseQueue write.
-                 "deployment", "deployment_locks", "deployment_history", "research_control")
+                 "deployment", "deployment_locks", "deployment_history", "research_control",
+                 # S8 batch B4 (V28 R-sdd3): the seven buckets only review.application.sdd writes
+                 "sdd_events", "sdd_iterations", "sdd_notifications", "sdd_observations", "sdd_proposals",
+                 "sdd_spec_heads", "sdd_transfer_candidates")
 
 
 class DecisionOwnership(Protocol):
