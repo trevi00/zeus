@@ -1,0 +1,9 @@
+{
+ "family": "intake.frontdesk_adapter",
+ "description": "S8 (V17 P-b) the front door's adapter half, M7 adapters/frontdesk.py (execute_frontdesk over a fake executor with an explicit snapshot, clean_checkout refusals, the desk output schema and prompt, and the monitoring evidence builder monitoring_facts/monitoring_evidence over snapshot files in the scenario temp dir with a fixed clock: fresh, stale, future, missing, oversized, 22 malformed payloads, the accounting modes, every fleet/observation branch), characterized before the split move; plus the M7 self-read through the default snapshot_path (snapshot=None, monitoring_evidence() with no path), recorded as M7 behaviour for the declared intended differences",
+ "reference_driver": "drivers/reference/s8_frontdesk_adapter.py",
+ "target_driver": null,
+ "target_status": "pending: S8 pilot 90 (the split move follows the golden)",
+ "golden": "goldens/reference/intake.frontdesk_adapter.json",
+ "slice": "S8"
+}
