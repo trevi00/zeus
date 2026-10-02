@@ -63,7 +63,9 @@ import argparse
 import hashlib
 import json
 import os
+import re
 import secrets
+import shlex
 import shutil
 import signal
 import subprocess
@@ -74,6 +76,8 @@ from contextlib import contextmanager
 from datetime import UTC, datetime
 from pathlib import Path
 
+import yaml
+
 HERE = Path(__file__).resolve().parent
 sys.path.insert(0, str(HERE))  # attempt_worker (the fixture Zeus builders)
 sys.path.insert(0, str(HERE.parent / "buzz_conntest"))  # run_matrix's helpers (never modified)
@@ -81,7 +85,7 @@ sys.path.insert(0, str(HERE.parent / "buzz_conntest"))  # run_matrix's helpers (
 import attempt_worker as fz
 from run_matrix import HARDENING_FORMAT, HEALTH_SECONDS, MAX_SIZE, PACE_SECONDS, STATE_FORMAT, Refusal, free_port
 
-from codex_harness.composition.buzz_bridge import custody_name
+from codex_harness.composition.buzz_bridge import BridgeConfig, custody_name
 from codex_harness.coordination.application import execution_fence
 from codex_harness.coordination.application.bridge_lease import BUCKET as LEASE_BUCKET
 from codex_harness.coordination.application.bridge_lease import FENCE_ROW
@@ -91,6 +95,7 @@ from codex_harness.coordination.application.fleet.registry import FleetRegistry
 from codex_harness.coordination.application.remote_control import COMMANDS, TRANSITIONS
 from codex_harness.coordination.domain.fleet import FleetRefused
 from codex_harness.credentials.adapters.role_keys import TestRoleKeys
+from codex_harness.kernel.errors import ContractError
 from codex_harness.kernel.message import envelope
 from codex_harness.observation.adapters.buzz_relay import BuzzRelayClient
 from codex_harness.observation.adapters.event_signer import NostrEventSigner
@@ -1106,6 +1111,237 @@ def remove_secrets_quietly(run):
         pass
 
 
+# -- D4: the static lint of the production templates (DESIGN-D section 5; no Docker, no systemd, no host effect) ---------
+
+TEMPLATES = HERE.parents[2] / "deploy"
+BRIDGE_UNIT = Path("buzz-bridge/buzz-bridge.service.template")
+BRIDGE_CONFIG = Path("buzz-bridge/config.template.json")
+RELAY_COMPOSE = Path("buzz-relay/compose.template.yaml")
+yaml_nodes = yaml.compose  # a bare name: the D2 static test reads every `.compose(` attribute call as a docker form
+PLACEHOLDER = re.compile(r"@[A-Z][A-Z0-9_]*@")
+INTERPOLATION = re.compile(r"\$\{[^}]*\}")
+SECRET_KEY = re.compile(r"password|passwd|secret|token|private|nsec|api_?key|access_?key|hmac|credential", re.I)
+PATH_KEY = re.compile(r"_(file|path|dir)$", re.I)
+SECRET_VALUES = ((re.compile(r"\bnsec1[0-9a-z]{8,}"), "an nsec key"),
+                 (re.compile(r"\bsk-[A-Za-z0-9_-]{8,}"), "an sk- key"),
+                 (re.compile(r"://[^/\s:@]+:[^/\s@]+@"), "credentials inside a URL"))
+BOOLEAN_WORDS = frozenset({"true", "false", "yes", "no", "on", "off", "0", "1"})
+LOOPBACK_PREFIXES = ("127.0.0.1:", "[::1]:", "localhost:")
+LOOPBACK_HOSTS = frozenset({"127.0.0.1", "::1", "localhost"})
+DIGEST = re.compile(r"@sha256:[0-9a-f]{64}$")
+TIME_UNITS = {"us": 1e-6, "usec": 1e-6, "ms": 1e-3, "msec": 1e-3, "s": 1, "sec": 1, "second": 1, "seconds": 1, "m": 60,
+              "min": 60, "minute": 60, "minutes": 60, "h": 3600, "hr": 3600, "hour": 3600, "hours": 3600, "": 1}
+
+
+def template_secret_literal(key, value):
+    """Why `value` under `key` is a literal secret, or None (a placeholder, an interpolation, a flag or a path is fine)."""
+    text = INTERPOLATION.sub("", PLACEHOLDER.sub("", str(value))).strip()
+    for pattern, what in SECRET_VALUES:
+        if pattern.search(INTERPOLATION.sub("", PLACEHOLDER.sub("PH", str(value)))):
+            return f"{what} in a literal value"
+    if SECRET_KEY.search(key) and not PATH_KEY.search(key) and text and text.lower() not in BOOLEAN_WORDS:
+        return f"a literal value under the secret-named key {key!r}"
+    return None
+
+
+def seconds_of(value):
+    """systemd time span `value` in seconds ('30', '1min 30s', '500ms'), or None when it is not one; infinity is inf."""
+    if value.strip() == "infinity":
+        return float("inf")
+    parts = re.fullmatch(r"(?:\s*\d+(?:\.\d+)?\s*[a-z]*)+", value.strip())
+    if not parts:
+        return None
+    total = 0.0
+    for number, unit in re.findall(r"(\d+(?:\.\d+)?)\s*([a-z]*)", value):
+        if unit not in TIME_UNITS:
+            return None
+        total += float(number) * TIME_UNITS[unit]
+    return total
+
+
+def line_of(text, needle):
+    for number, line in enumerate(text.splitlines(), 1):
+        if needle in line:
+            return number
+    return 1
+
+
+def lint_unit(text, config_seconds):
+    """Violations `(line, rule, detail)` of the bridge unit; `config_seconds` is recv_timeout plus one tick."""
+    found, directives = [], {}
+    for number, raw in enumerate(text.splitlines(), 1):
+        line = raw.strip()
+        if not line or line[0] in "#;" or line[0] == "[":
+            continue
+        key, _, value = line.partition("=")
+        key, value = key.strip(), value.strip()
+        directives.setdefault(key, (number, value))
+        pairs = []
+        if key == "EnvironmentFile":
+            found.append((number, "secret", "EnvironmentFile= may carry a secret: use a 0600 file named in the config"))
+        elif key == "Environment":
+            try:
+                pairs = [item.partition("=")[::2] for item in shlex.split(value)]
+            except ValueError:
+                found.append((number, "secret", "an unparsable Environment= line"))
+        for name, item in pairs:
+            reason = template_secret_literal(name, item)
+            if reason:
+                found.append((number, "secret", reason))
+        if key not in ("Environment", "EnvironmentFile"):
+            reason = template_secret_literal("", value)
+            if reason:
+                found.append((number, "secret", reason))
+    if "KillMode" not in directives:
+        found.append((1, "kill-mode", "KillMode is missing"))
+    if "TimeoutStopSec" not in directives:
+        found.append((1, "stop-timeout", "TimeoutStopSec is missing"))
+    else:
+        number, value = directives["TimeoutStopSec"]
+        seconds = seconds_of(value)
+        if seconds is None:
+            found.append((number, "stop-timeout", f"TimeoutStopSec={value} is not a time span"))
+        elif seconds <= config_seconds:
+            found.append((number, "stop-timeout",
+                          f"TimeoutStopSec={value} is not above recv_timeout plus one tick ({config_seconds:g}s)"))
+    return found
+
+
+def lint_config(text):
+    """`(violations, recv_timeout + tick)` of the bridge config template: unknown keys, secret literals, `BridgeConfig.parse`."""
+    defaults = {name: field.default for name, field in BridgeConfig.__dataclass_fields__.items()}
+    found = []
+    try:
+        document = json.loads(text)
+    except ValueError as exc:
+        return [(1, "config", f"not JSON: {exc}")], defaults["recv_timeout"] + defaults["tick_seconds"]
+    if not isinstance(document, dict):
+        return [(1, "config", "a JSON object is required")], defaults["recv_timeout"] + defaults["tick_seconds"]
+    seconds = sum(document.get(name, defaults[name]) for name in ("recv_timeout", "tick_seconds")
+                  if isinstance(document.get(name, defaults[name]), (int, float)))
+
+    def walk(key, value):
+        if isinstance(value, dict):
+            for inner_key, inner in value.items():
+                walk(inner_key, inner)
+        elif isinstance(value, list):
+            for inner in value:
+                walk(key, inner)
+        elif isinstance(value, str):
+            reason = template_secret_literal(str(key), value)
+            if reason:
+                found.append((line_of(text, f'"{key}"'), "secret", reason))
+    walk("", document)
+    for key in sorted(set(document) - set(defaults)):
+        found.append((line_of(text, f'"{key}"'), "unknown-key", f"{key!r} is not a BridgeConfig key"))
+    for key in sorted(set(defaults) - set(document)):
+        found.append((1, "missing-key", f"{key!r} is missing (every BridgeConfig key is listed)"))
+    if not found:
+        def dummy(key, value):
+            if isinstance(value, dict):
+                return {dummy(key, k): dummy(key, v) for k, v in value.items()}
+            if isinstance(value, list):
+                return [dummy(key, item) for item in value]
+            if isinstance(value, str) and PLACEHOLDER.search(value):
+                if key == "owners":
+                    return "ab" * 32
+                if key == "org_d":
+                    return "00000000-0000-4000-8000-000000000000"
+                return PLACEHOLDER.sub(lambda m: "dummy-" + m.group(0)[1:-1].lower(), value)
+            return value
+        try:
+            BridgeConfig.parse({key: dummy(key, value) for key, value in document.items()})
+        except ContractError as exc:
+            found.append((1, "config", f"BridgeConfig.parse refuses the template: {exc}"))
+    return found, seconds
+
+
+def lint_compose(text):
+    """Violations `(line, rule, detail)` of the relay compose template (parsed with line marks; comments never count)."""
+    try:
+        root = yaml_nodes(text)
+    except yaml.YAMLError as exc:
+        return [(getattr(getattr(exc, "problem_mark", None), "line", 0) + 1, "yaml", f"not YAML: {exc}")]
+    found = []
+
+    def scalar(node):
+        return node.value if isinstance(node, yaml.ScalarNode) else None
+
+    def at(node):
+        return node.start_mark.line + 1
+
+    def loopback_port(item):
+        if isinstance(item, yaml.ScalarNode):
+            if not item.value.startswith(LOOPBACK_PREFIXES):
+                found.append((at(item), "port", f"published port {item.value!r} is not on loopback"))
+        elif isinstance(item, yaml.MappingNode):
+            fields = {scalar(k): v for k, v in item.value}
+            host = scalar(fields.get("host_ip"))
+            if host not in LOOPBACK_HOSTS:
+                found.append((at(item), "port", f"published port has host_ip {host!r}: not loopback"))
+
+    def walk(node, parent_key=None):
+        if isinstance(node, yaml.MappingNode):
+            for key_node, value_node in node.value:
+                key = scalar(key_node)
+                if key in ("privileged", "cap_add"):
+                    found.append((at(key_node), "forbidden", f"{key} appears"))
+                elif key == "network_mode" and scalar(value_node) == "host":
+                    found.append((at(key_node), "forbidden", "network_mode: host"))
+                elif key == "image":
+                    image = scalar(value_node) or ""
+                    if not DIGEST.search(image):
+                        found.append((at(value_node), "image", f"image {image!r} is not pinned by sha256 digest"))
+                elif key == "ports" and isinstance(value_node, yaml.SequenceNode):
+                    for item in value_node.value:
+                        loopback_port(item)
+                if key is not None and scalar(value_node) is not None:
+                    reason = template_secret_literal(key, scalar(value_node))
+                    if reason:
+                        found.append((at(value_node), "secret", reason))
+                walk(value_node, key)
+        elif isinstance(node, yaml.SequenceNode):
+            for item in node.value:
+                text_value = scalar(item)
+                if text_value is not None and parent_key in ("environment", "labels") and "=" in text_value:
+                    name, _, rest = text_value.partition("=")
+                    reason = template_secret_literal(name, rest)
+                    if reason:
+                        found.append((at(item), "secret", reason))
+                walk(item, parent_key)
+        elif isinstance(node, yaml.ScalarNode):
+            if "docker.sock" in node.value:
+                found.append((at(node), "forbidden", f"the docker socket ({node.value!r})"))
+            for pattern, what in SECRET_VALUES:
+                if pattern.search(INTERPOLATION.sub("", PLACEHOLDER.sub("PH", node.value))):
+                    found.append((at(node), "secret", f"{what} in a literal value"))
+    walk(root)
+    return found
+
+
+def lint_templates(directory):
+    """The `file:line: rule: detail` lines of every violation in the three templates under `directory`."""
+    texts, out = {}, []
+    for relative in (BRIDGE_UNIT, BRIDGE_CONFIG, RELAY_COMPOSE):
+        try:
+            texts[relative] = (directory / relative).read_text(encoding="utf-8")
+        except OSError as exc:
+            out.append(f"{relative}:1: missing: {type(exc).__name__} reading the template")
+    found = {}
+    config_seconds = BridgeConfig.__dataclass_fields__["recv_timeout"].default + BridgeConfig.__dataclass_fields__[
+        "tick_seconds"].default
+    if BRIDGE_CONFIG in texts:
+        found[BRIDGE_CONFIG], config_seconds = lint_config(texts[BRIDGE_CONFIG])
+    if BRIDGE_UNIT in texts:
+        found[BRIDGE_UNIT] = lint_unit(texts[BRIDGE_UNIT], config_seconds)
+    if RELAY_COMPOSE in texts:
+        found[RELAY_COMPOSE] = lint_compose(texts[RELAY_COMPOSE])
+    for relative, violations in found.items():
+        first = {(line, rule): detail for line, rule, detail in reversed(sorted(violations))}  # one per line and rule
+        out.extend(f"{relative}:{line}: {rule}: {detail}" for (line, rule), detail in sorted(first.items()))
+    return out
+
+
 def main(argv=None):
     parser = argparse.ArgumentParser(description="Owner-run Buzz D2 isolated end-to-end (needs Docker and Node; never run "
                                                  "by pytest)")
@@ -1113,11 +1349,16 @@ def main(argv=None):
     parser.add_argument("--keep-on-failure", action="store_true",
                         help="on a failing step leave the stack running instead of `down -v`")
     parser.add_argument("--desktop", type=Path, default=DEFAULT_DESKTOP, help="the fork checkout holding desktop/ (D3 driver)")
-    parser.add_argument("--lint-templates", action="store_true", help="reserved for D4 (the production template lint)")
+    parser.add_argument("--lint-templates", action="store_true",
+                        help="statically lint the D4 production templates (no Docker, no systemd); exit 1 names each line")
+    parser.add_argument("--templates-dir", type=Path, default=TEMPLATES, help="the deploy directory --lint-templates reads")
     args = parser.parse_args(argv)
     if args.lint_templates:
-        print("not yet: the production template lint is D4")
-        return 0
+        violations = lint_templates(args.templates_dir)
+        for violation in violations:
+            print(f"LINT {violation}", flush=True)
+        print("templates lint-clean" if not violations else f"templates lint FAILED: {len(violations)} violation(s)")
+        return 1 if violations else 0
     stamp = datetime.now(UTC).strftime("%Y%m%dT%H%M%SZ")
     tmp = SCRATCH / stamp
     tmp.mkdir(mode=0o700, parents=True)

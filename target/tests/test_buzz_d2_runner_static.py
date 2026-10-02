@@ -232,7 +232,7 @@ def test_run_matrix_is_unchanged():
     assert hashlib.sha256(A4_RUNNER.read_bytes()).hexdigest() == RUN_MATRIX_SHA256
 
 
-def test_help_exits_zero_and_lists_the_flags_and_lint_templates_is_reserved():
+def test_help_exits_zero_and_lists_the_flags_and_lint_templates_runs_the_d4_lint():
     helped = subprocess.run([sys.executable, "-B", str(RUNNER), "--help"], capture_output=True, text=True, check=False,
                             timeout=120)
     assert helped.returncode == 0, helped.stderr[-300:]
@@ -240,7 +240,7 @@ def test_help_exits_zero_and_lists_the_flags_and_lint_templates_is_reserved():
         assert flag in helped.stdout
     linted = subprocess.run([sys.executable, "-B", str(RUNNER), "--lint-templates"], capture_output=True, text=True,
                             check=False, timeout=120)
-    assert linted.returncode == 0 and "not yet" in linted.stdout
+    assert linted.returncode == 0 and "templates lint-clean" in linted.stdout  # D4 replaced the D2 "not yet"
 
 
 def test_org_d_is_a_canonical_uuid_and_no_custody_file_is_copied():

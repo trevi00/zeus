@@ -1,0 +1,18 @@
+{
+  "relay_url": "@RELAY_URL@",
+  "channels": ["@COMMANDER_CHANNEL@", "@TEAM_CHANNEL@"],
+  "owners": ["@OWNER_PUBKEY_HEX@"],
+  "custody_dir": "@CUSTODY_DIR@",
+  "store_dsn_file": "@STORE_DSN_FILE@",
+  "commander_channel": "@COMMANDER_CHANNEL@",
+  "org_d": "@ORG_D@",
+  "team_channels": {"@TEAM@": "@TEAM_CHANNEL@"},
+  "organization_file": null,
+  "tick_seconds": 5,
+  "lease_ttl_seconds": 30,
+  "recv_timeout": 10,
+  "max_seconds": 900,
+  "recover_every": 12,
+  "store_fail_limit": 12,
+  "max_size": 1048576
+}

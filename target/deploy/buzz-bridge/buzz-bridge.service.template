@@ -1,0 +1,39 @@
+# Buzz bridge unit TEMPLATE (Buzz DESIGN-D section 5). Prepared by D4; NOTHING installs, enables or starts it: the
+# production install belongs to the ONE section-10 user request. Placeholders are @NAME@; the lint is
+# `run_e2e.py --lint-templates`.
+#
+# The bridge reads its store DSN from the 0600 file named by `store_dsn_file` and its keys from `custody_dir` (read-only
+# here: ProtectSystem=strict with no ReadWritePaths). No secret appears in this unit: no Environment= or EnvironmentFile=
+# carries one.
+#
+# Stop: SIGTERM only sets the loop's flag (RESEARCH-D D1), so the stop latency is recv_timeout plus one in-flight step.
+# TimeoutStopSec must exceed recv_timeout + one tick of config.template.json, or SIGKILL lands mid-pass (D2).
+[Unit]
+Description=Zeus Buzz bridge
+After=network-online.target
+Wants=network-online.target
+StartLimitIntervalSec=600
+StartLimitBurst=5
+
+[Service]
+Type=simple
+User=@USER@
+Group=@GROUP@
+Environment=PYTHONUNBUFFERED=1
+ExecStart=@VENV_PYTHON@ -B -m codex_harness.entry.processes.buzz_bridge --config @CONFIG_PATH@
+Restart=always
+RestartSec=10
+KillMode=mixed
+KillSignal=SIGTERM
+TimeoutStopSec=30
+NoNewPrivileges=yes
+ProtectSystem=strict
+ProtectHome=read-only
+PrivateTmp=yes
+ReadWritePaths=
+MemoryMax=2G
+MemorySwapMax=0
+OOMPolicy=continue
+
+[Install]
+WantedBy=multi-user.target
