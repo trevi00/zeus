@@ -1,0 +1,4583 @@
+{
+ "branch_coverage": {
+  "CompletionAuthority.__init__": "every case (store, artifacts, org)",
+  "CompletionAuthority._provenance calls self.artifacts.document/inspect, self.store.transaction": "c8_provenance",
+  "CompletionAuthority._provenance except ContractError (produced verdict) -> verdict_mismatch": "c8_provenance.produced_variants.scenarios_malformed, verdict_invalid",
+  "CompletionAuthority._provenance except Exception (artifact read)": "c8_provenance.inspect_fault_*, document_fault_*",
+  "CompletionAuthority._provenance except Exception (reviewer lookup)": "c8_provenance.reviewer_execution_variants, store_fails_reading_the_review_task_*",
+  "CompletionAuthority._provenance require(expected_scenarios) 'must be scenario names'": "c8_provenance.consumer_denominator_a_string, _a_tuple, _with_a_non_str",
+  "CompletionAuthority._provenance require(reviewer reference) and require(reviewer task)": "c8_provenance.reviewer_execution_variants",
+  "CompletionAuthority.inspect calls self.store.transaction": "every inspection",
+  "CompletionAuthority.inspect except (ContractError, KeyError, TypeError) -> corrupt": "c9_corruption (ContractError rows; KeyError rows: reviewer_missing, sequence_missing; TypeError: unreachable from a stored row, see NOTES)",
+  "CompletionAuthority.inspect except Exception -> unreadable": "c9_corruption.unreadable_store (closed_port, long_message, empty_message)",
+  "CompletionAuthority.inspect require(task identity)": "c2_worker_success.task_identity_required",
+  "CompletionAuthority.record calls self.store.transaction": "c1 (notice), c3 (verdict), c7 (replay); c9_corruption.unreadable_store.record_*",
+  "CompletionAuthority.record except ContractError -> notice -> raise (re-raise)": "c1_malformed.records (twice each), cross_target_receipt, notices",
+  "CompletionAuthority.record require(generation/attempt) 'different execution'": "c3_binding.generation_ahead, attempt_ahead, bool_generation_and_attempt_on_the_row, float_generation_on_the_row, row_without_generation; c4_reclaimed.old_target_refused",
+  "CompletionAuthority.record require(same) 'identity reused'": "c7_duplicates.identity_reused_with_different_content, stored_row_lacks_a_key",
+  "CompletionAuthority.record require(task is not None) 'unknown task'": "c3_binding.unknown_task",
+  "CompletionAuthority.require_authority require(authority)": "c2_worker_success.require_authority_refuses, c8_provenance.*_require, c9_corruption.unreadable_store",
+  "_excerpt (the bound of 2000)": "c1_malformed.long_excerpt, excerpt_exactly_at_the_bound_is_kept_whole",
+  "_task_of (a dict record, a dict target, a str task_id)": "c1_malformed.task_of, task_of_notice_task_ids"
+ },
+ "c10_constants": {
+  "BUCKET": "completion_verdicts",
+  "EVALUATION_KIND": "completion-evaluation",
+  "RECORD_ONLY": [
+   "sequence",
+   "recorded_at"
+  ],
+  "REJECTIONS": "completion_rejections",
+  "STATES": [
+   "unreadable",
+   "no_ledger",
+   "corrupt",
+   "partially_corrupt",
+   "rejected_only",
+   "not_evaluated",
+   "stale",
+   "not_approved",
+   "incomplete",
+   "not_succeeded",
+   "receipt_unbound",
+   "artifact_missing",
+   "artifact_unbound",
+   "reviewer_unbound",
+   "scenario_mismatch",
+   "verdict_mismatch",
+   "authoritative"
+  ],
+  "states_are_unique": true
+ },
+ "c11_test_every_named_state_is_reachable": {
+  "outside_STATES": [],
+  "reached": [
+   "artifact_missing",
+   "artifact_unbound",
+   "authoritative",
+   "corrupt",
+   "incomplete",
+   "no_ledger",
+   "not_approved",
+   "not_evaluated",
+   "not_succeeded",
+   "partially_corrupt",
+   "receipt_unbound",
+   "rejected_only",
+   "reviewer_unbound",
+   "scenario_mismatch",
+   "stale",
+   "unreadable",
+   "verdict_mismatch"
+  ],
+  "reached_equals_STATES": true,
+  "unreached": []
+ },
+ "c1_test_malformed_records_are_rejected_and_logged": {
+  "cross_target_receipt": {
+   "after": {
+    "buckets": {
+     "completion_rejections": "3c3b76253f5b62239da7010a7aaafd42d5b9165210c726a986dffa1675846e60",
+     "completion_verdicts": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945"
+    },
+    "rows": {
+     "completion_rejections": 22,
+     "completion_verdicts": 0
+    },
+    "store": "2fc52afb5ce0304d0e05ef772d8c34bccb142aa5bf6b1865badeed42f567d294"
+   },
+   "before": {
+    "buckets": {
+     "completion_rejections": "b7ab2f5a4c005a2ad375c314ece6b8ee102882d9212cba7027a2995bd2749567",
+     "completion_verdicts": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945"
+    },
+    "rows": {
+     "completion_rejections": 21,
+     "completion_verdicts": 0
+    },
+    "store": "62cadd1b26294a962e98fd140ec7416df83ac271182b34266a9aa8f50c94b59e"
+   },
+   "message": "Completion verdict rejected: runner_receipt targets a different execution than the verdict",
+   "nothing_written": false,
+   "raised": "ContractError"
+  },
+  "excerpt_exactly_at_the_bound_is_kept_whole": [
+   2000,
+   "ContractError"
+  ],
+  "excerpt_exactly_at_the_bound_notice_count": 1,
+  "inspect_is_rejected_only": {
+   "authority": false,
+   "corrupt": 0,
+   "reason": null,
+   "rejections": 20,
+   "state": "rejected_only",
+   "verdicts": 0
+  },
+  "long_excerpt": {
+   "again": {
+    "after": {
+     "buckets": {
+      "completion_rejections": "eb55e67fe9e2318ab5e59812ba58cfd946a88cfed4d09e4fa49467e810261498",
+      "completion_verdicts": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945"
+     },
+     "rows": {
+      "completion_rejections": 10,
+      "completion_verdicts": 0
+     },
+     "store": "0bbcb6c4879de2e685882389790ca293679935e87c6ab4736f96ec8f65820c33"
+    },
+    "before": {
+     "buckets": {
+      "completion_rejections": "eb55e67fe9e2318ab5e59812ba58cfd946a88cfed4d09e4fa49467e810261498",
+      "completion_verdicts": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945"
+     },
+     "rows": {
+      "completion_rejections": 10,
+      "completion_verdicts": 0
+     },
+     "store": "0bbcb6c4879de2e685882389790ca293679935e87c6ab4736f96ec8f65820c33"
+    },
+    "message": "Completion verdict rejected: Completion verdict must carry exactly ['evaluation_artifact', 'event', 'observed_at', 'reviewer', 'runner_receipt', 'scenarios', 'schema_version', 'spec_revision', 'target', 'verdict']",
+    "nothing_written": true,
+    "raised": "ContractError"
+   },
+   "ends_with_ellipsis": true,
+   "first": {
+    "after": {
+     "buckets": {
+      "completion_rejections": "eb55e67fe9e2318ab5e59812ba58cfd946a88cfed4d09e4fa49467e810261498",
+      "completion_verdicts": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945"
+     },
+     "rows": {
+      "completion_rejections": 10,
+      "completion_verdicts": 0
+     },
+     "store": "0bbcb6c4879de2e685882389790ca293679935e87c6ab4736f96ec8f65820c33"
+    },
+    "before": {
+     "buckets": {
+      "completion_rejections": "82cc45a2593c7fcba226af6f9f219c2637fbdeca440ce45f1b9dfda99de4dba2",
+      "completion_verdicts": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945"
+     },
+     "rows": {
+      "completion_rejections": 9,
+      "completion_verdicts": 0
+     },
+     "store": "25f3f8d86be571af16c1b18dc5e3a47f851b214b57eca7c8a91114f15858e312"
+    },
+    "message": "Completion verdict rejected: Completion verdict must carry exactly ['evaluation_artifact', 'event', 'observed_at', 'reviewer', 'runner_receipt', 'scenarios', 'schema_version', 'spec_revision', 'target', 'verdict']",
+    "nothing_written": false,
+    "raised": "ContractError"
+   },
+   "head_digest": "c6ea21e26bb1519d7331edd022abfc7e64ba0c63f84a3cc9591a91503a96849c",
+   "length": 2001
+  },
+  "notice_count_is_one_per_distinct_refusal": [
+   22,
+   22
+  ],
+  "notice_id_is_the_digest_of_task_reason_excerpt": true,
+  "notice_reasons_start_with_the_prefix": true,
+  "notice_task_ids": [
+   "task-1",
+   "x"
+  ],
+  "notices": [
+   {
+    "at": "2026-09-22T00:00:00+00:00",
+    "excerpt_digest": "7d3cc8c23c41cef6de07098c530e4b5bc0f11b2639ed461257ea8fd5223663da",
+    "excerpt_length": 723,
+    "id": "04669ce169cab4eeebbbb060d512c69a7d213a55beade21b99c9f0dd3feddf83",
+    "keys": [
+     "at",
+     "excerpt",
+     "id",
+     "reason",
+     "task_id"
+    ],
+    "reason": "Completion verdict rejected: observed_at must carry a timezone",
+    "task_id": "task-1"
+   },
+   {
+    "at": "2026-09-22T00:00:00+00:00",
+    "excerpt_digest": "2b31448a3bb3b849f5220d9fc6357c47725e7574253515e8d3b028424ac21367",
+    "excerpt_length": 727,
+    "id": "08a3a3d46b9272489f83ac4fdd4094e6883893a09bdf885738e78b8457578fc4",
+    "keys": [
+     "at",
+     "excerpt",
+     "id",
+     "reason",
+     "task_id"
+    ],
+    "reason": "Completion verdict rejected: target.generation must be a positive integer",
+    "task_id": "x"
+   },
+   {
+    "at": "2026-09-22T00:00:00+00:00",
+    "excerpt_digest": "eaf54d7e44d383433af16745d948c1ccdb5ada17b073cbbee09c793017aa5a49",
+    "excerpt_length": 722,
+    "id": "08b93461637e20c6cb20abeb8480b8dd4f2db2e27c69f70b6e52d1096cc87f23",
+    "keys": [
+     "at",
+     "excerpt",
+     "id",
+     "reason",
+     "task_id"
+    ],
+    "reason": "Completion verdict rejected: evaluation_artifact must be a sha256: reference",
+    "task_id": "task-1"
+   },
+   {
+    "at": "2026-09-22T00:00:00+00:00",
+    "excerpt_digest": "d30672c55746e21b0753d797e3d656e83df0da038432b17f68eda3308d6b0721",
+    "excerpt_length": 729,
+    "id": "0d5a55b1b735c91d785d4eec3dd182a52ba2a9792589e701c337d622445ae524",
+    "keys": [
+     "at",
+     "excerpt",
+     "id",
+     "reason",
+     "task_id"
+    ],
+    "reason": "Completion verdict rejected: schema_version must be 1",
+    "task_id": "task-1"
+   },
+   {
+    "at": "2026-09-22T00:00:00+00:00",
+    "excerpt_digest": "565359ec716bd729c709bc48d853752d9c100e1c7834012a4d482d85d62e947a",
+    "excerpt_length": 717,
+    "id": "18ffc28e67a5d2b62e4620e1d426ccdfb6629d60331d524e9e28fa44e84e184e",
+    "keys": [
+     "at",
+     "excerpt",
+     "id",
+     "reason",
+     "task_id"
+    ],
+    "reason": "Completion verdict rejected: reviewer.actor must be a non-empty string",
+    "task_id": "task-1"
+   },
+   {
+    "at": "2026-09-22T00:00:00+00:00",
+    "excerpt_digest": "522d6d7194eeb0eb5a1a644d9e08c000065d777f4c02075e6ce87c041b2c3386",
+    "excerpt_length": 732,
+    "id": "1cce0c87563bc2ff94479fe2c10a47173b3714c75fdd8b9dbac0486150f64c1d",
+    "keys": [
+     "at",
+     "excerpt",
+     "id",
+     "reason",
+     "task_id"
+    ],
+    "reason": "Completion verdict rejected: schema_version must be 1",
+    "task_id": "task-1"
+   },
+   {
+    "at": "2026-09-22T00:00:00+00:00",
+    "excerpt_digest": "aedadabef7d5e6d7ec4d4afb21d0ace25e2a495d2f9577e1dc6fe47e24db85fa",
+    "excerpt_length": 705,
+    "id": "1f2f5d39e568681cb6467056cc196e2e67b4e52edb8f2dc0b9c90cfc7db935a1",
+    "keys": [
+     "at",
+     "excerpt",
+     "id",
+     "reason",
+     "task_id"
+    ],
+    "reason": "Completion verdict rejected: scenarios.excluded[] must carry exactly ['approved_by', 'id', 'reason', 'revision']",
+    "task_id": "task-1"
+   },
+   {
+    "at": "2026-09-22T00:00:00+00:00",
+    "excerpt_digest": "3b4256f3022da5369284a6ded433520eee05c367887e08b1d22dd5769de49325",
+    "excerpt_length": 705,
+    "id": "21e037ee7d600102df84262fa936f4e7324fe265b81d47642389105a35bb8965",
+    "keys": [
+     "at",
+     "excerpt",
+     "id",
+     "reason",
+     "task_id"
+    ],
+    "reason": "Completion verdict rejected: observed_at must be ISO-8601 text",
+    "task_id": "task-1"
+   },
+   {
+    "at": "2026-09-22T00:00:00+00:00",
+    "excerpt_digest": "36457e3b69fba37d3d6e1016bc338ee8c101067c27c8e6734c72f7a67d9d3084",
+    "excerpt_length": 705,
+    "id": "2d2751e640e3874378ff2dbcf94e6ff8361b2e35454fb6ceda7a232f3818d7ab",
+    "keys": [
+     "at",
+     "excerpt",
+     "id",
+     "reason",
+     "task_id"
+    ],
+    "reason": "Completion verdict rejected: observed_at must be ISO-8601 text",
+    "task_id": "task-1"
+   },
+   {
+    "at": "2026-09-22T00:00:00+00:00",
+    "excerpt_digest": "23ff299255278e0e7910f1a76c106786eb41e4d8c47f4c79a9f58d716955083c",
+    "excerpt_length": 697,
+    "id": "4a7004ccaf634f02e18b014b54f2097bccc2f0191785ed887745c42a63a81931",
+    "keys": [
+     "at",
+     "excerpt",
+     "id",
+     "reason",
+     "task_id"
+    ],
+    "reason": "Completion verdict rejected: scenarios.passed must be a subset of scenarios.expected",
+    "task_id": "task-1"
+   },
+   {
+    "at": "2026-09-22T00:00:00+00:00",
+    "excerpt_digest": "214dce25d78e9338e6e8b9972cf8597344dc44210111247d06bf2c2429ea4bc0",
+    "excerpt_length": 735,
+    "id": "55fb5b0871485307faff103860ae4b6148ab3683be6bac9efa98b4ee21f28858",
+    "keys": [
+     "at",
+     "excerpt",
+     "id",
+     "reason",
+     "task_id"
+    ],
+    "reason": "Completion verdict rejected: runner_receipt targets a different execution than the verdict",
+    "task_id": "task-1"
+   },
+   {
+    "at": "2026-09-22T00:00:00+00:00",
+    "excerpt_digest": "36475432418be132693fca1d089abede9a964eecbe676d6ec1a8736672dcb911",
+    "excerpt_length": 702,
+    "id": "5a9051719aa2b92cd2ee5eeba4aeec4e2634d2a66364601c86be5de28405ed80",
+    "keys": [
+     "at",
+     "excerpt",
+     "id",
+     "reason",
+     "task_id"
+    ],
+    "reason": "Completion verdict rejected: scenarios.expected must not repeat a scenario",
+    "task_id": "task-1"
+   },
+   {
+    "at": "2026-09-22T00:00:00+00:00",
+    "excerpt_digest": "665ae266899dc7be7a55f49c04cc3bf921d96429e0fd3905c77ff157f3a26cc0",
+    "excerpt_length": 724,
+    "id": "75b1f71f4054b5c81f6443b6c8dff369795b1bbf28daad058f6d1e2acdd09eb6",
+    "keys": [
+     "at",
+     "excerpt",
+     "id",
+     "reason",
+     "task_id"
+    ],
+    "reason": "Completion verdict rejected: reviewer.kind must be one of ('model', 'human')",
+    "task_id": "task-1"
+   },
+   {
+    "at": "2026-09-22T00:00:00+00:00",
+    "excerpt_digest": "5857f4839b81f7faf2822e426a94b05b421ffa34873f15cca718fb27c8ab3e7d",
+    "excerpt_length": 720,
+    "id": "958b9087fe926a058756d893047f8a450350ba08466a0b51b1a66a35754f985e",
+    "keys": [
+     "at",
+     "excerpt",
+     "id",
+     "reason",
+     "task_id"
+    ],
+    "reason": "Completion verdict rejected: event must be completion.verdict",
+    "task_id": "task-1"
+   },
+   {
+    "at": "2026-09-22T00:00:00+00:00",
+    "excerpt_digest": "249b83f6a9dbb249ee1f618956e947766121c2b6541122db4bed6d7d5e68d0ce",
+    "excerpt_length": 751,
+    "id": "a5b2da3458a6bdc06f179eeb22116d645bdd39f3f447814868feb21431091e19",
+    "keys": [
+     "at",
+     "excerpt",
+     "id",
+     "reason",
+     "task_id"
+    ],
+    "reason": "Completion verdict rejected: Completion verdict must carry exactly ['evaluation_artifact', 'event', 'observed_at', 'reviewer', 'runner_receipt', 'scenarios', 'schema_version', 'spec_revision', 'target', 'verdict']",
+    "task_id": "task-1"
+   },
+   {
+    "at": "2026-09-22T00:00:00+00:00",
+    "excerpt_digest": "57051ccf87a34a9f67fddd24acfbf7b53c664d3b655af877928a49c29232c489",
+    "excerpt_length": 726,
+    "id": "af02ae5604208adbc083900e6da8557eff472d5f9509b510333c37bb2b836b15",
+    "keys": [
+     "at",
+     "excerpt",
+     "id",
+     "reason",
+     "task_id"
+    ],
+    "reason": "Completion verdict rejected: target.generation must be a positive integer",
+    "task_id": "x"
+   },
+   {
+    "at": "2026-09-22T00:00:00+00:00",
+    "excerpt_digest": "fb0a01e55f03d7ef3e887d9f63ec39b326e852cf1afa47ee6a43f7a565f45aa3",
+    "excerpt_length": 692,
+    "id": "b331308d04d576715880307d604ce3681899ff3b03b64276b670bd753bec53d7",
+    "keys": [
+     "at",
+     "excerpt",
+     "id",
+     "reason",
+     "task_id"
+    ],
+    "reason": "Completion verdict rejected: spec_revision must be lowercase hex of the declared length",
+    "task_id": "task-1"
+   },
+   {
+    "at": "2026-09-22T00:00:00+00:00",
+    "excerpt_digest": "c2b8b96115188cddb1b92f187df07140a04ff0e11c25e4cbe0d3d4b1d3448501",
+    "excerpt_length": 731,
+    "id": "b3c7b73c9769f1a6f99ac2acf6a4ced0c8f020dacd049969efd74df463e2225c",
+    "keys": [
+     "at",
+     "excerpt",
+     "id",
+     "reason",
+     "task_id"
+    ],
+    "reason": "Completion verdict rejected: verdict must be one of ('approved', 'iterate', 'escalate')",
+    "task_id": "task-1"
+   },
+   {
+    "at": "2026-09-22T00:00:00+00:00",
+    "excerpt_digest": "ffe593f388250a9e6d1deb20630351139c783c7d41a42fcb8c20712c6f5c1f7b",
+    "excerpt_length": 729,
+    "id": "b5ad36539f842e5b3e663757ecb325ab03e9e18e60b4253e65597a1fdb7aa5c4",
+    "keys": [
+     "at",
+     "excerpt",
+     "id",
+     "reason",
+     "task_id"
+    ],
+    "reason": "Completion verdict rejected: observed_at is in the future",
+    "task_id": "task-1"
+   },
+   {
+    "at": "2026-09-22T00:00:00+00:00",
+    "excerpt_digest": "ac67b90ee643208c1cd5071e82de1e3866fb2b185915142d1faaa1a013bb714b",
+    "excerpt_length": 754,
+    "id": "bac153c83f73ffe278e0b985f58d79c49bb6a7a42adce751cac699fd17b10410",
+    "keys": [
+     "at",
+     "excerpt",
+     "id",
+     "reason",
+     "task_id"
+    ],
+    "reason": "Completion verdict rejected: Completion verdict must carry exactly ['evaluation_artifact', 'event', 'observed_at', 'reviewer', 'runner_receipt', 'scenarios', 'schema_version', 'spec_revision', 'target', 'verdict']",
+    "task_id": "task-1"
+   },
+   {
+    "at": "2026-09-22T00:00:00+00:00",
+    "excerpt_digest": "68dcdb484a5698f0782b78bfa5af2b9fab0aea30398d40691eea6cad774e8b60",
+    "excerpt_length": 731,
+    "id": "bfe72b34e6eede190bb95753792de8a00b18e156a5cf5ca42313cbe953dc0d5f",
+    "keys": [
+     "at",
+     "excerpt",
+     "id",
+     "reason",
+     "task_id"
+    ],
+    "reason": "Completion verdict rejected: schema_version must be 1",
+    "task_id": "task-1"
+   },
+   {
+    "at": "2026-09-22T00:00:00+00:00",
+    "excerpt_digest": "4434b5c0a7bc3a1de6bf844b58fbbf8826bee0b2d0f284a2d52eb421402a30d3",
+    "excerpt_length": 726,
+    "id": "d77b06b8112206c2ceef01a5ed48a793240ebfe8c619da80a6f416de3d106858",
+    "keys": [
+     "at",
+     "excerpt",
+     "id",
+     "reason",
+     "task_id"
+    ],
+    "reason": "Completion verdict rejected: verdict must be one of ('approved', 'iterate', 'escalate')",
+    "task_id": "task-1"
+   }
+  ],
+  "records": {
+   "artifact bare": {
+    "first": {
+     "after": {
+      "buckets": {
+       "completion_rejections": "8c0bc9e4871634ba4b472ce3b3bc9883357e7c852dddf6722ebbc309920d0eea",
+       "completion_verdicts": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945"
+      },
+      "rows": {
+       "completion_rejections": 16,
+       "completion_verdicts": 0
+      },
+      "store": "a3e16ae573ea0148ef87fbea55087ae00f4956b83c9ab47aa9742cabc4972f0d"
+     },
+     "before": {
+      "buckets": {
+       "completion_rejections": "7681e42b4e726e51d295d5980eeaad061db641602f7b1f79e5bbf274f9abffe1",
+       "completion_verdicts": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945"
+      },
+      "rows": {
+       "completion_rejections": 15,
+       "completion_verdicts": 0
+      },
+      "store": "2b43254871b3bbbdaa071bfa3c561bb10b68424fb307279361423bd3ef095c51"
+     },
+     "message": "Completion verdict rejected: evaluation_artifact must be a sha256: reference",
+     "nothing_written": false,
+     "raised": "ContractError"
+    },
+    "mentions": true,
+    "replay": {
+     "after": {
+      "buckets": {
+       "completion_rejections": "8c0bc9e4871634ba4b472ce3b3bc9883357e7c852dddf6722ebbc309920d0eea",
+       "completion_verdicts": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945"
+      },
+      "rows": {
+       "completion_rejections": 16,
+       "completion_verdicts": 0
+      },
+      "store": "a3e16ae573ea0148ef87fbea55087ae00f4956b83c9ab47aa9742cabc4972f0d"
+     },
+     "before": {
+      "buckets": {
+       "completion_rejections": "8c0bc9e4871634ba4b472ce3b3bc9883357e7c852dddf6722ebbc309920d0eea",
+       "completion_verdicts": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945"
+      },
+      "rows": {
+       "completion_rejections": 16,
+       "completion_verdicts": 0
+      },
+      "store": "a3e16ae573ea0148ef87fbea55087ae00f4956b83c9ab47aa9742cabc4972f0d"
+     },
+     "message": "Completion verdict rejected: evaluation_artifact must be a sha256: reference",
+     "nothing_written": true,
+     "raised": "ContractError"
+    },
+    "replay_adds_nothing": true
+   },
+   "caller cross_target flag": {
+    "first": {
+     "after": {
+      "buckets": {
+       "completion_rejections": "5aefab31681077264babd4702d070d1dd26c7fe3f6029c37ce84d961f4adaada",
+       "completion_verdicts": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945"
+      },
+      "rows": {
+       "completion_rejections": 8,
+       "completion_verdicts": 0
+      },
+      "store": "0187cf40147fc7281569f088faa1cb1ff1f4decf909ec9badbc710b49c0952de"
+     },
+     "before": {
+      "buckets": {
+       "completion_rejections": "58425dc3d8a3e72308a7c3d581476c4b08ef0cbe6e1f25517465ce8df6b7bf1a",
+       "completion_verdicts": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945"
+      },
+      "rows": {
+       "completion_rejections": 7,
+       "completion_verdicts": 0
+      },
+      "store": "3d5cffb60bcc4c003c9bb8e38a56661cf5806edf0802589bd7de8b0a0d62807d"
+     },
+     "message": "Completion verdict rejected: Completion verdict must carry exactly ['evaluation_artifact', 'event', 'observed_at', 'reviewer', 'runner_receipt', 'scenarios', 'schema_version', 'spec_revision', 'target', 'verdict']",
+     "nothing_written": false,
+     "raised": "ContractError"
+    },
+    "mentions": true,
+    "replay": {
+     "after": {
+      "buckets": {
+       "completion_rejections": "5aefab31681077264babd4702d070d1dd26c7fe3f6029c37ce84d961f4adaada",
+       "completion_verdicts": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945"
+      },
+      "rows": {
+       "completion_rejections": 8,
+       "completion_verdicts": 0
+      },
+      "store": "0187cf40147fc7281569f088faa1cb1ff1f4decf909ec9badbc710b49c0952de"
+     },
+     "before": {
+      "buckets": {
+       "completion_rejections": "5aefab31681077264babd4702d070d1dd26c7fe3f6029c37ce84d961f4adaada",
+       "completion_verdicts": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945"
+      },
+      "rows": {
+       "completion_rejections": 8,
+       "completion_verdicts": 0
+      },
+      "store": "0187cf40147fc7281569f088faa1cb1ff1f4decf909ec9badbc710b49c0952de"
+     },
+     "message": "Completion verdict rejected: Completion verdict must carry exactly ['evaluation_artifact', 'event', 'observed_at', 'reviewer', 'runner_receipt', 'scenarios', 'schema_version', 'spec_revision', 'target', 'verdict']",
+     "nothing_written": true,
+     "raised": "ContractError"
+    },
+    "replay_adds_nothing": true
+   },
+   "completeness false text": {
+    "first": {
+     "after": {
+      "buckets": {
+       "completion_rejections": "58425dc3d8a3e72308a7c3d581476c4b08ef0cbe6e1f25517465ce8df6b7bf1a",
+       "completion_verdicts": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945"
+      },
+      "rows": {
+       "completion_rejections": 7,
+       "completion_verdicts": 0
+      },
+      "store": "3d5cffb60bcc4c003c9bb8e38a56661cf5806edf0802589bd7de8b0a0d62807d"
+     },
+     "before": {
+      "buckets": {
+       "completion_rejections": "7e8ca8b3712fc9d2a476593511bc0612834045990e8655bc7e83bf4018ee05b1",
+       "completion_verdicts": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945"
+      },
+      "rows": {
+       "completion_rejections": 6,
+       "completion_verdicts": 0
+      },
+      "store": "c435d64662ed81813135c2bbb3e1e08a42359bca040d38db3f2a848ccfa409f1"
+     },
+     "message": "Completion verdict rejected: Completion verdict must carry exactly ['evaluation_artifact', 'event', 'observed_at', 'reviewer', 'runner_receipt', 'scenarios', 'schema_version', 'spec_revision', 'target', 'verdict']",
+     "nothing_written": false,
+     "raised": "ContractError"
+    },
+    "mentions": true,
+    "replay": {
+     "after": {
+      "buckets": {
+       "completion_rejections": "58425dc3d8a3e72308a7c3d581476c4b08ef0cbe6e1f25517465ce8df6b7bf1a",
+       "completion_verdicts": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945"
+      },
+      "rows": {
+       "completion_rejections": 7,
+       "completion_verdicts": 0
+      },
+      "store": "3d5cffb60bcc4c003c9bb8e38a56661cf5806edf0802589bd7de8b0a0d62807d"
+     },
+     "before": {
+      "buckets": {
+       "completion_rejections": "58425dc3d8a3e72308a7c3d581476c4b08ef0cbe6e1f25517465ce8df6b7bf1a",
+       "completion_verdicts": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945"
+      },
+      "rows": {
+       "completion_rejections": 7,
+       "completion_verdicts": 0
+      },
+      "store": "3d5cffb60bcc4c003c9bb8e38a56661cf5806edf0802589bd7de8b0a0d62807d"
+     },
+     "message": "Completion verdict rejected: Completion verdict must carry exactly ['evaluation_artifact', 'event', 'observed_at', 'reviewer', 'runner_receipt', 'scenarios', 'schema_version', 'spec_revision', 'target', 'verdict']",
+     "nothing_written": true,
+     "raised": "ContractError"
+    },
+    "replay_adds_nothing": true
+   },
+   "duplicate scenario": {
+    "first": {
+     "after": {
+      "buckets": {
+       "completion_rejections": "5a56be508ce05748837ffcfcda5d07c38b8fbbb13aca78c08833954696462a62",
+       "completion_verdicts": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945"
+      },
+      "rows": {
+       "completion_rejections": 19,
+       "completion_verdicts": 0
+      },
+      "store": "f0cb9f7f1007bf3f160909f115d98833390cfc3b075c7e1fe821b847eb74ef9d"
+     },
+     "before": {
+      "buckets": {
+       "completion_rejections": "86d0813bedf149cef7d2fd875c2baaba1013efaa72930aa5265dd7b9b14a6ba2",
+       "completion_verdicts": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945"
+      },
+      "rows": {
+       "completion_rejections": 18,
+       "completion_verdicts": 0
+      },
+      "store": "cfdf9cb092053d9541edfd877659147f104dbabcf99ac3b6a5989595a8e9e19d"
+     },
+     "message": "Completion verdict rejected: scenarios.expected must not repeat a scenario",
+     "nothing_written": false,
+     "raised": "ContractError"
+    },
+    "mentions": true,
+    "replay": {
+     "after": {
+      "buckets": {
+       "completion_rejections": "5a56be508ce05748837ffcfcda5d07c38b8fbbb13aca78c08833954696462a62",
+       "completion_verdicts": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945"
+      },
+      "rows": {
+       "completion_rejections": 19,
+       "completion_verdicts": 0
+      },
+      "store": "f0cb9f7f1007bf3f160909f115d98833390cfc3b075c7e1fe821b847eb74ef9d"
+     },
+     "before": {
+      "buckets": {
+       "completion_rejections": "5a56be508ce05748837ffcfcda5d07c38b8fbbb13aca78c08833954696462a62",
+       "completion_verdicts": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945"
+      },
+      "rows": {
+       "completion_rejections": 19,
+       "completion_verdicts": 0
+      },
+      "store": "f0cb9f7f1007bf3f160909f115d98833390cfc3b075c7e1fe821b847eb74ef9d"
+     },
+     "message": "Completion verdict rejected: scenarios.expected must not repeat a scenario",
+     "nothing_written": true,
+     "raised": "ContractError"
+    },
+    "replay_adds_nothing": true
+   },
+   "exclusion unapproved": {
+    "first": {
+     "after": {
+      "buckets": {
+       "completion_rejections": "b7ab2f5a4c005a2ad375c314ece6b8ee102882d9212cba7027a2995bd2749567",
+       "completion_verdicts": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945"
+      },
+      "rows": {
+       "completion_rejections": 21,
+       "completion_verdicts": 0
+      },
+      "store": "62cadd1b26294a962e98fd140ec7416df83ac271182b34266a9aa8f50c94b59e"
+     },
+     "before": {
+      "buckets": {
+       "completion_rejections": "2616a07abaae578d292abdf3362dcd86c0158a406790cf33a45cc33391eaea0b",
+       "completion_verdicts": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945"
+      },
+      "rows": {
+       "completion_rejections": 20,
+       "completion_verdicts": 0
+      },
+      "store": "734f73670c991966a66a3ca29dff618c0096a936063834df6f656f32be3a7592"
+     },
+     "message": "Completion verdict rejected: scenarios.excluded[] must carry exactly ['approved_by', 'id', 'reason', 'revision']",
+     "nothing_written": false,
+     "raised": "ContractError"
+    },
+    "mentions": true,
+    "replay": {
+     "after": {
+      "buckets": {
+       "completion_rejections": "b7ab2f5a4c005a2ad375c314ece6b8ee102882d9212cba7027a2995bd2749567",
+       "completion_verdicts": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945"
+      },
+      "rows": {
+       "completion_rejections": 21,
+       "completion_verdicts": 0
+      },
+      "store": "62cadd1b26294a962e98fd140ec7416df83ac271182b34266a9aa8f50c94b59e"
+     },
+     "before": {
+      "buckets": {
+       "completion_rejections": "b7ab2f5a4c005a2ad375c314ece6b8ee102882d9212cba7027a2995bd2749567",
+       "completion_verdicts": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945"
+      },
+      "rows": {
+       "completion_rejections": 21,
+       "completion_verdicts": 0
+      },
+      "store": "62cadd1b26294a962e98fd140ec7416df83ac271182b34266a9aa8f50c94b59e"
+     },
+     "message": "Completion verdict rejected: scenarios.excluded[] must carry exactly ['approved_by', 'id', 'reason', 'revision']",
+     "nothing_written": true,
+     "raised": "ContractError"
+    },
+    "replay_adds_nothing": true
+   },
+   "future timestamp": {
+    "first": {
+     "after": {
+      "buckets": {
+       "completion_rejections": "895c670ac402aa0ef33bb28ec8b318df6a68cabbd4273a026edd77bb5536fbd4",
+       "completion_verdicts": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945"
+      },
+      "rows": {
+       "completion_rejections": 12,
+       "completion_verdicts": 0
+      },
+      "store": "1221bb58b71b20749205cd3c6834fde3ed4367daed9d5d038b110073a6960ab0"
+     },
+     "before": {
+      "buckets": {
+       "completion_rejections": "3a8496050656d6341867704e4f89eafe17ac525d1c348db47261ee9679e2225f",
+       "completion_verdicts": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945"
+      },
+      "rows": {
+       "completion_rejections": 11,
+       "completion_verdicts": 0
+      },
+      "store": "2d34e3cdc80747d61b51ccecde4464b8021d42c6c79c484a1b752af34d61a9e4"
+     },
+     "message": "Completion verdict rejected: observed_at is in the future",
+     "nothing_written": false,
+     "raised": "ContractError"
+    },
+    "mentions": true,
+    "replay": {
+     "after": {
+      "buckets": {
+       "completion_rejections": "895c670ac402aa0ef33bb28ec8b318df6a68cabbd4273a026edd77bb5536fbd4",
+       "completion_verdicts": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945"
+      },
+      "rows": {
+       "completion_rejections": 12,
+       "completion_verdicts": 0
+      },
+      "store": "1221bb58b71b20749205cd3c6834fde3ed4367daed9d5d038b110073a6960ab0"
+     },
+     "before": {
+      "buckets": {
+       "completion_rejections": "895c670ac402aa0ef33bb28ec8b318df6a68cabbd4273a026edd77bb5536fbd4",
+       "completion_verdicts": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945"
+      },
+      "rows": {
+       "completion_rejections": 12,
+       "completion_verdicts": 0
+      },
+      "store": "1221bb58b71b20749205cd3c6834fde3ed4367daed9d5d038b110073a6960ab0"
+     },
+     "message": "Completion verdict rejected: observed_at is in the future",
+     "nothing_written": true,
+     "raised": "ContractError"
+    },
+    "replay_adds_nothing": true
+   },
+   "generation bool": {
+    "first": {
+     "after": {
+      "buckets": {
+       "completion_rejections": "0fcb9b94d964d90e6b1568d64f3cb988cbf8eadee08358583e1c2311f0a0aab5",
+       "completion_verdicts": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945"
+      },
+      "rows": {
+       "completion_rejections": 14,
+       "completion_verdicts": 0
+      },
+      "store": "ecce73f725940f998814ec9811d04ec2a08b9549cb1fe6ffe1fe7d25ccb7d87c"
+     },
+     "before": {
+      "buckets": {
+       "completion_rejections": "6d51838b9d624522005a83c23804909efc80525b309a72c578212c95f0d1ffc9",
+       "completion_verdicts": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945"
+      },
+      "rows": {
+       "completion_rejections": 13,
+       "completion_verdicts": 0
+      },
+      "store": "3b1679f57435d715ab32d73f05546cdeae5dfd2244bcf60d9eb554c54c3610ec"
+     },
+     "message": "Completion verdict rejected: target.generation must be a positive integer",
+     "nothing_written": false,
+     "raised": "ContractError"
+    },
+    "mentions": true,
+    "replay": {
+     "after": {
+      "buckets": {
+       "completion_rejections": "0fcb9b94d964d90e6b1568d64f3cb988cbf8eadee08358583e1c2311f0a0aab5",
+       "completion_verdicts": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945"
+      },
+      "rows": {
+       "completion_rejections": 14,
+       "completion_verdicts": 0
+      },
+      "store": "ecce73f725940f998814ec9811d04ec2a08b9549cb1fe6ffe1fe7d25ccb7d87c"
+     },
+     "before": {
+      "buckets": {
+       "completion_rejections": "0fcb9b94d964d90e6b1568d64f3cb988cbf8eadee08358583e1c2311f0a0aab5",
+       "completion_verdicts": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945"
+      },
+      "rows": {
+       "completion_rejections": 14,
+       "completion_verdicts": 0
+      },
+      "store": "ecce73f725940f998814ec9811d04ec2a08b9549cb1fe6ffe1fe7d25ccb7d87c"
+     },
+     "message": "Completion verdict rejected: target.generation must be a positive integer",
+     "nothing_written": true,
+     "raised": "ContractError"
+    },
+    "replay_adds_nothing": true
+   },
+   "generation text": {
+    "first": {
+     "after": {
+      "buckets": {
+       "completion_rejections": "6d51838b9d624522005a83c23804909efc80525b309a72c578212c95f0d1ffc9",
+       "completion_verdicts": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945"
+      },
+      "rows": {
+       "completion_rejections": 13,
+       "completion_verdicts": 0
+      },
+      "store": "3b1679f57435d715ab32d73f05546cdeae5dfd2244bcf60d9eb554c54c3610ec"
+     },
+     "before": {
+      "buckets": {
+       "completion_rejections": "895c670ac402aa0ef33bb28ec8b318df6a68cabbd4273a026edd77bb5536fbd4",
+       "completion_verdicts": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945"
+      },
+      "rows": {
+       "completion_rejections": 12,
+       "completion_verdicts": 0
+      },
+      "store": "1221bb58b71b20749205cd3c6834fde3ed4367daed9d5d038b110073a6960ab0"
+     },
+     "message": "Completion verdict rejected: target.generation must be a positive integer",
+     "nothing_written": false,
+     "raised": "ContractError"
+    },
+    "mentions": true,
+    "replay": {
+     "after": {
+      "buckets": {
+       "completion_rejections": "6d51838b9d624522005a83c23804909efc80525b309a72c578212c95f0d1ffc9",
+       "completion_verdicts": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945"
+      },
+      "rows": {
+       "completion_rejections": 13,
+       "completion_verdicts": 0
+      },
+      "store": "3b1679f57435d715ab32d73f05546cdeae5dfd2244bcf60d9eb554c54c3610ec"
+     },
+     "before": {
+      "buckets": {
+       "completion_rejections": "6d51838b9d624522005a83c23804909efc80525b309a72c578212c95f0d1ffc9",
+       "completion_verdicts": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945"
+      },
+      "rows": {
+       "completion_rejections": 13,
+       "completion_verdicts": 0
+      },
+      "store": "3b1679f57435d715ab32d73f05546cdeae5dfd2244bcf60d9eb554c54c3610ec"
+     },
+     "message": "Completion verdict rejected: target.generation must be a positive integer",
+     "nothing_written": true,
+     "raised": "ContractError"
+    },
+    "replay_adds_nothing": true
+   },
+   "naive timestamp": {
+    "first": {
+     "after": {
+      "buckets": {
+       "completion_rejections": "3a8496050656d6341867704e4f89eafe17ac525d1c348db47261ee9679e2225f",
+       "completion_verdicts": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945"
+      },
+      "rows": {
+       "completion_rejections": 11,
+       "completion_verdicts": 0
+      },
+      "store": "2d34e3cdc80747d61b51ccecde4464b8021d42c6c79c484a1b752af34d61a9e4"
+     },
+     "before": {
+      "buckets": {
+       "completion_rejections": "51eb696aaec89ddf9084b25f6df436f46422fa1dfa25f32a47564262275356f2",
+       "completion_verdicts": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945"
+      },
+      "rows": {
+       "completion_rejections": 10,
+       "completion_verdicts": 0
+      },
+      "store": "70adeca909e29d574e2a57b58194cd50f0039cdd62a66239b51e6eb55901ea89"
+     },
+     "message": "Completion verdict rejected: observed_at must carry a timezone",
+     "nothing_written": false,
+     "raised": "ContractError"
+    },
+    "mentions": true,
+    "replay": {
+     "after": {
+      "buckets": {
+       "completion_rejections": "3a8496050656d6341867704e4f89eafe17ac525d1c348db47261ee9679e2225f",
+       "completion_verdicts": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945"
+      },
+      "rows": {
+       "completion_rejections": 11,
+       "completion_verdicts": 0
+      },
+      "store": "2d34e3cdc80747d61b51ccecde4464b8021d42c6c79c484a1b752af34d61a9e4"
+     },
+     "before": {
+      "buckets": {
+       "completion_rejections": "3a8496050656d6341867704e4f89eafe17ac525d1c348db47261ee9679e2225f",
+       "completion_verdicts": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945"
+      },
+      "rows": {
+       "completion_rejections": 11,
+       "completion_verdicts": 0
+      },
+      "store": "2d34e3cdc80747d61b51ccecde4464b8021d42c6c79c484a1b752af34d61a9e4"
+     },
+     "message": "Completion verdict rejected: observed_at must carry a timezone",
+     "nothing_written": true,
+     "raised": "ContractError"
+    },
+    "replay_adds_nothing": true
+   },
+   "nan timestamp": {
+    "first": {
+     "after": {
+      "buckets": {
+       "completion_rejections": "d336a6cc9a98a8a4e17067c5db14e0157be0c710e45cef40eeadb930188e0c02",
+       "completion_verdicts": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945"
+      },
+      "rows": {
+       "completion_rejections": 9,
+       "completion_verdicts": 0
+      },
+      "store": "250ac869d7e8c363e5adb50d855b6f1e88e8e1ba9a69aa433ff53819cf65a527"
+     },
+     "before": {
+      "buckets": {
+       "completion_rejections": "5aefab31681077264babd4702d070d1dd26c7fe3f6029c37ce84d961f4adaada",
+       "completion_verdicts": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945"
+      },
+      "rows": {
+       "completion_rejections": 8,
+       "completion_verdicts": 0
+      },
+      "store": "0187cf40147fc7281569f088faa1cb1ff1f4decf909ec9badbc710b49c0952de"
+     },
+     "message": "Completion verdict rejected: observed_at must be ISO-8601 text",
+     "nothing_written": false,
+     "raised": "ContractError"
+    },
+    "mentions": true,
+    "replay": {
+     "after": {
+      "buckets": {
+       "completion_rejections": "d336a6cc9a98a8a4e17067c5db14e0157be0c710e45cef40eeadb930188e0c02",
+       "completion_verdicts": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945"
+      },
+      "rows": {
+       "completion_rejections": 9,
+       "completion_verdicts": 0
+      },
+      "store": "250ac869d7e8c363e5adb50d855b6f1e88e8e1ba9a69aa433ff53819cf65a527"
+     },
+     "before": {
+      "buckets": {
+       "completion_rejections": "d336a6cc9a98a8a4e17067c5db14e0157be0c710e45cef40eeadb930188e0c02",
+       "completion_verdicts": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945"
+      },
+      "rows": {
+       "completion_rejections": 9,
+       "completion_verdicts": 0
+      },
+      "store": "250ac869d7e8c363e5adb50d855b6f1e88e8e1ba9a69aa433ff53819cf65a527"
+     },
+     "message": "Completion verdict rejected: observed_at must be ISO-8601 text",
+     "nothing_written": true,
+     "raised": "ContractError"
+    },
+    "replay_adds_nothing": true
+   },
+   "numeric timestamp": {
+    "first": {
+     "after": {
+      "buckets": {
+       "completion_rejections": "51eb696aaec89ddf9084b25f6df436f46422fa1dfa25f32a47564262275356f2",
+       "completion_verdicts": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945"
+      },
+      "rows": {
+       "completion_rejections": 10,
+       "completion_verdicts": 0
+      },
+      "store": "70adeca909e29d574e2a57b58194cd50f0039cdd62a66239b51e6eb55901ea89"
+     },
+     "before": {
+      "buckets": {
+       "completion_rejections": "d336a6cc9a98a8a4e17067c5db14e0157be0c710e45cef40eeadb930188e0c02",
+       "completion_verdicts": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945"
+      },
+      "rows": {
+       "completion_rejections": 9,
+       "completion_verdicts": 0
+      },
+      "store": "250ac869d7e8c363e5adb50d855b6f1e88e8e1ba9a69aa433ff53819cf65a527"
+     },
+     "message": "Completion verdict rejected: observed_at must be ISO-8601 text",
+     "nothing_written": false,
+     "raised": "ContractError"
+    },
+    "mentions": true,
+    "replay": {
+     "after": {
+      "buckets": {
+       "completion_rejections": "51eb696aaec89ddf9084b25f6df436f46422fa1dfa25f32a47564262275356f2",
+       "completion_verdicts": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945"
+      },
+      "rows": {
+       "completion_rejections": 10,
+       "completion_verdicts": 0
+      },
+      "store": "70adeca909e29d574e2a57b58194cd50f0039cdd62a66239b51e6eb55901ea89"
+     },
+     "before": {
+      "buckets": {
+       "completion_rejections": "51eb696aaec89ddf9084b25f6df436f46422fa1dfa25f32a47564262275356f2",
+       "completion_verdicts": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945"
+      },
+      "rows": {
+       "completion_rejections": 10,
+       "completion_verdicts": 0
+      },
+      "store": "70adeca909e29d574e2a57b58194cd50f0039cdd62a66239b51e6eb55901ea89"
+     },
+     "message": "Completion verdict rejected: observed_at must be ISO-8601 text",
+     "nothing_written": true,
+     "raised": "ContractError"
+    },
+    "replay_adds_nothing": true
+   },
+   "passed outside expected": {
+    "first": {
+     "after": {
+      "buckets": {
+       "completion_rejections": "2616a07abaae578d292abdf3362dcd86c0158a406790cf33a45cc33391eaea0b",
+       "completion_verdicts": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945"
+      },
+      "rows": {
+       "completion_rejections": 20,
+       "completion_verdicts": 0
+      },
+      "store": "734f73670c991966a66a3ca29dff618c0096a936063834df6f656f32be3a7592"
+     },
+     "before": {
+      "buckets": {
+       "completion_rejections": "5a56be508ce05748837ffcfcda5d07c38b8fbbb13aca78c08833954696462a62",
+       "completion_verdicts": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945"
+      },
+      "rows": {
+       "completion_rejections": 19,
+       "completion_verdicts": 0
+      },
+      "store": "f0cb9f7f1007bf3f160909f115d98833390cfc3b075c7e1fe821b847eb74ef9d"
+     },
+     "message": "Completion verdict rejected: scenarios.passed must be a subset of scenarios.expected",
+     "nothing_written": false,
+     "raised": "ContractError"
+    },
+    "mentions": true,
+    "replay": {
+     "after": {
+      "buckets": {
+       "completion_rejections": "2616a07abaae578d292abdf3362dcd86c0158a406790cf33a45cc33391eaea0b",
+       "completion_verdicts": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945"
+      },
+      "rows": {
+       "completion_rejections": 20,
+       "completion_verdicts": 0
+      },
+      "store": "734f73670c991966a66a3ca29dff618c0096a936063834df6f656f32be3a7592"
+     },
+     "before": {
+      "buckets": {
+       "completion_rejections": "2616a07abaae578d292abdf3362dcd86c0158a406790cf33a45cc33391eaea0b",
+       "completion_verdicts": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945"
+      },
+      "rows": {
+       "completion_rejections": 20,
+       "completion_verdicts": 0
+      },
+      "store": "734f73670c991966a66a3ca29dff618c0096a936063834df6f656f32be3a7592"
+     },
+     "message": "Completion verdict rejected: scenarios.passed must be a subset of scenarios.expected",
+     "nothing_written": true,
+     "raised": "ContractError"
+    },
+    "replay_adds_nothing": true
+   },
+   "reviewer empty": {
+    "first": {
+     "after": {
+      "buckets": {
+       "completion_rejections": "6d7de101854ca53546930e153a62b2da77509144a06ba44094fb77281ea7dfd4",
+       "completion_verdicts": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945"
+      },
+      "rows": {
+       "completion_rejections": 17,
+       "completion_verdicts": 0
+      },
+      "store": "c2c854ebb85d229d99996651f962209823c4aa1adc0646dd482f80663a759269"
+     },
+     "before": {
+      "buckets": {
+       "completion_rejections": "8c0bc9e4871634ba4b472ce3b3bc9883357e7c852dddf6722ebbc309920d0eea",
+       "completion_verdicts": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945"
+      },
+      "rows": {
+       "completion_rejections": 16,
+       "completion_verdicts": 0
+      },
+      "store": "a3e16ae573ea0148ef87fbea55087ae00f4956b83c9ab47aa9742cabc4972f0d"
+     },
+     "message": "Completion verdict rejected: reviewer.actor must be a non-empty string",
+     "nothing_written": false,
+     "raised": "ContractError"
+    },
+    "mentions": true,
+    "replay": {
+     "after": {
+      "buckets": {
+       "completion_rejections": "6d7de101854ca53546930e153a62b2da77509144a06ba44094fb77281ea7dfd4",
+       "completion_verdicts": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945"
+      },
+      "rows": {
+       "completion_rejections": 17,
+       "completion_verdicts": 0
+      },
+      "store": "c2c854ebb85d229d99996651f962209823c4aa1adc0646dd482f80663a759269"
+     },
+     "before": {
+      "buckets": {
+       "completion_rejections": "6d7de101854ca53546930e153a62b2da77509144a06ba44094fb77281ea7dfd4",
+       "completion_verdicts": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945"
+      },
+      "rows": {
+       "completion_rejections": 17,
+       "completion_verdicts": 0
+      },
+      "store": "c2c854ebb85d229d99996651f962209823c4aa1adc0646dd482f80663a759269"
+     },
+     "message": "Completion verdict rejected: reviewer.actor must be a non-empty string",
+     "nothing_written": true,
+     "raised": "ContractError"
+    },
+    "replay_adds_nothing": true
+   },
+   "reviewer kind": {
+    "first": {
+     "after": {
+      "buckets": {
+       "completion_rejections": "86d0813bedf149cef7d2fd875c2baaba1013efaa72930aa5265dd7b9b14a6ba2",
+       "completion_verdicts": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945"
+      },
+      "rows": {
+       "completion_rejections": 18,
+       "completion_verdicts": 0
+      },
+      "store": "cfdf9cb092053d9541edfd877659147f104dbabcf99ac3b6a5989595a8e9e19d"
+     },
+     "before": {
+      "buckets": {
+       "completion_rejections": "6d7de101854ca53546930e153a62b2da77509144a06ba44094fb77281ea7dfd4",
+       "completion_verdicts": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945"
+      },
+      "rows": {
+       "completion_rejections": 17,
+       "completion_verdicts": 0
+      },
+      "store": "c2c854ebb85d229d99996651f962209823c4aa1adc0646dd482f80663a759269"
+     },
+     "message": "Completion verdict rejected: reviewer.kind must be one of ('model', 'human')",
+     "nothing_written": false,
+     "raised": "ContractError"
+    },
+    "mentions": true,
+    "replay": {
+     "after": {
+      "buckets": {
+       "completion_rejections": "86d0813bedf149cef7d2fd875c2baaba1013efaa72930aa5265dd7b9b14a6ba2",
+       "completion_verdicts": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945"
+      },
+      "rows": {
+       "completion_rejections": 18,
+       "completion_verdicts": 0
+      },
+      "store": "cfdf9cb092053d9541edfd877659147f104dbabcf99ac3b6a5989595a8e9e19d"
+     },
+     "before": {
+      "buckets": {
+       "completion_rejections": "86d0813bedf149cef7d2fd875c2baaba1013efaa72930aa5265dd7b9b14a6ba2",
+       "completion_verdicts": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945"
+      },
+      "rows": {
+       "completion_rejections": 18,
+       "completion_verdicts": 0
+      },
+      "store": "cfdf9cb092053d9541edfd877659147f104dbabcf99ac3b6a5989595a8e9e19d"
+     },
+     "message": "Completion verdict rejected: reviewer.kind must be one of ('model', 'human')",
+     "nothing_written": true,
+     "raised": "ContractError"
+    },
+    "replay_adds_nothing": true
+   },
+   "schema null": {
+    "first": {
+     "after": {
+      "buckets": {
+       "completion_rejections": "eda451127c2b67285d3170c70993c8b196163ed6f21d001b4173c5c77b8e4701",
+       "completion_verdicts": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945"
+      },
+      "rows": {
+       "completion_rejections": 1,
+       "completion_verdicts": 0
+      },
+      "store": "7167766cb0278a5569869d48113db3dcfd2ec0a7c9f1cad4c2dbf7476c6d3cd6"
+     },
+     "before": {
+      "buckets": {
+       "completion_rejections": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945",
+       "completion_verdicts": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945"
+      },
+      "rows": {
+       "completion_rejections": 0,
+       "completion_verdicts": 0
+      },
+      "store": "97053c513ee0348a18c0e20a62ae1f81772dd0874c03884ce8b94f8e339e1ac3"
+     },
+     "message": "Completion verdict rejected: schema_version must be 1",
+     "nothing_written": false,
+     "raised": "ContractError"
+    },
+    "mentions": true,
+    "replay": {
+     "after": {
+      "buckets": {
+       "completion_rejections": "eda451127c2b67285d3170c70993c8b196163ed6f21d001b4173c5c77b8e4701",
+       "completion_verdicts": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945"
+      },
+      "rows": {
+       "completion_rejections": 1,
+       "completion_verdicts": 0
+      },
+      "store": "7167766cb0278a5569869d48113db3dcfd2ec0a7c9f1cad4c2dbf7476c6d3cd6"
+     },
+     "before": {
+      "buckets": {
+       "completion_rejections": "eda451127c2b67285d3170c70993c8b196163ed6f21d001b4173c5c77b8e4701",
+       "completion_verdicts": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945"
+      },
+      "rows": {
+       "completion_rejections": 1,
+       "completion_verdicts": 0
+      },
+      "store": "7167766cb0278a5569869d48113db3dcfd2ec0a7c9f1cad4c2dbf7476c6d3cd6"
+     },
+     "message": "Completion verdict rejected: schema_version must be 1",
+     "nothing_written": true,
+     "raised": "ContractError"
+    },
+    "replay_adds_nothing": true
+   },
+   "schema text": {
+    "first": {
+     "after": {
+      "buckets": {
+       "completion_rejections": "574eb15b54a4f22b48bbb1ee61deb886f8527cbb5c968b768fbbc1b6673a4ca5",
+       "completion_verdicts": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945"
+      },
+      "rows": {
+       "completion_rejections": 3,
+       "completion_verdicts": 0
+      },
+      "store": "a1182aedf6f4c5e7c6315fc1aa154a17071ca621a66c04155eea0a312036b4bd"
+     },
+     "before": {
+      "buckets": {
+       "completion_rejections": "0f61829176d6772ce9b5d375929bf63015c74f1df58eb392ce5a0532bab99c79",
+       "completion_verdicts": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945"
+      },
+      "rows": {
+       "completion_rejections": 2,
+       "completion_verdicts": 0
+      },
+      "store": "55e1fae407763d47430a19aac23efd861355ad6a75866b67166c6798d83b0301"
+     },
+     "message": "Completion verdict rejected: schema_version must be 1",
+     "nothing_written": false,
+     "raised": "ContractError"
+    },
+    "mentions": true,
+    "replay": {
+     "after": {
+      "buckets": {
+       "completion_rejections": "574eb15b54a4f22b48bbb1ee61deb886f8527cbb5c968b768fbbc1b6673a4ca5",
+       "completion_verdicts": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945"
+      },
+      "rows": {
+       "completion_rejections": 3,
+       "completion_verdicts": 0
+      },
+      "store": "a1182aedf6f4c5e7c6315fc1aa154a17071ca621a66c04155eea0a312036b4bd"
+     },
+     "before": {
+      "buckets": {
+       "completion_rejections": "574eb15b54a4f22b48bbb1ee61deb886f8527cbb5c968b768fbbc1b6673a4ca5",
+       "completion_verdicts": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945"
+      },
+      "rows": {
+       "completion_rejections": 3,
+       "completion_verdicts": 0
+      },
+      "store": "a1182aedf6f4c5e7c6315fc1aa154a17071ca621a66c04155eea0a312036b4bd"
+     },
+     "message": "Completion verdict rejected: schema_version must be 1",
+     "nothing_written": true,
+     "raised": "ContractError"
+    },
+    "replay_adds_nothing": true
+   },
+   "schema unknown": {
+    "first": {
+     "after": {
+      "buckets": {
+       "completion_rejections": "0f61829176d6772ce9b5d375929bf63015c74f1df58eb392ce5a0532bab99c79",
+       "completion_verdicts": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945"
+      },
+      "rows": {
+       "completion_rejections": 2,
+       "completion_verdicts": 0
+      },
+      "store": "55e1fae407763d47430a19aac23efd861355ad6a75866b67166c6798d83b0301"
+     },
+     "before": {
+      "buckets": {
+       "completion_rejections": "eda451127c2b67285d3170c70993c8b196163ed6f21d001b4173c5c77b8e4701",
+       "completion_verdicts": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945"
+      },
+      "rows": {
+       "completion_rejections": 1,
+       "completion_verdicts": 0
+      },
+      "store": "7167766cb0278a5569869d48113db3dcfd2ec0a7c9f1cad4c2dbf7476c6d3cd6"
+     },
+     "message": "Completion verdict rejected: schema_version must be 1",
+     "nothing_written": false,
+     "raised": "ContractError"
+    },
+    "mentions": true,
+    "replay": {
+     "after": {
+      "buckets": {
+       "completion_rejections": "0f61829176d6772ce9b5d375929bf63015c74f1df58eb392ce5a0532bab99c79",
+       "completion_verdicts": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945"
+      },
+      "rows": {
+       "completion_rejections": 2,
+       "completion_verdicts": 0
+      },
+      "store": "55e1fae407763d47430a19aac23efd861355ad6a75866b67166c6798d83b0301"
+     },
+     "before": {
+      "buckets": {
+       "completion_rejections": "0f61829176d6772ce9b5d375929bf63015c74f1df58eb392ce5a0532bab99c79",
+       "completion_verdicts": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945"
+      },
+      "rows": {
+       "completion_rejections": 2,
+       "completion_verdicts": 0
+      },
+      "store": "55e1fae407763d47430a19aac23efd861355ad6a75866b67166c6798d83b0301"
+     },
+     "message": "Completion verdict rejected: schema_version must be 1",
+     "nothing_written": true,
+     "raised": "ContractError"
+    },
+    "replay_adds_nothing": true
+   },
+   "spec short": {
+    "first": {
+     "after": {
+      "buckets": {
+       "completion_rejections": "7681e42b4e726e51d295d5980eeaad061db641602f7b1f79e5bbf274f9abffe1",
+       "completion_verdicts": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945"
+      },
+      "rows": {
+       "completion_rejections": 15,
+       "completion_verdicts": 0
+      },
+      "store": "2b43254871b3bbbdaa071bfa3c561bb10b68424fb307279361423bd3ef095c51"
+     },
+     "before": {
+      "buckets": {
+       "completion_rejections": "0fcb9b94d964d90e6b1568d64f3cb988cbf8eadee08358583e1c2311f0a0aab5",
+       "completion_verdicts": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945"
+      },
+      "rows": {
+       "completion_rejections": 14,
+       "completion_verdicts": 0
+      },
+      "store": "ecce73f725940f998814ec9811d04ec2a08b9549cb1fe6ffe1fe7d25ccb7d87c"
+     },
+     "message": "Completion verdict rejected: spec_revision must be lowercase hex of the declared length",
+     "nothing_written": false,
+     "raised": "ContractError"
+    },
+    "mentions": true,
+    "replay": {
+     "after": {
+      "buckets": {
+       "completion_rejections": "7681e42b4e726e51d295d5980eeaad061db641602f7b1f79e5bbf274f9abffe1",
+       "completion_verdicts": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945"
+      },
+      "rows": {
+       "completion_rejections": 15,
+       "completion_verdicts": 0
+      },
+      "store": "2b43254871b3bbbdaa071bfa3c561bb10b68424fb307279361423bd3ef095c51"
+     },
+     "before": {
+      "buckets": {
+       "completion_rejections": "7681e42b4e726e51d295d5980eeaad061db641602f7b1f79e5bbf274f9abffe1",
+       "completion_verdicts": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945"
+      },
+      "rows": {
+       "completion_rejections": 15,
+       "completion_verdicts": 0
+      },
+      "store": "2b43254871b3bbbdaa071bfa3c561bb10b68424fb307279361423bd3ef095c51"
+     },
+     "message": "Completion verdict rejected: spec_revision must be lowercase hex of the declared length",
+     "nothing_written": true,
+     "raised": "ContractError"
+    },
+    "replay_adds_nothing": true
+   },
+   "unrelated event": {
+    "first": {
+     "after": {
+      "buckets": {
+       "completion_rejections": "d4924aaa19dfb69b0bba305b5df057bb76d01e703320779e482dc40e8e52acc7",
+       "completion_verdicts": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945"
+      },
+      "rows": {
+       "completion_rejections": 4,
+       "completion_verdicts": 0
+      },
+      "store": "f5d6f1c86cf01d51f698cbfced844987d789164c6613bc5dbdf4cecd50a0935c"
+     },
+     "before": {
+      "buckets": {
+       "completion_rejections": "574eb15b54a4f22b48bbb1ee61deb886f8527cbb5c968b768fbbc1b6673a4ca5",
+       "completion_verdicts": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945"
+      },
+      "rows": {
+       "completion_rejections": 3,
+       "completion_verdicts": 0
+      },
+      "store": "a1182aedf6f4c5e7c6315fc1aa154a17071ca621a66c04155eea0a312036b4bd"
+     },
+     "message": "Completion verdict rejected: event must be completion.verdict",
+     "nothing_written": false,
+     "raised": "ContractError"
+    },
+    "mentions": true,
+    "replay": {
+     "after": {
+      "buckets": {
+       "completion_rejections": "d4924aaa19dfb69b0bba305b5df057bb76d01e703320779e482dc40e8e52acc7",
+       "completion_verdicts": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945"
+      },
+      "rows": {
+       "completion_rejections": 4,
+       "completion_verdicts": 0
+      },
+      "store": "f5d6f1c86cf01d51f698cbfced844987d789164c6613bc5dbdf4cecd50a0935c"
+     },
+     "before": {
+      "buckets": {
+       "completion_rejections": "d4924aaa19dfb69b0bba305b5df057bb76d01e703320779e482dc40e8e52acc7",
+       "completion_verdicts": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945"
+      },
+      "rows": {
+       "completion_rejections": 4,
+       "completion_verdicts": 0
+      },
+      "store": "f5d6f1c86cf01d51f698cbfced844987d789164c6613bc5dbdf4cecd50a0935c"
+     },
+     "message": "Completion verdict rejected: event must be completion.verdict",
+     "nothing_written": true,
+     "raised": "ContractError"
+    },
+    "replay_adds_nothing": true
+   },
+   "verdict false text": {
+    "first": {
+     "after": {
+      "buckets": {
+       "completion_rejections": "7e8ca8b3712fc9d2a476593511bc0612834045990e8655bc7e83bf4018ee05b1",
+       "completion_verdicts": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945"
+      },
+      "rows": {
+       "completion_rejections": 6,
+       "completion_verdicts": 0
+      },
+      "store": "c435d64662ed81813135c2bbb3e1e08a42359bca040d38db3f2a848ccfa409f1"
+     },
+     "before": {
+      "buckets": {
+       "completion_rejections": "3379f1d0b83c84c6d5a643de5426220d787e29a5080c722a36e86d14e9dc6859",
+       "completion_verdicts": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945"
+      },
+      "rows": {
+       "completion_rejections": 5,
+       "completion_verdicts": 0
+      },
+      "store": "ae5565ca14e95ed56689812203b29e22cb72471f0a48714f56abf93cb97fe16b"
+     },
+     "message": "Completion verdict rejected: verdict must be one of ('approved', 'iterate', 'escalate')",
+     "nothing_written": false,
+     "raised": "ContractError"
+    },
+    "mentions": true,
+    "replay": {
+     "after": {
+      "buckets": {
+       "completion_rejections": "7e8ca8b3712fc9d2a476593511bc0612834045990e8655bc7e83bf4018ee05b1",
+       "completion_verdicts": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945"
+      },
+      "rows": {
+       "completion_rejections": 6,
+       "completion_verdicts": 0
+      },
+      "store": "c435d64662ed81813135c2bbb3e1e08a42359bca040d38db3f2a848ccfa409f1"
+     },
+     "before": {
+      "buckets": {
+       "completion_rejections": "7e8ca8b3712fc9d2a476593511bc0612834045990e8655bc7e83bf4018ee05b1",
+       "completion_verdicts": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945"
+      },
+      "rows": {
+       "completion_rejections": 6,
+       "completion_verdicts": 0
+      },
+      "store": "c435d64662ed81813135c2bbb3e1e08a42359bca040d38db3f2a848ccfa409f1"
+     },
+     "message": "Completion verdict rejected: verdict must be one of ('approved', 'iterate', 'escalate')",
+     "nothing_written": true,
+     "raised": "ContractError"
+    },
+    "replay_adds_nothing": true
+   },
+   "verdict list": {
+    "first": {
+     "after": {
+      "buckets": {
+       "completion_rejections": "3379f1d0b83c84c6d5a643de5426220d787e29a5080c722a36e86d14e9dc6859",
+       "completion_verdicts": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945"
+      },
+      "rows": {
+       "completion_rejections": 5,
+       "completion_verdicts": 0
+      },
+      "store": "ae5565ca14e95ed56689812203b29e22cb72471f0a48714f56abf93cb97fe16b"
+     },
+     "before": {
+      "buckets": {
+       "completion_rejections": "d4924aaa19dfb69b0bba305b5df057bb76d01e703320779e482dc40e8e52acc7",
+       "completion_verdicts": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945"
+      },
+      "rows": {
+       "completion_rejections": 4,
+       "completion_verdicts": 0
+      },
+      "store": "f5d6f1c86cf01d51f698cbfced844987d789164c6613bc5dbdf4cecd50a0935c"
+     },
+     "message": "Completion verdict rejected: verdict must be one of ('approved', 'iterate', 'escalate')",
+     "nothing_written": false,
+     "raised": "ContractError"
+    },
+    "mentions": true,
+    "replay": {
+     "after": {
+      "buckets": {
+       "completion_rejections": "3379f1d0b83c84c6d5a643de5426220d787e29a5080c722a36e86d14e9dc6859",
+       "completion_verdicts": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945"
+      },
+      "rows": {
+       "completion_rejections": 5,
+       "completion_verdicts": 0
+      },
+      "store": "ae5565ca14e95ed56689812203b29e22cb72471f0a48714f56abf93cb97fe16b"
+     },
+     "before": {
+      "buckets": {
+       "completion_rejections": "3379f1d0b83c84c6d5a643de5426220d787e29a5080c722a36e86d14e9dc6859",
+       "completion_verdicts": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945"
+      },
+      "rows": {
+       "completion_rejections": 5,
+       "completion_verdicts": 0
+      },
+      "store": "ae5565ca14e95ed56689812203b29e22cb72471f0a48714f56abf93cb97fe16b"
+     },
+     "message": "Completion verdict rejected: verdict must be one of ('approved', 'iterate', 'escalate')",
+     "nothing_written": true,
+     "raised": "ContractError"
+    },
+    "replay_adds_nothing": true
+   }
+  },
+  "task_of": {
+   "empty_dict": {
+    "after": {
+     "buckets": {
+      "completion_rejections": "4a2f06a1acad33e18dc1d1a91ff76e2d42f14ceb20edadd161a01ee2dfbd544f",
+      "completion_verdicts": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945"
+     },
+     "rows": {
+      "completion_rejections": 5,
+      "completion_verdicts": 0
+     },
+     "store": "782a2d7628c6123aa5aa8e4d106a4ec17d179a5cd6390ba68940035ae253ba78"
+    },
+    "before": {
+     "buckets": {
+      "completion_rejections": "b5ff4756452e997474864d4daa61ef50353018d66bb915bade8b1424e8c180d0",
+      "completion_verdicts": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945"
+     },
+     "rows": {
+      "completion_rejections": 4,
+      "completion_verdicts": 0
+     },
+     "store": "0ce470ec8cefa59a7e7038cb6c6e079736c135a1bae6e4b128a6942e424de710"
+    },
+    "message": "Completion verdict rejected: Completion verdict must carry exactly ['evaluation_artifact', 'event', 'observed_at', 'reviewer', 'runner_receipt', 'scenarios', 'schema_version', 'spec_revision', 'target', 'verdict']",
+    "nothing_written": false,
+    "raised": "ContractError"
+   },
+   "int": {
+    "after": {
+     "buckets": {
+      "completion_rejections": "b5ff4756452e997474864d4daa61ef50353018d66bb915bade8b1424e8c180d0",
+      "completion_verdicts": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945"
+     },
+     "rows": {
+      "completion_rejections": 4,
+      "completion_verdicts": 0
+     },
+     "store": "0ce470ec8cefa59a7e7038cb6c6e079736c135a1bae6e4b128a6942e424de710"
+    },
+    "before": {
+     "buckets": {
+      "completion_rejections": "1407dee26ff726e00a51b0504b41893cf5a953675a3f057c185aa6921a29786a",
+      "completion_verdicts": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945"
+     },
+     "rows": {
+      "completion_rejections": 3,
+      "completion_verdicts": 0
+     },
+     "store": "e01609c6e4ded82c76ab30feb665fa42d8b3c1b0a7c8908a157ab44f93e419d1"
+    },
+    "message": "Completion verdict rejected: Completion verdict must carry exactly ['evaluation_artifact', 'event', 'observed_at', 'reviewer', 'runner_receipt', 'scenarios', 'schema_version', 'spec_revision', 'target', 'verdict']",
+    "nothing_written": false,
+    "raised": "ContractError"
+   },
+   "list": {
+    "after": {
+     "buckets": {
+      "completion_rejections": "63b2d03ca955a2734d8db91544b04c57460b419151f87656e8fb93142fb00432",
+      "completion_verdicts": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945"
+     },
+     "rows": {
+      "completion_rejections": 2,
+      "completion_verdicts": 0
+     },
+     "store": "be827de5566438129a7eeb07c592aad1b4b88d7746098aeacc9dc2364558beb8"
+    },
+    "before": {
+     "buckets": {
+      "completion_rejections": "7e2391cc4caa3f441fb8671202e3ce34d55bbae12ce3e6019abf63103268bb43",
+      "completion_verdicts": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945"
+     },
+     "rows": {
+      "completion_rejections": 1,
+      "completion_verdicts": 0
+     },
+     "store": "30a63b01a271e005016b38e5bc5b712ff657bd623856d837ca4467f60c6d932c"
+    },
+    "message": "Completion verdict rejected: Completion verdict must carry exactly ['evaluation_artifact', 'event', 'observed_at', 'reviewer', 'runner_receipt', 'scenarios', 'schema_version', 'spec_revision', 'target', 'verdict']",
+    "nothing_written": false,
+    "raised": "ContractError"
+   },
+   "none": {
+    "after": {
+     "buckets": {
+      "completion_rejections": "7e2391cc4caa3f441fb8671202e3ce34d55bbae12ce3e6019abf63103268bb43",
+      "completion_verdicts": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945"
+     },
+     "rows": {
+      "completion_rejections": 1,
+      "completion_verdicts": 0
+     },
+     "store": "30a63b01a271e005016b38e5bc5b712ff657bd623856d837ca4467f60c6d932c"
+    },
+    "before": {
+     "buckets": {
+      "completion_rejections": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945",
+      "completion_verdicts": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945"
+     },
+     "rows": {
+      "completion_rejections": 0,
+      "completion_verdicts": 0
+     },
+     "store": "4a617d26286a65f58bd80108a1ab477e1b0286fe68572612cfd67def0d733eea"
+    },
+    "message": "Completion verdict rejected: Completion verdict must carry exactly ['evaluation_artifact', 'event', 'observed_at', 'reviewer', 'runner_receipt', 'scenarios', 'schema_version', 'spec_revision', 'target', 'verdict']",
+    "nothing_written": false,
+    "raised": "ContractError"
+   },
+   "target_not_a_dict": {
+    "after": {
+     "buckets": {
+      "completion_rejections": "b32f5726f1c5cd84309553a9fd23d27b31c8f11e98b318bfcfb7a8acfb51730a",
+      "completion_verdicts": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945"
+     },
+     "rows": {
+      "completion_rejections": 6,
+      "completion_verdicts": 0
+     },
+     "store": "8f7865312370903528df8dae716f2642aa6d594114edf911017f67c40842bd58"
+    },
+    "before": {
+     "buckets": {
+      "completion_rejections": "4a2f06a1acad33e18dc1d1a91ff76e2d42f14ceb20edadd161a01ee2dfbd544f",
+      "completion_verdicts": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945"
+     },
+     "rows": {
+      "completion_rejections": 5,
+      "completion_verdicts": 0
+     },
+     "store": "782a2d7628c6123aa5aa8e4d106a4ec17d179a5cd6390ba68940035ae253ba78"
+    },
+    "message": "Completion verdict rejected: Completion verdict must carry exactly ['evaluation_artifact', 'event', 'observed_at', 'reviewer', 'runner_receipt', 'scenarios', 'schema_version', 'spec_revision', 'target', 'verdict']",
+    "nothing_written": false,
+    "raised": "ContractError"
+   },
+   "task_id_int": {
+    "after": {
+     "buckets": {
+      "completion_rejections": "64410d43310b7d70bcb9bc58b7435c6967382c3bdb406935c8ee3ad87e491216",
+      "completion_verdicts": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945"
+     },
+     "rows": {
+      "completion_rejections": 7,
+      "completion_verdicts": 0
+     },
+     "store": "d4c9d351b157abfa0e2dd15c3bd50d6942db05b609d838b68bc3e9a96e997bf0"
+    },
+    "before": {
+     "buckets": {
+      "completion_rejections": "b32f5726f1c5cd84309553a9fd23d27b31c8f11e98b318bfcfb7a8acfb51730a",
+      "completion_verdicts": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945"
+     },
+     "rows": {
+      "completion_rejections": 6,
+      "completion_verdicts": 0
+     },
+     "store": "8f7865312370903528df8dae716f2642aa6d594114edf911017f67c40842bd58"
+    },
+    "message": "Completion verdict rejected: Completion verdict must carry exactly ['evaluation_artifact', 'event', 'observed_at', 'reviewer', 'runner_receipt', 'scenarios', 'schema_version', 'spec_revision', 'target', 'verdict']",
+    "nothing_written": false,
+    "raised": "ContractError"
+   },
+   "task_id_str": {
+    "after": {
+     "buckets": {
+      "completion_rejections": "82cc45a2593c7fcba226af6f9f219c2637fbdeca440ce45f1b9dfda99de4dba2",
+      "completion_verdicts": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945"
+     },
+     "rows": {
+      "completion_rejections": 9,
+      "completion_verdicts": 0
+     },
+     "store": "25f3f8d86be571af16c1b18dc5e3a47f851b214b57eca7c8a91114f15858e312"
+    },
+    "before": {
+     "buckets": {
+      "completion_rejections": "b314847917e5462359807d06be37182eb0e24fd382e821b09b0bea37c289b8c7",
+      "completion_verdicts": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945"
+     },
+     "rows": {
+      "completion_rejections": 8,
+      "completion_verdicts": 0
+     },
+     "store": "9e32e479e19c52e6d2509f8ef4c6aab599767437c3c96600e0503a6d0632d7ba"
+    },
+    "message": "Completion verdict rejected: Completion verdict must carry exactly ['evaluation_artifact', 'event', 'observed_at', 'reviewer', 'runner_receipt', 'scenarios', 'schema_version', 'spec_revision', 'target', 'verdict']",
+    "nothing_written": false,
+    "raised": "ContractError"
+   },
+   "task_id_str_subclass": {
+    "after": {
+     "buckets": {
+      "completion_rejections": "b314847917e5462359807d06be37182eb0e24fd382e821b09b0bea37c289b8c7",
+      "completion_verdicts": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945"
+     },
+     "rows": {
+      "completion_rejections": 8,
+      "completion_verdicts": 0
+     },
+     "store": "9e32e479e19c52e6d2509f8ef4c6aab599767437c3c96600e0503a6d0632d7ba"
+    },
+    "before": {
+     "buckets": {
+      "completion_rejections": "64410d43310b7d70bcb9bc58b7435c6967382c3bdb406935c8ee3ad87e491216",
+      "completion_verdicts": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945"
+     },
+     "rows": {
+      "completion_rejections": 7,
+      "completion_verdicts": 0
+     },
+     "store": "d4c9d351b157abfa0e2dd15c3bd50d6942db05b609d838b68bc3e9a96e997bf0"
+    },
+    "message": "Completion verdict rejected: Completion verdict must carry exactly ['evaluation_artifact', 'event', 'observed_at', 'reviewer', 'runner_receipt', 'scenarios', 'schema_version', 'spec_revision', 'target', 'verdict']",
+    "nothing_written": false,
+    "raised": "ContractError"
+   },
+   "text": {
+    "after": {
+     "buckets": {
+      "completion_rejections": "1407dee26ff726e00a51b0504b41893cf5a953675a3f057c185aa6921a29786a",
+      "completion_verdicts": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945"
+     },
+     "rows": {
+      "completion_rejections": 3,
+      "completion_verdicts": 0
+     },
+     "store": "e01609c6e4ded82c76ab30feb665fa42d8b3c1b0a7c8908a157ab44f93e419d1"
+    },
+    "before": {
+     "buckets": {
+      "completion_rejections": "63b2d03ca955a2734d8db91544b04c57460b419151f87656e8fb93142fb00432",
+      "completion_verdicts": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945"
+     },
+     "rows": {
+      "completion_rejections": 2,
+      "completion_verdicts": 0
+     },
+     "store": "be827de5566438129a7eeb07c592aad1b4b88d7746098aeacc9dc2364558beb8"
+    },
+    "message": "Completion verdict rejected: Completion verdict must carry exactly ['evaluation_artifact', 'event', 'observed_at', 'reviewer', 'runner_receipt', 'scenarios', 'schema_version', 'spec_revision', 'target', 'verdict']",
+    "nothing_written": false,
+    "raised": "ContractError"
+   }
+  },
+  "task_of_notice_task_ids": [
+   "None",
+   "None",
+   "None",
+   "None",
+   "None",
+   "None",
+   "None",
+   "None",
+   "t-9"
+  ],
+  "verdict_ledger_is_empty": true
+ },
+ "c2_test_worker_success_is_not_completion_authority": {
+  "after_the_worker_succeeded": {
+   "authority": false,
+   "corrupt": 0,
+   "reason": null,
+   "rejections": 0,
+   "state": "not_evaluated",
+   "verdicts": 0
+  },
+  "before_any_verdict": {
+   "authority": false,
+   "corrupt": 0,
+   "reason": null,
+   "rejections": 0,
+   "state": "not_evaluated",
+   "verdicts": 0
+  },
+  "no_such_task": {
+   "authority": false,
+   "corrupt": 0,
+   "reason": "unknown task",
+   "rejections": 0,
+   "state": "no_ledger",
+   "verdicts": 0
+  },
+  "no_such_task_require": {
+   "after": {
+    "buckets": {
+     "completion_rejections": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945",
+     "completion_verdicts": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945"
+    },
+    "rows": {
+     "completion_rejections": 0,
+     "completion_verdicts": 0
+    },
+    "store": "3ffdc883c50b0902d789cc1e9b9bc5aac37ccd6d6bbd88de9e2217775fd6396e"
+   },
+   "before": {
+    "buckets": {
+     "completion_rejections": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945",
+     "completion_verdicts": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945"
+    },
+    "rows": {
+     "completion_rejections": 0,
+     "completion_verdicts": 0
+    },
+    "store": "3ffdc883c50b0902d789cc1e9b9bc5aac37ccd6d6bbd88de9e2217775fd6396e"
+   },
+   "message": "No completion authority: no_ledger",
+   "nothing_written": true,
+   "raised": "ContractError"
+  },
+  "require_authority_refuses": {
+   "after": {
+    "buckets": {
+     "completion_rejections": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945",
+     "completion_verdicts": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945"
+    },
+    "rows": {
+     "completion_rejections": 0,
+     "completion_verdicts": 0
+    },
+    "store": "3ffdc883c50b0902d789cc1e9b9bc5aac37ccd6d6bbd88de9e2217775fd6396e"
+   },
+   "before": {
+    "buckets": {
+     "completion_rejections": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945",
+     "completion_verdicts": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945"
+    },
+    "rows": {
+     "completion_rejections": 0,
+     "completion_verdicts": 0
+    },
+    "store": "3ffdc883c50b0902d789cc1e9b9bc5aac37ccd6d6bbd88de9e2217775fd6396e"
+   },
+   "message": "No completion authority: not_evaluated",
+   "nothing_written": true,
+   "raised": "ContractError"
+  },
+  "task_identity_required": {
+   "empty": {
+    "after": {
+     "buckets": {
+      "completion_rejections": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945",
+      "completion_verdicts": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945"
+     },
+     "rows": {
+      "completion_rejections": 0,
+      "completion_verdicts": 0
+     },
+     "store": "3ffdc883c50b0902d789cc1e9b9bc5aac37ccd6d6bbd88de9e2217775fd6396e"
+    },
+    "before": {
+     "buckets": {
+      "completion_rejections": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945",
+      "completion_verdicts": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945"
+     },
+     "rows": {
+      "completion_rejections": 0,
+      "completion_verdicts": 0
+     },
+     "store": "3ffdc883c50b0902d789cc1e9b9bc5aac37ccd6d6bbd88de9e2217775fd6396e"
+    },
+    "message": "Task identity required",
+    "nothing_written": true,
+    "raised": "ContractError"
+   },
+   "int": {
+    "after": {
+     "buckets": {
+      "completion_rejections": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945",
+      "completion_verdicts": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945"
+     },
+     "rows": {
+      "completion_rejections": 0,
+      "completion_verdicts": 0
+     },
+     "store": "3ffdc883c50b0902d789cc1e9b9bc5aac37ccd6d6bbd88de9e2217775fd6396e"
+    },
+    "before": {
+     "buckets": {
+      "completion_rejections": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945",
+      "completion_verdicts": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945"
+     },
+     "rows": {
+      "completion_rejections": 0,
+      "completion_verdicts": 0
+     },
+     "store": "3ffdc883c50b0902d789cc1e9b9bc5aac37ccd6d6bbd88de9e2217775fd6396e"
+    },
+    "message": "Task identity required",
+    "nothing_written": true,
+    "raised": "ContractError"
+   },
+   "list": {
+    "after": {
+     "buckets": {
+      "completion_rejections": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945",
+      "completion_verdicts": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945"
+     },
+     "rows": {
+      "completion_rejections": 0,
+      "completion_verdicts": 0
+     },
+     "store": "3ffdc883c50b0902d789cc1e9b9bc5aac37ccd6d6bbd88de9e2217775fd6396e"
+    },
+    "before": {
+     "buckets": {
+      "completion_rejections": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945",
+      "completion_verdicts": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945"
+     },
+     "rows": {
+      "completion_rejections": 0,
+      "completion_verdicts": 0
+     },
+     "store": "3ffdc883c50b0902d789cc1e9b9bc5aac37ccd6d6bbd88de9e2217775fd6396e"
+    },
+    "message": "Task identity required",
+    "nothing_written": true,
+    "raised": "ContractError"
+   },
+   "none": {
+    "after": {
+     "buckets": {
+      "completion_rejections": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945",
+      "completion_verdicts": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945"
+     },
+     "rows": {
+      "completion_rejections": 0,
+      "completion_verdicts": 0
+     },
+     "store": "3ffdc883c50b0902d789cc1e9b9bc5aac37ccd6d6bbd88de9e2217775fd6396e"
+    },
+    "before": {
+     "buckets": {
+      "completion_rejections": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945",
+      "completion_verdicts": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945"
+     },
+     "rows": {
+      "completion_rejections": 0,
+      "completion_verdicts": 0
+     },
+     "store": "3ffdc883c50b0902d789cc1e9b9bc5aac37ccd6d6bbd88de9e2217775fd6396e"
+    },
+    "message": "Task identity required",
+    "nothing_written": true,
+    "raised": "ContractError"
+   },
+   "str_subclass": {
+    "after": {
+     "buckets": {
+      "completion_rejections": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945",
+      "completion_verdicts": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945"
+     },
+     "rows": {
+      "completion_rejections": 0,
+      "completion_verdicts": 0
+     },
+     "store": "3ffdc883c50b0902d789cc1e9b9bc5aac37ccd6d6bbd88de9e2217775fd6396e"
+    },
+    "before": {
+     "buckets": {
+      "completion_rejections": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945",
+      "completion_verdicts": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945"
+     },
+     "rows": {
+      "completion_rejections": 0,
+      "completion_verdicts": 0
+     },
+     "store": "3ffdc883c50b0902d789cc1e9b9bc5aac37ccd6d6bbd88de9e2217775fd6396e"
+    },
+    "message": "Task identity required",
+    "nothing_written": true,
+    "raised": "ContractError"
+   },
+   "whitespace": {
+    "nothing_written": true,
+    "store_after": "3ffdc883c50b0902d789cc1e9b9bc5aac37ccd6d6bbd88de9e2217775fd6396e",
+    "value": {
+     "authority": false,
+     "corrupt": 0,
+     "latest": null,
+     "reason": "unknown task",
+     "rejections": 0,
+     "state": "no_ledger",
+     "task_id": " ",
+     "verdicts": 0
+    }
+   }
+  },
+  "task_status": "succeeded"
+ },
+ "c3_test_verdict_binds_execution_spec_artifact_and_receipt": {
+  "another_artifact_is_stale": {
+   "authority": false,
+   "corrupt": 0,
+   "reason": "no verdict binds the current execution, spec revision and artifact",
+   "rejections": 0,
+   "state": "stale",
+   "verdicts": 1
+  },
+  "another_spec_is_stale": {
+   "authority": false,
+   "corrupt": 0,
+   "reason": "no verdict binds the current execution, spec revision and artifact",
+   "rejections": 0,
+   "state": "stale",
+   "verdicts": 1
+  },
+  "approved_before_the_worker_finished": {
+   "authority": false,
+   "corrupt": 0,
+   "reason": "execution has not reported success",
+   "rejections": 0,
+   "state": "not_succeeded",
+   "verdicts": 1
+  },
+  "attempt_ahead": {
+   "after": {
+    "buckets": {
+     "completion_rejections": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945",
+     "completion_verdicts": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945"
+    },
+    "rows": {
+     "completion_rejections": 0,
+     "completion_verdicts": 0
+    },
+    "store": "929050f2414b55fe36c0673c994e80bdb656dd5aeb88f8c96f1c14c2e2a7aeda"
+   },
+   "before": {
+    "buckets": {
+     "completion_rejections": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945",
+     "completion_verdicts": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945"
+    },
+    "rows": {
+     "completion_rejections": 0,
+     "completion_verdicts": 0
+    },
+    "store": "929050f2414b55fe36c0673c994e80bdb656dd5aeb88f8c96f1c14c2e2a7aeda"
+   },
+   "message": "Completion verdict is bound to a different execution than the current one",
+   "nothing_written": true,
+   "raised": "ContractError"
+  },
+  "authoritative": {
+   "attempt": 1,
+   "authority": true,
+   "corrupt": 0,
+   "generation": 1,
+   "latest": {
+    "complete": true,
+    "id": "7b920cdcf588615e0a4a5cb1f6ef036c4d99441af50908a87957cac308e7ec0f",
+    "observed_at": "2026-09-10T00:00:00+00:00",
+    "reviewer": {
+     "actor": "lead:research",
+     "kind": "model"
+    },
+    "sequence": 1,
+    "verdict": "approved"
+   },
+   "reason": null,
+   "rejections": 0,
+   "state": "authoritative",
+   "status": "succeeded",
+   "verdicts": 1
+  },
+  "bool_generation_and_attempt_on_the_row": {
+   "after": {
+    "buckets": {
+     "completion_rejections": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945",
+     "completion_verdicts": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945"
+    },
+    "rows": {
+     "completion_rejections": 0,
+     "completion_verdicts": 0
+    },
+    "store": "fa76bfe586bc1df8608322a083f955e25d85e51b01ae21ead945358e261bc297"
+   },
+   "before": {
+    "buckets": {
+     "completion_rejections": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945",
+     "completion_verdicts": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945"
+    },
+    "rows": {
+     "completion_rejections": 0,
+     "completion_verdicts": 0
+    },
+    "store": "fa76bfe586bc1df8608322a083f955e25d85e51b01ae21ead945358e261bc297"
+   },
+   "message": "Completion verdict is bound to a different execution than the current one",
+   "nothing_written": true,
+   "raised": "ContractError"
+  },
+  "float_generation_on_the_row": {
+   "after": {
+    "buckets": {
+     "completion_rejections": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945",
+     "completion_verdicts": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945"
+    },
+    "rows": {
+     "completion_rejections": 0,
+     "completion_verdicts": 0
+    },
+    "store": "dcd34659132a74c850c90e12bf905fae587ceaee746483e763e6341be0608084"
+   },
+   "before": {
+    "buckets": {
+     "completion_rejections": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945",
+     "completion_verdicts": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945"
+    },
+    "rows": {
+     "completion_rejections": 0,
+     "completion_verdicts": 0
+    },
+    "store": "dcd34659132a74c850c90e12bf905fae587ceaee746483e763e6341be0608084"
+   },
+   "message": "Completion verdict is bound to a different execution than the current one",
+   "nothing_written": true,
+   "raised": "ContractError"
+  },
+  "generation_ahead": {
+   "after": {
+    "buckets": {
+     "completion_rejections": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945",
+     "completion_verdicts": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945"
+    },
+    "rows": {
+     "completion_rejections": 0,
+     "completion_verdicts": 0
+    },
+    "store": "97053c513ee0348a18c0e20a62ae1f81772dd0874c03884ce8b94f8e339e1ac3"
+   },
+   "before": {
+    "buckets": {
+     "completion_rejections": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945",
+     "completion_verdicts": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945"
+    },
+    "rows": {
+     "completion_rejections": 0,
+     "completion_verdicts": 0
+    },
+    "store": "97053c513ee0348a18c0e20a62ae1f81772dd0874c03884ce8b94f8e339e1ac3"
+   },
+   "message": "Completion verdict is bound to a different execution than the current one",
+   "nothing_written": true,
+   "raised": "ContractError"
+  },
+  "latest_for_the_first_artifact": {
+   "complete": true,
+   "id": "7b920cdcf588615e0a4a5cb1f6ef036c4d99441af50908a87957cac308e7ec0f",
+   "observed_at": "2026-09-10T00:00:00+00:00",
+   "reviewer": {
+    "actor": "lead:research",
+    "kind": "model"
+   },
+   "sequence": 1,
+   "verdict": "approved"
+  },
+  "other_is_a_new_identity_and_sequence": [
+   true,
+   true,
+   2
+  ],
+  "recorded": {
+   "nothing_written": false,
+   "store_after": "7532fd5db0559f7db801df6d1c6eb331bbbd5df964f8fdb7fa3f01789eb898df",
+   "value": {
+    "changed": true,
+    "id": "7b920cdcf588615e0a4a5cb1f6ef036c4d99441af50908a87957cac308e7ec0f",
+    "sequence": 1
+   }
+  },
+  "require_authority": {
+   "nothing_written": true,
+   "store_after": "bc2f51fd29aee4793722274c1ad9f91935039e3616c72fcbe355854bef0f3873",
+   "value": {
+    "attempt": 1,
+    "authority": true,
+    "corrupt": 0,
+    "generation": 1,
+    "latest": {
+     "complete": true,
+     "id": "7b920cdcf588615e0a4a5cb1f6ef036c4d99441af50908a87957cac308e7ec0f",
+     "observed_at": "2026-09-10T00:00:00+00:00",
+     "reviewer": {
+      "actor": "lead:research",
+      "kind": "model"
+     },
+     "sequence": 1,
+     "verdict": "approved"
+    },
+    "rejections": 0,
+    "state": "authoritative",
+    "status": "succeeded",
+    "task_id": "task-1",
+    "verdicts": 1
+   }
+  },
+  "row_without_generation": {
+   "after": {
+    "buckets": {
+     "completion_rejections": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945",
+     "completion_verdicts": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945"
+    },
+    "rows": {
+     "completion_rejections": 0,
+     "completion_verdicts": 0
+    },
+    "store": "019856f40c43b38b86f0d5050cd7fd672a0e44475e14b8f45fbc9ce8d215cb65"
+   },
+   "before": {
+    "buckets": {
+     "completion_rejections": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945",
+     "completion_verdicts": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945"
+    },
+    "rows": {
+     "completion_rejections": 0,
+     "completion_verdicts": 0
+    },
+    "store": "019856f40c43b38b86f0d5050cd7fd672a0e44475e14b8f45fbc9ce8d215cb65"
+   },
+   "message": "Completion verdict is bound to a different execution than the current one",
+   "nothing_written": true,
+   "raised": "ContractError"
+  },
+  "same_scenarios_other_spec": {
+   "nothing_written": false,
+   "store_after": "d39ca6e5cd112d4cb780bbf016b7a2326f795a65a4f3200e0b7fae4b527f0244",
+   "value": {
+    "changed": true,
+    "id": "c485355438660643fa357c1f7078aed719ad1618960fe9a167ef09f8c5c3466b",
+    "sequence": 2
+   }
+  },
+  "stored_row_equals_the_verdict_plus_sequence": true,
+  "stored_row_keys": [
+   "complete",
+   "evaluation_artifact",
+   "event",
+   "id",
+   "observed_at",
+   "recorded_at",
+   "reviewer",
+   "runner_receipt",
+   "scenarios",
+   "schema_version",
+   "sequence",
+   "spec_revision",
+   "target",
+   "verdict"
+  ],
+  "target_used_by_the_bool_case": {
+   "attempt": 1,
+   "generation": 1,
+   "task_id": "task-bool"
+  },
+  "unknown_task": {
+   "after": {
+    "buckets": {
+     "completion_rejections": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945",
+     "completion_verdicts": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945"
+    },
+    "rows": {
+     "completion_rejections": 0,
+     "completion_verdicts": 0
+    },
+    "store": "afd0d1e69c37ea214e5feba59a385ca4e313d03483326541d80719adf29f2623"
+   },
+   "before": {
+    "buckets": {
+     "completion_rejections": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945",
+     "completion_verdicts": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945"
+    },
+    "rows": {
+     "completion_rejections": 0,
+     "completion_verdicts": 0
+    },
+    "store": "afd0d1e69c37ea214e5feba59a385ca4e313d03483326541d80719adf29f2623"
+   },
+   "message": "Completion verdict for an unknown task",
+   "nothing_written": true,
+   "raised": "ContractError"
+  }
+ },
+ "c4_test_reclaimed_execution_makes_old_verdicts_stale": {
+  "attempt_moved_only": {
+   "authority": false,
+   "corrupt": 0,
+   "reason": "no verdict binds the current execution, spec revision and artifact",
+   "rejections": 0,
+   "state": "stale",
+   "verdicts": 1
+  },
+  "first_verdict": {
+   "nothing_written": false,
+   "store_after": "b9f8729e4e5219ec1f6642bfe454aace57fb640dc2124fb47412545af207d3ee",
+   "value": {
+    "changed": true,
+    "id": "1c7813c5511468a655d04492cf910a742720366a29e154d1e2594292cb2a47be",
+    "sequence": 1
+   }
+  },
+  "new_verdict_is_authoritative": {
+   "authority": true,
+   "corrupt": 0,
+   "reason": null,
+   "rejections": 0,
+   "state": "authoritative",
+   "verdicts": 2
+  },
+  "old_target_refused": {
+   "after": {
+    "buckets": {
+     "completion_rejections": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945",
+     "completion_verdicts": "dd06d8010c45c6b0998717bc02ea647b23b8e2766dd280d7fba3c069d06026a4"
+    },
+    "rows": {
+     "completion_rejections": 0,
+     "completion_verdicts": 1
+    },
+    "store": "42723e08c19f7f15c764574d4f4bec307267adec8b53a95842f4e1145fc63b4a"
+   },
+   "before": {
+    "buckets": {
+     "completion_rejections": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945",
+     "completion_verdicts": "dd06d8010c45c6b0998717bc02ea647b23b8e2766dd280d7fba3c069d06026a4"
+    },
+    "rows": {
+     "completion_rejections": 0,
+     "completion_verdicts": 1
+    },
+    "store": "42723e08c19f7f15c764574d4f4bec307267adec8b53a95842f4e1145fc63b4a"
+   },
+   "message": "Completion verdict is bound to a different execution than the current one",
+   "nothing_written": true,
+   "raised": "ContractError"
+  },
+  "old_verdict_is_stale": {
+   "authority": false,
+   "corrupt": 0,
+   "reason": "no verdict binds the current execution, spec revision and artifact",
+   "rejections": 0,
+   "state": "stale",
+   "verdicts": 1
+  },
+  "two_rows_one_per_attempt": [
+   [
+    1,
+    1,
+    1
+   ],
+   [
+    2,
+    2,
+    2
+   ]
+  ]
+ },
+ "c5_test_recording_order_not_observed_time_selects_the_verdict": {
+  "approved": {
+   "nothing_written": false,
+   "store_after": "4708c2bf063ffd71497baf44edc588466a72462576ddcfcf81ed474d6c0b3247",
+   "value": {
+    "changed": true,
+    "id": "8ea7153f63a93ad78ea0c560286ba2c8bc49b29f87129bf9ea25e3d5b1591cc1",
+    "sequence": 1
+   }
+  },
+  "approved_state": {
+   "authority": true,
+   "corrupt": 0,
+   "reason": null,
+   "rejections": 0,
+   "state": "authoritative",
+   "verdicts": 1
+  },
+  "observed_at_is_normalized_to_utc": {
+   "nothing_written": false,
+   "store_after": "084943af8a18e9471551ceac088c4c320f5c8c46bd41d15725c4483265988bfd",
+   "value": {
+    "changed": true,
+    "id": "2ff5cb8a188ca7d9db4bc80da5c7936f291fc45979b5dbe8061e7b2af59d0b07",
+    "sequence": 4
+   }
+  },
+  "old_acceptance_never_outranks": {
+   "authority": false,
+   "corrupt": 0,
+   "reason": null,
+   "rejections": 0,
+   "state": "not_approved",
+   "verdicts": 2
+  },
+  "other_task_first_sequence": {
+   "nothing_written": false,
+   "store_after": "28b9dd2e38f8559e6772204d07fc516a0a9ba86e448174ee66d087b5d60d38e4",
+   "value": {
+    "changed": true,
+    "id": "06ec00cecb864026f1e7f44ba8e25e5baf1616b53c54eadf6528bea2da18436f",
+    "sequence": 1
+   }
+  },
+  "other_task_rejection": {
+   "after": {
+    "buckets": {
+     "completion_rejections": "6e8a76adc2dbecae0c759db0108854ea5fbca78ba199e608feed8e136d3671ea",
+     "completion_verdicts": "a1ba75f1a105bccc469bc35e9e12e8b72f800291bd43e129bb3263680a1d1824"
+    },
+    "rows": {
+     "completion_rejections": 1,
+     "completion_verdicts": 5
+    },
+    "store": "30245b7ae7cde0fb74ce0a373db7473c788489af960c16074b68366182592ee5"
+   },
+   "before": {
+    "buckets": {
+     "completion_rejections": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945",
+     "completion_verdicts": "a1ba75f1a105bccc469bc35e9e12e8b72f800291bd43e129bb3263680a1d1824"
+    },
+    "rows": {
+     "completion_rejections": 0,
+     "completion_verdicts": 5
+    },
+    "store": "84f2386a9891f43b0f21622856c5ed76e0ca4b2eb582467c9cdd9034baaa6b23"
+   },
+   "message": "Completion verdict rejected: schema_version must be 1",
+   "nothing_written": false,
+   "raised": "ContractError"
+  },
+  "rejected_observed_earlier": {
+   "nothing_written": false,
+   "store_after": "e5c69563f27b39ce5138ab4993f38f69610d1c023bac8ae240d43b65f4ef9ba7",
+   "value": {
+    "changed": true,
+    "id": "ff91905ff0b079bde12e7d08321ac69cefbaa63f0bcc36342975e378b8fec571",
+    "sequence": 2
+   }
+  },
+  "rejection_is_current": {
+   "authority": false,
+   "corrupt": 0,
+   "latest": {
+    "complete": true,
+    "id": "ff91905ff0b079bde12e7d08321ac69cefbaa63f0bcc36342975e378b8fec571",
+    "observed_at": "2026-09-10T00:00:00+00:00",
+    "reviewer": {
+     "actor": "lead:improvement",
+     "kind": "human"
+    },
+    "sequence": 2,
+    "verdict": "iterate"
+   },
+   "reason": null,
+   "rejections": 0,
+   "state": "not_approved",
+   "verdicts": 2
+  },
+  "rejections_by_task": [
+   0,
+   1
+  ],
+  "replay_is_the_original_row": true,
+  "replay_with_a_later_observed_at": {
+   "nothing_written": true,
+   "store_after": "e5c69563f27b39ce5138ab4993f38f69610d1c023bac8ae240d43b65f4ef9ba7",
+   "value": {
+    "changed": false,
+    "id": "8ea7153f63a93ad78ea0c560286ba2c8bc49b29f87129bf9ea25e3d5b1591cc1",
+    "sequence": 1
+   }
+  },
+  "same_second": {
+   "nothing_written": false,
+   "store_after": "896495c527817c79eb40885b9e21c9cd033cc03a0ac3b27ec1c091e3c473b4da",
+   "value": {
+    "changed": true,
+    "id": "bc0c42b915e9d023a0f88f2868b4e5a6a071cfd9574d4be81b0c1279161a8e34",
+    "sequence": 3
+   }
+  },
+  "stored_observed_at": [
+   "2026-09-10T00:00:00+00:00",
+   "2026-09-10T00:00:00+00:00",
+   "2026-09-10T00:00:00+00:00",
+   "2026-09-10T00:00:10+00:00"
+  ],
+  "third_is_latest": {
+   "authority": true,
+   "corrupt": 0,
+   "latest": {
+    "complete": true,
+    "id": "bc0c42b915e9d023a0f88f2868b4e5a6a071cfd9574d4be81b0c1279161a8e34",
+    "observed_at": "2026-09-10T00:00:00+00:00",
+    "reviewer": {
+     "actor": "lead:improvement",
+     "kind": "model"
+    },
+    "sequence": 3,
+    "verdict": "approved"
+   },
+   "reason": null,
+   "rejections": 0,
+   "state": "authoritative",
+   "verdicts": 3
+  },
+  "verdicts_by_task": [
+   4,
+   1
+  ]
+ },
+ "c6_test_scenario_denominator_is_explicit": {
+  "empty": {
+   "nothing_written": false,
+   "store_after": "8ac9ae262ac682931f5516fe08a3dfddda830b39e04cc29aa04c54fd09d8e376",
+   "value": {
+    "changed": true,
+    "id": "c275f9a4de716fa53f5097c43cbf5b0c3979bf5553c20ae36ca609b0734c799e",
+    "sequence": 1
+   }
+  },
+  "empty_state": {
+   "authority": false,
+   "corrupt": 0,
+   "reason": "scenario denominator not fully dispositioned",
+   "rejections": 0,
+   "state": "incomplete",
+   "verdicts": 1
+  },
+  "excluded": {
+   "nothing_written": false,
+   "store_after": "69aeed3e97bf61d39b9d6fc5e71d79f5790a4acbf88dcf0204f6bf86c89d7302",
+   "value": {
+    "changed": true,
+    "id": "555cb080ffe9b85874b859a7f4b309df5129d45a930caf1a8d39f646f5818107",
+    "sequence": 3
+   }
+  },
+  "excluded_state": {
+   "authority": true,
+   "corrupt": 0,
+   "latest": {
+    "complete": true,
+    "id": "555cb080ffe9b85874b859a7f4b309df5129d45a930caf1a8d39f646f5818107",
+    "observed_at": "2026-09-10T00:00:00+00:00",
+    "reviewer": {
+     "actor": "lead:research",
+     "kind": "model"
+    },
+    "sequence": 3,
+    "verdict": "approved"
+   },
+   "reason": null,
+   "rejections": 0,
+   "state": "authoritative",
+   "verdicts": 3
+  },
+  "malformed_denominators": {
+   "excluded_bad_revision": {
+    "after": {
+     "buckets": {
+      "completion_rejections": "aed8d555259ac0046305698f8d4ec1252a6929f83dce505c1ca2253329c88a03",
+      "completion_verdicts": "a41f244d40c2135d407866d895cc1062eb1bfcf80f57c5b37fd10ea8e491a0fe"
+     },
+     "rows": {
+      "completion_rejections": 5,
+      "completion_verdicts": 3
+     },
+     "store": "d30fc1892c10a02728972709753151cc17cf6f565594ee73a91c0683b6928d6e"
+    },
+    "before": {
+     "buckets": {
+      "completion_rejections": "f321b58feb9404c4be2c5a2c7be94ed500a6025d174f1db49b4f4ef90334a8f8",
+      "completion_verdicts": "a41f244d40c2135d407866d895cc1062eb1bfcf80f57c5b37fd10ea8e491a0fe"
+     },
+     "rows": {
+      "completion_rejections": 4,
+      "completion_verdicts": 3
+     },
+     "store": "8d800245c564341c5dc92d4873cb2ace3f88fa74bb144f945ec30c6ac1d4ea63"
+    },
+    "message": "Completion verdict rejected: scenarios.excluded[].revision must be lowercase hex of the declared length",
+    "nothing_written": false,
+    "raised": "ContractError"
+   },
+   "excluded_blank_approver": {
+    "after": {
+     "buckets": {
+      "completion_rejections": "3f9ab55407cdfd26fecbf66689b64f1cfba30e95972f03a490801577d8e736c2",
+      "completion_verdicts": "a41f244d40c2135d407866d895cc1062eb1bfcf80f57c5b37fd10ea8e491a0fe"
+     },
+     "rows": {
+      "completion_rejections": 7,
+      "completion_verdicts": 3
+     },
+     "store": "2b2281407fd262fe06f569f44d8830a8faadb7a4dfd6f0ef5d6114c063d95d4c"
+    },
+    "before": {
+     "buckets": {
+      "completion_rejections": "ee5489cb5bb54a56f2ccae34b0a1e2a545a8d327f98cfb4b35ede0f3aba3b214",
+      "completion_verdicts": "a41f244d40c2135d407866d895cc1062eb1bfcf80f57c5b37fd10ea8e491a0fe"
+     },
+     "rows": {
+      "completion_rejections": 6,
+      "completion_verdicts": 3
+     },
+     "store": "cc22fd5a42b55d3647aa6a160d81372b336b89454425cc2ada71238fa99bb07c"
+    },
+    "message": "Completion verdict rejected: scenarios.excluded[].approved_by must be a non-empty string",
+    "nothing_written": false,
+    "raised": "ContractError"
+   },
+   "excluded_blank_reason": {
+    "after": {
+     "buckets": {
+      "completion_rejections": "ee5489cb5bb54a56f2ccae34b0a1e2a545a8d327f98cfb4b35ede0f3aba3b214",
+      "completion_verdicts": "a41f244d40c2135d407866d895cc1062eb1bfcf80f57c5b37fd10ea8e491a0fe"
+     },
+     "rows": {
+      "completion_rejections": 6,
+      "completion_verdicts": 3
+     },
+     "store": "cc22fd5a42b55d3647aa6a160d81372b336b89454425cc2ada71238fa99bb07c"
+    },
+    "before": {
+     "buckets": {
+      "completion_rejections": "aed8d555259ac0046305698f8d4ec1252a6929f83dce505c1ca2253329c88a03",
+      "completion_verdicts": "a41f244d40c2135d407866d895cc1062eb1bfcf80f57c5b37fd10ea8e491a0fe"
+     },
+     "rows": {
+      "completion_rejections": 5,
+      "completion_verdicts": 3
+     },
+     "store": "d30fc1892c10a02728972709753151cc17cf6f565594ee73a91c0683b6928d6e"
+    },
+    "message": "Completion verdict rejected: scenarios.excluded[].reason must be a non-empty string",
+    "nothing_written": false,
+    "raised": "ContractError"
+   },
+   "excluded_but_passed": {
+    "after": {
+     "buckets": {
+      "completion_rejections": "c6f8b5ad9d8e3ffcd7de1e431938accca8d2a2743344e47c1fd1c63509ba3395",
+      "completion_verdicts": "a41f244d40c2135d407866d895cc1062eb1bfcf80f57c5b37fd10ea8e491a0fe"
+     },
+     "rows": {
+      "completion_rejections": 2,
+      "completion_verdicts": 3
+     },
+     "store": "020cb8e34f67b6c0b36e28982ce9549ac1305d98afdc1ed42f9ee878f65a2b45"
+    },
+    "before": {
+     "buckets": {
+      "completion_rejections": "129e9ef15b274d83c13a6a67acdc25c9c77c2e56055c003a8dfca5b9780227fd",
+      "completion_verdicts": "a41f244d40c2135d407866d895cc1062eb1bfcf80f57c5b37fd10ea8e491a0fe"
+     },
+     "rows": {
+      "completion_rejections": 1,
+      "completion_verdicts": 3
+     },
+     "store": "2291a798d850b197cfd5deda087502f0b66278d731ba45ebf36529af4622dd7b"
+    },
+    "message": "Completion verdict rejected: an exclusion must name an expected scenario that did not pass",
+    "nothing_written": false,
+    "raised": "ContractError"
+   },
+   "excluded_not_a_list": {
+    "after": {
+     "buckets": {
+      "completion_rejections": "f321b58feb9404c4be2c5a2c7be94ed500a6025d174f1db49b4f4ef90334a8f8",
+      "completion_verdicts": "a41f244d40c2135d407866d895cc1062eb1bfcf80f57c5b37fd10ea8e491a0fe"
+     },
+     "rows": {
+      "completion_rejections": 4,
+      "completion_verdicts": 3
+     },
+     "store": "8d800245c564341c5dc92d4873cb2ace3f88fa74bb144f945ec30c6ac1d4ea63"
+    },
+    "before": {
+     "buckets": {
+      "completion_rejections": "9d44194187aa6a3a74edd0aebdf59c0e944fbd0c6a40640c81702f88f19876b2",
+      "completion_verdicts": "a41f244d40c2135d407866d895cc1062eb1bfcf80f57c5b37fd10ea8e491a0fe"
+     },
+     "rows": {
+      "completion_rejections": 3,
+      "completion_verdicts": 3
+     },
+     "store": "d21dc0d3ea12e66b51f93ebbfb2e5e66724161043e89aa07a04f76e167637f5d"
+    },
+    "message": "Completion verdict rejected: scenarios.excluded must be a list",
+    "nothing_written": false,
+    "raised": "ContractError"
+   },
+   "excluded_not_expected": {
+    "after": {
+     "buckets": {
+      "completion_rejections": "129e9ef15b274d83c13a6a67acdc25c9c77c2e56055c003a8dfca5b9780227fd",
+      "completion_verdicts": "a41f244d40c2135d407866d895cc1062eb1bfcf80f57c5b37fd10ea8e491a0fe"
+     },
+     "rows": {
+      "completion_rejections": 1,
+      "completion_verdicts": 3
+     },
+     "store": "2291a798d850b197cfd5deda087502f0b66278d731ba45ebf36529af4622dd7b"
+    },
+    "before": {
+     "buckets": {
+      "completion_rejections": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945",
+      "completion_verdicts": "a41f244d40c2135d407866d895cc1062eb1bfcf80f57c5b37fd10ea8e491a0fe"
+     },
+     "rows": {
+      "completion_rejections": 0,
+      "completion_verdicts": 3
+     },
+     "store": "69aeed3e97bf61d39b9d6fc5e71d79f5790a4acbf88dcf0204f6bf86c89d7302"
+    },
+    "message": "Completion verdict rejected: an exclusion must name an expected scenario that did not pass",
+    "nothing_written": false,
+    "raised": "ContractError"
+   },
+   "excluded_repeated": {
+    "after": {
+     "buckets": {
+      "completion_rejections": "9d44194187aa6a3a74edd0aebdf59c0e944fbd0c6a40640c81702f88f19876b2",
+      "completion_verdicts": "a41f244d40c2135d407866d895cc1062eb1bfcf80f57c5b37fd10ea8e491a0fe"
+     },
+     "rows": {
+      "completion_rejections": 3,
+      "completion_verdicts": 3
+     },
+     "store": "d21dc0d3ea12e66b51f93ebbfb2e5e66724161043e89aa07a04f76e167637f5d"
+    },
+    "before": {
+     "buckets": {
+      "completion_rejections": "c6f8b5ad9d8e3ffcd7de1e431938accca8d2a2743344e47c1fd1c63509ba3395",
+      "completion_verdicts": "a41f244d40c2135d407866d895cc1062eb1bfcf80f57c5b37fd10ea8e491a0fe"
+     },
+     "rows": {
+      "completion_rejections": 2,
+      "completion_verdicts": 3
+     },
+     "store": "020cb8e34f67b6c0b36e28982ce9549ac1305d98afdc1ed42f9ee878f65a2b45"
+    },
+    "message": "Completion verdict rejected: scenarios.excluded must not repeat a scenario",
+    "nothing_written": false,
+    "raised": "ContractError"
+   },
+   "expected_blank_name": {
+    "after": {
+     "buckets": {
+      "completion_rejections": "bf00f0edda546329fd71855ef5887a3dce1c5d83307bae39cf2fa015b5c59ef5",
+      "completion_verdicts": "a41f244d40c2135d407866d895cc1062eb1bfcf80f57c5b37fd10ea8e491a0fe"
+     },
+     "rows": {
+      "completion_rejections": 11,
+      "completion_verdicts": 3
+     },
+     "store": "cdb9c94a73cc9fa24715cad1ccbcf55b164dd8ff655b772e7cf60fcd9f5d1e89"
+    },
+    "before": {
+     "buckets": {
+      "completion_rejections": "3383f38c2e068f3ca01502c0abdacb7eb9cdd564673db9052c02e6505677aad1",
+      "completion_verdicts": "a41f244d40c2135d407866d895cc1062eb1bfcf80f57c5b37fd10ea8e491a0fe"
+     },
+     "rows": {
+      "completion_rejections": 10,
+      "completion_verdicts": 3
+     },
+     "store": "9fc3d5272242dfa2f01501de79b647cc3a100892b5a1c88486a6bc13db60a530"
+    },
+    "message": "Completion verdict rejected: scenarios.expected must be a list of non-empty strings",
+    "nothing_written": false,
+    "raised": "ContractError"
+   },
+   "expected_non_str": {
+    "after": {
+     "buckets": {
+      "completion_rejections": "75c589f3ab727e8fd2d3bc38490e352994431c0d06da24c2b871d68e4810a9b2",
+      "completion_verdicts": "a41f244d40c2135d407866d895cc1062eb1bfcf80f57c5b37fd10ea8e491a0fe"
+     },
+     "rows": {
+      "completion_rejections": 12,
+      "completion_verdicts": 3
+     },
+     "store": "e30f87630a4fa4933577333a378b550eb8004388f9f3b1dd2b1d6f822bf58f72"
+    },
+    "before": {
+     "buckets": {
+      "completion_rejections": "bf00f0edda546329fd71855ef5887a3dce1c5d83307bae39cf2fa015b5c59ef5",
+      "completion_verdicts": "a41f244d40c2135d407866d895cc1062eb1bfcf80f57c5b37fd10ea8e491a0fe"
+     },
+     "rows": {
+      "completion_rejections": 11,
+      "completion_verdicts": 3
+     },
+     "store": "cdb9c94a73cc9fa24715cad1ccbcf55b164dd8ff655b772e7cf60fcd9f5d1e89"
+    },
+    "message": "Completion verdict rejected: scenarios.expected must be a list of non-empty strings",
+    "nothing_written": false,
+    "raised": "ContractError"
+   },
+   "expected_not_a_list": {
+    "after": {
+     "buckets": {
+      "completion_rejections": "3383f38c2e068f3ca01502c0abdacb7eb9cdd564673db9052c02e6505677aad1",
+      "completion_verdicts": "a41f244d40c2135d407866d895cc1062eb1bfcf80f57c5b37fd10ea8e491a0fe"
+     },
+     "rows": {
+      "completion_rejections": 10,
+      "completion_verdicts": 3
+     },
+     "store": "9fc3d5272242dfa2f01501de79b647cc3a100892b5a1c88486a6bc13db60a530"
+    },
+    "before": {
+     "buckets": {
+      "completion_rejections": "3fc6576656fd291d60bca70e4e86befe37bea24f8b3d0ad803e142adc42d459e",
+      "completion_verdicts": "a41f244d40c2135d407866d895cc1062eb1bfcf80f57c5b37fd10ea8e491a0fe"
+     },
+     "rows": {
+      "completion_rejections": 9,
+      "completion_verdicts": 3
+     },
+     "store": "ef8766e0cfd105a46aa1c500e09063304ad377f348bff9b5b780884ec28796c2"
+    },
+    "message": "Completion verdict rejected: scenarios.expected must be a list of non-empty strings",
+    "nothing_written": false,
+    "raised": "ContractError"
+   },
+   "scenarios_extra_key": {
+    "after": {
+     "buckets": {
+      "completion_rejections": "3fc6576656fd291d60bca70e4e86befe37bea24f8b3d0ad803e142adc42d459e",
+      "completion_verdicts": "a41f244d40c2135d407866d895cc1062eb1bfcf80f57c5b37fd10ea8e491a0fe"
+     },
+     "rows": {
+      "completion_rejections": 9,
+      "completion_verdicts": 3
+     },
+     "store": "ef8766e0cfd105a46aa1c500e09063304ad377f348bff9b5b780884ec28796c2"
+    },
+    "before": {
+     "buckets": {
+      "completion_rejections": "9d747c49e4201c61d035d2e781b5edbec1611a92c4ff51b6405d185b67c6121b",
+      "completion_verdicts": "a41f244d40c2135d407866d895cc1062eb1bfcf80f57c5b37fd10ea8e491a0fe"
+     },
+     "rows": {
+      "completion_rejections": 8,
+      "completion_verdicts": 3
+     },
+     "store": "8e4b85f418ced5b4a100882a97a1d313d36df5b3eb7acfd1a773a0a3c8cd9756"
+    },
+    "message": "Completion verdict rejected: scenarios must carry exactly ['excluded', 'expected', 'passed']",
+    "nothing_written": false,
+    "raised": "ContractError"
+   },
+   "scenarios_not_a_dict": {
+    "after": {
+     "buckets": {
+      "completion_rejections": "9d747c49e4201c61d035d2e781b5edbec1611a92c4ff51b6405d185b67c6121b",
+      "completion_verdicts": "a41f244d40c2135d407866d895cc1062eb1bfcf80f57c5b37fd10ea8e491a0fe"
+     },
+     "rows": {
+      "completion_rejections": 8,
+      "completion_verdicts": 3
+     },
+     "store": "8e4b85f418ced5b4a100882a97a1d313d36df5b3eb7acfd1a773a0a3c8cd9756"
+    },
+    "before": {
+     "buckets": {
+      "completion_rejections": "3f9ab55407cdfd26fecbf66689b64f1cfba30e95972f03a490801577d8e736c2",
+      "completion_verdicts": "a41f244d40c2135d407866d895cc1062eb1bfcf80f57c5b37fd10ea8e491a0fe"
+     },
+     "rows": {
+      "completion_rejections": 7,
+      "completion_verdicts": 3
+     },
+     "store": "2b2281407fd262fe06f569f44d8830a8faadb7a4dfd6f0ef5d6114c063d95d4c"
+    },
+    "message": "Completion verdict rejected: scenarios must carry exactly ['excluded', 'expected', 'passed']",
+    "nothing_written": false,
+    "raised": "ContractError"
+   }
+  },
+  "oversize_record": {
+   "after": {
+    "buckets": {
+     "completion_rejections": "20ef1258900207df77be0164ad943d2e505b010383e8e2464574d0f9755faa03",
+     "completion_verdicts": "a41f244d40c2135d407866d895cc1062eb1bfcf80f57c5b37fd10ea8e491a0fe"
+    },
+    "rows": {
+     "completion_rejections": 20,
+     "completion_verdicts": 3
+    },
+    "store": "7e3ab922b0dd2090603255443d0d9ade5516665960b5e3a9fed140cad7881479"
+   },
+   "before": {
+    "buckets": {
+     "completion_rejections": "fd65071fac28b8bfa4ccacfc8ec13dbc4cbfe43a1b3a063e6f86055125eb43ae",
+     "completion_verdicts": "a41f244d40c2135d407866d895cc1062eb1bfcf80f57c5b37fd10ea8e491a0fe"
+    },
+    "rows": {
+     "completion_rejections": 19,
+     "completion_verdicts": 3
+    },
+    "store": "affc22950bf20a57bca63e78063b11b082e4f0853b8e4423e5f18c416eb2130a"
+   },
+   "message": "Completion verdict rejected: record exceeds 65536 bytes",
+   "nothing_written": false,
+   "raised": "ContractError"
+  },
+  "partial": {
+   "nothing_written": false,
+   "store_after": "a12cc22b141e3f7a1820c5547f1fe4be59da127f1f3b44d6fbb38aecbc96b524",
+   "value": {
+    "changed": true,
+    "id": "d206c923abc19f684ac9de4a07cbd4e66bf8db56f686a78fc71a2fbcfef25e19",
+    "sequence": 2
+   }
+  },
+  "partial_state": {
+   "authority": false,
+   "corrupt": 0,
+   "reason": "scenario denominator not fully dispositioned",
+   "rejections": 0,
+   "state": "incomplete",
+   "verdicts": 2
+  },
+  "receipt_refusals": {
+   "attempt_other": {
+    "after": {
+     "buckets": {
+      "completion_rejections": "85c5e5404c18a83fea93d6ae0217d3afb457baeea3d1f95956a453e3a8528a7f",
+      "completion_verdicts": "a41f244d40c2135d407866d895cc1062eb1bfcf80f57c5b37fd10ea8e491a0fe"
+     },
+     "rows": {
+      "completion_rejections": 15,
+      "completion_verdicts": 3
+     },
+     "store": "cb3456c500e8f3c0bc517e287e66f03efb8d641fd48bda77c0f4881cbbf45f22"
+    },
+    "before": {
+     "buckets": {
+      "completion_rejections": "7b050a999d7f6ac962206662feec52df24eb1499e39fb52b635ac38c02335d52",
+      "completion_verdicts": "a41f244d40c2135d407866d895cc1062eb1bfcf80f57c5b37fd10ea8e491a0fe"
+     },
+     "rows": {
+      "completion_rejections": 14,
+      "completion_verdicts": 3
+     },
+     "store": "1522f67635c426db4907f5af88a43257d27375203ee63c9d307119e78270d2e6"
+    },
+    "message": "Completion verdict rejected: runner_receipt targets a different execution than the verdict",
+    "nothing_written": false,
+    "raised": "ContractError"
+   },
+   "digest_short": {
+    "after": {
+     "buckets": {
+      "completion_rejections": "fc07dd44a7f5aa812afb48187972cadba69bb9b26be63e53e82a8370e83af63b",
+      "completion_verdicts": "a41f244d40c2135d407866d895cc1062eb1bfcf80f57c5b37fd10ea8e491a0fe"
+     },
+     "rows": {
+      "completion_rejections": 16,
+      "completion_verdicts": 3
+     },
+     "store": "e742b0ed652fa812e3169bfb6a1ff3a1af4eb6f24a2fc01029b32de5f8221125"
+    },
+    "before": {
+     "buckets": {
+      "completion_rejections": "85c5e5404c18a83fea93d6ae0217d3afb457baeea3d1f95956a453e3a8528a7f",
+      "completion_verdicts": "a41f244d40c2135d407866d895cc1062eb1bfcf80f57c5b37fd10ea8e491a0fe"
+     },
+     "rows": {
+      "completion_rejections": 15,
+      "completion_verdicts": 3
+     },
+     "store": "cb3456c500e8f3c0bc517e287e66f03efb8d641fd48bda77c0f4881cbbf45f22"
+    },
+    "message": "Completion verdict rejected: runner_receipt.digest must be lowercase hex of the declared length",
+    "nothing_written": false,
+    "raised": "ContractError"
+   },
+   "digest_uppercase": {
+    "after": {
+     "buckets": {
+      "completion_rejections": "ea3b42e78e670a7485ee74ac0481aa2f03ea99eabbfaf0745ae3582e421e7fea",
+      "completion_verdicts": "a41f244d40c2135d407866d895cc1062eb1bfcf80f57c5b37fd10ea8e491a0fe"
+     },
+     "rows": {
+      "completion_rejections": 17,
+      "completion_verdicts": 3
+     },
+     "store": "11d68c3a3168faf0bd32abd9c85ad91a1a1a8ea918a68234918df999ba4914be"
+    },
+    "before": {
+     "buckets": {
+      "completion_rejections": "fc07dd44a7f5aa812afb48187972cadba69bb9b26be63e53e82a8370e83af63b",
+      "completion_verdicts": "a41f244d40c2135d407866d895cc1062eb1bfcf80f57c5b37fd10ea8e491a0fe"
+     },
+     "rows": {
+      "completion_rejections": 16,
+      "completion_verdicts": 3
+     },
+     "store": "e742b0ed652fa812e3169bfb6a1ff3a1af4eb6f24a2fc01029b32de5f8221125"
+    },
+    "message": "Completion verdict rejected: runner_receipt.digest must be lowercase hex of the declared length",
+    "nothing_written": false,
+    "raised": "ContractError"
+   },
+   "extra_key": {
+    "after": {
+     "buckets": {
+      "completion_rejections": "fd65071fac28b8bfa4ccacfc8ec13dbc4cbfe43a1b3a063e6f86055125eb43ae",
+      "completion_verdicts": "a41f244d40c2135d407866d895cc1062eb1bfcf80f57c5b37fd10ea8e491a0fe"
+     },
+     "rows": {
+      "completion_rejections": 19,
+      "completion_verdicts": 3
+     },
+     "store": "affc22950bf20a57bca63e78063b11b082e4f0853b8e4423e5f18c416eb2130a"
+    },
+    "before": {
+     "buckets": {
+      "completion_rejections": "86c7899d07ec7b6903a88a3c7da28a93286d530bbe02dcfff68c074165e5fbb2",
+      "completion_verdicts": "a41f244d40c2135d407866d895cc1062eb1bfcf80f57c5b37fd10ea8e491a0fe"
+     },
+     "rows": {
+      "completion_rejections": 18,
+      "completion_verdicts": 3
+     },
+     "store": "2caed45a15d9d8fddf3c8f05de2f6ad38642c3f708cfed39efb3424e3dfe0c30"
+    },
+    "message": "Completion verdict rejected: runner_receipt must carry exactly ['attempt', 'digest', 'generation', 'id', 'task_id']",
+    "nothing_written": false,
+    "raised": "ContractError"
+   },
+   "generation_text": {
+    "after": {
+     "buckets": {
+      "completion_rejections": "7b050a999d7f6ac962206662feec52df24eb1499e39fb52b635ac38c02335d52",
+      "completion_verdicts": "a41f244d40c2135d407866d895cc1062eb1bfcf80f57c5b37fd10ea8e491a0fe"
+     },
+     "rows": {
+      "completion_rejections": 14,
+      "completion_verdicts": 3
+     },
+     "store": "1522f67635c426db4907f5af88a43257d27375203ee63c9d307119e78270d2e6"
+    },
+    "before": {
+     "buckets": {
+      "completion_rejections": "70b3f99070d4b96dec31ed9616f3c3b08c58094de79f978065416ed9ab5cc894",
+      "completion_verdicts": "a41f244d40c2135d407866d895cc1062eb1bfcf80f57c5b37fd10ea8e491a0fe"
+     },
+     "rows": {
+      "completion_rejections": 13,
+      "completion_verdicts": 3
+     },
+     "store": "e6d9c11a25c90cd118dd9ca432eb0cadbb64d82c7166b59d4c0fc73d201dd850"
+    },
+    "message": "Completion verdict rejected: runner_receipt targets a different execution than the verdict",
+    "nothing_written": false,
+    "raised": "ContractError"
+   },
+   "id_blank": {
+    "after": {
+     "buckets": {
+      "completion_rejections": "86c7899d07ec7b6903a88a3c7da28a93286d530bbe02dcfff68c074165e5fbb2",
+      "completion_verdicts": "a41f244d40c2135d407866d895cc1062eb1bfcf80f57c5b37fd10ea8e491a0fe"
+     },
+     "rows": {
+      "completion_rejections": 18,
+      "completion_verdicts": 3
+     },
+     "store": "2caed45a15d9d8fddf3c8f05de2f6ad38642c3f708cfed39efb3424e3dfe0c30"
+    },
+    "before": {
+     "buckets": {
+      "completion_rejections": "ea3b42e78e670a7485ee74ac0481aa2f03ea99eabbfaf0745ae3582e421e7fea",
+      "completion_verdicts": "a41f244d40c2135d407866d895cc1062eb1bfcf80f57c5b37fd10ea8e491a0fe"
+     },
+     "rows": {
+      "completion_rejections": 17,
+      "completion_verdicts": 3
+     },
+     "store": "11d68c3a3168faf0bd32abd9c85ad91a1a1a8ea918a68234918df999ba4914be"
+    },
+    "message": "Completion verdict rejected: runner_receipt.id must be a non-empty string",
+    "nothing_written": false,
+    "raised": "ContractError"
+   },
+   "task_id_other": {
+    "after": {
+     "buckets": {
+      "completion_rejections": "70b3f99070d4b96dec31ed9616f3c3b08c58094de79f978065416ed9ab5cc894",
+      "completion_verdicts": "a41f244d40c2135d407866d895cc1062eb1bfcf80f57c5b37fd10ea8e491a0fe"
+     },
+     "rows": {
+      "completion_rejections": 13,
+      "completion_verdicts": 3
+     },
+     "store": "e6d9c11a25c90cd118dd9ca432eb0cadbb64d82c7166b59d4c0fc73d201dd850"
+    },
+    "before": {
+     "buckets": {
+      "completion_rejections": "75c589f3ab727e8fd2d3bc38490e352994431c0d06da24c2b871d68e4810a9b2",
+      "completion_verdicts": "a41f244d40c2135d407866d895cc1062eb1bfcf80f57c5b37fd10ea8e491a0fe"
+     },
+     "rows": {
+      "completion_rejections": 12,
+      "completion_verdicts": 3
+     },
+     "store": "e30f87630a4fa4933577333a378b550eb8004388f9f3b1dd2b1d6f822bf58f72"
+    },
+    "message": "Completion verdict rejected: runner_receipt targets a different execution than the verdict",
+    "nothing_written": false,
+    "raised": "ContractError"
+   }
+  }
+ },
+ "c7_test_duplicate_and_concurrent_records_do_not_inflate": {
+  "after": {
+   "authority": true,
+   "corrupt": 0,
+   "reason": null,
+   "rejections": 0,
+   "state": "authoritative",
+   "verdicts": 1
+  },
+  "changed_count": 1,
+  "identity_reused_with_different_content": {
+   "after": {
+    "buckets": {
+     "completion_rejections": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945",
+     "completion_verdicts": "1bd7afa522f1d3af780c6d8aa95facda146caa63e23a3bc51df147c786ebe4ca"
+    },
+    "rows": {
+     "completion_rejections": 0,
+     "completion_verdicts": 1
+    },
+    "store": "e39e434572385f9c4994b68c2697d08fa486a66d5b2b6001eb8db11322c3a261"
+   },
+   "before": {
+    "buckets": {
+     "completion_rejections": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945",
+     "completion_verdicts": "1bd7afa522f1d3af780c6d8aa95facda146caa63e23a3bc51df147c786ebe4ca"
+    },
+    "rows": {
+     "completion_rejections": 0,
+     "completion_verdicts": 1
+    },
+    "store": "e39e434572385f9c4994b68c2697d08fa486a66d5b2b6001eb8db11322c3a261"
+   },
+   "message": "Completion verdict identity reused with different content",
+   "nothing_written": true,
+   "raised": "ContractError"
+  },
+  "now_boundary": {
+   "equal": {
+    "nothing_written": false,
+    "store_after": "b27e9aef8f6d0bfcc58fd02000b5896074e357e336a8f7f9d310a0875866a2d7",
+    "value": {
+     "changed": true,
+     "id": "c5ec31dc6d013b2a8cfb73c3414a40927aea78dcf3816b518daaeed0b8f7f58a",
+     "sequence": 1
+    }
+   },
+   "plus_60s": {
+    "nothing_written": false,
+    "store_after": "a562db9b3b3c95f813a7e3b72cd45b7d9fe32c870409eaa4394a07bc6e5d5b5e",
+    "value": {
+     "changed": true,
+     "id": "14465a1364b0f51c9bad048fd3df60e5db0b07d30e9cd09318e9942499c3cf0e",
+     "sequence": 2
+    }
+   },
+   "plus_60s_other_offset": {
+    "nothing_written": false,
+    "store_after": "6fbab27f13df6f467717a99770ace9f7f2fe520171a1f819578c50d66a534fa6",
+    "value": {
+     "changed": true,
+     "id": "4ea05e83f39dd9a9de4644106c4d79d0b711b0c308266fd74bd133fc4a344942",
+     "sequence": 3
+    }
+   },
+   "plus_61s": {
+    "after": {
+     "buckets": {
+      "completion_rejections": "3609fad66a49702b6c777e2e55a7042a6d9b02ebfd7a049d70511e33814c659c",
+      "completion_verdicts": "02489c4d7f46072c9be3c78cb6fc4af0c8080c3f1e438b1190d5dd511cc9945f"
+     },
+     "rows": {
+      "completion_rejections": 1,
+      "completion_verdicts": 2
+     },
+     "store": "267408a020e09db8e2eda693ed342d59bf9a6eebd0951019bc23cecf2cbd306d"
+    },
+    "before": {
+     "buckets": {
+      "completion_rejections": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945",
+      "completion_verdicts": "02489c4d7f46072c9be3c78cb6fc4af0c8080c3f1e438b1190d5dd511cc9945f"
+     },
+     "rows": {
+      "completion_rejections": 0,
+      "completion_verdicts": 2
+     },
+     "store": "294518bd820226318b12507f26080a953ef0ebe58b211f08b8780ea0f1ac23c3"
+    },
+    "message": "Completion verdict rejected: observed_at is in the future",
+    "nothing_written": false,
+    "raised": "ContractError"
+   }
+  },
+  "observed_at_differs_only": {
+   "nothing_written": true,
+   "store_after": "ee433960b1593b4ff104b6d85c6f8b8f39263bd37f2d01612681ab4a093d56dd",
+   "value": {
+    "changed": false,
+    "id": "5467a75be34dfd06bb3a35b1640a9f0b2246df45683304937e68860bf316f5c3",
+    "sequence": 1
+   }
+  },
+  "observed_at_in_the_future_without_now": {
+   "after": {
+    "buckets": {
+     "completion_rejections": "cdc1c7e7f8e8023cbd89d91bef94045d65dedf254f34611880fa11a2bb08be1c",
+     "completion_verdicts": "ff787e5d842db5c80212b0bd6c3cf8a6ff34c42183ad863bd69428df844c42a9"
+    },
+    "rows": {
+     "completion_rejections": 2,
+     "completion_verdicts": 3
+    },
+    "store": "bfb4593eaf94eb4552c52253567771d2bab4e73a75d53289f6c928b1d3b55920"
+   },
+   "before": {
+    "buckets": {
+     "completion_rejections": "3609fad66a49702b6c777e2e55a7042a6d9b02ebfd7a049d70511e33814c659c",
+     "completion_verdicts": "ff787e5d842db5c80212b0bd6c3cf8a6ff34c42183ad863bd69428df844c42a9"
+    },
+    "rows": {
+     "completion_rejections": 1,
+     "completion_verdicts": 3
+    },
+    "store": "27b5f351f475a8433ee8254cac4a66fab56519e6016a8355aa6855bc995b5525"
+   },
+   "message": "Completion verdict rejected: observed_at is in the future",
+   "nothing_written": false,
+   "raised": "ContractError"
+  },
+  "observed_in_the_past_without_now": {
+   "nothing_written": false,
+   "store_after": "401665339c133a92de65828e6c19387f6e6941e92f970bda6617e3fed3208e80",
+   "value": {
+    "changed": true,
+    "id": "759d043ed0f4b23609652c36ca669cad2681415369f58b4c2ebeb74eb530249a",
+    "sequence": 4
+   }
+  },
+  "record_only_fields_differ": {
+   "nothing_written": true,
+   "store_after": "b4f6df53ea61c3d9c9d752aa43affbaafe4951108950cfd667c604647d45d6c6",
+   "value": {
+    "changed": false,
+    "id": "5467a75be34dfd06bb3a35b1640a9f0b2246df45683304937e68860bf316f5c3",
+    "sequence": 41
+   }
+  },
+  "repeat_writes_nothing": [
+   true,
+   true,
+   true,
+   true,
+   true,
+   true,
+   true
+  ],
+  "results": [
+   {
+    "changed": true,
+    "id": "5467a75be34dfd06bb3a35b1640a9f0b2246df45683304937e68860bf316f5c3",
+    "sequence": 1
+   },
+   {
+    "changed": false,
+    "id": "5467a75be34dfd06bb3a35b1640a9f0b2246df45683304937e68860bf316f5c3",
+    "sequence": 1
+   },
+   {
+    "changed": false,
+    "id": "5467a75be34dfd06bb3a35b1640a9f0b2246df45683304937e68860bf316f5c3",
+    "sequence": 1
+   },
+   {
+    "changed": false,
+    "id": "5467a75be34dfd06bb3a35b1640a9f0b2246df45683304937e68860bf316f5c3",
+    "sequence": 1
+   },
+   {
+    "changed": false,
+    "id": "5467a75be34dfd06bb3a35b1640a9f0b2246df45683304937e68860bf316f5c3",
+    "sequence": 1
+   },
+   {
+    "changed": false,
+    "id": "5467a75be34dfd06bb3a35b1640a9f0b2246df45683304937e68860bf316f5c3",
+    "sequence": 1
+   },
+   {
+    "changed": false,
+    "id": "5467a75be34dfd06bb3a35b1640a9f0b2246df45683304937e68860bf316f5c3",
+    "sequence": 1
+   },
+   {
+    "changed": false,
+    "id": "5467a75be34dfd06bb3a35b1640a9f0b2246df45683304937e68860bf316f5c3",
+    "sequence": 1
+   }
+  ],
+  "sequences": [
+   1
+  ],
+  "stored_row_lacks_a_key": {
+   "after": {
+    "buckets": {
+     "completion_rejections": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945",
+     "completion_verdicts": "837e67101a857b3960bc3053e639f2260bf40ed9165c20237b00f3c2a416eb4c"
+    },
+    "rows": {
+     "completion_rejections": 0,
+     "completion_verdicts": 1
+    },
+    "store": "6b447be2cf83cdf73d37f4b6718e7c615ab325cb2a9e8dd483d1602f2ae896b6"
+   },
+   "before": {
+    "buckets": {
+     "completion_rejections": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945",
+     "completion_verdicts": "837e67101a857b3960bc3053e639f2260bf40ed9165c20237b00f3c2a416eb4c"
+    },
+    "rows": {
+     "completion_rejections": 0,
+     "completion_verdicts": 1
+    },
+    "store": "6b447be2cf83cdf73d37f4b6718e7c615ab325cb2a9e8dd483d1602f2ae896b6"
+   },
+   "message": "Completion verdict identity reused with different content",
+   "nothing_written": true,
+   "raised": "ContractError"
+  }
+ },
+ "c8_test_authority_needs_real_evidence_an_independent_reviewer_and_the_approved_denominator": {
+  "after_the_faults": {
+   "authority": true,
+   "corrupt": 0,
+   "reason": null,
+   "rejections": 0,
+   "state": "authoritative",
+   "verdicts": 1
+  },
+  "artifact_reads": 345,
+  "authoritative": {
+   "authority": true,
+   "corrupt": 0,
+   "latest": {
+    "complete": true,
+    "id": "c6e5b96fc0c424521bcb02fded77b57cb264c47873ccc1705b065d20a78a3a1f",
+    "observed_at": "2026-09-10T00:00:00+00:00",
+    "reviewer": {
+     "actor": "lead:improvement",
+     "kind": "human"
+    },
+    "sequence": 25,
+    "verdict": "approved"
+   },
+   "reason": null,
+   "rejections": 0,
+   "state": "authoritative",
+   "verdicts": 25
+  },
+  "consumer_denominator_a_string": {
+   "after": {
+    "buckets": {
+     "completion_rejections": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945",
+     "completion_verdicts": "1b1f21179570f0499a0d58ea0a8054b82bf874c8acfd7396f1014408deda1e7c"
+    },
+    "rows": {
+     "completion_rejections": 0,
+     "completion_verdicts": 70
+    },
+    "store": "f654572cae1e94d62fa1ecb97d5b70193a12fa99d2540b405d9304335f0ef6f8"
+   },
+   "before": {
+    "buckets": {
+     "completion_rejections": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945",
+     "completion_verdicts": "1b1f21179570f0499a0d58ea0a8054b82bf874c8acfd7396f1014408deda1e7c"
+    },
+    "rows": {
+     "completion_rejections": 0,
+     "completion_verdicts": 70
+    },
+    "store": "f654572cae1e94d62fa1ecb97d5b70193a12fa99d2540b405d9304335f0ef6f8"
+   },
+   "message": "expected_scenarios must be scenario names",
+   "nothing_written": true,
+   "raised": "ContractError"
+  },
+  "consumer_denominator_a_tuple": {
+   "after": {
+    "buckets": {
+     "completion_rejections": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945",
+     "completion_verdicts": "1b1f21179570f0499a0d58ea0a8054b82bf874c8acfd7396f1014408deda1e7c"
+    },
+    "rows": {
+     "completion_rejections": 0,
+     "completion_verdicts": 70
+    },
+    "store": "f654572cae1e94d62fa1ecb97d5b70193a12fa99d2540b405d9304335f0ef6f8"
+   },
+   "before": {
+    "buckets": {
+     "completion_rejections": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945",
+     "completion_verdicts": "1b1f21179570f0499a0d58ea0a8054b82bf874c8acfd7396f1014408deda1e7c"
+    },
+    "rows": {
+     "completion_rejections": 0,
+     "completion_verdicts": 70
+    },
+    "store": "f654572cae1e94d62fa1ecb97d5b70193a12fa99d2540b405d9304335f0ef6f8"
+   },
+   "message": "expected_scenarios must be scenario names",
+   "nothing_written": true,
+   "raised": "ContractError"
+  },
+  "consumer_denominator_empty": {
+   "authority": false,
+   "reason": "verdict denominator differs from the scenarios the consumer names",
+   "state": "scenario_mismatch"
+  },
+  "consumer_denominator_with_a_non_str": {
+   "after": {
+    "buckets": {
+     "completion_rejections": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945",
+     "completion_verdicts": "1b1f21179570f0499a0d58ea0a8054b82bf874c8acfd7396f1014408deda1e7c"
+    },
+    "rows": {
+     "completion_rejections": 0,
+     "completion_verdicts": 70
+    },
+    "store": "f654572cae1e94d62fa1ecb97d5b70193a12fa99d2540b405d9304335f0ef6f8"
+   },
+   "before": {
+    "buckets": {
+     "completion_rejections": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945",
+     "completion_verdicts": "1b1f21179570f0499a0d58ea0a8054b82bf874c8acfd7396f1014408deda1e7c"
+    },
+    "rows": {
+     "completion_rejections": 0,
+     "completion_verdicts": 70
+    },
+    "store": "f654572cae1e94d62fa1ecb97d5b70193a12fa99d2540b405d9304335f0ef6f8"
+   },
+   "message": "expected_scenarios must be scenario names",
+   "nothing_written": true,
+   "raised": "ContractError"
+  },
+  "consumer_names_fewer": {
+   "authority": false,
+   "reason": "verdict denominator differs from the scenarios the consumer names",
+   "state": "scenario_mismatch"
+  },
+  "consumer_names_nothing": {
+   "authority": true,
+   "reason": null,
+   "state": "authoritative"
+  },
+  "consumer_names_the_same_reordered_and_repeated": {
+   "authority": true,
+   "reason": null,
+   "state": "authoritative"
+  },
+  "document_fault_on_the_evaluation": {
+   "authority": false,
+   "corrupt": 0,
+   "reason": "sha256:242173fcf6b52f12fc63d37cfb9fdb3910612bceadf58bf298216bc2ad959f36: PermissionError",
+   "rejections": 0,
+   "state": "artifact_missing",
+   "verdicts": 1
+  },
+  "document_fault_on_the_execution": {
+   "authority": false,
+   "corrupt": 0,
+   "reason": "sha256:04a9a16d05b16860480dbf5fd131bc9532f5dc42ce73968c29a70b2c3abc01a9: PermissionError",
+   "rejections": 0,
+   "state": "artifact_missing",
+   "verdicts": 1
+  },
+  "empty_artifact_store": {
+   "authority": false,
+   "corrupt": 0,
+   "names_the_execution": true,
+   "reason": "sha256:04a9a16d05b16860480dbf5fd131bc9532f5dc42ce73968c29a70b2c3abc01a9: FileNotFoundError",
+   "rejections": 0,
+   "state": "artifact_missing",
+   "verdicts": 1
+  },
+  "evaluation_artifact_bindings": {
+   "attempt": {
+    "authority": false,
+    "reason": "evaluation artifact content is not a completion evaluation of this task, attempt and spec revision",
+    "state": "artifact_unbound"
+   },
+   "kind": {
+    "authority": false,
+    "reason": "evaluation artifact names another reviewer",
+    "state": "reviewer_unbound"
+   },
+   "reviewer": {
+    "authority": false,
+    "reason": "evaluation artifact names another reviewer",
+    "state": "reviewer_unbound"
+   },
+   "scenarios": {
+    "authority": false,
+    "reason": "verdict denominator differs from the scenarios the evaluation artifact names",
+    "state": "scenario_mismatch"
+   },
+   "scenarios_blank_name": {
+    "authority": false,
+    "reason": "verdict denominator differs from the scenarios the evaluation artifact names",
+    "state": "scenario_mismatch"
+   },
+   "scenarios_blank_str": {
+    "authority": false,
+    "reason": "evaluation artifact declares no scenario denominator",
+    "state": "artifact_unbound"
+   },
+   "scenarios_empty": {
+    "authority": false,
+    "reason": "evaluation artifact declares no scenario denominator",
+    "state": "artifact_unbound"
+   },
+   "scenarios_non_str": {
+    "authority": false,
+    "reason": "evaluation artifact declares no scenario denominator",
+    "state": "artifact_unbound"
+   },
+   "scenarios_none": {
+    "authority": false,
+    "reason": "evaluation artifact declares no scenario denominator",
+    "state": "artifact_unbound"
+   },
+   "scenarios_not_a_list": {
+    "authority": false,
+    "reason": "evaluation artifact declares no scenario denominator",
+    "state": "artifact_unbound"
+   },
+   "spec": {
+    "authority": false,
+    "reason": "evaluation artifact content is not a completion evaluation of this task, attempt and spec revision",
+    "state": "artifact_unbound"
+   },
+   "task": {
+    "authority": false,
+    "reason": "evaluation artifact content is not a completion evaluation of this task, attempt and spec revision",
+    "state": "artifact_unbound"
+   }
+  },
+  "evaluation_without_the_kind_key": {
+   "authority": false,
+   "reason": "evaluation artifact content is not a completion evaluation of this task, attempt and spec revision",
+   "state": "artifact_unbound"
+  },
+  "evaluation_without_the_scenarios_key": {
+   "authority": false,
+   "reason": "evaluation artifact declares no scenario denominator",
+   "state": "artifact_unbound"
+  },
+  "fabricated_receipt": {
+   "authority": false,
+   "corrupt": 0,
+   "reason": "runner_receipt is not the execution evidence the task recorded",
+   "rejections": 0,
+   "state": "receipt_unbound",
+   "verdicts": 1
+  },
+  "fabricated_receipt_require": {
+   "after": {
+    "buckets": {
+     "completion_rejections": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945",
+     "completion_verdicts": "6264241e7c6e9bf953e7452aaa5da398ee3a0ba20e112d27d8b40601138eea5e"
+    },
+    "rows": {
+     "completion_rejections": 0,
+     "completion_verdicts": 1
+    },
+    "store": "b31fb2e9fba0bebff513a80cddda847e0edcd8b16654d57bf119421b01af3293"
+   },
+   "before": {
+    "buckets": {
+     "completion_rejections": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945",
+     "completion_verdicts": "6264241e7c6e9bf953e7452aaa5da398ee3a0ba20e112d27d8b40601138eea5e"
+    },
+    "rows": {
+     "completion_rejections": 0,
+     "completion_verdicts": 1
+    },
+    "store": "b31fb2e9fba0bebff513a80cddda847e0edcd8b16654d57bf119421b01af3293"
+   },
+   "message": "No completion authority: receipt_unbound",
+   "nothing_written": true,
+   "raised": "ContractError"
+  },
+  "inspect_fault_on_the_evaluation": {
+   "authority": false,
+   "corrupt": 0,
+   "reason": "sha256:242173fcf6b52f12fc63d37cfb9fdb3910612bceadf58bf298216bc2ad959f36: PermissionError",
+   "rejections": 0,
+   "state": "artifact_missing",
+   "verdicts": 1
+  },
+  "inspect_fault_on_the_execution": {
+   "authority": false,
+   "corrupt": 0,
+   "reason": "sha256:04a9a16d05b16860480dbf5fd131bc9532f5dc42ce73968c29a70b2c3abc01a9: PermissionError",
+   "rejections": 0,
+   "state": "artifact_missing",
+   "verdicts": 1
+  },
+  "label_evaluation": {
+   "authority": false,
+   "reason": "evaluation artifact content is not a completion evaluation of this task, attempt and spec revision",
+   "state": "artifact_unbound"
+  },
+  "label_execution": {
+   "authority": false,
+   "corrupt": 0,
+   "reason": "execution artifact content names another task or attempt",
+   "rejections": 0,
+   "state": "receipt_unbound",
+   "verdicts": 1
+  },
+  "no_artifact_store": {
+   "authority": false,
+   "corrupt": 0,
+   "reason": "no artifact store to verify the receipt and evaluation artifact",
+   "rejections": 0,
+   "state": "artifact_missing",
+   "verdicts": 1
+  },
+  "no_organization": {
+   "authority": false,
+   "reason": "reviewer is not an independent organization actor",
+   "state": "reviewer_unbound"
+  },
+  "no_reviewer_execution": {
+   "authority": false,
+   "reason": "no verified reviewer execution: no reviewer execution reference",
+   "state": "reviewer_unbound"
+  },
+  "non_object_documents": {
+   "evaluation_document_a_list": {
+    "after": {
+     "buckets": {
+      "completion_rejections": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945",
+      "completion_verdicts": "7fbb0a4432f4deb70326e986493e02a56d7fe07771e5ff52b024906fe028f0ef"
+     },
+     "rows": {
+      "completion_rejections": 0,
+      "completion_verdicts": 72
+     },
+     "store": "a7837a14f9df6f05b09b7a8b8d4e915fa08d67beb5ce23e84973f0df9e4b7116"
+    },
+    "before": {
+     "buckets": {
+      "completion_rejections": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945",
+      "completion_verdicts": "7fbb0a4432f4deb70326e986493e02a56d7fe07771e5ff52b024906fe028f0ef"
+     },
+     "rows": {
+      "completion_rejections": 0,
+      "completion_verdicts": 72
+     },
+     "store": "a7837a14f9df6f05b09b7a8b8d4e915fa08d67beb5ce23e84973f0df9e4b7116"
+    },
+    "message": "'list' object has no attribute 'get'",
+    "nothing_written": true,
+    "raised": "AttributeError"
+   },
+   "execution_document_a_list": {
+    "after": {
+     "buckets": {
+      "completion_rejections": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945",
+      "completion_verdicts": "2b6a97c07c2a35866ad6faa893844236b429143d6ca5ec22be48d8800aefea5d"
+     },
+     "rows": {
+      "completion_rejections": 0,
+      "completion_verdicts": 71
+     },
+     "store": "14ee61396b3e15a1e44152549905d554f8198860500b22ef5ed45d95a2a7e628"
+    },
+    "before": {
+     "buckets": {
+      "completion_rejections": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945",
+      "completion_verdicts": "2b6a97c07c2a35866ad6faa893844236b429143d6ca5ec22be48d8800aefea5d"
+     },
+     "rows": {
+      "completion_rejections": 0,
+      "completion_verdicts": 71
+     },
+     "store": "14ee61396b3e15a1e44152549905d554f8198860500b22ef5ed45d95a2a7e628"
+    },
+    "message": "'list' object has no attribute 'get'",
+    "nothing_written": true,
+    "raised": "AttributeError"
+   }
+  },
+  "produced_variants": {
+   "answer_not_an_object": {
+    "authority": false,
+    "reason": "reviewer execution did not evaluate this execution and spec revision",
+    "state": "reviewer_unbound"
+   },
+   "evaluated_missing": {
+    "authority": false,
+    "reason": "reviewer execution did not evaluate this execution and spec revision",
+    "state": "reviewer_unbound"
+   },
+   "evaluated_not_an_object": {
+    "authority": false,
+    "reason": "reviewer execution did not evaluate this execution and spec revision",
+    "state": "reviewer_unbound"
+   },
+   "excluded_approver_differs": {
+    "authority": false,
+    "reason": "recorded verdict or scenario results differ from what the reviewer execution produced",
+    "state": "verdict_mismatch"
+   },
+   "excluded_reason_differs": {
+    "authority": false,
+    "reason": "recorded verdict or scenario results differ from what the reviewer execution produced",
+    "state": "verdict_mismatch"
+   },
+   "excluded_same_in_another_order": {
+    "authority": true,
+    "reason": null,
+    "state": "authoritative"
+   },
+   "expected_differs": {
+    "authority": false,
+    "reason": "recorded verdict or scenario results differ from what the reviewer execution produced",
+    "state": "verdict_mismatch"
+   },
+   "passed_differs": {
+    "authority": false,
+    "reason": "recorded verdict or scenario results differ from what the reviewer execution produced",
+    "state": "verdict_mismatch"
+   },
+   "passed_in_another_order": {
+    "authority": true,
+    "reason": null,
+    "state": "authoritative"
+   },
+   "scenarios_malformed": {
+    "authority": false,
+    "reason": "reviewer output does not carry valid scenario results",
+    "state": "verdict_mismatch"
+   },
+   "scenarios_missing": {
+    "authority": false,
+    "reason": "reviewer output does not carry valid scenario results",
+    "state": "verdict_mismatch"
+   },
+   "verdict_differs": {
+    "authority": false,
+    "reason": "recorded verdict or scenario results differ from what the reviewer execution produced",
+    "state": "verdict_mismatch"
+   },
+   "verdict_invalid": {
+    "authority": false,
+    "reason": "reviewer output does not carry valid scenario results",
+    "state": "verdict_mismatch"
+   },
+   "verdict_none": {
+    "authority": false,
+    "reason": "reviewer output does not carry valid scenario results",
+    "state": "verdict_mismatch"
+   }
+  },
+  "real_evidence": {
+   "authority": true,
+   "corrupt": 0,
+   "reason": null,
+   "rejections": 0,
+   "state": "authoritative",
+   "verdicts": 1
+  },
+  "receipt_variants": {
+   "digest_other": {
+    "authority": false,
+    "reason": "runner_receipt is not the execution evidence the task recorded",
+    "state": "receipt_unbound"
+   },
+   "execution_document_other_attempt": {
+    "authority": false,
+    "corrupt": 0,
+    "reason": "execution artifact content names another task or attempt",
+    "rejections": 0,
+    "state": "receipt_unbound",
+    "verdicts": 1
+   },
+   "execution_document_other_task": {
+    "authority": false,
+    "corrupt": 0,
+    "reason": "execution artifact content names another task or attempt",
+    "rejections": 0,
+    "state": "receipt_unbound",
+    "verdicts": 1
+   },
+   "execution_ref_int": {
+    "authority": false,
+    "reason": "runner_receipt is not the execution evidence the task recorded",
+    "state": "receipt_unbound"
+   },
+   "execution_ref_missing": {
+    "authority": false,
+    "reason": "runner_receipt is not the execution evidence the task recorded",
+    "state": "receipt_unbound"
+   },
+   "execution_ref_other": {
+    "authority": false,
+    "reason": "runner_receipt is not the execution evidence the task recorded",
+    "state": "receipt_unbound"
+   },
+   "id_other": {
+    "authority": false,
+    "reason": "runner_receipt is not the execution evidence the task recorded",
+    "state": "receipt_unbound"
+   },
+   "result_none": {
+    "authority": false,
+    "reason": "runner_receipt is not the execution evidence the task recorded",
+    "state": "receipt_unbound"
+   },
+   "result_not_a_dict": {
+    "authority": false,
+    "reason": "runner_receipt is not the execution evidence the task recorded",
+    "state": "receipt_unbound"
+   }
+  },
+  "recorded_as_what_it_was": {
+   "authority": false,
+   "reason": null,
+   "state": "not_approved"
+  },
+  "rejection_recorded_as_approval": {
+   "authority": false,
+   "reason": "recorded verdict or scenario results differ from what the reviewer execution produced",
+   "state": "verdict_mismatch"
+  },
+  "require_authority_consumer_denominator_a_string": {
+   "after": {
+    "buckets": {
+     "completion_rejections": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945",
+     "completion_verdicts": "1b1f21179570f0499a0d58ea0a8054b82bf874c8acfd7396f1014408deda1e7c"
+    },
+    "rows": {
+     "completion_rejections": 0,
+     "completion_verdicts": 70
+    },
+    "store": "f654572cae1e94d62fa1ecb97d5b70193a12fa99d2540b405d9304335f0ef6f8"
+   },
+   "before": {
+    "buckets": {
+     "completion_rejections": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945",
+     "completion_verdicts": "1b1f21179570f0499a0d58ea0a8054b82bf874c8acfd7396f1014408deda1e7c"
+    },
+    "rows": {
+     "completion_rejections": 0,
+     "completion_verdicts": 70
+    },
+    "store": "f654572cae1e94d62fa1ecb97d5b70193a12fa99d2540b405d9304335f0ef6f8"
+   },
+   "message": "expected_scenarios must be scenario names",
+   "nothing_written": true,
+   "raised": "ContractError"
+  },
+  "require_authority_with_the_consumer_denominator": {
+   "nothing_written": true,
+   "store_after": "f654572cae1e94d62fa1ecb97d5b70193a12fa99d2540b405d9304335f0ef6f8",
+   "value": {
+    "attempt": 1,
+    "authority": true,
+    "corrupt": 0,
+    "generation": 1,
+    "latest": {
+     "complete": true,
+     "id": "c6e5b96fc0c424521bcb02fded77b57cb264c47873ccc1705b065d20a78a3a1f",
+     "observed_at": "2026-09-10T00:00:00+00:00",
+     "reviewer": {
+      "actor": "lead:improvement",
+      "kind": "human"
+     },
+     "sequence": 25,
+     "verdict": "approved"
+    },
+    "rejections": 0,
+    "state": "authoritative",
+    "status": "succeeded",
+    "task_id": "task-4",
+    "verdicts": 25
+   }
+  },
+  "reviewer_execution_variants": {
+   "agent_is_another_actor": {
+    "authority": false,
+    "reason": "no verified reviewer execution: reviewer execution is not a succeeded task of the reviewer",
+    "state": "reviewer_unbound"
+   },
+   "attempt_differs": {
+    "authority": false,
+    "reason": "no verified reviewer execution: reviewer execution is not a succeeded task of the reviewer",
+    "state": "reviewer_unbound"
+   },
+   "result_missing": {
+    "authority": false,
+    "reason": "no verified reviewer execution: reviewer execution is not a succeeded task of the reviewer",
+    "state": "reviewer_unbound"
+   },
+   "result_names_another_artifact": {
+    "authority": false,
+    "reason": "no verified reviewer execution: reviewer execution is not a succeeded task of the reviewer",
+    "state": "reviewer_unbound"
+   },
+   "result_not_a_dict": {
+    "authority": false,
+    "reason": "no verified reviewer execution: reviewer execution is not a succeeded task of the reviewer",
+    "state": "reviewer_unbound"
+   },
+   "review_artifact_absent": {
+    "authority": false,
+    "reason": "no verified reviewer execution: sha256:7777777777777777777777777777777777777777777777777777777777777777",
+    "state": "reviewer_unbound"
+   },
+   "review_artifact_unreadable": {
+    "authority": false,
+    "reason": "no verified reviewer execution: disk",
+    "state": "reviewer_unbound"
+   },
+   "review_document_names_an_unknown_task": {
+    "authority": false,
+    "reason": "no verified reviewer execution: reviewer execution is not a succeeded task of the reviewer",
+    "state": "reviewer_unbound"
+   },
+   "review_document_not_an_object": {
+    "authority": false,
+    "reason": "no verified reviewer execution: 'list' object has no attribute 'get'",
+    "state": "reviewer_unbound"
+   },
+   "review_document_task_id_not_a_str": {
+    "authority": false,
+    "reason": "no verified reviewer execution: reviewer execution is not a succeeded task of the reviewer",
+    "state": "reviewer_unbound"
+   },
+   "review_reference_blank": {
+    "authority": false,
+    "reason": "no verified reviewer execution: no reviewer execution reference",
+    "state": "reviewer_unbound"
+   },
+   "review_reference_int": {
+    "authority": false,
+    "reason": "no verified reviewer execution: no reviewer execution reference",
+    "state": "reviewer_unbound"
+   },
+   "review_reference_list": {
+    "authority": false,
+    "reason": "no verified reviewer execution: no reviewer execution reference",
+    "state": "reviewer_unbound"
+   },
+   "review_reference_none": {
+    "authority": false,
+    "reason": "no verified reviewer execution: no reviewer execution reference",
+    "state": "reviewer_unbound"
+   },
+   "review_reference_not_sha256": {
+    "authority": false,
+    "reason": "no verified reviewer execution: no reviewer execution reference",
+    "state": "reviewer_unbound"
+   },
+   "status_not_succeeded": {
+    "authority": false,
+    "reason": "no verified reviewer execution: reviewer execution is not a succeeded task of the reviewer",
+    "state": "reviewer_unbound"
+   },
+   "store_fails_reading_the_review_task_empty_message": {
+    "authority": false,
+    "corrupt": 0,
+    "reason": "no verified reviewer execution: RuntimeError",
+    "rejections": 0,
+    "state": "reviewer_unbound",
+    "transactions": 2,
+    "verdicts": 1
+   },
+   "store_fails_reading_the_review_task_long_message": {
+    "authority": false,
+    "corrupt": 0,
+    "reason": "no verified reviewer execution: mmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmm",
+    "rejections": 0,
+    "state": "reviewer_unbound",
+    "transactions": 2,
+    "verdicts": 1
+   }
+  },
+  "reviewer_judged_another_spec": {
+   "authority": false,
+   "reason": "reviewer execution did not evaluate this execution and spec revision",
+   "state": "reviewer_unbound"
+  },
+  "reviewer_judged_another_task": {
+   "authority": false,
+   "reason": "reviewer execution did not evaluate this execution and spec revision",
+   "state": "reviewer_unbound"
+  },
+  "reviewer_judged_another_task_require": {
+   "after": {
+    "buckets": {
+     "completion_rejections": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945",
+     "completion_verdicts": "f8c28db9c3f3a08e7a1d17d3492de70221ad19be812b130036e3960a7db4c598"
+    },
+    "rows": {
+     "completion_rejections": 0,
+     "completion_verdicts": 51
+    },
+    "store": "9fcf1deac07e1690fd691ab5c7cbffd058fd51771df6728af3d0b84bf779b3c3"
+   },
+   "before": {
+    "buckets": {
+     "completion_rejections": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945",
+     "completion_verdicts": "f8c28db9c3f3a08e7a1d17d3492de70221ad19be812b130036e3960a7db4c598"
+    },
+    "rows": {
+     "completion_rejections": 0,
+     "completion_verdicts": 51
+    },
+    "store": "9fcf1deac07e1690fd691ab5c7cbffd058fd51771df6728af3d0b84bf779b3c3"
+   },
+   "message": "No completion authority: reviewer_unbound",
+   "nothing_written": true,
+   "raised": "ContractError"
+  },
+  "reviewer_outside_the_organization": {
+   "authority": false,
+   "reason": "reviewer is not an independent organization actor",
+   "state": "reviewer_unbound"
+  },
+  "reviewer_run_never_succeeded": {
+   "authority": false,
+   "reason": "no verified reviewer execution: reviewer execution is not a succeeded task of the reviewer",
+   "state": "reviewer_unbound"
+  },
+  "scenario_results_not_produced": {
+   "authority": false,
+   "reason": "recorded verdict or scenario results differ from what the reviewer execution produced",
+   "state": "verdict_mismatch"
+  },
+  "worker_reviews_itself": {
+   "authority": false,
+   "reason": "reviewer is not an independent organization actor",
+   "state": "reviewer_unbound"
+  }
+ },
+ "c9_test_memory_corruption_is_a_named_state": {
+  "all_corrupt": {
+   "authority": false,
+   "corrupt": 2,
+   "reason": "stored verdicts fail the closed schema",
+   "rejections": 0,
+   "state": "corrupt",
+   "verdicts": 2
+  },
+  "intact": {
+   "authority": true,
+   "corrupt": 0,
+   "reason": null,
+   "rejections": 0,
+   "state": "authoritative",
+   "verdicts": 1
+  },
+  "one_corrupt_one_valid": {
+   "authority": false,
+   "corrupt": 1,
+   "latest": null,
+   "reason": "stored verdicts fail the closed schema",
+   "rejections": 0,
+   "state": "partially_corrupt",
+   "verdicts": 2
+  },
+  "rejections_alongside_corrupt_rows": {
+   "authority": false,
+   "corrupt": 1,
+   "reason": "stored verdicts fail the closed schema",
+   "rejections": 1,
+   "state": "partially_corrupt",
+   "verdicts": 2
+  },
+  "restored": {
+   "authority": true,
+   "corrupt": 0,
+   "reason": null,
+   "rejections": 0,
+   "state": "authoritative",
+   "verdicts": 2
+  },
+  "row_with_a_non_str_task_id_is_not_this_tasks": {
+   "authority": true,
+   "corrupt": 0,
+   "reason": null,
+   "rejections": 0,
+   "state": "authoritative",
+   "verdicts": 1
+  },
+  "row_without_a_target_is_not_this_tasks": {
+   "authority": true,
+   "corrupt": 0,
+   "reason": null,
+   "rejections": 0,
+   "state": "authoritative",
+   "verdicts": 1
+  },
+  "stored_row_variants": {
+   "complete_is_recomputed": {
+    "authority": true,
+    "corrupt": 0,
+    "reason": null,
+    "rejections": 0,
+    "state": "authoritative",
+    "verdicts": 2
+   },
+   "event_missing": {
+    "authority": false,
+    "corrupt": 1,
+    "reason": "stored verdicts fail the closed schema",
+    "rejections": 0,
+    "state": "partially_corrupt",
+    "verdicts": 2
+   },
+   "extra_key_is_ignored": {
+    "authority": true,
+    "corrupt": 0,
+    "reason": null,
+    "rejections": 0,
+    "state": "authoritative",
+    "verdicts": 2
+   },
+   "id_missing": {
+    "authority": false,
+    "corrupt": 1,
+    "reason": "stored verdicts fail the closed schema",
+    "rejections": 0,
+    "state": "partially_corrupt",
+    "verdicts": 2
+   },
+   "identity_mismatch": {
+    "authority": false,
+    "corrupt": 1,
+    "reason": "stored verdicts fail the closed schema",
+    "rejections": 0,
+    "state": "partially_corrupt",
+    "verdicts": 2
+   },
+   "observed_at_numeric": {
+    "authority": false,
+    "corrupt": 1,
+    "reason": "stored verdicts fail the closed schema",
+    "rejections": 0,
+    "state": "partially_corrupt",
+    "verdicts": 2
+   },
+   "record_only_fields_dropped": {
+    "authority": true,
+    "corrupt": 0,
+    "reason": null,
+    "rejections": 0,
+    "state": "authoritative",
+    "verdicts": 2
+   },
+   "reviewer_missing": {
+    "authority": false,
+    "corrupt": 1,
+    "reason": "stored verdicts fail the closed schema",
+    "rejections": 0,
+    "state": "partially_corrupt",
+    "verdicts": 2
+   },
+   "scenarios_missing": {
+    "authority": false,
+    "corrupt": 1,
+    "reason": "stored verdicts fail the closed schema",
+    "rejections": 0,
+    "state": "partially_corrupt",
+    "verdicts": 2
+   },
+   "schema_version_text": {
+    "authority": false,
+    "corrupt": 1,
+    "reason": "stored verdicts fail the closed schema",
+    "rejections": 0,
+    "state": "partially_corrupt",
+    "verdicts": 2
+   },
+   "sequence_bool": {
+    "authority": false,
+    "corrupt": 1,
+    "reason": "stored verdicts fail the closed schema",
+    "rejections": 0,
+    "state": "partially_corrupt",
+    "verdicts": 2
+   },
+   "sequence_missing": {
+    "authority": false,
+    "corrupt": 1,
+    "reason": "stored verdicts fail the closed schema",
+    "rejections": 0,
+    "state": "partially_corrupt",
+    "verdicts": 2
+   },
+   "sequence_none": {
+    "authority": false,
+    "corrupt": 1,
+    "reason": "stored verdicts fail the closed schema",
+    "rejections": 0,
+    "state": "partially_corrupt",
+    "verdicts": 2
+   },
+   "sequence_text": {
+    "authority": false,
+    "corrupt": 1,
+    "reason": "stored verdicts fail the closed schema",
+    "rejections": 0,
+    "state": "partially_corrupt",
+    "verdicts": 2
+   },
+   "target_text": {
+    "authority": true,
+    "corrupt": 0,
+    "reason": null,
+    "rejections": 0,
+    "state": "authoritative",
+    "verdicts": 1
+   }
+  },
+  "unreadable_store": {
+   "closed_port": {
+    "report": {
+     "authority": false,
+     "reason": "ConnectionRefusedError: connection refused",
+     "state": "unreadable",
+     "task_id": "task-1"
+    },
+    "report_keys": [
+     "authority",
+     "reason",
+     "state",
+     "task_id"
+    ],
+    "require_authority": [
+     "ContractError",
+     "No completion authority: unreadable"
+    ]
+   },
+   "empty_message": {
+    "report": {
+     "authority": false,
+     "reason": "RuntimeError: ",
+     "state": "unreadable",
+     "task_id": "task-1"
+    },
+    "report_keys": [
+     "authority",
+     "reason",
+     "state",
+     "task_id"
+    ],
+    "require_authority": [
+     "ContractError",
+     "No completion authority: unreadable"
+    ]
+   },
+   "long_message": {
+    "report": {
+     "authority": false,
+     "reason": "OSError: zzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzz",
+     "state": "unreadable",
+     "task_id": "task-1"
+    },
+    "report_keys": [
+     "authority",
+     "reason",
+     "state",
+     "task_id"
+    ],
+    "require_authority": [
+     "ContractError",
+     "No completion authority: unreadable"
+    ]
+   },
+   "record_a_valid_record": [
+    "RuntimeError",
+    "store down"
+   ],
+   "record_malformed_record": [
+    "RuntimeError",
+    "store down"
+   ]
+  },
+  "verdict_false": {
+   "authority": false,
+   "corrupt": 1,
+   "reason": "stored verdicts fail the closed schema",
+   "rejections": 0,
+   "state": "corrupt",
+   "verdicts": 1
+  }
+ },
+ "cases_per_group": {
+  "c10_constants": 6,
+  "c1_test_malformed_records_are_rejected_and_logged": 14,
+  "c2_test_worker_success_is_not_completion_authority": 7,
+  "c3_test_verdict_binds_execution_spec_artifact_and_receipt": 18,
+  "c4_test_reclaimed_execution_makes_old_verdicts_stale": 6,
+  "c5_test_recording_order_not_observed_time_selects_the_verdict": 15,
+  "c6_test_scenario_denominator_is_explicit": 9,
+  "c7_test_duplicate_and_concurrent_records_do_not_inflate": 12,
+  "c8_test_authority_needs_real_evidence_an_independent_reviewer_and_the_approved_denominator": 41,
+  "c9_test_memory_corruption_is_a_named_state": 10
+ },
+ "m7_tests": {
+  "test_authority_needs_real_evidence_an_independent_reviewer_and_the_approved_denominator[memory,postgres]": "c8_provenance",
+  "test_duplicate_and_concurrent_records_do_not_inflate[memory,postgres]": "c7_duplicates (sequential deliveries; the PostgreSQL write lock is not a step)",
+  "test_every_named_state_is_reachable": "c11_states_reachable",
+  "test_malformed_records_are_rejected_and_logged[memory,postgres]": "c1_malformed",
+  "test_memory_corruption_is_a_named_state": "c9_corruption",
+  "test_postgres_corruption_and_unreachable_store_are_distinct": {
+   "postgres_row_edits": "unreachable: PostgreSQL (the row edits are the memory ones of c9_corruption)",
+   "unreachable_store": "c9_corruption.unreadable_store (a store that raises; the PostgreSQL connection itself is not a step)"
+  },
+  "test_reclaimed_execution_makes_old_verdicts_stale[memory,postgres]": "c4_reclaimed (the lapse of the lease is the task row's new generation and attempt)",
+  "test_recording_order_not_observed_time_selects_the_verdict[memory,postgres]": "c5_recording_order",
+  "test_scenario_denominator_is_explicit[memory,postgres]": "c6_denominator",
+  "test_verdict_binds_execution_spec_artifact_and_receipt[memory,postgres]": "c3_binding",
+  "test_worker_success_is_not_completion_authority[memory,postgres]": "c2_worker_success"
+ }
+}

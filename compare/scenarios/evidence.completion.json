@@ -1,0 +1,8 @@
+{
+ "family": "evidence.completion",
+ "description": "S8 completion authority of M7 application/completion.py (CompletionAuthority: record with its notices, inspect, _provenance, require_authority; _excerpt, _task_of), characterized before the completion move: the 11 tests of tests/test_completion_authority.py (malformed records and their notices, worker success is not authority, the execution/spec/artifact/receipt binding, a reclaimed execution, recording order, the scenario denominator, duplicate deliveries, the provenance chain to the reviewer execution, corruption, the unreadable store, every named state reached) plus labelled additions for every raise, except and require of the branch-table section (non-dict records, the excerpt bound, the now skew, artifact faults, reviewer execution variants, the store failing inside the provenance check), with the digests of completion_verdicts, completion_rejections and the whole store before and after every refusal; MemoryStore, scripted ids and clock, a labelled artifacts fake and organization, no adapter, no PostgreSQL",
+ "reference_driver": "drivers/reference/s8_completion.py",
+ "target_driver": "drivers/target/s8_completion.py",
+ "golden": "goldens/reference/evidence.completion.json",
+ "slice": "S8"
+}
