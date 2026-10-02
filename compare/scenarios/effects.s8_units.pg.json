@@ -1,0 +1,9 @@
+{
+ "family": "effects.s8_units.pg",
+ "description": "§2.9 S8 units on a labelled disposable PostgreSQL (each side's PostgresStore, one fresh migrated schema per case, durable rows read back): ResearchProgram.record_collection with its adoption reservation, ResearchProgram.fail_cycle with its recovery, FrontDesk.submit's request/session/outbox/event unit and the release evaluator's completion unit (releases.promote, the hook activation, the intent completed; the merge at depth 0); (a) injected failure at the unit's last write -> atomic rollback, (b) stale writer commits nothing, (c) replay adds no authority write, (d) the external effect entered at depth 0",
+ "reference_driver": "drivers/reference/s8_units.py",
+ "target_driver": "drivers/target/s8_units.py",
+ "requires": "disposable-postgresql",
+ "golden": "goldens/reference/effects.s8_units.pg.json",
+ "slice": "S8"
+}

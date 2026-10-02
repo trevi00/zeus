@@ -1,0 +1,3309 @@
+{
+ "evaluator_completion": {
+  "a_failure_at_hook_row": {
+   "changed_digests": [
+    [
+     "promotion_intents",
+     "ec6fdc40670df190c3e92dc99f322dd9c2d022db313a73ea256cfe80cf3150ce",
+     "bdfc02e9a1f1f09d7b799e8e97233e972497c5430a11a0821982176275f3eadf"
+    ]
+   ],
+   "committed_before_effect": [
+    [
+     "git.merge",
+     [
+      [
+       "promotion_intents",
+       "prepared"
+      ]
+     ]
+    ]
+   ],
+   "discarded_writes": [
+    [
+     "deployment",
+     ""
+    ],
+    [
+     "events",
+     ""
+    ],
+    [
+     "releases",
+     "active"
+    ]
+   ],
+   "durable_units": 2,
+   "durable_writes": [
+    [
+     "promotion_intents",
+     "merged"
+    ],
+    [
+     "promotion_intents",
+     "prepared"
+    ]
+   ],
+   "effects": [
+    [
+     "git.merge",
+     0
+    ]
+   ],
+   "git_calls": [
+    "merge"
+   ],
+   "hook": null,
+   "intent": "merged",
+   "outcome": {
+    "raised": {
+     "message": "injected failure at hooks",
+     "type": "Injected"
+    }
+   },
+   "pointer": null,
+   "release": "verified",
+   "rows_after": 3,
+   "rows_before": 2,
+   "rows_changed": [
+    [
+     "promotion_intents",
+     "ec6fdc40670df190c3e92dc99f322dd9c2d022db313a73ea256cfe80cf3150ce",
+     "merged"
+    ]
+   ],
+   "units": {
+    "COMMIT": 6,
+    "ROLLBACK": 1
+   },
+   "violations": []
+  },
+  "a_failure_at_intent_row": {
+   "changed_digests": [
+    [
+     "promotion_intents",
+     "ec6fdc40670df190c3e92dc99f322dd9c2d022db313a73ea256cfe80cf3150ce",
+     "bdfc02e9a1f1f09d7b799e8e97233e972497c5430a11a0821982176275f3eadf"
+    ]
+   ],
+   "committed_before_effect": [
+    [
+     "git.merge",
+     [
+      [
+       "promotion_intents",
+       "prepared"
+      ]
+     ]
+    ]
+   ],
+   "discarded_writes": [
+    [
+     "deployment",
+     ""
+    ],
+    [
+     "events",
+     ""
+    ],
+    [
+     "hooks",
+     "active"
+    ],
+    [
+     "releases",
+     "active"
+    ]
+   ],
+   "durable_units": 2,
+   "durable_writes": [
+    [
+     "promotion_intents",
+     "merged"
+    ],
+    [
+     "promotion_intents",
+     "prepared"
+    ]
+   ],
+   "effects": [
+    [
+     "git.merge",
+     0
+    ]
+   ],
+   "git_calls": [
+    "merge"
+   ],
+   "hook": null,
+   "intent": "merged",
+   "outcome": {
+    "raised": {
+     "message": "injected failure at promotion_intents",
+     "type": "Injected"
+    }
+   },
+   "pointer": null,
+   "release": "verified",
+   "rows_after": 3,
+   "rows_before": 2,
+   "rows_changed": [
+    [
+     "promotion_intents",
+     "ec6fdc40670df190c3e92dc99f322dd9c2d022db313a73ea256cfe80cf3150ce",
+     "merged"
+    ]
+   ],
+   "units": {
+    "COMMIT": 6,
+    "ROLLBACK": 1
+   },
+   "violations": []
+  },
+  "a_failure_at_promotion_last_write": {
+   "changed_digests": [
+    [
+     "promotion_intents",
+     "ec6fdc40670df190c3e92dc99f322dd9c2d022db313a73ea256cfe80cf3150ce",
+     "bdfc02e9a1f1f09d7b799e8e97233e972497c5430a11a0821982176275f3eadf"
+    ]
+   ],
+   "committed_before_effect": [
+    [
+     "git.merge",
+     [
+      [
+       "promotion_intents",
+       "prepared"
+      ]
+     ]
+    ]
+   ],
+   "discarded_writes": [
+    [
+     "deployment",
+     ""
+    ],
+    [
+     "releases",
+     "active"
+    ]
+   ],
+   "durable_units": 2,
+   "durable_writes": [
+    [
+     "promotion_intents",
+     "merged"
+    ],
+    [
+     "promotion_intents",
+     "prepared"
+    ]
+   ],
+   "effects": [
+    [
+     "git.merge",
+     0
+    ]
+   ],
+   "git_calls": [
+    "merge"
+   ],
+   "hook": null,
+   "intent": "merged",
+   "outcome": {
+    "raised": {
+     "message": "injected failure at events",
+     "type": "Injected"
+    }
+   },
+   "pointer": null,
+   "release": "verified",
+   "rows_after": 3,
+   "rows_before": 2,
+   "rows_changed": [
+    [
+     "promotion_intents",
+     "ec6fdc40670df190c3e92dc99f322dd9c2d022db313a73ea256cfe80cf3150ce",
+     "merged"
+    ]
+   ],
+   "units": {
+    "COMMIT": 6,
+    "ROLLBACK": 1
+   },
+   "violations": []
+  },
+  "b_active_moved": {
+   "after_move": {
+    "durable_writes": [
+     [
+      "promotion_intents",
+      "merged"
+     ]
+    ],
+    "writes": 1
+   },
+   "changed_digests": [
+    [
+     "deployment",
+     "active",
+     "ad4494734874985b400c77a002dc745f8613ebf099ef81897498340efcf1f6a4"
+    ],
+    [
+     "promotion_intents",
+     "ec6fdc40670df190c3e92dc99f322dd9c2d022db313a73ea256cfe80cf3150ce",
+     "bdfc02e9a1f1f09d7b799e8e97233e972497c5430a11a0821982176275f3eadf"
+    ]
+   ],
+   "committed_before_effect": [
+    [
+     "git.merge",
+     [
+      [
+       "promotion_intents",
+       "prepared"
+      ]
+     ]
+    ]
+   ],
+   "discarded_writes": [],
+   "durable_units": 2,
+   "durable_writes": [
+    [
+     "promotion_intents",
+     "merged"
+    ],
+    [
+     "promotion_intents",
+     "prepared"
+    ]
+   ],
+   "effects": [
+    [
+     "git.merge",
+     0
+    ]
+   ],
+   "git_calls": [
+    "merge"
+   ],
+   "hook": null,
+   "intent": "merged",
+   "outcome": {
+    "raised": {
+     "message": "Active deployment changed",
+     "type": "ContractError"
+    }
+   },
+   "pointer": "release-other",
+   "release": "verified",
+   "rows_after": 4,
+   "rows_before": 2,
+   "rows_changed": [
+    [
+     "deployment",
+     "active",
+     ""
+    ],
+    [
+     "promotion_intents",
+     "ec6fdc40670df190c3e92dc99f322dd9c2d022db313a73ea256cfe80cf3150ce",
+     "merged"
+    ]
+   ],
+   "units": {
+    "COMMIT": 6,
+    "ROLLBACK": 1
+   },
+   "violations": []
+  },
+  "b_release_moved": {
+   "after_move": {
+    "durable_writes": [
+     [
+      "promotion_intents",
+      "merged"
+     ]
+    ],
+    "writes": 1
+   },
+   "changed_digests": [
+    [
+     "promotion_intents",
+     "ec6fdc40670df190c3e92dc99f322dd9c2d022db313a73ea256cfe80cf3150ce",
+     "bdfc02e9a1f1f09d7b799e8e97233e972497c5430a11a0821982176275f3eadf"
+    ],
+    [
+     "releases",
+     "ec6fdc40670df190c3e92dc99f322dd9c2d022db313a73ea256cfe80cf3150ce",
+     "2f89ad420c6281eab63bebd0e42c7e45053c91ae6fb84e9c0556e5f847c2dfe0"
+    ]
+   ],
+   "committed_before_effect": [
+    [
+     "git.merge",
+     [
+      [
+       "promotion_intents",
+       "prepared"
+      ]
+     ]
+    ]
+   ],
+   "discarded_writes": [],
+   "durable_units": 2,
+   "durable_writes": [
+    [
+     "promotion_intents",
+     "merged"
+    ],
+    [
+     "promotion_intents",
+     "prepared"
+    ]
+   ],
+   "effects": [
+    [
+     "git.merge",
+     0
+    ]
+   ],
+   "git_calls": [
+    "merge"
+   ],
+   "hook": null,
+   "intent": "merged",
+   "outcome": {
+    "raised": {
+     "message": "Release not verified",
+     "type": "ContractError"
+    }
+   },
+   "pointer": null,
+   "release": "cancelled",
+   "rows_after": 3,
+   "rows_before": 2,
+   "rows_changed": [
+    [
+     "promotion_intents",
+     "ec6fdc40670df190c3e92dc99f322dd9c2d022db313a73ea256cfe80cf3150ce",
+     "merged"
+    ],
+    [
+     "releases",
+     "ec6fdc40670df190c3e92dc99f322dd9c2d022db313a73ea256cfe80cf3150ce",
+     "cancelled"
+    ]
+   ],
+   "units": {
+    "COMMIT": 6,
+    "ROLLBACK": 1
+   },
+   "violations": []
+  },
+  "c_replay_after_failure": {
+   "changed_digests": [
+    [
+     "deployment",
+     "active",
+     "676024f016eaaeb7811a69d4fb32886723e580e6600e953ebdb2f64ea3f72b65"
+    ],
+    [
+     "events",
+     "5eed0000-0000-4000-8000-000000000002",
+     "f1b73487b1d5c527d1d98cf274fc25deba423ec199becb155e63f0fbfa048c9c"
+    ],
+    [
+     "hooks",
+     "hook-1",
+     "ceb8c541e04edac94223431fb3958d78c62d95265daf902d5c915da30cd538ad"
+    ],
+    [
+     "promotion_intents",
+     "ec6fdc40670df190c3e92dc99f322dd9c2d022db313a73ea256cfe80cf3150ce",
+     "a370ddd910859cc0f99e61a2bf5b94638761389a70d6f30d04909c9d1175a180"
+    ],
+    [
+     "releases",
+     "ec6fdc40670df190c3e92dc99f322dd9c2d022db313a73ea256cfe80cf3150ce",
+     "454c2bc0b809848b1e4bf7b1fb2f92ba9b1626be5b0d6d8166791d437ae432c9"
+    ]
+   ],
+   "committed_before_effect": [],
+   "discarded_writes": [],
+   "durable_units": 1,
+   "durable_writes": [
+    [
+     "deployment",
+     ""
+    ],
+    [
+     "events",
+     ""
+    ],
+    [
+     "hooks",
+     "active"
+    ],
+    [
+     "promotion_intents",
+     "completed"
+    ],
+    [
+     "releases",
+     "active"
+    ]
+   ],
+   "effects": [],
+   "first": {
+    "raised": {
+     "message": "injected failure at promotion_intents",
+     "type": "Injected"
+    }
+   },
+   "git_calls": [
+    "merge"
+   ],
+   "hook": "active",
+   "intent": "completed",
+   "outcome": {
+    "returned": {
+     "image": "sha256:1111111111111111111111111111111111111111111111111111111111111111",
+     "merge": {
+      "merged": true,
+      "revision": "cccccccccccccccccccccccccccccccccccccccc",
+      "transport": "local"
+     },
+     "pointer": {
+      "at": "<time>",
+      "previous": null,
+      "release_id": "<release:s8-c_replay_after_failure>",
+      "revision": "cccccccccccccccccccccccccccccccccccccccc"
+     },
+     "status": "active"
+    }
+   },
+   "pointer": "<release:s8-c_replay_after_failure>",
+   "release": "active",
+   "rows_after": 6,
+   "rows_before": 3,
+   "rows_changed": [
+    [
+     "deployment",
+     "active",
+     ""
+    ],
+    [
+     "events",
+     "5eed0000-0000-4000-8000-000000000002",
+     ""
+    ],
+    [
+     "hooks",
+     "hook-1",
+     "active"
+    ],
+    [
+     "promotion_intents",
+     "ec6fdc40670df190c3e92dc99f322dd9c2d022db313a73ea256cfe80cf3150ce",
+     "completed"
+    ],
+    [
+     "releases",
+     "ec6fdc40670df190c3e92dc99f322dd9c2d022db313a73ea256cfe80cf3150ce",
+     "active"
+    ]
+   ],
+   "units": {
+    "COMMIT": 4
+   },
+   "violations": []
+  },
+  "c_replay_after_success": {
+   "changed_digests": [],
+   "committed_before_effect": [],
+   "discarded_writes": [],
+   "durable_units": 0,
+   "durable_writes": [],
+   "effects": [],
+   "first": {
+    "returned": {
+     "image": "sha256:1111111111111111111111111111111111111111111111111111111111111111",
+     "merge": {
+      "merged": true,
+      "revision": "cccccccccccccccccccccccccccccccccccccccc",
+      "transport": "local"
+     },
+     "pointer": {
+      "at": "<time>",
+      "previous": null,
+      "release_id": "<release:s8-c_replay_after_success>",
+      "revision": "cccccccccccccccccccccccccccccccccccccccc"
+     },
+     "status": "active"
+    }
+   },
+   "git_calls": [
+    "merge"
+   ],
+   "hook": "active",
+   "intent": "completed",
+   "outcome": {
+    "returned": {
+     "already_applied": true,
+     "pointer": {
+      "at": "<time>",
+      "previous": null,
+      "release_id": "<release:s8-c_replay_after_success>",
+      "revision": "cccccccccccccccccccccccccccccccccccccccc"
+     },
+     "status": "active"
+    }
+   },
+   "pointer": "<release:s8-c_replay_after_success>",
+   "release": "active",
+   "rows_after": 6,
+   "rows_before": 6,
+   "rows_changed": [],
+   "units": {
+    "COMMIT": 1
+   },
+   "violations": []
+  },
+  "success": {
+   "changed_digests": [
+    [
+     "deployment",
+     "active",
+     "676024f016eaaeb7811a69d4fb32886723e580e6600e953ebdb2f64ea3f72b65"
+    ],
+    [
+     "events",
+     "5eed0000-0000-4000-8000-000000000001",
+     "f1b73487b1d5c527d1d98cf274fc25deba423ec199becb155e63f0fbfa048c9c"
+    ],
+    [
+     "hooks",
+     "hook-1",
+     "ceb8c541e04edac94223431fb3958d78c62d95265daf902d5c915da30cd538ad"
+    ],
+    [
+     "promotion_intents",
+     "ec6fdc40670df190c3e92dc99f322dd9c2d022db313a73ea256cfe80cf3150ce",
+     "a370ddd910859cc0f99e61a2bf5b94638761389a70d6f30d04909c9d1175a180"
+    ],
+    [
+     "releases",
+     "ec6fdc40670df190c3e92dc99f322dd9c2d022db313a73ea256cfe80cf3150ce",
+     "454c2bc0b809848b1e4bf7b1fb2f92ba9b1626be5b0d6d8166791d437ae432c9"
+    ]
+   ],
+   "committed_before_effect": [
+    [
+     "git.merge",
+     [
+      [
+       "promotion_intents",
+       "prepared"
+      ]
+     ]
+    ]
+   ],
+   "discarded_writes": [],
+   "durable_units": 3,
+   "durable_writes": [
+    [
+     "deployment",
+     ""
+    ],
+    [
+     "events",
+     ""
+    ],
+    [
+     "hooks",
+     "active"
+    ],
+    [
+     "promotion_intents",
+     "completed"
+    ],
+    [
+     "promotion_intents",
+     "merged"
+    ],
+    [
+     "promotion_intents",
+     "prepared"
+    ],
+    [
+     "releases",
+     "active"
+    ]
+   ],
+   "effects": [
+    [
+     "git.merge",
+     0
+    ]
+   ],
+   "git_calls": [
+    "merge"
+   ],
+   "hook": "active",
+   "intent": "completed",
+   "outcome": {
+    "returned": {
+     "image": "sha256:1111111111111111111111111111111111111111111111111111111111111111",
+     "merge": {
+      "merged": true,
+      "revision": "cccccccccccccccccccccccccccccccccccccccc",
+      "transport": "local"
+     },
+     "pointer": {
+      "at": "<time>",
+      "previous": null,
+      "release_id": "<release:s8-success>",
+      "revision": "cccccccccccccccccccccccccccccccccccccccc"
+     },
+     "status": "active"
+    }
+   },
+   "pointer": "<release:s8-success>",
+   "release": "active",
+   "rows_after": 6,
+   "rows_before": 2,
+   "rows_changed": [
+    [
+     "deployment",
+     "active",
+     ""
+    ],
+    [
+     "events",
+     "5eed0000-0000-4000-8000-000000000001",
+     ""
+    ],
+    [
+     "hooks",
+     "hook-1",
+     "active"
+    ],
+    [
+     "promotion_intents",
+     "ec6fdc40670df190c3e92dc99f322dd9c2d022db313a73ea256cfe80cf3150ce",
+     "completed"
+    ],
+    [
+     "releases",
+     "ec6fdc40670df190c3e92dc99f322dd9c2d022db313a73ea256cfe80cf3150ce",
+     "active"
+    ]
+   ],
+   "units": {
+    "COMMIT": 7
+   },
+   "violations": []
+  }
+ },
+ "evaluator_completion_unreachable": {
+  "b_intent_moved": {
+   "unreachable": "M7 adapters/deployment.py:591-595 completes from the `intent` held in memory (written at :541-546 and :578-580) and never re-reads promotion_intents inside the unit: another writer's edit of the row is overwritten by the completed row, not refused"
+  }
+ },
+ "fail_cycle": {
+  "a_failure_at_cycle_row": {
+   "candidates": [
+    {
+     "claimed_cycle": 1,
+     "first_cycle": 1,
+     "id": "local-note",
+     "last_cycle": 1,
+     "reason": "owner_authorized_local_candidate",
+     "result": null,
+     "seen": 1,
+     "source": "local",
+     "status": "claimed",
+     "topic": "storage"
+    }
+   ],
+   "changed_digests": [],
+   "committed_before_effect": [],
+   "cycle": {
+    "audit_progress": null,
+    "capture": null,
+    "council": null,
+    "counts": {
+     "discovered": 1,
+     "duplicate": 0,
+     "eligible": 1,
+     "ignored": 0,
+     "new": 1,
+     "selected": 1
+    },
+    "failure": null,
+    "finished_at": null,
+    "id": "rp-001:001",
+    "investigations": null,
+    "number": 1,
+    "remaining": {
+     "adoptions": 1,
+     "cycles": 3
+    },
+    "result": null,
+    "selection": {
+     "candidate": "local-note",
+     "reason": "first_eligible_in_stable_order",
+     "source": "local"
+    },
+    "status": "selected",
+    "stop_reason": null
+   },
+   "discarded_writes": [],
+   "durable_units": 0,
+   "durable_writes": [],
+   "effects": [],
+   "not_applicable": "M7 application/research_program.py:1448-1470 reads and writes the store only: the failed dispatch is a row, nothing is released, retried or called",
+   "outcome": {
+    "message": "injected failure at research_program_cycles",
+    "reason_code": null,
+    "refused": "Injected"
+   },
+   "row": {
+    "active_cycle": "rp-001:001",
+    "adoptions": 1,
+    "blocked_reason": null,
+    "cycles": 0,
+    "last_tick_at": null,
+    "next_cycle": 2,
+    "state": "active",
+    "stop_reason": null,
+    "updated_at": "2028-01-01T00:00:00+00:00"
+   },
+   "rows_after": 3,
+   "rows_before": 3,
+   "rows_changed": [],
+   "units": {
+    "COMMIT": 3,
+    "ROLLBACK": 1
+   },
+   "violations": []
+  },
+  "a_failure_at_program_row": {
+   "candidates": [
+    {
+     "claimed_cycle": 1,
+     "first_cycle": 1,
+     "id": "local-note",
+     "last_cycle": 1,
+     "reason": "owner_authorized_local_candidate",
+     "result": null,
+     "seen": 1,
+     "source": "local",
+     "status": "claimed",
+     "topic": "storage"
+    }
+   ],
+   "changed_digests": [],
+   "committed_before_effect": [],
+   "cycle": {
+    "audit_progress": null,
+    "capture": null,
+    "council": null,
+    "counts": {
+     "discovered": 1,
+     "duplicate": 0,
+     "eligible": 1,
+     "ignored": 0,
+     "new": 1,
+     "selected": 1
+    },
+    "failure": null,
+    "finished_at": null,
+    "id": "rp-001:001",
+    "investigations": null,
+    "number": 1,
+    "remaining": {
+     "adoptions": 1,
+     "cycles": 3
+    },
+    "result": null,
+    "selection": {
+     "candidate": "local-note",
+     "reason": "first_eligible_in_stable_order",
+     "source": "local"
+    },
+    "status": "selected",
+    "stop_reason": null
+   },
+   "discarded_writes": [
+    [
+     "research_program_cycles",
+     "failed"
+    ]
+   ],
+   "durable_units": 0,
+   "durable_writes": [],
+   "effects": [],
+   "not_applicable": "M7 application/research_program.py:1448-1470 reads and writes the store only: the failed dispatch is a row, nothing is released, retried or called",
+   "outcome": {
+    "message": "injected failure at research_programs",
+    "reason_code": null,
+    "refused": "Injected"
+   },
+   "row": {
+    "active_cycle": "rp-001:001",
+    "adoptions": 1,
+    "blocked_reason": null,
+    "cycles": 0,
+    "last_tick_at": null,
+    "next_cycle": 2,
+    "state": "active",
+    "stop_reason": null,
+    "updated_at": "2028-01-01T00:00:00+00:00"
+   },
+   "rows_after": 3,
+   "rows_before": 3,
+   "rows_changed": [],
+   "units": {
+    "COMMIT": 3,
+    "ROLLBACK": 1
+   },
+   "violations": []
+  },
+  "b_active_cycle_moved": {
+   "after_move": {
+    "durable_writes": [],
+    "writes": 0
+   },
+   "candidates": [
+    {
+     "claimed_cycle": 1,
+     "first_cycle": 1,
+     "id": "local-note",
+     "last_cycle": 1,
+     "reason": "owner_authorized_local_candidate",
+     "result": null,
+     "seen": 1,
+     "source": "local",
+     "status": "claimed",
+     "topic": "storage"
+    }
+   ],
+   "changed_digests": [
+    [
+     "research_programs",
+     "rp-001",
+     "cd8fcca84b28a366f3d47d81b6276ee9be87c74137f45f3f761df5f1eb810163"
+    ]
+   ],
+   "committed_before_effect": [],
+   "cycle": {
+    "audit_progress": null,
+    "capture": null,
+    "council": null,
+    "counts": {
+     "discovered": 1,
+     "duplicate": 0,
+     "eligible": 1,
+     "ignored": 0,
+     "new": 1,
+     "selected": 1
+    },
+    "failure": null,
+    "finished_at": null,
+    "id": "rp-001:001",
+    "investigations": null,
+    "number": 1,
+    "remaining": {
+     "adoptions": 1,
+     "cycles": 3
+    },
+    "result": null,
+    "selection": {
+     "candidate": "local-note",
+     "reason": "first_eligible_in_stable_order",
+     "source": "local"
+    },
+    "status": "selected",
+    "stop_reason": null
+   },
+   "discarded_writes": [],
+   "durable_units": 0,
+   "durable_writes": [],
+   "effects": [],
+   "not_applicable": "M7 application/research_program.py:1448-1470 reads and writes the store only: the failed dispatch is a row, nothing is released, retried or called",
+   "outcome": {
+    "message": "research program refused: cycle_not_active",
+    "reason_code": "cycle_not_active",
+    "refused": "ProgramRefused"
+   },
+   "row": {
+    "active_cycle": "rp-001:099",
+    "adoptions": 1,
+    "blocked_reason": null,
+    "cycles": 0,
+    "last_tick_at": null,
+    "next_cycle": 2,
+    "state": "active",
+    "stop_reason": null,
+    "updated_at": "2028-01-01T00:00:00+00:00"
+   },
+   "rows_after": 3,
+   "rows_before": 3,
+   "rows_changed": [
+    [
+     "research_programs",
+     "rp-001",
+     ""
+    ]
+   ],
+   "units": {
+    "COMMIT": 3,
+    "ROLLBACK": 1
+   },
+   "violations": []
+  },
+  "b_cycle_state_moved": {
+   "after_move": {
+    "durable_writes": [],
+    "writes": 0
+   },
+   "candidates": [
+    {
+     "claimed_cycle": 1,
+     "first_cycle": 1,
+     "id": "local-note",
+     "last_cycle": 1,
+     "reason": "owner_authorized_local_candidate",
+     "result": null,
+     "seen": 1,
+     "source": "local",
+     "status": "claimed",
+     "topic": "storage"
+    }
+   ],
+   "changed_digests": [
+    [
+     "research_program_cycles",
+     "rp-001:001",
+     "d4b305e559eac09a1bb067e900ab61da877e19b333b7d8444e17b5ccaf95f440"
+    ]
+   ],
+   "committed_before_effect": [],
+   "cycle": {
+    "audit_progress": null,
+    "capture": null,
+    "council": null,
+    "counts": {
+     "discovered": 1,
+     "duplicate": 0,
+     "eligible": 1,
+     "ignored": 0,
+     "new": 1,
+     "selected": 1
+    },
+    "failure": null,
+    "finished_at": null,
+    "id": "rp-001:001",
+    "investigations": null,
+    "number": 1,
+    "remaining": {
+     "adoptions": 1,
+     "cycles": 3
+    },
+    "result": null,
+    "selection": {
+     "candidate": "local-note",
+     "reason": "first_eligible_in_stable_order",
+     "source": "local"
+    },
+    "status": "done",
+    "stop_reason": null
+   },
+   "discarded_writes": [],
+   "durable_units": 0,
+   "durable_writes": [],
+   "effects": [],
+   "not_applicable": "M7 application/research_program.py:1448-1470 reads and writes the store only: the failed dispatch is a row, nothing is released, retried or called",
+   "outcome": {
+    "message": "research program refused: cycle_state_changed",
+    "reason_code": "cycle_state_changed",
+    "refused": "ProgramRefused"
+   },
+   "row": {
+    "active_cycle": "rp-001:001",
+    "adoptions": 1,
+    "blocked_reason": null,
+    "cycles": 0,
+    "last_tick_at": null,
+    "next_cycle": 2,
+    "state": "active",
+    "stop_reason": null,
+    "updated_at": "2028-01-01T00:00:00+00:00"
+   },
+   "rows_after": 3,
+   "rows_before": 3,
+   "rows_changed": [
+    [
+     "research_program_cycles",
+     "rp-001:001",
+     "done"
+    ]
+   ],
+   "units": {
+    "COMMIT": 3,
+    "ROLLBACK": 1
+   },
+   "violations": []
+  },
+  "b_owner_moved": {
+   "after_move": {
+    "durable_writes": [],
+    "writes": 0
+   },
+   "candidates": [
+    {
+     "claimed_cycle": 1,
+     "first_cycle": 1,
+     "id": "local-note",
+     "last_cycle": 1,
+     "reason": "owner_authorized_local_candidate",
+     "result": null,
+     "seen": 1,
+     "source": "local",
+     "status": "claimed",
+     "topic": "storage"
+    }
+   ],
+   "changed_digests": [
+    [
+     "research_program_cycles",
+     "rp-001:001",
+     "6ab4c6333a99d4eb9f835e084fd27767576699e1ff1bf16336566118d9fc6e3f"
+    ]
+   ],
+   "committed_before_effect": [],
+   "cycle": {
+    "audit_progress": null,
+    "capture": null,
+    "council": null,
+    "counts": {
+     "discovered": 1,
+     "duplicate": 0,
+     "eligible": 1,
+     "ignored": 0,
+     "new": 1,
+     "selected": 1
+    },
+    "failure": null,
+    "finished_at": null,
+    "id": "rp-001:001",
+    "investigations": null,
+    "number": 1,
+    "remaining": {
+     "adoptions": 1,
+     "cycles": 3
+    },
+    "result": null,
+    "selection": {
+     "candidate": "local-note",
+     "reason": "first_eligible_in_stable_order",
+     "source": "local"
+    },
+    "status": "selected",
+    "stop_reason": null
+   },
+   "discarded_writes": [],
+   "durable_units": 0,
+   "durable_writes": [],
+   "effects": [],
+   "not_applicable": "M7 application/research_program.py:1448-1470 reads and writes the store only: the failed dispatch is a row, nothing is released, retried or called",
+   "outcome": {
+    "message": "research program refused: owner_mismatch",
+    "reason_code": "owner_mismatch",
+    "refused": "ProgramRefused"
+   },
+   "row": {
+    "active_cycle": "rp-001:001",
+    "adoptions": 1,
+    "blocked_reason": null,
+    "cycles": 0,
+    "last_tick_at": null,
+    "next_cycle": 2,
+    "state": "active",
+    "stop_reason": null,
+    "updated_at": "2028-01-01T00:00:00+00:00"
+   },
+   "rows_after": 3,
+   "rows_before": 3,
+   "rows_changed": [
+    [
+     "research_program_cycles",
+     "rp-001:001",
+     "selected"
+    ]
+   ],
+   "units": {
+    "COMMIT": 3,
+    "ROLLBACK": 1
+   },
+   "violations": []
+  },
+  "c_replay_after_failure": {
+   "candidates": [
+    {
+     "claimed_cycle": 1,
+     "first_cycle": 1,
+     "id": "local-note",
+     "last_cycle": 1,
+     "reason": "owner_authorized_local_candidate",
+     "result": null,
+     "seen": 1,
+     "source": "local",
+     "status": "claimed",
+     "topic": "storage"
+    }
+   ],
+   "changed_digests": [
+    [
+     "research_program_cycles",
+     "rp-001:001",
+     "eae292cde43bdf0ab1065156f4810002f97ac99e69dd86d633867f12d2ee4b82"
+    ],
+    [
+     "research_programs",
+     "rp-001",
+     "4f2d3c12c442fde331355835c55b151267c15592bf1e2db1dbd23576d1aa3456"
+    ]
+   ],
+   "committed_before_effect": [],
+   "cycle": {
+    "audit_progress": null,
+    "capture": null,
+    "council": null,
+    "counts": {
+     "discovered": 1,
+     "duplicate": 0,
+     "eligible": 1,
+     "ignored": 0,
+     "new": 1,
+     "selected": 1
+    },
+    "failure": {
+     "capture": null,
+     "code": "capture_refused",
+     "recovery": {
+      "capture": {
+       "path": "docs/zeus/research-captures/rp-001/001.json",
+       "ref": "refs/zeus/research/rp-001/001"
+      },
+      "note": "fixture-recovery"
+     },
+     "stage": "capture"
+    },
+    "finished_at": "2028-01-01T00:00:00+00:00",
+    "id": "rp-001:001",
+    "investigations": null,
+    "number": 1,
+    "remaining": {
+     "adoptions": 1,
+     "cycles": 3
+    },
+    "result": null,
+    "selection": {
+     "candidate": "local-note",
+     "reason": "first_eligible_in_stable_order",
+     "source": "local"
+    },
+    "status": "failed",
+    "stop_reason": "failed:capture"
+   },
+   "discarded_writes": [],
+   "durable_units": 1,
+   "durable_writes": [
+    [
+     "research_program_cycles",
+     "failed"
+    ],
+    [
+     "research_programs",
+     ""
+    ]
+   ],
+   "effects": [],
+   "first": {
+    "message": "injected failure at research_programs",
+    "reason_code": null,
+    "refused": "Injected"
+   },
+   "not_applicable": "M7 application/research_program.py:1448-1470 reads and writes the store only: the failed dispatch is a row, nothing is released, retried or called",
+   "outcome": {
+    "cached": null,
+    "ok": true
+   },
+   "row": {
+    "active_cycle": null,
+    "adoptions": 1,
+    "blocked_reason": "capture:capture_refused",
+    "cycles": 1,
+    "last_tick_at": "2028-01-01T00:00:00+00:00",
+    "next_cycle": 2,
+    "state": "blocked",
+    "stop_reason": "failed:capture",
+    "updated_at": "2028-01-01T00:00:00+00:00"
+   },
+   "rows_after": 3,
+   "rows_before": 3,
+   "rows_changed": [
+    [
+     "research_program_cycles",
+     "rp-001:001",
+     "failed"
+    ],
+    [
+     "research_programs",
+     "rp-001",
+     ""
+    ]
+   ],
+   "units": {
+    "COMMIT": 4
+   },
+   "violations": []
+  },
+  "c_replay_after_success": {
+   "candidates": [
+    {
+     "claimed_cycle": 1,
+     "first_cycle": 1,
+     "id": "local-note",
+     "last_cycle": 1,
+     "reason": "owner_authorized_local_candidate",
+     "result": null,
+     "seen": 1,
+     "source": "local",
+     "status": "claimed",
+     "topic": "storage"
+    }
+   ],
+   "changed_digests": [],
+   "committed_before_effect": [],
+   "cycle": {
+    "audit_progress": null,
+    "capture": null,
+    "council": null,
+    "counts": {
+     "discovered": 1,
+     "duplicate": 0,
+     "eligible": 1,
+     "ignored": 0,
+     "new": 1,
+     "selected": 1
+    },
+    "failure": {
+     "capture": null,
+     "code": "capture_refused",
+     "recovery": {
+      "capture": {
+       "path": "docs/zeus/research-captures/rp-001/001.json",
+       "ref": "refs/zeus/research/rp-001/001"
+      },
+      "note": "fixture-recovery"
+     },
+     "stage": "capture"
+    },
+    "finished_at": "2028-01-01T00:00:00+00:00",
+    "id": "rp-001:001",
+    "investigations": null,
+    "number": 1,
+    "remaining": {
+     "adoptions": 1,
+     "cycles": 3
+    },
+    "result": null,
+    "selection": {
+     "candidate": "local-note",
+     "reason": "first_eligible_in_stable_order",
+     "source": "local"
+    },
+    "status": "failed",
+    "stop_reason": "failed:capture"
+   },
+   "discarded_writes": [],
+   "durable_units": 0,
+   "durable_writes": [],
+   "effects": [],
+   "first": {
+    "cached": null,
+    "ok": true
+   },
+   "not_applicable": "M7 application/research_program.py:1448-1470 reads and writes the store only: the failed dispatch is a row, nothing is released, retried or called",
+   "outcome": {
+    "message": "research program refused: cycle_state_changed",
+    "reason_code": "cycle_state_changed",
+    "refused": "ProgramRefused"
+   },
+   "row": {
+    "active_cycle": null,
+    "adoptions": 1,
+    "blocked_reason": "capture:capture_refused",
+    "cycles": 1,
+    "last_tick_at": "2028-01-01T00:00:00+00:00",
+    "next_cycle": 2,
+    "state": "blocked",
+    "stop_reason": "failed:capture",
+    "updated_at": "2028-01-01T00:00:00+00:00"
+   },
+   "rows_after": 3,
+   "rows_before": 3,
+   "rows_changed": [],
+   "units": {
+    "COMMIT": 3,
+    "ROLLBACK": 1
+   },
+   "violations": []
+  },
+  "success": {
+   "candidates": [
+    {
+     "claimed_cycle": 1,
+     "first_cycle": 1,
+     "id": "local-note",
+     "last_cycle": 1,
+     "reason": "owner_authorized_local_candidate",
+     "result": null,
+     "seen": 1,
+     "source": "local",
+     "status": "claimed",
+     "topic": "storage"
+    }
+   ],
+   "changed_digests": [
+    [
+     "research_program_cycles",
+     "rp-001:001",
+     "eae292cde43bdf0ab1065156f4810002f97ac99e69dd86d633867f12d2ee4b82"
+    ],
+    [
+     "research_programs",
+     "rp-001",
+     "4f2d3c12c442fde331355835c55b151267c15592bf1e2db1dbd23576d1aa3456"
+    ]
+   ],
+   "committed_before_effect": [],
+   "cycle": {
+    "audit_progress": null,
+    "capture": null,
+    "council": null,
+    "counts": {
+     "discovered": 1,
+     "duplicate": 0,
+     "eligible": 1,
+     "ignored": 0,
+     "new": 1,
+     "selected": 1
+    },
+    "failure": {
+     "capture": null,
+     "code": "capture_refused",
+     "recovery": {
+      "capture": {
+       "path": "docs/zeus/research-captures/rp-001/001.json",
+       "ref": "refs/zeus/research/rp-001/001"
+      },
+      "note": "fixture-recovery"
+     },
+     "stage": "capture"
+    },
+    "finished_at": "2028-01-01T00:00:00+00:00",
+    "id": "rp-001:001",
+    "investigations": null,
+    "number": 1,
+    "remaining": {
+     "adoptions": 1,
+     "cycles": 3
+    },
+    "result": null,
+    "selection": {
+     "candidate": "local-note",
+     "reason": "first_eligible_in_stable_order",
+     "source": "local"
+    },
+    "status": "failed",
+    "stop_reason": "failed:capture"
+   },
+   "discarded_writes": [],
+   "durable_units": 1,
+   "durable_writes": [
+    [
+     "research_program_cycles",
+     "failed"
+    ],
+    [
+     "research_programs",
+     ""
+    ]
+   ],
+   "effects": [],
+   "not_applicable": "M7 application/research_program.py:1448-1470 reads and writes the store only: the failed dispatch is a row, nothing is released, retried or called",
+   "outcome": {
+    "cached": null,
+    "ok": true
+   },
+   "row": {
+    "active_cycle": null,
+    "adoptions": 1,
+    "blocked_reason": "capture:capture_refused",
+    "cycles": 1,
+    "last_tick_at": "2028-01-01T00:00:00+00:00",
+    "next_cycle": 2,
+    "state": "blocked",
+    "stop_reason": "failed:capture",
+    "updated_at": "2028-01-01T00:00:00+00:00"
+   },
+   "rows_after": 3,
+   "rows_before": 3,
+   "rows_changed": [
+    [
+     "research_program_cycles",
+     "rp-001:001",
+     "failed"
+    ],
+    [
+     "research_programs",
+     "rp-001",
+     ""
+    ]
+   ],
+   "units": {
+    "COMMIT": 4
+   },
+   "violations": []
+  }
+ },
+ "fail_cycle_dispatch": {
+  "a_failure_at_dispatch_row": {
+   "candidates": [
+    {
+     "claimed_cycle": null,
+     "first_cycle": 1,
+     "id": "c-9da1c6652203010bb4a438b8",
+     "last_cycle": 1,
+     "reason": "keyword:postgres in summary",
+     "result": null,
+     "seen": 1,
+     "source": "github",
+     "status": "eligible",
+     "topic": "storage"
+    },
+    {
+     "claimed_cycle": 1,
+     "first_cycle": 1,
+     "id": "inv-e22b6fca3d421d032a78b8c9",
+     "last_cycle": 1,
+     "reason": "portfolio_investigation_eligible",
+     "result": null,
+     "seen": 1,
+     "source": "investigation",
+     "status": "claimed",
+     "topic": "storage"
+    }
+   ],
+   "changed_digests": [],
+   "committed_before_effect": [],
+   "cycle": {
+    "audit_progress": null,
+    "capture": null,
+    "council": null,
+    "counts": {
+     "discovered": 1,
+     "duplicate": 0,
+     "eligible": 1,
+     "ignored": 0,
+     "new": 1,
+     "selected": 1
+    },
+    "failure": null,
+    "finished_at": null,
+    "id": "rp-001:001",
+    "investigations": {
+     "claimed": "e22b6fca3d421d032a78b8c9e9ea1f6fb8ae0a99dd0fffacffe31b405e7a64ee",
+     "counts": {
+      "claimed": 0,
+      "eligible": 1,
+      "insufficient_jobs": 0,
+      "malformed": 0,
+      "reason_code": 0,
+      "scanned": 1,
+      "state": 0
+     },
+     "ineligible": 0,
+     "new": 1,
+     "reported_result": null,
+     "result": null
+    },
+    "number": 1,
+    "remaining": {
+     "adoptions": 1,
+     "cycles": 2
+    },
+    "result": null,
+    "selection": {
+     "candidate": "inv-e22b6fca3d421d032a78b8c9",
+     "reason": "first_eligible_in_stable_order",
+     "source": "investigation"
+    },
+    "status": "selected",
+    "stop_reason": null
+   },
+   "discarded_writes": [],
+   "dispatches": [
+    [
+     "e22b6fca3d421d032a78b8c9e9ea1f6fb8ae0a99dd0fffacffe31b405e7a64ee",
+     "claimed",
+     null
+    ]
+   ],
+   "durable_units": 0,
+   "durable_writes": [],
+   "effects": [],
+   "not_applicable": "M7 application/research_program.py:1448-1470 reads and writes the store only: the failed dispatch is a row, nothing is released, retried or called",
+   "outcome": {
+    "message": "injected failure at research_investigation_dispatches",
+    "reason_code": null,
+    "refused": "Injected"
+   },
+   "row": {
+    "active_cycle": "rp-001:001",
+    "adoptions": 1,
+    "blocked_reason": null,
+    "cycles": 0,
+    "last_tick_at": null,
+    "next_cycle": 2,
+    "state": "active",
+    "stop_reason": null,
+    "updated_at": "2028-01-01T00:00:00+00:00"
+   },
+   "rows_after": 14,
+   "rows_before": 14,
+   "rows_changed": [],
+   "units": {
+    "COMMIT": 4,
+    "ROLLBACK": 1
+   },
+   "violations": []
+  },
+  "a_failure_at_program_row": {
+   "candidates": [
+    {
+     "claimed_cycle": null,
+     "first_cycle": 1,
+     "id": "c-9da1c6652203010bb4a438b8",
+     "last_cycle": 1,
+     "reason": "keyword:postgres in summary",
+     "result": null,
+     "seen": 1,
+     "source": "github",
+     "status": "eligible",
+     "topic": "storage"
+    },
+    {
+     "claimed_cycle": 1,
+     "first_cycle": 1,
+     "id": "inv-e22b6fca3d421d032a78b8c9",
+     "last_cycle": 1,
+     "reason": "portfolio_investigation_eligible",
+     "result": null,
+     "seen": 1,
+     "source": "investigation",
+     "status": "claimed",
+     "topic": "storage"
+    }
+   ],
+   "changed_digests": [],
+   "committed_before_effect": [],
+   "cycle": {
+    "audit_progress": null,
+    "capture": null,
+    "council": null,
+    "counts": {
+     "discovered": 1,
+     "duplicate": 0,
+     "eligible": 1,
+     "ignored": 0,
+     "new": 1,
+     "selected": 1
+    },
+    "failure": null,
+    "finished_at": null,
+    "id": "rp-001:001",
+    "investigations": {
+     "claimed": "e22b6fca3d421d032a78b8c9e9ea1f6fb8ae0a99dd0fffacffe31b405e7a64ee",
+     "counts": {
+      "claimed": 0,
+      "eligible": 1,
+      "insufficient_jobs": 0,
+      "malformed": 0,
+      "reason_code": 0,
+      "scanned": 1,
+      "state": 0
+     },
+     "ineligible": 0,
+     "new": 1,
+     "reported_result": null,
+     "result": null
+    },
+    "number": 1,
+    "remaining": {
+     "adoptions": 1,
+     "cycles": 2
+    },
+    "result": null,
+    "selection": {
+     "candidate": "inv-e22b6fca3d421d032a78b8c9",
+     "reason": "first_eligible_in_stable_order",
+     "source": "investigation"
+    },
+    "status": "selected",
+    "stop_reason": null
+   },
+   "discarded_writes": [
+    [
+     "research_investigation_dispatches",
+     ""
+    ],
+    [
+     "research_program_cycles",
+     "failed"
+    ]
+   ],
+   "dispatches": [
+    [
+     "e22b6fca3d421d032a78b8c9e9ea1f6fb8ae0a99dd0fffacffe31b405e7a64ee",
+     "claimed",
+     null
+    ]
+   ],
+   "durable_units": 0,
+   "durable_writes": [],
+   "effects": [],
+   "not_applicable": "M7 application/research_program.py:1448-1470 reads and writes the store only: the failed dispatch is a row, nothing is released, retried or called",
+   "outcome": {
+    "message": "injected failure at research_programs",
+    "reason_code": null,
+    "refused": "Injected"
+   },
+   "row": {
+    "active_cycle": "rp-001:001",
+    "adoptions": 1,
+    "blocked_reason": null,
+    "cycles": 0,
+    "last_tick_at": null,
+    "next_cycle": 2,
+    "state": "active",
+    "stop_reason": null,
+    "updated_at": "2028-01-01T00:00:00+00:00"
+   },
+   "rows_after": 14,
+   "rows_before": 14,
+   "rows_changed": [],
+   "units": {
+    "COMMIT": 4,
+    "ROLLBACK": 1
+   },
+   "violations": []
+  },
+  "c_replay_after_failure": {
+   "candidates": [
+    {
+     "claimed_cycle": null,
+     "first_cycle": 1,
+     "id": "c-9da1c6652203010bb4a438b8",
+     "last_cycle": 1,
+     "reason": "keyword:postgres in summary",
+     "result": null,
+     "seen": 1,
+     "source": "github",
+     "status": "eligible",
+     "topic": "storage"
+    },
+    {
+     "claimed_cycle": 1,
+     "first_cycle": 1,
+     "id": "inv-e22b6fca3d421d032a78b8c9",
+     "last_cycle": 1,
+     "reason": "portfolio_investigation_eligible",
+     "result": null,
+     "seen": 1,
+     "source": "investigation",
+     "status": "claimed",
+     "topic": "storage"
+    }
+   ],
+   "changed_digests": [
+    [
+     "research_investigation_dispatches",
+     "e22b6fca3d421d032a78b8c9e9ea1f6fb8ae0a99dd0fffacffe31b405e7a64ee",
+     "8ddfcfcddccdabc08b47d51d766f21c0ffd622e6dda50efc3ad9a528458dc85f"
+    ],
+    [
+     "research_program_cycles",
+     "rp-001:001",
+     "40bf285dd5a7af6c9c5ea36059ea018bf5a31b0fba6678fb6d68f6c0f17be084"
+    ],
+    [
+     "research_programs",
+     "rp-001",
+     "19e08689d04aaf56ead8be2a1f16482c2b7bdde274f22759e3727de787336f1d"
+    ]
+   ],
+   "committed_before_effect": [],
+   "cycle": {
+    "audit_progress": null,
+    "capture": null,
+    "council": null,
+    "counts": {
+     "discovered": 1,
+     "duplicate": 0,
+     "eligible": 1,
+     "ignored": 0,
+     "new": 1,
+     "selected": 1
+    },
+    "failure": {
+     "capture": null,
+     "code": "capture_refused",
+     "recovery": {
+      "capture": {
+       "path": "docs/zeus/research-captures/rp-001/001.json",
+       "ref": "refs/zeus/research/rp-001/001"
+      },
+      "note": "fixture-recovery"
+     },
+     "stage": "capture"
+    },
+    "finished_at": "2028-01-01T00:00:00+00:00",
+    "id": "rp-001:001",
+    "investigations": {
+     "claimed": "e22b6fca3d421d032a78b8c9e9ea1f6fb8ae0a99dd0fffacffe31b405e7a64ee",
+     "counts": {
+      "claimed": 0,
+      "eligible": 1,
+      "insufficient_jobs": 0,
+      "malformed": 0,
+      "reason_code": 0,
+      "scanned": 1,
+      "state": 0
+     },
+     "ineligible": 0,
+     "new": 1,
+     "reported_result": null,
+     "result": "failed"
+    },
+    "number": 1,
+    "remaining": {
+     "adoptions": 1,
+     "cycles": 2
+    },
+    "result": null,
+    "selection": {
+     "candidate": "inv-e22b6fca3d421d032a78b8c9",
+     "reason": "first_eligible_in_stable_order",
+     "source": "investigation"
+    },
+    "status": "failed",
+    "stop_reason": "failed:capture"
+   },
+   "discarded_writes": [],
+   "dispatches": [
+    [
+     "e22b6fca3d421d032a78b8c9e9ea1f6fb8ae0a99dd0fffacffe31b405e7a64ee",
+     "resolved",
+     "failed"
+    ]
+   ],
+   "durable_units": 1,
+   "durable_writes": [
+    [
+     "research_investigation_dispatches",
+     ""
+    ],
+    [
+     "research_program_cycles",
+     "failed"
+    ],
+    [
+     "research_programs",
+     ""
+    ]
+   ],
+   "effects": [],
+   "first": {
+    "message": "injected failure at research_programs",
+    "reason_code": null,
+    "refused": "Injected"
+   },
+   "not_applicable": "M7 application/research_program.py:1448-1470 reads and writes the store only: the failed dispatch is a row, nothing is released, retried or called",
+   "outcome": {
+    "cached": null,
+    "ok": true
+   },
+   "row": {
+    "active_cycle": null,
+    "adoptions": 1,
+    "blocked_reason": "capture:capture_refused",
+    "cycles": 1,
+    "last_tick_at": "2028-01-01T00:00:00+00:00",
+    "next_cycle": 2,
+    "state": "blocked",
+    "stop_reason": "failed:capture",
+    "updated_at": "2028-01-01T00:00:00+00:00"
+   },
+   "rows_after": 14,
+   "rows_before": 14,
+   "rows_changed": [
+    [
+     "research_investigation_dispatches",
+     "e22b6fca3d421d032a78b8c9e9ea1f6fb8ae0a99dd0fffacffe31b405e7a64ee",
+     ""
+    ],
+    [
+     "research_program_cycles",
+     "rp-001:001",
+     "failed"
+    ],
+    [
+     "research_programs",
+     "rp-001",
+     ""
+    ]
+   ],
+   "units": {
+    "COMMIT": 5
+   },
+   "violations": []
+  },
+  "success": {
+   "candidates": [
+    {
+     "claimed_cycle": null,
+     "first_cycle": 1,
+     "id": "c-9da1c6652203010bb4a438b8",
+     "last_cycle": 1,
+     "reason": "keyword:postgres in summary",
+     "result": null,
+     "seen": 1,
+     "source": "github",
+     "status": "eligible",
+     "topic": "storage"
+    },
+    {
+     "claimed_cycle": 1,
+     "first_cycle": 1,
+     "id": "inv-e22b6fca3d421d032a78b8c9",
+     "last_cycle": 1,
+     "reason": "portfolio_investigation_eligible",
+     "result": null,
+     "seen": 1,
+     "source": "investigation",
+     "status": "claimed",
+     "topic": "storage"
+    }
+   ],
+   "changed_digests": [
+    [
+     "research_investigation_dispatches",
+     "e22b6fca3d421d032a78b8c9e9ea1f6fb8ae0a99dd0fffacffe31b405e7a64ee",
+     "8ddfcfcddccdabc08b47d51d766f21c0ffd622e6dda50efc3ad9a528458dc85f"
+    ],
+    [
+     "research_program_cycles",
+     "rp-001:001",
+     "40bf285dd5a7af6c9c5ea36059ea018bf5a31b0fba6678fb6d68f6c0f17be084"
+    ],
+    [
+     "research_programs",
+     "rp-001",
+     "19e08689d04aaf56ead8be2a1f16482c2b7bdde274f22759e3727de787336f1d"
+    ]
+   ],
+   "committed_before_effect": [],
+   "cycle": {
+    "audit_progress": null,
+    "capture": null,
+    "council": null,
+    "counts": {
+     "discovered": 1,
+     "duplicate": 0,
+     "eligible": 1,
+     "ignored": 0,
+     "new": 1,
+     "selected": 1
+    },
+    "failure": {
+     "capture": null,
+     "code": "capture_refused",
+     "recovery": {
+      "capture": {
+       "path": "docs/zeus/research-captures/rp-001/001.json",
+       "ref": "refs/zeus/research/rp-001/001"
+      },
+      "note": "fixture-recovery"
+     },
+     "stage": "capture"
+    },
+    "finished_at": "2028-01-01T00:00:00+00:00",
+    "id": "rp-001:001",
+    "investigations": {
+     "claimed": "e22b6fca3d421d032a78b8c9e9ea1f6fb8ae0a99dd0fffacffe31b405e7a64ee",
+     "counts": {
+      "claimed": 0,
+      "eligible": 1,
+      "insufficient_jobs": 0,
+      "malformed": 0,
+      "reason_code": 0,
+      "scanned": 1,
+      "state": 0
+     },
+     "ineligible": 0,
+     "new": 1,
+     "reported_result": null,
+     "result": "failed"
+    },
+    "number": 1,
+    "remaining": {
+     "adoptions": 1,
+     "cycles": 2
+    },
+    "result": null,
+    "selection": {
+     "candidate": "inv-e22b6fca3d421d032a78b8c9",
+     "reason": "first_eligible_in_stable_order",
+     "source": "investigation"
+    },
+    "status": "failed",
+    "stop_reason": "failed:capture"
+   },
+   "discarded_writes": [],
+   "dispatches": [
+    [
+     "e22b6fca3d421d032a78b8c9e9ea1f6fb8ae0a99dd0fffacffe31b405e7a64ee",
+     "resolved",
+     "failed"
+    ]
+   ],
+   "durable_units": 1,
+   "durable_writes": [
+    [
+     "research_investigation_dispatches",
+     ""
+    ],
+    [
+     "research_program_cycles",
+     "failed"
+    ],
+    [
+     "research_programs",
+     ""
+    ]
+   ],
+   "effects": [],
+   "not_applicable": "M7 application/research_program.py:1448-1470 reads and writes the store only: the failed dispatch is a row, nothing is released, retried or called",
+   "outcome": {
+    "cached": null,
+    "ok": true
+   },
+   "row": {
+    "active_cycle": null,
+    "adoptions": 1,
+    "blocked_reason": "capture:capture_refused",
+    "cycles": 1,
+    "last_tick_at": "2028-01-01T00:00:00+00:00",
+    "next_cycle": 2,
+    "state": "blocked",
+    "stop_reason": "failed:capture",
+    "updated_at": "2028-01-01T00:00:00+00:00"
+   },
+   "rows_after": 14,
+   "rows_before": 14,
+   "rows_changed": [
+    [
+     "research_investigation_dispatches",
+     "e22b6fca3d421d032a78b8c9e9ea1f6fb8ae0a99dd0fffacffe31b405e7a64ee",
+     ""
+    ],
+    [
+     "research_program_cycles",
+     "rp-001:001",
+     "failed"
+    ],
+    [
+     "research_programs",
+     "rp-001",
+     ""
+    ]
+   ],
+   "units": {
+    "COMMIT": 5
+   },
+   "violations": []
+  }
+ },
+ "record_collection": {
+  "a_failure_at_candidate_row": {
+   "candidates": [],
+   "changed_digests": [],
+   "committed_before_effect": [],
+   "cycle": {
+    "capture": null,
+    "council": null,
+    "counts": null,
+    "failure": null,
+    "finished_at": null,
+    "id": "rp-001:001",
+    "number": 1,
+    "remaining": {
+     "adoptions": 2,
+     "cycles": 3
+    },
+    "result": null,
+    "selection": null,
+    "status": "collecting",
+    "stop_reason": null
+   },
+   "discarded_writes": [],
+   "durable_units": 0,
+   "durable_writes": [],
+   "effects": [],
+   "not_applicable": "M7 application/research_program.py:410-475 reads and writes the store only: no process, network, provider or Git call (the collection items arrive as arguments)",
+   "outcome": {
+    "message": "injected failure at research_program_candidates",
+    "reason_code": null,
+    "refused": "Injected"
+   },
+   "row": {
+    "active_cycle": "rp-001:001",
+    "adoptions": 0,
+    "blocked_reason": null,
+    "cycles": 0,
+    "last_tick_at": null,
+    "next_cycle": 2,
+    "state": "active",
+    "stop_reason": null,
+    "updated_at": "2028-01-01T00:00:00+00:00"
+   },
+   "rows_after": 2,
+   "rows_before": 2,
+   "rows_changed": [],
+   "units": {
+    "COMMIT": 3,
+    "ROLLBACK": 1
+   },
+   "violations": []
+  },
+  "a_failure_at_cycle_row": {
+   "candidates": [],
+   "changed_digests": [],
+   "committed_before_effect": [],
+   "cycle": {
+    "capture": null,
+    "council": null,
+    "counts": null,
+    "failure": null,
+    "finished_at": null,
+    "id": "rp-001:001",
+    "number": 1,
+    "remaining": {
+     "adoptions": 2,
+     "cycles": 3
+    },
+    "result": null,
+    "selection": null,
+    "status": "collecting",
+    "stop_reason": null
+   },
+   "discarded_writes": [
+    [
+     "research_program_candidates",
+     "claimed"
+    ],
+    [
+     "research_program_candidates",
+     "eligible"
+    ],
+    [
+     "research_program_candidates",
+     "ignored"
+    ]
+   ],
+   "durable_units": 0,
+   "durable_writes": [],
+   "effects": [],
+   "not_applicable": "M7 application/research_program.py:410-475 reads and writes the store only: no process, network, provider or Git call (the collection items arrive as arguments)",
+   "outcome": {
+    "message": "injected failure at research_program_cycles",
+    "reason_code": null,
+    "refused": "Injected"
+   },
+   "row": {
+    "active_cycle": "rp-001:001",
+    "adoptions": 0,
+    "blocked_reason": null,
+    "cycles": 0,
+    "last_tick_at": null,
+    "next_cycle": 2,
+    "state": "active",
+    "stop_reason": null,
+    "updated_at": "2028-01-01T00:00:00+00:00"
+   },
+   "rows_after": 2,
+   "rows_before": 2,
+   "rows_changed": [],
+   "units": {
+    "COMMIT": 3,
+    "ROLLBACK": 1
+   },
+   "violations": []
+  },
+  "a_failure_at_program_row": {
+   "candidates": [],
+   "changed_digests": [],
+   "committed_before_effect": [],
+   "cycle": {
+    "capture": null,
+    "council": null,
+    "counts": null,
+    "failure": null,
+    "finished_at": null,
+    "id": "rp-001:001",
+    "number": 1,
+    "remaining": {
+     "adoptions": 2,
+     "cycles": 3
+    },
+    "result": null,
+    "selection": null,
+    "status": "collecting",
+    "stop_reason": null
+   },
+   "discarded_writes": [
+    [
+     "research_program_candidates",
+     "claimed"
+    ],
+    [
+     "research_program_candidates",
+     "eligible"
+    ],
+    [
+     "research_program_candidates",
+     "ignored"
+    ],
+    [
+     "research_program_cycles",
+     "selected"
+    ]
+   ],
+   "durable_units": 0,
+   "durable_writes": [],
+   "effects": [],
+   "not_applicable": "M7 application/research_program.py:410-475 reads and writes the store only: no process, network, provider or Git call (the collection items arrive as arguments)",
+   "outcome": {
+    "message": "injected failure at research_programs",
+    "reason_code": null,
+    "refused": "Injected"
+   },
+   "row": {
+    "active_cycle": "rp-001:001",
+    "adoptions": 0,
+    "blocked_reason": null,
+    "cycles": 0,
+    "last_tick_at": null,
+    "next_cycle": 2,
+    "state": "active",
+    "stop_reason": null,
+    "updated_at": "2028-01-01T00:00:00+00:00"
+   },
+   "rows_after": 2,
+   "rows_before": 2,
+   "rows_changed": [],
+   "units": {
+    "COMMIT": 3,
+    "ROLLBACK": 1
+   },
+   "violations": []
+  },
+  "b_active_cycle_moved": {
+   "after_move": {
+    "durable_writes": [],
+    "writes": 0
+   },
+   "candidates": [],
+   "changed_digests": [
+    [
+     "research_programs",
+     "rp-001",
+     "8a55de56ba8466f522ef7e1893c77ad14ff917e123889a7bcfd4af798094596a"
+    ]
+   ],
+   "committed_before_effect": [],
+   "cycle": {
+    "capture": null,
+    "council": null,
+    "counts": null,
+    "failure": null,
+    "finished_at": null,
+    "id": "rp-001:001",
+    "number": 1,
+    "remaining": {
+     "adoptions": 2,
+     "cycles": 3
+    },
+    "result": null,
+    "selection": null,
+    "status": "collecting",
+    "stop_reason": null
+   },
+   "discarded_writes": [],
+   "durable_units": 0,
+   "durable_writes": [],
+   "effects": [],
+   "not_applicable": "M7 application/research_program.py:410-475 reads and writes the store only: no process, network, provider or Git call (the collection items arrive as arguments)",
+   "outcome": {
+    "message": "research program refused: cycle_not_active",
+    "reason_code": "cycle_not_active",
+    "refused": "ProgramRefused"
+   },
+   "row": {
+    "active_cycle": "rp-001:099",
+    "adoptions": 0,
+    "blocked_reason": null,
+    "cycles": 0,
+    "last_tick_at": null,
+    "next_cycle": 2,
+    "state": "active",
+    "stop_reason": null,
+    "updated_at": "2028-01-01T00:00:00+00:00"
+   },
+   "rows_after": 2,
+   "rows_before": 2,
+   "rows_changed": [
+    [
+     "research_programs",
+     "rp-001",
+     ""
+    ]
+   ],
+   "units": {
+    "COMMIT": 3,
+    "ROLLBACK": 1
+   },
+   "violations": []
+  },
+  "b_cycle_state_moved": {
+   "after_move": {
+    "durable_writes": [],
+    "writes": 0
+   },
+   "candidates": [],
+   "changed_digests": [
+    [
+     "research_program_cycles",
+     "rp-001:001",
+     "f43c640f760a58a71ff2d746364df012a14241b37a2c56aa272449fdf01c34d2"
+    ]
+   ],
+   "committed_before_effect": [],
+   "cycle": {
+    "capture": null,
+    "council": null,
+    "counts": null,
+    "failure": null,
+    "finished_at": null,
+    "id": "rp-001:001",
+    "number": 1,
+    "remaining": {
+     "adoptions": 2,
+     "cycles": 3
+    },
+    "result": null,
+    "selection": null,
+    "status": "failed",
+    "stop_reason": null
+   },
+   "discarded_writes": [],
+   "durable_units": 0,
+   "durable_writes": [],
+   "effects": [],
+   "not_applicable": "M7 application/research_program.py:410-475 reads and writes the store only: no process, network, provider or Git call (the collection items arrive as arguments)",
+   "outcome": {
+    "message": "research program refused: cycle_state_changed",
+    "reason_code": "cycle_state_changed",
+    "refused": "ProgramRefused"
+   },
+   "row": {
+    "active_cycle": "rp-001:001",
+    "adoptions": 0,
+    "blocked_reason": null,
+    "cycles": 0,
+    "last_tick_at": null,
+    "next_cycle": 2,
+    "state": "active",
+    "stop_reason": null,
+    "updated_at": "2028-01-01T00:00:00+00:00"
+   },
+   "rows_after": 2,
+   "rows_before": 2,
+   "rows_changed": [
+    [
+     "research_program_cycles",
+     "rp-001:001",
+     "failed"
+    ]
+   ],
+   "units": {
+    "COMMIT": 3,
+    "ROLLBACK": 1
+   },
+   "violations": []
+  },
+  "b_owner_moved": {
+   "after_move": {
+    "durable_writes": [],
+    "writes": 0
+   },
+   "candidates": [],
+   "changed_digests": [
+    [
+     "research_program_cycles",
+     "rp-001:001",
+     "f688326625a24209577de6e5e82d1ef9645002a1d6ab01442a9d4f86c6ea2860"
+    ]
+   ],
+   "committed_before_effect": [],
+   "cycle": {
+    "capture": null,
+    "council": null,
+    "counts": null,
+    "failure": null,
+    "finished_at": null,
+    "id": "rp-001:001",
+    "number": 1,
+    "remaining": {
+     "adoptions": 2,
+     "cycles": 3
+    },
+    "result": null,
+    "selection": null,
+    "status": "collecting",
+    "stop_reason": null
+   },
+   "discarded_writes": [],
+   "durable_units": 0,
+   "durable_writes": [],
+   "effects": [],
+   "not_applicable": "M7 application/research_program.py:410-475 reads and writes the store only: no process, network, provider or Git call (the collection items arrive as arguments)",
+   "outcome": {
+    "message": "research program refused: owner_mismatch",
+    "reason_code": "owner_mismatch",
+    "refused": "ProgramRefused"
+   },
+   "row": {
+    "active_cycle": "rp-001:001",
+    "adoptions": 0,
+    "blocked_reason": null,
+    "cycles": 0,
+    "last_tick_at": null,
+    "next_cycle": 2,
+    "state": "active",
+    "stop_reason": null,
+    "updated_at": "2028-01-01T00:00:00+00:00"
+   },
+   "rows_after": 2,
+   "rows_before": 2,
+   "rows_changed": [
+    [
+     "research_program_cycles",
+     "rp-001:001",
+     "collecting"
+    ]
+   ],
+   "units": {
+    "COMMIT": 3,
+    "ROLLBACK": 1
+   },
+   "violations": []
+  },
+  "c_replay_after_failure": {
+   "candidates": [
+    {
+     "claimed_cycle": 1,
+     "first_cycle": 1,
+     "id": "c-9da1c6652203010bb4a438b8",
+     "last_cycle": 1,
+     "reason": "keyword:postgres in summary",
+     "result": null,
+     "seen": 1,
+     "source": "github",
+     "status": "claimed",
+     "topic": "storage"
+    },
+    {
+     "claimed_cycle": null,
+     "first_cycle": 1,
+     "id": "c-d40269ee9834278a419cdc5d",
+     "last_cycle": 1,
+     "reason": "no_keyword_match",
+     "result": null,
+     "seen": 1,
+     "source": "github",
+     "status": "ignored",
+     "topic": null
+    }
+   ],
+   "changed_digests": [
+    [
+     "research_program_candidates",
+     "rp-001:c-9da1c6652203010bb4a438b8",
+     "1fad113a8cd10dd61ba51a98e44f15aea4172099dbd38eda35519ce816f73685"
+    ],
+    [
+     "research_program_candidates",
+     "rp-001:c-d40269ee9834278a419cdc5d",
+     "9f421cc78e2d186dbc2f617b542e4c68bb79dd608c8bd450156998948bc81430"
+    ],
+    [
+     "research_program_cycles",
+     "rp-001:001",
+     "d6cb58edd16f7a272488b8d07b562c8a84cb5711b856945b14dbdc5a5deeb096"
+    ],
+    [
+     "research_programs",
+     "rp-001",
+     "73d505675a39aca2e1a59fa1a675416bd01ee6ca597b7371391359dd90e0e16f"
+    ]
+   ],
+   "committed_before_effect": [],
+   "cycle": {
+    "audit_progress": null,
+    "capture": null,
+    "council": null,
+    "counts": {
+     "discovered": 2,
+     "duplicate": 0,
+     "eligible": 1,
+     "ignored": 1,
+     "new": 2,
+     "selected": 1
+    },
+    "failure": null,
+    "finished_at": null,
+    "id": "rp-001:001",
+    "investigations": null,
+    "number": 1,
+    "remaining": {
+     "adoptions": 1,
+     "cycles": 3
+    },
+    "result": null,
+    "selection": {
+     "candidate": "c-9da1c6652203010bb4a438b8",
+     "reason": "first_eligible_in_stable_order",
+     "source": "github"
+    },
+    "status": "selected",
+    "stop_reason": null
+   },
+   "discarded_writes": [],
+   "durable_units": 1,
+   "durable_writes": [
+    [
+     "research_program_candidates",
+     "claimed"
+    ],
+    [
+     "research_program_candidates",
+     "eligible"
+    ],
+    [
+     "research_program_candidates",
+     "ignored"
+    ],
+    [
+     "research_program_cycles",
+     "selected"
+    ],
+    [
+     "research_programs",
+     ""
+    ]
+   ],
+   "effects": [],
+   "first": {
+    "message": "injected failure at research_programs",
+    "reason_code": null,
+    "refused": "Injected"
+   },
+   "outcome": {
+    "cached": null,
+    "ok": true
+   },
+   "row": {
+    "active_cycle": "rp-001:001",
+    "adoptions": 1,
+    "blocked_reason": null,
+    "cycles": 0,
+    "last_tick_at": null,
+    "next_cycle": 2,
+    "state": "active",
+    "stop_reason": null,
+    "updated_at": "2028-01-01T00:00:00+00:00"
+   },
+   "rows_after": 4,
+   "rows_before": 2,
+   "rows_changed": [
+    [
+     "research_program_candidates",
+     "rp-001:c-9da1c6652203010bb4a438b8",
+     "claimed"
+    ],
+    [
+     "research_program_candidates",
+     "rp-001:c-d40269ee9834278a419cdc5d",
+     "ignored"
+    ],
+    [
+     "research_program_cycles",
+     "rp-001:001",
+     "selected"
+    ],
+    [
+     "research_programs",
+     "rp-001",
+     ""
+    ]
+   ],
+   "units": {
+    "COMMIT": 4
+   },
+   "violations": []
+  },
+  "c_replay_after_success": {
+   "candidates": [
+    {
+     "claimed_cycle": 1,
+     "first_cycle": 1,
+     "id": "c-9da1c6652203010bb4a438b8",
+     "last_cycle": 1,
+     "reason": "keyword:postgres in summary",
+     "result": null,
+     "seen": 1,
+     "source": "github",
+     "status": "claimed",
+     "topic": "storage"
+    },
+    {
+     "claimed_cycle": null,
+     "first_cycle": 1,
+     "id": "c-d40269ee9834278a419cdc5d",
+     "last_cycle": 1,
+     "reason": "no_keyword_match",
+     "result": null,
+     "seen": 1,
+     "source": "github",
+     "status": "ignored",
+     "topic": null
+    }
+   ],
+   "changed_digests": [],
+   "committed_before_effect": [],
+   "cycle": {
+    "audit_progress": null,
+    "capture": null,
+    "council": null,
+    "counts": {
+     "discovered": 2,
+     "duplicate": 0,
+     "eligible": 1,
+     "ignored": 1,
+     "new": 2,
+     "selected": 1
+    },
+    "failure": null,
+    "finished_at": null,
+    "id": "rp-001:001",
+    "investigations": null,
+    "number": 1,
+    "remaining": {
+     "adoptions": 1,
+     "cycles": 3
+    },
+    "result": null,
+    "selection": {
+     "candidate": "c-9da1c6652203010bb4a438b8",
+     "reason": "first_eligible_in_stable_order",
+     "source": "github"
+    },
+    "status": "selected",
+    "stop_reason": null
+   },
+   "discarded_writes": [],
+   "durable_units": 0,
+   "durable_writes": [],
+   "effects": [],
+   "first": {
+    "cached": null,
+    "ok": true
+   },
+   "outcome": {
+    "message": "research program refused: cycle_state_changed",
+    "reason_code": "cycle_state_changed",
+    "refused": "ProgramRefused"
+   },
+   "row": {
+    "active_cycle": "rp-001:001",
+    "adoptions": 1,
+    "blocked_reason": null,
+    "cycles": 0,
+    "last_tick_at": null,
+    "next_cycle": 2,
+    "state": "active",
+    "stop_reason": null,
+    "updated_at": "2028-01-01T00:00:00+00:00"
+   },
+   "rows_after": 4,
+   "rows_before": 4,
+   "rows_changed": [],
+   "units": {
+    "COMMIT": 3,
+    "ROLLBACK": 1
+   },
+   "violations": []
+  },
+  "success": {
+   "candidates": [
+    {
+     "claimed_cycle": 1,
+     "first_cycle": 1,
+     "id": "c-9da1c6652203010bb4a438b8",
+     "last_cycle": 1,
+     "reason": "keyword:postgres in summary",
+     "result": null,
+     "seen": 1,
+     "source": "github",
+     "status": "claimed",
+     "topic": "storage"
+    },
+    {
+     "claimed_cycle": null,
+     "first_cycle": 1,
+     "id": "c-d40269ee9834278a419cdc5d",
+     "last_cycle": 1,
+     "reason": "no_keyword_match",
+     "result": null,
+     "seen": 1,
+     "source": "github",
+     "status": "ignored",
+     "topic": null
+    }
+   ],
+   "changed_digests": [
+    [
+     "research_program_candidates",
+     "rp-001:c-9da1c6652203010bb4a438b8",
+     "1fad113a8cd10dd61ba51a98e44f15aea4172099dbd38eda35519ce816f73685"
+    ],
+    [
+     "research_program_candidates",
+     "rp-001:c-d40269ee9834278a419cdc5d",
+     "9f421cc78e2d186dbc2f617b542e4c68bb79dd608c8bd450156998948bc81430"
+    ],
+    [
+     "research_program_cycles",
+     "rp-001:001",
+     "d6cb58edd16f7a272488b8d07b562c8a84cb5711b856945b14dbdc5a5deeb096"
+    ],
+    [
+     "research_programs",
+     "rp-001",
+     "73d505675a39aca2e1a59fa1a675416bd01ee6ca597b7371391359dd90e0e16f"
+    ]
+   ],
+   "committed_before_effect": [],
+   "cycle": {
+    "audit_progress": null,
+    "capture": null,
+    "council": null,
+    "counts": {
+     "discovered": 2,
+     "duplicate": 0,
+     "eligible": 1,
+     "ignored": 1,
+     "new": 2,
+     "selected": 1
+    },
+    "failure": null,
+    "finished_at": null,
+    "id": "rp-001:001",
+    "investigations": null,
+    "number": 1,
+    "remaining": {
+     "adoptions": 1,
+     "cycles": 3
+    },
+    "result": null,
+    "selection": {
+     "candidate": "c-9da1c6652203010bb4a438b8",
+     "reason": "first_eligible_in_stable_order",
+     "source": "github"
+    },
+    "status": "selected",
+    "stop_reason": null
+   },
+   "discarded_writes": [],
+   "durable_units": 1,
+   "durable_writes": [
+    [
+     "research_program_candidates",
+     "claimed"
+    ],
+    [
+     "research_program_candidates",
+     "eligible"
+    ],
+    [
+     "research_program_candidates",
+     "ignored"
+    ],
+    [
+     "research_program_cycles",
+     "selected"
+    ],
+    [
+     "research_programs",
+     ""
+    ]
+   ],
+   "effects": [],
+   "not_applicable": "M7 application/research_program.py:410-475 reads and writes the store only: no process, network, provider or Git call (the collection items arrive as arguments)",
+   "outcome": {
+    "cached": null,
+    "ok": true
+   },
+   "row": {
+    "active_cycle": "rp-001:001",
+    "adoptions": 1,
+    "blocked_reason": null,
+    "cycles": 0,
+    "last_tick_at": null,
+    "next_cycle": 2,
+    "state": "active",
+    "stop_reason": null,
+    "updated_at": "2028-01-01T00:00:00+00:00"
+   },
+   "rows_after": 4,
+   "rows_before": 2,
+   "rows_changed": [
+    [
+     "research_program_candidates",
+     "rp-001:c-9da1c6652203010bb4a438b8",
+     "claimed"
+    ],
+    [
+     "research_program_candidates",
+     "rp-001:c-d40269ee9834278a419cdc5d",
+     "ignored"
+    ],
+    [
+     "research_program_cycles",
+     "rp-001:001",
+     "selected"
+    ],
+    [
+     "research_programs",
+     "rp-001",
+     ""
+    ]
+   ],
+   "units": {
+    "COMMIT": 4
+   },
+   "violations": []
+  }
+ },
+ "submit": {
+  "a_failure_at_event": {
+   "changed_digests": [],
+   "committed_before_effect": [],
+   "discarded_writes": [
+    [
+     "desk_requests",
+     "queued"
+    ],
+    [
+     "desk_sessions",
+     ""
+    ],
+    [
+     "outbox",
+     ""
+    ]
+   ],
+   "durable_units": 0,
+   "durable_writes": [],
+   "effects": [],
+   "events": [
+    "de5c0000-0000-4000-8000-000000000004:session_created"
+   ],
+   "not_applicable": "M7 application/frontdesk.py:100-130 only writes the outbox row inside the unit; the publication is DeskRunner's flush, a separate unit",
+   "outbox": [],
+   "outcome": {
+    "message": "injected failure at desk_events",
+    "reason_code": null,
+    "refused": "Injected"
+   },
+   "requests": [],
+   "rows_after": 2,
+   "rows_before": 2,
+   "rows_changed": [],
+   "session": [
+    [
+     "de5c0000-0000-4000-8000-000000000004",
+     0
+    ]
+   ],
+   "units": {
+    "ROLLBACK": 1
+   },
+   "violations": []
+  },
+  "a_failure_at_outbox": {
+   "changed_digests": [],
+   "committed_before_effect": [],
+   "discarded_writes": [
+    [
+     "desk_requests",
+     "queued"
+    ],
+    [
+     "desk_sessions",
+     ""
+    ]
+   ],
+   "durable_units": 0,
+   "durable_writes": [],
+   "effects": [],
+   "events": [
+    "de5c0000-0000-4000-8000-000000000007:session_created"
+   ],
+   "not_applicable": "M7 application/frontdesk.py:100-130 only writes the outbox row inside the unit; the publication is DeskRunner's flush, a separate unit",
+   "outbox": [],
+   "outcome": {
+    "message": "injected failure at outbox",
+    "reason_code": null,
+    "refused": "Injected"
+   },
+   "requests": [],
+   "rows_after": 2,
+   "rows_before": 2,
+   "rows_changed": [],
+   "session": [
+    [
+     "de5c0000-0000-4000-8000-000000000007",
+     0
+    ]
+   ],
+   "units": {
+    "ROLLBACK": 1
+   },
+   "violations": []
+  },
+  "b_request_content_moved": {
+   "changed_digests": [],
+   "committed_before_effect": [],
+   "discarded_writes": [],
+   "durable_units": 0,
+   "durable_writes": [],
+   "effects": [],
+   "events": [
+    "de5c0000-0000-4000-8000-00000000000d:session_created",
+    "de5c0000-0000-4000-8000-00000000000e:intake"
+   ],
+   "not_applicable": "M7 application/frontdesk.py:100-130 only writes the outbox row inside the unit; the publication is DeskRunner's flush, a separate unit",
+   "outbox": [
+    [
+     "desk-de5c0000-0000-4000-8000-00000000000e",
+     false
+    ]
+   ],
+   "outcome": {
+    "message": "desk refused: request_conflict (request_id)",
+    "reason_code": "request_conflict",
+    "refused": "DeskRefused"
+   },
+   "requests": [
+    [
+     "de5c0000-0000-4000-8000-00000000000e",
+     "queued"
+    ]
+   ],
+   "rows_after": 5,
+   "rows_before": 5,
+   "rows_changed": [],
+   "session": [
+    [
+     "de5c0000-0000-4000-8000-00000000000d",
+     1
+    ]
+   ],
+   "units": {
+    "ROLLBACK": 1
+   },
+   "violations": []
+  },
+  "b_rival_turn_opened": {
+   "after_move": {
+    "durable_writes": [],
+    "writes": 0
+   },
+   "changed_digests": [
+    [
+     "desk_events",
+     "de5c0000-0000-4000-8000-00000000000c:intake",
+     "c6337f181227627f1c50dff924f93c5cc5b912fbc734624d3f3d5f82e1d4b8bb"
+    ],
+    [
+     "desk_requests",
+     "de5c0000-0000-4000-8000-00000000000c",
+     "c2d655cebe9c94b45e8a8b1358c57c420edd4e4614f048eca926b78ce8ad48f9"
+    ],
+    [
+     "desk_sessions",
+     "de5c0000-0000-4000-8000-00000000000a",
+     "bd48f4a16e4b690158c54c81af98d92cab52a6cb613d4ba9ccb76234b5293322"
+    ],
+    [
+     "outbox",
+     "desk-de5c0000-0000-4000-8000-00000000000c",
+     "2fc52e1e77f2c659d4c1a1a9445416fd93d63fd1c73a6f51d93bd7b4962c83e0"
+    ]
+   ],
+   "committed_before_effect": [],
+   "discarded_writes": [],
+   "durable_units": 0,
+   "durable_writes": [],
+   "effects": [],
+   "events": [
+    "de5c0000-0000-4000-8000-00000000000a:session_created",
+    "de5c0000-0000-4000-8000-00000000000c:intake"
+   ],
+   "not_applicable": "M7 application/frontdesk.py:100-130 only writes the outbox row inside the unit; the publication is DeskRunner's flush, a separate unit",
+   "outbox": [
+    [
+     "desk-de5c0000-0000-4000-8000-00000000000c",
+     false
+    ]
+   ],
+   "outcome": {
+    "message": "desk refused: session_busy (session_id)",
+    "reason_code": "session_busy",
+    "refused": "DeskRefused"
+   },
+   "requests": [
+    [
+     "de5c0000-0000-4000-8000-00000000000c",
+     "queued"
+    ]
+   ],
+   "rows_after": 5,
+   "rows_before": 2,
+   "rows_changed": [
+    [
+     "desk_events",
+     "de5c0000-0000-4000-8000-00000000000c:intake",
+     "queued"
+    ],
+    [
+     "desk_requests",
+     "de5c0000-0000-4000-8000-00000000000c",
+     "queued"
+    ],
+    [
+     "desk_sessions",
+     "de5c0000-0000-4000-8000-00000000000a",
+     ""
+    ],
+    [
+     "outbox",
+     "desk-de5c0000-0000-4000-8000-00000000000c",
+     ""
+    ]
+   ],
+   "session": [
+    [
+     "de5c0000-0000-4000-8000-00000000000a",
+     1
+    ]
+   ],
+   "units": {
+    "ROLLBACK": 1
+   },
+   "violations": []
+  },
+  "c_replay_after_failure": {
+   "changed_digests": [
+    [
+     "desk_events",
+     "de5c0000-0000-4000-8000-000000000014:intake",
+     "e69948c4f419d4651d0183f37118ca29e37264eb55862bf20243f214da19b7f2"
+    ],
+    [
+     "desk_requests",
+     "de5c0000-0000-4000-8000-000000000014",
+     "536cfb337e1cc7c4f040465d1d45273fa83cfdf996687c22c7e687535a7540ad"
+    ],
+    [
+     "desk_sessions",
+     "de5c0000-0000-4000-8000-000000000013",
+     "269a827f1df0f5c496849cc47cb01420e1a3faafa6830752b37067faaca15fac"
+    ],
+    [
+     "outbox",
+     "desk-de5c0000-0000-4000-8000-000000000014",
+     "6a6b3554f3282638f7c29932fda41704ef56a05c895b7d1c3291b2077939eadb"
+    ]
+   ],
+   "committed_before_effect": [],
+   "discarded_writes": [],
+   "durable_units": 1,
+   "durable_writes": [
+    [
+     "desk_events",
+     "queued"
+    ],
+    [
+     "desk_requests",
+     "queued"
+    ],
+    [
+     "desk_sessions",
+     ""
+    ],
+    [
+     "outbox",
+     ""
+    ]
+   ],
+   "effects": [],
+   "events": [
+    "de5c0000-0000-4000-8000-000000000013:session_created",
+    "de5c0000-0000-4000-8000-000000000014:intake"
+   ],
+   "first": {
+    "message": "injected failure at desk_events",
+    "reason_code": null,
+    "refused": "Injected"
+   },
+   "not_applicable": "M7 application/frontdesk.py:100-130 only writes the outbox row inside the unit; the publication is DeskRunner's flush, a separate unit",
+   "outbox": [
+    [
+     "desk-de5c0000-0000-4000-8000-000000000014",
+     false
+    ]
+   ],
+   "outcome": {
+    "cached": false,
+    "ok": true
+   },
+   "requests": [
+    [
+     "de5c0000-0000-4000-8000-000000000014",
+     "queued"
+    ]
+   ],
+   "rows_after": 5,
+   "rows_before": 2,
+   "rows_changed": [
+    [
+     "desk_events",
+     "de5c0000-0000-4000-8000-000000000014:intake",
+     "queued"
+    ],
+    [
+     "desk_requests",
+     "de5c0000-0000-4000-8000-000000000014",
+     "queued"
+    ],
+    [
+     "desk_sessions",
+     "de5c0000-0000-4000-8000-000000000013",
+     ""
+    ],
+    [
+     "outbox",
+     "desk-de5c0000-0000-4000-8000-000000000014",
+     ""
+    ]
+   ],
+   "session": [
+    [
+     "de5c0000-0000-4000-8000-000000000013",
+     1
+    ]
+   ],
+   "units": {
+    "COMMIT": 1
+   },
+   "violations": []
+  },
+  "c_replay_after_success": {
+   "changed_digests": [],
+   "committed_before_effect": [],
+   "discarded_writes": [],
+   "durable_units": 0,
+   "durable_writes": [],
+   "effects": [],
+   "events": [
+    "de5c0000-0000-4000-8000-000000000010:session_created",
+    "de5c0000-0000-4000-8000-000000000011:intake"
+   ],
+   "first": {
+    "cached": false,
+    "ok": true
+   },
+   "not_applicable": "M7 application/frontdesk.py:100-130 only writes the outbox row inside the unit; the publication is DeskRunner's flush, a separate unit",
+   "outbox": [
+    [
+     "desk-de5c0000-0000-4000-8000-000000000011",
+     false
+    ]
+   ],
+   "outcome": {
+    "cached": true,
+    "ok": true
+   },
+   "requests": [
+    [
+     "de5c0000-0000-4000-8000-000000000011",
+     "queued"
+    ]
+   ],
+   "rows_after": 5,
+   "rows_before": 5,
+   "rows_changed": [],
+   "session": [
+    [
+     "de5c0000-0000-4000-8000-000000000010",
+     1
+    ]
+   ],
+   "units": {
+    "COMMIT": 1
+   },
+   "violations": []
+  },
+  "success": {
+   "changed_digests": [
+    [
+     "desk_events",
+     "de5c0000-0000-4000-8000-000000000002:intake",
+     "b528286e1c872feef67358fe06af51e228efc52f00a9010a56c5df7e3fa1137a"
+    ],
+    [
+     "desk_requests",
+     "de5c0000-0000-4000-8000-000000000002",
+     "d0b192f77c7651ddea1d9b7c1e964a16978a856e30338e3e855e8a6c93dba3e6"
+    ],
+    [
+     "desk_sessions",
+     "de5c0000-0000-4000-8000-000000000001",
+     "cda2e07b673095c5dacd5a06f0e16e1e1f63791a2793d06d2ee81d22764a871f"
+    ],
+    [
+     "outbox",
+     "desk-de5c0000-0000-4000-8000-000000000002",
+     "f9d9d368484bcb49786602536984b4d289f3bbd09dd008c641a2823f222fdf55"
+    ]
+   ],
+   "committed_before_effect": [],
+   "discarded_writes": [],
+   "durable_units": 1,
+   "durable_writes": [
+    [
+     "desk_events",
+     "queued"
+    ],
+    [
+     "desk_requests",
+     "queued"
+    ],
+    [
+     "desk_sessions",
+     ""
+    ],
+    [
+     "outbox",
+     ""
+    ]
+   ],
+   "effects": [],
+   "events": [
+    "de5c0000-0000-4000-8000-000000000001:session_created",
+    "de5c0000-0000-4000-8000-000000000002:intake"
+   ],
+   "not_applicable": "M7 application/frontdesk.py:100-130 only writes the outbox row inside the unit; the publication is DeskRunner's flush, a separate unit",
+   "outbox": [
+    [
+     "desk-de5c0000-0000-4000-8000-000000000002",
+     false
+    ]
+   ],
+   "outcome": {
+    "cached": false,
+    "ok": true
+   },
+   "requests": [
+    [
+     "de5c0000-0000-4000-8000-000000000002",
+     "queued"
+    ]
+   ],
+   "rows_after": 5,
+   "rows_before": 2,
+   "rows_changed": [
+    [
+     "desk_events",
+     "de5c0000-0000-4000-8000-000000000002:intake",
+     "queued"
+    ],
+    [
+     "desk_requests",
+     "de5c0000-0000-4000-8000-000000000002",
+     "queued"
+    ],
+    [
+     "desk_sessions",
+     "de5c0000-0000-4000-8000-000000000001",
+     ""
+    ],
+    [
+     "outbox",
+     "desk-de5c0000-0000-4000-8000-000000000002",
+     ""
+    ]
+   ],
+   "session": [
+    [
+     "de5c0000-0000-4000-8000-000000000001",
+     1
+    ]
+   ],
+   "units": {
+    "COMMIT": 1
+   },
+   "violations": []
+  }
+ }
+}

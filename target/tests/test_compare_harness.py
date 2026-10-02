@@ -109,7 +109,7 @@ S8_FAMILIES = {"research.program_tick", "research.capture", "research.program_re
                "research.correction_feedback", "review.release_suite", "research.source_execution_adapter", "coordination.fleet_backlog", "intake.ticket_lifecycle", "review.canary", "research.audit_repair",
                "research.threshold_reviews", "research.scheduling", "review.releases_audits", "intake.goal_progress", "intake.ticket_authority",
                "research.decision_feedback", "review.sdd", "research.audit_execution", "research.audit_runner", "research.audit_repair_replay",
-               "intake.tickets", "intake.github_tickets", "evidence.inspector", "evidence.isolated_inspector", "evidence.project_inspector", "effects.s8_units"}
+               "intake.tickets", "intake.github_tickets", "evidence.inspector", "evidence.isolated_inspector", "evidence.project_inspector", "effects.s8_units", "effects.s8_units.pg"}
 S9_FAMILIES = {"observation.schema", "observation.file_spool", "observation.frontend_bytes", "observation.measurements",
                "observation.monitoring_projection", "observation.viewer", "observation.collector", "observation.local_facts", "observation.collectors_core"}
 S7_IMPLEMENTED = {"delivery.tooling", "delivery.restore.pg", "delivery.fleet_recovery_collectors", "delivery.release_runner", "delivery.canaries", "delivery.migration_evidence", "delivery.host_migration_transfer", "delivery.host_targets", "delivery.managed_runtime", "delivery.managed_systemd",
@@ -126,7 +126,7 @@ S8_IMPLEMENTED = {"intake.portfolio", "research.dge", "evidence.inspections", "r
                   "research.source_verification", "research.runtime_thresholds", "research.threshold_replay", "research.threshold_proposals",
                   "research.correction_feedback", "review.release_suite",
                   "research.source_execution_adapter", "coordination.fleet_backlog", "intake.ticket_lifecycle", "review.canary", "research.audit_repair",
-                  "research.threshold_reviews", "review.releases_audits", "research.scheduling", "intake.goal_progress", "intake.ticket_authority", "research.decision_feedback", "review.sdd", "research.audit_execution", "research.audit_runner", "research.audit_repair_replay", "intake.tickets", "intake.github_tickets", "evidence.inspector", "evidence.isolated_inspector", "evidence.project_inspector", "effects.s8_units"}
+                  "research.threshold_reviews", "review.releases_audits", "research.scheduling", "intake.goal_progress", "intake.ticket_authority", "research.decision_feedback", "review.sdd", "research.audit_execution", "research.audit_runner", "research.audit_repair_replay", "intake.tickets", "intake.github_tickets", "evidence.inspector", "evidence.isolated_inspector", "evidence.project_inspector", "effects.s8_units", "effects.s8_units.pg"}
 S9_IMPLEMENTED = {"observation.schema", "observation.file_spool", "observation.frontend_bytes", "observation.measurements",
                   "observation.monitoring_projection", "observation.viewer", "observation.collector", "observation.local_facts", "observation.collectors_core"}
 IMPLEMENTED = {**{f: "S1" for f in S1_FAMILIES}, **{f: "S2" for f in S2_FAMILIES},
