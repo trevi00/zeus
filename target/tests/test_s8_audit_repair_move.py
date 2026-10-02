@@ -230,7 +230,10 @@ def test_v4_research_owns_the_three_buckets_and_only_this_module_writes_them():
     for context in ("coordination", "evidence", "knowledge", "review", "delivery", "intake", "routing", "storage", "execution", "observation"):
         other = importlib.import_module(f"codex_harness.{context}.ports") if (SRC / context / "ports.py").exists() else None
         assert other is None or not set(BUCKETS) & set(getattr(other, "OWNED_BUCKETS", ())), context
-    assert writers(BUCKETS, ("BUCKET_ACTIVATION", "BUCKET_CORRECTIONS")) == {"research/application/audit_repair.py"}
+    assert writers(BUCKETS[:2], ("BUCKET_ACTIVATION", "BUCKET_CORRECTIONS")) == {"research/application/audit_repair.py"}
+    # `schedule` is research's with TWO research writer modules, as in M7: this one and `application/scheduling.py`
+    # (S8 pilot 102, DESIGN-s8 §19/§19.1). Single writer is per context; both are research.
+    assert writers(BUCKETS[2:], ()) == {"research/application/audit_repair.py", "research/application/scheduling.py"}
 
 
 def test_after_the_move_outbox_and_events_are_written_by_the_module_only_through_the_owner_operations():
