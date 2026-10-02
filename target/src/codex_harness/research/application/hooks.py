@@ -4,9 +4,10 @@ Layer: application
 Context: research
 Owns: HookLifecycle.record_incident/review (M7 `Harness.record_incident/review`, moved ahead in S4: the review
     decision unit's research effects; transaction required; outbox/events through coordination's owner
-    operations, same bytes)
-Does not own: the rest of the hook lifecycle (propose, canary, activation: S8), the outbox/events bodies'
-    owner (coordination)
+    operations, same bytes) and get_hook/propose/record_canary/activate/rollback/prepare_command/active_hooks
+    (M7 `Harness.*`, S8 pilot 82: transaction required; events through coordination's EventJournal). The M7
+    self-transacting call shapes of these methods belong to the S10 composition facade, which opens the unit
+Does not own: the outbox/events bodies' owner (coordination), the unit (the composition facade)
 Entry points: HookLifecycle
 Contracts: INV-RECURRENCE-001, INV-MESSAGE-001
 """
@@ -19,7 +20,7 @@ from codex_harness.kernel.errors import require
 from codex_harness.kernel.ids import SYSTEM_IDS, digest, utcnow
 from codex_harness.kernel.message import envelope
 from codex_harness.kernel.policy import POLICY
-from codex_harness.research.domain.recurrence import Incident
+from codex_harness.research.domain.recurrence import Incident, hook_apply
 
 
 class HookLifecycle:
@@ -131,3 +132,71 @@ class HookLifecycle:
             hook["status"] = "reviewed"
         tx.put("hooks", hook_id, hook)
         return hook
+
+    def get_hook(self, hook_id: str, *, transaction) -> dict:
+        tx = transaction
+        hook = tx.get("hooks", hook_id)
+        require(hook is not None, "Hook not found")
+        return hook
+
+    def propose(self, hook_id: str, actor: str, spec: dict, revision: str, *, transaction) -> dict:
+        self.org.actor(actor, "worker")
+        require(bool(revision), "Candidate revision required")
+        hook_apply(spec, [], "windows")
+        tx = transaction
+        hook = tx.get("hooks", hook_id)
+        require(hook is not None and hook["status"] in {"required", "candidate", "rejected"},
+                "Cannot replace this hook")
+        hook.update(status="candidate", spec=spec, revision=revision, author=actor,
+                    version=hook["version"] + 1, reviews=[], canary=None)
+        tx.put("hooks", hook_id, hook)
+        self.events.append(tx, str((self.ids or SYSTEM_IDS).uuid4()), {"type": "hook.proposed", "hook_id": hook_id,
+                                                                      "revision": revision, "spec_hash": digest(spec), "at": utcnow(self.clock)})
+        return hook
+
+    def record_canary(self, hook_id: str, revision: str, spec_hash: str, checks: dict, *, transaction) -> dict:
+        required_checks = {"reproduction", "normal_case", "cli_start"}
+        require(set(checks) == required_checks and all(type(v) is bool for v in checks.values()),
+                "Canary needs reproduction, normal_case, cli_start booleans")
+        tx = transaction
+        hook = tx.get("hooks", hook_id)
+        require(hook is not None and hook["status"] == "reviewed", "Reviews must precede canary")
+        require(hook["revision"] == revision and digest(hook["spec"]) == spec_hash, "Stale canary")
+        hook["canary"] = {"checks": checks, "revision": revision, "spec_hash": spec_hash}
+        hook["status"] = "verified" if all(checks.values()) else "rejected"
+        tx.put("hooks", hook_id, hook)
+        return hook
+
+    def activate(self, hook_id: str, *, transaction) -> dict:
+        tx = transaction
+        hook = tx.get("hooks", hook_id)
+        require(hook is not None and hook["status"] == "verified", "Candidate not verified")
+        # @invariant INV-RELEASE-001: activation is bound to the reviewed artifact.
+        require(hook["canary"]["spec_hash"] == digest(hook["spec"]), "Artifact changed after canary")
+        hook["status"] = "active"
+        tx.put("hooks", hook_id, hook)
+        self.events.append(tx, str((self.ids or SYSTEM_IDS).uuid4()), {"type": "hook.activated", "hook_id": hook_id,
+                                                                      "revision": hook["revision"], "at": utcnow(self.clock)})
+        return hook
+
+    def rollback(self, hook_id: str, reason: str, *, transaction) -> None:
+        require(bool(reason), "Rollback requires reason")
+        tx = transaction
+        hook = tx.get("hooks", hook_id)
+        require(hook is not None and hook["status"] == "active", "Hook not active")
+        hook = hook.get("previous_active") or {**hook, "status": "rolled_back"}
+        tx.put("hooks", hook_id, hook)
+        self.events.append(tx, str((self.ids or SYSTEM_IDS).uuid4()), {"type": "hook.rolled_back", "hook_id": hook_id,
+                                                                      "reason": reason, "at": utcnow(self.clock)})
+
+    def prepare_command(self, argv: list[str], platform: str, *, transaction) -> list[str]:
+        hooks = self.active_hooks(transaction=transaction)
+        matches = [h for h in hooks if hook_apply(h["spec"], argv, platform) != argv]
+        require(len(matches) <= 1, "Conflicting active hooks; explicit resolution required")
+        return hook_apply(matches[0]["spec"], argv, platform) if matches else list(argv)
+
+    def active_hooks(self, *, transaction) -> list[dict]:
+        tx = transaction
+        hooks = sorted(tx.scan("hooks"), key=lambda x: x["id"])
+        return [active for h in hooks
+                if (active := h if h["status"] == "active" else h.get("previous_active"))]
