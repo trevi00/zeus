@@ -213,7 +213,7 @@ def test_org_snapshot_shape():
     event = bp.org_snapshot(org=_org(), d="pinned-org-d", channel=CHANNEL, created_at=NOW)
     assert event["kind"] == 45010
     assert event["tags"] == [["ar", "1"], ["d", "pinned-org-d"], ["h", CHANNEL], ["type", "zeus.org"],
-                             ["op", "create"]]
+                             ["title", bp.ORG_TITLE], ["op", "create"]]
     body = json.loads(event["content"])
     assert body["schema"] == "urn:zeus:buzz-org:1" and body["version"] == 7
     assert body["fleet"] == {"paused": False, "version": 2, "activation_hold": False}
@@ -409,3 +409,31 @@ def test_desk_ops_are_not_migrated_in_this_batch(task_view, fleet_view):
 def test_interventions_are_accepted_by_the_card_builder():
     for views in ((None, None), ({"terminal": False}, {"paused": True, "activation_hold": False})):
         assert _card(task=_task(interventions=bp.interventions(*views)))["kind"] == 45010
+
+
+# --- NIP-AR envelope contract (Buzz docs/nips/NIP-AR.md lines 36-47; artifact.rs:100-125) ---------------------------
+# The relay refuses a non-delete revision without exactly one each of ar=1, d (UUID), h, type, a nonblank title
+# (<= 512 UTF-8 bytes) and op, and `prev` exactly on an update; the org snapshot once lacked `title` (E2E run 3).
+
+def _artifact_events():
+    org_d = str(uuid.uuid5(bp.NS_ZEUS_BUZZ, "zeus.org:contract"))
+    events = [bp.org_snapshot(org=_org(), d=org_d, channel=CHANNEL, created_at=NOW),
+              bp.org_snapshot(org=_org(), d=org_d, channel=CHANNEL, created_at=NOW, op="update", prev=PREV),
+              _card(), _card(op="update", prev=PREV)]
+    return [e for e in events if e["kind"] == 45010]
+
+
+def test_every_45010_event_meets_the_nip_ar_envelope_contract():
+    events = _artifact_events()
+    assert len(events) == 4
+    for event in events:
+        names = [tag[0] for tag in event["tags"]]
+        for required in ("ar", "d", "h", "type", "title", "op"):
+            assert names.count(required) == 1, (required, event["tags"])
+        assert names.count("prev") == (1 if ["op", "update"] in event["tags"] else 0), event["tags"]
+        tags = {tag[0]: tag[1] for tag in event["tags"]}
+        assert tags["ar"] == "1" and tags["op"] in ("create", "update")
+        assert str(uuid.UUID(tags["d"])) == tags["d"], "d is a canonical lowercase UUID"
+        assert tags["h"] and tags["type"]
+        assert tags["title"].strip() and len(tags["title"].encode("utf-8")) <= 512
+    assert {tag[1] for e in events for tag in e["tags"] if tag[0] == "type"} == {"zeus.org", "zeus.task"}

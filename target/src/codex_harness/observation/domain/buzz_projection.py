@@ -44,6 +44,7 @@ KNOWN_MAJORS = {"org": 1, "task-root": 1, "task": 1, "receipt": 1, "command": rc
 
 MAX_SUMMARY_CHARS = 2000  # §4.5
 MAX_REASON_CHARS = rc.MAX_REASON_CHARS  # §4.3 (500)
+ORG_TITLE = "Zeus organization"  # NIP-AR: every non-delete revision needs a `title`; the org snapshot's is fixed
 MAX_TITLE_CHARS = 500  # REFUSE-READING: the title tag/field has no §4 bound; a declared one
 MAX_EVIDENCE_REFS = 100  # REFUSE-READING: §4.5 gives no count; a declared bound
 MAX_EVIDENCE_REF_CHARS = 128
@@ -306,7 +307,7 @@ def org_snapshot(*, org: dict, d: str, channel: str, created_at: int, op: str = 
                "fleet": {"paused": _opt_bool(fleet["paused"], "fleet paused"),
                          "version": _opt_int(fleet["version"], "fleet version"),
                          "activation_hold": _opt_bool(fleet["activation_hold"], "activation_hold")}}
-    tags = _artifact_tags(_text(d, "d"), channel, "zeus.org", op, prev)
+    tags = _artifact_tags(_text(d, "d"), channel, "zeus.org", op, prev, title=ORG_TITLE)
     return _event(KIND_ARTIFACT, created_at, tags, _bounded(_canonical(content)))
 
 
