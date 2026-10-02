@@ -562,7 +562,7 @@ def step_preconditions(run, rec):
     rec["residue_before"] = {key: len(value) for key, value in residue.items()}
     if any(residue.values()):
         raise Refusal(f"a resource of project {PROJECT} already exists; it is foreign to this run and is never cleaned")
-    assert str(run.tmp).startswith(str(SCRATCH) + "/") and not str(run.tmp).startswith("/tmp"), "the work dir is not scratch"
+    assert str(run.tmp).startswith(str(SCRATCH.resolve()) + "/") and not str(run.tmp).startswith("/tmp"), "the work dir is not scratch"
     run.relay_port, run.pg_port = free_port(), free_port()
     assert run.relay_port != run.pg_port, "the loopback ports collide"
     run.url = f"ws://127.0.0.1:{run.relay_port}"
@@ -915,7 +915,8 @@ def step_forged(run, rec):
         assert run.transitions(info["command_id"]) == [], f"the {role}-signed command has a transition"
     control, version = run.control()
     assert (control["paused"], version) == (control0["paused"], version0), "a forged command changed the fleet"
-    rec["receipts"] = {role: [] for role in commands}
+    rec["receipts"] = {role: run.receipts(info["command_id"]) for role, info in commands.items()}  # observed, not assumed
+    assert all(found == [] for found in rec["receipts"].values()), f"a forged command got a receipt: {rec['receipts']}"
 
 
 def stop_bridge(run, bridge, rec, key):
@@ -953,13 +954,25 @@ def step_sigterm(run, rec):
     last = len(second.ticks())
     run.poll(lambda: len(second.ticks()) > last, TICK + 10, "a tick of the second bridge", 0.1)
     time.sleep(TICK + 0.15)
+    before = len(second.ticks())
     stop_bridge(run, second, rec, "stop_mid_pass")
+    # a tick line written AFTER the signal means a tick was in flight: its step keys show how far the pass got
+    rec["mid_pass_ticks_after_signal"] = [sorted(t["steps"]) for t in second.ticks()[before:]]
     third = run.start_bridge()
     run.wait_leader(third)
 
 
+def current_leader(run):
+    """The newest bridge: alive, and holding the lease (a failed step 9 must not leave steps 10/11 on the wrong process)."""
+    bridge = run.bridges[-1]
+    assert bridge.proc.poll() is None, f"{bridge.name} is not running"
+    assert bridge.generation() == run.lease_row()["generation"], f"{bridge.name} does not hold the lease"
+    assert sum(1 for b in run.bridges if b.proc.poll() is None) == 1, "more than one bridge is running"
+    return bridge
+
+
 def step_sigkill(run, rec):
-    bridge = run.bridges[2]
+    bridge = current_leader(run)
     version0 = run.control()[1]
     run.wait_actionable({"op": "resume_fleet"})
     sent = run.driver("send", {"op": "resume_fleet", "reason": "e2e resume interrupted by SIGKILL"})
@@ -992,7 +1005,7 @@ def step_sigkill(run, rec):
 
 
 def step_passive(run, rec):
-    holder = run.bridges[3]
+    holder = current_leader(run)
     lease = run.lease_row()
     inbox0 = run.read(lambda tx: len(tx.scan("remote_inbox")))
     holder_ticks0 = len(holder.ticks())
