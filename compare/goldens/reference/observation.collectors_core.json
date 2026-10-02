@@ -1,0 +1,6224 @@
+{
+ "artifact_reader": {
+  "available": true,
+  "constants": {
+   "ACTIVE_EXECUTION": [
+    "pending",
+    "queued",
+    "retry",
+    "running"
+   ],
+   "ACTIVITY_BODY_BYTES": 65536,
+   "ACTIVITY_REFS": 6,
+   "ARTIFACT_REF": "^sha256:([0-9a-f]{64})$",
+   "CLAUDE_LABELS": [
+    "message",
+    "permission_denied",
+    "result",
+    "session_started",
+    "tool_completed",
+    "tool_started"
+   ],
+   "CODEX_LABELS": {
+    "item/completed": "item_completed",
+    "thread/tokenUsage/updated": "token_usage_updated"
+   },
+   "COMPACT_ONLY": {
+    "activity_sequence": null,
+    "attempt": null,
+    "generation": null,
+    "raw_ref": null
+   },
+   "ENVELOPE_KEYS": [
+    "defect",
+    "event",
+    "malformed",
+    "previous"
+   ],
+   "LANE_SESSIONS_SCHEMA": "urn:zeus:lane-sessions:1",
+   "LANE_SESSION_LIMIT": 50,
+   "PLAIN_STATUSES": [
+    "completed",
+    "denied",
+    "emitted",
+    "failed",
+    "started"
+   ],
+   "RECENT_TERMINAL_SECONDS": 600,
+   "TERMINAL_EXECUTION": [
+    "blocked",
+    "cancelled",
+    "expired",
+    "failed",
+    "inspection_blocked",
+    "succeeded",
+    "superseded"
+   ],
+   "UNINSTRUMENTED": "sessions started outside Zeus task ownership (an external coordinator or helper process) are not observed here and are never inferred from unit names or process ids"
+  },
+  "file_root": {
+   "available": false,
+   "read": [
+    "unavailable",
+    "runtime_unavailable",
+    null
+   ]
+  },
+  "missing_root": {
+   "available": false,
+   "created": false,
+   "invalid_first": [
+    "unreadable",
+    "invalid_ref",
+    null
+   ],
+   "read": [
+    "unavailable",
+    "runtime_unavailable",
+    null
+   ]
+  },
+  "reads": {
+   "bad_utf8": {
+    "value": [
+     "unreadable",
+     "invalid_json",
+     null
+    ]
+   },
+   "bytes": {
+    "value": [
+     "unreadable",
+     "invalid_ref",
+     null
+    ]
+   },
+   "dangling_symlink": {
+    "value": [
+     "unreadable",
+     "io_error",
+     null
+    ]
+   },
+   "directory": {
+    "value": [
+     "unreadable",
+     "io_error",
+     null
+    ]
+   },
+   "empty_body": {
+    "value": [
+     "ok",
+     null,
+     ""
+    ]
+   },
+   "empty_string": {
+    "value": [
+     "unreadable",
+     "invalid_ref",
+     null
+    ]
+   },
+   "exact_limit": {
+    "value": [
+     "ok",
+     null,
+     {
+      "len": 65536,
+      "sha256": "72128503ce416fec0e9be5dae8dae07ce22f4d85dd1acacc6e0424e213b5b176"
+     }
+    ]
+   },
+   "fifo": {
+    "value": [
+     "unreadable",
+     "io_error",
+     null
+    ]
+   },
+   "good": {
+    "value": [
+     "ok",
+     null,
+     {
+      "len": 638,
+      "sha256": "48a2502d5a6f38c4ab390c674c16beab35d94c3767e2b6669af5d19e8dcc522d"
+     }
+    ]
+   },
+   "huge": {
+    "value": [
+     "unreadable",
+     "too_large",
+     null
+    ]
+   },
+   "int": {
+    "value": [
+     "unreadable",
+     "invalid_ref",
+     null
+    ]
+   },
+   "list": {
+    "value": [
+     "unreadable",
+     "invalid_ref",
+     null
+    ]
+   },
+   "long": {
+    "value": [
+     "unreadable",
+     "invalid_ref",
+     null
+    ]
+   },
+   "missing": {
+    "value": [
+     "unavailable",
+     "missing_artifact",
+     null
+    ]
+   },
+   "newline_tail": {
+    "value": [
+     "unreadable",
+     "invalid_ref",
+     null
+    ]
+   },
+   "no_prefix": {
+    "value": [
+     "unreadable",
+     "invalid_ref",
+     null
+    ]
+   },
+   "none": {
+    "value": [
+     "unreadable",
+     "invalid_ref",
+     null
+    ]
+   },
+   "one_over": {
+    "value": [
+     "unreadable",
+     "too_large",
+     null
+    ]
+   },
+   "path_escape": {
+    "value": [
+     "unreadable",
+     "invalid_ref",
+     null
+    ]
+   },
+   "short": {
+    "value": [
+     "unreadable",
+     "invalid_ref",
+     null
+    ]
+   },
+   "symlink_to_outside": {
+    "value": [
+     "unreadable",
+     "io_error",
+     null
+    ]
+   },
+   "tampered": {
+    "value": [
+     "unreadable",
+     "integrity_failure",
+     null
+    ]
+   },
+   "unicode": {
+    "value": [
+     "ok",
+     null,
+     "한글 본문 ☃"
+    ]
+   },
+   "upper_hex": {
+    "value": [
+     "unreadable",
+     "invalid_ref",
+     null
+    ]
+   }
+  },
+  "root_is_a_path": "PosixPath",
+  "string_root_equal": true,
+  "symlink_root": {
+   "available": false,
+   "read": [
+    "unavailable",
+    "runtime_unavailable",
+    null
+   ]
+  },
+  "text": {
+   "bad_utf8": {
+    "value": [
+     "unreadable",
+     "invalid_json",
+     null
+    ]
+   },
+   "bytes": {
+    "value": [
+     "unreadable",
+     "invalid_ref",
+     null
+    ]
+   },
+   "dangling_symlink": {
+    "value": [
+     "unreadable",
+     "io_error",
+     null
+    ]
+   },
+   "directory": {
+    "value": [
+     "unreadable",
+     "io_error",
+     null
+    ]
+   },
+   "empty_body": {
+    "value": [
+     "ok",
+     null,
+     ""
+    ]
+   },
+   "empty_string": {
+    "value": [
+     "unreadable",
+     "invalid_ref",
+     null
+    ]
+   },
+   "exact_limit": {
+    "value": [
+     "ok",
+     null,
+     {
+      "len": 65536,
+      "sha256": "72128503ce416fec0e9be5dae8dae07ce22f4d85dd1acacc6e0424e213b5b176"
+     }
+    ]
+   },
+   "fifo": {
+    "value": [
+     "unreadable",
+     "io_error",
+     null
+    ]
+   },
+   "good": {
+    "value": [
+     "ok",
+     null,
+     {
+      "len": 638,
+      "sha256": "48a2502d5a6f38c4ab390c674c16beab35d94c3767e2b6669af5d19e8dcc522d"
+     }
+    ]
+   },
+   "huge": {
+    "value": [
+     "unreadable",
+     "too_large",
+     null
+    ]
+   },
+   "int": {
+    "value": [
+     "unreadable",
+     "invalid_ref",
+     null
+    ]
+   },
+   "list": {
+    "value": [
+     "unreadable",
+     "invalid_ref",
+     null
+    ]
+   },
+   "long": {
+    "value": [
+     "unreadable",
+     "invalid_ref",
+     null
+    ]
+   },
+   "missing": {
+    "value": [
+     "unavailable",
+     "missing_artifact",
+     null
+    ]
+   },
+   "newline_tail": {
+    "value": [
+     "unreadable",
+     "invalid_ref",
+     null
+    ]
+   },
+   "no_prefix": {
+    "value": [
+     "unreadable",
+     "invalid_ref",
+     null
+    ]
+   },
+   "none": {
+    "value": [
+     "unreadable",
+     "invalid_ref",
+     null
+    ]
+   },
+   "one_over": {
+    "value": [
+     "unreadable",
+     "too_large",
+     null
+    ]
+   },
+   "path_escape": {
+    "value": [
+     "unreadable",
+     "invalid_ref",
+     null
+    ]
+   },
+   "short": {
+    "value": [
+     "unreadable",
+     "invalid_ref",
+     null
+    ]
+   },
+   "symlink_to_outside": {
+    "value": [
+     "unreadable",
+     "io_error",
+     null
+    ]
+   },
+   "tampered": {
+    "value": [
+     "unreadable",
+     "integrity_failure",
+     null
+    ]
+   },
+   "unicode": {
+    "value": [
+     "ok",
+     null,
+     "한글 본문 ☃"
+    ]
+   },
+   "upper_hex": {
+    "value": [
+     "unreadable",
+     "invalid_ref",
+     null
+    ]
+   }
+  },
+  "tree_unchanged": true
+ },
+ "audit_progress": {
+  "control_none": {
+   "message": "'NoneType' object has no attribute 'get'",
+   "refused": "AttributeError"
+  },
+  "control_none_status": {
+   "value": [
+    {
+     "audit_id": "audit",
+     "checkpoint_partitions": 1,
+     "dispatch_status": null,
+     "files": 2,
+     "id": "legacy",
+     "independent_review": "not_certified_by_monitor",
+     "manifest_ref": "manifest",
+     "open_questions": 1,
+     "remaining_paths": 1,
+     "remaining_subsystems": 1,
+     "repository": "repo",
+     "review_ref": null,
+     "revision": "rev",
+     "semantically_reviewed_files": null,
+     "status": "source_verified_not_reviewed",
+     "test_receipt_ref": null
+    }
+   ]
+  },
+  "control_not_a_mapping": {
+   "message": "'str' object has no attribute 'get'",
+   "refused": "AttributeError"
+  },
+  "empty_data": {
+   "value": []
+  },
+  "inactive_default": {
+   "value": [
+    {
+     "audit_id": "audit",
+     "checkpoint_partitions": 1,
+     "dispatch_status": "inactive",
+     "files": 2,
+     "id": "legacy",
+     "independent_review": "not_certified_by_monitor",
+     "manifest_ref": "manifest",
+     "open_questions": 1,
+     "remaining_paths": 1,
+     "remaining_subsystems": 1,
+     "repository": "repo",
+     "review_ref": null,
+     "revision": "rev",
+     "semantically_reviewed_files": null,
+     "status": "source_verified_not_reviewed",
+     "test_receipt_ref": null
+    }
+   ]
+  },
+  "input_unchanged": true,
+  "missing_partition_field": {
+   "message": "'remaining_paths'",
+   "refused": "KeyError"
+  },
+  "missing_repository": {
+   "message": "'repository'",
+   "refused": "KeyError"
+  },
+  "missing_source": {
+   "message": "'source'",
+   "refused": "KeyError"
+  },
+  "multi": {
+   "value": [
+    {
+     "audit_id": "a3",
+     "checkpoint_partitions": 0,
+     "dispatch_status": "active",
+     "files": 1,
+     "independent_review": "not_certified_by_monitor",
+     "manifest_ref": "m3",
+     "open_questions": 0,
+     "remaining_paths": null,
+     "remaining_subsystems": null,
+     "repository": "r1",
+     "revision": "c1",
+     "status": "s3"
+    },
+    {
+     "audit_id": "a2",
+     "checkpoint_partitions": 1,
+     "dispatch_status": "active",
+     "files": 0,
+     "independent_review": "not_certified_by_monitor",
+     "manifest_ref": "m2",
+     "open_questions": 0,
+     "remaining_paths": 0,
+     "remaining_subsystems": 0,
+     "repository": "r2",
+     "revision": "c2",
+     "status": "s2"
+    }
+   ]
+  },
+  "no_partitions": {
+   "value": [
+    {
+     "audit_id": "audit",
+     "checkpoint_partitions": 0,
+     "dispatch_status": "inactive",
+     "files": 2,
+     "id": "legacy",
+     "independent_review": "not_certified_by_monitor",
+     "manifest_ref": "manifest",
+     "open_questions": 0,
+     "remaining_paths": null,
+     "remaining_subsystems": null,
+     "repository": "repo",
+     "review_ref": null,
+     "revision": "rev",
+     "semantically_reviewed_files": null,
+     "status": "source_verified_not_reviewed",
+     "test_receipt_ref": null
+    }
+   ]
+  },
+  "only_reference": {
+   "value": [
+    {
+     "files": null,
+     "id": "x",
+     "independent_review": true,
+     "manifest_ref": null,
+     "repository": "r",
+     "review_ref": "rr",
+     "revision": "v",
+     "semantically_reviewed_files": 3,
+     "status": null,
+     "test_receipt_ref": null
+    }
+   ]
+  },
+  "paused": {
+   "value": [
+    {
+     "audit_id": "audit",
+     "checkpoint_partitions": 1,
+     "dispatch_status": "paused",
+     "files": 2,
+     "id": "legacy",
+     "independent_review": "not_certified_by_monitor",
+     "manifest_ref": "manifest",
+     "open_questions": 1,
+     "remaining_paths": 1,
+     "remaining_subsystems": 1,
+     "repository": "repo",
+     "review_ref": null,
+     "revision": "rev",
+     "semantically_reviewed_files": null,
+     "status": "source_verified_not_reviewed",
+     "test_receipt_ref": null
+    }
+   ]
+  },
+  "same_key_merge": {
+   "value": [
+    {
+     "audit_id": "a3",
+     "checkpoint_partitions": 0,
+     "dispatch_status": "inactive",
+     "files": 1,
+     "id": "legacy",
+     "independent_review": "not_certified_by_monitor",
+     "manifest_ref": "m3",
+     "open_questions": 0,
+     "remaining_paths": null,
+     "remaining_subsystems": null,
+     "repository": "r1",
+     "review_ref": null,
+     "revision": "c1",
+     "semantically_reviewed_files": null,
+     "status": "s3",
+     "test_receipt_ref": null
+    }
+   ]
+  }
+ },
+ "container_scope": {
+  "fullmatch_samples": [
+   true,
+   true,
+   true,
+   false,
+   false,
+   false,
+   true,
+   false,
+   false
+  ],
+  "returns_a_new_list": {
+   "value": true
+  },
+  "values": [
+   {
+    "input": "None",
+    "result": {
+     "value": null
+    }
+   },
+   {
+    "input": "''",
+    "result": {
+     "value": null
+    }
+   },
+   {
+    "input": "'  '",
+    "result": {
+     "value": null
+    }
+   },
+   {
+    "input": "'\\n'",
+    "result": {
+     "value": null
+    }
+   },
+   {
+    "input": "'['",
+    "result": {
+     "message": "Monitor container scope must be a JSON list",
+     "refused": "ValueError"
+    }
+   },
+   {
+    "input": "'{}'",
+    "result": {
+     "message": "Monitor container scope must list 1..32 names",
+     "refused": "ValueError"
+    }
+   },
+   {
+    "input": "'[]'",
+    "result": {
+     "message": "Monitor container scope must list 1..32 names",
+     "refused": "ValueError"
+    }
+   },
+   {
+    "input": "'null'",
+    "result": {
+     "message": "Monitor container scope must list 1..32 names",
+     "refused": "ValueError"
+    }
+   },
+   {
+    "input": "'5'",
+    "result": {
+     "message": "Monitor container scope must list 1..32 names",
+     "refused": "ValueError"
+    }
+   },
+   {
+    "input": "'\"abc\"'",
+    "result": {
+     "message": "Monitor container scope must list 1..32 names",
+     "refused": "ValueError"
+    }
+   },
+   {
+    "input": "'true'",
+    "result": {
+     "message": "Monitor container scope must list 1..32 names",
+     "refused": "ValueError"
+    }
+   },
+   {
+    "input": "'[\"a\", \"a\"]'",
+    "result": {
+     "message": "Monitor container scope names must be unique",
+     "refused": "ValueError"
+    }
+   },
+   {
+    "input": "'[\"-x\"]'",
+    "result": {
+     "message": "Monitor container scope names must be exact Docker container names",
+     "refused": "ValueError"
+    }
+   },
+   {
+    "input": "'[\"_x\"]'",
+    "result": {
+     "message": "Monitor container scope names must be exact Docker container names",
+     "refused": "ValueError"
+    }
+   },
+   {
+    "input": "'[\"x-\"]'",
+    "result": {
+     "value": [
+      "x-"
+     ]
+    }
+   },
+   {
+    "input": "'[1]'",
+    "result": {
+     "message": "Monitor container scope names must be exact Docker container names",
+     "refused": "ValueError"
+    }
+   },
+   {
+    "input": "'[\"a b\"]'",
+    "result": {
+     "message": "Monitor container scope names must be exact Docker container names",
+     "refused": "ValueError"
+    }
+   },
+   {
+    "input": "'[\"a/b\"]'",
+    "result": {
+     "message": "Monitor container scope names must be exact Docker container names",
+     "refused": "ValueError"
+    }
+   },
+   {
+    "input": "'[\"a\"] '",
+    "result": {
+     "value": [
+      "a"
+     ]
+    }
+   },
+   {
+    "input": "'[\"a\"]\\n'",
+    "result": {
+     "value": [
+      "a"
+     ]
+    }
+   },
+   {
+    "input": "'[\"zeus-local-ops-redis\", \"zeus_pg.1\"]'",
+    "result": {
+     "value": [
+      "zeus-local-ops-redis",
+      "zeus_pg.1"
+     ]
+    }
+   },
+   {
+    "input": "'[\"c0\", \"c1\", \"c2\", \"c3\", \"c4\", \"c5\", \"c6\", \"c7\", \"c8\", \"c9\"",
+    "result": {
+     "value": [
+      "c0",
+      "c1",
+      "c2",
+      "c3",
+      "c4",
+      "c5",
+      "c6",
+      "c7",
+      "c8",
+      "c9",
+      "c10",
+      "c11",
+      "c12",
+      "c13",
+      "c14",
+      "c15",
+      "c16",
+      "c17",
+      "c18",
+      "c19",
+      "c20",
+      "c21",
+      "c22",
+      "c23",
+      "c24",
+      "c25",
+      "c26",
+      "c27",
+      "c28",
+      "c29",
+      "c30",
+      "c31"
+     ]
+    }
+   },
+   {
+    "input": "'[\"c0\", \"c1\", \"c2\", \"c3\", \"c4\", \"c5\", \"c6\", \"c7\", \"c8\", \"c9\"",
+    "result": {
+     "message": "Monitor container scope must list 1..32 names",
+     "refused": "ValueError"
+    }
+   },
+   {
+    "input": "'[\"aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+    "result": {
+     "value": [
+      "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa"
+     ]
+    }
+   },
+   {
+    "input": "'[\"aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+    "result": {
+     "message": "Monitor container scope names must be exact Docker container names",
+     "refused": "ValueError"
+    }
+   },
+   {
+    "input": "'[null]'",
+    "result": {
+     "message": "Monitor container scope names must be exact Docker container names",
+     "refused": "ValueError"
+    }
+   },
+   {
+    "input": "'[[\"a\"]]'",
+    "result": {
+     "message": "Monitor container scope names must be exact Docker container names",
+     "refused": "ValueError"
+    }
+   },
+   {
+    "input": "'[\"a\", 1]'",
+    "result": {
+     "message": "Monitor container scope names must be exact Docker container names",
+     "refused": "ValueError"
+    }
+   },
+   {
+    "input": "'[\"A\", \"a\"]'",
+    "result": {
+     "value": [
+      "A",
+      "a"
+     ]
+    }
+   },
+   {
+    "input": "'[\"한글\"]'",
+    "result": {
+     "message": "Monitor container scope names must be exact Docker container names",
+     "refused": "ValueError"
+    }
+   },
+   {
+    "input": "5",
+    "result": {
+     "message": "the JSON object must be str, bytes or bytearray, not int",
+     "refused": "TypeError"
+    }
+   },
+   {
+    "input": "[]",
+    "result": {
+     "message": "the JSON object must be str, bytes or bytearray, not list",
+     "refused": "TypeError"
+    }
+   },
+   {
+    "input": "b'[\"bytes\"]'",
+    "result": {
+     "value": [
+      "bytes"
+     ]
+    }
+   },
+   {
+    "input": "['a']",
+    "result": {
+     "message": "the JSON object must be str, bytes or bytearray, not list",
+     "refused": "TypeError"
+    }
+   }
+  ]
+ },
+ "database_facts": {
+  "agents_sessions": {
+   "idle": {
+    "capacity": null,
+    "checkpoint_evidence": null,
+    "fraction": null,
+    "generation": null,
+    "handoff_reason": null,
+    "id": null,
+    "next_action": "",
+    "progress_at": null,
+    "prompt_bytes": null,
+    "thread_id": null,
+    "usage_at": null,
+    "usage_source": "checkpoint",
+    "used_tokens": null
+   },
+   "implementer": {
+    "capacity": 1000,
+    "checkpoint_evidence": "sha256:cccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccc",
+    "fraction": 0.1,
+    "generation": 3,
+    "handoff_reason": "context",
+    "id": "sess-1",
+    "next_action": "continue with token=[redacted]",
+    "progress_at": "2026-09-28T00:30:00+00:00",
+    "prompt_bytes": 4321,
+    "thread_id": "th",
+    "usage_at": "2026-09-28T00:30:00+00:00",
+    "usage_source": "recent_observation",
+    "used_tokens": 100
+   },
+   "reviewer": {
+    "capacity": null,
+    "checkpoint_evidence": null,
+    "fraction": null,
+    "generation": null,
+    "handoff_reason": null,
+    "id": "sess-2",
+    "next_action": "",
+    "progress_at": "2026-09-28T00:40:00+00:00",
+    "prompt_bytes": null,
+    "thread_id": null,
+    "usage_at": null,
+    "usage_source": "checkpoint",
+    "used_tokens": 5
+   }
+  },
+  "constructor_attrs": [
+   "SimpleNamespace",
+   "FakeArtifacts"
+  ],
+  "decisions": [
+   {
+    "accepted": false,
+    "agent": "review_lead",
+    "attempt": 0,
+    "completed_at": null,
+    "correlation": null,
+    "created_at": null,
+    "error": "",
+    "evidence": null,
+    "id": "d1",
+    "lease_until": null,
+    "objective": "",
+    "parent": null,
+    "phase": "review",
+    "progress_at": null,
+    "reason": "Cannot inspect candidate",
+    "release_id": null,
+    "revision": null,
+    "status": "blocked"
+   }
+  ],
+  "empty_store_no_agents": {
+   "active": {
+    "at": null,
+    "release_id": null,
+    "revision": null
+   },
+   "agents": [],
+   "audits": [],
+   "decisions": [],
+   "events": [],
+   "health": {
+    "checked_at": null,
+    "status": null
+   },
+   "hooks": [],
+   "notifications": {
+    "last_batch": {},
+    "status_counts": {}
+   },
+   "releases": [],
+   "tasks": []
+  },
+  "empty_store_with_agents": {
+   "active": {
+    "at": null,
+    "release_id": null,
+    "revision": null
+   },
+   "agents": [
+    {
+     "capabilities": [
+      "code",
+      "test"
+     ],
+     "id": "implementer",
+     "role": "worker",
+     "session": {
+      "capacity": null,
+      "checkpoint_evidence": null,
+      "fraction": null,
+      "generation": null,
+      "handoff_reason": null,
+      "id": null,
+      "next_action": "",
+      "progress_at": null,
+      "prompt_bytes": null,
+      "thread_id": null,
+      "usage_at": null,
+      "usage_source": "checkpoint",
+      "used_tokens": null
+     }
+    },
+    {
+     "capabilities": [],
+     "id": "reviewer",
+     "role": "review",
+     "session": {
+      "capacity": null,
+      "checkpoint_evidence": null,
+      "fraction": null,
+      "generation": null,
+      "handoff_reason": null,
+      "id": null,
+      "next_action": "",
+      "progress_at": null,
+      "prompt_bytes": null,
+      "thread_id": null,
+      "usage_at": null,
+      "usage_source": "checkpoint",
+      "used_tokens": null
+     }
+    },
+    {
+     "capabilities": [],
+     "id": "idle",
+     "role": "none",
+     "session": {
+      "capacity": null,
+      "checkpoint_evidence": null,
+      "fraction": null,
+      "generation": null,
+      "handoff_reason": null,
+      "id": null,
+      "next_action": "",
+      "progress_at": null,
+      "prompt_bytes": null,
+      "thread_id": null,
+      "usage_at": null,
+      "usage_source": "checkpoint",
+      "used_tokens": null
+     }
+    }
+   ],
+   "audits": [],
+   "decisions": [],
+   "events": [],
+   "health": {
+    "checked_at": null,
+    "status": null
+   },
+   "hooks": [],
+   "notifications": {
+    "last_batch": {},
+    "status_counts": {}
+   },
+   "releases": [],
+   "tasks": []
+  },
+  "full": {
+   "artifact_calls": [
+    "sha256:1111111111111111111111111111111111111111111111111111111111111111",
+    "sha256:5555555555555555555555555555555555555555555555555555555555555555",
+    "sha256:7777777777777777777777777777777777777777777777777777777777777777"
+   ],
+   "canary_leaked": false,
+   "digest": "b2c786b0cb2ec194c2c65f8e7bf82a6f3e60f2c72d09d4102d6886e0cf2e894a",
+   "events_len": 60,
+   "facts": {
+    "active": {
+     "at": "2026-09-28T00:25:00+00:00",
+     "release_id": "rel-1",
+     "revision": "abc123"
+    },
+    "agents": [
+     {
+      "capabilities": [
+       "code",
+       "test"
+      ],
+      "id": "implementer",
+      "role": "worker",
+      "session": {
+       "capacity": 1000,
+       "checkpoint_evidence": "sha256:cccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccc",
+       "fraction": 0.1,
+       "generation": 3,
+       "handoff_reason": "context",
+       "id": "sess-1",
+       "next_action": "continue with token=[redacted]",
+       "progress_at": "2026-09-28T00:30:00+00:00",
+       "prompt_bytes": 4321,
+       "thread_id": "th",
+       "usage_at": "2026-09-28T00:30:00+00:00",
+       "usage_source": "recent_observation",
+       "used_tokens": 100
+      }
+     },
+     {
+      "capabilities": [],
+      "id": "reviewer",
+      "role": "review",
+      "session": {
+       "capacity": null,
+       "checkpoint_evidence": null,
+       "fraction": null,
+       "generation": null,
+       "handoff_reason": null,
+       "id": "sess-2",
+       "next_action": "",
+       "progress_at": "2026-09-28T00:40:00+00:00",
+       "prompt_bytes": null,
+       "thread_id": null,
+       "usage_at": null,
+       "usage_source": "checkpoint",
+       "used_tokens": 5
+      }
+     },
+     {
+      "capabilities": [],
+      "id": "idle",
+      "role": "none",
+      "session": {
+       "capacity": null,
+       "checkpoint_evidence": null,
+       "fraction": null,
+       "generation": null,
+       "handoff_reason": null,
+       "id": null,
+       "next_action": "",
+       "progress_at": null,
+       "prompt_bytes": null,
+       "thread_id": null,
+       "usage_at": null,
+       "usage_source": "checkpoint",
+       "used_tokens": null
+      }
+     }
+    ],
+    "audits": [
+     {
+      "files": 2,
+      "id": "ra",
+      "independent_review": null,
+      "manifest_ref": null,
+      "repository": "repo",
+      "review_ref": null,
+      "revision": "rev",
+      "semantically_reviewed_files": null,
+      "status": "inventoried_not_reviewed",
+      "test_receipt_ref": null
+     },
+     {
+      "audit_id": "ar",
+      "checkpoint_partitions": 1,
+      "dispatch_status": "paused",
+      "files": 1,
+      "independent_review": "not_certified_by_monitor",
+      "manifest_ref": "m",
+      "open_questions": 1,
+      "remaining_paths": 1,
+      "remaining_subsystems": 1,
+      "repository": "repo2",
+      "revision": "c2",
+      "status": "source_verified_not_reviewed"
+     }
+    ],
+    "decisions": [
+     {
+      "accepted": false,
+      "agent": "review_lead",
+      "attempt": 0,
+      "completed_at": null,
+      "correlation": null,
+      "created_at": null,
+      "error": "",
+      "evidence": null,
+      "id": "d1",
+      "lease_until": null,
+      "objective": "",
+      "parent": null,
+      "phase": "review",
+      "progress_at": null,
+      "reason": "Cannot inspect candidate",
+      "release_id": null,
+      "revision": null,
+      "status": "blocked"
+     }
+    ],
+    "events": {
+     "digest": "504ba8846cd3c7d9ef5c6d690925849cb102ed9d0be02fcc842f76259d64f99b",
+     "first": [
+      {
+       "at": "2026-09-28T00:34:30+00:00",
+       "hook_id": null,
+       "release_id": null,
+       "task_id": "t69",
+       "type": "tick"
+      },
+      {
+       "at": "2026-09-28T00:34:00+00:00",
+       "hook_id": null,
+       "release_id": null,
+       "task_id": "t68",
+       "type": "tick"
+      },
+      {
+       "at": "2026-09-28T00:33:30+00:00",
+       "hook_id": null,
+       "release_id": null,
+       "task_id": "t67",
+       "type": "tick"
+      }
+     ],
+     "last": [
+      {
+       "at": "2026-09-28T00:06:00+00:00",
+       "hook_id": null,
+       "release_id": null,
+       "task_id": "t12",
+       "type": "tick"
+      },
+      {
+       "at": "2026-09-28T00:05:30+00:00",
+       "hook_id": null,
+       "release_id": null,
+       "task_id": "t11",
+       "type": "tick"
+      },
+      {
+       "at": "2026-09-28T00:05:00+00:00",
+       "hook_id": null,
+       "release_id": null,
+       "task_id": "t10",
+       "type": "tick"
+      }
+     ],
+     "len": 60
+    },
+    "health": {
+     "checked_at": "2026-09-28T00:59:00+00:00",
+     "status": "healthy"
+    },
+    "hooks": [
+     {
+      "fixture": true,
+      "id": "h1",
+      "occurrences": 3,
+      "revision": "r",
+      "root_cause": "fixture-cause",
+      "scope": "repo",
+      "status": "open",
+      "version": 2
+     },
+     {
+      "fixture": false,
+      "id": "h2",
+      "occurrences": 0,
+      "revision": null,
+      "root_cause": "real",
+      "scope": null,
+      "status": "closed",
+      "version": null
+     }
+    ],
+    "notifications": {
+     "last_batch": {
+      "count": 3,
+      "last": "batch"
+     },
+     "status_counts": {
+      "delivered": 1,
+      "failed": 1,
+      "pending": 2
+     }
+    },
+    "releases": [
+     {
+      "branch": "b",
+      "checks": {
+       "cli": {
+        "evidence": "ev",
+        "passed": true
+       }
+      },
+      "created_at": "2026-09-28T00:20:00+00:00",
+      "id": "rel-1",
+      "reviews": [
+       {
+        "accepted": true,
+        "actor": "lead",
+        "evidence": "e"
+       }
+      ],
+      "revision": "abc123",
+      "status": "accepted"
+     },
+     {
+      "branch": null,
+      "checks": {},
+      "created_at": null,
+      "id": "rel-2",
+      "reviews": [],
+      "revision": null,
+      "status": "rejected"
+     }
+    ],
+    "tasks": [
+     {
+      "accepted": true,
+      "agent": "implementer",
+      "attempt": 2,
+      "completed_at": null,
+      "correlation": "corr-1",
+      "created_at": "2026-09-28T00:00:00+00:00",
+      "error": "password=[redacted] boom",
+      "evidence": "sha256:dddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddd",
+      "id": "t1",
+      "lease_until": "2026-09-28T01:00:00+00:00",
+      "objective": "Improve the monitor token=[redacted] xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx",
+      "parent": "parent-1",
+      "phase": "implement",
+      "progress_at": "2026-09-28T00:30:00+00:00",
+      "reason": "token=[redacted]",
+      "release_id": "rel-1",
+      "revision": "abc123",
+      "status": "running"
+     },
+     {
+      "accepted": null,
+      "agent": "reviewer",
+      "attempt": 0,
+      "completed_at": null,
+      "correlation": null,
+      "created_at": null,
+      "error": "",
+      "evidence": null,
+      "id": "t2",
+      "lease_until": null,
+      "objective": "",
+      "parent": null,
+      "phase": null,
+      "progress_at": null,
+      "reason": "",
+      "release_id": null,
+      "revision": null,
+      "status": "queued"
+     },
+     {
+      "accepted": null,
+      "agent": null,
+      "attempt": 0,
+      "completed_at": null,
+      "correlation": null,
+      "created_at": "2026-09-28T00:10:00+00:00",
+      "error": "",
+      "evidence": null,
+      "id": "t3",
+      "lease_until": null,
+      "objective": "details only",
+      "parent": null,
+      "phase": "explicit-phase",
+      "progress_at": null,
+      "reason": "",
+      "release_id": null,
+      "revision": null,
+      "status": "failed"
+     }
+    ]
+   },
+   "store_unchanged": true
+  },
+  "full_events": {
+   "first": {
+    "at": "2026-09-28T00:34:30+00:00",
+    "hook_id": null,
+    "release_id": null,
+    "task_id": "t69",
+    "type": "tick"
+   },
+   "last": {
+    "at": "2026-09-28T00:05:00+00:00",
+    "hook_id": null,
+    "release_id": null,
+    "task_id": "t10",
+    "type": "tick"
+   },
+   "sorted_descending": true
+  },
+  "refusals": {
+   "artifact_runtime_error": {
+    "message": "boom",
+    "refused": "RuntimeError"
+   },
+   "audit_without_repository": {
+    "message": "'repository'",
+    "refused": "KeyError"
+   },
+   "context_body_a_list": {
+    "message": "'list' object has no attribute 'get'",
+    "refused": "AttributeError"
+   },
+   "event_without_at": {
+    "value": {
+     "active": {
+      "at": null,
+      "release_id": null,
+      "revision": null
+     },
+     "agents": [
+      {
+       "capabilities": [],
+       "id": "implementer",
+       "role": "w",
+       "session": {
+        "capacity": null,
+        "checkpoint_evidence": null,
+        "fraction": null,
+        "generation": null,
+        "handoff_reason": null,
+        "id": null,
+        "next_action": "",
+        "progress_at": null,
+        "prompt_bytes": null,
+        "thread_id": null,
+        "usage_at": null,
+        "usage_source": "checkpoint",
+        "used_tokens": null
+       }
+      }
+     ],
+     "audits": [],
+     "decisions": [],
+     "events": [
+      {
+       "at": null,
+       "hook_id": null,
+       "release_id": null,
+       "task_id": null,
+       "type": "t"
+      }
+     ],
+     "health": {
+      "checked_at": null,
+      "status": null
+     },
+     "hooks": [],
+     "notifications": {
+      "last_batch": {},
+      "status_counts": {}
+     },
+     "releases": [],
+     "tasks": []
+    }
+   },
+   "outbox_without_status": {
+    "message": "'status'",
+    "refused": "KeyError"
+   },
+   "progress_without_id": {
+    "message": "'id'",
+    "refused": "KeyError"
+   },
+   "recent_body_a_list": {
+    "message": "'list' object has no attribute 'get'",
+    "refused": "AttributeError"
+   },
+   "release_without_status": {
+    "message": "'status'",
+    "refused": "KeyError"
+   },
+   "session_without_agent": {
+    "message": "'agent_id'",
+    "refused": "KeyError"
+   },
+   "task_without_id": {
+    "message": "'id'",
+    "refused": "KeyError"
+   },
+   "task_without_status": {
+    "message": "'status'",
+    "refused": "KeyError"
+   }
+  },
+  "store_failure": {
+   "message": "injected store outage",
+   "refused": "RuntimeError"
+  },
+  "tasks": [
+   {
+    "accepted": true,
+    "agent": "implementer",
+    "attempt": 2,
+    "completed_at": null,
+    "correlation": "corr-1",
+    "created_at": "2026-09-28T00:00:00+00:00",
+    "error": "password=[redacted] boom",
+    "evidence": "sha256:dddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddd",
+    "id": "t1",
+    "lease_until": "2026-09-28T01:00:00+00:00",
+    "objective": "Improve the monitor token=[redacted] xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx",
+    "parent": "parent-1",
+    "phase": "implement",
+    "progress_at": "2026-09-28T00:30:00+00:00",
+    "reason": "token=[redacted]",
+    "release_id": "rel-1",
+    "revision": "abc123",
+    "status": "running"
+   },
+   {
+    "accepted": null,
+    "agent": "reviewer",
+    "attempt": 0,
+    "completed_at": null,
+    "correlation": null,
+    "created_at": null,
+    "error": "",
+    "evidence": null,
+    "id": "t2",
+    "lease_until": null,
+    "objective": "",
+    "parent": null,
+    "phase": null,
+    "progress_at": null,
+    "reason": "",
+    "release_id": null,
+    "revision": null,
+    "status": "queued"
+   },
+   {
+    "accepted": null,
+    "agent": null,
+    "attempt": 0,
+    "completed_at": null,
+    "correlation": null,
+    "created_at": "2026-09-28T00:10:00+00:00",
+    "error": "",
+    "evidence": null,
+    "id": "t3",
+    "lease_until": null,
+    "objective": "details only",
+    "parent": null,
+    "phase": "explicit-phase",
+    "progress_at": null,
+    "reason": "",
+    "release_id": null,
+    "revision": null,
+    "status": "failed"
+   }
+  ],
+  "unwrapped_equals_wrapped": true,
+  "usage_sources": {
+   "all_missing": {
+    "capacity": 10,
+    "checkpoint_evidence": null,
+    "fraction": 0.5,
+    "generation": null,
+    "handoff_reason": null,
+    "id": "x",
+    "next_action": "",
+    "progress_at": "2026-09-28T00:00:00+00:00",
+    "prompt_bytes": null,
+    "thread_id": null,
+    "usage_at": null,
+    "usage_source": "checkpoint",
+    "used_tokens": 5
+   },
+   "checkpoint_when_no_recent_usage": {
+    "capacity": 10,
+    "checkpoint_evidence": null,
+    "fraction": 0.5,
+    "generation": null,
+    "handoff_reason": null,
+    "id": "x",
+    "next_action": "",
+    "progress_at": "2026-09-28T00:00:00+00:00",
+    "prompt_bytes": null,
+    "thread_id": null,
+    "usage_at": null,
+    "usage_source": "checkpoint",
+    "used_tokens": 5
+   },
+   "key_error_skipped": {
+    "capacity": 1,
+    "checkpoint_evidence": null,
+    "fraction": 1.0,
+    "generation": null,
+    "handoff_reason": null,
+    "id": "x",
+    "next_action": "",
+    "progress_at": "2026-09-28T00:00:00+00:00",
+    "prompt_bytes": null,
+    "thread_id": null,
+    "usage_at": "2026-09-28T00:00:00+00:00",
+    "usage_source": "recent_observation",
+    "used_tokens": 1
+   },
+   "newest_wins": {
+    "capacity": 20,
+    "checkpoint_evidence": null,
+    "fraction": 0.5,
+    "generation": null,
+    "handoff_reason": null,
+    "id": "x",
+    "next_action": "",
+    "progress_at": "2026-09-28T00:00:00+00:00",
+    "prompt_bytes": null,
+    "thread_id": null,
+    "usage_at": "2026-09-28T00:00:00+00:00",
+    "usage_source": "recent_observation",
+    "used_tokens": 10
+   },
+   "null_total": {
+    "capacity": 100,
+    "checkpoint_evidence": null,
+    "fraction": null,
+    "generation": null,
+    "handoff_reason": null,
+    "id": "x",
+    "next_action": "",
+    "progress_at": "2026-09-28T00:00:00+00:00",
+    "prompt_bytes": null,
+    "thread_id": null,
+    "usage_at": "2026-09-28T00:00:00+00:00",
+    "usage_source": "recent_observation",
+    "used_tokens": null
+   },
+   "zero_capacity": {
+    "capacity": 0,
+    "checkpoint_evidence": null,
+    "fraction": null,
+    "generation": null,
+    "handoff_reason": null,
+    "id": "x",
+    "next_action": "",
+    "progress_at": "2026-09-28T00:00:00+00:00",
+    "prompt_bytes": null,
+    "thread_id": null,
+    "usage_at": "2026-09-28T00:00:00+00:00",
+    "usage_source": "recent_observation",
+    "used_tokens": 5
+   }
+  },
+  "wrapper_blocks_writes": {
+   "message": "Monitor store is read-only",
+   "refused": "ContractError"
+  }
+ },
+ "execution_activity": {
+  "compact_body_too_large": {
+   "value": [
+    "unavailable",
+    [
+     {
+      "activity_sequence": null,
+      "attempt": null,
+      "collected_at": null,
+      "error_type": "too_large",
+      "event_label": null,
+      "generation": null,
+      "item_type": null,
+      "malformed": null,
+      "occurred_at": null,
+      "raw_ref": null,
+      "receipt_ref": "sha256:b2c7878a9a2cb8b7a02ac943cd7efd61d7fd7295feccac9b15a10fed7dd3e80f",
+      "sequence": null,
+      "source": "activity_receipt",
+      "state": "unreadable",
+      "status": null,
+      "tool_name": null
+     }
+    ]
+   ]
+  },
+  "compact_failing_reader": {
+   "value": [
+    "ok",
+    [
+     {
+      "activity_sequence": 1,
+      "attempt": 1,
+      "collected_at": "2026-09-28T01:00:00+00:00",
+      "error_type": null,
+      "event_label": "tool_started",
+      "generation": 2,
+      "item_type": null,
+      "malformed": false,
+      "occurred_at": null,
+      "raw_ref": null,
+      "receipt_ref": "sha256:8ac812897c160c140889897dc072018dff5d3dab8f08d3c65b742d77386c3f12",
+      "sequence": null,
+      "source": "activity_receipt",
+      "state": "ok",
+      "status": "started",
+      "tool_name": "Read"
+     }
+    ]
+   ]
+  },
+  "compact_first_item": [
+   "ok",
+   [
+    {
+     "activity_sequence": 1,
+     "attempt": 1,
+     "collected_at": "2026-09-28T01:00:00+00:00",
+     "error_type": null,
+     "event_label": "tool_started",
+     "generation": 2,
+     "item_type": null,
+     "malformed": false,
+     "occurred_at": null,
+     "raw_ref": null,
+     "receipt_ref": "sha256:8ac812897c160c140889897dc072018dff5d3dab8f08d3c65b742d77386c3f12",
+     "sequence": null,
+     "source": "activity_receipt",
+     "state": "ok",
+     "status": "started",
+     "tool_name": "Read"
+    }
+   ]
+  ],
+  "compact_members": {
+   "calls": false,
+   "canary": false,
+   "items": [
+    {
+     "activity_sequence": null,
+     "attempt": null,
+     "collected_at": null,
+     "error_type": "invalid_json",
+     "event_label": "malformed",
+     "generation": null,
+     "item_type": null,
+     "malformed": true,
+     "occurred_at": null,
+     "raw_ref": null,
+     "receipt_ref": "sha256:7e973609ceb35779216037d501273b4dc5936b7bfaaa533bab5350483f4c32ed",
+     "sequence": null,
+     "source": "activity_receipt",
+     "state": "unreadable",
+     "status": null,
+     "tool_name": null
+    },
+    {
+     "activity_sequence": null,
+     "attempt": null,
+     "collected_at": null,
+     "error_type": "invalid_shape",
+     "event_label": "malformed",
+     "generation": null,
+     "item_type": null,
+     "malformed": true,
+     "occurred_at": null,
+     "raw_ref": null,
+     "receipt_ref": "sha256:ff412fe3d28cd97257d0d93102959098aebfdd6537fac2049775ee265f5cb918",
+     "sequence": null,
+     "source": "activity_receipt",
+     "state": "malformed",
+     "status": null,
+     "tool_name": null
+    },
+    {
+     "activity_sequence": 2,
+     "attempt": 1,
+     "collected_at": "2026-09-28T01:00:00+00:00",
+     "error_type": null,
+     "event_label": "tool_completed",
+     "generation": 2,
+     "item_type": null,
+     "malformed": false,
+     "occurred_at": null,
+     "raw_ref": "sha256:48a2502d5a6f38c4ab390c674c16beab35d94c3767e2b6669af5d19e8dcc522d",
+     "receipt_ref": "sha256:8161b76ddb66ce9ed1ecddfc7fd3733af68a1b20ca157402fac06819f02172ac",
+     "sequence": 3,
+     "source": "activity_receipt",
+     "state": "ok",
+     "status": "completed",
+     "tool_name": null
+    },
+    {
+     "activity_sequence": 4,
+     "attempt": null,
+     "collected_at": "2026-09-28T01:00:00+00:00",
+     "error_type": null,
+     "event_label": "item_completed",
+     "generation": null,
+     "item_type": "mcpToolCall",
+     "malformed": false,
+     "occurred_at": "2026-09-27T23:00:00+00:00",
+     "raw_ref": "sha256:48a2502d5a6f38c4ab390c674c16beab35d94c3767e2b6669af5d19e8dcc522d",
+     "receipt_ref": "sha256:3869f69f135e299cb98722582c6a8dfec06499b0685753253b0f6cd63ad6973f",
+     "sequence": 1,
+     "source": "activity_receipt",
+     "state": "ok",
+     "status": "unknown",
+     "tool_name": null
+    },
+    {
+     "activity_sequence": 1,
+     "attempt": 1,
+     "collected_at": "2026-09-28T01:00:00+00:00",
+     "error_type": null,
+     "event_label": "tool_started",
+     "generation": 2,
+     "item_type": null,
+     "malformed": false,
+     "occurred_at": null,
+     "raw_ref": null,
+     "receipt_ref": "sha256:8ac812897c160c140889897dc072018dff5d3dab8f08d3c65b742d77386c3f12",
+     "sequence": null,
+     "source": "activity_receipt",
+     "state": "ok",
+     "status": "started",
+     "tool_name": "Read"
+    },
+    {
+     "activity_sequence": null,
+     "attempt": null,
+     "collected_at": null,
+     "error_type": "invalid_ref",
+     "event_label": null,
+     "generation": null,
+     "item_type": null,
+     "malformed": null,
+     "occurred_at": null,
+     "raw_ref": null,
+     "receipt_ref": null,
+     "sequence": null,
+     "source": "activity_receipt",
+     "state": "unreadable",
+     "status": null,
+     "tool_name": null
+    }
+   ],
+   "raw_followed": false,
+   "status": "ok"
+  },
+  "compact_no_fallback": {
+   "calls": [
+    "sha256:cccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccc"
+   ],
+   "items": [
+    {
+     "activity_sequence": null,
+     "attempt": null,
+     "collected_at": null,
+     "error_type": "missing_artifact",
+     "event_label": null,
+     "generation": null,
+     "item_type": null,
+     "malformed": null,
+     "occurred_at": null,
+     "raw_ref": null,
+     "receipt_ref": "sha256:cccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccc",
+     "sequence": null,
+     "source": "activity_receipt",
+     "state": "unavailable",
+     "status": null,
+     "tool_name": null
+    }
+   ],
+   "status": "unavailable"
+  },
+  "compact_raw_ref_is_data": {
+   "calls": true,
+   "raw_ref": true
+  },
+  "compact_receipt_bad_binding_none_row_id": {
+   "value": [
+    "unavailable",
+    [
+     {
+      "activity_sequence": null,
+      "attempt": null,
+      "collected_at": null,
+      "error_type": "binding_mismatch",
+      "event_label": null,
+      "generation": null,
+      "item_type": null,
+      "malformed": null,
+      "occurred_at": null,
+      "raw_ref": null,
+      "receipt_ref": "sha256:8ac812897c160c140889897dc072018dff5d3dab8f08d3c65b742d77386c3f12",
+      "sequence": null,
+      "source": "activity_receipt",
+      "state": "unreadable",
+      "status": null,
+      "tool_name": null
+     }
+    ]
+   ]
+  },
+  "compact_selection": {
+   "ring_empty": {
+    "value": [
+     "ok",
+     [
+      "progress_receipt"
+     ]
+    ]
+   },
+   "ring_missing": {
+    "value": [
+     "ok",
+     [
+      "progress_receipt"
+     ]
+    ]
+   },
+   "ring_string": {
+    "value": [
+     "ok",
+     [
+      "progress_receipt"
+     ]
+    ]
+   },
+   "sequence_bool": {
+    "value": [
+     "ok",
+     [
+      "progress_receipt"
+     ]
+    ]
+   },
+   "sequence_key_absent_watermark_zero": {
+    "value": [
+     "activity_receipt"
+    ]
+   },
+   "sequence_missing_zero_watermark": {
+    "value": [
+     "ok",
+     [
+      "progress_receipt"
+     ]
+    ]
+   },
+   "synchronized": {
+    "value": [
+     "ok",
+     [
+      "activity_receipt"
+     ]
+    ]
+   },
+   "watermark_behind": {
+    "value": [
+     "ok",
+     [
+      "progress_receipt"
+     ]
+    ]
+   },
+   "watermark_bool": {
+    "value": [
+     "ok",
+     [
+      "progress_receipt"
+     ]
+    ]
+   },
+   "watermark_negative": {
+    "value": [
+     "ok",
+     [
+      "progress_receipt"
+     ]
+    ]
+   },
+   "watermark_none": {
+    "value": [
+     "ok",
+     [
+      "progress_receipt"
+     ]
+    ]
+   },
+   "watermark_zero_sequence_absent": {
+    "value": [
+     "ok",
+     [
+      "activity_receipt"
+     ]
+    ]
+   }
+  },
+  "last_record_annotation": {
+   "collected_bad": [
+    [
+     null,
+     null
+    ],
+    [
+     7,
+     null
+    ]
+   ],
+   "collected_naive": [
+    [
+     null,
+     null
+    ],
+    [
+     7,
+     null
+    ]
+   ],
+   "collected_none": [
+    [
+     null,
+     null
+    ],
+    [
+     7,
+     null
+    ]
+   ],
+   "collected_offset": [
+    [
+     null,
+     null
+    ],
+    [
+     7,
+     "2026-09-28T00:59:30+00:00"
+    ]
+   ],
+   "last_none_ring": [
+    [
+     null,
+     null
+    ],
+    [
+     7,
+     "2026-09-28T00:59:30+00:00"
+    ]
+   ],
+   "last_other": [
+    [
+     null,
+     null
+    ],
+    [
+     null,
+     null
+    ]
+   ],
+   "seq_bool": [
+    [
+     null,
+     null
+    ],
+    [
+     null,
+     "2026-09-28T00:59:30+00:00"
+    ]
+   ],
+   "seq_negative": [
+    [
+     null,
+     null
+    ],
+    [
+     null,
+     "2026-09-28T00:59:30+00:00"
+    ]
+   ],
+   "seq_none": [
+    [
+     null,
+     null
+    ],
+    [
+     null,
+     "2026-09-28T00:59:30+00:00"
+    ]
+   ],
+   "seq_str": [
+    [
+     null,
+     null
+    ],
+    [
+     null,
+     "2026-09-28T00:59:30+00:00"
+    ]
+   ],
+   "seq_zero": [
+    [
+     null,
+     null
+    ],
+    [
+     null,
+     "2026-09-28T00:59:30+00:00"
+    ]
+   ]
+  },
+  "last_six": {
+   "calls": true,
+   "len": 6,
+   "sequences": [
+    null,
+    null,
+    null,
+    null,
+    null,
+    7
+   ],
+   "status": "ok"
+  },
+  "lineage": {
+   "'2'/1": {
+    "value": [
+     "lineage_unconfirmed",
+     []
+    ]
+   },
+   "1/1": {
+    "value": [
+     "lineage_unconfirmed",
+     []
+    ]
+   },
+   "2.0/1": {
+    "value": [
+     "lineage_unconfirmed",
+     []
+    ]
+   },
+   "2/1": {
+    "value": [
+     "ok",
+     [
+      {
+       "activity_sequence": null,
+       "attempt": null,
+       "collected_at": "2026-09-28T00:59:30+00:00",
+       "error_type": null,
+       "event_label": "result",
+       "generation": null,
+       "item_type": null,
+       "malformed": false,
+       "occurred_at": null,
+       "raw_ref": null,
+       "receipt_ref": "sha256:a1021ff8b55d08e536752971c8e9704cccdabace95606f6d1cd2098979223390",
+       "sequence": 7,
+       "source": "progress_receipt",
+       "state": "ok",
+       "status": "success",
+       "tool_name": null
+      }
+     ]
+    ]
+   },
+   "2/2": {
+    "value": [
+     "lineage_unconfirmed",
+     []
+    ]
+   },
+   "2/None": {
+    "value": [
+     "lineage_unconfirmed",
+     []
+    ]
+   },
+   "2/True": {
+    "value": [
+     "lineage_unconfirmed",
+     []
+    ]
+   },
+   "None/1": {
+    "value": [
+     "lineage_unconfirmed",
+     []
+    ]
+   },
+   "True/1": {
+    "value": [
+     "lineage_unconfirmed",
+     []
+    ]
+   }
+  },
+  "malformed_only": {
+   "absent": {
+    "value": [
+     "empty",
+     []
+    ]
+   },
+   "bool": {
+    "value": [
+     "empty",
+     []
+    ]
+   },
+   "int": {
+    "value": [
+     "malformed_not_in_recent",
+     []
+    ]
+   },
+   "recent_none": {
+    "value": [
+     "empty",
+     []
+    ]
+   },
+   "recent_string": {
+    "value": [
+     "malformed_not_in_recent",
+     []
+    ]
+   },
+   "string": {
+    "value": [
+     "empty",
+     []
+    ]
+   },
+   "zero": {
+    "value": [
+     "empty",
+     []
+    ]
+   }
+  },
+  "malformed_only_reads": [],
+  "membership": {
+   "calls": true,
+   "items": [
+    {
+     "activity_sequence": null,
+     "attempt": null,
+     "collected_at": null,
+     "error_type": null,
+     "event_label": "tool_completed",
+     "generation": null,
+     "item_type": null,
+     "malformed": false,
+     "occurred_at": null,
+     "raw_ref": null,
+     "receipt_ref": "sha256:38f20c5406ba5ab0d783a900826412a4487b2fca1b483cc2785cc2b3de44ac19",
+     "sequence": null,
+     "source": "progress_receipt",
+     "state": "ok",
+     "status": "completed",
+     "tool_name": null
+    }
+   ],
+   "refs": [
+    true
+   ],
+   "status": "ok"
+  },
+  "mixed_legacy": {
+   "calls": 6,
+   "canary": false,
+   "items": [
+    {
+     "activity_sequence": null,
+     "attempt": null,
+     "collected_at": null,
+     "error_type": null,
+     "event_label": "tool_completed",
+     "generation": null,
+     "item_type": null,
+     "malformed": false,
+     "occurred_at": null,
+     "raw_ref": null,
+     "receipt_ref": "sha256:48a2502d5a6f38c4ab390c674c16beab35d94c3767e2b6669af5d19e8dcc522d",
+     "sequence": null,
+     "source": "progress_receipt",
+     "state": "ok",
+     "status": "completed",
+     "tool_name": null
+    },
+    {
+     "activity_sequence": null,
+     "attempt": null,
+     "collected_at": null,
+     "error_type": "invalid_json",
+     "event_label": "malformed",
+     "generation": null,
+     "item_type": null,
+     "malformed": true,
+     "occurred_at": null,
+     "raw_ref": null,
+     "receipt_ref": "sha256:67498026efb8ef28453b3d6c2a5917906b974238e72f7039dc36fd9cdfc5a6b8",
+     "sequence": null,
+     "source": "progress_receipt",
+     "state": "unreadable",
+     "status": null,
+     "tool_name": null
+    },
+    {
+     "activity_sequence": null,
+     "attempt": null,
+     "collected_at": null,
+     "error_type": "invalid_json",
+     "event_label": "malformed",
+     "generation": null,
+     "item_type": null,
+     "malformed": true,
+     "occurred_at": null,
+     "raw_ref": null,
+     "receipt_ref": "sha256:2e1ea1f9b440d630b26f2a25c89146913ffb479e693478bb3f7dde8d4154624c",
+     "sequence": null,
+     "source": "progress_receipt",
+     "state": "unreadable",
+     "status": null,
+     "tool_name": null
+    },
+    {
+     "activity_sequence": null,
+     "attempt": null,
+     "collected_at": null,
+     "error_type": null,
+     "event_label": "malformed",
+     "generation": null,
+     "item_type": null,
+     "malformed": true,
+     "occurred_at": null,
+     "raw_ref": null,
+     "receipt_ref": "sha256:913d15a5a20d63320edab01d8ecb435a559fa25c84de99693982b2c2d2e843d8",
+     "sequence": null,
+     "source": "progress_receipt",
+     "state": "malformed",
+     "status": null,
+     "tool_name": null
+    },
+    {
+     "activity_sequence": null,
+     "attempt": null,
+     "collected_at": null,
+     "error_type": "invalid_shape",
+     "event_label": "malformed",
+     "generation": null,
+     "item_type": null,
+     "malformed": true,
+     "occurred_at": null,
+     "raw_ref": null,
+     "receipt_ref": "sha256:157f674787884b033f8ffd42880d63ba4c865551379097dcb7981121e81e5276",
+     "sequence": null,
+     "source": "progress_receipt",
+     "state": "malformed",
+     "status": null,
+     "tool_name": null
+    },
+    {
+     "activity_sequence": null,
+     "attempt": null,
+     "collected_at": null,
+     "error_type": "missing_artifact",
+     "event_label": null,
+     "generation": null,
+     "item_type": null,
+     "malformed": null,
+     "occurred_at": null,
+     "raw_ref": null,
+     "receipt_ref": "sha256:ffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff",
+     "sequence": null,
+     "source": "progress_receipt",
+     "state": "unavailable",
+     "status": null,
+     "tool_name": null
+    }
+   ],
+   "status": "ok"
+  },
+  "no_progress": {
+   "value": [
+    "empty",
+    []
+   ]
+  },
+  "odd_readers": {
+   "ok_with_bytes_text": {
+    "value": [
+     "unavailable",
+     [
+      {
+       "activity_sequence": null,
+       "attempt": null,
+       "collected_at": null,
+       "error_type": "invalid_shape",
+       "event_label": "malformed",
+       "generation": null,
+       "item_type": null,
+       "malformed": true,
+       "occurred_at": null,
+       "raw_ref": null,
+       "receipt_ref": "sha256:48a2502d5a6f38c4ab390c674c16beab35d94c3767e2b6669af5d19e8dcc522d",
+       "sequence": null,
+       "source": "progress_receipt",
+       "state": "malformed",
+       "status": null,
+       "tool_name": null
+      }
+     ]
+    ]
+   },
+   "ok_with_list_text": {
+    "value": [
+     "unavailable",
+     [
+      {
+       "activity_sequence": null,
+       "attempt": null,
+       "collected_at": null,
+       "error_type": "invalid_shape",
+       "event_label": "malformed",
+       "generation": null,
+       "item_type": null,
+       "malformed": true,
+       "occurred_at": null,
+       "raw_ref": null,
+       "receipt_ref": "sha256:48a2502d5a6f38c4ab390c674c16beab35d94c3767e2b6669af5d19e8dcc522d",
+       "sequence": null,
+       "source": "progress_receipt",
+       "state": "malformed",
+       "status": null,
+       "tool_name": null
+      }
+     ]
+    ]
+   },
+   "ok_with_none_text": {
+    "value": [
+     "unavailable",
+     [
+      {
+       "activity_sequence": null,
+       "attempt": null,
+       "collected_at": null,
+       "error_type": "invalid_shape",
+       "event_label": "malformed",
+       "generation": null,
+       "item_type": null,
+       "malformed": true,
+       "occurred_at": null,
+       "raw_ref": null,
+       "receipt_ref": "sha256:48a2502d5a6f38c4ab390c674c16beab35d94c3767e2b6669af5d19e8dcc522d",
+       "sequence": null,
+       "source": "progress_receipt",
+       "state": "malformed",
+       "status": null,
+       "tool_name": null
+      }
+     ]
+    ]
+   },
+   "returns_none": {
+    "value": [
+     "unavailable",
+     [
+      {
+       "activity_sequence": null,
+       "attempt": null,
+       "collected_at": null,
+       "error_type": "io_error",
+       "event_label": null,
+       "generation": null,
+       "item_type": null,
+       "malformed": null,
+       "occurred_at": null,
+       "raw_ref": null,
+       "receipt_ref": "sha256:48a2502d5a6f38c4ab390c674c16beab35d94c3767e2b6669af5d19e8dcc522d",
+       "sequence": null,
+       "source": "progress_receipt",
+       "state": "unreadable",
+       "status": null,
+       "tool_name": null
+      }
+     ]
+    ]
+   },
+   "returns_two": {
+    "value": [
+     "unavailable",
+     [
+      {
+       "activity_sequence": null,
+       "attempt": null,
+       "collected_at": null,
+       "error_type": "io_error",
+       "event_label": null,
+       "generation": null,
+       "item_type": null,
+       "malformed": null,
+       "occurred_at": null,
+       "raw_ref": null,
+       "receipt_ref": "sha256:48a2502d5a6f38c4ab390c674c16beab35d94c3767e2b6669af5d19e8dcc522d",
+       "sequence": null,
+       "source": "progress_receipt",
+       "state": "unreadable",
+       "status": null,
+       "tool_name": null
+      }
+     ]
+    ]
+   },
+   "state_other": {
+    "value": [
+     "unavailable",
+     [
+      {
+       "activity_sequence": null,
+       "attempt": null,
+       "collected_at": null,
+       "error_type": "code",
+       "event_label": null,
+       "generation": null,
+       "item_type": null,
+       "malformed": null,
+       "occurred_at": null,
+       "raw_ref": null,
+       "receipt_ref": "sha256:48a2502d5a6f38c4ab390c674c16beab35d94c3767e2b6669af5d19e8dcc522d",
+       "sequence": null,
+       "source": "progress_receipt",
+       "state": "weird",
+       "status": null,
+       "tool_name": null
+      }
+     ]
+    ]
+   },
+   "unavailable": {
+    "value": [
+     "unavailable",
+     [
+      {
+       "activity_sequence": null,
+       "attempt": null,
+       "collected_at": null,
+       "error_type": "runtime_unavailable",
+       "event_label": null,
+       "generation": null,
+       "item_type": null,
+       "malformed": null,
+       "occurred_at": null,
+       "raw_ref": null,
+       "receipt_ref": "sha256:48a2502d5a6f38c4ab390c674c16beab35d94c3767e2b6669af5d19e8dcc522d",
+       "sequence": null,
+       "source": "progress_receipt",
+       "state": "unavailable",
+       "status": null,
+       "tool_name": null
+      }
+     ]
+    ]
+   },
+   "value_error": {
+    "value": [
+     "unavailable",
+     [
+      {
+       "activity_sequence": null,
+       "attempt": null,
+       "collected_at": null,
+       "error_type": "io_error",
+       "event_label": null,
+       "generation": null,
+       "item_type": null,
+       "malformed": null,
+       "occurred_at": null,
+       "raw_ref": null,
+       "receipt_ref": "sha256:48a2502d5a6f38c4ab390c674c16beab35d94c3767e2b6669af5d19e8dcc522d",
+       "sequence": null,
+       "source": "progress_receipt",
+       "state": "unreadable",
+       "status": null,
+       "tool_name": null
+      }
+     ]
+    ]
+   }
+  },
+  "only_failures": {
+   "value": [
+    "unavailable",
+    [
+     {
+      "activity_sequence": null,
+      "attempt": null,
+      "collected_at": null,
+      "error_type": "invalid_json",
+      "event_label": "malformed",
+      "generation": null,
+      "item_type": null,
+      "malformed": true,
+      "occurred_at": null,
+      "raw_ref": null,
+      "receipt_ref": "sha256:67498026efb8ef28453b3d6c2a5917906b974238e72f7039dc36fd9cdfc5a6b8",
+      "sequence": null,
+      "source": "progress_receipt",
+      "state": "unreadable",
+      "status": null,
+      "tool_name": null
+     },
+     {
+      "activity_sequence": null,
+      "attempt": null,
+      "collected_at": null,
+      "error_type": "missing_artifact",
+      "event_label": null,
+      "generation": null,
+      "item_type": null,
+      "malformed": null,
+      "occurred_at": null,
+      "raw_ref": null,
+      "receipt_ref": "sha256:ffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff",
+      "sequence": null,
+      "source": "progress_receipt",
+      "state": "unavailable",
+      "status": null,
+      "tool_name": null
+     }
+    ]
+   ]
+  },
+  "order_and_dedup": {
+   "calls": true,
+   "collected": [
+    null,
+    "2026-09-28T00:59:30+00:00"
+   ],
+   "occurred": [
+    "2026-09-27T23:00:00+00:00",
+    "2026-09-27T23:00:00+00:00"
+   ],
+   "refs": [
+    true,
+    false
+   ],
+   "sequences": [
+    null,
+    7
+   ]
+  },
+  "reader_none": {
+   "compact": {
+    "value": [
+     "unavailable",
+     [
+      {
+       "activity_sequence": null,
+       "attempt": null,
+       "collected_at": null,
+       "error_type": "runtime_unavailable",
+       "event_label": null,
+       "generation": null,
+       "item_type": null,
+       "malformed": null,
+       "occurred_at": null,
+       "raw_ref": null,
+       "receipt_ref": null,
+       "sequence": null,
+       "source": "activity_receipt",
+       "state": "unavailable",
+       "status": null,
+       "tool_name": null
+      }
+     ]
+    ]
+   },
+   "legacy": {
+    "value": [
+     "unavailable",
+     [
+      {
+       "activity_sequence": null,
+       "attempt": null,
+       "collected_at": null,
+       "error_type": "runtime_unavailable",
+       "event_label": null,
+       "generation": null,
+       "item_type": null,
+       "malformed": null,
+       "occurred_at": null,
+       "raw_ref": null,
+       "receipt_ref": null,
+       "sequence": null,
+       "source": "progress_receipt",
+       "state": "unavailable",
+       "status": null,
+       "tool_name": null
+      }
+     ]
+    ]
+   }
+  },
+  "recent_window_parameter": {
+   "0": "not_selected",
+   "29": "not_selected",
+   "30": "ok",
+   "31": "ok",
+   "600": "ok"
+  },
+  "row_generation_none": {
+   "value": [
+    "lineage_unconfirmed",
+    []
+   ]
+  },
+  "selection": {
+   "''|2026-09-28T01:00:00+00:00": [
+    "not_selected",
+    0
+   ],
+   "'archived'|2026-09-28T01:00:00+00:00": [
+    "not_selected",
+    0
+   ],
+   "'blocked'|2026-09-28T01:00:00+00:00": [
+    "ok",
+    1
+   ],
+   "'cancelled'|2026-09-28T01:00:00+00:00": [
+    "ok",
+    1
+   ],
+   "'expired'|2026-09-28T01:00:00+00:00": [
+    "ok",
+    1
+   ],
+   "'failed'|2026-09-28T01:00:05+00:00": [
+    "not_selected",
+    0
+   ],
+   "'failed'|None": [
+    "not_selected",
+    0
+   ],
+   "'pending'|None": [
+    "ok",
+    1
+   ],
+   "'queued'|None": [
+    "ok",
+    1
+   ],
+   "'retry'|None": [
+    "ok",
+    1
+   ],
+   "'running'|None": [
+    "ok",
+    1
+   ],
+   "'succeeded'|2026-09-28T00:49:59+00:00": [
+    "not_selected",
+    0
+   ],
+   "'succeeded'|2026-09-28T00:50:00+00:00": [
+    "ok",
+    1
+   ],
+   "'succeeded'|2026-09-28T00:55:00": [
+    "not_selected",
+    0
+   ],
+   "'succeeded'|2026-09-28T09:55:00+09:00": [
+    "ok",
+    1
+   ],
+   "'succeeded'|5": [
+    "not_selected",
+    0
+   ],
+   "'succeeded'|not a time": [
+    "not_selected",
+    0
+   ],
+   "'superseded'|2026-09-28T01:00:00+00:00": [
+    "ok",
+    1
+   ],
+   "'unknown'|2026-09-28T01:00:00+00:00": [
+    "not_selected",
+    0
+   ],
+   "None|2026-09-28T01:00:00+00:00": [
+    "not_selected",
+    0
+   ],
+   "['succeeded']|2026-09-28T01:00:00+00:00": [
+    "not_selected",
+    0
+   ],
+   "{'s': 'running'}|None": [
+    "not_selected",
+    0
+   ]
+  },
+  "wrong_typed_refs": {
+   "calls": true,
+   "canary": false,
+   "last": {
+    "activity_sequence": null,
+    "attempt": null,
+    "collected_at": "2026-09-28T00:59:30+00:00",
+    "error_type": null,
+    "event_label": "tool_completed",
+    "generation": null,
+    "item_type": null,
+    "malformed": false,
+    "occurred_at": null,
+    "raw_ref": null,
+    "receipt_ref": "sha256:48a2502d5a6f38c4ab390c674c16beab35d94c3767e2b6669af5d19e8dcc522d",
+    "sequence": 7,
+    "source": "progress_receipt",
+    "state": "ok",
+    "status": "completed",
+    "tool_name": null
+   },
+   "refs": [
+    null,
+    "sha256:b4454c1ce3bcbdb821cc5d0b5a06c1058a9882fa613b1fa1425effd85c0da03f",
+    null,
+    "sha256:a1021ff8b55d08e536752971c8e9704cccdabace95606f6d1cd2098979223390",
+    null,
+    "sha256:48a2502d5a6f38c4ab390c674c16beab35d94c3767e2b6669af5d19e8dcc522d"
+   ],
+   "states": [
+    [
+     "unreadable",
+     "invalid_ref",
+     true
+    ],
+    [
+     "malformed",
+     "invalid_shape",
+     true
+    ],
+    [
+     "unreadable",
+     "invalid_ref",
+     true
+    ],
+    [
+     "unreadable",
+     "io_error",
+     true
+    ],
+    [
+     "unreadable",
+     "invalid_ref",
+     true
+    ],
+    [
+     "ok",
+     null,
+     true
+    ]
+   ],
+   "status": "ok"
+  }
+ },
+ "lane_artifact_resolver": {
+  "b_root_created": false,
+  "cached": true,
+  "extra_keys_ignored": {
+   "value": "ArtifactReader"
+  },
+  "id_changed_is_new": true,
+  "lane_a": [
+   "ok",
+   null,
+   "{\"event\": {\"provider\": \"claude-code-cli\", \"stream\": \"stdout\", \"type\": \"tool_completed\", \"raw_type\": \"assistant\", \"subtype\": \"CANARY-collectors-core-9d8c7b6a5f4e3d2c1b0a\", \"id\": \"toolu_CANARY-collectors-core-9d8c7b6a5f4e3d2c1b0a\", \"status\": \"completed\", \"sequence\": 41, \"tool\": null, \"text\": \"CANARY-collectors-core-9d8c7b6a5f4e3d2c1b0a\", \"defect\": \"CANARY-collectors-core-9d8c7b6a5f4e3d2c1b0a\", \"raw\": {\"message\": {\"content\": [{\"type\": \"tool_use\", \"input\": {\"command\": \"cat CANARY-collectors-core-9d8c7b6a5f4e3d2c1b0a\"}, \"thinking\": \"CANARY-collectors-core-9d8c7b6a5f4e3d2c1b0a\"}]}}}, \"malformed\": false, \"defect\": null, \"previous\": null}"
+  ],
+  "lane_b": [
+   "unavailable",
+   "runtime_unavailable"
+  ],
+  "missing_keys": {
+   "id": {
+    "message": "'id'",
+    "refused": "KeyError"
+   },
+   "runtime": {
+    "message": "'runtime'",
+    "refused": "KeyError"
+   },
+   "schema": {
+    "message": "'schema'",
+    "refused": "KeyError"
+   }
+  },
+  "moved_is_new": true,
+  "other_resolvers_do_not_share": true,
+  "reader_type": "ArtifactReader",
+  "root_is_the_registered_artifacts_dir": true,
+  "schema_changed_is_new": true,
+  "tree_has_no_rt_b": [
+   "rt-a"
+  ]
+ },
+ "lane_view": {
+  "activity_failure": {
+   "canary": false,
+   "restored": true,
+   "statuses": {
+    "d1": [
+     "blocked",
+     "unavailable",
+     [],
+     null
+    ],
+    "t1": [
+     "running",
+     "unavailable",
+     [],
+     4
+    ],
+    "t2": [
+     "succeeded",
+     "unavailable",
+     [],
+     null
+    ],
+    "t3": [
+     "failed",
+     "unavailable",
+     [],
+     null
+    ],
+    "t4": [
+     "queued",
+     "unavailable",
+     [],
+     null
+    ],
+    "t5": [
+     "weird",
+     "unavailable",
+     [],
+     null
+    ]
+   }
+  },
+  "default_now": {
+   "statuses": {
+    "d1": [
+     "blocked",
+     "not_selected"
+    ],
+    "t1": [
+     "running",
+     "ok"
+    ],
+    "t2": [
+     "succeeded",
+     "not_selected"
+    ],
+    "t3": [
+     "failed",
+     "not_selected"
+    ],
+    "t4": [
+     "queued",
+     "empty"
+    ],
+    "t5": [
+     "weird",
+     "not_selected"
+    ]
+   },
+   "total": 6
+  },
+  "empty_store": {
+   "counts": {},
+   "executions": [],
+   "invocations": {},
+   "total": 0,
+   "truncated": false,
+   "worker_sessions": {}
+  },
+  "lane_a": {
+   "digest": "f15ed7a60c84685cad078c906e7adc94d1e711dee95ab1315c8a5c4e17ddea24",
+   "view": {
+    "counts": {
+     "decision:blocked": 1,
+     "task:failed": 1,
+     "task:queued": 1,
+     "task:running": 1,
+     "task:succeeded": 1,
+     "task:weird": 1
+    },
+    "executions": [
+     {
+      "accepted": null,
+      "activity": [
+       {
+        "activity_sequence": null,
+        "attempt": null,
+        "collected_at": null,
+        "error_type": null,
+        "event_label": "session_started",
+        "generation": null,
+        "item_type": null,
+        "malformed": false,
+        "occurred_at": null,
+        "raw_ref": null,
+        "receipt_ref": "sha256:0962905fd39abaa477fa5237de697cebdd880ba7ea02fd6b47e8d683e965ae19",
+        "sequence": null,
+        "source": "progress_receipt",
+        "state": "ok",
+        "status": "started",
+        "tool_name": null
+       },
+       {
+        "activity_sequence": null,
+        "attempt": null,
+        "collected_at": "2026-09-28T00:59:30+00:00",
+        "error_type": null,
+        "event_label": "tool_completed",
+        "generation": null,
+        "item_type": null,
+        "malformed": false,
+        "occurred_at": null,
+        "raw_ref": null,
+        "receipt_ref": "sha256:48a2502d5a6f38c4ab390c674c16beab35d94c3767e2b6669af5d19e8dcc522d",
+        "sequence": 7,
+        "source": "progress_receipt",
+        "state": "ok",
+        "status": "completed",
+        "tool_name": null
+       }
+      ],
+      "activity_dropped": 4,
+      "activity_status": "ok",
+      "agent": "implementer",
+      "attempt": 1,
+      "completed_at": null,
+      "created_at": "2026-09-28T00:00:00+00:00",
+      "generation": 2,
+      "id": "t1",
+      "invocations": {
+       "by_status": {
+        "reserved": 1,
+        "settled": 1
+       },
+       "count": 2,
+       "latest": {
+        "attempt": 1,
+        "elapsed_seconds": null,
+        "generation": 2,
+        "identity": null,
+        "invocation": 2,
+        "model_source": null,
+        "outcome": null,
+        "provider": null,
+        "reason": null,
+        "reported_model": "not_projected",
+        "requested_model": null,
+        "reserved_at": "2026-09-28T00:30:00+00:00",
+        "settled_at": null,
+        "stage": null,
+        "status": "reserved",
+        "total_tokens": null,
+        "transport": null,
+        "usage_source": "unknown",
+        "within_budget": null
+       }
+      },
+      "kind": "task",
+      "lease_until": "2026-09-28T01:30:00+00:00",
+      "operation": {
+       "calls": null,
+       "claimed_at": "2026-09-28T00:00:00+00:00",
+       "decision_id": null,
+       "finished_at": null,
+       "id": "op1",
+       "lead_accepted": null,
+       "owner_handoff": true,
+       "reason_code": null,
+       "status": "running",
+       "updated_at": "2026-09-28T00:10:00+00:00"
+      },
+      "phase": "implement",
+      "progress": {
+       "attempt": 1,
+       "collected_at": "2026-09-28T00:59:30+00:00",
+       "generation": 2,
+       "last_completed": {
+        "evidence": "ev",
+        "occurred_at": null,
+        "sequence": 5,
+        "status": "error",
+        "type": "unknown"
+       },
+       "last_event": "claude/result",
+       "malformed_events": 1,
+       "occurred_at": "2026-09-28T00:40:00+00:00",
+       "provider": "claude-code-cli",
+       "sequence": 7
+      },
+      "status": "running",
+      "worker_session": {
+       "blocked": false,
+       "next_action": "owned by a running execution",
+       "next_owner": "execution",
+       "owner": {
+        "attempt": 1,
+        "generation": 2
+       },
+       "reason": null,
+       "reviews": [
+        {
+         "decision_id": "d2",
+         "outcome": "accepted",
+         "phase": "p"
+        },
+        {
+         "decision_id": "d3",
+         "outcome": "accepted",
+         "phase": "p"
+        },
+        {
+         "decision_id": "d4",
+         "outcome": "accepted",
+         "phase": "p"
+        },
+        {
+         "decision_id": "d5",
+         "outcome": "accepted",
+         "phase": "p"
+        },
+        {
+         "decision_id": "d6",
+         "outcome": "accepted",
+         "phase": "p"
+        },
+        {
+         "decision_id": "d7",
+         "outcome": "accepted",
+         "phase": "p"
+        },
+        {
+         "decision_id": "d8",
+         "outcome": "accepted",
+         "phase": "p"
+        },
+        {
+         "decision_id": "d9",
+         "outcome": "accepted",
+         "phase": "p"
+        }
+       ],
+       "state": "checkpointed",
+       "version": 4
+      }
+     },
+     {
+      "accepted": null,
+      "activity": [],
+      "activity_dropped": null,
+      "activity_status": "empty",
+      "agent": null,
+      "attempt": null,
+      "completed_at": null,
+      "created_at": "2026-09-28T00:58:00+00:00",
+      "generation": null,
+      "id": "t4",
+      "invocations": {
+       "by_status": {},
+       "count": 0,
+       "latest": null
+      },
+      "kind": "task",
+      "lease_until": null,
+      "operation": null,
+      "phase": "queued-action",
+      "progress": null,
+      "status": "queued",
+      "worker_session": null
+     },
+     {
+      "accepted": null,
+      "activity": [
+       {
+        "activity_sequence": null,
+        "attempt": null,
+        "collected_at": "2026-09-28T00:55:00+00:00",
+        "error_type": null,
+        "event_label": "session_started",
+        "generation": null,
+        "item_type": null,
+        "malformed": false,
+        "occurred_at": null,
+        "raw_ref": null,
+        "receipt_ref": "sha256:0962905fd39abaa477fa5237de697cebdd880ba7ea02fd6b47e8d683e965ae19",
+        "sequence": 3,
+        "source": "progress_receipt",
+        "state": "ok",
+        "status": "started",
+        "tool_name": null
+       }
+      ],
+      "activity_dropped": null,
+      "activity_status": "ok",
+      "agent": "reviewer",
+      "attempt": 1,
+      "completed_at": "2026-09-28T00:55:00+00:00",
+      "created_at": "2026-09-28T00:20:00+00:00",
+      "generation": 1,
+      "id": "t2",
+      "invocations": {
+       "by_status": {
+        "settled": 1
+       },
+       "count": 1,
+       "latest": {
+        "attempt": 1,
+        "elapsed_seconds": null,
+        "generation": 1,
+        "identity": null,
+        "invocation": 1,
+        "model_source": null,
+        "outcome": null,
+        "provider": null,
+        "reason": null,
+        "reported_model": "not_projected",
+        "requested_model": null,
+        "reserved_at": null,
+        "settled_at": null,
+        "stage": null,
+        "status": "settled",
+        "total_tokens": null,
+        "transport": null,
+        "usage_source": "unknown",
+        "within_budget": null
+       }
+      },
+      "kind": "task",
+      "lease_until": null,
+      "operation": {
+       "calls": {
+        "reserved": 2,
+        "settled": 1
+       },
+       "claimed_at": null,
+       "decision_id": "d1",
+       "finished_at": "2026-09-28T00:50:00+00:00",
+       "id": "op2",
+       "lead_accepted": false,
+       "owner_handoff": false,
+       "reason_code": "evidence_gate_refused",
+       "status": "failed",
+       "updated_at": null
+      },
+      "phase": "explicit",
+      "progress": {
+       "attempt": 1,
+       "collected_at": "2026-09-28T00:55:00+00:00",
+       "generation": 1,
+       "last_completed": {
+        "evidence": null,
+        "occurred_at": null,
+        "sequence": 3,
+        "status": "success",
+        "type": "result"
+       },
+       "last_event": null,
+       "malformed_events": 0,
+       "occurred_at": null,
+       "provider": null,
+       "sequence": 3
+      },
+      "status": "succeeded",
+      "worker_session": null
+     },
+     {
+      "accepted": false,
+      "activity": [],
+      "activity_dropped": null,
+      "activity_status": "not_selected",
+      "agent": "review_lead",
+      "attempt": 1,
+      "completed_at": null,
+      "created_at": "2026-09-28T00:30:00+00:00",
+      "generation": 1,
+      "id": "d1",
+      "invocations": {
+       "by_status": {
+        "settled": 1
+       },
+       "count": 1,
+       "latest": {
+        "attempt": null,
+        "elapsed_seconds": null,
+        "generation": null,
+        "identity": null,
+        "invocation": null,
+        "model_source": null,
+        "outcome": null,
+        "provider": null,
+        "reason": null,
+        "reported_model": "not_projected",
+        "requested_model": null,
+        "reserved_at": null,
+        "settled_at": null,
+        "stage": null,
+        "status": "settled",
+        "total_tokens": null,
+        "transport": null,
+        "usage_source": "unknown",
+        "within_budget": null
+       }
+      },
+      "kind": "decision",
+      "lease_until": null,
+      "operation": {
+       "calls": {
+        "reserved": 2,
+        "settled": 1
+       },
+       "claimed_at": null,
+       "decision_id": "d1",
+       "finished_at": "2026-09-28T00:50:00+00:00",
+       "id": "op2",
+       "lead_accepted": false,
+       "owner_handoff": false,
+       "reason_code": "evidence_gate_refused",
+       "status": "failed",
+       "updated_at": null
+      },
+      "phase": null,
+      "progress": null,
+      "status": "blocked",
+      "worker_session": null
+     },
+     {
+      "accepted": null,
+      "activity": [],
+      "activity_dropped": null,
+      "activity_status": "not_selected",
+      "agent": "implementer",
+      "attempt": null,
+      "completed_at": "2026-09-27T01:00:00+00:00",
+      "created_at": "2026-09-27T00:00:00+00:00",
+      "generation": null,
+      "id": "t3",
+      "invocations": {
+       "by_status": {},
+       "count": 0,
+       "latest": null
+      },
+      "kind": "task",
+      "lease_until": null,
+      "operation": {
+       "calls": null,
+       "claimed_at": "2026-09-28T00:00:00+00:00",
+       "decision_id": null,
+       "finished_at": null,
+       "id": "op1",
+       "lead_accepted": null,
+       "owner_handoff": true,
+       "reason_code": null,
+       "status": "running",
+       "updated_at": "2026-09-28T00:10:00+00:00"
+      },
+      "phase": null,
+      "progress": null,
+      "status": "failed",
+      "worker_session": {
+       "blocked": false,
+       "next_action": "owned by a running execution",
+       "next_owner": "execution",
+       "owner": {
+        "attempt": 1,
+        "generation": 2
+       },
+       "reason": null,
+       "reviews": [
+        {
+         "decision_id": "d2",
+         "outcome": "accepted",
+         "phase": "p"
+        },
+        {
+         "decision_id": "d3",
+         "outcome": "accepted",
+         "phase": "p"
+        },
+        {
+         "decision_id": "d4",
+         "outcome": "accepted",
+         "phase": "p"
+        },
+        {
+         "decision_id": "d5",
+         "outcome": "accepted",
+         "phase": "p"
+        },
+        {
+         "decision_id": "d6",
+         "outcome": "accepted",
+         "phase": "p"
+        },
+        {
+         "decision_id": "d7",
+         "outcome": "accepted",
+         "phase": "p"
+        },
+        {
+         "decision_id": "d8",
+         "outcome": "accepted",
+         "phase": "p"
+        },
+        {
+         "decision_id": "d9",
+         "outcome": "accepted",
+         "phase": "p"
+        }
+       ],
+       "state": "checkpointed",
+       "version": 4
+      }
+     },
+     {
+      "accepted": null,
+      "activity": [],
+      "activity_dropped": null,
+      "activity_status": "not_selected",
+      "agent": null,
+      "attempt": null,
+      "completed_at": null,
+      "created_at": null,
+      "generation": null,
+      "id": "t5",
+      "invocations": {
+       "by_status": {},
+       "count": 0,
+       "latest": null
+      },
+      "kind": "task",
+      "lease_until": null,
+      "operation": null,
+      "phase": null,
+      "progress": null,
+      "status": "weird",
+      "worker_session": null
+     }
+    ],
+    "invocations": {
+     "reserved": 1,
+     "settled": 3
+    },
+    "total": 6,
+    "truncated": false,
+    "worker_sessions": {
+     "checkpointed": 1,
+     "closed": 1
+    }
+   }
+  },
+  "lane_b_statuses": {
+   "d1": [
+    "blocked",
+    "not_selected",
+    []
+   ],
+   "t1": [
+    "running",
+    "unavailable",
+    [
+     "runtime_unavailable",
+     "runtime_unavailable"
+    ]
+   ],
+   "t2": [
+    "succeeded",
+    "unavailable",
+    [
+     "runtime_unavailable"
+    ]
+   ],
+   "t3": [
+    "failed",
+    "not_selected",
+    []
+   ],
+   "t4": [
+    "queued",
+    "empty",
+    []
+   ],
+   "t5": [
+    "weird",
+    "not_selected",
+    []
+   ]
+  },
+  "lane_b_unavailable_root": {
+   "digest": "dd2de595f870fbb52301eae1d57bf429120f80707e2e9a08fc970db6c03a7ea2",
+   "view": {
+    "counts": {
+     "decision:blocked": 1,
+     "task:failed": 1,
+     "task:queued": 1,
+     "task:running": 1,
+     "task:succeeded": 1,
+     "task:weird": 1
+    },
+    "executions": [
+     {
+      "accepted": null,
+      "activity": [
+       {
+        "activity_sequence": null,
+        "attempt": null,
+        "collected_at": null,
+        "error_type": "runtime_unavailable",
+        "event_label": null,
+        "generation": null,
+        "item_type": null,
+        "malformed": null,
+        "occurred_at": null,
+        "raw_ref": null,
+        "receipt_ref": "sha256:0962905fd39abaa477fa5237de697cebdd880ba7ea02fd6b47e8d683e965ae19",
+        "sequence": null,
+        "source": "progress_receipt",
+        "state": "unavailable",
+        "status": null,
+        "tool_name": null
+       },
+       {
+        "activity_sequence": null,
+        "attempt": null,
+        "collected_at": null,
+        "error_type": "runtime_unavailable",
+        "event_label": null,
+        "generation": null,
+        "item_type": null,
+        "malformed": null,
+        "occurred_at": null,
+        "raw_ref": null,
+        "receipt_ref": "sha256:48a2502d5a6f38c4ab390c674c16beab35d94c3767e2b6669af5d19e8dcc522d",
+        "sequence": null,
+        "source": "progress_receipt",
+        "state": "unavailable",
+        "status": null,
+        "tool_name": null
+       }
+      ],
+      "activity_dropped": 4,
+      "activity_status": "unavailable",
+      "agent": "implementer",
+      "attempt": 1,
+      "completed_at": null,
+      "created_at": "2026-09-28T00:00:00+00:00",
+      "generation": 2,
+      "id": "t1",
+      "invocations": {
+       "by_status": {
+        "reserved": 1,
+        "settled": 1
+       },
+       "count": 2,
+       "latest": {
+        "attempt": 1,
+        "elapsed_seconds": null,
+        "generation": 2,
+        "identity": null,
+        "invocation": 2,
+        "model_source": null,
+        "outcome": null,
+        "provider": null,
+        "reason": null,
+        "reported_model": "not_projected",
+        "requested_model": null,
+        "reserved_at": "2026-09-28T00:30:00+00:00",
+        "settled_at": null,
+        "stage": null,
+        "status": "reserved",
+        "total_tokens": null,
+        "transport": null,
+        "usage_source": "unknown",
+        "within_budget": null
+       }
+      },
+      "kind": "task",
+      "lease_until": "2026-09-28T01:30:00+00:00",
+      "operation": {
+       "calls": null,
+       "claimed_at": "2026-09-28T00:00:00+00:00",
+       "decision_id": null,
+       "finished_at": null,
+       "id": "op1",
+       "lead_accepted": null,
+       "owner_handoff": true,
+       "reason_code": null,
+       "status": "running",
+       "updated_at": "2026-09-28T00:10:00+00:00"
+      },
+      "phase": "implement",
+      "progress": {
+       "attempt": 1,
+       "collected_at": "2026-09-28T00:59:30+00:00",
+       "generation": 2,
+       "last_completed": {
+        "evidence": "ev",
+        "occurred_at": null,
+        "sequence": 5,
+        "status": "error",
+        "type": "unknown"
+       },
+       "last_event": "claude/result",
+       "malformed_events": 1,
+       "occurred_at": "2026-09-28T00:40:00+00:00",
+       "provider": "claude-code-cli",
+       "sequence": 7
+      },
+      "status": "running",
+      "worker_session": null
+     },
+     {
+      "accepted": null,
+      "activity": [],
+      "activity_dropped": null,
+      "activity_status": "empty",
+      "agent": null,
+      "attempt": null,
+      "completed_at": null,
+      "created_at": "2026-09-28T00:58:00+00:00",
+      "generation": null,
+      "id": "t4",
+      "invocations": {
+       "by_status": {},
+       "count": 0,
+       "latest": null
+      },
+      "kind": "task",
+      "lease_until": null,
+      "operation": null,
+      "phase": "queued-action",
+      "progress": null,
+      "status": "queued",
+      "worker_session": null
+     },
+     {
+      "accepted": null,
+      "activity": [
+       {
+        "activity_sequence": null,
+        "attempt": null,
+        "collected_at": null,
+        "error_type": "runtime_unavailable",
+        "event_label": null,
+        "generation": null,
+        "item_type": null,
+        "malformed": null,
+        "occurred_at": null,
+        "raw_ref": null,
+        "receipt_ref": "sha256:0962905fd39abaa477fa5237de697cebdd880ba7ea02fd6b47e8d683e965ae19",
+        "sequence": null,
+        "source": "progress_receipt",
+        "state": "unavailable",
+        "status": null,
+        "tool_name": null
+       }
+      ],
+      "activity_dropped": null,
+      "activity_status": "unavailable",
+      "agent": "reviewer",
+      "attempt": 1,
+      "completed_at": "2026-09-28T00:55:00+00:00",
+      "created_at": "2026-09-28T00:20:00+00:00",
+      "generation": 1,
+      "id": "t2",
+      "invocations": {
+       "by_status": {
+        "settled": 1
+       },
+       "count": 1,
+       "latest": {
+        "attempt": 1,
+        "elapsed_seconds": null,
+        "generation": 1,
+        "identity": null,
+        "invocation": 1,
+        "model_source": null,
+        "outcome": null,
+        "provider": null,
+        "reason": null,
+        "reported_model": "not_projected",
+        "requested_model": null,
+        "reserved_at": null,
+        "settled_at": null,
+        "stage": null,
+        "status": "settled",
+        "total_tokens": null,
+        "transport": null,
+        "usage_source": "unknown",
+        "within_budget": null
+       }
+      },
+      "kind": "task",
+      "lease_until": null,
+      "operation": {
+       "calls": {
+        "reserved": 2,
+        "settled": 1
+       },
+       "claimed_at": null,
+       "decision_id": "d1",
+       "finished_at": "2026-09-28T00:50:00+00:00",
+       "id": "op2",
+       "lead_accepted": false,
+       "owner_handoff": false,
+       "reason_code": "evidence_gate_refused",
+       "status": "failed",
+       "updated_at": null
+      },
+      "phase": "explicit",
+      "progress": {
+       "attempt": 1,
+       "collected_at": "2026-09-28T00:55:00+00:00",
+       "generation": 1,
+       "last_completed": {
+        "evidence": null,
+        "occurred_at": null,
+        "sequence": 3,
+        "status": "success",
+        "type": "result"
+       },
+       "last_event": null,
+       "malformed_events": 0,
+       "occurred_at": null,
+       "provider": null,
+       "sequence": 3
+      },
+      "status": "succeeded",
+      "worker_session": null
+     },
+     {
+      "accepted": false,
+      "activity": [],
+      "activity_dropped": null,
+      "activity_status": "not_selected",
+      "agent": "review_lead",
+      "attempt": 1,
+      "completed_at": null,
+      "created_at": "2026-09-28T00:30:00+00:00",
+      "generation": 1,
+      "id": "d1",
+      "invocations": {
+       "by_status": {
+        "settled": 1
+       },
+       "count": 1,
+       "latest": {
+        "attempt": null,
+        "elapsed_seconds": null,
+        "generation": null,
+        "identity": null,
+        "invocation": null,
+        "model_source": null,
+        "outcome": null,
+        "provider": null,
+        "reason": null,
+        "reported_model": "not_projected",
+        "requested_model": null,
+        "reserved_at": null,
+        "settled_at": null,
+        "stage": null,
+        "status": "settled",
+        "total_tokens": null,
+        "transport": null,
+        "usage_source": "unknown",
+        "within_budget": null
+       }
+      },
+      "kind": "decision",
+      "lease_until": null,
+      "operation": {
+       "calls": {
+        "reserved": 2,
+        "settled": 1
+       },
+       "claimed_at": null,
+       "decision_id": "d1",
+       "finished_at": "2026-09-28T00:50:00+00:00",
+       "id": "op2",
+       "lead_accepted": false,
+       "owner_handoff": false,
+       "reason_code": "evidence_gate_refused",
+       "status": "failed",
+       "updated_at": null
+      },
+      "phase": null,
+      "progress": null,
+      "status": "blocked",
+      "worker_session": null
+     },
+     {
+      "accepted": null,
+      "activity": [],
+      "activity_dropped": null,
+      "activity_status": "not_selected",
+      "agent": "implementer",
+      "attempt": null,
+      "completed_at": "2026-09-27T01:00:00+00:00",
+      "created_at": "2026-09-27T00:00:00+00:00",
+      "generation": null,
+      "id": "t3",
+      "invocations": {
+       "by_status": {},
+       "count": 0,
+       "latest": null
+      },
+      "kind": "task",
+      "lease_until": null,
+      "operation": {
+       "calls": null,
+       "claimed_at": "2026-09-28T00:00:00+00:00",
+       "decision_id": null,
+       "finished_at": null,
+       "id": "op1",
+       "lead_accepted": null,
+       "owner_handoff": true,
+       "reason_code": null,
+       "status": "running",
+       "updated_at": "2026-09-28T00:10:00+00:00"
+      },
+      "phase": null,
+      "progress": null,
+      "status": "failed",
+      "worker_session": null
+     },
+     {
+      "accepted": null,
+      "activity": [],
+      "activity_dropped": null,
+      "activity_status": "not_selected",
+      "agent": null,
+      "attempt": null,
+      "completed_at": null,
+      "created_at": null,
+      "generation": null,
+      "id": "t5",
+      "invocations": {
+       "by_status": {},
+       "count": 0,
+       "latest": null
+      },
+      "kind": "task",
+      "lease_until": null,
+      "operation": null,
+      "phase": null,
+      "progress": null,
+      "status": "weird",
+      "worker_session": null
+     }
+    ],
+    "invocations": {
+     "reserved": 1,
+     "settled": 3
+    },
+    "total": 6,
+    "truncated": false,
+    "worker_sessions": {}
+   }
+  },
+  "lane_view_positional_shape": true,
+  "no_secret_keys": [
+   "accepted",
+   "activity",
+   "activity_dropped",
+   "activity_status",
+   "agent",
+   "attempt",
+   "completed_at",
+   "created_at",
+   "generation",
+   "id",
+   "invocations",
+   "kind",
+   "lease_until",
+   "operation",
+   "phase",
+   "progress",
+   "status",
+   "worker_session"
+  ],
+  "odd_session_rows": {
+   "value": {
+    "counts": {
+     "task:running": 1
+    },
+    "executions": [
+     {
+      "accepted": null,
+      "activity": [],
+      "activity_dropped": null,
+      "activity_status": "empty",
+      "agent": null,
+      "attempt": null,
+      "completed_at": null,
+      "created_at": "2026-09-28T01:00:00+00:00",
+      "generation": null,
+      "id": "t",
+      "invocations": {
+       "by_status": {},
+       "count": 0,
+       "latest": null
+      },
+      "kind": "task",
+      "lease_until": null,
+      "operation": {
+       "calls": {
+        "reserved": null,
+        "settled": null
+       },
+       "claimed_at": null,
+       "decision_id": null,
+       "finished_at": null,
+       "id": "o",
+       "lead_accepted": null,
+       "owner_handoff": false,
+       "reason_code": null,
+       "status": null,
+       "updated_at": null
+      },
+      "phase": null,
+      "progress": null,
+      "status": "running",
+      "worker_session": {
+       "blocked": false,
+       "next_action": "owned by a running execution",
+       "next_owner": "execution",
+       "owner": null,
+       "reason": null,
+       "reviews": [],
+       "state": "weird",
+       "version": null
+      }
+     }
+    ],
+    "invocations": {},
+    "total": 1,
+    "truncated": false,
+    "worker_sessions": {
+     "weird": 1
+    }
+   }
+  },
+  "one_transaction": 1,
+  "per_lane_isolation": {
+   "a_counts": {
+    "decision:blocked": 1,
+    "task:failed": 1,
+    "task:queued": 1,
+    "task:running": 1,
+    "task:succeeded": 1,
+    "task:weird": 1
+   },
+   "a_owner_of_t1": [
+    {
+     "blocked": false,
+     "next_action": "owned by a running execution",
+     "next_owner": "execution",
+     "owner": {
+      "attempt": 1,
+      "generation": 2
+     },
+     "reason": null,
+     "reviews": [
+      {
+       "decision_id": "d2",
+       "outcome": "accepted",
+       "phase": "p"
+      },
+      {
+       "decision_id": "d3",
+       "outcome": "accepted",
+       "phase": "p"
+      },
+      {
+       "decision_id": "d4",
+       "outcome": "accepted",
+       "phase": "p"
+      },
+      {
+       "decision_id": "d5",
+       "outcome": "accepted",
+       "phase": "p"
+      },
+      {
+       "decision_id": "d6",
+       "outcome": "accepted",
+       "phase": "p"
+      },
+      {
+       "decision_id": "d7",
+       "outcome": "accepted",
+       "phase": "p"
+      },
+      {
+       "decision_id": "d8",
+       "outcome": "accepted",
+       "phase": "p"
+      },
+      {
+       "decision_id": "d9",
+       "outcome": "accepted",
+       "phase": "p"
+      }
+     ],
+     "state": "checkpointed",
+     "version": 4
+    }
+   ],
+   "a_sessions": {
+    "checkpointed": 1,
+    "closed": 1
+   },
+   "b_counts": {
+    "decision:blocked": 1,
+    "task:failed": 1,
+    "task:queued": 1,
+    "task:running": 1,
+    "task:succeeded": 1,
+    "task:weird": 1
+   },
+   "b_owner_of_t1": [
+    null
+   ],
+   "b_sessions": {},
+   "same_ids": true
+  },
+  "reader_none": {
+   "digest": "08c75a85ca3f2bf8d9f39561838d4e59789760fa801be2cac751e899077bb8b1",
+   "statuses": {
+    "d1": [
+     "not_selected",
+     []
+    ],
+    "t1": [
+     "unavailable",
+     [
+      "runtime_unavailable"
+     ]
+    ],
+    "t2": [
+     "unavailable",
+     [
+      "runtime_unavailable"
+     ]
+    ],
+    "t3": [
+     "not_selected",
+     []
+    ],
+    "t4": [
+     "empty",
+     []
+    ],
+    "t5": [
+     "not_selected",
+     []
+    ]
+   }
+  },
+  "scanned_buckets": [
+   "operations",
+   "tasks",
+   "decisions_pending",
+   "execution_progress",
+   "invocation_reservations",
+   "worker_sessions"
+  ],
+  "secret_free": {
+   "canary": false,
+   "fields_absent": [
+    true,
+    true,
+    true,
+    true,
+    true,
+    true,
+    true,
+    true
+   ]
+  },
+  "session_bucket_name": {
+   "value": {
+    "active": 1
+   }
+  },
+  "store_failure": {
+   "message": "injected lane outage",
+   "refused": "RuntimeError"
+  },
+  "stores_unchanged": [
+   true,
+   true
+  ],
+  "task_without_id": {
+   "message": "'id'",
+   "refused": "KeyError"
+  },
+  "truncated": {
+   "counts": {
+    "decision:blocked": 1,
+    "task:failed": 1,
+    "task:queued": 1,
+    "task:running": 41,
+    "task:succeeded": 21,
+    "task:weird": 1
+   },
+   "digest": "d5cd8d3d201ff226620da8f795aab754ca5f973421bd209a24bfaf57b7fa6607",
+   "invocations": {
+    "reserved": 1,
+    "settled": 3
+   },
+   "order": [
+    [
+     "m059",
+     "running"
+    ],
+    [
+     "t1",
+     "running"
+    ],
+    [
+     "m058",
+     "running"
+    ],
+    [
+     "t4",
+     "queued"
+    ],
+    [
+     "m056",
+     "running"
+    ],
+    [
+     "m055",
+     "running"
+    ],
+    [
+     "m053",
+     "running"
+    ],
+    [
+     "m052",
+     "running"
+    ],
+    [
+     "m050",
+     "running"
+    ],
+    [
+     "m049",
+     "running"
+    ],
+    [
+     "m047",
+     "running"
+    ],
+    [
+     "m046",
+     "running"
+    ],
+    [
+     "m044",
+     "running"
+    ],
+    [
+     "m043",
+     "running"
+    ],
+    [
+     "m041",
+     "running"
+    ],
+    [
+     "m040",
+     "running"
+    ],
+    [
+     "m038",
+     "running"
+    ],
+    [
+     "m037",
+     "running"
+    ],
+    [
+     "m035",
+     "running"
+    ],
+    [
+     "m034",
+     "running"
+    ]
+   ],
+   "shown": 50,
+   "total": 66,
+   "truncated": true,
+   "worker_sessions": {
+    "checkpointed": 1,
+    "closed": 1
+   }
+  },
+  "window_parameter": {
+   "0": {
+    "d1": "not_selected",
+    "t1": "ok",
+    "t2": "not_selected",
+    "t3": "not_selected",
+    "t4": "empty",
+    "t5": "not_selected"
+   },
+   "100000": {
+    "d1": "not_selected",
+    "t1": "ok",
+    "t2": "ok",
+    "t3": "empty",
+    "t4": "empty",
+    "t5": "not_selected"
+   },
+   "60": {
+    "d1": "not_selected",
+    "t1": "ok",
+    "t2": "not_selected",
+    "t3": "not_selected",
+    "t4": "empty",
+    "t5": "not_selected"
+   }
+  },
+  "worker_sessions_bucket_read": true
+ },
+ "parse_observed": [
+  {
+   "input": "'2026-09-18T12:00:00+00:00'",
+   "result": "2026-09-18 12:00:00+00:00",
+   "utcoffset": 0.0
+  },
+  {
+   "input": "'2026-09-18T12:00:00Z'",
+   "result": "2026-09-18 12:00:00+00:00",
+   "utcoffset": 0.0
+  },
+  {
+   "input": "'2026-09-18T21:00:00+09:00'",
+   "result": "2026-09-18 21:00:00+09:00",
+   "utcoffset": 32400.0
+  },
+  {
+   "input": "'2026-09-18T12:00:00.123456+00:00'",
+   "result": "2026-09-18 12:00:00.123456+00:00",
+   "utcoffset": 0.0
+  },
+  {
+   "input": "'2026-09-18T12:00:00'",
+   "result": null,
+   "utcoffset": null
+  },
+  {
+   "input": "'2026-09-18'",
+   "result": null,
+   "utcoffset": null
+  },
+  {
+   "input": "'20260918T120000+0000'",
+   "result": "2026-09-18 12:00:00+00:00",
+   "utcoffset": 0.0
+  },
+  {
+   "input": "'not-a-time'",
+   "result": null,
+   "utcoffset": null
+  },
+  {
+   "input": "''",
+   "result": null,
+   "utcoffset": null
+  },
+  {
+   "input": "None",
+   "result": null,
+   "utcoffset": null
+  },
+  {
+   "input": "5",
+   "result": null,
+   "utcoffset": null
+  },
+  {
+   "input": "5.5",
+   "result": null,
+   "utcoffset": null
+  },
+  {
+   "input": "['x']",
+   "result": null,
+   "utcoffset": null
+  },
+  {
+   "input": "{}",
+   "result": null,
+   "utcoffset": null
+  },
+  {
+   "input": "True",
+   "result": null,
+   "utcoffset": null
+  },
+  {
+   "input": "b'2026-09-18T12:00:00+00:00'",
+   "result": null,
+   "utcoffset": null
+  },
+  {
+   "input": "' 2026-09-18T12:00:00+00:00'",
+   "result": null,
+   "utcoffset": null
+  }
+ ],
+ "persisted_measurements": {
+  "default_now": {
+   "ages_over_20": [
+    true,
+    true,
+    true,
+    true,
+    true
+   ],
+   "future_age_negative": [
+    false
+   ],
+   "metric_ids": [
+    "bare",
+    "future",
+    "m",
+    "n",
+    "tie",
+    "tz"
+   ]
+  },
+  "empty": {
+   "value": []
+  },
+  "latest_per_metric": {
+   "value": [
+    {
+     "age_seconds": 0.0,
+     "metric_id": "bare",
+     "observed_at": "2026-09-18T12:00:00+00:00",
+     "source": "persisted_observation"
+    },
+    {
+     "age_seconds": -60.0,
+     "definition": {
+      "metric_id": "future"
+     },
+     "evidence_refs": [
+      "sha256:aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa"
+     ],
+     "id": "future-2026-09-18T12:01:00+00:00",
+     "metric_id": "future",
+     "observed_at": "2026-09-18T12:01:00+00:00",
+     "reason": "fixture",
+     "source": "persisted_observation",
+     "status": "pass",
+     "value": 9,
+     "window_end": "2026-09-18T12:01:00+00:00",
+     "window_start": "2026-09-18T12:01:00+00:00"
+    },
+    {
+     "age_seconds": 3600.0,
+     "definition": {
+      "metric_id": "m"
+     },
+     "evidence_refs": [
+      "sha256:aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa"
+     ],
+     "id": "m-2026-09-18T11:00:00+00:00",
+     "metric_id": "m",
+     "observed_at": "2026-09-18T11:00:00+00:00",
+     "reason": "fixture",
+     "source": "persisted_observation",
+     "status": "pass",
+     "value": 2,
+     "window_end": "2026-09-18T11:00:00+00:00",
+     "window_start": "2026-09-18T11:00:00+00:00"
+    },
+    {
+     "age_seconds": 30.0,
+     "definition": {
+      "metric_id": "n"
+     },
+     "evidence_refs": [
+      "sha256:aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa"
+     ],
+     "id": "n-2026-09-18T11:59:30+00:00",
+     "metric_id": "n",
+     "observed_at": "2026-09-18T11:59:30+00:00",
+     "reason": "fixture",
+     "source": "persisted_observation",
+     "status": "pass",
+     "value": 6,
+     "window_end": "2026-09-18T11:59:30+00:00",
+     "window_start": "2026-09-18T11:59:30+00:00"
+    },
+    {
+     "age_seconds": 300.0,
+     "definition": {
+      "metric_id": "tie"
+     },
+     "evidence_refs": [
+      "sha256:aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa"
+     ],
+     "id": "tie-2026-09-18T11:55:00+00:00",
+     "metric_id": "tie",
+     "observed_at": "2026-09-18T11:55:00+00:00",
+     "reason": "fixture",
+     "source": "persisted_observation",
+     "status": "pass",
+     "value": "first",
+     "window_end": "2026-09-18T11:55:00+00:00",
+     "window_start": "2026-09-18T11:55:00+00:00"
+    },
+    {
+     "age_seconds": 3600.0,
+     "definition": {
+      "metric_id": "tz"
+     },
+     "evidence_refs": [
+      "sha256:aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa"
+     ],
+     "id": "tz-2026-09-18T20:00:00+09:00",
+     "metric_id": "tz",
+     "observed_at": "2026-09-18T20:00:00+09:00",
+     "reason": "fixture",
+     "source": "persisted_observation",
+     "status": "pass",
+     "value": 8,
+     "window_end": "2026-09-18T20:00:00+09:00",
+     "window_start": "2026-09-18T20:00:00+09:00"
+    }
+   ]
+  },
+  "naive_now": {
+   "message": "can't subtract offset-naive and offset-aware datetimes",
+   "refused": "TypeError"
+  },
+  "positional_now_equals_keyword": true,
+  "read_only_store": {
+   "value": [
+    {
+     "age_seconds": 0.0,
+     "metric_id": "bare",
+     "observed_at": "2026-09-18T12:00:00+00:00",
+     "source": "persisted_observation"
+    },
+    {
+     "age_seconds": -60.0,
+     "definition": {
+      "metric_id": "future"
+     },
+     "evidence_refs": [
+      "sha256:aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa"
+     ],
+     "id": "future-2026-09-18T12:01:00+00:00",
+     "metric_id": "future",
+     "observed_at": "2026-09-18T12:01:00+00:00",
+     "reason": "fixture",
+     "source": "persisted_observation",
+     "status": "pass",
+     "value": 9,
+     "window_end": "2026-09-18T12:01:00+00:00",
+     "window_start": "2026-09-18T12:01:00+00:00"
+    },
+    {
+     "age_seconds": 3600.0,
+     "definition": {
+      "metric_id": "m"
+     },
+     "evidence_refs": [
+      "sha256:aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa"
+     ],
+     "id": "m-2026-09-18T11:00:00+00:00",
+     "metric_id": "m",
+     "observed_at": "2026-09-18T11:00:00+00:00",
+     "reason": "fixture",
+     "source": "persisted_observation",
+     "status": "pass",
+     "value": 2,
+     "window_end": "2026-09-18T11:00:00+00:00",
+     "window_start": "2026-09-18T11:00:00+00:00"
+    },
+    {
+     "age_seconds": 30.0,
+     "definition": {
+      "metric_id": "n"
+     },
+     "evidence_refs": [
+      "sha256:aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa"
+     ],
+     "id": "n-2026-09-18T11:59:30+00:00",
+     "metric_id": "n",
+     "observed_at": "2026-09-18T11:59:30+00:00",
+     "reason": "fixture",
+     "source": "persisted_observation",
+     "status": "pass",
+     "value": 6,
+     "window_end": "2026-09-18T11:59:30+00:00",
+     "window_start": "2026-09-18T11:59:30+00:00"
+    },
+    {
+     "age_seconds": 300.0,
+     "definition": {
+      "metric_id": "tie"
+     },
+     "evidence_refs": [
+      "sha256:aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa"
+     ],
+     "id": "tie-2026-09-18T11:55:00+00:00",
+     "metric_id": "tie",
+     "observed_at": "2026-09-18T11:55:00+00:00",
+     "reason": "fixture",
+     "source": "persisted_observation",
+     "status": "pass",
+     "value": "first",
+     "window_end": "2026-09-18T11:55:00+00:00",
+     "window_start": "2026-09-18T11:55:00+00:00"
+    },
+    {
+     "age_seconds": 3600.0,
+     "definition": {
+      "metric_id": "tz"
+     },
+     "evidence_refs": [
+      "sha256:aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa"
+     ],
+     "id": "tz-2026-09-18T20:00:00+09:00",
+     "metric_id": "tz",
+     "observed_at": "2026-09-18T20:00:00+09:00",
+     "reason": "fixture",
+     "source": "persisted_observation",
+     "status": "pass",
+     "value": 8,
+     "window_end": "2026-09-18T20:00:00+09:00",
+     "window_start": "2026-09-18T20:00:00+09:00"
+    }
+   ]
+  },
+  "store_failure": {
+   "message": "injected store outage",
+   "refused": "RuntimeError"
+  },
+  "store_unchanged": true
+ },
+ "project_receipt": {
+  "canary_leaked": false,
+  "claude_message": {
+   "value": {
+    "error_type": null,
+    "event_label": "message",
+    "item_type": null,
+    "malformed": false,
+    "occurred_at": null,
+    "state": "ok",
+    "status": "emitted",
+    "tool_name": null
+   }
+  },
+  "claude_occurred": {
+   "value": {
+    "error_type": null,
+    "event_label": "tool_completed",
+    "item_type": null,
+    "malformed": false,
+    "occurred_at": "2026-09-27T23:00:00+00:00",
+    "state": "ok",
+    "status": "completed",
+    "tool_name": null
+   }
+  },
+  "claude_occurred_bool": {
+   "value": {
+    "error_type": null,
+    "event_label": "tool_completed",
+    "item_type": null,
+    "malformed": false,
+    "occurred_at": null,
+    "state": "ok",
+    "status": "completed",
+    "tool_name": null
+   }
+  },
+  "claude_occurred_float": {
+   "value": {
+    "error_type": null,
+    "event_label": "tool_completed",
+    "item_type": null,
+    "malformed": false,
+    "occurred_at": null,
+    "state": "ok",
+    "status": "completed",
+    "tool_name": null
+   }
+  },
+  "claude_occurred_just_under": {
+   "value": {
+    "error_type": null,
+    "event_label": "tool_completed",
+    "item_type": null,
+    "malformed": false,
+    "occurred_at": "5138-11-16T09:46:39.998993+00:00",
+    "state": "ok",
+    "status": "completed",
+    "tool_name": null
+   }
+  },
+  "claude_occurred_negative": {
+   "value": {
+    "error_type": null,
+    "event_label": "tool_completed",
+    "item_type": null,
+    "malformed": false,
+    "occurred_at": null,
+    "state": "ok",
+    "status": "completed",
+    "tool_name": null
+   }
+  },
+  "claude_occurred_too_big": {
+   "value": {
+    "error_type": null,
+    "event_label": "tool_completed",
+    "item_type": null,
+    "malformed": false,
+    "occurred_at": null,
+    "state": "ok",
+    "status": "completed",
+    "tool_name": null
+   }
+  },
+  "claude_occurred_zero": {
+   "value": {
+    "error_type": null,
+    "event_label": "tool_completed",
+    "item_type": null,
+    "malformed": false,
+    "occurred_at": null,
+    "state": "ok",
+    "status": "completed",
+    "tool_name": null
+   }
+  },
+  "claude_permission_denied": {
+   "value": {
+    "error_type": null,
+    "event_label": "permission_denied",
+    "item_type": null,
+    "malformed": false,
+    "occurred_at": null,
+    "state": "ok",
+    "status": "denied",
+    "tool_name": null
+   }
+  },
+  "claude_result_error": {
+   "value": {
+    "error_type": null,
+    "event_label": "result",
+    "item_type": null,
+    "malformed": false,
+    "occurred_at": null,
+    "state": "ok",
+    "status": "error",
+    "tool_name": null
+   }
+  },
+  "claude_result_error_bare": {
+   "value": {
+    "error_type": null,
+    "event_label": "result",
+    "item_type": null,
+    "malformed": false,
+    "occurred_at": null,
+    "state": "ok",
+    "status": "error",
+    "tool_name": null
+   }
+  },
+  "claude_result_none": {
+   "value": {
+    "error_type": null,
+    "event_label": "result",
+    "item_type": null,
+    "malformed": false,
+    "occurred_at": null,
+    "state": "ok",
+    "status": "unknown",
+    "tool_name": null
+   }
+  },
+  "claude_result_success": {
+   "value": {
+    "error_type": null,
+    "event_label": "result",
+    "item_type": null,
+    "malformed": false,
+    "occurred_at": null,
+    "state": "ok",
+    "status": "success",
+    "tool_name": null
+   }
+  },
+  "claude_result_unknown": {
+   "value": {
+    "error_type": null,
+    "event_label": "result",
+    "item_type": null,
+    "malformed": false,
+    "occurred_at": null,
+    "state": "ok",
+    "status": "unknown",
+    "tool_name": null
+   }
+  },
+  "claude_session_started": {
+   "value": {
+    "error_type": null,
+    "event_label": "session_started",
+    "item_type": null,
+    "malformed": false,
+    "occurred_at": null,
+    "state": "ok",
+    "status": "started",
+    "tool_name": null
+   }
+  },
+  "claude_status_failed": {
+   "value": {
+    "error_type": null,
+    "event_label": "tool_completed",
+    "item_type": null,
+    "malformed": false,
+    "occurred_at": null,
+    "state": "ok",
+    "status": "failed",
+    "tool_name": null
+   }
+  },
+  "claude_status_none": {
+   "value": {
+    "error_type": null,
+    "event_label": "tool_completed",
+    "item_type": null,
+    "malformed": false,
+    "occurred_at": null,
+    "state": "ok",
+    "status": null,
+    "tool_name": null
+   }
+  },
+  "claude_status_unknown_plain": {
+   "value": {
+    "error_type": null,
+    "event_label": "message",
+    "item_type": null,
+    "malformed": false,
+    "occurred_at": null,
+    "state": "ok",
+    "status": "unknown",
+    "tool_name": null
+   }
+  },
+  "claude_tool_completed": {
+   "value": {
+    "error_type": null,
+    "event_label": "tool_completed",
+    "item_type": null,
+    "malformed": false,
+    "occurred_at": null,
+    "state": "ok",
+    "status": "completed",
+    "tool_name": null
+   }
+  },
+  "claude_tool_completed_tool_dropped": {
+   "value": {
+    "error_type": null,
+    "event_label": "tool_completed",
+    "item_type": null,
+    "malformed": false,
+    "occurred_at": null,
+    "state": "ok",
+    "status": "completed",
+    "tool_name": null
+   }
+  },
+  "claude_tool_started_canary": {
+   "value": {
+    "error_type": null,
+    "event_label": "tool_started",
+    "item_type": null,
+    "malformed": false,
+    "occurred_at": null,
+    "state": "ok",
+    "status": "started",
+    "tool_name": null
+   }
+  },
+  "claude_tool_started_mcp": {
+   "value": {
+    "error_type": null,
+    "event_label": "tool_started",
+    "item_type": null,
+    "malformed": false,
+    "occurred_at": null,
+    "state": "ok",
+    "status": "started",
+    "tool_name": null
+   }
+  },
+  "claude_tool_started_no_tool": {
+   "value": {
+    "error_type": null,
+    "event_label": "tool_started",
+    "item_type": null,
+    "malformed": false,
+    "occurred_at": null,
+    "state": "ok",
+    "status": "started",
+    "tool_name": null
+   }
+  },
+  "claude_tool_started_read": {
+   "value": {
+    "error_type": null,
+    "event_label": "tool_started",
+    "item_type": null,
+    "malformed": false,
+    "occurred_at": null,
+    "state": "ok",
+    "status": "started",
+    "tool_name": "Read"
+   }
+  },
+  "claude_unknown_kind": {
+   "value": {
+    "error_type": null,
+    "event_label": "unknown",
+    "item_type": null,
+    "malformed": false,
+    "occurred_at": null,
+    "state": "ok",
+    "status": "unknown",
+    "tool_name": null
+   }
+  },
+  "codex_agent_message_no_status": {
+   "value": {
+    "error_type": null,
+    "event_label": "item_completed",
+    "item_type": "agentMessage",
+    "malformed": false,
+    "occurred_at": "2026-09-27T23:00:00+00:00",
+    "state": "ok",
+    "status": null,
+    "tool_name": null
+   }
+  },
+  "codex_command": {
+   "value": {
+    "error_type": null,
+    "event_label": "item_completed",
+    "item_type": "commandExecution",
+    "malformed": false,
+    "occurred_at": "2026-09-27T23:00:00+00:00",
+    "state": "ok",
+    "status": "completed",
+    "tool_name": null
+   }
+  },
+  "codex_completed_bool_then_emitted": {
+   "value": {
+    "error_type": null,
+    "event_label": "item_completed",
+    "item_type": "fileChange",
+    "malformed": false,
+    "occurred_at": "2026-09-27T23:33:20+00:00",
+    "state": "ok",
+    "status": null,
+    "tool_name": null
+   }
+  },
+  "codex_emitted_at": {
+   "value": {
+    "error_type": null,
+    "event_label": "item_completed",
+    "item_type": null,
+    "malformed": false,
+    "occurred_at": "2026-09-27T23:33:20+00:00",
+    "state": "ok",
+    "status": null,
+    "tool_name": null
+   }
+  },
+  "codex_file_change_failed": {
+   "value": {
+    "error_type": null,
+    "event_label": "item_completed",
+    "item_type": "fileChange",
+    "malformed": false,
+    "occurred_at": "2026-09-27T23:00:00+00:00",
+    "state": "ok",
+    "status": "failed",
+    "tool_name": null
+   }
+  },
+  "codex_item_completed_at": {
+   "value": {
+    "error_type": null,
+    "event_label": "item_completed",
+    "item_type": "fileChange",
+    "malformed": false,
+    "occurred_at": "2026-09-27T23:00:00+00:00",
+    "state": "ok",
+    "status": null,
+    "tool_name": null
+   }
+  },
+  "codex_item_not_dict": {
+   "value": {
+    "error_type": null,
+    "event_label": "item_completed",
+    "item_type": null,
+    "malformed": false,
+    "occurred_at": null,
+    "state": "ok",
+    "status": null,
+    "tool_name": null
+   }
+  },
+  "codex_item_status_in_progress": {
+   "value": {
+    "error_type": null,
+    "event_label": "item_completed",
+    "item_type": "fileChange",
+    "malformed": false,
+    "occurred_at": "2026-09-27T23:00:00+00:00",
+    "state": "ok",
+    "status": "unknown",
+    "tool_name": null
+   }
+  },
+  "codex_mcp_unknown_status": {
+   "value": {
+    "error_type": null,
+    "event_label": "item_completed",
+    "item_type": "mcpToolCall",
+    "malformed": false,
+    "occurred_at": "2026-09-27T23:00:00+00:00",
+    "state": "ok",
+    "status": "unknown",
+    "tool_name": null
+   }
+  },
+  "codex_method_not_str": {
+   "value": {
+    "error_type": null,
+    "event_label": "unknown",
+    "item_type": null,
+    "malformed": false,
+    "occurred_at": null,
+    "state": "ok",
+    "status": null,
+    "tool_name": null
+   }
+  },
+  "codex_no_item": {
+   "value": {
+    "error_type": null,
+    "event_label": "item_completed",
+    "item_type": null,
+    "malformed": false,
+    "occurred_at": "2026-09-27T23:00:00+00:00",
+    "state": "ok",
+    "status": null,
+    "tool_name": null
+   }
+  },
+  "codex_params_list": {
+   "value": {
+    "error_type": null,
+    "event_label": "item_completed",
+    "item_type": null,
+    "malformed": false,
+    "occurred_at": null,
+    "state": "ok",
+    "status": null,
+    "tool_name": null
+   }
+  },
+  "codex_params_not_dict": {
+   "value": {
+    "error_type": null,
+    "event_label": "item_completed",
+    "item_type": null,
+    "malformed": false,
+    "occurred_at": null,
+    "state": "ok",
+    "status": null,
+    "tool_name": null
+   }
+  },
+  "codex_reasoning": {
+   "value": {
+    "error_type": null,
+    "event_label": "item_completed",
+    "item_type": "reasoning",
+    "malformed": false,
+    "occurred_at": "2026-09-27T23:00:00+00:00",
+    "state": "ok",
+    "status": "completed",
+    "tool_name": null
+   }
+  },
+  "codex_token_usage": {
+   "value": {
+    "error_type": null,
+    "event_label": "token_usage_updated",
+    "item_type": null,
+    "malformed": false,
+    "occurred_at": "2026-09-27T23:00:00+00:00",
+    "state": "ok",
+    "status": null,
+    "tool_name": null
+   }
+  },
+  "codex_unknown_method": {
+   "value": {
+    "error_type": null,
+    "event_label": "unknown",
+    "item_type": null,
+    "malformed": false,
+    "occurred_at": "2026-09-27T23:00:00+00:00",
+    "state": "ok",
+    "status": null,
+    "tool_name": null
+   }
+  },
+  "codex_unknown_type": {
+   "value": {
+    "error_type": null,
+    "event_label": "item_completed",
+    "item_type": "unknown",
+    "malformed": false,
+    "occurred_at": "2026-09-27T23:00:00+00:00",
+    "state": "ok",
+    "status": null,
+    "tool_name": null
+   }
+  },
+  "deep_nesting": {
+   "value": {
+    "error_type": "invalid_json",
+    "event_label": "malformed",
+    "item_type": null,
+    "malformed": true,
+    "occurred_at": null,
+    "state": "unreadable",
+    "status": null,
+    "tool_name": null
+   }
+  },
+  "deep_object": {
+   "value": {
+    "error_type": "invalid_shape",
+    "event_label": "malformed",
+    "item_type": null,
+    "malformed": true,
+    "occurred_at": null,
+    "state": "malformed",
+    "status": null,
+    "tool_name": null
+   }
+  },
+  "duplicate_key": {
+   "value": {
+    "error_type": "invalid_json",
+    "event_label": "malformed",
+    "item_type": null,
+    "malformed": true,
+    "occurred_at": null,
+    "state": "unreadable",
+    "status": null,
+    "tool_name": null
+   }
+  },
+  "empty": {
+   "value": {
+    "error_type": "invalid_json",
+    "event_label": "malformed",
+    "item_type": null,
+    "malformed": true,
+    "occurred_at": null,
+    "state": "unreadable",
+    "status": null,
+    "tool_name": null
+   }
+  },
+  "empty_event": {
+   "value": {
+    "error_type": null,
+    "event_label": "unknown",
+    "item_type": null,
+    "malformed": false,
+    "occurred_at": null,
+    "state": "ok",
+    "status": null,
+    "tool_name": null
+   }
+  },
+  "event_none": {
+   "value": {
+    "error_type": null,
+    "event_label": "malformed",
+    "item_type": null,
+    "malformed": true,
+    "occurred_at": null,
+    "state": "malformed",
+    "status": null,
+    "tool_name": null
+   }
+  },
+  "event_not_dict": {
+   "value": {
+    "error_type": null,
+    "event_label": "malformed",
+    "item_type": null,
+    "malformed": true,
+    "occurred_at": null,
+    "state": "malformed",
+    "status": null,
+    "tool_name": null
+   }
+  },
+  "event_str": {
+   "value": {
+    "error_type": null,
+    "event_label": "malformed",
+    "item_type": null,
+    "malformed": true,
+    "occurred_at": null,
+    "state": "malformed",
+    "status": null,
+    "tool_name": null
+   }
+  },
+  "extra_key": {
+   "value": {
+    "error_type": "invalid_shape",
+    "event_label": "malformed",
+    "item_type": null,
+    "malformed": true,
+    "occurred_at": null,
+    "state": "malformed",
+    "status": null,
+    "tool_name": null
+   }
+  },
+  "infinity": {
+   "value": {
+    "error_type": "invalid_json",
+    "event_label": "malformed",
+    "item_type": null,
+    "malformed": true,
+    "occurred_at": null,
+    "state": "unreadable",
+    "status": null,
+    "tool_name": null
+   }
+  },
+  "list_body": {
+   "value": {
+    "error_type": "invalid_shape",
+    "event_label": "malformed",
+    "item_type": null,
+    "malformed": true,
+    "occurred_at": null,
+    "state": "malformed",
+    "status": null,
+    "tool_name": null
+   }
+  },
+  "malformed_flag": {
+   "value": {
+    "error_type": null,
+    "event_label": "malformed",
+    "item_type": null,
+    "malformed": true,
+    "occurred_at": null,
+    "state": "malformed",
+    "status": null,
+    "tool_name": null
+   }
+  },
+  "malformed_flag_with_event": {
+   "value": {
+    "error_type": null,
+    "event_label": "malformed",
+    "item_type": null,
+    "malformed": true,
+    "occurred_at": null,
+    "state": "malformed",
+    "status": null,
+    "tool_name": null
+   }
+  },
+  "malformed_int": {
+   "value": {
+    "error_type": "invalid_shape",
+    "event_label": "malformed",
+    "item_type": null,
+    "malformed": true,
+    "occurred_at": null,
+    "state": "malformed",
+    "status": null,
+    "tool_name": null
+   }
+  },
+  "malformed_missing": {
+   "value": {
+    "error_type": "invalid_shape",
+    "event_label": "malformed",
+    "item_type": null,
+    "malformed": true,
+    "occurred_at": null,
+    "state": "malformed",
+    "status": null,
+    "tool_name": null
+   }
+  },
+  "malformed_not_bool": {
+   "value": {
+    "error_type": "invalid_shape",
+    "event_label": "malformed",
+    "item_type": null,
+    "malformed": true,
+    "occurred_at": null,
+    "state": "malformed",
+    "status": null,
+    "tool_name": null
+   }
+  },
+  "nan": {
+   "value": {
+    "error_type": "invalid_json",
+    "event_label": "malformed",
+    "item_type": null,
+    "malformed": true,
+    "occurred_at": null,
+    "state": "unreadable",
+    "status": null,
+    "tool_name": null
+   }
+  },
+  "neg_infinity": {
+   "value": {
+    "error_type": "invalid_json",
+    "event_label": "malformed",
+    "item_type": null,
+    "malformed": true,
+    "occurred_at": null,
+    "state": "unreadable",
+    "status": null,
+    "tool_name": null
+   }
+  },
+  "non_string_inputs": {
+   "5": {
+    "message": "the JSON object must be str, bytes or bytearray, not int",
+    "refused": "TypeError"
+   },
+   "None": {
+    "message": "the JSON object must be str, bytes or bytearray, not NoneType",
+    "refused": "TypeError"
+   },
+   "[]": {
+    "message": "the JSON object must be str, bytes or bytearray, not list",
+    "refused": "TypeError"
+   },
+   "b'{}'": {
+    "value": {
+     "error_type": "invalid_shape",
+     "event_label": "malformed",
+     "item_type": null,
+     "malformed": true,
+     "occurred_at": null,
+     "state": "malformed",
+     "status": null,
+     "tool_name": null
+    }
+   }
+  },
+  "not_json": {
+   "value": {
+    "error_type": "invalid_json",
+    "event_label": "malformed",
+    "item_type": null,
+    "malformed": true,
+    "occurred_at": null,
+    "state": "unreadable",
+    "status": null,
+    "tool_name": null
+   }
+  },
+  "null_body": {
+   "value": {
+    "error_type": "invalid_shape",
+    "event_label": "malformed",
+    "item_type": null,
+    "malformed": true,
+    "occurred_at": null,
+    "state": "malformed",
+    "status": null,
+    "tool_name": null
+   }
+  },
+  "number_body": {
+   "value": {
+    "error_type": "invalid_shape",
+    "event_label": "malformed",
+    "item_type": null,
+    "malformed": true,
+    "occurred_at": null,
+    "state": "malformed",
+    "status": null,
+    "tool_name": null
+   }
+  },
+  "only_known_keys": {
+   "value": {
+    "error_type": null,
+    "event_label": "message",
+    "item_type": null,
+    "malformed": false,
+    "occurred_at": null,
+    "state": "ok",
+    "status": null,
+    "tool_name": null
+   }
+  },
+  "provider_unknown": {
+   "value": {
+    "error_type": null,
+    "event_label": "unknown",
+    "item_type": null,
+    "malformed": false,
+    "occurred_at": null,
+    "state": "ok",
+    "status": null,
+    "tool_name": null
+   }
+  },
+  "string_body": {
+   "value": {
+    "error_type": "invalid_shape",
+    "event_label": "malformed",
+    "item_type": null,
+    "malformed": true,
+    "occurred_at": null,
+    "state": "malformed",
+    "status": null,
+    "tool_name": null
+   }
+  },
+  "truncated": {
+   "value": {
+    "error_type": "invalid_json",
+    "event_label": "malformed",
+    "item_type": null,
+    "malformed": true,
+    "occurred_at": null,
+    "state": "unreadable",
+    "status": null,
+    "tool_name": null
+   }
+  },
+  "unicode": {
+   "value": {
+    "error_type": null,
+    "event_label": "message",
+    "item_type": null,
+    "malformed": false,
+    "occurred_at": null,
+    "state": "ok",
+    "status": "emitted",
+    "tool_name": null
+   }
+  },
+  "wrong_claude_result_status_dict": {
+   "value": {
+    "error_type": "invalid_shape",
+    "event_label": "malformed",
+    "item_type": null,
+    "malformed": true,
+    "occurred_at": null,
+    "state": "malformed",
+    "status": null,
+    "tool_name": null
+   }
+  },
+  "wrong_claude_status_int": {
+   "value": {
+    "error_type": "invalid_shape",
+    "event_label": "malformed",
+    "item_type": null,
+    "malformed": true,
+    "occurred_at": null,
+    "state": "malformed",
+    "status": null,
+    "tool_name": null
+   }
+  },
+  "wrong_claude_status_list": {
+   "value": {
+    "error_type": "invalid_shape",
+    "event_label": "malformed",
+    "item_type": null,
+    "malformed": true,
+    "occurred_at": null,
+    "state": "malformed",
+    "status": null,
+    "tool_name": null
+   }
+  },
+  "wrong_claude_tool_dict": {
+   "value": {
+    "error_type": "invalid_shape",
+    "event_label": "malformed",
+    "item_type": null,
+    "malformed": true,
+    "occurred_at": null,
+    "state": "malformed",
+    "status": null,
+    "tool_name": null
+   }
+  },
+  "wrong_claude_tool_list": {
+   "value": {
+    "error_type": "invalid_shape",
+    "event_label": "malformed",
+    "item_type": null,
+    "malformed": true,
+    "occurred_at": null,
+    "state": "malformed",
+    "status": null,
+    "tool_name": null
+   }
+  },
+  "wrong_claude_type_dict": {
+   "value": {
+    "error_type": "invalid_shape",
+    "event_label": "malformed",
+    "item_type": null,
+    "malformed": true,
+    "occurred_at": null,
+    "state": "malformed",
+    "status": null,
+    "tool_name": null
+   }
+  },
+  "wrong_claude_type_list": {
+   "value": {
+    "error_type": "invalid_shape",
+    "event_label": "malformed",
+    "item_type": null,
+    "malformed": true,
+    "occurred_at": null,
+    "state": "malformed",
+    "status": null,
+    "tool_name": null
+   }
+  },
+  "wrong_codex_status_list": {
+   "value": {
+    "error_type": "invalid_shape",
+    "event_label": "malformed",
+    "item_type": null,
+    "malformed": true,
+    "occurred_at": null,
+    "state": "malformed",
+    "status": null,
+    "tool_name": null
+   }
+  },
+  "wrong_codex_type_dict": {
+   "value": {
+    "error_type": "invalid_shape",
+    "event_label": "malformed",
+    "item_type": null,
+    "malformed": true,
+    "occurred_at": null,
+    "state": "malformed",
+    "status": null,
+    "tool_name": null
+   }
+  },
+  "wrong_codex_type_list": {
+   "value": {
+    "error_type": "invalid_shape",
+    "event_label": "malformed",
+    "item_type": null,
+    "malformed": true,
+    "occurred_at": null,
+    "state": "malformed",
+    "status": null,
+    "tool_name": null
+   }
+  }
+ },
+ "read_only": {
+  "artifact_reader": {
+   "calls": [
+    [
+     "_body",
+     "ref",
+     null
+    ],
+    [
+     "_body",
+     "ref",
+     5
+    ],
+    [
+     "document",
+     "ref"
+    ],
+    [
+     "text",
+     "ref",
+     10
+    ],
+    [
+     "read",
+     "ref",
+     0,
+     8000
+    ],
+    [
+     "read",
+     "ref",
+     3,
+     4
+    ],
+    [
+     "inspect",
+     "ref"
+    ],
+    [
+     "search",
+     "ref",
+     "needle",
+     20
+    ],
+    [
+     "search",
+     "ref",
+     "needle",
+     2
+    ]
+   ],
+   "results": {
+    "_body": {
+     "value": "body"
+    },
+    "_body_max": {
+     "value": "body"
+    },
+    "document": {
+     "value": {
+      "document": "ref"
+     }
+    },
+    "inspect": {
+     "value": {
+      "inspect": "ref"
+     }
+    },
+    "put": {
+     "message": "Monitor artifact reader is read-only",
+     "refused": "ContractError"
+    },
+    "put_keywords": {
+     "message": "Monitor artifact reader is read-only",
+     "refused": "ContractError"
+    },
+    "read": {
+     "value": "read"
+    },
+    "read_args": {
+     "value": "read"
+    },
+    "search": {
+     "value": [
+      {
+       "search": [
+        "ref",
+        "needle",
+        20
+       ]
+      }
+     ]
+    },
+    "search_limit": {
+     "value": [
+      {
+       "search": [
+        "ref",
+        "needle",
+        2
+       ]
+      }
+     ]
+    },
+    "text": {
+     "value": "text"
+    },
+    "unreachable": [
+     {
+      "message": "'ReadOnlyArtifacts' object has no attribute 'delete'",
+      "refused": "AttributeError"
+     },
+     {
+      "message": "'ReadOnlyArtifacts' object has no attribute 'write'",
+      "refused": "AttributeError"
+     },
+     {
+      "message": "'ReadOnlyArtifacts' object has no attribute 'remove'",
+      "refused": "AttributeError"
+     },
+     {
+      "message": "'ReadOnlyArtifacts' object has no attribute 'root'",
+      "refused": "AttributeError"
+     }
+    ]
+   }
+  },
+  "delegation_calls": [
+   [
+    "get",
+    "b",
+    "k"
+   ],
+   [
+    "scan",
+    "b"
+   ],
+   [
+    "entries",
+    "b",
+    "",
+    100
+   ],
+   [
+    "entries",
+    "b",
+    "a",
+    7
+   ],
+   [
+    "records"
+   ]
+  ],
+  "graph_inside_with": {
+   "message": "Monitor store is read-only",
+   "refused": "ContractError"
+  },
+  "no_service_attrs": {
+   "message": "'types.SimpleNamespace' object has no attribute 'org'",
+   "refused": "AttributeError"
+  },
+  "put_after_reads": {
+   "message": "Monitor store is read-only",
+   "refused": "ContractError"
+  },
+  "read_only": {
+   "artifact_put_refused": {
+    "message": "Monitor artifact reader is read-only",
+    "refused": "ContractError"
+   },
+   "len": 2,
+   "org": "ORG",
+   "store_put_refused": {
+    "message": "Monitor store is read-only",
+    "refused": "ContractError"
+   },
+   "types": [
+    "ReadOnlyService",
+    "ReadOnlyArtifacts"
+   ]
+  },
+  "real_artifacts_put_refused": {
+   "put": {
+    "message": "Monitor artifact reader is read-only",
+    "refused": "ContractError"
+   },
+   "root_entries": [],
+   "tree_unchanged": true
+  },
+  "service": {
+   "extra_dropped": {
+    "message": "'ReadOnlyService' object has no attribute 'extra'",
+    "refused": "AttributeError"
+   },
+   "org": "ORG",
+   "scan": [
+    "one",
+    "three",
+    "two"
+   ],
+   "store_type": "ReadOnlyStore"
+  },
+  "store_still_writable_directly": true,
+  "store_unchanged": true,
+  "transaction_reads": {
+   "entries": [
+    {
+     "body": {
+      "id": "one",
+      "status": "queued"
+     },
+     "id": "one"
+    },
+    {
+     "body": {
+      "id": "two",
+      "status": "running"
+     },
+     "id": "two"
+    }
+   ],
+   "entries_after": [
+    {
+     "body": {
+      "id": "two",
+      "status": "running"
+     },
+     "id": "two"
+    }
+   ],
+   "entries_keywords": [
+    {
+     "body": {
+      "id": "one",
+      "status": "queued"
+     },
+     "id": "one"
+    }
+   ],
+   "get": {
+    "id": "one",
+    "status": "queued"
+   },
+   "get_missing": null,
+   "graph_refused": {
+    "message": "Monitor store is read-only",
+    "refused": "ContractError"
+   },
+   "private_view": {
+    "value": "MemoryTransaction"
+   },
+   "put_edge_unreachable": {
+    "message": "'ReadOnlyTransaction' object has no attribute 'put_edge'",
+    "refused": "AttributeError"
+   },
+   "put_keywords_refused": {
+    "message": "Monitor store is read-only",
+    "refused": "ContractError"
+   },
+   "put_no_args_refused": {
+    "message": "Monitor store is read-only",
+    "refused": "ContractError"
+   },
+   "put_node_unreachable": {
+    "message": "'ReadOnlyTransaction' object has no attribute 'put_node'",
+    "refused": "AttributeError"
+   },
+   "put_refused": {
+    "message": "Monitor store is read-only",
+    "refused": "ContractError"
+   },
+   "records": [
+    {
+     "body": {
+      "id": "k"
+     },
+     "bucket": "other",
+     "id": "k"
+    },
+    {
+     "body": {
+      "id": "one",
+      "status": "queued"
+     },
+     "bucket": "tasks",
+     "id": "one"
+    },
+    {
+     "body": {
+      "id": "two",
+      "status": "running"
+     },
+     "bucket": "tasks",
+     "id": "two"
+    }
+   ],
+   "scan": [
+    {
+     "id": "one",
+     "status": "queued"
+    },
+    {
+     "id": "two",
+     "status": "running"
+    }
+   ],
+   "scan_missing": [],
+   "type": "ReadOnlyTransaction",
+   "underlying_unreachable": [
+    {
+     "message": "'ReadOnlyTransaction' object has no attribute 'delete'",
+     "refused": "AttributeError"
+    },
+    {
+     "message": "'ReadOnlyTransaction' object has no attribute 'commit'",
+     "refused": "AttributeError"
+    },
+    {
+     "message": "'ReadOnlyTransaction' object has no attribute 'execute'",
+     "refused": "AttributeError"
+    },
+    {
+     "message": "'ReadOnlyTransaction' object has no attribute 'conn'",
+     "refused": "AttributeError"
+    }
+   ]
+  },
+  "write_inside_with": {
+   "message": "Monitor store is read-only",
+   "refused": "ContractError"
+  }
+ },
+ "safe_text": {
+  "canary_leaked": false,
+  "constants": {
+   "CONTAINER_NAME": "[A-Za-z0-9][A-Za-z0-9_.-]{0,127}",
+   "MAX_CONTAINERS": 32
+  },
+  "default_limit": [
+   {
+    "value": ""
+   },
+   {
+    "value": ""
+   },
+   {
+    "value": ""
+   },
+   {
+    "value": ""
+   },
+   {
+    "value": "plain"
+   },
+   {
+    "value": "5"
+   },
+   {
+    "value": "5.5"
+   },
+   {
+    "value": "[1]"
+   },
+   {
+    "value": "{'a': 1}"
+   },
+   {
+    "value": "b'bytes'"
+   },
+   {
+    "value": "xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx"
+   },
+   {
+    "value": "한글 라벨 가가가가가가가가가가가가가가가가가가가가가가가가가가가가가가가가가가가가가가가가가가가가가가가가가가"
+   },
+   {
+    "value": "postgresql://[redacted]@localhost/db"
+   },
+   {
+    "value": "https://[redacted]@host.example/path"
+   },
+   {
+    "value": "redis://:pw@h"
+   },
+   {
+    "value": "scheme://onlyuser@host"
+   },
+   {
+    "value": "a://[redacted]@d e://[redacted]@h"
+   },
+   {
+    "value": "Bearer [redacted]"
+   },
+   {
+    "value": "bearer [redacted]"
+   },
+   {
+    "value": "Authorization: Bearer [redacted]"
+   },
+   {
+    "value": "token=[redacted]"
+   },
+   {
+    "value": "TOKEN: [redacted]"
+   },
+   {
+    "value": "api_key = [redacted]"
+   },
+   {
+    "value": "API-KEY:[redacted]"
+   },
+   {
+    "value": "apikey=[redacted]"
+   },
+   {
+    "value": "password: [redacted] trailing"
+   },
+   {
+    "value": "PASSWORD=[redacted] token=[redacted]"
+   },
+   {
+    "value": "mixed postgresql://[redacted]@c Bearer [redacted] token=[redacted]"
+   },
+   {
+    "value": "token="
+   },
+   {
+    "value": "password"
+   },
+   {
+    "value": "no secret here"
+   }
+  ],
+  "limit_20": [
+   {
+    "value": "xxxxxxxxxxxxxxxxxxxx"
+   },
+   {
+    "value": "한글 라벨 가가가가가가가가가가가가가가"
+   },
+   {
+    "value": "postgresql://[redact"
+   },
+   {
+    "value": "https://[redacted]@h"
+   },
+   {
+    "value": "redis://:pw@h"
+   },
+   {
+    "value": "scheme://onlyuser@ho"
+   },
+   {
+    "value": "Bearer [redacted]"
+   },
+   {
+    "value": "bearer [redacted]"
+   },
+   {
+    "value": "Authorization: Beare"
+   },
+   {
+    "value": "token=[redacted]"
+   },
+   {
+    "value": "TOKEN: [redacted]"
+   }
+  ],
+  "limit_float": {
+   "message": "slice indices must be integers or None or have an __index__ method",
+   "refused": "TypeError"
+  },
+  "limit_negative": {
+   "value": "abcd"
+  },
+  "limit_none": {
+   "value": "abc"
+  },
+  "limit_zero": {
+   "value": ""
+  },
+  "multiline": {
+   "value": "a\ntoken=[redacted]\nb"
+  },
+  "redaction_before_truncation": {
+   "value": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaatoken"
+  },
+  "redaction_before_truncation_20": {
+   "value": "xxxxxxxxxxpassword=["
+  }
+ },
+ "scope_label": {
+  "canary_leaked": false,
+  "keyword_label": {
+   "value": "k"
+  },
+  "labels": [
+   {
+    "input": [
+     "/zeus-fixture/some-repo",
+     "None"
+    ],
+    "result": {
+     "value": "repository some-repo"
+    }
+   },
+   {
+    "input": [
+     "/zeus-fixture/some-repo",
+     "''"
+    ],
+    "result": {
+     "value": "repository some-repo"
+    }
+   },
+   {
+    "input": [
+     "/zeus-fixture/some-repo",
+     "'   '"
+    ],
+    "result": {
+     "value": "repository some-repo"
+    }
+   },
+   {
+    "input": [
+     "/zeus-fixture/some-repo/",
+     "'Label'"
+    ],
+    "result": {
+     "value": "Label"
+    }
+   },
+   {
+    "input": [
+     "/zeus-fixture/some-repo",
+     "'  padded  '"
+    ],
+    "result": {
+     "value": "padded"
+    }
+   },
+   {
+    "input": [
+     "/zeus-fixture/some-repo",
+     "'Zeus 고정 운영 원장 · 과거 격리 실행 제외 password=se"
+    ],
+    "result": {
+     "value": "Zeus 고정 운영 원장 · 과거 격리 실행 제외 password=[redacted]"
+    }
+   },
+   {
+    "input": [
+     "/zeus-fixture/some-repo",
+     "'xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx"
+    ],
+    "result": {
+     "value": "xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx"
+    }
+   },
+   {
+    "input": [
+     "/zeus-fixture/some-repo",
+     "'token=CANARY-collectors-core-9d8c7b6a5f"
+    ],
+    "result": {
+     "value": "token=[redacted]"
+    }
+   },
+   {
+    "input": [
+     "/zeus-fixture/some-repo",
+     "5"
+    ],
+    "result": {
+     "value": "5"
+    }
+   },
+   {
+    "input": [
+     "/zeus-fixture/some-repo",
+     "0"
+    ],
+    "result": {
+     "value": "repository some-repo"
+    }
+   },
+   {
+    "input": [
+     "/zeus-fixture/some-repo",
+     "['a']"
+    ],
+    "result": {
+     "value": "['a']"
+    }
+   },
+   {
+    "input": [
+     "/zeus-fixture/a/../other",
+     "None"
+    ],
+    "result": {
+     "value": "repository other"
+    }
+   },
+   {
+    "input": [
+     "/zeus-fixture/path-object",
+     "None"
+    ],
+    "result": {
+     "value": "repository path-object"
+    }
+   },
+   {
+    "input": [
+     "/",
+     "None"
+    ],
+    "result": {
+     "value": "repository "
+    }
+   },
+   {
+    "input": [
+     "/zeus-fixture/한글-저장소",
+     "None"
+    ],
+    "result": {
+     "value": "repository 한글-저장소"
+    }
+   },
+   {
+    "input": [
+     "/zeus-fixture/some-repo",
+     "'aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa"
+    ],
+    "result": {
+     "value": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaatoken"
+    }
+   }
+  ],
+  "repository_int": {
+   "message": "argument should be a str or an os.PathLike object where __fspath__ returns a str, not 'int'",
+   "refused": "TypeError"
+  },
+  "repository_none": {
+   "message": "argument should be a str or an os.PathLike object where __fspath__ returns a str, not 'NoneType'",
+   "refused": "TypeError"
+  }
+ }
+}
