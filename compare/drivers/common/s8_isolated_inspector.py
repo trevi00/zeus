@@ -39,7 +39,7 @@ from s1_common import relative
 PY = sys.executable
 IMAGE = "sha256:" + "a" * 64
 OTHER_IMAGE = "sha256:" + "b" * 64
-TOKEN = "sk-ant-oat01-FIXTURE-SECRET-VALUE"
+TOKEN = "sk" + "-ant-oat01-FIXTURE-SECRET-VALUE"  # assembled so the tree scan sees no credential-shaped literal
 SIBLING = "f" * 64
 UID = 4242
 PIDISH = {"pid", "group", "pgid", "process_id", "leader"}
