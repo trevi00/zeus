@@ -1,0 +1,5321 @@
+{
+ "branch_coverage": {
+  "ThresholdApprovals.__init__": "Case.approvals",
+  "ThresholdApprovals._event": "c1 issued event; c2 refused/consumed events; c3 revoked event; sequence in c4.events",
+  "_check applied value": "c2 applied_value_differs, applied_value_missing",
+  "_check applied value type": "c2 applied_value_float_type",
+  "_check environment": "c2 environment_differs",
+  "_check expired": "c2 expiry_exactly_at, expired, order_expired_before_environment",
+  "_check not issued": "c2 status_*, repeat_after_consumption; c3 consume_after_revoke",
+  "_check passes": "c2 consumed",
+  "_check previous revision": "c2 previous_revision_differs",
+  "_check previous value": "c2 previous_value_differs, previous_value_missing",
+  "_check revision equals previous": "c2 revision_equals_previous",
+  "_check unrelated thresholds": "c2 touches_other_threshold, other_threshold_added/removed",
+  "_time except ValueError -> raise ContractError('<name> is not ISO-8601')": "c3 time: garbage, empty, date_only; c2 expires_at_garbage/date_only",
+  "_time raise ContractError('<name> must be ISO-8601 text') (require)": "c3 time: int, none, bytes, datetime_object; c2 expires_at_int/none",
+  "_time require tzinfo": "c3 time: naive; c2 expires_at_naive; c3 inspect_corrupt.expires_naive",
+  "consume generation": "c2 other_name_first_generation, same_name_*_generation; c4",
+  "consume parse before the transaction": "c2 malformed_policies",
+  "consume refusal event then ContractError": "c2 refusals, refusal_events",
+  "consume require approval": "c2 unknown_approval",
+  "inspect except ContractError -> corrupt": "c3 inspect_corrupt",
+  "inspect except Exception -> unreadable": "c3 unreadable_*; not_mapped_* (BaseException propagates)",
+  "inspect expired": "c3 inspect_expired, inspect_at_expiry_is_expired",
+  "inspect fields": "c3 inspect_issued, inspect_exactly_the_keys",
+  "inspect missing": "c3 inspect_missing",
+  "issue artifacts.document": "c1 evidence_missing, evidence_ref_none, evidence_unreadable_propagates",
+  "issue idempotent existing return": "c1 issued.reissue_same_binding_other_ttl_and_time",
+  "issue put + issued event": "c1 issued",
+  "issue require actor": "c1 actor_*",
+  "issue require assessed request": "c1 not_assessed_pending, unknown_request",
+  "issue require both independent assessments accepted": "c1 reviews_*, first_not_accepted, second_*, first_blocked, second_inspection_blocked, blocked_false_is_fine",
+  "issue require environment": "c1 environment_*",
+  "issue require evidence still contains the proposal": "c1 evidence_lacks_the_proposal, evidence_proposal_differs, evidence_proposals_not_a_list",
+  "issue require finite different value": "c1 current_nan, suggested_inf, suggested_bool, current_bool, suggested_str, suggested_equals_current*",
+  "issue require reference-accepted suggestion": "c1 suggested_none, not_reference_accepted, reference_accepted_missing",
+  "issue require row unchanged since review": "c1 binding_is_not_the_row, row_missing",
+  "issue require ttl_seconds": "c1 ttl_*",
+  "parse_applied_policy require environment": "c2 malformed_policies environment_*",
+  "parse_applied_policy require key set": "c2 malformed_policies (not_a_dict, empty, missing_environment, extra_key); c3 parse_applied_policy",
+  "parse_applied_policy require revisions": "c2 malformed_policies revision_*, previous_revision_*",
+  "parse_applied_policy require values": "c2 malformed_policies values_*, previous_values_*",
+  "revoke already revoked": "c3 again_is_idempotent",
+  "revoke put + revoked event": "c3 revoked, events",
+  "revoke require actor": "c3 actor_*",
+  "revoke require approval": "c3 unknown",
+  "revoke require issued": "c2 revoke_after_consumption",
+  "revoke require reason": "c3 reason_*"
+ },
+ "c1_test_issue_binds_the_exact_assessed_change": {
+  "actor_empty": {
+   "after": {
+    "events": 0,
+    "store": "56db286dcd98064a",
+    "threshold_approval_events": "4f53cda18c2baa0c",
+    "threshold_approvals": "4f53cda18c2baa0c"
+   },
+   "approvals_unchanged": true,
+   "before": {
+    "events": 0,
+    "store": "56db286dcd98064a",
+    "threshold_approval_events": "4f53cda18c2baa0c",
+    "threshold_approvals": "4f53cda18c2baa0c"
+   },
+   "cause_type": null,
+   "events_unchanged": true,
+   "is_contract_error": true,
+   "message": "Only the conductor issues threshold approvals",
+   "outcome": "raised",
+   "store_unchanged": true,
+   "suppress_context": false,
+   "type": "ContractError"
+  },
+  "actor_lead": {
+   "after": {
+    "events": 0,
+    "store": "56db286dcd98064a",
+    "threshold_approval_events": "4f53cda18c2baa0c",
+    "threshold_approvals": "4f53cda18c2baa0c"
+   },
+   "approvals_unchanged": true,
+   "before": {
+    "events": 0,
+    "store": "56db286dcd98064a",
+    "threshold_approval_events": "4f53cda18c2baa0c",
+    "threshold_approvals": "4f53cda18c2baa0c"
+   },
+   "cause_type": null,
+   "events_unchanged": true,
+   "is_contract_error": true,
+   "message": "Only the conductor issues threshold approvals",
+   "outcome": "raised",
+   "store_unchanged": true,
+   "suppress_context": false,
+   "type": "ContractError"
+  },
+  "actor_none": {
+   "after": {
+    "events": 0,
+    "store": "56db286dcd98064a",
+    "threshold_approval_events": "4f53cda18c2baa0c",
+    "threshold_approvals": "4f53cda18c2baa0c"
+   },
+   "approvals_unchanged": true,
+   "before": {
+    "events": 0,
+    "store": "56db286dcd98064a",
+    "threshold_approval_events": "4f53cda18c2baa0c",
+    "threshold_approvals": "4f53cda18c2baa0c"
+   },
+   "cause_type": null,
+   "events_unchanged": true,
+   "is_contract_error": true,
+   "message": "Only the conductor issues threshold approvals",
+   "outcome": "raised",
+   "store_unchanged": true,
+   "suppress_context": false,
+   "type": "ContractError"
+  },
+  "actor_upper": {
+   "after": {
+    "events": 0,
+    "store": "56db286dcd98064a",
+    "threshold_approval_events": "4f53cda18c2baa0c",
+    "threshold_approvals": "4f53cda18c2baa0c"
+   },
+   "approvals_unchanged": true,
+   "before": {
+    "events": 0,
+    "store": "56db286dcd98064a",
+    "threshold_approval_events": "4f53cda18c2baa0c",
+    "threshold_approvals": "4f53cda18c2baa0c"
+   },
+   "cause_type": null,
+   "events_unchanged": true,
+   "is_contract_error": true,
+   "message": "Only the conductor issues threshold approvals",
+   "outcome": "raised",
+   "store_unchanged": true,
+   "suppress_context": false,
+   "type": "ContractError"
+  },
+  "actor_worker": {
+   "after": {
+    "events": 0,
+    "store": "56db286dcd98064a",
+    "threshold_approval_events": "4f53cda18c2baa0c",
+    "threshold_approvals": "4f53cda18c2baa0c"
+   },
+   "approvals_unchanged": true,
+   "before": {
+    "events": 0,
+    "store": "56db286dcd98064a",
+    "threshold_approval_events": "4f53cda18c2baa0c",
+    "threshold_approvals": "4f53cda18c2baa0c"
+   },
+   "cause_type": null,
+   "events_unchanged": true,
+   "is_contract_error": true,
+   "message": "Only the conductor issues threshold approvals",
+   "outcome": "raised",
+   "store_unchanged": true,
+   "suppress_context": false,
+   "type": "ContractError"
+  },
+  "another_request_another_approval": {
+   "after": {
+    "events": 3,
+    "store": "528054524722f3ea",
+    "threshold_approval_events": "767bc4d24af059aa",
+    "threshold_approvals": "e11a72944650b2e5"
+   },
+   "approvals_unchanged": false,
+   "before": {
+    "events": 2,
+    "store": "46e9063c5df7e4f4",
+    "threshold_approval_events": "19771e158064be9a",
+    "threshold_approvals": "0b49c66b2ea86398"
+   },
+   "events_unchanged": false,
+   "outcome": "returned",
+   "store_unchanged": false,
+   "value": {
+    "application": null,
+    "authority": "certifies one exact policy change; never writes the definition",
+    "corpus_hash": "corpus-ok2",
+    "current": 3,
+    "environment": "staging",
+    "evidence_ref": "sha256:1cf457bcdafc2520000000000000000000000000000000000000000000000000",
+    "expires_at": "2026-09-10T13:00:00+00:00",
+    "id": "659d89f69797b2358fbbca3567226779ea050deff3370e894185dd85ad6a123d",
+    "issued_at": "2026-09-10T12:00:00+00:00",
+    "issued_by": "conductor",
+    "kind": "threshold-approval-v1",
+    "name": "skill_match.FULL_BODY_MIN_SCORE",
+    "policy_revision": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+    "proposed": 4,
+    "registry_hash": "registry-1",
+    "request_binding": "3e7fe6f3d61758b1a14dcafe989fa6d5e6a3bce15cd6cddfbc0ae85a612be852",
+    "request_id": "req-ok2",
+    "reviews": [
+     {
+      "actor": "lead:improvement",
+      "decision_id": "decision-1-ok2",
+      "generation": 1
+     },
+     {
+      "actor": "conductor",
+      "decision_id": "decision-2-ok2",
+      "generation": 1
+     }
+    ],
+    "status": "issued"
+   }
+  },
+  "binding_is_not_the_row": {
+   "after": {
+    "events": 0,
+    "store": "0bf8dc0a77fed6a9",
+    "threshold_approval_events": "4f53cda18c2baa0c",
+    "threshold_approvals": "4f53cda18c2baa0c"
+   },
+   "approvals_unchanged": true,
+   "before": {
+    "events": 0,
+    "store": "0bf8dc0a77fed6a9",
+    "threshold_approval_events": "4f53cda18c2baa0c",
+    "threshold_approvals": "4f53cda18c2baa0c"
+   },
+   "cause_type": null,
+   "events_unchanged": true,
+   "is_contract_error": true,
+   "message": "Assessed record changed since review",
+   "outcome": "raised",
+   "store_unchanged": true,
+   "suppress_context": false,
+   "type": "ContractError"
+  },
+  "blocked_false_is_fine": {
+   "after": {
+    "events": 1,
+    "store": "d50b87bc749c1c83",
+    "threshold_approval_events": "459434179335222c",
+    "threshold_approvals": "a236b95b11b49d09"
+   },
+   "approvals_unchanged": false,
+   "before": {
+    "events": 0,
+    "store": "40630fd9716c29f0",
+    "threshold_approval_events": "4f53cda18c2baa0c",
+    "threshold_approvals": "4f53cda18c2baa0c"
+   },
+   "events_unchanged": false,
+   "outcome": "returned",
+   "store_unchanged": false,
+   "value": {
+    "application": null,
+    "authority": "certifies one exact policy change; never writes the definition",
+    "corpus_hash": "corpus-r11",
+    "current": 3,
+    "environment": "staging",
+    "evidence_ref": "sha256:424c2dda62202ddc000000000000000000000000000000000000000000000000",
+    "expires_at": "2026-09-10T13:00:00+00:00",
+    "id": "cb5bd948acf7658627ad9fc68c54275d239d485e20992c9c0f4a4f08702ea79b",
+    "issued_at": "2026-09-10T12:00:00+00:00",
+    "issued_by": "conductor",
+    "kind": "threshold-approval-v1",
+    "name": "skill_match.FULL_BODY_MIN_SCORE",
+    "policy_revision": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+    "proposed": 4,
+    "registry_hash": "registry-1",
+    "request_binding": "9f4a7507523847719c38d2e3e313125a14349e287d5365394fdf9c6727f33c63",
+    "request_id": "req-r11",
+    "reviews": [
+     {
+      "actor": "lead:improvement",
+      "decision_id": "d1",
+      "generation": 1
+     },
+     {
+      "actor": "conductor",
+      "decision_id": "d2",
+      "generation": 1
+     }
+    ],
+    "status": "issued"
+   }
+  },
+  "current_bool": {
+   "after": {
+    "events": 0,
+    "store": "7a46cd33d26667bc",
+    "threshold_approval_events": "4f53cda18c2baa0c",
+    "threshold_approvals": "4f53cda18c2baa0c"
+   },
+   "approvals_unchanged": true,
+   "before": {
+    "events": 0,
+    "store": "7a46cd33d26667bc",
+    "threshold_approval_events": "4f53cda18c2baa0c",
+    "threshold_approvals": "4f53cda18c2baa0c"
+   },
+   "cause_type": null,
+   "events_unchanged": true,
+   "is_contract_error": true,
+   "message": "Approval requires a finite, different value",
+   "outcome": "raised",
+   "store_unchanged": true,
+   "suppress_context": false,
+   "type": "ContractError"
+  },
+  "current_nan": {
+   "after": {
+    "events": 0,
+    "store": "170087e6929eebe8",
+    "threshold_approval_events": "4f53cda18c2baa0c",
+    "threshold_approvals": "4f53cda18c2baa0c"
+   },
+   "approvals_unchanged": true,
+   "before": {
+    "events": 0,
+    "store": "170087e6929eebe8",
+    "threshold_approval_events": "4f53cda18c2baa0c",
+    "threshold_approvals": "4f53cda18c2baa0c"
+   },
+   "cause_type": null,
+   "events_unchanged": true,
+   "is_contract_error": true,
+   "message": "Approval requires a finite, different value",
+   "outcome": "raised",
+   "store_unchanged": true,
+   "suppress_context": false,
+   "type": "ContractError"
+  },
+  "environment_empty": {
+   "after": {
+    "events": 0,
+    "store": "56db286dcd98064a",
+    "threshold_approval_events": "4f53cda18c2baa0c",
+    "threshold_approvals": "4f53cda18c2baa0c"
+   },
+   "approvals_unchanged": true,
+   "before": {
+    "events": 0,
+    "store": "56db286dcd98064a",
+    "threshold_approval_events": "4f53cda18c2baa0c",
+    "threshold_approvals": "4f53cda18c2baa0c"
+   },
+   "cause_type": null,
+   "events_unchanged": true,
+   "is_contract_error": true,
+   "message": "environment must be a lowercase token",
+   "outcome": "raised",
+   "store_unchanged": true,
+   "suppress_context": false,
+   "type": "ContractError"
+  },
+  "environment_exactly_64": {
+   "after": {
+    "events": 2,
+    "store": "a30c6be946b3d008",
+    "threshold_approval_events": "6e8326af42fdc360",
+    "threshold_approvals": "b0464a7a6955ab29"
+   },
+   "approvals_unchanged": false,
+   "before": {
+    "events": 1,
+    "store": "60a29b336008e1b0",
+    "threshold_approval_events": "b3b9b9aad6d0ff8c",
+    "threshold_approvals": "a6774b678339463f"
+   },
+   "events_unchanged": false,
+   "outcome": "returned",
+   "store_unchanged": false,
+   "value": {
+    "application": null,
+    "authority": "certifies one exact policy change; never writes the definition",
+    "corpus_hash": "corpus-2",
+    "current": 3,
+    "environment": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+    "evidence_ref": "sha256:863acaa06ffef2c4000000000000000000000000000000000000000000000000",
+    "expires_at": "2026-09-10T13:00:00+00:00",
+    "id": "1a7e7017fa4e36a30b509e492a8834d6344c11e9f8d60b711d813217f24b69b2",
+    "issued_at": "2026-09-10T12:00:00+00:00",
+    "issued_by": "conductor",
+    "kind": "threshold-approval-v1",
+    "name": "skill_match.FULL_BODY_MIN_SCORE",
+    "policy_revision": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+    "proposed": 4,
+    "registry_hash": "registry-1",
+    "request_binding": "d6709dbcd31ef1ddb525795aebe3b767d273e415287d53e0efee4ec2f026e0c5",
+    "request_id": "req-2",
+    "reviews": [
+     {
+      "actor": "lead:improvement",
+      "decision_id": "decision-1-2",
+      "generation": 1
+     },
+     {
+      "actor": "conductor",
+      "decision_id": "decision-2-2",
+      "generation": 1
+     }
+    ],
+    "status": "issued"
+   }
+  },
+  "environment_int": {
+   "after": {
+    "events": 0,
+    "store": "56db286dcd98064a",
+    "threshold_approval_events": "4f53cda18c2baa0c",
+    "threshold_approvals": "4f53cda18c2baa0c"
+   },
+   "approvals_unchanged": true,
+   "before": {
+    "events": 0,
+    "store": "56db286dcd98064a",
+    "threshold_approval_events": "4f53cda18c2baa0c",
+    "threshold_approvals": "4f53cda18c2baa0c"
+   },
+   "cause_type": null,
+   "events_unchanged": true,
+   "is_contract_error": true,
+   "message": "environment must be a lowercase token",
+   "outcome": "raised",
+   "store_unchanged": true,
+   "suppress_context": false,
+   "type": "ContractError"
+  },
+  "environment_leading_dash": {
+   "after": {
+    "events": 0,
+    "store": "56db286dcd98064a",
+    "threshold_approval_events": "4f53cda18c2baa0c",
+    "threshold_approvals": "4f53cda18c2baa0c"
+   },
+   "approvals_unchanged": true,
+   "before": {
+    "events": 0,
+    "store": "56db286dcd98064a",
+    "threshold_approval_events": "4f53cda18c2baa0c",
+    "threshold_approvals": "4f53cda18c2baa0c"
+   },
+   "cause_type": null,
+   "events_unchanged": true,
+   "is_contract_error": true,
+   "message": "environment must be a lowercase token",
+   "outcome": "raised",
+   "store_unchanged": true,
+   "suppress_context": false,
+   "type": "ContractError"
+  },
+  "environment_newline_tail": {
+   "after": {
+    "events": 0,
+    "store": "56db286dcd98064a",
+    "threshold_approval_events": "4f53cda18c2baa0c",
+    "threshold_approvals": "4f53cda18c2baa0c"
+   },
+   "approvals_unchanged": true,
+   "before": {
+    "events": 0,
+    "store": "56db286dcd98064a",
+    "threshold_approval_events": "4f53cda18c2baa0c",
+    "threshold_approvals": "4f53cda18c2baa0c"
+   },
+   "cause_type": null,
+   "events_unchanged": true,
+   "is_contract_error": true,
+   "message": "environment must be a lowercase token",
+   "outcome": "raised",
+   "store_unchanged": true,
+   "suppress_context": false,
+   "type": "ContractError"
+  },
+  "environment_none": {
+   "after": {
+    "events": 0,
+    "store": "56db286dcd98064a",
+    "threshold_approval_events": "4f53cda18c2baa0c",
+    "threshold_approvals": "4f53cda18c2baa0c"
+   },
+   "approvals_unchanged": true,
+   "before": {
+    "events": 0,
+    "store": "56db286dcd98064a",
+    "threshold_approval_events": "4f53cda18c2baa0c",
+    "threshold_approvals": "4f53cda18c2baa0c"
+   },
+   "cause_type": null,
+   "events_unchanged": true,
+   "is_contract_error": true,
+   "message": "environment must be a lowercase token",
+   "outcome": "raised",
+   "store_unchanged": true,
+   "suppress_context": false,
+   "type": "ContractError"
+  },
+  "environment_space": {
+   "after": {
+    "events": 0,
+    "store": "56db286dcd98064a",
+    "threshold_approval_events": "4f53cda18c2baa0c",
+    "threshold_approvals": "4f53cda18c2baa0c"
+   },
+   "approvals_unchanged": true,
+   "before": {
+    "events": 0,
+    "store": "56db286dcd98064a",
+    "threshold_approval_events": "4f53cda18c2baa0c",
+    "threshold_approvals": "4f53cda18c2baa0c"
+   },
+   "cause_type": null,
+   "events_unchanged": true,
+   "is_contract_error": true,
+   "message": "environment must be a lowercase token",
+   "outcome": "raised",
+   "store_unchanged": true,
+   "suppress_context": false,
+   "type": "ContractError"
+  },
+  "environment_too_long": {
+   "after": {
+    "events": 0,
+    "store": "56db286dcd98064a",
+    "threshold_approval_events": "4f53cda18c2baa0c",
+    "threshold_approvals": "4f53cda18c2baa0c"
+   },
+   "approvals_unchanged": true,
+   "before": {
+    "events": 0,
+    "store": "56db286dcd98064a",
+    "threshold_approval_events": "4f53cda18c2baa0c",
+    "threshold_approvals": "4f53cda18c2baa0c"
+   },
+   "cause_type": null,
+   "events_unchanged": true,
+   "is_contract_error": true,
+   "message": "environment must be a lowercase token",
+   "outcome": "raised",
+   "store_unchanged": true,
+   "suppress_context": false,
+   "type": "ContractError"
+  },
+  "environment_underscore": {
+   "after": {
+    "events": 1,
+    "store": "60a29b336008e1b0",
+    "threshold_approval_events": "b3b9b9aad6d0ff8c",
+    "threshold_approvals": "a6774b678339463f"
+   },
+   "approvals_unchanged": false,
+   "before": {
+    "events": 0,
+    "store": "56db286dcd98064a",
+    "threshold_approval_events": "4f53cda18c2baa0c",
+    "threshold_approvals": "4f53cda18c2baa0c"
+   },
+   "events_unchanged": false,
+   "outcome": "returned",
+   "store_unchanged": false,
+   "value": {
+    "application": null,
+    "authority": "certifies one exact policy change; never writes the definition",
+    "corpus_hash": "corpus-2",
+    "current": 3,
+    "environment": "a_b",
+    "evidence_ref": "sha256:863acaa06ffef2c4000000000000000000000000000000000000000000000000",
+    "expires_at": "2026-09-10T13:00:00+00:00",
+    "id": "f504581706ec9ce6457dca88063c21d2dbb41fbfd29b098672d678e2aa6fc161",
+    "issued_at": "2026-09-10T12:00:00+00:00",
+    "issued_by": "conductor",
+    "kind": "threshold-approval-v1",
+    "name": "skill_match.FULL_BODY_MIN_SCORE",
+    "policy_revision": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+    "proposed": 4,
+    "registry_hash": "registry-1",
+    "request_binding": "d6709dbcd31ef1ddb525795aebe3b767d273e415287d53e0efee4ec2f026e0c5",
+    "request_id": "req-2",
+    "reviews": [
+     {
+      "actor": "lead:improvement",
+      "decision_id": "decision-1-2",
+      "generation": 1
+     },
+     {
+      "actor": "conductor",
+      "decision_id": "decision-2-2",
+      "generation": 1
+     }
+    ],
+    "status": "issued"
+   }
+  },
+  "environment_upper": {
+   "after": {
+    "events": 0,
+    "store": "56db286dcd98064a",
+    "threshold_approval_events": "4f53cda18c2baa0c",
+    "threshold_approvals": "4f53cda18c2baa0c"
+   },
+   "approvals_unchanged": true,
+   "before": {
+    "events": 0,
+    "store": "56db286dcd98064a",
+    "threshold_approval_events": "4f53cda18c2baa0c",
+    "threshold_approvals": "4f53cda18c2baa0c"
+   },
+   "cause_type": null,
+   "events_unchanged": true,
+   "is_contract_error": true,
+   "message": "environment must be a lowercase token",
+   "outcome": "raised",
+   "store_unchanged": true,
+   "suppress_context": false,
+   "type": "ContractError"
+  },
+  "environment_with_dots_dashes": {
+   "after": {
+    "events": 5,
+    "store": "a71322c9d4fd0172",
+    "threshold_approval_events": "01de00d2b6bf25ca",
+    "threshold_approvals": "93d1041a0a8bb4d1"
+   },
+   "approvals_unchanged": false,
+   "before": {
+    "events": 4,
+    "store": "d9fad17158bd17c3",
+    "threshold_approval_events": "ae4e5a286aa387cc",
+    "threshold_approvals": "a244b299d81055be"
+   },
+   "events_unchanged": false,
+   "outcome": "returned",
+   "store_unchanged": false,
+   "value": {
+    "application": null,
+    "authority": "certifies one exact policy change; never writes the definition",
+    "corpus_hash": "corpus-2",
+    "current": 3,
+    "environment": "eu-west.1_a",
+    "evidence_ref": "sha256:863acaa06ffef2c4000000000000000000000000000000000000000000000000",
+    "expires_at": "2026-09-10T13:00:00+00:00",
+    "id": "dc24c59125c5477b65331af8585986cdbae7ea721b3e3355c3e3695f8c2246a4",
+    "issued_at": "2026-09-10T12:00:00+00:00",
+    "issued_by": "conductor",
+    "kind": "threshold-approval-v1",
+    "name": "skill_match.FULL_BODY_MIN_SCORE",
+    "policy_revision": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+    "proposed": 4,
+    "registry_hash": "registry-1",
+    "request_binding": "d6709dbcd31ef1ddb525795aebe3b767d273e415287d53e0efee4ec2f026e0c5",
+    "request_id": "req-2",
+    "reviews": [
+     {
+      "actor": "lead:improvement",
+      "decision_id": "decision-1-2",
+      "generation": 1
+     },
+     {
+      "actor": "conductor",
+      "decision_id": "decision-2-2",
+      "generation": 1
+     }
+    ],
+    "status": "issued"
+   }
+  },
+  "events_after_two_issues": [
+   "issued",
+   "issued"
+  ],
+  "evidence_lacks_the_proposal": {
+   "after": {
+    "events": 0,
+    "store": "8afd3e54101190e7",
+    "threshold_approval_events": "4f53cda18c2baa0c",
+    "threshold_approvals": "4f53cda18c2baa0c"
+   },
+   "approvals_unchanged": true,
+   "before": {
+    "events": 0,
+    "store": "8afd3e54101190e7",
+    "threshold_approval_events": "4f53cda18c2baa0c",
+    "threshold_approvals": "4f53cda18c2baa0c"
+   },
+   "cause_type": null,
+   "events_unchanged": true,
+   "is_contract_error": true,
+   "message": "Evaluation evidence no longer contains this proposal",
+   "outcome": "raised",
+   "store_unchanged": true,
+   "suppress_context": false,
+   "type": "ContractError"
+  },
+  "evidence_missing": {
+   "after": {
+    "events": 0,
+    "store": "ca7b9a1c21afb82b",
+    "threshold_approval_events": "4f53cda18c2baa0c",
+    "threshold_approvals": "4f53cda18c2baa0c"
+   },
+   "approvals_unchanged": true,
+   "before": {
+    "events": 0,
+    "store": "ca7b9a1c21afb82b",
+    "threshold_approval_events": "4f53cda18c2baa0c",
+    "threshold_approvals": "4f53cda18c2baa0c"
+   },
+   "cause_type": null,
+   "events_unchanged": true,
+   "is_contract_error": false,
+   "message": "sha256:eeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee",
+   "outcome": "raised",
+   "store_unchanged": true,
+   "suppress_context": false,
+   "type": "FileNotFoundError"
+  },
+  "evidence_proposal_differs": {
+   "after": {
+    "events": 0,
+    "store": "58795f5fb3ea7820",
+    "threshold_approval_events": "4f53cda18c2baa0c",
+    "threshold_approvals": "4f53cda18c2baa0c"
+   },
+   "approvals_unchanged": true,
+   "before": {
+    "events": 0,
+    "store": "58795f5fb3ea7820",
+    "threshold_approval_events": "4f53cda18c2baa0c",
+    "threshold_approvals": "4f53cda18c2baa0c"
+   },
+   "cause_type": null,
+   "events_unchanged": true,
+   "is_contract_error": true,
+   "message": "Evaluation evidence no longer contains this proposal",
+   "outcome": "raised",
+   "store_unchanged": true,
+   "suppress_context": false,
+   "type": "ContractError"
+  },
+  "evidence_proposals_not_a_list": {
+   "after": {
+    "events": 0,
+    "store": "a6245f5da08bc223",
+    "threshold_approval_events": "4f53cda18c2baa0c",
+    "threshold_approvals": "4f53cda18c2baa0c"
+   },
+   "approvals_unchanged": true,
+   "before": {
+    "events": 0,
+    "store": "a6245f5da08bc223",
+    "threshold_approval_events": "4f53cda18c2baa0c",
+    "threshold_approvals": "4f53cda18c2baa0c"
+   },
+   "cause_type": null,
+   "events_unchanged": true,
+   "is_contract_error": false,
+   "message": "unhashable type: 'dict'",
+   "outcome": "raised",
+   "store_unchanged": true,
+   "suppress_context": false,
+   "type": "TypeError"
+  },
+  "evidence_ref_none": {
+   "after": {
+    "events": 0,
+    "store": "8007ac00809dd38b",
+    "threshold_approval_events": "4f53cda18c2baa0c",
+    "threshold_approvals": "4f53cda18c2baa0c"
+   },
+   "approvals_unchanged": true,
+   "before": {
+    "events": 0,
+    "store": "8007ac00809dd38b",
+    "threshold_approval_events": "4f53cda18c2baa0c",
+    "threshold_approvals": "4f53cda18c2baa0c"
+   },
+   "cause_type": null,
+   "events_unchanged": true,
+   "is_contract_error": false,
+   "message": "None",
+   "outcome": "raised",
+   "store_unchanged": true,
+   "suppress_context": false,
+   "type": "FileNotFoundError"
+  },
+  "evidence_unreadable_propagates": {
+   "after": {
+    "events": 0,
+    "store": "5b4b94da34127e70",
+    "threshold_approval_events": "4f53cda18c2baa0c",
+    "threshold_approvals": "4f53cda18c2baa0c"
+   },
+   "approvals_unchanged": true,
+   "before": {
+    "events": 0,
+    "store": "5b4b94da34127e70",
+    "threshold_approval_events": "4f53cda18c2baa0c",
+    "threshold_approvals": "4f53cda18c2baa0c"
+   },
+   "cause_type": null,
+   "events_unchanged": true,
+   "is_contract_error": false,
+   "message": "disk",
+   "outcome": "raised",
+   "store_unchanged": true,
+   "suppress_context": false,
+   "type": "OSError"
+  },
+  "expires_at_is_issued_at_plus_ttl": [
+   "2026-09-10T12:00:00+00:00",
+   "2026-09-10T13:00:00+00:00",
+   "2026-09-10T12:01:00+00:00"
+  ],
+  "first_blocked": {
+   "after": {
+    "events": 0,
+    "store": "a88faeb2cb2a5457",
+    "threshold_approval_events": "4f53cda18c2baa0c",
+    "threshold_approvals": "4f53cda18c2baa0c"
+   },
+   "approvals_unchanged": true,
+   "before": {
+    "events": 0,
+    "store": "a88faeb2cb2a5457",
+    "threshold_approval_events": "4f53cda18c2baa0c",
+    "threshold_approvals": "4f53cda18c2baa0c"
+   },
+   "cause_type": null,
+   "events_unchanged": true,
+   "is_contract_error": true,
+   "message": "Both independent assessments must have accepted",
+   "outcome": "raised",
+   "store_unchanged": true,
+   "suppress_context": false,
+   "type": "ContractError"
+  },
+  "first_not_accepted": {
+   "after": {
+    "events": 0,
+    "store": "4dc01a0583a68c2d",
+    "threshold_approval_events": "4f53cda18c2baa0c",
+    "threshold_approvals": "4f53cda18c2baa0c"
+   },
+   "approvals_unchanged": true,
+   "before": {
+    "events": 0,
+    "store": "4dc01a0583a68c2d",
+    "threshold_approval_events": "4f53cda18c2baa0c",
+    "threshold_approvals": "4f53cda18c2baa0c"
+   },
+   "cause_type": null,
+   "events_unchanged": true,
+   "is_contract_error": true,
+   "message": "Both independent assessments must have accepted",
+   "outcome": "raised",
+   "store_unchanged": true,
+   "suppress_context": false,
+   "type": "ContractError"
+  },
+  "issue_with_the_real_clock_is_not_driven": "now is always passed",
+  "issued": {
+   "event_after_first": [
+    {
+     "approval_id": "0c508610900df27a35ff991b8911689dcfb292666721a48c9b702022c8d1bfda",
+     "at": "2026-09-22T00:00:00+00:00",
+     "environment": "prod",
+     "expires_at": "2026-09-10T12:01:00+00:00",
+     "id": "5656d1714ad3145b55418bdd947730d886a410525f3ba0055a6d64b35afe5686",
+     "kind": "issued",
+     "sequence": 1
+    },
+    {
+     "approval_id": "8796027705a34311cc552d703b45544c93373a3d2b004a865c789990dad6bb38",
+     "at": "2026-09-22T00:00:00+00:00",
+     "environment": "staging",
+     "expires_at": "2026-09-10T13:00:00+00:00",
+     "id": "963adfc1af835f93ea6d041f8594872af176f47f0adcf2d86200d8c926e2debe",
+     "kind": "issued",
+     "sequence": 1
+    }
+   ],
+   "first": {
+    "after": {
+     "events": 1,
+     "store": "3ea9173ddf144c55",
+     "threshold_approval_events": "d138b20b4c10b96f",
+     "threshold_approvals": "ede2bb673f95b41b"
+    },
+    "approvals_unchanged": false,
+    "before": {
+     "events": 0,
+     "store": "40bd300d99436653",
+     "threshold_approval_events": "4f53cda18c2baa0c",
+     "threshold_approvals": "4f53cda18c2baa0c"
+    },
+    "events_unchanged": false,
+    "outcome": "returned",
+    "store_unchanged": false,
+    "value": {
+     "application": null,
+     "authority": "certifies one exact policy change; never writes the definition",
+     "corpus_hash": "corpus-ok",
+     "current": 3,
+     "environment": "staging",
+     "evidence_ref": "sha256:b90775ec15cc32f6000000000000000000000000000000000000000000000000",
+     "expires_at": "2026-09-10T13:00:00+00:00",
+     "id": "8796027705a34311cc552d703b45544c93373a3d2b004a865c789990dad6bb38",
+     "issued_at": "2026-09-10T12:00:00+00:00",
+     "issued_by": "conductor",
+     "kind": "threshold-approval-v1",
+     "name": "skill_match.FULL_BODY_MIN_SCORE",
+     "policy_revision": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+     "proposed": 4,
+     "registry_hash": "registry-1",
+     "request_binding": "5762a2a395297c91e8fc2f6c1d454151f7f97c4145547b84f72eff965fae037b",
+     "request_id": "req-ok",
+     "reviews": [
+      {
+       "actor": "lead:improvement",
+       "decision_id": "decision-1-ok",
+       "generation": 1
+      },
+      {
+       "actor": "conductor",
+       "decision_id": "decision-2-ok",
+       "generation": 1
+      }
+     ],
+     "status": "issued"
+    }
+   },
+   "inspect": {
+    "application": null,
+    "authority": "certifies one exact policy change; never writes the definition",
+    "current": 3,
+    "environment": "staging",
+    "expires_at": "2026-09-10T13:00:00+00:00",
+    "id": "8796027705a34311cc552d703b45544c93373a3d2b004a865c789990dad6bb38",
+    "name": "skill_match.FULL_BODY_MIN_SCORE",
+    "policy_revision": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+    "proposed": 4,
+    "state": "issued"
+   },
+   "other_environment": {
+    "after": {
+     "events": 2,
+     "store": "0c13e5ffcdbad1de",
+     "threshold_approval_events": "19771e158064be9a",
+     "threshold_approvals": "0b49c66b2ea86398"
+    },
+    "approvals_unchanged": false,
+    "before": {
+     "events": 1,
+     "store": "3ea9173ddf144c55",
+     "threshold_approval_events": "d138b20b4c10b96f",
+     "threshold_approvals": "ede2bb673f95b41b"
+    },
+    "events_unchanged": false,
+    "outcome": "returned",
+    "store_unchanged": false,
+    "value": {
+     "application": null,
+     "authority": "certifies one exact policy change; never writes the definition",
+     "corpus_hash": "corpus-ok",
+     "current": 3,
+     "environment": "prod",
+     "evidence_ref": "sha256:b90775ec15cc32f6000000000000000000000000000000000000000000000000",
+     "expires_at": "2026-09-10T12:01:00+00:00",
+     "id": "0c508610900df27a35ff991b8911689dcfb292666721a48c9b702022c8d1bfda",
+     "issued_at": "2026-09-10T12:00:00+00:00",
+     "issued_by": "conductor",
+     "kind": "threshold-approval-v1",
+     "name": "skill_match.FULL_BODY_MIN_SCORE",
+     "policy_revision": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+     "proposed": 4,
+     "registry_hash": "registry-1",
+     "request_binding": "5762a2a395297c91e8fc2f6c1d454151f7f97c4145547b84f72eff965fae037b",
+     "request_id": "req-ok",
+     "reviews": [
+      {
+       "actor": "lead:improvement",
+       "decision_id": "decision-1-ok",
+       "generation": 1
+      },
+      {
+       "actor": "conductor",
+       "decision_id": "decision-2-ok",
+       "generation": 1
+      }
+     ],
+     "status": "issued"
+    }
+   },
+   "other_environment_is_another_id": true,
+   "reissue_returns_the_first": true,
+   "reissue_same_binding_other_ttl_and_time": {
+    "after": {
+     "events": 1,
+     "store": "3ea9173ddf144c55",
+     "threshold_approval_events": "d138b20b4c10b96f",
+     "threshold_approvals": "ede2bb673f95b41b"
+    },
+    "approvals_unchanged": true,
+    "before": {
+     "events": 1,
+     "store": "3ea9173ddf144c55",
+     "threshold_approval_events": "d138b20b4c10b96f",
+     "threshold_approvals": "ede2bb673f95b41b"
+    },
+    "events_unchanged": true,
+    "outcome": "returned",
+    "store_unchanged": true,
+    "value": {
+     "application": null,
+     "authority": "certifies one exact policy change; never writes the definition",
+     "corpus_hash": "corpus-ok",
+     "current": 3,
+     "environment": "staging",
+     "evidence_ref": "sha256:b90775ec15cc32f6000000000000000000000000000000000000000000000000",
+     "expires_at": "2026-09-10T13:00:00+00:00",
+     "id": "8796027705a34311cc552d703b45544c93373a3d2b004a865c789990dad6bb38",
+     "issued_at": "2026-09-10T12:00:00+00:00",
+     "issued_by": "conductor",
+     "kind": "threshold-approval-v1",
+     "name": "skill_match.FULL_BODY_MIN_SCORE",
+     "policy_revision": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+     "proposed": 4,
+     "registry_hash": "registry-1",
+     "request_binding": "5762a2a395297c91e8fc2f6c1d454151f7f97c4145547b84f72eff965fae037b",
+     "request_id": "req-ok",
+     "reviews": [
+      {
+       "actor": "lead:improvement",
+       "decision_id": "decision-1-ok",
+       "generation": 1
+      },
+      {
+       "actor": "conductor",
+       "decision_id": "decision-2-ok",
+       "generation": 1
+      }
+     ],
+     "status": "issued"
+    }
+   },
+   "stored_equals_returned": true
+  },
+  "not_assessed_pending": {
+   "after": {
+    "events": 0,
+    "store": "f1187e42e939dca6",
+    "threshold_approval_events": "4f53cda18c2baa0c",
+    "threshold_approvals": "4f53cda18c2baa0c"
+   },
+   "approvals_unchanged": true,
+   "before": {
+    "events": 0,
+    "store": "f1187e42e939dca6",
+    "threshold_approval_events": "4f53cda18c2baa0c",
+    "threshold_approvals": "4f53cda18c2baa0c"
+   },
+   "cause_type": null,
+   "events_unchanged": true,
+   "is_contract_error": true,
+   "message": "Assessed threshold review required",
+   "outcome": "raised",
+   "store_unchanged": true,
+   "suppress_context": false,
+   "type": "ContractError"
+  },
+  "not_reference_accepted": {
+   "after": {
+    "events": 0,
+    "store": "09f9a3f556f33b5c",
+    "threshold_approval_events": "4f53cda18c2baa0c",
+    "threshold_approvals": "4f53cda18c2baa0c"
+   },
+   "approvals_unchanged": true,
+   "before": {
+    "events": 0,
+    "store": "09f9a3f556f33b5c",
+    "threshold_approval_events": "4f53cda18c2baa0c",
+    "threshold_approvals": "4f53cda18c2baa0c"
+   },
+   "cause_type": null,
+   "events_unchanged": true,
+   "is_contract_error": true,
+   "message": "Only a reference-accepted suggestion can be approved",
+   "outcome": "raised",
+   "store_unchanged": true,
+   "suppress_context": false,
+   "type": "ContractError"
+  },
+  "reference_accepted_missing": {
+   "after": {
+    "events": 0,
+    "store": "97d95993f6cc5004",
+    "threshold_approval_events": "4f53cda18c2baa0c",
+    "threshold_approvals": "4f53cda18c2baa0c"
+   },
+   "approvals_unchanged": true,
+   "before": {
+    "events": 0,
+    "store": "97d95993f6cc5004",
+    "threshold_approval_events": "4f53cda18c2baa0c",
+    "threshold_approvals": "4f53cda18c2baa0c"
+   },
+   "cause_type": null,
+   "events_unchanged": true,
+   "is_contract_error": true,
+   "message": "Only a reference-accepted suggestion can be approved",
+   "outcome": "raised",
+   "store_unchanged": true,
+   "suppress_context": false,
+   "type": "ContractError"
+  },
+  "reviews_none": {
+   "after": {
+    "events": 0,
+    "store": "92a0290cc1a290c7",
+    "threshold_approval_events": "4f53cda18c2baa0c",
+    "threshold_approvals": "4f53cda18c2baa0c"
+   },
+   "approvals_unchanged": true,
+   "before": {
+    "events": 0,
+    "store": "92a0290cc1a290c7",
+    "threshold_approval_events": "4f53cda18c2baa0c",
+    "threshold_approvals": "4f53cda18c2baa0c"
+   },
+   "cause_type": null,
+   "events_unchanged": true,
+   "is_contract_error": true,
+   "message": "Both independent assessments must have accepted",
+   "outcome": "raised",
+   "store_unchanged": true,
+   "suppress_context": false,
+   "type": "ContractError"
+  },
+  "reviews_other_actor": {
+   "after": {
+    "events": 0,
+    "store": "6da6ff8246e66066",
+    "threshold_approval_events": "4f53cda18c2baa0c",
+    "threshold_approvals": "4f53cda18c2baa0c"
+   },
+   "approvals_unchanged": true,
+   "before": {
+    "events": 0,
+    "store": "6da6ff8246e66066",
+    "threshold_approval_events": "4f53cda18c2baa0c",
+    "threshold_approvals": "4f53cda18c2baa0c"
+   },
+   "cause_type": null,
+   "events_unchanged": true,
+   "is_contract_error": true,
+   "message": "Both independent assessments must have accepted",
+   "outcome": "raised",
+   "store_unchanged": true,
+   "suppress_context": false,
+   "type": "ContractError"
+  },
+  "reviews_single": {
+   "after": {
+    "events": 0,
+    "store": "b7b7dc1747215911",
+    "threshold_approval_events": "4f53cda18c2baa0c",
+    "threshold_approvals": "4f53cda18c2baa0c"
+   },
+   "approvals_unchanged": true,
+   "before": {
+    "events": 0,
+    "store": "b7b7dc1747215911",
+    "threshold_approval_events": "4f53cda18c2baa0c",
+    "threshold_approvals": "4f53cda18c2baa0c"
+   },
+   "cause_type": null,
+   "events_unchanged": true,
+   "is_contract_error": true,
+   "message": "Both independent assessments must have accepted",
+   "outcome": "raised",
+   "store_unchanged": true,
+   "suppress_context": false,
+   "type": "ContractError"
+  },
+  "reviews_three": {
+   "after": {
+    "events": 0,
+    "store": "58cb1b6135f003fd",
+    "threshold_approval_events": "4f53cda18c2baa0c",
+    "threshold_approvals": "4f53cda18c2baa0c"
+   },
+   "approvals_unchanged": true,
+   "before": {
+    "events": 0,
+    "store": "58cb1b6135f003fd",
+    "threshold_approval_events": "4f53cda18c2baa0c",
+    "threshold_approvals": "4f53cda18c2baa0c"
+   },
+   "cause_type": null,
+   "events_unchanged": true,
+   "is_contract_error": true,
+   "message": "Both independent assessments must have accepted",
+   "outcome": "raised",
+   "store_unchanged": true,
+   "suppress_context": false,
+   "type": "ContractError"
+  },
+  "reviews_wrong_order": {
+   "after": {
+    "events": 0,
+    "store": "9608bce96eb56391",
+    "threshold_approval_events": "4f53cda18c2baa0c",
+    "threshold_approvals": "4f53cda18c2baa0c"
+   },
+   "approvals_unchanged": true,
+   "before": {
+    "events": 0,
+    "store": "9608bce96eb56391",
+    "threshold_approval_events": "4f53cda18c2baa0c",
+    "threshold_approvals": "4f53cda18c2baa0c"
+   },
+   "cause_type": null,
+   "events_unchanged": true,
+   "is_contract_error": true,
+   "message": "Both independent assessments must have accepted",
+   "outcome": "raised",
+   "store_unchanged": true,
+   "suppress_context": false,
+   "type": "ContractError"
+  },
+  "row_missing": {
+   "after": {
+    "events": 0,
+    "store": "231c6f6c3d779e2f",
+    "threshold_approval_events": "4f53cda18c2baa0c",
+    "threshold_approvals": "4f53cda18c2baa0c"
+   },
+   "approvals_unchanged": true,
+   "before": {
+    "events": 0,
+    "store": "231c6f6c3d779e2f",
+    "threshold_approval_events": "4f53cda18c2baa0c",
+    "threshold_approvals": "4f53cda18c2baa0c"
+   },
+   "cause_type": null,
+   "events_unchanged": true,
+   "is_contract_error": true,
+   "message": "Assessed record changed since review",
+   "outcome": "raised",
+   "store_unchanged": true,
+   "suppress_context": false,
+   "type": "ContractError"
+  },
+  "row_without_proposal_fields": {
+   "after": {
+    "events": 0,
+    "store": "e6d27bf588054219",
+    "threshold_approval_events": "4f53cda18c2baa0c",
+    "threshold_approvals": "4f53cda18c2baa0c"
+   },
+   "approvals_unchanged": true,
+   "before": {
+    "events": 0,
+    "store": "e6d27bf588054219",
+    "threshold_approval_events": "4f53cda18c2baa0c",
+    "threshold_approvals": "4f53cda18c2baa0c"
+   },
+   "cause_type": null,
+   "events_unchanged": true,
+   "is_contract_error": true,
+   "message": "Assessed record changed since review",
+   "outcome": "raised",
+   "store_unchanged": true,
+   "suppress_context": false,
+   "type": "ContractError"
+  },
+  "second_accepted_missing": {
+   "after": {
+    "events": 0,
+    "store": "5b034b0be8535a5c",
+    "threshold_approval_events": "4f53cda18c2baa0c",
+    "threshold_approvals": "4f53cda18c2baa0c"
+   },
+   "approvals_unchanged": true,
+   "before": {
+    "events": 0,
+    "store": "5b034b0be8535a5c",
+    "threshold_approval_events": "4f53cda18c2baa0c",
+    "threshold_approvals": "4f53cda18c2baa0c"
+   },
+   "cause_type": null,
+   "events_unchanged": true,
+   "is_contract_error": false,
+   "message": "'accepted'",
+   "outcome": "raised",
+   "store_unchanged": true,
+   "suppress_context": false,
+   "type": "KeyError"
+  },
+  "second_inspection_blocked": {
+   "after": {
+    "events": 0,
+    "store": "dc67d2a065df2e3d",
+    "threshold_approval_events": "4f53cda18c2baa0c",
+    "threshold_approvals": "4f53cda18c2baa0c"
+   },
+   "approvals_unchanged": true,
+   "before": {
+    "events": 0,
+    "store": "dc67d2a065df2e3d",
+    "threshold_approval_events": "4f53cda18c2baa0c",
+    "threshold_approvals": "4f53cda18c2baa0c"
+   },
+   "cause_type": null,
+   "events_unchanged": true,
+   "is_contract_error": true,
+   "message": "Both independent assessments must have accepted",
+   "outcome": "raised",
+   "store_unchanged": true,
+   "suppress_context": false,
+   "type": "ContractError"
+  },
+  "second_not_accepted_truthy": {
+   "after": {
+    "events": 0,
+    "store": "271568c94952ee8d",
+    "threshold_approval_events": "4f53cda18c2baa0c",
+    "threshold_approvals": "4f53cda18c2baa0c"
+   },
+   "approvals_unchanged": true,
+   "before": {
+    "events": 0,
+    "store": "271568c94952ee8d",
+    "threshold_approval_events": "4f53cda18c2baa0c",
+    "threshold_approvals": "4f53cda18c2baa0c"
+   },
+   "cause_type": null,
+   "events_unchanged": true,
+   "is_contract_error": true,
+   "message": "Both independent assessments must have accepted",
+   "outcome": "raised",
+   "store_unchanged": true,
+   "suppress_context": false,
+   "type": "ContractError"
+  },
+  "suggested_bool": {
+   "after": {
+    "events": 0,
+    "store": "bf9e02025696b88e",
+    "threshold_approval_events": "4f53cda18c2baa0c",
+    "threshold_approvals": "4f53cda18c2baa0c"
+   },
+   "approvals_unchanged": true,
+   "before": {
+    "events": 0,
+    "store": "bf9e02025696b88e",
+    "threshold_approval_events": "4f53cda18c2baa0c",
+    "threshold_approvals": "4f53cda18c2baa0c"
+   },
+   "cause_type": null,
+   "events_unchanged": true,
+   "is_contract_error": true,
+   "message": "Approval requires a finite, different value",
+   "outcome": "raised",
+   "store_unchanged": true,
+   "suppress_context": false,
+   "type": "ContractError"
+  },
+  "suggested_equals_current": {
+   "after": {
+    "events": 0,
+    "store": "763375e5f4a538aa",
+    "threshold_approval_events": "4f53cda18c2baa0c",
+    "threshold_approvals": "4f53cda18c2baa0c"
+   },
+   "approvals_unchanged": true,
+   "before": {
+    "events": 0,
+    "store": "763375e5f4a538aa",
+    "threshold_approval_events": "4f53cda18c2baa0c",
+    "threshold_approvals": "4f53cda18c2baa0c"
+   },
+   "cause_type": null,
+   "events_unchanged": true,
+   "is_contract_error": true,
+   "message": "Approval requires a finite, different value",
+   "outcome": "raised",
+   "store_unchanged": true,
+   "suppress_context": false,
+   "type": "ContractError"
+  },
+  "suggested_equals_current_int_float": {
+   "after": {
+    "events": 0,
+    "store": "36704778f0fa10d7",
+    "threshold_approval_events": "4f53cda18c2baa0c",
+    "threshold_approvals": "4f53cda18c2baa0c"
+   },
+   "approvals_unchanged": true,
+   "before": {
+    "events": 0,
+    "store": "36704778f0fa10d7",
+    "threshold_approval_events": "4f53cda18c2baa0c",
+    "threshold_approvals": "4f53cda18c2baa0c"
+   },
+   "cause_type": null,
+   "events_unchanged": true,
+   "is_contract_error": true,
+   "message": "Approval requires a finite, different value",
+   "outcome": "raised",
+   "store_unchanged": true,
+   "suppress_context": false,
+   "type": "ContractError"
+  },
+  "suggested_inf": {
+   "after": {
+    "events": 0,
+    "store": "8f4afa954fc3616e",
+    "threshold_approval_events": "4f53cda18c2baa0c",
+    "threshold_approvals": "4f53cda18c2baa0c"
+   },
+   "approvals_unchanged": true,
+   "before": {
+    "events": 0,
+    "store": "8f4afa954fc3616e",
+    "threshold_approval_events": "4f53cda18c2baa0c",
+    "threshold_approvals": "4f53cda18c2baa0c"
+   },
+   "cause_type": null,
+   "events_unchanged": true,
+   "is_contract_error": true,
+   "message": "Approval requires a finite, different value",
+   "outcome": "raised",
+   "store_unchanged": true,
+   "suppress_context": false,
+   "type": "ContractError"
+  },
+  "suggested_none": {
+   "after": {
+    "events": 0,
+    "store": "70b65ac828fc8598",
+    "threshold_approval_events": "4f53cda18c2baa0c",
+    "threshold_approvals": "4f53cda18c2baa0c"
+   },
+   "approvals_unchanged": true,
+   "before": {
+    "events": 0,
+    "store": "70b65ac828fc8598",
+    "threshold_approval_events": "4f53cda18c2baa0c",
+    "threshold_approvals": "4f53cda18c2baa0c"
+   },
+   "cause_type": null,
+   "events_unchanged": true,
+   "is_contract_error": true,
+   "message": "Only a reference-accepted suggestion can be approved",
+   "outcome": "raised",
+   "store_unchanged": true,
+   "suppress_context": false,
+   "type": "ContractError"
+  },
+  "suggested_str": {
+   "after": {
+    "events": 0,
+    "store": "71fffc2d4cbe34d1",
+    "threshold_approval_events": "4f53cda18c2baa0c",
+    "threshold_approvals": "4f53cda18c2baa0c"
+   },
+   "approvals_unchanged": true,
+   "before": {
+    "events": 0,
+    "store": "71fffc2d4cbe34d1",
+    "threshold_approval_events": "4f53cda18c2baa0c",
+    "threshold_approvals": "4f53cda18c2baa0c"
+   },
+   "cause_type": null,
+   "events_unchanged": true,
+   "is_contract_error": true,
+   "message": "Approval requires a finite, different value",
+   "outcome": "raised",
+   "store_unchanged": true,
+   "suppress_context": false,
+   "type": "ContractError"
+  },
+  "ttl_exactly_max": {
+   "after": {
+    "events": 3,
+    "store": "ae8c79956b73997f",
+    "threshold_approval_events": "31f4c0d37859d020",
+    "threshold_approvals": "57ae17282dce284e"
+   },
+   "approvals_unchanged": false,
+   "before": {
+    "events": 2,
+    "store": "a30c6be946b3d008",
+    "threshold_approval_events": "6e8326af42fdc360",
+    "threshold_approvals": "b0464a7a6955ab29"
+   },
+   "events_unchanged": false,
+   "outcome": "returned",
+   "store_unchanged": false,
+   "value": {
+    "application": null,
+    "authority": "certifies one exact policy change; never writes the definition",
+    "corpus_hash": "corpus-2",
+    "current": 3,
+    "environment": "maxttl",
+    "evidence_ref": "sha256:863acaa06ffef2c4000000000000000000000000000000000000000000000000",
+    "expires_at": "2026-10-10T12:00:00+00:00",
+    "id": "498b6600252833d664568efa8d2be241228602541d154e396e49cb8236b64f8f",
+    "issued_at": "2026-09-10T12:00:00+00:00",
+    "issued_by": "conductor",
+    "kind": "threshold-approval-v1",
+    "name": "skill_match.FULL_BODY_MIN_SCORE",
+    "policy_revision": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+    "proposed": 4,
+    "registry_hash": "registry-1",
+    "request_binding": "d6709dbcd31ef1ddb525795aebe3b767d273e415287d53e0efee4ec2f026e0c5",
+    "request_id": "req-2",
+    "reviews": [
+     {
+      "actor": "lead:improvement",
+      "decision_id": "decision-1-2",
+      "generation": 1
+     },
+     {
+      "actor": "conductor",
+      "decision_id": "decision-2-2",
+      "generation": 1
+     }
+    ],
+    "status": "issued"
+   }
+  },
+  "ttl_float": {
+   "after": {
+    "events": 1,
+    "store": "60a29b336008e1b0",
+    "threshold_approval_events": "b3b9b9aad6d0ff8c",
+    "threshold_approvals": "a6774b678339463f"
+   },
+   "approvals_unchanged": true,
+   "before": {
+    "events": 1,
+    "store": "60a29b336008e1b0",
+    "threshold_approval_events": "b3b9b9aad6d0ff8c",
+    "threshold_approvals": "a6774b678339463f"
+   },
+   "cause_type": null,
+   "events_unchanged": true,
+   "is_contract_error": true,
+   "message": "ttl_seconds out of range",
+   "outcome": "raised",
+   "store_unchanged": true,
+   "suppress_context": false,
+   "type": "ContractError"
+  },
+  "ttl_max_plus_one": {
+   "after": {
+    "events": 1,
+    "store": "60a29b336008e1b0",
+    "threshold_approval_events": "b3b9b9aad6d0ff8c",
+    "threshold_approvals": "a6774b678339463f"
+   },
+   "approvals_unchanged": true,
+   "before": {
+    "events": 1,
+    "store": "60a29b336008e1b0",
+    "threshold_approval_events": "b3b9b9aad6d0ff8c",
+    "threshold_approvals": "a6774b678339463f"
+   },
+   "cause_type": null,
+   "events_unchanged": true,
+   "is_contract_error": true,
+   "message": "ttl_seconds out of range",
+   "outcome": "raised",
+   "store_unchanged": true,
+   "suppress_context": false,
+   "type": "ContractError"
+  },
+  "ttl_negative": {
+   "after": {
+    "events": 1,
+    "store": "60a29b336008e1b0",
+    "threshold_approval_events": "b3b9b9aad6d0ff8c",
+    "threshold_approvals": "a6774b678339463f"
+   },
+   "approvals_unchanged": true,
+   "before": {
+    "events": 1,
+    "store": "60a29b336008e1b0",
+    "threshold_approval_events": "b3b9b9aad6d0ff8c",
+    "threshold_approvals": "a6774b678339463f"
+   },
+   "cause_type": null,
+   "events_unchanged": true,
+   "is_contract_error": true,
+   "message": "ttl_seconds out of range",
+   "outcome": "raised",
+   "store_unchanged": true,
+   "suppress_context": false,
+   "type": "ContractError"
+  },
+  "ttl_none": {
+   "after": {
+    "events": 1,
+    "store": "60a29b336008e1b0",
+    "threshold_approval_events": "b3b9b9aad6d0ff8c",
+    "threshold_approvals": "a6774b678339463f"
+   },
+   "approvals_unchanged": true,
+   "before": {
+    "events": 1,
+    "store": "60a29b336008e1b0",
+    "threshold_approval_events": "b3b9b9aad6d0ff8c",
+    "threshold_approvals": "a6774b678339463f"
+   },
+   "cause_type": null,
+   "events_unchanged": true,
+   "is_contract_error": true,
+   "message": "ttl_seconds out of range",
+   "outcome": "raised",
+   "store_unchanged": true,
+   "suppress_context": false,
+   "type": "ContractError"
+  },
+  "ttl_one": {
+   "after": {
+    "events": 4,
+    "store": "d9fad17158bd17c3",
+    "threshold_approval_events": "ae4e5a286aa387cc",
+    "threshold_approvals": "a244b299d81055be"
+   },
+   "approvals_unchanged": false,
+   "before": {
+    "events": 3,
+    "store": "ae8c79956b73997f",
+    "threshold_approval_events": "31f4c0d37859d020",
+    "threshold_approvals": "57ae17282dce284e"
+   },
+   "events_unchanged": false,
+   "outcome": "returned",
+   "store_unchanged": false,
+   "value": {
+    "application": null,
+    "authority": "certifies one exact policy change; never writes the definition",
+    "corpus_hash": "corpus-2",
+    "current": 3,
+    "environment": "onettl",
+    "evidence_ref": "sha256:863acaa06ffef2c4000000000000000000000000000000000000000000000000",
+    "expires_at": "2026-09-10T12:00:01+00:00",
+    "id": "9232f82961043fdd73bb56867ee6ac2bb90aae0b52519405218911ba7c666b30",
+    "issued_at": "2026-09-10T12:00:00+00:00",
+    "issued_by": "conductor",
+    "kind": "threshold-approval-v1",
+    "name": "skill_match.FULL_BODY_MIN_SCORE",
+    "policy_revision": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+    "proposed": 4,
+    "registry_hash": "registry-1",
+    "request_binding": "d6709dbcd31ef1ddb525795aebe3b767d273e415287d53e0efee4ec2f026e0c5",
+    "request_id": "req-2",
+    "reviews": [
+     {
+      "actor": "lead:improvement",
+      "decision_id": "decision-1-2",
+      "generation": 1
+     },
+     {
+      "actor": "conductor",
+      "decision_id": "decision-2-2",
+      "generation": 1
+     }
+    ],
+    "status": "issued"
+   }
+  },
+  "ttl_over": {
+   "after": {
+    "events": 1,
+    "store": "60a29b336008e1b0",
+    "threshold_approval_events": "b3b9b9aad6d0ff8c",
+    "threshold_approvals": "a6774b678339463f"
+   },
+   "approvals_unchanged": true,
+   "before": {
+    "events": 1,
+    "store": "60a29b336008e1b0",
+    "threshold_approval_events": "b3b9b9aad6d0ff8c",
+    "threshold_approvals": "a6774b678339463f"
+   },
+   "cause_type": null,
+   "events_unchanged": true,
+   "is_contract_error": true,
+   "message": "ttl_seconds out of range",
+   "outcome": "raised",
+   "store_unchanged": true,
+   "suppress_context": false,
+   "type": "ContractError"
+  },
+  "ttl_str": {
+   "after": {
+    "events": 1,
+    "store": "60a29b336008e1b0",
+    "threshold_approval_events": "b3b9b9aad6d0ff8c",
+    "threshold_approvals": "a6774b678339463f"
+   },
+   "approvals_unchanged": true,
+   "before": {
+    "events": 1,
+    "store": "60a29b336008e1b0",
+    "threshold_approval_events": "b3b9b9aad6d0ff8c",
+    "threshold_approvals": "a6774b678339463f"
+   },
+   "cause_type": null,
+   "events_unchanged": true,
+   "is_contract_error": true,
+   "message": "ttl_seconds out of range",
+   "outcome": "raised",
+   "store_unchanged": true,
+   "suppress_context": false,
+   "type": "ContractError"
+  },
+  "ttl_true": {
+   "after": {
+    "events": 1,
+    "store": "60a29b336008e1b0",
+    "threshold_approval_events": "b3b9b9aad6d0ff8c",
+    "threshold_approvals": "a6774b678339463f"
+   },
+   "approvals_unchanged": true,
+   "before": {
+    "events": 1,
+    "store": "60a29b336008e1b0",
+    "threshold_approval_events": "b3b9b9aad6d0ff8c",
+    "threshold_approvals": "a6774b678339463f"
+   },
+   "cause_type": null,
+   "events_unchanged": true,
+   "is_contract_error": true,
+   "message": "ttl_seconds out of range",
+   "outcome": "raised",
+   "store_unchanged": true,
+   "suppress_context": false,
+   "type": "ContractError"
+  },
+  "ttl_zero": {
+   "after": {
+    "events": 1,
+    "store": "60a29b336008e1b0",
+    "threshold_approval_events": "b3b9b9aad6d0ff8c",
+    "threshold_approvals": "a6774b678339463f"
+   },
+   "approvals_unchanged": true,
+   "before": {
+    "events": 1,
+    "store": "60a29b336008e1b0",
+    "threshold_approval_events": "b3b9b9aad6d0ff8c",
+    "threshold_approvals": "a6774b678339463f"
+   },
+   "cause_type": null,
+   "events_unchanged": true,
+   "is_contract_error": true,
+   "message": "ttl_seconds out of range",
+   "outcome": "raised",
+   "store_unchanged": true,
+   "suppress_context": false,
+   "type": "ContractError"
+  },
+  "unknown_request": {
+   "after": {
+    "events": 0,
+    "store": "f1187e42e939dca6",
+    "threshold_approval_events": "4f53cda18c2baa0c",
+    "threshold_approvals": "4f53cda18c2baa0c"
+   },
+   "approvals_unchanged": true,
+   "before": {
+    "events": 0,
+    "store": "f1187e42e939dca6",
+    "threshold_approval_events": "4f53cda18c2baa0c",
+    "threshold_approvals": "4f53cda18c2baa0c"
+   },
+   "cause_type": null,
+   "events_unchanged": true,
+   "is_contract_error": true,
+   "message": "Assessed threshold review required",
+   "outcome": "raised",
+   "store_unchanged": true,
+   "suppress_context": false,
+   "type": "ContractError"
+  }
+ },
+ "c2_test_consume_certifies_exactly_one_matching_change": {
+  "consumed": {
+   "after": {
+    "events": 21,
+    "store": "58d8967700287463",
+    "threshold_approval_events": "014f3e589f294f87",
+    "threshold_approvals": "d2aa7213b304cb43"
+   },
+   "approvals_unchanged": false,
+   "before": {
+    "events": 20,
+    "store": "f4c7b33da0ece140",
+    "threshold_approval_events": "c1d153bc253a79f3",
+    "threshold_approvals": "cb66cce211b0c9fc"
+   },
+   "events_unchanged": false,
+   "outcome": "returned",
+   "store_unchanged": false,
+   "value": {
+    "application": {
+     "at": "2026-09-10T12:02:00+00:00",
+     "environment": "staging",
+     "generation": 1,
+     "revision": "cccccccccccccccccccccccccccccccccccccccc"
+    },
+    "authority": "certifies one exact policy change; never writes the definition",
+    "corpus_hash": "corpus-c",
+    "current": 3,
+    "environment": "staging",
+    "evidence_ref": "sha256:21da939c7a343060000000000000000000000000000000000000000000000000",
+    "expires_at": "2026-09-10T13:00:00+00:00",
+    "id": "7dc8844266d93c3216b885d9010346dd6d070dbadfec07507978ffc972f332a7",
+    "issued_at": "2026-09-10T12:00:00+00:00",
+    "issued_by": "conductor",
+    "kind": "threshold-approval-v1",
+    "name": "skill_match.FULL_BODY_MIN_SCORE",
+    "policy_revision": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+    "proposed": 4,
+    "registry_hash": "registry-1",
+    "request_binding": "e5ac00d30bd20df1ab8be6c0272cc413272b4606d658ee8a4c243f781a61739f",
+    "request_id": "req-c",
+    "reviews": [
+     {
+      "actor": "lead:improvement",
+      "decision_id": "decision-1-c",
+      "generation": 1
+     },
+     {
+      "actor": "conductor",
+      "decision_id": "decision-2-c",
+      "generation": 1
+     }
+    ],
+    "status": "consumed"
+   }
+  },
+  "consumed_stored_equals_returned": true,
+  "events": [
+   {
+    "approval_id": "7dc8844266d93c3216b885d9010346dd6d070dbadfec07507978ffc972f332a7",
+    "at": "2026-09-22T00:00:00+00:00",
+    "environment": "staging",
+    "expires_at": "2026-09-10T13:00:00+00:00",
+    "id": "0a7d5e693073c9a8bfd2b231a8013d4ba7699a893c436c3a2b55073a4cf6417c",
+    "kind": "issued",
+    "sequence": 1
+   },
+   {
+    "applied_revision": "cccccccccccccccccccccccccccccccccccccccc",
+    "approval_id": "7dc8844266d93c3216b885d9010346dd6d070dbadfec07507978ffc972f332a7",
+    "at": "2026-09-22T00:00:00+00:00",
+    "id": "55d8bc31fb3dbd70bef1b2b85a19f7bc6f5790dffa0a488c79b05f715d2626b1",
+    "kind": "refused",
+    "reason": "applied value differs from the approved proposed value",
+    "sequence": 2
+   },
+   {
+    "applied_revision": "cccccccccccccccccccccccccccccccccccccccc",
+    "approval_id": "7dc8844266d93c3216b885d9010346dd6d070dbadfec07507978ffc972f332a7",
+    "at": "2026-09-22T00:00:00+00:00",
+    "id": "245417ed1e755f11d9418f8c49e72014942942e267bc1d2b167032bb2464a002",
+    "kind": "refused",
+    "reason": "applied value type differs from the approved one",
+    "sequence": 3
+   },
+   {
+    "applied_revision": "cccccccccccccccccccccccccccccccccccccccc",
+    "approval_id": "7dc8844266d93c3216b885d9010346dd6d070dbadfec07507978ffc972f332a7",
+    "at": "2026-09-22T00:00:00+00:00",
+    "id": "d08ff86abc69a4cef72bb3d9d4a23ce511893dbcc456b0bf1da7ff7f75548fe4",
+    "kind": "refused",
+    "reason": "applied value differs from the approved proposed value",
+    "sequence": 4
+   },
+   {
+    "applied_revision": "cccccccccccccccccccccccccccccccccccccccc",
+    "approval_id": "7dc8844266d93c3216b885d9010346dd6d070dbadfec07507978ffc972f332a7",
+    "at": "2026-09-22T00:00:00+00:00",
+    "id": "92c272074dc5c6715410298e83e4f0bd0da30335964f2bb41b8de3e4b8509b01",
+    "kind": "refused",
+    "reason": "previous value differs from the approved current value",
+    "sequence": 5
+   },
+   {
+    "applied_revision": "cccccccccccccccccccccccccccccccccccccccc",
+    "approval_id": "7dc8844266d93c3216b885d9010346dd6d070dbadfec07507978ffc972f332a7",
+    "at": "2026-09-22T00:00:00+00:00",
+    "id": "63345c1c177fc11bf44428d43be7c2f8dea8f3e11b9fef70549a7e0065555017",
+    "kind": "refused",
+    "reason": "previous value differs from the approved current value",
+    "sequence": 6
+   },
+   {
+    "applied_revision": "cccccccccccccccccccccccccccccccccccccccc",
+    "approval_id": "7dc8844266d93c3216b885d9010346dd6d070dbadfec07507978ffc972f332a7",
+    "at": "2026-09-22T00:00:00+00:00",
+    "id": "4c561a744588ea72fdd61f91b0163aebee73ef77d29c4a65dbead76e4d980d48",
+    "kind": "refused",
+    "reason": "previous policy revision differs from the assessed one",
+    "sequence": 7
+   },
+   {
+    "applied_revision": "cccccccccccccccccccccccccccccccccccccccc",
+    "approval_id": "7dc8844266d93c3216b885d9010346dd6d070dbadfec07507978ffc972f332a7",
+    "at": "2026-09-22T00:00:00+00:00",
+    "id": "dada122ecac8be381653d2d1909ae7f75ae85ac2ee10e14c3398970d232b773d",
+    "kind": "refused",
+    "reason": "environment differs from the approved target",
+    "sequence": 8
+   },
+   {
+    "applied_revision": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+    "approval_id": "7dc8844266d93c3216b885d9010346dd6d070dbadfec07507978ffc972f332a7",
+    "at": "2026-09-22T00:00:00+00:00",
+    "id": "12d1d37bed313520b74a0dd6dd5604eb41a0599e0c036d6407790b5c72291a5a",
+    "kind": "refused",
+    "reason": "applied revision equals the previous revision",
+    "sequence": 9
+   },
+   {
+    "applied_revision": "cccccccccccccccccccccccccccccccccccccccc",
+    "approval_id": "7dc8844266d93c3216b885d9010346dd6d070dbadfec07507978ffc972f332a7",
+    "at": "2026-09-22T00:00:00+00:00",
+    "id": "8da2322939414eef11f07b980b4ff1e335297049bd68674bc68a0b9e32c09b24",
+    "kind": "refused",
+    "reason": "the change touches other thresholds: skill_telemetry_audit.FP_THIN_RATE",
+    "sequence": 10
+   },
+   {
+    "applied_revision": "cccccccccccccccccccccccccccccccccccccccc",
+    "approval_id": "7dc8844266d93c3216b885d9010346dd6d070dbadfec07507978ffc972f332a7",
+    "at": "2026-09-22T00:00:00+00:00",
+    "id": "00ea4060fe02a7acde77566c6f0f10da83bc0b171f7e684a0c7eef29ee78ce87",
+    "kind": "refused",
+    "reason": "the change touches other thresholds: skill_telemetry_audit.FP_THIN_RATE",
+    "sequence": 11
+   },
+   {
+    "applied_revision": "cccccccccccccccccccccccccccccccccccccccc",
+    "approval_id": "7dc8844266d93c3216b885d9010346dd6d070dbadfec07507978ffc972f332a7",
+    "at": "2026-09-22T00:00:00+00:00",
+    "id": "4c0a2973647f5e3f9269e9af7aa77c32ea720f54d94deb42a96f4c546f6fedd1",
+    "kind": "refused",
+    "reason": "the change touches other thresholds: skill_telemetry_audit.FP_THIN_RATE",
+    "sequence": 12
+   },
+   {
+    "applied_revision": "cccccccccccccccccccccccccccccccccccccccc",
+    "approval_id": "7dc8844266d93c3216b885d9010346dd6d070dbadfec07507978ffc972f332a7",
+    "at": "2026-09-22T00:00:00+00:00",
+    "id": "7f40c71bf6265b42724ee5d6b8384b1cfb106f908387179d5ceddc28e33f7c08",
+    "kind": "refused",
+    "reason": "the change touches other thresholds: ratio_tracker.WARN_THRESHOLD, skill_telemetry_audit.FP_THIN_RATE",
+    "sequence": 13
+   },
+   {
+    "applied_revision": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+    "approval_id": "7dc8844266d93c3216b885d9010346dd6d070dbadfec07507978ffc972f332a7",
+    "at": "2026-09-22T00:00:00+00:00",
+    "id": "dec9e00e80b51a367fa68f9ef4d0f8988c4a5ee84136cd5eb8a2b1fca562a1d4",
+    "kind": "refused",
+    "reason": "applied revision equals the previous revision",
+    "sequence": 14
+   },
+   {
+    "applied_revision": "cccccccccccccccccccccccccccccccccccccccc",
+    "approval_id": "7dc8844266d93c3216b885d9010346dd6d070dbadfec07507978ffc972f332a7",
+    "at": "2026-09-22T00:00:00+00:00",
+    "id": "7b9ceee14c586c48e59d1876a7c763a463468742f3b65408f7aef9614e3152cb",
+    "kind": "refused",
+    "reason": "environment differs from the approved target",
+    "sequence": 15
+   },
+   {
+    "applied_revision": "cccccccccccccccccccccccccccccccccccccccc",
+    "approval_id": "7dc8844266d93c3216b885d9010346dd6d070dbadfec07507978ffc972f332a7",
+    "at": "2026-09-22T00:00:00+00:00",
+    "id": "830672c3841046230509b1bd5b5e97e22225e556f8053b69ac9028dd7707a88a",
+    "kind": "refused",
+    "reason": "previous policy revision differs from the assessed one",
+    "sequence": 16
+   },
+   {
+    "applied_revision": "cccccccccccccccccccccccccccccccccccccccc",
+    "approval_id": "7dc8844266d93c3216b885d9010346dd6d070dbadfec07507978ffc972f332a7",
+    "at": "2026-09-22T00:00:00+00:00",
+    "id": "ef264c282b3505c04cb2c657a9a1ae0f06383761bdf01190a98182dce98a92ea",
+    "kind": "refused",
+    "reason": "approval expired",
+    "sequence": 17
+   },
+   {
+    "applied_revision": "cccccccccccccccccccccccccccccccccccccccc",
+    "approval_id": "7dc8844266d93c3216b885d9010346dd6d070dbadfec07507978ffc972f332a7",
+    "at": "2026-09-22T00:00:00+00:00",
+    "id": "1aaff994965a368d2a571eb30483933fd7b1001a032c34f341511904731dfe31",
+    "kind": "refused",
+    "reason": "applied value differs from the approved proposed value",
+    "sequence": 18
+   },
+   {
+    "applied_revision": "cccccccccccccccccccccccccccccccccccccccc",
+    "approval_id": "7dc8844266d93c3216b885d9010346dd6d070dbadfec07507978ffc972f332a7",
+    "at": "2026-09-22T00:00:00+00:00",
+    "id": "3b30158d91b5a4bbf9c8ac54816639908966e37f76538437d371470242e93722",
+    "kind": "refused",
+    "reason": "approval expired",
+    "sequence": 19
+   },
+   {
+    "applied_revision": "cccccccccccccccccccccccccccccccccccccccc",
+    "approval_id": "7dc8844266d93c3216b885d9010346dd6d070dbadfec07507978ffc972f332a7",
+    "at": "2026-09-22T00:00:00+00:00",
+    "id": "8255595e8b4a442f958008dbf8caae138f4c288503cd2a3f015a9af6884e2916",
+    "kind": "refused",
+    "reason": "approval expired",
+    "sequence": 20
+   },
+   {
+    "applied_revision": "cccccccccccccccccccccccccccccccccccccccc",
+    "approval_id": "7dc8844266d93c3216b885d9010346dd6d070dbadfec07507978ffc972f332a7",
+    "at": "2026-09-22T00:00:00+00:00",
+    "generation": 1,
+    "id": "19897d2c24ffe32dfbeaba4056acba1ea7f267368317335fd22a826ad8a89614",
+    "kind": "consumed",
+    "sequence": 21
+   },
+   {
+    "applied_revision": "cccccccccccccccccccccccccccccccccccccccc",
+    "approval_id": "7dc8844266d93c3216b885d9010346dd6d070dbadfec07507978ffc972f332a7",
+    "at": "2026-09-22T00:00:00+00:00",
+    "id": "7242f3050c3eeab934968b02d4e301572339581c36061a12326e406da98c56ef",
+    "kind": "refused",
+    "reason": "approval is consumed",
+    "sequence": 22
+   }
+  ],
+  "expired": {
+   "after": {
+    "events": 20,
+    "store": "f4c7b33da0ece140",
+    "threshold_approval_events": "c1d153bc253a79f3",
+    "threshold_approvals": "cb66cce211b0c9fc"
+   },
+   "approvals_unchanged": true,
+   "before": {
+    "events": 19,
+    "store": "46ae148d9d3c8270",
+    "threshold_approval_events": "a5603d930e626401",
+    "threshold_approvals": "cb66cce211b0c9fc"
+   },
+   "cause_type": null,
+   "events_unchanged": false,
+   "is_contract_error": true,
+   "message": "Threshold approval cannot certify this change: approval expired",
+   "outcome": "raised",
+   "store_unchanged": false,
+   "suppress_context": false,
+   "type": "ContractError"
+  },
+  "expires_at_date_only": {
+   "after": {
+    "events": 1,
+    "store": "052fdec2c6de7086",
+    "threshold_approval_events": "ab77befb0d42427c",
+    "threshold_approvals": "7406e83cb9804165"
+   },
+   "approvals_unchanged": true,
+   "before": {
+    "events": 1,
+    "store": "052fdec2c6de7086",
+    "threshold_approval_events": "ab77befb0d42427c",
+    "threshold_approvals": "7406e83cb9804165"
+   },
+   "cause_type": null,
+   "events_unchanged": true,
+   "is_contract_error": true,
+   "message": "expires_at must carry a timezone",
+   "outcome": "raised",
+   "store_unchanged": true,
+   "suppress_context": false,
+   "type": "ContractError"
+  },
+  "expires_at_garbage": {
+   "after": {
+    "events": 1,
+    "store": "076f69d36bb09522",
+    "threshold_approval_events": "e82593efdd3e6eb4",
+    "threshold_approvals": "63f213ecb5200f1d"
+   },
+   "approvals_unchanged": true,
+   "before": {
+    "events": 1,
+    "store": "076f69d36bb09522",
+    "threshold_approval_events": "e82593efdd3e6eb4",
+    "threshold_approvals": "63f213ecb5200f1d"
+   },
+   "cause_type": null,
+   "events_unchanged": true,
+   "is_contract_error": true,
+   "message": "expires_at is not ISO-8601",
+   "outcome": "raised",
+   "store_unchanged": true,
+   "suppress_context": true,
+   "type": "ContractError"
+  },
+  "expires_at_int": {
+   "after": {
+    "events": 1,
+    "store": "3e318f9dd5a8db35",
+    "threshold_approval_events": "db09b4099d2a12ba",
+    "threshold_approvals": "ea32d3a19705a6b3"
+   },
+   "approvals_unchanged": true,
+   "before": {
+    "events": 1,
+    "store": "3e318f9dd5a8db35",
+    "threshold_approval_events": "db09b4099d2a12ba",
+    "threshold_approvals": "ea32d3a19705a6b3"
+   },
+   "cause_type": null,
+   "events_unchanged": true,
+   "is_contract_error": true,
+   "message": "expires_at must be ISO-8601 text",
+   "outcome": "raised",
+   "store_unchanged": true,
+   "suppress_context": false,
+   "type": "ContractError"
+  },
+  "expires_at_naive": {
+   "after": {
+    "events": 1,
+    "store": "3451bf6a692b763a",
+    "threshold_approval_events": "94cdadf6ef52dbc7",
+    "threshold_approvals": "0d69899f3bb6a856"
+   },
+   "approvals_unchanged": true,
+   "before": {
+    "events": 1,
+    "store": "3451bf6a692b763a",
+    "threshold_approval_events": "94cdadf6ef52dbc7",
+    "threshold_approvals": "0d69899f3bb6a856"
+   },
+   "cause_type": null,
+   "events_unchanged": true,
+   "is_contract_error": true,
+   "message": "expires_at must carry a timezone",
+   "outcome": "raised",
+   "store_unchanged": true,
+   "suppress_context": false,
+   "type": "ContractError"
+  },
+  "expires_at_none": {
+   "after": {
+    "events": 1,
+    "store": "bc47dd5dbc33e345",
+    "threshold_approval_events": "8e9cc241973fd575",
+    "threshold_approvals": "c0a9fd2e92028cf9"
+   },
+   "approvals_unchanged": true,
+   "before": {
+    "events": 1,
+    "store": "bc47dd5dbc33e345",
+    "threshold_approval_events": "8e9cc241973fd575",
+    "threshold_approvals": "c0a9fd2e92028cf9"
+   },
+   "cause_type": null,
+   "events_unchanged": true,
+   "is_contract_error": true,
+   "message": "expires_at must be ISO-8601 text",
+   "outcome": "raised",
+   "store_unchanged": true,
+   "suppress_context": false,
+   "type": "ContractError"
+  },
+  "expiry_exactly_at": {
+   "after": {
+    "events": 19,
+    "store": "46ae148d9d3c8270",
+    "threshold_approval_events": "a5603d930e626401",
+    "threshold_approvals": "cb66cce211b0c9fc"
+   },
+   "approvals_unchanged": true,
+   "before": {
+    "events": 18,
+    "store": "4dcd1296662c1ef4",
+    "threshold_approval_events": "97000aeb3a06f2be",
+    "threshold_approvals": "cb66cce211b0c9fc"
+   },
+   "cause_type": null,
+   "events_unchanged": false,
+   "is_contract_error": true,
+   "message": "Threshold approval cannot certify this change: approval expired",
+   "outcome": "raised",
+   "store_unchanged": false,
+   "suppress_context": false,
+   "type": "ContractError"
+  },
+  "expiry_one_microsecond_before": {
+   "after": {
+    "events": 18,
+    "store": "4dcd1296662c1ef4",
+    "threshold_approval_events": "97000aeb3a06f2be",
+    "threshold_approvals": "cb66cce211b0c9fc"
+   },
+   "approvals_unchanged": true,
+   "before": {
+    "events": 17,
+    "store": "f462dc88b397e90c",
+    "threshold_approval_events": "433d7896f151219c",
+    "threshold_approvals": "cb66cce211b0c9fc"
+   },
+   "cause_type": null,
+   "events_unchanged": false,
+   "is_contract_error": true,
+   "message": "Threshold approval cannot certify this change: applied value differs from the approved proposed value",
+   "outcome": "raised",
+   "store_unchanged": false,
+   "suppress_context": false,
+   "type": "ContractError"
+  },
+  "generation_ignores_other_names": {
+   "at": "2026-09-10T12:01:00+00:00",
+   "environment": "staging",
+   "generation": 1,
+   "revision": "cccccccccccccccccccccccccccccccccccccccc"
+  },
+  "generation_scan_row_without_name": {
+   "after": {
+    "events": 1,
+    "store": "484df668beb52803",
+    "threshold_approval_events": "4473a04828e18b85",
+    "threshold_approvals": "14979494c265e1ac"
+   },
+   "approvals_unchanged": true,
+   "before": {
+    "events": 1,
+    "store": "484df668beb52803",
+    "threshold_approval_events": "4473a04828e18b85",
+    "threshold_approvals": "14979494c265e1ac"
+   },
+   "cause_type": null,
+   "events_unchanged": true,
+   "is_contract_error": false,
+   "message": "'name'",
+   "outcome": "raised",
+   "store_unchanged": true,
+   "suppress_context": false,
+   "type": "KeyError"
+  },
+  "generation_scan_row_without_status": {
+   "after": {
+    "events": 1,
+    "store": "593d073ee5e00ae0",
+    "threshold_approval_events": "8aa1dc0a53aaf4e1",
+    "threshold_approvals": "956273ea84989f49"
+   },
+   "approvals_unchanged": true,
+   "before": {
+    "events": 1,
+    "store": "593d073ee5e00ae0",
+    "threshold_approval_events": "8aa1dc0a53aaf4e1",
+    "threshold_approvals": "956273ea84989f49"
+   },
+   "cause_type": null,
+   "events_unchanged": true,
+   "is_contract_error": false,
+   "message": "'status'",
+   "outcome": "raised",
+   "store_unchanged": true,
+   "suppress_context": false,
+   "type": "KeyError"
+  },
+  "inspect_consumed": {
+   "application": {
+    "at": "2026-09-10T12:02:00+00:00",
+    "environment": "staging",
+    "generation": 1,
+    "revision": "cccccccccccccccccccccccccccccccccccccccc"
+   },
+   "authority": "certifies one exact policy change; never writes the definition",
+   "current": 3,
+   "environment": "staging",
+   "expires_at": "2026-09-10T13:00:00+00:00",
+   "id": "7dc8844266d93c3216b885d9010346dd6d070dbadfec07507978ffc972f332a7",
+   "name": "skill_match.FULL_BODY_MIN_SCORE",
+   "policy_revision": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+   "proposed": 4,
+   "state": "consumed"
+  },
+  "kinds": [
+   "issued",
+   "refused",
+   "refused",
+   "refused",
+   "refused",
+   "refused",
+   "refused",
+   "refused",
+   "refused",
+   "refused",
+   "refused",
+   "refused",
+   "refused",
+   "refused",
+   "refused",
+   "refused",
+   "refused",
+   "refused",
+   "refused",
+   "refused",
+   "consumed",
+   "refused"
+  ],
+  "malformed_are_refused_before_any_transaction": true,
+  "malformed_policies": {
+   "empty": {
+    "after": {
+     "events": 20,
+     "store": "f4c7b33da0ece140",
+     "threshold_approval_events": "c1d153bc253a79f3",
+     "threshold_approvals": "cb66cce211b0c9fc"
+    },
+    "approvals_unchanged": true,
+    "before": {
+     "events": 20,
+     "store": "f4c7b33da0ece140",
+     "threshold_approval_events": "c1d153bc253a79f3",
+     "threshold_approvals": "cb66cce211b0c9fc"
+    },
+    "cause_type": null,
+    "events_unchanged": true,
+    "is_contract_error": true,
+    "message": "Applied policy must carry previous_revision, previous_values, revision, values and environment",
+    "outcome": "raised",
+    "store_unchanged": true,
+    "suppress_context": false,
+    "type": "ContractError"
+   },
+   "environment_empty": {
+    "after": {
+     "events": 20,
+     "store": "f4c7b33da0ece140",
+     "threshold_approval_events": "c1d153bc253a79f3",
+     "threshold_approvals": "cb66cce211b0c9fc"
+    },
+    "approvals_unchanged": true,
+    "before": {
+     "events": 20,
+     "store": "f4c7b33da0ece140",
+     "threshold_approval_events": "c1d153bc253a79f3",
+     "threshold_approvals": "cb66cce211b0c9fc"
+    },
+    "cause_type": null,
+    "events_unchanged": true,
+    "is_contract_error": true,
+    "message": "environment must be a lowercase token",
+    "outcome": "raised",
+    "store_unchanged": true,
+    "suppress_context": false,
+    "type": "ContractError"
+   },
+   "environment_int": {
+    "after": {
+     "events": 20,
+     "store": "f4c7b33da0ece140",
+     "threshold_approval_events": "c1d153bc253a79f3",
+     "threshold_approvals": "cb66cce211b0c9fc"
+    },
+    "approvals_unchanged": true,
+    "before": {
+     "events": 20,
+     "store": "f4c7b33da0ece140",
+     "threshold_approval_events": "c1d153bc253a79f3",
+     "threshold_approvals": "cb66cce211b0c9fc"
+    },
+    "cause_type": null,
+    "events_unchanged": true,
+    "is_contract_error": true,
+    "message": "environment must be a lowercase token",
+    "outcome": "raised",
+    "store_unchanged": true,
+    "suppress_context": false,
+    "type": "ContractError"
+   },
+   "environment_leading_dot": {
+    "after": {
+     "events": 20,
+     "store": "f4c7b33da0ece140",
+     "threshold_approval_events": "c1d153bc253a79f3",
+     "threshold_approvals": "cb66cce211b0c9fc"
+    },
+    "approvals_unchanged": true,
+    "before": {
+     "events": 20,
+     "store": "f4c7b33da0ece140",
+     "threshold_approval_events": "c1d153bc253a79f3",
+     "threshold_approvals": "cb66cce211b0c9fc"
+    },
+    "cause_type": null,
+    "events_unchanged": true,
+    "is_contract_error": true,
+    "message": "environment must be a lowercase token",
+    "outcome": "raised",
+    "store_unchanged": true,
+    "suppress_context": false,
+    "type": "ContractError"
+   },
+   "environment_upper": {
+    "after": {
+     "events": 20,
+     "store": "f4c7b33da0ece140",
+     "threshold_approval_events": "c1d153bc253a79f3",
+     "threshold_approvals": "cb66cce211b0c9fc"
+    },
+    "approvals_unchanged": true,
+    "before": {
+     "events": 20,
+     "store": "f4c7b33da0ece140",
+     "threshold_approval_events": "c1d153bc253a79f3",
+     "threshold_approvals": "cb66cce211b0c9fc"
+    },
+    "cause_type": null,
+    "events_unchanged": true,
+    "is_contract_error": true,
+    "message": "environment must be a lowercase token",
+    "outcome": "raised",
+    "store_unchanged": true,
+    "suppress_context": false,
+    "type": "ContractError"
+   },
+   "extra_key": {
+    "after": {
+     "events": 20,
+     "store": "f4c7b33da0ece140",
+     "threshold_approval_events": "c1d153bc253a79f3",
+     "threshold_approvals": "cb66cce211b0c9fc"
+    },
+    "approvals_unchanged": true,
+    "before": {
+     "events": 20,
+     "store": "f4c7b33da0ece140",
+     "threshold_approval_events": "c1d153bc253a79f3",
+     "threshold_approvals": "cb66cce211b0c9fc"
+    },
+    "cause_type": null,
+    "events_unchanged": true,
+    "is_contract_error": true,
+    "message": "Applied policy must carry previous_revision, previous_values, revision, values and environment",
+    "outcome": "raised",
+    "store_unchanged": true,
+    "suppress_context": false,
+    "type": "ContractError"
+   },
+   "list": {
+    "after": {
+     "events": 20,
+     "store": "f4c7b33da0ece140",
+     "threshold_approval_events": "c1d153bc253a79f3",
+     "threshold_approvals": "cb66cce211b0c9fc"
+    },
+    "approvals_unchanged": true,
+    "before": {
+     "events": 20,
+     "store": "f4c7b33da0ece140",
+     "threshold_approval_events": "c1d153bc253a79f3",
+     "threshold_approvals": "cb66cce211b0c9fc"
+    },
+    "cause_type": null,
+    "events_unchanged": true,
+    "is_contract_error": true,
+    "message": "Applied policy must carry previous_revision, previous_values, revision, values and environment",
+    "outcome": "raised",
+    "store_unchanged": true,
+    "suppress_context": false,
+    "type": "ContractError"
+   },
+   "missing_environment": {
+    "after": {
+     "events": 20,
+     "store": "f4c7b33da0ece140",
+     "threshold_approval_events": "c1d153bc253a79f3",
+     "threshold_approvals": "cb66cce211b0c9fc"
+    },
+    "approvals_unchanged": true,
+    "before": {
+     "events": 20,
+     "store": "f4c7b33da0ece140",
+     "threshold_approval_events": "c1d153bc253a79f3",
+     "threshold_approvals": "cb66cce211b0c9fc"
+    },
+    "cause_type": null,
+    "events_unchanged": true,
+    "is_contract_error": true,
+    "message": "Applied policy must carry previous_revision, previous_values, revision, values and environment",
+    "outcome": "raised",
+    "store_unchanged": true,
+    "suppress_context": false,
+    "type": "ContractError"
+   },
+   "not_a_dict": {
+    "after": {
+     "events": 20,
+     "store": "f4c7b33da0ece140",
+     "threshold_approval_events": "c1d153bc253a79f3",
+     "threshold_approvals": "cb66cce211b0c9fc"
+    },
+    "approvals_unchanged": true,
+    "before": {
+     "events": 20,
+     "store": "f4c7b33da0ece140",
+     "threshold_approval_events": "c1d153bc253a79f3",
+     "threshold_approvals": "cb66cce211b0c9fc"
+    },
+    "cause_type": null,
+    "events_unchanged": true,
+    "is_contract_error": true,
+    "message": "Applied policy must carry previous_revision, previous_values, revision, values and environment",
+    "outcome": "raised",
+    "store_unchanged": true,
+    "suppress_context": false,
+    "type": "ContractError"
+   },
+   "previous_revision_none": {
+    "after": {
+     "events": 20,
+     "store": "f4c7b33da0ece140",
+     "threshold_approval_events": "c1d153bc253a79f3",
+     "threshold_approvals": "cb66cce211b0c9fc"
+    },
+    "approvals_unchanged": true,
+    "before": {
+     "events": 20,
+     "store": "f4c7b33da0ece140",
+     "threshold_approval_events": "c1d153bc253a79f3",
+     "threshold_approvals": "cb66cce211b0c9fc"
+    },
+    "cause_type": null,
+    "events_unchanged": true,
+    "is_contract_error": true,
+    "message": "previous_revision must be a Git commit hash",
+    "outcome": "raised",
+    "store_unchanged": true,
+    "suppress_context": false,
+    "type": "ContractError"
+   },
+   "previous_revision_short": {
+    "after": {
+     "events": 20,
+     "store": "f4c7b33da0ece140",
+     "threshold_approval_events": "c1d153bc253a79f3",
+     "threshold_approvals": "cb66cce211b0c9fc"
+    },
+    "approvals_unchanged": true,
+    "before": {
+     "events": 20,
+     "store": "f4c7b33da0ece140",
+     "threshold_approval_events": "c1d153bc253a79f3",
+     "threshold_approvals": "cb66cce211b0c9fc"
+    },
+    "cause_type": null,
+    "events_unchanged": true,
+    "is_contract_error": true,
+    "message": "previous_revision must be a Git commit hash",
+    "outcome": "raised",
+    "store_unchanged": true,
+    "suppress_context": false,
+    "type": "ContractError"
+   },
+   "previous_values_nan": {
+    "after": {
+     "events": 20,
+     "store": "f4c7b33da0ece140",
+     "threshold_approval_events": "c1d153bc253a79f3",
+     "threshold_approvals": "cb66cce211b0c9fc"
+    },
+    "approvals_unchanged": true,
+    "before": {
+     "events": 20,
+     "store": "f4c7b33da0ece140",
+     "threshold_approval_events": "c1d153bc253a79f3",
+     "threshold_approvals": "cb66cce211b0c9fc"
+    },
+    "cause_type": null,
+    "events_unchanged": true,
+    "is_contract_error": true,
+    "message": "previous_values must map registered names to finite numbers",
+    "outcome": "raised",
+    "store_unchanged": true,
+    "suppress_context": false,
+    "type": "ContractError"
+   },
+   "previous_values_str": {
+    "after": {
+     "events": 20,
+     "store": "f4c7b33da0ece140",
+     "threshold_approval_events": "c1d153bc253a79f3",
+     "threshold_approvals": "cb66cce211b0c9fc"
+    },
+    "approvals_unchanged": true,
+    "before": {
+     "events": 20,
+     "store": "f4c7b33da0ece140",
+     "threshold_approval_events": "c1d153bc253a79f3",
+     "threshold_approvals": "cb66cce211b0c9fc"
+    },
+    "cause_type": null,
+    "events_unchanged": true,
+    "is_contract_error": true,
+    "message": "previous_values must map registered names to finite numbers",
+    "outcome": "raised",
+    "store_unchanged": true,
+    "suppress_context": false,
+    "type": "ContractError"
+   },
+   "previous_values_unknown": {
+    "after": {
+     "events": 20,
+     "store": "f4c7b33da0ece140",
+     "threshold_approval_events": "c1d153bc253a79f3",
+     "threshold_approvals": "cb66cce211b0c9fc"
+    },
+    "approvals_unchanged": true,
+    "before": {
+     "events": 20,
+     "store": "f4c7b33da0ece140",
+     "threshold_approval_events": "c1d153bc253a79f3",
+     "threshold_approvals": "cb66cce211b0c9fc"
+    },
+    "cause_type": null,
+    "events_unchanged": true,
+    "is_contract_error": true,
+    "message": "previous_values must map registered names to finite numbers",
+    "outcome": "raised",
+    "store_unchanged": true,
+    "suppress_context": false,
+    "type": "ContractError"
+   },
+   "revision_head": {
+    "after": {
+     "events": 20,
+     "store": "f4c7b33da0ece140",
+     "threshold_approval_events": "c1d153bc253a79f3",
+     "threshold_approvals": "cb66cce211b0c9fc"
+    },
+    "approvals_unchanged": true,
+    "before": {
+     "events": 20,
+     "store": "f4c7b33da0ece140",
+     "threshold_approval_events": "c1d153bc253a79f3",
+     "threshold_approvals": "cb66cce211b0c9fc"
+    },
+    "cause_type": null,
+    "events_unchanged": true,
+    "is_contract_error": true,
+    "message": "revision must be a Git commit hash",
+    "outcome": "raised",
+    "store_unchanged": true,
+    "suppress_context": false,
+    "type": "ContractError"
+   },
+   "revision_int": {
+    "after": {
+     "events": 20,
+     "store": "f4c7b33da0ece140",
+     "threshold_approval_events": "c1d153bc253a79f3",
+     "threshold_approvals": "cb66cce211b0c9fc"
+    },
+    "approvals_unchanged": true,
+    "before": {
+     "events": 20,
+     "store": "f4c7b33da0ece140",
+     "threshold_approval_events": "c1d153bc253a79f3",
+     "threshold_approvals": "cb66cce211b0c9fc"
+    },
+    "cause_type": null,
+    "events_unchanged": true,
+    "is_contract_error": true,
+    "message": "revision must be a Git commit hash",
+    "outcome": "raised",
+    "store_unchanged": true,
+    "suppress_context": false,
+    "type": "ContractError"
+   },
+   "revision_long": {
+    "after": {
+     "events": 20,
+     "store": "f4c7b33da0ece140",
+     "threshold_approval_events": "c1d153bc253a79f3",
+     "threshold_approvals": "cb66cce211b0c9fc"
+    },
+    "approvals_unchanged": true,
+    "before": {
+     "events": 20,
+     "store": "f4c7b33da0ece140",
+     "threshold_approval_events": "c1d153bc253a79f3",
+     "threshold_approvals": "cb66cce211b0c9fc"
+    },
+    "cause_type": null,
+    "events_unchanged": true,
+    "is_contract_error": true,
+    "message": "revision must be a Git commit hash",
+    "outcome": "raised",
+    "store_unchanged": true,
+    "suppress_context": false,
+    "type": "ContractError"
+   },
+   "revision_short": {
+    "after": {
+     "events": 20,
+     "store": "f4c7b33da0ece140",
+     "threshold_approval_events": "c1d153bc253a79f3",
+     "threshold_approvals": "cb66cce211b0c9fc"
+    },
+    "approvals_unchanged": true,
+    "before": {
+     "events": 20,
+     "store": "f4c7b33da0ece140",
+     "threshold_approval_events": "c1d153bc253a79f3",
+     "threshold_approvals": "cb66cce211b0c9fc"
+    },
+    "cause_type": null,
+    "events_unchanged": true,
+    "is_contract_error": true,
+    "message": "revision must be a Git commit hash",
+    "outcome": "raised",
+    "store_unchanged": true,
+    "suppress_context": false,
+    "type": "ContractError"
+   },
+   "revision_trailing_newline": {
+    "after": {
+     "events": 20,
+     "store": "f4c7b33da0ece140",
+     "threshold_approval_events": "c1d153bc253a79f3",
+     "threshold_approvals": "cb66cce211b0c9fc"
+    },
+    "approvals_unchanged": true,
+    "before": {
+     "events": 20,
+     "store": "f4c7b33da0ece140",
+     "threshold_approval_events": "c1d153bc253a79f3",
+     "threshold_approvals": "cb66cce211b0c9fc"
+    },
+    "cause_type": null,
+    "events_unchanged": true,
+    "is_contract_error": true,
+    "message": "revision must be a Git commit hash",
+    "outcome": "raised",
+    "store_unchanged": true,
+    "suppress_context": false,
+    "type": "ContractError"
+   },
+   "revision_uppercase": {
+    "after": {
+     "events": 20,
+     "store": "f4c7b33da0ece140",
+     "threshold_approval_events": "c1d153bc253a79f3",
+     "threshold_approvals": "cb66cce211b0c9fc"
+    },
+    "approvals_unchanged": true,
+    "before": {
+     "events": 20,
+     "store": "f4c7b33da0ece140",
+     "threshold_approval_events": "c1d153bc253a79f3",
+     "threshold_approvals": "cb66cce211b0c9fc"
+    },
+    "cause_type": null,
+    "events_unchanged": true,
+    "is_contract_error": true,
+    "message": "revision must be a Git commit hash",
+    "outcome": "raised",
+    "store_unchanged": true,
+    "suppress_context": false,
+    "type": "ContractError"
+   },
+   "values_bool": {
+    "after": {
+     "events": 20,
+     "store": "f4c7b33da0ece140",
+     "threshold_approval_events": "c1d153bc253a79f3",
+     "threshold_approvals": "cb66cce211b0c9fc"
+    },
+    "approvals_unchanged": true,
+    "before": {
+     "events": 20,
+     "store": "f4c7b33da0ece140",
+     "threshold_approval_events": "c1d153bc253a79f3",
+     "threshold_approvals": "cb66cce211b0c9fc"
+    },
+    "cause_type": null,
+    "events_unchanged": true,
+    "is_contract_error": true,
+    "message": "values must map registered names to finite numbers",
+    "outcome": "raised",
+    "store_unchanged": true,
+    "suppress_context": false,
+    "type": "ContractError"
+   },
+   "values_inf": {
+    "after": {
+     "events": 20,
+     "store": "f4c7b33da0ece140",
+     "threshold_approval_events": "c1d153bc253a79f3",
+     "threshold_approvals": "cb66cce211b0c9fc"
+    },
+    "approvals_unchanged": true,
+    "before": {
+     "events": 20,
+     "store": "f4c7b33da0ece140",
+     "threshold_approval_events": "c1d153bc253a79f3",
+     "threshold_approvals": "cb66cce211b0c9fc"
+    },
+    "cause_type": null,
+    "events_unchanged": true,
+    "is_contract_error": true,
+    "message": "values must map registered names to finite numbers",
+    "outcome": "raised",
+    "store_unchanged": true,
+    "suppress_context": false,
+    "type": "ContractError"
+   },
+   "values_list": {
+    "after": {
+     "events": 20,
+     "store": "f4c7b33da0ece140",
+     "threshold_approval_events": "c1d153bc253a79f3",
+     "threshold_approvals": "cb66cce211b0c9fc"
+    },
+    "approvals_unchanged": true,
+    "before": {
+     "events": 20,
+     "store": "f4c7b33da0ece140",
+     "threshold_approval_events": "c1d153bc253a79f3",
+     "threshold_approvals": "cb66cce211b0c9fc"
+    },
+    "cause_type": null,
+    "events_unchanged": true,
+    "is_contract_error": true,
+    "message": "values must map registered names to finite numbers",
+    "outcome": "raised",
+    "store_unchanged": true,
+    "suppress_context": false,
+    "type": "ContractError"
+   },
+   "values_nan": {
+    "after": {
+     "events": 20,
+     "store": "f4c7b33da0ece140",
+     "threshold_approval_events": "c1d153bc253a79f3",
+     "threshold_approvals": "cb66cce211b0c9fc"
+    },
+    "approvals_unchanged": true,
+    "before": {
+     "events": 20,
+     "store": "f4c7b33da0ece140",
+     "threshold_approval_events": "c1d153bc253a79f3",
+     "threshold_approvals": "cb66cce211b0c9fc"
+    },
+    "cause_type": null,
+    "events_unchanged": true,
+    "is_contract_error": true,
+    "message": "values must map registered names to finite numbers",
+    "outcome": "raised",
+    "store_unchanged": true,
+    "suppress_context": false,
+    "type": "ContractError"
+   },
+   "values_str": {
+    "after": {
+     "events": 20,
+     "store": "f4c7b33da0ece140",
+     "threshold_approval_events": "c1d153bc253a79f3",
+     "threshold_approvals": "cb66cce211b0c9fc"
+    },
+    "approvals_unchanged": true,
+    "before": {
+     "events": 20,
+     "store": "f4c7b33da0ece140",
+     "threshold_approval_events": "c1d153bc253a79f3",
+     "threshold_approvals": "cb66cce211b0c9fc"
+    },
+    "cause_type": null,
+    "events_unchanged": true,
+    "is_contract_error": true,
+    "message": "values must map registered names to finite numbers",
+    "outcome": "raised",
+    "store_unchanged": true,
+    "suppress_context": false,
+    "type": "ContractError"
+   },
+   "values_unknown_name": {
+    "after": {
+     "events": 20,
+     "store": "f4c7b33da0ece140",
+     "threshold_approval_events": "c1d153bc253a79f3",
+     "threshold_approvals": "cb66cce211b0c9fc"
+    },
+    "approvals_unchanged": true,
+    "before": {
+     "events": 20,
+     "store": "f4c7b33da0ece140",
+     "threshold_approval_events": "c1d153bc253a79f3",
+     "threshold_approvals": "cb66cce211b0c9fc"
+    },
+    "cause_type": null,
+    "events_unchanged": true,
+    "is_contract_error": true,
+    "message": "values must map registered names to finite numbers",
+    "outcome": "raised",
+    "store_unchanged": true,
+    "suppress_context": false,
+    "type": "ContractError"
+   }
+  },
+  "order_environment_before_revision": {
+   "after": {
+    "events": 15,
+    "store": "650cda3f4dad7ed4",
+    "threshold_approval_events": "e9c8ff52416a23f3",
+    "threshold_approvals": "cb66cce211b0c9fc"
+   },
+   "approvals_unchanged": true,
+   "before": {
+    "events": 14,
+    "store": "31b0094c6ae0f02a",
+    "threshold_approval_events": "14c945389ac3f644",
+    "threshold_approvals": "cb66cce211b0c9fc"
+   },
+   "cause_type": null,
+   "events_unchanged": false,
+   "is_contract_error": true,
+   "message": "Threshold approval cannot certify this change: environment differs from the approved target",
+   "outcome": "raised",
+   "store_unchanged": false,
+   "suppress_context": false,
+   "type": "ContractError"
+  },
+  "order_expired_before_environment": {
+   "after": {
+    "events": 17,
+    "store": "f462dc88b397e90c",
+    "threshold_approval_events": "433d7896f151219c",
+    "threshold_approvals": "cb66cce211b0c9fc"
+   },
+   "approvals_unchanged": true,
+   "before": {
+    "events": 16,
+    "store": "8a636420290bc49e",
+    "threshold_approval_events": "d67d5d07b7152872",
+    "threshold_approvals": "cb66cce211b0c9fc"
+   },
+   "cause_type": null,
+   "events_unchanged": false,
+   "is_contract_error": true,
+   "message": "Threshold approval cannot certify this change: approval expired",
+   "outcome": "raised",
+   "store_unchanged": false,
+   "suppress_context": false,
+   "type": "ContractError"
+  },
+  "order_revision_before_value": {
+   "after": {
+    "events": 16,
+    "store": "8a636420290bc49e",
+    "threshold_approval_events": "d67d5d07b7152872",
+    "threshold_approvals": "cb66cce211b0c9fc"
+   },
+   "approvals_unchanged": true,
+   "before": {
+    "events": 15,
+    "store": "650cda3f4dad7ed4",
+    "threshold_approval_events": "e9c8ff52416a23f3",
+    "threshold_approvals": "cb66cce211b0c9fc"
+   },
+   "cause_type": null,
+   "events_unchanged": false,
+   "is_contract_error": true,
+   "message": "Threshold approval cannot certify this change: previous policy revision differs from the assessed one",
+   "outcome": "raised",
+   "store_unchanged": false,
+   "suppress_context": false,
+   "type": "ContractError"
+  },
+  "other_name_first_generation": {
+   "after": {
+    "events": 24,
+    "store": "460459c52364d878",
+    "threshold_approval_events": "6f50d30d3d645e21",
+    "threshold_approvals": "3a413462fbc19ae6"
+   },
+   "approvals_unchanged": false,
+   "before": {
+    "events": 23,
+    "store": "f3cd0801b78e84df",
+    "threshold_approval_events": "2e63ec5e46ff7a8f",
+    "threshold_approvals": "045e249e2c452a25"
+   },
+   "events_unchanged": false,
+   "outcome": "returned",
+   "store_unchanged": false,
+   "value": {
+    "application": {
+     "at": "2026-09-10T12:01:00+00:00",
+     "environment": "staging",
+     "generation": 1,
+     "revision": "eeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee"
+    },
+    "authority": "certifies one exact policy change; never writes the definition",
+    "corpus_hash": "corpus-c-other",
+    "current": 0.5,
+    "environment": "staging",
+    "evidence_ref": "sha256:50bd622a75fcb30f000000000000000000000000000000000000000000000000",
+    "expires_at": "2026-09-10T13:00:00+00:00",
+    "id": "a1c230d1d4e9612c862e171e4a66bf7a36730e2fa32f9e45447664d7488471a4",
+    "issued_at": "2026-09-10T12:00:00+00:00",
+    "issued_by": "conductor",
+    "kind": "threshold-approval-v1",
+    "name": "skill_telemetry_audit.FP_THIN_RATE",
+    "policy_revision": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+    "proposed": 0.6,
+    "registry_hash": "registry-1",
+    "request_binding": "8989dde47b571e228c6d2484eb7cc8c38eba601f6a9028cbf42aa11c69f1b572",
+    "request_id": "req-c-other",
+    "reviews": [
+     {
+      "actor": "lead:improvement",
+      "decision_id": "decision-1-c-other",
+      "generation": 1
+     },
+     {
+      "actor": "conductor",
+      "decision_id": "decision-2-c-other",
+      "generation": 1
+     }
+    ],
+    "status": "consumed"
+   }
+  },
+  "record_without_current": {
+   "after": {
+    "events": 1,
+    "store": "b8706f33a98dba6b",
+    "threshold_approval_events": "63e5746fd68c386f",
+    "threshold_approvals": "f766f9a2af1b3af5"
+   },
+   "approvals_unchanged": true,
+   "before": {
+    "events": 1,
+    "store": "b8706f33a98dba6b",
+    "threshold_approval_events": "63e5746fd68c386f",
+    "threshold_approvals": "f766f9a2af1b3af5"
+   },
+   "cause_type": null,
+   "events_unchanged": true,
+   "is_contract_error": false,
+   "message": "'current'",
+   "outcome": "raised",
+   "store_unchanged": true,
+   "suppress_context": false,
+   "type": "KeyError"
+  },
+  "record_without_environment": {
+   "after": {
+    "events": 1,
+    "store": "42b997ff1de9990c",
+    "threshold_approval_events": "220675d78aac0ab0",
+    "threshold_approvals": "9a02140be30b7c68"
+   },
+   "approvals_unchanged": true,
+   "before": {
+    "events": 1,
+    "store": "42b997ff1de9990c",
+    "threshold_approval_events": "220675d78aac0ab0",
+    "threshold_approvals": "9a02140be30b7c68"
+   },
+   "cause_type": null,
+   "events_unchanged": true,
+   "is_contract_error": false,
+   "message": "'environment'",
+   "outcome": "raised",
+   "store_unchanged": true,
+   "suppress_context": false,
+   "type": "KeyError"
+  },
+  "record_without_name": {
+   "after": {
+    "events": 1,
+    "store": "dd6b2f887d6be9eb",
+    "threshold_approval_events": "903ebbbaeca16112",
+    "threshold_approvals": "08f51d5856ad6654"
+   },
+   "approvals_unchanged": true,
+   "before": {
+    "events": 1,
+    "store": "dd6b2f887d6be9eb",
+    "threshold_approval_events": "903ebbbaeca16112",
+    "threshold_approvals": "08f51d5856ad6654"
+   },
+   "cause_type": null,
+   "events_unchanged": true,
+   "is_contract_error": false,
+   "message": "'name'",
+   "outcome": "raised",
+   "store_unchanged": true,
+   "suppress_context": false,
+   "type": "KeyError"
+  },
+  "record_without_policy_revision": {
+   "after": {
+    "events": 1,
+    "store": "c488a2edbbd17d1a",
+    "threshold_approval_events": "ac4146a0dcb39892",
+    "threshold_approvals": "35e8a504cdbbb0e6"
+   },
+   "approvals_unchanged": true,
+   "before": {
+    "events": 1,
+    "store": "c488a2edbbd17d1a",
+    "threshold_approval_events": "ac4146a0dcb39892",
+    "threshold_approvals": "35e8a504cdbbb0e6"
+   },
+   "cause_type": null,
+   "events_unchanged": true,
+   "is_contract_error": false,
+   "message": "'policy_revision'",
+   "outcome": "raised",
+   "store_unchanged": true,
+   "suppress_context": false,
+   "type": "KeyError"
+  },
+  "record_without_proposed": {
+   "after": {
+    "events": 1,
+    "store": "4bccb2a80df5dcd2",
+    "threshold_approval_events": "66ee6dddf02b52cd",
+    "threshold_approvals": "1129a7534920d074"
+   },
+   "approvals_unchanged": true,
+   "before": {
+    "events": 1,
+    "store": "4bccb2a80df5dcd2",
+    "threshold_approval_events": "66ee6dddf02b52cd",
+    "threshold_approvals": "1129a7534920d074"
+   },
+   "cause_type": null,
+   "events_unchanged": true,
+   "is_contract_error": false,
+   "message": "'proposed'",
+   "outcome": "raised",
+   "store_unchanged": true,
+   "suppress_context": false,
+   "type": "KeyError"
+  },
+  "refusal_events": [
+   {
+    "approval_id": "7dc8844266d93c3216b885d9010346dd6d070dbadfec07507978ffc972f332a7",
+    "at": "2026-09-22T00:00:00+00:00",
+    "environment": "staging",
+    "expires_at": "2026-09-10T13:00:00+00:00",
+    "id": "0a7d5e693073c9a8bfd2b231a8013d4ba7699a893c436c3a2b55073a4cf6417c",
+    "kind": "issued",
+    "sequence": 1
+   },
+   {
+    "applied_revision": "cccccccccccccccccccccccccccccccccccccccc",
+    "approval_id": "7dc8844266d93c3216b885d9010346dd6d070dbadfec07507978ffc972f332a7",
+    "at": "2026-09-22T00:00:00+00:00",
+    "id": "55d8bc31fb3dbd70bef1b2b85a19f7bc6f5790dffa0a488c79b05f715d2626b1",
+    "kind": "refused",
+    "reason": "applied value differs from the approved proposed value",
+    "sequence": 2
+   },
+   {
+    "applied_revision": "cccccccccccccccccccccccccccccccccccccccc",
+    "approval_id": "7dc8844266d93c3216b885d9010346dd6d070dbadfec07507978ffc972f332a7",
+    "at": "2026-09-22T00:00:00+00:00",
+    "id": "245417ed1e755f11d9418f8c49e72014942942e267bc1d2b167032bb2464a002",
+    "kind": "refused",
+    "reason": "applied value type differs from the approved one",
+    "sequence": 3
+   },
+   {
+    "applied_revision": "cccccccccccccccccccccccccccccccccccccccc",
+    "approval_id": "7dc8844266d93c3216b885d9010346dd6d070dbadfec07507978ffc972f332a7",
+    "at": "2026-09-22T00:00:00+00:00",
+    "id": "d08ff86abc69a4cef72bb3d9d4a23ce511893dbcc456b0bf1da7ff7f75548fe4",
+    "kind": "refused",
+    "reason": "applied value differs from the approved proposed value",
+    "sequence": 4
+   },
+   {
+    "applied_revision": "cccccccccccccccccccccccccccccccccccccccc",
+    "approval_id": "7dc8844266d93c3216b885d9010346dd6d070dbadfec07507978ffc972f332a7",
+    "at": "2026-09-22T00:00:00+00:00",
+    "id": "92c272074dc5c6715410298e83e4f0bd0da30335964f2bb41b8de3e4b8509b01",
+    "kind": "refused",
+    "reason": "previous value differs from the approved current value",
+    "sequence": 5
+   },
+   {
+    "applied_revision": "cccccccccccccccccccccccccccccccccccccccc",
+    "approval_id": "7dc8844266d93c3216b885d9010346dd6d070dbadfec07507978ffc972f332a7",
+    "at": "2026-09-22T00:00:00+00:00",
+    "id": "63345c1c177fc11bf44428d43be7c2f8dea8f3e11b9fef70549a7e0065555017",
+    "kind": "refused",
+    "reason": "previous value differs from the approved current value",
+    "sequence": 6
+   },
+   {
+    "applied_revision": "cccccccccccccccccccccccccccccccccccccccc",
+    "approval_id": "7dc8844266d93c3216b885d9010346dd6d070dbadfec07507978ffc972f332a7",
+    "at": "2026-09-22T00:00:00+00:00",
+    "id": "4c561a744588ea72fdd61f91b0163aebee73ef77d29c4a65dbead76e4d980d48",
+    "kind": "refused",
+    "reason": "previous policy revision differs from the assessed one",
+    "sequence": 7
+   },
+   {
+    "applied_revision": "cccccccccccccccccccccccccccccccccccccccc",
+    "approval_id": "7dc8844266d93c3216b885d9010346dd6d070dbadfec07507978ffc972f332a7",
+    "at": "2026-09-22T00:00:00+00:00",
+    "id": "dada122ecac8be381653d2d1909ae7f75ae85ac2ee10e14c3398970d232b773d",
+    "kind": "refused",
+    "reason": "environment differs from the approved target",
+    "sequence": 8
+   },
+   {
+    "applied_revision": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+    "approval_id": "7dc8844266d93c3216b885d9010346dd6d070dbadfec07507978ffc972f332a7",
+    "at": "2026-09-22T00:00:00+00:00",
+    "id": "12d1d37bed313520b74a0dd6dd5604eb41a0599e0c036d6407790b5c72291a5a",
+    "kind": "refused",
+    "reason": "applied revision equals the previous revision",
+    "sequence": 9
+   },
+   {
+    "applied_revision": "cccccccccccccccccccccccccccccccccccccccc",
+    "approval_id": "7dc8844266d93c3216b885d9010346dd6d070dbadfec07507978ffc972f332a7",
+    "at": "2026-09-22T00:00:00+00:00",
+    "id": "8da2322939414eef11f07b980b4ff1e335297049bd68674bc68a0b9e32c09b24",
+    "kind": "refused",
+    "reason": "the change touches other thresholds: skill_telemetry_audit.FP_THIN_RATE",
+    "sequence": 10
+   },
+   {
+    "applied_revision": "cccccccccccccccccccccccccccccccccccccccc",
+    "approval_id": "7dc8844266d93c3216b885d9010346dd6d070dbadfec07507978ffc972f332a7",
+    "at": "2026-09-22T00:00:00+00:00",
+    "id": "00ea4060fe02a7acde77566c6f0f10da83bc0b171f7e684a0c7eef29ee78ce87",
+    "kind": "refused",
+    "reason": "the change touches other thresholds: skill_telemetry_audit.FP_THIN_RATE",
+    "sequence": 11
+   },
+   {
+    "applied_revision": "cccccccccccccccccccccccccccccccccccccccc",
+    "approval_id": "7dc8844266d93c3216b885d9010346dd6d070dbadfec07507978ffc972f332a7",
+    "at": "2026-09-22T00:00:00+00:00",
+    "id": "4c0a2973647f5e3f9269e9af7aa77c32ea720f54d94deb42a96f4c546f6fedd1",
+    "kind": "refused",
+    "reason": "the change touches other thresholds: skill_telemetry_audit.FP_THIN_RATE",
+    "sequence": 12
+   },
+   {
+    "applied_revision": "cccccccccccccccccccccccccccccccccccccccc",
+    "approval_id": "7dc8844266d93c3216b885d9010346dd6d070dbadfec07507978ffc972f332a7",
+    "at": "2026-09-22T00:00:00+00:00",
+    "id": "7f40c71bf6265b42724ee5d6b8384b1cfb106f908387179d5ceddc28e33f7c08",
+    "kind": "refused",
+    "reason": "the change touches other thresholds: ratio_tracker.WARN_THRESHOLD, skill_telemetry_audit.FP_THIN_RATE",
+    "sequence": 13
+   },
+   {
+    "applied_revision": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+    "approval_id": "7dc8844266d93c3216b885d9010346dd6d070dbadfec07507978ffc972f332a7",
+    "at": "2026-09-22T00:00:00+00:00",
+    "id": "dec9e00e80b51a367fa68f9ef4d0f8988c4a5ee84136cd5eb8a2b1fca562a1d4",
+    "kind": "refused",
+    "reason": "applied revision equals the previous revision",
+    "sequence": 14
+   }
+  ],
+  "refusal_events_are_all_refused": true,
+  "refusals": {
+   "applied_value_differs": {
+    "after": {
+     "events": 2,
+     "store": "7b8f5a5a505994b7",
+     "threshold_approval_events": "38090428fd19575f",
+     "threshold_approvals": "cb66cce211b0c9fc"
+    },
+    "approvals_unchanged": true,
+    "before": {
+     "events": 1,
+     "store": "506fbae3d7852749",
+     "threshold_approval_events": "176b92c84507575e",
+     "threshold_approvals": "cb66cce211b0c9fc"
+    },
+    "cause_type": null,
+    "events_unchanged": false,
+    "is_contract_error": true,
+    "message": "Threshold approval cannot certify this change: applied value differs from the approved proposed value",
+    "outcome": "raised",
+    "store_unchanged": false,
+    "suppress_context": false,
+    "type": "ContractError"
+   },
+   "applied_value_float_type": {
+    "after": {
+     "events": 3,
+     "store": "95fe427adbf0fb91",
+     "threshold_approval_events": "4d890677e178d72f",
+     "threshold_approvals": "cb66cce211b0c9fc"
+    },
+    "approvals_unchanged": true,
+    "before": {
+     "events": 2,
+     "store": "7b8f5a5a505994b7",
+     "threshold_approval_events": "38090428fd19575f",
+     "threshold_approvals": "cb66cce211b0c9fc"
+    },
+    "cause_type": null,
+    "events_unchanged": false,
+    "is_contract_error": true,
+    "message": "Threshold approval cannot certify this change: applied value type differs from the approved one",
+    "outcome": "raised",
+    "store_unchanged": false,
+    "suppress_context": false,
+    "type": "ContractError"
+   },
+   "applied_value_missing": {
+    "after": {
+     "events": 4,
+     "store": "e213fe1956df9d67",
+     "threshold_approval_events": "2cd1611c9299e4a6",
+     "threshold_approvals": "cb66cce211b0c9fc"
+    },
+    "approvals_unchanged": true,
+    "before": {
+     "events": 3,
+     "store": "95fe427adbf0fb91",
+     "threshold_approval_events": "4d890677e178d72f",
+     "threshold_approvals": "cb66cce211b0c9fc"
+    },
+    "cause_type": null,
+    "events_unchanged": false,
+    "is_contract_error": true,
+    "message": "Threshold approval cannot certify this change: applied value differs from the approved proposed value",
+    "outcome": "raised",
+    "store_unchanged": false,
+    "suppress_context": false,
+    "type": "ContractError"
+   },
+   "environment_differs": {
+    "after": {
+     "events": 8,
+     "store": "5f076e853989c2fd",
+     "threshold_approval_events": "7cbf12798808ed9c",
+     "threshold_approvals": "cb66cce211b0c9fc"
+    },
+    "approvals_unchanged": true,
+    "before": {
+     "events": 7,
+     "store": "3a32e605695ab29b",
+     "threshold_approval_events": "a0fb339cf7154958",
+     "threshold_approvals": "cb66cce211b0c9fc"
+    },
+    "cause_type": null,
+    "events_unchanged": false,
+    "is_contract_error": true,
+    "message": "Threshold approval cannot certify this change: environment differs from the approved target",
+    "outcome": "raised",
+    "store_unchanged": false,
+    "suppress_context": false,
+    "type": "ContractError"
+   },
+   "other_threshold_added": {
+    "after": {
+     "events": 11,
+     "store": "cec1c9b3c7b89d45",
+     "threshold_approval_events": "922eb816379fe90a",
+     "threshold_approvals": "cb66cce211b0c9fc"
+    },
+    "approvals_unchanged": true,
+    "before": {
+     "events": 10,
+     "store": "2bb56dfe067abeb5",
+     "threshold_approval_events": "b02a2fbfd90a1c87",
+     "threshold_approvals": "cb66cce211b0c9fc"
+    },
+    "cause_type": null,
+    "events_unchanged": false,
+    "is_contract_error": true,
+    "message": "Threshold approval cannot certify this change: the change touches other thresholds: skill_telemetry_audit.FP_THIN_RATE",
+    "outcome": "raised",
+    "store_unchanged": false,
+    "suppress_context": false,
+    "type": "ContractError"
+   },
+   "other_threshold_removed": {
+    "after": {
+     "events": 12,
+     "store": "5a7d4185dbae5e38",
+     "threshold_approval_events": "a0ccf658cc899e62",
+     "threshold_approvals": "cb66cce211b0c9fc"
+    },
+    "approvals_unchanged": true,
+    "before": {
+     "events": 11,
+     "store": "cec1c9b3c7b89d45",
+     "threshold_approval_events": "922eb816379fe90a",
+     "threshold_approvals": "cb66cce211b0c9fc"
+    },
+    "cause_type": null,
+    "events_unchanged": false,
+    "is_contract_error": true,
+    "message": "Threshold approval cannot certify this change: the change touches other thresholds: skill_telemetry_audit.FP_THIN_RATE",
+    "outcome": "raised",
+    "store_unchanged": false,
+    "suppress_context": false,
+    "type": "ContractError"
+   },
+   "other_threshold_unchanged_is_fine_but_the_revision_is_the_same": {
+    "after": {
+     "events": 14,
+     "store": "31b0094c6ae0f02a",
+     "threshold_approval_events": "14c945389ac3f644",
+     "threshold_approvals": "cb66cce211b0c9fc"
+    },
+    "approvals_unchanged": true,
+    "before": {
+     "events": 13,
+     "store": "6e705bd59dfe3042",
+     "threshold_approval_events": "f87e77c774ef643e",
+     "threshold_approvals": "cb66cce211b0c9fc"
+    },
+    "cause_type": null,
+    "events_unchanged": false,
+    "is_contract_error": true,
+    "message": "Threshold approval cannot certify this change: applied revision equals the previous revision",
+    "outcome": "raised",
+    "store_unchanged": false,
+    "suppress_context": false,
+    "type": "ContractError"
+   },
+   "previous_revision_differs": {
+    "after": {
+     "events": 7,
+     "store": "3a32e605695ab29b",
+     "threshold_approval_events": "a0fb339cf7154958",
+     "threshold_approvals": "cb66cce211b0c9fc"
+    },
+    "approvals_unchanged": true,
+    "before": {
+     "events": 6,
+     "store": "2a7bec20a3fe7bae",
+     "threshold_approval_events": "898980f4c26b2cd8",
+     "threshold_approvals": "cb66cce211b0c9fc"
+    },
+    "cause_type": null,
+    "events_unchanged": false,
+    "is_contract_error": true,
+    "message": "Threshold approval cannot certify this change: previous policy revision differs from the assessed one",
+    "outcome": "raised",
+    "store_unchanged": false,
+    "suppress_context": false,
+    "type": "ContractError"
+   },
+   "previous_value_differs": {
+    "after": {
+     "events": 5,
+     "store": "e5899c74e4066cb7",
+     "threshold_approval_events": "5dafba79673e9f60",
+     "threshold_approvals": "cb66cce211b0c9fc"
+    },
+    "approvals_unchanged": true,
+    "before": {
+     "events": 4,
+     "store": "e213fe1956df9d67",
+     "threshold_approval_events": "2cd1611c9299e4a6",
+     "threshold_approvals": "cb66cce211b0c9fc"
+    },
+    "cause_type": null,
+    "events_unchanged": false,
+    "is_contract_error": true,
+    "message": "Threshold approval cannot certify this change: previous value differs from the approved current value",
+    "outcome": "raised",
+    "store_unchanged": false,
+    "suppress_context": false,
+    "type": "ContractError"
+   },
+   "previous_value_missing": {
+    "after": {
+     "events": 6,
+     "store": "2a7bec20a3fe7bae",
+     "threshold_approval_events": "898980f4c26b2cd8",
+     "threshold_approvals": "cb66cce211b0c9fc"
+    },
+    "approvals_unchanged": true,
+    "before": {
+     "events": 5,
+     "store": "e5899c74e4066cb7",
+     "threshold_approval_events": "5dafba79673e9f60",
+     "threshold_approvals": "cb66cce211b0c9fc"
+    },
+    "cause_type": null,
+    "events_unchanged": false,
+    "is_contract_error": true,
+    "message": "Threshold approval cannot certify this change: previous value differs from the approved current value",
+    "outcome": "raised",
+    "store_unchanged": false,
+    "suppress_context": false,
+    "type": "ContractError"
+   },
+   "revision_equals_previous": {
+    "after": {
+     "events": 9,
+     "store": "d75be0ce49dcfb26",
+     "threshold_approval_events": "acc76ca7665fe1e1",
+     "threshold_approvals": "cb66cce211b0c9fc"
+    },
+    "approvals_unchanged": true,
+    "before": {
+     "events": 8,
+     "store": "5f076e853989c2fd",
+     "threshold_approval_events": "7cbf12798808ed9c",
+     "threshold_approvals": "cb66cce211b0c9fc"
+    },
+    "cause_type": null,
+    "events_unchanged": false,
+    "is_contract_error": true,
+    "message": "Threshold approval cannot certify this change: applied revision equals the previous revision",
+    "outcome": "raised",
+    "store_unchanged": false,
+    "suppress_context": false,
+    "type": "ContractError"
+   },
+   "touches_other_threshold": {
+    "after": {
+     "events": 10,
+     "store": "2bb56dfe067abeb5",
+     "threshold_approval_events": "b02a2fbfd90a1c87",
+     "threshold_approvals": "cb66cce211b0c9fc"
+    },
+    "approvals_unchanged": true,
+    "before": {
+     "events": 9,
+     "store": "d75be0ce49dcfb26",
+     "threshold_approval_events": "acc76ca7665fe1e1",
+     "threshold_approvals": "cb66cce211b0c9fc"
+    },
+    "cause_type": null,
+    "events_unchanged": false,
+    "is_contract_error": true,
+    "message": "Threshold approval cannot certify this change: the change touches other thresholds: skill_telemetry_audit.FP_THIN_RATE",
+    "outcome": "raised",
+    "store_unchanged": false,
+    "suppress_context": false,
+    "type": "ContractError"
+   },
+   "two_other_thresholds_sorted": {
+    "after": {
+     "events": 13,
+     "store": "6e705bd59dfe3042",
+     "threshold_approval_events": "f87e77c774ef643e",
+     "threshold_approvals": "cb66cce211b0c9fc"
+    },
+    "approvals_unchanged": true,
+    "before": {
+     "events": 12,
+     "store": "5a7d4185dbae5e38",
+     "threshold_approval_events": "a0ccf658cc899e62",
+     "threshold_approvals": "cb66cce211b0c9fc"
+    },
+    "cause_type": null,
+    "events_unchanged": false,
+    "is_contract_error": true,
+    "message": "Threshold approval cannot certify this change: the change touches other thresholds: ratio_tracker.WARN_THRESHOLD, skill_telemetry_audit.FP_THIN_RATE",
+    "outcome": "raised",
+    "store_unchanged": false,
+    "suppress_context": false,
+    "type": "ContractError"
+   }
+  },
+  "repeat_after_consumption": {
+   "after": {
+    "events": 22,
+    "store": "40e02f158235031d",
+    "threshold_approval_events": "a9f5c6167c8f2362",
+    "threshold_approvals": "d2aa7213b304cb43"
+   },
+   "approvals_unchanged": true,
+   "before": {
+    "events": 21,
+    "store": "58d8967700287463",
+    "threshold_approval_events": "014f3e589f294f87",
+    "threshold_approvals": "d2aa7213b304cb43"
+   },
+   "cause_type": null,
+   "events_unchanged": false,
+   "is_contract_error": true,
+   "message": "Threshold approval cannot certify this change: approval is consumed",
+   "outcome": "raised",
+   "store_unchanged": false,
+   "suppress_context": false,
+   "type": "ContractError"
+  },
+  "revoke_after_consumption": {
+   "after": {
+    "events": 22,
+    "store": "40e02f158235031d",
+    "threshold_approval_events": "a9f5c6167c8f2362",
+    "threshold_approvals": "d2aa7213b304cb43"
+   },
+   "approvals_unchanged": true,
+   "before": {
+    "events": 22,
+    "store": "40e02f158235031d",
+    "threshold_approval_events": "a9f5c6167c8f2362",
+    "threshold_approvals": "d2aa7213b304cb43"
+   },
+   "cause_type": null,
+   "events_unchanged": true,
+   "is_contract_error": true,
+   "message": "Only an issued approval can be revoked; a consumed one is history",
+   "outcome": "raised",
+   "store_unchanged": true,
+   "suppress_context": false,
+   "type": "ContractError"
+  },
+  "same_name_second_generation": {
+   "after": {
+    "events": 26,
+    "store": "516dba338f45e25d",
+    "threshold_approval_events": "a7bf7be4ee8cb9c5",
+    "threshold_approvals": "b67eb32946224c60"
+   },
+   "approvals_unchanged": false,
+   "before": {
+    "events": 25,
+    "store": "6334f73ed2bb7984",
+    "threshold_approval_events": "6e1bc3df2d6a2464",
+    "threshold_approvals": "0b485788de6b60fd"
+   },
+   "events_unchanged": false,
+   "outcome": "returned",
+   "store_unchanged": false,
+   "value": {
+    "application": {
+     "at": "2026-09-10T12:01:00+00:00",
+     "environment": "prod",
+     "generation": 2,
+     "revision": "ffffffffffffffffffffffffffffffffffffffff"
+    },
+    "authority": "certifies one exact policy change; never writes the definition",
+    "corpus_hash": "corpus-c-again",
+    "current": 4,
+    "environment": "prod",
+    "evidence_ref": "sha256:dfa209be69d45550000000000000000000000000000000000000000000000000",
+    "expires_at": "2026-09-10T13:00:00+00:00",
+    "id": "bfe3f0828d2f84453c80f38fcf4b086580a455fe4a619abc49c4bbf9e14c1df6",
+    "issued_at": "2026-09-10T12:00:00+00:00",
+    "issued_by": "conductor",
+    "kind": "threshold-approval-v1",
+    "name": "skill_match.FULL_BODY_MIN_SCORE",
+    "policy_revision": "cccccccccccccccccccccccccccccccccccccccc",
+    "proposed": 5,
+    "registry_hash": "registry-1",
+    "request_binding": "c235bfc831656e5f412d23daa3fba5bda91fa47b8e220632b94fd6958e07d4fe",
+    "request_id": "req-c-again",
+    "reviews": [
+     {
+      "actor": "lead:improvement",
+      "decision_id": "decision-1-c-again",
+      "generation": 1
+     },
+     {
+      "actor": "conductor",
+      "decision_id": "decision-2-c-again",
+      "generation": 1
+     }
+    ],
+    "status": "consumed"
+   }
+  },
+  "same_name_third_generation_application": {
+   "at": "2026-09-10T12:01:00+00:00",
+   "environment": "qa",
+   "generation": 3,
+   "revision": "1111111111111111111111111111111111111111"
+  },
+  "status_expired": {
+   "after": {
+    "events": 2,
+    "store": "3d42ad08c3d05d01",
+    "threshold_approval_events": "670f473b3bc45ead",
+    "threshold_approvals": "8767ba232a88575f"
+   },
+   "approvals_unchanged": true,
+   "before": {
+    "events": 1,
+    "store": "e7c46275f3d90eec",
+    "threshold_approval_events": "bd5fe5c2839711fc",
+    "threshold_approvals": "8767ba232a88575f"
+   },
+   "cause_type": null,
+   "events_unchanged": false,
+   "is_contract_error": true,
+   "message": "Threshold approval cannot certify this change: approval is expired",
+   "outcome": "raised",
+   "store_unchanged": false,
+   "suppress_context": false,
+   "type": "ContractError"
+  },
+  "status_expired_events": [
+   "issued",
+   "refused"
+  ],
+  "status_revoked": {
+   "after": {
+    "events": 2,
+    "store": "2928e62873411e2c",
+    "threshold_approval_events": "7e4f2f6478e8721b",
+    "threshold_approvals": "5e9126d6cdd9253d"
+   },
+   "approvals_unchanged": true,
+   "before": {
+    "events": 1,
+    "store": "4f1ba496434f5b4e",
+    "threshold_approval_events": "09dd64d06810d10a",
+    "threshold_approvals": "5e9126d6cdd9253d"
+   },
+   "cause_type": null,
+   "events_unchanged": false,
+   "is_contract_error": true,
+   "message": "Threshold approval cannot certify this change: approval is revoked",
+   "outcome": "raised",
+   "store_unchanged": false,
+   "suppress_context": false,
+   "type": "ContractError"
+  },
+  "status_revoked_events": [
+   "issued",
+   "refused"
+  ],
+  "status_weird": {
+   "after": {
+    "events": 2,
+    "store": "75feaf154399532e",
+    "threshold_approval_events": "5e3df481da437c49",
+    "threshold_approvals": "2ff578e53d68c56a"
+   },
+   "approvals_unchanged": true,
+   "before": {
+    "events": 1,
+    "store": "179cb0cca1cccade",
+    "threshold_approval_events": "cefe6d757153c028",
+    "threshold_approvals": "2ff578e53d68c56a"
+   },
+   "cause_type": null,
+   "events_unchanged": false,
+   "is_contract_error": true,
+   "message": "Threshold approval cannot certify this change: approval is weird",
+   "outcome": "raised",
+   "store_unchanged": false,
+   "suppress_context": false,
+   "type": "ContractError"
+  },
+  "status_weird_events": [
+   "issued",
+   "refused"
+  ],
+  "still_issued_after_every_refusal": "issued",
+  "unknown_approval": {
+   "after": {
+    "events": 20,
+    "store": "f4c7b33da0ece140",
+    "threshold_approval_events": "c1d153bc253a79f3",
+    "threshold_approvals": "cb66cce211b0c9fc"
+   },
+   "approvals_unchanged": true,
+   "before": {
+    "events": 20,
+    "store": "f4c7b33da0ece140",
+    "threshold_approval_events": "c1d153bc253a79f3",
+    "threshold_approvals": "cb66cce211b0c9fc"
+   },
+   "cause_type": null,
+   "events_unchanged": true,
+   "is_contract_error": true,
+   "message": "Unknown threshold approval",
+   "outcome": "raised",
+   "store_unchanged": true,
+   "suppress_context": false,
+   "type": "ContractError"
+  },
+  "unknown_approval_with_a_malformed_policy_is_malformed_first": {
+   "after": {
+    "events": 20,
+    "store": "f4c7b33da0ece140",
+    "threshold_approval_events": "c1d153bc253a79f3",
+    "threshold_approvals": "cb66cce211b0c9fc"
+   },
+   "approvals_unchanged": true,
+   "before": {
+    "events": 20,
+    "store": "f4c7b33da0ece140",
+    "threshold_approval_events": "c1d153bc253a79f3",
+    "threshold_approvals": "cb66cce211b0c9fc"
+   },
+   "cause_type": null,
+   "events_unchanged": true,
+   "is_contract_error": true,
+   "message": "Applied policy must carry previous_revision, previous_values, revision, values and environment",
+   "outcome": "raised",
+   "store_unchanged": true,
+   "suppress_context": false,
+   "type": "ContractError"
+  }
+ },
+ "c3_test_revocation_and_degraded_states": {
+  "actor_empty": {
+   "after": {
+    "events": 1,
+    "store": "3b87520bc8d0eab4",
+    "threshold_approval_events": "dc5f48eb8899e2f8",
+    "threshold_approvals": "2c45d8e08896d9e6"
+   },
+   "approvals_unchanged": true,
+   "before": {
+    "events": 1,
+    "store": "3b87520bc8d0eab4",
+    "threshold_approval_events": "dc5f48eb8899e2f8",
+    "threshold_approvals": "2c45d8e08896d9e6"
+   },
+   "cause_type": null,
+   "events_unchanged": true,
+   "is_contract_error": true,
+   "message": "Only a reviewer revokes an approval",
+   "outcome": "raised",
+   "store_unchanged": true,
+   "suppress_context": false,
+   "type": "ContractError"
+  },
+  "actor_none": {
+   "after": {
+    "events": 1,
+    "store": "3b87520bc8d0eab4",
+    "threshold_approval_events": "dc5f48eb8899e2f8",
+    "threshold_approvals": "2c45d8e08896d9e6"
+   },
+   "approvals_unchanged": true,
+   "before": {
+    "events": 1,
+    "store": "3b87520bc8d0eab4",
+    "threshold_approval_events": "dc5f48eb8899e2f8",
+    "threshold_approvals": "2c45d8e08896d9e6"
+   },
+   "cause_type": null,
+   "events_unchanged": true,
+   "is_contract_error": true,
+   "message": "Only a reviewer revokes an approval",
+   "outcome": "raised",
+   "store_unchanged": true,
+   "suppress_context": false,
+   "type": "ContractError"
+  },
+  "actor_research": {
+   "after": {
+    "events": 1,
+    "store": "3b87520bc8d0eab4",
+    "threshold_approval_events": "dc5f48eb8899e2f8",
+    "threshold_approvals": "2c45d8e08896d9e6"
+   },
+   "approvals_unchanged": true,
+   "before": {
+    "events": 1,
+    "store": "3b87520bc8d0eab4",
+    "threshold_approval_events": "dc5f48eb8899e2f8",
+    "threshold_approvals": "2c45d8e08896d9e6"
+   },
+   "cause_type": null,
+   "events_unchanged": true,
+   "is_contract_error": true,
+   "message": "Only a reviewer revokes an approval",
+   "outcome": "raised",
+   "store_unchanged": true,
+   "suppress_context": false,
+   "type": "ContractError"
+  },
+  "actor_upper": {
+   "after": {
+    "events": 1,
+    "store": "3b87520bc8d0eab4",
+    "threshold_approval_events": "dc5f48eb8899e2f8",
+    "threshold_approvals": "2c45d8e08896d9e6"
+   },
+   "approvals_unchanged": true,
+   "before": {
+    "events": 1,
+    "store": "3b87520bc8d0eab4",
+    "threshold_approval_events": "dc5f48eb8899e2f8",
+    "threshold_approvals": "2c45d8e08896d9e6"
+   },
+   "cause_type": null,
+   "events_unchanged": true,
+   "is_contract_error": true,
+   "message": "Only a reviewer revokes an approval",
+   "outcome": "raised",
+   "store_unchanged": true,
+   "suppress_context": false,
+   "type": "ContractError"
+  },
+  "actor_worker": {
+   "after": {
+    "events": 1,
+    "store": "3b87520bc8d0eab4",
+    "threshold_approval_events": "dc5f48eb8899e2f8",
+    "threshold_approvals": "2c45d8e08896d9e6"
+   },
+   "approvals_unchanged": true,
+   "before": {
+    "events": 1,
+    "store": "3b87520bc8d0eab4",
+    "threshold_approval_events": "dc5f48eb8899e2f8",
+    "threshold_approvals": "2c45d8e08896d9e6"
+   },
+   "cause_type": null,
+   "events_unchanged": true,
+   "is_contract_error": true,
+   "message": "Only a reviewer revokes an approval",
+   "outcome": "raised",
+   "store_unchanged": true,
+   "suppress_context": false,
+   "type": "ContractError"
+  },
+  "again_is_idempotent": {
+   "after": {
+    "events": 2,
+    "store": "4dec81fe98e62a2a",
+    "threshold_approval_events": "95ab74dc4db922ba",
+    "threshold_approvals": "74c4d99d12b5d298"
+   },
+   "approvals_unchanged": true,
+   "before": {
+    "events": 2,
+    "store": "4dec81fe98e62a2a",
+    "threshold_approval_events": "95ab74dc4db922ba",
+    "threshold_approvals": "74c4d99d12b5d298"
+   },
+   "events_unchanged": true,
+   "outcome": "returned",
+   "store_unchanged": true,
+   "value": {
+    "application": null,
+    "authority": "certifies one exact policy change; never writes the definition",
+    "corpus_hash": "corpus-v",
+    "current": 3,
+    "environment": "staging",
+    "evidence_ref": "sha256:a81c4a87ce91b586000000000000000000000000000000000000000000000000",
+    "expires_at": "2026-09-10T13:00:00+00:00",
+    "id": "8a44d65abfcc70d78264b79f9d5c0c9506b3e7edf8a5ff9ea7cb32e0af523ebe",
+    "issued_at": "2026-09-10T12:00:00+00:00",
+    "issued_by": "conductor",
+    "kind": "threshold-approval-v1",
+    "name": "skill_match.FULL_BODY_MIN_SCORE",
+    "policy_revision": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+    "proposed": 4,
+    "registry_hash": "registry-1",
+    "request_binding": "7ca3e7f74b374f4c242a485e5decb88903f20c3fd64dafcd0f6b1f4d366ff4e3",
+    "request_id": "req-v",
+    "reviews": [
+     {
+      "actor": "lead:improvement",
+      "decision_id": "decision-1-v",
+      "generation": 1
+     },
+     {
+      "actor": "conductor",
+      "decision_id": "decision-2-v",
+      "generation": 1
+     }
+    ],
+    "revocation": {
+     "actor": "lead:improvement",
+     "at": "2026-09-22T00:00:00+00:00",
+     "reason": "a later rejection"
+    },
+    "status": "revoked"
+   }
+  },
+  "again_returns_the_first": true,
+  "consume_after_revoke": {
+   "after": {
+    "events": 3,
+    "store": "0b9de3a903d71a8a",
+    "threshold_approval_events": "ddb5b9c76e7ee433",
+    "threshold_approvals": "74c4d99d12b5d298"
+   },
+   "approvals_unchanged": true,
+   "before": {
+    "events": 2,
+    "store": "4dec81fe98e62a2a",
+    "threshold_approval_events": "95ab74dc4db922ba",
+    "threshold_approvals": "74c4d99d12b5d298"
+   },
+   "cause_type": null,
+   "events_unchanged": false,
+   "is_contract_error": true,
+   "message": "Threshold approval cannot certify this change: approval is revoked",
+   "outcome": "raised",
+   "store_unchanged": false,
+   "suppress_context": false,
+   "type": "ContractError"
+  },
+  "events": [
+   {
+    "approval_id": "8a44d65abfcc70d78264b79f9d5c0c9506b3e7edf8a5ff9ea7cb32e0af523ebe",
+    "at": "2026-09-22T00:00:00+00:00",
+    "environment": "staging",
+    "expires_at": "2026-09-10T13:00:00+00:00",
+    "id": "4b25cb03b3f0a552ff0c0b8dee887ceb0e3b8886edca6f9b4d51e33a12c311fc",
+    "kind": "issued",
+    "sequence": 1
+   },
+   {
+    "actor": "lead:improvement",
+    "approval_id": "8a44d65abfcc70d78264b79f9d5c0c9506b3e7edf8a5ff9ea7cb32e0af523ebe",
+    "at": "2026-09-22T00:00:00+00:00",
+    "id": "a24c5c189910ecd9dd1e010fffa10b50f1b504c24d876d51fb7f1c052559f4c0",
+    "kind": "revoked",
+    "reason": "a later rejection",
+    "sequence": 2
+   },
+   {
+    "applied_revision": "cccccccccccccccccccccccccccccccccccccccc",
+    "approval_id": "8a44d65abfcc70d78264b79f9d5c0c9506b3e7edf8a5ff9ea7cb32e0af523ebe",
+    "at": "2026-09-22T00:00:00+00:00",
+    "id": "4a7c5ced47411d66eaf16a5da56e77a8b7b43c9e1cc82f09937dafd55e8f60fb",
+    "kind": "refused",
+    "reason": "approval is revoked",
+    "sequence": 3
+   }
+  ],
+  "inspect_at_expiry_is_expired": "expired",
+  "inspect_corrupt": {
+   "application_missing_is_none": {
+    "after": {
+     "events": 1,
+     "store": "8fed21a9b47255f9",
+     "threshold_approval_events": "0e44afc9ea537229",
+     "threshold_approvals": "c51ed85a40a154f4"
+    },
+    "approvals_unchanged": true,
+    "before": {
+     "events": 1,
+     "store": "8fed21a9b47255f9",
+     "threshold_approval_events": "0e44afc9ea537229",
+     "threshold_approvals": "c51ed85a40a154f4"
+    },
+    "events_unchanged": true,
+    "outcome": "returned",
+    "store_unchanged": true,
+    "value": {
+     "application": null,
+     "authority": "certifies one exact policy change; never writes the definition",
+     "current": 3,
+     "environment": "staging",
+     "expires_at": "2026-09-10T13:00:00+00:00",
+     "id": "07b1d5ecff65a1b4d1e97b9b48180ed0df5d1f33feef54ef197b49e9df3e2f9b",
+     "name": "skill_match.FULL_BODY_MIN_SCORE",
+     "policy_revision": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+     "proposed": 4,
+     "state": "issued"
+    }
+   },
+   "authority_missing": {
+    "after": {
+     "events": 1,
+     "store": "4aff6b3afb165c71",
+     "threshold_approval_events": "15de890175ff2050",
+     "threshold_approvals": "c6848a7f8f309499"
+    },
+    "approvals_unchanged": true,
+    "before": {
+     "events": 1,
+     "store": "4aff6b3afb165c71",
+     "threshold_approval_events": "15de890175ff2050",
+     "threshold_approvals": "c6848a7f8f309499"
+    },
+    "cause_type": null,
+    "events_unchanged": true,
+    "is_contract_error": false,
+    "message": "'authority'",
+    "outcome": "raised",
+    "store_unchanged": true,
+    "suppress_context": false,
+    "type": "KeyError"
+   },
+   "consumed_state": {
+    "after": {
+     "events": 1,
+     "store": "eda7263496d5c676",
+     "threshold_approval_events": "d1899f50a6c8c992",
+     "threshold_approvals": "f7ee9b95e7f36253"
+    },
+    "approvals_unchanged": true,
+    "before": {
+     "events": 1,
+     "store": "eda7263496d5c676",
+     "threshold_approval_events": "d1899f50a6c8c992",
+     "threshold_approvals": "f7ee9b95e7f36253"
+    },
+    "events_unchanged": true,
+    "outcome": "returned",
+    "store_unchanged": true,
+    "value": {
+     "application": {
+      "revision": "cccccccccccccccccccccccccccccccccccccccc"
+     },
+     "authority": "certifies one exact policy change; never writes the definition",
+     "current": 3,
+     "environment": "staging",
+     "expires_at": "2026-09-10T13:00:00+00:00",
+     "id": "e53aa76ee2b940a6530d23830a6b2f021f529ab0829063d606a86a7bbc7cba66",
+     "name": "skill_match.FULL_BODY_MIN_SCORE",
+     "policy_revision": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+     "proposed": 4,
+     "state": "consumed"
+    }
+   },
+   "consumed_state_with_a_past_expiry": {
+    "after": {
+     "events": 1,
+     "store": "af8ab66e4cf49e97",
+     "threshold_approval_events": "9676e9fb59735c34",
+     "threshold_approvals": "b4566d62c32917f0"
+    },
+    "approvals_unchanged": true,
+    "before": {
+     "events": 1,
+     "store": "af8ab66e4cf49e97",
+     "threshold_approval_events": "9676e9fb59735c34",
+     "threshold_approvals": "b4566d62c32917f0"
+    },
+    "events_unchanged": true,
+    "outcome": "returned",
+    "store_unchanged": true,
+    "value": {
+     "application": null,
+     "authority": "certifies one exact policy change; never writes the definition",
+     "current": 3,
+     "environment": "staging",
+     "expires_at": "2020-01-01T00:00:00+00:00",
+     "id": "f7261095e6b21012e8efd6412154e5d711242fecc15881c0be8071219bb7205e",
+     "name": "skill_match.FULL_BODY_MIN_SCORE",
+     "policy_revision": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+     "proposed": 4,
+     "state": "consumed"
+    }
+   },
+   "current_inf": {
+    "after": {
+     "events": 1,
+     "store": "e9c637bcc26c7f5a",
+     "threshold_approval_events": "8f23f17a9b9dd5bd",
+     "threshold_approvals": "e273c652e08f8b2d"
+    },
+    "approvals_unchanged": true,
+    "before": {
+     "events": 1,
+     "store": "e9c637bcc26c7f5a",
+     "threshold_approval_events": "8f23f17a9b9dd5bd",
+     "threshold_approvals": "e273c652e08f8b2d"
+    },
+    "events_unchanged": true,
+    "outcome": "returned",
+    "store_unchanged": true,
+    "value": {
+     "id": "5e968929840ad4ddd6a26788d495991113b4060e8788d4a973fc64bbeecd8431",
+     "reason": "approval record is malformed",
+     "state": "corrupt"
+    }
+   },
+   "current_none": {
+    "after": {
+     "events": 1,
+     "store": "c58c453aa3853d04",
+     "threshold_approval_events": "c853dfde4937d4c4",
+     "threshold_approvals": "d7d4077e80b6848d"
+    },
+    "approvals_unchanged": true,
+    "before": {
+     "events": 1,
+     "store": "c58c453aa3853d04",
+     "threshold_approval_events": "c853dfde4937d4c4",
+     "threshold_approvals": "d7d4077e80b6848d"
+    },
+    "events_unchanged": true,
+    "outcome": "returned",
+    "store_unchanged": true,
+    "value": {
+     "id": "654f441afab870346e2e3d053b388e5f072b8acfaf9f767d96d1e19661bd092b",
+     "reason": "approval record is malformed",
+     "state": "corrupt"
+    }
+   },
+   "environment_missing": {
+    "after": {
+     "events": 1,
+     "store": "900a10c0b0540099",
+     "threshold_approval_events": "0d20819b5ff3db33",
+     "threshold_approvals": "ae19ca5331784119"
+    },
+    "approvals_unchanged": true,
+    "before": {
+     "events": 1,
+     "store": "900a10c0b0540099",
+     "threshold_approval_events": "0d20819b5ff3db33",
+     "threshold_approvals": "ae19ca5331784119"
+    },
+    "cause_type": null,
+    "events_unchanged": true,
+    "is_contract_error": false,
+    "message": "'environment'",
+    "outcome": "raised",
+    "store_unchanged": true,
+    "suppress_context": false,
+    "type": "KeyError"
+   },
+   "expires_garbage": {
+    "after": {
+     "events": 1,
+     "store": "9ca848d7cfb1e8a7",
+     "threshold_approval_events": "7cfd025519952e20",
+     "threshold_approvals": "361f342d5ea32862"
+    },
+    "approvals_unchanged": true,
+    "before": {
+     "events": 1,
+     "store": "9ca848d7cfb1e8a7",
+     "threshold_approval_events": "7cfd025519952e20",
+     "threshold_approvals": "361f342d5ea32862"
+    },
+    "events_unchanged": true,
+    "outcome": "returned",
+    "store_unchanged": true,
+    "value": {
+     "id": "93be25fab836e6048bfb52e4ee5c319f84780bd1aa9cfebc8c5b39af80d4b14f",
+     "reason": "expires_at is not ISO-8601",
+     "state": "corrupt"
+    }
+   },
+   "expires_in_another_zone": {
+    "after": {
+     "events": 1,
+     "store": "0e47775ae97e439f",
+     "threshold_approval_events": "f78e83e56d6c6fbf",
+     "threshold_approvals": "a15f7fc0dc43e00d"
+    },
+    "approvals_unchanged": true,
+    "before": {
+     "events": 1,
+     "store": "0e47775ae97e439f",
+     "threshold_approval_events": "f78e83e56d6c6fbf",
+     "threshold_approvals": "a15f7fc0dc43e00d"
+    },
+    "events_unchanged": true,
+    "outcome": "returned",
+    "store_unchanged": true,
+    "value": {
+     "application": null,
+     "authority": "certifies one exact policy change; never writes the definition",
+     "current": 3,
+     "environment": "staging",
+     "expires_at": "2026-09-10T20:00:00+09:00",
+     "id": "ec9c37738bba4ba4b501d3383323134996eef22df00a85cb26857866ee5a934e",
+     "name": "skill_match.FULL_BODY_MIN_SCORE",
+     "policy_revision": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+     "proposed": 4,
+     "state": "expired"
+    }
+   },
+   "expires_int": {
+    "after": {
+     "events": 1,
+     "store": "b037bb804b5d66d5",
+     "threshold_approval_events": "7d011f87dc30dc04",
+     "threshold_approvals": "838fd06bb6e2ea15"
+    },
+    "approvals_unchanged": true,
+    "before": {
+     "events": 1,
+     "store": "b037bb804b5d66d5",
+     "threshold_approval_events": "7d011f87dc30dc04",
+     "threshold_approvals": "838fd06bb6e2ea15"
+    },
+    "events_unchanged": true,
+    "outcome": "returned",
+    "store_unchanged": true,
+    "value": {
+     "id": "a7eee35a40f164c5fdf3b992b4bd73ed491b21b789c9fb82a97df02e16029056",
+     "reason": "expires_at must be ISO-8601 text",
+     "state": "corrupt"
+    }
+   },
+   "expires_missing": {
+    "after": {
+     "events": 1,
+     "store": "d1ce4e7511f1e588",
+     "threshold_approval_events": "2f99b24bf1d6e1d2",
+     "threshold_approvals": "9eb409c3a330a691"
+    },
+    "approvals_unchanged": true,
+    "before": {
+     "events": 1,
+     "store": "d1ce4e7511f1e588",
+     "threshold_approval_events": "2f99b24bf1d6e1d2",
+     "threshold_approvals": "9eb409c3a330a691"
+    },
+    "cause_type": null,
+    "events_unchanged": true,
+    "is_contract_error": false,
+    "message": "'expires_at'",
+    "outcome": "raised",
+    "store_unchanged": true,
+    "suppress_context": false,
+    "type": "KeyError"
+   },
+   "expires_naive": {
+    "after": {
+     "events": 1,
+     "store": "3a5b49cb893316ec",
+     "threshold_approval_events": "34f67e21a005dfff",
+     "threshold_approvals": "8184e24a3d016e0f"
+    },
+    "approvals_unchanged": true,
+    "before": {
+     "events": 1,
+     "store": "3a5b49cb893316ec",
+     "threshold_approval_events": "34f67e21a005dfff",
+     "threshold_approvals": "8184e24a3d016e0f"
+    },
+    "events_unchanged": true,
+    "outcome": "returned",
+    "store_unchanged": true,
+    "value": {
+     "id": "f2ec76a5424782e5d9e24c9f97c4db60e5a305cbc1bff6acca27b960b74eea3e",
+     "reason": "expires_at must carry a timezone",
+     "state": "corrupt"
+    }
+   },
+   "expires_none": {
+    "after": {
+     "events": 1,
+     "store": "639650d1d2bf21f7",
+     "threshold_approval_events": "2b766cad7e699cf7",
+     "threshold_approvals": "365dc43dcad0d3dd"
+    },
+    "approvals_unchanged": true,
+    "before": {
+     "events": 1,
+     "store": "639650d1d2bf21f7",
+     "threshold_approval_events": "2b766cad7e699cf7",
+     "threshold_approvals": "365dc43dcad0d3dd"
+    },
+    "events_unchanged": true,
+    "outcome": "returned",
+    "store_unchanged": true,
+    "value": {
+     "id": "78477236ce53fb98f8ee6480625308dff194166151b9ea67348f6c03e3ff7006",
+     "reason": "expires_at must be ISO-8601 text",
+     "state": "corrupt"
+    }
+   },
+   "issued_with_a_past_expiry": {
+    "after": {
+     "events": 1,
+     "store": "67e3ca3ec51fe0ec",
+     "threshold_approval_events": "863fa2faa226cc7a",
+     "threshold_approvals": "588f5379a1edeeec"
+    },
+    "approvals_unchanged": true,
+    "before": {
+     "events": 1,
+     "store": "67e3ca3ec51fe0ec",
+     "threshold_approval_events": "863fa2faa226cc7a",
+     "threshold_approvals": "588f5379a1edeeec"
+    },
+    "events_unchanged": true,
+    "outcome": "returned",
+    "store_unchanged": true,
+    "value": {
+     "application": null,
+     "authority": "certifies one exact policy change; never writes the definition",
+     "current": 3,
+     "environment": "staging",
+     "expires_at": "2020-01-01T00:00:00+00:00",
+     "id": "a8e4a76ffcb438113ceed677d342baee39ef7a29b6163b7f16909b48bde770d9",
+     "name": "skill_match.FULL_BODY_MIN_SCORE",
+     "policy_revision": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+     "proposed": 4,
+     "state": "expired"
+    }
+   },
+   "name_missing": {
+    "after": {
+     "events": 1,
+     "store": "4ad88904b266838e",
+     "threshold_approval_events": "d25a4225f7628898",
+     "threshold_approvals": "70b0ed3ba3908e5c"
+    },
+    "approvals_unchanged": true,
+    "before": {
+     "events": 1,
+     "store": "4ad88904b266838e",
+     "threshold_approval_events": "d25a4225f7628898",
+     "threshold_approvals": "70b0ed3ba3908e5c"
+    },
+    "events_unchanged": true,
+    "outcome": "returned",
+    "store_unchanged": true,
+    "value": {
+     "id": "c6bd690ea1eaa263d5facf919794cd4ef3b9693fbb38f25dd45768d81e9656a8",
+     "reason": "approval record is malformed",
+     "state": "corrupt"
+    }
+   },
+   "name_unhashable": {
+    "after": {
+     "events": 1,
+     "store": "fc687f67f16cbd6e",
+     "threshold_approval_events": "cc2f0e1efa1177bd",
+     "threshold_approvals": "b706aa1d70217171"
+    },
+    "approvals_unchanged": true,
+    "before": {
+     "events": 1,
+     "store": "fc687f67f16cbd6e",
+     "threshold_approval_events": "cc2f0e1efa1177bd",
+     "threshold_approvals": "b706aa1d70217171"
+    },
+    "cause_type": null,
+    "events_unchanged": true,
+    "is_contract_error": false,
+    "message": "unhashable type: 'list'",
+    "outcome": "raised",
+    "store_unchanged": true,
+    "suppress_context": false,
+    "type": "TypeError"
+   },
+   "name_unknown": {
+    "after": {
+     "events": 1,
+     "store": "d53d3f14ffee7cb2",
+     "threshold_approval_events": "f9e6b9112b922412",
+     "threshold_approvals": "386f9f11e72998c9"
+    },
+    "approvals_unchanged": true,
+    "before": {
+     "events": 1,
+     "store": "d53d3f14ffee7cb2",
+     "threshold_approval_events": "f9e6b9112b922412",
+     "threshold_approvals": "386f9f11e72998c9"
+    },
+    "events_unchanged": true,
+    "outcome": "returned",
+    "store_unchanged": true,
+    "value": {
+     "id": "5152f840daf12c78b6fb9c6ad1812d4a8ac477033f422c5f703c15f094b518bf",
+     "reason": "approval record is malformed",
+     "state": "corrupt"
+    }
+   },
+   "policy_revision_missing": {
+    "after": {
+     "events": 1,
+     "store": "d226d52fcca1cd6f",
+     "threshold_approval_events": "6ac570824de5a149",
+     "threshold_approvals": "e51c2c668de2b6b0"
+    },
+    "approvals_unchanged": true,
+    "before": {
+     "events": 1,
+     "store": "d226d52fcca1cd6f",
+     "threshold_approval_events": "6ac570824de5a149",
+     "threshold_approvals": "e51c2c668de2b6b0"
+    },
+    "cause_type": null,
+    "events_unchanged": true,
+    "is_contract_error": false,
+    "message": "'policy_revision'",
+    "outcome": "raised",
+    "store_unchanged": true,
+    "suppress_context": false,
+    "type": "KeyError"
+   },
+   "proposed_bool": {
+    "after": {
+     "events": 1,
+     "store": "5cc9dd7074027c53",
+     "threshold_approval_events": "7b082b0c290c6800",
+     "threshold_approvals": "cdc64ebb5e29e8e6"
+    },
+    "approvals_unchanged": true,
+    "before": {
+     "events": 1,
+     "store": "5cc9dd7074027c53",
+     "threshold_approval_events": "7b082b0c290c6800",
+     "threshold_approvals": "cdc64ebb5e29e8e6"
+    },
+    "events_unchanged": true,
+    "outcome": "returned",
+    "store_unchanged": true,
+    "value": {
+     "id": "43575fa1ee101c034060bb2daad223be7590dbe636cdb40f6c828dbbecab9c74",
+     "reason": "approval record is malformed",
+     "state": "corrupt"
+    }
+   },
+   "proposed_missing": {
+    "after": {
+     "events": 1,
+     "store": "392c0a951b8ef994",
+     "threshold_approval_events": "20a11e81dbc1a602",
+     "threshold_approvals": "650d2f3f723dde9f"
+    },
+    "approvals_unchanged": true,
+    "before": {
+     "events": 1,
+     "store": "392c0a951b8ef994",
+     "threshold_approval_events": "20a11e81dbc1a602",
+     "threshold_approvals": "650d2f3f723dde9f"
+    },
+    "events_unchanged": true,
+    "outcome": "returned",
+    "store_unchanged": true,
+    "value": {
+     "id": "790932fba10970f4a5f48f1968de2022cdde5b6737483ffa126b4069a2b05a28",
+     "reason": "approval record is malformed",
+     "state": "corrupt"
+    }
+   },
+   "proposed_nan": {
+    "after": {
+     "events": 1,
+     "store": "756c720ccc1bbb1b",
+     "threshold_approval_events": "bfe08c279ad3f465",
+     "threshold_approvals": "69da2665bd86f65a"
+    },
+    "approvals_unchanged": true,
+    "before": {
+     "events": 1,
+     "store": "756c720ccc1bbb1b",
+     "threshold_approval_events": "bfe08c279ad3f465",
+     "threshold_approvals": "69da2665bd86f65a"
+    },
+    "events_unchanged": true,
+    "outcome": "returned",
+    "store_unchanged": true,
+    "value": {
+     "id": "232b498bb5a7c31b4999e771f726865abcdfc69ee2b33de605edae247b5616b7",
+     "reason": "approval record is malformed",
+     "state": "corrupt"
+    }
+   },
+   "proposed_str": {
+    "after": {
+     "events": 1,
+     "store": "2073bf190b56ab0f",
+     "threshold_approval_events": "35941b0f6b5ac2b3",
+     "threshold_approvals": "e573aae5d36e123b"
+    },
+    "approvals_unchanged": true,
+    "before": {
+     "events": 1,
+     "store": "2073bf190b56ab0f",
+     "threshold_approval_events": "35941b0f6b5ac2b3",
+     "threshold_approvals": "e573aae5d36e123b"
+    },
+    "events_unchanged": true,
+    "outcome": "returned",
+    "store_unchanged": true,
+    "value": {
+     "id": "60e82b4f687c1673dc09b4b43ad02fffda1dfe26a6be6301c9df9d7e41060d71",
+     "reason": "approval record is malformed",
+     "state": "corrupt"
+    }
+   },
+   "revoked_state_with_a_past_expiry": {
+    "after": {
+     "events": 1,
+     "store": "0d0be39ae391d259",
+     "threshold_approval_events": "532900eca073c31a",
+     "threshold_approvals": "ad0b1bc5265ceeea"
+    },
+    "approvals_unchanged": true,
+    "before": {
+     "events": 1,
+     "store": "0d0be39ae391d259",
+     "threshold_approval_events": "532900eca073c31a",
+     "threshold_approvals": "ad0b1bc5265ceeea"
+    },
+    "events_unchanged": true,
+    "outcome": "returned",
+    "store_unchanged": true,
+    "value": {
+     "application": null,
+     "authority": "certifies one exact policy change; never writes the definition",
+     "current": 3,
+     "environment": "staging",
+     "expires_at": "2020-01-01T00:00:00+00:00",
+     "id": "d05564c5c17f061b43453e5b00dd1567a232f9005322077e0ce5256031ba816a",
+     "name": "skill_match.FULL_BODY_MIN_SCORE",
+     "policy_revision": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+     "proposed": 4,
+     "state": "revoked"
+    }
+   },
+   "status_expired_is_not_stored": {
+    "after": {
+     "events": 1,
+     "store": "4bb7a7bba58a4555",
+     "threshold_approval_events": "182713768ffc7521",
+     "threshold_approvals": "e1ac5c77f838494c"
+    },
+    "approvals_unchanged": true,
+    "before": {
+     "events": 1,
+     "store": "4bb7a7bba58a4555",
+     "threshold_approval_events": "182713768ffc7521",
+     "threshold_approvals": "e1ac5c77f838494c"
+    },
+    "events_unchanged": true,
+    "outcome": "returned",
+    "store_unchanged": true,
+    "value": {
+     "id": "815ced1c6147376a46baa85029c650cf928bf997ddc050cd39944a5046b7c331",
+     "reason": "approval record is malformed",
+     "state": "corrupt"
+    }
+   },
+   "status_missing": {
+    "after": {
+     "events": 1,
+     "store": "d9f94e376188fd63",
+     "threshold_approval_events": "7e21699b2e35e59b",
+     "threshold_approvals": "3405606bebf999a5"
+    },
+    "approvals_unchanged": true,
+    "before": {
+     "events": 1,
+     "store": "d9f94e376188fd63",
+     "threshold_approval_events": "7e21699b2e35e59b",
+     "threshold_approvals": "3405606bebf999a5"
+    },
+    "events_unchanged": true,
+    "outcome": "returned",
+    "store_unchanged": true,
+    "value": {
+     "id": "cde35b62d4409a2dbb76eb75ab0a3fc39563538aa8748732f0bd2da2a37bae3c",
+     "reason": "approval record is malformed",
+     "state": "corrupt"
+    }
+   },
+   "status_unknown": {
+    "after": {
+     "events": 1,
+     "store": "5e424472ed72ba0e",
+     "threshold_approval_events": "6d72e7b1f66eff8c",
+     "threshold_approvals": "ec0a1dc160e15c5c"
+    },
+    "approvals_unchanged": true,
+    "before": {
+     "events": 1,
+     "store": "5e424472ed72ba0e",
+     "threshold_approval_events": "6d72e7b1f66eff8c",
+     "threshold_approvals": "ec0a1dc160e15c5c"
+    },
+    "events_unchanged": true,
+    "outcome": "returned",
+    "store_unchanged": true,
+    "value": {
+     "id": "97bd91acf4fb3082d8b1644e8bdc1197f8c50f07b55d43970ad69d23138cbd5a",
+     "reason": "approval record is malformed",
+     "state": "corrupt"
+    }
+   }
+  },
+  "inspect_does_not_write": true,
+  "inspect_exactly_the_keys": [
+   "application",
+   "authority",
+   "current",
+   "environment",
+   "expires_at",
+   "id",
+   "name",
+   "policy_revision",
+   "proposed",
+   "state"
+  ],
+  "inspect_expired": {
+   "application": null,
+   "authority": "certifies one exact policy change; never writes the definition",
+   "current": 3,
+   "environment": "prod",
+   "expires_at": "2026-09-10T12:01:00+00:00",
+   "id": "cef7cfc8b9e2987258adf04e34567d06218bc838a1553d2de41156d3e54a4c96",
+   "name": "skill_match.FULL_BODY_MIN_SCORE",
+   "policy_revision": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+   "proposed": 4,
+   "state": "expired"
+  },
+  "inspect_issued": {
+   "application": null,
+   "authority": "certifies one exact policy change; never writes the definition",
+   "current": 3,
+   "environment": "eu",
+   "expires_at": "2026-09-10T13:00:00+00:00",
+   "id": "c2f283f1d1a05e041fe9fcaa635f17f32cf3f8f1998cce7c27d08a661f9e735b",
+   "name": "skill_match.FULL_BODY_MIN_SCORE",
+   "policy_revision": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+   "proposed": 4,
+   "state": "issued"
+  },
+  "inspect_just_before_expiry_is_issued": "issued",
+  "inspect_missing": {
+   "id": "nope",
+   "state": "missing"
+  },
+  "inspect_record_untouched": true,
+  "inspect_revoked": {
+   "application": null,
+   "authority": "certifies one exact policy change; never writes the definition",
+   "current": 3,
+   "environment": "staging",
+   "expires_at": "2026-09-10T13:00:00+00:00",
+   "id": "8a44d65abfcc70d78264b79f9d5c0c9506b3e7edf8a5ff9ea7cb32e0af523ebe",
+   "name": "skill_match.FULL_BODY_MIN_SCORE",
+   "policy_revision": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+   "proposed": 4,
+   "state": "revoked"
+  },
+  "invalid_actor_on_a_revoked_one_is_refused_first": {
+   "after": {
+    "events": 3,
+    "store": "0b9de3a903d71a8a",
+    "threshold_approval_events": "ddb5b9c76e7ee433",
+    "threshold_approvals": "74c4d99d12b5d298"
+   },
+   "approvals_unchanged": true,
+   "before": {
+    "events": 3,
+    "store": "0b9de3a903d71a8a",
+    "threshold_approval_events": "ddb5b9c76e7ee433",
+    "threshold_approvals": "74c4d99d12b5d298"
+   },
+   "cause_type": null,
+   "events_unchanged": true,
+   "is_contract_error": true,
+   "message": "Only a reviewer revokes an approval",
+   "outcome": "raised",
+   "store_unchanged": true,
+   "suppress_context": false,
+   "type": "ContractError"
+  },
+  "not_mapped_keyboard_interrupt": {
+   "propagated": "KeyboardInterrupt"
+  },
+  "not_mapped_system_exit": {
+   "propagated": "SystemExit"
+  },
+  "parse_applied_policy": {
+   "empty_values": [
+    "ok",
+    true
+   ],
+   "extra": [
+    "ContractError",
+    "Applied policy must carry previous_revision, previous_values, revision, values and environment"
+   ],
+   "float_values": [
+    "ok",
+    true
+   ],
+   "good": [
+    "ok",
+    true
+   ],
+   "missing": [
+    "ContractError",
+    "Applied policy must carry previous_revision, previous_values, revision, values and environment"
+   ],
+   "not_a_dict": [
+    "ContractError",
+    "Applied policy must carry previous_revision, previous_values, revision, values and environment"
+   ],
+   "two_names": [
+    "ok",
+    true
+   ]
+  },
+  "reason_blank": {
+   "after": {
+    "events": 1,
+    "store": "3b87520bc8d0eab4",
+    "threshold_approval_events": "dc5f48eb8899e2f8",
+    "threshold_approvals": "2c45d8e08896d9e6"
+   },
+   "approvals_unchanged": true,
+   "before": {
+    "events": 1,
+    "store": "3b87520bc8d0eab4",
+    "threshold_approval_events": "dc5f48eb8899e2f8",
+    "threshold_approvals": "2c45d8e08896d9e6"
+   },
+   "cause_type": null,
+   "events_unchanged": true,
+   "is_contract_error": true,
+   "message": "Revocation reason required",
+   "outcome": "raised",
+   "store_unchanged": true,
+   "suppress_context": false,
+   "type": "ContractError"
+  },
+  "reason_empty": {
+   "after": {
+    "events": 1,
+    "store": "3b87520bc8d0eab4",
+    "threshold_approval_events": "dc5f48eb8899e2f8",
+    "threshold_approvals": "2c45d8e08896d9e6"
+   },
+   "approvals_unchanged": true,
+   "before": {
+    "events": 1,
+    "store": "3b87520bc8d0eab4",
+    "threshold_approval_events": "dc5f48eb8899e2f8",
+    "threshold_approvals": "2c45d8e08896d9e6"
+   },
+   "cause_type": null,
+   "events_unchanged": true,
+   "is_contract_error": true,
+   "message": "Revocation reason required",
+   "outcome": "raised",
+   "store_unchanged": true,
+   "suppress_context": false,
+   "type": "ContractError"
+  },
+  "reason_int": {
+   "after": {
+    "events": 1,
+    "store": "3b87520bc8d0eab4",
+    "threshold_approval_events": "dc5f48eb8899e2f8",
+    "threshold_approvals": "2c45d8e08896d9e6"
+   },
+   "approvals_unchanged": true,
+   "before": {
+    "events": 1,
+    "store": "3b87520bc8d0eab4",
+    "threshold_approval_events": "dc5f48eb8899e2f8",
+    "threshold_approvals": "2c45d8e08896d9e6"
+   },
+   "cause_type": null,
+   "events_unchanged": true,
+   "is_contract_error": true,
+   "message": "Revocation reason required",
+   "outcome": "raised",
+   "store_unchanged": true,
+   "suppress_context": false,
+   "type": "ContractError"
+  },
+  "reason_list": {
+   "after": {
+    "events": 1,
+    "store": "3b87520bc8d0eab4",
+    "threshold_approval_events": "dc5f48eb8899e2f8",
+    "threshold_approvals": "2c45d8e08896d9e6"
+   },
+   "approvals_unchanged": true,
+   "before": {
+    "events": 1,
+    "store": "3b87520bc8d0eab4",
+    "threshold_approval_events": "dc5f48eb8899e2f8",
+    "threshold_approvals": "2c45d8e08896d9e6"
+   },
+   "cause_type": null,
+   "events_unchanged": true,
+   "is_contract_error": true,
+   "message": "Revocation reason required",
+   "outcome": "raised",
+   "store_unchanged": true,
+   "suppress_context": false,
+   "type": "ContractError"
+  },
+  "reason_none": {
+   "after": {
+    "events": 1,
+    "store": "3b87520bc8d0eab4",
+    "threshold_approval_events": "dc5f48eb8899e2f8",
+    "threshold_approvals": "2c45d8e08896d9e6"
+   },
+   "approvals_unchanged": true,
+   "before": {
+    "events": 1,
+    "store": "3b87520bc8d0eab4",
+    "threshold_approval_events": "dc5f48eb8899e2f8",
+    "threshold_approvals": "2c45d8e08896d9e6"
+   },
+   "cause_type": null,
+   "events_unchanged": true,
+   "is_contract_error": true,
+   "message": "Revocation reason required",
+   "outcome": "raised",
+   "store_unchanged": true,
+   "suppress_context": false,
+   "type": "ContractError"
+  },
+  "registry_names": [
+   "handoff_resume.STALE_DAYS_THRESHOLD",
+   "ratio_tracker.WARN_THRESHOLD",
+   "skill_candidate_detector._THRESHOLD",
+   "skill_match.FULL_BODY_MIN_SCORE",
+   "skill_telemetry_audit.FP_THIN_RATE"
+  ],
+  "revoke_an_expired_issued_one": {
+   "after": {
+    "events": 5,
+    "store": "5d1574cd862a2330",
+    "threshold_approval_events": "2a91f05fcf8f6368",
+    "threshold_approvals": "72f1b57bc170dbcf"
+   },
+   "approvals_unchanged": false,
+   "before": {
+    "events": 4,
+    "store": "60304edbd693ee4f",
+    "threshold_approval_events": "74fe8c926e0dc09c",
+    "threshold_approvals": "d25bab4b20b106ef"
+   },
+   "events_unchanged": false,
+   "outcome": "returned",
+   "store_unchanged": false,
+   "value": {
+    "application": null,
+    "authority": "certifies one exact policy change; never writes the definition",
+    "corpus_hash": "corpus-v2",
+    "current": 3,
+    "environment": "prod",
+    "evidence_ref": "sha256:83f12034479054b4000000000000000000000000000000000000000000000000",
+    "expires_at": "2026-09-10T12:01:00+00:00",
+    "id": "cef7cfc8b9e2987258adf04e34567d06218bc838a1553d2de41156d3e54a4c96",
+    "issued_at": "2026-09-10T12:00:00+00:00",
+    "issued_by": "conductor",
+    "kind": "threshold-approval-v1",
+    "name": "skill_match.FULL_BODY_MIN_SCORE",
+    "policy_revision": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+    "proposed": 4,
+    "registry_hash": "registry-1",
+    "request_binding": "de59adb521062e6c67e797d2b2f468c6efe8b91a8b7563276d8caaaf1d65e558",
+    "request_id": "req-v2",
+    "reviews": [
+     {
+      "actor": "lead:improvement",
+      "decision_id": "decision-1-v2",
+      "generation": 1
+     },
+     {
+      "actor": "conductor",
+      "decision_id": "decision-2-v2",
+      "generation": 1
+     }
+    ],
+    "revocation": {
+     "actor": "conductor",
+     "at": "2026-09-22T00:00:00+00:00",
+     "reason": "stale"
+    },
+    "status": "revoked"
+   }
+  },
+  "revoked": {
+   "after": {
+    "events": 2,
+    "store": "4dec81fe98e62a2a",
+    "threshold_approval_events": "95ab74dc4db922ba",
+    "threshold_approvals": "74c4d99d12b5d298"
+   },
+   "approvals_unchanged": false,
+   "before": {
+    "events": 1,
+    "store": "3b87520bc8d0eab4",
+    "threshold_approval_events": "dc5f48eb8899e2f8",
+    "threshold_approvals": "2c45d8e08896d9e6"
+   },
+   "events_unchanged": false,
+   "outcome": "returned",
+   "store_unchanged": false,
+   "value": {
+    "application": null,
+    "authority": "certifies one exact policy change; never writes the definition",
+    "corpus_hash": "corpus-v",
+    "current": 3,
+    "environment": "staging",
+    "evidence_ref": "sha256:a81c4a87ce91b586000000000000000000000000000000000000000000000000",
+    "expires_at": "2026-09-10T13:00:00+00:00",
+    "id": "8a44d65abfcc70d78264b79f9d5c0c9506b3e7edf8a5ff9ea7cb32e0af523ebe",
+    "issued_at": "2026-09-10T12:00:00+00:00",
+    "issued_by": "conductor",
+    "kind": "threshold-approval-v1",
+    "name": "skill_match.FULL_BODY_MIN_SCORE",
+    "policy_revision": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+    "proposed": 4,
+    "registry_hash": "registry-1",
+    "request_binding": "7ca3e7f74b374f4c242a485e5decb88903f20c3fd64dafcd0f6b1f4d366ff4e3",
+    "request_id": "req-v",
+    "reviews": [
+     {
+      "actor": "lead:improvement",
+      "decision_id": "decision-1-v",
+      "generation": 1
+     },
+     {
+      "actor": "conductor",
+      "decision_id": "decision-2-v",
+      "generation": 1
+     }
+    ],
+    "revocation": {
+     "actor": "lead:improvement",
+     "at": "2026-09-22T00:00:00+00:00",
+     "reason": "a later rejection"
+    },
+    "status": "revoked"
+   }
+  },
+  "revoked_is_stored": true,
+  "time": {
+   "bytes": [
+    "ContractError",
+    "field must be ISO-8601 text",
+    false,
+    true
+   ],
+   "date_only": [
+    "ContractError",
+    "field must carry a timezone",
+    false,
+    true
+   ],
+   "datetime_object": [
+    "ContractError",
+    "field must be ISO-8601 text",
+    false,
+    true
+   ],
+   "empty": [
+    "ContractError",
+    "field is not ISO-8601",
+    true,
+    true
+   ],
+   "garbage": [
+    "ContractError",
+    "field is not ISO-8601",
+    true,
+    true
+   ],
+   "int": [
+    "ContractError",
+    "field must be ISO-8601 text",
+    false,
+    true
+   ],
+   "naive": [
+    "ContractError",
+    "field must carry a timezone",
+    false,
+    true
+   ],
+   "none": [
+    "ContractError",
+    "field must be ISO-8601 text",
+    false,
+    true
+   ],
+   "offset": [
+    "ok",
+    "2026-09-10T12:00:00+09:00"
+   ],
+   "trailing_space": [
+    "ContractError",
+    "field is not ISO-8601",
+    true,
+    true
+   ],
+   "utc": [
+    "ok",
+    "2026-09-10T12:00:00+00:00"
+   ],
+   "z_suffix": [
+    "ok",
+    "2026-09-10T12:00:00+00:00"
+   ]
+  },
+  "unknown": {
+   "after": {
+    "events": 1,
+    "store": "3b87520bc8d0eab4",
+    "threshold_approval_events": "dc5f48eb8899e2f8",
+    "threshold_approvals": "2c45d8e08896d9e6"
+   },
+   "approvals_unchanged": true,
+   "before": {
+    "events": 1,
+    "store": "3b87520bc8d0eab4",
+    "threshold_approval_events": "dc5f48eb8899e2f8",
+    "threshold_approvals": "2c45d8e08896d9e6"
+   },
+   "cause_type": null,
+   "events_unchanged": true,
+   "is_contract_error": true,
+   "message": "Unknown threshold approval",
+   "outcome": "raised",
+   "store_unchanged": true,
+   "suppress_context": false,
+   "type": "ContractError"
+  },
+  "unreadable_contract": {
+   "id": "any",
+   "reason": "ContractError",
+   "state": "unreadable"
+  },
+  "unreadable_key_error": {
+   "id": "any",
+   "reason": "KeyError",
+   "state": "unreadable"
+  },
+  "unreadable_operational": {
+   "id": "any",
+   "reason": "RuntimeError",
+   "state": "unreadable"
+  },
+  "unreadable_os_error": {
+   "id": "any",
+   "reason": "OSError",
+   "state": "unreadable"
+  },
+  "unreadable_value_error": {
+   "id": "any",
+   "reason": "ValueError",
+   "state": "unreadable"
+  }
+ },
+ "c4_test_concurrent_consumers_on_postgres_get_one_certification": {
+  "each_refusal_adds_one_event": [
+   1,
+   1,
+   1,
+   1,
+   1,
+   1,
+   1,
+   1
+  ],
+  "events": [
+   "issued",
+   "consumed",
+   "refused",
+   "refused",
+   "refused",
+   "refused",
+   "refused",
+   "refused",
+   "refused"
+  ],
+  "increasing_generations": [
+   [
+    "returned",
+    2,
+    null
+   ],
+   [
+    "returned",
+    3,
+    null
+   ],
+   [
+    "returned",
+    4,
+    null
+   ]
+  ],
+  "one_certified": 1,
+  "refusals_leave_the_approval_row_unchanged": true,
+  "refused_events": 7,
+  "results": [
+   {
+    "application": {
+     "at": "2026-09-10T12:01:00+00:00",
+     "environment": "staging",
+     "generation": 1,
+     "revision": "0000000000000000000000000000000000000001"
+    },
+    "message": null,
+    "outcome": "returned"
+   },
+   {
+    "application": null,
+    "message": "Threshold approval cannot certify this change: approval is consumed",
+    "outcome": "raised"
+   },
+   {
+    "application": null,
+    "message": "Threshold approval cannot certify this change: approval is consumed",
+    "outcome": "raised"
+   },
+   {
+    "application": null,
+    "message": "Threshold approval cannot certify this change: approval is consumed",
+    "outcome": "raised"
+   },
+   {
+    "application": null,
+    "message": "Threshold approval cannot certify this change: approval is consumed",
+    "outcome": "raised"
+   },
+   {
+    "application": null,
+    "message": "Threshold approval cannot certify this change: approval is consumed",
+    "outcome": "raised"
+   },
+   {
+    "application": null,
+    "message": "Threshold approval cannot certify this change: approval is consumed",
+    "outcome": "raised"
+   },
+   {
+    "application": null,
+    "message": "Threshold approval cannot certify this change: approval is consumed",
+    "outcome": "raised"
+   }
+  ],
+  "row": {
+   "generation": 1,
+   "revision": "0000000000000000000000000000000000000001",
+   "status": "consumed"
+  },
+  "seven_refused_as_consumed": 7
+ },
+ "cases_per_group": {
+  "c1_test_issue_binds_the_exact_assessed_change": 63,
+  "c2_test_consume_certifies_exactly_one_matching_change": 43,
+  "c3_test_revocation_and_degraded_states": 39,
+  "c4_test_concurrent_consumers_on_postgres_get_one_certification": 9
+ },
+ "constants": {
+  "BUCKET": "threshold_approvals",
+  "ENVIRONMENT": "[a-z0-9][a-z0-9._-]{0,63}\\Z",
+  "EVENTS": "threshold_approval_events",
+  "MAX_TTL_SECONDS": 2592000,
+  "REVISION": "[0-9a-f]{40}\\Z",
+  "STATES": [
+   "issued",
+   "consumed",
+   "revoked",
+   "expired",
+   "missing",
+   "corrupt",
+   "unreadable"
+  ]
+ },
+ "m7_tests": {
+  "test_a_value_that_admits_nothing_is_never_an_improvement": {
+   "unreachable": "exercises domain.threshold_replay.admitted_entries and evaluate_threshold_change, not this module"
+  },
+  "test_concurrent_consumers_on_postgres_get_one_certification": {
+   "c4_test_concurrent_consumers_on_postgres_get_one_certification": "the sequential part; threads and PostgreSQL are not a scenario step"
+  },
+  "test_consume_certifies_exactly_one_matching_change": "c2_test_consume_certifies_exactly_one_matching_change",
+  "test_duplicates_audit_rows_and_unscored_events_are_not_additional_executions": {
+   "unreachable": "exercises domain.threshold_proposals.unique_events and propose_threshold_changes, not this module"
+  },
+  "test_issue_binds_the_exact_assessed_change": "c1_test_issue_binds_the_exact_assessed_change",
+  "test_revocation_and_degraded_states": "c3_test_revocation_and_degraded_states"
+ },
+ "states_reached": {
+  "STATES": [
+   "issued",
+   "consumed",
+   "revoked",
+   "expired",
+   "missing",
+   "corrupt",
+   "unreadable"
+  ],
+  "equals_STATES_but_for_the_unstored": [],
+  "reached": [
+   "consumed",
+   "corrupt",
+   "expired",
+   "issued",
+   "missing",
+   "revoked",
+   "unreadable"
+  ]
+ }
+}

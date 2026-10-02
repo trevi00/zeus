@@ -1,0 +1,8 @@
+{
+ "family": "research.threshold_approvals",
+ "description": "S8 threshold approvals of M7 application/threshold_approvals.py (ThresholdApprovals: issue, _check, consume, revoke, inspect, _event; parse_applied_policy, _time), characterized before the move: the four approval tests of tests/test_threshold_approvals.py (issue binds the exact assessed change, consume certifies exactly one matching change, revocation and the degraded states, the concurrent consumers as eight sequential deliveries) plus labelled additions for every raise, except and require of the branch-table section (every precondition of the assessed request, its reviews, row and evidence; every _check refusal in its order with the expiry boundary; the malformed applied policies; the unreadable, corrupt and missing records; the time parser), with the digests of threshold_approvals, threshold_approval_events and the whole store before and after every refusal; MemoryStore, scripted ids and clock, a labelled artifacts fake, the review chain's rows written directly, no adapter, no PostgreSQL",
+ "reference_driver": "drivers/reference/s8_threshold_approvals.py",
+ "target_driver": "drivers/target/s8_threshold_approvals.py",
+ "golden": "goldens/reference/research.threshold_approvals.json",
+ "slice": "S8"
+}
