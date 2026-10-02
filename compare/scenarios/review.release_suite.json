@@ -1,0 +1,9 @@
+{
+ "family": "review.release_suite",
+ "description": "S8 (V19 R-rs0..R-rs2) M7 adapters/release_suite.py ReleaseSuite.check over a labelled fake run_logged_process and a labelled fake artifact store (a pass in bounded batches, a failed batch, collection failures, an empty and an all-skipped suite, timeouts, a spawn error, a torn event file, a drifted/omitted/duplicated/unexpected node, a cancellation and a lost fence around collection and in a batch, the stale accounting environment, credential-shaped node ids and their redaction counts), bounded_log, read_events and the constants, characterized before the move; no real pytest child, no real artifact store",
+ "reference_driver": "drivers/reference/s8_release_suite.py",
+ "target_driver": null,
+ "golden": "goldens/reference/review.release_suite.json",
+ "slice": "S8",
+ "target_status": "pending S8 pilot 95 (V19): the module moves with its injected run_logged_process and redaction rules"
+}
