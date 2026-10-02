@@ -109,7 +109,8 @@ S7_IMPLEMENTED = {"delivery.tooling", "delivery.restore.pg", "delivery.fleet_rec
                   "coordination.owner_actions_migration", "effects.delivery_units", "effects.delivery_units.pg"}
 S8_IMPLEMENTED = {"intake.portfolio", "research.dge", "evidence.inspections", "research.autonomous", "research.audit_core",
                   "research.audit_progress",
-                  "research.program_records", "research.capture", "research.program_tick", "research.sources", "research.council", "research.council_snapshot", "research.autonomous_evidence"}
+                  "research.program_records", "research.capture", "research.program_tick", "research.sources", "research.council", "research.council_snapshot", "research.autonomous_evidence",
+                  "research.autonomous_roles"}
 IMPLEMENTED = {**{f: "S1" for f in S1_FAMILIES}, **{f: "S2" for f in S2_FAMILIES},
                **{f: "S3" for f in S3_IMPLEMENTED}, **{f: "S4" for f in S4_IMPLEMENTED},
                **{f: "S5" for f in S5_IMPLEMENTED}, **{f: "S6" for f in S6_IMPLEMENTED},
