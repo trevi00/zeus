@@ -1,0 +1,4189 @@
+{
+ "b1_acquire": {
+  "a_new_target_is_initialized_then_fetched": {
+   "bwrap_calls": [],
+   "git_spawns": [
+    {
+     "argv": [
+      "git",
+      "init",
+      "--bare",
+      "<root>/c001-acquire-new/audit-runner/d7d2ef8ecfaebe40aad91f0d7d7d5602e88f7eb2006dfb40fcde683b8329060f"
+     ],
+     "kwargs": {
+      "capture_output": true,
+      "check": true
+     }
+    },
+    {
+     "argv": [
+      "git",
+      "-C",
+      "<root>/c001-acquire-new/audit-runner/d7d2ef8ecfaebe40aad91f0d7d7d5602e88f7eb2006dfb40fcde683b8329060f",
+      "remote",
+      "add",
+      "origin",
+      "https://github.com/fixture/repo"
+     ],
+     "kwargs": {
+      "capture_output": true,
+      "check": true
+     }
+    },
+    {
+     "argv": [
+      "git",
+      "-C",
+      "<root>/c001-acquire-new/audit-runner/d7d2ef8ecfaebe40aad91f0d7d7d5602e88f7eb2006dfb40fcde683b8329060f",
+      "cat-file",
+      "-e",
+      "1111111111111111111111111111111111111111^{commit}"
+     ],
+     "kwargs": {
+      "capture_output": true,
+      "timeout": 30
+     }
+    },
+    {
+     "argv": [
+      "git",
+      "--no-replace-objects",
+      "-C",
+      "<root>/c001-acquire-new/audit-runner/d7d2ef8ecfaebe40aad91f0d7d7d5602e88f7eb2006dfb40fcde683b8329060f",
+      "-c",
+      "protocol.file.allow=never",
+      "-c",
+      "protocol.ext.allow=never",
+      "fetch",
+      "--no-tags",
+      "--depth=1",
+      "origin",
+      "1111111111111111111111111111111111111111"
+     ],
+     "kwargs": {
+      "stderr": "PIPE",
+      "stdout": "PIPE",
+      "timeout": 60
+     }
+    },
+    {
+     "argv": [
+      "git",
+      "--no-replace-objects",
+      "-C",
+      "<root>/c001-acquire-new/audit-runner/d7d2ef8ecfaebe40aad91f0d7d7d5602e88f7eb2006dfb40fcde683b8329060f",
+      "rev-parse",
+      "1111111111111111111111111111111111111111^{tree}"
+     ],
+     "kwargs": {
+      "stderr": "PIPE",
+      "stdout": "PIPE",
+      "timeout": 60
+     }
+    },
+    {
+     "argv": [
+      "git",
+      "--no-replace-objects",
+      "-C",
+      "<root>/c001-acquire-new/audit-runner/d7d2ef8ecfaebe40aad91f0d7d7d5602e88f7eb2006dfb40fcde683b8329060f",
+      "config",
+      "--get",
+      "remote.origin.url"
+     ],
+     "kwargs": {
+      "stderr": "PIPE",
+      "stdout": "PIPE",
+      "timeout": 60
+     }
+    },
+    {
+     "argv": [
+      "git",
+      "--no-replace-objects",
+      "-C",
+      "<root>/c001-acquire-new/audit-runner/d7d2ef8ecfaebe40aad91f0d7d7d5602e88f7eb2006dfb40fcde683b8329060f",
+      "cat-file",
+      "-t",
+      "1111111111111111111111111111111111111111"
+     ],
+     "kwargs": {
+      "stderr": "PIPE",
+      "stdout": "PIPE",
+      "timeout": 60
+     }
+    },
+    {
+     "argv": [
+      "git",
+      "--no-replace-objects",
+      "-C",
+      "<root>/c001-acquire-new/audit-runner/d7d2ef8ecfaebe40aad91f0d7d7d5602e88f7eb2006dfb40fcde683b8329060f",
+      "rev-parse",
+      "1111111111111111111111111111111111111111^{tree}"
+     ],
+     "kwargs": {
+      "stderr": "PIPE",
+      "stdout": "PIPE",
+      "timeout": 60
+     }
+    },
+    {
+     "argv": [
+      "git",
+      "--no-replace-objects",
+      "-C",
+      "<root>/c001-acquire-new/audit-runner/d7d2ef8ecfaebe40aad91f0d7d7d5602e88f7eb2006dfb40fcde683b8329060f",
+      "ls-tree",
+      "-r",
+      "-z",
+      "--full-tree",
+      "2222222222222222222222222222222222222222"
+     ],
+     "kwargs": {
+      "stderr": "PIPE",
+      "stdout": "PIPE",
+      "timeout": 60
+     }
+    },
+    {
+     "argv": [
+      "git",
+      "--no-replace-objects",
+      "-C",
+      "<root>/c001-acquire-new/audit-runner/d7d2ef8ecfaebe40aad91f0d7d7d5602e88f7eb2006dfb40fcde683b8329060f",
+      "cat-file",
+      "blob",
+      "5ae034634e8d382c8646068b8b52381815edabf0"
+     ],
+     "kwargs": {
+      "stderr": "PIPE",
+      "stdout": "PIPE",
+      "timeout": 60
+     }
+    },
+    {
+     "argv": [
+      "git",
+      "--no-replace-objects",
+      "-C",
+      "<root>/c001-acquire-new/audit-runner/d7d2ef8ecfaebe40aad91f0d7d7d5602e88f7eb2006dfb40fcde683b8329060f",
+      "cat-file",
+      "blob",
+      "1d3a06547c706bd0f75b130edecf4832295bba6b"
+     ],
+     "kwargs": {
+      "stderr": "PIPE",
+      "stdout": "PIPE",
+      "timeout": 60
+     }
+    },
+    {
+     "argv": [
+      "git",
+      "--no-replace-objects",
+      "-C",
+      "<root>/c001-acquire-new/audit-runner/d7d2ef8ecfaebe40aad91f0d7d7d5602e88f7eb2006dfb40fcde683b8329060f",
+      "cat-file",
+      "blob",
+      "1a2485251c33a70432394c93fb89330ef214bfc9"
+     ],
+     "kwargs": {
+      "stderr": "PIPE",
+      "stdout": "PIPE",
+      "timeout": 60
+     }
+    },
+    {
+     "argv": [
+      "git",
+      "--no-replace-objects",
+      "-C",
+      "<root>/c001-acquire-new/audit-runner/d7d2ef8ecfaebe40aad91f0d7d7d5602e88f7eb2006dfb40fcde683b8329060f",
+      "cat-file",
+      "blob",
+      "90db00e1d6cf116716ba949a1cca330ac8c63634"
+     ],
+     "kwargs": {
+      "stderr": "PIPE",
+      "stdout": "PIPE",
+      "timeout": 60
+     }
+    },
+    {
+     "argv": [
+      "git",
+      "--no-replace-objects",
+      "-C",
+      "<root>/c001-acquire-new/audit-runner/d7d2ef8ecfaebe40aad91f0d7d7d5602e88f7eb2006dfb40fcde683b8329060f",
+      "cat-file",
+      "blob",
+      "814f4a422927b82f5f8a43f8fab6d3839e3983f2"
+     ],
+     "kwargs": {
+      "stderr": "PIPE",
+      "stdout": "PIPE",
+      "timeout": 60
+     }
+    },
+    {
+     "argv": [
+      "git",
+      "--no-replace-objects",
+      "-C",
+      "<root>/c001-acquire-new/audit-runner/d7d2ef8ecfaebe40aad91f0d7d7d5602e88f7eb2006dfb40fcde683b8329060f",
+      "config",
+      "--get",
+      "remote.origin.url"
+     ],
+     "kwargs": {
+      "stderr": "PIPE",
+      "stdout": "PIPE",
+      "timeout": 60
+     }
+    }
+   ],
+   "root_after": [
+    "d7d2ef8ecfaebe40aad91f0d7d7d5602e88f7eb2006dfb40fcde683b8329060f",
+    "d7d2ef8ecfaebe40aad91f0d7d7d5602e88f7eb2006dfb40fcde683b8329060f.lock"
+   ],
+   "root_before": [],
+   "value": {
+    "entries": [
+     {
+      "artifact_ref": "sha256:47d36a60134671c86bdf7fb6897a29c97f176e2f2624da85ca135edbf20b3a8f",
+      "mode": "120000",
+      "object_id": "5ae034634e8d382c8646068b8b52381815edabf0",
+      "path": "bGluaw==",
+      "size": 6
+     },
+     {
+      "artifact_ref": "sha256:d82dbdb3bbabaedd7c81d2cea6aeaac158c243ae16106498f100dd2316ac7421",
+      "mode": "100644",
+      "object_id": "1d3a06547c706bd0f75b130edecf4832295bba6b",
+      "path": "bm9ybWFs",
+      "size": 6
+     },
+     {
+      "artifact_ref": "sha256:d46b1e131b233b0c42d8192b8d3818ff8f0dcd36d919dbc59ea68a963a75a0f6",
+      "mode": "100755",
+      "object_id": "1a2485251c33a70432394c93fb89330ef214bfc9",
+      "path": "cnVuLnNo",
+      "size": 10
+     },
+     {
+      "artifact_ref": "sha256:00b0ae17309b65efb24828e06256c986734fa2cbadb0e233771b10abc6344862",
+      "mode": "100644",
+      "object_id": "90db00e1d6cf116716ba949a1cca330ac8c63634",
+      "path": "c3BhY2UJYW5kCm5ld2xpbmU=",
+      "size": 3
+     },
+     {
+      "artifact_ref": "sha256:b7f8e2716388893b19677413b06deed02789fee315d4228330d487d8ed2f0aab",
+      "mode": "100644",
+      "object_id": "814f4a422927b82f5f8a43f8fab6d3839e3983f2",
+      "path": "ZGlyL25lc3RlZC50eHQ=",
+      "size": 8
+     },
+     {
+      "artifact_ref": null,
+      "mode": "160000",
+      "object_id": "9999999999999999999999999999999999999999",
+      "path": "dmVuZG9yL3N1Yg==",
+      "size": null
+     }
+    ],
+    "source": {
+     "commit": "1111111111111111111111111111111111111111",
+     "manifest_ref": "sha256:83f6fd558b6c7fb4ff497fd8f16e358a1689803f20288e090376591937b52d7e",
+     "manifest_ref_matches_the_stored_manifest": true,
+     "repository": "https://github.com/fixture/repo",
+     "tree": "2222222222222222222222222222222222222222",
+     "version": 1
+    },
+    "verifier": "GitSourceVerifier",
+    "verifier_repository": "<root>/c001-acquire-new/audit-runner/d7d2ef8ecfaebe40aad91f0d7d7d5602e88f7eb2006dfb40fcde683b8329060f",
+    "verifier_runs_the_labelled_git": "https://github.com/fixture/repo\n"
+   }
+  },
+  "a_second_acquire_replays_the_same_source": {
+   "bwrap_calls": [],
+   "git_spawns": [
+    {
+     "argv": [
+      "git",
+      "-C",
+      "<root>/c002-acquire-present/audit-runner/d7d2ef8ecfaebe40aad91f0d7d7d5602e88f7eb2006dfb40fcde683b8329060f",
+      "cat-file",
+      "-e",
+      "1111111111111111111111111111111111111111^{commit}"
+     ],
+     "kwargs": {
+      "capture_output": true,
+      "timeout": 30
+     }
+    },
+    {
+     "argv": [
+      "git",
+      "--no-replace-objects",
+      "-C",
+      "<root>/c002-acquire-present/audit-runner/d7d2ef8ecfaebe40aad91f0d7d7d5602e88f7eb2006dfb40fcde683b8329060f",
+      "rev-parse",
+      "1111111111111111111111111111111111111111^{tree}"
+     ],
+     "kwargs": {
+      "stderr": "PIPE",
+      "stdout": "PIPE",
+      "timeout": 60
+     }
+    },
+    {
+     "argv": [
+      "git",
+      "--no-replace-objects",
+      "-C",
+      "<root>/c002-acquire-present/audit-runner/d7d2ef8ecfaebe40aad91f0d7d7d5602e88f7eb2006dfb40fcde683b8329060f",
+      "config",
+      "--get",
+      "remote.origin.url"
+     ],
+     "kwargs": {
+      "stderr": "PIPE",
+      "stdout": "PIPE",
+      "timeout": 60
+     }
+    },
+    {
+     "argv": [
+      "git",
+      "--no-replace-objects",
+      "-C",
+      "<root>/c002-acquire-present/audit-runner/d7d2ef8ecfaebe40aad91f0d7d7d5602e88f7eb2006dfb40fcde683b8329060f",
+      "cat-file",
+      "-t",
+      "1111111111111111111111111111111111111111"
+     ],
+     "kwargs": {
+      "stderr": "PIPE",
+      "stdout": "PIPE",
+      "timeout": 60
+     }
+    },
+    {
+     "argv": [
+      "git",
+      "--no-replace-objects",
+      "-C",
+      "<root>/c002-acquire-present/audit-runner/d7d2ef8ecfaebe40aad91f0d7d7d5602e88f7eb2006dfb40fcde683b8329060f",
+      "rev-parse",
+      "1111111111111111111111111111111111111111^{tree}"
+     ],
+     "kwargs": {
+      "stderr": "PIPE",
+      "stdout": "PIPE",
+      "timeout": 60
+     }
+    },
+    {
+     "argv": [
+      "git",
+      "--no-replace-objects",
+      "-C",
+      "<root>/c002-acquire-present/audit-runner/d7d2ef8ecfaebe40aad91f0d7d7d5602e88f7eb2006dfb40fcde683b8329060f",
+      "ls-tree",
+      "-r",
+      "-z",
+      "--full-tree",
+      "2222222222222222222222222222222222222222"
+     ],
+     "kwargs": {
+      "stderr": "PIPE",
+      "stdout": "PIPE",
+      "timeout": 60
+     }
+    },
+    {
+     "argv": [
+      "git",
+      "--no-replace-objects",
+      "-C",
+      "<root>/c002-acquire-present/audit-runner/d7d2ef8ecfaebe40aad91f0d7d7d5602e88f7eb2006dfb40fcde683b8329060f",
+      "cat-file",
+      "blob",
+      "5ae034634e8d382c8646068b8b52381815edabf0"
+     ],
+     "kwargs": {
+      "stderr": "PIPE",
+      "stdout": "PIPE",
+      "timeout": 60
+     }
+    },
+    {
+     "argv": [
+      "git",
+      "--no-replace-objects",
+      "-C",
+      "<root>/c002-acquire-present/audit-runner/d7d2ef8ecfaebe40aad91f0d7d7d5602e88f7eb2006dfb40fcde683b8329060f",
+      "cat-file",
+      "blob",
+      "1d3a06547c706bd0f75b130edecf4832295bba6b"
+     ],
+     "kwargs": {
+      "stderr": "PIPE",
+      "stdout": "PIPE",
+      "timeout": 60
+     }
+    },
+    {
+     "argv": [
+      "git",
+      "--no-replace-objects",
+      "-C",
+      "<root>/c002-acquire-present/audit-runner/d7d2ef8ecfaebe40aad91f0d7d7d5602e88f7eb2006dfb40fcde683b8329060f",
+      "cat-file",
+      "blob",
+      "1a2485251c33a70432394c93fb89330ef214bfc9"
+     ],
+     "kwargs": {
+      "stderr": "PIPE",
+      "stdout": "PIPE",
+      "timeout": 60
+     }
+    },
+    {
+     "argv": [
+      "git",
+      "--no-replace-objects",
+      "-C",
+      "<root>/c002-acquire-present/audit-runner/d7d2ef8ecfaebe40aad91f0d7d7d5602e88f7eb2006dfb40fcde683b8329060f",
+      "cat-file",
+      "blob",
+      "90db00e1d6cf116716ba949a1cca330ac8c63634"
+     ],
+     "kwargs": {
+      "stderr": "PIPE",
+      "stdout": "PIPE",
+      "timeout": 60
+     }
+    },
+    {
+     "argv": [
+      "git",
+      "--no-replace-objects",
+      "-C",
+      "<root>/c002-acquire-present/audit-runner/d7d2ef8ecfaebe40aad91f0d7d7d5602e88f7eb2006dfb40fcde683b8329060f",
+      "cat-file",
+      "blob",
+      "814f4a422927b82f5f8a43f8fab6d3839e3983f2"
+     ],
+     "kwargs": {
+      "stderr": "PIPE",
+      "stdout": "PIPE",
+      "timeout": 60
+     }
+    },
+    {
+     "argv": [
+      "git",
+      "--no-replace-objects",
+      "-C",
+      "<root>/c002-acquire-present/audit-runner/d7d2ef8ecfaebe40aad91f0d7d7d5602e88f7eb2006dfb40fcde683b8329060f",
+      "config",
+      "--get",
+      "remote.origin.url"
+     ],
+     "kwargs": {
+      "stderr": "PIPE",
+      "stdout": "PIPE",
+      "timeout": 60
+     }
+    }
+   ],
+   "root_after": [
+    "d7d2ef8ecfaebe40aad91f0d7d7d5602e88f7eb2006dfb40fcde683b8329060f",
+    "d7d2ef8ecfaebe40aad91f0d7d7d5602e88f7eb2006dfb40fcde683b8329060f.lock"
+   ],
+   "root_before": [
+    "d7d2ef8ecfaebe40aad91f0d7d7d5602e88f7eb2006dfb40fcde683b8329060f",
+    "d7d2ef8ecfaebe40aad91f0d7d7d5602e88f7eb2006dfb40fcde683b8329060f.lock"
+   ],
+   "value": {
+    "entries": [
+     {
+      "artifact_ref": "sha256:47d36a60134671c86bdf7fb6897a29c97f176e2f2624da85ca135edbf20b3a8f",
+      "mode": "120000",
+      "object_id": "5ae034634e8d382c8646068b8b52381815edabf0",
+      "path": "bGluaw==",
+      "size": 6
+     },
+     {
+      "artifact_ref": "sha256:d82dbdb3bbabaedd7c81d2cea6aeaac158c243ae16106498f100dd2316ac7421",
+      "mode": "100644",
+      "object_id": "1d3a06547c706bd0f75b130edecf4832295bba6b",
+      "path": "bm9ybWFs",
+      "size": 6
+     },
+     {
+      "artifact_ref": "sha256:d46b1e131b233b0c42d8192b8d3818ff8f0dcd36d919dbc59ea68a963a75a0f6",
+      "mode": "100755",
+      "object_id": "1a2485251c33a70432394c93fb89330ef214bfc9",
+      "path": "cnVuLnNo",
+      "size": 10
+     },
+     {
+      "artifact_ref": "sha256:00b0ae17309b65efb24828e06256c986734fa2cbadb0e233771b10abc6344862",
+      "mode": "100644",
+      "object_id": "90db00e1d6cf116716ba949a1cca330ac8c63634",
+      "path": "c3BhY2UJYW5kCm5ld2xpbmU=",
+      "size": 3
+     },
+     {
+      "artifact_ref": "sha256:b7f8e2716388893b19677413b06deed02789fee315d4228330d487d8ed2f0aab",
+      "mode": "100644",
+      "object_id": "814f4a422927b82f5f8a43f8fab6d3839e3983f2",
+      "path": "ZGlyL25lc3RlZC50eHQ=",
+      "size": 8
+     },
+     {
+      "artifact_ref": null,
+      "mode": "160000",
+      "object_id": "9999999999999999999999999999999999999999",
+      "path": "dmVuZG9yL3N1Yg==",
+      "size": null
+     }
+    ],
+    "source": {
+     "commit": "1111111111111111111111111111111111111111",
+     "manifest_ref": "sha256:83f6fd558b6c7fb4ff497fd8f16e358a1689803f20288e090376591937b52d7e",
+     "manifest_ref_matches_the_stored_manifest": true,
+     "repository": "https://github.com/fixture/repo",
+     "tree": "2222222222222222222222222222222222222222",
+     "version": 1
+    },
+    "verifier": "GitSourceVerifier",
+    "verifier_repository": "<root>/c002-acquire-present/audit-runner/d7d2ef8ecfaebe40aad91f0d7d7d5602e88f7eb2006dfb40fcde683b8329060f",
+    "verifier_runs_the_labelled_git": "https://github.com/fixture/repo\n"
+   }
+  },
+  "acquire_fetch_fails": {
+   "bwrap_calls": [],
+   "git_spawns": [
+    {
+     "argv": [
+      "git",
+      "init",
+      "--bare",
+      "<root>/c008-acquire-fetch_fails/audit-runner/d7d2ef8ecfaebe40aad91f0d7d7d5602e88f7eb2006dfb40fcde683b8329060f"
+     ],
+     "kwargs": {
+      "capture_output": true,
+      "check": true
+     }
+    },
+    {
+     "argv": [
+      "git",
+      "-C",
+      "<root>/c008-acquire-fetch_fails/audit-runner/d7d2ef8ecfaebe40aad91f0d7d7d5602e88f7eb2006dfb40fcde683b8329060f",
+      "remote",
+      "add",
+      "origin",
+      "https://github.com/fixture/repo"
+     ],
+     "kwargs": {
+      "capture_output": true,
+      "check": true
+     }
+    },
+    {
+     "argv": [
+      "git",
+      "-C",
+      "<root>/c008-acquire-fetch_fails/audit-runner/d7d2ef8ecfaebe40aad91f0d7d7d5602e88f7eb2006dfb40fcde683b8329060f",
+      "cat-file",
+      "-e",
+      "1111111111111111111111111111111111111111^{commit}"
+     ],
+     "kwargs": {
+      "capture_output": true,
+      "timeout": 30
+     }
+    },
+    {
+     "argv": [
+      "git",
+      "--no-replace-objects",
+      "-C",
+      "<root>/c008-acquire-fetch_fails/audit-runner/d7d2ef8ecfaebe40aad91f0d7d7d5602e88f7eb2006dfb40fcde683b8329060f",
+      "-c",
+      "protocol.file.allow=never",
+      "-c",
+      "protocol.ext.allow=never",
+      "fetch",
+      "--no-tags",
+      "--depth=1",
+      "origin",
+      "1111111111111111111111111111111111111111"
+     ],
+     "kwargs": {
+      "stderr": "PIPE",
+      "stdout": "PIPE",
+      "timeout": 60
+     }
+    }
+   ],
+   "message": "Source Git inspection failed: fatal: could not read from remote repository",
+   "refused": "ContractError",
+   "root_after": [
+    "d7d2ef8ecfaebe40aad91f0d7d7d5602e88f7eb2006dfb40fcde683b8329060f",
+    "d7d2ef8ecfaebe40aad91f0d7d7d5602e88f7eb2006dfb40fcde683b8329060f.lock"
+   ],
+   "root_before": []
+  },
+  "acquire_init_fails": {
+   "bwrap_calls": [],
+   "git_spawns": [
+    {
+     "argv": [
+      "git",
+      "init",
+      "--bare",
+      "<root>/c005-acquire-init_fails/audit-runner/d7d2ef8ecfaebe40aad91f0d7d7d5602e88f7eb2006dfb40fcde683b8329060f"
+     ],
+     "kwargs": {
+      "capture_output": true,
+      "check": true
+     }
+    }
+   ],
+   "message": "Command '['git', 'init', '--bare', '<root>/c005-acquire-init_fails/audit-runner/d7d2ef8ecfaebe40aad91f0d7d7d5602e88f7eb2006dfb40fcde683b8329060f']' returned non-zero exit status 128.",
+   "refused": "CalledProcessError",
+   "root_after": [
+    "d7d2ef8ecfaebe40aad91f0d7d7d5602e88f7eb2006dfb40fcde683b8329060f",
+    "d7d2ef8ecfaebe40aad91f0d7d7d5602e88f7eb2006dfb40fcde683b8329060f.lock"
+   ],
+   "root_before": []
+  },
+  "acquire_remote_add_fails": {
+   "bwrap_calls": [],
+   "git_spawns": [
+    {
+     "argv": [
+      "git",
+      "init",
+      "--bare",
+      "<root>/c006-acquire-remote_add_fails/audit-runner/d7d2ef8ecfaebe40aad91f0d7d7d5602e88f7eb2006dfb40fcde683b8329060f"
+     ],
+     "kwargs": {
+      "capture_output": true,
+      "check": true
+     }
+    },
+    {
+     "argv": [
+      "git",
+      "-C",
+      "<root>/c006-acquire-remote_add_fails/audit-runner/d7d2ef8ecfaebe40aad91f0d7d7d5602e88f7eb2006dfb40fcde683b8329060f",
+      "remote",
+      "add",
+      "origin",
+      "https://github.com/fixture/repo"
+     ],
+     "kwargs": {
+      "capture_output": true,
+      "check": true
+     }
+    }
+   ],
+   "message": "Command '['git', '-C', '<root>/c006-acquire-remote_add_fails/audit-runner/d7d2ef8ecfaebe40aad91f0d7d7d5602e88f7eb2006dfb40fcde683b8329060f', 'remote', 'add', 'origin', 'https://github.com/fixture/repo']' returned non-zero exit s",
+   "refused": "CalledProcessError",
+   "root_after": [
+    "d7d2ef8ecfaebe40aad91f0d7d7d5602e88f7eb2006dfb40fcde683b8329060f",
+    "d7d2ef8ecfaebe40aad91f0d7d7d5602e88f7eb2006dfb40fcde683b8329060f.lock"
+   ],
+   "root_before": []
+  },
+  "acquire_the_commit_is_not_a_commit": {
+   "bwrap_calls": [],
+   "git_spawns": [
+    {
+     "argv": [
+      "git",
+      "init",
+      "--bare",
+      "<root>/c010-acquire-the_commit_is_not_a_commit/audit-runner/d7d2ef8ecfaebe40aad91f0d7d7d5602e88f7eb2006dfb40fcde683b8329060f"
+     ],
+     "kwargs": {
+      "capture_output": true,
+      "check": true
+     }
+    },
+    {
+     "argv": [
+      "git",
+      "-C",
+      "<root>/c010-acquire-the_commit_is_not_a_commit/audit-runner/d7d2ef8ecfaebe40aad91f0d7d7d5602e88f7eb2006dfb40fcde683b8329060f",
+      "remote",
+      "add",
+      "origin",
+      "https://github.com/fixture/repo"
+     ],
+     "kwargs": {
+      "capture_output": true,
+      "check": true
+     }
+    },
+    {
+     "argv": [
+      "git",
+      "-C",
+      "<root>/c010-acquire-the_commit_is_not_a_commit/audit-runner/d7d2ef8ecfaebe40aad91f0d7d7d5602e88f7eb2006dfb40fcde683b8329060f",
+      "cat-file",
+      "-e",
+      "1111111111111111111111111111111111111111^{commit}"
+     ],
+     "kwargs": {
+      "capture_output": true,
+      "timeout": 30
+     }
+    },
+    {
+     "argv": [
+      "git",
+      "--no-replace-objects",
+      "-C",
+      "<root>/c010-acquire-the_commit_is_not_a_commit/audit-runner/d7d2ef8ecfaebe40aad91f0d7d7d5602e88f7eb2006dfb40fcde683b8329060f",
+      "-c",
+      "protocol.file.allow=never",
+      "-c",
+      "protocol.ext.allow=never",
+      "fetch",
+      "--no-tags",
+      "--depth=1",
+      "origin",
+      "1111111111111111111111111111111111111111"
+     ],
+     "kwargs": {
+      "stderr": "PIPE",
+      "stdout": "PIPE",
+      "timeout": 60
+     }
+    },
+    {
+     "argv": [
+      "git",
+      "--no-replace-objects",
+      "-C",
+      "<root>/c010-acquire-the_commit_is_not_a_commit/audit-runner/d7d2ef8ecfaebe40aad91f0d7d7d5602e88f7eb2006dfb40fcde683b8329060f",
+      "rev-parse",
+      "1111111111111111111111111111111111111111^{tree}"
+     ],
+     "kwargs": {
+      "stderr": "PIPE",
+      "stdout": "PIPE",
+      "timeout": 60
+     }
+    },
+    {
+     "argv": [
+      "git",
+      "--no-replace-objects",
+      "-C",
+      "<root>/c010-acquire-the_commit_is_not_a_commit/audit-runner/d7d2ef8ecfaebe40aad91f0d7d7d5602e88f7eb2006dfb40fcde683b8329060f",
+      "config",
+      "--get",
+      "remote.origin.url"
+     ],
+     "kwargs": {
+      "stderr": "PIPE",
+      "stdout": "PIPE",
+      "timeout": 60
+     }
+    },
+    {
+     "argv": [
+      "git",
+      "--no-replace-objects",
+      "-C",
+      "<root>/c010-acquire-the_commit_is_not_a_commit/audit-runner/d7d2ef8ecfaebe40aad91f0d7d7d5602e88f7eb2006dfb40fcde683b8329060f",
+      "cat-file",
+      "-t",
+      "1111111111111111111111111111111111111111"
+     ],
+     "kwargs": {
+      "stderr": "PIPE",
+      "stdout": "PIPE",
+      "timeout": 60
+     }
+    }
+   ],
+   "message": "Source is not a commit",
+   "refused": "ContractError",
+   "root_after": [
+    "d7d2ef8ecfaebe40aad91f0d7d7d5602e88f7eb2006dfb40fcde683b8329060f",
+    "d7d2ef8ecfaebe40aad91f0d7d7d5602e88f7eb2006dfb40fcde683b8329060f.lock"
+   ],
+   "root_before": []
+  },
+  "acquire_the_commit_probe_times_out": {
+   "bwrap_calls": [],
+   "git_spawns": [
+    {
+     "argv": [
+      "git",
+      "init",
+      "--bare",
+      "<root>/c007-acquire-the_commit_probe_times_out/audit-runner/d7d2ef8ecfaebe40aad91f0d7d7d5602e88f7eb2006dfb40fcde683b8329060f"
+     ],
+     "kwargs": {
+      "capture_output": true,
+      "check": true
+     }
+    },
+    {
+     "argv": [
+      "git",
+      "-C",
+      "<root>/c007-acquire-the_commit_probe_times_out/audit-runner/d7d2ef8ecfaebe40aad91f0d7d7d5602e88f7eb2006dfb40fcde683b8329060f",
+      "remote",
+      "add",
+      "origin",
+      "https://github.com/fixture/repo"
+     ],
+     "kwargs": {
+      "capture_output": true,
+      "check": true
+     }
+    },
+    {
+     "argv": [
+      "git",
+      "-C",
+      "<root>/c007-acquire-the_commit_probe_times_out/audit-runner/d7d2ef8ecfaebe40aad91f0d7d7d5602e88f7eb2006dfb40fcde683b8329060f",
+      "cat-file",
+      "-e",
+      "1111111111111111111111111111111111111111^{commit}"
+     ],
+     "kwargs": {
+      "capture_output": true,
+      "timeout": 30
+     }
+    }
+   ],
+   "message": "Command '['git']' timed out after 30 seconds",
+   "refused": "TimeoutExpired",
+   "root_after": [
+    "d7d2ef8ecfaebe40aad91f0d7d7d5602e88f7eb2006dfb40fcde683b8329060f",
+    "d7d2ef8ecfaebe40aad91f0d7d7d5602e88f7eb2006dfb40fcde683b8329060f.lock"
+   ],
+   "root_before": []
+  },
+  "acquire_the_origin_is_another_repository": {
+   "bwrap_calls": [],
+   "git_spawns": [
+    {
+     "argv": [
+      "git",
+      "-C",
+      "<root>/c009-acquire-the_origin_is_another_repository/audit-runner/d7d2ef8ecfaebe40aad91f0d7d7d5602e88f7eb2006dfb40fcde683b8329060f",
+      "cat-file",
+      "-e",
+      "1111111111111111111111111111111111111111^{commit}"
+     ],
+     "kwargs": {
+      "capture_output": true,
+      "timeout": 30
+     }
+    },
+    {
+     "argv": [
+      "git",
+      "--no-replace-objects",
+      "-C",
+      "<root>/c009-acquire-the_origin_is_another_repository/audit-runner/d7d2ef8ecfaebe40aad91f0d7d7d5602e88f7eb2006dfb40fcde683b8329060f",
+      "rev-parse",
+      "1111111111111111111111111111111111111111^{tree}"
+     ],
+     "kwargs": {
+      "stderr": "PIPE",
+      "stdout": "PIPE",
+      "timeout": 60
+     }
+    },
+    {
+     "argv": [
+      "git",
+      "--no-replace-objects",
+      "-C",
+      "<root>/c009-acquire-the_origin_is_another_repository/audit-runner/d7d2ef8ecfaebe40aad91f0d7d7d5602e88f7eb2006dfb40fcde683b8329060f",
+      "config",
+      "--get",
+      "remote.origin.url"
+     ],
+     "kwargs": {
+      "stderr": "PIPE",
+      "stdout": "PIPE",
+      "timeout": 60
+     }
+    }
+   ],
+   "message": "Cross-repository source binding",
+   "refused": "ContractError",
+   "root_after": [
+    "d7d2ef8ecfaebe40aad91f0d7d7d5602e88f7eb2006dfb40fcde683b8329060f",
+    "d7d2ef8ecfaebe40aad91f0d7d7d5602e88f7eb2006dfb40fcde683b8329060f.lock"
+   ],
+   "root_before": [
+    "d7d2ef8ecfaebe40aad91f0d7d7d5602e88f7eb2006dfb40fcde683b8329060f"
+   ]
+  },
+  "acquire_the_tree_changed": {
+   "bwrap_calls": [],
+   "git_spawns": [
+    {
+     "argv": [
+      "git",
+      "init",
+      "--bare",
+      "<root>/c011-acquire-the_tree_changed/audit-runner/d7d2ef8ecfaebe40aad91f0d7d7d5602e88f7eb2006dfb40fcde683b8329060f"
+     ],
+     "kwargs": {
+      "capture_output": true,
+      "check": true
+     }
+    },
+    {
+     "argv": [
+      "git",
+      "-C",
+      "<root>/c011-acquire-the_tree_changed/audit-runner/d7d2ef8ecfaebe40aad91f0d7d7d5602e88f7eb2006dfb40fcde683b8329060f",
+      "remote",
+      "add",
+      "origin",
+      "https://github.com/fixture/repo"
+     ],
+     "kwargs": {
+      "capture_output": true,
+      "check": true
+     }
+    },
+    {
+     "argv": [
+      "git",
+      "-C",
+      "<root>/c011-acquire-the_tree_changed/audit-runner/d7d2ef8ecfaebe40aad91f0d7d7d5602e88f7eb2006dfb40fcde683b8329060f",
+      "cat-file",
+      "-e",
+      "1111111111111111111111111111111111111111^{commit}"
+     ],
+     "kwargs": {
+      "capture_output": true,
+      "timeout": 30
+     }
+    },
+    {
+     "argv": [
+      "git",
+      "--no-replace-objects",
+      "-C",
+      "<root>/c011-acquire-the_tree_changed/audit-runner/d7d2ef8ecfaebe40aad91f0d7d7d5602e88f7eb2006dfb40fcde683b8329060f",
+      "-c",
+      "protocol.file.allow=never",
+      "-c",
+      "protocol.ext.allow=never",
+      "fetch",
+      "--no-tags",
+      "--depth=1",
+      "origin",
+      "1111111111111111111111111111111111111111"
+     ],
+     "kwargs": {
+      "stderr": "PIPE",
+      "stdout": "PIPE",
+      "timeout": 60
+     }
+    },
+    {
+     "argv": [
+      "git",
+      "--no-replace-objects",
+      "-C",
+      "<root>/c011-acquire-the_tree_changed/audit-runner/d7d2ef8ecfaebe40aad91f0d7d7d5602e88f7eb2006dfb40fcde683b8329060f",
+      "rev-parse",
+      "1111111111111111111111111111111111111111^{tree}"
+     ],
+     "kwargs": {
+      "stderr": "PIPE",
+      "stdout": "PIPE",
+      "timeout": 60
+     }
+    },
+    {
+     "argv": [
+      "git",
+      "--no-replace-objects",
+      "-C",
+      "<root>/c011-acquire-the_tree_changed/audit-runner/d7d2ef8ecfaebe40aad91f0d7d7d5602e88f7eb2006dfb40fcde683b8329060f",
+      "config",
+      "--get",
+      "remote.origin.url"
+     ],
+     "kwargs": {
+      "stderr": "PIPE",
+      "stdout": "PIPE",
+      "timeout": 60
+     }
+    },
+    {
+     "argv": [
+      "git",
+      "--no-replace-objects",
+      "-C",
+      "<root>/c011-acquire-the_tree_changed/audit-runner/d7d2ef8ecfaebe40aad91f0d7d7d5602e88f7eb2006dfb40fcde683b8329060f",
+      "cat-file",
+      "-t",
+      "1111111111111111111111111111111111111111"
+     ],
+     "kwargs": {
+      "stderr": "PIPE",
+      "stdout": "PIPE",
+      "timeout": 60
+     }
+    },
+    {
+     "argv": [
+      "git",
+      "--no-replace-objects",
+      "-C",
+      "<root>/c011-acquire-the_tree_changed/audit-runner/d7d2ef8ecfaebe40aad91f0d7d7d5602e88f7eb2006dfb40fcde683b8329060f",
+      "rev-parse",
+      "1111111111111111111111111111111111111111^{tree}"
+     ],
+     "kwargs": {
+      "stderr": "PIPE",
+      "stdout": "PIPE",
+      "timeout": 60
+     }
+    }
+   ],
+   "message": "Changed commit/tree binding",
+   "refused": "ContractError",
+   "root_after": [
+    "d7d2ef8ecfaebe40aad91f0d7d7d5602e88f7eb2006dfb40fcde683b8329060f",
+    "d7d2ef8ecfaebe40aad91f0d7d7d5602e88f7eb2006dfb40fcde683b8329060f.lock"
+   ],
+   "root_before": []
+  },
+  "an_existing_target_with_the_commit_needs_no_fetch": {
+   "bwrap_calls": [],
+   "git_spawns": [
+    {
+     "argv": [
+      "git",
+      "-C",
+      "<root>/c002-acquire-present/audit-runner/d7d2ef8ecfaebe40aad91f0d7d7d5602e88f7eb2006dfb40fcde683b8329060f",
+      "cat-file",
+      "-e",
+      "1111111111111111111111111111111111111111^{commit}"
+     ],
+     "kwargs": {
+      "capture_output": true,
+      "timeout": 30
+     }
+    },
+    {
+     "argv": [
+      "git",
+      "--no-replace-objects",
+      "-C",
+      "<root>/c002-acquire-present/audit-runner/d7d2ef8ecfaebe40aad91f0d7d7d5602e88f7eb2006dfb40fcde683b8329060f",
+      "rev-parse",
+      "1111111111111111111111111111111111111111^{tree}"
+     ],
+     "kwargs": {
+      "stderr": "PIPE",
+      "stdout": "PIPE",
+      "timeout": 60
+     }
+    },
+    {
+     "argv": [
+      "git",
+      "--no-replace-objects",
+      "-C",
+      "<root>/c002-acquire-present/audit-runner/d7d2ef8ecfaebe40aad91f0d7d7d5602e88f7eb2006dfb40fcde683b8329060f",
+      "config",
+      "--get",
+      "remote.origin.url"
+     ],
+     "kwargs": {
+      "stderr": "PIPE",
+      "stdout": "PIPE",
+      "timeout": 60
+     }
+    },
+    {
+     "argv": [
+      "git",
+      "--no-replace-objects",
+      "-C",
+      "<root>/c002-acquire-present/audit-runner/d7d2ef8ecfaebe40aad91f0d7d7d5602e88f7eb2006dfb40fcde683b8329060f",
+      "cat-file",
+      "-t",
+      "1111111111111111111111111111111111111111"
+     ],
+     "kwargs": {
+      "stderr": "PIPE",
+      "stdout": "PIPE",
+      "timeout": 60
+     }
+    },
+    {
+     "argv": [
+      "git",
+      "--no-replace-objects",
+      "-C",
+      "<root>/c002-acquire-present/audit-runner/d7d2ef8ecfaebe40aad91f0d7d7d5602e88f7eb2006dfb40fcde683b8329060f",
+      "rev-parse",
+      "1111111111111111111111111111111111111111^{tree}"
+     ],
+     "kwargs": {
+      "stderr": "PIPE",
+      "stdout": "PIPE",
+      "timeout": 60
+     }
+    },
+    {
+     "argv": [
+      "git",
+      "--no-replace-objects",
+      "-C",
+      "<root>/c002-acquire-present/audit-runner/d7d2ef8ecfaebe40aad91f0d7d7d5602e88f7eb2006dfb40fcde683b8329060f",
+      "ls-tree",
+      "-r",
+      "-z",
+      "--full-tree",
+      "2222222222222222222222222222222222222222"
+     ],
+     "kwargs": {
+      "stderr": "PIPE",
+      "stdout": "PIPE",
+      "timeout": 60
+     }
+    },
+    {
+     "argv": [
+      "git",
+      "--no-replace-objects",
+      "-C",
+      "<root>/c002-acquire-present/audit-runner/d7d2ef8ecfaebe40aad91f0d7d7d5602e88f7eb2006dfb40fcde683b8329060f",
+      "cat-file",
+      "blob",
+      "5ae034634e8d382c8646068b8b52381815edabf0"
+     ],
+     "kwargs": {
+      "stderr": "PIPE",
+      "stdout": "PIPE",
+      "timeout": 60
+     }
+    },
+    {
+     "argv": [
+      "git",
+      "--no-replace-objects",
+      "-C",
+      "<root>/c002-acquire-present/audit-runner/d7d2ef8ecfaebe40aad91f0d7d7d5602e88f7eb2006dfb40fcde683b8329060f",
+      "cat-file",
+      "blob",
+      "1d3a06547c706bd0f75b130edecf4832295bba6b"
+     ],
+     "kwargs": {
+      "stderr": "PIPE",
+      "stdout": "PIPE",
+      "timeout": 60
+     }
+    },
+    {
+     "argv": [
+      "git",
+      "--no-replace-objects",
+      "-C",
+      "<root>/c002-acquire-present/audit-runner/d7d2ef8ecfaebe40aad91f0d7d7d5602e88f7eb2006dfb40fcde683b8329060f",
+      "cat-file",
+      "blob",
+      "1a2485251c33a70432394c93fb89330ef214bfc9"
+     ],
+     "kwargs": {
+      "stderr": "PIPE",
+      "stdout": "PIPE",
+      "timeout": 60
+     }
+    },
+    {
+     "argv": [
+      "git",
+      "--no-replace-objects",
+      "-C",
+      "<root>/c002-acquire-present/audit-runner/d7d2ef8ecfaebe40aad91f0d7d7d5602e88f7eb2006dfb40fcde683b8329060f",
+      "cat-file",
+      "blob",
+      "90db00e1d6cf116716ba949a1cca330ac8c63634"
+     ],
+     "kwargs": {
+      "stderr": "PIPE",
+      "stdout": "PIPE",
+      "timeout": 60
+     }
+    },
+    {
+     "argv": [
+      "git",
+      "--no-replace-objects",
+      "-C",
+      "<root>/c002-acquire-present/audit-runner/d7d2ef8ecfaebe40aad91f0d7d7d5602e88f7eb2006dfb40fcde683b8329060f",
+      "cat-file",
+      "blob",
+      "814f4a422927b82f5f8a43f8fab6d3839e3983f2"
+     ],
+     "kwargs": {
+      "stderr": "PIPE",
+      "stdout": "PIPE",
+      "timeout": 60
+     }
+    },
+    {
+     "argv": [
+      "git",
+      "--no-replace-objects",
+      "-C",
+      "<root>/c002-acquire-present/audit-runner/d7d2ef8ecfaebe40aad91f0d7d7d5602e88f7eb2006dfb40fcde683b8329060f",
+      "config",
+      "--get",
+      "remote.origin.url"
+     ],
+     "kwargs": {
+      "stderr": "PIPE",
+      "stdout": "PIPE",
+      "timeout": 60
+     }
+    }
+   ],
+   "root_after": [
+    "d7d2ef8ecfaebe40aad91f0d7d7d5602e88f7eb2006dfb40fcde683b8329060f",
+    "d7d2ef8ecfaebe40aad91f0d7d7d5602e88f7eb2006dfb40fcde683b8329060f.lock"
+   ],
+   "root_before": [
+    "d7d2ef8ecfaebe40aad91f0d7d7d5602e88f7eb2006dfb40fcde683b8329060f"
+   ],
+   "value": {
+    "entries": [
+     {
+      "artifact_ref": "sha256:47d36a60134671c86bdf7fb6897a29c97f176e2f2624da85ca135edbf20b3a8f",
+      "mode": "120000",
+      "object_id": "5ae034634e8d382c8646068b8b52381815edabf0",
+      "path": "bGluaw==",
+      "size": 6
+     },
+     {
+      "artifact_ref": "sha256:d82dbdb3bbabaedd7c81d2cea6aeaac158c243ae16106498f100dd2316ac7421",
+      "mode": "100644",
+      "object_id": "1d3a06547c706bd0f75b130edecf4832295bba6b",
+      "path": "bm9ybWFs",
+      "size": 6
+     },
+     {
+      "artifact_ref": "sha256:d46b1e131b233b0c42d8192b8d3818ff8f0dcd36d919dbc59ea68a963a75a0f6",
+      "mode": "100755",
+      "object_id": "1a2485251c33a70432394c93fb89330ef214bfc9",
+      "path": "cnVuLnNo",
+      "size": 10
+     },
+     {
+      "artifact_ref": "sha256:00b0ae17309b65efb24828e06256c986734fa2cbadb0e233771b10abc6344862",
+      "mode": "100644",
+      "object_id": "90db00e1d6cf116716ba949a1cca330ac8c63634",
+      "path": "c3BhY2UJYW5kCm5ld2xpbmU=",
+      "size": 3
+     },
+     {
+      "artifact_ref": "sha256:b7f8e2716388893b19677413b06deed02789fee315d4228330d487d8ed2f0aab",
+      "mode": "100644",
+      "object_id": "814f4a422927b82f5f8a43f8fab6d3839e3983f2",
+      "path": "ZGlyL25lc3RlZC50eHQ=",
+      "size": 8
+     },
+     {
+      "artifact_ref": null,
+      "mode": "160000",
+      "object_id": "9999999999999999999999999999999999999999",
+      "path": "dmVuZG9yL3N1Yg==",
+      "size": null
+     }
+    ],
+    "source": {
+     "commit": "1111111111111111111111111111111111111111",
+     "manifest_ref": "sha256:83f6fd558b6c7fb4ff497fd8f16e358a1689803f20288e090376591937b52d7e",
+     "manifest_ref_matches_the_stored_manifest": true,
+     "repository": "https://github.com/fixture/repo",
+     "tree": "2222222222222222222222222222222222222222",
+     "version": 1
+    },
+    "verifier": "GitSourceVerifier",
+    "verifier_repository": "<root>/c002-acquire-present/audit-runner/d7d2ef8ecfaebe40aad91f0d7d7d5602e88f7eb2006dfb40fcde683b8329060f",
+    "verifier_runs_the_labelled_git": "https://github.com/fixture/repo\n"
+   }
+  },
+  "an_existing_target_without_the_commit_fetches_it": {
+   "bwrap_calls": [],
+   "git_spawns": [
+    {
+     "argv": [
+      "git",
+      "-C",
+      "<root>/c003-acquire-absent/audit-runner/d7d2ef8ecfaebe40aad91f0d7d7d5602e88f7eb2006dfb40fcde683b8329060f",
+      "cat-file",
+      "-e",
+      "1111111111111111111111111111111111111111^{commit}"
+     ],
+     "kwargs": {
+      "capture_output": true,
+      "timeout": 30
+     }
+    },
+    {
+     "argv": [
+      "git",
+      "--no-replace-objects",
+      "-C",
+      "<root>/c003-acquire-absent/audit-runner/d7d2ef8ecfaebe40aad91f0d7d7d5602e88f7eb2006dfb40fcde683b8329060f",
+      "-c",
+      "protocol.file.allow=never",
+      "-c",
+      "protocol.ext.allow=never",
+      "fetch",
+      "--no-tags",
+      "--depth=1",
+      "origin",
+      "1111111111111111111111111111111111111111"
+     ],
+     "kwargs": {
+      "stderr": "PIPE",
+      "stdout": "PIPE",
+      "timeout": 60
+     }
+    },
+    {
+     "argv": [
+      "git",
+      "--no-replace-objects",
+      "-C",
+      "<root>/c003-acquire-absent/audit-runner/d7d2ef8ecfaebe40aad91f0d7d7d5602e88f7eb2006dfb40fcde683b8329060f",
+      "rev-parse",
+      "1111111111111111111111111111111111111111^{tree}"
+     ],
+     "kwargs": {
+      "stderr": "PIPE",
+      "stdout": "PIPE",
+      "timeout": 60
+     }
+    },
+    {
+     "argv": [
+      "git",
+      "--no-replace-objects",
+      "-C",
+      "<root>/c003-acquire-absent/audit-runner/d7d2ef8ecfaebe40aad91f0d7d7d5602e88f7eb2006dfb40fcde683b8329060f",
+      "config",
+      "--get",
+      "remote.origin.url"
+     ],
+     "kwargs": {
+      "stderr": "PIPE",
+      "stdout": "PIPE",
+      "timeout": 60
+     }
+    },
+    {
+     "argv": [
+      "git",
+      "--no-replace-objects",
+      "-C",
+      "<root>/c003-acquire-absent/audit-runner/d7d2ef8ecfaebe40aad91f0d7d7d5602e88f7eb2006dfb40fcde683b8329060f",
+      "cat-file",
+      "-t",
+      "1111111111111111111111111111111111111111"
+     ],
+     "kwargs": {
+      "stderr": "PIPE",
+      "stdout": "PIPE",
+      "timeout": 60
+     }
+    },
+    {
+     "argv": [
+      "git",
+      "--no-replace-objects",
+      "-C",
+      "<root>/c003-acquire-absent/audit-runner/d7d2ef8ecfaebe40aad91f0d7d7d5602e88f7eb2006dfb40fcde683b8329060f",
+      "rev-parse",
+      "1111111111111111111111111111111111111111^{tree}"
+     ],
+     "kwargs": {
+      "stderr": "PIPE",
+      "stdout": "PIPE",
+      "timeout": 60
+     }
+    },
+    {
+     "argv": [
+      "git",
+      "--no-replace-objects",
+      "-C",
+      "<root>/c003-acquire-absent/audit-runner/d7d2ef8ecfaebe40aad91f0d7d7d5602e88f7eb2006dfb40fcde683b8329060f",
+      "ls-tree",
+      "-r",
+      "-z",
+      "--full-tree",
+      "2222222222222222222222222222222222222222"
+     ],
+     "kwargs": {
+      "stderr": "PIPE",
+      "stdout": "PIPE",
+      "timeout": 60
+     }
+    },
+    {
+     "argv": [
+      "git",
+      "--no-replace-objects",
+      "-C",
+      "<root>/c003-acquire-absent/audit-runner/d7d2ef8ecfaebe40aad91f0d7d7d5602e88f7eb2006dfb40fcde683b8329060f",
+      "cat-file",
+      "blob",
+      "5ae034634e8d382c8646068b8b52381815edabf0"
+     ],
+     "kwargs": {
+      "stderr": "PIPE",
+      "stdout": "PIPE",
+      "timeout": 60
+     }
+    },
+    {
+     "argv": [
+      "git",
+      "--no-replace-objects",
+      "-C",
+      "<root>/c003-acquire-absent/audit-runner/d7d2ef8ecfaebe40aad91f0d7d7d5602e88f7eb2006dfb40fcde683b8329060f",
+      "cat-file",
+      "blob",
+      "1d3a06547c706bd0f75b130edecf4832295bba6b"
+     ],
+     "kwargs": {
+      "stderr": "PIPE",
+      "stdout": "PIPE",
+      "timeout": 60
+     }
+    },
+    {
+     "argv": [
+      "git",
+      "--no-replace-objects",
+      "-C",
+      "<root>/c003-acquire-absent/audit-runner/d7d2ef8ecfaebe40aad91f0d7d7d5602e88f7eb2006dfb40fcde683b8329060f",
+      "cat-file",
+      "blob",
+      "1a2485251c33a70432394c93fb89330ef214bfc9"
+     ],
+     "kwargs": {
+      "stderr": "PIPE",
+      "stdout": "PIPE",
+      "timeout": 60
+     }
+    },
+    {
+     "argv": [
+      "git",
+      "--no-replace-objects",
+      "-C",
+      "<root>/c003-acquire-absent/audit-runner/d7d2ef8ecfaebe40aad91f0d7d7d5602e88f7eb2006dfb40fcde683b8329060f",
+      "cat-file",
+      "blob",
+      "90db00e1d6cf116716ba949a1cca330ac8c63634"
+     ],
+     "kwargs": {
+      "stderr": "PIPE",
+      "stdout": "PIPE",
+      "timeout": 60
+     }
+    },
+    {
+     "argv": [
+      "git",
+      "--no-replace-objects",
+      "-C",
+      "<root>/c003-acquire-absent/audit-runner/d7d2ef8ecfaebe40aad91f0d7d7d5602e88f7eb2006dfb40fcde683b8329060f",
+      "cat-file",
+      "blob",
+      "814f4a422927b82f5f8a43f8fab6d3839e3983f2"
+     ],
+     "kwargs": {
+      "stderr": "PIPE",
+      "stdout": "PIPE",
+      "timeout": 60
+     }
+    },
+    {
+     "argv": [
+      "git",
+      "--no-replace-objects",
+      "-C",
+      "<root>/c003-acquire-absent/audit-runner/d7d2ef8ecfaebe40aad91f0d7d7d5602e88f7eb2006dfb40fcde683b8329060f",
+      "config",
+      "--get",
+      "remote.origin.url"
+     ],
+     "kwargs": {
+      "stderr": "PIPE",
+      "stdout": "PIPE",
+      "timeout": 60
+     }
+    }
+   ],
+   "root_after": [
+    "d7d2ef8ecfaebe40aad91f0d7d7d5602e88f7eb2006dfb40fcde683b8329060f",
+    "d7d2ef8ecfaebe40aad91f0d7d7d5602e88f7eb2006dfb40fcde683b8329060f.lock"
+   ],
+   "root_before": [
+    "d7d2ef8ecfaebe40aad91f0d7d7d5602e88f7eb2006dfb40fcde683b8329060f"
+   ],
+   "value": {
+    "entries": [
+     {
+      "artifact_ref": "sha256:47d36a60134671c86bdf7fb6897a29c97f176e2f2624da85ca135edbf20b3a8f",
+      "mode": "120000",
+      "object_id": "5ae034634e8d382c8646068b8b52381815edabf0",
+      "path": "bGluaw==",
+      "size": 6
+     },
+     {
+      "artifact_ref": "sha256:d82dbdb3bbabaedd7c81d2cea6aeaac158c243ae16106498f100dd2316ac7421",
+      "mode": "100644",
+      "object_id": "1d3a06547c706bd0f75b130edecf4832295bba6b",
+      "path": "bm9ybWFs",
+      "size": 6
+     },
+     {
+      "artifact_ref": "sha256:d46b1e131b233b0c42d8192b8d3818ff8f0dcd36d919dbc59ea68a963a75a0f6",
+      "mode": "100755",
+      "object_id": "1a2485251c33a70432394c93fb89330ef214bfc9",
+      "path": "cnVuLnNo",
+      "size": 10
+     },
+     {
+      "artifact_ref": "sha256:00b0ae17309b65efb24828e06256c986734fa2cbadb0e233771b10abc6344862",
+      "mode": "100644",
+      "object_id": "90db00e1d6cf116716ba949a1cca330ac8c63634",
+      "path": "c3BhY2UJYW5kCm5ld2xpbmU=",
+      "size": 3
+     },
+     {
+      "artifact_ref": "sha256:b7f8e2716388893b19677413b06deed02789fee315d4228330d487d8ed2f0aab",
+      "mode": "100644",
+      "object_id": "814f4a422927b82f5f8a43f8fab6d3839e3983f2",
+      "path": "ZGlyL25lc3RlZC50eHQ=",
+      "size": 8
+     },
+     {
+      "artifact_ref": null,
+      "mode": "160000",
+      "object_id": "9999999999999999999999999999999999999999",
+      "path": "dmVuZG9yL3N1Yg==",
+      "size": null
+     }
+    ],
+    "source": {
+     "commit": "1111111111111111111111111111111111111111",
+     "manifest_ref": "sha256:83f6fd558b6c7fb4ff497fd8f16e358a1689803f20288e090376591937b52d7e",
+     "manifest_ref_matches_the_stored_manifest": true,
+     "repository": "https://github.com/fixture/repo",
+     "tree": "2222222222222222222222222222222222222222",
+     "version": 1
+    },
+    "verifier": "GitSourceVerifier",
+    "verifier_repository": "<root>/c003-acquire-absent/audit-runner/d7d2ef8ecfaebe40aad91f0d7d7d5602e88f7eb2006dfb40fcde683b8329060f",
+    "verifier_runs_the_labelled_git": "https://github.com/fixture/repo\n"
+   }
+  },
+  "invalid_a_dot_git_repository_is_refused_before_any_spawn": {
+   "bwrap_calls": [],
+   "git_spawns": [],
+   "message": "Noncanonical repository identity",
+   "refused": "ContractError",
+   "root_after": [],
+   "root_before": []
+  },
+  "invalid_a_non_github_repository_is_refused_before_any_spawn": {
+   "bwrap_calls": [],
+   "git_spawns": [],
+   "message": "Noncanonical repository identity",
+   "refused": "ContractError",
+   "root_after": [],
+   "root_before": []
+  },
+  "invalid_a_non_string_commit_is_refused_before_any_spawn": {
+   "bwrap_calls": [],
+   "git_spawns": [],
+   "message": "expected string or bytes-like object, got 'NoneType'",
+   "refused": "TypeError",
+   "root_after": [],
+   "root_before": []
+  },
+  "invalid_a_short_commit_is_refused_before_any_spawn": {
+   "bwrap_calls": [],
+   "git_spawns": [],
+   "message": "Invalid Git identity",
+   "refused": "ContractError",
+   "root_after": [],
+   "root_before": []
+  },
+  "invalid_an_empty_repository_is_refused_before_any_spawn": {
+   "bwrap_calls": [],
+   "git_spawns": [],
+   "message": "Noncanonical repository identity",
+   "refused": "ContractError",
+   "root_after": [],
+   "root_before": []
+  },
+  "invalid_an_uppercase_commit_is_refused_before_any_spawn": {
+   "bwrap_calls": [],
+   "git_spawns": [],
+   "message": "Invalid Git identity",
+   "refused": "ContractError",
+   "root_after": [],
+   "root_before": []
+  },
+  "no_checkout_in_the_target": [],
+  "no_fetch_was_spawned": true,
+  "the_lock_file_and_target": [
+   "d7d2ef8ecfaebe40aad91f0d7d7d5602e88f7eb2006dfb40fcde683b8329060f",
+   "d7d2ef8ecfaebe40aad91f0d7d7d5602e88f7eb2006dfb40fcde683b8329060f.lock"
+  ],
+  "the_new_target_holds_the_remote_and_the_commit": {
+   "<root>/c001-acquire-new/audit-runner/d7d2ef8ecfaebe40aad91f0d7d7d5602e88f7eb2006dfb40fcde683b8329060f": {
+    "commits": [
+     "1111111111111111111111111111111111111111"
+    ],
+    "origin": "https://github.com/fixture/repo"
+   }
+  }
+ },
+ "b2_inert": {
+  "no_inert_command_spawned_anything": {
+   "bwrap": 0,
+   "git": 0
+  },
+  "oversized_ascii_line_advances_without_losing_text": {
+   "reads": [
+    {
+     "advanced": true,
+     "bytes": 24000,
+     "eof": false,
+     "next": [
+      0,
+      24000
+     ],
+     "partial_last_line": true
+    },
+    {
+     "advanced": true,
+     "bytes": 1,
+     "eof": true,
+     "next": [
+      1,
+      0
+     ],
+     "partial_last_line": false
+    }
+   ],
+   "reassembled_equals_the_content": true
+  },
+  "oversized_unicode_line_advances_without_losing_text": {
+   "reads": [
+    {
+     "advanced": true,
+     "bytes": 23999,
+     "eof": false,
+     "next": [
+      0,
+      6857
+     ],
+     "partial_last_line": true
+    },
+    {
+     "advanced": true,
+     "bytes": 18008,
+     "eof": true,
+     "next": [
+      1,
+      0
+     ],
+     "partial_last_line": false
+    }
+   ],
+   "reassembled_equals_the_content": true
+  },
+  "source_list_at_an_offset": {
+   "bwrap_calls": [],
+   "git_spawns": [],
+   "root_after": [],
+   "root_before": [],
+   "value": {
+    "output": {
+     "entries": [
+      {
+       "artifact_ref": "sha256:d46b1e131b233b0c42d8192b8d3818ff8f0dcd36d919dbc59ea68a963a75a0f6",
+       "mode": "100755",
+       "object_id": "1a2485251c33a70432394c93fb89330ef214bfc9",
+       "path": "cnVuLnNo",
+       "size": 10
+      },
+      {
+       "artifact_ref": "sha256:00b0ae17309b65efb24828e06256c986734fa2cbadb0e233771b10abc6344862",
+       "mode": "100644",
+       "object_id": "90db00e1d6cf116716ba949a1cca330ac8c63634",
+       "path": "c3BhY2UJYW5kCm5ld2xpbmU=",
+       "size": 3
+      },
+      {
+       "artifact_ref": "sha256:b7f8e2716388893b19677413b06deed02789fee315d4228330d487d8ed2f0aab",
+       "mode": "100644",
+       "object_id": "814f4a422927b82f5f8a43f8fab6d3839e3983f2",
+       "path": "ZGlyL25lc3RlZC50eHQ=",
+       "size": 8
+      },
+      {
+       "artifact_ref": null,
+       "mode": "160000",
+       "object_id": "9999999999999999999999999999999999999999",
+       "path": "dmVuZG9yL3N1Yg==",
+       "size": null
+      }
+     ],
+     "eof": true,
+     "next_offset": 102,
+     "total": 6
+    },
+    "output_digest": "1d5ec3a7ddd10cee492113ec46d9d511c47ae50ab41a8f103a3074683150b98b",
+    "output_ref_is_the_hash_of_the_stored_document": true,
+    "receipt": {
+     "command": [
+      "source-list",
+      "2"
+     ],
+     "environment_revision": "ac4f9ee5a05811566e8b96424f8d06132816d046529ddba2378a08e76d6ccf34",
+     "exit_status": 0,
+     "inspection_blocked": false,
+     "isolation": "inert-objects-no-code-execution",
+     "outcome": "read",
+     "passed": true,
+     "runner_id": "harness:inert-source-reader-v2",
+     "source": {
+      "commit": "1111111111111111111111111111111111111111",
+      "manifest_ref": "sha256:83f6fd558b6c7fb4ff497fd8f16e358a1689803f20288e090376591937b52d7e",
+      "repository": "https://github.com/fixture/repo",
+      "tree": "2222222222222222222222222222222222222222",
+      "version": 1
+     },
+     "version": 1
+    }
+   }
+  },
+  "source_list_defaults_to_offset_zero": {
+   "bwrap_calls": [],
+   "git_spawns": [],
+   "root_after": [],
+   "root_before": [],
+   "value": {
+    "output": {
+     "entries": [
+      {
+       "artifact_ref": "sha256:47d36a60134671c86bdf7fb6897a29c97f176e2f2624da85ca135edbf20b3a8f",
+       "mode": "120000",
+       "object_id": "5ae034634e8d382c8646068b8b52381815edabf0",
+       "path": "bGluaw==",
+       "size": 6
+      },
+      {
+       "artifact_ref": "sha256:d82dbdb3bbabaedd7c81d2cea6aeaac158c243ae16106498f100dd2316ac7421",
+       "mode": "100644",
+       "object_id": "1d3a06547c706bd0f75b130edecf4832295bba6b",
+       "path": "bm9ybWFs",
+       "size": 6
+      },
+      {
+       "artifact_ref": "sha256:d46b1e131b233b0c42d8192b8d3818ff8f0dcd36d919dbc59ea68a963a75a0f6",
+       "mode": "100755",
+       "object_id": "1a2485251c33a70432394c93fb89330ef214bfc9",
+       "path": "cnVuLnNo",
+       "size": 10
+      },
+      {
+       "artifact_ref": "sha256:00b0ae17309b65efb24828e06256c986734fa2cbadb0e233771b10abc6344862",
+       "mode": "100644",
+       "object_id": "90db00e1d6cf116716ba949a1cca330ac8c63634",
+       "path": "c3BhY2UJYW5kCm5ld2xpbmU=",
+       "size": 3
+      },
+      {
+       "artifact_ref": "sha256:b7f8e2716388893b19677413b06deed02789fee315d4228330d487d8ed2f0aab",
+       "mode": "100644",
+       "object_id": "814f4a422927b82f5f8a43f8fab6d3839e3983f2",
+       "path": "ZGlyL25lc3RlZC50eHQ=",
+       "size": 8
+      },
+      {
+       "artifact_ref": null,
+       "mode": "160000",
+       "object_id": "9999999999999999999999999999999999999999",
+       "path": "dmVuZG9yL3N1Yg==",
+       "size": null
+      }
+     ],
+     "eof": true,
+     "next_offset": 100,
+     "total": 6
+    },
+    "output_digest": "b14b394d5f6b6f828f99eedd5686d78c603aa329e58269e154d91898f89b2338",
+    "output_ref_is_the_hash_of_the_stored_document": true,
+    "receipt": {
+     "command": [
+      "source-list"
+     ],
+     "environment_revision": "ac4f9ee5a05811566e8b96424f8d06132816d046529ddba2378a08e76d6ccf34",
+     "exit_status": 0,
+     "inspection_blocked": false,
+     "isolation": "inert-objects-no-code-execution",
+     "outcome": "read",
+     "passed": true,
+     "runner_id": "harness:inert-source-reader-v2",
+     "source": {
+      "commit": "1111111111111111111111111111111111111111",
+      "manifest_ref": "sha256:83f6fd558b6c7fb4ff497fd8f16e358a1689803f20288e090376591937b52d7e",
+      "repository": "https://github.com/fixture/repo",
+      "tree": "2222222222222222222222222222222222222222",
+      "version": 1
+     },
+     "version": 1
+    }
+   }
+  },
+  "source_list_negative_offset": {
+   "bwrap_calls": [],
+   "git_spawns": [],
+   "message": "Invalid inventory offset",
+   "refused": "ContractError",
+   "root_after": [],
+   "root_before": []
+  },
+  "source_list_non_numeric_offset": {
+   "bwrap_calls": [],
+   "git_spawns": [],
+   "message": "invalid literal for int() with base 10: 'x'",
+   "refused": "ValueError",
+   "root_after": [],
+   "root_before": []
+  },
+  "source_list_past_the_end": {
+   "bwrap_calls": [],
+   "git_spawns": [],
+   "root_after": [],
+   "root_before": [],
+   "value": {
+    "output": {
+     "entries": [],
+     "eof": true,
+     "next_offset": 199,
+     "total": 6
+    },
+    "output_digest": "22168bfdab334212a730a998ab46b39c2d9ac05468871b610ebc33bc95b013c3",
+    "output_ref_is_the_hash_of_the_stored_document": true,
+    "receipt": {
+     "command": [
+      "source-list",
+      "99"
+     ],
+     "environment_revision": "ac4f9ee5a05811566e8b96424f8d06132816d046529ddba2378a08e76d6ccf34",
+     "exit_status": 0,
+     "inspection_blocked": false,
+     "isolation": "inert-objects-no-code-execution",
+     "outcome": "read",
+     "passed": true,
+     "runner_id": "harness:inert-source-reader-v2",
+     "source": {
+      "commit": "1111111111111111111111111111111111111111",
+      "manifest_ref": "sha256:83f6fd558b6c7fb4ff497fd8f16e358a1689803f20288e090376591937b52d7e",
+      "repository": "https://github.com/fixture/repo",
+      "tree": "2222222222222222222222222222222222222222",
+      "version": 1
+     },
+     "version": 1
+    }
+   }
+  },
+  "source_list_with_extra_arguments": {
+   "bwrap_calls": [],
+   "git_spawns": [],
+   "message": "Invalid source-list arguments",
+   "refused": "ContractError",
+   "root_after": [],
+   "root_before": []
+  },
+  "source_read_a_binary_blob_replaces_undecodable_bytes": {
+   "bwrap_calls": [],
+   "git_spawns": [],
+   "root_after": [],
+   "root_before": [],
+   "value": {
+    "output": {
+     "bytes_sha256": "af9ceddc9d8b08ac09e1994bfd20459b5e377425df7354dfce3501992828a5b7",
+     "eof": true,
+     "lines": [
+      "�\u0000�"
+     ],
+     "next_char": 0,
+     "next_line": 1,
+     "object_id": "90db00e1d6cf116716ba949a1cca330ac8c63634",
+     "partial_last_line": false,
+     "path": "c3BhY2UJYW5kCm5ld2xpbmU=",
+     "start_char": 0,
+     "start_line": 0,
+     "total_lines": 1
+    },
+    "output_digest": "49396f1d7c2eb545600ecf3283a8f7c3e347b1d58a61281576294390f8b7558c",
+    "output_ref_is_the_hash_of_the_stored_document": true,
+    "receipt": {
+     "command": [
+      "source-read",
+      "c3BhY2UJYW5kCm5ld2xpbmU=",
+      "0"
+     ],
+     "environment_revision": "ac4f9ee5a05811566e8b96424f8d06132816d046529ddba2378a08e76d6ccf34",
+     "exit_status": 0,
+     "inspection_blocked": false,
+     "isolation": "inert-objects-no-code-execution",
+     "outcome": "read",
+     "passed": true,
+     "runner_id": "harness:inert-source-reader-v2",
+     "source": {
+      "commit": "1111111111111111111111111111111111111111",
+      "manifest_ref": "sha256:83f6fd558b6c7fb4ff497fd8f16e358a1689803f20288e090376591937b52d7e",
+      "repository": "https://github.com/fixture/repo",
+      "tree": "2222222222222222222222222222222222222222",
+      "version": 1
+     },
+     "version": 1
+    }
+   }
+  },
+  "source_read_a_blob_that_is_not_base64": {
+   "bwrap_calls": [],
+   "git_spawns": [],
+   "message": "Only base64 data is allowed",
+   "refused": "Error",
+   "root_after": [],
+   "root_before": []
+  },
+  "source_read_a_blob_whose_bytes_do_not_match_their_hash": {
+   "bwrap_calls": [],
+   "git_spawns": [],
+   "message": "Invalid source bytes",
+   "refused": "ContractError",
+   "root_after": [],
+   "root_before": []
+  },
+  "source_read_a_character_past_the_line": {
+   "bwrap_calls": [],
+   "git_spawns": [],
+   "message": "Invalid source offset",
+   "refused": "ContractError",
+   "root_after": [],
+   "root_before": []
+  },
+  "source_read_a_line_past_the_end": {
+   "bwrap_calls": [],
+   "git_spawns": [],
+   "message": "Invalid source offset",
+   "refused": "ContractError",
+   "root_after": [],
+   "root_before": []
+  },
+  "source_read_a_negative_line": {
+   "bwrap_calls": [],
+   "git_spawns": [],
+   "message": "Invalid source offset",
+   "refused": "ContractError",
+   "root_after": [],
+   "root_before": []
+  },
+  "source_read_a_nested_file_from_line_one": {
+   "bwrap_calls": [],
+   "git_spawns": [],
+   "root_after": [],
+   "root_before": [],
+   "value": {
+    "output": {
+     "bytes_sha256": "c3f9c8c283a2b1f2f1896f27a01cbe3cddc0c9d93f752e4639035a0f5b36f6e8",
+     "eof": true,
+     "lines": [
+      "two"
+     ],
+     "next_char": 0,
+     "next_line": 2,
+     "object_id": "814f4a422927b82f5f8a43f8fab6d3839e3983f2",
+     "partial_last_line": false,
+     "path": "ZGlyL25lc3RlZC50eHQ=",
+     "start_char": 0,
+     "start_line": 1,
+     "total_lines": 2
+    },
+    "output_digest": "f57093dbff3ddbc09f607ee6851e552bf912aea8d8cbb40ac382631c8e1f854c",
+    "output_ref_is_the_hash_of_the_stored_document": true,
+    "receipt": {
+     "command": [
+      "source-read",
+      "ZGlyL25lc3RlZC50eHQ=",
+      "1"
+     ],
+     "environment_revision": "ac4f9ee5a05811566e8b96424f8d06132816d046529ddba2378a08e76d6ccf34",
+     "exit_status": 0,
+     "inspection_blocked": false,
+     "isolation": "inert-objects-no-code-execution",
+     "outcome": "read",
+     "passed": true,
+     "runner_id": "harness:inert-source-reader-v2",
+     "source": {
+      "commit": "1111111111111111111111111111111111111111",
+      "manifest_ref": "sha256:83f6fd558b6c7fb4ff497fd8f16e358a1689803f20288e090376591937b52d7e",
+      "repository": "https://github.com/fixture/repo",
+      "tree": "2222222222222222222222222222222222222222",
+      "version": 1
+     },
+     "version": 1
+    }
+   }
+  },
+  "source_read_a_non_numeric_line": {
+   "bwrap_calls": [],
+   "git_spawns": [],
+   "message": "invalid literal for int() with base 10: 'x'",
+   "refused": "ValueError",
+   "root_after": [],
+   "root_before": []
+  },
+  "source_read_a_submodule_path": {
+   "bwrap_calls": [],
+   "git_spawns": [],
+   "message": "Unknown or submodule path",
+   "refused": "ContractError",
+   "root_after": [],
+   "root_before": []
+  },
+  "source_read_a_symlink_entry_as_an_inert_file": {
+   "bwrap_calls": [],
+   "git_spawns": [],
+   "root_after": [],
+   "root_before": [],
+   "value": {
+    "output": {
+     "bytes_sha256": "317b32c143692b9939c197f6a5df54f9698df9a4882fe8bf19608968662be4fa",
+     "eof": true,
+     "lines": [
+      "normal"
+     ],
+     "next_char": 0,
+     "next_line": 1,
+     "object_id": "5ae034634e8d382c8646068b8b52381815edabf0",
+     "partial_last_line": false,
+     "path": "bGluaw==",
+     "start_char": 0,
+     "start_line": 0,
+     "total_lines": 1
+    },
+    "output_digest": "0c2bf621563c31845015817031faf13cea51dd8f8f311b2d39f6944b7471a336",
+    "output_ref_is_the_hash_of_the_stored_document": true,
+    "receipt": {
+     "command": [
+      "source-read",
+      "bGluaw==",
+      "0"
+     ],
+     "environment_revision": "ac4f9ee5a05811566e8b96424f8d06132816d046529ddba2378a08e76d6ccf34",
+     "exit_status": 0,
+     "inspection_blocked": false,
+     "isolation": "inert-objects-no-code-execution",
+     "outcome": "read",
+     "passed": true,
+     "runner_id": "harness:inert-source-reader-v2",
+     "source": {
+      "commit": "1111111111111111111111111111111111111111",
+      "manifest_ref": "sha256:83f6fd558b6c7fb4ff497fd8f16e358a1689803f20288e090376591937b52d7e",
+      "repository": "https://github.com/fixture/repo",
+      "tree": "2222222222222222222222222222222222222222",
+      "version": 1
+     },
+     "version": 1
+    }
+   }
+  },
+  "source_read_an_unknown_path": {
+   "bwrap_calls": [],
+   "git_spawns": [],
+   "message": "Unknown or submodule path",
+   "refused": "ContractError",
+   "root_after": [],
+   "root_before": []
+  },
+  "source_read_at_the_end_of_the_file": {
+   "bwrap_calls": [],
+   "git_spawns": [],
+   "root_after": [],
+   "root_before": [],
+   "value": {
+    "output": {
+     "bytes_sha256": "c3f9c8c283a2b1f2f1896f27a01cbe3cddc0c9d93f752e4639035a0f5b36f6e8",
+     "eof": true,
+     "lines": [],
+     "next_char": 0,
+     "next_line": 2,
+     "object_id": "814f4a422927b82f5f8a43f8fab6d3839e3983f2",
+     "partial_last_line": false,
+     "path": "ZGlyL25lc3RlZC50eHQ=",
+     "start_char": 0,
+     "start_line": 2,
+     "total_lines": 2
+    },
+    "output_digest": "130925301207c168079a2ce63e3730a79e50969b2a071f7a4b6c8ca0ff634cef",
+    "output_ref_is_the_hash_of_the_stored_document": true,
+    "receipt": {
+     "command": [
+      "source-read",
+      "ZGlyL25lc3RlZC50eHQ=",
+      "2",
+      "0"
+     ],
+     "environment_revision": "ac4f9ee5a05811566e8b96424f8d06132816d046529ddba2378a08e76d6ccf34",
+     "exit_status": 0,
+     "inspection_blocked": false,
+     "isolation": "inert-objects-no-code-execution",
+     "outcome": "read",
+     "passed": true,
+     "runner_id": "harness:inert-source-reader-v2",
+     "source": {
+      "commit": "1111111111111111111111111111111111111111",
+      "manifest_ref": "sha256:83f6fd558b6c7fb4ff497fd8f16e358a1689803f20288e090376591937b52d7e",
+      "repository": "https://github.com/fixture/repo",
+      "tree": "2222222222222222222222222222222222222222",
+      "version": 1
+     },
+     "version": 1
+    }
+   }
+  },
+  "source_read_the_whole_file": {
+   "bwrap_calls": [],
+   "git_spawns": [],
+   "root_after": [],
+   "root_before": [],
+   "value": {
+    "output": {
+     "bytes_sha256": "41cf6794ba4200b839c53531555f0f3998df4cbb01a4d5cb0b94e3ca5e23947d",
+     "eof": true,
+     "lines": [
+      "source"
+     ],
+     "next_char": 0,
+     "next_line": 1,
+     "object_id": "1d3a06547c706bd0f75b130edecf4832295bba6b",
+     "partial_last_line": false,
+     "path": "bm9ybWFs",
+     "start_char": 0,
+     "start_line": 0,
+     "total_lines": 1
+    },
+    "output_digest": "baafc54babff9a036b1c02de70a72b3ff65108703e12d26da17294dc069d7267",
+    "output_ref_is_the_hash_of_the_stored_document": true,
+    "receipt": {
+     "command": [
+      "source-read",
+      "bm9ybWFs",
+      "0"
+     ],
+     "environment_revision": "ac4f9ee5a05811566e8b96424f8d06132816d046529ddba2378a08e76d6ccf34",
+     "exit_status": 0,
+     "inspection_blocked": false,
+     "isolation": "inert-objects-no-code-execution",
+     "outcome": "read",
+     "passed": true,
+     "runner_id": "harness:inert-source-reader-v2",
+     "source": {
+      "commit": "1111111111111111111111111111111111111111",
+      "manifest_ref": "sha256:83f6fd558b6c7fb4ff497fd8f16e358a1689803f20288e090376591937b52d7e",
+      "repository": "https://github.com/fixture/repo",
+      "tree": "2222222222222222222222222222222222222222",
+      "version": 1
+     },
+     "version": 1
+    }
+   }
+  },
+  "source_read_too_few_arguments": {
+   "bwrap_calls": [],
+   "git_spawns": [],
+   "message": "Use source-read BASE64_PATH START_LINE [START_CHAR]",
+   "refused": "ContractError",
+   "root_after": [],
+   "root_before": []
+  },
+  "source_read_too_many_arguments": {
+   "bwrap_calls": [],
+   "git_spawns": [],
+   "message": "Use source-read BASE64_PATH START_LINE [START_CHAR]",
+   "refused": "ContractError",
+   "root_after": [],
+   "root_before": []
+  },
+  "source_read_with_a_character_offset": {
+   "bwrap_calls": [],
+   "git_spawns": [],
+   "root_after": [],
+   "root_before": [],
+   "value": {
+    "output": {
+     "bytes_sha256": "c3f9c8c283a2b1f2f1896f27a01cbe3cddc0c9d93f752e4639035a0f5b36f6e8",
+     "eof": true,
+     "lines": [
+      "e",
+      "two"
+     ],
+     "next_char": 0,
+     "next_line": 2,
+     "object_id": "814f4a422927b82f5f8a43f8fab6d3839e3983f2",
+     "partial_last_line": false,
+     "path": "ZGlyL25lc3RlZC50eHQ=",
+     "start_char": 2,
+     "start_line": 0,
+     "total_lines": 2
+    },
+    "output_digest": "d1dea25c198fc63a399218338924734f0e46b128201166cd3cabebc674bb164f",
+    "output_ref_is_the_hash_of_the_stored_document": true,
+    "receipt": {
+     "command": [
+      "source-read",
+      "ZGlyL25lc3RlZC50eHQ=",
+      "0",
+      "2"
+     ],
+     "environment_revision": "ac4f9ee5a05811566e8b96424f8d06132816d046529ddba2378a08e76d6ccf34",
+     "exit_status": 0,
+     "inspection_blocked": false,
+     "isolation": "inert-objects-no-code-execution",
+     "outcome": "read",
+     "passed": true,
+     "runner_id": "harness:inert-source-reader-v2",
+     "source": {
+      "commit": "1111111111111111111111111111111111111111",
+      "manifest_ref": "sha256:83f6fd558b6c7fb4ff497fd8f16e358a1689803f20288e090376591937b52d7e",
+      "repository": "https://github.com/fixture/repo",
+      "tree": "2222222222222222222222222222222222222222",
+      "version": 1
+     },
+     "version": 1
+    }
+   }
+  },
+  "the_same_range_twice_is_one_document": {
+   "objects": [
+    "1d3a06547c706bd0f75b130edecf4832295bba6b",
+    "1d3a06547c706bd0f75b130edecf4832295bba6b",
+    "814f4a422927b82f5f8a43f8fab6d3839e3983f2"
+   ],
+   "other_range_differs": true,
+   "same_ref": true
+  }
+ },
+ "b3_isolated": {
+  "a_clean_exit_with_a_bwrap_diagnostic": {
+   "bwrap_calls": [
+    {
+     "argv": [
+      "bwrap",
+      "--unshare-all",
+      "--die-with-parent",
+      "--new-session",
+      "--clearenv",
+      "--setenv",
+      "PATH",
+      "/usr/local/bin:/usr/bin:/bin",
+      "--ro-bind",
+      "/usr",
+      "/usr",
+      "--ro-bind",
+      "/bin",
+      "/bin",
+      "--proc",
+      "/proc",
+      "--dev",
+      "/dev",
+      "--tmpfs",
+      "/tmp",
+      "--ro-bind",
+      "<staged>",
+      "/source",
+      "--chdir",
+      "/source",
+      "--",
+      "find",
+      "."
+     ],
+     "staged": [
+      [
+       "dir",
+       "dir",
+       null,
+       null
+      ],
+      [
+       "dir/nested.txt",
+       "file",
+       "0o644",
+       8
+      ],
+      [
+       "link",
+       "file",
+       "0o644",
+       6
+      ],
+      [
+       "normal",
+       "file",
+       "0o644",
+       6
+      ],
+      [
+       "run.sh",
+       "file",
+       "0o755",
+       10
+      ],
+      [
+       "space\tand\nnewline",
+       "file",
+       "0o644",
+       3
+      ],
+      [
+       "vendor",
+       "dir",
+       null,
+       null
+      ]
+     ],
+     "timeout": 120
+    }
+   ],
+   "git_spawns": [],
+   "root_after": [],
+   "root_before": [],
+   "value": {
+    "output": {
+     "argv": [
+      "bwrap",
+      "--unshare-all",
+      "--die-with-parent",
+      "--new-session",
+      "--clearenv",
+      "--setenv",
+      "PATH",
+      "/usr/local/bin:/usr/bin:/bin",
+      "--ro-bind",
+      "/usr",
+      "/usr",
+      "--ro-bind",
+      "/bin",
+      "/bin",
+      "--proc",
+      "/proc",
+      "--dev",
+      "/dev",
+      "--tmpfs",
+      "/tmp",
+      "--ro-bind",
+      "<staged>",
+      "/source",
+      "--chdir",
+      "/source",
+      "--",
+      "find",
+      "."
+     ],
+     "exit_status": 0,
+     "stderr": "bwrap: warning on a clean exit",
+     "stdout": ""
+    },
+    "output_digest": "f5a42c67c25de8f048dcfaea4a1f4dba44c34b78d27e46028773bac4ee0ed4f0",
+    "output_ref_is_the_hash_of_the_stored_document": true,
+    "receipt": {
+     "command": [
+      "find",
+      "."
+     ],
+     "environment_revision": {
+      "is_the_bubblewrap_v1_digest_of_this_host": true
+     },
+     "exit_status": 0,
+     "inspection_blocked": false,
+     "isolation": "bubblewrap-unshare-all-readonly-source-inert-links",
+     "outcome": "executed",
+     "passed": false,
+     "runner_id": "harness:isolated-source-runner-v1",
+     "source": {
+      "commit": "1111111111111111111111111111111111111111",
+      "manifest_ref": "sha256:83f6fd558b6c7fb4ff497fd8f16e358a1689803f20288e090376591937b52d7e",
+      "repository": "https://github.com/fixture/repo",
+      "tree": "2222222222222222222222222222222222222222",
+      "version": 1
+     },
+     "version": 1
+    }
+   }
+  },
+  "a_command_that_exits_non_zero_is_not_a_block": {
+   "bwrap_calls": [
+    {
+     "argv": [
+      "bwrap",
+      "--unshare-all",
+      "--die-with-parent",
+      "--new-session",
+      "--clearenv",
+      "--setenv",
+      "PATH",
+      "/usr/local/bin:/usr/bin:/bin",
+      "--ro-bind",
+      "/usr",
+      "/usr",
+      "--ro-bind",
+      "/bin",
+      "/bin",
+      "--proc",
+      "/proc",
+      "--dev",
+      "/dev",
+      "--tmpfs",
+      "/tmp",
+      "--ro-bind",
+      "<staged>",
+      "/source",
+      "--chdir",
+      "/source",
+      "--",
+      "cat",
+      "missing"
+     ],
+     "staged": [
+      [
+       "dir",
+       "dir",
+       null,
+       null
+      ],
+      [
+       "dir/nested.txt",
+       "file",
+       "0o644",
+       8
+      ],
+      [
+       "link",
+       "file",
+       "0o644",
+       6
+      ],
+      [
+       "normal",
+       "file",
+       "0o644",
+       6
+      ],
+      [
+       "run.sh",
+       "file",
+       "0o755",
+       10
+      ],
+      [
+       "space\tand\nnewline",
+       "file",
+       "0o644",
+       3
+      ],
+      [
+       "vendor",
+       "dir",
+       null,
+       null
+      ]
+     ],
+     "timeout": 120
+    }
+   ],
+   "git_spawns": [],
+   "root_after": [],
+   "root_before": [],
+   "value": {
+    "output": {
+     "argv": [
+      "bwrap",
+      "--unshare-all",
+      "--die-with-parent",
+      "--new-session",
+      "--clearenv",
+      "--setenv",
+      "PATH",
+      "/usr/local/bin:/usr/bin:/bin",
+      "--ro-bind",
+      "/usr",
+      "/usr",
+      "--ro-bind",
+      "/bin",
+      "/bin",
+      "--proc",
+      "/proc",
+      "--dev",
+      "/dev",
+      "--tmpfs",
+      "/tmp",
+      "--ro-bind",
+      "<staged>",
+      "/source",
+      "--chdir",
+      "/source",
+      "--",
+      "cat",
+      "missing"
+     ],
+     "exit_status": 1,
+     "stderr": "cat: missing: No such file",
+     "stdout": ""
+    },
+    "output_digest": "1e005f2448e097e417f5b4150ee754aae9d13f9b4e33bfb940b69520647ad6da",
+    "output_ref_is_the_hash_of_the_stored_document": true,
+    "receipt": {
+     "command": [
+      "cat",
+      "missing"
+     ],
+     "environment_revision": {
+      "is_the_bubblewrap_v1_digest_of_this_host": true
+     },
+     "exit_status": 1,
+     "inspection_blocked": false,
+     "isolation": "bubblewrap-unshare-all-readonly-source-inert-links",
+     "outcome": "executed",
+     "passed": false,
+     "runner_id": "harness:isolated-source-runner-v1",
+     "source": {
+      "commit": "1111111111111111111111111111111111111111",
+      "manifest_ref": "sha256:83f6fd558b6c7fb4ff497fd8f16e358a1689803f20288e090376591937b52d7e",
+      "repository": "https://github.com/fixture/repo",
+      "tree": "2222222222222222222222222222222222222222",
+      "version": 1
+     },
+     "version": 1
+    }
+   }
+  },
+  "a_missing_runner_is_a_blocked_125": {
+   "bwrap_calls": [
+    {
+     "argv": [
+      "bwrap",
+      "--unshare-all",
+      "--die-with-parent",
+      "--new-session",
+      "--clearenv",
+      "--setenv",
+      "PATH",
+      "/usr/local/bin:/usr/bin:/bin",
+      "--ro-bind",
+      "/usr",
+      "/usr",
+      "--ro-bind",
+      "/bin",
+      "/bin",
+      "--proc",
+      "/proc",
+      "--dev",
+      "/dev",
+      "--tmpfs",
+      "/tmp",
+      "--ro-bind",
+      "<staged>",
+      "/source",
+      "--chdir",
+      "/source",
+      "--",
+      "find",
+      "."
+     ],
+     "staged": [
+      [
+       "dir",
+       "dir",
+       null,
+       null
+      ],
+      [
+       "dir/nested.txt",
+       "file",
+       "0o644",
+       8
+      ],
+      [
+       "link",
+       "file",
+       "0o644",
+       6
+      ],
+      [
+       "normal",
+       "file",
+       "0o644",
+       6
+      ],
+      [
+       "run.sh",
+       "file",
+       "0o755",
+       10
+      ],
+      [
+       "space\tand\nnewline",
+       "file",
+       "0o644",
+       3
+      ],
+      [
+       "vendor",
+       "dir",
+       null,
+       null
+      ]
+     ],
+     "timeout": 120
+    }
+   ],
+   "git_spawns": [],
+   "root_after": [],
+   "root_before": [],
+   "value": {
+    "output": {
+     "argv": [
+      "bwrap",
+      "--unshare-all",
+      "--die-with-parent",
+      "--new-session",
+      "--clearenv",
+      "--setenv",
+      "PATH",
+      "/usr/local/bin:/usr/bin:/bin",
+      "--ro-bind",
+      "/usr",
+      "/usr",
+      "--ro-bind",
+      "/bin",
+      "/bin",
+      "--proc",
+      "/proc",
+      "--dev",
+      "/dev",
+      "--tmpfs",
+      "/tmp",
+      "--ro-bind",
+      "<staged>",
+      "/source",
+      "--chdir",
+      "/source",
+      "--",
+      "find",
+      "."
+     ],
+     "error": "[Errno 2] No such file or directory: 'bwrap'"
+    },
+    "output_digest": "5f1b24605ac0785d1de1fc25faae0c29ef8b3adf835cfd410514a36bf8303c0f",
+    "output_ref_is_the_hash_of_the_stored_document": true,
+    "receipt": {
+     "command": [
+      "find",
+      "."
+     ],
+     "environment_revision": {
+      "is_the_bubblewrap_v1_digest_of_this_host": true
+     },
+     "exit_status": 125,
+     "inspection_blocked": true,
+     "isolation": "bubblewrap-unshare-all-readonly-source-inert-links",
+     "outcome": "isolation_unavailable",
+     "passed": false,
+     "runner_id": "harness:isolated-source-runner-v1",
+     "source": {
+      "commit": "1111111111111111111111111111111111111111",
+      "manifest_ref": "sha256:83f6fd558b6c7fb4ff497fd8f16e358a1689803f20288e090376591937b52d7e",
+      "repository": "https://github.com/fixture/repo",
+      "tree": "2222222222222222222222222222222222222222",
+      "version": 1
+     },
+     "version": 1
+    }
+   }
+  },
+  "a_namespace_denial_is_blocked_and_keeps_its_evidence": {
+   "bwrap_calls": [
+    {
+     "argv": [
+      "bwrap",
+      "--unshare-all",
+      "--die-with-parent",
+      "--new-session",
+      "--clearenv",
+      "--setenv",
+      "PATH",
+      "/usr/local/bin:/usr/bin:/bin",
+      "--ro-bind",
+      "/usr",
+      "/usr",
+      "--ro-bind",
+      "/bin",
+      "/bin",
+      "--proc",
+      "/proc",
+      "--dev",
+      "/dev",
+      "--tmpfs",
+      "/tmp",
+      "--ro-bind",
+      "<staged>",
+      "/source",
+      "--chdir",
+      "/source",
+      "--",
+      "find",
+      "."
+     ],
+     "staged": [
+      [
+       "dir",
+       "dir",
+       null,
+       null
+      ],
+      [
+       "dir/nested.txt",
+       "file",
+       "0o644",
+       8
+      ],
+      [
+       "link",
+       "file",
+       "0o644",
+       6
+      ],
+      [
+       "normal",
+       "file",
+       "0o644",
+       6
+      ],
+      [
+       "run.sh",
+       "file",
+       "0o755",
+       10
+      ],
+      [
+       "space\tand\nnewline",
+       "file",
+       "0o644",
+       3
+      ],
+      [
+       "vendor",
+       "dir",
+       null,
+       null
+      ]
+     ],
+     "timeout": 120
+    }
+   ],
+   "git_spawns": [],
+   "root_after": [],
+   "root_before": [],
+   "value": {
+    "output": {
+     "argv": [
+      "bwrap",
+      "--unshare-all",
+      "--die-with-parent",
+      "--new-session",
+      "--clearenv",
+      "--setenv",
+      "PATH",
+      "/usr/local/bin:/usr/bin:/bin",
+      "--ro-bind",
+      "/usr",
+      "/usr",
+      "--ro-bind",
+      "/bin",
+      "/bin",
+      "--proc",
+      "/proc",
+      "--dev",
+      "/dev",
+      "--tmpfs",
+      "/tmp",
+      "--ro-bind",
+      "<staged>",
+      "/source",
+      "--chdir",
+      "/source",
+      "--",
+      "find",
+      "."
+     ],
+     "exit_status": 1,
+     "stderr": "bwrap: Creating new namespace failed: Operation not permitted",
+     "stdout": ""
+    },
+    "output_digest": "17b853c3d1007d586ee98f30ebe2c8e552eeff0b02c2dc05af1910bae4133737",
+    "output_ref_is_the_hash_of_the_stored_document": true,
+    "receipt": {
+     "command": [
+      "find",
+      "."
+     ],
+     "environment_revision": {
+      "is_the_bubblewrap_v1_digest_of_this_host": true
+     },
+     "exit_status": 1,
+     "inspection_blocked": true,
+     "isolation": "bubblewrap-unshare-all-readonly-source-inert-links",
+     "outcome": "executed",
+     "passed": false,
+     "runner_id": "harness:isolated-source-runner-v1",
+     "source": {
+      "commit": "1111111111111111111111111111111111111111",
+      "manifest_ref": "sha256:83f6fd558b6c7fb4ff497fd8f16e358a1689803f20288e090376591937b52d7e",
+      "repository": "https://github.com/fixture/repo",
+      "tree": "2222222222222222222222222222222222222222",
+      "version": 1
+     },
+     "version": 1
+    }
+   }
+  },
+  "a_permission_error_is_a_blocked_125": {
+   "bwrap_calls": [
+    {
+     "argv": [
+      "bwrap",
+      "--unshare-all",
+      "--die-with-parent",
+      "--new-session",
+      "--clearenv",
+      "--setenv",
+      "PATH",
+      "/usr/local/bin:/usr/bin:/bin",
+      "--ro-bind",
+      "/usr",
+      "/usr",
+      "--ro-bind",
+      "/bin",
+      "/bin",
+      "--proc",
+      "/proc",
+      "--dev",
+      "/dev",
+      "--tmpfs",
+      "/tmp",
+      "--ro-bind",
+      "<staged>",
+      "/source",
+      "--chdir",
+      "/source",
+      "--",
+      "find",
+      "."
+     ],
+     "staged": [
+      [
+       "dir",
+       "dir",
+       null,
+       null
+      ],
+      [
+       "dir/nested.txt",
+       "file",
+       "0o644",
+       8
+      ],
+      [
+       "link",
+       "file",
+       "0o644",
+       6
+      ],
+      [
+       "normal",
+       "file",
+       "0o644",
+       6
+      ],
+      [
+       "run.sh",
+       "file",
+       "0o755",
+       10
+      ],
+      [
+       "space\tand\nnewline",
+       "file",
+       "0o644",
+       3
+      ],
+      [
+       "vendor",
+       "dir",
+       null,
+       null
+      ]
+     ],
+     "timeout": 120
+    }
+   ],
+   "git_spawns": [],
+   "root_after": [],
+   "root_before": [],
+   "value": {
+    "output": {
+     "argv": [
+      "bwrap",
+      "--unshare-all",
+      "--die-with-parent",
+      "--new-session",
+      "--clearenv",
+      "--setenv",
+      "PATH",
+      "/usr/local/bin:/usr/bin:/bin",
+      "--ro-bind",
+      "/usr",
+      "/usr",
+      "--ro-bind",
+      "/bin",
+      "/bin",
+      "--proc",
+      "/proc",
+      "--dev",
+      "/dev",
+      "--tmpfs",
+      "/tmp",
+      "--ro-bind",
+      "<staged>",
+      "/source",
+      "--chdir",
+      "/source",
+      "--",
+      "find",
+      "."
+     ],
+     "error": "[Errno 13] Permission denied: 'bwrap'"
+    },
+    "output_digest": "55e7542bfdc15be6986643dc589773338c74a5a5635cbebbf151dcd821592c5c",
+    "output_ref_is_the_hash_of_the_stored_document": true,
+    "receipt": {
+     "command": [
+      "find",
+      "."
+     ],
+     "environment_revision": {
+      "is_the_bubblewrap_v1_digest_of_this_host": true
+     },
+     "exit_status": 125,
+     "inspection_blocked": true,
+     "isolation": "bubblewrap-unshare-all-readonly-source-inert-links",
+     "outcome": "isolation_unavailable",
+     "passed": false,
+     "runner_id": "harness:isolated-source-runner-v1",
+     "source": {
+      "commit": "1111111111111111111111111111111111111111",
+      "manifest_ref": "sha256:83f6fd558b6c7fb4ff497fd8f16e358a1689803f20288e090376591937b52d7e",
+      "repository": "https://github.com/fixture/repo",
+      "tree": "2222222222222222222222222222222222222222",
+      "version": 1
+     },
+     "version": 1
+    }
+   }
+  },
+  "a_runner_error_exit_is_reported_as_the_commands_127": {
+   "bwrap_calls": [
+    {
+     "argv": [
+      "bwrap",
+      "--unshare-all",
+      "--die-with-parent",
+      "--new-session",
+      "--clearenv",
+      "--setenv",
+      "PATH",
+      "/usr/local/bin:/usr/bin:/bin",
+      "--ro-bind",
+      "/usr",
+      "/usr",
+      "--ro-bind",
+      "/bin",
+      "/bin",
+      "--proc",
+      "/proc",
+      "--dev",
+      "/dev",
+      "--tmpfs",
+      "/tmp",
+      "--ro-bind",
+      "<staged>",
+      "/source",
+      "--chdir",
+      "/source",
+      "--",
+      "nosuch"
+     ],
+     "staged": [
+      [
+       "dir",
+       "dir",
+       null,
+       null
+      ],
+      [
+       "dir/nested.txt",
+       "file",
+       "0o644",
+       8
+      ],
+      [
+       "link",
+       "file",
+       "0o644",
+       6
+      ],
+      [
+       "normal",
+       "file",
+       "0o644",
+       6
+      ],
+      [
+       "run.sh",
+       "file",
+       "0o755",
+       10
+      ],
+      [
+       "space\tand\nnewline",
+       "file",
+       "0o644",
+       3
+      ],
+      [
+       "vendor",
+       "dir",
+       null,
+       null
+      ]
+     ],
+     "timeout": 120
+    }
+   ],
+   "git_spawns": [],
+   "root_after": [],
+   "root_before": [],
+   "value": {
+    "output": {
+     "argv": [
+      "bwrap",
+      "--unshare-all",
+      "--die-with-parent",
+      "--new-session",
+      "--clearenv",
+      "--setenv",
+      "PATH",
+      "/usr/local/bin:/usr/bin:/bin",
+      "--ro-bind",
+      "/usr",
+      "/usr",
+      "--ro-bind",
+      "/bin",
+      "/bin",
+      "--proc",
+      "/proc",
+      "--dev",
+      "/dev",
+      "--tmpfs",
+      "/tmp",
+      "--ro-bind",
+      "<staged>",
+      "/source",
+      "--chdir",
+      "/source",
+      "--",
+      "nosuch"
+     ],
+     "exit_status": 127,
+     "stderr": "bwrap: execvp nosuch: No such file or directory",
+     "stdout": ""
+    },
+    "output_digest": "ec9875d6281fb9b98c1996d09759489bd5aa1709129a70aefee8d26bc42eb4c7",
+    "output_ref_is_the_hash_of_the_stored_document": true,
+    "receipt": {
+     "command": [
+      "nosuch"
+     ],
+     "environment_revision": {
+      "is_the_bubblewrap_v1_digest_of_this_host": true
+     },
+     "exit_status": 127,
+     "inspection_blocked": true,
+     "isolation": "bubblewrap-unshare-all-readonly-source-inert-links",
+     "outcome": "runner_error",
+     "passed": false,
+     "runner_id": "harness:isolated-source-runner-v1",
+     "source": {
+      "commit": "1111111111111111111111111111111111111111",
+      "manifest_ref": "sha256:83f6fd558b6c7fb4ff497fd8f16e358a1689803f20288e090376591937b52d7e",
+      "repository": "https://github.com/fixture/repo",
+      "tree": "2222222222222222222222222222222222222222",
+      "version": 1
+     },
+     "version": 1
+    }
+   }
+  },
+  "a_source_whose_commit_differs_from_its_manifest": {
+   "bwrap_calls": [],
+   "git_spawns": [],
+   "message": "Runner manifest mismatch",
+   "refused": "ContractError",
+   "root_after": [],
+   "root_before": []
+  },
+  "a_source_whose_manifest_is_unknown": {
+   "bwrap_calls": [],
+   "git_spawns": [],
+   "refused": "FileNotFoundError",
+   "root_after": [],
+   "root_before": []
+  },
+  "a_staged_inert_source_runs_under_bubblewrap": {
+   "bwrap_calls": [
+    {
+     "argv": [
+      "bwrap",
+      "--unshare-all",
+      "--die-with-parent",
+      "--new-session",
+      "--clearenv",
+      "--setenv",
+      "PATH",
+      "/usr/local/bin:/usr/bin:/bin",
+      "--ro-bind",
+      "/usr",
+      "/usr",
+      "--ro-bind",
+      "/bin",
+      "/bin",
+      "--proc",
+      "/proc",
+      "--dev",
+      "/dev",
+      "--tmpfs",
+      "/tmp",
+      "--ro-bind",
+      "<staged>",
+      "/source",
+      "--chdir",
+      "/source",
+      "--",
+      "find",
+      "."
+     ],
+     "staged": [
+      [
+       "dir",
+       "dir",
+       null,
+       null
+      ],
+      [
+       "dir/nested.txt",
+       "file",
+       "0o644",
+       8
+      ],
+      [
+       "link",
+       "file",
+       "0o644",
+       6
+      ],
+      [
+       "normal",
+       "file",
+       "0o644",
+       6
+      ],
+      [
+       "run.sh",
+       "file",
+       "0o755",
+       10
+      ],
+      [
+       "space\tand\nnewline",
+       "file",
+       "0o644",
+       3
+      ],
+      [
+       "vendor",
+       "dir",
+       null,
+       null
+      ]
+     ],
+     "timeout": 120
+    }
+   ],
+   "git_spawns": [],
+   "root_after": [],
+   "root_before": [],
+   "value": {
+    "output": {
+     "argv": [
+      "bwrap",
+      "--unshare-all",
+      "--die-with-parent",
+      "--new-session",
+      "--clearenv",
+      "--setenv",
+      "PATH",
+      "/usr/local/bin:/usr/bin:/bin",
+      "--ro-bind",
+      "/usr",
+      "/usr",
+      "--ro-bind",
+      "/bin",
+      "/bin",
+      "--proc",
+      "/proc",
+      "--dev",
+      "/dev",
+      "--tmpfs",
+      "/tmp",
+      "--ro-bind",
+      "<staged>",
+      "/source",
+      "--chdir",
+      "/source",
+      "--",
+      "find",
+      "."
+     ],
+     "exit_status": 0,
+     "stderr": "",
+     "stdout": "executed\n"
+    },
+    "output_digest": "ed5d479c54748321e31363ba53fb351a6a66df8baf9f4d2ef3d2798f9bc0c660",
+    "output_ref_is_the_hash_of_the_stored_document": true,
+    "receipt": {
+     "command": [
+      "find",
+      "."
+     ],
+     "environment_revision": {
+      "is_the_bubblewrap_v1_digest_of_this_host": true
+     },
+     "exit_status": 0,
+     "inspection_blocked": false,
+     "isolation": "bubblewrap-unshare-all-readonly-source-inert-links",
+     "outcome": "executed",
+     "passed": true,
+     "runner_id": "harness:isolated-source-runner-v1",
+     "source": {
+      "commit": "1111111111111111111111111111111111111111",
+      "manifest_ref": "sha256:83f6fd558b6c7fb4ff497fd8f16e358a1689803f20288e090376591937b52d7e",
+      "repository": "https://github.com/fixture/repo",
+      "tree": "2222222222222222222222222222222222222222",
+      "version": 1
+     },
+     "version": 1
+    }
+   }
+  },
+  "a_timeout_is_a_blocked_125": {
+   "bwrap_calls": [
+    {
+     "argv": [
+      "bwrap",
+      "--unshare-all",
+      "--die-with-parent",
+      "--new-session",
+      "--clearenv",
+      "--setenv",
+      "PATH",
+      "/usr/local/bin:/usr/bin:/bin",
+      "--ro-bind",
+      "/usr",
+      "/usr",
+      "--ro-bind",
+      "/bin",
+      "/bin",
+      "--proc",
+      "/proc",
+      "--dev",
+      "/dev",
+      "--tmpfs",
+      "/tmp",
+      "--ro-bind",
+      "<staged>",
+      "/source",
+      "--chdir",
+      "/source",
+      "--",
+      "sleep",
+      "999"
+     ],
+     "staged": [
+      [
+       "dir",
+       "dir",
+       null,
+       null
+      ],
+      [
+       "dir/nested.txt",
+       "file",
+       "0o644",
+       8
+      ],
+      [
+       "link",
+       "file",
+       "0o644",
+       6
+      ],
+      [
+       "normal",
+       "file",
+       "0o644",
+       6
+      ],
+      [
+       "run.sh",
+       "file",
+       "0o755",
+       10
+      ],
+      [
+       "space\tand\nnewline",
+       "file",
+       "0o644",
+       3
+      ],
+      [
+       "vendor",
+       "dir",
+       null,
+       null
+      ]
+     ],
+     "timeout": 120
+    }
+   ],
+   "git_spawns": [],
+   "root_after": [],
+   "root_before": [],
+   "value": {
+    "output": {
+     "argv": [
+      "bwrap",
+      "--unshare-all",
+      "--die-with-parent",
+      "--new-session",
+      "--clearenv",
+      "--setenv",
+      "PATH",
+      "/usr/local/bin:/usr/bin:/bin",
+      "--ro-bind",
+      "/usr",
+      "/usr",
+      "--ro-bind",
+      "/bin",
+      "/bin",
+      "--proc",
+      "/proc",
+      "--dev",
+      "/dev",
+      "--tmpfs",
+      "/tmp",
+      "--ro-bind",
+      "<staged>",
+      "/source",
+      "--chdir",
+      "/source",
+      "--",
+      "sleep",
+      "999"
+     ],
+     "error": "Command '['bwrap']' timed out after 120 seconds"
+    },
+    "output_digest": "8da479fdd8a498f2391ed1a9be0a4541edce54507378eb07609b2a2c78ac9a7b",
+    "output_ref_is_the_hash_of_the_stored_document": true,
+    "receipt": {
+     "command": [
+      "sleep",
+      "999"
+     ],
+     "environment_revision": {
+      "is_the_bubblewrap_v1_digest_of_this_host": true
+     },
+     "exit_status": 125,
+     "inspection_blocked": true,
+     "isolation": "bubblewrap-unshare-all-readonly-source-inert-links",
+     "outcome": "isolation_unavailable",
+     "passed": false,
+     "runner_id": "harness:isolated-source-runner-v1",
+     "source": {
+      "commit": "1111111111111111111111111111111111111111",
+      "manifest_ref": "sha256:83f6fd558b6c7fb4ff497fd8f16e358a1689803f20288e090376591937b52d7e",
+      "repository": "https://github.com/fixture/repo",
+      "tree": "2222222222222222222222222222222222222222",
+      "version": 1
+     },
+     "version": 1
+    }
+   }
+  },
+  "any_other_failure_propagates_and_the_staging_directory_is_removed": {
+   "bwrap_calls": [
+    {
+     "argv": [
+      "bwrap",
+      "--unshare-all",
+      "--die-with-parent",
+      "--new-session",
+      "--clearenv",
+      "--setenv",
+      "PATH",
+      "/usr/local/bin:/usr/bin:/bin",
+      "--ro-bind",
+      "/usr",
+      "/usr",
+      "--ro-bind",
+      "/bin",
+      "/bin",
+      "--proc",
+      "/proc",
+      "--dev",
+      "/dev",
+      "--tmpfs",
+      "/tmp",
+      "--ro-bind",
+      "<staged>",
+      "/source",
+      "--chdir",
+      "/source",
+      "--",
+      "find",
+      "."
+     ],
+     "staged": [
+      [
+       "dir",
+       "dir",
+       null,
+       null
+      ],
+      [
+       "dir/nested.txt",
+       "file",
+       "0o644",
+       8
+      ],
+      [
+       "link",
+       "file",
+       "0o644",
+       6
+      ],
+      [
+       "normal",
+       "file",
+       "0o644",
+       6
+      ],
+      [
+       "run.sh",
+       "file",
+       "0o755",
+       10
+      ],
+      [
+       "space\tand\nnewline",
+       "file",
+       "0o644",
+       3
+      ],
+      [
+       "vendor",
+       "dir",
+       null,
+       null
+      ]
+     ],
+     "timeout": 120
+    }
+   ],
+   "git_spawns": [],
+   "message": "unexpected",
+   "refused": "ValueError",
+   "root_after": [],
+   "root_before": []
+  },
+  "invalid_command_a_non_string_item_is_refused_before_any_staging": {
+   "bwrap_calls": [],
+   "git_spawns": [],
+   "message": "Invalid inspection command",
+   "refused": "ContractError",
+   "root_after": [],
+   "root_before": []
+  },
+  "invalid_command_a_string_is_refused_before_any_staging": {
+   "bwrap_calls": [],
+   "git_spawns": [],
+   "message": "Invalid inspection command",
+   "refused": "ContractError",
+   "root_after": [],
+   "root_before": []
+  },
+  "invalid_command_a_tuple_is_refused_before_any_staging": {
+   "bwrap_calls": [],
+   "git_spawns": [],
+   "message": "Invalid inspection command",
+   "refused": "ContractError",
+   "root_after": [],
+   "root_before": []
+  },
+  "invalid_command_an_empty_item_is_refused_before_any_staging": {
+   "bwrap_calls": [],
+   "git_spawns": [],
+   "message": "Invalid inspection command",
+   "refused": "ContractError",
+   "root_after": [],
+   "root_before": []
+  },
+  "invalid_command_an_empty_list_is_refused_before_any_staging": {
+   "bwrap_calls": [],
+   "git_spawns": [],
+   "message": "Invalid inspection command",
+   "refused": "ContractError",
+   "root_after": [],
+   "root_before": []
+  },
+  "invalid_command_none_is_refused_before_any_staging": {
+   "bwrap_calls": [],
+   "git_spawns": [],
+   "message": "Invalid inspection command",
+   "refused": "ContractError",
+   "root_after": [],
+   "root_before": []
+  },
+  "no_staging_directory_is_left": [],
+  "the_environment_digest_is_stable_across_runs": true,
+  "the_run_never_spawned_git": 0,
+  "the_staging_directory_is_removed": [],
+  "unsafe_a_nested_parent_path_called_no_runner": 0,
+  "unsafe_a_nested_parent_path_is_refused": {
+   "bwrap_calls": [],
+   "git_spawns": [],
+   "message": "Unsafe source path",
+   "refused": "ContractError",
+   "root_after": [],
+   "root_before": []
+  },
+  "unsafe_a_nested_parent_path_leaves_no_staging_directory": [],
+  "unsafe_a_parent_directory_path_called_no_runner": 0,
+  "unsafe_a_parent_directory_path_is_refused": {
+   "bwrap_calls": [],
+   "git_spawns": [],
+   "message": "Unsafe source path",
+   "refused": "ContractError",
+   "root_after": [],
+   "root_before": []
+  },
+  "unsafe_a_parent_directory_path_leaves_no_staging_directory": [],
+  "unsafe_an_absolute_path_called_no_runner": 0,
+  "unsafe_an_absolute_path_is_refused": {
+   "bwrap_calls": [],
+   "git_spawns": [],
+   "message": "Unsafe source path",
+   "refused": "ContractError",
+   "root_after": [],
+   "root_before": []
+  },
+  "unsafe_an_absolute_path_leaves_no_staging_directory": []
+ },
+ "b4_assigned": {
+  "a_cancelled_host_request_is_refused": {
+   "bwrap_calls": [],
+   "git_spawns": [],
+   "message": "Source execution cancelled",
+   "refused": "ContractError",
+   "root_after": [],
+   "root_before": []
+  },
+  "a_paused_request_was_not_queued": [],
+  "a_paused_research_activation_refuses_the_request": {
+   "bwrap_calls": [],
+   "git_spawns": [],
+   "message": "Source execution paused",
+   "refused": "ContractError",
+   "root_after": [],
+   "root_before": []
+  },
+  "a_source_that_is_not_the_audits_is_refused": {
+   "bwrap_calls": [],
+   "git_spawns": [],
+   "message": "Source execution assignment mismatch",
+   "refused": "ContractError",
+   "root_after": [],
+   "root_before": []
+  },
+  "an_inert_command_stays_inert_under_host_execution": {
+   "bwrap_calls": [],
+   "git_spawns": [],
+   "root_after": [],
+   "root_before": [],
+   "value": {
+    "output": {
+     "bytes_sha256": "41cf6794ba4200b839c53531555f0f3998df4cbb01a4d5cb0b94e3ca5e23947d",
+     "eof": true,
+     "lines": [
+      "source"
+     ],
+     "next_char": 0,
+     "next_line": 1,
+     "object_id": "1d3a06547c706bd0f75b130edecf4832295bba6b",
+     "partial_last_line": false,
+     "path": "bm9ybWFs",
+     "start_char": 0,
+     "start_line": 0,
+     "total_lines": 1
+    },
+    "output_digest": "baafc54babff9a036b1c02de70a72b3ff65108703e12d26da17294dc069d7267",
+    "output_ref_is_the_hash_of_the_stored_document": true,
+    "receipt": {
+     "command": [
+      "source-read",
+      "bm9ybWFs",
+      "0"
+     ],
+     "environment_revision": "ac4f9ee5a05811566e8b96424f8d06132816d046529ddba2378a08e76d6ccf34",
+     "exit_status": 0,
+     "inspection_blocked": false,
+     "isolation": "inert-objects-no-code-execution",
+     "outcome": "read",
+     "passed": true,
+     "runner_id": "harness:inert-source-reader-v2",
+     "source": {
+      "commit": "1111111111111111111111111111111111111111",
+      "manifest_ref": "sha256:83f6fd558b6c7fb4ff497fd8f16e358a1689803f20288e090376591937b52d7e",
+      "repository": "https://github.com/fixture/repo",
+      "tree": "2222222222222222222222222222222222222222",
+      "version": 1
+     },
+     "version": 1
+    }
+   }
+  },
+  "an_invalid_host_command_is_refused": {
+   "bwrap_calls": [],
+   "git_spawns": [],
+   "message": "Invalid command",
+   "refused": "ContractError",
+   "root_after": [],
+   "root_before": []
+  },
+  "no_host_request_for_an_inert_command": [],
+  "the_host_path_never_ran_bubblewrap": 0,
+  "the_host_path_requests_and_returns_the_hosts_receipt": {
+   "bwrap_calls": [],
+   "git_spawns": [],
+   "root_after": [],
+   "root_before": [],
+   "value": {
+    "receipt": {
+     "command": [
+      "python",
+      "--version"
+     ],
+     "environment_revision": "host-env",
+     "exit_status": 0,
+     "inspection_blocked": false,
+     "isolation": "docker-readonly",
+     "outcome": "executed",
+     "output_ref": "sha256:8171ec455e5f3619a7f2d4ec0d73dbc3a4dad3792902b2737fa61d062ad3a664",
+     "passed": true,
+     "runner_id": "host-docker-runner",
+     "source": {
+      "commit": "1111111111111111111111111111111111111111",
+      "manifest_ref": "sha256:83f6fd558b6c7fb4ff497fd8f16e358a1689803f20288e090376591937b52d7e",
+      "repository": "https://github.com/fixture/repo",
+      "tree": "2222222222222222222222222222222222222222",
+      "version": 1
+     },
+     "version": 1
+    },
+    "receipt_equals_the_hosts": true,
+    "requests": [
+     {
+      "command": [
+       "python",
+       "--version"
+      ],
+      "id": "a920100d17d4e8c5e6e16567d8c96a3419b9f8cac38030397d8ff06418272850",
+      "source": {
+       "commit": "1111111111111111111111111111111111111111",
+       "manifest_ref": "sha256:83f6fd558b6c7fb4ff497fd8f16e358a1689803f20288e090376591937b52d7e",
+       "repository": "https://github.com/fixture/repo",
+       "tree": "2222222222222222222222222222222222222222",
+       "version": 1
+      },
+      "status": "queued",
+      "task_id": "task-1"
+     }
+    ]
+   }
+  },
+  "the_host_request_row": [
+   {
+    "command": [
+     "python",
+     "--version"
+    ],
+    "id": "a920100d17d4e8c5e6e16567d8c96a3419b9f8cac38030397d8ff06418272850",
+    "source": {
+     "commit": "1111111111111111111111111111111111111111",
+     "manifest_ref": "sha256:83f6fd558b6c7fb4ff497fd8f16e358a1689803f20288e090376591937b52d7e",
+     "repository": "https://github.com/fixture/repo",
+     "tree": "2222222222222222222222222222222222222222",
+     "version": 1
+    },
+    "status": "queued",
+    "task_id": "task-1"
+   }
+  ],
+  "the_plain_path_ignores_the_task_and_workflow": {
+   "bwrap_calls": [],
+   "git_spawns": [],
+   "root_after": [],
+   "root_before": [],
+   "value": {
+    "output": {
+     "entries": [
+      {
+       "artifact_ref": "sha256:47d36a60134671c86bdf7fb6897a29c97f176e2f2624da85ca135edbf20b3a8f",
+       "mode": "120000",
+       "object_id": "5ae034634e8d382c8646068b8b52381815edabf0",
+       "path": "bGluaw==",
+       "size": 6
+      },
+      {
+       "artifact_ref": "sha256:d82dbdb3bbabaedd7c81d2cea6aeaac158c243ae16106498f100dd2316ac7421",
+       "mode": "100644",
+       "object_id": "1d3a06547c706bd0f75b130edecf4832295bba6b",
+       "path": "bm9ybWFs",
+       "size": 6
+      },
+      {
+       "artifact_ref": "sha256:d46b1e131b233b0c42d8192b8d3818ff8f0dcd36d919dbc59ea68a963a75a0f6",
+       "mode": "100755",
+       "object_id": "1a2485251c33a70432394c93fb89330ef214bfc9",
+       "path": "cnVuLnNo",
+       "size": 10
+      },
+      {
+       "artifact_ref": "sha256:00b0ae17309b65efb24828e06256c986734fa2cbadb0e233771b10abc6344862",
+       "mode": "100644",
+       "object_id": "90db00e1d6cf116716ba949a1cca330ac8c63634",
+       "path": "c3BhY2UJYW5kCm5ld2xpbmU=",
+       "size": 3
+      },
+      {
+       "artifact_ref": "sha256:b7f8e2716388893b19677413b06deed02789fee315d4228330d487d8ed2f0aab",
+       "mode": "100644",
+       "object_id": "814f4a422927b82f5f8a43f8fab6d3839e3983f2",
+       "path": "ZGlyL25lc3RlZC50eHQ=",
+       "size": 8
+      },
+      {
+       "artifact_ref": null,
+       "mode": "160000",
+       "object_id": "9999999999999999999999999999999999999999",
+       "path": "dmVuZG9yL3N1Yg==",
+       "size": null
+      }
+     ],
+     "eof": true,
+     "next_offset": 100,
+     "total": 6
+    },
+    "output_digest": "b14b394d5f6b6f828f99eedd5686d78c603aa329e58269e154d91898f89b2338",
+    "output_ref_is_the_hash_of_the_stored_document": true,
+    "receipt": {
+     "command": [
+      "source-list"
+     ],
+     "environment_revision": "ac4f9ee5a05811566e8b96424f8d06132816d046529ddba2378a08e76d6ccf34",
+     "exit_status": 0,
+     "inspection_blocked": false,
+     "isolation": "inert-objects-no-code-execution",
+     "outcome": "read",
+     "passed": true,
+     "runner_id": "harness:inert-source-reader-v2",
+     "source": {
+      "commit": "1111111111111111111111111111111111111111",
+      "manifest_ref": "sha256:83f6fd558b6c7fb4ff497fd8f16e358a1689803f20288e090376591937b52d7e",
+      "repository": "https://github.com/fixture/repo",
+      "tree": "2222222222222222222222222222222222222222",
+      "version": 1
+     },
+     "version": 1
+    }
+   }
+  },
+  "the_plain_path_refuses_an_invalid_command": {
+   "bwrap_calls": [],
+   "git_spawns": [],
+   "message": "Invalid inspection command",
+   "refused": "ContractError",
+   "root_after": [],
+   "root_before": []
+  },
+  "the_plain_path_runs_an_inert_command": {
+   "bwrap_calls": [],
+   "git_spawns": [],
+   "root_after": [],
+   "root_before": [],
+   "value": {
+    "output": {
+     "entries": [
+      {
+       "artifact_ref": "sha256:47d36a60134671c86bdf7fb6897a29c97f176e2f2624da85ca135edbf20b3a8f",
+       "mode": "120000",
+       "object_id": "5ae034634e8d382c8646068b8b52381815edabf0",
+       "path": "bGluaw==",
+       "size": 6
+      },
+      {
+       "artifact_ref": "sha256:d82dbdb3bbabaedd7c81d2cea6aeaac158c243ae16106498f100dd2316ac7421",
+       "mode": "100644",
+       "object_id": "1d3a06547c706bd0f75b130edecf4832295bba6b",
+       "path": "bm9ybWFs",
+       "size": 6
+      },
+      {
+       "artifact_ref": "sha256:d46b1e131b233b0c42d8192b8d3818ff8f0dcd36d919dbc59ea68a963a75a0f6",
+       "mode": "100755",
+       "object_id": "1a2485251c33a70432394c93fb89330ef214bfc9",
+       "path": "cnVuLnNo",
+       "size": 10
+      },
+      {
+       "artifact_ref": "sha256:00b0ae17309b65efb24828e06256c986734fa2cbadb0e233771b10abc6344862",
+       "mode": "100644",
+       "object_id": "90db00e1d6cf116716ba949a1cca330ac8c63634",
+       "path": "c3BhY2UJYW5kCm5ld2xpbmU=",
+       "size": 3
+      },
+      {
+       "artifact_ref": "sha256:b7f8e2716388893b19677413b06deed02789fee315d4228330d487d8ed2f0aab",
+       "mode": "100644",
+       "object_id": "814f4a422927b82f5f8a43f8fab6d3839e3983f2",
+       "path": "ZGlyL25lc3RlZC50eHQ=",
+       "size": 8
+      },
+      {
+       "artifact_ref": null,
+       "mode": "160000",
+       "object_id": "9999999999999999999999999999999999999999",
+       "path": "dmVuZG9yL3N1Yg==",
+       "size": null
+      }
+     ],
+     "eof": true,
+     "next_offset": 100,
+     "total": 6
+    },
+    "output_digest": "b14b394d5f6b6f828f99eedd5686d78c603aa329e58269e154d91898f89b2338",
+    "output_ref_is_the_hash_of_the_stored_document": true,
+    "receipt": {
+     "command": [
+      "source-list"
+     ],
+     "environment_revision": "ac4f9ee5a05811566e8b96424f8d06132816d046529ddba2378a08e76d6ccf34",
+     "exit_status": 0,
+     "inspection_blocked": false,
+     "isolation": "inert-objects-no-code-execution",
+     "outcome": "read",
+     "passed": true,
+     "runner_id": "harness:inert-source-reader-v2",
+     "source": {
+      "commit": "1111111111111111111111111111111111111111",
+      "manifest_ref": "sha256:83f6fd558b6c7fb4ff497fd8f16e358a1689803f20288e090376591937b52d7e",
+      "repository": "https://github.com/fixture/repo",
+      "tree": "2222222222222222222222222222222222222222",
+      "version": 1
+     },
+     "version": 1
+    }
+   }
+  },
+  "the_plain_path_runs_other_commands_under_bubblewrap": {
+   "bwrap_calls": [
+    {
+     "argv": [
+      "bwrap",
+      "--unshare-all",
+      "--die-with-parent",
+      "--new-session",
+      "--clearenv",
+      "--setenv",
+      "PATH",
+      "/usr/local/bin:/usr/bin:/bin",
+      "--ro-bind",
+      "/usr",
+      "/usr",
+      "--ro-bind",
+      "/bin",
+      "/bin",
+      "--proc",
+      "/proc",
+      "--dev",
+      "/dev",
+      "--tmpfs",
+      "/tmp",
+      "--ro-bind",
+      "<staged>",
+      "/source",
+      "--chdir",
+      "/source",
+      "--",
+      "find",
+      "."
+     ],
+     "staged": [
+      [
+       "dir",
+       "dir",
+       null,
+       null
+      ],
+      [
+       "dir/nested.txt",
+       "file",
+       "0o644",
+       8
+      ],
+      [
+       "link",
+       "file",
+       "0o644",
+       6
+      ],
+      [
+       "normal",
+       "file",
+       "0o644",
+       6
+      ],
+      [
+       "run.sh",
+       "file",
+       "0o755",
+       10
+      ],
+      [
+       "space\tand\nnewline",
+       "file",
+       "0o644",
+       3
+      ],
+      [
+       "vendor",
+       "dir",
+       null,
+       null
+      ]
+     ],
+     "timeout": 120
+    }
+   ],
+   "git_spawns": [],
+   "root_after": [],
+   "root_before": [],
+   "value": {
+    "output": {
+     "argv": [
+      "bwrap",
+      "--unshare-all",
+      "--die-with-parent",
+      "--new-session",
+      "--clearenv",
+      "--setenv",
+      "PATH",
+      "/usr/local/bin:/usr/bin:/bin",
+      "--ro-bind",
+      "/usr",
+      "/usr",
+      "--ro-bind",
+      "/bin",
+      "/bin",
+      "--proc",
+      "/proc",
+      "--dev",
+      "/dev",
+      "--tmpfs",
+      "/tmp",
+      "--ro-bind",
+      "<staged>",
+      "/source",
+      "--chdir",
+      "/source",
+      "--",
+      "find",
+      "."
+     ],
+     "exit_status": 0,
+     "stderr": "",
+     "stdout": "executed\n"
+    },
+    "output_digest": "ed5d479c54748321e31363ba53fb351a6a66df8baf9f4d2ef3d2798f9bc0c660",
+    "output_ref_is_the_hash_of_the_stored_document": true,
+    "receipt": {
+     "command": [
+      "find",
+      "."
+     ],
+     "environment_revision": {
+      "is_the_bubblewrap_v1_digest_of_this_host": true
+     },
+     "exit_status": 0,
+     "inspection_blocked": false,
+     "isolation": "bubblewrap-unshare-all-readonly-source-inert-links",
+     "outcome": "executed",
+     "passed": true,
+     "runner_id": "harness:isolated-source-runner-v1",
+     "source": {
+      "commit": "1111111111111111111111111111111111111111",
+      "manifest_ref": "sha256:83f6fd558b6c7fb4ff497fd8f16e358a1689803f20288e090376591937b52d7e",
+      "repository": "https://github.com/fixture/repo",
+      "tree": "2222222222222222222222222222222222222222",
+      "version": 1
+     },
+     "version": 1
+    }
+   }
+  }
+ },
+ "cases_per_group": {
+  "b1_acquire": 21,
+  "b2_inert": 26,
+  "b3_isolated": 30,
+  "b4_assigned": 14
+ },
+ "coverage": {
+  "counts": {
+   "left_out": 2,
+   "m7_test_nodes": 10,
+   "mirrored": 8
+  },
+  "left_out": {
+   "tests/test_background_processes.py::test_every_listed_spawn_goes_through_the_helper": {
+    "other family": "static source audit of the spawn helper (host_os / the spawn chokepoint test)"
+   },
+   "tests/test_research_audits.py::test_inventory_receipt_cannot_clear_claimed_test_coverage": {
+    "other family": "research.audit_core (service.checkpoint, test_claim_source_list_cannot_attest_a_test); the runner's source-list receipt is b2_inert.source_list_defaults_to_offset_zero"
+   }
+  },
+  "m7_tests": {
+   "tests/test_audit_progress.py::test_distinct_ranges_come_from_the_real_inert_reader_output_and_repeats_add_nothing": [
+    "b2_inert.the_same_range_twice_is_one_document"
+   ],
+   "tests/test_background_processes.py::test_every_listed_spawn_goes_through_the_helper": {
+    "other family": "static source audit of the spawn helper (host_os / the spawn chokepoint test)"
+   },
+   "tests/test_background_processes.py::test_piped_git_docker_and_probe_children_are_silent[audit_runner]": [
+    "b1_acquire.a_new_target_is_initialized_then_fetched"
+   ],
+   "tests/test_research_audits.py::test_acquire_pins_objects_without_checkout": [
+    "b1_acquire.an_existing_target_with_the_commit_needs_no_fetch",
+    "b1_acquire.no_fetch_was_spawned"
+   ],
+   "tests/test_research_audits.py::test_inert_reader_never_executes_repository_code": [
+    "b2_inert.source_list_defaults_to_offset_zero",
+    "b2_inert.source_read_the_whole_file",
+    "b2_inert.source_read_an_unknown_path",
+    "b2_inert.no_inert_command_spawned_anything"
+   ],
+   "tests/test_research_audits.py::test_inventory_receipt_cannot_clear_claimed_test_coverage": {
+    "other family": "research.audit_core (service.checkpoint, test_claim_source_list_cannot_attest_a_test); the runner's source-list receipt is b2_inert.source_list_defaults_to_offset_zero"
+   },
+   "tests/test_research_audits.py::test_namespace_denial_preserves_evidence_and_never_changes_isolation": [
+    "b3_isolated.a_namespace_denial_is_blocked_and_keeps_its_evidence"
+   ],
+   "tests/test_research_audits.py::test_oversized_source_line_advances_without_losing_unicode[ascii]": [
+    "b2_inert.oversized_ascii_line_advances_without_losing_text"
+   ],
+   "tests/test_research_audits.py::test_oversized_source_line_advances_without_losing_unicode[unicode]": [
+    "b2_inert.oversized_unicode_line_advances_without_losing_text"
+   ],
+   "tests/test_research_audits.py::test_real_runner_failure_retains_command_evidence": [
+    "b3_isolated.a_missing_runner_is_a_blocked_125"
+   ]
+  },
+  "mirrored": [
+   "tests/test_audit_progress.py::test_distinct_ranges_come_from_the_real_inert_reader_output_and_repeats_add_nothing",
+   "tests/test_background_processes.py::test_piped_git_docker_and_probe_children_are_silent[audit_runner]",
+   "tests/test_research_audits.py::test_acquire_pins_objects_without_checkout",
+   "tests/test_research_audits.py::test_inert_reader_never_executes_repository_code",
+   "tests/test_research_audits.py::test_namespace_denial_preserves_evidence_and_never_changes_isolation",
+   "tests/test_research_audits.py::test_oversized_source_line_advances_without_losing_unicode[ascii]",
+   "tests/test_research_audits.py::test_oversized_source_line_advances_without_losing_unicode[unicode]",
+   "tests/test_research_audits.py::test_real_runner_failure_retains_command_evidence"
+  ]
+ }
+}
