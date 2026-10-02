@@ -1548,7 +1548,7 @@
      "state": "error"
     }
    ],
-   "policy_hash": "b3aa1c7a28ee48188ae5184007f8de3d6b4a4826c1dedd6dbecc0a7a9f405115"
+   "policy_hash": "<host-path digest>"
   },
   "aggregate": [
    {
@@ -2550,7 +2550,7 @@
      "state": "error"
     }
    ],
-   "policy_hash": "562615b9d638b6123078b758a544564cbc88fb44907c968fd0e7d42f59b2d857"
+   "policy_hash": "<host-path digest>"
   },
   "absent_keys": [
    "context",
@@ -2619,7 +2619,7 @@
       "import sys; sys.exit(0)"
      ],
      "expected_exit": 0,
-     "id": "09046f7449b3956cdb5ecf44399ac4082d99ca1fbb72bb2ac6eb5f315e537ce2",
+     "id": "<host-path digest>",
      "kind": "command",
      "origin": "structured"
     },
@@ -2639,7 +2639,7 @@
    {
     "cause": "a directory is not evidence",
     "claim": {
-     "id": "3b861736bac512ed8c60f84a5c5ad4816e9dc0c363ad750eb510018f659b6f02",
+     "id": "<host-path digest>",
      "kind": "file",
      "origin": "structured",
      "path": "src",
@@ -2657,7 +2657,7 @@
       "/"
      ],
      "expected_exit": 0,
-     "id": "52d036b953dc2e36c56d7c82bb94feee1b36fcad0317a99e403bbe8ece13c0c8",
+     "id": "<host-path digest>",
      "kind": "command",
      "origin": "free_text"
     },
@@ -2672,7 +2672,7 @@
       "pass"
      ],
      "expected_exit": 0,
-     "id": "0a18e0cffa27cd74bf945c684aa9ba728ae2d407cb6a1334ea314cbaa64ed648",
+     "id": "<host-path digest>",
      "kind": "command",
      "origin": "structured"
     },

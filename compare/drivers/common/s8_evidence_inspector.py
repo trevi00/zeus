@@ -24,7 +24,7 @@ Layer: harness (never shipped)
 
 This module never imports `codex_harness`: everything from the product arrives through `api`, the object a reference (later a target) driver builds.
 Children are REAL (this side's own interpreter running fixed one-line programs) through the REAL `ProcessTree` on both sides. The nondeterministic fields
-are masked here, declared: the measured remainder inside `timeout after <float>s` becomes `<remaining>`, `duration_seconds` becomes `"<duration>"`, OS pids and group ids become `"<pid>"`, the termination receipt's elapsed
+are masked here, declared: the measured remainder inside `timeout after <float>s` becomes `<remaining>`, the policy hash of a scenario policy and a claim id (digests over this side's interpreter path) become `<host-path digest>`, `duration_seconds` becomes `"<duration>"`, OS pids and group ids become `"<pid>"`, the termination receipt's elapsed
 seconds become `"<duration>"`, and the host roots (the temporary directory and this side's interpreter paths) become symbolic names. The artifact
 receipt's wall-clock `at` is never reported. Inspection ids, which embed the host path, are checked by recomputing them from the report instead of
 being printed."""
@@ -48,6 +48,9 @@ TRUSTED = str(Path(sys.executable).resolve())
 PROBE = "zeus_candidate_probe"
 PIDISH = {"pid", "group", "pgid", "process_id", "leader"}
 DURATIONS = {"duration_seconds", "elapsed_seconds", "seconds"}
+# Digests that cover this side's own interpreter path (the scenario policy's prefixes and a claim's argv name it): the policy hash of a scenario
+# policy and a claim id. The PACKAGED policy's hash (no host path in it) is reported unmasked by `i1`.
+HOSTDIGESTS = {"policy_hash", "id"}
 # A real child that starts a real grandchild sharing its pipes: the streams reach EOF only when the whole TREE is gone.
 HOLDER = ("import subprocess, sys, time; subprocess.Popen([sys.executable, '-c', 'import time; time.sleep(120)']); "
           "print('started', flush=True); time.sleep(120)")
@@ -77,6 +80,8 @@ def mask(value):
                 out[key] = "<pid>"
             elif key in DURATIONS and isinstance(item, (int, float)) and not isinstance(item, bool):
                 out[key] = "<duration>"
+            elif key in HOSTDIGESTS and isinstance(item, str) and len(item) == 64:
+                out[key] = "<host-path digest>"
             else:
                 out[key] = mask(item)
         return out
