@@ -3,10 +3,11 @@
 Layer: application
 Context: review
 Owns: the `releases` bucket (proposal and review, moved ahead in S4; verify, the migration successors,
-    promote, rollback and the V5 owner operations, moved ahead in S7 for delivery), and review's
-    `deployment`, `deployment_history` and `research_control` rows those write
-Does not own: reconcile_audits and request_reverification (S8), ticket binding (intake, injected), events
-    (coordination's EventAppend) and hooks (research's HookRollback), each injected
+    promote, rollback and the V5 owner operations, moved ahead in S7 for delivery; S8: request_reverification),
+    and review's `deployment`, `deployment_history` and `research_control` rows those write (S8: reconcile_audits,
+    the audit activation recovery, writes `research_control`)
+Does not own: ticket binding (intake, injected), events (coordination's EventAppend) and hooks (research's
+    HookRollback), each injected
 Entry points: Releases, Releases.propose, Releases.review
 Contracts: INV-RELEASE-001, INV-TICKET-001
 
@@ -46,6 +47,38 @@ class Releases:
         self.store, self.org = store, organization
         self.ticket_binding, self.clock = ticket_binding, clock
         self.ticket_superseded, self.events, self.hooks, self.ids = ticket_superseded, events, hooks, ids
+
+    def reconcile_audits(self):
+        """Recover derived activation after an incumbent controller promotes the new runtime."""
+        from dataclasses import asdict
+        with self.store.transaction() as tx:
+            active = tx.get('deployment', 'active') or {}
+            record = tx.get('releases', active.get('release_id', ''))
+            if not record or record['status'] != 'active' or record['candidate'].get('audit_lifecycle_version') != 1:
+                return None
+            control = tx.get('research_control', 'activation')
+            # INV-RESEARCH-004: rollback pauses survive restoration of another release,
+            # including legacy records that identify only the removed release.
+            if control and (control.get('status') == 'paused' or
+                            control.get('release_id') == active['release_id'] or
+                            control.get('rolled_back_release') == active['release_id']):
+                return control  # Never undo a pause or rollback for the same release.
+            require(record['candidate']['revision'] == active['revision']
+                    and record['policy_hash'] == digest(record['policy']), 'Invalid active audit release')
+            author = self.org.actor(record['candidate']['author'], 'worker')
+            approved = {r['actor'] for r in record['reviews']
+                        if r['accepted'] and r['revision'] == active['revision'] and r.get('evidence')}
+            require(author.parent in approved and 'conductor' in approved, 'Audit reviews incomplete')
+            require(all(record['checks'].get(k, {}).get('passed') is True
+                        and record['checks'][k].get('evidence')
+                        for k in {'tests', 'cli_start', 'cli_file_task'} | set(record['policy']['checks'])),
+                    'Audit checks incomplete')
+            tx.put('research_control', 'graph', {'revision': active['revision'],
+                'tree': record['candidate']['tree'],
+                'organization': digest({k: asdict(v) for k, v in self.org.agents.items()})})
+            control = {'status': 'active', 'release_id': active['release_id'], 'revision': active['revision']}
+            tx.put('research_control', 'activation', control)
+            return control
 
     def propose(self, candidate: dict, policy: dict, *, transaction=None) -> dict:
         require(all(candidate.get(key) for key in ("revision", "base", "tree", "author")),
@@ -147,6 +180,58 @@ class Releases:
                 and (tx.get("deployment", "active") or {}).get("release_id") != release_id,
                 "Promotion effects exist for the release")
         return candidate, reviews, checks
+
+    def request_reverification(self, release_id: str, actor: str, expected_revision: str,
+                               expected_policy_hash: str, reason: str, evidence: str, *,
+                               now: datetime | None = None) -> dict:
+        """INV-RELEASE-REVERIFY-001: one reviewed successor of a check-rejected release.
+
+        The explicit trusted conductor request re-arms nothing: the rejected source stays byte for
+        byte unchanged, the successor inherits only the exact code reviews and starts with EMPTY
+        checks, so the normal queue and runner must produce every check again for the new id.
+        """
+        require(isinstance(reason, str) and reason.strip() and isinstance(evidence, str)
+                and evidence.strip(), "Reverification reason and evidence required")
+        self.org.actor(actor, "conductor")
+        now = now or _now(self.clock)
+        successor_id = reverification_successor_id(release_id)
+        request = {"actor": actor, "reason": reason, "evidence": evidence,
+                   "expected_revision": expected_revision, "expected_policy_hash": expected_policy_hash}
+        with self.store.transaction() as tx:
+            source = tx.get("releases", release_id)
+            require(source is not None, "Release not found")
+            if _evaluator_migrated(source):
+                raise UnsupportedEvaluatorReverification()
+            existing = tx.get("releases", successor_id)
+            if existing:
+                # A replay after a restart returns the same successor without any write.
+                receipt = existing.get("reverification") or {}
+                require(existing.get("reverify_of") == release_id
+                        and {k: receipt.get(k) for k in request} == request,
+                        "Conflicting reverification request")
+                return existing
+            # One successor per source whichever request commits first; the store transaction
+            # serializes both kinds (INV-RELEASE-EVALUATOR-MIGRATION-001).
+            require(tx.get("releases", evaluator_successor_id(release_id)) is None,
+                    "Release already has an evaluator migration successor")
+            # INV-RELEASE-ENVIRONMENT-REVERIFY-001: the three successor kinds block each other.
+            require(tx.get("releases", environment_successor_id(release_id)) is None,
+                    "Release already has an environment reverification successor")
+            candidate, reviews, checks = self._check_rejected_source(
+                tx, source, expected_revision, expected_policy_hash, now)
+            at = now.isoformat()
+            receipt = {**request, "source_checks_digest": digest(checks),
+                       "source_digest": digest(source), "at": at}
+            record = {"id": successor_id, "candidate": candidate, "policy": source["policy"],
+                      "policy_hash": source["policy_hash"], "status": "reviewed", "reviews": reviews,
+                      "checks": {}, "created_at": at, "reverify_of": release_id,
+                      "inherited_reviews": {"release_id": release_id, "digest": digest(reviews)},
+                      "reverification": receipt}
+            tx.put("releases", successor_id, record)
+            self._event(tx, "release.reverification_requested:" + successor_id,
+                        {"type": "release.reverification_requested", "at": at, "release_id": successor_id,
+                         "reverify_of": release_id, "actor": actor})
+            return record
 
     def request_evaluator_migration(self, release_id: str, actor: str, *, expected_revision: str,
                                     expected_policy_hash: str, approval: dict, resolved_pin: dict,
