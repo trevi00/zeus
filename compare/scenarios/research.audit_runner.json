@@ -2,8 +2,7 @@
  "family": "research.audit_runner",
  "description": "S8 batch B3 (V29 R-au0..R-au3) M7 adapters/audit_runner.py AuditRunner (acquire: a new target initialised and fetched, an existing target with and without the commit, the replay, the invalid repository and commit refused before any spawn, every scripted Git failure; execute: the inert source-list and source-read with every argument refusal and the oversized ASCII/Unicode cursor loop, the invalid commands, the manifest mismatch, the staged inert source under bubblewrap, the unsafe paths, a command exit, a namespace denial, a timeout and a missing runner as a blocked 125; execute_assigned: the plain path and the host_execution path through the real SourceExecutionClient over a labelled queue), characterized before the move into research: a LABELLED scripted git (subprocess.run's shape; the three spawns of acquire and the verifier's calls), a LABELLED bubblewrap run_process recording the staged listing, M7's own classify_isolated_run and FileArtifacts over a run-scoped directory, the harness clock; the temporary root is masked as <root>, the staging directory as <staged> and the host-dependent /lib and /lib64 binds are dropped from an isolated run's argv; the M7 tests that are other families are listed in m7_tests; no clone, network, Docker or bwrap",
  "reference_driver": "drivers/reference/s8_audit_runner.py",
- "target_driver": null,
+ "target_driver": "drivers/target/s8_audit_runner.py",
  "golden": "goldens/reference/research.audit_runner.json",
- "slice": "S8",
- "target_status": "pending: S8 batch B3 move"
+ "slice": "S8"
 }
