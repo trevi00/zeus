@@ -4,15 +4,18 @@ Layer: ports
 Context: observation
 Owns: OWNED_BUCKETS of the observation context; SpoolFull and ObservationSpool (M7 `ports.py`, moved ahead in S4
     unchanged: the append-only record store the Observer writes through); DeskHttp, the desk routes the viewer
-    serves only when a desk is injected (S9 U8, OWNER-DECISIONS-S9 D2.1; S10 passes `entry.http.desk` itself)
+    serves only when a desk is injected (S9 U8, OWNER-DECISIONS-S9 D2.1; S10 passes `entry.http.desk` itself);
+    CollectorPorts, the seams `collectors.collect` is given (S9 U7, D1.1; S10 builds it once)
 Does not own: ObservationDirectory (9 methods, above the port-size limit: S9) and the other observation Protocols
     (PostgresFacts, RedisFacts, ...: S9)
-Entry points: OWNED_BUCKETS, SpoolFull, ObservationSpool, DeskHttp
+Entry points: OWNED_BUCKETS, SpoolFull, ObservationSpool, DeskHttp, CollectorPorts
 Contracts: INV-OBSERVATION-001
 """
 
 from __future__ import annotations
 
+from collections.abc import Callable
+from dataclasses import dataclass
 from typing import Protocol
 
 # `metric_observations`: S9 P0 (coordinator), declared before its one writer, M7 application/measurements.py
@@ -46,3 +49,23 @@ class DeskHttp(Protocol):
     def read_body(self, handler): ...
     def handle_post(self, desk, path: str, document: dict): ...
     def error(self, code: str) -> bytes: ...
+
+
+@dataclass(frozen=True)
+class CollectorPorts:
+    """What M7 `adapters/monitoring.py` imported from other contexts, injected (S9 U7, OWNER-DECISIONS-S9 D1.1).
+
+    `run_process` runs the read-only docker commands; `bus_factory(url)` builds the Redis bus whose streams are read;
+    each projection takes the read-only store and returns its owner's status; `registered(store)` is the Fleet's
+    registered configuration (it raises the coordination `FleetRefused` when unregistered)."""
+    run_process: Callable
+    bus_factory: Callable
+    fleet: Callable
+    research_program: Callable
+    portfolio: Callable
+    fleet_backlog: Callable
+    host_delivery: Callable
+    worker_session: Callable
+    continuation: Callable
+    discovery_pressure: Callable
+    registered: Callable
