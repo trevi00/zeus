@@ -5,21 +5,23 @@ metric observations, runs only read-only Docker/Redis commands and never puts ro
 
 Layer: adapters
 Context: observation
-Owns: the monitor's core collectors (S9 unit U6): the read-only store, transaction, artifact and service wrappers (`ReadOnlyStore`, `ReadOnlyTransaction`, `ReadOnlyArtifacts`, `ReadOnlyService`, `read_only`), `safe_text`, `container_scope`, `parse_observed`, `persisted_measurements`, `DatabaseFacts`, `audit_progress`, the lane-session constants, the bounded activity projection (`ArtifactReader`, `project_receipt`, `execution_activity`, `lane_artifact_resolver` and the activity constants), `lane_view` and `scope_label`
-Does not own: Docker, Redis and the other `*_facts` sources, the lane store and resolver, `lane_session_facts`, `discovery_pressure_facts` and `collect` (U7, inserted at their SOURCE positions later), the monitor CLI (S10 `monitor`), the observation projection (`observation.adapters.monitoring_observations`), the worker-session bucket (`execution.application.worker_sessions.BUCKET`, read here as a literal)
-Entry points: CONTAINER_NAME, MAX_CONTAINERS, safe_text, ReadOnlyTransaction, ReadOnlyStore, ReadOnlyArtifacts, ReadOnlyService, read_only, container_scope, parse_observed, persisted_measurements, DatabaseFacts, audit_progress, LANE_SESSIONS_SCHEMA, LANE_SESSION_LIMIT, ACTIVE_EXECUTION, UNINSTRUMENTED, ArtifactReader, project_receipt, execution_activity, lane_artifact_resolver, lane_view, scope_label, ACTIVITY_REFS, ACTIVITY_BODY_BYTES, RECENT_TERMINAL_SECONDS, TERMINAL_EXECUTION, ARTIFACT_REF
+Owns: the monitor's collectors (S9 units U6 and U7): the read-only store, transaction, artifact and service wrappers (`ReadOnlyStore`, `ReadOnlyTransaction`, `ReadOnlyArtifacts`, `ReadOnlyService`, `read_only`), `safe_text`, `container_scope`, `parse_observed`, `persisted_measurements`, `DatabaseFacts`, `audit_progress`, the lane-session constants, the bounded activity projection (`ArtifactReader`, `project_receipt`, `execution_activity`, `lane_artifact_resolver` and the activity constants), `lane_view` and `scope_label`; the Docker and Redis sources (`docker_stats`, `docker_facts`, `redis_facts`), the eight `*_facts` projections (`fleet_facts`, `research_program_facts`, `portfolio_facts`, `fleet_backlog_facts`, `host_delivery_facts`, `worker_session_facts`, `continuation_facts`, `discovery_pressure_facts`), the lock-free lane snapshot store and resolver (`LANE_SNAPSHOT_BEGIN`, `LaneSnapshotStore`, `LaneSnapshotTransaction`, `lane_resolver`), `lane_session_facts` and `collect`
+Does not own: the processes, Redis bus, Fleet registration, owner projections and lane DSN it is handed (D1.1: `run_process`, `bus_factory`, `project`, `registered`, `dsn_for` and `CollectorPorts` are injected keyword-only, refused at first use when unwired; S10 composes them), the monitor CLI (S10 `monitor`), the observation projection (`observation.adapters.monitoring_observations`), the worker-session bucket (`execution.application.worker_sessions.BUCKET`, read here as a literal)
+Entry points: CONTAINER_NAME, MAX_CONTAINERS, safe_text, ReadOnlyTransaction, ReadOnlyStore, ReadOnlyArtifacts, ReadOnlyService, read_only, container_scope, parse_observed, persisted_measurements, DatabaseFacts, audit_progress, LANE_SESSIONS_SCHEMA, LANE_SESSION_LIMIT, ACTIVE_EXECUTION, UNINSTRUMENTED, ArtifactReader, project_receipt, execution_activity, lane_artifact_resolver, lane_view, scope_label, ACTIVITY_REFS, ACTIVITY_BODY_BYTES, RECENT_TERMINAL_SECONDS, TERMINAL_EXECUTION, ARTIFACT_REF, docker_stats, docker_facts, redis_facts, fleet_facts, research_program_facts, portfolio_facts, fleet_backlog_facts, host_delivery_facts, worker_session_facts, continuation_facts, LANE_SNAPSHOT_BEGIN, LaneSnapshotStore, LaneSnapshotTransaction, lane_resolver, lane_session_facts, discovery_pressure_facts, collect
 Contracts: INV-OBSERVATION-001, INV-LANE-SESSIONS-001
 
-Moved from M7 `adapters/monitoring.py` (SOURCE e38aa722) through named rules (S9 batch L2-B5, A/evidence/rebuild/s9/l2-b5/transcribe.py): R-c0 (the import block), R-c1 (the worker-session bucket literal and the execution-domain `status_view` home in `lane_view`), R-ch (this header); every other statement is M7's, in M7's order. The first paragraph is M7's module docstring.
+Moved from M7 `adapters/monitoring.py` (SOURCE e38aa722) through named rules (S9 batches L2-B5 and L2-B6, A/evidence/rebuild/s9/l2-b6/transcribe.py): R-c0/R-u0 (the import block), R-c1 (the worker-session bucket literal and the execution-domain `status_view` home in `lane_view`), R-u1..R-u6 (OWNER-DECISIONS-S9 D1.1: the injected seams), R-ch (this header); every other statement is M7's, in M7's order. The first paragraph is M7's module docstring.
 """
 import json
 import re
 from collections import Counter
+from concurrent.futures import ThreadPoolExecutor
 from contextlib import contextmanager
 from dataclasses import asdict
 from datetime import datetime, timezone
 from pathlib import Path
 
+from codex_harness.coordination.domain.fleet import FleetRefused
 from codex_harness.execution.domain.progress_activity import (
     BUILTIN_TOOLS,
     CODEX_ITEM_TYPES,
@@ -28,7 +30,9 @@ from codex_harness.execution.domain.progress_activity import (
     fixed_last_event,
     validate_receipt,
 )
-from codex_harness.kernel.errors import ContractError
+from codex_harness.kernel.errors import ContractError, require
+from codex_harness.observation.adapters.monitoring_observations import observation_facts
+from codex_harness.observation.application.monitoring import Monitoring
 from codex_harness.research.domain.council import TASK_STATUSES
 
 CONTAINER_NAME = re.compile(r'[A-Za-z0-9][A-Za-z0-9_.-]{0,127}')
@@ -277,11 +281,228 @@ def audit_progress(data, control):
     return list(output.values())
 
 
+def docker_stats(names, *, run_process=None):
+    if not names:
+        return {}
+    require(run_process is not None, 'run_process is not wired')
+    process = run_process(['docker', 'stats', '--no-stream', '--format', '{{json .}}', *names], timeout=15)
+    if process.returncode:
+        raise RuntimeError('Docker metrics unavailable')
+    stats = [json.loads(line) for line in process.stdout.splitlines() if line.startswith('{')]
+    return {row['Name']: row for row in stats}
+
+
+def docker_facts(repository, containers=None, *, run_process=None):
+    """Compose scope (containers None) is unchanged. Named scope lists exactly the requested
+    containers with read-only `docker ps --all` and `docker stats`; the CLI name filter matches
+    substrings, so returned names are checked exactly, unrelated containers are dropped and any
+    missing requested name makes the whole source unavailable rather than success-empty."""
+    if containers is None:
+        require(run_process is not None, 'run_process is not wired')
+        process = run_process(['docker', 'compose', 'ps', '--all', '--format', 'json'], cwd=repository, timeout=15)
+        if process.returncode:
+            raise RuntimeError('Docker status unavailable')
+        rows = [json.loads(line) for line in process.stdout.splitlines() if line.startswith('{')]
+        rows = [{'service': row['Service'], 'name': row['Name'], 'state': row['State'], 'image': row['Image']}
+                for row in rows]
+    else:
+        filters = [arg for name in containers for arg in ('--filter', f'name={name}')]
+        require(run_process is not None, 'run_process is not wired')
+        process = run_process(['docker', 'ps', '--all', '--format', '{{json .}}', *filters], timeout=15)
+        if process.returncode:
+            raise RuntimeError('Docker status unavailable')
+        listed = {}
+        for line in process.stdout.splitlines():
+            if line.startswith('{'):
+                row = json.loads(line)
+                listed[row.get('Names')] = row
+        missing = [name for name in containers if name not in listed]
+        if missing:
+            raise RuntimeError('Docker container missing')
+        rows = [{'service': name, 'name': name, 'state': listed[name].get('State'),
+                 'image': listed[name].get('Image')} for name in containers]
+    lookup = docker_stats([row['name'] for row in rows if row['state'] == 'running'], run_process=run_process)
+    return [{**row, 'cpu': lookup.get(row['name'], {}).get('CPUPerc'),
+             'memory': lookup.get(row['name'], {}).get('MemUsage')} for row in rows]
+
+
+def redis_facts(url, agents, *, bus_factory=None):
+    require(bus_factory is not None, 'bus_factory is not wired')
+    bus = bus_factory(url)
+    bus.client.connection_pool.connection_kwargs.update(socket_timeout=3, socket_connect_timeout=3)
+    output = []
+    for agent in agents:
+        key = bus.stream(agent)
+        exists = bus.client.exists(key)
+        groups = bus.client.xinfo_groups(key) if exists else []
+        output.append({'agent': agent, 'entries': bus.client.xlen(key) if exists else 0,
+                       'pending': sum(g.get('pending', 0) for g in groups),
+                       'lag': (None if any(g.get('lag') is None for g in groups)
+                               else sum(g.get('lag', 0) for g in groups)) if groups else None})
+    return output
+
+
+def fleet_facts(store, *, project=None):
+    """INV-FLEET-001 projection (`urn:zeus:fleet-status:1`) from PG reads only: identities,
+    states, codes and counts; never manifests, paths, schemas, DSNs or raw errors. Registration
+    is not service health, and `updated_at` is the last recorded fact, not liveness."""
+    require(project is not None, 'fleet projection is not wired')
+    return project(store)
+
+
+def research_program_facts(store, *, project=None):
+    """INV-RESEARCH-PROGRAM-001 projection (`urn:zeus:research-program-monitor:1`) from store reads
+    only: program states, cycle/adoption counts, outcomes and stop reasons for at most 20 programs
+    with `truncated` explicit; never configs, feed bodies, paths or raw errors."""
+    require(project is not None, 'research_program projection is not wired')
+    return project(store)
+
+
+def portfolio_facts(store, *, project=None):
+    """Operating portfolio projection (`urn:zeus:portfolio-status:1`) from store reads only: the
+    owner's goals, their criterion acceptance records, the bound jobs' identities/states/codes and
+    the failure investigation queue. Never manifests, objectives, paths, credentials or raw errors.
+    A candidate is a coarse triage family, not a confirmed cause, and an acceptance record is an
+    owner statement, not proof that the whole source was absorbed. A store failure propagates so
+    the envelope becomes `unavailable` rather than an empty portfolio."""
+    require(project is not None, 'portfolio projection is not wired')
+    return project(store)
+
+
+def fleet_backlog_facts(store, *, project=None):
+    """INV-FLEET-BACKLOG-001 projection (`urn:zeus:fleet-backlog-status:1`) for every registered
+    plan, from store reads only: plan and item identities, the pin, item state, the authoritative
+    Fleet job status, the linkage state, fixed reason codes, attempts, deferrals, counts and a
+    bounded next action. Never manifests, objectives, goal text, absolute paths, schemas, DSNs or
+    raw errors.
+
+    This is the same read-only status the `fleet backlog status` command projects; no tick happens
+    here, so nothing is selected, read from Git, enqueued, bound or written. `plan_paused`,
+    `fleet_paused`, `backlog_exhausted`, `blocked` and `conflict` stay distinct outcomes, an
+    unregistered plan is `registered: false` with an empty `plans` list rather than an absent
+    source, and a store failure propagates so the envelope becomes `unavailable` rather than an
+    empty backlog. A collected status is a selection projection only: never evidence of active
+    work, acceptance, release or deployment.
+    """
+    require(project is not None, 'fleet_backlog projection is not wired')
+    return project(store)
+
+
+def host_delivery_facts(store, *, project=None):
+    """INV-HOST-DELIVERY-001 projection (`urn:zeus:host-delivery-status:1`) for every registered
+    delivery plan and every host target, from store reads only: plan, release, target and instance
+    identities, the Git pin, descriptor DIGESTS, the durable stage, fixed reason codes, counts and
+    a bounded next action. Never a descriptor body, a host root, a service name, a scheduled task,
+    a PR title, a check log, a credential or a raw error.
+
+    This is the same read-only status the `host-delivery status` command projects; no tick happens
+    here, so nothing is published, merged, switched, started or written. `awaiting_review`,
+    `awaiting_ci`, `switching`, `awaiting_consumption`, `active`, `blocked`, `rolling_back` and
+    `rolled_back` stay distinct, a target whose descriptor was switched but NOT consumed reports
+    `consumed: false` rather than an activation, an unregistered controller is `registered: false`
+    with an empty list rather than an absent source, and a store failure propagates so the envelope
+    becomes `unavailable` rather than an empty delivery. A collected status is a durable-record
+    projection only: never evidence of a qualified live host or a passed owner canary.
+    """
+    require(project is not None, 'host_delivery projection is not wired')
+    return project(store)
+
+
+def worker_session_facts(store, *, project=None):
+    """INV-WORKER-SESSION-001 projection (`zeus.worker-session.v1`) of every durable task session,
+    from store reads only: task and session identifiers, state, version, the running owner's
+    execution/generation/attempt, the binding as ONE digest, archive references and hashes, review
+    decision ids and outcomes, promotion/cleanup records, per-state counts and the fixed next owner
+    and next action (blocked, unresolved and cleanup-failed sessions name the operator). Never
+    transcript bytes, archive paths, prompts or the raw binding values.
+
+    This is the same read-only status `worker-session status` prints; no archive is read, nothing
+    is begun, resumed, promoted or closed, and a store failure propagates so the envelope becomes
+    `unavailable` rather than an empty list. A collected status is not a transcript continuity
+    proof, an acceptance, a promotion or evidence that any model call ran.
+    """
+    require(project is not None, 'worker_session projection is not wired')
+    return project(store)
+
+
+def continuation_facts(store, *, project=None):
+    """INV-CONTINUATION-001 projection (`urn:zeus:continuation-status:1`) from store reads only:
+    registered policies (id, enabled, digest, pin), every intent's routing-table route, state,
+    cause code, next owner and next action, evidence references and predecessor/successor links,
+    per-state counts and the held families. Never a manifest, an objective, review text, a
+    transcript, a path or a credential; nothing is ticked, dispatched or admitted, and a store
+    failure propagates so the envelope becomes `unavailable` rather than an empty list."""
+    require(project is not None, 'continuation projection is not wired')
+    return project(store)
+
+
 LANE_SESSIONS_SCHEMA = 'urn:zeus:lane-sessions:1'
 LANE_SESSION_LIMIT = 50
 ACTIVE_EXECUTION = frozenset({'queued', 'pending', 'retry', 'running'})
 UNINSTRUMENTED = ('sessions started outside Zeus task ownership (an external coordinator or helper process) '
                   'are not observed here and are never inferred from unit names or process ids')
+
+
+LANE_SNAPSHOT_BEGIN = 'BEGIN ISOLATION LEVEL REPEATABLE READ READ ONLY'
+
+
+class LaneSnapshotStore:
+    """A lane store for the monitor that never takes the writers' advisory lock
+    (`PostgresStore.transaction` serializes every writer of the database through it). Each
+    transaction is ONE `REPEATABLE READ READ ONLY` snapshot (the council_snapshot pattern) with
+    bounded connect and statement timeouts, over a connection whose selected schema is verified to be
+    the lane's; it is always rolled back, and a write is refused here and by the server."""
+
+    def __init__(self, dsn, schema, *, connect=None, statement_timeout_ms=5000):
+        if connect is None:  # imported lazily so a store-free unit test needs no driver
+            import psycopg
+            connect = psycopg.connect
+        self.dsn, self.schema, self.connect, self.statement_timeout_ms = dsn, schema, connect, statement_timeout_ms
+
+    @contextmanager
+    def transaction(self):
+        with self.connect(self.dsn, connect_timeout=5, autocommit=True) as conn:
+            conn.execute(LANE_SNAPSHOT_BEGIN)
+            try:
+                conn.execute("SET LOCAL statement_timeout = '%dms'" % self.statement_timeout_ms)
+                if conn.execute('SELECT current_schema()').fetchone()[0] != self.schema:
+                    raise ContractError('Lane snapshot selected another schema')
+                yield LaneSnapshotTransaction(conn)
+            finally:
+                conn.execute('ROLLBACK')
+
+
+class LaneSnapshotTransaction:
+    def __init__(self, conn):
+        self._conn = conn
+
+    def get(self, bucket, key):
+        row = self._conn.execute('SELECT body FROM documents WHERE bucket=%s AND id=%s', (bucket, key)).fetchone()
+        return row[0] if row else None
+
+    def scan(self, bucket):
+        return [row[0] for row in self._conn.execute(
+            'SELECT body FROM documents WHERE bucket=%s ORDER BY id', (bucket,)).fetchall()]
+
+    def put(self, *args, **kwargs):
+        raise ContractError('Monitor store is read-only')
+
+
+def lane_resolver(host_dsn, store_factory=None, *, dsn_for=None):
+    """`lane -> read-only store` over the lane's own schema through the SAME `lane_dsn` path the Fleet
+    launcher and the owner actions use (no second registry). Cached per (lane id, schema), so a
+    changed registration never reuses another schema's store; nothing is created here. The default
+    store is the lock-free `LaneSnapshotStore`; `store_factory(dsn, schema)` is injectable."""
+    require(dsn_for is not None, 'dsn_for is not wired')
+    store_factory = store_factory or LaneSnapshotStore
+    cache = {}
+
+    def resolve(lane):
+        key = (lane['id'], lane['schema'])
+        if key not in cache:
+            cache[key] = ReadOnlyStore(store_factory(dsn_for(host_dsn, lane['schema']), lane['schema']))
+        return cache[key]
+    return resolve
 
 
 # ----- S2a activity pane (INV-LANE-SESSIONS-001 activity; FLEET-S2-SPEC) ---------------------------------------
@@ -715,8 +936,103 @@ def lane_view(store, reader=None, now=None, recent_terminal_seconds=RECENT_TERMI
             'worker_sessions': dict(Counter(view['state'] for view in sessions.values()))}
 
 
+def lane_session_facts(store, resolve, artifacts=None, now=None, *, registered=None):
+    """INV-LANE-SESSIONS-001 (`urn:zeus:lane-sessions:1`): every REGISTERED lane's executions, read
+    from the lane's own store (the control store holds none of them). Each lane fails independently as `unavailable` with its
+    error type only, never as an empty ok lane. An unregistered Fleet is `registered: false` with no
+    lane (as the `fleet` source reports it); any other store failure propagates so the envelope is
+    `unavailable`. `coverage.uninstrumented` names what this source cannot see. A collected row is
+    a durable-record projection only: never evidence of useful progress, acceptance or delivery."""
+    require(registered is not None, 'registered is not wired')
+    try:
+        lanes = registered(store)['config']['lanes']
+    except FleetRefused as exc:
+        if exc.reason_code != 'unregistered':
+            raise
+        lanes = None
+    views = []
+    for lane in lanes or ():
+        observed = datetime.now(timezone.utc).isoformat()
+        try:
+            view = {'status': 'ok', **lane_view(resolve(lane), artifacts(lane) if artifacts else None, now)}
+        except Exception as exc:
+            view = {'status': 'unavailable', 'error': type(exc).__name__}
+        views.append({'lane': lane['id'], 'team': lane.get('team'), 'observed_at': observed, **view})
+    observed = sum(view['status'] == 'ok' for view in views)
+    return {'schema': LANE_SESSIONS_SCHEMA, 'registered': lanes is not None,
+            'authority': 'durable-record projection; not progress, acceptance or delivery evidence',
+            'lanes': views,
+            'coverage': {'lanes_registered': len(lanes or ()), 'lanes_observed': observed,
+                         'lanes_unavailable': len(views) - observed, 'uninstrumented': [UNINSTRUMENTED]}}
+
+
+def discovery_pressure_facts(store, *, project=None):
+    """INV-DISCOVERY-PRESSURE-001 projection (`urn:zeus:discovery-pressure:1`) from store reads only: the
+    recorded proactive-discovery decision, its hysteresis state, W/C (null when unknown, never 0), occupancy,
+    basis and policy, or `evaluated: false` when no evaluator ever ran. Reading never evaluates or writes; a
+    store failure propagates so the envelope becomes `unavailable`."""
+    require(project is not None, 'discovery_pressure projection is not wired')
+    return project(store)
+
+
 def scope_label(repository, label=None):
     """ZEUS_MONITOR_SCOPE names what is observed; the default is the repository name. It is a
     label for the page toolbar, not a status or success claim."""
     text = safe_text(label, 200).strip()
     return text or f'repository {Path(repository).resolve().name}'
+
+
+def collect(service, artifacts, repository, redis_url, containers=None, scope=None, runtime=None, lanes=None,
+            lane_artifacts=None, *, ports=None):
+    """The three legacy sources (`database`, `docker`, `redis`) plus the additive store-backed
+    projections; with a runtime directory also `observations` (observatory-001) and with a lane
+    resolver also `lane_sessions`. Every envelope fails independently."""
+    require(ports is not None, 'collector ports are not wired')
+    def sample(callback):
+        try:
+            return {'status': 'ok', 'observed_at': datetime.now(timezone.utc).isoformat(), 'data': callback()}
+        except Exception as exc:
+            return {'status': 'unavailable', 'observed_at': datetime.now(timezone.utc).isoformat(),
+                    'error': type(exc).__name__, 'data': None}
+    def database():
+        # Read-only: stored facts plus already persisted observations; nothing is evaluated or written.
+        return {**Monitoring(DatabaseFacts(service, artifacts)).snapshot(),
+                'measurements': persisted_measurements(service.store)}
+    jobs = {'database': database,
+            'docker': lambda: docker_facts(repository, containers, run_process=ports.run_process),
+            'redis': lambda: redis_facts(redis_url, service.org.agents, bus_factory=ports.bus_factory),
+            # Additive fleet envelope (INV-FLEET-001): same read-only store, fails independently.
+            'fleet': lambda: fleet_facts(service.store, project=ports.fleet),
+            # Additive research-program envelope (INV-RESEARCH-PROGRAM-001): same read-only store, fails independently.
+            'research_programs': lambda: research_program_facts(service.store, project=ports.research_program),
+            # Additive portfolio envelope (operating-portfolio-001): same read-only store, fails independently.
+            'portfolio': lambda: portfolio_facts(service.store, project=ports.portfolio),
+            # Additive approved-backlog envelope (INV-FLEET-BACKLOG-001): same read-only store,
+            # fails independently, and never ticks the backlog it observes.
+            'fleet_backlog': lambda: fleet_backlog_facts(service.store, project=ports.fleet_backlog),
+            # Additive host-delivery envelope (INV-HOST-DELIVERY-001): same read-only store, fails
+            # independently, and never ticks, publishes, merges or switches what it observes.
+            'host_delivery': lambda: host_delivery_facts(service.store, project=ports.host_delivery),
+            # Additive worker-session envelope (INV-WORKER-SESSION-001): same read-only store, fails
+            # independently, and never reads an archive, resumes, promotes or closes what it observes.
+            'worker_sessions': lambda: worker_session_facts(service.store, project=ports.worker_session),
+            # Additive continuation envelope (INV-CONTINUATION-001): same read-only store, fails
+            # independently, and never ticks, dispatches or admits what it observes.
+            'continuation': lambda: continuation_facts(service.store, project=ports.continuation),
+            # Additive discovery-pressure envelope (INV-DISCOVERY-PRESSURE-001): same read-only store, fails
+            # independently, and never evaluates, initializes or writes the pressure row.
+            'discovery_pressure': lambda: discovery_pressure_facts(service.store, project=ports.discovery_pressure)}
+    if runtime is not None:
+        jobs['observations'] = lambda: observation_facts(service.store, runtime)
+    if lanes is not None:
+        # Additive lane-session envelope: every registered lane's own read-only store, each lane
+        # failing independently inside it; nothing is written, ticked or resumed.
+        jobs['lane_sessions'] = lambda: lane_session_facts(service.store, lanes, lane_artifacts, registered=ports.registered)
+    with ThreadPoolExecutor(max_workers=4) as pool:
+        futures = {name: pool.submit(sample, callback) for name, callback in jobs.items()}
+        sources = {name: future.result() for name, future in futures.items()}
+    return {'schema': 'harness-monitor.v1', 'collected_at': datetime.now(timezone.utc).isoformat(),
+            'scope': {'label': scope_label(repository, scope),
+                      'docker': 'named' if containers is not None else 'compose',
+                      'containers': list(containers) if containers is not None else None},
+            'sources': sources}
