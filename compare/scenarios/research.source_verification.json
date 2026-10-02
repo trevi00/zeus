@@ -2,8 +2,7 @@
  "family": "research.source_verification",
  "description": "S8 (V18 R-sv1) M7 adapters/source_verification.py GitSourceVerifier over a labelled fake subprocess.run and console-kwargs helper (inventory of a blob, symlink, raw tab/newline path and submodule; the cross-repository, commit, tree, object, manifest and inventory refusals; the git call shape), characterized before the move; no git process; M7's FileArtifacts over a run-scoped directory",
  "reference_driver": "drivers/reference/s8_source_verification.py",
- "target_driver": null,
+ "target_driver": "drivers/target/s8_source_verification.py",
  "golden": "goldens/reference/research.source_verification.json",
- "slice": "S8",
- "target_status": "pending S8 pilot 91 (V18): the module moves with its injected host_os ports"
+ "slice": "S8"
 }

@@ -2,8 +2,7 @@
  "family": "research.decision_feedback_registry",
  "description": "S8 (V18 R-df1) M7 adapters/decision_feedback.py load_registry over a labelled fake GitSource (commit missing, blob missing, non-regular modes, oversized, invalid JSON/UTF-8, duplicate keys, schema/entry refusals, a valid registry, the pin refusals), characterized before the move; no git process, no store",
  "reference_driver": "drivers/reference/s8_decision_feedback_registry.py",
- "target_driver": null,
+ "target_driver": "drivers/target/s8_decision_feedback_registry.py",
  "golden": "goldens/reference/research.decision_feedback_registry.json",
- "slice": "S8",
- "target_status": "pending S8 pilot 91 (V18): the module moves with its injected host_os ports"
+ "slice": "S8"
 }

@@ -2,8 +2,7 @@
  "family": "research.reverse_source",
  "description": "S8 (V18 R-rs1) M7 adapters/reverse_source.py observe_source over a labelled fake run_process (clean, dirty, not the worktree root, HEAD changed, git failure at each step and a raising runner -> unknown, the tree resolved from the captured commit, stripped output), characterized before the move; no git process",
  "reference_driver": "drivers/reference/s8_reverse_source.py",
- "target_driver": null,
+ "target_driver": "drivers/target/s8_reverse_source.py",
  "golden": "goldens/reference/research.reverse_source.json",
- "slice": "S8",
- "target_status": "pending S8 pilot 91 (V18): the module moves with its injected host_os ports"
+ "slice": "S8"
 }
