@@ -6,8 +6,10 @@
 # here: ProtectSystem=strict with no ReadWritePaths). No secret appears in this unit: no Environment= or EnvironmentFile=
 # carries one.
 #
-# Stop: SIGTERM only sets the loop's flag (RESEARCH-D D1), so the stop latency is recv_timeout plus one in-flight step.
-# TimeoutStopSec must exceed recv_timeout + one tick of config.template.json, or SIGKILL lands mid-pass (D2).
+# Stop: SIGTERM only sets the loop's flag (RESEARCH-D D1); the passes read it before each channel, page and outbox row,
+# and every relay request is bounded by op_deadline_seconds (a TOTAL wall time, AUTH retry included). The stop bound is
+# op_deadline_seconds + one store transaction (5 s). TimeoutStopSec must be at least op_deadline_seconds + 5 of
+# config.template.json, or SIGKILL lands mid-pass (D2, D5 F1).
 [Unit]
 Description=Zeus Buzz bridge
 After=network-online.target

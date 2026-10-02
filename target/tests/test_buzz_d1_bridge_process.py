@@ -54,7 +54,7 @@ class Inbound:
     def __init__(self, calls, relay):
         self.calls, self.relay, self.script, self.generations = calls, relay, [], []
 
-    def run(self, generation):
+    def run(self, generation, *, stop=None):
         self.calls.append("inbound")
         self.generations.append(generation)
         step = self.script.pop(0) if self.script else None
@@ -88,11 +88,11 @@ class Outbox:
     def __init__(self, calls):
         self.calls = calls
 
-    def deliver(self, generation):
+    def deliver(self, generation, *, stop=None):
         self.calls.append("deliver")
         return {"sent": 0}
 
-    def recover_deferred(self, generation, regenerate):
+    def recover_deferred(self, generation, regenerate, *, stop=None):
         self.calls.append("recover")
         return {}
 

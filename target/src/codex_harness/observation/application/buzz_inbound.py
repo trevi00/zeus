@@ -21,9 +21,16 @@ EOSE and short pages are observations, never proof (§6.2 step 4): a finished pa
 `gap_unknown`, with the `ended` reason, and stays an unresolved checkpoint until its upper bound is older than
 `now - LOOKBACK`; it then retires from the operational view but stays recorded. A crash leaves the pass
 `running` with its keyset, and the next run resumes it with `until` + `before_id` (the relay's composite keyset).
+
+A cooperative stop (D5 F1, DESIGN-D §2): `run(generation, stop=...)` reads `stop` before each channel and hands it to
+the relay's pager, which reads it before each page. Once it is true no further network work starts; the current atomic
+unit finishes (the pages already read are committed, then the pending owner rows are sunk). A pass the pager ended with
+`stopped` is NOT finished: it stays `running` with its keyset, so the next run resumes it from the first unread page.
 """
 
 from __future__ import annotations
+
+from collections.abc import Callable
 
 LOOKBACK = 780  # COMMAND_TTL 600 + MAX_SKEW 60 + DELIVERY_SLACK 120 (§6.2.1)
 PASSES = "buzz_passes"
@@ -35,9 +42,17 @@ class InboundPass:
         self.store, self.relay, self.inbox, self.lease, self.sink = store, relay, inbox, lease, sink
         self.owners, self.channels, self.clock, self.lookback = frozenset(owners), tuple(channels), clock, lookback
 
-    def run(self, generation: int) -> dict:
-        """Run every bound channel once under `generation`; the per-channel result."""
-        return {channel: self._channel(channel, generation) for channel in self.channels}
+    def run(self, generation: int, *, stop: Callable[[], bool] | None = None) -> dict:
+        """Run every bound channel once under `generation`; the per-channel result.
+
+        With `stop`, the channels after the one in flight when it became true are not started (absent from the result).
+        """
+        report = {}
+        for channel in self.channels:
+            if stop is not None and stop():
+                break
+            report[channel] = self._channel(channel, generation, stop)
+        return report
 
     def compact(self, generation: int) -> int:
         """Reclaim processed no-command inbox bodies older than `lookback + 24 h` (§6.2 F6; DA-R1)."""
@@ -48,20 +63,23 @@ class InboundPass:
 
     # -- one channel ------------------------------------------------------------------------------------
 
-    def _channel(self, channel: str, generation: int) -> dict:
+    def _channel(self, channel: str, generation: int, stop: Callable[[], bool] | None = None) -> dict:
         now = int(self.clock())
         key, record = self._open_pass(channel, generation, now)
         self._advance_cursor(channel, generation, record["high"])  # a crashed run's cursor catches up first
         query = {"kinds": [9], "#h": [channel], "since": record["lower"]}
         if record["keyset"] is not None:
             query["until"], query["before_id"] = record["keyset"]
-        result = self.relay.query_all(query)
+        result = self.relay.query_all(query, stop=stop) if stop is not None else self.relay.query_all(query)
         events = sorted(result["events"], key=lambda event: (-event["created_at"], event["id"]))
         inserted = 0
         for event in events:
             inserted += self._commit_event(channel, generation, key, event, now) == "inserted"
             self._advance_cursor(channel, generation, self._read_pass(key)["high"])
         processed, failed = self._sink_pending(channel, generation)
+        if result["ended"] == "stopped":  # D5 F1: unfinished, not a gap observation; the next run resumes the keyset
+            return {"ended": "stopped", "events": len(events), "inserted": inserted, "sunk": processed,
+                    "sink_failed": failed, "lower": record["lower"], "pass": key}
         with self.store.transaction() as tx:
             self.lease.require_current(tx, generation)
             record = tx.get(PASSES, key)

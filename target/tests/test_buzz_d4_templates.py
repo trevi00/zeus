@@ -89,7 +89,7 @@ def test_the_config_lists_every_bridge_config_key_with_the_code_defaults():
     assert set(document) == set(fields)
     for key, field in fields.items():
         if key in ("organization_file", "tick_seconds", "lease_ttl_seconds", "recv_timeout", "max_seconds",
-                   "recover_every", "store_fail_limit", "max_size"):
+                   "recover_every", "store_fail_limit", "max_size", "op_deadline_seconds"):
             assert document[key] == field.default, key
     for key in ("relay_url", "custody_dir", "store_dsn_file", "org_d"):
         assert re.fullmatch(r"@[A-Z_]+@", document[key]), key
@@ -143,15 +143,15 @@ def test_the_docker_socket_is_refused(tmp_path):
                      "docker socket")
 
 
-def test_a_stop_timeout_not_above_recv_timeout_plus_a_tick_is_refused(tmp_path):
+def test_a_stop_timeout_below_op_deadline_plus_five_is_refused(tmp_path):
     expect_violation(tmp_path, UNIT, "TimeoutStopSec=30", "TimeoutStopSec=5", "stop-timeout", "TimeoutStopSec=5")
-    expect_violation(tmp_path, UNIT, "TimeoutStopSec=30", "TimeoutStopSec=15", "stop-timeout")  # equal to 10 + 5
-    code, out = lint(plant(tmp_path, UNIT, "TimeoutStopSec=30", "TimeoutStopSec=16s"))
+    expect_violation(tmp_path, UNIT, "TimeoutStopSec=30", "TimeoutStopSec=24", "stop-timeout")  # below 20 + 5
+    code, out = lint(plant(tmp_path, UNIT, "TimeoutStopSec=30", "TimeoutStopSec=25s"))
     assert code == 0, out
 
 
-def test_the_stop_timeout_follows_the_config_templates_recv_timeout(tmp_path):
-    target = plant(tmp_path, CONFIG, '"recv_timeout": 10', '"recv_timeout": 40')
+def test_the_stop_timeout_follows_the_config_templates_op_deadline(tmp_path):
+    target = plant(tmp_path, CONFIG, '"op_deadline_seconds": 20', '"op_deadline_seconds": 40')
     code, out = lint(target)
     assert code == 1 and "stop-timeout" in out, out
 

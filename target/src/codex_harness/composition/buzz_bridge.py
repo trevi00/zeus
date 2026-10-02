@@ -10,8 +10,11 @@ Contracts: INV-OBSERVATION-001, INV-EXECUTION-IDENTITY-001 (Buzz DESIGN §6.4-§
 
 One process, one relay connection, no threads: the relay client is sync and not thread-safe, and every inbound step
 is a pass-based reconciliation, not a live subscription. A tick is lease, inbound pass, projection plan, outbox
-delivery, housekeeping, then a sliced wait. The stop flag is read between steps and in the wait slices, so the stop
-latency is at most `recv_timeout` plus one step. The lease is never released on exit: the next start acquires a new
+delivery, housekeeping, then a sliced wait. The stop flag is read between steps, in the wait slices AND inside the
+steps (D5 F1): before each channel and each page of the inbound pass and before each outbox row, so once it is set no
+new network work starts. The relay client bounds every request by `op_deadline_seconds` (one total wall time, AUTH retry
+included, not a per-receive timeout), so the documented stop bound is `op_deadline_seconds` plus one store transaction;
+the unit's `TimeoutStopSec` must be at least that bound. The lease is never released on exit: the next start acquires a new
 generation and a stale instance commits nothing (every use-case transaction re-reads the generation). The owner id
 is unique per process because `BridgeLease.acquire` advances the generation even for the same owner id.
 
@@ -57,7 +60,7 @@ AUTH_ROLE = SIGNING_ROLE  # DESIGN §6.2.1: the bridge AUTHs (NIP-42) with its c
 _REQUIRED = ("relay_url", "channels", "owners", "custody_dir", "store_dsn_file", "commander_channel", "org_d",
              "team_channels")
 _OPTIONAL = {"tick_seconds": 5, "lease_ttl_seconds": 30, "recv_timeout": 10, "max_seconds": 900, "recover_every": 12,
-             "store_fail_limit": 12, "max_size": 1 << 20}
+             "store_fail_limit": 12, "max_size": 1 << 20, "op_deadline_seconds": 20}
 _STRINGS = ("relay_url", "custody_dir", "store_dsn_file", "commander_channel", "org_d")
 _HEX64 = frozenset("0123456789abcdef")
 _CUSTODY_LEGAL = re.compile(r"[a-z0-9_-]+")
@@ -112,6 +115,7 @@ class BridgeConfig:
     recover_every: int = 12
     store_fail_limit: int = 12
     max_size: int = 1 << 20
+    op_deadline_seconds: float = 20
 
     @classmethod
     def parse(cls, document: dict) -> BridgeConfig:
@@ -148,12 +152,15 @@ class BridgeConfig:
         tick = _number(document, "tick_seconds", 1, 60)
         ttl = _number(document, "lease_ttl_seconds", 0)
         require(ttl > 3 * tick, "buzz bridge config: lease_ttl_seconds must exceed three ticks")
+        recv = _number(document, "recv_timeout", 0.001)
+        op_deadline = _number(document, "op_deadline_seconds", 0.001)
+        require(op_deadline > recv, "buzz bridge config: op_deadline_seconds must exceed recv_timeout")  # D5 F1
         config = cls(document["relay_url"], tuple(document["channels"]), tuple(document["owners"]),
                      document["custody_dir"], document["store_dsn_file"], document["commander_channel"],
                      document["org_d"], dict(teams), organization_file, tick, ttl,
-                     _number(document, "recv_timeout", 0.001), _number(document, "max_seconds", 0),
+                     recv, _number(document, "max_seconds", 0),
                      _whole(document, "recover_every", 1), _whole(document, "store_fail_limit", 1),
-                     _whole(document, "max_size", 1))
+                     _whole(document, "max_size", 1), op_deadline)
         config.load_organization()  # an unreadable or invalid organization file is refused with the config
         return config
 
@@ -295,7 +302,7 @@ class BridgeRuntime:
         tick.generation = generation
         if stop():
             return generation, None, False
-        report = self.inbound.run(generation)
+        report = self.inbound.run(generation, stop=stop)
         tick.steps["inbound"] = _inbound_counts(report)
         ended = {result["ended"] for result in report.values()}
         if "closed:restricted" in ended:  # DESIGN-D §2: configuration, final, no retry storm
@@ -308,10 +315,10 @@ class BridgeRuntime:
         tick.steps["plan"] = self.projection.plan(generation)
         if stop():
             return generation, None, False
-        tick.steps["deliver"] = self.outbox.deliver(generation)
+        tick.steps["deliver"] = self.outbox.deliver(generation, stop=stop)
         if stop():
             return generation, None, False
-        self._housekeeping(tick, generation, number)
+        self._housekeeping(tick, generation, number, stop)
         return generation, None, False
 
     def _lease(self, generation):
@@ -322,9 +329,9 @@ class BridgeRuntime:
             self.lease.renew(tx, self.owner_id, generation, now, ttl)
             return generation
 
-    def _housekeeping(self, tick: _Tick, generation: int, number: int) -> None:
+    def _housekeeping(self, tick: _Tick, generation: int, number: int, stop: Callable[[], bool]) -> None:
         if number % self.config.recover_every == 0:
-            tick.steps["recover"] = self.outbox.recover_deferred(generation, self.projection.regenerate)
+            tick.steps["recover"] = self.outbox.recover_deferred(generation, self.projection.regenerate, stop=stop)
         if self._compacted_at is None or self.monotonic() - self._compacted_at >= COMPACT_EVERY_SECONDS:
             tick.steps["compact"] = self.inbound.compact(generation)  # first active tick, then hourly
             self._compacted_at = self.monotonic()
@@ -361,7 +368,8 @@ def default_relay(config: BridgeConfig, signer) -> BuzzRelayClient:
             return verify_event(event)
 
     return BuzzRelayClient(config.relay_url, auth_signer=signer, auth_role=AUTH_ROLE, verifier=_Verifier(),
-                           max_size=config.max_size, recv_timeout=config.recv_timeout)
+                           max_size=config.max_size, recv_timeout=config.recv_timeout,
+                           op_deadline=config.op_deadline_seconds)
 
 
 def default_store(dsn: str):

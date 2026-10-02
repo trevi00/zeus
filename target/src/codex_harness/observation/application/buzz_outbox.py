@@ -21,6 +21,10 @@ passes and 10 minutes. A state subject reconciles by `ids`; no positive match re
 plan answers `{"superseded": True}` and the op is retired. A relay `conflict:` rejection of a state row (a lost CAS)
 ends its window like a timestamp rejection (§6.1.5).
 
+Cooperative stop (D5 F1, DESIGN-D §2): `deliver` and `recover_deferred` take an optional `stop` and read it before each
+row (and before a re-publication's send); once it is true no further relay call starts. The row in flight finishes, every
+unstarted row stays `pending`/`unknown` (or the deferred watermark stays), so the next pass resumes it exactly once.
+
 Capacity (§6.1 step 6, P6). `pending`, `in_flight` and `unknown` rows of every class count against `outbox_max`,
 checked in the transaction that would add a row. Over the bound the work is DEFERRED, never dropped: no row, a
 per-class watermark (the last op enqueued before the first deferral), and one coalesced `outbox_capacity` alert.
@@ -153,7 +157,7 @@ class BuzzOutbox:
 
     # -- delivery ---------------------------------------------------------------------------------------
 
-    def deliver(self, generation: int) -> dict:
+    def deliver(self, generation: int, *, stop: Callable[[], bool] | None = None) -> dict:
         """One pass over the pending and unknown rows, oldest first; the per-outcome counts."""
         counts = dict.fromkeys(("sent", "acknowledged", "unknown", "reconciled", "republished", "replanned",
                                 "superseded"), 0)
@@ -163,6 +167,8 @@ class BuzzOutbox:
                 (row for row in tx.scan(OUTBOX) if row["status"] in ("pending", "unknown")),
                 key=lambda row: (row["created_at"], row["subject"], row["version"]))]
         for op_id in ids:
+            if stop is not None and stop():
+                break  # D5 F1: the rest stays pending or unknown for the next pass
             with self.store.transaction() as tx:
                 self.lease.require_current(tx, generation)
                 row = tx.get(OUTBOX, op_id)
@@ -172,7 +178,7 @@ class BuzzOutbox:
             if not row["reconcile"] and now - row["created_at"] < self.drift_window:
                 self._resend(generation, row, now, counts)
             elif row["cls"] == "append":
-                self._reconcile_append(generation, row, now, counts)
+                self._reconcile_append(generation, row, now, counts, stop)
             else:
                 self._reconcile_state(generation, row, now, counts)
         return counts
@@ -201,7 +207,8 @@ class BuzzOutbox:
         counts["acknowledged"] += accepted is True
         counts["unknown"] += accepted is None
 
-    def _reconcile_append(self, generation: int, row: dict, now: int, counts: dict) -> None:
+    def _reconcile_append(self, generation: int, row: dict, now: int, counts: dict,
+                          stop: Callable[[], bool] | None = None) -> None:
         """§6.1 step 4, append-only: by the `zr-op` tag; absence is never concluded; re-publication is throttled."""
         tag = next(tag[1] for tag in row["event"]["tags"] if tag[:1] == [OP_TAG])
         found = self._match(
@@ -229,6 +236,8 @@ class BuzzOutbox:
             status="unknown", event=fresh, event_id=fresh["id"], created_at=now, stalled_passes=0,
             last_republish_at=now, reconcile=False))
         counts["republished"] += 1
+        if stop is not None and stop():
+            return  # D5 F1: the fresh copy is stored; the next pass resends it within its drift window
         self._resend(generation, {**row, "event": fresh}, now, counts)
 
     def _reconcile_state(self, generation: int, row: dict, now: int, counts: dict) -> None:
@@ -297,7 +306,8 @@ class BuzzOutbox:
 
     # -- recovery ---------------------------------------------------------------------------------------
 
-    def recover_deferred(self, generation: int, regenerate: Callable[[str, list | None], list[dict]]) -> dict:
+    def recover_deferred(self, generation: int, regenerate: Callable[[str, list | None], list[dict]], *,
+                         stop: Callable[[], bool] | None = None) -> dict:
         """Regenerate deferred work oldest-first once capacity frees; `{cls: count enqueued}`.
 
         `regenerate(cls, after_watermark)` stands in for the audit records (Batch B): it returns
@@ -315,6 +325,9 @@ class BuzzOutbox:
             recovered[cls] = 0
             complete = True
             for item in regenerate(cls, last):
+                if stop is not None and stop():
+                    complete = False  # D5 F1: the watermark stays at the last op that fit; the next pass resumes
+                    break
                 with self.store.transaction() as tx:
                     self.lease.require_current(tx, generation)
                     outcome = self._enqueue(tx, item["subject"], item["version"], item["unsigned"], cls, self.role,

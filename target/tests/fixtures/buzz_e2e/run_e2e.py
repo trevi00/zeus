@@ -1166,8 +1166,11 @@ def line_of(text, needle):
     return 1
 
 
+STORE_TX_SECONDS = 5  # the documented stop bound is op_deadline_seconds plus one store transaction (D5 F1)
+
+
 def lint_unit(text, config_seconds):
-    """Violations `(line, rule, detail)` of the bridge unit; `config_seconds` is recv_timeout plus one tick."""
+    """Violations `(line, rule, detail)` of the bridge unit; `config_seconds` is the stop bound: op_deadline_seconds + 5."""
     found, directives = [], {}
     for number, raw in enumerate(text.splitlines(), 1):
         line = raw.strip()
@@ -1201,24 +1204,28 @@ def lint_unit(text, config_seconds):
         seconds = seconds_of(value)
         if seconds is None:
             found.append((number, "stop-timeout", f"TimeoutStopSec={value} is not a time span"))
-        elif seconds <= config_seconds:
+        elif seconds < config_seconds:
             found.append((number, "stop-timeout",
-                          f"TimeoutStopSec={value} is not above recv_timeout plus one tick ({config_seconds:g}s)"))
+                          f"TimeoutStopSec={value} is below the stop bound op_deadline_seconds plus {STORE_TX_SECONDS}s "
+                          f"({config_seconds:g}s)"))
     return found
 
 
 def lint_config(text):
-    """`(violations, recv_timeout + tick)` of the bridge config template: unknown keys, secret literals, `BridgeConfig.parse`."""
+    """`(violations, stop bound)` of the bridge config template: unknown keys, secret literals, `BridgeConfig.parse`.
+
+    The stop bound is `op_deadline_seconds` plus one store transaction (a request's total time, not a receive timeout)."""
     defaults = {name: field.default for name, field in BridgeConfig.__dataclass_fields__.items()}
     found = []
     try:
         document = json.loads(text)
     except ValueError as exc:
-        return [(1, "config", f"not JSON: {exc}")], defaults["recv_timeout"] + defaults["tick_seconds"]
+        return [(1, "config", f"not JSON: {exc}")], defaults["op_deadline_seconds"] + STORE_TX_SECONDS
     if not isinstance(document, dict):
-        return [(1, "config", "a JSON object is required")], defaults["recv_timeout"] + defaults["tick_seconds"]
-    seconds = sum(document.get(name, defaults[name]) for name in ("recv_timeout", "tick_seconds")
-                  if isinstance(document.get(name, defaults[name]), (int, float)))
+        return [(1, "config", "a JSON object is required")], defaults["op_deadline_seconds"] + STORE_TX_SECONDS
+    deadline = document.get("op_deadline_seconds", defaults["op_deadline_seconds"])
+    seconds = (deadline if isinstance(deadline, (int, float)) and not isinstance(deadline, bool)
+               else defaults["op_deadline_seconds"]) + STORE_TX_SECONDS
 
     def walk(key, value):
         if isinstance(value, dict):
@@ -1328,8 +1335,7 @@ def lint_templates(directory):
         except OSError as exc:
             out.append(f"{relative}:1: missing: {type(exc).__name__} reading the template")
     found = {}
-    config_seconds = BridgeConfig.__dataclass_fields__["recv_timeout"].default + BridgeConfig.__dataclass_fields__[
-        "tick_seconds"].default
+    config_seconds = BridgeConfig.__dataclass_fields__["op_deadline_seconds"].default + STORE_TX_SECONDS
     if BRIDGE_CONFIG in texts:
         found[BRIDGE_CONFIG], config_seconds = lint_config(texts[BRIDGE_CONFIG])
     if BRIDGE_UNIT in texts:

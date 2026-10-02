@@ -19,12 +19,17 @@ environment's proxy is never used, and a frame over `max_size` closes the connec
 `legacy=True` is the documented way in websockets 17 to get the connection object directly (without it every
 send warns that `connect()` must be used as a context manager).
 The client is not thread-safe: one caller drives one connection.
+
+One operation deadline (`op_deadline`, D5 F1): the TOTAL wall time of one request (a query, one `query_all` page or a
+publish, including its AUTH retry), measured on the injected `clock`. It is checked in the receive loop, so frames
+that keep arriving but answer nothing cannot extend it, and the receive timeout is clipped to what is left.
 """
 
 from __future__ import annotations
 
 import time
 from collections.abc import Callable, Iterator
+from contextlib import contextmanager
 
 from codex_harness.kernel.errors import ContractError
 from codex_harness.observation.domain import nostr_event as ne
@@ -80,11 +85,14 @@ class BuzzRelayClient:
     def __init__(self, url: str, *, auth_signer: EventSigner, auth_role: str, verifier: EventVerifier,
                  connect: Callable | None = None, clock: Callable[[], float] = time.time,
                  sleep: Callable[[float], None] = time.sleep, max_size: int, open_timeout: float = 10,
-                 recv_timeout: float = 30, page: int = 1000):
+                 recv_timeout: float = 30, page: int = 1000, op_deadline: float | None = None):
         if isinstance(page, bool) or not isinstance(page, int) or page < 1:
             raise ContractError("relay: page is a positive integer")
         if isinstance(max_size, bool) or not isinstance(max_size, int) or max_size < 1:
             raise ContractError("relay: max_size is a positive integer")
+        if op_deadline is not None and (isinstance(op_deadline, bool) or not isinstance(op_deadline, (int, float))
+                                        or op_deadline <= 0):
+            raise ContractError("relay: op_deadline is a positive number of seconds")
         if connect is None:
             from websockets.sync.client import connect as ws_connect
             connect = ws_connect
@@ -99,6 +107,8 @@ class BuzzRelayClient:
         self._open_timeout = open_timeout
         self._recv_timeout = recv_timeout
         self._page = page
+        self._op_deadline = op_deadline
+        self._deadline: float | None = None  # the running operation's absolute end on `clock`; None between operations
         self._ws = None
         self._challenge: str | None = None
         self._subs: set[str] = set()
@@ -107,12 +117,33 @@ class BuzzRelayClient:
 
     # -- connection -------------------------------------------------------------------------------------
 
+    @contextmanager
+    def _operation(self):
+        """One request's total time budget (`op_deadline`); a nested use keeps the outer deadline."""
+        outer = self._deadline
+        if outer is None and self._op_deadline is not None:
+            self._deadline = self._clock() + self._op_deadline
+        try:
+            yield
+        finally:
+            self._deadline = outer
+
+    def _left(self, limit: float) -> float:
+        """`limit` clipped to the running operation's remaining time; `_Timeout` once it is spent."""
+        if self._deadline is None:
+            return limit
+        left = self._deadline - self._clock()
+        if left <= 0:
+            raise _Timeout
+        return min(limit, left)
+
     def _open(self):
         if self._ws is not None:
             return self._ws
+        open_timeout = self._left(self._open_timeout)
         try:
             self._ws = self._connect(self._url, proxy=None, compression=None, max_size=self._max_size,
-                                     open_timeout=self._open_timeout, legacy=True)
+                                     open_timeout=open_timeout, legacy=True)
         except (OSError, TimeoutError, ConnectionError) as exc:
             self.last_close_code = 1006
             raise _Lost("connection_closed") from exc
@@ -152,7 +183,7 @@ class BuzzRelayClient:
         ws = self._open()
         while True:
             try:
-                raw = ws.recv(timeout=self._recv_timeout)
+                raw = ws.recv(timeout=self._left(self._recv_timeout))
             except TimeoutError as exc:
                 raise _Timeout from exc
             except Exception as exc:
@@ -178,7 +209,7 @@ class BuzzRelayClient:
     def _best_effort(self, text: str) -> None:
         try:
             self._send(text)
-        except _Lost:
+        except (_Lost, _Timeout):
             pass
 
     # -- NIP-42 -----------------------------------------------------------------------------------------
@@ -206,12 +237,13 @@ class BuzzRelayClient:
         frame_text = ne.event_frame(event)
         ident = event["id"]
         try:
-            for attempt in (0, 1):
-                self._send(frame_text)
-                result = self._await_ok(ident)
-                if result["prefix"] == "auth-required" and attempt == 0 and self._authenticate():
-                    continue
-                return result
+            with self._operation():
+                for attempt in (0, 1):
+                    self._send(frame_text)
+                    result = self._await_ok(ident)
+                    if result["prefix"] == "auth-required" and attempt == 0 and self._authenticate():
+                        continue
+                    return result
         except _Lost as exc:
             return _result(ident, None, "unknown", str(exc))
         except _Timeout:
@@ -246,32 +278,33 @@ class BuzzRelayClient:
         retried = False
         ended = "connection_closed"
         try:
-            self._send(ne.req(sub_id, *filters))
-            while True:
-                frame = self._next()
-                if frame.kind == "invalid":
-                    counts["unverified"] += 1
-                    counts["received"] += 1
-                elif frame.kind == "EVENT" and frame.sub_id == sub_id:
-                    counts["received"] += 1
-                    if self._verified(frame.event):
-                        events.setdefault(frame.event["id"], frame.event)
-                    else:
+            with self._operation():
+                self._send(ne.req(sub_id, *filters))
+                while True:
+                    frame = self._next()
+                    if frame.kind == "invalid":
                         counts["unverified"] += 1
-                elif frame.kind == "EOSE" and frame.sub_id == sub_id:
-                    ended = "eose"
-                    break
-                elif frame.kind == "CLOSED" and frame.sub_id == sub_id:
-                    prefix = ne.classify(frame.message)
-                    if prefix == "auth-required" and not retried and self._authenticate():
-                        retried = True
-                        self._send(ne.req(sub_id, *filters))
-                        continue
-                    ended = f"closed:{prefix}"
-                    return self._query_result(events, ended, counts)
-            self._best_effort(ne.close(sub_id))
+                        counts["received"] += 1
+                    elif frame.kind == "EVENT" and frame.sub_id == sub_id:
+                        counts["received"] += 1
+                        if self._verified(frame.event):
+                            events.setdefault(frame.event["id"], frame.event)
+                        else:
+                            counts["unverified"] += 1
+                    elif frame.kind == "EOSE" and frame.sub_id == sub_id:
+                        ended = "eose"
+                        break
+                    elif frame.kind == "CLOSED" and frame.sub_id == sub_id:
+                        prefix = ne.classify(frame.message)
+                        if prefix == "auth-required" and not retried and self._authenticate():
+                            retried = True
+                            self._send(ne.req(sub_id, *filters))
+                            continue
+                        ended = f"closed:{prefix}"
+                        return self._query_result(events, ended, counts)
+                self._best_effort(ne.close(sub_id))
         except _Timeout:
-            ended = "timeout"
+            ended = "timeout"  # an observation, never proof (design §6.2 step 4); the operation deadline lands here too
             self._best_effort(ne.close(sub_id))
         except _Lost:
             ended = "connection_closed"
@@ -288,7 +321,8 @@ class BuzzRelayClient:
         except ContractError:
             return False
 
-    def query_all(self, filter: dict, *, until: int | None = None) -> dict:  # noqa: A002 - port signature
+    def query_all(self, filter: dict, *, until: int | None = None,  # noqa: A002 - port signature
+                  stop: Callable[[], bool] | None = None) -> dict:
         """Every event matching `filter`, paged by the relay's composite keyset (design §6.2 step 4).
 
         Pages of `page` events, in the relay's order (created_at desc, id asc); the next page asks
@@ -297,12 +331,18 @@ class BuzzRelayClient:
         The keyset must strictly advance and each page must add an event; otherwise `ended` is `stalled`.
         Returns `{"events", "ended", "pages", "unverified"}`; `ended == "eose"` here means every page ended
         by EOSE and the last was short, which is still the relay's word, not proof of completeness.
+
+        `stop` (D5 F1) is read before each page: once true no further page is requested and `ended` is `stopped`,
+        with the pages already read (the caller resumes from the keyset it committed). `None` never stops early.
         """
         events: dict[str, dict] = {}
         unverified = pages = 0
         cursor: tuple[int, str] | None = None
         ended = "eose"
         while True:
+            if stop is not None and stop():
+                ended = "stopped"
+                break
             request = {**filter, "limit": self._page}
             if cursor is not None:
                 request["until"], request["before_id"] = cursor
