@@ -1,0 +1,1286 @@
+{
+ "k1_loading": {
+  "absent": {
+   "blank": null,
+   "empty": null,
+   "other_keys": null
+  },
+  "alias_setting": {
+   "harness_wins": true,
+   "same_digest": true
+  },
+  "constants": {
+   "max_dependency_bytes": 8388608,
+   "max_profile_bytes": 262144,
+   "setting": "HARNESS_EVIDENCE_PROFILE",
+   "unprintable": "[\\x00-\\x1f\\x7f]"
+  },
+  "container_profile": {
+   "image": "sha256:aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+   "interpreter": "/opt/zeus/bin/python",
+   "requires_container": true,
+   "schema": "urn:zeus:project-evidence:2"
+  },
+  "host_profile": {
+   "checks": [
+    {
+     "argv": [
+      "python",
+      "-m",
+      "pytest",
+      "probes/test_zeus_backend_probe.py",
+      "-q",
+      "-p",
+      "no:cacheprovider"
+     ],
+     "context": "backend",
+     "expected_exit": 0,
+     "id": "probe"
+    }
+   ],
+   "contexts": {
+    "backend": {
+     "cwd": "backend",
+     "dependency_files": [
+      "backend/requirements.lock"
+     ],
+     "interpreter": "<PY>",
+     "source_paths": [
+      "backend/src"
+     ]
+    }
+   },
+   "digest_matches_parse": true,
+   "keys": [
+    "checks",
+    "contexts",
+    "profile_digest",
+    "schema"
+   ],
+   "schema": "urn:zeus:project-evidence:1"
+  },
+  "packaged_policy_default": {
+   "loads": true
+  },
+  "refusals": {
+   "absent": {
+    "message": "Evidence profile unavailable or not valid JSON",
+    "raised": "ContractError"
+   },
+   "directory": {
+    "message": "Evidence profile unavailable or not valid JSON",
+    "raised": "ContractError"
+   },
+   "missing_interpreter": {
+    "message": "Trusted replay interpreter is not a file: <ROOT>/01-loading/no-such-python",
+    "raised": "ContractError"
+   },
+   "not_json": {
+    "message": "Evidence profile unavailable or not valid JSON",
+    "raised": "ContractError"
+   },
+   "oversized": {
+    "message": "Evidence profile unavailable or not valid JSON",
+    "raised": "ContractError"
+   },
+   "relative": {
+    "message": "Evidence profile setting must name an absolute file",
+    "raised": "ContractError"
+   }
+  }
+ },
+ "k2_resolution": {
+  "base_environment": {
+   "HOME": "/h",
+   "PATH": "/p",
+   "PYTHONDONTWRITEBYTECODE": "1",
+   "PYTHONIOENCODING": "utf-8",
+   "PYTHONPATH": "<src>"
+  },
+  "instructions": {
+   "checks_equal": true,
+   "commands": {
+    "probe": "cd <ROOT>/02-resolution/review/backend && PYTHONPATH=<ROOT>/02-resolution/review/backend/src PYTHONDONTWRITEBYTECODE=1 <PY> -m pytest probes/test_zeus_backend_probe.py -q -p no:cacheprovider"
+   },
+   "contexts": {
+    "backend": {
+     "cwd": "<ROOT>/02-resolution/review/backend",
+     "environment": {
+      "PYTHONDONTWRITEBYTECODE": "1",
+      "PYTHONPATH": "<ROOT>/02-resolution/review/backend/src"
+     },
+     "interpreter": "<PY>",
+     "source_paths": [
+      "<ROOT>/02-resolution/review/backend/src"
+     ]
+    }
+   },
+   "instruction": "These checks and contexts are host-authored and replace the legacy \"python on PATH\" rule for these checks only. `commands` holds each check as exact POSIX sh text (cd to the context cwd, the context environment, the context interpreter in place of the first token \"python\"); run it verbatim from the repository root, which stays your working and editing root. In another shell use the same cwd, environment, interpreter and argv. Do not choose another argv, cwd or interpreter and do not install dependencies. Every check is required. Report what you observed, a nonzero exit included. Read results from stdout; write no output files into the checkout.",
+   "keys": [
+    "checks",
+    "commands",
+    "contexts",
+    "instruction",
+    "profile_digest",
+    "schema"
+   ],
+   "no_other_checkout": true,
+   "profile_digest_matches": true,
+   "rebound": true,
+   "schema": "urn:zeus:project-evidence:1"
+  },
+  "interpreter_bytes_in_identity": {
+   "digest_changes": true,
+   "sha_changes": true
+  },
+  "no_source_paths": {
+   "HOME": "/h",
+   "PATH": "/p",
+   "PYTHONDONTWRITEBYTECODE": "1",
+   "PYTHONIOENCODING": "utf-8"
+  },
+  "oversized_dependency": {
+   "message": "Project evidence dependency file is missing or exceeds its budget: backend/requirements.lock",
+   "raised": "ContractError"
+  },
+  "refusals": {
+   "cwd_is_file": {
+    "message": "Project evidence cwd is not a directory: backend/requirements.lock",
+    "raised": "ContractError"
+   },
+   "cwd_missing": {
+    "message": "Project evidence cwd is not a directory: backend/absent",
+    "raised": "ContractError"
+   },
+   "dependency_is_directory": {
+    "message": "Project evidence dependency file is missing or exceeds its budget: backend/src",
+    "raised": "ContractError"
+   },
+   "dependency_missing": {
+    "message": "Project evidence dependency file is missing or exceeds its budget: backend/absent.lock",
+    "raised": "ContractError"
+   },
+   "interpreter_missing": {
+    "message": "Trusted replay interpreter is not a file: <ROOT>/02-resolution/no-python.exe",
+    "raised": "ContractError"
+   },
+   "source_missing": {
+    "message": "Project evidence source path is not a directory: backend/absent",
+    "raised": "ContractError"
+   }
+  },
+  "resolved": {
+   "context_keys": [
+    "cwd",
+    "dependency_files",
+    "environment",
+    "environment_digest",
+    "interpreter",
+    "interpreter_sha256",
+    "source_paths"
+   ],
+   "cwd": "<ROOT>/02-resolution/candidate/backend",
+   "dependency_files": {
+    "backend/requirements.lock": "1bdf86043728f7123c93bec94e49d9abeb0264c7452aa1b498e0589cdb140a41"
+   },
+   "digest_len": 64,
+   "environment": {
+    "PYTHONDONTWRITEBYTECODE": "1",
+    "PYTHONIOENCODING": "utf-8",
+    "PYTHONPATH": "<ROOT>/02-resolution/candidate/backend/src",
+    "ZEUS_SECRET": false
+   },
+   "environment_digest_len": 64,
+   "interpreter_is_host_path": true,
+   "interpreter_sha256_len": 64,
+   "keys": [
+    "contexts",
+    "digest",
+    "profile_digest",
+    "workspace"
+   ],
+   "profile_digest_matches": true,
+   "source_paths": [
+    "<ROOT>/02-resolution/candidate/backend/src"
+   ],
+   "workspace": "<ROOT>/02-resolution/candidate"
+  },
+  "resolved_argument": {
+   "same": true
+  },
+  "shell_command": {
+   "control_character": {
+    "message": "Project evidence command value cannot be quoted safely",
+    "raised": "ContractError"
+   },
+   "no_pythonpath": [
+    "cd /c",
+    "PYTHONPATH='' PYTHONDONTWRITEBYTECODE=1 /py -m ruff check ."
+   ],
+   "not_enforceable": {
+    "message": "Only python -m pytest and python -m ruff check have a worker command",
+    "raised": "ContractError"
+   },
+   "quoted": [
+    "cd '/tmp/a b'",
+    "PYTHONPATH='/x y' PYTHONDONTWRITEBYTECODE=1 /usr/bin/python3 -m pytest -q 'it'\"'\"'s'"
+   ]
+  },
+  "symlink_escape": {
+   "cwd": {
+    "message": "Project evidence cwd resolves outside the candidate: backend/linked",
+    "raised": "ContractError"
+   },
+   "source": {
+    "message": "Project evidence source path resolves outside the candidate: backend/linked",
+    "raised": "ContractError"
+   }
+  },
+  "worker_delivery": {
+   "commands": [
+    {
+     "check_id": "probe",
+     "command": "cd <ROOT>/02-resolution/implementation/backend && PYTHONPATH=<ROOT>/02-resolution/implementation/backend/src PYTHONDONTWRITEBYTECODE=1 <PY> -m pytest probes/test_zeus_backend_probe.py -q -p no:cacheprovider",
+     "context": "backend"
+    }
+   ],
+   "document": "## Host project checks (this run)\n\nThe host selected project execution contexts for this run. For the checks below, and only for them, this section overrides the \"Environment\" interpreter rule and the legacy `tests` command-string format above: run each command verbatim with Bash from the repository root (it changes into its own context directory; your working and editing root stays the repository root). Do not alter argv, cwd, interpreter or environment, and do not install dependencies. `tests` holds exactly one {check_id, status, exit_code} per check: executed with the exit code you observed (a failure stays a failure), or not_run with null.\n\n- probe (context backend): `cd <ROOT>/02-resolution/implementation/backend && PYTHONPATH=<ROOT>/02-resolution/implementation/backend/src PYTHONDONTWRITEBYTECODE=1 <PY> -m pytest probes/test_zeus_backend_probe.py -q -p no:cacheprovider`\n",
+   "permissions_allow": [
+    "Bash(cd <ROOT>/02-resolution/implementation/backend && PYTHONPATH=<ROOT>/02-resolution/implementation/backend/src PYTHONDONTWRITEBYTECODE=1 <PY> -m pytest probes/test_zeus_backend_probe.py -q -p no:cacheprovider)",
+    "Bash(cd <ROOT>/02-resolution/implementation/backend)",
+    "Bash(PYTHONPATH=<ROOT>/02-resolution/implementation/backend/src PYTHONDONTWRITEBYTECODE=1 <PY> -m pytest probes/test_zeus_backend_probe.py -q -p no:cacheprovider)"
+   ],
+   "profile_digest": "<profile digest>",
+   "project_digest": "<host digest>",
+   "workspace": "<ROOT>/02-resolution/implementation"
+  },
+  "worker_delivery_shape": {
+   "keys": [
+    "commands",
+    "document",
+    "permissions_allow",
+    "profile_digest",
+    "project_digest",
+    "workspace"
+   ],
+   "parts_removed": true,
+   "rules_wildcard_free": true,
+   "workspace": "<ROOT>/02-resolution/implementation"
+  },
+  "worker_delivery_two_checks": {
+   "commands": [
+    {
+     "check_id": "probe",
+     "command": "cd <ROOT>/02-resolution/implementation/backend && PYTHONPATH=<ROOT>/02-resolution/implementation/backend/src PYTHONDONTWRITEBYTECODE=1 <PY> -m pytest probes/test_zeus_backend_probe.py -q -p no:cacheprovider",
+     "context": "backend"
+    },
+    {
+     "check_id": "second",
+     "command": "cd <ROOT>/02-resolution/implementation/backend && PYTHONPATH=<ROOT>/02-resolution/implementation/backend/src PYTHONDONTWRITEBYTECODE=1 <PY> -m pytest probes/test_zeus_backend_failing.py -q -p no:cacheprovider",
+     "context": "backend"
+    }
+   ],
+   "document": "## Host project checks (this run)\n\nThe host selected project execution contexts for this run. For the checks below, and only for them, this section overrides the \"Environment\" interpreter rule and the legacy `tests` command-string format above: run each command verbatim with Bash from the repository root (it changes into its own context directory; your working and editing root stays the repository root). Do not alter argv, cwd, interpreter or environment, and do not install dependencies. `tests` holds exactly one {check_id, status, exit_code} per check: executed with the exit code you observed (a failure stays a failure), or not_run with null.\n\n- probe (context backend): `cd <ROOT>/02-resolution/implementation/backend && PYTHONPATH=<ROOT>/02-resolution/implementation/backend/src PYTHONDONTWRITEBYTECODE=1 <PY> -m pytest probes/test_zeus_backend_probe.py -q -p no:cacheprovider`\n- second (context backend): `cd <ROOT>/02-resolution/implementation/backend && PYTHONPATH=<ROOT>/02-resolution/implementation/backend/src PYTHONDONTWRITEBYTECODE=1 <PY> -m pytest probes/test_zeus_backend_failing.py -q -p no:cacheprovider`\n",
+   "permissions_allow": [
+    "Bash(cd <ROOT>/02-resolution/implementation/backend && PYTHONPATH=<ROOT>/02-resolution/implementation/backend/src PYTHONDONTWRITEBYTECODE=1 <PY> -m pytest probes/test_zeus_backend_probe.py -q -p no:cacheprovider)",
+    "Bash(cd <ROOT>/02-resolution/implementation/backend)",
+    "Bash(PYTHONPATH=<ROOT>/02-resolution/implementation/backend/src PYTHONDONTWRITEBYTECODE=1 <PY> -m pytest probes/test_zeus_backend_probe.py -q -p no:cacheprovider)",
+    "Bash(cd <ROOT>/02-resolution/implementation/backend && PYTHONPATH=<ROOT>/02-resolution/implementation/backend/src PYTHONDONTWRITEBYTECODE=1 <PY> -m pytest probes/test_zeus_backend_failing.py -q -p no:cacheprovider)",
+    "Bash(PYTHONPATH=<ROOT>/02-resolution/implementation/backend/src PYTHONDONTWRITEBYTECODE=1 <PY> -m pytest probes/test_zeus_backend_failing.py -q -p no:cacheprovider)"
+   ],
+   "profile_digest": "8a124a1c018ef5463c654755d180d4b8011976b738a236afbb1386f82937da35",
+   "project_digest": "<host digest>",
+   "workspace": "<ROOT>/02-resolution/implementation"
+  },
+  "workspace_missing": {
+   "message": "Project evidence workspace directory does not exist",
+   "raised": "ContractError"
+  }
+ },
+ "k3_container": {
+  "binding": {
+   "image_not_pinned": {
+    "message": "A container project evidence profile requires the host isolation selection",
+    "raised": "ContractError"
+   },
+   "image_not_text": {
+    "message": "A container project evidence profile requires the host isolation selection",
+    "raised": "ContractError"
+   },
+   "image_with_suffix": {
+    "message": "A container project evidence profile requires the host isolation selection",
+    "raised": "ContractError"
+   },
+   "limits_copied": true,
+   "no_isolation": {
+    "message": "A container project evidence profile requires the host isolation selection",
+    "raised": "ContractError"
+   },
+   "not_a_dict": {
+    "message": "A container project evidence profile requires the host isolation selection",
+    "raised": "ContractError"
+   },
+   "ok": {
+    "image": "sha256:aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+    "isolation_digest": "d6476f1f588762d18884f97ab8bd5f8c66a7b867b917489762049f0761ea87c2",
+    "kind": "container",
+    "limits": {
+     "cleanup_seconds": 30,
+     "cpus": "2",
+     "docker_command_seconds": 60,
+     "home_mb": 256,
+     "inner_grace_seconds": 45,
+     "max_file_bytes": 16777216,
+     "max_files": 10000,
+     "max_total_bytes": 268435456,
+     "memory": "4g",
+     "pids": 512,
+     "tmp_mb": 512
+    },
+    "mode": "docker"
+   },
+   "other_image": {
+    "message": "Project evidence execution image is not the host-selected isolation image",
+    "raised": "ContractError"
+   },
+   "other_mode": {
+    "message": "A container project evidence profile requires the host isolation selection",
+    "raised": "ContractError"
+   },
+   "version_one": {
+    "message": "Project evidence profile version 1 has no container execution",
+    "raised": "ContractError"
+   }
+  },
+  "constants": {
+   "container_interpreter_equals_trusted": true,
+   "image_pattern": "sha256:[0-9a-f]{64}",
+   "mode": "docker",
+   "note": "These commands run INSIDE the pinned verification image over the mounted candidate at /workspace. The paths, the interpreter and the environment are container values: they do not exist on the host and must never be run there.",
+   "trusted": "/opt/zeus/bin/python",
+   "workspace": "/workspace"
+  },
+  "delivery": {
+   "commands": [
+    {
+     "check_id": "unit",
+     "command": "cd /workspace/backend && PYTHONPATH=/workspace/backend/src PYTHONDONTWRITEBYTECODE=1 /opt/zeus/bin/python -m pytest backend/probes -q",
+     "context": "backend"
+    },
+    {
+     "check_id": "lint",
+     "command": "cd /workspace/backend && PYTHONPATH=/workspace/backend/src PYTHONDONTWRITEBYTECODE=1 /opt/zeus/bin/python -m ruff check .",
+     "context": "backend"
+    }
+   ],
+   "document": "## Host project checks (this run, inside this container)\n\nThe host selected project execution contexts for this run. For the checks below, and only for them, this section overrides the \"Environment\" interpreter rule and the legacy `tests` command-string format above: run each command verbatim with Bash from the repository root (it changes into its own context directory; your working and editing root stays the repository root). Do not alter argv, cwd, interpreter or environment, and do not install dependencies. `tests` holds exactly one {check_id, status, exit_code} per check: executed with the exit code you observed (a failure stays a failure), or not_run with null.\n\n- unit (context backend): `cd /workspace/backend && PYTHONPATH=/workspace/backend/src PYTHONDONTWRITEBYTECODE=1 /opt/zeus/bin/python -m pytest backend/probes -q`\n- lint (context backend): `cd /workspace/backend && PYTHONPATH=/workspace/backend/src PYTHONDONTWRITEBYTECODE=1 /opt/zeus/bin/python -m ruff check .`\n",
+   "execution": {
+    "image": "sha256:aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+    "isolation_digest": "d6476f1f588762d18884f97ab8bd5f8c66a7b867b917489762049f0761ea87c2",
+    "kind": "container",
+    "limits": {
+     "cleanup_seconds": 30,
+     "cpus": "2",
+     "docker_command_seconds": 60,
+     "home_mb": 256,
+     "inner_grace_seconds": 45,
+     "max_file_bytes": 16777216,
+     "max_files": 10000,
+     "max_total_bytes": 268435456,
+     "memory": "4g",
+     "pids": 512,
+     "tmp_mb": 512
+    },
+    "mode": "docker"
+   },
+   "host_workspace": "<ROOT>/03-container/candidate",
+   "permissions_allow": [
+    "Bash(cd /workspace/backend && PYTHONPATH=/workspace/backend/src PYTHONDONTWRITEBYTECODE=1 /opt/zeus/bin/python -m pytest backend/probes -q)",
+    "Bash(cd /workspace/backend)",
+    "Bash(PYTHONPATH=/workspace/backend/src PYTHONDONTWRITEBYTECODE=1 /opt/zeus/bin/python -m pytest backend/probes -q)",
+    "Bash(cd /workspace/backend && PYTHONPATH=/workspace/backend/src PYTHONDONTWRITEBYTECODE=1 /opt/zeus/bin/python -m ruff check .)",
+    "Bash(PYTHONPATH=/workspace/backend/src PYTHONDONTWRITEBYTECODE=1 /opt/zeus/bin/python -m ruff check .)"
+   ],
+   "profile_digest": "0617df9dbc7ed7062e4d21b342ab034ff36844d05e15886ea4340e5053547d78",
+   "project_digest": "<project digest>",
+   "workspace": "/workspace"
+  },
+  "delivery_shape": {
+   "cd_part_allowed": true,
+   "execution": {
+    "image": "sha256:aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+    "isolation_digest": "d6476f1f588762d18884f97ab8bd5f8c66a7b867b917489762049f0761ea87c2",
+    "kind": "container",
+    "limits": {
+     "cleanup_seconds": 30,
+     "cpus": "2",
+     "docker_command_seconds": 60,
+     "home_mb": 256,
+     "inner_grace_seconds": 45,
+     "max_file_bytes": 16777216,
+     "max_files": 10000,
+     "max_total_bytes": 268435456,
+     "memory": "4g",
+     "pids": 512,
+     "tmp_mb": 512
+    },
+    "mode": "docker"
+   },
+   "heading_inside_container": true,
+   "host_workspace": "<ROOT>/03-container/candidate",
+   "keys": [
+    "commands",
+    "document",
+    "execution",
+    "host_workspace",
+    "permissions_allow",
+    "profile_digest",
+    "project_digest",
+    "workspace"
+   ],
+   "no_host_path": true,
+   "wildcard_free": true,
+   "workspace": "/workspace"
+  },
+  "instructions": {
+   "checks_equal": true,
+   "commands": {
+    "lint": "cd /workspace/backend && PYTHONPATH=/workspace/backend/src PYTHONDONTWRITEBYTECODE=1 /opt/zeus/bin/python -m ruff check .",
+    "unit": "cd /workspace/backend && PYTHONPATH=/workspace/backend/src PYTHONDONTWRITEBYTECODE=1 /opt/zeus/bin/python -m pytest backend/probes -q"
+   },
+   "contexts": {
+    "backend": {
+     "cwd": "/workspace/backend",
+     "environment": {
+      "PYTHONDONTWRITEBYTECODE": "1",
+      "PYTHONPATH": "/workspace/backend/src"
+     },
+     "interpreter": "/opt/zeus/bin/python",
+     "source_paths": [
+      "/workspace/backend/src"
+     ]
+    }
+   },
+   "execution": {
+    "image": "sha256:aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+    "isolation_digest": "d6476f1f588762d18884f97ab8bd5f8c66a7b867b917489762049f0761ea87c2",
+    "kind": "container",
+    "limits": {
+     "cleanup_seconds": 30,
+     "cpus": "2",
+     "docker_command_seconds": 60,
+     "home_mb": 256,
+     "inner_grace_seconds": 45,
+     "max_file_bytes": 16777216,
+     "max_files": 10000,
+     "max_total_bytes": 268435456,
+     "memory": "4g",
+     "pids": 512,
+     "tmp_mb": 512
+    },
+    "mode": "docker"
+   },
+   "host_workspace": "<ROOT>/03-container/candidate",
+   "instruction": "These commands run INSIDE the pinned verification image over the mounted candidate at /workspace. The paths, the interpreter and the environment are container values: they do not exist on the host and must never be run there. These checks and contexts are host-authored and replace the legacy \"python on PATH\" rule for these checks only. `commands` holds each check as exact POSIX sh text (cd to the context cwd, the context environment, the context interpreter in place of the first token \"python\"); run it verbatim from the repository root, which stays your working and editing root. In another shell use the same cwd, environment, interpreter and argv. Do not choose another argv, cwd or interpreter and do not install dependencies. Every check is required. Report what you observed, a nonzero exit included. Read results from stdout; write no output files into the checkout.",
+   "keys": [
+    "checks",
+    "commands",
+    "contexts",
+    "execution",
+    "host_workspace",
+    "instruction",
+    "profile_digest",
+    "project_digest",
+    "schema",
+    "workspace"
+   ],
+   "project_digest_follows_tree": true,
+   "project_digest_is_resolved_digest": true,
+   "schema": "urn:zeus:project-evidence:2",
+   "workspace": "/workspace"
+  },
+  "refusals": {
+   "no_isolation": {
+    "container_execution_instructions": {
+     "message": "A container project evidence profile requires the host isolation selection",
+     "raised": "ContractError"
+    },
+    "container_worker_delivery": {
+     "message": "A container project evidence profile requires the host isolation selection",
+     "raised": "ContractError"
+    }
+   },
+   "other_image": {
+    "container_execution_instructions": {
+     "message": "Project evidence execution image is not the host-selected isolation image",
+     "raised": "ContractError"
+    },
+    "container_worker_delivery": {
+     "message": "Project evidence execution image is not the host-selected isolation image",
+     "raised": "ContractError"
+    }
+   },
+   "version_one": {
+    "container_execution_instructions": {
+     "message": "Project evidence profile version 1 has no container execution",
+     "raised": "ContractError"
+    },
+    "container_worker_delivery": {
+     "message": "Project evidence profile version 1 has no container execution",
+     "raised": "ContractError"
+    }
+   }
+  },
+  "resolve_refusals": {
+   "no_isolation": {
+    "message": "A container project evidence profile requires the host isolation selection",
+    "raised": "ContractError"
+   },
+   "other_image": {
+    "message": "Project evidence execution image is not the host-selected isolation image",
+    "raised": "ContractError"
+   },
+   "version_one": {
+    "message": "Project evidence profile version 1 has no container execution",
+    "raised": "ContractError"
+   },
+   "workspace_missing": {
+    "message": "Project evidence workspace directory does not exist",
+    "raised": "ContractError"
+   }
+  },
+  "resolved": {
+   "context": {
+    "cwd": "/workspace/backend",
+    "dependency_files": {
+     "backend/requirements.lock": "1bdf86043728f7123c93bec94e49d9abeb0264c7452aa1b498e0589cdb140a41"
+    },
+    "environment": {
+     "GIT_CONFIG_COUNT": "1",
+     "GIT_CONFIG_KEY_0": "safe.directory",
+     "GIT_CONFIG_VALUE_0": "/workspace",
+     "HOME": "/tmp",
+     "PYTHONDONTWRITEBYTECODE": "1",
+     "PYTHONIOENCODING": "utf-8",
+     "PYTHONPATH": "/workspace/backend/src"
+    },
+    "environment_digest": "<host digest>",
+    "interpreter": "/opt/zeus/bin/python",
+    "relative_cwd": "backend",
+    "relative_source_paths": [
+     "backend/src"
+    ],
+    "source_paths": [
+     "/workspace/backend/src"
+    ]
+   },
+   "context_keys": [
+    "cwd",
+    "dependency_files",
+    "environment",
+    "environment_digest",
+    "interpreter",
+    "relative_cwd",
+    "relative_source_paths",
+    "source_paths",
+    "workspace"
+   ],
+   "context_workspace": "<ROOT>/03-container/candidate",
+   "digest_len": 64,
+   "execution": {
+    "image": "sha256:aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+    "isolation_digest": "d6476f1f588762d18884f97ab8bd5f8c66a7b867b917489762049f0761ea87c2",
+    "kind": "container",
+    "limits": {
+     "cleanup_seconds": 30,
+     "cpus": "2",
+     "docker_command_seconds": 60,
+     "home_mb": 256,
+     "inner_grace_seconds": 45,
+     "max_file_bytes": 16777216,
+     "max_files": 10000,
+     "max_total_bytes": 268435456,
+     "memory": "4g",
+     "pids": 512,
+     "tmp_mb": 512
+    },
+    "mode": "docker"
+   },
+   "keys": [
+    "contexts",
+    "digest",
+    "execution",
+    "profile_digest",
+    "workspace"
+   ],
+   "workspace": "<ROOT>/03-container/candidate"
+  },
+  "root_context": {
+   "cwd": "/workspace",
+   "dependency_files": {
+    "backend/requirements.lock": "1bdf86043728f7123c93bec94e49d9abeb0264c7452aa1b498e0589cdb140a41"
+   },
+   "environment": {
+    "GIT_CONFIG_COUNT": "1",
+    "GIT_CONFIG_KEY_0": "safe.directory",
+    "GIT_CONFIG_VALUE_0": "/workspace",
+    "HOME": "/tmp",
+    "PYTHONDONTWRITEBYTECODE": "1",
+    "PYTHONIOENCODING": "utf-8",
+    "PYTHONPATH": "/workspace/backend/src"
+   },
+   "environment_digest": "<host digest>",
+   "interpreter": "/opt/zeus/bin/python",
+   "relative_cwd": ".",
+   "relative_source_paths": [
+    "backend/src"
+   ],
+   "source_paths": [
+    "/workspace/backend/src"
+   ]
+  },
+  "tree_refusals": {
+   "dependency_missing": {
+    "container_execution_instructions": {
+     "message": "Project evidence dependency file is missing or exceeds its budget: backend/requirements.lock",
+     "raised": "ContractError"
+    },
+    "container_worker_delivery": {
+     "message": "Project evidence dependency file is missing or exceeds its budget: backend/requirements.lock",
+     "raised": "ContractError"
+    }
+   },
+   "empty": {
+    "container_execution_instructions": {
+     "message": "Project evidence cwd is not a directory: backend",
+     "raised": "ContractError"
+    },
+    "container_worker_delivery": {
+     "message": "Project evidence cwd is not a directory: backend",
+     "raised": "ContractError"
+    }
+   },
+   "source_missing": {
+    "container_execution_instructions": {
+     "message": "Project evidence source path is not a directory: backend/src",
+     "raised": "ContractError"
+    },
+    "container_worker_delivery": {
+     "message": "Project evidence source path is not a directory: backend/src",
+     "raised": "ContractError"
+    }
+   },
+   "symlink_escape": {
+    "container_execution_instructions": {
+     "message": "Project evidence source path resolves outside the candidate: backend/src",
+     "raised": "ContractError"
+    },
+    "container_worker_delivery": {
+     "message": "Project evidence source path resolves outside the candidate: backend/src",
+     "raised": "ContractError"
+    }
+   }
+  }
+ },
+ "k4_host_route": {
+  "constructor": {
+   "message": "Parsed project evidence profile required",
+   "raised": "ContractError"
+  },
+  "exit_five": {
+   "finding": {
+    "argv_transformation": "first token \"python\" replaced by the trusted host interpreter; authorization was decided on the original argv",
+    "cause": "exit 5, claimed 0",
+    "check_id": "unit",
+    "context": "backend",
+    "cwd": "<ROOT>/06-exit-five/candidate/backend",
+    "expected_exit": 0,
+    "interpreter": "<PY>",
+    "observed_exits": [
+     5,
+     5
+    ],
+    "original_argv": [
+     "python",
+     "-m",
+     "pytest",
+     "empty_tests",
+     "-q",
+     "-p",
+     "no:cacheprovider"
+    ],
+    "replay_argv": [
+     "<PY>",
+     "-m",
+     "pytest",
+     "empty_tests",
+     "-q",
+     "-p",
+     "no:cacheprovider"
+    ],
+    "reported_exit": 0,
+    "state": "verified_mismatch",
+    "timeout_seconds": 60,
+    "timeouts_seconds": [
+     60,
+     60
+    ]
+   },
+   "verdict": "incomplete"
+  },
+  "failure_kept": {
+   "states": {
+    "must-pass": {
+     "argv_transformation": "first token \"python\" replaced by the trusted host interpreter; authorization was decided on the original argv",
+     "cause": "exit 1, claimed 0",
+     "check_id": "must-pass",
+     "context": "backend",
+     "cwd": "<ROOT>/05-failure/candidate/backend",
+     "expected_exit": 0,
+     "interpreter": "<PY>",
+     "observed_exits": [
+      1,
+      1
+     ],
+     "original_argv": [
+      "python",
+      "-m",
+      "pytest",
+      "probes/test_zeus_backend_failing.py",
+      "-q",
+      "-p",
+      "no:cacheprovider"
+     ],
+     "replay_argv": [
+      "<PY>",
+      "-m",
+      "pytest",
+      "probes/test_zeus_backend_failing.py",
+      "-q",
+      "-p",
+      "no:cacheprovider"
+     ],
+     "reported_exit": 1,
+     "state": "verified_mismatch",
+     "timeout_seconds": 60,
+     "timeouts_seconds": [
+      60,
+      60
+     ]
+    },
+    "negative": {
+     "argv_transformation": "first token \"python\" replaced by the trusted host interpreter; authorization was decided on the original argv",
+     "cause": "exit 1 as claimed on 2 identical replay(s)",
+     "check_id": "negative",
+     "context": "backend",
+     "cwd": "<ROOT>/05-failure/candidate/backend",
+     "expected_exit": 1,
+     "interpreter": "<PY>",
+     "observed_exits": [
+      1,
+      1
+     ],
+     "original_argv": [
+      "python",
+      "-m",
+      "pytest",
+      "probes/test_zeus_backend_failing.py",
+      "-q",
+      "-p",
+      "no:cacheprovider"
+     ],
+     "replay_argv": [
+      "<PY>",
+      "-m",
+      "pytest",
+      "probes/test_zeus_backend_failing.py",
+      "-q",
+      "-p",
+      "no:cacheprovider"
+     ],
+     "reported_exit": 1,
+     "state": "checked",
+     "timeout_seconds": 60,
+     "timeouts_seconds": [
+      60,
+      60
+     ]
+    },
+    "probe": {
+     "argv_transformation": "first token \"python\" replaced by the trusted host interpreter; authorization was decided on the original argv",
+     "cause": "worker reported exit 1, host expected 0; replay exits [0, 0]",
+     "check_id": "probe",
+     "context": "backend",
+     "cwd": "<ROOT>/05-failure/candidate/backend",
+     "expected_exit": 0,
+     "interpreter": "<PY>",
+     "observed_exits": [
+      0,
+      0
+     ],
+     "original_argv": [
+      "python",
+      "-m",
+      "pytest",
+      "probes/test_zeus_backend_probe.py",
+      "-q",
+      "-p",
+      "no:cacheprovider"
+     ],
+     "replay_argv": [
+      "<PY>",
+      "-m",
+      "pytest",
+      "probes/test_zeus_backend_probe.py",
+      "-q",
+      "-p",
+      "no:cacheprovider"
+     ],
+     "reported_exit": 1,
+     "state": "verified_mismatch",
+     "timeout_seconds": 60,
+     "timeouts_seconds": [
+      60,
+      60
+     ]
+    }
+   },
+   "verdict": "incomplete"
+  },
+  "identity": {
+   "dependency_is_new": true,
+   "environment_is_new": true,
+   "profile_is_new": true,
+   "profile_verdict": "incomplete",
+   "same_read_back": true
+  },
+  "legacy_without_profile": {
+   "project_digest_in_context": false,
+   "project_in_identity": false,
+   "project_in_snapshot": false,
+   "verdict": "no_claims"
+  },
+  "never_spawned": {
+   "causes": [
+    "worker reported not_run; a required check stays incomplete and is not replayed",
+    "required check has no observation; not replayed"
+   ],
+   "claim_statuses": [
+    "executed",
+    "missing"
+   ],
+   "claims_argv_are_the_profile": true,
+   "empty_claims": 2,
+   "empty_verdict": "incomplete",
+   "refusals": 5,
+   "spawned": 0,
+   "states": [
+    "not_checked",
+    "not_checked"
+   ],
+   "verdict": "incomplete"
+  },
+  "project_snapshot_not_named": {
+   "message": "Inspector project snapshot is not the one its identity names",
+   "raised": "ContractError"
+  },
+  "r1_bypass": {
+   "spawned": 0,
+   "state": "not_checked"
+  },
+  "r1_legacy_form_authorized": true,
+  "r1_packaged_accepts": {
+   "python -m pytest -q": true,
+   "python -m ruff check .": true
+  },
+  "r1_profile_boundary": {
+   "python -m ruff": {
+    "message": "Project evidence check argv is not an authorized replay prefix",
+    "raised": "ContractError"
+   },
+   "python -m zeus_backend_probe": {
+    "message": "Project evidence check argv must be python -m pytest or python -m ruff check: profile version 1 enforces the context interpreter only for those forms",
+    "raised": "ContractError"
+   },
+   "python -mpytest": {
+    "message": "Project evidence check argv is not an authorized replay prefix",
+    "raised": "ContractError"
+   },
+   "python3 -m pytest": {
+    "message": "Project evidence check argv is not an authorized replay prefix",
+    "raised": "ContractError"
+   },
+   "ruff check .": {
+    "message": "Project evidence check argv must be python -m pytest or python -m ruff check: profile version 1 enforces the context interpreter only for those forms",
+    "raised": "ContractError"
+   },
+   "uv run python -m pytest -q": {
+    "message": "Project evidence check argv must be python -m pytest or python -m ruff check: profile version 1 enforces the context interpreter only for those forms",
+    "raised": "ContractError"
+   }
+  },
+  "r2_no_repeat_beyond": {
+   "finding": {
+    "argv_transformation": "first token \"python\" replaced by the trusted host interpreter; authorization was decided on the original argv",
+    "cause": "aggregate replay budget exhausted before replay 2; replay exits so far [0]",
+    "check_id": "probe",
+    "context": "backend",
+    "cwd": "<ROOT>/11-deadline/candidate/backend",
+    "expected_exit": 0,
+    "interpreter": "<PY>",
+    "observed_exits": [
+     0
+    ],
+    "original_argv": [
+     "python",
+     "-m",
+     "pytest",
+     "probes/test_zeus_backend_probe.py",
+     "-q",
+     "-p",
+     "no:cacheprovider"
+    ],
+    "replay_argv": [
+     "<PY>",
+     "-m",
+     "pytest",
+     "probes/test_zeus_backend_probe.py",
+     "-q",
+     "-p",
+     "no:cacheprovider"
+    ],
+    "reported_exit": 0,
+    "state": "not_checked",
+    "timeout_seconds": 1,
+    "timeouts_seconds": [
+     1
+    ]
+   },
+   "given": [
+    1
+   ]
+  },
+  "r2_real_second_replay": {
+   "attempts_at_most_two": true,
+   "first_timeout_near_budget": true,
+   "not_checked": true,
+   "second_shrunk": true
+  },
+  "r2_remainder": {
+   "finding": {
+    "argv_transformation": "first token \"python\" replaced by the trusted host interpreter; authorization was decided on the original argv",
+    "cause": "replay 2 ended after the aggregate replay deadline; a late result is not counted; replay exits so far [0, 0]",
+    "check_id": "probe",
+    "context": "backend",
+    "cwd": "<ROOT>/10-deadline/candidate/backend",
+    "expected_exit": 0,
+    "interpreter": "<PY>",
+    "observed_exits": [
+     0,
+     0
+    ],
+    "original_argv": [
+     "python",
+     "-m",
+     "pytest",
+     "probes/test_zeus_backend_probe.py",
+     "-q",
+     "-p",
+     "no:cacheprovider"
+    ],
+    "replay_argv": [
+     "<PY>",
+     "-m",
+     "pytest",
+     "probes/test_zeus_backend_probe.py",
+     "-q",
+     "-p",
+     "no:cacheprovider"
+    ],
+    "reported_exit": 0,
+    "state": "not_checked",
+    "timeout_seconds": 1,
+    "timeouts_seconds": [
+     1,
+     0.25
+    ]
+   },
+   "given": [
+    1,
+    0.25
+   ]
+  },
+  "r2_timely": {
+   "finding": {
+    "argv_transformation": "first token \"python\" replaced by the trusted host interpreter; authorization was decided on the original argv",
+    "cause": "exit 0 as claimed on 2 identical replay(s)",
+    "check_id": "probe",
+    "context": "backend",
+    "cwd": "<ROOT>/12-deadline/candidate/backend",
+    "expected_exit": 0,
+    "interpreter": "<PY>",
+    "observed_exits": [
+     0,
+     0
+    ],
+    "original_argv": [
+     "python",
+     "-m",
+     "pytest",
+     "probes/test_zeus_backend_probe.py",
+     "-q",
+     "-p",
+     "no:cacheprovider"
+    ],
+    "replay_argv": [
+     "<PY>",
+     "-m",
+     "pytest",
+     "probes/test_zeus_backend_probe.py",
+     "-q",
+     "-p",
+     "no:cacheprovider"
+    ],
+    "reported_exit": 0,
+    "state": "checked",
+    "timeout_seconds": 1,
+    "timeouts_seconds": [
+     1,
+     0.75
+    ]
+   },
+   "given": [
+    1,
+    0.75
+   ]
+  },
+  "refusals_are_findings": {
+   "states": [
+    "checked",
+    "error"
+   ],
+   "verdict": "incomplete"
+  },
+  "refuse_before_spawn": {
+   "refusals": {
+    "cwd": {
+     "message": "Project evidence cwd is not a directory: backend/absent",
+     "raised": "ContractError"
+    },
+    "dependency": {
+     "message": "Project evidence dependency file is missing or exceeds its budget: backend/absent.lock",
+     "raised": "ContractError"
+    },
+    "interpreter": {
+     "message": "Trusted replay interpreter is not a file: <ROOT>/14-before-spawn/no-python.exe",
+     "raised": "ContractError"
+    },
+    "source": {
+     "message": "Project evidence source path is not a directory: backend/absent",
+     "raised": "ContractError"
+    }
+   },
+   "spawned": 0
+  },
+  "replay_under_snapshot": {
+   "digest_matches": true,
+   "verdict": "all_checked"
+  },
+  "required_check": {
+   "binding_keys": [
+    "attempt",
+    "base",
+    "generation",
+    "owner",
+    "source_revision",
+    "task_id",
+    "tree",
+    "workspace"
+   ],
+   "contexts": {
+    "backend": {
+     "cwd": "<ROOT>/04-replay/candidate/backend",
+     "dependency_files": {
+      "backend/requirements.lock": "1bdf86043728f7123c93bec94e49d9abeb0264c7452aa1b498e0589cdb140a41"
+     },
+     "environment_digest": "<host digest>",
+     "interpreter": "<PY>",
+     "interpreter_sha256": "<host digest>",
+     "source_paths": [
+      "<ROOT>/04-replay/candidate/backend/src"
+     ]
+    }
+   },
+   "denominator": {
+    "checked": 1,
+    "claims": 1,
+    "error": 0,
+    "flake_pattern": 0,
+    "missing": 0,
+    "not_checked": 0,
+    "replay_failed": 0,
+    "unknown": 0,
+    "verified_mismatch": 0
+   },
+   "finding": {
+    "argv_transformation": "first token \"python\" replaced by the trusted host interpreter; authorization was decided on the original argv",
+    "cause": "exit 0 as claimed on 2 identical replay(s)",
+    "check_id": "probe",
+    "context": "backend",
+    "cwd": "<ROOT>/04-replay/candidate/backend",
+    "expected_exit": 0,
+    "interpreter": "<PY>",
+    "observed_exits": [
+     0,
+     0
+    ],
+    "original_argv": [
+     "python",
+     "-m",
+     "pytest",
+     "probes/test_zeus_backend_probe.py",
+     "-q",
+     "-p",
+     "no:cacheprovider"
+    ],
+    "replay_argv": [
+     "<PY>",
+     "-m",
+     "pytest",
+     "probes/test_zeus_backend_probe.py",
+     "-q",
+     "-p",
+     "no:cacheprovider"
+    ],
+    "reported_exit": 0,
+    "state": "checked",
+    "timeout_seconds": 60,
+    "timeouts_seconds": [
+     60,
+     60
+    ]
+   },
+   "no_pycache": true,
+   "project_digest_in_context": true,
+   "replay_argv_head_is_host": true,
+   "replay_argv_tail": [
+    "-m",
+    "pytest",
+    "probes/test_zeus_backend_probe.py",
+    "-q",
+    "-p",
+    "no:cacheprovider"
+   ],
+   "runs": [
+    {
+     "duration_seconds": "<duration>",
+     "failure": null,
+     "returncode": 0,
+     "stderr": {
+      "bytes": 0,
+      "decoding": "utf-8",
+      "ref": "sha256:40a7f21fd14936974072a6cf7f256544da5cbf338d56721f65ae7d80ed7b2e2a",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "truncated": false
+     },
+     "stdout": {
+      "bytes": 9,
+      "decoding": "utf-8",
+      "ref": "sha256:0ba1f7affb4a9dccc7d6f7038ef53c3d9bd6793688ac6d52140cd644d3a895d0",
+      "sha256": "a92b7fdcb45e1d22fc2af4c80adc6e7fc1389ff8a694010cf5e6ff0b5ffbf1f6",
+      "truncated": false
+     },
+     "terminated": false
+    },
+    {
+     "duration_seconds": "<duration>",
+     "failure": null,
+     "returncode": 0,
+     "stderr": {
+      "bytes": 0,
+      "decoding": "utf-8",
+      "ref": "sha256:40a7f21fd14936974072a6cf7f256544da5cbf338d56721f65ae7d80ed7b2e2a",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "truncated": false
+     },
+     "stdout": {
+      "bytes": 9,
+      "decoding": "utf-8",
+      "ref": "sha256:0ba1f7affb4a9dccc7d6f7038ef53c3d9bd6793688ac6d52140cd644d3a895d0",
+      "sha256": "a92b7fdcb45e1d22fc2af4c80adc6e7fc1389ff8a694010cf5e6ff0b5ffbf1f6",
+      "truncated": false
+     },
+     "terminated": false
+    }
+   ],
+   "stored": "all_checked",
+   "verdict": "all_checked"
+  },
+  "snapshot": {
+   "clock_is_monotonic": "monotonic",
+   "identity_keys": [
+    "cwd",
+    "environment_digest",
+    "environment_names",
+    "interpreter",
+    "platform",
+    "policy_hash",
+    "project",
+    "tool"
+   ],
+   "identity_project_contexts": {
+    "backend": {
+     "cwd": "<ROOT>/16-snapshot/candidate/backend",
+     "dependency_files": {
+      "backend/requirements.lock": "1bdf86043728f7123c93bec94e49d9abeb0264c7452aa1b498e0589cdb140a41"
+     },
+     "environment_digest": "<host digest>",
+     "interpreter": "<PY>",
+     "interpreter_sha256": "<host digest>",
+     "source_paths": [
+      "<ROOT>/16-snapshot/candidate/backend/src"
+     ]
+    }
+   },
+   "identity_project_keys": [
+    "contexts",
+    "digest",
+    "profile_digest",
+    "workspace"
+   ],
+   "keys": [
+    "environment",
+    "identity",
+    "interpreter",
+    "project"
+   ],
+   "needs_cwd": {
+    "message": "Project evidence snapshot requires the candidate workspace",
+    "raised": "ContractError"
+   },
+   "project_keys": [
+    "contexts",
+    "digest",
+    "profile_digest",
+    "workspace"
+   ]
+  },
+  "worker_schema": {
+   "check_enum": [
+    "probe"
+   ],
+   "closed": true,
+   "properties": [
+    "summary",
+    "tests"
+   ],
+   "second_enum": [
+    "other"
+   ],
+   "status_enum": [
+    "executed",
+    "not_run"
+   ]
+  }
+ }
+}
