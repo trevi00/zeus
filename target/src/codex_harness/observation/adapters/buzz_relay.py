@@ -31,11 +31,14 @@ socket. After an abort the connection is discarded, never reused: the query ends
 (a partial send is never a negative fact: how much was sent is unknowable). CLOSE is sent only while budget remains,
 under the same watchdog, and never to a new connection. The real connect path creates the TCP socket itself and hands it
 to `connect(sock=...)` (websockets 17.1 sync client) so the reference is kept; `abort()` is the stop-time shutdown that
-does not wait for websockets' `close_timeout`. The injected `connect` and `timer` seams keep the tests deterministic.
+does not wait for websockets' `close_timeout`. The name lookup is bounded too (D6 v2): it
+runs in a daemon thread joined with the remaining open budget (expiry is `timeout`/unknown and no socket is created; an IP
+literal skips the thread). The injected `connect`, `timer` and `resolver` seams keep the tests deterministic.
 """
 
 from __future__ import annotations
 
+import ipaddress
 import socket
 import threading
 import time
@@ -101,7 +104,8 @@ class BuzzRelayClient:
                  connect: Callable | None = None, clock: Callable[[], float] = time.time,
                  sleep: Callable[[float], None] = time.sleep, max_size: int, open_timeout: float = 10,
                  recv_timeout: float = 30, page: int = 1000, op_deadline: float | None = None,
-                 timer: Callable[[float, Callable[[], None]], object] = threading.Timer):
+                 timer: Callable[[float, Callable[[], None]], object] = threading.Timer,
+                 resolver: Callable = socket.getaddrinfo):
         if isinstance(page, bool) or not isinstance(page, int) or page < 1:
             raise ContractError("relay: page is a positive integer")
         if isinstance(max_size, bool) or not isinstance(max_size, int) or max_size < 1:
@@ -112,6 +116,7 @@ class BuzzRelayClient:
         self._sock = None  # the TCP socket the real connect path created (kept for the abort); None for an injected connect
         self._connect = connect if connect is not None else self._ws_connect
         self._timer = timer
+        self._resolver = resolver
         self._url = url
         self._signer = auth_signer
         self._role = auth_role
@@ -161,7 +166,7 @@ class BuzzRelayClient:
         from websockets.uri import parse_uri
         uri = parse_uri(url)
         started = time.monotonic()
-        sock = socket.create_connection((uri.host, uri.port), timeout=open_timeout)
+        sock = self._tcp_connect(uri.host, uri.port, open_timeout, started)
         try:
             sock.settimeout(None)  # websockets' reader thread shares the socket: no socket timeout is ever set
             ws = ws_connect(url, sock=sock, open_timeout=max(open_timeout - (time.monotonic() - started), 0.001),
@@ -171,6 +176,57 @@ class BuzzRelayClient:
             raise
         self._sock = sock
         return ws
+
+    def _resolve(self, host: str, port: int, timeout: float) -> list:
+        """`getaddrinfo` results within `timeout`; `_Timeout` when the lookup outlives it (D6 v2). A lookup cannot be
+        interrupted, so it runs in a daemon thread that is abandoned on expiry (it ends on its own, never reused). An IP
+        literal needs no lookup and no thread."""
+        try:
+            address = ipaddress.ip_address(host)
+        except ValueError:
+            address = None
+        if address is not None:
+            family = socket.AF_INET6 if address.version == 6 else socket.AF_INET
+            return [(family, socket.SOCK_STREAM, 0, "", (host, port))]
+        box: list = []
+
+        def lookup():
+            try:
+                box.append(self._resolver(host, port, type=socket.SOCK_STREAM))
+            except BaseException as exc:  # noqa: BLE001 - handed to the caller's thread
+                box.append(exc)
+
+        thread = threading.Thread(target=lookup, daemon=True)
+        thread.start()
+        thread.join(timeout)
+        if not box:
+            raise _Timeout
+        if isinstance(box[0], BaseException):
+            raise box[0]
+        return box[0]
+
+    def _tcp_connect(self, host: str, port: int, open_timeout: float, started: float) -> socket.socket:
+        """A connected TCP socket: the lookup and every connect attempt share `open_timeout`."""
+        def left() -> float:
+            remaining = open_timeout - (time.monotonic() - started)
+            if remaining <= 0:
+                raise _Timeout
+            return remaining
+
+        error: OSError | None = None
+        for family, kind, proto, _, address in self._resolve(host, port, open_timeout):
+            sock = socket.socket(family, kind, proto)
+            try:
+                sock.settimeout(left())
+                sock.connect(address)
+                return sock
+            except OSError as exc:
+                sock.close()
+                error = exc
+            except BaseException:
+                sock.close()
+                raise
+        raise error or OSError("no address")
 
     def _shutdown_socket(self, ws) -> None:
         """Interrupt any I/O on `ws`'s socket (a TLS wrapper replaces the raw socket, so prefer the connection's own)."""

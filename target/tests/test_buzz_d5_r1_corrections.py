@@ -992,3 +992,39 @@ def test_d6_the_unit_template_stop_budget_is_at_least_the_enforced_bound_and_the
     assert (code, out.strip()) == (0, "templates lint-clean") and "TimeoutStopSec=45" in (DEPLOY / UNIT).read_text()
     code, out = lint(plant(tmp_path, CONFIG, '"store_transaction_timeout_seconds": 15', '"store_transaction_timeout_seconds": 20'))
     assert code == 1 and "stop-timeout" in out and "= 47s" in out, out  # the bound follows the config template's allowance
+
+
+# ---- D6 v2: the name lookup is inside the open budget ---------------------------------------------------------------------
+def test_d6_a_name_lookup_that_outlives_the_budget_ends_timeout_and_creates_no_socket(monkeypatch):
+    before, release, calls = live_threads(), threading.Event(), []
+
+    def resolver(host, port, **kwargs):
+        calls.append(host)
+        release.wait(10)
+        return []
+
+    made = []
+    real_socket = socket.socket
+    monkeypatch.setattr(socket, "socket", lambda *a, **k: made.append(a) or real_socket(*a, **k))
+    relay = BuzzRelayClient("ws://slow.invalid:9", auth_signer=Signer(), auth_role="conductor", verifier=Verify(),
+                            max_size=1 << 20, recv_timeout=0.2, op_deadline=0.5, resolver=resolver)
+    started = time.monotonic()
+    assert relay.query([{}])["ended"] == "timeout" and time.monotonic() - started < 2  # within the total budget
+    assert relay.publish(dict(stranger(), id="d" * 64, kind=1))["accepted"] is None  # unknown, not rejected
+    assert calls == ["slow.invalid"] * 2 and made == []  # no socket was created
+    release.set()
+    assert wait_for_no_new_threads(before)  # the orphaned resolver ends on its own
+
+
+def test_d6_an_ip_literal_needs_no_lookup_thread():
+    before, server, calls = live_threads(), SilentRelay(), []
+    try:
+        relay = BuzzRelayClient(server.url, auth_signer=Signer(), auth_role="conductor", verifier=Verify(),
+                                max_size=1 << 20, recv_timeout=0.5, op_deadline=2.0,
+                                resolver=lambda *a, **k: calls.append(a) or [])
+        relay._open()
+        assert calls == [] and relay._ws is not None  # connected with no resolver call
+        relay.abort()
+    finally:
+        server.stop()
+    assert wait_for_no_new_threads(before)

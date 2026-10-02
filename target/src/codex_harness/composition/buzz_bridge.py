@@ -425,7 +425,9 @@ def default_relay(config: BridgeConfig, signer) -> BuzzRelayClient:
 def default_store(dsn: str, *, transaction_timeout_seconds: float = _OPTIONAL["store_transaction_timeout_seconds"]):
     """The PostgreSQL store with the bridge's enforced allowance: the server ends any session that spans longer than
     `transaction_timeout_seconds` in a transaction (PostgreSQL 17; an older server refuses the setting at connect, an
-    explicit store failure, never a silently unbounded store). `PostgresStore` itself is unchanged."""
+    explicit store failure, never a silently unbounded store). `PostgresStore` itself is unchanged. A DSN that carries
+    explicit `options` has them merged; once the DSN has `options`, libpq ignores `PGOPTIONS`, so the DSN's options
+    override the environment variable."""
     from codex_harness.storage.adapters.postgres_store import PostgresStore
     return PostgresStore(with_transaction_timeout(dsn, transaction_timeout_seconds))
 
