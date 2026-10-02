@@ -33,8 +33,8 @@ conductor, 2 leads and 3 workers in two teams (`organization.json`, packaged-sty
   admission row of a paused fleet is MISSING in the target (DESIGN-D §8) and the report says so in step 6.
 - `t3` is the fixture WORK of steps 6 and 9 (`t2` is cancelled in step 5, so it cannot be the running work afterwards).
 - Custody names: every role key is created under `custody_name(role_id)` (composition.buzz_bridge) in the bridge's
-  custody directory; the bridge's NIP-42 identity role `bridge` is a byte copy of the conductor key (same pubkey, so the
-  relay needs no further membership).
+  custody directory; the bridge AUTHs (NIP-42) and signs with its conductor key (DESIGN §6.2.1), so the relay needs no
+  further membership and no key is copied.
 
 Steps (A = asserted, R = recorded in the report; a failing step is named and the run goes on):
  1 preconditions  A: docker, node and the D3 driver exist; digests pinned; no resource of this project exists (a foreign
@@ -95,6 +95,7 @@ from codex_harness.kernel.message import envelope
 from codex_harness.observation.adapters.buzz_relay import BuzzRelayClient
 from codex_harness.observation.adapters.event_signer import NostrEventSigner
 from codex_harness.observation.adapters.nostr_verify import verify_event
+from codex_harness.observation.domain.buzz_projection import NS_ZEUS_BUZZ
 from codex_harness.storage.adapters.postgres_store import PostgresStore
 
 PROJECT = "zeus-buzz-e2e"
@@ -112,7 +113,7 @@ LEASE_TTL = 8  # lease_ttl_seconds: must exceed three ticks
 RECV_TIMEOUT = 3  # recv_timeout
 STOP_BOUND = RECV_TIMEOUT + TICK + 5  # DESIGN-D §2: recv_timeout + one step (the step bound is generous: PG + relay)
 COMMAND_WAIT = 60  # a command's receipts within 60 s
-ORG_D = "zeus-e2e-org"
+ORG_D = str(uuid.uuid5(NS_ZEUS_BUZZ, "zeus.org:e2e"))  # canonical UUID: the relay refuses any other `d`
 TEAMS = ("alpha", "beta")
 CHANNELS = ("commander", *TEAMS)
 TASKS = (("t1", "lead:alpha", "worker:alpha-1"), ("t2", "lead:alpha", "worker:alpha-2"),
@@ -146,7 +147,8 @@ CLAIM_FENCE_PATHS = {
                      "a paused fleet (DESIGN-D §8 follow-up row)",
 }
 WATCH = [
-    "the bridge's NIP-42 identity role `bridge` is a byte copy of the conductor key (one pubkey, one relay membership)",
+    "v2: the org card's `d` is ORG_D, a canonical UUID (the relay refuses `invalid: invalid UUID`); the bridge AUTHs "
+    "with the conductor role, so no key is copied",
     "step 2 asserts the conductor and stranger 9000 joins; the owner's own 9000 answer is recorded (it may be `duplicate`)",
     "the first committed disposition is effect_done (revision 1): `received`/`accepted` are implicit, so step 4 asserts "
     "the driver's last receipt is effect_done and the intervention state is done, and records every receipt",
@@ -578,16 +580,12 @@ def write_secret(path: Path, text: str):
 
 
 def make_keys(run, rec, organization):
-    """Owner/stranger/relay keys outside the bridge's custody; conductor, `bridge` and every org role inside it."""
+    """Owner/stranger/relay keys outside the bridge's custody; conductor (the bridge's NIP-42 and signing identity, DESIGN §6.2.1) and every org role inside it."""
     for role in OUTSIDE_ROLES:
         run.owner_keys.create(role)
     names = ["conductor"] + [custody_name(role_id) for role_id in organization.agents if role_id != "conductor"]
     for name in dict.fromkeys(names):
         run.custody.create(name)
-    conductor_bytes = (run.custody_dir / "conductor.key").read_bytes()  # the bridge's AUTH identity shares the conductor key
-    fd = os.open(run.custody_dir / "bridge.key", os.O_WRONLY | os.O_CREAT | os.O_EXCL, 0o600)
-    with os.fdopen(fd, "wb") as handle:
-        handle.write(conductor_bytes)
     owner_hex = (run.keys_dir / "owner.key").read_bytes().hex()  # the file is the run's own throwaway key
     write_secret(run.owner_key_file, owner_hex + "\n")
     run.secrets.add(owner_hex)

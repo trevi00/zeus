@@ -241,3 +241,20 @@ def test_help_exits_zero_and_lists_the_flags_and_lint_templates_is_reserved():
     linted = subprocess.run([sys.executable, "-B", str(RUNNER), "--lint-templates"], capture_output=True, text=True,
                             check=False, timeout=120)
     assert linted.returncode == 0 and "not yet" in linted.stdout
+
+
+def test_org_d_is_a_canonical_uuid_and_no_custody_file_is_copied():
+    import uuid
+
+    from codex_harness.observation.domain.buzz_projection import NS_ZEUS_BUZZ
+
+    text = RUNNER.read_text("utf-8")
+    assert 'ORG_D = str(uuid.uuid5(NS_ZEUS_BUZZ, "zeus.org:e2e"))' in text
+    value = str(uuid.uuid5(NS_ZEUS_BUZZ, "zeus.org:e2e"))
+    assert str(uuid.UUID(value)) == value
+    assert '"org_d": ORG_D' in text and '"orgD": ORG_D' in text  # bridge and driver configs share the one value
+    assert "bridge.key" not in text
+    make_keys = ast.unparse(functions()["make_keys"])
+    assert "conductor.key" not in make_keys and "bridge.key" not in make_keys
+    assert make_keys.count("read_bytes") == 1 and "owner.key" in make_keys  # only the owner key file is read (its hex)
+    assert "shutil.copy" not in text
