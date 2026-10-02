@@ -1,0 +1,9 @@
+{
+ "family": "observation.monitoring_projection",
+ "description": "S9 unit U5a (M7 application/monitoring.py, the pure projection), characterized before the move into observation.application.monitoring: age_seconds over every timestamp shape, the Monitoring snapshot over scripted facts with a fixed now (health freshness at the 120 s bound, notification attention/observed/unknown, task counts, per-agent execution state, expired and missing leases, queue statuses, the policy snapshot, the stamped time, in-place mutation and a failing read) and initiatives over every stage, release, canary, rejection, lease, activity and ordering shape; mirrors the Monitoring and initiatives tests of tests/test_monitoring.py; no clock, store, process, network or mask",
+ "reference_driver": "drivers/reference/s9_monitoring_projection.py",
+ "target_driver": null,
+ "target_status": "pending: the target side is the S9 unit U5a move (target driver s9_monitoring_projection.py, added with the target drivers)",
+ "golden": "goldens/reference/observation.monitoring_projection.json",
+ "slice": "S9"
+}

@@ -1,0 +1,5392 @@
+{
+ "age_seconds": {
+  "each": [
+   {
+    "value": 0
+   },
+   {
+    "value": 30.0
+   },
+   {
+    "value": 120.0
+   },
+   {
+    "value": 121.0
+   },
+   {
+    "value": 10800.0
+   },
+   {
+    "value": 0
+   },
+   {
+    "value": null
+   },
+   {
+    "value": 60.0
+   },
+   {
+    "value": null
+   },
+   {
+    "value": null
+   },
+   {
+    "value": null
+   },
+   {
+    "value": null
+   },
+   {
+    "value": null
+   },
+   {
+    "value": null
+   }
+  ],
+  "integer_valued_float": [
+   "int",
+   "float"
+  ],
+  "naive_now": {
+   "value": null
+  },
+  "naive_stamp_aware_now": {
+   "value": null
+  }
+ },
+ "initiative_case_count": 37,
+ "initiatives": {
+  "accepted_false_not_succeeded": {
+   "value": [
+    {
+     "activity_age_seconds": 3600.0,
+     "activity_note": "최근 활동 없음 · 정체 여부 확인 필요",
+     "focus": "구현",
+     "id": "goal",
+     "last_activity": "2026-09-18T11:00:00+00:00",
+     "reason": "",
+     "stages": [
+      {
+       "phase": "plan",
+       "record": null,
+       "status": "waiting",
+       "title": "계획"
+      },
+      {
+       "phase": "implement",
+       "record": {
+        "accepted": false,
+        "correlation": "goal",
+        "created_at": "2026-09-18T11:00:00+00:00",
+        "id": "i",
+        "objective": "Improve i",
+        "phase": "implement",
+        "status": "failed"
+       },
+       "status": "failed",
+       "title": "구현"
+      },
+      {
+       "phase": "review_lead",
+       "record": null,
+       "status": "waiting",
+       "title": "팀장 검수"
+      },
+      {
+       "phase": "review_conductor",
+       "record": null,
+       "status": "waiting",
+       "title": "지휘자 검수"
+      },
+      {
+       "phase": "canary",
+       "record": null,
+       "status": "waiting",
+       "title": "테스트 · 카나리아"
+      },
+      {
+       "phase": "deployment",
+       "record": null,
+       "status": "waiting",
+       "title": "운영 반영"
+      }
+     ],
+     "status": "attention",
+     "title": "Improve i"
+    }
+   ]
+  },
+  "activity_completed_at": {
+   "value": [
+    {
+     "activity_age_seconds": 10.0,
+     "activity_note": "최근 활동 관측",
+     "focus": "구현",
+     "id": "goal",
+     "last_activity": "2026-09-18T11:59:50+00:00",
+     "reason": "",
+     "stages": [
+      {
+       "phase": "plan",
+       "record": null,
+       "status": "waiting",
+       "title": "계획"
+      },
+      {
+       "phase": "implement",
+       "record": {
+        "completed_at": "2026-09-18T11:59:50+00:00",
+        "correlation": "goal",
+        "created_at": "2026-09-18T11:00:00+00:00",
+        "id": "i",
+        "objective": "Improve i",
+        "phase": "implement",
+        "status": "queued"
+       },
+       "status": "queued",
+       "title": "구현"
+      },
+      {
+       "phase": "review_lead",
+       "record": null,
+       "status": "waiting",
+       "title": "팀장 검수"
+      },
+      {
+       "phase": "review_conductor",
+       "record": null,
+       "status": "waiting",
+       "title": "지휘자 검수"
+      },
+      {
+       "phase": "canary",
+       "record": null,
+       "status": "waiting",
+       "title": "테스트 · 카나리아"
+      },
+      {
+       "phase": "deployment",
+       "record": null,
+       "status": "waiting",
+       "title": "운영 반영"
+      }
+     ],
+     "status": "running",
+     "title": "Improve i"
+    }
+   ]
+  },
+  "activity_created_only": {
+   "value": [
+    {
+     "activity_age_seconds": 60.0,
+     "activity_note": "최근 활동 관측",
+     "focus": "구현",
+     "id": "goal",
+     "last_activity": "2026-09-18T11:59:00+00:00",
+     "reason": "",
+     "stages": [
+      {
+       "phase": "plan",
+       "record": null,
+       "status": "waiting",
+       "title": "계획"
+      },
+      {
+       "phase": "implement",
+       "record": {
+        "correlation": "goal",
+        "created_at": "2026-09-18T11:59:00+00:00",
+        "id": "i",
+        "objective": "Improve i",
+        "phase": "implement",
+        "status": "queued"
+       },
+       "status": "queued",
+       "title": "구현"
+      },
+      {
+       "phase": "review_lead",
+       "record": null,
+       "status": "waiting",
+       "title": "팀장 검수"
+      },
+      {
+       "phase": "review_conductor",
+       "record": null,
+       "status": "waiting",
+       "title": "지휘자 검수"
+      },
+      {
+       "phase": "canary",
+       "record": null,
+       "status": "waiting",
+       "title": "테스트 · 카나리아"
+      },
+      {
+       "phase": "deployment",
+       "record": null,
+       "status": "waiting",
+       "title": "운영 반영"
+      }
+     ],
+     "status": "running",
+     "title": "Improve i"
+    }
+   ]
+  },
+  "activity_fresh": {
+   "value": [
+    {
+     "activity_age_seconds": 120.0,
+     "activity_note": "최근 활동 관측",
+     "focus": "구현",
+     "id": "goal",
+     "last_activity": "2026-09-18T11:58:00+00:00",
+     "reason": "",
+     "stages": [
+      {
+       "phase": "plan",
+       "record": null,
+       "status": "waiting",
+       "title": "계획"
+      },
+      {
+       "phase": "implement",
+       "record": {
+        "correlation": "goal",
+        "created_at": "2026-09-18T11:00:00+00:00",
+        "id": "i",
+        "objective": "Improve i",
+        "phase": "implement",
+        "progress_at": "2026-09-18T11:58:00+00:00",
+        "status": "queued"
+       },
+       "status": "queued",
+       "title": "구현"
+      },
+      {
+       "phase": "review_lead",
+       "record": null,
+       "status": "waiting",
+       "title": "팀장 검수"
+      },
+      {
+       "phase": "review_conductor",
+       "record": null,
+       "status": "waiting",
+       "title": "지휘자 검수"
+      },
+      {
+       "phase": "canary",
+       "record": null,
+       "status": "waiting",
+       "title": "테스트 · 카나리아"
+      },
+      {
+       "phase": "deployment",
+       "record": null,
+       "status": "waiting",
+       "title": "운영 반영"
+      }
+     ],
+     "status": "running",
+     "title": "Improve i"
+    }
+   ]
+  },
+  "activity_future": {
+   "value": [
+    {
+     "activity_age_seconds": 0,
+     "activity_note": "최근 활동 관측",
+     "focus": "구현",
+     "id": "goal",
+     "last_activity": "2026-09-18T12:00:30+00:00",
+     "reason": "",
+     "stages": [
+      {
+       "phase": "plan",
+       "record": null,
+       "status": "waiting",
+       "title": "계획"
+      },
+      {
+       "phase": "implement",
+       "record": {
+        "correlation": "goal",
+        "created_at": "2026-09-18T11:00:00+00:00",
+        "id": "i",
+        "objective": "Improve i",
+        "phase": "implement",
+        "progress_at": "2026-09-18T12:00:30+00:00",
+        "status": "queued"
+       },
+       "status": "queued",
+       "title": "구현"
+      },
+      {
+       "phase": "review_lead",
+       "record": null,
+       "status": "waiting",
+       "title": "팀장 검수"
+      },
+      {
+       "phase": "review_conductor",
+       "record": null,
+       "status": "waiting",
+       "title": "지휘자 검수"
+      },
+      {
+       "phase": "canary",
+       "record": null,
+       "status": "waiting",
+       "title": "테스트 · 카나리아"
+      },
+      {
+       "phase": "deployment",
+       "record": null,
+       "status": "waiting",
+       "title": "운영 반영"
+      }
+     ],
+     "status": "running",
+     "title": "Improve i"
+    }
+   ]
+  },
+  "activity_junk": {
+   "value": [
+    {
+     "activity_age_seconds": null,
+     "activity_note": "최근 활동 없음 · 정체 여부 확인 필요",
+     "focus": "구현",
+     "id": "goal",
+     "last_activity": "junk",
+     "reason": "",
+     "stages": [
+      {
+       "phase": "plan",
+       "record": null,
+       "status": "waiting",
+       "title": "계획"
+      },
+      {
+       "phase": "implement",
+       "record": {
+        "correlation": "goal",
+        "created_at": "2026-09-18T11:00:00+00:00",
+        "id": "i",
+        "objective": "Improve i",
+        "phase": "implement",
+        "progress_at": "junk",
+        "status": "queued"
+       },
+       "status": "queued",
+       "title": "구현"
+      },
+      {
+       "phase": "review_lead",
+       "record": null,
+       "status": "waiting",
+       "title": "팀장 검수"
+      },
+      {
+       "phase": "review_conductor",
+       "record": null,
+       "status": "waiting",
+       "title": "지휘자 검수"
+      },
+      {
+       "phase": "canary",
+       "record": null,
+       "status": "waiting",
+       "title": "테스트 · 카나리아"
+      },
+      {
+       "phase": "deployment",
+       "record": null,
+       "status": "waiting",
+       "title": "운영 반영"
+      }
+     ],
+     "status": "running",
+     "title": "Improve i"
+    }
+   ]
+  },
+  "activity_stale": {
+   "value": [
+    {
+     "activity_age_seconds": 121.0,
+     "activity_note": "최근 활동 없음 · 정체 여부 확인 필요",
+     "focus": "구현",
+     "id": "goal",
+     "last_activity": "2026-09-18T11:57:59+00:00",
+     "reason": "",
+     "stages": [
+      {
+       "phase": "plan",
+       "record": null,
+       "status": "waiting",
+       "title": "계획"
+      },
+      {
+       "phase": "implement",
+       "record": {
+        "correlation": "goal",
+        "created_at": "2026-09-18T11:00:00+00:00",
+        "id": "i",
+        "objective": "Improve i",
+        "phase": "implement",
+        "progress_at": "2026-09-18T11:57:59+00:00",
+        "status": "queued"
+       },
+       "status": "queued",
+       "title": "구현"
+      },
+      {
+       "phase": "review_lead",
+       "record": null,
+       "status": "waiting",
+       "title": "팀장 검수"
+      },
+      {
+       "phase": "review_conductor",
+       "record": null,
+       "status": "waiting",
+       "title": "지휘자 검수"
+      },
+      {
+       "phase": "canary",
+       "record": null,
+       "status": "waiting",
+       "title": "테스트 · 카나리아"
+      },
+      {
+       "phase": "deployment",
+       "record": null,
+       "status": "waiting",
+       "title": "운영 반영"
+      }
+     ],
+     "status": "running",
+     "title": "Improve i"
+    }
+   ]
+  },
+  "awaiting_next_stage": {
+   "value": [
+    {
+     "activity_age_seconds": 0,
+     "activity_note": "최근 활동 관측",
+     "focus": "다음 단계 확인",
+     "id": "goal",
+     "last_activity": "2026-09-18T12:00:00+00:00",
+     "reason": "",
+     "stages": [
+      {
+       "phase": "plan",
+       "record": null,
+       "status": "waiting",
+       "title": "계획"
+      },
+      {
+       "phase": "implement",
+       "record": {
+        "correlation": "goal",
+        "created_at": "2026-09-18T12:00:00+00:00",
+        "id": "impl",
+        "objective": "Improve impl",
+        "phase": "implement",
+        "status": "succeeded"
+       },
+       "status": "succeeded",
+       "title": "구현"
+      },
+      {
+       "phase": "review_lead",
+       "record": null,
+       "status": "waiting",
+       "title": "팀장 검수"
+      },
+      {
+       "phase": "review_conductor",
+       "record": null,
+       "status": "waiting",
+       "title": "지휘자 검수"
+      },
+      {
+       "phase": "canary",
+       "record": null,
+       "status": "waiting",
+       "title": "테스트 · 카나리아"
+      },
+      {
+       "phase": "deployment",
+       "record": null,
+       "status": "waiting",
+       "title": "운영 반영"
+      }
+     ],
+     "status": "awaiting_next_stage",
+     "title": "Improve impl"
+    }
+   ]
+  },
+  "completed_implementation_blocked_review": {
+   "value": [
+    {
+     "activity_age_seconds": 0,
+     "activity_note": "최근 활동 관측",
+     "focus": "팀장 검수",
+     "id": "goal",
+     "last_activity": "2026-09-18T12:00:00+00:00",
+     "reason": "Cannot inspect candidate",
+     "stages": [
+      {
+       "phase": "plan",
+       "record": null,
+       "status": "waiting",
+       "title": "계획"
+      },
+      {
+       "phase": "implement",
+       "record": {
+        "correlation": "goal",
+        "created_at": "2026-09-18T12:00:00+00:00",
+        "id": "impl",
+        "objective": "Improve impl",
+        "phase": "implement",
+        "status": "succeeded"
+       },
+       "status": "succeeded",
+       "title": "구현"
+      },
+      {
+       "phase": "review_lead",
+       "record": {
+        "correlation": "goal",
+        "created_at": "2026-09-18T12:00:00+00:00",
+        "id": "review",
+        "objective": "Improve review",
+        "phase": "review_lead",
+        "reason": "Cannot inspect candidate",
+        "status": "blocked"
+       },
+       "status": "blocked",
+       "title": "팀장 검수"
+      },
+      {
+       "phase": "review_conductor",
+       "record": null,
+       "status": "waiting",
+       "title": "지휘자 검수"
+      },
+      {
+       "phase": "canary",
+       "record": null,
+       "status": "waiting",
+       "title": "테스트 · 카나리아"
+      },
+      {
+       "phase": "deployment",
+       "record": null,
+       "status": "waiting",
+       "title": "운영 반영"
+      }
+     ],
+     "status": "attention",
+     "title": "Improve impl"
+    }
+   ]
+  },
+  "created_at_missing_sorted_first": {
+   "value": [
+    {
+     "activity_age_seconds": 3600.0,
+     "activity_note": "최근 활동 없음 · 정체 여부 확인 필요",
+     "focus": "다음 단계 확인",
+     "id": "goal",
+     "last_activity": "2026-09-18T11:00:00+00:00",
+     "reason": "",
+     "stages": [
+      {
+       "phase": "plan",
+       "record": null,
+       "status": "waiting",
+       "title": "계획"
+      },
+      {
+       "phase": "implement",
+       "record": {
+        "correlation": "goal",
+        "created_at": "2026-09-18T11:00:00+00:00",
+        "id": "i1",
+        "objective": "Improve i1",
+        "phase": "implement",
+        "status": "succeeded"
+       },
+       "status": "succeeded",
+       "title": "구현"
+      },
+      {
+       "phase": "review_lead",
+       "record": null,
+       "status": "waiting",
+       "title": "팀장 검수"
+      },
+      {
+       "phase": "review_conductor",
+       "record": null,
+       "status": "waiting",
+       "title": "지휘자 검수"
+      },
+      {
+       "phase": "canary",
+       "record": null,
+       "status": "waiting",
+       "title": "테스트 · 카나리아"
+      },
+      {
+       "phase": "deployment",
+       "record": null,
+       "status": "waiting",
+       "title": "운영 반영"
+      }
+     ],
+     "status": "awaiting_next_stage",
+     "title": "Improve i2"
+    }
+   ]
+  },
+  "empty": {
+   "value": []
+  },
+  "failed_canary_expired_lease": {
+   "value": [
+    {
+     "activity_age_seconds": null,
+     "activity_note": "최근 활동 없음 · 정체 여부 확인 필요",
+     "focus": "구현",
+     "id": "goal",
+     "last_activity": "",
+     "reason": "",
+     "stages": [
+      {
+       "phase": "plan",
+       "record": null,
+       "status": "waiting",
+       "title": "계획"
+      },
+      {
+       "phase": "implement",
+       "record": {
+        "correlation": "goal",
+        "id": "impl",
+        "lease_until": "2026-09-18T11:59:59+00:00",
+        "phase": "implement",
+        "revision": "abc",
+        "status": "running"
+       },
+       "status": "lease_expired",
+       "title": "구현"
+      },
+      {
+       "phase": "review_lead",
+       "record": null,
+       "status": "waiting",
+       "title": "팀장 검수"
+      },
+      {
+       "phase": "review_conductor",
+       "record": null,
+       "status": "waiting",
+       "title": "지휘자 검수"
+      },
+      {
+       "phase": "canary",
+       "record": {
+        "checks": {
+         "cli": {
+          "passed": false
+         }
+        },
+        "id": "release",
+        "revision": "abc",
+        "status": "rejected"
+       },
+       "status": "failed",
+       "title": "테스트 · 카나리아"
+      },
+      {
+       "phase": "deployment",
+       "record": {
+        "checks": {
+         "cli": {
+          "passed": false
+         }
+        },
+        "id": "release",
+        "revision": "abc",
+        "status": "rejected"
+       },
+       "status": "rejected",
+       "title": "운영 반영"
+      }
+     ],
+     "status": "attention",
+     "title": "goal"
+    }
+   ]
+  },
+  "later_row_wins": {
+   "value": [
+    {
+     "activity_age_seconds": 7200.0,
+     "activity_note": "최근 활동 없음 · 정체 여부 확인 필요",
+     "focus": "다음 단계 확인",
+     "id": "goal",
+     "last_activity": "2026-09-18T10:00:00+00:00",
+     "reason": "",
+     "stages": [
+      {
+       "phase": "plan",
+       "record": null,
+       "status": "waiting",
+       "title": "계획"
+      },
+      {
+       "phase": "implement",
+       "record": {
+        "correlation": "goal",
+        "created_at": "2026-09-18T10:00:00+00:00",
+        "id": "i2",
+        "objective": "Improve i2",
+        "phase": "implement",
+        "status": "succeeded"
+       },
+       "status": "succeeded",
+       "title": "구현"
+      },
+      {
+       "phase": "review_lead",
+       "record": null,
+       "status": "waiting",
+       "title": "팀장 검수"
+      },
+      {
+       "phase": "review_conductor",
+       "record": null,
+       "status": "waiting",
+       "title": "지휘자 검수"
+      },
+      {
+       "phase": "canary",
+       "record": null,
+       "status": "waiting",
+       "title": "테스트 · 카나리아"
+      },
+      {
+       "phase": "deployment",
+       "record": null,
+       "status": "waiting",
+       "title": "운영 반영"
+      }
+     ],
+     "status": "awaiting_next_stage",
+     "title": "Improve i1"
+    }
+   ]
+  },
+  "missing_tasks_key": {
+   "message": "'tasks'",
+   "refused": "KeyError"
+  },
+  "no_correlation": {
+   "value": []
+  },
+  "no_plan_or_implement": {
+   "value": []
+  },
+  "objective_and_reason": {
+   "value": [
+    {
+     "activity_age_seconds": null,
+     "activity_note": "최근 활동 없음 · 정체 여부 확인 필요",
+     "focus": "구현",
+     "id": "g",
+     "last_activity": "",
+     "reason": "boom",
+     "stages": [
+      {
+       "phase": "plan",
+       "record": null,
+       "status": "waiting",
+       "title": "계획"
+      },
+      {
+       "phase": "implement",
+       "record": {
+        "correlation": "g",
+        "error": "boom",
+        "id": "i",
+        "phase": "implement",
+        "status": "failed"
+       },
+       "status": "failed",
+       "title": "구현"
+      },
+      {
+       "phase": "review_lead",
+       "record": null,
+       "status": "waiting",
+       "title": "팀장 검수"
+      },
+      {
+       "phase": "review_conductor",
+       "record": null,
+       "status": "waiting",
+       "title": "지휘자 검수"
+      },
+      {
+       "phase": "canary",
+       "record": null,
+       "status": "waiting",
+       "title": "테스트 · 카나리아"
+      },
+      {
+       "phase": "deployment",
+       "record": null,
+       "status": "waiting",
+       "title": "운영 반영"
+      }
+     ],
+     "status": "attention",
+     "title": "g"
+    }
+   ]
+  },
+  "queued_pending_retry": {
+   "value": [
+    {
+     "activity_age_seconds": 1800.0,
+     "activity_note": "최근 활동 없음 · 정체 여부 확인 필요",
+     "focus": "계획",
+     "id": "goal",
+     "last_activity": "2026-09-18T11:30:00+00:00",
+     "reason": "",
+     "stages": [
+      {
+       "phase": "plan",
+       "record": {
+        "correlation": "goal",
+        "created_at": "2026-09-18T11:00:00+00:00",
+        "id": "p",
+        "objective": "Improve p",
+        "phase": "plan",
+        "status": "queued"
+       },
+       "status": "queued",
+       "title": "계획"
+      },
+      {
+       "phase": "implement",
+       "record": {
+        "correlation": "goal",
+        "created_at": "2026-09-18T11:30:00+00:00",
+        "id": "i",
+        "objective": "Improve i",
+        "phase": "implement",
+        "status": "retry"
+       },
+       "status": "retry",
+       "title": "구현"
+      },
+      {
+       "phase": "review_lead",
+       "record": {
+        "correlation": "goal",
+        "created_at": "2026-09-18T11:00:00+00:00",
+        "id": "rl",
+        "objective": "Improve rl",
+        "phase": "review_lead",
+        "status": "pending"
+       },
+       "status": "pending",
+       "title": "팀장 검수"
+      },
+      {
+       "phase": "review_conductor",
+       "record": null,
+       "status": "waiting",
+       "title": "지휘자 검수"
+      },
+      {
+       "phase": "canary",
+       "record": null,
+       "status": "waiting",
+       "title": "테스트 · 카나리아"
+      },
+      {
+       "phase": "deployment",
+       "record": null,
+       "status": "waiting",
+       "title": "운영 반영"
+      }
+     ],
+     "status": "running",
+     "title": "Improve p"
+    }
+   ]
+  },
+  "reason_prefers_reason": {
+   "value": [
+    {
+     "activity_age_seconds": null,
+     "activity_note": "최근 활동 없음 · 정체 여부 확인 필요",
+     "focus": "구현",
+     "id": "g",
+     "last_activity": "",
+     "reason": "why",
+     "stages": [
+      {
+       "phase": "plan",
+       "record": null,
+       "status": "waiting",
+       "title": "계획"
+      },
+      {
+       "phase": "implement",
+       "record": {
+        "correlation": "g",
+        "error": "boom",
+        "id": "i",
+        "phase": "implement",
+        "reason": "why",
+        "status": "failed"
+       },
+       "status": "failed",
+       "title": "구현"
+      },
+      {
+       "phase": "review_lead",
+       "record": null,
+       "status": "waiting",
+       "title": "팀장 검수"
+      },
+      {
+       "phase": "review_conductor",
+       "record": null,
+       "status": "waiting",
+       "title": "지휘자 검수"
+      },
+      {
+       "phase": "canary",
+       "record": null,
+       "status": "waiting",
+       "title": "테스트 · 카나리아"
+      },
+      {
+       "phase": "deployment",
+       "record": null,
+       "status": "waiting",
+       "title": "운영 반영"
+      }
+     ],
+     "status": "attention",
+     "title": "g"
+    }
+   ]
+  },
+  "rejected": {
+   "value": [
+    {
+     "activity_age_seconds": 3600.0,
+     "activity_note": "최근 활동 없음 · 정체 여부 확인 필요",
+     "focus": "구현",
+     "id": "goal",
+     "last_activity": "2026-09-18T11:00:00+00:00",
+     "reason": "",
+     "stages": [
+      {
+       "phase": "plan",
+       "record": null,
+       "status": "waiting",
+       "title": "계획"
+      },
+      {
+       "phase": "implement",
+       "record": {
+        "accepted": false,
+        "correlation": "goal",
+        "created_at": "2026-09-18T11:00:00+00:00",
+        "id": "i",
+        "objective": "Improve i",
+        "phase": "implement",
+        "status": "succeeded"
+       },
+       "status": "rejected",
+       "title": "구현"
+      },
+      {
+       "phase": "review_lead",
+       "record": {
+        "accepted": true,
+        "correlation": "goal",
+        "created_at": "2026-09-18T11:00:00+00:00",
+        "id": "rl",
+        "objective": "Improve rl",
+        "phase": "review_lead",
+        "status": "succeeded"
+       },
+       "status": "succeeded",
+       "title": "팀장 검수"
+      },
+      {
+       "phase": "review_conductor",
+       "record": null,
+       "status": "waiting",
+       "title": "지휘자 검수"
+      },
+      {
+       "phase": "canary",
+       "record": null,
+       "status": "waiting",
+       "title": "테스트 · 카나리아"
+      },
+      {
+       "phase": "deployment",
+       "record": null,
+       "status": "waiting",
+       "title": "운영 반영"
+      }
+     ],
+     "status": "attention",
+     "title": "Improve i"
+    }
+   ]
+  },
+  "release_active_pass": {
+   "value": [
+    {
+     "activity_age_seconds": 3600.0,
+     "activity_note": "최근 활동 없음 · 정체 여부 확인 필요",
+     "focus": "다음 단계 확인",
+     "id": "goal",
+     "last_activity": "2026-09-18T11:00:00+00:00",
+     "reason": "",
+     "stages": [
+      {
+       "phase": "plan",
+       "record": null,
+       "status": "waiting",
+       "title": "계획"
+      },
+      {
+       "phase": "implement",
+       "record": {
+        "correlation": "goal",
+        "created_at": "2026-09-18T11:00:00+00:00",
+        "id": "i",
+        "objective": "Improve i",
+        "phase": "implement",
+        "release_id": "rel",
+        "status": "succeeded"
+       },
+       "status": "succeeded",
+       "title": "구현"
+      },
+      {
+       "phase": "review_lead",
+       "record": null,
+       "status": "waiting",
+       "title": "팀장 검수"
+      },
+      {
+       "phase": "review_conductor",
+       "record": null,
+       "status": "waiting",
+       "title": "지휘자 검수"
+      },
+      {
+       "phase": "canary",
+       "record": {
+        "checks": {
+         "a": {
+          "passed": true
+         }
+        },
+        "created_at": "2026-09-18T11:55:00+00:00",
+        "id": "rel",
+        "status": "active"
+       },
+       "status": "succeeded",
+       "title": "테스트 · 카나리아"
+      },
+      {
+       "phase": "deployment",
+       "record": {
+        "checks": {
+         "a": {
+          "passed": true
+         }
+        },
+        "created_at": "2026-09-18T11:55:00+00:00",
+        "id": "rel",
+        "status": "active"
+       },
+       "status": "active",
+       "title": "운영 반영"
+      }
+     ],
+     "status": "deployed",
+     "title": "Improve i"
+    }
+   ]
+  },
+  "release_by_revision": {
+   "value": [
+    {
+     "activity_age_seconds": 3600.0,
+     "activity_note": "최근 활동 없음 · 정체 여부 확인 필요",
+     "focus": "다음 단계 확인",
+     "id": "goal",
+     "last_activity": "2026-09-18T11:00:00+00:00",
+     "reason": "",
+     "stages": [
+      {
+       "phase": "plan",
+       "record": null,
+       "status": "waiting",
+       "title": "계획"
+      },
+      {
+       "phase": "implement",
+       "record": {
+        "correlation": "goal",
+        "created_at": "2026-09-18T11:00:00+00:00",
+        "id": "i",
+        "objective": "Improve i",
+        "phase": "implement",
+        "revision": "r1",
+        "status": "succeeded"
+       },
+       "status": "succeeded",
+       "title": "구현"
+      },
+      {
+       "phase": "review_lead",
+       "record": null,
+       "status": "waiting",
+       "title": "팀장 검수"
+      },
+      {
+       "phase": "review_conductor",
+       "record": null,
+       "status": "waiting",
+       "title": "지휘자 검수"
+      },
+      {
+       "phase": "canary",
+       "record": {
+        "checks": {
+         "a": {
+          "passed": true
+         }
+        },
+        "id": "x",
+        "revision": "r1",
+        "status": "active"
+       },
+       "status": "succeeded",
+       "title": "테스트 · 카나리아"
+      },
+      {
+       "phase": "deployment",
+       "record": {
+        "checks": {
+         "a": {
+          "passed": true
+         }
+        },
+        "id": "x",
+        "revision": "r1",
+        "status": "active"
+       },
+       "status": "active",
+       "title": "운영 반영"
+      }
+     ],
+     "status": "deployed",
+     "title": "Improve i"
+    }
+   ]
+  },
+  "release_candidate_pass": {
+   "value": [
+    {
+     "activity_age_seconds": 3600.0,
+     "activity_note": "최근 활동 없음 · 정체 여부 확인 필요",
+     "focus": "다음 단계 확인",
+     "id": "goal",
+     "last_activity": "2026-09-18T11:00:00+00:00",
+     "reason": "",
+     "stages": [
+      {
+       "phase": "plan",
+       "record": null,
+       "status": "waiting",
+       "title": "계획"
+      },
+      {
+       "phase": "implement",
+       "record": {
+        "correlation": "goal",
+        "created_at": "2026-09-18T11:00:00+00:00",
+        "id": "i",
+        "objective": "Improve i",
+        "phase": "implement",
+        "release_id": "rel",
+        "status": "succeeded"
+       },
+       "status": "succeeded",
+       "title": "구현"
+      },
+      {
+       "phase": "review_lead",
+       "record": null,
+       "status": "waiting",
+       "title": "팀장 검수"
+      },
+      {
+       "phase": "review_conductor",
+       "record": null,
+       "status": "waiting",
+       "title": "지휘자 검수"
+      },
+      {
+       "phase": "canary",
+       "record": {
+        "checks": {
+         "a": {
+          "passed": true
+         }
+        },
+        "created_at": "2026-09-18T11:55:00+00:00",
+        "id": "rel",
+        "status": "candidate"
+       },
+       "status": "waiting",
+       "title": "테스트 · 카나리아"
+      },
+      {
+       "phase": "deployment",
+       "record": {
+        "checks": {
+         "a": {
+          "passed": true
+         }
+        },
+        "created_at": "2026-09-18T11:55:00+00:00",
+        "id": "rel",
+        "status": "candidate"
+       },
+       "status": "candidate",
+       "title": "운영 반영"
+      }
+     ],
+     "status": "awaiting_next_stage",
+     "title": "Improve i"
+    }
+   ]
+  },
+  "release_failed_check_beats_status": {
+   "value": [
+    {
+     "activity_age_seconds": 3600.0,
+     "activity_note": "최근 활동 없음 · 정체 여부 확인 필요",
+     "focus": "테스트 · 카나리아",
+     "id": "goal",
+     "last_activity": "2026-09-18T11:00:00+00:00",
+     "reason": "",
+     "stages": [
+      {
+       "phase": "plan",
+       "record": null,
+       "status": "waiting",
+       "title": "계획"
+      },
+      {
+       "phase": "implement",
+       "record": {
+        "correlation": "goal",
+        "created_at": "2026-09-18T11:00:00+00:00",
+        "id": "i",
+        "objective": "Improve i",
+        "phase": "implement",
+        "release_id": "rel",
+        "status": "succeeded"
+       },
+       "status": "succeeded",
+       "title": "구현"
+      },
+      {
+       "phase": "review_lead",
+       "record": null,
+       "status": "waiting",
+       "title": "팀장 검수"
+      },
+      {
+       "phase": "review_conductor",
+       "record": null,
+       "status": "waiting",
+       "title": "지휘자 검수"
+      },
+      {
+       "phase": "canary",
+       "record": {
+        "checks": {
+         "a": {
+          "passed": false
+         },
+         "b": {
+          "passed": true
+         }
+        },
+        "created_at": "2026-09-18T11:55:00+00:00",
+        "id": "rel",
+        "status": "active"
+       },
+       "status": "failed",
+       "title": "테스트 · 카나리아"
+      },
+      {
+       "phase": "deployment",
+       "record": {
+        "checks": {
+         "a": {
+          "passed": false
+         },
+         "b": {
+          "passed": true
+         }
+        },
+        "created_at": "2026-09-18T11:55:00+00:00",
+        "id": "rel",
+        "status": "active"
+       },
+       "status": "active",
+       "title": "운영 반영"
+      }
+     ],
+     "status": "attention",
+     "title": "Improve i"
+    }
+   ]
+  },
+  "release_latest_of_two": {
+   "value": [
+    {
+     "activity_age_seconds": 3600.0,
+     "activity_note": "최근 활동 없음 · 정체 여부 확인 필요",
+     "focus": "다음 단계 확인",
+     "id": "goal",
+     "last_activity": "2026-09-18T11:00:00+00:00",
+     "reason": "",
+     "stages": [
+      {
+       "phase": "plan",
+       "record": null,
+       "status": "waiting",
+       "title": "계획"
+      },
+      {
+       "phase": "implement",
+       "record": {
+        "correlation": "goal",
+        "created_at": "2026-09-18T11:00:00+00:00",
+        "id": "i",
+        "objective": "Improve i",
+        "phase": "implement",
+        "release_id": "a",
+        "revision": "r1",
+        "status": "succeeded"
+       },
+       "status": "succeeded",
+       "title": "구현"
+      },
+      {
+       "phase": "review_lead",
+       "record": null,
+       "status": "waiting",
+       "title": "팀장 검수"
+      },
+      {
+       "phase": "review_conductor",
+       "record": null,
+       "status": "waiting",
+       "title": "지휘자 검수"
+      },
+      {
+       "phase": "canary",
+       "record": {
+        "checks": {
+         "c": {
+          "passed": true
+         }
+        },
+        "created_at": "2026-09-18T11:00:00+00:00",
+        "id": "b",
+        "revision": "r1",
+        "status": "active"
+       },
+       "status": "succeeded",
+       "title": "테스트 · 카나리아"
+      },
+      {
+       "phase": "deployment",
+       "record": {
+        "checks": {
+         "c": {
+          "passed": true
+         }
+        },
+        "created_at": "2026-09-18T11:00:00+00:00",
+        "id": "b",
+        "revision": "r1",
+        "status": "active"
+       },
+       "status": "active",
+       "title": "운영 반영"
+      }
+     ],
+     "status": "deployed",
+     "title": "Improve i"
+    }
+   ]
+  },
+  "release_no_checks_active": {
+   "value": [
+    {
+     "activity_age_seconds": 3600.0,
+     "activity_note": "최근 활동 없음 · 정체 여부 확인 필요",
+     "focus": "다음 단계 확인",
+     "id": "goal",
+     "last_activity": "2026-09-18T11:00:00+00:00",
+     "reason": "",
+     "stages": [
+      {
+       "phase": "plan",
+       "record": null,
+       "status": "waiting",
+       "title": "계획"
+      },
+      {
+       "phase": "implement",
+       "record": {
+        "correlation": "goal",
+        "created_at": "2026-09-18T11:00:00+00:00",
+        "id": "i",
+        "objective": "Improve i",
+        "phase": "implement",
+        "release_id": "rel",
+        "status": "succeeded"
+       },
+       "status": "succeeded",
+       "title": "구현"
+      },
+      {
+       "phase": "review_lead",
+       "record": null,
+       "status": "waiting",
+       "title": "팀장 검수"
+      },
+      {
+       "phase": "review_conductor",
+       "record": null,
+       "status": "waiting",
+       "title": "지휘자 검수"
+      },
+      {
+       "phase": "canary",
+       "record": {
+        "created_at": "2026-09-18T11:55:00+00:00",
+        "id": "rel",
+        "status": "active"
+       },
+       "status": "waiting",
+       "title": "테스트 · 카나리아"
+      },
+      {
+       "phase": "deployment",
+       "record": {
+        "created_at": "2026-09-18T11:55:00+00:00",
+        "id": "rel",
+        "status": "active"
+       },
+       "status": "active",
+       "title": "운영 반영"
+      }
+     ],
+     "status": "deployed",
+     "title": "Improve i"
+    }
+   ]
+  },
+  "release_no_status": {
+   "message": "'status'",
+   "refused": "KeyError"
+  },
+  "release_rolled_back": {
+   "value": [
+    {
+     "activity_age_seconds": 3600.0,
+     "activity_note": "최근 활동 없음 · 정체 여부 확인 필요",
+     "focus": "운영 반영",
+     "id": "goal",
+     "last_activity": "2026-09-18T11:00:00+00:00",
+     "reason": "",
+     "stages": [
+      {
+       "phase": "plan",
+       "record": null,
+       "status": "waiting",
+       "title": "계획"
+      },
+      {
+       "phase": "implement",
+       "record": {
+        "correlation": "goal",
+        "created_at": "2026-09-18T11:00:00+00:00",
+        "id": "i",
+        "objective": "Improve i",
+        "phase": "implement",
+        "release_id": "rel",
+        "status": "succeeded"
+       },
+       "status": "succeeded",
+       "title": "구현"
+      },
+      {
+       "phase": "review_lead",
+       "record": null,
+       "status": "waiting",
+       "title": "팀장 검수"
+      },
+      {
+       "phase": "review_conductor",
+       "record": null,
+       "status": "waiting",
+       "title": "지휘자 검수"
+      },
+      {
+       "phase": "canary",
+       "record": {
+        "checks": {
+         "a": {
+          "passed": true
+         }
+        },
+        "created_at": "2026-09-18T11:55:00+00:00",
+        "id": "rel",
+        "status": "rolled_back"
+       },
+       "status": "waiting",
+       "title": "테스트 · 카나리아"
+      },
+      {
+       "phase": "deployment",
+       "record": {
+        "checks": {
+         "a": {
+          "passed": true
+         }
+        },
+        "created_at": "2026-09-18T11:55:00+00:00",
+        "id": "rel",
+        "status": "rolled_back"
+       },
+       "status": "rolled_back",
+       "title": "운영 반영"
+      }
+     ],
+     "status": "attention",
+     "title": "Improve i"
+    }
+   ]
+  },
+  "release_superseded_pass": {
+   "value": [
+    {
+     "activity_age_seconds": 3600.0,
+     "activity_note": "최근 활동 없음 · 정체 여부 확인 필요",
+     "focus": "다음 단계 확인",
+     "id": "goal",
+     "last_activity": "2026-09-18T11:00:00+00:00",
+     "reason": "",
+     "stages": [
+      {
+       "phase": "plan",
+       "record": null,
+       "status": "waiting",
+       "title": "계획"
+      },
+      {
+       "phase": "implement",
+       "record": {
+        "correlation": "goal",
+        "created_at": "2026-09-18T11:00:00+00:00",
+        "id": "i",
+        "objective": "Improve i",
+        "phase": "implement",
+        "release_id": "rel",
+        "status": "succeeded"
+       },
+       "status": "succeeded",
+       "title": "구현"
+      },
+      {
+       "phase": "review_lead",
+       "record": null,
+       "status": "waiting",
+       "title": "팀장 검수"
+      },
+      {
+       "phase": "review_conductor",
+       "record": null,
+       "status": "waiting",
+       "title": "지휘자 검수"
+      },
+      {
+       "phase": "canary",
+       "record": {
+        "checks": {
+         "a": {
+          "passed": true
+         }
+        },
+        "created_at": "2026-09-18T11:55:00+00:00",
+        "id": "rel",
+        "status": "superseded"
+       },
+       "status": "succeeded",
+       "title": "테스트 · 카나리아"
+      },
+      {
+       "phase": "deployment",
+       "record": {
+        "checks": {
+         "a": {
+          "passed": true
+         }
+        },
+        "created_at": "2026-09-18T11:55:00+00:00",
+        "id": "rel",
+        "status": "superseded"
+       },
+       "status": "superseded",
+       "title": "운영 반영"
+      }
+     ],
+     "status": "previously_deployed",
+     "title": "Improve i"
+    }
+   ]
+  },
+  "release_unrelated": {
+   "value": [
+    {
+     "activity_age_seconds": 3600.0,
+     "activity_note": "최근 활동 없음 · 정체 여부 확인 필요",
+     "focus": "다음 단계 확인",
+     "id": "goal",
+     "last_activity": "2026-09-18T11:00:00+00:00",
+     "reason": "",
+     "stages": [
+      {
+       "phase": "plan",
+       "record": null,
+       "status": "waiting",
+       "title": "계획"
+      },
+      {
+       "phase": "implement",
+       "record": {
+        "correlation": "goal",
+        "created_at": "2026-09-18T11:00:00+00:00",
+        "id": "i",
+        "objective": "Improve i",
+        "phase": "implement",
+        "release_id": "zzz",
+        "status": "succeeded"
+       },
+       "status": "succeeded",
+       "title": "구현"
+      },
+      {
+       "phase": "review_lead",
+       "record": null,
+       "status": "waiting",
+       "title": "팀장 검수"
+      },
+      {
+       "phase": "review_conductor",
+       "record": null,
+       "status": "waiting",
+       "title": "지휘자 검수"
+      },
+      {
+       "phase": "canary",
+       "record": null,
+       "status": "waiting",
+       "title": "테스트 · 카나리아"
+      },
+      {
+       "phase": "deployment",
+       "record": null,
+       "status": "waiting",
+       "title": "운영 반영"
+      }
+     ],
+     "status": "awaiting_next_stage",
+     "title": "Improve i"
+    }
+   ]
+  },
+  "release_verified_all_pass": {
+   "value": [
+    {
+     "activity_age_seconds": 3600.0,
+     "activity_note": "최근 활동 없음 · 정체 여부 확인 필요",
+     "focus": "다음 단계 확인",
+     "id": "goal",
+     "last_activity": "2026-09-18T11:00:00+00:00",
+     "reason": "",
+     "stages": [
+      {
+       "phase": "plan",
+       "record": null,
+       "status": "waiting",
+       "title": "계획"
+      },
+      {
+       "phase": "implement",
+       "record": {
+        "correlation": "goal",
+        "created_at": "2026-09-18T11:00:00+00:00",
+        "id": "i",
+        "objective": "Improve i",
+        "phase": "implement",
+        "release_id": "rel",
+        "status": "succeeded"
+       },
+       "status": "succeeded",
+       "title": "구현"
+      },
+      {
+       "phase": "review_lead",
+       "record": null,
+       "status": "waiting",
+       "title": "팀장 검수"
+      },
+      {
+       "phase": "review_conductor",
+       "record": null,
+       "status": "waiting",
+       "title": "지휘자 검수"
+      },
+      {
+       "phase": "canary",
+       "record": {
+        "checks": {
+         "a": {
+          "passed": true
+         },
+         "b": {
+          "passed": true
+         }
+        },
+        "created_at": "2026-09-18T11:55:00+00:00",
+        "id": "rel",
+        "status": "verified"
+       },
+       "status": "succeeded",
+       "title": "테스트 · 카나리아"
+      },
+      {
+       "phase": "deployment",
+       "record": {
+        "checks": {
+         "a": {
+          "passed": true
+         },
+         "b": {
+          "passed": true
+         }
+        },
+        "created_at": "2026-09-18T11:55:00+00:00",
+        "id": "rel",
+        "status": "verified"
+       },
+       "status": "verified",
+       "title": "운영 반영"
+      }
+     ],
+     "status": "awaiting_next_stage",
+     "title": "Improve i"
+    }
+   ]
+  },
+  "release_verified_one_unknown": {
+   "value": [
+    {
+     "activity_age_seconds": 3600.0,
+     "activity_note": "최근 활동 없음 · 정체 여부 확인 필요",
+     "focus": "다음 단계 확인",
+     "id": "goal",
+     "last_activity": "2026-09-18T11:00:00+00:00",
+     "reason": "",
+     "stages": [
+      {
+       "phase": "plan",
+       "record": null,
+       "status": "waiting",
+       "title": "계획"
+      },
+      {
+       "phase": "implement",
+       "record": {
+        "correlation": "goal",
+        "created_at": "2026-09-18T11:00:00+00:00",
+        "id": "i",
+        "objective": "Improve i",
+        "phase": "implement",
+        "release_id": "rel",
+        "status": "succeeded"
+       },
+       "status": "succeeded",
+       "title": "구현"
+      },
+      {
+       "phase": "review_lead",
+       "record": null,
+       "status": "waiting",
+       "title": "팀장 검수"
+      },
+      {
+       "phase": "review_conductor",
+       "record": null,
+       "status": "waiting",
+       "title": "지휘자 검수"
+      },
+      {
+       "phase": "canary",
+       "record": {
+        "checks": {
+         "a": {
+          "passed": true
+         },
+         "b": {}
+        },
+        "created_at": "2026-09-18T11:55:00+00:00",
+        "id": "rel",
+        "status": "verified"
+       },
+       "status": "waiting",
+       "title": "테스트 · 카나리아"
+      },
+      {
+       "phase": "deployment",
+       "record": {
+        "checks": {
+         "a": {
+          "passed": true
+         },
+         "b": {}
+        },
+        "created_at": "2026-09-18T11:55:00+00:00",
+        "id": "rel",
+        "status": "verified"
+       },
+       "status": "verified",
+       "title": "운영 반영"
+      }
+     ],
+     "status": "awaiting_next_stage",
+     "title": "Improve i"
+    }
+   ]
+  },
+  "releases_absent": {
+   "value": [
+    {
+     "activity_age_seconds": 3600.0,
+     "activity_note": "최근 활동 없음 · 정체 여부 확인 필요",
+     "focus": "다음 단계 확인",
+     "id": "goal",
+     "last_activity": "2026-09-18T11:00:00+00:00",
+     "reason": "",
+     "stages": [
+      {
+       "phase": "plan",
+       "record": null,
+       "status": "waiting",
+       "title": "계획"
+      },
+      {
+       "phase": "implement",
+       "record": {
+        "correlation": "goal",
+        "created_at": "2026-09-18T11:00:00+00:00",
+        "id": "i",
+        "objective": "Improve i",
+        "phase": "implement",
+        "status": "succeeded"
+       },
+       "status": "succeeded",
+       "title": "구현"
+      },
+      {
+       "phase": "review_lead",
+       "record": null,
+       "status": "waiting",
+       "title": "팀장 검수"
+      },
+      {
+       "phase": "review_conductor",
+       "record": null,
+       "status": "waiting",
+       "title": "지휘자 검수"
+      },
+      {
+       "phase": "canary",
+       "record": null,
+       "status": "waiting",
+       "title": "테스트 · 카나리아"
+      },
+      {
+       "phase": "deployment",
+       "record": null,
+       "status": "waiting",
+       "title": "운영 반영"
+      }
+     ],
+     "status": "awaiting_next_stage",
+     "title": "Improve i"
+    }
+   ]
+  },
+  "row_without_id_in_release_lookup": {
+   "message": "'id'",
+   "refused": "KeyError"
+  },
+  "running_lease_none": {
+   "value": [
+    {
+     "activity_age_seconds": 3600.0,
+     "activity_note": "최근 활동 없음 · 정체 여부 확인 필요",
+     "focus": "계획",
+     "id": "goal",
+     "last_activity": "2026-09-18T11:00:00+00:00",
+     "reason": "",
+     "stages": [
+      {
+       "phase": "plan",
+       "record": {
+        "correlation": "goal",
+        "created_at": "2026-09-18T11:00:00+00:00",
+        "id": "p",
+        "objective": "Improve p",
+        "phase": "plan",
+        "status": "running"
+       },
+       "status": "lease_expired",
+       "title": "계획"
+      },
+      {
+       "phase": "implement",
+       "record": null,
+       "status": "waiting",
+       "title": "구현"
+      },
+      {
+       "phase": "review_lead",
+       "record": null,
+       "status": "waiting",
+       "title": "팀장 검수"
+      },
+      {
+       "phase": "review_conductor",
+       "record": null,
+       "status": "waiting",
+       "title": "지휘자 검수"
+      },
+      {
+       "phase": "canary",
+       "record": null,
+       "status": "waiting",
+       "title": "테스트 · 카나리아"
+      },
+      {
+       "phase": "deployment",
+       "record": null,
+       "status": "waiting",
+       "title": "운영 반영"
+      }
+     ],
+     "status": "attention",
+     "title": "Improve p"
+    }
+   ]
+  },
+  "running_stage": {
+   "value": [
+    {
+     "activity_age_seconds": 5.0,
+     "activity_note": "최근 활동 관측",
+     "focus": "계획",
+     "id": "goal",
+     "last_activity": "2026-09-18T11:59:55+00:00",
+     "reason": "",
+     "stages": [
+      {
+       "phase": "plan",
+       "record": {
+        "correlation": "goal",
+        "created_at": "2026-09-18T11:00:00+00:00",
+        "id": "p",
+        "lease_until": "2026-09-18T12:00:30+00:00",
+        "objective": "Improve p",
+        "phase": "plan",
+        "progress_at": "2026-09-18T11:59:55+00:00",
+        "status": "running"
+       },
+       "status": "running",
+       "title": "계획"
+      },
+      {
+       "phase": "implement",
+       "record": null,
+       "status": "waiting",
+       "title": "구현"
+      },
+      {
+       "phase": "review_lead",
+       "record": null,
+       "status": "waiting",
+       "title": "팀장 검수"
+      },
+      {
+       "phase": "review_conductor",
+       "record": null,
+       "status": "waiting",
+       "title": "지휘자 검수"
+      },
+      {
+       "phase": "canary",
+       "record": null,
+       "status": "waiting",
+       "title": "테스트 · 카나리아"
+      },
+      {
+       "phase": "deployment",
+       "record": null,
+       "status": "waiting",
+       "title": "운영 반영"
+      }
+     ],
+     "status": "running",
+     "title": "Improve p"
+    }
+   ]
+  },
+  "two_initiatives_sorted": {
+   "value": [
+    {
+     "activity_age_seconds": 7200.0,
+     "activity_note": "최근 활동 없음 · 정체 여부 확인 필요",
+     "focus": "계획",
+     "id": "d",
+     "last_activity": "2026-09-18T10:00:00+00:00",
+     "reason": "",
+     "stages": [
+      {
+       "phase": "plan",
+       "record": {
+        "correlation": "d",
+        "created_at": "2026-09-18T10:00:00+00:00",
+        "id": "d1",
+        "objective": "Improve d1",
+        "phase": "plan",
+        "status": "failed"
+       },
+       "status": "failed",
+       "title": "계획"
+      },
+      {
+       "phase": "implement",
+       "record": null,
+       "status": "waiting",
+       "title": "구현"
+      },
+      {
+       "phase": "review_lead",
+       "record": null,
+       "status": "waiting",
+       "title": "팀장 검수"
+      },
+      {
+       "phase": "review_conductor",
+       "record": null,
+       "status": "waiting",
+       "title": "지휘자 검수"
+      },
+      {
+       "phase": "canary",
+       "record": null,
+       "status": "waiting",
+       "title": "테스트 · 카나리아"
+      },
+      {
+       "phase": "deployment",
+       "record": null,
+       "status": "waiting",
+       "title": "운영 반영"
+      }
+     ],
+     "status": "attention",
+     "title": "Improve d1"
+    },
+    {
+     "activity_age_seconds": 32400.0,
+     "activity_note": "최근 활동 없음 · 정체 여부 확인 필요",
+     "focus": "구현",
+     "id": "b",
+     "last_activity": "2026-09-18T03:00:00+00:00",
+     "reason": "",
+     "stages": [
+      {
+       "phase": "plan",
+       "record": null,
+       "status": "waiting",
+       "title": "계획"
+      },
+      {
+       "phase": "implement",
+       "record": {
+        "correlation": "b",
+        "created_at": "2026-09-18T03:00:00+00:00",
+        "id": "b1",
+        "objective": "Improve b1",
+        "phase": "implement",
+        "status": "blocked"
+       },
+       "status": "blocked",
+       "title": "구현"
+      },
+      {
+       "phase": "review_lead",
+       "record": null,
+       "status": "waiting",
+       "title": "팀장 검수"
+      },
+      {
+       "phase": "review_conductor",
+       "record": null,
+       "status": "waiting",
+       "title": "지휘자 검수"
+      },
+      {
+       "phase": "canary",
+       "record": null,
+       "status": "waiting",
+       "title": "테스트 · 카나리아"
+      },
+      {
+       "phase": "deployment",
+       "record": null,
+       "status": "waiting",
+       "title": "운영 반영"
+      }
+     ],
+     "status": "attention",
+     "title": "Improve b1"
+    },
+    {
+     "activity_age_seconds": 3600.0,
+     "activity_note": "최근 활동 없음 · 정체 여부 확인 필요",
+     "focus": "다음 단계 확인",
+     "id": "c",
+     "last_activity": "2026-09-18T11:00:00+00:00",
+     "reason": "",
+     "stages": [
+      {
+       "phase": "plan",
+       "record": {
+        "correlation": "c",
+        "created_at": "2026-09-18T11:00:00+00:00",
+        "id": "c1",
+        "objective": "Improve c1",
+        "phase": "plan",
+        "status": "succeeded"
+       },
+       "status": "succeeded",
+       "title": "계획"
+      },
+      {
+       "phase": "implement",
+       "record": null,
+       "status": "waiting",
+       "title": "구현"
+      },
+      {
+       "phase": "review_lead",
+       "record": null,
+       "status": "waiting",
+       "title": "팀장 검수"
+      },
+      {
+       "phase": "review_conductor",
+       "record": null,
+       "status": "waiting",
+       "title": "지휘자 검수"
+      },
+      {
+       "phase": "canary",
+       "record": null,
+       "status": "waiting",
+       "title": "테스트 · 카나리아"
+      },
+      {
+       "phase": "deployment",
+       "record": null,
+       "status": "waiting",
+       "title": "운영 반영"
+      }
+     ],
+     "status": "awaiting_next_stage",
+     "title": "Improve c1"
+    },
+    {
+     "activity_age_seconds": 18000.0,
+     "activity_note": "최근 활동 없음 · 정체 여부 확인 필요",
+     "focus": "다음 단계 확인",
+     "id": "a",
+     "last_activity": "2026-09-18T07:00:00+00:00",
+     "reason": "",
+     "stages": [
+      {
+       "phase": "plan",
+       "record": null,
+       "status": "waiting",
+       "title": "계획"
+      },
+      {
+       "phase": "implement",
+       "record": {
+        "correlation": "a",
+        "created_at": "2026-09-18T07:00:00+00:00",
+        "id": "a1",
+        "objective": "Improve a1",
+        "phase": "implement",
+        "status": "succeeded"
+       },
+       "status": "succeeded",
+       "title": "구현"
+      },
+      {
+       "phase": "review_lead",
+       "record": null,
+       "status": "waiting",
+       "title": "팀장 검수"
+      },
+      {
+       "phase": "review_conductor",
+       "record": null,
+       "status": "waiting",
+       "title": "지휘자 검수"
+      },
+      {
+       "phase": "canary",
+       "record": null,
+       "status": "waiting",
+       "title": "테스트 · 카나리아"
+      },
+      {
+       "phase": "deployment",
+       "record": null,
+       "status": "waiting",
+       "title": "운영 반영"
+      }
+     ],
+     "status": "awaiting_next_stage",
+     "title": "Improve a1"
+    }
+   ]
+  }
+ },
+ "snapshot": {
+  "health": {
+   "absent": {
+    "reads": 1,
+    "result": {
+     "value": {
+      "agents": [
+       {
+        "execution_state": "running",
+        "expired_leases": 1,
+        "id": "worker",
+        "queued": 1,
+        "work": [
+         "run"
+        ]
+       },
+       {
+        "execution_state": "running",
+        "expired_leases": 0,
+        "id": "idle",
+        "queued": 1,
+        "work": [
+         "decr"
+        ]
+       }
+      ],
+      "decisions": [
+       {
+        "agent": "idle",
+        "id": "dec",
+        "status": "pending"
+       },
+       {
+        "agent": "idle",
+        "id": "decr",
+        "lease_until": "2026-09-18T12:00:00+00:00",
+        "status": "running"
+       }
+      ],
+      "health_age_seconds": null,
+      "initiatives": [],
+      "notifications": {
+       "age_seconds": null,
+       "last_batch": {},
+       "status": "unknown",
+       "status_counts": {}
+      },
+      "observed_at": "2026-09-18T12:00:00+00:00",
+      "operating_status": "unknown",
+      "policy": {
+       "artifact_retention_days": 7,
+       "claude_event_queue": 2000,
+       "claude_events_retained": 400,
+       "claude_line_bytes": 1048576,
+       "claude_stream_bytes": 8388608,
+       "context_checkpoint_fraction": 0.7,
+       "decision_seconds": 900,
+       "health_failure_threshold": 3,
+       "idle_seconds": 3600,
+       "max_active_executions": 2,
+       "max_attempts": 3,
+       "max_reworks": 2,
+       "observation_alert_window_seconds": 300,
+       "observation_collect_batch": 1000,
+       "observation_retention_seconds": 604800,
+       "observation_segment_bytes": 4194304,
+       "observation_spool_bytes": 33554432,
+       "recurrence_threshold": 2,
+       "release_check_seconds": 900,
+       "release_lease_seconds": 1200,
+       "release_max_attempts": 3,
+       "release_retry_seconds": 30,
+       "research_interval_hours": 6,
+       "source_cpus": 1,
+       "source_execution_seconds": 120,
+       "source_memory_mb": 512,
+       "source_output_bytes": 65536,
+       "source_pids": 128,
+       "source_read_bytes": 24000,
+       "source_read_lines": 120,
+       "source_request_seconds": 300,
+       "source_scratch_mb": 128,
+       "stream_retention_entries": 1000,
+       "task_lease_seconds": 600,
+       "task_seconds": 3600
+      },
+      "task_counts": {
+       "queued": 1,
+       "running": 2,
+       "succeeded": 1
+      },
+      "tasks": [
+       {
+        "agent": "worker",
+        "id": "run",
+        "lease_until": "2026-09-18T12:00:30+00:00",
+        "status": "running"
+       },
+       {
+        "agent": "worker",
+        "id": "old",
+        "lease_until": "2026-09-18T11:59:59+00:00",
+        "status": "running"
+       },
+       {
+        "agent": "worker",
+        "id": "q",
+        "status": "queued"
+       },
+       {
+        "agent": "idle",
+        "id": "done",
+        "status": "succeeded"
+       }
+      ]
+     }
+    }
+   },
+   "empty": {
+    "reads": 1,
+    "result": {
+     "value": {
+      "agents": [
+       {
+        "execution_state": "running",
+        "expired_leases": 1,
+        "id": "worker",
+        "queued": 1,
+        "work": [
+         "run"
+        ]
+       },
+       {
+        "execution_state": "running",
+        "expired_leases": 0,
+        "id": "idle",
+        "queued": 1,
+        "work": [
+         "decr"
+        ]
+       }
+      ],
+      "decisions": [
+       {
+        "agent": "idle",
+        "id": "dec",
+        "status": "pending"
+       },
+       {
+        "agent": "idle",
+        "id": "decr",
+        "lease_until": "2026-09-18T12:00:00+00:00",
+        "status": "running"
+       }
+      ],
+      "health": {},
+      "health_age_seconds": null,
+      "initiatives": [],
+      "notifications": {
+       "age_seconds": null,
+       "last_batch": {},
+       "status": "unknown",
+       "status_counts": {}
+      },
+      "observed_at": "2026-09-18T12:00:00+00:00",
+      "operating_status": "unknown",
+      "policy": {
+       "artifact_retention_days": 7,
+       "claude_event_queue": 2000,
+       "claude_events_retained": 400,
+       "claude_line_bytes": 1048576,
+       "claude_stream_bytes": 8388608,
+       "context_checkpoint_fraction": 0.7,
+       "decision_seconds": 900,
+       "health_failure_threshold": 3,
+       "idle_seconds": 3600,
+       "max_active_executions": 2,
+       "max_attempts": 3,
+       "max_reworks": 2,
+       "observation_alert_window_seconds": 300,
+       "observation_collect_batch": 1000,
+       "observation_retention_seconds": 604800,
+       "observation_segment_bytes": 4194304,
+       "observation_spool_bytes": 33554432,
+       "recurrence_threshold": 2,
+       "release_check_seconds": 900,
+       "release_lease_seconds": 1200,
+       "release_max_attempts": 3,
+       "release_retry_seconds": 30,
+       "research_interval_hours": 6,
+       "source_cpus": 1,
+       "source_execution_seconds": 120,
+       "source_memory_mb": 512,
+       "source_output_bytes": 65536,
+       "source_pids": 128,
+       "source_read_bytes": 24000,
+       "source_read_lines": 120,
+       "source_request_seconds": 300,
+       "source_scratch_mb": 128,
+       "stream_retention_entries": 1000,
+       "task_lease_seconds": 600,
+       "task_seconds": 3600
+      },
+      "task_counts": {
+       "queued": 1,
+       "running": 2,
+       "succeeded": 1
+      },
+      "tasks": [
+       {
+        "agent": "worker",
+        "id": "run",
+        "lease_until": "2026-09-18T12:00:30+00:00",
+        "status": "running"
+       },
+       {
+        "agent": "worker",
+        "id": "old",
+        "lease_until": "2026-09-18T11:59:59+00:00",
+        "status": "running"
+       },
+       {
+        "agent": "worker",
+        "id": "q",
+        "status": "queued"
+       },
+       {
+        "agent": "idle",
+        "id": "done",
+        "status": "succeeded"
+       }
+      ]
+     }
+    }
+   },
+   "fresh": {
+    "reads": 1,
+    "result": {
+     "value": {
+      "agents": [
+       {
+        "execution_state": "running",
+        "expired_leases": 1,
+        "id": "worker",
+        "queued": 1,
+        "work": [
+         "run"
+        ]
+       },
+       {
+        "execution_state": "running",
+        "expired_leases": 0,
+        "id": "idle",
+        "queued": 1,
+        "work": [
+         "decr"
+        ]
+       }
+      ],
+      "decisions": [
+       {
+        "agent": "idle",
+        "id": "dec",
+        "status": "pending"
+       },
+       {
+        "agent": "idle",
+        "id": "decr",
+        "lease_until": "2026-09-18T12:00:00+00:00",
+        "status": "running"
+       }
+      ],
+      "health": {
+       "checked_at": "2026-09-18T11:58:00+00:00",
+       "status": "degraded"
+      },
+      "health_age_seconds": 120.0,
+      "initiatives": [],
+      "notifications": {
+       "age_seconds": null,
+       "last_batch": {},
+       "status": "unknown",
+       "status_counts": {}
+      },
+      "observed_at": "2026-09-18T12:00:00+00:00",
+      "operating_status": "degraded",
+      "policy": {
+       "artifact_retention_days": 7,
+       "claude_event_queue": 2000,
+       "claude_events_retained": 400,
+       "claude_line_bytes": 1048576,
+       "claude_stream_bytes": 8388608,
+       "context_checkpoint_fraction": 0.7,
+       "decision_seconds": 900,
+       "health_failure_threshold": 3,
+       "idle_seconds": 3600,
+       "max_active_executions": 2,
+       "max_attempts": 3,
+       "max_reworks": 2,
+       "observation_alert_window_seconds": 300,
+       "observation_collect_batch": 1000,
+       "observation_retention_seconds": 604800,
+       "observation_segment_bytes": 4194304,
+       "observation_spool_bytes": 33554432,
+       "recurrence_threshold": 2,
+       "release_check_seconds": 900,
+       "release_lease_seconds": 1200,
+       "release_max_attempts": 3,
+       "release_retry_seconds": 30,
+       "research_interval_hours": 6,
+       "source_cpus": 1,
+       "source_execution_seconds": 120,
+       "source_memory_mb": 512,
+       "source_output_bytes": 65536,
+       "source_pids": 128,
+       "source_read_bytes": 24000,
+       "source_read_lines": 120,
+       "source_request_seconds": 300,
+       "source_scratch_mb": 128,
+       "stream_retention_entries": 1000,
+       "task_lease_seconds": 600,
+       "task_seconds": 3600
+      },
+      "task_counts": {
+       "queued": 1,
+       "running": 2,
+       "succeeded": 1
+      },
+      "tasks": [
+       {
+        "agent": "worker",
+        "id": "run",
+        "lease_until": "2026-09-18T12:00:30+00:00",
+        "status": "running"
+       },
+       {
+        "agent": "worker",
+        "id": "old",
+        "lease_until": "2026-09-18T11:59:59+00:00",
+        "status": "running"
+       },
+       {
+        "agent": "worker",
+        "id": "q",
+        "status": "queued"
+       },
+       {
+        "agent": "idle",
+        "id": "done",
+        "status": "succeeded"
+       }
+      ]
+     }
+    }
+   },
+   "future": {
+    "reads": 1,
+    "result": {
+     "value": {
+      "agents": [
+       {
+        "execution_state": "running",
+        "expired_leases": 1,
+        "id": "worker",
+        "queued": 1,
+        "work": [
+         "run"
+        ]
+       },
+       {
+        "execution_state": "running",
+        "expired_leases": 0,
+        "id": "idle",
+        "queued": 1,
+        "work": [
+         "decr"
+        ]
+       }
+      ],
+      "decisions": [
+       {
+        "agent": "idle",
+        "id": "dec",
+        "status": "pending"
+       },
+       {
+        "agent": "idle",
+        "id": "decr",
+        "lease_until": "2026-09-18T12:00:00+00:00",
+        "status": "running"
+       }
+      ],
+      "health": {
+       "checked_at": "2026-09-18T12:00:09+00:00",
+       "status": "healthy"
+      },
+      "health_age_seconds": 0,
+      "initiatives": [],
+      "notifications": {
+       "age_seconds": null,
+       "last_batch": {},
+       "status": "unknown",
+       "status_counts": {}
+      },
+      "observed_at": "2026-09-18T12:00:00+00:00",
+      "operating_status": "healthy",
+      "policy": {
+       "artifact_retention_days": 7,
+       "claude_event_queue": 2000,
+       "claude_events_retained": 400,
+       "claude_line_bytes": 1048576,
+       "claude_stream_bytes": 8388608,
+       "context_checkpoint_fraction": 0.7,
+       "decision_seconds": 900,
+       "health_failure_threshold": 3,
+       "idle_seconds": 3600,
+       "max_active_executions": 2,
+       "max_attempts": 3,
+       "max_reworks": 2,
+       "observation_alert_window_seconds": 300,
+       "observation_collect_batch": 1000,
+       "observation_retention_seconds": 604800,
+       "observation_segment_bytes": 4194304,
+       "observation_spool_bytes": 33554432,
+       "recurrence_threshold": 2,
+       "release_check_seconds": 900,
+       "release_lease_seconds": 1200,
+       "release_max_attempts": 3,
+       "release_retry_seconds": 30,
+       "research_interval_hours": 6,
+       "source_cpus": 1,
+       "source_execution_seconds": 120,
+       "source_memory_mb": 512,
+       "source_output_bytes": 65536,
+       "source_pids": 128,
+       "source_read_bytes": 24000,
+       "source_read_lines": 120,
+       "source_request_seconds": 300,
+       "source_scratch_mb": 128,
+       "stream_retention_entries": 1000,
+       "task_lease_seconds": 600,
+       "task_seconds": 3600
+      },
+      "task_counts": {
+       "queued": 1,
+       "running": 2,
+       "succeeded": 1
+      },
+      "tasks": [
+       {
+        "agent": "worker",
+        "id": "run",
+        "lease_until": "2026-09-18T12:00:30+00:00",
+        "status": "running"
+       },
+       {
+        "agent": "worker",
+        "id": "old",
+        "lease_until": "2026-09-18T11:59:59+00:00",
+        "status": "running"
+       },
+       {
+        "agent": "worker",
+        "id": "q",
+        "status": "queued"
+       },
+       {
+        "agent": "idle",
+        "id": "done",
+        "status": "succeeded"
+       }
+      ]
+     }
+    }
+   },
+   "junk_at": {
+    "reads": 1,
+    "result": {
+     "value": {
+      "agents": [
+       {
+        "execution_state": "running",
+        "expired_leases": 1,
+        "id": "worker",
+        "queued": 1,
+        "work": [
+         "run"
+        ]
+       },
+       {
+        "execution_state": "running",
+        "expired_leases": 0,
+        "id": "idle",
+        "queued": 1,
+        "work": [
+         "decr"
+        ]
+       }
+      ],
+      "decisions": [
+       {
+        "agent": "idle",
+        "id": "dec",
+        "status": "pending"
+       },
+       {
+        "agent": "idle",
+        "id": "decr",
+        "lease_until": "2026-09-18T12:00:00+00:00",
+        "status": "running"
+       }
+      ],
+      "health": {
+       "checked_at": 7,
+       "status": "healthy"
+      },
+      "health_age_seconds": null,
+      "initiatives": [],
+      "notifications": {
+       "age_seconds": null,
+       "last_batch": {},
+       "status": "unknown",
+       "status_counts": {}
+      },
+      "observed_at": "2026-09-18T12:00:00+00:00",
+      "operating_status": "unknown",
+      "policy": {
+       "artifact_retention_days": 7,
+       "claude_event_queue": 2000,
+       "claude_events_retained": 400,
+       "claude_line_bytes": 1048576,
+       "claude_stream_bytes": 8388608,
+       "context_checkpoint_fraction": 0.7,
+       "decision_seconds": 900,
+       "health_failure_threshold": 3,
+       "idle_seconds": 3600,
+       "max_active_executions": 2,
+       "max_attempts": 3,
+       "max_reworks": 2,
+       "observation_alert_window_seconds": 300,
+       "observation_collect_batch": 1000,
+       "observation_retention_seconds": 604800,
+       "observation_segment_bytes": 4194304,
+       "observation_spool_bytes": 33554432,
+       "recurrence_threshold": 2,
+       "release_check_seconds": 900,
+       "release_lease_seconds": 1200,
+       "release_max_attempts": 3,
+       "release_retry_seconds": 30,
+       "research_interval_hours": 6,
+       "source_cpus": 1,
+       "source_execution_seconds": 120,
+       "source_memory_mb": 512,
+       "source_output_bytes": 65536,
+       "source_pids": 128,
+       "source_read_bytes": 24000,
+       "source_read_lines": 120,
+       "source_request_seconds": 300,
+       "source_scratch_mb": 128,
+       "stream_retention_entries": 1000,
+       "task_lease_seconds": 600,
+       "task_seconds": 3600
+      },
+      "task_counts": {
+       "queued": 1,
+       "running": 2,
+       "succeeded": 1
+      },
+      "tasks": [
+       {
+        "agent": "worker",
+        "id": "run",
+        "lease_until": "2026-09-18T12:00:30+00:00",
+        "status": "running"
+       },
+       {
+        "agent": "worker",
+        "id": "old",
+        "lease_until": "2026-09-18T11:59:59+00:00",
+        "status": "running"
+       },
+       {
+        "agent": "worker",
+        "id": "q",
+        "status": "queued"
+       },
+       {
+        "agent": "idle",
+        "id": "done",
+        "status": "succeeded"
+       }
+      ]
+     }
+    }
+   },
+   "missing_at": {
+    "reads": 1,
+    "result": {
+     "value": {
+      "agents": [
+       {
+        "execution_state": "running",
+        "expired_leases": 1,
+        "id": "worker",
+        "queued": 1,
+        "work": [
+         "run"
+        ]
+       },
+       {
+        "execution_state": "running",
+        "expired_leases": 0,
+        "id": "idle",
+        "queued": 1,
+        "work": [
+         "decr"
+        ]
+       }
+      ],
+      "decisions": [
+       {
+        "agent": "idle",
+        "id": "dec",
+        "status": "pending"
+       },
+       {
+        "agent": "idle",
+        "id": "decr",
+        "lease_until": "2026-09-18T12:00:00+00:00",
+        "status": "running"
+       }
+      ],
+      "health": {
+       "status": "healthy"
+      },
+      "health_age_seconds": null,
+      "initiatives": [],
+      "notifications": {
+       "age_seconds": null,
+       "last_batch": {},
+       "status": "unknown",
+       "status_counts": {}
+      },
+      "observed_at": "2026-09-18T12:00:00+00:00",
+      "operating_status": "unknown",
+      "policy": {
+       "artifact_retention_days": 7,
+       "claude_event_queue": 2000,
+       "claude_events_retained": 400,
+       "claude_line_bytes": 1048576,
+       "claude_stream_bytes": 8388608,
+       "context_checkpoint_fraction": 0.7,
+       "decision_seconds": 900,
+       "health_failure_threshold": 3,
+       "idle_seconds": 3600,
+       "max_active_executions": 2,
+       "max_attempts": 3,
+       "max_reworks": 2,
+       "observation_alert_window_seconds": 300,
+       "observation_collect_batch": 1000,
+       "observation_retention_seconds": 604800,
+       "observation_segment_bytes": 4194304,
+       "observation_spool_bytes": 33554432,
+       "recurrence_threshold": 2,
+       "release_check_seconds": 900,
+       "release_lease_seconds": 1200,
+       "release_max_attempts": 3,
+       "release_retry_seconds": 30,
+       "research_interval_hours": 6,
+       "source_cpus": 1,
+       "source_execution_seconds": 120,
+       "source_memory_mb": 512,
+       "source_output_bytes": 65536,
+       "source_pids": 128,
+       "source_read_bytes": 24000,
+       "source_read_lines": 120,
+       "source_request_seconds": 300,
+       "source_scratch_mb": 128,
+       "stream_retention_entries": 1000,
+       "task_lease_seconds": 600,
+       "task_seconds": 3600
+      },
+      "task_counts": {
+       "queued": 1,
+       "running": 2,
+       "succeeded": 1
+      },
+      "tasks": [
+       {
+        "agent": "worker",
+        "id": "run",
+        "lease_until": "2026-09-18T12:00:30+00:00",
+        "status": "running"
+       },
+       {
+        "agent": "worker",
+        "id": "old",
+        "lease_until": "2026-09-18T11:59:59+00:00",
+        "status": "running"
+       },
+       {
+        "agent": "worker",
+        "id": "q",
+        "status": "queued"
+       },
+       {
+        "agent": "idle",
+        "id": "done",
+        "status": "succeeded"
+       }
+      ]
+     }
+    }
+   },
+   "naive": {
+    "reads": 1,
+    "result": {
+     "value": {
+      "agents": [
+       {
+        "execution_state": "running",
+        "expired_leases": 1,
+        "id": "worker",
+        "queued": 1,
+        "work": [
+         "run"
+        ]
+       },
+       {
+        "execution_state": "running",
+        "expired_leases": 0,
+        "id": "idle",
+        "queued": 1,
+        "work": [
+         "decr"
+        ]
+       }
+      ],
+      "decisions": [
+       {
+        "agent": "idle",
+        "id": "dec",
+        "status": "pending"
+       },
+       {
+        "agent": "idle",
+        "id": "decr",
+        "lease_until": "2026-09-18T12:00:00+00:00",
+        "status": "running"
+       }
+      ],
+      "health": {
+       "checked_at": "2026-09-18T11:59:59",
+       "status": "healthy"
+      },
+      "health_age_seconds": null,
+      "initiatives": [],
+      "notifications": {
+       "age_seconds": null,
+       "last_batch": {},
+       "status": "unknown",
+       "status_counts": {}
+      },
+      "observed_at": "2026-09-18T12:00:00+00:00",
+      "operating_status": "unknown",
+      "policy": {
+       "artifact_retention_days": 7,
+       "claude_event_queue": 2000,
+       "claude_events_retained": 400,
+       "claude_line_bytes": 1048576,
+       "claude_stream_bytes": 8388608,
+       "context_checkpoint_fraction": 0.7,
+       "decision_seconds": 900,
+       "health_failure_threshold": 3,
+       "idle_seconds": 3600,
+       "max_active_executions": 2,
+       "max_attempts": 3,
+       "max_reworks": 2,
+       "observation_alert_window_seconds": 300,
+       "observation_collect_batch": 1000,
+       "observation_retention_seconds": 604800,
+       "observation_segment_bytes": 4194304,
+       "observation_spool_bytes": 33554432,
+       "recurrence_threshold": 2,
+       "release_check_seconds": 900,
+       "release_lease_seconds": 1200,
+       "release_max_attempts": 3,
+       "release_retry_seconds": 30,
+       "research_interval_hours": 6,
+       "source_cpus": 1,
+       "source_execution_seconds": 120,
+       "source_memory_mb": 512,
+       "source_output_bytes": 65536,
+       "source_pids": 128,
+       "source_read_bytes": 24000,
+       "source_read_lines": 120,
+       "source_request_seconds": 300,
+       "source_scratch_mb": 128,
+       "stream_retention_entries": 1000,
+       "task_lease_seconds": 600,
+       "task_seconds": 3600
+      },
+      "task_counts": {
+       "queued": 1,
+       "running": 2,
+       "succeeded": 1
+      },
+      "tasks": [
+       {
+        "agent": "worker",
+        "id": "run",
+        "lease_until": "2026-09-18T12:00:30+00:00",
+        "status": "running"
+       },
+       {
+        "agent": "worker",
+        "id": "old",
+        "lease_until": "2026-09-18T11:59:59+00:00",
+        "status": "running"
+       },
+       {
+        "agent": "worker",
+        "id": "q",
+        "status": "queued"
+       },
+       {
+        "agent": "idle",
+        "id": "done",
+        "status": "succeeded"
+       }
+      ]
+     }
+    }
+   },
+   "no_status": {
+    "reads": 1,
+    "result": {
+     "value": {
+      "agents": [
+       {
+        "execution_state": "running",
+        "expired_leases": 1,
+        "id": "worker",
+        "queued": 1,
+        "work": [
+         "run"
+        ]
+       },
+       {
+        "execution_state": "running",
+        "expired_leases": 0,
+        "id": "idle",
+        "queued": 1,
+        "work": [
+         "decr"
+        ]
+       }
+      ],
+      "decisions": [
+       {
+        "agent": "idle",
+        "id": "dec",
+        "status": "pending"
+       },
+       {
+        "agent": "idle",
+        "id": "decr",
+        "lease_until": "2026-09-18T12:00:00+00:00",
+        "status": "running"
+       }
+      ],
+      "health": {
+       "checked_at": "2026-09-18T11:59:55+00:00"
+      },
+      "health_age_seconds": 5.0,
+      "initiatives": [],
+      "notifications": {
+       "age_seconds": null,
+       "last_batch": {},
+       "status": "unknown",
+       "status_counts": {}
+      },
+      "observed_at": "2026-09-18T12:00:00+00:00",
+      "operating_status": "unknown",
+      "policy": {
+       "artifact_retention_days": 7,
+       "claude_event_queue": 2000,
+       "claude_events_retained": 400,
+       "claude_line_bytes": 1048576,
+       "claude_stream_bytes": 8388608,
+       "context_checkpoint_fraction": 0.7,
+       "decision_seconds": 900,
+       "health_failure_threshold": 3,
+       "idle_seconds": 3600,
+       "max_active_executions": 2,
+       "max_attempts": 3,
+       "max_reworks": 2,
+       "observation_alert_window_seconds": 300,
+       "observation_collect_batch": 1000,
+       "observation_retention_seconds": 604800,
+       "observation_segment_bytes": 4194304,
+       "observation_spool_bytes": 33554432,
+       "recurrence_threshold": 2,
+       "release_check_seconds": 900,
+       "release_lease_seconds": 1200,
+       "release_max_attempts": 3,
+       "release_retry_seconds": 30,
+       "research_interval_hours": 6,
+       "source_cpus": 1,
+       "source_execution_seconds": 120,
+       "source_memory_mb": 512,
+       "source_output_bytes": 65536,
+       "source_pids": 128,
+       "source_read_bytes": 24000,
+       "source_read_lines": 120,
+       "source_request_seconds": 300,
+       "source_scratch_mb": 128,
+       "stream_retention_entries": 1000,
+       "task_lease_seconds": 600,
+       "task_seconds": 3600
+      },
+      "task_counts": {
+       "queued": 1,
+       "running": 2,
+       "succeeded": 1
+      },
+      "tasks": [
+       {
+        "agent": "worker",
+        "id": "run",
+        "lease_until": "2026-09-18T12:00:30+00:00",
+        "status": "running"
+       },
+       {
+        "agent": "worker",
+        "id": "old",
+        "lease_until": "2026-09-18T11:59:59+00:00",
+        "status": "running"
+       },
+       {
+        "agent": "worker",
+        "id": "q",
+        "status": "queued"
+       },
+       {
+        "agent": "idle",
+        "id": "done",
+        "status": "succeeded"
+       }
+      ]
+     }
+    }
+   },
+   "none": {
+    "reads": 1,
+    "result": {
+     "value": {
+      "agents": [
+       {
+        "execution_state": "running",
+        "expired_leases": 1,
+        "id": "worker",
+        "queued": 1,
+        "work": [
+         "run"
+        ]
+       },
+       {
+        "execution_state": "running",
+        "expired_leases": 0,
+        "id": "idle",
+        "queued": 1,
+        "work": [
+         "decr"
+        ]
+       }
+      ],
+      "decisions": [
+       {
+        "agent": "idle",
+        "id": "dec",
+        "status": "pending"
+       },
+       {
+        "agent": "idle",
+        "id": "decr",
+        "lease_until": "2026-09-18T12:00:00+00:00",
+        "status": "running"
+       }
+      ],
+      "health": null,
+      "health_age_seconds": null,
+      "initiatives": [],
+      "notifications": {
+       "age_seconds": null,
+       "last_batch": {},
+       "status": "unknown",
+       "status_counts": {}
+      },
+      "observed_at": "2026-09-18T12:00:00+00:00",
+      "operating_status": "unknown",
+      "policy": {
+       "artifact_retention_days": 7,
+       "claude_event_queue": 2000,
+       "claude_events_retained": 400,
+       "claude_line_bytes": 1048576,
+       "claude_stream_bytes": 8388608,
+       "context_checkpoint_fraction": 0.7,
+       "decision_seconds": 900,
+       "health_failure_threshold": 3,
+       "idle_seconds": 3600,
+       "max_active_executions": 2,
+       "max_attempts": 3,
+       "max_reworks": 2,
+       "observation_alert_window_seconds": 300,
+       "observation_collect_batch": 1000,
+       "observation_retention_seconds": 604800,
+       "observation_segment_bytes": 4194304,
+       "observation_spool_bytes": 33554432,
+       "recurrence_threshold": 2,
+       "release_check_seconds": 900,
+       "release_lease_seconds": 1200,
+       "release_max_attempts": 3,
+       "release_retry_seconds": 30,
+       "research_interval_hours": 6,
+       "source_cpus": 1,
+       "source_execution_seconds": 120,
+       "source_memory_mb": 512,
+       "source_output_bytes": 65536,
+       "source_pids": 128,
+       "source_read_bytes": 24000,
+       "source_read_lines": 120,
+       "source_request_seconds": 300,
+       "source_scratch_mb": 128,
+       "stream_retention_entries": 1000,
+       "task_lease_seconds": 600,
+       "task_seconds": 3600
+      },
+      "task_counts": {
+       "queued": 1,
+       "running": 2,
+       "succeeded": 1
+      },
+      "tasks": [
+       {
+        "agent": "worker",
+        "id": "run",
+        "lease_until": "2026-09-18T12:00:30+00:00",
+        "status": "running"
+       },
+       {
+        "agent": "worker",
+        "id": "old",
+        "lease_until": "2026-09-18T11:59:59+00:00",
+        "status": "running"
+       },
+       {
+        "agent": "worker",
+        "id": "q",
+        "status": "queued"
+       },
+       {
+        "agent": "idle",
+        "id": "done",
+        "status": "succeeded"
+       }
+      ]
+     }
+    }
+   },
+   "stale": {
+    "reads": 1,
+    "result": {
+     "value": {
+      "agents": [
+       {
+        "execution_state": "running",
+        "expired_leases": 1,
+        "id": "worker",
+        "queued": 1,
+        "work": [
+         "run"
+        ]
+       },
+       {
+        "execution_state": "running",
+        "expired_leases": 0,
+        "id": "idle",
+        "queued": 1,
+        "work": [
+         "decr"
+        ]
+       }
+      ],
+      "decisions": [
+       {
+        "agent": "idle",
+        "id": "dec",
+        "status": "pending"
+       },
+       {
+        "agent": "idle",
+        "id": "decr",
+        "lease_until": "2026-09-18T12:00:00+00:00",
+        "status": "running"
+       }
+      ],
+      "health": {
+       "checked_at": "2026-09-18T11:57:59+00:00",
+       "status": "healthy"
+      },
+      "health_age_seconds": 121.0,
+      "initiatives": [],
+      "notifications": {
+       "age_seconds": null,
+       "last_batch": {},
+       "status": "unknown",
+       "status_counts": {}
+      },
+      "observed_at": "2026-09-18T12:00:00+00:00",
+      "operating_status": "unknown",
+      "policy": {
+       "artifact_retention_days": 7,
+       "claude_event_queue": 2000,
+       "claude_events_retained": 400,
+       "claude_line_bytes": 1048576,
+       "claude_stream_bytes": 8388608,
+       "context_checkpoint_fraction": 0.7,
+       "decision_seconds": 900,
+       "health_failure_threshold": 3,
+       "idle_seconds": 3600,
+       "max_active_executions": 2,
+       "max_attempts": 3,
+       "max_reworks": 2,
+       "observation_alert_window_seconds": 300,
+       "observation_collect_batch": 1000,
+       "observation_retention_seconds": 604800,
+       "observation_segment_bytes": 4194304,
+       "observation_spool_bytes": 33554432,
+       "recurrence_threshold": 2,
+       "release_check_seconds": 900,
+       "release_lease_seconds": 1200,
+       "release_max_attempts": 3,
+       "release_retry_seconds": 30,
+       "research_interval_hours": 6,
+       "source_cpus": 1,
+       "source_execution_seconds": 120,
+       "source_memory_mb": 512,
+       "source_output_bytes": 65536,
+       "source_pids": 128,
+       "source_read_bytes": 24000,
+       "source_read_lines": 120,
+       "source_request_seconds": 300,
+       "source_scratch_mb": 128,
+       "stream_retention_entries": 1000,
+       "task_lease_seconds": 600,
+       "task_seconds": 3600
+      },
+      "task_counts": {
+       "queued": 1,
+       "running": 2,
+       "succeeded": 1
+      },
+      "tasks": [
+       {
+        "agent": "worker",
+        "id": "run",
+        "lease_until": "2026-09-18T12:00:30+00:00",
+        "status": "running"
+       },
+       {
+        "agent": "worker",
+        "id": "old",
+        "lease_until": "2026-09-18T11:59:59+00:00",
+        "status": "running"
+       },
+       {
+        "agent": "worker",
+        "id": "q",
+        "status": "queued"
+       },
+       {
+        "agent": "idle",
+        "id": "done",
+        "status": "succeeded"
+       }
+      ]
+     }
+    }
+   }
+  },
+  "notifications": {
+   "default": {
+    "reads": 1,
+    "result": {
+     "value": {
+      "agents": [
+       {
+        "execution_state": "running",
+        "expired_leases": 1,
+        "id": "worker",
+        "queued": 1,
+        "work": [
+         "run"
+        ]
+       },
+       {
+        "execution_state": "running",
+        "expired_leases": 0,
+        "id": "idle",
+        "queued": 1,
+        "work": [
+         "decr"
+        ]
+       }
+      ],
+      "decisions": [
+       {
+        "agent": "idle",
+        "id": "dec",
+        "status": "pending"
+       },
+       {
+        "agent": "idle",
+        "id": "decr",
+        "lease_until": "2026-09-18T12:00:00+00:00",
+        "status": "running"
+       }
+      ],
+      "health": {
+       "checked_at": "2026-09-18T11:59:50+00:00",
+       "status": "healthy"
+      },
+      "health_age_seconds": 10.0,
+      "initiatives": [],
+      "notifications": {
+       "age_seconds": null,
+       "last_batch": {},
+       "status": "unknown",
+       "status_counts": {}
+      },
+      "observed_at": "2026-09-18T12:00:00+00:00",
+      "operating_status": "healthy",
+      "policy": {
+       "artifact_retention_days": 7,
+       "claude_event_queue": 2000,
+       "claude_events_retained": 400,
+       "claude_line_bytes": 1048576,
+       "claude_stream_bytes": 8388608,
+       "context_checkpoint_fraction": 0.7,
+       "decision_seconds": 900,
+       "health_failure_threshold": 3,
+       "idle_seconds": 3600,
+       "max_active_executions": 2,
+       "max_attempts": 3,
+       "max_reworks": 2,
+       "observation_alert_window_seconds": 300,
+       "observation_collect_batch": 1000,
+       "observation_retention_seconds": 604800,
+       "observation_segment_bytes": 4194304,
+       "observation_spool_bytes": 33554432,
+       "recurrence_threshold": 2,
+       "release_check_seconds": 900,
+       "release_lease_seconds": 1200,
+       "release_max_attempts": 3,
+       "release_retry_seconds": 30,
+       "research_interval_hours": 6,
+       "source_cpus": 1,
+       "source_execution_seconds": 120,
+       "source_memory_mb": 512,
+       "source_output_bytes": 65536,
+       "source_pids": 128,
+       "source_read_bytes": 24000,
+       "source_read_lines": 120,
+       "source_request_seconds": 300,
+       "source_scratch_mb": 128,
+       "stream_retention_entries": 1000,
+       "task_lease_seconds": 600,
+       "task_seconds": 3600
+      },
+      "task_counts": {
+       "queued": 1,
+       "running": 2,
+       "succeeded": 1
+      },
+      "tasks": [
+       {
+        "agent": "worker",
+        "id": "run",
+        "lease_until": "2026-09-18T12:00:30+00:00",
+        "status": "running"
+       },
+       {
+        "agent": "worker",
+        "id": "old",
+        "lease_until": "2026-09-18T11:59:59+00:00",
+        "status": "running"
+       },
+       {
+        "agent": "worker",
+        "id": "q",
+        "status": "queued"
+       },
+       {
+        "agent": "idle",
+        "id": "done",
+        "status": "succeeded"
+       }
+      ]
+     }
+    }
+   },
+   "error_no_batch": {
+    "reads": 1,
+    "result": {
+     "value": {
+      "agents": [
+       {
+        "execution_state": "running",
+        "expired_leases": 1,
+        "id": "worker",
+        "queued": 1,
+        "work": [
+         "run"
+        ]
+       },
+       {
+        "execution_state": "running",
+        "expired_leases": 0,
+        "id": "idle",
+        "queued": 1,
+        "work": [
+         "decr"
+        ]
+       }
+      ],
+      "decisions": [
+       {
+        "agent": "idle",
+        "id": "dec",
+        "status": "pending"
+       },
+       {
+        "agent": "idle",
+        "id": "decr",
+        "lease_until": "2026-09-18T12:00:00+00:00",
+        "status": "running"
+       }
+      ],
+      "health": {
+       "checked_at": "2026-09-18T11:59:50+00:00",
+       "status": "healthy"
+      },
+      "health_age_seconds": 10.0,
+      "initiatives": [],
+      "notifications": {
+       "age_seconds": null,
+       "last_batch": {},
+       "status": "attention",
+       "status_counts": {
+        "error": 1
+       }
+      },
+      "observed_at": "2026-09-18T12:00:00+00:00",
+      "operating_status": "healthy",
+      "policy": {
+       "artifact_retention_days": 7,
+       "claude_event_queue": 2000,
+       "claude_events_retained": 400,
+       "claude_line_bytes": 1048576,
+       "claude_stream_bytes": 8388608,
+       "context_checkpoint_fraction": 0.7,
+       "decision_seconds": 900,
+       "health_failure_threshold": 3,
+       "idle_seconds": 3600,
+       "max_active_executions": 2,
+       "max_attempts": 3,
+       "max_reworks": 2,
+       "observation_alert_window_seconds": 300,
+       "observation_collect_batch": 1000,
+       "observation_retention_seconds": 604800,
+       "observation_segment_bytes": 4194304,
+       "observation_spool_bytes": 33554432,
+       "recurrence_threshold": 2,
+       "release_check_seconds": 900,
+       "release_lease_seconds": 1200,
+       "release_max_attempts": 3,
+       "release_retry_seconds": 30,
+       "research_interval_hours": 6,
+       "source_cpus": 1,
+       "source_execution_seconds": 120,
+       "source_memory_mb": 512,
+       "source_output_bytes": 65536,
+       "source_pids": 128,
+       "source_read_bytes": 24000,
+       "source_read_lines": 120,
+       "source_request_seconds": 300,
+       "source_scratch_mb": 128,
+       "stream_retention_entries": 1000,
+       "task_lease_seconds": 600,
+       "task_seconds": 3600
+      },
+      "task_counts": {
+       "queued": 1,
+       "running": 2,
+       "succeeded": 1
+      },
+      "tasks": [
+       {
+        "agent": "worker",
+        "id": "run",
+        "lease_until": "2026-09-18T12:00:30+00:00",
+        "status": "running"
+       },
+       {
+        "agent": "worker",
+        "id": "old",
+        "lease_until": "2026-09-18T11:59:59+00:00",
+        "status": "running"
+       },
+       {
+        "agent": "worker",
+        "id": "q",
+        "status": "queued"
+       },
+       {
+        "agent": "idle",
+        "id": "done",
+        "status": "succeeded"
+       }
+      ]
+     }
+    }
+   },
+   "junk_at": {
+    "reads": 1,
+    "result": {
+     "value": {
+      "agents": [
+       {
+        "execution_state": "running",
+        "expired_leases": 1,
+        "id": "worker",
+        "queued": 1,
+        "work": [
+         "run"
+        ]
+       },
+       {
+        "execution_state": "running",
+        "expired_leases": 0,
+        "id": "idle",
+        "queued": 1,
+        "work": [
+         "decr"
+        ]
+       }
+      ],
+      "decisions": [
+       {
+        "agent": "idle",
+        "id": "dec",
+        "status": "pending"
+       },
+       {
+        "agent": "idle",
+        "id": "decr",
+        "lease_until": "2026-09-18T12:00:00+00:00",
+        "status": "running"
+       }
+      ],
+      "health": {
+       "checked_at": "2026-09-18T11:59:50+00:00",
+       "status": "healthy"
+      },
+      "health_age_seconds": 10.0,
+      "initiatives": [],
+      "notifications": {
+       "age_seconds": null,
+       "last_batch": {
+        "at": "x"
+       },
+       "status": "unknown",
+       "status_counts": {}
+      },
+      "observed_at": "2026-09-18T12:00:00+00:00",
+      "operating_status": "healthy",
+      "policy": {
+       "artifact_retention_days": 7,
+       "claude_event_queue": 2000,
+       "claude_events_retained": 400,
+       "claude_line_bytes": 1048576,
+       "claude_stream_bytes": 8388608,
+       "context_checkpoint_fraction": 0.7,
+       "decision_seconds": 900,
+       "health_failure_threshold": 3,
+       "idle_seconds": 3600,
+       "max_active_executions": 2,
+       "max_attempts": 3,
+       "max_reworks": 2,
+       "observation_alert_window_seconds": 300,
+       "observation_collect_batch": 1000,
+       "observation_retention_seconds": 604800,
+       "observation_segment_bytes": 4194304,
+       "observation_spool_bytes": 33554432,
+       "recurrence_threshold": 2,
+       "release_check_seconds": 900,
+       "release_lease_seconds": 1200,
+       "release_max_attempts": 3,
+       "release_retry_seconds": 30,
+       "research_interval_hours": 6,
+       "source_cpus": 1,
+       "source_execution_seconds": 120,
+       "source_memory_mb": 512,
+       "source_output_bytes": 65536,
+       "source_pids": 128,
+       "source_read_bytes": 24000,
+       "source_read_lines": 120,
+       "source_request_seconds": 300,
+       "source_scratch_mb": 128,
+       "stream_retention_entries": 1000,
+       "task_lease_seconds": 600,
+       "task_seconds": 3600
+      },
+      "task_counts": {
+       "queued": 1,
+       "running": 2,
+       "succeeded": 1
+      },
+      "tasks": [
+       {
+        "agent": "worker",
+        "id": "run",
+        "lease_until": "2026-09-18T12:00:30+00:00",
+        "status": "running"
+       },
+       {
+        "agent": "worker",
+        "id": "old",
+        "lease_until": "2026-09-18T11:59:59+00:00",
+        "status": "running"
+       },
+       {
+        "agent": "worker",
+        "id": "q",
+        "status": "queued"
+       },
+       {
+        "agent": "idle",
+        "id": "done",
+        "status": "succeeded"
+       }
+      ]
+     }
+    }
+   },
+   "missing_keys": {
+    "reads": 1,
+    "result": {
+     "message": "'last_batch'",
+     "refused": "KeyError"
+    }
+   },
+   "observed": {
+    "reads": 1,
+    "result": {
+     "value": {
+      "agents": [
+       {
+        "execution_state": "running",
+        "expired_leases": 1,
+        "id": "worker",
+        "queued": 1,
+        "work": [
+         "run"
+        ]
+       },
+       {
+        "execution_state": "running",
+        "expired_leases": 0,
+        "id": "idle",
+        "queued": 1,
+        "work": [
+         "decr"
+        ]
+       }
+      ],
+      "decisions": [
+       {
+        "agent": "idle",
+        "id": "dec",
+        "status": "pending"
+       },
+       {
+        "agent": "idle",
+        "id": "decr",
+        "lease_until": "2026-09-18T12:00:00+00:00",
+        "status": "running"
+       }
+      ],
+      "health": {
+       "checked_at": "2026-09-18T11:59:50+00:00",
+       "status": "healthy"
+      },
+      "health_age_seconds": 10.0,
+      "initiatives": [],
+      "notifications": {
+       "age_seconds": 120.0,
+       "last_batch": {
+        "at": "2026-09-18T11:58:00+00:00"
+       },
+       "status": "observed",
+       "status_counts": {
+        "sent": 4
+       }
+      },
+      "observed_at": "2026-09-18T12:00:00+00:00",
+      "operating_status": "healthy",
+      "policy": {
+       "artifact_retention_days": 7,
+       "claude_event_queue": 2000,
+       "claude_events_retained": 400,
+       "claude_line_bytes": 1048576,
+       "claude_stream_bytes": 8388608,
+       "context_checkpoint_fraction": 0.7,
+       "decision_seconds": 900,
+       "health_failure_threshold": 3,
+       "idle_seconds": 3600,
+       "max_active_executions": 2,
+       "max_attempts": 3,
+       "max_reworks": 2,
+       "observation_alert_window_seconds": 300,
+       "observation_collect_batch": 1000,
+       "observation_retention_seconds": 604800,
+       "observation_segment_bytes": 4194304,
+       "observation_spool_bytes": 33554432,
+       "recurrence_threshold": 2,
+       "release_check_seconds": 900,
+       "release_lease_seconds": 1200,
+       "release_max_attempts": 3,
+       "release_retry_seconds": 30,
+       "research_interval_hours": 6,
+       "source_cpus": 1,
+       "source_execution_seconds": 120,
+       "source_memory_mb": 512,
+       "source_output_bytes": 65536,
+       "source_pids": 128,
+       "source_read_bytes": 24000,
+       "source_read_lines": 120,
+       "source_request_seconds": 300,
+       "source_scratch_mb": 128,
+       "stream_retention_entries": 1000,
+       "task_lease_seconds": 600,
+       "task_seconds": 3600
+      },
+      "task_counts": {
+       "queued": 1,
+       "running": 2,
+       "succeeded": 1
+      },
+      "tasks": [
+       {
+        "agent": "worker",
+        "id": "run",
+        "lease_until": "2026-09-18T12:00:30+00:00",
+        "status": "running"
+       },
+       {
+        "agent": "worker",
+        "id": "old",
+        "lease_until": "2026-09-18T11:59:59+00:00",
+        "status": "running"
+       },
+       {
+        "agent": "worker",
+        "id": "q",
+        "status": "queued"
+       },
+       {
+        "agent": "idle",
+        "id": "done",
+        "status": "succeeded"
+       }
+      ]
+     }
+    }
+   },
+   "observed_zero_counts": {
+    "reads": 1,
+    "result": {
+     "value": {
+      "agents": [
+       {
+        "execution_state": "running",
+        "expired_leases": 1,
+        "id": "worker",
+        "queued": 1,
+        "work": [
+         "run"
+        ]
+       },
+       {
+        "execution_state": "running",
+        "expired_leases": 0,
+        "id": "idle",
+        "queued": 1,
+        "work": [
+         "decr"
+        ]
+       }
+      ],
+      "decisions": [
+       {
+        "agent": "idle",
+        "id": "dec",
+        "status": "pending"
+       },
+       {
+        "agent": "idle",
+        "id": "decr",
+        "lease_until": "2026-09-18T12:00:00+00:00",
+        "status": "running"
+       }
+      ],
+      "health": {
+       "checked_at": "2026-09-18T11:59:50+00:00",
+       "status": "healthy"
+      },
+      "health_age_seconds": 10.0,
+      "initiatives": [],
+      "notifications": {
+       "age_seconds": 3.0,
+       "last_batch": {
+        "at": "2026-09-18T11:59:57+00:00"
+       },
+       "status": "observed",
+       "status_counts": {
+        "quarantined": 0,
+        "retry": 0
+       }
+      },
+      "observed_at": "2026-09-18T12:00:00+00:00",
+      "operating_status": "healthy",
+      "policy": {
+       "artifact_retention_days": 7,
+       "claude_event_queue": 2000,
+       "claude_events_retained": 400,
+       "claude_line_bytes": 1048576,
+       "claude_stream_bytes": 8388608,
+       "context_checkpoint_fraction": 0.7,
+       "decision_seconds": 900,
+       "health_failure_threshold": 3,
+       "idle_seconds": 3600,
+       "max_active_executions": 2,
+       "max_attempts": 3,
+       "max_reworks": 2,
+       "observation_alert_window_seconds": 300,
+       "observation_collect_batch": 1000,
+       "observation_retention_seconds": 604800,
+       "observation_segment_bytes": 4194304,
+       "observation_spool_bytes": 33554432,
+       "recurrence_threshold": 2,
+       "release_check_seconds": 900,
+       "release_lease_seconds": 1200,
+       "release_max_attempts": 3,
+       "release_retry_seconds": 30,
+       "research_interval_hours": 6,
+       "source_cpus": 1,
+       "source_execution_seconds": 120,
+       "source_memory_mb": 512,
+       "source_output_bytes": 65536,
+       "source_pids": 128,
+       "source_read_bytes": 24000,
+       "source_read_lines": 120,
+       "source_request_seconds": 300,
+       "source_scratch_mb": 128,
+       "stream_retention_entries": 1000,
+       "task_lease_seconds": 600,
+       "task_seconds": 3600
+      },
+      "task_counts": {
+       "queued": 1,
+       "running": 2,
+       "succeeded": 1
+      },
+      "tasks": [
+       {
+        "agent": "worker",
+        "id": "run",
+        "lease_until": "2026-09-18T12:00:30+00:00",
+        "status": "running"
+       },
+       {
+        "agent": "worker",
+        "id": "old",
+        "lease_until": "2026-09-18T11:59:59+00:00",
+        "status": "running"
+       },
+       {
+        "agent": "worker",
+        "id": "q",
+        "status": "queued"
+       },
+       {
+        "agent": "idle",
+        "id": "done",
+        "status": "succeeded"
+       }
+      ]
+     }
+    }
+   },
+   "publishing": {
+    "reads": 1,
+    "result": {
+     "value": {
+      "agents": [
+       {
+        "execution_state": "running",
+        "expired_leases": 1,
+        "id": "worker",
+        "queued": 1,
+        "work": [
+         "run"
+        ]
+       },
+       {
+        "execution_state": "running",
+        "expired_leases": 0,
+        "id": "idle",
+        "queued": 1,
+        "work": [
+         "decr"
+        ]
+       }
+      ],
+      "decisions": [
+       {
+        "agent": "idle",
+        "id": "dec",
+        "status": "pending"
+       },
+       {
+        "agent": "idle",
+        "id": "decr",
+        "lease_until": "2026-09-18T12:00:00+00:00",
+        "status": "running"
+       }
+      ],
+      "health": {
+       "checked_at": "2026-09-18T11:59:50+00:00",
+       "status": "healthy"
+      },
+      "health_age_seconds": 10.0,
+      "initiatives": [],
+      "notifications": {
+       "age_seconds": 1.0,
+       "last_batch": {
+        "at": "2026-09-18T11:59:59+00:00"
+       },
+       "status": "attention",
+       "status_counts": {
+        "publishing": 3
+       }
+      },
+      "observed_at": "2026-09-18T12:00:00+00:00",
+      "operating_status": "healthy",
+      "policy": {
+       "artifact_retention_days": 7,
+       "claude_event_queue": 2000,
+       "claude_events_retained": 400,
+       "claude_line_bytes": 1048576,
+       "claude_stream_bytes": 8388608,
+       "context_checkpoint_fraction": 0.7,
+       "decision_seconds": 900,
+       "health_failure_threshold": 3,
+       "idle_seconds": 3600,
+       "max_active_executions": 2,
+       "max_attempts": 3,
+       "max_reworks": 2,
+       "observation_alert_window_seconds": 300,
+       "observation_collect_batch": 1000,
+       "observation_retention_seconds": 604800,
+       "observation_segment_bytes": 4194304,
+       "observation_spool_bytes": 33554432,
+       "recurrence_threshold": 2,
+       "release_check_seconds": 900,
+       "release_lease_seconds": 1200,
+       "release_max_attempts": 3,
+       "release_retry_seconds": 30,
+       "research_interval_hours": 6,
+       "source_cpus": 1,
+       "source_execution_seconds": 120,
+       "source_memory_mb": 512,
+       "source_output_bytes": 65536,
+       "source_pids": 128,
+       "source_read_bytes": 24000,
+       "source_read_lines": 120,
+       "source_request_seconds": 300,
+       "source_scratch_mb": 128,
+       "stream_retention_entries": 1000,
+       "task_lease_seconds": 600,
+       "task_seconds": 3600
+      },
+      "task_counts": {
+       "queued": 1,
+       "running": 2,
+       "succeeded": 1
+      },
+      "tasks": [
+       {
+        "agent": "worker",
+        "id": "run",
+        "lease_until": "2026-09-18T12:00:30+00:00",
+        "status": "running"
+       },
+       {
+        "agent": "worker",
+        "id": "old",
+        "lease_until": "2026-09-18T11:59:59+00:00",
+        "status": "running"
+       },
+       {
+        "agent": "worker",
+        "id": "q",
+        "status": "queued"
+       },
+       {
+        "agent": "idle",
+        "id": "done",
+        "status": "succeeded"
+       }
+      ]
+     }
+    }
+   },
+   "quarantined": {
+    "reads": 1,
+    "result": {
+     "value": {
+      "agents": [
+       {
+        "execution_state": "running",
+        "expired_leases": 1,
+        "id": "worker",
+        "queued": 1,
+        "work": [
+         "run"
+        ]
+       },
+       {
+        "execution_state": "running",
+        "expired_leases": 0,
+        "id": "idle",
+        "queued": 1,
+        "work": [
+         "decr"
+        ]
+       }
+      ],
+      "decisions": [
+       {
+        "agent": "idle",
+        "id": "dec",
+        "status": "pending"
+       },
+       {
+        "agent": "idle",
+        "id": "decr",
+        "lease_until": "2026-09-18T12:00:00+00:00",
+        "status": "running"
+       }
+      ],
+      "health": {
+       "checked_at": "2026-09-18T11:59:50+00:00",
+       "status": "healthy"
+      },
+      "health_age_seconds": 10.0,
+      "initiatives": [],
+      "notifications": {
+       "age_seconds": 5.0,
+       "last_batch": {
+        "at": "2026-09-18T11:59:55+00:00"
+       },
+       "status": "attention",
+       "status_counts": {
+        "quarantined": 1
+       }
+      },
+      "observed_at": "2026-09-18T12:00:00+00:00",
+      "operating_status": "healthy",
+      "policy": {
+       "artifact_retention_days": 7,
+       "claude_event_queue": 2000,
+       "claude_events_retained": 400,
+       "claude_line_bytes": 1048576,
+       "claude_stream_bytes": 8388608,
+       "context_checkpoint_fraction": 0.7,
+       "decision_seconds": 900,
+       "health_failure_threshold": 3,
+       "idle_seconds": 3600,
+       "max_active_executions": 2,
+       "max_attempts": 3,
+       "max_reworks": 2,
+       "observation_alert_window_seconds": 300,
+       "observation_collect_batch": 1000,
+       "observation_retention_seconds": 604800,
+       "observation_segment_bytes": 4194304,
+       "observation_spool_bytes": 33554432,
+       "recurrence_threshold": 2,
+       "release_check_seconds": 900,
+       "release_lease_seconds": 1200,
+       "release_max_attempts": 3,
+       "release_retry_seconds": 30,
+       "research_interval_hours": 6,
+       "source_cpus": 1,
+       "source_execution_seconds": 120,
+       "source_memory_mb": 512,
+       "source_output_bytes": 65536,
+       "source_pids": 128,
+       "source_read_bytes": 24000,
+       "source_read_lines": 120,
+       "source_request_seconds": 300,
+       "source_scratch_mb": 128,
+       "stream_retention_entries": 1000,
+       "task_lease_seconds": 600,
+       "task_seconds": 3600
+      },
+      "task_counts": {
+       "queued": 1,
+       "running": 2,
+       "succeeded": 1
+      },
+      "tasks": [
+       {
+        "agent": "worker",
+        "id": "run",
+        "lease_until": "2026-09-18T12:00:30+00:00",
+        "status": "running"
+       },
+       {
+        "agent": "worker",
+        "id": "old",
+        "lease_until": "2026-09-18T11:59:59+00:00",
+        "status": "running"
+       },
+       {
+        "agent": "worker",
+        "id": "q",
+        "status": "queued"
+       },
+       {
+        "agent": "idle",
+        "id": "done",
+        "status": "succeeded"
+       }
+      ]
+     }
+    }
+   },
+   "retry_stale": {
+    "reads": 1,
+    "result": {
+     "value": {
+      "agents": [
+       {
+        "execution_state": "running",
+        "expired_leases": 1,
+        "id": "worker",
+        "queued": 1,
+        "work": [
+         "run"
+        ]
+       },
+       {
+        "execution_state": "running",
+        "expired_leases": 0,
+        "id": "idle",
+        "queued": 1,
+        "work": [
+         "decr"
+        ]
+       }
+      ],
+      "decisions": [
+       {
+        "agent": "idle",
+        "id": "dec",
+        "status": "pending"
+       },
+       {
+        "agent": "idle",
+        "id": "decr",
+        "lease_until": "2026-09-18T12:00:00+00:00",
+        "status": "running"
+       }
+      ],
+      "health": {
+       "checked_at": "2026-09-18T11:59:50+00:00",
+       "status": "healthy"
+      },
+      "health_age_seconds": 10.0,
+      "initiatives": [],
+      "notifications": {
+       "age_seconds": 3600.0,
+       "last_batch": {
+        "at": "2026-09-18T11:00:00+00:00"
+       },
+       "status": "attention",
+       "status_counts": {
+        "retry": 2
+       }
+      },
+      "observed_at": "2026-09-18T12:00:00+00:00",
+      "operating_status": "healthy",
+      "policy": {
+       "artifact_retention_days": 7,
+       "claude_event_queue": 2000,
+       "claude_events_retained": 400,
+       "claude_line_bytes": 1048576,
+       "claude_stream_bytes": 8388608,
+       "context_checkpoint_fraction": 0.7,
+       "decision_seconds": 900,
+       "health_failure_threshold": 3,
+       "idle_seconds": 3600,
+       "max_active_executions": 2,
+       "max_attempts": 3,
+       "max_reworks": 2,
+       "observation_alert_window_seconds": 300,
+       "observation_collect_batch": 1000,
+       "observation_retention_seconds": 604800,
+       "observation_segment_bytes": 4194304,
+       "observation_spool_bytes": 33554432,
+       "recurrence_threshold": 2,
+       "release_check_seconds": 900,
+       "release_lease_seconds": 1200,
+       "release_max_attempts": 3,
+       "release_retry_seconds": 30,
+       "research_interval_hours": 6,
+       "source_cpus": 1,
+       "source_execution_seconds": 120,
+       "source_memory_mb": 512,
+       "source_output_bytes": 65536,
+       "source_pids": 128,
+       "source_read_bytes": 24000,
+       "source_read_lines": 120,
+       "source_request_seconds": 300,
+       "source_scratch_mb": 128,
+       "stream_retention_entries": 1000,
+       "task_lease_seconds": 600,
+       "task_seconds": 3600
+      },
+      "task_counts": {
+       "queued": 1,
+       "running": 2,
+       "succeeded": 1
+      },
+      "tasks": [
+       {
+        "agent": "worker",
+        "id": "run",
+        "lease_until": "2026-09-18T12:00:30+00:00",
+        "status": "running"
+       },
+       {
+        "agent": "worker",
+        "id": "old",
+        "lease_until": "2026-09-18T11:59:59+00:00",
+        "status": "running"
+       },
+       {
+        "agent": "worker",
+        "id": "q",
+        "status": "queued"
+       },
+       {
+        "agent": "idle",
+        "id": "done",
+        "status": "succeeded"
+       }
+      ]
+     }
+    }
+   },
+   "unknown_no_at": {
+    "reads": 1,
+    "result": {
+     "value": {
+      "agents": [
+       {
+        "execution_state": "running",
+        "expired_leases": 1,
+        "id": "worker",
+        "queued": 1,
+        "work": [
+         "run"
+        ]
+       },
+       {
+        "execution_state": "running",
+        "expired_leases": 0,
+        "id": "idle",
+        "queued": 1,
+        "work": [
+         "decr"
+        ]
+       }
+      ],
+      "decisions": [
+       {
+        "agent": "idle",
+        "id": "dec",
+        "status": "pending"
+       },
+       {
+        "agent": "idle",
+        "id": "decr",
+        "lease_until": "2026-09-18T12:00:00+00:00",
+        "status": "running"
+       }
+      ],
+      "health": {
+       "checked_at": "2026-09-18T11:59:50+00:00",
+       "status": "healthy"
+      },
+      "health_age_seconds": 10.0,
+      "initiatives": [],
+      "notifications": {
+       "age_seconds": null,
+       "last_batch": {},
+       "status": "unknown",
+       "status_counts": {}
+      },
+      "observed_at": "2026-09-18T12:00:00+00:00",
+      "operating_status": "healthy",
+      "policy": {
+       "artifact_retention_days": 7,
+       "claude_event_queue": 2000,
+       "claude_events_retained": 400,
+       "claude_line_bytes": 1048576,
+       "claude_stream_bytes": 8388608,
+       "context_checkpoint_fraction": 0.7,
+       "decision_seconds": 900,
+       "health_failure_threshold": 3,
+       "idle_seconds": 3600,
+       "max_active_executions": 2,
+       "max_attempts": 3,
+       "max_reworks": 2,
+       "observation_alert_window_seconds": 300,
+       "observation_collect_batch": 1000,
+       "observation_retention_seconds": 604800,
+       "observation_segment_bytes": 4194304,
+       "observation_spool_bytes": 33554432,
+       "recurrence_threshold": 2,
+       "release_check_seconds": 900,
+       "release_lease_seconds": 1200,
+       "release_max_attempts": 3,
+       "release_retry_seconds": 30,
+       "research_interval_hours": 6,
+       "source_cpus": 1,
+       "source_execution_seconds": 120,
+       "source_memory_mb": 512,
+       "source_output_bytes": 65536,
+       "source_pids": 128,
+       "source_read_bytes": 24000,
+       "source_read_lines": 120,
+       "source_request_seconds": 300,
+       "source_scratch_mb": 128,
+       "stream_retention_entries": 1000,
+       "task_lease_seconds": 600,
+       "task_seconds": 3600
+      },
+      "task_counts": {
+       "queued": 1,
+       "running": 2,
+       "succeeded": 1
+      },
+      "tasks": [
+       {
+        "agent": "worker",
+        "id": "run",
+        "lease_until": "2026-09-18T12:00:30+00:00",
+        "status": "running"
+       },
+       {
+        "agent": "worker",
+        "id": "old",
+        "lease_until": "2026-09-18T11:59:59+00:00",
+        "status": "running"
+       },
+       {
+        "agent": "worker",
+        "id": "q",
+        "status": "queued"
+       },
+       {
+        "agent": "idle",
+        "id": "done",
+        "status": "succeeded"
+       }
+      ]
+     }
+    }
+   },
+   "unknown_stale": {
+    "reads": 1,
+    "result": {
+     "value": {
+      "agents": [
+       {
+        "execution_state": "running",
+        "expired_leases": 1,
+        "id": "worker",
+        "queued": 1,
+        "work": [
+         "run"
+        ]
+       },
+       {
+        "execution_state": "running",
+        "expired_leases": 0,
+        "id": "idle",
+        "queued": 1,
+        "work": [
+         "decr"
+        ]
+       }
+      ],
+      "decisions": [
+       {
+        "agent": "idle",
+        "id": "dec",
+        "status": "pending"
+       },
+       {
+        "agent": "idle",
+        "id": "decr",
+        "lease_until": "2026-09-18T12:00:00+00:00",
+        "status": "running"
+       }
+      ],
+      "health": {
+       "checked_at": "2026-09-18T11:59:50+00:00",
+       "status": "healthy"
+      },
+      "health_age_seconds": 10.0,
+      "initiatives": [],
+      "notifications": {
+       "age_seconds": 121.0,
+       "last_batch": {
+        "at": "2026-09-18T11:57:59+00:00"
+       },
+       "status": "unknown",
+       "status_counts": {
+        "sent": 4
+       }
+      },
+      "observed_at": "2026-09-18T12:00:00+00:00",
+      "operating_status": "healthy",
+      "policy": {
+       "artifact_retention_days": 7,
+       "claude_event_queue": 2000,
+       "claude_events_retained": 400,
+       "claude_line_bytes": 1048576,
+       "claude_stream_bytes": 8388608,
+       "context_checkpoint_fraction": 0.7,
+       "decision_seconds": 900,
+       "health_failure_threshold": 3,
+       "idle_seconds": 3600,
+       "max_active_executions": 2,
+       "max_attempts": 3,
+       "max_reworks": 2,
+       "observation_alert_window_seconds": 300,
+       "observation_collect_batch": 1000,
+       "observation_retention_seconds": 604800,
+       "observation_segment_bytes": 4194304,
+       "observation_spool_bytes": 33554432,
+       "recurrence_threshold": 2,
+       "release_check_seconds": 900,
+       "release_lease_seconds": 1200,
+       "release_max_attempts": 3,
+       "release_retry_seconds": 30,
+       "research_interval_hours": 6,
+       "source_cpus": 1,
+       "source_execution_seconds": 120,
+       "source_memory_mb": 512,
+       "source_output_bytes": 65536,
+       "source_pids": 128,
+       "source_read_bytes": 24000,
+       "source_read_lines": 120,
+       "source_request_seconds": 300,
+       "source_scratch_mb": 128,
+       "stream_retention_entries": 1000,
+       "task_lease_seconds": 600,
+       "task_seconds": 3600
+      },
+      "task_counts": {
+       "queued": 1,
+       "running": 2,
+       "succeeded": 1
+      },
+      "tasks": [
+       {
+        "agent": "worker",
+        "id": "run",
+        "lease_until": "2026-09-18T12:00:30+00:00",
+        "status": "running"
+       },
+       {
+        "agent": "worker",
+        "id": "old",
+        "lease_until": "2026-09-18T11:59:59+00:00",
+        "status": "running"
+       },
+       {
+        "agent": "worker",
+        "id": "q",
+        "status": "queued"
+       },
+       {
+        "agent": "idle",
+        "id": "done",
+        "status": "succeeded"
+       }
+      ]
+     }
+    }
+   }
+  },
+  "now_is_stamped": true,
+  "policy_equals_singleton": true,
+  "scripted": {
+   "reads": 1,
+   "result": {
+    "value": {
+     "agents": [
+      {
+       "execution_state": "running",
+       "expired_leases": 1,
+       "id": "worker",
+       "queued": 1,
+       "work": [
+        "run"
+       ]
+      },
+      {
+       "execution_state": "running",
+       "expired_leases": 0,
+       "id": "idle",
+       "queued": 1,
+       "work": [
+        "decr"
+       ]
+      }
+     ],
+     "decisions": [
+      {
+       "agent": "idle",
+       "id": "dec",
+       "status": "pending"
+      },
+      {
+       "agent": "idle",
+       "id": "decr",
+       "lease_until": "2026-09-18T12:00:00+00:00",
+       "status": "running"
+      }
+     ],
+     "health": {
+      "checked_at": "2026-09-18T11:59:50+00:00",
+      "status": "healthy"
+     },
+     "health_age_seconds": 10.0,
+     "initiatives": [],
+     "notifications": {
+      "age_seconds": null,
+      "last_batch": {},
+      "status": "unknown",
+      "status_counts": {}
+     },
+     "observed_at": "2026-09-18T12:00:00+00:00",
+     "operating_status": "healthy",
+     "policy": {
+      "artifact_retention_days": 7,
+      "claude_event_queue": 2000,
+      "claude_events_retained": 400,
+      "claude_line_bytes": 1048576,
+      "claude_stream_bytes": 8388608,
+      "context_checkpoint_fraction": 0.7,
+      "decision_seconds": 900,
+      "health_failure_threshold": 3,
+      "idle_seconds": 3600,
+      "max_active_executions": 2,
+      "max_attempts": 3,
+      "max_reworks": 2,
+      "observation_alert_window_seconds": 300,
+      "observation_collect_batch": 1000,
+      "observation_retention_seconds": 604800,
+      "observation_segment_bytes": 4194304,
+      "observation_spool_bytes": 33554432,
+      "recurrence_threshold": 2,
+      "release_check_seconds": 900,
+      "release_lease_seconds": 1200,
+      "release_max_attempts": 3,
+      "release_retry_seconds": 30,
+      "research_interval_hours": 6,
+      "source_cpus": 1,
+      "source_execution_seconds": 120,
+      "source_memory_mb": 512,
+      "source_output_bytes": 65536,
+      "source_pids": 128,
+      "source_read_bytes": 24000,
+      "source_read_lines": 120,
+      "source_request_seconds": 300,
+      "source_scratch_mb": 128,
+      "stream_retention_entries": 1000,
+      "task_lease_seconds": 600,
+      "task_seconds": 3600
+     },
+     "task_counts": {
+      "queued": 1,
+      "running": 2,
+      "succeeded": 1
+     },
+     "tasks": [
+      {
+       "agent": "worker",
+       "id": "run",
+       "lease_until": "2026-09-18T12:00:30+00:00",
+       "status": "running"
+      },
+      {
+       "agent": "worker",
+       "id": "old",
+       "lease_until": "2026-09-18T11:59:59+00:00",
+       "status": "running"
+      },
+      {
+       "agent": "worker",
+       "id": "q",
+       "status": "queued"
+      },
+      {
+       "agent": "idle",
+       "id": "done",
+       "status": "succeeded"
+      }
+     ]
+    }
+   }
+  },
+  "shapes": {
+   "agent_row_without_agent_key": {
+    "reads": 1,
+    "result": {
+     "message": "'agent'",
+     "refused": "KeyError"
+    }
+   },
+   "expired_and_stale_health": {
+    "reads": 1,
+    "result": {
+     "value": {
+      "agents": [
+       {
+        "execution_state": "waiting",
+        "expired_leases": 1,
+        "id": "worker",
+        "queued": 1,
+        "work": []
+       }
+      ],
+      "decisions": [],
+      "health": {
+       "checked_at": "2026-09-18T11:57:00+00:00",
+       "status": "healthy"
+      },
+      "health_age_seconds": 180.0,
+      "initiatives": [],
+      "notifications": {
+       "age_seconds": null,
+       "last_batch": {},
+       "status": "unknown",
+       "status_counts": {}
+      },
+      "observed_at": "2026-09-18T12:00:00+00:00",
+      "operating_status": "unknown",
+      "policy": {
+       "artifact_retention_days": 7,
+       "claude_event_queue": 2000,
+       "claude_events_retained": 400,
+       "claude_line_bytes": 1048576,
+       "claude_stream_bytes": 8388608,
+       "context_checkpoint_fraction": 0.7,
+       "decision_seconds": 900,
+       "health_failure_threshold": 3,
+       "idle_seconds": 3600,
+       "max_active_executions": 2,
+       "max_attempts": 3,
+       "max_reworks": 2,
+       "observation_alert_window_seconds": 300,
+       "observation_collect_batch": 1000,
+       "observation_retention_seconds": 604800,
+       "observation_segment_bytes": 4194304,
+       "observation_spool_bytes": 33554432,
+       "recurrence_threshold": 2,
+       "release_check_seconds": 900,
+       "release_lease_seconds": 1200,
+       "release_max_attempts": 3,
+       "release_retry_seconds": 30,
+       "research_interval_hours": 6,
+       "source_cpus": 1,
+       "source_execution_seconds": 120,
+       "source_memory_mb": 512,
+       "source_output_bytes": 65536,
+       "source_pids": 128,
+       "source_read_bytes": 24000,
+       "source_read_lines": 120,
+       "source_request_seconds": 300,
+       "source_scratch_mb": 128,
+       "stream_retention_entries": 1000,
+       "task_lease_seconds": 600,
+       "task_seconds": 3600
+      },
+      "task_counts": {
+       "queued": 1,
+       "running": 1
+      },
+      "tasks": [
+       {
+        "agent": "worker",
+        "id": "old",
+        "lease_until": "2026-09-18T11:59:59+00:00",
+        "status": "running"
+       },
+       {
+        "agent": "worker",
+        "id": "new",
+        "status": "queued"
+       }
+      ]
+     }
+    }
+   },
+   "facts_extra_keys_kept": {
+    "reads": 1,
+    "result": {
+     "value": {
+      "agents": [],
+      "custom": {
+       "a": 1
+      },
+      "decisions": [],
+      "health_age_seconds": null,
+      "initiatives": [],
+      "notifications": {
+       "age_seconds": null,
+       "last_batch": {},
+       "status": "unknown",
+       "status_counts": {}
+      },
+      "observed_at": "2026-09-18T12:00:00+00:00",
+      "operating_status": "unknown",
+      "policy": {
+       "artifact_retention_days": 7,
+       "claude_event_queue": 2000,
+       "claude_events_retained": 400,
+       "claude_line_bytes": 1048576,
+       "claude_stream_bytes": 8388608,
+       "context_checkpoint_fraction": 0.7,
+       "decision_seconds": 900,
+       "health_failure_threshold": 3,
+       "idle_seconds": 3600,
+       "max_active_executions": 2,
+       "max_attempts": 3,
+       "max_reworks": 2,
+       "observation_alert_window_seconds": 300,
+       "observation_collect_batch": 1000,
+       "observation_retention_seconds": 604800,
+       "observation_segment_bytes": 4194304,
+       "observation_spool_bytes": 33554432,
+       "recurrence_threshold": 2,
+       "release_check_seconds": 900,
+       "release_lease_seconds": 1200,
+       "release_max_attempts": 3,
+       "release_retry_seconds": 30,
+       "research_interval_hours": 6,
+       "source_cpus": 1,
+       "source_execution_seconds": 120,
+       "source_memory_mb": 512,
+       "source_output_bytes": 65536,
+       "source_pids": 128,
+       "source_read_bytes": 24000,
+       "source_read_lines": 120,
+       "source_request_seconds": 300,
+       "source_scratch_mb": 128,
+       "stream_retention_entries": 1000,
+       "task_lease_seconds": 600,
+       "task_seconds": 3600
+      },
+      "releases": [],
+      "task_counts": {},
+      "tasks": []
+     }
+    }
+   },
+   "input_not_mutated": {
+    "facts_were_mutated_in_place": true,
+    "same_object_returned": true
+   },
+   "lease_equal_to_now_is_live": {
+    "reads": 1,
+    "result": {
+     "value": {
+      "agents": [
+       {
+        "execution_state": "running",
+        "expired_leases": 0,
+        "id": "w",
+        "queued": 0,
+        "work": [
+         "a"
+        ]
+       }
+      ],
+      "decisions": [],
+      "health_age_seconds": null,
+      "initiatives": [],
+      "notifications": {
+       "age_seconds": null,
+       "last_batch": {},
+       "status": "unknown",
+       "status_counts": {}
+      },
+      "observed_at": "2026-09-18T12:00:00+00:00",
+      "operating_status": "unknown",
+      "policy": {
+       "artifact_retention_days": 7,
+       "claude_event_queue": 2000,
+       "claude_events_retained": 400,
+       "claude_line_bytes": 1048576,
+       "claude_stream_bytes": 8388608,
+       "context_checkpoint_fraction": 0.7,
+       "decision_seconds": 900,
+       "health_failure_threshold": 3,
+       "idle_seconds": 3600,
+       "max_active_executions": 2,
+       "max_attempts": 3,
+       "max_reworks": 2,
+       "observation_alert_window_seconds": 300,
+       "observation_collect_batch": 1000,
+       "observation_retention_seconds": 604800,
+       "observation_segment_bytes": 4194304,
+       "observation_spool_bytes": 33554432,
+       "recurrence_threshold": 2,
+       "release_check_seconds": 900,
+       "release_lease_seconds": 1200,
+       "release_max_attempts": 3,
+       "release_retry_seconds": 30,
+       "research_interval_hours": 6,
+       "source_cpus": 1,
+       "source_execution_seconds": 120,
+       "source_memory_mb": 512,
+       "source_output_bytes": 65536,
+       "source_pids": 128,
+       "source_read_bytes": 24000,
+       "source_read_lines": 120,
+       "source_request_seconds": 300,
+       "source_scratch_mb": 128,
+       "stream_retention_entries": 1000,
+       "task_lease_seconds": 600,
+       "task_seconds": 3600
+      },
+      "task_counts": {
+       "running": 1
+      },
+      "tasks": [
+       {
+        "agent": "w",
+        "id": "a",
+        "lease_until": "2026-09-18T12:00:00+00:00",
+        "status": "running"
+       }
+      ]
+     }
+    }
+   },
+   "missing_agents": {
+    "reads": 1,
+    "result": {
+     "message": "'agents'",
+     "refused": "KeyError"
+    }
+   },
+   "missing_tasks": {
+    "reads": 1,
+    "result": {
+     "message": "'tasks'",
+     "refused": "KeyError"
+    }
+   },
+   "no_tasks_no_agents": {
+    "reads": 1,
+    "result": {
+     "value": {
+      "agents": [],
+      "decisions": [],
+      "health_age_seconds": null,
+      "initiatives": [],
+      "notifications": {
+       "age_seconds": null,
+       "last_batch": {},
+       "status": "unknown",
+       "status_counts": {}
+      },
+      "observed_at": "2026-09-18T12:00:00+00:00",
+      "operating_status": "unknown",
+      "policy": {
+       "artifact_retention_days": 7,
+       "claude_event_queue": 2000,
+       "claude_events_retained": 400,
+       "claude_line_bytes": 1048576,
+       "claude_stream_bytes": 8388608,
+       "context_checkpoint_fraction": 0.7,
+       "decision_seconds": 900,
+       "health_failure_threshold": 3,
+       "idle_seconds": 3600,
+       "max_active_executions": 2,
+       "max_attempts": 3,
+       "max_reworks": 2,
+       "observation_alert_window_seconds": 300,
+       "observation_collect_batch": 1000,
+       "observation_retention_seconds": 604800,
+       "observation_segment_bytes": 4194304,
+       "observation_spool_bytes": 33554432,
+       "recurrence_threshold": 2,
+       "release_check_seconds": 900,
+       "release_lease_seconds": 1200,
+       "release_max_attempts": 3,
+       "release_retry_seconds": 30,
+       "research_interval_hours": 6,
+       "source_cpus": 1,
+       "source_execution_seconds": 120,
+       "source_memory_mb": 512,
+       "source_output_bytes": 65536,
+       "source_pids": 128,
+       "source_read_bytes": 24000,
+       "source_read_lines": 120,
+       "source_request_seconds": 300,
+       "source_scratch_mb": 128,
+       "stream_retention_entries": 1000,
+       "task_lease_seconds": 600,
+       "task_seconds": 3600
+      },
+      "task_counts": {},
+      "tasks": []
+     }
+    }
+   },
+   "queue_statuses": {
+    "reads": 1,
+    "result": {
+     "value": {
+      "agents": [
+       {
+        "execution_state": "waiting",
+        "expired_leases": 0,
+        "id": "w",
+        "queued": 4,
+        "work": []
+       }
+      ],
+      "decisions": [
+       {
+        "agent": "w",
+        "id": "dq",
+        "status": "pending"
+       }
+      ],
+      "health_age_seconds": null,
+      "initiatives": [],
+      "notifications": {
+       "age_seconds": null,
+       "last_batch": {},
+       "status": "unknown",
+       "status_counts": {}
+      },
+      "observed_at": "2026-09-18T12:00:00+00:00",
+      "operating_status": "unknown",
+      "policy": {
+       "artifact_retention_days": 7,
+       "claude_event_queue": 2000,
+       "claude_events_retained": 400,
+       "claude_line_bytes": 1048576,
+       "claude_stream_bytes": 8388608,
+       "context_checkpoint_fraction": 0.7,
+       "decision_seconds": 900,
+       "health_failure_threshold": 3,
+       "idle_seconds": 3600,
+       "max_active_executions": 2,
+       "max_attempts": 3,
+       "max_reworks": 2,
+       "observation_alert_window_seconds": 300,
+       "observation_collect_batch": 1000,
+       "observation_retention_seconds": 604800,
+       "observation_segment_bytes": 4194304,
+       "observation_spool_bytes": 33554432,
+       "recurrence_threshold": 2,
+       "release_check_seconds": 900,
+       "release_lease_seconds": 1200,
+       "release_max_attempts": 3,
+       "release_retry_seconds": 30,
+       "research_interval_hours": 6,
+       "source_cpus": 1,
+       "source_execution_seconds": 120,
+       "source_memory_mb": 512,
+       "source_output_bytes": 65536,
+       "source_pids": 128,
+       "source_read_bytes": 24000,
+       "source_read_lines": 120,
+       "source_request_seconds": 300,
+       "source_scratch_mb": 128,
+       "stream_retention_entries": 1000,
+       "task_lease_seconds": 600,
+       "task_seconds": 3600
+      },
+      "task_counts": {
+       "blocked": 1,
+       "failed": 1,
+       "pending": 1,
+       "queued": 1,
+       "retry": 1
+      },
+      "tasks": [
+       {
+        "agent": "w",
+        "id": "0",
+        "status": "queued"
+       },
+       {
+        "agent": "w",
+        "id": "1",
+        "status": "retry"
+       },
+       {
+        "agent": "w",
+        "id": "2",
+        "status": "pending"
+       },
+       {
+        "agent": "w",
+        "id": "3",
+        "status": "blocked"
+       },
+       {
+        "agent": "w",
+        "id": "4",
+        "status": "failed"
+       }
+      ]
+     }
+    }
+   },
+   "read_failure": {
+    "message": "facts down",
+    "refused": "RuntimeError"
+   },
+   "running_without_lease": {
+    "reads": 1,
+    "result": {
+     "value": {
+      "agents": [
+       {
+        "execution_state": "waiting",
+        "expired_leases": 3,
+        "id": "w",
+        "queued": 0,
+        "work": []
+       }
+      ],
+      "decisions": [],
+      "health_age_seconds": null,
+      "initiatives": [],
+      "notifications": {
+       "age_seconds": null,
+       "last_batch": {},
+       "status": "unknown",
+       "status_counts": {}
+      },
+      "observed_at": "2026-09-18T12:00:00+00:00",
+      "operating_status": "unknown",
+      "policy": {
+       "artifact_retention_days": 7,
+       "claude_event_queue": 2000,
+       "claude_events_retained": 400,
+       "claude_line_bytes": 1048576,
+       "claude_stream_bytes": 8388608,
+       "context_checkpoint_fraction": 0.7,
+       "decision_seconds": 900,
+       "health_failure_threshold": 3,
+       "idle_seconds": 3600,
+       "max_active_executions": 2,
+       "max_attempts": 3,
+       "max_reworks": 2,
+       "observation_alert_window_seconds": 300,
+       "observation_collect_batch": 1000,
+       "observation_retention_seconds": 604800,
+       "observation_segment_bytes": 4194304,
+       "observation_spool_bytes": 33554432,
+       "recurrence_threshold": 2,
+       "release_check_seconds": 900,
+       "release_lease_seconds": 1200,
+       "release_max_attempts": 3,
+       "release_retry_seconds": 30,
+       "research_interval_hours": 6,
+       "source_cpus": 1,
+       "source_execution_seconds": 120,
+       "source_memory_mb": 512,
+       "source_output_bytes": 65536,
+       "source_pids": 128,
+       "source_read_bytes": 24000,
+       "source_read_lines": 120,
+       "source_request_seconds": 300,
+       "source_scratch_mb": 128,
+       "stream_retention_entries": 1000,
+       "task_lease_seconds": 600,
+       "task_seconds": 3600
+      },
+      "task_counts": {
+       "running": 3
+      },
+      "tasks": [
+       {
+        "agent": "w",
+        "id": "a",
+        "status": "running"
+       },
+       {
+        "agent": "w",
+        "id": "b",
+        "lease_until": null,
+        "status": "running"
+       },
+       {
+        "agent": "w",
+        "id": "c",
+        "lease_until": "bad",
+        "status": "running"
+       }
+      ]
+     }
+    }
+   },
+   "task_without_status": {
+    "reads": 1,
+    "result": {
+     "message": "'status'",
+     "refused": "KeyError"
+    }
+   }
+  }
+ }
+}
