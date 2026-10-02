@@ -288,7 +288,7 @@ class BridgeRuntime:
                 self._wait(delay, stop)
             return EXIT_OK
         finally:
-            self._close_relay()
+            self._close_relay(abort=stop())
 
     def _failed(self, tick: _Tick, exc: Exception, failures: int) -> tuple[int, int | None]:
         failures += 1
@@ -369,8 +369,11 @@ class BridgeRuntime:
                 return
             self.sleep(min(SLICE_SECONDS, left))
 
-    def _close_relay(self) -> None:
-        close = getattr(self.relay, "close", None)
+    def _close_relay(self, *, abort: bool = False) -> None:
+        """Close the relay; on a requested stop abort its socket instead (D6): the stop must not wait for the peer's
+        close handshake (websockets' default `close_timeout` is 10 s)."""
+        close = getattr(self.relay, "abort", None) if abort else None
+        close = close or getattr(self.relay, "close", None)
         if close is not None:
             try:
                 close()

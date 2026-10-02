@@ -5,7 +5,13 @@ socket and a fake clock (`recv` advances it): no wall-clock sleep, signal, netwo
 Contracts: Buzz DESIGN-D section 2 (stop, relay-loss/auth policy), section 5 (stop timeout), section 6 rows 1 and 7;
 DESIGN section 6.2 step 4 (an end other than EOSE is an observation, never proof).
 """
+import base64
+import hashlib
 import json
+import re
+import socket
+import threading
+import time
 
 import pytest
 from test_buzz_a3b_outbox import World
@@ -292,7 +298,7 @@ def test_the_operation_deadline_bounds_a_query_whose_irrelevant_frames_keep_arri
     started = env.t
     result = relay.query([{"kinds": [9]}])
     assert result["ended"] == "timeout" and OP - 3 <= env.t - started <= OP
-    assert sock.kinds("CLOSE")  # as for any timeout; the connection stays usable
+    assert not sock.kinds("CLOSE")  # D6: the budget is spent, so no cleanup send starts (no fresh allowance)
 
 
 def test_the_operation_deadline_bounds_a_publish_and_it_is_unknown_not_rejected():
@@ -588,3 +594,237 @@ def test_d6_a_stop_during_recovery_starts_no_compaction_and_keeps_the_deferred_w
     rt2.projection.regenerate = lambda cls, after, *, stop=None: items[:1]  # one fits the freed capacity
     assert rt2.run(lambda: False) == 0
     assert "compact" in calls2 and w.rows("buzz_outbox_watermarks")[0]["deferred"] is False  # resumed and settled
+
+
+# ---- D6 item 2: the operation deadline covers a blocked send, the AUTH retry and the cleanup ------------------------------
+class FakeTimer:
+    """A `threading.Timer` stand-in: it never fires by itself. A stalled send fires the armed watchdog on a real thread
+    (as the real Timer would), advancing the fake clock by the delay it was armed with."""
+
+    def __init__(self, owner, delay, fn):
+        self.owner, self.delay, self.fn = owner, delay, fn
+        self.started = self.cancelled = self.fired = False
+        self.thread = None
+
+    def start(self):
+        self.started = True
+
+    def cancel(self):
+        self.cancelled = True
+
+    def join(self, timeout=None):
+        if self.thread is not None:
+            self.thread.join(timeout)
+
+    def fire(self):
+        self.fired = True
+        self.thread = threading.Thread(target=self._run)
+        self.thread.start()
+
+    def _run(self):
+        self.owner.env.t += self.delay
+        self.fn()
+
+
+class Timers:
+    def __init__(self, env):
+        self.env, self.made = env, []
+
+    def __call__(self, delay, fn):
+        timer = FakeTimer(self, delay, fn)
+        self.made.append(timer)
+        return timer
+
+    def fire_armed(self):
+        armed = [t for t in self.made if t.started and not t.cancelled and not t.fired]
+        assert armed, "a send blocked with no watchdog armed"
+        armed[-1].fire()
+
+
+class StallSock:
+    def __init__(self):
+        self.shutdowns, self.released = [], threading.Event()
+
+    def shutdown(self, how):
+        self.shutdowns.append(how)
+        self.released.set()
+
+
+class StallWs(Socket):
+    """A websockets-like connection whose send of the `stall` frame kinds cannot complete until its socket is shut down."""
+
+    def __init__(self, env, timers, stall, on_send=None, **kwargs):
+        super().__init__(env, on_send, **kwargs)
+        self.timers, self.stall, self.socket, self.closed = timers, set(stall), StallSock(), 0
+
+    def send(self, text):
+        frame = json.loads(text)
+        if frame[0] not in self.stall:
+            return super().send(text)
+        self.sent.append(frame)  # attempted, never completed
+        self.timers.fire_armed()
+        assert self.socket.released.wait(5), "the watchdog never shut the socket down"
+        raise OSError("socket shut down")
+
+    def close(self):
+        self.closed += 1
+
+
+def live_threads():
+    return {t for t in threading.enumerate() if t.is_alive()}
+
+
+def eose_on_req(frame):
+    return [["EOSE", frame[1]]] if frame[0] == "REQ" else []
+
+
+def test_d6_a_blocked_query_send_ends_timeout_in_the_budget_and_the_connection_is_discarded():
+    env, before = Env(), live_threads()
+    timers = Timers(env)
+    first, second = StallWs(env, timers, {"REQ"}), Socket(env, eose_on_req)
+    relay = client(env, [first, second], timer=timers)
+    started = env.t
+    result = relay.query([{"kinds": [9]}])
+    assert result["ended"] == "timeout" and env.t - started <= OP  # the same total budget
+    assert first.socket.shutdowns == [socket.SHUT_RDWR]  # the watchdog shut the socket down, once
+    assert [frame[0] for frame in first.sent] == ["REQ"]  # the attempted sends: no CLOSE followed
+    assert [t.delay for t in timers.made] == [OP] and first.closed == 1  # armed with the remaining budget; discarded
+    assert relay.query([{"kinds": [9]}])["ended"] == "eose" and second.kinds("REQ")  # a new connection, never the old one
+    assert live_threads() <= before  # no leaked watchdog thread
+
+
+def test_d6_a_blocked_publish_send_ends_unknown_not_rejected_in_the_budget():
+    env, before = Env(), live_threads()
+    timers = Timers(env)
+    ws = StallWs(env, timers, {"EVENT"})
+    relay = client(env, ws, timer=timers)
+    started = env.t
+    result = relay.publish(dict(stranger(), id="d" * 64, kind=1))
+    assert result["accepted"] is None and result["prefix"] == "unknown" and env.t - started <= OP  # a partial send is no negative fact
+    assert ws.socket.shutdowns == [socket.SHUT_RDWR] and [frame[0] for frame in ws.sent] == ["EVENT"]
+    assert live_threads() <= before
+
+
+def test_d6_a_blocked_cleanup_close_gets_only_the_remaining_budget():
+    env, before = Env(), live_threads()
+    timers = Timers(env)
+    ws = StallWs(env, timers, {"CLOSE"})  # the REQ is sent, nothing answers: a receive timeout leaves 10 s of budget
+    relay = client(env, ws, timer=timers)
+    started = env.t
+    assert relay.query([{"kinds": [9]}])["ended"] == "timeout"
+    assert env.t - started <= OP and [frame[0] for frame in ws.sent] == ["REQ", "CLOSE"]
+    assert [t.delay for t in timers.made] == [OP, pytest.approx(OP - RECV)]  # never a fresh allowance for the CLOSE
+    assert ws.socket.shutdowns == [socket.SHUT_RDWR]
+    assert live_threads() <= before
+
+
+def test_d6_a_blocked_auth_send_ends_timeout_and_the_request_is_not_retried():
+    env, before = Env(), live_threads()
+    timers = Timers(env)
+
+    def on_send(frame):
+        return [["AUTH", "chal"], ["CLOSED", frame[1], "auth-required: sign in"]] if frame[0] == "REQ" else []
+
+    ws = StallWs(env, timers, {"AUTH"}, on_send)
+    relay = client(env, ws, timer=timers)
+    started = env.t
+    assert relay.query([{"kinds": [9]}])["ended"] == "timeout" and env.t - started <= OP
+    assert [frame[0] for frame in ws.sent] == ["REQ", "AUTH"] and ws.socket.shutdowns == [socket.SHUT_RDWR]
+    assert relay.auth_refused is None and live_threads() <= before
+
+
+def test_d6_a_receive_timeout_with_budget_left_still_sends_one_close_and_cancels_every_watchdog():
+    env, before = Env(), live_threads()
+    timers = Timers(env)
+    sock = Socket(env)
+    sock.socket = StallSock()
+    relay = client(env, sock, timer=timers)
+    assert relay.query([{}])["ended"] == "timeout" and len(sock.kinds("CLOSE")) == 1  # the control: cleanup within budget
+    assert timers.made and all(t.cancelled and not t.fired for t in timers.made) and sock.socket.shutdowns == []
+    assert live_threads() <= before
+
+
+def test_d6_without_an_operation_deadline_no_watchdog_is_armed_and_the_a_b_behaviour_is_unchanged():
+    env = Env()
+    timers = Timers(env)
+    sock = Socket(env, eose_on_req)
+    sock.socket = StallSock()
+    relay = client(env, sock, op_deadline=None, timer=timers)
+    assert relay.query([{}])["ended"] == "eose" and timers.made == []
+
+
+class SilentRelay:
+    """A TCP server that completes the WebSocket handshake by hand and then never reads: a send into it backs up."""
+
+    GUID = b"258EAFA5-E914-47DA-95CA-C5AB0DC85B11"
+
+    def __init__(self):
+        self.listener = socket.create_server(("127.0.0.1", 0))
+        self.url = f"ws://127.0.0.1:{self.listener.getsockname()[1]}"
+        self.release = threading.Event()
+        self.thread = threading.Thread(target=self._run)
+        self.thread.start()
+
+    def _run(self):
+        conn, _ = self.listener.accept()
+        data = b""
+        while b"\r\n\r\n" not in data:
+            data += conn.recv(4096)
+        key = re.search(rb"Sec-WebSocket-Key: (\S+)", data, re.I).group(1)
+        accept = base64.b64encode(hashlib.sha1(key + self.GUID).digest())
+        conn.sendall(b"HTTP/1.1 101 Switching Protocols\r\nUpgrade: websocket\r\nConnection: Upgrade\r\n"
+                     b"Sec-WebSocket-Accept: " + accept + b"\r\n\r\n")
+        self.release.wait(20)
+        conn.close()
+
+    def stop(self):
+        self.release.set()
+        self.thread.join(5)
+        self.listener.close()
+
+
+def wait_for_no_new_threads(before, seconds=5):
+    deadline = time.monotonic() + seconds
+    while time.monotonic() < deadline and not live_threads() <= before:
+        time.sleep(0.02)
+    return live_threads() <= before
+
+
+def test_d6_the_real_connect_path_aborts_a_send_that_backs_up_within_the_budget():
+    from codex_harness.observation.adapters.buzz_relay import _Timeout
+    before, server = live_threads(), SilentRelay()
+    try:
+        relay = BuzzRelayClient(server.url, auth_signer=Signer(), auth_role="conductor", verifier=Verify(),
+                                max_size=1 << 20, recv_timeout=0.5, op_deadline=1.0)  # the real connect and Timer
+        started = time.monotonic()
+        with relay._operation(), pytest.raises(_Timeout):
+            relay._send("x" * (96 << 20))  # far more than the socket buffers hold: sendall blocks
+        assert 0.8 <= time.monotonic() - started <= 4  # the watchdog shut the socket down at the deadline
+        assert relay._ws is None  # the connection was discarded
+    finally:
+        server.stop()
+    assert wait_for_no_new_threads(before)
+
+
+def test_d6_a_requested_stop_aborts_the_socket_instead_of_waiting_for_the_close_handshake():
+    before, server = live_threads(), SilentRelay()  # it never answers a close frame
+    try:
+        relay = BuzzRelayClient(server.url, auth_signer=Signer(), auth_role="conductor", verifier=Verify(),
+                                max_size=1 << 20, recv_timeout=0.5, op_deadline=2.0)
+        relay._open()
+        started = time.monotonic()
+        relay.abort()
+        assert time.monotonic() - started < 3 and relay._ws is None  # not websockets' default 10 s close_timeout
+        relay.abort()  # idempotent
+    finally:
+        server.stop()
+    assert wait_for_no_new_threads(before)
+
+
+def test_d6_the_runtime_aborts_the_relay_on_a_requested_stop_and_closes_it_gracefully_otherwise():
+    for stopped, expected in ((True, "abort"), (False, "close")):
+        env, seen = Env(), []
+        rt, _ = runtime(env, max_seconds=0)
+        rt.relay.abort = lambda: seen.append("abort")
+        rt.relay.close = lambda: seen.append("close")
+        assert rt.run(lambda: stopped) == 0 and seen == [expected]

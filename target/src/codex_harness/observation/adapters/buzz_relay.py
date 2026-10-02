@@ -21,12 +21,23 @@ send warns that `connect()` must be used as a context manager).
 The client is not thread-safe: one caller drives one connection.
 
 One operation deadline (`op_deadline`, D5 F1): the TOTAL wall time of one request (a query, one `query_all` page or a
-publish, including its AUTH retry), measured on the injected `clock`. It is checked in the receive loop, so frames
-that keep arriving but answer nothing cannot extend it, and the receive timeout is clipped to what is left.
+publish, including its AUTH retry and its CLOSE cleanup), measured on the injected `clock`. It is checked in the receive
+loop, so frames that keep arriving but answer nothing cannot extend it, and the receive timeout is clipped to what is left.
+
+A blocking send is bounded by a watchdog (D6, round-2 F1): a timer armed with the operation's REMAINING budget shuts the
+connection's socket down (`shutdown(SHUT_RDWR)`, the primitive websockets' own `close_socket` uses to interrupt I/O),
+and is cancelled and joined when the send ends. A socket timeout is NOT used: websockets' background reader shares the
+socket. After an abort the connection is discarded, never reused: the query ends `timeout`, the publish `accepted: None`
+(a partial send is never a negative fact: how much was sent is unknowable). CLOSE is sent only while budget remains,
+under the same watchdog, and never to a new connection. The real connect path creates the TCP socket itself and hands it
+to `connect(sock=...)` (websockets 17.1 sync client) so the reference is kept; `abort()` is the stop-time shutdown that
+does not wait for websockets' `close_timeout`. The injected `connect` and `timer` seams keep the tests deterministic.
 """
 
 from __future__ import annotations
 
+import socket
+import threading
 import time
 from collections.abc import Callable, Iterator
 from contextlib import contextmanager
@@ -89,7 +100,8 @@ class BuzzRelayClient:
     def __init__(self, url: str, *, auth_signer: EventSigner, auth_role: str, verifier: EventVerifier,
                  connect: Callable | None = None, clock: Callable[[], float] = time.time,
                  sleep: Callable[[float], None] = time.sleep, max_size: int, open_timeout: float = 10,
-                 recv_timeout: float = 30, page: int = 1000, op_deadline: float | None = None):
+                 recv_timeout: float = 30, page: int = 1000, op_deadline: float | None = None,
+                 timer: Callable[[float, Callable[[], None]], object] = threading.Timer):
         if isinstance(page, bool) or not isinstance(page, int) or page < 1:
             raise ContractError("relay: page is a positive integer")
         if isinstance(max_size, bool) or not isinstance(max_size, int) or max_size < 1:
@@ -97,14 +109,13 @@ class BuzzRelayClient:
         if op_deadline is not None and (isinstance(op_deadline, bool) or not isinstance(op_deadline, (int, float))
                                         or op_deadline <= 0):
             raise ContractError("relay: op_deadline is a positive number of seconds")
-        if connect is None:
-            from websockets.sync.client import connect as ws_connect
-            connect = ws_connect
+        self._sock = None  # the TCP socket the real connect path created (kept for the abort); None for an injected connect
+        self._connect = connect if connect is not None else self._ws_connect
+        self._timer = timer
         self._url = url
         self._signer = auth_signer
         self._role = auth_role
         self._verifier = verifier
-        self._connect = connect
         self._clock = clock
         self._sleep = sleep  # injected for callers' reconnect loops; this client never sleeps on its own
         self._max_size = max_size
@@ -143,6 +154,33 @@ class BuzzRelayClient:
             raise _Timeout
         return min(limit, left)
 
+    def _ws_connect(self, url: str, *, open_timeout: float, **options):
+        """The real connection: the TCP socket is created here and handed to websockets (`sock=`), keeping the reference
+        the watchdog and `abort` shut down (D6). The TCP connect and the handshake share `open_timeout`."""
+        from websockets.sync.client import connect as ws_connect
+        from websockets.uri import parse_uri
+        uri = parse_uri(url)
+        started = time.monotonic()
+        sock = socket.create_connection((uri.host, uri.port), timeout=open_timeout)
+        try:
+            sock.settimeout(None)  # websockets' reader thread shares the socket: no socket timeout is ever set
+            ws = ws_connect(url, sock=sock, open_timeout=max(open_timeout - (time.monotonic() - started), 0.001),
+                            **options)
+        except BaseException:
+            sock.close()
+            raise
+        self._sock = sock
+        return ws
+
+    def _shutdown_socket(self, ws) -> None:
+        """Interrupt any I/O on `ws`'s socket (a TLS wrapper replaces the raw socket, so prefer the connection's own)."""
+        target = getattr(ws, "socket", None) or self._sock
+        if target is not None:
+            try:
+                target.shutdown(socket.SHUT_RDWR)
+            except OSError:
+                pass
+
     def _open(self):
         if self._ws is not None:
             return self._ws
@@ -162,7 +200,7 @@ class BuzzRelayClient:
         return self._ws
 
     def _drop(self, code: int | None = None) -> None:
-        ws, self._ws = self._ws, None
+        ws, self._ws, self._sock = self._ws, None, None
         self._challenge = None
         self._subs.clear()
         if ws is not None:
@@ -175,14 +213,36 @@ class BuzzRelayClient:
                 pass
 
     def _send(self, text: str) -> None:
+        """Send one frame. Inside an operation the send runs under the watchdog (module doc): the remaining budget is
+        its only allowance, and a send the watchdog interrupted discards the connection and is `_Timeout`."""
         ws = self._open()
+        left = self._left(float("inf")) if self._deadline is not None else None  # `_Timeout` when the budget is spent
+        fired = threading.Event()
+
+        def abort():
+            fired.set()
+            self._shutdown_socket(ws)
+
+        watchdog = None
+        if left is not None and (getattr(ws, "socket", None) or self._sock) is not None:
+            watchdog = self._timer(left, abort)
+            watchdog.daemon = True
+            watchdog.start()
         try:
             ws.send(text)
         except Exception as exc:
-            if not type(exc).__module__.startswith("websockets") and not isinstance(exc, OSError):
-                raise
+            if watchdog is None or not fired.is_set():
+                if not type(exc).__module__.startswith("websockets") and not isinstance(exc, OSError):
+                    raise
+                self._drop()
+                raise _Lost("connection_closed") from exc
+        finally:
+            if watchdog is not None:
+                watchdog.cancel()
+                watchdog.join()
+        if fired.is_set():  # the connection was shut down mid-send: never reuse it, and the send's outcome is unknown
             self._drop()
-            raise _Lost("connection_closed") from exc
+            raise _Timeout
 
     def _next(self) -> ne.RelayFrame:
         """The next relay frame: AUTH challenges are kept, NOTICE is skipped, a malformed frame is `invalid`."""
@@ -213,6 +273,8 @@ class BuzzRelayClient:
             return frame
 
     def _best_effort(self, text: str) -> None:
+        if self._ws is None:  # a lost or discarded connection: never reconnect just to send a cleanup frame
+            return
         try:
             self._send(text)
         except (_Lost, _Timeout):
@@ -299,33 +361,36 @@ class BuzzRelayClient:
             return self._query_result(events, f"closed:{self.auth_refused}", counts)
         try:
             with self._operation():
-                self._send(ne.req(sub_id, *filters))
-                while True:
-                    frame = self._next()
-                    if frame.kind == "invalid":
-                        counts["unverified"] += 1
-                        counts["received"] += 1
-                    elif frame.kind == "EVENT" and frame.sub_id == sub_id:
-                        counts["received"] += 1
-                        if self._verified(frame.event):
-                            events.setdefault(frame.event["id"], frame.event)
-                        else:
+                try:
+                    self._send(ne.req(sub_id, *filters))
+                    while True:
+                        frame = self._next()
+                        if frame.kind == "invalid":
                             counts["unverified"] += 1
-                    elif frame.kind == "EOSE" and frame.sub_id == sub_id:
-                        ended = "eose"
-                        break
-                    elif frame.kind == "CLOSED" and frame.sub_id == sub_id:
-                        prefix = ne.classify(frame.message)
-                        if prefix == "auth-required" and not retried and self._authenticate():
-                            retried = True
-                            self._send(ne.req(sub_id, *filters))
-                            continue
-                        ended = f"closed:{self.auth_refused or prefix}"  # a refused AUTH is `restricted`, not auth-required
-                        return self._query_result(events, ended, counts)
-                self._best_effort(ne.close(sub_id))
+                            counts["received"] += 1
+                        elif frame.kind == "EVENT" and frame.sub_id == sub_id:
+                            counts["received"] += 1
+                            if self._verified(frame.event):
+                                events.setdefault(frame.event["id"], frame.event)
+                            else:
+                                counts["unverified"] += 1
+                        elif frame.kind == "EOSE" and frame.sub_id == sub_id:
+                            ended = "eose"
+                            break
+                        elif frame.kind == "CLOSED" and frame.sub_id == sub_id:
+                            prefix = ne.classify(frame.message)
+                            if prefix == "auth-required" and not retried and self._authenticate():
+                                retried = True
+                                self._send(ne.req(sub_id, *filters))
+                                continue
+                            ended = f"closed:{self.auth_refused or prefix}"  # a refused AUTH is `restricted`
+                            return self._query_result(events, ended, counts)
+                    self._best_effort(ne.close(sub_id))
+                except _Timeout:
+                    ended = "timeout"  # an observation, never proof (design §6.2 step 4); the deadline lands here too
+                    self._best_effort(ne.close(sub_id))  # inside the operation: only the budget that is left (D6)
         except _Timeout:
-            ended = "timeout"  # an observation, never proof (design §6.2 step 4); the operation deadline lands here too
-            self._best_effort(ne.close(sub_id))
+            ended = "timeout"  # the cleanup itself ran out of budget
         except _Lost:
             ended = "connection_closed"
         return self._query_result(events, ended, counts)
@@ -424,6 +489,21 @@ class BuzzRelayClient:
                 self._subs.discard(sub_id)
                 if self._ws is not None:
                     self._best_effort(ne.close(sub_id))
+
+    def abort(self) -> None:
+        """Drop the connection NOW (a requested stop, D6): shut the socket down and close without a CLOSE frame or the
+        close handshake, so the stop never waits for websockets' `close_timeout`. Idempotent."""
+        ws = self._ws
+        if ws is not None:
+            self._shutdown_socket(ws)
+        self._ws = self._sock = None
+        self._challenge = None
+        self._subs.clear()
+        if ws is not None:
+            try:
+                ws.close()
+            except Exception:  # noqa: BLE001 - exiting; the socket is already shut down
+                pass
 
     def close(self) -> None:
         """CLOSE every open subscription, then close the socket."""
