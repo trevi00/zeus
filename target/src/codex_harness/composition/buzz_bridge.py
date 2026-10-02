@@ -30,6 +30,7 @@ import socket
 import stat
 import sys
 import time
+import uuid
 from collections.abc import Callable
 from dataclasses import dataclass
 from pathlib import Path
@@ -52,7 +53,7 @@ EXIT_OK, EXIT_NO_RECONNECT, EXIT_RESTRICTED, EXIT_STORE = 0, 3, 4, 5
 SLICE_SECONDS = 0.5
 COMPACT_EVERY_SECONDS = 3600
 SIGNING_ROLE = "conductor"  # the outbox's role, as the B tests wire it
-AUTH_ROLE = "bridge"  # the NIP-42 identity, as the A2 tests wire it
+AUTH_ROLE = SIGNING_ROLE  # DESIGN §6.2.1: the bridge AUTHs (NIP-42) with its conductor key
 _REQUIRED = ("relay_url", "channels", "owners", "custody_dir", "store_dsn_file", "commander_channel", "org_d",
              "team_channels")
 _OPTIONAL = {"tick_seconds": 5, "lease_ttl_seconds": 30, "recv_timeout": 10, "max_seconds": 900, "recover_every": 12,
@@ -136,6 +137,12 @@ class BridgeConfig:
         for index, owner in enumerate(document["owners"]):
             require(len(owner) == 64 and set(owner) <= _HEX64,
                     f"buzz bridge config: owners[{index}] is not 64 lowercase hex characters (length {len(owner)})")
+        org_d = document["org_d"]  # the org card's 45010 `d` must be a canonical UUID: the relay refuses anything else
+        try:
+            canonical_uuid = str(uuid.UUID(org_d)) == org_d
+        except ValueError:
+            canonical_uuid = False
+        require(canonical_uuid, "buzz bridge config: org_d is not a canonical lowercase UUID string")
         unbound = sorted({document["commander_channel"], *teams.values()} - set(document["channels"]))
         require(not unbound, f"buzz bridge config: channels must include the commander and every team channel {unbound}")
         tick = _number(document, "tick_seconds", 1, 60)

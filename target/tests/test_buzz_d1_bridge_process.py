@@ -435,3 +435,16 @@ def test_a_second_runtime_stays_passive_while_the_first_renews():
     assert first.run(never) == 0
     assert first.inbound.generations == [1] * 5  # renewed, never re-acquired
     assert second_calls == [] and second_lines and {line["generation"] for line in second_lines} == {"passive"}
+
+
+@pytest.mark.parametrize("org_d", ["zeus-e2e-org", "4F1B7C52-9C0E-4F5A-8D1E-6A2B3C4D5E6F",
+                                   "{4f1b7c52-9c0e-4f5a-8d1e-6a2b3c4d5e6f}", "4f1b7c529c0e4f5a8d1e6a2b3c4d5e6f", ""])
+def test_config_refuses_an_org_d_that_is_not_a_canonical_lowercase_uuid(org_d):
+    with pytest.raises(ContractError, match="org_d"):
+        BridgeConfig.parse(document(org_d=org_d))  # the relay answers `invalid: invalid UUID` to anything else
+
+
+def test_the_relay_client_authenticates_with_the_conductor_role():
+    assert bb.AUTH_ROLE == bb.SIGNING_ROLE == "conductor"  # DESIGN §6.2.1
+    client = bb.default_relay(BridgeConfig.parse(document()), object())
+    assert client._role == "conductor"

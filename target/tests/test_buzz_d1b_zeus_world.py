@@ -364,7 +364,7 @@ def test_main_with_a_complete_config_builds_the_real_world_without_an_injected_f
     org_file = None if packaged else legal_org_file(tmp_path)
     roles = packaged_organization().agents if packaged else ("lead-improvement", "worker-impl")
     keys = TestRoleKeys(tmp_path / "keys")
-    for name in dict.fromkeys(("conductor", "bridge", *map(custody_name, roles))):
+    for name in dict.fromkeys(("conductor", *map(custody_name, roles))):
         keys.create(name)
     dsn = tmp_path / "dsn"
     dsn.write_text(SCHEME + "u:pw@h/db")
@@ -428,7 +428,7 @@ def test_distinct_ids_never_share_a_custody_name():
 def test_build_runtime_with_the_packaged_org_looks_up_every_key_by_custody_name(tmp_path):
     org = packaged_organization()
     keys = TestRoleKeys(tmp_path / "keys")
-    for name in dict.fromkeys(("conductor", "bridge", *map(custody_name, org.agents))):
+    for name in dict.fromkeys(("conductor", *map(custody_name, org.agents))):
         keys.create(name)
     dsn = tmp_path / "dsn"
     dsn.write_text(SCHEME + "u:pw@h/db")
