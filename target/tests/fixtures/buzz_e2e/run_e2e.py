@@ -85,7 +85,13 @@ sys.path.insert(0, str(HERE.parent / "buzz_conntest"))  # run_matrix's helpers (
 import attempt_worker as fz
 from run_matrix import HARDENING_FORMAT, HEALTH_SECONDS, MAX_SIZE, PACE_SECONDS, STATE_FORMAT, Refusal, free_port
 
-from codex_harness.composition.buzz_bridge import BridgeConfig, custody_name
+from codex_harness.composition.buzz_bridge import (
+    STOP_MARGIN_SECONDS,
+    STORE_CONNECT_SECONDS,
+    BridgeConfig,
+    custody_name,
+    stop_bound_seconds,
+)
 from codex_harness.coordination.application import execution_fence
 from codex_harness.coordination.application.bridge_lease import BUCKET as LEASE_BUCKET
 from codex_harness.coordination.application.bridge_lease import FENCE_ROW
@@ -1166,11 +1172,24 @@ def line_of(text, needle):
     return 1
 
 
-STORE_TX_SECONDS = 5  # the documented stop bound is op_deadline_seconds plus one store transaction (D5 F1)
+def stop_bound_of(document):
+    """`(seconds, formula)`: the documented stop bound of a config document (D6): op_deadline_seconds + the store's 5 s
+    connect + store_transaction_timeout_seconds + a 2 s margin; a missing or malformed value counts as its default."""
+    defaults = {name: field.default for name, field in BridgeConfig.__dataclass_fields__.items()}
+
+    def number(key):
+        value = document.get(key, defaults[key]) if isinstance(document, dict) else defaults[key]
+        return value if isinstance(value, (int, float)) and not isinstance(value, bool) else defaults[key]
+
+    op, store = number("op_deadline_seconds"), number("store_transaction_timeout_seconds")
+    formula = (f"op_deadline_seconds ({op:g}) + {STORE_CONNECT_SECONDS} + store_transaction_timeout_seconds ({store:g}) "
+               f"+ {STOP_MARGIN_SECONDS}")
+    return stop_bound_seconds(op, store), formula
 
 
-def lint_unit(text, config_seconds):
-    """Violations `(line, rule, detail)` of the bridge unit; `config_seconds` is the stop bound: op_deadline_seconds + 5."""
+def lint_unit(text, bound):
+    """Violations `(line, rule, detail)` of the bridge unit; `bound` is `(seconds, formula)` of `stop_bound_of`."""
+    config_seconds, formula = bound
     found, directives = [], {}
     for number, raw in enumerate(text.splitlines(), 1):
         line = raw.strip()
@@ -1206,26 +1225,24 @@ def lint_unit(text, config_seconds):
             found.append((number, "stop-timeout", f"TimeoutStopSec={value} is not a time span"))
         elif seconds < config_seconds:
             found.append((number, "stop-timeout",
-                          f"TimeoutStopSec={value} is below the stop bound op_deadline_seconds plus {STORE_TX_SECONDS}s "
-                          f"({config_seconds:g}s)"))
+                          f"TimeoutStopSec={value} is below the stop bound {formula} = {config_seconds:g}s"))
     return found
 
 
 def lint_config(text):
     """`(violations, stop bound)` of the bridge config template: unknown keys, secret literals, `BridgeConfig.parse`.
 
-    The stop bound is `op_deadline_seconds` plus one store transaction (a request's total time, not a receive timeout)."""
-    defaults = {name: field.default for name, field in BridgeConfig.__dataclass_fields__.items()}
+    The stop bound is `stop_bound_of` (D6): op_deadline_seconds, the store's connect, the enforced transaction allowance
+    and a margin."""
     found = []
     try:
         document = json.loads(text)
     except ValueError as exc:
-        return [(1, "config", f"not JSON: {exc}")], defaults["op_deadline_seconds"] + STORE_TX_SECONDS
+        return [(1, "config", f"not JSON: {exc}")], stop_bound_of({})
     if not isinstance(document, dict):
-        return [(1, "config", "a JSON object is required")], defaults["op_deadline_seconds"] + STORE_TX_SECONDS
-    deadline = document.get("op_deadline_seconds", defaults["op_deadline_seconds"])
-    seconds = (deadline if isinstance(deadline, (int, float)) and not isinstance(deadline, bool)
-               else defaults["op_deadline_seconds"]) + STORE_TX_SECONDS
+        return [(1, "config", "a JSON object is required")], stop_bound_of({})
+    defaults = {name: field.default for name, field in BridgeConfig.__dataclass_fields__.items()}
+    bound = stop_bound_of(document)
 
     def walk(key, value):
         if isinstance(value, dict):
@@ -1260,7 +1277,7 @@ def lint_config(text):
             BridgeConfig.parse({key: dummy(key, value) for key, value in document.items()})
         except ContractError as exc:
             found.append((1, "config", f"BridgeConfig.parse refuses the template: {exc}"))
-    return found, seconds
+    return found, bound
 
 
 def lint_compose(text):
@@ -1335,11 +1352,11 @@ def lint_templates(directory):
         except OSError as exc:
             out.append(f"{relative}:1: missing: {type(exc).__name__} reading the template")
     found = {}
-    config_seconds = BridgeConfig.__dataclass_fields__["op_deadline_seconds"].default + STORE_TX_SECONDS
+    bound = stop_bound_of({})
     if BRIDGE_CONFIG in texts:
-        found[BRIDGE_CONFIG], config_seconds = lint_config(texts[BRIDGE_CONFIG])
+        found[BRIDGE_CONFIG], bound = lint_config(texts[BRIDGE_CONFIG])
     if BRIDGE_UNIT in texts:
-        found[BRIDGE_UNIT] = lint_unit(texts[BRIDGE_UNIT], config_seconds)
+        found[BRIDGE_UNIT] = lint_unit(texts[BRIDGE_UNIT], bound)
     if RELAY_COMPOSE in texts:
         found[RELAY_COMPOSE] = lint_compose(texts[RELAY_COMPOSE])
     for relative, violations in found.items():

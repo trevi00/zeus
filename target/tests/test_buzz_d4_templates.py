@@ -75,7 +75,7 @@ def test_the_unit_carries_the_design_directives_and_no_secret_environment():
             key, _, value = line.partition("=")
             directives.setdefault(key, []).append(value)
     expected = {"Type": "simple", "User": "@USER@", "Restart": "always", "RestartSec": "10", "KillMode": "mixed",
-                "TimeoutStopSec": "30", "NoNewPrivileges": "yes", "ProtectSystem": "strict", "ProtectHome": "read-only",
+                "TimeoutStopSec": "45", "NoNewPrivileges": "yes", "ProtectSystem": "strict", "ProtectHome": "read-only",
                 "PrivateTmp": "yes", "ReadWritePaths": "", "MemoryMax": "2G", "MemorySwapMax": "0",
                 "OOMPolicy": "continue",
                 "ExecStart": "@VENV_PYTHON@ -B -m codex_harness.entry.processes.buzz_bridge --config @CONFIG_PATH@"}
@@ -144,9 +144,9 @@ def test_the_docker_socket_is_refused(tmp_path):
 
 
 def test_a_stop_timeout_below_op_deadline_plus_five_is_refused(tmp_path):
-    expect_violation(tmp_path, UNIT, "TimeoutStopSec=30", "TimeoutStopSec=5", "stop-timeout", "TimeoutStopSec=5")
-    expect_violation(tmp_path, UNIT, "TimeoutStopSec=30", "TimeoutStopSec=24", "stop-timeout")  # below 20 + 5
-    code, out = lint(plant(tmp_path, UNIT, "TimeoutStopSec=30", "TimeoutStopSec=25s"))
+    expect_violation(tmp_path, UNIT, "TimeoutStopSec=45", "TimeoutStopSec=5", "stop-timeout", "TimeoutStopSec=5")
+    expect_violation(tmp_path, UNIT, "TimeoutStopSec=45", "TimeoutStopSec=41", "stop-timeout")  # below 20 + 5 + 15 + 2 (D6)
+    code, out = lint(plant(tmp_path, UNIT, "TimeoutStopSec=45", "TimeoutStopSec=42s"))
     assert code == 0, out
 
 
@@ -161,7 +161,7 @@ def test_a_missing_kill_mode_is_refused(tmp_path):
 
 
 def test_a_missing_stop_timeout_is_refused(tmp_path):
-    expect_violation(tmp_path, UNIT, "TimeoutStopSec=30\n", "", "stop-timeout")
+    expect_violation(tmp_path, UNIT, "TimeoutStopSec=45\n", "", "stop-timeout")
 
 
 @pytest.mark.parametrize(("relative", "old", "new"), [

@@ -13,11 +13,13 @@ import socket
 import threading
 import time
 
+import psycopg
+import psycopg.conninfo
 import pytest
 from test_buzz_a3b_outbox import World
 from test_buzz_b3_remote_control import NOW
 from test_buzz_d1_bridge_process import Env, document, runtime
-from test_buzz_d4_templates import CONFIG, UNIT, expect_violation, lint, plant
+from test_buzz_d4_templates import CONFIG, DEPLOY, UNIT, expect_violation, lint, plant
 
 from codex_harness.composition.buzz_bridge import BridgeConfig
 from codex_harness.coordination.application.remote_inbox import RemoteInbox
@@ -356,15 +358,15 @@ def test_the_default_relay_receives_the_configured_deadline():
 
 # ---- F1: the unit's stop budget is tied to that bound ---------------------------------------------------------------
 def test_the_template_discriminator_rejects_a_stop_budget_below_op_deadline_plus_five(tmp_path):
-    expect_violation(tmp_path, UNIT, "TimeoutStopSec=30", "TimeoutStopSec=24", "stop-timeout", "TimeoutStopSec=24")
-    code, out = lint(plant(tmp_path, UNIT, "TimeoutStopSec=30", "TimeoutStopSec=25"))
-    assert code == 0, out  # exactly op_deadline_seconds + 5 is enough
+    expect_violation(tmp_path, UNIT, "TimeoutStopSec=45", "TimeoutStopSec=24", "stop-timeout", "TimeoutStopSec=24")
+    code, out = lint(plant(tmp_path, UNIT, "TimeoutStopSec=45", "TimeoutStopSec=42"))
+    assert code == 0, out  # D6: exactly op_deadline_seconds + 5 + store_transaction_timeout_seconds + 2 is enough
 
 
 def test_the_stop_budget_follows_the_config_templates_op_deadline_not_recv_timeout_plus_a_tick(tmp_path):
     code, out = lint(plant(tmp_path, CONFIG, '"op_deadline_seconds": 20', '"op_deadline_seconds": 40'))
     assert code == 1 and "stop-timeout" in out, out
-    code, out = lint(plant(tmp_path, CONFIG, '"recv_timeout": 10', '"recv_timeout": 12'))  # recv + tick is 17 < 25: fine
+    code, out = lint(plant(tmp_path, CONFIG, '"recv_timeout": 10', '"recv_timeout": 12'))  # recv + tick is 17 < 42: fine
     assert code == 0, out
 
 
@@ -828,3 +830,165 @@ def test_d6_the_runtime_aborts_the_relay_on_a_requested_stop_and_closes_it_grace
         rt.relay.abort = lambda: seen.append("abort")
         rt.relay.close = lambda: seen.append("close")
         assert rt.run(lambda: stopped) == 0 and seen == [expected]
+
+
+# ---- D6 item 3: the store allowance in the stop bound is real, and the unit and the lint carry the same bound ---------------
+class PgConn:
+    """A fake PostgreSQL session: the server terminates a session whose transaction outlives `transaction_timeout`."""
+
+    def __init__(self, server, timeout_ms):
+        self.server, self.timeout_ms, self.began = server, timeout_ms, None
+
+    def __enter__(self):
+        return self
+
+    def __exit__(self, kind, value, trace):
+        self.server.rolled_back += kind is not None
+        self.server.committed += kind is None
+        return False
+
+    def execute(self, sql, params=None):
+        env = self.server.env
+        if self.began is None:
+            self.began = env.t  # the first statement opens the transaction
+        cost = self.server.lock_wait if "pg_advisory_xact_lock" in sql else self.server.statement
+        env.t += cost
+        if self.timeout_ms is not None and env.t - self.began > self.timeout_ms / 1000:
+            env.t = self.began + self.timeout_ms / 1000  # the server ends the session at that moment
+            raise psycopg.OperationalError("terminating connection due to transaction timeout")
+        return self
+
+    def fetchone(self):
+        return None
+
+
+class PgServer:
+    def __init__(self, env, *, version=17, connect_delay=0.0, lock_wait=0.0, statement=0.0):
+        self.env, self.version, self.connect_delay, self.lock_wait, self.statement = env, version, connect_delay, lock_wait, statement
+        self.connects, self.committed, self.rolled_back = [], 0, 0
+
+    def connect(self, dsn, connect_timeout=None):
+        options = psycopg.conninfo.conninfo_to_dict(dsn).get("options", "")
+        found = re.findall(r"transaction_timeout=(\d+)", options)
+        self.connects.append({"options": options, "connect_timeout": connect_timeout})
+        if self.connect_delay > connect_timeout:
+            self.env.t += connect_timeout
+            raise psycopg.OperationalError("connection timeout expired")
+        self.env.t += self.connect_delay
+        if found and self.version < 17:
+            raise psycopg.OperationalError('FATAL:  unrecognized configuration parameter "transaction_timeout"')
+        return PgConn(self, int(found[-1]) if found else None)
+
+
+def fake_pg(monkeypatch, env, **kwargs):
+    server = PgServer(env, **kwargs)
+    monkeypatch.setattr(psycopg, "connect", server.connect)
+    return server
+
+
+STORE_DSN = "host=db.invalid dbname=zeus options='-c search_path=zeus'"
+
+
+def test_d6_the_bridge_store_merges_the_transaction_timeout_into_the_dsn_options(monkeypatch):
+    from codex_harness.composition.buzz_bridge import default_store, with_transaction_timeout
+    options = psycopg.conninfo.conninfo_to_dict(with_transaction_timeout(STORE_DSN, 15))["options"]
+    assert options.split() == ["-c", "search_path=zeus", "-c", "transaction_timeout=15000"]  # the existing option survives
+    bare = psycopg.conninfo.conninfo_to_dict(with_transaction_timeout("host=db.invalid dbname=zeus", 2.5))["options"]
+    assert bare.split() == ["-c", "transaction_timeout=2500"]
+    uri = "postgres" + "ql://db.invalid/zeus?options=-c%20search_path%3Dzeus"
+    assert "transaction_timeout=15000" in psycopg.conninfo.conninfo_to_dict(with_transaction_timeout(uri, 15))["options"]
+    server = fake_pg(monkeypatch, Env())
+    with default_store(STORE_DSN, transaction_timeout_seconds=15).transaction():
+        pass
+    assert "-c transaction_timeout=15000" in server.connects[0]["options"] and server.connects[0]["connect_timeout"] == 5
+
+
+def test_d6_a_slow_transaction_is_terminated_within_the_store_allowance_and_rolls_back(monkeypatch):
+    from codex_harness.composition.buzz_bridge import STORE_CONNECT_SECONDS, default_store
+    env = Env()
+    server = fake_pg(monkeypatch, env, connect_delay=5, lock_wait=9, statement=30)  # the slowest connect, a lock wait, a stall
+    store = default_store(STORE_DSN, transaction_timeout_seconds=15)
+    started = env.t
+    with pytest.raises(psycopg.OperationalError, match="transaction timeout"):
+        with store.transaction() as tx:
+            tx.put("remote_inbox", "e1", {"state": "processed"})  # the effect...
+            tx.put("remote_inbox", "receipt:e1", {})  # ...and its receipt
+    assert env.t - started <= STORE_CONNECT_SECONDS + 15  # connect 5 s + transaction 15 s: the enforced store allowance
+    assert (server.committed, server.rolled_back) == (0, 1)  # nothing was half committed
+    server.statement = 0.5  # replay: the same unit on a healthy server commits once
+    started = env.t
+    with store.transaction() as tx:
+        tx.put("remote_inbox", "e1", {"state": "processed"})
+        tx.put("remote_inbox", "receipt:e1", {})
+    assert (server.committed, server.rolled_back) == (1, 1) and env.t - started <= STORE_CONNECT_SECONDS + 15
+
+
+def test_d6_connect_lock_statement_and_settlement_stay_inside_the_allowance(monkeypatch):
+    from codex_harness.composition.buzz_bridge import STORE_CONNECT_SECONDS, default_store
+    env = Env()
+    server = fake_pg(monkeypatch, env, connect_delay=4.9, lock_wait=10, statement=1)  # lock + settlement just fit
+    store = default_store(STORE_DSN, transaction_timeout_seconds=15)
+    started = env.t
+    with store.transaction() as tx:  # SET LOCAL lock_timeout, the advisory lock, then the unit's bookkeeping
+        tx.put("buzz_passes", "a:1", {})
+        tx.put("remote_inbox", "e1", {})
+    elapsed = env.t - started  # connect 4.9 + SET LOCAL 1 + the lock wait 10 + two bookkeeping statements 2
+    assert server.committed == 1 and elapsed == pytest.approx(4.9 + 1 + 10 + 2) and elapsed <= STORE_CONNECT_SECONDS + 15
+    server.connect_delay = 6  # a connect slower than the fixed 5 s is refused, not waited for
+    with pytest.raises(psycopg.OperationalError, match="connect"):
+        with store.transaction():
+            pass
+
+
+def test_d6_a_pre_17_server_refusing_the_setting_is_an_explicit_store_failure_not_an_unbounded_store():
+    from codex_harness.composition.buzz_bridge import default_store
+    env = Env()
+    server = PgServer(env, version=16)
+    real_connect, psycopg.connect = psycopg.connect, server.connect
+    try:
+        rt, calls = runtime(env, default_store(STORE_DSN, transaction_timeout_seconds=15), store_fail_limit=2, max_seconds=100)
+        assert rt.run(lambda: False) == 5  # DESIGN-D: the consecutive store failures end the process
+    finally:
+        psycopg.connect = real_connect
+    assert calls == [] and all("transaction_timeout=15000" in c["options"] for c in server.connects)
+    assert [line["steps"].get("failed") for line in env.lines] == ["OperationalError", "OperationalError"]
+
+
+def test_d6_the_config_names_the_store_allowance_and_the_bound_formula():
+    from codex_harness.composition.buzz_bridge import stop_bound_seconds
+    assert BridgeConfig.parse(document()).store_transaction_timeout_seconds == 15
+    assert BridgeConfig.parse(document(store_transaction_timeout_seconds=7.5)).store_transaction_timeout_seconds == 7.5
+    for bad in (0, -1, "x", True, 3601):
+        with pytest.raises(ContractError):
+            BridgeConfig.parse(document(store_transaction_timeout_seconds=bad))
+    assert stop_bound_seconds(20, 15) == 42  # op_deadline_seconds + 5 (store connect) + store_transaction_timeout_seconds + 2
+    assert stop_bound_seconds(33, 10) == 50
+
+
+def test_d6_the_default_store_factory_carries_the_configured_allowance(tmp_path, monkeypatch):
+    from codex_harness.composition import buzz_bridge
+    from codex_harness.credentials.adapters.role_keys import TestRoleKeys
+    keys = TestRoleKeys(tmp_path / "keys")
+    keys.create("conductor")
+    dsn = tmp_path / "dsn"
+    dsn.write_text("host=db.invalid dbname=zeus")
+    dsn.chmod(0o600)
+    seen = []
+    monkeypatch.setattr(buzz_bridge, "default_store", lambda text, **kw: seen.append((text, kw)) or None)
+    config = BridgeConfig.parse(document(custody_dir=str(tmp_path / "keys"), store_dsn_file=str(dsn),
+                                         store_transaction_timeout_seconds=9))
+    with pytest.raises(Exception):  # the world factory is not under test: only the store factory call is
+        buzz_bridge.build_runtime(config, world_factory=lambda store: 1 / 0)
+    assert seen == [("host=db.invalid dbname=zeus", {"transaction_timeout_seconds": 9})]
+
+
+def test_d6_the_unit_template_stop_budget_is_at_least_the_enforced_bound_and_the_lint_reports_it(tmp_path):
+    code, out = lint(plant(tmp_path, UNIT, "TimeoutStopSec=45", "TimeoutStopSec=42"))
+    assert code == 0, out  # the matching template: exactly the bound 20 + 5 + 15 + 2
+    hit = expect_violation(tmp_path, UNIT, "TimeoutStopSec=45", "TimeoutStopSec=41", "stop-timeout", "TimeoutStopSec=41")
+    assert "op_deadline_seconds (20) + 5 + store_transaction_timeout_seconds (15) + 2 = 42s" in hit  # the formula, reported
+    expect_violation(tmp_path, UNIT, "TimeoutStopSec=45", "TimeoutStopSec=30", "stop-timeout")  # the old op + 5 + margin
+    code, out = lint(DEPLOY)
+    assert (code, out.strip()) == (0, "templates lint-clean") and "TimeoutStopSec=45" in (DEPLOY / UNIT).read_text()
+    code, out = lint(plant(tmp_path, CONFIG, '"store_transaction_timeout_seconds": 15', '"store_transaction_timeout_seconds": 20'))
+    assert code == 1 and "stop-timeout" in out and "= 47s" in out, out  # the bound follows the config template's allowance

@@ -15,5 +15,6 @@
   "recover_every": 12,
   "store_fail_limit": 12,
   "max_size": 1048576,
-  "op_deadline_seconds": 20
+  "op_deadline_seconds": 20,
+  "store_transaction_timeout_seconds": 15
 }

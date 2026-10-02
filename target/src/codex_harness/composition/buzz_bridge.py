@@ -12,9 +12,13 @@ One process, one relay connection, no threads: the relay client is sync and not 
 is a pass-based reconciliation, not a live subscription. A tick is lease, inbound pass, projection plan, outbox
 delivery, housekeeping, then a sliced wait. The stop flag is read between steps, in the wait slices AND inside the
 steps (D5 F1): before each channel and each page of the inbound pass and before each outbox row, so once it is set no
-new network work starts. The relay client bounds every request by `op_deadline_seconds` (one total wall time, AUTH retry
-included, not a per-receive timeout), so the documented stop bound is `op_deadline_seconds` plus one store transaction;
-the unit's `TimeoutStopSec` must be at least that bound. The lease is never released on exit: the next start acquires a new
+new network work starts, and before each pending-command sink and the housekeeping compaction (D6). The relay client
+bounds every request by `op_deadline_seconds` (one total wall time: send, receive, AUTH retry and CLOSE cleanup, a blocked
+send included, not a per-receive timeout) and a requested stop aborts the relay socket; the store allowance is enforced
+by the DSN (`-c transaction_timeout=<store_transaction_timeout_seconds>`, PostgreSQL 17; an older server refuses the
+setting at connect, an explicit store failure) on top of the store's fixed connect timeout. The documented stop bound is
+`stop_bound_seconds`: `op_deadline_seconds` + 5 (connect) + `store_transaction_timeout_seconds` + 2 (margin) = 42 s at the
+defaults; the unit's `TimeoutStopSec` must be at least that bound (the template lint enforces it). The lease is never released on exit: the next start acquires a new
 generation and a stale instance commits nothing (every use-case transaction re-reads the generation). The owner id
 is unique per process because `BridgeLease.acquire` advances the generation even for the same owner id.
 
@@ -28,6 +32,7 @@ event content, key or DSN, and a failing step is named by its exception class al
 """
 from __future__ import annotations
 
+import functools
 import json
 import os
 import re
@@ -62,7 +67,10 @@ AUTH_ROLE = SIGNING_ROLE  # DESIGN §6.2.1: the bridge AUTHs (NIP-42) with its c
 _REQUIRED = ("relay_url", "channels", "owners", "custody_dir", "store_dsn_file", "commander_channel", "org_d",
              "team_channels")
 _OPTIONAL = {"tick_seconds": 5, "lease_ttl_seconds": 30, "recv_timeout": 10, "max_seconds": 900, "recover_every": 12,
-             "store_fail_limit": 12, "max_size": 1 << 20, "op_deadline_seconds": 20}
+             "store_fail_limit": 12, "max_size": 1 << 20, "op_deadline_seconds": 20,
+             "store_transaction_timeout_seconds": 15}
+STORE_CONNECT_SECONDS = 5  # PostgresStore's fixed connect timeout (storage/adapters/postgres_store.py): not configurable here
+STOP_MARGIN_SECONDS = 2
 _STRINGS = ("relay_url", "custody_dir", "store_dsn_file", "commander_channel", "org_d")
 _HEX64 = frozenset("0123456789abcdef")
 _CUSTODY_LEGAL = re.compile(r"[a-z0-9_-]+")
@@ -118,6 +126,7 @@ class BridgeConfig:
     store_fail_limit: int = 12
     max_size: int = 1 << 20
     op_deadline_seconds: float = 20
+    store_transaction_timeout_seconds: float = 15
 
     @classmethod
     def parse(cls, document: dict) -> BridgeConfig:
@@ -157,12 +166,13 @@ class BridgeConfig:
         recv = _number(document, "recv_timeout", 0.001)
         op_deadline = _number(document, "op_deadline_seconds", 0.001)
         require(op_deadline > recv, "buzz bridge config: op_deadline_seconds must exceed recv_timeout")  # D5 F1
+        store_tx = _number(document, "store_transaction_timeout_seconds", 1, 3600)  # above the store's 10 s lock_timeout by default
         config = cls(document["relay_url"], tuple(document["channels"]), tuple(document["owners"]),
                      document["custody_dir"], document["store_dsn_file"], document["commander_channel"],
                      document["org_d"], dict(teams), organization_file, tick, ttl,
                      recv, _number(document, "max_seconds", 0),
                      _whole(document, "recover_every", 1), _whole(document, "store_fail_limit", 1),
-                     _whole(document, "max_size", 1), op_deadline)
+                     _whole(document, "max_size", 1), op_deadline, store_tx)
         config.load_organization()  # an unreadable or invalid organization file is refused with the config
         return config
 
@@ -197,6 +207,19 @@ class BridgeConfig:
         require(mode & 0o077 == 0, "buzz bridge config: store_dsn_file must not be group or world accessible")
         require(bool(text), "buzz bridge config: store_dsn_file is empty")
         return text
+
+
+def stop_bound_seconds(op_deadline_seconds: float, store_transaction_timeout_seconds: float) -> float:
+    """The documented stop bound (D6): one relay operation, one store unit (connect + transaction) and a margin."""
+    return op_deadline_seconds + STORE_CONNECT_SECONDS + store_transaction_timeout_seconds + STOP_MARGIN_SECONDS
+
+
+def with_transaction_timeout(dsn: str, seconds: float) -> str:
+    """`dsn` with `-c transaction_timeout=<ms>` appended to its libpq `options` (any existing options are kept)."""
+    from psycopg.conninfo import conninfo_to_dict, make_conninfo
+    options = conninfo_to_dict(dsn).get("options", "")
+    setting = f"-c transaction_timeout={round(seconds * 1000)}"
+    return make_conninfo(dsn, options=f"{options} {setting}".strip())
 
 
 def new_owner_id() -> str:
@@ -399,19 +422,24 @@ def default_relay(config: BridgeConfig, signer) -> BuzzRelayClient:
                            op_deadline=config.op_deadline_seconds)
 
 
-def default_store(dsn: str):
+def default_store(dsn: str, *, transaction_timeout_seconds: float = _OPTIONAL["store_transaction_timeout_seconds"]):
+    """The PostgreSQL store with the bridge's enforced allowance: the server ends any session that spans longer than
+    `transaction_timeout_seconds` in a transaction (PostgreSQL 17; an older server refuses the setting at connect, an
+    explicit store failure, never a silently unbounded store). `PostgresStore` itself is unchanged."""
     from codex_harness.storage.adapters.postgres_store import PostgresStore
-    return PostgresStore(dsn)
+    return PostgresStore(with_transaction_timeout(dsn, transaction_timeout_seconds))
 
 
 def build_runtime(config: BridgeConfig, *, world_factory: Callable[[object], ZeusWorld],
-                  store_factory: Callable[[str], object] = default_store,
+                  store_factory: Callable[[str], object] | None = None,
                   relay_factory: Callable[[BridgeConfig, object], object] = default_relay,
                   clock: Callable[[], float] = time.time, monotonic: Callable[[], float] = time.monotonic,
                   sleep: Callable[[float], None] = time.sleep, out: Callable[[str], object] | None = None,
                   owner_id: str | None = None) -> BridgeRuntime:
     """Wire the use cases as the B tests do (`test_buzz_b_pg`, `test_buzz_b4_projection`); the Zeus read side comes
     from `world_factory(store)`."""
+    if store_factory is None:
+        store_factory = functools.partial(default_store, transaction_timeout_seconds=config.store_transaction_timeout_seconds)
     store = store_factory(config.read_dsn())
     world = world_factory(store)
     keys = TestRoleKeys(config.custody_dir)

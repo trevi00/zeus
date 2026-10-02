@@ -6,10 +6,11 @@
 # here: ProtectSystem=strict with no ReadWritePaths). No secret appears in this unit: no Environment= or EnvironmentFile=
 # carries one.
 #
-# Stop: SIGTERM only sets the loop's flag (RESEARCH-D D1); the passes read it before each channel, page and outbox row,
-# and every relay request is bounded by op_deadline_seconds (a TOTAL wall time, AUTH retry included). The stop bound is
-# op_deadline_seconds + one store transaction (5 s). TimeoutStopSec must be at least op_deadline_seconds + 5 of
-# config.template.json, or SIGKILL lands mid-pass (D2, D5 F1).
+# Stop: SIGTERM only sets the loop's flag (RESEARCH-D D1); the passes read it before each channel, page, pending-command
+# sink and outbox row, every relay request is bounded by op_deadline_seconds (a TOTAL wall time: send, receive, AUTH retry
+# and cleanup) and every store transaction by the DSN's transaction_timeout (store_transaction_timeout_seconds, PostgreSQL
+# 17). The stop bound is op_deadline_seconds + 5 (store connect) + store_transaction_timeout_seconds + 2 (margin) = 42 s.
+# TimeoutStopSec must be at least that bound for config.template.json, or SIGKILL lands mid-pass (D2, D5 F1, D6).
 [Unit]
 Description=Zeus Buzz bridge
 After=network-online.target
@@ -27,7 +28,7 @@ Restart=always
 RestartSec=10
 KillMode=mixed
 KillSignal=SIGTERM
-TimeoutStopSec=30
+TimeoutStopSec=45
 NoNewPrivileges=yes
 ProtectSystem=strict
 ProtectHome=read-only
