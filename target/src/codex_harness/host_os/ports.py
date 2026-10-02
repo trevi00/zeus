@@ -3,13 +3,16 @@ and the bounded process runner other contexts use instead of creating processes 
 
 Layer: ports
 Context: host_os
-Owns: the Protocols only; `host_os.adapters.git_workspace.GitWorkspace` implements the first three;
-    `ProcessRunner` is implemented by `host_os.adapters.process_groups.run_process` and
+Owns: the Protocols only, and `ProcessCancelled` (the one exception class a logged child's owner-cancellation
+    raises; a value other contexts catch, defined here so they need not import an adapter, S8 V19);
+    `host_os.adapters.git_workspace.GitWorkspace` implements the first three;
+    `ProcessRunner` is implemented by `host_os.adapters.process_groups.run_process`,
+    `LoggedProcessRunner` by `host_os.adapters.process_groups.run_logged_process` and
     `ChildProcesses` by `host_os.adapters.process_groups.ChokepointProcesses` (the one spawn
     chokepoint), both injected by composition (S3: the container adapters' docker/git calls, the
     staging export and the attached transports)
 Does not own: who may publish or merge (review), release policy, what a caller runs
-Entry points: Workspaces, CandidateInspection, Publication, ProcessRunner, ChildProcesses, GitBlobSource
+Entry points: Workspaces, CandidateInspection, Publication, ProcessRunner, LoggedProcessRunner, ProcessCancelled, ChildProcesses, GitBlobSource
 Contracts: INV-RELEASE-001, INV-SESSION-001
 
 Shared infrastructure ports (`SP` in the §3.6 table). The five unrelated M7 `SourceControl` methods
@@ -41,6 +44,22 @@ class ProcessRunner(Protocol):
 
     def __call__(self, argv: list, cwd: str | None = None, timeout: int = 120,
                  input_text: str | None = None, env: dict | None = None): ...
+
+
+class ProcessCancelled(KeyboardInterrupt):
+    """A logged child interrupted by the owner; `observation` says what cleanup could prove."""
+
+    def __init__(self, observation: dict):
+        super().__init__("process cancelled")
+        self.observation = observation
+
+
+class LoggedProcessRunner(Protocol):
+    """One bounded child whose stdout/stderr stream straight into owner files, so a deadline keeps them: returns the observation
+    (`exit_code`, `timed_out`, cleanup facts); an owner interruption raises `ProcessCancelled` after the same cleanup."""
+
+    def __call__(self, argv: list[str], *, stdout_path, stderr_path, cwd: str | None = None,
+                 timeout: int = 120, env: dict | None = None) -> dict: ...
 
 
 class ChildProcesses(Protocol):

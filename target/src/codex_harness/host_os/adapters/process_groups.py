@@ -7,7 +7,7 @@ kill and reap; the spawn-observer registry
 Does not own: which process should run (callers), the Windows console/kill primitives
 (host_os.adapters.windows.no_console), owned-tree receipts (host_os.adapters.process_tree)
 Entry points: popen, run, run_process, run_logged_process, observe_spawns, no_console_kwargs,
-python_channel_environment, ProcessCancelled, ChokepointProcesses (the host_os.ports.ChildProcesses port)
+python_channel_environment, ProcessCancelled (defined in host_os.ports, S8 V19; imported here), ChokepointProcesses (the host_os.ports.ChildProcesses port)
 Contracts: INV-ENCODING-001, INV-HOST-DELIVERY-VERIFY-001
 
 The spawn chokepoint (design §5.3 S1): `popen`/`run` are the only calls in the target tree that
@@ -26,6 +26,7 @@ import time
 from contextlib import contextmanager
 
 from codex_harness.host_os.adapters.windows import no_console
+from codex_harness.host_os.ports import ProcessCancelled
 
 # How long a killed logged child may take to be reaped before cleanup reports it as unreaped.
 REAP_SECONDS = 10
@@ -144,14 +145,6 @@ def run_process(argv: list[str], cwd: str | None = None, timeout: int = 120,
         process.communicate()
         raise
     return subprocess.CompletedProcess(argv, process.returncode, stdout, stderr)
-
-
-class ProcessCancelled(KeyboardInterrupt):
-    """A logged child interrupted by the owner; `observation` says what cleanup could prove."""
-
-    def __init__(self, observation: dict):
-        super().__init__("process cancelled")
-        self.observation = observation
 
 
 def _group_gone(pgid: int, seconds: float = 5.0) -> bool:
