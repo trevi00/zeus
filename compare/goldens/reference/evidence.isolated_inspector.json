@@ -1,0 +1,6266 @@
+{
+ "j1_identity_and_refusals": {
+  "container_environment": {
+   "copy_each_call": true,
+   "no_src": {
+    "GIT_CONFIG_COUNT": "1",
+    "GIT_CONFIG_KEY_0": "safe.directory",
+    "GIT_CONFIG_VALUE_0": "/workspace",
+    "HOME": "/tmp",
+    "PYTHONDONTWRITEBYTECODE": "1",
+    "PYTHONIOENCODING": "utf-8"
+   },
+   "none": {
+    "GIT_CONFIG_COUNT": "1",
+    "GIT_CONFIG_KEY_0": "safe.directory",
+    "GIT_CONFIG_VALUE_0": "/workspace",
+    "HOME": "/tmp",
+    "PYTHONDONTWRITEBYTECODE": "1",
+    "PYTHONIOENCODING": "utf-8"
+   },
+   "src_is_file": {
+    "GIT_CONFIG_COUNT": "1",
+    "GIT_CONFIG_KEY_0": "safe.directory",
+    "GIT_CONFIG_VALUE_0": "/workspace",
+    "HOME": "/tmp",
+    "PYTHONDONTWRITEBYTECODE": "1",
+    "PYTHONIOENCODING": "utf-8"
+   },
+   "with_src": {
+    "GIT_CONFIG_COUNT": "1",
+    "GIT_CONFIG_KEY_0": "safe.directory",
+    "GIT_CONFIG_VALUE_0": "/workspace",
+    "HOME": "/tmp",
+    "PYTHONDONTWRITEBYTECODE": "1",
+    "PYTHONIOENCODING": "utf-8",
+    "PYTHONPATH": "/workspace/src"
+   }
+  },
+  "container_environment_constant": {
+   "GIT_CONFIG_COUNT": "1",
+   "GIT_CONFIG_KEY_0": "safe.directory",
+   "GIT_CONFIG_VALUE_0": "/workspace",
+   "HOME": "/tmp",
+   "PYTHONDONTWRITEBYTECODE": "1",
+   "PYTHONIOENCODING": "utf-8"
+  },
+  "image_change": {
+   "credentials": "none",
+   "differs": true,
+   "first_image": "sha256:aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+   "network": "none",
+   "platform": "linux-container",
+   "second_image": "sha256:bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb",
+   "snapshot": "fresh copy per replay",
+   "workspace": "/workspace"
+  },
+  "no_workspace": {
+   "context": {
+    "cwd": "<ROOT>/absent",
+    "task_id": "t"
+   },
+   "findings": [
+    {
+     "cause": "workspace directory does not exist",
+     "claim": null,
+     "state": "error"
+    }
+   ],
+   "policy_hash": "5b447c2d2bb7d1383f64a5f99a26f743848e786b92fc5b713ad59dee03ce09ea"
+  },
+  "snapshot": {
+   "environment": {
+    "GIT_CONFIG_COUNT": "1",
+    "GIT_CONFIG_KEY_0": "safe.directory",
+    "GIT_CONFIG_VALUE_0": "/workspace",
+    "HOME": "/tmp",
+    "PYTHONDONTWRITEBYTECODE": "1",
+    "PYTHONIOENCODING": "utf-8",
+    "PYTHONPATH": "/workspace/src"
+   },
+   "identity": {
+    "container": {
+     "credentials": "none",
+     "digest": "01afe59a75022e32546e61ac04d71927a8c5cab72cf591f7f4a3d8886672c46c",
+     "driver_sha256": "dddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddd",
+     "image": "sha256:aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+     "limits": {
+      "cleanup_seconds": 2,
+      "cpus": "2",
+      "docker_command_seconds": 60,
+      "home_mb": 256,
+      "inner_grace_seconds": 1,
+      "max_file_bytes": 16777216,
+      "max_files": 10000,
+      "max_total_bytes": 268435456,
+      "memory": "4g",
+      "pids": 512,
+      "tmp_mb": 512
+     },
+     "mode": "docker",
+     "network": "none",
+     "protocol": "zeus-isolated-worker-v1",
+     "snapshot": "fresh copy per replay",
+     "workspace": "/workspace"
+    },
+    "cwd": "<ROOT>/04-identity/candidate",
+    "environment_digest": "5f891630e6c374c3241af8d9c613bc2faca931c20b8187bb6d2451fbbbf2c00e",
+    "environment_names": [
+     "GIT_CONFIG_COUNT",
+     "GIT_CONFIG_KEY_0",
+     "GIT_CONFIG_VALUE_0",
+     "HOME",
+     "PYTHONDONTWRITEBYTECODE",
+     "PYTHONIOENCODING",
+     "PYTHONPATH"
+    ],
+    "interpreter": "/opt/zeus/bin/python",
+    "platform": "linux-container",
+    "policy_hash": "5b447c2d2bb7d1383f64a5f99a26f743848e786b92fc5b713ad59dee03ce09ea"
+   },
+   "interpreter": "/opt/zeus/bin/python"
+  },
+  "snapshot_keys": {
+   "identity": [
+    "container",
+    "cwd",
+    "environment_digest",
+    "environment_names",
+    "interpreter",
+    "platform",
+    "policy_hash"
+   ],
+   "same_twice": true,
+   "top": [
+    "environment",
+    "identity",
+    "interpreter"
+   ]
+  },
+  "snapshot_no_cwd": {
+   "environment": {
+    "GIT_CONFIG_COUNT": "1",
+    "GIT_CONFIG_KEY_0": "safe.directory",
+    "GIT_CONFIG_VALUE_0": "/workspace",
+    "HOME": "/tmp",
+    "PYTHONDONTWRITEBYTECODE": "1",
+    "PYTHONIOENCODING": "utf-8"
+   },
+   "identity": {
+    "container": {
+     "credentials": "none",
+     "digest": "01afe59a75022e32546e61ac04d71927a8c5cab72cf591f7f4a3d8886672c46c",
+     "driver_sha256": "dddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddd",
+     "image": "sha256:aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+     "limits": {
+      "cleanup_seconds": 2,
+      "cpus": "2",
+      "docker_command_seconds": 60,
+      "home_mb": 256,
+      "inner_grace_seconds": 1,
+      "max_file_bytes": 16777216,
+      "max_files": 10000,
+      "max_total_bytes": 268435456,
+      "memory": "4g",
+      "pids": 512,
+      "tmp_mb": 512
+     },
+     "mode": "docker",
+     "network": "none",
+     "protocol": "zeus-isolated-worker-v1",
+     "snapshot": "fresh copy per replay",
+     "workspace": "/workspace"
+    },
+    "cwd": null,
+    "environment_digest": "ec975a75c4a2016866f3d78e06bd634c594a20da1b743f9d64b9808cb267e556",
+    "environment_names": [
+     "GIT_CONFIG_COUNT",
+     "GIT_CONFIG_KEY_0",
+     "GIT_CONFIG_VALUE_0",
+     "HOME",
+     "PYTHONDONTWRITEBYTECODE",
+     "PYTHONIOENCODING"
+    ],
+    "interpreter": "/opt/zeus/bin/python",
+    "platform": "linux-container",
+    "policy_hash": "5b447c2d2bb7d1383f64a5f99a26f743848e786b92fc5b713ad59dee03ce09ea"
+   },
+   "interpreter": "/opt/zeus/bin/python"
+  },
+  "trusted_and_python": {
+   "docker": "docker",
+   "interpreter": "/opt/zeus/bin/python",
+   "python": "container:sha256:aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+   "root_is_path": "PosixPath",
+   "trusted_none": "/opt/zeus/bin/python",
+   "trusted_other": "/opt/zeus/bin/python"
+  },
+  "unauthorized": {
+   "context_interpreter": "/opt/zeus/bin/python",
+   "context_python": "container:sha256:aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+   "docker_calls": [],
+   "finding": {
+    "cause": "command is not an authorized replay prefix; a claim is not authority",
+    "claim": {
+     "argv": [
+      "python",
+      "-c",
+      "print(1)"
+     ],
+     "expected_exit": 0,
+     "id": "1f86d61c4c2afc534711998fd6b112d46ac1a7c11dfeb4a4fa01c1503d64470f",
+     "kind": "command",
+     "origin": "structured"
+    },
+    "state": "not_checked"
+   },
+   "records": []
+  }
+ },
+ "j2_lifecycle": {
+  "captured": [
+   {
+    "argv": [
+     "docker",
+     "start",
+     "--attach",
+     "eeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee1"
+    ],
+    "cwd": null,
+    "env_names": [
+     "HOME",
+     "PATH"
+    ],
+    "max_bytes": 65536,
+    "progress": true,
+    "timeout": 300
+   },
+   {
+    "argv": [
+     "docker",
+     "start",
+     "--attach",
+     "eeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee1"
+    ],
+    "cwd": null,
+    "env_names": [
+     "HOME",
+     "PATH"
+    ],
+    "max_bytes": 65536,
+    "progress": true,
+    "timeout": 300
+   }
+  ],
+  "container_exit": {
+   "finding": {
+    "argv_identical": false,
+    "argv_transformation": "first token \"python\" replaced by the trusted host interpreter; authorization was decided on the original argv",
+    "cause": "exit 3, claimed 0",
+    "claim": {
+     "argv": [
+      "python",
+      "-m",
+      "pytest",
+      "-q"
+     ],
+     "expected_exit": 0,
+     "id": "28c3babc7015e24ef6ba63cb4a8b117db4a3aef30dba2db8de838dc5f3de99c3",
+     "kind": "command",
+     "origin": "free_text"
+    },
+    "interpreter": "/opt/zeus/bin/python",
+    "original_argv": [
+     "python",
+     "-m",
+     "pytest",
+     "-q"
+    ],
+    "replay_argv": [
+     "/opt/zeus/bin/python",
+     "-m",
+     "pytest",
+     "-q"
+    ],
+    "runs": [
+     {
+      "cleanup": {
+       "confirmed": true,
+       "injected": true,
+       "reason": "exited"
+      },
+      "container": {
+       "cleanup": {
+        "evidence_written": true,
+        "exit_code": 0,
+        "recovery": null,
+        "removed": true
+       },
+       "controls": {
+        "cap_drop": [
+         "ALL"
+        ],
+        "image": "sha256:aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+        "labels": {
+         "zeus.isolated.role": "verifier",
+         "zeus.isolated.run": "ccd3f44201debd0adcb49e3b7023a0c4"
+        },
+        "memory": 1,
+        "mounts": [
+         {
+          "Destination": "/workspace",
+          "RW": true,
+          "Source": "<ROOT>/06-own-exit/replays/ccd3f44201debd0adcb49e3b7023a0c4/workspace",
+          "Type": "bind"
+         }
+        ],
+        "nano_cpus": 1,
+        "network": "none",
+        "pids_limit": 512,
+        "ports": {},
+        "privileged": false,
+        "read_only": true,
+        "security_opt": [
+         "no-new-privileges"
+        ],
+        "user": "4242:4242"
+       },
+       "credentials": "none",
+       "id": "eeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee1",
+       "image": "sha256:aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+       "name": "zeus-verifier-ccd3f44201debd0adcb49e3b7023a0c4",
+       "network": "none",
+       "record": "<ROOT>/06-own-exit/replays/ccd3f44201debd0adcb49e3b7023a0c4/run.json",
+       "run_id": "ccd3f44201debd0adcb49e3b7023a0c4",
+       "snapshot_sha256": "a66e9e9870224a846ff8eb31241ce3625b8818ffc88152dca9412c63938d7113",
+       "stop": {
+        "capture_cleanup": {
+         "confirmed": true,
+         "injected": true,
+         "reason": "exited"
+        },
+        "client_confirmed": true,
+        "confirmed": true,
+        "container_confirmed": true,
+        "exit_code": 3,
+        "killed": false,
+        "oom_killed": false,
+        "status": "exited"
+       }
+      },
+      "duration_seconds": "<duration>",
+      "failure": null,
+      "returncode": 3,
+      "terminated": false
+     },
+     {
+      "cleanup": {
+       "confirmed": true,
+       "injected": true,
+       "reason": "exited"
+      },
+      "container": {
+       "cleanup": {
+        "evidence_written": true,
+        "exit_code": 0,
+        "recovery": null,
+        "removed": true
+       },
+       "controls": {
+        "cap_drop": [
+         "ALL"
+        ],
+        "image": "sha256:aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+        "labels": {
+         "zeus.isolated.role": "verifier",
+         "zeus.isolated.run": "a68189b3665a0a1c61a123c9426899e3"
+        },
+        "memory": 1,
+        "mounts": [
+         {
+          "Destination": "/workspace",
+          "RW": true,
+          "Source": "<ROOT>/06-own-exit/replays/a68189b3665a0a1c61a123c9426899e3/workspace",
+          "Type": "bind"
+         }
+        ],
+        "nano_cpus": 1,
+        "network": "none",
+        "pids_limit": 512,
+        "ports": {},
+        "privileged": false,
+        "read_only": true,
+        "security_opt": [
+         "no-new-privileges"
+        ],
+        "user": "4242:4242"
+       },
+       "credentials": "none",
+       "id": "eeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee1",
+       "image": "sha256:aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+       "name": "zeus-verifier-a68189b3665a0a1c61a123c9426899e3",
+       "network": "none",
+       "record": "<ROOT>/06-own-exit/replays/a68189b3665a0a1c61a123c9426899e3/run.json",
+       "run_id": "a68189b3665a0a1c61a123c9426899e3",
+       "snapshot_sha256": "a66e9e9870224a846ff8eb31241ce3625b8818ffc88152dca9412c63938d7113",
+       "stop": {
+        "capture_cleanup": {
+         "confirmed": true,
+         "injected": true,
+         "reason": "exited"
+        },
+        "client_confirmed": true,
+        "confirmed": true,
+        "container_confirmed": true,
+        "exit_code": 3,
+        "killed": false,
+        "oom_killed": false,
+        "status": "exited"
+       }
+      },
+      "duration_seconds": "<duration>",
+      "failure": null,
+      "returncode": 3,
+      "terminated": false
+     }
+    ],
+    "state": "verified_mismatch"
+   },
+   "records": [
+    {
+     "argv": [
+      "/opt/zeus/bin/python",
+      "-m",
+      "pytest",
+      "-q"
+     ],
+     "container": "eeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee1",
+     "container_name": "zeus-verifier-a68189b3665a0a1c61a123c9426899e3",
+     "image": "sha256:aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+     "isolation_digest": "01afe59a75022e32546e61ac04d71927a8c5cab72cf591f7f4a3d8886672c46c",
+     "label": "zeus.isolated.run=a68189b3665a0a1c61a123c9426899e3",
+     "lifecycle": [
+      {
+       "at": "<time>",
+       "snapshot_sha256": "a66e9e9870224a846ff8eb31241ce3625b8818ffc88152dca9412c63938d7113",
+       "state": "prepared"
+      },
+      {
+       "at": "<time>",
+       "container": "eeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee1",
+       "state": "created"
+      },
+      {
+       "at": "<time>",
+       "recovery": {
+        "container": "eeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee1",
+        "name": "zeus-verifier-a68189b3665a0a1c61a123c9426899e3",
+        "record": "<ROOT>/06-own-exit/replays/a68189b3665a0a1c61a123c9426899e3/run.json"
+       },
+       "state": "start_requested"
+      },
+      {
+       "at": "<time>",
+       "interrupted": null,
+       "state": "stop_confirmed",
+       "stop": {
+        "capture_cleanup": {
+         "confirmed": true,
+         "injected": true,
+         "reason": "exited"
+        },
+        "client_confirmed": true,
+        "confirmed": true,
+        "container_confirmed": true,
+        "exit_code": 3,
+        "killed": false,
+        "oom_killed": false,
+        "status": "exited"
+       }
+      },
+      {
+       "at": "<time>",
+       "outcome": "replayed",
+       "state": "evidence_retained"
+      },
+      {
+       "at": "<time>",
+       "state": "removed"
+      }
+     ],
+     "record": "<ROOT>/06-own-exit/replays/a68189b3665a0a1c61a123c9426899e3/run.json",
+     "result": {
+      "cleanup": {
+       "confirmed": true,
+       "injected": true,
+       "reason": "exited"
+      },
+      "container": {
+       "controls": {
+        "cap_drop": [
+         "ALL"
+        ],
+        "image": "sha256:aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+        "labels": {
+         "zeus.isolated.role": "verifier",
+         "zeus.isolated.run": "a68189b3665a0a1c61a123c9426899e3"
+        },
+        "memory": 1,
+        "mounts": [
+         {
+          "Destination": "/workspace",
+          "RW": true,
+          "Source": "<ROOT>/06-own-exit/replays/a68189b3665a0a1c61a123c9426899e3/workspace",
+          "Type": "bind"
+         }
+        ],
+        "nano_cpus": 1,
+        "network": "none",
+        "pids_limit": 512,
+        "ports": {},
+        "privileged": false,
+        "read_only": true,
+        "security_opt": [
+         "no-new-privileges"
+        ],
+        "user": "4242:4242"
+       },
+       "credentials": "none",
+       "id": "eeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee1",
+       "image": "sha256:aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+       "name": "zeus-verifier-a68189b3665a0a1c61a123c9426899e3",
+       "network": "none",
+       "record": "<ROOT>/06-own-exit/replays/a68189b3665a0a1c61a123c9426899e3/run.json",
+       "run_id": "a68189b3665a0a1c61a123c9426899e3",
+       "snapshot_sha256": "a66e9e9870224a846ff8eb31241ce3625b8818ffc88152dca9412c63938d7113",
+       "stop": {
+        "capture_cleanup": {
+         "confirmed": true,
+         "injected": true,
+         "reason": "exited"
+        },
+        "client_confirmed": true,
+        "confirmed": true,
+        "container_confirmed": true,
+        "exit_code": 3,
+        "killed": false,
+        "oom_killed": false,
+        "status": "exited"
+       }
+      },
+      "duration_seconds": "<duration>",
+      "failure": null,
+      "returncode": 3,
+      "terminated": false
+     },
+     "retained_files": {},
+     "role": "verifier",
+     "run_id": "a68189b3665a0a1c61a123c9426899e3",
+     "snapshot": "<ROOT>/06-own-exit/replays/a68189b3665a0a1c61a123c9426899e3/workspace",
+     "state": "removed",
+     "workspace": "<ROOT>/06-own-exit/candidate"
+    },
+    {
+     "argv": [
+      "/opt/zeus/bin/python",
+      "-m",
+      "pytest",
+      "-q"
+     ],
+     "container": "eeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee1",
+     "container_name": "zeus-verifier-ccd3f44201debd0adcb49e3b7023a0c4",
+     "image": "sha256:aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+     "isolation_digest": "01afe59a75022e32546e61ac04d71927a8c5cab72cf591f7f4a3d8886672c46c",
+     "label": "zeus.isolated.run=ccd3f44201debd0adcb49e3b7023a0c4",
+     "lifecycle": [
+      {
+       "at": "<time>",
+       "snapshot_sha256": "a66e9e9870224a846ff8eb31241ce3625b8818ffc88152dca9412c63938d7113",
+       "state": "prepared"
+      },
+      {
+       "at": "<time>",
+       "container": "eeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee1",
+       "state": "created"
+      },
+      {
+       "at": "<time>",
+       "recovery": {
+        "container": "eeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee1",
+        "name": "zeus-verifier-ccd3f44201debd0adcb49e3b7023a0c4",
+        "record": "<ROOT>/06-own-exit/replays/ccd3f44201debd0adcb49e3b7023a0c4/run.json"
+       },
+       "state": "start_requested"
+      },
+      {
+       "at": "<time>",
+       "interrupted": null,
+       "state": "stop_confirmed",
+       "stop": {
+        "capture_cleanup": {
+         "confirmed": true,
+         "injected": true,
+         "reason": "exited"
+        },
+        "client_confirmed": true,
+        "confirmed": true,
+        "container_confirmed": true,
+        "exit_code": 3,
+        "killed": false,
+        "oom_killed": false,
+        "status": "exited"
+       }
+      },
+      {
+       "at": "<time>",
+       "outcome": "replayed",
+       "state": "evidence_retained"
+      },
+      {
+       "at": "<time>",
+       "state": "removed"
+      }
+     ],
+     "record": "<ROOT>/06-own-exit/replays/ccd3f44201debd0adcb49e3b7023a0c4/run.json",
+     "result": {
+      "cleanup": {
+       "confirmed": true,
+       "injected": true,
+       "reason": "exited"
+      },
+      "container": {
+       "controls": {
+        "cap_drop": [
+         "ALL"
+        ],
+        "image": "sha256:aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+        "labels": {
+         "zeus.isolated.role": "verifier",
+         "zeus.isolated.run": "ccd3f44201debd0adcb49e3b7023a0c4"
+        },
+        "memory": 1,
+        "mounts": [
+         {
+          "Destination": "/workspace",
+          "RW": true,
+          "Source": "<ROOT>/06-own-exit/replays/ccd3f44201debd0adcb49e3b7023a0c4/workspace",
+          "Type": "bind"
+         }
+        ],
+        "nano_cpus": 1,
+        "network": "none",
+        "pids_limit": 512,
+        "ports": {},
+        "privileged": false,
+        "read_only": true,
+        "security_opt": [
+         "no-new-privileges"
+        ],
+        "user": "4242:4242"
+       },
+       "credentials": "none",
+       "id": "eeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee1",
+       "image": "sha256:aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+       "name": "zeus-verifier-ccd3f44201debd0adcb49e3b7023a0c4",
+       "network": "none",
+       "record": "<ROOT>/06-own-exit/replays/ccd3f44201debd0adcb49e3b7023a0c4/run.json",
+       "run_id": "ccd3f44201debd0adcb49e3b7023a0c4",
+       "snapshot_sha256": "a66e9e9870224a846ff8eb31241ce3625b8818ffc88152dca9412c63938d7113",
+       "stop": {
+        "capture_cleanup": {
+         "confirmed": true,
+         "injected": true,
+         "reason": "exited"
+        },
+        "client_confirmed": true,
+        "confirmed": true,
+        "container_confirmed": true,
+        "exit_code": 3,
+        "killed": false,
+        "oom_killed": false,
+        "status": "exited"
+       }
+      },
+      "duration_seconds": "<duration>",
+      "failure": null,
+      "returncode": 3,
+      "terminated": false
+     },
+     "retained_files": {},
+     "role": "verifier",
+     "run_id": "ccd3f44201debd0adcb49e3b7023a0c4",
+     "snapshot": "<ROOT>/06-own-exit/replays/ccd3f44201debd0adcb49e3b7023a0c4/workspace",
+     "state": "removed",
+     "workspace": "<ROOT>/06-own-exit/candidate"
+    }
+   ]
+  },
+  "containers_left": [
+   "ffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff"
+  ],
+  "create_flags": [
+   {
+    "entrypoint": "/opt/zeus/bin/python",
+    "name": "zeus-verifier-7ea096312bd59f5c1afacfc57f7a831c",
+    "network": "none",
+    "pythonpath": true,
+    "read_only": true,
+    "tail": [
+     "-m",
+     "pytest",
+     "-q"
+    ],
+    "token_name": false,
+    "user": "4242:4242",
+    "workdir": "/workspace"
+   },
+   {
+    "entrypoint": "/opt/zeus/bin/python",
+    "name": "zeus-verifier-c8077fb2c12524042ab5c3d0b2f2c864",
+    "network": "none",
+    "pythonpath": true,
+    "read_only": true,
+    "tail": [
+     "-m",
+     "pytest",
+     "-q"
+    ],
+    "token_name": false,
+    "user": "4242:4242",
+    "workdir": "/workspace"
+   }
+  ],
+  "creates": [
+   [
+    "create",
+    "--name",
+    "zeus-verifier-7ea096312bd59f5c1afacfc57f7a831c",
+    "--label",
+    "zeus.isolated.run=7ea096312bd59f5c1afacfc57f7a831c",
+    "--label",
+    "zeus.isolated.role=verifier",
+    "--network",
+    "none",
+    "--read-only",
+    "--cap-drop",
+    "ALL",
+    "--security-opt",
+    "no-new-privileges",
+    "--user",
+    "4242:4242",
+    "--memory",
+    "4g",
+    "--cpus",
+    "2",
+    "--pids-limit",
+    "512",
+    "--init",
+    "--interactive",
+    "--tmpfs",
+    "/tmp:rw,nosuid,nodev,size=512m,mode=1777",
+    "--tmpfs",
+    "/home/worker:rw,nosuid,nodev,size=256m,mode=1777",
+    "--mount",
+    "type=bind,source=<ROOT>/05-lifecycle/replays/7ea096312bd59f5c1afacfc57f7a831c/workspace,target=/workspace",
+    "-e",
+    "HOME=/tmp",
+    "-e",
+    "PYTHONIOENCODING=utf-8",
+    "-e",
+    "PYTHONDONTWRITEBYTECODE=1",
+    "-e",
+    "GIT_CONFIG_COUNT=1",
+    "-e",
+    "GIT_CONFIG_KEY_0=safe.directory",
+    "-e",
+    "GIT_CONFIG_VALUE_0=/workspace",
+    "-e",
+    "PYTHONPATH=/workspace/src",
+    "-w",
+    "/workspace",
+    "--entrypoint",
+    "/opt/zeus/bin/python",
+    "sha256:aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+    "-m",
+    "pytest",
+    "-q"
+   ],
+   [
+    "create",
+    "--name",
+    "zeus-verifier-c8077fb2c12524042ab5c3d0b2f2c864",
+    "--label",
+    "zeus.isolated.run=c8077fb2c12524042ab5c3d0b2f2c864",
+    "--label",
+    "zeus.isolated.role=verifier",
+    "--network",
+    "none",
+    "--read-only",
+    "--cap-drop",
+    "ALL",
+    "--security-opt",
+    "no-new-privileges",
+    "--user",
+    "4242:4242",
+    "--memory",
+    "4g",
+    "--cpus",
+    "2",
+    "--pids-limit",
+    "512",
+    "--init",
+    "--interactive",
+    "--tmpfs",
+    "/tmp:rw,nosuid,nodev,size=512m,mode=1777",
+    "--tmpfs",
+    "/home/worker:rw,nosuid,nodev,size=256m,mode=1777",
+    "--mount",
+    "type=bind,source=<ROOT>/05-lifecycle/replays/c8077fb2c12524042ab5c3d0b2f2c864/workspace,target=/workspace",
+    "-e",
+    "HOME=/tmp",
+    "-e",
+    "PYTHONIOENCODING=utf-8",
+    "-e",
+    "PYTHONDONTWRITEBYTECODE=1",
+    "-e",
+    "GIT_CONFIG_COUNT=1",
+    "-e",
+    "GIT_CONFIG_KEY_0=safe.directory",
+    "-e",
+    "GIT_CONFIG_VALUE_0=/workspace",
+    "-e",
+    "PYTHONPATH=/workspace/src",
+    "-w",
+    "/workspace",
+    "--entrypoint",
+    "/opt/zeus/bin/python",
+    "sha256:aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+    "-m",
+    "pytest",
+    "-q"
+   ]
+  ],
+  "docker_env_names": [
+   [
+    "HOME",
+    "PATH"
+   ],
+   [],
+   [],
+   [],
+   [],
+   [
+    "HOME",
+    "PATH"
+   ],
+   [],
+   [],
+   [],
+   []
+  ],
+  "docker_verbs": [
+   "create",
+   "inspect",
+   "inspect",
+   "rm",
+   "ps",
+   "create",
+   "inspect",
+   "inspect",
+   "rm",
+   "ps"
+  ],
+  "progress_stages": [
+   "replay_start",
+   "replay_end",
+   "replay_start",
+   "replay_end"
+  ],
+  "records": [
+   {
+    "argv": [
+     "/opt/zeus/bin/python",
+     "-m",
+     "pytest",
+     "-q"
+    ],
+    "container": "eeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee1",
+    "container_name": "zeus-verifier-7ea096312bd59f5c1afacfc57f7a831c",
+    "image": "sha256:aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+    "isolation_digest": "01afe59a75022e32546e61ac04d71927a8c5cab72cf591f7f4a3d8886672c46c",
+    "label": "zeus.isolated.run=7ea096312bd59f5c1afacfc57f7a831c",
+    "lifecycle": [
+     {
+      "at": "<time>",
+      "snapshot_sha256": "a66e9e9870224a846ff8eb31241ce3625b8818ffc88152dca9412c63938d7113",
+      "state": "prepared"
+     },
+     {
+      "at": "<time>",
+      "container": "eeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee1",
+      "state": "created"
+     },
+     {
+      "at": "<time>",
+      "recovery": {
+       "container": "eeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee1",
+       "name": "zeus-verifier-7ea096312bd59f5c1afacfc57f7a831c",
+       "record": "<ROOT>/05-lifecycle/replays/7ea096312bd59f5c1afacfc57f7a831c/run.json"
+      },
+      "state": "start_requested"
+     },
+     {
+      "at": "<time>",
+      "interrupted": null,
+      "state": "stop_confirmed",
+      "stop": {
+       "capture_cleanup": {
+        "confirmed": true,
+        "injected": true,
+        "reason": "exited"
+       },
+       "client_confirmed": true,
+       "confirmed": true,
+       "container_confirmed": true,
+       "exit_code": 0,
+       "killed": false,
+       "oom_killed": false,
+       "status": "exited"
+      }
+     },
+     {
+      "at": "<time>",
+      "outcome": "replayed",
+      "state": "evidence_retained"
+     },
+     {
+      "at": "<time>",
+      "state": "removed"
+     }
+    ],
+    "record": "<ROOT>/05-lifecycle/replays/7ea096312bd59f5c1afacfc57f7a831c/run.json",
+    "result": {
+     "cleanup": {
+      "confirmed": true,
+      "injected": true,
+      "reason": "exited"
+     },
+     "container": {
+      "controls": {
+       "cap_drop": [
+        "ALL"
+       ],
+       "image": "sha256:aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+       "labels": {
+        "zeus.isolated.role": "verifier",
+        "zeus.isolated.run": "7ea096312bd59f5c1afacfc57f7a831c"
+       },
+       "memory": 1,
+       "mounts": [
+        {
+         "Destination": "/workspace",
+         "RW": true,
+         "Source": "<ROOT>/05-lifecycle/replays/7ea096312bd59f5c1afacfc57f7a831c/workspace",
+         "Type": "bind"
+        }
+       ],
+       "nano_cpus": 1,
+       "network": "none",
+       "pids_limit": 512,
+       "ports": {},
+       "privileged": false,
+       "read_only": true,
+       "security_opt": [
+        "no-new-privileges"
+       ],
+       "user": "4242:4242"
+      },
+      "credentials": "none",
+      "id": "eeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee1",
+      "image": "sha256:aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+      "name": "zeus-verifier-7ea096312bd59f5c1afacfc57f7a831c",
+      "network": "none",
+      "record": "<ROOT>/05-lifecycle/replays/7ea096312bd59f5c1afacfc57f7a831c/run.json",
+      "run_id": "7ea096312bd59f5c1afacfc57f7a831c",
+      "snapshot_sha256": "a66e9e9870224a846ff8eb31241ce3625b8818ffc88152dca9412c63938d7113",
+      "stop": {
+       "capture_cleanup": {
+        "confirmed": true,
+        "injected": true,
+        "reason": "exited"
+       },
+       "client_confirmed": true,
+       "confirmed": true,
+       "container_confirmed": true,
+       "exit_code": 0,
+       "killed": false,
+       "oom_killed": false,
+       "status": "exited"
+      }
+     },
+     "duration_seconds": "<duration>",
+     "failure": null,
+     "returncode": 0,
+     "terminated": false
+    },
+    "retained_files": {},
+    "role": "verifier",
+    "run_id": "7ea096312bd59f5c1afacfc57f7a831c",
+    "snapshot": "<ROOT>/05-lifecycle/replays/7ea096312bd59f5c1afacfc57f7a831c/workspace",
+    "state": "removed",
+    "workspace": "<ROOT>/05-lifecycle/candidate"
+   },
+   {
+    "argv": [
+     "/opt/zeus/bin/python",
+     "-m",
+     "pytest",
+     "-q"
+    ],
+    "container": "eeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee1",
+    "container_name": "zeus-verifier-c8077fb2c12524042ab5c3d0b2f2c864",
+    "image": "sha256:aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+    "isolation_digest": "01afe59a75022e32546e61ac04d71927a8c5cab72cf591f7f4a3d8886672c46c",
+    "label": "zeus.isolated.run=c8077fb2c12524042ab5c3d0b2f2c864",
+    "lifecycle": [
+     {
+      "at": "<time>",
+      "snapshot_sha256": "a66e9e9870224a846ff8eb31241ce3625b8818ffc88152dca9412c63938d7113",
+      "state": "prepared"
+     },
+     {
+      "at": "<time>",
+      "container": "eeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee1",
+      "state": "created"
+     },
+     {
+      "at": "<time>",
+      "recovery": {
+       "container": "eeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee1",
+       "name": "zeus-verifier-c8077fb2c12524042ab5c3d0b2f2c864",
+       "record": "<ROOT>/05-lifecycle/replays/c8077fb2c12524042ab5c3d0b2f2c864/run.json"
+      },
+      "state": "start_requested"
+     },
+     {
+      "at": "<time>",
+      "interrupted": null,
+      "state": "stop_confirmed",
+      "stop": {
+       "capture_cleanup": {
+        "confirmed": true,
+        "injected": true,
+        "reason": "exited"
+       },
+       "client_confirmed": true,
+       "confirmed": true,
+       "container_confirmed": true,
+       "exit_code": 0,
+       "killed": false,
+       "oom_killed": false,
+       "status": "exited"
+      }
+     },
+     {
+      "at": "<time>",
+      "outcome": "replayed",
+      "state": "evidence_retained"
+     },
+     {
+      "at": "<time>",
+      "state": "removed"
+     }
+    ],
+    "record": "<ROOT>/05-lifecycle/replays/c8077fb2c12524042ab5c3d0b2f2c864/run.json",
+    "result": {
+     "cleanup": {
+      "confirmed": true,
+      "injected": true,
+      "reason": "exited"
+     },
+     "container": {
+      "controls": {
+       "cap_drop": [
+        "ALL"
+       ],
+       "image": "sha256:aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+       "labels": {
+        "zeus.isolated.role": "verifier",
+        "zeus.isolated.run": "c8077fb2c12524042ab5c3d0b2f2c864"
+       },
+       "memory": 1,
+       "mounts": [
+        {
+         "Destination": "/workspace",
+         "RW": true,
+         "Source": "<ROOT>/05-lifecycle/replays/c8077fb2c12524042ab5c3d0b2f2c864/workspace",
+         "Type": "bind"
+        }
+       ],
+       "nano_cpus": 1,
+       "network": "none",
+       "pids_limit": 512,
+       "ports": {},
+       "privileged": false,
+       "read_only": true,
+       "security_opt": [
+        "no-new-privileges"
+       ],
+       "user": "4242:4242"
+      },
+      "credentials": "none",
+      "id": "eeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee1",
+      "image": "sha256:aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+      "name": "zeus-verifier-c8077fb2c12524042ab5c3d0b2f2c864",
+      "network": "none",
+      "record": "<ROOT>/05-lifecycle/replays/c8077fb2c12524042ab5c3d0b2f2c864/run.json",
+      "run_id": "c8077fb2c12524042ab5c3d0b2f2c864",
+      "snapshot_sha256": "a66e9e9870224a846ff8eb31241ce3625b8818ffc88152dca9412c63938d7113",
+      "stop": {
+       "capture_cleanup": {
+        "confirmed": true,
+        "injected": true,
+        "reason": "exited"
+       },
+       "client_confirmed": true,
+       "confirmed": true,
+       "container_confirmed": true,
+       "exit_code": 0,
+       "killed": false,
+       "oom_killed": false,
+       "status": "exited"
+      }
+     },
+     "duration_seconds": "<duration>",
+     "failure": null,
+     "returncode": 0,
+     "terminated": false
+    },
+    "retained_files": {},
+    "role": "verifier",
+    "run_id": "c8077fb2c12524042ab5c3d0b2f2c864",
+    "snapshot": "<ROOT>/05-lifecycle/replays/c8077fb2c12524042ab5c3d0b2f2c864/workspace",
+    "state": "removed",
+    "workspace": "<ROOT>/05-lifecycle/candidate"
+   }
+  ],
+  "report": {
+   "context_interpreter": "/opt/zeus/bin/python",
+   "context_python": "container:sha256:aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+   "network": [
+    "none",
+    "none"
+   ],
+   "replay_argv": [
+    "/opt/zeus/bin/python"
+   ],
+   "runs": [
+    {
+     "cleanup": {
+      "confirmed": true,
+      "injected": true,
+      "reason": "exited"
+     },
+     "container": {
+      "cleanup": {
+       "evidence_written": true,
+       "exit_code": 0,
+       "recovery": null,
+       "removed": true
+      },
+      "controls": {
+       "cap_drop": [
+        "ALL"
+       ],
+       "image": "sha256:aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+       "labels": {
+        "zeus.isolated.role": "verifier",
+        "zeus.isolated.run": "7ea096312bd59f5c1afacfc57f7a831c"
+       },
+       "memory": 1,
+       "mounts": [
+        {
+         "Destination": "/workspace",
+         "RW": true,
+         "Source": "<ROOT>/05-lifecycle/replays/7ea096312bd59f5c1afacfc57f7a831c/workspace",
+         "Type": "bind"
+        }
+       ],
+       "nano_cpus": 1,
+       "network": "none",
+       "pids_limit": 512,
+       "ports": {},
+       "privileged": false,
+       "read_only": true,
+       "security_opt": [
+        "no-new-privileges"
+       ],
+       "user": "4242:4242"
+      },
+      "credentials": "none",
+      "id": "eeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee1",
+      "image": "sha256:aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+      "name": "zeus-verifier-7ea096312bd59f5c1afacfc57f7a831c",
+      "network": "none",
+      "record": "<ROOT>/05-lifecycle/replays/7ea096312bd59f5c1afacfc57f7a831c/run.json",
+      "run_id": "7ea096312bd59f5c1afacfc57f7a831c",
+      "snapshot_sha256": "a66e9e9870224a846ff8eb31241ce3625b8818ffc88152dca9412c63938d7113",
+      "stop": {
+       "capture_cleanup": {
+        "confirmed": true,
+        "injected": true,
+        "reason": "exited"
+       },
+       "client_confirmed": true,
+       "confirmed": true,
+       "container_confirmed": true,
+       "exit_code": 0,
+       "killed": false,
+       "oom_killed": false,
+       "status": "exited"
+      }
+     },
+     "duration_seconds": "<duration>",
+     "failure": null,
+     "returncode": 0,
+     "terminated": false
+    },
+    {
+     "cleanup": {
+      "confirmed": true,
+      "injected": true,
+      "reason": "exited"
+     },
+     "container": {
+      "cleanup": {
+       "evidence_written": true,
+       "exit_code": 0,
+       "recovery": null,
+       "removed": true
+      },
+      "controls": {
+       "cap_drop": [
+        "ALL"
+       ],
+       "image": "sha256:aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+       "labels": {
+        "zeus.isolated.role": "verifier",
+        "zeus.isolated.run": "c8077fb2c12524042ab5c3d0b2f2c864"
+       },
+       "memory": 1,
+       "mounts": [
+        {
+         "Destination": "/workspace",
+         "RW": true,
+         "Source": "<ROOT>/05-lifecycle/replays/c8077fb2c12524042ab5c3d0b2f2c864/workspace",
+         "Type": "bind"
+        }
+       ],
+       "nano_cpus": 1,
+       "network": "none",
+       "pids_limit": 512,
+       "ports": {},
+       "privileged": false,
+       "read_only": true,
+       "security_opt": [
+        "no-new-privileges"
+       ],
+       "user": "4242:4242"
+      },
+      "credentials": "none",
+      "id": "eeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee1",
+      "image": "sha256:aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+      "name": "zeus-verifier-c8077fb2c12524042ab5c3d0b2f2c864",
+      "network": "none",
+      "record": "<ROOT>/05-lifecycle/replays/c8077fb2c12524042ab5c3d0b2f2c864/run.json",
+      "run_id": "c8077fb2c12524042ab5c3d0b2f2c864",
+      "snapshot_sha256": "a66e9e9870224a846ff8eb31241ce3625b8818ffc88152dca9412c63938d7113",
+      "stop": {
+       "capture_cleanup": {
+        "confirmed": true,
+        "injected": true,
+        "reason": "exited"
+       },
+       "client_confirmed": true,
+       "confirmed": true,
+       "container_confirmed": true,
+       "exit_code": 0,
+       "killed": false,
+       "oom_killed": false,
+       "status": "exited"
+      }
+     },
+     "duration_seconds": "<duration>",
+     "failure": null,
+     "returncode": 0,
+     "terminated": false
+    }
+   ],
+   "state": "checked"
+  },
+  "rm_after_create": true,
+  "snapshots_left": [],
+  "token_in_calls": false,
+  "unresolved": []
+ },
+ "j3_interruptions": {
+  "capture_debt": {
+   "kill_called": true,
+   "raised": {
+    "capture_cleanup": {
+     "confirmed": false,
+     "injected": true,
+     "readers_alive": [
+      "stdout"
+     ],
+     "reason": "KeyboardInterrupt"
+    },
+    "message": "",
+    "raised": "KeyboardInterrupt"
+   },
+   "rm_called": false,
+   "state": "stop_unconfirmed",
+   "stop": {
+    "capture_cleanup": {
+     "confirmed": false,
+     "injected": true,
+     "readers_alive": [
+      "stdout"
+     ],
+     "reason": "KeyboardInterrupt"
+    },
+    "client_confirmed": false,
+    "confirmed": false,
+    "container_confirmed": true,
+    "exit_code": 0,
+    "killed": true,
+    "oom_killed": false,
+    "status": "exited"
+   },
+   "unresolved": [
+    {
+     "container": "eeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee1",
+     "record": "<ROOT>/10-capture-debt/replays/fa3872cc9adcff418c36466687a75143/run.json",
+     "run_id": "fa3872cc9adcff418c36466687a75143",
+     "state": "stop_unconfirmed",
+     "workspace": "<ROOT>/10-capture-debt/candidate"
+    }
+   ]
+  },
+  "interrupted": {
+   "containers_left": [
+    "ffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff"
+   ],
+   "kills": [
+    [
+     "kill",
+     "eeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee1"
+    ]
+   ],
+   "owner_before_start": [
+    {
+     "argv": [
+      "/opt/zeus/bin/python",
+      "-m",
+      "pytest",
+      "-q"
+     ],
+     "container": "eeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee1",
+     "container_name": "zeus-verifier-10f6b8e7ec3597a990e367949de4e3a4",
+     "image": "sha256:aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+     "isolation_digest": "01afe59a75022e32546e61ac04d71927a8c5cab72cf591f7f4a3d8886672c46c",
+     "label": "zeus.isolated.run=10f6b8e7ec3597a990e367949de4e3a4",
+     "lifecycle": [
+      {
+       "at": "<time>",
+       "snapshot_sha256": "a66e9e9870224a846ff8eb31241ce3625b8818ffc88152dca9412c63938d7113",
+       "state": "prepared"
+      },
+      {
+       "at": "<time>",
+       "container": "eeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee1",
+       "state": "created"
+      },
+      {
+       "at": "<time>",
+       "recovery": {
+        "container": "eeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee1",
+        "name": "zeus-verifier-10f6b8e7ec3597a990e367949de4e3a4",
+        "record": "<ROOT>/08-interrupted/replays/10f6b8e7ec3597a990e367949de4e3a4/run.json"
+       },
+       "state": "start_requested"
+      }
+     ],
+     "record": "<ROOT>/08-interrupted/replays/10f6b8e7ec3597a990e367949de4e3a4/run.json",
+     "role": "verifier",
+     "run_id": "10f6b8e7ec3597a990e367949de4e3a4",
+     "snapshot": "<ROOT>/08-interrupted/replays/10f6b8e7ec3597a990e367949de4e3a4/workspace",
+     "state": "start_requested",
+     "workspace": "<ROOT>/08-interrupted/candidate"
+    }
+   ],
+   "raised": {
+    "capture_cleanup": {
+     "confirmed": true,
+     "injected": true,
+     "reason": "KeyboardInterrupt"
+    },
+    "message": "",
+    "raised": "KeyboardInterrupt"
+   },
+   "records": [
+    {
+     "argv": [
+      "/opt/zeus/bin/python",
+      "-m",
+      "pytest",
+      "-q"
+     ],
+     "container": "eeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee1",
+     "container_name": "zeus-verifier-10f6b8e7ec3597a990e367949de4e3a4",
+     "image": "sha256:aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+     "isolation_digest": "01afe59a75022e32546e61ac04d71927a8c5cab72cf591f7f4a3d8886672c46c",
+     "label": "zeus.isolated.run=10f6b8e7ec3597a990e367949de4e3a4",
+     "lifecycle": [
+      {
+       "at": "<time>",
+       "snapshot_sha256": "a66e9e9870224a846ff8eb31241ce3625b8818ffc88152dca9412c63938d7113",
+       "state": "prepared"
+      },
+      {
+       "at": "<time>",
+       "container": "eeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee1",
+       "state": "created"
+      },
+      {
+       "at": "<time>",
+       "recovery": {
+        "container": "eeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee1",
+        "name": "zeus-verifier-10f6b8e7ec3597a990e367949de4e3a4",
+        "record": "<ROOT>/08-interrupted/replays/10f6b8e7ec3597a990e367949de4e3a4/run.json"
+       },
+       "state": "start_requested"
+      },
+      {
+       "at": "<time>",
+       "interrupted": "KeyboardInterrupt",
+       "state": "stop_confirmed",
+       "stop": {
+        "capture_cleanup": {
+         "confirmed": true,
+         "injected": true,
+         "reason": "KeyboardInterrupt"
+        },
+        "client_confirmed": true,
+        "confirmed": true,
+        "container_confirmed": true,
+        "exit_code": 0,
+        "killed": true,
+        "oom_killed": false,
+        "status": "exited"
+       }
+      },
+      {
+       "at": "<time>",
+       "outcome": "interrupted",
+       "state": "evidence_retained"
+      },
+      {
+       "at": "<time>",
+       "state": "removed"
+      }
+     ],
+     "record": "<ROOT>/08-interrupted/replays/10f6b8e7ec3597a990e367949de4e3a4/run.json",
+     "result": {
+      "interrupted": "KeyboardInterrupt",
+      "stop": {
+       "capture_cleanup": {
+        "confirmed": true,
+        "injected": true,
+        "reason": "KeyboardInterrupt"
+       },
+       "client_confirmed": true,
+       "confirmed": true,
+       "container_confirmed": true,
+       "exit_code": 0,
+       "killed": true,
+       "oom_killed": false,
+       "status": "exited"
+      }
+     },
+     "retained_files": {},
+     "role": "verifier",
+     "run_id": "10f6b8e7ec3597a990e367949de4e3a4",
+     "snapshot": "<ROOT>/08-interrupted/replays/10f6b8e7ec3597a990e367949de4e3a4/workspace",
+     "state": "removed",
+     "workspace": "<ROOT>/08-interrupted/candidate"
+    }
+   ],
+   "unresolved": []
+  },
+  "progress_refusal": {
+   "kills": true,
+   "raised": {
+    "capture_cleanup": {
+     "confirmed": true,
+     "injected": true,
+     "reason": "ContractError"
+    },
+    "message": "Stale or expired task execution",
+    "raised": "ContractError"
+   },
+   "records": [
+    {
+     "argv": [
+      "/opt/zeus/bin/python",
+      "-m",
+      "pytest",
+      "-q"
+     ],
+     "container": "eeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee1",
+     "container_name": "zeus-verifier-38b5c3284410d2fe09a0ac58bf9735fb",
+     "image": "sha256:aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+     "isolation_digest": "01afe59a75022e32546e61ac04d71927a8c5cab72cf591f7f4a3d8886672c46c",
+     "label": "zeus.isolated.run=38b5c3284410d2fe09a0ac58bf9735fb",
+     "lifecycle": [
+      {
+       "at": "<time>",
+       "snapshot_sha256": "a66e9e9870224a846ff8eb31241ce3625b8818ffc88152dca9412c63938d7113",
+       "state": "prepared"
+      },
+      {
+       "at": "<time>",
+       "container": "eeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee1",
+       "state": "created"
+      },
+      {
+       "at": "<time>",
+       "recovery": {
+        "container": "eeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee1",
+        "name": "zeus-verifier-38b5c3284410d2fe09a0ac58bf9735fb",
+        "record": "<ROOT>/07-progress-refusal/replays/38b5c3284410d2fe09a0ac58bf9735fb/run.json"
+       },
+       "state": "start_requested"
+      },
+      {
+       "at": "<time>",
+       "interrupted": "ContractError",
+       "state": "stop_confirmed",
+       "stop": {
+        "capture_cleanup": {
+         "confirmed": true,
+         "injected": true,
+         "reason": "ContractError"
+        },
+        "client_confirmed": true,
+        "confirmed": true,
+        "container_confirmed": true,
+        "exit_code": 0,
+        "killed": true,
+        "oom_killed": false,
+        "status": "exited"
+       }
+      },
+      {
+       "at": "<time>",
+       "outcome": "interrupted",
+       "state": "evidence_retained"
+      },
+      {
+       "at": "<time>",
+       "state": "removed"
+      }
+     ],
+     "record": "<ROOT>/07-progress-refusal/replays/38b5c3284410d2fe09a0ac58bf9735fb/run.json",
+     "result": {
+      "interrupted": "ContractError",
+      "stop": {
+       "capture_cleanup": {
+        "confirmed": true,
+        "injected": true,
+        "reason": "ContractError"
+       },
+       "client_confirmed": true,
+       "confirmed": true,
+       "container_confirmed": true,
+       "exit_code": 0,
+       "killed": true,
+       "oom_killed": false,
+       "status": "exited"
+      }
+     },
+     "retained_files": {},
+     "role": "verifier",
+     "run_id": "38b5c3284410d2fe09a0ac58bf9735fb",
+     "snapshot": "<ROOT>/07-progress-refusal/replays/38b5c3284410d2fe09a0ac58bf9735fb/workspace",
+     "state": "removed",
+     "workspace": "<ROOT>/07-progress-refusal/candidate"
+    }
+   ],
+   "replays_started": 1,
+   "unresolved": []
+  },
+  "unconfirmed_stop": {
+   "creates_unchanged": true,
+   "id_still_there": true,
+   "last_step": {
+    "at": "<time>",
+    "interrupted": "KeyboardInterrupt",
+    "recovery": {
+     "container": "eeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee1",
+     "name": "zeus-verifier-86f68a6498f1f31a983cf84a2b87a4b0",
+     "record": "<ROOT>/09-unconfirmed/replays/86f68a6498f1f31a983cf84a2b87a4b0/run.json"
+    },
+    "state": "stop_unconfirmed",
+    "stop": {
+     "capture_cleanup": {
+      "confirmed": true,
+      "injected": true,
+      "reason": "KeyboardInterrupt"
+     },
+     "client_confirmed": true,
+     "confirmed": false,
+     "container_confirmed": false,
+     "exit_code": 0,
+     "killed": true,
+     "oom_killed": false,
+     "status": "running"
+    }
+   },
+   "next_replay": {
+    "argv_identical": false,
+    "argv_transformation": "first token \"python\" replaced by the trusted host interpreter; authorization was decided on the original argv",
+    "cause": "attempt 1: isolated_replay_unavailable: isolation_unresolved_run",
+    "claim": {
+     "argv": [
+      "python",
+      "-m",
+      "pytest",
+      "-q"
+     ],
+     "expected_exit": 0,
+     "id": "28c3babc7015e24ef6ba63cb4a8b117db4a3aef30dba2db8de838dc5f3de99c3",
+     "kind": "command",
+     "origin": "free_text"
+    },
+    "interpreter": "/opt/zeus/bin/python",
+    "original_argv": [
+     "python",
+     "-m",
+     "pytest",
+     "-q"
+    ],
+    "replay_argv": [
+     "/opt/zeus/bin/python",
+     "-m",
+     "pytest",
+     "-q"
+    ],
+    "runs": [
+     {
+      "container": {
+       "credentials": "none",
+       "image": "sha256:aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+       "name": "zeus-verifier-a1170f175749073e601d1aade0c9c75a",
+       "network": "none",
+       "run_id": "a1170f175749073e601d1aade0c9c75a",
+       "unresolved": [
+        {
+         "container": "eeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee1",
+         "record": "<ROOT>/09-unconfirmed/replays/86f68a6498f1f31a983cf84a2b87a4b0/run.json",
+         "run_id": "86f68a6498f1f31a983cf84a2b87a4b0",
+         "state": "stop_unconfirmed",
+         "workspace": "<ROOT>/09-unconfirmed/candidate"
+        }
+       ]
+      },
+      "duration_seconds": "<duration>",
+      "failure": "isolated_replay_unavailable: isolation_unresolved_run",
+      "returncode": null
+     }
+    ],
+    "state": "replay_failed"
+   },
+   "raised": {
+    "capture_cleanup": {
+     "confirmed": true,
+     "injected": true,
+     "reason": "KeyboardInterrupt"
+    },
+    "message": "",
+    "raised": "KeyboardInterrupt"
+   },
+   "reconcile": {
+    "reconciled": true,
+    "run_id": "86f68a6498f1f31a983cf84a2b87a4b0"
+   },
+   "rm_calls": [],
+   "state": "stop_unconfirmed",
+   "unresolved": [
+    {
+     "container": "eeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee1",
+     "record": "<ROOT>/09-unconfirmed/replays/86f68a6498f1f31a983cf84a2b87a4b0/run.json",
+     "run_id": "86f68a6498f1f31a983cf84a2b87a4b0",
+     "state": "stop_unconfirmed",
+     "workspace": "<ROOT>/09-unconfirmed/candidate"
+    }
+   ],
+   "unresolved_after": []
+  }
+ },
+ "j4_failures": {
+  "capture_failure": {
+   "finding": {
+    "argv_identical": false,
+    "argv_transformation": "first token \"python\" replaced by the trusted host interpreter; authorization was decided on the original argv",
+    "cause": "attempt 1: timeout after 2s",
+    "claim": {
+     "argv": [
+      "python",
+      "-m",
+      "pytest",
+      "-q"
+     ],
+     "expected_exit": 0,
+     "id": "28c3babc7015e24ef6ba63cb4a8b117db4a3aef30dba2db8de838dc5f3de99c3",
+     "kind": "command",
+     "origin": "free_text"
+    },
+    "interpreter": "/opt/zeus/bin/python",
+    "original_argv": [
+     "python",
+     "-m",
+     "pytest",
+     "-q"
+    ],
+    "replay_argv": [
+     "/opt/zeus/bin/python",
+     "-m",
+     "pytest",
+     "-q"
+    ],
+    "runs": [
+     {
+      "cleanup": {
+       "confirmed": true,
+       "injected": true,
+       "reason": "timeout"
+      },
+      "container": {
+       "cleanup": {
+        "evidence_written": true,
+        "exit_code": 0,
+        "recovery": null,
+        "removed": true
+       },
+       "controls": {
+        "cap_drop": [
+         "ALL"
+        ],
+        "image": "sha256:aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+        "labels": {
+         "zeus.isolated.role": "verifier",
+         "zeus.isolated.run": "66e08480c0ab700f500dae43c120ebd7"
+        },
+        "memory": 1,
+        "mounts": [
+         {
+          "Destination": "/workspace",
+          "RW": true,
+          "Source": "<ROOT>/18-capture-failure/replays/66e08480c0ab700f500dae43c120ebd7/workspace",
+          "Type": "bind"
+         }
+        ],
+        "nano_cpus": 1,
+        "network": "none",
+        "pids_limit": 512,
+        "ports": {},
+        "privileged": false,
+        "read_only": true,
+        "security_opt": [
+         "no-new-privileges"
+        ],
+        "user": "4242:4242"
+       },
+       "credentials": "none",
+       "id": "eeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee1",
+       "image": "sha256:aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+       "name": "zeus-verifier-66e08480c0ab700f500dae43c120ebd7",
+       "network": "none",
+       "record": "<ROOT>/18-capture-failure/replays/66e08480c0ab700f500dae43c120ebd7/run.json",
+       "run_id": "66e08480c0ab700f500dae43c120ebd7",
+       "snapshot_sha256": "a66e9e9870224a846ff8eb31241ce3625b8818ffc88152dca9412c63938d7113",
+       "stop": {
+        "capture_cleanup": {
+         "confirmed": true,
+         "injected": true,
+         "reason": "timeout"
+        },
+        "client_confirmed": true,
+        "confirmed": true,
+        "container_confirmed": true,
+        "exit_code": 0,
+        "killed": false,
+        "oom_killed": false,
+        "status": "exited"
+       }
+      },
+      "duration_seconds": "<duration>",
+      "failure": "timeout after 2s",
+      "returncode": -9,
+      "terminated": true
+     }
+    ],
+    "state": "replay_failed"
+   },
+   "records": [
+    {
+     "argv": [
+      "/opt/zeus/bin/python",
+      "-m",
+      "pytest",
+      "-q"
+     ],
+     "container": "eeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee1",
+     "container_name": "zeus-verifier-66e08480c0ab700f500dae43c120ebd7",
+     "image": "sha256:aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+     "isolation_digest": "01afe59a75022e32546e61ac04d71927a8c5cab72cf591f7f4a3d8886672c46c",
+     "label": "zeus.isolated.run=66e08480c0ab700f500dae43c120ebd7",
+     "lifecycle": [
+      {
+       "at": "<time>",
+       "snapshot_sha256": "a66e9e9870224a846ff8eb31241ce3625b8818ffc88152dca9412c63938d7113",
+       "state": "prepared"
+      },
+      {
+       "at": "<time>",
+       "container": "eeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee1",
+       "state": "created"
+      },
+      {
+       "at": "<time>",
+       "recovery": {
+        "container": "eeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee1",
+        "name": "zeus-verifier-66e08480c0ab700f500dae43c120ebd7",
+        "record": "<ROOT>/18-capture-failure/replays/66e08480c0ab700f500dae43c120ebd7/run.json"
+       },
+       "state": "start_requested"
+      },
+      {
+       "at": "<time>",
+       "interrupted": null,
+       "state": "stop_confirmed",
+       "stop": {
+        "capture_cleanup": {
+         "confirmed": true,
+         "injected": true,
+         "reason": "timeout"
+        },
+        "client_confirmed": true,
+        "confirmed": true,
+        "container_confirmed": true,
+        "exit_code": 0,
+        "killed": false,
+        "oom_killed": false,
+        "status": "exited"
+       }
+      },
+      {
+       "at": "<time>",
+       "outcome": "timeout after 2s",
+       "state": "evidence_retained"
+      },
+      {
+       "at": "<time>",
+       "state": "removed"
+      }
+     ],
+     "record": "<ROOT>/18-capture-failure/replays/66e08480c0ab700f500dae43c120ebd7/run.json",
+     "result": {
+      "cleanup": {
+       "confirmed": true,
+       "injected": true,
+       "reason": "timeout"
+      },
+      "container": {
+       "controls": {
+        "cap_drop": [
+         "ALL"
+        ],
+        "image": "sha256:aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+        "labels": {
+         "zeus.isolated.role": "verifier",
+         "zeus.isolated.run": "66e08480c0ab700f500dae43c120ebd7"
+        },
+        "memory": 1,
+        "mounts": [
+         {
+          "Destination": "/workspace",
+          "RW": true,
+          "Source": "<ROOT>/18-capture-failure/replays/66e08480c0ab700f500dae43c120ebd7/workspace",
+          "Type": "bind"
+         }
+        ],
+        "nano_cpus": 1,
+        "network": "none",
+        "pids_limit": 512,
+        "ports": {},
+        "privileged": false,
+        "read_only": true,
+        "security_opt": [
+         "no-new-privileges"
+        ],
+        "user": "4242:4242"
+       },
+       "credentials": "none",
+       "id": "eeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee1",
+       "image": "sha256:aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+       "name": "zeus-verifier-66e08480c0ab700f500dae43c120ebd7",
+       "network": "none",
+       "record": "<ROOT>/18-capture-failure/replays/66e08480c0ab700f500dae43c120ebd7/run.json",
+       "run_id": "66e08480c0ab700f500dae43c120ebd7",
+       "snapshot_sha256": "a66e9e9870224a846ff8eb31241ce3625b8818ffc88152dca9412c63938d7113",
+       "stop": {
+        "capture_cleanup": {
+         "confirmed": true,
+         "injected": true,
+         "reason": "timeout"
+        },
+        "client_confirmed": true,
+        "confirmed": true,
+        "container_confirmed": true,
+        "exit_code": 0,
+        "killed": false,
+        "oom_killed": false,
+        "status": "exited"
+       }
+      },
+      "duration_seconds": "<duration>",
+      "failure": "timeout after 2s",
+      "returncode": -9,
+      "terminated": true
+     },
+     "retained_files": {},
+     "role": "verifier",
+     "run_id": "66e08480c0ab700f500dae43c120ebd7",
+     "snapshot": "<ROOT>/18-capture-failure/replays/66e08480c0ab700f500dae43c120ebd7/workspace",
+     "state": "removed",
+     "workspace": "<ROOT>/18-capture-failure/candidate"
+    }
+   ],
+   "unresolved": []
+  },
+  "controls_refused": {
+   "captured": [],
+   "containers": 1,
+   "finding": {
+    "argv_identical": false,
+    "argv_transformation": "first token \"python\" replaced by the trusted host interpreter; authorization was decided on the original argv",
+    "cause": "attempt 1: isolated_replay_unavailable: container_controls_mismatch",
+    "claim": {
+     "argv": [
+      "python",
+      "-m",
+      "pytest",
+      "-q"
+     ],
+     "expected_exit": 0,
+     "id": "28c3babc7015e24ef6ba63cb4a8b117db4a3aef30dba2db8de838dc5f3de99c3",
+     "kind": "command",
+     "origin": "free_text"
+    },
+    "interpreter": "/opt/zeus/bin/python",
+    "original_argv": [
+     "python",
+     "-m",
+     "pytest",
+     "-q"
+    ],
+    "replay_argv": [
+     "/opt/zeus/bin/python",
+     "-m",
+     "pytest",
+     "-q"
+    ],
+    "runs": [
+     {
+      "container": {
+       "cleanup": {
+        "exit_code": 0,
+        "removed": true
+       },
+       "credentials": "none",
+       "id": "eeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee1",
+       "image": "sha256:aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+       "name": "zeus-verifier-9900512341ec2f7397ef7d0c0e5eda9d",
+       "network": "none",
+       "run_id": "9900512341ec2f7397ef7d0c0e5eda9d",
+       "snapshot_sha256": "a66e9e9870224a846ff8eb31241ce3625b8818ffc88152dca9412c63938d7113"
+      },
+      "duration_seconds": "<duration>",
+      "failure": "isolated_replay_unavailable: container_controls_mismatch",
+      "returncode": null
+     }
+    ],
+    "state": "replay_failed"
+   },
+   "records": [
+    {
+     "argv": [
+      "/opt/zeus/bin/python",
+      "-m",
+      "pytest",
+      "-q"
+     ],
+     "container": "eeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee1",
+     "container_name": "zeus-verifier-9900512341ec2f7397ef7d0c0e5eda9d",
+     "image": "sha256:aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+     "isolation_digest": "01afe59a75022e32546e61ac04d71927a8c5cab72cf591f7f4a3d8886672c46c",
+     "label": "zeus.isolated.run=9900512341ec2f7397ef7d0c0e5eda9d",
+     "lifecycle": [
+      {
+       "at": "<time>",
+       "snapshot_sha256": "a66e9e9870224a846ff8eb31241ce3625b8818ffc88152dca9412c63938d7113",
+       "state": "prepared"
+      },
+      {
+       "at": "<time>",
+       "container": "eeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee1",
+       "state": "created"
+      },
+      {
+       "at": "<time>",
+       "reason": "container_controls_mismatch",
+       "state": "refused"
+      }
+     ],
+     "record": "<ROOT>/16-controls-refused/replays/9900512341ec2f7397ef7d0c0e5eda9d/run.json",
+     "role": "verifier",
+     "run_id": "9900512341ec2f7397ef7d0c0e5eda9d",
+     "snapshot": "<ROOT>/16-controls-refused/replays/9900512341ec2f7397ef7d0c0e5eda9d/workspace",
+     "state": "refused",
+     "workspace": "<ROOT>/16-controls-refused/candidate"
+    }
+   ],
+   "snapshots": [],
+   "unresolved": []
+  },
+  "controls_refused_not_removed": {
+   "finding": {
+    "argv_identical": false,
+    "argv_transformation": "first token \"python\" replaced by the trusted host interpreter; authorization was decided on the original argv",
+    "cause": "attempt 1: isolated_replay_unavailable: container_controls_mismatch",
+    "claim": {
+     "argv": [
+      "python",
+      "-m",
+      "pytest",
+      "-q"
+     ],
+     "expected_exit": 0,
+     "id": "28c3babc7015e24ef6ba63cb4a8b117db4a3aef30dba2db8de838dc5f3de99c3",
+     "kind": "command",
+     "origin": "free_text"
+    },
+    "interpreter": "/opt/zeus/bin/python",
+    "original_argv": [
+     "python",
+     "-m",
+     "pytest",
+     "-q"
+    ],
+    "replay_argv": [
+     "/opt/zeus/bin/python",
+     "-m",
+     "pytest",
+     "-q"
+    ],
+    "runs": [
+     {
+      "container": {
+       "cleanup": {
+        "exit_code": 1,
+        "removed": false
+       },
+       "credentials": "none",
+       "id": "eeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee1",
+       "image": "sha256:aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+       "name": "zeus-verifier-d71501b50da60e69431c2d4ab5814b01",
+       "network": "none",
+       "run_id": "d71501b50da60e69431c2d4ab5814b01",
+       "snapshot_sha256": "a66e9e9870224a846ff8eb31241ce3625b8818ffc88152dca9412c63938d7113"
+      },
+      "duration_seconds": "<duration>",
+      "failure": "isolated_replay_unavailable: container_controls_mismatch",
+      "returncode": null
+     }
+    ],
+    "state": "replay_failed"
+   },
+   "records": [
+    {
+     "argv": [
+      "/opt/zeus/bin/python",
+      "-m",
+      "pytest",
+      "-q"
+     ],
+     "container": "eeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee1",
+     "container_name": "zeus-verifier-d71501b50da60e69431c2d4ab5814b01",
+     "image": "sha256:aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+     "isolation_digest": "01afe59a75022e32546e61ac04d71927a8c5cab72cf591f7f4a3d8886672c46c",
+     "label": "zeus.isolated.run=d71501b50da60e69431c2d4ab5814b01",
+     "lifecycle": [
+      {
+       "at": "<time>",
+       "snapshot_sha256": "a66e9e9870224a846ff8eb31241ce3625b8818ffc88152dca9412c63938d7113",
+       "state": "prepared"
+      },
+      {
+       "at": "<time>",
+       "container": "eeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee1",
+       "state": "created"
+      }
+     ],
+     "record": "<ROOT>/17-controls-refused-kept/replays/d71501b50da60e69431c2d4ab5814b01/run.json",
+     "role": "verifier",
+     "run_id": "d71501b50da60e69431c2d4ab5814b01",
+     "snapshot": "<ROOT>/17-controls-refused-kept/replays/d71501b50da60e69431c2d4ab5814b01/workspace",
+     "state": "created",
+     "workspace": "<ROOT>/17-controls-refused-kept/candidate"
+    }
+   ],
+   "snapshots": [
+    "replays/d71501b50da60e69431c2d4ab5814b01/workspace"
+   ],
+   "unresolved": [
+    {
+     "container": "eeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee1",
+     "record": "<ROOT>/17-controls-refused-kept/replays/d71501b50da60e69431c2d4ab5814b01/run.json",
+     "run_id": "d71501b50da60e69431c2d4ab5814b01",
+     "state": "created",
+     "workspace": "<ROOT>/17-controls-refused-kept/candidate"
+    }
+   ]
+  },
+  "create_refused": {
+   "captured": [],
+   "finding": {
+    "argv_identical": false,
+    "argv_transformation": "first token \"python\" replaced by the trusted host interpreter; authorization was decided on the original argv",
+    "cause": "attempt 1: isolated_replay_unavailable: container_create_failed",
+    "claim": {
+     "argv": [
+      "python",
+      "-m",
+      "pytest",
+      "-q"
+     ],
+     "expected_exit": 0,
+     "id": "28c3babc7015e24ef6ba63cb4a8b117db4a3aef30dba2db8de838dc5f3de99c3",
+     "kind": "command",
+     "origin": "free_text"
+    },
+    "interpreter": "/opt/zeus/bin/python",
+    "original_argv": [
+     "python",
+     "-m",
+     "pytest",
+     "-q"
+    ],
+    "replay_argv": [
+     "/opt/zeus/bin/python",
+     "-m",
+     "pytest",
+     "-q"
+    ],
+    "runs": [
+     {
+      "container": {
+       "credentials": "none",
+       "image": "sha256:aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+       "name": "zeus-verifier-0e36417e0f4ffb71d7bdda0fc8788544",
+       "network": "none",
+       "run_id": "0e36417e0f4ffb71d7bdda0fc8788544",
+       "snapshot_sha256": "a66e9e9870224a846ff8eb31241ce3625b8818ffc88152dca9412c63938d7113"
+      },
+      "duration_seconds": "<duration>",
+      "failure": "isolated_replay_unavailable: container_create_failed",
+      "returncode": null
+     }
+    ],
+    "state": "replay_failed"
+   },
+   "records": [
+    {
+     "argv": [
+      "/opt/zeus/bin/python",
+      "-m",
+      "pytest",
+      "-q"
+     ],
+     "container": null,
+     "container_name": "zeus-verifier-0e36417e0f4ffb71d7bdda0fc8788544",
+     "image": "sha256:aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+     "isolation_digest": "01afe59a75022e32546e61ac04d71927a8c5cab72cf591f7f4a3d8886672c46c",
+     "label": "zeus.isolated.run=0e36417e0f4ffb71d7bdda0fc8788544",
+     "lifecycle": [
+      {
+       "at": "<time>",
+       "snapshot_sha256": "a66e9e9870224a846ff8eb31241ce3625b8818ffc88152dca9412c63938d7113",
+       "state": "prepared"
+      },
+      {
+       "at": "<time>",
+       "reason": "container_create_failed",
+       "state": "refused"
+      }
+     ],
+     "record": "<ROOT>/14-create-refused/replays/0e36417e0f4ffb71d7bdda0fc8788544/run.json",
+     "role": "verifier",
+     "run_id": "0e36417e0f4ffb71d7bdda0fc8788544",
+     "snapshot": "<ROOT>/14-create-refused/replays/0e36417e0f4ffb71d7bdda0fc8788544/workspace",
+     "state": "refused",
+     "workspace": "<ROOT>/14-create-refused/candidate"
+    }
+   ],
+   "snapshots": [],
+   "verbs": [
+    "create",
+    "ps"
+   ]
+  },
+  "lost_create_id": {
+   "records": [
+    {
+     "argv": [
+      "/opt/zeus/bin/python",
+      "-m",
+      "pytest",
+      "-q"
+     ],
+     "container": "eeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee1",
+     "container_name": "zeus-verifier-83b8e9a7954066cefbee8fc7f70b8f7a",
+     "image": "sha256:aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+     "isolation_digest": "01afe59a75022e32546e61ac04d71927a8c5cab72cf591f7f4a3d8886672c46c",
+     "label": "zeus.isolated.run=83b8e9a7954066cefbee8fc7f70b8f7a",
+     "lifecycle": [
+      {
+       "at": "<time>",
+       "snapshot_sha256": "a66e9e9870224a846ff8eb31241ce3625b8818ffc88152dca9412c63938d7113",
+       "state": "prepared"
+      },
+      {
+       "at": "<time>",
+       "container": "eeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee1",
+       "state": "created"
+      },
+      {
+       "at": "<time>",
+       "recovery": {
+        "container": "eeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee1",
+        "name": "zeus-verifier-83b8e9a7954066cefbee8fc7f70b8f7a",
+        "record": "<ROOT>/15-lost-create-id/replays/83b8e9a7954066cefbee8fc7f70b8f7a/run.json"
+       },
+       "state": "start_requested"
+      },
+      {
+       "at": "<time>",
+       "interrupted": null,
+       "state": "stop_confirmed",
+       "stop": {
+        "capture_cleanup": {
+         "confirmed": true,
+         "injected": true,
+         "reason": "exited"
+        },
+        "client_confirmed": true,
+        "confirmed": true,
+        "container_confirmed": true,
+        "exit_code": 0,
+        "killed": false,
+        "oom_killed": false,
+        "status": "exited"
+       }
+      },
+      {
+       "at": "<time>",
+       "outcome": "replayed",
+       "state": "evidence_retained"
+      },
+      {
+       "at": "<time>",
+       "state": "removed"
+      }
+     ],
+     "record": "<ROOT>/15-lost-create-id/replays/83b8e9a7954066cefbee8fc7f70b8f7a/run.json",
+     "result": {
+      "cleanup": {
+       "confirmed": true,
+       "injected": true,
+       "reason": "exited"
+      },
+      "container": {
+       "controls": {
+        "cap_drop": [
+         "ALL"
+        ],
+        "image": "sha256:aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+        "labels": {
+         "zeus.isolated.role": "verifier",
+         "zeus.isolated.run": "83b8e9a7954066cefbee8fc7f70b8f7a"
+        },
+        "memory": 1,
+        "mounts": [
+         {
+          "Destination": "/workspace",
+          "RW": true,
+          "Source": "<ROOT>/15-lost-create-id/replays/83b8e9a7954066cefbee8fc7f70b8f7a/workspace",
+          "Type": "bind"
+         }
+        ],
+        "nano_cpus": 1,
+        "network": "none",
+        "pids_limit": 512,
+        "ports": {},
+        "privileged": false,
+        "read_only": true,
+        "security_opt": [
+         "no-new-privileges"
+        ],
+        "user": "4242:4242"
+       },
+       "credentials": "none",
+       "id": "eeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee1",
+       "image": "sha256:aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+       "name": "zeus-verifier-83b8e9a7954066cefbee8fc7f70b8f7a",
+       "network": "none",
+       "record": "<ROOT>/15-lost-create-id/replays/83b8e9a7954066cefbee8fc7f70b8f7a/run.json",
+       "run_id": "83b8e9a7954066cefbee8fc7f70b8f7a",
+       "snapshot_sha256": "a66e9e9870224a846ff8eb31241ce3625b8818ffc88152dca9412c63938d7113",
+       "stop": {
+        "capture_cleanup": {
+         "confirmed": true,
+         "injected": true,
+         "reason": "exited"
+        },
+        "client_confirmed": true,
+        "confirmed": true,
+        "container_confirmed": true,
+        "exit_code": 0,
+        "killed": false,
+        "oom_killed": false,
+        "status": "exited"
+       }
+      },
+      "duration_seconds": "<duration>",
+      "failure": null,
+      "returncode": 0,
+      "terminated": false
+     },
+     "retained_files": {},
+     "role": "verifier",
+     "run_id": "83b8e9a7954066cefbee8fc7f70b8f7a",
+     "snapshot": "<ROOT>/15-lost-create-id/replays/83b8e9a7954066cefbee8fc7f70b8f7a/workspace",
+     "state": "removed",
+     "workspace": "<ROOT>/15-lost-create-id/candidate"
+    },
+    {
+     "argv": [
+      "/opt/zeus/bin/python",
+      "-m",
+      "pytest",
+      "-q"
+     ],
+     "container": "eeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee1",
+     "container_name": "zeus-verifier-ff90eccd25a0954e17490dc114c283b3",
+     "image": "sha256:aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+     "isolation_digest": "01afe59a75022e32546e61ac04d71927a8c5cab72cf591f7f4a3d8886672c46c",
+     "label": "zeus.isolated.run=ff90eccd25a0954e17490dc114c283b3",
+     "lifecycle": [
+      {
+       "at": "<time>",
+       "snapshot_sha256": "a66e9e9870224a846ff8eb31241ce3625b8818ffc88152dca9412c63938d7113",
+       "state": "prepared"
+      },
+      {
+       "at": "<time>",
+       "container": "eeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee1",
+       "state": "created"
+      },
+      {
+       "at": "<time>",
+       "recovery": {
+        "container": "eeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee1",
+        "name": "zeus-verifier-ff90eccd25a0954e17490dc114c283b3",
+        "record": "<ROOT>/15-lost-create-id/replays/ff90eccd25a0954e17490dc114c283b3/run.json"
+       },
+       "state": "start_requested"
+      },
+      {
+       "at": "<time>",
+       "interrupted": null,
+       "state": "stop_confirmed",
+       "stop": {
+        "capture_cleanup": {
+         "confirmed": true,
+         "injected": true,
+         "reason": "exited"
+        },
+        "client_confirmed": true,
+        "confirmed": true,
+        "container_confirmed": true,
+        "exit_code": 0,
+        "killed": false,
+        "oom_killed": false,
+        "status": "exited"
+       }
+      },
+      {
+       "at": "<time>",
+       "outcome": "replayed",
+       "state": "evidence_retained"
+      },
+      {
+       "at": "<time>",
+       "state": "removed"
+      }
+     ],
+     "record": "<ROOT>/15-lost-create-id/replays/ff90eccd25a0954e17490dc114c283b3/run.json",
+     "result": {
+      "cleanup": {
+       "confirmed": true,
+       "injected": true,
+       "reason": "exited"
+      },
+      "container": {
+       "controls": {
+        "cap_drop": [
+         "ALL"
+        ],
+        "image": "sha256:aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+        "labels": {
+         "zeus.isolated.role": "verifier",
+         "zeus.isolated.run": "ff90eccd25a0954e17490dc114c283b3"
+        },
+        "memory": 1,
+        "mounts": [
+         {
+          "Destination": "/workspace",
+          "RW": true,
+          "Source": "<ROOT>/15-lost-create-id/replays/ff90eccd25a0954e17490dc114c283b3/workspace",
+          "Type": "bind"
+         }
+        ],
+        "nano_cpus": 1,
+        "network": "none",
+        "pids_limit": 512,
+        "ports": {},
+        "privileged": false,
+        "read_only": true,
+        "security_opt": [
+         "no-new-privileges"
+        ],
+        "user": "4242:4242"
+       },
+       "credentials": "none",
+       "id": "eeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee1",
+       "image": "sha256:aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+       "name": "zeus-verifier-ff90eccd25a0954e17490dc114c283b3",
+       "network": "none",
+       "record": "<ROOT>/15-lost-create-id/replays/ff90eccd25a0954e17490dc114c283b3/run.json",
+       "run_id": "ff90eccd25a0954e17490dc114c283b3",
+       "snapshot_sha256": "a66e9e9870224a846ff8eb31241ce3625b8818ffc88152dca9412c63938d7113",
+       "stop": {
+        "capture_cleanup": {
+         "confirmed": true,
+         "injected": true,
+         "reason": "exited"
+        },
+        "client_confirmed": true,
+        "confirmed": true,
+        "container_confirmed": true,
+        "exit_code": 0,
+        "killed": false,
+        "oom_killed": false,
+        "status": "exited"
+       }
+      },
+      "duration_seconds": "<duration>",
+      "failure": null,
+      "returncode": 0,
+      "terminated": false
+     },
+     "retained_files": {},
+     "role": "verifier",
+     "run_id": "ff90eccd25a0954e17490dc114c283b3",
+     "snapshot": "<ROOT>/15-lost-create-id/replays/ff90eccd25a0954e17490dc114c283b3/workspace",
+     "state": "removed",
+     "workspace": "<ROOT>/15-lost-create-id/candidate"
+    }
+   ],
+   "state": "checked",
+   "verbs": [
+    "create",
+    "ps",
+    "inspect",
+    "inspect"
+   ]
+  },
+  "preparation_oserror": {
+   "captured": [],
+   "creates": 0,
+   "finding": {
+    "argv_identical": false,
+    "argv_transformation": "first token \"python\" replaced by the trusted host interpreter; authorization was decided on the original argv",
+    "cause": "attempt 1: isolated_replay_unavailable: NotADirectoryError",
+    "claim": {
+     "argv": [
+      "python",
+      "-m",
+      "pytest",
+      "-q"
+     ],
+     "expected_exit": 0,
+     "id": "28c3babc7015e24ef6ba63cb4a8b117db4a3aef30dba2db8de838dc5f3de99c3",
+     "kind": "command",
+     "origin": "free_text"
+    },
+    "interpreter": "/opt/zeus/bin/python",
+    "original_argv": [
+     "python",
+     "-m",
+     "pytest",
+     "-q"
+    ],
+    "replay_argv": [
+     "/opt/zeus/bin/python",
+     "-m",
+     "pytest",
+     "-q"
+    ],
+    "runs": [
+     {
+      "container": {
+       "credentials": "none",
+       "image": "sha256:aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+       "name": "zeus-verifier-b0b5c696d55eaa6da7e296e861880d7b",
+       "network": "none",
+       "run_id": "b0b5c696d55eaa6da7e296e861880d7b"
+      },
+      "duration_seconds": "<duration>",
+      "failure": "isolated_replay_unavailable: NotADirectoryError",
+      "returncode": null
+     }
+    ],
+    "state": "replay_failed"
+   },
+   "verbs": []
+  },
+  "unavailable": {
+   "captured": [],
+   "finding": {
+    "argv_identical": false,
+    "argv_transformation": "first token \"python\" replaced by the trusted host interpreter; authorization was decided on the original argv",
+    "cause": "attempt 1: isolated_replay_unavailable: container_create_failed",
+    "claim": {
+     "argv": [
+      "python",
+      "-m",
+      "pytest",
+      "-q"
+     ],
+     "expected_exit": 0,
+     "id": "28c3babc7015e24ef6ba63cb4a8b117db4a3aef30dba2db8de838dc5f3de99c3",
+     "kind": "command",
+     "origin": "free_text"
+    },
+    "interpreter": "/opt/zeus/bin/python",
+    "original_argv": [
+     "python",
+     "-m",
+     "pytest",
+     "-q"
+    ],
+    "replay_argv": [
+     "/opt/zeus/bin/python",
+     "-m",
+     "pytest",
+     "-q"
+    ],
+    "runs": [
+     {
+      "container": {
+       "credentials": "none",
+       "image": "sha256:aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+       "name": "zeus-verifier-e551fec87663b4a78051a73a4e87e4dc",
+       "network": "none",
+       "run_id": "e551fec87663b4a78051a73a4e87e4dc",
+       "snapshot_sha256": "a66e9e9870224a846ff8eb31241ce3625b8818ffc88152dca9412c63938d7113"
+      },
+      "duration_seconds": "<duration>",
+      "failure": "isolated_replay_unavailable: container_create_failed",
+      "returncode": null
+     }
+    ],
+    "state": "replay_failed"
+   },
+   "records": [
+    {
+     "argv": [
+      "/opt/zeus/bin/python",
+      "-m",
+      "pytest",
+      "-q"
+     ],
+     "container": null,
+     "container_name": "zeus-verifier-e551fec87663b4a78051a73a4e87e4dc",
+     "image": "sha256:aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+     "isolation_digest": "01afe59a75022e32546e61ac04d71927a8c5cab72cf591f7f4a3d8886672c46c",
+     "label": "zeus.isolated.run=e551fec87663b4a78051a73a4e87e4dc",
+     "lifecycle": [
+      {
+       "at": "<time>",
+       "snapshot_sha256": "a66e9e9870224a846ff8eb31241ce3625b8818ffc88152dca9412c63938d7113",
+       "state": "prepared"
+      },
+      {
+       "at": "<time>",
+       "reason": "container_create_failed",
+       "state": "refused"
+      }
+     ],
+     "record": "<ROOT>/13-unavailable/replays/e551fec87663b4a78051a73a4e87e4dc/run.json",
+     "role": "verifier",
+     "run_id": "e551fec87663b4a78051a73a4e87e4dc",
+     "snapshot": "<ROOT>/13-unavailable/replays/e551fec87663b4a78051a73a4e87e4dc/workspace",
+     "state": "refused",
+     "workspace": "<ROOT>/13-unavailable/candidate"
+    }
+   ],
+   "snapshots": []
+  },
+  "unconfirmed_after_return": {
+   "containers": 2,
+   "finding": {
+    "argv_identical": false,
+    "argv_transformation": "first token \"python\" replaced by the trusted host interpreter; authorization was decided on the original argv",
+    "cause": "attempt 1: container_stop_unconfirmed; recovery record <ROOT>/11-stop-unconfirmed/replays/16d5cbeb2a43aa56c10404b121264a71/run.json container eeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee1",
+    "claim": {
+     "argv": [
+      "python",
+      "-m",
+      "pytest",
+      "-q"
+     ],
+     "expected_exit": 0,
+     "id": "28c3babc7015e24ef6ba63cb4a8b117db4a3aef30dba2db8de838dc5f3de99c3",
+     "kind": "command",
+     "origin": "free_text"
+    },
+    "interpreter": "/opt/zeus/bin/python",
+    "original_argv": [
+     "python",
+     "-m",
+     "pytest",
+     "-q"
+    ],
+    "replay_argv": [
+     "/opt/zeus/bin/python",
+     "-m",
+     "pytest",
+     "-q"
+    ],
+    "runs": [
+     {
+      "cleanup": {
+       "confirmed": true,
+       "injected": true,
+       "reason": "exited"
+      },
+      "container": {
+       "controls": {
+        "cap_drop": [
+         "ALL"
+        ],
+        "image": "sha256:aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+        "labels": {
+         "zeus.isolated.role": "verifier",
+         "zeus.isolated.run": "16d5cbeb2a43aa56c10404b121264a71"
+        },
+        "memory": 1,
+        "mounts": [
+         {
+          "Destination": "/workspace",
+          "RW": true,
+          "Source": "<ROOT>/11-stop-unconfirmed/replays/16d5cbeb2a43aa56c10404b121264a71/workspace",
+          "Type": "bind"
+         }
+        ],
+        "nano_cpus": 1,
+        "network": "none",
+        "pids_limit": 512,
+        "ports": {},
+        "privileged": false,
+        "read_only": true,
+        "security_opt": [
+         "no-new-privileges"
+        ],
+        "user": "4242:4242"
+       },
+       "credentials": "none",
+       "id": "eeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee1",
+       "image": "sha256:aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+       "name": "zeus-verifier-16d5cbeb2a43aa56c10404b121264a71",
+       "network": "none",
+       "record": "<ROOT>/11-stop-unconfirmed/replays/16d5cbeb2a43aa56c10404b121264a71/run.json",
+       "run_id": "16d5cbeb2a43aa56c10404b121264a71",
+       "snapshot_sha256": "a66e9e9870224a846ff8eb31241ce3625b8818ffc88152dca9412c63938d7113",
+       "stop": {
+        "capture_cleanup": {
+         "confirmed": true,
+         "injected": true,
+         "reason": "exited"
+        },
+        "client_confirmed": true,
+        "confirmed": false,
+        "container_confirmed": false,
+        "exit_code": 0,
+        "killed": true,
+        "oom_killed": false,
+        "status": "running"
+       }
+      },
+      "duration_seconds": "<duration>",
+      "failure": "container_stop_unconfirmed; recovery record <ROOT>/11-stop-unconfirmed/replays/16d5cbeb2a43aa56c10404b121264a71/run.json container eeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee1",
+      "returncode": 0,
+      "terminated": false
+     }
+    ],
+    "state": "replay_failed"
+   },
+   "records": [
+    {
+     "argv": [
+      "/opt/zeus/bin/python",
+      "-m",
+      "pytest",
+      "-q"
+     ],
+     "container": "eeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee1",
+     "container_name": "zeus-verifier-16d5cbeb2a43aa56c10404b121264a71",
+     "image": "sha256:aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+     "isolation_digest": "b740d7ac51c10a4d57e33234c3fe2c57eabfc023126296187676a49a520e6b19",
+     "label": "zeus.isolated.run=16d5cbeb2a43aa56c10404b121264a71",
+     "lifecycle": [
+      {
+       "at": "<time>",
+       "snapshot_sha256": "a66e9e9870224a846ff8eb31241ce3625b8818ffc88152dca9412c63938d7113",
+       "state": "prepared"
+      },
+      {
+       "at": "<time>",
+       "container": "eeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee1",
+       "state": "created"
+      },
+      {
+       "at": "<time>",
+       "recovery": {
+        "container": "eeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee1",
+        "name": "zeus-verifier-16d5cbeb2a43aa56c10404b121264a71",
+        "record": "<ROOT>/11-stop-unconfirmed/replays/16d5cbeb2a43aa56c10404b121264a71/run.json"
+       },
+       "state": "start_requested"
+      },
+      {
+       "at": "<time>",
+       "interrupted": null,
+       "recovery": {
+        "container": "eeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee1",
+        "name": "zeus-verifier-16d5cbeb2a43aa56c10404b121264a71",
+        "record": "<ROOT>/11-stop-unconfirmed/replays/16d5cbeb2a43aa56c10404b121264a71/run.json"
+       },
+       "state": "stop_unconfirmed",
+       "stop": {
+        "capture_cleanup": {
+         "confirmed": true,
+         "injected": true,
+         "reason": "exited"
+        },
+        "client_confirmed": true,
+        "confirmed": false,
+        "container_confirmed": false,
+        "exit_code": 0,
+        "killed": true,
+        "oom_killed": false,
+        "status": "running"
+       }
+      }
+     ],
+     "record": "<ROOT>/11-stop-unconfirmed/replays/16d5cbeb2a43aa56c10404b121264a71/run.json",
+     "role": "verifier",
+     "run_id": "16d5cbeb2a43aa56c10404b121264a71",
+     "snapshot": "<ROOT>/11-stop-unconfirmed/replays/16d5cbeb2a43aa56c10404b121264a71/workspace",
+     "state": "stop_unconfirmed",
+     "workspace": "<ROOT>/11-stop-unconfirmed/candidate"
+    }
+   ]
+  },
+  "unwritten": {
+   "containers": 2,
+   "finding": {
+    "argv_identical": false,
+    "argv_transformation": "first token \"python\" replaced by the trusted host interpreter; authorization was decided on the original argv",
+    "cause": "attempt 1: replay_evidence_unwritten; container retained; recovery record <ROOT>/12-unwritten/replays/18bb15f41e780a4d102af56ced3b575a/run.json container eeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee1",
+    "claim": {
+     "argv": [
+      "python",
+      "-m",
+      "pytest",
+      "-q"
+     ],
+     "expected_exit": 0,
+     "id": "28c3babc7015e24ef6ba63cb4a8b117db4a3aef30dba2db8de838dc5f3de99c3",
+     "kind": "command",
+     "origin": "free_text"
+    },
+    "interpreter": "/opt/zeus/bin/python",
+    "original_argv": [
+     "python",
+     "-m",
+     "pytest",
+     "-q"
+    ],
+    "replay_argv": [
+     "/opt/zeus/bin/python",
+     "-m",
+     "pytest",
+     "-q"
+    ],
+    "runs": [
+     {
+      "cleanup": {
+       "confirmed": true,
+       "injected": true,
+       "reason": "exited"
+      },
+      "container": {
+       "cleanup": {
+        "evidence_written": false,
+        "exit_code": null,
+        "recovery": {
+         "container": "eeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee1",
+         "name": "zeus-verifier-18bb15f41e780a4d102af56ced3b575a",
+         "record": "<ROOT>/12-unwritten/replays/18bb15f41e780a4d102af56ced3b575a/run.json"
+        },
+        "removed": false
+       },
+       "controls": {
+        "cap_drop": [
+         "ALL"
+        ],
+        "image": "sha256:aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+        "labels": {
+         "zeus.isolated.role": "verifier",
+         "zeus.isolated.run": "18bb15f41e780a4d102af56ced3b575a"
+        },
+        "memory": 1,
+        "mounts": [
+         {
+          "Destination": "/workspace",
+          "RW": true,
+          "Source": "<ROOT>/12-unwritten/replays/18bb15f41e780a4d102af56ced3b575a/workspace",
+          "Type": "bind"
+         }
+        ],
+        "nano_cpus": 1,
+        "network": "none",
+        "pids_limit": 512,
+        "ports": {},
+        "privileged": false,
+        "read_only": true,
+        "security_opt": [
+         "no-new-privileges"
+        ],
+        "user": "4242:4242"
+       },
+       "credentials": "none",
+       "id": "eeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee1",
+       "image": "sha256:aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+       "name": "zeus-verifier-18bb15f41e780a4d102af56ced3b575a",
+       "network": "none",
+       "record": "<ROOT>/12-unwritten/replays/18bb15f41e780a4d102af56ced3b575a/run.json",
+       "run_id": "18bb15f41e780a4d102af56ced3b575a",
+       "snapshot_sha256": "a66e9e9870224a846ff8eb31241ce3625b8818ffc88152dca9412c63938d7113",
+       "stop": {
+        "capture_cleanup": {
+         "confirmed": true,
+         "injected": true,
+         "reason": "exited"
+        },
+        "client_confirmed": true,
+        "confirmed": true,
+        "container_confirmed": true,
+        "exit_code": 0,
+        "killed": false,
+        "oom_killed": false,
+        "status": "exited"
+       }
+      },
+      "duration_seconds": "<duration>",
+      "failure": "replay_evidence_unwritten; container retained; recovery record <ROOT>/12-unwritten/replays/18bb15f41e780a4d102af56ced3b575a/run.json container eeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee1",
+      "returncode": 0,
+      "terminated": false
+     }
+    ],
+    "state": "replay_failed"
+   },
+   "records": [
+    {
+     "argv": [
+      "/opt/zeus/bin/python",
+      "-m",
+      "pytest",
+      "-q"
+     ],
+     "container": "eeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee1",
+     "container_name": "zeus-verifier-18bb15f41e780a4d102af56ced3b575a",
+     "image": "sha256:aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+     "isolation_digest": "01afe59a75022e32546e61ac04d71927a8c5cab72cf591f7f4a3d8886672c46c",
+     "label": "zeus.isolated.run=18bb15f41e780a4d102af56ced3b575a",
+     "lifecycle": [
+      {
+       "at": "<time>",
+       "snapshot_sha256": "a66e9e9870224a846ff8eb31241ce3625b8818ffc88152dca9412c63938d7113",
+       "state": "prepared"
+      },
+      {
+       "at": "<time>",
+       "container": "eeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee1",
+       "state": "created"
+      },
+      {
+       "at": "<time>",
+       "recovery": {
+        "container": "eeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee1",
+        "name": "zeus-verifier-18bb15f41e780a4d102af56ced3b575a",
+        "record": "<ROOT>/12-unwritten/replays/18bb15f41e780a4d102af56ced3b575a/run.json"
+       },
+       "state": "start_requested"
+      },
+      {
+       "at": "<time>",
+       "interrupted": null,
+       "state": "stop_confirmed",
+       "stop": {
+        "capture_cleanup": {
+         "confirmed": true,
+         "injected": true,
+         "reason": "exited"
+        },
+        "client_confirmed": true,
+        "confirmed": true,
+        "container_confirmed": true,
+        "exit_code": 0,
+        "killed": false,
+        "oom_killed": false,
+        "status": "exited"
+       }
+      }
+     ],
+     "record": "<ROOT>/12-unwritten/replays/18bb15f41e780a4d102af56ced3b575a/run.json",
+     "role": "verifier",
+     "run_id": "18bb15f41e780a4d102af56ced3b575a",
+     "snapshot": "<ROOT>/12-unwritten/replays/18bb15f41e780a4d102af56ced3b575a/workspace",
+     "state": "stop_confirmed",
+     "workspace": "<ROOT>/12-unwritten/candidate"
+    }
+   ],
+   "rm_called": false,
+   "unresolved": [
+    {
+     "container": "eeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee1",
+     "record": "<ROOT>/12-unwritten/replays/18bb15f41e780a4d102af56ced3b575a/run.json",
+     "run_id": "18bb15f41e780a4d102af56ced3b575a",
+     "state": "stop_confirmed",
+     "workspace": "<ROOT>/12-unwritten/candidate"
+    }
+   ]
+  }
+ },
+ "j5_real_capture": {
+  "interrupted_in_wait": {
+   "child_gone_at_stop": true,
+   "containers_left": [
+    "ffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff"
+   ],
+   "raised": {
+    "capture_cleanup": {
+     "confirmed": true,
+     "error": null,
+     "readers_alive": [],
+     "reason": "KeyboardInterrupt",
+     "streams_closed": [
+      "stdout",
+      "stderr"
+     ],
+     "tree": {
+      "boundary": {
+       "group": "<pid>",
+       "kind": "process_group",
+       "limit": "a descendant that calls setsid leaves this group and cannot be proven gone from here",
+       "owned_from_spawn": true
+      },
+      "confirmed": true,
+      "note": "a terminated parent is not a terminated tree; acceptance needs both",
+      "parent": {
+       "already_exited": false,
+       "confirmed": true,
+       "escalated": false,
+       "exit_code": -15,
+       "pid": "<pid>",
+       "signalled": true
+      },
+      "reason": "KeyboardInterrupt",
+      "tree": {
+       "confirmed": true,
+       "evidence": "signal zero to the group until no member answers",
+       "group": "<pid>",
+       "group_empty": true,
+       "method": "process_group"
+      }
+     }
+    },
+    "message": "",
+    "raised": "KeyboardInterrupt"
+   },
+   "result": "KeyboardInterrupt",
+   "state": "removed",
+   "stop": {
+    "capture_cleanup": {
+     "confirmed": true,
+     "error": null,
+     "readers_alive": [],
+     "reason": "KeyboardInterrupt",
+     "streams_closed": [
+      "stdout",
+      "stderr"
+     ],
+     "tree": {
+      "boundary": {
+       "group": "<pid>",
+       "kind": "process_group",
+       "limit": "a descendant that calls setsid leaves this group and cannot be proven gone from here",
+       "owned_from_spawn": true
+      },
+      "confirmed": true,
+      "note": "a terminated parent is not a terminated tree; acceptance needs both",
+      "parent": {
+       "already_exited": false,
+       "confirmed": true,
+       "escalated": false,
+       "exit_code": -15,
+       "pid": "<pid>",
+       "signalled": true
+      },
+      "reason": "KeyboardInterrupt",
+      "tree": {
+       "confirmed": true,
+       "evidence": "signal zero to the group until no member answers",
+       "group": "<pid>",
+       "group_empty": true,
+       "method": "process_group"
+      }
+     }
+    },
+    "client_confirmed": true,
+    "confirmed": true,
+    "container_confirmed": true,
+    "exit_code": 0,
+    "killed": true,
+    "oom_killed": false,
+    "status": "exited"
+   },
+   "stop_before_watchdog": true,
+   "stop_calls": 1,
+   "streams_closed": true,
+   "unresolved": [],
+   "watchdog_fired": false
+  },
+  "known_failure": {
+   "child_gone": true,
+   "finding": {
+    "argv_identical": false,
+    "argv_transformation": "first token \"python\" replaced by the trusted host interpreter; authorization was decided on the original argv",
+    "cause": "attempt 1: timeout after 2s; process tree terminated",
+    "claim": {
+     "argv": [
+      "python",
+      "-m",
+      "pytest",
+      "-q"
+     ],
+     "expected_exit": 0,
+     "id": "28c3babc7015e24ef6ba63cb4a8b117db4a3aef30dba2db8de838dc5f3de99c3",
+     "kind": "command",
+     "origin": "free_text"
+    },
+    "interpreter": "/opt/zeus/bin/python",
+    "original_argv": [
+     "python",
+     "-m",
+     "pytest",
+     "-q"
+    ],
+    "replay_argv": [
+     "/opt/zeus/bin/python",
+     "-m",
+     "pytest",
+     "-q"
+    ],
+    "runs": [
+     {
+      "cleanup": {
+       "confirmed": true,
+       "error": null,
+       "readers_alive": [],
+       "reason": "timeout",
+       "streams_closed": [
+        "stdout",
+        "stderr"
+       ],
+       "tree": {
+        "boundary": {
+         "group": "<pid>",
+         "kind": "process_group",
+         "limit": "a descendant that calls setsid leaves this group and cannot be proven gone from here",
+         "owned_from_spawn": true
+        },
+        "confirmed": true,
+        "note": "a terminated parent is not a terminated tree; acceptance needs both",
+        "parent": {
+         "already_exited": false,
+         "confirmed": true,
+         "escalated": false,
+         "exit_code": -15,
+         "pid": "<pid>",
+         "signalled": true
+        },
+        "reason": "timeout",
+        "tree": {
+         "confirmed": true,
+         "evidence": "signal zero to the group until no member answers",
+         "group": "<pid>",
+         "group_empty": true,
+         "method": "process_group"
+        }
+       }
+      },
+      "container": {
+       "cleanup": {
+        "evidence_written": true,
+        "exit_code": 0,
+        "recovery": null,
+        "removed": true
+       },
+       "controls": {
+        "cap_drop": [
+         "ALL"
+        ],
+        "image": "sha256:aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+        "labels": {
+         "zeus.isolated.role": "verifier",
+         "zeus.isolated.run": "d29ea5d724e8f06cbe61a4d5a4f53621"
+        },
+        "memory": 1,
+        "mounts": [
+         {
+          "Destination": "/workspace",
+          "RW": true,
+          "Source": "<ROOT>/21-real-timeout/replays/d29ea5d724e8f06cbe61a4d5a4f53621/workspace",
+          "Type": "bind"
+         }
+        ],
+        "nano_cpus": 1,
+        "network": "none",
+        "pids_limit": 512,
+        "ports": {},
+        "privileged": false,
+        "read_only": true,
+        "security_opt": [
+         "no-new-privileges"
+        ],
+        "user": "4242:4242"
+       },
+       "credentials": "none",
+       "id": "eeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee1",
+       "image": "sha256:aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+       "name": "zeus-verifier-d29ea5d724e8f06cbe61a4d5a4f53621",
+       "network": "none",
+       "record": "<ROOT>/21-real-timeout/replays/d29ea5d724e8f06cbe61a4d5a4f53621/run.json",
+       "run_id": "d29ea5d724e8f06cbe61a4d5a4f53621",
+       "snapshot_sha256": "a66e9e9870224a846ff8eb31241ce3625b8818ffc88152dca9412c63938d7113",
+       "stop": {
+        "capture_cleanup": {
+         "confirmed": true,
+         "error": null,
+         "readers_alive": [],
+         "reason": "timeout",
+         "streams_closed": [
+          "stdout",
+          "stderr"
+         ],
+         "tree": {
+          "boundary": {
+           "group": "<pid>",
+           "kind": "process_group",
+           "limit": "a descendant that calls setsid leaves this group and cannot be proven gone from here",
+           "owned_from_spawn": true
+          },
+          "confirmed": true,
+          "note": "a terminated parent is not a terminated tree; acceptance needs both",
+          "parent": {
+           "already_exited": false,
+           "confirmed": true,
+           "escalated": false,
+           "exit_code": -15,
+           "pid": "<pid>",
+           "signalled": true
+          },
+          "reason": "timeout",
+          "tree": {
+           "confirmed": true,
+           "evidence": "signal zero to the group until no member answers",
+           "group": "<pid>",
+           "group_empty": true,
+           "method": "process_group"
+          }
+         }
+        },
+        "client_confirmed": true,
+        "confirmed": true,
+        "container_confirmed": true,
+        "exit_code": 0,
+        "killed": true,
+        "oom_killed": false,
+        "status": "exited"
+       }
+      },
+      "duration_seconds": "<duration>",
+      "failure": "timeout after 2s; process tree terminated",
+      "returncode": -15,
+      "stderr": {
+       "bytes": 0,
+       "decoding": "utf-8",
+       "ref": "sha256:evidence-replay-stderr",
+       "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+       "truncated": false
+      },
+      "stdout": {
+       "bytes": 8,
+       "decoding": "utf-8",
+       "ref": "sha256:evidence-replay-stdout",
+       "sha256": "eff64b343dcb2b1dc113648e7089b9ce9f8a7f6c7808a03a2cffb4ad7302f606",
+       "truncated": false
+      },
+      "terminated": true
+     }
+    ],
+    "state": "replay_failed"
+   },
+   "records": [
+    {
+     "argv": [
+      "/opt/zeus/bin/python",
+      "-m",
+      "pytest",
+      "-q"
+     ],
+     "container": "eeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee1",
+     "container_name": "zeus-verifier-d29ea5d724e8f06cbe61a4d5a4f53621",
+     "image": "sha256:aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+     "isolation_digest": "01afe59a75022e32546e61ac04d71927a8c5cab72cf591f7f4a3d8886672c46c",
+     "label": "zeus.isolated.run=d29ea5d724e8f06cbe61a4d5a4f53621",
+     "lifecycle": [
+      {
+       "at": "<time>",
+       "snapshot_sha256": "a66e9e9870224a846ff8eb31241ce3625b8818ffc88152dca9412c63938d7113",
+       "state": "prepared"
+      },
+      {
+       "at": "<time>",
+       "container": "eeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee1",
+       "state": "created"
+      },
+      {
+       "at": "<time>",
+       "recovery": {
+        "container": "eeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee1",
+        "name": "zeus-verifier-d29ea5d724e8f06cbe61a4d5a4f53621",
+        "record": "<ROOT>/21-real-timeout/replays/d29ea5d724e8f06cbe61a4d5a4f53621/run.json"
+       },
+       "state": "start_requested"
+      },
+      {
+       "at": "<time>",
+       "interrupted": null,
+       "state": "stop_confirmed",
+       "stop": {
+        "capture_cleanup": {
+         "confirmed": true,
+         "error": null,
+         "readers_alive": [],
+         "reason": "timeout",
+         "streams_closed": [
+          "stdout",
+          "stderr"
+         ],
+         "tree": {
+          "boundary": {
+           "group": "<pid>",
+           "kind": "process_group",
+           "limit": "a descendant that calls setsid leaves this group and cannot be proven gone from here",
+           "owned_from_spawn": true
+          },
+          "confirmed": true,
+          "note": "a terminated parent is not a terminated tree; acceptance needs both",
+          "parent": {
+           "already_exited": false,
+           "confirmed": true,
+           "escalated": false,
+           "exit_code": -15,
+           "pid": "<pid>",
+           "signalled": true
+          },
+          "reason": "timeout",
+          "tree": {
+           "confirmed": true,
+           "evidence": "signal zero to the group until no member answers",
+           "group": "<pid>",
+           "group_empty": true,
+           "method": "process_group"
+          }
+         }
+        },
+        "client_confirmed": true,
+        "confirmed": true,
+        "container_confirmed": true,
+        "exit_code": 0,
+        "killed": true,
+        "oom_killed": false,
+        "status": "exited"
+       }
+      },
+      {
+       "at": "<time>",
+       "outcome": "timeout after 2s; process tree terminated",
+       "state": "evidence_retained"
+      },
+      {
+       "at": "<time>",
+       "state": "removed"
+      }
+     ],
+     "record": "<ROOT>/21-real-timeout/replays/d29ea5d724e8f06cbe61a4d5a4f53621/run.json",
+     "result": {
+      "cleanup": {
+       "confirmed": true,
+       "error": null,
+       "readers_alive": [],
+       "reason": "timeout",
+       "streams_closed": [
+        "stdout",
+        "stderr"
+       ],
+       "tree": {
+        "boundary": {
+         "group": "<pid>",
+         "kind": "process_group",
+         "limit": "a descendant that calls setsid leaves this group and cannot be proven gone from here",
+         "owned_from_spawn": true
+        },
+        "confirmed": true,
+        "note": "a terminated parent is not a terminated tree; acceptance needs both",
+        "parent": {
+         "already_exited": false,
+         "confirmed": true,
+         "escalated": false,
+         "exit_code": -15,
+         "pid": "<pid>",
+         "signalled": true
+        },
+        "reason": "timeout",
+        "tree": {
+         "confirmed": true,
+         "evidence": "signal zero to the group until no member answers",
+         "group": "<pid>",
+         "group_empty": true,
+         "method": "process_group"
+        }
+       }
+      },
+      "container": {
+       "controls": {
+        "cap_drop": [
+         "ALL"
+        ],
+        "image": "sha256:aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+        "labels": {
+         "zeus.isolated.role": "verifier",
+         "zeus.isolated.run": "d29ea5d724e8f06cbe61a4d5a4f53621"
+        },
+        "memory": 1,
+        "mounts": [
+         {
+          "Destination": "/workspace",
+          "RW": true,
+          "Source": "<ROOT>/21-real-timeout/replays/d29ea5d724e8f06cbe61a4d5a4f53621/workspace",
+          "Type": "bind"
+         }
+        ],
+        "nano_cpus": 1,
+        "network": "none",
+        "pids_limit": 512,
+        "ports": {},
+        "privileged": false,
+        "read_only": true,
+        "security_opt": [
+         "no-new-privileges"
+        ],
+        "user": "4242:4242"
+       },
+       "credentials": "none",
+       "id": "eeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee1",
+       "image": "sha256:aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+       "name": "zeus-verifier-d29ea5d724e8f06cbe61a4d5a4f53621",
+       "network": "none",
+       "record": "<ROOT>/21-real-timeout/replays/d29ea5d724e8f06cbe61a4d5a4f53621/run.json",
+       "run_id": "d29ea5d724e8f06cbe61a4d5a4f53621",
+       "snapshot_sha256": "a66e9e9870224a846ff8eb31241ce3625b8818ffc88152dca9412c63938d7113",
+       "stop": {
+        "capture_cleanup": {
+         "confirmed": true,
+         "error": null,
+         "readers_alive": [],
+         "reason": "timeout",
+         "streams_closed": [
+          "stdout",
+          "stderr"
+         ],
+         "tree": {
+          "boundary": {
+           "group": "<pid>",
+           "kind": "process_group",
+           "limit": "a descendant that calls setsid leaves this group and cannot be proven gone from here",
+           "owned_from_spawn": true
+          },
+          "confirmed": true,
+          "note": "a terminated parent is not a terminated tree; acceptance needs both",
+          "parent": {
+           "already_exited": false,
+           "confirmed": true,
+           "escalated": false,
+           "exit_code": -15,
+           "pid": "<pid>",
+           "signalled": true
+          },
+          "reason": "timeout",
+          "tree": {
+           "confirmed": true,
+           "evidence": "signal zero to the group until no member answers",
+           "group": "<pid>",
+           "group_empty": true,
+           "method": "process_group"
+          }
+         }
+        },
+        "client_confirmed": true,
+        "confirmed": true,
+        "container_confirmed": true,
+        "exit_code": 0,
+        "killed": true,
+        "oom_killed": false,
+        "status": "exited"
+       }
+      },
+      "duration_seconds": "<duration>",
+      "failure": "timeout after 2s; process tree terminated",
+      "returncode": -15,
+      "stderr": {
+       "bytes": 0,
+       "decoding": "utf-8",
+       "raw": "",
+       "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+       "truncated": false
+      },
+      "stdout": {
+       "bytes": 8,
+       "decoding": "utf-8",
+       "raw": "started\n",
+       "sha256": "eff64b343dcb2b1dc113648e7089b9ce9f8a7f6c7808a03a2cffb4ad7302f606",
+       "truncated": false
+      },
+      "terminated": true
+     },
+     "retained_files": {},
+     "role": "verifier",
+     "run_id": "d29ea5d724e8f06cbe61a4d5a4f53621",
+     "snapshot": "<ROOT>/21-real-timeout/replays/d29ea5d724e8f06cbe61a4d5a4f53621/workspace",
+     "state": "removed",
+     "workspace": "<ROOT>/21-real-timeout/candidate"
+    }
+   ],
+   "unresolved": []
+  },
+  "normal_exit": {
+   "containers": [
+    "ffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff"
+   ],
+   "exits": [
+    0,
+    0
+   ],
+   "records": [
+    {
+     "argv": [
+      "/opt/zeus/bin/python",
+      "-m",
+      "pytest",
+      "-q"
+     ],
+     "container": "eeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee1",
+     "container_name": "zeus-verifier-d419851fe863b918a06a887bd7826a5e",
+     "image": "sha256:aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+     "isolation_digest": "01afe59a75022e32546e61ac04d71927a8c5cab72cf591f7f4a3d8886672c46c",
+     "label": "zeus.isolated.run=d419851fe863b918a06a887bd7826a5e",
+     "lifecycle": [
+      {
+       "at": "<time>",
+       "snapshot_sha256": "a66e9e9870224a846ff8eb31241ce3625b8818ffc88152dca9412c63938d7113",
+       "state": "prepared"
+      },
+      {
+       "at": "<time>",
+       "container": "eeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee1",
+       "state": "created"
+      },
+      {
+       "at": "<time>",
+       "recovery": {
+        "container": "eeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee1",
+        "name": "zeus-verifier-d419851fe863b918a06a887bd7826a5e",
+        "record": "<ROOT>/20-real-normal/replays/d419851fe863b918a06a887bd7826a5e/run.json"
+       },
+       "state": "start_requested"
+      },
+      {
+       "at": "<time>",
+       "interrupted": null,
+       "state": "stop_confirmed",
+       "stop": {
+        "capture_cleanup": {
+         "confirmed": true,
+         "error": null,
+         "readers_alive": [],
+         "reason": "exited",
+         "streams_closed": [
+          "stdout",
+          "stderr"
+         ],
+         "tree": {
+          "boundary": {
+           "group": "<pid>",
+           "kind": "process_group",
+           "limit": "a descendant that calls setsid leaves this group and cannot be proven gone from here",
+           "owned_from_spawn": true
+          },
+          "confirmed": true,
+          "note": "a terminated parent is not a terminated tree; acceptance needs both",
+          "parent": {
+           "already_exited": true,
+           "confirmed": true,
+           "ended_on_its_own": true,
+           "escalated": false,
+           "exit_code": 0,
+           "pid": "<pid>",
+           "signalled": null
+          },
+          "reason": "exited",
+          "tree": {
+           "confirmed": true,
+           "evidence": "signal zero to the group until no member answers",
+           "group": "<pid>",
+           "group_empty": true,
+           "method": "process_group"
+          }
+         }
+        },
+        "client_confirmed": true,
+        "confirmed": true,
+        "container_confirmed": true,
+        "exit_code": 0,
+        "killed": false,
+        "oom_killed": false,
+        "status": "exited"
+       }
+      },
+      {
+       "at": "<time>",
+       "outcome": "replayed",
+       "state": "evidence_retained"
+      },
+      {
+       "at": "<time>",
+       "state": "removed"
+      }
+     ],
+     "record": "<ROOT>/20-real-normal/replays/d419851fe863b918a06a887bd7826a5e/run.json",
+     "result": {
+      "cleanup": {
+       "confirmed": true,
+       "error": null,
+       "readers_alive": [],
+       "reason": "exited",
+       "streams_closed": [
+        "stdout",
+        "stderr"
+       ],
+       "tree": {
+        "boundary": {
+         "group": "<pid>",
+         "kind": "process_group",
+         "limit": "a descendant that calls setsid leaves this group and cannot be proven gone from here",
+         "owned_from_spawn": true
+        },
+        "confirmed": true,
+        "note": "a terminated parent is not a terminated tree; acceptance needs both",
+        "parent": {
+         "already_exited": true,
+         "confirmed": true,
+         "ended_on_its_own": true,
+         "escalated": false,
+         "exit_code": 0,
+         "pid": "<pid>",
+         "signalled": null
+        },
+        "reason": "exited",
+        "tree": {
+         "confirmed": true,
+         "evidence": "signal zero to the group until no member answers",
+         "group": "<pid>",
+         "group_empty": true,
+         "method": "process_group"
+        }
+       }
+      },
+      "container": {
+       "controls": {
+        "cap_drop": [
+         "ALL"
+        ],
+        "image": "sha256:aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+        "labels": {
+         "zeus.isolated.role": "verifier",
+         "zeus.isolated.run": "d419851fe863b918a06a887bd7826a5e"
+        },
+        "memory": 1,
+        "mounts": [
+         {
+          "Destination": "/workspace",
+          "RW": true,
+          "Source": "<ROOT>/20-real-normal/replays/d419851fe863b918a06a887bd7826a5e/workspace",
+          "Type": "bind"
+         }
+        ],
+        "nano_cpus": 1,
+        "network": "none",
+        "pids_limit": 512,
+        "ports": {},
+        "privileged": false,
+        "read_only": true,
+        "security_opt": [
+         "no-new-privileges"
+        ],
+        "user": "4242:4242"
+       },
+       "credentials": "none",
+       "id": "eeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee1",
+       "image": "sha256:aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+       "name": "zeus-verifier-d419851fe863b918a06a887bd7826a5e",
+       "network": "none",
+       "record": "<ROOT>/20-real-normal/replays/d419851fe863b918a06a887bd7826a5e/run.json",
+       "run_id": "d419851fe863b918a06a887bd7826a5e",
+       "snapshot_sha256": "a66e9e9870224a846ff8eb31241ce3625b8818ffc88152dca9412c63938d7113",
+       "stop": {
+        "capture_cleanup": {
+         "confirmed": true,
+         "error": null,
+         "readers_alive": [],
+         "reason": "exited",
+         "streams_closed": [
+          "stdout",
+          "stderr"
+         ],
+         "tree": {
+          "boundary": {
+           "group": "<pid>",
+           "kind": "process_group",
+           "limit": "a descendant that calls setsid leaves this group and cannot be proven gone from here",
+           "owned_from_spawn": true
+          },
+          "confirmed": true,
+          "note": "a terminated parent is not a terminated tree; acceptance needs both",
+          "parent": {
+           "already_exited": true,
+           "confirmed": true,
+           "ended_on_its_own": true,
+           "escalated": false,
+           "exit_code": 0,
+           "pid": "<pid>",
+           "signalled": null
+          },
+          "reason": "exited",
+          "tree": {
+           "confirmed": true,
+           "evidence": "signal zero to the group until no member answers",
+           "group": "<pid>",
+           "group_empty": true,
+           "method": "process_group"
+          }
+         }
+        },
+        "client_confirmed": true,
+        "confirmed": true,
+        "container_confirmed": true,
+        "exit_code": 0,
+        "killed": false,
+        "oom_killed": false,
+        "status": "exited"
+       }
+      },
+      "duration_seconds": "<duration>",
+      "failure": null,
+      "returncode": 0,
+      "stderr": {
+       "bytes": 0,
+       "decoding": "utf-8",
+       "raw": "",
+       "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+       "truncated": false
+      },
+      "stdout": {
+       "bytes": 3,
+       "decoding": "utf-8",
+       "raw": "ok\n",
+       "sha256": "dc51b8c96c2d745df3bd5590d990230a482fd247123599548e0632fdbf97fc22",
+       "truncated": false
+      },
+      "terminated": false
+     },
+     "retained_files": {},
+     "role": "verifier",
+     "run_id": "d419851fe863b918a06a887bd7826a5e",
+     "snapshot": "<ROOT>/20-real-normal/replays/d419851fe863b918a06a887bd7826a5e/workspace",
+     "state": "removed",
+     "workspace": "<ROOT>/20-real-normal/candidate"
+    },
+    {
+     "argv": [
+      "/opt/zeus/bin/python",
+      "-m",
+      "pytest",
+      "-q"
+     ],
+     "container": "eeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee1",
+     "container_name": "zeus-verifier-ef3e14d67dd58fabb44b73b0b7eafa7f",
+     "image": "sha256:aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+     "isolation_digest": "01afe59a75022e32546e61ac04d71927a8c5cab72cf591f7f4a3d8886672c46c",
+     "label": "zeus.isolated.run=ef3e14d67dd58fabb44b73b0b7eafa7f",
+     "lifecycle": [
+      {
+       "at": "<time>",
+       "snapshot_sha256": "a66e9e9870224a846ff8eb31241ce3625b8818ffc88152dca9412c63938d7113",
+       "state": "prepared"
+      },
+      {
+       "at": "<time>",
+       "container": "eeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee1",
+       "state": "created"
+      },
+      {
+       "at": "<time>",
+       "recovery": {
+        "container": "eeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee1",
+        "name": "zeus-verifier-ef3e14d67dd58fabb44b73b0b7eafa7f",
+        "record": "<ROOT>/20-real-normal/replays/ef3e14d67dd58fabb44b73b0b7eafa7f/run.json"
+       },
+       "state": "start_requested"
+      },
+      {
+       "at": "<time>",
+       "interrupted": null,
+       "state": "stop_confirmed",
+       "stop": {
+        "capture_cleanup": {
+         "confirmed": true,
+         "error": null,
+         "readers_alive": [],
+         "reason": "exited",
+         "streams_closed": [
+          "stdout",
+          "stderr"
+         ],
+         "tree": {
+          "boundary": {
+           "group": "<pid>",
+           "kind": "process_group",
+           "limit": "a descendant that calls setsid leaves this group and cannot be proven gone from here",
+           "owned_from_spawn": true
+          },
+          "confirmed": true,
+          "note": "a terminated parent is not a terminated tree; acceptance needs both",
+          "parent": {
+           "already_exited": true,
+           "confirmed": true,
+           "ended_on_its_own": true,
+           "escalated": false,
+           "exit_code": 0,
+           "pid": "<pid>",
+           "signalled": null
+          },
+          "reason": "exited",
+          "tree": {
+           "confirmed": true,
+           "evidence": "signal zero to the group until no member answers",
+           "group": "<pid>",
+           "group_empty": true,
+           "method": "process_group"
+          }
+         }
+        },
+        "client_confirmed": true,
+        "confirmed": true,
+        "container_confirmed": true,
+        "exit_code": 0,
+        "killed": false,
+        "oom_killed": false,
+        "status": "exited"
+       }
+      },
+      {
+       "at": "<time>",
+       "outcome": "replayed",
+       "state": "evidence_retained"
+      },
+      {
+       "at": "<time>",
+       "state": "removed"
+      }
+     ],
+     "record": "<ROOT>/20-real-normal/replays/ef3e14d67dd58fabb44b73b0b7eafa7f/run.json",
+     "result": {
+      "cleanup": {
+       "confirmed": true,
+       "error": null,
+       "readers_alive": [],
+       "reason": "exited",
+       "streams_closed": [
+        "stdout",
+        "stderr"
+       ],
+       "tree": {
+        "boundary": {
+         "group": "<pid>",
+         "kind": "process_group",
+         "limit": "a descendant that calls setsid leaves this group and cannot be proven gone from here",
+         "owned_from_spawn": true
+        },
+        "confirmed": true,
+        "note": "a terminated parent is not a terminated tree; acceptance needs both",
+        "parent": {
+         "already_exited": true,
+         "confirmed": true,
+         "ended_on_its_own": true,
+         "escalated": false,
+         "exit_code": 0,
+         "pid": "<pid>",
+         "signalled": null
+        },
+        "reason": "exited",
+        "tree": {
+         "confirmed": true,
+         "evidence": "signal zero to the group until no member answers",
+         "group": "<pid>",
+         "group_empty": true,
+         "method": "process_group"
+        }
+       }
+      },
+      "container": {
+       "controls": {
+        "cap_drop": [
+         "ALL"
+        ],
+        "image": "sha256:aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+        "labels": {
+         "zeus.isolated.role": "verifier",
+         "zeus.isolated.run": "ef3e14d67dd58fabb44b73b0b7eafa7f"
+        },
+        "memory": 1,
+        "mounts": [
+         {
+          "Destination": "/workspace",
+          "RW": true,
+          "Source": "<ROOT>/20-real-normal/replays/ef3e14d67dd58fabb44b73b0b7eafa7f/workspace",
+          "Type": "bind"
+         }
+        ],
+        "nano_cpus": 1,
+        "network": "none",
+        "pids_limit": 512,
+        "ports": {},
+        "privileged": false,
+        "read_only": true,
+        "security_opt": [
+         "no-new-privileges"
+        ],
+        "user": "4242:4242"
+       },
+       "credentials": "none",
+       "id": "eeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee1",
+       "image": "sha256:aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+       "name": "zeus-verifier-ef3e14d67dd58fabb44b73b0b7eafa7f",
+       "network": "none",
+       "record": "<ROOT>/20-real-normal/replays/ef3e14d67dd58fabb44b73b0b7eafa7f/run.json",
+       "run_id": "ef3e14d67dd58fabb44b73b0b7eafa7f",
+       "snapshot_sha256": "a66e9e9870224a846ff8eb31241ce3625b8818ffc88152dca9412c63938d7113",
+       "stop": {
+        "capture_cleanup": {
+         "confirmed": true,
+         "error": null,
+         "readers_alive": [],
+         "reason": "exited",
+         "streams_closed": [
+          "stdout",
+          "stderr"
+         ],
+         "tree": {
+          "boundary": {
+           "group": "<pid>",
+           "kind": "process_group",
+           "limit": "a descendant that calls setsid leaves this group and cannot be proven gone from here",
+           "owned_from_spawn": true
+          },
+          "confirmed": true,
+          "note": "a terminated parent is not a terminated tree; acceptance needs both",
+          "parent": {
+           "already_exited": true,
+           "confirmed": true,
+           "ended_on_its_own": true,
+           "escalated": false,
+           "exit_code": 0,
+           "pid": "<pid>",
+           "signalled": null
+          },
+          "reason": "exited",
+          "tree": {
+           "confirmed": true,
+           "evidence": "signal zero to the group until no member answers",
+           "group": "<pid>",
+           "group_empty": true,
+           "method": "process_group"
+          }
+         }
+        },
+        "client_confirmed": true,
+        "confirmed": true,
+        "container_confirmed": true,
+        "exit_code": 0,
+        "killed": false,
+        "oom_killed": false,
+        "status": "exited"
+       }
+      },
+      "duration_seconds": "<duration>",
+      "failure": null,
+      "returncode": 0,
+      "stderr": {
+       "bytes": 0,
+       "decoding": "utf-8",
+       "raw": "",
+       "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+       "truncated": false
+      },
+      "stdout": {
+       "bytes": 3,
+       "decoding": "utf-8",
+       "raw": "ok\n",
+       "sha256": "dc51b8c96c2d745df3bd5590d990230a482fd247123599548e0632fdbf97fc22",
+       "truncated": false
+      },
+      "terminated": false
+     },
+     "retained_files": {},
+     "role": "verifier",
+     "run_id": "ef3e14d67dd58fabb44b73b0b7eafa7f",
+     "snapshot": "<ROOT>/20-real-normal/replays/ef3e14d67dd58fabb44b73b0b7eafa7f/workspace",
+     "state": "removed",
+     "workspace": "<ROOT>/20-real-normal/candidate"
+    }
+   ],
+   "spawned": 2,
+   "state": "checked",
+   "unresolved": []
+  },
+  "proof_absent": {
+   "capture_cleanup": null,
+   "finding": {
+    "argv_identical": false,
+    "argv_transformation": "first token \"python\" replaced by the trusted host interpreter; authorization was decided on the original argv",
+    "cause": "attempt 1: capture_cleanup_unconfirmed; recovery record <ROOT>/25-real-proof-absent/replays/0bf05c334e58a958f1757b294aff2619/run.json container eeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee1",
+    "claim": {
+     "argv": [
+      "python",
+      "-m",
+      "pytest",
+      "-q"
+     ],
+     "expected_exit": 0,
+     "id": "28c3babc7015e24ef6ba63cb4a8b117db4a3aef30dba2db8de838dc5f3de99c3",
+     "kind": "command",
+     "origin": "free_text"
+    },
+    "interpreter": "/opt/zeus/bin/python",
+    "original_argv": [
+     "python",
+     "-m",
+     "pytest",
+     "-q"
+    ],
+    "replay_argv": [
+     "/opt/zeus/bin/python",
+     "-m",
+     "pytest",
+     "-q"
+    ],
+    "runs": [
+     {
+      "container": {
+       "controls": {
+        "cap_drop": [
+         "ALL"
+        ],
+        "image": "sha256:aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+        "labels": {
+         "zeus.isolated.role": "verifier",
+         "zeus.isolated.run": "0bf05c334e58a958f1757b294aff2619"
+        },
+        "memory": 1,
+        "mounts": [
+         {
+          "Destination": "/workspace",
+          "RW": true,
+          "Source": "<ROOT>/25-real-proof-absent/replays/0bf05c334e58a958f1757b294aff2619/workspace",
+          "Type": "bind"
+         }
+        ],
+        "nano_cpus": 1,
+        "network": "none",
+        "pids_limit": 512,
+        "ports": {},
+        "privileged": false,
+        "read_only": true,
+        "security_opt": [
+         "no-new-privileges"
+        ],
+        "user": "4242:4242"
+       },
+       "credentials": "none",
+       "id": "eeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee1",
+       "image": "sha256:aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+       "name": "zeus-verifier-0bf05c334e58a958f1757b294aff2619",
+       "network": "none",
+       "record": "<ROOT>/25-real-proof-absent/replays/0bf05c334e58a958f1757b294aff2619/run.json",
+       "run_id": "0bf05c334e58a958f1757b294aff2619",
+       "snapshot_sha256": "a66e9e9870224a846ff8eb31241ce3625b8818ffc88152dca9412c63938d7113",
+       "stop": {
+        "capture_cleanup": null,
+        "client_confirmed": false,
+        "confirmed": false,
+        "container_confirmed": true,
+        "exit_code": 0,
+        "killed": false,
+        "oom_killed": false,
+        "status": "exited"
+       }
+      },
+      "duration_seconds": "<duration>",
+      "failure": "capture_cleanup_unconfirmed; recovery record <ROOT>/25-real-proof-absent/replays/0bf05c334e58a958f1757b294aff2619/run.json container eeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee1",
+      "returncode": 0,
+      "stderr": {
+       "bytes": 0,
+       "decoding": "utf-8",
+       "ref": "sha256:evidence-replay-stderr",
+       "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+       "truncated": false
+      },
+      "stdout": {
+       "bytes": 3,
+       "decoding": "utf-8",
+       "ref": "sha256:evidence-replay-stdout",
+       "sha256": "dc51b8c96c2d745df3bd5590d990230a482fd247123599548e0632fdbf97fc22",
+       "truncated": false
+      },
+      "terminated": false
+     }
+    ],
+    "state": "replay_failed"
+   },
+   "reconcile": {
+    "records": [
+     {
+      "argv": [
+       "/opt/zeus/bin/python",
+       "-m",
+       "pytest",
+       "-q"
+      ],
+      "container": "eeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee1",
+      "container_name": "zeus-verifier-0bf05c334e58a958f1757b294aff2619",
+      "image": "sha256:aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+      "isolation_digest": "b740d7ac51c10a4d57e33234c3fe2c57eabfc023126296187676a49a520e6b19",
+      "label": "zeus.isolated.run=0bf05c334e58a958f1757b294aff2619",
+      "lifecycle": [
+       {
+        "at": "<time>",
+        "snapshot_sha256": "a66e9e9870224a846ff8eb31241ce3625b8818ffc88152dca9412c63938d7113",
+        "state": "prepared"
+       },
+       {
+        "at": "<time>",
+        "container": "eeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee1",
+        "state": "created"
+       },
+       {
+        "at": "<time>",
+        "recovery": {
+         "container": "eeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee1",
+         "name": "zeus-verifier-0bf05c334e58a958f1757b294aff2619",
+         "record": "<ROOT>/25-real-proof-absent/replays/0bf05c334e58a958f1757b294aff2619/run.json"
+        },
+        "state": "start_requested"
+       },
+       {
+        "at": "<time>",
+        "interrupted": null,
+        "recovery": {
+         "container": "eeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee1",
+         "name": "zeus-verifier-0bf05c334e58a958f1757b294aff2619",
+         "record": "<ROOT>/25-real-proof-absent/replays/0bf05c334e58a958f1757b294aff2619/run.json"
+        },
+        "state": "stop_unconfirmed",
+        "stop": {
+         "capture_cleanup": null,
+         "client_confirmed": false,
+         "confirmed": false,
+         "container_confirmed": true,
+         "exit_code": 0,
+         "killed": false,
+         "oom_killed": false,
+         "status": "exited"
+        }
+       }
+      ],
+      "record": "<ROOT>/25-real-proof-absent/replays/0bf05c334e58a958f1757b294aff2619/run.json",
+      "role": "verifier",
+      "run_id": "0bf05c334e58a958f1757b294aff2619",
+      "snapshot": "<ROOT>/25-real-proof-absent/replays/0bf05c334e58a958f1757b294aff2619/workspace",
+      "state": "stop_unconfirmed",
+      "workspace": "<ROOT>/25-real-proof-absent/candidate"
+     }
+    ],
+    "refused": {
+     "container": "eeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee1",
+     "reason": "client_cleanup_unconfirmed",
+     "reconciled": false,
+     "run_id": "0bf05c334e58a958f1757b294aff2619"
+    },
+    "unresolved": 1
+   },
+   "retained": {
+    "has_result": false,
+    "id_present": true,
+    "recovery_matches": true,
+    "refusal": {
+     "evidence_written": false,
+     "exit_code": null,
+     "recovery": {
+      "container": null,
+      "name": "zeus-verifier-0bf05c334e58a958f1757b294aff2619",
+      "record": "<ROOT>/25-real-proof-absent/replays/0bf05c334e58a958f1757b294aff2619/run.json"
+     },
+     "refused": "client_cleanup_unconfirmed",
+     "removed": false
+    },
+    "rm_called": false,
+    "state": "stop_unconfirmed",
+    "stop": {
+     "capture_cleanup": null,
+     "client_confirmed": false,
+     "confirmed": false,
+     "container_confirmed": true,
+     "exit_code": 0,
+     "killed": false,
+     "oom_killed": false,
+     "status": "exited"
+    },
+    "unresolved": [
+     {
+      "container": "eeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee1",
+      "record": "<ROOT>/25-real-proof-absent/replays/0bf05c334e58a958f1757b294aff2619/run.json",
+      "run_id": "0bf05c334e58a958f1757b294aff2619",
+      "state": "stop_unconfirmed",
+      "workspace": "<ROOT>/25-real-proof-absent/candidate"
+     }
+    ]
+   },
+   "spawned": 1
+  },
+  "proof_no_confirmed": {
+   "capture_cleanup": {
+    "reason": "exited"
+   },
+   "finding": {
+    "argv_identical": false,
+    "argv_transformation": "first token \"python\" replaced by the trusted host interpreter; authorization was decided on the original argv",
+    "cause": "attempt 1: capture_cleanup_unconfirmed; recovery record <ROOT>/29-real-proof-no_confirmed/replays/990caac0dac1a36b2d84fcc540c181a2/run.json container eeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee1",
+    "claim": {
+     "argv": [
+      "python",
+      "-m",
+      "pytest",
+      "-q"
+     ],
+     "expected_exit": 0,
+     "id": "28c3babc7015e24ef6ba63cb4a8b117db4a3aef30dba2db8de838dc5f3de99c3",
+     "kind": "command",
+     "origin": "free_text"
+    },
+    "interpreter": "/opt/zeus/bin/python",
+    "original_argv": [
+     "python",
+     "-m",
+     "pytest",
+     "-q"
+    ],
+    "replay_argv": [
+     "/opt/zeus/bin/python",
+     "-m",
+     "pytest",
+     "-q"
+    ],
+    "runs": [
+     {
+      "cleanup": {
+       "reason": "exited"
+      },
+      "container": {
+       "controls": {
+        "cap_drop": [
+         "ALL"
+        ],
+        "image": "sha256:aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+        "labels": {
+         "zeus.isolated.role": "verifier",
+         "zeus.isolated.run": "990caac0dac1a36b2d84fcc540c181a2"
+        },
+        "memory": 1,
+        "mounts": [
+         {
+          "Destination": "/workspace",
+          "RW": true,
+          "Source": "<ROOT>/29-real-proof-no_confirmed/replays/990caac0dac1a36b2d84fcc540c181a2/workspace",
+          "Type": "bind"
+         }
+        ],
+        "nano_cpus": 1,
+        "network": "none",
+        "pids_limit": 512,
+        "ports": {},
+        "privileged": false,
+        "read_only": true,
+        "security_opt": [
+         "no-new-privileges"
+        ],
+        "user": "4242:4242"
+       },
+       "credentials": "none",
+       "id": "eeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee1",
+       "image": "sha256:aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+       "name": "zeus-verifier-990caac0dac1a36b2d84fcc540c181a2",
+       "network": "none",
+       "record": "<ROOT>/29-real-proof-no_confirmed/replays/990caac0dac1a36b2d84fcc540c181a2/run.json",
+       "run_id": "990caac0dac1a36b2d84fcc540c181a2",
+       "snapshot_sha256": "a66e9e9870224a846ff8eb31241ce3625b8818ffc88152dca9412c63938d7113",
+       "stop": {
+        "capture_cleanup": {
+         "reason": "exited"
+        },
+        "client_confirmed": false,
+        "confirmed": false,
+        "container_confirmed": true,
+        "exit_code": 0,
+        "killed": false,
+        "oom_killed": false,
+        "status": "exited"
+       }
+      },
+      "duration_seconds": "<duration>",
+      "failure": "capture_cleanup_unconfirmed; recovery record <ROOT>/29-real-proof-no_confirmed/replays/990caac0dac1a36b2d84fcc540c181a2/run.json container eeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee1",
+      "returncode": 0,
+      "stderr": {
+       "bytes": 0,
+       "decoding": "utf-8",
+       "ref": "sha256:evidence-replay-stderr",
+       "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+       "truncated": false
+      },
+      "stdout": {
+       "bytes": 3,
+       "decoding": "utf-8",
+       "ref": "sha256:evidence-replay-stdout",
+       "sha256": "dc51b8c96c2d745df3bd5590d990230a482fd247123599548e0632fdbf97fc22",
+       "truncated": false
+      },
+      "terminated": false
+     }
+    ],
+    "state": "replay_failed"
+   },
+   "reconcile": {
+    "records": [
+     {
+      "argv": [
+       "/opt/zeus/bin/python",
+       "-m",
+       "pytest",
+       "-q"
+      ],
+      "container": "eeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee1",
+      "container_name": "zeus-verifier-990caac0dac1a36b2d84fcc540c181a2",
+      "image": "sha256:aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+      "isolation_digest": "b740d7ac51c10a4d57e33234c3fe2c57eabfc023126296187676a49a520e6b19",
+      "label": "zeus.isolated.run=990caac0dac1a36b2d84fcc540c181a2",
+      "lifecycle": [
+       {
+        "at": "<time>",
+        "snapshot_sha256": "a66e9e9870224a846ff8eb31241ce3625b8818ffc88152dca9412c63938d7113",
+        "state": "prepared"
+       },
+       {
+        "at": "<time>",
+        "container": "eeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee1",
+        "state": "created"
+       },
+       {
+        "at": "<time>",
+        "recovery": {
+         "container": "eeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee1",
+         "name": "zeus-verifier-990caac0dac1a36b2d84fcc540c181a2",
+         "record": "<ROOT>/29-real-proof-no_confirmed/replays/990caac0dac1a36b2d84fcc540c181a2/run.json"
+        },
+        "state": "start_requested"
+       },
+       {
+        "at": "<time>",
+        "interrupted": null,
+        "recovery": {
+         "container": "eeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee1",
+         "name": "zeus-verifier-990caac0dac1a36b2d84fcc540c181a2",
+         "record": "<ROOT>/29-real-proof-no_confirmed/replays/990caac0dac1a36b2d84fcc540c181a2/run.json"
+        },
+        "state": "stop_unconfirmed",
+        "stop": {
+         "capture_cleanup": {
+          "reason": "exited"
+         },
+         "client_confirmed": false,
+         "confirmed": false,
+         "container_confirmed": true,
+         "exit_code": 0,
+         "killed": false,
+         "oom_killed": false,
+         "status": "exited"
+        }
+       }
+      ],
+      "record": "<ROOT>/29-real-proof-no_confirmed/replays/990caac0dac1a36b2d84fcc540c181a2/run.json",
+      "role": "verifier",
+      "run_id": "990caac0dac1a36b2d84fcc540c181a2",
+      "snapshot": "<ROOT>/29-real-proof-no_confirmed/replays/990caac0dac1a36b2d84fcc540c181a2/workspace",
+      "state": "stop_unconfirmed",
+      "workspace": "<ROOT>/29-real-proof-no_confirmed/candidate"
+     }
+    ],
+    "refused": {
+     "container": "eeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee1",
+     "reason": "client_cleanup_unconfirmed",
+     "reconciled": false,
+     "run_id": "990caac0dac1a36b2d84fcc540c181a2"
+    },
+    "unresolved": 1
+   },
+   "retained": {
+    "has_result": false,
+    "id_present": true,
+    "recovery_matches": true,
+    "refusal": {
+     "evidence_written": false,
+     "exit_code": null,
+     "recovery": {
+      "container": null,
+      "name": "zeus-verifier-990caac0dac1a36b2d84fcc540c181a2",
+      "record": "<ROOT>/29-real-proof-no_confirmed/replays/990caac0dac1a36b2d84fcc540c181a2/run.json"
+     },
+     "refused": "client_cleanup_unconfirmed",
+     "removed": false
+    },
+    "rm_called": false,
+    "state": "stop_unconfirmed",
+    "stop": {
+     "capture_cleanup": {
+      "reason": "exited"
+     },
+     "client_confirmed": false,
+     "confirmed": false,
+     "container_confirmed": true,
+     "exit_code": 0,
+     "killed": false,
+     "oom_killed": false,
+     "status": "exited"
+    },
+    "unresolved": [
+     {
+      "container": "eeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee1",
+      "record": "<ROOT>/29-real-proof-no_confirmed/replays/990caac0dac1a36b2d84fcc540c181a2/run.json",
+      "run_id": "990caac0dac1a36b2d84fcc540c181a2",
+      "state": "stop_unconfirmed",
+      "workspace": "<ROOT>/29-real-proof-no_confirmed/candidate"
+     }
+    ]
+   },
+   "spawned": 1
+  },
+  "proof_none": {
+   "capture_cleanup": null,
+   "finding": {
+    "argv_identical": false,
+    "argv_transformation": "first token \"python\" replaced by the trusted host interpreter; authorization was decided on the original argv",
+    "cause": "attempt 1: capture_cleanup_unconfirmed; recovery record <ROOT>/26-real-proof-none/replays/fb9adc96000b31eed16559ff25250100/run.json container eeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee1",
+    "claim": {
+     "argv": [
+      "python",
+      "-m",
+      "pytest",
+      "-q"
+     ],
+     "expected_exit": 0,
+     "id": "28c3babc7015e24ef6ba63cb4a8b117db4a3aef30dba2db8de838dc5f3de99c3",
+     "kind": "command",
+     "origin": "free_text"
+    },
+    "interpreter": "/opt/zeus/bin/python",
+    "original_argv": [
+     "python",
+     "-m",
+     "pytest",
+     "-q"
+    ],
+    "replay_argv": [
+     "/opt/zeus/bin/python",
+     "-m",
+     "pytest",
+     "-q"
+    ],
+    "runs": [
+     {
+      "cleanup": null,
+      "container": {
+       "controls": {
+        "cap_drop": [
+         "ALL"
+        ],
+        "image": "sha256:aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+        "labels": {
+         "zeus.isolated.role": "verifier",
+         "zeus.isolated.run": "fb9adc96000b31eed16559ff25250100"
+        },
+        "memory": 1,
+        "mounts": [
+         {
+          "Destination": "/workspace",
+          "RW": true,
+          "Source": "<ROOT>/26-real-proof-none/replays/fb9adc96000b31eed16559ff25250100/workspace",
+          "Type": "bind"
+         }
+        ],
+        "nano_cpus": 1,
+        "network": "none",
+        "pids_limit": 512,
+        "ports": {},
+        "privileged": false,
+        "read_only": true,
+        "security_opt": [
+         "no-new-privileges"
+        ],
+        "user": "4242:4242"
+       },
+       "credentials": "none",
+       "id": "eeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee1",
+       "image": "sha256:aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+       "name": "zeus-verifier-fb9adc96000b31eed16559ff25250100",
+       "network": "none",
+       "record": "<ROOT>/26-real-proof-none/replays/fb9adc96000b31eed16559ff25250100/run.json",
+       "run_id": "fb9adc96000b31eed16559ff25250100",
+       "snapshot_sha256": "a66e9e9870224a846ff8eb31241ce3625b8818ffc88152dca9412c63938d7113",
+       "stop": {
+        "capture_cleanup": null,
+        "client_confirmed": false,
+        "confirmed": false,
+        "container_confirmed": true,
+        "exit_code": 0,
+        "killed": false,
+        "oom_killed": false,
+        "status": "exited"
+       }
+      },
+      "duration_seconds": "<duration>",
+      "failure": "capture_cleanup_unconfirmed; recovery record <ROOT>/26-real-proof-none/replays/fb9adc96000b31eed16559ff25250100/run.json container eeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee1",
+      "returncode": 0,
+      "stderr": {
+       "bytes": 0,
+       "decoding": "utf-8",
+       "ref": "sha256:evidence-replay-stderr",
+       "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+       "truncated": false
+      },
+      "stdout": {
+       "bytes": 3,
+       "decoding": "utf-8",
+       "ref": "sha256:evidence-replay-stdout",
+       "sha256": "dc51b8c96c2d745df3bd5590d990230a482fd247123599548e0632fdbf97fc22",
+       "truncated": false
+      },
+      "terminated": false
+     }
+    ],
+    "state": "replay_failed"
+   },
+   "reconcile": {
+    "records": [
+     {
+      "argv": [
+       "/opt/zeus/bin/python",
+       "-m",
+       "pytest",
+       "-q"
+      ],
+      "container": "eeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee1",
+      "container_name": "zeus-verifier-fb9adc96000b31eed16559ff25250100",
+      "image": "sha256:aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+      "isolation_digest": "b740d7ac51c10a4d57e33234c3fe2c57eabfc023126296187676a49a520e6b19",
+      "label": "zeus.isolated.run=fb9adc96000b31eed16559ff25250100",
+      "lifecycle": [
+       {
+        "at": "<time>",
+        "snapshot_sha256": "a66e9e9870224a846ff8eb31241ce3625b8818ffc88152dca9412c63938d7113",
+        "state": "prepared"
+       },
+       {
+        "at": "<time>",
+        "container": "eeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee1",
+        "state": "created"
+       },
+       {
+        "at": "<time>",
+        "recovery": {
+         "container": "eeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee1",
+         "name": "zeus-verifier-fb9adc96000b31eed16559ff25250100",
+         "record": "<ROOT>/26-real-proof-none/replays/fb9adc96000b31eed16559ff25250100/run.json"
+        },
+        "state": "start_requested"
+       },
+       {
+        "at": "<time>",
+        "interrupted": null,
+        "recovery": {
+         "container": "eeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee1",
+         "name": "zeus-verifier-fb9adc96000b31eed16559ff25250100",
+         "record": "<ROOT>/26-real-proof-none/replays/fb9adc96000b31eed16559ff25250100/run.json"
+        },
+        "state": "stop_unconfirmed",
+        "stop": {
+         "capture_cleanup": null,
+         "client_confirmed": false,
+         "confirmed": false,
+         "container_confirmed": true,
+         "exit_code": 0,
+         "killed": false,
+         "oom_killed": false,
+         "status": "exited"
+        }
+       }
+      ],
+      "record": "<ROOT>/26-real-proof-none/replays/fb9adc96000b31eed16559ff25250100/run.json",
+      "role": "verifier",
+      "run_id": "fb9adc96000b31eed16559ff25250100",
+      "snapshot": "<ROOT>/26-real-proof-none/replays/fb9adc96000b31eed16559ff25250100/workspace",
+      "state": "stop_unconfirmed",
+      "workspace": "<ROOT>/26-real-proof-none/candidate"
+     }
+    ],
+    "refused": {
+     "container": "eeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee1",
+     "reason": "client_cleanup_unconfirmed",
+     "reconciled": false,
+     "run_id": "fb9adc96000b31eed16559ff25250100"
+    },
+    "unresolved": 1
+   },
+   "retained": {
+    "has_result": false,
+    "id_present": true,
+    "recovery_matches": true,
+    "refusal": {
+     "evidence_written": false,
+     "exit_code": null,
+     "recovery": {
+      "container": null,
+      "name": "zeus-verifier-fb9adc96000b31eed16559ff25250100",
+      "record": "<ROOT>/26-real-proof-none/replays/fb9adc96000b31eed16559ff25250100/run.json"
+     },
+     "refused": "client_cleanup_unconfirmed",
+     "removed": false
+    },
+    "rm_called": false,
+    "state": "stop_unconfirmed",
+    "stop": {
+     "capture_cleanup": null,
+     "client_confirmed": false,
+     "confirmed": false,
+     "container_confirmed": true,
+     "exit_code": 0,
+     "killed": false,
+     "oom_killed": false,
+     "status": "exited"
+    },
+    "unresolved": [
+     {
+      "container": "eeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee1",
+      "record": "<ROOT>/26-real-proof-none/replays/fb9adc96000b31eed16559ff25250100/run.json",
+      "run_id": "fb9adc96000b31eed16559ff25250100",
+      "state": "stop_unconfirmed",
+      "workspace": "<ROOT>/26-real-proof-none/candidate"
+     }
+    ]
+   },
+   "spawned": 1
+  },
+  "proof_string": {
+   "capture_cleanup": "yes",
+   "finding": {
+    "argv_identical": false,
+    "argv_transformation": "first token \"python\" replaced by the trusted host interpreter; authorization was decided on the original argv",
+    "cause": "attempt 1: capture_cleanup_unconfirmed; recovery record <ROOT>/27-real-proof-string/replays/bdb38be0d9aa70b910e8187e7fdcdcdc/run.json container eeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee1",
+    "claim": {
+     "argv": [
+      "python",
+      "-m",
+      "pytest",
+      "-q"
+     ],
+     "expected_exit": 0,
+     "id": "28c3babc7015e24ef6ba63cb4a8b117db4a3aef30dba2db8de838dc5f3de99c3",
+     "kind": "command",
+     "origin": "free_text"
+    },
+    "interpreter": "/opt/zeus/bin/python",
+    "original_argv": [
+     "python",
+     "-m",
+     "pytest",
+     "-q"
+    ],
+    "replay_argv": [
+     "/opt/zeus/bin/python",
+     "-m",
+     "pytest",
+     "-q"
+    ],
+    "runs": [
+     {
+      "cleanup": "yes",
+      "container": {
+       "controls": {
+        "cap_drop": [
+         "ALL"
+        ],
+        "image": "sha256:aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+        "labels": {
+         "zeus.isolated.role": "verifier",
+         "zeus.isolated.run": "bdb38be0d9aa70b910e8187e7fdcdcdc"
+        },
+        "memory": 1,
+        "mounts": [
+         {
+          "Destination": "/workspace",
+          "RW": true,
+          "Source": "<ROOT>/27-real-proof-string/replays/bdb38be0d9aa70b910e8187e7fdcdcdc/workspace",
+          "Type": "bind"
+         }
+        ],
+        "nano_cpus": 1,
+        "network": "none",
+        "pids_limit": 512,
+        "ports": {},
+        "privileged": false,
+        "read_only": true,
+        "security_opt": [
+         "no-new-privileges"
+        ],
+        "user": "4242:4242"
+       },
+       "credentials": "none",
+       "id": "eeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee1",
+       "image": "sha256:aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+       "name": "zeus-verifier-bdb38be0d9aa70b910e8187e7fdcdcdc",
+       "network": "none",
+       "record": "<ROOT>/27-real-proof-string/replays/bdb38be0d9aa70b910e8187e7fdcdcdc/run.json",
+       "run_id": "bdb38be0d9aa70b910e8187e7fdcdcdc",
+       "snapshot_sha256": "a66e9e9870224a846ff8eb31241ce3625b8818ffc88152dca9412c63938d7113",
+       "stop": {
+        "capture_cleanup": "yes",
+        "client_confirmed": false,
+        "confirmed": false,
+        "container_confirmed": true,
+        "exit_code": 0,
+        "killed": false,
+        "oom_killed": false,
+        "status": "exited"
+       }
+      },
+      "duration_seconds": "<duration>",
+      "failure": "capture_cleanup_unconfirmed; recovery record <ROOT>/27-real-proof-string/replays/bdb38be0d9aa70b910e8187e7fdcdcdc/run.json container eeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee1",
+      "returncode": 0,
+      "stderr": {
+       "bytes": 0,
+       "decoding": "utf-8",
+       "ref": "sha256:evidence-replay-stderr",
+       "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+       "truncated": false
+      },
+      "stdout": {
+       "bytes": 3,
+       "decoding": "utf-8",
+       "ref": "sha256:evidence-replay-stdout",
+       "sha256": "dc51b8c96c2d745df3bd5590d990230a482fd247123599548e0632fdbf97fc22",
+       "truncated": false
+      },
+      "terminated": false
+     }
+    ],
+    "state": "replay_failed"
+   },
+   "reconcile": {
+    "records": [
+     {
+      "argv": [
+       "/opt/zeus/bin/python",
+       "-m",
+       "pytest",
+       "-q"
+      ],
+      "container": "eeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee1",
+      "container_name": "zeus-verifier-bdb38be0d9aa70b910e8187e7fdcdcdc",
+      "image": "sha256:aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+      "isolation_digest": "b740d7ac51c10a4d57e33234c3fe2c57eabfc023126296187676a49a520e6b19",
+      "label": "zeus.isolated.run=bdb38be0d9aa70b910e8187e7fdcdcdc",
+      "lifecycle": [
+       {
+        "at": "<time>",
+        "snapshot_sha256": "a66e9e9870224a846ff8eb31241ce3625b8818ffc88152dca9412c63938d7113",
+        "state": "prepared"
+       },
+       {
+        "at": "<time>",
+        "container": "eeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee1",
+        "state": "created"
+       },
+       {
+        "at": "<time>",
+        "recovery": {
+         "container": "eeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee1",
+         "name": "zeus-verifier-bdb38be0d9aa70b910e8187e7fdcdcdc",
+         "record": "<ROOT>/27-real-proof-string/replays/bdb38be0d9aa70b910e8187e7fdcdcdc/run.json"
+        },
+        "state": "start_requested"
+       },
+       {
+        "at": "<time>",
+        "interrupted": null,
+        "recovery": {
+         "container": "eeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee1",
+         "name": "zeus-verifier-bdb38be0d9aa70b910e8187e7fdcdcdc",
+         "record": "<ROOT>/27-real-proof-string/replays/bdb38be0d9aa70b910e8187e7fdcdcdc/run.json"
+        },
+        "state": "stop_unconfirmed",
+        "stop": {
+         "capture_cleanup": "yes",
+         "client_confirmed": false,
+         "confirmed": false,
+         "container_confirmed": true,
+         "exit_code": 0,
+         "killed": false,
+         "oom_killed": false,
+         "status": "exited"
+        }
+       }
+      ],
+      "record": "<ROOT>/27-real-proof-string/replays/bdb38be0d9aa70b910e8187e7fdcdcdc/run.json",
+      "role": "verifier",
+      "run_id": "bdb38be0d9aa70b910e8187e7fdcdcdc",
+      "snapshot": "<ROOT>/27-real-proof-string/replays/bdb38be0d9aa70b910e8187e7fdcdcdc/workspace",
+      "state": "stop_unconfirmed",
+      "workspace": "<ROOT>/27-real-proof-string/candidate"
+     }
+    ],
+    "refused": {
+     "container": "eeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee1",
+     "reason": "client_cleanup_unconfirmed",
+     "reconciled": false,
+     "run_id": "bdb38be0d9aa70b910e8187e7fdcdcdc"
+    },
+    "unresolved": 1
+   },
+   "retained": {
+    "has_result": false,
+    "id_present": true,
+    "recovery_matches": true,
+    "refusal": {
+     "evidence_written": false,
+     "exit_code": null,
+     "recovery": {
+      "container": null,
+      "name": "zeus-verifier-bdb38be0d9aa70b910e8187e7fdcdcdc",
+      "record": "<ROOT>/27-real-proof-string/replays/bdb38be0d9aa70b910e8187e7fdcdcdc/run.json"
+     },
+     "refused": "client_cleanup_unconfirmed",
+     "removed": false
+    },
+    "rm_called": false,
+    "state": "stop_unconfirmed",
+    "stop": {
+     "capture_cleanup": "yes",
+     "client_confirmed": false,
+     "confirmed": false,
+     "container_confirmed": true,
+     "exit_code": 0,
+     "killed": false,
+     "oom_killed": false,
+     "status": "exited"
+    },
+    "unresolved": [
+     {
+      "container": "eeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee1",
+      "record": "<ROOT>/27-real-proof-string/replays/bdb38be0d9aa70b910e8187e7fdcdcdc/run.json",
+      "run_id": "bdb38be0d9aa70b910e8187e7fdcdcdc",
+      "state": "stop_unconfirmed",
+      "workspace": "<ROOT>/27-real-proof-string/candidate"
+     }
+    ]
+   },
+   "spawned": 1
+  },
+  "proof_string_confirmed": {
+   "capture_cleanup": {
+    "confirmed": "true"
+   },
+   "finding": {
+    "argv_identical": false,
+    "argv_transformation": "first token \"python\" replaced by the trusted host interpreter; authorization was decided on the original argv",
+    "cause": "attempt 1: capture_cleanup_unconfirmed; recovery record <ROOT>/28-real-proof-string_confirmed/replays/8625b091a3235be5100ee920e87f555a/run.json container eeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee1",
+    "claim": {
+     "argv": [
+      "python",
+      "-m",
+      "pytest",
+      "-q"
+     ],
+     "expected_exit": 0,
+     "id": "28c3babc7015e24ef6ba63cb4a8b117db4a3aef30dba2db8de838dc5f3de99c3",
+     "kind": "command",
+     "origin": "free_text"
+    },
+    "interpreter": "/opt/zeus/bin/python",
+    "original_argv": [
+     "python",
+     "-m",
+     "pytest",
+     "-q"
+    ],
+    "replay_argv": [
+     "/opt/zeus/bin/python",
+     "-m",
+     "pytest",
+     "-q"
+    ],
+    "runs": [
+     {
+      "cleanup": {
+       "confirmed": "true"
+      },
+      "container": {
+       "controls": {
+        "cap_drop": [
+         "ALL"
+        ],
+        "image": "sha256:aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+        "labels": {
+         "zeus.isolated.role": "verifier",
+         "zeus.isolated.run": "8625b091a3235be5100ee920e87f555a"
+        },
+        "memory": 1,
+        "mounts": [
+         {
+          "Destination": "/workspace",
+          "RW": true,
+          "Source": "<ROOT>/28-real-proof-string_confirmed/replays/8625b091a3235be5100ee920e87f555a/workspace",
+          "Type": "bind"
+         }
+        ],
+        "nano_cpus": 1,
+        "network": "none",
+        "pids_limit": 512,
+        "ports": {},
+        "privileged": false,
+        "read_only": true,
+        "security_opt": [
+         "no-new-privileges"
+        ],
+        "user": "4242:4242"
+       },
+       "credentials": "none",
+       "id": "eeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee1",
+       "image": "sha256:aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+       "name": "zeus-verifier-8625b091a3235be5100ee920e87f555a",
+       "network": "none",
+       "record": "<ROOT>/28-real-proof-string_confirmed/replays/8625b091a3235be5100ee920e87f555a/run.json",
+       "run_id": "8625b091a3235be5100ee920e87f555a",
+       "snapshot_sha256": "a66e9e9870224a846ff8eb31241ce3625b8818ffc88152dca9412c63938d7113",
+       "stop": {
+        "capture_cleanup": {
+         "confirmed": "true"
+        },
+        "client_confirmed": false,
+        "confirmed": false,
+        "container_confirmed": true,
+        "exit_code": 0,
+        "killed": false,
+        "oom_killed": false,
+        "status": "exited"
+       }
+      },
+      "duration_seconds": "<duration>",
+      "failure": "capture_cleanup_unconfirmed; recovery record <ROOT>/28-real-proof-string_confirmed/replays/8625b091a3235be5100ee920e87f555a/run.json container eeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee1",
+      "returncode": 0,
+      "stderr": {
+       "bytes": 0,
+       "decoding": "utf-8",
+       "ref": "sha256:evidence-replay-stderr",
+       "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+       "truncated": false
+      },
+      "stdout": {
+       "bytes": 3,
+       "decoding": "utf-8",
+       "ref": "sha256:evidence-replay-stdout",
+       "sha256": "dc51b8c96c2d745df3bd5590d990230a482fd247123599548e0632fdbf97fc22",
+       "truncated": false
+      },
+      "terminated": false
+     }
+    ],
+    "state": "replay_failed"
+   },
+   "reconcile": {
+    "records": [
+     {
+      "argv": [
+       "/opt/zeus/bin/python",
+       "-m",
+       "pytest",
+       "-q"
+      ],
+      "container": "eeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee1",
+      "container_name": "zeus-verifier-8625b091a3235be5100ee920e87f555a",
+      "image": "sha256:aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+      "isolation_digest": "b740d7ac51c10a4d57e33234c3fe2c57eabfc023126296187676a49a520e6b19",
+      "label": "zeus.isolated.run=8625b091a3235be5100ee920e87f555a",
+      "lifecycle": [
+       {
+        "at": "<time>",
+        "snapshot_sha256": "a66e9e9870224a846ff8eb31241ce3625b8818ffc88152dca9412c63938d7113",
+        "state": "prepared"
+       },
+       {
+        "at": "<time>",
+        "container": "eeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee1",
+        "state": "created"
+       },
+       {
+        "at": "<time>",
+        "recovery": {
+         "container": "eeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee1",
+         "name": "zeus-verifier-8625b091a3235be5100ee920e87f555a",
+         "record": "<ROOT>/28-real-proof-string_confirmed/replays/8625b091a3235be5100ee920e87f555a/run.json"
+        },
+        "state": "start_requested"
+       },
+       {
+        "at": "<time>",
+        "interrupted": null,
+        "recovery": {
+         "container": "eeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee1",
+         "name": "zeus-verifier-8625b091a3235be5100ee920e87f555a",
+         "record": "<ROOT>/28-real-proof-string_confirmed/replays/8625b091a3235be5100ee920e87f555a/run.json"
+        },
+        "state": "stop_unconfirmed",
+        "stop": {
+         "capture_cleanup": {
+          "confirmed": "true"
+         },
+         "client_confirmed": false,
+         "confirmed": false,
+         "container_confirmed": true,
+         "exit_code": 0,
+         "killed": false,
+         "oom_killed": false,
+         "status": "exited"
+        }
+       }
+      ],
+      "record": "<ROOT>/28-real-proof-string_confirmed/replays/8625b091a3235be5100ee920e87f555a/run.json",
+      "role": "verifier",
+      "run_id": "8625b091a3235be5100ee920e87f555a",
+      "snapshot": "<ROOT>/28-real-proof-string_confirmed/replays/8625b091a3235be5100ee920e87f555a/workspace",
+      "state": "stop_unconfirmed",
+      "workspace": "<ROOT>/28-real-proof-string_confirmed/candidate"
+     }
+    ],
+    "refused": {
+     "container": "eeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee1",
+     "reason": "client_cleanup_unconfirmed",
+     "reconciled": false,
+     "run_id": "8625b091a3235be5100ee920e87f555a"
+    },
+    "unresolved": 1
+   },
+   "retained": {
+    "has_result": false,
+    "id_present": true,
+    "recovery_matches": true,
+    "refusal": {
+     "evidence_written": false,
+     "exit_code": null,
+     "recovery": {
+      "container": null,
+      "name": "zeus-verifier-8625b091a3235be5100ee920e87f555a",
+      "record": "<ROOT>/28-real-proof-string_confirmed/replays/8625b091a3235be5100ee920e87f555a/run.json"
+     },
+     "refused": "client_cleanup_unconfirmed",
+     "removed": false
+    },
+    "rm_called": false,
+    "state": "stop_unconfirmed",
+    "stop": {
+     "capture_cleanup": {
+      "confirmed": "true"
+     },
+     "client_confirmed": false,
+     "confirmed": false,
+     "container_confirmed": true,
+     "exit_code": 0,
+     "killed": false,
+     "oom_killed": false,
+     "status": "exited"
+    },
+    "unresolved": [
+     {
+      "container": "eeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee1",
+      "record": "<ROOT>/28-real-proof-string_confirmed/replays/8625b091a3235be5100ee920e87f555a/run.json",
+      "run_id": "8625b091a3235be5100ee920e87f555a",
+      "state": "stop_unconfirmed",
+      "workspace": "<ROOT>/28-real-proof-string_confirmed/candidate"
+     }
+    ]
+   },
+   "spawned": 1
+  },
+  "raised_interruption_unconfirmed": {
+   "child_alive": true,
+   "interrupted_step": "KeyboardInterrupt",
+   "raised": {
+    "capture_cleanup": {
+     "confirmed": false,
+     "error": null,
+     "readers_alive": [
+      "stdout",
+      "stderr"
+     ],
+     "reason": "KeyboardInterrupt",
+     "streams_closed": [],
+     "tree": {
+      "confirmed": false,
+      "injected": true,
+      "reason": "KeyboardInterrupt"
+     }
+    },
+    "message": "",
+    "raised": "KeyboardInterrupt"
+   },
+   "reconcile": {
+    "records": [
+     {
+      "argv": [
+       "/opt/zeus/bin/python",
+       "-m",
+       "pytest",
+       "-q"
+      ],
+      "container": "eeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee1",
+      "container_name": "zeus-verifier-aacadad031032d3faf3c24647fbab68b",
+      "image": "sha256:aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+      "isolation_digest": "b740d7ac51c10a4d57e33234c3fe2c57eabfc023126296187676a49a520e6b19",
+      "label": "zeus.isolated.run=aacadad031032d3faf3c24647fbab68b",
+      "lifecycle": [
+       {
+        "at": "<time>",
+        "snapshot_sha256": "a66e9e9870224a846ff8eb31241ce3625b8818ffc88152dca9412c63938d7113",
+        "state": "prepared"
+       },
+       {
+        "at": "<time>",
+        "container": "eeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee1",
+        "state": "created"
+       },
+       {
+        "at": "<time>",
+        "recovery": {
+         "container": "eeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee1",
+         "name": "zeus-verifier-aacadad031032d3faf3c24647fbab68b",
+         "record": "<ROOT>/24-real-interrupt-unconfirmed/replays/aacadad031032d3faf3c24647fbab68b/run.json"
+        },
+        "state": "start_requested"
+       },
+       {
+        "at": "<time>",
+        "interrupted": "KeyboardInterrupt",
+        "recovery": {
+         "container": "eeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee1",
+         "name": "zeus-verifier-aacadad031032d3faf3c24647fbab68b",
+         "record": "<ROOT>/24-real-interrupt-unconfirmed/replays/aacadad031032d3faf3c24647fbab68b/run.json"
+        },
+        "state": "stop_unconfirmed",
+        "stop": {
+         "capture_cleanup": {
+          "confirmed": false,
+          "error": null,
+          "readers_alive": [
+           "stdout",
+           "stderr"
+          ],
+          "reason": "KeyboardInterrupt",
+          "streams_closed": [],
+          "tree": {
+           "confirmed": false,
+           "injected": true,
+           "reason": "KeyboardInterrupt"
+          }
+         },
+         "client_confirmed": false,
+         "confirmed": false,
+         "container_confirmed": true,
+         "exit_code": 0,
+         "killed": true,
+         "oom_killed": false,
+         "status": "exited"
+        }
+       }
+      ],
+      "record": "<ROOT>/24-real-interrupt-unconfirmed/replays/aacadad031032d3faf3c24647fbab68b/run.json",
+      "role": "verifier",
+      "run_id": "aacadad031032d3faf3c24647fbab68b",
+      "snapshot": "<ROOT>/24-real-interrupt-unconfirmed/replays/aacadad031032d3faf3c24647fbab68b/workspace",
+      "state": "stop_unconfirmed",
+      "workspace": "<ROOT>/24-real-interrupt-unconfirmed/candidate"
+     }
+    ],
+    "refused": {
+     "container": "eeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee1",
+     "reason": "client_cleanup_unconfirmed",
+     "reconciled": false,
+     "run_id": "aacadad031032d3faf3c24647fbab68b"
+    },
+    "unresolved": 1
+   },
+   "retained": {
+    "has_result": false,
+    "id_present": true,
+    "recovery_matches": true,
+    "refusal": {
+     "evidence_written": false,
+     "exit_code": null,
+     "recovery": {
+      "container": null,
+      "name": "zeus-verifier-aacadad031032d3faf3c24647fbab68b",
+      "record": "<ROOT>/24-real-interrupt-unconfirmed/replays/aacadad031032d3faf3c24647fbab68b/run.json"
+     },
+     "refused": "client_cleanup_unconfirmed",
+     "removed": false
+    },
+    "rm_called": false,
+    "state": "stop_unconfirmed",
+    "stop": {
+     "capture_cleanup": {
+      "confirmed": false,
+      "error": null,
+      "readers_alive": [
+       "stdout",
+       "stderr"
+      ],
+      "reason": "KeyboardInterrupt",
+      "streams_closed": [],
+      "tree": {
+       "confirmed": false,
+       "injected": true,
+       "reason": "KeyboardInterrupt"
+      }
+     },
+     "client_confirmed": false,
+     "confirmed": false,
+     "container_confirmed": true,
+     "exit_code": 0,
+     "killed": true,
+     "oom_killed": false,
+     "status": "exited"
+    },
+    "unresolved": [
+     {
+      "container": "eeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee1",
+      "record": "<ROOT>/24-real-interrupt-unconfirmed/replays/aacadad031032d3faf3c24647fbab68b/run.json",
+      "run_id": "aacadad031032d3faf3c24647fbab68b",
+      "state": "stop_unconfirmed",
+      "workspace": "<ROOT>/24-real-interrupt-unconfirmed/candidate"
+     }
+    ]
+   }
+  },
+  "returned_unconfirmed": {
+   "child_alive_on_return": true,
+   "creates_unchanged": true,
+   "finding": {
+    "argv_identical": false,
+    "argv_transformation": "first token \"python\" replaced by the trusted host interpreter; authorization was decided on the original argv",
+    "cause": "attempt 1: capture_cleanup_unconfirmed; recovery record <ROOT>/22-real-unconfirmed/replays/4bee35c48f07a009937676c92dc3cfd2/run.json container eeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee1",
+    "claim": {
+     "argv": [
+      "python",
+      "-m",
+      "pytest",
+      "-q"
+     ],
+     "expected_exit": 0,
+     "id": "28c3babc7015e24ef6ba63cb4a8b117db4a3aef30dba2db8de838dc5f3de99c3",
+     "kind": "command",
+     "origin": "free_text"
+    },
+    "interpreter": "/opt/zeus/bin/python",
+    "original_argv": [
+     "python",
+     "-m",
+     "pytest",
+     "-q"
+    ],
+    "replay_argv": [
+     "/opt/zeus/bin/python",
+     "-m",
+     "pytest",
+     "-q"
+    ],
+    "runs": [
+     {
+      "cleanup": {
+       "confirmed": false,
+       "error": null,
+       "readers_alive": [
+        "stdout",
+        "stderr"
+       ],
+       "reason": "timeout",
+       "streams_closed": [],
+       "tree": {
+        "confirmed": false,
+        "injected": true,
+        "reason": "timeout"
+       }
+      },
+      "container": {
+       "controls": {
+        "cap_drop": [
+         "ALL"
+        ],
+        "image": "sha256:aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+        "labels": {
+         "zeus.isolated.role": "verifier",
+         "zeus.isolated.run": "4bee35c48f07a009937676c92dc3cfd2"
+        },
+        "memory": 1,
+        "mounts": [
+         {
+          "Destination": "/workspace",
+          "RW": true,
+          "Source": "<ROOT>/22-real-unconfirmed/replays/4bee35c48f07a009937676c92dc3cfd2/workspace",
+          "Type": "bind"
+         }
+        ],
+        "nano_cpus": 1,
+        "network": "none",
+        "pids_limit": 512,
+        "ports": {},
+        "privileged": false,
+        "read_only": true,
+        "security_opt": [
+         "no-new-privileges"
+        ],
+        "user": "4242:4242"
+       },
+       "credentials": "none",
+       "id": "eeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee1",
+       "image": "sha256:aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+       "name": "zeus-verifier-4bee35c48f07a009937676c92dc3cfd2",
+       "network": "none",
+       "record": "<ROOT>/22-real-unconfirmed/replays/4bee35c48f07a009937676c92dc3cfd2/run.json",
+       "run_id": "4bee35c48f07a009937676c92dc3cfd2",
+       "snapshot_sha256": "a66e9e9870224a846ff8eb31241ce3625b8818ffc88152dca9412c63938d7113",
+       "stop": {
+        "capture_cleanup": {
+         "confirmed": false,
+         "error": null,
+         "readers_alive": [
+          "stdout",
+          "stderr"
+         ],
+         "reason": "timeout",
+         "streams_closed": [],
+         "tree": {
+          "confirmed": false,
+          "injected": true,
+          "reason": "timeout"
+         }
+        },
+        "client_confirmed": false,
+        "confirmed": false,
+        "container_confirmed": true,
+        "exit_code": 0,
+        "killed": true,
+        "oom_killed": false,
+        "status": "exited"
+       }
+      },
+      "duration_seconds": "<duration>",
+      "failure": "capture_cleanup_unconfirmed; recovery record <ROOT>/22-real-unconfirmed/replays/4bee35c48f07a009937676c92dc3cfd2/run.json container eeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee1",
+      "returncode": null,
+      "stderr": {
+       "bytes": 0,
+       "decoding": "utf-8",
+       "ref": "sha256:evidence-replay-stderr",
+       "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+       "truncated": false
+      },
+      "stdout": {
+       "bytes": 0,
+       "decoding": "utf-8",
+       "ref": "sha256:evidence-replay-stdout",
+       "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+       "truncated": false
+      },
+      "terminated": true
+     }
+    ],
+    "state": "replay_failed"
+   },
+   "next_replay": {
+    "argv_identical": false,
+    "argv_transformation": "first token \"python\" replaced by the trusted host interpreter; authorization was decided on the original argv",
+    "cause": "attempt 1: isolated_replay_unavailable: isolation_unresolved_run",
+    "claim": {
+     "argv": [
+      "python",
+      "-m",
+      "pytest",
+      "-q"
+     ],
+     "expected_exit": 0,
+     "id": "28c3babc7015e24ef6ba63cb4a8b117db4a3aef30dba2db8de838dc5f3de99c3",
+     "kind": "command",
+     "origin": "free_text"
+    },
+    "interpreter": "/opt/zeus/bin/python",
+    "original_argv": [
+     "python",
+     "-m",
+     "pytest",
+     "-q"
+    ],
+    "replay_argv": [
+     "/opt/zeus/bin/python",
+     "-m",
+     "pytest",
+     "-q"
+    ],
+    "runs": [
+     {
+      "container": {
+       "credentials": "none",
+       "image": "sha256:aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+       "name": "zeus-verifier-7599af8170df911c2f77af258b353a0e",
+       "network": "none",
+       "run_id": "7599af8170df911c2f77af258b353a0e",
+       "unresolved": [
+        {
+         "container": "eeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee1",
+         "record": "<ROOT>/22-real-unconfirmed/replays/4bee35c48f07a009937676c92dc3cfd2/run.json",
+         "run_id": "4bee35c48f07a009937676c92dc3cfd2",
+         "state": "stop_unconfirmed",
+         "workspace": "<ROOT>/22-real-unconfirmed/candidate"
+        }
+       ]
+      },
+      "duration_seconds": "<duration>",
+      "failure": "isolated_replay_unavailable: isolation_unresolved_run",
+      "returncode": null
+     }
+    ],
+    "state": "replay_failed"
+   },
+   "reconcile": {
+    "records": [
+     {
+      "argv": [
+       "/opt/zeus/bin/python",
+       "-m",
+       "pytest",
+       "-q"
+      ],
+      "container": "eeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee1",
+      "container_name": "zeus-verifier-4bee35c48f07a009937676c92dc3cfd2",
+      "image": "sha256:aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+      "isolation_digest": "b740d7ac51c10a4d57e33234c3fe2c57eabfc023126296187676a49a520e6b19",
+      "label": "zeus.isolated.run=4bee35c48f07a009937676c92dc3cfd2",
+      "lifecycle": [
+       {
+        "at": "<time>",
+        "snapshot_sha256": "a66e9e9870224a846ff8eb31241ce3625b8818ffc88152dca9412c63938d7113",
+        "state": "prepared"
+       },
+       {
+        "at": "<time>",
+        "container": "eeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee1",
+        "state": "created"
+       },
+       {
+        "at": "<time>",
+        "recovery": {
+         "container": "eeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee1",
+         "name": "zeus-verifier-4bee35c48f07a009937676c92dc3cfd2",
+         "record": "<ROOT>/22-real-unconfirmed/replays/4bee35c48f07a009937676c92dc3cfd2/run.json"
+        },
+        "state": "start_requested"
+       },
+       {
+        "at": "<time>",
+        "interrupted": null,
+        "recovery": {
+         "container": "eeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee1",
+         "name": "zeus-verifier-4bee35c48f07a009937676c92dc3cfd2",
+         "record": "<ROOT>/22-real-unconfirmed/replays/4bee35c48f07a009937676c92dc3cfd2/run.json"
+        },
+        "state": "stop_unconfirmed",
+        "stop": {
+         "capture_cleanup": {
+          "confirmed": false,
+          "error": null,
+          "readers_alive": [
+           "stdout",
+           "stderr"
+          ],
+          "reason": "timeout",
+          "streams_closed": [],
+          "tree": {
+           "confirmed": false,
+           "injected": true,
+           "reason": "timeout"
+          }
+         },
+         "client_confirmed": false,
+         "confirmed": false,
+         "container_confirmed": true,
+         "exit_code": 0,
+         "killed": true,
+         "oom_killed": false,
+         "status": "exited"
+        }
+       }
+      ],
+      "record": "<ROOT>/22-real-unconfirmed/replays/4bee35c48f07a009937676c92dc3cfd2/run.json",
+      "role": "verifier",
+      "run_id": "4bee35c48f07a009937676c92dc3cfd2",
+      "snapshot": "<ROOT>/22-real-unconfirmed/replays/4bee35c48f07a009937676c92dc3cfd2/workspace",
+      "state": "stop_unconfirmed",
+      "workspace": "<ROOT>/22-real-unconfirmed/candidate"
+     }
+    ],
+    "refused": {
+     "container": "eeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee1",
+     "reason": "client_cleanup_unconfirmed",
+     "reconciled": false,
+     "run_id": "4bee35c48f07a009937676c92dc3cfd2"
+    },
+    "unresolved": 1
+   },
+   "retained": {
+    "has_result": false,
+    "id_present": true,
+    "recovery_matches": true,
+    "refusal": {
+     "evidence_written": false,
+     "exit_code": null,
+     "recovery": {
+      "container": null,
+      "name": "zeus-verifier-4bee35c48f07a009937676c92dc3cfd2",
+      "record": "<ROOT>/22-real-unconfirmed/replays/4bee35c48f07a009937676c92dc3cfd2/run.json"
+     },
+     "refused": "client_cleanup_unconfirmed",
+     "removed": false
+    },
+    "rm_called": false,
+    "state": "stop_unconfirmed",
+    "stop": {
+     "capture_cleanup": {
+      "confirmed": false,
+      "error": null,
+      "readers_alive": [
+       "stdout",
+       "stderr"
+      ],
+      "reason": "timeout",
+      "streams_closed": [],
+      "tree": {
+       "confirmed": false,
+       "injected": true,
+       "reason": "timeout"
+      }
+     },
+     "client_confirmed": false,
+     "confirmed": false,
+     "container_confirmed": true,
+     "exit_code": 0,
+     "killed": true,
+     "oom_killed": false,
+     "status": "exited"
+    },
+    "unresolved": [
+     {
+      "container": "eeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee1",
+      "record": "<ROOT>/22-real-unconfirmed/replays/4bee35c48f07a009937676c92dc3cfd2/run.json",
+      "run_id": "4bee35c48f07a009937676c92dc3cfd2",
+      "state": "stop_unconfirmed",
+      "workspace": "<ROOT>/22-real-unconfirmed/candidate"
+     }
+    ]
+   },
+   "spawned": 1
+  },
+  "unwritten_evidence": {
+   "child_exit": 0,
+   "finding": {
+    "argv_identical": false,
+    "argv_transformation": "first token \"python\" replaced by the trusted host interpreter; authorization was decided on the original argv",
+    "cause": "attempt 1: replay_evidence_unwritten; container retained; recovery record <ROOT>/30-real-unwritten/replays/3ceb3d49e100ffa2d79569a9dd7e5a60/run.json container eeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee1",
+    "claim": {
+     "argv": [
+      "python",
+      "-m",
+      "pytest",
+      "-q"
+     ],
+     "expected_exit": 0,
+     "id": "28c3babc7015e24ef6ba63cb4a8b117db4a3aef30dba2db8de838dc5f3de99c3",
+     "kind": "command",
+     "origin": "free_text"
+    },
+    "interpreter": "/opt/zeus/bin/python",
+    "original_argv": [
+     "python",
+     "-m",
+     "pytest",
+     "-q"
+    ],
+    "replay_argv": [
+     "/opt/zeus/bin/python",
+     "-m",
+     "pytest",
+     "-q"
+    ],
+    "runs": [
+     {
+      "cleanup": {
+       "confirmed": true,
+       "error": null,
+       "readers_alive": [],
+       "reason": "exited",
+       "streams_closed": [
+        "stdout",
+        "stderr"
+       ],
+       "tree": {
+        "boundary": {
+         "group": "<pid>",
+         "kind": "process_group",
+         "limit": "a descendant that calls setsid leaves this group and cannot be proven gone from here",
+         "owned_from_spawn": true
+        },
+        "confirmed": true,
+        "note": "a terminated parent is not a terminated tree; acceptance needs both",
+        "parent": {
+         "already_exited": true,
+         "confirmed": true,
+         "ended_on_its_own": true,
+         "escalated": false,
+         "exit_code": 0,
+         "pid": "<pid>",
+         "signalled": null
+        },
+        "reason": "exited",
+        "tree": {
+         "confirmed": true,
+         "evidence": "signal zero to the group until no member answers",
+         "group": "<pid>",
+         "group_empty": true,
+         "method": "process_group"
+        }
+       }
+      },
+      "container": {
+       "cleanup": {
+        "evidence_written": false,
+        "exit_code": null,
+        "recovery": {
+         "container": "eeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee1",
+         "name": "zeus-verifier-3ceb3d49e100ffa2d79569a9dd7e5a60",
+         "record": "<ROOT>/30-real-unwritten/replays/3ceb3d49e100ffa2d79569a9dd7e5a60/run.json"
+        },
+        "removed": false
+       },
+       "controls": {
+        "cap_drop": [
+         "ALL"
+        ],
+        "image": "sha256:aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+        "labels": {
+         "zeus.isolated.role": "verifier",
+         "zeus.isolated.run": "3ceb3d49e100ffa2d79569a9dd7e5a60"
+        },
+        "memory": 1,
+        "mounts": [
+         {
+          "Destination": "/workspace",
+          "RW": true,
+          "Source": "<ROOT>/30-real-unwritten/replays/3ceb3d49e100ffa2d79569a9dd7e5a60/workspace",
+          "Type": "bind"
+         }
+        ],
+        "nano_cpus": 1,
+        "network": "none",
+        "pids_limit": 512,
+        "ports": {},
+        "privileged": false,
+        "read_only": true,
+        "security_opt": [
+         "no-new-privileges"
+        ],
+        "user": "4242:4242"
+       },
+       "credentials": "none",
+       "id": "eeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee1",
+       "image": "sha256:aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+       "name": "zeus-verifier-3ceb3d49e100ffa2d79569a9dd7e5a60",
+       "network": "none",
+       "record": "<ROOT>/30-real-unwritten/replays/3ceb3d49e100ffa2d79569a9dd7e5a60/run.json",
+       "run_id": "3ceb3d49e100ffa2d79569a9dd7e5a60",
+       "snapshot_sha256": "a66e9e9870224a846ff8eb31241ce3625b8818ffc88152dca9412c63938d7113",
+       "stop": {
+        "capture_cleanup": {
+         "confirmed": true,
+         "error": null,
+         "readers_alive": [],
+         "reason": "exited",
+         "streams_closed": [
+          "stdout",
+          "stderr"
+         ],
+         "tree": {
+          "boundary": {
+           "group": "<pid>",
+           "kind": "process_group",
+           "limit": "a descendant that calls setsid leaves this group and cannot be proven gone from here",
+           "owned_from_spawn": true
+          },
+          "confirmed": true,
+          "note": "a terminated parent is not a terminated tree; acceptance needs both",
+          "parent": {
+           "already_exited": true,
+           "confirmed": true,
+           "ended_on_its_own": true,
+           "escalated": false,
+           "exit_code": 0,
+           "pid": "<pid>",
+           "signalled": null
+          },
+          "reason": "exited",
+          "tree": {
+           "confirmed": true,
+           "evidence": "signal zero to the group until no member answers",
+           "group": "<pid>",
+           "group_empty": true,
+           "method": "process_group"
+          }
+         }
+        },
+        "client_confirmed": true,
+        "confirmed": true,
+        "container_confirmed": true,
+        "exit_code": 0,
+        "killed": false,
+        "oom_killed": false,
+        "status": "exited"
+       }
+      },
+      "duration_seconds": "<duration>",
+      "failure": "replay_evidence_unwritten; container retained; recovery record <ROOT>/30-real-unwritten/replays/3ceb3d49e100ffa2d79569a9dd7e5a60/run.json container eeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee1",
+      "returncode": 0,
+      "stderr": {
+       "bytes": 0,
+       "decoding": "utf-8",
+       "ref": "sha256:evidence-replay-stderr",
+       "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+       "truncated": false
+      },
+      "stdout": {
+       "bytes": 3,
+       "decoding": "utf-8",
+       "ref": "sha256:evidence-replay-stdout",
+       "sha256": "dc51b8c96c2d745df3bd5590d990230a482fd247123599548e0632fdbf97fc22",
+       "truncated": false
+      },
+      "terminated": false
+     }
+    ],
+    "state": "replay_failed"
+   },
+   "id_present": true,
+   "rm_called": false,
+   "state": "stop_confirmed",
+   "stop_confirmed": true,
+   "unresolved": 1
+  }
+ },
+ "j6_project_in_container": {
+  "constructor_refusals": {
+   "host_profile": {
+    "message": "Project evidence profile version 1 has no container execution",
+    "raised": "ContractError"
+   },
+   "no_isolation": {
+    "message": "A container project evidence profile requires the host isolation selection",
+    "raised": "ContractError"
+   },
+   "not_a_profile": {
+    "message": "Parsed project evidence profile required",
+    "raised": "ContractError"
+   },
+   "other_image": {
+    "message": "Project evidence execution image is not the host-selected isolation image",
+    "raised": "ContractError"
+   },
+   "roots_created": [
+    "artifacts",
+    "candidate"
+   ]
+  },
+  "each_check_in_its_context": {
+   "captured": 4,
+   "check_ids": [
+    "unit",
+    "lint"
+   ],
+   "context_interpreter": "/opt/zeus/bin/python",
+   "context_python": "container:sha256:aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+   "creates": 4,
+   "distinct_names": 4,
+   "entrypoints": [
+    "/opt/zeus/bin/python",
+    "/opt/zeus/bin/python",
+    "/opt/zeus/bin/python",
+    "/opt/zeus/bin/python"
+   ],
+   "environment_names": [
+    "GIT_CONFIG_COUNT",
+    "GIT_CONFIG_KEY_0",
+    "GIT_CONFIG_VALUE_0",
+    "HOME",
+    "PYTHONDONTWRITEBYTECODE",
+    "PYTHONIOENCODING",
+    "PYTHONPATH"
+   ],
+   "findings": [
+    {
+     "argv_transformation": "first token \"python\" replaced by the trusted host interpreter; authorization was decided on the original argv",
+     "cause": "exit 0 as claimed on 2 identical replay(s)",
+     "check_id": "unit",
+     "claim": {
+      "argv": [
+       "python",
+       "-m",
+       "pytest",
+       "backend/probes",
+       "-q"
+      ],
+      "check_id": "unit",
+      "context": "backend",
+      "expected_exit": 0,
+      "id": "29221f443b4cf8709cd5feeac35819f0ea6e48d60b032f3a5c34abb136e3c0e2",
+      "kind": "project_check",
+      "origin": "host_profile",
+      "reported_exit": 0,
+      "status": "executed"
+     },
+     "context": "backend",
+     "cwd": "/workspace/backend",
+     "expected_exit": 0,
+     "interpreter": "/opt/zeus/bin/python",
+     "observed_exits": [
+      0,
+      0
+     ],
+     "original_argv": [
+      "python",
+      "-m",
+      "pytest",
+      "backend/probes",
+      "-q"
+     ],
+     "replay_argv": [
+      "/opt/zeus/bin/python",
+      "-m",
+      "pytest",
+      "backend/probes",
+      "-q"
+     ],
+     "reported_exit": 0,
+     "state": "checked",
+     "timeout_seconds": 300,
+     "timeouts_seconds": [
+      300,
+      300
+     ]
+    },
+    {
+     "argv_transformation": "first token \"python\" replaced by the trusted host interpreter; authorization was decided on the original argv",
+     "cause": "exit 0 as claimed on 2 identical replay(s)",
+     "check_id": "lint",
+     "claim": {
+      "argv": [
+       "python",
+       "-m",
+       "ruff",
+       "check",
+       "."
+      ],
+      "check_id": "lint",
+      "context": "backend",
+      "expected_exit": 0,
+      "id": "2985c03d8323324219e1597492101b23cdc1aca621242860cd3256b1b9ad2f40",
+      "kind": "project_check",
+      "origin": "host_profile",
+      "reported_exit": 0,
+      "status": "executed"
+     },
+     "context": "backend",
+     "cwd": "/workspace/backend",
+     "expected_exit": 0,
+     "interpreter": "/opt/zeus/bin/python",
+     "observed_exits": [
+      0,
+      0
+     ],
+     "original_argv": [
+      "python",
+      "-m",
+      "ruff",
+      "check",
+      "."
+     ],
+     "replay_argv": [
+      "/opt/zeus/bin/python",
+      "-m",
+      "ruff",
+      "check",
+      "."
+     ],
+     "reported_exit": 0,
+     "state": "checked",
+     "timeout_seconds": 300,
+     "timeouts_seconds": [
+      300,
+      300
+     ]
+    }
+   ],
+   "first_tail": [
+    "-m",
+    "pytest",
+    "backend/probes",
+    "-q"
+   ],
+   "host_path_in_argv": [
+    false,
+    false,
+    false,
+    false
+   ],
+   "last_tail": [
+    "-m",
+    "ruff",
+    "check",
+    "."
+   ],
+   "networks": [
+    "none",
+    "none",
+    "none",
+    "none"
+   ],
+   "project_digest_matches": true,
+   "pythonpath": [
+    true,
+    true,
+    true,
+    true
+   ],
+   "read_only": [
+    true,
+    true,
+    true,
+    true
+   ],
+   "snapshot_environment": {
+    "GIT_CONFIG_COUNT": "1",
+    "GIT_CONFIG_KEY_0": "safe.directory",
+    "GIT_CONFIG_VALUE_0": "/workspace",
+    "HOME": "/tmp",
+    "PYTHONDONTWRITEBYTECODE": "1",
+    "PYTHONIOENCODING": "utf-8"
+   },
+   "snapshot_identity": {
+    "container": {
+     "credentials": "none",
+     "digest": "01afe59a75022e32546e61ac04d71927a8c5cab72cf591f7f4a3d8886672c46c",
+     "driver_sha256": "dddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddd",
+     "image": "sha256:aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+     "limits": {
+      "cleanup_seconds": 2,
+      "cpus": "2",
+      "docker_command_seconds": 60,
+      "home_mb": 256,
+      "inner_grace_seconds": 1,
+      "max_file_bytes": 16777216,
+      "max_files": 10000,
+      "max_total_bytes": 268435456,
+      "memory": "4g",
+      "pids": 512,
+      "tmp_mb": 512
+     },
+     "mode": "docker",
+     "network": "none",
+     "protocol": "zeus-isolated-worker-v1",
+     "snapshot": "fresh copy per replay",
+     "workspace": "/workspace"
+    },
+    "cwd": "<ROOT>/31-project-checks/candidate",
+    "environment_digest": "ec975a75c4a2016866f3d78e06bd634c594a20da1b743f9d64b9808cb267e556",
+    "environment_names": [
+     "GIT_CONFIG_COUNT",
+     "GIT_CONFIG_KEY_0",
+     "GIT_CONFIG_VALUE_0",
+     "HOME",
+     "PYTHONDONTWRITEBYTECODE",
+     "PYTHONIOENCODING"
+    ],
+    "interpreter": "/opt/zeus/bin/python",
+    "platform": "linux-container",
+    "policy_hash": "5b447c2d2bb7d1383f64a5f99a26f743848e786b92fc5b713ad59dee03ce09ea",
+    "project": {
+     "contexts": {
+      "backend": {
+       "cwd": "/workspace/backend",
+       "dependency_files": {
+        "backend/requirements.lock": "1bdf86043728f7123c93bec94e49d9abeb0264c7452aa1b498e0589cdb140a41"
+       },
+       "environment_digest": "9a09abb8c5bc0112d5247667507fae370ae590b1228fded79c73877e7b1eda9f",
+       "interpreter": "/opt/zeus/bin/python",
+       "relative_cwd": "backend",
+       "relative_source_paths": [
+        "backend/src"
+       ],
+       "source_paths": [
+        "/workspace/backend/src"
+       ]
+      }
+     },
+     "digest": "<host-path digest>",
+     "execution": {
+      "image": "sha256:aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+      "isolation_digest": "01afe59a75022e32546e61ac04d71927a8c5cab72cf591f7f4a3d8886672c46c",
+      "kind": "container",
+      "limits": {
+       "cleanup_seconds": 2,
+       "cpus": "2",
+       "docker_command_seconds": 60,
+       "home_mb": 256,
+       "inner_grace_seconds": 1,
+       "max_file_bytes": 16777216,
+       "max_files": 10000,
+       "max_total_bytes": 268435456,
+       "memory": "4g",
+       "pids": 512,
+       "tmp_mb": 512
+      },
+      "mode": "docker"
+     },
+     "profile_digest": "0617df9dbc7ed7062e4d21b342ab034ff36844d05e15886ea4340e5053547d78",
+     "workspace": "<ROOT>/31-project-checks/candidate"
+    }
+   },
+   "snapshots_left": [],
+   "states": [
+    "checked",
+    "checked"
+   ],
+   "token_in_calls": false,
+   "token_name": [
+    false,
+    false,
+    false,
+    false
+   ],
+   "unresolved": [],
+   "workdirs": [
+    "/workspace/backend",
+    "/workspace/backend",
+    "/workspace/backend",
+    "/workspace/backend"
+   ]
+  },
+  "identity": {
+   "dependency_change_is_new": true,
+   "first_verdict": "all_checked",
+   "narrowed_claims": 1,
+   "narrowed_is_new": true,
+   "project_digest_present": true,
+   "same_proof_read_back": true
+  },
+  "lost_owner": {
+   "kills": true,
+   "raised": {
+    "capture_cleanup": {
+     "confirmed": true,
+     "injected": true,
+     "reason": "ContractError"
+    },
+    "message": "Stale or expired task execution",
+    "raised": "ContractError"
+   },
+   "records": [
+    {
+     "argv": [
+      "/opt/zeus/bin/python",
+      "-m",
+      "pytest",
+      "backend/probes",
+      "-q"
+     ],
+     "container": "eeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee1",
+     "container_name": "zeus-verifier-bd984ea936c4430f571a027b62fd5c0b",
+     "image": "sha256:aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+     "isolation_digest": "01afe59a75022e32546e61ac04d71927a8c5cab72cf591f7f4a3d8886672c46c",
+     "label": "zeus.isolated.run=bd984ea936c4430f571a027b62fd5c0b",
+     "lifecycle": [
+      {
+       "at": "<time>",
+       "snapshot_sha256": "1efb96729dba3a61e137d19f53fb20db2e1b5ba3976ddf7234c8d7a63f27c0c3",
+       "state": "prepared"
+      },
+      {
+       "at": "<time>",
+       "container": "eeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee1",
+       "state": "created"
+      },
+      {
+       "at": "<time>",
+       "recovery": {
+        "container": "eeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee1",
+        "name": "zeus-verifier-bd984ea936c4430f571a027b62fd5c0b",
+        "record": "<ROOT>/34-project-lost-owner/replays/bd984ea936c4430f571a027b62fd5c0b/run.json"
+       },
+       "state": "start_requested"
+      },
+      {
+       "at": "<time>",
+       "interrupted": "ContractError",
+       "state": "stop_confirmed",
+       "stop": {
+        "capture_cleanup": {
+         "confirmed": true,
+         "injected": true,
+         "reason": "ContractError"
+        },
+        "client_confirmed": true,
+        "confirmed": true,
+        "container_confirmed": true,
+        "exit_code": 0,
+        "killed": true,
+        "oom_killed": false,
+        "status": "exited"
+       }
+      },
+      {
+       "at": "<time>",
+       "outcome": "interrupted",
+       "state": "evidence_retained"
+      },
+      {
+       "at": "<time>",
+       "state": "removed"
+      }
+     ],
+     "record": "<ROOT>/34-project-lost-owner/replays/bd984ea936c4430f571a027b62fd5c0b/run.json",
+     "result": {
+      "interrupted": "ContractError",
+      "stop": {
+       "capture_cleanup": {
+        "confirmed": true,
+        "injected": true,
+        "reason": "ContractError"
+       },
+       "client_confirmed": true,
+       "confirmed": true,
+       "container_confirmed": true,
+       "exit_code": 0,
+       "killed": true,
+       "oom_killed": false,
+       "status": "exited"
+      }
+     },
+     "retained_files": {},
+     "role": "verifier",
+     "run_id": "bd984ea936c4430f571a027b62fd5c0b",
+     "snapshot": "<ROOT>/34-project-lost-owner/replays/bd984ea936c4430f571a027b62fd5c0b/workspace",
+     "state": "removed",
+     "workspace": "<ROOT>/34-project-lost-owner/candidate"
+    }
+   ],
+   "replays_started": 1,
+   "unresolved": []
+  },
+  "never_reaches_a_container": {
+   "bypass_state": "not_checked",
+   "captured": 0,
+   "creates": 0,
+   "states": [
+    "not_checked",
+    "not_checked",
+    "error",
+    "error"
+   ]
+  },
+  "project_inspector": {
+   "execution": {
+    "image": "sha256:aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+    "isolation_digest": "01afe59a75022e32546e61ac04d71927a8c5cab72cf591f7f4a3d8886672c46c",
+    "kind": "container",
+    "limits": {
+     "cleanup_seconds": 2,
+     "cpus": "2",
+     "docker_command_seconds": 60,
+     "home_mb": 256,
+     "inner_grace_seconds": 1,
+     "max_file_bytes": 16777216,
+     "max_files": 10000,
+     "max_total_bytes": 268435456,
+     "memory": "4g",
+     "pids": 512,
+     "tmp_mb": 512
+    },
+    "mode": "docker"
+   },
+   "python": "container:sha256:aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+   "replay_is_the_docker_one": true,
+   "snapshot_needs_cwd": {
+    "message": "Project evidence snapshot requires the candidate workspace",
+    "raised": "ContractError"
+   },
+   "trusted_image": "/opt/zeus/bin/python",
+   "trusted_none": "/opt/zeus/bin/python",
+   "trusted_other": {
+    "message": "The isolated project inspector runs the image interpreter only",
+    "raised": "ContractError"
+   }
+  },
+  "refusals_and_mismatch": {
+   "empty_verdict": "incomplete",
+   "mismatch_state": "verified_mismatch",
+   "mismatch_verdict": "incomplete",
+   "observed_exits": [
+    0,
+    0
+   ],
+   "refused": {
+    "captured": 0,
+    "claim_states": {
+     "lint": "not_checked",
+     "unit": "not_checked"
+    },
+    "creates": 0,
+    "states": [
+     "not_checked",
+     "not_checked",
+     "error",
+     "error"
+    ],
+    "verdict": "incomplete"
+   },
+   "reported_exit": 1
+  }
+ }
+}
