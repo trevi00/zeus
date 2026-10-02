@@ -14,8 +14,10 @@ from __future__ import annotations
 
 from typing import Protocol
 
+# `metric_observations`: S9 P0 (coordinator), declared before its one writer, M7 application/measurements.py
+# (PREP-S9 §4.2 U4; no other SOURCE writer).
 OWNED_BUCKETS = ("observation_audit", "observations", "observation_quarantine", "observation_alerts",
-                 "observation_collections", "observation_terminations", "health")
+                 "observation_collections", "observation_terminations", "health", "metric_observations")
 
 
 class SpoolFull(RuntimeError):
