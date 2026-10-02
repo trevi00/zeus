@@ -108,8 +108,9 @@ def test_research_owns_the_threshold_approval_buckets():
     from codex_harness.research import ports
 
     module = importlib.import_module(MODULE)
-    assert ports.OWNED_BUCKETS[-2:] == ("threshold_approvals", "threshold_approval_events")
-    assert {module.BUCKET, module.EVENTS} == set(ports.OWNED_BUCKETS[-2:])
+    # later pilots append their own buckets (pilot 88): the pair is pinned by name, once each, not by position
+    assert [b for b in ports.OWNED_BUCKETS if b.startswith("threshold_approval")] == ["threshold_approvals", "threshold_approval_events"]
+    assert {module.BUCKET, module.EVENTS} <= set(ports.OWNED_BUCKETS)
 
 
 def test_only_this_module_names_the_threshold_approval_buckets_in_the_target_source():

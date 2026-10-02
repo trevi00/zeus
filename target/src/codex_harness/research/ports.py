@@ -38,7 +38,11 @@ OWNED_BUCKETS = ("inbox", "incidents", "hooks", "research_programs", "dge_sessio
                  # S8 pilot 76 (V4): the one bucket only research.application.discovery_pressure writes
                  "discovery_pressure",
                  # S8 pilot 86 (V4): the two buckets only research.application.threshold_approvals writes
-                 "threshold_approvals", "threshold_approval_events")
+                 "threshold_approvals", "threshold_approval_events",
+                 # S8 pilot 88 (V4): the three buckets only research.application.reverse_progress writes and the two buckets only
+                 # research.application.source_execution writes
+                 "reverse_requests", "reverse_progress", "reverse_history",
+                 "source_execution_requests", "source_execution_history")
 
 
 class OutboxAppend(Protocol):
