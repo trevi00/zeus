@@ -16,9 +16,10 @@ the 10 CLI tests are not adapter tests and stay S10), plus LABELLED additions fo
   every fleet/observation branch and bound.
 - **s5_monitoring_evidence**: `monitoring_evidence(path, now)` over snapshot files in the scenario temp dir: fresh, stale, future, missing,
   directory, oversized, 20 malformed payloads, agreement with the readiness endpoint, no write.
-- **s6_m7_default_path** (present ONLY when the side still has `snapshot_path`, i.e. M7): `execute_frontdesk(..., snapshot=None)` and
-  `monitoring_evidence()` read the runtime file through the default `snapshot_path()`. This is the V17 intended difference: the target refuses
-  `snapshot=None` and its `monitoring_evidence` requires the path (R-f1, R-m1); the scenario declares the keys absent on the target.
+- **s6_snapshot_none** and **s7_default_path** (present ONLY when the side still has `snapshot_path`, i.e. M7): `execute_frontdesk(..., snapshot=None)`
+  self-reads the runtime file, and `snapshot_path()`/`monitoring_evidence()` with no path read it through the default path. These are the two V17
+  intended differences (the target refuses `snapshot=None`, R-f1; its `monitoring_evidence` requires the path and `snapshot_path` is gone, R-m1):
+  the scenario declares each group absent on the target. The refusal itself is pinned by the target's own tests.
 
 Temp-path rule (documented, driver-side): every snapshot file lives in one scenario temp directory; `norm` replaces that directory's string,
 wherever it occurs in a result, by `<tmp>` and counts the replacements (`TEMP_PATH_REPLACEMENTS`). It never masks a state, a reason or an age;
@@ -551,18 +552,16 @@ def s5_monitoring_evidence(api, scratch):
     return out
 
 
-def s6_default_path(api, scratch, w):
-    """M7 only: the self-read of the owner's runtime capture through the default `snapshot_path()` (V17: absent on the target)."""
-    out = {"has_snapshot_path": True}
+def s6_snapshot_none(api, scratch, w):
+    """M7 only: `execute_frontdesk(..., snapshot=None)` self-reads the owner's runtime capture through the default `snapshot_path()`.
+    The target refuses `snapshot=None` (V17 R-f1: composition supplies the evidence): intended difference 1, the whole group is absent there."""
+    out = {}
     seam = api.default_path
     n = seam.collected(5)
     path = scratch.root / "monitoring.json"
-
-    # ---- test_the_execution_helper_carries_the_owner_runtime_capture_as_evidence / ..._reports_a_malformed_capture_as_unknown_without_failing /
-    # ---- ..._reports_an_absent_capture_as_unknown: `snapshot` omitted, the runtime file read through the default path
-    case = {}
     with seam.install(path):
-        out["snapshot_path_name"] = seam.current().name
+        # ---- test_the_execution_helper_carries_the_owner_runtime_capture_as_evidence / ..._reports_a_malformed_capture_as_unknown_without_failing /
+        # ---- ..._reports_an_absent_capture_as_unknown: `snapshot` omitted, the runtime file read through the default path
         for label, body in (("owner_capture", monitoring_document(n)), ("malformed_capture", b'{"schema": "harness-monitor.v1", "sources": 3}'),
                             ("absent_capture", None)):
             if body is None:
@@ -571,28 +570,39 @@ def s6_default_path(api, scratch, w):
                 write(path, body)
             svc, desk, session_id, row, task = turn(api, w)
             result = execute(api, svc, task)
-            case[label] = norm({"fleet_snapshot": result["run_calls"][0]["evidence"]["fleet_snapshot"], "answer": result["outcome"]["returned"]["answer"],
-                                "store_unchanged": result["store_unchanged"]}, scratch.root)
+            out[label] = norm({"fleet_snapshot": result["run_calls"][0]["evidence"]["fleet_snapshot"], "answer": result["outcome"]["returned"]["answer"],
+                               "store_unchanged": result["store_unchanged"]}, scratch.root)
         # `snapshot=None` passed explicitly is the omitted default
         write(path, monitoring_document(n))
         svc, desk, session_id, row, task = turn(api, w)
         explicit_none = execute(api, svc, task, snapshot=None)
         svc, desk, session_id, row, task = turn(api, w)
         omitted = execute(api, svc, task)
-        case["explicit_none_equals_omitted"] = {"same_fleet_and_availability": [explicit_none["run_calls"][0]["evidence"]["fleet_snapshot"][k] for k in ("availability", "fleet", "freshness")]
-                                                     == [omitted["run_calls"][0]["evidence"]["fleet_snapshot"][k] for k in ("availability", "fleet", "freshness")]}
-        # `monitoring_evidence()` with no path: the same default file
+        keys = ("availability", "fleet", "freshness")
+        out["explicit_none_equals_omitted"] = {"same_fleet_and_availability": [explicit_none["run_calls"][0]["evidence"]["fleet_snapshot"][k] for k in keys]
+                                               == [omitted["run_calls"][0]["evidence"]["fleet_snapshot"][k] for k in keys]}
+    return out
+
+
+def s7_default_path(api, scratch, w):
+    """M7 only: `snapshot_path()` (the runtime file, through the composition's `runtime_dir`) and `monitoring_evidence()` with no path.
+    The target has neither (V17 R-m1: the path is required, composition owns `runtime_dir`): intended difference 2, the whole group is absent there."""
+    out = {"has_snapshot_path": True}
+    seam = api.default_path
+    n = seam.collected(5)
+    path = scratch.root / "monitoring.json"
+    with seam.install(path):
+        out["snapshot_path_name"] = seam.current().name
         write(path, monitoring_document(n))
-        case["monitoring_evidence_no_path"] = norm(plain(api.monitoring_evidence()), scratch.root)
-        case["monitoring_evidence_path_none"] = norm(plain(api.monitoring_evidence(None)), scratch.root)
-        # the default path is read when there is NO explicit snapshot only: an explicit snapshot never touches it
+        out["monitoring_evidence_no_path"] = norm(plain(api.monitoring_evidence()), scratch.root)
+        out["monitoring_evidence_path_none"] = norm(plain(api.monitoring_evidence(None)), scratch.root)
+        # the default path is not touched when the snapshot is explicit
         write(path, b"{not json")
         svc, desk, session_id, row, task = turn(api, w)
         explicit = execute(api, svc, task, snapshot={"marker": "explicit"})
-        case["explicit_snapshot_ignores_the_default_path"] = explicit["run_calls"][0]["evidence"]["fleet_snapshot"]
+        out["explicit_snapshot_ignores_the_default_path"] = explicit["run_calls"][0]["evidence"]["fleet_snapshot"]
         # a failing default path (an exception from the configuration) is explicit unknown evidence, never a raised turn failure
-        case["default_path_raises"] = norm(plain(seam.raising(RuntimeError("configuration failure"))), scratch.root)
-    out["snapshot_none_and_default_path"] = case
+        out["default_path_raises"] = norm(plain(seam.raising(RuntimeError("configuration failure"))), scratch.root)
     return out
 
 
@@ -618,10 +628,10 @@ M7_TESTS = {
     "test_a_missing_or_unreadable_capture_never_fails_the_turn": "s5_monitoring_evidence (same name, plus 22 malformed payloads)",
     "test_an_oversized_or_unopenable_capture_is_unknown": "s5_monitoring_evidence (same name; a real oversized file as well)",
     "test_the_execution_helper_carries_the_owner_runtime_capture_as_evidence": "s5_monitoring_evidence (the capture on disk as evidence) and s3_execute "
-                                                                               "(explicit snapshot); s6_m7_default_path (M7 self-read, intended difference)",
-    "test_the_execution_helper_reports_a_malformed_capture_as_unknown_without_failing": "s6_m7_default_path (M7 self-read, intended difference); "
+                                                                               "(explicit snapshot); s6_snapshot_none (M7 self-read, intended difference)",
+    "test_the_execution_helper_reports_a_malformed_capture_as_unknown_without_failing": "s6_snapshot_none (M7 self-read, intended difference); "
                                                                                        "s5_monitoring_evidence.malformed_payloads (the evidence itself)",
-    "test_the_execution_helper_reports_an_absent_capture_as_unknown": "s6_m7_default_path (M7 self-read, intended difference); "
+    "test_the_execution_helper_reports_an_absent_capture_as_unknown": "s6_snapshot_none (M7 self-read, intended difference); "
                                                                       "s5_monitoring_evidence (missing path)",
 }
 
@@ -634,10 +644,11 @@ def run(api) -> dict:
         result = {"s1_constants": s1_constants(api), "s2_clean_checkout": s2_clean_checkout(api), "s3_execute": s3_execute(api, world),
                   "s4_monitoring_facts": s4_monitoring_facts(api), "s5_monitoring_evidence": s5_monitoring_evidence(api, scratch)}
         if api.default_path is not None:
-            result["s6_m7_default_path"] = s6_default_path(api, scratch, world)
+            result["s6_snapshot_none"] = s6_snapshot_none(api, scratch, world)
+            result["s7_default_path"] = s7_default_path(api, scratch, world)
     finally:
         scratch.close()
-    result["s7_m7_tests"] = M7_TESTS
+    result["s8_m7_tests"] = M7_TESTS
     result["temp_path_replacements"] = TEMP_PATH_REPLACEMENTS["count"]
     result["cases_per_group"] = {name: len(result[name]) for name in ("s1_constants", "s2_clean_checkout", "s3_execute", "s4_monitoring_facts",
                                                                       "s5_monitoring_evidence")}

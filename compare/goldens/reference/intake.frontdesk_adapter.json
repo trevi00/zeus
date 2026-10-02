@@ -7472,29 +7472,10 @@
    }
   }
  },
- "s6_m7_default_path": {
-  "has_snapshot_path": true,
-  "snapshot_none_and_default_path": {
-   "absent_capture": {
-    "answer": "구독 사용량은 기록되고 호출 수 상한은 적용되지 않습니다.",
-    "fleet_snapshot": {
-     "age_seconds": null,
-     "authority": "sanitized_owner_runtime_observation; the collector's last capture, not a live query and not proof of a current incident",
-     "availability": "unknown",
-     "basis": "capture_time_unknown",
-     "collected_at": null,
-     "fleet": null,
-     "freshness": "unknown",
-     "freshness_bound_seconds": 20,
-     "freshness_reason": "snapshot_missing",
-     "observations": null,
-     "reason_code": "snapshot_missing",
-     "schema": "urn:zeus:desk-monitoring:1",
-     "sources": null
-    },
-    "store_unchanged": true
-   },
-   "default_path_raises": {
+ "s6_snapshot_none": {
+  "absent_capture": {
+   "answer": "구독 사용량은 기록되고 호출 수 상한은 적용되지 않습니다.",
+   "fleet_snapshot": {
     "age_seconds": null,
     "authority": "sanitized_owner_runtime_observation; the collector's last capture, not a live query and not proof of a current incident",
     "availability": "unknown",
@@ -7503,39 +7484,40 @@
     "fleet": null,
     "freshness": "unknown",
     "freshness_bound_seconds": 20,
-    "freshness_reason": "snapshot_unavailable",
+    "freshness_reason": "snapshot_missing",
     "observations": null,
-    "reason_code": "snapshot_unavailable",
+    "reason_code": "snapshot_missing",
     "schema": "urn:zeus:desk-monitoring:1",
     "sources": null
    },
-   "explicit_none_equals_omitted": {
-    "same_fleet_and_availability": true
+   "store_unchanged": true
+  },
+  "explicit_none_equals_omitted": {
+   "same_fleet_and_availability": true
+  },
+  "malformed_capture": {
+   "answer": "구독 사용량은 기록되고 호출 수 상한은 적용되지 않습니다.",
+   "fleet_snapshot": {
+    "age_seconds": null,
+    "authority": "sanitized_owner_runtime_observation; the collector's last capture, not a live query and not proof of a current incident",
+    "availability": "unknown",
+    "basis": "capture_time_unknown",
+    "collected_at": null,
+    "fleet": null,
+    "freshness": "unknown",
+    "freshness_bound_seconds": 20,
+    "freshness_reason": "sources_unexpected",
+    "observations": null,
+    "reason_code": "sources_unexpected",
+    "schema": "urn:zeus:desk-monitoring:1",
+    "sources": null
    },
-   "explicit_snapshot_ignores_the_default_path": {
-    "marker": "explicit"
-   },
-   "malformed_capture": {
-    "answer": "구독 사용량은 기록되고 호출 수 상한은 적용되지 않습니다.",
-    "fleet_snapshot": {
-     "age_seconds": null,
-     "authority": "sanitized_owner_runtime_observation; the collector's last capture, not a live query and not proof of a current incident",
-     "availability": "unknown",
-     "basis": "capture_time_unknown",
-     "collected_at": null,
-     "fleet": null,
-     "freshness": "unknown",
-     "freshness_bound_seconds": 20,
-     "freshness_reason": "sources_unexpected",
-     "observations": null,
-     "reason_code": "sources_unexpected",
-     "schema": "urn:zeus:desk-monitoring:1",
-     "sources": null
-    },
-    "store_unchanged": true
-   },
-   "monitoring_evidence_no_path": {
-    "age_seconds": 15,
+   "store_unchanged": true
+  },
+  "owner_capture": {
+   "answer": "구독 사용량은 기록되고 호출 수 상한은 적용되지 않습니다.",
+   "fleet_snapshot": {
+    "age_seconds": 7,
     "authority": "sanitized_owner_runtime_observation; the collector's last capture, not a live query and not proof of a current incident",
     "availability": "observed",
     "basis": "current_capture",
@@ -7578,7 +7560,7 @@
     "schema": "urn:zeus:desk-monitoring:1",
     "sources": {
      "database": {
-      "age_seconds": 15,
+      "age_seconds": 7,
       "error_type": null,
       "freshness": "current",
       "freshness_reason": "current",
@@ -7592,28 +7574,28 @@
       "status": "unavailable"
      },
      "fleet": {
-      "age_seconds": 15,
+      "age_seconds": 7,
       "error_type": null,
       "freshness": "current",
       "freshness_reason": "current",
       "status": "ok"
      },
      "observations": {
-      "age_seconds": 15,
+      "age_seconds": 7,
       "error_type": null,
       "freshness": "current",
       "freshness_reason": "current",
       "status": "ok"
      },
      "redis": {
-      "age_seconds": 15,
+      "age_seconds": 7,
       "error_type": null,
       "freshness": "current",
       "freshness_reason": "current",
       "status": "ok"
      },
      "research_programs": {
-      "age_seconds": 15,
+      "age_seconds": 7,
       "error_type": null,
       "freshness": "current",
       "freshness_reason": "current",
@@ -7621,188 +7603,206 @@
      }
     }
    },
-   "monitoring_evidence_path_none": {
-    "age_seconds": 15,
-    "authority": "sanitized_owner_runtime_observation; the collector's last capture, not a live query and not proof of a current incident",
+   "store_unchanged": true
+  }
+ },
+ "s7_default_path": {
+  "default_path_raises": {
+   "age_seconds": null,
+   "authority": "sanitized_owner_runtime_observation; the collector's last capture, not a live query and not proof of a current incident",
+   "availability": "unknown",
+   "basis": "capture_time_unknown",
+   "collected_at": null,
+   "fleet": null,
+   "freshness": "unknown",
+   "freshness_bound_seconds": 20,
+   "freshness_reason": "snapshot_unavailable",
+   "observations": null,
+   "reason_code": "snapshot_unavailable",
+   "schema": "urn:zeus:desk-monitoring:1",
+   "sources": null
+  },
+  "explicit_snapshot_ignores_the_default_path": {
+   "marker": "explicit"
+  },
+  "has_snapshot_path": true,
+  "monitoring_evidence_no_path": {
+   "age_seconds": 5,
+   "authority": "sanitized_owner_runtime_observation; the collector's last capture, not a live query and not proof of a current incident",
+   "availability": "observed",
+   "basis": "current_capture",
+   "collected_at": "2026-01-01T00:00:45+00:00",
+   "fleet": {
+    "accounting_mode": "subscription",
+    "accounting_note": "subscription usage is recorded; no call-count ceiling is applied",
+    "active_lanes": 1,
     "availability": "observed",
-    "basis": "current_capture",
-    "collected_at": "2026-01-01T00:00:35+00:00",
-    "fleet": {
-     "accounting_mode": "subscription",
-     "accounting_note": "subscription usage is recorded; no call-count ceiling is applied",
-     "active_lanes": 1,
-     "availability": "observed",
-     "jobs_truncated": false,
-     "lanes": 2,
-     "max_parallel": 2,
-     "paused": false,
-     "registered": true,
-     "sampled_jobs": 1,
-     "sampled_jobs_by_status": {
-      "running": 1
-     }
-    },
-    "freshness": "current",
-    "freshness_bound_seconds": 20,
-    "freshness_reason": "current",
-    "observations": {
-     "availability": "observed",
-     "history": {
-      "note": "stored past records; an old sampled error does not prove a current unresolved incident, and absence does not prove none",
-      "sample_truncated": true,
-      "sampled_events": 120,
-      "sampled_high_severity": 7
-     },
-     "pending": {
-      "alerts": 2,
-      "terminations_local": 1,
-      "terminations_recorded": 1,
-      "unreadable_terminations": 0
-     },
-     "spool_status": "ok"
-    },
-    "reason_code": null,
-    "schema": "urn:zeus:desk-monitoring:1",
-    "sources": {
-     "database": {
-      "age_seconds": 15,
-      "error_type": null,
-      "freshness": "current",
-      "freshness_reason": "current",
-      "status": "ok"
-     },
-     "docker": {
-      "age_seconds": null,
-      "error_type": "DockerUnavailable",
-      "freshness": "unknown",
-      "freshness_reason": "collection_failed",
-      "status": "unavailable"
-     },
-     "fleet": {
-      "age_seconds": 15,
-      "error_type": null,
-      "freshness": "current",
-      "freshness_reason": "current",
-      "status": "ok"
-     },
-     "observations": {
-      "age_seconds": 15,
-      "error_type": null,
-      "freshness": "current",
-      "freshness_reason": "current",
-      "status": "ok"
-     },
-     "redis": {
-      "age_seconds": 15,
-      "error_type": null,
-      "freshness": "current",
-      "freshness_reason": "current",
-      "status": "ok"
-     },
-     "research_programs": {
-      "age_seconds": 15,
-      "error_type": null,
-      "freshness": "current",
-      "freshness_reason": "current",
-      "status": "ok"
-     }
+    "jobs_truncated": false,
+    "lanes": 2,
+    "max_parallel": 2,
+    "paused": false,
+    "registered": true,
+    "sampled_jobs": 1,
+    "sampled_jobs_by_status": {
+     "running": 1
     }
    },
-   "owner_capture": {
-    "answer": "구독 사용량은 기록되고 호출 수 상한은 적용되지 않습니다.",
-    "fleet_snapshot": {
-     "age_seconds": 7,
-     "authority": "sanitized_owner_runtime_observation; the collector's last capture, not a live query and not proof of a current incident",
-     "availability": "observed",
-     "basis": "current_capture",
-     "collected_at": "2026-01-01T00:00:35+00:00",
-     "fleet": {
-      "accounting_mode": "subscription",
-      "accounting_note": "subscription usage is recorded; no call-count ceiling is applied",
-      "active_lanes": 1,
-      "availability": "observed",
-      "jobs_truncated": false,
-      "lanes": 2,
-      "max_parallel": 2,
-      "paused": false,
-      "registered": true,
-      "sampled_jobs": 1,
-      "sampled_jobs_by_status": {
-       "running": 1
-      }
-     },
+   "freshness": "current",
+   "freshness_bound_seconds": 20,
+   "freshness_reason": "current",
+   "observations": {
+    "availability": "observed",
+    "history": {
+     "note": "stored past records; an old sampled error does not prove a current unresolved incident, and absence does not prove none",
+     "sample_truncated": true,
+     "sampled_events": 120,
+     "sampled_high_severity": 7
+    },
+    "pending": {
+     "alerts": 2,
+     "terminations_local": 1,
+     "terminations_recorded": 1,
+     "unreadable_terminations": 0
+    },
+    "spool_status": "ok"
+   },
+   "reason_code": null,
+   "schema": "urn:zeus:desk-monitoring:1",
+   "sources": {
+    "database": {
+     "age_seconds": 5,
+     "error_type": null,
      "freshness": "current",
-     "freshness_bound_seconds": 20,
      "freshness_reason": "current",
-     "observations": {
-      "availability": "observed",
-      "history": {
-       "note": "stored past records; an old sampled error does not prove a current unresolved incident, and absence does not prove none",
-       "sample_truncated": true,
-       "sampled_events": 120,
-       "sampled_high_severity": 7
-      },
-      "pending": {
-       "alerts": 2,
-       "terminations_local": 1,
-       "terminations_recorded": 1,
-       "unreadable_terminations": 0
-      },
-      "spool_status": "ok"
-     },
-     "reason_code": null,
-     "schema": "urn:zeus:desk-monitoring:1",
-     "sources": {
-      "database": {
-       "age_seconds": 7,
-       "error_type": null,
-       "freshness": "current",
-       "freshness_reason": "current",
-       "status": "ok"
-      },
-      "docker": {
-       "age_seconds": null,
-       "error_type": "DockerUnavailable",
-       "freshness": "unknown",
-       "freshness_reason": "collection_failed",
-       "status": "unavailable"
-      },
-      "fleet": {
-       "age_seconds": 7,
-       "error_type": null,
-       "freshness": "current",
-       "freshness_reason": "current",
-       "status": "ok"
-      },
-      "observations": {
-       "age_seconds": 7,
-       "error_type": null,
-       "freshness": "current",
-       "freshness_reason": "current",
-       "status": "ok"
-      },
-      "redis": {
-       "age_seconds": 7,
-       "error_type": null,
-       "freshness": "current",
-       "freshness_reason": "current",
-       "status": "ok"
-      },
-      "research_programs": {
-       "age_seconds": 7,
-       "error_type": null,
-       "freshness": "current",
-       "freshness_reason": "current",
-       "status": "ok"
-      }
-     }
+     "status": "ok"
     },
-    "store_unchanged": true
+    "docker": {
+     "age_seconds": null,
+     "error_type": "DockerUnavailable",
+     "freshness": "unknown",
+     "freshness_reason": "collection_failed",
+     "status": "unavailable"
+    },
+    "fleet": {
+     "age_seconds": 5,
+     "error_type": null,
+     "freshness": "current",
+     "freshness_reason": "current",
+     "status": "ok"
+    },
+    "observations": {
+     "age_seconds": 5,
+     "error_type": null,
+     "freshness": "current",
+     "freshness_reason": "current",
+     "status": "ok"
+    },
+    "redis": {
+     "age_seconds": 5,
+     "error_type": null,
+     "freshness": "current",
+     "freshness_reason": "current",
+     "status": "ok"
+    },
+    "research_programs": {
+     "age_seconds": 5,
+     "error_type": null,
+     "freshness": "current",
+     "freshness_reason": "current",
+     "status": "ok"
+    }
+   }
+  },
+  "monitoring_evidence_path_none": {
+   "age_seconds": 5,
+   "authority": "sanitized_owner_runtime_observation; the collector's last capture, not a live query and not proof of a current incident",
+   "availability": "observed",
+   "basis": "current_capture",
+   "collected_at": "2026-01-01T00:00:45+00:00",
+   "fleet": {
+    "accounting_mode": "subscription",
+    "accounting_note": "subscription usage is recorded; no call-count ceiling is applied",
+    "active_lanes": 1,
+    "availability": "observed",
+    "jobs_truncated": false,
+    "lanes": 2,
+    "max_parallel": 2,
+    "paused": false,
+    "registered": true,
+    "sampled_jobs": 1,
+    "sampled_jobs_by_status": {
+     "running": 1
+    }
+   },
+   "freshness": "current",
+   "freshness_bound_seconds": 20,
+   "freshness_reason": "current",
+   "observations": {
+    "availability": "observed",
+    "history": {
+     "note": "stored past records; an old sampled error does not prove a current unresolved incident, and absence does not prove none",
+     "sample_truncated": true,
+     "sampled_events": 120,
+     "sampled_high_severity": 7
+    },
+    "pending": {
+     "alerts": 2,
+     "terminations_local": 1,
+     "terminations_recorded": 1,
+     "unreadable_terminations": 0
+    },
+    "spool_status": "ok"
+   },
+   "reason_code": null,
+   "schema": "urn:zeus:desk-monitoring:1",
+   "sources": {
+    "database": {
+     "age_seconds": 5,
+     "error_type": null,
+     "freshness": "current",
+     "freshness_reason": "current",
+     "status": "ok"
+    },
+    "docker": {
+     "age_seconds": null,
+     "error_type": "DockerUnavailable",
+     "freshness": "unknown",
+     "freshness_reason": "collection_failed",
+     "status": "unavailable"
+    },
+    "fleet": {
+     "age_seconds": 5,
+     "error_type": null,
+     "freshness": "current",
+     "freshness_reason": "current",
+     "status": "ok"
+    },
+    "observations": {
+     "age_seconds": 5,
+     "error_type": null,
+     "freshness": "current",
+     "freshness_reason": "current",
+     "status": "ok"
+    },
+    "redis": {
+     "age_seconds": 5,
+     "error_type": null,
+     "freshness": "current",
+     "freshness_reason": "current",
+     "status": "ok"
+    },
+    "research_programs": {
+     "age_seconds": 5,
+     "error_type": null,
+     "freshness": "current",
+     "freshness_reason": "current",
+     "status": "ok"
+    }
    }
   },
   "snapshot_path_name": "monitoring.json"
  },
- "s7_m7_tests": {
+ "s8_m7_tests": {
   "test_a_capture_from_the_future_is_not_reported_as_current": "s4_monitoring_facts (same name, 4 offsets)",
   "test_a_malformed_capture_is_explicitly_unknown": "s4_monitoring_facts (same name, 8 documents)",
   "test_a_malformed_container_is_unknown_not_zero": "s4_monitoring_facts (same name)",
@@ -7823,9 +7823,9 @@
   "test_the_desk_output_schema_requires_every_property_and_keeps_null_and_empty_values": {
    "s1_constants": "the schema, its required list and the objective type are recorded directly; completed_output (adapters.execution_output) is another module's, not this family's; validate_answer's refusals are in s3_execute (the malformed answers)"
   },
-  "test_the_execution_helper_carries_the_owner_runtime_capture_as_evidence": "s5_monitoring_evidence (the capture on disk as evidence) and s3_execute (explicit snapshot); s6_m7_default_path (M7 self-read, intended difference)",
-  "test_the_execution_helper_reports_a_malformed_capture_as_unknown_without_failing": "s6_m7_default_path (M7 self-read, intended difference); s5_monitoring_evidence.malformed_payloads (the evidence itself)",
-  "test_the_execution_helper_reports_an_absent_capture_as_unknown": "s6_m7_default_path (M7 self-read, intended difference); s5_monitoring_evidence (missing path)"
+  "test_the_execution_helper_carries_the_owner_runtime_capture_as_evidence": "s5_monitoring_evidence (the capture on disk as evidence) and s3_execute (explicit snapshot); s6_snapshot_none (M7 self-read, intended difference)",
+  "test_the_execution_helper_reports_a_malformed_capture_as_unknown_without_failing": "s6_snapshot_none (M7 self-read, intended difference); s5_monitoring_evidence.malformed_payloads (the evidence itself)",
+  "test_the_execution_helper_reports_an_absent_capture_as_unknown": "s6_snapshot_none (M7 self-read, intended difference); s5_monitoring_evidence (missing path)"
  },
  "temp_path_replacements": 0
 }
