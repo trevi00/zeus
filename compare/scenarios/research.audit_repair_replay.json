@@ -2,8 +2,7 @@
  "family": "research.audit_repair_replay",
  "description": "S8 batch B3 (DESIGN-s8 §28.1 R-rd1) M7 adapters/audit_repair.py replay_decode(partition, answer) (the pure replay of the content decode of one retained draft: every refused shape returns only the error type and the digest of its message, the draft text never leaves, a draft that now decodes cleanly is refused false, an invalid trusted partition and a non-ContractError failure are raised; the inputs are never changed), characterized before the move into research; build_repair is S10 composition and is not characterized; the M7 tests that use replay_decode as the AuditRepair owner's replay are the research.audit_repair family; no store, clock, provider or database",
  "reference_driver": "drivers/reference/s8_audit_repair_replay.py",
- "target_driver": null,
+ "target_driver": "drivers/target/s8_audit_repair_replay.py",
  "golden": "goldens/reference/research.audit_repair_replay.json",
- "slice": "S8",
- "target_status": "pending: S8 batch B3 replay_decode move"
+ "slice": "S8"
 }
