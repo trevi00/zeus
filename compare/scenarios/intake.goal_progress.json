@@ -1,0 +1,9 @@
+{
+ "family": "intake.goal_progress",
+ "description": "S8 batch B1 goal progress of M7 application/goal_progress.py (validate_manifest and its refusals, definition_hash, evaluate_criterion over open, closed, reopened, stale, missing, corrupted and broken-chain tickets and forged closure events, admit_dispatch admitted and refused, GoalProgress.report, compare_reports and its refusals), characterized before the move into intake, mirroring tests/test_goal_progress.py at module level (the GitHub, Tickets.dispatch and CLI halves recorded as unreachable): MemoryStore with planted ticket rows and real lifecycle events, scripted clock, the whole-store digest before and after every call; no database",
+ "reference_driver": "drivers/reference/s8_goal_progress.py",
+ "target_driver": null,
+ "golden": "goldens/reference/intake.goal_progress.json",
+ "slice": "S8",
+ "target_status": "pending: S8 batch B1 goal_progress move"
+}

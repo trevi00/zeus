@@ -1,0 +1,2007 @@
+{
+ "admit": {
+  "binding_without_id": {
+   "is_contract_error": false,
+   "message": "'id'",
+   "outcome": "raised",
+   "store_after": "d6e6389cffffdff9",
+   "store_before": "d6e6389cffffdff9",
+   "store_unchanged": true,
+   "type": "KeyError"
+  },
+  "blank_criterion_id": {
+   "is_contract_error": true,
+   "message": "Goal criterion id required",
+   "outcome": "raised",
+   "store_after": "d6e6389cffffdff9",
+   "store_before": "d6e6389cffffdff9",
+   "store_unchanged": true,
+   "type": "ContractError"
+  },
+  "criterion_id_not_text": {
+   "is_contract_error": true,
+   "message": "Goal criterion id required",
+   "outcome": "raised",
+   "store_after": "d6e6389cffffdff9",
+   "store_before": "d6e6389cffffdff9",
+   "store_unchanged": true,
+   "type": "ContractError"
+  },
+  "missing_refused": {
+   "is_contract_error": true,
+   "message": "Goal criterion is missing; dispatch refused",
+   "outcome": "raised",
+   "store_after": "4d025668a5db6087",
+   "store_before": "4d025668a5db6087",
+   "store_unchanged": true,
+   "type": "ContractError"
+  },
+  "other_hash_binding": {
+   "is_contract_error": true,
+   "message": "Dispatch ticket does not match the goal criterion binding",
+   "outcome": "raised",
+   "store_after": "d6e6389cffffdff9",
+   "store_before": "d6e6389cffffdff9",
+   "store_unchanged": true,
+   "type": "ContractError"
+  },
+  "other_revision_binding": {
+   "is_contract_error": true,
+   "message": "Dispatch ticket does not match the goal criterion binding",
+   "outcome": "raised",
+   "store_after": "d6e6389cffffdff9",
+   "store_before": "d6e6389cffffdff9",
+   "store_unchanged": true,
+   "type": "ContractError"
+  },
+  "other_ticket_binding": {
+   "is_contract_error": true,
+   "message": "Dispatch ticket does not match the goal criterion binding",
+   "outcome": "raised",
+   "store_after": "d6e6389cffffdff9",
+   "store_before": "d6e6389cffffdff9",
+   "store_unchanged": true,
+   "type": "ContractError"
+  },
+  "pending_admitted": {
+   "outcome": "returned",
+   "store_after": "d6e6389cffffdff9",
+   "store_before": "d6e6389cffffdff9",
+   "store_unchanged": true,
+   "value": {
+    "criterion_id": "c1",
+    "definition_hash": "9121dfd1e6f7f0b235a486b26f85bbd18be9a9d43c52683bef94b8ce79155ecd",
+    "id": "goal-1"
+   }
+  },
+  "reopened_admitted": {
+   "outcome": "returned",
+   "store_after": "e65b57b96c9aa1ef",
+   "store_before": "e65b57b96c9aa1ef",
+   "store_unchanged": true,
+   "value": {
+    "criterion_id": "c1",
+    "definition_hash": "9121dfd1e6f7f0b235a486b26f85bbd18be9a9d43c52683bef94b8ce79155ecd",
+    "id": "goal-1"
+   }
+  },
+  "resolved_refused": {
+   "is_contract_error": true,
+   "message": "Goal criterion is resolved; dispatch refused",
+   "outcome": "raised",
+   "store_after": "57f3d4f99f7a6a16",
+   "store_before": "57f3d4f99f7a6a16",
+   "store_unchanged": true,
+   "type": "ContractError"
+  },
+  "second_criterion_admitted": {
+   "outcome": "returned",
+   "store_after": "d6e6389cffffdff9",
+   "store_before": "d6e6389cffffdff9",
+   "store_unchanged": true,
+   "value": {
+    "criterion_id": "c2",
+    "definition_hash": "9121dfd1e6f7f0b235a486b26f85bbd18be9a9d43c52683bef94b8ce79155ecd",
+    "id": "goal-1"
+   }
+  },
+  "stale_refused": {
+   "is_contract_error": true,
+   "message": "Goal criterion is stale; dispatch refused",
+   "outcome": "raised",
+   "store_after": "4d025668a5db6087",
+   "store_before": "4d025668a5db6087",
+   "store_unchanged": true,
+   "type": "ContractError"
+  },
+  "unknown_criterion": {
+   "is_contract_error": true,
+   "message": "Goal criterion not in manifest",
+   "outcome": "raised",
+   "store_after": "d6e6389cffffdff9",
+   "store_before": "d6e6389cffffdff9",
+   "store_unchanged": true,
+   "type": "ContractError"
+  },
+  "unverified_refused": {
+   "is_contract_error": true,
+   "message": "Goal criterion is unverified; dispatch refused",
+   "outcome": "raised",
+   "store_after": "4d025668a5db6087",
+   "store_before": "4d025668a5db6087",
+   "store_unchanged": true,
+   "type": "ContractError"
+  }
+ },
+ "cases_per_group": {
+  "admit": 14,
+  "compare": 41,
+  "evaluate": 32,
+  "manifest": 38,
+  "report": 9,
+  "surface": 4
+ },
+ "compare": {
+  "bad_after_authority": {
+   "is_contract_error": true,
+   "message": "Unknown goal progress report shape",
+   "outcome": "raised",
+   "store_after": "18f88a17ed0816df",
+   "store_before": "18f88a17ed0816df",
+   "store_unchanged": true,
+   "type": "ContractError"
+  },
+  "bad_after_criteria_51": {
+   "is_contract_error": true,
+   "message": "Goal report criteria required",
+   "outcome": "raised",
+   "store_after": "18f88a17ed0816df",
+   "store_before": "18f88a17ed0816df",
+   "store_unchanged": true,
+   "type": "ContractError"
+  },
+  "bad_after_criteria_empty": {
+   "is_contract_error": true,
+   "message": "Goal report criteria required",
+   "outcome": "raised",
+   "store_after": "18f88a17ed0816df",
+   "store_before": "18f88a17ed0816df",
+   "store_unchanged": true,
+   "type": "ContractError"
+  },
+  "bad_after_criteria_not_list": {
+   "is_contract_error": true,
+   "message": "Goal report criteria required",
+   "outcome": "raised",
+   "store_after": "18f88a17ed0816df",
+   "store_before": "18f88a17ed0816df",
+   "store_unchanged": true,
+   "type": "ContractError"
+  },
+  "bad_after_criterion_not_dict": {
+   "is_contract_error": true,
+   "message": "Invalid goal report criterion",
+   "outcome": "raised",
+   "store_after": "18f88a17ed0816df",
+   "store_before": "18f88a17ed0816df",
+   "store_unchanged": true,
+   "type": "ContractError"
+  },
+  "bad_after_duplicate_id": {
+   "is_contract_error": true,
+   "message": "Duplicate goal criterion id",
+   "outcome": "raised",
+   "store_after": "18f88a17ed0816df",
+   "store_before": "18f88a17ed0816df",
+   "store_unchanged": true,
+   "type": "ContractError"
+  },
+  "bad_after_empty": {
+   "is_contract_error": true,
+   "message": "Unknown goal progress report shape",
+   "outcome": "raised",
+   "store_after": "18f88a17ed0816df",
+   "store_before": "18f88a17ed0816df",
+   "store_unchanged": true,
+   "type": "ContractError"
+  },
+  "bad_after_extra_field": {
+   "is_contract_error": true,
+   "message": "Unknown goal progress report shape",
+   "outcome": "raised",
+   "store_after": "18f88a17ed0816df",
+   "store_before": "18f88a17ed0816df",
+   "store_unchanged": true,
+   "type": "ContractError"
+  },
+  "bad_after_goal_blank": {
+   "is_contract_error": true,
+   "message": "Goal report identity required",
+   "outcome": "raised",
+   "store_after": "18f88a17ed0816df",
+   "store_before": "18f88a17ed0816df",
+   "store_unchanged": true,
+   "type": "ContractError"
+  },
+  "bad_after_hash_not_hex": {
+   "is_contract_error": true,
+   "message": "Goal report identity required",
+   "outcome": "raised",
+   "store_after": "18f88a17ed0816df",
+   "store_before": "18f88a17ed0816df",
+   "store_unchanged": true,
+   "type": "ContractError"
+  },
+  "bad_after_list": {
+   "is_contract_error": true,
+   "message": "Unknown goal progress report shape",
+   "outcome": "raised",
+   "store_after": "18f88a17ed0816df",
+   "store_before": "18f88a17ed0816df",
+   "store_unchanged": true,
+   "type": "ContractError"
+  },
+  "bad_after_missing_field": {
+   "is_contract_error": true,
+   "message": "Invalid goal report criterion",
+   "outcome": "raised",
+   "store_after": "18f88a17ed0816df",
+   "store_before": "18f88a17ed0816df",
+   "store_unchanged": true,
+   "type": "ContractError"
+  },
+  "bad_after_none": {
+   "is_contract_error": true,
+   "message": "Unknown goal progress report shape",
+   "outcome": "raised",
+   "store_after": "18f88a17ed0816df",
+   "store_before": "18f88a17ed0816df",
+   "store_unchanged": true,
+   "type": "ContractError"
+  },
+  "bad_after_raw_field": {
+   "is_contract_error": true,
+   "message": "Invalid goal report criterion",
+   "outcome": "raised",
+   "store_after": "18f88a17ed0816df",
+   "store_before": "18f88a17ed0816df",
+   "store_unchanged": true,
+   "type": "ContractError"
+  },
+  "bad_after_schema": {
+   "is_contract_error": true,
+   "message": "Unknown goal progress report shape",
+   "outcome": "raised",
+   "store_after": "18f88a17ed0816df",
+   "store_before": "18f88a17ed0816df",
+   "store_unchanged": true,
+   "type": "ContractError"
+  },
+  "bad_after_status_unknown": {
+   "is_contract_error": true,
+   "message": "Invalid goal criterion status",
+   "outcome": "raised",
+   "store_after": "18f88a17ed0816df",
+   "store_before": "18f88a17ed0816df",
+   "store_unchanged": true,
+   "type": "ContractError"
+  },
+  "bad_before_authority": {
+   "is_contract_error": true,
+   "message": "Unknown goal progress report shape",
+   "outcome": "raised",
+   "store_after": "18f88a17ed0816df",
+   "store_before": "18f88a17ed0816df",
+   "store_unchanged": true,
+   "type": "ContractError"
+  },
+  "bad_before_criteria_51": {
+   "is_contract_error": true,
+   "message": "Goal report criteria required",
+   "outcome": "raised",
+   "store_after": "18f88a17ed0816df",
+   "store_before": "18f88a17ed0816df",
+   "store_unchanged": true,
+   "type": "ContractError"
+  },
+  "bad_before_criteria_empty": {
+   "is_contract_error": true,
+   "message": "Goal report criteria required",
+   "outcome": "raised",
+   "store_after": "18f88a17ed0816df",
+   "store_before": "18f88a17ed0816df",
+   "store_unchanged": true,
+   "type": "ContractError"
+  },
+  "bad_before_criteria_not_list": {
+   "is_contract_error": true,
+   "message": "Goal report criteria required",
+   "outcome": "raised",
+   "store_after": "18f88a17ed0816df",
+   "store_before": "18f88a17ed0816df",
+   "store_unchanged": true,
+   "type": "ContractError"
+  },
+  "bad_before_criterion_not_dict": {
+   "is_contract_error": true,
+   "message": "Invalid goal report criterion",
+   "outcome": "raised",
+   "store_after": "18f88a17ed0816df",
+   "store_before": "18f88a17ed0816df",
+   "store_unchanged": true,
+   "type": "ContractError"
+  },
+  "bad_before_duplicate_id": {
+   "is_contract_error": true,
+   "message": "Duplicate goal criterion id",
+   "outcome": "raised",
+   "store_after": "18f88a17ed0816df",
+   "store_before": "18f88a17ed0816df",
+   "store_unchanged": true,
+   "type": "ContractError"
+  },
+  "bad_before_empty": {
+   "is_contract_error": true,
+   "message": "Unknown goal progress report shape",
+   "outcome": "raised",
+   "store_after": "18f88a17ed0816df",
+   "store_before": "18f88a17ed0816df",
+   "store_unchanged": true,
+   "type": "ContractError"
+  },
+  "bad_before_extra_field": {
+   "is_contract_error": true,
+   "message": "Unknown goal progress report shape",
+   "outcome": "raised",
+   "store_after": "18f88a17ed0816df",
+   "store_before": "18f88a17ed0816df",
+   "store_unchanged": true,
+   "type": "ContractError"
+  },
+  "bad_before_goal_blank": {
+   "is_contract_error": true,
+   "message": "Goal report identity required",
+   "outcome": "raised",
+   "store_after": "18f88a17ed0816df",
+   "store_before": "18f88a17ed0816df",
+   "store_unchanged": true,
+   "type": "ContractError"
+  },
+  "bad_before_hash_not_hex": {
+   "is_contract_error": true,
+   "message": "Goal report identity required",
+   "outcome": "raised",
+   "store_after": "18f88a17ed0816df",
+   "store_before": "18f88a17ed0816df",
+   "store_unchanged": true,
+   "type": "ContractError"
+  },
+  "bad_before_list": {
+   "is_contract_error": true,
+   "message": "Unknown goal progress report shape",
+   "outcome": "raised",
+   "store_after": "18f88a17ed0816df",
+   "store_before": "18f88a17ed0816df",
+   "store_unchanged": true,
+   "type": "ContractError"
+  },
+  "bad_before_missing_field": {
+   "is_contract_error": true,
+   "message": "Invalid goal report criterion",
+   "outcome": "raised",
+   "store_after": "18f88a17ed0816df",
+   "store_before": "18f88a17ed0816df",
+   "store_unchanged": true,
+   "type": "ContractError"
+  },
+  "bad_before_none": {
+   "is_contract_error": true,
+   "message": "Unknown goal progress report shape",
+   "outcome": "raised",
+   "store_after": "18f88a17ed0816df",
+   "store_before": "18f88a17ed0816df",
+   "store_unchanged": true,
+   "type": "ContractError"
+  },
+  "bad_before_raw_field": {
+   "is_contract_error": true,
+   "message": "Invalid goal report criterion",
+   "outcome": "raised",
+   "store_after": "18f88a17ed0816df",
+   "store_before": "18f88a17ed0816df",
+   "store_unchanged": true,
+   "type": "ContractError"
+  },
+  "bad_before_schema": {
+   "is_contract_error": true,
+   "message": "Unknown goal progress report shape",
+   "outcome": "raised",
+   "store_after": "18f88a17ed0816df",
+   "store_before": "18f88a17ed0816df",
+   "store_unchanged": true,
+   "type": "ContractError"
+  },
+  "bad_before_status_unknown": {
+   "is_contract_error": true,
+   "message": "Invalid goal criterion status",
+   "outcome": "raised",
+   "store_after": "18f88a17ed0816df",
+   "store_before": "18f88a17ed0816df",
+   "store_unchanged": true,
+   "type": "ContractError"
+  },
+  "bindings_differ": {
+   "is_contract_error": true,
+   "message": "Goal criterion identities or bindings differ between reports",
+   "outcome": "raised",
+   "store_after": "18f88a17ed0816df",
+   "store_before": "18f88a17ed0816df",
+   "store_unchanged": true,
+   "type": "ContractError"
+  },
+  "definition_changed": {
+   "is_contract_error": true,
+   "message": "Goal definition changed; reports are not comparable",
+   "outcome": "raised",
+   "store_after": "18f88a17ed0816df",
+   "store_before": "18f88a17ed0816df",
+   "store_unchanged": true,
+   "type": "ContractError"
+  },
+  "goal_changed": {
+   "is_contract_error": true,
+   "message": "Goal definition changed; reports are not comparable",
+   "outcome": "raised",
+   "store_after": "18f88a17ed0816df",
+   "store_before": "18f88a17ed0816df",
+   "store_unchanged": true,
+   "type": "ContractError"
+  },
+  "identities_differ_by_a_criterion": {
+   "is_contract_error": true,
+   "message": "Goal criterion identities or bindings differ between reports",
+   "outcome": "raised",
+   "store_after": "18f88a17ed0816df",
+   "store_before": "18f88a17ed0816df",
+   "store_unchanged": true,
+   "type": "ContractError"
+  },
+  "metrics_are_ignored": {
+   "outcome": "returned",
+   "store_after": "18f88a17ed0816df",
+   "store_before": "18f88a17ed0816df",
+   "store_unchanged": true,
+   "value": {
+    "authority": "observation_only",
+    "definition_hash": "a3856dc02d1921aece759201d0547dd774fafaab15f66456b89a040ed7c38224",
+    "gained": [],
+    "goal_id": "goal-1",
+    "net_resolved": -1,
+    "regressed": [
+     "c1"
+    ]
+   }
+  },
+  "pending_to_resolved": {
+   "outcome": "returned",
+   "store_after": "18f88a17ed0816df",
+   "store_before": "18f88a17ed0816df",
+   "store_unchanged": true,
+   "value": {
+    "authority": "observation_only",
+    "definition_hash": "a3856dc02d1921aece759201d0547dd774fafaab15f66456b89a040ed7c38224",
+    "gained": [
+     "c1"
+    ],
+    "goal_id": "goal-1",
+    "net_resolved": 1,
+    "regressed": []
+   }
+  },
+  "reopened_to_resolved": {
+   "outcome": "returned",
+   "store_after": "18f88a17ed0816df",
+   "store_before": "18f88a17ed0816df",
+   "store_unchanged": true,
+   "value": {
+    "authority": "observation_only",
+    "definition_hash": "a3856dc02d1921aece759201d0547dd774fafaab15f66456b89a040ed7c38224",
+    "gained": [
+     "c1"
+    ],
+    "goal_id": "goal-1",
+    "net_resolved": 1,
+    "regressed": []
+   }
+  },
+  "resolved_to_reopened": {
+   "outcome": "returned",
+   "store_after": "18f88a17ed0816df",
+   "store_before": "18f88a17ed0816df",
+   "store_unchanged": true,
+   "value": {
+    "authority": "observation_only",
+    "definition_hash": "a3856dc02d1921aece759201d0547dd774fafaab15f66456b89a040ed7c38224",
+    "gained": [],
+    "goal_id": "goal-1",
+    "net_resolved": -1,
+    "regressed": [
+     "c1"
+    ]
+   }
+  },
+  "same_report": {
+   "outcome": "returned",
+   "store_after": "18f88a17ed0816df",
+   "store_before": "18f88a17ed0816df",
+   "store_unchanged": true,
+   "value": {
+    "authority": "observation_only",
+    "definition_hash": "a3856dc02d1921aece759201d0547dd774fafaab15f66456b89a040ed7c38224",
+    "gained": [],
+    "goal_id": "goal-1",
+    "net_resolved": 0,
+    "regressed": []
+   }
+  }
+ },
+ "evaluate": {
+  "absent_revision_missing": {
+   "outcome": "returned",
+   "store_after": "bd8986900b6ac78c",
+   "store_before": "bd8986900b6ac78c",
+   "store_unchanged": true,
+   "value": {
+    "acceptance": "Ticket closed with local evidence",
+    "content_hash": "725651a903fc2d81dd7cc406064d47c994ef439268315eedd6ec8671ae346e4e",
+    "id": "c1",
+    "revision": 2,
+    "status": "missing",
+    "ticket_id": "ZEUS-000000000001"
+   }
+  },
+  "absent_ticket_missing": {
+   "outcome": "returned",
+   "store_after": "bd8986900b6ac78c",
+   "store_before": "bd8986900b6ac78c",
+   "store_unchanged": true,
+   "value": {
+    "acceptance": "Ticket closed with local evidence",
+    "content_hash": "725651a903fc2d81dd7cc406064d47c994ef439268315eedd6ec8671ae346e4e",
+    "id": "c1",
+    "revision": 1,
+    "status": "missing",
+    "ticket_id": "ZEUS-absent00000"
+   }
+  },
+  "broken_chain_unverified": {
+   "outcome": "returned",
+   "store_after": "a6514fe25fe90d8b",
+   "store_before": "a6514fe25fe90d8b",
+   "store_unchanged": true,
+   "value": {
+    "acceptance": "Ticket closed with local evidence",
+    "content_hash": "43e2cd6013dc2f38857eb8700eafa1754f937cb8228a1c769ceec2041136dac4",
+    "id": "c1",
+    "revision": 2,
+    "status": "unverified",
+    "ticket_id": "ZEUS-000000000001"
+   }
+  },
+  "closed_again_resolved": {
+   "outcome": "returned",
+   "store_after": "6b998d570bd399ec",
+   "store_before": "6b998d570bd399ec",
+   "store_unchanged": true,
+   "value": {
+    "acceptance": "Ticket closed with local evidence",
+    "closure": {
+     "event_id": "df4f40e0b946893c2012ad8069929d074ace5ca663b70c39ae1800b496c623da",
+     "packet_ref": "sha256:1111111111111111111111111111111111111111111111111111111111111111",
+     "proof_ref": "sha256:2222222222222222222222222222222222222222222222222222222222222222"
+    },
+    "content_hash": "725651a903fc2d81dd7cc406064d47c994ef439268315eedd6ec8671ae346e4e",
+    "id": "c1",
+    "revision": 1,
+    "status": "resolved",
+    "ticket_id": "ZEUS-000000000001"
+   }
+  },
+  "closed_fabricated_event_reference_unverified": {
+   "outcome": "returned",
+   "store_after": "a3f1405a4b9df6e0",
+   "store_before": "a3f1405a4b9df6e0",
+   "store_unchanged": true,
+   "value": {
+    "acceptance": "Ticket closed with local evidence",
+    "content_hash": "725651a903fc2d81dd7cc406064d47c994ef439268315eedd6ec8671ae346e4e",
+    "id": "c1",
+    "revision": 1,
+    "status": "unverified",
+    "ticket_id": "ZEUS-000000000001"
+   }
+  },
+  "closed_resolved_repeated": {
+   "outcome": "returned",
+   "store_after": "d05d57578fb4d8c7",
+   "store_before": "d05d57578fb4d8c7",
+   "store_unchanged": true,
+   "value": {
+    "acceptance": "Ticket closed with local evidence",
+    "closure": {
+     "event_id": "9ff4560e7f07b4cf7efe17bccd66a9d09a4cb7e6ba1724b695b4c4ee3b27d851",
+     "packet_ref": "sha256:1111111111111111111111111111111111111111111111111111111111111111",
+     "proof_ref": "sha256:2222222222222222222222222222222222222222222222222222222222222222"
+    },
+    "content_hash": "725651a903fc2d81dd7cc406064d47c994ef439268315eedd6ec8671ae346e4e",
+    "id": "c1",
+    "revision": 1,
+    "status": "resolved",
+    "ticket_id": "ZEUS-000000000001"
+   }
+  },
+  "closed_resolved_through_report": {
+   "outcome": "returned",
+   "store_after": "d05d57578fb4d8c7",
+   "store_before": "d05d57578fb4d8c7",
+   "store_unchanged": true,
+   "value": {
+    "acceptance": "Ticket closed with local evidence",
+    "closure": {
+     "event_id": "9ff4560e7f07b4cf7efe17bccd66a9d09a4cb7e6ba1724b695b4c4ee3b27d851",
+     "packet_ref": "sha256:1111111111111111111111111111111111111111111111111111111111111111",
+     "proof_ref": "sha256:2222222222222222222222222222222222222222222222222222222222222222"
+    },
+    "content_hash": "725651a903fc2d81dd7cc406064d47c994ef439268315eedd6ec8671ae346e4e",
+    "id": "c1",
+    "revision": 1,
+    "status": "resolved",
+    "ticket_id": "ZEUS-000000000001"
+   }
+  },
+  "closed_resolved_with_closure": {
+   "outcome": "returned",
+   "store_after": "d05d57578fb4d8c7",
+   "store_before": "d05d57578fb4d8c7",
+   "store_unchanged": true,
+   "value": {
+    "acceptance": "Ticket closed with local evidence",
+    "closure": {
+     "event_id": "9ff4560e7f07b4cf7efe17bccd66a9d09a4cb7e6ba1724b695b4c4ee3b27d851",
+     "packet_ref": "sha256:1111111111111111111111111111111111111111111111111111111111111111",
+     "proof_ref": "sha256:2222222222222222222222222222222222222222222222222222222222222222"
+    },
+    "content_hash": "725651a903fc2d81dd7cc406064d47c994ef439268315eedd6ec8671ae346e4e",
+    "id": "c1",
+    "revision": 1,
+    "status": "resolved",
+    "ticket_id": "ZEUS-000000000001"
+   }
+  },
+  "closed_sequence_mismatch_unverified": {
+   "outcome": "returned",
+   "store_after": "6c4c4dd0cac26892",
+   "store_before": "6c4c4dd0cac26892",
+   "store_unchanged": true,
+   "value": {
+    "acceptance": "Ticket closed with local evidence",
+    "content_hash": "725651a903fc2d81dd7cc406064d47c994ef439268315eedd6ec8671ae346e4e",
+    "id": "c1",
+    "revision": 1,
+    "status": "unverified",
+    "ticket_id": "ZEUS-000000000001"
+   }
+  },
+  "closed_status_without_decision_unverified": {
+   "outcome": "returned",
+   "store_after": "3a52b2f857b8a47f",
+   "store_before": "3a52b2f857b8a47f",
+   "store_unchanged": true,
+   "value": {
+    "acceptance": "Ticket closed with local evidence",
+    "content_hash": "725651a903fc2d81dd7cc406064d47c994ef439268315eedd6ec8671ae346e4e",
+    "id": "c1",
+    "revision": 1,
+    "status": "unverified",
+    "ticket_id": "ZEUS-000000000001"
+   }
+  },
+  "closure_names_another_event_unverified": {
+   "outcome": "returned",
+   "store_after": "65f5674d65a80b36",
+   "store_before": "65f5674d65a80b36",
+   "store_unchanged": true,
+   "value": {
+    "acceptance": "Ticket closed with local evidence",
+    "content_hash": "725651a903fc2d81dd7cc406064d47c994ef439268315eedd6ec8671ae346e4e",
+    "id": "c1",
+    "revision": 1,
+    "status": "unverified",
+    "ticket_id": "ZEUS-000000000001"
+   }
+  },
+  "closure_without_event_id_unverified": {
+   "outcome": "returned",
+   "store_after": "58c79bc8d6b43071",
+   "store_before": "58c79bc8d6b43071",
+   "store_unchanged": true,
+   "value": {
+    "acceptance": "Ticket closed with local evidence",
+    "content_hash": "725651a903fc2d81dd7cc406064d47c994ef439268315eedd6ec8671ae346e4e",
+    "id": "c1",
+    "revision": 1,
+    "status": "unverified",
+    "ticket_id": "ZEUS-000000000001"
+   }
+  },
+  "corrupted_revision_content_unverified": {
+   "outcome": "returned",
+   "store_after": "112ff7ba08483ec8",
+   "store_before": "112ff7ba08483ec8",
+   "store_unchanged": true,
+   "value": {
+    "acceptance": "Ticket closed with local evidence",
+    "content_hash": "43e2cd6013dc2f38857eb8700eafa1754f937cb8228a1c769ceec2041136dac4",
+    "id": "c1",
+    "revision": 2,
+    "status": "unverified",
+    "ticket_id": "ZEUS-000000000001"
+   }
+  },
+  "dispatched_pending": {
+   "outcome": "returned",
+   "store_after": "2aaa8f203dfcba55",
+   "store_before": "2aaa8f203dfcba55",
+   "store_unchanged": true,
+   "value": {
+    "acceptance": "Ticket closed with local evidence",
+    "content_hash": "43e2cd6013dc2f38857eb8700eafa1754f937cb8228a1c769ceec2041136dac4",
+    "id": "c1",
+    "revision": 2,
+    "status": "pending",
+    "ticket_id": "ZEUS-000000000001"
+   }
+  },
+  "event_chain_length": 3,
+  "fabricated_closed_unverified": {
+   "outcome": "returned",
+   "store_after": "64388531f40e3a13",
+   "store_before": "64388531f40e3a13",
+   "store_unchanged": true,
+   "value": {
+    "acceptance": "Ticket closed with local evidence",
+    "content_hash": "43e2cd6013dc2f38857eb8700eafa1754f937cb8228a1c769ceec2041136dac4",
+    "id": "c1",
+    "revision": 2,
+    "status": "unverified",
+    "ticket_id": "ZEUS-000000000001"
+   }
+  },
+  "forged_closed_event_not_closed_kind": {
+   "outcome": "returned",
+   "store_after": "194463810ee4a7ad",
+   "store_before": "194463810ee4a7ad",
+   "store_unchanged": true,
+   "value": {
+    "acceptance": "Ticket closed with local evidence",
+    "content_hash": "725651a903fc2d81dd7cc406064d47c994ef439268315eedd6ec8671ae346e4e",
+    "id": "c1",
+    "revision": 1,
+    "status": "unverified",
+    "ticket_id": "ZEUS-000000000001"
+   }
+  },
+  "forged_closed_event_other_hash": {
+   "outcome": "returned",
+   "store_after": "5f132c76358e0a0f",
+   "store_before": "5f132c76358e0a0f",
+   "store_unchanged": true,
+   "value": {
+    "acceptance": "Ticket closed with local evidence",
+    "content_hash": "725651a903fc2d81dd7cc406064d47c994ef439268315eedd6ec8671ae346e4e",
+    "id": "c1",
+    "revision": 1,
+    "status": "unverified",
+    "ticket_id": "ZEUS-000000000001"
+   }
+  },
+  "forged_closed_event_other_revision": {
+   "outcome": "returned",
+   "store_after": "59c7d3af0c260959",
+   "store_before": "59c7d3af0c260959",
+   "store_unchanged": true,
+   "value": {
+    "acceptance": "Ticket closed with local evidence",
+    "content_hash": "725651a903fc2d81dd7cc406064d47c994ef439268315eedd6ec8671ae346e4e",
+    "id": "c1",
+    "revision": 1,
+    "status": "unverified",
+    "ticket_id": "ZEUS-000000000001"
+   }
+  },
+  "forged_closed_event_packet_ref_not_sha": {
+   "outcome": "returned",
+   "store_after": "7339dab589cf8053",
+   "store_before": "7339dab589cf8053",
+   "store_unchanged": true,
+   "value": {
+    "acceptance": "Ticket closed with local evidence",
+    "content_hash": "725651a903fc2d81dd7cc406064d47c994ef439268315eedd6ec8671ae346e4e",
+    "id": "c1",
+    "revision": 1,
+    "status": "unverified",
+    "ticket_id": "ZEUS-000000000001"
+   }
+  },
+  "forged_closed_event_proof_ref_bad_hex": {
+   "outcome": "returned",
+   "store_after": "b0d29d2a0967a3bc",
+   "store_before": "b0d29d2a0967a3bc",
+   "store_unchanged": true,
+   "value": {
+    "acceptance": "Ticket closed with local evidence",
+    "content_hash": "725651a903fc2d81dd7cc406064d47c994ef439268315eedd6ec8671ae346e4e",
+    "id": "c1",
+    "revision": 1,
+    "status": "unverified",
+    "ticket_id": "ZEUS-000000000001"
+   }
+  },
+  "forged_closed_event_proof_ref_missing": {
+   "outcome": "returned",
+   "store_after": "903954fe7b80bb38",
+   "store_before": "903954fe7b80bb38",
+   "store_unchanged": true,
+   "value": {
+    "acceptance": "Ticket closed with local evidence",
+    "content_hash": "725651a903fc2d81dd7cc406064d47c994ef439268315eedd6ec8671ae346e4e",
+    "id": "c1",
+    "revision": 1,
+    "status": "unverified",
+    "ticket_id": "ZEUS-000000000001"
+   }
+  },
+  "open_pending": {
+   "outcome": "returned",
+   "store_after": "bd8986900b6ac78c",
+   "store_before": "bd8986900b6ac78c",
+   "store_unchanged": true,
+   "value": {
+    "acceptance": "Ticket closed with local evidence",
+    "content_hash": "725651a903fc2d81dd7cc406064d47c994ef439268315eedd6ec8671ae346e4e",
+    "id": "c1",
+    "revision": 1,
+    "status": "pending",
+    "ticket_id": "ZEUS-000000000001"
+   }
+  },
+  "reopened": {
+   "outcome": "returned",
+   "store_after": "18f88a17ed0816df",
+   "store_before": "18f88a17ed0816df",
+   "store_unchanged": true,
+   "value": {
+    "acceptance": "Ticket closed with local evidence",
+    "content_hash": "725651a903fc2d81dd7cc406064d47c994ef439268315eedd6ec8671ae346e4e",
+    "id": "c1",
+    "revision": 1,
+    "status": "reopened",
+    "ticket_id": "ZEUS-000000000001"
+   }
+  },
+  "restored_closure_resolved": {
+   "outcome": "returned",
+   "store_after": "d05d57578fb4d8c7",
+   "store_before": "d05d57578fb4d8c7",
+   "store_unchanged": true,
+   "value": {
+    "acceptance": "Ticket closed with local evidence",
+    "closure": {
+     "event_id": "9ff4560e7f07b4cf7efe17bccd66a9d09a4cb7e6ba1724b695b4c4ee3b27d851",
+     "packet_ref": "sha256:1111111111111111111111111111111111111111111111111111111111111111",
+     "proof_ref": "sha256:2222222222222222222222222222222222222222222222222222222222222222"
+    },
+    "content_hash": "725651a903fc2d81dd7cc406064d47c994ef439268315eedd6ec8671ae346e4e",
+    "id": "c1",
+    "revision": 1,
+    "status": "resolved",
+    "ticket_id": "ZEUS-000000000001"
+   }
+  },
+  "restored_resolved": {
+   "outcome": "returned",
+   "store_after": "d05d57578fb4d8c7",
+   "store_before": "d05d57578fb4d8c7",
+   "store_unchanged": true,
+   "value": {
+    "acceptance": "Ticket closed with local evidence",
+    "closure": {
+     "event_id": "9ff4560e7f07b4cf7efe17bccd66a9d09a4cb7e6ba1724b695b4c4ee3b27d851",
+     "packet_ref": "sha256:1111111111111111111111111111111111111111111111111111111111111111",
+     "proof_ref": "sha256:2222222222222222222222222222222222222222222222222222222222222222"
+    },
+    "content_hash": "725651a903fc2d81dd7cc406064d47c994ef439268315eedd6ec8671ae346e4e",
+    "id": "c1",
+    "revision": 1,
+    "status": "resolved",
+    "ticket_id": "ZEUS-000000000001"
+   }
+  },
+  "revised_new_binding_pending": {
+   "outcome": "returned",
+   "store_after": "7d85cdc311df1544",
+   "store_before": "7d85cdc311df1544",
+   "store_unchanged": true,
+   "value": {
+    "acceptance": "Ticket closed with local evidence",
+    "content_hash": "43e2cd6013dc2f38857eb8700eafa1754f937cb8228a1c769ceec2041136dac4",
+    "id": "c1",
+    "revision": 2,
+    "status": "pending",
+    "ticket_id": "ZEUS-000000000001"
+   }
+  },
+  "revised_old_binding_stale": {
+   "outcome": "returned",
+   "store_after": "7d85cdc311df1544",
+   "store_before": "7d85cdc311df1544",
+   "store_unchanged": true,
+   "value": {
+    "acceptance": "Ticket closed with local evidence",
+    "content_hash": "725651a903fc2d81dd7cc406064d47c994ef439268315eedd6ec8671ae346e4e",
+    "id": "c1",
+    "revision": 1,
+    "status": "stale",
+    "ticket_id": "ZEUS-000000000001"
+   }
+  },
+  "revision_hash_differs_unverified": {
+   "outcome": "returned",
+   "store_after": "c82bb3d81da7cb05",
+   "store_before": "c82bb3d81da7cb05",
+   "store_unchanged": true,
+   "value": {
+    "acceptance": "Ticket closed with local evidence",
+    "content_hash": "43e2cd6013dc2f38857eb8700eafa1754f937cb8228a1c769ceec2041136dac4",
+    "id": "c1",
+    "revision": 2,
+    "status": "unverified",
+    "ticket_id": "ZEUS-000000000001"
+   }
+  },
+  "tampered_event_unverified": {
+   "outcome": "returned",
+   "store_after": "32fde0e641c2e143",
+   "store_before": "32fde0e641c2e143",
+   "store_unchanged": true,
+   "value": {
+    "acceptance": "Ticket closed with local evidence",
+    "content_hash": "725651a903fc2d81dd7cc406064d47c994ef439268315eedd6ec8671ae346e4e",
+    "id": "c1",
+    "revision": 1,
+    "status": "unverified",
+    "ticket_id": "ZEUS-000000000001"
+   }
+  },
+  "unknown_status_unverified": {
+   "outcome": "returned",
+   "store_after": "919d70db35ba6c37",
+   "store_before": "919d70db35ba6c37",
+   "store_unchanged": true,
+   "value": {
+    "acceptance": "Ticket closed with local evidence",
+    "content_hash": "43e2cd6013dc2f38857eb8700eafa1754f937cb8228a1c769ceec2041136dac4",
+    "id": "c1",
+    "revision": 2,
+    "status": "unverified",
+    "ticket_id": "ZEUS-000000000001"
+   }
+  },
+  "wrong_hash_stale": {
+   "outcome": "returned",
+   "store_after": "bd8986900b6ac78c",
+   "store_before": "bd8986900b6ac78c",
+   "store_unchanged": true,
+   "value": {
+    "acceptance": "Ticket closed with local evidence",
+    "content_hash": "ffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff",
+    "id": "c1",
+    "revision": 1,
+    "status": "stale",
+    "ticket_id": "ZEUS-000000000001"
+   }
+  }
+ },
+ "m7_tests": {
+  "covered": [
+   "test_row1_pending_then_local_close_resolves_exact_denominator (a planted close)",
+   "test_row2_remote_close_review_vote_and_task_success_do_not_count (the missing, closure-receipt, tampered-chain and fabricated-closure halves)",
+   "test_row2_stale_revision_and_corrupted_revision_content_are_not_resolved",
+   "test_row3_reopen_regresses_and_changed_definition_is_not_comparable",
+   "test_row4_* (the module half: admit_dispatch for pending, reopened, resolved, unverified, a binding mismatch, an unknown criterion)",
+   "test_row5_invalid_duplicate_or_empty_manifests_are_rejected",
+   "test_row5_unknown_compare_shapes_and_store_failures"
+  ],
+  "unreachable": {
+   "test_row2_remote_close_review_vote_and_task_success_do_not_count (the GitHub sync, review vote and task halves)": "GitHub fixture, Workflow",
+   "test_row4_goal_bound_dispatch_is_atomic_idempotent_and_distinct": "Tickets.dispatch (application/tickets.py)",
+   "test_row4_resolved_and_unverified_criteria_refuse_dispatch_before_writes (the dispatch half)": "Tickets.dispatch",
+   "test_row6_cli_report_compare_and_dispatch_options": "the CLI (S10)"
+  }
+ },
+ "manifest": {
+  "definition_hash": {
+   "outcome": "returned",
+   "store_after": "bd8986900b6ac78c",
+   "store_before": "bd8986900b6ac78c",
+   "store_unchanged": true,
+   "value": "a3856dc02d1921aece759201d0547dd774fafaab15f66456b89a040ed7c38224"
+  },
+  "definition_hash_of_a_changed_denominator_differs": true,
+  "definition_hash_of_invalid": {
+   "is_contract_error": true,
+   "message": "Goal manifest needs version, id, objective, non_goals and criteria",
+   "outcome": "raised",
+   "store_after": "bd8986900b6ac78c",
+   "store_before": "bd8986900b6ac78c",
+   "store_unchanged": true,
+   "type": "ContractError"
+  },
+  "report_refuses_an_invalid_manifest_before_the_store": {
+   "is_contract_error": true,
+   "message": "Goal manifest needs version, id, objective, non_goals and criteria",
+   "outcome": "raised",
+   "store_after": "bd8986900b6ac78c",
+   "store_before": "bd8986900b6ac78c",
+   "store_unchanged": true,
+   "type": "ContractError"
+  },
+  "valid": {
+   "outcome": "returned",
+   "store_after": "bd8986900b6ac78c",
+   "store_before": "bd8986900b6ac78c",
+   "store_unchanged": true,
+   "value": {
+    "criteria": [
+     {
+      "acceptance": "Ticket closed with local evidence",
+      "content_hash": "725651a903fc2d81dd7cc406064d47c994ef439268315eedd6ec8671ae346e4e",
+      "id": "c1",
+      "revision": 1,
+      "ticket_id": "ZEUS-000000000001"
+     }
+    ],
+    "id": "goal-1",
+    "non_goals": [
+     "Deploy"
+    ],
+    "objective": "Resolve the fixture residual",
+    "version": 1
+   }
+  },
+  "valid_is_a_deep_copy": [
+   true,
+   true,
+   true
+  ],
+  "validate_criteria_50_ok": {
+   "outcome": "returned",
+   "store_after": "bd8986900b6ac78c",
+   "store_before": "bd8986900b6ac78c",
+   "store_unchanged": true,
+   "value": {
+    "criteria": [
+     {
+      "acceptance": "Ticket closed with local evidence",
+      "content_hash": "725651a903fc2d81dd7cc406064d47c994ef439268315eedd6ec8671ae346e4e",
+      "id": "c0",
+      "revision": 1,
+      "ticket_id": "T0"
+     },
+     {
+      "acceptance": "Ticket closed with local evidence",
+      "content_hash": "725651a903fc2d81dd7cc406064d47c994ef439268315eedd6ec8671ae346e4e",
+      "id": "c1",
+      "revision": 1,
+      "ticket_id": "T1"
+     },
+     {
+      "acceptance": "Ticket closed with local evidence",
+      "content_hash": "725651a903fc2d81dd7cc406064d47c994ef439268315eedd6ec8671ae346e4e",
+      "id": "c2",
+      "revision": 1,
+      "ticket_id": "T2"
+     },
+     {
+      "acceptance": "Ticket closed with local evidence",
+      "content_hash": "725651a903fc2d81dd7cc406064d47c994ef439268315eedd6ec8671ae346e4e",
+      "id": "c3",
+      "revision": 1,
+      "ticket_id": "T3"
+     },
+     {
+      "acceptance": "Ticket closed with local evidence",
+      "content_hash": "725651a903fc2d81dd7cc406064d47c994ef439268315eedd6ec8671ae346e4e",
+      "id": "c4",
+      "revision": 1,
+      "ticket_id": "T4"
+     },
+     {
+      "acceptance": "Ticket closed with local evidence",
+      "content_hash": "725651a903fc2d81dd7cc406064d47c994ef439268315eedd6ec8671ae346e4e",
+      "id": "c5",
+      "revision": 1,
+      "ticket_id": "T5"
+     },
+     {
+      "acceptance": "Ticket closed with local evidence",
+      "content_hash": "725651a903fc2d81dd7cc406064d47c994ef439268315eedd6ec8671ae346e4e",
+      "id": "c6",
+      "revision": 1,
+      "ticket_id": "T6"
+     },
+     {
+      "acceptance": "Ticket closed with local evidence",
+      "content_hash": "725651a903fc2d81dd7cc406064d47c994ef439268315eedd6ec8671ae346e4e",
+      "id": "c7",
+      "revision": 1,
+      "ticket_id": "T7"
+     },
+     {
+      "acceptance": "Ticket closed with local evidence",
+      "content_hash": "725651a903fc2d81dd7cc406064d47c994ef439268315eedd6ec8671ae346e4e",
+      "id": "c8",
+      "revision": 1,
+      "ticket_id": "T8"
+     },
+     {
+      "acceptance": "Ticket closed with local evidence",
+      "content_hash": "725651a903fc2d81dd7cc406064d47c994ef439268315eedd6ec8671ae346e4e",
+      "id": "c9",
+      "revision": 1,
+      "ticket_id": "T9"
+     },
+     {
+      "acceptance": "Ticket closed with local evidence",
+      "content_hash": "725651a903fc2d81dd7cc406064d47c994ef439268315eedd6ec8671ae346e4e",
+      "id": "c10",
+      "revision": 1,
+      "ticket_id": "T10"
+     },
+     {
+      "acceptance": "Ticket closed with local evidence",
+      "content_hash": "725651a903fc2d81dd7cc406064d47c994ef439268315eedd6ec8671ae346e4e",
+      "id": "c11",
+      "revision": 1,
+      "ticket_id": "T11"
+     },
+     {
+      "acceptance": "Ticket closed with local evidence",
+      "content_hash": "725651a903fc2d81dd7cc406064d47c994ef439268315eedd6ec8671ae346e4e",
+      "id": "c12",
+      "revision": 1,
+      "ticket_id": "T12"
+     },
+     {
+      "acceptance": "Ticket closed with local evidence",
+      "content_hash": "725651a903fc2d81dd7cc406064d47c994ef439268315eedd6ec8671ae346e4e",
+      "id": "c13",
+      "revision": 1,
+      "ticket_id": "T13"
+     },
+     {
+      "acceptance": "Ticket closed with local evidence",
+      "content_hash": "725651a903fc2d81dd7cc406064d47c994ef439268315eedd6ec8671ae346e4e",
+      "id": "c14",
+      "revision": 1,
+      "ticket_id": "T14"
+     },
+     {
+      "acceptance": "Ticket closed with local evidence",
+      "content_hash": "725651a903fc2d81dd7cc406064d47c994ef439268315eedd6ec8671ae346e4e",
+      "id": "c15",
+      "revision": 1,
+      "ticket_id": "T15"
+     },
+     {
+      "acceptance": "Ticket closed with local evidence",
+      "content_hash": "725651a903fc2d81dd7cc406064d47c994ef439268315eedd6ec8671ae346e4e",
+      "id": "c16",
+      "revision": 1,
+      "ticket_id": "T16"
+     },
+     {
+      "acceptance": "Ticket closed with local evidence",
+      "content_hash": "725651a903fc2d81dd7cc406064d47c994ef439268315eedd6ec8671ae346e4e",
+      "id": "c17",
+      "revision": 1,
+      "ticket_id": "T17"
+     },
+     {
+      "acceptance": "Ticket closed with local evidence",
+      "content_hash": "725651a903fc2d81dd7cc406064d47c994ef439268315eedd6ec8671ae346e4e",
+      "id": "c18",
+      "revision": 1,
+      "ticket_id": "T18"
+     },
+     {
+      "acceptance": "Ticket closed with local evidence",
+      "content_hash": "725651a903fc2d81dd7cc406064d47c994ef439268315eedd6ec8671ae346e4e",
+      "id": "c19",
+      "revision": 1,
+      "ticket_id": "T19"
+     },
+     {
+      "acceptance": "Ticket closed with local evidence",
+      "content_hash": "725651a903fc2d81dd7cc406064d47c994ef439268315eedd6ec8671ae346e4e",
+      "id": "c20",
+      "revision": 1,
+      "ticket_id": "T20"
+     },
+     {
+      "acceptance": "Ticket closed with local evidence",
+      "content_hash": "725651a903fc2d81dd7cc406064d47c994ef439268315eedd6ec8671ae346e4e",
+      "id": "c21",
+      "revision": 1,
+      "ticket_id": "T21"
+     },
+     {
+      "acceptance": "Ticket closed with local evidence",
+      "content_hash": "725651a903fc2d81dd7cc406064d47c994ef439268315eedd6ec8671ae346e4e",
+      "id": "c22",
+      "revision": 1,
+      "ticket_id": "T22"
+     },
+     {
+      "acceptance": "Ticket closed with local evidence",
+      "content_hash": "725651a903fc2d81dd7cc406064d47c994ef439268315eedd6ec8671ae346e4e",
+      "id": "c23",
+      "revision": 1,
+      "ticket_id": "T23"
+     },
+     {
+      "acceptance": "Ticket closed with local evidence",
+      "content_hash": "725651a903fc2d81dd7cc406064d47c994ef439268315eedd6ec8671ae346e4e",
+      "id": "c24",
+      "revision": 1,
+      "ticket_id": "T24"
+     },
+     {
+      "acceptance": "Ticket closed with local evidence",
+      "content_hash": "725651a903fc2d81dd7cc406064d47c994ef439268315eedd6ec8671ae346e4e",
+      "id": "c25",
+      "revision": 1,
+      "ticket_id": "T25"
+     },
+     {
+      "acceptance": "Ticket closed with local evidence",
+      "content_hash": "725651a903fc2d81dd7cc406064d47c994ef439268315eedd6ec8671ae346e4e",
+      "id": "c26",
+      "revision": 1,
+      "ticket_id": "T26"
+     },
+     {
+      "acceptance": "Ticket closed with local evidence",
+      "content_hash": "725651a903fc2d81dd7cc406064d47c994ef439268315eedd6ec8671ae346e4e",
+      "id": "c27",
+      "revision": 1,
+      "ticket_id": "T27"
+     },
+     {
+      "acceptance": "Ticket closed with local evidence",
+      "content_hash": "725651a903fc2d81dd7cc406064d47c994ef439268315eedd6ec8671ae346e4e",
+      "id": "c28",
+      "revision": 1,
+      "ticket_id": "T28"
+     },
+     {
+      "acceptance": "Ticket closed with local evidence",
+      "content_hash": "725651a903fc2d81dd7cc406064d47c994ef439268315eedd6ec8671ae346e4e",
+      "id": "c29",
+      "revision": 1,
+      "ticket_id": "T29"
+     },
+     {
+      "acceptance": "Ticket closed with local evidence",
+      "content_hash": "725651a903fc2d81dd7cc406064d47c994ef439268315eedd6ec8671ae346e4e",
+      "id": "c30",
+      "revision": 1,
+      "ticket_id": "T30"
+     },
+     {
+      "acceptance": "Ticket closed with local evidence",
+      "content_hash": "725651a903fc2d81dd7cc406064d47c994ef439268315eedd6ec8671ae346e4e",
+      "id": "c31",
+      "revision": 1,
+      "ticket_id": "T31"
+     },
+     {
+      "acceptance": "Ticket closed with local evidence",
+      "content_hash": "725651a903fc2d81dd7cc406064d47c994ef439268315eedd6ec8671ae346e4e",
+      "id": "c32",
+      "revision": 1,
+      "ticket_id": "T32"
+     },
+     {
+      "acceptance": "Ticket closed with local evidence",
+      "content_hash": "725651a903fc2d81dd7cc406064d47c994ef439268315eedd6ec8671ae346e4e",
+      "id": "c33",
+      "revision": 1,
+      "ticket_id": "T33"
+     },
+     {
+      "acceptance": "Ticket closed with local evidence",
+      "content_hash": "725651a903fc2d81dd7cc406064d47c994ef439268315eedd6ec8671ae346e4e",
+      "id": "c34",
+      "revision": 1,
+      "ticket_id": "T34"
+     },
+     {
+      "acceptance": "Ticket closed with local evidence",
+      "content_hash": "725651a903fc2d81dd7cc406064d47c994ef439268315eedd6ec8671ae346e4e",
+      "id": "c35",
+      "revision": 1,
+      "ticket_id": "T35"
+     },
+     {
+      "acceptance": "Ticket closed with local evidence",
+      "content_hash": "725651a903fc2d81dd7cc406064d47c994ef439268315eedd6ec8671ae346e4e",
+      "id": "c36",
+      "revision": 1,
+      "ticket_id": "T36"
+     },
+     {
+      "acceptance": "Ticket closed with local evidence",
+      "content_hash": "725651a903fc2d81dd7cc406064d47c994ef439268315eedd6ec8671ae346e4e",
+      "id": "c37",
+      "revision": 1,
+      "ticket_id": "T37"
+     },
+     {
+      "acceptance": "Ticket closed with local evidence",
+      "content_hash": "725651a903fc2d81dd7cc406064d47c994ef439268315eedd6ec8671ae346e4e",
+      "id": "c38",
+      "revision": 1,
+      "ticket_id": "T38"
+     },
+     {
+      "acceptance": "Ticket closed with local evidence",
+      "content_hash": "725651a903fc2d81dd7cc406064d47c994ef439268315eedd6ec8671ae346e4e",
+      "id": "c39",
+      "revision": 1,
+      "ticket_id": "T39"
+     },
+     {
+      "acceptance": "Ticket closed with local evidence",
+      "content_hash": "725651a903fc2d81dd7cc406064d47c994ef439268315eedd6ec8671ae346e4e",
+      "id": "c40",
+      "revision": 1,
+      "ticket_id": "T40"
+     },
+     {
+      "acceptance": "Ticket closed with local evidence",
+      "content_hash": "725651a903fc2d81dd7cc406064d47c994ef439268315eedd6ec8671ae346e4e",
+      "id": "c41",
+      "revision": 1,
+      "ticket_id": "T41"
+     },
+     {
+      "acceptance": "Ticket closed with local evidence",
+      "content_hash": "725651a903fc2d81dd7cc406064d47c994ef439268315eedd6ec8671ae346e4e",
+      "id": "c42",
+      "revision": 1,
+      "ticket_id": "T42"
+     },
+     {
+      "acceptance": "Ticket closed with local evidence",
+      "content_hash": "725651a903fc2d81dd7cc406064d47c994ef439268315eedd6ec8671ae346e4e",
+      "id": "c43",
+      "revision": 1,
+      "ticket_id": "T43"
+     },
+     {
+      "acceptance": "Ticket closed with local evidence",
+      "content_hash": "725651a903fc2d81dd7cc406064d47c994ef439268315eedd6ec8671ae346e4e",
+      "id": "c44",
+      "revision": 1,
+      "ticket_id": "T44"
+     },
+     {
+      "acceptance": "Ticket closed with local evidence",
+      "content_hash": "725651a903fc2d81dd7cc406064d47c994ef439268315eedd6ec8671ae346e4e",
+      "id": "c45",
+      "revision": 1,
+      "ticket_id": "T45"
+     },
+     {
+      "acceptance": "Ticket closed with local evidence",
+      "content_hash": "725651a903fc2d81dd7cc406064d47c994ef439268315eedd6ec8671ae346e4e",
+      "id": "c46",
+      "revision": 1,
+      "ticket_id": "T46"
+     },
+     {
+      "acceptance": "Ticket closed with local evidence",
+      "content_hash": "725651a903fc2d81dd7cc406064d47c994ef439268315eedd6ec8671ae346e4e",
+      "id": "c47",
+      "revision": 1,
+      "ticket_id": "T47"
+     },
+     {
+      "acceptance": "Ticket closed with local evidence",
+      "content_hash": "725651a903fc2d81dd7cc406064d47c994ef439268315eedd6ec8671ae346e4e",
+      "id": "c48",
+      "revision": 1,
+      "ticket_id": "T48"
+     },
+     {
+      "acceptance": "Ticket closed with local evidence",
+      "content_hash": "725651a903fc2d81dd7cc406064d47c994ef439268315eedd6ec8671ae346e4e",
+      "id": "c49",
+      "revision": 1,
+      "ticket_id": "T49"
+     }
+    ],
+    "id": "goal-1",
+    "non_goals": [
+     "Deploy"
+    ],
+    "objective": "Resolve the fixture residual",
+    "version": 1
+   }
+  },
+  "validate_criteria_51": {
+   "is_contract_error": true,
+   "message": "Goal criteria must hold 1 to 50 entries",
+   "outcome": "raised",
+   "store_after": "bd8986900b6ac78c",
+   "store_before": "bd8986900b6ac78c",
+   "store_unchanged": true,
+   "type": "ContractError"
+  },
+  "validate_criteria_empty": {
+   "is_contract_error": true,
+   "message": "Goal criteria must hold 1 to 50 entries",
+   "outcome": "raised",
+   "store_after": "bd8986900b6ac78c",
+   "store_before": "bd8986900b6ac78c",
+   "store_unchanged": true,
+   "type": "ContractError"
+  },
+  "validate_criteria_string": {
+   "is_contract_error": true,
+   "message": "Goal criteria must hold 1 to 50 entries",
+   "outcome": "raised",
+   "store_after": "bd8986900b6ac78c",
+   "store_before": "bd8986900b6ac78c",
+   "store_unchanged": true,
+   "type": "ContractError"
+  },
+  "validate_criterion_acceptance_blank": {
+   "is_contract_error": true,
+   "message": "Goal criterion id, acceptance and ticket_id required",
+   "outcome": "raised",
+   "store_after": "bd8986900b6ac78c",
+   "store_before": "bd8986900b6ac78c",
+   "store_unchanged": true,
+   "type": "ContractError"
+  },
+  "validate_criterion_extra": {
+   "is_contract_error": true,
+   "message": "Goal criterion needs id, acceptance, ticket_id, revision and content_hash",
+   "outcome": "raised",
+   "store_after": "bd8986900b6ac78c",
+   "store_before": "bd8986900b6ac78c",
+   "store_unchanged": true,
+   "type": "ContractError"
+  },
+  "validate_criterion_hash_not_text": {
+   "is_contract_error": true,
+   "message": "Goal criterion content_hash must be 64 lowercase hex",
+   "outcome": "raised",
+   "store_after": "bd8986900b6ac78c",
+   "store_before": "bd8986900b6ac78c",
+   "store_unchanged": true,
+   "type": "ContractError"
+  },
+  "validate_criterion_hash_short": {
+   "is_contract_error": true,
+   "message": "Goal criterion content_hash must be 64 lowercase hex",
+   "outcome": "raised",
+   "store_after": "bd8986900b6ac78c",
+   "store_before": "bd8986900b6ac78c",
+   "store_unchanged": true,
+   "type": "ContractError"
+  },
+  "validate_criterion_hash_upper": {
+   "is_contract_error": true,
+   "message": "Goal criterion content_hash must be 64 lowercase hex",
+   "outcome": "raised",
+   "store_after": "bd8986900b6ac78c",
+   "store_before": "bd8986900b6ac78c",
+   "store_unchanged": true,
+   "type": "ContractError"
+  },
+  "validate_criterion_missing_acceptance": {
+   "is_contract_error": true,
+   "message": "Goal criterion needs id, acceptance, ticket_id, revision and content_hash",
+   "outcome": "raised",
+   "store_after": "bd8986900b6ac78c",
+   "store_before": "bd8986900b6ac78c",
+   "store_unchanged": true,
+   "type": "ContractError"
+  },
+  "validate_criterion_not_a_dict": {
+   "is_contract_error": true,
+   "message": "Goal criterion needs id, acceptance, ticket_id, revision and content_hash",
+   "outcome": "raised",
+   "store_after": "bd8986900b6ac78c",
+   "store_before": "bd8986900b6ac78c",
+   "store_unchanged": true,
+   "type": "ContractError"
+  },
+  "validate_criterion_revision_0": {
+   "is_contract_error": true,
+   "message": "Goal criterion revision must be a positive integer",
+   "outcome": "raised",
+   "store_after": "bd8986900b6ac78c",
+   "store_before": "bd8986900b6ac78c",
+   "store_unchanged": true,
+   "type": "ContractError"
+  },
+  "validate_criterion_revision_bool": {
+   "is_contract_error": true,
+   "message": "Goal criterion revision must be a positive integer",
+   "outcome": "raised",
+   "store_after": "bd8986900b6ac78c",
+   "store_before": "bd8986900b6ac78c",
+   "store_unchanged": true,
+   "type": "ContractError"
+  },
+  "validate_criterion_revision_string": {
+   "is_contract_error": true,
+   "message": "Goal criterion revision must be a positive integer",
+   "outcome": "raised",
+   "store_after": "bd8986900b6ac78c",
+   "store_before": "bd8986900b6ac78c",
+   "store_unchanged": true,
+   "type": "ContractError"
+  },
+  "validate_criterion_ticket_blank": {
+   "is_contract_error": true,
+   "message": "Goal criterion id, acceptance and ticket_id required",
+   "outcome": "raised",
+   "store_after": "bd8986900b6ac78c",
+   "store_before": "bd8986900b6ac78c",
+   "store_unchanged": true,
+   "type": "ContractError"
+  },
+  "validate_duplicate_id": {
+   "is_contract_error": true,
+   "message": "Duplicate goal criterion id",
+   "outcome": "raised",
+   "store_after": "bd8986900b6ac78c",
+   "store_before": "bd8986900b6ac78c",
+   "store_unchanged": true,
+   "type": "ContractError"
+  },
+  "validate_duplicate_ticket": {
+   "is_contract_error": true,
+   "message": "Duplicate goal criterion ticket binding",
+   "outcome": "raised",
+   "store_after": "bd8986900b6ac78c",
+   "store_before": "bd8986900b6ac78c",
+   "store_unchanged": true,
+   "type": "ContractError"
+  },
+  "validate_extra_field": {
+   "is_contract_error": true,
+   "message": "Goal manifest needs version, id, objective, non_goals and criteria",
+   "outcome": "raised",
+   "store_after": "bd8986900b6ac78c",
+   "store_before": "bd8986900b6ac78c",
+   "store_unchanged": true,
+   "type": "ContractError"
+  },
+  "validate_id_blank": {
+   "is_contract_error": true,
+   "message": "Goal id and objective required",
+   "outcome": "raised",
+   "store_after": "bd8986900b6ac78c",
+   "store_before": "bd8986900b6ac78c",
+   "store_unchanged": true,
+   "type": "ContractError"
+  },
+  "validate_id_long": {
+   "is_contract_error": true,
+   "message": "Goal id and objective required",
+   "outcome": "raised",
+   "store_after": "bd8986900b6ac78c",
+   "store_before": "bd8986900b6ac78c",
+   "store_unchanged": true,
+   "type": "ContractError"
+  },
+  "validate_missing_non_goals": {
+   "is_contract_error": true,
+   "message": "Goal manifest needs version, id, objective, non_goals and criteria",
+   "outcome": "raised",
+   "store_after": "bd8986900b6ac78c",
+   "store_before": "bd8986900b6ac78c",
+   "store_unchanged": true,
+   "type": "ContractError"
+  },
+  "validate_non_goals_empty_ok": {
+   "outcome": "returned",
+   "store_after": "bd8986900b6ac78c",
+   "store_before": "bd8986900b6ac78c",
+   "store_unchanged": true,
+   "value": {
+    "criteria": [
+     {
+      "acceptance": "Ticket closed with local evidence",
+      "content_hash": "725651a903fc2d81dd7cc406064d47c994ef439268315eedd6ec8671ae346e4e",
+      "id": "c1",
+      "revision": 1,
+      "ticket_id": "ZEUS-000000000001"
+     }
+    ],
+    "id": "goal-1",
+    "non_goals": [],
+    "objective": "Resolve the fixture residual",
+    "version": 1
+   }
+  },
+  "validate_non_goals_long": {
+   "is_contract_error": true,
+   "message": "Goal non_goals must be a list of text",
+   "outcome": "raised",
+   "store_after": "bd8986900b6ac78c",
+   "store_before": "bd8986900b6ac78c",
+   "store_unchanged": true,
+   "type": "ContractError"
+  },
+  "validate_non_goals_number": {
+   "is_contract_error": true,
+   "message": "Goal non_goals must be a list of text",
+   "outcome": "raised",
+   "store_after": "bd8986900b6ac78c",
+   "store_before": "bd8986900b6ac78c",
+   "store_unchanged": true,
+   "type": "ContractError"
+  },
+  "validate_non_goals_string": {
+   "is_contract_error": true,
+   "message": "Goal non_goals must be a list of text",
+   "outcome": "raised",
+   "store_after": "bd8986900b6ac78c",
+   "store_before": "bd8986900b6ac78c",
+   "store_unchanged": true,
+   "type": "ContractError"
+  },
+  "validate_not_a_dict": {
+   "is_contract_error": true,
+   "message": "Goal manifest needs version, id, objective, non_goals and criteria",
+   "outcome": "raised",
+   "store_after": "bd8986900b6ac78c",
+   "store_before": "bd8986900b6ac78c",
+   "store_unchanged": true,
+   "type": "ContractError"
+  },
+  "validate_objective_empty": {
+   "is_contract_error": true,
+   "message": "Goal id and objective required",
+   "outcome": "raised",
+   "store_after": "bd8986900b6ac78c",
+   "store_before": "bd8986900b6ac78c",
+   "store_unchanged": true,
+   "type": "ContractError"
+  },
+  "validate_objective_not_text": {
+   "is_contract_error": true,
+   "message": "Goal id and objective required",
+   "outcome": "raised",
+   "store_after": "bd8986900b6ac78c",
+   "store_before": "bd8986900b6ac78c",
+   "store_unchanged": true,
+   "type": "ContractError"
+  },
+  "validate_two_distinct_ok": {
+   "outcome": "returned",
+   "store_after": "bd8986900b6ac78c",
+   "store_before": "bd8986900b6ac78c",
+   "store_unchanged": true,
+   "value": {
+    "criteria": [
+     {
+      "acceptance": "Ticket closed with local evidence",
+      "content_hash": "725651a903fc2d81dd7cc406064d47c994ef439268315eedd6ec8671ae346e4e",
+      "id": "c1",
+      "revision": 1,
+      "ticket_id": "ZEUS-000000000001"
+     },
+     {
+      "acceptance": "Ticket closed with local evidence",
+      "content_hash": "725651a903fc2d81dd7cc406064d47c994ef439268315eedd6ec8671ae346e4e",
+      "id": "c2",
+      "revision": 1,
+      "ticket_id": "ZEUS-000000000002"
+     }
+    ],
+    "id": "goal-1",
+    "non_goals": [
+     "Deploy"
+    ],
+    "objective": "Resolve the fixture residual",
+    "version": 1
+   }
+  },
+  "validate_version_2": {
+   "is_contract_error": true,
+   "message": "Unsupported goal manifest version",
+   "outcome": "raised",
+   "store_after": "bd8986900b6ac78c",
+   "store_before": "bd8986900b6ac78c",
+   "store_unchanged": true,
+   "type": "ContractError"
+  },
+  "validate_version_bool": {
+   "is_contract_error": true,
+   "message": "Unsupported goal manifest version",
+   "outcome": "raised",
+   "store_after": "bd8986900b6ac78c",
+   "store_before": "bd8986900b6ac78c",
+   "store_unchanged": true,
+   "type": "ContractError"
+  },
+  "validate_version_string": {
+   "is_contract_error": true,
+   "message": "Unsupported goal manifest version",
+   "outcome": "raised",
+   "store_after": "bd8986900b6ac78c",
+   "store_before": "bd8986900b6ac78c",
+   "store_unchanged": true,
+   "type": "ContractError"
+  }
+ },
+ "report": {
+  "broken_store": {
+   "message": "store unavailable",
+   "outcome": "raised",
+   "type": "RuntimeError"
+  },
+  "manifest_not_mutated": true,
+  "mixed_counts": {
+   "outcome": "returned",
+   "store_after": "57f3d4f99f7a6a16",
+   "store_before": "57f3d4f99f7a6a16",
+   "store_unchanged": true,
+   "value": {
+    "authority": "observation_only",
+    "criteria": [
+     {
+      "acceptance": "Ticket closed with local evidence",
+      "closure": {
+       "event_id": "9ff4560e7f07b4cf7efe17bccd66a9d09a4cb7e6ba1724b695b4c4ee3b27d851",
+       "packet_ref": "sha256:1111111111111111111111111111111111111111111111111111111111111111",
+       "proof_ref": "sha256:2222222222222222222222222222222222222222222222222222222222222222"
+      },
+      "content_hash": "725651a903fc2d81dd7cc406064d47c994ef439268315eedd6ec8671ae346e4e",
+      "id": "c1",
+      "revision": 1,
+      "status": "resolved",
+      "ticket_id": "ZEUS-000000000001"
+     },
+     {
+      "acceptance": "Ticket closed with local evidence",
+      "content_hash": "bce0cf8c2b3a22344800a78dd667b1d35e3dc111afc8caac0b6acf119f05e517",
+      "id": "c2",
+      "revision": 1,
+      "status": "pending",
+      "ticket_id": "ZEUS-000000000002"
+     },
+     {
+      "acceptance": "Ticket closed with local evidence",
+      "content_hash": "725651a903fc2d81dd7cc406064d47c994ef439268315eedd6ec8671ae346e4e",
+      "id": "c3",
+      "revision": 1,
+      "status": "missing",
+      "ticket_id": "ZEUS-absent00000"
+     },
+     {
+      "acceptance": "Ticket closed with local evidence",
+      "content_hash": "bce0cf8c2b3a22344800a78dd667b1d35e3dc111afc8caac0b6acf119f05e517",
+      "id": "c4",
+      "revision": 1,
+      "status": "missing",
+      "ticket_id": "ZEUS-absent00001"
+     }
+    ],
+    "definition_hash": "2d0766ad60f9d03ed49f4f5512299fa84ff6a1eaa7f7cbebcee9dfc7f3d63f16",
+    "goal_id": "goal-1",
+    "metrics": {
+     "completion_ratio": 0.25,
+     "missing": 2,
+     "remaining": 3,
+     "reopened": 0,
+     "resolved": 1,
+     "stale": 0,
+     "total": 4,
+     "unverified": 0
+    },
+    "objective": "Resolve the fixture residual",
+    "schema": "urn:zeus:goal-progress:1"
+   }
+  },
+  "pending": {
+   "outcome": "returned",
+   "store_after": "d6e6389cffffdff9",
+   "store_before": "d6e6389cffffdff9",
+   "store_unchanged": true,
+   "value": {
+    "authority": "observation_only",
+    "criteria": [
+     {
+      "acceptance": "Ticket closed with local evidence",
+      "content_hash": "725651a903fc2d81dd7cc406064d47c994ef439268315eedd6ec8671ae346e4e",
+      "id": "c1",
+      "revision": 1,
+      "status": "pending",
+      "ticket_id": "ZEUS-000000000001"
+     }
+    ],
+    "definition_hash": "a3856dc02d1921aece759201d0547dd774fafaab15f66456b89a040ed7c38224",
+    "goal_id": "goal-1",
+    "metrics": {
+     "completion_ratio": 0.0,
+     "missing": 0,
+     "remaining": 1,
+     "reopened": 0,
+     "resolved": 0,
+     "stale": 0,
+     "total": 1,
+     "unverified": 0
+    },
+    "objective": "Resolve the fixture residual",
+    "schema": "urn:zeus:goal-progress:1"
+   }
+  },
+  "pending_hash_is_the_definition_hash": true,
+  "reopened": {
+   "outcome": "returned",
+   "store_after": "e65b57b96c9aa1ef",
+   "store_before": "e65b57b96c9aa1ef",
+   "store_unchanged": true,
+   "value": {
+    "authority": "observation_only",
+    "criteria": [
+     {
+      "acceptance": "Ticket closed with local evidence",
+      "content_hash": "725651a903fc2d81dd7cc406064d47c994ef439268315eedd6ec8671ae346e4e",
+      "id": "c1",
+      "revision": 1,
+      "status": "reopened",
+      "ticket_id": "ZEUS-000000000001"
+     }
+    ],
+    "definition_hash": "a3856dc02d1921aece759201d0547dd774fafaab15f66456b89a040ed7c38224",
+    "goal_id": "goal-1",
+    "metrics": {
+     "completion_ratio": 0.0,
+     "missing": 0,
+     "remaining": 1,
+     "reopened": 1,
+     "resolved": 0,
+     "stale": 0,
+     "total": 1,
+     "unverified": 0
+    },
+    "objective": "Resolve the fixture residual",
+    "schema": "urn:zeus:goal-progress:1"
+   }
+  },
+  "repeat_equal": true,
+  "report_total_one_ratio": {
+   "completion_ratio": 1.0,
+   "missing": 0,
+   "remaining": 0,
+   "reopened": 0,
+   "resolved": 1,
+   "stale": 0,
+   "total": 1,
+   "unverified": 0
+  },
+  "resolved": {
+   "outcome": "returned",
+   "store_after": "57f3d4f99f7a6a16",
+   "store_before": "57f3d4f99f7a6a16",
+   "store_unchanged": true,
+   "value": {
+    "authority": "observation_only",
+    "criteria": [
+     {
+      "acceptance": "Ticket closed with local evidence",
+      "closure": {
+       "event_id": "9ff4560e7f07b4cf7efe17bccd66a9d09a4cb7e6ba1724b695b4c4ee3b27d851",
+       "packet_ref": "sha256:1111111111111111111111111111111111111111111111111111111111111111",
+       "proof_ref": "sha256:2222222222222222222222222222222222222222222222222222222222222222"
+      },
+      "content_hash": "725651a903fc2d81dd7cc406064d47c994ef439268315eedd6ec8671ae346e4e",
+      "id": "c1",
+      "revision": 1,
+      "status": "resolved",
+      "ticket_id": "ZEUS-000000000001"
+     }
+    ],
+    "definition_hash": "a3856dc02d1921aece759201d0547dd774fafaab15f66456b89a040ed7c38224",
+    "goal_id": "goal-1",
+    "metrics": {
+     "completion_ratio": 1.0,
+     "missing": 0,
+     "remaining": 0,
+     "reopened": 0,
+     "resolved": 1,
+     "stale": 0,
+     "total": 1,
+     "unverified": 0
+    },
+    "objective": "Resolve the fixture residual",
+    "schema": "urn:zeus:goal-progress:1"
+   }
+  }
+ },
+ "surface": {
+  "GoalProgress": {
+   "__init__": "(self, store)",
+   "report": "(self, manifest)"
+  },
+  "constants": {
+   "COUNTED": [
+    "resolved",
+    "reopened",
+    "missing",
+    "stale",
+    "unverified"
+   ],
+   "CRITERION_FIELDS": [
+    "acceptance",
+    "content_hash",
+    "id",
+    "revision",
+    "ticket_id"
+   ],
+   "MANIFEST_FIELDS": [
+    "criteria",
+    "id",
+    "non_goals",
+    "objective",
+    "version"
+   ],
+   "REPORT_FIELDS": [
+    "authority",
+    "criteria",
+    "definition_hash",
+    "goal_id",
+    "metrics",
+    "objective",
+    "schema"
+   ],
+   "SCHEMA": "urn:zeus:goal-progress:1",
+   "STATUSES": [
+    "missing",
+    "pending",
+    "reopened",
+    "resolved",
+    "stale",
+    "unverified"
+   ]
+  },
+  "constructor_keeps_the_store": true,
+  "signatures": {
+   "admit_dispatch": "(tx, manifest, criterion_id, bound)",
+   "compare_reports": "(before, after)",
+   "definition_hash": "(manifest)",
+   "evaluate_criterion": "(tx, criterion)",
+   "validate_manifest": "(manifest)"
+  }
+ }
+}
