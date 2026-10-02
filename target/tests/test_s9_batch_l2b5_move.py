@@ -26,6 +26,10 @@ M7 tests this batch does NOT port yet (the S9 ported suite is a later step): fro
 `test_a_row_whose_activity_cannot_be_projected_is_unavailable_and_keeps_its_session_facts`,
 `test_read_only_store_and_reader_refuse_writes_while_collection_works`, `test_container_scope_unset_keeps_compose_and_named_mode_is_exact` and
 `test_collector_entrypoint_is_read_only_and_needs_no_executor`.
+
+After S9 batch L2-B6 the module also holds U7 (OWNER-DECISIONS-S9 D1.1), so every assertion below is about U6's OWN definitions (the nodes named in `U6_NAMES`, their source
+segments and the imports they use); the whole-module invariants (every M7 definition in M7's order, the import homes, the refusals of the unwired ports, the spawn sites)
+are owned by `test_s9_batch_l2b6_move.py`. The one whole-module check kept here is the layer rules (`import_rules.check` is empty).
 """
 
 from __future__ import annotations
@@ -54,12 +58,16 @@ U6_NAMES = ["CONTAINER_NAME", "MAX_CONTAINERS", "safe_text", "ReadOnlyTransactio
             "ACTIVITY_REFS", "ACTIVITY_BODY_BYTES", "RECENT_TERMINAL_SECONDS", "TERMINAL_EXECUTION", "ARTIFACT_REF", "CLAUDE_LABELS", "CODEX_LABELS", "PLAIN_STATUSES",
             "ENVELOPE_KEYS", "_optional_strings", "ArtifactReader", "_strict_json", "_epoch_ms", "project_receipt", "_aware", "execution_activity", "COMPACT_ONLY",
             "_failed_entry", "_compact_selected", "_compact_activity", "lane_artifact_resolver", "_execution_view", "lane_view", "scope_label"]
+U6_NODES = [n for n in ast.parse(TEXT).body if (n.name if isinstance(n, (ast.FunctionDef, ast.ClassDef)) else
+                                                ([t.id for t in n.targets if isinstance(t, ast.Name)] or [None])[0] if isinstance(n, ast.Assign) else None) in U6_NAMES]
+U6_TEXT = "\n".join(ast.get_source_segment(TEXT, n) for n in U6_NODES)
+U6_TREE = ast.Module(body=U6_NODES, type_ignores=[])
 U7_NAMES = {"docker_stats", "docker_facts", "redis_facts", "fleet_facts", "research_program_facts", "portfolio_facts", "fleet_backlog_facts", "host_delivery_facts",
             "worker_session_facts", "continuation_facts", "LANE_SNAPSHOT_BEGIN", "LaneSnapshotStore", "LaneSnapshotTransaction", "lane_resolver", "lane_session_facts",
             "discovery_pressure_facts", "collect"}
 U7_IMPORTED = {"RedisBus", "run_process", "Fleet", "FleetRefused", "Monitoring", "observation_facts", "ThreadPoolExecutor"}
 FORBIDDEN_HOMES = ("codex_harness.adapters", "codex_harness.domain", "codex_harness.application", "codex_harness.ports", "codex_harness.entry", "codex_harness.intake",
-                   "codex_harness.evidence", "codex_harness.delivery", "codex_harness.coordination")
+                   "codex_harness.evidence", "codex_harness.delivery")
 
 
 def show(rev, path):
@@ -102,12 +110,11 @@ class InverseOfR_c1(ast.NodeTransformer):
 
 # ---- the statements ----------------------------------------------------------------------------
 
-def test_exactly_the_u6_names_are_present_in_source_order():
+def test_the_u6_names_are_all_present_in_m7s_relative_order():
     ours, theirs = statements(TEXT), statements(show(SOURCE, M7_MON))
-    assert list(ours) == U6_NAMES
-    assert list(ours) == [n for n in theirs if n in U6_NAMES]
-    assert not U7_NAMES & set(ours) and not U7_NAMES & set(dir(collectors))
-    assert set(theirs) - set(ours) == U7_NAMES
+    assert [n for n in ours if n in U6_NAMES] == U6_NAMES
+    assert [n for n in ours if n in U6_NAMES] == [n for n in theirs if n in U6_NAMES]
+    assert len(U6_NODES) == len(U6_NAMES)
     assert {n for n in dir(collectors) if not n.startswith("__")} >= set(U6_NAMES)
 
 
@@ -122,23 +129,24 @@ def test_every_u6_statement_is_m7s_modulo_r_c1():
     assert changed == ["lane_view"]
 
 
-def test_the_text_is_m7s_four_line_groups_byte_for_byte_but_r_c1():
+def test_the_text_holds_u6s_four_m7_line_groups_byte_for_byte_but_r_c1():
     lines = show(SOURCE, M7_MON).split("\n")
     groups = ["\n".join(lines[a - 1:b]) for a, b in ((32, 275), (428, 432), (497, 925), (966, 970))]
-    body = TEXT[TEXT.index("CONTAINER_NAME = "):]
     old = ("    from codex_harness.application.worker_sessions import BUCKET as SESSIONS\n"
            "    from codex_harness.domain.worker_sessions import status_view\n")
+    new = ("    SESSIONS = 'worker_sessions'  # R-c1: the V9 literal of execution.application.worker_sessions.BUCKET (an observation adapter may not import it)\n"
+           "    from codex_harness.execution.domain.worker_sessions import status_view\n")
     assert groups[2].count(old) == 1
-    expected = "\n\n\n".join(groups[:2] + [groups[2].replace(old, "@@")] + groups[3:]) + "\n"
-    assert body.count("SESSIONS = 'worker_sessions'") == 1
-    pieces = expected.split("@@")
-    assert len(pieces) == 2 and body.startswith(pieces[0]) and body.endswith(pieces[1])
-    middle = body[len(pieces[0]):len(body) - len(pieces[1])]
-    assert middle.splitlines()[1] == "    from codex_harness.execution.domain.worker_sessions import status_view"
-    assert middle.splitlines()[0].startswith("    SESSIONS = 'worker_sessions'") and len(middle.splitlines()) == 2
+    expected = groups[:2] + [groups[2].replace(old, new)] + groups[3:]
+    assert TEXT.count("SESSIONS = 'worker_sessions'") == 1
+    for group in expected:
+        assert group in TEXT
+    middle = new.splitlines()
+    assert middle[1] == "    from codex_harness.execution.domain.worker_sessions import status_view"
+    assert middle[0].startswith("    SESSIONS = 'worker_sessions'") and len(middle) == 2
 
 
-def test_the_header_keeps_m7s_docstring_first_and_names_u6_not_u7():
+def test_the_header_keeps_m7s_docstring_first_and_names_u6():
     doc = ast.get_docstring(ast.parse(TEXT))
     assert doc.startswith(ast.get_docstring(ast.parse(show(SOURCE, M7_MON))) + "\n\nLayer: adapters\nContext: observation\n")
     for field in ("Owns:", "Does not own:", "Entry points:", "Contracts: INV-OBSERVATION-001", "Moved from M7", SOURCE, "R-c0", "R-c1", "R-ch"):
@@ -146,24 +154,23 @@ def test_the_header_keeps_m7s_docstring_first_and_names_u6_not_u7():
     entry_points = doc.split("Entry points:")[1].split("\n")[0]
     for name in ("ReadOnlyStore", "DatabaseFacts", "ArtifactReader", "project_receipt", "execution_activity", "lane_view", "scope_label"):
         assert name in entry_points
-    assert not [name for name in U7_NAMES if name in entry_points]
 
 
 # ---- the import homes and R-c1 -----------------------------------------------------------------
 
-def test_the_import_homes_resolve_in_the_target_alone_and_none_is_u7s():
+def test_every_name_u6_uses_resolves_at_its_target_home():
     tree = ast.parse(TEXT)
-    assert from_imports(tree) == {
-        "collections": ["Counter"], "contextlib": ["contextmanager"], "dataclasses": ["asdict"], "datetime": ["datetime", "timezone"], "pathlib": ["Path"],
-        "codex_harness.execution.domain.progress_activity": ["BUILTIN_TOOLS", "CODEX_ITEM_TYPES", "fixed_completed_status", "fixed_completed_type", "fixed_last_event",
-                                                             "validate_receipt"],
-        "codex_harness.kernel.errors": ["ContractError"], "codex_harness.research.domain.council": ["TASK_STATUSES"]}
-    assert sorted(a.name for n in tree.body if isinstance(n, ast.Import) for a in n.names) == ["json", "re"]
+    homes = {"collections": ["Counter"], "contextlib": ["contextmanager"], "dataclasses": ["asdict"], "datetime": ["datetime", "timezone"], "pathlib": ["Path"],
+             "codex_harness.execution.domain.progress_activity": ["BUILTIN_TOOLS", "CODEX_ITEM_TYPES", "fixed_completed_status", "fixed_completed_type", "fixed_last_event",
+                                                                  "validate_receipt"],
+             "codex_harness.kernel.errors": ["ContractError"], "codex_harness.research.domain.council": ["TASK_STATUSES"]}
+    imports = from_imports(tree)
+    for module, names in homes.items():
+        assert set(names) <= set(imports[module]), module
+    assert {"json", "re"} <= {a.name for n in tree.body if isinstance(n, ast.Import) for a in n.names}
     modules = [n.module or "" for n in ast.walk(tree) if isinstance(n, ast.ImportFrom)]
     assert not [m for m in modules if m.startswith(FORBIDDEN_HOMES)]
-    imported = {a.asname or a.name for n in ast.walk(tree) if isinstance(n, (ast.Import, ast.ImportFrom)) for a in n.names}
-    assert not U7_IMPORTED & imported
-    lazy = sorted(a.name for n in ast.walk(tree) if isinstance(n, ast.Import) and n not in tree.body for a in n.names)
+    lazy = sorted(a.name for n in ast.walk(U6_TREE) if isinstance(n, ast.Import) for a in n.names)
     assert lazy == ["hashlib", "os", "stat"]
     from codex_harness.execution.domain import progress_activity
     from codex_harness.execution.domain import worker_sessions as domain_sessions
@@ -180,8 +187,6 @@ def test_r_c1_literal_equals_the_owners_bucket_and_status_view_is_the_execution_
     assert len(literal) == 1 and isinstance(literal[0].value, ast.Constant) and literal[0].value.value == owner.BUCKET == "worker_sessions"
     lazy = [n for n in lane_view.body if isinstance(n, ast.ImportFrom)]
     assert [(n.module, [a.name for a in n.names]) for n in lazy] == [("codex_harness.execution.domain.worker_sessions", ["status_view"])]
-    modules = [n.module or "" for n in ast.walk(ast.parse(TEXT)) if isinstance(n, ast.ImportFrom)]
-    assert not [m for m in modules if "application" in m.split(".")]
 
 
 class Recording:
@@ -300,19 +305,19 @@ def test_call_shapes_are_m7s_and_nothing_is_injected_in_this_batch():
 
 
 def test_the_u6_clock_calls_stay_the_two_uninjected_datetime_now_calls_of_m7():
-    now_calls = {n.lineno: next(f.name for f in ast.walk(ast.parse(TEXT)) if isinstance(f, ast.FunctionDef) and f.lineno <= n.lineno <= f.end_lineno)
-                 for n in ast.walk(ast.parse(TEXT)) if isinstance(n, ast.Call) and isinstance(n.func, ast.Attribute) and n.func.attr == "now"}
+    now_calls = {n.lineno: next(f.name for f in ast.walk(U6_TREE) if isinstance(f, ast.FunctionDef) and f.lineno <= n.lineno <= f.end_lineno)
+                 for n in ast.walk(U6_TREE) if isinstance(n, ast.Call) and isinstance(n.func, ast.Attribute) and n.func.attr == "now"}
     assert sorted(now_calls.values()) == ["lane_view", "persisted_measurements"]
-    assert "utcnow" not in TEXT and "Clock" not in TEXT
+    assert "utcnow" not in U6_TEXT and "Clock" not in U6_TEXT
 
 
-def test_no_new_spawn_site_and_no_process_or_thread_machinery():
-    tree = ast.parse(TEXT)
+def test_no_new_spawn_site_and_no_process_or_thread_machinery_inside_u6():
+    tree = U6_TREE
     imported = {n.module if isinstance(n, ast.ImportFrom) else a.name for n in ast.walk(tree) if isinstance(n, (ast.Import, ast.ImportFrom)) for a in
                 (n.names if isinstance(n, ast.Import) else [None])}
     assert not imported & {"subprocess", "multiprocessing", "threading", "concurrent.futures", "socket", "asyncio", "redis", "psycopg"}
     for banned in ("subprocess", "Popen", "multiprocessing", "ThreadPoolExecutor", "os.system", "os.popen", "os.exec", "os.spawn", "os.fork", "run_process"):
-        assert banned not in TEXT, banned
+        assert banned not in U6_TEXT, banned
     spawn = [n for n in ast.walk(tree) if isinstance(n, ast.Call) and isinstance(n.func, ast.Attribute) and isinstance(n.func.value, ast.Name)
              and n.func.value.id == "os" and re.match(r"(exec|spawn|posix_spawn|system|popen|fork)", n.func.attr)]
     assert spawn == []
@@ -322,4 +327,4 @@ def test_no_layer_or_cycle_violation_touches_the_module():
     violations = import_rules.check(REPO / "target" / "src")
     assert [v for v in violations if "observation.adapters.collectors" in v.module] == []
     assert violations == []
-    assert not re.search(r"(?m)^(?:from|import) codex_harness\.(?!kernel|execution\.domain|research\.domain)", TEXT)
+    assert not re.search(r"(?m)^\s*(?:from|import) codex_harness\.(?!kernel|execution\.domain|research\.domain)", U6_TEXT)
