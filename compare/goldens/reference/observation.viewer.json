@@ -1,0 +1,4745 @@
+{
+ "hosts_methods": {
+  "localhost_authority": {
+   "/": {
+    "body": "<!doctype html>\n<html lang=\"ko\">\n  <head>\n    <meta charset=\"UTF-8\" />\n    <meta name=\"viewport\" content=\"width=device-width, initial-scale=1.0\" />\n    <meta name=\"color-scheme\" content=\"light dark\" />\n    <title>Zeus 관측소 · 운영 모니터</title>\n    <script type=\"module\" crossorigin src=\"/assets/index-BXzOlXIh.js\"></script>\n    <link rel=\"stylesheet\" crossorigin href=\"/assets/index-qm7Y6T2g.css\">\n  </head>\n  <body>\n    <div id=\"root\"></div>\n  </body>\n</html>\n",
+    "headers": [
+     [
+      "Content-Type",
+      "text/html; charset=utf-8"
+     ],
+     [
+      "Content-Length",
+      "473"
+     ],
+     [
+      "Cache-Control",
+      "no-store"
+     ],
+     [
+      "X-Content-Type-Options",
+      "nosniff"
+     ],
+     [
+      "Content-Security-Policy",
+      "default-src 'self'; script-src 'self' 'unsafe-inline'; style-src 'self' 'unsafe-inline'; connect-src 'self'; img-src 'self' data:; font-src 'self'; frame-ancestors 'none'"
+     ]
+    ],
+    "status": 200
+   },
+   "/.env": {
+    "body": "Not found",
+    "headers": [
+     [
+      "Content-Type",
+      "text/plain"
+     ],
+     [
+      "Content-Length",
+      "9"
+     ],
+     [
+      "Cache-Control",
+      "no-store"
+     ],
+     [
+      "X-Content-Type-Options",
+      "nosniff"
+     ],
+     [
+      "Content-Security-Policy",
+      "default-src 'self'; script-src 'self' 'unsafe-inline'; style-src 'self' 'unsafe-inline'; connect-src 'self'; img-src 'self' data:; font-src 'self'; frame-ancestors 'none'"
+     ]
+    ],
+    "status": 404
+   },
+   "/api/status": {
+    "body": "{\"sources\": {}}",
+    "headers": [
+     [
+      "Content-Type",
+      "application/json; charset=utf-8"
+     ],
+     [
+      "Content-Length",
+      "15"
+     ],
+     [
+      "Cache-Control",
+      "no-store"
+     ],
+     [
+      "X-Content-Type-Options",
+      "nosniff"
+     ],
+     [
+      "Content-Security-Policy",
+      "default-src 'self'; script-src 'self' 'unsafe-inline'; style-src 'self' 'unsafe-inline'; connect-src 'self'; img-src 'self' data:; font-src 'self'; frame-ancestors 'none'"
+     ]
+    ],
+    "status": 200
+   },
+   "/assets/index-BXzOlXIh.js": {
+    "body": {
+     "sha256": "b4609494be13896f10ce387ca3015c1b8af20ae2d758d6da94d56234c811c359",
+     "size": 536230
+    },
+    "headers": [
+     [
+      "Content-Type",
+      "text/javascript; charset=utf-8"
+     ],
+     [
+      "Content-Length",
+      "536230"
+     ],
+     [
+      "Cache-Control",
+      "no-store"
+     ],
+     [
+      "X-Content-Type-Options",
+      "nosniff"
+     ],
+     [
+      "Content-Security-Policy",
+      "default-src 'self'; script-src 'self' 'unsafe-inline'; style-src 'self' 'unsafe-inline'; connect-src 'self'; img-src 'self' data:; font-src 'self'; frame-ancestors 'none'"
+     ]
+    ],
+    "status": 200
+   },
+   "/assets/missing.js": {
+    "body": "Not found",
+    "headers": [
+     [
+      "Content-Type",
+      "text/plain"
+     ],
+     [
+      "Content-Length",
+      "9"
+     ],
+     [
+      "Cache-Control",
+      "no-store"
+     ],
+     [
+      "X-Content-Type-Options",
+      "nosniff"
+     ],
+     [
+      "Content-Security-Policy",
+      "default-src 'self'; script-src 'self' 'unsafe-inline'; style-src 'self' 'unsafe-inline'; connect-src 'self'; img-src 'self' data:; font-src 'self'; frame-ancestors 'none'"
+     ]
+    ],
+    "status": 404
+   },
+   "/health": {
+    "body": "{\"service\":\"harness-monitor\"}",
+    "headers": [
+     [
+      "Content-Type",
+      "application/json"
+     ],
+     [
+      "Content-Length",
+      "29"
+     ],
+     [
+      "Cache-Control",
+      "no-store"
+     ],
+     [
+      "X-Content-Type-Options",
+      "nosniff"
+     ],
+     [
+      "Content-Security-Policy",
+      "default-src 'self'; script-src 'self' 'unsafe-inline'; style-src 'self' 'unsafe-inline'; connect-src 'self'; img-src 'self' data:; font-src 'self'; frame-ancestors 'none'"
+     ]
+    ],
+    "status": 200
+   },
+   "/legacy": {
+    "body": {
+     "sha256": "f4041606233fd1631bb0bde3b8f3b016f5cec221665e8534ea212a6fa247fd74",
+     "size": 26705
+    },
+    "headers": [
+     [
+      "Content-Type",
+      "text/html; charset=utf-8"
+     ],
+     [
+      "Content-Length",
+      "26705"
+     ],
+     [
+      "Cache-Control",
+      "no-store"
+     ],
+     [
+      "X-Content-Type-Options",
+      "nosniff"
+     ],
+     [
+      "Content-Security-Policy",
+      "default-src 'self'; script-src 'self' 'unsafe-inline'; style-src 'self' 'unsafe-inline'; connect-src 'self'; img-src 'self' data:; font-src 'self'; frame-ancestors 'none'"
+     ]
+    ],
+    "status": 200
+   },
+   "/ready": {
+    "body": "{\"schema\": \"urn:zeus:monitor-readiness:1\", \"service\": \"harness-monitor\", \"ready\": false, \"basis\": \"observation_freshness\", \"checked_at\": \"2026-09-19T12:00:00+00:00\", \"freshness_seconds\": 20, \"future_tolerance_seconds\": 5, \"snapshot\": {\"state\": \"invalid\", \"reason\": \"schema_unexpected\", \"age_seconds\": null}, \"sources\": {}}",
+    "headers": [
+     [
+      "Content-Type",
+      "application/json; charset=utf-8"
+     ],
+     [
+      "Content-Length",
+      "322"
+     ],
+     [
+      "Cache-Control",
+      "no-store"
+     ],
+     [
+      "X-Content-Type-Options",
+      "nosniff"
+     ],
+     [
+      "Content-Security-Policy",
+      "default-src 'self'; script-src 'self' 'unsafe-inline'; style-src 'self' 'unsafe-inline'; connect-src 'self'; img-src 'self' data:; font-src 'self'; frame-ancestors 'none'"
+     ]
+    ],
+    "status": 503
+   }
+  },
+  "missing_host": {
+   "/": {
+    "body": "Forbidden host",
+    "headers": [
+     [
+      "Content-Type",
+      "text/plain"
+     ],
+     [
+      "Content-Length",
+      "14"
+     ],
+     [
+      "Cache-Control",
+      "no-store"
+     ],
+     [
+      "X-Content-Type-Options",
+      "nosniff"
+     ],
+     [
+      "Content-Security-Policy",
+      "default-src 'self'; script-src 'self' 'unsafe-inline'; style-src 'self' 'unsafe-inline'; connect-src 'self'; img-src 'self' data:; font-src 'self'; frame-ancestors 'none'"
+     ]
+    ],
+    "status": 403
+   },
+   "/.env": {
+    "body": "Forbidden host",
+    "headers": [
+     [
+      "Content-Type",
+      "text/plain"
+     ],
+     [
+      "Content-Length",
+      "14"
+     ],
+     [
+      "Cache-Control",
+      "no-store"
+     ],
+     [
+      "X-Content-Type-Options",
+      "nosniff"
+     ],
+     [
+      "Content-Security-Policy",
+      "default-src 'self'; script-src 'self' 'unsafe-inline'; style-src 'self' 'unsafe-inline'; connect-src 'self'; img-src 'self' data:; font-src 'self'; frame-ancestors 'none'"
+     ]
+    ],
+    "status": 403
+   },
+   "/api/status": {
+    "body": "Forbidden host",
+    "headers": [
+     [
+      "Content-Type",
+      "text/plain"
+     ],
+     [
+      "Content-Length",
+      "14"
+     ],
+     [
+      "Cache-Control",
+      "no-store"
+     ],
+     [
+      "X-Content-Type-Options",
+      "nosniff"
+     ],
+     [
+      "Content-Security-Policy",
+      "default-src 'self'; script-src 'self' 'unsafe-inline'; style-src 'self' 'unsafe-inline'; connect-src 'self'; img-src 'self' data:; font-src 'self'; frame-ancestors 'none'"
+     ]
+    ],
+    "status": 403
+   },
+   "/assets/index-BXzOlXIh.js": {
+    "body": "Forbidden host",
+    "headers": [
+     [
+      "Content-Type",
+      "text/plain"
+     ],
+     [
+      "Content-Length",
+      "14"
+     ],
+     [
+      "Cache-Control",
+      "no-store"
+     ],
+     [
+      "X-Content-Type-Options",
+      "nosniff"
+     ],
+     [
+      "Content-Security-Policy",
+      "default-src 'self'; script-src 'self' 'unsafe-inline'; style-src 'self' 'unsafe-inline'; connect-src 'self'; img-src 'self' data:; font-src 'self'; frame-ancestors 'none'"
+     ]
+    ],
+    "status": 403
+   },
+   "/assets/missing.js": {
+    "body": "Forbidden host",
+    "headers": [
+     [
+      "Content-Type",
+      "text/plain"
+     ],
+     [
+      "Content-Length",
+      "14"
+     ],
+     [
+      "Cache-Control",
+      "no-store"
+     ],
+     [
+      "X-Content-Type-Options",
+      "nosniff"
+     ],
+     [
+      "Content-Security-Policy",
+      "default-src 'self'; script-src 'self' 'unsafe-inline'; style-src 'self' 'unsafe-inline'; connect-src 'self'; img-src 'self' data:; font-src 'self'; frame-ancestors 'none'"
+     ]
+    ],
+    "status": 403
+   },
+   "/health": {
+    "body": "Forbidden host",
+    "headers": [
+     [
+      "Content-Type",
+      "text/plain"
+     ],
+     [
+      "Content-Length",
+      "14"
+     ],
+     [
+      "Cache-Control",
+      "no-store"
+     ],
+     [
+      "X-Content-Type-Options",
+      "nosniff"
+     ],
+     [
+      "Content-Security-Policy",
+      "default-src 'self'; script-src 'self' 'unsafe-inline'; style-src 'self' 'unsafe-inline'; connect-src 'self'; img-src 'self' data:; font-src 'self'; frame-ancestors 'none'"
+     ]
+    ],
+    "status": 403
+   },
+   "/legacy": {
+    "body": "Forbidden host",
+    "headers": [
+     [
+      "Content-Type",
+      "text/plain"
+     ],
+     [
+      "Content-Length",
+      "14"
+     ],
+     [
+      "Cache-Control",
+      "no-store"
+     ],
+     [
+      "X-Content-Type-Options",
+      "nosniff"
+     ],
+     [
+      "Content-Security-Policy",
+      "default-src 'self'; script-src 'self' 'unsafe-inline'; style-src 'self' 'unsafe-inline'; connect-src 'self'; img-src 'self' data:; font-src 'self'; frame-ancestors 'none'"
+     ]
+    ],
+    "status": 403
+   },
+   "/ready": {
+    "body": "Forbidden host",
+    "headers": [
+     [
+      "Content-Type",
+      "text/plain"
+     ],
+     [
+      "Content-Length",
+      "14"
+     ],
+     [
+      "Cache-Control",
+      "no-store"
+     ],
+     [
+      "X-Content-Type-Options",
+      "nosniff"
+     ],
+     [
+      "Content-Security-Policy",
+      "default-src 'self'; script-src 'self' 'unsafe-inline'; style-src 'self' 'unsafe-inline'; connect-src 'self'; img-src 'self' data:; font-src 'self'; frame-ancestors 'none'"
+     ]
+    ],
+    "status": 403
+   }
+  },
+  "own_authority": {
+   "/": {
+    "body": "<!doctype html>\n<html lang=\"ko\">\n  <head>\n    <meta charset=\"UTF-8\" />\n    <meta name=\"viewport\" content=\"width=device-width, initial-scale=1.0\" />\n    <meta name=\"color-scheme\" content=\"light dark\" />\n    <title>Zeus 관측소 · 운영 모니터</title>\n    <script type=\"module\" crossorigin src=\"/assets/index-BXzOlXIh.js\"></script>\n    <link rel=\"stylesheet\" crossorigin href=\"/assets/index-qm7Y6T2g.css\">\n  </head>\n  <body>\n    <div id=\"root\"></div>\n  </body>\n</html>\n",
+    "headers": [
+     [
+      "Content-Type",
+      "text/html; charset=utf-8"
+     ],
+     [
+      "Content-Length",
+      "473"
+     ],
+     [
+      "Cache-Control",
+      "no-store"
+     ],
+     [
+      "X-Content-Type-Options",
+      "nosniff"
+     ],
+     [
+      "Content-Security-Policy",
+      "default-src 'self'; script-src 'self' 'unsafe-inline'; style-src 'self' 'unsafe-inline'; connect-src 'self'; img-src 'self' data:; font-src 'self'; frame-ancestors 'none'"
+     ]
+    ],
+    "status": 200
+   },
+   "/.env": {
+    "body": "Not found",
+    "headers": [
+     [
+      "Content-Type",
+      "text/plain"
+     ],
+     [
+      "Content-Length",
+      "9"
+     ],
+     [
+      "Cache-Control",
+      "no-store"
+     ],
+     [
+      "X-Content-Type-Options",
+      "nosniff"
+     ],
+     [
+      "Content-Security-Policy",
+      "default-src 'self'; script-src 'self' 'unsafe-inline'; style-src 'self' 'unsafe-inline'; connect-src 'self'; img-src 'self' data:; font-src 'self'; frame-ancestors 'none'"
+     ]
+    ],
+    "status": 404
+   },
+   "/api/status": {
+    "body": "{\"sources\": {}}",
+    "headers": [
+     [
+      "Content-Type",
+      "application/json; charset=utf-8"
+     ],
+     [
+      "Content-Length",
+      "15"
+     ],
+     [
+      "Cache-Control",
+      "no-store"
+     ],
+     [
+      "X-Content-Type-Options",
+      "nosniff"
+     ],
+     [
+      "Content-Security-Policy",
+      "default-src 'self'; script-src 'self' 'unsafe-inline'; style-src 'self' 'unsafe-inline'; connect-src 'self'; img-src 'self' data:; font-src 'self'; frame-ancestors 'none'"
+     ]
+    ],
+    "status": 200
+   },
+   "/assets/index-BXzOlXIh.js": {
+    "body": {
+     "sha256": "b4609494be13896f10ce387ca3015c1b8af20ae2d758d6da94d56234c811c359",
+     "size": 536230
+    },
+    "headers": [
+     [
+      "Content-Type",
+      "text/javascript; charset=utf-8"
+     ],
+     [
+      "Content-Length",
+      "536230"
+     ],
+     [
+      "Cache-Control",
+      "no-store"
+     ],
+     [
+      "X-Content-Type-Options",
+      "nosniff"
+     ],
+     [
+      "Content-Security-Policy",
+      "default-src 'self'; script-src 'self' 'unsafe-inline'; style-src 'self' 'unsafe-inline'; connect-src 'self'; img-src 'self' data:; font-src 'self'; frame-ancestors 'none'"
+     ]
+    ],
+    "status": 200
+   },
+   "/assets/missing.js": {
+    "body": "Not found",
+    "headers": [
+     [
+      "Content-Type",
+      "text/plain"
+     ],
+     [
+      "Content-Length",
+      "9"
+     ],
+     [
+      "Cache-Control",
+      "no-store"
+     ],
+     [
+      "X-Content-Type-Options",
+      "nosniff"
+     ],
+     [
+      "Content-Security-Policy",
+      "default-src 'self'; script-src 'self' 'unsafe-inline'; style-src 'self' 'unsafe-inline'; connect-src 'self'; img-src 'self' data:; font-src 'self'; frame-ancestors 'none'"
+     ]
+    ],
+    "status": 404
+   },
+   "/health": {
+    "body": "{\"service\":\"harness-monitor\"}",
+    "headers": [
+     [
+      "Content-Type",
+      "application/json"
+     ],
+     [
+      "Content-Length",
+      "29"
+     ],
+     [
+      "Cache-Control",
+      "no-store"
+     ],
+     [
+      "X-Content-Type-Options",
+      "nosniff"
+     ],
+     [
+      "Content-Security-Policy",
+      "default-src 'self'; script-src 'self' 'unsafe-inline'; style-src 'self' 'unsafe-inline'; connect-src 'self'; img-src 'self' data:; font-src 'self'; frame-ancestors 'none'"
+     ]
+    ],
+    "status": 200
+   },
+   "/legacy": {
+    "body": {
+     "sha256": "f4041606233fd1631bb0bde3b8f3b016f5cec221665e8534ea212a6fa247fd74",
+     "size": 26705
+    },
+    "headers": [
+     [
+      "Content-Type",
+      "text/html; charset=utf-8"
+     ],
+     [
+      "Content-Length",
+      "26705"
+     ],
+     [
+      "Cache-Control",
+      "no-store"
+     ],
+     [
+      "X-Content-Type-Options",
+      "nosniff"
+     ],
+     [
+      "Content-Security-Policy",
+      "default-src 'self'; script-src 'self' 'unsafe-inline'; style-src 'self' 'unsafe-inline'; connect-src 'self'; img-src 'self' data:; font-src 'self'; frame-ancestors 'none'"
+     ]
+    ],
+    "status": 200
+   },
+   "/ready": {
+    "body": "{\"schema\": \"urn:zeus:monitor-readiness:1\", \"service\": \"harness-monitor\", \"ready\": false, \"basis\": \"observation_freshness\", \"checked_at\": \"2026-09-19T12:00:00+00:00\", \"freshness_seconds\": 20, \"future_tolerance_seconds\": 5, \"snapshot\": {\"state\": \"invalid\", \"reason\": \"schema_unexpected\", \"age_seconds\": null}, \"sources\": {}}",
+    "headers": [
+     [
+      "Content-Type",
+      "application/json; charset=utf-8"
+     ],
+     [
+      "Content-Length",
+      "322"
+     ],
+     [
+      "Cache-Control",
+      "no-store"
+     ],
+     [
+      "X-Content-Type-Options",
+      "nosniff"
+     ],
+     [
+      "Content-Security-Policy",
+      "default-src 'self'; script-src 'self' 'unsafe-inline'; style-src 'self' 'unsafe-inline'; connect-src 'self'; img-src 'self' data:; font-src 'self'; frame-ancestors 'none'"
+     ]
+    ],
+    "status": 503
+   }
+  },
+  "post": {
+   "/": {
+    "body": "Read only",
+    "headers": [
+     [
+      "Content-Type",
+      "text/plain"
+     ],
+     [
+      "Content-Length",
+      "9"
+     ],
+     [
+      "Cache-Control",
+      "no-store"
+     ],
+     [
+      "X-Content-Type-Options",
+      "nosniff"
+     ],
+     [
+      "Content-Security-Policy",
+      "default-src 'self'; script-src 'self' 'unsafe-inline'; style-src 'self' 'unsafe-inline'; connect-src 'self'; img-src 'self' data:; font-src 'self'; frame-ancestors 'none'"
+     ]
+    ],
+    "status": 405
+   },
+   "/anything": {
+    "body": "Read only",
+    "headers": [
+     [
+      "Content-Type",
+      "text/plain"
+     ],
+     [
+      "Content-Length",
+      "9"
+     ],
+     [
+      "Cache-Control",
+      "no-store"
+     ],
+     [
+      "X-Content-Type-Options",
+      "nosniff"
+     ],
+     [
+      "Content-Security-Policy",
+      "default-src 'self'; script-src 'self' 'unsafe-inline'; style-src 'self' 'unsafe-inline'; connect-src 'self'; img-src 'self' data:; font-src 'self'; frame-ancestors 'none'"
+     ]
+    ],
+    "status": 405
+   },
+   "/api/desk/intents": {
+    "body": "Read only",
+    "headers": [
+     [
+      "Content-Type",
+      "text/plain"
+     ],
+     [
+      "Content-Length",
+      "9"
+     ],
+     [
+      "Cache-Control",
+      "no-store"
+     ],
+     [
+      "X-Content-Type-Options",
+      "nosniff"
+     ],
+     [
+      "Content-Security-Policy",
+      "default-src 'self'; script-src 'self' 'unsafe-inline'; style-src 'self' 'unsafe-inline'; connect-src 'self'; img-src 'self' data:; font-src 'self'; frame-ancestors 'none'"
+     ]
+    ],
+    "status": 405
+   },
+   "/api/desk/sessions": {
+    "body": "Read only",
+    "headers": [
+     [
+      "Content-Type",
+      "text/plain"
+     ],
+     [
+      "Content-Length",
+      "9"
+     ],
+     [
+      "Cache-Control",
+      "no-store"
+     ],
+     [
+      "X-Content-Type-Options",
+      "nosniff"
+     ],
+     [
+      "Content-Security-Policy",
+      "default-src 'self'; script-src 'self' 'unsafe-inline'; style-src 'self' 'unsafe-inline'; connect-src 'self'; img-src 'self' data:; font-src 'self'; frame-ancestors 'none'"
+     ]
+    ],
+    "status": 405
+   },
+   "/api/status": {
+    "body": "Read only",
+    "headers": [
+     [
+      "Content-Type",
+      "text/plain"
+     ],
+     [
+      "Content-Length",
+      "9"
+     ],
+     [
+      "Cache-Control",
+      "no-store"
+     ],
+     [
+      "X-Content-Type-Options",
+      "nosniff"
+     ],
+     [
+      "Content-Security-Policy",
+      "default-src 'self'; script-src 'self' 'unsafe-inline'; style-src 'self' 'unsafe-inline'; connect-src 'self'; img-src 'self' data:; font-src 'self'; frame-ancestors 'none'"
+     ]
+    ],
+    "status": 405
+   },
+   "/health?x=1": {
+    "body": "Read only",
+    "headers": [
+     [
+      "Content-Type",
+      "text/plain"
+     ],
+     [
+      "Content-Length",
+      "9"
+     ],
+     [
+      "Cache-Control",
+      "no-store"
+     ],
+     [
+      "X-Content-Type-Options",
+      "nosniff"
+     ],
+     [
+      "Content-Security-Policy",
+      "default-src 'self'; script-src 'self' 'unsafe-inline'; style-src 'self' 'unsafe-inline'; connect-src 'self'; img-src 'self' data:; font-src 'self'; frame-ancestors 'none'"
+     ]
+    ],
+    "status": 405
+   },
+   "/ready": {
+    "body": "Read only",
+    "headers": [
+     [
+      "Content-Type",
+      "text/plain"
+     ],
+     [
+      "Content-Length",
+      "9"
+     ],
+     [
+      "Cache-Control",
+      "no-store"
+     ],
+     [
+      "X-Content-Type-Options",
+      "nosniff"
+     ],
+     [
+      "Content-Security-Policy",
+      "default-src 'self'; script-src 'self' 'unsafe-inline'; style-src 'self' 'unsafe-inline'; connect-src 'self'; img-src 'self' data:; font-src 'self'; frame-ancestors 'none'"
+     ]
+    ],
+    "status": 405
+   }
+  },
+  "post_missing_host": {
+   "/": {
+    "body": "Read only",
+    "headers": [
+     [
+      "Content-Type",
+      "text/plain"
+     ],
+     [
+      "Content-Length",
+      "9"
+     ],
+     [
+      "Cache-Control",
+      "no-store"
+     ],
+     [
+      "X-Content-Type-Options",
+      "nosniff"
+     ],
+     [
+      "Content-Security-Policy",
+      "default-src 'self'; script-src 'self' 'unsafe-inline'; style-src 'self' 'unsafe-inline'; connect-src 'self'; img-src 'self' data:; font-src 'self'; frame-ancestors 'none'"
+     ]
+    ],
+    "status": 405
+   },
+   "/anything": {
+    "body": "Read only",
+    "headers": [
+     [
+      "Content-Type",
+      "text/plain"
+     ],
+     [
+      "Content-Length",
+      "9"
+     ],
+     [
+      "Cache-Control",
+      "no-store"
+     ],
+     [
+      "X-Content-Type-Options",
+      "nosniff"
+     ],
+     [
+      "Content-Security-Policy",
+      "default-src 'self'; script-src 'self' 'unsafe-inline'; style-src 'self' 'unsafe-inline'; connect-src 'self'; img-src 'self' data:; font-src 'self'; frame-ancestors 'none'"
+     ]
+    ],
+    "status": 405
+   },
+   "/api/desk/intents": {
+    "body": "Read only",
+    "headers": [
+     [
+      "Content-Type",
+      "text/plain"
+     ],
+     [
+      "Content-Length",
+      "9"
+     ],
+     [
+      "Cache-Control",
+      "no-store"
+     ],
+     [
+      "X-Content-Type-Options",
+      "nosniff"
+     ],
+     [
+      "Content-Security-Policy",
+      "default-src 'self'; script-src 'self' 'unsafe-inline'; style-src 'self' 'unsafe-inline'; connect-src 'self'; img-src 'self' data:; font-src 'self'; frame-ancestors 'none'"
+     ]
+    ],
+    "status": 405
+   },
+   "/api/desk/sessions": {
+    "body": "Read only",
+    "headers": [
+     [
+      "Content-Type",
+      "text/plain"
+     ],
+     [
+      "Content-Length",
+      "9"
+     ],
+     [
+      "Cache-Control",
+      "no-store"
+     ],
+     [
+      "X-Content-Type-Options",
+      "nosniff"
+     ],
+     [
+      "Content-Security-Policy",
+      "default-src 'self'; script-src 'self' 'unsafe-inline'; style-src 'self' 'unsafe-inline'; connect-src 'self'; img-src 'self' data:; font-src 'self'; frame-ancestors 'none'"
+     ]
+    ],
+    "status": 405
+   },
+   "/api/status": {
+    "body": "Read only",
+    "headers": [
+     [
+      "Content-Type",
+      "text/plain"
+     ],
+     [
+      "Content-Length",
+      "9"
+     ],
+     [
+      "Cache-Control",
+      "no-store"
+     ],
+     [
+      "X-Content-Type-Options",
+      "nosniff"
+     ],
+     [
+      "Content-Security-Policy",
+      "default-src 'self'; script-src 'self' 'unsafe-inline'; style-src 'self' 'unsafe-inline'; connect-src 'self'; img-src 'self' data:; font-src 'self'; frame-ancestors 'none'"
+     ]
+    ],
+    "status": 405
+   },
+   "/health?x=1": {
+    "body": "Read only",
+    "headers": [
+     [
+      "Content-Type",
+      "text/plain"
+     ],
+     [
+      "Content-Length",
+      "9"
+     ],
+     [
+      "Cache-Control",
+      "no-store"
+     ],
+     [
+      "X-Content-Type-Options",
+      "nosniff"
+     ],
+     [
+      "Content-Security-Policy",
+      "default-src 'self'; script-src 'self' 'unsafe-inline'; style-src 'self' 'unsafe-inline'; connect-src 'self'; img-src 'self' data:; font-src 'self'; frame-ancestors 'none'"
+     ]
+    ],
+    "status": 405
+   },
+   "/ready": {
+    "body": "Read only",
+    "headers": [
+     [
+      "Content-Type",
+      "text/plain"
+     ],
+     [
+      "Content-Length",
+      "9"
+     ],
+     [
+      "Cache-Control",
+      "no-store"
+     ],
+     [
+      "X-Content-Type-Options",
+      "nosniff"
+     ],
+     [
+      "Content-Security-Policy",
+      "default-src 'self'; script-src 'self' 'unsafe-inline'; style-src 'self' 'unsafe-inline'; connect-src 'self'; img-src 'self' data:; font-src 'self'; frame-ancestors 'none'"
+     ]
+    ],
+    "status": 405
+   }
+  },
+  "post_with_body": {
+   "body": "Read only",
+   "headers": [
+    [
+     "Content-Type",
+     "text/plain"
+    ],
+    [
+     "Content-Length",
+     "9"
+    ],
+    [
+     "Cache-Control",
+     "no-store"
+    ],
+    [
+     "X-Content-Type-Options",
+     "nosniff"
+    ],
+    [
+     "Content-Security-Policy",
+     "default-src 'self'; script-src 'self' 'unsafe-inline'; style-src 'self' 'unsafe-inline'; connect-src 'self'; img-src 'self' data:; font-src 'self'; frame-ancestors 'none'"
+    ]
+   ],
+   "status": 405
+  },
+  "post_wrong_host": {
+   "/": {
+    "body": "Read only",
+    "headers": [
+     [
+      "Content-Type",
+      "text/plain"
+     ],
+     [
+      "Content-Length",
+      "9"
+     ],
+     [
+      "Cache-Control",
+      "no-store"
+     ],
+     [
+      "X-Content-Type-Options",
+      "nosniff"
+     ],
+     [
+      "Content-Security-Policy",
+      "default-src 'self'; script-src 'self' 'unsafe-inline'; style-src 'self' 'unsafe-inline'; connect-src 'self'; img-src 'self' data:; font-src 'self'; frame-ancestors 'none'"
+     ]
+    ],
+    "status": 405
+   },
+   "/anything": {
+    "body": "Read only",
+    "headers": [
+     [
+      "Content-Type",
+      "text/plain"
+     ],
+     [
+      "Content-Length",
+      "9"
+     ],
+     [
+      "Cache-Control",
+      "no-store"
+     ],
+     [
+      "X-Content-Type-Options",
+      "nosniff"
+     ],
+     [
+      "Content-Security-Policy",
+      "default-src 'self'; script-src 'self' 'unsafe-inline'; style-src 'self' 'unsafe-inline'; connect-src 'self'; img-src 'self' data:; font-src 'self'; frame-ancestors 'none'"
+     ]
+    ],
+    "status": 405
+   },
+   "/api/desk/intents": {
+    "body": "Read only",
+    "headers": [
+     [
+      "Content-Type",
+      "text/plain"
+     ],
+     [
+      "Content-Length",
+      "9"
+     ],
+     [
+      "Cache-Control",
+      "no-store"
+     ],
+     [
+      "X-Content-Type-Options",
+      "nosniff"
+     ],
+     [
+      "Content-Security-Policy",
+      "default-src 'self'; script-src 'self' 'unsafe-inline'; style-src 'self' 'unsafe-inline'; connect-src 'self'; img-src 'self' data:; font-src 'self'; frame-ancestors 'none'"
+     ]
+    ],
+    "status": 405
+   },
+   "/api/desk/sessions": {
+    "body": "Read only",
+    "headers": [
+     [
+      "Content-Type",
+      "text/plain"
+     ],
+     [
+      "Content-Length",
+      "9"
+     ],
+     [
+      "Cache-Control",
+      "no-store"
+     ],
+     [
+      "X-Content-Type-Options",
+      "nosniff"
+     ],
+     [
+      "Content-Security-Policy",
+      "default-src 'self'; script-src 'self' 'unsafe-inline'; style-src 'self' 'unsafe-inline'; connect-src 'self'; img-src 'self' data:; font-src 'self'; frame-ancestors 'none'"
+     ]
+    ],
+    "status": 405
+   },
+   "/api/status": {
+    "body": "Read only",
+    "headers": [
+     [
+      "Content-Type",
+      "text/plain"
+     ],
+     [
+      "Content-Length",
+      "9"
+     ],
+     [
+      "Cache-Control",
+      "no-store"
+     ],
+     [
+      "X-Content-Type-Options",
+      "nosniff"
+     ],
+     [
+      "Content-Security-Policy",
+      "default-src 'self'; script-src 'self' 'unsafe-inline'; style-src 'self' 'unsafe-inline'; connect-src 'self'; img-src 'self' data:; font-src 'self'; frame-ancestors 'none'"
+     ]
+    ],
+    "status": 405
+   },
+   "/health?x=1": {
+    "body": "Read only",
+    "headers": [
+     [
+      "Content-Type",
+      "text/plain"
+     ],
+     [
+      "Content-Length",
+      "9"
+     ],
+     [
+      "Cache-Control",
+      "no-store"
+     ],
+     [
+      "X-Content-Type-Options",
+      "nosniff"
+     ],
+     [
+      "Content-Security-Policy",
+      "default-src 'self'; script-src 'self' 'unsafe-inline'; style-src 'self' 'unsafe-inline'; connect-src 'self'; img-src 'self' data:; font-src 'self'; frame-ancestors 'none'"
+     ]
+    ],
+    "status": 405
+   },
+   "/ready": {
+    "body": "Read only",
+    "headers": [
+     [
+      "Content-Type",
+      "text/plain"
+     ],
+     [
+      "Content-Length",
+      "9"
+     ],
+     [
+      "Cache-Control",
+      "no-store"
+     ],
+     [
+      "X-Content-Type-Options",
+      "nosniff"
+     ],
+     [
+      "Content-Security-Policy",
+      "default-src 'self'; script-src 'self' 'unsafe-inline'; style-src 'self' 'unsafe-inline'; connect-src 'self'; img-src 'self' data:; font-src 'self'; frame-ancestors 'none'"
+     ]
+    ],
+    "status": 405
+   }
+  },
+  "wrong_host": {
+   "empty": {
+    "/": {
+     "body": "Forbidden host",
+     "headers": [
+      [
+       "Content-Type",
+       "text/plain"
+      ],
+      [
+       "Content-Length",
+       "14"
+      ],
+      [
+       "Cache-Control",
+       "no-store"
+      ],
+      [
+       "X-Content-Type-Options",
+       "nosniff"
+      ],
+      [
+       "Content-Security-Policy",
+       "default-src 'self'; script-src 'self' 'unsafe-inline'; style-src 'self' 'unsafe-inline'; connect-src 'self'; img-src 'self' data:; font-src 'self'; frame-ancestors 'none'"
+      ]
+     ],
+     "status": 403
+    },
+    "/.env": {
+     "body": "Forbidden host",
+     "headers": [
+      [
+       "Content-Type",
+       "text/plain"
+      ],
+      [
+       "Content-Length",
+       "14"
+      ],
+      [
+       "Cache-Control",
+       "no-store"
+      ],
+      [
+       "X-Content-Type-Options",
+       "nosniff"
+      ],
+      [
+       "Content-Security-Policy",
+       "default-src 'self'; script-src 'self' 'unsafe-inline'; style-src 'self' 'unsafe-inline'; connect-src 'self'; img-src 'self' data:; font-src 'self'; frame-ancestors 'none'"
+      ]
+     ],
+     "status": 403
+    },
+    "/api/status": {
+     "body": "Forbidden host",
+     "headers": [
+      [
+       "Content-Type",
+       "text/plain"
+      ],
+      [
+       "Content-Length",
+       "14"
+      ],
+      [
+       "Cache-Control",
+       "no-store"
+      ],
+      [
+       "X-Content-Type-Options",
+       "nosniff"
+      ],
+      [
+       "Content-Security-Policy",
+       "default-src 'self'; script-src 'self' 'unsafe-inline'; style-src 'self' 'unsafe-inline'; connect-src 'self'; img-src 'self' data:; font-src 'self'; frame-ancestors 'none'"
+      ]
+     ],
+     "status": 403
+    },
+    "/assets/index-BXzOlXIh.js": {
+     "body": "Forbidden host",
+     "headers": [
+      [
+       "Content-Type",
+       "text/plain"
+      ],
+      [
+       "Content-Length",
+       "14"
+      ],
+      [
+       "Cache-Control",
+       "no-store"
+      ],
+      [
+       "X-Content-Type-Options",
+       "nosniff"
+      ],
+      [
+       "Content-Security-Policy",
+       "default-src 'self'; script-src 'self' 'unsafe-inline'; style-src 'self' 'unsafe-inline'; connect-src 'self'; img-src 'self' data:; font-src 'self'; frame-ancestors 'none'"
+      ]
+     ],
+     "status": 403
+    },
+    "/assets/missing.js": {
+     "body": "Forbidden host",
+     "headers": [
+      [
+       "Content-Type",
+       "text/plain"
+      ],
+      [
+       "Content-Length",
+       "14"
+      ],
+      [
+       "Cache-Control",
+       "no-store"
+      ],
+      [
+       "X-Content-Type-Options",
+       "nosniff"
+      ],
+      [
+       "Content-Security-Policy",
+       "default-src 'self'; script-src 'self' 'unsafe-inline'; style-src 'self' 'unsafe-inline'; connect-src 'self'; img-src 'self' data:; font-src 'self'; frame-ancestors 'none'"
+      ]
+     ],
+     "status": 403
+    },
+    "/health": {
+     "body": "Forbidden host",
+     "headers": [
+      [
+       "Content-Type",
+       "text/plain"
+      ],
+      [
+       "Content-Length",
+       "14"
+      ],
+      [
+       "Cache-Control",
+       "no-store"
+      ],
+      [
+       "X-Content-Type-Options",
+       "nosniff"
+      ],
+      [
+       "Content-Security-Policy",
+       "default-src 'self'; script-src 'self' 'unsafe-inline'; style-src 'self' 'unsafe-inline'; connect-src 'self'; img-src 'self' data:; font-src 'self'; frame-ancestors 'none'"
+      ]
+     ],
+     "status": 403
+    },
+    "/legacy": {
+     "body": "Forbidden host",
+     "headers": [
+      [
+       "Content-Type",
+       "text/plain"
+      ],
+      [
+       "Content-Length",
+       "14"
+      ],
+      [
+       "Cache-Control",
+       "no-store"
+      ],
+      [
+       "X-Content-Type-Options",
+       "nosniff"
+      ],
+      [
+       "Content-Security-Policy",
+       "default-src 'self'; script-src 'self' 'unsafe-inline'; style-src 'self' 'unsafe-inline'; connect-src 'self'; img-src 'self' data:; font-src 'self'; frame-ancestors 'none'"
+      ]
+     ],
+     "status": 403
+    },
+    "/ready": {
+     "body": "Forbidden host",
+     "headers": [
+      [
+       "Content-Type",
+       "text/plain"
+      ],
+      [
+       "Content-Length",
+       "14"
+      ],
+      [
+       "Cache-Control",
+       "no-store"
+      ],
+      [
+       "X-Content-Type-Options",
+       "nosniff"
+      ],
+      [
+       "Content-Security-Policy",
+       "default-src 'self'; script-src 'self' 'unsafe-inline'; style-src 'self' 'unsafe-inline'; connect-src 'self'; img-src 'self' data:; font-src 'self'; frame-ancestors 'none'"
+      ]
+     ],
+     "status": 403
+    }
+   },
+   "localhost_no_port": {
+    "/": {
+     "body": "Forbidden host",
+     "headers": [
+      [
+       "Content-Type",
+       "text/plain"
+      ],
+      [
+       "Content-Length",
+       "14"
+      ],
+      [
+       "Cache-Control",
+       "no-store"
+      ],
+      [
+       "X-Content-Type-Options",
+       "nosniff"
+      ],
+      [
+       "Content-Security-Policy",
+       "default-src 'self'; script-src 'self' 'unsafe-inline'; style-src 'self' 'unsafe-inline'; connect-src 'self'; img-src 'self' data:; font-src 'self'; frame-ancestors 'none'"
+      ]
+     ],
+     "status": 403
+    },
+    "/.env": {
+     "body": "Forbidden host",
+     "headers": [
+      [
+       "Content-Type",
+       "text/plain"
+      ],
+      [
+       "Content-Length",
+       "14"
+      ],
+      [
+       "Cache-Control",
+       "no-store"
+      ],
+      [
+       "X-Content-Type-Options",
+       "nosniff"
+      ],
+      [
+       "Content-Security-Policy",
+       "default-src 'self'; script-src 'self' 'unsafe-inline'; style-src 'self' 'unsafe-inline'; connect-src 'self'; img-src 'self' data:; font-src 'self'; frame-ancestors 'none'"
+      ]
+     ],
+     "status": 403
+    },
+    "/api/status": {
+     "body": "Forbidden host",
+     "headers": [
+      [
+       "Content-Type",
+       "text/plain"
+      ],
+      [
+       "Content-Length",
+       "14"
+      ],
+      [
+       "Cache-Control",
+       "no-store"
+      ],
+      [
+       "X-Content-Type-Options",
+       "nosniff"
+      ],
+      [
+       "Content-Security-Policy",
+       "default-src 'self'; script-src 'self' 'unsafe-inline'; style-src 'self' 'unsafe-inline'; connect-src 'self'; img-src 'self' data:; font-src 'self'; frame-ancestors 'none'"
+      ]
+     ],
+     "status": 403
+    },
+    "/assets/index-BXzOlXIh.js": {
+     "body": "Forbidden host",
+     "headers": [
+      [
+       "Content-Type",
+       "text/plain"
+      ],
+      [
+       "Content-Length",
+       "14"
+      ],
+      [
+       "Cache-Control",
+       "no-store"
+      ],
+      [
+       "X-Content-Type-Options",
+       "nosniff"
+      ],
+      [
+       "Content-Security-Policy",
+       "default-src 'self'; script-src 'self' 'unsafe-inline'; style-src 'self' 'unsafe-inline'; connect-src 'self'; img-src 'self' data:; font-src 'self'; frame-ancestors 'none'"
+      ]
+     ],
+     "status": 403
+    },
+    "/assets/missing.js": {
+     "body": "Forbidden host",
+     "headers": [
+      [
+       "Content-Type",
+       "text/plain"
+      ],
+      [
+       "Content-Length",
+       "14"
+      ],
+      [
+       "Cache-Control",
+       "no-store"
+      ],
+      [
+       "X-Content-Type-Options",
+       "nosniff"
+      ],
+      [
+       "Content-Security-Policy",
+       "default-src 'self'; script-src 'self' 'unsafe-inline'; style-src 'self' 'unsafe-inline'; connect-src 'self'; img-src 'self' data:; font-src 'self'; frame-ancestors 'none'"
+      ]
+     ],
+     "status": 403
+    },
+    "/health": {
+     "body": "Forbidden host",
+     "headers": [
+      [
+       "Content-Type",
+       "text/plain"
+      ],
+      [
+       "Content-Length",
+       "14"
+      ],
+      [
+       "Cache-Control",
+       "no-store"
+      ],
+      [
+       "X-Content-Type-Options",
+       "nosniff"
+      ],
+      [
+       "Content-Security-Policy",
+       "default-src 'self'; script-src 'self' 'unsafe-inline'; style-src 'self' 'unsafe-inline'; connect-src 'self'; img-src 'self' data:; font-src 'self'; frame-ancestors 'none'"
+      ]
+     ],
+     "status": 403
+    },
+    "/legacy": {
+     "body": "Forbidden host",
+     "headers": [
+      [
+       "Content-Type",
+       "text/plain"
+      ],
+      [
+       "Content-Length",
+       "14"
+      ],
+      [
+       "Cache-Control",
+       "no-store"
+      ],
+      [
+       "X-Content-Type-Options",
+       "nosniff"
+      ],
+      [
+       "Content-Security-Policy",
+       "default-src 'self'; script-src 'self' 'unsafe-inline'; style-src 'self' 'unsafe-inline'; connect-src 'self'; img-src 'self' data:; font-src 'self'; frame-ancestors 'none'"
+      ]
+     ],
+     "status": 403
+    },
+    "/ready": {
+     "body": "Forbidden host",
+     "headers": [
+      [
+       "Content-Type",
+       "text/plain"
+      ],
+      [
+       "Content-Length",
+       "14"
+      ],
+      [
+       "Cache-Control",
+       "no-store"
+      ],
+      [
+       "X-Content-Type-Options",
+       "nosniff"
+      ],
+      [
+       "Content-Security-Policy",
+       "default-src 'self'; script-src 'self' 'unsafe-inline'; style-src 'self' 'unsafe-inline'; connect-src 'self'; img-src 'self' data:; font-src 'self'; frame-ancestors 'none'"
+      ]
+     ],
+     "status": 403
+    }
+   },
+   "no_port": {
+    "/": {
+     "body": "Forbidden host",
+     "headers": [
+      [
+       "Content-Type",
+       "text/plain"
+      ],
+      [
+       "Content-Length",
+       "14"
+      ],
+      [
+       "Cache-Control",
+       "no-store"
+      ],
+      [
+       "X-Content-Type-Options",
+       "nosniff"
+      ],
+      [
+       "Content-Security-Policy",
+       "default-src 'self'; script-src 'self' 'unsafe-inline'; style-src 'self' 'unsafe-inline'; connect-src 'self'; img-src 'self' data:; font-src 'self'; frame-ancestors 'none'"
+      ]
+     ],
+     "status": 403
+    },
+    "/.env": {
+     "body": "Forbidden host",
+     "headers": [
+      [
+       "Content-Type",
+       "text/plain"
+      ],
+      [
+       "Content-Length",
+       "14"
+      ],
+      [
+       "Cache-Control",
+       "no-store"
+      ],
+      [
+       "X-Content-Type-Options",
+       "nosniff"
+      ],
+      [
+       "Content-Security-Policy",
+       "default-src 'self'; script-src 'self' 'unsafe-inline'; style-src 'self' 'unsafe-inline'; connect-src 'self'; img-src 'self' data:; font-src 'self'; frame-ancestors 'none'"
+      ]
+     ],
+     "status": 403
+    },
+    "/api/status": {
+     "body": "Forbidden host",
+     "headers": [
+      [
+       "Content-Type",
+       "text/plain"
+      ],
+      [
+       "Content-Length",
+       "14"
+      ],
+      [
+       "Cache-Control",
+       "no-store"
+      ],
+      [
+       "X-Content-Type-Options",
+       "nosniff"
+      ],
+      [
+       "Content-Security-Policy",
+       "default-src 'self'; script-src 'self' 'unsafe-inline'; style-src 'self' 'unsafe-inline'; connect-src 'self'; img-src 'self' data:; font-src 'self'; frame-ancestors 'none'"
+      ]
+     ],
+     "status": 403
+    },
+    "/assets/index-BXzOlXIh.js": {
+     "body": "Forbidden host",
+     "headers": [
+      [
+       "Content-Type",
+       "text/plain"
+      ],
+      [
+       "Content-Length",
+       "14"
+      ],
+      [
+       "Cache-Control",
+       "no-store"
+      ],
+      [
+       "X-Content-Type-Options",
+       "nosniff"
+      ],
+      [
+       "Content-Security-Policy",
+       "default-src 'self'; script-src 'self' 'unsafe-inline'; style-src 'self' 'unsafe-inline'; connect-src 'self'; img-src 'self' data:; font-src 'self'; frame-ancestors 'none'"
+      ]
+     ],
+     "status": 403
+    },
+    "/assets/missing.js": {
+     "body": "Forbidden host",
+     "headers": [
+      [
+       "Content-Type",
+       "text/plain"
+      ],
+      [
+       "Content-Length",
+       "14"
+      ],
+      [
+       "Cache-Control",
+       "no-store"
+      ],
+      [
+       "X-Content-Type-Options",
+       "nosniff"
+      ],
+      [
+       "Content-Security-Policy",
+       "default-src 'self'; script-src 'self' 'unsafe-inline'; style-src 'self' 'unsafe-inline'; connect-src 'self'; img-src 'self' data:; font-src 'self'; frame-ancestors 'none'"
+      ]
+     ],
+     "status": 403
+    },
+    "/health": {
+     "body": "Forbidden host",
+     "headers": [
+      [
+       "Content-Type",
+       "text/plain"
+      ],
+      [
+       "Content-Length",
+       "14"
+      ],
+      [
+       "Cache-Control",
+       "no-store"
+      ],
+      [
+       "X-Content-Type-Options",
+       "nosniff"
+      ],
+      [
+       "Content-Security-Policy",
+       "default-src 'self'; script-src 'self' 'unsafe-inline'; style-src 'self' 'unsafe-inline'; connect-src 'self'; img-src 'self' data:; font-src 'self'; frame-ancestors 'none'"
+      ]
+     ],
+     "status": 403
+    },
+    "/legacy": {
+     "body": "Forbidden host",
+     "headers": [
+      [
+       "Content-Type",
+       "text/plain"
+      ],
+      [
+       "Content-Length",
+       "14"
+      ],
+      [
+       "Cache-Control",
+       "no-store"
+      ],
+      [
+       "X-Content-Type-Options",
+       "nosniff"
+      ],
+      [
+       "Content-Security-Policy",
+       "default-src 'self'; script-src 'self' 'unsafe-inline'; style-src 'self' 'unsafe-inline'; connect-src 'self'; img-src 'self' data:; font-src 'self'; frame-ancestors 'none'"
+      ]
+     ],
+     "status": 403
+    },
+    "/ready": {
+     "body": "Forbidden host",
+     "headers": [
+      [
+       "Content-Type",
+       "text/plain"
+      ],
+      [
+       "Content-Length",
+       "14"
+      ],
+      [
+       "Cache-Control",
+       "no-store"
+      ],
+      [
+       "X-Content-Type-Options",
+       "nosniff"
+      ],
+      [
+       "Content-Security-Policy",
+       "default-src 'self'; script-src 'self' 'unsafe-inline'; style-src 'self' 'unsafe-inline'; connect-src 'self'; img-src 'self' data:; font-src 'self'; frame-ancestors 'none'"
+      ]
+     ],
+     "status": 403
+    }
+   },
+   "other_port": {
+    "/": {
+     "body": "Forbidden host",
+     "headers": [
+      [
+       "Content-Type",
+       "text/plain"
+      ],
+      [
+       "Content-Length",
+       "14"
+      ],
+      [
+       "Cache-Control",
+       "no-store"
+      ],
+      [
+       "X-Content-Type-Options",
+       "nosniff"
+      ],
+      [
+       "Content-Security-Policy",
+       "default-src 'self'; script-src 'self' 'unsafe-inline'; style-src 'self' 'unsafe-inline'; connect-src 'self'; img-src 'self' data:; font-src 'self'; frame-ancestors 'none'"
+      ]
+     ],
+     "status": 403
+    },
+    "/.env": {
+     "body": "Forbidden host",
+     "headers": [
+      [
+       "Content-Type",
+       "text/plain"
+      ],
+      [
+       "Content-Length",
+       "14"
+      ],
+      [
+       "Cache-Control",
+       "no-store"
+      ],
+      [
+       "X-Content-Type-Options",
+       "nosniff"
+      ],
+      [
+       "Content-Security-Policy",
+       "default-src 'self'; script-src 'self' 'unsafe-inline'; style-src 'self' 'unsafe-inline'; connect-src 'self'; img-src 'self' data:; font-src 'self'; frame-ancestors 'none'"
+      ]
+     ],
+     "status": 403
+    },
+    "/api/status": {
+     "body": "Forbidden host",
+     "headers": [
+      [
+       "Content-Type",
+       "text/plain"
+      ],
+      [
+       "Content-Length",
+       "14"
+      ],
+      [
+       "Cache-Control",
+       "no-store"
+      ],
+      [
+       "X-Content-Type-Options",
+       "nosniff"
+      ],
+      [
+       "Content-Security-Policy",
+       "default-src 'self'; script-src 'self' 'unsafe-inline'; style-src 'self' 'unsafe-inline'; connect-src 'self'; img-src 'self' data:; font-src 'self'; frame-ancestors 'none'"
+      ]
+     ],
+     "status": 403
+    },
+    "/assets/index-BXzOlXIh.js": {
+     "body": "Forbidden host",
+     "headers": [
+      [
+       "Content-Type",
+       "text/plain"
+      ],
+      [
+       "Content-Length",
+       "14"
+      ],
+      [
+       "Cache-Control",
+       "no-store"
+      ],
+      [
+       "X-Content-Type-Options",
+       "nosniff"
+      ],
+      [
+       "Content-Security-Policy",
+       "default-src 'self'; script-src 'self' 'unsafe-inline'; style-src 'self' 'unsafe-inline'; connect-src 'self'; img-src 'self' data:; font-src 'self'; frame-ancestors 'none'"
+      ]
+     ],
+     "status": 403
+    },
+    "/assets/missing.js": {
+     "body": "Forbidden host",
+     "headers": [
+      [
+       "Content-Type",
+       "text/plain"
+      ],
+      [
+       "Content-Length",
+       "14"
+      ],
+      [
+       "Cache-Control",
+       "no-store"
+      ],
+      [
+       "X-Content-Type-Options",
+       "nosniff"
+      ],
+      [
+       "Content-Security-Policy",
+       "default-src 'self'; script-src 'self' 'unsafe-inline'; style-src 'self' 'unsafe-inline'; connect-src 'self'; img-src 'self' data:; font-src 'self'; frame-ancestors 'none'"
+      ]
+     ],
+     "status": 403
+    },
+    "/health": {
+     "body": "Forbidden host",
+     "headers": [
+      [
+       "Content-Type",
+       "text/plain"
+      ],
+      [
+       "Content-Length",
+       "14"
+      ],
+      [
+       "Cache-Control",
+       "no-store"
+      ],
+      [
+       "X-Content-Type-Options",
+       "nosniff"
+      ],
+      [
+       "Content-Security-Policy",
+       "default-src 'self'; script-src 'self' 'unsafe-inline'; style-src 'self' 'unsafe-inline'; connect-src 'self'; img-src 'self' data:; font-src 'self'; frame-ancestors 'none'"
+      ]
+     ],
+     "status": 403
+    },
+    "/legacy": {
+     "body": "Forbidden host",
+     "headers": [
+      [
+       "Content-Type",
+       "text/plain"
+      ],
+      [
+       "Content-Length",
+       "14"
+      ],
+      [
+       "Cache-Control",
+       "no-store"
+      ],
+      [
+       "X-Content-Type-Options",
+       "nosniff"
+      ],
+      [
+       "Content-Security-Policy",
+       "default-src 'self'; script-src 'self' 'unsafe-inline'; style-src 'self' 'unsafe-inline'; connect-src 'self'; img-src 'self' data:; font-src 'self'; frame-ancestors 'none'"
+      ]
+     ],
+     "status": 403
+    },
+    "/ready": {
+     "body": "Forbidden host",
+     "headers": [
+      [
+       "Content-Type",
+       "text/plain"
+      ],
+      [
+       "Content-Length",
+       "14"
+      ],
+      [
+       "Cache-Control",
+       "no-store"
+      ],
+      [
+       "X-Content-Type-Options",
+       "nosniff"
+      ],
+      [
+       "Content-Security-Policy",
+       "default-src 'self'; script-src 'self' 'unsafe-inline'; style-src 'self' 'unsafe-inline'; connect-src 'self'; img-src 'self' data:; font-src 'self'; frame-ancestors 'none'"
+      ]
+     ],
+     "status": 403
+    }
+   },
+   "untrusted.example": {
+    "/": {
+     "body": "Forbidden host",
+     "headers": [
+      [
+       "Content-Type",
+       "text/plain"
+      ],
+      [
+       "Content-Length",
+       "14"
+      ],
+      [
+       "Cache-Control",
+       "no-store"
+      ],
+      [
+       "X-Content-Type-Options",
+       "nosniff"
+      ],
+      [
+       "Content-Security-Policy",
+       "default-src 'self'; script-src 'self' 'unsafe-inline'; style-src 'self' 'unsafe-inline'; connect-src 'self'; img-src 'self' data:; font-src 'self'; frame-ancestors 'none'"
+      ]
+     ],
+     "status": 403
+    },
+    "/.env": {
+     "body": "Forbidden host",
+     "headers": [
+      [
+       "Content-Type",
+       "text/plain"
+      ],
+      [
+       "Content-Length",
+       "14"
+      ],
+      [
+       "Cache-Control",
+       "no-store"
+      ],
+      [
+       "X-Content-Type-Options",
+       "nosniff"
+      ],
+      [
+       "Content-Security-Policy",
+       "default-src 'self'; script-src 'self' 'unsafe-inline'; style-src 'self' 'unsafe-inline'; connect-src 'self'; img-src 'self' data:; font-src 'self'; frame-ancestors 'none'"
+      ]
+     ],
+     "status": 403
+    },
+    "/api/status": {
+     "body": "Forbidden host",
+     "headers": [
+      [
+       "Content-Type",
+       "text/plain"
+      ],
+      [
+       "Content-Length",
+       "14"
+      ],
+      [
+       "Cache-Control",
+       "no-store"
+      ],
+      [
+       "X-Content-Type-Options",
+       "nosniff"
+      ],
+      [
+       "Content-Security-Policy",
+       "default-src 'self'; script-src 'self' 'unsafe-inline'; style-src 'self' 'unsafe-inline'; connect-src 'self'; img-src 'self' data:; font-src 'self'; frame-ancestors 'none'"
+      ]
+     ],
+     "status": 403
+    },
+    "/assets/index-BXzOlXIh.js": {
+     "body": "Forbidden host",
+     "headers": [
+      [
+       "Content-Type",
+       "text/plain"
+      ],
+      [
+       "Content-Length",
+       "14"
+      ],
+      [
+       "Cache-Control",
+       "no-store"
+      ],
+      [
+       "X-Content-Type-Options",
+       "nosniff"
+      ],
+      [
+       "Content-Security-Policy",
+       "default-src 'self'; script-src 'self' 'unsafe-inline'; style-src 'self' 'unsafe-inline'; connect-src 'self'; img-src 'self' data:; font-src 'self'; frame-ancestors 'none'"
+      ]
+     ],
+     "status": 403
+    },
+    "/assets/missing.js": {
+     "body": "Forbidden host",
+     "headers": [
+      [
+       "Content-Type",
+       "text/plain"
+      ],
+      [
+       "Content-Length",
+       "14"
+      ],
+      [
+       "Cache-Control",
+       "no-store"
+      ],
+      [
+       "X-Content-Type-Options",
+       "nosniff"
+      ],
+      [
+       "Content-Security-Policy",
+       "default-src 'self'; script-src 'self' 'unsafe-inline'; style-src 'self' 'unsafe-inline'; connect-src 'self'; img-src 'self' data:; font-src 'self'; frame-ancestors 'none'"
+      ]
+     ],
+     "status": 403
+    },
+    "/health": {
+     "body": "Forbidden host",
+     "headers": [
+      [
+       "Content-Type",
+       "text/plain"
+      ],
+      [
+       "Content-Length",
+       "14"
+      ],
+      [
+       "Cache-Control",
+       "no-store"
+      ],
+      [
+       "X-Content-Type-Options",
+       "nosniff"
+      ],
+      [
+       "Content-Security-Policy",
+       "default-src 'self'; script-src 'self' 'unsafe-inline'; style-src 'self' 'unsafe-inline'; connect-src 'self'; img-src 'self' data:; font-src 'self'; frame-ancestors 'none'"
+      ]
+     ],
+     "status": 403
+    },
+    "/legacy": {
+     "body": "Forbidden host",
+     "headers": [
+      [
+       "Content-Type",
+       "text/plain"
+      ],
+      [
+       "Content-Length",
+       "14"
+      ],
+      [
+       "Cache-Control",
+       "no-store"
+      ],
+      [
+       "X-Content-Type-Options",
+       "nosniff"
+      ],
+      [
+       "Content-Security-Policy",
+       "default-src 'self'; script-src 'self' 'unsafe-inline'; style-src 'self' 'unsafe-inline'; connect-src 'self'; img-src 'self' data:; font-src 'self'; frame-ancestors 'none'"
+      ]
+     ],
+     "status": 403
+    },
+    "/ready": {
+     "body": "Forbidden host",
+     "headers": [
+      [
+       "Content-Type",
+       "text/plain"
+      ],
+      [
+       "Content-Length",
+       "14"
+      ],
+      [
+       "Cache-Control",
+       "no-store"
+      ],
+      [
+       "X-Content-Type-Options",
+       "nosniff"
+      ],
+      [
+       "Content-Security-Policy",
+       "default-src 'self'; script-src 'self' 'unsafe-inline'; style-src 'self' 'unsafe-inline'; connect-src 'self'; img-src 'self' data:; font-src 'self'; frame-ancestors 'none'"
+      ]
+     ],
+     "status": 403
+    }
+   }
+  },
+  "wrong_host_other_forms": {
+   "ipv6": {
+    "body": "Forbidden host",
+    "headers": [
+     [
+      "Content-Type",
+      "text/plain"
+     ],
+     [
+      "Content-Length",
+      "14"
+     ],
+     [
+      "Cache-Control",
+      "no-store"
+     ],
+     [
+      "X-Content-Type-Options",
+      "nosniff"
+     ],
+     [
+      "Content-Security-Policy",
+      "default-src 'self'; script-src 'self' 'unsafe-inline'; style-src 'self' 'unsafe-inline'; connect-src 'self'; img-src 'self' data:; font-src 'self'; frame-ancestors 'none'"
+     ]
+    ],
+    "status": 403
+   },
+   "upper": {
+    "body": "Forbidden host",
+    "headers": [
+     [
+      "Content-Type",
+      "text/plain"
+     ],
+     [
+      "Content-Length",
+      "14"
+     ],
+     [
+      "Cache-Control",
+      "no-store"
+     ],
+     [
+      "X-Content-Type-Options",
+      "nosniff"
+     ],
+     [
+      "Content-Security-Policy",
+      "default-src 'self'; script-src 'self' 'unsafe-inline'; style-src 'self' 'unsafe-inline'; connect-src 'self'; img-src 'self' data:; font-src 'self'; frame-ancestors 'none'"
+     ]
+    ],
+    "status": 403
+   },
+   "zero": {
+    "body": "Forbidden host",
+    "headers": [
+     [
+      "Content-Type",
+      "text/plain"
+     ],
+     [
+      "Content-Length",
+      "14"
+     ],
+     [
+      "Cache-Control",
+      "no-store"
+     ],
+     [
+      "X-Content-Type-Options",
+      "nosniff"
+     ],
+     [
+      "Content-Security-Policy",
+      "default-src 'self'; script-src 'self' 'unsafe-inline'; style-src 'self' 'unsafe-inline'; connect-src 'self'; img-src 'self' data:; font-src 'self'; frame-ancestors 'none'"
+     ]
+    ],
+    "status": 403
+   }
+  }
+ },
+ "masked_headers": {
+  "Date": 173,
+  "Server": 173
+ },
+ "packaged_resources": {
+  "assets": {
+   ".hidden.js": {
+    "body": "Not found",
+    "headers": [
+     [
+      "Content-Type",
+      "text/plain"
+     ],
+     [
+      "Content-Length",
+      "9"
+     ],
+     [
+      "Cache-Control",
+      "no-store"
+     ],
+     [
+      "X-Content-Type-Options",
+      "nosniff"
+     ],
+     [
+      "Content-Security-Policy",
+      "default-src 'self'; script-src 'self' 'unsafe-inline'; style-src 'self' 'unsafe-inline'; connect-src 'self'; img-src 'self' data:; font-src 'self'; frame-ancestors 'none'"
+     ]
+    ],
+    "status": 404
+   },
+   "UPPER.JS": {
+    "body": "Not found",
+    "headers": [
+     [
+      "Content-Type",
+      "text/plain"
+     ],
+     [
+      "Content-Length",
+      "9"
+     ],
+     [
+      "Cache-Control",
+      "no-store"
+     ],
+     [
+      "X-Content-Type-Options",
+      "nosniff"
+     ],
+     [
+      "Content-Security-Policy",
+      "default-src 'self'; script-src 'self' 'unsafe-inline'; style-src 'self' 'unsafe-inline'; connect-src 'self'; img-src 'self' data:; font-src 'self'; frame-ancestors 'none'"
+     ]
+    ],
+    "status": 404
+   },
+   "a.map": {
+    "body": "Not found",
+    "headers": [
+     [
+      "Content-Type",
+      "text/plain"
+     ],
+     [
+      "Content-Length",
+      "9"
+     ],
+     [
+      "Cache-Control",
+      "no-store"
+     ],
+     [
+      "X-Content-Type-Options",
+      "nosniff"
+     ],
+     [
+      "Content-Security-Policy",
+      "default-src 'self'; script-src 'self' 'unsafe-inline'; style-src 'self' 'unsafe-inline'; connect-src 'self'; img-src 'self' data:; font-src 'self'; frame-ancestors 'none'"
+     ]
+    ],
+    "status": 404
+   },
+   "big.js": {
+    "body": "Not found",
+    "headers": [
+     [
+      "Content-Type",
+      "text/plain"
+     ],
+     [
+      "Content-Length",
+      "9"
+     ],
+     [
+      "Cache-Control",
+      "no-store"
+     ],
+     [
+      "X-Content-Type-Options",
+      "nosniff"
+     ],
+     [
+      "Content-Security-Policy",
+      "default-src 'self'; script-src 'self' 'unsafe-inline'; style-src 'self' 'unsafe-inline'; connect-src 'self'; img-src 'self' data:; font-src 'self'; frame-ancestors 'none'"
+     ]
+    ],
+    "status": 404
+   },
+   "dir.js": {
+    "body": "Not found",
+    "headers": [
+     [
+      "Content-Type",
+      "text/plain"
+     ],
+     [
+      "Content-Length",
+      "9"
+     ],
+     [
+      "Cache-Control",
+      "no-store"
+     ],
+     [
+      "X-Content-Type-Options",
+      "nosniff"
+     ],
+     [
+      "Content-Security-Policy",
+      "default-src 'self'; script-src 'self' 'unsafe-inline'; style-src 'self' 'unsafe-inline'; connect-src 'self'; img-src 'self' data:; font-src 'self'; frame-ancestors 'none'"
+     ]
+    ],
+    "status": 404
+   },
+   "dot.": {
+    "body": "Not found",
+    "headers": [
+     [
+      "Content-Type",
+      "text/plain"
+     ],
+     [
+      "Content-Length",
+      "9"
+     ],
+     [
+      "Cache-Control",
+      "no-store"
+     ],
+     [
+      "X-Content-Type-Options",
+      "nosniff"
+     ],
+     [
+      "Content-Security-Policy",
+      "default-src 'self'; script-src 'self' 'unsafe-inline'; style-src 'self' 'unsafe-inline'; connect-src 'self'; img-src 'self' data:; font-src 'self'; frame-ancestors 'none'"
+     ]
+    ],
+    "status": 404
+   },
+   "empty.js": {
+    "body": "",
+    "headers": [
+     [
+      "Content-Type",
+      "text/javascript; charset=utf-8"
+     ],
+     [
+      "Content-Length",
+      "0"
+     ],
+     [
+      "Cache-Control",
+      "no-store"
+     ],
+     [
+      "X-Content-Type-Options",
+      "nosniff"
+     ],
+     [
+      "Content-Security-Policy",
+      "default-src 'self'; script-src 'self' 'unsafe-inline'; style-src 'self' 'unsafe-inline'; connect-src 'self'; img-src 'self' data:; font-src 'self'; frame-ancestors 'none'"
+     ]
+    ],
+    "status": 200
+   },
+   "font.woff": {
+    "body": "\u0000w1",
+    "headers": [
+     [
+      "Content-Type",
+      "font/woff"
+     ],
+     [
+      "Content-Length",
+      "3"
+     ],
+     [
+      "Cache-Control",
+      "no-store"
+     ],
+     [
+      "X-Content-Type-Options",
+      "nosniff"
+     ],
+     [
+      "Content-Security-Policy",
+      "default-src 'self'; script-src 'self' 'unsafe-inline'; style-src 'self' 'unsafe-inline'; connect-src 'self'; img-src 'self' data:; font-src 'self'; frame-ancestors 'none'"
+     ]
+    ],
+    "status": 200
+   },
+   "font.woff2": {
+    "body": "\u0000w2",
+    "headers": [
+     [
+      "Content-Type",
+      "font/woff2"
+     ],
+     [
+      "Content-Length",
+      "3"
+     ],
+     [
+      "Cache-Control",
+      "no-store"
+     ],
+     [
+      "X-Content-Type-Options",
+      "nosniff"
+     ],
+     [
+      "Content-Security-Policy",
+      "default-src 'self'; script-src 'self' 'unsafe-inline'; style-src 'self' 'unsafe-inline'; connect-src 'self'; img-src 'self' data:; font-src 'self'; frame-ancestors 'none'"
+     ]
+    ],
+    "status": 200
+   },
+   "index-abc.css": {
+    "body": "body{}",
+    "headers": [
+     [
+      "Content-Type",
+      "text/css; charset=utf-8"
+     ],
+     [
+      "Content-Length",
+      "6"
+     ],
+     [
+      "Cache-Control",
+      "no-store"
+     ],
+     [
+      "X-Content-Type-Options",
+      "nosniff"
+     ],
+     [
+      "Content-Security-Policy",
+      "default-src 'self'; script-src 'self' 'unsafe-inline'; style-src 'self' 'unsafe-inline'; connect-src 'self'; img-src 'self' data:; font-src 'self'; frame-ancestors 'none'"
+     ]
+    ],
+    "status": 200
+   },
+   "index-abc.js": {
+    "body": "console.log(1)",
+    "headers": [
+     [
+      "Content-Type",
+      "text/javascript; charset=utf-8"
+     ],
+     [
+      "Content-Length",
+      "14"
+     ],
+     [
+      "Cache-Control",
+      "no-store"
+     ],
+     [
+      "X-Content-Type-Options",
+      "nosniff"
+     ],
+     [
+      "Content-Security-Policy",
+      "default-src 'self'; script-src 'self' 'unsafe-inline'; style-src 'self' 'unsafe-inline'; connect-src 'self'; img-src 'self' data:; font-src 'self'; frame-ancestors 'none'"
+     ]
+    ],
+    "status": 200
+   },
+   "index-abc.js/": {
+    "body": "Not found",
+    "headers": [
+     [
+      "Content-Type",
+      "text/plain"
+     ],
+     [
+      "Content-Length",
+      "9"
+     ],
+     [
+      "Cache-Control",
+      "no-store"
+     ],
+     [
+      "X-Content-Type-Options",
+      "nosniff"
+     ],
+     [
+      "Content-Security-Policy",
+      "default-src 'self'; script-src 'self' 'unsafe-inline'; style-src 'self' 'unsafe-inline'; connect-src 'self'; img-src 'self' data:; font-src 'self'; frame-ancestors 'none'"
+     ]
+    ],
+    "status": 404
+   },
+   "limit.js": {
+    "body": {
+     "sha256": "03a7bd518f3e4ecac11f2e77f7437928ba5d80ac0b2b26a523d90e7628bfd59b",
+     "size": 5000000
+    },
+    "headers": [
+     [
+      "Content-Type",
+      "text/javascript; charset=utf-8"
+     ],
+     [
+      "Content-Length",
+      "5000000"
+     ],
+     [
+      "Cache-Control",
+      "no-store"
+     ],
+     [
+      "X-Content-Type-Options",
+      "nosniff"
+     ],
+     [
+      "Content-Security-Policy",
+      "default-src 'self'; script-src 'self' 'unsafe-inline'; style-src 'self' 'unsafe-inline'; connect-src 'self'; img-src 'self' data:; font-src 'self'; frame-ancestors 'none'"
+     ]
+    ],
+    "status": 200
+   },
+   "noext": {
+    "body": "Not found",
+    "headers": [
+     [
+      "Content-Type",
+      "text/plain"
+     ],
+     [
+      "Content-Length",
+      "9"
+     ],
+     [
+      "Cache-Control",
+      "no-store"
+     ],
+     [
+      "X-Content-Type-Options",
+      "nosniff"
+     ],
+     [
+      "Content-Security-Policy",
+      "default-src 'self'; script-src 'self' 'unsafe-inline'; style-src 'self' 'unsafe-inline'; connect-src 'self'; img-src 'self' data:; font-src 'self'; frame-ancestors 'none'"
+     ]
+    ],
+    "status": 404
+   },
+   "pic.svg": {
+    "body": "<svg/>",
+    "headers": [
+     [
+      "Content-Type",
+      "image/svg+xml"
+     ],
+     [
+      "Content-Length",
+      "6"
+     ],
+     [
+      "Cache-Control",
+      "no-store"
+     ],
+     [
+      "X-Content-Type-Options",
+      "nosniff"
+     ],
+     [
+      "Content-Security-Policy",
+      "default-src 'self'; script-src 'self' 'unsafe-inline'; style-src 'self' 'unsafe-inline'; connect-src 'self'; img-src 'self' data:; font-src 'self'; frame-ancestors 'none'"
+     ]
+    ],
+    "status": 200
+   },
+   "secret.json": {
+    "body": "Not found",
+    "headers": [
+     [
+      "Content-Type",
+      "text/plain"
+     ],
+     [
+      "Content-Length",
+      "9"
+     ],
+     [
+      "Cache-Control",
+      "no-store"
+     ],
+     [
+      "X-Content-Type-Options",
+      "nosniff"
+     ],
+     [
+      "Content-Security-Policy",
+      "default-src 'self'; script-src 'self' 'unsafe-inline'; style-src 'self' 'unsafe-inline'; connect-src 'self'; img-src 'self' data:; font-src 'self'; frame-ancestors 'none'"
+     ]
+    ],
+    "status": 404
+   },
+   "xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx.js": {
+    "body": "1",
+    "headers": [
+     [
+      "Content-Type",
+      "text/javascript; charset=utf-8"
+     ],
+     [
+      "Content-Length",
+      "1"
+     ],
+     [
+      "Cache-Control",
+      "no-store"
+     ],
+     [
+      "X-Content-Type-Options",
+      "nosniff"
+     ],
+     [
+      "Content-Security-Policy",
+      "default-src 'self'; script-src 'self' 'unsafe-inline'; style-src 'self' 'unsafe-inline'; connect-src 'self'; img-src 'self' data:; font-src 'self'; frame-ancestors 'none'"
+     ]
+    ],
+    "status": 200
+   },
+   "xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx.js": {
+    "body": "Not found",
+    "headers": [
+     [
+      "Content-Type",
+      "text/plain"
+     ],
+     [
+      "Content-Length",
+      "9"
+     ],
+     [
+      "Cache-Control",
+      "no-store"
+     ],
+     [
+      "X-Content-Type-Options",
+      "nosniff"
+     ],
+     [
+      "Content-Security-Policy",
+      "default-src 'self'; script-src 'self' 'unsafe-inline'; style-src 'self' 'unsafe-inline'; connect-src 'self'; img-src 'self' data:; font-src 'self'; frame-ancestors 'none'"
+     ]
+    ],
+    "status": 404
+   }
+  },
+  "direct": {
+   "asset": {
+    "..": {
+     "none": true,
+     "typed": null
+    },
+    "../legacy/monitor.html": {
+     "none": true,
+     "typed": null
+    },
+    "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa": {
+     "none": true,
+     "typed": null
+    },
+    "big.js": {
+     "none": true,
+     "typed": null
+    },
+    "dir.js": {
+     "none": true,
+     "typed": null
+    },
+    "index-abc.js": {
+     "none": false,
+     "typed": [
+      "console.log(1)",
+      "text/javascript; charset=utf-8"
+     ]
+    },
+    "limit.js": {
+     "none": false,
+     "typed": [
+      {
+       "sha256": "03a7bd518f3e4ecac11f2e77f7437928ba5d80ac0b2b26a523d90e7628bfd59b",
+       "size": 5000000
+      },
+      "text/javascript; charset=utf-8"
+     ]
+    },
+    "secret.json": {
+     "none": true,
+     "typed": null
+    }
+   },
+   "constants": {
+    "ASSET_NAME": "[A-Za-z0-9][A-Za-z0-9_.-]{0,127}",
+    "ASSET_TYPES": {
+     ".css": "text/css; charset=utf-8",
+     ".js": "text/javascript; charset=utf-8",
+     ".svg": "image/svg+xml",
+     ".woff": "font/woff",
+     ".woff2": "font/woff2"
+    },
+    "CSP": "default-src 'self'; script-src 'self' 'unsafe-inline'; style-src 'self' 'unsafe-inline'; connect-src 'self'; img-src 'self' data:; font-src 'self'; frame-ancestors 'none'",
+    "MAX_ASSET_BYTES": 5000000,
+    "VIEWER_PORT": 8787
+   },
+   "index_page": "<!doctype html><div id=\"root\"></div>"
+  },
+  "index_built": {
+   "body": "<!doctype html><div id=\"root\"></div>",
+   "headers": [
+    [
+     "Content-Type",
+     "text/html; charset=utf-8"
+    ],
+    [
+     "Content-Length",
+     "36"
+    ],
+    [
+     "Cache-Control",
+     "no-store"
+    ],
+    [
+     "X-Content-Type-Options",
+     "nosniff"
+    ],
+    [
+     "Content-Security-Policy",
+     "default-src 'self'; script-src 'self' 'unsafe-inline'; style-src 'self' 'unsafe-inline'; connect-src 'self'; img-src 'self' data:; font-src 'self'; frame-ancestors 'none'"
+    ]
+   ],
+   "status": 200
+  },
+  "index_legacy_equal": true,
+  "index_legacy_fallback": {
+   "body": "<!doctype html><title>legacy</title><script>1</script>",
+   "headers": [
+    [
+     "Content-Type",
+     "text/html; charset=utf-8"
+    ],
+    [
+     "Content-Length",
+     "54"
+    ],
+    [
+     "Cache-Control",
+     "no-store"
+    ],
+    [
+     "X-Content-Type-Options",
+     "nosniff"
+    ],
+    [
+     "Content-Security-Policy",
+     "default-src 'self'; script-src 'self' 'unsafe-inline'; style-src 'self' 'unsafe-inline'; connect-src 'self'; img-src 'self' data:; font-src 'self'; frame-ancestors 'none'"
+    ]
+   ],
+   "status": 200
+  },
+  "legacy_route": {
+   "body": "<!doctype html><title>legacy</title><script>1</script>",
+   "headers": [
+    [
+     "Content-Type",
+     "text/html; charset=utf-8"
+    ],
+    [
+     "Content-Length",
+     "54"
+    ],
+    [
+     "Cache-Control",
+     "no-store"
+    ],
+    [
+     "X-Content-Type-Options",
+     "nosniff"
+    ],
+    [
+     "Content-Security-Policy",
+     "default-src 'self'; script-src 'self' 'unsafe-inline'; style-src 'self' 'unsafe-inline'; connect-src 'self'; img-src 'self' data:; font-src 'self'; frame-ancestors 'none'"
+    ]
+   ],
+   "status": 200
+  }
+ },
+ "ready": {
+  "empty": {
+   "body": "{\"schema\": \"urn:zeus:monitor-readiness:1\", \"service\": \"harness-monitor\", \"ready\": false, \"basis\": \"observation_freshness\", \"checked_at\": \"2026-09-19T12:00:00+00:00\", \"freshness_seconds\": 20, \"future_tolerance_seconds\": 5, \"snapshot\": {\"state\": \"invalid\", \"reason\": \"undecodable\", \"age_seconds\": null}, \"sources\": {}}",
+   "headers": [
+    [
+     "Content-Type",
+     "application/json; charset=utf-8"
+    ],
+    [
+     "Content-Length",
+     "316"
+    ],
+    [
+     "Cache-Control",
+     "no-store"
+    ],
+    [
+     "X-Content-Type-Options",
+     "nosniff"
+    ],
+    [
+     "Content-Security-Policy",
+     "default-src 'self'; script-src 'self' 'unsafe-inline'; style-src 'self' 'unsafe-inline'; connect-src 'self'; img-src 'self' data:; font-src 'self'; frame-ancestors 'none'"
+    ]
+   ],
+   "status": 503
+  },
+  "fresh": {
+   "body": "{\"schema\": \"urn:zeus:monitor-readiness:1\", \"service\": \"harness-monitor\", \"ready\": true, \"basis\": \"observation_freshness\", \"checked_at\": \"2026-09-19T12:00:00+00:00\", \"freshness_seconds\": 20, \"future_tolerance_seconds\": 5, \"snapshot\": {\"state\": \"fresh\", \"reason\": \"current\", \"age_seconds\": 1.0}, \"sources\": {\"database\": {\"state\": \"fresh\", \"reason\": \"current\", \"age_seconds\": 1.0}, \"docker\": {\"state\": \"fresh\", \"reason\": \"current\", \"age_seconds\": 1.0}, \"redis\": {\"state\": \"fresh\", \"reason\": \"current\", \"age_seconds\": 1.0}}}",
+   "headers": [
+    [
+     "Content-Type",
+     "application/json; charset=utf-8"
+    ],
+    [
+     "Content-Length",
+     "520"
+    ],
+    [
+     "Cache-Control",
+     "no-store"
+    ],
+    [
+     "X-Content-Type-Options",
+     "nosniff"
+    ],
+    [
+     "Content-Security-Policy",
+     "default-src 'self'; script-src 'self' 'unsafe-inline'; style-src 'self' 'unsafe-inline'; connect-src 'self'; img-src 'self' data:; font-src 'self'; frame-ancestors 'none'"
+    ]
+   ],
+   "status": 200
+  },
+  "future": {
+   "body": "{\"schema\": \"urn:zeus:monitor-readiness:1\", \"service\": \"harness-monitor\", \"ready\": false, \"basis\": \"observation_freshness\", \"checked_at\": \"2026-09-19T12:00:00+00:00\", \"freshness_seconds\": 20, \"future_tolerance_seconds\": 5, \"snapshot\": {\"state\": \"invalid\", \"reason\": \"timestamp_in_future\", \"age_seconds\": null}, \"sources\": {\"database\": {\"state\": \"fresh\", \"reason\": \"current\", \"age_seconds\": 1.0}, \"docker\": {\"state\": \"fresh\", \"reason\": \"current\", \"age_seconds\": 1.0}, \"redis\": {\"state\": \"fresh\", \"reason\": \"current\", \"age_seconds\": 1.0}}}",
+   "headers": [
+    [
+     "Content-Type",
+     "application/json; charset=utf-8"
+    ],
+    [
+     "Content-Length",
+     "536"
+    ],
+    [
+     "Cache-Control",
+     "no-store"
+    ],
+    [
+     "X-Content-Type-Options",
+     "nosniff"
+    ],
+    [
+     "Content-Security-Policy",
+     "default-src 'self'; script-src 'self' 'unsafe-inline'; style-src 'self' 'unsafe-inline'; connect-src 'self'; img-src 'self' data:; font-src 'self'; frame-ancestors 'none'"
+    ]
+   ],
+   "status": 503
+  },
+  "garbage": {
+   "body": "{\"schema\": \"urn:zeus:monitor-readiness:1\", \"service\": \"harness-monitor\", \"ready\": false, \"basis\": \"observation_freshness\", \"checked_at\": \"2026-09-19T12:00:00+00:00\", \"freshness_seconds\": 20, \"future_tolerance_seconds\": 5, \"snapshot\": {\"state\": \"invalid\", \"reason\": \"undecodable\", \"age_seconds\": null}, \"sources\": {}}",
+   "headers": [
+    [
+     "Content-Type",
+     "application/json; charset=utf-8"
+    ],
+    [
+     "Content-Length",
+     "316"
+    ],
+    [
+     "Cache-Control",
+     "no-store"
+    ],
+    [
+     "X-Content-Type-Options",
+     "nosniff"
+    ],
+    [
+     "Content-Security-Policy",
+     "default-src 'self'; script-src 'self' 'unsafe-inline'; style-src 'self' 'unsafe-inline'; connect-src 'self'; img-src 'self' data:; font-src 'self'; frame-ancestors 'none'"
+    ]
+   ],
+   "status": 503
+  },
+  "list": {
+   "body": "{\"schema\": \"urn:zeus:monitor-readiness:1\", \"service\": \"harness-monitor\", \"ready\": false, \"basis\": \"observation_freshness\", \"checked_at\": \"2026-09-19T12:00:00+00:00\", \"freshness_seconds\": 20, \"future_tolerance_seconds\": 5, \"snapshot\": {\"state\": \"invalid\", \"reason\": \"not_an_object\", \"age_seconds\": null}, \"sources\": {}}",
+   "headers": [
+    [
+     "Content-Type",
+     "application/json; charset=utf-8"
+    ],
+    [
+     "Content-Length",
+     "318"
+    ],
+    [
+     "Cache-Control",
+     "no-store"
+    ],
+    [
+     "X-Content-Type-Options",
+     "nosniff"
+    ],
+    [
+     "Content-Security-Policy",
+     "default-src 'self'; script-src 'self' 'unsafe-inline'; style-src 'self' 'unsafe-inline'; connect-src 'self'; img-src 'self' data:; font-src 'self'; frame-ancestors 'none'"
+    ]
+   ],
+   "status": 503
+  },
+  "missing": {
+   "body": "{\"schema\": \"urn:zeus:monitor-readiness:1\", \"service\": \"harness-monitor\", \"ready\": false, \"basis\": \"observation_freshness\", \"checked_at\": \"2026-09-19T12:00:00+00:00\", \"freshness_seconds\": 20, \"future_tolerance_seconds\": 5, \"snapshot\": {\"state\": \"unavailable\", \"reason\": \"file_missing\", \"age_seconds\": null}, \"sources\": {}}",
+   "headers": [
+    [
+     "Content-Type",
+     "application/json; charset=utf-8"
+    ],
+    [
+     "Content-Length",
+     "321"
+    ],
+    [
+     "Cache-Control",
+     "no-store"
+    ],
+    [
+     "X-Content-Type-Options",
+     "nosniff"
+    ],
+    [
+     "Content-Security-Policy",
+     "default-src 'self'; script-src 'self' 'unsafe-inline'; style-src 'self' 'unsafe-inline'; connect-src 'self'; img-src 'self' data:; font-src 'self'; frame-ancestors 'none'"
+    ]
+   ],
+   "status": 503
+  },
+  "no_sources": {
+   "body": "{\"schema\": \"urn:zeus:monitor-readiness:1\", \"service\": \"harness-monitor\", \"ready\": false, \"basis\": \"observation_freshness\", \"checked_at\": \"2026-09-19T12:00:00+00:00\", \"freshness_seconds\": 20, \"future_tolerance_seconds\": 5, \"snapshot\": {\"state\": \"fresh\", \"reason\": \"current\", \"age_seconds\": 0.0}, \"sources\": {\"database\": {\"state\": \"unavailable\", \"reason\": \"envelope_missing\", \"age_seconds\": null}, \"docker\": {\"state\": \"unavailable\", \"reason\": \"envelope_missing\", \"age_seconds\": null}, \"redis\": {\"state\": \"unavailable\", \"reason\": \"envelope_missing\", \"age_seconds\": null}}}",
+   "headers": [
+    [
+     "Content-Type",
+     "application/json; charset=utf-8"
+    ],
+    [
+     "Content-Length",
+     "569"
+    ],
+    [
+     "Cache-Control",
+     "no-store"
+    ],
+    [
+     "X-Content-Type-Options",
+     "nosniff"
+    ],
+    [
+     "Content-Security-Policy",
+     "default-src 'self'; script-src 'self' 'unsafe-inline'; style-src 'self' 'unsafe-inline'; connect-src 'self'; img-src 'self' data:; font-src 'self'; frame-ancestors 'none'"
+    ]
+   ],
+   "status": 503
+  },
+  "post": {
+   "body": "Read only",
+   "headers": [
+    [
+     "Content-Type",
+     "text/plain"
+    ],
+    [
+     "Content-Length",
+     "9"
+    ],
+    [
+     "Cache-Control",
+     "no-store"
+    ],
+    [
+     "X-Content-Type-Options",
+     "nosniff"
+    ],
+    [
+     "Content-Security-Policy",
+     "default-src 'self'; script-src 'self' 'unsafe-inline'; style-src 'self' 'unsafe-inline'; connect-src 'self'; img-src 'self' data:; font-src 'self'; frame-ancestors 'none'"
+    ]
+   ],
+   "status": 405
+  },
+  "query": {
+   "body": "{\"schema\": \"urn:zeus:monitor-readiness:1\", \"service\": \"harness-monitor\", \"ready\": true, \"basis\": \"observation_freshness\", \"checked_at\": \"2026-09-19T12:00:00+00:00\", \"freshness_seconds\": 20, \"future_tolerance_seconds\": 5, \"snapshot\": {\"state\": \"fresh\", \"reason\": \"current\", \"age_seconds\": 1.0}, \"sources\": {\"database\": {\"state\": \"fresh\", \"reason\": \"current\", \"age_seconds\": 1.0}, \"docker\": {\"state\": \"fresh\", \"reason\": \"current\", \"age_seconds\": 1.0}, \"redis\": {\"state\": \"fresh\", \"reason\": \"current\", \"age_seconds\": 1.0}}}",
+   "headers": [
+    [
+     "Content-Type",
+     "application/json; charset=utf-8"
+    ],
+    [
+     "Content-Length",
+     "520"
+    ],
+    [
+     "Cache-Control",
+     "no-store"
+    ],
+    [
+     "X-Content-Type-Options",
+     "nosniff"
+    ],
+    [
+     "Content-Security-Policy",
+     "default-src 'self'; script-src 'self' 'unsafe-inline'; style-src 'self' 'unsafe-inline'; connect-src 'self'; img-src 'self' data:; font-src 'self'; frame-ancestors 'none'"
+    ]
+   ],
+   "status": 200
+  },
+  "recovered_on_same_server": {
+   "body": "{\"schema\": \"urn:zeus:monitor-readiness:1\", \"service\": \"harness-monitor\", \"ready\": true, \"basis\": \"observation_freshness\", \"checked_at\": \"2026-09-19T12:00:00+00:00\", \"freshness_seconds\": 20, \"future_tolerance_seconds\": 5, \"snapshot\": {\"state\": \"fresh\", \"reason\": \"current\", \"age_seconds\": 1.0}, \"sources\": {\"database\": {\"state\": \"fresh\", \"reason\": \"current\", \"age_seconds\": 1.0}, \"docker\": {\"state\": \"fresh\", \"reason\": \"current\", \"age_seconds\": 1.0}, \"redis\": {\"state\": \"fresh\", \"reason\": \"current\", \"age_seconds\": 1.0}}}",
+   "headers": [
+    [
+     "Content-Type",
+     "application/json; charset=utf-8"
+    ],
+    [
+     "Content-Length",
+     "520"
+    ],
+    [
+     "Cache-Control",
+     "no-store"
+    ],
+    [
+     "X-Content-Type-Options",
+     "nosniff"
+    ],
+    [
+     "Content-Security-Policy",
+     "default-src 'self'; script-src 'self' 'unsafe-inline'; style-src 'self' 'unsafe-inline'; connect-src 'self'; img-src 'self' data:; font-src 'self'; frame-ancestors 'none'"
+    ]
+   ],
+   "status": 200
+  },
+  "slash": {
+   "body": "Not found",
+   "headers": [
+    [
+     "Content-Type",
+     "text/plain"
+    ],
+    [
+     "Content-Length",
+     "9"
+    ],
+    [
+     "Cache-Control",
+     "no-store"
+    ],
+    [
+     "X-Content-Type-Options",
+     "nosniff"
+    ],
+    [
+     "Content-Security-Policy",
+     "default-src 'self'; script-src 'self' 'unsafe-inline'; style-src 'self' 'unsafe-inline'; connect-src 'self'; img-src 'self' data:; font-src 'self'; frame-ancestors 'none'"
+    ]
+   ],
+   "status": 404
+  },
+  "stale": {
+   "body": "{\"schema\": \"urn:zeus:monitor-readiness:1\", \"service\": \"harness-monitor\", \"ready\": false, \"basis\": \"observation_freshness\", \"checked_at\": \"2026-09-19T12:00:00+00:00\", \"freshness_seconds\": 20, \"future_tolerance_seconds\": 5, \"snapshot\": {\"state\": \"stale\", \"reason\": \"older_than_window\", \"age_seconds\": 300.0}, \"sources\": {\"database\": {\"state\": \"stale\", \"reason\": \"older_than_window\", \"age_seconds\": 300.0}, \"docker\": {\"state\": \"stale\", \"reason\": \"older_than_window\", \"age_seconds\": 300.0}, \"redis\": {\"state\": \"stale\", \"reason\": \"older_than_window\", \"age_seconds\": 300.0}}}",
+   "headers": [
+    [
+     "Content-Type",
+     "application/json; charset=utf-8"
+    ],
+    [
+     "Content-Length",
+     "569"
+    ],
+    [
+     "Cache-Control",
+     "no-store"
+    ],
+    [
+     "X-Content-Type-Options",
+     "nosniff"
+    ],
+    [
+     "Content-Security-Policy",
+     "default-src 'self'; script-src 'self' 'unsafe-inline'; style-src 'self' 'unsafe-inline'; connect-src 'self'; img-src 'self' data:; font-src 'self'; frame-ancestors 'none'"
+    ]
+   ],
+   "status": 503
+  },
+  "stale_source": {
+   "body": "{\"schema\": \"urn:zeus:monitor-readiness:1\", \"service\": \"harness-monitor\", \"ready\": false, \"basis\": \"observation_freshness\", \"checked_at\": \"2026-09-19T12:00:00+00:00\", \"freshness_seconds\": 20, \"future_tolerance_seconds\": 5, \"snapshot\": {\"state\": \"fresh\", \"reason\": \"current\", \"age_seconds\": 1.0}, \"sources\": {\"database\": {\"state\": \"fresh\", \"reason\": \"current\", \"age_seconds\": 1.0}, \"docker\": {\"state\": \"stale\", \"reason\": \"older_than_window\", \"age_seconds\": 300.0}, \"redis\": {\"state\": \"fresh\", \"reason\": \"current\", \"age_seconds\": 1.0}}}",
+   "headers": [
+    [
+     "Content-Type",
+     "application/json; charset=utf-8"
+    ],
+    [
+     "Content-Length",
+     "533"
+    ],
+    [
+     "Cache-Control",
+     "no-store"
+    ],
+    [
+     "X-Content-Type-Options",
+     "nosniff"
+    ],
+    [
+     "Content-Security-Policy",
+     "default-src 'self'; script-src 'self' 'unsafe-inline'; style-src 'self' 'unsafe-inline'; connect-src 'self'; img-src 'self' data:; font-src 'self'; frame-ancestors 'none'"
+    ]
+   ],
+   "status": 503
+  },
+  "status_still_the_snapshot": {
+   "body": "{\"schema\": \"harness-monitor.v1\", \"collected_at\": \"2026-09-19T11:59:59+00:00\", \"scope\": {\"label\": \"repository zeus\", \"docker\": \"compose\", \"containers\": null}, \"sources\": {\"database\": {\"status\": \"ok\", \"observed_at\": \"2026-09-19T11:59:59+00:00\", \"data\": []}, \"docker\": {\"status\": \"ok\", \"observed_at\": \"2026-09-19T11:59:59+00:00\", \"data\": []}, \"redis\": {\"status\": \"ok\", \"observed_at\": \"2026-09-19T11:59:59+00:00\", \"data\": []}}}",
+   "headers": [
+    [
+     "Content-Type",
+     "application/json; charset=utf-8"
+    ],
+    [
+     "Content-Length",
+     "423"
+    ],
+    [
+     "Cache-Control",
+     "no-store"
+    ],
+    [
+     "X-Content-Type-Options",
+     "nosniff"
+    ],
+    [
+     "Content-Security-Policy",
+     "default-src 'self'; script-src 'self' 'unsafe-inline'; style-src 'self' 'unsafe-inline'; connect-src 'self'; img-src 'self' data:; font-src 'self'; frame-ancestors 'none'"
+    ]
+   ],
+   "status": 200
+  },
+  "wrong_host": {
+   "body": "Forbidden host",
+   "headers": [
+    [
+     "Content-Type",
+     "text/plain"
+    ],
+    [
+     "Content-Length",
+     "14"
+    ],
+    [
+     "Cache-Control",
+     "no-store"
+    ],
+    [
+     "X-Content-Type-Options",
+     "nosniff"
+    ],
+    [
+     "Content-Security-Policy",
+     "default-src 'self'; script-src 'self' 'unsafe-inline'; style-src 'self' 'unsafe-inline'; connect-src 'self'; img-src 'self' data:; font-src 'self'; frame-ancestors 'none'"
+    ]
+   ],
+   "status": 403
+  }
+ },
+ "routes": {
+  "assets_refused": {
+   "/assets/": {
+    "body": "Not found",
+    "headers": [
+     [
+      "Content-Type",
+      "text/plain"
+     ],
+     [
+      "Content-Length",
+      "9"
+     ],
+     [
+      "Cache-Control",
+      "no-store"
+     ],
+     [
+      "X-Content-Type-Options",
+      "nosniff"
+     ],
+     [
+      "Content-Security-Policy",
+      "default-src 'self'; script-src 'self' 'unsafe-inline'; style-src 'self' 'unsafe-inline'; connect-src 'self'; img-src 'self' data:; font-src 'self'; frame-ancestors 'none'"
+     ]
+    ],
+    "status": 404
+   },
+   "/assets/-lead.js": {
+    "body": "Not found",
+    "headers": [
+     [
+      "Content-Type",
+      "text/plain"
+     ],
+     [
+      "Content-Length",
+      "9"
+     ],
+     [
+      "Cache-Control",
+      "no-store"
+     ],
+     [
+      "X-Content-Type-Options",
+      "nosniff"
+     ],
+     [
+      "Content-Security-Policy",
+      "default-src 'self'; script-src 'self' 'unsafe-inline'; style-src 'self' 'unsafe-inline'; connect-src 'self'; img-src 'self' data:; font-src 'self'; frame-ancestors 'none'"
+     ]
+    ],
+    "status": 404
+   },
+   "/assets/..": {
+    "body": "Not found",
+    "headers": [
+     [
+      "Content-Type",
+      "text/plain"
+     ],
+     [
+      "Content-Length",
+      "9"
+     ],
+     [
+      "Cache-Control",
+      "no-store"
+     ],
+     [
+      "X-Content-Type-Options",
+      "nosniff"
+     ],
+     [
+      "Content-Security-Policy",
+      "default-src 'self'; script-src 'self' 'unsafe-inline'; style-src 'self' 'unsafe-inline'; connect-src 'self'; img-src 'self' data:; font-src 'self'; frame-ancestors 'none'"
+     ]
+    ],
+    "status": 404
+   },
+   "/assets/..%2fmonitor.html": {
+    "body": "Not found",
+    "headers": [
+     [
+      "Content-Type",
+      "text/plain"
+     ],
+     [
+      "Content-Length",
+      "9"
+     ],
+     [
+      "Cache-Control",
+      "no-store"
+     ],
+     [
+      "X-Content-Type-Options",
+      "nosniff"
+     ],
+     [
+      "Content-Security-Policy",
+      "default-src 'self'; script-src 'self' 'unsafe-inline'; style-src 'self' 'unsafe-inline'; connect-src 'self'; img-src 'self' data:; font-src 'self'; frame-ancestors 'none'"
+     ]
+    ],
+    "status": 404
+   },
+   "/assets/../monitor.html": {
+    "body": "Not found",
+    "headers": [
+     [
+      "Content-Type",
+      "text/plain"
+     ],
+     [
+      "Content-Length",
+      "9"
+     ],
+     [
+      "Cache-Control",
+      "no-store"
+     ],
+     [
+      "X-Content-Type-Options",
+      "nosniff"
+     ],
+     [
+      "Content-Security-Policy",
+      "default-src 'self'; script-src 'self' 'unsafe-inline'; style-src 'self' 'unsafe-inline'; connect-src 'self'; img-src 'self' data:; font-src 'self'; frame-ancestors 'none'"
+     ]
+    ],
+    "status": 404
+   },
+   "/assets/.hidden.js": {
+    "body": "Not found",
+    "headers": [
+     [
+      "Content-Type",
+      "text/plain"
+     ],
+     [
+      "Content-Length",
+      "9"
+     ],
+     [
+      "Cache-Control",
+      "no-store"
+     ],
+     [
+      "X-Content-Type-Options",
+      "nosniff"
+     ],
+     [
+      "Content-Security-Policy",
+      "default-src 'self'; script-src 'self' 'unsafe-inline'; style-src 'self' 'unsafe-inline'; connect-src 'self'; img-src 'self' data:; font-src 'self'; frame-ancestors 'none'"
+     ]
+    ],
+    "status": 404
+   },
+   "/assets/a..b.js": {
+    "body": "Not found",
+    "headers": [
+     [
+      "Content-Type",
+      "text/plain"
+     ],
+     [
+      "Content-Length",
+      "9"
+     ],
+     [
+      "Cache-Control",
+      "no-store"
+     ],
+     [
+      "X-Content-Type-Options",
+      "nosniff"
+     ],
+     [
+      "Content-Security-Policy",
+      "default-src 'self'; script-src 'self' 'unsafe-inline'; style-src 'self' 'unsafe-inline'; connect-src 'self'; img-src 'self' data:; font-src 'self'; frame-ancestors 'none'"
+     ]
+    ],
+    "status": 404
+   },
+   "/assets/index-BXzOlXIh.js/": {
+    "body": "Not found",
+    "headers": [
+     [
+      "Content-Type",
+      "text/plain"
+     ],
+     [
+      "Content-Length",
+      "9"
+     ],
+     [
+      "Cache-Control",
+      "no-store"
+     ],
+     [
+      "X-Content-Type-Options",
+      "nosniff"
+     ],
+     [
+      "Content-Security-Policy",
+      "default-src 'self'; script-src 'self' 'unsafe-inline'; style-src 'self' 'unsafe-inline'; connect-src 'self'; img-src 'self' data:; font-src 'self'; frame-ancestors 'none'"
+     ]
+    ],
+    "status": 404
+   },
+   "/assets/index-abc.js/": {
+    "body": "Not found",
+    "headers": [
+     [
+      "Content-Type",
+      "text/plain"
+     ],
+     [
+      "Content-Length",
+      "9"
+     ],
+     [
+      "Cache-Control",
+      "no-store"
+     ],
+     [
+      "X-Content-Type-Options",
+      "nosniff"
+     ],
+     [
+      "Content-Security-Policy",
+      "default-src 'self'; script-src 'self' 'unsafe-inline'; style-src 'self' 'unsafe-inline'; connect-src 'self'; img-src 'self' data:; font-src 'self'; frame-ancestors 'none'"
+     ]
+    ],
+    "status": 404
+   },
+   "/assets/index.js?x=1": {
+    "body": "Not found",
+    "headers": [
+     [
+      "Content-Type",
+      "text/plain"
+     ],
+     [
+      "Content-Length",
+      "9"
+     ],
+     [
+      "Cache-Control",
+      "no-store"
+     ],
+     [
+      "X-Content-Type-Options",
+      "nosniff"
+     ],
+     [
+      "Content-Security-Policy",
+      "default-src 'self'; script-src 'self' 'unsafe-inline'; style-src 'self' 'unsafe-inline'; connect-src 'self'; img-src 'self' data:; font-src 'self'; frame-ancestors 'none'"
+     ]
+    ],
+    "status": 404
+   },
+   "/assets/index.json": {
+    "body": "Not found",
+    "headers": [
+     [
+      "Content-Type",
+      "text/plain"
+     ],
+     [
+      "Content-Length",
+      "9"
+     ],
+     [
+      "Cache-Control",
+      "no-store"
+     ],
+     [
+      "X-Content-Type-Options",
+      "nosniff"
+     ],
+     [
+      "Content-Security-Policy",
+      "default-src 'self'; script-src 'self' 'unsafe-inline'; style-src 'self' 'unsafe-inline'; connect-src 'self'; img-src 'self' data:; font-src 'self'; frame-ancestors 'none'"
+     ]
+    ],
+    "status": 404
+   },
+   "/assets/missing.js": {
+    "body": "Not found",
+    "headers": [
+     [
+      "Content-Type",
+      "text/plain"
+     ],
+     [
+      "Content-Length",
+      "9"
+     ],
+     [
+      "Cache-Control",
+      "no-store"
+     ],
+     [
+      "X-Content-Type-Options",
+      "nosniff"
+     ],
+     [
+      "Content-Security-Policy",
+      "default-src 'self'; script-src 'self' 'unsafe-inline'; style-src 'self' 'unsafe-inline'; connect-src 'self'; img-src 'self' data:; font-src 'self'; frame-ancestors 'none'"
+     ]
+    ],
+    "status": 404
+   },
+   "/assets/monitor.html": {
+    "body": "Not found",
+    "headers": [
+     [
+      "Content-Type",
+      "text/plain"
+     ],
+     [
+      "Content-Length",
+      "9"
+     ],
+     [
+      "Cache-Control",
+      "no-store"
+     ],
+     [
+      "X-Content-Type-Options",
+      "nosniff"
+     ],
+     [
+      "Content-Security-Policy",
+      "default-src 'self'; script-src 'self' 'unsafe-inline'; style-src 'self' 'unsafe-inline'; connect-src 'self'; img-src 'self' data:; font-src 'self'; frame-ancestors 'none'"
+     ]
+    ],
+    "status": 404
+   },
+   "/assets/observatory": {
+    "body": "Not found",
+    "headers": [
+     [
+      "Content-Type",
+      "text/plain"
+     ],
+     [
+      "Content-Length",
+      "9"
+     ],
+     [
+      "Cache-Control",
+      "no-store"
+     ],
+     [
+      "X-Content-Type-Options",
+      "nosniff"
+     ],
+     [
+      "Content-Security-Policy",
+      "default-src 'self'; script-src 'self' 'unsafe-inline'; style-src 'self' 'unsafe-inline'; connect-src 'self'; img-src 'self' data:; font-src 'self'; frame-ancestors 'none'"
+     ]
+    ],
+    "status": 404
+   },
+   "/assets/vite.svg": {
+    "body": "Not found",
+    "headers": [
+     [
+      "Content-Type",
+      "text/plain"
+     ],
+     [
+      "Content-Length",
+      "9"
+     ],
+     [
+      "Cache-Control",
+      "no-store"
+     ],
+     [
+      "X-Content-Type-Options",
+      "nosniff"
+     ],
+     [
+      "Content-Security-Policy",
+      "default-src 'self'; script-src 'self' 'unsafe-inline'; style-src 'self' 'unsafe-inline'; connect-src 'self'; img-src 'self' data:; font-src 'self'; frame-ancestors 'none'"
+     ]
+    ],
+    "status": 404
+   },
+   "/assets/x/y.js": {
+    "body": "Not found",
+    "headers": [
+     [
+      "Content-Type",
+      "text/plain"
+     ],
+     [
+      "Content-Length",
+      "9"
+     ],
+     [
+      "Cache-Control",
+      "no-store"
+     ],
+     [
+      "X-Content-Type-Options",
+      "nosniff"
+     ],
+     [
+      "Content-Security-Policy",
+      "default-src 'self'; script-src 'self' 'unsafe-inline'; style-src 'self' 'unsafe-inline'; connect-src 'self'; img-src 'self' data:; font-src 'self'; frame-ancestors 'none'"
+     ]
+    ],
+    "status": 404
+   },
+   "/assets/xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx.js": {
+    "body": "Not found",
+    "headers": [
+     [
+      "Content-Type",
+      "text/plain"
+     ],
+     [
+      "Content-Length",
+      "9"
+     ],
+     [
+      "Cache-Control",
+      "no-store"
+     ],
+     [
+      "X-Content-Type-Options",
+      "nosniff"
+     ],
+     [
+      "Content-Security-Policy",
+      "default-src 'self'; script-src 'self' 'unsafe-inline'; style-src 'self' 'unsafe-inline'; connect-src 'self'; img-src 'self' data:; font-src 'self'; frame-ancestors 'none'"
+     ]
+    ],
+    "status": 404
+   }
+  },
+  "assets_valid": {
+   "index-BXzOlXIh.js": {
+    "body": {
+     "sha256": "b4609494be13896f10ce387ca3015c1b8af20ae2d758d6da94d56234c811c359",
+     "size": 536230
+    },
+    "headers": [
+     [
+      "Content-Type",
+      "text/javascript; charset=utf-8"
+     ],
+     [
+      "Content-Length",
+      "536230"
+     ],
+     [
+      "Cache-Control",
+      "no-store"
+     ],
+     [
+      "X-Content-Type-Options",
+      "nosniff"
+     ],
+     [
+      "Content-Security-Policy",
+      "default-src 'self'; script-src 'self' 'unsafe-inline'; style-src 'self' 'unsafe-inline'; connect-src 'self'; img-src 'self' data:; font-src 'self'; frame-ancestors 'none'"
+     ]
+    ],
+    "status": 200
+   },
+   "index-qm7Y6T2g.css": {
+    "body": {
+     "sha256": "8c85ff4e781d9296e777f23fdd9c84f9eb1b519e20e1dae2d2c9078c51521dd6",
+     "size": 53821
+    },
+    "headers": [
+     [
+      "Content-Type",
+      "text/css; charset=utf-8"
+     ],
+     [
+      "Content-Length",
+      "53821"
+     ],
+     [
+      "Cache-Control",
+      "no-store"
+     ],
+     [
+      "X-Content-Type-Options",
+      "nosniff"
+     ],
+     [
+      "Content-Security-Policy",
+      "default-src 'self'; script-src 'self' 'unsafe-inline'; style-src 'self' 'unsafe-inline'; connect-src 'self'; img-src 'self' data:; font-src 'self'; frame-ancestors 'none'"
+     ]
+    ],
+    "status": 200
+   }
+  },
+  "assets_valid_query": {
+   "body": {
+    "sha256": "b4609494be13896f10ce387ca3015c1b8af20ae2d758d6da94d56234c811c359",
+    "size": 536230
+   },
+   "headers": [
+    [
+     "Content-Type",
+     "text/javascript; charset=utf-8"
+    ],
+    [
+     "Content-Length",
+     "536230"
+    ],
+    [
+     "Cache-Control",
+     "no-store"
+    ],
+    [
+     "X-Content-Type-Options",
+     "nosniff"
+    ],
+    [
+     "Content-Security-Policy",
+     "default-src 'self'; script-src 'self' 'unsafe-inline'; style-src 'self' 'unsafe-inline'; connect-src 'self'; img-src 'self' data:; font-src 'self'; frame-ancestors 'none'"
+    ]
+   ],
+   "status": 200
+  },
+  "empty_path": {
+   "body": "Not found",
+   "headers": [
+    [
+     "Content-Type",
+     "text/plain"
+    ],
+    [
+     "Content-Length",
+     "9"
+    ],
+    [
+     "Cache-Control",
+     "no-store"
+    ],
+    [
+     "X-Content-Type-Options",
+     "nosniff"
+    ],
+    [
+     "Content-Security-Policy",
+     "default-src 'self'; script-src 'self' 'unsafe-inline'; style-src 'self' 'unsafe-inline'; connect-src 'self'; img-src 'self' data:; font-src 'self'; frame-ancestors 'none'"
+    ]
+   ],
+   "status": 404
+  },
+  "index": {
+   "body": "<!doctype html>\n<html lang=\"ko\">\n  <head>\n    <meta charset=\"UTF-8\" />\n    <meta name=\"viewport\" content=\"width=device-width, initial-scale=1.0\" />\n    <meta name=\"color-scheme\" content=\"light dark\" />\n    <title>Zeus 관측소 · 운영 모니터</title>\n    <script type=\"module\" crossorigin src=\"/assets/index-BXzOlXIh.js\"></script>\n    <link rel=\"stylesheet\" crossorigin href=\"/assets/index-qm7Y6T2g.css\">\n  </head>\n  <body>\n    <div id=\"root\"></div>\n  </body>\n</html>\n",
+   "headers": [
+    [
+     "Content-Type",
+     "text/html; charset=utf-8"
+    ],
+    [
+     "Content-Length",
+     "473"
+    ],
+    [
+     "Cache-Control",
+     "no-store"
+    ],
+    [
+     "X-Content-Type-Options",
+     "nosniff"
+    ],
+    [
+     "Content-Security-Policy",
+     "default-src 'self'; script-src 'self' 'unsafe-inline'; style-src 'self' 'unsafe-inline'; connect-src 'self'; img-src 'self' data:; font-src 'self'; frame-ancestors 'none'"
+    ]
+   ],
+   "status": 200
+  },
+  "index_query": {
+   "body": "<!doctype html>\n<html lang=\"ko\">\n  <head>\n    <meta charset=\"UTF-8\" />\n    <meta name=\"viewport\" content=\"width=device-width, initial-scale=1.0\" />\n    <meta name=\"color-scheme\" content=\"light dark\" />\n    <title>Zeus 관측소 · 운영 모니터</title>\n    <script type=\"module\" crossorigin src=\"/assets/index-BXzOlXIh.js\"></script>\n    <link rel=\"stylesheet\" crossorigin href=\"/assets/index-qm7Y6T2g.css\">\n  </head>\n  <body>\n    <div id=\"root\"></div>\n  </body>\n</html>\n",
+   "headers": [
+    [
+     "Content-Type",
+     "text/html; charset=utf-8"
+    ],
+    [
+     "Content-Length",
+     "473"
+    ],
+    [
+     "Cache-Control",
+     "no-store"
+    ],
+    [
+     "X-Content-Type-Options",
+     "nosniff"
+    ],
+    [
+     "Content-Security-Policy",
+     "default-src 'self'; script-src 'self' 'unsafe-inline'; style-src 'self' 'unsafe-inline'; connect-src 'self'; img-src 'self' data:; font-src 'self'; frame-ancestors 'none'"
+    ]
+   ],
+   "status": 200
+  },
+  "legacy": {
+   "body": {
+    "sha256": "f4041606233fd1631bb0bde3b8f3b016f5cec221665e8534ea212a6fa247fd74",
+    "size": 26705
+   },
+   "headers": [
+    [
+     "Content-Type",
+     "text/html; charset=utf-8"
+    ],
+    [
+     "Content-Length",
+     "26705"
+    ],
+    [
+     "Cache-Control",
+     "no-store"
+    ],
+    [
+     "X-Content-Type-Options",
+     "nosniff"
+    ],
+    [
+     "Content-Security-Policy",
+     "default-src 'self'; script-src 'self' 'unsafe-inline'; style-src 'self' 'unsafe-inline'; connect-src 'self'; img-src 'self' data:; font-src 'self'; frame-ancestors 'none'"
+    ]
+   ],
+   "status": 200
+  },
+  "legacy_slash": {
+   "body": "Not found",
+   "headers": [
+    [
+     "Content-Type",
+     "text/plain"
+    ],
+    [
+     "Content-Length",
+     "9"
+    ],
+    [
+     "Cache-Control",
+     "no-store"
+    ],
+    [
+     "X-Content-Type-Options",
+     "nosniff"
+    ],
+    [
+     "Content-Security-Policy",
+     "default-src 'self'; script-src 'self' 'unsafe-inline'; style-src 'self' 'unsafe-inline'; connect-src 'self'; img-src 'self' data:; font-src 'self'; frame-ancestors 'none'"
+    ]
+   ],
+   "status": 404
+  },
+  "unknown": {
+   "body": "Not found",
+   "headers": [
+    [
+     "Content-Type",
+     "text/plain"
+    ],
+    [
+     "Content-Length",
+     "9"
+    ],
+    [
+     "Cache-Control",
+     "no-store"
+    ],
+    [
+     "X-Content-Type-Options",
+     "nosniff"
+    ],
+    [
+     "Content-Security-Policy",
+     "default-src 'self'; script-src 'self' 'unsafe-inline'; style-src 'self' 'unsafe-inline'; connect-src 'self'; img-src 'self' data:; font-src 'self'; frame-ancestors 'none'"
+    ]
+   ],
+   "status": 404
+  }
+ },
+ "serve": {
+  "binds_before_refusal": [],
+  "desk_on_default_port": {
+   "message": "The desk is never served on the viewer listener 8787",
+   "refused": "ValueError"
+  },
+  "desk_on_explicit_viewer_port": {
+   "message": "The desk is never served on the viewer listener 9911",
+   "refused": "ValueError"
+  },
+  "desk_on_overridden_viewer_port": {
+   "message": "The desk is never served on the viewer listener 8787",
+   "refused": "ValueError"
+  },
+  "desk_on_viewer_port_positional": {
+   "message": "The desk is never served on the viewer listener 8787",
+   "refused": "ValueError"
+  },
+  "web_mode_default_port": [
+   {
+    "value": null
+   },
+   [
+    {
+     "address": [
+      "127.0.0.1",
+      8787
+     ],
+     "handler_is_class": true,
+     "served": true
+    }
+   ]
+  ],
+  "web_mode_explicit_port": [
+   {
+    "value": null
+   },
+   [
+    {
+     "address": [
+      "127.0.0.1",
+      9912
+     ],
+     "handler_is_class": true,
+     "served": true
+    }
+   ]
+  ],
+  "web_mode_viewer_port_override": [
+   {
+    "value": null
+   },
+   [
+    {
+     "address": [
+      "127.0.0.1",
+      9913
+     ],
+     "handler_is_class": true,
+     "served": true
+    }
+   ]
+  ]
+ },
+ "status": {
+  "directory": {
+   "body": "{\"error\":\"snapshot_unavailable\"}",
+   "headers": [
+    [
+     "Content-Type",
+     "application/json"
+    ],
+    [
+     "Content-Length",
+     "32"
+    ],
+    [
+     "Cache-Control",
+     "no-store"
+    ],
+    [
+     "X-Content-Type-Options",
+     "nosniff"
+    ],
+    [
+     "Content-Security-Policy",
+     "default-src 'self'; script-src 'self' 'unsafe-inline'; style-src 'self' 'unsafe-inline'; connect-src 'self'; img-src 'self' data:; font-src 'self'; frame-ancestors 'none'"
+    ]
+   ],
+   "status": 503
+  },
+  "files": {
+   "at_limit": {
+    "response": {
+     "body": {
+      "sha256": "28f3e49cfa397271fa297804e40218de0657129c63b699d00a7731ef5b1565c9",
+      "size": 5000000
+     },
+     "headers": [
+      [
+       "Content-Type",
+       "application/json; charset=utf-8"
+      ],
+      [
+       "Content-Length",
+       "5000000"
+      ],
+      [
+       "Cache-Control",
+       "no-store"
+      ],
+      [
+       "X-Content-Type-Options",
+       "nosniff"
+      ],
+      [
+       "Content-Security-Policy",
+       "default-src 'self'; script-src 'self' 'unsafe-inline'; style-src 'self' 'unsafe-inline'; connect-src 'self'; img-src 'self' data:; font-src 'self'; frame-ancestors 'none'"
+      ]
+     ],
+     "status": 200
+    },
+    "size": 5000000
+   },
+   "binary_utf8": {
+    "response": {
+     "body": "{\"error\":\"snapshot_unavailable\"}",
+     "headers": [
+      [
+       "Content-Type",
+       "application/json"
+      ],
+      [
+       "Content-Length",
+       "32"
+      ],
+      [
+       "Cache-Control",
+       "no-store"
+      ],
+      [
+       "X-Content-Type-Options",
+       "nosniff"
+      ],
+      [
+       "Content-Security-Policy",
+       "default-src 'self'; script-src 'self' 'unsafe-inline'; style-src 'self' 'unsafe-inline'; connect-src 'self'; img-src 'self' data:; font-src 'self'; frame-ancestors 'none'"
+      ]
+     ],
+     "status": 503
+    },
+    "size": 3
+   },
+   "empty": {
+    "response": {
+     "body": "{\"error\":\"snapshot_unavailable\"}",
+     "headers": [
+      [
+       "Content-Type",
+       "application/json"
+      ],
+      [
+       "Content-Length",
+       "32"
+      ],
+      [
+       "Cache-Control",
+       "no-store"
+      ],
+      [
+       "X-Content-Type-Options",
+       "nosniff"
+      ],
+      [
+       "Content-Security-Policy",
+       "default-src 'self'; script-src 'self' 'unsafe-inline'; style-src 'self' 'unsafe-inline'; connect-src 'self'; img-src 'self' data:; font-src 'self'; frame-ancestors 'none'"
+      ]
+     ],
+     "status": 503
+    },
+    "size": 0
+   },
+   "envelope": {
+    "response": {
+     "body": "{\"schema\": \"harness-monitor.v1\", \"collected_at\": \"2026-09-19T11:59:59+00:00\", \"scope\": {\"label\": \"repository zeus\", \"docker\": \"compose\", \"containers\": null}, \"sources\": {\"database\": {\"status\": \"ok\", \"observed_at\": \"2026-09-19T11:59:59+00:00\", \"data\": []}, \"docker\": {\"status\": \"ok\", \"observed_at\": \"2026-09-19T11:59:59+00:00\", \"data\": []}, \"redis\": {\"status\": \"ok\", \"observed_at\": \"2026-09-19T11:59:59+00:00\", \"data\": []}}}",
+     "headers": [
+      [
+       "Content-Type",
+       "application/json; charset=utf-8"
+      ],
+      [
+       "Content-Length",
+       "423"
+      ],
+      [
+       "Cache-Control",
+       "no-store"
+      ],
+      [
+       "X-Content-Type-Options",
+       "nosniff"
+      ],
+      [
+       "Content-Security-Policy",
+       "default-src 'self'; script-src 'self' 'unsafe-inline'; style-src 'self' 'unsafe-inline'; connect-src 'self'; img-src 'self' data:; font-src 'self'; frame-ancestors 'none'"
+      ]
+     ],
+     "status": 200
+    },
+    "size": 423
+   },
+   "json_null": {
+    "response": {
+     "body": "null",
+     "headers": [
+      [
+       "Content-Type",
+       "application/json; charset=utf-8"
+      ],
+      [
+       "Content-Length",
+       "4"
+      ],
+      [
+       "Cache-Control",
+       "no-store"
+      ],
+      [
+       "X-Content-Type-Options",
+       "nosniff"
+      ],
+      [
+       "Content-Security-Policy",
+       "default-src 'self'; script-src 'self' 'unsafe-inline'; style-src 'self' 'unsafe-inline'; connect-src 'self'; img-src 'self' data:; font-src 'self'; frame-ancestors 'none'"
+      ]
+     ],
+     "status": 200
+    },
+    "size": 4
+   },
+   "json_scalar": {
+    "response": {
+     "body": "5",
+     "headers": [
+      [
+       "Content-Type",
+       "application/json; charset=utf-8"
+      ],
+      [
+       "Content-Length",
+       "1"
+      ],
+      [
+       "Cache-Control",
+       "no-store"
+      ],
+      [
+       "X-Content-Type-Options",
+       "nosniff"
+      ],
+      [
+       "Content-Security-Policy",
+       "default-src 'self'; script-src 'self' 'unsafe-inline'; style-src 'self' 'unsafe-inline'; connect-src 'self'; img-src 'self' data:; font-src 'self'; frame-ancestors 'none'"
+      ]
+     ],
+     "status": 200
+    },
+    "size": 1
+   },
+   "not_json": {
+    "response": {
+     "body": "{\"error\":\"snapshot_unavailable\"}",
+     "headers": [
+      [
+       "Content-Type",
+       "application/json"
+      ],
+      [
+       "Content-Length",
+       "32"
+      ],
+      [
+       "Cache-Control",
+       "no-store"
+      ],
+      [
+       "X-Content-Type-Options",
+       "nosniff"
+      ],
+      [
+       "Content-Security-Policy",
+       "default-src 'self'; script-src 'self' 'unsafe-inline'; style-src 'self' 'unsafe-inline'; connect-src 'self'; img-src 'self' data:; font-src 'self'; frame-ancestors 'none'"
+      ]
+     ],
+     "status": 503
+    },
+    "size": 5
+   },
+   "over_limit": {
+    "response": {
+     "body": "{\"error\":\"snapshot_unavailable\"}",
+     "headers": [
+      [
+       "Content-Type",
+       "application/json"
+      ],
+      [
+       "Content-Length",
+       "32"
+      ],
+      [
+       "Cache-Control",
+       "no-store"
+      ],
+      [
+       "X-Content-Type-Options",
+       "nosniff"
+      ],
+      [
+       "Content-Security-Policy",
+       "default-src 'self'; script-src 'self' 'unsafe-inline'; style-src 'self' 'unsafe-inline'; connect-src 'self'; img-src 'self' data:; font-src 'self'; frame-ancestors 'none'"
+      ]
+     ],
+     "status": 503
+    },
+    "size": 5000001
+   },
+   "padded_at_limit": {
+    "response": {
+     "body": {
+      "sha256": "b509653e5545cce85d7b43ba0f47e6ab7cb90feaf6e5ec33f997eedd51127dfc",
+      "size": 5000000
+     },
+     "headers": [
+      [
+       "Content-Type",
+       "application/json; charset=utf-8"
+      ],
+      [
+       "Content-Length",
+       "5000000"
+      ],
+      [
+       "Cache-Control",
+       "no-store"
+      ],
+      [
+       "X-Content-Type-Options",
+       "nosniff"
+      ],
+      [
+       "Content-Security-Policy",
+       "default-src 'self'; script-src 'self' 'unsafe-inline'; style-src 'self' 'unsafe-inline'; connect-src 'self'; img-src 'self' data:; font-src 'self'; frame-ancestors 'none'"
+      ]
+     ],
+     "status": 200
+    },
+    "size": 5000000
+   },
+   "padded_over_limit": {
+    "response": {
+     "body": "{\"error\":\"snapshot_unavailable\"}",
+     "headers": [
+      [
+       "Content-Type",
+       "application/json"
+      ],
+      [
+       "Content-Length",
+       "32"
+      ],
+      [
+       "Cache-Control",
+       "no-store"
+      ],
+      [
+       "X-Content-Type-Options",
+       "nosniff"
+      ],
+      [
+       "Content-Security-Policy",
+       "default-src 'self'; script-src 'self' 'unsafe-inline'; style-src 'self' 'unsafe-inline'; connect-src 'self'; img-src 'self' data:; font-src 'self'; frame-ancestors 'none'"
+      ]
+     ],
+     "status": 503
+    },
+    "size": 5000001
+   },
+   "truncated": {
+    "response": {
+     "body": "{\"error\":\"snapshot_unavailable\"}",
+     "headers": [
+      [
+       "Content-Type",
+       "application/json"
+      ],
+      [
+       "Content-Length",
+       "32"
+      ],
+      [
+       "Cache-Control",
+       "no-store"
+      ],
+      [
+       "X-Content-Type-Options",
+       "nosniff"
+      ],
+      [
+       "Content-Security-Policy",
+       "default-src 'self'; script-src 'self' 'unsafe-inline'; style-src 'self' 'unsafe-inline'; connect-src 'self'; img-src 'self' data:; font-src 'self'; frame-ancestors 'none'"
+      ]
+     ],
+     "status": 503
+    },
+    "size": 12
+   },
+   "valid": {
+    "response": {
+     "body": "{\"sources\": {}}",
+     "headers": [
+      [
+       "Content-Type",
+       "application/json; charset=utf-8"
+      ],
+      [
+       "Content-Length",
+       "15"
+      ],
+      [
+       "Cache-Control",
+       "no-store"
+      ],
+      [
+       "X-Content-Type-Options",
+       "nosniff"
+      ],
+      [
+       "Content-Security-Policy",
+       "default-src 'self'; script-src 'self' 'unsafe-inline'; style-src 'self' 'unsafe-inline'; connect-src 'self'; img-src 'self' data:; font-src 'self'; frame-ancestors 'none'"
+      ]
+     ],
+     "status": 200
+    },
+    "size": 15
+   },
+   "valid_unicode": {
+    "response": {
+     "body": "{\"label\": \"관측\"}",
+     "headers": [
+      [
+       "Content-Type",
+       "application/json; charset=utf-8"
+      ],
+      [
+       "Content-Length",
+       "19"
+      ],
+      [
+       "Cache-Control",
+       "no-store"
+      ],
+      [
+       "X-Content-Type-Options",
+       "nosniff"
+      ],
+      [
+       "Content-Security-Policy",
+       "default-src 'self'; script-src 'self' 'unsafe-inline'; style-src 'self' 'unsafe-inline'; connect-src 'self'; img-src 'self' data:; font-src 'self'; frame-ancestors 'none'"
+      ]
+     ],
+     "status": 200
+    },
+    "size": 19
+   }
+  },
+  "health": {
+   "body": "{\"service\":\"harness-monitor\"}",
+   "headers": [
+    [
+     "Content-Type",
+     "application/json"
+    ],
+    [
+     "Content-Length",
+     "29"
+    ],
+    [
+     "Cache-Control",
+     "no-store"
+    ],
+    [
+     "X-Content-Type-Options",
+     "nosniff"
+    ],
+    [
+     "Content-Security-Policy",
+     "default-src 'self'; script-src 'self' 'unsafe-inline'; style-src 'self' 'unsafe-inline'; connect-src 'self'; img-src 'self' data:; font-src 'self'; frame-ancestors 'none'"
+    ]
+   ],
+   "status": 200
+  },
+  "health_missing_snapshot": {
+   "body": "{\"service\":\"harness-monitor\"}",
+   "headers": [
+    [
+     "Content-Type",
+     "application/json"
+    ],
+    [
+     "Content-Length",
+     "29"
+    ],
+    [
+     "Cache-Control",
+     "no-store"
+    ],
+    [
+     "X-Content-Type-Options",
+     "nosniff"
+    ],
+    [
+     "Content-Security-Policy",
+     "default-src 'self'; script-src 'self' 'unsafe-inline'; style-src 'self' 'unsafe-inline'; connect-src 'self'; img-src 'self' data:; font-src 'self'; frame-ancestors 'none'"
+    ]
+   ],
+   "status": 200
+  },
+  "health_query": {
+   "body": "{\"service\":\"harness-monitor\"}",
+   "headers": [
+    [
+     "Content-Type",
+     "application/json"
+    ],
+    [
+     "Content-Length",
+     "29"
+    ],
+    [
+     "Cache-Control",
+     "no-store"
+    ],
+    [
+     "X-Content-Type-Options",
+     "nosniff"
+    ],
+    [
+     "Content-Security-Policy",
+     "default-src 'self'; script-src 'self' 'unsafe-inline'; style-src 'self' 'unsafe-inline'; connect-src 'self'; img-src 'self' data:; font-src 'self'; frame-ancestors 'none'"
+    ]
+   ],
+   "status": 200
+  },
+  "health_slash": {
+   "body": "Not found",
+   "headers": [
+    [
+     "Content-Type",
+     "text/plain"
+    ],
+    [
+     "Content-Length",
+     "9"
+    ],
+    [
+     "Cache-Control",
+     "no-store"
+    ],
+    [
+     "X-Content-Type-Options",
+     "nosniff"
+    ],
+    [
+     "Content-Security-Policy",
+     "default-src 'self'; script-src 'self' 'unsafe-inline'; style-src 'self' 'unsafe-inline'; connect-src 'self'; img-src 'self' data:; font-src 'self'; frame-ancestors 'none'"
+    ]
+   ],
+   "status": 404
+  },
+  "missing": {
+   "body": "{\"sources\": {}}",
+   "headers": [
+    [
+     "Content-Type",
+     "application/json; charset=utf-8"
+    ],
+    [
+     "Content-Length",
+     "15"
+    ],
+    [
+     "Cache-Control",
+     "no-store"
+    ],
+    [
+     "X-Content-Type-Options",
+     "nosniff"
+    ],
+    [
+     "Content-Security-Policy",
+     "default-src 'self'; script-src 'self' 'unsafe-inline'; style-src 'self' 'unsafe-inline'; connect-src 'self'; img-src 'self' data:; font-src 'self'; frame-ancestors 'none'"
+    ]
+   ],
+   "status": 200
+  },
+  "query": {
+   "body": "{\"sources\": {}}",
+   "headers": [
+    [
+     "Content-Type",
+     "application/json; charset=utf-8"
+    ],
+    [
+     "Content-Length",
+     "15"
+    ],
+    [
+     "Cache-Control",
+     "no-store"
+    ],
+    [
+     "X-Content-Type-Options",
+     "nosniff"
+    ],
+    [
+     "Content-Security-Policy",
+     "default-src 'self'; script-src 'self' 'unsafe-inline'; style-src 'self' 'unsafe-inline'; connect-src 'self'; img-src 'self' data:; font-src 'self'; frame-ancestors 'none'"
+    ]
+   ],
+   "status": 200
+  },
+  "recovered": {
+   "body": "{\"sources\": {}}",
+   "headers": [
+    [
+     "Content-Type",
+     "application/json; charset=utf-8"
+    ],
+    [
+     "Content-Length",
+     "15"
+    ],
+    [
+     "Cache-Control",
+     "no-store"
+    ],
+    [
+     "X-Content-Type-Options",
+     "nosniff"
+    ],
+    [
+     "Content-Security-Policy",
+     "default-src 'self'; script-src 'self' 'unsafe-inline'; style-src 'self' 'unsafe-inline'; connect-src 'self'; img-src 'self' data:; font-src 'self'; frame-ancestors 'none'"
+    ]
+   ],
+   "status": 200
+  },
+  "slash": {
+   "body": "Not found",
+   "headers": [
+    [
+     "Content-Type",
+     "text/plain"
+    ],
+    [
+     "Content-Length",
+     "9"
+    ],
+    [
+     "Cache-Control",
+     "no-store"
+    ],
+    [
+     "X-Content-Type-Options",
+     "nosniff"
+    ],
+    [
+     "Content-Security-Policy",
+     "default-src 'self'; script-src 'self' 'unsafe-inline'; style-src 'self' 'unsafe-inline'; connect-src 'self'; img-src 'self' data:; font-src 'self'; frame-ancestors 'none'"
+    ]
+   ],
+   "status": 404
+  }
+ },
+ "tmp_dir_in_result": false
+}
