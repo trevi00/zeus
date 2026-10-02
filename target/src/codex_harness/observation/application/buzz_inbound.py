@@ -24,8 +24,8 @@ EOSE and short pages are observations, never proof (§6.2 step 4): a finished pa
 
 A cooperative stop (D5 F1, DESIGN-D §2): `run(generation, stop=...)` reads `stop` before each channel and hands it to
 the relay's pager, which reads it before each page. Once it is true no further network work starts; the current atomic
-unit finishes (the pages already read are committed, then the pending owner rows are sunk). A pass the pager ended with
-`stopped` is NOT finished: it stays `running` with its keyset, so the next run resumes it from the first unread page.
+unit finishes (the event commit in flight completes, then the pending owner rows are sunk). A pass the pager ended with
+`stopped`, or that stopped between event commits, is NOT finished: it stays `running` with its keyset, so the next run resumes it from the first unread page.
 """
 
 from __future__ import annotations
@@ -73,11 +73,15 @@ class InboundPass:
         result = self.relay.query_all(query, stop=stop) if stop is not None else self.relay.query_all(query)
         events = sorted(result["events"], key=lambda event: (-event["created_at"], event["id"]))
         inserted = 0
+        halted = result["ended"] == "stopped"
         for event in events:
+            if stop is not None and stop():
+                halted = True  # the rest of the page is read again from the committed keyset
+                break
             inserted += self._commit_event(channel, generation, key, event, now) == "inserted"
             self._advance_cursor(channel, generation, self._read_pass(key)["high"])
         processed, failed = self._sink_pending(channel, generation)
-        if result["ended"] == "stopped":  # D5 F1: unfinished, not a gap observation; the next run resumes the keyset
+        if halted:  # D5 F1: unfinished, not a gap observation; the next run resumes the keyset
             return {"ended": "stopped", "events": len(events), "inserted": inserted, "sunk": processed,
                     "sink_failed": failed, "lower": record["lower"], "pass": key}
         with self.store.transaction() as tx:

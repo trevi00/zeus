@@ -143,20 +143,19 @@ def test_f1b_a_stop_during_paginated_inbound_reads_starts_no_further_page_and_re
     env, channels = Env(), ["a", "b"]
     events = [channel_event("a", i) for i in range(5)] + [channel_event("b", 0)]
     flag = []
-    sock = Socket(env, relay_of(events))
+    sock = Socket(env, relay_of(events), frame_cost=1)
     sock.on_recv = lambda: flag.append(True)  # SIGTERM arrives during the first page
     rt, calls = compose(env, client(env, sock, page=2), channels)
+    started = env.t
     assert rt.run(lambda: bool(flag)) == 0
-    assert len(sock.kinds("REQ")) == 1 and calls == []  # page 2 and channel b never start
-    first = inbox_ids(rt.store)
-    assert len(first) == 2  # the page that was in flight is committed; the pass is left to resume
-    keyset = tuple(passes(rt.store, "a")[0]["keyset"])
-    assert passes(rt.store, "a")[0]["state"] == "running" and keyset[1] in first
+    assert len(sock.kinds("REQ")) == 1 and calls == [] and env.t - started <= OP  # page 2 and channel b never start
+    assert inbox_ids(rt.store) == []  # the stop was already set: the page read is not committed, nothing is half done
+    assert passes(rt.store, "a")[0]["state"] == "running" and passes(rt.store, "b") == []
     restarted = Socket(env, relay_of(events))
     rt2, _ = compose(env, client(env, restarted, page=2), channels, store=rt.store, max_seconds=0)
     assert rt2.run(lambda: False) == 0
     flts = [frame[2] for frame in restarted.kinds("REQ")]
-    assert flts[0]["#h"] == ["a"] and (flts[0]["until"], flts[0]["before_id"]) == keyset
+    assert [f["#h"][0] for f in flts] == ["a", "a", "a", "b"]  # a's three pages (2 + 2 + 1), then b
     assert inbox_ids(rt.store) == sorted(event["id"] for event in events)  # each exactly once, nothing lost
     assert all(row["state"] != "running" for row in passes(rt.store, "a"))
 
@@ -176,13 +175,16 @@ def test_f1c_a_stop_during_a_multi_row_outbox_delivery_sends_no_further_row_and_
     publish = w.relay.publish
 
     def publishing(event):
-        flag.append(True)  # SIGTERM arrives during the first row's publish
+        flag.append(True)  # SIGTERM arrives during the first row's publish, which takes as long as a request may
+        env.t += OP
         return publish(event)
 
     w.relay.publish = publishing
     rt, calls = outbox_runtime(env, w, w.relay)
+    started = env.t
     assert rt.run(lambda: bool(flag)) == 0
     assert len(w.relay.published) == 1 and "recover" not in calls and "compact" not in calls
+    assert env.t - started <= OP  # the in-flight row used the whole allowance; no other row added to it
     assert sorted(row["status"] for row in w.rows()) == ["acknowledged", "pending", "pending"]
     w.relay.publish = publish
     rt2, _ = outbox_runtime(env, w, w.relay)
@@ -207,6 +209,43 @@ def test_f1c_recover_deferred_checks_stop_before_each_row_and_keeps_the_watermar
     assert w.outbox.recover_deferred(w.generation, regenerate, stop=lambda: True) == {"state": 0}
     assert w.rows("buzz_outbox_watermarks")[0]["deferred"] is True  # nothing was dropped: the work is still deferred
     assert w.outbox.recover_deferred(w.generation, regenerate)["state"] >= 1
+
+
+def test_f1c_a_stop_during_a_state_rows_reconciliation_query_does_not_replan(tmp_path):
+    w = World(tmp_path)
+    w.enqueue("s0", 1)
+    w.now += 700  # past the drift window: the row is reconciled (query, then re-plan), not resent
+    flag = []
+    query = w.relay.query
+
+    def querying(filters):
+        flag.append(True)
+        return query(filters)
+
+    w.relay.query = querying
+    w.plan = {"version": 2, "unsigned": w.unsigned("s0@2")}
+    w.outbox.deliver(w.generation, stop=lambda: bool(flag))
+    assert w.replans == [] and w.row("s0", 1)["status"] == "pending"  # the second relay call never started
+    w.relay.query = query
+    counts = w.outbox.deliver(w.generation)  # restart: reconciled once, re-planned once
+    assert w.replans == ["s0"] and counts["replanned"] == 1
+
+
+def test_f1b_a_stop_between_event_commits_leaves_the_pass_running_and_resumes_the_rest():
+    env, events = Env(), [channel_event("a", i) for i in range(3)]
+    rt, _ = compose(env, client(env, Socket(env)), ["a"], max_seconds=0)  # only its store and lease are used
+    sock = Socket(env, relay_of(events))
+    inbound = InboundPass(rt.store, client(env, sock), RemoteInbox(), rt.lease, lambda *a: "done", [], ["a"], env.clock)
+    with rt.store.transaction() as tx:
+        generation = rt.lease.acquire(tx, "owner-1", env.t, 30)
+    report = inbound.run(generation, stop=lambda: len(inbox_ids(rt.store)) >= 1)
+    assert report["a"]["ended"] == "stopped" and len(inbox_ids(rt.store)) == 1
+    assert passes(rt.store, "a")[0]["state"] == "running"
+    resumed = Socket(env, relay_of(events))
+    InboundPass(rt.store, client(env, resumed), RemoteInbox(), rt.lease, lambda *a: "done", [], ["a"],
+                env.clock).run(generation)
+    assert inbox_ids(rt.store) == sorted(event["id"] for event in events)
+    assert resumed.kinds("REQ")[0][2]["until"] == events[0]["created_at"]  # from the committed keyset, not from scratch
 
 
 # ---- F1: one operation deadline ------------------------------------------------------------------------------------
@@ -320,6 +359,15 @@ def test_f2_the_refusal_is_sticky_the_client_never_authenticates_or_sends_again(
     assert len(sock.sent) == sent and len(sock.kinds("AUTH")) == 1  # nothing was sent after the refusal
 
 
+def test_f2_a_refusal_in_the_first_of_several_channels_opens_no_further_pass():
+    env = Env()
+    sock = restricted_relay(env)
+    rt, calls = compose(env, client(env, sock), ["a", "b", "c"], tick_seconds=1)
+    assert rt.run(lambda: False) == 4
+    assert len(sock.kinds("REQ")) == 1 and passes(rt.store, "b") == [] and passes(rt.store, "c") == []
+    assert len(passes(rt.store, "a")) == 1 and env.lines[-1]["steps"]["inbound"]["channels"] == 1
+
+
 def test_f2_a_direct_closed_restricted_is_not_a_sticky_auth_refusal():
     env = Env()
     sock = Socket(env, lambda frame: [["CLOSED", frame[1], "restricted: no"]] if frame[0] == "REQ" else [])
@@ -398,6 +446,9 @@ def test_f2_the_equivalent_refusal_during_publication_exits_four_before_housekee
     assert len(sock.kinds("AUTH")) == 1 and len(sock.kinds("EVENT")) == 1  # the second row is never sent
     assert "recover" not in calls and "compact" not in calls and env.slices == []
     assert {row["status"] for row in w.rows()} == {"pending"}  # nothing was lost or acknowledged
+    first, second = sorted(w.rows(), key=lambda row: row["subject"])
+    assert (first["attempts"], second["attempts"]) == (1, 0) and second["first_sent_at"] is None  # no later delivery
+    assert env.lines[-1]["steps"]["deliver"]["sent"] == 1
 
 
 def test_f2_the_refusal_during_recovery_exits_four_before_compaction(tmp_path):

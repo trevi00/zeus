@@ -304,7 +304,8 @@ class BridgeRuntime:
         tick.generation = generation
         if stop():
             return generation, None, False
-        report = self.inbound.run(generation, stop=stop)
+        halt = lambda: stop() or self._refused()  # noqa: E731 - D5: a refused AUTH ends a pass like a stop does
+        report = self.inbound.run(generation, stop=halt)
         tick.steps["inbound"] = _inbound_counts(report)
         ended = {result["ended"] for result in report.values()}
         if "closed:restricted" in ended or self._refused():  # DESIGN-D §2: configuration, final, no retry storm
@@ -319,12 +320,12 @@ class BridgeRuntime:
             return generation, EXIT_RESTRICTED, False
         if stop():
             return generation, None, False
-        tick.steps["deliver"] = self.outbox.deliver(generation, stop=stop)
+        tick.steps["deliver"] = self.outbox.deliver(generation, stop=halt)
         if self._refused():  # D5 F2: the relay refused our AUTH during publication or reconciliation
             return generation, EXIT_RESTRICTED, False
         if stop():
             return generation, None, False
-        if self._housekeeping(tick, generation, number, stop):
+        if self._housekeeping(tick, generation, number, halt):
             return generation, EXIT_RESTRICTED, False
         return generation, None, False
 

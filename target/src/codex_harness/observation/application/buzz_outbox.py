@@ -22,7 +22,7 @@ plan answers `{"superseded": True}` and the op is retired. A relay `conflict:` r
 ends its window like a timestamp rejection (§6.1.5).
 
 Cooperative stop (D5 F1, DESIGN-D §2): `deliver` and `recover_deferred` take an optional `stop` and read it before each
-row (and before a re-publication's send); once it is true no further relay call starts. The row in flight finishes, every
+row (and before a re-publication's send and before a state row's re-plan, the relay calls after its first query); once it is true no further relay call starts. The row in flight finishes, every
 unstarted row stays `pending`/`unknown` (or the deferred watermark stays), so the next pass resumes it exactly once.
 
 Capacity (§6.1 step 6, P6). `pending`, `in_flight` and `unknown` rows of every class count against `outbox_max`,
@@ -180,7 +180,7 @@ class BuzzOutbox:
             elif row["cls"] == "append":
                 self._reconcile_append(generation, row, now, counts, stop)
             else:
-                self._reconcile_state(generation, row, now, counts)
+                self._reconcile_state(generation, row, now, counts, stop)
         return counts
 
     def _resend(self, generation: int, row: dict, now: int, counts: dict) -> None:
@@ -240,7 +240,8 @@ class BuzzOutbox:
             return  # D5 F1: the fresh copy is stored; the next pass resends it within its drift window
         self._resend(generation, {**row, "event": fresh}, now, counts)
 
-    def _reconcile_state(self, generation: int, row: dict, now: int, counts: dict) -> None:
+    def _reconcile_state(self, generation: int, row: dict, now: int, counts: dict,
+                         stop: Callable[[], bool] | None = None) -> None:
         """§6.1 step 4, state: a positive `ids` match, else re-plan a NEW version regardless of the unknown."""
         ident = row["event_id"]
         found = self._match([{"ids": [ident]}], lambda event: event["id"] == ident
@@ -254,6 +255,8 @@ class BuzzOutbox:
             counts["reconciled"] += 1
             counts["acknowledged"] += 1
             return
+        if stop is not None and stop():
+            return  # D5 F1: replan queries the relay once more; the row stays as it is and the next pass reconciles it
         plan = self.replan(row["subject"])
         if plan and plan.get("superseded") is True:  # §6.1.5: the relay head already carries newer state (or nothing is
             self._commit(generation, row["id"], lambda body: self._reclaim(body, "superseded"))  # to say over it)
