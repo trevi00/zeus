@@ -61,7 +61,7 @@ def violations(modules: set[str]) -> list[str]:
                       and not m.startswith(ALLOWED_CREDENTIAL_ADAPTER + ".")))
 
 
-BATCH_D_PROCESS = ("composition.buzz_bridge", "entry.processes.buzz_bridge")
+BATCH_D_PROCESS = ("composition.buzz_bridge", "composition.buzz_world", "entry.processes.buzz_bridge")
 
 
 @pytest.mark.parametrize("entry", BATCH_B + BATCH_A_TRANSPORT + BATCH_D_PROCESS)
