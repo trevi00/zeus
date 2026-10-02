@@ -53,7 +53,10 @@ OWNED_BUCKETS = ("inbox", "incidents", "hooks", "research_programs", "dge_sessio
                  # writer, application/scheduling.py, is research's and not moved yet)
                  "audit_repair_activation", "audit_repair_corrections", "schedule",
                  # S8 pilot 101 (V4): the bucket only research.application.threshold_reviews writes (restore: V22 R-tr3)
-                 "threshold_review_requests")
+                 "threshold_review_requests",
+                 # S8 batch B4 (V25 R-df2): the five buckets only research.application.decision_feedback writes
+                 "decision_observations", "decision_feedback_groups", "recurring_work_candidates",
+                 "decision_feedback_conflicts", "decision_feedback_collections")
 
 
 class OutboxAppend(Protocol):
