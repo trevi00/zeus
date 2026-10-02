@@ -1,0 +1,8 @@
+{
+ "family": "review.sdd",
+ "description": "S8 batch B4 (V28 R-sdd1..R-sdd3) M7 application/sdd.py SDD (register: provenance variants, replay, revision two superseding, requirement-meaning and deletion refusals, planted ticket missing/stale/closed/lifecycle-changed; observe/propose with gaps, replays, refusals and identical observations per iteration; status over every superseded state, the corrupt artifact and the journal break/sidecar/head refusals; record_gate_verdict: runner receipts bound/unbound, reviewer claims, a labelled provider in five modes, retractions; request_advance; record_transfer), characterized before the move into review: LABELLED content-addressed artifacts and provider, planted tickets rows with the real intake ticket_binding, the harness clock; the whole-store digest and artifact count around every call; the 20 M7 tests are 13 non-SDD and 7 real_postgres, listed in m7_tests; no device, provider, network or database",
+ "reference_driver": "drivers/reference/s8_sdd.py",
+ "target_driver": "drivers/target/s8_sdd.py",
+ "golden": "goldens/reference/review.sdd.json",
+ "slice": "S8"
+}
