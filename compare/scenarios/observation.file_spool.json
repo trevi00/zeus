@@ -1,0 +1,9 @@
+{
+ "family": "observation.file_spool",
+ "description": "S9 unit U2 (M7 adapters/observation_spool.py, INV-OBSERVATION-001), characterized before the move into observation.adapters.observation_spool: real files in a per-case temporary directory (append/read, segment rotation and naming incl. width past 9999, the max_bytes bound -> SpoolFull with exactly the first record kept, acknowledged offsets in every readable and unreadable form, hash/shape/json/object corruption and a truncated tail that the writer then finishes, atomic_write, the lifecycle lock and writer_alive, the run lock and the second-writer refusal, close/reopen, SpoolDirectory listing/known_runs/run_age/run_finished/live_runs/prune/reclaim/reclaimable, health, pending alerts with replayer acknowledgements, termination records), real child processes (two concurrent writers, a killed writer, a writer dying with half a record, a held lock, a held lifecycle lock with LIFECYCLE_TIMEOUT lowered on the module) and real threads at the M7 review5 barrier positions (gc/reclaim waiting for a registering writer, gc before registration); mirrors tests/test_observation_spool.py and the spool parts of test_observation_review{,2,3,4,5}.py. Declared nondeterministic fields are normalized inside the driver, not by the mask list: the temporary root (<root>), atomic_write's random temporary-file suffix (<tmp>), pids (never reported), mtimes (aged files set to a fixed epoch, explicit now), and the wall-clock updated_at/closed_at (proven ISO-8601 UTC, reported as <utc-iso>); lock timing is never asserted. No device, provider, network or database",
+ "reference_driver": "drivers/reference/s9_file_spool.py",
+ "target_driver": null,
+ "target_status": "pending: the target side is the S9 unit U2 move (observation.adapters.observation_spool)",
+ "golden": "goldens/reference/observation.file_spool.json",
+ "slice": "S9"
+}

@@ -1,0 +1,1605 @@
+{
+ "acknowledgements": {
+  "ack_is_a_directory": {
+   "value": 0
+  },
+  "acknowledged_twice": {
+   "files": {
+    "spool/.lifecycle.lock": {
+     "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+     "size": 0
+    },
+    "spool/000000000000000000000000000000a0.0000.ack": {
+     "ends_with_newline": true,
+     "json": {
+      "consumed": 2,
+      "offset": 9,
+      "updated_at": "<utc-iso>"
+     }
+    },
+    "spool/000000000000000000000000000000a0.0000.jsonl": {
+     "sha256": "b98d26502ef49480f2fcf53bf05695d7ba8adb77373fe86c4c98e53f65f4313e",
+     "size": 79
+    },
+    "spool/000000000000000000000000000000a0.lock": {
+     "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+     "size": 0
+    }
+   },
+   "size_clamps": 70,
+   "value": 9
+  },
+  "bad_utf8": {
+   "value": 0
+  },
+  "big": {
+   "value": 99999999
+  },
+  "bool": {
+   "value": 0
+  },
+  "empty": {
+   "value": 0
+  },
+  "float": {
+   "value": 0
+  },
+  "list": {
+   "message": "'list' object has no attribute 'get'",
+   "refused": "AttributeError"
+  },
+  "missing": 0,
+  "missing_key": {
+   "value": 0
+  },
+  "negative": {
+   "value": 0
+  },
+  "not_json": {
+   "value": 0
+  },
+  "offset_beyond_size": {
+   "unacknowledged": 0,
+   "value": 1000000
+  },
+  "string": {
+   "value": 0
+  },
+  "valid": {
+   "value": 12
+  },
+  "zero": {
+   "value": 0
+  }
+ },
+ "append_read_rotation": {
+  "after_append": {
+   "owns_run": true,
+   "path": "spool/000000000000000000000000000000a0.0007.jsonl",
+   "rotations": 7,
+   "segment": 7,
+   "segments": [
+    "spool/000000000000000000000000000000a0.0000.jsonl",
+    "spool/000000000000000000000000000000a0.0001.jsonl",
+    "spool/000000000000000000000000000000a0.0002.jsonl",
+    "spool/000000000000000000000000000000a0.0003.jsonl",
+    "spool/000000000000000000000000000000a0.0004.jsonl",
+    "spool/000000000000000000000000000000a0.0005.jsonl",
+    "spool/000000000000000000000000000000a0.0006.jsonl",
+    "spool/000000000000000000000000000000a0.0007.jsonl"
+   ],
+   "size": 900,
+   "unacknowledged": 900
+  },
+  "closed": {
+   "closed": true,
+   "listing": {
+    "dirs": [
+     "spool"
+    ],
+    "files": {
+     "spool/.lifecycle.lock": {
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "size": 0
+     },
+     "spool/000000000000000000000000000000a0.0000.jsonl": {
+      "sha256": "edf0070cdc74ac02e275dad2ffca67b04a44e66f7c373fc87bfedb792eec9171",
+      "size": 88
+     },
+     "spool/000000000000000000000000000000a0.0001.jsonl": {
+      "sha256": "3f20a91a76c877dd1acc1e808983d97ef01dc6f43359a2ff5f50d0597cef16d9",
+      "size": 95
+     },
+     "spool/000000000000000000000000000000a0.0002.jsonl": {
+      "sha256": "1b37926a605406445b73f310bf71ffcd7f8fb65aaf790d946bdaed57ba2cc83d",
+      "size": 102
+     },
+     "spool/000000000000000000000000000000a0.0003.jsonl": {
+      "sha256": "d9c29d9063894bd23fd96dc1bb013193458ff86f46b7fd2753542d43e2082a43",
+      "size": 109
+     },
+     "spool/000000000000000000000000000000a0.0004.jsonl": {
+      "sha256": "5efa71e632e6d15e0acc0f4eba69da452230e617f58ca35a237f6ce1e0157f38",
+      "size": 116
+     },
+     "spool/000000000000000000000000000000a0.0005.jsonl": {
+      "sha256": "39174a6cf3d02fbcb03eae86f48eadd333e7577fe758521ff20fab611c9ff348",
+      "size": 123
+     },
+     "spool/000000000000000000000000000000a0.0006.jsonl": {
+      "sha256": "6d427bf5e31f98d6be0906cddbb53ba72940a249fef9bd77141cd2466bf32c18",
+      "size": 130
+     },
+     "spool/000000000000000000000000000000a0.0007.jsonl": {
+      "sha256": "a2de2c0fa0e9b2eb12aef6b31e482b7a0af655513f6ccacc62cebbbd91a9aa06",
+      "size": 137
+     },
+     "spool/000000000000000000000000000000a0.closed": {
+      "ends_with_newline": true,
+      "json": {
+       "closed_at": "<utc-iso>",
+       "segments": 8
+      }
+     },
+     "spool/000000000000000000000000000000a0.lock": {
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "size": 0
+     }
+    }
+   },
+   "owns_run": false
+  },
+  "constructed": {
+   "closed": false,
+   "files_after_construction": {},
+   "max_bytes": 1048576,
+   "owns_run": false,
+   "path": "spool/000000000000000000000000000000a0.0000.jsonl",
+   "root_is_path": true,
+   "segment_bytes": 170
+  },
+  "fsync_default": {
+   "append": 79,
+   "fsync": true
+  },
+  "listing": {
+   "dirs": [
+    "spool"
+   ],
+   "files": {
+    "spool/.lifecycle.lock": {
+     "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+     "size": 0
+    },
+    "spool/000000000000000000000000000000a0.0000.jsonl": {
+     "sha256": "46ae85232ccac60d498b81e71c92fe008d46ab90dd2a8034463a96d462a4a95c",
+     "size": 177
+    },
+    "spool/000000000000000000000000000000a0.0001.jsonl": {
+     "sha256": "3f20a91a76c877dd1acc1e808983d97ef01dc6f43359a2ff5f50d0597cef16d9",
+     "size": 95
+    },
+    "spool/000000000000000000000000000000a0.0002.jsonl": {
+     "sha256": "1b37926a605406445b73f310bf71ffcd7f8fb65aaf790d946bdaed57ba2cc83d",
+     "size": 102
+    },
+    "spool/000000000000000000000000000000a0.0003.jsonl": {
+     "sha256": "d9c29d9063894bd23fd96dc1bb013193458ff86f46b7fd2753542d43e2082a43",
+     "size": 109
+    },
+    "spool/000000000000000000000000000000a0.0004.jsonl": {
+     "sha256": "5efa71e632e6d15e0acc0f4eba69da452230e617f58ca35a237f6ce1e0157f38",
+     "size": 116
+    },
+    "spool/000000000000000000000000000000a0.0005.jsonl": {
+     "sha256": "39174a6cf3d02fbcb03eae86f48eadd333e7577fe758521ff20fab611c9ff348",
+     "size": 123
+    },
+    "spool/000000000000000000000000000000a0.0006.jsonl": {
+     "sha256": "6d427bf5e31f98d6be0906cddbb53ba72940a249fef9bd77141cd2466bf32c18",
+     "size": 130
+    },
+    "spool/000000000000000000000000000000a0.0007.jsonl": {
+     "sha256": "a2de2c0fa0e9b2eb12aef6b31e482b7a0af655513f6ccacc62cebbbd91a9aa06",
+     "size": 137
+    },
+    "spool/000000000000000000000000000000a0.closed": {
+     "ends_with_newline": true,
+     "json": {
+      "closed_at": "<utc-iso>",
+      "segments": 1
+     }
+    },
+    "spool/000000000000000000000000000000a0.lock": {
+     "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+     "size": 0
+    }
+   }
+  },
+  "offsets": [
+   88,
+   95,
+   102,
+   109,
+   116,
+   123,
+   130,
+   137
+  ],
+  "read": {
+   "spool/000000000000000000000000000000a0.0000.jsonl": [
+    {
+     "defect": null,
+     "end": 88,
+     "event": {
+      "n": 0,
+      "pad": ""
+     },
+     "kind": "audit",
+     "start": 0,
+     "status": "complete"
+    }
+   ],
+   "spool/000000000000000000000000000000a0.0001.jsonl": [
+    {
+     "defect": null,
+     "end": 95,
+     "event": {
+      "n": 1,
+      "pad": "ppppppp"
+     },
+     "kind": "event",
+     "start": 0,
+     "status": "complete"
+    }
+   ],
+   "spool/000000000000000000000000000000a0.0002.jsonl": [
+    {
+     "defect": null,
+     "end": 102,
+     "event": {
+      "n": 2,
+      "pad": "pppppppppppppp"
+     },
+     "kind": "event",
+     "start": 0,
+     "status": "complete"
+    }
+   ],
+   "spool/000000000000000000000000000000a0.0003.jsonl": [
+    {
+     "defect": null,
+     "end": 109,
+     "event": {
+      "n": 3,
+      "pad": "ppppppppppppppppppppp"
+     },
+     "kind": "audit",
+     "start": 0,
+     "status": "complete"
+    }
+   ],
+   "spool/000000000000000000000000000000a0.0004.jsonl": [
+    {
+     "defect": null,
+     "end": 116,
+     "event": {
+      "n": 4,
+      "pad": "pppppppppppppppppppppppppppp"
+     },
+     "kind": "event",
+     "start": 0,
+     "status": "complete"
+    }
+   ],
+   "spool/000000000000000000000000000000a0.0005.jsonl": [
+    {
+     "defect": null,
+     "end": 123,
+     "event": {
+      "n": 5,
+      "pad": "ppppppppppppppppppppppppppppppppppp"
+     },
+     "kind": "event",
+     "start": 0,
+     "status": "complete"
+    }
+   ],
+   "spool/000000000000000000000000000000a0.0006.jsonl": [
+    {
+     "defect": null,
+     "end": 130,
+     "event": {
+      "n": 6,
+      "pad": "pppppppppppppppppppppppppppppppppppppppppp"
+     },
+     "kind": "audit",
+     "start": 0,
+     "status": "complete"
+    }
+   ],
+   "spool/000000000000000000000000000000a0.0007.jsonl": [
+    {
+     "defect": null,
+     "end": 137,
+     "event": {
+      "n": 7,
+      "pad": "ppppppppppppppppppppppppppppppppppppppppppppppppp"
+     },
+     "kind": "event",
+     "start": 0,
+     "status": "complete"
+    }
+   ]
+  },
+  "reopen_after_close": {
+   "append": {
+    "value": 177
+   },
+   "owns_run": true,
+   "path": "spool/000000000000000000000000000000a0.0000.jsonl",
+   "segment": 0,
+   "size_of_first_segment_before": 177
+  },
+  "segment_larger_than_limit_is_capped": {
+   "segment_bytes": 100
+  }
+ },
+ "atomic_writes": {
+  "content": "second\nline\n",
+  "non_text": {
+   "leftovers": [],
+   "message": "write() argument must be str, not bytes",
+   "refused": "TypeError",
+   "target_exists": false
+  },
+  "only_the_target": [
+   "health.json"
+  ],
+  "parents_created_and_newline_kept": "é☃\r\n",
+  "replace_onto_a_directory": {
+   "leftovers": [],
+   "message": "[Errno 21] Is a directory: '<root>/is-a-dir.<tmp>.tmp' -> '<root>/is-a-dir'",
+   "refused": "IsADirectoryError"
+  }
+ },
+ "barrier_gc_before_registration": {
+  "about_to_take_the_lifecycle_lock": true,
+  "alive": true,
+  "collectable_path": [
+   "spool/000000000000000000000000000000a0.0000.jsonl"
+  ],
+  "gc": {
+   "files": 1,
+   "runs": 1,
+   "segments": 0,
+   "skipped": 0
+  },
+  "segment_open_before_write": true,
+  "stale_gone": true,
+  "write": {
+   "offset": 79
+  },
+  "writer_not_yet_known": true
+ },
+ "barrier_gc_waits_for_a_registering_writer": {
+  "active_segment_kept": true,
+  "collectable_path": [
+   "spool/000000000000000000000000000000a0.0000.jsonl"
+  ],
+  "gc_blocked_while_registering": true,
+  "gc_finished": true,
+  "gc_result": {
+   "files": 0,
+   "runs": 0,
+   "segments": 0,
+   "skipped": 0
+  },
+  "lock_opened": true,
+  "record": [
+   [
+    "complete",
+    {
+     "x": 1
+    }
+   ]
+  ],
+  "segment_open_before_write": true,
+  "write": {
+   "offset": 79
+  },
+  "writer_alive": true
+ },
+ "barrier_reclaim_waits_for_registration": {
+  "active_segment_kept": true,
+  "collectable_path": [
+   "spool/000000000000000000000000000000a0.0000.jsonl"
+  ],
+  "lock_opened": true,
+  "reclaim_blocked_while_registering": true,
+  "reclaim_finished": true,
+  "reclaim_result": false,
+  "segment_open_before_write": true,
+  "write": {
+   "offset": 79
+  }
+ },
+ "bounds_and_ack": {
+  "ack_listing": {
+   "spool/.lifecycle.lock": {
+    "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "size": 0
+   },
+   "spool/000000000000000000000000000000a0.0000.ack": {
+    "ends_with_newline": true,
+    "json": {
+     "consumed": 1,
+     "offset": 79,
+     "updated_at": "<utc-iso>"
+    }
+   },
+   "spool/000000000000000000000000000000a0.0000.jsonl": {
+    "sha256": "b98d26502ef49480f2fcf53bf05695d7ba8adb77373fe86c4c98e53f65f4313e",
+    "size": 79
+   },
+   "spool/000000000000000000000000000000a0.0001.jsonl": {
+    "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "size": 0
+   },
+   "spool/000000000000000000000000000000a0.lock": {
+    "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "size": 0
+   }
+  },
+  "after_ack": {
+   "acknowledged": 79,
+   "directory_unacknowledged": 0,
+   "read_from_ack": [],
+   "unacknowledged": 0
+  },
+  "append_after_ack_recomputes_from_disk": {
+   "value": 79
+  },
+  "files_after_refusal": [
+   "spool/000000000000000000000000000000a0.0000.jsonl",
+   "spool/000000000000000000000000000000a0.0001.jsonl"
+  ],
+  "first": 79,
+  "line": 79,
+  "listing_after_refusal": {
+   "spool/.lifecycle.lock": {
+    "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "size": 0
+   },
+   "spool/000000000000000000000000000000a0.0000.jsonl": {
+    "sha256": "b98d26502ef49480f2fcf53bf05695d7ba8adb77373fe86c4c98e53f65f4313e",
+    "size": 79
+   },
+   "spool/000000000000000000000000000000a0.0001.jsonl": {
+    "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "size": 0
+   },
+   "spool/000000000000000000000000000000a0.lock": {
+    "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "size": 0
+   }
+  },
+  "missing_max_bytes": {
+   "message": "FileSpool.__init__() missing 1 required keyword-only argument: 'max_bytes'",
+   "refused": "TypeError"
+  },
+  "review_bound": {
+   "message": "spool 000000000000000000000000000000a3 holds 79 unacknowledged of 200 bytes",
+   "refused": "SpoolFull"
+  },
+  "second_refused": {
+   "message": "spool 000000000000000000000000000000a0 holds 79 unacknowledged of 89 bytes",
+   "refused": "SpoolFull"
+  },
+  "second_segment": {
+   "rotations": 1,
+   "segments": [
+    "spool/000000000000000000000000000000a0.0000.jsonl",
+    "spool/000000000000000000000000000000a0.0001.jsonl"
+   ]
+  },
+  "segment_holds_exactly_the_first": [
+   {
+    "defect": null,
+    "end": 79,
+    "event": {
+     "a": 1
+    },
+    "kind": "event",
+    "start": 0,
+    "status": "complete"
+   }
+  ],
+  "unacknowledged_after": 79,
+  "validation": {
+   "bool": {
+    "message": "Spool limit must be a positive byte count",
+    "refused": "ContractError"
+   },
+   "float": {
+    "message": "Spool limit must be a positive byte count",
+    "refused": "ContractError"
+   },
+   "negative": {
+    "message": "Spool limit must be a positive byte count",
+    "refused": "ContractError"
+   },
+   "ok": {
+    "value": true
+   },
+   "segment_bool": {
+    "message": "Segment size must be positive",
+    "refused": "ContractError"
+   },
+   "segment_zero": {
+    "message": "Segment size must be positive",
+    "refused": "ContractError"
+   },
+   "string": {
+    "message": "Spool limit must be a positive byte count",
+    "refused": "ContractError"
+   },
+   "zero": {
+    "message": "Spool limit must be a positive byte count",
+    "refused": "ContractError"
+   }
+  }
+ },
+ "busy_lifecycle_lock": {
+  "after_release": {
+   "append": {
+    "value": 79
+   },
+   "owns": true,
+   "prune": {
+    "files": 1,
+    "runs": 1,
+    "segments": 0,
+    "skipped": 0
+   },
+   "stale_gone": true
+  },
+  "alive_is_the_answer_when_busy": true,
+  "close_of_a_writer_that_never_registered": {
+   "value": null
+  },
+  "held": "held",
+  "nothing_touched": {
+   "owns": false,
+   "run_lock": false,
+   "spool_files": []
+  },
+  "prune_skips": {
+   "files": 0,
+   "runs": 0,
+   "segments": 0,
+   "skipped": 1
+  },
+  "reclaim_declines": false,
+  "released": true,
+  "stale_lock_kept": true,
+  "writer_refused": {
+   "message": "The observation directory is busy; this run cannot register now",
+   "refused": "ContractError"
+  }
+ },
+ "close_while_the_lifecycle_lock_is_busy": {
+  "closed": {
+   "closed": true,
+   "marker": {
+    "closed_at": "<utc-iso>",
+    "segments": 1
+   },
+   "owns": false
+  },
+  "held": "held",
+  "run_lock_released": true
+ },
+ "dead_writer_and_live_prune": {
+  "alive_while_the_child_lives": true,
+  "dead_child": {
+   "alive": false,
+   "finished": true,
+   "lock_file_gone": true,
+   "prune": {
+    "files": 1,
+    "runs": 1,
+    "segments": 1,
+    "skipped": 0
+   },
+   "reclaimable": true,
+   "segment_gone": true
+  },
+  "live_child": {
+   "finished": false,
+   "lock_file_kept": true,
+   "prune": {
+    "files": 0,
+    "runs": 0,
+    "segments": 0,
+    "skipped": 0
+   },
+   "reclaimable": false,
+   "segment_kept": true
+  },
+  "released_by_the_os": true,
+  "written": "written"
+ },
+ "definitions": {
+  "FileSpool": true,
+  "IDENTIFIER_NAME": true,
+  "LIFECYCLE_TIMEOUT": true,
+  "LINE": true,
+  "MemorySpool": true,
+  "RECORD_ID": true,
+  "RECORD_KINDS": true,
+  "SEGMENT": true,
+  "SpoolDirectory": true,
+  "atomic_write": true,
+  "encode_record": true,
+  "lifecycle_lock": true,
+  "read_acknowledged": true,
+  "read_records": true,
+  "run_lock_path": true,
+  "segment_identity": true,
+  "segment_path": true,
+  "writer_alive": true
+ },
+ "directory_files": {
+  "empty_directory": {
+   "alerts": {},
+   "health": [],
+   "known": [],
+   "live": [],
+   "prune": {
+    "files": 0,
+    "runs": 0,
+    "segments": 0,
+    "skipped": 0
+   },
+   "spool_files": [],
+   "terminations": [],
+   "total_bytes": 0,
+   "unacknowledged": 0
+  },
+  "known_runs": [
+   "000000000000000000000000000000a0",
+   "000000000000000000000000000000a1",
+   "000000000000000000000000000000a2"
+  ],
+  "read_is_read_records": true,
+  "root_is_path": true,
+  "spool_files_are_ordered_numerically": [
+   "spool/000000000000000000000000000000a0.0000.jsonl",
+   "spool/000000000000000000000000000000a0.9999.jsonl",
+   "spool/000000000000000000000000000000a0.10000.jsonl",
+   "spool/000000000000000000000000000000a1.0001.jsonl"
+  ]
+ },
+ "health_alerts_terminations": {
+  "acknowledged": {
+   "ids": [
+    "e0",
+    "e1",
+    "e2",
+    "e3"
+   ],
+   "listing": [
+    "health/000000000000000000000000000000a0.json",
+    "health/broken.json",
+    "health/listish.json",
+    "pending-alerts/000000000000000000000000000000a1.acked.000000000000000000000000000000a2.json",
+    "pending-alerts/000000000000000000000000000000a1.acked.000000000000000000000000000000a3.json",
+    "pending-alerts/000000000000000000000000000000a1.json"
+   ],
+   "pending": {}
+  },
+  "health": [
+   {
+    "n": 1,
+    "process_run_id": "000000000000000000000000000000a0",
+    "state": "up"
+   }
+  ],
+  "health_listing": {
+   "health/000000000000000000000000000000a0.json": {
+    "sha256": "fc27f4eecd513beb7500457844042723de59e3825855a1e5c02a99aa18d98a06",
+    "size": 73
+   },
+   "health/broken.json": {
+    "sha256": "92072df399cb74703f8e86f450d552bc0bb01eeeb98a90985a1b7772c8fd0016",
+    "size": 9
+   },
+   "health/listish.json": {
+    "sha256": "080a9ed428559ef602668b4c00f114f1a11c3f6b02a435f0bdc154578e4d7f22",
+    "size": 3
+   }
+  },
+  "health_path": "health/000000000000000000000000000000a0.json",
+  "health_with_an_unreadable_file": [
+   {
+    "n": 1,
+    "process_run_id": "000000000000000000000000000000a0",
+    "state": "up"
+   },
+   {
+    "process_run_id": "broken",
+    "unreadable": true
+   },
+   [
+    1
+   ]
+  ],
+  "origin_empty_removes_the_file": {
+   "files": [
+    "health/000000000000000000000000000000a0.json",
+    "health/broken.json",
+    "health/listish.json",
+    "pending-alerts/000000000000000000000000000000a1.acked.000000000000000000000000000000a2.json",
+    "pending-alerts/000000000000000000000000000000a1.acked.000000000000000000000000000000a3.json"
+   ],
+   "pending": {}
+  },
+  "origin_rewrite_drops_acknowledged_ids": {
+   "000000000000000000000000000000a1": [
+    {
+     "event_id": "e9"
+    }
+   ]
+  },
+  "pending": {
+   "000000000000000000000000000000a1": [
+    {
+     "event_id": "e0",
+     "n": 0
+    },
+    {
+     "event_id": "e1",
+     "n": 1
+    },
+    {
+     "event_id": "e2",
+     "n": 2
+    },
+    {
+     "event_id": "e3",
+     "n": 3
+    }
+   ]
+  },
+  "termination": {
+   "after": {
+    "listing": {
+     "health/000000000000000000000000000000a0.json": {
+      "sha256": "fc27f4eecd513beb7500457844042723de59e3825855a1e5c02a99aa18d98a06",
+      "size": 73
+     },
+     "health/broken.json": {
+      "sha256": "92072df399cb74703f8e86f450d552bc0bb01eeeb98a90985a1b7772c8fd0016",
+      "size": 9
+     },
+     "health/listish.json": {
+      "sha256": "080a9ed428559ef602668b4c00f114f1a11c3f6b02a435f0bdc154578e4d7f22",
+      "size": 3
+     },
+     "pending-alerts/000000000000000000000000000000a1.acked.000000000000000000000000000000a2.json": {
+      "sha256": "3d7a27d1ccef288c97f96f5caac3951e7217585825fd3a803bf041c1046fa979",
+      "size": 17
+     },
+     "pending-alerts/000000000000000000000000000000a1.acked.000000000000000000000000000000a3.json": {
+      "sha256": "63fd634910b07821a2bf20f04120899e7192f742d071a7dfdbe551d66e10e7d1",
+      "size": 7
+     },
+     "pending-alerts/000000000000000000000000000000a1.acked.broken.json": {
+      "sha256": "126d2904065e679464121f53e0e6363ece482477e0977b63c1a4ab8e148bfec1",
+      "size": 6
+     },
+     "pending-alerts/000000000000000000000000000000a1.acked.dict.json": {
+      "sha256": "44136fa355b3678a1146ad16f7e8649e94fb4fc21fe77e8310c060f61caaff8a",
+      "size": 2
+     },
+     "pending-alerts/000000000000000000000000000000a3.json": {
+      "sha256": "886661835e4b571476d373f7c349db490e4b5d843ebf542593be9534fe567bd0",
+      "size": 19
+     },
+     "pending-alerts/000000000000000000000000000000a4.json": {
+      "sha256": "7ccfa1fbf3940e6f0c0375d87c0f9235a50514e14cb427bdfaf5077987b26ccf",
+      "size": 8
+     },
+     "pending-alerts/000000000000000000000000000000a5.json": {
+      "sha256": "46efa1f664e79177bd0491593af05e08b122eab8c8739b21f00a7dee3c54becc",
+      "size": 22
+     },
+     "pending-alerts/000000000000000000000000000000a6.json": {
+      "sha256": "44136fa355b3678a1146ad16f7e8649e94fb4fc21fe77e8310c060f61caaff8a",
+      "size": 2
+     },
+     "terminations/resolved/t1.json": {
+      "sha256": "b15fa27113ad61cf2774e6157587797d95e7e3a70d57c31778160219e3ea3b5b",
+      "size": 91
+     },
+     "terminations/resolved/t2.json": {
+      "sha256": "fe4a37fd787d46da41c7d5d1963042cd5f76f65e6f88cabeede2a9444dad099e",
+      "size": 84
+     },
+     "terminations/t3.json": {
+      "sha256": "8745a98ef045a2c647d003630006822aef4b0c4229a6d36d861db1cc6f5fa84b",
+      "size": 16
+     },
+     "terminations/t4.json": {
+      "sha256": "080a9ed428559ef602668b4c00f114f1a11c3f6b02a435f0bdc154578e4d7f22",
+      "size": 3
+     }
+    },
+    "pending": [
+     "t3",
+     "t4"
+    ]
+   },
+   "again": {
+    "message": "<root>/terminations/t1.json",
+    "refused": "FileExistsError"
+   },
+   "for_other_task": [],
+   "for_task": [
+    {
+     "record_id": "t1",
+     "status": "pending_reconciliation",
+     "task_id": "task-1"
+    }
+   ],
+   "invalid_ids": {
+    "": {
+     "message": "Invalid termination record id",
+     "refused": "ContractError"
+    },
+    "a b": {
+     "message": "Invalid termination record id",
+     "refused": "ContractError"
+    },
+    "a/b": {
+     "message": "Invalid termination record id",
+     "refused": "ContractError"
+    },
+    "xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx": {
+     "message": "Invalid termination record id",
+     "refused": "ContractError"
+    }
+   },
+   "pending": [
+    {
+     "record_id": "t1",
+     "status": "pending_reconciliation",
+     "task_id": "task-1"
+    }
+   ],
+   "record": "terminations/t1.json",
+   "resolve": {
+    "value": {
+     "record_id": "t1",
+     "resolution": {
+      "by": "sink",
+      "n": 1
+     },
+     "status": "resolved",
+     "task_id": "task-1"
+    }
+   },
+   "resolve_again_is_idempotent": {
+    "value": {
+     "record_id": "t1",
+     "resolution": {
+      "by": "sink",
+      "n": 1
+     },
+     "status": "resolved",
+     "task_id": "task-1"
+    }
+   },
+   "resolve_invalid_id": {
+    "message": "Invalid termination record id",
+    "refused": "ContractError"
+   },
+   "resolve_unknown": {
+    "message": "Unknown termination record",
+    "refused": "ContractError"
+   },
+   "resolve_unreadable": {
+    "value": {
+     "record_id": "t2",
+     "resolution": {
+      "by": "sink"
+     },
+     "status": "resolved",
+     "unreadable": true
+    }
+   },
+   "unreadable_files_block_every_task": [
+    {
+     "record_id": "t2",
+     "status": "pending_reconciliation",
+     "task_id": null,
+     "unreadable": true
+    },
+    {
+     "record_id": "t3",
+     "status": "pending_reconciliation",
+     "task_id": null,
+     "unreadable": true
+    },
+    {
+     "record_id": "t4",
+     "status": "pending_reconciliation",
+     "task_id": null,
+     "unreadable": true
+    }
+   ],
+   "unreadable_for_task": [
+    {
+     "record_id": "t1",
+     "status": "pending_reconciliation",
+     "task_id": "task-1"
+    },
+    {
+     "record_id": "t2",
+     "status": "pending_reconciliation",
+     "task_id": null,
+     "unreadable": true
+    },
+    {
+     "record_id": "t3",
+     "status": "pending_reconciliation",
+     "task_id": null,
+     "unreadable": true
+    },
+    {
+     "record_id": "t4",
+     "status": "pending_reconciliation",
+     "task_id": null,
+     "unreadable": true
+    }
+   ]
+  },
+  "unreadable_or_odd_alert_files": {
+   "acked_ids": [
+    "e0",
+    "e1",
+    "e2",
+    "e3"
+   ],
+   "acknowledge_over_a_broken_file": {
+    "after": [
+     "e0",
+     "e1",
+     "e2",
+     "e3",
+     "z"
+    ],
+    "value": null
+   },
+   "pending": {
+    "000000000000000000000000000000a3": [
+     {
+      "event_id": "x"
+     }
+    ]
+   }
+  }
+ },
+ "lifecycle_and_locks": {
+  "before_first_append": {
+   "alive": false,
+   "owns": false
+  },
+  "close_serialized_with_gc": {
+   "finished": true,
+   "first_prune": {
+    "files": 0,
+    "runs": 0,
+    "segments": 0,
+    "skipped": 0
+   },
+   "known_after": [
+    "000000000000000000000000000000a0"
+   ],
+   "lifecycle_lock_file_kept": true,
+   "lifecycle_lock_is_not_a_segment": true,
+   "listing": {
+    "spool/.lifecycle.lock": {
+     "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+     "size": 0
+    },
+    "spool/000000000000000000000000000000a0.0000.ack": {
+     "ends_with_newline": true,
+     "json": {
+      "consumed": 1,
+      "offset": 79,
+      "updated_at": "<utc-iso>"
+     }
+    },
+    "spool/000000000000000000000000000000a0.0000.jsonl": {
+     "sha256": "b63246d87ee9602b90e33c96e4f4752e57c54f0ec110e0913bfd2fe72f8e6548",
+     "size": 158
+    },
+    "spool/000000000000000000000000000000a0.closed": {
+     "ends_with_newline": true,
+     "json": {
+      "closed_at": "<utc-iso>",
+      "segments": 1
+     }
+    },
+    "spool/000000000000000000000000000000a0.lock": {
+     "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+     "size": 0
+    }
+   },
+   "second_prune": {
+    "files": 0,
+    "runs": 0,
+    "segments": 0,
+    "skipped": 0
+   }
+  },
+  "free_run_is_not_alive": false,
+  "never_acquired": {
+   "known": [],
+   "marker": false
+  },
+  "owner": {
+   "alive": true,
+   "module_probe": true,
+   "owns": true
+  },
+  "owner_closed": {
+   "alive": false,
+   "append": {
+    "message": "This observation run was closed by its writer and cannot be resumed",
+    "refused": "ContractError"
+   },
+   "closed": true,
+   "finished": true,
+   "marker": {
+    "closed_at": "<utc-iso>",
+    "segments": 1
+   }
+  },
+  "owner_keeps_writing": {
+   "append": {
+    "value": 158
+   },
+   "live_runs": [
+    "000000000000000000000000000000a0"
+   ],
+   "spool_files": [
+    "spool/000000000000000000000000000000a0.0000.jsonl"
+   ]
+  },
+  "refused_close": {
+   "alive": true,
+   "finished": false,
+   "marker": false,
+   "prune": {
+    "files": 0,
+    "runs": 0,
+    "segments": 0,
+    "skipped": 0
+   },
+   "reclaimable": false,
+   "segment_kept": true
+  },
+  "refused_writer": {
+   "listing": {
+    "spool/.lifecycle.lock": {
+     "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+     "size": 0
+    },
+    "spool/000000000000000000000000000000a0.0000.ack": {
+     "ends_with_newline": true,
+     "json": {
+      "consumed": 1,
+      "offset": 79,
+      "updated_at": "<utc-iso>"
+     }
+    },
+    "spool/000000000000000000000000000000a0.0000.jsonl": {
+     "sha256": "47670010f5b4f9dc32a79cc853023a5a7e6de11ebbd169308b72cb3a42faa58a",
+     "size": 79
+    },
+    "spool/000000000000000000000000000000a0.lock": {
+     "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+     "size": 0
+    }
+   },
+   "owns": false
+  },
+  "refused_writer_is_closed_object": {
+   "message": "This observation run was closed by its writer and cannot be resumed",
+   "refused": "ContractError"
+  },
+  "repeated_close_rewrites_nothing": true,
+  "second_writer_refused": {
+   "message": "Another live writer holds this observation run",
+   "refused": "ContractError"
+  }
+ },
+ "memory_spool_still_equal": {
+  "close": null,
+  "fail_with": {
+   "message": "down",
+   "refused": "RuntimeError"
+  },
+  "first": 79,
+  "records": [
+   {
+    "a": 1
+   }
+  ],
+  "second": {
+   "message": "memory spool full",
+   "refused": "SpoolFull"
+  },
+  "size": 79
+ },
+ "names_and_codecs": {
+  "audit_kind": "audit",
+  "identifier_name": {
+   "000000000000000000000000000000A0": false,
+   "000000000000000000000000000000a": false,
+   "000000000000000000000000000000a0": true,
+   "000000000000000000000000000000a00": false,
+   "gggggggggggggggggggggggggggggggg": false
+  },
+  "kind_refused": {
+   "message": "Unknown spool record kind",
+   "refused": "ContractError"
+  },
+  "lifecycle_is_singleton": true,
+  "lifecycle_path": "spool/.lifecycle.lock",
+  "lifecycle_timeout": 10.0,
+  "line_sha256": "6afe427dbb610c6e85dc41f3722e4873407f0aec84a7d4e59d2ff8cd32cca104",
+  "line_shape": [
+   " ",
+   "event",
+   true
+  ],
+  "line_size": 115,
+  "record_id": {
+   "": false,
+   "..": true,
+   "a": true,
+   "a b": false,
+   "a.b:c-d_e": true,
+   "a/b": false,
+   "xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx": true,
+   "xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx": false,
+   "é": false
+  },
+  "record_kinds": [
+   "event",
+   "audit"
+  ],
+  "run_lock_path": "spool/000000000000000000000000000000a0.lock",
+  "segment_identity": {
+   "000000000000000000000000000000A0.0000.jsonl": null,
+   "000000000000000000000000000000a.0000.jsonl": null,
+   "000000000000000000000000000000a0.0000.ack": null,
+   "000000000000000000000000000000a0.0000.jsonl": [
+    "000000000000000000000000000000a0",
+    0
+   ],
+   "000000000000000000000000000000a0.0000.jsonl.tmp": null,
+   "000000000000000000000000000000a0.10000.jsonl": [
+    "000000000000000000000000000000a0",
+    10000
+   ],
+   "000000000000000000000000000000a0.123.jsonl": null,
+   "000000000000000000000000000000a0.12345678.jsonl": [
+    "000000000000000000000000000000a0",
+    12345678
+   ],
+   "not-a-segment": null,
+   "x.0000.jsonl": null
+  },
+  "segment_path": [
+   "spool/000000000000000000000000000000a0.0000.jsonl",
+   "spool/000000000000000000000000000000a0.0007.jsonl",
+   "spool/000000000000000000000000000000a0.9999.jsonl",
+   "spool/000000000000000000000000000000a0.10000.jsonl",
+   "spool/000000000000000000000000000000a0.123456.jsonl"
+  ]
+ },
+ "partial_tail_and_corruption": {
+  "empty_file": [],
+  "file_size": 588,
+  "finished_tail_from_start": [
+   {
+    "defect": null,
+    "end": 598,
+    "event": {
+     "n": 2,
+     "text": "é☃"
+    },
+    "kind": "event",
+    "start": 504,
+    "status": "complete"
+   }
+  ],
+  "from_a_mid_line_offset": [
+   [
+    "corrupt",
+    "line shape"
+   ],
+   [
+    "corrupt",
+    "hash mismatch"
+   ]
+  ],
+  "from_past_the_end": [],
+  "last_end": 588,
+  "missing_file": {
+   "message": "[Errno 2] No such file or directory: '<root>/missing.jsonl'",
+   "refused": "FileNotFoundError"
+  },
+  "offsets_contiguous": true,
+  "only_a_partial_line": [
+   {
+    "defect": "no newline",
+    "end": 3,
+    "event": null,
+    "kind": null,
+    "start": 0,
+    "status": "truncated_tail"
+   }
+  ],
+  "rows": [
+   {
+    "defect": null,
+    "end": 79,
+    "event": {
+     "n": 1
+    },
+    "kind": "event",
+    "start": 0,
+    "status": "complete"
+   },
+   {
+    "defect": "hash mismatch",
+    "end": 153,
+    "event": null,
+    "kind": "event",
+    "start": 79,
+    "status": "corrupt"
+   },
+   {
+    "defect": "line shape",
+    "end": 171,
+    "event": null,
+    "kind": null,
+    "start": 153,
+    "status": "corrupt"
+   },
+   {
+    "defect": "invalid json",
+    "end": 252,
+    "event": null,
+    "kind": "audit",
+    "start": 171,
+    "status": "corrupt"
+   },
+   {
+    "defect": "not an object",
+    "end": 327,
+    "event": null,
+    "kind": "event",
+    "start": 252,
+    "status": "corrupt"
+   },
+   {
+    "defect": "line shape",
+    "end": 410,
+    "event": null,
+    "kind": null,
+    "start": 327,
+    "status": "corrupt"
+   },
+   {
+    "defect": null,
+    "end": 504,
+    "event": {
+     "n": 2,
+     "text": "é☃"
+    },
+    "kind": "event",
+    "start": 410,
+    "status": "complete"
+   },
+   {
+    "defect": "no newline",
+    "end": 588,
+    "event": null,
+    "kind": null,
+    "start": 504,
+    "status": "truncated_tail"
+   }
+  ]
+ },
+ "prune_and_reclaim": {
+  "after_close": {
+   "reclaimable_last": true,
+   "total_bytes_positive": true,
+   "unacknowledged": 0
+  },
+  "alert_acknowledged_by_a_replayer": {
+   "listing": {
+    "pending-alerts/000000000000000000000000000000a1.acked.000000000000000000000000000000a2.json": {
+     "sha256": "7cd70f9797d151cb9468a136023a369af4190134e6a03c4f6a9f3c37a08dca78",
+     "size": 7
+    },
+    "pending-alerts/000000000000000000000000000000a1.json": {
+     "sha256": "df4e67ac4474a8924bfb4edcdf816911dbe802054f9eb6907a71625a9ff7949a",
+     "size": 20
+    },
+    "spool/.lifecycle.lock": {
+     "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+     "size": 0
+    }
+   },
+   "prune": {
+    "files": 0,
+    "runs": 0,
+    "segments": 0,
+    "skipped": 0
+   }
+  },
+  "finished_run_with_outstanding_alert": {
+   "alerts_kept": [
+    "000000000000000000000000000000a1"
+   ],
+   "listing": {
+    "pending-alerts/000000000000000000000000000000a1.json": {
+     "sha256": "df4e67ac4474a8924bfb4edcdf816911dbe802054f9eb6907a71625a9ff7949a",
+     "size": 20
+    },
+    "spool/.lifecycle.lock": {
+     "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+     "size": 0
+    }
+   },
+   "prune": {
+    "files": 3,
+    "runs": 1,
+    "segments": 1,
+    "skipped": 0
+   }
+  },
+  "listing": {
+   "spool/.lifecycle.lock": {
+    "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "size": 0
+   }
+  },
+  "prune_after_close": {
+   "files": 2,
+   "runs": 1,
+   "segments": 3,
+   "skipped": 0
+  },
+  "reclaim_a_rotated_past_one": {
+   "ack_gone": true,
+   "reclaimed": true,
+   "segment_gone": true
+  },
+  "reclaim_non_segment": false,
+  "reclaim_the_active_one_is_refused": false,
+  "reclaim_twice": false,
+  "reclaimable_acknowledged_open_run": [
+   true,
+   true,
+   true,
+   false
+  ],
+  "reclaimable_unacknowledged": [
+   false,
+   false,
+   false,
+   false
+  ],
+  "segments": [
+   "spool/000000000000000000000000000000a0.0000.jsonl",
+   "spool/000000000000000000000000000000a0.0001.jsonl",
+   "spool/000000000000000000000000000000a0.0002.jsonl",
+   "spool/000000000000000000000000000000a0.0003.jsonl"
+  ]
+ },
+ "real_child_processes": {
+  "alive_after_exit": {
+   "a": false,
+   "b": false,
+   "killed": false,
+   "partial": false
+  },
+  "closed_markers": {
+   "a": true,
+   "b": true,
+   "killed": false,
+   "partial": false
+  },
+  "exit": {
+   "a": 0,
+   "b": 0,
+   "killed": "signal",
+   "partial": 3
+  },
+  "finished_with_retention_elapsed": {
+   "a": true,
+   "b": true,
+   "killed": true,
+   "partial": true
+  },
+  "killed_producing": true,
+  "runs_found": true,
+  "summary": {
+   "a": {
+    "at_least_one_complete": true,
+    "complete": 150,
+    "indices_in_order": true,
+    "other_statuses": [],
+    "segments": 1,
+    "statuses_tail": "complete",
+    "total": 150
+   },
+   "b": {
+    "at_least_one_complete": true,
+    "complete": 150,
+    "indices_in_order": true,
+    "other_statuses": [],
+    "segments": 1,
+    "statuses_tail": "complete",
+    "total": 150
+   },
+   "killed": {
+    "at_least_one_complete": true,
+    "complete": null,
+    "indices_in_order": true,
+    "other_statuses": [],
+    "segments": null,
+    "statuses_tail": "complete",
+    "total": null
+   },
+   "partial": {
+    "at_least_one_complete": true,
+    "complete": 150,
+    "indices_in_order": true,
+    "other_statuses": [
+     "truncated_tail"
+    ],
+    "segments": 1,
+    "statuses_tail": "truncated_tail",
+    "total": 151
+   }
+  }
+ },
+ "runs_ages_and_retention": {
+  "acknowledged_live_last_segment_is_kept": {
+   "prune": {
+    "files": 0,
+    "runs": 0,
+    "segments": 0,
+    "skipped": 0
+   },
+   "reclaimable": false,
+   "segment_kept": true
+  },
+  "age_unknown_run": null,
+  "age_with_live_writer": 100.0,
+  "closed_run": {
+   "age": 5.0,
+   "finished": true
+  },
+  "closed_run_acknowledged_prune": {
+   "known": [],
+   "listing": {
+    "spool/.lifecycle.lock": {
+     "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+     "size": 0
+    }
+   },
+   "prune": {
+    "files": 3,
+    "runs": 1,
+    "segments": 1,
+    "skipped": 0
+   }
+  },
+  "closed_run_prune_keeps_the_unacknowledged_tail": {
+   "prune": {
+    "files": 0,
+    "runs": 0,
+    "segments": 0,
+    "skipped": 0
+   },
+   "segments_left": [
+    "spool/000000000000000000000000000000a0.0000.jsonl"
+   ]
+  },
+  "dead_run": {
+   "age_before_probes": 3.0,
+   "alive": false,
+   "finished_by_retention": {
+    "age_only_grows": true,
+    "custom_window": true,
+    "inside_window": false,
+    "outside_window": true,
+    "repeated_probes": [
+     true,
+     true,
+     true
+    ]
+   },
+   "gone": {
+    "known": [],
+    "lock": false,
+    "segment": false
+   },
+   "prune": {
+    "files": 1,
+    "runs": 1,
+    "segments": 1,
+    "skipped": 0
+   },
+   "reclaimable_acknowledged": true,
+   "reclaimable_unacknowledged": false
+  },
+  "later_append_still_collectable": [
+   "spool/000000000000000000000000000000a0.0000.jsonl"
+  ],
+  "leftover_lock_file": {
+   "age": null,
+   "finished": true,
+   "gone": true,
+   "known": true,
+   "known_after": [],
+   "prune": {
+    "files": 1,
+    "runs": 1,
+    "segments": 0,
+    "skipped": 0
+   }
+  },
+  "live_writer_is_never_finished_by_age": {
+   "finished": false,
+   "live_runs": [
+    "000000000000000000000000000000a0"
+   ],
+   "lock_file_kept": true,
+   "prune": {
+    "files": 0,
+    "runs": 0,
+    "segments": 0,
+    "skipped": 0
+   },
+   "reclaimable": false,
+   "segment_kept": true
+  },
+  "writer_after_gc_reclaimed_its_leftover": {
+   "alive": true,
+   "append": {
+    "value": 79
+   },
+   "files": [
+    "spool/000000000000000000000000000000a3.0000.jsonl"
+   ],
+   "prune": {
+    "files": 0,
+    "runs": 0,
+    "segments": 0,
+    "skipped": 0
+   }
+  }
+ }
+}
