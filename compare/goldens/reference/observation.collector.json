@@ -1,0 +1,3630 @@
+{
+ "acknowledged_only_after_commit": {
+  "after": {
+   "000000000000000000000000000000c0.0000.jsonl": 5624
+  },
+  "again": {
+   "alerts_replayed": 0,
+   "confirmed_audits": 0,
+   "conflicts": 0,
+   "corrupt": 0,
+   "duplicates": 0,
+   "files": 1,
+   "inserted": 1,
+   "per_file": [
+    {
+     "file": "000000000000000000000000000000c0.0000.jsonl",
+     "from_offset": 4606,
+     "inserted": 1,
+     "records": 1,
+     "to_offset": 5624
+    }
+   ],
+   "pruned_files": 0,
+   "pruned_runs": 0,
+   "reclaimed_segments": 0,
+   "records": 1,
+   "refused": 0,
+   "sink_failures": 0,
+   "truncated_tail": 0,
+   "unconfirmed_audits": 0
+  },
+  "clock_reads": 23,
+  "counts": {
+   "observation_alerts": 1,
+   "observation_audit": 0,
+   "observation_collections": 2,
+   "observation_quarantine": 0,
+   "observation_terminations": 0,
+   "observations": 6
+  },
+  "during": {
+   "acknowledged": {
+    "000000000000000000000000000000c0.0000.jsonl": 0
+   },
+   "counts": {
+    "observation_alerts": 1,
+    "observation_audit": 0,
+    "observation_collections": 0,
+    "observation_quarantine": 0,
+    "observation_terminations": 0,
+    "observations": 0
+   },
+   "last_defect": "OSError: message_sha256=6b7b2e8cdbb27db0",
+   "sink_state": "available"
+  },
+  "failed": {
+   "alerts_replayed": 0,
+   "confirmed_audits": 0,
+   "conflicts": 0,
+   "corrupt": 0,
+   "duplicates": 0,
+   "files": 1,
+   "inserted": 0,
+   "per_file": [],
+   "pruned_files": 0,
+   "pruned_runs": 0,
+   "reclaimed_segments": 0,
+   "records": 0,
+   "refused": 0,
+   "sink_failures": 1,
+   "truncated_tail": 0,
+   "unconfirmed_audits": 0
+  },
+  "no_observer_outage": {
+   "alerts_replayed": 0,
+   "confirmed_audits": 0,
+   "conflicts": 0,
+   "corrupt": 0,
+   "duplicates": 0,
+   "files": 1,
+   "inserted": 0,
+   "per_file": [],
+   "pruned_files": 0,
+   "pruned_runs": 0,
+   "reclaimed_segments": 0,
+   "records": 0,
+   "refused": 0,
+   "sink_failures": 1,
+   "truncated_tail": 0,
+   "unconfirmed_audits": 0
+  },
+  "receipts": [
+   {
+    "at": "2026-01-01T00:00:17+00:00",
+    "file": "000000000000000000000000000000c0.0000.jsonl",
+    "from_offset": 0,
+    "id": "38582b7aceb2ae4eb1c47016e4de6c7ef9fa69f36397af37e865995116cef0e9",
+    "inserted": 5,
+    "records": 5,
+    "to_offset": 4606
+   },
+   {
+    "at": "2026-01-01T00:00:21+00:00",
+    "file": "000000000000000000000000000000c0.0000.jsonl",
+    "from_offset": 4606,
+    "id": "cf3292667cf6ab5e01b4c98b16f38db0eb64ac71b2bf9f608dc24e7e54f8a2a6",
+    "inserted": 1,
+    "records": 1,
+    "to_offset": 5624
+   }
+  ],
+  "recovered": {
+   "alerts_replayed": 0,
+   "confirmed_audits": 0,
+   "conflicts": 0,
+   "corrupt": 0,
+   "duplicates": 0,
+   "files": 1,
+   "inserted": 5,
+   "per_file": [
+    {
+     "file": "000000000000000000000000000000c0.0000.jsonl",
+     "from_offset": 0,
+     "inserted": 5,
+     "records": 5,
+     "to_offset": 4606
+    }
+   ],
+   "pruned_files": 0,
+   "pruned_runs": 0,
+   "reclaimed_segments": 0,
+   "records": 5,
+   "refused": 0,
+   "sink_failures": 0,
+   "truncated_tail": 0,
+   "unconfirmed_audits": 0
+  },
+  "sink_state": "available"
+ },
+ "audit_confirmation": {
+  "clock_reads": 9,
+  "counts": {
+   "observation_alerts": 0,
+   "observation_audit": 1,
+   "observation_collections": 1,
+   "observation_quarantine": 0,
+   "observation_terminations": 0,
+   "observations": 3
+  },
+  "events": [
+   {
+    "audit_confirmed": false,
+    "authority": "informational_only",
+    "collected_at": "2026-01-01T00:00:04+00:00",
+    "event_id": "b9492f9b034078d44a953b3ca01327dd28c38fda1f347839deb5a7917db097f2",
+    "event_type": "general.process_idle_exit",
+    "payload_hash": "6ecaadb6d0b5c400360fe99a1794fb3540bb1f6acaad45ccdfab942104be72d0",
+    "record_kind": "audit",
+    "spool": {
+     "file": "000000000000000000000000000000c0.0000.jsonl",
+     "offset": 908
+    }
+   },
+   {
+    "audit_confirmed": true,
+    "authority": "informational_only",
+    "collected_at": "2026-01-01T00:00:03+00:00",
+    "event_id": "ef1106821945ef7d6d43235affefbc4b0c455fe3b8853a13c895a94f1eed7b98",
+    "event_type": "general.process_idle_exit",
+    "payload_hash": "5a3fe6bd7bf144efec2611426545044fb72b63366c94db6305ead108dc53dadc",
+    "record_kind": "audit",
+    "spool": {
+     "file": "000000000000000000000000000000c0.0000.jsonl",
+     "offset": 0
+    }
+   },
+   {
+    "audit_confirmed": null,
+    "authority": "informational_only",
+    "collected_at": "2026-01-01T00:00:05+00:00",
+    "event_id": "f1cce1b8cc548959a31c3a9a2cc829409644fca9f798a402f9dec16dab2c70d5",
+    "event_type": "general.process_idle_exit",
+    "payload_hash": "151d1bc92ff647d49727597acc795442f5ba77d9fb133d340043a45f271394ca",
+    "record_kind": "event",
+    "spool": {
+     "file": "000000000000000000000000000000c0.0000.jsonl",
+     "offset": 1816
+    }
+   }
+  ],
+  "ids": {
+   "confirmed": "ef1106821945ef7d6d43235affefbc4b0c455fe3b8853a13c895a94f1eed7b98",
+   "plain": "f1cce1b8cc548959a31c3a9a2cc829409644fca9f798a402f9dec16dab2c70d5",
+   "unconfirmed": "b9492f9b034078d44a953b3ca01327dd28c38fda1f347839deb5a7917db097f2"
+  },
+  "receipt": {
+   "alerts_replayed": 0,
+   "confirmed_audits": 1,
+   "conflicts": 0,
+   "corrupt": 0,
+   "duplicates": 0,
+   "files": 1,
+   "inserted": 3,
+   "per_file": [
+    {
+     "confirmed_audits": 1,
+     "file": "000000000000000000000000000000c0.0000.jsonl",
+     "from_offset": 0,
+     "inserted": 3,
+     "records": 3,
+     "to_offset": 2724,
+     "unconfirmed_audits": 1
+    }
+   ],
+   "pruned_files": 0,
+   "pruned_runs": 0,
+   "reclaimed_segments": 0,
+   "records": 3,
+   "refused": 0,
+   "sink_failures": 0,
+   "truncated_tail": 0,
+   "unconfirmed_audits": 1
+  }
+ },
+ "batching": {
+  "acknowledged": {
+   "000000000000000000000000000000c0.0008.jsonl": 908
+  },
+  "clock_reads": 36,
+  "constructor_batch": 2,
+  "passes": [
+   {
+    "alerts_replayed": 0,
+    "confirmed_audits": 0,
+    "conflicts": 0,
+    "corrupt": 0,
+    "duplicates": 0,
+    "files": 9,
+    "inserted": 9,
+    "per_file": [
+     {
+      "file": "000000000000000000000000000000c0.0000.jsonl",
+      "from_offset": 0,
+      "inserted": 1,
+      "records": 1,
+      "to_offset": 908
+     },
+     {
+      "file": "000000000000000000000000000000c0.0001.jsonl",
+      "from_offset": 0,
+      "inserted": 1,
+      "records": 1,
+      "to_offset": 908
+     },
+     {
+      "file": "000000000000000000000000000000c0.0002.jsonl",
+      "from_offset": 0,
+      "inserted": 1,
+      "records": 1,
+      "to_offset": 908
+     },
+     {
+      "file": "000000000000000000000000000000c0.0003.jsonl",
+      "from_offset": 0,
+      "inserted": 1,
+      "records": 1,
+      "to_offset": 908
+     },
+     {
+      "file": "000000000000000000000000000000c0.0004.jsonl",
+      "from_offset": 0,
+      "inserted": 1,
+      "records": 1,
+      "to_offset": 908
+     },
+     {
+      "file": "000000000000000000000000000000c0.0005.jsonl",
+      "from_offset": 0,
+      "inserted": 1,
+      "records": 1,
+      "to_offset": 908
+     },
+     {
+      "file": "000000000000000000000000000000c0.0006.jsonl",
+      "from_offset": 0,
+      "inserted": 1,
+      "records": 1,
+      "to_offset": 908
+     },
+     {
+      "file": "000000000000000000000000000000c0.0007.jsonl",
+      "from_offset": 0,
+      "inserted": 1,
+      "records": 1,
+      "to_offset": 908
+     },
+     {
+      "file": "000000000000000000000000000000c0.0008.jsonl",
+      "from_offset": 0,
+      "inserted": 1,
+      "records": 1,
+      "to_offset": 908
+     }
+    ],
+    "pruned_files": 0,
+    "pruned_runs": 0,
+    "reclaimed_segments": 8,
+    "records": 9,
+    "refused": 0,
+    "sink_failures": 0,
+    "truncated_tail": 0,
+    "unconfirmed_audits": 0
+   },
+   {
+    "alerts_replayed": 0,
+    "confirmed_audits": 0,
+    "conflicts": 0,
+    "corrupt": 0,
+    "duplicates": 0,
+    "files": 1,
+    "inserted": 0,
+    "per_file": [],
+    "pruned_files": 0,
+    "pruned_runs": 0,
+    "reclaimed_segments": 0,
+    "records": 0,
+    "refused": 0,
+    "sink_failures": 0,
+    "truncated_tail": 0,
+    "unconfirmed_audits": 0
+   },
+   {
+    "alerts_replayed": 0,
+    "confirmed_audits": 0,
+    "conflicts": 0,
+    "corrupt": 0,
+    "duplicates": 0,
+    "files": 1,
+    "inserted": 0,
+    "per_file": [],
+    "pruned_files": 0,
+    "pruned_runs": 0,
+    "reclaimed_segments": 0,
+    "records": 0,
+    "refused": 0,
+    "sink_failures": 0,
+    "truncated_tail": 0,
+    "unconfirmed_audits": 0
+   },
+   {
+    "alerts_replayed": 0,
+    "confirmed_audits": 0,
+    "conflicts": 0,
+    "corrupt": 0,
+    "duplicates": 0,
+    "files": 1,
+    "inserted": 0,
+    "per_file": [],
+    "pruned_files": 0,
+    "pruned_runs": 0,
+    "reclaimed_segments": 0,
+    "records": 0,
+    "refused": 0,
+    "sink_failures": 0,
+    "truncated_tail": 0,
+    "unconfirmed_audits": 0
+   },
+   {
+    "alerts_replayed": 0,
+    "confirmed_audits": 0,
+    "conflicts": 0,
+    "corrupt": 0,
+    "duplicates": 0,
+    "files": 1,
+    "inserted": 0,
+    "per_file": [],
+    "pruned_files": 0,
+    "pruned_runs": 0,
+    "reclaimed_segments": 0,
+    "records": 0,
+    "refused": 0,
+    "sink_failures": 0,
+    "truncated_tail": 0,
+    "unconfirmed_audits": 0
+   },
+   {
+    "alerts_replayed": 0,
+    "confirmed_audits": 0,
+    "conflicts": 0,
+    "corrupt": 0,
+    "duplicates": 0,
+    "files": 1,
+    "inserted": 0,
+    "per_file": [],
+    "pruned_files": 0,
+    "pruned_runs": 0,
+    "reclaimed_segments": 0,
+    "records": 0,
+    "refused": 0,
+    "sink_failures": 0,
+    "truncated_tail": 0,
+    "unconfirmed_audits": 0
+   },
+   {
+    "alerts_replayed": 0,
+    "confirmed_audits": 0,
+    "conflicts": 0,
+    "corrupt": 0,
+    "duplicates": 0,
+    "files": 1,
+    "inserted": 0,
+    "per_file": [],
+    "pruned_files": 0,
+    "pruned_runs": 0,
+    "reclaimed_segments": 0,
+    "records": 0,
+    "refused": 0,
+    "sink_failures": 0,
+    "truncated_tail": 0,
+    "unconfirmed_audits": 0
+   },
+   {
+    "alerts_replayed": 0,
+    "confirmed_audits": 0,
+    "conflicts": 0,
+    "corrupt": 0,
+    "duplicates": 0,
+    "files": 1,
+    "inserted": 0,
+    "per_file": [],
+    "pruned_files": 0,
+    "pruned_runs": 0,
+    "reclaimed_segments": 0,
+    "records": 0,
+    "refused": 0,
+    "sink_failures": 0,
+    "truncated_tail": 0,
+    "unconfirmed_audits": 0
+   },
+   {
+    "alerts_replayed": 0,
+    "confirmed_audits": 0,
+    "conflicts": 0,
+    "corrupt": 0,
+    "duplicates": 0,
+    "files": 1,
+    "inserted": 0,
+    "per_file": [],
+    "pruned_files": 0,
+    "pruned_runs": 0,
+    "reclaimed_segments": 0,
+    "records": 0,
+    "refused": 0,
+    "sink_failures": 0,
+    "truncated_tail": 0,
+    "unconfirmed_audits": 0
+   },
+   {
+    "alerts_replayed": 0,
+    "confirmed_audits": 0,
+    "conflicts": 0,
+    "corrupt": 0,
+    "duplicates": 0,
+    "files": 1,
+    "inserted": 0,
+    "per_file": [],
+    "pruned_files": 0,
+    "pruned_runs": 0,
+    "reclaimed_segments": 0,
+    "records": 0,
+    "refused": 0,
+    "sink_failures": 0,
+    "truncated_tail": 0,
+    "unconfirmed_audits": 0
+   },
+   {
+    "alerts_replayed": 0,
+    "confirmed_audits": 0,
+    "conflicts": 0,
+    "corrupt": 0,
+    "duplicates": 0,
+    "files": 1,
+    "inserted": 0,
+    "per_file": [],
+    "pruned_files": 0,
+    "pruned_runs": 0,
+    "reclaimed_segments": 0,
+    "records": 0,
+    "refused": 0,
+    "sink_failures": 0,
+    "truncated_tail": 0,
+    "unconfirmed_audits": 0
+   },
+   {
+    "alerts_replayed": 0,
+    "confirmed_audits": 0,
+    "conflicts": 0,
+    "corrupt": 0,
+    "duplicates": 0,
+    "files": 1,
+    "inserted": 0,
+    "per_file": [],
+    "pruned_files": 0,
+    "pruned_runs": 0,
+    "reclaimed_segments": 0,
+    "records": 0,
+    "refused": 0,
+    "sink_failures": 0,
+    "truncated_tail": 0,
+    "unconfirmed_audits": 0
+   }
+  ],
+  "stored": [
+   0,
+   1,
+   2,
+   3,
+   4,
+   5,
+   6,
+   7,
+   8
+  ]
+ },
+ "canary": {
+  "alerts_pending": 2,
+  "clock_reads": 15,
+  "counts": {
+   "observation_alerts": 2,
+   "observation_audit": 1,
+   "observation_collections": 1,
+   "observation_quarantine": 0,
+   "observation_terminations": 0,
+   "observations": 4
+  },
+  "last_defect_redacted": true,
+  "leaked": false,
+  "receipt": {
+   "alerts_replayed": 2,
+   "confirmed_audits": 1,
+   "conflicts": 0,
+   "corrupt": 0,
+   "duplicates": 0,
+   "files": 1,
+   "inserted": 4,
+   "per_file": [
+    {
+     "confirmed_audits": 1,
+     "file": "000000000000000000000000000000c0.0000.jsonl",
+     "from_offset": 0,
+     "inserted": 4,
+     "records": 4,
+     "to_offset": 3900
+    }
+   ],
+   "pruned_files": 0,
+   "pruned_runs": 0,
+   "reclaimed_segments": 0,
+   "records": 4,
+   "refused": 0,
+   "sink_failures": 0,
+   "truncated_tail": 0,
+   "unconfirmed_audits": 0
+  }
+ },
+ "constructor": {
+  "batch_bool": {
+   "message": "Collection batch must be positive",
+   "refused": "ContractError"
+  },
+  "batch_float": {
+   "message": "Collection batch must be positive",
+   "refused": "ContractError"
+  },
+  "batch_negative": {
+   "message": "Collection batch must be positive",
+   "refused": "ContractError"
+  },
+  "batch_one": {
+   "value": {
+    "batch": 1,
+    "has_observer": false,
+    "validate_is": true
+   }
+  },
+  "batch_str": {
+   "message": "Collection batch must be positive",
+   "refused": "ContractError"
+  },
+  "batch_zero": {
+   "message": "Collection batch must be positive",
+   "refused": "ContractError"
+  },
+  "collect_empty_directory": {
+   "alerts_replayed": 0,
+   "confirmed_audits": 0,
+   "conflicts": 0,
+   "corrupt": 0,
+   "duplicates": 0,
+   "files": 0,
+   "inserted": 0,
+   "per_file": [],
+   "pruned_files": 0,
+   "pruned_runs": 0,
+   "reclaimed_segments": 0,
+   "records": 0,
+   "refused": 0,
+   "sink_failures": 0,
+   "truncated_tail": 0,
+   "unconfirmed_audits": 0
+  },
+  "default": {
+   "value": {
+    "batch": 1000,
+    "has_observer": false,
+    "validate_is": true
+   }
+  },
+  "positional_validate": {
+   "message": "Collector.__init__() takes 3 positional arguments but 4 were given",
+   "refused": "TypeError"
+  },
+  "replay_without_observer": 0,
+  "validate_missing": {
+   "message": "Collector needs the observation validator",
+   "refused": "ContractError"
+  },
+  "validate_not_callable": {
+   "message": "Collector needs the observation validator",
+   "refused": "ContractError"
+  }
+ },
+ "dead_run_and_prune": {
+  "clock_reads": 10,
+  "files": [],
+  "known_after": [],
+  "known_before": [
+   "000000000000000000000000000000c0",
+   "000000000000000000000000000000c1"
+  ],
+  "listing": {
+   "obs/spool/.lifecycle.lock": {
+    "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "size": 0
+   }
+  },
+  "quarantine": [
+   {
+    "at": "2026-01-01T00:00:03+00:00",
+    "defect": "[]: additionalProperties; []: required; []: required; []: required; []: required",
+    "event_id": null,
+    "file": "000000000000000000000000000000c0.0000.jsonl",
+    "id": "826bca44ef1fc96c79b239e36811137510aaca1446507a208a4cadfa38316cf5",
+    "offset": 0,
+    "reason": "schema_refused"
+   }
+  ],
+  "result": {
+   "alerts_replayed": 0,
+   "confirmed_audits": 0,
+   "conflicts": 0,
+   "corrupt": 0,
+   "duplicates": 0,
+   "files": 2,
+   "inserted": 2,
+   "per_file": [
+    {
+     "file": "000000000000000000000000000000c0.0000.jsonl",
+     "from_offset": 0,
+     "records": 1,
+     "refused": 1,
+     "to_offset": 96
+    },
+    {
+     "file": "000000000000000000000000000000c1.0000.jsonl",
+     "from_offset": 0,
+     "inserted": 2,
+     "records": 2,
+     "to_offset": 1816
+    }
+   ],
+   "pruned_files": 4,
+   "pruned_runs": 2,
+   "reclaimed_segments": 2,
+   "records": 3,
+   "refused": 1,
+   "sink_failures": 0,
+   "truncated_tail": 0,
+   "unconfirmed_audits": 0
+  }
+ },
+ "dedupe_and_conflict": {
+  "acknowledged": {
+   "000000000000000000000000000000c0.0000.jsonl": 6001
+  },
+  "alert_types": [
+   "operations.observation_conflict"
+  ],
+  "alerts": [
+   {
+    "attributes": {
+     "conflicting_event_id": "fb3d4d8888ccedd80d4cdb7c3f8f9fed7147caa3826ba7c963928379e1274d6a",
+     "expected_hash": "3c1d5eedd7cbc9c19f71aeb1f62c091b4827d5a1393dc86a471c53da9fcba603",
+     "observed_hash": "84abefbceac900cc520df1cfdaf59ddd0ed4fcd33beb569f586317ef7577c573",
+     "quarantine_id": "916a6758c0a47ebe112fc0de9260f3f0d9b93546dbdc010bac6c0a334fe18b4e"
+    },
+    "category": "operations",
+    "causation_id": null,
+    "correlation_id": null,
+    "event_id": "e8f0633a8f92885a8cc12b4f853a12c66bb0b6749311ff0eef0f86cf43e44897",
+    "event_type": "operations.observation_conflict",
+    "evidence_refs": [],
+    "execution": {
+     "attempt": null,
+     "bucket": null,
+     "generation": null,
+     "invocation_id": null,
+     "kind": "system",
+     "process_run_id": "000000000000000000000000000000c0",
+     "provider": null,
+     "revision": null,
+     "role": "s9-collector",
+     "session_id": null,
+     "task_id": null
+    },
+    "notification": {
+     "channel": "postgres:observation_alerts",
+     "status": "recorded"
+    },
+    "observed_at": "2026-01-01T00:00:07+00:00",
+    "occurred_at": null,
+    "outcome": "observed",
+    "payload_hash": "7432beb9861b1079dac169f064388ae99f31322e2cad62e71fa4a7ba42c806f4",
+    "reason_code": null,
+    "redaction": {
+     "applied": true,
+     "findings": 0,
+     "truncated": 0
+    },
+    "schema_version": "1.0",
+    "sequence": {
+     "basis": "unassigned",
+     "number": null,
+     "process_run_id": "000000000000000000000000000000c0"
+    },
+    "severity": "error",
+    "source": {
+     "component": "s9-collector",
+     "host": "fixture-host",
+     "pid": 1
+    },
+    "suppressed_before": 0
+   }
+  ],
+  "clock_reads": 17,
+  "events": [
+   {
+    "attributes": {
+     "conflicts": 0,
+     "corrupt": 0,
+     "duplicates": 0,
+     "files": 1,
+     "inserted": 1,
+     "records": 1,
+     "truncated_tail": 0,
+     "unconfirmed_audits": 0
+    },
+    "audit_confirmed": null,
+    "authority": "informational_only",
+    "category": "operations",
+    "causation_id": null,
+    "collected_at": "2026-01-01T00:00:05+00:00",
+    "correlation_id": null,
+    "event_id": "0401cab9841b1a19be8e4f4437ea1fbd0db04f05a16085a1ce9e67183365159b",
+    "event_type": "operations.collection_completed",
+    "evidence_refs": [],
+    "execution": {
+     "attempt": null,
+     "bucket": null,
+     "generation": null,
+     "invocation_id": null,
+     "kind": "system",
+     "process_run_id": "000000000000000000000000000000c0",
+     "provider": null,
+     "revision": null,
+     "role": "s9-collector",
+     "session_id": null,
+     "task_id": null
+    },
+    "observed_at": "2026-01-01T00:00:04+00:00",
+    "occurred_at": null,
+    "outcome": "observed",
+    "payload_hash": "1c97e71e7f3fc49711b3bc50cfb39dcb9fd06e623c669c5c332497af94131325",
+    "reason_code": null,
+    "record_kind": "event",
+    "redaction": {
+     "applied": true,
+     "findings": 0,
+     "truncated": 0
+    },
+    "schema_version": "1.0",
+    "sequence": {
+     "basis": "spool_append",
+     "number": 2,
+     "process_run_id": "000000000000000000000000000000c0"
+    },
+    "severity": "info",
+    "source": {
+     "component": "s9-collector",
+     "host": "fixture-host",
+     "pid": 1
+    },
+    "spool": {
+     "file": "000000000000000000000000000000c0.0000.jsonl",
+     "offset": 908
+    }
+   },
+   {
+    "attributes": {
+     "conflicts": 1,
+     "corrupt": 0,
+     "duplicates": 1,
+     "files": 1,
+     "inserted": 1,
+     "records": 3,
+     "truncated_tail": 0,
+     "unconfirmed_audits": 0
+    },
+    "audit_confirmed": null,
+    "authority": "informational_only",
+    "category": "operations",
+    "causation_id": null,
+    "collected_at": "2026-01-01T00:00:13+00:00",
+    "correlation_id": null,
+    "event_id": "cd2dc279355c79f9e7e44a7501d8e413e1c0d829f4419aa6a3aed38dee836f30",
+    "event_type": "operations.collection_completed",
+    "evidence_refs": [],
+    "execution": {
+     "attempt": null,
+     "bucket": null,
+     "generation": null,
+     "invocation_id": null,
+     "kind": "system",
+     "process_run_id": "000000000000000000000000000000c0",
+     "provider": null,
+     "revision": null,
+     "role": "s9-collector",
+     "session_id": null,
+     "task_id": null
+    },
+    "observed_at": "2026-01-01T00:00:11+00:00",
+    "occurred_at": null,
+    "outcome": "observed",
+    "payload_hash": "78cd6cd06a081c18473ddb67cbdbc4304479ef9e457db24b42aa7ded61646b80",
+    "reason_code": null,
+    "record_kind": "event",
+    "redaction": {
+     "applied": true,
+     "findings": 0,
+     "truncated": 0
+    },
+    "schema_version": "1.0",
+    "sequence": {
+     "basis": "spool_append",
+     "number": 3,
+     "process_run_id": "000000000000000000000000000000c0"
+    },
+    "severity": "info",
+    "source": {
+     "component": "s9-collector",
+     "host": "fixture-host",
+     "pid": 1
+    },
+    "spool": {
+     "file": "000000000000000000000000000000c0.0000.jsonl",
+     "offset": 4983
+    }
+   },
+   {
+    "attributes": {
+     "conflicting_event_id": "fb3d4d8888ccedd80d4cdb7c3f8f9fed7147caa3826ba7c963928379e1274d6a",
+     "expected_hash": "3c1d5eedd7cbc9c19f71aeb1f62c091b4827d5a1393dc86a471c53da9fcba603",
+     "observed_hash": "84abefbceac900cc520df1cfdaf59ddd0ed4fcd33beb569f586317ef7577c573",
+     "quarantine_id": "916a6758c0a47ebe112fc0de9260f3f0d9b93546dbdc010bac6c0a334fe18b4e"
+    },
+    "audit_confirmed": null,
+    "authority": "informational_only",
+    "category": "operations",
+    "causation_id": null,
+    "collected_at": "2026-01-01T00:00:12+00:00",
+    "correlation_id": null,
+    "event_id": "e8f0633a8f92885a8cc12b4f853a12c66bb0b6749311ff0eef0f86cf43e44897",
+    "event_type": "operations.observation_conflict",
+    "evidence_refs": [],
+    "execution": {
+     "attempt": null,
+     "bucket": null,
+     "generation": null,
+     "invocation_id": null,
+     "kind": "system",
+     "process_run_id": "000000000000000000000000000000c0",
+     "provider": null,
+     "revision": null,
+     "role": "s9-collector",
+     "session_id": null,
+     "task_id": null
+    },
+    "observed_at": "2026-01-01T00:00:07+00:00",
+    "occurred_at": null,
+    "outcome": "observed",
+    "payload_hash": "7432beb9861b1079dac169f064388ae99f31322e2cad62e71fa4a7ba42c806f4",
+    "reason_code": null,
+    "record_kind": "event",
+    "redaction": {
+     "applied": true,
+     "findings": 0,
+     "truncated": 0
+    },
+    "schema_version": "1.0",
+    "sequence": {
+     "basis": "unassigned",
+     "number": null,
+     "process_run_id": "000000000000000000000000000000c0"
+    },
+    "severity": "error",
+    "source": {
+     "component": "s9-collector",
+     "host": "fixture-host",
+     "pid": 1
+    },
+    "spool": {
+     "file": "000000000000000000000000000000c0.0000.jsonl",
+     "offset": 3742
+    }
+   },
+   {
+    "attributes": {
+     "idle_seconds": 5
+    },
+    "audit_confirmed": null,
+    "authority": "informational_only",
+    "category": "general",
+    "causation_id": null,
+    "collected_at": "2026-01-01T00:00:01+00:00",
+    "correlation_id": null,
+    "event_id": "fb3d4d8888ccedd80d4cdb7c3f8f9fed7147caa3826ba7c963928379e1274d6a",
+    "event_type": "general.process_idle_exit",
+    "evidence_refs": [],
+    "execution": {
+     "attempt": null,
+     "bucket": null,
+     "generation": null,
+     "invocation_id": null,
+     "kind": "system",
+     "process_run_id": "000000000000000000000000000000c0",
+     "provider": null,
+     "revision": null,
+     "role": "s9-collector",
+     "session_id": null,
+     "task_id": null
+    },
+    "observed_at": "2026-01-01T00:00:00+00:00",
+    "occurred_at": null,
+    "outcome": "observed",
+    "payload_hash": "3c1d5eedd7cbc9c19f71aeb1f62c091b4827d5a1393dc86a471c53da9fcba603",
+    "reason_code": null,
+    "record_kind": "event",
+    "redaction": {
+     "applied": true,
+     "findings": 0,
+     "truncated": 0
+    },
+    "schema_version": "1.0",
+    "sequence": {
+     "basis": "spool_append",
+     "number": 1,
+     "process_run_id": "000000000000000000000000000000c0"
+    },
+    "severity": "info",
+    "source": {
+     "component": "s9-collector",
+     "host": "fixture-host",
+     "pid": 1
+    },
+    "spool": {
+     "file": "000000000000000000000000000000c0.0000.jsonl",
+     "offset": 0
+    }
+   }
+  ],
+  "first": {
+   "alerts_replayed": 0,
+   "confirmed_audits": 0,
+   "conflicts": 0,
+   "corrupt": 0,
+   "duplicates": 0,
+   "files": 1,
+   "inserted": 1,
+   "per_file": [
+    {
+     "file": "000000000000000000000000000000c0.0000.jsonl",
+     "from_offset": 0,
+     "inserted": 1,
+     "records": 1,
+     "to_offset": 908
+    }
+   ],
+   "pruned_files": 0,
+   "pruned_runs": 0,
+   "reclaimed_segments": 0,
+   "records": 1,
+   "refused": 0,
+   "sink_failures": 0,
+   "truncated_tail": 0,
+   "unconfirmed_audits": 0
+  },
+  "listing": {
+   "obs/health/000000000000000000000000000000c0.json": {
+    "sha256": "377ef1553e58284e6df7b204c04f35fc7f9f49eadef79020ee7f355ccbfe7702",
+    "size": 399
+   },
+   "obs/spool/.lifecycle.lock": {
+    "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "size": 0
+   },
+   "obs/spool/000000000000000000000000000000c0.0000.ack": {
+    "json": {
+     "consumed": 2,
+     "offset": 6001,
+     "updated_at": "<utc-iso>"
+    }
+   },
+   "obs/spool/000000000000000000000000000000c0.0000.jsonl": {
+    "sha256": "9c6bef6d2d4801232696aa51577b23386252683f8a754414f231210bbbe10076",
+    "size": 7019
+   },
+   "obs/spool/000000000000000000000000000000c0.lock": {
+    "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "size": 0
+   }
+  },
+  "observation_types": [
+   "general.process_idle_exit",
+   "operations.collection_completed",
+   "operations.collection_completed",
+   "operations.observation_conflict"
+  ],
+  "quarantine": [
+   {
+    "at": "2026-01-01T00:00:06+00:00",
+    "event_id": "fb3d4d8888ccedd80d4cdb7c3f8f9fed7147caa3826ba7c963928379e1274d6a",
+    "expected_hash": "3c1d5eedd7cbc9c19f71aeb1f62c091b4827d5a1393dc86a471c53da9fcba603",
+    "file": "000000000000000000000000000000c0.0000.jsonl",
+    "id": "916a6758c0a47ebe112fc0de9260f3f0d9b93546dbdc010bac6c0a334fe18b4e",
+    "observed_hash": "84abefbceac900cc520df1cfdaf59ddd0ed4fcd33beb569f586317ef7577c573",
+    "offset": 2834,
+    "reason": "conflicting_content",
+    "source": {
+     "attributes": {
+      "idle_seconds": 6
+     },
+     "category": "general",
+     "causation_id": null,
+     "correlation_id": null,
+     "event_id": "fb3d4d8888ccedd80d4cdb7c3f8f9fed7147caa3826ba7c963928379e1274d6a",
+     "event_type": "general.process_idle_exit",
+     "evidence_refs": [],
+     "execution": {
+      "attempt": null,
+      "bucket": null,
+      "generation": null,
+      "invocation_id": null,
+      "kind": "system",
+      "process_run_id": "000000000000000000000000000000c0",
+      "provider": null,
+      "revision": null,
+      "role": "s9-collector",
+      "session_id": null,
+      "task_id": null
+     },
+     "observed_at": "2026-01-01T00:00:00+00:00",
+     "occurred_at": null,
+     "outcome": "observed",
+     "reason_code": null,
+     "redaction": {
+      "applied": true,
+      "findings": 0,
+      "truncated": 0
+     },
+     "schema_version": "1.0",
+     "sequence": {
+      "basis": "spool_append",
+      "number": 1,
+      "process_run_id": "000000000000000000000000000000c0"
+     },
+     "severity": "info",
+     "source": {
+      "component": "s9-collector",
+      "host": "fixture-host",
+      "pid": 1
+     }
+    }
+   }
+  ],
+  "receipts": [
+   {
+    "at": "2026-01-01T00:00:15+00:00",
+    "file": "000000000000000000000000000000c0.0000.jsonl",
+    "from_offset": 3742,
+    "id": "3a4a632502de43b81b065a4b5539de7e456a165a726639951357599ceb536e96",
+    "inserted": 2,
+    "records": 2,
+    "to_offset": 6001
+   },
+   {
+    "at": "2026-01-01T00:00:03+00:00",
+    "file": "000000000000000000000000000000c0.0000.jsonl",
+    "from_offset": 0,
+    "id": "72cb59a4d06eb6d27e6daf537c8a4ffb1cb89e50dd1d639701ca5525be97d3ea",
+    "inserted": 1,
+    "records": 1,
+    "to_offset": 908
+   },
+   {
+    "at": "2026-01-01T00:00:10+00:00",
+    "conflicts": 1,
+    "duplicates": 1,
+    "file": "000000000000000000000000000000c0.0000.jsonl",
+    "from_offset": 908,
+    "id": "fc6c0c5dc60b062249accf8c75913b5fde1aa8d2669cc288f68612331083d4ad",
+    "inserted": 1,
+    "records": 3,
+    "to_offset": 3742
+   }
+  ],
+  "second": {
+   "alerts_replayed": 0,
+   "confirmed_audits": 0,
+   "conflicts": 1,
+   "corrupt": 0,
+   "duplicates": 1,
+   "files": 1,
+   "inserted": 1,
+   "per_file": [
+    {
+     "conflicts": 1,
+     "duplicates": 1,
+     "file": "000000000000000000000000000000c0.0000.jsonl",
+     "from_offset": 908,
+     "inserted": 1,
+     "records": 3,
+     "to_offset": 3742
+    }
+   ],
+   "pruned_files": 0,
+   "pruned_runs": 0,
+   "reclaimed_segments": 0,
+   "records": 3,
+   "refused": 0,
+   "sink_failures": 0,
+   "truncated_tail": 0,
+   "unconfirmed_audits": 0
+  },
+  "stored_idle": {
+   "conflicts": 0,
+   "corrupt": 0,
+   "duplicates": 0,
+   "files": 1,
+   "inserted": 1,
+   "records": 1,
+   "truncated_tail": 0,
+   "unconfirmed_audits": 0
+  },
+  "third": {
+   "alerts_replayed": 0,
+   "confirmed_audits": 0,
+   "conflicts": 0,
+   "corrupt": 0,
+   "duplicates": 0,
+   "files": 1,
+   "inserted": 2,
+   "per_file": [
+    {
+     "file": "000000000000000000000000000000c0.0000.jsonl",
+     "from_offset": 3742,
+     "inserted": 2,
+     "records": 2,
+     "to_offset": 6001
+    }
+   ],
+   "pruned_files": 0,
+   "pruned_runs": 0,
+   "reclaimed_segments": 0,
+   "records": 2,
+   "refused": 0,
+   "sink_failures": 0,
+   "truncated_tail": 0,
+   "unconfirmed_audits": 0
+  }
+ },
+ "orphan_report": {
+  "bad_now": {
+   "message": "Invalid isoformat string: 'yesterday'",
+   "refused": "ValueError"
+  },
+  "default_now": {
+   "as_of": "<utc-iso>",
+   "as_of_is_utc_iso": true,
+   "in_progress": [
+    "r0"
+   ],
+   "note": "orphan means reserved without a live lease; it is an observation, the invocation ledger's reclaim closes it as unsettled_unknown",
+   "orphans": [
+    "r1",
+    "r2",
+    "r3",
+    "r4",
+    "r5",
+    "r6",
+    "r7",
+    "r8"
+   ]
+  },
+  "empty": {
+   "as_of": "2026-06-01T00:00:00+00:00",
+   "in_progress": [],
+   "note": "orphan means reserved without a live lease; it is an observation, the invocation ledger's reclaim closes it as unsettled_unknown",
+   "orphan": []
+  },
+  "empty_now": {
+   "as_of": "<utc-iso>",
+   "in_progress": [
+    {
+     "attempt": 1,
+     "bucket": "tasks",
+     "generation": 1,
+     "lease_until": "2999-01-01T00:00:00+00:00",
+     "reason": null,
+     "reservation_id": "r0",
+     "reserved_at": "2026-01-01T00:00:00+00:00",
+     "task_id": "alive"
+    }
+   ],
+   "note": "orphan means reserved without a live lease; it is an observation, the invocation ledger's reclaim closes it as unsettled_unknown",
+   "orphan": [
+    {
+     "attempt": 1,
+     "bucket": "tasks",
+     "generation": 1,
+     "lease_until": "2000-01-01T00:00:00+00:00",
+     "reason": "execution_lease_expired",
+     "reservation_id": "r1",
+     "reserved_at": "2026-01-01T00:00:00+00:00",
+     "task_id": "expired"
+    },
+    {
+     "attempt": 1,
+     "bucket": "tasks",
+     "generation": 1,
+     "lease_until": "garbage",
+     "reason": "execution_lease_expired",
+     "reservation_id": "r2",
+     "reserved_at": "2026-01-01T00:00:00+00:00",
+     "task_id": "bad_lease"
+    },
+    {
+     "attempt": 1,
+     "bucket": "tasks",
+     "generation": 1,
+     "lease_until": null,
+     "reason": "execution_lease_expired",
+     "reservation_id": "r3",
+     "reserved_at": "2026-01-01T00:00:00+00:00",
+     "task_id": "no_lease"
+    },
+    {
+     "attempt": 1,
+     "bucket": "tasks",
+     "generation": 1,
+     "lease_until": "2999-01-01T00:00:00+00:00",
+     "reason": "execution_lease_expired",
+     "reservation_id": "r4",
+     "reserved_at": "2026-01-01T00:00:00+00:00",
+     "task_id": "other_owner"
+    },
+    {
+     "attempt": 1,
+     "bucket": "tasks",
+     "generation": 1,
+     "lease_until": "2999-01-01T00:00:00+00:00",
+     "reason": "execution_retry",
+     "reservation_id": "r5",
+     "reserved_at": "2026-01-01T00:00:00+00:00",
+     "task_id": "retry"
+    },
+    {
+     "attempt": 1,
+     "bucket": "tasks",
+     "generation": 1,
+     "lease_until": "2999-01-01T00:00:00+00:00",
+     "reason": "execution_superseded",
+     "reservation_id": "r6",
+     "reserved_at": "2026-01-01T00:00:00+00:00",
+     "task_id": "superseded"
+    },
+    {
+     "attempt": 1,
+     "bucket": "tasks",
+     "generation": 1,
+     "lease_until": "2999-01-01T00:00:00+00:00",
+     "reason": "execution_superseded",
+     "reservation_id": "r7",
+     "reserved_at": "2026-01-01T00:00:00+00:00",
+     "task_id": "next_attempt"
+    },
+    {
+     "attempt": 1,
+     "bucket": "tasks",
+     "generation": 1,
+     "lease_until": null,
+     "reason": "execution_missing",
+     "reservation_id": "r8",
+     "reserved_at": "2026-01-01T00:00:00+00:00",
+     "task_id": "missing"
+    }
+   ]
+  },
+  "fixed_now": {
+   "as_of": "2026-06-01T00:00:00+00:00",
+   "in_progress": [
+    {
+     "attempt": 1,
+     "bucket": "tasks",
+     "generation": 1,
+     "lease_until": "2999-01-01T00:00:00+00:00",
+     "reason": null,
+     "reservation_id": "r0",
+     "reserved_at": "2026-01-01T00:00:00+00:00",
+     "task_id": "alive"
+    }
+   ],
+   "note": "orphan means reserved without a live lease; it is an observation, the invocation ledger's reclaim closes it as unsettled_unknown",
+   "orphan": [
+    {
+     "attempt": 1,
+     "bucket": "tasks",
+     "generation": 1,
+     "lease_until": "2000-01-01T00:00:00+00:00",
+     "reason": "execution_lease_expired",
+     "reservation_id": "r1",
+     "reserved_at": "2026-01-01T00:00:00+00:00",
+     "task_id": "expired"
+    },
+    {
+     "attempt": 1,
+     "bucket": "tasks",
+     "generation": 1,
+     "lease_until": "garbage",
+     "reason": "execution_lease_expired",
+     "reservation_id": "r2",
+     "reserved_at": "2026-01-01T00:00:00+00:00",
+     "task_id": "bad_lease"
+    },
+    {
+     "attempt": 1,
+     "bucket": "tasks",
+     "generation": 1,
+     "lease_until": null,
+     "reason": "execution_lease_expired",
+     "reservation_id": "r3",
+     "reserved_at": "2026-01-01T00:00:00+00:00",
+     "task_id": "no_lease"
+    },
+    {
+     "attempt": 1,
+     "bucket": "tasks",
+     "generation": 1,
+     "lease_until": "2999-01-01T00:00:00+00:00",
+     "reason": "execution_lease_expired",
+     "reservation_id": "r4",
+     "reserved_at": "2026-01-01T00:00:00+00:00",
+     "task_id": "other_owner"
+    },
+    {
+     "attempt": 1,
+     "bucket": "tasks",
+     "generation": 1,
+     "lease_until": "2999-01-01T00:00:00+00:00",
+     "reason": "execution_retry",
+     "reservation_id": "r5",
+     "reserved_at": "2026-01-01T00:00:00+00:00",
+     "task_id": "retry"
+    },
+    {
+     "attempt": 1,
+     "bucket": "tasks",
+     "generation": 1,
+     "lease_until": "2999-01-01T00:00:00+00:00",
+     "reason": "execution_superseded",
+     "reservation_id": "r6",
+     "reserved_at": "2026-01-01T00:00:00+00:00",
+     "task_id": "superseded"
+    },
+    {
+     "attempt": 1,
+     "bucket": "tasks",
+     "generation": 1,
+     "lease_until": "2999-01-01T00:00:00+00:00",
+     "reason": "execution_superseded",
+     "reservation_id": "r7",
+     "reserved_at": "2026-01-01T00:00:00+00:00",
+     "task_id": "next_attempt"
+    },
+    {
+     "attempt": 1,
+     "bucket": "tasks",
+     "generation": 1,
+     "lease_until": null,
+     "reason": "execution_missing",
+     "reservation_id": "r8",
+     "reserved_at": "2026-01-01T00:00:00+00:00",
+     "task_id": "missing"
+    }
+   ]
+  },
+  "naive_now": {
+   "message": "can't compare offset-naive and offset-aware datetimes",
+   "refused": "TypeError"
+  },
+  "non_string_now": {
+   "message": "fromisoformat: argument must be str",
+   "refused": "TypeError"
+  },
+  "store_untouched": true
+ },
+ "outage_bounds_spool_and_recovery_resumes": {
+  "clock_reads": 302,
+  "counts": {
+   "observation_alerts": 49,
+   "observation_audit": 0,
+   "observation_collections": 27,
+   "observation_quarantine": 0,
+   "observation_terminations": 0,
+   "observations": 27
+  },
+  "drain_passes": 2,
+  "dropped_before": 0,
+  "end": {
+   "counters": {
+    "alerts_pending": 49,
+    "alerts_replayed": 49,
+    "dropped_spool_full": 48,
+    "emitted": 27
+   },
+   "pending": 0,
+   "sink_state": "available"
+  },
+  "final": {
+   "alerts_replayed": 0,
+   "confirmed_audits": 0,
+   "conflicts": 0,
+   "corrupt": 0,
+   "duplicates": 0,
+   "files": 3,
+   "inserted": 2,
+   "per_file": [
+    {
+     "file": "000000000000000000000000000000c0.0025.jsonl",
+     "from_offset": 0,
+     "inserted": 1,
+     "records": 1,
+     "to_offset": 1019
+    },
+    {
+     "file": "000000000000000000000000000000c0.0026.jsonl",
+     "from_offset": 0,
+     "inserted": 1,
+     "records": 1,
+     "to_offset": 911
+    }
+   ],
+   "pruned_files": 0,
+   "pruned_runs": 0,
+   "reclaimed_segments": 2,
+   "records": 2,
+   "refused": 0,
+   "sink_failures": 0,
+   "truncated_tail": 0,
+   "unconfirmed_audits": 0
+  },
+  "last_drain": {
+   "alerts_replayed": 0,
+   "confirmed_audits": 0,
+   "conflicts": 0,
+   "corrupt": 0,
+   "duplicates": 0,
+   "files": 2,
+   "inserted": 1,
+   "per_file": [
+    {
+     "file": "000000000000000000000000000000c0.0024.jsonl",
+     "from_offset": 0,
+     "inserted": 1,
+     "records": 1,
+     "to_offset": 1019
+    }
+   ],
+   "pruned_files": 0,
+   "pruned_runs": 0,
+   "reclaimed_segments": 1,
+   "records": 1,
+   "refused": 0,
+   "sink_failures": 0,
+   "truncated_tail": 0,
+   "unconfirmed_audits": 0
+  },
+  "outage": {
+   "bounded": true,
+   "dropped": 48,
+   "pending_alerts": 49,
+   "sink_state": "unavailable",
+   "unacknowledged_bytes": 3793
+  },
+  "resumed_without_new_drops": true,
+  "stored": {
+   "count": 13,
+   "digest": "5200f477a24415065ef7cc4d3d0af21eb69b85bcc4729ce5ca71c624628fb3c7",
+   "first_ten": [
+    0,
+    1,
+    2,
+    3,
+    4,
+    5,
+    6,
+    7,
+    8,
+    9
+   ],
+   "has_999": true,
+   "unique": true
+  }
+ },
+ "pending_alerts_only_replay": {
+  "after": {
+   "inherited_pending": 0,
+   "pending_files": {},
+   "sink_state": "available"
+  },
+  "clock_reads": 11,
+  "counts": {
+   "observation_alerts": 3,
+   "observation_audit": 0,
+   "observation_collections": 0,
+   "observation_quarantine": 0,
+   "observation_terminations": 0,
+   "observations": 0
+  },
+  "debt": {
+   "files": {
+    "000000000000000000000000000000c0": 3
+   },
+   "pending": 3
+  },
+  "emit_refused": true,
+  "replay_without_observer": 0,
+  "replayed": {
+   "all_after_recovery": true,
+   "all_stored": true,
+   "replayed_by": [
+    "000000000000000000000000000000c1"
+   ]
+  },
+  "result": {
+   "alerts_replayed": 3,
+   "confirmed_audits": 0,
+   "conflicts": 0,
+   "corrupt": 0,
+   "duplicates": 0,
+   "files": 1,
+   "inserted": 0,
+   "per_file": [],
+   "pruned_files": 5,
+   "pruned_runs": 1,
+   "reclaimed_segments": 1,
+   "records": 0,
+   "refused": 0,
+   "sink_failures": 0,
+   "truncated_tail": 0,
+   "unconfirmed_audits": 0
+  }
+ },
+ "pending_replay_commit_failure": {
+  "after": {
+   "files": {},
+   "stored_debt": true
+  },
+  "b_again": 4,
+  "b_failed": {
+   "alerts_replayed": 0,
+   "confirmed_audits": 0,
+   "conflicts": 0,
+   "corrupt": 0,
+   "duplicates": 0,
+   "files": 2,
+   "inserted": 0,
+   "per_file": [],
+   "pruned_files": 3,
+   "pruned_runs": 1,
+   "reclaimed_segments": 1,
+   "records": 0,
+   "refused": 0,
+   "sink_failures": 1,
+   "truncated_tail": 0,
+   "unconfirmed_audits": 0
+  },
+  "b_state": {
+   "files": 4,
+   "inherited_pending": 1,
+   "sink_state": "unavailable"
+  },
+  "c_replayed": {
+   "alerts_replayed": 4,
+   "covers_debt": true
+  },
+  "clock_reads": 24,
+  "counts": {
+   "observation_alerts": 4,
+   "observation_audit": 0,
+   "observation_collections": 2,
+   "observation_quarantine": 0,
+   "observation_terminations": 0,
+   "observations": 2
+  }
+ },
+ "prune_disabled_and_failing": {
+  "clock_reads": 7,
+  "listing_after": [
+   "obs/spool/.lifecycle.lock"
+  ],
+  "listing_after_prune_false": [
+   "obs/health/000000000000000000000000000000c0.json",
+   "obs/spool/.lifecycle.lock",
+   "obs/spool/000000000000000000000000000000c0.closed",
+   "obs/spool/000000000000000000000000000000c0.lock"
+  ],
+  "prune_false": {
+   "alerts_replayed": 0,
+   "confirmed_audits": 0,
+   "conflicts": 0,
+   "corrupt": 0,
+   "duplicates": 0,
+   "files": 1,
+   "inserted": 2,
+   "per_file": [
+    {
+     "file": "000000000000000000000000000000c0.0000.jsonl",
+     "from_offset": 0,
+     "inserted": 2,
+     "records": 2,
+     "to_offset": 1816
+    }
+   ],
+   "pruned_files": 0,
+   "pruned_runs": 0,
+   "reclaimed_segments": 1,
+   "records": 2,
+   "refused": 0,
+   "sink_failures": 0,
+   "truncated_tail": 0,
+   "unconfirmed_audits": 0
+  },
+  "prune_raises": {
+   "alerts_replayed": 0,
+   "confirmed_audits": 0,
+   "conflicts": 0,
+   "corrupt": 0,
+   "duplicates": 0,
+   "files": 0,
+   "inserted": 0,
+   "per_file": [],
+   "pruned_files": 0,
+   "pruned_runs": 0,
+   "reclaimed_segments": 0,
+   "records": 0,
+   "refused": 0,
+   "sink_failures": 0,
+   "truncated_tail": 0,
+   "unconfirmed_audits": 0
+  },
+  "pruned": {
+   "alerts_replayed": 0,
+   "confirmed_audits": 0,
+   "conflicts": 0,
+   "corrupt": 0,
+   "duplicates": 0,
+   "files": 0,
+   "inserted": 0,
+   "per_file": [],
+   "pruned_files": 3,
+   "pruned_runs": 1,
+   "reclaimed_segments": 0,
+   "records": 0,
+   "refused": 0,
+   "sink_failures": 0,
+   "truncated_tail": 0,
+   "unconfirmed_audits": 0
+  }
+ },
+ "reclaim_and_rotation": {
+  "clock_reads": 294,
+  "closed": {
+   "alerts_replayed": 0,
+   "confirmed_audits": 0,
+   "conflicts": 0,
+   "corrupt": 0,
+   "duplicates": 0,
+   "files": 2,
+   "inserted": 1,
+   "per_file": [
+    {
+     "file": "000000000000000000000000000000c0.0072.jsonl",
+     "from_offset": 0,
+     "inserted": 1,
+     "records": 1,
+     "to_offset": 1019
+    }
+   ],
+   "pruned_files": 3,
+   "pruned_runs": 1,
+   "reclaimed_segments": 2,
+   "records": 1,
+   "refused": 0,
+   "sink_failures": 0,
+   "truncated_tail": 0,
+   "unconfirmed_audits": 0
+  },
+  "dropped": 0,
+  "files_after_close": [],
+  "listing": {
+   "obs/spool/.lifecycle.lock": {
+    "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "size": 0
+   }
+  },
+  "receipts": [
+   {
+    "alerts_replayed": 0,
+    "confirmed_audits": 0,
+    "conflicts": 0,
+    "corrupt": 0,
+    "duplicates": 0,
+    "files": 5,
+    "inserted": 5,
+    "per_file": [
+     {
+      "file": "000000000000000000000000000000c0.0000.jsonl",
+      "from_offset": 0,
+      "inserted": 1,
+      "records": 1,
+      "to_offset": 908
+     },
+     {
+      "file": "000000000000000000000000000000c0.0001.jsonl",
+      "from_offset": 0,
+      "inserted": 1,
+      "records": 1,
+      "to_offset": 908
+     },
+     {
+      "file": "000000000000000000000000000000c0.0002.jsonl",
+      "from_offset": 0,
+      "inserted": 1,
+      "records": 1,
+      "to_offset": 908
+     },
+     {
+      "file": "000000000000000000000000000000c0.0003.jsonl",
+      "from_offset": 0,
+      "inserted": 1,
+      "records": 1,
+      "to_offset": 908
+     },
+     {
+      "file": "000000000000000000000000000000c0.0004.jsonl",
+      "from_offset": 0,
+      "inserted": 1,
+      "records": 1,
+      "to_offset": 908
+     }
+    ],
+    "pruned_files": 0,
+    "pruned_runs": 0,
+    "reclaimed_segments": 4,
+    "records": 5,
+    "refused": 0,
+    "sink_failures": 0,
+    "truncated_tail": 0,
+    "unconfirmed_audits": 0
+   },
+   {
+    "alerts_replayed": 0,
+    "confirmed_audits": 0,
+    "conflicts": 0,
+    "corrupt": 0,
+    "duplicates": 0,
+    "files": 7,
+    "inserted": 6,
+    "per_file": [
+     {
+      "file": "000000000000000000000000000000c0.0005.jsonl",
+      "from_offset": 0,
+      "inserted": 1,
+      "records": 1,
+      "to_offset": 1018
+     },
+     {
+      "file": "000000000000000000000000000000c0.0006.jsonl",
+      "from_offset": 0,
+      "inserted": 1,
+      "records": 1,
+      "to_offset": 908
+     },
+     {
+      "file": "000000000000000000000000000000c0.0007.jsonl",
+      "from_offset": 0,
+      "inserted": 1,
+      "records": 1,
+      "to_offset": 908
+     },
+     {
+      "file": "000000000000000000000000000000c0.0008.jsonl",
+      "from_offset": 0,
+      "inserted": 1,
+      "records": 1,
+      "to_offset": 908
+     },
+     {
+      "file": "000000000000000000000000000000c0.0009.jsonl",
+      "from_offset": 0,
+      "inserted": 1,
+      "records": 1,
+      "to_offset": 909
+     },
+     {
+      "file": "000000000000000000000000000000c0.0010.jsonl",
+      "from_offset": 0,
+      "inserted": 1,
+      "records": 1,
+      "to_offset": 909
+     }
+    ],
+    "pruned_files": 0,
+    "pruned_runs": 0,
+    "reclaimed_segments": 6,
+    "records": 6,
+    "refused": 0,
+    "sink_failures": 0,
+    "truncated_tail": 0,
+    "unconfirmed_audits": 0
+   },
+   {
+    "alerts_replayed": 0,
+    "confirmed_audits": 0,
+    "conflicts": 0,
+    "corrupt": 0,
+    "duplicates": 0,
+    "files": 7,
+    "inserted": 6,
+    "per_file": [
+     {
+      "file": "000000000000000000000000000000c0.0011.jsonl",
+      "from_offset": 0,
+      "inserted": 1,
+      "records": 1,
+      "to_offset": 1019
+     },
+     {
+      "file": "000000000000000000000000000000c0.0012.jsonl",
+      "from_offset": 0,
+      "inserted": 1,
+      "records": 1,
+      "to_offset": 910
+     },
+     {
+      "file": "000000000000000000000000000000c0.0013.jsonl",
+      "from_offset": 0,
+      "inserted": 1,
+      "records": 1,
+      "to_offset": 910
+     },
+     {
+      "file": "000000000000000000000000000000c0.0014.jsonl",
+      "from_offset": 0,
+      "inserted": 1,
+      "records": 1,
+      "to_offset": 910
+     },
+     {
+      "file": "000000000000000000000000000000c0.0015.jsonl",
+      "from_offset": 0,
+      "inserted": 1,
+      "records": 1,
+      "to_offset": 910
+     },
+     {
+      "file": "000000000000000000000000000000c0.0016.jsonl",
+      "from_offset": 0,
+      "inserted": 1,
+      "records": 1,
+      "to_offset": 910
+     }
+    ],
+    "pruned_files": 0,
+    "pruned_runs": 0,
+    "reclaimed_segments": 6,
+    "records": 6,
+    "refused": 0,
+    "sink_failures": 0,
+    "truncated_tail": 0,
+    "unconfirmed_audits": 0
+   },
+   {
+    "alerts_replayed": 0,
+    "confirmed_audits": 0,
+    "conflicts": 0,
+    "corrupt": 0,
+    "duplicates": 0,
+    "files": 7,
+    "inserted": 6,
+    "per_file": [
+     {
+      "file": "000000000000000000000000000000c0.0017.jsonl",
+      "from_offset": 0,
+      "inserted": 1,
+      "records": 1,
+      "to_offset": 1019
+     },
+     {
+      "file": "000000000000000000000000000000c0.0018.jsonl",
+      "from_offset": 0,
+      "inserted": 1,
+      "records": 1,
+      "to_offset": 910
+     },
+     {
+      "file": "000000000000000000000000000000c0.0019.jsonl",
+      "from_offset": 0,
+      "inserted": 1,
+      "records": 1,
+      "to_offset": 910
+     },
+     {
+      "file": "000000000000000000000000000000c0.0020.jsonl",
+      "from_offset": 0,
+      "inserted": 1,
+      "records": 1,
+      "to_offset": 910
+     },
+     {
+      "file": "000000000000000000000000000000c0.0021.jsonl",
+      "from_offset": 0,
+      "inserted": 1,
+      "records": 1,
+      "to_offset": 910
+     },
+     {
+      "file": "000000000000000000000000000000c0.0022.jsonl",
+      "from_offset": 0,
+      "inserted": 1,
+      "records": 1,
+      "to_offset": 910
+     }
+    ],
+    "pruned_files": 0,
+    "pruned_runs": 0,
+    "reclaimed_segments": 6,
+    "records": 6,
+    "refused": 0,
+    "sink_failures": 0,
+    "truncated_tail": 0,
+    "unconfirmed_audits": 0
+   },
+   {
+    "alerts_replayed": 0,
+    "confirmed_audits": 0,
+    "conflicts": 0,
+    "corrupt": 0,
+    "duplicates": 0,
+    "files": 7,
+    "inserted": 6,
+    "per_file": [
+     {
+      "file": "000000000000000000000000000000c0.0023.jsonl",
+      "from_offset": 0,
+      "inserted": 1,
+      "records": 1,
+      "to_offset": 1019
+     },
+     {
+      "file": "000000000000000000000000000000c0.0024.jsonl",
+      "from_offset": 0,
+      "inserted": 1,
+      "records": 1,
+      "to_offset": 910
+     },
+     {
+      "file": "000000000000000000000000000000c0.0025.jsonl",
+      "from_offset": 0,
+      "inserted": 1,
+      "records": 1,
+      "to_offset": 910
+     },
+     {
+      "file": "000000000000000000000000000000c0.0026.jsonl",
+      "from_offset": 0,
+      "inserted": 1,
+      "records": 1,
+      "to_offset": 910
+     },
+     {
+      "file": "000000000000000000000000000000c0.0027.jsonl",
+      "from_offset": 0,
+      "inserted": 1,
+      "records": 1,
+      "to_offset": 910
+     },
+     {
+      "file": "000000000000000000000000000000c0.0028.jsonl",
+      "from_offset": 0,
+      "inserted": 1,
+      "records": 1,
+      "to_offset": 910
+     }
+    ],
+    "pruned_files": 0,
+    "pruned_runs": 0,
+    "reclaimed_segments": 6,
+    "records": 6,
+    "refused": 0,
+    "sink_failures": 0,
+    "truncated_tail": 0,
+    "unconfirmed_audits": 0
+   },
+   {
+    "alerts_replayed": 0,
+    "confirmed_audits": 0,
+    "conflicts": 0,
+    "corrupt": 0,
+    "duplicates": 0,
+    "files": 7,
+    "inserted": 6,
+    "per_file": [
+     {
+      "file": "000000000000000000000000000000c0.0029.jsonl",
+      "from_offset": 0,
+      "inserted": 1,
+      "records": 1,
+      "to_offset": 1019
+     },
+     {
+      "file": "000000000000000000000000000000c0.0030.jsonl",
+      "from_offset": 0,
+      "inserted": 1,
+      "records": 1,
+      "to_offset": 910
+     },
+     {
+      "file": "000000000000000000000000000000c0.0031.jsonl",
+      "from_offset": 0,
+      "inserted": 1,
+      "records": 1,
+      "to_offset": 910
+     },
+     {
+      "file": "000000000000000000000000000000c0.0032.jsonl",
+      "from_offset": 0,
+      "inserted": 1,
+      "records": 1,
+      "to_offset": 910
+     },
+     {
+      "file": "000000000000000000000000000000c0.0033.jsonl",
+      "from_offset": 0,
+      "inserted": 1,
+      "records": 1,
+      "to_offset": 910
+     },
+     {
+      "file": "000000000000000000000000000000c0.0034.jsonl",
+      "from_offset": 0,
+      "inserted": 1,
+      "records": 1,
+      "to_offset": 910
+     }
+    ],
+    "pruned_files": 0,
+    "pruned_runs": 0,
+    "reclaimed_segments": 6,
+    "records": 6,
+    "refused": 0,
+    "sink_failures": 0,
+    "truncated_tail": 0,
+    "unconfirmed_audits": 0
+   },
+   {
+    "alerts_replayed": 0,
+    "confirmed_audits": 0,
+    "conflicts": 0,
+    "corrupt": 0,
+    "duplicates": 0,
+    "files": 7,
+    "inserted": 6,
+    "per_file": [
+     {
+      "file": "000000000000000000000000000000c0.0035.jsonl",
+      "from_offset": 0,
+      "inserted": 1,
+      "records": 1,
+      "to_offset": 1019
+     },
+     {
+      "file": "000000000000000000000000000000c0.0036.jsonl",
+      "from_offset": 0,
+      "inserted": 1,
+      "records": 1,
+      "to_offset": 910
+     },
+     {
+      "file": "000000000000000000000000000000c0.0037.jsonl",
+      "from_offset": 0,
+      "inserted": 1,
+      "records": 1,
+      "to_offset": 910
+     },
+     {
+      "file": "000000000000000000000000000000c0.0038.jsonl",
+      "from_offset": 0,
+      "inserted": 1,
+      "records": 1,
+      "to_offset": 910
+     },
+     {
+      "file": "000000000000000000000000000000c0.0039.jsonl",
+      "from_offset": 0,
+      "inserted": 1,
+      "records": 1,
+      "to_offset": 910
+     },
+     {
+      "file": "000000000000000000000000000000c0.0040.jsonl",
+      "from_offset": 0,
+      "inserted": 1,
+      "records": 1,
+      "to_offset": 910
+     }
+    ],
+    "pruned_files": 0,
+    "pruned_runs": 0,
+    "reclaimed_segments": 6,
+    "records": 6,
+    "refused": 0,
+    "sink_failures": 0,
+    "truncated_tail": 0,
+    "unconfirmed_audits": 0
+   },
+   {
+    "alerts_replayed": 0,
+    "confirmed_audits": 0,
+    "conflicts": 0,
+    "corrupt": 0,
+    "duplicates": 0,
+    "files": 7,
+    "inserted": 6,
+    "per_file": [
+     {
+      "file": "000000000000000000000000000000c0.0041.jsonl",
+      "from_offset": 0,
+      "inserted": 1,
+      "records": 1,
+      "to_offset": 1019
+     },
+     {
+      "file": "000000000000000000000000000000c0.0042.jsonl",
+      "from_offset": 0,
+      "inserted": 1,
+      "records": 1,
+      "to_offset": 910
+     },
+     {
+      "file": "000000000000000000000000000000c0.0043.jsonl",
+      "from_offset": 0,
+      "inserted": 1,
+      "records": 1,
+      "to_offset": 910
+     },
+     {
+      "file": "000000000000000000000000000000c0.0044.jsonl",
+      "from_offset": 0,
+      "inserted": 1,
+      "records": 1,
+      "to_offset": 910
+     },
+     {
+      "file": "000000000000000000000000000000c0.0045.jsonl",
+      "from_offset": 0,
+      "inserted": 1,
+      "records": 1,
+      "to_offset": 910
+     },
+     {
+      "file": "000000000000000000000000000000c0.0046.jsonl",
+      "from_offset": 0,
+      "inserted": 1,
+      "records": 1,
+      "to_offset": 910
+     }
+    ],
+    "pruned_files": 0,
+    "pruned_runs": 0,
+    "reclaimed_segments": 6,
+    "records": 6,
+    "refused": 0,
+    "sink_failures": 0,
+    "truncated_tail": 0,
+    "unconfirmed_audits": 0
+   },
+   {
+    "alerts_replayed": 0,
+    "confirmed_audits": 0,
+    "conflicts": 0,
+    "corrupt": 0,
+    "duplicates": 0,
+    "files": 7,
+    "inserted": 6,
+    "per_file": [
+     {
+      "file": "000000000000000000000000000000c0.0047.jsonl",
+      "from_offset": 0,
+      "inserted": 1,
+      "records": 1,
+      "to_offset": 1019
+     },
+     {
+      "file": "000000000000000000000000000000c0.0048.jsonl",
+      "from_offset": 0,
+      "inserted": 1,
+      "records": 1,
+      "to_offset": 910
+     },
+     {
+      "file": "000000000000000000000000000000c0.0049.jsonl",
+      "from_offset": 0,
+      "inserted": 1,
+      "records": 1,
+      "to_offset": 910
+     },
+     {
+      "file": "000000000000000000000000000000c0.0050.jsonl",
+      "from_offset": 0,
+      "inserted": 1,
+      "records": 1,
+      "to_offset": 910
+     },
+     {
+      "file": "000000000000000000000000000000c0.0051.jsonl",
+      "from_offset": 0,
+      "inserted": 1,
+      "records": 1,
+      "to_offset": 910
+     },
+     {
+      "file": "000000000000000000000000000000c0.0052.jsonl",
+      "from_offset": 0,
+      "inserted": 1,
+      "records": 1,
+      "to_offset": 910
+     }
+    ],
+    "pruned_files": 0,
+    "pruned_runs": 0,
+    "reclaimed_segments": 6,
+    "records": 6,
+    "refused": 0,
+    "sink_failures": 0,
+    "truncated_tail": 0,
+    "unconfirmed_audits": 0
+   },
+   {
+    "alerts_replayed": 0,
+    "confirmed_audits": 0,
+    "conflicts": 0,
+    "corrupt": 0,
+    "duplicates": 0,
+    "files": 7,
+    "inserted": 6,
+    "per_file": [
+     {
+      "file": "000000000000000000000000000000c0.0053.jsonl",
+      "from_offset": 0,
+      "inserted": 1,
+      "records": 1,
+      "to_offset": 1019
+     },
+     {
+      "file": "000000000000000000000000000000c0.0054.jsonl",
+      "from_offset": 0,
+      "inserted": 1,
+      "records": 1,
+      "to_offset": 910
+     },
+     {
+      "file": "000000000000000000000000000000c0.0055.jsonl",
+      "from_offset": 0,
+      "inserted": 1,
+      "records": 1,
+      "to_offset": 910
+     },
+     {
+      "file": "000000000000000000000000000000c0.0056.jsonl",
+      "from_offset": 0,
+      "inserted": 1,
+      "records": 1,
+      "to_offset": 910
+     },
+     {
+      "file": "000000000000000000000000000000c0.0057.jsonl",
+      "from_offset": 0,
+      "inserted": 1,
+      "records": 1,
+      "to_offset": 910
+     },
+     {
+      "file": "000000000000000000000000000000c0.0058.jsonl",
+      "from_offset": 0,
+      "inserted": 1,
+      "records": 1,
+      "to_offset": 910
+     }
+    ],
+    "pruned_files": 0,
+    "pruned_runs": 0,
+    "reclaimed_segments": 6,
+    "records": 6,
+    "refused": 0,
+    "sink_failures": 0,
+    "truncated_tail": 0,
+    "unconfirmed_audits": 0
+   },
+   {
+    "alerts_replayed": 0,
+    "confirmed_audits": 0,
+    "conflicts": 0,
+    "corrupt": 0,
+    "duplicates": 0,
+    "files": 7,
+    "inserted": 6,
+    "per_file": [
+     {
+      "file": "000000000000000000000000000000c0.0059.jsonl",
+      "from_offset": 0,
+      "inserted": 1,
+      "records": 1,
+      "to_offset": 1019
+     },
+     {
+      "file": "000000000000000000000000000000c0.0060.jsonl",
+      "from_offset": 0,
+      "inserted": 1,
+      "records": 1,
+      "to_offset": 910
+     },
+     {
+      "file": "000000000000000000000000000000c0.0061.jsonl",
+      "from_offset": 0,
+      "inserted": 1,
+      "records": 1,
+      "to_offset": 910
+     },
+     {
+      "file": "000000000000000000000000000000c0.0062.jsonl",
+      "from_offset": 0,
+      "inserted": 1,
+      "records": 1,
+      "to_offset": 910
+     },
+     {
+      "file": "000000000000000000000000000000c0.0063.jsonl",
+      "from_offset": 0,
+      "inserted": 1,
+      "records": 1,
+      "to_offset": 910
+     },
+     {
+      "file": "000000000000000000000000000000c0.0064.jsonl",
+      "from_offset": 0,
+      "inserted": 1,
+      "records": 1,
+      "to_offset": 910
+     }
+    ],
+    "pruned_files": 0,
+    "pruned_runs": 0,
+    "reclaimed_segments": 6,
+    "records": 6,
+    "refused": 0,
+    "sink_failures": 0,
+    "truncated_tail": 0,
+    "unconfirmed_audits": 0
+   },
+   {
+    "alerts_replayed": 0,
+    "confirmed_audits": 0,
+    "conflicts": 0,
+    "corrupt": 0,
+    "duplicates": 0,
+    "files": 7,
+    "inserted": 6,
+    "per_file": [
+     {
+      "file": "000000000000000000000000000000c0.0065.jsonl",
+      "from_offset": 0,
+      "inserted": 1,
+      "records": 1,
+      "to_offset": 1019
+     },
+     {
+      "file": "000000000000000000000000000000c0.0066.jsonl",
+      "from_offset": 0,
+      "inserted": 1,
+      "records": 1,
+      "to_offset": 910
+     },
+     {
+      "file": "000000000000000000000000000000c0.0067.jsonl",
+      "from_offset": 0,
+      "inserted": 1,
+      "records": 1,
+      "to_offset": 910
+     },
+     {
+      "file": "000000000000000000000000000000c0.0068.jsonl",
+      "from_offset": 0,
+      "inserted": 1,
+      "records": 1,
+      "to_offset": 910
+     },
+     {
+      "file": "000000000000000000000000000000c0.0069.jsonl",
+      "from_offset": 0,
+      "inserted": 1,
+      "records": 1,
+      "to_offset": 910
+     },
+     {
+      "file": "000000000000000000000000000000c0.0070.jsonl",
+      "from_offset": 0,
+      "inserted": 1,
+      "records": 1,
+      "to_offset": 910
+     }
+    ],
+    "pruned_files": 0,
+    "pruned_runs": 0,
+    "reclaimed_segments": 6,
+    "records": 6,
+    "refused": 0,
+    "sink_failures": 0,
+    "truncated_tail": 0,
+    "unconfirmed_audits": 0
+   }
+  ],
+  "reclaimed": 70,
+  "rotations": 71,
+  "seen_all": true,
+  "spool_files": [
+   "000000000000000000000000000000c0.0070.jsonl",
+   "000000000000000000000000000000c0.0071.jsonl"
+  ],
+  "unacknowledged_bytes": 1019
+ },
+ "refusals_and_quarantine": {
+  "clock_reads": 11,
+  "counts": {
+   "observation_alerts": 0,
+   "observation_audit": 0,
+   "observation_collections": 1,
+   "observation_quarantine": 7,
+   "observation_terminations": 0,
+   "observations": 1
+  },
+  "event_types": [
+   "general.process_idle_exit"
+  ],
+  "quarantine": [
+   {
+    "at": "2026-01-01T00:00:02+00:00",
+    "file": "000000000000000000000000000000c0.0000.jsonl",
+    "keys": [
+     "how",
+     "what",
+     "who"
+    ],
+    "offset": 908,
+    "reason": "business_message_shape"
+   },
+   {
+    "at": "2026-01-01T00:00:03+00:00",
+    "file": "000000000000000000000000000000c0.0000.jsonl",
+    "keys": [
+     "message_id",
+     "type"
+    ],
+    "offset": 1012,
+    "reason": "business_message_shape"
+   },
+   {
+    "at": "2026-01-01T00:00:04+00:00",
+    "defect": "['event_id']: pattern; []: additionalProperties; []: required; []: required; []: required",
+    "event_id": "ev-valid-id",
+    "file": "000000000000000000000000000000c0.0000.jsonl",
+    "offset": 1114,
+    "reason": "schema_refused"
+   },
+   {
+    "at": "2026-01-01T00:00:05+00:00",
+    "defect": "['event_id']: pattern; []: additionalProperties; []: required; []: required; []: required",
+    "event_id": null,
+    "file": "000000000000000000000000000000c0.0000.jsonl",
+    "offset": 1221,
+    "reason": "schema_refused"
+   },
+   {
+    "at": "2026-01-01T00:00:06+00:00",
+    "defect": "['event_id']: pattern; []: additionalProperties; []: required; []: required; []: required",
+    "event_id": null,
+    "file": "000000000000000000000000000000c0.0000.jsonl",
+    "offset": 1335,
+    "reason": "schema_refused"
+   },
+   {
+    "at": "2026-01-01T00:00:07+00:00",
+    "defect": "['event_id']: type; []: required; []: required; []: required; []: required",
+    "event_id": null,
+    "file": "000000000000000000000000000000c0.0000.jsonl",
+    "offset": 1632,
+    "reason": "schema_refused"
+   },
+   {
+    "at": "2026-01-01T00:00:08+00:00",
+    "defect": "hash mismatch",
+    "end": 2700,
+    "file": "000000000000000000000000000000c0.0000.jsonl",
+    "kind": "event",
+    "offset": 2626,
+    "reason": "corrupt_record"
+   }
+  ],
+  "receipt": {
+   "alerts_replayed": 0,
+   "confirmed_audits": 0,
+   "conflicts": 0,
+   "corrupt": 1,
+   "duplicates": 1,
+   "files": 1,
+   "inserted": 1,
+   "per_file": [
+    {
+     "corrupt": 1,
+     "duplicates": 1,
+     "file": "000000000000000000000000000000c0.0000.jsonl",
+     "from_offset": 0,
+     "inserted": 1,
+     "records": 9,
+     "refused": 6,
+     "to_offset": 2700
+    }
+   ],
+   "pruned_files": 0,
+   "pruned_runs": 0,
+   "reclaimed_segments": 0,
+   "records": 9,
+   "refused": 6,
+   "sink_failures": 0,
+   "truncated_tail": 0,
+   "unconfirmed_audits": 0
+  },
+  "validator_raises": {
+   "acknowledged": {
+    "000000000000000000000000000000c0.0000.jsonl": 0
+   },
+   "counts": {
+    "observation_alerts": 1,
+    "observation_audit": 0,
+    "observation_collections": 0,
+    "observation_quarantine": 0,
+    "observation_terminations": 0,
+    "observations": 0
+   },
+   "last_defect": "ValueError: message_sha256=29a3ffce4deb7f8c",
+   "receipt": {
+    "alerts_replayed": 0,
+    "confirmed_audits": 0,
+    "conflicts": 0,
+    "corrupt": 0,
+    "duplicates": 0,
+    "files": 1,
+    "inserted": 0,
+    "per_file": [],
+    "pruned_files": 0,
+    "pruned_runs": 0,
+    "reclaimed_segments": 0,
+    "records": 0,
+    "refused": 0,
+    "sink_failures": 1,
+    "truncated_tail": 0,
+    "unconfirmed_audits": 0
+   },
+   "sink_state": "available"
+  }
+ },
+ "segment_10000": {
+  "after_close": {
+   "alerts_replayed": 0,
+   "confirmed_audits": 0,
+   "conflicts": 0,
+   "corrupt": 0,
+   "duplicates": 0,
+   "files": 1,
+   "inserted": 0,
+   "per_file": [],
+   "pruned_files": 3,
+   "pruned_runs": 1,
+   "reclaimed_segments": 1,
+   "records": 0,
+   "refused": 0,
+   "sink_failures": 0,
+   "truncated_tail": 0,
+   "unconfirmed_audits": 0
+  },
+  "clock_reads": 49,
+  "emitted": 12,
+  "files": [],
+  "names": [
+   "000000000000000000000000000000c0.9999.jsonl",
+   "000000000000000000000000000000c0.10000.jsonl",
+   "000000000000000000000000000000c0.10001.jsonl",
+   "000000000000000000000000000000c0.10002.jsonl",
+   "000000000000000000000000000000c0.10003.jsonl",
+   "000000000000000000000000000000c0.10004.jsonl",
+   "000000000000000000000000000000c0.10005.jsonl",
+   "000000000000000000000000000000c0.10006.jsonl",
+   "000000000000000000000000000000c0.10007.jsonl",
+   "000000000000000000000000000000c0.10008.jsonl",
+   "000000000000000000000000000000c0.10009.jsonl",
+   "000000000000000000000000000000c0.10010.jsonl"
+  ],
+  "result": {
+   "alerts_replayed": 0,
+   "confirmed_audits": 0,
+   "conflicts": 0,
+   "corrupt": 0,
+   "duplicates": 0,
+   "files": 12,
+   "inserted": 12,
+   "per_file": [
+    {
+     "file": "000000000000000000000000000000c0.9999.jsonl",
+     "from_offset": 0,
+     "inserted": 1,
+     "records": 1,
+     "to_offset": 908
+    },
+    {
+     "file": "000000000000000000000000000000c0.10000.jsonl",
+     "from_offset": 0,
+     "inserted": 1,
+     "records": 1,
+     "to_offset": 908
+    },
+    {
+     "file": "000000000000000000000000000000c0.10001.jsonl",
+     "from_offset": 0,
+     "inserted": 1,
+     "records": 1,
+     "to_offset": 908
+    },
+    {
+     "file": "000000000000000000000000000000c0.10002.jsonl",
+     "from_offset": 0,
+     "inserted": 1,
+     "records": 1,
+     "to_offset": 908
+    },
+    {
+     "file": "000000000000000000000000000000c0.10003.jsonl",
+     "from_offset": 0,
+     "inserted": 1,
+     "records": 1,
+     "to_offset": 908
+    },
+    {
+     "file": "000000000000000000000000000000c0.10004.jsonl",
+     "from_offset": 0,
+     "inserted": 1,
+     "records": 1,
+     "to_offset": 908
+    },
+    {
+     "file": "000000000000000000000000000000c0.10005.jsonl",
+     "from_offset": 0,
+     "inserted": 1,
+     "records": 1,
+     "to_offset": 908
+    },
+    {
+     "file": "000000000000000000000000000000c0.10006.jsonl",
+     "from_offset": 0,
+     "inserted": 1,
+     "records": 1,
+     "to_offset": 908
+    },
+    {
+     "file": "000000000000000000000000000000c0.10007.jsonl",
+     "from_offset": 0,
+     "inserted": 1,
+     "records": 1,
+     "to_offset": 908
+    },
+    {
+     "file": "000000000000000000000000000000c0.10008.jsonl",
+     "from_offset": 0,
+     "inserted": 1,
+     "records": 1,
+     "to_offset": 909
+    },
+    {
+     "file": "000000000000000000000000000000c0.10009.jsonl",
+     "from_offset": 0,
+     "inserted": 1,
+     "records": 1,
+     "to_offset": 910
+    },
+    {
+     "file": "000000000000000000000000000000c0.10010.jsonl",
+     "from_offset": 0,
+     "inserted": 1,
+     "records": 1,
+     "to_offset": 910
+    }
+   ],
+   "pruned_files": 0,
+   "pruned_runs": 0,
+   "reclaimed_segments": 11,
+   "records": 12,
+   "refused": 0,
+   "sink_failures": 0,
+   "truncated_tail": 0,
+   "unconfirmed_audits": 0
+  },
+  "segment": 10010,
+  "stored": [
+   0,
+   1,
+   2,
+   3,
+   4,
+   5,
+   6,
+   7,
+   8,
+   9,
+   10,
+   11
+  ]
+ },
+ "sink_outage_and_alert_replay": {
+  "acknowledged_during_outage": 0,
+  "after_recovery": {
+   "pending": 0,
+   "pending_files": {},
+   "sink_state": "available"
+  },
+  "alert_notification": {
+   "channel": null,
+   "status": "pending"
+  },
+  "alert_statuses": {
+   "operations.sink_unavailable": {
+    "channel": "postgres:observation_alerts",
+    "replayed_by": "000000000000000000000000000000c0",
+    "status": "recorded_after_recovery"
+   },
+   "operations.spool_saturated": {
+    "channel": "postgres:observation_alerts",
+    "replayed_by": "000000000000000000000000000000c0",
+    "status": "recorded_after_recovery"
+   }
+  },
+  "alerts_pending": 2,
+  "canary_leaked": false,
+  "clock_reads": 17,
+  "counts": {
+   "observation_alerts": 2,
+   "observation_audit": 0,
+   "observation_collections": 2,
+   "observation_quarantine": 0,
+   "observation_terminations": 0,
+   "observations": 5
+  },
+  "emit_during_outage": true,
+  "failed": {
+   "alerts_replayed": 0,
+   "confirmed_audits": 0,
+   "conflicts": 0,
+   "corrupt": 0,
+   "duplicates": 0,
+   "files": 1,
+   "inserted": 0,
+   "per_file": [],
+   "pruned_files": 0,
+   "pruned_runs": 0,
+   "reclaimed_segments": 0,
+   "records": 0,
+   "refused": 0,
+   "sink_failures": 1,
+   "truncated_tail": 0,
+   "unconfirmed_audits": 0
+  },
+  "health": [
+   {
+    "pending": [
+     {
+      "event_type": "operations.sink_unavailable",
+      "observed_at": "2026-01-01T00:00:01+00:00"
+     },
+     {
+      "event_type": "operations.spool_saturated",
+      "observed_at": "2026-01-01T00:00:00+00:00"
+     }
+    ],
+    "sink": "unavailable"
+   }
+  ],
+  "next": {
+   "alerts_replayed": 0,
+   "confirmed_audits": 0,
+   "conflicts": 0,
+   "corrupt": 0,
+   "duplicates": 0,
+   "files": 1,
+   "inserted": 2,
+   "per_file": [
+    {
+     "file": "000000000000000000000000000000c0.0000.jsonl",
+     "from_offset": 2799,
+     "inserted": 2,
+     "records": 2,
+     "to_offset": 4745
+    }
+   ],
+   "pruned_files": 0,
+   "pruned_runs": 0,
+   "reclaimed_segments": 0,
+   "records": 2,
+   "refused": 0,
+   "sink_failures": 0,
+   "truncated_tail": 0,
+   "unconfirmed_audits": 0
+  },
+  "recovered": {
+   "alerts_replayed": 2,
+   "confirmed_audits": 0,
+   "conflicts": 0,
+   "corrupt": 0,
+   "duplicates": 0,
+   "files": 1,
+   "inserted": 3,
+   "per_file": [
+    {
+     "file": "000000000000000000000000000000c0.0000.jsonl",
+     "from_offset": 0,
+     "inserted": 3,
+     "records": 3,
+     "to_offset": 2799
+    }
+   ],
+   "pruned_files": 0,
+   "pruned_runs": 0,
+   "reclaimed_segments": 0,
+   "records": 3,
+   "refused": 0,
+   "sink_failures": 0,
+   "truncated_tail": 0,
+   "unconfirmed_audits": 0
+  },
+  "recovery_events": [
+   "general.process_idle_exit",
+   "operations.collection_completed",
+   "operations.sink_recovered",
+   "operations.sink_unavailable",
+   "operations.spool_saturated"
+  ],
+  "sink_state": "unavailable"
+ },
+ "status_report": {
+  "canary_leaked": false,
+  "clock_reads": 20,
+  "collected": {
+   "alerts_replayed": 0,
+   "confirmed_audits": 0,
+   "conflicts": 0,
+   "corrupt": 0,
+   "duplicates": 0,
+   "files": 1,
+   "inserted": 6,
+   "per_file": [
+    {
+     "file": "000000000000000000000000000000c0.0000.jsonl",
+     "from_offset": 0,
+     "inserted": 6,
+     "records": 6,
+     "to_offset": 5833
+    }
+   ],
+   "pruned_files": 0,
+   "pruned_runs": 0,
+   "reclaimed_segments": 0,
+   "records": 6,
+   "refused": 0,
+   "sink_failures": 0,
+   "truncated_tail": 0,
+   "unconfirmed_audits": 0
+  },
+  "memory_directory": {
+   "alerts": {
+    "pending_locally": null,
+    "recorded": 0
+   },
+   "authority": "informational_only",
+   "buckets": {
+    "observation_alerts": 0,
+    "observation_audit": 0,
+    "observation_collections": 0,
+    "observation_quarantine": 0,
+    "observation_terminations": 0,
+    "observations": 0
+   },
+   "limits": {
+    "finished_run_retention_seconds": 604800,
+    "note": "the per-run limit bounds live producers; the directory total is the sum over producers plus finished runs inside the retention window, not a hard cap",
+    "per_run_unacknowledged_bytes": 33554432,
+    "segment_bytes": 4194304
+   },
+   "live_writer_runs": [],
+   "observer": null,
+   "orphans": {
+    "as_of": "<utc-iso>",
+    "in_progress": [],
+    "note": "orphan means reserved without a live lease; it is an observation, the invocation ledger's reclaim closes it as unsettled_unknown",
+    "orphan": []
+   },
+   "pending_alert_files": {},
+   "pending_terminations": {
+    "local": [],
+    "sink": []
+   },
+   "process_health": [],
+   "runtime_directory_bytes": 0,
+   "spool_files": [],
+   "spool_unacknowledged_bytes": 0
+  },
+  "memory_directory_observer": {
+   "alerts": {
+    "pending_locally": 2,
+    "recorded": 1
+   },
+   "authority": "informational_only",
+   "buckets": {
+    "observation_alerts": 1,
+    "observation_audit": 0,
+    "observation_collections": 1,
+    "observation_quarantine": 0,
+    "observation_terminations": 3,
+    "observations": 6
+   },
+   "limits": {
+    "finished_run_retention_seconds": 604800,
+    "note": "the per-run limit bounds live producers; the directory total is the sum over producers plus finished runs inside the retention window, not a hard cap",
+    "per_run_unacknowledged_bytes": 33554432,
+    "segment_bytes": 4194304
+   },
+   "live_writer_runs": [],
+   "observer": {
+    "component": "s9-collector",
+    "counters": {
+     "alerts_pending": 2,
+     "emitted": 4,
+     "terminations": 1
+    },
+    "host": "fixture-host",
+    "inherited_pending_alerts": {},
+    "last_defect": "OSError: message_sha256=9984f14975762b13",
+    "pending_alerts": [
+     {
+      "event_type": "operations.sink_unavailable",
+      "observed_at": "2026-01-01T00:00:07+00:00"
+     },
+     {
+      "event_type": "operations.spool_saturated",
+      "observed_at": "2026-01-01T00:00:06+00:00"
+     }
+    ],
+    "pid": 1,
+    "process_run_id": "000000000000000000000000000000c0",
+    "role": "s9-collector",
+    "sequence_next": 5,
+    "sink": "unavailable",
+    "spool": {
+     "limit_bytes": 1048576,
+     "rotations": 0,
+     "unacknowledged_bytes": 0
+    },
+    "updated_at": "2026-01-01T00:00:19+00:00"
+   },
+   "orphans": {
+    "as_of": "<utc-iso>",
+    "in_progress": [
+     {
+      "attempt": 1,
+      "bucket": "tasks",
+      "generation": 1,
+      "lease_until": "2999-01-01T00:00:00+00:00",
+      "reason": null,
+      "reservation_id": "res",
+      "reserved_at": "2026-01-01T00:00:00+00:00",
+      "task_id": "x"
+     }
+    ],
+    "note": "orphan means reserved without a live lease; it is an observation, the invocation ledger's reclaim closes it as unsettled_unknown",
+    "orphan": []
+   },
+   "pending_alert_files": {},
+   "pending_terminations": {
+    "local": [],
+    "sink": [
+     {
+      "attempt": 1,
+      "boundary": "settlement",
+      "bucket": "tasks",
+      "error": "RuntimeError: message_sha256=20b9458ca349a629",
+      "error_type": "RuntimeError",
+      "evidence_refs": [
+       "sha256:aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa"
+      ],
+      "generation": 1,
+      "invocation_outcome": "unknown",
+      "note": "provider entered; outcome not durably recorded; do not re-execute before an operator reconciles",
+      "process_run_id": "000000000000000000000000000000c0",
+      "record_id": "b137f6353cfa551e69731072cd230c51ad5ffca1a106a75869c35fa65e59619a",
+      "recorded_at": "2026-01-01T00:00:03+00:00",
+      "reservation_id": "r1",
+      "status": "pending_reconciliation",
+      "stream_hash": null,
+      "task_id": "t1"
+     },
+     {
+      "record_id": "sink-pending",
+      "status": "unconfirmed",
+      "task_id": "t2"
+     }
+    ]
+   },
+   "process_health": [],
+   "runtime_directory_bytes": 0,
+   "spool_files": [],
+   "spool_unacknowledged_bytes": 0
+  },
+  "positional": {
+   "value": {
+    "alerts": {
+     "pending_locally": null,
+     "recorded": 1
+    },
+    "authority": "informational_only",
+    "buckets": {
+     "observation_alerts": 1,
+     "observation_audit": 0,
+     "observation_collections": 1,
+     "observation_quarantine": 0,
+     "observation_terminations": 3,
+     "observations": 6
+    },
+    "limits": {
+     "finished_run_retention_seconds": 604800,
+     "note": "the per-run limit bounds live producers; the directory total is the sum over producers plus finished runs inside the retention window, not a hard cap",
+     "per_run_unacknowledged_bytes": 33554432,
+     "segment_bytes": 4194304
+    },
+    "live_writer_runs": [
+     "000000000000000000000000000000c0"
+    ],
+    "observer": null,
+    "orphans": {
+     "as_of": "<utc-iso>",
+     "in_progress": [
+      {
+       "attempt": 1,
+       "bucket": "tasks",
+       "generation": 1,
+       "lease_until": "2999-01-01T00:00:00+00:00",
+       "reason": null,
+       "reservation_id": "res",
+       "reserved_at": "2026-01-01T00:00:00+00:00",
+       "task_id": "x"
+      }
+     ],
+     "note": "orphan means reserved without a live lease; it is an observation, the invocation ledger's reclaim closes it as unsettled_unknown",
+     "orphan": []
+    },
+    "pending_alert_files": {
+     "000000000000000000000000000000c0": 2
+    },
+    "pending_terminations": {
+     "local": [
+      {
+       "attempt": 1,
+       "boundary": "settlement",
+       "bucket": "tasks",
+       "error": "RuntimeError: message_sha256=20b9458ca349a629",
+       "error_type": "RuntimeError",
+       "evidence_refs": [
+        "sha256:aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa"
+       ],
+       "generation": 1,
+       "invocation_outcome": "unknown",
+       "note": "provider entered; outcome not durably recorded; do not re-execute before an operator reconciles",
+       "process_run_id": "000000000000000000000000000000c0",
+       "record_id": "b137f6353cfa551e69731072cd230c51ad5ffca1a106a75869c35fa65e59619a",
+       "recorded_at": "2026-01-01T00:00:03+00:00",
+       "reservation_id": "r1",
+       "status": "pending_reconciliation",
+       "stream_hash": null,
+       "task_id": "t1"
+      }
+     ],
+     "sink": [
+      {
+       "attempt": 1,
+       "boundary": "settlement",
+       "bucket": "tasks",
+       "error": "RuntimeError: message_sha256=20b9458ca349a629",
+       "error_type": "RuntimeError",
+       "evidence_refs": [
+        "sha256:aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa"
+       ],
+       "generation": 1,
+       "invocation_outcome": "unknown",
+       "note": "provider entered; outcome not durably recorded; do not re-execute before an operator reconciles",
+       "process_run_id": "000000000000000000000000000000c0",
+       "record_id": "b137f6353cfa551e69731072cd230c51ad5ffca1a106a75869c35fa65e59619a",
+       "recorded_at": "2026-01-01T00:00:03+00:00",
+       "reservation_id": "r1",
+       "status": "pending_reconciliation",
+       "stream_hash": null,
+       "task_id": "t1"
+      },
+      {
+       "record_id": "sink-pending",
+       "status": "unconfirmed",
+       "task_id": "t2"
+      }
+     ]
+    },
+    "process_health": [
+     {
+      "component": "s9-collector",
+      "counters": {
+       "alerts_pending": 2,
+       "emitted": 4,
+       "terminations": 1
+      },
+      "host": "fixture-host",
+      "inherited_pending_alerts": {},
+      "last_defect": "OSError: message_sha256=9984f14975762b13",
+      "pending_alerts": [
+       {
+        "event_type": "operations.sink_unavailable",
+        "observed_at": "2026-01-01T00:00:07+00:00"
+       },
+       {
+        "event_type": "operations.spool_saturated",
+        "observed_at": "2026-01-01T00:00:06+00:00"
+       }
+      ],
+      "pid": 1,
+      "process_run_id": "000000000000000000000000000000c0",
+      "role": "s9-collector",
+      "sequence_next": 5,
+      "sink": "unavailable",
+      "spool": {
+       "limit_bytes": 1048576,
+       "rotations": 0,
+       "unacknowledged_bytes": 5833
+      },
+      "updated_at": "2026-01-01T00:00:09+00:00"
+     }
+    ],
+    "runtime_directory_bytes_without_stamps": 9166,
+    "spool_files": [
+     "000000000000000000000000000000c0.0000.jsonl"
+    ],
+    "spool_unacknowledged_bytes": 0
+   }
+  },
+  "store_unchanged": {
+   "observation_alerts": 1,
+   "observation_audit": 0,
+   "observation_collections": 1,
+   "observation_quarantine": 0,
+   "observation_terminations": 3,
+   "observations": 6
+  },
+  "with_observer": {
+   "alerts": {
+    "pending_locally": 2,
+    "recorded": 1
+   },
+   "authority": "informational_only",
+   "buckets": {
+    "observation_alerts": 1,
+    "observation_audit": 0,
+    "observation_collections": 1,
+    "observation_quarantine": 0,
+    "observation_terminations": 3,
+    "observations": 6
+   },
+   "limits": {
+    "finished_run_retention_seconds": 604800,
+    "note": "the per-run limit bounds live producers; the directory total is the sum over producers plus finished runs inside the retention window, not a hard cap",
+    "per_run_unacknowledged_bytes": 33554432,
+    "segment_bytes": 4194304
+   },
+   "live_writer_runs": [
+    "000000000000000000000000000000c0"
+   ],
+   "observer": {
+    "component": "s9-collector",
+    "counters": {
+     "alerts_pending": 2,
+     "emitted": 4,
+     "terminations": 1
+    },
+    "host": "fixture-host",
+    "inherited_pending_alerts": {},
+    "last_defect": "OSError: message_sha256=9984f14975762b13",
+    "pending_alerts": [
+     {
+      "event_type": "operations.sink_unavailable",
+      "observed_at": "2026-01-01T00:00:07+00:00"
+     },
+     {
+      "event_type": "operations.spool_saturated",
+      "observed_at": "2026-01-01T00:00:06+00:00"
+     }
+    ],
+    "pid": 1,
+    "process_run_id": "000000000000000000000000000000c0",
+    "role": "s9-collector",
+    "sequence_next": 5,
+    "sink": "unavailable",
+    "spool": {
+     "limit_bytes": 1048576,
+     "rotations": 0,
+     "unacknowledged_bytes": 0
+    },
+    "updated_at": "2026-01-01T00:00:18+00:00"
+   },
+   "orphans": {
+    "as_of": "<utc-iso>",
+    "in_progress": [
+     {
+      "attempt": 1,
+      "bucket": "tasks",
+      "generation": 1,
+      "lease_until": "2999-01-01T00:00:00+00:00",
+      "reason": null,
+      "reservation_id": "res",
+      "reserved_at": "2026-01-01T00:00:00+00:00",
+      "task_id": "x"
+     }
+    ],
+    "note": "orphan means reserved without a live lease; it is an observation, the invocation ledger's reclaim closes it as unsettled_unknown",
+    "orphan": []
+   },
+   "pending_alert_files": {
+    "000000000000000000000000000000c0": 2
+   },
+   "pending_terminations": {
+    "local": [
+     {
+      "attempt": 1,
+      "boundary": "settlement",
+      "bucket": "tasks",
+      "error": "RuntimeError: message_sha256=20b9458ca349a629",
+      "error_type": "RuntimeError",
+      "evidence_refs": [
+       "sha256:aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa"
+      ],
+      "generation": 1,
+      "invocation_outcome": "unknown",
+      "note": "provider entered; outcome not durably recorded; do not re-execute before an operator reconciles",
+      "process_run_id": "000000000000000000000000000000c0",
+      "record_id": "b137f6353cfa551e69731072cd230c51ad5ffca1a106a75869c35fa65e59619a",
+      "recorded_at": "2026-01-01T00:00:03+00:00",
+      "reservation_id": "r1",
+      "status": "pending_reconciliation",
+      "stream_hash": null,
+      "task_id": "t1"
+     }
+    ],
+    "sink": [
+     {
+      "attempt": 1,
+      "boundary": "settlement",
+      "bucket": "tasks",
+      "error": "RuntimeError: message_sha256=20b9458ca349a629",
+      "error_type": "RuntimeError",
+      "evidence_refs": [
+       "sha256:aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa"
+      ],
+      "generation": 1,
+      "invocation_outcome": "unknown",
+      "note": "provider entered; outcome not durably recorded; do not re-execute before an operator reconciles",
+      "process_run_id": "000000000000000000000000000000c0",
+      "record_id": "b137f6353cfa551e69731072cd230c51ad5ffca1a106a75869c35fa65e59619a",
+      "recorded_at": "2026-01-01T00:00:03+00:00",
+      "reservation_id": "r1",
+      "status": "pending_reconciliation",
+      "stream_hash": null,
+      "task_id": "t1"
+     },
+     {
+      "record_id": "sink-pending",
+      "status": "unconfirmed",
+      "task_id": "t2"
+     }
+    ]
+   },
+   "process_health": [
+    {
+     "component": "s9-collector",
+     "counters": {
+      "alerts_pending": 2,
+      "emitted": 4,
+      "terminations": 1
+     },
+     "host": "fixture-host",
+     "inherited_pending_alerts": {},
+     "last_defect": "OSError: message_sha256=9984f14975762b13",
+     "pending_alerts": [
+      {
+       "event_type": "operations.sink_unavailable",
+       "observed_at": "2026-01-01T00:00:07+00:00"
+      },
+      {
+       "event_type": "operations.spool_saturated",
+       "observed_at": "2026-01-01T00:00:06+00:00"
+      }
+     ],
+     "pid": 1,
+     "process_run_id": "000000000000000000000000000000c0",
+     "role": "s9-collector",
+     "sequence_next": 5,
+     "sink": "unavailable",
+     "spool": {
+      "limit_bytes": 1048576,
+      "rotations": 0,
+      "unacknowledged_bytes": 5833
+     },
+     "updated_at": "2026-01-01T00:00:09+00:00"
+    }
+   ],
+   "runtime_directory_bytes_without_stamps": 9166,
+   "spool_files": [
+    "000000000000000000000000000000c0.0000.jsonl"
+   ],
+   "spool_unacknowledged_bytes": 0
+  },
+  "without_observer": {
+   "alerts": {
+    "pending_locally": null,
+    "recorded": 1
+   },
+   "authority": "informational_only",
+   "buckets": {
+    "observation_alerts": 1,
+    "observation_audit": 0,
+    "observation_collections": 1,
+    "observation_quarantine": 0,
+    "observation_terminations": 3,
+    "observations": 6
+   },
+   "limits": {
+    "finished_run_retention_seconds": 604800,
+    "note": "the per-run limit bounds live producers; the directory total is the sum over producers plus finished runs inside the retention window, not a hard cap",
+    "per_run_unacknowledged_bytes": 33554432,
+    "segment_bytes": 4194304
+   },
+   "live_writer_runs": [
+    "000000000000000000000000000000c0"
+   ],
+   "observer": null,
+   "orphans": {
+    "as_of": "<utc-iso>",
+    "in_progress": [
+     {
+      "attempt": 1,
+      "bucket": "tasks",
+      "generation": 1,
+      "lease_until": "2999-01-01T00:00:00+00:00",
+      "reason": null,
+      "reservation_id": "res",
+      "reserved_at": "2026-01-01T00:00:00+00:00",
+      "task_id": "x"
+     }
+    ],
+    "note": "orphan means reserved without a live lease; it is an observation, the invocation ledger's reclaim closes it as unsettled_unknown",
+    "orphan": []
+   },
+   "pending_alert_files": {
+    "000000000000000000000000000000c0": 2
+   },
+   "pending_terminations": {
+    "local": [
+     {
+      "attempt": 1,
+      "boundary": "settlement",
+      "bucket": "tasks",
+      "error": "RuntimeError: message_sha256=20b9458ca349a629",
+      "error_type": "RuntimeError",
+      "evidence_refs": [
+       "sha256:aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa"
+      ],
+      "generation": 1,
+      "invocation_outcome": "unknown",
+      "note": "provider entered; outcome not durably recorded; do not re-execute before an operator reconciles",
+      "process_run_id": "000000000000000000000000000000c0",
+      "record_id": "b137f6353cfa551e69731072cd230c51ad5ffca1a106a75869c35fa65e59619a",
+      "recorded_at": "2026-01-01T00:00:03+00:00",
+      "reservation_id": "r1",
+      "status": "pending_reconciliation",
+      "stream_hash": null,
+      "task_id": "t1"
+     }
+    ],
+    "sink": [
+     {
+      "attempt": 1,
+      "boundary": "settlement",
+      "bucket": "tasks",
+      "error": "RuntimeError: message_sha256=20b9458ca349a629",
+      "error_type": "RuntimeError",
+      "evidence_refs": [
+       "sha256:aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa"
+      ],
+      "generation": 1,
+      "invocation_outcome": "unknown",
+      "note": "provider entered; outcome not durably recorded; do not re-execute before an operator reconciles",
+      "process_run_id": "000000000000000000000000000000c0",
+      "record_id": "b137f6353cfa551e69731072cd230c51ad5ffca1a106a75869c35fa65e59619a",
+      "recorded_at": "2026-01-01T00:00:03+00:00",
+      "reservation_id": "r1",
+      "status": "pending_reconciliation",
+      "stream_hash": null,
+      "task_id": "t1"
+     },
+     {
+      "record_id": "sink-pending",
+      "status": "unconfirmed",
+      "task_id": "t2"
+     }
+    ]
+   },
+   "process_health": [
+    {
+     "component": "s9-collector",
+     "counters": {
+      "alerts_pending": 2,
+      "emitted": 4,
+      "terminations": 1
+     },
+     "host": "fixture-host",
+     "inherited_pending_alerts": {},
+     "last_defect": "OSError: message_sha256=9984f14975762b13",
+     "pending_alerts": [
+      {
+       "event_type": "operations.sink_unavailable",
+       "observed_at": "2026-01-01T00:00:07+00:00"
+      },
+      {
+       "event_type": "operations.spool_saturated",
+       "observed_at": "2026-01-01T00:00:06+00:00"
+      }
+     ],
+     "pid": 1,
+     "process_run_id": "000000000000000000000000000000c0",
+     "role": "s9-collector",
+     "sequence_next": 5,
+     "sink": "unavailable",
+     "spool": {
+      "limit_bytes": 1048576,
+      "rotations": 0,
+      "unacknowledged_bytes": 5833
+     },
+     "updated_at": "2026-01-01T00:00:09+00:00"
+    }
+   ],
+   "runtime_directory_bytes_without_stamps": 9166,
+   "spool_files": [
+    "000000000000000000000000000000c0.0000.jsonl"
+   ],
+   "spool_unacknowledged_bytes": 0
+  }
+ },
+ "truncated_tail": {
+  "after": {
+   "closed": false,
+   "files": [],
+   "health": []
+  },
+  "clock_reads": 8,
+  "counts": {
+   "observation_alerts": 0,
+   "observation_audit": 0,
+   "observation_collections": 2,
+   "observation_quarantine": 1,
+   "observation_terminations": 0,
+   "observations": 1
+  },
+  "finished": {
+   "alerts_replayed": 0,
+   "confirmed_audits": 0,
+   "conflicts": 0,
+   "corrupt": 1,
+   "duplicates": 0,
+   "files": 1,
+   "inserted": 0,
+   "per_file": [
+    {
+     "corrupt": 1,
+     "file": "000000000000000000000000000000c0.0000.jsonl",
+     "from_offset": 908,
+     "records": 1,
+     "to_offset": 990
+    }
+   ],
+   "pruned_files": 3,
+   "pruned_runs": 1,
+   "reclaimed_segments": 1,
+   "records": 1,
+   "refused": 0,
+   "sink_failures": 0,
+   "truncated_tail": 0,
+   "unconfirmed_audits": 0
+  },
+  "live": {
+   "alerts_replayed": 0,
+   "confirmed_audits": 0,
+   "conflicts": 0,
+   "corrupt": 0,
+   "duplicates": 0,
+   "files": 1,
+   "inserted": 1,
+   "per_file": [
+    {
+     "file": "000000000000000000000000000000c0.0000.jsonl",
+     "from_offset": 0,
+     "inserted": 1,
+     "records": 1,
+     "to_offset": 908
+    }
+   ],
+   "pruned_files": 0,
+   "pruned_runs": 0,
+   "reclaimed_segments": 0,
+   "records": 1,
+   "refused": 0,
+   "sink_failures": 0,
+   "truncated_tail": 1,
+   "unconfirmed_audits": 0
+  },
+  "live_acknowledged": {
+   "000000000000000000000000000000c0.0000.jsonl": 908
+  },
+  "live_again": {
+   "alerts_replayed": 0,
+   "confirmed_audits": 0,
+   "conflicts": 0,
+   "corrupt": 0,
+   "duplicates": 0,
+   "files": 1,
+   "inserted": 0,
+   "per_file": [],
+   "pruned_files": 0,
+   "pruned_runs": 0,
+   "reclaimed_segments": 0,
+   "records": 0,
+   "refused": 0,
+   "sink_failures": 0,
+   "truncated_tail": 1,
+   "unconfirmed_audits": 0
+  },
+  "live_files": [
+   "000000000000000000000000000000c0.0000.jsonl"
+  ],
+  "quarantine": [
+   {
+    "at": "2026-01-01T00:00:05+00:00",
+    "defect": "truncated tail of a finished run",
+    "end": 990,
+    "file": "000000000000000000000000000000c0.0000.jsonl",
+    "id": "33abcbedb630b9cd258018b665f6a1ae0420f2c979f9aab9711c37ed692e9ecf",
+    "kind": null,
+    "offset": 908,
+    "reason": "corrupt_record"
+   }
+  ]
+ }
+}
