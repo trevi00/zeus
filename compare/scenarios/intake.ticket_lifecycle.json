@@ -1,0 +1,8 @@
+{
+ "family": "intake.ticket_lifecycle",
+ "description": "S8 ticket lifecycle of M7 application/ticket_lifecycle.py (TicketLifecycle: prepare, review, close, reopen, verify_closed and the helpers require_no_promotion, event_document, verify_chain, transition: the closure packet and every evidence rule, the unmerged commit, the trust anchor pin, the one decision per packet and per sequence, replay and stale retries, rollback of a failed commit, a ticket edited during signature verification, reopen with its exact revision/sequence/state, the lifecycle chain and its tampering), characterized before the move into intake (V11) in the sequences of tests/test_ticket_lifecycle.py: MemoryStore, M7's Tickets (target: a labelled stand-in transcribed from M7), a LABELLED authority and artifact store, scripted clock; the store digest before and after every refusal; no real signer, git repository, GitHub or PostgreSQL",
+ "reference_driver": "drivers/reference/s8_ticket_lifecycle.py",
+ "target_driver": "drivers/target/s8_ticket_lifecycle.py",
+ "golden": "goldens/reference/intake.ticket_lifecycle.json",
+ "slice": "S8"
+}
