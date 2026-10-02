@@ -16,7 +16,7 @@ from test_buzz_d4_templates import CONFIG, UNIT, expect_violation, lint, plant
 from codex_harness.composition.buzz_bridge import BridgeConfig
 from codex_harness.coordination.application.remote_inbox import RemoteInbox
 from codex_harness.kernel.errors import ContractError
-from codex_harness.observation.adapters.buzz_relay import BuzzRelayClient
+from codex_harness.observation.adapters.buzz_relay import BuzzRelayClient, reconnect_delay
 from codex_harness.observation.application.buzz_inbound import InboundPass
 
 RECV, OP = 10, 20
@@ -285,3 +285,137 @@ def test_the_stop_budget_follows_the_config_templates_op_deadline_not_recv_timeo
     assert code == 1 and "stop-timeout" in out, out
     code, out = lint(plant(tmp_path, CONFIG, '"recv_timeout": 10', '"recv_timeout": 12'))  # recv + tick is 17 < 25: fine
     assert code == 0, out
+
+
+# ---- F2: restricted AUTH is final ----------------------------------------------------------------------------------
+def restricted_relay(env):
+    def on_send(frame):
+        if frame[0] == "REQ":
+            return [["AUTH", "challenge"], ["CLOSED", frame[1], "auth-required: login"]]
+        if frame[0] == "AUTH":
+            return [["OK", frame[1]["id"], False, "restricted: not a relay member"]]
+        return []
+    return Socket(env, on_send)
+
+
+def test_f2_a_restricted_auth_answer_exits_four_with_one_auth_and_no_planning_delivery_or_sleep():
+    env = Env()
+    sock = restricted_relay(env)
+    rt, calls = compose(env, client(env, sock), ["a"], tick_seconds=1, max_seconds=30)
+    assert rt.run(lambda: False) == 4  # example 2
+    assert len(sock.kinds("AUTH")) == 1 and len(sock.kinds("REQ")) == 1
+    assert calls == [] and env.slices == [] and env.lines[-1]["exit"] == 4  # no plan/deliver/compact, no retry sleep
+
+
+def test_f2_the_refusal_is_sticky_the_client_never_authenticates_or_sends_again():
+    env = Env()
+    sock = restricted_relay(env)
+    relay = client(env, sock)
+    assert relay.query([{}])["ended"] == "closed:restricted" and relay.auth_refused == "restricted"
+    sent = len(sock.sent)
+    assert relay.query([{}])["ended"] == "closed:restricted"
+    assert relay.query_all({"kinds": [9]})["ended"] == "closed:restricted"
+    result = relay.publish(dict(stranger(), id="d" * 64, kind=1))
+    assert result["accepted"] is False and result["message"].startswith("restricted:")
+    assert len(sock.sent) == sent and len(sock.kinds("AUTH")) == 1  # nothing was sent after the refusal
+
+
+def test_f2_a_direct_closed_restricted_is_not_a_sticky_auth_refusal():
+    env = Env()
+    sock = Socket(env, lambda frame: [["CLOSED", frame[1], "restricted: no"]] if frame[0] == "REQ" else [])
+    relay = client(env, sock)
+    assert relay.query([{}])["ended"] == "closed:restricted" and relay.auth_refused is None  # accepted A2 behaviour
+
+
+def test_f2_a_positive_auth_still_retries_the_original_request_once():
+    env = Env()
+
+    def on_send(frame):
+        if frame[0] == "REQ" and len(sock.kinds("REQ")) == 1:
+            return [["AUTH", "challenge"], ["CLOSED", frame[1], "auth-required: login"]]
+        if frame[0] == "REQ":
+            return [["EOSE", frame[1]]]
+        if frame[0] == "AUTH":
+            return [["OK", frame[1]["id"], True, ""]]
+        return []
+
+    sock = Socket(env, on_send)
+    rt, calls = compose(env, client(env, sock), ["a"], max_seconds=0)
+    assert rt.run(lambda: False) == 0
+    assert len(sock.kinds("AUTH")) == 1 and len(sock.kinds("REQ")) == 2 and calls.count("plan") == 1
+    assert getattr(rt.relay, "auth_refused", None) is None
+
+
+def test_f2_an_ordinary_lost_connection_still_follows_reconnect_pacing_and_infers_no_restriction():
+    env, connects = Env(), []
+
+    class Dead:
+        def send(self, text):
+            pass
+
+        def recv(self, timeout):
+            raise OSError("reset")
+
+        def close(self):
+            pass
+
+    def connect(*a, **k):
+        connects.append(env.t)
+        return Dead()
+
+    relay = BuzzRelayClient("ws://fixture.invalid", auth_signer=Signer(), auth_role="conductor", verifier=Verify(),
+                            connect=connect, max_size=1 << 20, clock=env.clock, recv_timeout=RECV, op_deadline=OP)
+    rt, calls = compose(env, relay, ["a"], tick_seconds=1, lease_ttl_seconds=30, max_seconds=1000)
+    assert rt.run(lambda: len(connects) >= 3) == 0
+    gaps = [b - a for a, b in zip(connects, connects[1:])]
+    assert gaps == [pytest.approx(reconnect_delay(1006, 0)), pytest.approx(reconnect_delay(1006, 1))]
+    assert calls == [] and relay.auth_refused is None
+
+
+def test_f2_a_timeout_does_not_make_the_client_think_it_is_restricted():
+    env = Env()
+    relay = client(env, Socket(env))
+    assert relay.query([{}])["ended"] == "timeout" and relay.auth_refused is None
+
+
+def test_f2_the_equivalent_refusal_during_publication_exits_four_before_housekeeping(tmp_path):
+    env, w = Env(), World(tmp_path)
+    w.enqueue("s0", 1)
+    w.enqueue("s1", 1)
+
+    def on_send(frame):
+        if frame[0] == "EVENT":
+            return [["AUTH", "challenge"], ["OK", frame[1]["id"], False, "auth-required: sign in"]]
+        if frame[0] == "AUTH":
+            return [["OK", frame[1]["id"], False, "restricted: not a relay member"]]
+        return []
+
+    sock = Socket(env, on_send)
+    relay = client(env, sock)
+    w.outbox.relay = relay
+    rt, calls = outbox_runtime(env, w, relay, max_seconds=100, tick_seconds=1, recover_every=1)
+    assert rt.run(lambda: False) == 4
+    assert len(sock.kinds("AUTH")) == 1 and len(sock.kinds("EVENT")) == 1  # the second row is never sent
+    assert "recover" not in calls and "compact" not in calls and env.slices == []
+    assert {row["status"] for row in w.rows()} == {"pending"}  # nothing was lost or acknowledged
+
+
+def test_f2_the_refusal_during_recovery_exits_four_before_compaction(tmp_path):
+    env, w = Env(), World(tmp_path)
+
+    class Refused:
+        auth_refused = None
+
+    relay = Refused()
+
+    class Outbox:
+        def deliver(self, generation, **kwargs):
+            return {"sent": 0}
+
+        def recover_deferred(self, generation, regenerate, **kwargs):
+            relay.auth_refused = "restricted"
+            return {}
+
+    rt, calls = outbox_runtime(env, w, relay, max_seconds=100, recover_every=1)
+    rt.outbox = Outbox()
+    assert rt.run(lambda: False) == 4 and "compact" not in calls and env.slices == []

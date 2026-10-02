@@ -79,7 +79,11 @@ class BuzzRelayClient:
     `accepted` values: see each method. NIP-42: the latest `["AUTH", challenge]` is kept per connection; on
     `OK false "auth-required: ..."` or `CLOSED "auth-required: ..."` the client sends an AUTH event
     (kind 22242, tags `relay` = the exact URL and `challenge`), waits for its OK and retries the request ONCE.
-    `restricted:` and a second `auth-required` are final.
+    A second `auth-required` is final. So is an AUTH event the relay answers `OK false restricted:` (D5 F2, DESIGN-D §2):
+    the client records the sticky `auth_refused = "restricted"`, never authenticates or sends again, and every later
+    `query`/`query_all` ends `closed:restricted`, `publish` is `accepted: False` with the relay's `restricted:` message
+    and `subscribe` ends `closed:restricted`. Only that answer sets it: not a timeout, a lost connection or a
+    `restricted:` CLOSED/OK to an ordinary request.
     """
 
     def __init__(self, url: str, *, auth_signer: EventSigner, auth_role: str, verifier: EventVerifier,
@@ -109,6 +113,8 @@ class BuzzRelayClient:
         self._page = page
         self._op_deadline = op_deadline
         self._deadline: float | None = None  # the running operation's absolute end on `clock`; None between operations
+        self.auth_refused: str | None = None  # `restricted` once the relay refused our AUTH: final for this client
+        self._refusal = ""  # the relay's message of that refusal
         self._ws = None
         self._challenge: str | None = None
         self._subs: set[str] = set()
@@ -215,8 +221,12 @@ class BuzzRelayClient:
     # -- NIP-42 -----------------------------------------------------------------------------------------
 
     def _authenticate(self) -> bool:
-        """Answer the stored challenge; True when the relay accepts the AUTH event."""
-        if self._challenge is None:
+        """Answer the stored challenge; True when the relay accepts the AUTH event.
+
+        `OK false restricted:` is the final refusal (`auth_refused`): the prefix is kept, not reduced to False, and no
+        later AUTH is ever sent by this client.
+        """
+        if self._challenge is None or self.auth_refused is not None:
             return False
         unsigned = ne.auth_event_template(self._url, self._challenge, int(self._clock()))
         signed = self._signer.sign(self._role, unsigned)
@@ -224,6 +234,8 @@ class BuzzRelayClient:
         while True:
             frame = self._next()
             if frame.kind == "OK" and frame.event_id == signed["id"]:
+                if not frame.accepted and ne.classify(frame.message) == "restricted":
+                    self.auth_refused, self._refusal = "restricted", frame.message
                 return bool(frame.accepted)
 
     # -- publish ----------------------------------------------------------------------------------------
@@ -232,10 +244,14 @@ class BuzzRelayClient:
         """Send one signed event; `{"id", "accepted", "prefix", "message"}` from its OK.
 
         `duplicate:` is `accepted: True, prefix: "duplicate"` (design §6.1 step 3). A timeout or a closed
-        connection is `accepted: None, prefix: "unknown"`: the outcome is unknown, never guessed.
+        connection is `accepted: None, prefix: "unknown"`: the outcome is unknown, never guessed. A refused AUTH
+        (`auth_refused`) is `accepted: False` with the relay's `restricted:` message (the request that met the
+        refusal keeps its `auth-required` prefix; later calls send nothing and carry the prefix `restricted`).
         """
         frame_text = ne.event_frame(event)
         ident = event["id"]
+        if self.auth_refused is not None:
+            return _result(ident, False, self.auth_refused, self._refusal)
         try:
             with self._operation():
                 for attempt in (0, 1):
@@ -243,6 +259,8 @@ class BuzzRelayClient:
                     result = self._await_ok(ident)
                     if result["prefix"] == "auth-required" and attempt == 0 and self._authenticate():
                         continue
+                    if self.auth_refused is not None:  # the refusal ends the request: accepted False, its message
+                        result = {**result, "message": self._refusal}
                     return result
         except _Lost as exc:
             return _result(ident, None, "unknown", str(exc))
@@ -277,6 +295,8 @@ class BuzzRelayClient:
         counts = {"unverified": 0, "received": 0}
         retried = False
         ended = "connection_closed"
+        if self.auth_refused is not None:
+            return self._query_result(events, f"closed:{self.auth_refused}", counts)
         try:
             with self._operation():
                 self._send(ne.req(sub_id, *filters))
@@ -300,7 +320,7 @@ class BuzzRelayClient:
                             retried = True
                             self._send(ne.req(sub_id, *filters))
                             continue
-                        ended = f"closed:{prefix}"
+                        ended = f"closed:{self.auth_refused or prefix}"  # a refused AUTH is `restricted`, not auth-required
                         return self._query_result(events, ended, counts)
                 self._best_effort(ne.close(sub_id))
         except _Timeout:
@@ -376,6 +396,8 @@ class BuzzRelayClient:
         (`closed:<prefix>` or `connection_closed`). A receive timeout only waits again; closing the
         generator sends CLOSE."""
         retried = False
+        if self.auth_refused is not None:
+            return f"closed:{self.auth_refused}"
         try:
             self._send(ne.req(sub_id, *filters))
             self._subs.add(sub_id)
@@ -394,7 +416,7 @@ class BuzzRelayClient:
                         self._send(ne.req(sub_id, *filters))
                         continue
                     self._subs.discard(sub_id)
-                    return f"closed:{prefix}"
+                    return f"closed:{self.auth_refused or prefix}"
         except _Lost:
             return "connection_closed"
         finally:

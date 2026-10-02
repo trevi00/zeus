@@ -19,7 +19,9 @@ generation and a stale instance commits nothing (every use-case transaction re-r
 is unique per process because `BridgeLease.acquire` advances the generation even for the same owner id.
 
 Exit codes: 0 stop requested or `max_seconds` reached after the current tick; 3 the relay's close code allows no
-reconnect; 4 a `restricted:` answer (configuration, final); 5 `store_fail_limit` consecutive failing ticks.
+reconnect; 4 a `restricted:` answer (configuration, final: the inbound `closed:restricted`, or the relay client's
+sticky `auth_refused` after any step, D5 F2; returned before any further planning or delivery and without a retry
+sleep); 5 `store_fail_limit` consecutive failing ticks.
 
 The store DSN is read from a 0600 file and is never logged. A tick log line (JSON on stdout) carries counts only: no
 event content, key or DSN, and a failing step is named by its exception class alone.
@@ -305,7 +307,7 @@ class BridgeRuntime:
         report = self.inbound.run(generation, stop=stop)
         tick.steps["inbound"] = _inbound_counts(report)
         ended = {result["ended"] for result in report.values()}
-        if "closed:restricted" in ended:  # DESIGN-D §2: configuration, final, no retry storm
+        if "closed:restricted" in ended or self._refused():  # DESIGN-D §2: configuration, final, no retry storm
             return generation, EXIT_RESTRICTED, False
         if "connection_closed" in ended:
             return generation, None, True  # the caller paces the reconnect from the relay's close code
@@ -313,13 +315,22 @@ class BridgeRuntime:
             return generation, None, False
         self.projection.use_generation(generation)
         tick.steps["plan"] = self.projection.plan(generation)
+        if self._refused():
+            return generation, EXIT_RESTRICTED, False
         if stop():
             return generation, None, False
         tick.steps["deliver"] = self.outbox.deliver(generation, stop=stop)
+        if self._refused():  # D5 F2: the relay refused our AUTH during publication or reconciliation
+            return generation, EXIT_RESTRICTED, False
         if stop():
             return generation, None, False
-        self._housekeeping(tick, generation, number, stop)
+        if self._housekeeping(tick, generation, number, stop):
+            return generation, EXIT_RESTRICTED, False
         return generation, None, False
+
+    def _refused(self) -> bool:
+        """The relay client's final AUTH refusal (F2); a relay without the flag never refuses."""
+        return getattr(self.relay, "auth_refused", None) == "restricted"
 
     def _lease(self, generation):
         now, ttl = self.clock(), self.config.lease_ttl_seconds
@@ -329,12 +340,16 @@ class BridgeRuntime:
             self.lease.renew(tx, self.owner_id, generation, now, ttl)
             return generation
 
-    def _housekeeping(self, tick: _Tick, generation: int, number: int, stop: Callable[[], bool]) -> None:
+    def _housekeeping(self, tick: _Tick, generation: int, number: int, stop: Callable[[], bool]) -> bool:
+        """Recovery and compaction; True when recovery met the relay's final AUTH refusal (compaction is skipped)."""
         if number % self.config.recover_every == 0:
             tick.steps["recover"] = self.outbox.recover_deferred(generation, self.projection.regenerate, stop=stop)
+            if self._refused():
+                return True
         if self._compacted_at is None or self.monotonic() - self._compacted_at >= COMPACT_EVERY_SECONDS:
             tick.steps["compact"] = self.inbound.compact(generation)  # first active tick, then hourly
             self._compacted_at = self.monotonic()
+        return False
 
     def _wait(self, seconds: float, stop: Callable[[], bool]) -> None:
         """Sleep `seconds` in slices of at most 0.5 s, returning as soon as `stop` is set."""
