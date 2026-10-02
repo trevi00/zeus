@@ -187,9 +187,9 @@ def test_imports_are_only_kernel_and_evidence_homes():
 def test_v4_evidence_owns_the_inspection_buckets():
     from codex_harness.evidence import ports
 
-    assert ports.OWNED_BUCKETS == ("evidence_inspections", "evidence_inspection_notices")
+    assert ports.OWNED_BUCKETS == ("evidence_inspections", "evidence_inspection_notices", "completion_verdicts", "completion_rejections")
     app = importlib.import_module(APP)
-    assert {app.BUCKET, app.NOTICES} == set(ports.OWNED_BUCKETS)
+    assert {app.BUCKET, app.NOTICES} == set(ports.OWNED_BUCKETS[:2])
 
 
 def test_only_the_evidence_inspection_application_writes_the_inspection_buckets():

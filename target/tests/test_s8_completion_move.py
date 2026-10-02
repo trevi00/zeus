@@ -102,11 +102,19 @@ def test_the_module_writes_only_its_two_buckets_and_reads_tasks_by_literal():
         assert word not in target_text().split('"""', 2)[2], word
 
 
+def test_evidence_owns_the_completion_buckets():
+    from codex_harness.evidence import ports
+
+    module = importlib.import_module(MODULE)
+    assert ports.OWNED_BUCKETS[-2:] == ("completion_verdicts", "completion_rejections")
+    assert {module.BUCKET, module.REJECTIONS} == set(ports.OWNED_BUCKETS[-2:])
+
+
 def test_only_this_module_names_the_completion_buckets_in_the_target_source():
     src = REPO / "target" / "src" / "codex_harness"
     named = [path.relative_to(src).as_posix() for path in sorted(src.rglob("*.py"))
              if any(f"'{b}'" in path.read_text() or f'"{b}"' in path.read_text() for b in ("completion_verdicts", "completion_rejections"))]
-    assert named == ["evidence/application/completion.py"], named
+    assert named == ["evidence/application/completion.py", "evidence/ports.py"], named
 
 
 def test_the_constants_are_m7_s():
