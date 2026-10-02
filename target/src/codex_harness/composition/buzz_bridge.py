@@ -315,7 +315,7 @@ class BridgeRuntime:
         if stop():
             return generation, None, False
         self.projection.use_generation(generation)
-        tick.steps["plan"] = self.projection.plan(generation)
+        tick.steps["plan"] = self.projection.plan(generation, stop=halt)
         if self._refused():
             return generation, EXIT_RESTRICTED, False
         if stop():
@@ -344,7 +344,10 @@ class BridgeRuntime:
     def _housekeeping(self, tick: _Tick, generation: int, number: int, stop: Callable[[], bool]) -> bool:
         """Recovery and compaction; True when recovery met the relay's final AUTH refusal (compaction is skipped)."""
         if number % self.config.recover_every == 0:
-            tick.steps["recover"] = self.outbox.recover_deferred(generation, self.projection.regenerate, stop=stop)
+            def regenerate(cls, after):
+                return self.projection.regenerate(cls, after, stop=stop)
+
+            tick.steps["recover"] = self.outbox.recover_deferred(generation, regenerate, stop=stop)
             if self._refused():
                 return True
         if self._compacted_at is None or self.monotonic() - self._compacted_at >= COMPACT_EVERY_SECONDS:

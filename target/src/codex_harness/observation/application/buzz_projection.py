@@ -100,11 +100,14 @@ class BuzzProjection:
 
     # -- plan ---------------------------------------------------------------------------------------------
 
-    def plan(self, generation: int) -> dict:
-        """Enqueue everything the Zeus state now calls for; the counts of what happened."""
+    def plan(self, generation: int, *, stop: Callable[[], bool] | None = None) -> dict:
+        """Enqueue everything the Zeus state now calls for; the counts of what happened.
+
+        `stop` (D5 F1) is read before each relay head query: once true no further query starts and the remaining
+        unverified subjects keep their recorded condition (no probe answer proves nothing, as for an error)."""
         self.generation = generation
         counts = dict.fromkeys(_COUNTS, 0)
-        probes = self._unverified_heads()  # relay calls stay outside the transaction
+        probes = self._unverified_heads(stop)  # relay calls stay outside the transaction
         with self.store.transaction() as tx:
             self.outbox.lease.require_current(tx, generation)
             ctx = self._context(tx)
@@ -220,7 +223,7 @@ class BuzzProjection:
 
     # -- regenerate (Q5, Q6) ------------------------------------------------------------------------------
 
-    def regenerate(self, cls: str, after: list | None) -> list[dict]:
+    def regenerate(self, cls: str, after: list | None, *, stop: Callable[[], bool] | None = None) -> list[dict]:
         """The deferred work of `cls` after the outbox watermark `[subject, version]`, oldest first.
 
         Append: roots and receipts in the plan's global order, from the audit and the task rows. State: the org and
@@ -231,7 +234,7 @@ class BuzzProjection:
             return []
         mark = after[0] if after else None
         out = []
-        probes = self._unverified_heads() if cls == "state" else {}  # relay calls stay outside the transaction
+        probes = self._unverified_heads(stop) if cls == "state" else {}  # relay calls stay outside the transaction
         with self.store.transaction() as tx:
             self.outbox.lease.require_current(tx, self.generation)
             ctx = self._context(tx)
@@ -459,11 +462,20 @@ class BuzzProjection:
 
     # -- relay head -----------------------------------------------------------------------------------------
 
-    def _unverified_heads(self) -> dict:
-        """The relay's current head of each subject recorded `unverified_foreign_revision` (only those are re-queried)."""
+    def _unverified_heads(self, stop: Callable[[], bool] | None = None) -> dict:
+        """The relay's current head of each subject recorded `unverified_foreign_revision` (only those are re-queried).
+
+        `stop` is read before each query (D5 F1); a subject not probed has no entry, which `_state_eligibility` reads
+        as an unknown head (SKIP): nothing is published over it."""
         with self.store.transaction() as tx:
             subjects = [row["subject"] for row in tx.scan(HEADS) if row["condition"] == UNVERIFIED]
-        return {subject: self._query_head(self._d_of(subject)) for subject in subjects if self._d_of(subject)}
+        heads = {}
+        for subject in subjects:
+            if stop is not None and stop():
+                break
+            if self._d_of(subject):
+                heads[subject] = self._query_head(self._d_of(subject))
+        return heads
 
     def _query_head(self, d: str) -> dict | None:
         """The current 45010 head of `d` (`{"kinds":[45010], "#d":[d]}`), or None: an empty, erroring or non-EOSE

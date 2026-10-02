@@ -248,6 +248,42 @@ def test_f1b_a_stop_between_event_commits_leaves_the_pass_running_and_resumes_th
     assert resumed.kinds("REQ")[0][2]["until"] == events[0]["created_at"]  # from the committed keyset, not from scratch
 
 
+def test_f1_planning_and_regeneration_start_no_head_query_after_a_stop(tmp_path):
+    from test_buzz_b4_projection import P
+    p = P(tmp_path)
+    with p.w.store.transaction() as tx:  # three subjects recorded unverified_foreign_revision
+        for name in ("t1", "t2", "t3"):
+            tx.put("buzz_heads", f"task:{name}", {"subject": f"task:{name}", "condition": "unverified_foreign_revision"})
+    flag = []
+    query = p.relay.query
+
+    def querying(filters):
+        flag.append(True)  # the stop arrives during the first head query
+        return query(filters)
+
+    p.relay.query = querying
+    p.proj.plan(p.gen, stop=lambda: bool(flag))
+    assert len(p.relay.d_queries) == 1  # exactly one relay query, not three
+    flag.clear()
+    p.relay.d_queries.clear()
+    assert p.proj.regenerate("state", None, stop=lambda: bool(flag)) is not None and len(p.relay.d_queries) == 1
+    flag.clear()
+    p.relay.d_queries.clear()
+    p.proj.plan(p.gen)  # no stop: every unverified subject is probed, as today
+    assert len(p.relay.d_queries) == 3
+
+
+def test_f1_the_runtime_hands_its_stop_to_planning_and_recovery():
+    env, seen = Env(), []
+    rt, calls = runtime(env, max_seconds=0, recover_every=1)
+    rt.projection.plan = lambda generation, *, stop=None: seen.append(("plan", stop)) or {}
+    rt.projection.regenerate = lambda cls, after, *, stop=None: seen.append(("regenerate", stop)) or []
+    rt.outbox.recover_deferred = lambda generation, regenerate, *, stop=None: regenerate("state", None) and 0 or {}
+    flag = lambda: False  # noqa: E731
+    assert rt.run(flag) == 0
+    assert [name for name, _ in seen] == ["plan", "regenerate"] and all(callable(stop) for _, stop in seen)
+
+
 # ---- F1: one operation deadline ------------------------------------------------------------------------------------
 def test_the_operation_deadline_bounds_a_query_whose_irrelevant_frames_keep_arriving():
     env = Env()

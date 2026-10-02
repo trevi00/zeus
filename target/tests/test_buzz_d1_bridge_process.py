@@ -76,11 +76,11 @@ class Projection:
     def use_generation(self, generation):
         self.generation = generation
 
-    def plan(self, generation):
+    def plan(self, generation, *, stop=None):
         self.calls.append("plan")
         return {"org": 0}
 
-    def regenerate(self, cls, after):
+    def regenerate(self, cls, after, *, stop=None):
         return []
 
 
