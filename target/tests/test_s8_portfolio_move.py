@@ -181,11 +181,11 @@ def test_r_p4_safe_code_has_one_owner():
 def test_v4_intake_owns_the_portfolio_buckets():
     from codex_harness.intake import ports
 
-    assert ports.OWNED_BUCKETS == ("portfolio_bindings", "portfolio_acceptances", "portfolio_investigations",
-                                   "portfolio_followups")
+    portfolio = ("portfolio_bindings", "portfolio_acceptances", "portfolio_investigations", "portfolio_followups")
+    # S8 pilot 84 (V16) appends the four front-desk buckets after the portfolio ones
+    assert ports.OWNED_BUCKETS == portfolio + ("desk_sessions", "desk_requests", "desk_events", "desk_receipts")
     app = importlib.import_module(APP)
-    assert {app.BUCKET_BINDINGS, app.BUCKET_ACCEPTANCES, app.BUCKET_INVESTIGATIONS, app.BUCKET_FOLLOWUPS} == set(
-        ports.OWNED_BUCKETS)
+    assert {app.BUCKET_BINDINGS, app.BUCKET_ACCEPTANCES, app.BUCKET_INVESTIGATIONS, app.BUCKET_FOLLOWUPS} == set(portfolio)
 
 
 def test_spot_check_the_moved_portfolio_runs_over_a_memory_store():
