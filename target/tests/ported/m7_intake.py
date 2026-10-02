@@ -50,20 +50,35 @@ Named adaptations (each is a construction/import/patch-target adaptation, never 
   `composition.configuration.runtime_dir() / MONITORING_FILE` (M7's body of `snapshot_path`). A case may replace
   `snapshot_path` on the facade, as M7 cases patched it on the module. `readiness` is
   `observation.adapters.monitoring_readiness.readiness`; `completed_output` is `execution.adapters.execution_output`'s.
+- `Harness(store, org)` is `m7_coordination.Harness` (`.store`, `.org`, `.flusher`, `record_incident`) with M7's remaining
+  hook-lifecycle and session methods routed to their owners: `review`, `get_hook`, `propose`, `record_canary`, `activate`,
+  `rollback`, `prepare_command` and `active_hooks` are research's `HookLifecycle` called inside a unit opened around the
+  call (M7's `Harness` opened it), and `checkpoint` is coordination's `SessionCheckpoints` over the S4 Workflow. An
+  unrouted name still raises AttributeError.
+- `session_action` (M7 `domain.model.session_action`) has NO target implementation: the ledger names
+  `coordination.application.sessions:session_action` (designed, not implemented), so it imports as a placeholder
+  (`unavailable("S5", ...)`) and only the test that calls it is skipped, with the owner named.
+- `GoalProgress(store)`, `SCHEMA`, `compare_reports`, `definition_hash` and `validate_manifest` of the goal-progress
+  suite are `intake.application.goal_progress`'s; `FleetBacklog(store, fleet=None, clock=utcnow, portfolio=None,
+  observer=None)` is the moved class over the Fleet's registry port (`fleet.registry`, as `s8_fleet_backlog.py`'s
+  `fleet_port` hands it), and `Portfolio`/`packaged_definitions`/`portfolio`/`portfolio_reconciler` are the intake ones.
 - The operator CLIs (`cli`, `ticket_cli`, `frontdesk_cli`) and `bootstrap` are NOT here (S10): only tests skipped whole,
   with the owning slice, name them.
 """
 
 from __future__ import annotations
 
-from m7_coordination import Harness, Workflow, organization  # noqa: F401
+from m7_coordination import Harness as _Harness
+from m7_coordination import Workflow, organization, unavailable  # noqa: F401
 from m7_delivery import ReleaseRunner, Releases  # noqa: F401
 from m7_executor import Executor as _Executor
 
 from codex_harness.composition import configuration
+from codex_harness.coordination.application import fleet_backlog as _fleet_backlog
 from codex_harness.coordination.application.desk_runner import SUMMARY_TURNS, DeskRunner  # noqa: F401
 from codex_harness.coordination.application.messages import MessageHandler
 from codex_harness.coordination.application.outbox import Outbox
+from codex_harness.coordination.application.sessions import SessionCheckpoints
 from codex_harness.coordination.application.workflow import ClaimGuardRefused  # noqa: F401
 from codex_harness.evidence.adapters.evidence_inspection import EvidenceInspector
 from codex_harness.evidence.application.evidence_inspection import EvidenceInspections
@@ -92,7 +107,7 @@ from codex_harness.intake.domain import frontdesk as desk_domain  # noqa: F401
 from codex_harness.intake.domain import ticket_lifecycle as domain_ticket_lifecycle  # noqa: F401
 from codex_harness.intake.domain.frontdesk import DeskRefused, prior_turns, validate_answer  # noqa: F401
 from codex_harness.kernel.errors import ContractError  # noqa: F401
-from codex_harness.kernel.ids import canonical, digest, utcnow  # noqa: F401
+from codex_harness.kernel.ids import SYSTEM_IDS, canonical, digest, utcnow  # noqa: F401
 from codex_harness.observation.adapters import desk_monitoring as _monitoring_side
 from codex_harness.observation.adapters.desk_monitoring import (  # noqa: F401
     ACCOUNTING_NOTE,
@@ -103,6 +118,38 @@ from codex_harness.observation.adapters.monitoring_readiness import readiness  #
 from codex_harness.storage.adapters.file_artifacts import FileArtifacts  # noqa: F401
 from codex_harness.storage.adapters.memory_store import MemoryStore, MemoryTransaction  # noqa: F401
 from codex_harness.storage.adapters.message_schema import validate_message  # noqa: F401
+
+HOOK_UNITS = ("review", "get_hook", "propose", "record_canary", "activate", "rollback", "prepare_command", "active_hooks")
+
+
+class Harness(_Harness):
+    """`m7_coordination.Harness` with M7's hook-lifecycle and session methods routed to their owners."""
+
+    def __init__(self, store, org):
+        super().__init__(store, org)
+        self.sessions = SessionCheckpoints(store, org, workflow=Workflow(store, org), ids=SYSTEM_IDS)
+
+    def checkpoint(self, agent, expected_generation, state, execution=None):
+        return self.sessions.checkpoint(agent, expected_generation, state, execution)
+
+
+def _hook_unit(name):
+    def method(self, *args, **kwargs):
+        with self.store.transaction() as tx:  # M7's Harness opened the unit around each of these
+            return getattr(self.hooks, name)(*args, transaction=tx, **kwargs)
+    method.__name__ = name
+    return method
+
+
+for _name in HOOK_UNITS:
+    setattr(Harness, _name, _hook_unit(_name))
+
+session_action = unavailable("S5", "session_action")
+
+
+def FleetBacklog(store, fleet=None, clock=utcnow, portfolio=None, observer=None):  # noqa: N802 - the M7 constructor name
+    """The moved class over the Fleet's registry port (`s8_fleet_backlog.py`'s `fleet_port`)."""
+    return _fleet_backlog.FleetBacklog(store, None if fleet is None else fleet.registry, clock, portfolio, observer)
 
 
 def Tickets(store, org):  # noqa: N802 - the M7 constructor name
