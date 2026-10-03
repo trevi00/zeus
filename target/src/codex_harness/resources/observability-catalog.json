@@ -1,0 +1,343 @@
+{
+ "catalog_version": 1,
+ "events": {
+  "operations.queue_item_waited": {
+   "owner_context": "coordination",
+   "category": "operations",
+   "severity": "info",
+   "boundary": "queue_wait",
+   "attributes": {
+    "queue": {
+     "type": "string",
+     "enum": [
+      "outbox",
+      "research_dispatch",
+      "fleet_backlog",
+      "frontdesk",
+      "release_queue",
+      "other"
+     ]
+    },
+    "item_ref": {
+     "type": "string",
+     "opaque": true
+    },
+    "wait_seconds": {
+     "type": "number"
+    },
+    "outcome": {
+     "type": "string",
+     "enum": [
+      "started",
+      "succeeded",
+      "failed",
+      "aborted",
+      "blocked",
+      "unknown",
+      "observed"
+     ]
+    }
+   },
+   "producer_sites": "measured at X1b"
+  },
+  "development.role_dispatch_decided": {
+   "owner_context": "coordination",
+   "category": "development",
+   "severity": "info",
+   "boundary": "role_dispatch",
+   "attributes": {
+    "role": {
+     "type": "string",
+     "opaque": true
+    },
+    "provider": {
+     "type": "string",
+     "opaque": true
+    },
+    "decision": {
+     "type": "string",
+     "enum": [
+      "dispatched",
+      "deferred",
+      "refused",
+      "other"
+     ]
+    },
+    "decision_reason": {
+     "type": "string",
+     "enum": [
+      "eligible",
+      "no_capacity",
+      "provider_unavailable",
+      "not_assigned",
+      "policy_denied",
+      "other"
+     ]
+    },
+    "latency_seconds": {
+     "type": "number"
+    }
+   },
+   "producer_sites": "measured at X1b"
+  },
+  "operations.capacity_refused": {
+   "owner_context": "coordination",
+   "category": "operations",
+   "severity": "warning",
+   "boundary": "admission_denial",
+   "attributes": {
+    "scope": {
+     "type": "string",
+     "enum": [
+      "fleet_unit",
+      "lane_slots",
+      "invocation_budget",
+      "other"
+     ]
+    },
+    "refusal_reason": {
+     "type": "string",
+     "enum": [
+      "lane_full",
+      "unit_limit",
+      "budget_exhausted",
+      "host_pressure",
+      "other"
+     ]
+    },
+    "retry_after_seconds": {
+     "type": "nullable_integer"
+    }
+   },
+   "producer_sites": "measured at X1b"
+  },
+  "development.tool_call_completed": {
+   "owner_context": "execution",
+   "category": "development",
+   "severity": "info",
+   "boundary": "tool_call",
+   "attributes": {
+    "tool": {
+     "type": "string",
+     "enum": [
+      "Bash",
+      "Edit",
+      "Glob",
+      "Grep",
+      "NotebookEdit",
+      "Read",
+      "StructuredOutput",
+      "Task",
+      "WebFetch",
+      "WebSearch",
+      "Write",
+      "other"
+     ]
+    },
+    "outcome": {
+     "type": "string",
+     "enum": [
+      "started",
+      "succeeded",
+      "failed",
+      "aborted",
+      "blocked",
+      "unknown",
+      "observed"
+     ]
+    },
+    "duration_ms": {
+     "type": "nullable_integer"
+    },
+    "reservation_id": {
+     "type": "nullable_string",
+     "opaque": true
+    }
+   },
+   "producer_sites": "measured at X1b"
+  },
+  "development.skill_selected": {
+   "owner_context": "context",
+   "category": "development",
+   "severity": "info",
+   "boundary": "skill_call",
+   "attributes": {
+    "skill_ref": {
+     "type": "string",
+     "opaque": true
+    },
+    "selected": {
+     "type": "boolean"
+    },
+    "selection_reason": {
+     "type": "string",
+     "enum": [
+      "matched",
+      "required",
+      "default",
+      "not_matched",
+      "other"
+     ]
+    }
+   },
+   "producer_sites": "measured at X1b"
+  },
+  "operations.ci_observed": {
+   "owner_context": "delivery",
+   "category": "operations",
+   "severity": "info",
+   "boundary": "ci",
+   "attributes": {
+    "check": {
+     "type": "string",
+     "opaque": true
+    },
+    "conclusion": {
+     "type": "string",
+     "enum": [
+      "success",
+      "failure",
+      "cancelled",
+      "skipped",
+      "timed_out",
+      "neutral",
+      "pending",
+      "other"
+     ]
+    },
+    "duration_seconds": {
+     "type": "nullable_integer"
+    },
+    "attempt": {
+     "type": "integer"
+    }
+   },
+   "producer_sites": "measured at X1b"
+  },
+  "operations.cleanup_recorded": {
+   "owner_context": "execution",
+   "category": "operations",
+   "severity": "info",
+   "boundary": "cleanup",
+   "attributes": {
+    "resource": {
+     "type": "string",
+     "enum": [
+      "worktree",
+      "scratch_dir",
+      "verification_stack",
+      "container",
+      "other"
+     ]
+    },
+    "cleanup_outcome": {
+     "type": "string",
+     "enum": [
+      "removed",
+      "held",
+      "debt_recorded",
+      "failed",
+      "other"
+     ]
+    },
+    "cleanup_reason": {
+     "type": "string",
+     "enum": [
+      "completed",
+      "retained_for_evidence",
+      "still_in_use",
+      "removal_failed",
+      "expired",
+      "other"
+     ]
+    }
+   },
+   "producer_sites": "measured at X1b"
+  },
+  "operations.collector_started": {
+   "owner_context": "observation",
+   "category": "operations",
+   "severity": "info",
+   "boundary": "restart_collector",
+   "attributes": {
+    "collector": {
+     "type": "string",
+     "opaque": true
+    },
+    "previous_exit": {
+     "type": "string",
+     "enum": [
+      "first_start",
+      "clean",
+      "crashed",
+      "killed",
+      "unknown",
+      "other"
+     ]
+    }
+   },
+   "producer_sites": "measured at X1b"
+  },
+  "operations.path_declined": {
+   "owner_context": "observation",
+   "category": "operations",
+   "severity": "info",
+   "boundary": "declined_or_skipped",
+   "attributes": {
+    "feature": {
+     "type": "string",
+     "opaque": true
+    },
+    "decline_reason": {
+     "type": "string",
+     "enum": [
+      "disabled",
+      "not_applicable",
+      "skipped_by_policy",
+      "unavailable",
+      "other"
+     ]
+    }
+   },
+   "producer_sites": "measured at X1b"
+  },
+  "development.provider_usage_split": {
+   "owner_context": "execution",
+   "category": "development",
+   "severity": "info",
+   "boundary": "model_call_identity",
+   "attributes": {
+    "reservation_id": {
+     "type": "string",
+     "opaque": true
+    },
+    "provider_session_ref": {
+     "type": "nullable_string",
+     "opaque": true
+    },
+    "input_tokens": {
+     "type": "nullable_integer"
+    },
+    "output_tokens": {
+     "type": "nullable_integer"
+    },
+    "cache_read_tokens": {
+     "type": "nullable_integer"
+    },
+    "cache_write_tokens": {
+     "type": "nullable_integer"
+    },
+    "usage_source": {
+     "type": "string",
+     "enum": [
+      "unknown",
+      "thread/tokenUsage/updated",
+      "claude/result.usage",
+      "other"
+     ]
+    }
+   },
+   "producer_sites": "measured at X1b"
+  }
+ }
+}
