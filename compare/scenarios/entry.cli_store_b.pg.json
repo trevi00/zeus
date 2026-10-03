@@ -1,0 +1,9 @@
+{
+ "family": "entry.cli_store_b.pg",
+ "description": "The hook/incident/recovery store roots incident, rollback-hook, run-command, demo, seed-research-backlog and execution-recovery through main() on a labelled disposable PostgreSQL (one fresh schema per case group): the same incident occurrence twice, rollback-hook of an unknown hook, run-command (this interpreter printing ok; no argv refused), demo (the scripted bootstrap lifecycle in full: its canary probe cannot spawn a Codex executable under the provider guard, so the probe is recorded as unavailable (cli_start false), the hook is rejected, never activated, and the rest of the M7 result is recorded with the per-run uuids reduced; no refusal exit, the full M7 result), seed-research-backlog over empty artifacts (the packaged resource refusal) and over five planted fixture manifests (the emitted list), and execution-recovery prepare of an exhausted task, apply of its packet, and prepare over an existing output file; stdout, stderr and exit code per case, no mask",
+ "reference_driver": "drivers/reference/s10_cli_store_b.py",
+ "target_driver": "drivers/target/s10_cli_store_b.py",
+ "requires": "disposable-postgresql",
+ "golden": "goldens/reference/entry.cli_store_b.pg.json",
+ "slice": "S10"
+}

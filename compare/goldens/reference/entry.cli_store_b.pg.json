@@ -1,0 +1,419 @@
+{
+ "cases": {
+  "demo": {
+   "argv": [
+    "demo"
+   ],
+   "exit": 0,
+   "stderr": "",
+   "stdout": {
+    "canary": {
+     "checks": {
+      "cli_start": false,
+      "normal_case": true,
+      "reproduction": true
+     },
+     "probe": {
+      "passed": false,
+      "version": "unavailable"
+     },
+     "scope": "bootstrap-command-hook; not a release deployment canary"
+    },
+    "checkpoint": {
+     "agent_id": "worker:implementation",
+     "checkpoint": {
+      "graph_snapshot": "bootstrap-fixture",
+      "hook_id": "hook-73b6569b7864e0dfca44b580",
+      "next_action": "apply active hooks before the next command",
+      "source_revision": "spec-sha256:e5b6432d897cdcb7f694a951303c3a72b2dae69dee8de59e3039eb89c00e891d"
+     },
+     "generation": 1,
+     "session_id": "<uuid>"
+    },
+    "hook": {
+     "author": "worker:implementation",
+     "canary": {
+      "checks": {
+       "cli_start": false,
+       "normal_case": true,
+       "reproduction": true
+      },
+      "revision": "spec-sha256:e5b6432d897cdcb7f694a951303c3a72b2dae69dee8de59e3039eb89c00e891d",
+      "spec_hash": "e5b6432d897cdcb7f694a951303c3a72b2dae69dee8de59e3039eb89c00e891d"
+     },
+     "evidence_refs": [
+      "fixture:windows-codex-ps1-policy"
+     ],
+     "fingerprint": "73b6569b7864e0dfca44b58010e9a3b3456b2aff4d987c5f8eb975f6ca517e4b",
+     "id": "hook-73b6569b7864e0dfca44b580",
+     "occurrences": 2,
+     "reviews": [
+      {
+       "actor": "lead:improvement",
+       "evidence_ref": "fixture:scripted-review-not-llm",
+       "passed": true,
+       "revision": "spec-sha256:e5b6432d897cdcb7f694a951303c3a72b2dae69dee8de59e3039eb89c00e891d",
+       "role": "lead",
+       "spec_hash": "e5b6432d897cdcb7f694a951303c3a72b2dae69dee8de59e3039eb89c00e891d"
+      },
+      {
+       "actor": "conductor",
+       "evidence_ref": "fixture:scripted-review-not-llm",
+       "passed": true,
+       "revision": "spec-sha256:e5b6432d897cdcb7f694a951303c3a72b2dae69dee8de59e3039eb89c00e891d",
+       "role": "conductor",
+       "spec_hash": "e5b6432d897cdcb7f694a951303c3a72b2dae69dee8de59e3039eb89c00e891d"
+      }
+     ],
+     "revision": "spec-sha256:e5b6432d897cdcb7f694a951303c3a72b2dae69dee8de59e3039eb89c00e891d",
+     "root_cause": "powershell-codex-ps1-policy",
+     "scope": "bootstrap/windows/codex",
+     "spec": {
+      "kind": "executable_alias",
+      "match": "codex.ps1",
+      "platform": "windows",
+      "replacement": "codex.cmd"
+     },
+     "status": "rejected",
+     "version": 2
+    },
+    "incidents": [
+     {
+      "duplicate_occurrence": false,
+      "hook_created": false,
+      "hook_id": null,
+      "occurrences": 1
+     },
+     {
+      "duplicate_occurrence": false,
+      "hook_created": true,
+      "hook_id": "hook-73b6569b7864e0dfca44b580",
+      "occurrences": 2
+     }
+    ],
+    "mode": "scripted-bootstrap; no autonomous PR review or deployment",
+    "prepared_command": [
+     "codex.ps1",
+     "--version"
+    ]
+   }
+  },
+  "incident_first": {
+   "argv": [
+    "incident",
+    "<FIXTURE>/incident.json"
+   ],
+   "exit": 0,
+   "stderr": "",
+   "stdout": {
+    "duplicate_occurrence": false,
+    "hook_created": false,
+    "hook_id": null,
+    "occurrences": 1
+   }
+  },
+  "incident_replay": {
+   "argv": [
+    "incident",
+    "<FIXTURE>/incident.json"
+   ],
+   "exit": 0,
+   "stderr": "",
+   "stdout": {
+    "duplicate_occurrence": false,
+    "hook_created": false,
+    "hook_id": null,
+    "occurrences": 1
+   }
+  },
+  "init_db": {
+   "argv": [
+    "init-db"
+   ],
+   "exit": 0,
+   "stderr": "",
+   "stdout": {
+    "already_applied": [],
+    "applied": [
+     {
+      "module": "core",
+      "version": "1"
+     }
+    ],
+    "migrated": true,
+    "tool": {
+     "filename_contract": "V?<n>(.<n>|_<n>)*(__<description>)?.sql",
+     "name": "zeus-sql-migrator",
+     "version": 1
+    }
+   }
+  },
+  "init_db_backlog": {
+   "argv": [
+    "init-db"
+   ],
+   "exit": 0,
+   "stderr": "",
+   "stdout": {
+    "already_applied": [],
+    "applied": [
+     {
+      "module": "core",
+      "version": "1"
+     }
+    ],
+    "migrated": true,
+    "tool": {
+     "filename_contract": "V?<n>(.<n>|_<n>)*(__<description>)?.sql",
+     "name": "zeus-sql-migrator",
+     "version": 1
+    }
+   }
+  },
+  "init_db_demo": {
+   "argv": [
+    "init-db"
+   ],
+   "exit": 0,
+   "stderr": "",
+   "stdout": {
+    "already_applied": [],
+    "applied": [
+     {
+      "module": "core",
+      "version": "1"
+     }
+    ],
+    "migrated": true,
+    "tool": {
+     "filename_contract": "V?<n>(.<n>|_<n>)*(__<description>)?.sql",
+     "name": "zeus-sql-migrator",
+     "version": 1
+    }
+   }
+  },
+  "init_db_recovery": {
+   "argv": [
+    "init-db"
+   ],
+   "exit": 0,
+   "stderr": "",
+   "stdout": {
+    "already_applied": [],
+    "applied": [
+     {
+      "module": "core",
+      "version": "1"
+     }
+    ],
+    "migrated": true,
+    "tool": {
+     "filename_contract": "V?<n>(.<n>|_<n>)*(__<description>)?.sql",
+     "name": "zeus-sql-migrator",
+     "version": 1
+    }
+   }
+  },
+  "recovery_apply": {
+   "argv": [
+    "execution-recovery",
+    "apply",
+    "--packet",
+    "<FIXTURE>/packet.json"
+   ],
+   "exit": 0,
+   "stderr": "",
+   "stdout": {
+    "attempt_outcomes": [
+     {
+      "attempt": 1,
+      "error": "Actual failure API input",
+      "status": "failed"
+     }
+    ],
+    "execution": {
+     "agent": "lead:improvement",
+     "attempt": 1,
+     "error": null,
+     "execution_deadline": null,
+     "failure": null,
+     "generation": 2,
+     "id": "00000000-0000-4000-8000-0000000000c3",
+     "input_hash": "8e79c1c4a3b3deb9c70f13c004372245577a345621d2e7d2c17e4fda6a9ad5e3",
+     "lease_owner": null,
+     "lease_until": null,
+     "recovery_sequence": 1,
+     "result": null,
+     "status": "retry"
+    },
+    "receipt_is_bound": true,
+    "receipt_is_sha256": true,
+    "replayed": false,
+    "retry_budget": {
+     "max_attempts": 2,
+     "origin": "resume",
+     "version": 2
+    }
+   }
+  },
+  "recovery_prepare": {
+   "argv": [
+    "execution-recovery",
+    "prepare",
+    "00000000-0000-4000-8000-0000000000c3",
+    "--operation",
+    "resume",
+    "--max-attempts",
+    "2",
+    "--reason",
+    "Investigated transient failure",
+    "--operator",
+    "test-operator",
+    "--evidence",
+    "sha256:452f3081ed27e3771411994c5feb713ec00245ec6ef283c121455f4e1d954ef1",
+    "--output",
+    "<FIXTURE>/packet.json"
+   ],
+   "exit": 0,
+   "stderr": "",
+   "stdout": {
+    "applied": false,
+    "authority": "trusted_local_operator",
+    "packet": "<FIXTURE>/packet.json"
+   }
+  },
+  "recovery_prepare_existing_output": {
+   "argv": [
+    "execution-recovery",
+    "prepare",
+    "00000000-0000-4000-8000-0000000000c3",
+    "--operation",
+    "resume",
+    "--max-attempts",
+    "2",
+    "--reason",
+    "Investigated transient failure",
+    "--operator",
+    "test-operator",
+    "--evidence",
+    "sha256:452f3081ed27e3771411994c5feb713ec00245ec6ef283c121455f4e1d954ef1",
+    "--output",
+    "<FIXTURE>/packet.json"
+   ],
+   "exit": 1,
+   "stderr": {
+    "error": "Cannot create new recovery packet file"
+   },
+   "stdout": ""
+  },
+  "rollback_hook_unknown": {
+   "argv": [
+    "rollback-hook",
+    "no-such-hook",
+    "--reason",
+    "r"
+   ],
+   "exit": 1,
+   "stderr": {
+    "error": "Hook not active"
+   },
+   "stdout": ""
+  },
+  "run_command": {
+   "argv": [
+    "run-command",
+    "--",
+    "<PY>",
+    "-c",
+    "print('ok')"
+   ],
+   "exit": 0,
+   "stderr": "",
+   "stdout": {
+    "argv": [
+     "<PY>",
+     "-c",
+     "print('ok')"
+    ],
+    "exit_code": 0,
+    "stderr": "",
+    "stdout": "ok\n"
+   }
+  },
+  "run_command_no_argv": {
+   "argv": [
+    "run-command"
+   ],
+   "exit": 1,
+   "stderr": {
+    "error": "Command argv required after --"
+   },
+   "stdout": ""
+  },
+  "seed_backlog_fixture": {
+   "argv": [
+    "seed-research-backlog",
+    "--artifacts",
+    "<FIXTURE>/seed-artifacts"
+   ],
+   "exit": 0,
+   "stderr": "",
+   "stdout": [
+    {
+     "activation": "pending_verified_rollout",
+     "id": "27bed38d8b324d666f247473b3c866f3ab055045a80637a3252599fa59923cdc",
+     "priority": 1,
+     "repository": "https://github.com/fixture/repo0",
+     "reviewed_paths": 0,
+     "status": "inventoried_not_reviewed"
+    },
+    {
+     "activation": "pending_verified_rollout",
+     "id": "5854ef3f9cf4cc1ccec2c1f60a445d321e44b6d7e132f9cae9deed9a5026b105",
+     "priority": 2,
+     "repository": "https://github.com/fixture/repo1",
+     "reviewed_paths": 0,
+     "status": "inventoried_not_reviewed"
+    },
+    {
+     "activation": "pending_verified_rollout",
+     "id": "7c5443dc1aee77ea8b6c854ee9530d89987ef72eccbea7aadf65291350545796",
+     "priority": 3,
+     "repository": "https://github.com/fixture/repo2",
+     "reviewed_paths": 0,
+     "status": "inventoried_not_reviewed"
+    },
+    {
+     "activation": "pending_verified_rollout",
+     "id": "f46d685b9197e881760a2c306acde881bce8e9c47d5af4d361dcfbf335470fbc",
+     "priority": 4,
+     "repository": "https://github.com/fixture/repo3",
+     "reviewed_paths": 0,
+     "status": "inventoried_not_reviewed"
+    },
+    {
+     "activation": "pending_verified_rollout",
+     "id": "639e928fa74b921ff37067a3c7f3abacfc5dc4d4091d9e5d1a43cce2e88258c4",
+     "priority": 5,
+     "repository": "https://github.com/fixture/repo4",
+     "reviewed_paths": 0,
+     "status": "inventoried_not_reviewed"
+    }
+   ]
+  },
+  "seed_backlog_packaged_empty": {
+   "argv": [
+    "seed-research-backlog",
+    "--artifacts",
+    "<FIXTURE>/empty-artifacts"
+   ],
+   "exit": "raised FileNotFoundError: [Errno 2] No such file or directory: '<FIXTURE>/empty-artifacts/18cf0c27d54f21227142177466ddd49fb985707d648fc4a59f0d76370ab68575.txt'",
+   "stderr": "",
+   "stdout": ""
+  },
+  "seeded": {
+   "id": "00000000-0000-4000-8000-0000000000c3",
+   "status": "failed"
+  }
+ }
+}
