@@ -141,12 +141,17 @@ def main() -> None:
         from codex_harness.entry.cli import (
             canary,
             cancel,
+            context,
             doctor,
+            embed,
             goal,
+            index,
             init_db,
             inspect,
             organization,
             paths,
+            project_graph,
+            query,
             release_retry,
             setup,
             status,
@@ -155,7 +160,9 @@ def main() -> None:
         composed = {"paths": paths.run, "setup": setup.run, "organization": organization.run,
                     "validate": validate.run, "canary": canary.run, "doctor": doctor.run,
                     "init-db": init_db.run, "status": status.run, "inspect": inspect.run, "cancel": cancel.run,
-                    "release-retry": release_retry.run, "goal": goal.run}
+                    "release-retry": release_retry.run, "goal": goal.run,
+                    "index": index.run, "query": query.run, "embed": embed.run, "project-graph": project_graph.run,
+                    "context": context.run}
         if args.command not in composed:
             raise RuntimeError("zeus " + args.command + " is not composed in the rebuild yet (DESIGN-s10 §3)")
         composed[args.command](args)
