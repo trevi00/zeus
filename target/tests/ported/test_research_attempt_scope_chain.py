@@ -42,7 +42,7 @@ from collections import Counter
 from contextlib import contextmanager
 
 import pytest
-from m7_research import DEFINITIONS, OwnerActions, ResearchProgram, organization
+from m7_research import OwnerActions, ResearchProgram, organization
 from test_continuation import World, only
 from test_continuation_research import receipt_for, two_strikes
 from test_owner_actions import PIN, FakeAssessor, owner_policy
@@ -55,6 +55,7 @@ from test_research_attempt_scope_program import (
     family_dispatch,
 )
 from test_research_attempt_scope_program import launch as bound_launch
+from test_research_investigations import DEFINITIONS
 from test_research_program import POLICY, Clock
 from test_research_program_fixtures import config
 

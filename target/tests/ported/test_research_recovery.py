@@ -40,17 +40,15 @@ from pathlib import Path
 import pytest
 from m7_coordination import unavailable
 from m7_research import (
-    INVESTIGATION,
-    SOURCE,
     CouncilRun,
     Harness,
     ResearchProgram,
     Workflow,
     organization,
     packaged_policy,
-    portfolio,
     relay,
 )
+from test_research_investigations import INVESTIGATION, SOURCE, portfolio
 from test_research_program import POLICY, build
 from test_research_program_fixtures import CANARY, FakeCouncil, config
 
@@ -331,7 +329,7 @@ def _provider_slot(env, message_id):
 
 
 def _disposition(env, message_id):
-    from m7_research import DEFINITIONS
+    from test_research_investigations import DEFINITIONS
     Portfolio(env.store, DEFINITIONS).disposition(INVESTIGATION, "researched", ["sha256:" + "1" * 64])
 
 
