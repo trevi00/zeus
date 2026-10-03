@@ -62,10 +62,23 @@ Named adaptations (each is a construction/import adaptation, never a behaviour c
   it imports as a placeholder class (subclassable at import) that raises on any use, and only skipped tests name it.
 - `organization()` is `routing.adapters.organization_source.packaged_organization` (M7 `bootstrap.organization`) and
   `packaged_policy` is `routing.adapters.provider_policy.packaged_policy` (M7 `adapters.providers.packaged_policy`).
+
+Batch P10 (earlier coordination) adds, each a construction/import adaptation:
+- `schedule_research(service, now=None)` is `research.application.scheduling.schedule_research` with the `Outbox` and the
+  bound `reconcile_audits` of `m7_delivery.Releases` wired, exactly as `m7_research.schedule_audits` wires them (as
+  `s8_scheduling.py` does); `Releases` is imported at call time because `m7_delivery` imports this shim.
+- `flush_outbox(service, bus, observer=None, correlation_id=None)` is `coordination.application.local_cycle.flush_outbox`
+  over the service's `flusher` (M7's function took the service and called its `flush_outbox`; the target takes the
+  flusher).
+- `ResearchLaunches(root, repository, *, spawn=spawn_guardian, run=subprocess.run, **kwargs)` is
+  `coordination.adapters.owner_launches.ResearchLaunches` with M7's two defaults (the target requires `spawn` at `start`
+  and `run` at `probe`, the seams M7 defaulted to `spawn_guardian` and `subprocess.run`); `DEFAULT_ARGV` is the guarded
+  launch's (M7 `adapters.owner_actions.DEFAULT_ARGV`).
 """
 
 from __future__ import annotations
 
+import subprocess
 import time
 from pathlib import Path
 from uuid import uuid4
@@ -73,7 +86,9 @@ from uuid import uuid4
 from codex_harness.composition import guarded_launch as _guarded_composition
 from codex_harness.coordination.adapters import conductor_launch as _conductor_launch
 from codex_harness.coordination.adapters import guarded_launch as _guarded_launch
+from codex_harness.coordination.adapters import owner_launches as _owner_launches
 from codex_harness.coordination.application import execution_recovery as _execution_recovery
+from codex_harness.coordination.application import local_cycle as _local_cycle
 from codex_harness.coordination.application import operation_finalization, outbox_relay
 from codex_harness.coordination.application.continuation.frames import PolicyFrames
 from codex_harness.coordination.application.continuation.grants import CapacityGrants
@@ -113,6 +128,7 @@ from codex_harness.intake.application.portfolio_lineage import PortfolioLineage
 from codex_harness.kernel.errors import ContractError
 from codex_harness.kernel.ids import SYSTEM_CLOCK, SYSTEM_IDS, utcnow
 from codex_harness.observation.application.health import HealthRecords
+from codex_harness.research.application import scheduling as _scheduling
 from codex_harness.research.application.audit_gate import require_adoption
 from codex_harness.research.application.hooks import HookLifecycle
 from codex_harness.research.application.program_state import ProgramState
@@ -120,10 +136,11 @@ from codex_harness.routing.adapters.organization_source import packaged_organiza
 from codex_harness.routing.adapters.provider_policy import packaged_policy
 from codex_harness.storage.adapters.file_artifacts import FileArtifacts
 
-__all__ = ["ConductorProcesses", "Continuation", "ExecutionRecovery", "Fleet", "FleetRunner", "Harness",
-           "LaneEvidence", "LaunchRefused", "LocalCycle", "Operation", "OwnerActions", "ResearchEvidence", "Workflow",
-           "_prepare", "_publish", "guard", "launch_directory", "main", "observe", "organization", "packaged_policy",
-           "pin_route", "relay", "spawn_guardian", "unavailable"]
+__all__ = ["ConductorProcesses", "Continuation", "DEFAULT_ARGV", "ExecutionRecovery", "Fleet", "FleetRunner", "Harness",
+           "LaneEvidence", "LaunchRefused", "LocalCycle", "Operation", "OwnerActions", "ResearchEvidence",
+           "ResearchLaunches", "Workflow", "_prepare", "_publish", "flush_outbox", "guard", "launch_directory", "main",
+           "observe", "organization", "packaged_policy", "pin_route", "relay", "schedule_research", "spawn_guardian",
+           "unavailable"]
 
 ROUTES = {
     "registry": ("register", "registered", "enqueue", "record_delivery", "delivery", "reconciliation_required",
@@ -414,9 +431,26 @@ observe = _guarded_launch.observe
 launch_directory = _guarded_launch.launch_directory
 
 
+DEFAULT_ARGV = _guarded_launch.DEFAULT_ARGV
+
+
+def ResearchLaunches(root, repository, *, spawn=spawn_guardian, run=subprocess.run, **kwargs):  # noqa: N802 - M7 name
+    return _owner_launches.ResearchLaunches(root, repository, spawn=spawn, run=run, **kwargs)
+
+
 def ConductorProcesses(config, host, **kwargs):  # noqa: N802 - the M7 constructor name
     kwargs.setdefault("spawn", spawn_guardian)
     return _conductor_launch.ConductorProcesses(config, host, **kwargs)
+
+
+def flush_outbox(service, bus, observer=None, correlation_id=None):
+    return _local_cycle.flush_outbox(service.flusher, bus, observer, correlation_id)
+
+
+def schedule_research(service, now=None):
+    from m7_delivery import Releases  # at call time: m7_delivery imports this shim
+    releases = Releases(service.store, service.org)
+    return _scheduling.schedule_research(service, now, outbox=Outbox(), reconcile_audits=releases.reconcile_audits)
 
 
 class _UnavailableMeta(type):
