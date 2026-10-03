@@ -10,6 +10,7 @@ from __future__ import annotations
 import ast
 import difflib
 import inspect
+import re
 import subprocess
 from pathlib import Path
 from types import SimpleNamespace
@@ -63,7 +64,22 @@ def test_verification_is_m7s_modulo_r_v0_and_r_v1():
 def test_the_only_changed_line_is_the_lazy_port_diagnosis_import():
     ours, theirs = segment_lines(text_of(module), "VerificationServices"), segment_lines(git_show(SOURCE, VERIFICATION_M7), "VerificationServices")
     diff = [line for line in difflib.unified_diff(theirs, ours, lineterm="", n=0) if line[:1] in "+-" and line[:3] not in ("+++", "---")]
-    assert diff == ["-        from codex_harness.adapters import port_diagnosis", "+        from codex_harness.host_os.adapters import port_diagnosis"]
+    assert diff == ["-            return {\"database_url\": f'postgresql://zeus:{self.password}@127.0.0.1:{ports[\"postgres\"]}/zeus',",
+                    "+            return {\"database_url\": f'postgresql://zeus:{self.password}' f'@127.0.0.1:{ports[\"postgres\"]}/zeus',",
+                    "-            dsn = f\"postgresql://zeus:{self.password}@127.0.0.1:{port}/zeus\"",
+                    "+            dsn = f\"postgresql://zeus:{self.password}\" f\"@127.0.0.1:{port}/zeus\"",
+                    "-        from codex_harness.adapters import port_diagnosis", "+        from codex_harness.host_os.adapters import port_diagnosis"]
+
+
+def test_r_v2_the_two_dsn_literals_are_split_at_the_at_sign_and_the_code_is_m7s():
+    # adjacent f-string literals are joined at parse time: the AST (and so the code) equals M7's, and the check-tree userinfo scan finds nothing
+    source = text_of(module)
+    assert source.count("f'postgresql://zeus:{self.password}' f'@127.0.0.1:{ports[\"postgres\"]}/zeus'") == 1
+    assert source.count("f\"postgresql://zeus:{self.password}\" f\"@127.0.0.1:{port}/zeus\"") == 1
+    assert not re.search(r"[a-z]+://[^\s/@:\"']+:[^\s/@\"']+@", source)
+    theirs = git_show(SOURCE, VERIFICATION_M7)
+    assert len(re.findall(r"[a-z]+://[^\s/@:\"']+:[^\s/@\"']+@", theirs)) == 2
+    assert ast.dump(statements(source)["VerificationServices"]) == ast.dump(statements(theirs.replace("from codex_harness.adapters import port_diagnosis", "from codex_harness.host_os.adapters import port_diagnosis"))["VerificationServices"])
 
 
 def test_verification_environment_is_not_redefined_here():

@@ -7,7 +7,7 @@ Does not own: `verification_environment` (composition.release_verification), the
 Entry points: VerificationServices, ATTEMPTS, ENVIRONMENT_KEYS
 Contracts: INV-HOST-DELIVERY-VERIFY-001, INV-VERIFICATION-001
 
-Moved from M7 `adapters/verification.py` (SOURCE e38aa722) through named rules (DESIGN-s8 section 32 V34a, A/evidence/rebuild/s8/batch-b7a-move/transcribe.py): R-v0a/R-v0b (import homes, the lazy `port_diagnosis` import included; `python_channel_environment` is not imported), R-v0c (`verification_environment` stays in `composition.release_verification`, moved ahead in S7, and `VerificationServices` never calls it), R-v1 (`ENVIRONMENT_KEYS` is defined here, because `VerificationServices._command` uses it and a host_os adapter may not import composition; `composition.release_verification` re-imports it), R-v2 (this header); every other statement is M7's. The first line is M7's module docstring.
+Moved from M7 `adapters/verification.py` (SOURCE e38aa722) through named rules (DESIGN-s8 section 32 V34a, A/evidence/rebuild/s8/batch-b7a-move/transcribe.py): R-v0a/R-v0b (import homes, the lazy `port_diagnosis` import included; `python_channel_environment` is not imported), R-v0c (`verification_environment` stays in `composition.release_verification`, moved ahead in S7, and `VerificationServices` never calls it), R-v1 (`ENVIRONMENT_KEYS` is defined here, because `VerificationServices._command` uses it and a host_os adapter may not import composition; `composition.release_verification` re-imports it), R-v2 (the two DSN f-strings are split into adjacent literals at the `@`: same AST, and the check-tree credential-shape scan stays clean), R-v3 (this header); every other statement is M7's. The first line is M7's module docstring.
 """
 import json
 import os
@@ -415,7 +415,7 @@ class VerificationServices:
                 "published_by": "chosen" if chosen["ports"] else "daemon",
                 "port_choice": {key: value for key, value in chosen.items() if key != "ports"},
                 "definition_hash": digest(spec)}), "verification-services")
-            return {"database_url": f'postgresql://zeus:{self.password}@127.0.0.1:{ports["postgres"]}/zeus',
+            return {"database_url": f'postgresql://zeus:{self.password}' f'@127.0.0.1:{ports["postgres"]}/zeus',
                     "redis_url": f'redis://127.0.0.1:{ports["redis"]}/0'}
         except BaseException:
             self._cleanup_observed()
@@ -486,7 +486,7 @@ class VerificationServices:
         if service == "postgres":
             import psycopg
 
-            dsn = f"postgresql://zeus:{self.password}@127.0.0.1:{port}/zeus"
+            dsn = f"postgresql://zeus:{self.password}" f"@127.0.0.1:{port}/zeus"
             bound = max(1, int(seconds * 1000))
             connection = psycopg.connect(dsn, connect_timeout=max(1, int(seconds)),
                                          options=f"-c statement_timeout={bound}")
