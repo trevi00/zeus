@@ -1,0 +1,1571 @@
+{
+ "adb_inventory": {
+  "diagnostics": [],
+  "empty": [],
+  "indented": [],
+  "ip_serial": [
+   [
+    "192.168.0.5:5555",
+    "device"
+   ]
+  ],
+  "rows": [
+   [
+    "emulator-5554",
+    "device"
+   ],
+   [
+    "serial",
+    "unauthorized"
+   ]
+  ],
+  "states": [
+   [
+    "a1",
+    "device"
+   ],
+   [
+    "b2",
+    "offline"
+   ],
+   [
+    "c3",
+    "unauthorized"
+   ],
+   [
+    "d4",
+    "authorizing"
+   ],
+   [
+    "e5",
+    "no"
+   ],
+   [
+    "g7",
+    "device"
+   ]
+  ],
+  "tab_separated": [
+   [
+    "R58M1234ABC",
+    "device"
+   ]
+  ],
+  "trailing_state_text": []
+ },
+ "device_probe": {
+  "adb_devices_fail": {
+   "adb_calls": [
+    "devices -l"
+   ],
+   "result": {
+    "ok": {
+     "acceptance_passed": false,
+     "adb_available": true,
+     "agent_device_available": false,
+     "authority": "discovery_only",
+     "aws_cli_available": true,
+     "devices": [],
+     "reason": "ADB device inventory unavailable",
+     "status": "unavailable",
+     "target": "Samsung Android phone and tablet"
+    }
+   }
+  },
+  "adb_no_devices": {
+   "adb_calls": [
+    "devices -l"
+   ],
+   "result": {
+    "ok": {
+     "acceptance_passed": false,
+     "adb_available": true,
+     "agent_device_available": false,
+     "authority": "discovery_only",
+     "aws_cli_available": false,
+     "devices": [],
+     "reason": "Discovery is not a real-device scenario run; app/build/reset and session evidence remain required",
+     "status": "blocked",
+     "target": "Samsung Android phone and tablet"
+    }
+   }
+  },
+  "android_home_adb": {
+   "adb_calls": [
+    "devices -l",
+    "-s R5CT1 shell getprop ro.product.manufacturer",
+    "-s R5CT1 shell getprop ro.product.model",
+    "-s R5CT1 shell getprop ro.build.version.release",
+    "-s R5CT1 shell getprop ro.build.version.oneui",
+    "-s R5CT1 shell getprop ro.kernel.qemu",
+    "-s R5CT1 shell getprop ro.build.characteristics"
+   ],
+   "result": {
+    "ok": {
+     "acceptance_passed": false,
+     "adb_available": true,
+     "agent_device_available": false,
+     "authority": "discovery_only",
+     "aws_cli_available": false,
+     "devices": [
+      {
+       "characteristics": "default",
+       "device_id": "b0a7466e41cb4d1f523a9fc86eeb11aec8c04a478e48bffbb43400a87056b912",
+       "form_factor": "phone",
+       "manufacturer": "samsung",
+       "model": "SM-S918B",
+       "one_ui_version": "60100",
+       "os_version": "14",
+       "physical_candidate": true,
+       "qemu": "0",
+       "state": "device"
+      }
+     ],
+     "reason": "Discovery is not a real-device scenario run; app/build/reset and session evidence remain required",
+     "status": "discovered",
+     "target": "Samsung Android phone and tablet"
+    }
+   }
+  },
+  "android_home_missing_dir": {
+   "adb_calls": [],
+   "result": {
+    "ok": {
+     "acceptance_passed": false,
+     "adb_available": false,
+     "agent_device_available": false,
+     "authority": "discovery_only",
+     "aws_cli_available": false,
+     "devices": [],
+     "reason": "Android platform-tools/adb and authorized Samsung devices required",
+     "status": "blocked",
+     "target": "Samsung Android phone and tablet"
+    }
+   }
+  },
+  "emulator_named_but_qemu_zero": {
+   "adb_calls": [
+    "devices -l",
+    "-s emulator-5556 shell getprop ro.product.manufacturer",
+    "-s emulator-5556 shell getprop ro.product.model",
+    "-s emulator-5556 shell getprop ro.build.version.release",
+    "-s emulator-5556 shell getprop ro.build.version.oneui",
+    "-s emulator-5556 shell getprop ro.kernel.qemu",
+    "-s emulator-5556 shell getprop ro.build.characteristics"
+   ],
+   "result": {
+    "ok": {
+     "acceptance_passed": false,
+     "adb_available": true,
+     "agent_device_available": false,
+     "authority": "discovery_only",
+     "aws_cli_available": false,
+     "devices": [
+      {
+       "characteristics": "default",
+       "device_id": "f8ea82daf485103834d96b7a9171340d7329581503915376a2d6e688dcfab974",
+       "form_factor": "phone",
+       "manufacturer": "samsung",
+       "model": "x",
+       "one_ui_version": "",
+       "os_version": "1",
+       "physical_candidate": false,
+       "qemu": "0",
+       "state": "device"
+      }
+     ],
+     "reason": "Discovery is not a real-device scenario run; app/build/reset and session evidence remain required",
+     "status": "blocked",
+     "target": "Samsung Android phone and tablet"
+    }
+   }
+  },
+  "emulator_only": {
+   "adb_calls": [
+    "devices -l",
+    "-s emulator-5554 shell getprop ro.product.manufacturer",
+    "-s emulator-5554 shell getprop ro.product.model",
+    "-s emulator-5554 shell getprop ro.build.version.release",
+    "-s emulator-5554 shell getprop ro.build.version.oneui",
+    "-s emulator-5554 shell getprop ro.kernel.qemu",
+    "-s emulator-5554 shell getprop ro.build.characteristics"
+   ],
+   "result": {
+    "ok": {
+     "acceptance_passed": false,
+     "adb_available": true,
+     "agent_device_available": false,
+     "authority": "discovery_only",
+     "aws_cli_available": false,
+     "devices": [
+      {
+       "characteristics": "default",
+       "device_id": "85abd7287b60646d62638452f2d7b6140d6ea40bc1d77a2fa1a53c6e321fc22e",
+       "form_factor": "phone",
+       "manufacturer": "samsung",
+       "model": "sdk",
+       "one_ui_version": "",
+       "os_version": "14",
+       "physical_candidate": false,
+       "qemu": "1",
+       "state": "device"
+      }
+     ],
+     "reason": "Discovery is not a real-device scenario run; app/build/reset and session evidence remain required",
+     "status": "blocked",
+     "target": "Samsung Android phone and tablet"
+    }
+   }
+  },
+  "getprop_all_fail": {
+   "adb_calls": [
+    "devices -l",
+    "-s Z0 shell getprop ro.product.manufacturer",
+    "-s Z0 shell getprop ro.product.model",
+    "-s Z0 shell getprop ro.build.version.release",
+    "-s Z0 shell getprop ro.build.version.oneui",
+    "-s Z0 shell getprop ro.kernel.qemu",
+    "-s Z0 shell getprop ro.build.characteristics"
+   ],
+   "result": {
+    "ok": {
+     "acceptance_passed": false,
+     "adb_available": true,
+     "agent_device_available": false,
+     "authority": "discovery_only",
+     "aws_cli_available": false,
+     "devices": [
+      {
+       "characteristics": "unknown",
+       "device_id": "b1dfc27b9a66dca58579cdd6123688622acf7149f172c02cf6b294212f8a25be",
+       "form_factor": "phone",
+       "manufacturer": "unknown",
+       "model": "unknown",
+       "one_ui_version": "unknown",
+       "os_version": "unknown",
+       "physical_candidate": false,
+       "qemu": "unknown",
+       "state": "device"
+      }
+     ],
+     "reason": "Discovery is not a real-device scenario run; app/build/reset and session evidence remain required",
+     "status": "blocked",
+     "target": "Samsung Android phone and tablet"
+    }
+   }
+  },
+  "home_appdata_adb": {
+   "adb_calls": [
+    "devices -l",
+    "-s R5CT1 shell getprop ro.product.manufacturer",
+    "-s R5CT1 shell getprop ro.product.model",
+    "-s R5CT1 shell getprop ro.build.version.release",
+    "-s R5CT1 shell getprop ro.build.version.oneui",
+    "-s R5CT1 shell getprop ro.kernel.qemu",
+    "-s R5CT1 shell getprop ro.build.characteristics"
+   ],
+   "result": {
+    "ok": {
+     "acceptance_passed": false,
+     "adb_available": true,
+     "agent_device_available": false,
+     "authority": "discovery_only",
+     "aws_cli_available": false,
+     "devices": [
+      {
+       "characteristics": "default",
+       "device_id": "b0a7466e41cb4d1f523a9fc86eeb11aec8c04a478e48bffbb43400a87056b912",
+       "form_factor": "phone",
+       "manufacturer": "samsung",
+       "model": "SM-S918B",
+       "one_ui_version": "60100",
+       "os_version": "14",
+       "physical_candidate": true,
+       "qemu": "0",
+       "state": "device"
+      }
+     ],
+     "reason": "Discovery is not a real-device scenario run; app/build/reset and session evidence remain required",
+     "status": "discovered",
+     "target": "Samsung Android phone and tablet"
+    }
+   }
+  },
+  "mixed_with_missing_props_and_offline": {
+   "adb_calls": [
+    "devices -l",
+    "-s P1 shell getprop ro.product.manufacturer",
+    "-s P1 shell getprop ro.product.model",
+    "-s P1 shell getprop ro.build.version.release",
+    "-s P1 shell getprop ro.build.version.oneui",
+    "-s P1 shell getprop ro.kernel.qemu",
+    "-s P1 shell getprop ro.build.characteristics",
+    "-s R5CT1 shell getprop ro.product.manufacturer",
+    "-s R5CT1 shell getprop ro.product.model",
+    "-s R5CT1 shell getprop ro.build.version.release",
+    "-s R5CT1 shell getprop ro.build.version.oneui",
+    "-s R5CT1 shell getprop ro.kernel.qemu",
+    "-s R5CT1 shell getprop ro.build.characteristics",
+    "-s X7 shell getprop ro.product.manufacturer",
+    "-s X7 shell getprop ro.product.model",
+    "-s X7 shell getprop ro.build.version.release",
+    "-s X7 shell getprop ro.build.version.oneui",
+    "-s X7 shell getprop ro.kernel.qemu",
+    "-s X7 shell getprop ro.build.characteristics"
+   ],
+   "result": {
+    "ok": {
+     "acceptance_passed": false,
+     "adb_available": true,
+     "agent_device_available": false,
+     "authority": "discovery_only",
+     "aws_cli_available": false,
+     "devices": [
+      {
+       "characteristics": "default",
+       "device_id": "97086571f822df6942619590a6980a5b7f2f3395c5581c8bec2a5075cf4e23c0",
+       "form_factor": "phone",
+       "manufacturer": "Google",
+       "model": "Pixel 8",
+       "one_ui_version": "",
+       "os_version": "14",
+       "physical_candidate": false,
+       "qemu": "0",
+       "state": "device"
+      },
+      {
+       "device_id": "4de33337ceee3c81bc01a2a434212e6853e33ccbfeef5f5885e947472712bd16",
+       "state": "offline"
+      },
+      {
+       "characteristics": "default",
+       "device_id": "b0a7466e41cb4d1f523a9fc86eeb11aec8c04a478e48bffbb43400a87056b912",
+       "form_factor": "phone",
+       "manufacturer": "samsung",
+       "model": "SM-S918B",
+       "one_ui_version": "60100",
+       "os_version": "14",
+       "physical_candidate": true,
+       "qemu": "0",
+       "state": "device"
+      },
+      {
+       "characteristics": "default",
+       "device_id": "fb4d83266fc51826780f5dbf32b7df83689de413dfc3404699e576942ca39c61",
+       "form_factor": "phone",
+       "manufacturer": "samsung",
+       "model": "SM-A",
+       "one_ui_version": "unknown",
+       "os_version": "13",
+       "physical_candidate": true,
+       "qemu": "0",
+       "state": "device"
+      }
+     ],
+     "reason": "Discovery is not a real-device scenario run; app/build/reset and session evidence remain required",
+     "status": "discovered",
+     "target": "Samsung Android phone and tablet"
+    }
+   }
+  },
+  "no_adb_with_aws_and_agent_device": {
+   "adb_calls": [],
+   "result": {
+    "ok": {
+     "acceptance_passed": false,
+     "adb_available": false,
+     "agent_device_available": true,
+     "authority": "discovery_only",
+     "aws_cli_available": true,
+     "devices": [],
+     "reason": "Android platform-tools/adb and authorized Samsung devices required",
+     "status": "blocked",
+     "target": "Samsung Android phone and tablet"
+    }
+   }
+  },
+  "no_tools": {
+   "adb_calls": [],
+   "result": {
+    "ok": {
+     "acceptance_passed": false,
+     "adb_available": false,
+     "agent_device_available": false,
+     "authority": "discovery_only",
+     "aws_cli_available": false,
+     "devices": [],
+     "reason": "Android platform-tools/adb and authorized Samsung devices required",
+     "status": "blocked",
+     "target": "Samsung Android phone and tablet"
+    }
+   }
+  },
+  "not_samsung": {
+   "adb_calls": [
+    "devices -l",
+    "-s P1 shell getprop ro.product.manufacturer",
+    "-s P1 shell getprop ro.product.model",
+    "-s P1 shell getprop ro.build.version.release",
+    "-s P1 shell getprop ro.build.version.oneui",
+    "-s P1 shell getprop ro.kernel.qemu",
+    "-s P1 shell getprop ro.build.characteristics"
+   ],
+   "result": {
+    "ok": {
+     "acceptance_passed": false,
+     "adb_available": true,
+     "agent_device_available": false,
+     "authority": "discovery_only",
+     "aws_cli_available": false,
+     "devices": [
+      {
+       "characteristics": "default",
+       "device_id": "97086571f822df6942619590a6980a5b7f2f3395c5581c8bec2a5075cf4e23c0",
+       "form_factor": "phone",
+       "manufacturer": "Google",
+       "model": "Pixel 8",
+       "one_ui_version": "",
+       "os_version": "14",
+       "physical_candidate": false,
+       "qemu": "0",
+       "state": "device"
+      }
+     ],
+     "reason": "Discovery is not a real-device scenario run; app/build/reset and session evidence remain required",
+     "status": "blocked",
+     "target": "Samsung Android phone and tablet"
+    }
+   }
+  },
+  "offline_and_unauthorized": {
+   "adb_calls": [
+    "devices -l"
+   ],
+   "result": {
+    "ok": {
+     "acceptance_passed": false,
+     "adb_available": true,
+     "agent_device_available": false,
+     "authority": "discovery_only",
+     "aws_cli_available": false,
+     "devices": [
+      {
+       "device_id": "4de33337ceee3c81bc01a2a434212e6853e33ccbfeef5f5885e947472712bd16",
+       "state": "offline"
+      },
+      {
+       "device_id": "e10a7a0ea40ff505a21a2dbac542d45fc8a947403223b80aa1973e6c4fb8f228",
+       "state": "unauthorized"
+      },
+      {
+       "device_id": "973ce3432355cdc6c2318cd864fafc0bbf390c8a2e44c08f0421b01347e993be",
+       "state": "authorizing"
+      }
+     ],
+     "reason": "Discovery is not a real-device scenario run; app/build/reset and session evidence remain required",
+     "status": "blocked",
+     "target": "Samsung Android phone and tablet"
+    }
+   }
+  },
+  "one_samsung_phone": {
+   "adb_calls": [
+    "devices -l",
+    "-s R5CT1 shell getprop ro.product.manufacturer",
+    "-s R5CT1 shell getprop ro.product.model",
+    "-s R5CT1 shell getprop ro.build.version.release",
+    "-s R5CT1 shell getprop ro.build.version.oneui",
+    "-s R5CT1 shell getprop ro.kernel.qemu",
+    "-s R5CT1 shell getprop ro.build.characteristics"
+   ],
+   "result": {
+    "ok": {
+     "acceptance_passed": false,
+     "adb_available": true,
+     "agent_device_available": true,
+     "authority": "discovery_only",
+     "aws_cli_available": false,
+     "devices": [
+      {
+       "characteristics": "default",
+       "device_id": "b0a7466e41cb4d1f523a9fc86eeb11aec8c04a478e48bffbb43400a87056b912",
+       "form_factor": "phone",
+       "manufacturer": "samsung",
+       "model": "SM-S918B",
+       "one_ui_version": "60100",
+       "os_version": "14",
+       "physical_candidate": true,
+       "qemu": "0",
+       "state": "device"
+      }
+     ],
+     "reason": "Discovery is not a real-device scenario run; app/build/reset and session evidence remain required",
+     "status": "discovered",
+     "target": "Samsung Android phone and tablet"
+    }
+   }
+  },
+  "samsung_tablet_empty_qemu": {
+   "adb_calls": [
+    "devices -l",
+    "-s T9 shell getprop ro.product.manufacturer",
+    "-s T9 shell getprop ro.product.model",
+    "-s T9 shell getprop ro.build.version.release",
+    "-s T9 shell getprop ro.build.version.oneui",
+    "-s T9 shell getprop ro.kernel.qemu",
+    "-s T9 shell getprop ro.build.characteristics"
+   ],
+   "result": {
+    "ok": {
+     "acceptance_passed": false,
+     "adb_available": true,
+     "agent_device_available": false,
+     "authority": "discovery_only",
+     "aws_cli_available": false,
+     "devices": [
+      {
+       "characteristics": "tablet,nosdcard",
+       "device_id": "ab94b0c7ea29b65f2278bae1b4733449dc79690ad3189fc389ac9b26cd195a3e",
+       "form_factor": "tablet",
+       "manufacturer": "Samsung",
+       "model": "SM-X710",
+       "one_ui_version": "",
+       "os_version": "14",
+       "physical_candidate": true,
+       "qemu": "",
+       "state": "device"
+      }
+     ],
+     "reason": "Discovery is not a real-device scenario run; app/build/reset and session evidence remain required",
+     "status": "discovered",
+     "target": "Samsung Android phone and tablet"
+    }
+   }
+  },
+  "sdk_root_adb": {
+   "adb_calls": [
+    "devices -l",
+    "-s R5CT1 shell getprop ro.product.manufacturer",
+    "-s R5CT1 shell getprop ro.product.model",
+    "-s R5CT1 shell getprop ro.build.version.release",
+    "-s R5CT1 shell getprop ro.build.version.oneui",
+    "-s R5CT1 shell getprop ro.kernel.qemu",
+    "-s R5CT1 shell getprop ro.build.characteristics"
+   ],
+   "result": {
+    "ok": {
+     "acceptance_passed": false,
+     "adb_available": true,
+     "agent_device_available": false,
+     "authority": "discovery_only",
+     "aws_cli_available": false,
+     "devices": [
+      {
+       "characteristics": "default",
+       "device_id": "b0a7466e41cb4d1f523a9fc86eeb11aec8c04a478e48bffbb43400a87056b912",
+       "form_factor": "phone",
+       "manufacturer": "samsung",
+       "model": "SM-S918B",
+       "one_ui_version": "60100",
+       "os_version": "14",
+       "physical_candidate": true,
+       "qemu": "0",
+       "state": "device"
+      }
+     ],
+     "reason": "Discovery is not a real-device scenario run; app/build/reset and session evidence remain required",
+     "status": "discovered",
+     "target": "Samsung Android phone and tablet"
+    }
+   }
+  }
+ },
+ "load_json": {
+  "absent.json": {
+   "error": "FileNotFoundError",
+   "message": "[Errno 2] No such file or directory: '<ROOT>/repo/docs/absent.json'"
+  },
+  "bom.json": {
+   "ok": {
+    "design": {
+     "components": "components",
+     "icons": "icons",
+     "required_stories": [
+      "story"
+     ],
+     "tokens": "tokens"
+    },
+    "devices": [
+     {
+      "conditions": [
+       "portrait"
+      ],
+      "form_factor": "phone",
+      "id": "DEV.a",
+      "manufacturer": "samsung",
+      "physical_required": true,
+      "platform": "android"
+     }
+    ],
+    "id": "spec.alpha",
+    "intent": "Review the scenario intent",
+    "personas": [
+     "owner"
+    ],
+    "requirements": [
+     {
+      "id": "REQ.a",
+      "risk": "normal",
+      "statement": "The owner reviews the intent",
+      "status": "active"
+     }
+    ],
+    "reset_contract": "reset between runs",
+    "scenarios": [
+     {
+      "bindings": [],
+      "device_profiles": [
+       "DEV.a"
+      ],
+      "given": [
+       "a draft"
+      ],
+      "id": "SCN.intent-review",
+      "requirement_ids": [
+       "REQ.a"
+      ],
+      "status": "active",
+      "then": [
+       "the intent is shown"
+      ],
+      "title": "Intent review",
+      "when": [
+       "the owner reads it"
+      ]
+     }
+    ],
+    "schema": "zeus.sdd.v1",
+    "target": {
+     "alpha_url": null,
+     "app_id": null,
+     "build_hash": null,
+     "kind": "unconfigured"
+    },
+    "title": "Bom"
+   }
+  },
+  "dupkey.json": {
+   "error": "ContractError",
+   "message": "Duplicate JSON key: a"
+  },
+  "empty.json": {
+   "error": "JSONDecodeError",
+   "message": "Expecting value: line 1 column 1 (char 0)"
+  },
+  "exact.json": {
+   "ok": {}
+  },
+  "huge.json": {
+   "error": "ContractError",
+   "message": "SDD input exceeds 1 MiB budget"
+  },
+  "latin.json": {
+   "error": "UnicodeDecodeError",
+   "message": "'utf-8' codec can't decode byte 0xe9 in position 7: invalid continuation byte"
+  },
+  "nan.json": {
+   "ok": {
+    "list": [
+     "float:inf",
+     "float:-inf"
+    ],
+    "value": "float:nan"
+   }
+  },
+  "str_path": {
+   "ok": {
+    "design": {
+     "components": "components",
+     "icons": "icons",
+     "required_stories": [
+      "story"
+     ],
+     "tokens": "tokens"
+    },
+    "devices": [
+     {
+      "conditions": [
+       "portrait"
+      ],
+      "form_factor": "phone",
+      "id": "DEV.a",
+      "manufacturer": "samsung",
+      "physical_required": true,
+      "platform": "android"
+     }
+    ],
+    "id": "spec.alpha",
+    "intent": "Review the scenario intent",
+    "personas": [
+     "owner"
+    ],
+    "requirements": [
+     {
+      "id": "REQ.a",
+      "risk": "normal",
+      "statement": "The owner reviews the intent",
+      "status": "active"
+     }
+    ],
+    "reset_contract": "reset between runs",
+    "scenarios": [
+     {
+      "bindings": [],
+      "device_profiles": [
+       "DEV.a"
+      ],
+      "given": [
+       "a draft"
+      ],
+      "id": "SCN.intent-review",
+      "requirement_ids": [
+       "REQ.a"
+      ],
+      "status": "active",
+      "then": [
+       "the intent is shown"
+      ],
+      "title": "Intent review",
+      "when": [
+       "the owner reads it"
+      ]
+     }
+    ],
+    "schema": "zeus.sdd.v1",
+    "target": {
+     "alpha_url": null,
+     "app_id": null,
+     "build_hash": null,
+     "kind": "unconfigured"
+    },
+    "title": "Bom"
+   }
+  },
+  "valid_title": {
+   "ok": "Draft"
+  }
+ },
+ "parse_json": {
+  "bad": {
+   "error": "JSONDecodeError",
+   "message": "Expecting property name enclosed in double quotes: line 1 column 2 (char 1)"
+  },
+  "dup": {
+   "error": "ContractError",
+   "message": "Duplicate JSON key: a"
+  },
+  "list_dup": {
+   "error": "ContractError",
+   "message": "Duplicate JSON key: k"
+  },
+  "nan": {
+   "ok": [
+    "float:nan"
+   ]
+  },
+  "nested_dup": {
+   "error": "ContractError",
+   "message": "Duplicate JSON key: b"
+  },
+  "ok": {
+   "ok": {
+    "a": [
+     1,
+     2,
+     {
+      "b": null
+     }
+    ]
+   }
+  },
+  "scalar": {
+   "ok": 3
+  }
+ },
+ "read_spec_draft": {
+  "absolute": {
+   "ok": [
+    {
+     "design": {
+      "components": "components",
+      "icons": "icons",
+      "required_stories": [
+       "story"
+      ],
+      "tokens": "tokens"
+     },
+     "devices": [
+      {
+       "conditions": [
+        "portrait"
+       ],
+       "form_factor": "phone",
+       "id": "DEV.a",
+       "manufacturer": "samsung",
+       "physical_required": true,
+       "platform": "android"
+      }
+     ],
+     "id": "spec.alpha",
+     "intent": "Review the scenario intent",
+     "personas": [
+      "owner"
+     ],
+     "requirements": [
+      {
+       "id": "REQ.a",
+       "risk": "normal",
+       "statement": "The owner reviews the intent",
+       "status": "active"
+      }
+     ],
+     "reset_contract": "reset between runs",
+     "scenarios": [
+      {
+       "bindings": [],
+       "device_profiles": [
+        "DEV.a"
+       ],
+       "given": [
+        "a draft"
+       ],
+       "id": "SCN.intent-review",
+       "requirement_ids": [
+        "REQ.a"
+       ],
+       "status": "active",
+       "then": [
+        "the intent is shown"
+       ],
+       "title": "Intent review",
+       "when": [
+        "the owner reads it"
+       ]
+      }
+     ],
+     "schema": "zeus.sdd.v1",
+     "target": {
+      "alpha_url": null,
+      "app_id": null,
+      "build_hash": null,
+      "kind": "unconfigured"
+     },
+     "title": "Draft"
+    },
+    {
+     "mode": "working_tree_draft",
+     "path": "<ROOT>/repo/docs/spec.json",
+     "repository": "<ROOT>/repo",
+     "revision": null
+    }
+   ]
+  },
+  "duplicate_keys": {
+   "error": "ContractError",
+   "message": "Duplicate JSON key: id"
+  },
+  "invalid_spec": {
+   "error": "ContractError",
+   "message": "Unsupported SDD schema"
+  },
+  "missing": {
+   "error": "FileNotFoundError",
+   "message": "[Errno 2] No such file or directory: '<ROOT>/repo/nowhere.json'"
+  },
+  "none_revision": {
+   "ok": [
+    {
+     "design": {
+      "components": "components",
+      "icons": "icons",
+      "required_stories": [
+       "story"
+      ],
+      "tokens": "tokens"
+     },
+     "devices": [
+      {
+       "conditions": [
+        "portrait"
+       ],
+       "form_factor": "phone",
+       "id": "DEV.a",
+       "manufacturer": "samsung",
+       "physical_required": true,
+       "platform": "android"
+      }
+     ],
+     "id": "spec.alpha",
+     "intent": "Review the scenario intent",
+     "personas": [
+      "owner"
+     ],
+     "requirements": [
+      {
+       "id": "REQ.a",
+       "risk": "normal",
+       "statement": "The owner reviews the intent",
+       "status": "active"
+      }
+     ],
+     "reset_contract": "reset between runs",
+     "scenarios": [
+      {
+       "bindings": [],
+       "device_profiles": [
+        "DEV.a"
+       ],
+       "given": [
+        "a draft"
+       ],
+       "id": "SCN.intent-review",
+       "requirement_ids": [
+        "REQ.a"
+       ],
+       "status": "active",
+       "then": [
+        "the intent is shown"
+       ],
+       "title": "Intent review",
+       "when": [
+        "the owner reads it"
+       ]
+      }
+     ],
+     "schema": "zeus.sdd.v1",
+     "target": {
+      "alpha_url": null,
+      "app_id": null,
+      "build_hash": null,
+      "kind": "unconfigured"
+     },
+     "title": "Draft"
+    },
+    {
+     "mode": "working_tree_draft",
+     "path": "<ROOT>/repo/docs/spec.json",
+     "repository": "<ROOT>/repo",
+     "revision": null
+    }
+   ]
+  },
+  "outside_the_repository": {
+   "ok": [
+    {
+     "design": {
+      "components": "components",
+      "icons": "icons",
+      "required_stories": [
+       "story"
+      ],
+      "tokens": "tokens"
+     },
+     "devices": [
+      {
+       "conditions": [
+        "portrait"
+       ],
+       "form_factor": "phone",
+       "id": "DEV.a",
+       "manufacturer": "samsung",
+       "physical_required": true,
+       "platform": "android"
+      }
+     ],
+     "id": "spec.alpha",
+     "intent": "Review the scenario intent",
+     "personas": [
+      "owner"
+     ],
+     "requirements": [
+      {
+       "id": "REQ.a",
+       "risk": "normal",
+       "statement": "The owner reviews the intent",
+       "status": "active"
+      }
+     ],
+     "reset_contract": "reset between runs",
+     "scenarios": [
+      {
+       "bindings": [],
+       "device_profiles": [
+        "DEV.a"
+       ],
+       "given": [
+        "a draft"
+       ],
+       "id": "SCN.intent-review",
+       "requirement_ids": [
+        "REQ.a"
+       ],
+       "status": "active",
+       "then": [
+        "the intent is shown"
+       ],
+       "title": "Intent review",
+       "when": [
+        "the owner reads it"
+       ]
+      }
+     ],
+     "schema": "zeus.sdd.v1",
+     "target": {
+      "alpha_url": null,
+      "app_id": null,
+      "build_hash": null,
+      "kind": "unconfigured"
+     },
+     "title": "Outside"
+    },
+    {
+     "mode": "working_tree_draft",
+     "path": "<ROOT>/outside.json",
+     "repository": "<ROOT>/repo",
+     "revision": null
+    }
+   ]
+  },
+  "oversize_file": {
+   "error": "ContractError",
+   "message": "SDD input exceeds 1 MiB budget"
+  },
+  "relative": {
+   "ok": [
+    {
+     "design": {
+      "components": "components",
+      "icons": "icons",
+      "required_stories": [
+       "story"
+      ],
+      "tokens": "tokens"
+     },
+     "devices": [
+      {
+       "conditions": [
+        "portrait"
+       ],
+       "form_factor": "phone",
+       "id": "DEV.a",
+       "manufacturer": "samsung",
+       "physical_required": true,
+       "platform": "android"
+      }
+     ],
+     "id": "spec.alpha",
+     "intent": "Review the scenario intent",
+     "personas": [
+      "owner"
+     ],
+     "requirements": [
+      {
+       "id": "REQ.a",
+       "risk": "normal",
+       "statement": "The owner reviews the intent",
+       "status": "active"
+      }
+     ],
+     "reset_contract": "reset between runs",
+     "scenarios": [
+      {
+       "bindings": [],
+       "device_profiles": [
+        "DEV.a"
+       ],
+       "given": [
+        "a draft"
+       ],
+       "id": "SCN.intent-review",
+       "requirement_ids": [
+        "REQ.a"
+       ],
+       "status": "active",
+       "then": [
+        "the intent is shown"
+       ],
+       "title": "Intent review",
+       "when": [
+        "the owner reads it"
+       ]
+      }
+     ],
+     "schema": "zeus.sdd.v1",
+     "target": {
+      "alpha_url": null,
+      "app_id": null,
+      "build_hash": null,
+      "kind": "unconfigured"
+     },
+     "title": "Draft"
+    },
+    {
+     "mode": "working_tree_draft",
+     "path": "<ROOT>/repo/docs/spec.json",
+     "repository": "<ROOT>/repo",
+     "revision": null
+    }
+   ]
+  },
+  "str_empty_revision": {
+   "ok": [
+    {
+     "design": {
+      "components": "components",
+      "icons": "icons",
+      "required_stories": [
+       "story"
+      ],
+      "tokens": "tokens"
+     },
+     "devices": [
+      {
+       "conditions": [
+        "portrait"
+       ],
+       "form_factor": "phone",
+       "id": "DEV.a",
+       "manufacturer": "samsung",
+       "physical_required": true,
+       "platform": "android"
+      }
+     ],
+     "id": "spec.alpha",
+     "intent": "Review the scenario intent",
+     "personas": [
+      "owner"
+     ],
+     "requirements": [
+      {
+       "id": "REQ.a",
+       "risk": "normal",
+       "statement": "The owner reviews the intent",
+       "status": "active"
+      }
+     ],
+     "reset_contract": "reset between runs",
+     "scenarios": [
+      {
+       "bindings": [],
+       "device_profiles": [
+        "DEV.a"
+       ],
+       "given": [
+        "a draft"
+       ],
+       "id": "SCN.intent-review",
+       "requirement_ids": [
+        "REQ.a"
+       ],
+       "status": "active",
+       "then": [
+        "the intent is shown"
+       ],
+       "title": "Intent review",
+       "when": [
+        "the owner reads it"
+       ]
+      }
+     ],
+     "schema": "zeus.sdd.v1",
+     "target": {
+      "alpha_url": null,
+      "app_id": null,
+      "build_hash": null,
+      "kind": "unconfigured"
+     },
+     "title": "Draft"
+    },
+    {
+     "mode": "working_tree_draft",
+     "path": "<ROOT>/repo/docs/spec.json",
+     "repository": "<ROOT>/repo",
+     "revision": null
+    }
+   ]
+  }
+ },
+ "read_spec_git": {
+  "abbreviated": {
+   "outcome": null,
+   "provenance": {
+    "mode": "git",
+    "path": "docs/spec.json",
+    "repository": "<ROOT>/repo",
+    "revision": "dfd38db71a87d9b39aa5ca1c59e387856cb91599"
+   },
+   "title": "First"
+  },
+  "branch": {
+   "outcome": null,
+   "provenance": {
+    "mode": "git",
+    "path": "docs/spec.json",
+    "repository": "<ROOT>/repo",
+    "revision": "f02b757d6bc6b464d0b92ad453aefeaf9da971fa"
+   },
+   "title": "Second"
+  },
+  "duplicate_keys_blob": {
+   "error": "ContractError",
+   "message": "Duplicate JSON key: id"
+  },
+  "first_sha": {
+   "outcome": null,
+   "provenance": {
+    "mode": "git",
+    "path": "docs/spec.json",
+    "repository": "<ROOT>/repo",
+    "revision": "dfd38db71a87d9b39aa5ca1c59e387856cb91599"
+   },
+   "title": "First"
+  },
+  "head": {
+   "outcome": null,
+   "provenance": {
+    "mode": "git",
+    "path": "docs/spec.json",
+    "repository": "<ROOT>/repo",
+    "revision": "f02b757d6bc6b464d0b92ad453aefeaf9da971fa"
+   },
+   "title": "Second"
+  },
+  "invalid_spec_blob": {
+   "error": "ContractError",
+   "message": "Unsupported SDD schema"
+  },
+  "missing_in_pinned_tree": {
+   "error": "ContractError",
+   "message": "Spec does not exist in pinned Git tree"
+  },
+  "missing_path": {
+   "error": "ContractError",
+   "message": "Spec does not exist in pinned Git tree"
+  },
+  "outside_the_repository": {
+   "error": "ValueError",
+   "message": "'<ROOT>/outside.json' is not in the subpath of '<ROOT>/repo'"
+  },
+  "oversize_blob": {
+   "error": "ContractError",
+   "message": "Spec exceeds size budget"
+  },
+  "pyproject_not_a_spec": {
+   "error": "JSONDecodeError",
+   "message": "Expecting value: line 1 column 2 (char 1)"
+  },
+  "relative_path": {
+   "ok": [
+    {
+     "design": {
+      "components": "components",
+      "icons": "icons",
+      "required_stories": [
+       "story"
+      ],
+      "tokens": "tokens"
+     },
+     "devices": [
+      {
+       "conditions": [
+        "portrait"
+       ],
+       "form_factor": "phone",
+       "id": "DEV.a",
+       "manufacturer": "samsung",
+       "physical_required": true,
+       "platform": "android"
+      }
+     ],
+     "id": "spec.alpha",
+     "intent": "Review the scenario intent",
+     "personas": [
+      "owner"
+     ],
+     "requirements": [
+      {
+       "id": "REQ.a",
+       "risk": "normal",
+       "statement": "The owner reviews the intent",
+       "status": "active"
+      }
+     ],
+     "reset_contract": "reset between runs",
+     "scenarios": [
+      {
+       "bindings": [],
+       "device_profiles": [
+        "DEV.a"
+       ],
+       "given": [
+        "a draft"
+       ],
+       "id": "SCN.intent-review",
+       "requirement_ids": [
+        "REQ.a"
+       ],
+       "status": "active",
+       "then": [
+        "the intent is shown"
+       ],
+       "title": "Intent review",
+       "when": [
+        "the owner reads it"
+       ]
+      }
+     ],
+     "schema": "zeus.sdd.v1",
+     "target": {
+      "alpha_url": null,
+      "app_id": null,
+      "build_hash": null,
+      "kind": "unconfigured"
+     },
+     "title": "First"
+    },
+    {
+     "mode": "git",
+     "path": "docs/spec.json",
+     "repository": "<ROOT>/repo",
+     "revision": "dfd38db71a87d9b39aa5ca1c59e387856cb91599"
+    }
+   ]
+  },
+  "revision_as_option": {
+   "error": "ContractError",
+   "message": "Spec Git revision unavailable"
+  },
+  "revision_is_a_tree": {
+   "error": "ContractError",
+   "message": "Spec Git revision unavailable"
+  },
+  "second_sha": {
+   "outcome": null,
+   "provenance": {
+    "mode": "git",
+    "path": "docs/spec.json",
+    "repository": "<ROOT>/repo",
+    "revision": "f02b757d6bc6b464d0b92ad453aefeaf9da971fa"
+   },
+   "title": "Second"
+  },
+  "tag": {
+   "outcome": null,
+   "provenance": {
+    "mode": "git",
+    "path": "docs/spec.json",
+    "repository": "<ROOT>/repo",
+    "revision": "dfd38db71a87d9b39aa5ca1c59e387856cb91599"
+   },
+   "title": "First"
+  },
+  "tag_peeled": {
+   "outcome": null,
+   "provenance": {
+    "mode": "git",
+    "path": "docs/spec.json",
+    "repository": "<ROOT>/repo",
+    "revision": "dfd38db71a87d9b39aa5ca1c59e387856cb91599"
+   },
+   "title": "First"
+  },
+  "unknown_revision": {
+   "error": "ContractError",
+   "message": "Spec Git revision unavailable"
+  }
+ },
+ "render_review": {
+  "ampersand_in_data": false,
+  "angle_brackets_in_data": false,
+  "data_report_keys": [
+   "acceptance_passed",
+   "denominators",
+   "human_authority_configured",
+   "model_transfer",
+   "next_action",
+   "observation_count",
+   "release_authorized",
+   "schema",
+   "spec_hash",
+   "stages"
+  ],
+  "data_title": "</script><script>alert(\"injected\")</script> & <b>",
+  "empty_report_is_default": true,
+  "invalid_spec": {
+   "error": "ContractError",
+   "message": "Unsupported SDD schema"
+  },
+  "not_a_dict": {
+   "error": "ContractError",
+   "message": "Invalid SDD spec fields"
+  },
+  "page_bytes": 14773,
+  "page_sha": "b07a488bb8a7619c01bfbf2d3e73b5347b55077d3052a33d01f5c55f5e5ddb46",
+  "placeholder_left": false,
+  "plain": "44929a3ce809858ce73db00f74823400b9ddcd81ac20a634277945808fa812ba",
+  "title_escaped": true,
+  "with_report": "b5a9c7c92f322fe888a0dd081292969fdba9bf4dce9608a5f3090b75461ab9cf"
+ },
+ "replay_source": {
+  "financial": {
+   "error": "ContractError",
+   "message": "Financial replay requires reviewed backend reconciliation and payment environment integration"
+  },
+  "inline_credential": {
+   "error": "ContractError",
+   "message": "Use environment parameter references for input, never inline credentials"
+  },
+  "missing_oracle_binding": {
+   "error": "ContractError",
+   "message": "Every oracle requires an explicit assertion binding"
+  },
+  "multi_scenario": {
+   "error": "ContractError",
+   "message": "Multi-scenario replay requires a verified per-scenario reset integration"
+  },
+  "no_active_scenario": {
+   "error": "ContractError",
+   "message": "No active scenarios"
+  },
+  "no_app_id": {
+   "error": "ContractError",
+   "message": "Concrete Android app and build hash required for replay export"
+  },
+  "no_bindings": {
+   "error": "ContractError",
+   "message": "Scenario has no observed selector bindings: SCN.intent-review"
+  },
+  "quoted_text": {
+   "parses": true,
+   "sha": "39069b53d98b0c58220ede95d3f3a404b11e9fc608fe2f3876e0adb57b41092a"
+  },
+  "tap_and_assert": {
+   "again_equal": true,
+   "has_oracles_table": true,
+   "head": [
+    "\"\"\"Generated Appium replay; unexecuted and not human acceptance evidence.",
+    "Review the spec oracles and satisfy its reset contract before execution.",
+    "Spec hash: 3dc2b3e8ab681a9df81bdbb34860d92930b679b82ff7444af06ca3159317c1e3"
+   ],
+   "lines": 51,
+   "parses": true,
+   "sha": "96a52a088c061c1cb9a8fe6ab9b8a32acdca7be7328957e17d44042dc2c8c947",
+   "subtests": 1
+  },
+  "unconfigured_target": {
+   "error": "ContractError",
+   "message": "Concrete Android app and build hash required for replay export"
+  },
+  "unknown_target_kind": {
+   "error": "ContractError",
+   "message": "Unsupported target kind"
+  },
+  "with_env_input": {
+   "again_equal": true,
+   "has_oracles_table": true,
+   "head": [
+    "\"\"\"Generated Appium replay; unexecuted and not human acceptance evidence.",
+    "Review the spec oracles and satisfy its reset contract before execution.",
+    "Spec hash: e62183cd8e760a907f3de8519020ef92017e41d44b45253d73388e77fbcd603b"
+   ],
+   "lines": 54,
+   "parses": true,
+   "sha": "1c5c1b54c1a9a0af95e802255b57183898dd880b0817e81096b66042c2b92bbe",
+   "subtests": 1
+  }
+ },
+ "revisions_distinct": true,
+ "write_export": {
+  "again_equal": {
+   "ok": {
+    "bytes": 6,
+    "content_hash": "4894cb6fbd92c26988238092e38e7535185e54a4777e4ff9ebc920718be06831",
+    "path": "<ROOT>/exports/nested/review.html"
+   }
+  },
+  "content_kept": "검토",
+  "create": {
+   "ok": {
+    "bytes": 6,
+    "content_hash": "4894cb6fbd92c26988238092e38e7535185e54a4777e4ff9ebc920718be06831",
+    "path": "<ROOT>/exports/nested/review.html"
+   }
+  },
+  "different_content": {
+   "error": "ContractError",
+   "message": "Export exists with different content; choose a new path"
+  },
+  "directory_listing": [
+   "draft.py.review",
+   "empty.html",
+   "nested/review.html"
+  ],
+  "empty_body": {
+   "ok": {
+    "bytes": 0,
+    "content_hash": "12ae32cb1ec02d01eda3581b127c1fee3b0dc53572ed6baf239721a03d82e126",
+    "path": "<ROOT>/exports/empty.html"
+   }
+  },
+  "parent_is_a_file": {
+   "error": "FileExistsError",
+   "message": "[Errno 17] File exists: '<ROOT>/exports/nested/review.html'"
+  },
+  "relative_path": {
+   "ok": {
+    "bytes": 8,
+    "content_hash": "4a7df1f824f9dc1b908531fa52055ce6e93d43847ea46f848593e180f2c5b80e",
+    "path": "<ROOT>/repo/exports/rel.html"
+   }
+  },
+  "replay_again": {
+   "ok": {
+    "bytes": 9,
+    "content_hash": "45e1d58051c9addfeb2f55bb191107aaba892fec76191fc34cc026efb2950908",
+    "path": "<ROOT>/exports/draft.py.review"
+   }
+  },
+  "replay_create": {
+   "ok": {
+    "bytes": 9,
+    "content_hash": "45e1d58051c9addfeb2f55bb191107aaba892fec76191fc34cc026efb2950908",
+    "path": "<ROOT>/exports/draft.py.review"
+   }
+  },
+  "replay_different": {
+   "error": "ContractError",
+   "message": "Export exists with different content; choose a new path"
+  },
+  "replay_html_suffix": {
+   "error": "ContractError",
+   "message": "Review requires .html; replay drafts require .py.review to avoid automatic test collection"
+  },
+  "replay_wrong_suffix": {
+   "error": "ContractError",
+   "message": "Review requires .html; replay drafts require .py.review to avoid automatic test collection"
+  },
+  "review_py_review_suffix": {
+   "error": "ContractError",
+   "message": "Review requires .html; replay drafts require .py.review to avoid automatic test collection"
+  },
+  "review_wrong_suffix": {
+   "error": "ContractError",
+   "message": "Review requires .html; replay drafts require .py.review to avoid automatic test collection"
+  },
+  "test_generated_absent": true,
+  "unknown_kind": {
+   "error": "ContractError",
+   "message": "Unknown SDD export kind"
+  }
+ }
+}

@@ -1,0 +1,8 @@
+{
+ "family": "review.sdd_adapter",
+ "description": "S8 batch B8 (DESIGN-s8 section 31/32; R-sd1 injects root and run_process into read_spec, R-sd2 run_process into device_probe) M7 adapters/sdd.py characterized before the move into review: load_json/parse_json (valid, BOM, NaN and Infinity, duplicate keys, oversize and exact-limit, bad encoding, missing), read_spec in working-tree-draft mode (absolute and relative, outside the repository, invalid, oversize) and in git mode over a fixture repository (pinned sha, tag, HEAD, branch, abbreviated, unknown, tree and option-shaped revisions, missing path, oversize blob), write_export (idempotent, different content refused, suffix rules per kind), render_review (script-escape, report), replay_source (every refusal, the export, quoting), adb_inventory and device_probe over scripted stand-in adb/aws/agent-device on PATH, ANDROID_HOME, ANDROID_SDK_ROOT and HOME (none, failing, no devices, one Samsung phone, tablet, emulator, offline, mixed, failing getprop); real Git and real process spawns, no device",
+ "reference_driver": "drivers/reference/s8_sdd_adapter.py",
+ "target_driver": "drivers/target/s8_sdd_adapter.py",
+ "golden": "goldens/reference/review.sdd_adapter.json",
+ "slice": "S8"
+}
