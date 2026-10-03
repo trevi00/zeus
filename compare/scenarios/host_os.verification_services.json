@@ -1,0 +1,8 @@
+{
+ "family": "host_os.verification_services",
+ "description": "S8 batch B7a (DESIGN-s8 section 32 V34a; R-v1 moves ENVIRONMENT_KEYS into the module) M7 adapters/verification.py characterized before the move into host_os, mirroring tests/test_verification.py: the constructor's project names and refusals, _command (project, filtered scripted environment, timeout floor, refusal), the compose/manifest definition and the receipt over a scripted docker (compose up/down/ps/port/exec) put where the module looks run_process up, every endpoint refusal, every cleanup failure, collect_stale over a matrix of stacks (finished and live, changed definition, mismatched project, invalid and symlinked manifests, failing down), the readiness gate over real loopback sockets (accepts and cannot answer with real psycopg and redis refused, never accepts, waits for the answer, not this project's service, late answers, a silent service, the container identity, the exception chain, the receipt), the attempt machinery (reserved, running, reclaimed and released; held resources and their confirmation; the process-wide limit; a hanging close; late registration; unknown state) and the failed-readiness capture; harness clock for utcnow, real wall time for waits (reclaim window shortened through the module attribute and its default recorded), scripted environment, published_ports.choose and the port_diagnosis probes scripted; temporary paths, passwords and loopback ports named symbolically",
+ "reference_driver": "drivers/reference/s8_verification_services.py",
+ "target_driver": "drivers/target/s8_verification_services.py",
+ "golden": "goldens/reference/host_os.verification_services.json",
+ "slice": "S8"
+}

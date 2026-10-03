@@ -1,0 +1,4231 @@
+{
+ "case_count": 41,
+ "cases": {
+  "answer_over_loopback": {
+   "ok": {
+    "accepts_and_closes_postgres": {
+     "closed_after": [],
+     "error": "OperationalError",
+     "kind": "closed_unexpectedly",
+     "registered": []
+    },
+    "accepts_and_closes_redis": {
+     "closed_after": [
+      true
+     ],
+     "error": "ConnectionError",
+     "kind": "closed_unexpectedly",
+     "registered": [
+      "_RedisHandle"
+     ]
+    },
+    "closed_port_postgres": {
+     "closed_after": [],
+     "error": "OperationalError",
+     "kind": "refused",
+     "registered": []
+    },
+    "closed_port_redis": {
+     "closed_after": [
+      true
+     ],
+     "error": "ConnectionError",
+     "kind": "refused",
+     "registered": [
+      "_RedisHandle"
+     ]
+    },
+    "default_register": {
+     "postgres": "OperationalError",
+     "redis": "ConnectionError"
+    }
+   }
+  },
+  "attempt_units": {
+   "ok": {
+    "done_while_reserved": {
+     "after": "worker_finished",
+     "before": "reserved",
+     "worker_done": true
+    },
+    "finished": {
+     "record": {
+      "attempt": "a-u1",
+      "closed": 0,
+      "reclaim_deadline_seconds": 0.5,
+      "reclaim_thread": null,
+      "reclaimed": true,
+      "recovery": "this process still holds it; sweeping continues as later attempts start, and it ends when the process ends. The compose stack is removed by its own teardown regardless.",
+      "resources": [],
+      "resources_still_held": 0,
+      "state": "worker_finished",
+      "thread": "verification-attempt-unit-a-u1",
+      "worker_finished": true
+     },
+     "result": "value",
+     "settled": true,
+     "state": "worker_finished"
+    },
+    "fresh_registry": {
+     "outstanding": [],
+     "started": 0
+    },
+    "new": {
+     "daemon": true,
+     "reclaimable": false,
+     "settled": false,
+     "state": "reserved",
+     "thread_name": "verification-attempt-unit-a-u1"
+    },
+    "reclaim": {
+     "report": {
+      "attempt": "a-u6",
+      "closed": 0,
+      "owed_in_process": 0,
+      "reclaim_deadline_seconds": 0.5,
+      "reclaim_thread": "verification-reclaim-a-u6",
+      "reclaimed": true,
+      "recovery": "this process still holds it; sweeping continues as later attempts start, and it ends when the process ends. The compose stack is removed by its own teardown regardless.",
+      "resources": [],
+      "resources_still_held": 0,
+      "state": "cancelled",
+      "thread": "verification-attempt-unit-a-u6",
+      "worker_finished": true
+     },
+     "slots_after": []
+    },
+    "register_after_cancel": {
+     "closed": true,
+     "report": {
+      "close_attempts": 1,
+      "error": null,
+      "kind": "Recorded",
+      "state": "closed"
+     },
+     "settled": false,
+     "state": "cancelled"
+    },
+    "running": "running",
+    "take_back_after_worker": {
+     "settled": true,
+     "worker_finished": true
+    },
+    "take_back_deadline": {
+     "reclaimable": true,
+     "resource_closed": true,
+     "settled": false,
+     "state": "cancelled",
+     "worker_alive": true,
+     "worker_finished": false
+    },
+    "waited": true,
+    "worker_error": {
+     "result": {
+      "error": "ValueError",
+      "message": "unit failure"
+     },
+     "settled": false,
+     "state": "reserved"
+    }
+   }
+  },
+  "capture_bound": {
+   "ok": {
+    "deadline_seconds": 0.5,
+    "fast": {
+     "context_keys": [
+      "docker_context",
+      "docker_host_set",
+      "kernel",
+      "platform",
+      "reference",
+      "wsl_networking_mode"
+     ],
+     "deadline_seconds": 3.0,
+     "delay_is_number": true,
+     "lookup_found": true,
+     "means": "every vantage reached the port during its observation, so whatever refused earlier was not refusing while this was taken",
+     "observations": {
+      "container": {
+       "how": "stub",
+       "observed": true,
+       "reachable": true
+      },
+      "windows": {
+       "how": "stub",
+       "observed": true,
+       "reachable": true
+      },
+      "wsl": {
+       "how": "stub",
+       "observed": true,
+       "reachable": true
+      }
+     },
+     "still_running": [],
+     "verdict": "all_reachable"
+    },
+    "keys": [
+     "container_lookup",
+     "context",
+     "deadline_seconds",
+     "delay_from_failure_seconds",
+     "means",
+     "note",
+     "observations",
+     "port",
+     "seconds",
+     "service",
+     "still_running",
+     "verdict"
+    ],
+    "lookup": {
+     "found": true,
+     "positive": true
+    },
+    "lookup_bound": [
+     1
+    ],
+    "means": "at least one vantage observed nothing, so this narrows nothing",
+    "observations": {
+     "container": {
+      "how": "probe",
+      "reachable": null
+     },
+     "windows": {
+      "how": "probe",
+      "reachable": null
+     },
+     "wsl": {
+      "how": "probe",
+      "reachable": null
+     }
+    },
+    "spent_within_bound": true,
+    "verdict": "undetermined"
+   }
+  },
+  "capture_fails": {
+   "ok": {
+    "failed_at_forwarded": "undetermined",
+    "record": {
+     "deadline_seconds": 10.0,
+     "error": "RuntimeError",
+     "means": "the capture itself did not run; nothing is narrowed",
+     "port": 56379,
+     "service": "redis",
+     "verdict": "undetermined"
+    },
+    "uses_module_bound": true
+   }
+  },
+  "cleanup_guards": {
+   "ok": {
+    "elsewhere": {
+     "artifacts": [
+      {
+       "body": {
+        "definition_hash": "6ad1067fd5ed83cbc9043ff50b8839eb7b39a0deb07e2c9684a54944534fe7a2",
+        "port_choice": {
+         "asked": 2,
+         "daemon_is_local": true,
+         "guarantee": "scripted",
+         "sides": {
+          "local": {
+           "checked": true,
+           "how": "bind",
+           "kind": "linux"
+          },
+          "peer": {
+           "checked": false,
+           "kind": "none"
+          }
+         },
+         "verified_on": [
+          "local"
+         ],
+         "window": [
+          20000,
+          32767
+         ],
+         "window_source": "scripted"
+        },
+        "ports": {
+         "postgres": 45678,
+         "redis": 45679
+        },
+        "project": "zeus-verify-aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+        "published_by": "chosen",
+        "readiness": {
+         "postgres": {
+          "identity": "fixture",
+          "ready_after": 0.0,
+          "refusals_during_startup": {},
+          "tcp_after": 0.0
+         },
+         "redis": {
+          "identity": "fixture",
+          "ready_after": 0.0,
+          "refusals_during_startup": {},
+          "tcp_after": 0.0
+         }
+        },
+        "ready_after_seconds": {
+         "postgres": 0.0,
+         "redis": 0.0
+        },
+        "status": "services_ready"
+       },
+       "source": "verification-services"
+      },
+      {
+       "body": {
+        "error_type": "ContractError",
+        "project": "zeus-verify-aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+        "status": "cleanup_failed"
+       },
+       "source": "verification-cleanup"
+      },
+      {
+       "body": {
+        "project": "zeus-verify-aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+        "status": "services_removed"
+       },
+       "source": "verification-cleanup"
+      }
+     ],
+     "failure": {
+      "error_type": "ContractError",
+      "project": "zeus-verify-aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+      "status": "cleanup_failed"
+     },
+     "listing": [
+      "guard-elsewhere-target/x",
+      "guard-elsewhere-target/x/compose.json",
+      "guard-elsewhere-target/x/manifest.json",
+      "guard-elsewhere/zeus-verify-aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+      "guard-elsewhere/zeus-verify-aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa/compose.json",
+      "guard-elsewhere/zeus-verify-aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa/manifest.json"
+     ],
+     "verbs": [
+      "up",
+      "port",
+      "port",
+      "down"
+     ]
+    },
+    "extra_file": {
+     "artifacts": [
+      {
+       "body": {
+        "definition_hash": "6ad1067fd5ed83cbc9043ff50b8839eb7b39a0deb07e2c9684a54944534fe7a2",
+        "port_choice": {
+         "asked": 2,
+         "daemon_is_local": true,
+         "guarantee": "scripted",
+         "sides": {
+          "local": {
+           "checked": true,
+           "how": "bind",
+           "kind": "linux"
+          },
+          "peer": {
+           "checked": false,
+           "kind": "none"
+          }
+         },
+         "verified_on": [
+          "local"
+         ],
+         "window": [
+          20000,
+          32767
+         ],
+         "window_source": "scripted"
+        },
+        "ports": {
+         "postgres": 45678,
+         "redis": 45679
+        },
+        "project": "zeus-verify-aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+        "published_by": "chosen",
+        "readiness": {
+         "postgres": {
+          "identity": "fixture",
+          "ready_after": 0.0,
+          "refusals_during_startup": {},
+          "tcp_after": 0.0
+         },
+         "redis": {
+          "identity": "fixture",
+          "ready_after": 0.0,
+          "refusals_during_startup": {},
+          "tcp_after": 0.0
+         }
+        },
+        "ready_after_seconds": {
+         "postgres": 0.0,
+         "redis": 0.0
+        },
+        "status": "services_ready"
+       },
+       "source": "verification-services"
+      },
+      {
+       "body": {
+        "error_type": "OSError",
+        "project": "zeus-verify-aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+        "status": "cleanup_failed"
+       },
+       "source": "verification-cleanup"
+      },
+      {
+       "body": {
+        "project": "zeus-verify-aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+        "status": "services_removed"
+       },
+       "source": "verification-cleanup"
+      }
+     ],
+     "failure": {
+      "error_type": "OSError",
+      "project": "zeus-verify-aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+      "status": "cleanup_failed"
+     },
+     "listing": [
+      "guard-extra_file/zeus-verify-aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+      "guard-extra_file/zeus-verify-aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa/extra.txt"
+     ],
+     "verbs": [
+      "up",
+      "port",
+      "port",
+      "down"
+     ]
+    },
+    "missing_file": {
+     "artifacts": [
+      {
+       "body": {
+        "definition_hash": "6ad1067fd5ed83cbc9043ff50b8839eb7b39a0deb07e2c9684a54944534fe7a2",
+        "port_choice": {
+         "asked": 2,
+         "daemon_is_local": true,
+         "guarantee": "scripted",
+         "sides": {
+          "local": {
+           "checked": true,
+           "how": "bind",
+           "kind": "linux"
+          },
+          "peer": {
+           "checked": false,
+           "kind": "none"
+          }
+         },
+         "verified_on": [
+          "local"
+         ],
+         "window": [
+          20000,
+          32767
+         ],
+         "window_source": "scripted"
+        },
+        "ports": {
+         "postgres": 45678,
+         "redis": 45679
+        },
+        "project": "zeus-verify-aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+        "published_by": "chosen",
+        "readiness": {
+         "postgres": {
+          "identity": "fixture",
+          "ready_after": 0.0,
+          "refusals_during_startup": {},
+          "tcp_after": 0.0
+         },
+         "redis": {
+          "identity": "fixture",
+          "ready_after": 0.0,
+          "refusals_during_startup": {},
+          "tcp_after": 0.0
+         }
+        },
+        "ready_after_seconds": {
+         "postgres": 0.0,
+         "redis": 0.0
+        },
+        "status": "services_ready"
+       },
+       "source": "verification-services"
+      },
+      {
+       "body": {
+        "error_type": "FileNotFoundError",
+        "project": "zeus-verify-aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+        "status": "cleanup_failed"
+       },
+       "source": "verification-cleanup"
+      },
+      {
+       "body": {
+        "project": "zeus-verify-aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+        "status": "services_removed"
+       },
+       "source": "verification-cleanup"
+      }
+     ],
+     "failure": {
+      "error_type": "FileNotFoundError",
+      "project": "zeus-verify-aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+      "status": "cleanup_failed"
+     },
+     "listing": [
+      "guard-missing_file/zeus-verify-aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+      "guard-missing_file/zeus-verify-aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa/manifest.json"
+     ],
+     "verbs": [
+      "up",
+      "port",
+      "port",
+      "down"
+     ]
+    },
+    "ok": {
+     "artifacts": [
+      {
+       "body": {
+        "definition_hash": "6ad1067fd5ed83cbc9043ff50b8839eb7b39a0deb07e2c9684a54944534fe7a2",
+        "port_choice": {
+         "asked": 2,
+         "daemon_is_local": true,
+         "guarantee": "scripted",
+         "sides": {
+          "local": {
+           "checked": true,
+           "how": "bind",
+           "kind": "linux"
+          },
+          "peer": {
+           "checked": false,
+           "kind": "none"
+          }
+         },
+         "verified_on": [
+          "local"
+         ],
+         "window": [
+          20000,
+          32767
+         ],
+         "window_source": "scripted"
+        },
+        "ports": {
+         "postgres": 45678,
+         "redis": 45679
+        },
+        "project": "zeus-verify-aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+        "published_by": "chosen",
+        "readiness": {
+         "postgres": {
+          "identity": "fixture",
+          "ready_after": 0.0,
+          "refusals_during_startup": {},
+          "tcp_after": 0.0
+         },
+         "redis": {
+          "identity": "fixture",
+          "ready_after": 0.0,
+          "refusals_during_startup": {},
+          "tcp_after": 0.0
+         }
+        },
+        "ready_after_seconds": {
+         "postgres": 0.0,
+         "redis": 0.0
+        },
+        "status": "services_ready"
+       },
+       "source": "verification-services"
+      },
+      {
+       "body": {
+        "project": "zeus-verify-aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+        "status": "services_removed"
+       },
+       "source": "verification-cleanup"
+      }
+     ],
+     "failure": null,
+     "listing": [],
+     "verbs": [
+      "up",
+      "port",
+      "port",
+      "down"
+     ]
+    },
+    "symlink": {
+     "artifacts": [
+      {
+       "body": {
+        "definition_hash": "6ad1067fd5ed83cbc9043ff50b8839eb7b39a0deb07e2c9684a54944534fe7a2",
+        "port_choice": {
+         "asked": 2,
+         "daemon_is_local": true,
+         "guarantee": "scripted",
+         "sides": {
+          "local": {
+           "checked": true,
+           "how": "bind",
+           "kind": "linux"
+          },
+          "peer": {
+           "checked": false,
+           "kind": "none"
+          }
+         },
+         "verified_on": [
+          "local"
+         ],
+         "window": [
+          20000,
+          32767
+         ],
+         "window_source": "scripted"
+        },
+        "ports": {
+         "postgres": 45678,
+         "redis": 45679
+        },
+        "project": "zeus-verify-aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+        "published_by": "chosen",
+        "readiness": {
+         "postgres": {
+          "identity": "fixture",
+          "ready_after": 0.0,
+          "refusals_during_startup": {},
+          "tcp_after": 0.0
+         },
+         "redis": {
+          "identity": "fixture",
+          "ready_after": 0.0,
+          "refusals_during_startup": {},
+          "tcp_after": 0.0
+         }
+        },
+        "ready_after_seconds": {
+         "postgres": 0.0,
+         "redis": 0.0
+        },
+        "status": "services_ready"
+       },
+       "source": "verification-services"
+      },
+      {
+       "body": {
+        "error_type": "ContractError",
+        "project": "zeus-verify-aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+        "status": "cleanup_failed"
+       },
+       "source": "verification-cleanup"
+      },
+      {
+       "body": {
+        "project": "zeus-verify-aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+        "status": "services_removed"
+       },
+       "source": "verification-cleanup"
+      }
+     ],
+     "failure": {
+      "error_type": "ContractError",
+      "project": "zeus-verify-aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+      "status": "cleanup_failed"
+     },
+     "listing": [
+      "guard-symlink-target/y",
+      "guard-symlink-target/y/compose.json",
+      "guard-symlink-target/y/manifest.json",
+      "guard-symlink/moved",
+      "guard-symlink/moved/compose.json",
+      "guard-symlink/moved/manifest.json",
+      "guard-symlink/zeus-verify-aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa"
+     ],
+     "verbs": [
+      "up",
+      "port",
+      "port",
+      "down"
+     ]
+    }
+   }
+  },
+  "close_that_hangs": {
+   "ok": {
+    "caller_came_back": true,
+    "close_really_stuck": true,
+    "owed": 1,
+    "raised": {
+     "error": "TimeoutError",
+     "message": "the attempt did not finish within its share of the deadline"
+    },
+    "reclaim_still_running": true,
+    "recovery": true,
+    "resources": [
+     {
+      "close_attempts": 1,
+      "error": null,
+      "kind": "Hanging",
+      "state": "open"
+     }
+    ],
+    "state": "cancelled"
+   }
+  },
+  "collect_stale": {
+   "ok": {
+    "absent_root": {
+     "removed": []
+    },
+    "after_first": [
+     "zeus-verify-00000000000000000000000000000000",
+     "zeus-verify-22222222222222222222222222222222",
+     "zeus-verify-33333333333333333333333333333333",
+     "zeus-verify-44444444444444444444444444444444",
+     "zeus-verify-55555555555555555555555555555555",
+     "zeus-verify-66666666666666666666666666666666",
+     "zeus-verify-77777777777777777777777777777777",
+     "zeus-verify-88888888888888888888888888888888",
+     "zeus-verify-dddddddddddddddddddddddddddddddd",
+     "zeus-verify-eeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee",
+     "zeus-verify-not-a-hex-name"
+    ],
+    "after_second": [
+     "zeus-verify-00000000000000000000000000000000",
+     "zeus-verify-22222222222222222222222222222222",
+     "zeus-verify-44444444444444444444444444444444",
+     "zeus-verify-66666666666666666666666666666666",
+     "zeus-verify-77777777777777777777777777777777",
+     "zeus-verify-88888888888888888888888888888888",
+     "zeus-verify-dddddddddddddddddddddddddddddddd",
+     "zeus-verify-eeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee",
+     "zeus-verify-not-a-hex-name"
+    ],
+    "artifacts": [
+     {
+      "body": {
+       "error_type": "ContractError",
+       "project": "zeus-verify-33333333333333333333333333333333",
+       "status": "cleanup_blocked"
+      },
+      "source": "verification-cleanup"
+     },
+     {
+      "body": {
+       "error_type": "ContractError",
+       "project": "zeus-verify-44444444444444444444444444444444",
+       "status": "cleanup_blocked"
+      },
+      "source": "verification-cleanup"
+     },
+     {
+      "body": {
+       "error_type": "ContractError",
+       "project": "zeus-verify-55555555555555555555555555555555",
+       "status": "cleanup_blocked"
+      },
+      "source": "verification-cleanup"
+     },
+     {
+      "body": {
+       "error_type": "ContractError",
+       "project": "zeus-verify-not-a-hex-name",
+       "status": "cleanup_blocked"
+      },
+      "source": "verification-cleanup"
+     },
+     {
+      "body": {
+       "error_type": "JSONDecodeError",
+       "project": "zeus-verify-00000000000000000000000000000000",
+       "status": "cleanup_blocked"
+      },
+      "source": "verification-cleanup"
+     },
+     {
+      "body": {
+       "error_type": "KeyError",
+       "project": "zeus-verify-88888888888888888888888888888888",
+       "status": "cleanup_blocked"
+      },
+      "source": "verification-cleanup"
+     },
+     {
+      "body": {
+       "error_type": "RuntimeError",
+       "project": "zeus-verify-66666666666666666666666666666666",
+       "status": "cleanup_failed"
+      },
+      "source": "verification-cleanup"
+     },
+     {
+      "body": {
+       "error_type": "TypeError",
+       "project": "zeus-verify-77777777777777777777777777777777",
+       "status": "cleanup_blocked"
+      },
+      "source": "verification-cleanup"
+     },
+     {
+      "body": {
+       "project": "zeus-verify-11111111111111111111111111111111",
+       "status": "services_removed"
+      },
+      "source": "verification-cleanup"
+     }
+    ],
+    "down_args": [
+     [
+      "down",
+      "--volumes",
+      "--remove-orphans",
+      "--timeout",
+      "10"
+     ]
+    ],
+    "down_projects": [
+     "zeus-verify-11111111111111111111111111111111",
+     "zeus-verify-66666666666666666666666666666666"
+    ],
+    "empty_root": {
+     "removed": []
+    },
+    "first": {
+     "failures": [
+      {
+       "error_type": "JSONDecodeError",
+       "project": "zeus-verify-00000000000000000000000000000000",
+       "status": "cleanup_blocked"
+      },
+      {
+       "error_type": "ContractError",
+       "project": "zeus-verify-33333333333333333333333333333333",
+       "status": "cleanup_blocked"
+      },
+      {
+       "error_type": "ContractError",
+       "project": "zeus-verify-44444444444444444444444444444444",
+       "status": "cleanup_blocked"
+      },
+      {
+       "error_type": "ContractError",
+       "project": "zeus-verify-55555555555555555555555555555555",
+       "status": "cleanup_blocked"
+      },
+      {
+       "error_type": "RuntimeError",
+       "project": "zeus-verify-66666666666666666666666666666666",
+       "status": "cleanup_failed"
+      },
+      {
+       "error_type": "TypeError",
+       "project": "zeus-verify-77777777777777777777777777777777",
+       "status": "cleanup_blocked"
+      },
+      {
+       "error_type": "KeyError",
+       "project": "zeus-verify-88888888888888888888888888888888",
+       "status": "cleanup_blocked"
+      },
+      {
+       "error_type": "ContractError",
+       "project": "zeus-verify-not-a-hex-name",
+       "status": "cleanup_blocked"
+      }
+     ],
+     "keys": [
+      "failures",
+      "removed"
+     ],
+     "removed": [
+      "zeus-verify-11111111111111111111111111111111"
+     ]
+    },
+    "second_max_age_zero": {
+     "failures": [
+      {
+       "error_type": "JSONDecodeError",
+       "project": "zeus-verify-00000000000000000000000000000000",
+       "status": "cleanup_blocked"
+      },
+      {
+       "error_type": "ContractError",
+       "project": "zeus-verify-44444444444444444444444444444444",
+       "status": "cleanup_blocked"
+      },
+      {
+       "error_type": "RuntimeError",
+       "project": "zeus-verify-66666666666666666666666666666666",
+       "status": "cleanup_failed"
+      },
+      {
+       "error_type": "TypeError",
+       "project": "zeus-verify-77777777777777777777777777777777",
+       "status": "cleanup_blocked"
+      },
+      {
+       "error_type": "KeyError",
+       "project": "zeus-verify-88888888888888888888888888888888",
+       "status": "cleanup_blocked"
+      },
+      {
+       "error_type": "ContractError",
+       "project": "zeus-verify-not-a-hex-name",
+       "status": "cleanup_blocked"
+      }
+     ],
+     "removed": [
+      "zeus-verify-33333333333333333333333333333333",
+      "zeus-verify-55555555555555555555555555555555"
+     ]
+    }
+   }
+  },
+  "command": {
+   "ok": {
+    "answers": {
+     "default": "container-postgres",
+     "fraction": "container-postgres",
+     "large": "container-postgres",
+     "negative": "container-postgres",
+     "truncated": "container-postgres"
+    },
+    "calls": [
+     {
+      "args": [
+       "up",
+       "-d"
+      ],
+      "cwd": "<ROOT>/command/zeus-verify-aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+      "env": {
+       "DOCKER_CONFIG": "/scripted/docker",
+       "DOCKER_CONTEXT": "scripted",
+       "DOCKER_HOST": "unix:///scripted/docker.sock",
+       "HOME": "/scripted/home",
+       "LANG": "C.UTF-8",
+       "NO_PROXY": "localhost",
+       "PATH": "/scripted/bin",
+       "SSL_CERT_FILE": "/scripted/ca.pem",
+       "TEMP": "/scripted/temp",
+       "ZEUS_VERIFY_PASSWORD": "<PASSWORD>",
+       "http_proxy": "http://scripted-proxy:3128"
+      },
+      "extra": [],
+      "files": [],
+      "prefix": [
+       "docker",
+       "compose",
+       "--project-name",
+       "zeus-verify-aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+       "--file",
+       "compose.json"
+      ],
+      "timeout": 150
+     },
+     {
+      "args": [
+       "ps",
+       "-q",
+       "postgres"
+      ],
+      "cwd": "<ROOT>/command/zeus-verify-aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+      "env": {
+       "DOCKER_CONFIG": "/scripted/docker",
+       "DOCKER_CONTEXT": "scripted",
+       "DOCKER_HOST": "unix:///scripted/docker.sock",
+       "HOME": "/scripted/home",
+       "LANG": "C.UTF-8",
+       "NO_PROXY": "localhost",
+       "PATH": "/scripted/bin",
+       "SSL_CERT_FILE": "/scripted/ca.pem",
+       "TEMP": "/scripted/temp",
+       "ZEUS_VERIFY_PASSWORD": "<PASSWORD>",
+       "http_proxy": "http://scripted-proxy:3128"
+      },
+      "extra": [],
+      "files": [],
+      "prefix": [
+       "docker",
+       "compose",
+       "--project-name",
+       "zeus-verify-aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+       "--file",
+       "compose.json"
+      ],
+      "timeout": 150
+     },
+     {
+      "args": [
+       "ps",
+       "-q",
+       "postgres"
+      ],
+      "cwd": "<ROOT>/command/zeus-verify-aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+      "env": {
+       "DOCKER_CONFIG": "/scripted/docker",
+       "DOCKER_CONTEXT": "scripted",
+       "DOCKER_HOST": "unix:///scripted/docker.sock",
+       "HOME": "/scripted/home",
+       "LANG": "C.UTF-8",
+       "NO_PROXY": "localhost",
+       "PATH": "/scripted/bin",
+       "SSL_CERT_FILE": "/scripted/ca.pem",
+       "TEMP": "/scripted/temp",
+       "ZEUS_VERIFY_PASSWORD": "<PASSWORD>",
+       "http_proxy": "http://scripted-proxy:3128"
+      },
+      "extra": [],
+      "files": [],
+      "prefix": [
+       "docker",
+       "compose",
+       "--project-name",
+       "zeus-verify-aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+       "--file",
+       "compose.json"
+      ],
+      "timeout": 1
+     },
+     {
+      "args": [
+       "ps",
+       "-q",
+       "postgres"
+      ],
+      "cwd": "<ROOT>/command/zeus-verify-aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+      "env": {
+       "DOCKER_CONFIG": "/scripted/docker",
+       "DOCKER_CONTEXT": "scripted",
+       "DOCKER_HOST": "unix:///scripted/docker.sock",
+       "HOME": "/scripted/home",
+       "LANG": "C.UTF-8",
+       "NO_PROXY": "localhost",
+       "PATH": "/scripted/bin",
+       "SSL_CERT_FILE": "/scripted/ca.pem",
+       "TEMP": "/scripted/temp",
+       "ZEUS_VERIFY_PASSWORD": "<PASSWORD>",
+       "http_proxy": "http://scripted-proxy:3128"
+      },
+      "extra": [],
+      "files": [],
+      "prefix": [
+       "docker",
+       "compose",
+       "--project-name",
+       "zeus-verify-aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+       "--file",
+       "compose.json"
+      ],
+      "timeout": 2
+     },
+     {
+      "args": [
+       "ps",
+       "-q",
+       "postgres"
+      ],
+      "cwd": "<ROOT>/command/zeus-verify-aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+      "env": {
+       "DOCKER_CONFIG": "/scripted/docker",
+       "DOCKER_CONTEXT": "scripted",
+       "DOCKER_HOST": "unix:///scripted/docker.sock",
+       "HOME": "/scripted/home",
+       "LANG": "C.UTF-8",
+       "NO_PROXY": "localhost",
+       "PATH": "/scripted/bin",
+       "SSL_CERT_FILE": "/scripted/ca.pem",
+       "TEMP": "/scripted/temp",
+       "ZEUS_VERIFY_PASSWORD": "<PASSWORD>",
+       "http_proxy": "http://scripted-proxy:3128"
+      },
+      "extra": [],
+      "files": [],
+      "prefix": [
+       "docker",
+       "compose",
+       "--project-name",
+       "zeus-verify-aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+       "--file",
+       "compose.json"
+      ],
+      "timeout": 1
+     },
+     {
+      "args": [
+       "ps",
+       "-q",
+       "postgres"
+      ],
+      "cwd": "<ROOT>/command/zeus-verify-aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+      "env": {
+       "DOCKER_CONFIG": "/scripted/docker",
+       "DOCKER_CONTEXT": "scripted",
+       "DOCKER_HOST": "unix:///scripted/docker.sock",
+       "HOME": "/scripted/home",
+       "LANG": "C.UTF-8",
+       "NO_PROXY": "localhost",
+       "PATH": "/scripted/bin",
+       "SSL_CERT_FILE": "/scripted/ca.pem",
+       "TEMP": "/scripted/temp",
+       "ZEUS_VERIFY_PASSWORD": "<PASSWORD>",
+       "http_proxy": "http://scripted-proxy:3128"
+      },
+      "extra": [],
+      "files": [],
+      "prefix": [
+       "docker",
+       "compose",
+       "--project-name",
+       "zeus-verify-aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+       "--file",
+       "compose.json"
+      ],
+      "timeout": 600
+     }
+    ],
+    "password_in_env": true,
+    "refused": {
+     "down": {
+      "ok": ""
+     },
+     "port": {
+      "error": "KeyError",
+      "message": "'x'"
+     },
+     "up": {
+      "error": "RuntimeError",
+      "message": "Isolated verification services unavailable: up"
+     }
+    },
+    "stdout_stripped": "started"
+   }
+  },
+  "constants": {
+   "ok": {
+    "DIAGNOSIS_SECONDS": 10.0,
+    "RECLAIM_SECONDS": 5.0,
+    "UNRECLAIMED_LIMIT": 3,
+    "environment_keys": [
+     "ALLUSERSPROFILE",
+     "APPDATA",
+     "COMSPEC",
+     "HOME",
+     "HOMEDRIVE",
+     "HOMEPATH",
+     "HTTPS_PROXY",
+     "HTTP_PROXY",
+     "LANG",
+     "LC_ALL",
+     "LOCALAPPDATA",
+     "NO_PROXY",
+     "PATH",
+     "PATHEXT",
+     "PROGRAMDATA",
+     "PROGRAMFILES",
+     "PROGRAMFILES(X86)",
+     "REQUESTS_CA_BUNDLE",
+     "SSL_CERT_DIR",
+     "SSL_CERT_FILE",
+     "SYSTEMROOT",
+     "TEMP",
+     "TMP",
+     "TMPDIR",
+     "USERPROFILE",
+     "UV_CACHE_DIR",
+     "WINDIR"
+    ],
+    "reclaimable": [
+     "worker_finished",
+     "cancelled"
+    ],
+    "registry": "_Attempts",
+    "registry_empty": true,
+    "states": [
+     "closed",
+     "open",
+     "unknown",
+     "reserved",
+     "running",
+     "worker_finished",
+     "cancelled",
+     "released"
+    ]
+   }
+  },
+  "container_identity": {
+   "ok": {
+    "calls": [
+     {
+      "args": [
+       "exec",
+       "-T",
+       "postgres",
+       "psql",
+       "-U",
+       "zeus",
+       "-d",
+       "zeus",
+       "-tAc",
+       "select system_identifier from pg_control_system()"
+      ],
+      "cwd": "<ROOT>/identity-lookup/zeus-verify-aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+      "env": {
+       "DOCKER_CONFIG": "/scripted/docker",
+       "DOCKER_CONTEXT": "scripted",
+       "DOCKER_HOST": "unix:///scripted/docker.sock",
+       "HOME": "/scripted/home",
+       "LANG": "C.UTF-8",
+       "NO_PROXY": "localhost",
+       "PATH": "/scripted/bin",
+       "SSL_CERT_FILE": "/scripted/ca.pem",
+       "TEMP": "/scripted/temp",
+       "ZEUS_VERIFY_PASSWORD": "<PASSWORD>",
+       "http_proxy": "http://scripted-proxy:3128"
+      },
+      "extra": [],
+      "files": [],
+      "prefix": [
+       "docker",
+       "compose",
+       "--project-name",
+       "zeus-verify-aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+       "--file",
+       "compose.json"
+      ],
+      "timeout": 7
+     },
+     {
+      "args": [
+       "exec",
+       "-T",
+       "redis",
+       "redis-cli",
+       "info",
+       "server"
+      ],
+      "cwd": "<ROOT>/identity-lookup/zeus-verify-aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+      "env": {
+       "DOCKER_CONFIG": "/scripted/docker",
+       "DOCKER_CONTEXT": "scripted",
+       "DOCKER_HOST": "unix:///scripted/docker.sock",
+       "HOME": "/scripted/home",
+       "LANG": "C.UTF-8",
+       "NO_PROXY": "localhost",
+       "PATH": "/scripted/bin",
+       "SSL_CERT_FILE": "/scripted/ca.pem",
+       "TEMP": "/scripted/temp",
+       "ZEUS_VERIFY_PASSWORD": "<PASSWORD>",
+       "http_proxy": "http://scripted-proxy:3128"
+      },
+      "extra": [],
+      "files": [],
+      "prefix": [
+       "docker",
+       "compose",
+       "--project-name",
+       "zeus-verify-aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+       "--file",
+       "compose.json"
+      ],
+      "timeout": 7
+     }
+    ],
+    "docker_fails": {
+     "error": "RuntimeError",
+     "message": "Isolated verification services unavailable: exec"
+    },
+    "postgres": "7001",
+    "redis": "runid-redis",
+    "redis_first_run_id": "spaced",
+    "redis_without_run_id": ""
+   }
+  },
+  "directory_exists": {
+   "ok": {
+    "artifacts": [],
+    "kept": "kept",
+    "result": {
+     "error": "FileExistsError",
+     "message": "[Errno 17] File exists: '<ROOT>/exists/zeus-verify-aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa'"
+    },
+    "verbs": []
+   }
+  },
+  "endpoint_refusals": {
+   "ok": {
+    "empty": {
+     "artifacts": [
+      {
+       "body": {
+        "definition_hash": "6ad1067fd5ed83cbc9043ff50b8839eb7b39a0deb07e2c9684a54944534fe7a2",
+        "port_choice": {
+         "asked": 2,
+         "daemon_is_local": true,
+         "guarantee": "scripted",
+         "sides": {
+          "local": {
+           "checked": true,
+           "how": "bind",
+           "kind": "linux"
+          },
+          "peer": {
+           "checked": false,
+           "kind": "none"
+          }
+         },
+         "verified_on": [
+          "local"
+         ],
+         "window": [
+          20000,
+          32767
+         ],
+         "window_source": "scripted"
+        },
+        "ports": {
+         "postgres": 45678,
+         "redis": 45679
+        },
+        "project": "zeus-verify-aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+        "published_by": "chosen",
+        "readiness": {
+         "postgres": {
+          "identity": "fixture",
+          "ready_after": 0.0,
+          "refusals_during_startup": {},
+          "tcp_after": 0.0
+         },
+         "redis": {
+          "identity": "fixture",
+          "ready_after": 0.0,
+          "refusals_during_startup": {},
+          "tcp_after": 0.0
+         }
+        },
+        "ready_after_seconds": {
+         "postgres": 0.0,
+         "redis": 0.0
+        },
+        "status": "services_ready"
+       },
+       "source": "verification-services"
+      },
+      {
+       "body": {
+        "project": "zeus-verify-aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+        "status": "services_removed"
+       },
+       "source": "verification-cleanup"
+      }
+     ],
+     "compose": {
+      "services": {
+       "postgres": {
+        "cpus": 1,
+        "environment": {
+         "POSTGRES_DB": "zeus",
+         "POSTGRES_PASSWORD": "${ZEUS_VERIFY_PASSWORD}",
+         "POSTGRES_USER": "zeus"
+        },
+        "healthcheck": {
+         "interval": "1s",
+         "retries": 60,
+         "test": [
+          "CMD-SHELL",
+          "pg_isready -U zeus -d zeus"
+         ],
+         "timeout": "3s"
+        },
+        "image": "pgvector/pgvector:pg17",
+        "mem_limit": "512m",
+        "ports": [
+         "127.0.0.1:31000:5432"
+        ],
+        "volumes": [
+         "database:/var/lib/postgresql/data"
+        ]
+       },
+       "redis": {
+        "command": [
+         "redis-server",
+         "--appendonly",
+         "no"
+        ],
+        "cpus": 0.5,
+        "healthcheck": {
+         "interval": "1s",
+         "retries": 60,
+         "test": [
+          "CMD",
+          "redis-cli",
+          "ping"
+         ],
+         "timeout": "3s"
+        },
+        "image": "redis:7.4-alpine",
+        "mem_limit": "128m",
+        "ports": [
+         "127.0.0.1:31001:6379"
+        ]
+       }
+      },
+      "volumes": {
+       "database": {}
+      }
+     },
+     "directory_removed": true,
+     "docker_cwd": "<ROOT>/lifecycle-ep-empty/zeus-verify-aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+     "endpoints": {
+      "database_url": "postgresql://zeus:<PASSWORD>@127.0.0.1:45678/zeus",
+      "redis_url": "redis://127.0.0.1:45679/0"
+     },
+     "inside": [
+      "compose.json",
+      "manifest.json"
+     ],
+     "last_args": [
+      "down",
+      "--volumes",
+      "--remove-orphans",
+      "--timeout",
+      "10"
+     ],
+     "manifest": {
+      "created_at": "2026-09-22T00:00:00+00:00",
+      "definition_hash": "6ad1067fd5ed83cbc9043ff50b8839eb7b39a0deb07e2c9684a54944534fe7a2",
+      "project": "zeus-verify-aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa"
+     },
+     "password_not_in_compose": true,
+     "result": {
+      "ok": "left"
+     },
+     "timeouts": [
+      150,
+      150,
+      150,
+      150
+     ],
+     "verbs": [
+      "up",
+      "port",
+      "port",
+      "down"
+     ]
+    },
+    "ipv6": {
+     "artifacts": [
+      {
+       "body": {
+        "project": "zeus-verify-aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+        "status": "services_removed"
+       },
+       "source": "verification-cleanup"
+      }
+     ],
+     "compose": {
+      "services": {
+       "postgres": {
+        "cpus": 1,
+        "environment": {
+         "POSTGRES_DB": "zeus",
+         "POSTGRES_PASSWORD": "${ZEUS_VERIFY_PASSWORD}",
+         "POSTGRES_USER": "zeus"
+        },
+        "healthcheck": {
+         "interval": "1s",
+         "retries": 60,
+         "test": [
+          "CMD-SHELL",
+          "pg_isready -U zeus -d zeus"
+         ],
+         "timeout": "3s"
+        },
+        "image": "pgvector/pgvector:pg17",
+        "mem_limit": "512m",
+        "ports": [
+         "127.0.0.1:31000:5432"
+        ],
+        "volumes": [
+         "database:/var/lib/postgresql/data"
+        ]
+       },
+       "redis": {
+        "command": [
+         "redis-server",
+         "--appendonly",
+         "no"
+        ],
+        "cpus": 0.5,
+        "healthcheck": {
+         "interval": "1s",
+         "retries": 60,
+         "test": [
+          "CMD",
+          "redis-cli",
+          "ping"
+         ],
+         "timeout": "3s"
+        },
+        "image": "redis:7.4-alpine",
+        "mem_limit": "128m",
+        "ports": [
+         "127.0.0.1:31001:6379"
+        ]
+       }
+      },
+      "volumes": {
+       "database": {}
+      }
+     },
+     "directory_removed": true,
+     "docker_cwd": "<ROOT>/lifecycle-ep-ipv6/zeus-verify-aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+     "endpoints": null,
+     "inside": null,
+     "last_args": [
+      "down",
+      "--volumes",
+      "--remove-orphans",
+      "--timeout",
+      "10"
+     ],
+     "manifest": {
+      "created_at": "2026-09-22T00:00:00+00:00",
+      "definition_hash": "6ad1067fd5ed83cbc9043ff50b8839eb7b39a0deb07e2c9684a54944534fe7a2",
+      "project": "zeus-verify-aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa"
+     },
+     "password_not_in_compose": true,
+     "result": {
+      "error": "ContractError",
+      "message": "Unknown verification endpoint"
+     },
+     "timeouts": [
+      150,
+      150,
+      150
+     ],
+     "verbs": [
+      "up",
+      "port",
+      "down"
+     ]
+    },
+    "max": {
+     "artifacts": [
+      {
+       "body": {
+        "definition_hash": "6ad1067fd5ed83cbc9043ff50b8839eb7b39a0deb07e2c9684a54944534fe7a2",
+        "port_choice": {
+         "asked": 2,
+         "daemon_is_local": true,
+         "guarantee": "scripted",
+         "sides": {
+          "local": {
+           "checked": true,
+           "how": "bind",
+           "kind": "linux"
+          },
+          "peer": {
+           "checked": false,
+           "kind": "none"
+          }
+         },
+         "verified_on": [
+          "local"
+         ],
+         "window": [
+          20000,
+          32767
+         ],
+         "window_source": "scripted"
+        },
+        "ports": {
+         "postgres": 65535,
+         "redis": 65535
+        },
+        "project": "zeus-verify-aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+        "published_by": "chosen",
+        "readiness": {
+         "postgres": {
+          "identity": "fixture",
+          "ready_after": 0.0,
+          "refusals_during_startup": {},
+          "tcp_after": 0.0
+         },
+         "redis": {
+          "identity": "fixture",
+          "ready_after": 0.0,
+          "refusals_during_startup": {},
+          "tcp_after": 0.0
+         }
+        },
+        "ready_after_seconds": {
+         "postgres": 0.0,
+         "redis": 0.0
+        },
+        "status": "services_ready"
+       },
+       "source": "verification-services"
+      },
+      {
+       "body": {
+        "project": "zeus-verify-aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+        "status": "services_removed"
+       },
+       "source": "verification-cleanup"
+      }
+     ],
+     "compose": {
+      "services": {
+       "postgres": {
+        "cpus": 1,
+        "environment": {
+         "POSTGRES_DB": "zeus",
+         "POSTGRES_PASSWORD": "${ZEUS_VERIFY_PASSWORD}",
+         "POSTGRES_USER": "zeus"
+        },
+        "healthcheck": {
+         "interval": "1s",
+         "retries": 60,
+         "test": [
+          "CMD-SHELL",
+          "pg_isready -U zeus -d zeus"
+         ],
+         "timeout": "3s"
+        },
+        "image": "pgvector/pgvector:pg17",
+        "mem_limit": "512m",
+        "ports": [
+         "127.0.0.1:31000:5432"
+        ],
+        "volumes": [
+         "database:/var/lib/postgresql/data"
+        ]
+       },
+       "redis": {
+        "command": [
+         "redis-server",
+         "--appendonly",
+         "no"
+        ],
+        "cpus": 0.5,
+        "healthcheck": {
+         "interval": "1s",
+         "retries": 60,
+         "test": [
+          "CMD",
+          "redis-cli",
+          "ping"
+         ],
+         "timeout": "3s"
+        },
+        "image": "redis:7.4-alpine",
+        "mem_limit": "128m",
+        "ports": [
+         "127.0.0.1:31001:6379"
+        ]
+       }
+      },
+      "volumes": {
+       "database": {}
+      }
+     },
+     "directory_removed": true,
+     "docker_cwd": "<ROOT>/lifecycle-ep-max/zeus-verify-aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+     "endpoints": {
+      "database_url": "postgresql://zeus:<PASSWORD>@127.0.0.1:65535/zeus",
+      "redis_url": "redis://127.0.0.1:65535/0"
+     },
+     "inside": [
+      "compose.json",
+      "manifest.json"
+     ],
+     "last_args": [
+      "down",
+      "--volumes",
+      "--remove-orphans",
+      "--timeout",
+      "10"
+     ],
+     "manifest": {
+      "created_at": "2026-09-22T00:00:00+00:00",
+      "definition_hash": "6ad1067fd5ed83cbc9043ff50b8839eb7b39a0deb07e2c9684a54944534fe7a2",
+      "project": "zeus-verify-aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa"
+     },
+     "password_not_in_compose": true,
+     "result": {
+      "ok": "left"
+     },
+     "timeouts": [
+      150,
+      150,
+      150,
+      150
+     ],
+     "verbs": [
+      "up",
+      "port",
+      "port",
+      "down"
+     ]
+    },
+    "text": {
+     "artifacts": [
+      {
+       "body": {
+        "project": "zeus-verify-aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+        "status": "services_removed"
+       },
+       "source": "verification-cleanup"
+      }
+     ],
+     "compose": {
+      "services": {
+       "postgres": {
+        "cpus": 1,
+        "environment": {
+         "POSTGRES_DB": "zeus",
+         "POSTGRES_PASSWORD": "${ZEUS_VERIFY_PASSWORD}",
+         "POSTGRES_USER": "zeus"
+        },
+        "healthcheck": {
+         "interval": "1s",
+         "retries": 60,
+         "test": [
+          "CMD-SHELL",
+          "pg_isready -U zeus -d zeus"
+         ],
+         "timeout": "3s"
+        },
+        "image": "pgvector/pgvector:pg17",
+        "mem_limit": "512m",
+        "ports": [
+         "127.0.0.1:31000:5432"
+        ],
+        "volumes": [
+         "database:/var/lib/postgresql/data"
+        ]
+       },
+       "redis": {
+        "command": [
+         "redis-server",
+         "--appendonly",
+         "no"
+        ],
+        "cpus": 0.5,
+        "healthcheck": {
+         "interval": "1s",
+         "retries": 60,
+         "test": [
+          "CMD",
+          "redis-cli",
+          "ping"
+         ],
+         "timeout": "3s"
+        },
+        "image": "redis:7.4-alpine",
+        "mem_limit": "128m",
+        "ports": [
+         "127.0.0.1:31001:6379"
+        ]
+       }
+      },
+      "volumes": {
+       "database": {}
+      }
+     },
+     "directory_removed": true,
+     "docker_cwd": "<ROOT>/lifecycle-ep-text/zeus-verify-aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+     "endpoints": null,
+     "inside": null,
+     "last_args": [
+      "down",
+      "--volumes",
+      "--remove-orphans",
+      "--timeout",
+      "10"
+     ],
+     "manifest": {
+      "created_at": "2026-09-22T00:00:00+00:00",
+      "definition_hash": "6ad1067fd5ed83cbc9043ff50b8839eb7b39a0deb07e2c9684a54944534fe7a2",
+      "project": "zeus-verify-aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa"
+     },
+     "password_not_in_compose": true,
+     "result": {
+      "error": "ContractError",
+      "message": "Unknown verification endpoint"
+     },
+     "timeouts": [
+      150,
+      150,
+      150
+     ],
+     "verbs": [
+      "up",
+      "port",
+      "down"
+     ]
+    },
+    "too_large": {
+     "artifacts": [
+      {
+       "body": {
+        "project": "zeus-verify-aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+        "status": "services_removed"
+       },
+       "source": "verification-cleanup"
+      }
+     ],
+     "compose": {
+      "services": {
+       "postgres": {
+        "cpus": 1,
+        "environment": {
+         "POSTGRES_DB": "zeus",
+         "POSTGRES_PASSWORD": "${ZEUS_VERIFY_PASSWORD}",
+         "POSTGRES_USER": "zeus"
+        },
+        "healthcheck": {
+         "interval": "1s",
+         "retries": 60,
+         "test": [
+          "CMD-SHELL",
+          "pg_isready -U zeus -d zeus"
+         ],
+         "timeout": "3s"
+        },
+        "image": "pgvector/pgvector:pg17",
+        "mem_limit": "512m",
+        "ports": [
+         "127.0.0.1:31000:5432"
+        ],
+        "volumes": [
+         "database:/var/lib/postgresql/data"
+        ]
+       },
+       "redis": {
+        "command": [
+         "redis-server",
+         "--appendonly",
+         "no"
+        ],
+        "cpus": 0.5,
+        "healthcheck": {
+         "interval": "1s",
+         "retries": 60,
+         "test": [
+          "CMD",
+          "redis-cli",
+          "ping"
+         ],
+         "timeout": "3s"
+        },
+        "image": "redis:7.4-alpine",
+        "mem_limit": "128m",
+        "ports": [
+         "127.0.0.1:31001:6379"
+        ]
+       }
+      },
+      "volumes": {
+       "database": {}
+      }
+     },
+     "directory_removed": true,
+     "docker_cwd": "<ROOT>/lifecycle-ep-too_large/zeus-verify-aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+     "endpoints": null,
+     "inside": null,
+     "last_args": [
+      "down",
+      "--volumes",
+      "--remove-orphans",
+      "--timeout",
+      "10"
+     ],
+     "manifest": {
+      "created_at": "2026-09-22T00:00:00+00:00",
+      "definition_hash": "6ad1067fd5ed83cbc9043ff50b8839eb7b39a0deb07e2c9684a54944534fe7a2",
+      "project": "zeus-verify-aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa"
+     },
+     "password_not_in_compose": true,
+     "result": {
+      "error": "ContractError",
+      "message": "Unknown verification endpoint"
+     },
+     "timeouts": [
+      150,
+      150,
+      150
+     ],
+     "verbs": [
+      "up",
+      "port",
+      "down"
+     ]
+    },
+    "trailing": {
+     "artifacts": [
+      {
+       "body": {
+        "project": "zeus-verify-aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+        "status": "services_removed"
+       },
+       "source": "verification-cleanup"
+      }
+     ],
+     "compose": {
+      "services": {
+       "postgres": {
+        "cpus": 1,
+        "environment": {
+         "POSTGRES_DB": "zeus",
+         "POSTGRES_PASSWORD": "${ZEUS_VERIFY_PASSWORD}",
+         "POSTGRES_USER": "zeus"
+        },
+        "healthcheck": {
+         "interval": "1s",
+         "retries": 60,
+         "test": [
+          "CMD-SHELL",
+          "pg_isready -U zeus -d zeus"
+         ],
+         "timeout": "3s"
+        },
+        "image": "pgvector/pgvector:pg17",
+        "mem_limit": "512m",
+        "ports": [
+         "127.0.0.1:31000:5432"
+        ],
+        "volumes": [
+         "database:/var/lib/postgresql/data"
+        ]
+       },
+       "redis": {
+        "command": [
+         "redis-server",
+         "--appendonly",
+         "no"
+        ],
+        "cpus": 0.5,
+        "healthcheck": {
+         "interval": "1s",
+         "retries": 60,
+         "test": [
+          "CMD",
+          "redis-cli",
+          "ping"
+         ],
+         "timeout": "3s"
+        },
+        "image": "redis:7.4-alpine",
+        "mem_limit": "128m",
+        "ports": [
+         "127.0.0.1:31001:6379"
+        ]
+       }
+      },
+      "volumes": {
+       "database": {}
+      }
+     },
+     "directory_removed": true,
+     "docker_cwd": "<ROOT>/lifecycle-ep-trailing/zeus-verify-aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+     "endpoints": null,
+     "inside": null,
+     "last_args": [
+      "down",
+      "--volumes",
+      "--remove-orphans",
+      "--timeout",
+      "10"
+     ],
+     "manifest": {
+      "created_at": "2026-09-22T00:00:00+00:00",
+      "definition_hash": "6ad1067fd5ed83cbc9043ff50b8839eb7b39a0deb07e2c9684a54944534fe7a2",
+      "project": "zeus-verify-aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa"
+     },
+     "password_not_in_compose": true,
+     "result": {
+      "error": "ContractError",
+      "message": "Unknown verification endpoint"
+     },
+     "timeouts": [
+      150,
+      150,
+      150
+     ],
+     "verbs": [
+      "up",
+      "port",
+      "down"
+     ]
+    },
+    "wildcard": {
+     "artifacts": [
+      {
+       "body": {
+        "project": "zeus-verify-aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+        "status": "services_removed"
+       },
+       "source": "verification-cleanup"
+      }
+     ],
+     "compose": {
+      "services": {
+       "postgres": {
+        "cpus": 1,
+        "environment": {
+         "POSTGRES_DB": "zeus",
+         "POSTGRES_PASSWORD": "${ZEUS_VERIFY_PASSWORD}",
+         "POSTGRES_USER": "zeus"
+        },
+        "healthcheck": {
+         "interval": "1s",
+         "retries": 60,
+         "test": [
+          "CMD-SHELL",
+          "pg_isready -U zeus -d zeus"
+         ],
+         "timeout": "3s"
+        },
+        "image": "pgvector/pgvector:pg17",
+        "mem_limit": "512m",
+        "ports": [
+         "127.0.0.1:31000:5432"
+        ],
+        "volumes": [
+         "database:/var/lib/postgresql/data"
+        ]
+       },
+       "redis": {
+        "command": [
+         "redis-server",
+         "--appendonly",
+         "no"
+        ],
+        "cpus": 0.5,
+        "healthcheck": {
+         "interval": "1s",
+         "retries": 60,
+         "test": [
+          "CMD",
+          "redis-cli",
+          "ping"
+         ],
+         "timeout": "3s"
+        },
+        "image": "redis:7.4-alpine",
+        "mem_limit": "128m",
+        "ports": [
+         "127.0.0.1:31001:6379"
+        ]
+       }
+      },
+      "volumes": {
+       "database": {}
+      }
+     },
+     "directory_removed": true,
+     "docker_cwd": "<ROOT>/lifecycle-ep-wildcard/zeus-verify-aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+     "endpoints": null,
+     "inside": null,
+     "last_args": [
+      "down",
+      "--volumes",
+      "--remove-orphans",
+      "--timeout",
+      "10"
+     ],
+     "manifest": {
+      "created_at": "2026-09-22T00:00:00+00:00",
+      "definition_hash": "6ad1067fd5ed83cbc9043ff50b8839eb7b39a0deb07e2c9684a54944534fe7a2",
+      "project": "zeus-verify-aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa"
+     },
+     "password_not_in_compose": true,
+     "result": {
+      "error": "ContractError",
+      "message": "Unknown verification endpoint"
+     },
+     "timeouts": [
+      150,
+      150,
+      150
+     ],
+     "verbs": [
+      "up",
+      "port",
+      "down"
+     ]
+    },
+    "zero": {
+     "artifacts": [
+      {
+       "body": {
+        "project": "zeus-verify-aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+        "status": "services_removed"
+       },
+       "source": "verification-cleanup"
+      }
+     ],
+     "compose": {
+      "services": {
+       "postgres": {
+        "cpus": 1,
+        "environment": {
+         "POSTGRES_DB": "zeus",
+         "POSTGRES_PASSWORD": "${ZEUS_VERIFY_PASSWORD}",
+         "POSTGRES_USER": "zeus"
+        },
+        "healthcheck": {
+         "interval": "1s",
+         "retries": 60,
+         "test": [
+          "CMD-SHELL",
+          "pg_isready -U zeus -d zeus"
+         ],
+         "timeout": "3s"
+        },
+        "image": "pgvector/pgvector:pg17",
+        "mem_limit": "512m",
+        "ports": [
+         "127.0.0.1:31000:5432"
+        ],
+        "volumes": [
+         "database:/var/lib/postgresql/data"
+        ]
+       },
+       "redis": {
+        "command": [
+         "redis-server",
+         "--appendonly",
+         "no"
+        ],
+        "cpus": 0.5,
+        "healthcheck": {
+         "interval": "1s",
+         "retries": 60,
+         "test": [
+          "CMD",
+          "redis-cli",
+          "ping"
+         ],
+         "timeout": "3s"
+        },
+        "image": "redis:7.4-alpine",
+        "mem_limit": "128m",
+        "ports": [
+         "127.0.0.1:31001:6379"
+        ]
+       }
+      },
+      "volumes": {
+       "database": {}
+      }
+     },
+     "directory_removed": true,
+     "docker_cwd": "<ROOT>/lifecycle-ep-zero/zeus-verify-aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+     "endpoints": null,
+     "inside": null,
+     "last_args": [
+      "down",
+      "--volumes",
+      "--remove-orphans",
+      "--timeout",
+      "10"
+     ],
+     "manifest": {
+      "created_at": "2026-09-22T00:00:00+00:00",
+      "definition_hash": "6ad1067fd5ed83cbc9043ff50b8839eb7b39a0deb07e2c9684a54944534fe7a2",
+      "project": "zeus-verify-aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa"
+     },
+     "password_not_in_compose": true,
+     "result": {
+      "error": "ContractError",
+      "message": "Unknown verification endpoint"
+     },
+     "timeouts": [
+      150,
+      150,
+      150
+     ],
+     "verbs": [
+      "up",
+      "port",
+      "down"
+     ]
+    }
+   }
+  },
+  "finish_and_sweep": {
+   "ok": {
+    "outstanding": [],
+    "result": "ok",
+    "second_wait": {
+     "ok": 3
+    },
+    "slot_before": [
+     "a0001"
+    ],
+    "slots_after_finish": []
+   }
+  },
+  "held": {
+   "ok": {
+    "all_fail": {
+     "calls": [
+      "cancel",
+      "close",
+      "terminate",
+      "kill",
+      "cancel",
+      "close",
+      "terminate",
+      "kill"
+     ],
+     "closed": false,
+     "first": false,
+     "initial": "open",
+     "report": {
+      "close_attempts": 2,
+      "error": "RuntimeError",
+      "kind": "Scripted",
+      "state": "open"
+     },
+     "second": false
+    },
+    "already_closed": {
+     "calls": [],
+     "closed": true,
+     "first": true,
+     "initial": "closed",
+     "report": {
+      "close_attempts": 0,
+      "error": null,
+      "kind": "Scripted",
+      "state": "closed"
+     },
+     "second": true
+    },
+    "cancel_fails": {
+     "calls": [
+      "cancel",
+      "close"
+     ],
+     "closed": true,
+     "first": true,
+     "initial": "open",
+     "report": {
+      "close_attempts": 1,
+      "error": "RuntimeError",
+      "kind": "Scripted",
+      "state": "closed"
+     },
+     "second": true
+    },
+    "cancel_only": {
+     "calls": [
+      "cancel"
+     ],
+     "closed": true,
+     "first": true,
+     "initial": "open",
+     "report": {
+      "close_attempts": 1,
+      "error": null,
+      "kind": "Scripted",
+      "state": "closed"
+     },
+     "second": true
+    },
+    "cancel_then_close": {
+     "calls": [
+      "cancel",
+      "close"
+     ],
+     "closed": true,
+     "first": true,
+     "initial": "open",
+     "report": {
+      "close_attempts": 1,
+      "error": null,
+      "kind": "Scripted",
+      "state": "closed"
+     },
+     "second": true
+    },
+    "close_fails": {
+     "calls": [
+      "close",
+      "terminate",
+      "close",
+      "terminate"
+     ],
+     "closed": false,
+     "first": false,
+     "initial": "open",
+     "report": {
+      "close_attempts": 2,
+      "error": "RuntimeError",
+      "kind": "Scripted",
+      "state": "open"
+     },
+     "second": false
+    },
+    "close_without_flag": {
+     "calls": [
+      "close",
+      "close"
+     ],
+     "closed": false,
+     "first": false,
+     "initial": "open",
+     "report": {
+      "close_attempts": 2,
+      "error": null,
+      "kind": "Scripted",
+      "state": "open"
+     },
+     "second": false
+    },
+    "confirm": {
+     "after": true,
+     "before": false,
+     "state": "closed"
+    },
+    "kill_only": {
+     "calls": [
+      "kill"
+     ],
+     "closed": true,
+     "first": true,
+     "initial": "open",
+     "report": {
+      "close_attempts": 1,
+      "error": null,
+      "kind": "Scripted",
+      "state": "closed"
+     },
+     "second": true
+    },
+    "nothing": {
+     "calls": [],
+     "closed": false,
+     "first": false,
+     "initial": "open",
+     "report": {
+      "close_attempts": 2,
+      "error": null,
+      "kind": "Scripted",
+      "state": "open"
+     },
+     "second": false
+    },
+    "redis_handle": {
+     "client_closes": 1,
+     "closed_after": true,
+     "closed_before": false,
+     "state_after": "closed",
+     "state_before": "open"
+    },
+    "terminate_only": {
+     "calls": [
+      "terminate"
+     ],
+     "closed": true,
+     "first": true,
+     "initial": "open",
+     "report": {
+      "close_attempts": 1,
+      "error": null,
+      "kind": "Scripted",
+      "state": "closed"
+     },
+     "second": true
+    }
+   }
+  },
+  "invalid_manifest": {
+   "ok": {
+    "artifacts": [
+     {
+      "body": {
+       "definition_hash": "6ad1067fd5ed83cbc9043ff50b8839eb7b39a0deb07e2c9684a54944534fe7a2",
+       "port_choice": {
+        "asked": 2,
+        "daemon_is_local": true,
+        "guarantee": "scripted",
+        "sides": {
+         "local": {
+          "checked": true,
+          "how": "bind",
+          "kind": "linux"
+         },
+         "peer": {
+          "checked": false,
+          "kind": "none"
+         }
+        },
+        "verified_on": [
+         "local"
+        ],
+        "window": [
+         20000,
+         32767
+        ],
+        "window_source": "scripted"
+       },
+       "ports": {
+        "postgres": 45678,
+        "redis": 45679
+       },
+       "project": "zeus-verify-aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+       "published_by": "chosen",
+       "readiness": {
+        "postgres": {
+         "identity": "fixture",
+         "ready_after": 0.0,
+         "refusals_during_startup": {},
+         "tcp_after": 0.0
+        },
+        "redis": {
+         "identity": "fixture",
+         "ready_after": 0.0,
+         "refusals_during_startup": {},
+         "tcp_after": 0.0
+        }
+       },
+       "ready_after_seconds": {
+        "postgres": 0.0,
+        "redis": 0.0
+       },
+       "status": "services_ready"
+      },
+      "source": "verification-services"
+     },
+     {
+      "body": {
+       "error_type": "JSONDecodeError",
+       "project": "zeus-verify-00000000000000000000000000000000",
+       "status": "cleanup_blocked"
+      },
+      "source": "verification-cleanup"
+     },
+     {
+      "body": {
+       "project": "zeus-verify-aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+       "status": "services_removed"
+      },
+      "source": "verification-cleanup"
+     }
+    ],
+    "failures": [
+     {
+      "error_type": "JSONDecodeError",
+      "project": "zeus-verify-00000000000000000000000000000000",
+      "status": "cleanup_blocked"
+     }
+    ],
+    "invalid_kept": true,
+    "removed": [
+     "zeus-verify-aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa"
+    ],
+    "valid_removed": true
+   }
+  },
+  "lifecycle": {
+   "ok": {
+    "daemon_ports": {
+     "artifacts": [
+      {
+       "body": {
+        "definition_hash": "fa4db73e4290ba28bc41f0b5f19bad8ec82891e2c2b74d813b03314017163794",
+        "port_choice": {
+         "asked": 2,
+         "daemon_is_local": true,
+         "guarantee": "scripted",
+         "sides": {
+          "local": {
+           "checked": true,
+           "how": "bind",
+           "kind": "linux"
+          },
+          "peer": {
+           "checked": false,
+           "kind": "none"
+          }
+         },
+         "verified_on": [
+          "local"
+         ],
+         "window": [
+          20000,
+          32767
+         ],
+         "window_source": "scripted"
+        },
+        "ports": {
+         "postgres": 45678,
+         "redis": 45679
+        },
+        "project": "zeus-verify-aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+        "published_by": "daemon",
+        "readiness": {
+         "postgres": {
+          "identity": "fixture",
+          "ready_after": 0.0,
+          "refusals_during_startup": {},
+          "tcp_after": 0.0
+         },
+         "redis": {
+          "identity": "fixture",
+          "ready_after": 0.0,
+          "refusals_during_startup": {},
+          "tcp_after": 0.0
+         }
+        },
+        "ready_after_seconds": {
+         "postgres": 0.0,
+         "redis": 0.0
+        },
+        "status": "services_ready"
+       },
+       "source": "verification-services"
+      },
+      {
+       "body": {
+        "project": "zeus-verify-aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+        "status": "services_removed"
+       },
+       "source": "verification-cleanup"
+      }
+     ],
+     "compose": {
+      "services": {
+       "postgres": {
+        "cpus": 1,
+        "environment": {
+         "POSTGRES_DB": "zeus",
+         "POSTGRES_PASSWORD": "${ZEUS_VERIFY_PASSWORD}",
+         "POSTGRES_USER": "zeus"
+        },
+        "healthcheck": {
+         "interval": "1s",
+         "retries": 60,
+         "test": [
+          "CMD-SHELL",
+          "pg_isready -U zeus -d zeus"
+         ],
+         "timeout": "3s"
+        },
+        "image": "pgvector/pgvector:pg17",
+        "mem_limit": "512m",
+        "ports": [
+         "127.0.0.1::5432"
+        ],
+        "volumes": [
+         "database:/var/lib/postgresql/data"
+        ]
+       },
+       "redis": {
+        "command": [
+         "redis-server",
+         "--appendonly",
+         "no"
+        ],
+        "cpus": 0.5,
+        "healthcheck": {
+         "interval": "1s",
+         "retries": 60,
+         "test": [
+          "CMD",
+          "redis-cli",
+          "ping"
+         ],
+         "timeout": "3s"
+        },
+        "image": "redis:7.4-alpine",
+        "mem_limit": "128m",
+        "ports": [
+         "127.0.0.1::6379"
+        ]
+       }
+      },
+      "volumes": {
+       "database": {}
+      }
+     },
+     "directory_removed": true,
+     "docker_cwd": "<ROOT>/lifecycle-daemon/zeus-verify-aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+     "endpoints": {
+      "database_url": "postgresql://zeus:<PASSWORD>@127.0.0.1:45678/zeus",
+      "redis_url": "redis://127.0.0.1:45679/0"
+     },
+     "inside": [
+      "compose.json",
+      "manifest.json"
+     ],
+     "last_args": [
+      "down",
+      "--volumes",
+      "--remove-orphans",
+      "--timeout",
+      "10"
+     ],
+     "manifest": {
+      "created_at": "2026-09-22T00:00:00+00:00",
+      "definition_hash": "fa4db73e4290ba28bc41f0b5f19bad8ec82891e2c2b74d813b03314017163794",
+      "project": "zeus-verify-aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa"
+     },
+     "password_not_in_compose": true,
+     "result": {
+      "ok": "left"
+     },
+     "timeouts": [
+      150,
+      150,
+      150,
+      150
+     ],
+     "verbs": [
+      "up",
+      "port",
+      "port",
+      "down"
+     ]
+    },
+    "down": {
+     "artifacts": [
+      {
+       "body": {
+        "definition_hash": "6ad1067fd5ed83cbc9043ff50b8839eb7b39a0deb07e2c9684a54944534fe7a2",
+        "port_choice": {
+         "asked": 2,
+         "daemon_is_local": true,
+         "guarantee": "scripted",
+         "sides": {
+          "local": {
+           "checked": true,
+           "how": "bind",
+           "kind": "linux"
+          },
+          "peer": {
+           "checked": false,
+           "kind": "none"
+          }
+         },
+         "verified_on": [
+          "local"
+         ],
+         "window": [
+          20000,
+          32767
+         ],
+         "window_source": "scripted"
+        },
+        "ports": {
+         "postgres": 45678,
+         "redis": 45679
+        },
+        "project": "zeus-verify-aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+        "published_by": "chosen",
+        "readiness": {
+         "postgres": {
+          "identity": "fixture",
+          "ready_after": 0.0,
+          "refusals_during_startup": {},
+          "tcp_after": 0.0
+         },
+         "redis": {
+          "identity": "fixture",
+          "ready_after": 0.0,
+          "refusals_during_startup": {},
+          "tcp_after": 0.0
+         }
+        },
+        "ready_after_seconds": {
+         "postgres": 0.0,
+         "redis": 0.0
+        },
+        "status": "services_ready"
+       },
+       "source": "verification-services"
+      },
+      {
+       "body": {
+        "error_type": "RuntimeError",
+        "project": "zeus-verify-aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+        "status": "cleanup_failed"
+       },
+       "source": "verification-cleanup"
+      }
+     ],
+     "compose": {
+      "services": {
+       "postgres": {
+        "cpus": 1,
+        "environment": {
+         "POSTGRES_DB": "zeus",
+         "POSTGRES_PASSWORD": "${ZEUS_VERIFY_PASSWORD}",
+         "POSTGRES_USER": "zeus"
+        },
+        "healthcheck": {
+         "interval": "1s",
+         "retries": 60,
+         "test": [
+          "CMD-SHELL",
+          "pg_isready -U zeus -d zeus"
+         ],
+         "timeout": "3s"
+        },
+        "image": "pgvector/pgvector:pg17",
+        "mem_limit": "512m",
+        "ports": [
+         "127.0.0.1:31000:5432"
+        ],
+        "volumes": [
+         "database:/var/lib/postgresql/data"
+        ]
+       },
+       "redis": {
+        "command": [
+         "redis-server",
+         "--appendonly",
+         "no"
+        ],
+        "cpus": 0.5,
+        "healthcheck": {
+         "interval": "1s",
+         "retries": 60,
+         "test": [
+          "CMD",
+          "redis-cli",
+          "ping"
+         ],
+         "timeout": "3s"
+        },
+        "image": "redis:7.4-alpine",
+        "mem_limit": "128m",
+        "ports": [
+         "127.0.0.1:31001:6379"
+        ]
+       }
+      },
+      "volumes": {
+       "database": {}
+      }
+     },
+     "directory_removed": false,
+     "docker_cwd": "<ROOT>/lifecycle-down/zeus-verify-aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+     "endpoints": {
+      "database_url": "postgresql://zeus:<PASSWORD>@127.0.0.1:45678/zeus",
+      "redis_url": "redis://127.0.0.1:45679/0"
+     },
+     "inside": [
+      "compose.json",
+      "manifest.json"
+     ],
+     "last_args": [
+      "down",
+      "--volumes",
+      "--remove-orphans",
+      "--timeout",
+      "10"
+     ],
+     "manifest": {
+      "created_at": "2026-09-22T00:00:00+00:00",
+      "definition_hash": "6ad1067fd5ed83cbc9043ff50b8839eb7b39a0deb07e2c9684a54944534fe7a2",
+      "project": "zeus-verify-aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa"
+     },
+     "password_not_in_compose": true,
+     "result": {
+      "ok": "left"
+     },
+     "timeouts": [
+      150,
+      150,
+      150,
+      150
+     ],
+     "verbs": [
+      "up",
+      "port",
+      "port",
+      "down"
+     ]
+    },
+    "ok": {
+     "artifacts": [
+      {
+       "body": {
+        "definition_hash": "6ad1067fd5ed83cbc9043ff50b8839eb7b39a0deb07e2c9684a54944534fe7a2",
+        "port_choice": {
+         "asked": 2,
+         "daemon_is_local": true,
+         "guarantee": "scripted",
+         "sides": {
+          "local": {
+           "checked": true,
+           "how": "bind",
+           "kind": "linux"
+          },
+          "peer": {
+           "checked": false,
+           "kind": "none"
+          }
+         },
+         "verified_on": [
+          "local"
+         ],
+         "window": [
+          20000,
+          32767
+         ],
+         "window_source": "scripted"
+        },
+        "ports": {
+         "postgres": 45678,
+         "redis": 45679
+        },
+        "project": "zeus-verify-aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+        "published_by": "chosen",
+        "readiness": {
+         "postgres": {
+          "identity": "fixture",
+          "ready_after": 0.0,
+          "refusals_during_startup": {},
+          "tcp_after": 0.0
+         },
+         "redis": {
+          "identity": "fixture",
+          "ready_after": 0.0,
+          "refusals_during_startup": {},
+          "tcp_after": 0.0
+         }
+        },
+        "ready_after_seconds": {
+         "postgres": 0.0,
+         "redis": 0.0
+        },
+        "status": "services_ready"
+       },
+       "source": "verification-services"
+      },
+      {
+       "body": {
+        "project": "zeus-verify-aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+        "status": "services_removed"
+       },
+       "source": "verification-cleanup"
+      }
+     ],
+     "compose": {
+      "services": {
+       "postgres": {
+        "cpus": 1,
+        "environment": {
+         "POSTGRES_DB": "zeus",
+         "POSTGRES_PASSWORD": "${ZEUS_VERIFY_PASSWORD}",
+         "POSTGRES_USER": "zeus"
+        },
+        "healthcheck": {
+         "interval": "1s",
+         "retries": 60,
+         "test": [
+          "CMD-SHELL",
+          "pg_isready -U zeus -d zeus"
+         ],
+         "timeout": "3s"
+        },
+        "image": "pgvector/pgvector:pg17",
+        "mem_limit": "512m",
+        "ports": [
+         "127.0.0.1:31000:5432"
+        ],
+        "volumes": [
+         "database:/var/lib/postgresql/data"
+        ]
+       },
+       "redis": {
+        "command": [
+         "redis-server",
+         "--appendonly",
+         "no"
+        ],
+        "cpus": 0.5,
+        "healthcheck": {
+         "interval": "1s",
+         "retries": 60,
+         "test": [
+          "CMD",
+          "redis-cli",
+          "ping"
+         ],
+         "timeout": "3s"
+        },
+        "image": "redis:7.4-alpine",
+        "mem_limit": "128m",
+        "ports": [
+         "127.0.0.1:31001:6379"
+        ]
+       }
+      },
+      "volumes": {
+       "database": {}
+      }
+     },
+     "directory_removed": true,
+     "docker_cwd": "<ROOT>/lifecycle-ok/zeus-verify-aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+     "endpoints": {
+      "database_url": "postgresql://zeus:<PASSWORD>@127.0.0.1:45678/zeus",
+      "redis_url": "redis://127.0.0.1:45679/0"
+     },
+     "inside": [
+      "compose.json",
+      "manifest.json"
+     ],
+     "last_args": [
+      "down",
+      "--volumes",
+      "--remove-orphans",
+      "--timeout",
+      "10"
+     ],
+     "manifest": {
+      "created_at": "2026-09-22T00:00:00+00:00",
+      "definition_hash": "6ad1067fd5ed83cbc9043ff50b8839eb7b39a0deb07e2c9684a54944534fe7a2",
+      "project": "zeus-verify-aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa"
+     },
+     "password_not_in_compose": true,
+     "result": {
+      "ok": "left"
+     },
+     "timeouts": [
+      150,
+      150,
+      150,
+      150
+     ],
+     "verbs": [
+      "up",
+      "port",
+      "port",
+      "down"
+     ]
+    },
+    "port": {
+     "artifacts": [
+      {
+       "body": {
+        "project": "zeus-verify-aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+        "status": "services_removed"
+       },
+       "source": "verification-cleanup"
+      }
+     ],
+     "compose": {
+      "services": {
+       "postgres": {
+        "cpus": 1,
+        "environment": {
+         "POSTGRES_DB": "zeus",
+         "POSTGRES_PASSWORD": "${ZEUS_VERIFY_PASSWORD}",
+         "POSTGRES_USER": "zeus"
+        },
+        "healthcheck": {
+         "interval": "1s",
+         "retries": 60,
+         "test": [
+          "CMD-SHELL",
+          "pg_isready -U zeus -d zeus"
+         ],
+         "timeout": "3s"
+        },
+        "image": "pgvector/pgvector:pg17",
+        "mem_limit": "512m",
+        "ports": [
+         "127.0.0.1:31000:5432"
+        ],
+        "volumes": [
+         "database:/var/lib/postgresql/data"
+        ]
+       },
+       "redis": {
+        "command": [
+         "redis-server",
+         "--appendonly",
+         "no"
+        ],
+        "cpus": 0.5,
+        "healthcheck": {
+         "interval": "1s",
+         "retries": 60,
+         "test": [
+          "CMD",
+          "redis-cli",
+          "ping"
+         ],
+         "timeout": "3s"
+        },
+        "image": "redis:7.4-alpine",
+        "mem_limit": "128m",
+        "ports": [
+         "127.0.0.1:31001:6379"
+        ]
+       }
+      },
+      "volumes": {
+       "database": {}
+      }
+     },
+     "directory_removed": true,
+     "docker_cwd": "<ROOT>/lifecycle-port/zeus-verify-aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+     "endpoints": null,
+     "inside": null,
+     "last_args": [
+      "down",
+      "--volumes",
+      "--remove-orphans",
+      "--timeout",
+      "10"
+     ],
+     "manifest": {
+      "created_at": "2026-09-22T00:00:00+00:00",
+      "definition_hash": "6ad1067fd5ed83cbc9043ff50b8839eb7b39a0deb07e2c9684a54944534fe7a2",
+      "project": "zeus-verify-aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa"
+     },
+     "password_not_in_compose": true,
+     "result": {
+      "error": "RuntimeError",
+      "message": "Isolated verification services unavailable: port"
+     },
+     "timeouts": [
+      150,
+      150,
+      150
+     ],
+     "verbs": [
+      "up",
+      "port",
+      "down"
+     ]
+    },
+    "tests": {
+     "artifacts": [
+      {
+       "body": {
+        "definition_hash": "6ad1067fd5ed83cbc9043ff50b8839eb7b39a0deb07e2c9684a54944534fe7a2",
+        "port_choice": {
+         "asked": 2,
+         "daemon_is_local": true,
+         "guarantee": "scripted",
+         "sides": {
+          "local": {
+           "checked": true,
+           "how": "bind",
+           "kind": "linux"
+          },
+          "peer": {
+           "checked": false,
+           "kind": "none"
+          }
+         },
+         "verified_on": [
+          "local"
+         ],
+         "window": [
+          20000,
+          32767
+         ],
+         "window_source": "scripted"
+        },
+        "ports": {
+         "postgres": 45678,
+         "redis": 45679
+        },
+        "project": "zeus-verify-aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+        "published_by": "chosen",
+        "readiness": {
+         "postgres": {
+          "identity": "fixture",
+          "ready_after": 0.0,
+          "refusals_during_startup": {},
+          "tcp_after": 0.0
+         },
+         "redis": {
+          "identity": "fixture",
+          "ready_after": 0.0,
+          "refusals_during_startup": {},
+          "tcp_after": 0.0
+         }
+        },
+        "ready_after_seconds": {
+         "postgres": 0.0,
+         "redis": 0.0
+        },
+        "status": "services_ready"
+       },
+       "source": "verification-services"
+      },
+      {
+       "body": {
+        "project": "zeus-verify-aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+        "status": "services_removed"
+       },
+       "source": "verification-cleanup"
+      }
+     ],
+     "compose": {
+      "services": {
+       "postgres": {
+        "cpus": 1,
+        "environment": {
+         "POSTGRES_DB": "zeus",
+         "POSTGRES_PASSWORD": "${ZEUS_VERIFY_PASSWORD}",
+         "POSTGRES_USER": "zeus"
+        },
+        "healthcheck": {
+         "interval": "1s",
+         "retries": 60,
+         "test": [
+          "CMD-SHELL",
+          "pg_isready -U zeus -d zeus"
+         ],
+         "timeout": "3s"
+        },
+        "image": "pgvector/pgvector:pg17",
+        "mem_limit": "512m",
+        "ports": [
+         "127.0.0.1:31000:5432"
+        ],
+        "volumes": [
+         "database:/var/lib/postgresql/data"
+        ]
+       },
+       "redis": {
+        "command": [
+         "redis-server",
+         "--appendonly",
+         "no"
+        ],
+        "cpus": 0.5,
+        "healthcheck": {
+         "interval": "1s",
+         "retries": 60,
+         "test": [
+          "CMD",
+          "redis-cli",
+          "ping"
+         ],
+         "timeout": "3s"
+        },
+        "image": "redis:7.4-alpine",
+        "mem_limit": "128m",
+        "ports": [
+         "127.0.0.1:31001:6379"
+        ]
+       }
+      },
+      "volumes": {
+       "database": {}
+      }
+     },
+     "directory_removed": true,
+     "docker_cwd": "<ROOT>/lifecycle-tests/zeus-verify-aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+     "endpoints": {
+      "database_url": "postgresql://zeus:<PASSWORD>@127.0.0.1:45678/zeus",
+      "redis_url": "redis://127.0.0.1:45679/0"
+     },
+     "inside": [
+      "compose.json",
+      "manifest.json"
+     ],
+     "last_args": [
+      "down",
+      "--volumes",
+      "--remove-orphans",
+      "--timeout",
+      "10"
+     ],
+     "manifest": {
+      "created_at": "2026-09-22T00:00:00+00:00",
+      "definition_hash": "6ad1067fd5ed83cbc9043ff50b8839eb7b39a0deb07e2c9684a54944534fe7a2",
+      "project": "zeus-verify-aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa"
+     },
+     "password_not_in_compose": true,
+     "result": {
+      "error": "RuntimeError",
+      "message": "fixture tests failed"
+     },
+     "timeouts": [
+      150,
+      150,
+      150,
+      150
+     ],
+     "verbs": [
+      "up",
+      "port",
+      "port",
+      "down"
+     ]
+    },
+    "up": {
+     "artifacts": [
+      {
+       "body": {
+        "project": "zeus-verify-aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+        "status": "services_removed"
+       },
+       "source": "verification-cleanup"
+      }
+     ],
+     "compose": {
+      "services": {
+       "postgres": {
+        "cpus": 1,
+        "environment": {
+         "POSTGRES_DB": "zeus",
+         "POSTGRES_PASSWORD": "${ZEUS_VERIFY_PASSWORD}",
+         "POSTGRES_USER": "zeus"
+        },
+        "healthcheck": {
+         "interval": "1s",
+         "retries": 60,
+         "test": [
+          "CMD-SHELL",
+          "pg_isready -U zeus -d zeus"
+         ],
+         "timeout": "3s"
+        },
+        "image": "pgvector/pgvector:pg17",
+        "mem_limit": "512m",
+        "ports": [
+         "127.0.0.1:31000:5432"
+        ],
+        "volumes": [
+         "database:/var/lib/postgresql/data"
+        ]
+       },
+       "redis": {
+        "command": [
+         "redis-server",
+         "--appendonly",
+         "no"
+        ],
+        "cpus": 0.5,
+        "healthcheck": {
+         "interval": "1s",
+         "retries": 60,
+         "test": [
+          "CMD",
+          "redis-cli",
+          "ping"
+         ],
+         "timeout": "3s"
+        },
+        "image": "redis:7.4-alpine",
+        "mem_limit": "128m",
+        "ports": [
+         "127.0.0.1:31001:6379"
+        ]
+       }
+      },
+      "volumes": {
+       "database": {}
+      }
+     },
+     "directory_removed": true,
+     "docker_cwd": "<ROOT>/lifecycle-up/zeus-verify-aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+     "endpoints": null,
+     "inside": null,
+     "last_args": [
+      "down",
+      "--volumes",
+      "--remove-orphans",
+      "--timeout",
+      "10"
+     ],
+     "manifest": {
+      "created_at": "2026-09-22T00:00:00+00:00",
+      "definition_hash": "6ad1067fd5ed83cbc9043ff50b8839eb7b39a0deb07e2c9684a54944534fe7a2",
+      "project": "zeus-verify-aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa"
+     },
+     "password_not_in_compose": true,
+     "result": {
+      "error": "RuntimeError",
+      "message": "Isolated verification services unavailable: up"
+     },
+     "timeouts": [
+      150,
+      150
+     ],
+     "verbs": [
+      "up",
+      "down"
+     ]
+    }
+   }
+  },
+  "other_attempt_untouched": {
+   "ok": {
+    "a_resource_closed": false,
+    "a_state": "running",
+    "second": {
+     "ok": "done"
+    },
+    "slots": [
+     "a0001"
+    ]
+   }
+  },
+  "project_names": {
+   "ok": {
+    "artifacts_kept": true,
+    "default_directory_under_root": true,
+    "default_shape": true,
+    "distinct_passwords": true,
+    "distinct_projects": true,
+    "explicit": "zeus-verify-aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+    "explicit_directory": "<ROOT>/names/zeus-verify-aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+    "explicit_root": "<ROOT>/names",
+    "linked_directory": "<ROOT>/names-real/zeus-verify-bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb",
+    "linked_root_resolved": "<ROOT>/names-real",
+    "nothing_created": [
+     "link"
+    ],
+    "password_hex_48": true,
+    "refused": {
+     "empty": {
+      "error": "ContractError",
+      "message": "Unknown verification stack"
+     },
+     "long": {
+      "error": "ContractError",
+      "message": "Unknown verification stack"
+     },
+     "newline": {
+      "error": "ContractError",
+      "message": "Unknown verification stack"
+     },
+     "non_hex": {
+      "error": "ContractError",
+      "message": "Unknown verification stack"
+     },
+     "other_prefix": {
+      "error": "ContractError",
+      "message": "Unknown verification stack"
+     },
+     "short": {
+      "error": "ContractError",
+      "message": "Unknown verification stack"
+     },
+     "traversal": {
+      "error": "ContractError",
+      "message": "Unknown verification stack"
+     },
+     "upper_case": {
+      "error": "ContractError",
+      "message": "Unknown verification stack"
+     }
+    }
+   }
+  },
+  "readiness_cannot_answer": {
+   "ok": {
+    "postgres": {
+     "artifacts": [],
+     "bounded": true,
+     "diagnosis_calls": [],
+     "password_in_message": false,
+     "result": {
+      "error": "ContractError",
+      "message": "Verification service postgres on 127.0.0.1:<PORT-0> accepted a connection but did not answer within 1.5s; refusals: {\"closed_unexpectedly\":N}"
+     }
+    },
+    "redis": {
+     "artifacts": [],
+     "bounded": true,
+     "diagnosis_calls": [],
+     "password_in_message": false,
+     "result": {
+      "error": "ContractError",
+      "message": "Verification service redis on 127.0.0.1:<PORT-1> accepted a connection but did not answer within 1.5s; refusals: {\"closed_unexpectedly\":N}"
+     }
+    }
+   }
+  },
+  "readiness_diagnosis_lookup": {
+   "ok": {
+    "docker_fails": {
+     "calls": [
+      {
+       "container": null,
+       "failed_at": "float",
+       "lookup": null,
+       "port": "<PORT-0>",
+       "seconds": 10.0,
+       "service": "postgres"
+      }
+     ],
+     "docker": [
+      {
+       "args": [
+        "ps",
+        "-q",
+        "postgres"
+       ],
+       "cwd": "<ROOT>/diag-docker_fails/zeus-verify-aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+       "env": {
+        "DOCKER_CONFIG": "/scripted/docker",
+        "DOCKER_CONTEXT": "scripted",
+        "DOCKER_HOST": "unix:///scripted/docker.sock",
+        "HOME": "/scripted/home",
+        "LANG": "C.UTF-8",
+        "NO_PROXY": "localhost",
+        "PATH": "/scripted/bin",
+        "SSL_CERT_FILE": "/scripted/ca.pem",
+        "TEMP": "/scripted/temp",
+        "ZEUS_VERIFY_PASSWORD": "<PASSWORD>",
+        "http_proxy": "http://scripted-proxy:3128"
+       },
+       "extra": [],
+       "files": [],
+       "prefix": [
+        "docker",
+        "compose",
+        "--project-name",
+        "zeus-verify-aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+        "--file",
+        "compose.json"
+       ],
+       "timeout": 2
+      }
+     ],
+     "record": {
+      "means": "scripted: service",
+      "port": "<PORT-0>",
+      "service": "postgres",
+      "verdict": "service"
+     }
+    },
+    "empty_answer": {
+     "calls": [
+      {
+       "container": null,
+       "failed_at": "float",
+       "lookup": null,
+       "port": "<PORT-0>",
+       "seconds": 10.0,
+       "service": "postgres"
+      }
+     ],
+     "docker": [
+      {
+       "args": [
+        "ps",
+        "-q",
+        "postgres"
+       ],
+       "cwd": "<ROOT>/diag-empty_answer/zeus-verify-aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+       "env": {
+        "DOCKER_CONFIG": "/scripted/docker",
+        "DOCKER_CONTEXT": "scripted",
+        "DOCKER_HOST": "unix:///scripted/docker.sock",
+        "HOME": "/scripted/home",
+        "LANG": "C.UTF-8",
+        "NO_PROXY": "localhost",
+        "PATH": "/scripted/bin",
+        "SSL_CERT_FILE": "/scripted/ca.pem",
+        "TEMP": "/scripted/temp",
+        "ZEUS_VERIFY_PASSWORD": "<PASSWORD>",
+        "http_proxy": "http://scripted-proxy:3128"
+       },
+       "extra": [],
+       "files": [],
+       "prefix": [
+        "docker",
+        "compose",
+        "--project-name",
+        "zeus-verify-aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+        "--file",
+        "compose.json"
+       ],
+       "timeout": 2
+      }
+     ],
+     "record": {
+      "means": "scripted: service",
+      "port": "<PORT-0>",
+      "service": "postgres",
+      "verdict": "service"
+     }
+    },
+    "found": {
+     "calls": [
+      {
+       "container": null,
+       "failed_at": "float",
+       "lookup": "container-postgres",
+       "port": "<PORT-0>",
+       "seconds": 10.0,
+       "service": "postgres"
+      }
+     ],
+     "docker": [
+      {
+       "args": [
+        "ps",
+        "-q",
+        "postgres"
+       ],
+       "cwd": "<ROOT>/diag-found/zeus-verify-aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+       "env": {
+        "DOCKER_CONFIG": "/scripted/docker",
+        "DOCKER_CONTEXT": "scripted",
+        "DOCKER_HOST": "unix:///scripted/docker.sock",
+        "HOME": "/scripted/home",
+        "LANG": "C.UTF-8",
+        "NO_PROXY": "localhost",
+        "PATH": "/scripted/bin",
+        "SSL_CERT_FILE": "/scripted/ca.pem",
+        "TEMP": "/scripted/temp",
+        "ZEUS_VERIFY_PASSWORD": "<PASSWORD>",
+        "http_proxy": "http://scripted-proxy:3128"
+       },
+       "extra": [],
+       "files": [],
+       "prefix": [
+        "docker",
+        "compose",
+        "--project-name",
+        "zeus-verify-aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+        "--file",
+        "compose.json"
+       ],
+       "timeout": 2
+      }
+     ],
+     "record": {
+      "means": "scripted: service",
+      "port": "<PORT-0>",
+      "service": "postgres",
+      "verdict": "service"
+     }
+    },
+    "zero_seconds": {
+     "calls": [
+      {
+       "container": null,
+       "failed_at": "NoneType",
+       "lookup": null,
+       "port": 1,
+       "seconds": 10.0,
+       "service": "redis"
+      }
+     ],
+     "record": {
+      "means": "scripted: service",
+      "port": 1,
+      "service": "redis",
+      "verdict": "service"
+     }
+    }
+   }
+  },
+  "readiness_exception_chain": {
+   "ok": {
+    "cause": "None",
+    "message": "Verification service postgres on 127.0.0.1:<PORT-0> accepted a connection but did not answer within 0.3s; refusals: {\"other\":N}",
+    "password_in_traceback": false,
+    "refusals_named": true,
+    "sentinel_in_traceback": false,
+    "suppressed_context": true,
+    "type": "ContractError"
+   }
+  },
+  "readiness_identity_unreadable": {
+   "ok": {
+    "diagnosis_calls": [],
+    "result": {
+     "error": "ContractError",
+     "message": "The container identity for postgres could not be read within the 1.0s deadline; refusals: {\"other\":N}"
+    },
+    "within_both_bounds": true
+   }
+  },
+  "readiness_late_answer": {
+   "ok": {
+    "abandoned": {
+     "artifacts": [
+      "verification-readiness:readiness_failed"
+     ],
+     "diagnosis_calls": [
+      {
+       "container": null,
+       "failed_at": "float",
+       "lookup": null,
+       "port": "<PORT-0>",
+       "seconds": 10.0,
+       "service": "postgres"
+      }
+     ],
+     "result": {
+      "error": "ContractError",
+      "message": "Verification service postgres on 127.0.0.1:<PORT-0> accepted a connection but did not answer within 0.1s; refusals: {\"other\":N}; where it broke: service (scripted: service)"
+     }
+    },
+    "unbounded": {
+     "artifacts": [],
+     "diagnosis_calls": [],
+     "result": {
+      "error": "ContractError",
+      "message": "Verification service postgres on 127.0.0.1:<PORT-1> answered after its 0.1s deadline had passed; refusals: {}"
+     }
+    }
+   }
+  },
+  "readiness_never_accepts": {
+   "ok": {
+    "lookup_calls": [
+     [
+      "ps",
+      "-q",
+      "redis",
+      2
+     ],
+     [
+      "ps",
+      "-q",
+      "postgres",
+      2
+     ]
+    ],
+    "postgres": {
+     "artifacts": [
+      {
+       "body": {
+        "diagnosis": {
+         "means": "scripted: publication",
+         "port": "<PORT-1>",
+         "service": "postgres",
+         "verdict": "publication"
+        },
+        "project": "zeus-verify-aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+        "status": "readiness_failed"
+       },
+       "source": "verification-readiness"
+      }
+     ],
+     "bounded": true,
+     "diagnosis_calls": [
+      {
+       "container": null,
+       "failed_at": "float",
+       "lookup": "container-postgres",
+       "port": "<PORT-1>",
+       "seconds": 10.0,
+       "service": "postgres"
+      }
+     ],
+     "result": {
+      "error": "ContractError",
+      "message": "Verification endpoint 127.0.0.1:<PORT-1> for postgres never accepted a connection within 0.5s; refusals: {\"refused\":N}; where it broke: publication (scripted: publication)"
+     }
+    },
+    "redis": {
+     "artifacts": [
+      {
+       "body": {
+        "diagnosis": {
+         "means": "scripted: publication",
+         "port": "<PORT-0>",
+         "service": "redis",
+         "verdict": "publication"
+        },
+        "project": "zeus-verify-aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+        "status": "readiness_failed"
+       },
+       "source": "verification-readiness"
+      }
+     ],
+     "bounded": true,
+     "diagnosis_calls": [
+      {
+       "container": null,
+       "failed_at": "float",
+       "lookup": "container-redis",
+       "port": "<PORT-0>",
+       "seconds": 10.0,
+       "service": "redis"
+      }
+     ],
+     "result": {
+      "error": "ContractError",
+      "message": "Verification endpoint 127.0.0.1:<PORT-0> for redis never accepted a connection within 0.5s; refusals: {\"refused\":N}; where it broke: publication (scripted: publication)"
+     }
+    }
+   }
+  },
+  "readiness_not_this_project": {
+   "ok": {
+    "artifacts": [],
+    "diagnosis_calls": [],
+    "empty_identity": {
+     "error": "ContractError",
+     "message": "The service answering 127.0.0.1:<PORT-0> is not this project's redis; refusals: {}"
+    },
+    "mismatch": {
+     "error": "ContractError",
+     "message": "The service answering 127.0.0.1:<PORT-0> is not this project's postgres; refusals: {}"
+    }
+   }
+  },
+  "readiness_receipt": {
+   "ok": {
+    "identity": "identity-redis",
+    "keys": [
+     "identity",
+     "note",
+     "readiness_deadline_seconds",
+     "ready_after",
+     "reclaim_deadline_seconds",
+     "refusals_during_startup",
+     "tcp_after",
+     "unreclaimed_attempts"
+    ],
+    "note": "ready is a real answer from the container this project started, inside one readiness deadline covering every stage; the reclaim deadline is separate and only bounds taking back an attempt that already missed the first one",
+    "numbers": [
+     true,
+     true
+    ],
+    "readiness_deadline_seconds": 5,
+    "reclaim_deadline_seconds": 0.5,
+    "refusals": {},
+    "result_kind": [
+     "ok"
+    ],
+    "unreclaimed_attempts": []
+   }
+  },
+  "readiness_silent_service": {
+   "ok": {
+    "bounded": true,
+    "diagnosis_calls": [
+     {
+      "container": null,
+      "failed_at": "float",
+      "lookup": null,
+      "port": "<PORT-0>",
+      "seconds": 10.0,
+      "service": "postgres"
+     }
+    ],
+    "owed_states": [
+     "cancelled"
+    ],
+    "owed_while_blocked": 1,
+    "result": {
+     "error": "ContractError",
+     "message": "Verification service postgres on 127.0.0.1:<PORT-0> accepted a connection but did not answer within 0.5s; refusals: {\"other\":N}; where it broke: service (scripted: service)"
+    },
+    "unreclaimed": [
+     {
+      "project": "zeus-verify-aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+      "reclaimed": false,
+      "resources_still_held": 0,
+      "state": "cancelled",
+      "status": "attempt_unreclaimed",
+      "worker_finished": false
+     }
+    ]
+   }
+  },
+  "readiness_waits_for_answer": {
+   "ok": {
+    "artifacts": [],
+    "diagnosis_calls": [],
+    "identity": "our-service",
+    "keys": [
+     "identity",
+     "note",
+     "readiness_deadline_seconds",
+     "ready_after",
+     "reclaim_deadline_seconds",
+     "refusals_during_startup",
+     "tcp_after",
+     "unreclaimed_attempts"
+    ],
+    "refusal_kinds": [
+     "starting_up"
+    ],
+    "result_kind": [
+     "ok"
+    ],
+    "socket_first": true,
+    "starting_up_seen": true,
+    "unreclaimed": [],
+    "waited_for_the_answer": true
+   }
+  },
+  "refusal_kinds": {
+   "ok": {
+    "kinds": {
+     "closed": "closed_unexpectedly",
+     "empty": "other",
+     "order_closed_before_refused": "closed_unexpectedly",
+     "order_starting_first": "starting_up",
+     "other": "other",
+     "refused": "refused",
+     "reset": "closed_unexpectedly",
+     "starting_up": "starting_up",
+     "timeout": "timed_out",
+     "timeout_word": "timed_out",
+     "upper": "refused"
+    },
+    "static": "refused"
+   }
+  },
+  "registered_after_reclamation": {
+   "ok": {
+    "first_closed": true,
+    "late_closed": true,
+    "owed_after": [],
+    "raised": {
+     "error": "TimeoutError",
+     "message": "the attempt did not finish within its share of the deadline"
+    }
+   }
+  },
+  "registered_after_window": {
+   "ok": {
+    "late_closed": true,
+    "owned_after_window": 1,
+    "raised": {
+     "error": "TimeoutError",
+     "message": "the attempt did not finish within its share of the deadline"
+    }
+   }
+  },
+  "reservation": {
+   "ok": {
+    "beside": {
+     "ok": "beside"
+    },
+    "kept_by_sweep": true,
+    "outstanding": [
+     {
+      "attempt": "a-test",
+      "closed": 0,
+      "reclaim_deadline_seconds": 0.5,
+      "reclaim_thread": null,
+      "reclaimed": false,
+      "recovery": "this process still holds it; sweeping continues as later attempts start, and it ends when the process ends. The compose stack is removed by its own teardown regardless.",
+      "resources": [],
+      "resources_still_held": 0,
+      "state": "reserved",
+      "thread": "verification-attempt-reserve-a-test",
+      "worker_finished": false
+     }
+    ],
+    "reclaimable": false,
+    "settled": false,
+    "state": "reserved",
+    "still_there": true
+   }
+  },
+  "slot_limits": {
+   "ok": {
+    "all_running": true,
+    "refused": {
+     "error": "ContractError",
+     "message": "3 attempts in this process are still owned (['a0001', 'a0002', 'a0003']); refusing to start another. They end when this process ends; each compose stack is removed by its own teardown regardless."
+    },
+    "slots": [
+     "a0001",
+     "a0002",
+     "a0003"
+    ],
+    "started_counter": 3,
+    "states": [
+     "running"
+    ]
+   }
+  },
+  "slot_released": {
+   "ok": {
+    "after_error": [],
+    "closed_by_worker": {
+     "debt_cleared": true,
+     "result": {
+      "ok": "answered"
+     },
+     "socket_closed": true
+    },
+    "left_open": {
+     "debt_cleared": true,
+     "result": {
+      "ok": "answered"
+     },
+     "socket_closed": true
+    },
+    "slots_after": [],
+    "worker_error": {
+     "error": "ValueError",
+     "message": "worker failed"
+    }
+   }
+  },
+  "stale_cycle": {
+   "ok": {
+    "artifacts": [
+     {
+      "body": {
+       "definition_hash": "6ad1067fd5ed83cbc9043ff50b8839eb7b39a0deb07e2c9684a54944534fe7a2",
+       "port_choice": {
+        "asked": 2,
+        "daemon_is_local": true,
+        "guarantee": "scripted",
+        "sides": {
+         "local": {
+          "checked": true,
+          "how": "bind",
+          "kind": "linux"
+         },
+         "peer": {
+          "checked": false,
+          "kind": "none"
+         }
+        },
+        "verified_on": [
+         "local"
+        ],
+        "window": [
+         20000,
+         32767
+        ],
+        "window_source": "scripted"
+       },
+       "ports": {
+        "postgres": 45678,
+        "redis": 45679
+       },
+       "project": "zeus-verify-aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+       "published_by": "chosen",
+       "readiness": {
+        "postgres": {
+         "identity": "fixture",
+         "ready_after": 0.0,
+         "refusals_during_startup": {},
+         "tcp_after": 0.0
+        },
+        "redis": {
+         "identity": "fixture",
+         "ready_after": 0.0,
+         "refusals_during_startup": {},
+         "tcp_after": 0.0
+        }
+       },
+       "ready_after_seconds": {
+        "postgres": 0.0,
+        "redis": 0.0
+       },
+       "status": "services_ready"
+      },
+      "source": "verification-services"
+     },
+     {
+      "body": {
+       "error_type": "ContractError",
+       "project": "zeus-verify-aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+       "status": "cleanup_blocked"
+      },
+      "source": "verification-cleanup"
+     },
+     {
+      "body": {
+       "error_type": "RuntimeError",
+       "project": "zeus-verify-bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb",
+       "status": "cleanup_failed"
+      },
+      "source": "verification-cleanup"
+     },
+     {
+      "body": {
+       "project": "zeus-verify-aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+       "status": "services_removed"
+      },
+      "source": "verification-cleanup"
+     },
+     {
+      "body": {
+       "project": "zeus-verify-bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb",
+       "status": "services_removed"
+      },
+      "source": "verification-cleanup"
+     }
+    ],
+    "changed_definition": {
+     "directory_kept": true,
+     "result": {
+      "failures": [
+       {
+        "error_type": "ContractError",
+        "project": "zeus-verify-aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+        "status": "cleanup_blocked"
+       }
+      ],
+      "removed": []
+     }
+    },
+    "entered_manifest": {
+     "created_at": "2026-09-22T00:00:00+00:00",
+     "definition_hash": "6ad1067fd5ed83cbc9043ff50b8839eb7b39a0deb07e2c9684a54944534fe7a2",
+     "project": "zeus-verify-aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa"
+    },
+    "failing_verbs": [
+     "up",
+     "down"
+    ],
+    "fresh_left": {
+     "removed": []
+    },
+    "primary": {
+     "error": "RuntimeError",
+     "message": "Isolated verification services unavailable: up"
+    },
+    "restored": {
+     "directory_removed": true,
+     "result": {
+      "removed": [
+       "zeus-verify-aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa"
+      ]
+     }
+    },
+    "retried": {
+     "directory_removed": true,
+     "result": {
+      "removed": [
+       "zeus-verify-bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb"
+      ]
+     }
+    },
+    "retry_manifest_kept": true,
+    "verbs": [
+     "up",
+     "port",
+     "port",
+     "down"
+    ]
+   }
+  },
+  "start_failure": {
+   "ok": {
+    "raised": {
+     "error": "RuntimeError",
+     "message": "cannot start a thread"
+    },
+    "slots": [],
+    "started": 1
+   }
+  },
+  "state_of": {
+   "ok": {
+    "bool_false": "open",
+    "bool_true": "closed",
+    "closed_socket": "closed",
+    "fileno_fails": "unknown",
+    "float": "unknown",
+    "int_one": "closed",
+    "int_zero": "open",
+    "no_attribute": "unknown",
+    "none": "unknown",
+    "open_socket": "open",
+    "string": "unknown"
+   }
+  },
+  "stubborn_resource": {
+   "ok": {
+    "close_tried": [
+     true
+    ],
+    "owed": 1,
+    "raised": {
+     "error": "TimeoutError",
+     "message": "the attempt did not finish within its share of the deadline"
+    },
+    "reclaimed": false,
+    "resource": [
+     {
+      "error": "OSError",
+      "kind": "Stubborn",
+      "state": "unknown"
+     }
+    ],
+    "resources_still_held": 1,
+    "socket_open": true
+   }
+  },
+  "timed_out_attempt": {
+   "ok": {
+    "all_closed": true,
+    "no_leftover_threads": true,
+    "results": [
+     {
+      "error": "TimeoutError",
+      "message": "the attempt did not finish within its share of the deadline"
+     },
+     {
+      "error": "TimeoutError",
+      "message": "the attempt did not finish within its share of the deadline"
+     },
+     {
+      "error": "TimeoutError",
+      "message": "the attempt did not finish within its share of the deadline"
+     }
+    ],
+    "slots_after": [],
+    "sockets": 3,
+    "started": 3,
+    "taken_back": true
+   }
+  },
+  "unreadable_resource": {
+   "ok": {
+    "owed": 1,
+    "raised": {
+     "error": "TimeoutError",
+     "message": "the attempt did not finish within its share of the deadline"
+    },
+    "reclaimed": false,
+    "socket_open": true,
+    "state": [
+     "unknown"
+    ]
+   }
+  },
+  "unreclaimed_limit": {
+   "ok": {
+    "direct_refusal": {
+     "error": "ContractError",
+     "message": "3 attempts in this process are still owned (['a0001', 'a0002', 'a0003']); refusing to start another. They end when this process ends; each compose stack is removed by its own teardown regardless."
+    },
+    "owed": [
+     1,
+     2,
+     3
+    ],
+    "owed_after_refusal": 3,
+    "records": [
+     {
+      "attempt": "a0001",
+      "closed": 0,
+      "reclaim_deadline_seconds": 0.5,
+      "reclaim_thread": "verification-reclaim-a0001",
+      "reclaimed": false,
+      "recovery": "this process still holds it; sweeping continues as later attempts start, and it ends when the process ends. The compose stack is removed by its own teardown regardless.",
+      "resources": [],
+      "resources_still_held": 0,
+      "state": "cancelled",
+      "thread": "verification-attempt-00000000-a0001",
+      "worker_finished": false
+     },
+     {
+      "attempt": "a0002",
+      "closed": 0,
+      "reclaim_deadline_seconds": 0.5,
+      "reclaim_thread": "verification-reclaim-a0002",
+      "reclaimed": false,
+      "recovery": "this process still holds it; sweeping continues as later attempts start, and it ends when the process ends. The compose stack is removed by its own teardown regardless.",
+      "resources": [],
+      "resources_still_held": 0,
+      "state": "cancelled",
+      "thread": "verification-attempt-11111111-a0002",
+      "worker_finished": false
+     },
+     {
+      "attempt": "a0003",
+      "closed": 0,
+      "reclaim_deadline_seconds": 0.5,
+      "reclaim_thread": "verification-reclaim-a0003",
+      "reclaimed": false,
+      "recovery": "this process still holds it; sweeping continues as later attempts start, and it ends when the process ends. The compose stack is removed by its own teardown regardless.",
+      "resources": [],
+      "resources_still_held": 0,
+      "state": "cancelled",
+      "thread": "verification-attempt-22222222-a0003",
+      "worker_finished": false
+     }
+    ],
+    "recovery_text": "this process still holds it; sweeping continues as later attempts start, and it ends when the process ends. The compose stack is removed by its own teardown regardless.",
+    "refused": {
+     "error": "ContractError",
+     "message": "3 attempts in this process are still owned (['a0001', 'a0002', 'a0003']); refusing to start another. They end when this process ends; each compose stack is removed by its own teardown regardless."
+    },
+    "started_after": 3,
+    "timeouts": [
+     {
+      "error": "TimeoutError",
+      "message": "the attempt did not finish within its share of the deadline"
+     },
+     {
+      "error": "TimeoutError",
+      "message": "the attempt did not finish within its share of the deadline"
+     },
+     {
+      "error": "TimeoutError",
+      "message": "the attempt did not finish within its share of the deadline"
+     }
+    ],
+    "unreclaimed_artifacts": [
+     {
+      "attempt": "a0001",
+      "owed_in_process": 1,
+      "project": "zeus-verify-00000000000000000000000000000000",
+      "reclaim_thread": "verification-reclaim-a0001",
+      "reclaimed": false,
+      "resources_still_held": 0,
+      "state": "cancelled",
+      "status": "attempt_unreclaimed",
+      "thread": "verification-attempt-00000000-a0001",
+      "worker_finished": false
+     },
+     {
+      "attempt": "a0002",
+      "owed_in_process": 2,
+      "project": "zeus-verify-11111111111111111111111111111111",
+      "reclaim_thread": "verification-reclaim-a0002",
+      "reclaimed": false,
+      "resources_still_held": 0,
+      "state": "cancelled",
+      "status": "attempt_unreclaimed",
+      "thread": "verification-attempt-11111111-a0002",
+      "worker_finished": false
+     },
+     {
+      "attempt": "a0003",
+      "owed_in_process": 3,
+      "project": "zeus-verify-22222222222222222222222222222222",
+      "reclaim_thread": "verification-reclaim-a0003",
+      "reclaimed": false,
+      "resources_still_held": 0,
+      "state": "cancelled",
+      "status": "attempt_unreclaimed",
+      "thread": "verification-attempt-22222222-a0003",
+      "worker_finished": false
+     }
+    ]
+   }
+  }
+ }
+}
