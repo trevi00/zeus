@@ -1,0 +1,8 @@
+{
+ "family": "coordination.continuation_binding",
+ "description": "M7 Executor._continuation (INV-CONTINUATION-001) over a MemoryStore: a stored identical binding is returned; another operation, no stored row, a differing stored row and an invalid document refuse; no continuation attached is the legacy None (reference only)",
+ "reference_driver": "drivers/reference/s10_continuation_binding.py",
+ "target_driver": "drivers/target/s10_continuation_binding.py",
+ "golden": "goldens/reference/coordination.continuation_binding.json",
+ "slice": "S10"
+}

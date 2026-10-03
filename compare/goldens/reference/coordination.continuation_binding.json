@@ -1,0 +1,33 @@
+{
+ "a_valid_returned": {
+  "returned": {
+   "digest": "e03cf88820229c8feb7034aeee4cb55d97497112b0c3d757034ecf1af10009a5",
+   "operation_id": "operation-1"
+  },
+  "store_changed": false
+ },
+ "b_other_operation": {
+  "message": "Continuation binding names another operation",
+  "refused": "ContractError",
+  "store_changed": false
+ },
+ "c_no_stored_row": {
+  "message": "Continuation binding is not the lane's own record",
+  "refused": "ContractError",
+  "store_changed": false
+ },
+ "d_stored_row_differs": {
+  "message": "Continuation binding is not the lane's own record",
+  "refused": "ContractError",
+  "store_changed": false
+ },
+ "e_invalid_document": {
+  "message": "continuation refused: binding_invalid (schema)",
+  "refused": "ContinuationRefused",
+  "store_changed": false
+ },
+ "f_not_attached": {
+  "returned": null,
+  "store_changed": false
+ }
+}
