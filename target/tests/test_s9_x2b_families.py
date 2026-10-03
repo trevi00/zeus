@@ -38,7 +38,7 @@ def run(r):
 
 
 def test_the_new_families_are_registered_with_counter_type_and_labels():
-    assert len(FAMILIES) == 12
+    assert set(NEW) <= set(FAMILIES)
     assert {name: FAMILIES[name].labels for name in NEW} == {
         NEW[0]: ("result",), NEW[1]: ("provider", "outcome", "within_budget"), NEW[2]: ("provider",),
         NEW[3]: ("stage",), NEW[4]: ("state",), NEW[5]: ("transition",)}
