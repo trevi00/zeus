@@ -114,7 +114,8 @@ def initialize(root: Path | None = None) -> dict:
     created = False
     password = secrets.token_hex(24)
     content = (f"POSTGRES_PASSWORD={password}\n"
-               f"HARNESS_DATABASE_URL=postgresql://harness:{password}@127.0.0.1:55432/harness\n"
+               "HARNESS_DATABASE_URL=postgresql:"
+               f"//harness:{password}@127.0.0.1:55432/harness\n"
                "HARNESS_REDIS_URL=redis://127.0.0.1:56379/0\n"
                "COMPOSE_PROJECT_NAME=zeus\nZEUS_REDIS_NAMESPACE=zeus\n")
     try:

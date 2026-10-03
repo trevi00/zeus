@@ -16,7 +16,6 @@ import driver  # noqa: E402
 driver.start("target")
 
 import s10_cli_storefree  # noqa: E402
-
 from codex_harness.entry.cli import main  # noqa: E402
 
 if __name__ == "__main__":

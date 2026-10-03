@@ -14,7 +14,7 @@ import json
 import sys
 from pathlib import Path
 
-from codex_harness.entry.cli.output import emit
+from codex_harness.entry.cli.output import emit as emit
 
 
 def parser() -> argparse.ArgumentParser:
