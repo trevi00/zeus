@@ -19,7 +19,7 @@ def run(args) -> None:
     from pathlib import Path
 
     from codex_harness.composition import cli as composition
-    from codex_harness.entry.cli import emit
+    from codex_harness.entry.cli.output import emit
     runtime = composition.codex_runtime()
     result = runtime.probe()
     if args.live:

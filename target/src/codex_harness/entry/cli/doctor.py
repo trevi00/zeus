@@ -26,7 +26,7 @@ def run(args) -> None:
         repository_root,
         runtime_dir,
     )
-    from codex_harness.entry.cli import emit
+    from codex_harness.entry.cli.output import emit
     checks = {name: shutil.which(name) is not None for name in ("git", "uv", "docker")}
     checks.update(codex=resolve_codex() is not None, codex_auth=codex_auth().is_file(),
                   compose=(repository_root() / "compose.yaml").is_file())

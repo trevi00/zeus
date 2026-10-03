@@ -20,7 +20,7 @@ def run(args) -> None:
     from pathlib import Path
 
     from codex_harness.composition.cli import organization, validate_message
-    from codex_harness.entry.cli import emit
+    from codex_harness.entry.cli.output import emit
     message = validate_message(json.loads(Path(args.file).read_text(encoding="utf-8")))
     organization().authorize(message)
     emit({"valid": True, "message_id": message["message_id"]})

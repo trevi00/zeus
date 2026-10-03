@@ -18,5 +18,5 @@ def run(args) -> None:
     from dataclasses import asdict
 
     from codex_harness.composition.cli import organization
-    from codex_harness.entry.cli import emit
+    from codex_harness.entry.cli.output import emit
     emit({"agents": [asdict(a) for a in organization().agents.values()]})

@@ -28,7 +28,7 @@ def parser_roots(parser):
     return list(action.choices)
 
 
-def test_the_51_root_modules_each_own_exactly_one_public_function_add_parser():
+def test_the_51_root_modules_each_define_add_parser_and_at_most_run():
     roots = golden_roots()
     assert len(roots) == 51
     for root in roots:
@@ -37,8 +37,8 @@ def test_the_51_root_modules_each_own_exactly_one_public_function_add_parser():
         tree = ast.parse(path.read_text(encoding="utf-8"))
         public = [n.name for n in tree.body if isinstance(n, (ast.FunctionDef, ast.AsyncFunctionDef, ast.ClassDef))
                   and not n.name.startswith("_")]
-        assert public == ["add_parser"], (root, public)
-    assert {p.stem for p in PACKAGE.glob("*.py")} == {r.replace("-", "_") for r in roots} | {"__init__"}
+        assert "add_parser" in public and set(public) <= {"add_parser", "run"}, (root, public)
+    assert {p.stem for p in PACKAGE.glob("*.py")} == {r.replace("-", "_") for r in roots} | {"__init__", "output"}
 
 
 def test_parser_root_order_equals_the_golden_root_order():
