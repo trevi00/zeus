@@ -1,0 +1,6 @@
+low 1
+high 2
+max 3
+oom 4
+oom_kill 5
+oom_group_kill 6
