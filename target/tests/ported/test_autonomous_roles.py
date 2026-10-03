@@ -1,0 +1,446 @@
+"""Ported SOURCE M7 suite `tests/test_autonomous_roles.py` (e38aa722) run against the S8 target (DESIGN-s8 §29).
+
+Every assertion is M7's, unchanged. Adaptations, all construction/import/patch-target-only: the M7 names `Harness`, `Workflow`, `organization`, `packaged_policy`, `AutonomousRun`, `CouncilRun`, `Operation`, `load_isolation` come from the `m7_research` shim (see its docstring for each) and `Executor` from `m7_executor`; every other name from its target home in `kernel`, `storage`, `research`, `coordination`, `knowledge`, `execution` and `observation`. A patch of M7's `adapters.bus.Redis` targets `storage.adapters.redis_bus.Redis`, of `adapters.executor.AppServer` `m7_executor.AppServer`, and the lazy `application.autonomous`/`application.operation` module imports the `coordination.application` ones. A test that needs a capability
+outside S1-S8 is kept whole under a skip naming its slice. M7 docstring follows.
+
+Producer/consumer contract for the four model-facing role schemas (INV-AUTONOMOUS-001).
+
+Every output below is a labelled fixture; no model is called. The live rejected researcher output
+is reproduced as a compact fixture carrying only the refused kinds and status, never the transcript.
+"""
+import json
+
+import pytest
+from jsonschema import Draft202012Validator
+from m7_research import packaged_policy
+
+from codex_harness.execution.adapters.execution_output import completed_output
+from codex_harness.execution.adapters.output_schema import preflight
+from codex_harness.kernel.errors import ContractError
+from codex_harness.kernel.ids import canonical
+from codex_harness.research.adapters.autonomous_roles import (
+    ANSWERED_STATUSES,
+    CONSUMER_ENUMS,
+    OBJECTIVES,
+    SCHEMAS,
+    SOURCED_KINDS,
+    UNRESOLVED_STATUS,
+    UNSOURCED_KIND,
+)
+from codex_harness.research.domain.autonomous import (
+    ROLE_ORDER,
+    SSOT_DECISIONS,
+    event_from_role,
+    packet_from_research,
+    validate_autonomous_manifest,
+)
+from codex_harness.research.domain.dge import (
+    CLAIM_KINDS,
+    DECISIONS,
+    QUESTION_STATUSES,
+    SEVERITIES,
+    VERDICTS,
+    EventError,
+    PacketError,
+    validate_event,
+    validate_payload,
+)
+
+BASE = "a" * 40
+SOURCE_SHA = "b" * 64
+CRITERION = "focused tests pass"
+MANIFEST = validate_autonomous_manifest(
+    {"schema": "urn:zeus:autonomous:1", "id": "auto-roles", "base_revision": BASE,
+     "goal": {"path": "docs/zeus/operations/GOAL.md", "sha256": SOURCE_SHA, "criterion": "one-start entry point",
+              "rationale": "fixture"},
+     "plan": {"objective": "align the role schemas", "acceptance_criteria": [CRITERION],
+              "allowed_paths": ["src/codex_harness/adapters/autonomous_roles.py"]},
+     "budget": {"per_host": 8, "total": 16},
+     "claude": {"model": "claude-fixture-model", "timeout_seconds": 300, "max_budget_usd": 2},
+     "deadline": "2030-01-01T00:00:00+00:00",
+     "research": {"topic": "role contracts", "questions": ["which enums?"], "search_scope": ["src"]}},
+    packaged_policy())
+SOURCE = {"id": "s1", "path": "docs/contracts.md", "sha256": SOURCE_SHA, "locator": "git", "revision": BASE, "read_scope": "all"}
+TRANSITION = {"compatibility": "additive", "rollback": "revert", "retirement": "none"}
+RESEARCH = {"sources": [SOURCE],
+            "claims": [{"id": "c1", "kind": "fact", "text": "CLAIM_KINDS is finite", "source_ids": ["s1"]},
+                       {"id": "c2", "kind": "inference", "text": "an enum keeps outputs inside it", "source_ids": ["s1"]},
+                       {"id": "c3", "kind": "unknown", "text": "runtime jsonschema behaviour on the host", "source_ids": []}],
+            "questions": [{"id": "q1", "question": "which enums?", "blocking": True, "status": "answered", "claim_ids": ["c1"]},
+                          {"id": "q2", "question": "host behaviour?", "blocking": False, "status": "unknown", "claim_ids": ["c3"]}],
+            "ssot": {"searched_paths": ["src"], "searched_symbols": ["CLAIM_KINDS"], "authoritative_definition": "domain/dge.py",
+                     "callers": ["adapters/autonomous_roles.py"], "evidence": ["ran: python -m pytest tests/test_dge.py (observed pass)"],
+                     "unknowns": [], "decision": "improve", "rationale": "reuse the domain constants", "transition": TRANSITION},
+            "needs_user": False, "user_question": None}
+CRITICAL = {"id": "f1", "criterion": CRITERION, "severity": "critical", "scenario": "schema admits a bad kind", "claim_ids": ["c1"],
+            "trigger": "model emits kind=verdict", "impact": "packet refused after a paid start", "mitigation": "enum from CLAIM_KINDS"}
+MINOR = {"id": "f2", "criterion": CRITERION, "severity": "minor", "scenario": "prompt wording", "claim_ids": ["c2"],
+         "trigger": None, "impact": None, "mitigation": None}
+ROLE_OUTPUTS = {"researcher": RESEARCH, "proposer": {"summary": "enum every finite field", "claim_ids": ["c1", "c2"]},
+                "attacker": {"findings": [CRITICAL, MINOR]},
+                "arbiter": {"verdict": "accept", "rationale": "the critical finding is mitigated by the plan", "research_question": None,
+                            "dispositions": [{"finding_id": "f1", "decision": "resolved", "reason": "enum in schema"},
+                                             {"finding_id": "f2", "decision": "deferred", "reason": "backlog"}]}}
+# Live canary autonomous-ssot-canary-001 (task 7708599f, base e345c2e): the researcher's real output used
+# these claim kinds and a prose question status; packet_from_research refused it. Compact fixture, not the transcript.
+LIVE_REJECTED_KINDS = ("review_frame", "recommendation", "test_command", "execution_result", "verdict")
+LIVE_REJECTED_STATUS = "open - depends on the future CI run"
+# Live canary autonomous-ssot-canary-002 (researcher e8152929, base 490c5d4): valid enums, but claim c6 was a fact
+# about the run's own execution environment with source_ids=[]; packet_from_research refused it. Compact fixture.
+LIVE_UNCITED_FACT = {"id": "c6", "kind": "fact", "text": "the execution environment observed during this run", "source_ids": []}
+# research-program-001 live cycle 1 (execution artifact sha256:8e4f8990..., capture c63c303f): the researcher's real
+# output passed the execution schema, then packet_from_research refused it because answered question q3 cited
+# claim c11 of kind unknown. SYNTHETIC fixture reproducing only that q3/c11 relationship, never the saved answer,
+# which stays unchanged in its artifact (RESULT.md); the id, text and citation names below are placeholders.
+LIVE_UNKNOWN_CITED_CLAIM = {"id": "c11", "kind": "unknown", "text": "whether the lead's primary source exists", "source_ids": []}
+LIVE_ANSWERED_WITH_UNKNOWN = {"id": "q3", "question": "what remains unknown about the lead?", "blocking": False,
+                              "status": "answered", "claim_ids": ["c11"]}
+PACKET_DIGEST = "1" * 64
+CLAIM_VARIANTS = SCHEMAS["researcher"]["properties"]["claims"]["items"]["anyOf"]
+QUESTION_VARIANTS = SCHEMAS["researcher"]["properties"]["questions"]["items"]["anyOf"]
+
+
+def schema_check(role, output):
+    """What the runner does with the provider's text: preflight plus Draft 2020-12 validation."""
+    return completed_output(canonical(output), SCHEMAS[role])
+
+
+def consume(role, output, findings=None):
+    """The existing consumers, untouched: packet validator for research, per-role payload validator for debate."""
+    if role == "researcher":
+        return packet_from_research(MANIFEST, output)
+    event = validate_event(event_from_role(role, output, PACKET_DIGEST, 1, "task-" + role))
+    return validate_payload(role, event["payload"], claim_ids={"c1", "c2", "c3"}, criteria=[CRITERION],
+                            findings=findings if findings is not None else ROLE_OUTPUTS["attacker"]["findings"])
+
+
+def test_every_role_schema_enum_is_the_consumer_constant_and_passes_preflight():
+    schemas = SCHEMAS
+    # The claim kind is split across the two typed anyOf variants; together they are exactly CLAIM_KINDS.
+    sourced, unsourced = CLAIM_VARIANTS
+    claim_kind = {"type": "string", "enum": sourced["properties"]["kind"]["enum"] + unsourced["properties"]["kind"]["enum"]}
+    # The question status is split the same way across its two typed anyOf variants; together exactly QUESTION_STATUSES.
+    answered, unresolved = QUESTION_VARIANTS
+    question_status = {"type": "string", "enum": answered["properties"]["status"]["enum"] + unresolved["properties"]["status"]["enum"]}
+    located = {"claim.kind": claim_kind,
+               "question.status": question_status,
+               "ssot.decision": schemas["researcher"]["properties"]["ssot"]["properties"]["decision"],
+               "finding.severity": schemas["attacker"]["properties"]["findings"]["items"]["properties"]["severity"],
+               "arbiter.verdict": schemas["arbiter"]["properties"]["verdict"],
+               "disposition.decision": schemas["arbiter"]["properties"]["dispositions"]["items"]["properties"]["decision"]}
+    expected = {"claim.kind": CLAIM_KINDS, "question.status": QUESTION_STATUSES, "ssot.decision": SSOT_DECISIONS,
+                "finding.severity": SEVERITIES, "arbiter.verdict": VERDICTS, "disposition.decision": DECISIONS}
+    assert CONSUMER_ENUMS == expected
+    for field, node in located.items():
+        assert node["type"] == "string" and set(node["enum"]) == expected[field] and len(node["enum"]) == len(expected[field]), field
+    for role in ROLE_ORDER:
+        receipt = preflight(SCHEMAS[role])
+        assert receipt["checks"] and ("enum" in receipt["keywords"]) == (role != "proposer"), role
+        assert ("anyOf" in receipt["keywords"]) == (role == "researcher") and not {"if", "then", "else", "allOf"} & set(receipt["keywords"]), role
+
+
+def test_claim_variants_state_the_consumer_citation_rule_with_typed_anyof_and_minitems():
+    # Consumer rule (domain.dge._claims): nonempty source_ids for every kind except unknown. The producer states
+    # it as two closed object variants; nothing else about the claim differs between them.
+    sourced, unsourced = CLAIM_VARIANTS
+    assert SOURCED_KINDS | {UNSOURCED_KIND} == CLAIM_KINDS and UNSOURCED_KIND not in SOURCED_KINDS
+    assert set(sourced["properties"]["kind"]["enum"]) == SOURCED_KINDS and unsourced["properties"]["kind"]["enum"] == [UNSOURCED_KIND]
+    assert sourced["properties"]["source_ids"] == {"type": "array", "items": {"type": "string"}, "minItems": 1}
+    assert unsourced["properties"]["source_ids"] == {"type": "array", "items": {"type": "string"}}
+    for variant in CLAIM_VARIANTS:
+        assert variant["type"] == "object" and variant["additionalProperties"] is False
+        assert variant["required"] == ["id", "kind", "text", "source_ids"] and variant["properties"]["kind"]["type"] == "string"
+    assert set(SCHEMAS["researcher"]["properties"]["claims"]["items"]) == {"anyOf"}
+
+
+def test_question_variants_state_the_two_local_consumer_rules_with_typed_anyof_and_never_the_cross_array_rule():
+    # Consumer rules (domain.dge._questions): nonempty claim_ids when answered; no blocking unknown. The producer
+    # states exactly those two LOCAL rules as two closed object variants with the same field set and constants.
+    # The third consumer rule (answered cites only non-unknown claims) needs the claims array and is deliberately
+    # absent: no variant names a claim kind, so schema admission never implies consumer acceptance of a reference.
+    answered, unresolved = QUESTION_VARIANTS
+    assert ANSWERED_STATUSES | {UNRESOLVED_STATUS} == QUESTION_STATUSES and UNRESOLVED_STATUS not in ANSWERED_STATUSES
+    assert set(answered["properties"]["status"]["enum"]) == ANSWERED_STATUSES and unresolved["properties"]["status"]["enum"] == [UNRESOLVED_STATUS]
+    assert answered["properties"]["claim_ids"] == {"type": "array", "items": {"type": "string"}, "minItems": 1}
+    assert unresolved["properties"]["claim_ids"] == {"type": "array", "items": {"type": "string"}}
+    assert answered["properties"]["blocking"] == {"type": "boolean"}
+    assert unresolved["properties"]["blocking"] == {"type": "boolean", "enum": [False]}, "typed single-value enum, no const/if"
+    for variant in QUESTION_VARIANTS:
+        assert variant["type"] == "object" and variant["additionalProperties"] is False
+        assert variant["required"] == ["id", "question", "blocking", "status", "claim_ids"]
+        assert variant["properties"]["status"]["type"] == "string"
+        assert "kind" not in json.dumps(variant), "the schema cannot see claim kinds"
+    assert set(SCHEMAS["researcher"]["properties"]["questions"]["items"]) == {"anyOf"}
+
+
+@pytest.mark.parametrize("status", sorted(QUESTION_STATUSES))
+@pytest.mark.parametrize("blocking", [False, True], ids=["nonblocking", "blocking"])
+@pytest.mark.parametrize("claim_ids", [[], ["c1"]], ids=["empty", "cited"])
+def test_every_local_question_shape_is_admitted_exactly_when_the_consumer_accepts_it(status, blocking, claim_ids):
+    # Local matrix: answered needs nonempty refs (either blocking value); unknown needs blocking false (any refs).
+    # The cited reference is a fact (c1) so that only the LOCAL rules decide here; cross-array cases are separate.
+    question = {"id": "q9", "question": "one more question", "blocking": blocking, "status": status, "claim_ids": claim_ids}
+    output = {**RESEARCH, "questions": RESEARCH["questions"] + [question]}
+    result = schema_check("researcher", output)
+    admitted = (status == "answered" and bool(claim_ids)) or (status == UNRESOLVED_STATUS and not blocking)
+    if admitted:
+        assert result["answer"] == output, result.get("failure")
+        packet = packet_from_research(MANIFEST, output)["packet"]
+        assert packet["questions"][-1] == question, "an unknown may cite an unknown claim, a fact, or nothing"
+        return
+    assert result["answer"] is None and result["failure"]["output_reason"] == "schema_mismatch"
+    assert result["failure"]["owner"] == "agent_output" and result["failure"]["instance_path"] == ["questions", 2]
+    assert "one more question" not in str(result["failure"]), "no output text is echoed"
+    refusal = "must be a list of distinct ids" if status == "answered" else "blocking unresolved"
+    with pytest.raises(PacketError, match=refusal):
+        packet_from_research(MANIFEST, output)
+
+
+@pytest.mark.parametrize("claim_ids, refusal", [
+    (["c3"], "cites only non-unknown claims"),
+    (["c1", "c3"], "cites only non-unknown claims"),
+    (["c404"], "references an unknown id"),
+    (["c1", "c1"], "must be a list of distinct ids"),
+], ids=["unknown-kind", "mixed-known-and-unknown", "missing-id", "duplicate-id"])
+def test_relational_reference_limits_pass_the_schema_and_stay_consumer_refused(claim_ids, refusal):
+    # Schema capability versus consumer proof: every answered question below is well-formed for the model-facing
+    # schema (nonempty string ids) and every one is refused by the unchanged packet validator. The local schema
+    # cannot state these rules; passing it is not evidence that the packet will be accepted.
+    question = {"id": "q9", "question": "which claims settle it?", "blocking": True, "status": "answered", "claim_ids": claim_ids}
+    output = {**RESEARCH, "questions": RESEARCH["questions"] + [question]}
+    result = schema_check("researcher", output)
+    assert result["answer"] == output and result["structural"]["checks"]["schema"] == "checked", result.get("failure")
+    with pytest.raises(PacketError, match=refusal):
+        packet_from_research(MANIFEST, output)
+
+
+def test_live_answered_question_citing_an_unknown_claim_fixture_is_still_refused_and_the_honest_forms_pass():
+    # Labelled SYNTHETIC recurrence of research-program-001 cycle 1: q3 answered, citing c11 of kind unknown.
+    # Before and after this batch the schema admits it (the reference is nonempty) and only the unchanged packet
+    # validator refuses it; nothing coerces, relabels or retries, and the saved live answer is not touched.
+    live = {**RESEARCH, "claims": RESEARCH["claims"] + [LIVE_UNKNOWN_CITED_CLAIM],
+            "questions": RESEARCH["questions"] + [LIVE_ANSWERED_WITH_UNKNOWN]}
+    assert schema_check("researcher", live)["answer"] == live, "schema capability, not consumer proof"
+    with pytest.raises(PacketError, match="answered question cites only non-unknown claims"):
+        packet_from_research(MANIFEST, live)
+    # Control 1: the honest nonblocking unknown. Same question, same citation, status unknown, blocking false.
+    honest_unknown = {**live, "questions": RESEARCH["questions"] + [{**LIVE_ANSWERED_WITH_UNKNOWN, "status": UNRESOLVED_STATUS}]}
+    assert schema_check("researcher", honest_unknown)["answer"] == honest_unknown
+    consumed = packet_from_research(MANIFEST, honest_unknown)["packet"]
+    assert consumed["questions"][-1] == {**LIVE_ANSWERED_WITH_UNKNOWN, "status": UNRESOLVED_STATUS}
+    assert consumed["claims"][-1] == LIVE_UNKNOWN_CITED_CLAIM, "the unknown claim is kept as unknown, never relabelled"
+    # Control 2: the sourced-limitation form. q3 is answered by a fact about a DOCUMENTED limitation (cited to a
+    # source at base) and the uncertainty itself stays a separate nonblocking unknown question citing c11.
+    documented = {"id": "c12", "kind": "fact", "text": "the capture record states the primary source was not fetched", "source_ids": ["s1"]}
+    sourced_limitation = {**live, "claims": live["claims"] + [documented],
+                          "questions": RESEARCH["questions"] + [{**LIVE_ANSWERED_WITH_UNKNOWN, "claim_ids": ["c12"]},
+                                                                {"id": "q4", "question": "does the primary source exist?",
+                                                                 "blocking": False, "status": UNRESOLVED_STATUS, "claim_ids": ["c11"]}]}
+    assert schema_check("researcher", sourced_limitation)["answer"] == sourced_limitation
+    consumed = packet_from_research(MANIFEST, sourced_limitation)["packet"]
+    assert [(q["status"], q["claim_ids"]) for q in consumed["questions"][-2:]] == [("answered", ["c12"]), ("unknown", ["c11"])]
+    # Coercion that would have "passed" the live answer is not a control: relabelling c11 as a fact with no source is
+    # refused at the schema (claims rule), and relabelling it as a cited fact would be an invented citation.
+    relabelled = {**live, "claims": RESEARCH["claims"] + [{**LIVE_UNKNOWN_CITED_CLAIM, "kind": "fact"}]}
+    assert schema_check("researcher", relabelled)["failure"]["instance_path"] == ["claims", 3]
+
+
+@pytest.mark.parametrize("kind", sorted(CLAIM_KINDS))
+@pytest.mark.parametrize("source_ids", [[], ["s1"]], ids=["empty", "cited"])
+def test_every_kind_with_empty_and_nonempty_citations_is_admitted_exactly_when_the_consumer_accepts(kind, source_ids):
+    claim = {"id": "c9", "kind": kind, "text": "one more claim", "source_ids": source_ids}
+    output = {**RESEARCH, "claims": RESEARCH["claims"] + [claim]}
+    result = schema_check("researcher", output)
+    admitted = bool(source_ids) or kind == UNSOURCED_KIND
+    if admitted:
+        assert result["answer"] == output, result.get("failure")
+        packet = packet_from_research(MANIFEST, output)["packet"]
+        assert packet["claims"][-1] == claim, "an unknown may carry citations or none; the consumer keeps both"
+    else:
+        assert result["answer"] is None and result["failure"]["output_reason"] == "schema_mismatch"
+        assert result["failure"]["owner"] == "agent_output" and result["failure"]["instance_path"] == ["claims", 3]
+        with pytest.raises(PacketError, match="claim source_ids must be a list of distinct ids"):
+            packet_from_research(MANIFEST, output)
+
+
+def test_live_uncited_fact_fixture_is_refused_before_the_packet_and_the_observation_belongs_in_evidence():
+    # Labelled reproduction of the canary-002 refusal, not the answer itself. Before this fix the schema admitted
+    # source_ids=[] for a fact and only packet_from_research refused, after a paid start.
+    live = {**RESEARCH, "claims": RESEARCH["claims"] + [LIVE_UNCITED_FACT]}
+    result = schema_check("researcher", live)
+    assert result["answer"] is None and result["failure"]["output_reason"] == "schema_mismatch"
+    assert result["failure"]["instance_path"] == ["claims", 3] and result["failure"]["schema_path"][-1] == "anyOf"
+    assert LIVE_UNCITED_FACT["text"] not in str(result["failure"]), "no output text is echoed"
+    with pytest.raises(PacketError, match="claim source_ids must be a list of distinct ids"):
+        packet_from_research(MANIFEST, live)
+    # Controls: the same observation is valid as an unknown claim, and as ssot.evidence with no claim at all.
+    # The refusal is about the fact/citation pairing; no citation is forced and nothing is repaired.
+    as_unknown = {**RESEARCH, "claims": RESEARCH["claims"] + [{**LIVE_UNCITED_FACT, "kind": UNSOURCED_KIND}]}
+    assert schema_check("researcher", as_unknown)["answer"] == as_unknown
+    assert packet_from_research(MANIFEST, as_unknown)["packet"]["claims"][-1]["kind"] == UNSOURCED_KIND
+    as_evidence = {**RESEARCH, "ssot": {**RESEARCH["ssot"], "evidence": RESEARCH["ssot"]["evidence"] + [LIVE_UNCITED_FACT["text"]]}}
+    assert schema_check("researcher", as_evidence)["answer"] == as_evidence
+    assert packet_from_research(MANIFEST, as_evidence)["ssot"]["evidence"][-1] == LIVE_UNCITED_FACT["text"]
+
+
+def test_prompts_name_the_finite_values_and_separate_design_unknowns_from_future_tests():
+    researcher = OBJECTIVES["researcher"]
+    for value in CLAIM_KINDS | QUESTION_STATUSES | SSOT_DECISIONS:
+        assert value in researcher
+    assert "ssot.evidence" in researcher and "not claim kinds" in researcher
+    assert "cites at least one source id" in researcher and "only an unknown claim may leave source_ids empty" in researcher
+    assert "runtime, test run or clean checkout" in researcher and "never invent a citation" in researcher
+    assert "have not run yet are not unknown design questions" in researcher
+    assert "not asked to certify" in researcher, "a read-only researcher never certifies the future fix"
+    # Packet producer alignment (research-program-001 q3/c11): the cross-array rule the schema cannot state.
+    assert "checked across both arrays" in researcher and "refused, never repaired" in researcher
+    assert "answered question cites at least one claim id and only fact/inference claims, never an unknown claim" in researcher
+    assert "unknown question has blocking false" in researcher
+    assert "Self-check every answered question before you return" in researcher
+    assert "Never relabel an unknown claim as fact or inference" in researcher and "unknown evidence stays unknown" in researcher
+    assert "'what remains unknown?'" in researcher and "DOCUMENTED limitation" in researcher
+    assert "separate nonblocking unknown question" in researcher
+    assert "status unknown with blocking true" in researcher and "do not mark it nonblocking or answered to pass the check" in researcher
+    assert all(v in OBJECTIVES["attacker"] for v in SEVERITIES) and "Everything else is minor" in OBJECTIVES["attacker"]
+    assert all(v in OBJECTIVES["arbiter"] for v in VERDICTS | DECISIONS) and "never defer a critical" in OBJECTIVES["arbiter"]
+
+
+@pytest.mark.parametrize("role", ROLE_ORDER)
+def test_valid_full_role_output_passes_the_schema_and_the_consumer(role):
+    result = schema_check(role, ROLE_OUTPUTS[role])
+    assert result["answer"] == ROLE_OUTPUTS[role] and result["structural"]["checks"]["schema"] == "checked", result.get("failure")
+    consumed = consume(role, ROLE_OUTPUTS[role])
+    if role == "researcher":
+        assert consumed["ssot"]["decision"] == "improve" and [c["kind"] for c in consumed["packet"]["claims"]] == ["fact", "inference", "unknown"]
+        assert [q["status"] for q in consumed["packet"]["questions"]] == ["answered", "unknown"]
+    elif role == "attacker":
+        assert [f["severity"] for f in consumed["findings"]] == ["critical", "minor"]
+        assert consumed["findings"][0]["scenario"].endswith("mitigation: enum from CLAIM_KINDS"), "materiality is carried into the event"
+    elif role == "arbiter":
+        assert [d["decision"] for d in consumed["dispositions"]] == ["resolved", "deferred"]
+
+
+@pytest.mark.parametrize("role, pointer, bad", [
+    ("researcher", ("claims", 0, "kind"), "review_frame"),
+    ("researcher", ("questions", 0, "status"), "open"),
+    ("researcher", ("ssot", "decision"), "keep"),
+    ("attacker", ("findings", 0, "severity"), "high"),
+    ("arbiter", ("verdict",), "approve"),
+    ("arbiter", ("dispositions", 0, "decision"), "accepted"),
+])
+def test_invalid_finite_values_are_refused_at_the_model_boundary_and_by_the_consumer(role, pointer, bad):
+    document = json.loads(canonical(ROLE_OUTPUTS[role]))
+    node = document
+    for step in pointer[:-1]:
+        node = node[step]
+    node[pointer[-1]] = bad
+    result = schema_check(role, document)
+    assert result["answer"] is None and result["failure"]["output_reason"] == "schema_mismatch"
+    # A claim or question is refused at the item itself: both anyOf variants fail on the finite field, so the best
+    # match is the anyOf.
+    reported = list(pointer[:2]) if pointer[0] in ("claims", "questions") else list(pointer)
+    assert result["failure"]["owner"] == "agent_output" and result["failure"]["instance_path"] == reported
+    assert bad not in str(result["failure"]), "no value is echoed"
+    with pytest.raises((PacketError, EventError, ContractError)):
+        consume(role, document)
+
+
+def test_live_rejected_claim_kinds_and_question_status_fixture_is_refused_before_the_packet():
+    # Labelled reproduction of the live refusal: the same shape the researcher returned, reduced to the
+    # refused values. Before this fix the schema admitted it and only packet_from_research refused.
+    live = {**RESEARCH,
+            "claims": [{"id": "c" + str(i), "kind": kind, "text": "process commentary", "source_ids": ["s1"]}
+                       for i, kind in enumerate(LIVE_REJECTED_KINDS, 1)],
+            "questions": [{"id": "q1", "question": "does the future CI pass?", "blocking": True, "status": LIVE_REJECTED_STATUS,
+                           "claim_ids": ["c1"]}]}
+    result = schema_check("researcher", live)
+    assert result["answer"] is None and result["failure"]["output_reason"] == "schema_mismatch"
+    assert result["failure"]["instance_path"] == ["claims", 0]
+    with pytest.raises(PacketError, match="known kind"):
+        packet_from_research(MANIFEST, live)
+    only_status = {**RESEARCH, "questions": [{**RESEARCH["questions"][0], "status": LIVE_REJECTED_STATUS}]}
+    assert schema_check("researcher", only_status)["failure"]["instance_path"] == ["questions", 0]
+    with pytest.raises(PacketError, match="answered or unknown"):
+        packet_from_research(MANIFEST, only_status)
+    # The consumer is unchanged: a blocking design unknown is still refused (research first); since the question
+    # alignment the model boundary refuses it too (owner agent_output, no retry), while a non-blocking unknown
+    # about a future test is carried as an unknown claim.
+    blocking_unknown = {**RESEARCH, "questions": [{**RESEARCH["questions"][1], "blocking": True}]}
+    refused = schema_check("researcher", blocking_unknown)
+    assert refused["answer"] is None and refused["failure"]["instance_path"] == ["questions", 0]
+    with pytest.raises(PacketError, match="blocking unresolved"):
+        packet_from_research(MANIFEST, blocking_unknown)
+
+
+@pytest.mark.parametrize("decision", sorted(SSOT_DECISIONS))
+def test_every_ssot_decision_the_schema_admits_is_consumed(decision):
+    ssot = {**RESEARCH["ssot"], "decision": decision,
+            "authoritative_definition": None if decision == "new" else "domain/dge.py",
+            "transition": TRANSITION if decision in {"improve", "migrate"} else None}
+    output = {**RESEARCH, "ssot": ssot}
+    assert schema_check("researcher", output)["answer"] == output
+    assert packet_from_research(MANIFEST, output)["ssot"]["decision"] == decision
+
+
+def test_every_severity_verdict_and_disposition_the_schema_admits_is_consumed_under_the_debate_rules():
+    for severity in sorted(SEVERITIES):
+        finding = CRITICAL if severity == "critical" else MINOR
+        assert consume("attacker", {"findings": [finding]})["findings"][0]["severity"] == severity
+    unsupported = {**CRITICAL, "trigger": None}
+    assert schema_check("attacker", {"findings": [unsupported]})["answer"], "the schema admits it; the host rule refuses it"
+    with pytest.raises(ContractError, match="concrete trigger"):
+        consume("attacker", {"findings": [unsupported]})
+    for verdict in sorted(VERDICTS):
+        dispositions = [{"finding_id": "f1", "decision": "blocking" if verdict != "accept" else "resolved", "reason": "r"},
+                        {"finding_id": "f2", "decision": "deferred", "reason": "backlog"}]
+        output = {"verdict": verdict, "rationale": "r", "dispositions": dispositions,
+                  "research_question": "what else?" if verdict == "needs_research" else None}
+        assert schema_check("arbiter", output)["answer"] == output
+        assert consume("arbiter", output)["verdict"] == verdict
+    for decision in sorted(DECISIONS):
+        output = {"verdict": "reject", "rationale": "r", "research_question": None,
+                  "dispositions": [{"finding_id": "f1", "decision": decision if decision != "deferred" else "resolved", "reason": "r"},
+                                   {"finding_id": "f2", "decision": decision, "reason": "r"}]}
+        assert consume("arbiter", output)["dispositions"][1]["decision"] == decision
+    deferred_critical = {**ROLE_OUTPUTS["arbiter"], "dispositions": [{"finding_id": "f1", "decision": "deferred", "reason": "later"},
+                                                                     {"finding_id": "f2", "decision": "resolved", "reason": "r"}]}
+    assert schema_check("arbiter", deferred_critical)["answer"], "the enum admits deferred; the debate rule refuses it for a critical"
+    with pytest.raises(EventError, match="cannot defer a critical"):
+        consume("arbiter", deferred_critical)
+
+
+def test_schema_validation_is_the_same_dialect_the_runner_reports():
+    for role in ROLE_ORDER:
+        Draft202012Validator.check_schema(SCHEMAS[role])
+        assert not list(Draft202012Validator(SCHEMAS[role]).iter_errors(ROLE_OUTPUTS[role])), role
+
+
+def test_finding_criterion_is_the_exact_pinned_plan_enum_per_execution():
+    """project-evidence-contract-001 item 5: schema -> domain boundary; fixtures only, no model is called."""
+    from codex_harness.research.adapters.autonomous_roles import CRITERION_ROLES, role_schema
+
+    before = json.dumps(SCHEMAS, sort_keys=True)
+    second_criterion = "Lint passes; no unrelated changes."
+    details = {"acceptance_criteria": [CRITERION, second_criterion]}
+    paraphrase = {**MINOR, "criterion": "Focused tests pass."}
+    for role in CRITERION_ROLES:
+        schema = role_schema(role, details)
+        preflight(schema)
+        criterion = schema["properties"]["findings"]["items"]["properties"]["criterion"]
+        assert criterion == {"type": "string", "enum": [CRITERION, second_criterion]}
+        validator = Draft202012Validator(schema["properties"]["findings"])
+        assert not list(validator.iter_errors([CRITICAL, {**MINOR, "criterion": second_criterion}]))
+        assert list(validator.iter_errors([paraphrase])), "a paraphrase is refused at the model boundary"
+        # A later, different plan does not inherit this plan's enum, and the constants never change.
+        later = role_schema(role, {"acceptance_criteria": ["another plan item"]})
+        assert later["properties"]["findings"]["items"]["properties"]["criterion"]["enum"] == ["another plan item"]
+        assert SCHEMAS[role]["properties"]["findings"]["items"]["properties"]["criterion"] == {"type": "string"}
+        for missing in ({}, {"acceptance_criteria": []}, {"acceptance_criteria": [CRITERION, CRITERION]}):
+            with pytest.raises(ContractError):
+                role_schema(role, missing)
+    assert json.dumps(SCHEMAS, sort_keys=True) == before
+    assert role_schema("proposer", {}) == SCHEMAS["proposer"] and role_schema("proposer", {}) is not SCHEMAS["proposer"]
+    # The domain keeps exact membership: what the enum admits it accepts, the paraphrase it still refuses.
+    assert consume("attacker", {"findings": [CRITICAL]})["findings"][0]["criterion"] == CRITERION
+    with pytest.raises(EventError, match="exact plan acceptance item"):
+        consume("attacker", {"findings": [paraphrase]})
