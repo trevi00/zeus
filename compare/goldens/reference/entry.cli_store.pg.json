@@ -1,0 +1,275 @@
+{
+ "cases": {
+  "cancel_seeded": {
+   "argv": [
+    "cancel",
+    "00000000-0000-4000-8000-0000000000c2",
+    "--reason",
+    "r"
+   ],
+   "exit": 0,
+   "stderr": "",
+   "stdout": {
+    "cancelled": "00000000-0000-4000-8000-0000000000c2"
+   }
+  },
+  "cancel_unknown": {
+   "argv": [
+    "cancel",
+    "no-such-task",
+    "--reason",
+    "r"
+   ],
+   "exit": 1,
+   "stderr": {
+    "error": "Task and cancellation reason required"
+   },
+   "stdout": ""
+  },
+  "goal_compare": {
+   "argv": [
+    "goal",
+    "compare",
+    "<FIXTURE>/before.json",
+    "<FIXTURE>/before.json"
+   ],
+   "exit": 0,
+   "stderr": "",
+   "stdout": {
+    "authority": "observation_only",
+    "definition_hash": "d8ba6c8b2914da4351320af65aaa04a53aa6a1eab0d7cfe2129dff6f1415c599",
+    "gained": [],
+    "goal_id": "goal-c2a",
+    "net_resolved": 0,
+    "regressed": []
+   }
+  },
+  "goal_report": {
+   "argv": [
+    "goal",
+    "report",
+    "<FIXTURE>/manifest.json"
+   ],
+   "exit": 0,
+   "stderr": "",
+   "stdout": {
+    "authority": "observation_only",
+    "criteria": [
+     {
+      "acceptance": "ticket closes",
+      "content_hash": "0000000000000000000000000000000000000000000000000000000000000000",
+      "id": "c1",
+      "revision": 1,
+      "status": "missing",
+      "ticket_id": "T-C2A"
+     }
+    ],
+    "definition_hash": "d8ba6c8b2914da4351320af65aaa04a53aa6a1eab0d7cfe2129dff6f1415c599",
+    "goal_id": "goal-c2a",
+    "metrics": {
+     "completion_ratio": 0.0,
+     "missing": 1,
+     "remaining": 1,
+     "reopened": 0,
+     "resolved": 0,
+     "stale": 0,
+     "total": 1,
+     "unverified": 0
+    },
+    "objective": "Observe one criterion",
+    "schema": "urn:zeus:goal-progress:1"
+   }
+  },
+  "init_db_empty_schema": {
+   "argv": [
+    "init-db"
+   ],
+   "exit": 0,
+   "stderr": "",
+   "stdout": {
+    "already_applied": [],
+    "applied": [
+     {
+      "module": "core",
+      "version": "1"
+     }
+    ],
+    "migrated": true,
+    "tool": {
+     "filename_contract": "V?<n>(.<n>|_<n>)*(__<description>)?.sql",
+     "name": "zeus-sql-migrator",
+     "version": 1
+    }
+   }
+  },
+  "init_db_first": {
+   "argv": [
+    "init-db"
+   ],
+   "exit": 0,
+   "stderr": "",
+   "stdout": {
+    "already_applied": [],
+    "applied": [
+     {
+      "module": "core",
+      "version": "1"
+     }
+    ],
+    "migrated": true,
+    "tool": {
+     "filename_contract": "V?<n>(.<n>|_<n>)*(__<description>)?.sql",
+     "name": "zeus-sql-migrator",
+     "version": 1
+    }
+   }
+  },
+  "init_db_second": {
+   "argv": [
+    "init-db"
+   ],
+   "exit": 0,
+   "stderr": "",
+   "stdout": {
+    "already_applied": [
+     {
+      "module": "core",
+      "version": "1"
+     }
+    ],
+    "applied": [],
+    "migrated": true,
+    "tool": {
+     "filename_contract": "V?<n>(.<n>|_<n>)*(__<description>)?.sql",
+     "name": "zeus-sql-migrator",
+     "version": 1
+    }
+   }
+  },
+  "init_db_seeded": {
+   "argv": [
+    "init-db"
+   ],
+   "exit": 0,
+   "stderr": "",
+   "stdout": {
+    "already_applied": [],
+    "applied": [
+     {
+      "module": "core",
+      "version": "1"
+     }
+    ],
+    "migrated": true,
+    "tool": {
+     "filename_contract": "V?<n>(.<n>|_<n>)*(__<description>)?.sql",
+     "name": "zeus-sql-migrator",
+     "version": 1
+    }
+   }
+  },
+  "inspect_tasks": {
+   "argv": [
+    "inspect",
+    "tasks"
+   ],
+   "exit": 0,
+   "stderr": "",
+   "stdout": []
+  },
+  "inspect_tasks_after": {
+   "argv": [
+    "inspect",
+    "tasks"
+   ],
+   "exit": 0,
+   "stderr": "",
+   "stdout": [
+    {
+     "id": "00000000-0000-4000-8000-0000000000c2",
+     "status": "cancelled"
+    }
+   ]
+  },
+  "release_retry_unknown": {
+   "argv": [
+    "release-retry",
+    "no-such-release",
+    "--reason",
+    "r"
+   ],
+   "exit": 1,
+   "stderr": {
+    "error": "Release is not recoverable"
+   },
+   "stdout": ""
+  },
+  "seeded": {
+   "id": "00000000-0000-4000-8000-0000000000c2",
+   "status": "queued"
+  },
+  "status": {
+   "argv": [
+    "status"
+   ],
+   "exit": 0,
+   "stderr": "",
+   "stdout": {
+    "active_deployment": null,
+    "blocked_decisions": [],
+    "health": null,
+    "observed_task_success_rate": null,
+    "pending_hooks": [],
+    "policy": {
+     "artifact_retention_days": 7,
+     "claude_event_queue": 2000,
+     "claude_events_retained": 400,
+     "claude_line_bytes": 1048576,
+     "claude_stream_bytes": 8388608,
+     "context_checkpoint_fraction": 0.7,
+     "decision_seconds": 900,
+     "health_failure_threshold": 3,
+     "idle_seconds": 3600,
+     "max_active_executions": 2,
+     "max_attempts": 3,
+     "max_reworks": 2,
+     "observation_alert_window_seconds": 300,
+     "observation_collect_batch": 1000,
+     "observation_retention_seconds": 604800,
+     "observation_segment_bytes": 4194304,
+     "observation_spool_bytes": 33554432,
+     "recurrence_threshold": 2,
+     "release_check_seconds": 900,
+     "release_lease_seconds": 1200,
+     "release_max_attempts": 3,
+     "release_retry_seconds": 30,
+     "research_interval_hours": 6,
+     "source_cpus": 1,
+     "source_execution_seconds": 120,
+     "source_memory_mb": 512,
+     "source_output_bytes": 65536,
+     "source_pids": 128,
+     "source_read_bytes": 24000,
+     "source_read_lines": 120,
+     "source_request_seconds": 300,
+     "source_scratch_mb": 128,
+     "stream_retention_entries": 1000,
+     "task_lease_seconds": 600,
+     "task_seconds": 3600
+    },
+    "sample_size": 0,
+    "tasks": {}
+   }
+  },
+  "status_no_database_url": {
+   "argv": [
+    "status"
+   ],
+   "exit": 1,
+   "stderr": {
+    "error": "Run scripts/setup.py or set HARNESS_DATABASE_URL"
+   },
+   "stdout": ""
+  }
+ }
+}

@@ -1,0 +1,9 @@
+{
+ "family": "entry.cli_store.pg",
+ "description": "The store roots init-db, status, inspect, cancel, release-retry and goal through main() on a labelled disposable PostgreSQL (one fresh schema per case group): init-db twice, status/inspect/cancel/release-retry on the empty schema, goal report and the store-free goal compare, a seeded task cancelled then inspected, and status without HARNESS_DATABASE_URL; stdout, stderr and exit code per case, no mask",
+ "reference_driver": "drivers/reference/s10_cli_store.py",
+ "target_driver": "drivers/target/s10_cli_store.py",
+ "requires": "disposable-postgresql",
+ "golden": "goldens/reference/entry.cli_store.pg.json",
+ "slice": "S10"
+}
