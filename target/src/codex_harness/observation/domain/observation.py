@@ -271,6 +271,20 @@ REGISTRY = {
                                        "retired_decisions": _I, "unresolved": _I, "already_terminal": _I},
     "operations.operation_message_parked": {"operation_id": _S, "message_id": _S, "message_type": _S,
                                             "disposition_id": _S, "stream_entry_id": _N},
+    # S9 X1a (OBSERVABILITY-COVERAGE-20261002 via OWNER-DECISIONS-S9 D4, DESIGN-s9-X §1.1): the ten additive event
+    # types. Every `*_reason`/`outcome`/`queue`/`scope`-style value is a closed enum declared in
+    # `resources/observability-catalog.json` (the SSOT; `event_catalog.check_catalog_attributes` refuses the
+    # rest); ids are opaque and never labels; absent usage values are null, never 0; no free text.
+    "operations.queue_item_waited": {"queue": _S, "item_ref": _S, "wait_seconds": _F, "outcome": _S},
+    "development.role_dispatch_decided": {"role": _S, "provider": _S, "decision": _S, "decision_reason": _S, "latency_seconds": _F},
+    "operations.capacity_refused": {"scope": _S, "refusal_reason": _S, "retry_after_seconds": _NI},
+    "development.tool_call_completed": {"tool": _S, "outcome": _S, "duration_ms": _NI, "reservation_id": _N},
+    "development.skill_selected": {"skill_ref": _S, "selected": _B, "selection_reason": _S},
+    "operations.ci_observed": {"check": _S, "conclusion": _S, "duration_seconds": _NI, "attempt": _I},
+    "operations.cleanup_recorded": {"resource": _S, "cleanup_outcome": _S, "cleanup_reason": _S},
+    "operations.collector_started": {"collector": _S, "previous_exit": _S},
+    "operations.path_declined": {"feature": _S, "decline_reason": _S},
+    "development.provider_usage_split": {"reservation_id": _S, "provider_session_ref": _N, "input_tokens": _NI, "output_tokens": _NI, "cache_read_tokens": _NI, "cache_write_tokens": _NI, "usage_source": _S},
 }
 
 
