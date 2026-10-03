@@ -2472,7 +2472,7 @@
    }
   },
   "no_argument_reads_the_working_directory": {
-   "dependency_root": "/opt/zeus-monitor",
+   "dependency_root": "<work>/absent/zeus-monitor",
    "exit": 1,
    "keys": [
     "authority",
@@ -2487,9 +2487,9 @@
     "schema",
     "status"
    ],
-   "node": "/usr/local/bin/node",
+   "node": "<work>/absent/node",
    "refusal": {
-    "detail": "/usr/local/bin/node",
+    "detail": "<work>/absent/node",
     "kind": "node_missing"
    },
    "schema": "zeus.monitor-frontend-checks/v1",

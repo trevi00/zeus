@@ -619,11 +619,16 @@ def main_cases(api, world):
 
 
 def _main_over_a_tree(api, world, empty):
-    """`main([])` over a candidate tree as the working directory: the image store is absent, so the node/dependency refusals are the observation."""
+    """`main([])` over a candidate tree as the working directory: the image store is absent, so the node/dependency refusals are the observation.
+
+    `NODE` and `DEPENDENCY_ROOT` are pinned, on both sides, to absent paths under the work root (both are module globals read at
+    call time). Their image-bound absolute defaults made the refusal depend on the HOST: GitHub's ubuntu runners have
+    `/usr/local/bin/node`, aibox does not (CI run 37102239992)."""
     candidate = candidate_tree(world, "main-candidate")
     os.chdir(candidate)
     buffer = io.StringIO()
-    with contextlib.redirect_stdout(buffer):
+    absent = world.root / "absent"
+    with patched(api.module, NODE=absent / "node", DEPENDENCY_ROOT=absent / "zeus-monitor"), contextlib.redirect_stdout(buffer):
         code = api.main([])
     os.chdir(empty)
     body = json.loads(buffer.getvalue())
