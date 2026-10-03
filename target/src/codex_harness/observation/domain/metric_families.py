@@ -2,7 +2,7 @@
 
 Layer: domain
 Context: observation
-Owns: `Family`, `FAMILIES` (the six families of X2a and the six of X2b, keyed by name), `DURATION_BUCKETS` and `samples`
+Owns: `Family`, `FAMILIES` (the X2a and X2b families and the X5a feature-use counter, keyed by name), `DURATION_BUCKETS` and `samples`
 Does not own: the stored documents or the projection transaction (`observation.application.metrics_projector`), the
     text rendering (`observation.adapters.metrics_exposition`)
 Entry points: Family, FAMILIES, DURATION_BUCKETS, samples
@@ -19,6 +19,7 @@ from dataclasses import dataclass
 
 from codex_harness.delivery.domain.host_delivery import HALTED_STAGES, STAGE_ORDER
 from codex_harness.execution.domain.worker_sessions import STATES as WORKER_SESSION_STATES
+from codex_harness.observation.domain.feature_registry import FEATURE_OF
 from codex_harness.observation.domain.observation import CATEGORIES, INVOCATION_OUTCOMES
 
 DURATION_BUCKETS = (1, 5, 15, 30, 60, 120, 300, 600, 1200, 1800, 3600, 7200, 14400, 43200, 86400)
@@ -43,6 +44,7 @@ ABANDONED = "zeus_invocation_abandoned_total"
 STAGE_ENTRIES = "zeus_delivery_stage_entries_total"
 SESSION_TRANSITIONS = "zeus_worker_session_transitions_total"
 BACKLOG = "zeus_backlog_transitions_total"
+FEATURE_USES = "zeus_feature_uses_total"
 
 
 @dataclass(frozen=True)
@@ -91,6 +93,9 @@ FAMILIES = {family.name: family for family in (
     Family(BACKLOG, "counter",
            "Fleet backlog transitions, from development.backlog_item_admitted, operations.backlog_recovered, operations.backlog_unavailable and operations.backlog_item_refused.",
            ("transition",)),
+    Family(FEATURE_USES, "counter",
+           "Observations that prove a feature was used, by feature, from every stored row whose event type is a proof event of the feature.",
+           ("feature",)),
 )}
 
 
@@ -115,6 +120,8 @@ def samples(row, *, providers):
     event_type = row.get("event_type")
     if type(event_type) is not str:  # totality: an unhashable value must not reach the dict lookups below
         event_type = None
+    if event_type in FEATURE_OF:  # a closed enum (FEATURES); other types add nothing and are not refused
+        out.append((FEATURE_USES, (FEATURE_OF[event_type],), 1))
     attributes = row.get("attributes")
     if not isinstance(attributes, dict):
         attributes = {}
