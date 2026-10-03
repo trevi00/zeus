@@ -384,30 +384,57 @@ def differing_paths(expected, actual, path="$") -> list[str]:
     return [] if expected == actual else [path]
 
 
-INTENDED_OPS = frozenset({"absent", "remove_item"})
+INTENDED_OPS = frozenset({"absent", "remove_item", "replace", "add"})
 
 
 def apply_intended_differences(golden, declarations) -> tuple[object, list[str]]:
     """The target's EXPECTED result: the reference golden with each declared, authorized intended difference applied.
 
-    A declaration is `{"path": "$.a.b", "op": "absent" | "remove_item", "item": <for remove_item>, "authority":
-    "<who decided, where recorded>"}`. It is an ASSERTION, not a mask:
+    A declaration is `{"path": "$.a.b", "op": "absent" | "remove_item" | "replace" | "add", "item": <remove_item>,
+    "value": <replace, add>, "key": <add, optionally replace>, "authority": "<who decided, where recorded>"}`. It is
+    an ASSERTION, not a mask:
     - the path must exist in the reference golden (a stale declaration is refused);
-    - the target must then differ in exactly that way (the key absent, or exactly that one list item removed);
+    - the target must then differ in exactly that way (the key absent, exactly that one list item removed, the value
+      at the path exactly `value`, or the member `key` of the object at the path exactly `value`);
     - every other byte must be equal.
+    `path` is split on `.`, so a member whose name contains a dot is addressed only as a literal `key` under its
+    parent path: `add` names the EXISTING object in `path` and a `key` that must be ABSENT there (an existing one is
+    "stale or not an addition"); `replace` with a `key` names the parent in `path` and the member in `key`.
 
-    Used only for explicitly retired behaviour (e.g. the W-B Windows branches the user retired on 2026-09-28,
-    DESIGN-s7 §0). Returns `(expected, problems)`; any problem makes the scenario fail."""
+    Used only for explicitly retired or additive behaviour (e.g. the W-B Windows branches the user retired on
+    2026-09-28, DESIGN-s7 §0; the S9 event catalog additions, DESIGN-s9-X §1). Returns `(expected, problems)`; any
+    problem makes the scenario fail."""
     expected = json.loads(json.dumps(golden))
     problems = []
     for index, declaration in enumerate(declarations or []):
         path, op = declaration.get("path"), declaration.get("op")
+        literal = declaration.get("key")
         if (not isinstance(path, str) or not path.startswith("$.") or op not in INTENDED_OPS
-                or not str(declaration.get("authority") or "").strip()):
+                or not str(declaration.get("authority") or "").strip()
+                or (op in ("replace", "add") and "value" not in declaration)
+                or (op == "add" and not isinstance(literal, str))
+                or (op == "replace" and "key" in declaration and not isinstance(literal, str))
+                or (op in ("absent", "remove_item") and "key" in declaration)):
             problems.append(f"intended_differences[{index}]: invalid declaration")
             continue
         keys = path[2:].split(".")
         node = expected
+        if op == "add" or (op == "replace" and "key" in declaration):
+            for key in keys:
+                node = node.get(key) if isinstance(node, dict) else None
+            last = literal
+            if op == "replace" and (not isinstance(node, dict) or last not in node):
+                problems.append(f"intended_differences[{index}]: {path} has no member {last!r} (stale)")
+                continue
+            if op == "add":
+                if not isinstance(node, dict):
+                    problems.append(f"intended_differences[{index}]: {path} is not an object in the reference golden (stale)")
+                    continue
+                if last in node:
+                    problems.append(f"intended_differences[{index}]: {path} already has member {last!r} (stale or not an addition)")
+                    continue
+            node[last] = declaration["value"]
+            continue
         for key in keys[:-1]:
             node = node.get(key) if isinstance(node, dict) else None
         last = keys[-1]
@@ -416,6 +443,8 @@ def apply_intended_differences(golden, declarations) -> tuple[object, list[str]]
             continue
         if op == "absent":
             del node[last]
+        elif op == "replace":
+            node[last] = declaration["value"]
         else:
             value = node[last]
             if not isinstance(value, list) or value.count(declaration.get("item")) != 1:

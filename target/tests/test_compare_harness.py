@@ -262,6 +262,42 @@ def test_an_intended_difference_is_asserted_exactly_and_nothing_else_is_masked()
     assert expected != golden
 
 
+def test_replace_and_add_are_asserted_exactly_and_a_dotted_key_is_one_member():
+    run = _run_module()
+    golden = {"size": 66, "valid": {"general.a": {"ok": True}}, "other": {"x": 1}}
+    declared = [{"path": "$.size", "op": "replace", "value": 76, "authority": "owner"},
+                {"path": "$.valid", "op": "add", "key": "operations.capacity_refused", "value": {"ok": True},
+                 "authority": "owner"},
+                {"path": "$.valid", "op": "replace", "key": "general.a", "value": {"ok": False}, "authority": "owner"}]
+    expected, problems = run.apply_intended_differences(golden, declared)
+    assert problems == []
+    assert expected == {"size": 76, "valid": {"general.a": {"ok": False}, "operations.capacity_refused": {"ok": True}},
+                        "other": {"x": 1}}  # nothing else is masked; the dotted name is ONE member, not a path
+    assert golden["size"] == 66 and "operations.capacity_refused" not in golden["valid"]
+    # a wrong target value is a difference, never absorbed
+    assert expected != {**expected, "size": 77}
+    assert run.differing_paths(expected, {**expected, "valid": {"general.a": {"ok": False}}})
+
+
+def test_replace_and_add_bad_declarations_are_problems():
+    run = _run_module()
+    golden = {"size": 66, "valid": {"general.a": 1}}
+    for bad in ({"path": "$.valid", "op": "add", "key": "general.a", "value": 2, "authority": "x"},  # exists
+                {"path": "$.valid", "op": "add", "value": 2, "authority": "x"},                   # no key
+                {"path": "$.valid", "op": "add", "key": "n", "value": 2, "authority": ""},        # no authority
+                {"path": "$.valid", "op": "add", "key": "n", "authority": "x"},                    # no value
+                {"path": "$.size", "op": "add", "key": "n", "value": 2, "authority": "x"},         # not an object
+                {"path": "$.missing", "op": "add", "key": "n", "value": 2, "authority": "x"},      # stale parent
+                {"path": "$.size", "op": "replace", "authority": "x"},                             # no value
+                {"path": "$.size", "op": "replace", "value": 1, "authority": ""},                 # no authority
+                {"path": "$.nope", "op": "replace", "value": 1, "authority": "x"},                 # not in the golden
+                {"path": "$.valid", "op": "replace", "key": "general.b", "value": 1, "authority": "x"}):  # no member
+        _, problems = run.apply_intended_differences(golden, [bad])
+        assert problems, bad
+    assert run.apply_intended_differences(golden, [{"path": "$.valid", "op": "add", "key": "general.a", "value": 2,
+                                                    "authority": "x"}])[1][0].endswith("(stale or not an addition)")
+
+
 def test_stale_or_invalid_declarations_are_problems():
     run = _run_module()
     golden = {"a": {"b": [1]}}
