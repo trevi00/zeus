@@ -4,8 +4,9 @@ Every assertion is M7's, unchanged. Adaptations, all construction/import: `Harne
 `pin_route`, `_prepare`, `_publish` and `organization` come from the `m7_coordination` shim (its docstring names the
 routing); `envelope` from `kernel.message`, `ContractError` from `kernel.errors`, `validate_message` and
 `MemoryStore`/`PostgresStore` from `storage.adapters`, `MessageDeliveryError`/`TransportChanged` from
-`storage.ports`. The one test that needs M7's monitoring (`DatabaseFacts`, `Monitoring`) belongs to S9 and stays
-here skipped, whole and unrewritten, with its names bound to placeholders that raise. PostgreSQL parametrizations
+`storage.ports`. The one test that needs M7's monitoring (`DatabaseFacts`, `Monitoring`) runs (S9 batch U): `Monitoring` is
+`observation.application.monitoring.Monitoring` and `DatabaseFacts` is `observation.adapters.collectors.DatabaseFacts`, both
+read through `m7_observation` (the `monitoring` facade for the latter). PostgreSQL parametrizations
 skip as in M7 without the disposable integration database.
 """
 from concurrent.futures import ThreadPoolExecutor
@@ -18,6 +19,7 @@ from uuid import uuid4
 import psycopg
 import pytest
 from m7_coordination import Harness, _prepare, _publish, organization, pin_route
+from m7_observation import Monitoring, monitoring
 from psycopg import sql
 
 from codex_harness.kernel.errors import ContractError
@@ -26,16 +28,6 @@ from codex_harness.storage.adapters.memory_store import MemoryStore
 from codex_harness.storage.adapters.message_schema import validate_message
 from codex_harness.storage.adapters.postgres_store import PostgresStore
 from codex_harness.storage.ports import MessageDeliveryError, TransportChanged
-
-
-class DatabaseFacts:
-    """S9 owns M7 `adapters.monitoring.DatabaseFacts`; only the skipped test below names it."""
-
-    def __init__(self, *args, **kwargs):
-        raise NotImplementedError("S9: observation monitoring")
-
-
-Monitoring = DatabaseFacts  # S9: `application.monitoring.Monitoring`, likewise only named by the skipped test
 
 
 @pytest.fixture(params=['memory', 'postgres'])
@@ -293,13 +285,12 @@ def test_a_publish_override_that_cannot_recheck_stays_unbound_and_delivers(servi
         assert 'transport' not in tx.get('outbox_delivery', identity)
 
 
-@pytest.mark.skip(reason="S9: observation monitoring (adapters.monitoring.DatabaseFacts, application.monitoring.Monitoring)")
 def test_monitor_keeps_quarantine_attention_after_later_empty_successful_batches(service):
     with service.store.transaction() as tx:
         tx.put('outbox', 'invalid', [])
     service.flush_outbox(Bus())
     service.flush_outbox(Bus())
-    facts = DatabaseFacts(service, SimpleNamespace()).read()
+    facts = monitoring.DatabaseFacts(service, SimpleNamespace()).read()
     later = datetime.now(timezone.utc) + timedelta(hours=1)
     snapshot = Monitoring(SimpleNamespace(read=lambda: facts)).snapshot(later)
     assert snapshot['notifications']['status'] == 'attention'
