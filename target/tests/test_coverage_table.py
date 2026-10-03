@@ -22,7 +22,8 @@ TABLE = ROOT / "coverage" / "ledger-coverage.json"
 PINNED = {"module": 289, "contract": 91, "cli_node": 152, "console_script": 5, "module_entry": 36,
           "http_route": 10, "resource": 33, "capability": 10, "bucket": 169, "flow": 5,
           "public_api": 1769,
-          "addition": 12}  # S9 X1a: the D4 additive rows (OBSERVABILITY-COVERAGE-20261002; DESIGN-s9-X §1), no SOURCE counterpart
+          "addition": 18}  # S9 D4 additive rows, no SOURCE counterpart: X1a 12 (DESIGN-s9-X §1); X1b-1 catalog_observer,
+#                            X2a bucket + 3 modules (§2.2), X3a resource_facts (§3)
 
 
 @pytest.fixture(scope="module")

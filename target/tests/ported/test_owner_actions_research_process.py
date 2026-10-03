@@ -12,6 +12,10 @@ and `POLICY` is `kernel.policy`'s. The CLI names (`add_program_parser`, `program
 modules (`test_continuation_research`, `test_owner_actions_recovery`) are the ported ones.
 - Skipped whole and unrewritten: the S10 tests (the research-program CLI option; the owner process ticking its policies).
   The tests that build the ported recovery suite's `Chain` (`build`, `FakeCouncil`, `FakeBudget`) run.
+- Timing adaptation (S9 integration, CI run 37120866708): `stop` also waits for the guardian's own exit after its
+  `cleanup.json` proof, because the guardian writes the proof before it exits and `poll` reports `running` while it
+  lives. That race is inherited from M7's identical helper; it is evidenced in
+  A/evidence/rebuild/s9/integration/CI-37120866708-research-process-race.md. No assertion changed.
 
 M7 module docstring follows.
 
@@ -103,6 +107,12 @@ def stop(chain, row):
     directory = launch_directory(chain.research.root, row["launch_id"])
     (directory / "stop").write_text("stop", "utf-8")
     assert until(lambda: (directory / "cleanup.json").exists()), "the guardian never proved its cleanup"
+    # Adaptation (timing only; CI run 37120866708): the guardian persists its proof BEFORE it exits, and `poll` reports
+    # `running` while the guardian process lives, so the next tick could still see it running (a race inherited from
+    # M7). Wait for the guardian's own exit, as `stop_all` does.
+    guardian = chain.research.children.get(row["launch_id"])
+    if guardian is not None:
+        guardian.wait(30)
 
 
 def child_records(chain, row):
