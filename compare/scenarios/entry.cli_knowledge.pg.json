@@ -1,0 +1,9 @@
+{
+ "family": "entry.cli_knowledge.pg",
+ "description": "The knowledge roots index, query, context, project-graph and embed through main() on a labelled disposable PostgreSQL (one fresh schema per case group, init-db first): index of a two-module fixture tree, a query hitting an indexed symbol and a query with no hit, context for the worker agent, project-graph, embed --limit 0 (M7 refuses the batch size before any model is loaded) and index of a missing root; stdout, stderr and exit code per case, the fixture path normalized to <FIXTURE>, no mask. query --semantic and any embed of a non-empty text are excluded (they load the fastembed model; owner rule R-c6)",
+ "reference_driver": "drivers/reference/s10_cli_knowledge.py",
+ "target_driver": "drivers/target/s10_cli_knowledge.py",
+ "requires": "disposable-postgresql",
+ "golden": "goldens/reference/entry.cli_knowledge.pg.json",
+ "slice": "S10"
+}

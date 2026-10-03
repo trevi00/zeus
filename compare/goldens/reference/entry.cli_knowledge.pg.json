@@ -1,0 +1,257 @@
+{
+ "cases": {
+  "context_hit": {
+   "argv": [
+    "context",
+    "build_alpha_index",
+    "--agent",
+    "worker:implementation",
+    "--budget",
+    "6000"
+   ],
+   "exit": 0,
+   "stderr": "",
+   "stdout": {
+    "agent_id": "worker:implementation",
+    "compiler_version": "1",
+    "estimated_tokens": 1561,
+    "evidence": [
+     {
+      "body": "alpha.py",
+      "id": "file:2d3da7a0808e6039:alpha.py",
+      "revision": "cda8b3091420908a189c581bda11f07298645e02b015be3b70ef94e30a34ccc0",
+      "source_ref": "alpha.py",
+      "trust": "evidence-not-instructions"
+     },
+     {
+      "body": "beta.py",
+      "id": "file:2d3da7a0808e6039:beta.py",
+      "revision": "2a844587859f1fa9d4bc39728284146be4ea4b102ad0961828d3000a2892f0d4",
+      "source_ref": "beta.py",
+      "trust": "evidence-not-instructions"
+     },
+     {
+      "body": "class AlphaIndexer:\n    \"\"\"Walks a tree.\"\"\"\n\n    def walk(self, root):\n        return sorted(os.listdir(root))",
+      "id": "symbol:2d3da7a0808e6039:alpha.py:AlphaIndexer",
+      "revision": "cda8b3091420908a189c581bda11f07298645e02b015be3b70ef94e30a34ccc0",
+      "source_ref": "alpha.py:5",
+      "trust": "evidence-not-instructions"
+     },
+     {
+      "body": "def build_alpha_index(root):\n    return AlphaIndexer().walk(root)",
+      "id": "symbol:2d3da7a0808e6039:alpha.py:build_alpha_index",
+      "revision": "cda8b3091420908a189c581bda11f07298645e02b015be3b70ef94e30a34ccc0",
+      "source_ref": "alpha.py:12",
+      "trust": "evidence-not-instructions"
+     },
+     {
+      "body": "def summarize_beta(root):\n    return len(build_alpha_index(root))",
+      "id": "symbol:2d3da7a0808e6039:beta.py:summarize_beta",
+      "revision": "2a844587859f1fa9d4bc39728284146be4ea4b102ad0961828d3000a2892f0d4",
+      "source_ref": "beta.py:5",
+      "trust": "evidence-not-instructions"
+     }
+    ],
+    "manifest_hash": "79a1889b8e80b82bef487faa066bf7a3c358bbcf82de263ebae7043d0f38fce6",
+    "omitted": [],
+    "required": {
+     "acceptance_criteria": [
+      "Return grounded evidence"
+     ],
+     "objective": "build_alpha_index",
+     "policy": "bootstrap-v1",
+     "role": "worker"
+    },
+    "snapshot": "bd3847c10a48dbd07beb8945441b818ac4e901cfa37c48c60958c672da18b57e",
+    "task_id": "query:build_alpha_index"
+   }
+  },
+  "context_miss": {
+   "argv": [
+    "context",
+    "zzqxnosuchsymbolzz",
+    "--agent",
+    "worker:implementation",
+    "--budget",
+    "6000"
+   ],
+   "exit": 0,
+   "stderr": "",
+   "stdout": {
+    "agent_id": "worker:implementation",
+    "compiler_version": "1",
+    "estimated_tokens": 302,
+    "evidence": [],
+    "manifest_hash": "3dd174e8f8a0f2a37e646ffe861e0402f4f41b304662f437549c7736be8d6927",
+    "omitted": [],
+    "required": {
+     "acceptance_criteria": [
+      "Return grounded evidence"
+     ],
+     "objective": "zzqxnosuchsymbolzz",
+     "policy": "bootstrap-v1",
+     "role": "worker"
+    },
+    "snapshot": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945",
+    "task_id": "query:zzqxnosuchsymbolzz"
+   }
+  },
+  "embed_limit_zero": {
+   "argv": [
+    "embed",
+    "--limit",
+    "0"
+   ],
+   "exit": 1,
+   "stderr": {
+    "error": "Invalid embedding batch size"
+   },
+   "stdout": ""
+  },
+  "index_again": {
+   "argv": [
+    "index",
+    "<FIXTURE>/tree"
+   ],
+   "exit": 0,
+   "stderr": "",
+   "stdout": {
+    "edges": 7,
+    "nodes": 7,
+    "snapshot": "e8315e9925ceec4a58c74ffda708fd3e923c74c716504968773995bd8bfab15f"
+   }
+  },
+  "index_fixture": {
+   "argv": [
+    "index",
+    "<FIXTURE>/tree"
+   ],
+   "exit": 0,
+   "stderr": "",
+   "stdout": {
+    "edges": 7,
+    "nodes": 7,
+    "snapshot": "e8315e9925ceec4a58c74ffda708fd3e923c74c716504968773995bd8bfab15f"
+   }
+  },
+  "index_missing_root": {
+   "argv": [
+    "index",
+    "<FIXTURE>/no-such-root"
+   ],
+   "exit": 1,
+   "stderr": {
+    "error": "Repository not found"
+   },
+   "stdout": ""
+  },
+  "init_db": {
+   "argv": [
+    "init-db"
+   ],
+   "exit": 0,
+   "stderr": "",
+   "stdout": {
+    "already_applied": [],
+    "applied": [
+     {
+      "module": "core",
+      "version": "1"
+     }
+    ],
+    "migrated": true,
+    "tool": {
+     "filename_contract": "V?<n>(.<n>|_<n>)*(__<description>)?.sql",
+     "name": "zeus-sql-migrator",
+     "version": 1
+    }
+   }
+  },
+  "project_graph": {
+   "argv": [
+    "project-graph"
+   ],
+   "exit": 0,
+   "stderr": "",
+   "stdout": {
+    "edges": 11,
+    "nodes": 12,
+    "snapshot": "6ff5e2429466483921584d919692c8324b008968e7d84297edbbc43a83b308ae"
+   }
+  },
+  "query_hit": {
+   "argv": [
+    "query",
+    "build_alpha_index"
+   ],
+   "exit": 0,
+   "stderr": "",
+   "stdout": [
+    {
+     "body": "def build_alpha_index(root):\n    return AlphaIndexer().walk(root)",
+     "id": "symbol:2d3da7a0808e6039:alpha.py:build_alpha_index",
+     "kind": "function_definition",
+     "properties": {
+      "name": "build_alpha_index",
+      "snapshot": "e8315e9925ceec4a58c74ffda708fd3e923c74c716504968773995bd8bfab15f"
+     },
+     "revision": "cda8b3091420908a189c581bda11f07298645e02b015be3b70ef94e30a34ccc0",
+     "source_ref": "alpha.py:12"
+    },
+    {
+     "body": "def summarize_beta(root):\n    return len(build_alpha_index(root))",
+     "id": "symbol:2d3da7a0808e6039:beta.py:summarize_beta",
+     "kind": "function_definition",
+     "properties": {
+      "name": "summarize_beta",
+      "snapshot": "e8315e9925ceec4a58c74ffda708fd3e923c74c716504968773995bd8bfab15f"
+     },
+     "revision": "2a844587859f1fa9d4bc39728284146be4ea4b102ad0961828d3000a2892f0d4",
+     "source_ref": "beta.py:5"
+    },
+    {
+     "body": "alpha.py",
+     "id": "file:2d3da7a0808e6039:alpha.py",
+     "kind": "file",
+     "properties": {
+      "language": "python",
+      "snapshot": "e8315e9925ceec4a58c74ffda708fd3e923c74c716504968773995bd8bfab15f"
+     },
+     "revision": "cda8b3091420908a189c581bda11f07298645e02b015be3b70ef94e30a34ccc0",
+     "source_ref": "alpha.py"
+    },
+    {
+     "body": "beta.py",
+     "id": "file:2d3da7a0808e6039:beta.py",
+     "kind": "file",
+     "properties": {
+      "language": "python",
+      "snapshot": "e8315e9925ceec4a58c74ffda708fd3e923c74c716504968773995bd8bfab15f"
+     },
+     "revision": "2a844587859f1fa9d4bc39728284146be4ea4b102ad0961828d3000a2892f0d4",
+     "source_ref": "beta.py"
+    },
+    {
+     "body": "class AlphaIndexer:\n    \"\"\"Walks a tree.\"\"\"\n\n    def walk(self, root):\n        return sorted(os.listdir(root))",
+     "id": "symbol:2d3da7a0808e6039:alpha.py:AlphaIndexer",
+     "kind": "class_definition",
+     "properties": {
+      "name": "AlphaIndexer",
+      "snapshot": "e8315e9925ceec4a58c74ffda708fd3e923c74c716504968773995bd8bfab15f"
+     },
+     "revision": "cda8b3091420908a189c581bda11f07298645e02b015be3b70ef94e30a34ccc0",
+     "source_ref": "alpha.py:5"
+    }
+   ]
+  },
+  "query_miss": {
+   "argv": [
+    "query",
+    "zzqxnosuchsymbolzz"
+   ],
+   "exit": 0,
+   "stderr": "",
+   "stdout": []
+  }
+ }
+}
