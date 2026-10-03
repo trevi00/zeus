@@ -1,0 +1,97 @@
+# Zeus S9 recording and alert rules over the X2c (queue), G3 (Redis stream) and X5a (feature-use) families.
+#
+# No Alertmanager and no notification routing exist here (DESIGN-s9-X §4): these rules only evaluate, so an alert is
+# a state visible in Prometheus. Deduplication, grouping and silencing are not delivered.
+# Every threshold is provisional (no production baseline, S9 fixtures); each alert says so in `threshold_basis`.
+# `for` is the pending window, `keep_firing_for` the recovery hysteresis; an alert resolves when its expression
+# returns nothing and `keep_firing_for` has elapsed. Contracts: INV-OBSERVATION-001.
+groups:
+  - name: zeus-s9b-recording
+    rules:
+      - record: zeus:redis_memory_usage_ratio
+        expr: zeus_redis_memory_used_bytes / zeus_redis_memory_max_bytes
+      - record: zeus:feature_used:7d
+        expr: increase(zeus_feature_uses_total[7d]) > bool 0
+      # A CANDIDATE only (OBSERVABILITY): the collector-window health and the deployment state are not in it, and
+      # zero use is never a removal authority.
+      - record: zeus:feature_unused_instrumented_candidate:7d
+        expr: (zeus_feature_instrumented == 1) unless on (feature) (increase(zeus_feature_uses_total[7d]) > 0)
+  - name: zeus-s9b-alerts
+    rules:
+      - alert: ZeusOutboxOldestWaitingHigh
+        expr: zeus_queue_oldest_age_seconds{queue="outbox"} > 600
+        for: 10m
+        keep_firing_for: 10m
+        labels:
+          owner: coordination
+          severity: warning
+        annotations:
+          summary: The oldest waiting outbox row has waited more than ten minutes.
+          runbook: target/docs/runbooks/zeus-s9b.md#zeusoutboxoldestwaitinghigh
+          threshold_basis: "provisional: no production baseline (S9 fixtures)"
+      - alert: ZeusTaskOldestWaitingHigh
+        expr: zeus_queue_oldest_age_seconds{queue="tasks"} > 3600
+        for: 15m
+        keep_firing_for: 15m
+        labels:
+          owner: coordination
+          severity: warning
+        annotations:
+          summary: The oldest queued or retrying task has waited more than an hour.
+          runbook: target/docs/runbooks/zeus-s9b.md#zeustaskoldestwaitinghigh
+          threshold_basis: "provisional: no production baseline (S9 fixtures)"
+      - alert: ZeusQueueFactsUnavailable
+        expr: zeus_queue_facts_available == 0
+        for: 30m
+        keep_firing_for: 10m
+        labels:
+          owner: observation
+          severity: info
+        annotations:
+          summary: A queue could not be read completely, so its depth and oldest age are not observed.
+          runbook: target/docs/runbooks/zeus-s9b.md#zeusqueuefactsunavailable
+          threshold_basis: "provisional: no production baseline (S9 fixtures)"
+      - alert: ZeusRedisPendingStale
+        expr: zeus_redis_pending_oldest_idle_seconds > 300
+        for: 10m
+        keep_firing_for: 10m
+        labels:
+          owner: coordination
+          severity: warning
+        annotations:
+          summary: A pending stream entry of an agent has been idle for more than five minutes since its last delivery.
+          runbook: target/docs/runbooks/zeus-s9b.md#zeusredispendingstale
+          threshold_basis: "provisional: no production baseline (S9 fixtures)"
+      - alert: ZeusRedisDeadLettersGrowing
+        expr: delta(zeus_redis_dead_letter_entries[1h]) > 0
+        for: 5m
+        keep_firing_for: 30m
+        labels:
+          owner: coordination
+          severity: warning
+        annotations:
+          summary: The dead-letter stream gained entries over the last hour.
+          runbook: target/docs/runbooks/zeus-s9b.md#zeusredisdeadlettersgrowing
+          threshold_basis: "provisional: no production baseline (S9 fixtures)"
+      - alert: ZeusRedisMemoryHigh
+        expr: zeus:redis_memory_usage_ratio > 0.8
+        for: 10m
+        keep_firing_for: 10m
+        labels:
+          owner: storage
+          severity: warning
+        annotations:
+          summary: Redis uses more than 80 percent of its configured maxmemory.
+          runbook: target/docs/runbooks/zeus-s9b.md#zeusredismemoryhigh
+          threshold_basis: "provisional: no production baseline (S9 fixtures)"
+      - alert: ZeusRedisFactsUnavailable
+        expr: zeus_redis_facts_available == 0
+        for: 15m
+        keep_firing_for: 10m
+        labels:
+          owner: observation
+          severity: info
+        annotations:
+          summary: The Redis reads of a scope failed, so its stream and memory facts are not observed.
+          runbook: target/docs/runbooks/zeus-s9b.md#zeusredisfactsunavailable
+          threshold_basis: "provisional: no production baseline (S9 fixtures)"
