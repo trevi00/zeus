@@ -6,7 +6,7 @@
     "accepts_and_closes_postgres": {
      "closed_after": [],
      "error": "OperationalError",
-     "kind": "closed_unexpectedly",
+     "kind_is_a_connection_drop": true,
      "registered": []
     },
     "accepts_and_closes_redis": {
@@ -14,7 +14,7 @@
       true
      ],
      "error": "ConnectionError",
-     "kind": "closed_unexpectedly",
+     "kind_is_a_connection_drop": true,
      "registered": [
       "_RedisHandle"
      ]
@@ -1388,7 +1388,7 @@
      "directory_removed": true,
      "docker_cwd": "<ROOT>/lifecycle-ep-empty/zeus-verify-aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
      "endpoints": {
-      "database_url": "postgresql://zeus:<PASSWORD>@127.0.0.1:45678/zeus",
+      "database_url": "postgresql://<USERINFO>@127.0.0.1:45678/zeus",
       "redis_url": "redis://127.0.0.1:45679/0"
      },
      "inside": [
@@ -1644,7 +1644,7 @@
      "directory_removed": true,
      "docker_cwd": "<ROOT>/lifecycle-ep-max/zeus-verify-aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
      "endpoints": {
-      "database_url": "postgresql://zeus:<PASSWORD>@127.0.0.1:65535/zeus",
+      "database_url": "postgresql://<USERINFO>@127.0.0.1:65535/zeus",
       "redis_url": "redis://127.0.0.1:65535/0"
      },
      "inside": [
@@ -2568,7 +2568,7 @@
      "directory_removed": true,
      "docker_cwd": "<ROOT>/lifecycle-daemon/zeus-verify-aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
      "endpoints": {
-      "database_url": "postgresql://zeus:<PASSWORD>@127.0.0.1:45678/zeus",
+      "database_url": "postgresql://<USERINFO>@127.0.0.1:45678/zeus",
       "redis_url": "redis://127.0.0.1:45679/0"
      },
      "inside": [
@@ -2728,7 +2728,7 @@
      "directory_removed": false,
      "docker_cwd": "<ROOT>/lifecycle-down/zeus-verify-aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
      "endpoints": {
-      "database_url": "postgresql://zeus:<PASSWORD>@127.0.0.1:45678/zeus",
+      "database_url": "postgresql://<USERINFO>@127.0.0.1:45678/zeus",
       "redis_url": "redis://127.0.0.1:45679/0"
      },
      "inside": [
@@ -2887,7 +2887,7 @@
      "directory_removed": true,
      "docker_cwd": "<ROOT>/lifecycle-ok/zeus-verify-aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
      "endpoints": {
-      "database_url": "postgresql://zeus:<PASSWORD>@127.0.0.1:45678/zeus",
+      "database_url": "postgresql://<USERINFO>@127.0.0.1:45678/zeus",
       "redis_url": "redis://127.0.0.1:45679/0"
      },
      "inside": [
@@ -3143,7 +3143,7 @@
      "directory_removed": true,
      "docker_cwd": "<ROOT>/lifecycle-tests/zeus-verify-aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
      "endpoints": {
-      "database_url": "postgresql://zeus:<PASSWORD>@127.0.0.1:45678/zeus",
+      "database_url": "postgresql://<USERINFO>@127.0.0.1:45678/zeus",
       "redis_url": "redis://127.0.0.1:45679/0"
      },
      "inside": [
@@ -3342,28 +3342,8 @@
    }
   },
   "readiness_cannot_answer": {
-   "ok": {
-    "postgres": {
-     "artifacts": [],
-     "bounded": true,
-     "diagnosis_calls": [],
-     "password_in_message": false,
-     "result": {
-      "error": "ContractError",
-      "message": "Verification service postgres on 127.0.0.1:<PORT-0> accepted a connection but did not answer within 1.5s; refusals: {\"closed_unexpectedly\":N}"
-     }
-    },
-    "redis": {
-     "artifacts": [],
-     "bounded": true,
-     "diagnosis_calls": [],
-     "password_in_message": false,
-     "result": {
-      "error": "ContractError",
-      "message": "Verification service redis on 127.0.0.1:<PORT-1> accepted a connection but did not answer within 1.5s; refusals: {\"closed_unexpectedly\":N}"
-     }
-    }
-   }
+   "error": "JSONDecodeError",
+   "message": "Expecting value: line 1 column 24 (char 23)"
   },
   "readiness_diagnosis_lookup": {
    "ok": {

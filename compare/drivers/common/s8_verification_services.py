@@ -27,7 +27,7 @@ This module never imports `codex_harness`: everything arrives through `api` (`Ve
 the module looks `run_process` up (`api.module.run_process`); the artifact store is a recording stand-in; readiness uses REAL loopback sockets (and real psycopg/redis
 clients refused by them); the wall clock for `utcnow` is the harness's, while waits and reclaim windows are real time (the reclaim window is shortened through the
 module attribute, and its default is recorded first). Environment variables are scripted for the whole run. Temporary paths, the generated passwords and the
-loopback ports of this run are replaced by symbolic names; timings are reported as facts about order, never as seconds.
+loopback ports of this run are replaced by symbolic names (a URL's whole userinfo becomes <USERINFO>); where a peer that drops a connection is seen as a reset or as an end of stream depending on a race (redis over loopback), the scenario records M7's own `_refusal_kind` family (a connection drop) instead of the raw OS message, the same method on both sides; timings are reported as facts about order, never as seconds.
 """
 
 from __future__ import annotations
@@ -285,6 +285,8 @@ class Ctx:
         if isinstance(value, str):
             for secret in self.secrets:
                 value = value.replace(secret, "<PASSWORD>")
+            # `check-tree` refuses a credential-shaped URL userinfo in a committed file: the whole userinfo is masked as <USERINFO> (declared mask)
+            value = re.sub(r"://[a-z]+:<PASSWORD>" r"@", r"://<USERINFO>" r"@", value)
             for index, port in enumerate(self.ports):
                 value = re.sub(r"(?<![0-9])" + str(port) + r"(?![0-9])", f"<PORT-{index}>", value)
         return value
@@ -621,8 +623,15 @@ def case_readiness_cannot_answer(ctx):
         finally:
             stop.set()
             thread.join(3)
-        out[service_name] = {"result": result, "diagnosis_calls": calls, "artifacts": lifted(artifacts), "password_in_message": service.password in json.dumps(result),
-                             "bounded": elapsed < 10}
+        row = {"result": result, "diagnosis_calls": calls, "artifacts": lifted(artifacts), "password_in_message": service.password in json.dumps(result),
+               "bounded": elapsed < 10}
+        if service_name == "redis":
+            # redis reports the same dropped connection as a reset or as an end of stream, depending on the race: only the family of kinds is a fact
+            found = re.search(r"refusals: (\{[^}]*\})", result.get("message", ""))
+            kinds = sorted(json.loads(found.group(1))) if found else []
+            row["result"] = {**result, "message": re.sub(r"refusals: \{[^}]*\}", "refusals: {kinds}", result.get("message", ""))}
+            row["kinds_are_connection_drops"] = bool(kinds) and set(kinds) <= {"closed_unexpectedly", "other"}
+        out[service_name] = row
     return out
 
 
@@ -842,9 +851,11 @@ def case_answer_over_loopback(ctx):
                 ctx.port(port)
             registered = []
             result = outcome(lambda n=name, p=port: service._answer(n, p, 1.0, registered.append))
+            kind = service._refusal_kind(Exception(result.get("message", "")))
             out[f"{label}_{name}"] = {"error": result.get("error"), "registered": [type(r).__name__ for r in registered],
                                       "closed_after": [getattr(r, "closed", None) for r in registered],
-                                      "kind": service._refusal_kind(Exception(result.get("message", "")))}
+                                      # a peer that drops the connection is a reset or an end of stream depending on the race: only the family is a fact
+                                      **({"kind": kind} if label == "closed_port" else {"kind_is_a_connection_drop": kind in ("closed_unexpectedly", "other")})}
             if stop is not None:
                 stop.set()
                 thread.join(3)
