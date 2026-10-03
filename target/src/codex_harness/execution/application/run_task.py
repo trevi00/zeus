@@ -10,15 +10,20 @@ Owns: RunTask.execute_one and the invocation core `_run` (M7 `adapters/executor.
 Does not own: the lease rules and coordination writes (coordination, through TaskLedger/TaskLifecycle and
     ExecutionRecords), the breaker (InvocationAdmission), session checkpoints (SessionCheckpoint), the Observer,
     context composition (context.ContextComposer, the §5 seam), the transports (execution.adapters.transports)
-    and result persistence (execution.adapters, injected); the S8 collaborators (council delivery, correction
+    and result persistence (execution.adapters, injected); the S8 collaborators (council role context, correction
     feedback, evidence inspection, project evidence, role/front-desk execution, research sources, audit
     execution, native hook candidates) refuse when absent; the S5 continuation lanes likewise
 Entry points: RunTask.execute_one, ResearchRequired
 Contracts: INV-INVOCATION-001, INV-SESSION-001, INV-OBSERVATION-001, INV-CONTEXT-001, INV-WORKER-SESSION-001,
     INV-CLAUDE-WORKER-001, INV-RELEASE-001, INV-RECURRENCE-001, INV-EVIDENCE-001
 
+CHANGE (S8 V32, DESIGN-s8 §30/§30.1): council delivery and correction feedback are composed. `delivery` and
+`correction_feedback` pass into the context request and the injected `composition_admission` (context.ports.
+CompositionAdmission; research implements it, composition wires it) into `compose`; without it a run carrying either
+refuses first, before any reservation or provider (the port is not named `admission`: that is the invocation breaker).
+
 Declared boundaries (DESIGN-run-task §5/§8), each an explicit refusal before any reservation or provider, never a
-silent skip: council delivery and correction-feedback composition (S8); a continuation lane binding (S5); an
+silent skip: a continuation lane binding (S5); an
 evidence profile, evidence inspection, role/front-desk execution, research sources, audit execution and native
 hook candidates without their port (S8). Everything else is M7's body with the substitutions.
 """
@@ -48,6 +53,7 @@ from codex_harness.execution.domain.invocation_outcomes import (
 )
 from codex_harness.execution.domain.output_contracts import (
     ACTIVITY_LOCK_SECONDS,
+    DELIVERY_ARTIFACT_READER,
     GITHUB_RESEARCH,
     IMPLEMENTATION,
     OUTPUT_SEVERITY,
@@ -91,7 +97,7 @@ class RunTask:
                  audit_execution=None, roles=None, council=None, feedback=None, evidence_gate=None,
                  project_evidence=None, hook_candidates=None, continuations=None, research_admission=None,
                  clock=None, ids=None,
-                 monotonic=None):
+                 monotonic=None, composition_admission=None):
         # `ledger` satisfies execution.ports TaskLedger + TaskLifecycle (coordination TaskOwnership); `observer`
         # satisfies ObservationEvents + ObservationMarkers (one Observer); `results` carries the execution adapters
         # persist/tool_usage/preflight/handoff_refs/retain_evidence_handoff (an application never imports them).
@@ -113,6 +119,9 @@ class RunTask:
         # RF-RT (addendum A1 v2), S4 part: consulted before a plan/implement dispatch when supplied. S8 owns the
         # package store, S5 persists the disposition, and S10 composition must wire it (PLANNED; test double only).
         self.research_admission = research_admission
+        # DESIGN-s8 §30.1 R-cd4: the council-delivery and correction-feedback admission the composer needs (S8
+        # research implements it, S10 composition wires it); named apart from `admission`, the invocation breaker.
+        self.composition_admission = composition_admission
         self.clock, self.ids = clock, ids or SYSTEM_IDS
         self.monotonic = monotonic or __import__("time").monotonic
 
@@ -375,9 +384,10 @@ class RunTask:
             model_receipt = selection.receipt()
         # DESIGN-run-task §5 composition seam: the legacy composition is the S2 ContextComposer (compare:
         # context.composition), turn >= 2 through its D7 fields. Council delivery and correction feedback are
-        # composed by S8; until then they refuse here, before any reservation or provider (never a silent drop).
-        require(delivery is None, "Council delivery composition is not wired")
-        require(correction_feedback is None, "Correction feedback composition is not wired")
+        # composed there too (S8 V32) through the injected admission; without it they refuse here, before any
+        # reservation or provider (never a silent drop).
+        if delivery is not None or correction_feedback is not None:
+            require(self.composition_admission is not None, "Composition admission is not wired")
         with self.store.transaction() as tx:
             deployed = tx.get("deployment", "active")
         review = role = project = None
@@ -404,7 +414,10 @@ class RunTask:
                 default_provider=self.execution_policy.policy.default_provider, read_only=read_only,
                 action=action, stage=stage, deployed_revision=(deployed or {}).get("revision"),
                 checkpoint=checkpoint, progress=progress, review_context=review, role_context=role,
-                project_evidence=project, recovery=recovery_sources, basis_revision=basis))
+                project_evidence=project, recovery=recovery_sources, basis_revision=basis, delivery=delivery,
+                correction_feedback=correction_feedback,
+                delivery_reader=DELIVERY_ARTIFACT_READER if delivery is not None else None),
+                admission=self.composition_admission)
 
         composed = compose()
         binding, context_bound, basis_revision = composed.binding, composed.context_bound, composed.basis_revision

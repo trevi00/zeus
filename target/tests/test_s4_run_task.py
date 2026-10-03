@@ -169,8 +169,8 @@ def test_an_absent_s5_s8_port_refuses_before_any_provider(tmp_path, action, send
 
 
 @pytest.mark.parametrize("kwargs, wording", [
-    ({"delivery": {"inline": []}}, "Council delivery composition is not wired"),
-    ({"correction_feedback": {"findings": []}}, "Correction feedback composition is not wired"),
+    ({"delivery": {"inline": []}}, "Composition admission is not wired"),
+    ({"correction_feedback": {"findings": []}}, "Composition admission is not wired"),
 ])
 def test_s8_composition_inputs_refuse_before_reservation(tmp_path, kwargs, wording):
     run_task, _, store, _, calls = build(tmp_path)
