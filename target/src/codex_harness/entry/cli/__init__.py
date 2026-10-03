@@ -1,7 +1,7 @@
 """The `zeus` root parser assembler (M7 cli.py).
 
 Layer: entry
-Owns: parser (the root parser: global options and the root order), emit, and main (the M7 shell and the one dispatch table of the composed roots)
+Owns: parser (the root parser: global options and the root order), main (the M7 shell and the one dispatch table of the composed roots), and the re-export of emit (entry.cli.output)
 Does not own: the root parsers and bodies (the modules of this package) and the roots not yet composed (S10 units C2-C8)
 Entry points: parser, emit, main
 Contracts: none
@@ -14,9 +14,7 @@ import json
 import sys
 from pathlib import Path
 
-
-def emit(data: object) -> None:
-    print(json.dumps(data, ensure_ascii=False, indent=2), flush=True)
+from codex_harness.entry.cli.output import emit
 
 
 def parser() -> argparse.ArgumentParser:

@@ -16,7 +16,7 @@ def add_parser(commands) -> None:
 
 def run(args) -> None:
     from codex_harness.composition.configuration import repository_root, runtime_dir, settings
-    from codex_harness.entry.cli import emit
+    from codex_harness.entry.cli.output import emit
     config = settings()
     emit({"repository": str(repository_root()), "runtime": str(runtime_dir()),
           "compose_project": config.get("COMPOSE_PROJECT_NAME", "codex-harness"),

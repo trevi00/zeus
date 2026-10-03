@@ -16,7 +16,7 @@ def add_parser(commands) -> None:
 
 def run(args) -> None:
     from codex_harness.composition.configuration import initialize, runtime_dir
-    from codex_harness.entry.cli import emit
+    from codex_harness.entry.cli.output import emit
     result = initialize()
     runtime_dir().mkdir(parents=True, exist_ok=True)
     emit(result)
