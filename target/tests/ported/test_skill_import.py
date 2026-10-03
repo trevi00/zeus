@@ -2,9 +2,13 @@
 
 Import paths rewritten to the target modules; any other adaptation is named in place.
 
-Not ported here (owning slice; carried forward, listed in the S2 coverage evidence):
+Formerly not ported here (S2-S7 pilots); batch U3 below copies every one of them:
 - test_cli_preview_has_no_database_or_artifact_writes_and_audit_selects_legacy: S10 entry: the CLI main()/script moves to entry/composition
+
+Batch U3 (V6 retrofit): the preview/audit CLI case is copied verbatim and skipped whole, `S10: the skill import operator CLI`
+(M7 `skill_import.main` and the audit CLI); the names only it reads stay unresolved by design (F821).
 """
+# ruff: noqa: F821
 import base64
 import copy
 import json
@@ -141,5 +145,29 @@ def test_concurrent_reimport_and_retention_keep_one_cursor(monkeypatch):
     assert importer.audit('other-project', 'segment')['invocations'] == 0
     with pytest.raises(ContractError, match='Source artifact'):
         importer.ingest('project', 'segment', data, 'sha256:wrong')
+
+
+@pytest.mark.skip(reason="S10: the skill import operator CLI")
+def test_cli_preview_has_no_database_or_artifact_writes_and_audit_selects_legacy(tmp_path, capsys):
+    path = tmp_path / 'legacy.jsonl'
+    path.write_bytes(row() * 3)
+    target = tmp_path / 'artifacts'
+    assert main([str(path), '--source-id', 'segment', '--github-repo', 'owner/repo',
+                 '--artifacts', str(target), '--dry-run']) == 0
+    assert json.loads(capsys.readouterr().out)['counts']['events'] == 3
+    assert not target.exists()
+    store = MemoryStore()
+    import_file(path, digest('github:owner/repo'), 'segment', store, FileArtifacts(str(target)))
+    before = copy.deepcopy(store.data)
+    assert audit_cli(['--github-repo', 'owner/repo', '--legacy-source', 'segment', '--json'], store=store) == 0
+    report = json.loads(capsys.readouterr().out)
+    assert report['invocations'] == 3 and report['source_ref'].startswith('sha256:')
+    assert store.data == before
+    assert audit_cli(['--github-repo', 'owner/repo', '--legacy-source', 'segment'], store=store) == 0
+    text = capsys.readouterr().out
+    assert 'LEGACY SOURCE: segment' in text and 'Historical skill version unknown' in text
+    assert report['source_ref'] in text
+    assert audit_cli(['--github-repo', 'owner/repo', '--json'], store=store) == 0
+    assert json.loads(capsys.readouterr().out)['invocations'] == 0
 
 

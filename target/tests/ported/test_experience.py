@@ -4,17 +4,25 @@ Ported SOURCE M7 suite `tests/test_experience.py` run against the target (REBUIL
 
 Import paths rewritten to the target modules; any other adaptation is named in place.
 
-Not ported here (owning slice; carried forward, listed in the S2 coverage evidence):
+Formerly not ported here (S2-S7 pilots); batch U3 below copies every one of them:
 - test_imported_claims_never_feed_recurrence: S8 research: recurrence/hook lifecycle over the Harness
 - test_cli_dry_run_writes_nothing_and_import_uses_injected_store: S10 entry: the CLI main()/script moves to entry/composition
+
+Batch U3 (V6 retrofit): the two cases that had been left out are copied verbatim. test_imported_claims_never_feed_recurrence RUNS
+(`Harness`/`organization` are `m7_coordination`'s, `envelope` is `kernel.message`'s). test_cli_dry_run_... is kept whole under
+`S10: the lesson import operator CLI` (its `main` is the S10 entry; the names it reads stay unresolved by design, F821).
 """
+# ruff: noqa: F821
 import copy
 from functools import partial as _partial
+from uuid import uuid4
 
 import pytest
+from m7_coordination import Harness, organization
 
 from codex_harness.context.adapters.yaml_source import load_yaml as _load_yaml
 from codex_harness.kernel.errors import ContractError
+from codex_harness.kernel.message import envelope
 from codex_harness.knowledge.adapters.experience_import import import_lessons, parse_lesson, preview_lessons
 from codex_harness.knowledge.application.experience import ExperienceClaims
 from codex_harness.knowledge.domain.experience import classify_evidence, experience_claim, split_frontmatter
@@ -180,6 +188,51 @@ def test_same_id_with_different_content_is_rejected():
         ExperienceClaims(store).record(tampered, 'sha256:' + '0' * 64)
     with pytest.raises(ContractError, match='archived first'):
         ExperienceClaims(store).record(claim, 'not-a-ref')
+
+
+def test_imported_claims_never_feed_recurrence(tmp_path):
+    store = MemoryStore()
+    directory = tmp_path / 'lessons'
+    directory.mkdir()
+    for index in range(25):
+        (directory / f'lesson-{index}.md').write_bytes(lesson(occurrences=308 + index))
+    report = import_lessons([directory], 'harness', OBSERVED, store, FileArtifacts(str(tmp_path / 'a')))
+    assert report['totals']['files'] == 25 and report['totals']['upstream_occurrences_sum'] > 7000
+    service = Harness(store, organization())
+    message = envelope('incident.report', 'worker:implementation', 'lead:improvement', 'record_incident',
+                       {'occurrence_id': str(uuid4()), 'root_cause': 'cp949-child-encoding',
+                        'scope': 'harness', 'evidence_refs': ['fixture:error']}, 'experience-test')
+    result = service.record_incident(message)
+    assert result['occurrences'] == 1 and result['hook_id'] is None
+    with store.transaction() as tx:
+        assert tx.scan('hooks') == [] and len(tx.scan('incidents')) == 1
+        assert len(tx.scan('experience_claims')) == 25
+
+
+@pytest.mark.skip(reason="S10: the lesson import operator CLI")
+def test_cli_dry_run_writes_nothing_and_import_uses_injected_store(tmp_path, capsys):
+    directory = tmp_path / 'lessons'
+    directory.mkdir()
+    (directory / 'one.md').write_bytes(lesson())
+    (directory / 'two.md').write_bytes(lesson(evidence=['incident:x']))
+    (directory / 'ignored.txt').write_bytes(b'not a lesson')
+    artifacts = tmp_path / 'artifacts'
+    assert main([str(directory), '--basis', 'observed', '--dry-run', '--artifacts', str(artifacts)]) == 0
+    report = json.loads(capsys.readouterr().out)
+    assert report['preview_only'] and report['totals'] == {'files': 2, 'upstream_occurrences_sum': 616,
+                                                           'independent_occurrences_sum': 1, 'unverified': 1,
+                                                           'recomputed': 1}
+    assert not artifacts.exists()
+    assert main([str(directory), '--basis', 'pinned', '--dry-run']) == 2
+    assert 'full commit revision' in capsys.readouterr().err
+    store = MemoryStore()
+    assert main([str(directory), '--basis', 'pinned', '--revision', PINNED['revision'],
+                 '--artifacts', str(artifacts), '--path-prefix', 'knowledge/lessons/'], store=store) == 0
+    report = json.loads(capsys.readouterr().out)
+    assert [entry['changed'] for entry in report['claims']] == [True, True] and artifacts.exists()
+    assert ExperienceClaims(store).versions('harness', 'knowledge/lessons/one.md')[0]['upstream_occurrences'] == 308
+    assert main([str(tmp_path / 'missing'), '--basis', 'observed', '--dry-run']) == 2
+    assert preview_lessons([directory / 'two.md'], 'harness', OBSERVED)['claims'][0]['status'] == 'independently_recomputed'
 
 
 

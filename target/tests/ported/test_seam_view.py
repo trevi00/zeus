@@ -8,8 +8,11 @@ Ported SOURCE M7 suite `tests/test_seam_view.py` run against the target (REBUILD
 
 Import paths rewritten to the target modules; any other adaptation is named in place.
 
-Not ported here (owning slice; carried forward, listed in the S2 coverage evidence):
+Formerly not ported here (S2-S7 pilots); batch U3 below copies every one of them:
 - test_sdd_report_separates_stage_denominators: S8 review: the SDD gate report
+
+Batch U3 (V6 retrofit): test_sdd_report_separates_stage_denominators is copied verbatim and RUNS (`gate_report` is
+`review.domain.sdd`'s; `spec_data` is the ported `test_sdd`'s, as M7's in-body import reads).
 """
 import json
 
@@ -26,6 +29,7 @@ from codex_harness.knowledge.domain.seam_view import (
     seam_id,
 )
 from codex_harness.knowledge.domain.seams import compare
+from codex_harness.review.domain.sdd import gate_report
 from codex_harness.storage.adapters.memory_store import MemoryStore
 
 
@@ -168,5 +172,15 @@ def test_ledger_view_row_is_derived_and_regenerable(backend, request, monkeypatc
     with store.transaction() as tx:
         assert len(tx.scan(OBSERVATIONS)) == 6, 'history is preserved, never rewritten'
         assert len(tx.scan(VIEWS)) == 4
+
+
+def test_sdd_report_separates_stage_denominators():
+    from test_sdd import spec_data
+    report = gate_report(spec_data(), [{'physical_device': True, 'passed': True}])
+    denominators = report['denominators']
+    assert denominators['scenarios_declared'] == len(spec_data()['scenarios']) > 0
+    assert denominators['observations_imported'] == 1 and denominators['scenarios_executed_by_runner'] == 0
+    assert denominators['assertions_verified'] == 0 and denominators['human_accepted'] == 0
+    assert not report['acceptance_passed'] and 'never count as executed' in denominators['note']
 
 

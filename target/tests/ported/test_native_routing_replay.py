@@ -2,11 +2,18 @@
 
 Import paths rewritten to the target modules; any other adaptation is named in place.
 
-Not ported here (owning slice; carried forward, listed in the S2 coverage evidence):
+Formerly not ported here (S2-S7 pilots); batch U3 below copies every one of them:
 - test_actual_project_context_manifest_reproduces: S8 research: the Git-pinned native threshold policy repository (runtime_thresholds/threshold_proposals)
 - test_explicit_new_round_recovers_missing_evidence_without_rewriting_old_run: S8 research: the threshold-proposal collection CLI (M7 adapters.threshold_proposals.main)
 - test_real_collection_cli_archives_native_comparison_with_reference_proposals: S8 research: the threshold-proposal collection CLI (M7 adapters.threshold_proposals.main)
+
+Batch U3 (V6 retrofit): the three cases that had been left out are copied verbatim and skipped whole: the two collection-CLI
+cases `S10: the native routing replay operator CLI` (M7 `threshold_proposals.main`), and test_actual_project_context_manifest_...
+`S10: adapters.threshold_policy` (its `policy_repo` fixture is the Git-bound policy repository of
+`research.adapters.threshold_policy`, not on the target; `m7_research.policy_repo` raises on purpose). Names read only by those
+bodies stay unresolved by design (file-level F821).
 """
+# ruff: noqa: F821
 import copy
 from functools import partial as _partial
 
@@ -95,6 +102,84 @@ def test_unreproducible_or_missing_evidence_is_not_success(tmp_path, change):
         assert 'detail' not in report['manifests'][ref]
     else:
         assert report['manifests'][ref]['detail'] == details[change]
+
+
+@pytest.mark.skip(reason="S10: the native routing replay operator CLI")
+def test_explicit_new_round_recovers_missing_evidence_without_rewriting_old_run(policy_repo, tmp_path, capsys):
+    root, _ = policy_repo
+    artifacts, manifest, ref, _ = routed(tmp_path)
+    row = next(row for row in manifest['skills'] if row['tier'] == 'full')
+    body_path = artifacts.root / (row['content_ref'][7:] + '.txt')
+    original = body_path.read_bytes()
+    body_path.unlink()
+    store = MemoryStore()
+    with store.transaction() as tx:
+        tx.put('skill_history', digest('github:owner/repo'),
+               {'events': [{**event, 'manifest_ref': ref} for event in events()]})
+    args = ['--github-repo', 'owner/repo', '--harness-repo', str(root), '--artifacts', str(artifacts.root)]
+    assert main(args, store=store) == 0
+    old = json.loads(capsys.readouterr().out)
+    assert 'native_replay_incomplete' in old['proposals'][0]['activation_blockers']
+    body_path.write_bytes(original)
+    assert main(args, store=store) == 0
+    assert json.loads(capsys.readouterr().out) == old
+    assert main([*args, '--evaluation-round', '1'], store=store) == 0
+    new = json.loads(capsys.readouterr().out)
+    assert new['id'] != old['id'] and new['evaluation_round'] == 1
+    assert 'native_replay_incomplete' not in new['proposals'][0]['activation_blockers']
+    assert 'native_task_success_and_release_review_required' in new['proposals'][0]['activation_blockers']
+    assert not new['activation_ready']
+    assert main([*args, '--evaluation-round', '1'], store=store) == 0
+    assert json.loads(capsys.readouterr().out) == new
+    with store.transaction() as tx:
+        assert tx.get('threshold_proposal_runs', old['id']) == old
+        assert len(tx.scan('threshold_proposal_runs')) == 2
+    assert main([*args, '--evaluation-round', '-1'], store=store) == 2
+
+
+@pytest.mark.skip(reason="S10: the native routing replay operator CLI")
+def test_real_collection_cli_archives_native_comparison_with_reference_proposals(policy_repo, tmp_path, capsys):
+    root, _ = policy_repo
+    artifacts, _, ref, _ = routed(tmp_path)
+    store = MemoryStore()
+    with store.transaction() as tx:
+        tx.put('skill_history', digest('github:owner/repo'),
+               {'events': [{**event, 'manifest_ref': ref} for event in events()]})
+    assert main(['--github-repo', 'owner/repo', '--harness-repo', str(root),
+                 '--artifacts', str(artifacts.root)], store=store) == 0
+    run = json.loads(capsys.readouterr().out)
+    document = artifacts.document(run['evidence_ref'])
+    assert len(document['proposals']) == 1
+    native = document['native_routing']
+    assert native['replayed_events'] == 40 and native['values'] == [2, 3, 4]
+    assert not run['activation_ready'] and not native['activation_ready']
+    assert native['distinct_manifests'] == 1 and len(native['manifests']) == 1
+    # Losing transitive files cannot create another run for the same input basis.
+    native_ref = native['manifests'][ref]['body_refs'][0]
+    (artifacts.root / (native_ref[7:] + '.txt')).unlink()
+    assert main(['--github-repo', 'owner/repo', '--harness-repo', str(root),
+                 '--artifacts', str(artifacts.root)], store=store) == 0
+    assert json.loads(capsys.readouterr().out) == run
+
+
+@pytest.mark.skip(reason="S10: adapters.threshold_policy (the policy_repo fixture: research.adapters.threshold_policy is not on the target)")
+def test_actual_project_context_manifest_reproduces(policy_repo, tmp_path):
+    from codex_harness.adapters.project_skills import project_context
+
+    root, git = policy_repo
+    path = root / '.harness/skills/_common/fixture.md'
+    path.parent.mkdir(parents=True)
+    path.write_text('---\nkeywords: alpha beta gamma\n---\nREAL BODY', encoding='utf-8')
+    git._git('add', '.')
+    git._git('commit', '-qm', 'project skill fixture')
+    revision = git._git('rev-parse', 'HEAD')
+    artifacts = FileArtifacts(str(tmp_path / 'artifacts'))
+    output, selection = project_context(git, artifacts, str(root), revision, 'alpha beta gamma')
+    report = NativeRoutingReplay(artifacts).evaluate([{'manifest_ref': selection['manifest_ref']}], [3, 4])
+    assert report['status'] == 'complete'
+    replayed = report['manifests'][selection['manifest_ref']]
+    assert replayed['baseline']['selected'] == {
+        item.id.removeprefix('project-skill:'): digest(item.body) for item in output if item.priority == 18}
 
 
 

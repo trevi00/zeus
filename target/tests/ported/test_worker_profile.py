@@ -10,15 +10,9 @@ Ported SOURCE M7 suite `tests/test_worker_profile.py` run against the target (RE
 
 Import paths rewritten to the target modules; any other adaptation is named in place.
 
-Not ported here (owning slice; carried forward, listed in the S2 coverage evidence):
-- test_a_profiled_run_delivers_the_document_and_hooks_and_reads_back_real_receipts: S3 execution: a profiled run through the Claude CLI transport
-- test_hooks_that_never_ran_are_recorded_as_not_observed: S3 execution: a profiled run through the Claude CLI transport
-- test_concurrent_sessions_keep_separate_receipt_directories: S3 execution: a profiled run through the Claude CLI transport
-- test_a_profiled_run_that_hits_its_deadline_keeps_the_existing_failure_and_receipts: S3 execution: a profiled run through the Claude CLI transport
-- test_an_unknown_profile_name_is_refused_before_anything_is_probed: S3 execution: the Claude CLI transport
-- test_the_profile_adds_hooks_and_bash_rules_and_changes_no_other_policy: S3 execution: the Claude CLI transport
-- test_the_metadata_command_is_one_exact_allow_and_every_earlier_grant_is_preserved: S3 execution: the Claude CLI transport
-- test_an_unconfigured_run_keeps_the_existing_transport_contract: S3 execution: the Claude CLI transport
+Batch U3 (V6 retrofit): the eight cases that had been left out are copied verbatim (with the `transport` and `execute`
+helpers) and RUN against the S4 Claude transport. Adaptations, named: `ClaudeCodeRuntime` is the `m7_executor` constructor
+(the target transport with its host facilities injected); `packaged_policy` and `authorized` are `m7_evidence`'s.
 """
 import json
 import os
@@ -28,17 +22,22 @@ import sys
 from pathlib import Path
 
 import pytest
+from m7_evidence import authorized, packaged_policy
+from m7_executor import ClaudeCodeRuntime
 
 from codex_harness.context.adapters import worker_profile as module
 from codex_harness.context.adapters.worker_profile import (
     WorkerProfileError,
     hook_command,
     hook_receipts,
+    hook_settings,
     load_profile,
+    merge_settings,
     profile_digest,
     profile_environment,
     quote_argument,
 )
+from codex_harness.execution.adapters.providers.claude_cli import claude_settings
 from codex_harness.kernel.errors import ContractError
 
 CHILD = Path(__file__).resolve().parent / "claude_protocol_child.py"
@@ -57,6 +56,18 @@ SESSION = "00000000-0000-4000-8000-0000000000aa"
 
 
 
+
+
+def transport(scenario, runtime, **kwargs):
+    return ClaudeCodeRuntime(model="claude-stub-" + scenario, runtime=runtime, executable=str(CHILD),
+                             launcher=[sys.executable], max_budget_usd=1.0,
+                             settings_document=claude_settings(runtime), **kwargs)
+
+
+def execute(scenario, workspace, runtime, session_id=None):
+    with transport(scenario, runtime) as opened:
+        return opened.run("지시문: fixture prompt", str(workspace), SCHEMA, timeout=90,
+                          session_id=session_id)
 
 
 def observation(workspace):
@@ -85,6 +96,13 @@ def test_the_packaged_profile_verifies_and_carries_its_provenance():
     assert all(source["pinned_sha256"] and source["commit"] for source in profile["sources"])
     assert all(rule.startswith("Bash(") for rule in profile["permissions_allow"])
     assert profile["hook_path"].is_file() and len(profile_digest(profile)) == 64
+
+
+@pytest.mark.parametrize("name", ["", "worker-v2", "../worker-profile-v1.json", 1, ["worker-v1"]])
+def test_an_unknown_profile_name_is_refused_before_anything_is_probed(name):
+    with pytest.raises(WorkerProfileError, match="Unknown worker profile"):
+        ClaudeCodeRuntime(model="sonnet", runtime={"worker_profile": name}, executable=None,
+                          max_budget_usd=1.0)
 
 
 
@@ -231,6 +249,62 @@ def test_the_hook_bounds_its_input_and_reports_write_failure_without_content(tmp
     assert b"Traceback" not in failed.stderr and CANARY.encode() not in failed.stderr
 
 
+def test_the_profile_adds_hooks_and_bash_rules_and_changes_no_other_policy():
+    profile = load_profile("worker-v1")
+    hooks = hook_settings("cmd")
+    merged = merge_settings(claude_settings(RUNTIME), profile, hooks)
+    assert merged["permissions"]["deny"] == RUNTIME["disallowed_tools"]
+    assert merged["permissions"]["defaultMode"] == "acceptEdits"
+    assert merged["permissions"]["allow"][:3] == RUNTIME["allowed_tools"]
+    assert "Bash(python -m ruff:*)" in merged["permissions"]["allow"]
+    assert set(merged["hooks"]) == {"SessionStart", "PostToolUse", "PostToolUseFailure"}
+    assert merged["hooks"]["PostToolUse"][0]["matcher"] == "Bash"
+    assert merged["hooks"]["PostToolUseFailure"][0]["matcher"] == "Bash|Edit|Glob|Grep|Read|Write"
+    assert "Stop" not in merged["hooks"]
+    assert merge_settings(None, profile, hooks)["permissions"]["allow"] == profile["permissions_allow"]
+    with pytest.raises(WorkerProfileError, match="already carry hooks"):
+        merge_settings({"hooks": {"Stop": []}}, profile, hooks)
+
+
+def test_the_metadata_command_is_one_exact_allow_and_every_earlier_grant_is_preserved():
+    """Issue 124: each fixed module is granted as one exact command, never as a Python prefix."""
+    profile = load_profile("worker-v1")
+    exact = "Bash(python -m codex_harness.adapters.worker_profile_metadata)"
+    frontend = "Bash(python -m codex_harness.adapters.monitor_frontend_checks)"
+    assert profile["permissions_allow"] == [
+        "Bash(python -m pytest:*)", "Bash(python -m pytest)", "Bash(python -m ruff:*)",
+        "Bash(python -m compileall:*)", "Bash(git status:*)", "Bash(git status)", "Bash(git diff:*)",
+        "Bash(git diff)", "Bash(git log:*)", exact, frontend]
+    fixed = (exact, frontend)
+    assert all(":*" not in rule for rule in fixed), "a fixed capability is never granted with a wildcard"
+    assert not [rule for rule in profile["permissions_allow"] if rule not in fixed
+                and ("worker_profile_metadata" in rule or "monitor_frontend_checks" in rule
+                     or rule.startswith(("Bash(python:", "Bash(python)", "Bash(python -m:", "Bash(python -m)",
+                                         "Bash(python -c", "Bash(node", "Bash(npm", "Bash(npx")))]
+    # The grant is only as narrow as the replay policy that repeats it: extra tokens are refused.
+    packaged = packaged_policy()
+    for rule in fixed:
+        argv = rule[len("Bash("):-1].split()
+        assert authorized(argv, packaged), rule
+        assert not authorized([*argv, "--help"], packaged) and not authorized([*argv, "."], packaged)
+    manifest = json.loads(module._resource_path("worker-profile-v1.json").read_text("utf-8"))
+    assert list(manifest) == ["id", "version", "document", "document_sha256", "hook", "hook_sha256",
+                              "character_limit", "hooks", "permissions", "sources", "note"]
+    assert set(manifest["permissions"]) == {"allow"} and manifest["character_limit"] == module.MAX_CHARACTERS
+    assert manifest["hooks"] == ["SessionStart", "PostToolUse(Bash)",
+                                 "PostToolUseFailure(Bash|Edit|Glob|Grep|Read|Write)"]
+    assert len(manifest["sources"]) == 13
+    assert {source["path"] for source in manifest["sources"]} >= {
+        "scripts/lib/repeat_error_tracker.py", "scripts/lib/strike_dispatcher.py",
+        "scripts/cli/strike_research_consume.py"}
+    base = claude_settings({**RUNTIME, "disallowed_tools": ["Task", "WebFetch", "Bash(python -c:*)"]})
+    merged = merge_settings(base, profile, hook_settings("cmd"))
+    assert merged["permissions"]["deny"] == ["Task", "WebFetch", "Bash(python -c:*)"], "denies are delivered unchanged"
+    assert merged["permissions"]["allow"] == [*RUNTIME["allowed_tools"], *profile["permissions_allow"]]
+    assert merged["permissions"]["allow"].count(exact) == 1 and merged["permissions"]["allow"].count(frontend) == 1
+    assert merged["permissions"]["defaultMode"] == "acceptEdits"
+
+
 # ---- settings and environment -----------------------------------------------------------------
 
 
@@ -251,6 +325,106 @@ def test_the_profile_environment_prefixes_path_and_binds_pythonpath_to_the_candi
     assert env["HOME"] == "/h" and "/parent/leak" not in env["PYTHONPATH"]
     with pytest.raises(WorkerProfileError, match="not a file"):
         module.verified_interpreter(str(tmp_path / "missing-python"))
+
+
+def test_a_profiled_run_delivers_the_document_and_hooks_and_reads_back_real_receipts(tmp_path):
+    runtime, root = profiled(tmp_path)
+    workspace = tmp_path / "candidate 작업"
+    (workspace / "src").mkdir(parents=True)
+    result = execute("profile", workspace, runtime, session_id=SESSION)
+    seen = observation(workspace)
+    profile = load_profile("worker-v1")
+
+    # Delivery: the document is a value on the child's command line, the log keeps a digest.
+    assert seen["append_system_prompt"] == profile["document"]
+    argv = result["command"]["argv"]
+    assert "--append-system-prompt" in argv
+    assert profile["document"] not in argv and all("Verification before" not in str(e) for e in argv)
+    selected = result["command"]["worker_profile"]
+    assert selected["id"] == "worker-v1" and selected["document_sha256"] == profile["document_sha256"]
+    assert selected["document_transport"] == "--append-system-prompt"
+    assert "document" not in selected and selected["compliance"].startswith("not judged")
+    assert selected["sources"][0]["pinned_sha256"]
+    settings = json.loads(seen["settings"])
+    assert set(settings["hooks"]) == {"SessionStart", "PostToolUse", "PostToolUseFailure"}
+    assert settings["permissions"]["deny"] == RUNTIME["disallowed_tools"]
+    assert "Bash(python -m ruff:*)" in settings["permissions"]["allow"]
+
+    # Environment: the verified interpreter leads PATH; PYTHONPATH is the candidate's src.
+    assert seen["path"].split(os.pathsep)[0] == str(Path(sys.executable).resolve().parent)
+    assert seen["pythonpath"] == str((workspace / "src").resolve())
+    assert result["command"]["environment"]["profile"]["pythonpath"] == seen["pythonpath"]
+    assert "PYTHONPATH" in seen["environment_names"]
+
+    # Observation: the child invoked both hooks through its shell and the hook wrote receipts.
+    assert [run["exit_code"] for run in seen["hook_runs"]] == [0, 0], seen["hook_runs"]
+    receipts = result["worker_profile"]["hook_receipts"]
+    assert receipts["observed"] is True and receipts["records"] == 2
+    assert receipts["events"] == {"SessionStart": 1, "PostToolUse": 1, "PostToolUseFailure": 0}
+    assert receipts["two_strike"]["observed"] is False and receipts["two_strike"]["research_required"] == 0
+    assert receipts["sessions_named"] == [SESSION] and receipts["foreign_records"] == 0
+    directory = Path(receipts["directory"])
+    assert directory == (root / SESSION).resolve() and directory.is_dir()
+    assert workspace.resolve() not in directory.parents, "receipts live outside the checkout"
+    for path in directory.glob("*.json"):
+        assert CANARY not in path.read_text("utf-8")
+    assert result["worker_profile"]["selected"] == selected
+    assert result["answer"]["tests"] == ["profile hooks invoked"]
+    assert result["process"]["confirmed"] and result["process"]["exit_code"] == 0
+    assert receipts["authority"].startswith("none")
+
+
+def test_hooks_that_never_ran_are_recorded_as_not_observed(tmp_path):
+    runtime, root = profiled(tmp_path)
+    workspace = tmp_path / "ws"
+    workspace.mkdir()
+    result = execute("normal", workspace, runtime)  # the normal child ignores its settings
+    receipts = result["worker_profile"]["hook_receipts"]
+    assert receipts["observed"] is False and receipts["records"] == 0
+    assert receipts["events"] == {"SessionStart": 0, "PostToolUse": 0, "PostToolUseFailure": 0}
+    assert result["command"]["worker_profile"]["id"] == "worker-v1", "installation is still recorded"
+    assert result["answer"] is not None, "the run's own outcome is unchanged by an absent receipt"
+
+
+def test_concurrent_sessions_keep_separate_receipt_directories(tmp_path):
+    runtime, root = profiled(tmp_path)
+    first = "00000000-0000-4000-8000-000000000001"
+    second = "00000000-0000-4000-8000-000000000002"
+    results = []
+    for session in (first, second):
+        workspace = tmp_path / session
+        workspace.mkdir()
+        results.append(execute("profile", workspace, runtime, session_id=session))
+    for session, result in zip((first, second), results):
+        receipts = result["worker_profile"]["hook_receipts"]
+        assert Path(receipts["directory"]).name == session
+        assert receipts["records"] == 2 and receipts["sessions_named"] == [session]
+    assert sorted(path.name for path in root.iterdir()) == [first, second]
+
+
+def test_a_profiled_run_that_hits_its_deadline_keeps_the_existing_failure_and_receipts(tmp_path):
+    runtime, root = profiled(tmp_path)
+    workspace = tmp_path / "ws"
+    workspace.mkdir()
+    with transport("silent", runtime) as opened:
+        result = opened.run("지시문", str(workspace), SCHEMA, timeout=2)
+    assert result["failure"]["cause"] == "claude-provider-timeout"
+    assert result["process"]["confirmed"] and result["process"]["stop_reason"] == "deadline"
+    assert result["worker_profile"]["hook_receipts"]["observed"] is False
+
+
+def test_an_unconfigured_run_keeps_the_existing_transport_contract(tmp_path):
+    result = execute("normal", tmp_path, RUNTIME)
+    seen = observation(tmp_path)
+    assert "worker_profile" not in result
+    assert result["command"]["worker_profile"] is None
+    assert "--append-system-prompt" not in result["command"]["argv"]
+    assert seen["append_system_prompt"] is None
+    assert "hooks" not in json.loads(seen["settings"])
+    assert json.loads(seen["settings"]) == claude_settings(RUNTIME)
+    assert seen["pythonpath"] is None and "profile" not in result["command"]["environment"]
+    assert "--append-system-prompt" not in transport("normal", RUNTIME)._planned_flags()
+    assert result["answer"] is not None
 
 
 # ---- the whole run against the protocol child --------------------------------------------------

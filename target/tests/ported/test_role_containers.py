@@ -11,7 +11,7 @@ the carried I1 (f)1-(f)5 and RC2-F3 1-5 discriminators, the scrub/refusal contro
 transport tests). Import paths and the injected fake are rewritten through `m7_containers` (its docstring
 names both adaptations); any other adaptation is named in place.
 
-Not ported here (owning slice; carried forward, listed in the S3 coverage evidence):
+Formerly not ported here (S2-S7 pilots); batch U3 below copies every one of them:
 - test_the_viewer_web_service_refuses_to_start_with_a_desk_revision: S10 entry (monitor)
 - test_serve_refuses_a_desk_on_the_viewer_port_before_binding: S9 observation (viewer)
 - test_monitor_web_main_refuses_before_any_listener_when_the_desk_is_configured: S10 entry (monitor)
@@ -24,6 +24,11 @@ PORTING NOTES (S4 ported executor suites; the M7 assertions are unchanged):
   with isolation the target runs the active native hooks INSIDE the codex container (golden hooks.native_container)
   instead of M7's `codex_container_native_hooks_unsupported` refusal, and M7 `adapters/hooks.NativeHooks` (patched
   by this test) is S8's. The body is kept unchanged.
+
+Batch U3 (V6 retrofit): the three desk/viewer-listener cases that had been left out are copied verbatim.
+test_serve_refuses_a_desk_on_the_viewer_port_before_binding RUNS: M7's `adapters.monitoring_web` is
+`observation.adapters.viewer_http` (its `serve` and `ThreadingHTTPServer`; the in-body import line is the adaptation). The other
+two are skipped whole, `S10: the monitor entry (monitor.listener_refusal)` and `S10: the monitor web entry (monitor.main)`.
 """
 import json
 import os
@@ -965,6 +970,41 @@ def test_executor_hands_off_writer_evidence_after_the_transport_returns(tmp_path
     # The reviewer that later names only this writer's receipt receives the manifest and its files.
     refs = rc.handoff_refs(executor.artifacts.root, ["worker result " + result["execution_ref"]])
     assert handed["manifest"] in refs and len(refs) == 3
+
+
+# ---- (f)6: the viewer listener never serves the desk ---------------------------------------------
+@pytest.mark.skip(reason="S10: the monitor entry (monitor.listener_refusal)")
+def test_the_viewer_web_service_refuses_to_start_with_a_desk_revision():
+    from codex_harness import monitor
+
+    assert monitor.listener_refusal("web", None, "a" * 40, viewer=8787).startswith("monitor web refuses")
+    assert monitor.listener_refusal("web", None, None, viewer=8787) is None
+    assert monitor.listener_refusal("desk", 8788, "a" * 40, viewer=8787) is None
+    for port, viewer in ((None, 8787), (8787, 8787), (8790, 8790), (8787, 8790)):
+        assert "own --port" in monitor.listener_refusal("desk", port, "a" * 40, viewer=viewer)
+    assert "needs ZEUS_DESK_REVISION" in monitor.listener_refusal("desk", 8788, "", viewer=8787)
+    assert monitor.viewer_port({"ZEUS_AIBOX_WEB_PORT": "8790"}) == 8790 and monitor.viewer_port({}) == 8787
+
+
+def test_serve_refuses_a_desk_on_the_viewer_port_before_binding(tmp_path, monkeypatch):
+    from codex_harness.observation.adapters import viewer_http as monitoring_web
+
+    monkeypatch.setattr(monitoring_web, "ThreadingHTTPServer", Unexpected)
+    with pytest.raises(ValueError, match="never served on the viewer listener"):
+        monitoring_web.serve(tmp_path / "snapshot.json", 8787, desk=object())
+    with pytest.raises(ValueError):
+        monitoring_web.serve(tmp_path / "snapshot.json", 8790, desk=object(), viewer_port=8790)
+
+
+@pytest.mark.skip(reason="S10: the monitor web entry (monitor.main)")
+def test_monitor_web_main_refuses_before_any_listener_when_the_desk_is_configured(tmp_path, monkeypatch):
+    from codex_harness import monitor
+
+    monkeypatch.setattr(monitor, "settings", lambda: {"ZEUS_DESK_REVISION": "a" * 40})
+    monkeypatch.setattr(sys, "argv", ["zeus-monitor", "web"])
+    monkeypatch.setattr("codex_harness.adapters.monitoring_web.ThreadingHTTPServer", Unexpected)
+    with pytest.raises(SystemExit, match="refuses to start"):
+        monitor.main()
 
 
 # ---- Docker-backed denial fixtures (disposable, labelled, never a provider) -----------------------

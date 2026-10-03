@@ -7,12 +7,17 @@ Ported SOURCE M7 suite `tests/test_isolated_worker.py` run against the target (R
 Import paths and the injected fake are rewritten through `m7_containers` (its docstring names the
 adaptations); any other adaptation is named in place.
 
-Not ported here (owning slice; carried forward, listed in the S3 coverage evidence):
+Formerly not ported here (S2-S7 pilots); batch U3 below copies every one of them:
 - test_identity_binds_isolation_only_when_selected: S10 entry (operation_cli identity)
 - test_host_isolation_refuses_project_profile_and_never_builds_host_path: S10 composition (bootstrap)
 - test_entry_reuses_the_runtime_contract_and_tags_every_line: S10 entry (isolated_worker_entry shim)
 - test_entry_passes_the_read_only_flag_only_under_its_own_protocol: S10 entry (isolated_worker_entry shim)
+
+Batch U3 (V6 retrofit): the four cases listed above are copied verbatim and skipped whole with the owning slice named
+(`S10: the operator CLI identity (operation_cli)`, `S10: composition (bootstrap.host_isolation)` and, twice, `S10: the isolated
+worker container entry (isolated_worker_entry)`); the names only they read stay unresolved by design (file-level F821).
 """
+# ruff: noqa: F821
 import json
 import os
 import shutil
@@ -181,6 +186,15 @@ def test_absent_configuration_is_host_mode_and_partial_or_unknown_refuses():
     assert one["image"] == IMAGE and one["digest"] != other["digest"]
 
 
+@pytest.mark.skip(reason="S10: the operator CLI identity (operation_cli)")
+def test_identity_binds_isolation_only_when_selected(config, tmp_path):
+    policy = SimpleNamespace(summary=lambda: {"policy_digest": "p", "config_digest": "c"})
+    legacy = operation_cli.identity({}, tmp_path, policy, {}, tmp_path)
+    bound = operation_cli.identity({}, tmp_path, policy, {}, tmp_path, isolation=config)
+    assert "isolation" not in legacy and {k: v for k, v in bound.items() if k != "isolation"} == legacy
+    assert bound["isolation"]["image"] == IMAGE and bound["isolation"]["limits"] == config["limits"]
+
+
 def test_preflight_refuses_missing_daemon_image_and_token(config, tmp_path, monkeypatch):
     with pytest.raises(iw.IsolationError) as refused:  # real spawn failure of an absent client binary
         iw.preflight(config, str(tmp_path / "no-such-docker"), {iw.TOKEN_NAME: TOKEN})
@@ -196,6 +210,17 @@ def test_preflight_refuses_missing_daemon_image_and_token(config, tmp_path, monk
             iw.preflight(config, "docker", environment)
         assert refused.value.reason_code == code
     assert not any(TOKEN in json.dumps(call) for call in fake.calls)
+
+
+@pytest.mark.skip(reason="S10: composition (bootstrap.host_isolation)")
+def test_host_isolation_refuses_project_profile_and_never_builds_host_path(monkeypatch):
+    from codex_harness import bootstrap
+    monkeypatch.setattr(bootstrap, "settings", lambda: {})
+    assert bootstrap.host_isolation() is None
+    monkeypatch.setattr(bootstrap, "settings", lambda: {"ZEUS_WORKER_ISOLATION": "docker", "ZEUS_WORKER_IMAGE": IMAGE})
+    with pytest.raises(iw.IsolationError) as refused:
+        bootstrap.host_isolation({"profile_digest": "x"})
+    assert refused.value.reason_code == "isolation_refuses_project_evidence_profile"
 
 
 # ---- source validation --------------------------------------------------------------------------
@@ -458,6 +483,44 @@ class FixtureRuntime:
 
 def lines(output):
     return [iw.parse_line(line + b"\n", 1 << 20) for line in output.getvalue().splitlines()]
+
+
+@pytest.mark.skip(reason="S10: the isolated worker container entry (isolated_worker_entry)")
+def test_entry_reuses_the_runtime_contract_and_tags_every_line():
+    request = {"protocol": iw.PROTOCOL, "prompt": "p", "schema": SCHEMA, "timeout": 5, "model": "fable", "session_id": "s",
+               "runtime": {"worker_profile": None}, "cwd": iw.WORKSPACE, "evidence_root": iw.EVIDENCE}
+    output = io.BytesIO()
+    assert entry.serve(io.BytesIO(json.dumps(request).encode()), output, FixtureRuntime) == 0
+    kinds = lines(output)
+    assert [m["kind"] for m in kinds] == ["entered", "event", "result"]
+    assert kinds[1]["event"] == {"type": "system", "cwd": "/workspace", "root": "/evidence"} and "events" not in kinds[2]["result"]
+    refused = io.BytesIO()
+    assert entry.serve(io.BytesIO(b"{}"), refused, FixtureRuntime) == 1 and lines(refused)[0]["kind"] == "refused"
+
+
+@pytest.mark.skip(reason="S10: the isolated worker container entry (isolated_worker_entry)")
+def test_entry_passes_the_read_only_flag_only_under_its_own_protocol():
+    """INV-ROLE-CONTAINER-001: claude-role-ro names READ_ONLY_PROTOCOL and read_only together."""
+    seen = []
+
+    class ReadOnlyRuntime(FixtureRuntime):
+        def run(self, prompt, cwd, schema, timeout, *, on_event, on_enter, session_id, read_only=False):
+            seen.append(read_only)
+            return super().run(prompt, cwd, schema, timeout, on_event=on_event, on_enter=on_enter,
+                               session_id=session_id)
+    base = {"prompt": "p", "schema": SCHEMA, "timeout": 5, "model": "fable", "session_id": "s",
+            "runtime": {"worker_profile": None}, "cwd": iw.WORKSPACE, "evidence_root": iw.EVIDENCE}
+    output = io.BytesIO()
+    request = {**base, "protocol": iw.READ_ONLY_PROTOCOL, "read_only": True}
+    assert entry.serve(io.BytesIO(json.dumps(request).encode()), output, ReadOnlyRuntime) == 0 and seen == [True]
+    for bad in ({**base, "protocol": iw.READ_ONLY_PROTOCOL}, {**base, "protocol": iw.PROTOCOL, "read_only": True},
+                {**base, "protocol": iw.READ_ONLY_PROTOCOL, "read_only": "yes"}):
+        refused = io.BytesIO()
+        assert entry.serve(io.BytesIO(json.dumps(bad).encode()), refused, ReadOnlyRuntime) == 1
+        assert lines(refused)[0]["kind"] == "refused"
+    assert seen == [True]
+    with pytest.raises(ContractError):
+        iw.request_protocol(True, False, read_only=True)
 
 
 def test_claude_role_ro_binds_the_review_checkout_read_only_and_imports_nothing(config, candidate, tmp_path, monkeypatch):

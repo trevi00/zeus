@@ -23,25 +23,42 @@ PORTING NOTES (S4 ported executor suites; the M7 assertions are unchanged):
   `_inspect_evidence` raises on purpose and is never to build the gate. Their bodies are kept unchanged, so the names
   that exist only there are unresolved by design (file-level `# ruff: noqa: F821`).
 
-not ported: S8 evidence inspection: the ledger/inspector cases (`EvidenceInspections`, `EvidenceInspector`,
-`ProjectEvidenceInspector`: every M7 case of this file that uses none of `LeaseProgress`, `Executor` or
-`execute_one`, and the two ledger cases that use only `EvidenceInspections`).
+Batch U3 (V6 retrofit): the 15 cases that had been left out are copied verbatim and RUN (the ledger/inspector cases; the
+inspectors, `EvidenceInspections`, `forwards_progress`, `BUCKET`/`NOTICES` and `ProcessTree` are the moved objects). Their
+helpers are M7's own (`inspector`, `project`, `project_inspector`, `command`, `Recorder`, `FakeProcess`, `Legacy`,
+`CountingStore`, `SLEEP`); `EvidenceInspector`/`ProjectEvidenceInspector` are the `m7_evidence` constructors (the host_os
+`ProcessTree` class injected). One construction adaptation: M7's `ei._capture(...)` call in
+test_a_refusal_during_a_real_wait_... passes the keyword-only `process_tree=ProcessTree` the moved `_capture` takes.
 """
 # ruff: noqa: F821
+import subprocess
+import threading
+import time
 from inspect import signature
 
 import m7_executor
 import pytest
-from m7_evidence import EvidenceInspector
+from m7_evidence import EvidenceInspector, ProjectEvidenceInspector, parse_profile, replay_environment
 from test_evidence_inspection import PY, policy, setup_implementation  # noqa: F401 - fixture import
+from test_project_evidence import POLICY as PROJECT_POLICY
+from test_project_evidence import check as project_check
+from test_project_evidence import document, executed
+from test_project_evidence import policy as project_policy
+from test_project_evidence import workspace as project_candidate
 
 from codex_harness.coordination.application.execution_time import ExecutionTimeError
 from codex_harness.evidence.adapters import evidence_inspection as ei
 from codex_harness.evidence.adapters import isolated_evidence as ie
 from codex_harness.evidence.adapters import project_evidence as pe
-from codex_harness.evidence.application.evidence_inspection import EvidenceInspections
+from codex_harness.evidence.application.evidence_inspection import (
+    BUCKET,
+    NOTICES,
+    EvidenceInspections,
+    forwards_progress,
+)
 from codex_harness.execution.application import lease_progress as ex
 from codex_harness.execution.application.lease_progress import LeaseProgress
+from codex_harness.host_os.adapters.process_tree import ProcessTree
 from codex_harness.kernel.errors import ContractError
 from codex_harness.kernel.message import envelope
 from codex_harness.kernel.policy import POLICY
@@ -49,12 +66,38 @@ from codex_harness.routing.adapters.organization_source import packaged_organiza
 from codex_harness.storage.adapters.file_artifacts import FileArtifacts
 from codex_harness.storage.adapters.memory_store import MemoryStore
 
+SLEEP = 'import time; time.sleep({})'
 LOST = 'Stale or expired task execution'
 
 
 def assignment(action="implement", agent="worker:implementation"):
     parent = packaged_organization().actor(agent).parent
     return envelope("task.assign", parent, agent, action, {"objective": "fixture"}, "test")
+
+
+def inspector(tmp_path, **replay):
+    return EvidenceInspector(FileArtifacts(str(tmp_path / 'artifacts')), policy(**replay))
+
+
+def project(tmp_path, seconds=0.1, name='candidate'):
+    """An existing valid host project-evidence fixture, with one real check that sleeps briefly.
+
+    The check is a real `python -m pytest` child of the profile's own interpreter in the profile's
+    own context; only its duration is chosen here, so no test waits for a real lease."""
+    root = project_candidate(tmp_path, name)
+    (root / 'backend' / 'probes' / 'test_slow.py').write_text(
+        f'import time\n\n\ndef test_slow():\n    time.sleep({seconds})\n', encoding='utf-8')
+    return root
+
+
+def project_inspector(tmp_path, doc=None, **replay):
+    return ProjectEvidenceInspector(FileArtifacts(str(tmp_path / 'project-artifacts')),
+                                    parse_profile(doc or document([project_check('slow', 'slow')]), PROJECT_POLICY),
+                                    project_policy(**replay))
+
+
+def command(code, expected_exit=0):
+    return {'kind': 'command', 'argv': [PY, '-c', code], 'expected_exit': expected_exit}
 
 
 def leased(store=None):
@@ -70,6 +113,164 @@ def taken_over(store, lease, owner='owner-2'):
     with store.transaction() as tx:
         row = tx.get('tasks', lease['id'])
         tx.put('tasks', lease['id'], {**row, 'lease_owner': owner})
+
+
+class Recorder:
+    """A progress callback that records its stages and may refuse at a chosen one."""
+
+    def __init__(self, refuse_at=None, error=None, after=0):
+        self.stages, self.refuse_at, self.error, self.after = [], refuse_at, error, after
+
+    def __call__(self, stage=None):
+        self.stages.append(stage)
+        if stage == self.refuse_at and self.stages.count(stage) > self.after:
+            raise self.error or ContractError(LOST)
+
+    def count(self, stage):
+        return self.stages.count(stage)
+
+
+class FakeProcess:
+    """A process whose wait is scripted; `exits_after` waits report the child as still running."""
+
+    args = ['fake']
+
+    def __init__(self, exits_after=0):
+        self.exits_after, self.waits = exits_after, []
+
+    def wait(self, timeout=None):
+        self.waits.append(timeout)
+        if len(self.waits) <= self.exits_after:
+            raise subprocess.TimeoutExpired(self.args, timeout)
+        return 0
+
+
+def test_without_a_callback_the_wait_is_exactly_the_bounded_wait_it_always_was():
+    process = FakeProcess()
+    ei._wait(process, 12.0, None)
+    assert process.waits == [12.0], 'a caller that supplies nothing is not polled and not changed'
+
+
+def test_the_callback_runs_between_bounded_polls_and_the_wait_still_ends_at_its_deadline(monkeypatch):
+    monkeypatch.setattr(ei, 'POLL_SECONDS', 0.01)  # deterministic: the poll, not the clock, is shortened
+    process, progress = FakeProcess(exits_after=3), Recorder()
+    ei._wait(process, 5.0, progress)
+    assert progress.stages == ['replay_wait'] * 3 and all(t <= 0.01 for t in process.waits)
+    forever, progress = FakeProcess(exits_after=10**6), Recorder()
+    started = time.monotonic()
+    with pytest.raises(subprocess.TimeoutExpired):
+        ei._wait(forever, 0.2, progress)
+    assert 0.2 <= time.monotonic() - started < 5, 'the per-command deadline is not extended by polling'
+    assert progress.count('replay_wait') > 1
+
+
+def test_a_refusal_during_a_real_wait_reclaims_the_child_and_carries_its_cleanup(tmp_path):
+    progress = Recorder(refuse_at='replay_wait')
+    started = time.monotonic()
+    with pytest.raises(ContractError, match=LOST) as raised:
+        ei._capture([PY, '-c', SLEEP.format(120)], str(tmp_path), 120, 4096, replay_environment(), progress=progress,
+                    process_tree=ProcessTree)
+    assert time.monotonic() - started < 30, 'the lost owner stopped waiting for a 120-second child'
+    cleanup = raised.value.capture_cleanup
+    assert cleanup['reason'] == 'ContractError' and cleanup['confirmed'] and cleanup['tree']['confirmed']
+    assert cleanup['readers_alive'] == [] and sorted(cleanup['streams_closed']) == ['stderr', 'stdout']
+
+
+def test_a_real_command_is_polled_and_a_live_owner_keeps_its_findings(tmp_path, monkeypatch):
+    monkeypatch.setattr(ei, 'POLL_SECONDS', 0.05)
+    workspace = tmp_path / 'ws'
+    workspace.mkdir()
+    progress = Recorder()
+    report = inspector(tmp_path, replays_per_claim=1).inspect([command(SLEEP.format(0.5))], workspace,
+                                                              {'task_id': 't', 'attempt': 1}, progress=progress)
+    assert report['findings'][0]['state'] == 'checked'
+    assert progress.stages[0] == 'replay_start' and progress.stages[-1] == 'replay_end'
+    assert progress.count('replay_wait') >= 2, 'the owner had its turn while the command ran'
+
+
+def test_ownership_loss_starts_no_further_command_and_returns_no_findings(tmp_path):
+    workspace = tmp_path / 'ws'
+    workspace.mkdir()
+    insp, spawned = inspector(tmp_path, replays_per_claim=2), []
+    replay = insp._replay
+    insp._replay = lambda *a, **k: (spawned.append(a[0]), replay(*a, **k))[1]
+    progress = Recorder(refuse_at='replay_start', after=1)  # lost between the first and the second replay
+    with pytest.raises(ContractError, match=LOST):
+        insp.inspect([command('import sys; sys.exit(0)'), command('import sys; sys.exit(0)')], workspace,
+                     {'task_id': 't', 'attempt': 1}, progress=progress)
+    assert len(spawned) == 1, 'the second replay never started'
+
+
+def test_a_failing_callback_is_raised_through_and_never_becomes_a_verdict(tmp_path):
+    workspace = tmp_path / 'ws'
+    workspace.mkdir()
+    progress = Recorder(refuse_at='replay_end', error=RuntimeError('injected callback failure'))
+    with pytest.raises(RuntimeError, match='injected callback failure'):
+        inspector(tmp_path, replays_per_claim=2).inspect([command('import sys; sys.exit(0)')], workspace,
+                                                         {'task_id': 't', 'attempt': 1}, progress=progress)
+
+
+def test_no_thread_outlives_the_inspection_that_used_a_callback(tmp_path):
+    workspace = tmp_path / 'ws'
+    workspace.mkdir()
+    before = set(threading.enumerate())
+    progress = Recorder()
+    inspector(tmp_path, replays_per_claim=1).inspect([command(SLEEP.format(0.3))], workspace,
+                                                     {'task_id': 't', 'attempt': 1}, progress=progress)
+    assert {t for t in threading.enumerate() if t.is_alive()} - before == set(), 'no renewer and no reader is left'
+
+
+def test_the_ledger_checks_the_owner_before_it_reads_and_before_it_writes(tmp_path):
+    workspace = tmp_path / 'ws'
+    workspace.mkdir()
+    store, _, lease = leased()
+    candidate = {'revision': 'c' * 40}
+    calls, insp = [], inspector(tmp_path, replays_per_claim=1)
+    real = insp.inspect
+    insp.inspect = lambda *a, **k: (calls.append(k.get('progress')), real(*a, **k))[1]
+    start = Recorder(refuse_at='inspection_start')
+    with pytest.raises(ContractError, match=LOST):
+        EvidenceInspections(store, insp).inspect(lease, candidate, [command('import sys; sys.exit(0)')], workspace,
+                                                 progress=start)
+    assert calls == [], 'a lost owner does not even read the inspector'
+    end = Recorder(refuse_at='inspection_end')
+    with pytest.raises(ContractError, match=LOST):
+        EvidenceInspections(store, insp).inspect(lease, candidate, [command('import sys; sys.exit(0)')], workspace,
+                                                 progress=end)
+    assert calls == [end], 'the callback reached the inspector as given, per call'
+    with store.transaction() as tx:
+        assert tx.scan(BUCKET) == [] and tx.scan(NOTICES) == [], 'a stale owner publishes no inspection'
+    live = EvidenceInspections(store, insp).inspect(lease, candidate, [command('import sys; sys.exit(0)')], workspace,
+                                                    progress=Recorder())
+    assert live['verdict'] == 'all_checked'
+    without = EvidenceInspections(store, insp).inspect(lease, candidate, [command('import sys; sys.exit(0)')], workspace)
+    assert without == live, 'the identity and the row are the callback-free ones; nothing was added to the key'
+
+
+class Legacy:
+    """An inspector from before this batch: it takes no callback and must keep working untouched."""
+
+    def __init__(self, inner):
+        self.inner = inner
+
+    def snapshot(self, cwd=None):
+        return self.inner.snapshot(cwd)
+
+    def inspect(self, claims, cwd, binding, environment=None, interpreter=None):
+        return self.inner.inspect(claims, cwd, binding, environment=environment, interpreter=interpreter)
+
+
+def test_an_inspector_that_takes_no_callback_is_not_handed_one_and_still_runs(tmp_path):
+    workspace = tmp_path / 'ws'
+    workspace.mkdir()
+    store, _, lease = leased()
+    assert forwards_progress(EvidenceInspector.inspect) and not forwards_progress(Legacy.inspect)
+    assert not forwards_progress('not a callable')
+    progress = Recorder()
+    row = EvidenceInspections(store, Legacy(inspector(tmp_path, replays_per_claim=1))).inspect(
+        lease, {'revision': 'c' * 40}, [command('import sys; sys.exit(0)')], workspace, progress=progress)
+    assert row['verdict'] == 'all_checked'
+    assert progress.stages == ['inspection_start', 'inspection_end'], 'the boundary checks still bound it'
 
 
 def test_the_owner_check_renews_on_its_cadence_and_never_lengthens_the_lease():
@@ -167,6 +368,69 @@ def test_the_implement_path_still_inspects_and_completes_with_a_live_lease(setup
         assert [r['id'] for r in tx.scan(BUCKET)] == [inspection['inspection_id']]
 
 
+def test_the_profile_route_polls_a_real_child_and_a_live_owner_keeps_its_findings(tmp_path, monkeypatch):
+    """R1: the third production inspector. Its host check is a real pytest child in the profile's own
+    context, and the caller's turn comes between the bounded polls of that wait, as on the legacy route."""
+    monkeypatch.setattr(ei, 'POLL_SECONDS', 0.05)  # the poll, not the clock, is shortened
+    root = project(tmp_path, seconds=0.6)
+    progress = Recorder()
+    report = project_inspector(tmp_path, replays_per_claim=1).inspect(
+        [executed('slow')], str(root), {'task_id': 't', 'attempt': 1}, progress=progress)
+    finding = report['findings'][0]
+    assert finding['state'] == 'checked', finding
+    assert finding['check_id'] == 'slow' and finding['observed_exits'] == [0]
+    assert progress.stages[0] == 'replay_start' and progress.stages[-1] == 'replay_end'
+    assert progress.count('replay_wait') >= 2, 'the owner had its turn while the host check ran'
+
+
+def test_the_profile_route_starts_no_further_check_after_the_owner_is_lost(tmp_path, monkeypatch):
+    root = project(tmp_path)
+    doc = document([project_check('first', 'slow'), project_check('second', 'slow')])
+    spawned, capture = [], pe._capture
+
+    def recorded(argv, *args, **kwargs):
+        spawned.append(argv)
+        return capture(argv, *args, **kwargs)
+    monkeypatch.setattr(pe, '_capture', recorded)
+    progress = Recorder(refuse_at='replay_start', after=1)  # INJECTED loss between the two host checks
+    with pytest.raises(ContractError, match=LOST):
+        project_inspector(tmp_path, doc, replays_per_claim=1).inspect(
+            [executed('first'), executed('second')], str(root), {'task_id': 't', 'attempt': 1}, progress=progress)
+    assert len(spawned) == 1, 'the second host check never started'
+
+
+def test_a_refusal_during_a_profile_check_is_never_swallowed_into_a_state(tmp_path, monkeypatch):
+    """A cancelled profile check is not classified: nothing returns, whatever the profile says."""
+    monkeypatch.setattr(ei, 'POLL_SECONDS', 0.05)
+    root = project(tmp_path, seconds=30)
+    progress = Recorder(refuse_at='replay_wait')
+    started = time.monotonic()
+    with pytest.raises(ContractError, match=LOST):
+        project_inspector(tmp_path, replays_per_claim=1).inspect(
+            [executed('slow')], str(root), {'task_id': 't', 'attempt': 1}, progress=progress)
+    assert time.monotonic() - started < 25, 'the lost owner stopped waiting for a 30-second host check'
+
+
+def test_the_ledger_hands_the_callback_and_the_fence_to_the_profile_route(tmp_path):
+    """R1 and R2 together on the profile route: the adapter declares the callback, so the ledger gives
+    it one, and the caller's transaction guard fences both of that ledger's transactions."""
+    root = project(tmp_path)
+    store, workflow, lease = leased()
+    assert forwards_progress(ProjectEvidenceInspector.inspect), 'the profile adapter declares the check'
+    progress, fences = Recorder(), []
+
+    def guard(tx):
+        fences.append('fenced')
+        return workflow._owned(tx, lease)
+    row = EvidenceInspections(store, project_inspector(tmp_path, replays_per_claim=1)).inspect(
+        lease, {'revision': 'c' * 40}, [executed('slow')], str(root), progress=progress, guard=guard)
+    assert row['verdict'] == 'all_checked', row['findings']
+    assert progress.stages[0] == 'inspection_start' and progress.stages[-1] == 'inspection_end'
+    assert progress.count('replay_start') == progress.count('replay_end') == 1
+    assert len(fences) == 2, 'the cache read and the publication are both fenced'
+    assert row['context']['project_digest'] == row['inspector']['project']['digest'], 'the profile identity is unchanged'
+
+
 def test_every_boundary_forces_a_fresh_read_and_only_the_poll_is_throttled():
     """R2: the cadence is for the polls of one wait. A boundary re-reads ownership whatever it says."""
     store, workflow, lease = leased()
@@ -196,6 +460,64 @@ def test_a_takeover_inside_the_default_cadence_window_still_refuses_at_the_next_
     with pytest.raises(ContractError, match=LOST):
         progress('replay_start')
     assert progress.checks == 1 and progress.refusal is not None, 'the boundary read refused the stale owner'
+
+
+def test_ownership_lost_before_publication_writes_neither_a_row_nor_a_recording_notice(tmp_path):
+    """R2: the guard runs in the write transaction itself, so the last moment is covered too - and a
+    lost lease is not a failure of the ledger, so it never becomes an inspection-recording notice."""
+    workspace = tmp_path / 'ws'
+    workspace.mkdir()
+    store, workflow, lease = leased()
+
+    def guard(tx):
+        return workflow._owned(tx, lease)
+
+    def losing(stage=None):  # INJECTED once the replays are done and the row is not yet written
+        if stage == 'inspection_end':
+            taken_over(store, lease)
+    with pytest.raises(ContractError, match=LOST):
+        EvidenceInspections(store, inspector(tmp_path, replays_per_claim=1)).inspect(
+            lease, {'revision': 'c' * 40}, [command('import sys; sys.exit(0)')], workspace,
+            progress=losing, guard=guard)
+    with store.transaction() as tx:
+        assert tx.scan(BUCKET) == [], 'a stale owner publishes no inspection'
+        assert tx.scan(NOTICES) == [], 'and its refusal is not recorded as a recording failure'
+
+
+class CountingStore:
+    """Counts the ledger's OWN transactions: the guard must use the one it is handed, never open one."""
+
+    def __init__(self, inner):
+        self.inner, self.transactions = inner, 0
+
+    def transaction(self):
+        self.transactions += 1
+        return self.inner.transaction()
+
+
+def test_a_cache_hit_is_fenced_and_the_guard_opens_no_transaction_of_its_own(tmp_path):
+    workspace = tmp_path / 'ws'
+    workspace.mkdir()
+    store, workflow, lease = leased()
+    counting = CountingStore(store)
+    insp, inspected = inspector(tmp_path, replays_per_claim=1), []
+    real = insp.inspect
+    insp.inspect = lambda *a, **k: (inspected.append(True), real(*a, **k))[1]
+    inspections = EvidenceInspections(counting, insp)
+    candidate, claims = {'revision': 'c' * 40}, [command('import sys; sys.exit(0)')]
+
+    def guard(tx):
+        return workflow._owned(tx, lease)
+    row = inspections.inspect(lease, candidate, claims, workspace, guard=guard)
+    assert row['verdict'] == 'all_checked'
+    assert counting.transactions == 2, 'one read and one write, exactly as a guardless caller makes'
+    assert inspections.inspect(lease, candidate, claims, workspace, guard=guard) == row, 'a live owner reads its cache'
+    assert len(inspected) == 1, 'the second call was the cached row'
+    taken_over(store, lease)
+    with pytest.raises(ContractError, match=LOST):
+        inspections.inspect(lease, candidate, claims, workspace, guard=guard)
+    assert len(inspected) == 1, 'the stale owner never reached the inspector'
+    assert inspections.inspect(lease, candidate, claims, workspace) == row, 'a caller without a guard keeps its contract'
 
 
 def test_the_executor_always_supplies_its_own_ownership_guard_to_the_ledger(tmp_path, monkeypatch):
