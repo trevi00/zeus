@@ -85,6 +85,7 @@ from codex_harness.coordination.application.execution_records import ExecutionRe
 from codex_harness.coordination.application.execution_recovery import ExecutionRecovery
 from codex_harness.coordination.application.invocation_admission import InvocationBreaker
 from codex_harness.coordination.application.outbox import Outbox
+from codex_harness.coordination.application.outbox_relay import OutboxFlusher
 from codex_harness.coordination.application.sessions import SessionCheckpoints
 from codex_harness.coordination.application.task_ownership import TaskOwnership
 from codex_harness.coordination.application.workflow import Workflow
@@ -114,8 +115,9 @@ from codex_harness.host_os.adapters.process_tree import ProcessTree, TreeOwnersh
 from codex_harness.host_os.adapters.windows import job_objects, no_console
 from codex_harness.intake.application import tickets
 from codex_harness.kernel.errors import ContractError
-from codex_harness.kernel.ids import SYSTEM_IDS
+from codex_harness.kernel.ids import SYSTEM_CLOCK, SYSTEM_IDS
 from codex_harness.observation.adapters.observation_spool import MemorySpool
+from codex_harness.observation.application.health import HealthRecords
 from codex_harness.observation.application.observations import (
     MemoryDirectory,
     Observer,
@@ -296,6 +298,12 @@ class Service:
 
     def __init__(self, store, org=None):
         self.store, self.org = store, org if org is not None else packaged_organization()
+
+    def flush_outbox(self, bus, limit=100, audit=None, correlation_id=None):
+        """M7 `Harness.flush_outbox` over the target `OutboxFlusher`, built as `m7_coordination.Harness` builds it."""
+        flusher = OutboxFlusher(self.store, self.org, health=HealthRecords().record, clock=SYSTEM_CLOCK,
+                                ids=SYSTEM_IDS)
+        return flusher.flush(bus, limit, audit, correlation_id)
 
 
 class _LazyPolicy:
