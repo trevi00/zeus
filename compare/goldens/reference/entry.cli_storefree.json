@@ -9,7 +9,7 @@
    "stderr": "",
    "stdout": {
     "checks": {
-     "codex": true,
+     "codex": false,
      "codex_auth": false,
      "compose": false,
      "docker": true,
