@@ -4,8 +4,10 @@ Every assertion is M7's, unchanged. Adaptations, all construction/import: `Fleet
 and `packaged_policy` come from the `m7_coordination` shim (its docstring names the routing); `validate_config`,
 `FleetRefused`, `classify_outcome`, `paths_conflict` from `coordination.domain.fleet`, `validate_manifest` from
 `coordination.domain.operation`, `MemoryStore` from `storage.adapters.memory_store`. The two tests that need M7's
-monitoring collector (`adapters.monitoring`: `collect`, `docker_facts`, `redis_facts`) belong to S9 and stay
-here skipped, whole and unrewritten (`collect` is a module-level placeholder that raises, so the names resolve).
+monitoring collector (`adapters.monitoring`: `collect`, `docker_facts`, `redis_facts`) run (S9 batch U): `monitoring` is the
+`m7_observation.monitoring` facade over `observation.adapters.collectors` (the S9P2 suites' import shape), `monitoring.collect`
+is M7's `collect` and the `docker_facts`/`redis_facts` replacements land on the facade; the inline
+`from codex_harness.adapters import monitoring` is replaced by the module-level shim import.
 """
 import json
 from contextlib import contextmanager
@@ -13,6 +15,7 @@ from copy import deepcopy
 
 import pytest
 from m7_coordination import Fleet, FleetRunner, LaunchRefused, packaged_policy
+from m7_observation import monitoring
 
 from codex_harness.coordination.domain.fleet import (
     FleetRefused,
@@ -22,12 +25,6 @@ from codex_harness.coordination.domain.fleet import (
 )
 from codex_harness.coordination.domain.operation import validate_manifest
 from codex_harness.storage.adapters.memory_store import MemoryStore
-
-
-def collect(*args, **kwargs):
-    """S9 owns M7 `adapters.monitoring.collect`; only the skipped tests below name it."""
-    raise NotImplementedError("S9: observation monitoring collector")
-
 
 CANARY = "CANARY-must-never-be-emitted"
 BASE = "a" * 40
@@ -255,11 +252,9 @@ def ticking():
     return lambda: "2026-09-18T00:00:00.%06d+00:00" % next(counter)
 
 
-@pytest.mark.skip(reason="S9: observation monitoring collector")
 def test_queued_reasons_persist_change_only_on_new_facts_and_reach_the_monitor(tmp_path, monkeypatch):
     from types import SimpleNamespace
 
-    from codex_harness.adapters import monitoring
     monkeypatch.setattr(monitoring, "docker_facts", lambda repository, containers=None: [])
     monkeypatch.setattr(monitoring, "redis_facts", lambda url, agents: [])
     f = Fleet(MemoryStore(), clock=ticking())
@@ -291,7 +286,7 @@ def test_queued_reasons_persist_change_only_on_new_facts_and_reach_the_monitor(t
     # The reasons survive `status` and the monitor envelope, and a status read writes nothing.
     service, _ = monitoring.read_only(SimpleNamespace(store=f.store, org=SimpleNamespace(agents={})), None)
     before = deepcopy(f.store.data)
-    data = collect(service, None, str(tmp_path), "redis://127.0.0.1/0")["sources"]["fleet"]["data"]
+    data = monitoring.collect(service, None, str(tmp_path), "redis://127.0.0.1/0")["sources"]["fleet"]["data"]
     assert {j["id"]: (j["status"], j["reason_code"]) for j in data["jobs"]} == {
         "op-1": ("failed", "child_refused"), "op-2": ("dispatching", None), "op-3": ("queued", "dependency_failed")}
     assert f.store.data == before
@@ -524,31 +519,29 @@ def test_running_service_refreshes_effective_ceilings_before_new_admission(tmp_p
     assert summary["admitted"] == ["op-1"] and summary["finalized"][0]["status"] == "accepted" and summary["stopped"] is True
 
 
-@pytest.mark.skip(reason="S9: observation monitoring collector")
 def test_monitor_snapshot_carries_fleet_envelope_and_survives_store_failure(tmp_path, monkeypatch):
     from types import SimpleNamespace
 
-    from codex_harness.adapters import monitoring
     monkeypatch.setattr(monitoring, "docker_facts", lambda repository, containers=None: [])
     monkeypatch.setattr(monitoring, "redis_facts", lambda url, agents: [])
     f = fleet(tmp_path)
     f.enqueue("a", manifest("op-1", ["docs/x.md"]), GOAL, [])
     service, _ = monitoring.read_only(SimpleNamespace(store=f.store, org=SimpleNamespace(agents={})), None)
     before = deepcopy(f.store.data)
-    envelope = collect(service, None, str(tmp_path), "redis://127.0.0.1/0")["sources"]["fleet"]
+    envelope = monitoring.collect(service, None, str(tmp_path), "redis://127.0.0.1/0")["sources"]["fleet"]
     assert envelope["status"] == "ok" and envelope["data"]["registered"] is True
     assert envelope["data"]["jobs"][0]["status"] == "queued" and envelope["data"]["truncated"] is False
     text = json.dumps(envelope)
     assert CANARY not in text and str(tmp_path) not in text and "lane_a" not in text and "redis://" not in text
     assert f.store.data == before
-    empty = collect(monitoring.ReadOnlyService(SimpleNamespace(store=MemoryStore(), org=SimpleNamespace(agents={}))),
+    empty = monitoring.collect(monitoring.ReadOnlyService(SimpleNamespace(store=MemoryStore(), org=SimpleNamespace(agents={}))),
                     None, str(tmp_path), "redis://127.0.0.1/0")["sources"]["fleet"]
     assert empty["data"] == {"schema": "urn:zeus:fleet-status:1", "registered": False, "lanes": [], "jobs": []}
 
     class Broken:
         def transaction(self):
             raise RuntimeError("injected outage (fixture)")
-    broken = collect(SimpleNamespace(store=Broken(), org=SimpleNamespace(agents={})), None, str(tmp_path), "redis://x")
+    broken = monitoring.collect(SimpleNamespace(store=Broken(), org=SimpleNamespace(agents={})), None, str(tmp_path), "redis://x")
     assert broken["sources"]["fleet"] == {"status": "unavailable", "observed_at": broken["sources"]["fleet"]["observed_at"],
                                           "error": "RuntimeError", "data": None}
 

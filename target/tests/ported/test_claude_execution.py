@@ -11,8 +11,8 @@ PORTING NOTES (S4 ported executor suites):
 - SKIPPED, each at the top of its test with the owner slice:
   - test_the_models_own_six_w_output_carries_no_authority: S5 coordination: the outbox relay
     (M7 `Harness.flush_outbox` -> `application.outbox.relay`) is not in the target.
-  - test_c09_a_canary_printed_by_the_provider_stays_out_of_every_log: S9 observation schema adapter
-    (M7 `adapters.contracts.validate_observation`) and S10 entry (`cli.emit`) are not in the target.
+  - test_c09_a_canary_printed_by_the_provider_stays_out_of_every_log: S10 `cli.emit` (the operator CLI)
+    is not in the target; `validate_observation` is S9's and exists (batch U relabelled the reason).
 - The `postgres` parameter of the `store` fixture uses the ported conftest's `isolated_pgstore`: it skips
   unless HARNESS_INTEGRATION=1 and a disposable ZEUS_TEST_DSN are set (as in every ported PostgreSQL case).
 - `# noqa: F821` marks the one name (`validate_observation`) that exists only in the skipped body.
@@ -379,7 +379,7 @@ def test_c07_a_claude_checkpoint_is_not_recovered_into_a_codex_attempt(tmp_path,
 # ---- C09: a secret a provider prints reaches no log ------------------------------------------------
 
 def test_c09_a_canary_printed_by_the_provider_stays_out_of_every_log(tmp_path, monkeypatch, store, capsys):
-    pytest.skip("S9: observation schema adapter (M7 adapters/contracts.validate_observation) and S10: cli.emit are not in the target")
+    pytest.skip("S10: cli.emit (the operator CLI); validate_observation is S9's and exists")
     from codex_harness.cli import emit as cli_emit
     s = build(tmp_path, monkeypatch, store, scenario="canary")
     row = run(s)
