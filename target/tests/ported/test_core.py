@@ -3,8 +3,7 @@ only imports and construction differ. `Harness(store, org)` is the `m7_intake` s
 M7's `Harness` routed to research's `HookLifecycle` and coordination's `SessionCheckpoints`, each hook call in a unit as M7
 opened it); `organization()` is the packaged organization; `validate_message` is `storage.adapters.message_schema`'s;
 `ContextItem`/`compile_context` are `context.domain.packet`'s; `envelope`, `digest` and `ContractError` are the kernel's.
-`session_action` has NO target implementation (the ledger's `coordination.application.sessions:session_action` is designed
-and absent): its parametrized test is kept whole and skipped, naming the owner.
+`session_action` is `coordination.application.sessions.session_action` (routed by the shim; its parametrized test runs).
 """
 from copy import deepcopy
 from uuid import uuid4
@@ -182,7 +181,6 @@ def test_recurrence_updates_same_hook_without_disabling_previous_verified_versio
     (70, 0, False, "rotate"), (70, 0, True, "checkpoint_when_safe"),
     (20, 3600, False, "hibernate"), (20, 3600, True, "continue"),
 ])
-@pytest.mark.skip(reason='S5: session_action (coordination.application.sessions:session_action is designed, not implemented on the target)')
 def test_session_lifecycle(used, idle, busy, action):
     assert session_action(used, 100, idle, busy) == action
 

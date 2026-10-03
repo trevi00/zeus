@@ -34,18 +34,11 @@ Named adaptations (each is a construction/import/patch-target adaptation, never 
 - The M7 domain names are `evidence.domain.evidence`, `evidence.domain.project_evidence`,
   `evidence.domain.check_results`, `evidence.domain.gate_verdicts` and `kernel.ids`/`kernel.errors`.
 - `SDD(store, artifacts, human_provider=None)` is the moved class with its two ports injected, as
-  `compare/drivers/target/s8_sdd.py` does: intake's `ticket_binding` and the kernel's system clock. `SOURCE` is a verbatim
-  copy of `tests/test_sdd.py`'s `SOURCE` (DESIGN-s8 §29.2: that suite is P8's and not yet ported); `spec_data` of the same
-  module is `load_json(SPEC)` over the M7 file loader `adapters.sdd.load_json`, whose ledger home
-  (`review.adapters.sdd:load_json`) is designed and absent on the target, so `spec_data` is a placeholder
-  (`unavailable("S8", ...)`) and only the tests that call it are skipped.
-- `audit`, `FixtureRunner`, `activate_fixture`, `complete_fixture_audit` and `lease_review` are VERBATIM copies of the
-  helpers of `tests/test_research_audits.py` (P3's suite, not yet ported: DESIGN-s8 §29.2), AST-equal to M7 modulo their
-  in-function import lines (module imports here) and two constructions: the verifier gets host_os's `ChokepointProcesses` as
-  `processes`, and `ResearchAudits` is built with its three ports as `s8_audit_core.py` builds it (coordination's
-  `ExecutionRecovery` with research's `audit_gate.binding`, `Outbox`, `PendingDecisions`; the system clock and ids).
-  `Workflow(store, org)` is `m7_coordination.Workflow`, `Releases` is `m7_delivery.Releases`. They are replaced by imports
-  from the ported suite when P3 lands.
+  `compare/drivers/target/s8_sdd.py` does: intake's `ticket_binding` and the kernel's system clock.
+- Batch U2b retired the copies this shim held (DESIGN-s8 §29.2): `SOURCE` and `spec_data` (M7 `test_sdd`) and `audit`,
+  `FixtureRunner`, `activate_fixture`, `complete_fixture_audit` and `lease_review` (M7 `test_research_audits`). Their
+  consumers (`test_gate_verdicts`, `test_runner_categories`) import them from the ported `test_sdd` and
+  `test_research_audits`, as M7's own import lines do. A shim must not import a test module, so none is imported here.
 - `source_execution` stands for the module M7 cases patched (`codex_harness.adapters.source_execution`): a facade over
   `research.adapters.source_execution`. `bounded_command` and `run_process` assignments install M7's two-argument
   callables: `bounded_command` behind a wrapper taking the moved function's keyword-only `processes`, and `run_process` as
@@ -59,22 +52,11 @@ Named adaptations (each is a construction/import/patch-target adaptation, never 
 
 from __future__ import annotations
 
-import base64
-import json
-import os
-import subprocess
-from dataclasses import replace
-from datetime import datetime, timedelta, timezone
 from pathlib import Path
 
 import m7_containers
-import pytest
 from m7_coordination import Workflow, organization, unavailable  # noqa: F401
-from m7_delivery import Releases
 
-from codex_harness.coordination.application import execution_recovery
-from codex_harness.coordination.application.decisions import PendingDecisions
-from codex_harness.coordination.application.outbox import Outbox
 from codex_harness.evidence.adapters import evidence_inspection as _ei
 from codex_harness.evidence.adapters import isolated_evidence as _ie
 from codex_harness.evidence.adapters import project_evidence as _pe
@@ -110,24 +92,9 @@ from codex_harness.host_os.adapters.process_tree import ProcessTree
 from codex_harness.intake.application.tickets import ticket_binding
 from codex_harness.kernel.errors import ContractError  # noqa: F401
 from codex_harness.kernel.ids import SYSTEM_CLOCK, SYSTEM_IDS, canonical, digest  # noqa: F401
-from codex_harness.kernel.message import envelope
 from codex_harness.research.adapters import source_execution as _source_execution
-from codex_harness.research.adapters.source_verification import GitSourceVerifier
-from codex_harness.research.application import audit_gate
-from codex_harness.research.application.research import ResearchAudits
-from codex_harness.research.domain.research import (
-    AdaptationProposal,
-    ExecutionReceipt,
-    InventoryEntry,
-    PartitionCheckpoint,
-    PathDisposition,
-    SourceIdentity,
-    SubsystemAnalysis,
-)
 from codex_harness.review.application import sdd as _sdd
 from codex_harness.review.domain.check_results import classify_isolated_run
-from codex_harness.storage.adapters.file_artifacts import FileArtifacts
-from codex_harness.storage.adapters.memory_store import MemoryStore
 
 
 def _real_capture(*args, **kwargs):
@@ -219,122 +186,7 @@ def SDD(store, artifacts, human_provider=None):  # noqa: N802 - the M7 construct
     return _sdd.SDD(store, artifacts, human_provider, ticket_binding=ticket_binding, clock=SYSTEM_CLOCK)
 
 
-SOURCE = {"mode": "working_tree_draft", "repository": "contract-test", "revision": None, "path": "spec.json"}
-spec_data = unavailable("S8", "test_sdd.spec_data (review.adapters.sdd.load_json has no target implementation yet)")
-
-
 PROCESSES = process_groups.ChokepointProcesses()
-
-
-def research_audits(store, verifier, artifacts, workflow, runner=None):
-    """`ResearchAudits(store, verifier, artifacts, workflow, runner)` with its V3 ports, as `s8_audit_core.py` wires them."""
-    recovery = execution_recovery.ExecutionRecovery(store, workflow.org, artifacts, audit_binding=audit_gate.binding,
-                                                    ticket_binding=ticket_binding, clock=SYSTEM_CLOCK, ids=SYSTEM_IDS)
-    return ResearchAudits(store, verifier, artifacts, workflow, runner, decision_validation=recovery,
-                          outbox=Outbox(), pending_decisions=PendingDecisions())
-
-
-@pytest.fixture
-def audit(tmp_path):
-    repo = tmp_path / 'source'
-    repo.mkdir()
-    def git(*args):
-        return subprocess.check_output(['git', '-C', str(repo), *args]).decode().strip()
-    git('init', '-q')
-    git('config', 'user.email', 'fixture@example.com')
-    git('config', 'user.name', 'Fixture')
-    git('remote', 'add', 'origin', 'https://github.com/fixture/repo.git')
-    (repo / 'normal').write_text('source')
-    git('add', '.')
-    # INV-GRAPH-001: Git paths need not be representable on the host filesystem.
-    raw_name = b'space and name' if os.name == 'nt' else b'space\tand\nnewline'
-    for mode, name, body in [('100644', raw_name, b'\xff\x00\xfe'),
-                             ('120000', b'link', b'normal')]:
-        oid = subprocess.check_output(['git', '-C', str(repo), 'hash-object', '-w', '--stdin'],
-                                      input=body).strip()
-        subprocess.run(['git', '-C', str(repo), 'update-index', '-z', '--index-info'],
-                       input=mode.encode() + b' ' + oid + b'\t' + name + b'\0', check=True)
-    git('commit', '-qm', 'fixture')
-    artifacts = FileArtifacts(str(tmp_path / 'artifacts'))
-    verifier = GitSourceVerifier(repo, artifacts, processes=PROCESSES)
-    source = SourceIdentity('https://github.com/fixture/repo', git('rev-parse', 'HEAD'),
-                            git('rev-parse', 'HEAD^{tree}'), 'sha256:' + '0' * 64)
-    entries = verifier.inventory(source)
-    manifest = {'version': 1, 'repository': source.repository, 'commit': source.commit,
-                'tree': source.tree, 'entries': entries}
-    source = replace(source, manifest_ref=artifacts.put(canonical(manifest), 'fixture')['ref'])
-    entries = [InventoryEntry(**e) for e in entries]
-    store = MemoryStore()
-    workflow = Workflow(store, organization())
-    service = research_audits(store, verifier, artifacts, workflow)
-    record = service.import_audit(source, entries, ['core'])
-    return service, record, source, entries, git
-
-
-
-class FixtureRunner:
-    """Injected fixture receipts; these are not actual isolated or Codex verification."""
-    def __init__(self, artifacts, blocked=False, passed=None, outcome=None):
-        self.artifacts, self.blocked = artifacts, blocked
-        self.passed = (not blocked) if passed is None else passed
-        self.outcome = outcome or ('isolation_unavailable' if blocked else 'executed')
-
-    def execute(self, source, command):
-        output = self.artifacts.put('fixture inspection output', 'test-fixture')['ref']
-        return ExecutionReceipt(source, 'fixture-env', command, 'fixture-isolation',
-                                125 if self.blocked else 0, output, 'fixture-runner', self.blocked,
-                                passed=self.passed, outcome=self.outcome)
-
-    def execute_assigned(self, source, command, task, workflow):
-        return self.execute(source, command)
-
-
-def activate_fixture(service, revision='audit', expected=None, enabled=True):
-    releases = Releases(service.store, service.workflow.org)
-    candidate = {'revision': revision, 'tree': 'fixture-tree', 'base': 'fixture-base',
-                 'author': 'worker:implementation'}
-    if enabled:
-        candidate['audit_lifecycle_version'] = 1
-    release = releases.propose(candidate, {'checks': ['tests', 'cli_start', 'cli_file_task']})
-    for actor in ('lead:improvement', 'conductor'):
-        releases.review(release['id'], actor, revision, True, 'fixture-review')
-    releases.verify(release['id'], revision, release['policy_hash'], {
-        k: {'passed': True, 'evidence': 'fixture-canary-not-production'}
-        for k in release['policy']['checks']})
-    releases.promote(release['id'], expected)
-    return releases, release
-
-
-def complete_fixture_audit(service, record, source):
-    service.runner = FixtureRunner(service.artifacts)
-    for part in service.partition(record['id'], 1):
-        message = envelope('task.assign', 'lead:research', 'worker:github', 'audit_partition',
-            {'audit_id': record['id'], 'partition_id': part['partition_id']}, 'fixture')
-        service.workflow.submit(message)
-        task = service.workflow.claim('worker:github', 'fixture')
-        receipt = service.execute(task, record['id'], ['fixture-inspection'])
-        ref = receipt['receipt']['output_ref']
-        paths = [PathDisposition(p, 'binary' if base64.b64decode(p).startswith(b'space') else 'semantic',
-                    [ref], ['symbol'], 'fixture trace', [], 'fixture-inspection', [receipt['id']])
-                 for p in part['paths']]
-        systems = [SubsystemAnalysis(name, [e['path'] for e in record['inventory']], ['contract'],
-            ['main'], ['impl'], ['caller'], ['config'], ['git'], ['failure'], [json.dumps(['fixture-inspection'])],
-            [receipt['id']], [ref], [], [], []) for name in part['subsystems']]
-        saved = service.checkpoint(task, replace(PartitionCheckpoint(**part), remaining_paths=[],
-                                   remaining_subsystems=[], cursor='done'), paths, systems)
-        service.workflow.complete(task, saved)
-    return AdaptationProposal(source, [e['path'] for e in record['inventory']], ['source:symbol'],
-        'behavior', 'failures', ['harness:symbol'], 'overlap', 'boundaries', 'git/postgres',
-        'six-w.v1', 'graph', 'attribution', 'license', 'dependencies', 'adapt', 'reason', 'worker:github')
-
-
-def lease_review(service, actor):
-    with service.store.transaction() as tx:
-        row = next(r for r in tx.scan('decisions_pending') if r['actor'] == actor and r['status'] == 'pending')
-        row.update(status='running', generation=1, lease_owner='fixture', owner='fixture',
-                   lease_until=(datetime.now(timezone.utc) + timedelta(minutes=5)).isoformat())
-        tx.put('decisions_pending', row['id'], row)
-        return {**row, '_bucket': 'decisions_pending'}
 
 
 _REAL_BOUNDED = _source_execution.bounded_command

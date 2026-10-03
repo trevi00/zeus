@@ -1,6 +1,6 @@
 """Ported SOURCE M7 suite `tests/test_background_processes.py` (e38aa722) run against the S8 target.
 
-Every assertion is M7's, unchanged. Adaptations, all construction/import/patch-target (each is named in the `m7_executor` shim docstring, the P9 additions included): `Executor`, `Harness` (the carrier `m7_executor.Service`) and `organization` come from the shims, every other M7 `codex_harness.adapters|application|domain` name from its target home (`kernel`, `storage`, `execution`, `research`, `host_os`, `evidence`, `context`, `coordination`, `review`), and the patch target `codex_harness.adapters.executor.AppServer` is `m7_executor.AppServer`. The M7 module names (`commands`, `app_server`, `process_tree`, `isolated_worker`, `operation_cli`, `source_verification`, `audit_runner`, `source_execution`) are the `m7_executor` `_View` stand-ins. Kept whole under skip: test_fleet_lane_child_is_silent_in_its_own_group (S6: `LaneLauncher` is absent from the ledger-designed coordination.adapters.fleet_runtime; its docstring-level owner is S10), test_every_listed_spawn_goes_through_the_helper (S1: M7's eleven-module spawn audit is replaced by the target spawn chokepoint; those files no longer exist). The three Windows-only tests keep M7's own skipif.
+Every assertion is M7's, unchanged. Adaptations, all construction/import/patch-target (each is named in the `m7_executor` shim docstring, the P9 additions included): `Executor`, `Harness` (the carrier `m7_executor.Service`) and `organization` come from the shims, every other M7 `codex_harness.adapters|application|domain` name from its target home (`kernel`, `storage`, `execution`, `research`, `host_os`, `evidence`, `context`, `coordination`, `review`), and the patch target `codex_harness.adapters.executor.AppServer` is `m7_executor.AppServer`. The M7 module names (`commands`, `app_server`, `process_tree`, `isolated_worker`, `operation_cli`, `source_verification`, `audit_runner`, `source_execution`) are the `m7_executor` `_View` stand-ins. Kept whole under skip: test_fleet_lane_child_is_silent_in_its_own_group (S10: `LaneLauncher`, OWNER-DECISIONS-S10 #3), test_every_listed_spawn_goes_through_the_helper (S1: M7's eleven-module spawn audit is replaced by the target spawn chokepoint; those files no longer exist). The three Windows-only tests keep M7's own skipif.
 
 M7 module docstring follows.
 
@@ -161,7 +161,7 @@ def test_run_process_and_its_taskkill_are_silent(recorder, monkeypatch, tmp_path
     assert raised.value.kwargs["timeout"] == 20 and raised.value.kwargs["capture_output"] is True
 
 
-@pytest.mark.skip(reason='S6: LaneLauncher (ledger row adapters/fleet_runtime.py is S5/S6 designed, target coordination.adapters.fleet_runtime, but the module has no LaneLauncher; conductor_launch.py says pending S10)')
+@pytest.mark.skip(reason='S10: LaneLauncher (OWNER-DECISIONS-S10 #3)')
 def test_fleet_lane_child_is_silent_in_its_own_group(recorder, monkeypatch, tmp_path):
     monkeypatch.setattr(fleet_runtime, "lane_environment", lambda lane, host, environ: {"ZEUS_DATABASE_URL": "dsn"})
     monkeypatch.setattr(fleet_runtime, "verify_lane_schema", lambda dsn, schema, connect: None)

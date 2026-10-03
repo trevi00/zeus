@@ -8,9 +8,10 @@ successful command is itself the evidence that none is built. No model runs.
 Ported SOURCE M7 suite `tests/test_fleet_backlog_cli.py` (e38aa722) run against the S8 target. Every assertion is M7's,
 unchanged. This suite drives the `zeus fleet backlog` adapter and the operator CLI: every one of its 19 cases is kept whole
 and skipped, each naming its owner, because each goes through a capability the target does not hold yet:
-- S8: the adapter's loaders (`load_plan`, `load_manifest`, `register_plan`, `tick_plan`, `backlog_ticker`, `configured_plan`,
-  `PLAN_SETTING`): the ledger's `intake.adapters.fleet_backlog` is designed and absent (only `read_blob`/`REGULAR_BLOB` moved
-  ahead, to `intake.adapters.backlog_blobs`); they are placeholders here and nothing is invented;
+- S10 (V33: composition.fleet_backlog): the adapter's loaders (`load_plan`, `load_manifest`, `register_plan`, `tick_plan`,
+  `backlog_ticker`, `configured_plan`, `PLAN_SETTING`): DESIGN-s8 §32 V33 re-sliced the M7 `adapters.fleet_backlog` module to
+  S10 `composition.fleet_backlog` (only `read_blob`/`REGULAR_BLOB` moved ahead, to `intake.adapters.backlog_blobs`); they are
+  placeholders here and nothing is invented;
 - S10: the operator CLI (`fleet_cli.execute`/`refusal`, `cli.parser`, `bootstrap`), also placeholders.
 Imports otherwise are target homes: `Fleet`/`FleetRunner`/`packaged_policy` from `m7_coordination`, `FleetBacklog` from `m7_intake`
 (the moved class over the Fleet's registry port), `GitSource` is `host_os.adapters.git_source`'s, `REGULAR_BLOB` the moved
@@ -42,17 +43,17 @@ from codex_harness.observation.application.observations import MemoryDirectory, 
 from codex_harness.observation.domain.observation import new_process_run_id
 from codex_harness.storage.adapters.memory_store import MemoryStore
 
-_LOADERS = "intake.adapters.fleet_backlog (the M7 adapter's loaders)"
+_LOADERS = "V33: composition.fleet_backlog (the M7 adapter's loaders)"
 bootstrap = unavailable("S10", "bootstrap")
 cli = unavailable("S10", "cli")
 fleet_cli = unavailable("S10", "fleet_cli")
-PLAN_SETTING = unavailable("S8", _LOADERS + ": PLAN_SETTING")
-backlog_ticker = unavailable("S8", _LOADERS + ": backlog_ticker")
-configured_plan = unavailable("S8", _LOADERS + ": configured_plan")
-load_manifest = unavailable("S8", _LOADERS + ": load_manifest")
-load_plan = unavailable("S8", _LOADERS + ": load_plan")
-register_plan = unavailable("S8", _LOADERS + ": register_plan")
-tick_plan = unavailable("S8", _LOADERS + ": tick_plan")
+PLAN_SETTING = unavailable("S10", _LOADERS + ": PLAN_SETTING")
+backlog_ticker = unavailable("S10", _LOADERS + ": backlog_ticker")
+configured_plan = unavailable("S10", _LOADERS + ": configured_plan")
+load_manifest = unavailable("S10", _LOADERS + ": load_manifest")
+load_plan = unavailable("S10", _LOADERS + ": load_plan")
+register_plan = unavailable("S10", _LOADERS + ": register_plan")
+tick_plan = unavailable("S10", _LOADERS + ": tick_plan")
 
 CANARY = "CANARY-must-never-be-emitted"
 PLAN_PATH = "docs/zeus/backlog.json"
@@ -176,7 +177,7 @@ def register(service, repository, revision=None, path=PLAN_PATH, lane="a"):
                                            revision=revision or repository.revision, path=path))
 
 
-@pytest.mark.skip(reason='S8: intake.adapters.fleet_backlog (load_plan, load_manifest, register_plan, tick_plan, backlog_ticker, configured_plan) has no target implementation yet (ledger: designed; only read_blob/REGULAR_BLOB moved ahead)')
+@pytest.mark.skip(reason='S10: V33: composition.fleet_backlog (load_plan, load_manifest, register_plan, tick_plan, backlog_ticker, configured_plan) has no target implementation yet (DESIGN-s8 §32 V33 re-sliced the adapter to S10; only read_blob/REGULAR_BLOB moved ahead)')
 def test_the_plan_and_its_manifests_are_read_at_the_pin_and_never_from_the_working_tree(repository):
     source = GitSource(repository.root)
     loaded = load_plan(source, repository.revision, PLAN_PATH)
@@ -194,7 +195,7 @@ def test_the_plan_and_its_manifests_are_read_at_the_pin_and_never_from_the_worki
                              "bytes": len(GOAL_TEXT.encode("utf-8"))}
 
 
-@pytest.mark.skip(reason='S8: intake.adapters.fleet_backlog (load_plan, load_manifest, register_plan, tick_plan, backlog_ticker, configured_plan) has no target implementation yet (ledger: designed; only read_blob/REGULAR_BLOB moved ahead)')
+@pytest.mark.skip(reason='S10: V33: composition.fleet_backlog (load_plan, load_manifest, register_plan, tick_plan, backlog_ticker, configured_plan) has no target implementation yet (DESIGN-s8 §32 V33 re-sliced the adapter to S10; only read_blob/REGULAR_BLOB moved ahead)')
 def test_the_fixture_pins_the_committed_bytes_under_inherited_git_newline_normalization(
         tmp_path, repository, monkeypatch):
     """Portability of THIS test file, not a runtime change (owner Windows gate, 2026-09-22).
@@ -258,7 +259,7 @@ def test_the_fixture_pins_the_committed_bytes_under_inherited_git_newline_normal
     assert load_manifest(source, item_document("three", third, third_revision, third_sha))["bytes"] > 0
 
 
-@pytest.mark.skip(reason='S8: intake.adapters.fleet_backlog (load_plan, load_manifest, register_plan, tick_plan, backlog_ticker, configured_plan) has no target implementation yet (ledger: designed; only read_blob/REGULAR_BLOB moved ahead)')
+@pytest.mark.skip(reason='S10: V33: composition.fleet_backlog (load_plan, load_manifest, register_plan, tick_plan, backlog_ticker, configured_plan) has no target implementation yet (DESIGN-s8 §32 V33 re-sliced the adapter to S10; only read_blob/REGULAR_BLOB moved ahead)')
 def test_a_disposable_repository_overrides_an_inherited_global_autocrlf(tmp_path, monkeypatch):
     """The repository's own settings must beat the value the host would otherwise contribute.
 
@@ -324,7 +325,7 @@ def test_register_tick_and_status_admit_one_approved_successor_through_the_exist
     assert CANARY not in text and str(repository.root) not in text and "lane_a" not in text
 
 
-@pytest.mark.skip(reason='S8: intake.adapters.fleet_backlog (load_plan, load_manifest, register_plan, tick_plan, backlog_ticker, configured_plan) has no target implementation yet (ledger: designed; only read_blob/REGULAR_BLOB moved ahead)')
+@pytest.mark.skip(reason='S10: V33: composition.fleet_backlog (load_plan, load_manifest, register_plan, tick_plan, backlog_ticker, configured_plan) has no target implementation yet (DESIGN-s8 §32 V33 re-sliced the adapter to S10; only read_blob/REGULAR_BLOB moved ahead)')
 def test_a_manifest_that_moved_under_an_approved_item_is_refused_with_a_fixed_code(service, repository):
     source = GitSource(repository.root)
     moved = dict(repository.items[0], manifest_sha256="0" * 64)
@@ -341,7 +342,7 @@ def test_a_manifest_that_moved_under_an_approved_item_is_refused_with_a_fixed_co
     assert CANARY not in str(info.value)
 
 
-@pytest.mark.skip(reason='S8: intake.adapters.fleet_backlog (load_plan, load_manifest, register_plan, tick_plan, backlog_ticker, configured_plan) has no target implementation yet (ledger: designed; only read_blob/REGULAR_BLOB moved ahead)')
+@pytest.mark.skip(reason='S10: V33: composition.fleet_backlog (load_plan, load_manifest, register_plan, tick_plan, backlog_ticker, configured_plan) has no target implementation yet (DESIGN-s8 §32 V33 re-sliced the adapter to S10; only read_blob/REGULAR_BLOB moved ahead)')
 def test_a_manifest_whose_goal_bytes_do_not_match_its_pin_is_refused(tmp_path, repository):
     root = repository.root
     sha = write(root, "docs/zeus/manifests/bad.json",
@@ -355,7 +356,7 @@ def test_a_manifest_whose_goal_bytes_do_not_match_its_pin_is_refused(tmp_path, r
         load_manifest(GitSource(root), item_document("broken", "docs/zeus/manifests/broken.json", revision, sha))
 
 
-@pytest.mark.skip(reason='S8: intake.adapters.fleet_backlog (load_plan, load_manifest, register_plan, tick_plan, backlog_ticker, configured_plan) has no target implementation yet (ledger: designed; only read_blob/REGULAR_BLOB moved ahead)')
+@pytest.mark.skip(reason='S10: V33: composition.fleet_backlog (load_plan, load_manifest, register_plan, tick_plan, backlog_ticker, configured_plan) has no target implementation yet (DESIGN-s8 §32 V33 re-sliced the adapter to S10; only read_blob/REGULAR_BLOB moved ahead)')
 def test_a_foreign_repository_an_unknown_lane_and_an_unknown_goal_are_refused(tmp_path, service, repository):
     config_document = Fleet(service.store).registered()["config"]
     foreign = plan_document("7" * 64, repository.items, plan_id="plan-foreign")
@@ -407,7 +408,7 @@ def test_a_missing_plan_revision_or_path_is_a_fixed_code_never_an_empty_success(
     assert listing["plans"] == [] and listing["registered"] is False and listing["exit_code"] == 0
 
 
-@pytest.mark.skip(reason='S8: intake.adapters.fleet_backlog (load_plan, load_manifest, register_plan, tick_plan, backlog_ticker, configured_plan) has no target implementation yet (ledger: designed; only read_blob/REGULAR_BLOB moved ahead)')
+@pytest.mark.skip(reason='S10: V33: composition.fleet_backlog (load_plan, load_manifest, register_plan, tick_plan, backlog_ticker, configured_plan) has no target implementation yet (DESIGN-s8 §32 V33 re-sliced the adapter to S10; only read_blob/REGULAR_BLOB moved ahead)')
 def test_a_definition_that_changed_after_registration_refuses_the_item_at_tick(service, repository):
     """The portfolio stays the authority over goals: a criterion that no longer exists refuses the
     item with a reason instead of admitting stale work."""
@@ -422,7 +423,7 @@ def test_a_definition_that_changed_after_registration_refuses_the_item_at_tick(s
     assert service.store.data[BUCKET_INTENTS, "plan-1:one"]["attempts"] == 1
 
 
-@pytest.mark.skip(reason='S8: intake.adapters.fleet_backlog (load_plan, load_manifest, register_plan, tick_plan, backlog_ticker, configured_plan) has no target implementation yet (ledger: designed; only read_blob/REGULAR_BLOB moved ahead)')
+@pytest.mark.skip(reason='S10: V33: composition.fleet_backlog (load_plan, load_manifest, register_plan, tick_plan, backlog_ticker, configured_plan) has no target implementation yet (DESIGN-s8 §32 V33 re-sliced the adapter to S10; only read_blob/REGULAR_BLOB moved ahead)')
 def test_the_runner_opt_in_is_absent_by_default(tmp_path):
     assert configured_plan({}) is None and configured_plan({PLAN_SETTING: "   "}) is None
     assert configured_plan({PLAN_SETTING: " plan-1 "}) == "plan-1"

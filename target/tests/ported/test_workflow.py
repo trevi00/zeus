@@ -2,11 +2,12 @@
 
 Every assertion is M7's, unchanged. Adaptations, all construction/import/patch-point:
 - `Workflow` and `organization` come from the `m7_coordination` shim (its docstring names the routing of the S4
-  Workflow and the S5 MessageHandler); `MemoryStore`, `Releases`, `ContractError` and `envelope` from their target
+  Workflow and the S5 MessageHandler); `MemoryStore`, `ContractError` and `envelope` from their target
   modules.
-- `Releases(store, org)` gets intake's `tickets.ticket_binding` injected (a `functools.partial`).
-- Kept skipped whole, unrewritten (owner slice: review): the two `Releases` tests that call `verify`, `promote` and
-  `rollback`, which the target `Releases` does not have yet.
+- `Releases(store, org)` is `m7_delivery.Releases` (the review `Releases` with intake's ticket ports and the event/hook
+  ports wired as composition wires them).
+- The two `Releases` tests that call `verify`, `promote` and `rollback` run (batch U2b): those methods are in
+  `review.application.releases`.
 - Executor tests: `Executor`/`Harness`/`VERDICT`/`FileArtifacts` are `m7_executor.Executor`/`m7_executor.Service`
   (a TEST shim over RunTask and ReviewDecisions; construction only), `execution.domain.output_contracts.VERDICT` and
   `storage.adapters.file_artifacts.FileArtifacts`. The patch target `codex_harness.adapters.executor.AppServer` is
@@ -17,19 +18,14 @@ Every assertion is M7's, unchanged. Adaptations, all construction/import/patch-p
   `harness_hooks/` lives.
 """
 from datetime import datetime, timedelta, timezone
-from functools import partial
 
 import pytest
 from m7_coordination import Workflow, organization
+from m7_delivery import Releases
 
-from codex_harness.intake.application import tickets
 from codex_harness.kernel.errors import ContractError
 from codex_harness.kernel.message import envelope
-from codex_harness.review.application.releases import Releases as _Releases
 from codex_harness.storage.adapters.memory_store import MemoryStore
-
-# Adapted: the ticket binding is injected (intake owns it), as `m7_executor.Executor` builds it.
-Releases = partial(_Releases, ticket_binding=tickets.ticket_binding)
 
 
 def assignment(action="implement", agent="worker:implementation"):
@@ -106,7 +102,6 @@ def reviewed_release(service, revision="a"):
     return release
 
 
-@pytest.mark.skip(reason="S8: Releases.verify/promote/rollback (release verification, promotion, canary) are not in the target yet; S4 moved only propose/review")
 def test_release_requires_current_policy_complete_checks_and_fenced_promotion():
     service = Releases(MemoryStore(), organization())
     release = reviewed_release(service)
@@ -126,7 +121,6 @@ def test_release_requires_current_policy_complete_checks_and_fenced_promotion():
     assert service.rollback(second["id"], "regression")["release_id"] == release["id"]
 
 
-@pytest.mark.skip(reason="S8: Releases.verify/promote/rollback (release verification, promotion, canary) are not in the target yet; S4 moved only propose/review")
 def test_failed_canary_never_promotes():
     service = Releases(MemoryStore(), organization())
     release = reviewed_release(service)

@@ -10,10 +10,8 @@ the `m7_research` shim (the ResearchProgram with its three composition ports wir
 the two `utcnow` patch targets (`application.outbox`, `application.execution_fence`) are `coordination.application.outbox_relay` and
 `coordination.application.execution_fence` (module globals, as in M7), and the patched callable takes the target's optional
 `clock` argument (`lambda clock=None: T0` for M7's `lambda: T0`: the target's `utcnow(clock)` passes its injected clock); `DEFINITIONS` (in `later_member`) is M7's own import from the ported `test_research_investigations`; the other test modules are the ported ones.
-the three authorization kinds whose worlds reach a placeholder or a not-yet-ported helper module are skipped per parameter
-(`pytest.param(kind, marks=skip)` in the `parametrize` list; node ids unchanged, the other kinds run): `followup` (the ported
-`test_continuation` still holds `Portfolio` as an S8 placeholder) and `v3_successor`/`v4_contract` (the real-council worlds of
-`test_research_recovery` need the P4 modules `test_autonomous`/`test_council`); batch U removes those skips. M7 docstring follows.
+the three authorization kinds the P-batches' placeholders held (`followup`, `v3_successor`, `v4_contract`) run (batch U2b removed the
+`pytest.param(kind, marks=skip)` wrappers; M7's own parametrization is restored). M7 docstring follows.
 
 Attempt-scoped research, research-program layer (INV-RESEARCH-ATTEMPT-SCOPE-001, FLEET-U2B-SPEC §3 and §5):
 the owner-bound target reservation, in-transaction synthesis and exact-target selection, the forward and
@@ -993,12 +991,6 @@ def _followup(tmp_path):
 
 AUTHORIZATIONS = {"v1_transport": _v1_transport, "v2_revocation": _v2_revocation, "v3_successor": _v3_successor,
                   "v4_contract": _v4_contract, "followup": _followup}
-SKIPPED_KINDS = {
-    "followup": "S8: batch U (test_continuation.Portfolio)",
-    "v3_successor": "S8: batch U (test_autonomous.Artifacts, test_council.FakeSnapshotPort/SnapshotArtifacts via test_research_recovery.read_only_world)",
-    "v4_contract": "S8: batch U (test_autonomous.Artifacts, test_council.FakeSnapshotPort/SnapshotArtifacts via test_research_recovery.initial_world)"}
-KINDS = [pytest.param(kind, marks=pytest.mark.skip(reason=SKIPPED_KINDS[kind])) if kind in SKIPPED_KINDS else kind
-         for kind in sorted(AUTHORIZATIONS)]
 
 
 def authorize(world, store=None, ports=None):
@@ -1015,7 +1007,7 @@ def copy_store(store) -> MemoryStore:
     return copy
 
 
-@pytest.mark.parametrize("kind", KINDS)
+@pytest.mark.parametrize("kind", sorted(AUTHORIZATIONS))
 def test_an_authorization_whose_claim_would_take_a_scope_held_job_refuses_in_every_state_with_zero_writes(
         kind, tmp_path, inert_executor):
     """Recovery v1-v4 and successor over the family's CURRENT scoped membership (which the replacement recaptures),
@@ -1038,7 +1030,7 @@ def test_an_authorization_whose_claim_would_take_a_scope_held_job_refuses_in_eve
 
 
 @pytest.mark.parametrize("scope", ["none", "disjoint"])
-@pytest.mark.parametrize("kind", KINDS)
+@pytest.mark.parametrize("kind", sorted(AUTHORIZATIONS))
 def test_pin_without_an_intersecting_scope_claim_the_same_authorization_is_byte_identical(
         kind, scope, tmp_path, monkeypatch, inert_executor):
     """PIN (U2B-10 K): with no scope claim, or a disjoint complete one of the same cause, every authorization is
@@ -1059,9 +1051,7 @@ def test_pin_without_an_intersecting_scope_claim_the_same_authorization_is_byte_
     assert records(world.store) == records(legacy)
 
 
-@pytest.mark.parametrize("kind", [
-    "v1_transport", pytest.param("v3_successor", marks=pytest.mark.skip(reason=SKIPPED_KINDS["v3_successor"])),
-    pytest.param("v4_contract", marks=pytest.mark.skip(reason=SKIPPED_KINDS["v4_contract"]))])
+@pytest.mark.parametrize("kind", ["v1_transport", "v3_successor", "v4_contract"])
 def test_a_scope_claim_committed_during_the_port_read_is_refused_by_the_writing_transaction(
         kind, tmp_path, inert_executor):
     """The guard is re-read in the transaction that writes: a claim committed while the transport or the execution

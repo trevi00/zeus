@@ -11,24 +11,36 @@ PORTING NOTES (S4 ported executor suites; the M7 assertions are unchanged):
   the same composition the executor shim uses) and the target `packaged_organization()`; `assignment()` is copied
   from M7 `tests/test_workflow.py`. The `Executor`/`Harness` of `executor_with` are `m7_executor.Executor`/`Service`.
 - Ported and run: the four LeaseProgress cases (cadence/renewal, taken-over or expired refusal, boundary reads,
-  takeover inside the cadence window).
-- SKIPPED (each carries its owner reason at the top): test_the_executor_stops_a_replay_..., 
+  takeover inside the cadence window) and `test_the_callback_is_a_parameter_of_every_hop_...` (batch U2b: it needs only
+  the moved inspectors and `EvidenceInspections`; M7's `ex` is `execution.application.lease_progress`, which holds
+  `LeaseProgress` and the `LEASE_*_SECONDS` constants, and `ei`/`ie`/`pe` are the `evidence.adapters` modules).
+- The `setup_implementation` fixture, `PY` and `policy` are M7's own `from test_evidence_inspection import ...` line (the
+  ported suite; batch U2b deleted the local placeholder).
+- SKIPPED `S10: EvidenceGate (OWNER-DECISIONS-S10 #7)`, kept whole: test_the_executor_stops_a_replay_...,
   test_the_implement_path_still_inspects_..., test_the_executor_always_supplies_its_own_ownership_guard_...,
-  test_the_executor_publishes_nothing_when_the_lease_ends_..., test_the_callback_is_a_parameter_of_every_hop_...:
-  S8 evidence inspection. The Executor cases need `EvidenceInspections` and the inspectors; the shim's
-  `_inspect_evidence` raises "Evidence inspection is not wired (S8)". Their bodies are kept unchanged, so the
-  names that exist only there are unresolved by design (file-level `# ruff: noqa: F821`). The implement case's
-  `setup_implementation` fixture (M7 `test_evidence_inspection`, S8's suite) is a local placeholder that skips.
+  test_the_executor_publishes_nothing_when_the_lease_ends_...: each reaches M7's `Executor._inspect_evidence`, the
+  EvidenceGate, composition-level orchestration decided at the S10 executor composition unit; the `m7_executor` shim's
+  `_inspect_evidence` raises on purpose and is never to build the gate. Their bodies are kept unchanged, so the names
+  that exist only there are unresolved by design (file-level `# ruff: noqa: F821`).
 
 not ported: S8 evidence inspection: the ledger/inspector cases (`EvidenceInspections`, `EvidenceInspector`,
 `ProjectEvidenceInspector`: every M7 case of this file that uses none of `LeaseProgress`, `Executor` or
 `execute_one`, and the two ledger cases that use only `EvidenceInspections`).
 """
 # ruff: noqa: F821
+from inspect import signature
+
 import m7_executor
 import pytest
+from m7_evidence import EvidenceInspector
+from test_evidence_inspection import PY, policy, setup_implementation  # noqa: F401 - fixture import
 
 from codex_harness.coordination.application.execution_time import ExecutionTimeError
+from codex_harness.evidence.adapters import evidence_inspection as ei
+from codex_harness.evidence.adapters import isolated_evidence as ie
+from codex_harness.evidence.adapters import project_evidence as pe
+from codex_harness.evidence.application.evidence_inspection import EvidenceInspections
+from codex_harness.execution.application import lease_progress as ex
 from codex_harness.execution.application.lease_progress import LeaseProgress
 from codex_harness.kernel.errors import ContractError
 from codex_harness.kernel.message import envelope
@@ -43,11 +55,6 @@ LOST = 'Stale or expired task execution'
 def assignment(action="implement", agent="worker:implementation"):
     parent = packaged_organization().actor(agent).parent
     return envelope("task.assign", parent, agent, action, {"objective": "fixture"}, "test")
-
-
-@pytest.fixture
-def setup_implementation():
-    pytest.skip("S8: evidence inspection (M7 tests/test_evidence_inspection.setup_implementation fixture) is not in the target")
 
 
 def leased(store=None):
@@ -120,7 +127,7 @@ def executor_with(tmp_path, store):
 
 
 def test_the_executor_stops_a_replay_whose_execution_was_taken_over_and_publishes_no_verdict(tmp_path, monkeypatch):
-    pytest.skip("S8: evidence inspection (M7 adapters.evidence_inspection.ProcessTree replay, application.evidence_inspection.EvidenceInspections) is not in the target")
+    pytest.skip("S10: EvidenceGate (OWNER-DECISIONS-S10 #7)")
     """The affected path itself: `_inspect_evidence` under a real claimed lease, with the takeover
     INJECTED at the moment the replay starts."""
     monkeypatch.setattr(ei, 'POLL_SECONDS', 0.05)
@@ -149,7 +156,7 @@ def test_the_executor_stops_a_replay_whose_execution_was_taken_over_and_publishe
 
 
 def test_the_implement_path_still_inspects_and_completes_with_a_live_lease(setup_implementation):  # noqa: F811
-    pytest.skip("S8: evidence inspection (the implement path's M7 Executor._inspect_evidence / EvidenceInspections) is not wired in the target")
+    pytest.skip("S10: EvidenceGate (OWNER-DECISIONS-S10 #7)")
     """No-callback compatibility end to end: the same `execute_one` as before, now carrying a live
     per-call check, still records the inspection and succeeds."""
     row = setup_implementation.executor.execute_one('worker:implementation')
@@ -192,7 +199,7 @@ def test_a_takeover_inside_the_default_cadence_window_still_refuses_at_the_next_
 
 
 def test_the_executor_always_supplies_its_own_ownership_guard_to_the_ledger(tmp_path, monkeypatch):
-    pytest.skip("S8: evidence inspection (application.evidence_inspection.EvidenceInspections) is not in the target")
+    pytest.skip("S10: EvidenceGate (OWNER-DECISIONS-S10 #7)")
     """Production route: the executor's guard is this lease's own `_owned`, taken in the ledger's
     transaction. A legacy caller may omit one; the executor never does."""
     store, workflow, lease = leased()
@@ -216,7 +223,7 @@ def test_the_executor_always_supplies_its_own_ownership_guard_to_the_ledger(tmp_
 
 
 def test_the_executor_publishes_nothing_when_the_lease_ends_after_the_last_boundary(tmp_path, monkeypatch):
-    pytest.skip("S8: evidence inspection (application.evidence_inspection.EvidenceInspections) is not in the target")
+    pytest.skip("S10: EvidenceGate (OWNER-DECISIONS-S10 #7)")
     """The gap only the transaction fence can close: the takeover is INJECTED after the inspection-end
     boundary check, while the row is being built, so the write transaction is the one that refuses."""
     store, workflow, lease = leased()
@@ -235,7 +242,6 @@ def test_the_executor_publishes_nothing_when_the_lease_ends_after_the_last_bound
 
 
 def test_the_callback_is_a_parameter_of_every_hop_and_never_module_or_instance_state():
-    pytest.skip("S8: evidence inspection (adapters.evidence_inspection, isolated_evidence, project_evidence, EvidenceInspections) is not in the target")
     """No mutable global callback and no detached renewer: each hop declares `progress` per call, its
     default is None, and the executor keeps the cadence the provider path already uses."""
     for call in (ei.EvidenceInspector.inspect, ei.EvidenceInspector.inspect_command, ei.EvidenceInspector._replay,

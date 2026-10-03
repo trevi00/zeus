@@ -11,9 +11,9 @@ PORTING NOTES (S4 ported executor suites; the M7 assertions are unchanged):
   `_run`, exactly as M7 patched `executor._run`.
 - `IMPLEMENTATION` is imported from `execution.domain.output_contracts`; `FileArtifacts`/`MemoryStore` from storage.
 - test_assignment_preserves_trusted_importance_into_implementation, test_plan_passes_trusted_action_and_keeps_review_default:
-  SKIPPED, S8 evidence inspection: both drive `execute_one('worker:implementation')`, whose implement path runs the
-  M7 `Executor._inspect_evidence` (EvidenceInspections/EvidenceInspector); the shim's `_inspect_evidence` raises
-  "Evidence inspection is not wired (S8)", so the implement task retries instead of succeeding.
+  SKIPPED, `S10: EvidenceGate (OWNER-DECISIONS-S10 #7)`: both drive `execute_one('worker:implementation')`, whose implement
+  path runs the M7 `Executor._inspect_evidence`, the EvidenceGate (composition-level orchestration decided at the S10
+  executor composition unit); the shim's `_inspect_evidence` raises on purpose, so the implement task would retry.
 - test_lead_review_projects_only_importance_and_conductor_rework_preserves_it: SKIPPED, S5 coordination: the
   M7 `Workflow.handle(report)` (the report -> conductor decision hand-off) is not in the target Workflow.
 """
@@ -92,7 +92,7 @@ def test_executor_sends_selection_and_seals_it_in_execution_receipt(tmp_path, mo
 ])
 def test_assignment_preserves_trusted_importance_into_implementation(tmp_path, monkeypatch,
                                                                     importance, expected):
-    pytest.skip("S8: evidence inspection (M7 Executor._inspect_evidence over EvidenceInspections/EvidenceInspector) is not wired in the target")
+    pytest.skip("S10: EvidenceGate (OWNER-DECISIONS-S10 #7)")
     service = m7_executor.Service(MemoryStore())
     git = SimpleNamespace(
         repository=tmp_path,
@@ -128,7 +128,7 @@ def test_assignment_preserves_trusted_importance_into_implementation(tmp_path, m
 
 
 def test_plan_passes_trusted_action_and_keeps_review_default(tmp_path, monkeypatch):
-    pytest.skip("S8: evidence inspection (M7 Executor._inspect_evidence over EvidenceInspections/EvidenceInspector) is not wired in the target")
+    pytest.skip("S10: EvidenceGate (OWNER-DECISIONS-S10 #7)")
     for name in ('ZEUS_CLAUDE_ASSIGNMENTS', 'ZEUS_CLAUDE_MODEL', 'ZEUS_CLAUDE_MAX_BUDGET_USD'):
         monkeypatch.delenv(name, raising=False)
     service = m7_executor.Service(MemoryStore())
