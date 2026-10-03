@@ -33,6 +33,8 @@ UNPRODUCED_AT_EC681D20 = frozenset({
     "operations.supervisor_error", "operations.supervisor_tick", "operations.worker_replace_requested",
     "operations.worker_wake_requested"})
 
+PRODUCED_SINCE = {"development.role_dispatch_decided"}  # X1b-2: produced by RunTask at the admission boundary
+
 IDS = ("model_invocation", "task_execution", "worker_sessions", "message_relay", "message_intake", "fleet_backlog",
        "host_delivery", "continuation", "operation_finalization", "autonomous", "discovery_pressure",
        "observation_pipeline", "audit_service", "evidence_inspection", "supervisor", "process_lifecycle",
@@ -55,7 +57,7 @@ def test_the_ids_are_the_25_of_the_table():
 def test_instrumented_is_false_exactly_when_every_proof_event_is_unproduced():
     assert UNPRODUCED_AT_EC681D20 <= set(REGISTRY) and len(UNPRODUCED_AT_EC681D20) == 26
     for feature in FEATURES.values():
-        unproduced = set(feature.proof_events) <= UNPRODUCED_AT_EC681D20
+        unproduced = set(feature.proof_events) <= UNPRODUCED_AT_EC681D20 - PRODUCED_SINCE
         assert feature.instrumented is (not unproduced), feature.id
         assert (feature.seam is None) is feature.instrumented, feature.id
 

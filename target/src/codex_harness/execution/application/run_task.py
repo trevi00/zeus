@@ -698,18 +698,35 @@ class RunTask:
                     return self.observer.for_lease(lease, provider=assignment.identity, invocation_id=invocation_id,
                                                    revision=basis_revision)
                 return self.observer.system(revision=basis_revision, role=agent)
-            reservation = (self.invocations.reserve(
-                lease, request=request, budget_seconds=timeout, stage=stage,
-                guard=lambda tx: self.ledger.owned(tx, lease),
-                audit=lambda tx, row: (self.observer.guard_reservation(tx, lease),
-                    self.observer.mark_unconfirmed(tx, lease, reservation_id=row["id"]),
-                    self.observer.audit(
-                    tx, "development.invocation_reserved", "started", identity=["reservation", row["id"], "reserved"],
-                    execution=observed_execution(row["id"]), correlation_id=correlation, causation_id=key,
-                    attributes={"reservation_id": row["id"], "stage": stage, "transport": assignment.transport,
-                                "requested_model": requested_model, "budget_seconds": float(timeout),
-                                "workload": workload})))
-                if lease else None)
+            def role_dispatch_decided(decision, reason, reservation_id=None):
+                # X1b-2 (DESIGN-s9-X §1.5 R1): one decision event per leased run, observed at the admission
+                # boundary; the spool path never raises, so the refusal that follows is unchanged.
+                if lease:
+                    self.observer.emit("development.role_dispatch_decided",
+                                       "succeeded" if decision == "dispatched" else "blocked",
+                                       execution=observed_execution(reservation_id),
+                                       correlation_id=correlation, causation_id=key,
+                                       attributes={"role": agent, "provider": assignment.identity,
+                                                   "decision": decision, "decision_reason": reason,
+                                                   "latency_seconds": self.monotonic() - started})
+            reservation = None
+            if lease:
+                # X1b-2 (DESIGN-s9-X §1.5 R1): observe a capacity refusal and re-raise the same exception.
+                try:
+                    reservation = self.invocations.reserve(
+                    lease, request=request, budget_seconds=timeout, stage=stage,
+                    guard=lambda tx: self.ledger.owned(tx, lease),
+                    audit=lambda tx, row: (self.observer.guard_reservation(tx, lease),
+                        self.observer.mark_unconfirmed(tx, lease, reservation_id=row["id"]),
+                        self.observer.audit(
+                        tx, "development.invocation_reserved", "started", identity=["reservation", row["id"], "reserved"],
+                        execution=observed_execution(row["id"]), correlation_id=correlation, causation_id=key,
+                        attributes={"reservation_id": row["id"], "stage": stage, "transport": assignment.transport,
+                                    "requested_model": requested_model, "budget_seconds": float(timeout),
+                                    "workload": workload})))
+                except ContractError:
+                    role_dispatch_decided("refused", "no_capacity")
+                    raise
             reservation_id = reservation["id"] if reservation else None
             admission = None
             # INV-OBSERVATION-001: `provider_entered` marks the external-effect boundary. Before it,
@@ -748,7 +765,15 @@ class RunTask:
             try:
                 # INV-INVOCATION-001 / INV-BREAKER-001: capacity refusal must not take a
                 # probe slot; breaker refusal must release the invocation reservation.
-                admission = self.admission.admit(self.admission.key(assignment.identity, workload), lease) if lease else None
+                admission = None
+                if lease:
+                    # X1b-2 (DESIGN-s9-X §1.5 R1): observe a breaker refusal and re-raise the same exception.
+                    try:
+                        admission = self.admission.admit(self.admission.key(assignment.identity, workload), lease)
+                    except ContractError:
+                        role_dispatch_decided("refused", "provider_unavailable", reservation_id)
+                        raise
+                    role_dispatch_decided("dispatched", "eligible", reservation_id)
                 session_arguments = {}
                 if session_owner is not None:
                     # Exclusive claim of the logical session for this execution; a refusal (owned,

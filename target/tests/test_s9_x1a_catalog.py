@@ -40,7 +40,7 @@ def m7_registry():
 
 def test_the_catalog_loads_and_names_exactly_the_ten_new_events():
     catalog = load_catalog()
-    assert catalog["catalog_version"] == 2
+    assert catalog["catalog_version"] == 3
     assert set(catalog["events"]) == NEW
     for name, entry in catalog["events"].items():
         assert {"owner_context", "category", "severity", "boundary", "attributes", "producer_sites"} <= set(entry)
