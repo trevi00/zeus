@@ -1,0 +1,303 @@
+"""Ported SOURCE M7 suite `tests/test_executor_research.py` (e38aa722) run against the S8 target.
+
+Every assertion is M7's, unchanged. Adaptations, all construction/import/patch-target (each is named in the `m7_executor` shim docstring, the P9 additions included): `Executor`, `Harness` (the carrier `m7_executor.Service`) and `organization` come from the shims, every other M7 `codex_harness.adapters|application|domain` name from its target home (`kernel`, `storage`, `execution`, `research`, `host_os`, `evidence`, `context`, `coordination`, `review`), and the patch target `codex_harness.adapters.executor.AppServer` is `m7_executor.AppServer`. `ExecutionRecovery` is `m7_coordination.ExecutionRecovery`; `DiscoveryPressure` is `m7_research.DiscoveryPressure` (the census port wired); `ResearchSources`, `packaged_policy`, `CAUSE`, `preflight` and `GITHUB_RESEARCH` are the target ones.
+"""
+import json
+from pathlib import Path
+from types import SimpleNamespace
+
+import pytest
+from m7_coordination import ExecutionRecovery, organization
+from m7_executor import Executor
+from m7_executor import Service as Harness
+from m7_research import DiscoveryPressure
+
+from codex_harness.execution.adapters.output_schema import CAUSE, preflight
+from codex_harness.execution.domain.output_contracts import GITHUB_RESEARCH
+from codex_harness.kernel.message import envelope
+from codex_harness.research.adapters.discovery_pressure import packaged_policy
+from codex_harness.research.adapters.research import ResearchSources
+from codex_harness.storage.adapters.file_artifacts import FileArtifacts
+from codex_harness.storage.adapters.memory_store import MemoryStore
+
+URL = 'https://github.com/owner/repo'
+REV = 'a' * 40
+
+
+@pytest.fixture
+def setup(tmp_path, monkeypatch):
+    service = Harness(MemoryStore(), organization())
+    artifacts = FileArtifacts(str(tmp_path / 'artifacts'))
+    calls, prompts = [], []
+    config = {'shortlist': {'source_url': URL},
+              'final': {'source_url': URL, 'source_revision': REV, 'title': 'Improve',
+                        'objective': 'Improve', 'evidence': 'README', 'acceptance_criteria': []},
+              'interrupt': {}, 'failure': None, 'revision': REV}
+    collection = {'artifact': artifacts.put('collected source', 'fixture')['ref'],
+                  'items': [{'url': URL, 'summary': '한' * 30000}]}
+    readme = artifacts.put('README한' * 10000, 'fixture')['ref']
+
+    def collect(source, *, intent):
+        calls.append('collect')
+        return collection
+
+    def detail(url):
+        calls.append('detail')
+        assert url == URL
+        if config['failure'] == 'detail':
+            raise OSError('detail unavailable')
+        return {'url': URL, 'revision': config['revision'], 'readme_ref': readme}
+
+    class Runtime:
+        def __init__(self, **kw): pass
+        def __enter__(self): return self
+        def __exit__(self, *args): pass
+        def run(self, prompt, cwd, schema, *args, **kw):
+            assert len(prompt.encode('utf-8')) <= 22000
+            packet = json.loads(prompt)
+            prompts.append(packet)
+            stage = packet['required'].get('research_context', {}).get('stage', 'final')
+            calls.append(stage)
+            if config.get('callback'):
+                config['callback'](stage)
+            event = {'method': 'item/completed', 'params': {'item': {'id': stage, 'type': 'command'}}}
+            kw['on_event'](event)
+            if config['failure'] == stage:
+                raise OSError('runtime unavailable')
+            interrupted = config['interrupt'].get(stage, 0) > 0
+            if interrupted:
+                config['interrupt'][stage] -= 1
+            return {'answer': config[stage], 'events': [event], 'thread_id': stage,
+                    'usage': {'totalTokens': 123}, 'rotate': interrupted, 'interrupted': interrupted}
+
+    monkeypatch.setattr('m7_executor.AppServer', Runtime)
+    executor = Executor(service, SimpleNamespace(repository=tmp_path, _git=lambda *a, **kw: 'harness'),
+                        artifacts, research=SimpleNamespace(collect=collect, github_detail=detail))
+    message = envelope('task.assign', 'lead:research', 'worker:github', 'research',
+                       {'source': 'github', 'intent': 'user_request'}, 'fixture')
+    task = executor.workflow.submit(message)
+    return SimpleNamespace(executor=executor, service=service, artifacts=artifacts, calls=calls,
+                           prompts=prompts, config=config, collection=collection, task=task)
+
+
+def test_order_provenance_overflow_and_measurement(setup):
+    s = setup
+    completed = s.executor.execute_one('worker:github')
+    assert s.calls == ['collect', 'shortlist', 'detail', 'final']
+    assert completed['status'] == 'succeeded'
+    result = completed['result']
+    assert result['basis_revision'] == 'harness'
+    assert result['source_revision'] == result['source_details']['revision'] == REV
+    assert result['source_artifact'] == s.collection['artifact']
+    final = s.prompts[-1]['required']
+    provenance = final['research_context']
+    assert provenance['source_revision'] == REV and provenance['source_url'] == URL
+    assert final['recovery']['sources'] == {}
+    for prefix in ('readme', 'source'):
+        path = Path(provenance[prefix + '_file'])
+        ref = provenance['readme_ref' if prefix == 'readme' else 'source_artifact']
+        assert path.read_text(encoding="utf-8") == s.artifacts._body(ref)
+    evidence = json.loads(Path(final['external_context']['file']).read_text(encoding='utf-8'))
+    assert evidence['readme_excerpt'].startswith('README한')
+    assert len(evidence['readme_excerpt'].encode()) <= 10000
+    for ref in (result['execution_ref'], result['shortlist_execution_ref']):
+        record = json.loads(s.artifacts._body(ref))
+        assert record['elapsed_seconds'] >= 0 and record['usage']['totalTokens'] == 123
+        context = json.loads(s.artifacts._body(record['context_ref']))
+        assert context['required']['research_context']['stage'] in {'shortlist', 'final'}
+    assert result['research_attempt'] == 1
+
+
+@pytest.mark.parametrize('failure', ['shortlist_url', 'shortlist_missing', 'detail', 'revision',
+                                   'final_url', 'final_revision', 'final_missing'])
+def test_invalid_evidence_never_completes(setup, failure):
+    s = setup
+    if failure == 'shortlist_url':
+        s.config['shortlist']['source_url'] = 'https://example.com'
+    if failure == 'shortlist_missing':
+        s.config['shortlist'] = {}
+    if failure == 'detail':
+        s.config['failure'] = 'detail'
+    if failure == 'revision':
+        s.config['revision'] = 'invalid'
+    if failure == 'final_url':
+        s.config['final']['source_url'] = 'https://github.com/other/repo'
+    if failure == 'final_revision':
+        s.config['final']['source_revision'] = 'b' * 40
+    if failure == 'final_missing':
+        del s.config['final']['source_revision']
+    # A rejected answer is an observed outcome (retry). 'detail' is an infrastructure error between
+    # two provider calls of one attempt whose effects are still unconfirmed: blocked (INV-OBSERVATION-001).
+    expected = 'blocked' if failure == 'detail' else 'retry'
+    assert s.executor.execute_one('worker:github')['status'] == expected
+    with s.service.store.transaction() as tx:
+        messages = [r['message'] for r in tx.scan('outbox')]
+        assert all(m['type'] == 'execution.notice' for m in messages)
+        reasons = sorted(m['what']['details']['reason_code'] for m in messages)
+        assert reasons == (['execution_failed', 'reconciliation_required'] if expected == 'blocked' else ['execution_failed'])
+        assert tx.get('tasks', s.task['id'])['status'] == expected
+    if not failure.startswith('final'):
+        assert 'final' not in s.calls
+
+
+@pytest.mark.parametrize('stage', ['shortlist', 'final'])
+def test_stage_interruptions_use_only_matching_recovery(setup, stage):
+    s = setup
+    s.config['interrupt'][stage] = 1
+    assert s.executor.execute_one('worker:github')['status'] == 'succeeded'
+    matching = [p for p in s.prompts if p['required']['research_context']['stage'] == stage]
+    assert len(matching) == 2
+    assert matching[0]['required']['recovery']['sources'] == {}
+    assert 'checkpoint' in matching[1]['required']['recovery']['sources']
+
+
+def reconcile_and_repair(s, task_id, resolution='rerun'):
+    """INV-OBSERVATION-001: a failure after provider entry blocks the task; the operator reconciles
+    the termination record, then re-queues through the existing execution-recovery repair path."""
+    [record] = s.executor.observer.pending_terminations(task_id)
+    s.executor.observer.resolve_termination(record['record_id'], resolution=resolution, operator='test-operator',
+                                            reason='explicit test decision')
+    recovery = ExecutionRecovery(s.service.store, s.service.org, s.artifacts)
+    evidence = s.artifacts.put('operator reviewed the termination record', 'test-evidence')['ref']
+    packet = recovery.prepare('tasks', task_id, operation='repair', max_attempts=3, deadline=None,
+                              reason='reconciled', evidence_refs=[evidence], operator='test-operator')
+    return recovery.apply(packet)
+
+
+@pytest.mark.parametrize('stage', ['shortlist', 'detail', 'final'])
+def test_retry_after_failure_recollects_and_retrieves_before_final(setup, stage):
+    s = setup
+    s.config['failure'] = stage
+    first = s.executor.execute_one('worker:github')
+    # 'shortlist'/'final': the transport failed after the provider was entered. 'detail': an
+    # infrastructure error between two provider calls of the same attempt, with the attempt's
+    # effects still unconfirmed. Both block until an operator reconciles (INV-OBSERVATION-001).
+    assert first['status'] == 'blocked' and first['error'] == 'reconciliation_required'
+    assert s.executor.execute_one('worker:github') is None
+    reconcile_and_repair(s, s.task['id'])
+    s.config['failure'] = None
+    s.calls.clear()
+    result = s.executor.execute_one('worker:github')
+    assert result['status'] == 'succeeded' and result['result']['research_attempt'] == 2
+    assert s.calls == ['collect', 'shortlist', 'detail', 'final']
+    if stage == 'shortlist':
+        assert 'progress' in s.prompts[1]['required']['recovery']['sources']
+    assert s.prompts[-1]['required']['recovery']['sources'] == {}
+
+
+@pytest.mark.parametrize('stage', ['shortlist', 'final'])
+def test_stale_execution_cannot_record_progress_checkpoint_or_complete(setup, stage):
+    s = setup
+    def revoke(current):
+        if current == stage:
+            with s.service.store.transaction() as tx:
+                task = tx.get('tasks', s.task['id'])
+                task['generation'] += 1
+                tx.put('tasks', task['id'], task)
+    s.config['callback'] = revoke
+    # Lease loss is a non-authoritative outcome; it must not terminate serve().
+    assert s.executor.execute_one('worker:github')['status'] == 'stale'
+    with s.service.store.transaction() as tx:
+        assert not tx.scan('decisions_pending')
+    with s.service.store.transaction() as tx:
+        assert not tx.scan('outbox')
+        session = tx.get('sessions', 'worker:github')
+        assert session is None if stage == 'shortlist' else session['generation'] == 1
+
+
+def test_geeknews_remains_single_invocation(setup):
+    s = setup
+    with s.service.store.transaction() as tx:
+        task = tx.get('tasks', s.task['id'])
+        task['message']['what']['details']['source'] = 'geeknews'
+        tx.put('tasks', task['id'], task)
+    assert s.executor.execute_one('worker:github')['status'] == 'succeeded'
+    assert s.calls == ['collect', 'final']
+
+
+@pytest.mark.parametrize('change', ['none', 'revision', 'artifact', 'stage', 'harness'])
+def test_recovery_binding_rejects_changed_evidence_and_stage(setup, change):
+    s = setup
+    evidence = {'provenance': {'source_revision': REV, 'readme_ref': 'first'}}
+    def run(stage):
+        return s.executor._run('worker:github', 'same-task', 'Evaluate', evidence,
+                               str(s.executor.git.repository), GITHUB_RESEARCH, True, stage=stage)
+    run('final')
+    if change == 'revision':
+        evidence['provenance']['source_revision'] = 'b' * 40
+    if change == 'artifact':
+        evidence['provenance']['readme_ref'] = 'second'
+    if change == 'harness':
+        s.executor.git._git = lambda *a, **kw: 'new-harness'
+    run('shortlist' if change == 'stage' else 'final')
+    recovery = s.prompts[-1]['required']['recovery']['sources']
+    assert bool(recovery) == (change == 'none')
+    assert len(s.prompts) == 2  # Always regenerate evaluation; checkpoint is context only.
+
+
+def test_stale_session_generation_rejects_checkpoint(setup):
+    s = setup
+    def advance(stage):
+        with s.service.store.transaction() as tx:
+            tx.put('sessions', 'worker:github', {'generation': 7, 'checkpoint': {}})
+    s.config['callback'] = advance
+    result = s.executor.execute_one('worker:github')
+    # The checkpoint failed after the provider ran: the failure is recorded, then the task is blocked.
+    assert result['status'] == 'blocked' and result['error'] == 'reconciliation_required'
+    assert 'Stale session' in result['attempt_outcomes'][-1]['error']
+    with s.service.store.transaction() as tx:
+        messages = [r['message'] for r in tx.scan('outbox')]
+        assert [m['type'] for m in messages] == ['execution.notice', 'execution.notice']
+        assert sorted(m['what']['details']['reason_code'] for m in messages) == ['execution_failed', 'reconciliation_required']
+        assert tx.get('sessions', 'worker:github')['generation'] == 7
+    [pending] = s.executor.observer.pending_terminations(s.task['id'])
+    assert pending['boundary'] == 'checkpoint' and pending['invocation_outcome'] == 'accepted'
+
+
+def test_preflight_failure_uses_existing_execution_failure_reporting(setup):
+    s = setup
+
+    def reject_schema(stage):
+        preflight({'properties': {'version': {'const': 1}}})
+
+    s.config['callback'] = reject_schema
+    result = s.executor.execute_one('worker:github')
+    # Raised from inside the transport after entry: recorded as a failure, then blocked.
+    assert result['status'] == 'blocked' and CAUSE in result['attempt_outcomes'][-1]['error']
+    with s.service.store.transaction() as tx:
+        failures = [r for r in tx.scan('decisions_pending') if r['phase'] == 'diagnose']
+        assert len(failures) == 1
+        receipt = s.artifacts.document(failures[0]['input']['evidence_ref'])
+        assert CAUSE in receipt['error']
+        assert receipt['task_id'] == s.task['id']
+        assert tx.get('tasks', s.task['id'])['status'] != 'succeeded'
+
+
+@pytest.mark.parametrize("intent,pressure,code", [
+    (None, None, "discovery_intent_required"),
+    ("proactive", SimpleNamespace(admit=lambda: {"decision": "hold", "reason_code": "pressure_high"}), "pressure_high"),
+    ("proactive", None, "pressure_unavailable"),
+    # An evaluator that cannot complete (a raising one, or the real one over an unavailable store) is a hold too.
+    ("proactive", SimpleNamespace(admit=lambda: (_ for _ in ()).throw(OSError("store unreadable"))), "pressure_unknown"),
+    ("proactive", "unavailable-store", "pressure_unknown"),
+])
+def test_a_held_or_intent_less_research_task_fails_once_without_fetch_retry_or_diagnosis(tmp_path, intent, pressure, code):
+    """INV-DISCOVERY-PRESSURE-001 through the REAL ResearchSources: a policy decision ends the task `failed` after ONE
+    attempt, with no fetch, no shortlist or model call, no retry and no diagnose decision."""
+    class NoFetch(ResearchSources):
+        def fetch(self, url):
+            raise AssertionError("fetched " + url)
+    if pressure == "unavailable-store":
+        unavailable = SimpleNamespace(transaction=lambda: (_ for _ in ()).throw(OSError("store unreadable")))
+        pressure = DiscoveryPressure(unavailable, packaged_policy(), SimpleNamespace(audit=None))
+    service = Harness(MemoryStore(), organization())
+    artifacts = FileArtifacts(str(tmp_path / 'artifacts'))
+    executor = Executor(service, SimpleNamespace(repository=tmp_path, _git=lambda *a, **kw: 'harness'), artifacts,
+                        research=NoFetch(artifacts, pressure=pressure))
+    details = {'source': 'github'} if intent is None else {'source': 'github', 'intent': intent}
+    executor.workflow.submit(envelope('task.assign', 'lead:research', 'worker:github', 'research', details, 'fixture'))
+    failed = executor.execute_one('worker:github')
+    assert failed['status'] == 'failed' and failed['error'] == 'discovery_policy: ' + code
+    assert failed['attempt'] == 1 and executor.execute_one('worker:github') is None, 'never replayed'
+    with service.store.transaction() as tx:
+        assert [row for row in tx.scan('decisions_pending') if row.get('phase') == 'diagnose'] == [], 'no diagnosis call'
