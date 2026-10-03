@@ -53,6 +53,7 @@ the next successful sink transaction, including after a process restart.
 """
 from __future__ import annotations
 
+import functools
 import os
 import platform
 import sys
@@ -64,6 +65,7 @@ from datetime import datetime
 from codex_harness.kernel.errors import ContractError, require
 from codex_harness.kernel.ids import digest, utcnow
 from codex_harness.kernel.policy import POLICY
+from codex_harness.observation.domain.event_catalog import check_catalog_attributes, load_catalog
 from codex_harness.observation.domain.observation import (
     REFERENCE,
     build_event,
@@ -75,6 +77,20 @@ from codex_harness.observation.domain.observation import (
     redact_text,
 )
 from codex_harness.observation.ports import SpoolFull
+
+
+@functools.cache
+def _catalog_event_types() -> frozenset:
+    return frozenset(load_catalog()["events"])
+
+
+def _catalog_checked(event_type, attributes):
+    """X1 (DESIGN-s9-X §1.1, OBSERVABILITY-COVERAGE-20261002): an event the catalog declares is checked against it
+    FIRST (closed enums, opaque ids, declared attributes); every other event type is unchanged."""
+    if event_type in _catalog_event_types():
+        return check_catalog_attributes(event_type, attributes or {})
+    return attributes
+
 
 AUDIT_BUCKET = "observation_audit"
 EVENT_BUCKET = "observations"
@@ -271,7 +287,7 @@ class Observer:
                                     sequence=sequence, observed_at=self.clock(), source=self.source,
                                     occurred_at=occurred_at, correlation_id=correlation_id,
                                     causation_id=causation_id, reason_code=reason_code,
-                                    evidence_refs=evidence_refs, attributes=attributes, severity=severity,
+                                    evidence_refs=evidence_refs, attributes=_catalog_checked(event_type, attributes), severity=severity,
                                     identity=identity)
             except ContractError as exc:
                 self._refused(event_type, exc)
@@ -337,7 +353,7 @@ class Observer:
             event = build_event(event_type=event_type, outcome=outcome, execution=execution or self.system(),
                                 sequence=sequence, observed_at=self.clock(), source=self.source,
                                 occurred_at=occurred_at, correlation_id=correlation_id, causation_id=causation_id,
-                                reason_code=reason_code, evidence_refs=evidence_refs, attributes=attributes,
+                                reason_code=reason_code, evidence_refs=evidence_refs, attributes=_catalog_checked(event_type, attributes),
                                 severity=severity, identity=identity)
             if self._append("audit", event):
                 self._next += 1

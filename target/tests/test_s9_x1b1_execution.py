@@ -167,3 +167,33 @@ def test_a_capacity_refusal_is_observed_as_the_invocation_budget_and_still_refus
     assert event["severity"] == "warning" and event["outcome"] == "blocked"
     check_catalog_attributes("operations.capacity_refused", event["attributes"])
     assert splits(run_task) == []
+
+
+def observer_for_catalog(tmp_path):
+    return build(tmp_path)[0].observer
+
+
+def test_the_observer_refuses_a_catalog_event_outside_the_catalog_and_leaves_other_events_alone(tmp_path):
+    observer = observer_for_catalog(tmp_path)
+    good = {"scope": "invocation_budget", "refusal_reason": "budget_exhausted", "retry_after_seconds": None}
+    assert observer.emit("operations.capacity_refused", "blocked", attributes=good, severity="warning")
+    before = observer.counters["refused"]
+    for bad in ({**good, "scope": "made_up"}, {**good, "refusal_reason": "because"}, {**good, "extra": 1}):
+        assert observer.emit("operations.capacity_refused", "blocked", attributes=bad, severity="warning") is None
+    assert observer.counters["refused"] == before + 3
+    opaque = {"reservation_id": "has a space", "provider_session_ref": None, **NULLS, "usage_source": "unknown"}
+    assert observer.emit(SPLIT, "observed", attributes=opaque) is None
+    # an event type outside the catalog is validated exactly as before
+    assert observer.emit("general.process_started", "started", attributes={})
+
+
+def test_the_observer_audit_checks_the_catalog_first_too(tmp_path):
+    run_task, workflow, store, _, _ = build(tmp_path)
+    bad = {"scope": "made_up", "refusal_reason": "budget_exhausted", "retry_after_seconds": None}
+    with store.transaction() as tx:
+        try:
+            run_task.observer.audit(tx, "operations.capacity_refused", "blocked", identity=["t", "1"], attributes=bad,
+                                    severity="warning")
+        except ContractError:
+            return
+    raise AssertionError("a catalog-refused audit must raise")
