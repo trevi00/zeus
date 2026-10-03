@@ -273,7 +273,7 @@ REGISTRY = {
                                             "disposition_id": _S, "stream_entry_id": _N},
     # S9 X1a (OBSERVABILITY-COVERAGE-20261002 via OWNER-DECISIONS-S9 D4, DESIGN-s9-X §1.1): the ten additive event
     # types. Every `*_reason`/`outcome`/`queue`/`scope`-style value is a closed enum declared in
-    # `resources/observability-catalog.json` (the SSOT; `event_catalog.check_catalog_attributes` refuses the
+    # `observation/observability-catalog.json` (the SSOT; `event_catalog.check_catalog_attributes` refuses the
     # rest); ids are opaque and never labels; absent usage values are null, never 0; no free text.
     "operations.queue_item_waited": {"queue": _S, "item_ref": _S, "wait_seconds": _F, "outcome": _S},
     "development.role_dispatch_decided": {"role": _S, "provider": _S, "decision": _S, "decision_reason": _S, "latency_seconds": _F},

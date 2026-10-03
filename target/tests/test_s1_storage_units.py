@@ -79,20 +79,9 @@ def test_message_schema_holds_only_the_six_w_half():
     assert not hasattr(message_schema, "validate_observation"), "observation schema belongs to S9"
 
 
-# Declared additive resources: file -> authority. Exact names, no pattern; SOURCE files never change or disappear.
-ADDITIONS = {"observability-catalog.json": "S9 X1a: OBSERVABILITY-COVERAGE-20261002 via OWNER-DECISIONS-S9 D4; DESIGN-s9-X §1"}
-
-
 def test_packaged_resources_are_the_source_bytes():
     def tree(root):
         return {p.relative_to(root).as_posix(): hashlib.sha256(p.read_bytes()).hexdigest()
                 for p in sorted(root.rglob("*")) if p.is_file() and "__pycache__" not in p.parts}
 
-    target, source = tree(TARGET_RESOURCES), tree(SOURCE_RESOURCES)
-    missing = sorted(name for name in source if name not in target)
-    changed = sorted(name for name in source if name in target and target[name] != source[name])
-    assert not missing, f"SOURCE resources missing from the target: {missing}"
-    assert not changed, f"SOURCE resources whose bytes changed: {changed}"
-    extra = sorted(name for name in target if name not in source)
-    assert [n for n in extra if n not in ADDITIONS] == [], f"undeclared extra resources: {[n for n in extra if n not in ADDITIONS]}"
-    assert [n for n in ADDITIONS if n not in extra] == [], f"declared additions missing: {[n for n in ADDITIONS if n not in extra]}"
+    assert tree(TARGET_RESOURCES) == tree(SOURCE_RESOURCES)

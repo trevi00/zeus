@@ -24,8 +24,12 @@ CATALOG_RESOURCE = "observability-catalog.json"
 
 
 def load_catalog() -> dict:
-    """The packaged catalog, parsed fresh (callers must not mutate a shared copy)."""
-    return json.loads((files("codex_harness.resources") / CATALOG_RESOURCE).read_text(encoding="utf-8"))
+    """The packaged catalog, parsed fresh (callers must not mutate a shared copy).
+
+    It is packaged with its owner, `codex_harness.observation`, NOT in the shared `codex_harness.resources` tree. S1's
+    storage migrator scans that tree as its migration location, so an extra file there changed the CI-only
+    `storage.pg` family (CI run 37102239992), and `resources/` stays byte-identical to SOURCE."""
+    return json.loads((files("codex_harness.observation") / CATALOG_RESOURCE).read_text(encoding="utf-8"))
 
 
 def check_catalog_attributes(event_type: str, attributes: dict) -> dict:
