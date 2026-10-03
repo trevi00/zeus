@@ -7,9 +7,10 @@ canary and runtime helpers, `Fleet`, `organization`, `MemoryStore`, `GitWorkspac
 `delivery.domain.host_delivery`, the BUCKET_* names from `delivery.application.host_delivery.state`, the fleet names
 from `coordination`, the observation names from `observation`. A name whose owner is in a later slice (the operator
 CLI and lane resolution, S10; the Windows scheduled task, W-B) is an `unavailable(slice, name)` placeholder, and only
-tests skipped whole and unrewritten (each with its owning slice) name it: of the 13 evaluator tests this batch unskipped,
-four name `add_parser`/`run_loop` and stay skipped whole as S10 (the legacy-halt resume through the CLI, and the three
-SIGTERM/blocked-fence run-loop cases); the other nine run.
+tests skipped whole and unrewritten (each with its owning slice) name it: of the 13 evaluator tests U2a unskipped,
+five name `add_parser`/`run_loop` and stay skipped whole as S10 (the legacy-halt resume through the CLI, the three
+SIGTERM/blocked-fence run-loop cases, and the blocked-PostgreSQL-heartbeat stop, an integration case that only the owner's
+CI-equivalent `target-integration` run reached); the other eight run.
 The release evaluator is the target's (S8): `ReleaseRunner` is the shim's wiring of `delivery.adapters.deployment` with the
 real `ReleaseSuite`, `ReleaseVerifier`, `FenceUnobservable` and `bounded_fence` are `composition.release_verifier`'s
 (through the shim), and `deployment` is the shim's route to `delivery.adapters.deployment` (its `VerificationServices` is
@@ -851,6 +852,7 @@ def test_a_blocked_postgres_store_returns_the_whole_tick_unsettled_well_before_l
     assert disk_record(system, attempt["attempt_id"])["state"] == "resolved"
 
 
+@pytest.mark.skip(reason='S10: the host-delivery run loop (adapters.host_delivery.run_loop; no S8 gap)')
 @pytest.mark.integration
 def test_a_stop_while_a_blocked_postgres_heartbeat_times_out_settles_nothing(
         tmp_path, monkeypatch, isolated_pgstore):
