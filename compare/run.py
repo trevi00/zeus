@@ -604,6 +604,59 @@ def docker_fixture() -> dict:
     return {"exit_code": done.returncode if ok or done.returncode else 1, "summary": summary, "tail": tail}
 
 
+# SKIPPED-TEST-CLOSURE-20261004 B: the owner-run checks that need a real stack under the guard. Each sets only the opt-in
+# forms its tests need; a skip of a named test is a failure of the command, not a pass.
+OWNER_DOCKER_SKIP_MARKERS = ("Explicit disposable Docker", "Two disposable PostgreSQL 17 + pgvector")
+
+
+def _owner_pytest(env: dict, work: Path, files: list[str], timeout: int) -> dict:
+    done = subprocess.run([str(TARGET_PYTHON), "-m", "pytest", "-q", "-p", "no:cacheprovider", "-rs",
+                           "--basetemp", str(work / "pytest"), *files],
+                          cwd=str(ROOT / "target"), env=env, capture_output=True, text=True, timeout=timeout)
+    lines = done.stdout.strip().splitlines()
+    summary = lines[-1] if lines else ""
+    missed = [line for line in lines if line.startswith("SKIPPED") and any(m in line for m in OWNER_DOCKER_SKIP_MARKERS)]
+    ok = done.returncode == 0 and " passed" in summary and not missed
+    return {"exit_code": 0 if ok else (done.returncode or 1), "summary": summary,
+            "skipped": [line for line in lines if line.startswith("SKIPPED")], "tail": lines[-15:]}
+
+
+def verify_stack() -> dict:
+    """The ported VerificationServices Docker tests on real disposable compose stacks, under the guard with the
+    fixture opt-in plus `ZEUS_TEST_DOCKER_VERIFY_STACK` (exactly the stack's admitted forms; provider_guard.py)."""
+    if not TARGET_PYTHON.exists():
+        return {"error": "target venv missing: run `uv sync --frozen --project target`"}
+    SCRATCH.mkdir(parents=True, exist_ok=True)
+    with tempfile.TemporaryDirectory(prefix="zeus-verify-stack-", dir=SCRATCH) as raw:
+        work = Path(raw)
+        env = provider_guard.child_environment(work / "env", extra={
+            provider_guard.DOCKER_OPT_IN_ENV: "1", provider_guard.DOCKER_VERIFY_STACK_ENV: "1"})
+        (work / "env" / "fakebin" / "docker").unlink()
+        return _owner_pytest(env, work, ["tests/ported/test_verification.py", "tests/ported/test_host_interruption.py"],
+                             2400)
+
+
+def migration_rehearsal() -> dict:
+    """The ported PostgreSQL migration rehearsal on the `disposable-postgresql-pair` fixture (PostgresPair), under the
+    guard with only its `docker exec` pg tool forms (DOCKER_PGEXEC), as the restore.pg families run."""
+    if not TARGET_PYTHON.exists():
+        return {"error": "target venv missing: run `uv sync --frozen --project target`"}
+    SCRATCH.mkdir(parents=True, exist_ok=True)
+    with tempfile.TemporaryDirectory(prefix="zeus-pg-rehearsal-", dir=SCRATCH) as raw:
+        work = Path(raw)
+        dump = work / "dump"
+        dump.mkdir()
+        with PostgresPair(work, dump) as pair:
+            env = provider_guard.child_environment(work / "env", extra={
+                "ZEUS_MIGRATION_TEST_PG_SOURCE_CONTAINER": pair.source.name,
+                "ZEUS_MIGRATION_TEST_PG_SOURCE_SOCKET": str(pair.source.socket),
+                "ZEUS_MIGRATION_TEST_PG_TARGET_CONTAINER": pair.target.name,
+                "ZEUS_MIGRATION_TEST_PG_TARGET_SOCKET": str(pair.target.socket),
+                provider_guard.DOCKER_OPT_IN_ENV: "1", provider_guard.DOCKER_PGEXEC_ENV: "1"})
+            (work / "env" / "fakebin" / "docker").unlink(missing_ok=True)
+            return _owner_pytest(env, work, ["tests/ported/test_host_migration_pg_rehearsal.py"], 1500)
+
+
 def main(argv=None) -> int:
     parser = argparse.ArgumentParser(description=__doc__.splitlines()[0])
     sub = parser.add_subparsers(dest="command", required=True)
@@ -611,6 +664,8 @@ def main(argv=None) -> int:
     sub.add_parser("prepare")
     sub.add_parser("target-integration")
     sub.add_parser("docker-fixture")
+    sub.add_parser("verify-stack")
+    sub.add_parser("migration-rehearsal")
     run_cmd = sub.add_parser("run")
     run_cmd.add_argument("--record", action="store_true", help="write reference goldens")
     run_cmd.add_argument("--no-bwrap", action="store_true")
@@ -625,6 +680,12 @@ def main(argv=None) -> int:
         ok = report["ok"]
     elif args.command == "docker-fixture":
         report = docker_fixture()
+        ok = report.get("exit_code") == 0
+    elif args.command == "verify-stack":
+        report = verify_stack()
+        ok = report.get("exit_code") == 0
+    elif args.command == "migration-rehearsal":
+        report = migration_rehearsal()
         ok = report.get("exit_code") == 0
     elif args.command == "target-integration":
         report = target_integration()
