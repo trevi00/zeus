@@ -48,7 +48,7 @@ def test_canary_exit_follows_the_probe(monkeypatch, capsys):
 
 def test_a_root_not_composed_yet_is_a_json_error_with_exit_one(monkeypatch, capsys):
     # C8 moves this example to a still-uncomposed root, or retires it when all 51 are composed.
-    code, out, err = run_main(monkeypatch, capsys, "fleet")
+    code, out, err = run_main(monkeypatch, capsys, "fleet", "pause")
     assert code == 1 and out == ""
     assert json.loads(err) == {"error": "zeus fleet is not composed in the rebuild yet (DESIGN-s10 §3)"}
 
