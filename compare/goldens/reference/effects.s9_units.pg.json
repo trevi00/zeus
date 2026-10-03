@@ -1,0 +1,1969 @@
+{
+ "collect": {
+  "a_failure_at_receipt": {
+   "acknowledged": {
+    "000000000000000000000000000000c0.0000.jsonl": 0
+   },
+   "alerts": [
+    "operations.sink_unavailable"
+   ],
+   "changed_digests": [
+    [
+     "observation_alerts",
+     "6f0371403da464b8246255e2cc3a235ba3da2132d65abf09ba2036cab268ef56",
+     "25a11ef54ac2c0c6479ff546f0eee8a6791c8f1155db31fe22338ab5f77ab2ff"
+    ]
+   ],
+   "committed_before_effect": [],
+   "counters": {
+    "alerts_recorded": 1,
+    "emitted": 4
+   },
+   "counts": {
+    "observation_alerts": 1,
+    "observation_audit": 0,
+    "observation_collections": 0,
+    "observation_quarantine": 0,
+    "observation_terminations": 0,
+    "observations": 0
+   },
+   "discarded_writes": [
+    [
+     "observations",
+     ""
+    ]
+   ],
+   "durable_units": 1,
+   "durable_writes": [
+    [
+     "observation_alerts",
+     ""
+    ]
+   ],
+   "effects": [],
+   "last_defect": "Injected: message_sha256=cb598330fee513a9",
+   "observation_ids": 0,
+   "outcome": {
+    "ok": true,
+    "value": {
+     "alerts_replayed": 0,
+     "confirmed_audits": 0,
+     "conflicts": 0,
+     "corrupt": 0,
+     "duplicates": 0,
+     "files": 1,
+     "inserted": 0,
+     "per_file": [],
+     "pruned_files": 0,
+     "pruned_runs": 0,
+     "reclaimed_segments": 0,
+     "records": 0,
+     "refused": 0,
+     "sink_failures": 1,
+     "truncated_tail": 0,
+     "unconfirmed_audits": 0
+    }
+   },
+   "quarantine": [],
+   "rows_after": 1,
+   "rows_before": 0,
+   "rows_changed": [
+    [
+     "observation_alerts",
+     "6f0371403da464b8246255e2cc3a235ba3da2132d65abf09ba2036cab268ef56",
+     ""
+    ]
+   ],
+   "sink_state": "available",
+   "units": {
+    "COMMIT": 1,
+    "ROLLBACK": 1
+   },
+   "violations": []
+  },
+  "a_failure_at_receipt_conflict": {
+   "acknowledged": {
+    "000000000000000000000000000000c0.0000.jsonl": 2700
+   },
+   "alerts": [
+    "operations.sink_unavailable"
+   ],
+   "changed_digests": [
+    [
+     "observation_alerts",
+     "57353f8ca0e5f2c22aa2cd2be4c6cf998cb28628f298704856c5a8b6e7c40644",
+     "1cb1c632a88979673e0f5f79a9de82bf2b8526ae3414553f3b0708c5ff2b0692"
+    ]
+   ],
+   "committed_before_effect": [],
+   "counters": {
+    "alerts_recorded": 2,
+    "emitted": 6
+   },
+   "counts": {
+    "observation_alerts": 1,
+    "observation_audit": 0,
+    "observation_collections": 1,
+    "observation_quarantine": 0,
+    "observation_terminations": 0,
+    "observations": 3
+   },
+   "discarded_writes": [
+    [
+     "observation_alerts",
+     ""
+    ],
+    [
+     "observation_quarantine",
+     ""
+    ],
+    [
+     "observations",
+     ""
+    ]
+   ],
+   "durable_units": 1,
+   "durable_writes": [
+    [
+     "observation_alerts",
+     ""
+    ]
+   ],
+   "effects": [],
+   "last_defect": "Injected: message_sha256=cb598330fee513a9",
+   "observation_ids": 3,
+   "outcome": {
+    "ok": true,
+    "value": {
+     "alerts_replayed": 0,
+     "confirmed_audits": 0,
+     "conflicts": 0,
+     "corrupt": 0,
+     "duplicates": 0,
+     "files": 1,
+     "inserted": 0,
+     "per_file": [],
+     "pruned_files": 0,
+     "pruned_runs": 0,
+     "reclaimed_segments": 0,
+     "records": 0,
+     "refused": 0,
+     "sink_failures": 1,
+     "truncated_tail": 0,
+     "unconfirmed_audits": 0
+    }
+   },
+   "quarantine": [],
+   "rows_after": 5,
+   "rows_before": 4,
+   "rows_changed": [
+    [
+     "observation_alerts",
+     "57353f8ca0e5f2c22aa2cd2be4c6cf998cb28628f298704856c5a8b6e7c40644",
+     ""
+    ]
+   ],
+   "sink_state": "available",
+   "units": {
+    "COMMIT": 1,
+    "ROLLBACK": 1
+   },
+   "violations": []
+  },
+  "b_rival_committed_first": {
+   "acknowledged": {
+    "000000000000000000000000000000c0.0000.jsonl": 2700
+   },
+   "after_move": {
+    "durable_writes": [
+     [
+      "observation_collections",
+      ""
+     ]
+    ],
+    "writes": 1
+   },
+   "alerts": [],
+   "changed_digests": [
+    [
+     "observation_collections",
+     "0beef4e67762b2147eaafb200be412f7e4a8f640bc80133dbb00fe377506910d",
+     "a31ea086bda0a6c97af1ae125c7ec2bbe3ae4cf8f005080ea5cf05af003c201c"
+    ],
+    [
+     "observations",
+     "b29709f4661c279ee4f2936e207f6afbb8e3d76e11f8bd30d89a9c7c866f1058",
+     "abdde730d9df1566b626d4d2de366b268a7bf025890c044fe4d73f78b4cef796"
+    ],
+    [
+     "observations",
+     "f1cce1b8cc548959a31c3a9a2cc829409644fca9f798a402f9dec16dab2c70d5",
+     "cbad558610d5878a760c3b684c1285e1af7435f1c90902e1edd54b8a5f92e222"
+    ],
+    [
+     "observations",
+     "fb3d4d8888ccedd80d4cdb7c3f8f9fed7147caa3826ba7c963928379e1274d6a",
+     "477e6a9676cfab33e73df0847dcac46ce2ed9ce828e752aa9e70fb49682ee8d6"
+    ]
+   ],
+   "committed_before_effect": [
+    [
+     "directory.acknowledge",
+     [
+      [
+       "observation_collections",
+       ""
+      ]
+     ]
+    ],
+    [
+     "directory.reclaim",
+     [
+      [
+       "observation_collections",
+       ""
+      ]
+     ]
+    ]
+   ],
+   "counters": null,
+   "counts": {
+    "observation_alerts": 0,
+    "observation_audit": 0,
+    "observation_collections": 1,
+    "observation_quarantine": 0,
+    "observation_terminations": 0,
+    "observations": 3
+   },
+   "discarded_writes": [],
+   "durable_units": 1,
+   "durable_writes": [
+    [
+     "observation_collections",
+     ""
+    ]
+   ],
+   "effects": [
+    [
+     "directory.acknowledge",
+     0
+    ],
+    [
+     "directory.reclaim",
+     0
+    ]
+   ],
+   "last_defect": "",
+   "observation_ids": 3,
+   "outcome": {
+    "ok": true,
+    "value": {
+     "alerts_replayed": 0,
+     "confirmed_audits": 0,
+     "conflicts": 0,
+     "corrupt": 0,
+     "duplicates": 3,
+     "files": 1,
+     "inserted": 0,
+     "per_file": [
+      {
+       "duplicates": 3,
+       "file": "000000000000000000000000000000c0.0000.jsonl",
+       "from_offset": 0,
+       "records": 3,
+       "to_offset": 2700
+      }
+     ],
+     "pruned_files": 0,
+     "pruned_runs": 0,
+     "reclaimed_segments": 0,
+     "records": 3,
+     "refused": 0,
+     "sink_failures": 0,
+     "truncated_tail": 0,
+     "unconfirmed_audits": 0
+    }
+   },
+   "quarantine": [],
+   "rows_after": 4,
+   "rows_before": 0,
+   "rows_changed": [
+    [
+     "observation_collections",
+     "0beef4e67762b2147eaafb200be412f7e4a8f640bc80133dbb00fe377506910d",
+     ""
+    ],
+    [
+     "observations",
+     "b29709f4661c279ee4f2936e207f6afbb8e3d76e11f8bd30d89a9c7c866f1058",
+     ""
+    ],
+    [
+     "observations",
+     "f1cce1b8cc548959a31c3a9a2cc829409644fca9f798a402f9dec16dab2c70d5",
+     ""
+    ],
+    [
+     "observations",
+     "fb3d4d8888ccedd80d4cdb7c3f8f9fed7147caa3826ba7c963928379e1274d6a",
+     ""
+    ]
+   ],
+   "sink_state": null,
+   "units": {
+    "COMMIT": 1
+   },
+   "violations": []
+  },
+  "c_replay_after_failure": {
+   "acknowledged": {
+    "000000000000000000000000000000c0.0000.jsonl": 4567
+   },
+   "alerts": [
+    "operations.sink_unavailable"
+   ],
+   "changed_digests": [
+    [
+     "observation_collections",
+     "14b63cb1da0c28dedce1dbfa74c075a554e89c2a9253f83f6a96a9e06cce628b",
+     "ee63d052db756c22b10e8f5ebedc2f9d6b9bab04081f14b5b5f21a34352e111f"
+    ],
+    [
+     "observations",
+     "6f0371403da464b8246255e2cc3a235ba3da2132d65abf09ba2036cab268ef56",
+     "50942f435ca7180321e01a98b45f5ed4a46af9a115057bdc70d4b6374d4993db"
+    ],
+    [
+     "observations",
+     "70fb692ec30bbe58e5637b3ac340bf0e0361508ecb6554dd772bfc073ac4d1b3",
+     "ff903291648612927b54679c7eac75c772446825c526889d4dd3b9b7e239dae0"
+    ],
+    [
+     "observations",
+     "b29709f4661c279ee4f2936e207f6afbb8e3d76e11f8bd30d89a9c7c866f1058",
+     "77bfeee1a8d10e750aae2140350e4b1b6a4207532cd24b8e243ca8fe85c98592"
+    ],
+    [
+     "observations",
+     "f1cce1b8cc548959a31c3a9a2cc829409644fca9f798a402f9dec16dab2c70d5",
+     "5e39ba64dacf00dffc1ef3965b82acb5c2c1f7fbf52a4fcea6231329a13a0b74"
+    ],
+    [
+     "observations",
+     "fb3d4d8888ccedd80d4cdb7c3f8f9fed7147caa3826ba7c963928379e1274d6a",
+     "386075ede82057c4b27fb620514767720f1baa701c04a1d6e3b1ab72c936acab"
+    ]
+   ],
+   "committed_before_effect": [
+    [
+     "directory.acknowledge",
+     [
+      [
+       "observation_collections",
+       ""
+      ],
+      [
+       "observations",
+       ""
+      ]
+     ]
+    ],
+    [
+     "directory.reclaim",
+     [
+      [
+       "observation_collections",
+       ""
+      ],
+      [
+       "observations",
+       ""
+      ]
+     ]
+    ]
+   ],
+   "counters": {
+    "alerts_recorded": 1,
+    "emitted": 4
+   },
+   "counts": {
+    "observation_alerts": 1,
+    "observation_audit": 0,
+    "observation_collections": 1,
+    "observation_quarantine": 0,
+    "observation_terminations": 0,
+    "observations": 5
+   },
+   "discarded_writes": [],
+   "durable_units": 1,
+   "durable_writes": [
+    [
+     "observation_collections",
+     ""
+    ],
+    [
+     "observations",
+     ""
+    ]
+   ],
+   "effects": [
+    [
+     "directory.acknowledge",
+     0
+    ],
+    [
+     "directory.reclaim",
+     0
+    ]
+   ],
+   "first": {
+    "ok": true,
+    "value": {
+     "alerts_replayed": 0,
+     "confirmed_audits": 0,
+     "conflicts": 0,
+     "corrupt": 0,
+     "duplicates": 0,
+     "files": 1,
+     "inserted": 0,
+     "per_file": [],
+     "pruned_files": 0,
+     "pruned_runs": 0,
+     "reclaimed_segments": 0,
+     "records": 0,
+     "refused": 0,
+     "sink_failures": 1,
+     "truncated_tail": 0,
+     "unconfirmed_audits": 0
+    }
+   },
+   "first_acknowledged": {
+    "000000000000000000000000000000c0.0000.jsonl": 0
+   },
+   "last_defect": "Injected: message_sha256=cb598330fee513a9",
+   "observation_ids": 5,
+   "outcome": {
+    "ok": true,
+    "value": {
+     "alerts_replayed": 0,
+     "confirmed_audits": 0,
+     "conflicts": 0,
+     "corrupt": 0,
+     "duplicates": 0,
+     "files": 1,
+     "inserted": 5,
+     "per_file": [
+      {
+       "file": "000000000000000000000000000000c0.0000.jsonl",
+       "from_offset": 0,
+       "inserted": 5,
+       "records": 5,
+       "to_offset": 4567
+      }
+     ],
+     "pruned_files": 0,
+     "pruned_runs": 0,
+     "reclaimed_segments": 0,
+     "records": 5,
+     "refused": 0,
+     "sink_failures": 0,
+     "truncated_tail": 0,
+     "unconfirmed_audits": 0
+    }
+   },
+   "quarantine": [],
+   "rows_after": 7,
+   "rows_before": 1,
+   "rows_changed": [
+    [
+     "observation_collections",
+     "14b63cb1da0c28dedce1dbfa74c075a554e89c2a9253f83f6a96a9e06cce628b",
+     ""
+    ],
+    [
+     "observations",
+     "6f0371403da464b8246255e2cc3a235ba3da2132d65abf09ba2036cab268ef56",
+     ""
+    ],
+    [
+     "observations",
+     "70fb692ec30bbe58e5637b3ac340bf0e0361508ecb6554dd772bfc073ac4d1b3",
+     ""
+    ],
+    [
+     "observations",
+     "b29709f4661c279ee4f2936e207f6afbb8e3d76e11f8bd30d89a9c7c866f1058",
+     ""
+    ],
+    [
+     "observations",
+     "f1cce1b8cc548959a31c3a9a2cc829409644fca9f798a402f9dec16dab2c70d5",
+     ""
+    ],
+    [
+     "observations",
+     "fb3d4d8888ccedd80d4cdb7c3f8f9fed7147caa3826ba7c963928379e1274d6a",
+     ""
+    ]
+   ],
+   "sink_state": "available",
+   "units": {
+    "COMMIT": 1
+   },
+   "violations": []
+  },
+  "c_replay_after_success": {
+   "acknowledged": {
+    "000000000000000000000000000000c0.0000.jsonl": 5400
+   },
+   "alerts": [],
+   "changed_digests": [
+    [
+     "observation_collections",
+     "fe1b6ddb282ae4b8eb4bbf541b3d84ac2533c6fb5463e9bba37afaabf6806e2f",
+     "3c72c3bdca97b613e573b0a246c53c96bf8cf6eb4266edc9d995ae8933bc9f1a"
+    ]
+   ],
+   "committed_before_effect": [
+    [
+     "directory.acknowledge",
+     [
+      [
+       "observation_collections",
+       ""
+      ]
+     ]
+    ],
+    [
+     "directory.reclaim",
+     [
+      [
+       "observation_collections",
+       ""
+      ]
+     ]
+    ]
+   ],
+   "counters": null,
+   "counts": {
+    "observation_alerts": 0,
+    "observation_audit": 0,
+    "observation_collections": 2,
+    "observation_quarantine": 0,
+    "observation_terminations": 0,
+    "observations": 3
+   },
+   "discarded_writes": [],
+   "durable_units": 1,
+   "durable_writes": [
+    [
+     "observation_collections",
+     ""
+    ]
+   ],
+   "effects": [
+    [
+     "directory.acknowledge",
+     0
+    ],
+    [
+     "directory.reclaim",
+     0
+    ]
+   ],
+   "first": {
+    "ok": true,
+    "value": {
+     "alerts_replayed": 0,
+     "confirmed_audits": 0,
+     "conflicts": 0,
+     "corrupt": 0,
+     "duplicates": 0,
+     "files": 1,
+     "inserted": 3,
+     "per_file": [
+      {
+       "file": "000000000000000000000000000000c0.0000.jsonl",
+       "from_offset": 0,
+       "inserted": 3,
+       "records": 3,
+       "to_offset": 2700
+      }
+     ],
+     "pruned_files": 0,
+     "pruned_runs": 0,
+     "reclaimed_segments": 0,
+     "records": 3,
+     "refused": 0,
+     "sink_failures": 0,
+     "truncated_tail": 0,
+     "unconfirmed_audits": 0
+    }
+   },
+   "last_defect": "",
+   "observation_ids": 3,
+   "outcome": {
+    "ok": true,
+    "value": {
+     "alerts_replayed": 0,
+     "confirmed_audits": 0,
+     "conflicts": 0,
+     "corrupt": 0,
+     "duplicates": 3,
+     "files": 1,
+     "inserted": 0,
+     "per_file": [
+      {
+       "duplicates": 3,
+       "file": "000000000000000000000000000000c0.0000.jsonl",
+       "from_offset": 2700,
+       "records": 3,
+       "to_offset": 5400
+      }
+     ],
+     "pruned_files": 0,
+     "pruned_runs": 0,
+     "reclaimed_segments": 0,
+     "records": 3,
+     "refused": 0,
+     "sink_failures": 0,
+     "truncated_tail": 0,
+     "unconfirmed_audits": 0
+    }
+   },
+   "quarantine": [],
+   "rows_after": 5,
+   "rows_before": 4,
+   "rows_changed": [
+    [
+     "observation_collections",
+     "fe1b6ddb282ae4b8eb4bbf541b3d84ac2533c6fb5463e9bba37afaabf6806e2f",
+     ""
+    ]
+   ],
+   "sink_state": null,
+   "units": {
+    "COMMIT": 1
+   },
+   "violations": []
+  },
+  "success": {
+   "acknowledged": {
+    "000000000000000000000000000000c0.0000.jsonl": 2700
+   },
+   "alerts": [],
+   "changed_digests": [
+    [
+     "observation_collections",
+     "9398683120f5262fea4c95523875aef06809f058e8841550af164f099c7d5354",
+     "336e331e037b3ff888c8b2b1ec9432ab49056d1ee1898783eb792fe5450f723e"
+    ],
+    [
+     "observations",
+     "b29709f4661c279ee4f2936e207f6afbb8e3d76e11f8bd30d89a9c7c866f1058",
+     "12e81f0ac7b138e99d6ec2b4b345877ed174f4e851c97f135a06c9c7786f1ad4"
+    ],
+    [
+     "observations",
+     "f1cce1b8cc548959a31c3a9a2cc829409644fca9f798a402f9dec16dab2c70d5",
+     "f3c534d2b99cdc117920eeb78d1c21357a7279635bcea9a75ea3c097ef55815b"
+    ],
+    [
+     "observations",
+     "fb3d4d8888ccedd80d4cdb7c3f8f9fed7147caa3826ba7c963928379e1274d6a",
+     "2a78e36c78c96118570f33b61c6468bc58d6dc7dd2b3cc7a01e6e540015251c8"
+    ]
+   ],
+   "committed_before_effect": [
+    [
+     "directory.acknowledge",
+     [
+      [
+       "observation_collections",
+       ""
+      ],
+      [
+       "observations",
+       ""
+      ]
+     ]
+    ],
+    [
+     "directory.reclaim",
+     [
+      [
+       "observation_collections",
+       ""
+      ],
+      [
+       "observations",
+       ""
+      ]
+     ]
+    ]
+   ],
+   "counters": null,
+   "counts": {
+    "observation_alerts": 0,
+    "observation_audit": 0,
+    "observation_collections": 1,
+    "observation_quarantine": 0,
+    "observation_terminations": 0,
+    "observations": 3
+   },
+   "discarded_writes": [],
+   "durable_units": 1,
+   "durable_writes": [
+    [
+     "observation_collections",
+     ""
+    ],
+    [
+     "observations",
+     ""
+    ]
+   ],
+   "effects": [
+    [
+     "directory.acknowledge",
+     0
+    ],
+    [
+     "directory.reclaim",
+     0
+    ]
+   ],
+   "last_defect": "",
+   "observation_ids": 3,
+   "outcome": {
+    "ok": true,
+    "value": {
+     "alerts_replayed": 0,
+     "confirmed_audits": 0,
+     "conflicts": 0,
+     "corrupt": 0,
+     "duplicates": 0,
+     "files": 1,
+     "inserted": 3,
+     "per_file": [
+      {
+       "file": "000000000000000000000000000000c0.0000.jsonl",
+       "from_offset": 0,
+       "inserted": 3,
+       "records": 3,
+       "to_offset": 2700
+      }
+     ],
+     "pruned_files": 0,
+     "pruned_runs": 0,
+     "reclaimed_segments": 0,
+     "records": 3,
+     "refused": 0,
+     "sink_failures": 0,
+     "truncated_tail": 0,
+     "unconfirmed_audits": 0
+    }
+   },
+   "quarantine": [],
+   "rows_after": 4,
+   "rows_before": 0,
+   "rows_changed": [
+    [
+     "observation_collections",
+     "9398683120f5262fea4c95523875aef06809f058e8841550af164f099c7d5354",
+     ""
+    ],
+    [
+     "observations",
+     "b29709f4661c279ee4f2936e207f6afbb8e3d76e11f8bd30d89a9c7c866f1058",
+     ""
+    ],
+    [
+     "observations",
+     "f1cce1b8cc548959a31c3a9a2cc829409644fca9f798a402f9dec16dab2c70d5",
+     ""
+    ],
+    [
+     "observations",
+     "fb3d4d8888ccedd80d4cdb7c3f8f9fed7147caa3826ba7c963928379e1274d6a",
+     ""
+    ]
+   ],
+   "sink_state": null,
+   "units": {
+    "COMMIT": 1
+   },
+   "violations": []
+  }
+ },
+ "record_alert": {
+  "a_failure_at_alert_row": {
+   "changed_digests": [
+    [
+     "observation_alerts",
+     "4c74c9ef8b9cf2de860ee133ab0c7a9f84c015d8944813de99e4e0b6132677ed",
+     "4d2a1015314d4b43ecdb4f67a7a6304794d043013fea72a6c03af02c1fd09cd1"
+    ]
+   ],
+   "committed_before_effect": [
+    [
+     "directory.write_pending_alerts",
+     [
+      [
+       "observation_alerts",
+       ""
+      ]
+     ]
+    ]
+   ],
+   "counters": {
+    "alerts_pending": 1,
+    "alerts_recorded": 1,
+    "emitted": 1
+   },
+   "discarded_writes": [],
+   "durable_units": 1,
+   "durable_writes": [
+    [
+     "observation_alerts",
+     ""
+    ]
+   ],
+   "effects": [
+    [
+     "directory.write_pending_alerts",
+     0
+    ]
+   ],
+   "outcome": {
+    "ok": true,
+    "value": {
+     "attributes": {
+      "dropped": 1,
+      "error_type": "X"
+     },
+     "category": "operations",
+     "causation_id": null,
+     "correlation_id": null,
+     "event_id": "633a9918fe4c75796263bb57bd46ae9938226dc58eedad53670901f3b4cf0758",
+     "event_type": "operations.spool_append_failed",
+     "evidence_refs": [],
+     "execution": {
+      "attempt": null,
+      "bucket": null,
+      "generation": null,
+      "invocation_id": null,
+      "kind": "system",
+      "process_run_id": "000000000000000000000000000000c0",
+      "provider": null,
+      "revision": null,
+      "role": "s9-units",
+      "session_id": null,
+      "task_id": null
+     },
+     "notification": {
+      "channel": null,
+      "status": "pending"
+     },
+     "observed_at": "2026-01-01T00:00:00+00:00",
+     "occurred_at": null,
+     "outcome": "observed",
+     "payload_hash": "e6cd6d192a7adf4ed8ecd4f50177b53804e199579bbf038c9fe3dda462eb4128",
+     "reason_code": null,
+     "redaction": {
+      "applied": true,
+      "findings": 0,
+      "truncated": 0
+     },
+     "schema_version": "1.0",
+     "sequence": {
+      "basis": "unassigned",
+      "number": null,
+      "process_run_id": "000000000000000000000000000000c0"
+     },
+     "severity": "warning",
+     "source": {
+      "component": "s9-units",
+      "host": "fixture-host",
+      "pid": 1
+     },
+     "suppressed_before": 0
+    }
+   },
+   "pending": [
+    "633a9918fe4c75796263bb57bd46ae9938226dc58eedad53670901f3b4cf0758"
+   ],
+   "pending_file": {
+    "000000000000000000000000000000c0": [
+     "633a9918fe4c75796263bb57bd46ae9938226dc58eedad53670901f3b4cf0758"
+    ]
+   },
+   "rows_after": 1,
+   "rows_before": 0,
+   "rows_changed": [
+    [
+     "observation_alerts",
+     "4c74c9ef8b9cf2de860ee133ab0c7a9f84c015d8944813de99e4e0b6132677ed",
+     ""
+    ]
+   ],
+   "sink_state": "available",
+   "stored": [
+    [
+     "operations.sink_unavailable",
+     "recorded",
+     "4c74c9ef8b9cf2de860ee133ab0c7a9f84c015d8944813de99e4e0b6132677ed"
+    ]
+   ],
+   "units": {
+    "COMMIT": 1,
+    "ROLLBACK": 1
+   },
+   "violations": []
+  },
+  "b_not_applicable": {
+   "changed_digests": [
+    [
+     "observation_alerts",
+     "633a9918fe4c75796263bb57bd46ae9938226dc58eedad53670901f3b4cf0758",
+     "5ebd32e4b0d0b0f1d2220b7c7af39aa400376c0d1173a522cbec69130915c905"
+    ]
+   ],
+   "committed_before_effect": [],
+   "counters": {
+    "alerts_recorded": 1
+   },
+   "discarded_writes": [],
+   "durable_units": 1,
+   "durable_writes": [
+    [
+     "observation_alerts",
+     ""
+    ]
+   ],
+   "effects": [],
+   "not_applicable": "M7 application/observations.py:376-412 builds the alert from (kind, key) and keys its row by its own event id: no owner token, fence or version is read, so no writer can be stale",
+   "outcome": {
+    "ok": true,
+    "value": {
+     "attributes": {
+      "dropped": 1,
+      "error_type": "X"
+     },
+     "category": "operations",
+     "causation_id": null,
+     "correlation_id": null,
+     "event_id": "633a9918fe4c75796263bb57bd46ae9938226dc58eedad53670901f3b4cf0758",
+     "event_type": "operations.spool_append_failed",
+     "evidence_refs": [],
+     "execution": {
+      "attempt": null,
+      "bucket": null,
+      "generation": null,
+      "invocation_id": null,
+      "kind": "system",
+      "process_run_id": "000000000000000000000000000000c0",
+      "provider": null,
+      "revision": null,
+      "role": "s9-units",
+      "session_id": null,
+      "task_id": null
+     },
+     "notification": {
+      "channel": "postgres:observation_alerts",
+      "status": "recorded"
+     },
+     "observed_at": "2026-01-01T00:00:00+00:00",
+     "occurred_at": null,
+     "outcome": "observed",
+     "payload_hash": "e6cd6d192a7adf4ed8ecd4f50177b53804e199579bbf038c9fe3dda462eb4128",
+     "reason_code": null,
+     "redaction": {
+      "applied": true,
+      "findings": 0,
+      "truncated": 0
+     },
+     "schema_version": "1.0",
+     "sequence": {
+      "basis": "unassigned",
+      "number": null,
+      "process_run_id": "000000000000000000000000000000c0"
+     },
+     "severity": "warning",
+     "source": {
+      "component": "s9-units",
+      "host": "fixture-host",
+      "pid": 1
+     },
+     "suppressed_before": 0
+    }
+   },
+   "pending": [],
+   "pending_file": {},
+   "rows_after": 1,
+   "rows_before": 0,
+   "rows_changed": [
+    [
+     "observation_alerts",
+     "633a9918fe4c75796263bb57bd46ae9938226dc58eedad53670901f3b4cf0758",
+     ""
+    ]
+   ],
+   "sink_state": "available",
+   "stored": [
+    [
+     "operations.spool_append_failed",
+     "recorded",
+     "633a9918fe4c75796263bb57bd46ae9938226dc58eedad53670901f3b4cf0758"
+    ]
+   ],
+   "units": {
+    "COMMIT": 1
+   },
+   "violations": []
+  },
+  "c_repeat_after_window": {
+   "changed_digests": [
+    [
+     "observation_alerts",
+     "954e0c55c30cd88e23832ab87a310eb9518efcee0c374b8fe8b0c0afc166c78e",
+     "b41b865647cdd9425a3d19292cbea9ec602ef4df0a4cb24c40022c61d9ad1e04"
+    ]
+   ],
+   "committed_before_effect": [],
+   "counters": {
+    "alerts_recorded": 2
+   },
+   "discarded_writes": [],
+   "durable_units": 1,
+   "durable_writes": [
+    [
+     "observation_alerts",
+     ""
+    ]
+   ],
+   "effects": [],
+   "first": {
+    "ok": true,
+    "value": {
+     "attributes": {
+      "dropped": 1,
+      "error_type": "X"
+     },
+     "category": "operations",
+     "causation_id": null,
+     "correlation_id": null,
+     "event_id": "633a9918fe4c75796263bb57bd46ae9938226dc58eedad53670901f3b4cf0758",
+     "event_type": "operations.spool_append_failed",
+     "evidence_refs": [],
+     "execution": {
+      "attempt": null,
+      "bucket": null,
+      "generation": null,
+      "invocation_id": null,
+      "kind": "system",
+      "process_run_id": "000000000000000000000000000000c0",
+      "provider": null,
+      "revision": null,
+      "role": "s9-units",
+      "session_id": null,
+      "task_id": null
+     },
+     "notification": {
+      "channel": "postgres:observation_alerts",
+      "status": "recorded"
+     },
+     "observed_at": "2026-01-01T00:00:00+00:00",
+     "occurred_at": null,
+     "outcome": "observed",
+     "payload_hash": "e6cd6d192a7adf4ed8ecd4f50177b53804e199579bbf038c9fe3dda462eb4128",
+     "reason_code": null,
+     "redaction": {
+      "applied": true,
+      "findings": 0,
+      "truncated": 0
+     },
+     "schema_version": "1.0",
+     "sequence": {
+      "basis": "unassigned",
+      "number": null,
+      "process_run_id": "000000000000000000000000000000c0"
+     },
+     "severity": "warning",
+     "source": {
+      "component": "s9-units",
+      "host": "fixture-host",
+      "pid": 1
+     },
+     "suppressed_before": 0
+    }
+   },
+   "outcome": {
+    "ok": true,
+    "value": {
+     "attributes": {
+      "dropped": 1,
+      "error_type": "X"
+     },
+     "category": "operations",
+     "causation_id": null,
+     "correlation_id": null,
+     "event_id": "954e0c55c30cd88e23832ab87a310eb9518efcee0c374b8fe8b0c0afc166c78e",
+     "event_type": "operations.spool_append_failed",
+     "evidence_refs": [],
+     "execution": {
+      "attempt": null,
+      "bucket": null,
+      "generation": null,
+      "invocation_id": null,
+      "kind": "system",
+      "process_run_id": "000000000000000000000000000000c0",
+      "provider": null,
+      "revision": null,
+      "role": "s9-units",
+      "session_id": null,
+      "task_id": null
+     },
+     "notification": {
+      "channel": "postgres:observation_alerts",
+      "status": "recorded"
+     },
+     "observed_at": "2026-01-01T00:00:02+00:00",
+     "occurred_at": null,
+     "outcome": "observed",
+     "payload_hash": "e6cd6d192a7adf4ed8ecd4f50177b53804e199579bbf038c9fe3dda462eb4128",
+     "reason_code": null,
+     "redaction": {
+      "applied": true,
+      "findings": 0,
+      "truncated": 0
+     },
+     "schema_version": "1.0",
+     "sequence": {
+      "basis": "unassigned",
+      "number": null,
+      "process_run_id": "000000000000000000000000000000c0"
+     },
+     "severity": "warning",
+     "source": {
+      "component": "s9-units",
+      "host": "fixture-host",
+      "pid": 1
+     },
+     "suppressed_before": 0
+    }
+   },
+   "pending": [],
+   "pending_file": {},
+   "rows_after": 2,
+   "rows_before": 1,
+   "rows_changed": [
+    [
+     "observation_alerts",
+     "954e0c55c30cd88e23832ab87a310eb9518efcee0c374b8fe8b0c0afc166c78e",
+     ""
+    ]
+   ],
+   "sink_state": "available",
+   "stored": [
+    [
+     "operations.spool_append_failed",
+     "recorded",
+     "633a9918fe4c75796263bb57bd46ae9938226dc58eedad53670901f3b4cf0758"
+    ],
+    [
+     "operations.spool_append_failed",
+     "recorded",
+     "954e0c55c30cd88e23832ab87a310eb9518efcee0c374b8fe8b0c0afc166c78e"
+    ]
+   ],
+   "units": {
+    "COMMIT": 1
+   },
+   "violations": []
+  },
+  "c_repeat_in_window": {
+   "changed_digests": [],
+   "committed_before_effect": [],
+   "counters": {
+    "alerts_recorded": 1,
+    "alerts_suppressed": 1
+   },
+   "discarded_writes": [],
+   "durable_units": 0,
+   "durable_writes": [],
+   "effects": [],
+   "first": {
+    "ok": true,
+    "value": {
+     "attributes": {
+      "dropped": 1,
+      "error_type": "X"
+     },
+     "category": "operations",
+     "causation_id": null,
+     "correlation_id": null,
+     "event_id": "633a9918fe4c75796263bb57bd46ae9938226dc58eedad53670901f3b4cf0758",
+     "event_type": "operations.spool_append_failed",
+     "evidence_refs": [],
+     "execution": {
+      "attempt": null,
+      "bucket": null,
+      "generation": null,
+      "invocation_id": null,
+      "kind": "system",
+      "process_run_id": "000000000000000000000000000000c0",
+      "provider": null,
+      "revision": null,
+      "role": "s9-units",
+      "session_id": null,
+      "task_id": null
+     },
+     "notification": {
+      "channel": "postgres:observation_alerts",
+      "status": "recorded"
+     },
+     "observed_at": "2026-01-01T00:00:00+00:00",
+     "occurred_at": null,
+     "outcome": "observed",
+     "payload_hash": "e6cd6d192a7adf4ed8ecd4f50177b53804e199579bbf038c9fe3dda462eb4128",
+     "reason_code": null,
+     "redaction": {
+      "applied": true,
+      "findings": 0,
+      "truncated": 0
+     },
+     "schema_version": "1.0",
+     "sequence": {
+      "basis": "unassigned",
+      "number": null,
+      "process_run_id": "000000000000000000000000000000c0"
+     },
+     "severity": "warning",
+     "source": {
+      "component": "s9-units",
+      "host": "fixture-host",
+      "pid": 1
+     },
+     "suppressed_before": 0
+    }
+   },
+   "outcome": {
+    "ok": true,
+    "value": null
+   },
+   "pending": [],
+   "pending_file": {},
+   "rows_after": 1,
+   "rows_before": 1,
+   "rows_changed": [],
+   "sink_state": "available",
+   "stored": [
+    [
+     "operations.spool_append_failed",
+     "recorded",
+     "633a9918fe4c75796263bb57bd46ae9938226dc58eedad53670901f3b4cf0758"
+    ]
+   ],
+   "units": {},
+   "violations": []
+  },
+  "c_replay_after_failure": {
+   "changed_digests": [
+    [
+     "observation_alerts",
+     "59a2438b0f286908d816ced7dbade9bccf847f2278f74cd51f2ba03ff203e150",
+     "89229ecb39f353599f32d9fe6f2f0dfff18baaff2a17f70f9d0332aa6f736ca6"
+    ],
+    [
+     "observation_alerts",
+     "633a9918fe4c75796263bb57bd46ae9938226dc58eedad53670901f3b4cf0758",
+     "75736ad9bb482fd0960583e3d0cec60ebb80ca7cf78aeb53f4bd8df5240c0af8"
+    ]
+   ],
+   "committed_before_effect": [
+    [
+     "directory.write_pending_alerts",
+     [
+      [
+       "observation_alerts",
+       ""
+      ]
+     ]
+    ]
+   ],
+   "counters": {
+    "alerts_pending": 1,
+    "alerts_recorded": 2,
+    "alerts_replayed": 1,
+    "emitted": 1
+   },
+   "discarded_writes": [],
+   "durable_units": 1,
+   "durable_writes": [
+    [
+     "observation_alerts",
+     ""
+    ]
+   ],
+   "effects": [
+    [
+     "directory.write_pending_alerts",
+     0
+    ]
+   ],
+   "first": {
+    "ok": true,
+    "value": {
+     "attributes": {
+      "dropped": 1,
+      "error_type": "X"
+     },
+     "category": "operations",
+     "causation_id": null,
+     "correlation_id": null,
+     "event_id": "633a9918fe4c75796263bb57bd46ae9938226dc58eedad53670901f3b4cf0758",
+     "event_type": "operations.spool_append_failed",
+     "evidence_refs": [],
+     "execution": {
+      "attempt": null,
+      "bucket": null,
+      "generation": null,
+      "invocation_id": null,
+      "kind": "system",
+      "process_run_id": "000000000000000000000000000000c0",
+      "provider": null,
+      "revision": null,
+      "role": "s9-units",
+      "session_id": null,
+      "task_id": null
+     },
+     "notification": {
+      "channel": null,
+      "status": "pending"
+     },
+     "observed_at": "2026-01-01T00:00:00+00:00",
+     "occurred_at": null,
+     "outcome": "observed",
+     "payload_hash": "e6cd6d192a7adf4ed8ecd4f50177b53804e199579bbf038c9fe3dda462eb4128",
+     "reason_code": null,
+     "redaction": {
+      "applied": true,
+      "findings": 0,
+      "truncated": 0
+     },
+     "schema_version": "1.0",
+     "sequence": {
+      "basis": "unassigned",
+      "number": null,
+      "process_run_id": "000000000000000000000000000000c0"
+     },
+     "severity": "warning",
+     "source": {
+      "component": "s9-units",
+      "host": "fixture-host",
+      "pid": 1
+     },
+     "suppressed_before": 0
+    }
+   },
+   "first_pending": [
+    "633a9918fe4c75796263bb57bd46ae9938226dc58eedad53670901f3b4cf0758"
+   ],
+   "outcome": {
+    "ok": true,
+    "value": {
+     "attributes": {
+      "dropped": 1,
+      "error_type": "X"
+     },
+     "category": "operations",
+     "causation_id": null,
+     "correlation_id": null,
+     "event_id": "59a2438b0f286908d816ced7dbade9bccf847f2278f74cd51f2ba03ff203e150",
+     "event_type": "operations.spool_append_failed",
+     "evidence_refs": [],
+     "execution": {
+      "attempt": null,
+      "bucket": null,
+      "generation": null,
+      "invocation_id": null,
+      "kind": "system",
+      "process_run_id": "000000000000000000000000000000c0",
+      "provider": null,
+      "revision": null,
+      "role": "s9-units",
+      "session_id": null,
+      "task_id": null
+     },
+     "notification": {
+      "channel": "postgres:observation_alerts",
+      "status": "recorded"
+     },
+     "observed_at": "2026-01-01T00:00:05+00:00",
+     "occurred_at": null,
+     "outcome": "observed",
+     "payload_hash": "e6cd6d192a7adf4ed8ecd4f50177b53804e199579bbf038c9fe3dda462eb4128",
+     "reason_code": null,
+     "redaction": {
+      "applied": true,
+      "findings": 0,
+      "truncated": 0
+     },
+     "schema_version": "1.0",
+     "sequence": {
+      "basis": "unassigned",
+      "number": null,
+      "process_run_id": "000000000000000000000000000000c0"
+     },
+     "severity": "warning",
+     "source": {
+      "component": "s9-units",
+      "host": "fixture-host",
+      "pid": 1
+     },
+     "suppressed_before": 0
+    }
+   },
+   "pending": [],
+   "pending_file": {},
+   "rows_after": 3,
+   "rows_before": 1,
+   "rows_changed": [
+    [
+     "observation_alerts",
+     "59a2438b0f286908d816ced7dbade9bccf847f2278f74cd51f2ba03ff203e150",
+     ""
+    ],
+    [
+     "observation_alerts",
+     "633a9918fe4c75796263bb57bd46ae9938226dc58eedad53670901f3b4cf0758",
+     ""
+    ]
+   ],
+   "sink_state": "available",
+   "stored": [
+    [
+     "operations.sink_unavailable",
+     "recorded",
+     "4c74c9ef8b9cf2de860ee133ab0c7a9f84c015d8944813de99e4e0b6132677ed"
+    ],
+    [
+     "operations.spool_append_failed",
+     "recorded",
+     "59a2438b0f286908d816ced7dbade9bccf847f2278f74cd51f2ba03ff203e150"
+    ],
+    [
+     "operations.spool_append_failed",
+     "recorded_after_recovery",
+     "633a9918fe4c75796263bb57bd46ae9938226dc58eedad53670901f3b4cf0758"
+    ]
+   ],
+   "units": {
+    "COMMIT": 1
+   },
+   "violations": []
+  },
+  "success": {
+   "changed_digests": [
+    [
+     "observation_alerts",
+     "633a9918fe4c75796263bb57bd46ae9938226dc58eedad53670901f3b4cf0758",
+     "5ebd32e4b0d0b0f1d2220b7c7af39aa400376c0d1173a522cbec69130915c905"
+    ]
+   ],
+   "committed_before_effect": [],
+   "counters": {
+    "alerts_recorded": 1
+   },
+   "discarded_writes": [],
+   "durable_units": 1,
+   "durable_writes": [
+    [
+     "observation_alerts",
+     ""
+    ]
+   ],
+   "effects": [],
+   "outcome": {
+    "ok": true,
+    "value": {
+     "attributes": {
+      "dropped": 1,
+      "error_type": "X"
+     },
+     "category": "operations",
+     "causation_id": null,
+     "correlation_id": null,
+     "event_id": "633a9918fe4c75796263bb57bd46ae9938226dc58eedad53670901f3b4cf0758",
+     "event_type": "operations.spool_append_failed",
+     "evidence_refs": [],
+     "execution": {
+      "attempt": null,
+      "bucket": null,
+      "generation": null,
+      "invocation_id": null,
+      "kind": "system",
+      "process_run_id": "000000000000000000000000000000c0",
+      "provider": null,
+      "revision": null,
+      "role": "s9-units",
+      "session_id": null,
+      "task_id": null
+     },
+     "notification": {
+      "channel": "postgres:observation_alerts",
+      "status": "recorded"
+     },
+     "observed_at": "2026-01-01T00:00:00+00:00",
+     "occurred_at": null,
+     "outcome": "observed",
+     "payload_hash": "e6cd6d192a7adf4ed8ecd4f50177b53804e199579bbf038c9fe3dda462eb4128",
+     "reason_code": null,
+     "redaction": {
+      "applied": true,
+      "findings": 0,
+      "truncated": 0
+     },
+     "schema_version": "1.0",
+     "sequence": {
+      "basis": "unassigned",
+      "number": null,
+      "process_run_id": "000000000000000000000000000000c0"
+     },
+     "severity": "warning",
+     "source": {
+      "component": "s9-units",
+      "host": "fixture-host",
+      "pid": 1
+     },
+     "suppressed_before": 0
+    }
+   },
+   "pending": [],
+   "pending_file": {},
+   "rows_after": 1,
+   "rows_before": 0,
+   "rows_changed": [
+    [
+     "observation_alerts",
+     "633a9918fe4c75796263bb57bd46ae9938226dc58eedad53670901f3b4cf0758",
+     ""
+    ]
+   ],
+   "sink_state": "available",
+   "stored": [
+    [
+     "operations.spool_append_failed",
+     "recorded",
+     "633a9918fe4c75796263bb57bd46ae9938226dc58eedad53670901f3b4cf0758"
+    ]
+   ],
+   "units": {
+    "COMMIT": 1
+   },
+   "violations": []
+  }
+ },
+ "resolve_termination": {
+  "a_failure_at_audit": {
+   "audits": [],
+   "changed_digests": [],
+   "committed_before_effect": [],
+   "counters": {
+    "emitted": 1,
+    "terminations": 1
+   },
+   "discarded_writes": [
+    [
+     "observation_terminations",
+     "resolved"
+    ]
+   ],
+   "durable_units": 0,
+   "durable_writes": [],
+   "effects": [],
+   "outcome": {
+    "message": "injected failure at observation_audit",
+    "refused": "Injected"
+   },
+   "pending_local": [
+    "b137f6353cfa551e69731072cd230c51ad5ffca1a106a75869c35fa65e59619a"
+   ],
+   "rows_after": 1,
+   "rows_before": 1,
+   "rows_changed": [],
+   "termination": [
+    [
+     "b137f6353cfa551e69731072cd230c51ad5ffca1a106a75869c35fa65e59619a",
+     "pending_reconciliation",
+     null,
+     null
+    ]
+   ],
+   "units": {
+    "ROLLBACK": 1
+   },
+   "violations": []
+  },
+  "b_mover_resolved_different": {
+   "after_move": {
+    "durable_writes": [],
+    "writes": 0
+   },
+   "audits": [
+    "development.reconciliation_resolved"
+   ],
+   "changed_digests": [
+    [
+     "observation_audit",
+     "3dbb3b55410fb689fbe2158339ace059292d981600e451a05ceca1c2f2b4e6cc",
+     "89a3931c210edd8f9f10a9ccb17f4821e1d3a579e2451441c19b862ea3cb7469"
+    ],
+    [
+     "observation_terminations",
+     "b137f6353cfa551e69731072cd230c51ad5ffca1a106a75869c35fa65e59619a",
+     "73adb7cd4abd0af194cc1cf07ffba11d66035933e130df26aba04c8fc25922cf"
+    ]
+   ],
+   "committed_before_effect": [],
+   "counters": {
+    "emitted": 1,
+    "terminations": 1
+   },
+   "discarded_writes": [],
+   "durable_units": 0,
+   "durable_writes": [],
+   "effects": [],
+   "outcome": {
+    "message": "Termination already resolved with a different decision",
+    "refused": "ContractError"
+   },
+   "pending_local": [],
+   "rows_after": 2,
+   "rows_before": 1,
+   "rows_changed": [
+    [
+     "observation_audit",
+     "3dbb3b55410fb689fbe2158339ace059292d981600e451a05ceca1c2f2b4e6cc",
+     ""
+    ],
+    [
+     "observation_terminations",
+     "b137f6353cfa551e69731072cd230c51ad5ffca1a106a75869c35fa65e59619a",
+     "resolved"
+    ]
+   ],
+   "termination": [
+    [
+     "b137f6353cfa551e69731072cd230c51ad5ffca1a106a75869c35fa65e59619a",
+     "resolved",
+     "discard",
+     "op-2"
+    ]
+   ],
+   "units": {
+    "ROLLBACK": 1
+   },
+   "violations": []
+  },
+  "c_redelivered_after_interrupted_finalize": {
+   "audits": [
+    "development.reconciliation_resolved"
+   ],
+   "changed_digests": [],
+   "committed_before_effect": [
+    [
+     "directory.resolve_termination",
+     []
+    ]
+   ],
+   "counters": {
+    "audited": 1,
+    "emitted": 1,
+    "reconciliation_redelivered": 1,
+    "terminations": 1
+   },
+   "discarded_writes": [],
+   "durable_units": 0,
+   "durable_writes": [],
+   "effects": [
+    [
+     "directory.resolve_termination",
+     0
+    ]
+   ],
+   "first": {
+    "message": "interrupted after the commit",
+    "refused": "OSError"
+   },
+   "first_pending": [
+    "b137f6353cfa551e69731072cd230c51ad5ffca1a106a75869c35fa65e59619a"
+   ],
+   "outcome": {
+    "ok": true,
+    "value": {
+     "attempt": 1,
+     "boundary": "settlement",
+     "bucket": "tasks",
+     "error": "RuntimeError: message_sha256=20b9458ca349a629",
+     "error_type": "RuntimeError",
+     "evidence_refs": [],
+     "generation": 1,
+     "invocation_outcome": "unknown",
+     "note": "provider entered; outcome not durably recorded; do not re-execute before an operator reconciles",
+     "process_run_id": "000000000000000000000000000000c0",
+     "record_id": "b137f6353cfa551e69731072cd230c51ad5ffca1a106a75869c35fa65e59619a",
+     "recorded_at": "2026-01-01T00:00:00+00:00",
+     "reservation_id": "r1",
+     "resolution": {
+      "at": "2026-01-01T00:00:03+00:00",
+      "authority": "operator_label_not_authenticated",
+      "operator": "op-1",
+      "reason": {
+       "redaction_findings": 0,
+       "sha256": "cc46d40ac357ebd3a8a55a1e707a773db5d6077b102e67663bebab8ad4f6131a",
+       "text": "checked",
+       "truncated": false
+      },
+      "resolution": "rerun"
+     },
+     "status": "resolved",
+     "stream_hash": null,
+     "task_id": "t1"
+    }
+   },
+   "pending_local": [],
+   "rows_after": 2,
+   "rows_before": 2,
+   "rows_changed": [],
+   "termination": [
+    [
+     "b137f6353cfa551e69731072cd230c51ad5ffca1a106a75869c35fa65e59619a",
+     "resolved",
+     "rerun",
+     "op-1"
+    ]
+   ],
+   "units": {
+    "COMMIT": 1
+   },
+   "violations": []
+  },
+  "c_redelivered_after_success": {
+   "audits": [
+    "development.reconciliation_resolved"
+   ],
+   "changed_digests": [],
+   "committed_before_effect": [],
+   "counters": {
+    "audited": 1,
+    "emitted": 1,
+    "reconciliation_redelivered": 1,
+    "terminations": 1
+   },
+   "discarded_writes": [],
+   "durable_units": 0,
+   "durable_writes": [],
+   "effects": [],
+   "first": {
+    "ok": true,
+    "value": {
+     "attempt": 1,
+     "boundary": "settlement",
+     "bucket": "tasks",
+     "error": "RuntimeError: message_sha256=20b9458ca349a629",
+     "error_type": "RuntimeError",
+     "evidence_refs": [],
+     "generation": 1,
+     "invocation_outcome": "unknown",
+     "note": "provider entered; outcome not durably recorded; do not re-execute before an operator reconciles",
+     "process_run_id": "000000000000000000000000000000c0",
+     "record_id": "b137f6353cfa551e69731072cd230c51ad5ffca1a106a75869c35fa65e59619a",
+     "recorded_at": "2026-01-01T00:00:00+00:00",
+     "reservation_id": "r1",
+     "resolution": {
+      "at": "2026-01-01T00:00:03+00:00",
+      "authority": "operator_label_not_authenticated",
+      "operator": "op-1",
+      "reason": {
+       "redaction_findings": 0,
+       "sha256": "cc46d40ac357ebd3a8a55a1e707a773db5d6077b102e67663bebab8ad4f6131a",
+       "text": "checked",
+       "truncated": false
+      },
+      "resolution": "rerun"
+     },
+     "status": "resolved",
+     "stream_hash": null,
+     "task_id": "t1"
+    }
+   },
+   "first_pending": [],
+   "outcome": {
+    "ok": true,
+    "value": {
+     "attempt": 1,
+     "boundary": "settlement",
+     "bucket": "tasks",
+     "error": "RuntimeError: message_sha256=20b9458ca349a629",
+     "error_type": "RuntimeError",
+     "evidence_refs": [],
+     "generation": 1,
+     "invocation_outcome": "unknown",
+     "note": "provider entered; outcome not durably recorded; do not re-execute before an operator reconciles",
+     "process_run_id": "000000000000000000000000000000c0",
+     "record_id": "b137f6353cfa551e69731072cd230c51ad5ffca1a106a75869c35fa65e59619a",
+     "recorded_at": "2026-01-01T00:00:00+00:00",
+     "reservation_id": "r1",
+     "resolution": {
+      "at": "2026-01-01T00:00:03+00:00",
+      "authority": "operator_label_not_authenticated",
+      "operator": "op-1",
+      "reason": {
+       "redaction_findings": 0,
+       "sha256": "cc46d40ac357ebd3a8a55a1e707a773db5d6077b102e67663bebab8ad4f6131a",
+       "text": "checked",
+       "truncated": false
+      },
+      "resolution": "rerun"
+     },
+     "status": "resolved",
+     "stream_hash": null,
+     "task_id": "t1"
+    }
+   },
+   "pending_local": [],
+   "rows_after": 2,
+   "rows_before": 2,
+   "rows_changed": [],
+   "termination": [
+    [
+     "b137f6353cfa551e69731072cd230c51ad5ffca1a106a75869c35fa65e59619a",
+     "resolved",
+     "rerun",
+     "op-1"
+    ]
+   ],
+   "units": {
+    "COMMIT": 1
+   },
+   "violations": []
+  },
+  "success": {
+   "audits": [
+    "development.reconciliation_resolved"
+   ],
+   "changed_digests": [
+    [
+     "observation_audit",
+     "3dbb3b55410fb689fbe2158339ace059292d981600e451a05ceca1c2f2b4e6cc",
+     "af7383228d1f28155660d6141a895d320e940dc185705a3676da913bebd55f00"
+    ],
+    [
+     "observation_terminations",
+     "b137f6353cfa551e69731072cd230c51ad5ffca1a106a75869c35fa65e59619a",
+     "c3abe7cb670a1ec5f742d0353837301b3a2d8d85cb0f8f2c70e2d9a3ac541d63"
+    ]
+   ],
+   "committed_before_effect": [
+    [
+     "directory.resolve_termination",
+     [
+      [
+       "observation_audit",
+       ""
+      ],
+      [
+       "observation_terminations",
+       "resolved"
+      ]
+     ]
+    ]
+   ],
+   "counters": {
+    "audited": 1,
+    "emitted": 1,
+    "terminations": 1
+   },
+   "discarded_writes": [],
+   "durable_units": 1,
+   "durable_writes": [
+    [
+     "observation_audit",
+     ""
+    ],
+    [
+     "observation_terminations",
+     "resolved"
+    ]
+   ],
+   "effects": [
+    [
+     "directory.resolve_termination",
+     0
+    ]
+   ],
+   "outcome": {
+    "ok": true,
+    "value": {
+     "attempt": 1,
+     "boundary": "settlement",
+     "bucket": "tasks",
+     "error": "RuntimeError: message_sha256=20b9458ca349a629",
+     "error_type": "RuntimeError",
+     "evidence_refs": [],
+     "generation": 1,
+     "invocation_outcome": "unknown",
+     "note": "provider entered; outcome not durably recorded; do not re-execute before an operator reconciles",
+     "process_run_id": "000000000000000000000000000000c0",
+     "record_id": "b137f6353cfa551e69731072cd230c51ad5ffca1a106a75869c35fa65e59619a",
+     "recorded_at": "2026-01-01T00:00:00+00:00",
+     "reservation_id": "r1",
+     "resolution": {
+      "at": "2026-01-01T00:00:03+00:00",
+      "authority": "operator_label_not_authenticated",
+      "operator": "op-1",
+      "reason": {
+       "redaction_findings": 0,
+       "sha256": "cc46d40ac357ebd3a8a55a1e707a773db5d6077b102e67663bebab8ad4f6131a",
+       "text": "checked",
+       "truncated": false
+      },
+      "resolution": "rerun"
+     },
+     "status": "resolved",
+     "stream_hash": null,
+     "task_id": "t1"
+    }
+   },
+   "pending_local": [],
+   "rows_after": 2,
+   "rows_before": 1,
+   "rows_changed": [
+    [
+     "observation_audit",
+     "3dbb3b55410fb689fbe2158339ace059292d981600e451a05ceca1c2f2b4e6cc",
+     ""
+    ],
+    [
+     "observation_terminations",
+     "b137f6353cfa551e69731072cd230c51ad5ffca1a106a75869c35fa65e59619a",
+     "resolved"
+    ]
+   ],
+   "termination": [
+    [
+     "b137f6353cfa551e69731072cd230c51ad5ffca1a106a75869c35fa65e59619a",
+     "resolved",
+     "rerun",
+     "op-1"
+    ]
+   ],
+   "units": {
+    "COMMIT": 1
+   },
+   "violations": []
+  }
+ }
+}

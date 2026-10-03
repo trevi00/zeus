@@ -1,0 +1,9 @@
+{
+ "family": "effects.s9_units.pg",
+ "description": "§2.9 S9 units on a labelled disposable PostgreSQL (each side's PostgresStore, one fresh migrated schema per case, durable rows read back): Collector.collect's sink batch, Observer._record_alert's own-sink unit and Observer.resolve_termination; (a) injected failure at the unit's last write -> atomic rollback, (b) stale writer commits nothing, (c) replay adds no authority write, (d) the file effects entered at depth 0",
+ "reference_driver": "drivers/reference/s9_units.py",
+ "target_driver": "drivers/target/s9_units.py",
+ "requires": "disposable-postgresql",
+ "golden": "goldens/reference/effects.s9_units.pg.json",
+ "slice": "S9"
+}

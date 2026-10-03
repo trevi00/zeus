@@ -1,0 +1,8 @@
+{
+ "family": "effects.s9_units",
+ "description": "§2.9 S9 units on MemoryStore (DESIGN-s9-units, V9): Collector.collect's sink batch (the observations inserts, quarantine rows and conflict alert, the observation_collections receipt, the pending-alert flush in ONE transaction; then directory.acknowledge/reclaim), Observer._record_alert's own-sink unit (the alert row then the pending flush; the pending file on failure) and Observer.resolve_termination (the resolved termination row then the reconciliation_resolved audit; then the local finalize); (a) injected failure at the unit's last write -> nothing of the unit remains, no acknowledge, (b) stale writer (a rival Collector over a copy of the spool, a second operator's different decision) -> nothing committed by the call, (c) same-key replay -> no authority write, (d) the file effects entered at transaction depth 0; the real SpoolDirectory behind an effect-recording proxy, the S9 collector world's ticking clock",
+ "reference_driver": "drivers/reference/s9_units.py",
+ "target_driver": "drivers/target/s9_units.py",
+ "golden": "goldens/reference/effects.s9_units.json",
+ "slice": "S9"
+}
