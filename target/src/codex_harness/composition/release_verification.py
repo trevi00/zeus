@@ -1,7 +1,7 @@
 """Composition of the release runner: its verification environment and the wiring of the deployment adapter (DESIGN-s7 adapters-move §13).
 
 Layer: composition
-Owns: `ENVIRONMENT_KEYS` and `verification_environment` (M7 `adapters/verification.py`, moved ahead of S8; the rest of verification.py stays S8), `ExecutionContainerNaming` and `release_runner`, the wiring of `delivery.adapters.deployment.ReleaseRunner`
+Owns: `verification_environment` (M7 `adapters/verification.py`, moved ahead of S8) and `ENVIRONMENT_KEYS` (re-imported from `host_os.adapters.verification` (S8 B7a R-v1)), `ExecutionContainerNaming` and `release_runner`, the wiring of `delivery.adapters.deployment.ReleaseRunner`
 Does not own: VerificationServices, the release suite and the hooks (S8/S10) and the rebase request (S5): `release_runner` takes them as parameters (carries)
 Entry points: ENVIRONMENT_KEYS, verification_environment, ExecutionContainerNaming, release_runner
 Contracts: INV-RELEASE-001, INV-ENCODING-001, INV-HOST-DELIVERY-VERIFY-001
@@ -18,15 +18,11 @@ from codex_harness.coordination.application.events import EventJournal
 from codex_harness.delivery.adapters.deployment import ReleaseRunner
 from codex_harness.execution.domain.container_spec import LABEL, ROLE_LABEL
 from codex_harness.host_os.adapters.process_groups import python_channel_environment
+from codex_harness.host_os.adapters.verification import ENVIRONMENT_KEYS
 from codex_harness.intake.application import tickets
 from codex_harness.research.application.hook_rollback import HookRollback
 from codex_harness.review.application.release_queue import ReleaseQueue
 from codex_harness.review.application.releases import Releases
-
-ENVIRONMENT_KEYS = {"PATH", "SYSTEMROOT", "WINDIR", "COMSPEC", "PATHEXT", "TEMP", "TMP", "TMPDIR",
-    "HOME", "USERPROFILE", "LOCALAPPDATA", "APPDATA", "LANG", "LC_ALL", "UV_CACHE_DIR",
-    "PROGRAMDATA", "PROGRAMFILES", "PROGRAMFILES(X86)", "HOMEDRIVE", "HOMEPATH", "ALLUSERSPROFILE",
-    "HTTP_PROXY", "HTTPS_PROXY", "NO_PROXY", "SSL_CERT_FILE", "SSL_CERT_DIR", "REQUESTS_CA_BUNDLE"}
 
 
 def verification_environment(endpoints, environ=None):
