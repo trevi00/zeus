@@ -20,8 +20,10 @@ sys.path.insert(0, str(Path(__file__).resolve().parent))
 
 from test_s4_run_task import build, submit, task_row  # noqa: E402
 
+from codex_harness.execution.application.invocation_ledger import InvocationCapacityRefused
 from codex_harness.execution.application.run_task import _usage_split  # noqa: E402
-from codex_harness.execution.domain.invocation import usage_record  # noqa: E402
+from codex_harness.execution.domain.invocation import usage_record
+from codex_harness.kernel.errors import ContractError  # noqa: E402
 from codex_harness.observation.domain.event_catalog import (  # noqa: E402
     check_catalog_attributes,
     load_catalog,
@@ -139,3 +141,29 @@ def test_an_event_the_registry_refuses_is_dropped_and_counted_never_the_task(tmp
     assert splits(run_task) == []
     assert run_task.observer.counters["refused"] >= 1
     assert task_row(store)["status"] == "succeeded"
+
+
+def test_a_capacity_refusal_is_observed_as_the_invocation_budget_and_still_refuses(tmp_path):
+    run_task, workflow, store, _, calls = build(tmp_path)
+    run_task.invocations.capacity = 0  # every reservation now meets the capacity refusal
+    submit(workflow)
+    seen = []
+    original = run_task.invocations.reserve
+
+    def reserve(*args, **kwargs):
+        try:
+            return original(*args, **kwargs)
+        except ContractError as exc:
+            seen.append(exc)
+            raise
+
+    run_task.invocations.reserve = reserve
+    run_task.execute_one("lead:improvement")  # the ordinary failure disposition handles the refusal, as before
+    assert not calls and len(seen) == 1 and type(seen[0]) is InvocationCapacityRefused
+    assert isinstance(seen[0], ContractError) and "Invocation capacity is reserved by other executions" in str(seen[0])
+    [event] = [r for r in spool(run_task) if r["event_type"] == "operations.capacity_refused"]
+    assert event["attributes"] == {"scope": "invocation_budget", "refusal_reason": "budget_exhausted",
+                                   "retry_after_seconds": None}
+    assert event["severity"] == "warning" and event["outcome"] == "blocked"
+    check_catalog_attributes("operations.capacity_refused", event["attributes"])
+    assert splits(run_task) == []

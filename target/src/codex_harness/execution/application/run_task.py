@@ -34,6 +34,7 @@ import re
 from pathlib import Path
 
 from codex_harness.context.domain.composition import CompositionRequest, evidence_json, recovery_bound
+from codex_harness.execution.application.invocation_ledger import InvocationCapacityRefused
 from codex_harness.execution.domain.container_spec import (
     CLAUDE_IMPL_RW,
     ROLE_PROFILES,
@@ -698,18 +699,27 @@ class RunTask:
                     return self.observer.for_lease(lease, provider=assignment.identity, invocation_id=invocation_id,
                                                    revision=basis_revision)
                 return self.observer.system(revision=basis_revision, role=agent)
-            reservation = (self.invocations.reserve(
-                lease, request=request, budget_seconds=timeout, stage=stage,
-                guard=lambda tx: self.ledger.owned(tx, lease),
-                audit=lambda tx, row: (self.observer.guard_reservation(tx, lease),
-                    self.observer.mark_unconfirmed(tx, lease, reservation_id=row["id"]),
-                    self.observer.audit(
-                    tx, "development.invocation_reserved", "started", identity=["reservation", row["id"], "reserved"],
-                    execution=observed_execution(row["id"]), correlation_id=correlation, causation_id=key,
-                    attributes={"reservation_id": row["id"], "stage": stage, "transport": assignment.transport,
-                                "requested_model": requested_model, "budget_seconds": float(timeout),
-                                "workload": workload})))
-                if lease else None)
+            try:
+                reservation = (self.invocations.reserve(
+                    lease, request=request, budget_seconds=timeout, stage=stage,
+                    guard=lambda tx: self.ledger.owned(tx, lease),
+                    audit=lambda tx, row: (self.observer.guard_reservation(tx, lease),
+                        self.observer.mark_unconfirmed(tx, lease, reservation_id=row["id"]),
+                        self.observer.audit(
+                        tx, "development.invocation_reserved", "started", identity=["reservation", row["id"], "reserved"],
+                        execution=observed_execution(row["id"]), correlation_id=correlation, causation_id=key,
+                        attributes={"reservation_id": row["id"], "stage": stage, "transport": assignment.transport,
+                                    "requested_model": requested_model, "budget_seconds": float(timeout),
+                                    "workload": workload})))
+                    if lease else None)
+            except InvocationCapacityRefused:
+                # X1b-1 (R-x1b1-1, DESIGN-s9-X §1.3): the capacity of the invocation ledger is the invocation
+                # budget. Observed through the spool; the same exception object is re-raised unchanged.
+                self.observer.emit("operations.capacity_refused", "blocked", execution=observed_execution(),
+                                   correlation_id=correlation, causation_id=key, severity="warning",
+                                   attributes={"scope": "invocation_budget", "refusal_reason": "budget_exhausted",
+                                               "retry_after_seconds": None})
+                raise
             reservation_id = reservation["id"] if reservation else None
             admission = None
             # INV-OBSERVATION-001: `provider_entered` marks the external-effect boundary. Before it,
