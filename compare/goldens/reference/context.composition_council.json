@@ -1,0 +1,1102 @@
+{
+ "conductor_all_inline": {
+  "artifact_puts": [
+   {
+    "ref": "sha256:a869af5584000849af81b975d4f1d98e7caf8a2ef5aea0fb7673808555c8e0e3",
+    "source": "task:task-conductor"
+   },
+   {
+    "ref": "sha256:7244f8c8cdd2739b4bf6c982acf001d1ebd408f86b618fa85520c1abae9806d6",
+    "source": "context:task-conductor"
+   }
+  ],
+  "context_measurement": {
+   "delivery_bytes": 7823,
+   "delivery_overhead_bytes": 1276,
+   "host_overhead_bytes": 2165,
+   "limit_bytes": 40960,
+   "payload_bytes": 6547,
+   "policy": "urn:zeus:council-input:2",
+   "rendered_bytes": 9988,
+   "required_bytes": 9988,
+   "reserved": 8192,
+   "reserved_bytes": 0,
+   "schema": "urn:zeus:council-input:2",
+   "sections": {
+    "dba_report": 713,
+    "improvement_proposal": 4285,
+    "packet": 779,
+    "research_proposal": 770
+   },
+   "unit": "utf8_bytes_of_canonical_json",
+   "usable": 40960,
+   "window": 49152
+  },
+  "delivered_prompts": [
+   {
+    "bytes": 9988,
+    "equals_packet_render": true,
+    "layout": {
+     "correction_feedback_sha256": null,
+     "council_delivery_sha256": "523eb069f42dfa91af903d5f1dce5b715c85d4a6d2fb3c7849afd90e753541e8",
+     "evidence_ids": [],
+     "external_context_keys": [
+      "reader_argv_prefix",
+      "ref"
+     ],
+     "reader_has_operations": false,
+     "reader_sha256": "ced33d17f996286aed118445fc2301eb6dc6a52ac1755d7cefbc464a31380650",
+     "recovery": {
+      "sources": {}
+     },
+     "required_keys": [
+      "acceptance_criteria",
+      "artifact_reader",
+      "council_delivery",
+      "external_context",
+      "objective",
+      "policy",
+      "project_skills",
+      "recovery",
+      "research_context",
+      "role",
+      "role_context",
+      "versions"
+     ],
+     "task_contract": null
+    },
+    "sha256": "f524b8787a3056c8893bb29b7722c8984c9b74efa76b891a21319262f4b6b853"
+   }
+  ],
+  "packets": [
+   {
+    "agent_id": "conductor",
+    "bytes": 10131,
+    "canonical_bytes": true,
+    "compiler_version": "1",
+    "estimated_tokens": 9988,
+    "estimated_tokens_is_rendered_utf8_bytes": true,
+    "evidence_ids": [],
+    "evidence_priorities_trust": [],
+    "fields": [
+     "agent_id",
+     "compiler_version",
+     "estimated_tokens",
+     "evidence",
+     "manifest_hash",
+     "omitted",
+     "required",
+     "snapshot",
+     "task_id"
+    ],
+    "manifest_hash": "bf3506054db12715b3fa1e5a17f3cdfd75ee9a67dca735981d8fd88f39e2bb25",
+    "manifest_hash_recomputes": true,
+    "omitted": [],
+    "project_skills": {
+     "included": 0,
+     "omitted": 0,
+     "project_id": null,
+     "selected": 0,
+     "status": "not_configured"
+    },
+    "ref": "sha256:7244f8c8cdd2739b4bf6c982acf001d1ebd408f86b618fa85520c1abae9806d6",
+    "ref_is_sha256_of_bytes": true,
+    "rendered_bytes": 9988,
+    "rendered_sha256": "f524b8787a3056c8893bb29b7722c8984c9b74efa76b891a21319262f4b6b853",
+    "required_digests": {
+     "acceptance_criteria": "1245bf42ee35c7ab173324fb5795a39ca30ef7cdec06b58b38cc2ba45ffdf6e1",
+     "artifact_reader": "ced33d17f996286aed118445fc2301eb6dc6a52ac1755d7cefbc464a31380650",
+     "council_delivery": "523eb069f42dfa91af903d5f1dce5b715c85d4a6d2fb3c7849afd90e753541e8",
+     "external_context": "3a95b885ac492d6921f78959a7837249dcf0c8f06b0c0c58491d6c48f252728f",
+     "objective": "4f965e6c20dbe5de1998d9d2ff1dc73f1159a14b99d3a54217c3b5469e298b92",
+     "policy": "75c407637d7ae39e779f9c47266de25998d55811a615f0cd857702701918a6f9",
+     "project_skills": "b45ccdbfc6e02a6973988986ff3e54e61049cad13b05c7a4cd585822390ae361",
+     "recovery": "ea8fc4ac6125411b26dc4ad44d4322b2b400759a0dd9b69cb78565ff35523469",
+     "research_context": "6933f04d3c57194e66289c64d8fafd12199fa4c2280a6a326961e5f2e593cfe0",
+     "role": "0380db97ec507816cb2435f11d56f1bfe151dea2ae25a75859e9b2f0417dda5b",
+     "role_context": "a853e9b17eb01ee70cd7c1af7b6223e20b8f382f4b1007a6ea77182b48b044ef",
+     "versions": "108f2d3be271f2294a4070b875fb08434a7a5c16c948cb4ffcb2a887e176b46b"
+    },
+    "required_keys": [
+     "acceptance_criteria",
+     "artifact_reader",
+     "council_delivery",
+     "external_context",
+     "objective",
+     "policy",
+     "project_skills",
+     "recovery",
+     "research_context",
+     "role",
+     "role_context",
+     "versions"
+    ],
+    "sha256": "7244f8c8cdd2739b4bf6c982acf001d1ebd408f86b618fa85520c1abae9806d6",
+    "snapshot": "861dc1cfb3864ea6eab4ff59d5a7a48354c579a911d51032340a1ab5335cb9b1",
+    "source_label": "context:task-conductor",
+    "task_id": "task-conductor"
+   }
+  ],
+  "provider_calls": 1,
+  "reservation_rows": 0,
+  "status": "composed"
+ },
+ "conductor_contract_remainder_with_knowledge": {
+  "artifact_puts": [
+   {
+    "ref": "sha256:a91158457e27226bf01471e0ac275e85245870ef226a0ff5912e79cf869d564a",
+    "source": "task:task-conductor-remainder"
+   },
+   {
+    "ref": "sha256:841cb823a44b68d11f5a23add15a057cee5cf07eb9cebe75992b31299243b39d",
+    "source": "context:task-conductor-remainder"
+   }
+  ],
+  "context_measurement": {
+   "delivery_bytes": 7823,
+   "delivery_overhead_bytes": 1276,
+   "host_overhead_bytes": 2580,
+   "limit_bytes": 40960,
+   "payload_bytes": 6547,
+   "policy": "urn:zeus:council-input:2",
+   "rendered_bytes": 10403,
+   "required_bytes": 10403,
+   "reserved": 8192,
+   "reserved_bytes": 0,
+   "schema": "urn:zeus:council-input:2",
+   "sections": {
+    "dba_report": 713,
+    "improvement_proposal": 4285,
+    "packet": 779,
+    "research_proposal": 770
+   },
+   "unit": "utf8_bytes_of_canonical_json",
+   "usable": 40960,
+   "window": 49152
+  },
+  "delivered_prompts": [
+   {
+    "bytes": 10403,
+    "equals_packet_render": true,
+    "layout": {
+     "correction_feedback_sha256": null,
+     "council_delivery_sha256": "523eb069f42dfa91af903d5f1dce5b715c85d4a6d2fb3c7849afd90e753541e8",
+     "evidence_ids": [
+      "file:README",
+      "runtime:note-1"
+     ],
+     "external_context_keys": [
+      "reader_argv_prefix",
+      "ref"
+     ],
+     "reader_has_operations": false,
+     "reader_sha256": "ced33d17f996286aed118445fc2301eb6dc6a52ac1755d7cefbc464a31380650",
+     "recovery": {
+      "sources": {}
+     },
+     "required_keys": [
+      "acceptance_criteria",
+      "artifact_reader",
+      "council_delivery",
+      "external_context",
+      "objective",
+      "policy",
+      "project_skills",
+      "recovery",
+      "research_context",
+      "role",
+      "role_context",
+      "task_contract",
+      "versions"
+     ],
+     "task_contract": {
+      "allowed_paths": [
+       "src/app"
+      ],
+      "objective": "Council remainder objective"
+     }
+    },
+    "sha256": "e604234229dc29d82c3f8fdae1efbb227e122fcc79966470be1eb3b82a1040f7"
+   }
+  ],
+  "packets": [
+   {
+    "agent_id": "conductor",
+    "bytes": 10547,
+    "canonical_bytes": true,
+    "compiler_version": "1",
+    "estimated_tokens": 10403,
+    "estimated_tokens_is_rendered_utf8_bytes": true,
+    "evidence_ids": [
+     "file:README",
+     "runtime:note-1"
+    ],
+    "evidence_priorities_trust": [
+     "evidence-not-instructions"
+    ],
+    "fields": [
+     "agent_id",
+     "compiler_version",
+     "estimated_tokens",
+     "evidence",
+     "manifest_hash",
+     "omitted",
+     "required",
+     "snapshot",
+     "task_id"
+    ],
+    "manifest_hash": "0ba1a2800302a228dd62353b4f9c7333d84ca3b75ea4c7cbb4bd082c5198a735",
+    "manifest_hash_recomputes": true,
+    "omitted": [],
+    "project_skills": {
+     "included": 0,
+     "omitted": 0,
+     "project_id": null,
+     "selected": 0,
+     "status": "not_configured"
+    },
+    "ref": "sha256:841cb823a44b68d11f5a23add15a057cee5cf07eb9cebe75992b31299243b39d",
+    "ref_is_sha256_of_bytes": true,
+    "rendered_bytes": 10403,
+    "rendered_sha256": "e604234229dc29d82c3f8fdae1efbb227e122fcc79966470be1eb3b82a1040f7",
+    "required_digests": {
+     "acceptance_criteria": "1245bf42ee35c7ab173324fb5795a39ca30ef7cdec06b58b38cc2ba45ffdf6e1",
+     "artifact_reader": "ced33d17f996286aed118445fc2301eb6dc6a52ac1755d7cefbc464a31380650",
+     "council_delivery": "523eb069f42dfa91af903d5f1dce5b715c85d4a6d2fb3c7849afd90e753541e8",
+     "external_context": "15d5bf2dd7dbd2d75b5393df862ade7768d849db84baf14d24c3eb03f7e64763",
+     "objective": "4f965e6c20dbe5de1998d9d2ff1dc73f1159a14b99d3a54217c3b5469e298b92",
+     "policy": "75c407637d7ae39e779f9c47266de25998d55811a615f0cd857702701918a6f9",
+     "project_skills": "b45ccdbfc6e02a6973988986ff3e54e61049cad13b05c7a4cd585822390ae361",
+     "recovery": "ea8fc4ac6125411b26dc4ad44d4322b2b400759a0dd9b69cb78565ff35523469",
+     "research_context": "afc15336a5332f1b391dc675e28255ac1a9ef368217f6963518e8abeaa518a69",
+     "role": "0380db97ec507816cb2435f11d56f1bfe151dea2ae25a75859e9b2f0417dda5b",
+     "role_context": "a853e9b17eb01ee70cd7c1af7b6223e20b8f382f4b1007a6ea77182b48b044ef",
+     "task_contract": "b44b7018b30e37f6213a84a7522964b2447b7acf4e3a53598009eb455ec553f7",
+     "versions": "108f2d3be271f2294a4070b875fb08434a7a5c16c948cb4ffcb2a887e176b46b"
+    },
+    "required_keys": [
+     "acceptance_criteria",
+     "artifact_reader",
+     "council_delivery",
+     "external_context",
+     "objective",
+     "policy",
+     "project_skills",
+     "recovery",
+     "research_context",
+     "role",
+     "role_context",
+     "task_contract",
+     "versions"
+    ],
+    "sha256": "841cb823a44b68d11f5a23add15a057cee5cf07eb9cebe75992b31299243b39d",
+    "snapshot": "861dc1cfb3864ea6eab4ff59d5a7a48354c579a911d51032340a1ab5335cb9b1",
+    "source_label": "context:task-conductor-remainder",
+    "task_id": "task-conductor-remainder"
+   }
+  ],
+  "provider_calls": 1,
+  "reservation_rows": 0,
+  "status": "composed"
+ },
+ "conductor_delivery_not_the_projection": {
+  "artifact_puts": [
+   {
+    "ref": "sha256:a869af5584000849af81b975d4f1d98e7caf8a2ef5aea0fb7673808555c8e0e3",
+    "source": "task:task-conductor-foreign"
+   }
+  ],
+  "context_measurement": null,
+  "delivered_prompts": [],
+  "packets": [],
+  "provider_calls": 0,
+  "refusal": {
+   "error": "ContractError",
+   "message": "Council delivery is not the projection of this task"
+  },
+  "reservation_rows": 0,
+  "status": "refused"
+ },
+ "conductor_feedback_host_overhead_overflow": {
+  "artifact_puts": [
+   {
+    "ref": "sha256:a869af5584000849af81b975d4f1d98e7caf8a2ef5aea0fb7673808555c8e0e3",
+    "source": "task:task-conductor-fb-over"
+   }
+  ],
+  "context_measurement": null,
+  "delivered_prompts": [],
+  "packets": [],
+  "provider_calls": 0,
+  "refusal": {
+   "error": "CouncilInputOverflow",
+   "message": "needs_scope_split:host_overhead:47564/4096"
+  },
+  "reservation_rows": 0,
+  "status": "refused"
+ },
+ "conductor_recovery_source": {
+  "artifact_puts": [
+   {
+    "ref": "sha256:a869af5584000849af81b975d4f1d98e7caf8a2ef5aea0fb7673808555c8e0e3",
+    "source": "task:task-conductor-recovery"
+   },
+   {
+    "ref": "sha256:0c14cc8062fdbbc31a52ca6c264ba007a9a4f1ca4a7a18591a279c6609a7a796",
+    "source": "recovery:task-conductor-recovery:checkpoint"
+   },
+   {
+    "ref": "sha256:6917f3813d7ea724923f3f13f985335ed05ef83a27cd6b2a01d42805b9950c43",
+    "source": "recovery:task-conductor-recovery:progress"
+   }
+  ],
+  "context_measurement": null,
+  "delivered_prompts": [],
+  "packets": [],
+  "provider_calls": 0,
+  "refusal": {
+   "error": "CouncilInputOverflow",
+   "message": "needs_scope_split:host_overhead:4675/4096"
+  },
+  "reservation_rows": 0,
+  "status": "refused"
+ },
+ "conductor_required_overflow": {
+  "artifact_puts": [
+   {
+    "ref": "sha256:a869af5584000849af81b975d4f1d98e7caf8a2ef5aea0fb7673808555c8e0e3",
+    "source": "task:task-conductor-over"
+   }
+  ],
+  "context_measurement": null,
+  "delivered_prompts": [],
+  "packets": [],
+  "provider_calls": 0,
+  "refusal": {
+   "error": "CouncilInputOverflow",
+   "message": "needs_scope_split:host_overhead:7170/4096"
+  },
+  "reservation_rows": 0,
+  "status": "refused"
+ },
+ "conductor_with_feedback": {
+  "artifact_puts": [
+   {
+    "ref": "sha256:a869af5584000849af81b975d4f1d98e7caf8a2ef5aea0fb7673808555c8e0e3",
+    "source": "task:task-conductor-fb"
+   },
+   {
+    "ref": "sha256:f87b15c01a500d3d6b5df1cc3e71e5d96671b7703b2b74f92fe0f820dc28b892",
+    "source": "context:task-conductor-fb"
+   }
+  ],
+  "context_measurement": {
+   "delivery_bytes": 7823,
+   "delivery_overhead_bytes": 1276,
+   "host_overhead_bytes": 3349,
+   "limit_bytes": 40960,
+   "payload_bytes": 6547,
+   "policy": "urn:zeus:council-input:2",
+   "rendered_bytes": 11172,
+   "required_bytes": 11172,
+   "reserved": 8192,
+   "reserved_bytes": 0,
+   "schema": "urn:zeus:council-input:2",
+   "sections": {
+    "dba_report": 713,
+    "improvement_proposal": 4285,
+    "packet": 779,
+    "research_proposal": 770
+   },
+   "unit": "utf8_bytes_of_canonical_json",
+   "usable": 40960,
+   "window": 49152
+  },
+  "delivered_prompts": [
+   {
+    "bytes": 11172,
+    "equals_packet_render": true,
+    "layout": {
+     "correction_feedback_sha256": "c3e38f6342312eecdce9b751bd49e8b4f5a769c1b478dfb0932d49e191e295e5",
+     "council_delivery_sha256": "523eb069f42dfa91af903d5f1dce5b715c85d4a6d2fb3c7849afd90e753541e8",
+     "evidence_ids": [],
+     "external_context_keys": [
+      "reader_argv_prefix",
+      "ref"
+     ],
+     "reader_has_operations": false,
+     "reader_sha256": "ced33d17f996286aed118445fc2301eb6dc6a52ac1755d7cefbc464a31380650",
+     "recovery": {
+      "sources": {}
+     },
+     "required_keys": [
+      "acceptance_criteria",
+      "artifact_reader",
+      "correction_feedback",
+      "council_delivery",
+      "external_context",
+      "objective",
+      "policy",
+      "project_skills",
+      "recovery",
+      "research_context",
+      "role",
+      "role_context",
+      "versions"
+     ],
+     "task_contract": null
+    },
+    "sha256": "c30758421318e2e420076a260382188d98866b648eadff29cac0c383041a8198"
+   }
+  ],
+  "packets": [
+   {
+    "agent_id": "conductor",
+    "bytes": 11316,
+    "canonical_bytes": true,
+    "compiler_version": "1",
+    "estimated_tokens": 11172,
+    "estimated_tokens_is_rendered_utf8_bytes": true,
+    "evidence_ids": [],
+    "evidence_priorities_trust": [],
+    "fields": [
+     "agent_id",
+     "compiler_version",
+     "estimated_tokens",
+     "evidence",
+     "manifest_hash",
+     "omitted",
+     "required",
+     "snapshot",
+     "task_id"
+    ],
+    "manifest_hash": "e9a0651c2ea9d69a49e1de9bb312fb06ac94462fee5db3169029aeb2a2a063dd",
+    "manifest_hash_recomputes": true,
+    "omitted": [],
+    "project_skills": {
+     "included": 0,
+     "omitted": 0,
+     "project_id": null,
+     "selected": 0,
+     "status": "not_configured"
+    },
+    "ref": "sha256:f87b15c01a500d3d6b5df1cc3e71e5d96671b7703b2b74f92fe0f820dc28b892",
+    "ref_is_sha256_of_bytes": true,
+    "rendered_bytes": 11172,
+    "rendered_sha256": "c30758421318e2e420076a260382188d98866b648eadff29cac0c383041a8198",
+    "required_digests": {
+     "acceptance_criteria": "1245bf42ee35c7ab173324fb5795a39ca30ef7cdec06b58b38cc2ba45ffdf6e1",
+     "artifact_reader": "ced33d17f996286aed118445fc2301eb6dc6a52ac1755d7cefbc464a31380650",
+     "correction_feedback": "c3e38f6342312eecdce9b751bd49e8b4f5a769c1b478dfb0932d49e191e295e5",
+     "council_delivery": "523eb069f42dfa91af903d5f1dce5b715c85d4a6d2fb3c7849afd90e753541e8",
+     "external_context": "3a95b885ac492d6921f78959a7837249dcf0c8f06b0c0c58491d6c48f252728f",
+     "objective": "4f965e6c20dbe5de1998d9d2ff1dc73f1159a14b99d3a54217c3b5469e298b92",
+     "policy": "75c407637d7ae39e779f9c47266de25998d55811a615f0cd857702701918a6f9",
+     "project_skills": "b45ccdbfc6e02a6973988986ff3e54e61049cad13b05c7a4cd585822390ae361",
+     "recovery": "ea8fc4ac6125411b26dc4ad44d4322b2b400759a0dd9b69cb78565ff35523469",
+     "research_context": "6933f04d3c57194e66289c64d8fafd12199fa4c2280a6a326961e5f2e593cfe0",
+     "role": "0380db97ec507816cb2435f11d56f1bfe151dea2ae25a75859e9b2f0417dda5b",
+     "role_context": "a853e9b17eb01ee70cd7c1af7b6223e20b8f382f4b1007a6ea77182b48b044ef",
+     "versions": "108f2d3be271f2294a4070b875fb08434a7a5c16c948cb4ffcb2a887e176b46b"
+    },
+    "required_keys": [
+     "acceptance_criteria",
+     "artifact_reader",
+     "correction_feedback",
+     "council_delivery",
+     "external_context",
+     "objective",
+     "policy",
+     "project_skills",
+     "recovery",
+     "research_context",
+     "role",
+     "role_context",
+     "versions"
+    ],
+    "sha256": "f87b15c01a500d3d6b5df1cc3e71e5d96671b7703b2b74f92fe0f820dc28b892",
+    "snapshot": "861dc1cfb3864ea6eab4ff59d5a7a48354c579a911d51032340a1ab5335cb9b1",
+    "source_label": "context:task-conductor-fb",
+    "task_id": "task-conductor-fb"
+   }
+  ],
+  "provider_calls": 1,
+  "reservation_rows": 0,
+  "status": "composed"
+ },
+ "implementation_feedback_context_insufficient": {
+  "artifact_puts": [
+   {
+    "ref": "sha256:103947693a9f263aa3975b36427d2c50f6f336cf5b648a56c5c1c8e50ff6f602",
+    "source": "task:task-impl-fb-over"
+   },
+   {
+    "ref": "sha256:fceb46b9a8197201ff4adffc27c7d6377cc74eeca6428848cdb4aa445868c251",
+    "source": "baldrix:b9586c59c062457a45018e41c2e753934b5ca6c9:stages.yaml"
+   },
+   {
+    "ref": "sha256:f3ca6be9452186f924548712639a3aa84a0393658fc8935d2fa2f90a76066c36",
+    "source": "git:81dd81b43ec446b1a562029a5a60bb18c2fe76f1:.harness/skills/_common/review-checklist.md"
+   },
+   {
+    "ref": "sha256:84e8b29967c26b6f4a8a4877f0d2e6541d0a1bc86b46254fb4fd92ccb3638455",
+    "source": "git:81dd81b43ec446b1a562029a5a60bb18c2fe76f1:.harness/skills/_common/testing/SKILL.md"
+   },
+   {
+    "ref": "sha256:46296aba340ae05fd7e185846f2ddfa7e87b20508c679298cf0d74e16e234515",
+    "source": "git:81dd81b43ec446b1a562029a5a60bb18c2fe76f1:.harness/skills/python/pytest/fixtures.md"
+   },
+   {
+    "ref": "sha256:434bc0b20a82216058769e2a53a75f00b41a381bb853b35df66bc1693a2aace6",
+    "source": "git:81dd81b43ec446b1a562029a5a60bb18c2fe76f1:.harness/skills/python/huge-retry.md"
+   },
+   {
+    "ref": "sha256:7262e17e776e5ca9aa19f2d912502356c7c690e6a00a9649948dc0ba4826fd8a",
+    "source": "git:81dd81b43ec446b1a562029a5a60bb18c2fe76f1:.harness/skills/python/logging.md"
+   },
+   {
+    "ref": "sha256:ceca7b98356558d7b9864820bb1ec55d5cef1457dc7b8cece12ac6de34f2b0c7",
+    "source": "git:81dd81b43ec446b1a562029a5a60bb18c2fe76f1:.harness/skills/python/retry-patterns.md"
+   },
+   {
+    "ref": "sha256:36146785db3d13a3fc70e880f6726ba63c29b42b15b01fe00da7fc5c88eac714",
+    "source": "git:81dd81b43ec446b1a562029a5a60bb18c2fe76f1:.harness/skills/shared/tools/SKILL.md"
+   },
+   {
+    "ref": "sha256:f6e3bbb7b1bea6403dc172669e4bfb8eab66f06cd4b2a4298722d0fb17387e1d",
+    "source": "git:81dd81b43ec446b1a562029a5a60bb18c2fe76f1:src/app/retry.py:head"
+   },
+   {
+    "ref": "sha256:9d88e251b07521ea1fe22ff85dbd42e892299104a5612954638c4eb263f28b6a",
+    "source": "project-skill-guidance"
+   },
+   {
+    "ref": "sha256:1baffb68c1b295247aff40bee14dde5f20839a9b5ddb48ceab826dc0f134fd53",
+    "source": "project-skill-selection"
+   },
+   {
+    "ref": "sha256:b118ebb385552739d97b73ea74c8c29370d7a8869a196653c038a236b2f068f5",
+    "source": "skill-history-assessment"
+   }
+  ],
+  "context_measurement": null,
+  "delivered_prompts": [],
+  "packets": [],
+  "provider_calls": 0,
+  "refusal": {
+   "error": "CorrectionFeedbackRefused",
+   "message": "Correction feedback refused: feedback_context_insufficient"
+  },
+  "reservation_rows": 0,
+  "status": "refused"
+ },
+ "implementation_with_feedback": {
+  "artifact_puts": [
+   {
+    "ref": "sha256:103947693a9f263aa3975b36427d2c50f6f336cf5b648a56c5c1c8e50ff6f602",
+    "source": "task:task-impl-fb"
+   },
+   {
+    "ref": "sha256:fceb46b9a8197201ff4adffc27c7d6377cc74eeca6428848cdb4aa445868c251",
+    "source": "baldrix:b9586c59c062457a45018e41c2e753934b5ca6c9:stages.yaml"
+   },
+   {
+    "ref": "sha256:f3ca6be9452186f924548712639a3aa84a0393658fc8935d2fa2f90a76066c36",
+    "source": "git:81dd81b43ec446b1a562029a5a60bb18c2fe76f1:.harness/skills/_common/review-checklist.md"
+   },
+   {
+    "ref": "sha256:84e8b29967c26b6f4a8a4877f0d2e6541d0a1bc86b46254fb4fd92ccb3638455",
+    "source": "git:81dd81b43ec446b1a562029a5a60bb18c2fe76f1:.harness/skills/_common/testing/SKILL.md"
+   },
+   {
+    "ref": "sha256:46296aba340ae05fd7e185846f2ddfa7e87b20508c679298cf0d74e16e234515",
+    "source": "git:81dd81b43ec446b1a562029a5a60bb18c2fe76f1:.harness/skills/python/pytest/fixtures.md"
+   },
+   {
+    "ref": "sha256:434bc0b20a82216058769e2a53a75f00b41a381bb853b35df66bc1693a2aace6",
+    "source": "git:81dd81b43ec446b1a562029a5a60bb18c2fe76f1:.harness/skills/python/huge-retry.md"
+   },
+   {
+    "ref": "sha256:7262e17e776e5ca9aa19f2d912502356c7c690e6a00a9649948dc0ba4826fd8a",
+    "source": "git:81dd81b43ec446b1a562029a5a60bb18c2fe76f1:.harness/skills/python/logging.md"
+   },
+   {
+    "ref": "sha256:ceca7b98356558d7b9864820bb1ec55d5cef1457dc7b8cece12ac6de34f2b0c7",
+    "source": "git:81dd81b43ec446b1a562029a5a60bb18c2fe76f1:.harness/skills/python/retry-patterns.md"
+   },
+   {
+    "ref": "sha256:36146785db3d13a3fc70e880f6726ba63c29b42b15b01fe00da7fc5c88eac714",
+    "source": "git:81dd81b43ec446b1a562029a5a60bb18c2fe76f1:.harness/skills/shared/tools/SKILL.md"
+   },
+   {
+    "ref": "sha256:f6e3bbb7b1bea6403dc172669e4bfb8eab66f06cd4b2a4298722d0fb17387e1d",
+    "source": "git:81dd81b43ec446b1a562029a5a60bb18c2fe76f1:src/app/retry.py:head"
+   },
+   {
+    "ref": "sha256:9d88e251b07521ea1fe22ff85dbd42e892299104a5612954638c4eb263f28b6a",
+    "source": "project-skill-guidance"
+   },
+   {
+    "ref": "sha256:1baffb68c1b295247aff40bee14dde5f20839a9b5ddb48ceab826dc0f134fd53",
+    "source": "project-skill-selection"
+   },
+   {
+    "ref": "sha256:9c27dc5c0b46bfac63afeb62885d634eccf350d5428c3df8cbe967c6f50053d9",
+    "source": "skill-history-assessment"
+   },
+   {
+    "ref": "sha256:d74ec041ee04b28d7cb4ddb410f65e9d8c1eeb3731fa30eb4617e6750af8fb1f",
+    "source": "context:task-impl-fb"
+   }
+  ],
+  "context_measurement": {
+   "policy": "legacy",
+   "rendered_bytes": 10241,
+   "reserved": 6000,
+   "unit": "utf8_bytes",
+   "usable": 22000,
+   "window": 28000
+  },
+  "delivered_prompts": [
+   {
+    "bytes": 10241,
+    "equals_packet_render": true,
+    "layout": {
+     "correction_feedback_sha256": "b87957a42a763c63774b795319ee7eac240095d3daebd0af04996b6f84bfbfb5",
+     "council_delivery_sha256": null,
+     "evidence_ids": [
+      "project-skill:.harness/skills/python/retry-patterns.md",
+      "project-skill:.harness/skills/_common/review-checklist.md",
+      "project-skill:.harness/skills/_common/testing/SKILL.md",
+      "project-skill:.harness/skills/python/huge-retry.md",
+      "project-guidance:sha256:9d88e251b07521ea1fe22ff85dbd42e892299104a5612954638c4eb263f28b6a",
+      "sha256:103947693a9f263aa3975b36427d2c50f6f336cf5b648a56c5c1c8e50ff6f602"
+     ],
+     "external_context_keys": [
+      "file",
+      "reader_argv_prefix",
+      "ref"
+     ],
+     "reader_has_operations": true,
+     "reader_sha256": "c7ebd1aca621bbeb118e1b55377c1e05a90797f707eeb858e16e647dc345435e",
+     "recovery": {
+      "instruction": "Before repeating tools, inspect recovery sources with the artifact_reader argv recipe.",
+      "sources": {}
+     },
+     "required_keys": [
+      "acceptance_criteria",
+      "artifact_reader",
+      "correction_feedback",
+      "external_context",
+      "objective",
+      "policy",
+      "project_skills",
+      "recovery",
+      "research_context",
+      "role",
+      "task_contract",
+      "versions"
+     ],
+     "task_contract": {
+      "acceptance_criteria": [
+       "retry is bounded"
+      ],
+      "allowed_paths": [
+       "src/app"
+      ],
+      "objective": "Bounded retry"
+     }
+    },
+    "sha256": "3769858a1203200fdd64c6e106f242c5cd649315d6dfbc853c05659fae4ea8f4"
+   }
+  ],
+  "packets": [
+   {
+    "agent_id": "worker:implementation",
+    "bytes": 10385,
+    "canonical_bytes": true,
+    "compiler_version": "1",
+    "estimated_tokens": 10241,
+    "estimated_tokens_is_rendered_utf8_bytes": true,
+    "evidence_ids": [
+     "project-skill:.harness/skills/python/retry-patterns.md",
+     "project-skill:.harness/skills/_common/review-checklist.md",
+     "project-skill:.harness/skills/_common/testing/SKILL.md",
+     "project-skill:.harness/skills/python/huge-retry.md",
+     "project-guidance:sha256:9d88e251b07521ea1fe22ff85dbd42e892299104a5612954638c4eb263f28b6a",
+     "sha256:103947693a9f263aa3975b36427d2c50f6f336cf5b648a56c5c1c8e50ff6f602"
+    ],
+    "evidence_priorities_trust": [
+     "evidence-not-instructions"
+    ],
+    "fields": [
+     "agent_id",
+     "compiler_version",
+     "estimated_tokens",
+     "evidence",
+     "manifest_hash",
+     "omitted",
+     "required",
+     "snapshot",
+     "task_id"
+    ],
+    "manifest_hash": "dfb92aefd31a62c65bfd2087a5707e9e0e861bf243e2bddfdfeaf8601cfb7abd",
+    "manifest_hash_recomputes": true,
+    "omitted": [],
+    "project_skills": {
+     "included": 4,
+     "omitted": 0,
+     "project_id": "3f1c2b7a-8d4e-4c1b-9a2f-6e5d4c3b2a19",
+     "selected": 4,
+     "status": "configured"
+    },
+    "ref": "sha256:d74ec041ee04b28d7cb4ddb410f65e9d8c1eeb3731fa30eb4617e6750af8fb1f",
+    "ref_is_sha256_of_bytes": true,
+    "rendered_bytes": 10241,
+    "rendered_sha256": "3769858a1203200fdd64c6e106f242c5cd649315d6dfbc853c05659fae4ea8f4",
+    "required_digests": {
+     "acceptance_criteria": "1245bf42ee35c7ab173324fb5795a39ca30ef7cdec06b58b38cc2ba45ffdf6e1",
+     "artifact_reader": "c7ebd1aca621bbeb118e1b55377c1e05a90797f707eeb858e16e647dc345435e",
+     "correction_feedback": "b87957a42a763c63774b795319ee7eac240095d3daebd0af04996b6f84bfbfb5",
+     "external_context": "a1242d7c0056696e5c5be7d7c17579bb8fbce5e6bda5a2373ee38986e0f05c8e",
+     "objective": "91982427c8144a9894a7ef2ad909d441b7e9e6073d3e999cf02c50cfe6e8df90",
+     "policy": "75c407637d7ae39e779f9c47266de25998d55811a615f0cd857702701918a6f9",
+     "project_skills": "e1f17dc14be221ba718c5bca27e9d04009c7c796463d1ab5fd5031257008ff70",
+     "recovery": "a12b13fb212269bd41ea5dac872c23df7cddef5b6ae8029475abd75488f3f57c",
+     "research_context": "a06dfcf2b784e5ec749ec44b4ef617024f61815d38a100742ac8b93f007a9667",
+     "role": "346be04205ddb7592d24ccb1e37f525b5ee8486d4caef2306b7f622ffdcbe6f2",
+     "task_contract": "bb5cb98607b8d23a1c8391989874fc22e2613f661e157bf107388f0979bfe464",
+     "versions": "75c7262d62389af1e028c61554373424168e2813ccce7a0cefb6a76b9a7f9b82"
+    },
+    "required_keys": [
+     "acceptance_criteria",
+     "artifact_reader",
+     "correction_feedback",
+     "external_context",
+     "objective",
+     "policy",
+     "project_skills",
+     "recovery",
+     "research_context",
+     "role",
+     "task_contract",
+     "versions"
+    ],
+    "sha256": "d74ec041ee04b28d7cb4ddb410f65e9d8c1eeb3731fa30eb4617e6750af8fb1f",
+    "snapshot": "861dc1cfb3864ea6eab4ff59d5a7a48354c579a911d51032340a1ab5335cb9b1",
+    "source_label": "context:task-impl-fb",
+    "task_id": "task-impl-fb"
+   }
+  ],
+  "provider_calls": 1,
+  "reservation_rows": 0,
+  "status": "composed"
+ },
+ "improvement_lead_all_inline": {
+  "artifact_puts": [
+   {
+    "ref": "sha256:f45fa7f46f55733942450e4a136ab4aa59d6f1566d5464b53ecfb575de29feb1",
+    "source": "task:task-improvement_lead"
+   },
+   {
+    "ref": "sha256:efd63e3df55dff2b542ced3ffef2794d7ec916f25535e5284302eb517b1b0e58",
+    "source": "context:task-improvement_lead"
+   }
+  ],
+  "context_measurement": {
+   "delivery_bytes": 3428,
+   "delivery_overhead_bytes": 1166,
+   "host_overhead_bytes": 3204,
+   "limit_bytes": 40960,
+   "payload_bytes": 2262,
+   "policy": "urn:zeus:council-input:2",
+   "rendered_bytes": 6632,
+   "required_bytes": 6632,
+   "reserved": 8192,
+   "reserved_bytes": 8192,
+   "schema": "urn:zeus:council-input:2",
+   "sections": {
+    "dba_report": 713,
+    "packet": 779,
+    "research_proposal": 770
+   },
+   "unit": "utf8_bytes_of_canonical_json",
+   "usable": 40960,
+   "window": 49152
+  },
+  "delivered_prompts": [
+   {
+    "bytes": 6632,
+    "equals_packet_render": true,
+    "layout": {
+     "correction_feedback_sha256": null,
+     "council_delivery_sha256": "0e7bfc172c64598a79c337bf4f184ce1bdb9c5afd16e67c9086e53be1641cedb",
+     "evidence_ids": [],
+     "external_context_keys": [
+      "reader_argv_prefix",
+      "ref"
+     ],
+     "reader_has_operations": false,
+     "reader_sha256": "ced33d17f996286aed118445fc2301eb6dc6a52ac1755d7cefbc464a31380650",
+     "recovery": {
+      "sources": {}
+     },
+     "required_keys": [
+      "acceptance_criteria",
+      "artifact_reader",
+      "council_delivery",
+      "external_context",
+      "objective",
+      "policy",
+      "project_skills",
+      "recovery",
+      "research_context",
+      "role",
+      "role_context",
+      "versions"
+     ],
+     "task_contract": null
+    },
+    "sha256": "7e2133a766495e6f236954d4f52aeea6cc527d7690b591bfa406422e09a81877"
+   }
+  ],
+  "packets": [
+   {
+    "agent_id": "lead:improvement",
+    "bytes": 6775,
+    "canonical_bytes": true,
+    "compiler_version": "1",
+    "estimated_tokens": 6632,
+    "estimated_tokens_is_rendered_utf8_bytes": true,
+    "evidence_ids": [],
+    "evidence_priorities_trust": [],
+    "fields": [
+     "agent_id",
+     "compiler_version",
+     "estimated_tokens",
+     "evidence",
+     "manifest_hash",
+     "omitted",
+     "required",
+     "snapshot",
+     "task_id"
+    ],
+    "manifest_hash": "1840cc38d9be346ac682a05ae9fedb69366e4696262f671c3f244737cd1c2031",
+    "manifest_hash_recomputes": true,
+    "omitted": [],
+    "project_skills": {
+     "included": 0,
+     "omitted": 0,
+     "project_id": null,
+     "selected": 0,
+     "status": "not_configured"
+    },
+    "ref": "sha256:efd63e3df55dff2b542ced3ffef2794d7ec916f25535e5284302eb517b1b0e58",
+    "ref_is_sha256_of_bytes": true,
+    "rendered_bytes": 6632,
+    "rendered_sha256": "7e2133a766495e6f236954d4f52aeea6cc527d7690b591bfa406422e09a81877",
+    "required_digests": {
+     "acceptance_criteria": "1245bf42ee35c7ab173324fb5795a39ca30ef7cdec06b58b38cc2ba45ffdf6e1",
+     "artifact_reader": "ced33d17f996286aed118445fc2301eb6dc6a52ac1755d7cefbc464a31380650",
+     "council_delivery": "0e7bfc172c64598a79c337bf4f184ce1bdb9c5afd16e67c9086e53be1641cedb",
+     "external_context": "f722452a2aa1e742e7c3b20ef31ede876d4d32d0a4a80b083fd0533e61e65577",
+     "objective": "623b045ced61ed7089503d662ef4a818679a2c2c4c910375b42c28414b4ab7ac",
+     "policy": "75c407637d7ae39e779f9c47266de25998d55811a615f0cd857702701918a6f9",
+     "project_skills": "b45ccdbfc6e02a6973988986ff3e54e61049cad13b05c7a4cd585822390ae361",
+     "recovery": "ea8fc4ac6125411b26dc4ad44d4322b2b400759a0dd9b69cb78565ff35523469",
+     "research_context": "8a2b94f127099a527e728adcbc0a67eb78aecb3d489b1005998781f814834b9d",
+     "role": "81c7e8d481d38ac8f770da4d09df613a288bc5b741664a6b190ca39671a2ab75",
+     "role_context": "a853e9b17eb01ee70cd7c1af7b6223e20b8f382f4b1007a6ea77182b48b044ef",
+     "versions": "108f2d3be271f2294a4070b875fb08434a7a5c16c948cb4ffcb2a887e176b46b"
+    },
+    "required_keys": [
+     "acceptance_criteria",
+     "artifact_reader",
+     "council_delivery",
+     "external_context",
+     "objective",
+     "policy",
+     "project_skills",
+     "recovery",
+     "research_context",
+     "role",
+     "role_context",
+     "versions"
+    ],
+    "sha256": "efd63e3df55dff2b542ced3ffef2794d7ec916f25535e5284302eb517b1b0e58",
+    "snapshot": "861dc1cfb3864ea6eab4ff59d5a7a48354c579a911d51032340a1ab5335cb9b1",
+    "source_label": "context:task-improvement_lead",
+    "task_id": "task-improvement_lead"
+   }
+  ],
+  "provider_calls": 1,
+  "reservation_rows": 0,
+  "status": "composed"
+ },
+ "research_lead_all_inline": {
+  "artifact_puts": [
+   {
+    "ref": "sha256:a9bf373d68bd2bfc0e6eca2413407af0f04b101e63935d8bcb0e454e0f4b9dd1",
+    "source": "task:task-research_lead"
+   },
+   {
+    "ref": "sha256:6cec8a7eae77bb6e5d531c85ee4c9bbfcb29ddbdaf6f48372fa0a1dafb4169cc",
+    "source": "context:task-research_lead"
+   }
+  ],
+  "context_measurement": {
+   "delivery_bytes": 2623,
+   "delivery_overhead_bytes": 1131,
+   "host_overhead_bytes": 2580,
+   "limit_bytes": 40960,
+   "payload_bytes": 1492,
+   "policy": "urn:zeus:council-input:2",
+   "rendered_bytes": 5203,
+   "required_bytes": 5203,
+   "reserved": 8192,
+   "reserved_bytes": 12288,
+   "schema": "urn:zeus:council-input:2",
+   "sections": {
+    "dba_report": 713,
+    "packet": 779
+   },
+   "unit": "utf8_bytes_of_canonical_json",
+   "usable": 40960,
+   "window": 49152
+  },
+  "delivered_prompts": [
+   {
+    "bytes": 5203,
+    "equals_packet_render": true,
+    "layout": {
+     "correction_feedback_sha256": null,
+     "council_delivery_sha256": "e2ff1f73d6571688e3777ba12a6b3e17645b62ed24d7b18ed8af58eea55cb43f",
+     "evidence_ids": [],
+     "external_context_keys": [
+      "reader_argv_prefix",
+      "ref"
+     ],
+     "reader_has_operations": false,
+     "reader_sha256": "ced33d17f996286aed118445fc2301eb6dc6a52ac1755d7cefbc464a31380650",
+     "recovery": {
+      "sources": {}
+     },
+     "required_keys": [
+      "acceptance_criteria",
+      "artifact_reader",
+      "council_delivery",
+      "external_context",
+      "objective",
+      "policy",
+      "project_skills",
+      "recovery",
+      "research_context",
+      "role",
+      "role_context",
+      "versions"
+     ],
+     "task_contract": null
+    },
+    "sha256": "fab1a28f217b46939b0aa661e54aaca529a5dcf5dbf20a0ae62b62f226c4818e"
+   }
+  ],
+  "packets": [
+   {
+    "agent_id": "lead:research",
+    "bytes": 5346,
+    "canonical_bytes": true,
+    "compiler_version": "1",
+    "estimated_tokens": 5203,
+    "estimated_tokens_is_rendered_utf8_bytes": true,
+    "evidence_ids": [],
+    "evidence_priorities_trust": [],
+    "fields": [
+     "agent_id",
+     "compiler_version",
+     "estimated_tokens",
+     "evidence",
+     "manifest_hash",
+     "omitted",
+     "required",
+     "snapshot",
+     "task_id"
+    ],
+    "manifest_hash": "100a4da001cdea202cffe2f5a30d5ea5f390975f9a7879532f4de4cb9bf7ec16",
+    "manifest_hash_recomputes": true,
+    "omitted": [],
+    "project_skills": {
+     "included": 0,
+     "omitted": 0,
+     "project_id": null,
+     "selected": 0,
+     "status": "not_configured"
+    },
+    "ref": "sha256:6cec8a7eae77bb6e5d531c85ee4c9bbfcb29ddbdaf6f48372fa0a1dafb4169cc",
+    "ref_is_sha256_of_bytes": true,
+    "rendered_bytes": 5203,
+    "rendered_sha256": "fab1a28f217b46939b0aa661e54aaca529a5dcf5dbf20a0ae62b62f226c4818e",
+    "required_digests": {
+     "acceptance_criteria": "1245bf42ee35c7ab173324fb5795a39ca30ef7cdec06b58b38cc2ba45ffdf6e1",
+     "artifact_reader": "ced33d17f996286aed118445fc2301eb6dc6a52ac1755d7cefbc464a31380650",
+     "council_delivery": "e2ff1f73d6571688e3777ba12a6b3e17645b62ed24d7b18ed8af58eea55cb43f",
+     "external_context": "8047510ca3908bd9a1e08e90d722fb5d08b103b1b2deda794eb1bba024f98cb9",
+     "objective": "9ee904f75b80fb442755acb1c14ffd88cc973052987f909f20a34ee43776317d",
+     "policy": "75c407637d7ae39e779f9c47266de25998d55811a615f0cd857702701918a6f9",
+     "project_skills": "b45ccdbfc6e02a6973988986ff3e54e61049cad13b05c7a4cd585822390ae361",
+     "recovery": "ea8fc4ac6125411b26dc4ad44d4322b2b400759a0dd9b69cb78565ff35523469",
+     "research_context": "21975b1dfe166353635de3c555b1dc023d464552b118a61390c5523553ba3169",
+     "role": "22ca5af442b3823e0c1c25e1a91273f55afdd83eaec86d43b957358509d1cfac",
+     "role_context": "a853e9b17eb01ee70cd7c1af7b6223e20b8f382f4b1007a6ea77182b48b044ef",
+     "versions": "108f2d3be271f2294a4070b875fb08434a7a5c16c948cb4ffcb2a887e176b46b"
+    },
+    "required_keys": [
+     "acceptance_criteria",
+     "artifact_reader",
+     "council_delivery",
+     "external_context",
+     "objective",
+     "policy",
+     "project_skills",
+     "recovery",
+     "research_context",
+     "role",
+     "role_context",
+     "versions"
+    ],
+    "sha256": "6cec8a7eae77bb6e5d531c85ee4c9bbfcb29ddbdaf6f48372fa0a1dafb4169cc",
+    "snapshot": "861dc1cfb3864ea6eab4ff59d5a7a48354c579a911d51032340a1ab5335cb9b1",
+    "source_label": "context:task-research_lead",
+    "task_id": "task-research_lead"
+   }
+  ],
+  "provider_calls": 1,
+  "reservation_rows": 0,
+  "status": "composed"
+ },
+ "research_lead_recovery_source": {
+  "artifact_puts": [
+   {
+    "ref": "sha256:a9bf373d68bd2bfc0e6eca2413407af0f04b101e63935d8bcb0e454e0f4b9dd1",
+    "source": "task:task-research-recovery"
+   },
+   {
+    "ref": "sha256:13186d9e5604a6491a8ae7bb36bc9410e3c601da141c60fac363fca0493605c4",
+    "source": "recovery:task-research-recovery:checkpoint"
+   },
+   {
+    "ref": "sha256:abb2c64de3faa172b4f85f0c7a5870dc40b3be261a7bde9fb08f4ec9704ca580",
+    "source": "recovery:task-research-recovery:progress"
+   }
+  ],
+  "context_measurement": null,
+  "delivered_prompts": [],
+  "packets": [],
+  "provider_calls": 0,
+  "refusal": {
+   "error": "CouncilInputOverflow",
+   "message": "needs_scope_split:host_overhead:5091/4096"
+  },
+  "reservation_rows": 0,
+  "status": "refused"
+ }
+}

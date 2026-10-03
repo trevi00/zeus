@@ -1,0 +1,8 @@
+{
+ "family": "context.composition_council",
+ "description": "S8 V32 council-delivery and correction-feedback composition (DESIGN-s8 section 30): M7 Executor._run with delivery= (each debate role, the inline-trimmed and omitted-empty task contract, recovery without and with a source, the needs_scope_split preflight refusals, a delivery that is not the task's projection) and correction_feedback= (delivered, feedback_context_insufficient before any provider); rendered prompt layout, retained packet bytes/ref, every artifact put, reservation rows and the council context_measurement",
+ "reference_driver": "drivers/reference/s8_council_composition.py",
+ "target_driver": "drivers/target/s8_council_composition.py",
+ "golden": "goldens/reference/context.composition_council.json",
+ "slice": "S8"
+}
