@@ -2,8 +2,8 @@
 
 Every assertion is M7's, unchanged. Adaptations, all construction, import and patch-target (the `m7_delivery` shim
 docstring names the routing): `deployment` is the moved `delivery.adapters.deployment` (its `controller_code_revision`
-is patched on it as in M7); `reviewed_record`, `runner_for` and `source_repository` are the shim's labelled verbatim
-copies of the helpers of M7 modules whose suites are not ported (S8); `fake_verification_services` is M7
+is patched on it as in M7); `reviewed_record` and `runner_for` are the ported `test_release_evaluator_migration`'s and `source_repository` the ported
+`verification_fixtures`', imported as M7 imports them; `fake_verification_services` is M7
 `tests/conftest.py`'s fixture over the injected `verification_services` port. Root adaptation: M7's
 `Path(deployment.__file__).resolve().parents[3]` (the repository root, `src/codex_harness/adapters/deployment.py`) is
 `parents[4]` here (`target/`, `src/codex_harness/delivery/adapters/deployment.py`), which is the root the moved
@@ -28,10 +28,9 @@ from m7_delivery import (
     controller_code_revision,
     deployment,
     fake_verification_services,  # noqa: F401  (fixture)
-    reviewed_record,
-    runner_for,
-    source_repository,
 )
+from test_release_evaluator_migration import reviewed_record, runner_for
+from verification_fixtures import source_repository
 
 RUNNING = "1" * 40
 

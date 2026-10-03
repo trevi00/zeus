@@ -68,19 +68,23 @@ Named adaptations (each is a construction/import/patch-target adaptation, never 
   `ReleaseRunner(service, git, artifacts, auth, auto_merge=True, fence=None, verification_root=None)` is
   `composition.release_verification.release_runner` with what M7's class built itself supplied as the delivery
   driver does (`compare/drivers/target/s7_release_runner.py`): `runner` is a holder over `process_groups.run_process`,
-  `verification_services` and `request_rebase` are LABELLED refusals (their owners are S8 and S5) unless a case installs
-  its own double, and `release_suite` and `hooks` are LABELLED refusals (S8/S10: never reached by these suites). The
+  `verification_services` and `request_rebase` are LABELLED refusals (a unit suite starts no compose stack; the rebase owner is S5) unless a case installs
+  its own double, and `hooks` is a LABELLED refusal (S10: never reached by these suites). The
   patch targets move with the collaborators: `deployment.run_process` (read/assigned) is the `runner` holder,
   `deployment.VerificationServices` the `verification_services` holder, and `Workflow.request_rebase` the `request_rebase`
   holder (called as M7 called it, `value(handler, task_id, base)`); `deployment` otherwise stands for the moved
   `delivery.adapters.deployment`. `fake_verification_services` is M7 `tests/conftest.py`'s fixture over that holder.
   `attempt_resources` closes over `ExecutionContainerNaming()`, the check_results names come from
   `review.domain.check_results`, `Harness` is `m7_coordination.Harness`, `FileArtifacts(root)` the target's with its
-  default clock. The helpers of M7 modules whose suites are not ported (S8) that these suites import are labelled
-  VERBATIM copies here, only their imports (and the `git` helper's name, `_fixture_git`) differing: `source_repository`
-  (`verification_fixtures`), `candidate_runner` (`test_release_recovery`; it imports the ported `test_git_workspace`
-  lazily), `runner_for` and `reviewed_record` (`test_release_evaluator_migration`). None reaches `fake_docker`, `fake_uv`
-  or the real `ReleaseSuite`.
+  default clock. `release_suite` is `review.adapters.release_suite.ReleaseSuite` with the production injections closed
+  over as composition passes them (`run_logged_process=process_groups.run_logged_process`, observation's `redact_text`
+  and `redact_value`; V19 R-rs1), and `ReleaseVerifier` is `composition.release_verifier.ReleaseVerifier` (B7b); `hooks`
+  stays a LABELLED refusal (S10), never reached by these suites. The helpers of M7 modules that are now ported are NOT
+  copied here: a consumer imports `source_repository` from `verification_fixtures` (a helper module with no tests) and
+  `candidate_runner`, `runner_for` and `reviewed_record` from their ported test modules, as M7's own suites do (the shim
+  imports no test module: those import the shim). The shim still re-exports `source_repository` and `_fixture_git`
+  (`verification_fixtures.git`) from the helper module, only because the ported `test_release_evaluator_migration` imports
+  them from here.
 - Managed runtime (`test_managed_runtime`, `test_managed_systemd`): `ManagedFleetTarget`, `SystemdManagedFleetTarget` and
   `Materializer` are the moved adapters wired as composition wires them (`ChokepointProcesses()`, `configuration`,
   `run_process`; `compare/drivers/target/s7_managed_composition.py`); each class also recognizes its unwired base in
@@ -104,9 +108,7 @@ from __future__ import annotations
 
 import inspect
 import os
-import subprocess
 from contextlib import nullcontext
-from pathlib import Path
 from types import SimpleNamespace
 
 import pytest
@@ -116,12 +118,19 @@ from m7_coordination import (
     Harness,  # noqa: F401
     unavailable,
 )
+from verification_fixtures import git as _fixture_git  # noqa: F401
+from verification_fixtures import source_repository  # noqa: F401
 
 from codex_harness.composition import configuration, delivery_hosts
 from codex_harness.composition import fleet_recovery as _recovery_composition
 from codex_harness.composition import managed_runtime as _managed_composition
 from codex_harness.composition import owner_action_adapters as _owner_adapters
 from codex_harness.composition.release_verification import ExecutionContainerNaming, release_runner
+from codex_harness.composition.release_verifier import (  # noqa: F401
+    FenceUnobservable,
+    ReleaseVerifier,
+    bounded_fence,
+)
 from codex_harness.context.adapters import worker_profile
 from codex_harness.coordination.adapters import fleet_recovery as _fleet_recovery
 from codex_harness.coordination.application import execution_fence
@@ -180,8 +189,13 @@ from codex_harness.kernel.ids import SYSTEM_CLOCK, SYSTEM_IDS, digest, utcnow  #
 from codex_harness.kernel.policy import POLICY  # noqa: F401
 from codex_harness.observation.adapters.observation_spool import MemorySpool  # noqa: F401
 from codex_harness.observation.application.observations import MemoryDirectory, Observer  # noqa: F401
-from codex_harness.observation.domain.observation import new_process_run_id  # noqa: F401
+from codex_harness.observation.domain.observation import (  # noqa: F401
+    new_process_run_id,
+    redact_text,
+    redact_value,
+)
 from codex_harness.research.application.hook_rollback import HookRollback
+from codex_harness.review.adapters.release_suite import ReleaseSuite  # noqa: F401
 from codex_harness.review.application.release_queue import ReleaseQueue as _ReleaseQueue
 from codex_harness.review.application.releases import Releases as _Releases
 from codex_harness.review.domain import check_results  # noqa: F401
@@ -516,17 +530,22 @@ def _refusal(label):
 
 
 _PROCESS = _Holder(process_groups.run_process)
-_SERVICES = _Holder(_refusal("VerificationServices reached without a case's own double (S8)"))
+_SERVICES = _Holder(_refusal("VerificationServices reached without a case's own double (no unit suite starts a compose stack)"))
 _REBASE_DEFAULT = _refusal("request_rebase reached without a case's own double (S5)")
 _REBASE = _Holder(_REBASE_DEFAULT)
-_SUITE = _refusal("ReleaseSuite reached: its owner is S8")
 _HOOKS = _refusal("NativeHooks reached: its owner is S10")
+
+
+def _release_suite(artifacts, fence):
+    """`review.adapters.release_suite.ReleaseSuite` with the production injections closed over, as composition passes them (V19 R-rs1)."""
+    return ReleaseSuite(artifacts, fence, run_logged_process=process_groups.run_logged_process, redact=redact_text,
+                        redact_value=redact_value)
 
 
 def ReleaseRunner(service, git, artifacts, auth, auto_merge=True, fence=None, verification_root=None):
     handler = SimpleNamespace(store=service.store, org=service.org)  # the MessageHandler-shaped `self` of request_rebase
     return release_runner(
-        service, git, artifacts, auth, auto_merge, fence, verification_root, runner=_PROCESS, release_suite=_SUITE,
+        service, git, artifacts, auth, auto_merge, fence, verification_root, runner=_PROCESS, release_suite=_release_suite,
         verification_services=_SERVICES, hooks=_HOOKS,
         request_rebase=lambda task_id, new_base: _REBASE.value(handler, task_id, new_base),
         clock=SYSTEM_CLOCK, ids=SYSTEM_IDS)
@@ -584,99 +603,6 @@ def fake_verification_services(monkeypatch):
     monkeypatch.setattr(deployment, "VerificationServices",
                         lambda *args: nullcontext({"database_url": "postgresql://fixture/isolated",
                                                    "redis_url": "redis://fixture/0"}))
-
-
-# Helpers of M7 modules whose suites are not ported (S8), copied VERBATIM (labelled; only the imports and the git
-# helper's name differ) so the suites that import them run: `verification_fixtures.source_repository` and its `git`
-# (tests/verification_fixtures.py:235-266, e38aa722), `test_release_recovery.candidate_runner` (tests/test_release_recovery.py:17-34)
-# and `test_release_evaluator_migration.runner_for` / `reviewed_record` (tests/test_release_evaluator_migration.py:226-256).
-# None reaches `fake_docker`, `fake_uv` or the real `ReleaseSuite`.
-def _fixture_git(root, *argv) -> str:
-    return subprocess.run(["git", "-C", str(root), *argv], check=True, capture_output=True,
-                          text=True).stdout.strip()
-
-
-def source_repository(root: Path, *, failing_candidate: bool = False) -> dict:
-    """A real disposable repository: a base with a tiny real suite, and one candidate commit."""
-    root.mkdir(parents=True)
-    _fixture_git(root, "init", "-q", "-b", "main")
-    for key, value in (("core.autocrlf", "false"), ("user.name", "Fixture"),
-                       ("user.email", "fixture@localhost")):
-        _fixture_git(root, "config", "--local", key, value)
-    (root / "tests").mkdir()
-    # As in any real candidate repository, the evaluator's own venv is ignored; otherwise the
-    # evaluator correctly refuses the workspace as dirty.
-    (root / ".gitignore").write_text(".venv/\n__pycache__/\n.pytest_cache/\n", encoding="utf-8")
-    (root / "pyproject.toml").write_text('[project]\nname = "fixture-candidate"\nversion = "0"\n',
-                                         encoding="utf-8")
-    (root / "tests" / "test_fixture.py").write_text("def test_incumbent_fixture():\n    assert True\n",
-                                                   encoding="utf-8")
-    _fixture_git(root, "add", "-A")
-    _fixture_git(root, "commit", "-q", "-m", "base")
-    base = _fixture_git(root, "rev-parse", "HEAD")
-    (root / "feature.txt").write_text("candidate\n", encoding="utf-8")
-    if failing_candidate:
-        (root / "tests" / "test_candidate.py").write_text("def test_candidate():\n    assert False\n",
-                                                          encoding="utf-8")
-    _fixture_git(root, "add", "-A")
-    _fixture_git(root, "commit", "-q", "-m", "candidate")
-    revision = _fixture_git(root, "rev-parse", "HEAD")
-    _fixture_git(root, "checkout", "-q", "--detach", base)
-    return {"root": root, "base": base, "revision": revision,
-            "tree": _fixture_git(root, "rev-parse", revision + "^{tree}")}
-
-
-def candidate_runner(tmp_path, store=None, remote=None):
-    from test_git_workspace import repository  # the ported module (M7 imported it at module level)
-    root = repository(tmp_path)
-    # The target repository is part of the captured identity (FA-015), so it is fixed before capture.
-    adapter = GitWorkspace(str(root), str(tmp_path / "workspaces"), remote=remote)
-    workspace = adapter.prepare("candidate-task")
-    (Path(workspace["path"]) / "change.txt").write_text("candidate", encoding="utf-8")
-    candidate = adapter.capture(workspace)
-    service = Harness(store or MemoryStore(), organization())
-    runner = ReleaseRunner(service, adapter, FileArtifacts(tmp_path / "artifacts"), "unused")
-    release = runner.releases.propose(candidate, {"checks": ["tests"]})
-    for actor in ("lead:improvement", "conductor"):
-        runner.releases.review(release["id"], actor, candidate["revision"], True, "fixture:review")
-    runner.releases.verify(release["id"], candidate["revision"], release["policy_hash"],
-                           {"tests": {"passed": True, "evidence": "fixture:tests"}})
-    with service.store.transaction() as tx:
-        tx.put("images", release["id"], {"image": "sha256:fixture"})
-    return runner, release, root
-
-
-def runner_for(tmp_path, repo, release, monkeypatch):
-    store = MemoryStore()
-    with store.transaction() as tx:
-        tx.put("releases", release["id"], release)
-    service = SimpleNamespace(store=store, org=organization())
-    runner = ReleaseRunner(service, GitWorkspace(str(repo["root"]), str(tmp_path / "workspaces")),
-                           FileArtifacts(str(tmp_path / "artifacts")), str(tmp_path / "unused-auth"),
-                           verification_root=str(tmp_path / "verification"))
-    calls = []
-
-    def check(argv, cwd=None, **kwargs):  # labelled: install passes, the incumbent suite "fails"
-        calls.append({"argv": [str(a) for a in argv], "cwd": str(cwd)})
-        return {"passed": len(calls) == 1, "evidence": "fixture:check-" + str(len(calls))}
-
-    monkeypatch.setattr(runner, "_check", check)
-    return runner, calls
-
-
-def reviewed_record(repo, *, pin=None):
-    candidate = {"revision": repo["revision"], "base": repo["base"], "tree": repo["tree"],
-                 "author": "worker:implementation"}
-    policy = {"checks": ["tests", "cli_start", "cli_file_task"], "revision": repo["base"]}
-    record = {"id": "a" * 64, "candidate": candidate, "policy": policy, "status": "reviewed",
-              "reviews": [], "checks": {}}
-    if pin is not None:
-        record["policy"] = {**policy, "revision": pin["evaluator_revision"]}
-        record["evaluator_migration"] = {"source_release_id": "b" * 64, "base": repo["base"],
-                                         "evidence": "sha256:" + "c" * 64, "approved_by": "conductor",
-                                         **pin}
-    record["policy_hash"] = digest(record["policy"])
-    return record
 
 
 def attempt_resources(attempt_id):

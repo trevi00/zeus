@@ -1,13 +1,13 @@
 """Ported SOURCE M7 suite `tests/test_check_binding.py` (e38aa722) run against the S7 target (DESIGN-s7 §6).
 
 Every assertion is M7's, unchanged. Adaptations, all construction, import and patch-target (the `m7_delivery` shim
-docstring names the routing): `ReleaseRunner` is the release runner as composition wires it (its S8/S10/S5 carries are
+docstring names the routing): `ReleaseRunner` is the release runner as composition wires it (its S10/S5 carries are
 labelled refusals unless a case installs its own double); `deployment` is the moved `delivery.adapters.deployment`, and
 the string patch target `codex_harness.adapters.deployment.VerificationServices` is `monkeypatch.setattr(deployment,
 "VerificationServices", ...)`, which installs the double in the runner's injected `verification_services` port;
-`candidate_runner` is the shim's labelled verbatim copy of `test_release_recovery.candidate_runner`; `git`/`repository`
-come from the ported `test_git_workspace`; `check_results` names from `review.domain`. A test that needs the real
-`ReleaseSuite` (S8: the denominator over real pytest children) is kept WHOLE under `pytest.mark.skip`, never rewritten.
+`candidate_runner` is the ported `test_release_recovery`'s, imported as M7 imports it; `git`/`repository`
+come from the ported `test_git_workspace`; `check_results` names from `review.domain`. The real `ReleaseSuite` (the
+denominator over real pytest children) is the shim's `release_suite` wiring of `review.adapters.release_suite`.
 
 M7 docstring follows.
 
@@ -27,11 +27,11 @@ from m7_delivery import (
     GitWorkspace,
     Harness,
     ReleaseRunner,
-    candidate_runner,
     deployment,
     organization,
 )
 from test_git_workspace import git, repository
+from test_release_recovery import candidate_runner
 
 from codex_harness.kernel.errors import ContractError
 from codex_harness.review.domain.check_results import (
@@ -111,7 +111,6 @@ def test_checks_bind_to_the_candidate_revision_of_the_workspace_they_ran_in(tmp_
     assert legacy['passed'] and legacy['binding']['expected_revision'] is None and 'bound' not in legacy['binding']
 
 
-@pytest.mark.skip(reason='S8: the real ReleaseSuite (the denominator over real pytest children)')
 def test_test_checks_pass_only_by_their_denominator_in_the_bound_workspace(tmp_path):
     runner, adapter, root = runner_with_real_git(tmp_path)
     tests = root / 'tests'

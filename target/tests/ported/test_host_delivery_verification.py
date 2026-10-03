@@ -6,11 +6,15 @@ canary and runtime helpers, `Fleet`, `organization`, `MemoryStore`, `GitWorkspac
 `POLICY` and `digest` come from the shim over the S7 split objects and moved adapters; the domain names from
 `delivery.domain.host_delivery`, the BUCKET_* names from `delivery.application.host_delivery.state`, the fleet names
 from `coordination`, the observation names from `observation`. A name whose owner is in a later slice (the operator
-CLI and lane resolution, S10; the release evaluator and `verification_fixtures`, S8; the Windows scheduled task,
-W-B) is an `unavailable(slice, name)` placeholder, and only tests skipped whole and unrewritten (each with its owning
-slice) name it.
-The `verification_fixtures` helpers (M7 `tests/verification_fixtures.py`) belong to the S8 release evaluator and have no
-ported module; they import as placeholders and the tests that use them are skipped whole as S8.
+CLI and lane resolution, S10; the Windows scheduled task, W-B) is an `unavailable(slice, name)` placeholder, and only
+tests skipped whole and unrewritten (each with its owning slice) name it: of the 13 evaluator tests this batch unskipped,
+four name `add_parser`/`run_loop` and stay skipped whole as S10 (the legacy-halt resume through the CLI, and the three
+SIGTERM/blocked-fence run-loop cases); the other nine run.
+The release evaluator is the target's (S8): `ReleaseRunner` is the shim's wiring of `delivery.adapters.deployment` with the
+real `ReleaseSuite`, `ReleaseVerifier`, `FenceUnobservable` and `bounded_fence` are `composition.release_verifier`'s
+(through the shim), and `deployment` is the shim's route to `delivery.adapters.deployment` (its `VerificationServices` is
+patched through the runner's injected port). `FixtureServices`, `fake_docker` and `source_repository` are the ported
+`verification_fixtures` helper module (M7 `tests/verification_fixtures.py`), imported as M7 imports them.
 
 M7 docstring follows.
 
@@ -49,7 +53,10 @@ from m7_delivery import (
     HostDelivery,
     ProcessHostTarget,
     ReleaseQueue,
+    ReleaseRunner,
     Releases,
+    ReleaseVerifier,
+    deployment,
     organization,
     owner_qualified_canary,
     startup_identity_canary,
@@ -66,6 +73,7 @@ from test_host_delivery import (
     targets_document,
     visited,
 )
+from verification_fixtures import FixtureServices, fake_docker, source_repository
 
 from codex_harness.delivery.application.host_delivery.state import BUCKET_INTENTS
 from codex_harness.delivery.domain.host_delivery import (
@@ -88,16 +96,10 @@ from codex_harness.delivery.domain.host_delivery import (
     validate_plan,
 )
 
-deployment = unavailable('S8', 'adapters.deployment')
 host_delivery = unavailable('S10', 'adapters.host_delivery')
-FixtureServices = unavailable('S8', 'verification_fixtures.FixtureServices')
-fake_docker = unavailable('S8', 'verification_fixtures.fake_docker')
-source_repository = unavailable('S8', 'verification_fixtures.source_repository')
-ReleaseRunner = unavailable('S8', 'adapters.deployment.ReleaseRunner')
 add_parser = unavailable('S10', 'adapters.host_delivery.add_parser')
 execute = unavailable('S10', 'adapters.host_delivery.execute')
 run_loop = unavailable('S10', 'adapters.host_delivery.run_loop')
-ReleaseVerifier = unavailable('S8', 'adapters.release_verifier.ReleaseVerifier')
 
 POLICY_CHECKS = {"checks": ["tests", "cli_start", "cli_file_task"], "evaluator": "fixture-incumbent-policy"}
 EVIDENCE = "sha256:" + "ab" * 32
@@ -195,7 +197,6 @@ def assert_exact_names(system, attempt_id):
 
 
 # ----- N-1: reviewed -> verifying -> verified -> ... -> active ----------------------------------------
-@pytest.mark.skip(reason='S8: the release evaluator and its fixtures (verification_fixtures.fake_docker; no ported module)')
 @binds_a_runtime
 def test_a_reviewed_release_is_verified_by_the_real_evaluator_before_publication(tmp_path, monkeypatch, store):
     system = build(tmp_path, monkeypatch, store)
@@ -224,7 +225,6 @@ def test_a_reviewed_release_is_verified_by_the_real_evaluator_before_publication
         stop_target(system)
 
 
-@pytest.mark.skip(reason='S8: the release evaluator and its fixtures (verification_fixtures.fake_docker; no ported module)')
 def test_a_check_that_executed_and_failed_rejects_without_publication(tmp_path, monkeypatch, store):
     """F-1 over the real evaluator: the candidate's own suite really fails."""
     system = build(tmp_path, monkeypatch, store, failing=True)
@@ -285,7 +285,7 @@ def snapshot(store):
                                "host_delivery_plans")}
 
 
-@pytest.mark.skip(reason='S8: the release evaluator and its fixtures (verification_fixtures.fake_docker; no ported module)')
+@pytest.mark.skip(reason='S10: the operator CLI (adapters.host_delivery.add_parser and execute; no S8 gap)')
 @binds_a_runtime
 def test_the_merged_unverified_legacy_halt_resumes_once_and_verifies_to_active(tmp_path, monkeypatch, store):
     system = build(tmp_path, monkeypatch, store)
@@ -331,7 +331,7 @@ def test_the_merged_unverified_legacy_halt_resumes_once_and_verifies_to_active(t
 
 
 # ----- L-1: a real child, a real SIGTERM, the real run loop ---------------------------------------
-@pytest.mark.skip(reason='S8: the release evaluator and its fixtures (verification_fixtures.fake_docker; no ported module)')
+@pytest.mark.skip(reason='S10: the host-delivery run loop (adapters.host_delivery.run_loop; no S8 gap)')
 def test_sigterm_during_an_evaluation_ends_its_own_children_and_containers_once(tmp_path, monkeypatch):
     system = build(tmp_path, monkeypatch, SerialStore())
     daemon = system["daemon"]
@@ -383,7 +383,6 @@ def test_sigterm_during_an_evaluation_ends_its_own_children_and_containers_once(
 
 
 # ----- L-2 / L-3: a lost lease and an unobservable store between checks -----------------------------
-@pytest.mark.skip(reason='S8: the release evaluator and its fixtures (verification_fixtures.fake_docker; no ported module)')
 def test_a_lease_lost_between_suite_batches_records_nothing_and_cleans_up(tmp_path, monkeypatch):
     system = build(tmp_path, monkeypatch, SerialStore())
     delivery, store = system["delivery"], system["store"]
@@ -510,7 +509,6 @@ class StoreOutage:
         monkeypatch.setattr(verifier, "evaluate", evaluate)
 
 
-@pytest.mark.skip(reason='S8: the release evaluator and its fixtures (verification_fixtures.fake_docker; no ported module)')
 def test_an_unobservable_store_cancels_without_a_write_and_the_next_tick_attaches_the_receipt(
         tmp_path, monkeypatch):
     system = build(tmp_path, monkeypatch, SerialStore(), fence_seconds=0.5)
@@ -551,7 +549,6 @@ def test_an_unobservable_store_cancels_without_a_write_and_the_next_tick_attache
     assert results[-1]["stage"] == PUBLISHING and len(attempts) == 2
 
 
-@pytest.mark.skip(reason='S8: the release evaluator and its fixtures (verification_fixtures.fake_docker; no ported module)')
 def test_an_unobservable_fence_settles_and_writes_nothing_through_the_same_unavailable_store(
         tmp_path, monkeypatch):
     """R1: ONE unavailable store blocks the heartbeat AND every settlement or write after it; the
@@ -608,7 +605,7 @@ def test_an_unobservable_fence_settles_and_writes_nothing_through_the_same_unava
     assert all(len(unresolved_attempts(snapshot)) == 1 for snapshot in outage.evaluations)
 
 
-@pytest.mark.skip(reason='S8: the release evaluator and its fixtures (verification_fixtures.fake_docker; no ported module)')
+@pytest.mark.skip(reason='S10: the host-delivery run loop (adapters.host_delivery.run_loop; no S8 gap)')
 def test_a_stop_during_a_blocked_fence_touches_no_store_and_a_repeated_signal_is_only_the_flag(
         tmp_path, monkeypatch):
     """The first SIGTERM lands while the heartbeat is blocked (well inside the default fence bound):
@@ -704,7 +701,7 @@ def stop_then_fail_the_heartbeat(system, monkeypatch, outage):
     return {"summary": summary, "receipts": receipts, "failed": failed[0], "returned": returned}
 
 
-@pytest.mark.skip(reason='S8: the release evaluator and its fixtures (verification_fixtures.fake_docker; no ported module)')
+@pytest.mark.skip(reason='S10: the host-delivery run loop (adapters.host_delivery.run_loop; no S8 gap)')
 def test_a_stop_during_a_blocked_fence_whose_heartbeat_then_fails_still_settles_nothing(tmp_path, monkeypatch):
     """R1 repair: the heartbeat blocked under a stop FAILS before the evaluation returns, so no
     observation is in flight any more - yet the store never answered it, and the same outage still
@@ -791,14 +788,11 @@ def test_the_verification_fence_counts_a_failed_observation_as_unobserved_but_no
     assert unanswered.close() is True
 
 
-@pytest.mark.skip(reason='S8: the release evaluator and its fixtures (verification_fixtures.fake_docker; no ported module)')
 @pytest.mark.integration
 def test_a_blocked_postgres_heartbeat_is_bounded_by_the_fence_not_by_an_assumed_timeout(isolated_pgstore):
     """The real store: the controller advisory lock is held elsewhere, so the heartbeat blocks."""
     import psycopg
-    from m7_delivery import unavailable
-    FenceUnobservable = unavailable('S8', 'adapters.release_verifier.FenceUnobservable')
-    bounded_fence = unavailable('S8', 'adapters.release_verifier.bounded_fence')
+    from m7_delivery import FenceUnobservable, bounded_fence
 
     store = isolated_pgstore
     org = organization()
@@ -823,7 +817,6 @@ def test_a_blocked_postgres_heartbeat_is_bounded_by_the_fence_not_by_an_assumed_
     fence()  # observable again once the store answers
 
 
-@pytest.mark.skip(reason='S8: the release evaluator and its fixtures (verification_fixtures.fake_docker; no ported module)')
 @pytest.mark.integration
 def test_a_blocked_postgres_store_returns_the_whole_tick_unsettled_well_before_lock_timeout(
         tmp_path, monkeypatch, isolated_pgstore):
@@ -858,7 +851,6 @@ def test_a_blocked_postgres_store_returns_the_whole_tick_unsettled_well_before_l
     assert disk_record(system, attempt["attempt_id"])["state"] == "resolved"
 
 
-@pytest.mark.skip(reason='S8: the release evaluator and its fixtures (verification_fixtures.fake_docker; no ported module)')
 @pytest.mark.integration
 def test_a_stop_while_a_blocked_postgres_heartbeat_times_out_settles_nothing(
         tmp_path, monkeypatch, isolated_pgstore):
@@ -894,7 +886,6 @@ def test_a_stop_while_a_blocked_postgres_heartbeat_times_out_settles_nothing(
 
 
 # ----- L-11: the evaluator split keeps the legacy contract ---------------------------------------
-@pytest.mark.skip(reason='S8: the release evaluator and its fixtures (verification_fixtures.fake_docker; no ported module)')
 def test_the_evaluator_writes_nothing_to_the_store_and_legacy_names_stay_random(tmp_path, monkeypatch):
     system = build(tmp_path, monkeypatch, SerialStore())
     store = system["store"]
