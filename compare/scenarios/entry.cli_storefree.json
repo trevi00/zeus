@@ -1,0 +1,8 @@
+{
+ "family": "entry.cli_storefree",
+ "description": "The store-free zeus roots through main(): paths, --repository, setup twice, organization, validate (valid, invalid), doctor --offline; stdout, stderr and exit code per case, fixture path normalized",
+ "reference_driver": "drivers/reference/s10_cli_storefree.py",
+ "target_driver": "drivers/target/s10_cli_storefree.py",
+ "golden": "goldens/reference/entry.cli_storefree.json",
+ "slice": "S10"
+}
