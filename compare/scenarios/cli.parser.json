@@ -2,8 +2,7 @@
  "family": "cli.parser",
  "description": "CLI parser golden: 152 nodes / 51 roots, arguments, choices, per-node --help digest",
  "reference_driver": "drivers/reference/cli_parser.py",
- "target_driver": null,
+ "target_driver": "drivers/target/cli_parser.py",
  "golden": "goldens/reference/cli.parser.json",
- "slice": "S10",
- "target_status": "pending: the target side is not implemented in S0; no target row is reported green"
+ "slice": "S10"
 }
