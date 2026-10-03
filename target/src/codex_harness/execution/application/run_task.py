@@ -87,6 +87,29 @@ class ResearchRequired(ContractError):
         self.disposition, self.reason = disposition, reason
 
 
+def _token_count(value):
+    return value if type(value) is int and value >= 0 else None
+
+
+def _usage_split(reservation_id, result, usage, transport):
+    """The attributes of `development.usage_split_recorded` from values this site already holds (DESIGN-s9-X §1.3).
+
+    `usage_record` stays M7-verbatim: Claude's parts are its `usage["parts"]`; Codex keeps only totals there, so the
+    split reads the transport's raw `usage["total"]` token-usage breakdown. Absent is null, never 0. Codex has no
+    cache-write field (null); its `inputTokens` includes the cached part (`cachedInputTokens`)."""
+    if transport == 'claude_cli':
+        parts = usage.get('parts') or {}
+        split = (parts.get('input_tokens'), parts.get('output_tokens'), parts.get('cache_read_input_tokens'),
+                 parts.get('cache_creation_input_tokens'))
+    else:
+        raw = result.get('usage') if isinstance(result.get('usage'), dict) else {}
+        total = raw.get('total') if isinstance(raw.get('total'), dict) else {}
+        split = (total.get('inputTokens'), total.get('outputTokens'), total.get('cachedInputTokens'), None)
+    names = ("input_tokens", "output_tokens", "cache_read_tokens", "cache_write_tokens")
+    return {"reservation_id": reservation_id, "provider_session_ref": result.get("thread_id"),
+            **{name: _token_count(value) for name, value in zip(names, split)}, "usage_source": usage["source"]}
+
+
 class RunTask:
     """The task-execution use case. Constructor-injected owners and ports only; no per-run state on the object."""
 
@@ -841,6 +864,14 @@ class RunTask:
                             attributes={"reservation_id": row["id"], "invocation_outcome": row["outcome"],
                                         "usage_source": row["usage"]["source"], "total_tokens": row["usage"]["total_tokens"],
                                         "within_budget": bool(row.get("within_budget"))}))
+                    # X1b-1 (DESIGN-s9-X §1.3): through the spool, never the audit table, and after settlement so
+                    # the `development.provider_*` sequence of this flow is unchanged. Telemetry only: the Observer
+                    # refuses (and counts) an event whose attributes the REGISTRY refuses, never the task. The
+                    # catalog check (`event_catalog`) is observation's domain, which execution may not import.
+                    self.observer.emit("development.usage_split_recorded", "observed",
+                                       execution=observed_execution(reservation_id), correlation_id=correlation,
+                                       causation_id=key,
+                                       attributes=_usage_split(reservation_id, result, usage, assignment.transport))
                 boundary = "breaker_report"
                 if admission is not None:
                     verdict = self.admission.verdict(result)
