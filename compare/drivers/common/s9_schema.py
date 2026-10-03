@@ -61,8 +61,7 @@ def run(api) -> dict:
         observed_at=OBSERVED, source={"component": "s9-schema", "host": "h", "pid": 0}, attributes={"agent": None, "idle_seconds": 5},
         severity="critical", identity=["unassigned", 1])
     out = {"registry_size": len(api.REGISTRY)}
-    out["registry_valid"] = {name: outcome(api, system(name, number=index + 1))
-                             for index, name in enumerate(sorted(api.REGISTRY))}
+    out["registry_valid"] = {name: outcome(api, system(name)) for name in sorted(api.REGISTRY)}
     out["valid"] = {"system": outcome(api, base), "execution": outcome(api, execution()), "decisions_pending_unassigned": outcome(api, decisions),
                     "oversize_attributes_are_not_bounded_by_the_schema": outcome(api, {**base, "attributes": {"blob": "x" * 20000, "n": [1, {"a": None}]}}),
                     "every_severity": {sev: outcome(api, {**base, "severity": sev}) for sev in ("debug", "info", "warning", "error", "critical")},
