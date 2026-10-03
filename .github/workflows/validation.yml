@@ -127,6 +127,8 @@ jobs:
       - run: python compare/run.py run --only effects.delivery_units.pg --pg
       # S8 V8 units (DESIGN-s8 §2 row effects.s8_units; the S7-B1 lesson: every .pg family runs here), reference AND target.
       - run: python compare/run.py run --only effects.s8_units.pg --pg
+      # S9 §2.9 observation units (DESIGN-s9-units v1), reference AND target, every .pg family runs here.
+      - run: python compare/run.py run --only effects.s9_units.pg --pg
       # S7 restore differential (DESIGN-s7 §4 item 4, restore/DESIGN §2.3; Codex S7-B1): dump/restore/rename/compare
       # on its own fresh labelled network-less disposable PostgreSQL pair per side, reference AND target.
       - run: python compare/run.py run --only delivery.restore.pg --pg
