@@ -2,7 +2,7 @@
 
 Layer: entry
 Owns: parser (the root parser: global options and the root order), main (the M7 shell and the one dispatch table of the composed roots), and the re-export of emit (entry.cli.output)
-Does not own: the root parsers and bodies (the modules of this package) and the roots not yet composed (S10 units C2b-C8)
+Does not own: the root parsers and bodies (the modules of this package) and the roots not yet composed (S10 units C2c-C8)
 Entry points: parser, emit, main
 Contracts: none
 
@@ -141,13 +141,19 @@ def main() -> None:
         from codex_harness.entry.cli import (
             canary,
             cancel,
+            demo,
             doctor,
+            execution_recovery,
             goal,
+            incident,
             init_db,
             inspect,
             organization,
             paths,
             release_retry,
+            rollback_hook,
+            run_command,
+            seed_research_backlog,
             setup,
             status,
             validate,
@@ -155,7 +161,10 @@ def main() -> None:
         composed = {"paths": paths.run, "setup": setup.run, "organization": organization.run,
                     "validate": validate.run, "canary": canary.run, "doctor": doctor.run,
                     "init-db": init_db.run, "status": status.run, "inspect": inspect.run, "cancel": cancel.run,
-                    "release-retry": release_retry.run, "goal": goal.run}
+                    "release-retry": release_retry.run, "goal": goal.run,
+                    "incident": incident.run, "rollback-hook": rollback_hook.run, "run-command": run_command.run,
+                    "demo": demo.run, "seed-research-backlog": seed_research_backlog.run,
+                    "execution-recovery": execution_recovery.run}
         if args.command not in composed:
             raise RuntimeError("zeus " + args.command + " is not composed in the rebuild yet (DESIGN-s10 §3)")
         composed[args.command](args)
