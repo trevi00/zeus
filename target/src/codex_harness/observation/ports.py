@@ -19,9 +19,12 @@ from dataclasses import dataclass
 from typing import Protocol
 
 # `metric_observations`: S9 P0 (coordinator), declared before its one writer, M7 application/measurements.py
-# (PREP-S9 §4.2 U4; no other SOURCE writer).
+# (PREP-S9 §4.2 U4; no other SOURCE writer). `observation_metrics` (a different bucket): S9 X2 P0 (coordinator), the
+# metrics projection's aggregates, an addition with no SOURCE counterpart, declared before its one writer
+# `application.metrics_projector` (DESIGN-s9-X §2.2).
 OWNED_BUCKETS = ("observation_audit", "observations", "observation_quarantine", "observation_alerts",
-                 "observation_collections", "observation_terminations", "health", "metric_observations")
+                 "observation_collections", "observation_terminations", "health", "metric_observations",
+                 "observation_metrics")
 
 
 class SpoolFull(RuntimeError):
