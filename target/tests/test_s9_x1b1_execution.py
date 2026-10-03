@@ -51,7 +51,7 @@ def splits(run_task):
 
 def test_the_renamed_catalog_loads_as_v2():
     catalog = load_catalog()
-    assert catalog["catalog_version"] == 3
+    assert catalog["catalog_version"] == 4
     assert SPLIT in catalog["events"] and "development.provider_usage_split" not in catalog["events"]
     assert not SPLIT.startswith("development.provider_")
 

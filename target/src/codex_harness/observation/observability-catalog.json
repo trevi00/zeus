@@ -1,5 +1,5 @@
 {
- "catalog_version": 3,
+ "catalog_version": 4,
  "events": {
   "operations.queue_item_waited": {
    "owner_context": "coordination",
@@ -338,6 +338,30 @@
     }
    },
    "producer_sites": "measured at X1b"
+  }
+ },
+ "separate_logs": {
+  "research.program_event_log": {
+   "owner_context": "research",
+   "decision": "OWNER-DECISIONS-S9 D6: retained and registered, not folded before cutover",
+   "producer": "codex_harness.research.adapters.research_program.EventLog",
+   "location": "<runtime>/research-program/<program_id>/events.jsonl",
+   "format": "jsonl",
+   "record_fields": [
+    "at",
+    "category",
+    "event",
+    "cycle",
+    "attributes"
+   ],
+   "categories": [
+    "general",
+    "development",
+    "operations"
+   ],
+   "event_names": "free: not REGISTRY event types, never validated by validate_observation",
+   "collected": false,
+   "disclosure": "a second logging truth beside the observation spool; the Collector does not read it, so no metric or monitor projection counts it. Folding it into the shared event schema is a post-parity X1 item with its own acceptance"
   }
  }
 }
