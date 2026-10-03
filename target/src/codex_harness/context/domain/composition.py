@@ -127,3 +127,9 @@ class CompositionRequest:
     # the stored rows, and keeps the basis revision it read once before the loop.
     recovery: dict | None = None
     basis_revision: str | None = None
+    # DESIGN-s8 §30 R-cd3 / §30.1, additive: the council delivery and correction feedback the caller supplies as
+    # values (None: the legacy composition). `delivery_reader` is `execution.domain.output_contracts.
+    # DELIVERY_ARTIFACT_READER`, filled by RunTask so there is one definition and no copy in context.
+    delivery: dict | None = None
+    correction_feedback: dict | None = None
+    delivery_reader: dict | None = None
