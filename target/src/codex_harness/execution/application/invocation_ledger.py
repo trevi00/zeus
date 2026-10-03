@@ -25,7 +25,7 @@ from __future__ import annotations
 from datetime import datetime, timezone
 
 from codex_harness.execution.domain.invocation import USAGE_SOURCES, outcome_check
-from codex_harness.kernel.errors import ContractError, require
+from codex_harness.kernel.errors import require
 from codex_harness.kernel.ids import SYSTEM_CLOCK, digest, utcnow
 from codex_harness.kernel.policy import POLICY
 from codex_harness.kernel.ports import Clock
@@ -38,10 +38,6 @@ UNKNOWN_USAGE = {'source': 'unknown', 'total_tokens': None, 'last_tokens': None}
 
 def reservation_key(bucket, task_id, generation, attempt, invocation):
     return digest(['invocation', bucket, task_id, generation, attempt, invocation])
-
-
-class InvocationCapacityRefused(ContractError):
-    """R-x1b1-1 (S9 X1b-1): the invocation capacity refusal of `reserve`; a ContractError with the same message."""
 
 
 class InvocationLedger:
@@ -84,8 +80,7 @@ class InvocationLedger:
                                                'closed_at': now, 'reason': 'superseded_by_new_attempt'})
             self._reclaim_dead(tx, now)
             open_rows = [row for row in tx.scan(BUCKET) if row['status'] == 'reserved']
-            if len(open_rows) >= self.capacity:  # R-x1b1-1: typed, so RunTask can observe it without matching text
-                raise InvocationCapacityRefused('Invocation capacity is reserved by other executions')
+            require(len(open_rows) < self.capacity, 'Invocation capacity is reserved by other executions')
             row = {'id': key, 'bucket': bucket, 'task_id': lease['id'], 'generation': lease['generation'],
                    'attempt': lease['attempt'], 'invocation': invocation, 'stage': stage,
                    'owner': lease.get('lease_owner'), 'request': request,
