@@ -1,5 +1,5 @@
 {
- "catalog_version": 1,
+ "catalog_version": 2,
  "events": {
   "operations.queue_item_waited": {
    "owner_context": "coordination",
@@ -301,7 +301,7 @@
    },
    "producer_sites": "measured at X1b"
   },
-  "development.provider_usage_split": {
+  "development.usage_split_recorded": {
    "owner_context": "execution",
    "category": "development",
    "severity": "info",

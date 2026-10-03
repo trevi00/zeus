@@ -284,7 +284,7 @@ REGISTRY = {
     "operations.cleanup_recorded": {"resource": _S, "cleanup_outcome": _S, "cleanup_reason": _S},
     "operations.collector_started": {"collector": _S, "previous_exit": _S},
     "operations.path_declined": {"feature": _S, "decline_reason": _S},
-    "development.provider_usage_split": {"reservation_id": _S, "provider_session_ref": _N, "input_tokens": _NI, "output_tokens": _NI, "cache_read_tokens": _NI, "cache_write_tokens": _NI, "usage_source": _S},
+    "development.usage_split_recorded": {"reservation_id": _S, "provider_session_ref": _N, "input_tokens": _NI, "output_tokens": _NI, "cache_read_tokens": _NI, "cache_write_tokens": _NI, "usage_source": _S},
 }
 
 

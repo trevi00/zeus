@@ -15,11 +15,11 @@
   {
    "path": "$.registry_valid",
    "op": "add",
-   "key": "development.provider_usage_split",
+   "key": "development.usage_split_recorded",
    "value": {
     "accepted": true,
     "same_object": true,
-    "digest": "a2db6ad2bc5f1905c988a5e9ba573abd60e92fe84b1181064b0d75869ae55fed"
+    "digest": "fb5a711bf546a6247496962216b218dbed36cf1a4932a37e15f5fbeab52e9d63"
    },
    "authority": "OBSERVABILITY-COVERAGE-20261002 via OWNER-DECISIONS-S9 D4; DESIGN-s9-X §1"
   },

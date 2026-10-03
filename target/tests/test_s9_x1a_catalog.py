@@ -26,7 +26,7 @@ OPAQUE_NAMES = {"role", "provider", "check", "feature", "collector"}
 NEW = {"operations.queue_item_waited", "development.role_dispatch_decided", "operations.capacity_refused",
        "development.tool_call_completed", "development.skill_selected", "operations.ci_observed",
        "operations.cleanup_recorded", "operations.collector_started", "operations.path_declined",
-       "development.provider_usage_split"}
+       "development.usage_split_recorded"}
 
 
 def m7_registry():
@@ -40,7 +40,7 @@ def m7_registry():
 
 def test_the_catalog_loads_and_names_exactly_the_ten_new_events():
     catalog = load_catalog()
-    assert catalog["catalog_version"] == 1
+    assert catalog["catalog_version"] == 2
     assert set(catalog["events"]) == NEW
     for name, entry in catalog["events"].items():
         assert {"owner_context", "category", "severity", "boundary", "attributes", "producer_sites"} <= set(entry)
