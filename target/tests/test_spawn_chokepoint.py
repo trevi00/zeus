@@ -45,6 +45,22 @@ def test_only_the_chokepoint_creates_processes():
     assert sorted(sites[CHOKEPOINT.relative_to(SRC).as_posix()]) == ["subprocess.Popen", "subprocess.run"]
 
 
+def test_no_target_code_passes_shell_or_a_console_cancelling_flag():
+    """The rest of M7's retired spawn audit (`test_background_processes::test_every_listed_spawn_goes_through_the_helper`,
+    SKIPPED-TEST-CLOSURE-20261004 C), generalized from its eleven M7 files to the whole target: no `shell=` keyword
+    on any call, and no CREATE_NEW_CONSOLE or DETACHED_PROCESS in code (Windows ignores CREATE_NO_WINDOW next to
+    either, so the chokepoint's no-console policy would be cancelled). Docstrings may name them; code may not."""
+    found = []
+    for path in sorted(SRC.rglob("*.py")):
+        for node in ast.walk(ast.parse(path.read_text(encoding="utf-8"))):
+            if isinstance(node, ast.keyword) and node.arg == "shell":
+                found.append(f"{path.relative_to(SRC)}:{node.value.lineno} shell=")
+            name = node.id if isinstance(node, ast.Name) else node.attr if isinstance(node, ast.Attribute) else None
+            if name in ("CREATE_NEW_CONSOLE", "DETACHED_PROCESS"):
+                found.append(f"{path.relative_to(SRC)}:{node.lineno} {name}")
+    assert found == []
+
+
 def test_the_packaged_hook_resource_spawns_nothing_either():
     assert spawn_sites(SRC / "codex_harness" / "resources" / "worker_profile_hook.py") == []
 
