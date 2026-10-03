@@ -166,3 +166,23 @@ def test_the_counter_series_through_the_projection(tmp_path):
 def test_role_dispatch_is_instrumented_with_no_seam():
     feature = FEATURES["role_dispatch"]
     assert feature.instrumented is True and feature.seam is None and feature.proof_events == (EVENT,)
+
+
+@pytest.mark.parametrize("site", ["reserve", "admit"])
+def test_any_other_refusal_is_reported_as_other_with_the_same_error(tmp_path, monkeypatch, site):
+    """Owner correction (int21): only the two fixed refusal texts name a reason; every other ContractError is `other`."""
+    run_task, workflow, store, _, calls = build(tmp_path)
+    message = "Reservation budget must be positive" if site == "reserve" else "Admission requires a typed execution lease"
+
+    def refusing(*args, **kwargs):
+        raise ContractError(message)
+
+    if site == "reserve":
+        monkeypatch.setattr(run_task.invocations, "reserve", refusing)
+    else:
+        monkeypatch.setattr(run_task.admission.breaker, "admit", refusing)
+    submit(workflow)
+    run_task.execute_one(AGENT)
+    assert task_row(store)["error"] == "ContractError: " + message and not calls
+    [event] = decided(run_task)
+    assert (event["attributes"]["decision"], event["attributes"]["decision_reason"]) == ("refused", "other")

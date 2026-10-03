@@ -78,6 +78,12 @@ from codex_harness.kernel.ids import SYSTEM_IDS, canonical, digest, utcnow
 from codex_harness.kernel.policy import POLICY
 from codex_harness.routing.domain.model_selection import select_model
 
+# X1b-2 (DESIGN-s9-X §1.5 R1): the two refusal texts `role_dispatch_decided` names a reason for. They are fixed
+# `require` messages of their owners (execution.application.invocation_ledger.InvocationLedger.reserve and
+# coordination.application.breaker.InvocationBreaker._admit); any other refusal is reported as `other`.
+_CAPACITY_REFUSAL = "Invocation capacity is reserved by other executions"
+_BREAKER_REFUSAL = "Breaker refuses admission for "
+
 
 class ResearchRequired(ContractError):
     """RF-RT: the research-first admission did not admit this design/implementation dispatch (no provider ran)."""
@@ -724,8 +730,11 @@ class RunTask:
                         attributes={"reservation_id": row["id"], "stage": stage, "transport": assignment.transport,
                                     "requested_model": requested_model, "budget_seconds": float(timeout),
                                     "workload": workload})))
-                except ContractError:
-                    role_dispatch_decided("refused", "no_capacity")
+                except ContractError as exc:
+                    # Owner correction (int21): only the ledger's capacity refusal is `no_capacity`; any other
+                    # reservation refusal (lease shape, budget, an open reservation, a guard) is `other`.
+                    role_dispatch_decided("refused", "no_capacity" if str(exc).startswith(_CAPACITY_REFUSAL)
+                                          else "other")
                     raise
             reservation_id = reservation["id"] if reservation else None
             admission = None
@@ -770,8 +779,10 @@ class RunTask:
                     # X1b-2 (DESIGN-s9-X §1.5 R1): observe a breaker refusal and re-raise the same exception.
                     try:
                         admission = self.admission.admit(self.admission.key(assignment.identity, workload), lease)
-                    except ContractError:
-                        role_dispatch_decided("refused", "provider_unavailable", reservation_id)
+                    except ContractError as exc:
+                        # Owner correction (int21): only the breaker's own refusal is `provider_unavailable`.
+                        role_dispatch_decided("refused", "provider_unavailable" if str(exc).startswith(_BREAKER_REFUSAL)
+                                              else "other", reservation_id)
                         raise
                     role_dispatch_decided("dispatched", "eligible", reservation_id)
                 session_arguments = {}
