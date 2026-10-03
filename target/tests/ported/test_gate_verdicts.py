@@ -2,18 +2,17 @@
 
 Ported SOURCE M7 suite `tests/test_gate_verdicts.py` (e38aa722) run against the S8 target. Every assertion is M7's,
 unchanged; only imports and construction differ. `SDD(store, artifacts)` is the moved class with its ticket-binding and clock
-ports injected, `SOURCE` a verbatim copy of `tests/test_sdd.py`'s (P8's suite, not yet ported: DESIGN-s8 §29.2) and `Tickets`
-the `m7_intake` shim's (all in the shims, whose docstrings name them); the domain/kernel/storage names are their target homes. The
-three cases that register an SDD iteration load the spec through `test_sdd.spec_data` -> `adapters.sdd.load_json`, which has
-NO target implementation yet (ledger `review.adapters.sdd:load_json`: designed, absent), so they are kept whole and skipped,
-naming the owner.
+ports injected, and `Tickets` the `m7_intake` shim's (both in the shims, whose docstrings name them); `SOURCE` and `spec_data` are
+M7's own `from test_sdd import SOURCE, spec_data` (the ported suite; batch U2b deleted the shim copy). The domain/kernel/storage
+names are their target homes. The three cases that register an SDD iteration run.
 """
 import json
 from dataclasses import asdict, replace
 
 import pytest
-from m7_evidence import SDD, SOURCE, spec_data
+from m7_evidence import SDD
 from m7_intake import Tickets, organization
+from test_sdd import SOURCE, spec_data
 
 from codex_harness.evidence.domain.gate_verdicts import GateVerdict, compact, fold_verdicts, parse_verdict
 from codex_harness.kernel.errors import ContractError
@@ -150,7 +149,6 @@ def runner_receipt(service, row, statement, exit_status=0, **changes):
     return service.artifacts.put(json.dumps(body), 'runner-receipt')['ref']
 
 
-@pytest.mark.skip(reason='S8: batch U (test_sdd.spec_data: review.adapters.sdd.load_json has no target implementation yet; the SDD capability exists)')
 def test_iteration_records_verdicts_in_the_journal_and_advance_consumes_the_fold(tmp_path):
     service, row = registered_iteration(tmp_path)
     stage = row['stage']
@@ -215,7 +213,6 @@ class FixtureDecisionProvider:
         return {**claim, 'authenticated': self.authenticated and claim['actor'] == self.actor}
 
 
-@pytest.mark.skip(reason='S8: batch U (test_sdd.spec_data: review.adapters.sdd.load_json has no target implementation yet; the SDD capability exists)')
 def test_runner_receipt_must_bind_the_verdict_it_supports(tmp_path):
     # Review counterexample (PR #46): free text with a caller-written exit_status is not evidence.
     service, row = registered_iteration(tmp_path)
@@ -239,7 +236,6 @@ def test_runner_receipt_must_bind_the_verdict_it_supports(tmp_path):
     assert event['details']['receipt_binding']['exit_status'] == 0
 
 
-@pytest.mark.skip(reason='S8: batch U (test_sdd.spec_data: review.adapters.sdd.load_json has no target implementation yet; the SDD capability exists)')
 def test_human_statements_settle_only_through_the_provider_verification(tmp_path):
     service, row = registered_iteration(tmp_path)
     stage = row['stage']

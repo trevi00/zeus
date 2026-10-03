@@ -8,9 +8,9 @@ shim (the facade over the split owner-action objects; its docstring names the ro
 `coordination.domain`'s; `plan_digest` and `validate_plan` are `delivery.domain.host_delivery`'s;
 `environment_successor_id` is `review.application.releases`'s; `MemoryStore` is `storage.adapters.memory_store`'s. The
 sibling helper modules (`test_owner_actions_migration`, `test_host_delivery`) are the ported ones.
-- Skipped whole and unrewritten (batch-order dependency, reported for batch U): the tests that build `real_env`, whose
-  lazy `from test_release_environment_reverification import approval_for, migrated_rejected_plan` names a sibling suite
-  that batch P8 ports (it has no ported module yet).
+- The tests that build `real_env` run (batch U2b): their lazy
+  `from test_release_environment_reverification import approval_for, migrated_rejected_plan` is M7's own line, now
+  resolving to the module batch P8 ported.
 
 M7 module docstring follows.
 
@@ -387,7 +387,6 @@ def real_env(tmp_path, control, lane_store, monkeypatch):
             "source": source, "original": original, "plan": plan, "doc": doc, "log": log, "targets": targets}
 
 
-@pytest.mark.skip(reason="S8: batch U (test_release_environment_reverification.approval_for, migrated_rejected_plan: ported by batch P8)")
 @pytest.mark.parametrize("backend, restart", [
     ("memory", False), ("memory", True),
     pytest.param("postgres", True, marks=pytest.mark.integration)])
@@ -447,7 +446,6 @@ def _everything(store):
 BACKENDS = ["memory", pytest.param("postgres", marks=pytest.mark.integration)]
 
 
-@pytest.mark.skip(reason="S8: batch U (test_release_environment_reverification.approval_for, migrated_rejected_plan: ported by batch P8)")
 @pytest.mark.parametrize("backend", BACKENDS)
 @pytest.mark.parametrize("running, code", [("0" * 40, "migration_controller_code_mismatch"),
                                            (None, "migration_controller_code_unavailable")])
@@ -479,7 +477,6 @@ def test_wrong_or_unknown_running_controller_code_leaves_everything_unused(tmp_p
     assert receipt["controller_resolved"] == approved
 
 
-@pytest.mark.skip(reason="S8: batch U (test_release_environment_reverification.approval_for, migrated_rejected_plan: ported by batch P8)")
 @pytest.mark.parametrize("backend", BACKENDS)
 def test_code_that_changes_after_the_request_waits_and_never_consumes_the_successor(tmp_path, monkeypatch,
                                                                                     request, backend):

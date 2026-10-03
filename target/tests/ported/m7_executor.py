@@ -20,7 +20,8 @@ Named adaptations (each is a construction/patch-point adaptation, never a behavi
   `executor._execution_policy = None` re-reads the environment.
 - `_run` and `_inspect_evidence` are methods of the shim: RunTask's own `_run` and the review invoker call
   through them, so `monkeypatch.setattr(executor, "_run", ...)` works as it did in M7. `_inspect_evidence` raises
-  ContractError (S8 evidence inspection is not wired).
+  ContractError on purpose: M7's `_inspect_evidence` is the EvidenceGate, composition-level orchestration decided at the S10
+  executor composition unit (OWNER-DECISIONS-S10 #7); the shim never builds it, and the tests that reach it are skipped `S10`.
 - An isolation object without `summary()`/`review_context()` (the M7 tests' stand-ins) is wrapped so the RunTask isolation
   port is met over its `config` (`container_spec.summary`, `owned_container.isolated_review_context`).
 - P9 additions (routes added only; no existing route changed): `Executor._fail_task` is RunTask's, `Executor._open_runtime` is
@@ -425,7 +426,7 @@ class Executor:
         return self.run_task.transports.open(assignment, model, cwd, action, read_only, handoff)
 
     def _inspect_evidence(self, *args, **kwargs):
-        raise ContractError("Evidence inspection is not wired (S8)")
+        raise ContractError("Evidence inspection is not wired (S10: EvidenceGate, OWNER-DECISIONS-S10 #7)")
 
     def execute_one(self, agent, expected=None):
         return self.run_task.execute_one(agent, expected)

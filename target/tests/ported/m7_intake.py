@@ -55,9 +55,8 @@ Named adaptations (each is a construction/import/patch-target adaptation, never 
   `rollback`, `prepare_command` and `active_hooks` are research's `HookLifecycle` called inside a unit opened around the
   call (M7's `Harness` opened it), and `checkpoint` is coordination's `SessionCheckpoints` over the S4 Workflow. An
   unrouted name still raises AttributeError.
-- `session_action` (M7 `domain.model.session_action`) has NO target implementation: the ledger names
-  `coordination.application.sessions:session_action` (designed, not implemented), so it imports as a placeholder
-  (`unavailable("S5", ...)`) and only the test that calls it is skipped, with the owner named.
+- `session_action` (M7 `domain.model.session_action`) is `coordination.application.sessions.session_action` (moved in
+  B8; batch U2b routes it there).
 - `GoalProgress(store)`, `SCHEMA`, `compare_reports`, `definition_hash` and `validate_manifest` of the goal-progress
   suite are `intake.application.goal_progress`'s; `FleetBacklog(store, fleet=None, clock=utcnow, portfolio=None,
   observer=None)` is the moved class over the Fleet's registry port (`fleet.registry`, as `s8_fleet_backlog.py`'s
@@ -78,7 +77,10 @@ from codex_harness.coordination.application import fleet_backlog as _fleet_backl
 from codex_harness.coordination.application.desk_runner import SUMMARY_TURNS, DeskRunner  # noqa: F401
 from codex_harness.coordination.application.messages import MessageHandler
 from codex_harness.coordination.application.outbox import Outbox
-from codex_harness.coordination.application.sessions import SessionCheckpoints
+from codex_harness.coordination.application.sessions import (
+    SessionCheckpoints,
+    session_action,  # noqa: F401
+)
 from codex_harness.coordination.application.workflow import ClaimGuardRefused  # noqa: F401
 from codex_harness.evidence.adapters.evidence_inspection import EvidenceInspector
 from codex_harness.evidence.application.evidence_inspection import EvidenceInspections
@@ -144,7 +146,6 @@ def _hook_unit(name):
 for _name in HOOK_UNITS:
     setattr(Harness, _name, _hook_unit(_name))
 
-session_action = unavailable("S5", "session_action")
 
 
 def FleetBacklog(store, fleet=None, clock=utcnow, portfolio=None, observer=None):  # noqa: N802 - the M7 constructor name

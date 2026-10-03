@@ -7,9 +7,8 @@ re-run in the original environment after an isolation exception.
 
 Ported SOURCE M7 suite `tests/test_runner_categories.py` (e38aa722) run against the S8 target. Every assertion is M7's,
 unchanged; only imports, construction and patch targets differ. `audit` (the fixture) and the helpers the approval case imports
-(`FixtureRunner`, `activate_fixture`, `complete_fixture_audit`, `lease_review`) are VERBATIM copies in the `m7_evidence`
-shim of `tests/test_research_audits.py`'s (P3's suite, not yet ported: DESIGN-s8 §29.2; its docstring names the two
-construction differences); `DockerSourceRunner(root, artifacts, docker)` is the moved class with its `processes`,
+(`FixtureRunner`, `activate_fixture`, `complete_fixture_audit`, `lease_review`) are M7's own `from test_research_audits
+import ...` lines, resolving to the ported suite (batch U2b deleted the `m7_evidence` copies); `DockerSourceRunner(root, artifacts, docker)` is the moved class with its `processes`,
 `run_process` and `classify` ports injected. The string patch targets `codex_harness.adapters.source_execution.<name>`
 (M7's module globals `bounded_command` and `run_process`) are `m7_evidence.source_execution.<name>`, the facade over the moved
 module (M7's two-argument callables are installed behind the moved function's keyword-only `processes`). One environment
@@ -23,7 +22,8 @@ import subprocess
 from dataclasses import replace
 
 import pytest
-from m7_evidence import DockerSourceRunner, audit  # noqa: F401
+from m7_evidence import DockerSourceRunner
+from test_research_audits import audit  # noqa: F401
 
 from codex_harness.kernel.errors import ContractError
 from codex_harness.review.domain.check_results import RUN_CATEGORIES, classify_isolated_run
@@ -110,7 +110,7 @@ def test_runner_receipts_carry_category_denominator_and_attempt(audit, tmp_path,
 def test_research_approval_refuses_receipts_that_executed_but_did_not_pass(audit, failure):  # noqa: F811
     # Review counterexample (PR #58): rc=0 with "3 skipped" gave exit_status=0 / inspection_blocked=False, the only
     # two values the approval consumer read. The consumer now reads the runner's verdict from the receipt.
-    from m7_evidence import FixtureRunner, activate_fixture, complete_fixture_audit, lease_review
+    from test_research_audits import FixtureRunner, activate_fixture, complete_fixture_audit, lease_review
 
     from codex_harness.research.domain.research import IndependentReview
     service, record, source, _, _ = audit
