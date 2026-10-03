@@ -2,7 +2,7 @@
  "adapters": [],
  "adapters_note": "Temporary compatibility adapters (purpose, direction, owning slice, removal condition). None is planned; permanent entry shims are listed in §3.5 rows.",
  "counts": {
-  "addition": 20,
+  "addition": 22,
   "atomic_unit": 190,
   "bucket": 169,
   "capability": 10,
@@ -37,7 +37,7 @@
   "retire:<U-id>",
   "addition:<authority>"
  ],
- "ledger_key_digest": "db9fd7705d4f0f45190eb8c6e67c5942fd173c3d1e0617be0ae51f07a7e4c14b",
+ "ledger_key_digest": "75671ceabd53bcdb0dbb7018001e72127db4cf1268f64aed0b4a33cb3b78a815",
  "ledger_sha256": "38a84d48e4ede80839850fa087e87d526d885fdd32aa452193cb0ad307c048ee",
  "schema": "zeus:rebuild-ledger-coverage:1",
  "source_commit": "e38aa722ff1e91dc01ec650689cfe3eebe1ff699",
@@ -2827,6 +2827,8 @@
   {"evidence": ["target:tests/test_s9_x2a_metrics.py"], "intent": "addition:OBSERVABILITY-COVERAGE-20261002 (OWNER-DECISIONS-S9 D4; DESIGN-s9-X §2, §2.2)", "key": "addition:observation/module/metrics_exposition", "kind": "addition", "layer": "adapters", "slice": "S9", "slice_progress": "S9 X2a: the Prometheus text format 0.0.4 renderer (golden-tested)", "status": "designed", "symbol_basis": "DESIGN-s9-X §2", "target_owner": "observation", "target_symbol": ["codex_harness.observation.adapters.metrics_exposition:render"], "trace": "addition (no SOURCE counterpart)", "untraced": false},
   {"evidence": ["target:tests/test_s9_x3a_resource_facts.py"], "intent": "addition:OBSERVABILITY-COVERAGE-20261002 (OWNER-DECISIONS-S9 D4; DESIGN-s9-X §3)", "key": "addition:observation/module/resource_facts", "kind": "addition", "layer": "adapters", "slice": "S9", "slice_progress": "S9 X3a: cgroup v2, PSI, filesystem and interface facts through injectable roots; unavailable is never zero", "status": "designed", "symbol_basis": "DESIGN-s9-X §3", "target_owner": "observation", "target_symbol": ["codex_harness.observation.adapters.resource_facts:ResourceFacts"], "trace": "addition (no SOURCE counterpart)", "untraced": false},
   {"evidence": ["target:tests/test_s9_x4a_rules.py", "owner-run:promtool (A/evidence/rebuild/s9/integration/x4a-promtool.txt)"], "intent": "addition:OBSERVABILITY-COVERAGE-20261002 (OWNER-DECISIONS-S9 D4; DESIGN-s9-X §4)", "key": "addition:observation/resource/zeus-s9-rules", "kind": "addition", "layer": "adapters", "slice": "S9", "slice_progress": "S9 X4a: 5 recording rules and 9 alerts (owner, severity, for, keep_firing_for, runbook, provisional thresholds); promtool firing/resolution tests in zeus-s9.test.yml, owner-run outside pytest (the provider guard is kept)", "status": "designed", "symbol_basis": "DESIGN-s9-X §4", "target_owner": "observation", "target_symbol": ["target/deploy/observability/prometheus/rules/zeus-s9.yml"], "trace": "addition (no SOURCE counterpart)", "untraced": false},
-  {"evidence": ["target:tests/test_s9_x4a_rules.py", "owner-run:promtool (A/evidence/rebuild/s9/integration/x4a-promtool.txt)"], "intent": "addition:OBSERVABILITY-COVERAGE-20261002 (OWNER-DECISIONS-S9 D4; DESIGN-s9-X §4)", "key": "addition:observation/resource/zeus-s9-runbook", "kind": "addition", "layer": "adapters", "slice": "S9", "slice_progress": "S9 X4a: one runbook section per alert (what fired, three read-only checks, what not to conclude, owner)", "status": "designed", "symbol_basis": "DESIGN-s9-X §4", "target_owner": "observation", "target_symbol": ["target/docs/runbooks/zeus-s9.md"], "trace": "addition (no SOURCE counterpart)", "untraced": false}
+  {"evidence": ["target:tests/test_s9_x4a_rules.py", "owner-run:promtool (A/evidence/rebuild/s9/integration/x4a-promtool.txt)"], "intent": "addition:OBSERVABILITY-COVERAGE-20261002 (OWNER-DECISIONS-S9 D4; DESIGN-s9-X §4)", "key": "addition:observation/resource/zeus-s9-runbook", "kind": "addition", "layer": "adapters", "slice": "S9", "slice_progress": "S9 X4a: one runbook section per alert (what fired, three read-only checks, what not to conclude, owner)", "status": "designed", "symbol_basis": "DESIGN-s9-X §4", "target_owner": "observation", "target_symbol": ["target/docs/runbooks/zeus-s9.md"], "trace": "addition (no SOURCE counterpart)", "untraced": false},
+  {"evidence": ["target:tests/test_s9_x2c_queue_facts.py"], "intent": "addition:OBSERVABILITY-COVERAGE-20261002 (OWNER-DECISIONS-S9 D4; DESIGN-s9-X §2.4)", "key": "addition:observation/module/queue_facts", "kind": "addition", "layer": "adapters", "slice": "S9", "slice_progress": "S9 X2c: queue depth and oldest-age facts as bounded state reads; truncated or unreadable is unavailable, never zero", "status": "designed", "symbol_basis": "DESIGN-s9-X §2.4", "target_owner": "observation", "target_symbol": ["codex_harness.observation.adapters.queue_facts:QueueFacts"], "trace": "addition (no SOURCE counterpart)", "untraced": false},
+  {"evidence": ["target:tests/test_s9_x5a_features.py"], "intent": "addition:OBSERVABILITY-COVERAGE-20261002 (OWNER-DECISIONS-S9 D4; DESIGN-s9-X §5, §5.1)", "key": "addition:observation/module/feature_registry", "kind": "addition", "layer": "domain", "slice": "S9", "slice_progress": "S9 X5a: 25 features over the 76 event types, the instrumented flag pinned to the DESIGN-s9-X §5.1 measurement, zeus_feature_uses_total and the usage-state precedence (zero use is never a removal authority)", "status": "designed", "symbol_basis": "DESIGN-s9-X §5.1", "target_owner": "observation", "target_symbol": ["codex_harness.observation.domain.feature_registry:FEATURES"], "trace": "addition (no SOURCE counterpart)", "untraced": false}
  ]
 }
