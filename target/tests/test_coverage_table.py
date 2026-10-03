@@ -21,7 +21,8 @@ ROOT = Path(__file__).resolve().parents[2]
 TABLE = ROOT / "coverage" / "ledger-coverage.json"
 PINNED = {"module": 289, "contract": 91, "cli_node": 152, "console_script": 5, "module_entry": 36,
           "http_route": 10, "resource": 33, "capability": 10, "bucket": 169, "flow": 5,
-          "public_api": 1769}
+          "public_api": 1769,
+          "addition": 12}  # S9 X1a: the D4 additive rows (OBSERVABILITY-COVERAGE-20261002; DESIGN-s9-X §1), no SOURCE counterpart
 
 
 @pytest.fixture(scope="module")
@@ -44,7 +45,9 @@ def test_pinned_ledger_and_counts(table):
 def test_row_fields_and_values(table):
     for r in table["rows"]:
         assert r["status"] in table["statuses"]
-        assert r["intent"] == "preserve" or r["intent"].startswith(("change:§4 ", "retire:U")), r["key"]
+        assert r["intent"] == "preserve" or r["intent"].startswith(("change:§4 ", "retire:U", "addition:")), r["key"]
+        if r["intent"].startswith("addition:"):  # an addition has an authority, a target and its own tests (D4)
+            assert r["kind"] == "addition" and len(r["intent"]) > len("addition:") and r["target_symbol"], r["key"]
         if r["status"] in {"designed", "implemented"}:
             assert r["target_owner"] and r["target_symbol"] and r["evidence"], r["key"]
         else:
