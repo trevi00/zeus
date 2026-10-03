@@ -34,10 +34,8 @@ Batch P2 (research program) adds, each a construction/import adaptation:
 - `repository_identity(path)` is M7 `adapters.dge_cli.repository_identity` BODY, verbatim (`digest(str(Path(path).resolve()))`),
   a labelled copy: its ledger home `entry.cli.dge` is the S10 CLI module, absent from the target (the precedent is
   `m7_coordination.ResearchEvidence`). It is NOT `coordination.domain.fleet.repository_identity`, whose body differs.
-- `SOURCE`, `FAMILY`, `INVESTIGATION`, `DEFINITIONS`, `JOBS` and `portfolio(store, jobs=JOBS)` are M7
-  `tests/test_research_investigations.py`'s helper definitions, verbatim, labelled copies: that suite belongs to batch P5
-  (not yet ported) and the chain and recovery suites cannot be collected without them (`Portfolio` and `BUCKET_JOBS`
-  are the target homes). Batch P5 owns the ported module.
+- `SOURCE`, `FAMILY`, `INVESTIGATION`, `DEFINITIONS`, `JOBS` and `portfolio` are NOT here: they are M7 `tests/test_research_investigations.py`'s own
+  definitions, imported by the ported suites from the ported `test_research_investigations` (batch P5), as M7's suites import them.
 - `organization`, `Harness`, `Workflow`, `relay` are `m7_coordination`'s (M7 `bootstrap.organization`,
   `application.service.Harness`, `application.workflow.Workflow`, `application.outbox.relay`).
 - `CouncilRun(service, executor=None, bus=None, workflow=None, budget=None, collector=None, verify_sources=None,
@@ -90,6 +88,21 @@ Batch P4 (research council) adds, each a construction/import adaptation:
 - The artifact-reader and verdict-schema constants of M7 `adapters.executor`
   are `execution.domain.output_contracts`'s; M7's `adapters.bus` names are `storage.adapters.redis_bus`'s, and a patch of its
   `Redis` global targets that module.
+Batch P5 (research feedback) adds, each a construction/import adaptation:
+- `observe_source(path)` is the target `research.adapters.reverse_source.observe_source` with host_os's `run_process` injected as the
+  target requires (V18 R-rs1), read at call time from the `reverse_source` namespace (M7's module global
+  `adapters.reverse_source.run_process`; the ported suite patches `m7_research.reverse_source.run_process`).
+- `deliver(store, artifacts, binding)` is the target `research.adapters.correction_feedback.deliver` with observation's `redact_text` injected
+  as its `redact` rule (V18 R-cf1), as `compare/drivers/target/s8_correction_feedback.py` binds it.
+- `DiscoveryPressure(store, policy_document, observer, ...)` is the target class with coordination's `DiscoveryCensusReader` wired as its
+  `census` port, as `composition.discovery_pressure` and `compare/drivers/target/s8_sources.py` wire it. `Fleet` is `m7_coordination.Fleet`
+  (the S5 facade) with M7's static `Fleet._registry` (`coordination.application.fleet.state.registry`, identical, V15), as that driver binds it.
+- `monitoring.discovery_pressure_facts(store)` is the observation collector's with its `project` port bound to the target `status` (the
+  composition S10 wires; M7's was exactly `status(store)`).
+- `events(empty=False)` is M7 `tests/test_threshold_collection.py`'s helper, verbatim, a labelled copy (that suite is S10-carried, so no
+  ported module exists). `policy_repo` (that suite's fixture) and `current_policy` (`adapters.threshold_policy`) are S10 placeholders:
+  `adapters.threshold_policy` (ledger `codex_harness.research.adapters.threshold_policy`, slice S10) is not on the target, so the fixture
+  raises and every test that builds its world through it is skipped whole for S10.
 """
 
 from __future__ import annotations
@@ -103,6 +116,7 @@ from uuid import uuid4
 
 import m7_executor
 import pytest
+from m7_coordination import Fleet as _Fleet
 from m7_coordination import Harness, Workflow, organization, packaged_policy, relay, unavailable
 from m7_coordination import OwnerActions as _OwnerActions
 from m7_delivery import Releases
@@ -116,8 +130,9 @@ from codex_harness.coordination.application import (
     outbox_relay,
 )
 from codex_harness.coordination.application.decisions import DecisionOwnership, PendingDecisions
+from codex_harness.coordination.application.discovery_census_reader import DiscoveryCensusReader
 from codex_harness.coordination.application.events import EventJournal
-from codex_harness.coordination.application.fleet.state import BUCKET_JOBS
+from codex_harness.coordination.application.fleet import state as fleet_state
 from codex_harness.coordination.application.operation import Operation as _Operation
 from codex_harness.coordination.application.outbox import Outbox
 from codex_harness.coordination.application.research_launch_facts import ResearchLaunchFacts
@@ -125,22 +140,25 @@ from codex_harness.evidence.application.inspections import EvidenceRecords
 from codex_harness.execution.adapters.containers import owned_container
 from codex_harness.execution.adapters.providers.codex_app_server import AppServer
 from codex_harness.host_os.adapters import git_source, process_groups
-from codex_harness.intake.application.portfolio import Portfolio, family_id
 from codex_harness.intake.application.progress_candidates import ProgressCandidates
 from codex_harness.kernel.ids import SYSTEM_CLOCK, SYSTEM_IDS, canonical, digest, utcnow
 from codex_harness.knowledge.application import promotion as knowledge_promotion
+from codex_harness.observation.adapters import collectors
 from codex_harness.observation.adapters.observation_spool import MemorySpool
 from codex_harness.observation.application.observations import MemoryDirectory, Observer
+from codex_harness.observation.domain.observation import redact_text
 from codex_harness.research.adapters import audit_execution as _audit_execution
 from codex_harness.research.adapters import audit_runner as _audit_runner
 from codex_harness.research.adapters import autonomous_roles, correction_feedback, dge_sources
 from codex_harness.research.adapters import research_program as _adapter
+from codex_harness.research.adapters import reverse_source as _reverse_source
 from codex_harness.research.adapters import source_execution as _source_execution
 from codex_harness.research.adapters import source_verification as _source_verification
 from codex_harness.research.adapters.council_composition import CouncilCompositionAdmission
 from codex_harness.research.application import audit_gate, dge
 from codex_harness.research.application import audit_progress as _audit_progress
 from codex_harness.research.application import audit_repair as _audit_repair
+from codex_harness.research.application import discovery_pressure as _discovery_pressure
 from codex_harness.research.application import research as _research
 from codex_harness.research.application import research_program as _application
 from codex_harness.research.application import scheduling as _scheduling
@@ -151,10 +169,10 @@ from codex_harness.storage.adapters.message_schema import validate_message
 
 __all__ = ["AppServer", "ArtifactMaintenance", "AuditExecution", "AuditProgress", "AuditRepair", "AuditRunner", "AutonomousRun",
            "CouncilRun", "Executor",
-           "DEFINITIONS", "DockerSourceRunner", "FAMILY", "FixtureBus", "FixtureExecutor", "GitCapture", "GitSource",
-           "GitSourceVerifier", "Harness", "INVESTIGATION", "JOBS", "Operation", "OwnerActions", "ProgramRunner", "REVISION", "Releases",
-           "ResearchAudits", "ResearchProgram", "SOURCE", "Workflow", "audit_runner", "audit_service", "connected", "load_isolation", "monitoring",
-           "organization", "packaged_policy", "partitions_of", "portfolio", "relay", "repository_identity", "research_program",
+           "DockerSourceRunner", "FixtureBus", "FixtureExecutor", "GitCapture", "GitSource",
+           "GitSourceVerifier", "Harness", "Operation", "OwnerActions", "ProgramRunner", "REVISION", "Releases",
+           "ResearchAudits", "ResearchProgram", "Workflow", "audit_runner", "audit_service", "connected", "DiscoveryPressure", "Fleet", "current_policy", "deliver", "events", "load_isolation", "monitoring",
+           "observe_source", "organization", "packaged_policy", "partitions_of", "policy_repo", "relay", "repository_identity", "research_program",
            "runner", "schedule_audits", "source_execution", "spool_observer", "unavailable"]
 
 GitSource = git_source.GitSource
@@ -179,7 +197,9 @@ class ProgramRunner(_adapter.ProgramRunner):
         super().__init__(*args, verify_sources=dge_sources.verify_sources, **kwargs)
 
 
-monitoring = SimpleNamespace(research_program_facts=lambda store: ResearchProgram(store).monitor())
+monitoring = SimpleNamespace(
+    research_program_facts=lambda store: ResearchProgram(store).monitor(),
+    discovery_pressure_facts=lambda store: collectors.discovery_pressure_facts(store, project=_discovery_pressure.status))
 
 
 def repository_identity(repository) -> str:
@@ -198,35 +218,6 @@ class CouncilRun(_council.CouncilRun):
         super().__init__(service, *args, sessions_factory=dge.DebateSessions, evidence_records=EvidenceRecords(),
                          promotion=knowledge_promotion, operation_factory=operation_factory, **kwargs)
 
-
-# M7 `tests/test_research_investigations.py` helpers, verbatim (labelled copies; see the docstring).
-SOURCE = {"topic": "storage", "project_ids": ["ops"], "reason_codes": ["store_timeout"]}
-FAMILY = ("failed", "store_timeout")
-INVESTIGATION = family_id(*FAMILY)
-DEFINITIONS = {"schema": "urn:zeus:portfolio-definitions:1", "projects": [
-    {"id": "ops", "title": "Operations", "outcome": "bound fleet work completes", "source_ref": "docs/GOAL.md",
-     "criteria": [{"id": "c1", "text": "jobs reach a terminal accepted state"}]},
-    {"id": "other", "title": "Other", "outcome": "unrelated work", "source_ref": "docs/GOAL.md",
-     "criteria": [{"id": "c1", "text": "unrelated criterion"}]}]}
-# (job id, status, reason code, bound project): two distinct qualifying jobs and one same-family job
-# bound to a project this program is NOT authorized for.
-JOBS = (("j-1", "failed", "store_timeout", "ops"), ("j-2", "failed", "store_timeout", "ops"),
-        ("j-3", "failed", "store_timeout", "other"), ("j-4", "rejected", "review_rejected", "ops"))
-
-
-def portfolio(store, jobs=JOBS) -> Portfolio:
-    """LABELLED synthetic Fleet rows (only the fields the reconciler reads) under the REAL portfolio
-    reconciler, owner bindings and owner dispositions."""
-    from test_research_program_fixtures import BASE_CLOCK
-    owner = Portfolio(store, DEFINITIONS, clock=lambda: BASE_CLOCK)
-    with store.transaction() as tx:
-        for job_id, status, reason, _ in jobs:
-            tx.put(BUCKET_JOBS, job_id, {"id": job_id, "lane": "lane-1", "status": status, "reason_code": reason,
-                                         "error_type": None, "updated_at": BASE_CLOCK})
-    for job_id, _, _, project in jobs:
-        owner.bind(job_id, project, "c1")
-    owner.reconcile()
-    return owner
 
 RESEARCH_PRIVATE = {"_research_decide": ("research_dispatch", "_research_decide"),
                     "_observe_dispatch": ("research_dispatch", "_observe_dispatch"),
@@ -467,3 +458,40 @@ class Executor(m7_executor.Executor):
         if run_task is not None:
             port = value if value is None or hasattr(value, "summary") else m7_executor._Isolation(value)
             run_task.isolation = run_task.transports.isolation = port
+
+
+# ---- batch P5: research feedback ---------------------------------------------------------------------------------------------
+reverse_source = SimpleNamespace(run_process=process_groups.run_process)
+
+
+def observe_source(path):
+    def run_process(*a, **k):  # read at call time, as M7 read its module global
+        return reverse_source.run_process(*a, **k)
+    return _reverse_source.observe_source(path, run_process=run_process)
+
+
+def events(empty=False):  # M7 `tests/test_threshold_collection.py::events`, verbatim (labelled copy)
+    return [{'at': f'2026-01-01T00:00:{i:02d}Z',
+             'top': [{'score': score, 'body_chars': 500} for score in ([3] if empty else [3, 5])]}
+            for i in range(40)]
+
+
+current_policy = unavailable("S10", "adapters.threshold_policy.current_policy")
+
+
+@pytest.fixture
+def policy_repo(tmp_path):
+    raise NotImplementedError("S10: adapters.threshold_policy (POLICY_PATHS, current_policy) is not on the target")
+
+
+def deliver(store, artifacts, binding):
+    return correction_feedback.deliver(store, artifacts, binding, redact=redact_text)
+
+
+class DiscoveryPressure(_discovery_pressure.DiscoveryPressure):
+    def __init__(self, store, policy_document, observer, *args, **kwargs):
+        super().__init__(store, policy_document, observer, *args, census=DiscoveryCensusReader(), **kwargs)
+
+
+class Fleet(_Fleet):
+    _registry = staticmethod(fleet_state.registry)

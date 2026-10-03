@@ -30,7 +30,8 @@ import threading
 from types import SimpleNamespace
 
 import pytest
-from m7_research import DEFINITIONS, ResearchProgram, packaged_policy
+from m7_research import ResearchProgram, packaged_policy
+from test_research_investigations import DEFINITIONS
 from test_research_program import POLICY, Clock, build, registered
 from test_research_program_fixtures import CANARY, FakeCouncil, config, git
 
