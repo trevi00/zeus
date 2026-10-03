@@ -18,10 +18,13 @@ from pathlib import Path
 
 sys.path.insert(0, str(Path(__file__).resolve().parent))
 
+import pytest  # noqa: E402
 from test_s4_run_task import build, submit, task_row  # noqa: E402
 
 from codex_harness.execution.application.run_task import _usage_split  # noqa: E402
 from codex_harness.execution.domain.invocation import usage_record  # noqa: E402
+from codex_harness.kernel.errors import ContractError  # noqa: E402
+from codex_harness.observation.application.catalog_observer import CatalogCheckingObserver  # noqa: E402
 from codex_harness.observation.domain.event_catalog import (  # noqa: E402
     check_catalog_attributes,
     load_catalog,
@@ -139,3 +142,47 @@ def test_an_event_the_registry_refuses_is_dropped_and_counted_never_the_task(tmp
     assert splits(run_task) == []
     assert run_task.observer.counters["refused"] >= 1
     assert task_row(store)["status"] == "succeeded"
+
+
+def wired(tmp_path, **extra):
+    """A RunTask whose Observer is the catalog-checking decorator around the fixture's Observer."""
+    run_task, workflow, store, _, calls = build(tmp_path, extra=extra)
+    run_task.observer = CatalogCheckingObserver(run_task.observer)
+    return run_task, workflow, store, calls
+
+
+def test_run_task_through_the_decorator_emits_the_split_exactly_as_before(tmp_path):
+    usage = {"total": {"totalTokens": 9, "inputTokens": 5, "outputTokens": 3, "cachedInputTokens": 1}}
+    run_task, workflow, store, _ = wired(tmp_path, usage=usage)
+    submit(workflow)
+    assert run_task.execute_one("lead:improvement")["status"] == "succeeded"
+    [event] = splits(run_task)
+    assert event["attributes"]["input_tokens"] == 5 and event["attributes"]["cache_read_tokens"] == 1
+    with store.transaction() as tx:  # audit, termination, guard and every other method still reach the Observer
+        kinds = {a["event_type"] for a in tx.scan("observation_audit")}
+    assert {"development.invocation_reserved", "development.invocation_settled"} <= kinds
+    assert run_task.observer.counters["refused"] == 0
+
+
+def test_the_decorator_refuses_catalog_values_and_passes_other_events_through(tmp_path):
+    observer = CatalogCheckingObserver(build(tmp_path)[0].observer)
+    good = {"scope": "invocation_budget", "refusal_reason": "budget_exhausted", "retry_after_seconds": None}
+    assert observer.emit("operations.capacity_refused", "blocked", attributes=good, severity="warning")
+    before = observer.counters["refused"]
+    for bad in ({**good, "scope": "made_up"}, {**good, "refusal_reason": "because"}, {**good, "extra": 1}):
+        assert observer.emit("operations.capacity_refused", "blocked", attributes=bad, severity="warning") is None
+    opaque = {"reservation_id": "has a space", "provider_session_ref": None, **NULLS, "usage_source": "unknown"}
+    assert observer.emit(SPLIT, "observed", attributes=opaque) is None
+    assert observer.counters["refused"] == before + 4
+    assert observer.emit("general.process_started", "started", attributes={})  # not in the catalog: untouched
+
+
+def test_the_decorator_audit_checks_the_catalog_first_and_forwards_the_rest(tmp_path):
+    run_task, _, store, _ = wired(tmp_path)
+    bad = {"scope": "made_up", "refusal_reason": "budget_exhausted", "retry_after_seconds": None}
+    with store.transaction() as tx:
+        with pytest.raises(ContractError):
+            run_task.observer.audit(tx, "operations.capacity_refused", "blocked", identity=["t", "1"],
+                                    attributes=bad, severity="warning")
+        row = run_task.observer.audit(tx, "general.process_started", "started", identity=["t", "2"], attributes={})
+        assert row["event_type"] == "general.process_started"
