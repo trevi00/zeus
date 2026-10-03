@@ -2,11 +2,15 @@
 
 Import paths rewritten to the target modules; any other adaptation is named in place.
 
-Not ported here (owning slice; carried forward, listed in the S2 coverage evidence):
+Formerly not ported here (S2-S7 pilots); batch U3 below copies every one of them:
 - test_cli_detect_preview_initialize_and_existing_profile: S10 entry: the CLI main()/script moves to entry/composition
 - test_unknown_cli_preview_remains_available_but_does_not_freeze_empty_profile: S10 entry: the CLI main()/script moves to entry/composition
 - test_metadata_only_detection_requires_explicit_stack_before_write: S10 entry: the CLI main()/script moves to entry/composition
+
+Batch U3 (V6 retrofit): the three cases that had been left out (four node IDs) are copied verbatim and skipped whole,
+`S10: the project_init operator CLI (scripts/project_init.py)`; the names only they read stay unresolved by design (F821).
 """
+# ruff: noqa: F821
 import hashlib
 import json
 from pathlib import Path
@@ -89,6 +93,39 @@ def test_oversized_manifest_and_directory_signal_are_rejected(tmp_path):
         detect_project(tmp_path)
 
 
+@pytest.mark.skip(reason="S10: the project_init operator CLI (scripts/project_init.py)")
+def test_cli_detect_preview_initialize_and_existing_profile(tmp_path):
+    (tmp_path / 'package.json').write_text('{"dependencies":{"react":"^18"}}')
+    (tmp_path / 'tsconfig.json').write_text('{}')
+    script = Path(__file__).resolve().parents[1] / 'scripts/project_init.py'
+    env = {**os.environ, 'PYTHONPATH': str(script.parents[1] / 'src')}
+    command = [sys.executable, str(script), str(tmp_path), '--detect']
+    preview = subprocess.run(command + ['--preview'], env=env, capture_output=True, text=True)
+    assert preview.returncode == 0, preview.stderr
+    assert json.loads(preview.stdout)['written'] is False
+    assert not (tmp_path / '.harness').exists()
+    applied = subprocess.run(command, env=env, capture_output=True, text=True)
+    assert applied.returncode == 0, applied.stderr
+    profile = parse_profile((tmp_path / '.harness/tech-stack.yaml').read_text())
+    assert 'typescript/react' in eligible_paths(profile)
+    assert json.loads(applied.stdout)['commit_required'] is True
+    repeated = subprocess.run(command, env=env, capture_output=True, text=True)
+    assert repeated.returncode == 2 and 'FileExistsError' in repeated.stderr
+
+
+@pytest.mark.skip(reason="S10: the project_init operator CLI (scripts/project_init.py)")
+def test_unknown_cli_preview_remains_available_but_does_not_freeze_empty_profile(tmp_path):
+    script = Path(__file__).resolve().parents[1] / 'scripts/project_init.py'
+    env = {**os.environ, 'PYTHONPATH': str(script.parents[1] / 'src')}
+    command = [sys.executable, str(script), str(tmp_path), '--detect']
+    preview = subprocess.run(command + ['--preview'], env=env, capture_output=True, text=True)
+    assert preview.returncode == 0
+    assert json.loads(preview.stdout)['profile']['metadata']['detection']['status'] == 'unknown'
+    applied = subprocess.run(command, env=env, capture_output=True, text=True)
+    assert applied.returncode == 2 and 'No project signals' in applied.stderr
+    assert not (tmp_path / '.harness').exists()
+
+
 
 
 
@@ -123,6 +160,24 @@ def test_unresolvable_home_is_classified(tmp_path, monkeypatch):
 def test_workflow_signal_uses_exact_directory_names(tmp_path, directory):
     (tmp_path / directory).mkdir(parents=True)
     assert detect_project(tmp_path)['metadata']['detection']['status'] == 'unknown'
+
+
+@pytest.mark.skip(reason="S10: the project_init operator CLI (scripts/project_init.py)")
+@pytest.mark.parametrize('signal', ['Dockerfile', '.github/workflows'])
+def test_metadata_only_detection_requires_explicit_stack_before_write(tmp_path, signal):
+    if signal == 'Dockerfile':
+        (tmp_path / signal).write_text('FROM scratch')
+    else:
+        (tmp_path / signal).mkdir(parents=True)
+    profile = detect_project(tmp_path)
+    assert profile['stacks'] == []
+    assert profile['metadata']['detection']['status'] == 'detected'
+    script = Path(__file__).resolve().parents[1] / 'scripts/project_init.py'
+    env = {**os.environ, 'PYTHONPATH': str(script.parents[1] / 'src')}
+    result = subprocess.run([sys.executable, str(script), str(tmp_path), '--detect'],
+                            env=env, capture_output=True, text=True)
+    assert result.returncode == 2 and 'Only metadata signals' in result.stderr
+    assert not (tmp_path / '.harness/tech-stack.yaml').exists()
 
 
 

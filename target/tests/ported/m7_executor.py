@@ -52,6 +52,7 @@ Named adaptations (each is a construction/patch-point adaptation, never a behavi
   assigned `list_revision` is installed behind a wrapper that drops the port argument and restored as it was); `operation_cli` exposes
   `GitSource` (`host_os.adapters.git_source`, moved ahead of the S10 CLI); `source_verification.GitSourceVerifier`,
   `audit_runner.AuditRunner` and `source_execution.bounded_command` are the target objects with `processes=ChokepointProcesses()`.
+- Batch U3 route: `Executor._task_session_owner` is RunTask's function of that name (read on the class, with a stand-in `self`).
 - The context composer's threshold source is the packaged definition (`conftest.NATIVE_THRESHOLDS`), as the
   ported S2 suites supply it (research implements that port in S8).
 """
@@ -424,6 +425,10 @@ class Executor:
 
     def _open_runtime(self, assignment, model, cwd=None, action=None, read_only=False, handoff=None):
         return self.run_task.transports.open(assignment, model, cwd, action, read_only, handoff)
+
+    # Batch U3 route (added only): M7 `Executor._task_session_owner(self, ...)`, read on the class by the session suite with a
+    # stand-in `self` that carries `worker_sessions` and `isolation`; RunTask's own function reads exactly those two attributes.
+    _task_session_owner = RunTask._task_session_owner
 
     def _inspect_evidence(self, *args, **kwargs):
         raise ContractError("Evidence inspection is not wired (S10: EvidenceGate, OWNER-DECISIONS-S10 #7)")

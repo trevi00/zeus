@@ -2,9 +2,11 @@
 `tests/claude_protocol_child.py`, copied unchanged beside it) against the target Claude transport.
 
 Adaptations, named: imports point at the target; the transport's host facilities are injected (the
-`ClaudeHost` of this file: host_os run_process and ProcessTree, the context worker-profile adapter, and a
-redaction stand-in because observation's `redact_text` moves in S9 and no case here asserts redaction; the
-private `_StreamState` takes that redactor explicitly; the CANARY constant of M7 `test_observations` is
+`ClaudeHost` of this file: host_os run_process and ProcessTree, the context worker-profile adapter and observation's
+real `redact_text`, which batch U3 put in place of the redaction stand-in this file held while S9 had not landed); the
+one DECLARED assert-embedded construction adaptation: the private `_StreamState` takes that redactor explicitly, so
+`test_each_way_of_losing_output_is_named` builds `_StreamState(limits, redact_text)` where M7 built
+`_StreamState(limits)` (ported_check is run with `--allow-assert-diff` for that one test); the CANARY constant of M7 `test_observations` is
 copied, that suite being S9's; the dummy database URL is assembled at run time for check-tree).
 M7 module docstring follows.
 
@@ -31,17 +33,13 @@ from codex_harness.execution.domain.invocation import classify_result, parse_req
 from codex_harness.host_os.adapters import process_groups
 from codex_harness.host_os.adapters.process_tree import ProcessTree, TreeOwnershipLeak
 from codex_harness.kernel.errors import ContractError
+from codex_harness.observation.domain.observation import redact_text
 
 CANARY = "CANARY-7e1d9c3b5a2f4e6d8c0b1a2f3e4d5c6b"  # M7 tests/test_observations.CANARY (that suite is S9's)
 
 
-def _no_redaction_stand_in(text):
-    """Observation's `redact_text` moves in S9; no case of this file asserts a redaction (named adaptation)."""
-    return text, 0
-
-
 HOST = claude_cli.ClaudeHost(runner=process_groups.run_process, trees=ProcessTree, tree_leak=TreeOwnershipLeak,
-                             worker_profiles=worker_profile, redact=_no_redaction_stand_in)
+                             worker_profiles=worker_profile, redact=redact_text)
 
 
 def ClaudeCodeRuntime(**kwargs):  # noqa: N802 - the M7 constructor form, adapted: the host is injected
@@ -400,18 +398,18 @@ def test_each_way_of_losing_output_is_named(tmp_path):
     """The rule itself, without needing three different hostile children to reach it."""
     from codex_harness.execution.adapters.providers.claude_cli import _lost_output, _StreamState
     limits = {"line_bytes": 10, "stream_bytes": 10, "queue_events": 1, "retained_events": 1}
-    assert _lost_output(_StreamState(limits, _no_redaction_stand_in)) is None
-    truncated = _StreamState(limits, _no_redaction_stand_in)
+    assert _lost_output(_StreamState(limits, redact_text)) is None
+    truncated = _StreamState(limits, redact_text)
     truncated.truncated = True
     assert "output limit" in _lost_output(truncated)
-    overflowed = _StreamState(limits, _no_redaction_stand_in)
+    overflowed = _StreamState(limits, redact_text)
     overflowed.count("queue_full")
     assert "never examined" in _lost_output(overflowed)
-    broken = _StreamState(limits, _no_redaction_stand_in)
+    broken = _StreamState(limits, redact_text)
     broken.reader_errors.append({"stream": "stdout", "error": "OSError"})
     assert "stdout reader failed" in _lost_output(broken)
     # A dead stderr reader loses diagnostics, not the record of what the provider did.
-    noisy = _StreamState(limits, _no_redaction_stand_in)
+    noisy = _StreamState(limits, redact_text)
     noisy.reader_errors.append({"stream": "stderr", "error": "OSError"})
     assert _lost_output(noisy) is None
 

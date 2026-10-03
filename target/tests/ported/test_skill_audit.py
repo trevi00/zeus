@@ -2,11 +2,15 @@
 
 Import paths rewritten to the target modules; any other adaptation is named in place.
 
-Not ported here (owning slice; carried forward, listed in the S2 coverage evidence):
+Formerly not ported here (S2-S7 pilots); batch U3 below copies every one of them:
 - test_window_cutoff_boundary_and_legacy_slug_cli: S10 entry: the CLI main()/script moves to entry/composition
 - test_cli_reads_same_project_without_writes_and_replay_preserves_time: S10 entry: the CLI main()/script moves to entry/composition
 - test_store_value_error_is_unavailable_not_bad_arguments: S10 entry: the CLI main()/script moves to entry/composition
+
+Batch U3 (V6 retrofit): the three CLI cases that had been left out are copied verbatim and skipped whole,
+`S10: the skill audit operator CLI` (M7 `skill_audit.main`); the names only they read stay unresolved by design (F821).
 """
+# ruff: noqa: F821
 import json
 
 import pytest
@@ -114,6 +118,18 @@ def test_total_score_matches_upstream_producer_not_pointer_eligibility():
     assert 'base score median: 1' in render_text(report)
 
 
+@pytest.mark.skip(reason="S10: the skill audit operator CLI")
+def test_window_cutoff_boundary_and_legacy_slug_cli(capsys, monkeypatch):
+    monkeypatch.setattr('codex_harness.domain.skill_audit.MAX_EVENTS', 2)
+    boundary = timestamp('2026-09-08T00:00:00Z')
+    report = audit_history([observation(i) for i in range(3)], cutoff=boundary)
+    assert report['invocations'] == 2 and report['max_events'] == 2
+    store = MemoryStore()
+    SkillHistory(store).record(digest('github:owner/repo'), observation('slug'))
+    assert main(['--github-repo', 'Owner/Repo', '--json'], store=store) == 0
+    assert json.loads(capsys.readouterr().out)['invocations'] == 1
+
+
 
 
 @pytest.mark.parametrize('value', ['0s', '-1d', 'NaNh', 'infh', '7x', ''])
@@ -136,6 +152,48 @@ def test_invalid_base_score_cannot_be_recorded(value):
     with pytest.raises(ContractError, match='Invalid base score'):
         SkillHistory(store).record('project', entry)
     assert store.data == {}
+
+
+@pytest.mark.skip(reason="S10: the skill audit operator CLI")
+def test_cli_reads_same_project_without_writes_and_replay_preserves_time(capsys):
+    store = MemoryStore()
+    project_id = str(uuid4())
+    key = digest('uuid:' + project_id)
+    history = SkillHistory(store)
+    entry = observation('old')
+    del entry['top'][0]['dimensions']
+    history.record(key, entry)
+    before = copy.deepcopy(store.data)
+    entry['top'][0]['dimensions'] = ['kw:new-detail']
+    assert not history.record(key, entry)
+    assert store.data == before
+    for index in range(3):
+        history.record(key, observation(index))
+    before = copy.deepcopy(store.data)
+    assert main(['--project-id', project_id, '--json', '--since', '1h'], store=store) == 0
+    report = json.loads(capsys.readouterr().out)
+    assert report['invocations'] == 4 and report['dim_weight'] == {'kw': 3}
+    assert report['unknown_timestamp_events'] == 0
+    assert store.data == before
+    assert main(['--project-id', str(uuid4()), '--json'], store=store) == 0
+    assert json.loads(capsys.readouterr().out)['invocations'] == 0
+    assert main(['--github-repo', '../sibling', '--json'], store=store) == 2
+    assert main(['--project-id', project_id, '--since', 'invalid'], store=store) == 2
+    assert main(['--project-id', project_id, '--min-samples', '0'], store=store) == 2
+    assert main(['--project-id', 'not-a-uuid'], store=store) == 2
+    capsys.readouterr()
+    assert main(['--project-id', project_id], store=store) == 0
+    assert 'Narrow the kw surface' in capsys.readouterr().out
+
+
+@pytest.mark.skip(reason="S10: the skill audit operator CLI")
+def test_store_value_error_is_unavailable_not_bad_arguments(capsys):
+    class BrokenStore:
+        def transaction(self):
+            raise ValueError('secret backend detail')
+    assert main(['--project-id', str(uuid4())], store=BrokenStore()) == 1
+    error = json.loads(capsys.readouterr().err)
+    assert error == {'error': 'Audit unavailable', 'type': 'ValueError'}
 
 
 

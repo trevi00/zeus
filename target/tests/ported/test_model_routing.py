@@ -2,7 +2,7 @@
 
 Import paths rewritten to the target modules; any other adaptation is named in place.
 
-Not ported here (owning slice; carried forward, listed in the S2 coverage evidence):
+Formerly not ported here (S2-S7 pilots); batch U3 below copies every one of them:
 - test_required_hook_plan_is_explicitly_important: S8 research: recurrence/hook lifecycle over the Harness
 
 PORTING NOTES (S4 ported executor suites; the M7 assertions are unchanged):
@@ -16,6 +16,9 @@ PORTING NOTES (S4 ported executor suites; the M7 assertions are unchanged):
   executor composition unit); the shim's `_inspect_evidence` raises on purpose, so the implement task would retry.
 - test_lead_review_projects_only_importance_and_conductor_rework_preserves_it: SKIPPED, S5 coordination: the
   M7 `Workflow.handle(report)` (the report -> conductor decision hand-off) is not in the target Workflow.
+
+Batch U3 (V6 retrofit): test_required_hook_plan_is_explicitly_important is copied verbatim and RUNS (`Harness`, `Workflow` (whose
+`handle` routes to the S5 messages) and `organization` are `m7_coordination`'s; `envelope` is the target's).
 """
 
 import json
@@ -23,8 +26,8 @@ from types import SimpleNamespace
 
 import m7_executor
 import pytest
+from m7_coordination import Harness, Workflow, organization
 
-from codex_harness.coordination.application.workflow import Workflow
 from codex_harness.execution.domain.output_contracts import IMPLEMENTATION
 from codex_harness.kernel.errors import ContractError
 from codex_harness.kernel.message import envelope
@@ -205,6 +208,17 @@ def test_rejection_preserves_simple_implementation_classification(tmp_path, monk
         assert details['plan']['origin']['importance'] == 'simple'
     else:
         assert details['importance'] == 'simple'
+
+
+def test_required_hook_plan_is_explicitly_important():
+    service = Harness(MemoryStore(), organization())
+    hook = {'id': 'hook-fixture', 'status': 'required'}
+    with service.store.transaction() as tx:
+        tx.put('hooks', hook['id'], hook)
+    message = envelope('hook.required', 'lead:improvement', 'conductor', 'implement_hook',
+                       {'hook_id': hook['id']}, 'routing')
+    result = Workflow(service.store, service.org).handle(message)
+    assert result['next_message']['what']['details']['importance'] == 'important'
 
 
 def test_lead_review_projects_only_importance_and_conductor_rework_preserves_it(tmp_path, monkeypatch):

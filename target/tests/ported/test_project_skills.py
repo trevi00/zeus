@@ -2,7 +2,7 @@
 
 Import paths rewritten to the target modules; any other adaptation is named in place.
 
-Not ported here (owning slice; carried forward, listed in the S2 coverage evidence):
+Formerly not ported here (S2-S7 pilots); batch U3 below copies every one of them:
 - test_cli_legacy_import_preserves_extra_metadata_and_never_overwrites: S10 entry: the CLI main()/script moves to entry/composition
 
 PORTING NOTES (S4 ported executor suites; the M7 assertions are unchanged):
@@ -13,7 +13,11 @@ PORTING NOTES (S4 ported executor suites; the M7 assertions are unchanged):
 - test_real_skill_history_annotation_and_recovery_survive_other_task_observation: SKIPPED, S10 entry: its final
   step calls the skill-audit CLI `main([...], store=store)` (M7 `adapters/skill_audit.main`), which is not in the
   target (`context.adapters.skill_audit` keeps only `render_text`). The body is kept unchanged.
+
+Batch U3 (V6 retrofit): test_cli_legacy_import_preserves_extra_metadata_and_never_overwrites is copied verbatim and skipped
+whole, `S10: the project_init operator CLI (scripts/project_init.py)`; the names only it reads stay unresolved by design (F821).
 """
+# ruff: noqa: F821
 
 import json
 from functools import partial as _partial
@@ -302,5 +306,31 @@ def test_selected_skill_symlink_is_rejected(project):
     git._git('commit', '-qm', 'fixture skill symlink mode')
     with pytest.raises(ContractError, match='regular Git file'):
         project_context(git, artifacts, str(root), git._git('rev-parse', 'HEAD'))
+
+
+@pytest.mark.skip(reason="S10: the project_init operator CLI (scripts/project_init.py)")
+def test_cli_legacy_import_preserves_extra_metadata_and_never_overwrites(tmp_path):
+    root = tmp_path / 'project'
+    (root / '.claude').mkdir(parents=True)
+    legacy = root / '.claude/tech-stack.yaml'
+    source = ('stack: {language: java, framework: springboot, version: 3.10, test_command: mvn}\n'
+              'database: {type: mysql, version: 5.7}\norm: mybatis\n'
+              'mobile: {framework: android}\n')
+    legacy.write_text(source)
+    script = Path(__file__).resolve().parents[1] / 'scripts/project_init.py'
+    env = {**os.environ, 'PYTHONPATH': str(script.parents[1] / 'src')}
+    argv = [sys.executable, str(script), str(root), '--from-claude']
+    first = subprocess.run(argv, env=env, capture_output=True, text=True)
+    assert first.returncode == 0, first.stderr
+    output = json.loads(first.stdout)['profile']
+    assert output['metadata']['legacy_fields']['database']['version'] == '5.7'
+    assert output['metadata']['stack_fields']['stack']['test_command'] == 'mvn'
+    assert output['metadata']['unmapped_stack_blocks']['mobile']['framework'] == 'android'
+    assert output['stacks'][0]['version'] == '3.10'
+    assert parse_profile((root / '.harness/tech-stack.yaml').read_text()) == output
+    assert legacy.read_text() == source
+    second = subprocess.run(argv, env=env, capture_output=True, text=True)
+    assert second.returncode == 2 and 'Traceback' not in second.stderr
+    assert json.loads(second.stderr)['error'] == 'FileExistsError'
 
 
