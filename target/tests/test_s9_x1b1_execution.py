@@ -21,7 +21,10 @@ from test_s4_run_task import build, submit, task_row  # noqa: E402
 
 from codex_harness.execution.application.run_task import _usage_split  # noqa: E402
 from codex_harness.execution.domain.invocation import usage_record  # noqa: E402
-from codex_harness.observation.domain.event_catalog import check_catalog_attributes, load_catalog  # noqa: E402
+from codex_harness.observation.domain.event_catalog import (  # noqa: E402
+    check_catalog_attributes,
+    load_catalog,
+)
 
 SPLIT = "development.usage_split_recorded"
 NULLS = {"input_tokens": None, "output_tokens": None, "cache_read_tokens": None, "cache_write_tokens": None}
