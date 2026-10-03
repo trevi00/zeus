@@ -113,6 +113,8 @@ def samples(row, *, providers):
     else:
         refused.append(PROJECTED)
     event_type = row.get("event_type")
+    if type(event_type) is not str:  # totality: an unhashable value must not reach the dict lookups below
+        event_type = None
     attributes = row.get("attributes")
     if not isinstance(attributes, dict):
         attributes = {}

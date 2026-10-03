@@ -16,6 +16,7 @@ from codex_harness.observation.adapters.observation_spool import SpoolDirectory
 from codex_harness.observation.application.metrics_projector import MetricsProjector, ProjectingStore
 from codex_harness.observation.application.observations import Collector
 from codex_harness.observation.domain.metric_families import FAMILIES, samples
+from codex_harness.observation.domain.metric_families import PROJECTED as PROJECTED_FAMILY
 from codex_harness.observation.domain.observation import INVOCATION_OUTCOMES
 from codex_harness.storage.adapters.memory_store import MemoryStore
 
@@ -185,3 +186,10 @@ def test_an_out_of_enum_value_counts_a_rejection_per_family():
     assert series(rows, REJECTIONS) == {(name,): 1 for name, _ in bad_rows}
     assert not set(NEW) & {r["metric"] for r in rows}
     assert "deploying" not in render(rows)
+
+
+def test_samples_stays_total_for_an_unhashable_event_type():
+    """Owner correction (int17): the X2b dict lookups must not raise on a malformed row (the X2a totality contract)."""
+    for event_type in (["general.message_published"], {"a": 1}, 7, None):
+        made, refused = samples({"category": "general", "event_type": event_type}, providers=())
+        assert made == [(PROJECTED_FAMILY, ("general",), 1)] and refused == []
