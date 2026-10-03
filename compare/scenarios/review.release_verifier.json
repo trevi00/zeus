@@ -1,0 +1,8 @@
+{
+ "family": "review.release_verifier",
+ "description": "S8 batch B7b (DESIGN-s8 section 32 V34b) M7 adapters/release_verifier.py characterized before the move into composition, mirroring the verifier parts of tests/test_release_verifier.py and tests/test_host_interruption.py: the module surface and defaults, the cancellation boundary (raises once, only while active, only on the main thread), the bounded fence (lost, unobservable, hanging, late success), HostFacts over a written proc and cgroup tree (hostile command name, absence only on proof, foreign proc root), the attempt identity and record, evaluate over a scripted evaluator (checked, retry, fence lost and unobservable, superseded, refused, unexpected, interrupted, stop requested before, unreadable docker, own leftovers, failing receipts, unwritable record), reconcile over planted records and store attempts (dead, alive, self and unknown owners, resolved, unreadable and mismatched records, never started, cgroup strangers), the host child group reclaim matrix over a scripted killpg, container reconciliation and compose removal over one scripted docker (exact name and label only, ambiguity and errors are debt, foreign containers never named) and the attempt names; scripted facts, os.getpid and os.killpg for the whole run, scripted docker at the module's process runner, harness clock, real shortened time for fence waits; temporary paths named symbolically and record file digests masked",
+ "reference_driver": "drivers/reference/s8_release_verifier.py",
+ "target_driver": "drivers/target/s8_release_verifier.py",
+ "golden": "goldens/reference/review.release_verifier.json",
+ "slice": "S8"
+}
