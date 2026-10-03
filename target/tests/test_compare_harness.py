@@ -131,8 +131,8 @@ S8_IMPLEMENTED = {"intake.portfolio", "research.dge", "evidence.inspections", "r
 S9_IMPLEMENTED = {"observation.schema", "observation.file_spool", "observation.frontend_bytes", "observation.measurements",
                   "observation.monitoring_projection", "observation.viewer", "observation.collector", "observation.local_facts", "observation.collectors_core",
                   "observation.collectors_sources", "observation.frontend_checks", "effects.s9_units", "effects.s9_units.pg"}
-S10_FAMILIES = {"entry.cli_storefree", "entry.cli_store.pg", "coordination.continuation_binding"}
-S10_IMPLEMENTED = {"cli.parser", "entry.cli_storefree", "entry.cli_store.pg", "coordination.continuation_binding"}
+S10_FAMILIES = {"entry.cli_storefree", "entry.cli_store.pg", "entry.cli_store_b.pg", "coordination.continuation_binding"}
+S10_IMPLEMENTED = {"cli.parser", "entry.cli_storefree", "entry.cli_store.pg", "entry.cli_store_b.pg", "coordination.continuation_binding"}
 IMPLEMENTED = {**{f: "S1" for f in S1_FAMILIES}, **{f: "S2" for f in S2_FAMILIES},
                **{f: "S3" for f in S3_IMPLEMENTED}, **{f: "S4" for f in S4_IMPLEMENTED},
                **{f: "S5" for f in S5_IMPLEMENTED}, **{f: "S6" for f in S6_IMPLEMENTED},
