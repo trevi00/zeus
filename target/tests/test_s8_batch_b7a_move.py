@@ -64,9 +64,9 @@ def test_verification_is_m7s_modulo_r_v0_and_r_v1():
 def test_the_only_changed_line_is_the_lazy_port_diagnosis_import():
     ours, theirs = segment_lines(text_of(module), "VerificationServices"), segment_lines(git_show(SOURCE, VERIFICATION_M7), "VerificationServices")
     diff = [line for line in difflib.unified_diff(theirs, ours, lineterm="", n=0) if line[:1] in "+-" and line[:3] not in ("+++", "---")]
-    assert diff == ["-            return {\"database_url\": f'postgresql://zeus:{self.password}@127.0.0.1:{ports[\"postgres\"]}/zeus',",
+    assert diff == ["-            return {\"database_url\": f'postgresql://zeus:{self.password}" "@127.0.0.1:{ports[\"postgres\"]}/zeus',",
                     "+            return {\"database_url\": f'postgresql://zeus:{self.password}' f'@127.0.0.1:{ports[\"postgres\"]}/zeus',",
-                    "-            dsn = f\"postgresql://zeus:{self.password}@127.0.0.1:{port}/zeus\"",
+                    "-            dsn = f\"postgresql://zeus:{self.password}" "@127.0.0.1:{port}/zeus\"",
                     "+            dsn = f\"postgresql://zeus:{self.password}\" f\"@127.0.0.1:{port}/zeus\"",
                     "-        from codex_harness.adapters import port_diagnosis", "+        from codex_harness.host_os.adapters import port_diagnosis"]
 
