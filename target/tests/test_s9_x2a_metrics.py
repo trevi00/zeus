@@ -323,3 +323,80 @@ def test_samples_is_total_over_malformed_rows():
     assert samples({"category": "operations", "event_type": "operations.collection_completed",
                     "attributes": {"records": 5, "inserted": 3, "duplicates": 1, "conflicts": 0, "corrupt": 0}},
                    providers=PROVIDERS)[0][-1] == ("zeus_observation_records_total", ("refused",), 1)
+
+
+# ----- S9 round 1 F1 (FLEET-REBUILD-S9-ACCEPT): numeric totality of the duration histogram -------------------------
+REJECTED = "zeus_metrics_label_rejections_total"
+
+
+def emit_duration(o, elapsed, outcome="accepted"):
+    execution = o.for_lease(LEASE, provider="claude-code-cli")
+    assert o.emit("development.provider_finished", "succeeded", execution=execution,
+                  attributes={"invocation_outcome": outcome, "elapsed_seconds": elapsed}) is not None
+
+
+def all_finite(rows):
+    json.dumps(rows, allow_nan=False)  # raises on a non-finite number anywhere in the snapshot
+    return True
+
+
+def test_an_overflowing_integer_duration_is_a_counted_rejection_and_the_batch_still_commits(tmp_path):
+    """Codex S9 F1 trigger: a JSON integer 10**309 passes the schema but cannot convert to float. Before the fix,
+    `samples` raised OverflowError and every pass rolled the whole sink batch back (sink_failures 1, inserted 0)."""
+    base = MemoryStore()
+    _, store = projecting(base)
+    o = file_observer(tmp_path / "obs", base)
+    emit_duration(o, 10 ** 309)
+    emit_duration(o, 5.0)
+    collector = Collector(store, SpoolDirectory(tmp_path / "obs"), validate=validate_observation, observer=o)
+    first = collector.collect()
+    assert first["inserted"] == 2 and not first.get("sink_failures")
+    rows = snapshot(base)
+    assert series(rows, DURATION) == {("claude-code-cli", "accepted"): {
+        "buckets": [0, 1] + [1] * (len(DURATION_BUCKETS) - 2), "sum": 5.0, "count": 1}}
+    assert series(rows, REJECTED) == {(DURATION,): 1}
+    assert series(rows, "zeus_metrics_projected_observations_total") == {("development",): 2}
+    collector.collect()   # pass 1's collection_completed; the two duration rows are never recounted
+    rows = snapshot(base)
+    assert series(rows, REJECTED) == {(DURATION,): 1}
+    assert series(rows, DURATION)[("claude-code-cli", "accepted")]["count"] == 1 and all_finite(rows)
+
+
+def test_finite_durations_whose_sum_would_overflow_are_rejected_without_a_partial_update(tmp_path):
+    """Codex S9 F1 discriminator: two individually finite 1e308 durations made the histogram sum infinite. The second
+    sample is now refused whole (no bucket, count or sum change) and counted once; the same holds across batches and for
+    a restarted projector, and no non-finite number is ever stored."""
+    base = MemoryStore()
+    _, store = projecting(base)
+    o = file_observer(tmp_path / "obs", base)
+    emit_duration(o, 1e308)
+    emit_duration(o, 1e308)
+    collector = Collector(store, SpoolDirectory(tmp_path / "obs"), validate=validate_observation, observer=o)
+    assert collector.collect()["inserted"] == 2
+    rows = snapshot(base)
+    kept = series(rows, DURATION)[("claude-code-cli", "accepted")]
+    assert kept["count"] == 1 and kept["sum"] == 1e308 and kept["buckets"] == [0] * len(DURATION_BUCKETS)
+    assert series(rows, REJECTED) == {(DURATION,): 1} and all_finite(rows)
+
+    _, restarted = projecting(base)   # a new projector over the same durable aggregates
+    emit_duration(o, 1e308)
+    emit_duration(o, 2.0, outcome="provider_failure")
+    later = Collector(restarted, SpoolDirectory(tmp_path / "obs"), validate=validate_observation, observer=o).collect()
+    assert later["inserted"] == 3 and not later.get("sink_failures")   # incl. pass 1's collection_completed
+    rows = snapshot(base)
+    assert series(rows, DURATION)[("claude-code-cli", "accepted")] == kept
+    assert series(rows, DURATION)[("claude-code-cli", "provider_failure")]["sum"] == 2.0
+    assert series(rows, REJECTED) == {(DURATION,): 2} and all_finite(rows)
+
+
+def test_samples_refuses_an_unconvertible_integer_duration_and_keeps_the_positive_controls():
+    def row(elapsed):
+        return {"category": "development", "event_type": "development.provider_finished",
+                "execution": {"provider": "claude-code-cli"},
+                "attributes": {"invocation_outcome": "accepted", "elapsed_seconds": elapsed}}
+    for bad in (10 ** 309, float("inf"), float("nan"), -1, True):
+        made, refused = samples(row(bad), providers=PROVIDERS)
+        assert refused == [DURATION] and DURATION not in {s[0] for s in made}
+    for good in (0, 3, 2.5, 10 ** 300):
+        made, refused = samples(row(good), providers=PROVIDERS)
+        assert refused == [] and (DURATION, ("claude-code-cli", "accepted"), good) in made

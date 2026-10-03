@@ -111,7 +111,12 @@ def _count(value) -> bool:
 
 
 def _seconds(value) -> bool:
-    return type(value) in (int, float) and math.isfinite(value) and value >= 0
+    if type(value) not in (int, float) or value < 0:
+        return False
+    try:
+        return math.isfinite(value)
+    except OverflowError:  # an int beyond the float range is no representable duration (S9 round 1 F1): refused, never raised
+        return False
 
 
 def samples(row, *, providers):

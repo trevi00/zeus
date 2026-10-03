@@ -121,3 +121,29 @@ def test_failed_batch_leaves_no_metrics_and_the_next_pass_counts_once(tmp_path, 
 
     assert collector.collect()["inserted"] == 0   # nothing left in the spool: no second count
     assert projected(stored(pgstore, projector)) == {("general",): 3}
+
+
+def test_an_overflowing_duration_sum_is_rejected_and_the_batch_commits_on_postgresql(tmp_path, pgstore):
+    """S9 round 1 F1 on PostgreSQL: two finite 1e308 durations and one integer 10**309 once rolled the batch back (an
+    OverflowError, and a non-finite sum PostgreSQL JSON refuses). Now the batch commits, the refused samples are counted
+    as rejections, and every stored aggregate is finite."""
+    import json
+
+    projector = MetricsProjector(providers=PROVIDERS)
+    root = tmp_path / "obs"
+    o = Observer(pgstore, FileSpool(root, new_process_run_id(), max_bytes=1 << 20, fsync=False), component="unit",
+                 directory=SpoolDirectory(root), alert_window_seconds=300)
+    execution = o.for_lease({"id": "task-1", "generation": 1, "attempt": 1, "agent": "worker:implementation"},
+                            provider="claude-code-cli")
+    for elapsed in (1e308, 1e308, 10 ** 309):
+        assert o.emit("development.provider_finished", "succeeded", execution=execution,
+                      attributes={"invocation_outcome": "accepted", "elapsed_seconds": elapsed}) is not None
+    result = Collector(ProjectingStore(pgstore, projector), SpoolDirectory(root), validate=validate_observation).collect()
+    assert result["inserted"] == 3 and not result.get("sink_failures")
+    state = stored(pgstore, projector)
+    json.dumps(state["snapshot"], allow_nan=False)
+    [duration] = [r for r in state["snapshot"] if r["metric"] == "zeus_model_invocation_duration_seconds"]
+    assert [item["value"]["count"] for item in duration["series"]] == [1]
+    [rejected] = [r for r in state["snapshot"] if r["metric"] == "zeus_metrics_label_rejections_total"]
+    assert {tuple(item["labels"]): item["value"] for item in rejected["series"]} == {
+        ("zeus_model_invocation_duration_seconds",): 2}

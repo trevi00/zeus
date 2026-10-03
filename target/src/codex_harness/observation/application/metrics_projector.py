@@ -17,6 +17,7 @@ and the series key is `json.dumps(list(label_values))`. No timestamps are stored
 from __future__ import annotations
 
 import json
+import math
 from contextlib import contextmanager
 
 from codex_harness.observation.application.observations import EVENT_BUCKET
@@ -40,16 +41,25 @@ class MetricsProjector:
             for family in refused:
                 rejections += 1
                 counts.setdefault(REJECTIONS, []).append((json.dumps([family]), 1))
-        for name in sorted(counts):
+        # The rejection family is applied LAST: a histogram sample refused below (a sum that would leave the finite
+        # range, S9 round 1 F1) is counted there in the same transaction, and the sample changes nothing else.
+        for name in [*sorted(n for n in counts if n != REJECTIONS), REJECTIONS]:
+            if name not in counts:
+                continue
             family = FAMILIES[name]
             document = tx.get(METRICS_BUCKET, "family:" + name)
             series = dict(document["series"]) if document else {}
             for key, value in counts[name]:
                 if family.type == "histogram":
                     current = series.get(key) or {"buckets": [0] * len(family.buckets), "sum": 0.0, "count": 0}
+                    total = current["sum"] + float(value)
+                    if not math.isfinite(total):
+                        rejections += 1
+                        counts.setdefault(REJECTIONS, []).append((json.dumps([name]), 1))
+                        continue
                     series[key] = {"buckets": [n + (1 if value <= bound else 0)
                                                for n, bound in zip(current["buckets"], family.buckets)],
-                                   "sum": current["sum"] + float(value), "count": current["count"] + 1}
+                                   "sum": total, "count": current["count"] + 1}
                 else:
                     series[key] = series.get(key, 0) + value
             tx.put(METRICS_BUCKET, "family:" + name, {"series": series})
