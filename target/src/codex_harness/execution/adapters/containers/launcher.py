@@ -65,6 +65,7 @@ from codex_harness.execution.adapters.containers.owned_container import (
     OwnedContainer,
     docker_environment,
     host_user,
+    isolated_review_context,
     preflight,
 )
 from codex_harness.execution.adapters.containers.staging import (
@@ -1056,6 +1057,14 @@ class IsolatedWorker:
                  broker_factory=None, credentials: CredentialBoundary | None = None):
         self.config, self.root, self.docker, self.host = config, Path(root), docker, host
         self.broker_factory, self.credentials = broker_factory, credentials
+
+    # S10 GAP #6 (OWNER-DECISIONS-S10 #6): RunTask's isolation collaborator; M7's Executor called the same
+    # functions with `isolation.config`.
+    def summary(self) -> dict:
+        return summary(self.config)  # the module-level container_spec.summary, not this method
+
+    def review_context(self, cwd, profile: str | None = None) -> dict:
+        return isolated_review_context(cwd, self.config, profile)
 
     def runtime(self, *, model, runtime, max_budget_usd, settings_document,
                 project_delivery=None, profile: str = "claude-impl-rw", handoff=None) -> IsolatedClaudeRuntime:
