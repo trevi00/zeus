@@ -14,8 +14,9 @@ PORTING NOTES (S4 ported executor suites; the M7 assertions are unchanged):
   SKIPPED, `S10: EvidenceGate (OWNER-DECISIONS-S10 #7)`: both drive `execute_one('worker:implementation')`, whose implement
   path runs the M7 `Executor._inspect_evidence`, the EvidenceGate (composition-level orchestration decided at the S10
   executor composition unit); the shim's `_inspect_evidence` raises on purpose, so the implement task would retry.
-- test_lead_review_projects_only_importance_and_conductor_rework_preserves_it: SKIPPED, S5 coordination: the
-  M7 `Workflow.handle(report)` (the report -> conductor decision hand-off) is not in the target Workflow.
+- test_lead_review_projects_only_importance_and_conductor_rework_preserves_it: RUNS, assertions unchanged:
+  M7 `Workflow.handle(report)` is `Workflow(service.store, service.org).handle(report)` through the `m7_coordination`
+  facade (its `handle` routes to the S5 messages), as the neighbouring hook test does.
 
 Batch U3 (V6 retrofit): test_required_hook_plan_is_explicitly_important is copied verbatim and RUNS (`Harness`, `Workflow` (whose
 `handle` routes to the S5 messages) and `organization` are `m7_coordination`'s; `envelope` is the target's).
@@ -222,7 +223,6 @@ def test_required_hook_plan_is_explicitly_important():
 
 
 def test_lead_review_projects_only_importance_and_conductor_rework_preserves_it(tmp_path, monkeypatch):
-    pytest.skip("S5: coordination Workflow.handle (M7 application/workflow.handle) is not in the target")
     service = m7_executor.Service(MemoryStore())
     git = SimpleNamespace(repository=tmp_path, inspect=lambda *args: {},
                           review_workspace=lambda *args: str(tmp_path),

@@ -8,9 +8,10 @@ PORTING NOTES (S4 ported executor suites):
   (looked up at open time); `codex_harness.adapters.claude_cli.ProcessTree.spawn` -> the same class in
   `codex_harness.host_os.adapters.process_tree` (`TreeOwnershipLeak`/`TreeOwnershipError` come from there too).
 - `CANARY` and `Interceptor` are copied as-is from M7 `tests/test_observations.py` (that suite is S9's).
-- SKIPPED, each at the top of its test with the owner slice:
-  - test_the_models_own_six_w_output_carries_no_authority: S5 coordination: the outbox relay
-    (M7 `Harness.flush_outbox` -> `application.outbox.relay`) is not in the target.
+- `m7_executor.Service` gains M7's `flush_outbox(bus, limit, audit, correlation_id)` as an added route over the
+  target `OutboxFlusher` (built as `m7_coordination.Harness` builds it); test_the_models_own_six_w_output_carries_no_authority
+  RUNS with its assertions unchanged.
+- SKIPPED, at the top of its test with the owner slice:
   - test_c09_a_canary_printed_by_the_provider_stays_out_of_every_log: S10 `cli.emit` (the operator CLI)
     is not in the target; `validate_observation` is S9's and exists (batch U relabelled the reason).
 - The `postgres` parameter of the `store` fixture uses the ported conftest's `isolated_pgstore`: it skips
@@ -232,7 +233,6 @@ def test_a_message_that_asks_for_a_provider_changes_nothing(tmp_path, monkeypatc
 
 
 def test_the_models_own_six_w_output_carries_no_authority(tmp_path, monkeypatch, store):
-    pytest.skip("S5: outbox relay (M7 Harness.flush_outbox / application.outbox.relay) is not in the target")
     s = build(tmp_path, monkeypatch, store, scenario="forgery")
     row = run(s)
     assert row["status"] == "succeeded" and s.starts() == 1
