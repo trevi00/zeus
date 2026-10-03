@@ -1,0 +1,28 @@
+# HELP zeus_escapes_total Back\\slash and\nnewline help.
+# TYPE zeus_escapes_total counter
+zeus_escapes_total{name="q\"uote\\back\nline"} 3
+# HELP zeus_model_invocation_duration_seconds Model invocation duration in seconds by provider and outcome, from development.provider_finished.
+# TYPE zeus_model_invocation_duration_seconds histogram
+zeus_model_invocation_duration_seconds_bucket{provider="claude-code-cli",outcome="accepted",le="1.0"} 0
+zeus_model_invocation_duration_seconds_bucket{provider="claude-code-cli",outcome="accepted",le="5.0"} 0
+zeus_model_invocation_duration_seconds_bucket{provider="claude-code-cli",outcome="accepted",le="15.0"} 0
+zeus_model_invocation_duration_seconds_bucket{provider="claude-code-cli",outcome="accepted",le="30.0"} 0
+zeus_model_invocation_duration_seconds_bucket{provider="claude-code-cli",outcome="accepted",le="60.0"} 0
+zeus_model_invocation_duration_seconds_bucket{provider="claude-code-cli",outcome="accepted",le="120.0"} 0
+zeus_model_invocation_duration_seconds_bucket{provider="claude-code-cli",outcome="accepted",le="300.0"} 0
+zeus_model_invocation_duration_seconds_bucket{provider="claude-code-cli",outcome="accepted",le="600.0"} 0
+zeus_model_invocation_duration_seconds_bucket{provider="claude-code-cli",outcome="accepted",le="1200.0"} 2
+zeus_model_invocation_duration_seconds_bucket{provider="claude-code-cli",outcome="accepted",le="1800.0"} 2
+zeus_model_invocation_duration_seconds_bucket{provider="claude-code-cli",outcome="accepted",le="3600.0"} 2
+zeus_model_invocation_duration_seconds_bucket{provider="claude-code-cli",outcome="accepted",le="7200.0"} 2
+zeus_model_invocation_duration_seconds_bucket{provider="claude-code-cli",outcome="accepted",le="14400.0"} 2
+zeus_model_invocation_duration_seconds_bucket{provider="claude-code-cli",outcome="accepted",le="43200.0"} 2
+zeus_model_invocation_duration_seconds_bucket{provider="claude-code-cli",outcome="accepted",le="86400.0"} 2
+zeus_model_invocation_duration_seconds_bucket{provider="claude-code-cli",outcome="accepted",le="+Inf"} 2
+zeus_model_invocation_duration_seconds_sum{provider="claude-code-cli",outcome="accepted"} 1400.0
+zeus_model_invocation_duration_seconds_count{provider="claude-code-cli",outcome="accepted"} 2
+# HELP zeus_zz_gauge A gauge that X3 will use.
+# TYPE zeus_zz_gauge gauge
+zeus_zz_gauge{state="up"} 1
+zeus_zz_gauge{state="ratio"} 0.5
+zeus_zz_gauge{state="top"} +Inf
