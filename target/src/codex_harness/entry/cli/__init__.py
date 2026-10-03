@@ -1,16 +1,22 @@
 """The `zeus` root parser assembler (M7 cli.py).
 
 Layer: entry
-Owns: parser (the root parser: global options and the root order)
-Does not own: the root parsers (the 51 modules of this package) and dispatch (S10 units C1-C8)
-Entry points: parser
+Owns: parser (the root parser: global options and the root order), emit, and main (the M7 shell and the one dispatch table of the composed roots)
+Does not own: the root parsers and bodies (the modules of this package) and the roots not yet composed (S10 units C2-C8)
+Entry points: parser, emit, main
 Contracts: none
 
 Moved from M7 cli.py:175-389 (SOURCE e38aa722) by named rules (A/evidence/rebuild/s10/unit-p/transcribe.py); the parser statements are M7's verbatim.
 """
 
 import argparse
+import json
+import sys
 from pathlib import Path
+
+
+def emit(data: object) -> None:
+    print(json.dumps(data, ensure_ascii=False, indent=2), flush=True)
 
 
 def parser() -> argparse.ArgumentParser:
@@ -124,3 +130,22 @@ def parser() -> argparse.ArgumentParser:
     ticket.add_parser(commands)
     goal.add_parser(commands)
     return p
+
+
+def main() -> None:
+    if hasattr(sys.stdout, "reconfigure"):
+        sys.stdout.reconfigure(encoding="utf-8")
+    args = parser().parse_args()
+    if args.repository:
+        from codex_harness.composition.configuration import select_repository
+        select_repository(args.repository)
+    try:
+        from codex_harness.entry.cli import canary, doctor, organization, paths, setup, validate
+        composed = {"paths": paths.run, "setup": setup.run, "organization": organization.run,
+                    "validate": validate.run, "canary": canary.run, "doctor": doctor.run}
+        if args.command not in composed:
+            raise RuntimeError("zeus " + args.command + " is not composed in the rebuild yet (DESIGN-s10 §3)")
+        composed[args.command](args)
+    except (ValueError, RuntimeError) as exc:
+        print(json.dumps({"error": str(exc)}, ensure_ascii=False), file=sys.stderr)
+        raise SystemExit(1) from exc
