@@ -28,7 +28,7 @@ Named adaptations (each is a construction/import adaptation, never a behaviour c
 - `relay` is `outbox_relay.relay` with observation's `HealthRecords().record` and the system clock/ids, and
   `pin_route`, `_prepare` and `_publish` are `outbox_relay`'s (M7 `application.outbox`).
 - `ExecutionRecovery(store, org, artifacts)` is the S5 `ExecutionRecovery` with intake's `ticket_binding` injected
-  and no audit binding or threshold-review port (both are research's, S8).
+  and research's `audit_gate.binding` injected as the audit binding; no threshold-review port (S10: `threshold_reviews`).
 - `Continuation(store, fleet=None, lanes=None, conductor=None, validate=None, observer=None, clock=utcnow,
   evidence=None)` is a facade over the split objects of `coordination.application.continuation` (DESIGN-s6 §3), built as
   `compare/drivers/target/s6_continuation_composition.py` builds it: the golden composition's route table, and an
@@ -39,6 +39,8 @@ Named adaptations (each is a construction/import adaptation, never a behaviour c
   an assignment to `_verify_evidence`, is installed on that owner object, which is what M7's `self._move(...)`
   reached: the sibling objects call the owner, never the facade. `super()._move(...)` reaches the owner's own method.
   The restart table's `Continuation._resume_<action>` methods are the tick object's, exposed as class attributes.
+  `Continuation._recovery_held(tx, investigation)` (a static method M7's research recovery tests call on the class) is
+  `ResearchAcceptance`'s static method of the same name.
   `LaneEvidence` is `coordination.application.continuation.lanes.LaneEvidence` (the M7 constructor).
 - `Fleet`'s routed methods are class attributes (each delegates to its owner at call time), so a subclass can
   override one and call `super().enqueue(...)` as M7 tests do; an unrouted name still raises AttributeError.
@@ -129,6 +131,7 @@ from codex_harness.kernel.errors import ContractError
 from codex_harness.kernel.ids import SYSTEM_CLOCK, SYSTEM_IDS, utcnow
 from codex_harness.observation.application.health import HealthRecords
 from codex_harness.research.application import scheduling as _scheduling
+from codex_harness.research.application.audit_gate import binding as audit_binding
 from codex_harness.research.application.audit_gate import require_adoption
 from codex_harness.research.application.hooks import HookLifecycle
 from codex_harness.research.application.program_state import ProgramState
@@ -242,7 +245,7 @@ class Operation(_Operation):
 
 def ExecutionRecovery(store, org, artifacts):  # noqa: N802 - the M7 constructor name
     return _execution_recovery.ExecutionRecovery(store, org, artifacts, ticket_binding=tickets.ticket_binding,
-                                                 clock=SYSTEM_CLOCK, ids=SYSTEM_IDS)
+                                                 audit_binding=audit_binding, clock=SYSTEM_CLOCK, ids=SYSTEM_IDS)
 
 
 # ---- S6: continuation, research evidence, owner actions, the guarded child launch ------------------------------
@@ -306,6 +309,10 @@ class Continuation:
 
 for _name in PRIVATE_ROUTES:
     setattr(Continuation, _name, _private(_name))
+
+# M7's `Continuation._recovery_held(tx, investigation)` is a static method called on the class (S8 research recovery tests);
+# its owner is `ResearchAcceptance`'s static method of the same name.
+Continuation._recovery_held = staticmethod(ResearchAcceptance._recovery_held)
 
 
 def _resume(name):

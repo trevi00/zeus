@@ -8,7 +8,8 @@ the bucket names and `IntentChanged` from `coordination.application.continuation
 `GitWorkspace`, `MemorySpool`, `WorkerSessions` and `Observer` from their target owners, `ContractError`, `envelope`,
 `digest` and `canonical` from `kernel`. A name whose owner is in a later slice is a `unavailable(slice, name)`
 placeholder, and only tests skipped whole and unrewritten (each with its owning slice) name it.
-`SessionArchives` is the ported `test_worker_sessions` wrapper over the target's injected `FileArtifacts`.
+`seed_rejection` is M7's own import from the ported `test_correction_feedback`; `packaged_definitions` is
+`intake.adapters.portfolio`'s and `Portfolio` `intake.application.portfolio`'s. `SessionArchives` is the ported `test_worker_sessions` wrapper over the target's injected `FileArtifacts`.
 
 M7 docstring follows.
 
@@ -41,6 +42,7 @@ from m7_coordination import (
     packaged_policy,
     unavailable,
 )
+from test_correction_feedback import seed_rejection
 from test_fleet import config as fleet_config
 from test_git_workspace import repository
 from test_operation import Bus, Collector, FakeBudget, FakeExecutor
@@ -58,6 +60,8 @@ from codex_harness.coordination.domain.operation import validate_manifest
 from codex_harness.execution.adapters.worker_sessions import export_session
 from codex_harness.execution.application.worker_sessions import WorkerSessions
 from codex_harness.host_os.adapters.git_workspace import GitWorkspace
+from codex_harness.intake.adapters.portfolio import packaged_definitions
+from codex_harness.intake.application.portfolio import Portfolio
 from codex_harness.kernel.errors import ContractError
 from codex_harness.kernel.message import envelope
 from codex_harness.observation.adapters.observation_spool import MemorySpool
@@ -66,10 +70,7 @@ from codex_harness.observation.domain.observation import new_process_run_id
 from codex_harness.storage.adapters.file_artifacts import FileArtifacts
 from codex_harness.storage.adapters.memory_store import MemoryStore
 
-seed_rejection = unavailable('S8', 'test_correction_feedback.seed_rejection')
 Executor = unavailable('S10', 'adapters.executor.Executor')
-packaged_definitions = unavailable('S8', 'adapters.portfolio.packaged_definitions')
-Portfolio = unavailable('S8', 'application.portfolio.Portfolio')
 
 CANARY = "CANARY-continuation-objective-never-projected"
 BASE = "a" * 40
@@ -437,7 +438,6 @@ def test_lost_responses_around_each_effect_reconcile_to_one_successor(tmp_path):
 
 
 # ---- two-strike research, fairness and hold of one family only ----------------------------------
-@pytest.mark.skip(reason='S8: Portfolio owner and research program application (Portfolio, ResearchProgram, FakeCouncil and the research fixtures)')
 def test_second_distinct_failure_invokes_research_once_and_holds_only_that_family(tmp_path):
     world = World(tmp_path)
     world.register()
@@ -482,7 +482,6 @@ def test_second_distinct_failure_invokes_research_once_and_holds_only_that_famil
     assert follow["session_mode"].startswith("fresh_evidence_handoff"), "the session was not reviewed again"
 
 
-@pytest.mark.skip(reason='S8: Portfolio owner and research program application (Portfolio, ResearchProgram, FakeCouncil and the research fixtures)')
 def test_correction_budget_of_the_policy_is_a_named_refusal(tmp_path):
     world = World(tmp_path, max_corrections=1)
     world.register()

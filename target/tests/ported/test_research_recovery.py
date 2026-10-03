@@ -1,9 +1,9 @@
 """Ported SOURCE M7 suite `tests/test_research_recovery.py` (e38aa722) run against the S8 target (DESIGN-s8 §29).
 
 Every assertion is M7's, unchanged. Adaptations, all construction/import-only: `ResearchProgram`, `ProgramRunner` (via the
-ported `test_research_program.build`), `CouncilRun`, `Harness`, `Workflow`, `relay`, `organization`, `packaged_policy` and the
-helpers `INVESTIGATION`, `SOURCE`, `portfolio` come from the `m7_research` shim (see its docstring: the wired target objects,
-and the labelled copies of the P5 `test_research_investigations` helpers); `validate_message` from
+ported `test_research_program.build`), `CouncilRun`, `Harness`, `Workflow`, `relay`, `organization` and `packaged_policy` come
+from the `m7_research` shim (see its docstring: the wired target objects); the helpers `INVESTIGATION`, `SOURCE`, `portfolio`
+are M7's own imports from the ported `test_research_investigations` (and `test_autonomous`/`test_council` likewise); `validate_message` from
 `storage.adapters.message_schema`, `MessageDeliveryError` from `storage.ports`, `RedisBus` from `storage.adapters.redis_bus`
 (patched as `codex_harness.storage.adapters.redis_bus.Redis`), `TransportProbe` from `research.adapters.research_program`,
 `ExecutionEvidence` from `research.adapters.autonomous_evidence`, the domain modules from `codex_harness.research.domain`,
@@ -11,8 +11,7 @@ and the labelled copies of the P5 `test_research_investigations` helpers); `vali
 `observation.application.observations`, `Continuation` from `m7_coordination`, `advance` from
 `coordination.application.execution_fence`, `council_module` from `coordination.application.council`. `recover_cli` (the S10
 operator CLI `adapters.research_program_cli.recover`) is `unavailable("S10", ...)`; every test that reaches it is kept whole
-under skip, as is every test that reaches the P4 helper modules `test_autonomous`/`test_council` (not yet ported; batch U
-removes those skips). M7 docstring follows.
+under skip. M7 docstring follows.
 
 Research dispatch transport recovery (research-dispatch-recovery-001, SPEC "Research dispatch
 transport recovery").
@@ -1265,7 +1264,6 @@ def no_successor(env) -> bool:
                 and len(tx.scan("outbox_quarantine")) == 1 and tx.get(BUCKET_DISPATCHES, SECOND) is None)
 
 
-@pytest.mark.skip(reason="S8: batch U (test_autonomous.Artifacts/RESEARCH/ROLE_OUTPUTS/evidence_ref_of and test_council.DBA_REPORT/IMPROVEMENT/FakeSnapshotPort/SnapshotArtifacts: P4 suites not yet ported)")
 def test_the_fixture_is_the_real_shaped_settled_read_only_foreign_message_failure(tmp_path):
     env, council, _ = read_only_world(tmp_path)
     facts = predecessor_history(env)
@@ -1283,7 +1281,6 @@ def test_the_fixture_is_the_real_shaped_settled_read_only_foreign_message_failur
     assert refused(env.programs.recover_dispatch, revocation(env, sha, "rp-003"), None) == "recovery_conflict"
 
 
-@pytest.mark.skip(reason="S8: batch U (test_autonomous.Artifacts/RESEARCH/ROLE_OUTPUTS/evidence_ref_of and test_council.DBA_REPORT/IMPROVEMENT/FakeSnapshotPort/SnapshotArtifacts: P4 suites not yet ported)")
 def test_one_explicit_successor_of_the_exact_failed_head_is_claimed_once_and_history_is_kept(tmp_path):
     env, council, runner = read_only_world(tmp_path)
     before = predecessor_history(env)
@@ -1417,7 +1414,6 @@ def _unsent_foreign_role(env, council):
     (_answer_changed, "recovery_evidence_mismatch"),
     (_corrupt_artifact, "recovery_evidence_corrupt"),
     (_drop_fence, "recovery_revocation_fence_missing")])
-@pytest.mark.skip(reason="S8: batch U (test_autonomous.Artifacts/RESEARCH/ROLE_OUTPUTS/evidence_ref_of and test_council.DBA_REPORT/IMPROVEMENT/FakeSnapshotPort/SnapshotArtifacts: P4 suites not yet ported)")
 def test_unsettled_unknown_effectful_or_unproven_predecessors_refuse_and_write_nothing(tmp_path, fault, reason):
     env, council, _ = read_only_world(tmp_path)
     _, sha = replacement(env, "rp-003")
@@ -1430,7 +1426,6 @@ def test_unsettled_unknown_effectful_or_unproven_predecessors_refuse_and_write_n
     assert no_successor(env)
 
 
-@pytest.mark.skip(reason="S8: batch U (test_autonomous.Artifacts/RESEARCH/ROLE_OUTPUTS/evidence_ref_of and test_council.DBA_REPORT/IMPROVEMENT/FakeSnapshotPort/SnapshotArtifacts: P4 suites not yet ported)")
 def test_unavailable_evidence_stale_pins_and_widened_scope_refuse_and_write_nothing(tmp_path):
     from test_autonomous import Artifacts
 
@@ -1457,7 +1452,6 @@ def test_unavailable_evidence_stale_pins_and_widened_scope_refuse_and_write_noth
 @pytest.mark.parametrize("status, reason", [("accepted", "recovery_dispatch_not_failed"),
                                             ("rejected", "recovery_dispatch_not_failed"),
                                             ("failed", "recovery_not_settled_read_only")])
-@pytest.mark.skip(reason="S8: batch U (test_autonomous.Artifacts/RESEARCH/ROLE_OUTPUTS/evidence_ref_of and test_council.DBA_REPORT/IMPROVEMENT/FakeSnapshotPort/SnapshotArtifacts: P4 suites not yet ported)")
 def test_accepted_rejected_or_other_failed_predecessors_are_never_succeeded(tmp_path, status, reason):
     env, _ = legacy_world(tmp_path)
     _, sha = replacement(env)
@@ -1515,7 +1509,6 @@ def _drop_original_fence(env, message_id):
     (_corrupt_successor, "recovery_successor_corrupt"),
     (_drop_head, "recovery_successor_corrupt"),
     (_drop_original_fence, "recovery_revocation_fence_missing")])
-@pytest.mark.skip(reason="S8: batch U (test_autonomous.Artifacts/RESEARCH/ROLE_OUTPUTS/evidence_ref_of and test_council.DBA_REPORT/IMPROVEMENT/FakeSnapshotPort/SnapshotArtifacts: P4 suites not yet ported)")
 def test_a_broken_retained_chain_holds_replay_and_the_successor_claim(tmp_path, fault, reason):
     env, council, runner = read_only_world(tmp_path)
     message_id = _unsent_report(env)
@@ -1536,7 +1529,6 @@ def test_a_broken_retained_chain_holds_replay_and_the_successor_claim(tmp_path, 
         assert tx.get("research_dispatch_successors", INVESTIGATION + ":2")["state"] == "authorized"
 
 
-@pytest.mark.skip(reason="S8: batch U (test_autonomous.Artifacts/RESEARCH/ROLE_OUTPUTS/evidence_ref_of and test_council.DBA_REPORT/IMPROVEMENT/FakeSnapshotPort/SnapshotArtifacts: P4 suites not yet ported)")
 def test_concurrent_and_restarted_successor_requests_record_one_row_one_head(tmp_path):
     env, council, _ = read_only_world(tmp_path)
     _unsent_report(env)
@@ -1560,7 +1552,7 @@ def test_concurrent_and_restarted_successor_requests_record_one_row_one_head(tmp
     assert ResearchProgram(env.store, clock=env.clock).recover_dispatch(document, None, None)["cached"] is True
 
 
-@pytest.mark.skip(reason="S8: batch U (test_autonomous.Artifacts/RESEARCH/ROLE_OUTPUTS/evidence_ref_of and test_council.DBA_REPORT/IMPROVEMENT/FakeSnapshotPort/SnapshotArtifacts: P4 suites not yet ported)")
+@pytest.mark.skip(reason="S10: adapters.research_program_cli.recover (the operator CLI `recover`)")
 def test_the_cli_successor_reads_the_executor_artifact_store_and_builds_no_bus(tmp_path, monkeypatch):
     env, council, _ = read_only_world(tmp_path)
     _, sha = replacement(env, "rp-003")
@@ -1779,7 +1771,6 @@ def no_contract_successor(env) -> bool:
 
 
 @pytest.mark.parametrize("legacy, reason", [(False, SUMMARY_TOO_LONG), (True, "debate_refused:ContractError")])
-@pytest.mark.skip(reason="S8: batch U (test_autonomous.Artifacts/RESEARCH/ROLE_OUTPUTS/evidence_ref_of and test_council.DBA_REPORT/IMPROVEMENT/FakeSnapshotPort/SnapshotArtifacts: P4 suites not yet ported)")
 def test_the_fixture_is_the_actual_shaped_settled_four_role_contract_failure(tmp_path, legacy, reason):
     env, council = initial_world(tmp_path, legacy=legacy)
     facts = run_history(env)
@@ -1801,7 +1792,6 @@ def test_the_fixture_is_the_actual_shaped_settled_four_role_contract_failure(tmp
 
 
 @pytest.mark.parametrize("legacy", [False, True])
-@pytest.mark.skip(reason="S8: batch U (test_autonomous.Artifacts/RESEARCH/ROLE_OUTPUTS/evidence_ref_of and test_council.DBA_REPORT/IMPROVEMENT/FakeSnapshotPort/SnapshotArtifacts: P4 suites not yet ported)")
 def test_one_explicit_successor_of_the_initial_contract_failure_is_claimed_once_and_history_is_kept(tmp_path, legacy):
     from m7_coordination import Continuation
     env, council = initial_world(tmp_path, legacy=legacy)
@@ -1845,7 +1835,6 @@ def test_one_explicit_successor_of_the_initial_contract_failure_is_claimed_once_
     assert len(runner.council.manifests) == 1
 
 
-@pytest.mark.skip(reason="S8: batch U (test_autonomous.Artifacts/RESEARCH/ROLE_OUTPUTS/evidence_ref_of and test_council.DBA_REPORT/IMPROVEMENT/FakeSnapshotPort/SnapshotArtifacts: P4 suites not yet ported)")
 def test_an_existing_lineage_current_dispatch_contract_failure_has_one_successor(tmp_path):
     env, council = current_world(tmp_path)
     before = run_history(env, "rp-002.c001", REPLACEMENT)
@@ -1930,7 +1919,6 @@ def _cdecision_recorded(env, council):
     (_cterminated, "recovery_effect_unknown"),
     (_cmissing_artifact, "recovery_evidence_unavailable"),   # the raw fixture store raises uncoded; see the real port below
     (_ccorrupt_artifact, "recovery_evidence_corrupt")])
-@pytest.mark.skip(reason="S8: batch U (test_autonomous.Artifacts/RESEARCH/ROLE_OUTPUTS/evidence_ref_of and test_council.DBA_REPORT/IMPROVEMENT/FakeSnapshotPort/SnapshotArtifacts: P4 suites not yet ported)")
 def test_unsettled_unknown_effectful_or_unproven_contract_predecessors_refuse_and_write_nothing(tmp_path, fault, reason):
     env, council = initial_world(tmp_path)
     _, sha = replacement(env)
@@ -1940,7 +1928,6 @@ def test_unsettled_unknown_effectful_or_unproven_contract_predecessors_refuse_an
     assert no_contract_successor(env)
 
 
-@pytest.mark.skip(reason="S8: batch U (test_autonomous.Artifacts/RESEARCH/ROLE_OUTPUTS/evidence_ref_of and test_council.DBA_REPORT/IMPROVEMENT/FakeSnapshotPort/SnapshotArtifacts: P4 suites not yet ported)")
 def test_a_wrong_failure_foreign_evidence_or_stale_pin_refuses_and_writes_nothing(tmp_path):
     from test_autonomous import Artifacts
 
@@ -1976,7 +1963,6 @@ def test_a_wrong_failure_foreign_evidence_or_stale_pin_refuses_and_writes_nothin
     {"failure": {"execution_ref": "not-a-ref"}}, {"failure": {"extra": 1}},
     {"predecessor": {"lineage_request_sha256": "a" * 64}}, {"predecessor": {"dispatch": REPLACEMENT}},
     {"mode": "settled_read_only_successor"}, {"replacement": {"program": "rp-001"}}])
-@pytest.mark.skip(reason="S8: batch U (test_autonomous.Artifacts/RESEARCH/ROLE_OUTPUTS/evidence_ref_of and test_council.DBA_REPORT/IMPROVEMENT/FakeSnapshotPort/SnapshotArtifacts: P4 suites not yet ported)")
 def test_the_contract_request_is_strict(tmp_path, change):
     env, council = initial_world(tmp_path)
     _, sha = replacement(env)
@@ -1986,7 +1972,6 @@ def test_the_contract_request_is_strict(tmp_path, change):
     assert no_contract_successor(env)
 
 
-@pytest.mark.skip(reason="S8: batch U (test_autonomous.Artifacts/RESEARCH/ROLE_OUTPUTS/evidence_ref_of and test_council.DBA_REPORT/IMPROVEMENT/FakeSnapshotPort/SnapshotArtifacts: P4 suites not yet ported)")
 def test_another_contract_error_or_a_read_only_failure_is_not_this_contract_failure(tmp_path):
     # A generic refusal with the SAME legacy code (an unknown claim id, not a bounded field): the recorded reason
     # alone never qualifies; the bound artifact re-derives another refusal, not the pinned field code.
@@ -2005,7 +1990,6 @@ def test_another_contract_error_or_a_read_only_failure_is_not_this_contract_fail
     assert refused(other.programs.recover_dispatch, document, None, ro_council.artifacts) == "recovery_not_settled_read_only"
 
 
-@pytest.mark.skip(reason="S8: batch U (test_autonomous.Artifacts/RESEARCH/ROLE_OUTPUTS/evidence_ref_of and test_council.DBA_REPORT/IMPROVEMENT/FakeSnapshotPort/SnapshotArtifacts: P4 suites not yet ported)")
 def test_a_broken_retained_fence_holds_replay_the_claim_and_the_scoped_receipt_consumer(tmp_path):
     from m7_coordination import Continuation
 
@@ -2034,7 +2018,6 @@ def test_a_broken_retained_fence_holds_replay_the_claim_and_the_scoped_receipt_c
         assert tx.get("research_dispatch_successors", INVESTIGATION + ":2")["state"] == "authorized"
 
 
-@pytest.mark.skip(reason="S8: batch U (test_autonomous.Artifacts/RESEARCH/ROLE_OUTPUTS/evidence_ref_of and test_council.DBA_REPORT/IMPROVEMENT/FakeSnapshotPort/SnapshotArtifacts: P4 suites not yet ported)")
 def test_a_failed_contract_successor_stays_held(tmp_path):
     env, council = initial_world(tmp_path)
     _, sha = replacement(env)
@@ -2053,7 +2036,6 @@ def test_a_failed_contract_successor_stays_held(tmp_path):
         assert len(tx.scan("research_dispatch_successors")) == 1 and tx.get(BUCKET_DISPATCHES, SECOND)["result"] == "failed"
 
 
-@pytest.mark.skip(reason="S8: batch U (test_autonomous.Artifacts/RESEARCH/ROLE_OUTPUTS/evidence_ref_of and test_council.DBA_REPORT/IMPROVEMENT/FakeSnapshotPort/SnapshotArtifacts: P4 suites not yet ported)")
 def test_concurrent_and_restarted_contract_requests_record_one_row_one_head(tmp_path):
     env, council = initial_world(tmp_path)
     _, sha = replacement(env)
@@ -2075,7 +2057,7 @@ def test_concurrent_and_restarted_contract_requests_record_one_row_one_head(tmp_
     assert ResearchProgram(env.store, clock=env.clock).recover_dispatch(document, None, None)["cached"] is True
 
 
-@pytest.mark.skip(reason="S8: batch U (test_autonomous.Artifacts/RESEARCH/ROLE_OUTPUTS/evidence_ref_of and test_council.DBA_REPORT/IMPROVEMENT/FakeSnapshotPort/SnapshotArtifacts: P4 suites not yet ported)")
+@pytest.mark.skip(reason="S10: adapters.research_program_cli.recover (the operator CLI `recover`)")
 def test_the_cli_contract_successor_reads_the_artifact_store_and_builds_no_bus(tmp_path, monkeypatch):
     env, council = initial_world(tmp_path)
     _, sha = replacement(env)

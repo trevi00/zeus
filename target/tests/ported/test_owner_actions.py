@@ -153,7 +153,6 @@ def registered(world, assessor=None, **policy):
 
 
 # ---- accepted: one assessment, one receipt through the existing API, the hold released once ----------------
-@pytest.mark.skip(reason='S8: Portfolio owner and research program application (Portfolio, ResearchProgram, FakeCouncil and the research fixtures)')
 def test_accepted_assessment_assembles_the_exact_receipt_and_the_existing_tick_releases_the_hold_once(tmp_path):
     world = World(tmp_path)
     root, successor, research, investigation, dispatch = held(world, tmp_path)
@@ -186,7 +185,6 @@ def test_accepted_assessment_assembles_the_exact_receipt_and_the_existing_tick_r
     assert world.control.data == idle and len(assessor.starts) == 1 and assessor.contexts == 1
 
 
-@pytest.mark.skip(reason='S8: Portfolio owner and research program application (Portfolio, ResearchProgram, FakeCouncil and the research fixtures)')
 @pytest.mark.parametrize("verdict, state, code", [
     (False, do.REJECTED, "assessment_rejected"), ("blocked", do.UNKNOWN, "assessment_blocked")])
 def test_a_rejected_or_blocked_assessment_is_a_named_terminal_state_and_the_family_stays_held(tmp_path, verdict,
@@ -206,7 +204,6 @@ def test_a_rejected_or_blocked_assessment_is_a_named_terminal_state_and_the_fami
     assert world.control.data == snapshot and len(assessor.starts) == 1
 
 
-@pytest.mark.skip(reason='S8: Portfolio owner and research program application (Portfolio, ResearchProgram, FakeCouncil and the research fixtures)')
 def test_an_unfinished_assessment_is_relaunched_at_most_once_and_then_unknown(tmp_path):
     world = World(tmp_path)
     held(world, tmp_path)
@@ -219,7 +216,6 @@ def test_an_unfinished_assessment_is_relaunched_at_most_once_and_then_unknown(tm
     assert len(assessor.starts) == 1 and receipts(world) == {}
 
 
-@pytest.mark.skip(reason='S8: Portfolio owner and research program application (Portfolio, ResearchProgram, FakeCouncil and the research fixtures)')
 def test_a_guardian_that_never_spawned_is_relaunched_once_under_a_new_launch_identity(tmp_path):
     world = World(tmp_path)
     _, _, research, _, _ = held(world, tmp_path)
@@ -236,7 +232,6 @@ def test_a_guardian_that_never_spawned_is_relaunched_once_under_a_new_launch_ide
     assert len(decisions(world)) == 1 and research["id"] in receipts(world)
 
 
-@pytest.mark.skip(reason='S8: Portfolio owner and research program application (Portfolio, ResearchProgram, FakeCouncil and the research fixtures)')
 def test_a_lost_start_response_after_the_model_decided_is_recognized_never_repeated(tmp_path):
     world = World(tmp_path)
     _, _, research, _, _ = held(world, tmp_path)
@@ -248,7 +243,6 @@ def test_a_lost_start_response_after_the_model_decided_is_recognized_never_repea
     assert research["id"] in receipts(world)
 
 
-@pytest.mark.skip(reason='S8: Portfolio owner and research program application (Portfolio, ResearchProgram, FakeCouncil and the research fixtures)')
 def test_a_restarted_coordinator_resumes_after_the_model_and_after_the_receipt_without_a_second_call(tmp_path):
     world = World(tmp_path)
     _, _, research, _, _ = held(world, tmp_path)
@@ -288,7 +282,6 @@ def test_a_restarted_coordinator_resumes_after_the_model_and_after_the_receipt_w
     assert len(assessor.starts) == 1 and len(decisions(world)) == 1
 
 
-@pytest.mark.skip(reason='S8: Portfolio owner and research program application (Portfolio, ResearchProgram, FakeCouncil and the research fixtures)')
 def test_an_executed_assessment_bound_to_the_exact_binding_is_reused_without_a_new_call(tmp_path):
     world = World(tmp_path)
     _, _, research, _, _ = held(world, tmp_path)
@@ -322,7 +315,6 @@ def test_reuse_accepts_only_an_executed_decision_of_the_exact_binding():
 
 
 # ---- changed evidence: the old action is refused, a new exact identity is assessed anew -------------------
-@pytest.mark.skip(reason='S8: Portfolio owner and research program application (Portfolio, ResearchProgram, FakeCouncil and the research fixtures)')
 def test_a_changed_attempt_refuses_the_stale_action_and_only_a_new_exact_binding_is_assessed(tmp_path):
     world = World(tmp_path)
     root, successor, research, _, _ = held(world, tmp_path)
@@ -359,7 +351,6 @@ def test_no_accepted_research_yet_is_a_named_wait_that_writes_nothing(tmp_path):
     assert world.control.data == before and assessor.starts == [] and assessor.contexts == 0
 
 
-@pytest.mark.skip(reason='S8: Portfolio owner and research program application (Portfolio, ResearchProgram, FakeCouncil and the research fixtures)')
 def test_an_absent_or_disabled_policy_or_a_foreign_target_does_nothing(tmp_path):
     world = World(tmp_path)
     held(world, tmp_path)
@@ -379,7 +370,6 @@ def test_an_absent_or_disabled_policy_or_a_foreign_target_does_nothing(tmp_path)
 
 
 # ---- the actual mixed-cause family: schema 2 assembled from persisted lineage and promotion rows -----------
-@pytest.mark.skip(reason='S8: Portfolio owner and research program application (Portfolio, ResearchProgram, FakeCouncil and the research fixtures)')
 def test_the_mixed_cause_family_is_assembled_as_a_schema2_receipt_and_released_once(tmp_path):
     world = World(tmp_path)
     family = mixed_family(world, tmp_path)
@@ -405,7 +395,6 @@ def test_the_mixed_cause_family_is_assembled_as_a_schema2_receipt_and_released_o
 
 
 # ---- R1: a decided assessment is promoted only on its bound launch's cleanup and settlement proof ----------
-@pytest.mark.skip(reason='S8: Portfolio owner and research program application (Portfolio, ResearchProgram, FakeCouncil and the research fixtures)')
 def test_a_success_persisted_before_the_launch_exits_waits_and_completes_only_after_the_proof(tmp_path):
     world = World(tmp_path)
     _, _, research, _, _ = held(world, tmp_path)
@@ -428,7 +417,6 @@ def test_a_success_persisted_before_the_launch_exits_waits_and_completes_only_af
     assert len(assessor.starts) == 1 and len(decisions(world)) == 1
 
 
-@pytest.mark.skip(reason='S8: Portfolio owner and research program application (Portfolio, ResearchProgram, FakeCouncil and the research fixtures)')
 @pytest.mark.parametrize("launch, code", [
     ("unknown", "assessment_launch_unknown"), ("unsettled", "assessment_settlement_unresolved"),
     ("timeout", "assessment_launch_timeout")])
@@ -457,7 +445,6 @@ def test_an_unproven_cleanup_or_settlement_after_a_verdict_is_a_named_unknown_ne
     assert world.control.data == snapshot and len(assessor.starts) == 1
 
 
-@pytest.mark.skip(reason='S8: Portfolio owner and research program application (Portfolio, ResearchProgram, FakeCouncil and the research fixtures)')
 def test_the_review_probe_accepted_decision_with_an_unknown_guardian_stores_no_receipt(tmp_path):
     """REVIEW-pr202 R1 probe: succeeded bound decision, poll unknown with cleanup_confirmed false."""
     world = World(tmp_path)
@@ -471,7 +458,6 @@ def test_the_review_probe_accepted_decision_with_an_unknown_guardian_stores_no_r
     assert research["id"] not in receipts(world)
 
 
-@pytest.mark.skip(reason='S8: Portfolio owner and research program application (Portfolio, ResearchProgram, FakeCouncil and the research fixtures)')
 @pytest.mark.parametrize("launch, state, code", [
     ("running", do.ASSESSING, "assessment_reused"), ("unknown", do.UNKNOWN, "assessment_launch_unknown"),
     ("unsettled", do.UNKNOWN, "assessment_settlement_unresolved"), (None, do.UNKNOWN, "assessment_execution_unbound")])
@@ -499,7 +485,6 @@ def test_a_reused_decision_after_a_restart_passes_the_same_launch_gate_without_a
         assert again["state"] == do.COMPLETED and research["id"] in receipts(world) and second.starts == []
 
 
-@pytest.mark.skip(reason='S8: Portfolio owner and research program application (Portfolio, ResearchProgram, FakeCouncil and the research fixtures)')
 def test_a_reused_decision_without_this_actions_launch_identity_is_unbound(tmp_path):
     world = World(tmp_path)
     held(world, tmp_path)

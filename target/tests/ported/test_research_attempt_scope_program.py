@@ -9,7 +9,7 @@ the `m7_research` shim (the ResearchProgram with its three composition ports wir
 `AppServer`/`ClaudeCodeRuntime` names are looked up at open time) where M7 patched `codex_harness.adapters.executor`;
 the two `utcnow` patch targets (`application.outbox`, `application.execution_fence`) are `coordination.application.outbox_relay` and
 `coordination.application.execution_fence` (module globals, as in M7), and the patched callable takes the target's optional
-`clock` argument (`lambda clock=None: T0` for M7's `lambda: T0`: the target's `utcnow(clock)` passes its injected clock); `DEFINITIONS` (in `later_member`) is the `m7_research` copy of the P5 helper; the other test modules are the ported ones.
+`clock` argument (`lambda clock=None: T0` for M7's `lambda: T0`: the target's `utcnow(clock)` passes its injected clock); `DEFINITIONS` (in `later_member`) is M7's own import from the ported `test_research_investigations`; the other test modules are the ported ones.
 the three authorization kinds whose worlds reach a placeholder or a not-yet-ported helper module are skipped per parameter
 (`pytest.param(kind, marks=skip)` in the `parametrize` list; node ids unchanged, the other kinds run): `followup` (the ported
 `test_continuation` still holds `Portfolio` as an S8 placeholder) and `v3_successor`/`v4_contract` (the real-council worlds of

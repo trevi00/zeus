@@ -390,7 +390,6 @@ def test_a_scope_receipt_rechecked_at_consumption_holds_when_the_claim_no_longer
     assert world.intents()[research["id"]]["state"] == dc.RESEARCH_REQUIRED
 
 
-@pytest.mark.skip(reason="S8: batch U (Portfolio, DEFINITIONS, build, registered, FakeCouncil: unavailable placeholders in test_continuation_research.py)")
 def test_a_family_receipt_for_a_scoped_intent_refuses_research_scope_claimed_on_accept_supplement_and_recheck(
         tmp_path):
     world = World(tmp_path)
@@ -429,7 +428,6 @@ def test_a_family_receipt_for_a_scoped_intent_refuses_research_scope_claimed_on_
     assert world.intents()[research["id"]]["state"] == dc.RESEARCH_REQUIRED and len(world.jobs()) == 2
 
 
-@pytest.mark.skip(reason="S8: batch U (Portfolio, DEFINITIONS, build, registered, FakeCouncil: unavailable placeholders in test_continuation_research.py)")
 def test_the_writer_transaction_rechecks_a_scope_claim_that_appeared_after_verification(tmp_path):
     world = World(tmp_path)
     root, successor, research, investigation, dispatch = held(world, tmp_path)
@@ -445,7 +443,6 @@ def test_the_writer_transaction_rechecks_a_scope_claim_that_appeared_after_verif
     assert receipts(world) == {}
 
 
-@pytest.mark.skip(reason="S8: batch U (Portfolio, DEFINITIONS, build, registered, FakeCouncil: unavailable placeholders in test_continuation_research.py)")
 def test_a_mixed_receipt_cannot_cover_or_bypass_a_scope(tmp_path):
     world = World(tmp_path)
     family = mixed_family(world, tmp_path)
@@ -487,7 +484,6 @@ def test_an_owner_supplement_naming_the_scope_is_refused_and_nothing_is_recorded
 
 
 # ---- U2B-1: no recovery or successor head ever redirects a scope ---------------------------------------
-@pytest.mark.skip(reason="S8: batch U (Portfolio, DEFINITIONS, build, registered, FakeCouncil: unavailable placeholders in test_continuation_research.py)")
 def test_no_family_or_forged_recovery_or_head_redirects_a_scope_dispatch(tmp_path):
     world = World(tmp_path)
     root, successor, research, investigation, dispatch = held(world, tmp_path)
