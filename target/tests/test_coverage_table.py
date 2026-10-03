@@ -183,3 +183,36 @@ def test_s4_rows_moved_so_far_are_implemented_and_the_rest_stay_designed(table):
         assert any(e.startswith(("compare:", "target:tests/")) for e in row["evidence"]), name
     for name in S4_REMAINING:
         assert rows["module:src/codex_harness/" + name]["status"] == "designed", name
+
+
+def _generator():
+    sys.path.insert(0, str(ROOT / "coverage"))
+    try:
+        import generate
+    finally:
+        sys.path.remove(str(ROOT / "coverage"))
+    return generate
+
+
+def test_the_regeneration_check_compares_the_generated_skeleton_and_still_sees_skeleton_drift(table):
+    """SKIPPED-TEST-CLOSURE-20261004 B: the generator owns the skeleton; the integrations own MAINTAINED_FIELDS and the
+    addition rows (since S3, 0a8737cc). A drift in any generator-owned field must still fail the check."""
+    import copy
+
+    generate = _generator()
+    base = generate.skeleton(table)
+    maintained = copy.deepcopy(table)
+    row = next(r for r in maintained["rows"] if r["kind"] == "module")
+    for field in generate.MAINTAINED_FIELDS:
+        row[field] = "edited by an integration"
+    maintained["rows"].append({**row, "key": "addition:fixture/extra", "kind": generate.ADDITION})
+    maintained["counts"][generate.ADDITION] = maintained["counts"].get(generate.ADDITION, 0) + 1
+    assert generate.skeleton(maintained) == base
+    for field, value in (("trace", "changed"), ("kind", "contract"), ("layer", "changed"), ("untraced", None)):
+        drifted = copy.deepcopy(table)
+        next(r for r in drifted["rows"] if r["kind"] == "module")[field] = value
+        assert generate.skeleton(drifted) != base, field
+    removed = copy.deepcopy(table)
+    removed["rows"] = [r for r in removed["rows"] if r["kind"] == generate.ADDITION or r is not removed["rows"][0]]
+    assert generate.skeleton(removed) != base
+    assert not generate.MAINTAINED_FIELDS & {"key", "kind", "layer", "trace", "untraced", "intent", "candidate"}

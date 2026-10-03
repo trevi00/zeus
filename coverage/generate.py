@@ -2,8 +2,8 @@
 
 Layer: harness (never shipped); standard library only.
 
-    python coverage/generate.py --ledger <FLEET-REBUILD-LEDGER.json>            # write
-    python coverage/generate.py --ledger <FLEET-REBUILD-LEDGER.json> --check    # compare only
+    python coverage/generate.py --ledger <FLEET-REBUILD-LEDGER.json>            # write (refused over a maintained table)
+    python coverage/generate.py --ledger <FLEET-REBUILD-LEDGER.json> --check    # compare the generated skeleton only
 
 Row identities are frozen from the ledger (sha256 pinned below). The context of each module row is
 the accepted design mapping (`scratch/rebuild-design/map.py`, reproduced literally in MAP, with the
@@ -838,6 +838,26 @@ def build(ledger: dict, static: dict) -> dict:
     }
 
 
+# Since S3 (0a8737cc, 2026-09-30) the slice integrations maintain these row fields in place, through their recorded
+# edit scripts, and append `addition` rows (no SOURCE counterpart; OBSERVABILITY-COVERAGE-20261002). The generator owns
+# everything else: the SOURCE-derived skeleton of row keys, kinds, layers, traces and every other field. `--check`
+# therefore compares skeletons, and writing a fresh table over a maintained one is refused (it would discard every
+# integration edit). SKIPPED-TEST-CLOSURE-20261004 B (`test_table_regenerates_from_the_pinned_ledger`).
+MAINTAINED_FIELDS = frozenset({"evidence", "mapping_correction", "slice", "slice_progress", "status", "symbol_basis",
+                               "target_owner", "target_symbol", "writer_contexts"})
+ADDITION = "addition"
+ADDITION_INTENT = "addition:<authority>"
+
+
+def skeleton(table: dict) -> dict:
+    """The generator-owned part of a coverage table: no maintained field, no addition row, count or intent."""
+    top = {k: v for k, v in table.items() if k not in {"rows", "counts", "intents", "ledger_key_digest"}}
+    return {**top, "counts": {k: v for k, v in table["counts"].items() if k != ADDITION},
+            "intents": [i for i in table["intents"] if i != ADDITION_INTENT],
+            "rows": [{k: v for k, v in r.items() if k not in MAINTAINED_FIELDS}
+                     for r in table["rows"] if r["kind"] != ADDITION]}
+
+
 def dump(document: dict) -> str:
     head = {k: v for k, v in document.items() if k != "rows"}
     lines = json.dumps(head, indent=1, ensure_ascii=False, sort_keys=True)[:-2]
@@ -856,10 +876,17 @@ def main(argv=None) -> int:
     ledger = json.loads(args.ledger.read_text(encoding="utf-8"))
     static = json.loads((ROOT / "compare/goldens/reference/static.source.json").read_text(encoding="utf-8"))
     text = dump(build(ledger, static))
+    current = json.loads(OUT.read_text(encoding="utf-8")) if OUT.exists() else None
     if args.check:
-        same = OUT.exists() and OUT.read_text(encoding="utf-8") == text
-        print(json.dumps({"coverage_matches_generated": same}))
+        same = current is not None and skeleton(current) == skeleton(json.loads(text))
+        print(json.dumps({"coverage_matches_generated": same, "compared": "skeleton",
+                          "maintained_fields": sorted(MAINTAINED_FIELDS),
+                          "addition_rows": sum(r["kind"] == ADDITION for r in (current or {}).get("rows", []))}))
         return 0 if same else 1
+    if current is not None and OUT.read_text(encoding="utf-8") != text:
+        print("refused: coverage/ledger-coverage.json is integration-maintained since S3; regenerating it would discard"
+              " every integration edit (use --check)", file=sys.stderr)
+        return 1
     OUT.write_text(text, encoding="utf-8")
     print(json.dumps({"written": str(OUT.relative_to(ROOT)), "bytes": len(text.encode())}))
     return 0
