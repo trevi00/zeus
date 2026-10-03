@@ -5,6 +5,7 @@ Each layer has a control: (a) the in-process audit hook, extended to child Pytho
 (c) bwrap without network, checked only when the session runs under it.
 """
 
+import json
 import os
 import subprocess
 import sys
@@ -145,6 +146,118 @@ def test_fixture_binds_are_limited_to_the_declared_root(monkeypatch, tmp_path):
     provider_guard.check_spawn(None, argv)
     outside = ["docker", "run", "--mount", "type=bind,src=/home,dst=/h", *argv[3:]]
     assert refused(outside)
+
+
+VERIFY_PROJECT = "zeus-verify-" + "0" * 32
+
+
+def verify_stack(tmp_path, mutate=None):
+    """The compose definition `host_os.adapters.verification.VerificationServices.__enter__` writes."""
+    spec = {"services": {
+        "postgres": {"image": "pgvector/pgvector:pg17",
+                     "environment": {"POSTGRES_USER": "zeus", "POSTGRES_DB": "zeus",
+                                     "POSTGRES_PASSWORD": "${ZEUS_VERIFY_PASSWORD}"},
+                     "ports": ["127.0.0.1:15432:5432"], "volumes": ["database:/var/lib/postgresql/data"],
+                     "mem_limit": "512m", "cpus": 1,
+                     "healthcheck": {"test": ["CMD-SHELL", "pg_isready -U zeus -d zeus"]}},
+        "redis": {"image": "redis:7.4-alpine", "ports": ["127.0.0.1::6379"],
+                  "command": ["redis-server", "--appendonly", "no"], "mem_limit": "128m", "cpus": 0.5,
+                  "healthcheck": {"test": ["CMD", "redis-cli", "ping"]}}},
+        "volumes": {"database": {}}}
+    if mutate:
+        mutate(spec)
+    path = tmp_path / "stack" / "compose.json"
+    path.parent.mkdir(parents=True, exist_ok=True)
+    path.write_text(json.dumps(spec), encoding="utf-8")
+    return path
+
+
+def compose(path, *args, project=VERIFY_PROJECT):
+    return ["docker", "compose", "--project-name", project, "--file", str(path), *args]
+
+
+LABEL_FILTER = "label=com.docker.compose.project=" + VERIFY_PROJECT
+
+
+def test_the_verification_stack_forms_need_their_own_opt_in(monkeypatch, tmp_path):
+    """SKIPPED-TEST-CLOSURE-20261004 B: the owner-run stack checks get a THIRD opt-in, never the fixture one alone."""
+    monkeypatch.setenv(provider_guard.DOCKER_OPT_IN_ENV, "1")
+    monkeypatch.delenv(provider_guard.DOCKER_VERIFY_STACK_ENV, raising=False)
+    path = verify_stack(tmp_path)
+    assert refused(compose(path, "up", "-d", "--wait"))
+    assert refused(["docker", "ps", "-aq", "--filter", LABEL_FILTER])
+    monkeypatch.setenv(provider_guard.DOCKER_VERIFY_STACK_ENV, "1")
+    provider_guard.check_spawn(None, compose(path, "up", "-d", "--wait"))
+    monkeypatch.delenv(provider_guard.DOCKER_OPT_IN_ENV)
+    assert refused(compose(path, "up", "-d", "--wait"))
+
+
+@pytest.mark.parametrize("args", [
+    ["up", "-d", "--wait"], ["up", "-d", "--no-recreate", "--wait", "postgres"], ["port", "postgres", "5432"],
+    ["port", "redis", "6379"], ["ps", "--all", "--quiet", "postgres"], ["ps", "-q", "redis"], ["pause", "postgres"],
+    ["unpause", "postgres"], ["stop", "--timeout", "5", "postgres"],
+    ["down", "--volumes", "--remove-orphans", "--timeout", "10"],
+    ["exec", "-T", "postgres", "psql", "-U", "zeus", "-d", "zeus", "-Atqc", "SELECT 1"],
+    ["exec", "-T", "redis", "redis-cli", "info", "server"],
+])
+def test_the_verification_stack_admits_exactly_its_own_forms(monkeypatch, tmp_path, args):
+    monkeypatch.setenv(provider_guard.DOCKER_OPT_IN_ENV, "1")
+    monkeypatch.setenv(provider_guard.DOCKER_VERIFY_STACK_ENV, "1")
+    provider_guard.check_spawn(None, compose(verify_stack(tmp_path), *args))
+
+
+def test_the_verification_stack_removal_check_reads_only_its_project(monkeypatch):
+    monkeypatch.setenv(provider_guard.DOCKER_OPT_IN_ENV, "1")
+    monkeypatch.setenv(provider_guard.DOCKER_VERIFY_STACK_ENV, "1")
+    provider_guard.check_spawn(None, ["docker", "ps", "-aq", "--filter", LABEL_FILTER])
+    provider_guard.check_spawn(None, ["docker", "volume", "ls", "-q", "--filter", LABEL_FILTER])
+    for argv in (["docker", "ps", "-aq"], ["docker", "ps", "-aq", "--filter", "label=com.docker.compose.project=prod"],
+                 ["docker", "volume", "ls", "-q"], ["docker", "volume", "rm", "x"], ["docker", "volume", "prune", "-f"],
+                 ["docker", "ps", "-aq", "--filter", LABEL_FILTER, "extra"]):
+        assert refused(argv), argv
+
+
+@pytest.mark.parametrize("args,project,name", [
+    (["up", "-d"], "zeus-prod", "compose.json"), (["up", "-d"], "zeus-verify-XYZ", "compose.json"),
+    (["up", "-d"], VERIFY_PROJECT, "docker-compose.yml"), (["run", "postgres", "sh"], VERIFY_PROJECT, "compose.json"),
+    (["cp", "postgres:/x", "/tmp"], VERIFY_PROJECT, "compose.json"), (["pull"], VERIFY_PROJECT, "compose.json"),
+    (["config"], VERIFY_PROJECT, "compose.json"), (["up", "-d", "worker"], VERIFY_PROJECT, "compose.json"),
+    (["port", "postgres", "6379"], VERIFY_PROJECT, "compose.json"), (["pause"], VERIFY_PROJECT, "compose.json"),
+    (["exec", "-T", "postgres", "bash"], VERIFY_PROJECT, "compose.json"),
+    (["exec", "postgres", "psql"], VERIFY_PROJECT, "compose.json"),
+    (["down", "postgres"], VERIFY_PROJECT, "compose.json"), (["up", "--build"], VERIFY_PROJECT, "compose.json"),
+])
+def test_the_verification_stack_refuses_every_other_compose_form(monkeypatch, tmp_path, args, project, name):
+    monkeypatch.setenv(provider_guard.DOCKER_OPT_IN_ENV, "1")
+    monkeypatch.setenv(provider_guard.DOCKER_VERIFY_STACK_ENV, "1")
+    path = verify_stack(tmp_path)
+    renamed = path.with_name(name)
+    path.rename(renamed)
+    assert refused(compose(renamed, *args, project=project))
+    assert refused(["docker", "compose", "--file", str(renamed), "--project-name", project, *args])
+    assert refused(["docker", "compose", "--project-name", VERIFY_PROJECT, "--file", "stack/compose.json", "up", "-d"])
+
+
+@pytest.mark.parametrize("mutate", [
+    lambda s: s["services"]["postgres"].update(privileged=True),
+    lambda s: s["services"]["redis"].update(network_mode="host"),
+    lambda s: s["services"]["postgres"].update(cap_add=["SYS_ADMIN"]),
+    lambda s: s["services"]["postgres"].update(image="ubuntu"),
+    lambda s: s["services"]["postgres"].update(ports=["0.0.0.0:15432:5432"]),
+    lambda s: s["services"]["redis"].update(ports=["6379:6379"]),
+    lambda s: s["services"]["postgres"].update(ports=["127.0.0.1:15432:5432", "127.0.0.1:2375:2375"]),
+    lambda s: s["services"]["postgres"].update(volumes=["/var/run/docker.sock:/var/run/docker.sock"]),
+    lambda s: s["services"]["postgres"].update(volumes=["/srv:/var/lib/postgresql/data"]),
+    lambda s: s["services"].update(extra={"image": "redis:7.4-alpine"}),
+    lambda s: s["services"]["redis"].update(command=["sh", "-c", "id"]),
+    lambda s: s["services"]["postgres"]["environment"].update(PGDATA="/x"),
+    lambda s: s.update(networks={"default": {"external": True}}),
+    lambda s: s["volumes"].update(other={"driver": "local"}),
+])
+def test_the_verification_stack_refuses_a_broader_definition(monkeypatch, tmp_path, mutate):
+    monkeypatch.setenv(provider_guard.DOCKER_OPT_IN_ENV, "1")
+    monkeypatch.setenv(provider_guard.DOCKER_VERIFY_STACK_ENV, "1")
+    assert refused(compose(verify_stack(tmp_path, mutate), "up", "-d", "--wait"))
 
 
 def test_docker_marker_does_not_admit_a_real_provider_spawn(monkeypatch):

@@ -29,11 +29,18 @@ complete forms are admitted:
   `disposable-postgresql-pair` families alone, S7 restore design §2): no exec option at all, an owned fixture
   container, and exactly the M7 host-migration tool forms `pg_dump|pg_restore -U <ident> -h /var/run/postgresql
   ...` and `sha256sum /dump/<name>`, every path operand being `/var/run/postgresql` or `/dump/<name>`.
-Everything else (`cp`, `pull`, `compose`, `network`, `volume`, `system`, other `exec` forms, ...) is refused.
+- `compose`, ONLY with the third opt-in `ZEUS_TEST_DOCKER_VERIFY_STACK=1` (set by the owner-run verification-stack
+  command alone, SKIPPED-TEST-CLOSURE-20261004 B): exactly `compose --project-name zeus-verify-<32 hex> --file
+  <absolute>/compose.json <subcommand>` over the disposable two-service stack `host_os.adapters.verification` writes
+  (fixture images, loopback-only publications, one named volume, allow-listed service keys: nothing privileged, no
+  network mode, no binds), with the stack's own subcommand forms, plus the project-scoped read-only `ps`/`volume ls`
+  label filters its removal check uses.
+Everything else (`cp`, `pull`, other `compose`, `network`, `volume`, `system`, other `exec` forms, ...) is refused.
 """
 
 from __future__ import annotations
 
+import json
 import os
 import re
 import shlex
@@ -48,6 +55,13 @@ DOCKER_OPT_IN_ENV = "ZEUS_TEST_DOCKER"
 DOCKER_IMAGES_ENV = "ZEUS_TEST_DOCKER_FIXTURE_IMAGES"  # extra EXACT image refs, comma-separated
 DOCKER_BIND_ROOT_ENV = "ZEUS_TEST_DOCKER_BIND_ROOT"
 DOCKER_PGEXEC_ENV = "ZEUS_TEST_DOCKER_PGEXEC"  # second opt-in: the restore family's `docker exec` tool forms
+DOCKER_VERIFY_STACK_ENV = "ZEUS_TEST_DOCKER_VERIFY_STACK"  # third opt-in: the owner-run VerificationServices stack
+VERIFY_PROJECT = re.compile(r"^zeus-verify-[0-9a-f]{32}$")
+VERIFY_SERVICES = {"postgres": "5432", "redis": "6379"}
+VERIFY_SERVICE_KEYS = {"postgres": frozenset({"image", "environment", "ports", "volumes", "mem_limit", "cpus",
+                                              "healthcheck"}),
+                       "redis": frozenset({"image", "ports", "command", "mem_limit", "cpus", "healthcheck"})}
+VERIFY_PROGRAMS = {"postgres": "psql", "redis": "redis-cli"}
 PG_TOOLS = frozenset({"pg_dump", "pg_restore"})
 PG_SOCKET_DIR = "/var/run/postgresql"
 DUMP_PATH = re.compile(r"^/dump/[A-Za-z0-9][A-Za-z0-9._-]{0,127}$")
@@ -217,6 +231,87 @@ def _check_exec(args: list[str], env) -> None:
             raise DockerRefused("docker exec pg tool arguments may not contain ..")
 
 
+def _verify_stack_definition(path: Path, env) -> None:
+    """The file must be the disposable stack `VerificationServices.__enter__` writes, nothing broader."""
+    try:
+        spec = json.loads(path.read_text(encoding="utf-8"))
+    except (OSError, ValueError) as exc:
+        raise DockerRefused(f"compose definition unreadable: {type(exc).__name__}") from None
+    if not isinstance(spec, dict) or set(spec) != {"services", "volumes"} or spec["volumes"] != {"database": {}}:
+        raise DockerRefused("compose definition is not the two-service verification stack")
+    services = spec["services"]
+    if not isinstance(services, dict) or set(services) != set(VERIFY_SERVICES):
+        raise DockerRefused("compose services must be exactly postgres and redis")
+    for name, service in services.items():
+        if not isinstance(service, dict) or set(service) - VERIFY_SERVICE_KEYS[name]:
+            raise DockerRefused(f"compose service {name} has a key outside the verification stack")
+        if service.get("image") not in _fixture_images(env):
+            raise DockerRefused(f"compose service {name} image is not a fixture image")
+        ports = service.get("ports")
+        if not (isinstance(ports, list) and len(ports) == 1 and isinstance(ports[0], str) and re.fullmatch(
+                r"127\.0\.0\.1:([0-9]{1,5})?:" + VERIFY_SERVICES[name], ports[0])):
+            raise DockerRefused(f"compose service {name} may publish its own port on 127.0.0.1 only")
+    if services["postgres"].get("volumes") != ["database:/var/lib/postgresql/data"]:
+        raise DockerRefused("compose postgres may mount only the named database volume")
+    environment = services["postgres"].get("environment")
+    if not isinstance(environment, dict) or set(environment) != {"POSTGRES_USER", "POSTGRES_DB", "POSTGRES_PASSWORD"}:
+        raise DockerRefused("compose postgres environment is not the verification stack's")
+    if services["redis"].get("command") != ["redis-server", "--appendonly", "no"]:
+        raise DockerRefused("compose redis command is not the verification stack's")
+
+
+def _verify_filter(args: list[str], flags: set[str]) -> None:
+    opts, operands = _options(args, {"--filter"}, flags)
+    filters = [v for k, v in opts if k == "--filter"]
+    if operands or len(filters) != 1 or not filters[0].startswith("label=com.docker.compose.project=") \
+            or not VERIFY_PROJECT.match(filters[0].rsplit("=", 1)[1]):
+        raise DockerRefused("only the verification project's label filter is admitted")
+
+
+def _check_verify_stack(command: str, args: list[str], env) -> None:
+    """The owner-run verification-stack forms (`host_os.adapters.verification._command` and its removal check)."""
+    if ((env or {}).get(DOCKER_VERIFY_STACK_ENV) or os.environ.get(DOCKER_VERIFY_STACK_ENV)) != "1":
+        raise DockerRefused(f"docker {command} needs {DOCKER_VERIFY_STACK_ENV}=1")
+    if command == "ps":
+        return _verify_filter(args, {"-a", "--all", "-q", "--quiet", "-aq", "-qa"})
+    if command == "volume":
+        if not args or args[0] != "ls":
+            raise DockerRefused("docker volume ls only")
+        return _verify_filter(args[1:], {"-q", "--quiet"})
+    if len(args) < 5 or args[0] != "--project-name" or not VERIFY_PROJECT.match(args[1]) or args[2] != "--file":
+        raise DockerRefused("compose needs --project-name zeus-verify-<32 hex> --file <path> first")
+    path = Path(args[3])
+    if not path.is_absolute() or path.name != "compose.json":
+        raise DockerRefused("compose --file must be an absolute compose.json")
+    _verify_stack_definition(path, env)
+    sub, rest = args[4], args[5:]
+    single = {"pause": (set(), set()), "unpause": (set(), set()), "stop": ({"-t", "--timeout"}, set())}
+    if sub == "up":
+        _, operands = _options(rest, set(), {"-d", "--detach", "--wait", "--no-recreate"})
+        if len(operands) > 1 or not set(operands) <= set(VERIFY_SERVICES):
+            raise DockerRefused("compose up names at most one stack service")
+    elif sub == "port":
+        if len(rest) != 2 or VERIFY_SERVICES.get(rest[0]) != rest[1]:
+            raise DockerRefused("compose port <service> <its own port> only")
+    elif sub == "ps":
+        _, operands = _options(rest, set(), {"-a", "--all", "-q", "--quiet"})
+        if len(operands) > 1 or not set(operands) <= set(VERIFY_SERVICES):
+            raise DockerRefused("compose ps names at most one stack service")
+    elif sub in single:
+        _, operands = _options(rest, *single[sub])
+        if len(operands) != 1 or operands[0] not in VERIFY_SERVICES:
+            raise DockerRefused(f"compose {sub} names exactly one stack service")
+    elif sub == "down":
+        _, operands = _options(rest, {"-t", "--timeout"}, {"-v", "--volumes", "--remove-orphans"})
+        if operands:
+            raise DockerRefused("compose down takes no operand")
+    elif sub == "exec":
+        if len(rest) < 3 or rest[0] != "-T" or VERIFY_PROGRAMS.get(rest[1]) != rest[2]:
+            raise DockerRefused("compose exec -T postgres psql | -T redis redis-cli only")
+    else:
+        raise DockerRefused(f"compose {sub} is not a verification-stack form")
+
+
 def docker_policy(argv: list[str], env=None) -> str:
     """Return the normalized admitted subcommand, or raise DockerRefused (default-deny)."""
     if ((env or {}).get(DOCKER_OPT_IN_ENV) or os.environ.get(DOCKER_OPT_IN_ENV)) != "1":
@@ -229,6 +324,9 @@ def docker_policy(argv: list[str], env=None) -> str:
         command, rest = DOCKER_ALIASES[command, rest[0]], rest[1:]
     if command == "exec":
         _check_exec(rest, env)
+        return command
+    if command in {"compose", "ps", "volume"}:
+        _check_verify_stack(command, rest, env)
         return command
     if command not in DOCKER_TOP:
         raise DockerRefused(f"docker {command} is not a supported fixture form")
