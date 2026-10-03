@@ -1,0 +1,203 @@
+# promtool unit tests for zeus-s9b.yml (S9 X4b): every alert fires with its exact labels and annotations and later
+# resolves (the condition stops, then `keep_firing_for` elapses); every recording rule has an exact value, including
+# a feature with no series at all. OWNER-RUN, as for X4a: `promtool test rules zeus-s9b.test.yml`.
+rule_files:
+  - zeus-s9b.yml
+evaluation_interval: 1m
+group_eval_order:
+  - zeus-s9b-recording
+  - zeus-s9b-alerts
+tests:
+  # ZeusOutboxOldestWaitingHigh
+  - interval: 1m
+    input_series:
+      - series: 'zeus_queue_oldest_age_seconds{queue="outbox"}'
+        values: '700x30 0x100'
+    alert_rule_test:
+      - eval_time: 15m
+        alertname: ZeusOutboxOldestWaitingHigh
+        exp_alerts:
+          - exp_labels:
+              queue: outbox
+              owner: coordination
+              severity: warning
+            exp_annotations:
+              summary: "The oldest waiting outbox row has waited more than ten minutes."
+              runbook: target/docs/runbooks/zeus-s9b.md#zeusoutboxoldestwaitinghigh
+              threshold_basis: "provisional: no production baseline (S9 fixtures)"
+      - eval_time: 50m
+        alertname: ZeusOutboxOldestWaitingHigh
+        exp_alerts: []
+  # ZeusTaskOldestWaitingHigh
+  - interval: 1m
+    input_series:
+      - series: 'zeus_queue_oldest_age_seconds{queue="tasks"}'
+        values: '4000x60 0x100'
+    alert_rule_test:
+      - eval_time: 20m
+        alertname: ZeusTaskOldestWaitingHigh
+        exp_alerts:
+          - exp_labels:
+              queue: tasks
+              owner: coordination
+              severity: warning
+            exp_annotations:
+              summary: "The oldest queued or retrying task has waited more than an hour."
+              runbook: target/docs/runbooks/zeus-s9b.md#zeustaskoldestwaitinghigh
+              threshold_basis: "provisional: no production baseline (S9 fixtures)"
+      - eval_time: 90m
+        alertname: ZeusTaskOldestWaitingHigh
+        exp_alerts: []
+  # ZeusQueueFactsUnavailable
+  - interval: 1m
+    input_series:
+      - series: 'zeus_queue_facts_available{queue="outbox"}'
+        values: '0x60 1x100'
+    alert_rule_test:
+      - eval_time: 40m
+        alertname: ZeusQueueFactsUnavailable
+        exp_alerts:
+          - exp_labels:
+              queue: outbox
+              owner: observation
+              severity: info
+            exp_annotations:
+              summary: "A queue could not be read completely, so its depth and oldest age are not observed."
+              runbook: target/docs/runbooks/zeus-s9b.md#zeusqueuefactsunavailable
+              threshold_basis: "provisional: no production baseline (S9 fixtures)"
+      - eval_time: 80m
+        alertname: ZeusQueueFactsUnavailable
+        exp_alerts: []
+  # ZeusRedisPendingStale
+  - interval: 1m
+    input_series:
+      - series: 'zeus_redis_pending_oldest_idle_seconds{agent="conductor"}'
+        values: '400x20 10x100'
+    alert_rule_test:
+      - eval_time: 15m
+        alertname: ZeusRedisPendingStale
+        exp_alerts:
+          - exp_labels:
+              agent: conductor
+              owner: coordination
+              severity: warning
+            exp_annotations:
+              summary: "A pending stream entry of an agent has been idle for more than five minutes since its last delivery."
+              runbook: target/docs/runbooks/zeus-s9b.md#zeusredispendingstale
+              threshold_basis: "provisional: no production baseline (S9 fixtures)"
+      - eval_time: 50m
+        alertname: ZeusRedisPendingStale
+        exp_alerts: []
+  # ZeusRedisDeadLettersGrowing
+  - interval: 1m
+    input_series:
+      - series: 'zeus_redis_dead_letter_entries'
+        values: '0+1x30 30x200'
+    alert_rule_test:
+      - eval_time: 15m
+        alertname: ZeusRedisDeadLettersGrowing
+        exp_alerts:
+          - exp_labels:
+              owner: coordination
+              severity: warning
+            exp_annotations:
+              summary: "The dead-letter stream gained entries over the last hour."
+              runbook: target/docs/runbooks/zeus-s9b.md#zeusredisdeadlettersgrowing
+              threshold_basis: "provisional: no production baseline (S9 fixtures)"
+      - eval_time: 150m
+        alertname: ZeusRedisDeadLettersGrowing
+        exp_alerts: []
+  # ZeusRedisFactsUnavailable
+  - interval: 1m
+    input_series:
+      - series: 'zeus_redis_facts_available{scope="conductor"}'
+        values: '0x30 1x100'
+    alert_rule_test:
+      - eval_time: 20m
+        alertname: ZeusRedisFactsUnavailable
+        exp_alerts:
+          - exp_labels:
+              scope: conductor
+              owner: observation
+              severity: info
+            exp_annotations:
+              summary: "The Redis reads of a scope failed, so its stream and memory facts are not observed."
+              runbook: target/docs/runbooks/zeus-s9b.md#zeusredisfactsunavailable
+              threshold_basis: "provisional: no production baseline (S9 fixtures)"
+      - eval_time: 60m
+        alertname: ZeusRedisFactsUnavailable
+        exp_alerts: []
+  # ZeusRedisMemoryHigh
+  - interval: 1m
+    input_series:
+      - series: 'zeus_redis_memory_used_bytes'
+        values: '900x30 100x100'
+      - series: 'zeus_redis_memory_max_bytes'
+        values: '1000x130'
+    alert_rule_test:
+      - eval_time: 15m
+        alertname: ZeusRedisMemoryHigh
+        exp_alerts:
+          - exp_labels:
+              owner: storage
+              severity: warning
+            exp_annotations:
+              summary: "Redis uses more than 80 percent of its configured maxmemory."
+              runbook: target/docs/runbooks/zeus-s9b.md#zeusredismemoryhigh
+              threshold_basis: "provisional: no production baseline (S9 fixtures)"
+      - eval_time: 50m
+        alertname: ZeusRedisMemoryHigh
+        exp_alerts: []
+  # rec-redis-memory
+  - interval: 1m
+    input_series:
+      - series: 'zeus_redis_memory_used_bytes'
+        values: '250x20'
+      - series: 'zeus_redis_memory_max_bytes'
+        values: '1000x20'
+    promql_expr_test:
+      - expr: zeus:redis_memory_usage_ratio
+        eval_time: 5m
+        exp_samples:
+          - labels: 'zeus:redis_memory_usage_ratio'
+            value: 0.25
+  # rec-redis-memory-unlimited: maxmemory 0 emits no max series, so there is no ratio
+  - interval: 1m
+    input_series:
+      - series: 'zeus_redis_memory_used_bytes'
+        values: '250x20'
+    promql_expr_test:
+      - expr: zeus:redis_memory_usage_ratio
+        eval_time: 5m
+        exp_samples: []
+  # rec-feature: fleet_backlog is instrumented and never used (no series at all), model_invocation is used,
+  # task_execution is instrumented with a flat counter, maintenance is not instrumented
+  - interval: 1m
+    input_series:
+      - series: 'zeus_feature_instrumented{feature="fleet_backlog"}'
+        values: '1x40'
+      - series: 'zeus_feature_instrumented{feature="model_invocation"}'
+        values: '1x40'
+      - series: 'zeus_feature_instrumented{feature="task_execution"}'
+        values: '1x40'
+      - series: 'zeus_feature_instrumented{feature="maintenance"}'
+        values: '0x40'
+      - series: 'zeus_feature_uses_total{feature="model_invocation"}'
+        values: '0+1x40'
+      - series: 'zeus_feature_uses_total{feature="task_execution"}'
+        values: '7x40'
+    promql_expr_test:
+      - expr: zeus:feature_used:7d
+        eval_time: 30m
+        exp_samples:
+          - labels: 'zeus:feature_used:7d{feature="model_invocation"}'
+            value: 1
+          - labels: 'zeus:feature_used:7d{feature="task_execution"}'
+            value: 0
+      - expr: zeus:feature_unused_instrumented_candidate:7d
+        eval_time: 30m
+        exp_samples:
+          - labels: 'zeus:feature_unused_instrumented_candidate:7d{feature="fleet_backlog"}'
+            value: 1
+          - labels: 'zeus:feature_unused_instrumented_candidate:7d{feature="task_execution"}'
+            value: 1
