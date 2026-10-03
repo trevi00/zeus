@@ -7,7 +7,7 @@ Layer: harness (never shipped); standard library only.
 `zeus-harness`, with `ZEUS_REPOSITORY` pointing at it. Each case records the parsed stdout JSON, the
 stderr (parsed JSON, else the text) and the SystemExit code. Cases: `paths`; `--repository <second>
 paths`; `organization` (agent count and the sha256 of stdout); `validate` with a valid and an invalid
-message; `doctor --offline`; `setup` twice (`env_created` true, then false; the `.env` mode 0600 is
+message; `doctor --offline` (PATH = fixture stubs git/uv/docker and no codex, HOME = the fixture); `setup` twice (`env_created` true, then false; the `.env` mode 0600 is
 asserted here and its content is never read). `canary` is not a case: it spawns `codex`.
 The one declared normalization: the fixture directory path becomes `<FIXTURE>` (in stdout, stderr and argv).
 """
@@ -106,7 +106,21 @@ def run_all(main, work: Path) -> dict:
         cases["organization"]["stdout_sha256"] = sha(organization["_stdout_text"])
         case("validate_valid", ["validate", str(good)])
         case("validate_invalid", ["validate", str(bad)])
-        case("doctor_offline", ["doctor", "--offline"])
+        bin_dir = fixture / "bin"
+        bin_dir.mkdir()
+        for name in ("git", "uv", "docker"):
+            stub = bin_dir / name
+            stub.write_text("#!/bin/sh\nexit 0\n", encoding="utf-8")
+            stub.chmod(0o755)
+        # Host independent: only the stubs are on PATH (no codex) and HOME is the fixture, so codex,
+        # codex_auth and compose are false whatever the host has installed.
+        host = {k: os.environ.get(k) for k in ("PATH", "HOME")}
+        os.environ.update(PATH=str(bin_dir), HOME=str(fixture))
+        try:
+            case("doctor_offline", ["doctor", "--offline"])
+        finally:
+            for k, v in host.items():
+                os.environ[k] = v
         case("setup_first", ["setup"])
         env_file = fixture / ".env"
         assert stat.S_IMODE(env_file.stat().st_mode) == 0o600, "the .env must be mode 0600"
