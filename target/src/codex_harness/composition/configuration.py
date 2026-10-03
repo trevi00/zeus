@@ -1,9 +1,9 @@
 """Host settings: the dotenv layer merged under the environment (INV-HOST-DELIVERY-001).
 
 Layer: composition
-Owns: settings, repository_root, read_env and aliases, and runtime_dir, codex_auth and compose_environment (M7 `adapters/configuration.py` functions, moved ahead of S10); the rest of configuration.py stays S10
-Does not own: select_repository and initialize (S10)
-Entry points: settings, repository_root, read_env, aliases, runtime_dir, codex_auth, compose_environment
+Owns: settings, repository_root, read_env and aliases, runtime_dir, codex_auth and compose_environment (M7 `adapters/configuration.py` functions, moved ahead of S10), and select_repository and initialize (S10 unit C1)
+Does not own: nothing of M7 `adapters/configuration.py` remains elsewhere
+Entry points: settings, repository_root, read_env, aliases, runtime_dir, codex_auth, compose_environment, select_repository, initialize
 Contracts: INV-HOST-DELIVERY-001
 
 Moved ahead of its slice from M7 `adapters/configuration.py` (SOURCE e38aa722) through named rules (DESIGN-s7 adapters-move, A/evidence/rebuild/s7/move-aheads/transcribe.py); the only changes are this header and the imports of the four functions; every body is otherwise M7's. Pilot 47 (A/evidence/rebuild/s7/deployment-move/move_aheads.py) appended runtime_dir, codex_auth and compose_environment verbatim.
@@ -12,6 +12,7 @@ from __future__ import annotations
 
 import os
 import re
+import secrets
 import tomllib
 from pathlib import Path
 
@@ -98,3 +99,30 @@ def compose_environment() -> dict[str, str]:
     config["ZEUS_CODEX_AUTH"] = config["HARNESS_CODEX_AUTH"]
     config["ZEUS_RUNTIME_DIR"] = config["HARNESS_RUNTIME_DIR"]
     return config
+
+
+def select_repository(root: Path) -> None:
+    value = str(root.resolve())
+    os.environ.update(ZEUS_REPOSITORY=value, HARNESS_REPOSITORY=value)
+
+
+def initialize(root: Path | None = None) -> dict:
+    """Create credentials exclusively; reruns never rotate an existing database password."""
+    root = (root or repository_root()).resolve()
+    root.mkdir(parents=True, exist_ok=True)
+    path = root / ".env"
+    created = False
+    password = secrets.token_hex(24)
+    content = (f"POSTGRES_PASSWORD={password}\n"
+               f"HARNESS_DATABASE_URL=postgresql://harness:{password}@127.0.0.1:55432/harness\n"
+               "HARNESS_REDIS_URL=redis://127.0.0.1:56379/0\n"
+               "COMPOSE_PROJECT_NAME=zeus\nZEUS_REDIS_NAMESPACE=zeus\n")
+    try:
+        descriptor = os.open(path, os.O_WRONLY | os.O_CREAT | os.O_EXCL, 0o600)
+    except FileExistsError:
+        pass
+    else:
+        with os.fdopen(descriptor, "w", encoding="utf-8", newline="\n") as stream:
+            stream.write(content)
+        created = True
+    return {"repository": str(root), "env_created": created}
