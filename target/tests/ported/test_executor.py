@@ -1,0 +1,184 @@
+"""Ported SOURCE M7 suite `tests/test_executor.py` (e38aa722) run against the S8 target.
+
+Every assertion is M7's, unchanged. Adaptations, all construction/import/patch-target (each is named in the `m7_executor` shim docstring, the P9 additions included): `Executor`, `Harness` (the carrier `m7_executor.Service`) and `organization` come from the shims, every other M7 `codex_harness.adapters|application|domain` name from its target home (`kernel`, `storage`, `execution`, `research`, `host_os`, `evidence`, `context`, `coordination`, `review`), and the patch target `codex_harness.adapters.executor.AppServer` is `m7_executor.AppServer`. `Executor` is `m7_intake.Executor` (`m7_executor.Executor` with M7's evidence gate wired); the patch target `...executor.ClaudeCodeRuntime` is `m7_executor.ClaudeCodeRuntime`.
+
+M7 module docstring follows.
+
+The implementation worker's delivered instruction (operating-portfolio-001, completion batch).
+
+Run 5b6a3b1cc9f249dfbbc0b2c8f5407e50 lost 647s to five refused StructuredOutput attempts, each one
+missing the required `tests` field, so the envelope is now stated in the objective as well. These
+tests read the objective of a REAL `execute_one` implementation run on both paths: the runtime is a
+labelled fixture seam (no provider, model, network or Docker), while the executor, the Git
+workspace, the workflow and the prompt composition are the production ones.
+
+"""
+import json
+import sys
+from datetime import datetime, timedelta, timezone
+from pathlib import Path
+from types import SimpleNamespace
+
+import pytest
+from jsonschema import Draft202012Validator
+from m7_coordination import organization
+from m7_executor import Service as Harness
+from m7_intake import Executor
+from test_git_workspace import git, repository
+from test_project_evidence import POLICY, document, workspace
+
+from codex_harness.evidence.domain.project_evidence import parse_profile
+from codex_harness.execution.domain.output_contracts import IMPLEMENTATION, implementation_instruction
+from codex_harness.host_os.adapters.git_workspace import GitWorkspace
+from codex_harness.kernel.message import envelope
+from codex_harness.kernel.policy import POLICY as RUNTIME
+from codex_harness.storage.adapters.file_artifacts import FileArtifacts
+from codex_harness.storage.adapters.memory_store import MemoryStore
+
+# `RUNTIME` is the runtime policy; the `POLICY` imported above is the project-evidence one.
+PY = sys.executable
+
+
+def run_implementation(tmp_path, monkeypatch, profile=None, deadline_seconds=None, claude_timeout=None):
+    """One real implement execution; returns the prompts and time limits the fixture runtime received.
+
+    `deadline_seconds` puts a durable deadline on the assignment itself; `claude_timeout` configures
+    the second provider so its explicit `timeout_seconds` control is the one the executor must take
+    the minimum with. Neither changes anything else about the run.
+    """
+    root = repository(tmp_path)
+    if profile is not None:  # the profile's context must exist in the candidate the worker receives
+        workspace(tmp_path, 'repository')
+        git(root, 'add', '.')
+        git(root, 'commit', '-m', 'backend context')
+    git_workspace = GitWorkspace(str(root), str(tmp_path / 'workspaces'))
+    service = Harness(MemoryStore(), organization())
+    executor = Executor(service, git_workspace, FileArtifacts(str(tmp_path / 'artifacts')),
+                        evidence_profile=profile)
+    prompts, timeouts = [], []
+
+    class Runtime:
+        """Fixture seam: records the composed prompt and the delivered time limit, and answers the
+        declared schema. No provider, model, network or Docker."""
+
+        def __init__(self, **kwargs): pass
+        def __enter__(self): return self
+        def __exit__(self, *args): pass
+
+        def run(self, prompt, cwd, schema, timeout, **kwargs):
+            prompts.append(json.loads(prompt))
+            timeouts.append(timeout)
+            Path(cwd, 'change.txt').write_text('implemented', encoding='utf-8')
+            return {'answer': {'summary': 'fixture', 'tests': []}, 'events': [], 'thread_id': 'thread',
+                    'turn_id': 'turn', 'usage': None, 'rotate': False, 'interrupted': False,
+                    'requested_model': kwargs.get('model')}
+
+    monkeypatch.setattr('m7_executor.AppServer', Runtime)
+    monkeypatch.setattr('m7_executor.ClaudeCodeRuntime', lambda **kwargs: Runtime())
+    for name in ('ZEUS_CLAUDE_ASSIGNMENTS', 'ZEUS_CLAUDE_MODEL', 'ZEUS_CLAUDE_MAX_BUDGET_USD',
+                 'ZEUS_CLAUDE_TIMEOUT_SECONDS', 'ZEUS_CLAUDE_ACCOUNTING_MODE'):
+        monkeypatch.delenv(name, raising=False)
+    if claude_timeout is not None:
+        monkeypatch.setenv('ZEUS_CLAUDE_ASSIGNMENTS', 'worker:implementation/implement')
+        monkeypatch.setenv('ZEUS_CLAUDE_MODEL', 'claude-fixture-model')
+        monkeypatch.setenv('ZEUS_CLAUDE_MAX_BUDGET_USD', '1')
+        monkeypatch.setenv('ZEUS_CLAUDE_TIMEOUT_SECONDS', str(claude_timeout))
+    message = envelope('task.assign', organization().actor('worker:implementation').parent,
+                       'worker:implementation', 'implement',
+                       {'plan': {'objective': 'fixture', 'acceptance_criteria': ['x'],
+                                 'allowed_paths': ['change.txt']}}, 'fixture', None)
+    message['where']['revision'] = git_workspace._git('rev-parse', 'HEAD')
+    if deadline_seconds is not None:
+        message['when']['deadline'] = (datetime.now(timezone.utc)
+                                       + timedelta(seconds=deadline_seconds)).isoformat()
+    executor.workflow.submit(message)
+    row = executor.execute_one('worker:implementation')
+    return SimpleNamespace(prompts=prompts, timeouts=timeouts, row=row, executor=executor)
+
+
+def test_the_legacy_implementation_objective_requires_both_fields_and_shows_only_a_shape(tmp_path, monkeypatch):
+    delivered = run_implementation(tmp_path, monkeypatch)
+    objective = delivered.prompts[0]['required']['objective']
+    assert objective == implementation_instruction(False)
+    assert 'BOTH top-level fields, `summary` and `tests`' in objective
+    assert 'neither is optional' in objective and 'omits one is refused' in objective
+    assert 'lists only the exact commands you executed, one per string' in objective
+    assert 'Shape only, not an example of work that was done' in objective
+    assert '{"summary": "<concise observed results>", "tests": ["python -m pytest tests/test_x.py -q"]}' in objective
+    # An empty answer stays honest, and honest is still not acceptance.
+    assert 'empty' in objective and 'never by itself sufficient' in objective
+    assert 'check_id' not in objective, 'the profiled observation shape belongs to the profiled path only'
+    assert 'concise observed fact' in objective
+    assert delivered.row['status'] == 'succeeded', delivered.row
+
+
+def test_the_profiled_implementation_objective_states_the_observation_shape_and_the_same_two_fields(tmp_path, monkeypatch):
+    profile = parse_profile(document(), POLICY)
+    delivered = run_implementation(tmp_path, monkeypatch, profile=profile)
+    objective = delivered.prompts[0]['required']['objective']
+    assert objective == implementation_instruction(True)
+    assert 'BOTH top-level fields, `summary` and `tests`' in objective
+    assert '{check_id, status, exit_code}' in objective and 'a failure stays a failure' in objective
+    assert '[{"check_id": "<a declared check_id>", "status": "executed", "exit_code": 0}]}' in objective
+    assert 'Shape only, not an example of work that was done' in objective
+    assert 'python -m pytest tests/test_x.py -q' not in objective, 'no legacy command shape on this path'
+    assert 'never by itself sufficient' in objective
+    # The host's own project context still travels with it; the instruction replaced nothing else.
+    assert delivered.prompts[0]['required']['project_evidence']['checks'] == profile['checks']
+
+
+def test_the_implementation_schema_still_refuses_an_answer_that_omits_either_field():
+    """Schema validation is unchanged: the instruction is a mitigation, never the enforcement."""
+    validator = Draft202012Validator(IMPLEMENTATION)
+    assert IMPLEMENTATION['required'] == ['summary', 'tests']
+    assert validator.is_valid({'summary': 'ran nothing', 'tests': []})
+    assert not validator.is_valid({'summary': 'prose instead of the envelope'})
+    assert not validator.is_valid({'tests': ['python -m pytest -q']})
+    assert not validator.is_valid({'summary': 's', 'tests': []} | {'notes': 'x'})
+
+
+# ---- the authorized time allowance (operating-portfolio-001, LOGGING.md) -------------------------
+
+def test_the_authorized_allowance_is_one_definition_and_a_ceiling(tmp_path, monkeypatch):
+    """INV-RESOURCE-001: the user-authorized hour (and the fifteen-minute decision allowance) live in
+    domain/policy.py, and the delivered limit is the policy's own, not a number the executor invents."""
+    assert (RUNTIME.task_seconds, RUNTIME.decision_seconds) == (3600, 900)
+    delivered = run_implementation(tmp_path, monkeypatch)
+    assert delivered.row['status'] == 'succeeded', delivered.row
+    assert delivered.timeouts == [RUNTIME.task_seconds] == [3600]
+
+
+def test_a_shorter_explicit_deadline_still_wins_over_the_default_allowance(tmp_path, monkeypatch):
+    """The assignment's own durable deadline shortens the run; the allowance is a ceiling, not a grant."""
+    delivered = run_implementation(tmp_path, monkeypatch, deadline_seconds=120)
+    assert delivered.row['status'] == 'succeeded', delivered.row
+    [delivered_timeout] = delivered.timeouts
+    assert 60 < delivered_timeout <= 120, delivered_timeout
+
+
+def test_a_decision_role_is_given_the_decision_allowance_not_the_task_one(tmp_path, monkeypatch):
+    """The same production `_run`, asked for a non-worker role: the branch that picks the allowance is
+    the executor's own, so the delivered limit says which one it took."""
+    delivered = run_implementation(tmp_path, monkeypatch)
+    executor = delivered.executor
+    delivered.timeouts.clear()
+    answer = executor._run('lead:improvement', 'decision-fixture', 'fixture objective', {},
+                           str(executor.git.repository), IMPLEMENTATION)
+    assert answer['summary'] == 'fixture'
+    assert delivered.timeouts == [RUNTIME.decision_seconds] == [900]
+
+
+def test_a_shorter_explicit_provider_control_still_takes_the_minimum(tmp_path, monkeypatch):
+    """The configured `claude_cli` ceiling is explicit host configuration and keeps winning; the
+    transport is a labelled fixture seam, the selection and the argument delivery are production."""
+    delivered = run_implementation(tmp_path, monkeypatch, claude_timeout=300)
+    assert delivered.row['status'] == 'succeeded', delivered.row
+    assert delivered.timeouts == [300] and 300 < RUNTIME.task_seconds
+
+
+@pytest.mark.parametrize('profiled', [False, True])
+def test_the_instruction_never_claims_a_check_was_run(profiled):
+    objective = implementation_instruction(profiled)
+    assert 'Shape only' in objective
+    for claim in ('passed', 'ran successfully', 'all tests pass'):
+        assert claim not in objective
