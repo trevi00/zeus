@@ -4,5 +4,123 @@
  "reference_driver": "drivers/reference/s9_schema.py",
  "target_driver": "drivers/target/s9_schema.py",
  "golden": "goldens/reference/observation.schema.json",
- "slice": "S9"
+ "slice": "S9",
+ "intended_differences": [
+  {
+   "path": "$.registry_size",
+   "op": "replace",
+   "value": 76,
+   "authority": "OBSERVABILITY-COVERAGE-20261002 via OWNER-DECISIONS-S9 D4; DESIGN-s9-X §1"
+  },
+  {
+   "path": "$.registry_valid",
+   "op": "add",
+   "key": "development.provider_usage_split",
+   "value": {
+    "accepted": true,
+    "same_object": true,
+    "digest": "a2db6ad2bc5f1905c988a5e9ba573abd60e92fe84b1181064b0d75869ae55fed"
+   },
+   "authority": "OBSERVABILITY-COVERAGE-20261002 via OWNER-DECISIONS-S9 D4; DESIGN-s9-X §1"
+  },
+  {
+   "path": "$.registry_valid",
+   "op": "add",
+   "key": "development.role_dispatch_decided",
+   "value": {
+    "accepted": true,
+    "same_object": true,
+    "digest": "0502380165cb9627c0dc0cfd2e2e04ff346bc4ddad0e9fb5a0ac42dd2f54b25e"
+   },
+   "authority": "OBSERVABILITY-COVERAGE-20261002 via OWNER-DECISIONS-S9 D4; DESIGN-s9-X §1"
+  },
+  {
+   "path": "$.registry_valid",
+   "op": "add",
+   "key": "development.skill_selected",
+   "value": {
+    "accepted": true,
+    "same_object": true,
+    "digest": "eeb8c93a55eb48092b25c0a71df35c23f6bae61acf55c5c8a126892dd91f1713"
+   },
+   "authority": "OBSERVABILITY-COVERAGE-20261002 via OWNER-DECISIONS-S9 D4; DESIGN-s9-X §1"
+  },
+  {
+   "path": "$.registry_valid",
+   "op": "add",
+   "key": "development.tool_call_completed",
+   "value": {
+    "accepted": true,
+    "same_object": true,
+    "digest": "8acd3e10c3629bcdfe17d744cf4c46b78522e9037e629777fc04b94258c0d9ee"
+   },
+   "authority": "OBSERVABILITY-COVERAGE-20261002 via OWNER-DECISIONS-S9 D4; DESIGN-s9-X §1"
+  },
+  {
+   "path": "$.registry_valid",
+   "op": "add",
+   "key": "operations.capacity_refused",
+   "value": {
+    "accepted": true,
+    "same_object": true,
+    "digest": "497cebd91f649a58645a978599d78af6a874bc2cf7fc1d20126008f83436b8b3"
+   },
+   "authority": "OBSERVABILITY-COVERAGE-20261002 via OWNER-DECISIONS-S9 D4; DESIGN-s9-X §1"
+  },
+  {
+   "path": "$.registry_valid",
+   "op": "add",
+   "key": "operations.ci_observed",
+   "value": {
+    "accepted": true,
+    "same_object": true,
+    "digest": "f2ec79beeb7badf4c11b71fe1e5becbfced7024f19ee9d5cc751d52f2b060a64"
+   },
+   "authority": "OBSERVABILITY-COVERAGE-20261002 via OWNER-DECISIONS-S9 D4; DESIGN-s9-X §1"
+  },
+  {
+   "path": "$.registry_valid",
+   "op": "add",
+   "key": "operations.cleanup_recorded",
+   "value": {
+    "accepted": true,
+    "same_object": true,
+    "digest": "492073fd171bda23b744c6ec8c85df96c1c1e98e8db70c470885c711e0b65bd8"
+   },
+   "authority": "OBSERVABILITY-COVERAGE-20261002 via OWNER-DECISIONS-S9 D4; DESIGN-s9-X §1"
+  },
+  {
+   "path": "$.registry_valid",
+   "op": "add",
+   "key": "operations.collector_started",
+   "value": {
+    "accepted": true,
+    "same_object": true,
+    "digest": "58b1c3cc348a3a31370c656121cd6ee9b0a243465e264407b2ae7ad0adf6449c"
+   },
+   "authority": "OBSERVABILITY-COVERAGE-20261002 via OWNER-DECISIONS-S9 D4; DESIGN-s9-X §1"
+  },
+  {
+   "path": "$.registry_valid",
+   "op": "add",
+   "key": "operations.path_declined",
+   "value": {
+    "accepted": true,
+    "same_object": true,
+    "digest": "1efcf9ae20a01c3d795d9b6abf95ffc4a2f46f0c78466cd3bd9eda30524b78f1"
+   },
+   "authority": "OBSERVABILITY-COVERAGE-20261002 via OWNER-DECISIONS-S9 D4; DESIGN-s9-X §1"
+  },
+  {
+   "path": "$.registry_valid",
+   "op": "add",
+   "key": "operations.queue_item_waited",
+   "value": {
+    "accepted": true,
+    "same_object": true,
+    "digest": "b03e77ffd8435ec176bbf53f1fbcc1b21f1bb0155407407c4b864a611ef4edc2"
+   },
+   "authority": "OBSERVABILITY-COVERAGE-20261002 via OWNER-DECISIONS-S9 D4; DESIGN-s9-X §1"
+  }
+ ]
 }
