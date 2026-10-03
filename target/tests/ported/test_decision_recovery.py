@@ -7,8 +7,8 @@ delegate to the target owners that hold them (`decisions`, `run_task`); `Release
 ticket binding injected; `executor.workflow` (the S4 Workflow, whose `handle` the MessageHandler owns) is replaced by
 the shim's `Workflow` over the same store; `advance_fence` and `release_review_policy` come from
 `coordination.application`, `ContractError`/`digest`/`envelope` from `kernel`, `FileArtifacts`/`MemoryStore` from
-`storage.adapters`. The audit-binding test needs research's audit binding (S8) and the real-CLI test M7's
-`python -m zeus` (S10); both stay skipped, whole and unrewritten. PostgreSQL parametrizations skip as in M7 without
+`storage.adapters`. The audit-binding test runs over the shim's `ExecutionRecovery` with research's `audit_gate.binding` injected; the real-CLI
+test needs M7's `python -m zeus` (S10) and stays skipped, whole and unrewritten. PostgreSQL parametrizations skip as in M7 without
 the integration database.
 """
 import json
@@ -162,7 +162,6 @@ def test_historical_diagnosis_survives_source_retry_but_not_recorded_occurrence(
         assert tx.get('decisions_pending', row['id'])['attempt'] == 1
 
 
-@pytest.mark.skip(reason="S8: research audit binding (research.application.audit_gate.binding and audit_review recovery)")
 def test_audit_binding_checks_active_evaluator_and_prior_reviews(system):
     executor, recovery = system
     proposal = {'author': 'worker:research'}

@@ -1,7 +1,8 @@
 """Ported SOURCE M7 suite `tests/test_research_attempt_scope_chain.py` (e38aa722) run against the S8 target (DESIGN-s8 §29).
 
-Every assertion is M7's, unchanged. Adaptations, all construction/import-only: `OwnerActions`, `ResearchProgram`, `organization`
-and `DEFINITIONS` (the labelled copy of the P5 helper) come from the `m7_research` shim (see its docstring); the domain modules
+Every assertion is M7's, unchanged. Adaptations, all construction/import-only: `OwnerActions`, `ResearchProgram` and `organization`
+come from the `m7_research` shim (see its docstring), and `DEFINITIONS` is M7's own import from the ported
+`test_research_investigations`; the domain modules
 come from `codex_harness.research.domain` (`research_investigations`, `research_program`) and
 `codex_harness.coordination.domain` (`continuation`, `owner_actions`), the buckets from
 `coordination.application.{owner_actions,continuation}.state`, `intake.domain.portfolio` and

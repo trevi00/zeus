@@ -9,7 +9,7 @@ one `clock`, to their split homes); `organization`, `packaged_policy`, `Workflow
 (`delivery.adapters.target_files`) come from the shims; the owner-action BUCKET_* names, `CONTINUATION_BINDINGS`,
 `lineage_of` and `plan_json` from `coordination.application.owner_actions.state`, the domain modules from
 `coordination.domain` and `delivery.domain`, the adapter names from `delivery.adapters.host_delivery`, `digest` from
-`kernel.ids`. The research program is S8: the `test_research_*` fixture modules (`build`, `FakeBudget`, `FakeCouncil`, `config`, `DEFINITIONS`), `Portfolio` and `validate_config` are `unavailable("S8", ...)` placeholders (never copies), and every test that builds the world through `Chain` (whose constructor calls `build`) is kept whole under skip "S8: research program"; `Operation` is `coordination.application.operation`, `family_id` `intake.domain.portfolio`, `cycle_id`/`CYCLE_DONE` `research.domain.research_program`. The two tests that do not build `Chain` run.
+`kernel.ids`. The research program is S8, and its fixtures are M7's own imports from the ported S8 suites (`build` from `test_research_program`, `FakeBudget`, `FakeCouncil` and `config` from `test_research_program_fixtures`, `DEFINITIONS` from `test_research_investigations`), `Portfolio` is `intake.application.portfolio`'s and `validate_config` `research.domain.research_program`'s; `Operation` is the `m7_coordination` shim's (the M7 positional construction over the S5 class; the one local import in `Chain.run_next`), `family_id` `intake.domain.portfolio`, `cycle_id`/`CYCLE_DONE` `research.domain.research_program`.
 
 M7 docstring follows.
 
@@ -43,7 +43,6 @@ from m7_coordination import (
     Workflow,
     organization,
     packaged_policy,
-    unavailable,
 )
 from m7_delivery import GitPlanPublisher, HostDelivery, TargetFiles
 from test_continuation import BASE, GOAL, World, only
@@ -55,6 +54,9 @@ from test_owner_actions_migration import (
     first_activation_port,  # LABELLED fake first-activation port
 )
 from test_owner_delivery import ReleasingConductor, git_repository
+from test_research_investigations import DEFINITIONS
+from test_research_program import build
+from test_research_program_fixtures import FakeBudget, FakeCouncil, config
 
 from codex_harness.coordination.application.continuation.state import BUCKET_INTENTS
 from codex_harness.coordination.application.owner_actions.state import (
@@ -67,18 +69,10 @@ from codex_harness.coordination.domain import continuation as dc
 from codex_harness.coordination.domain import owner_actions as do
 from codex_harness.delivery.application.host_delivery.state import BUCKET_INTENTS as HD_INTENTS
 from codex_harness.delivery.domain.host_delivery import ACTIVE, BLOCKED, MERGED, WITHDRAWN
+from codex_harness.intake.application.portfolio import Portfolio
 from codex_harness.intake.domain.portfolio import family_id
 from codex_harness.kernel.ids import digest
-from codex_harness.research.domain.research_program import CYCLE_DONE, cycle_id
-
-SKIP_S8 = "S8: research program (the Portfolio owner, ResearchProgram and the test_research_* fixtures `build`/`FakeCouncil`)"
-DEFINITIONS = unavailable("S8", "test_research_investigations.DEFINITIONS")
-build = unavailable("S8", "test_research_program.build")
-FakeBudget = unavailable("S8", "test_research_program_fixtures.FakeBudget")
-FakeCouncil = unavailable("S8", "test_research_program_fixtures.FakeCouncil")
-config = unavailable("S8", "test_research_program_fixtures.config")
-Portfolio = unavailable("S8", "application.portfolio.Portfolio")
-validate_config = unavailable("S8", "domain.research_program.validate_config")
+from codex_harness.research.domain.research_program import CYCLE_DONE, cycle_id, validate_config
 
 TARGET = "fleet-host"
 REPO = "github:zeus-owner/zeus-harness"
@@ -256,11 +250,10 @@ class Chain:
 
     def run_next(self, **executor):
         """The Fleet admits its oldest admissible job; the lane runs it through the REAL Operation."""
+        from m7_coordination import Operation
         from test_continuation import IDENTITY
         from test_operation import Bus, Collector
         from test_operation import FakeBudget as OperationBudget
-
-        from codex_harness.coordination.application.operation import Operation
 
         world = self.world
         job = world.fleet.admit_one()["job"]
@@ -359,7 +352,6 @@ def released(chain, research_intent):
 
 
 # ===== T1-9 + C2 + C3: the whole two-family chain, no human relay ==========================================
-@pytest.mark.skip(reason=SKIP_S8)
 def test_b2_held_at_f4_while_i1_delivers_then_b2_is_researched_requalified_on_i1s_merge_and_delivered(tmp_path):
     chain = Chain(tmp_path)
     world = chain.world
@@ -459,7 +451,6 @@ def requalified(chain):
     return row
 
 
-@pytest.mark.skip(reason=SKIP_S8)
 def test_the_second_candidate_on_the_stale_base_is_requalified_on_the_first_merge_and_delivered(tmp_path):
     chain, second, plan2, plan1 = stale(tmp_path)
     chain.owners()
@@ -475,7 +466,6 @@ def test_the_second_candidate_on_the_stale_base_is_requalified_on_the_first_merg
     assert merged[-1]["stage"] == MERGED and chain.github.publishes == 2 and chain.github.merges == 2
 
 
-@pytest.mark.skip(reason=SKIP_S8)
 def test_a_version1_policy_never_withdraws_requalifies_or_dispatches(tmp_path):
     chain, second, plan2, _ = stale(tmp_path, owner_schema=do.POLICY_SCHEMA)
     snapshot = deepcopy(chain.world.control.data)
@@ -505,7 +495,6 @@ class Lossy:
         return call
 
 
-@pytest.mark.skip(reason=SKIP_S8)
 @pytest.mark.parametrize("crash", ["before_slot", "withdraw_response_lost", "before_document",
                                    "requalify_response_lost"])
 def test_a_restart_at_any_persisted_state_replays_to_one_withdrawal_and_one_requalification(tmp_path, crash):
@@ -544,7 +533,6 @@ def test_a_restart_at_any_persisted_state_replays_to_one_withdrawal_and_one_requ
     assert chain.github.publishes == 1 and chain.github.merges == 1
 
 
-@pytest.mark.skip(reason=SKIP_S8)
 def test_main_moving_between_the_persisted_document_and_the_call_refuses_and_the_cap_holds(tmp_path):
     """T1-5: the persisted document names M1; main moves to M2 before `requalify_delivery` reads it."""
     chain, second, plan2, _ = stale(tmp_path)
@@ -562,7 +550,6 @@ def test_main_moving_between_the_persisted_document_and_the_call_refuses_and_the
     assert chain.world.control.data == snapshot, "no second action without a new blocked plan"
 
 
-@pytest.mark.skip(reason=SKIP_S8)
 def test_a_goal_changed_at_the_new_main_is_a_named_refusal_and_no_migration_is_written(tmp_path):
     """T1-6."""
     chain, second, _, _ = stale(tmp_path)
@@ -576,7 +563,6 @@ def test_a_goal_changed_at_the_new_main_is_a_named_refusal_and_no_migration_is_w
     assert chain.world.intents()[second["id"]]["state"] in dc.REQUALIFICATION_REQUALIFIABLE
 
 
-@pytest.mark.skip(reason=SKIP_S8)
 def test_an_unobservable_github_keeps_the_row_and_the_target_busy_until_it_can_be_observed(tmp_path):
     """T1-7: unknown is not stale; nothing is withdrawn or released, then the same row proceeds."""
     chain, _, plan2, _ = stale(tmp_path)
@@ -608,7 +594,6 @@ def second_blocked_family(chain):
     return twin
 
 
-@pytest.mark.skip(reason=SKIP_S8)
 def test_max_per_family_one_allows_the_first_requalification_and_refuses_the_next(tmp_path):
     """T1-8 and the adjudicated cap clarification: the first is allowed (no self count), the next exhausts."""
     chain, second, _, _ = stale(tmp_path)
@@ -624,7 +609,6 @@ def test_max_per_family_one_allows_the_first_requalification_and_refuses_the_nex
     assert twin["plan_id"] in rows
 
 
-@pytest.mark.skip(reason=SKIP_S8)
 def test_two_owner_processes_racing_the_cap_never_overshoot_it(tmp_path):
     """Control matrix, concurrency axis: two coordinators over the same store, interleaved at the slot."""
     chain, _, _, _ = stale(tmp_path)
@@ -646,7 +630,6 @@ def test_two_owner_processes_racing_the_cap_never_overshoot_it(tmp_path):
     assert len(chain.requalify_calls) <= 1
 
 
-@pytest.mark.skip(reason=SKIP_S8)
 def test_the_same_blocked_plan_is_one_action_for_restarts_and_second_coordinators_and_never_another_policys(
         tmp_path):
     """The action id binds the plan, intent and family, never the owner policy id; discovery reads only the
@@ -666,7 +649,6 @@ def test_the_same_blocked_plan_is_one_action_for_restarts_and_second_coordinator
     assert len(chain.actions(do.DELIVERY_REQUALIFY)) == 1 and len(chain.requalify_calls) == 1
 
 
-@pytest.mark.skip(reason=SKIP_S8)
 def test_a_plan_blocked_for_another_reason_or_a_touched_host_is_never_requalified(tmp_path):
     chain, _, plan2, _ = stale(tmp_path)
     with chain.world.lane.store.transaction() as tx:
@@ -683,7 +665,6 @@ def test_a_plan_blocked_for_another_reason_or_a_touched_host_is_never_requalifie
 
 
 # ===== T1-2 / T1-3: one delivery authority =====================================================================
-@pytest.mark.skip(reason=SKIP_S8)
 def test_a_plan_whose_lane_store_has_no_target_row_is_a_named_wait(tmp_path):
     """T1-3: the same target named from a lane whose store never registered it: nothing is published."""
     chain = Chain(tmp_path, research=False)
@@ -762,7 +743,6 @@ def program_row(chain):
         return tx.get(BUCKET_PROGRAMS, PROGRAM)
 
 
-@pytest.mark.skip(reason=SKIP_S8)
 def test_the_provider_unavailable_refuses_before_any_resume_reservation_or_spawn(tmp_path):
     """T3-5."""
     chain, intent, _, _ = held_chain(tmp_path, ok=False)
@@ -778,7 +758,6 @@ def test_the_provider_unavailable_refuses_before_any_resume_reservation_or_spawn
     assert len(chain.actions(do.RESEARCH_DISPATCH)) == 1 and chain.research.probes == 1, "no spin"
 
 
-@pytest.mark.skip(reason=SKIP_S8)
 def test_a_collection_only_cycle_is_a_named_outcome_and_never_a_second_tick(tmp_path):
     """T3-6: the child's own cycle collected and selected nothing (LABELLED complete_cycle shape)."""
     chain, _, _, _ = held_chain(tmp_path, hold=True)
@@ -803,7 +782,6 @@ def test_a_collection_only_cycle_is_a_named_outcome_and_never_a_second_tick(tmp_
     assert len(chain.actions(do.RESEARCH_DISPATCH)) == 1 and chain.research.starts == [launch]
 
 
-@pytest.mark.skip(reason=SKIP_S8)
 def test_a_cycle_reserved_under_that_number_by_another_owner_is_foreign_never_ours(tmp_path):
     """T3-7: exact cycle-owner evidence, not the number alone."""
     chain, _, _, _ = held_chain(tmp_path, foreign=True)
@@ -815,7 +793,6 @@ def test_a_cycle_reserved_under_that_number_by_another_owner_is_foreign_never_ou
     assert len(chain.research.starts) == 1
 
 
-@pytest.mark.skip(reason=SKIP_S8)
 def test_a_launch_that_never_entered_is_relaunched_once_and_then_unknown(tmp_path):
     chain, _, _, _ = held_chain(tmp_path, hold=True)
     chain.owner.tick("owners-002")
@@ -831,7 +808,6 @@ def test_a_launch_that_never_entered_is_relaunched_once_and_then_unknown(tmp_pat
     assert len(chain.research.starts) == 2
 
 
-@pytest.mark.skip(reason=SKIP_S8)
 def test_an_owned_crashed_cycle_keeps_the_program_busy_and_is_never_relaunched(tmp_path):
     """T3-4 (fixture half): the child reserved our cycle and died; its guardian proved cleanup."""
     chain, _, _, _ = held_chain(tmp_path, hold=True)
@@ -848,7 +824,6 @@ def test_an_owned_crashed_cycle_keeps_the_program_busy_and_is_never_relaunched(t
     assert len(chain.research.starts) == 1
 
 
-@pytest.mark.skip(reason=SKIP_S8)
 def test_other_policies_advance_while_the_research_child_is_pending(tmp_path):
     """T3-1 (fixture half): the child stays running across ticks; i1's plan is published and registered."""
     chain, _, _, _ = held_chain(tmp_path, hold=True)
@@ -870,7 +845,6 @@ def decision_rows(chain):
             "research_dispatch_heads", "portfolio_investigations", "fleet_jobs", "portfolio_bindings")}
 
 
-@pytest.mark.skip(reason=SKIP_S8)
 @pytest.mark.parametrize("case, reason, act", [
     ("exact", "research_ready_resume_then_tick", True),
     ("active", "research_ready_tick", True),
@@ -914,7 +888,6 @@ def test_the_ported_ro1_decision_table(tmp_path, case, reason, act):
     assert (decision["act"], decision["reason"]) == (act, reason)
 
 
-@pytest.mark.skip(reason=SKIP_S8)
 def test_discovery_is_idempotent_across_restarts_and_a_second_coordinator(tmp_path):
     chain, _, _, _ = held_chain(tmp_path, hold=True)
     chain.owner.tick("owners-002")
@@ -923,7 +896,6 @@ def test_discovery_is_idempotent_across_restarts_and_a_second_coordinator(tmp_pa
     assert len(chain.actions(do.RESEARCH_DISPATCH)) == 1 and len(chain.research.starts) == 1
 
 
-@pytest.mark.skip(reason=SKIP_S8)
 def test_the_happy_path_fixture_chain_accepts_the_research_through_the_existing_receipt(tmp_path):
     """T3-9 - LABELLED happy-path fixture only: research_required -> research_dispatch -> (child records the
     dispatch) -> research_receipt -> accept_research. It does not establish process liveness."""

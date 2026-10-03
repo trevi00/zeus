@@ -83,7 +83,8 @@ Batch P4 (research council) adds, each a construction/import adaptation:
   name, as the `m7_containers.iw` namespace binds it).
 - `Executor(...)` is `m7_executor.Executor` (a later `executor.isolation = ...` assignment reaches its RunTask and transports, as M7's
   call-time read did) with the V32 council composition wired into its RunTask as S10 composition will wire it
-  (DESIGN-s8 §30.1): `council=research.adapters.autonomous_roles`, `feedback=research.adapters.correction_feedback`,
+  (DESIGN-s8 §30.1): `council=research.adapters.autonomous_roles`, `feedback=RedactedFeedback()` (an object whose `deliver(store, artifacts, binding)` is
+  the redact-bound `deliver` of batch P5 below, as S10 composition will wire it; not the bare `correction_feedback` module),
   `composition_admission=CouncilCompositionAdmission()`; `m7_executor.AppServer`/`ClaudeCodeRuntime` stay the patch points.
 - The artifact-reader and verdict-schema constants of M7 `adapters.executor`
   are `execution.domain.output_contracts`'s; M7's `adapters.bus` names are `storage.adapters.redis_bus`'s, and a patch of its
@@ -441,10 +442,20 @@ class AutonomousRun(_autonomous.AutonomousRun):
 load_isolation = owned_container.load_host_isolation
 
 
+class RedactedFeedback:
+    """The object `run_task.feedback` is wired to (RunTask calls only `feedback.deliver(store, artifacts, binding)`): the
+    target `correction_feedback.deliver` with observation's `redact_text` injected as its `redact` rule, i.e. this
+    shim's `deliver` below, as S10 composition will wire it (OWNER-DECISIONS-S10 #9), not the bare module."""
+
+    @staticmethod
+    def deliver(store, artifacts, binding):
+        return deliver(store, artifacts, binding)
+
+
 class Executor(m7_executor.Executor):
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
-        self.run_task.council, self.run_task.feedback = autonomous_roles, correction_feedback
+        self.run_task.council, self.run_task.feedback = autonomous_roles, RedactedFeedback()
         self.run_task.composition_admission = CouncilCompositionAdmission()
 
     @property

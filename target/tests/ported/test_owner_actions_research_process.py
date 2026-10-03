@@ -10,10 +10,8 @@ the names M7's `adapters.owner_actions` module gave this file (`ResearchLaunches
 and `POLICY` is `kernel.policy`'s. The CLI names (`add_program_parser`, `program_run`: M7
 `adapters.research_program_cli`, ledger S10 `entry.cli.research_program`) are `unavailable("S10", ...)`. The sibling helper
 modules (`test_continuation_research`, `test_owner_actions_recovery`) are the ported ones.
-- Skipped whole and unrewritten: the S10 tests (the research-program CLI option; the owner process ticking its policies),
-  and the five tests that build the ported recovery suite's `Chain`, whose research world is still placeholdered there
-  (`build`, `FakeCouncil`, `FakeBudget`: `unavailable('S8')` in `test_owner_actions_recovery`),
-  filled by batch U.
+- Skipped whole and unrewritten: the S10 tests (the research-program CLI option; the owner process ticking its policies).
+  The tests that build the ported recovery suite's `Chain` (`build`, `FakeCouncil`, `FakeBudget`) run.
 
 M7 module docstring follows.
 
@@ -114,7 +112,6 @@ def child_records(chain, row):
 
 
 # ---- T3-1: the tick never joins the child; the other policy advances meanwhile -----------------------------
-@pytest.mark.skip(reason="S8: batch U (test_owner_actions_recovery.Chain: build, FakeCouncil, FakeBudget)")
 def test_ticks_stay_bounded_while_the_real_child_runs_and_the_other_policy_is_delivered(tmp_path):
     chain = process_chain(tmp_path)
     try:
@@ -143,7 +140,6 @@ def test_ticks_stay_bounded_while_the_real_child_runs_and_the_other_policy_is_de
 
 
 # ---- T3-2: stop while pending, restart, observe: a proof decides, never a second spawn --------------------
-@pytest.mark.skip(reason="S8: batch U (test_owner_actions_recovery.Chain: build, FakeCouncil, FakeBudget)")
 def test_a_stopped_child_seen_by_a_restarted_owner_is_decided_by_its_proof_and_its_rows(tmp_path):
     chain = process_chain(tmp_path)
     try:
@@ -170,7 +166,6 @@ def test_a_stopped_child_seen_by_a_restarted_owner_is_decided_by_its_proof_and_i
         stop_all(chain)
 
 
-@pytest.mark.skip(reason="S8: batch U (test_owner_actions_recovery.Chain: build, FakeCouncil, FakeBudget)")
 @pytest.mark.parametrize("reserved", [False, True])
 def test_a_guardian_killed_without_a_proof_is_unknown_keeps_the_debt_and_is_never_relaunched(tmp_path, reserved):
     """T3-2 no proof, and T3-4: an owned cycle of a crashed child keeps the program busy."""
@@ -200,7 +195,6 @@ def test_a_guardian_killed_without_a_proof_is_unknown_keeps_the_debt_and_is_neve
 
 
 # ---- T3-3: a lost start response ---------------------------------------------------------------------------
-@pytest.mark.skip(reason="S8: batch U (test_owner_actions_recovery.Chain: build, FakeCouncil, FakeBudget)")
 def test_a_lost_start_response_is_replayed_as_cached_and_one_guardian_runs(tmp_path):
     chain = process_chain(tmp_path)
     real = chain.research

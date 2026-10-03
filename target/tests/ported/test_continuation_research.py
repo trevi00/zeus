@@ -11,8 +11,14 @@ placeholder, and only tests skipped whole and unrewritten (each with its owning 
 `BUCKET_BINDINGS`, `BUCKET_INVESTIGATIONS` and `BUCKET_DISPATCHES` are the bucket names
 `coordination.application.continuation.state` and `owner_actions.state` hold (M7 `application.portfolio` and
 `research_program`); `family_id` is `intake.domain.portfolio.family_id`; `config_digest` and `validate_config` are
-`research.domain.research_program`'s. The research fixtures are the S8 suites' (`test_research_program`,
-`test_research_program_fixtures`, `test_research_recovery`, `test_research_investigations`): not ported yet.
+`research.domain.research_program`'s. The research fixtures are M7's own, imported from the ported S8 suites
+(`test_research_investigations.DEFINITIONS`, `test_research_program.{POLICY, build, registered}`,
+`test_research_program_fixtures.{FakeCouncil, config, template}`, `test_research_recovery.{FakeTransport,
+PublicationFailingCouncil, UnreachableBus, ForeignMessageCouncil}`); `Portfolio` is `intake.application.portfolio`'s,
+`ResearchProgram` and `deliver` (the target `correction_feedback.deliver` with observation's `redact_text` injected) come
+from the `m7_research` shim, `RESEARCH_SCHEMA` and `CorrectionFeedbackRefused` from `research.adapters.correction_feedback`.
+Only `adapter`, `continuation_cli` and the local `recover` (S10 CLI modules) remain `unavailable` placeholders; the 7 tests
+that reach them (the parametrized evidence-bytes test and the CLI follow-up test) are skipped whole for S10.
 
 M7 docstring follows.
 
@@ -40,8 +46,18 @@ from pathlib import Path
 
 import pytest
 from m7_coordination import Continuation, Fleet, LaneEvidence, unavailable
+from m7_research import ResearchProgram, deliver
 from test_continuation import World, only
 from test_fleet import config as fleet_config
+from test_research_investigations import DEFINITIONS
+from test_research_program import POLICY, build, registered
+from test_research_program_fixtures import FakeCouncil, config, template
+from test_research_recovery import (
+    FakeTransport,
+    ForeignMessageCouncil,
+    PublicationFailingCouncil,
+    UnreachableBus,
+)
 
 from codex_harness.coordination.application.continuation.state import (
     BUCKET_BINDINGS,
@@ -53,26 +69,15 @@ from codex_harness.coordination.application.owner_actions.state import (
     BUCKET_INVESTIGATIONS,
 )
 from codex_harness.coordination.domain import continuation as dc
+from codex_harness.intake.application.portfolio import Portfolio
 from codex_harness.intake.domain.portfolio import family_id
 from codex_harness.kernel.ids import digest
 from codex_harness.observation.application.observations import Observer
+from codex_harness.research.adapters.correction_feedback import RESEARCH_SCHEMA, CorrectionFeedbackRefused
 from codex_harness.research.domain.research_program import config_digest, validate_config
 
-DEFINITIONS = unavailable('S8', 'test_research_investigations.DEFINITIONS')
-POLICY = unavailable('S8', 'test_research_program.POLICY')
-build = unavailable('S8', 'test_research_program.build')
-registered = unavailable('S8', 'test_research_program.registered')
-FakeCouncil = unavailable('S8', 'test_research_program_fixtures.FakeCouncil')
-config = unavailable('S8', 'test_research_program_fixtures.config')
-FakeTransport = unavailable('S8', 'test_research_recovery.FakeTransport')
-PublicationFailingCouncil = unavailable('S8', 'test_research_recovery.PublicationFailingCouncil')
-UnreachableBus = unavailable('S8', 'test_research_recovery.UnreachableBus')
 adapter = unavailable('S10', 'adapters.continuation')
 continuation_cli = unavailable('S10', 'adapters.continuation_cli')
-RESEARCH_SCHEMA = unavailable('S8', 'adapters.correction_feedback.RESEARCH_SCHEMA')
-CorrectionFeedbackRefused = unavailable('S8', 'adapters.correction_feedback.CorrectionFeedbackRefused')
-deliver = unavailable('S8', 'adapters.correction_feedback.deliver')
-Portfolio = unavailable('S8', 'application.portfolio.Portfolio')
 
 # The owner's research evidence: real bytes stored in the World's temporary FileArtifacts root by
 # `receipt_for`, and read back (bounded, digest checked) at acceptance and again at consumption.
@@ -152,7 +157,6 @@ def held(world, tmp_path):
 
 
 # ---- the exact covered pair leaves research_required once -------------------------------------------
-@pytest.mark.skip(reason='S8: Portfolio owner and research program application (Portfolio, ResearchProgram, FakeCouncil and the research fixtures)')
 def test_exact_receipt_releases_the_hold_once_and_admits_one_evidence_repair_successor(tmp_path):
     world = World(tmp_path)
     root, successor, research, investigation, dispatch = held(world, tmp_path)
@@ -249,7 +253,6 @@ def _unknown_investigation(document, world, ids):
     return {"investigation": "0" * 64}
 
 
-@pytest.mark.skip(reason='S8: Portfolio owner and research program application (Portfolio, ResearchProgram, FakeCouncil and the research fixtures)')
 @pytest.mark.parametrize("change, reason", [
     (_drop_one, "research_coverage_partial"), (_foreign_sha, "research_policy_foreign"),
     (_foreign_policy, "research_policy_foreign"), (_wrong_intent, "research_intent_wrong"),
@@ -271,7 +274,6 @@ def test_partial_foreign_wrong_changed_or_absent_evidence_is_refused_and_stays_h
     assert len(world.jobs()) == 2, "no successor without an accepted receipt"
 
 
-@pytest.mark.skip(reason='S8: Portfolio owner and research program application (Portfolio, ResearchProgram, FakeCouncil and the research fixtures)')
 @pytest.mark.parametrize("council, reason", [("rejected", "research_not_accepted"), ("failed", "research_not_accepted")])
 def test_rejected_or_failed_research_never_releases(tmp_path, council, reason):
     world = World(tmp_path)
@@ -283,7 +285,6 @@ def test_rejected_or_failed_research_never_releases(tmp_path, council, reason):
     assert receipts(world) == {}
 
 
-@pytest.mark.skip(reason='S8: Portfolio owner and research program application (Portfolio, ResearchProgram, FakeCouncil and the research fixtures)')
 def test_unfinished_research_and_an_unclaimed_investigation_never_release(tmp_path):
     world = World(tmp_path)
     world.register()
@@ -316,7 +317,6 @@ def test_unfinished_research_and_an_unclaimed_investigation_never_release(tmp_pa
     assert receipts(world) == {}
 
 
-@pytest.mark.skip(reason='S8: Portfolio owner and research program application (Portfolio, ResearchProgram, FakeCouncil and the research fixtures)')
 def test_a_member_outside_the_investigation_or_the_dispatch_scope_is_unverifiable(tmp_path):
     world = World(tmp_path)
     world.register()
@@ -333,7 +333,6 @@ def test_a_member_outside_the_investigation_or_the_dispatch_scope_is_unverifiabl
 
 
 # ---- two families under one coarse investigation stay independent ----------------------------------
-@pytest.mark.skip(reason='S8: Portfolio owner and research program application (Portfolio, ResearchProgram, FakeCouncil and the research fixtures)')
 def test_two_families_sharing_one_coarse_investigation_are_released_only_by_their_own_receipt(tmp_path):
     world = World(tmp_path)
     world.register()
@@ -362,7 +361,6 @@ def test_two_families_sharing_one_coarse_investigation_are_released_only_by_thei
 
 
 # ---- immutability, concurrency and restart ----------------------------------------------------------
-@pytest.mark.skip(reason='S8: Portfolio owner and research program application (Portfolio, ResearchProgram, FakeCouncil and the research fixtures)')
 def test_concurrent_submission_keeps_one_receipt_and_a_different_one_conflicts(tmp_path):
     world = World(tmp_path)
     root, successor, research, investigation, dispatch = held(world, tmp_path)
@@ -384,7 +382,6 @@ def test_concurrent_submission_keeps_one_receipt_and_a_different_one_conflicts(t
     assert receipts(world) == stored, "the stored receipt is never edited"
 
 
-@pytest.mark.skip(reason='S8: Portfolio owner and research program application (Portfolio, ResearchProgram, FakeCouncil and the research fixtures)')
 def test_restart_and_concurrent_controllers_consume_the_persisted_receipt_once(tmp_path):
     world = World(tmp_path)
     root, successor, research, investigation, dispatch = held(world, tmp_path)
@@ -409,7 +406,6 @@ def test_restart_and_concurrent_controllers_consume_the_persisted_receipt_once(t
     assert len(repairs) == 1 and len(world.jobs()) == 3, "one successor across restart and two controllers"
 
 
-@pytest.mark.skip(reason='S8: Portfolio owner and research program application (Portfolio, ResearchProgram, FakeCouncil and the research fixtures)')
 def test_an_unreadable_lane_or_a_changed_attempt_after_acceptance_never_approves(tmp_path):
     world = World(tmp_path)
     root, successor, research, investigation, dispatch = held(world, tmp_path)
@@ -435,7 +431,6 @@ def test_an_unreadable_lane_or_a_changed_attempt_after_acceptance_never_approves
     assert world.intents()[research["id"]]["state"] == dc.RESEARCH_REQUIRED and len(world.jobs()) == 2
 
 
-@pytest.mark.skip(reason='S8: Portfolio owner and research program application (Portfolio, ResearchProgram, FakeCouncil and the research fixtures)')
 def test_an_old_receipt_never_authorizes_a_new_failure_of_the_family(tmp_path):
     world = World(tmp_path)
     root, successor, research, investigation, dispatch = held(world, tmp_path)
@@ -491,7 +486,7 @@ def _not_text(world):
     return [ref]
 
 
-@pytest.mark.skip(reason='S8: Portfolio owner and research program application (Portfolio, ResearchProgram, FakeCouncil and the research fixtures)')
+@pytest.mark.skip(reason='S10: adapters.continuation_cli (the operator CLI `refusal` projection)')
 @pytest.mark.parametrize("fault, reason", [
     (_missing, "research_evidence_missing"), (_one_missing, "research_evidence_missing"),
     (_unreadable, "research_evidence_unreadable"), (_tampered, "research_evidence_corrupt"),
@@ -510,7 +505,6 @@ def test_acceptance_reads_the_actual_evidence_bytes_and_refuses_what_is_not_ther
     assert only(world.intents(), id=research["id"])["state"] == dc.RESEARCH_REQUIRED and len(world.jobs()) == 2
 
 
-@pytest.mark.skip(reason='S8: Portfolio owner and research program application (Portfolio, ResearchProgram, FakeCouncil and the research fixtures)')
 def test_an_absent_verifier_neither_accepts_nor_consumes_a_receipt(tmp_path):
     world = World(tmp_path)
     root, successor, research, investigation, dispatch = held(world, tmp_path)
@@ -540,7 +534,6 @@ def _block(world):
     return "research_evidence_unreadable"
 
 
-@pytest.mark.skip(reason='S8: Portfolio owner and research program application (Portfolio, ResearchProgram, FakeCouncil and the research fixtures)')
 @pytest.mark.parametrize("fault", [_remove, _tamper, _block])
 def test_evidence_lost_after_acceptance_keeps_the_hold_until_it_verifies_again(tmp_path, fault):
     world = World(tmp_path)
@@ -567,7 +560,6 @@ def test_evidence_lost_after_acceptance_keeps_the_hold_until_it_verifies_again(t
 
 
 # ---- research dispatch transport recovery (research-dispatch-recovery-001) ---------------------------
-@pytest.mark.skip(reason='S8: Portfolio owner and research program application (Portfolio, ResearchProgram, FakeCouncil and the research fixtures)')
 def test_a_recovered_dispatch_binds_the_scoped_receipt_to_the_accepted_replacement_only(tmp_path):
     """The REAL council fails before provider entry (LABELLED transport fault), the owner authorizes
     one replacement program, and only a receipt naming THAT accepted run releases the hold."""
@@ -655,7 +647,6 @@ def revoked_research(world, tmp_path):
     return research, investigation, current, ("execution_fences", "tasks:" + item["message"]["message_id"])
 
 
-@pytest.mark.skip(reason='S8: Portfolio owner and research program application (Portfolio, ResearchProgram, FakeCouncil and the research fixtures)')
 def test_an_execution_revocation_releases_the_receipt_only_while_its_retained_fence_holds(tmp_path):
     """SPEC "Actual legacy research recovery: execution revocation": a lost retained fence (LABELLED
     injected fault) holds both acceptance and consumption by name; the exact fence restored releases
@@ -684,14 +675,11 @@ def test_an_execution_revocation_releases_the_receipt_only_while_its_retained_fe
 
 
 # ---- settled read-only successor (SPEC "Real council progress", 2026-09-24) ---------------------------
-@pytest.mark.skip(reason='S8: Portfolio owner and research program application (Portfolio, ResearchProgram, FakeCouncil and the research fixtures)')
 def test_a_settled_read_only_successor_binds_the_receipt_to_the_current_successor_only(tmp_path):
     """rp-001 revoked -> rp-002's REAL council settles researcher + DBA and fails `foreign_message`
     (LABELLED executor, bus, snapshot) -> the owner's explicit successor authorizes rp-003, whose
     (LABELLED) council accepts. A receipt naming the failed predecessor never approves; the current
     successor's does, and only while the retained chain holds (LABELLED injected fault)."""
-    ForeignMessageCouncil = unavailable('S8', 'test_research_recovery.ForeignMessageCouncil')
-
     world = World(tmp_path)
     research, investigation, replacement, fence_key = revoked_research_failing(world, tmp_path)
     with pytest.raises(dc.ContinuationRefused, match="research_not_accepted"):
@@ -752,8 +740,6 @@ def test_a_settled_read_only_successor_binds_the_receipt_to_the_current_successo
 def revoked_research_failing(world, tmp_path):
     """`revoked_research` with the replacement rp-002 run by the REAL council that settles researcher +
     DBA and then fails `foreign_message`. Keeps the env, source and council on the world object."""
-    ForeignMessageCouncil = unavailable('S8', 'test_research_recovery.ForeignMessageCouncil')
-
     world.register()
     root, successor, research = two_strikes(world, "op-x", "docs/a.md")
     owner = Portfolio(world.control, DEFINITIONS)
@@ -817,7 +803,6 @@ def _fence(world, key):
         return deepcopy(tx.get(*key))
 
 
-@pytest.mark.skip(reason='S8: Portfolio owner and research program application (Portfolio, ResearchProgram, FakeCouncil and the research fixtures)')
 @pytest.mark.parametrize("fault, reason", [
     (_lose, "research_recovery_revocation_fence_missing"),
     (_change, "research_recovery_revocation_fence_changed"),
@@ -860,7 +845,6 @@ def _interleave(world, key, controller, document, insert, fault):
     controller._verify_evidence = between
 
 
-@pytest.mark.skip(reason='S8: Portfolio owner and research program application (Portfolio, ResearchProgram, FakeCouncil and the research fixtures)')
 @pytest.mark.parametrize("insert, fault, reason", [
     (True, None, None),
     (True, _lose, "research_recovery_revocation_fence_missing"),
@@ -883,7 +867,6 @@ def test_the_write_transaction_rechecks_the_fence_on_concurrent_insertion_and_on
     assert only(world.intents(), id=research["id"])["state"] == dc.RESEARCH_REQUIRED
 
 
-@pytest.mark.skip(reason='S8: Portfolio owner and research program application (Portfolio, ResearchProgram, FakeCouncil and the research fixtures)')
 def test_postgres_replay_and_concurrent_insertion_recheck_the_fence_in_one_writer_transaction(tmp_path,
                                                                                                isolated_pgstore):
     """Real isolated PostgreSQL (HARNESS_INTEGRATION=1): the same control store backs the Fleet, the
@@ -942,7 +925,6 @@ def failed_root(world, op_id="op-x", path="docs/a.md", bind=True):
     return root
 
 
-@pytest.mark.skip(reason='S8: Portfolio owner and research program application (Portfolio, ResearchProgram, FakeCouncil and the research fixtures)')
 def test_a_new_successor_inherits_its_origins_project_once_and_an_unbound_origin_is_never_guessed(tmp_path):
     world = World(tmp_path)
     world.register()
@@ -967,7 +949,6 @@ def test_a_new_successor_inherits_its_origins_project_once_and_an_unbound_origin
     assert bindings(world) == stored
 
 
-@pytest.mark.skip(reason='S8: Portfolio owner and research program application (Portfolio, ResearchProgram, FakeCouncil and the research fixtures)')
 def test_an_interrupted_admission_binds_once_on_replay_and_a_conflicting_binding_holds_the_intent(tmp_path):
     world = World(tmp_path)
     world.register()
@@ -986,7 +967,6 @@ def test_an_interrupted_admission_binds_once_on_replay_and_a_conflicting_binding
     assert bindings(world)[successor]["project_id"] == "other" and len(world.jobs()) == 2
 
 
-@pytest.mark.skip(reason='S8: Portfolio owner and research program application (Portfolio, ResearchProgram, FakeCouncil and the research fixtures)')
 def test_concurrent_controllers_after_an_interrupted_admission_bind_and_admit_exactly_once(tmp_path):
     world = World(tmp_path)
     world.register()
@@ -1063,7 +1043,6 @@ def owned003(world, tmp_path):
     return root, successor, research, investigation, dispatch, repair, document
 
 
-@pytest.mark.skip(reason='S8: Portfolio owner and research program application (Portfolio, ResearchProgram, FakeCouncil and the research fixtures)')
 def test_explicit_ownership_reconcile_proves_exact_lineage_only(tmp_path):
     world = World(tmp_path)
     root, successor, research, investigation, dispatch, repair = accepted003(world, tmp_path)
@@ -1082,7 +1061,6 @@ def test_explicit_ownership_reconcile_proves_exact_lineage_only(tmp_path):
             world.controller.reconcile_ownership(intent_id)
 
 
-@pytest.mark.skip(reason='S8: Portfolio owner and research program application (Portfolio, ResearchProgram, FakeCouncil and the research fixtures)')
 def test_ownership_reconcile_refuses_an_unbound_origin_and_a_broken_lineage(tmp_path):
     world = World(tmp_path)
     world.register()
@@ -1105,7 +1083,6 @@ def test_ownership_reconcile_refuses_an_unbound_origin_and_a_broken_lineage(tmp_
     assert bindings(world)[successor]["project_id"] == "other", "never overwritten"
 
 
-@pytest.mark.skip(reason='S8: Portfolio owner and research program application (Portfolio, ResearchProgram, FakeCouncil and the research fixtures)')
 def test_baseline_the_unbound_successor_is_excluded_and_the_receipt_refuses_even_after_ownership(tmp_path):
     world = World(tmp_path)
     root, successor, research, investigation, dispatch, repair = accepted003(world, tmp_path)
@@ -1119,7 +1096,6 @@ def test_baseline_the_unbound_successor_is_excluded_and_the_receipt_refuses_even
     assert receipts(world) == {}
 
 
-@pytest.mark.skip(reason='S8: Portfolio owner and research program application (Portfolio, ResearchProgram, FakeCouncil and the research fixtures)')
 def test_accepted003_owner_supplement_releases_exactly_the_two_attempt_receipt_once(tmp_path):
     world = World(tmp_path)
     root, successor, research, investigation, dispatch, repair, document = owned003(world, tmp_path)
@@ -1203,7 +1179,6 @@ def _no_descendants(document, world, ids):
     return {"descendants": []}
 
 
-@pytest.mark.skip(reason='S8: Portfolio owner and research program application (Portfolio, ResearchProgram, FakeCouncil and the research fixtures)')
 @pytest.mark.parametrize("change, reason", [
     (_via_research_intent, "research_supplement_lineage_broken"),
     (_foreign_parent, "research_supplement_lineage_broken"),
@@ -1223,7 +1198,6 @@ def test_a_forged_foreign_partial_or_unproven_supplement_is_refused_and_stores_n
         world.controller.accept_research(receipt_for(world, research, investigation, dispatch))
 
 
-@pytest.mark.skip(reason='S8: Portfolio owner and research program application (Portfolio, ResearchProgram, FakeCouncil and the research fixtures)')
 def test_an_unowned_successor_or_an_unaccepted_review_never_registers(tmp_path):
     world = World(tmp_path)
     root, successor, research, investigation, dispatch, repair = accepted003(world, tmp_path)
@@ -1240,7 +1214,6 @@ def test_an_unowned_successor_or_an_unaccepted_review_never_registers(tmp_path):
     assert supplements(world) == {}
 
 
-@pytest.mark.skip(reason='S8: Portfolio owner and research program application (Portfolio, ResearchProgram, FakeCouncil and the research fixtures)')
 def test_concurrent_identical_supplements_store_one_row(tmp_path):
     world = World(tmp_path)
     root, successor, research, investigation, dispatch, repair, document = owned003(world, tmp_path)
@@ -1287,7 +1260,6 @@ def _supplement_tampered(world, successor):
     return "research_supplement_corrupt", (BUCKET_RESEARCH_SUPPLEMENTS, row["id"], row)
 
 
-@pytest.mark.skip(reason='S8: Portfolio owner and research program application (Portfolio, ResearchProgram, FakeCouncil and the research fixtures)')
 @pytest.mark.parametrize("fault", [_review_withdrawn, _attestation_lost, _ownership_changed, _supplement_tampered])
 def test_consumption_rechecks_the_supplement_and_holds_until_it_verifies_again(tmp_path, fault):
     world = World(tmp_path)
@@ -1309,7 +1281,6 @@ def test_consumption_rechecks_the_supplement_and_holds_until_it_verifies_again(t
     assert world.intents()[research["id"]]["state"] == dc.COMPLETED and len(world.jobs()) == jobs + 1
 
 
-@pytest.mark.skip(reason='S8: Portfolio owner and research program application (Portfolio, ResearchProgram, FakeCouncil and the research fixtures)')
 def test_a_new_attempt_after_the_supplement_refuses_both_its_receipt_and_a_reused_supplement(tmp_path):
     world = World(tmp_path)
     root, successor, research, investigation, dispatch, repair, document = owned003(world, tmp_path)
@@ -1424,13 +1395,10 @@ def refused_code(call, *args) -> str:
     return caught.value.reason_code
 
 
-@pytest.mark.skip(reason='S8: Portfolio owner and research program application (Portfolio, ResearchProgram, FakeCouncil and the research fixtures)')
 def test_an_accepted_report_follow_up_captures_the_new_member_once_and_binds_only_the_new_receipt(tmp_path):
     """Accepted rp-001 + a newly bound authoritative member -> the owner's explicit follow-up authorizes rp-002
     once; registration alone releases nothing; rp-002's (LABELLED) council accepts a FRESH snapshot that
     captures the new member; only a receipt naming THAT dispatch approves, under its original capture."""
-    ResearchProgram = unavailable('S8', 'application.research_program.ResearchProgram')
-
     world = World(tmp_path)
     env, owner, root, successor, research, investigation, dispatch = accepted_report(world, tmp_path)
     captured = list(dispatch["job_ids"])
@@ -1579,7 +1547,6 @@ FOLLOWUP_FAULTS = [
 ]
 
 
-@pytest.mark.skip(reason='S8: Portfolio owner and research program application (Portfolio, ResearchProgram, FakeCouncil and the research fixtures)')
 def test_active_unknown_unproven_or_runtime_edit_predecessors_refuse_and_write_nothing(tmp_path):
     """Each LABELLED injected fault is applied alone to the settled accepted world, then undone."""
     world = World(tmp_path)
@@ -1599,7 +1566,6 @@ def test_active_unknown_unproven_or_runtime_edit_predecessors_refuse_and_write_n
     assert env.programs.recover_dispatch(document, None)["state"] == "authorized", "the clean world authorizes"
 
 
-@pytest.mark.skip(reason='S8: Portfolio owner and research program application (Portfolio, ResearchProgram, FakeCouncil and the research fixtures)')
 def test_settled_or_foreign_termination_records_do_not_block_the_followup(tmp_path):
     """Closed and operator-resolved markers of the run's own tasks, and an unresolved marker of another
     task (or of the right id in another bucket), are not the accepted predecessor's unknown effects."""
@@ -1615,7 +1581,6 @@ def test_settled_or_foreign_termination_records_do_not_block_the_followup(tmp_pa
     assert env.programs.recover_dispatch(document, None)["state"] == "authorized"
 
 
-@pytest.mark.skip(reason='S8: Portfolio owner and research program application (Portfolio, ResearchProgram, FakeCouncil and the research fixtures)')
 def test_stale_foreign_or_missing_evidence_and_changed_authority_refuse_and_write_nothing(tmp_path):
     world = World(tmp_path)
     env, owner, root, successor, research, investigation, dispatch = accepted_report(world, tmp_path)
@@ -1648,7 +1613,6 @@ def test_stale_foreign_or_missing_evidence_and_changed_authority_refuse_and_writ
     assert lineage_rows(world) == ([], [])
 
 
-@pytest.mark.skip(reason='S8: Portfolio owner and research program application (Portfolio, ResearchProgram, FakeCouncil and the research fixtures)')
 def test_membership_drift_after_authorization_holds_the_claim_until_it_is_exact_again(tmp_path):
     world = World(tmp_path)
     env, owner, root, successor, research, investigation, dispatch = accepted_report(world, tmp_path)
@@ -1676,10 +1640,7 @@ def test_membership_drift_after_authorization_holds_the_claim_until_it_is_exact_
         assert tx.get(BUCKET_DISPATCHES, investigation + ".recovery-2")["job_ids_sha256"] == document["members"]["sha256"]
 
 
-@pytest.mark.skip(reason='S8: Portfolio owner and research program application (Portfolio, ResearchProgram, FakeCouncil and the research fixtures)')
 def test_concurrent_follow_up_requests_record_one_row_and_one_claim(tmp_path):
-    ResearchProgram = unavailable('S8', 'application.research_program.ResearchProgram')
-
     world = World(tmp_path)
     env, owner, root, successor, research, investigation, dispatch = accepted_report(world, tmp_path)
     owner.bind(successor, "ops", "c1")
@@ -1706,7 +1667,6 @@ def test_concurrent_follow_up_requests_record_one_row_and_one_claim(tmp_path):
         assert sorted(d["id"] for d in tx.scan(BUCKET_DISPATCHES)) == [investigation, investigation + ".recovery-2"]
 
 
-@pytest.mark.skip(reason='S8: Portfolio owner and research program application (Portfolio, ResearchProgram, FakeCouncil and the research fixtures)')
 def test_a_failed_follow_up_stays_held_and_is_never_followed_up_again(tmp_path):
     world = World(tmp_path)
     env, owner, root, successor, research, investigation, dispatch = accepted_report(world, tmp_path)
@@ -1729,7 +1689,7 @@ def test_a_failed_follow_up_stays_held_and_is_never_followed_up_again(tmp_path):
     assert refused_code(env.programs.recover_dispatch, again, None) == "followup_predecessor_not_accepted"
 
 
-@pytest.mark.skip(reason='S8: Portfolio owner and research program application (Portfolio, ResearchProgram, FakeCouncil and the research fixtures)')
+@pytest.mark.skip(reason='S10: adapters.research_program_cli.recover (the operator CLI `recover`)')
 def test_the_cli_follow_up_reads_the_control_store_only_and_builds_no_bus(tmp_path, monkeypatch):
     recover = unavailable('S10', 'adapters.research_program_cli.recover')
 
@@ -1757,8 +1717,6 @@ NEW_PAIR = "Analyze ONLY the cont-fe15931105e915769378e016 and cont-6adfa87f8938
 def report_template(head, objective=OLD_PAIR, **changes):
     """The fixture template with the report objective set; `changes` maps a template field to a dict merged
     into it (or to a whole value for a non-dict field)."""
-    template = unavailable('S8', 'test_research_program_fixtures.template')
-
     document = template(head)
     document["plan"]["objective"] = objective
     for name, value in changes.items():
@@ -1780,7 +1738,6 @@ def pinned_config(head, program_id, template, **overrides):
                                            "template": template, **overrides}), POLICY)
 
 
-@pytest.mark.skip(reason='S8: Portfolio owner and research program application (Portfolio, ResearchProgram, FakeCouncil and the research fixtures)')
 def test_followup_scope_admits_only_report_content_and_narrowing_and_never_loosens_same_authority():
     from codex_harness.research.domain.research_program import followup_scope, same_authority
 
@@ -1836,7 +1793,6 @@ def test_followup_scope_admits_only_report_content_and_narrowing_and_never_loose
     assert followup_scope(None, new) is None
 
 
-@pytest.mark.skip(reason='S8: Portfolio owner and research program application (Portfolio, ResearchProgram, FakeCouncil and the research fixtures)')
 def test_an_owner_pinned_new_pair_report_follow_up_authorizes_claims_and_records_the_transition(tmp_path):
     """Real-shaped: the accepted report investigated one pair; the owner pins a NEW registered config whose
     report content names ONLY the new pair. Recover authorizes (legacy `same_authority` would refuse), the row
@@ -1878,7 +1834,6 @@ def test_an_owner_pinned_new_pair_report_follow_up_authorizes_claims_and_records
     assert current["job_ids_sha256"] == document["members"]["sha256"]
 
 
-@pytest.mark.skip(reason='S8: Portfolio owner and research program application (Portfolio, ResearchProgram, FakeCouncil and the research fixtures)')
 def test_followup_authority_broadening_stale_or_malformed_bindings_refuse_and_write_nothing(tmp_path):
     world = World(tmp_path)
     env, owner, root, successor, research, investigation, dispatch = accepted_report(world, tmp_path)
@@ -1918,7 +1873,6 @@ def test_followup_authority_broadening_stale_or_malformed_bindings_refuse_and_wr
     assert lineage_rows(world) == ([], [])
 
 
-@pytest.mark.skip(reason='S8: Portfolio owner and research program application (Portfolio, ResearchProgram, FakeCouncil and the research fixtures)')
 @pytest.mark.parametrize("fault", ["predecessor_config", "replacement_registration"])
 def test_a_scope_bound_follow_up_is_held_at_claim_when_either_registered_config_changed(tmp_path, fault):
     """LABELLED injected faults after authorization: the pinned replacement registration, or the predecessor
@@ -2016,7 +1970,6 @@ def mixed_for(world, family, **overrides):
             **overrides}
 
 
-@pytest.mark.skip(reason='S8: Portfolio owner and research program application (Portfolio, ResearchProgram, FakeCouncil and the research fixtures)')
 def test_actual_mixed_family_is_refused_by_schema1_and_released_once_by_the_mixed_receipt_into_evidence_repair(
         tmp_path):
     world = World(tmp_path)
@@ -2160,7 +2113,6 @@ MIXED_FAULTS = [
 ]
 
 
-@pytest.mark.skip(reason='S8: Portfolio owner and research program application (Portfolio, ResearchProgram, FakeCouncil and the research fixtures)')
 @pytest.mark.parametrize("name, change, reason", MIXED_FAULTS, ids=[fault[0] for fault in MIXED_FAULTS])
 def test_partial_foreign_stale_unproven_or_unreadable_mixed_evidence_refuses_with_no_mutation(tmp_path, name, change,
                                                                                                reason):
@@ -2177,7 +2129,6 @@ def test_partial_foreign_stale_unproven_or_unreadable_mixed_evidence_refuses_wit
     assert world.intents()[family["research"]["id"]]["state"] == dc.RESEARCH_REQUIRED
 
 
-@pytest.mark.skip(reason='S8: Portfolio owner and research program application (Portfolio, ResearchProgram, FakeCouncil and the research fixtures)')
 def test_a_receipt_releases_no_correction_budget(tmp_path):
     """The mixed receipt releases the hold; the existing `max_corrections` still decides the successor."""
     world = World(tmp_path, max_corrections=2)
@@ -2192,7 +2143,6 @@ def test_a_receipt_releases_no_correction_budget(tmp_path):
     assert world.controller.status("policy-1")["held_families"][family["root"]] == "correction_budget_exhausted"
 
 
-@pytest.mark.skip(reason='S8: Portfolio owner and research program application (Portfolio, ResearchProgram, FakeCouncil and the research fixtures)')
 def test_an_unavailable_lane_or_an_unknown_or_active_execution_never_approves(tmp_path):
     world = World(tmp_path)
     family = mixed_family(world, tmp_path)
@@ -2222,7 +2172,6 @@ def test_an_unavailable_lane_or_an_unknown_or_active_execution_never_approves(tm
     assert world.controller.accept_research(document)["cached"] is False
 
 
-@pytest.mark.skip(reason='S8: Portfolio owner and research program application (Portfolio, ResearchProgram, FakeCouncil and the research fixtures)')
 def test_concurrent_mixed_submissions_store_one_receipt_and_a_different_one_conflicts(tmp_path):
     world = World(tmp_path)
     family = mixed_family(world, tmp_path)
@@ -2245,7 +2194,6 @@ def test_concurrent_mixed_submissions_store_one_receipt_and_a_different_one_conf
     assert receipts(world) == stored, "a conflict never overwrites"
 
 
-@pytest.mark.skip(reason='S8: Portfolio owner and research program application (Portfolio, ResearchProgram, FakeCouncil and the research fixtures)')
 def test_restart_and_concurrent_controllers_consume_the_mixed_receipt_once_with_its_provenance(tmp_path):
     world = World(tmp_path)
     family = mixed_family(world, tmp_path)
@@ -2298,7 +2246,6 @@ def _mixed_attestation_lost(world, family):
     return "research_evidence_missing", ("file", path, data)
 
 
-@pytest.mark.skip(reason='S8: Portfolio owner and research program application (Portfolio, ResearchProgram, FakeCouncil and the research fixtures)')
 @pytest.mark.parametrize("fault", [_mixed_ownership_changed, _mixed_review_withdrawn, _mixed_receipt_tampered,
                                    _mixed_attestation_lost])
 def test_consumption_rechecks_the_mixed_receipt_and_holds_until_it_verifies_again(tmp_path, fault):
@@ -2366,7 +2313,6 @@ def grants(world):
         return {row["id"]: row for row in tx.scan("continuation_capacity_grants")}
 
 
-@pytest.mark.skip(reason='S8: Portfolio owner and research program application (Portfolio, ResearchProgram, FakeCouncil and the research fixtures)')
 def test_without_a_grant_the_exhausted_budget_is_unchanged_and_status_names_the_owner_action(tmp_path):
     world = World(tmp_path, max_corrections=2)
     family = budget_refused(world, tmp_path)
@@ -2380,7 +2326,6 @@ def test_without_a_grant_the_exhausted_budget_is_unchanged_and_status_names_the_
     assert status["capacity"] == {"grants": [], "families": []}
 
 
-@pytest.mark.skip(reason='S8: Portfolio owner and research program application (Portfolio, ResearchProgram, FakeCouncil and the research fixtures)')
 def test_one_exact_grant_admits_one_retained_candidate_repair_and_keeps_history_counts_and_gates(tmp_path):
     world = World(tmp_path, max_corrections=2)
     family = budget_refused(world, tmp_path)
@@ -2523,7 +2468,6 @@ CAPACITY_FAULTS = [
 ]
 
 
-@pytest.mark.skip(reason='S8: Portfolio owner and research program application (Portfolio, ResearchProgram, FakeCouncil and the research fixtures)')
 @pytest.mark.parametrize("name, change, reason", CAPACITY_FAULTS, ids=[fault[0] for fault in CAPACITY_FAULTS])
 def test_foreign_stale_unknown_active_or_unproven_grants_refuse_with_no_effect(tmp_path, name, change, reason):
     world = World(tmp_path, max_corrections=2)
@@ -2540,7 +2484,6 @@ def test_foreign_stale_unknown_active_or_unproven_grants_refuse_with_no_effect(t
     assert world.binding(dc.successor_id(family["refused"]["id"])) is None
 
 
-@pytest.mark.skip(reason='S8: Portfolio owner and research program application (Portfolio, ResearchProgram, FakeCouncil and the research fixtures)')
 def test_concurrent_identical_and_conflicting_grants_reserve_one_successor_once(tmp_path):
     world = World(tmp_path, max_corrections=2)
     family = budget_refused(world, tmp_path)
@@ -2588,7 +2531,6 @@ class GrantCrash(BaseException):
     """LABELLED injected process death at an exact grant boundary (escapes every handler)."""
 
 
-@pytest.mark.skip(reason='S8: Portfolio owner and research program application (Portfolio, ResearchProgram, FakeCouncil and the research fixtures)')
 @pytest.mark.parametrize("boundary", ["before_grant_commit", "after_grant_commit", "before_binding", "published",
                                       "enqueued"])
 def test_a_crash_at_each_grant_boundary_reconciles_the_same_successor(tmp_path, boundary):
@@ -2661,7 +2603,6 @@ def _source_moved(world, refused):
     return "capacity_source_changed", ("fleet_jobs", row["id"], row)
 
 
-@pytest.mark.skip(reason='S8: Portfolio owner and research program application (Portfolio, ResearchProgram, FakeCouncil and the research fixtures)')
 @pytest.mark.parametrize("fault", [_grant_tampered, _rationale_gone, _source_moved])
 def test_stale_grant_authority_holds_before_each_new_effect_until_it_verifies_again(tmp_path, fault):
     world = World(tmp_path, max_corrections=2)
@@ -2685,7 +2626,6 @@ def test_stale_grant_authority_holds_before_each_new_effect_until_it_verifies_ag
     assert intent["state"] == dc.ADMITTED and intent["hold"] is None and len(world.jobs()) == len(jobs) + 1
 
 
-@pytest.mark.skip(reason='S8: Portfolio owner and research program application (Portfolio, ResearchProgram, FakeCouncil and the research fixtures)')
 @pytest.mark.parametrize("key_of, change, reason", [
     (lambda r, f: r["origin_job"], {"updated_at": "2099-01-01T00:00:00+00:00"}, "capacity_source_changed"),
     (lambda r, f: f["parent"], {"status": "dispatching"}, "capacity_family_active"),
@@ -2725,7 +2665,6 @@ def test_a_fleet_row_moved_between_binding_and_admission_of_one_tick_refuses_the
     assert [h["state"] for h in intent["history"]].count(dc.INTENDED) == 1 and len(grants(world)) == 1
 
 
-@pytest.mark.skip(reason='S8: Portfolio owner and research program application (Portfolio, ResearchProgram, FakeCouncil and the research fixtures)')
 def test_a_known_failed_repair_never_replenishes_and_another_grant_needs_a_distinct_decision(tmp_path):
     world = World(tmp_path, max_corrections=2)
     family = budget_refused(world, tmp_path)
@@ -2746,7 +2685,6 @@ def test_a_known_failed_repair_never_replenishes_and_another_grant_needs_a_disti
     assert set(grants(world)) == {family["refused"]["id"]}
 
 
-@pytest.mark.skip(reason='S8: Portfolio owner and research program application (Portfolio, ResearchProgram, FakeCouncil and the research fixtures)')
 def test_a_rationale_already_used_by_another_grant_is_not_a_distinct_owner_decision(tmp_path):
     world = World(tmp_path, max_corrections=2)
     family = budget_refused(world, tmp_path)
@@ -2773,7 +2711,6 @@ def reference_of(world, research):
             "policy_sha256": world.controller.policy("policy-1")["policy_sha256"], "family": research["family"]}
 
 
-@pytest.mark.skip(reason='S8: Portfolio owner and research program application (Portfolio, ResearchProgram, FakeCouncil and the research fixtures)')
 def test_the_first_successor_after_research_binds_exactly_its_receipt_and_its_worker_reads_the_evidence(tmp_path):
     world = World(tmp_path)
     root, successor, research, investigation, dispatch = held(world, tmp_path)
@@ -2806,7 +2743,6 @@ def test_the_first_successor_after_research_binds_exactly_its_receipt_and_its_wo
     assert repair["successor_job"] == dc.successor_id(repair["id"])
 
 
-@pytest.mark.skip(reason='S8: Portfolio owner and research program application (Portfolio, ResearchProgram, FakeCouncil and the research fixtures)')
 def test_evidence_lost_after_the_binding_refuses_the_worker_by_code(tmp_path):
     world = World(tmp_path)
     root, successor, research, investigation, dispatch = held(world, tmp_path)
@@ -2822,7 +2758,6 @@ def test_evidence_lost_after_the_binding_refuses_the_worker_by_code(tmp_path):
         deliver(world.lane.store, world.artifacts, binding)
 
 
-@pytest.mark.skip(reason='S8: Portfolio owner and research program application (Portfolio, ResearchProgram, FakeCouncil and the research fixtures)')
 def test_a_stored_receipt_changed_before_derivation_refuses_the_successor_until_it_is_intact(tmp_path):
     world = World(tmp_path)
     root, successor, research, investigation, dispatch = held(world, tmp_path)
@@ -2847,7 +2782,6 @@ def test_a_stored_receipt_changed_before_derivation_refuses_the_successor_until_
     assert world.binding(repair["successor_job"])["predecessor"]["research"] == reference_of(world, research)
 
 
-@pytest.mark.skip(reason='S8: Portfolio owner and research program application (Portfolio, ResearchProgram, FakeCouncil and the research fixtures)')
 def test_the_granted_first_repair_after_research_carries_the_pinned_receipt_and_replays_identically(tmp_path):
     world = World(tmp_path, max_corrections=2)
     family = budget_refused(world, tmp_path)
@@ -2878,7 +2812,6 @@ def _row(key, route, state, at, family="f", policy="policy-1", successor=None, *
             "successor_job": successor, **extra}
 
 
-@pytest.mark.skip(reason='S8: Portfolio owner and research program application (Portfolio, ResearchProgram, FakeCouncil and the research fixtures)')
 def test_research_handoff_names_only_the_first_successor_after_a_completed_research():
     before = _row("a" * 64, dc.EVIDENCE_REPAIR, dc.ADMITTED, "1", successor="cont-a")
     held = _row("b" * 64, dc.RESEARCH, dc.RESEARCH_REQUIRED, "2")

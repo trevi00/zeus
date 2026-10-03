@@ -5,8 +5,8 @@ Every assertion is M7's, unchanged. Adaptations, all construction/import: `Harne
 routing); the M7 fixtures come from the ported `test_local_cycle` and `test_operation`; `record` from
 `coordination.application.execution_notices`, `ContractError` from `kernel.errors`, `envelope` from `kernel.message`,
 `MemoryStore` from `storage.adapters.memory_store`, `MessageDeliveryError` from `storage.ports`. The four tests that
-drive M7's autonomous run (`test_autonomous.build`/`valid`, `AutonomousRefused`) belong to S8 (research) and stay here
-skipped, whole and unrewritten, with those names bound to placeholders that raise.
+drive M7's autonomous run import `test_autonomous.build`/`valid` from the ported suite, and `AutonomousRefused` from
+`coordination.application.autonomous` (its target home); they run.
 
 Correlation-scoped outbox publication (INV-MESSAGE-001, Implementation015).
 
@@ -22,6 +22,8 @@ from uuid import uuid4
 
 import pytest
 from m7_coordination import Harness, LocalCycle, Workflow, _prepare, _publish, organization, relay
+from test_autonomous import build as build_autonomous
+from test_autonomous import valid as autonomous_valid
 from test_local_cycle import Bus as CycleBus
 from test_local_cycle import FakeExecutor as CycleExecutor
 from test_local_cycle import task as cycle_task
@@ -29,24 +31,12 @@ from test_operation import BOUND_GOAL, IDENTITY, Bus
 from test_operation import build as build_operation
 from test_operation import valid as operation_valid
 
+from codex_harness.coordination.application.autonomous import AutonomousRefused
 from codex_harness.coordination.application.execution_notices import record
 from codex_harness.kernel.errors import ContractError
 from codex_harness.kernel.message import envelope
 from codex_harness.storage.adapters.memory_store import MemoryStore
 from codex_harness.storage.ports import MessageDeliveryError
-
-
-def build_autonomous(*args, **kwargs):
-    """S8 owns M7 `test_autonomous.build` and `application.autonomous`; only the skipped tests below name it."""
-    raise NotImplementedError("S8: autonomous run (research.application.autonomous)")
-
-
-autonomous_valid = build_autonomous  # S8: `test_autonomous.valid`, likewise only named by the skipped tests
-
-
-class AutonomousRefused(Exception):  # noqa: N818 - S8 owns M7 `application.autonomous.AutonomousRefused`
-    reason_code = None
-
 
 CORR = "improvement:scoped-current"
 FOREIGN = "improvement:unrelated-history"
@@ -319,7 +309,6 @@ def test_scope_change_between_preparation_and_publication_supersedes_the_attempt
 
 
 # ----- role seam: delivery is not admission ----------------------------------------------------
-@pytest.mark.skip(reason="S8: autonomous run (research.application.autonomous, M7 test_autonomous fixtures)")
 def test_role_refuses_before_any_reservation_when_the_expected_task_was_never_admitted():
     svc, run, executor, budget = build_autonomous()
     run.bus = AcceptedButNotAdmitted()
@@ -331,7 +320,6 @@ def test_role_refuses_before_any_reservation_when_the_expected_task_was_never_ad
         assert tx.scan("tasks") == [] and len(tx.scan("outbox")) == 1
 
 
-@pytest.mark.skip(reason="S8: autonomous run (research.application.autonomous, M7 test_autonomous fixtures)")
 def test_role_refuses_before_any_reservation_when_its_own_publication_failed():
     svc, run, executor, budget = build_autonomous()
     run.bus = RefusingBus()
@@ -344,7 +332,6 @@ def test_role_refuses_before_any_reservation_when_its_own_publication_failed():
         assert [d["status"] for d in tx.scan("outbox_delivery")] == ["retry"], "the intent is retained, not retried here"
 
 
-@pytest.mark.skip(reason="S8: autonomous run (research.application.autonomous, M7 test_autonomous fixtures)")
 @pytest.mark.parametrize("count", [120, 1100])
 def test_autonomous_roles_publish_only_their_own_correlation_over_a_large_foreign_backlog(count):
     svc, run, executor, budget = build_autonomous()
@@ -459,7 +446,6 @@ def test_unpublished_workflow_command_stops_the_cycle_before_any_candidate_or_ex
         assert tx.get("tasks", "t-current")["status"] == "queued"
 
 
-@pytest.mark.skip(reason="S8: autonomous run (research.application.autonomous, M7 test_autonomous fixtures)")
 def test_autonomous_delivery_refuses_when_a_workflow_generated_command_is_not_published():
     """The same seam on the council/autonomous side (`AutonomousRun._deliver`, used by the conductor
     relay): the derived command is committed, unproven on the transport, and the run refuses."""

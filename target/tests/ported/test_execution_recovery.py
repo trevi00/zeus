@@ -4,7 +4,7 @@ Every assertion is M7's, unchanged. Adaptations, all construction/import: `Execu
 `organization` come from the `m7_coordination` shim (its docstring names the routing: intake's `ticket_binding`
 injected, no audit binding or threshold-review port); `assignment` from the ported `test_workflow`; `ContractError`,
 `canonical`, `digest` from `kernel`, `FileArtifacts`/`MemoryStore` from `storage.adapters`. The threshold-review
-recovery test needs research's threshold-review port (S8) and stays skipped, whole and unrewritten. The real-process
+recovery test needs research's threshold-review port (S10, DESIGN-s8 §28.1: `threshold_reviews` moved with the S10 entry) and stays skipped, whole and unrewritten. The real-process
 CLI test drives M7's `python -m zeus execution-recovery` (S10, entry) and stays here skipped, whole and unrewritten.
 The PostgreSQL parametrizations skip as in M7 without the integration database.
 """
@@ -191,7 +191,7 @@ def test_recovery_state_and_receipt_rollback_together(workflow, recovery):
     assert recovery.apply(packet)['replayed'] is False
 
 
-@pytest.mark.skip(reason="S8: research threshold reviews (threshold-review recovery port, `threshold_review_requests`)")
+@pytest.mark.skip(reason="S10: threshold reviews (DESIGN-s8 §28.1: threshold_reviews moved with the S10 entry)")
 def test_decision_and_threshold_request_recovery_are_atomic_and_replay_bound(workflow, recovery):
     actor, request_id = 'conductor', 'test-threshold-request'
     decision_id = digest([request_id, actor])
