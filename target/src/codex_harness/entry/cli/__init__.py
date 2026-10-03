@@ -2,7 +2,7 @@
 
 Layer: entry
 Owns: parser (the root parser: global options and the root order), main (the M7 shell and the one dispatch table of the composed roots), and the re-export of emit (entry.cli.output)
-Does not own: the root parsers and bodies (the modules of this package) and the roots not yet composed (S10 units C2-C8)
+Does not own: the root parsers and bodies (the modules of this package) and the roots not yet composed (S10 units C2b-C8)
 Entry points: parser, emit, main
 Contracts: none
 
@@ -138,9 +138,24 @@ def main() -> None:
         from codex_harness.composition.configuration import select_repository
         select_repository(args.repository)
     try:
-        from codex_harness.entry.cli import canary, doctor, organization, paths, setup, validate
+        from codex_harness.entry.cli import (
+            cancel,
+            canary,
+            doctor,
+            goal,
+            init_db,
+            inspect,
+            organization,
+            paths,
+            release_retry,
+            setup,
+            status,
+            validate,
+        )
         composed = {"paths": paths.run, "setup": setup.run, "organization": organization.run,
-                    "validate": validate.run, "canary": canary.run, "doctor": doctor.run}
+                    "validate": validate.run, "canary": canary.run, "doctor": doctor.run,
+                    "init-db": init_db.run, "status": status.run, "inspect": inspect.run, "cancel": cancel.run,
+                    "release-retry": release_retry.run, "goal": goal.run}
         if args.command not in composed:
             raise RuntimeError("zeus " + args.command + " is not composed in the rebuild yet (DESIGN-s10 §3)")
         composed[args.command](args)
