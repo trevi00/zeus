@@ -95,8 +95,11 @@ def _usage_split(reservation_id, result, usage, transport):
     """The attributes of `development.usage_split_recorded` from values this site already holds (DESIGN-s9-X §1.3).
 
     `usage_record` stays M7-verbatim: Claude's parts are its `usage["parts"]`; Codex keeps only totals there, so the
-    split reads the transport's raw `usage["total"]` token-usage breakdown. Absent is null, never 0. Codex has no
-    cache-write field (null); its `inputTokens` includes the cached part (`cachedInputTokens`)."""
+    split reads the transport's raw `usage["total"]` token-usage breakdown. Absent is null, never 0. Field names:
+    codex-cli 0.156.1 `app-server generate-json-schema`, `v2/ThreadTokenUsageUpdatedNotification.json`
+    `TokenUsageBreakdown` (required inputTokens, cachedInputTokens, outputTokens, reasoningOutputTokens,
+    totalTokens; optional cacheWriteInputTokens, so cache_write_tokens is null when absent). Codex's `inputTokens`
+    includes the cached part (`cachedInputTokens`)."""
     if transport == 'claude_cli':
         parts = usage.get('parts') or {}
         split = (parts.get('input_tokens'), parts.get('output_tokens'), parts.get('cache_read_input_tokens'),
@@ -104,7 +107,8 @@ def _usage_split(reservation_id, result, usage, transport):
     else:
         raw = result.get('usage') if isinstance(result.get('usage'), dict) else {}
         total = raw.get('total') if isinstance(raw.get('total'), dict) else {}
-        split = (total.get('inputTokens'), total.get('outputTokens'), total.get('cachedInputTokens'), None)
+        split = (total.get('inputTokens'), total.get('outputTokens'), total.get('cachedInputTokens'),
+                 total.get('cacheWriteInputTokens'))
     names = ("input_tokens", "output_tokens", "cache_read_tokens", "cache_write_tokens")
     return {"reservation_id": reservation_id, "provider_session_ref": result.get("thread_id"),
             **{name: _token_count(value) for name, value in zip(names, split)}, "usage_source": usage["source"]}

@@ -4,7 +4,8 @@
   (`test_observation_wiring:130` asserts that table's event-type SET) and never as a `development.provider_*`
   type (`test_council_input:694`).
 - Absent usage is null, never 0. Claude's split is `usage["parts"]`; Codex's is the raw `usage["total"]` breakdown
-  (`inputTokens`/`outputTokens`/`cachedInputTokens`; no cache-write field).
+  (`inputTokens`/`outputTokens`/`cachedInputTokens`/optional `cacheWriteInputTokens`; names from codex-cli 0.156.1
+  `app-server generate-json-schema`, `v2/ThreadTokenUsageUpdatedNotification.json` `TokenUsageBreakdown`).
 - The Claude path is proved on the extraction (`_usage_split`) with the shape `usage_record` produces; the M7-bound
   `test_claude_execution` drives the full Claude flow and stays unchanged.
 Fixture proof only: both transports are stubbed (see test_s4_run_task).
@@ -54,7 +55,7 @@ def test_the_renamed_catalog_loads_as_v2():
 
 def test_codex_split_follows_settlement_with_the_exact_counts(tmp_path):
     usage = {"total": {"totalTokens": 321, "inputTokens": 200, "outputTokens": 100, "cachedInputTokens": 50,
-                       "reasoningOutputTokens": 21}}
+                       "reasoningOutputTokens": 21, "cacheWriteInputTokens": 12}}
     run_task, store = run_plan(tmp_path, usage=usage)
     [event] = splits(run_task)
     with store.transaction() as tx:
@@ -62,7 +63,7 @@ def test_codex_split_follows_settlement_with_the_exact_counts(tmp_path):
     attributes = event["attributes"]
     assert attributes == {"reservation_id": settled["attributes"]["reservation_id"], "provider_session_ref": "th",
                           "input_tokens": 200, "output_tokens": 100, "cache_read_tokens": 50,
-                          "cache_write_tokens": None, "usage_source": "thread/tokenUsage/updated"}
+                          "cache_write_tokens": 12, "usage_source": "thread/tokenUsage/updated"}
     assert event["outcome"] == "observed"
     assert event["execution"] == settled["execution"]
     assert (event["correlation_id"], event["causation_id"]) == (settled["correlation_id"], settled["causation_id"])
