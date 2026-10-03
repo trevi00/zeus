@@ -1,0 +1,121 @@
+# Zeus S9 recording and alert rules over the X2a (observation metrics) and X3a (resource facts) families.
+#
+# No Alertmanager and no notification routing exist here (DESIGN-s9-X §4): these rules only evaluate, so an alert is
+# a state visible in Prometheus. Deduplication, grouping and silencing are not delivered.
+# Every threshold is provisional (no production baseline, S9 fixtures); each alert says so in `threshold_basis`.
+# `for` is the pending window, `keep_firing_for` the recovery hysteresis; an alert resolves when its expression
+# returns nothing and `keep_firing_for` has elapsed. Contracts: INV-OBSERVATION-001.
+groups:
+  - name: zeus-s9-recording
+    rules:
+      - record: zeus:observation_records_problem_ratio:rate15m
+        expr: sum(rate(zeus_observation_records_total{result=~"refused|corrupt|conflict"}[15m])) / sum(rate(zeus_observation_records_total[15m]))
+      - record: zeus:model_invocation_failure_ratio:rate1h
+        expr: sum by (provider) (rate(zeus_model_invocation_duration_seconds_count{outcome!="accepted"}[1h])) / sum by (provider) (rate(zeus_model_invocation_duration_seconds_count[1h]))
+      - record: zeus:filesystem_available_ratio
+        expr: zeus_filesystem_available_bytes / zeus_filesystem_size_bytes
+      - record: zeus:cgroup_memory_usage_ratio
+        expr: zeus_cgroup_memory_current_bytes / zeus_cgroup_memory_max_bytes
+      - record: zeus:cgroup_cpu_throttled_ratio:rate5m
+        expr: rate(zeus_cgroup_cpu_throttled_seconds_total[5m])
+  - name: zeus-s9-alerts
+    rules:
+      - alert: ZeusObservationRecordsRejected
+        expr: increase(zeus_observation_records_total{result=~"refused|corrupt|conflict"}[15m]) > 0
+        for: 5m
+        keep_firing_for: 15m
+        labels:
+          owner: observation
+          severity: warning
+        annotations:
+          summary: Spool records were refused, corrupt or in conflict during collection.
+          runbook: target/docs/runbooks/zeus-s9.md#zeusobservationrecordsrejected
+          threshold_basis: "provisional: no production baseline (S9 fixtures)"
+      - alert: ZeusMetricsLabelRejections
+        expr: increase(zeus_metrics_label_rejections_total[1h]) > 0
+        for: 5m
+        keep_firing_for: 30m
+        labels:
+          owner: observation
+          severity: info
+        annotations:
+          summary: The metrics projection refused samples whose label value or attribute was outside its contract.
+          runbook: target/docs/runbooks/zeus-s9.md#zeusmetricslabelrejections
+          threshold_basis: "provisional: no production baseline (S9 fixtures)"
+      - alert: ZeusModelInvocationFailureRatioHigh
+        expr: zeus:model_invocation_failure_ratio:rate1h > 0.5 and on (provider) sum by (provider) (increase(zeus_model_invocation_duration_seconds_count[1h])) >= 4
+        for: 15m
+        keep_firing_for: 15m
+        labels:
+          owner: execution
+          severity: warning
+        annotations:
+          summary: More than half of a provider's model invocations over the last hour did not end accepted.
+          runbook: target/docs/runbooks/zeus-s9.md#zeusmodelinvocationfailureratiohigh
+          threshold_basis: "provisional: no production baseline (S9 fixtures)"
+      - alert: ZeusCgroupOOMKill
+        expr: increase(zeus_cgroup_memory_events_total{event="oom_kill"}[10m]) > 0
+        for: 1m
+        keep_firing_for: 30m
+        labels:
+          owner: host_os
+          severity: critical
+        annotations:
+          summary: The kernel OOM-killed a process in a unit cgroup.
+          runbook: target/docs/runbooks/zeus-s9.md#zeuscgroupoomkill
+          threshold_basis: "provisional: no production baseline (S9 fixtures)"
+      - alert: ZeusMemoryPressureHigh
+        expr: zeus_pressure_stall_ratio{resource="memory",kind="some",window="60s"} > 0.2
+        for: 10m
+        keep_firing_for: 10m
+        labels:
+          owner: host_os
+          severity: warning
+        annotations:
+          summary: Tasks stalled on memory for more than a fifth of the last minute, sustained.
+          runbook: target/docs/runbooks/zeus-s9.md#zeusmemorypressurehigh
+          threshold_basis: "provisional: no production baseline (S9 fixtures)"
+      - alert: ZeusCPUThrottlingHigh
+        expr: zeus:cgroup_cpu_throttled_ratio:rate5m > 0.25
+        for: 15m
+        keep_firing_for: 10m
+        labels:
+          owner: host_os
+          severity: warning
+        annotations:
+          summary: A unit cgroup was CPU-throttled for more than a quarter of the time, sustained.
+          runbook: target/docs/runbooks/zeus-s9.md#zeuscputhrottlinghigh
+          threshold_basis: "provisional: no production baseline (S9 fixtures)"
+      - alert: ZeusFilesystemSpaceLow
+        expr: zeus:filesystem_available_ratio < 0.10
+        for: 15m
+        keep_firing_for: 15m
+        labels:
+          owner: host_os
+          severity: warning
+        annotations:
+          summary: A configured filesystem has less than a tenth of its bytes available.
+          runbook: target/docs/runbooks/zeus-s9.md#zeusfilesystemspacelow
+          threshold_basis: "provisional: no production baseline (S9 fixtures)"
+      - alert: ZeusPidsLimitHit
+        expr: increase(zeus_cgroup_pids_limit_hits_total[10m]) > 0
+        for: 1m
+        keep_firing_for: 30m
+        labels:
+          owner: host_os
+          severity: warning
+        annotations:
+          summary: A unit cgroup reached its process limit.
+          runbook: target/docs/runbooks/zeus-s9.md#zeuspidslimithit
+          threshold_basis: "provisional: no production baseline (S9 fixtures)"
+      - alert: ZeusResourceFactUnavailable
+        expr: zeus_resource_fact_available == 0
+        for: 30m
+        keep_firing_for: 10m
+        labels:
+          owner: observation
+          severity: info
+        annotations:
+          summary: A resource fact could not be read, so its series is absent (unavailable is not zero).
+          runbook: target/docs/runbooks/zeus-s9.md#zeusresourcefactunavailable
+          threshold_basis: "provisional: no production baseline (S9 fixtures)"
