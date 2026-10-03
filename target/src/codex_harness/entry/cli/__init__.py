@@ -139,8 +139,8 @@ def main() -> None:
         select_repository(args.repository)
     try:
         from codex_harness.entry.cli import (
-            cancel,
             canary,
+            cancel,
             doctor,
             goal,
             init_db,
