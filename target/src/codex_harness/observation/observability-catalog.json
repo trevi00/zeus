@@ -1,5 +1,5 @@
 {
- "catalog_version": 2,
+ "catalog_version": 3,
  "events": {
   "operations.queue_item_waited": {
    "owner_context": "coordination",
@@ -41,7 +41,7 @@
    "producer_sites": "measured at X1b"
   },
   "development.role_dispatch_decided": {
-   "owner_context": "coordination",
+   "owner_context": "execution",
    "category": "development",
    "severity": "info",
    "boundary": "role_dispatch",

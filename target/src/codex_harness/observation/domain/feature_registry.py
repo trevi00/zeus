@@ -77,7 +77,7 @@ FEATURES = {feature.id: feature for feature in (
     Feature("process_lifecycle", "coordination", _events(_G, "process_started", "process_idle_exit"), False,
             "entry.cli / entry.processes.supervisor"),
     Feature("maintenance", "storage", _events(_O, "maintenance_job"), False, "none (no producer even in SOURCE)"),
-    Feature("role_dispatch", "execution", _events(_D, "role_dispatch_decided"), False, "X1b-2 (DESIGN-s9-X §1.5)"),
+    Feature("role_dispatch", "execution", _events(_D, "role_dispatch_decided"), True),
     Feature("capacity_admission", "coordination", _events(_O, "capacity_refused"), False,
             "S10 (#18b, Fleet composition)"),
     Feature("tool_calls", "execution", _events(_D, "tool_call_completed"), False, "open (pairing decision, §1.5)"),

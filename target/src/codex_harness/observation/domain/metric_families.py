@@ -2,7 +2,7 @@
 
 Layer: domain
 Context: observation
-Owns: `Family`, `FAMILIES` (the X2a and X2b families and the X5a feature-use counter, keyed by name), `DURATION_BUCKETS` and `samples`
+Owns: `Family`, `FAMILIES` (the X2a and X2b families, the X5a feature-use counter and the X1b-2 role-dispatch counter, keyed by name), `DURATION_BUCKETS` and `samples`
 Does not own: the stored documents or the projection transaction (`observation.application.metrics_projector`), the
     text rendering (`observation.adapters.metrics_exposition`)
 Entry points: Family, FAMILIES, DURATION_BUCKETS, samples
@@ -45,6 +45,10 @@ STAGE_ENTRIES = "zeus_delivery_stage_entries_total"
 SESSION_TRANSITIONS = "zeus_worker_session_transitions_total"
 BACKLOG = "zeus_backlog_transitions_total"
 FEATURE_USES = "zeus_feature_uses_total"
+ROLE_DISPATCH = "zeus_role_dispatch_decisions_total"
+# Exactly the closed enums of development.role_dispatch_decided in the observability catalog (X1b-2; a test asserts it).
+DISPATCH_DECISIONS = ("dispatched", "deferred", "refused", "other")
+DISPATCH_REASONS = ("eligible", "no_capacity", "provider_unavailable", "not_assigned", "policy_denied", "other")
 
 
 @dataclass(frozen=True)
@@ -96,6 +100,9 @@ FAMILIES = {family.name: family for family in (
     Family(FEATURE_USES, "counter",
            "Observations that prove a feature was used, by feature, from every stored row whose event type is a proof event of the feature.",
            ("feature",)),
+    Family(ROLE_DISPATCH, "counter",
+           "Role dispatch decisions by decision and reason, from development.role_dispatch_decided.",
+           ("decision", "decision_reason")),
 )}
 
 
@@ -188,4 +195,12 @@ def samples(row, *, providers):
             refused.append(SESSION_TRANSITIONS)
     elif event_type in BACKLOG_TRANSITIONS:
         out.append((BACKLOG, (BACKLOG_TRANSITIONS[event_type],), 1))
+    elif event_type == "development.role_dispatch_decided":
+        decision = attributes.get("decision")
+        reason = attributes.get("decision_reason")
+        if (type(decision) is str and decision in DISPATCH_DECISIONS
+                and type(reason) is str and reason in DISPATCH_REASONS):
+            out.append((ROLE_DISPATCH, (decision, reason), 1))
+        else:
+            refused.append(ROLE_DISPATCH)
     return out, refused
