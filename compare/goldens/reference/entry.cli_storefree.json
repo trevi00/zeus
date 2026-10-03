@@ -1,0 +1,113 @@
+{
+ "cases": {
+  "doctor_offline": {
+   "argv": [
+    "doctor",
+    "--offline"
+   ],
+   "exit": 1,
+   "stderr": "",
+   "stdout": {
+    "checks": {
+     "codex": true,
+     "codex_auth": false,
+     "compose": false,
+     "docker": true,
+     "git": true,
+     "uv": true
+    },
+    "repository": "<FIXTURE>",
+    "runtime": "<FIXTURE>/.runtime",
+    "services_checked": false
+   }
+  },
+  "organization": {
+   "argv": [
+    "organization"
+   ],
+   "exit": 0,
+   "stderr": "",
+   "stdout": {
+    "agent_count": 12
+   },
+   "stdout_sha256": "d8cb7bf75870461c651cc37c53c706ec1179d1a4b8ee77e0aef6eaea30e61955"
+  },
+  "paths": {
+   "argv": [
+    "paths"
+   ],
+   "exit": 0,
+   "stderr": "",
+   "stdout": {
+    "compose_project": "codex-harness",
+    "redis_namespace": "codex-harness",
+    "repository": "<FIXTURE>",
+    "runtime": "<FIXTURE>/.runtime"
+   }
+  },
+  "repository_option_paths": {
+   "argv": [
+    "--repository",
+    "<FIXTURE>/second",
+    "paths"
+   ],
+   "exit": 0,
+   "stderr": "",
+   "stdout": {
+    "compose_project": "codex-harness",
+    "redis_namespace": "codex-harness",
+    "repository": "<FIXTURE>/second",
+    "runtime": "<FIXTURE>/second/.runtime"
+   }
+  },
+  "setup_files": {
+   "env_mode": "0600",
+   "runtime_dir": true
+  },
+  "setup_first": {
+   "argv": [
+    "setup"
+   ],
+   "exit": 0,
+   "stderr": "",
+   "stdout": {
+    "env_created": true,
+    "repository": "<FIXTURE>"
+   }
+  },
+  "setup_second": {
+   "argv": [
+    "setup"
+   ],
+   "exit": 0,
+   "stderr": "",
+   "stdout": {
+    "env_created": false,
+    "repository": "<FIXTURE>"
+   }
+  },
+  "validate_invalid": {
+   "argv": [
+    "validate",
+    "<FIXTURE>/bad.json"
+   ],
+   "exit": 1,
+   "stderr": {
+    "error": "[]: 'who' is a required property"
+   },
+   "stdout": ""
+  },
+  "validate_valid": {
+   "argv": [
+    "validate",
+    "<FIXTURE>/good.json"
+   ],
+   "exit": 0,
+   "stderr": "",
+   "stdout": {
+    "message_id": "00000000-0000-4000-8000-000000000001",
+    "valid": true
+   }
+  }
+ }
+}
