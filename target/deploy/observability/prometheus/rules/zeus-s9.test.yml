@@ -1,0 +1,289 @@
+# promtool unit tests for zeus-s9.yml (S9 X4a): every alert fires with its exact labels and annotations and later
+# resolves (the condition stops, then `keep_firing_for` elapses); every recording rule has an exact value; the failure
+# ratio alert also has a below-volume case that does not fire. Run: `promtool test rules zeus-s9.test.yml`.
+rule_files:
+  - zeus-s9.yml
+evaluation_interval: 1m
+group_eval_order:
+  - zeus-s9-recording
+  - zeus-s9-alerts
+tests:
+  # ZeusObservationRecordsRejected
+  - interval: 1m
+    input_series:
+      - series: 'zeus_observation_records_total{result="refused"}'
+        values: '0 0 5x50'
+    alert_rule_test:
+      - eval_time: 10m
+        alertname: ZeusObservationRecordsRejected
+        exp_alerts:
+          - exp_labels:
+              result: refused
+              owner: observation
+              severity: warning
+            exp_annotations:
+              summary: "Spool records were refused, corrupt or in conflict during collection."
+              runbook: target/docs/runbooks/zeus-s9.md#zeusobservationrecordsrejected
+              threshold_basis: "provisional: no production baseline (S9 fixtures)"
+      - eval_time: 40m
+        alertname: ZeusObservationRecordsRejected
+        exp_alerts: []
+  # ZeusMetricsLabelRejections
+  - interval: 1m
+    input_series:
+      - series: 'zeus_metrics_label_rejections_total{metric="zeus_observation_records_total"}'
+        values: '0 0 3x100'
+    alert_rule_test:
+      - eval_time: 10m
+        alertname: ZeusMetricsLabelRejections
+        exp_alerts:
+          - exp_labels:
+              metric: zeus_observation_records_total
+              owner: observation
+              severity: info
+            exp_annotations:
+              summary: "The metrics projection refused samples whose label value or attribute was outside its contract."
+              runbook: target/docs/runbooks/zeus-s9.md#zeusmetricslabelrejections
+              threshold_basis: "provisional: no production baseline (S9 fixtures)"
+      - eval_time: 100m
+        alertname: ZeusMetricsLabelRejections
+        exp_alerts: []
+  # ZeusModelInvocationFailureRatioHigh
+  - interval: 1m
+    input_series:
+      - series: 'zeus_model_invocation_duration_seconds_count{provider="codex",outcome="provider_failure"}'
+        values: '0+1x40 40x80'
+      - series: 'zeus_model_invocation_duration_seconds_count{provider="codex",outcome="accepted"}'
+        values: '0x40 0+3x80'
+    alert_rule_test:
+      - eval_time: 30m
+        alertname: ZeusModelInvocationFailureRatioHigh
+        exp_alerts:
+          - exp_labels:
+              provider: codex
+              owner: execution
+              severity: warning
+            exp_annotations:
+              summary: "More than half of a provider's model invocations over the last hour did not end accepted."
+              runbook: target/docs/runbooks/zeus-s9.md#zeusmodelinvocationfailureratiohigh
+              threshold_basis: "provisional: no production baseline (S9 fixtures)"
+      - eval_time: 45m
+        alertname: ZeusModelInvocationFailureRatioHigh
+        exp_alerts:
+          - exp_labels:
+              provider: codex
+              owner: execution
+              severity: warning
+            exp_annotations:
+              summary: "More than half of a provider's model invocations over the last hour did not end accepted."
+              runbook: target/docs/runbooks/zeus-s9.md#zeusmodelinvocationfailureratiohigh
+              threshold_basis: "provisional: no production baseline (S9 fixtures)"
+      - eval_time: 80m
+        alertname: ZeusModelInvocationFailureRatioHigh
+        exp_alerts: []
+  # ZeusModelInvocationFailureRatioHigh-below-volume
+  - interval: 1m
+    input_series:
+      - series: 'zeus_model_invocation_duration_seconds_count{provider="lowvol",outcome="provider_failure"}'
+        values: '0 0 1x120'
+      - series: 'zeus_model_invocation_duration_seconds_count{provider="lowvol",outcome="accepted"}'
+        values: '0x120'
+    alert_rule_test:
+      - eval_time: 20m
+        alertname: ZeusModelInvocationFailureRatioHigh
+        exp_alerts: []
+      - eval_time: 40m
+        alertname: ZeusModelInvocationFailureRatioHigh
+        exp_alerts: []
+  # ZeusCgroupOOMKill
+  - interval: 1m
+    input_series:
+      - series: 'zeus_cgroup_memory_events_total{unit="worker",event="oom_kill"}'
+        values: '0 0 1x50'
+    alert_rule_test:
+      - eval_time: 5m
+        alertname: ZeusCgroupOOMKill
+        exp_alerts:
+          - exp_labels:
+              unit: worker
+              event: oom_kill
+              owner: host_os
+              severity: critical
+            exp_annotations:
+              summary: "The kernel OOM-killed a process in a unit cgroup."
+              runbook: target/docs/runbooks/zeus-s9.md#zeuscgroupoomkill
+              threshold_basis: "provisional: no production baseline (S9 fixtures)"
+      - eval_time: 45m
+        alertname: ZeusCgroupOOMKill
+        exp_alerts: []
+  # ZeusMemoryPressureHigh
+  - interval: 1m
+    input_series:
+      - series: 'zeus_pressure_stall_ratio{scope="host",resource="memory",kind="some",window="60s"}'
+        values: '0.3x20 0x40'
+    alert_rule_test:
+      - eval_time: 15m
+        alertname: ZeusMemoryPressureHigh
+        exp_alerts:
+          - exp_labels:
+              scope: host
+              resource: memory
+              kind: some
+              window: 60s
+              owner: host_os
+              severity: warning
+            exp_annotations:
+              summary: "Tasks stalled on memory for more than a fifth of the last minute, sustained."
+              runbook: target/docs/runbooks/zeus-s9.md#zeusmemorypressurehigh
+              threshold_basis: "provisional: no production baseline (S9 fixtures)"
+      - eval_time: 35m
+        alertname: ZeusMemoryPressureHigh
+        exp_alerts: []
+  # ZeusCPUThrottlingHigh
+  - interval: 1m
+    input_series:
+      - series: 'zeus_cgroup_cpu_throttled_seconds_total{unit="worker"}'
+        values: '0+30x40 1200x40'
+    alert_rule_test:
+      - eval_time: 20m
+        alertname: ZeusCPUThrottlingHigh
+        exp_alerts:
+          - exp_labels:
+              unit: worker
+              owner: host_os
+              severity: warning
+            exp_annotations:
+              summary: "A unit cgroup was CPU-throttled for more than a quarter of the time, sustained."
+              runbook: target/docs/runbooks/zeus-s9.md#zeuscputhrottlinghigh
+              threshold_basis: "provisional: no production baseline (S9 fixtures)"
+      - eval_time: 60m
+        alertname: ZeusCPUThrottlingHigh
+        exp_alerts: []
+  # ZeusFilesystemSpaceLow
+  - interval: 1m
+    input_series:
+      - series: 'zeus_filesystem_size_bytes{mount="data"}'
+        values: '1000x80'
+      - series: 'zeus_filesystem_available_bytes{mount="data"}'
+        values: '500x10 50x30 500x40'
+    alert_rule_test:
+      - eval_time: 30m
+        alertname: ZeusFilesystemSpaceLow
+        exp_alerts:
+          - exp_labels:
+              mount: data
+              owner: host_os
+              severity: warning
+            exp_annotations:
+              summary: "A configured filesystem has less than a tenth of its bytes available."
+              runbook: target/docs/runbooks/zeus-s9.md#zeusfilesystemspacelow
+              threshold_basis: "provisional: no production baseline (S9 fixtures)"
+      - eval_time: 60m
+        alertname: ZeusFilesystemSpaceLow
+        exp_alerts: []
+  # ZeusPidsLimitHit
+  - interval: 1m
+    input_series:
+      - series: 'zeus_cgroup_pids_limit_hits_total{unit="worker"}'
+        values: '0 0 2x50'
+    alert_rule_test:
+      - eval_time: 5m
+        alertname: ZeusPidsLimitHit
+        exp_alerts:
+          - exp_labels:
+              unit: worker
+              owner: host_os
+              severity: warning
+            exp_annotations:
+              summary: "A unit cgroup reached its process limit."
+              runbook: target/docs/runbooks/zeus-s9.md#zeuspidslimithit
+              threshold_basis: "provisional: no production baseline (S9 fixtures)"
+      - eval_time: 45m
+        alertname: ZeusPidsLimitHit
+        exp_alerts: []
+  # ZeusResourceFactUnavailable
+  - interval: 1m
+    input_series:
+      - series: 'zeus_resource_fact_available{scope="host",fact="pressure_io"}'
+        values: '0x39 1x40'
+    alert_rule_test:
+      - eval_time: 35m
+        alertname: ZeusResourceFactUnavailable
+        exp_alerts:
+          - exp_labels:
+              scope: host
+              fact: pressure_io
+              owner: observation
+              severity: info
+            exp_annotations:
+              summary: "A resource fact could not be read, so its series is absent (unavailable is not zero)."
+              runbook: target/docs/runbooks/zeus-s9.md#zeusresourcefactunavailable
+              threshold_basis: "provisional: no production baseline (S9 fixtures)"
+      - eval_time: 55m
+        alertname: ZeusResourceFactUnavailable
+        exp_alerts: []
+  # rec-records
+  - interval: 1m
+    input_series:
+      - series: 'zeus_observation_records_total{result="inserted"}'
+        values: '0+8x120'
+      - series: 'zeus_observation_records_total{result="refused"}'
+        values: '0+1x120'
+      - series: 'zeus_observation_records_total{result="conflict"}'
+        values: '0+1x120'
+    promql_expr_test:
+      - expr: zeus:observation_records_problem_ratio:rate15m
+        eval_time: 30m
+        exp_samples:
+          - labels: 'zeus:observation_records_problem_ratio:rate15m'
+            value: 0.2
+  # rec-model
+  - interval: 1m
+    input_series:
+      - series: 'zeus_model_invocation_duration_seconds_count{provider="codex",outcome="provider_failure"}'
+        values: '0+1x120'
+      - series: 'zeus_model_invocation_duration_seconds_count{provider="codex",outcome="accepted"}'
+        values: '0+3x120'
+    promql_expr_test:
+      - expr: zeus:model_invocation_failure_ratio:rate1h
+        eval_time: 90m
+        exp_samples:
+          - labels: 'zeus:model_invocation_failure_ratio:rate1h{provider="codex"}'
+            value: 0.25
+  # rec-fs
+  - interval: 1m
+    input_series:
+      - series: 'zeus_filesystem_size_bytes{mount="data"}'
+        values: '1000x20'
+      - series: 'zeus_filesystem_available_bytes{mount="data"}'
+        values: '250x20'
+    promql_expr_test:
+      - expr: zeus:filesystem_available_ratio
+        eval_time: 5m
+        exp_samples:
+          - labels: 'zeus:filesystem_available_ratio{mount="data"}'
+            value: 0.25
+  # rec-mem
+  - interval: 1m
+    input_series:
+      - series: 'zeus_cgroup_memory_current_bytes{unit="worker"}'
+        values: '300x20'
+      - series: 'zeus_cgroup_memory_max_bytes{unit="worker"}'
+        values: '1000x20'
+    promql_expr_test:
+      - expr: zeus:cgroup_memory_usage_ratio
+        eval_time: 5m
+        exp_samples:
+          - labels: 'zeus:cgroup_memory_usage_ratio{unit="worker"}'
+            value: 0.3
+  # rec-cpu
+  - interval: 1m
+    input_series:
+      - series: 'zeus_cgroup_cpu_throttled_seconds_total{unit="worker"}'
+        values: '0+30x40'
+    promql_expr_test:
+      - expr: zeus:cgroup_cpu_throttled_ratio:rate5m
+        eval_time: 10m
+        exp_samples:
+          - labels: 'zeus:cgroup_cpu_throttled_ratio:rate5m{unit="worker"}'
+            value: 0.5
