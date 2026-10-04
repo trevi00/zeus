@@ -117,6 +117,7 @@ from codex_harness.host_os.adapters.process_groups import ChokepointProcesses
 from codex_harness.host_os.adapters.process_tree import ProcessTree, TreeOwnershipLeak
 from codex_harness.host_os.adapters.windows import job_objects, no_console
 from codex_harness.intake.application import tickets
+from codex_harness.kernel.errors import require
 from codex_harness.kernel.ids import SYSTEM_CLOCK, SYSTEM_IDS
 from codex_harness.observation.adapters.observation_spool import MemorySpool
 from codex_harness.observation.application.health import HealthRecords
@@ -357,6 +358,15 @@ class _ProjectEvidence:
         return worker_schema(profile)
 
 
+def _stand_in_refusals(isolation, evidence_profile):
+    """M7 `Executor.__init__` :402-406 for an isolation stand-in: the same two refusals, then whether the profile is a container one."""
+    container = requires_container(evidence_profile) if evidence_profile is not None else False
+    require(isolation is None or evidence_profile is None or container,
+            "Isolated worker mode refuses a host project evidence profile")
+    require(not container or isolation is not None, "A container project evidence profile requires the host isolated worker")
+    return container
+
+
 class Executor:
     def __init__(self, service, git, artifacts, knowledge=None, research=None, observer=None, execution_policy=None,
                  evidence_profile=None, isolation=None, worker_sessions=None):
@@ -407,8 +417,8 @@ class Executor:
         # #7 is composed by `composition.evidence_gate`; an isolation stand-in without `config`/`root`/`docker`
         # keeps M7's behaviour: its own `inspector(artifacts, profile)` (M7 `IsolatedWorker.inspector`) is called.
         if isolation is not None and not all(hasattr(isolation, a) for a in ("config", "root", "docker")):
-            inspector = isolation.inspector(
-                artifacts, evidence_profile if evidence_profile is not None and requires_container(evidence_profile) else None)
+            container = _stand_in_refusals(isolation, evidence_profile)
+            inspector = isolation.inspector(artifacts, evidence_profile if container else None)
         else:
             inspector = evidence_inspector(artifacts, isolation=isolation, evidence_profile=evidence_profile)
         self.evidence_gate = EvidenceGate(EvidenceInspections(store, inspector), self.workflow, self.observer)
