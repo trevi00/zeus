@@ -1,0 +1,214 @@
+{
+ "cases": {
+  "capacity_grant_invalid_json": {
+   "argv": [
+    "continuation",
+    "capacity-grant",
+    "--file",
+    "<DOCUMENTS>/invalid.json"
+   ],
+   "exit": 1,
+   "stderr": "",
+   "stdout": {
+    "error_type": "FleetRefused",
+    "exit_code": 1,
+    "next_owner": null,
+    "reason_code": "unregistered",
+    "status": "refused"
+   }
+  },
+  "delivery_requalify_invalid_json": {
+   "argv": [
+    "continuation",
+    "delivery-requalify",
+    "--file",
+    "<DOCUMENTS>/invalid.json"
+   ],
+   "exit": 1,
+   "stderr": "",
+   "stdout": {
+    "error_type": "FleetRefused",
+    "exit_code": 1,
+    "next_owner": null,
+    "reason_code": "unregistered",
+    "status": "refused"
+   }
+  },
+  "identity_no_fleet": {
+   "argv": [
+    "continuation",
+    "identity",
+    "--lane",
+    "x"
+   ],
+   "exit": 1,
+   "stderr": "",
+   "stdout": {
+    "error_type": "FleetRefused",
+    "exit_code": 1,
+    "next_owner": null,
+    "reason_code": "unregistered",
+    "status": "refused"
+   }
+  },
+  "init_db": {
+   "argv": [
+    "init-db"
+   ],
+   "exit": 0,
+   "stderr": "",
+   "stdout": {
+    "already_applied": [],
+    "applied": [
+     {
+      "module": "core",
+      "version": "1"
+     }
+    ],
+    "migrated": true,
+    "tool": {
+     "filename_contract": "V?<n>(.<n>|_<n>)*(__<description>)?.sql",
+     "name": "zeus-sql-migrator",
+     "version": 1
+    }
+   }
+  },
+  "ownership_reconcile_unknown_intent": {
+   "argv": [
+    "continuation",
+    "ownership-reconcile",
+    "--intent",
+    "nope"
+   ],
+   "exit": 1,
+   "stderr": "",
+   "stdout": {
+    "error_type": "ContinuationRefused",
+    "exit_code": 1,
+    "next_owner": "operator",
+    "reason_code": "ownership_intent_invalid",
+    "status": "refused"
+   }
+  },
+  "register_no_fleet": {
+   "argv": [
+    "continuation",
+    "register",
+    "--lane",
+    "x",
+    "--revision",
+    "0000000000000000000000000000000000000000",
+    "--path",
+    "p"
+   ],
+   "exit": 1,
+   "stderr": "",
+   "stdout": {
+    "error_type": "FleetRefused",
+    "exit_code": 1,
+    "next_owner": null,
+    "reason_code": "unregistered",
+    "status": "refused"
+   }
+  },
+  "research_accept_invalid_json": {
+   "argv": [
+    "continuation",
+    "research-accept",
+    "--file",
+    "<DOCUMENTS>/invalid.json"
+   ],
+   "exit": 1,
+   "stderr": "",
+   "stdout": {
+    "error_type": "FleetRefused",
+    "exit_code": 1,
+    "next_owner": null,
+    "reason_code": "unregistered",
+    "status": "refused"
+   }
+  },
+  "research_supplement_invalid_json": {
+   "argv": [
+    "continuation",
+    "research-supplement",
+    "--file",
+    "<DOCUMENTS>/invalid.json"
+   ],
+   "exit": 1,
+   "stderr": "",
+   "stdout": {
+    "error_type": "FleetRefused",
+    "exit_code": 1,
+    "next_owner": null,
+    "reason_code": "unregistered",
+    "status": "refused"
+   }
+  },
+  "status_all": {
+   "argv": [
+    "continuation",
+    "status"
+   ],
+   "exit": 0,
+   "stderr": "",
+   "stdout": {
+    "authority": "continuation intent projection: not an approval, a review, a merge, a release or a deployment; each effect is performed by its existing owner",
+    "capacity": {
+     "families": [],
+     "grants": []
+    },
+    "counts": {},
+    "exit_code": 0,
+    "held_families": {},
+    "intents": [],
+    "policies": [],
+    "requalifications": [],
+    "schema": "urn:zeus:continuation-status:1",
+    "truncated": false
+   }
+  },
+  "status_unknown_policy": {
+   "argv": [
+    "continuation",
+    "status",
+    "--policy",
+    "nope"
+   ],
+   "exit": 0,
+   "stderr": "",
+   "stdout": {
+    "authority": "continuation intent projection: not an approval, a review, a merge, a release or a deployment; each effect is performed by its existing owner",
+    "capacity": {
+     "families": [],
+     "grants": []
+    },
+    "counts": {},
+    "exit_code": 0,
+    "held_families": {},
+    "intents": [],
+    "policies": [],
+    "requalifications": [],
+    "schema": "urn:zeus:continuation-status:1",
+    "truncated": false
+   }
+  },
+  "tick_no_fleet": {
+   "argv": [
+    "continuation",
+    "tick",
+    "--policy",
+    "nope"
+   ],
+   "exit": 1,
+   "stderr": "",
+   "stdout": {
+    "error_type": "FleetRefused",
+    "exit_code": 1,
+    "next_owner": null,
+    "reason_code": "unregistered",
+    "status": "refused"
+   }
+  }
+ }
+}
