@@ -133,10 +133,10 @@ S9_IMPLEMENTED = {"observation.schema", "observation.file_spool", "observation.f
                   "observation.collectors_sources", "observation.frontend_checks", "effects.s9_units", "effects.s9_units.pg"}
 S10_FAMILIES = {"entry.cli_storefree", "entry.cli_store.pg", "entry.cli_store_b.pg", "entry.cli_knowledge.pg",
                 "entry.cli_bus.pgredis", "entry.cli_ticket_sdd.pg", "coordination.continuation_binding",
-                "entry.cli_governance.pg"}
+                "entry.cli_governance.pg", "entry.cli_research_gov.pg"}
 S10_IMPLEMENTED = {"cli.parser", "entry.cli_storefree", "entry.cli_store.pg", "entry.cli_store_b.pg",
                    "entry.cli_knowledge.pg", "entry.cli_bus.pgredis", "entry.cli_ticket_sdd.pg",
-                   "coordination.continuation_binding", "entry.cli_governance.pg"}
+                   "coordination.continuation_binding", "entry.cli_governance.pg", "entry.cli_research_gov.pg"}
 IMPLEMENTED = {**{f: "S1" for f in S1_FAMILIES}, **{f: "S2" for f in S2_FAMILIES},
                **{f: "S3" for f in S3_IMPLEMENTED}, **{f: "S4" for f in S4_IMPLEMENTED},
                **{f: "S5" for f in S5_IMPLEMENTED}, **{f: "S6" for f in S6_IMPLEMENTED},
