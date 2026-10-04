@@ -1,10 +1,10 @@
 """The collector, web and desk wiring of `zeus-monitor`: the journal, the collect loop, the desk service, the listener refusal and the production `CollectorPorts`.
 
 Layer: composition
-Owns: Journal, source_states, run_collector, desk_service, viewer_port, listener_refusal, collector_ports, serve_web, serve_desk
+Owns: Journal, source_states, render_metrics, write_metrics, run_collector, desk_service, viewer_port, listener_refusal, collector_ports, serve_web, serve_desk
 Does not own: the argument shape and the mode dispatch (entry.processes.monitor), the desk routes (entry.http.desk), the viewer listener (observation.adapters.viewer_http), the collection itself (observation.adapters.collectors)
 Entry points: run_collector, serve_web, serve_desk, listener_refusal, collector_ports
-Contracts: INV-MONITOR-VIEWER-001, local-operations-desk-001
+Contracts: INV-MONITOR-VIEWER-001, INV-OBSERVATION-001, local-operations-desk-001
 
 Moved from M7 `monitor.py` (SOURCE e38aa722) by named rule R-e2 (S10 unit E2a): `Journal` (:33-50), `source_states` (:53), `run_collector` (:56-114), `desk_service` (:116-131), `viewer_port` (:134-139) and
 `listener_refusal` (:142-158) are M7's statements except the import homes (`settings`/`runtime_dir` are `composition.configuration`, `FileArtifacts` is `storage.adapters.file_artifacts`, the collector
@@ -27,6 +27,21 @@ may not import `entry.http.desk` (the entry passes the module itself).
 | continuation | `continuation_owners(store).frames.status()` (C8b-1; the shim routes `status` to `frames`) | `composition.continuation` |
 | discovery_pressure | the module's `status` | `research.application.discovery_pressure` |
 | registered | `FleetRegistry(store).registered()` | `coordination.application.fleet.registry` |
+
+S10 unit E2b (DESIGN-s10 §15 option (c), rule R-e2b) adds the metrics file: after each snapshot write `run_collector` renders `zeus-metrics.prom` (Prometheus 0.0.4 text through
+`observation.adapters.metrics_exposition.render`) next to `monitoring.json`, atomically (`zeus-metrics.prom.tmp` then `os.replace`), with no listener and no route. `zeus-metrics-health.prom` is
+always rewritten the same way with `zeus_metrics_render_success` (0/1) and, once a render has succeeded, `zeus_metrics_render_last_success_timestamp_seconds` (unix seconds, no sample timestamps). A failed
+render leaves the last good `zeus-metrics.prom` in place, journals `metrics_render_failed` with the error type only, and never stops the collector or touches `monitoring.json`.
+
+Row producers (every one S9's tests render through `render(...)`, found by grep):
+
+| producer | status | reason |
+|---|---|---|
+| `MetricsProjector(providers=PROVIDERS).snapshot(tx)` (`composition.observation.PROVIDERS`) | used | the projected series in the store, one read transaction of the read-only store |
+| `observation.domain.feature_registry.instrumented_rows()` | used | no input |
+| `observation.adapters.queue_facts.QueueFacts(store, now=...)` (test_s9_x2c_queue_facts:122) | used | inputs are the read-only store and an aware UTC clock; it reads in its own bounded transaction and reports an unreadable queue as `available 0` |
+| `observation.adapters.redis_stream_facts.RedisStreamFacts(url, agents, bus_factory)` (test_s9_redis_stream_facts:141) | not wired | S9 composed no closed agent roster for the monitor process; none is invented here |
+| `observation.adapters.resource_facts.ResourceFacts(cgroup_root, proc_root, units, mounts, interfaces)` (test_s9_x3a:31) | not wired | S9 composed no unit-to-cgroup map, mount names or interface names for the monitor process; they are host layout |
 
 `lane_resolver` is called with `dsn_for=lane_dsn` (`coordination.adapters.fleet_runtime`). Imports sit inside the functions, so importing this module stays light.
 """
@@ -73,6 +88,62 @@ def source_states(result):
     return {name: (envelope.get('status'), envelope.get('error')) for name, envelope in result['sources'].items()}
 
 
+METRICS_FILE, METRICS_HEALTH_FILE = 'zeus-metrics.prom', 'zeus-metrics-health.prom'
+RENDER_SUCCESS = 'zeus_metrics_render_success'
+RENDER_LAST_SUCCESS = 'zeus_metrics_render_last_success_timestamp_seconds'
+
+
+def _health_rows(success, last_success):
+    rows = [{'metric': RENDER_SUCCESS, 'type': 'gauge', 'labels': [], 'buckets': [],
+             'help': 'Whether the last metrics render of the monitor collector succeeded (1) or failed (0).',
+             'series': [{'labels': [], 'value': 1 if success else 0}]}]
+    if last_success is not None:
+        rows.append({'metric': RENDER_LAST_SUCCESS, 'type': 'gauge', 'labels': [], 'buckets': [],
+                     'help': 'Unix time in seconds of the last successful metrics render of the monitor collector.',
+                     'series': [{'labels': [], 'value': last_success}]})
+    return rows
+
+
+def render_metrics(service, *, clock=time.time):
+    """The exposition text: the S9 row producers over the read-only store, then the health gauges (success 1, now).
+
+    The projected series are read in ONE read transaction (INV-OBSERVATION-001); a producer's failure raises."""
+    from codex_harness.composition.observation import PROVIDERS
+    from codex_harness.observation.adapters.metrics_exposition import render
+    from codex_harness.observation.adapters.queue_facts import QueueFacts
+    from codex_harness.observation.application.metrics_projector import MetricsProjector
+    from codex_harness.observation.domain.feature_registry import instrumented_rows
+    now = int(clock())
+    with service.store.transaction() as tx:
+        rows = MetricsProjector(providers=PROVIDERS).snapshot(tx)
+    rows += instrumented_rows()
+    rows += QueueFacts(service.store, now=lambda: datetime.fromtimestamp(now, timezone.utc)).rows()
+    return render(rows + _health_rows(True, now))
+
+
+def write_metrics(runtime, text, name=METRICS_FILE):
+    """Atomic write next to `monitoring.json`: `<name>.tmp`, then `os.replace`."""
+    temp = runtime / (name + '.tmp')
+    temp.write_text(text, 'utf-8')
+    os.replace(temp, runtime / name)
+
+
+def publish_metrics(service, runtime, journal, last_success, clock=time.time):
+    """Render and write the metrics files; returns the last success time. A failure is journalled by type and never raised."""
+    from codex_harness.observation.adapters.metrics_exposition import render
+    now = int(clock())
+    try:
+        write_metrics(runtime, render_metrics(service, clock=lambda: now))
+        last_success, success = now, True
+    except Exception as exc:  # noqa: BLE001 - derived data: the collector and monitoring.json carry on
+        journal.write('metrics_render_failed', error=type(exc).__name__)
+        success = False
+    try:
+        write_metrics(runtime, render(_health_rows(success, last_success)), METRICS_HEALTH_FILE)
+    except Exception as exc:  # noqa: BLE001
+        journal.write('metrics_render_failed', error=type(exc).__name__)
+    return last_success
+
 
 def run_collector(args, root, runtime, snapshot):
     from codex_harness.composition import build, redis_url
@@ -107,6 +178,7 @@ def run_collector(args, root, runtime, snapshot):
                           scope='named' if containers is not None else 'compose',
                           containers=len(containers) if containers is not None else None)
             previous = {}
+            last_success = None
             while True:
                 result = collect(service, artifacts, str(root), url, containers, scope, runtime=runtime, lanes=lanes,
                                  lane_artifacts=lane_artifacts, ports=ports)
@@ -121,6 +193,7 @@ def run_collector(args, root, runtime, snapshot):
                 except OSError as exc:
                     journal.write('snapshot_write_failed', error=type(exc).__name__)
                     raise
+                last_success = publish_metrics(service, runtime, journal, last_success)
                 if args.once:
                     journal.write('shutdown', reason='once')
                     return
