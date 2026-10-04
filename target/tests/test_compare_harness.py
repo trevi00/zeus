@@ -135,13 +135,15 @@ S10_FAMILIES = {"entry.cli_storefree", "entry.cli_store.pg", "entry.cli_store_b.
                 "entry.cli_bus.pgredis", "entry.cli_ticket_sdd.pg", "coordination.continuation_binding",
                 "entry.cli_governance.pg", "entry.cli_research_gov.pg", "research.threshold_policy",
                 "entry.cli_executor.pgredis", "entry.cli_cycle_serve.pgredis", "entry.cli_operation.pg", "entry.cli_desk_program.pg",
-                "entry.cli_continuation.pg", "entry.cli_fleet.pg", "entry.cli_host_delivery.pg"}
+                "entry.cli_continuation.pg", "entry.cli_fleet.pg", "entry.cli_host_delivery.pg",
+                "entry.cli_owner_actions.pg"}
 S10_IMPLEMENTED = {"cli.parser", "entry.cli_storefree", "entry.cli_store.pg", "entry.cli_store_b.pg",
                    "entry.cli_knowledge.pg", "entry.cli_bus.pgredis", "entry.cli_ticket_sdd.pg",
                    "coordination.continuation_binding", "entry.cli_governance.pg", "entry.cli_research_gov.pg",
                    "research.threshold_policy", "entry.cli_executor.pgredis", "entry.cli_cycle_serve.pgredis",
                    "entry.cli_operation.pg", "entry.cli_desk_program.pg",
-                   "entry.cli_continuation.pg", "entry.cli_fleet.pg", "entry.cli_host_delivery.pg"}
+                   "entry.cli_continuation.pg", "entry.cli_fleet.pg", "entry.cli_host_delivery.pg",
+                "entry.cli_owner_actions.pg"}
 IMPLEMENTED = {**{f: "S1" for f in S1_FAMILIES}, **{f: "S2" for f in S2_FAMILIES},
                **{f: "S3" for f in S3_IMPLEMENTED}, **{f: "S4" for f in S4_IMPLEMENTED},
                **{f: "S5" for f in S5_IMPLEMENTED}, **{f: "S6" for f in S6_IMPLEMENTED},
