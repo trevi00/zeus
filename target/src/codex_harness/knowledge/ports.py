@@ -13,7 +13,8 @@ from __future__ import annotations
 from typing import Protocol
 
 OWNED_BUCKETS = ("experience_claims", "profile_consents", "profile_runs", "promotions", "seam_comparisons",
-                 "seam_ledger_imports", "seam_observations", "seam_views", "snapshot_imports")
+                 "seam_ledger_imports", "seam_observations", "seam_views", "snapshot_imports",
+                 "graph_index")  # S10 E3: GraphIndexState (M7 supervisor's graph index revision)
 
 
 class CodeIndex(Protocol):
