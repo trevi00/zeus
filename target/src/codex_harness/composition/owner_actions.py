@@ -73,7 +73,7 @@ MAX_POLICY_BYTES = 64 * 1024
 def owner_action_owners(store, *, continuation=None, org=None, lanes=None, deliveries=None, publisher=None,
                         assessments=None, targets=None, fleet=None, validate=None, first_activation=None, clock=None,
                         withdrawals=None, mainline=None, requalify=None, artifacts=None, research=None,
-                        ledger=None) -> SimpleNamespace:
+                        ledger=None, observer=None) -> SimpleNamespace:
     """The S6 split of M7's `OwnerActions(store, **ports)`: the objects by key, as the module docstring tables."""
     from codex_harness.coordination.application.owner_actions.actions import ActionStore
     from codex_harness.coordination.application.owner_actions.canary import CanaryFamily
@@ -113,7 +113,7 @@ def owner_action_owners(store, *, continuation=None, org=None, lanes=None, deliv
     scheduler = OwnerActionScheduler(store, clock=clock, continuation=continuation, actions=actions, canary=canary,
                                      delivery_plan=delivery_plan, migration=migration,
                                      requalify_family=requalify_family, research_acceptance=research_acceptance,
-                                     research_dispatch=research_dispatch)
+                                     research_dispatch=research_dispatch, observer=observer)
     return SimpleNamespace(store=store, assessments=assessments, actions=actions,
                            research_acceptance=research_acceptance, delivery_plan=delivery_plan, canary=canary,
                            migration=migration, requalify_family=requalify_family,

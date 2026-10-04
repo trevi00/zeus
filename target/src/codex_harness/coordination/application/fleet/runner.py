@@ -31,7 +31,7 @@ class FleetRunner:
     job this process launched is finalized by it even if another runner races."""
 
     def __init__(self, registry, admission, pause, launcher, sleep=time.sleep, interval: float = 5.0, reconcile=None,
-                 backlog=None, control=None, continuation=None):
+                 backlog=None, control=None, continuation=None, observer=None):
         # DESIGN-s5 F: the runner holds the three Fleet objects it drives (M7 held one `Fleet`).
         self.fleet_registry, self.fleet_admission, self.fleet_pause = registry, admission, pause
         self.launcher, self.sleep, self.interval = launcher, sleep, interval
@@ -58,6 +58,8 @@ class FleetRunner:
         # stop draining, and are settled by `drain()` while admission is closed. None - the
         # default - keeps this runner's exact previous behaviour.
         self.continuation = continuation
+        # Optional catalog observer (S10 A5-2): `path_declined` for each pass this runner was built without.
+        self.observer = observer
         self.continuation_state = None
         # Last logged reconciliation state, so repeated identical failures stay silent and only a
         # real transition is written.
@@ -103,6 +105,12 @@ class FleetRunner:
 
     def run(self, once: bool) -> dict:
         self.fleet_registry.registered()  # refuse early when unregistered; ceilings are re-read per scan
+        if self.observer is not None:
+            for feature, pass_ in (("fleet_reconcile", self.reconcile), ("fleet_backlog", self.backlog),
+                                   ("continuation", self.continuation)):
+                if pass_ is None:
+                    self.observer.emit("operations.path_declined", "observed",
+                                       attributes={"feature": feature, "decline_reason": "disabled"})
         summary = {"admitted": [], "finalized": [], "finalize_failures": [], "blocked": {}, "stopped": False,
                    "reconciliation": {"state": "disabled", "error_type": None},
                    "backlog": {"state": "disabled", "outcome": None, "reason_code": None,

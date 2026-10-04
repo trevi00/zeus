@@ -76,8 +76,9 @@ class ContinuationTick:
     observation of terminal member jobs with their routing effects."""
 
     def __init__(self, store, *, conductor=None, fleet=None, lanes=None, frames=None, intents=None,
-                 research=None, settlement=None, successors=None):
+                 research=None, settlement=None, successors=None, observer=None):
         self.store = store
+        self.observer = observer  # optional (S10 A5-2): `path_declined` for an unregistered or disabled policy
         self.conductor = conductor
         self.fleet = fleet
         self.lanes = lanes
@@ -87,6 +88,12 @@ class ContinuationTick:
         self.settlement = settlement
         self.successors = successors
 
+    def _declined(self, feature: str, reason: str) -> None:
+        """`operations.path_declined` (DESIGN-s10 §17, R-a52); nothing without an observer."""
+        if self.observer is not None:
+            self.observer.emit("operations.path_declined", "observed",
+                               attributes={"feature": feature, "decline_reason": reason})
+
     # ----- one tick -----------------------------------------------------------------------
     def tick(self, policy_id: str, *, pin_sha256: str | None = None, runtime=None) -> dict:
         """One bounded pass. `pin_sha256` is the digest of the pinned policy bytes re-read by the
@@ -95,9 +102,11 @@ class ContinuationTick:
                   "skipped": [], "reason_code": None, "owned_elsewhere": {"count": 0, "jobs": []}}
         row = self.frames.policy(policy_id)
         if row is None:
+            self._declined("continuation", "not_applicable")
             return {**result, "outcome": "disabled", "reason_code": "policy_unregistered"}
         policy = row["policy"]
         if not policy["enabled"]:
+            self._declined("continuation", "disabled")
             return {**result, "outcome": "disabled", "reason_code": "policy_disabled"}
         if pin_sha256 is not None and pin_sha256 != row["pin"].get("sha256"):
             # No NEW effect under changed pinned bytes; already started launches are still settled

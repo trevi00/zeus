@@ -116,6 +116,11 @@ class DeliveryController:
             return self.state.result(plan, intent, OUTCOME_BUSY, reason_code=str(intent["held"]))
         if not self.enabled:
             # Registration, reconciliation and projection stay available; nothing external happens.
+            # S10 A5-2: the state's own Observer (if any) records the declined path.
+            observer = getattr(self.state, "observer", None)
+            if observer is not None:
+                observer.emit("operations.path_declined", "observed",
+                              attributes={"feature": "host_delivery", "decline_reason": "disabled"})
             return self.state.result(plan, intent, OUTCOME_DISABLED, reason_code="delivery_disabled")
         gate = self.state.gate(plan)
         if gate["state"] == OUTCOME_REFUSED and intent["stage"] != VERIFYING:

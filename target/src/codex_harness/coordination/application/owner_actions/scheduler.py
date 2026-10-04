@@ -61,8 +61,9 @@ class OwnerActionScheduler:
 
     def __init__(self, store, *, clock=utcnow, continuation=None, actions=None, canary=None,
                  delivery_plan=None, migration=None, requalify_family=None, research_acceptance=None,
-                 research_dispatch=None):
+                 research_dispatch=None, observer=None):
         self.store = store
+        self.observer = observer  # optional (S10 A5-2): `path_declined` for a disabled policy
         self.clock = clock
         self.continuation = continuation
         self.actions = actions
@@ -110,6 +111,12 @@ class OwnerActionScheduler:
                 "migrations": [_migration_status(row) for row in
                                sorted(migrations, key=lambda r: (str(r.get("created_at")), r["id"]))][-50:]}
 
+    def _declined(self, feature: str, reason: str) -> None:
+        """`operations.path_declined` (DESIGN-s10 §17, R-a52); nothing without an observer."""
+        if self.observer is not None:
+            self.observer.emit("operations.path_declined", "observed",
+                               attributes={"feature": feature, "decline_reason": reason})
+
     # ----- one bounded tick -------------------------------------------------------------------------
     def tick(self, policy_id: str, *, pin_sha256: str | None = None) -> dict:
         """Discover owed actions and advance at most `MAX_ACTIONS_PER_TICK` of them by one step each."""
@@ -120,6 +127,7 @@ class OwnerActionScheduler:
         if pin_sha256 is not None and row["pin"].get("sha256") != pin_sha256:
             return self._receipt(policy_id, "refused", reason_code="policy_changed")
         if not row["policy"]["enabled"]:
+            self._declined("owner_actions", "disabled")
             return self._receipt(policy_id, "disabled", reason_code="policy_disabled")
         continuation = None if self.continuation is None else self.continuation.policy(
             row["policy"]["continuation_policy"])

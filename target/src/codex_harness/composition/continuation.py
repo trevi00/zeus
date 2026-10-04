@@ -85,7 +85,7 @@ def continuation_owners(store, fleet=None, lanes=None, conductor=None, validate=
     frames = PolicyFrames(store, clock=clock, grants=grants, intents=intents, requalification=requalification)
     settlement = LaunchSettlement(store, conductor=conductor, fleet=fleet, lanes=lanes, frames=frames, intents=intents)
     tick = ContinuationTick(store, conductor=conductor, fleet=fleet, lanes=lanes, frames=frames, intents=intents,
-                            research=research, settlement=settlement, successors=successors)
+                            research=research, settlement=settlement, successors=successors, observer=observer)
     return SimpleNamespace(intents=intents, frames=frames, research=research, successors=successors, grants=grants,
                            requalification=requalification, settlement=settlement, tick=tick,
                            ownership=OwnershipReconciliation(store, successors=successors))
