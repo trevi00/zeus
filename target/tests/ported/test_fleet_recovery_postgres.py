@@ -37,7 +37,7 @@ from uuid import uuid4
 
 import psycopg
 import pytest
-from m7_delivery import Fleet, database_url, fleet_cli
+from m7_delivery import Fleet, database_url, fleet_cli, harness_database_url
 from psycopg import sql
 from test_fleet_host_migration import OLD_REPO, cli_migrate, cli_state, spy, stopped_journal
 from test_fleet_host_migration import fault as observed_again
@@ -68,6 +68,18 @@ from codex_harness.coordination.domain.fleet_recovery import INTERRUPTED
 from codex_harness.execution.adapters import call_budget
 
 pytestmark = pytest.mark.integration
+
+
+@pytest.fixture(autouse=True)
+def composed_host_database(monkeypatch):
+    """Environment-naming adaptation (`m7_delivery.harness_database_url`, 2026-10-01), applied to the S10-composed
+    fleet commands (C8b-2): `composition.cli_fleet` reads `settings()["HARNESS_DATABASE_URL"]` as M7's `fleet_cli`
+    did, and M7's integration runs exported the disposable test database under that name; the target harness
+    exports it as `ZEUS_TEST_DSN` (R-X refuses production endpoint names). Owner fix after the int36 TI
+    (2026-10-04T14:37Z); assertions unchanged."""
+    from codex_harness.composition import configuration
+    real = configuration.settings
+    monkeypatch.setattr(configuration, "settings", lambda: {**real(), "HARNESS_DATABASE_URL": harness_database_url()})
 
 
 def gone(*_, **__):
