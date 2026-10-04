@@ -558,7 +558,11 @@ def test_the_configured_runner_continues_successors_and_emits_the_structured_tra
     FakeLauncher.constructed, FakeLauncher.launched_ids = [], []
     monkeypatch.setattr(configuration, "settings", lambda: {PLAN_SETTING: "plan-1"})
     monkeypatch.setattr(composition_fleet, "lane_launcher", FakeLauncher)
-    monkeypatch.setattr(observation, "build_observer", lambda store, component, role=None: observer)
+    # S10 F2 (FLEET-REBUILD-S10-ACCEPT F2): the runner now has its own observer; the stand-in routes by
+    # component (patch-target adaptation; assertions unchanged)
+    monkeypatch.setattr(observation, "build_observer",
+                        lambda store, component, role=None: observer if component == "fleet-backlog" else Observer(
+                            store, MemorySpool(new_process_run_id()), component=component, directory=MemoryDirectory()))
     before = handlers()
     summary = fleet_cli.execute(service, SimpleNamespace(fleet_command="run", once=True))
     assert handlers() == before, "the run hands the process its previous handlers back"

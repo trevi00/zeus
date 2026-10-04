@@ -128,15 +128,16 @@ def test_cli_fleet_hands_admission_only_an_observer_it_already_built(service, re
                                                                       monkeypatch):
     cli_fleet.run_fleet(service, SimpleNamespace(once=True))  # no host settings: no observer, none passed
     assert fakes.observers == [] and FakeRunner.built[0].args[1].observer is None
-    assert "observer" not in FakeRunner.built[0].ports  # the Fleet runner's path_declined stays unwired (follow-up)
+    assert FakeRunner.built[0].ports["observer"] is None  # S10 F2: no settings, so the runner has no observer either
     settings[fleet_backlog.PLAN_SETTING] = "plan-1"
     settings[wiring.POLICY_SETTING] = "p1"
     monkeypatch.setattr(fleet_backlog, "backlog_ticker", lambda *a, **k: "backlog-tick")
     monkeypatch.setattr(wiring, "continuation_ticker", lambda *a, **k: "continuation-tick")
     cli_fleet.run_fleet(service, SimpleNamespace(once=True))
-    assert fakes.observers == ["fleet-backlog", "fleet-continuation"]
+    assert fakes.observers == ["fleet-backlog", "fleet-continuation", "fleet-runner"]  # S10 F2
     assert FakeRunner.built[1].args[1].observer == ("observer", "fleet-backlog")
-    assert "observer" not in FakeRunner.built[1].ports  # the backlog observer's exact spool list stays as M7 pins it
+    # S10 F2: the runner's own observer (component fleet-runner), never the backlog one whose exact spool list M7 pins
+    assert FakeRunner.built[1].ports["observer"] == ("observer", "fleet-runner")
 
 
 # ----- skill_selected ---------------------------------------------------------------------------------------------------

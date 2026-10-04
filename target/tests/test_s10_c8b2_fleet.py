@@ -131,7 +131,7 @@ def test_run_fleet_builds_each_ticker_with_its_own_observer_when_the_settings_ar
     control = object()
     cli_fleet.run_fleet(service, SimpleNamespace(once=False), control=control)
     runner = FakeRunner.built[0]
-    assert fakes.observers == ["fleet-backlog", "fleet-continuation"]
+    assert fakes.observers == ["fleet-backlog", "fleet-continuation", "fleet-runner"]  # S10 F2
     assert built["backlog"] == (registered, "plan-1", {"observer": ("observer", "fleet-backlog")})
     assert built["continuation"] == (registered, ["p1", "p2"], {"observer": ("observer", "fleet-continuation")})
     assert (runner.ports["backlog"], runner.ports["continuation"], runner.ports["control"]) == (

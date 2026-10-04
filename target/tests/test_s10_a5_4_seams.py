@@ -3,8 +3,9 @@
 
 MemoryStore, a recording observer behind the catalog-checking wrapper (a non-catalog attribute refuses and fails the test); no
 provider, process, Git or PostgreSQL. Wired: `ci_observed` (DeliveryState.emit_check) and the release_queue `queue_item_waited`
-(the controller tick's claim). Unwired, reported: the cleanup ledger (no caller holds an observer); the frontdesk and
-research-dispatch claims have no pin-safe form (S8 AST pins) and are not implemented.
+(the controller tick's claim). Unwired, reported: the cleanup ledger (no caller holds an observer). S10 F2: the frontdesk and
+research-dispatch claims are wired by composition wrappers (composition.queue_waits, tests in test_s10_r1_f2b.py), not by the
+S8-pinned owners.
 """
 from __future__ import annotations
 

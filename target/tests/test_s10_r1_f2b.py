@@ -24,6 +24,9 @@ from codex_harness.composition import (
     cli_bus,
     cli_desk,
     cli_research_program,
+    configuration,
+    continuation,
+    fleet_backlog,
     observation,
     operation,
     queue_waits,
@@ -268,3 +271,47 @@ def test_a_wait_without_two_aware_ordered_instants_emits_nothing(enqueued, claim
 def test_registry_rows_stay_instrumented_with_their_wired_producers():
     assert FEATURES["queue_wait"].instrumented and FEATURES["queue_wait"].seam is None
     assert FEATURES["declined_paths"].instrumented and FEATURES["declined_paths"].seam is None
+
+
+# ----- Fleet runner: its own observer through the real run_fleet and the real FleetRunner -----------------------------------------
+def fleet_run(tmp_path, monkeypatch, host, runner_observer):
+    """`cli_fleet.run_fleet` with the REAL FleetRunner over an idle fleet; only the launcher, the host settings, the two tickers and
+    the observer builder (which records the components asked for) are fixtures."""
+    from codex_harness.composition import cli_fleet, continuation, fleet, fleet_backlog, managed_runtime
+
+    store, asked = MemoryStore(), []
+    FleetRegistry(store).register(managed_runtime.fixture_config(tmp_path))
+    idle = SimpleNamespace(budget_exhausted=lambda budget: False, wait=lambda handles, seconds: [])
+    monkeypatch.setattr(observation, "build_observer", lambda store, component, **kw: asked.append(component) or (
+        runner_observer if component == "fleet-runner" else observed()[1]))
+    monkeypatch.setattr(fleet, "lane_launcher", lambda config, host, **kw: idle)
+    monkeypatch.setattr(fleet_backlog, "backlog_ticker", lambda *a, **k: lambda: {})
+    monkeypatch.setattr(continuation, "continuation_ticker", lambda *a, **k: lambda: {})
+    monkeypatch.setattr(configuration, "settings", lambda: host)
+    return cli_fleet.run_fleet(SimpleNamespace(store=store), SimpleNamespace(once=True)), asked
+
+
+def test_a_run_with_only_the_backlog_setting_declines_continuation_through_the_runners_own_observer(tmp_path, monkeypatch):
+    recorder, observer = observed()
+    summary, asked = fleet_run(tmp_path, monkeypatch, {fleet_backlog.PLAN_SETTING: "plan-1"}, observer)
+    assert asked == ["fleet-backlog", "fleet-runner"]
+    assert recorder.events == [declined("continuation", "disabled")]
+    plain, _ = fleet_run(tmp_path, monkeypatch, {fleet_backlog.PLAN_SETTING: "plan-1"}, None)
+    assert plain == summary, "the business summary is the same without the runner observer"
+
+
+def test_a_run_with_only_the_policy_setting_declines_the_backlog_pass(tmp_path, monkeypatch):
+    recorder, observer = observed()
+    _, asked = fleet_run(tmp_path, monkeypatch, {continuation.POLICY_SETTING: "p1"}, observer)
+    assert asked == ["fleet-continuation", "fleet-runner"]
+    assert recorder.events == [declined("fleet_backlog", "disabled")]
+
+
+def test_a_run_with_both_settings_declines_nothing_and_a_run_with_neither_builds_no_observer(tmp_path, monkeypatch):
+    recorder, observer = observed()
+    both = {fleet_backlog.PLAN_SETTING: "plan-1", continuation.POLICY_SETTING: "p1"}
+    _, asked = fleet_run(tmp_path, monkeypatch, both, observer)
+    assert asked == ["fleet-backlog", "fleet-continuation", "fleet-runner"] and recorder.events == []
+    recorder, observer = observed()
+    _, asked = fleet_run(tmp_path, monkeypatch, {}, observer)
+    assert asked == [] and recorder.events == []

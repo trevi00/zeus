@@ -73,9 +73,17 @@ def run_fleet(service, args, *, control=None) -> dict:
     # DESIGN-s10 §17 (R-a52): the Fleet's own seams reuse an observer this path already built; none is built here,
     # so a run without the host settings keeps `observer=None` and emits nothing.
     fleet_observer = backlog_observer or continuation_observer
+    # S10 F2-B: the runner's declined-path observer (`path_declined` for a disabled backlog or continuation pass) is its
+    # OWN process observer (component `fleet-runner`), never the backlog one whose spool the M7 CLI test pins; it exists
+    # under the same host-settings condition as the two above, so a run without the settings still builds none.
+    # `reconcile` is always wired here, so `fleet_reconcile` declined is unreachable from this path.
+    runner_observer = None
+    if plan_id is not None or policy_ids is not None:
+        runner_observer = build_observer(service.store, "fleet-runner")
     runner = FleetRunner(registry, AdmissionControl(service.store, observer=fleet_observer), FleetPause(service.store),
                          fleet.lane_launcher(config, host), reconcile=portfolio_reconciler(service.store),
-                         backlog=backlog_tick, control=control, continuation=continuation_tick)
+                         backlog=backlog_tick, control=control, continuation=continuation_tick,
+                         observer=runner_observer)
     installed = []  # (signal, previous handler) for each handler THIS run replaced
     try:
         for name in ("SIGINT", "SIGTERM", "SIGBREAK"):
