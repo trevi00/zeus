@@ -160,15 +160,70 @@ def test_each_refusal_in_order_leaves_no_publish_and_no_record():
         assert bus.published == [] and stored(store) is None, code
 
 
-def test_a_delivery_failure_records_failed_and_a_retry_completes_with_two_attempts():
+class AcceptThenTimeoutClient:
+    """LABELLED in-memory fake of the redis client: `xadd` records the acceptance, then the response is lost."""
+
+    def __init__(self):
+        self.accepted = []
+
+    def xadd(self, stream, fields):
+        from redis.exceptions import TimeoutError as RedisTimeoutError
+
+        self.accepted.append((stream, dict(fields)))
+        raise RedisTimeoutError("response lost")
+
+
+def real_bus(client):
+    bus = RedisBus.__new__(RedisBus)
+    bus.namespace, bus.client = NAMESPACE, client
+    return bus
+
+
+def test_an_ambiguous_publish_stays_in_doubt_across_a_fresh_instance_and_publishes_once():
+    """F1: the REAL RedisBus maps a lost XADD response to MessageDeliveryError; the write may have happened."""
+    client = AcceptThenTimeoutClient()
+    bus = real_bus(client)
+    bus.records = [record("1-0", "1-0", body(message()))]
+    bus.dead_letters = lambda limit: bus.records[:limit + 1]
+    store = MemoryStore()
+    assert refusal(lambda: replay(DeadLetters(store, bus, clock=FixedClock()))) == "replay_in_doubt"
+    held = stored(store)
+    assert held["status"] == "intent" and held["error_type"] == "TimeoutError" and held["attempts"] == 1
+    assert held["operator_reason"] == "agent registered after fix" and held["actor"] == "operator-lead"
+    assert refusal(lambda: replay(DeadLetters(store, bus, clock=FixedClock()))) == "replay_in_doubt"
+    assert len(client.accepted) == 1 and stored(store)["attempts"] == 1
+
+
+def test_an_error_before_any_accepted_write_is_also_held():
     use, store, bus = service([record("1-0", "1-0", body(message()))], fail=MessageDeliveryError("ConnectionError"))
-    assert refusal(lambda: replay(use)) == "replay_delivery_failed"
-    failed = stored(store)
-    assert failed["status"] == "failed" and failed["error_type"] == "ConnectionError" and failed["attempts"] == 1
-    assert use.list()["dead_letters"][0]["replay"] == {"status": "failed", "attempts": 1, "replayed_entry_id": None}
+    assert refusal(lambda: replay(use)) == "replay_in_doubt"
+    held = stored(store)
+    assert held["status"] == "intent" and held["error_type"] == "MessageDeliveryError" and held["attempts"] == 1
     bus.fail = None
-    done = replay(use)
-    assert done["status"] == "completed" and done["attempts"] == 2 and done["created_at"] == failed["created_at"]
+    assert refusal(lambda: replay(use)) == "replay_in_doubt"
+    assert bus.published == []
+    assert use.list()["dead_letters"][0]["replay"] == {"status": "intent", "attempts": 1, "replayed_entry_id": None}
+
+
+def test_an_error_type_never_carries_the_exception_text():
+    use, store, _ = service([record("1-0", "1-0", body(message()))], fail=MessageDeliveryError("secret-detail"))
+    refusal(lambda: replay(use))
+    assert stored(store)["error_type"] == "MessageDeliveryError" and "secret-detail" not in json.dumps(stored(store))
+
+
+def test_a_persistence_failure_after_a_successful_publish_leaves_intent_and_a_retry_is_in_doubt():
+    use, store, bus = service([record("1-0", "1-0", body(message()))])
+    original = use._finish
+
+    def broken(key, outcome):
+        raise RuntimeError("store down")
+
+    use._finish = broken
+    with pytest.raises(RuntimeError):
+        replay(use)
+    use._finish = original
+    assert len(bus.published) == 1 and stored(store)["status"] == "intent"
+    assert refusal(lambda: replay(use)) == "replay_in_doubt"
     assert len(bus.published) == 1
 
 
