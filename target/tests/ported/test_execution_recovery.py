@@ -2,9 +2,8 @@
 
 Every assertion is M7's, unchanged. Adaptations, all construction/import: `ExecutionRecovery`, `Workflow` and
 `organization` come from the `m7_coordination` shim (its docstring names the routing: intake's `ticket_binding`
-injected, no audit binding or threshold-review port); `assignment` from the ported `test_workflow`; `ContractError`,
-`canonical`, `digest` from `kernel`, `FileArtifacts`/`MemoryStore` from `storage.adapters`. The threshold-review
-recovery test needs research's threshold-review port (S10, DESIGN-s8 §28.1: `threshold_reviews` moved with the S10 entry) and stays skipped, whole and unrewritten. The real-process
+injected, no audit binding or threshold-review port, which the fixture sets); `assignment` from the ported `test_workflow`; `ContractError`,
+`canonical`, `digest` from `kernel`, `FileArtifacts`/`MemoryStore` from `storage.adapters`. The `recovery` fixture wires research's `ThresholdReviewRecords` as the threshold-review port (S10 unit T1). The real-process
 CLI test drives M7's `python -m zeus execution-recovery` (S10, entry) and stays here skipped, whole and unrewritten.
 The PostgreSQL parametrizations skip as in M7 without the integration database.
 """
@@ -22,6 +21,7 @@ from test_workflow import assignment
 
 from codex_harness.kernel.errors import ContractError
 from codex_harness.kernel.ids import canonical, digest
+from codex_harness.research.application.threshold_reviews import ThresholdReviewRecords
 from codex_harness.storage.adapters.file_artifacts import FileArtifacts
 from codex_harness.storage.adapters.memory_store import MemoryStore
 
@@ -34,7 +34,10 @@ def workflow(request):
 
 @pytest.fixture
 def recovery(workflow, tmp_path):
-    return ExecutionRecovery(workflow.store, workflow.org, FileArtifacts(tmp_path / 'artifacts'))
+    artifacts = FileArtifacts(tmp_path / 'artifacts')
+    recovery = ExecutionRecovery(workflow.store, workflow.org, artifacts)
+    recovery.threshold_reviews = ThresholdReviewRecords(artifacts)  # the V22 port the M7 recovery read inline
+    return recovery
 
 
 def exhausted(workflow):
@@ -191,7 +194,6 @@ def test_recovery_state_and_receipt_rollback_together(workflow, recovery):
     assert recovery.apply(packet)['replayed'] is False
 
 
-@pytest.mark.skip(reason="S10: threshold reviews (DESIGN-s8 §28.1: threshold_reviews moved with the S10 entry)")
 def test_decision_and_threshold_request_recovery_are_atomic_and_replay_bound(workflow, recovery):
     actor, request_id = 'conductor', 'test-threshold-request'
     decision_id = digest([request_id, actor])

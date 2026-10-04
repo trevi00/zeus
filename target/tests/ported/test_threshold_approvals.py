@@ -1,10 +1,9 @@
 """Ported SOURCE M7 suite `tests/test_threshold_approvals.py` (e38aa722) run against the S8 target (DESIGN-s8 §29).
 
 Every assertion is M7's, unchanged. Adaptations, all import-only: `source_policy_repo` (M7 `test_threshold_collection.policy_repo`) is the
-`m7_research` S10 placeholder (`adapters.threshold_policy` is not on the target); `policy_repo`, `runtime`, `setup_review` are the ported
+`m7_research` fixture (S10 unit T1, built from the target `research.adapters.threshold_policy` constants); `policy_repo`, `runtime`, `setup_review` are the ported
 `test_threshold_reviews`'s; `ThresholdApprovals` is `research.application.threshold_approvals`, the domain modules `threshold_proposals` and
-`threshold_replay` are `research.domain`'s, `ContractError` is `kernel.errors`'s. The four tests that build their world through `setup_review`
-(the S10 `current_policy`) are kept whole under an S10 skip; the two domain tests run. M7 docstring follows.
+`threshold_replay` are `research.domain`'s, `ContractError` is `kernel.errors`'s. The four tests that build their world through `setup_review` run (S10 unit T1). M7 docstring follows.
 
 FA-021: calibration evaluates unique executions and an approval certifies one exact change once
 (INV-THRESHOLD-APPROVAL-001).
@@ -98,7 +97,6 @@ def change(proposal, **over):
     return document
 
 
-@pytest.mark.skip(reason='S10: adapters.threshold_policy.current_policy (the policy_repo fixture and the Git-bound policy are not on the target)')
 def test_issue_binds_the_exact_assessed_change(policy_repo, tmp_path, monkeypatch):  # noqa: F811
     executor, _, _ = setup_review(policy_repo, tmp_path)[0], None, None
     approvals = ThresholdApprovals(executor.service.store, executor.artifacts)
@@ -124,7 +122,6 @@ def test_issue_binds_the_exact_assessed_change(policy_repo, tmp_path, monkeypatc
     assert approvals.inspect(approval['id'], now=T0)['state'] == 'issued'
 
 
-@pytest.mark.skip(reason='S10: adapters.threshold_policy.current_policy (the policy_repo fixture and the Git-bound policy are not on the target)')
 def test_consume_certifies_exactly_one_matching_change(policy_repo, tmp_path, monkeypatch):  # noqa: F811
     executor, request, proposal = assessed(policy_repo, tmp_path, monkeypatch)
     approvals = ThresholdApprovals(executor.service.store, executor.artifacts)
@@ -164,7 +161,6 @@ def test_consume_certifies_exactly_one_matching_change(policy_repo, tmp_path, mo
     assert approvals.inspect(approval['id'])['state'] == 'consumed'
 
 
-@pytest.mark.skip(reason='S10: adapters.threshold_policy.current_policy (the policy_repo fixture and the Git-bound policy are not on the target)')
 def test_revocation_and_degraded_states(policy_repo, tmp_path, monkeypatch):  # noqa: F811
     executor, request, proposal = assessed(policy_repo, tmp_path, monkeypatch)
     store = executor.service.store
@@ -188,7 +184,6 @@ def test_revocation_and_degraded_states(policy_repo, tmp_path, monkeypatch):  # 
         parse_applied_policy({'revision': 'c' * 40})
 
 
-@pytest.mark.skip(reason='S10: adapters.threshold_policy.current_policy (the policy_repo fixture and the Git-bound policy are not on the target)')
 def test_concurrent_consumers_on_postgres_get_one_certification(policy_repo, tmp_path, monkeypatch, isolated_pgstore):  # noqa: F811
     executor, request, proposal = assessed(policy_repo, tmp_path, monkeypatch)
     # The assessed rows are real outputs of the review chain; replay them into the isolated schema.
