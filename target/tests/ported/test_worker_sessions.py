@@ -36,6 +36,7 @@ from m7_containers import install_docker, iw
 from m7_executor import ClaudeCodeRuntime, Executor
 from test_isolated_worker import IMAGE, TOKEN, FakeDocker, git
 
+from codex_harness.composition import isolated_worker_entry as entry
 from codex_harness.execution.adapters import worker_sessions as session_adapter
 from codex_harness.execution.adapters.providers.claude_cli import ClaudeUnavailable, claude_settings
 from codex_harness.execution.adapters.worker_sessions import (
@@ -834,7 +835,6 @@ def test_state_matrix_refuses_every_undeclared_transition():
 
 
 # ---- isolated transport and trusted entry --------------------------------------------------------
-@pytest.mark.skip(reason="S10: the isolated worker container entry (isolated_worker_entry)")
 def test_entry_binds_task_sessions_to_fixed_paths_and_protocol(tmp_path):
     sid = "bbbbbbbb-bbbb-4bbb-8bbb-bbbbbbbbbbbb"
     base = {"protocol": iw.SESSION_PROTOCOL, "session_id": sid, "evidence_root": "/evidence"}

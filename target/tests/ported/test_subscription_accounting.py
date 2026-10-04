@@ -35,12 +35,15 @@ from types import SimpleNamespace
 
 import pytest
 from m7_containers import iw
-from m7_coordination import Fleet, organization, packaged_policy, unavailable
+from m7_coordination import Fleet, organization, packaged_policy
 from m7_executor import ClaudeCodeRuntime, fleet_runtime
 from test_claude_cli_process import CHILD, SCHEMA, observation
 from test_fleet import GOAL, config, manifest
 from test_research_program_fixtures import config as program_config
 
+from codex_harness.composition import (
+    isolated_worker_entry as entry,  # ledger home `composition.isolated_worker_entry`
+)
 from codex_harness.coordination.application.operation import BudgetedExecutor, BudgetRefused
 from codex_harness.coordination.domain.fleet import (
     FleetRefused,
@@ -59,8 +62,6 @@ from codex_harness.research.domain.research_program import ProgramRefused, headr
 from codex_harness.research.domain.research_program import validate_config as validate_program
 from codex_harness.routing.domain.providers import parse_configuration, select_execution
 from codex_harness.storage.adapters.memory_store import MemoryStore
-
-entry = unavailable("S10", "adapters.isolated_worker_entry")  # ledger home `entry.processes.isolated_worker`
 
 FINITE, SUB = {"per_host": 2, "total": 4}, {"mode": "subscription", "per_host": 2, "total": 4}
 BASE = "a" * 40
@@ -333,7 +334,6 @@ def test_executor_opens_the_host_runtime_with_the_selected_mode_and_no_null_cap(
     assert set(built[0]) == set(built[1]) == {"model", "runtime", "executable", "max_budget_usd", "settings_document"}
 
 
-@pytest.mark.skip(reason="S10: entry.processes.isolated_worker (M7 isolated_worker_entry.serve)")
 def test_isolated_runtime_dict_and_entry_carry_the_mode_and_omit_the_cap(tmp_path):
     """The isolated request already serializes `runtime` (isolated_worker.py) and the in-image entry hands it
     to ClaudeCodeRuntime unchanged (isolated_worker_entry.py): neither file changes. No container runs here;
