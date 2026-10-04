@@ -402,19 +402,20 @@ class NoAdmissionLauncher:
         raise AssertionError("this test must never produce an outcome")
 
 
-@pytest.mark.skip(reason='S10: the zeus fleet run operator CLI (fleet_cli.execute, fleet_runtime.LaneLauncher wiring)')
 def test_actual_fleet_cli_run_reconciles_through_the_real_runner(tmp_path, monkeypatch):
     """The shipped `zeus fleet run` entrypoint, not a spy: `fleet_cli.execute` builds the real
     `FleetRunner`, so the adapter wiring itself must turn two historical failures into one durable
     candidate. Only the launcher is a fixture, and it admits nothing."""
-    from codex_harness.adapters import fleet_cli, fleet_runtime
+    from m7_delivery import fleet_cli
+
+    from codex_harness.composition import fleet as composition_fleet
 
     f = fleet(tmp_path)
     finish(f, "op-1", "failed", "child_refused")
     finish(f, "op-2", "failed", "child_refused")
     assert [k for k in f.store.data if k[0] == BUCKET_INVESTIGATIONS] == []
     NoAdmissionLauncher.constructed = []
-    monkeypatch.setattr(fleet_runtime, "LaneLauncher", NoAdmissionLauncher)
+    monkeypatch.setattr(composition_fleet, "lane_launcher", NoAdmissionLauncher)
     enqueue(f, "op-3")                     # queued work stays queued: only reconciliation runs
     # Only the terminal rows are compared: Fleet itself still records the blocking reason of the
     # queued job during admission.

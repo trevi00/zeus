@@ -1170,9 +1170,11 @@ def cli_relocate(state, tmp_path, monkeypatch, *, store=None, request=None, dock
     adapter's own configuration/job resolution is the code under test."""
     from types import SimpleNamespace
 
-    from codex_harness.adapters import fleet_cli, fleet_recovery
+    from m7_delivery import fleet_cli
 
-    monkeypatch.setattr(fleet_recovery, "docker_state", lambda container, client="docker": docker(container))
+    from codex_harness.composition import fleet_recovery
+
+    monkeypatch.setattr(fleet_recovery, "docker_state", lambda container, client="docker", **_: docker(container))
     path = tmp_path / name
     path.write_text(json.dumps(request or request_for(state), sort_keys=True), encoding="utf-8")
     return fleet_cli.execute(SimpleNamespace(store=state["store"] if store is None else store),
@@ -1195,7 +1197,6 @@ def nested_observer(state, store, request):
     return observe
 
 
-@pytest.mark.skip(reason='S10: the operator CLI (adapters.fleet_cli)')
 def test_the_cli_first_call_commits_without_a_nested_store_transaction(tmp_path, monkeypatch):
     """`Fleet.relocate` re-reads the observation from INSIDE its committing transaction, where a
     callback that reads the primary store again waits on a lock the same call holds. Over a store
@@ -1235,7 +1236,6 @@ def test_the_non_reentrant_regression_catches_the_pre_fix_observation(tmp_path):
         assert tx.get(BUCKET_REGISTRY, "fleet-1")["config_sha256"] == state["config_sha256"]
 
 
-@pytest.mark.skip(reason='S10: the operator CLI (adapters.fleet_cli)')
 def test_the_cli_reads_the_lane_again_inside_the_committing_transaction(tmp_path, monkeypatch):
     """Only the immutable store inputs are reused: the retained lane run is observed on Docker again
     inside the transaction, so a container that is running by then refuses before the write."""
@@ -1257,7 +1257,6 @@ def test_the_cli_reads_the_lane_again_inside_the_committing_transaction(tmp_path
         assert tx.get(BUCKET_REGISTRY, "fleet-1")["config_sha256"] == state["config_sha256"]
 
 
-@pytest.mark.skip(reason='S10: the operator CLI (adapters.fleet_cli)')
 def test_the_cli_refuses_a_configuration_that_is_no_longer_the_expected_one(tmp_path, monkeypatch):
     """The configuration the observation reads its lanes from is the one the request expects, so a
     stale expectation refuses instead of observing lanes the commit would not have accepted."""
@@ -1271,7 +1270,6 @@ def test_the_cli_refuses_a_configuration_that_is_no_longer_the_expected_one(tmp_
         assert tx.get(BUCKET_REGISTRY, "fleet-1")["config_sha256"] == state["config_sha256"]
 
 
-@pytest.mark.skip(reason='S10: the operator CLI (adapters.fleet_cli)')
 def test_the_cli_refuses_when_a_job_was_queued_after_the_observed_rows(tmp_path, monkeypatch):
     """The queued denominator stays the committing transaction's own read of the job rows, not the
     reused ones: a job enqueued after the first observation refuses the cutover rather than leaving
@@ -1279,7 +1277,7 @@ def test_the_cli_refuses_when_a_job_was_queued_after_the_observed_rows(tmp_path,
     state = setup(tmp_path)
     store = NonReentrant(state["store"])
 
-    from codex_harness.adapters import fleet_recovery
+    from codex_harness.coordination.adapters import fleet_recovery
 
     collect = fleet_recovery.collect_relocation_proof
     calls = []
@@ -1304,14 +1302,16 @@ def test_the_cli_refuses_when_a_job_was_queued_after_the_observed_rows(tmp_path,
         assert tx.get(BUCKET_REGISTRY, "fleet-1")["config_sha256"] == state["config_sha256"]
 
 
-@pytest.mark.skip(reason='S10: the operator CLI (adapters.fleet_cli)')
 def test_the_cli_replays_a_committed_relocation_without_observing_the_old_paths(tmp_path, monkeypatch):
     """The shipped `zeus fleet relocate` entrypoint: once the receipt is committed, the command
     answers from it even though the journal, the old checkout and the copied files it verified are
     gone. Every external reader is replaced by a fault that fails the test if it is reached."""
     from types import SimpleNamespace
 
-    from codex_harness.adapters import fleet_cli, fleet_recovery
+    from m7_delivery import fleet_cli
+
+    from codex_harness.composition import fleet_recovery as composition_recovery
+    from codex_harness.coordination.adapters import fleet_recovery
 
     state = setup(tmp_path)
     request = request_for(state)
@@ -1322,7 +1322,7 @@ def test_the_cli_replays_a_committed_relocation_without_observing_the_old_paths(
         raise AssertionError("a committed relocation must not observe any external state")
 
     monkeypatch.setattr(fleet_recovery, "collect_relocation_proof", gone)
-    monkeypatch.setattr(fleet_recovery, "docker_state", gone)
+    monkeypatch.setattr(composition_recovery, "docker_state", gone)
     retire(state["source"], tmp_path / "retired" / "repo-a")  # gone, as it is after a real cutover
     os.unlink(state["journal"])
 
