@@ -235,6 +235,28 @@ def test_an_unfinished_intent_is_replay_in_doubt():
     assert bus.published == [] and stored(store)["status"] == "intent"
 
 
+def test_a_predecessor_failed_record_after_an_accepted_publish_is_in_doubt_and_publishes_once():
+    """F1 round 2: the e0dc49c4 replay wrote `failed` (with the exception text) after an accepted XADD whose response was
+    lost. That record carries no proof that nothing was written, so a fresh instance refuses it like an `intent`."""
+    client = AcceptThenTimeoutClient()
+    bus = real_bus(client)
+    bus.records = [record("1-0", "1-0", body(message()))]
+    bus.dead_letters = lambda limit: bus.records[:limit + 1]
+    with pytest.raises(MessageDeliveryError):
+        bus.publish(message())  # the predecessor's accepted publish, response lost
+    key, at = replay_key(SOURCE, "1-0"), "2026-10-03T09:00:00+00:00"
+    predecessor = {"id": key, "status": "failed", "source": SOURCE, "entry_id": "1-0", "dead_letter_ids": ["1-0"],
+                   "reasons": ["Unknown agent"], "body_sha256": "0" * 64, "operator_reason": "first operator reason",
+                   "actor": "operator-first", "attempts": 1, "created_at": at, "updated_at": at,
+                   "error_type": "Timeout reading from socket"}
+    store = MemoryStore()
+    with store.transaction() as tx:
+        tx.put(BUCKET, key, dict(predecessor))
+    assert refusal(lambda: replay(DeadLetters(store, bus, clock=FixedClock()))) == "replay_in_doubt"
+    assert len(client.accepted) == 1, "a second accepted XADD: the predecessor's ambiguous replay was published again"
+    assert stored(store) == predecessor  # the original audit and attempt count are unchanged
+
+
 def test_the_root_is_composed_and_main_dispatches_list_and_replay(monkeypatch, capsys):
     import ast
     from pathlib import Path
