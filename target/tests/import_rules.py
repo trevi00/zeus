@@ -35,7 +35,11 @@ SHIMS = frozenset({"codex_harness.cli", "codex_harness.monitor", "codex_harness.
                    "codex_harness.adapters.host_delivery", "codex_harness.adapters.managed_runtime",
                    "codex_harness.adapters.worker_profile_metadata", "codex_harness.container_main",
                    # S9 U9 (OWNER-DECISIONS-S9 D3.1): the pinned `-m` argv of the frontend checks.
-                   "codex_harness.adapters.monitor_frontend_checks"})
+                   "codex_harness.adapters.monitor_frontend_checks",
+                   # S10 int44 (owner, DESIGN-s10 §16b): the rest of the corrected S0 scan's keep_shim set
+                   # (static.source.json shims.conditional; OWNER-DECISIONS-S11 #11).
+                   "codex_harness.adapters.artifact_reader", "codex_harness.adapters.host_migration",
+                   "codex_harness.adapters.migrations"})
 # Package __init__ modules that only hold shims/resources; they must not import anything.
 PACKAGE_INITS = frozenset({"codex_harness.adapters", "codex_harness.resources"})
 RES = frozenset({"codex_harness.resources.worker_profile_hook"})

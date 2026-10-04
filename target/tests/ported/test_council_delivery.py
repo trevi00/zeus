@@ -188,7 +188,6 @@ def test_debate_roles_receive_the_lossless_projection_inline_and_the_exact_artif
     for rule in ("reader_argv_prefix", "not_inline", "quote", "argv list", "next_cursor", "--limit"):
         assert rule in reader["instruction"] + reader["output"], rule
     argv = [*external["reader_argv_prefix"], *delivery["not_inline"]["ssot"]["operation"]]
-    argv = [a.replace("codex_harness.adapters.artifact_reader", "codex_harness.storage.adapters.artifact_reader") for a in argv]  # K2 argv adaptation: the M7 module is not kept (E5b map)
     read = subprocess.run(argv, capture_output=True, check=False, text=True, encoding="utf-8")
     assert read.returncode == 0, read.stderr
     content = json.loads(read.stdout)["content"]
@@ -220,7 +219,7 @@ def test_size_matched_synthetic_conductor_case_keeps_required_fields_inline_with
     pages, cursor = [], "0"
     while cursor is not None:
         operation[operation.index("--cursor") + 1] = cursor
-        read = subprocess.run([a.replace("codex_harness.adapters.artifact_reader", "codex_harness.storage.adapters.artifact_reader") for a in (*prefix, *operation)], capture_output=True, check=False, text=True, encoding="utf-8")
+        read = subprocess.run([*prefix, *operation], capture_output=True, check=False, text=True, encoding="utf-8")
         assert read.returncode == 0 and len(read.stdout) <= 8000, read.stderr
         page = json.loads(read.stdout)
         pages.append(page["content"])

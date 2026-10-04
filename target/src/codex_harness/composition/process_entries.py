@@ -64,3 +64,15 @@ def isolated_worker_reconcile(root):
 def service_entry_main(argv, *, cli_main):
     from codex_harness.host_os.adapters.service_entry import main
     return main(argv, cli_main=cli_main)
+
+
+def artifact_reader_main(argv):
+    """Owner, int44 (DESIGN-s10 §16b): the kept `adapters.artifact_reader` shim's body."""
+    from codex_harness.storage.adapters.artifact_reader import main
+    return main(argv)
+
+
+def migrations_main(argv):
+    """Owner, int44 (DESIGN-s10 §16b): the kept `adapters.migrations` shim's body."""
+    from codex_harness.storage.adapters.migrator import main
+    return main(argv)

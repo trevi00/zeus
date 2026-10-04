@@ -135,7 +135,7 @@ def _root_case(case, base: Path):
 def test_the_root_list_is_measured_and_complete():
     names = [c[0] for c in CASES]
     assert len(_parser_roots()) == 53 and {"research-package", "dlq"} <= set(_parser_roots())
-    assert len(_process_modules()) == 13
+    assert len(_process_modules()) == 15  # owner int44: + artifact_reader, migrations (DESIGN-s10 §16b)
     assert len([n for n in names if n.startswith("shim:")]) == len(import_rules.SHIMS)
     assert {"zeus", "composition"} <= set(names) and len(names) == len(set(names))
 

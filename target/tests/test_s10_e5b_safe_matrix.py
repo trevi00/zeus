@@ -21,8 +21,7 @@ ARGV_MAP = ast.literal_eval(SOURCE[SOURCE.index("ARGV_MAP = ") + len("ARGV_MAP =
 DECLARED = {d["key"]: d for d in SCENARIO["intended_differences"]}
 STDOUT = {"stdout", "stdout_bytes", "stdout_sha256"}
 # Rows whose stdout carries the module dotted path (argparse usage or description text).
-PATH_STDOUT = {"module.adapters.experience --help", "module.adapters.host_migration --help",
-               "module.adapters.observed_assets --help"}
+PATH_STDOUT = {"module.adapters.experience --help", "module.adapters.observed_assets --help"}
 HELP_ROWS = {"console.zeus --help", "console.harness --help"}
 VERSION_ROW = "console.zeus --version"
 
@@ -66,10 +65,11 @@ def test_each_declaration_differs_only_in_the_fields_its_authority_names():
         if key in PATH_STDOUT or key in HELP_ROWS or key == VERSION_ROW:
             allowed |= STDOUT
         assert differing(key) <= allowed, key
-    # the migrations -> migrator row: argparse `prog` is the explicit M7 string on both sides, so argv only
-    assert differing("module.adapters.migrations --help") == {"argv"}
-    for key in ("artifact_reader --help", "artifact_reader.index_fixture",
-                "import_only.codex_harness.adapters.isolated_worker",
+    # owner int44 (DESIGN-s10 §16b): artifact_reader, host_migration and migrations are kept shims, so not mapped
+    for key in ("module.adapters.host_migration --help", "module.adapters.migrations --help",
+                "artifact_reader --help", "artifact_reader.index_fixture"):
+        assert key not in ARGV_MAP and key not in DECLARED, key
+    for key in ("import_only.codex_harness.adapters.isolated_worker",
                 "import_only.codex_harness.adapters.service_entry"):
         assert differing(key) == {"argv"}
 

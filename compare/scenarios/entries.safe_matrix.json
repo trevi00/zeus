@@ -9,89 +9,6 @@
   {
    "path": "$.rows",
    "op": "replace",
-   "key": "artifact_reader --help",
-   "value": {
-    "argv": [
-     "python",
-     "-m",
-     "codex_harness.storage.adapters.artifact_reader",
-     "--help"
-    ],
-    "exit": 0,
-    "stderr_last_line": [],
-    "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
-    "stdout": "usage: artifact_reader.py [-h] --root ROOT --ref REF {index,page,pointer,search} ...\n\nBounded immutable artifact reader\n\npositional arguments:\n  {index,page,pointer,search}\n\noptions:\n  -h, --help            show this help message and exit\n  --root ROOT           exact artifact store root\n  --ref REF             exact sha256:<digest> reference\n",
-    "stdout_bytes": 345,
-    "stdout_sha256": "acf86c64c398ad8e949154af6cd881a224a976232f9db03cf9c5f955405396c9"
-   },
-   "authority": "S10 E5b (DESIGN-s10 section 16 (b), owner 2026-10-04): codex_harness.adapters.artifact_reader is not kept at its M7 path (REBUILD-DESIGN-v2 section 3.5, S0's pinned-argv scan); its target entry is codex_harness.storage.adapters.artifact_reader"
-  },
-  {
-   "path": "$.rows",
-   "op": "replace",
-   "key": "artifact_reader.index_fixture",
-   "value": {
-    "argv": [
-     "python",
-     "-m",
-     "codex_harness.storage.adapters.artifact_reader",
-     "--root",
-     "<WORK>/fixture-artifacts",
-     "--ref",
-     "sha256:20a98f6bc005d698a9ea31332ca29cd12e6851ad24a9c8e8b5529da9ecbb3307",
-     "index"
-    ],
-    "exit": 0,
-    "json": [
-     {
-      "content": [
-       {
-        "length": 2,
-        "pointer": "",
-        "type": "object"
-       },
-       {
-        "pointer": "/fixture",
-        "type": "boolean"
-       },
-       {
-        "length": 3,
-        "pointer": "/items",
-        "type": "array"
-       },
-       {
-        "pointer": "/items/0",
-        "type": "number"
-       },
-       {
-        "pointer": "/items/1",
-        "type": "number"
-       },
-       {
-        "pointer": "/items/2",
-        "type": "number"
-       }
-      ],
-      "content_encoding": "json-index",
-      "contract": "artifact-query.v1",
-      "cursor": 0,
-      "mode": "index",
-      "next_cursor": null,
-      "ref": "sha256:20a98f6bc005d698a9ea31332ca29cd12e6851ad24a9c8e8b5529da9ecbb3307",
-      "truncated": false
-     }
-    ],
-    "stderr_last_line": [],
-    "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
-    "stdout": "{\"content\":[{\"length\":2,\"pointer\":\"\",\"type\":\"object\"},{\"pointer\":\"/fixture\",\"type\":\"boolean\"},{\"length\":3,\"pointer\":\"/items\",\"type\":\"array\"},{\"pointer\":\"/items/0\",\"type\":\"number\"},{\"pointer\":\"/items/1\",\"type\":\"number\"},{\"pointer\":\"/items/2\",\"type\":\"number\"}],\"content_encoding\":\"json-index\",\"contract\":\"artifact-query.v1\",\"cursor\":0,\"mode\":\"index\",\"next_cursor\":null,\"ref\":\"sha256:20a98f6bc005d698a9ea31332ca29cd12e6851ad24a9c8e8b5529da9ecbb3307\",\"truncated\":false}",
-    "stdout_bytes": 465,
-    "stdout_sha256": "6f9645987d4b336cfce70b1e0085b74dad6497aa2481aef81431dab5de978c7e"
-   },
-   "authority": "S10 E5b (DESIGN-s10 section 16 (b), owner 2026-10-04): codex_harness.adapters.artifact_reader is not kept at its M7 path (REBUILD-DESIGN-v2 section 3.5, S0's pinned-argv scan); its target entry is codex_harness.storage.adapters.artifact_reader"
-  },
-  {
-   "path": "$.rows",
-   "op": "replace",
    "key": "console.harness --help",
    "value": {
     "argv": [
@@ -202,46 +119,6 @@
     "stdout_sha256": "128069719081d80c320fea6bc5f803516ca5d23e4ef8394dade8f7347848f9ea"
    },
    "authority": "S10 E5b (DESIGN-s10 section 16 (b), owner 2026-10-04): codex_harness.adapters.experience is not kept at its M7 path (REBUILD-DESIGN-v2 section 3.5, S0's pinned-argv scan); its target entry is codex_harness.entry.processes.experience; the stdout, its sha256 and bytes change only by that dotted path (argparse usage/description text), a direct consequence of the mapping; the help description is M7's module docstring with only the module path changed"
-  },
-  {
-   "path": "$.rows",
-   "op": "replace",
-   "key": "module.adapters.host_migration --help",
-   "value": {
-    "argv": [
-     "python",
-     "-m",
-     "codex_harness.entry.processes.host_migration",
-     "--help"
-    ],
-    "exit": 0,
-    "stderr_last_line": [],
-    "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
-    "stdout": "usage: python -m codex_harness.entry.processes.host_migration [-h]\n                                                              {validate,plan,advance,checkpoint,intend-activation,activation-successor,status,rollback-plan,activation-write,activation-switch,observe-limited-active,fence-write,artifact-inventory,artifact-stage,artifact-verify,pg-export,pg-inventory,pg-compare-schema,pg-coverage,pg-dump-db,pg-catalog,pg-compare-catalog,pg-restore-db,redis-inventory,redis-copy,compare-redis,pel-owners,gate,prepare-layout}\n                                                              ...\n\nHost migration coordinator boundary (INV-HOST-MIGRATION-001). Connection strings come from named\nenvironment variables only; offline checks delegate to scripts/aibox_data.\n\npositional arguments:\n  {validate,plan,advance,checkpoint,intend-activation,activation-successor,status,rollback-plan,activation-write,activation-switch,observe-limited-active,fence-write,artifact-inventory,artifact-stage,artifact-verify,pg-export,pg-inventory,pg-compare-schema,pg-coverage,pg-dump-db,pg-catalog,pg-compare-catalog,pg-restore-db,redis-inventory,redis-copy,compare-redis,pel-owners,gate,prepare-layout}\n    activation-switch   Receipt first, then `current`, under the coordinator transaction\n    observe-limited-active\n                        Read-only managed limited_active observation: prints {observation,\n                        evidence, transition_draft}; with --expect, {observation, comparison}\n                        only; writes, starts and submits nothing\n    pg-dump-db          Whole-database custom archive (D3)\n    pg-catalog          Whole-database catalog with every table's row digest\n    pg-restore-db       Restore into a NEW dedicated DB, verify, rename atomically\n\noptions:\n  -h, --help            show this help message and exit\n",
-    "stdout_bytes": 1834,
-    "stdout_sha256": "54af56095a4d1791fb7510ac180769b4b4c6179dfac791c801c60b5f90f8ce38"
-   },
-   "authority": "S10 E5b (DESIGN-s10 section 16 (b), owner 2026-10-04): codex_harness.adapters.host_migration is not kept at its M7 path (REBUILD-DESIGN-v2 section 3.5, S0's pinned-argv scan); its target entry is codex_harness.entry.processes.host_migration; the stdout, its sha256 and bytes change only by that dotted path (argparse usage/description text), a direct consequence of the mapping"
-  },
-  {
-   "path": "$.rows",
-   "op": "replace",
-   "key": "module.adapters.migrations --help",
-   "value": {
-    "argv": [
-     "python",
-     "-m",
-     "codex_harness.storage.adapters.migrator",
-     "--help"
-    ],
-    "exit": 0,
-    "stderr_last_line": [],
-    "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
-    "stdout": "usage: codex_harness.adapters.migrations [-h] --config CONFIG --root ROOT [--dsn-env DSN_ENV]\n                                         [--applied-by APPLIED_BY]\n                                         {precheck,apply}\n\npositional arguments:\n  {precheck,apply}\n\noptions:\n  -h, --help            show this help message and exit\n  --config CONFIG       JSON file with version, target_vendor, locations, expected_tables\n  --root ROOT\n  --dsn-env DSN_ENV\n  --applied-by APPLIED_BY\n",
-    "stdout_bytes": 477,
-    "stdout_sha256": "5d5620101e1b594c4c785233dc39c8dfaa8d2b508b53cc017d39cc4fb0bbf25c"
-   },
-   "authority": "S10 E5b (DESIGN-s10 section 16 (b), owner 2026-10-04): codex_harness.adapters.migrations is not kept at its M7 path (REBUILD-DESIGN-v2 section 3.5, S0's pinned-argv scan); its target entry is codex_harness.storage.adapters.migrator"
   },
   {
    "path": "$.rows",

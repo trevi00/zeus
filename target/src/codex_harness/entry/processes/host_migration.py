@@ -6,7 +6,7 @@ Does not own: the command bodies (`composition.host_migration_cli.execute`), the
 Entry points: main, parser
 Contracts: INV-HOST-MIGRATION-001
 
-Moved from M7 `adapters/host_migration.py` `parser` (:1146-1284) and `main` (:1285-1293) (SOURCE e38aa722) by rule R-e5cd (S10 unit E5c), verbatim except the program name and the home of `MigrationRefused`; the M7 module path is NOT a shim (DESIGN-s10 §16), so the target argv is this module's.
+Moved from M7 `adapters/host_migration.py` `parser` (:1146-1284) and `main` (:1285-1293) (SOURCE e38aa722) by rule R-e5cd (S10 unit E5c), verbatim except the home of `MigrationRefused`. The M7 module path is a kept shim (the corrected S0 scan; DESIGN-s10 §16b, owner int44), so the program name stays M7's.
 """
 from __future__ import annotations
 
@@ -18,7 +18,7 @@ from codex_harness.delivery.domain.host_migration import MigrationRefused
 
 
 def parser() -> argparse.ArgumentParser:
-    root = argparse.ArgumentParser(prog="python -m codex_harness.entry.processes.host_migration",
+    root = argparse.ArgumentParser(prog="python -m codex_harness.adapters.host_migration",
                                    description="Host migration coordinator boundary (INV-HOST-MIGRATION-001). "
                                                "Connection strings come from named environment variables only; "
                                                "offline checks delegate to scripts/aibox_data.")

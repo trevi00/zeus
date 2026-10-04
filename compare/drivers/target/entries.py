@@ -36,19 +36,13 @@ import codex_harness  # noqa: E402,F401  (R-O: the origin check counts at least 
 TARGET = Path(os.environ["ZEUS_REBUILD_TARGET_SRC"]).resolve().parent
 # Row key -> (M7 module, target module). S10 E5b (DESIGN-s10 section 16 (b), owner 2026-10-04): the M7 module is
 # not kept at its M7 path (REBUILD-DESIGN-v2 section 3.5, S0's pinned-argv scan); its target entry is the second.
+# Owner int44 (DESIGN-s10 section 16b): artifact_reader, host_migration and migrations are KEPT by the corrected S0
+# scan (static.source.json keep_shim true), so their rows run M7's argv against the shims and are not mapped.
 ARGV_MAP = {
     "module.adapters.experience --help": ("codex_harness.adapters.experience",
                                           "codex_harness.entry.processes.experience"),  # E5a
-    "module.adapters.host_migration --help": ("codex_harness.adapters.host_migration",
-                                              "codex_harness.entry.processes.host_migration"),  # E5c
-    "module.adapters.migrations --help": ("codex_harness.adapters.migrations",
-                                          "codex_harness.storage.adapters.migrator"),
     "module.adapters.observed_assets --help": ("codex_harness.adapters.observed_assets",
                                                "codex_harness.entry.cli.observed_assets"),
-    "artifact_reader --help": ("codex_harness.adapters.artifact_reader",
-                               "codex_harness.storage.adapters.artifact_reader"),
-    "artifact_reader.index_fixture": ("codex_harness.adapters.artifact_reader",
-                                      "codex_harness.storage.adapters.artifact_reader"),
     # import-only rows: DESIGN-s10 section 16 int38 note (isolated_worker), E5a (service_entry)
     "import_only.codex_harness.adapters.isolated_worker": ("codex_harness.adapters.isolated_worker",
                                                            "codex_harness.entry.processes.isolated_worker_runs"),
