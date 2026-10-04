@@ -1,0 +1,61 @@
+{
+ "cases": {
+  "definition_mismatch": {
+   "cause": null,
+   "message": "Loaded routing threshold differs from definition",
+   "refused": "ContractError"
+  },
+  "loaded_committed_mismatch": {
+   "cause": null,
+   "message": "Loaded threshold source differs from selected Git revision",
+   "refused": "ContractError"
+  },
+  "missing_source": {
+   "cause": null,
+   "message": "Missing regular policy source",
+   "refused": "ContractError"
+  },
+  "revision_dash": {
+   "cause": null,
+   "message": "Invalid policy revision",
+   "refused": "ContractError"
+  },
+  "valid_head": {
+   "returned": {
+    "encoding": "UTF-8 text with normalized newlines",
+    "kind": "current_native_git_policy",
+    "revision": "cccccccccccccccccccccccccccccccccccccccc",
+    "sources": {
+     "src/codex_harness/adapters/artifacts.py": "1c7282f8db6f127c856985f3b78fa5ea32c48dccf44db27facc6f1e39248efa8",
+     "src/codex_harness/adapters/commands.py": "281dbd2aaf0bb62863b2012e49ca15bfb10ebfef7ac8b8f482581c46246277f3",
+     "src/codex_harness/adapters/executor.py": "efff9cf1db3e168dde1e6b5126a80c0446b74026cb1ea142e70a27cab3a697a2",
+     "src/codex_harness/adapters/git.py": "0c95f79e2f1bce91df2e2449a56ca4a2aa3943a22b7c5b52603c667f677fdcde",
+     "src/codex_harness/adapters/native_routing_replay.py": "317e4682d73e055fc8358e69ff738ccd0e57f9bf8f01c531c19eda7589951b16",
+     "src/codex_harness/adapters/runtime_thresholds.py": "7998197b5ca9b6101628abd803bc0db8661e9a08d07564906bc34d0ea8c8f323",
+     "src/codex_harness/adapters/skill_routing.py": "7c1634a4169387979c992335e5efb8fcc3a4ee78fdacbe5d8474e9036dda9d5a",
+     "src/codex_harness/adapters/store.py": "a4d1dc36764a7e2d1b0adbda77b545c137049c7e37fa5d0581a69f694889029e",
+     "src/codex_harness/adapters/threshold_policy.py": "fd35c5d40d8cd4f15f44af5ef75f7a117954b865ff61063fc7404c134cf13b0f",
+     "src/codex_harness/adapters/threshold_proposals.py": "17a00c4aae676315378565f82b2dc133f389484c56447baa47f894ba300639e6",
+     "src/codex_harness/adapters/threshold_reviews.py": "e6b7716bfb01e163ca602c9669dab7da4a8270eaf28f8a9ee9d3e7684cc8d2de",
+     "src/codex_harness/application/threshold_proposals.py": "d5f1f2c03e752ed64aba86e4724856d8f39ca0f7ef9e2f16ff012bab6425af96",
+     "src/codex_harness/application/threshold_reviews.py": "2b97a1efa6feb3a517d3e3145b020af30151b52c1a27bae80648ceab5327ac80",
+     "src/codex_harness/application/workflow.py": "e4f49988e62df7a636ac093b3cf9eacd3a09a841db1e203909b6ef99e6a0b210",
+     "src/codex_harness/domain/model.py": "9b4cc99166ed741b58c4417c5a3d6dc581dc0dfa3b54a6b8a1adf67af80b3177",
+     "src/codex_harness/domain/policy.py": "1ee46c4a83e0c2f3cab9b5a46acc324907b74406635760973aaafa3cc8ae1dfd",
+     "src/codex_harness/domain/skill_admission.py": "26c6c9647b9468c6a4883e3b16fd0a1e047c0b5345f4557b70b9a0f4e4d09cc5",
+     "src/codex_harness/domain/skill_audit.py": "8fca576290f2904974425472173ecd4e3ed02d8bb6d2a947e7a26279a04f9857",
+     "src/codex_harness/domain/skill_history.py": "7f2a400321efa278899b65d36b8928416aaa19f060f1f97a72e44c5173f68985",
+     "src/codex_harness/domain/skill_ranking.py": "65faacd03c5beccb0c5a848202342417cced55786739fa6471029d8572052225",
+     "src/codex_harness/domain/threshold_proposals.py": "ccf858bf35a5b55aac7d7f76d79ea6a4c3b7b2ca3e07063b03bbaf95f59d0053",
+     "src/codex_harness/domain/threshold_replay.py": "aa5881c6611d1e4ca788d91089f067892217fb8d9e8aa546c687e677dbe97047",
+     "src/codex_harness/resources/organization.json": "9492c69d2af921d97b0edd1ff00a9f08883ceae47778dbf5799f8eb4b284efa9",
+     "src/codex_harness/resources/threshold-policy.json": "9598313535b9a3b22ebc36e378c07a1ee1d65fd3eb3dd133941f9a9ac6e1f35c"
+    },
+    "values": {
+     "skill_match.FULL_BODY_MIN_SCORE": 3
+    }
+   }
+  }
+ },
+ "sources_count": 24
+}

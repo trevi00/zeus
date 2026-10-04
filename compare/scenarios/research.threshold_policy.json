@@ -1,0 +1,20 @@
+{
+ "family": "research.threshold_policy",
+ "description": "S10 (V20 DESIGN-s8 section 18 item 3) M7 adapters/threshold_policy.py current_policy over a LABELLED fake git whose _git serves the policy sources' own texts at one fixed fake commit id: a valid HEAD, revision -x, one source missing from the fake ls-tree, a loaded/committed mismatch (one show returns altered text) and a definition mismatch (the effective policy patched to differ); values, kind, encoding and every refusal are compared; sources and revision (the side's own paths and the fake commit) are recorded by the reference only",
+ "reference_driver": "drivers/reference/s10_threshold_policy.py",
+ "target_driver": "drivers/target/s10_threshold_policy.py",
+ "golden": "goldens/reference/research.threshold_policy.json",
+ "slice": "S10",
+ "intended_differences": [
+  {
+   "path": "$.cases.valid_head.returned.sources",
+   "op": "absent",
+   "authority": "V20 (DESIGN-s8 section 18 item 3): the sources are keyed by each side's own policy paths (M7 src/codex_harness/... against the target codex_harness/... homes), so only the values, kind, encoding and the refusals are compared"
+  },
+  {
+   "path": "$.cases.valid_head.returned.revision",
+   "op": "absent",
+   "authority": "V20 (DESIGN-s8 section 18 item 3): the revision is the fake commit id the fake git returns, declared absent with the sources"
+  }
+ ]
+}
