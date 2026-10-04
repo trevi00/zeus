@@ -141,6 +141,7 @@ def main() -> None:
         from codex_harness.entry.cli import (
             artifact,
             audit_repair,
+            audit_service,
             autonomous,
             canary,
             cancel,
@@ -194,7 +195,7 @@ def main() -> None:
                     "index": index.run, "query": query.run, "embed": embed.run, "project-graph": project_graph.run,
                     "context": context.run, "flush": flush.run, "send": send.run, "observe": observe.run,
                     "ticket": ticket.run, "sdd": sdd.run,
-                    "audit-repair": audit_repair.run, "worker-session": worker_session.run,
+                    "audit-repair": audit_repair.run, "audit-service": audit_service.run, "worker-session": worker_session.run,
                     "dge": dge.run, "decision-feedback": decision_feedback.run,
                     "release-abandon": release_abandon.run, "cleanup": cleanup.run, "research": research.run,
                     "improve": improve.run, "execute-one": execute_one.run, "rebase": rebase.run,
