@@ -5,7 +5,7 @@ them): `SDD` is `review.application.sdd.SDD` with intake's `ticket_binding` and 
 `Tickets` and `organization` are the shim's, the adapter names are `review.adapters.sdd`, the domain names
 `review.domain.sdd`, `select_model` is `routing.domain.model_selection`, `ContractError`/`digest`/`utcnow` are the kernel's,
 `ROOT`'s `parents[1]` is `parents[3]` (the repository root holding `docs/sdd`). The offline-CLI case runs the `zeus sdd`
-operator CLI and is kept whole under an S10 skip; the PostgreSQL cases keep M7's own integration behaviour.
+operator CLI (`python -m zeus`, K2: it runs); the PostgreSQL cases keep M7's own integration behaviour.
 """
 import ast
 import json
@@ -261,7 +261,6 @@ def test_replay_export_is_idempotent_and_never_overwrites_a_different_draft(tmp_
         write_export(tmp_path / "test_draft.py", source, kind="replay")
 
 
-@pytest.mark.skip(reason="S10 unit E: `python -m zeus` (the zeus package and console-script shim, absent at 8b60bac1; entry.cli.sdd.run exists but has no process entry)")
 def test_offline_cli_review_runs_without_database_access(tmp_path):
     result = subprocess.run([sys.executable, "-m", "zeus", "sdd", "view", str(SPEC),
                              "--output", str(tmp_path / "review.html")], cwd=ROOT,

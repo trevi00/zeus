@@ -29,7 +29,7 @@ import subprocess
 from copy import deepcopy
 
 import pytest
-from m7_coordination import unavailable
+from m7_delivery import _collected, _fleet_recovery
 from test_continuation import BASE, CANDIDATE, World, accepted_item, only
 
 from codex_harness.composition import continuation as adapter
@@ -483,9 +483,9 @@ def real_goal_world(tmp_path, monkeypatch):
             "port": port, "root": root, "old": old, "new": new, "old_sha": old_sha, "new_sha": new_sha}
 
 
-@pytest.mark.skip(reason='S10: coordination.adapters.fleet_recovery._queued_bindings (the fleet recovery reader; a private whose target signature takes the `git_source` seam: fleet unit C8b-2)')
 def test_a_real_goal_blob_that_changed_is_refused_without_and_rebound_with_an_owner_migration(tmp_path, monkeypatch):
-    _queued_bindings = unavailable('S10', 'adapters.fleet_recovery._queued_bindings')
+    def _queued_bindings(target, jobs):  # K2: the target private takes the `git_source` seam (C8b-2 wiring)
+        return _fleet_recovery._queued_bindings(target, jobs, git_source=_collected().git_source)
 
     w = real_goal_world(tmp_path, monkeypatch)
     world, delivery, job = w["world"], w["delivery"], w["job"]

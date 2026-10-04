@@ -18,7 +18,6 @@ from codex_harness.storage.adapters.file_artifacts import FileArtifacts
 from codex_harness.storage.adapters.memory_store import MemoryStore
 
 
-@pytest.mark.skip(reason='S10: entry shim for the artifact reader argv (-m codex_harness.adapters.artifact_reader; the target module is storage.adapters.artifact_reader)')
 def test_every_recovery_prompt_is_bounded_and_preserves_external_history(tmp_path, monkeypatch):
     service = Harness(MemoryStore(), organization())
     artifacts = FileArtifacts(str(tmp_path / 'artifacts'))
@@ -61,6 +60,7 @@ def test_every_recovery_prompt_is_bounded_and_preserves_external_history(tmp_pat
             assert source['reader_argv_prefix'][-1] == source['ref']
     invocation = [*prompts[0]['required']['external_context']['reader_argv_prefix'],
                   *prompts[0]['required']['artifact_reader']['operations']['index']]
+    invocation = [a.replace("codex_harness.adapters.artifact_reader", "codex_harness.storage.adapters.artifact_reader") for a in invocation]  # K2 argv adaptation: the M7 module is not kept (E5b map)
     inspected = subprocess.run(invocation, capture_output=True, check=False, text=True)
     assert inspected.returncode == 0
     inspection = json.loads(inspected.stdout)

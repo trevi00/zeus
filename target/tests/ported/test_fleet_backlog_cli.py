@@ -8,8 +8,7 @@ successful command is itself the evidence that none is built. No model runs.
 Ported SOURCE M7 suite `tests/test_fleet_backlog_cli.py` (e38aa722) run against the S8 target. Every assertion is M7's,
 unchanged. This suite drives the `zeus fleet backlog` adapter and the operator CLI. S10 unit C8b-2 (R-c28) un-skipped 18 of its 19 cases (import lines and
 patch targets only): the adapter's loaders are `composition.fleet_backlog` (V33), `fleet_cli.execute`/`refusal` are `entry.cli.fleet._execute` and `entry.cli.operation.refusal`,
-`fleet_runtime.LaneLauncher` is patched as `composition.fleet.lane_launcher` and `bootstrap.build_observer` as `composition.observation.build_observer`. The one case kept skipped
-is the `cli.parser` one (`cli` stays an `unavailable` placeholder: it is not a fleet_cli case).
+`fleet_runtime.LaneLauncher` is patched as `composition.fleet.lane_launcher` and `bootstrap.build_observer` as `composition.observation.build_observer`. The `cli.parser` case runs since K2 (`cli` is `codex_harness.entry.cli`).
 Imports otherwise are target homes: `Fleet`/`FleetRunner`/`packaged_policy` from `m7_coordination`, `FleetBacklog` from `m7_intake`
 (the moved class over the Fleet's registry port), `GitSource` is `host_os.adapters.git_source`'s, `REGULAR_BLOB` the moved
 `backlog_blobs`', the plan grammar `intake.domain.backlog`, the observation names the S9 homes the target holds.
@@ -24,7 +23,7 @@ from pathlib import Path
 from types import SimpleNamespace
 
 import pytest
-from m7_coordination import Fleet, FleetRunner, packaged_policy, unavailable
+from m7_coordination import Fleet, FleetRunner, packaged_policy
 from m7_intake import FleetBacklog
 
 from codex_harness.composition import fleet as composition_fleet
@@ -41,6 +40,7 @@ from codex_harness.composition.fleet_backlog import (
 from codex_harness.coordination.application.fleet_backlog import BUCKET_INTENTS
 from codex_harness.coordination.domain.fleet import repository_identity
 from codex_harness.coordination.domain.operation import validate_manifest
+from codex_harness.entry import cli
 from codex_harness.entry.cli import fleet as entry_fleet
 from codex_harness.entry.cli import operation as entry_operation
 from codex_harness.host_os.adapters.git_source import GitSource
@@ -52,7 +52,6 @@ from codex_harness.observation.application.observations import MemoryDirectory, 
 from codex_harness.observation.domain.observation import new_process_run_id
 from codex_harness.storage.adapters.memory_store import MemoryStore
 
-cli = unavailable("S10", "cli")
 # `fleet_cli.execute` / `fleet_cli.refusal` are the S10 entry bodies (R-c28, unit C8b-2): `entry.cli.fleet._execute` and `entry.cli.operation.refusal`.
 fleet_cli = SimpleNamespace(execute=entry_fleet._execute, refusal=entry_operation.refusal)
 
@@ -421,7 +420,6 @@ def test_the_runner_opt_in_is_absent_by_default(tmp_path):
     assert configured_plan(None) is None
 
 
-@pytest.mark.skip(reason='S10: the operator CLI parser (cli.parser)')
 def test_the_cli_parser_exposes_backlog_register_tick_and_status():
     parsed = cli.parser().parse_args(["fleet", "backlog", "register", "--lane", "a",
                                       "--revision", "c" * 40, "--path", PLAN_PATH])

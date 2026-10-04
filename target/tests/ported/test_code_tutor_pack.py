@@ -4,8 +4,8 @@ Every assertion is M7's, unchanged. Adaptations, all import, construction and pa
 them): `project_context` is context's with the packaged threshold source (`conftest.NATIVE_THRESHOLDS`); `GitWorkspace` is
 `host_os.adapters.git_workspace`; `load_json`, `render_review` and `replay_source` are `review.adapters.sdd`; `validate_spec`
 and `gate_report` are review's domain; `ContractError` and `digest` are the kernel's; `ROOT`'s `parents[1]` is `parents[3]`
-(the repository root holding `examples/`). The one case that runs the `python -m zeus sdd inspect` CLI is kept whole under
-an S10 skip (the operator CLI).
+(the repository root holding `examples/`). The one case that runs the `python -m zeus sdd inspect` CLI runs
+(K2: `python -m zeus` is composed by E1).
 """
 import json
 import shutil
@@ -190,7 +190,6 @@ def test_native_sdd_draft_has_exactly_five_pending_scenarios():
         replay_source(spec)
 
 
-@pytest.mark.skip(reason="S10 unit E: `python -m zeus` (the zeus package and console-script shim, absent at 8b60bac1; entry.cli.sdd.run exists but has no process entry)")
 def test_native_report_and_review_render_stay_blocked_without_release_authority(tmp_path):
     spec = load_json(SPEC)
     report = gate_report(spec)

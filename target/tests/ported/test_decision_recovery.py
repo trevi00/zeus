@@ -8,7 +8,7 @@ ticket binding injected; `executor.workflow` (the S4 Workflow, whose `handle` th
 the shim's `Workflow` over the same store; `advance_fence` and `release_review_policy` come from
 `coordination.application`, `ContractError`/`digest`/`envelope` from `kernel`, `FileArtifacts`/`MemoryStore` from
 `storage.adapters`. The audit-binding test runs over the shim's `ExecutionRecovery` with research's `audit_gate.binding` injected; the real-CLI
-test needs M7's `python -m zeus` (S10) and stays skipped, whole and unrewritten. PostgreSQL parametrizations skip as in M7 without
+test runs `python -m zeus` (S10 E1) and its child process builds the shim `Executor` over `composition.build()` (K2; PG-gated, proven at TI). PostgreSQL parametrizations skip as in M7 without
 the integration database.
 """
 import json
@@ -258,7 +258,6 @@ def test_release_already_queued_blocks_recovery_before_attempt(system):
         assert tx.get('decisions_pending', row['id'])['attempt'] == 1
 
 
-@pytest.mark.skip(reason="S10 unit E: `python -m zeus` (the zeus package and console-script shim, absent at 8b60bac1; entry.cli.execution_recovery.run exists but has no process entry), and the child process imports M7 codex_harness.adapters.*/bootstrap")
 def test_real_cli_recovery_then_new_process_rejects_changed_review_context(isolated_pgstore, tmp_path):
     service = Harness(isolated_pgstore, organization())
     runtime = tmp_path / '의사결정 복구'
@@ -281,14 +280,20 @@ def test_real_cli_recovery_then_new_process_rejects_changed_review_context(isola
     child = '''
 import json,sys
 from types import SimpleNamespace
-from codex_harness.adapters.artifacts import FileArtifacts
-from codex_harness.adapters.executor import Executor
-from codex_harness.adapters.configuration import runtime_dir
-from codex_harness.bootstrap import build
-e=Executor(build(),SimpleNamespace(repository=sys.argv[1]),FileArtifacts(runtime_dir()/'artifacts'))
+sys.path.insert(0,sys.argv[2])
+from m7_executor import Executor as _Executor
+from codex_harness import composition
+from codex_harness.composition.configuration import runtime_dir
+from codex_harness.storage.adapters.file_artifacts import FileArtifacts
+class Executor(_Executor):
+    def _commit_decision(self,*a):
+        return self.decisions._commit_decision(*a)
+    def _fail_task(self,*a,**k):
+        return self.run_task._fail_task(*a,**k)
+e=Executor(composition.build(),SimpleNamespace(repository=sys.argv[1]),FileArtifacts(runtime_dir()/'artifacts'))
 print(json.dumps(e.decide_one('conductor')))
 '''
-    result = subprocess.run([sys.executable, '-c', child, str(tmp_path)], env=env, capture_output=True, timeout=30)
+    result = subprocess.run([sys.executable, '-c', child, str(tmp_path), os.path.dirname(__file__)], env=env, capture_output=True, timeout=30)
     assert result.returncode == 0 and json.loads(result.stdout) is None
     with isolated_pgstore.transaction() as tx:
         current = tx.get('decisions_pending', row['id'])

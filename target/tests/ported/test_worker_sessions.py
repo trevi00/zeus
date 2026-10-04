@@ -13,9 +13,9 @@ monitoring, isolated-stage-failure and executor-binding cases. Adaptations, name
 and the case that replaced `iw._docker` calls `install_docker`; `Observer`, `MemorySpool`, `MemoryDirectory`,
 `new_process_run_id` and `monitoring` are `m7_observation`'s, `Harness`/`organization` are `m7_coordination`'s, `envelope` is
 `kernel.message`'s; `worker_session_facts` is given the `project` port S10 composes (`WorkerSessions(store, None).status`),
-the keyword seam of the moved collector. SKIPPED whole: `S10: the worker-session operator CLI` and `S10: the isolated worker
-container entry (isolated_worker_entry)` (the entry case and the container-recreation case, whose `SessionDocker` runs it:
-its helper `SessionDocker`/`INNER_SESSION` are not copied, so the names stay unresolved by design, file-level F821). The real
+the keyword seam of the moved collector. K2 (both run): the operator-CLI case is `entry.cli.worker_session._execute`/`_refusal` with `entry.cli.parser`; the
+container-recreation case copies M7's `SessionDocker`/`INNER_SESSION` helpers (the in-container serve is `composition.isolated_worker_entry`,
+the runtime is the `m7_executor` one, `install_fake` routes docker and the process tree). The real
 Claude probe keeps M7's own environment gate.
 """
 # ruff: noqa: F821
@@ -32,7 +32,7 @@ from pathlib import Path
 from types import SimpleNamespace
 
 import pytest
-from m7_containers import install_docker, iw
+from m7_containers import install_docker, install_fake, iw
 from m7_executor import ClaudeCodeRuntime, Executor
 from test_isolated_worker import IMAGE, TOKEN, FakeDocker, git
 
@@ -871,7 +871,64 @@ def test_entry_binds_task_sessions_to_fixed_paths_and_protocol(tmp_path):
     assert json.loads(out.getvalue())["kind"] == "refused"
 
 
-@pytest.mark.skip(reason="S10: the isolated worker container entry (isolated_worker_entry)")
+REAL_TREE = iw.ProcessTree
+
+
+INNER_SESSION = r'''
+import functools, io, json, os, sys
+from codex_harness.composition import isolated_worker_entry as entry
+from m7_executor import ClaudeCodeRuntime
+child, workspace, evidence, home = sys.argv[1:5]
+os.environ["HOME"] = home
+request = json.loads(sys.stdin.buffer.readline().decode("utf-8"))
+# Fixture path mapping: a real container always runs in /workspace; here one FIXED host directory
+# plays that part for every run (the per-run staging path would be a different transcript store).
+request["cwd"], request["evidence_root"] = workspace, evidence
+session = request.get("task_session")
+if session:
+    session["export"] = session["export"].replace("/evidence", evidence, 1)
+    if session.get("restore"):
+        session["restore"] = session["restore"].replace("/evidence", evidence, 1)
+out = io.BytesIO()
+factory = functools.partial(ClaudeCodeRuntime, executable=child, launcher=[sys.executable])
+code = entry.serve(io.BytesIO(json.dumps(request).encode("utf-8")), out, runtime_factory=factory)
+for line in out.getvalue().splitlines():
+    message = json.loads(line)
+    reported = ((message.get("result") or {}).get("task_session") or {})
+    if reported.get("export"):
+        reported["export"] = reported["export"].replace(evidence, "/evidence", 1)
+    sys.stdout.write(json.dumps(message) + "\n")
+sys.stdout.flush()
+sys.exit(code)
+'''
+
+
+class SessionDocker(FakeDocker):
+    """Injected fake Docker whose 'container' runs the REAL entry and CLI transport against the fixture child."""
+
+    def __init__(self, tmp_path, home, workspace):
+        super().__init__(tmp_path)
+        self.script.write_text(INNER_SESSION, encoding="utf-8")
+        self.home, self.workspace = home, workspace
+
+    def tree(self):
+        fake = self
+
+        class Tree:
+            @staticmethod
+            def spawn(argv, **kwargs):
+                container = fake.containers[argv[-1]]
+                container["status"] = "running"
+                mounts = {m["target"]: m["source"] for m in container["mounts"]}
+                kwargs["env"] = {**os.environ, "HOME": str(fake.home), "PYTHONPATH": str(Path(__file__).resolve().parent)}
+                assert Path(mounts[iw.WORKSPACE]).is_dir()
+                tree = REAL_TREE.spawn([sys.executable, str(fake.script), str(CHILD), str(fake.workspace),
+                                        mounts[iw.EVIDENCE], str(fake.home)], **kwargs)
+                fake.process = tree.process
+                return tree
+        return Tree
+
+
 def test_isolated_transport_restores_resumes_and_exports_across_container_recreation(short_root, monkeypatch):
     tmp_path = short_root
     config = iw.load_isolation({"ZEUS_WORKER_ISOLATION": "docker", "ZEUS_WORKER_IMAGE": IMAGE})
@@ -890,8 +947,7 @@ def test_isolated_transport_restores_resumes_and_exports_across_container_recrea
         plan = owner_sessions.begin("task-1", identity(), who)
         (tmp_path / name).mkdir()
         fake = SessionDocker(tmp_path / name, tmp_path / (name + "h"), container_workspace)
-        monkeypatch.setattr(iw, "_docker", fake)
-        monkeypatch.setattr(iw, "ProcessTree", fake.tree())
+        install_fake(monkeypatch, fake)
         # Short run root: the production run layout below it (`<run id>/evidence/session-restore/`)
         # plus this fixture's host-derived transcript key is the longest path of the suite.
         runtime = iw.IsolatedClaudeRuntime(config, tmp_path / "r", model=MODEL, runtime=RUNTIME, max_budget_usd=1.0,
@@ -951,24 +1007,23 @@ def test_isolated_resume_stage_failure_refuses_before_any_container(tmp_path, mo
 
 
 # ---- CLI: read-only status and explicit close ----------------------------------------------------
-@pytest.mark.skip(reason="S10: the worker-session operator CLI")
 def test_cli_status_is_read_only_and_close_requires_promotion(tmp_path):
-    from codex_harness import cli
-    from codex_harness.adapters import worker_sessions as adapter
+    from codex_harness.entry import cli
+    from codex_harness.entry.cli import worker_session as adapter
     store, owner_sessions = sessions(tmp_path)
     plan = owner_sessions.begin("task-1", identity(), owner())
     adopt_turn(owner_sessions, tmp_path, "t1", plan["session_id"], "/workspace", [b"a"], owner())
     service = SimpleNamespace(store=store)
     before = copy.deepcopy(store.data)
-    status = adapter.execute(service, cli.parser().parse_args(["worker-session", "status", "--task-id", "task-1"]),
+    status = adapter._execute(service, cli.parser().parse_args(["worker-session", "status", "--task-id", "task-1"]),
                              archives=owner_sessions.archives)
     assert status["exit_code"] == 0 and status["sessions"][0]["state"] == ws.CHECKPOINTED
     assert store.data == before
     assert "base64" not in json.dumps(status) and '"a\\n"' not in json.dumps(status)
     close = cli.parser().parse_args(["worker-session", "close", "--task-id", "task-1"])
     with pytest.raises(ws.WorkerSessionRefused) as refused:
-        adapter.execute(service, close, archives=owner_sessions.archives)
-    printed = adapter.refusal(refused.value)
+        adapter._execute(service, close, archives=owner_sessions.archives)
+    printed = adapter._refusal(refused.value)
     assert printed == {"refused": True, "reason": "session_not_promoted", "error_type": "WorkerSessionRefused",
                        "exit_code": 1}
     evidence = evidence_store(tmp_path)
@@ -980,7 +1035,7 @@ def test_cli_status_is_read_only_and_close_requires_promotion(tmp_path):
     promoted = evidence.put(json.dumps({"fixture": "promoted accepted evidence"}), "fixture")["ref"]
     receipt = evidence.put(json.dumps(ws.promotion_receipt(accepted, [promoted])), "fixture")["ref"]
     WorkerSessions(store, owner_sessions.archives, evidence=evidence).promote("task-1", receipt)
-    closed = adapter.execute(service, close, archives=owner_sessions.archives, evidence=evidence)
+    closed = adapter._execute(service, close, archives=owner_sessions.archives, evidence=evidence)
     assert closed["closed"] and closed["archive_retained"].startswith("sha256:")
 
 

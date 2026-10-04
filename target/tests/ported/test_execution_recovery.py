@@ -4,7 +4,7 @@ Every assertion is M7's, unchanged. Adaptations, all construction/import: `Execu
 `organization` come from the `m7_coordination` shim (its docstring names the routing: intake's `ticket_binding`
 injected, no audit binding or threshold-review port, which the fixture sets); `assignment` from the ported `test_workflow`; `ContractError`,
 `canonical`, `digest` from `kernel`, `FileArtifacts`/`MemoryStore` from `storage.adapters`. The `recovery` fixture wires research's `ThresholdReviewRecords` as the threshold-review port (S10 unit T1). The real-process
-CLI test drives M7's `python -m zeus execution-recovery` (S10, entry) and stays here skipped, whole and unrewritten.
+CLI test drives `python -m zeus execution-recovery` (E1 entry; K2: it runs, PostgreSQL-gated).
 The PostgreSQL parametrizations skip as in M7 without the integration database.
 """
 import json
@@ -231,7 +231,6 @@ def test_decision_and_threshold_request_recovery_are_atomic_and_replay_bound(wor
         recovery.apply(packet)
 
 
-@pytest.mark.skip(reason="S10 unit E: `python -m zeus` (the zeus package and console-script shim, absent at 8b60bac1; entry.cli.execution_recovery.run exists but has no process entry)")
 def test_real_pg_cli_prepare_apply_replay_and_process_restart(isolated_pgstore, tmp_path):
     workflow = Workflow(isolated_pgstore, organization())
     task, _ = exhausted(workflow)

@@ -1053,7 +1053,6 @@ def test_a_proof_that_changed_between_the_reads_refuses_before_commit(tmp_path):
         assert tx.scan(BUCKET_RELOCATION) == []
 
 
-@pytest.mark.skip(reason='S10: the operator CLI (cli.parser)')
 def test_the_owner_command_exists_on_the_cli_and_requires_the_runner_journal(tmp_path):
     from codex_harness.cli import parser
 

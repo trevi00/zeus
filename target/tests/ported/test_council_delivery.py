@@ -142,7 +142,6 @@ ANSWERS = {"research_lead": {"summary": "s", "claim_ids": ["c0"], "snapshot_dige
            "conductor": CONDUCTOR_ANSWER}
 
 
-@pytest.mark.skip(reason="S10: entry shim for the artifact reader argv (-m codex_harness.adapters.artifact_reader; the target module is storage.adapters.artifact_reader)")
 @pytest.mark.parametrize("role", COUNCIL_DEBATE_ROLES)
 def test_debate_roles_receive_the_lossless_projection_inline_and_the_exact_artifact_by_pointer(tmp_path, monkeypatch, role):
     details = details_for(role)
@@ -189,6 +188,7 @@ def test_debate_roles_receive_the_lossless_projection_inline_and_the_exact_artif
     for rule in ("reader_argv_prefix", "not_inline", "quote", "argv list", "next_cursor", "--limit"):
         assert rule in reader["instruction"] + reader["output"], rule
     argv = [*external["reader_argv_prefix"], *delivery["not_inline"]["ssot"]["operation"]]
+    argv = [a.replace("codex_harness.adapters.artifact_reader", "codex_harness.storage.adapters.artifact_reader") for a in argv]  # K2 argv adaptation: the M7 module is not kept (E5b map)
     read = subprocess.run(argv, capture_output=True, check=False, text=True, encoding="utf-8")
     assert read.returncode == 0, read.stderr
     content = json.loads(read.stdout)["content"]
@@ -200,7 +200,6 @@ def projection_bytes(details: dict) -> int:
     return len(canonical({k: v for k, v in details.items() if k not in ("ssot", "prior_outputs")}).encode("utf-8"))
 
 
-@pytest.mark.skip(reason="S10: entry shim for the artifact reader argv (-m codex_harness.adapters.artifact_reader; the target module is storage.adapters.artifact_reader)")
 def test_size_matched_synthetic_conductor_case_keeps_required_fields_inline_within_the_compiler_budget(tmp_path, monkeypatch):
     # SYNTHETIC size match to run003: whole details > 22000 bytes (owner fact: 32119), the inline part below it
     # (owner fact: 17819 without ssot/prior_outputs). This proves delivery under the compiler rule, not live latency.
@@ -221,7 +220,7 @@ def test_size_matched_synthetic_conductor_case_keeps_required_fields_inline_with
     pages, cursor = [], "0"
     while cursor is not None:
         operation[operation.index("--cursor") + 1] = cursor
-        read = subprocess.run([*prefix, *operation], capture_output=True, check=False, text=True, encoding="utf-8")
+        read = subprocess.run([a.replace("codex_harness.adapters.artifact_reader", "codex_harness.storage.adapters.artifact_reader") for a in (*prefix, *operation)], capture_output=True, check=False, text=True, encoding="utf-8")
         assert read.returncode == 0 and len(read.stdout) <= 8000, read.stderr
         page = json.loads(read.stdout)
         pages.append(page["content"])

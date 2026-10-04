@@ -566,7 +566,6 @@ def settled_once(world, controller, intent):
     assert world.fleet.units() == units
 
 
-@pytest.mark.skip(reason='S10: the Fleet runner stopping a real guardian process (fleet unit C8b-2 and the guardian process entry, unit E); ContinuationPass is composition.continuation')
 @POSIX
 def test_fleet_runner_stop_reaches_the_real_guardian_once_and_its_proof_settles_once(tmp_path):
     world = World(tmp_path)
@@ -609,7 +608,6 @@ def test_fleet_runner_stop_reaches_the_real_guardian_once_and_its_proof_settles_
     settled_once(world, controller, intent)
 
 
-@pytest.mark.skip(reason='S10: the Fleet runner stopping a real guardian process (fleet unit C8b-2 and the guardian process entry, unit E); ContinuationPass is composition.continuation')
 @POSIX
 @pytest.mark.parametrize("store", ["blocked", "down"])
 def test_fleet_runner_stop_cleans_the_real_tree_while_the_store_is_blocked_or_down(tmp_path, store):
@@ -648,7 +646,6 @@ def test_fleet_runner_stop_cleans_the_real_tree_while_the_store_is_blocked_or_do
     settled_once(world, controller, intent)
 
 
-@pytest.mark.skip(reason='S10: the Fleet runner stopping a real guardian process (fleet unit C8b-2 and the guardian process entry, unit E); ContinuationPass is composition.continuation')
 @POSIX
 def test_a_failed_stop_request_is_observable_fabricates_no_cleanup_and_keeps_the_deadline(tmp_path, monkeypatch):
     world = World(tmp_path)

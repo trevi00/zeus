@@ -9,11 +9,11 @@ Formerly not ported here (S2-S7 pilots); batch U3 below copies every one of them
 - test_cli_dry_run_writes_nothing_and_import_uses_injected_store: S10 entry: the CLI main()/script moves to entry/composition
 
 Batch U3 (V6 retrofit): the two cases that had been left out are copied verbatim. test_imported_claims_never_feed_recurrence RUNS
-(`Harness`/`organization` are `m7_coordination`'s, `envelope` is `kernel.message`'s). test_cli_dry_run_... is kept whole under
-`S10: the lesson import operator CLI` (its `main` is the S10 entry; the names it reads stay unresolved by design, F821).
+(`Harness`/`organization` are `m7_coordination`'s, `envelope` is `kernel.message`'s). test_cli_dry_run_... is runs since K2 (`main` is `entry.processes.experience.main`; `json` is imported).
 """
 # ruff: noqa: F821
 import copy
+import json
 from functools import partial as _partial
 from uuid import uuid4
 
@@ -21,6 +21,7 @@ import pytest
 from m7_coordination import Harness, organization
 
 from codex_harness.context.adapters.yaml_source import load_yaml as _load_yaml
+from codex_harness.entry.processes.experience import main
 from codex_harness.kernel.errors import ContractError
 from codex_harness.kernel.message import envelope
 from codex_harness.knowledge.adapters.experience_import import import_lessons, parse_lesson, preview_lessons
@@ -209,7 +210,6 @@ def test_imported_claims_never_feed_recurrence(tmp_path):
         assert len(tx.scan('experience_claims')) == 25
 
 
-@pytest.mark.skip(reason="S10 operator-script main (no composed home at 8b60bac1): the lesson import main is absent; knowledge.adapters.experience_import has no main")
 def test_cli_dry_run_writes_nothing_and_import_uses_injected_store(tmp_path, capsys):
     directory = tmp_path / 'lessons'
     directory.mkdir()

@@ -1,12 +1,13 @@
 """Ported SOURCE M7 suite `tests/test_fleet_runtime.py` (e38aa722) run against the S5/S6 target.
 
 Every assertion is M7's, unchanged. Adaptations, all construction/import: `Fleet`, `Harness`, `LaunchRefused`,
-`organization` and `unavailable` come from the `m7_coordination` shim (its docstring names the routing); `fleet_runtime`
+`organization` come from the `m7_coordination` shim (its docstring names the routing); `fleet_runtime`
 is the `m7_executor` view over `coordination.adapters.fleet_runtime` (its `LaneLauncher`, `lane_environment` and spawn are the
 `composition.fleet` bindings, rule R-c16), `FleetRefused` is `coordination.domain.fleet`'s, `MemoryStore` is
-`storage.adapters.memory_store`'s. `cli` and `fleet_cli` (M7 `codex_harness.cli`, `adapters.fleet_cli`: the S10 entry
-CLIs) are `unavailable("S10", ...)` placeholders that raise on use.
-- Skipped whole and unrewritten: the CLI test (S10: the entry CLIs). The two LaneLauncher tests run (S10 C8a, GAP #3).
+`storage.adapters.memory_store`'s. K2 (the CLI test runs): `cli.parser` is `entry.cli.parser`, `cli.emit` is `entry.cli.output.emit`,
+`cli.fleet_command(service, args)` is `entry.cli.fleet.run(args)` over the service `composition.build` returns (patched), `fleet_cli.check_resolved`
+and `fleet_cli.execute` are `entry.cli.fleet._check_resolved` and `_execute`, and the forbidden builders are `composition.operation.build_executor`
+and `composition.observation.build_observer`. The two LaneLauncher tests run (S10 C8a, GAP #3).
 - check-tree: the synthetic DSN in `ISOLATION` is written as two ADJACENT string literals split at the `@`
   (`"postgresql://harness:secret" "@127.0.0.1:55432/harness"`); Python joins them at parse time, so the AST and the value
   are identical to M7's single literal.
@@ -24,15 +25,19 @@ from pathlib import Path
 from types import SimpleNamespace
 
 import pytest
-from m7_coordination import Fleet, Harness, LaunchRefused, organization, unavailable
+from m7_coordination import Fleet, Harness, LaunchRefused, organization
 from m7_executor import fleet_runtime
 from psycopg.conninfo import conninfo_to_dict
 
+from codex_harness import composition
+from codex_harness.composition import observation, operation
 from codex_harness.coordination.domain.fleet import FleetRefused
+from codex_harness.entry import cli as entry_cli
+from codex_harness.entry.cli import fleet as entry_fleet
+from codex_harness.entry.cli import output
 from codex_harness.storage.adapters.memory_store import MemoryStore
 
-cli = unavailable("S10", "cli")  # M7 `codex_harness.cli`: the entry CLI
-fleet_cli = unavailable("S10", "adapters.fleet_cli")  # ledger home `entry.cli.fleet`
+cli = entry_cli  # M7 `codex_harness.cli`: the entry CLI (K2: `parser` only; `fleet_command` is `entry.cli.fleet.run` over the patched `composition.build`)
 
 CANARY = "CANARY-must-never-be-emitted"
 ISOLATION = {"ZEUS_WORKER_ISOLATION": "docker", "ZEUS_WORKER_IMAGE": "sha256:" + "0" * 64,
@@ -182,39 +187,42 @@ def test_launcher_spawns_real_child_in_lane_environment_and_reads_exact_receipt(
         launcher.launch(job)
 
 
-@pytest.mark.skip(reason="S10 (C8b-2): kept skipped, structural: the case drives M7 `cli.fleet_command(service, args)` and patches `cli.emit` and `bootstrap`; the target `entry.cli.fleet.run(args)` builds its own service, so it cannot take the case's Harness (the register/enqueue/status/refusal paths are covered by entry.cli_fleet.pg and tests/test_s10_c8b2_fleet.py)")
 def test_cli_register_enqueue_status_and_refusals_are_redacted(tmp_path, monkeypatch):
     root, head = repository(tmp_path)
     svc = Harness(MemoryStore(), organization())
     outputs = []
-    monkeypatch.setattr(cli, "emit", outputs.append)
-    for name in ("build_executor", "build_observer"):
-        monkeypatch.setattr("codex_harness.bootstrap." + name, lambda *a, **k: pytest.fail(name + " built by fleet"))
+    monkeypatch.setattr(output, "emit", outputs.append)
+    monkeypatch.setattr(operation, "build_executor", lambda *a, **k: pytest.fail("build_executor built by fleet"))
+    monkeypatch.setattr(observation, "build_observer", lambda *a, **k: pytest.fail("build_observer built by fleet"))
+
+    def fleet_command(service, args):  # K2: M7 `fleet_command(service, args)` is the root over the service `build` returns
+        monkeypatch.setattr(composition, "build", lambda: service)
+        entry_fleet.run(args)
     fleet_file, op_file = tmp_path / "fleet.json", tmp_path / "op.json"
     fleet_file.write_text(json.dumps(config(tmp_path)), encoding="utf-8")
     op_file.write_text(json.dumps(manifest(head)), encoding="utf-8")
-    cli.fleet_command(svc, cli.parser().parse_args(["fleet", "register", "--file", str(fleet_file)]))
+    fleet_command(svc, cli.parser().parse_args(["fleet", "register", "--file", str(fleet_file)]))
     assert outputs[-1]["registered"] is True and outputs[-1]["exit_code"] == 0 and str(tmp_path) not in json.dumps(outputs)
-    cli.fleet_command(svc, cli.parser().parse_args(["fleet", "enqueue", "--lane", "a", "--file", str(op_file)]))
+    fleet_command(svc, cli.parser().parse_args(["fleet", "enqueue", "--lane", "a", "--file", str(op_file)]))
     assert outputs[-1]["job"]["status"] == "queued" and outputs[-1]["job"]["goal"]["base_revision"] == head
-    cli.fleet_command(svc, cli.parser().parse_args(["fleet", "pause"]))
-    cli.fleet_command(svc, cli.parser().parse_args(["fleet", "status"]))
+    fleet_command(svc, cli.parser().parse_args(["fleet", "pause"]))
+    fleet_command(svc, cli.parser().parse_args(["fleet", "status"]))
     assert outputs[-1]["paused"] is True and outputs[-1]["reconciliation_required"] == [] and outputs[-1]["jobs"][0]["id"] == "op-1"
-    cli.fleet_command(svc, cli.parser().parse_args(["fleet", "resume"]))
+    fleet_command(svc, cli.parser().parse_args(["fleet", "resume"]))
     assert outputs[-1]["paused"] is False and outputs[-1]["budget"] == {"per_host": 2, "total": 4}
     # The operator grant: refused while op-1 is queued, granted on an idle fleet, visible in status.
     grant = ["fleet", "authorize-budget", "--per-host", "3", "--total", "6", "--expected-total", "4"]
     with pytest.raises(SystemExit):
-        cli.fleet_command(svc, cli.parser().parse_args(grant))
+        fleet_command(svc, cli.parser().parse_args(grant))
     assert outputs[-1] == {"status": "refused", "reason_code": "fleet_not_idle", "error_type": "FleetRefused", "exit_code": 1}
     idle = Harness(MemoryStore(), organization())
-    cli.fleet_command(idle, cli.parser().parse_args(["fleet", "register", "--file", str(fleet_file)]))
-    cli.fleet_command(idle, cli.parser().parse_args(grant))
+    fleet_command(idle, cli.parser().parse_args(["fleet", "register", "--file", str(fleet_file)]))
+    fleet_command(idle, cli.parser().parse_args(grant))
     assert outputs[-1]["granted"] is True and outputs[-1]["budget"] == {"per_host": 3, "total": 6} and outputs[-1]["exit_code"] == 0
-    cli.fleet_command(idle, cli.parser().parse_args(["fleet", "status"]))
+    fleet_command(idle, cli.parser().parse_args(["fleet", "status"]))
     assert outputs[-1]["budget"] == {"per_host": 3, "total": 6} and outputs[-1]["paused"] is False
     with pytest.raises(SystemExit):
-        cli.fleet_command(idle, cli.parser().parse_args(["fleet", "enqueue", "--lane", "a", "--file", str(op_file)]))
+        fleet_command(idle, cli.parser().parse_args(["fleet", "enqueue", "--lane", "a", "--file", str(op_file)]))
     assert outputs[-1]["reason_code"] == "budget_mismatch"
     assert cli.parser().parse_args(["fleet", "run", "--once"]).once is True
     assert cli.parser().parse_args(["fleet", "enqueue", "--lane", "a", "--file", "x", "--after", "j1", "--after", "j2"]).after == ["j1", "j2"]
@@ -223,12 +231,12 @@ def test_cli_register_enqueue_status_and_refusals_are_redacted(tmp_path, monkeyp
     unresolved["lanes"][0]["repository"] = str(tmp_path / "missing")
     fleet_file.write_text(json.dumps(unresolved), encoding="utf-8")
     with pytest.raises(SystemExit):
-        cli.fleet_command(svc, cli.parser().parse_args(["fleet", "register", "--file", str(fleet_file)]))
+        fleet_command(svc, cli.parser().parse_args(["fleet", "register", "--file", str(fleet_file)]))
     assert outputs[-1] == {"status": "refused", "reason_code": "repository_missing", "error_type": "FleetRefused", "exit_code": 1}
     with pytest.raises(FleetRefused, match="repository_missing"):
-        fleet_cli.check_resolved(unresolved)
-    monkeypatch.setattr(fleet_cli, "execute", lambda service, args: (_ for _ in ()).throw(RuntimeError("dsn=" + CANARY)))
+        entry_fleet._check_resolved(unresolved)
+    monkeypatch.setattr(entry_fleet, "_execute", lambda service, args: (_ for _ in ()).throw(RuntimeError("dsn=" + CANARY)))
     with pytest.raises(SystemExit):
-        cli.fleet_command(svc, cli.parser().parse_args(["fleet", "status"]))
+        fleet_command(svc, cli.parser().parse_args(["fleet", "status"]))
     assert outputs[-1] == {"status": "refused", "reason_code": "error", "error_type": "RuntimeError", "exit_code": 1}
     assert Fleet(svc.store).status()["jobs"][0]["operation_id"] == "op-1"

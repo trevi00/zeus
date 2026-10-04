@@ -4,8 +4,8 @@ Every assertion is M7's, unchanged. Adaptations, all construction/import/patch-t
 `deliver` come from the `m7_research` shim (`Executor` with the V32 council/feedback composition wired into its RunTask; `deliver(store, artifacts,
 binding)` is the target function with observation's `redact_text` injected as the target requires, V18 R-cf1); the constants and
 `CorrectionFeedbackRefused` from `codex_harness.research.adapters.correction_feedback`; `iw` from `m7_containers`; `entry` (the in-container
-entry `adapters.isolated_worker_entry`, ledger S10 `entry.processes.isolated_worker`) is `unavailable("S10", ...)`, and the one test that
-serves a request through it is kept whole under an S10 skip; the ten tests that submit an assignment through `Executor.execute_one` with an attached
+entry `adapters.isolated_worker_entry`, ledger S10 `entry.processes.isolated_worker`) is `composition.isolated_worker_entry` (K2: the test that
+serves a request through it runs, over the same lane-store port); the ten tests that submit an assignment through `Executor.execute_one` with an attached
 continuation binding (44 node IDs) run since S10 K1: the lane-store port (`RunTask.continuations`) is `ContinuationBindings` as `composition.operation.build_executor`
 wires it, added to the `m7_executor` shim; the five that call `deliver` directly run; `persist_result` from `execution.adapters.execution_output`, `LANE_BINDINGS` from
 `coordination.application.continuation.state`, `dc` from `coordination.domain.continuation`, `GitWorkspace` from `host_os.adapters.git_workspace`,
@@ -209,7 +209,6 @@ def test_bound_rejected_review_reaches_the_provider_input_readable_redacted_and_
                                         "candidate_revision": world.candidate["revision"]}
 
 
-@pytest.mark.skip(reason="S10: the executor composition's continuation-lanes port (RunTask.continuations, M7 Executor._continuation); the in-container serve it then reaches is now composition.isolated_worker_entry")
 def test_the_rendered_provider_input_crosses_the_real_container_entry_unchanged(tmp_path, monkeypatch):
     """The request the isolated runtime writes to the container's stdin, read by the real entry."""
     world = World(tmp_path, monkeypatch)
