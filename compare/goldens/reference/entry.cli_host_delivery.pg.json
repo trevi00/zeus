@@ -1,0 +1,337 @@
+{
+ "cases": {
+  "fleet_register_valid": {
+   "argv": [
+    "fleet",
+    "register",
+    "--file",
+    "<DOCUMENTS>/fleet.json"
+   ],
+   "exit": 0,
+   "stderr": "",
+   "stdout": {
+    "cached": false,
+    "config": {
+     "accounting_mode": "finite",
+     "budget": {
+      "per_host": 2,
+      "total": 4
+     },
+     "id": "fleet-c8b4",
+     "lanes": [
+      {
+       "id": "a",
+       "team": "team-a"
+      },
+      {
+       "id": "b",
+       "team": "team-b"
+      }
+     ],
+     "max_parallel": 2,
+     "schema": "urn:zeus:fleet:1"
+    },
+    "config_sha256": "10adb69a367fbd11b164bb38dc53c2143aa9a4f69082c02d5cfea2cfaddddeea",
+    "exit_code": 0,
+    "id": "fleet-c8b4",
+    "registered": true
+   }
+  },
+  "init_db": {
+   "argv": [
+    "init-db"
+   ],
+   "exit": 0,
+   "stderr": "",
+   "stdout": {
+    "already_applied": [],
+    "applied": [
+     {
+      "module": "core",
+      "version": "1"
+     }
+    ],
+    "migrated": true,
+    "tool": {
+     "filename_contract": "V?<n>(.<n>|_<n>)*(__<description>)?.sql",
+     "name": "zeus-sql-migrator",
+     "version": 1
+    }
+   }
+  },
+  "lane_register_targets_no_fleet": {
+   "argv": [
+    "host-delivery",
+    "register-targets",
+    "--file",
+    "<DOCUMENTS>/targets.json",
+    "--lane",
+    "a"
+   ],
+   "exit": 1,
+   "stderr": "",
+   "stdout": {
+    "error_type": "DeliveryRefused",
+    "exit_code": 1,
+    "reason_code": "lane_registry_unregistered",
+    "status": "refused"
+   }
+  },
+  "lane_status_no_fleet": {
+   "argv": [
+    "host-delivery",
+    "status",
+    "--lane",
+    "a"
+   ],
+   "exit": 1,
+   "stderr": "",
+   "stdout": {
+    "error_type": "DeliveryRefused",
+    "exit_code": 1,
+    "reason_code": "lane_registry_unregistered",
+    "status": "refused"
+   }
+  },
+  "lane_status_unknown_lane": {
+   "argv": [
+    "host-delivery",
+    "status",
+    "--lane",
+    "nope"
+   ],
+   "exit": 1,
+   "stderr": "",
+   "stdout": {
+    "error_type": "DeliveryRefused",
+    "exit_code": 1,
+    "reason_code": "lane_unknown",
+    "status": "refused"
+   }
+  },
+  "lane_tick_no_fleet": {
+   "argv": [
+    "host-delivery",
+    "tick",
+    "--lane",
+    "a"
+   ],
+   "exit": 1,
+   "stderr": "",
+   "stdout": {
+    "error_type": "DeliveryRefused",
+    "exit_code": 1,
+    "reason_code": "lane_registry_unregistered",
+    "status": "refused"
+   }
+  },
+  "lane_tick_unprovisioned_schema": {
+   "argv": [
+    "host-delivery",
+    "tick",
+    "--lane",
+    "a"
+   ],
+   "exit": 1,
+   "stderr": "",
+   "stdout": {
+    "error_type": "DeliveryRefused",
+    "exit_code": 1,
+    "reason_code": "lane_schema_mismatch",
+    "status": "refused"
+   }
+  },
+  "register_plan_missing": {
+   "argv": [
+    "host-delivery",
+    "register",
+    "--revision",
+    "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+    "--path",
+    "plan.json"
+   ],
+   "exit": 1,
+   "stderr": "",
+   "stdout": {
+    "error_type": "DeliveryRefused",
+    "exit_code": 1,
+    "reason_code": "plan_revision_missing",
+    "status": "refused"
+   }
+  },
+  "register_targets_invalid_json": {
+   "argv": [
+    "host-delivery",
+    "register-targets",
+    "--file",
+    "<DOCUMENTS>/invalid.json"
+   ],
+   "exit": 1,
+   "stderr": "",
+   "stdout": {
+    "error_type": "JSONDecodeError",
+    "exit_code": 1,
+    "reason_code": "error",
+    "status": "refused"
+   }
+  },
+  "register_targets_valid": {
+   "argv": [
+    "host-delivery",
+    "register-targets",
+    "--file",
+    "<DOCUMENTS>/targets.json"
+   ],
+   "exit": 0,
+   "stderr": "",
+   "stdout": {
+    "authority": "host_delivery; approval remains the existing Releases lead+conductor record and the ReleaseQueue fence. A delivery receipt proves publication, observed CI, merge, an atomically switched descriptor and a consumed startup identity - never a review verdict, a semantic acceptance or a qualified live host",
+    "exit_code": 0,
+    "registered": true,
+    "targets": [
+     "fixture-process"
+    ]
+   }
+  },
+  "resume_document_invalid_json": {
+   "argv": [
+    "host-delivery",
+    "resume",
+    "--plan",
+    "plan-x",
+    "--plan-sha256",
+    "cccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccc",
+    "--evidence",
+    "sha256:eeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee",
+    "--document",
+    "<DOCUMENTS>/invalid.json"
+   ],
+   "exit": 1,
+   "stderr": "",
+   "stdout": {
+    "error_type": "DeliveryRefused",
+    "exit_code": 1,
+    "reason_code": "first_activation_document_unreadable",
+    "status": "refused"
+   }
+  },
+  "resume_unknown_plan": {
+   "argv": [
+    "host-delivery",
+    "resume",
+    "--plan",
+    "plan-x",
+    "--plan-sha256",
+    "cccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccc",
+    "--evidence",
+    "sha256:eeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee"
+   ],
+   "exit": 1,
+   "stderr": "",
+   "stdout": {
+    "error_type": "DeliveryRefused",
+    "exit_code": 1,
+    "reason_code": "plan_unregistered",
+    "status": "refused"
+   }
+  },
+  "run_once_empty": {
+   "argv": [
+    "host-delivery",
+    "run",
+    "--once"
+   ],
+   "exit": 0,
+   "stderr": "",
+   "stdout": {
+    "exit_code": 0,
+    "outcomes": {
+     "idle": 1
+    },
+    "schema": "urn:zeus:host-delivery-run:1",
+    "stopped": false,
+    "ticks": 1
+   }
+  },
+  "status_empty": {
+   "argv": [
+    "host-delivery",
+    "status"
+   ],
+   "exit": 0,
+   "stderr": "",
+   "stdout": {
+    "authority": "host_delivery; approval remains the existing Releases lead+conductor record and the ReleaseQueue fence. A delivery receipt proves publication, observed CI, merge, an atomically switched descriptor and a consumed startup identity - never a review verdict, a semantic acceptance or a qualified live host",
+    "counts": {},
+    "deliveries": [],
+    "enabled": false,
+    "exit_code": 0,
+    "registered": false,
+    "schema": "urn:zeus:host-delivery-status:1",
+    "targets": []
+   }
+  },
+  "status_registered": {
+   "argv": [
+    "host-delivery",
+    "status"
+   ],
+   "exit": 0,
+   "stderr": "",
+   "stdout": {
+    "authority": "host_delivery; approval remains the existing Releases lead+conductor record and the ReleaseQueue fence. A delivery receipt proves publication, observed CI, merge, an atomically switched descriptor and a consumed startup identity - never a review verdict, a semantic acceptance or a qualified live host",
+    "counts": {},
+    "deliveries": [],
+    "enabled": false,
+    "exit_code": 0,
+    "registered": false,
+    "schema": "urn:zeus:host-delivery-status:1",
+    "targets": []
+   }
+  },
+  "status_unknown_plan": {
+   "argv": [
+    "host-delivery",
+    "status",
+    "--plan",
+    "nope"
+   ],
+   "exit": 1,
+   "stderr": "",
+   "stdout": {
+    "authority": "host_delivery; approval remains the existing Releases lead+conductor record and the ReleaseQueue fence. A delivery receipt proves publication, observed CI, merge, an atomically switched descriptor and a consumed startup identity - never a review verdict, a semantic acceptance or a qualified live host",
+    "deliveries": [],
+    "enabled": false,
+    "exit_code": 1,
+    "next_action": "register_plan",
+    "outcome": "plan_unregistered",
+    "plan_id": "nope",
+    "registered": false,
+    "schema": "urn:zeus:host-delivery-status:1",
+    "targets": []
+   }
+  },
+  "withdraw_unknown_plan": {
+   "argv": [
+    "host-delivery",
+    "withdraw",
+    "--plan",
+    "plan-x",
+    "--plan-sha256",
+    "cccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccc",
+    "--evidence",
+    "sha256:eeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee",
+    "--reason",
+    "reviewed_base_moved"
+   ],
+   "exit": 1,
+   "stderr": "",
+   "stdout": {
+    "error_type": "DeliveryRefused",
+    "exit_code": 1,
+    "reason_code": "plan_unregistered",
+    "status": "refused"
+   }
+  }
+ }
+}

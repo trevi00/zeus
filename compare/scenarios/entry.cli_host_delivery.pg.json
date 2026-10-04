@@ -1,0 +1,9 @@
+{
+ "family": "entry.cli_host_delivery.pg",
+ "description": "The host-delivery root through main() on a labelled disposable PostgreSQL (one fresh schema, init-db first, no mask) over fixture directories at a fixed work path: status with nothing registered (every plan, and an unknown plan: exit 1), register-targets and resume --document with a file that is not JSON, run --once, withdraw, resume and register on an empty store, a --lane route with no registered fleet, then a valid fleet register and the --lane routes of an unknown lane and of a registered but unprovisioned lane schema, and a valid register-targets with its status (the target sets ZEUS_COMPOSITION_PROFILE=development: declared difference E-c21); stdout, stderr and exit code per case, the fixture paths normalized",
+ "reference_driver": "drivers/reference/s10_cli_host_delivery.py",
+ "target_driver": "drivers/target/s10_cli_host_delivery.py",
+ "requires": "disposable-postgresql",
+ "golden": "goldens/reference/entry.cli_host_delivery.pg.json",
+ "slice": "S10"
+}
