@@ -10,8 +10,7 @@ Copies the shims hold at this batch (U2b), listed here so a new copy is a consci
 - `m7_research`: `repository_identity` (M7 `adapters/dge_cli.py`, S10 CLI); `REVISION`, `FixtureBus`, `FixtureExecutor`,
   `connected`, `runner`, `spool_observer`, `partitions_of` (M7 `tests/test_audit_service.py`, S10-carried); `events`
   (M7 `tests/test_threshold_collection.py`, S10-carried).
-- `m7_coordination`: `ResearchEvidence` (M7 `adapters/continuation.py`; its target owner `coordination.adapters.continuation`
-  is not implemented).
+- `m7_coordination`: none. `ResearchEvidence` is now the production `coordination.adapters.continuation` class (S10 C8b-1, V-c27).
 `m7_delivery`'s copies belong to batch U2a and are checked there.
 """
 import ast
@@ -30,7 +29,6 @@ COPIES = [
     ("m7_research.py", "tests/test_audit_service.py",
      ["REVISION", "FixtureBus", "FixtureExecutor", "connected", "runner", "spool_observer", "partitions_of"]),
     ("m7_research.py", "tests/test_threshold_collection.py", ["events"]),
-    ("m7_coordination.py", "src/codex_harness/adapters/continuation.py", ["ResearchEvidence"]),
 ]
 
 
