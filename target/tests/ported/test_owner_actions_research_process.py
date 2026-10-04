@@ -8,9 +8,9 @@ the names M7's `adapters.owner_actions` module gave this file (`ResearchLaunches
 `BUCKET_PROGRAMS` is `coordination.application.owner_actions.state`'s, `do` is `coordination.domain.owner_actions`,
 `ProgramRefused` is `research.domain.research_program`'s, `CONDUCT_MARGIN_SECONDS` is `coordination.adapters.guarded_launch`'s
 and `POLICY` is `kernel.policy`'s. The CLI names (`add_program_parser`, `program_run`: M7
-`adapters.research_program_cli`, ledger S10 `entry.cli.research_program`) are `unavailable("S10", ...)`. The sibling helper
+`adapters.research_program_cli`) are `entry.cli.research_program.add_parser` and `_run` (S10 C6c, R-c26). The sibling helper
 modules (`test_continuation_research`, `test_owner_actions_recovery`) are the ported ones.
-- Skipped whole and unrewritten: the S10 tests (the research-program CLI option; the owner process ticking its policies).
+- Skipped whole and unrewritten: the S10 test of the owner process ticking its policies (the research-program CLI option test runs).
   The tests that build the ported recovery suite's `Chain` (`build`, `FakeCouncil`, `FakeBudget`) run.
 - Timing adaptation (S9 integration, CI run 37120866708): `stop` also waits for the guardian's own exit after its
   `cleanup.json` proof, because the guardian writes the proof before it exits and `poll` reports `running` while it
@@ -44,10 +44,11 @@ from test_owner_actions_recovery import PROGRAM, Chain, accepted, registered_pla
 
 from codex_harness.coordination.application.owner_actions.state import BUCKET_PROGRAMS
 from codex_harness.coordination.domain import owner_actions as do
+from codex_harness.entry.cli import research_program as research_program_root
 from codex_harness.research.domain.research_program import ProgramRefused
 
-add_program_parser = unavailable("S10", "adapters.research_program_cli.add_parser")  # ledger home `entry.cli.research_program`
-program_run = unavailable("S10", "adapters.research_program_cli.run")
+add_program_parser = research_program_root.add_parser  # M7 `adapters.research_program_cli.add_parser` (S10 R-c26)
+program_run = research_program_root._run  # M7 `adapters.research_program_cli.run`
 adapter = SimpleNamespace(ResearchLaunches=ResearchLaunches, DEFAULT_ARGV=DEFAULT_ARGV,
                           tick_policy=unavailable("S10", "adapters.owner_actions.tick_policy"),
                           tick_policies=unavailable("S10", "adapters.owner_actions.tick_policies"),
@@ -280,7 +281,6 @@ def test_the_child_argv_is_the_existing_cli_with_the_launch_id_as_cycle_owner_in
     assert adapter.ResearchLaunches(tmp_path, str).seconds == POLICY.task_seconds + CONDUCT_MARGIN_SECONDS
 
 
-@pytest.mark.skip(reason="S10: research-program CLI (adapters.research_program_cli.add_parser/run)")
 def test_the_cycle_owner_option_is_one_tick_and_one_exact_token():
     import argparse
 

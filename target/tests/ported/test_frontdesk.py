@@ -13,8 +13,9 @@ homes. M7's `adapters.frontdesk` is split by owner: the in-function `from codex_
 as frontdesk_adapter` are `m7_intake`'s names and its `frontdesk_adapter` facade (monitoring side + execute side, with the
 snapshot evidence supplied as composition supplies it; `snapshot_path` is replaceable on the facade as M7's was on the module);
 `readiness` and `completed_output` are their target homes.
-Kept skipped whole, unrewritten (S10: the desk operator CLI `frontdesk_cli` / `cli.desk_command` and `bootstrap`):
-the seven tests that run the desk through them.
+The seven tests that run the desk operator CLI (M7 `frontdesk_cli` / `cli.desk_command`, `bootstrap`) run the S10 target (R-c26):
+`frontdesk_cli.run` is `composition.cli_desk.run_desk`, `frontdesk_cli.build_runner` its `build_runner`, `bootstrap.build_observer`
+`composition.observation.build_observer`, and `cli.desk_command(svc, args)` is `entry.cli.desk.run(args)` over the service `composition.build` returns.
 """
 import json
 import threading
@@ -768,24 +769,22 @@ def test_conversational_branch_refuses_a_dirty_or_moved_checkout():
         execute_frontdesk(fake_executor_object(svc, ANSWER, FakeGit(revision="b" * 40)), task)
 
 
-@pytest.mark.skip(reason="S10: the desk operator CLI (frontdesk_cli.run, bootstrap)")
 def test_the_host_lock_and_observer_are_released_when_the_wiring_fails(tmp_path, monkeypatch):
-    import codex_harness.bootstrap as bootstrap
     from filelock import FileLock
 
-    from codex_harness.adapters import configuration, frontdesk_cli
+    from codex_harness.composition import cli_desk, configuration, observation
 
     closed = []
     monkeypatch.setattr(configuration, "runtime_dir", lambda: tmp_path)
-    monkeypatch.setattr(bootstrap, "build_observer",
+    monkeypatch.setattr(observation, "build_observer",
                         lambda *args, **kwargs: SimpleNamespace(close=lambda: closed.append(True)))
 
     def broken(service, args, observer):
         raise RuntimeError("injected wiring failure")  # e.g. an unreachable Redis or budget
 
-    monkeypatch.setattr(frontdesk_cli, "build_runner", broken)
+    monkeypatch.setattr(cli_desk, "build_runner", broken)
     with pytest.raises(RuntimeError):
-        frontdesk_cli.run(service(), SimpleNamespace(revision=REVISION, once=True, desk_command="run"))
+        cli_desk.run_desk(service(), SimpleNamespace(revision=REVISION, once=True, desk_command="run"))
     assert closed == [True]
     lock = FileLock(str(tmp_path / "frontdesk.lock"), timeout=0)
     lock.acquire()  # the desk lock is free for the next start; it was not leaked
@@ -795,24 +794,21 @@ def test_the_host_lock_and_observer_are_released_when_the_wiring_fails(tmp_path,
 def desk_cli(tmp_path, monkeypatch, desk_runner):
     """`zeus desk run` around an ALREADY built runner: the real lock, observer release and result,
     with no Redis, executor or provider wiring."""
-    import codex_harness.bootstrap as bootstrap
-
-    from codex_harness.adapters import configuration, frontdesk_cli
+    from codex_harness.composition import cli_desk, configuration, observation
 
     monkeypatch.setattr(configuration, "runtime_dir", lambda: tmp_path)
-    monkeypatch.setattr(bootstrap, "build_observer", lambda *args, **kwargs: SimpleNamespace(close=lambda: None))
-    monkeypatch.setattr(frontdesk_cli, "build_runner", lambda service, args, observer: desk_runner)
-    return frontdesk_cli, SimpleNamespace(revision=REVISION, once=True, desk_command="run")
+    monkeypatch.setattr(observation, "build_observer", lambda *args, **kwargs: SimpleNamespace(close=lambda: None))
+    monkeypatch.setattr(cli_desk, "build_runner", lambda service, args, observer: desk_runner)
+    return cli_desk, SimpleNamespace(revision=REVISION, once=True, desk_command="run")
 
 
-@pytest.mark.skip(reason="S10: the desk operator CLI (frontdesk_cli.run, bootstrap)")
 def test_an_injected_storage_loss_is_a_durable_failure_and_a_nonzero_desk_exit(tmp_path, monkeypatch):
     svc, desk, session_id = opened()
     request_id = submit(desk, session_id)["request"]["id"]
     # Injected: the terminal write fails, so this run cannot record the outcome of its own turn.
     desk_runner, _ = runner(svc, UnavailableFinalize(svc, REVISION), FakeExecutor(svc))
-    frontdesk_cli, args = desk_cli(tmp_path, monkeypatch, desk_runner)
-    result = frontdesk_cli.run(svc, args)
+    cli_desk, args = desk_cli(tmp_path, monkeypatch, desk_runner)
+    result = cli_desk.run_desk(svc, args)
     assert result["exit_code"] == 1 and result["stopped"] is True
     assert result["failure"] == {"action": "unavailable", "request_id": request_id,
                                  "reason_code": "storage_unavailable", "error_type": "RuntimeError"}
@@ -820,33 +816,33 @@ def test_an_injected_storage_loss_is_a_durable_failure_and_a_nonzero_desk_exit(t
     assert desk.request(request_id)["status"] == "dispatching"
 
 
-@pytest.mark.skip(reason="S10: the desk operator CLI (cli.desk_command, frontdesk_cli, bootstrap)")
 def test_a_storage_stopped_desk_run_exits_the_process_nonzero(tmp_path, monkeypatch, capsys):
-    from codex_harness import cli
+    from codex_harness import composition
+    from codex_harness.entry.cli import desk as desk_root
 
     svc, desk, session_id = opened()
     submit(desk, session_id)
     desk_runner, _ = runner(svc, UnavailableFinalize(svc, REVISION), FakeExecutor(svc))
     _, args = desk_cli(tmp_path, monkeypatch, desk_runner)
+    monkeypatch.setattr(composition, "build", lambda: svc)
     with pytest.raises(SystemExit) as exit_info:
-        cli.desk_command(svc, args)
+        desk_root.run(args)
     assert exit_info.value.code == 1
     printed = json.loads(capsys.readouterr().out)
     assert printed["failure"]["reason_code"] == "storage_unavailable"
 
 
-@pytest.mark.skip(reason="S10: the desk operator CLI (frontdesk_cli.run, bootstrap)")
 def test_a_normal_idle_or_interrupted_desk_run_stays_successful(tmp_path, monkeypatch):
     svc, desk, session_id = opened()
     request_id = submit(desk, session_id)["request"]["id"]
     desk_runner, _ = runner(svc, desk, FakeExecutor(svc))
-    frontdesk_cli, args = desk_cli(tmp_path, monkeypatch, desk_runner)
-    result = frontdesk_cli.run(svc, args)  # one answered turn, then an idle `--once` exit
+    cli_desk, args = desk_cli(tmp_path, monkeypatch, desk_runner)
+    result = cli_desk.run_desk(svc, args)  # one answered turn, then an idle `--once` exit
     assert result["exit_code"] == 0 and result["failure"] is None
     assert result["statuses"] == {"answered": 1} and desk.request(request_id)["status"] == "answered"
     interrupted, _ = runner(svc, desk, FakeExecutor(svc))
     interrupted.stop()  # a graceful interrupt claims nothing and is still a completed run
-    assert frontdesk_cli.run(svc, args)["exit_code"] == 0
+    assert cli_desk.run_desk(svc, args)["exit_code"] == 0
 
 
 def owned_signals():
@@ -861,7 +857,6 @@ def handlers():
     return {number: signal.getsignal(number) for number in owned_signals()}
 
 
-@pytest.mark.skip(reason="S10: the desk operator CLI (frontdesk_cli.run, bootstrap)")
 def test_an_actual_signal_while_running_stops_the_desk_gracefully_and_the_handlers_are_restored(
         tmp_path, monkeypatch):
     """Release CI cancellation: the run's handlers close over its runner, so a leaked handler
@@ -884,8 +879,8 @@ def test_an_actual_signal_while_running_stops_the_desk_gracefully_and_the_handle
         svc, desk, _ = opened()
         desk_runner, _ = runner(svc, desk, FakeExecutor(svc))
         desk_runner.sleep = signalling_wait
-        frontdesk_cli, args = desk_cli(tmp_path, monkeypatch, desk_runner)
-        result = frontdesk_cli.run(svc, SimpleNamespace(**{**vars(args), "once": False}))
+        cli_desk, args = desk_cli(tmp_path, monkeypatch, desk_runner)
+        result = cli_desk.run_desk(svc, SimpleNamespace(**{**vars(args), "once": False}))
         assert len(waits) == 1, "the stopped desk never waits for more turns"
         assert all(during[number] is not before[number] for number in before), "installed while running"
         assert result["exit_code"] == 0 and result["stopped"] is True and result["failure"] is None
@@ -896,7 +891,6 @@ def test_an_actual_signal_while_running_stops_the_desk_gracefully_and_the_handle
         signal.signal(signal.SIGINT, incoming)  # this test's own custom handler, not the run's
 
 
-@pytest.mark.skip(reason="S10: the desk operator CLI (frontdesk_cli.run, bootstrap)")
 def test_a_desk_runner_exception_restores_the_handlers_and_keeps_the_original_error(tmp_path, monkeypatch):
     import signal
 
@@ -912,16 +906,15 @@ def test_a_desk_runner_exception_restores_the_handlers_and_keeps_the_original_er
             assert signal.getsignal(signal.SIGINT) is not before[signal.SIGINT]
             raise RuntimeError("runner failed")
 
-    frontdesk_cli, args = desk_cli(tmp_path, monkeypatch, Failing())
+    cli_desk, args = desk_cli(tmp_path, monkeypatch, Failing())
     with pytest.raises(RuntimeError, match="runner failed"):
-        frontdesk_cli.run(service(), args)
+        cli_desk.run_desk(service(), args)
     assert handlers() == before
     lock = FileLock(str(tmp_path / "frontdesk.lock"), timeout=0)
     lock.acquire()  # the desk lock is free for the next start; it was not leaked
     lock.release()
 
 
-@pytest.mark.skip(reason="S10: the desk operator CLI (frontdesk_cli.run, bootstrap)")
 def test_a_partial_desk_handler_installation_restores_only_what_it_installed(tmp_path, monkeypatch):
     """INJECTED FAULT: installing the second owned handler fails after the first was replaced."""
     import signal
@@ -947,9 +940,9 @@ def test_a_partial_desk_handler_installation_restores_only_what_it_installed(tmp
         def run(self, once):
             raise AssertionError("the runner ran after a failed installation")
 
-    frontdesk_cli, args = desk_cli(tmp_path, monkeypatch, NeverRuns())
+    cli_desk, args = desk_cli(tmp_path, monkeypatch, NeverRuns())
     with pytest.raises(OSError, match="injected"):
-        frontdesk_cli.run(service(), args)
+        cli_desk.run_desk(service(), args)
     # Installed first, failed second, then only the first is handed back; later signals untouched.
     assert [number for number, _ in calls] == [numbers[0], numbers[1], numbers[0]]
     assert calls[-1][1] is before[numbers[0]]
