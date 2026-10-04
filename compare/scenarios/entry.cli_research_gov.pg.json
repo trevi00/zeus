@@ -1,0 +1,9 @@
+{
+ "family": "entry.cli_research_gov.pg",
+ "description": "The dge and decision-feedback roots through main() on a labelled disposable PostgreSQL (one fresh schema, no mask) over a fixture git repository with one pinned commit and a fixed path: dge register of a valid packet whose source is a regular blob at base, the same register again (cached) and status; dge register of a source digest mismatch and submit of an invalid event (M7's refusal shapes); decision-feedback status, report on an empty store, collect against the fixture registry at the pinned revision, report after it, and collect of a registry path that is not in the commit (M7's refusal); stdout, stderr and exit code per case",
+ "reference_driver": "drivers/reference/s10_cli_research_gov.py",
+ "target_driver": "drivers/target/s10_cli_research_gov.py",
+ "requires": "disposable-postgresql",
+ "golden": "goldens/reference/entry.cli_research_gov.pg.json",
+ "slice": "S10"
+}
