@@ -133,6 +133,9 @@ jobs:
       - run: python compare/run.py run --only entry.cli_store.pg --pg
       - run: python compare/run.py run --only entry.cli_store_b.pg --pg
       - run: python compare/run.py run --only entry.cli_knowledge.pg --pg
+      - run: python compare/run.py run --only entry.cli_ticket_sdd.pg --pg
+      # S10 C4: the combined disposable PostgreSQL + Redis fixture (R-c7).
+      - run: python compare/run.py run --only entry.cli_bus.pgredis --pg --redis
       # S7 restore differential (DESIGN-s7 §4 item 4, restore/DESIGN §2.3; Codex S7-B1): dump/restore/rename/compare
       # on its own fresh labelled network-less disposable PostgreSQL pair per side, reference AND target.
       - run: python compare/run.py run --only delivery.restore.pg --pg
