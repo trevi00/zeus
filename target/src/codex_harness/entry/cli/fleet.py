@@ -1,12 +1,17 @@
-"""The `zeus fleet` argument parser (M7 adapters/fleet_cli.py).
+"""The `zeus fleet` root: the argument parser and the command bodies (M7 adapters/fleet_cli.py, cli.py fleet_command).
 
 Layer: entry
-Owns: add_parser (the argument shape of `zeus fleet`)
-Does not own: dispatch and composition (S10 unit C8)
-Entry points: add_parser
-Contracts: none
+Owns: add_parser (the argument shape of `zeus fleet`), run (its body: M7 fleet_command) and the private _check_resolved, _register, _enqueue, _record_delivery, _status, _backlog and _execute (M7 fleet_cli)
+Does not own: dispatch (entry.cli main), the runner, the backlog and recovery wiring (composition.cli_fleet, composition.fleet_backlog) and the shared helpers (entry.cli.operation)
+Entry points: add_parser, run
+Contracts: INV-FLEET-001, INV-FLEET-BACKLOG-001
 
 Moved from M7 adapters/fleet_cli.py:25-77 (SOURCE e38aa722) by named rules (A/evidence/rebuild/s10/unit-p/transcribe.py); the parser statements are M7's verbatim.
+`run` is M7 `cli.py` `fleet_command` (:496-507) and `_check_resolved`, `_register`, `_enqueue`, `_record_delivery`, `_status`, `_backlog` and `_execute` are `adapters/fleet_cli.py` `check_resolved` (:108-118), `register` (:121-123), `enqueue` (:126-132),
+`record_delivery` (:191-195), `status` (:318-321), `backlog` (:324-343) and `execute` (:346-372) (R-c28, S10 unit C8b-2): the bodies are M7's verbatim except that the service is built first (as M7 `main()` did), `Fleet(store)` is the
+split owner of the method (the table of `composition.cli_fleet`), `GitSource` is `composition.cli_research.git_source`, `packaged_policy` is `composition.cli_operation`'s and `bind_goal`, `read_manifest` and `refusal` are `entry.cli.operation`'s
+(`bind_goal` is looked up through that module at call time). The `run`, `reconcile-interrupted`, `relocate` and `migrate-host` branches call `composition.cli_fleet`; the three owner documents are read here (`read_manifest`, which
+composition may not import) and handed over. Imports sit inside the functions, so importing this module stays light.
 """
 
 from pathlib import Path
@@ -67,3 +72,134 @@ def add_parser(commands) -> None:
     backlog_tick.add_argument("--plan", required=True, help="Registered plan id")
     backlog_status = backlog_sub.add_parser("status", help="Read the backlog projection; store read only")
     backlog_status.add_argument("--plan", default=None, help="One plan id; omitted reads every registered plan")
+
+
+def run(args) -> None:
+    """INV-FLEET-001: exit 0 only for a completed command; refusals print a code and a type, never
+    manifests, paths, schemas, DSNs, raw exceptions or process output."""
+    from codex_harness.composition import build
+    from codex_harness.entry.cli.operation import refusal
+    from codex_harness.entry.cli.output import emit
+    service = build()
+    try:
+        result = _execute(service, args)
+    except Exception as exc:
+        emit(refusal(exc))
+        raise SystemExit(1) from exc
+    emit(result)
+    if result.get("exit_code", 1) != 0:
+        raise SystemExit(1)
+
+
+def _check_resolved(config: dict) -> dict:
+    """Adapter-side filesystem facts the grammar cannot know: each path is its own resolution and
+    every repository is an existing directory. Runtime roots may not exist yet."""
+    from codex_harness.coordination.domain.fleet import FleetRefused
+
+    for index, lane in enumerate(config["lanes"]):
+        for key in ("repository", "runtime"):
+            path = Path(lane[key])
+            if path.resolve() != path:
+                raise FleetRefused("path_unresolved", "lanes[" + str(index) + "]." + key)
+        if not Path(lane["repository"]).is_dir():
+            raise FleetRefused("repository_missing", "lanes[" + str(index) + "].repository")
+    return config
+
+
+def _register(service, args) -> dict:
+    from codex_harness.coordination.application.fleet.registry import FleetRegistry
+    from codex_harness.coordination.domain.fleet import validate_config
+    from codex_harness.entry.cli.operation import read_manifest
+
+    config = _check_resolved(validate_config(read_manifest(args.file)))
+    return {**FleetRegistry(service.store).register(config), "exit_code": 0}
+
+
+def _enqueue(service, args) -> dict:
+    from codex_harness.composition.cli_operation import packaged_policy
+    from codex_harness.composition.cli_research import git_source
+    from codex_harness.coordination.application.fleet.registry import FleetRegistry
+    from codex_harness.coordination.domain.fleet import lane_of
+    from codex_harness.coordination.domain.operation import validate_manifest
+    from codex_harness.entry.cli.operation import bind_goal, read_manifest
+
+    fleet = FleetRegistry(service.store)
+    lane = lane_of(fleet.registered()["config"], args.lane)
+    manifest = validate_manifest(read_manifest(args.file), packaged_policy())
+    # The goal is bound at the configured lane repository, never at the current directory.
+    goal = bind_goal(manifest, git_source(lane["repository"]))
+    return {**fleet.enqueue(args.lane, manifest, goal, args.after), "exit_code": 0}
+
+
+def _record_delivery(service, args) -> dict:
+    """The owner states what they verified from a preserved receipt. This CLI is the only writer:
+    no web request and no model run records a delivery, and recording one changes no job status."""
+    from codex_harness.coordination.application.fleet.registry import FleetRegistry
+    from codex_harness.entry.cli.operation import read_manifest
+
+    document = read_manifest(args.file)
+    return {**FleetRegistry(service.store).record_delivery(args.job, document), "exit_code": 0}
+
+
+def _status(service, args) -> dict:
+    from codex_harness.coordination.application.fleet.registry import FleetRegistry
+
+    # Store read only: no executor, observer, bus, budget or provider is built.
+    fleet = FleetRegistry(service.store)
+    return {**fleet.status(), "reconciliation_required": fleet.reconciliation_required(), "exit_code": 0}
+
+
+def _backlog(service, args) -> dict:
+    """`zeus fleet backlog register|tick|status`. Git reads and manifest validation happen in the
+    adapter, outside every store transaction; admission itself is the unchanged `FleetRegistry.enqueue`."""
+    from codex_harness.composition.fleet_backlog import register_plan, tick_plan
+    from codex_harness.coordination.application.fleet.registry import FleetRegistry
+    from codex_harness.coordination.application.fleet_backlog import FleetBacklog
+    from codex_harness.intake.domain.backlog import FAILED_OUTCOMES
+
+    command = args.backlog_command
+    if command == "register":
+        config = FleetRegistry(service.store).registered()["config"]
+        return {**register_plan(service.store, config, args.lane, args.revision, args.path), "exit_code": 0}
+    if command == "tick":
+        config = FleetRegistry(service.store).registered()["config"]
+        result = tick_plan(service.store, config, args.plan)
+        return {**result, "exit_code": 1 if result["outcome"] in FAILED_OUTCOMES else 0}
+    plan_id = getattr(args, "plan", None)
+    projection = FleetBacklog(service.store).status(plan_id)
+    # A named plan that is not registered is a refusal; listing every plan is a successful read
+    # even when nothing is registered yet.
+    return {**projection, "exit_code": 1 if plan_id is not None and not projection["registered"] else 0}
+
+
+def _execute(service, args) -> dict:
+    from codex_harness.composition import cli_fleet
+    from codex_harness.coordination.application.fleet.pause import FleetPause
+    from codex_harness.entry.cli.operation import read_manifest
+
+    command = args.fleet_command
+    if command == "register":
+        return _register(service, args)
+    if command == "enqueue":
+        return _enqueue(service, args)
+    if command == "run":
+        return cli_fleet.run_fleet(service, args)
+    if command == "pause":
+        return {**FleetPause(service.store).pause(), "exit_code": 0}
+    if command == "resume":
+        return {**FleetPause(service.store).resume(), "exit_code": 0}
+    if command == "record-delivery":
+        return _record_delivery(service, args)
+    if command == "backlog":
+        return _backlog(service, args)
+    if command == "reconcile-interrupted":
+        return cli_fleet.reconcile_interrupted(service, args, read_manifest(args.file))
+    if command == "relocate":
+        return cli_fleet.relocate(service, args, read_manifest(args.file))
+    if command == "migrate-host":
+        return cli_fleet.migrate_host(service, args, read_manifest(args.file))
+    if command == "authorize-budget":
+        grant = FleetPause(service.store).authorize_budget(args.per_host, args.total, args.expected_total,
+                                                           mode=getattr(args, "mode", None))
+        return {**grant, "exit_code": 0}
+    return _status(service, args)
