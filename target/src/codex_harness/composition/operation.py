@@ -304,6 +304,7 @@ class Executor:
         composer = ContextComposer(artifacts, artifacts.root, GitRepository(git),
                                    ProjectSkills(git, artifacts, runtime_thresholds),
                                    SkillHistoryRecorder(store, artifacts, git), knowledge)
+        composer.observer = self.observer  # S10 A5-2: attribute injection; the S8 pin fixes ContextComposer.__init__
         results = SimpleNamespace(persist=execution_output.persist_result, tool_usage=execution_output.tool_usage,
                                   preflight=output_schema.preflight, handoff_refs=handoff.handoff_refs,
                                   retain_evidence_handoff=handoff.retain_evidence_handoff)

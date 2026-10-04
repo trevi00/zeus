@@ -66,6 +66,21 @@ class ContextComposer:
         self.artifacts, self.artifact_root = artifacts, artifact_root
         self.repository, self.skills, self.history, self.knowledge = repository, skills, history, knowledge
 
+    observer = None  # optional, injected by composition only (S10 A5-2)
+
+    def _emit_skill_selection(self, skill_items, packet) -> None:
+        """One `development.skill_selected` per project-skill item the selector returned: selected when the sealed
+        packet carries it, otherwise omitted by the budget. The selection record carries no per-skill reason, so it
+        is `other`; the skill ref is a digest of the item id, never the path."""
+        if self.observer is None:
+            return
+        admitted = {item["id"] for item in packet.evidence}
+        for item in skill_items:
+            self.observer.emit(
+                "development.skill_selected", "observed",
+                attributes={"skill_ref": "sha256:" + hashlib.sha256(item.id.encode("utf-8")).hexdigest(),
+                            "selected": item.id in admitted, "selection_reason": "other"})
+
     def compose(self, request: CompositionRequest, *, admission=None) -> ComposedContext:
         """The sealed packet of one turn. Refuses (ContractError) when the required contract exceeds the
         budget; stores the task evidence, skill, guidance and recovery artifacts it references."""
@@ -185,6 +200,7 @@ class ContextComposer:
         before_counts = packet.estimated_tokens
         included = sum(item['id'].startswith('project-skill:') for item in packet.evidence)
         packet.required['project_skills'].update(included=included, omitted=skill_selection['selected'] - included)
+        self._emit_skill_selection(skill_items, packet)
         packet.seal()
         require(packet.estimated_tokens <= before_counts, 'Skill counts increased context size')
         # Named byte measurements of the FINAL rendered prompt; never a token estimate.
