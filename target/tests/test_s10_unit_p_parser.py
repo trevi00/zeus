@@ -38,7 +38,8 @@ def test_the_51_root_modules_each_define_add_parser_and_at_most_run():
         public = [n.name for n in tree.body if isinstance(n, (ast.FunctionDef, ast.AsyncFunctionDef, ast.ClassDef))
                   and not n.name.startswith("_")]
         assert "add_parser" in public and set(public) <= {"add_parser", "run"}, (root, public)
-    assert {p.stem for p in PACKAGE.glob("*.py")} == {r.replace("-", "_") for r in roots} | {"__init__", "output"}
+    # operation: entry.cli.operation, the M7 operation_cli helpers (C7a), not a root
+    assert {p.stem for p in PACKAGE.glob("*.py")} == {r.replace("-", "_") for r in roots} | {"__init__", "output", "operation"}
 
 
 def test_parser_root_order_equals_the_golden_root_order():
