@@ -41,6 +41,7 @@ import pytest
 from m7_delivery import HostMigrations, MemoryStore
 from m7_delivery import host_migration as adapter
 
+from codex_harness.composition import host_migration_cli
 from codex_harness.delivery.application.host_migration import BUCKET, BUCKET_TRANSITIONS
 from codex_harness.delivery.domain import host_migration as policy
 from codex_harness.delivery.domain.host_delivery import (
@@ -51,9 +52,21 @@ from codex_harness.delivery.domain.host_delivery import (
     validate_targets,
 )
 from codex_harness.delivery.domain.host_migration import MigrationRefused
+from codex_harness.entry.processes import host_migration as entry_cli
 from codex_harness.kernel.ids import canonical, digest
 
 ROOT = Path(__file__).resolve().parents[2]  # adaptation: the target tree
+
+
+def _tool(name: str):
+    """Adaptation (S10 E5c, R-e5c-ct): M7's `adapter.canonical_module(name)` imported the tool module in-process. The target
+    `composition.canonical_tools` refuses that (no dynamic import), so these FIXTURES (`contracts.PG_SCHEMA`,
+    `pg_schema_from_export`, `mapping.body_sha`) load `ROOT/scripts/aibox_data/<name>.py` by file here, in the test."""
+    path = ROOT / "scripts" / "aibox_data" / (name + ".py")
+    spec = importlib.util.spec_from_file_location("e5cd_aibox_data_" + name, path)
+    module = importlib.util.module_from_spec(spec)
+    spec.loader.exec_module(module)
+    return module
 
 
 def _can_symlink() -> bool:
@@ -221,13 +234,12 @@ def test_source_public_is_accepted_only_as_the_control_ledger_and_reverses_exact
         ("/srv/zeus/artifacts", "D:/workspaces/zeus/artifacts")
 
 
-@pytest.mark.skip(reason='S10: the operator CLI (adapters.host_migration.schema_store)')
 def test_schema_scope_allows_source_public_and_refuses_target_public():
-    assert adapter._schema("public", "source") == "public"
+    assert host_migration_cli._schema("public", "source") == "public"
     with pytest.raises(MigrationRefused, match="public_schema"):
-        adapter._schema("public", "target")
+        host_migration_cli._schema("public", "target")
     with pytest.raises(MigrationRefused, match="public_schema"):
-        adapter.schema_store("host=/nonexistent dbname=x", "public", "target")
+        host_migration_cli.schema_store("host=/nonexistent dbname=x", "public", "target")
 
 
 # ----- coordinator: typed evidence ----------------------------------------------------------------
@@ -820,11 +832,10 @@ def test_fence_refuses_every_launcher_role_including_monitors(tmp_path):
 
 # ----- canonical tooling wiring (actual subprocess of scripts/aibox_data) ------------------------------
 def cli(capsys, *argv):
-    code = adapter.main(list(argv))
+    code = entry_cli.main(list(argv))
     return code, json.loads(capsys.readouterr().out)
 
 
-@pytest.mark.skip(reason='S10: the operator CLI (adapters.host_migration.main)')
 @posix_permissions
 def test_unreadable_nested_directory_is_a_failed_inventory_not_an_empty_one(tmp_path, capsys):
     source = tmp_path / "source"
@@ -841,7 +852,6 @@ def test_unreadable_nested_directory_is_a_failed_inventory_not_an_empty_one(tmp_
     assert manifest["roots"]["art"]["unreadable"] == [{"path": "a/denied", "error": "PermissionError"}]
 
 
-@pytest.mark.skip(reason='S10: the operator CLI (adapters.host_migration.main)')
 @needs_symlink
 def test_stage_refuses_preexisting_destination_ancestor_symlink_and_writes_nothing_outside(tmp_path, capsys):
     source, staging, outside = tmp_path / "source", tmp_path / "staging", tmp_path / "outside"
@@ -860,7 +870,6 @@ def test_stage_refuses_preexisting_destination_ancestor_symlink_and_writes_nothi
     assert os.listdir(outside) == []
 
 
-@pytest.mark.skip(reason='S10: the operator CLI (adapters.host_migration.main)')
 def test_verify_mismatch_exits_nonzero_and_match_exits_zero(tmp_path, capsys):
     source, staging = tmp_path / "source", tmp_path / "staging"
     (source / "d").mkdir(parents=True)
@@ -893,7 +902,7 @@ def test_a_wrapper_never_promotes_exit_zero_beside_a_failing_typed_result(tmp_pa
 
 # ----- PostgreSQL: one schema per comparison, exact coverage ------------------------------------------
 def canonical_inventory(tmp_path, role, schemas):
-    contracts = adapter.canonical_module("contracts")
+    contracts = _tool("contracts")
     inventory = {"schema": contracts.PG_SCHEMA, "server_version_num": 171100,
                  "extensions": {"plpgsql": "1.0", "vector": "0.8.6"}, "schemas": {}}
     for name, rows in schemas.items():
@@ -915,13 +924,12 @@ def relocated_registry():
 
 
 def registry_delta():
-    mapping = adapter.canonical_module("mapping")
+    mapping = _tool("mapping")
     return {"changes": [{"bucket": "fleet_registry", "id": "fleet",
                          "before_sha256": mapping.body_sha(REGISTRY["body"]),
                          "after_sha256": mapping.body_sha(relocated_registry()["body"])}]}
 
 
-@pytest.mark.skip(reason="S10: canonical_module's provider (the operator CLI process root; aibox_data is external tooling)")
 def test_per_schema_comparison_with_registry_delta_only_on_public(tmp_path):
     source = canonical_inventory(tmp_path, "s", {"public": [REGISTRY, HISTORY], "zeus_fleet_harness": [LANE]})
     target = canonical_inventory(tmp_path, "t", {"zeus_aibox_control": [relocated_registry(), HISTORY],
@@ -947,7 +955,6 @@ def test_per_schema_comparison_with_registry_delta_only_on_public(tmp_path):
     assert failing["result"]["failed"] == ["schema=public"] and failing["receipt"]["ok"] is False
 
 
-@pytest.mark.skip(reason="S10: canonical_module's provider (the operator CLI process root; aibox_data is external tooling)")
 def test_pg_compare_cli_mismatch_exits_nonzero(tmp_path, capsys):
     source = canonical_inventory(tmp_path, "s", {"public": [REGISTRY], "zeus_fleet_harness": [LANE]})
     target = canonical_inventory(tmp_path, "t", {"zeus_aibox_control": [REGISTRY], "zeus_aibox_harness": []})
@@ -967,7 +974,6 @@ REDIS_SOURCE = os.environ.get("ZEUS_MIGRATION_TEST_REDIS_SOURCE")
 REDIS_TARGET = os.environ.get("ZEUS_MIGRATION_TEST_REDIS_TARGET")
 
 
-@pytest.mark.skip(reason='S10: the operator CLI (adapters.host_migration.main)')
 @pytest.mark.skipif(not (REDIS_SOURCE and REDIS_TARGET), reason="Two disposable Redis servers required")
 def test_redis_copy_is_verified_by_the_canonical_comparison(capsys):
     from redis import Redis
@@ -1146,16 +1152,15 @@ def test_prepare_layout_is_dry_run_by_default_and_idempotent(tmp_path):
     assert {row["state"] for row in adapter.prepare_layout(root, apply=True)["directories"]} == {"present"}
 
 
-@pytest.mark.skip(reason='S10: the operator CLI (adapters.host_migration.main)')
 def test_cli_validate_reports_digest_and_never_echoes_a_secret(tmp_path, capsys):
     good, bad = tmp_path / "good.json", tmp_path / "bad.json"
     good.write_text(json.dumps(manifest()))
     leaked = copy.deepcopy(manifest())
     leaked["target"]["postgres"]["endpoint"]["name"] = "postgresql://zeus:hunter2" "@db/zeus"
     bad.write_text(json.dumps(leaked))
-    assert adapter.main(["validate", "--file", str(good)]) == 0
+    assert entry_cli.main(["validate", "--file", str(good)]) == 0
     assert json.loads(capsys.readouterr().out)["valid"] is True
-    assert adapter.main(["validate", "--file", str(bad)]) == 1
+    assert entry_cli.main(["validate", "--file", str(bad)]) == 1
     output = capsys.readouterr().out
     assert "hunter2" not in output and json.loads(output)["refused"] == "secret_value"
 

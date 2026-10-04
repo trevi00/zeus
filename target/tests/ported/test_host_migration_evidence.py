@@ -50,6 +50,7 @@ from m7_delivery import host_migration as adapter
 from m7_delivery import host_migration_evidence as producer
 from test_host_migration import manifest
 
+from codex_harness.composition import host_migration_evidence_cli as evidence_cli
 from codex_harness.coordination.domain.owner_actions import (
     DELIVERY_CANARY,
     action_id,
@@ -77,6 +78,7 @@ from codex_harness.delivery.domain.host_delivery import (
     validate_targets,
 )
 from codex_harness.delivery.domain.managed_runtime import blob_id, new_manifest
+from codex_harness.entry.processes import host_migration as entry_cli
 from codex_harness.kernel.ids import digest
 
 pytestmark = pytest.mark.skipif(os.name != "posix", reason=(
@@ -975,21 +977,19 @@ def _cli(world, *extra) -> list:
             "--schema", "zeus_aibox_migration", "--control-schema", "zeus_aibox_control", *extra]
 
 
-@pytest.mark.skip(reason='S10: the operator CLI (adapters.host_migration.main)')
 def test_cli_prints_observation_evidence_and_draft_and_exits_by_ok(world, monkeypatch, capsys):
     ports = world.ports()
-    monkeypatch.setattr(producer, "cli_ports", lambda args: ports)
-    assert adapter.main(_cli(world)) == 0
+    monkeypatch.setattr(evidence_cli, "cli_ports", lambda args: ports)
+    assert entry_cli.main(_cli(world)) == 0
     printed = json.loads(capsys.readouterr().out)
     assert {"observation", "evidence", "transition_draft"} <= set(printed)
     assert printed["observation"]["ok"] is True
     world.edit(RECEIPT_NAME, instance_id=None)
     ports = world.ports()
-    assert adapter.main(_cli(world)) == 1
+    assert entry_cli.main(_cli(world)) == 1
     assert json.loads(capsys.readouterr().out)["observation"]["reason_code"] == policy.CANARY
 
 
-@pytest.mark.skip(reason='S10: the operator CLI (adapters.host_migration.main)')
 def test_cli_store_failure_leaks_no_credential_and_reads_no_host(world, monkeypatch, capsys):
     import psycopg
 
@@ -1005,7 +1005,7 @@ def test_cli_store_failure_leaks_no_credential_and_reads_no_host(world, monkeypa
 
     monkeypatch.setattr(psycopg, "connect", connect)
     monkeypatch.setattr(producer, "bounded_run", host_command)
-    code = adapter.main(_cli(world, "--dsn-env", "ZEUS_TEST_MIGRATION_DSN", "--control-dsn-env",
+    code = entry_cli.main(_cli(world, "--dsn-env", "ZEUS_TEST_MIGRATION_DSN", "--control-dsn-env",
                                "ZEUS_TEST_CONTROL_DSN", "--lane", "harness"))
     captured = capsys.readouterr()
     assert code == 1 and secret not in captured.out + captured.err
@@ -1014,48 +1014,45 @@ def test_cli_store_failure_leaks_no_credential_and_reads_no_host(world, monkeypa
     assert printed["transition_draft"] is None
 
 
-@pytest.mark.skip(reason='S10: the operator CLI (adapters.host_migration_evidence.cli_ports)')
 def test_cli_ports_are_read_only_snapshots_and_connect_nothing(monkeypatch):
     import psycopg
-    from codex_harness.adapters.monitoring import LaneSnapshotStore
 
-    from codex_harness.adapters import store as stores
+    from codex_harness.observation.adapters.collectors import LaneSnapshotStore
+    from codex_harness.storage.adapters import postgres_store as stores
 
     monkeypatch.setenv("ZEUS_TEST_DSN", "postgresql://zeus@127.0.0.1:1/zeus")
     monkeypatch.setattr(psycopg, "connect", lambda *a, **k: (_ for _ in ()).throw(AssertionError("connected")))
     monkeypatch.setattr(stores.PostgresStore, "__init__", lambda *a, **k: (_ for _ in ()).throw(
         AssertionError("writer store constructed")))
-    args = adapter.parser().parse_args(["observe-limited-active", "--migration-id", MID, "--expected-id", "a" * 64,
+    args = entry_cli.parser().parse_args(["observe-limited-active", "--migration-id", MID, "--expected-id", "a" * 64,
                                         "--target-id", TARGET, "--plan-id", PLAN, "--actor", "a", "--root", "/r",
                                         "--dsn-env", "ZEUS_TEST_DSN", "--schema", "zeus_aibox_migration",
                                         "--control-dsn-env", "ZEUS_TEST_DSN", "--control-schema",
                                         "zeus_aibox_control"])
-    ports = producer.cli_ports(args)
+    ports = evidence_cli.cli_ports(args)
     assert isinstance(ports.coordinator, LaneSnapshotStore) and isinstance(ports.control, LaneSnapshotStore)
     assert (ports.coordinator.schema, ports.control.schema) == ("zeus_aibox_migration", "zeus_aibox_control")
     assert ports.delivery(ports.control) is ports.control
     args.schema = "public"
     with pytest.raises(migration.MigrationRefused, match="schema_invalid"):
-        producer.cli_ports(args)
+        evidence_cli.cli_ports(args)
 
 
-@pytest.mark.skip(reason='S10: the operator CLI (adapters.host_migration.parser)')
 @pytest.mark.parametrize("argv", [["--consumed", "true"], ["--passed", "true"], ["--receipt", "r.json"],
                                   ["--apply"]])
 def test_cli_accepts_no_claim_substitute_receipt_or_apply_argument(world, argv, capsys):
     with pytest.raises(SystemExit):
-        adapter.parser().parse_args(_cli(world, *argv))
+        entry_cli.parser().parse_args(_cli(world, *argv))
 
 
-@pytest.mark.skip(reason='S10: the operator CLI (adapters.host_migration.main)')
 @pytest.mark.parametrize("option", ["--dsn", "--dsn-env", "--control-dsn-env"])
 def test_a_credential_given_as_an_env_name_is_refused_and_never_echoed(world, monkeypatch, capsys, option):
     """argparse accepts `--dsn` as `--dsn-env`: whatever is typed there is a NAME, validated as one, and
     the refusal names the argument only. Nothing is read."""
     secret = "postgresql://zeus:hunter2" "@127.0.0.1/zeus"
     monkeypatch.setenv("HARNESS_DATABASE_URL", "postgresql://zeus@127.0.0.1:1/zeus")
-    monkeypatch.setattr(producer, "HostReader", lambda **kwargs: pytest.fail("host reader built"))
-    assert adapter.main(_cli(world, option, secret)) == 1
+    monkeypatch.setattr(evidence_cli, "HostReader", lambda **kwargs: pytest.fail("host reader built"))  # adaptation: the CLI module name
+    assert entry_cli.main(_cli(world, option, secret)) == 1
     captured = capsys.readouterr()
     assert "hunter2" not in captured.out + captured.err
     assert json.loads(captured.out)["refused"] == "environment_name_invalid"
@@ -1093,7 +1090,6 @@ def test_observation_validation_is_strict_and_ok_means_everything_held(world):
 
 
 # ----- S1/S2/S3/S5/S6: no value leaks, bounded commands, no inherited environment, safe opens -----------
-@pytest.mark.skip(reason='S10: the operator CLI (adapters.host_migration.main)')
 @pytest.mark.parametrize("value", ["postgresql://zeus:hun%zzter2" "@127.0.0.1/zeus", "sk-live-hunter2-secret",
                                    "postgresql://zeus:hunter2" "@[unterminated/zeus"])
 @pytest.mark.parametrize("option", ["--dsn-env", "--control-dsn-env"])
@@ -1103,15 +1099,14 @@ def test_a_malformed_dsn_or_a_secret_variable_is_refused_without_its_value(world
     no traceback is printed. Nothing is built, read or connected."""
     monkeypatch.setenv("ZEUS_TEST_DSN", "postgresql://zeus@127.0.0.1:1/zeus")
     monkeypatch.setenv("ZEUS_TEST_SECRET", value)
-    monkeypatch.setattr(producer, "HostReader", lambda **kwargs: pytest.fail("host reader built"))
+    monkeypatch.setattr(evidence_cli, "HostReader", lambda **kwargs: pytest.fail("host reader built"))  # adaptation: the CLI module name
     other = "--control-dsn-env" if option == "--dsn-env" else "--dsn-env"
-    code = adapter.main(_cli(world, option, "ZEUS_TEST_SECRET", other, "ZEUS_TEST_DSN"))
+    code = entry_cli.main(_cli(world, option, "ZEUS_TEST_SECRET", other, "ZEUS_TEST_DSN"))
     captured = capsys.readouterr()
     assert code == 1 and "hunter2" not in captured.out + captured.err and "Traceback" not in captured.err
     assert json.loads(captured.out) == {"refused": "environment_invalid", "field": option[2:].replace("-", "_")}
 
 
-@pytest.mark.skip(reason='S10: the operator CLI (adapters.host_migration.main)')
 @pytest.mark.parametrize("role", ["supervisor", "entry"])
 def test_a_reused_pid_keeps_only_an_argv_digest_and_its_arguments_never_reach_the_output(world, monkeypatch,
                                                                                          capsys, role):
@@ -1119,8 +1114,8 @@ def test_a_reused_pid_keeps_only_an_argv_digest_and_its_arguments_never_reach_th
     pid, ppid, ticks = (SUP_PID, 1, SUP_TICKS) if role == "supervisor" else (ENTRY_PID, SUP_PID, ENTRY_TICKS)
     world.process(pid, ppid, ticks, ["/usr/bin/other-tool", secret])
     ports = world.ports()
-    monkeypatch.setattr(producer, "cli_ports", lambda args: ports)
-    assert adapter.main(_cli(world)) == 1
+    monkeypatch.setattr(evidence_cli, "cli_ports", lambda args: ports)
+    assert entry_cli.main(_cli(world)) == 1
     captured = capsys.readouterr()
     assert "hunter2" not in captured.out + captured.err
     printed = json.loads(captured.out)
@@ -1236,7 +1231,6 @@ class RecordingConnection:
         return _Rows([])
 
 
-@pytest.mark.skip(reason='S10: the operator CLI (adapters.host_migration.main)')
 def test_lane_path_reads_every_store_through_read_only_snapshots_with_the_exact_sql_shape(world, monkeypatch,
                                                                                          capsys):
     """`--lane`: the delivery rows are found through `Fleet(control).registered()` over the control
@@ -1256,8 +1250,8 @@ def test_lane_path_reads_every_store_through_read_only_snapshots_with_the_exact_
     monkeypatch.setenv("ZEUS_TEST_CONTROL_DSN", "postgresql://zeus@127.0.0.1:1/zeus")
     monkeypatch.setattr(psycopg, "connect", lambda dsn, **kwargs: RecordingConnection(stores, dsn, kwargs, log))
     host = world.host()
-    monkeypatch.setattr(producer, "HostReader", lambda **kwargs: host)
-    code = adapter.main(_cli(world, "--dsn-env", "ZEUS_TEST_MIGRATION_DSN", "--control-dsn-env",
+    monkeypatch.setattr(evidence_cli, "HostReader", lambda **kwargs: host)  # adaptation: cli_ports reads its own module name
+    code = entry_cli.main(_cli(world, "--dsn-env", "ZEUS_TEST_MIGRATION_DSN", "--control-dsn-env",
                                "ZEUS_TEST_CONTROL_DSN", "--lane", "harness"))
     printed = json.loads(capsys.readouterr().out)
     assert code == 0 and printed["observation"]["ok"] is True
@@ -1443,15 +1437,14 @@ def test_ph4_13_a_post_check_difference_is_refused(world, case):
                code=code, detail=detail)
 
 
-@pytest.mark.skip(reason='S10: the operator CLI (adapters.host_migration.main)')
 def test_ph4_13_post_transition_without_an_archive_is_refused_before_any_read(world, monkeypatch, capsys):
     ports = world.ports()
     with pytest.raises(migration.MigrationRefused, match="request_invalid") as refusal:
         producer.observe(world.request(), ports, post_transition=True)
     assert refusal.value.field == "expect"
     assert world.runner.calls == [] and all(store.transactions == 0 for store in world.stores.values())
-    monkeypatch.setattr(producer, "cli_ports", lambda args: pytest.fail("ports built"))
-    assert adapter.main(_cli(world, "--post-transition")) == 1
+    monkeypatch.setattr(evidence_cli, "cli_ports", lambda args: pytest.fail("ports built"))
+    assert entry_cli.main(_cli(world, "--post-transition")) == 1
     assert json.loads(capsys.readouterr().out) == {"refused": "request_invalid", "field": "expect"}
 
 
@@ -1494,7 +1487,6 @@ def test_ph4_13_an_archive_that_is_not_this_producers_complete_success_is_refuse
     assert world.runner.calls == [] and all(store.transactions == 0 for store in world.stores.values())
 
 
-@pytest.mark.skip(reason='S10: the operator CLI (adapters.host_migration.main)')
 @pytest.mark.parametrize("post", [False, True])
 def test_ph4_13_the_comparison_is_read_only_and_exits_by_its_verdict(world, monkeypatch, capsys, tmp_path, post):
     archive = archived(world.observe())
@@ -1503,13 +1495,13 @@ def test_ph4_13_the_comparison_is_read_only_and_exits_by_its_verdict(world, monk
     if post:
         submit(world, archive)
     ports = world.ports()
-    monkeypatch.setattr(producer, "cli_ports", lambda args: ports)
+    monkeypatch.setattr(evidence_cli, "cli_ports", lambda args: ports)
     before = (tree(world.root, world.proc), copy.deepcopy(world.coordinator.data),
               copy.deepcopy(world.control_store.data), copy.deepcopy(world.delivery.data))
     extra = ["--expect", str(path)] + (["--post-transition"] if post else [])
     attempts: list = []
     with no_effects(monkeypatch, attempts):
-        code = adapter.main(_cli(world, *extra))
+        code = entry_cli.main(_cli(world, *extra))
     assert attempts == [] and all(store.puts == [] for store in world.stores.values())
     assert (tree(world.root, world.proc), world.coordinator.data, world.control_store.data,
             world.delivery.data) == before
@@ -1518,21 +1510,20 @@ def test_ph4_13_the_comparison_is_read_only_and_exits_by_its_verdict(world, monk
     assert printed["comparison"]["post_check"] == ("ok" if post else None)
     # The opposite mode refuses: before the transition nothing was recorded, after it the coordinator moved.
     ports = world.ports()
-    assert adapter.main(_cli(world, "--expect", str(path), *([] if post else ["--post-transition"]))) == 1
+    assert entry_cli.main(_cli(world, "--expect", str(path), *([] if post else ["--post-transition"]))) == 1
     assert json.loads(capsys.readouterr().out)["comparison"]["reason_code"] == policy.DOCUMENT
 
 
-@pytest.mark.skip(reason='S10: the operator CLI (adapters.host_migration.main)')
 @pytest.mark.parametrize("content", [None, "{not json", "[]", "NaN"])
 def test_ph4_13_an_unreadable_archive_file_is_refused_naming_the_argument_only(world, monkeypatch, capsys,
                                                                               tmp_path, content):
     path = tmp_path / "archived-observation.json"
     if content is not None:
         path.write_text(content)
-    monkeypatch.setattr(producer, "cli_ports", lambda args: pytest.fail("ports built"))
-    assert adapter.main(_cli(world, "--expect", str(path))) == 1
+    monkeypatch.setattr(evidence_cli, "cli_ports", lambda args: pytest.fail("ports built"))
+    assert entry_cli.main(_cli(world, "--expect", str(path))) == 1
     assert json.loads(capsys.readouterr().out) == {"refused": "expect_invalid", "field": "expect"}
-    assert adapter.main(_cli(world, "--expect", "relative/archive.json")) == 1
+    assert entry_cli.main(_cli(world, "--expect", "relative/archive.json")) == 1
     assert json.loads(capsys.readouterr().out) == {"refused": "request_invalid", "field": "expect"}
 
 
@@ -1647,7 +1638,6 @@ LEAK_CASES = {
 }
 
 
-@pytest.mark.skip(reason='S10: the operator CLI (adapters.host_migration.main)')
 @pytest.mark.parametrize("case", sorted(LEAK_CASES))
 def test_f1_no_excluded_key_or_untyped_value_reaches_the_result_or_the_cli(world, monkeypatch, capsys, case):
     """Excluded keys (including one whose NAME is the marker) and wrong-typed or free-text values, per
@@ -1663,8 +1653,8 @@ def test_f1_no_excluded_key_or_untyped_value_reaches_the_result_or_the_cli(world
         refused(result, code, detail)
     recompute(result)
     ports = world.ports()
-    monkeypatch.setattr(producer, "cli_ports", lambda args: ports)
-    assert adapter.main(_cli(world)) == (0 if code is None else 1)
+    monkeypatch.setattr(evidence_cli, "cli_ports", lambda args: ports)
+    assert entry_cli.main(_cli(world)) == (0 if code is None else 1)
     captured = capsys.readouterr()
     assert MARKER not in captured.out + captured.err and captured.err == ""
     printed = json.loads(captured.out)

@@ -67,11 +67,14 @@ from test_host_migration import (
     walk,
 )
 
+from codex_harness.composition import host_migration_cli
 from codex_harness.coordination.application.fleet.state import BUCKET_UNITS
 from codex_harness.coordination.domain import continuation as dc
+from codex_harness.delivery.adapters import host_migration as host_migration_module
 from codex_harness.delivery.application.host_migration import BUCKET, BUCKET_TRANSITIONS
 from codex_harness.delivery.domain import host_migration as policy
 from codex_harness.delivery.domain.host_migration import MigrationRefused
+from codex_harness.entry.processes import host_migration as entry_cli
 from codex_harness.kernel.ids import canonical, digest
 from codex_harness.storage.adapters.postgres_store import PostgresStore
 
@@ -977,7 +980,6 @@ def test_portable_a_second_switch_then_a_record_wait_for_the_port_inside_the_tra
     assert port.plans[-1]["effective_id"] == head and len(port.plans) == 3
 
 
-@pytest.mark.skip(reason='S10: the operator CLI (adapters.host_migration.main)')
 def test_switch_refuses_on_non_posix(tmp_path, monkeypatch, capsys):
     """The counterpart of every `posix_only` row: on a non-POSIX host as it is; on POSIX through the
     adapter's own platform seam (never the process-wide `os.name`). Nothing is written: no receipt,
@@ -1002,42 +1004,43 @@ def test_switch_refuses_on_non_posix(tmp_path, monkeypatch, capsys):
             switch(coordinator, h, expected=expected, check=check,
                    preconditions=lambda c, m: pytest.fail("no precondition is observed"))
         assert (refused.value.reason_code, refused.value.field) == (adapter.POSIX_ONLY, "platform")
-    monkeypatch.setattr(adapter, "_coordinator", lambda args: pytest.fail("the coordinator store is never opened"))
+    monkeypatch.setattr(host_migration_cli, "_coordinator", lambda args: pytest.fail("the coordinator store is never opened"))
     paths = ["--migration-id", MID, "--control-dir", str(h.control), "--releases-dir", str(h.releases),
              "--managed-state-dir", str(h.managed), "--dsn-env", "ZEUS_AIBOX_MIGRATION_DSN",
              "--schema", "zeus_aibox_migration"]
     for extra in (["--expected-id", head], ["--check"]):
-        assert adapter.main(["activation-switch", *extra, *paths]) == 1
+        assert entry_cli.main(["activation-switch", *extra, *paths]) == 1
         assert json.loads(capsys.readouterr().out) == {"refused": adapter.POSIX_ONLY, "field": "platform"}
     assert calls == [] and files() == before and coordinator.store.data == rows
     assert not [name for name, _ in before if ".current." in name]
 
 
 # ----- CLI --------------------------------------------------------------------------------------------
-@pytest.mark.skip(reason='S10: the operator CLI (adapters.host_migration.main)')
 @posix_only
 def test_cli_records_a_successor_and_switches_only_with_an_expected_head(tmp_path, monkeypatch, capsys):
     coordinator, _, intent_id = paused()
     h = host(tmp_path, coordinator)
-    monkeypatch.setattr(adapter, "_coordinator", lambda args: coordinator)
-    monkeypatch.setattr(adapter, "recovery_preconditions", lambda control, managed: [])  # fixture: idle host
+    monkeypatch.setattr(host_migration_cli, "_coordinator", lambda args: coordinator)
+    # Adaptation: `adapter.recovery_preconditions` is a runner-closing wrapper on the facade; `switch_effect` (called by the CLI's
+    # `execute`) reads the moved module's own name, so the patch lands there and accepts the `runner=` it is now given.
+    monkeypatch.setattr(host_migration_module, "recovery_preconditions", lambda control, managed, **_: [])  # fixture: idle host
     document = tmp_path / "successor.json"
     document.write_text(json.dumps(successor(intent_id)))
     store = ["--dsn-env", "ZEUS_AIBOX_MIGRATION_DSN", "--schema", "zeus_aibox_migration"]
-    assert adapter.main(["activation-successor", "--file", str(document), *store]) == 0
+    assert entry_cli.main(["activation-successor", "--file", str(document), *store]) == 0
     head = json.loads(capsys.readouterr().out)["successor_id"]
-    assert adapter.main(["activation-successor", "--file", str(document), *store]) == 0
+    assert entry_cli.main(["activation-successor", "--file", str(document), *store]) == 0
     assert json.loads(capsys.readouterr().out)["cached"] is True
     paths = ["--migration-id", MID, "--control-dir", str(h.control), "--releases-dir", str(h.releases),
              "--managed-state-dir", str(h.managed), *store]
-    assert adapter.main(["activation-switch", *paths]) == 1
+    assert entry_cli.main(["activation-switch", *paths]) == 1
     assert json.loads(capsys.readouterr().out) == {"refused": "expected_id_required", "field": "expected_id"}
-    assert adapter.main(["activation-switch", "--check", *paths]) == 0
+    assert entry_cli.main(["activation-switch", "--check", *paths]) == 0
     assert json.loads(capsys.readouterr().out)["classification"] == adapter.RECORDED_NOT_SWITCHED
-    assert adapter.main(["activation-switch", "--expected-id", head, *paths]) == 0
+    assert entry_cli.main(["activation-switch", "--expected-id", head, *paths]) == 0
     assert json.loads(capsys.readouterr().out)["revision"] == NEXT
     (h.control / "host-activation.json").write_text("{}\n")
-    assert adapter.main(["activation-switch", "--check", *paths]) == 1  # inconsistent is not a pass
+    assert entry_cli.main(["activation-switch", "--check", *paths]) == 1  # inconsistent is not a pass
 
 
 # ----- S6 ordering on the actual FleetRunner ------------------------------------------------------------
