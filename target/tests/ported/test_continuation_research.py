@@ -17,8 +17,8 @@ placeholder, and only tests skipped whole and unrewritten (each with its owning 
 PublicationFailingCouncil, UnreachableBus, ForeignMessageCouncil}`); `Portfolio` is `intake.application.portfolio`'s,
 `ResearchProgram` and `deliver` (the target `correction_feedback.deliver` with observation's `redact_text` injected) come
 from the `m7_research` shim, `RESEARCH_SCHEMA` and `CorrectionFeedbackRefused` from `research.adapters.correction_feedback`.
-Only `adapter` and `continuation_cli` (S10 CLI modules) remain `unavailable` placeholders; the 6 tests that reach them (the
-parametrized evidence-bytes test) are skipped whole for S10. The local `recover` is `entry.cli.research_program._recover` (S10 C6c, R-c26),
+`adapter` is `coordination.adapters.continuation` (S10 unit C8b-1, R-c27: the production `ResearchEvidence` and its byte ceiling) and
+`continuation_cli` is `entry.cli.continuation` (its `refusal` is the private `_refusal`), so the 6 evidence-bytes tests run. The local `recover` is `entry.cli.research_program._recover` (S10 C6c, R-c26),
 so the CLI follow-up test runs (its patch targets are the target homes of `RedisBus` and `ExecutionEvidence`).
 
 M7 docstring follows.
@@ -46,7 +46,7 @@ from copy import deepcopy
 from pathlib import Path
 
 import pytest
-from m7_coordination import Continuation, Fleet, LaneEvidence, unavailable
+from m7_coordination import Continuation, Fleet, LaneEvidence
 from m7_research import ResearchProgram, deliver
 from test_continuation import World, only
 from test_fleet import config as fleet_config
@@ -60,6 +60,7 @@ from test_research_recovery import (
     UnreachableBus,
 )
 
+from codex_harness.coordination.adapters import continuation as adapter
 from codex_harness.coordination.application.continuation.state import (
     BUCKET_BINDINGS,
     BUCKET_RESEARCH_RECEIPTS,
@@ -70,6 +71,7 @@ from codex_harness.coordination.application.owner_actions.state import (
     BUCKET_INVESTIGATIONS,
 )
 from codex_harness.coordination.domain import continuation as dc
+from codex_harness.entry.cli import continuation as continuation_cli
 from codex_harness.entry.cli import research_program as research_program_root
 from codex_harness.intake.application.portfolio import Portfolio
 from codex_harness.intake.domain.portfolio import family_id
@@ -77,9 +79,6 @@ from codex_harness.kernel.ids import digest
 from codex_harness.observation.application.observations import Observer
 from codex_harness.research.adapters.correction_feedback import RESEARCH_SCHEMA, CorrectionFeedbackRefused
 from codex_harness.research.domain.research_program import config_digest, validate_config
-
-adapter = unavailable('S10', 'adapters.continuation')
-continuation_cli = unavailable('S10', 'adapters.continuation_cli')
 
 # The owner's research evidence: real bytes stored in the World's temporary FileArtifacts root by
 # `receipt_for`, and read back (bounded, digest checked) at acceptance and again at consumption.
@@ -488,7 +487,6 @@ def _not_text(world):
     return [ref]
 
 
-@pytest.mark.skip(reason='S10: adapters.continuation_cli (the operator CLI `refusal` projection)')
 @pytest.mark.parametrize("fault, reason", [
     (_missing, "research_evidence_missing"), (_one_missing, "research_evidence_missing"),
     (_unreadable, "research_evidence_unreadable"), (_tampered, "research_evidence_corrupt"),
@@ -501,7 +499,7 @@ def test_acceptance_reads_the_actual_evidence_bytes_and_refuses_what_is_not_ther
     with pytest.raises(dc.ContinuationRefused) as info:
         world.controller.accept_research(document)
     assert (info.value.reason_code, info.value.owner) == (reason, "portfolio_research")
-    assert str(tmp_path) not in json.dumps(continuation_cli.refusal(info.value)), "no path leaves"
+    assert str(tmp_path) not in json.dumps(continuation_cli._refusal(info.value)), "no path leaves"
     assert receipts(world) == {}
     world.tick()
     assert only(world.intents(), id=research["id"])["state"] == dc.RESEARCH_REQUIRED and len(world.jobs()) == 2

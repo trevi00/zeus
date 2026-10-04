@@ -44,9 +44,9 @@ Named adaptations (each is a construction/import adaptation, never a behaviour c
   `LaneEvidence` is `coordination.application.continuation.lanes.LaneEvidence` (the M7 constructor).
 - `Fleet`'s routed methods are class attributes (each delegates to its owner at call time), so a subclass can
   override one and call `super().enqueue(...)` as M7 tests do; an unrouted name still raises AttributeError.
-- `ResearchEvidence(root, max_bytes)` is the body of M7 `adapters.continuation.ResearchEvidence`, verbatim, over the
-  target `FileArtifacts` and the domain's `ContinuationRefused`; its target owner (`coordination.adapters.continuation`,
-  the production wiring) is not implemented yet, so the suites' one evidence reader lives here as a labelled copy.
+- `ResearchEvidence(root, max_bytes)` is the production class `coordination.adapters.continuation.ResearchEvidence` (S10 unit C8b-1, R-c27)
+  bound with `store_factory=FileArtifacts` (V-c27: the store class is a required keyword there, a coordination adapter may not import
+  a storage adapter); M7's two-argument constructor is kept, and nothing else of the class changes.
 - `OwnerActions(store, **ports)` is a facade over the split objects of `coordination.application.owner_actions`
   (DESIGN-s6 §4), built as `s6_owner_actions_composition.py` builds it, with the SYSTEM clock and ids the M7 class used
   (the composition's scripted G1 ports are the golden's; a suite must never see them).
@@ -82,13 +82,14 @@ from __future__ import annotations
 
 import subprocess
 import time
-from pathlib import Path
 from uuid import uuid4
 
 from codex_harness.composition import guarded_launch as _guarded_composition
 from codex_harness.coordination.adapters import conductor_launch as _conductor_launch
 from codex_harness.coordination.adapters import guarded_launch as _guarded_launch
 from codex_harness.coordination.adapters import owner_launches as _owner_launches
+from codex_harness.coordination.adapters.continuation import MAX_RESEARCH_EVIDENCE_BYTES
+from codex_harness.coordination.adapters.continuation import ResearchEvidence as _ResearchEvidence
 from codex_harness.coordination.application import execution_recovery as _execution_recovery
 from codex_harness.coordination.application import local_cycle as _local_cycle
 from codex_harness.coordination.application import operation_finalization, outbox_relay
@@ -122,12 +123,10 @@ from codex_harness.coordination.application.owner_actions.research_acceptance im
 from codex_harness.coordination.application.owner_actions.research_dispatch import ResearchLaunchFamily
 from codex_harness.coordination.application.owner_actions.scheduler import OwnerActionScheduler
 from codex_harness.coordination.application.workflow import Workflow as _Workflow
-from codex_harness.coordination.domain.continuation import RESEARCH, ROUTE_OWNERS, ContinuationRefused
 from codex_harness.coordination.domain.fleet import LaunchRefused
 from codex_harness.evidence.application.inspections import EvidenceRecords
 from codex_harness.intake.application import tickets
 from codex_harness.intake.application.portfolio_lineage import PortfolioLineage
-from codex_harness.kernel.errors import ContractError
 from codex_harness.kernel.ids import SYSTEM_CLOCK, SYSTEM_IDS, utcnow
 from codex_harness.observation.application.health import HealthRecords
 from codex_harness.research.application import scheduling as _scheduling
@@ -327,38 +326,11 @@ for _name in vars(ContinuationTick):  # M7's restart table names `Continuation._
         setattr(Continuation, _name, _resume(_name))
 
 
-MAX_RESEARCH_EVIDENCE_BYTES = 1024 * 1024  # the FileArtifacts.text ceiling
-
-
-class ResearchEvidence:
-    """The research evidence port over ONE trusted content-addressed store (`FileArtifacts`): `verify`
-    reads at most `max_bytes` of the reference's actual bytes and checks their SHA-256. Refusals are
-    fixed codes (`research_evidence_missing|unreadable|oversized|corrupt|invalid`); no path, raw error
-    or content leaves. The root is fixed by configuration; it is never created, searched or
-    supplied by a caller, and nothing is fetched. Integrity holds at the observed read only."""
+class ResearchEvidence(_ResearchEvidence):
+    """M7 `adapters.continuation.ResearchEvidence(root, max_bytes)`: the production class, bound with `store_factory=FileArtifacts` (R-c27, V-c27)."""
 
     def __init__(self, root, max_bytes: int = MAX_RESEARCH_EVIDENCE_BYTES):
-        self.root, self.max_bytes, self.store = Path(root), max_bytes, None
-
-    def verify(self, reference) -> None:
-        code = None
-        try:
-            if self.store is None:
-                if not self.root.is_dir():
-                    raise FileNotFoundError
-                self.store = FileArtifacts(str(self.root))
-            self.store.text(reference, self.max_bytes)
-        except FileNotFoundError:
-            code = "research_evidence_missing"
-        except UnicodeDecodeError:
-            code = "research_evidence_invalid"  # digest matched, but not the text the store writes
-        except OSError:
-            code = "research_evidence_unreadable"
-        except ContractError as exc:
-            code = {"Artifact exceeds text budget": "research_evidence_oversized",
-                    "Artifact modified": "research_evidence_corrupt"}.get(str(exc), "research_evidence_invalid")
-        if code is not None:
-            raise ContinuationRefused(code, ROUTE_OWNERS[RESEARCH], "evidence_refs")
+        super().__init__(root, max_bytes, store_factory=FileArtifacts)
 
 
 OWNER_ROUTES = {"register": "scheduler", "status": "scheduler", "tick": "scheduler", "recover_canary": "canary",

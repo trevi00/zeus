@@ -32,12 +32,11 @@ import pytest
 from m7_coordination import unavailable
 from test_continuation import BASE, CANDIDATE, World, accepted_item, only
 
+from codex_harness.composition import continuation as adapter
 from codex_harness.coordination.application.continuation.state import BUCKET_INTENTS, LANE_BINDINGS
 from codex_harness.coordination.domain import continuation as dc
+from codex_harness.entry.cli.continuation import add_parser
 from codex_harness.kernel.ids import digest
-
-adapter = unavailable('S10', 'adapters.continuation')
-add_parser = unavailable('S10', 'adapters.continuation_cli.add_parser')
 
 MAIN = "9" * 40                   # the remote main the change is re-derived on (labelled)
 PLAN_ID, PLAN_SHA = "own-h1-plan", "5" * 64
@@ -484,7 +483,7 @@ def real_goal_world(tmp_path, monkeypatch):
             "port": port, "root": root, "old": old, "new": new, "old_sha": old_sha, "new_sha": new_sha}
 
 
-@pytest.mark.skip(reason='S10: the continuation CLI and production adapters (coordination.adapters.continuation, entry CLI)')
+@pytest.mark.skip(reason='S10: coordination.adapters.fleet_recovery._queued_bindings (the fleet recovery reader; a private whose target signature takes the `git_source` seam: fleet unit C8b-2)')
 def test_a_real_goal_blob_that_changed_is_refused_without_and_rebound_with_an_owner_migration(tmp_path, monkeypatch):
     _queued_bindings = unavailable('S10', 'adapters.fleet_recovery._queued_bindings')
 
@@ -693,7 +692,6 @@ def test_goal_migration_interacts_with_family_exclusion_and_a_raced_intent(tmp_p
 
 
 # ----- the adapter and CLI -----------------------------------------------------------------------------------
-@pytest.mark.skip(reason='S10: the continuation CLI and production adapters (coordination.adapters.continuation, entry CLI)')
 def test_the_lane_mainline_port_reads_the_goal_digest_at_an_explicit_commit(tmp_path):
     from test_git_workspace import git, repository
     root = repository(tmp_path)
@@ -711,7 +709,6 @@ def test_the_lane_mainline_port_reads_the_goal_digest_at_an_explicit_commit(tmp_
     assert port.goal(head, "docs/MISSING.md") is None
 
 
-@pytest.mark.skip(reason='S10: the continuation CLI and production adapters (coordination.adapters.continuation, entry CLI)')
 def test_the_cli_reads_a_bounded_owner_file_and_names_the_command(tmp_path):
     parser = argparse.ArgumentParser()
     add_parser(parser.add_subparsers(dest="command"))
