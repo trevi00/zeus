@@ -22,8 +22,6 @@ import driver  # noqa: E402
 
 driver.start("target")
 
-import codex_harness  # noqa: E402,F401  (R-O: the origin check counts at least one product module)
-
 import hashlib  # noqa: E402
 import json  # noqa: E402
 import os  # noqa: E402
@@ -32,6 +30,8 @@ import tempfile  # noqa: E402
 
 import masks  # noqa: E402
 import provider_guard  # noqa: E402
+
+import codex_harness  # noqa: E402,F401  (R-O: the origin check counts at least one product module)
 
 TARGET = Path(os.environ["ZEUS_REBUILD_TARGET_SRC"]).resolve().parent
 # Row key -> (M7 module, target module). S10 E5b (DESIGN-s10 section 16 (b), owner 2026-10-04): the M7 module is
