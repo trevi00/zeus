@@ -15,6 +15,7 @@ from copy import deepcopy
 from uuid import uuid4
 
 from codex_harness.intake.application.goal_progress import admit_dispatch, validate_manifest
+from codex_harness.intake.domain.operation_manifest import valid_research_exemption
 from codex_harness.kernel.errors import ContractError, require
 from codex_harness.kernel.ids import digest, utcnow
 from codex_harness.kernel.message import envelope
@@ -32,8 +33,12 @@ class TicketClosed(TicketSuperseded):
 
 
 def validate_content(content):
-    require(isinstance(content, dict) and set(content) == set(TEXT_FIELDS + LIST_FIELDS),
+    # G20-D4: `research_exemption` is the one optional field; an absent field keeps every content hash unchanged.
+    require(isinstance(content, dict)
+            and set(content) - {"research_exemption"} == set(TEXT_FIELDS + LIST_FIELDS),
             "Ticket needs title, problem, impact, rollback, evidence_refs, scope, acceptance_criteria, verification")
+    require("research_exemption" not in content or valid_research_exemption(content["research_exemption"]),
+            "Invalid ticket research_exemption")
     for name in TEXT_FIELDS:
         require(isinstance(content[name], str) and 0 < len(content[name].strip()) <= 12000,
                 "Invalid ticket " + name)
@@ -192,6 +197,8 @@ class Tickets:
                        "ticket_context": content, "ticket_reviews": reviews}
             if goal_binding is not None:
                 details["goal_binding"] = goal_binding
+            if "research_exemption" in content:
+                details["research_exemption"] = dict(content["research_exemption"])
             observations = sorted((r for r in tx.scan("ticket_remote_observations")
                                    if r["ticket_id"] == ticket_id), key=lambda r: (r["at"], r["id"]))
             details["external_ticket_observations"] = observations[-10:]
