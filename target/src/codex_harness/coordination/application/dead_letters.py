@@ -2,7 +2,7 @@
 
 Layer: application
 Context: coordination
-Owns: bucket dead_letter_replays (one record per `(source, entry_id)`: intent, completed or failed, with the operator
+Owns: bucket dead_letter_replays (one record per `(source, entry_id)`: intent or completed, with the operator
     reason and actor), DeadLetters.list, DeadLetters.replay
 Does not own: the dead-letter stream and the publish (the injected bus, storage), the argument shape (entry.cli.dlq)
 Entry points: DeadLetters.list, DeadLetters.replay
@@ -12,7 +12,11 @@ A declared target addition (no M7 counterpart). The dead-letter record carries t
 stream entry id of the failed delivery, so `(source, entry_id)` names one failed message however many dead-letter
 records it left. A replay records its intent in one transaction, publishes unbound as the original publisher did, then
 records the outcome: an unfinished `intent` (a crash between the publish and the record) refuses `replay_in_doubt`
-rather than publishing twice. Message-identity idempotency in the workflow makes a duplicate delivery a no-op (RSM G1).
+rather than publishing twice. A MessageDeliveryError from the publish is AMBIGUOUS (the XADD may have been accepted and
+the response lost), so it is held on the same `intent` record with the exception class name only, never retried
+(FLEET-REBUILD-S10-ACCEPT F1). An in-doubt replay is resolved by an operator decision outside this command (a
+follow-up), never by an automatic retry. Message-identity idempotency in the workflow makes a duplicate delivery a
+no-op (RSM G1).
 A body is never returned: the group carries its sha256 and size only.
 """
 
@@ -91,6 +95,8 @@ class DeadLetters:
             status = None if previous is None else previous["status"]
             require(status != COMPLETED, "already_replayed")
             require(status != INTENT, "replay_in_doubt")
+            # F1: `failed` is no longer produced by replay (an ambiguous publish stays `intent`); it is still read as
+            # retryable only for compatibility with a record written before the correction.
             record = {"id": key, "status": INTENT, "source": source, "entry_id": entry_id,
                       "dead_letter_ids": list(group["ids"]), "reasons": sorted(group["reasons"]),
                       "body_sha256": self._identity(source, entry_id, group)["body_sha256"],
@@ -101,8 +107,9 @@ class DeadLetters:
         try:
             replayed = self.bus.publish(message)
         except MessageDeliveryError as exc:
-            self._finish(key, {"status": FAILED, "error_type": str(exc) or type(exc).__name__})
-            raise ContractError("replay_delivery_failed") from exc
+            # F1: no proof of absence of the write; keep `intent` and record the class name, never the text.
+            self._finish(key, {"error_type": type(exc.__cause__ or exc).__name__})
+            raise ContractError("replay_in_doubt") from exc
         return self._finish(key, {"status": COMPLETED, "replayed_entry_id": replayed})
 
     def _finish(self, key: str, outcome: dict) -> dict:
