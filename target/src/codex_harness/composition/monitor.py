@@ -40,6 +40,7 @@ Row producers (every one S9's tests render through `render(...)`, found by grep)
 | `MetricsProjector(providers=PROVIDERS).snapshot(tx)` (`composition.observation.PROVIDERS`) | used | the projected series in the store, one read transaction of the read-only store |
 | `observation.domain.feature_registry.instrumented_rows()` | used | no input |
 | `observation.adapters.queue_facts.QueueFacts(store, now=...)` (test_s9_x2c_queue_facts:122) | used | inputs are the read-only store and an aware UTC clock; it reads in its own bounded transaction and reports an unreadable queue as `available 0` |
+| `observation.adapters.spool_facts.SpoolFacts(runtime / "observations")` (A5-3) | used | the spool health records through `SpoolDirectory.read_health` only (nothing written); a missing directory or a failed read is `available 0` with no dropped series; the monitor passes `runtime` |
 | `observation.adapters.redis_stream_facts.RedisStreamFacts(url, agents, bus_factory)` (test_s9_redis_stream_facts:141) | not wired | S9 composed no closed agent roster for the monitor process; none is invented here |
 | `observation.adapters.resource_facts.ResourceFacts(cgroup_root, proc_root, units, mounts, interfaces)` (test_s9_x3a:31) | not wired | S9 composed no unit-to-cgroup map, mount names or interface names for the monitor process; they are host layout |
 
@@ -104,15 +105,17 @@ def _health_rows(success, last_success):
     return rows
 
 
-def render_metrics(service, *, clock=time.time):
+def render_metrics(service, *, clock=time.time, runtime=None):
     """The exposition text: the S9 row producers over the read-only store and nothing else (DESIGN-s10 §15a).
 
     The health gauges are written only to `zeus-metrics-health.prom`, so a failed render never leaves a stale
     success series in the last good main file. The projected series are read in ONE read transaction
-    (INV-OBSERVATION-001); a producer's failure raises."""
+    (INV-OBSERVATION-001); a producer's failure raises. With `runtime`, the spool drop gauges of `<runtime>/observations`
+    (`SpoolFacts`, a state read that writes nothing) are appended."""
     from codex_harness.composition.observation import PROVIDERS
     from codex_harness.observation.adapters.metrics_exposition import render
     from codex_harness.observation.adapters.queue_facts import QueueFacts
+    from codex_harness.observation.adapters.spool_facts import SpoolFacts
     from codex_harness.observation.application.metrics_projector import MetricsProjector
     from codex_harness.observation.domain.feature_registry import instrumented_rows
     now = int(clock())
@@ -120,6 +123,8 @@ def render_metrics(service, *, clock=time.time):
         rows = MetricsProjector(providers=PROVIDERS).snapshot(tx)
     rows += instrumented_rows()
     rows += QueueFacts(service.store, now=lambda: datetime.fromtimestamp(now, timezone.utc)).rows()
+    if runtime is not None:
+        rows += SpoolFacts(runtime / "observations").rows()
     return render(rows)
 
 
@@ -135,7 +140,7 @@ def publish_metrics(service, runtime, journal, last_success, clock=time.time):
     from codex_harness.observation.adapters.metrics_exposition import render
     now = int(clock())
     try:
-        write_metrics(runtime, render_metrics(service, clock=lambda: now))
+        write_metrics(runtime, render_metrics(service, clock=lambda: now, runtime=runtime))
         last_success, success = now, True
     except Exception as exc:  # noqa: BLE001 - derived data: the collector and monitoring.json carry on
         journal.write('metrics_render_failed', error=type(exc).__name__)
