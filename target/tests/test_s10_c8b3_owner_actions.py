@@ -380,7 +380,8 @@ def test_migrate_and_canary_recover_read_their_document_and_call_the_routed_owne
 def test_tick_joins_the_assessments_and_exits_one_on_a_refusal(service, monkeypatch):
     joined = []
     owner = SimpleNamespace(assessments=SimpleNamespace(join=lambda: joined.append(1)))
-    monkeypatch.setattr(wiring, "coordinator", lambda service, config, host: owner)
+    monkeypatch.setattr(wiring, "coordinator", lambda service, config, host, observer=None: owner)  # S10 F2
+    monkeypatch.setattr(wiring, "process_observer", lambda store: None)  # S10 F2
     from codex_harness.coordination.application.fleet.registry import FleetRegistry
 
     monkeypatch.setattr(FleetRegistry, "registered", lambda self: {"config": fleet_config()})
@@ -393,7 +394,8 @@ def test_tick_joins_the_assessments_and_exits_one_on_a_refusal(service, monkeypa
 
 def test_run_ticks_every_named_policy_through_the_loop(service, monkeypatch):
     owner = SimpleNamespace()
-    monkeypatch.setattr(wiring, "coordinator", lambda service, config, host: owner)
+    monkeypatch.setattr(wiring, "coordinator", lambda service, config, host, observer=None: owner)  # S10 F2
+    monkeypatch.setattr(wiring, "process_observer", lambda store: None)  # S10 F2
     from codex_harness.coordination.application.fleet.registry import FleetRegistry
 
     monkeypatch.setattr(FleetRegistry, "registered", lambda self: {"config": fleet_config()})

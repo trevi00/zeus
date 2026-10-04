@@ -84,7 +84,10 @@ def _execute(service, args) -> dict:
     if command == "register":
         return {**composition.register_policy(service.store, config, args.lane, args.revision, args.path),
                 "exit_code": 0}
-    owner = composition.coordinator(service, config, settings())
+    # S10 F2-B: only the ticking commands hold a process observer (the scheduler's `path_declined`); the other
+    # commands call the coordinator exactly as before.
+    ports = {"observer": composition.process_observer(service.store)} if command in ("tick", "run") else {}
+    owner = composition.coordinator(service, config, settings(), **ports)
     if command == "migrate":
         try:
             document = json.loads(Path(args.document).read_text(encoding="utf-8"))

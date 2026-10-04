@@ -3,7 +3,7 @@
 Layer: composition
 Owns: owner_action_owners (the builder of the S6 split), delivery_port, continuation_port, load_policy, register_policy, assessment_ceilings, assess, coordinator, tick_policy, tick_policies, policy_list, run_loop and the private _resolve_provider
 Does not own: the argument shape and the command bodies (entry.cli.owner_actions), the families (coordination.application.owner_actions), the plan publisher (composition.owner_action_adapters), the guarded launches (coordination.adapters.owner_launches) and the target files (delivery.adapters.target_files)
-Entry points: owner_action_owners, load_policy, register_policy, assess, coordinator, tick_policy, tick_policies, policy_list, run_loop
+Entry points: owner_action_owners, process_observer, load_policy, register_policy, assess, coordinator, tick_policy, tick_policies, policy_list, run_loop
 Contracts: INV-OWNER-ACTIONS-001, INV-OWNER-ACTIONS-MIGRATION-001, INV-HOST-DELIVERY-FIRST-ACTIVATION-001, INV-RELEASE-EVALUATOR-MIGRATION-001, INV-RELEASE-ENVIRONMENT-REVERIFY-001
 
 Moved from M7 `adapters/owner_actions.py` (SOURCE e38aa722) by named rule R-c32 (S10 unit C8b-3), the documented S10 carry of S6/S7's moves: `load_policy` (:86-93), `register_policy` (:96-99), `_resolve_provider` (:310-313), `assessment_ceilings` (:316-336),
@@ -226,8 +226,16 @@ def assess(service, decision_id: str, correlation_id: str, model_label: str, *, 
 
 
 # ----- the coordinator with its real ports -------------------------------------------------------------
+def process_observer(store):
+    """The durable process observer of the `tick` and `run` commands (S10 F2-B): its own component, so the `assess`
+    child's `cli.owner-actions` spool is unchanged. It reaches the scheduler's `path_declined` (a disabled policy)."""
+    from codex_harness.composition.observation import build_observer
+
+    return build_observer(store, "owner-actions")
+
+
 def coordinator(service, config: dict, host: dict, *, lanes=None, assessments=None, publisher_factory=None,
-                continuation=None, research=None):
+                continuation=None, research=None, observer=None):
     from codex_harness.composition.cli_host_delivery import lane_git
     from codex_harness.composition.configuration import runtime_dir
     from codex_harness.composition.continuation import (
@@ -298,7 +306,7 @@ def coordinator(service, config: dict, host: dict, *, lanes=None, assessments=No
         first_activation=first_activation,
         withdrawals=withdrawals, mainline=LaneMainline(config, host),
         requalify=lambda document: requalify_delivery(store, config, host, document, lanes=lanes),
-        artifacts=artifacts, research=research, ledger=lambda: CallBudget().counts())
+        artifacts=artifacts, research=research, ledger=lambda: CallBudget().counts(), observer=observer)
 
 
 def tick_policy(owner, config: dict, policy_id: str, *, source_factory=GitSource) -> dict:
