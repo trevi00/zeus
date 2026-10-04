@@ -1,0 +1,242 @@
+{
+ "cases": {
+  "init_db": {
+   "argv": [
+    "init-db"
+   ],
+   "exit": 0,
+   "stderr": "",
+   "stdout": {
+    "already_applied": [],
+    "applied": [
+     {
+      "module": "core",
+      "version": "1"
+     }
+    ],
+    "migrated": true,
+    "tool": {
+     "filename_contract": "V?<n>(.<n>|_<n>)*(__<description>)?.sql",
+     "name": "zeus-sql-migrator",
+     "version": 1
+    }
+   }
+  },
+  "repair_disable_unknown": {
+   "argv": [
+    "audit-repair",
+    "disable",
+    "--audit-id",
+    "audit-unknown",
+    "--operator",
+    "op"
+   ],
+   "exit": 1,
+   "stderr": "",
+   "stdout": {
+    "error_type": "RepairRefused",
+    "exit_code": 1,
+    "reason_code": "unknown_audit",
+    "status": "refused"
+   }
+  },
+  "repair_enable_seeded": {
+   "argv": [
+    "audit-repair",
+    "enable",
+    "--audit-id",
+    "audit-unknown",
+    "--task-id",
+    "00000000-0000-4000-8000-0000000000c7",
+    "--operator",
+    "op"
+   ],
+   "exit": 1,
+   "stderr": "",
+   "stdout": {
+    "error_type": "RepairRefused",
+    "exit_code": 1,
+    "reason_code": "unknown_audit",
+    "status": "refused"
+   }
+  },
+  "repair_enable_unknown": {
+   "argv": [
+    "audit-repair",
+    "enable",
+    "--audit-id",
+    "audit-unknown",
+    "--task-id",
+    "00000000-0000-4000-8000-0000000000c7",
+    "--operator",
+    "op"
+   ],
+   "exit": 1,
+   "stderr": "",
+   "stdout": {
+    "error_type": "RepairRefused",
+    "exit_code": 1,
+    "reason_code": "unknown_audit",
+    "status": "refused"
+   }
+  },
+  "repair_inspect_no_task": {
+   "argv": [
+    "audit-repair",
+    "inspect",
+    "--audit-id",
+    "audit-unknown"
+   ],
+   "exit": 0,
+   "stderr": "",
+   "stdout": {
+    "audit_id": "audit-unknown",
+    "audit_repair": "inspect",
+    "candidates": [],
+    "enabled": false,
+    "exit_code": 0,
+    "scope": []
+   }
+  },
+  "repair_inspect_unknown": {
+   "argv": [
+    "audit-repair",
+    "inspect",
+    "--audit-id",
+    "audit-unknown",
+    "--task-id",
+    "00000000-0000-4000-8000-0000000000c7"
+   ],
+   "exit": 0,
+   "stderr": "",
+   "stdout": {
+    "audit_id": "audit-unknown",
+    "audit_repair": "inspect",
+    "candidates": [],
+    "enabled": false,
+    "exit_code": 0,
+    "scope": []
+   }
+  },
+  "repair_status_unknown": {
+   "argv": [
+    "audit-repair",
+    "status",
+    "--audit-id",
+    "audit-unknown"
+   ],
+   "exit": 0,
+   "stderr": "",
+   "stdout": {
+    "audit_id": "audit-unknown",
+    "audit_repair": "status",
+    "corrections": [],
+    "counts": {
+     "admitted": 0,
+     "attempted": 0,
+     "deferred": 0,
+     "reconciliation_required": 0,
+     "repaired": 0,
+     "research_required": 0
+    },
+    "enabled": false,
+    "exit_code": 0,
+    "operator": null,
+    "schema": "urn:zeus:audit-repair:1",
+    "scope": [],
+    "updated_at": null
+   }
+  },
+  "seeded": {
+   "id": "00000000-0000-4000-8000-0000000000c7",
+   "status": "queued"
+  },
+  "session_close_seeded": {
+   "argv": [
+    "worker-session",
+    "close",
+    "--task-id",
+    "00000000-0000-4000-8000-0000000000c7"
+   ],
+   "exit": 1,
+   "stderr": "",
+   "stdout": {
+    "error_type": "WorkerSessionRefused",
+    "exit_code": 1,
+    "reason": "session_missing",
+    "refused": true
+   }
+  },
+  "session_close_unknown": {
+   "argv": [
+    "worker-session",
+    "close",
+    "--task-id",
+    "00000000-0000-4000-8000-0000000000c7"
+   ],
+   "exit": 1,
+   "stderr": "",
+   "stdout": {
+    "error_type": "WorkerSessionRefused",
+    "exit_code": 1,
+    "reason": "session_missing",
+    "refused": true
+   }
+  },
+  "session_status_all": {
+   "argv": [
+    "worker-session",
+    "status"
+   ],
+   "exit": 0,
+   "stderr": "",
+   "stdout": {
+    "authority": "read-only projection of worker_sessions rows: not a resume, a transcript continuity proof, an acceptance, a promotion or a release",
+    "blocked": 0,
+    "counts": {},
+    "exit_code": 0,
+    "schema": "zeus.worker-session.v1",
+    "sessions": [],
+    "truncated": false
+   }
+  },
+  "session_status_seeded": {
+   "argv": [
+    "worker-session",
+    "status",
+    "--task-id",
+    "00000000-0000-4000-8000-0000000000c7"
+   ],
+   "exit": 0,
+   "stderr": "",
+   "stdout": {
+    "authority": "read-only projection of worker_sessions rows: not a resume, a transcript continuity proof, an acceptance, a promotion or a release",
+    "blocked": 0,
+    "counts": {},
+    "exit_code": 0,
+    "schema": "zeus.worker-session.v1",
+    "sessions": [],
+    "truncated": false
+   }
+  },
+  "session_status_unknown": {
+   "argv": [
+    "worker-session",
+    "status",
+    "--task-id",
+    "00000000-0000-4000-8000-0000000000c7"
+   ],
+   "exit": 0,
+   "stderr": "",
+   "stdout": {
+    "authority": "read-only projection of worker_sessions rows: not a resume, a transcript continuity proof, an acceptance, a promotion or a release",
+    "blocked": 0,
+    "counts": {},
+    "exit_code": 0,
+    "schema": "zeus.worker-session.v1",
+    "sessions": [],
+    "truncated": false
+   }
+  }
+ }
+}
