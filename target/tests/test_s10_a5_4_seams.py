@@ -3,9 +3,9 @@
 
 MemoryStore, a recording observer behind the catalog-checking wrapper (a non-catalog attribute refuses and fails the test); no
 provider, process, Git or PostgreSQL. Wired: `ci_observed` (DeliveryState.emit_check) and the release_queue `queue_item_waited`
-(the controller tick's claim). Unwired, reported: the cleanup ledger (no caller holds an observer). S10 F2: the frontdesk and
-research-dispatch claims are wired by composition wrappers (composition.queue_waits, tests in test_s10_r1_f2b.py), not by the
-S8-pinned owners.
+(the controller tick's claim). S10 F2 wired the cleanup ledger (test_s10_r1_f2a.py: the executor's container path and the
+`isolated_worker_runs reconcile` step), and the frontdesk and research-dispatch claims through composition wrappers
+(composition.queue_waits, tests in test_s10_r1_f2b.py), not through the S8-pinned owners.
 """
 from __future__ import annotations
 
@@ -93,7 +93,7 @@ def test_the_ci_stage_hands_emit_check_its_claim():
     github = SimpleNamespace(observe=lambda candidate: {"head": "h", "checks": checks(*(["success"] * 4))})
     claim = {"id": "r1", "attempt": 2}
     CiObservation(MemoryStore(), github=github, state=state).observe_ci(PLAN, {"head": "h"}, claim)
-    assert seen[0][1] == {"claim": claim} and seen[0][0][2] == AWAITING_CI
+    assert seen[0][1] == {"claim": claim, "durations": None} and seen[0][0][2] == AWAITING_CI  # S10 F2: the adapter's timing mapping (None: this port reports none)
 
 
 # ----- queue_item_waited (release_queue) --------------------------------------------------------------------------------
@@ -148,7 +148,7 @@ def test_the_controller_tick_emits_once_per_claim_and_nothing_for_a_busy_release
     assert tick(None, observer) == {"outcome": "controller_lease_held"} and len(waits(recorder)) == 1  # busy: no claim, no event
 
 
-# ----- cleanup_recorded (the ledger seam; no caller holds an observer) -------------------------------------------------
+# ----- cleanup_recorded (the ledger seam; its callers are wired since S10 F2) -------------------------------------------------
 class Container:
     id, name = "c1", "zeus-worker-r1"
     config = {"limits": {"cleanup_seconds": 1}}
@@ -236,7 +236,6 @@ def test_reconcile_emits_per_record(tmp_path):
 
 
 # ----- the registry -----------------------------------------------------------------------------------------------------
-def test_the_wired_features_are_instrumented_and_the_unwired_cleanup_names_its_seam():
-    for feature in ("ci_checks", "queue_wait"):
+def test_the_wired_features_are_instrumented():
+    for feature in ("ci_checks", "queue_wait", "cleanup"):  # S10 F2: cleanup is wired (it named its seam before)
         assert FEATURES[feature].instrumented is True and FEATURES[feature].seam is None
-    assert FEATURES["cleanup"].instrumented is False and "cleanup_ledger" in FEATURES["cleanup"].seam
