@@ -6,9 +6,10 @@ Layer: harness (never shipped); standard library and psycopg only, and never `co
 patched, against a labelled disposable PostgreSQL (`ZEUS_REBUILD_PG_DSN`) AND a labelled disposable Redis
 (`ZEUS_REBUILD_REDIS_URL`, rule R-c7): `HARNESS_DATABASE_URL` is that DSN with `options=-c search_path=<schema>,public` on
 one FRESH schema (dropped at the end), `HARNESS_REDIS_URL` is the Redis URL and `HARNESS_REDIS_NAMESPACE` is unique per run.
-Cases, after `init-db`: `doctor` (online), `flush_empty`, `send` (the stream id, chosen by the Redis server, is normalized
-in-driver to `<STREAM_ID>`), `observe_status` and `observe_collect` on an empty spool, and `observe_reconcile_unknown`
-(M7's refusal). Each records argv, the SystemExit code, parsed stdout and parsed stderr, the fixture directory path
+Cases, after `init-db`: `observe_status` and `observe_collect` first, each in its own fresh runtime directory (an empty
+spool; the report's wall-clock `orphans.as_of` is normalized in-driver to `<AS_OF>`), then `doctor` (online),
+`flush_empty`, `send` (the stream id, chosen by the Redis server, is normalized in-driver to `<STREAM_ID>`) and
+`observe_reconcile_unknown` (M7's refusal). The declared normalizations are `<FIXTURE>`, `<STREAM_ID>` and `<AS_OF>`. Each records argv, the SystemExit code, parsed stdout and parsed stderr, the fixture directory path
 normalized to `<FIXTURE>`. No mask is declared.
 """
 
@@ -94,13 +95,19 @@ def run_all(api, work: Path, dsn: str, redis_url: str) -> dict:
             conn.execute(f'CREATE SCHEMA "{schema}"')
         os.environ["HARNESS_DATABASE_URL"] = make_conninfo(dsn, options=f"-c search_path={schema},public")
         case("init_db", ["init-db"])
+        # (d) and (e) run first, each in its OWN fresh runtime directory: no observer has written a health record there.
+        os.environ["HARNESS_RUNTIME_DIR"] = str(fixture / "rt-status")
+        status = case("observe_status", ["observe", "status"])
+        if isinstance(status["stdout"], dict) and "as_of" in status["stdout"].get("orphans", {}):
+            status["stdout"]["orphans"]["as_of"] = "<AS_OF>"
+        os.environ["HARNESS_RUNTIME_DIR"] = str(fixture / "rt-collect")
+        case("observe_collect", ["observe", "collect"])
+        os.environ["HARNESS_RUNTIME_DIR"] = str(fixture / "rt-main")
         case("doctor", ["doctor"])
         case("flush_empty", ["flush"])
         sent = case("send", ["send", str(message)])
         if isinstance(sent["stdout"], dict) and STREAM_ID.match(str(sent["stdout"].get("stream_id"))):
             sent["stdout"]["stream_id"] = "<STREAM_ID>"
-        case("observe_status", ["observe", "status"])
-        case("observe_collect", ["observe", "collect"])
         case("observe_reconcile_unknown", ["observe", "reconcile", "no-such-record", "--resolution", "discard",
                                             "--operator", "op", "--reason", "r"])
     finally:
