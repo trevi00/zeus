@@ -4,8 +4,7 @@ Every assertion is M7's, unchanged. Adaptations (construction, import and patch-
 - every `codex_harness` name is `m7_observation`'s (its S9 home; `Harness`, `organization` the shims' via `m7_coordination`, `Executor` is `m7_intake.Executor`: `m7_executor.Executor` with the evidence gate wired, `executor.evidence` replaced as in M7; `EvidenceInspector(artifacts, policy)` is the moved class with the process-tree port composition injects); `repository` is the ported `test_git_workspace`'s;
 - patch target: `codex_harness.adapters.executor.AppServer` is `m7_executor.AppServer` (read at open time); `SpoolFull` is `observation.ports.SpoolFull`.
 
-Kept skipped whole, unrewritten:
-- `test_an_accepted_answer_and_its_checked_inspection_are_one_correlated_story`, `test_an_answer_without_claims_is_recorded_as_no_claims_and_never_as_success`, `test_an_unchecked_claim_is_incomplete_and_the_denominator_says_why`, `test_a_failed_inspection_is_unknown_and_its_exception_text_reaches_no_surface`, `test_the_boundary_events_reach_the_monitoring_projection_and_replay_adds_no_second_count` (5 tests): S10. M7's `Executor._inspect_evidence` emits `development.evidence_inspection_started` and `_finished` around the inspection; `_inspect_evidence` (the EvidenceGate) is composition-level orchestration owned by S10 (OWNER-DECISIONS-S10 #7; PREP-S10 §EvidenceGate: no target home before it) and no S1-S9 target object emits them (the shim's evidence gate, `m7_intake.Executor`, does not). The tests that need no such event run.
+The five inspection-boundary tests (`test_an_accepted_answer_and_its_checked_inspection_are_one_correlated_story` and its four siblings) RUN, bodies unchanged: M7's `Executor._inspect_evidence` emits `development.evidence_inspection_started` and `_finished`, and the `m7_executor` shim routes it to `composition.evidence_gate.EvidenceGate` (OWNER-DECISIONS-S10 #7).
 
 M7 docstring:
 Output and evidence-inspection boundaries as observations (operating-portfolio-001, LOGGING.md).
@@ -176,7 +175,6 @@ def test_only_a_declared_terminal_subtype_can_name_a_reason_of_its_own():
 
 # ---- accepted output, checked evidence ----------------------------------------------------------
 
-@pytest.mark.skip(reason="S10: the executor composition's evidence_inspection_started/_finished events (Executor._inspect_evidence)")
 def test_an_accepted_answer_and_its_checked_inspection_are_one_correlated_story(tmp_path, monkeypatch):
     s = build(tmp_path, monkeypatch, lambda schema, model: turn(answer_text([PASSING_CLAIM]), schema, model))
     row = s.executor.execute_one('worker:implementation')
@@ -319,7 +317,6 @@ def test_structured_output_retry_exhaustion_is_named_apart_and_bound_to_its_arti
 
 # ---- empty and failed evidence -------------------------------------------------------------------
 
-@pytest.mark.skip(reason="S10: the executor composition's evidence_inspection_started/_finished events (Executor._inspect_evidence)")
 def test_an_answer_without_claims_is_recorded_as_no_claims_and_never_as_success(tmp_path, monkeypatch):
     s = build(tmp_path, monkeypatch, lambda schema, model: turn(answer_text([]), schema, model))
     row = s.executor.execute_one('worker:implementation')
@@ -336,7 +333,6 @@ def test_an_answer_without_claims_is_recorded_as_no_claims_and_never_as_success(
     assert one(rows, 'development.task_completed')['attributes']['status'] == 'succeeded'
 
 
-@pytest.mark.skip(reason="S10: the executor composition's evidence_inspection_started/_finished events (Executor._inspect_evidence)")
 def test_an_unchecked_claim_is_incomplete_and_the_denominator_says_why(tmp_path, monkeypatch):
     s = build(tmp_path, monkeypatch,
               lambda schema, model: turn(answer_text([PASSING_CLAIM, 'rm -rf build']), schema, model))
@@ -348,7 +344,6 @@ def test_an_unchecked_claim_is_incomplete_and_the_denominator_says_why(tmp_path,
     assert finished['attributes']['not_checked'] == 1
 
 
-@pytest.mark.skip(reason="S10: the executor composition's evidence_inspection_started/_finished events (Executor._inspect_evidence)")
 def test_a_failed_inspection_is_unknown_and_its_exception_text_reaches_no_surface(tmp_path, monkeypatch):
     """INJECTED fault: the recorded inspection raises. The canary stands for any foreign message."""
     s = build(tmp_path, monkeypatch, lambda schema, model: turn(answer_text([PASSING_CLAIM]), schema, model))
@@ -383,7 +378,6 @@ def test_a_failed_inspection_is_unknown_and_its_exception_text_reaches_no_surfac
 
 # ---- collection and projection ---------------------------------------------------------------------
 
-@pytest.mark.skip(reason="S10: the executor composition's evidence_inspection_started/_finished events (Executor._inspect_evidence)")
 def test_the_boundary_events_reach_the_monitoring_projection_and_replay_adds_no_second_count(tmp_path, monkeypatch):
     s = build(tmp_path, monkeypatch, lambda schema, model: turn(answer_text([PASSING_CLAIM]), schema, model))
     s.executor.execute_one('worker:implementation')

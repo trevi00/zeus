@@ -16,12 +16,9 @@ PORTING NOTES (S4 ported executor suites; the M7 assertions are unchanged):
   `LeaseProgress` and the `LEASE_*_SECONDS` constants, and `ei`/`ie`/`pe` are the `evidence.adapters` modules).
 - The `setup_implementation` fixture, `PY` and `policy` are M7's own `from test_evidence_inspection import ...` line (the
   ported suite; batch U2b deleted the local placeholder).
-- SKIPPED `S10: EvidenceGate (OWNER-DECISIONS-S10 #7)`, kept whole: test_the_executor_stops_a_replay_...,
-  test_the_implement_path_still_inspects_..., test_the_executor_always_supplies_its_own_ownership_guard_...,
-  test_the_executor_publishes_nothing_when_the_lease_ends_...: each reaches M7's `Executor._inspect_evidence`, the
-  EvidenceGate, composition-level orchestration decided at the S10 executor composition unit; the `m7_executor` shim's
-  `_inspect_evidence` raises on purpose and is never to build the gate. Their bodies are kept unchanged, so the names
-  that exist only there are unresolved by design (file-level `# ruff: noqa: F821`).
+- test_the_executor_stops_a_replay_..., test_the_implement_path_still_inspects_..., test_the_executor_always_supplies_its_own_ownership_guard_...,
+  test_the_executor_publishes_nothing_when_the_lease_ends_...: RUN, bodies unchanged: each reaches M7's `Executor._inspect_evidence`, which the
+  `m7_executor` shim routes to `composition.evidence_gate.EvidenceGate` (OWNER-DECISIONS-S10 #7). `SimpleNamespace` (for `executor_with`) and `ledger` (M7's `application.evidence_inspection` alias) are imported, and `ei.ProcessTree` is bound per test by the autouse fixture above.
 
 Batch U3 (V6 retrofit): the 15 cases that had been left out are copied verbatim and RUN (the ledger/inspector cases; the
 inspectors, `EvidenceInspections`, `forwards_progress`, `BUCKET`/`NOTICES` and `ProcessTree` are the moved objects). Their
@@ -35,6 +32,7 @@ import subprocess
 import threading
 import time
 from inspect import signature
+from types import SimpleNamespace
 
 import m7_executor
 import pytest
@@ -50,6 +48,7 @@ from codex_harness.coordination.application.execution_time import ExecutionTimeE
 from codex_harness.evidence.adapters import evidence_inspection as ei
 from codex_harness.evidence.adapters import isolated_evidence as ie
 from codex_harness.evidence.adapters import project_evidence as pe
+from codex_harness.evidence.application import evidence_inspection as ledger
 from codex_harness.evidence.application.evidence_inspection import (
     BUCKET,
     NOTICES,
@@ -65,6 +64,14 @@ from codex_harness.kernel.policy import POLICY
 from codex_harness.routing.adapters.organization_source import packaged_organization
 from codex_harness.storage.adapters.file_artifacts import FileArtifacts
 from codex_harness.storage.adapters.memory_store import MemoryStore
+
+
+@pytest.fixture(autouse=True)
+def _module_process_tree(monkeypatch):
+    """M7's `evidence_inspection` module held `ProcessTree`; the moved module takes it as a port, so the two cases that patch
+    `ei.ProcessTree.spawn` read the host_os class through this per-test binding."""
+    monkeypatch.setattr(ei, 'ProcessTree', ProcessTree, raising=False)
+
 
 SLEEP = 'import time; time.sleep({})'
 LOST = 'Stale or expired task execution'
@@ -328,7 +335,6 @@ def executor_with(tmp_path, store):
 
 
 def test_the_executor_stops_a_replay_whose_execution_was_taken_over_and_publishes_no_verdict(tmp_path, monkeypatch):
-    pytest.skip("S10: EvidenceGate (OWNER-DECISIONS-S10 #7)")
     """The affected path itself: `_inspect_evidence` under a real claimed lease, with the takeover
     INJECTED at the moment the replay starts."""
     monkeypatch.setattr(ei, 'POLL_SECONDS', 0.05)
@@ -357,7 +363,6 @@ def test_the_executor_stops_a_replay_whose_execution_was_taken_over_and_publishe
 
 
 def test_the_implement_path_still_inspects_and_completes_with_a_live_lease(setup_implementation):  # noqa: F811
-    pytest.skip("S10: EvidenceGate (OWNER-DECISIONS-S10 #7)")
     """No-callback compatibility end to end: the same `execute_one` as before, now carrying a live
     per-call check, still records the inspection and succeeds."""
     row = setup_implementation.executor.execute_one('worker:implementation')
@@ -521,7 +526,6 @@ def test_a_cache_hit_is_fenced_and_the_guard_opens_no_transaction_of_its_own(tmp
 
 
 def test_the_executor_always_supplies_its_own_ownership_guard_to_the_ledger(tmp_path, monkeypatch):
-    pytest.skip("S10: EvidenceGate (OWNER-DECISIONS-S10 #7)")
     """Production route: the executor's guard is this lease's own `_owned`, taken in the ledger's
     transaction. A legacy caller may omit one; the executor never does."""
     store, workflow, lease = leased()
@@ -545,7 +549,6 @@ def test_the_executor_always_supplies_its_own_ownership_guard_to_the_ledger(tmp_
 
 
 def test_the_executor_publishes_nothing_when_the_lease_ends_after_the_last_boundary(tmp_path, monkeypatch):
-    pytest.skip("S10: EvidenceGate (OWNER-DECISIONS-S10 #7)")
     """The gap only the transaction fence can close: the takeover is INJECTED after the inspection-end
     boundary check, while the row is being built, so the write transaction is the one that refuses."""
     store, workflow, lease = leased()
