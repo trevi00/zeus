@@ -4,8 +4,10 @@ workflow behaviour. No product module changes; these characterize, they do not p
 - G1 (real Redis): a reclaim (`XAUTOCLAIM` by idle time) racing a consumer that is still handling the entry.
   Idle is not proof the effect stopped, so both consumers may run `workflow.handle`; business idempotency is by
   message identity (never entry id) in the workflow/store, so the second handle must be a no-op.
-- G2 (real Redis) and G2b (fake client, runs everywhere): `RedisBus.dead_letter` is `XADD <ns>:dead-letter` THEN
-  `ack`, two commands. A crash between them leaves the entry pending, and a redelivery dead-letters it again.
+- G2 (real Redis) and G2b (fake client, runs everywhere): `RedisBus.dead_letter` is ONE Lua script (XADD
+  `<ns>:dead-letter` then XACK). Declared intended change, S10 A5-1a (DESIGN-s10 §17a); the S9 window (a crash
+  between two commands leaving a pending entry behind a record) no longer exists. A fault before the script
+  leaves no record and the entry pending; the redelivery writes exactly one record.
 
 Real-Redis tests are integration-gated: they skip unless `HARNESS_REDIS_URL` is set (target-integration sets it).
 """
@@ -103,36 +105,35 @@ def consume_one(bus, workflow, consumer, idle_ms):
 
 
 @needs_redis
-def test_a_crash_between_dead_letter_xadd_and_xack_leaves_the_entry_pending_and_a_redelivery_writes_a_second_record():
-    """Matrix row G2 (real Redis). `dead_letter` is XADD then ack; the ack fails once, modelling a crash between
-    the two commands. PROVES: the entry stays pending while the dead-letter stream already holds ONE record; the
-    redelivery (`receive(idle_ms=0)`) dead-letters again with the real ack, so the stream holds TWO records with the
-    same `source` and `entry_id`, nothing is pending, and no workflow effect ever ran for the poison entry.
-    This characterizes the window; it is NOT a user-visible defect today, because no dead-letter consumer exists in
-    the target (the duplicate record is only a duplicate audit line). An atomic script would be a later owner
-    decision on this evidence."""
+def test_the_dead_letter_is_atomic_a_fault_before_the_script_leaves_no_record_and_the_redelivery_writes_one():
+    """Matrix row G2 (real Redis), declared intended change, S10 A5-1a (DESIGN-s10 §17a); the S9 window no longer
+    exists. `dead_letter` is one `EVAL` (XADD then XACK). The first call fails BEFORE the script (patched
+    `client.eval` raises once for the dead-letter script only). PROVES: 0 records and the entry still pending; the
+    redelivery (`receive(idle_ms=0)`) writes exactly 1 record with that `source` and `entry_id`, 0 entries are
+    pending, and no workflow effect ever ran for the poison entry."""
     bus = RedisBus(REDIS_URL, "zeus-s9-g2-" + uuid4().hex)
     workflow = Workflow(MemoryStore(), organization())
     dead_stream = bus.namespace + ":dead-letter"
     try:
         entry_id = bus.client.xadd(bus.stream(AGENT), poison_fields())
-        real_ack, calls = bus.ack, []
+        real_eval, calls = bus.client.eval, []
 
-        def crash_once(agent, entry):
-            calls.append(entry)
-            if len(calls) == 1:
-                raise RedisConnectionError("fixture: crash between XADD and XACK")
-            real_ack(agent, entry)
+        def fault_once(script, *args):
+            if script == RedisBus._DEAD_LETTER_SCRIPT:
+                calls.append(args)
+                if len(calls) == 1:
+                    raise RedisConnectionError("fixture: fault before the dead-letter script")
+            return real_eval(script, *args)
 
-        with patch.object(RedisBus, "ack", side_effect=crash_once):
+        with patch.object(bus.client, "eval", side_effect=fault_once):
             with pytest.raises(RedisConnectionError):
                 consume_one(bus, workflow, "consumer-a", 60000)
             assert [r["message_id"] for r in pending_rows(bus, AGENT)] == [entry_id]
-            assert bus.client.xlen(dead_stream) == 1
+            assert bus.client.xlen(dead_stream) == 0
             assert consume_one(bus, workflow, "consumer-b", 0) == entry_id
 
         records = bus.client.xrange(dead_stream)
-        assert len(records) == 2
+        assert len(records) == 1
         assert {(f["source"], f["entry_id"]) for _, f in records} == {(bus.stream(AGENT), entry_id)}
         assert pending_rows(bus, AGENT) == []
         with workflow.store.transaction() as tx:
@@ -142,38 +143,40 @@ def test_a_crash_between_dead_letter_xadd_and_xack_leaves_the_entry_pending_and_
 
 
 class FakeStreamClient:
-    """LABELLED in-memory stand-in implementing only `xadd` and `xack`, with a pending set; `fail_ack_once` is an
-    injected fault. It is not a Redis observation."""
+    """LABELLED in-memory stand-in that emulates the dead-letter script (XADD to KEYS[1] then XACK on KEYS[2]) as
+    one step, with a pending set; `fail_before_eval_once` is an injected fault raised before the script runs. It
+    is not a Redis observation."""
 
     def __init__(self):
-        self.streams, self.pending, self.fail_ack_once = {}, {"e-1"}, False
+        self.streams, self.pending, self.fail_before_eval_once = {}, {"e-1"}, False
 
-    def xadd(self, stream, fields):
-        self.streams.setdefault(stream, []).append(dict(fields))
-        return f"{len(self.streams[stream])}-0"
-
-    def xack(self, stream, group, entry_id):
-        if self.fail_ack_once:
-            self.fail_ack_once = False
-            raise RedisConnectionError("fixture: crash between XADD and XACK")
+    def eval(self, script, numkeys, *args):
+        assert script == RedisBus._DEAD_LETTER_SCRIPT and numkeys == 2
+        if self.fail_before_eval_once:
+            self.fail_before_eval_once = False
+            raise RedisConnectionError("fixture: fault before the dead-letter script")
+        dead, source, src, entry_id, body, reason = args
+        self.streams.setdefault(dead, []).append(
+            {"source": src, "entry_id": entry_id, "body": body, "reason": reason})
         self.pending.discard(entry_id)
         return 1
 
 
-def test_g2b_dead_letter_writes_before_it_acks_so_a_failed_ack_duplicates_the_record():
-    """Matrix row G2b (fake client, runs everywhere): the same ordering facts without Redis. XADD happens first and
-    is not undone when the ack fails: the entry stays pending with one record; the redelivered dead-letter adds a
-    second record with identical `source` and `entry_id` and the ack finally clears the pending entry."""
+def test_g2b_dead_letter_is_atomic_a_fault_before_the_script_leaves_no_record_and_the_redelivery_writes_one():
+    """Matrix row G2b (fake client, runs everywhere), declared intended change, S10 A5-1a (DESIGN-s10 §17a); the
+    S9 window no longer exists. Over a LABELLED fake that emulates the script: a fault before it leaves 0 records
+    and the entry pending; the redelivery writes exactly 1 record with that `source` and `entry_id` and 0 entries
+    are pending."""
     bus = RedisBus("redis://localhost:6379", "ns")
     bus.client = FakeStreamClient()
     fields = poison_fields()
-    bus.client.fail_ack_once = True
+    bus.client.fail_before_eval_once = True
     with pytest.raises(RedisConnectionError):
         bus.dead_letter(AGENT, "e-1", fields, "bad body")
     assert bus.client.pending == {"e-1"}
-    assert len(bus.client.streams["ns:dead-letter"]) == 1
+    assert bus.client.streams.get("ns:dead-letter", []) == []
     bus.dead_letter(AGENT, "e-1", fields, "bad body")
     records = bus.client.streams["ns:dead-letter"]
-    assert len(records) == 2
+    assert len(records) == 1
     assert {(r["source"], r["entry_id"]) for r in records} == {("ns:agent:" + AGENT, "e-1")}
     assert bus.client.pending == set()

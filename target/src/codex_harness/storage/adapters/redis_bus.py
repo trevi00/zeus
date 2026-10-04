@@ -41,6 +41,14 @@ def run_namespace(prefix: str, run_id: str) -> str:
 
 
 class RedisBus:
+    # INV-MESSAGE-001, RSM G2: the dead-letter record and the acknowledgement are one atomic step.
+    # KEYS[1] dead-letter stream, KEYS[2] source stream; ARGV source, entry_id, body, reason.
+    _DEAD_LETTER_SCRIPT = """
+redis.call('XADD', KEYS[1], '*', 'source', ARGV[1], 'entry_id', ARGV[2], 'body', ARGV[3], 'reason', ARGV[4])
+redis.call('XACK', KEYS[2], 'workers', ARGV[2])
+return 1
+"""
+
     # INV-MESSAGE-001: group inspection and deletion must be atomic so pending
     # and not-yet-delivered payloads remain available for at-least-once delivery.
     _COMPACT_SCRIPT = """
@@ -221,11 +229,11 @@ return redis.call('XADD', KEYS[2], '*', 'body', ARGV[2])
         return int(self.client.eval(self._COMPACT_SCRIPT, 1, self.stream(agent), count))
 
     def dead_letter(self, agent: str, entry_id: str, fields: dict, reason: str) -> None:
-        self.client.xadd(f"{self.namespace}:dead-letter", {
-            "source": self.stream(agent), "entry_id": entry_id,
-            "body": fields.get("body", ""), "reason": reason,
-        })
-        self.ack(agent, entry_id)
+        # RSM G2, DESIGN-s10 §17a: XADD and XACK run as one server-side step, so a crash can no longer
+        # leave the entry pending behind a written record. A reclaim race can still dead-letter one
+        # entry twice, so any replay of the dead-letter stream STILL REQUIRES dedup by (source, entry_id).
+        self.client.eval(self._DEAD_LETTER_SCRIPT, 2, f"{self.namespace}:dead-letter", self.stream(agent),
+                         self.stream(agent), entry_id, fields.get("body", ""), reason)
 
     @staticmethod
     def decode(fields: dict) -> dict:
