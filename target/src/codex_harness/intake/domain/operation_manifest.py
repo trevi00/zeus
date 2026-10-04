@@ -35,11 +35,6 @@ GOAL_FIELDS = {"path", "sha256", "criterion", "rationale"}
 PLAN_FIELDS = {"objective", "acceptance_criteria", "allowed_paths"}
 DESIGN_FIELDS = {"session_id", "packet_digest"}
 CLAUDE_FIELDS = {"model", "timeout_seconds", "max_budget_usd"}
-# G20-D4 (DESIGN-s10 §14): the optional declared research exemption. The class names equal
-# research.domain.research_package.EXEMPTION_CLASSES (research depends on intake, so intake keeps its own copy; a test pins them equal).
-EXEMPTION_CLASSES = ("refactor-same-meaning", "bugfix-with-failing-test", "docs-only", "objective-quality",
-                     "unchanged-accepted-procedure", "research-approved-audit")
-EXEMPTION_REASON_LIMIT = 500
 WORKER = "worker:implementation"
 ACTION = "implement"
 TEXT_LIMIT = 12000
@@ -51,12 +46,6 @@ class ManifestError(ContractError):
 
 def _text(value, limit=TEXT_LIMIT) -> bool:
     return type(value) is str and 0 < len(value.strip()) <= limit
-
-
-def valid_research_exemption(value) -> bool:
-    """G20-D4: `{class, reason}` with a known class and a non-empty reason of at most 500 characters."""
-    return (isinstance(value, dict) and set(value) == {"class", "reason"} and value["class"] in EXEMPTION_CLASSES
-            and _text(value["reason"], EXEMPTION_REASON_LIMIT))
 
 
 def _integer(value) -> bool:
@@ -103,11 +92,7 @@ def validate_manifest(document, policy) -> dict:
     if not isinstance(document, dict) or document.get("schema") not in {SCHEMA, SCHEMA_V2}:
         raise ManifestError("Operation manifest schema is not " + SCHEMA + " or " + SCHEMA_V2)
     schema = document["schema"]
-    # G20-D4: `research_exemption` is the one optional root field; absent, the canonical form is unchanged.
-    _fields({k: v for k, v in document.items() if k != "research_exemption"},
-            FIELDS_V2 if schema == SCHEMA_V2 else FIELDS, "root")
-    if "research_exemption" in document and not valid_research_exemption(document["research_exemption"]):
-        raise ManifestError("Operation manifest research_exemption needs a known class and a reason of at most 500 characters")
+    _fields(document, FIELDS_V2 if schema == SCHEMA_V2 else FIELDS, "root")
     if type(document["id"]) is not str or ID.fullmatch(document["id"]) is None:
         raise ManifestError("Operation manifest id must be a short safe token")
     if type(document["base_revision"]) is not str or REVISION.fullmatch(document["base_revision"]) is None:
@@ -156,8 +141,6 @@ def validate_manifest(document, policy) -> dict:
                             "max_budget_usd": claude["max_budget_usd"]}}
     if design is not None:
         canonical["design"] = {"session_id": design["session_id"], "packet_digest": design["packet_digest"]}
-    if "research_exemption" in document:
-        canonical["research_exemption"] = dict(document["research_exemption"])
     return canonical
 
 

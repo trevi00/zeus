@@ -244,9 +244,6 @@ class Operation:
         if continuation is not None:
             # Top-level and owner-written only; the executor re-reads the same lane row before use.
             details["continuation"] = dict(continuation)
-        if "research_exemption" in manifest:
-            # G20-D4: the declared research exemption travels with the assignment, only when present.
-            details["operation"]["research_exemption"] = dict(manifest["research_exemption"])
         if "design" in manifest:
             # The worker and reviewer can trace the plan authority; the reference is not knowledge.
             details["operation"]["design"] = dict(manifest["design"])
