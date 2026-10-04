@@ -41,8 +41,8 @@ Named adaptations (each is a construction/patch-point adaptation, never a behavi
   the Git `show`, research's `hook_apply` and host_os's runner and channel environment. `.git` and `.artifacts` are readable,
   and `canary`/`configuration` call `materialize` through the facade, so a test's replacement of `adapter.materialize` is seen.
 - The M7 module names of `test_background_processes` (`commands`, `app_server`, `process_tree`, `isolated_worker`, `operation_cli`,
-  `source_verification`, `audit_runner`, `source_execution`; `published_ports`, `port_diagnosis` and `fleet_runtime` are the target
-  modules themselves) are `_View` stand-ins that route a read or an assignment to the target module that now owns the name:
+  `source_verification`, `audit_runner`, `source_execution`; `published_ports` and `port_diagnosis` are the target
+  modules themselves) and `fleet_runtime` (a view over `coordination.adapters.fleet_runtime`, below) are `_View` stand-ins that route a read or an assignment to the target module that now owns the name:
   `commands` -> `host_os.adapters.process_groups` / `windows.no_console` (so `monkeypatch.setattr(commands, "os", ...)` lands on
   `process_groups.os`); `app_server` -> `execution.adapters.providers.codex_app_server` whose `AppServer(**kw)` is built with the
   `ChokepointProcesses()` port composition injects; `process_tree` -> `host_os.adapters.process_tree`, with `CREATE_SUSPENDED` and
@@ -67,6 +67,7 @@ from uuid import uuid4
 
 from conftest import NATIVE_THRESHOLDS
 
+from codex_harness.composition import fleet as _fleet_composition
 from codex_harness.context.adapters import worker_profile
 from codex_harness.context.adapters.composition_sources import (
     GitRepository,
@@ -75,7 +76,7 @@ from codex_harness.context.adapters.composition_sources import (
 )
 from codex_harness.context.adapters.review_context import review_context
 from codex_harness.context.application.compose import ContextComposer
-from codex_harness.coordination.adapters import fleet_runtime  # noqa: F401 - the M7 module name
+from codex_harness.coordination.adapters import fleet_runtime as _fleet_runtime
 from codex_harness.coordination.application.breaker import Breaker
 from codex_harness.coordination.application.decision_claims import claim_decision
 from codex_harness.coordination.application.decision_recovery import release_review_policy
@@ -92,6 +93,7 @@ from codex_harness.coordination.application.workflow import Workflow
 from codex_harness.evidence.adapters import project_evidence
 from codex_harness.evidence.domain.project_evidence import requires_container, worker_schema
 from codex_harness.execution.adapters import execution_output, output_schema
+from codex_harness.execution.adapters.call_budget import CallBudget
 from codex_harness.execution.adapters.containers import handoff, owned_container, staging
 from codex_harness.execution.adapters.providers import claude_cli, codex_app_server, codex_exec
 from codex_harness.execution.adapters.providers.claude_cli import claude_settings
@@ -242,6 +244,38 @@ audit_runner = _View(extra={"AuditRunner": lambda root, artifacts, host_executio
     root, artifacts, host_execution, processes=ChokepointProcesses())})
 source_execution = _View(extra={"bounded_command": lambda argv, timeout: _source_execution.bounded_command(
     argv, timeout, processes=ChokepointProcesses())})
+
+
+class _LaneLauncher(_fleet_runtime.LaneLauncher):
+    """M7's `LaneLauncher(...)`: the isolation loader, the call budget (only when the test passes none) and the spawn are
+    the `composition.fleet` bindings (R-c16)."""
+
+    def __init__(self, *args, load_isolation=None, budget=None, popen=None, **kwargs):
+        super().__init__(
+            *args, load_isolation=load_isolation or owned_container.load_host_isolation,
+            budget=budget if budget is not None else CallBudget(),
+            popen=popen or _fleet_composition.lane_popen, **kwargs)
+
+
+_FLEET_LANE_ENVIRONMENT = _fleet_runtime.lane_environment
+
+
+def _bound_lane_environment(lane, host_settings, base=None):
+    return _fleet_composition.lane_environment(lane, host_settings, base)
+
+
+class _FleetRuntimeView(_View):
+    def __setattr__(self, name, value):
+        if name != "lane_environment":
+            return super().__setattr__(name, value)
+        if value is _bound_lane_environment:  # monkeypatch's undo: put the module's own function back
+            _fleet_runtime.lane_environment = _FLEET_LANE_ENVIRONMENT
+        else:  # M7's three-argument replacement: the loader keyword belongs to the target seam
+            _fleet_runtime.lane_environment = lambda lane, host, environ, *, load_isolation=None: value(lane, host, environ)
+
+
+fleet_runtime = _FleetRuntimeView(_fleet_runtime, extra={
+    "LaneLauncher": _LaneLauncher, "lane_environment": _bound_lane_environment})
 
 
 class _FacadeHost(HostHooks):

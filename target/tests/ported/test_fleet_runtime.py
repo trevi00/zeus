@@ -2,12 +2,11 @@
 
 Every assertion is M7's, unchanged. Adaptations, all construction/import: `Fleet`, `Harness`, `LaunchRefused`,
 `organization` and `unavailable` come from the `m7_coordination` shim (its docstring names the routing); `fleet_runtime`
-is `coordination.adapters.fleet_runtime`, `FleetRefused` is `coordination.domain.fleet`'s, `MemoryStore` is
+is the `m7_executor` view over `coordination.adapters.fleet_runtime` (its `LaneLauncher`, `lane_environment` and spawn are the
+`composition.fleet` bindings, rule R-c16), `FleetRefused` is `coordination.domain.fleet`'s, `MemoryStore` is
 `storage.adapters.memory_store`'s. `cli` and `fleet_cli` (M7 `codex_harness.cli`, `adapters.fleet_cli`: the S10 entry
 CLIs) are `unavailable("S10", ...)` placeholders that raise on use.
-- Skipped whole and unrewritten: the two LaneLauncher tests, because `coordination.adapters.fleet_runtime` has no
-  `LaneLauncher` (S10-entry GAP #3, OWNER-DECISIONS-S10 #3; the module also has no `lane_environment` or `read_receipt`
-  yet, which the first test calls before its `LaneLauncher` use); and the CLI test (S10: the entry CLIs).
+- Skipped whole and unrewritten: the CLI test (S10: the entry CLIs). The two LaneLauncher tests run (S10 C8a, GAP #3).
 - check-tree: the synthetic DSN in `ISOLATION` is written as two ADJACENT string literals split at the `@`
   (`"postgresql://harness:secret" "@127.0.0.1:55432/harness"`); Python joins them at parse time, so the AST and the value
   are identical to M7's single literal.
@@ -26,9 +25,9 @@ from types import SimpleNamespace
 
 import pytest
 from m7_coordination import Fleet, Harness, LaunchRefused, organization, unavailable
+from m7_executor import fleet_runtime
 from psycopg.conninfo import conninfo_to_dict
 
-from codex_harness.coordination.adapters import fleet_runtime
 from codex_harness.coordination.domain.fleet import FleetRefused
 from codex_harness.storage.adapters.memory_store import MemoryStore
 
@@ -102,7 +101,6 @@ class FakeConnection:
         return SimpleNamespace(fetchone=lambda: (row,) if row is not None else None)
 
 
-@pytest.mark.skip(reason="S10: LaneLauncher (OWNER-DECISIONS-S10 #3)")
 def test_lane_environment_sets_both_prefixes_and_requires_isolation(tmp_path):
     lane = config(tmp_path)["lanes"][0]
     env = fleet_runtime.lane_environment(lane, {**ISOLATION, "ZEUS_CLAUDE_EXECUTABLE": "claude"}, base={"PATH": "p"})
@@ -130,7 +128,6 @@ def test_lane_environment_sets_both_prefixes_and_requires_isolation(tmp_path):
     assert fleet_runtime.read_receipt("x", "lane_a", "op-1", FakeConnection("lane_a", {}, fail=OSError("down"))) == (None, "OSError")
 
 
-@pytest.mark.skip(reason="S10: LaneLauncher (OWNER-DECISIONS-S10 #3)")
 def test_launcher_spawns_real_child_in_lane_environment_and_reads_exact_receipt(tmp_path, monkeypatch):
     root, head = repository(tmp_path)
     stub = tmp_path / "stub.py"
