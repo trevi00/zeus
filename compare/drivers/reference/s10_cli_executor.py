@@ -28,7 +28,6 @@ import s10_cli_executor  # noqa: E402
 from codex_harness.cli import main  # noqa: E402
 
 
-
 @contextlib.contextmanager
 def scripted():
     ticks, counter = itertools.count(), itertools.count(1)
