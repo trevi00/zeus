@@ -136,7 +136,7 @@ S10_FAMILIES = {"entry.cli_storefree", "entry.cli_store.pg", "entry.cli_store_b.
                 "entry.cli_governance.pg", "entry.cli_research_gov.pg", "research.threshold_policy",
                 "entry.cli_executor.pgredis", "entry.cli_cycle_serve.pgredis", "entry.cli_operation.pg",
                 "entry.cli_audit_service.pg", "entry.cli_desk_program.pg", "entry.cli_continuation.pg", "entry.cli_fleet.pg", "entry.cli_host_delivery.pg", "entry.cli_owner_actions.pg"}
-S10_IMPLEMENTED = {"cli.parser", "entry.cli_storefree", "entry.cli_store.pg", "entry.cli_store_b.pg",
+S10_IMPLEMENTED = {"cli.parser", "entries.safe_matrix", "entry.cli_storefree", "entry.cli_store.pg", "entry.cli_store_b.pg",
                    "entry.cli_knowledge.pg", "entry.cli_bus.pgredis", "entry.cli_ticket_sdd.pg",
                    "coordination.continuation_binding", "entry.cli_governance.pg", "entry.cli_research_gov.pg",
                    "research.threshold_policy", "entry.cli_executor.pgredis", "entry.cli_cycle_serve.pgredis",
