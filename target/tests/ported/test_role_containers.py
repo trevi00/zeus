@@ -28,7 +28,8 @@ PORTING NOTES (S4 ported executor suites; the M7 assertions are unchanged):
 Batch U3 (V6 retrofit): the three desk/viewer-listener cases that had been left out are copied verbatim.
 test_serve_refuses_a_desk_on_the_viewer_port_before_binding RUNS: M7's `adapters.monitoring_web` is
 `observation.adapters.viewer_http` (its `serve` and `ThreadingHTTPServer`; the in-body import line is the adaptation). The other
-two are skipped whole, `S10: the monitor entry (monitor.listener_refusal)` and `S10: the monitor web entry (monitor.main)`.
+two run since S10 E2a: `monitor.listener_refusal`/`viewer_port` are `composition.monitor`'s, `monitor.main` is `entry.processes.monitor.main` (its
+`settings` is that module's, the patched listener class `observation.adapters.viewer_http.ThreadingHTTPServer`).
 """
 import json
 import os
@@ -973,9 +974,8 @@ def test_executor_hands_off_writer_evidence_after_the_transport_returns(tmp_path
 
 
 # ---- (f)6: the viewer listener never serves the desk ---------------------------------------------
-@pytest.mark.skip(reason="S10: the monitor entry (monitor.listener_refusal)")
 def test_the_viewer_web_service_refuses_to_start_with_a_desk_revision():
-    from codex_harness import monitor
+    from codex_harness.composition import monitor
 
     assert monitor.listener_refusal("web", None, "a" * 40, viewer=8787).startswith("monitor web refuses")
     assert monitor.listener_refusal("web", None, None, viewer=8787) is None
@@ -996,13 +996,12 @@ def test_serve_refuses_a_desk_on_the_viewer_port_before_binding(tmp_path, monkey
         monitoring_web.serve(tmp_path / "snapshot.json", 8790, desk=object(), viewer_port=8790)
 
 
-@pytest.mark.skip(reason="S10: the monitor web entry (monitor.main)")
 def test_monitor_web_main_refuses_before_any_listener_when_the_desk_is_configured(tmp_path, monkeypatch):
-    from codex_harness import monitor
+    from codex_harness.entry.processes import monitor
 
     monkeypatch.setattr(monitor, "settings", lambda: {"ZEUS_DESK_REVISION": "a" * 40})
     monkeypatch.setattr(sys, "argv", ["zeus-monitor", "web"])
-    monkeypatch.setattr("codex_harness.adapters.monitoring_web.ThreadingHTTPServer", Unexpected)
+    monkeypatch.setattr("codex_harness.observation.adapters.viewer_http.ThreadingHTTPServer", Unexpected)
     with pytest.raises(SystemExit, match="refuses to start"):
         monitor.main()
 

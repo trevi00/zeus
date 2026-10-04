@@ -10,8 +10,8 @@ Ported SOURCE M7 suite `tests/test_portfolio.py` (e38aa722) run against the S8 t
 unchanged; only imports and construction differ. `Fleet`/`FleetRunner`/`packaged_policy` are `m7_coordination`'s (the Fleet
 facade over the split S5/S6 objects), `Portfolio`, `packaged_definitions`, `portfolio` and `portfolio_reconciler` are the intake
 ones (same constructors), `validate_manifest` is `coordination.domain.operation`'s, `BUCKET_JOBS` the fleet state's, `digest`
-the kernel's. Kept whole and skipped, naming the owner: the monitor-envelope case (the S9 collectors exist, but
-`collectors.collect` takes the `CollectorPorts` that S10 composition wires; `monitoring` is a placeholder) and the case that
+the kernel's. The monitor-envelope case runs (S10 E2a): `monitoring` is the `m7_observation` facade over `collectors.collect` with the
+`CollectorPorts` that `composition.monitor.collector_ports` wires. Kept whole and skipped, naming the owner: the case that
 drives the `zeus fleet run` operator CLI (`fleet_cli.execute`, S10).
 """
 import json
@@ -21,7 +21,8 @@ from copy import deepcopy
 from types import SimpleNamespace
 
 import pytest
-from m7_coordination import Fleet, FleetRunner, packaged_policy, unavailable
+from m7_coordination import Fleet, FleetRunner, packaged_policy
+from m7_observation import monitoring
 
 from codex_harness.coordination.application.fleet.state import BUCKET_JOBS
 from codex_harness.coordination.domain.operation import validate_manifest
@@ -38,8 +39,6 @@ from codex_harness.intake.application.portfolio import (
 )
 from codex_harness.kernel.ids import digest
 from codex_harness.storage.adapters.memory_store import MemoryStore
-
-monitoring = unavailable("S10", "monitoring.read_only/collect (the monitor composition: collectors.collect needs its CollectorPorts)")
 
 CANARY = "CANARY-must-never-be-emitted"
 BASE = "a" * 40
@@ -303,7 +302,6 @@ def test_projection_samples_jobs_and_candidates_while_counting_every_row(tmp_pat
     assert len(view["investigations"][0]["job_ids"]) == 50 and view["investigations"][0]["count"] == 9
 
 
-@pytest.mark.skip(reason='S10: the monitor composition (collectors.collect needs the CollectorPorts that composition wires)')
 def test_monitor_envelope_is_additive_read_only_and_unavailable_on_store_failure(tmp_path, monkeypatch):
     monkeypatch.setattr(monitoring, "docker_facts", lambda repository, containers=None: [])
     monkeypatch.setattr(monitoring, "redis_facts", lambda url, agents: [])
