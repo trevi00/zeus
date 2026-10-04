@@ -300,7 +300,7 @@ class Executor:
                                            runner=process_groups.run_process,
                                            channel_environment=process_groups.python_channel_environment,
                                            interpreter=sys.executable),
-            continuations=ContinuationBindings(store), ids=SYSTEM_IDS)
+            continuations=ContinuationBindings(store), clock=SYSTEM_CLOCK, ids=SYSTEM_IDS)
         self.recovery = ExecutionRecovery(store, org, artifacts, ticket_binding=tickets.ticket_binding,
                                           audit_binding=audit_gate.binding,
                                           threshold_reviews=ThresholdReviewRecords(artifacts), clock=SYSTEM_CLOCK,
