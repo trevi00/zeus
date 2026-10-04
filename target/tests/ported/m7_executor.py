@@ -53,6 +53,7 @@ Named adaptations (each is a construction/patch-point adaptation, never a behavi
   assigned `list_revision` is installed behind a wrapper that drops the port argument and restored as it was); `operation_cli` exposes
   `GitSource` (`host_os.adapters.git_source`, moved ahead of the S10 CLI); `source_verification.GitSourceVerifier`,
   `audit_runner.AuditRunner` and `source_execution.bounded_command` are the target objects with `processes=ChokepointProcesses()`.
+- K1: RunTask's `continuations` port is `ContinuationBindings(store)` (M7 `Executor._continuation`, composed by `composition.operation.build_executor`).
 - Batch U3 route: `Executor._task_session_owner` is RunTask's function of that name (read on the class, with a stand-in `self`).
 - The context composer's threshold source is the packaged definition (`conftest.NATIVE_THRESHOLDS`), as the
   ported S2 suites supply it (research implements that port in S8).
@@ -80,6 +81,7 @@ from codex_harness.context.adapters.review_context import review_context
 from codex_harness.context.application.compose import ContextComposer
 from codex_harness.coordination.adapters import fleet_runtime as _fleet_runtime
 from codex_harness.coordination.application.breaker import Breaker
+from codex_harness.coordination.application.continuation.bindings import ContinuationBindings
 from codex_harness.coordination.application.decision_claims import claim_decision
 from codex_harness.coordination.application.decision_recovery import release_review_policy
 from codex_harness.coordination.application.decisions import DecisionFailures, DecisionOwnership
@@ -442,7 +444,7 @@ class Executor:
             ReconciliationRequired=ReconciliationRequired, PostExecutionRecordFailure=PostExecutionRecordFailure,
             worker_sessions=worker_sessions, isolation=port, evidence_profile=evidence_profile,
             knowledge=knowledge, research=research, policy_refusals=(DiscoveryPaused, DiscoveryRefused),
-            project_evidence=_ProjectEvidence(self),
+            project_evidence=_ProjectEvidence(self), continuations=ContinuationBindings(store),
             evidence_gate=SimpleNamespace(inspect=lambda *a, **k: self._inspect_evidence(*a, **k)),
             ids=SYSTEM_IDS)
         # RunTask reaches its own `_run`; route it through the shim so a test's patch of `executor._run` is seen.
