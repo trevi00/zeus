@@ -1,10 +1,10 @@
 """The production Executor and its builder (OWNER-DECISIONS-S10 #2, #7, #8, #12, #16, #17, #18; DESIGN-s10 §9-§11).
 
 Layer: composition
-Owns: HOST_PROFILE, host_evidence_profile, host_isolation, build_executor, Executor
-Does not own: RunTask (execution), ReviewDecisions (review), the isolated worker composition (S10 unit C5c), research_admission
-(S10 unit C5b-3)
-Entry points: build_executor, Executor, host_evidence_profile, host_isolation
+Owns: HOST_PROFILE, COMPOSITION_PROFILES, composition_profile, host_evidence_profile, host_isolation, build_executor, Executor
+Does not own: RunTask (execution), ReviewDecisions (review), the isolated worker (`composition.isolation`, C5c-1),
+research_admission (S10 unit C5b-3)
+Entry points: build_executor, Executor, composition_profile, host_evidence_profile, host_isolation
 Contracts: INV-PROJECT-EVIDENCE-001, INV-ISOLATED-WORKER-001, INV-OBSERVATION-001, INV-EXECUTION-IDENTITY-001
 
 `Executor` is the production `coordination.ports.TaskRunner` (OWNER-DECISIONS-S10 #8): `execute_one` -> RunTask,
@@ -34,10 +34,16 @@ The decision side is complete as the inventory lists it: `Releases` (events, hoo
 Gap, not written here: `ReviewDecisions.threshold_review` (M7 `review_threshold`, :1787-1789) is still absent at this head
 (S8 B6; `research/adapters` has no `threshold_reviews`), so it keeps ReviewDecisions' own refusing default.
 
+Composition profile (C5c-2; OWNER-DECISIONS-S10 #10, REBUILD-DESIGN-v2 section 4 row 8): `ZEUS_COMPOSITION_PROFILE` is
+`development` or `production`. There is no default: an absent, empty or other value is unknown and the composition refuses
+it (`composition_profile_unknown`) before anything is built. `production` requires isolation (`production_requires_isolation`)
+and constructs no host provider transport: the Executor's `host_app_server` and `claude_runtime` factories raise
+`host_transport_refused_in_production`. Which hosts set `production` is the user's decision in the consolidated U-request
+(U6(c)), not code. P2's import audit is S11 (AR3), not this module.
+
 Deltas from M7, named: D-ar: `audit_runner` is not a `build_executor` parameter (the runner is built in `Executor.__init__`
-with `host_execution=True`, as M7 `bootstrap.build_executor` passed it); D12: `isolation` is passed through unchanged; `host_isolation` raises `IsolationError`
-for every configured selection until C5c (a transitional, declared refusal: it never falls back to host execution and never
-constructs a provider or container object); D13: `research_admission` stays None (S10 unit C5b-3: the RF-RT research-first admission is an intended behaviour
+with `host_execution=True`, as M7 `bootstrap.build_executor` passed it); D12: `isolation` is passed through unchanged; `host_isolation` composes the C5c-1
+`composition.isolation.isolated_worker` for a configured selection (it never falls back to host execution); D13: `research_admission` stays None (S10 unit C5b-3: the RF-RT research-first admission is an intended behaviour
 change M7 did not have); the five ports above are wired by C5b-2; RunTask's own refusals stand.
 """
 from __future__ import annotations
@@ -94,7 +100,7 @@ from codex_harness.host_os.adapters.process_groups import ChokepointProcesses
 from codex_harness.host_os.adapters.process_tree import ProcessTree, TreeOwnershipLeak
 from codex_harness.intake.adapters import frontdesk
 from codex_harness.intake.application import tickets
-from codex_harness.kernel.errors import IsolationError
+from codex_harness.kernel.errors import ContractError, IsolationError, require
 from codex_harness.kernel.ids import SYSTEM_CLOCK, SYSTEM_IDS
 from codex_harness.observation.application.observations import (
     PostExecutionRecordFailure,
@@ -120,10 +126,31 @@ from codex_harness.review.domain.check_results import classify_isolated_run
 from codex_harness.routing.adapters.provider_policy import host_policy
 
 HOST_PROFILE = "host"
+COMPOSITION_PROFILES = ("development", "production")
 
 # One host's Claude facilities (M7 `adapters/claude.py` read these as module names; the target injects them).
 CLAUDE_HOST = claude_cli.ClaudeHost(runner=process_groups.run_process, trees=ProcessTree, tree_leak=TreeOwnershipLeak,
                                     worker_profiles=worker_profile, redact=redact_text)
+
+
+def composition_profile(host_settings):
+    """OWNER-DECISIONS-S10 #10: the explicit composition profile. No default: absent IS unknown."""
+    value = host_settings.get("ZEUS_COMPOSITION_PROFILE")
+    if value not in COMPOSITION_PROFILES:
+        raise ContractError("composition_profile_unknown")
+    return value
+
+
+def _host_transport_refused(**_kwargs):
+    raise IsolationError("host_transport_refused_in_production")
+
+
+def _host_app_server(**kw):
+    return codex_app_server.AppServer(**kw, processes=ChokepointProcesses())
+
+
+def _host_claude_runtime(**kw):
+    return claude_cli.ClaudeCodeRuntime(**kw, host=CLAUDE_HOST)
 
 
 def host_evidence_profile():
@@ -137,9 +164,8 @@ def host_isolation(evidence_profile=None):
 
     Unknown or partial configuration, a version-1 (host) project-evidence profile beside it and a version-2
     (container) profile without it or naming another image raise here, before any executor or provider exists;
-    nothing falls back to host execution. A configured selection is refused until S10 unit C5c composes the isolated
-    worker (M7 :95-96 `preflight` and `IsolatedWorker`): a declared, transitional refusal that builds no provider and
-    no container object."""
+    nothing falls back to host execution. A configured selection composes the isolated worker
+    (`composition.isolation`, C5c-1; M7 :95-96 `preflight` and `IsolatedWorker`)."""
     config = owned_container.load_host_isolation(configuration.settings())
     container_profile = requires_container(evidence_profile)
     if config is None:
@@ -151,19 +177,25 @@ def host_isolation(evidence_profile=None):
     if container_profile and evidence_profile["execution"]["image"] != config["image"]:
         # The profile names an image the host did not select: refused here, before any container.
         raise IsolationError("project_evidence_image_mismatch")
-    raise IsolationError("the isolated worker composition is S10 unit C5c")
+    from codex_harness.composition import isolation
+    return isolation.isolated_worker(config)
 
 
 def build_executor(service=None, observer=None, execution_policy=None, knowledge=True, evidence_profile=HOST_PROFILE,
-                   isolation=HOST_PROFILE, worker_sessions=None):
+                   isolation=HOST_PROFILE, worker_sessions=None, profile=None):
     """`worker_sessions` is a `WorkerSessions` owner for task-session execution, or None (default).
     `knowledge=False` builds the executor without any knowledge adapter: no hybrid query and no
     index_python/project_runtime write on rotate. `evidence_profile` is the profile an entry point already
     loaded (or None) so identity and executor share one load; by default it is read from the host
-    settings here, before the executor exists and so before any provider entry."""
+    settings here, before the executor exists and so before any provider entry. `profile` overrides the
+    `ZEUS_COMPOSITION_PROFILE` setting (OWNER-DECISIONS-S10 #10)."""
+    chosen = profile if profile is not None else composition_profile(configuration.settings())
+    require(chosen in COMPOSITION_PROFILES, "composition_profile_unknown")
     profile = host_evidence_profile() if evidence_profile == HOST_PROFILE else evidence_profile
     # Same sentinel: by default the host selection is read (and refused) here, before the executor.
     isolated = host_isolation(profile) if isolation == HOST_PROFILE else isolation
+    if chosen == "production" and isolated is None:
+        raise IsolationError("production_requires_isolation")
     from codex_harness.host_os.adapters.git_workspace import GitWorkspace
     from codex_harness.knowledge.adapters.postgres_knowledge import PostgresKnowledge
     from codex_harness.research.adapters import discovery_pressure
@@ -184,6 +216,7 @@ def build_executor(service=None, observer=None, execution_policy=None, knowledge
                     ResearchSources(artifacts, pressure=discovery_pressure.pressure(service.store, observer)),
                     observer=observer,
                     execution_policy=execution_policy, evidence_profile=profile,
+                    host_transports=(chosen == "development"),
                     # INV-WORKER-SESSION-001: only an entry point that holds a trusted continuation
                     # binding passes an owner; None keeps every other caller's exact fresh path.
                     **({} if worker_sessions is None else {"worker_sessions": worker_sessions}),
@@ -249,7 +282,7 @@ class Executor:
     `ReviewDecisions.threshold_review` (S8 B6, absent at this head; it keeps ReviewDecisions' refusing default)."""
 
     def __init__(self, service, git, artifacts, knowledge=None, research=None, observer=None, execution_policy=None,
-                 evidence_profile=None, isolation=None, worker_sessions=None):
+                 evidence_profile=None, isolation=None, worker_sessions=None, host_transports=True):
         self.service, self.git, self.artifacts = service, git, artifacts
         store, org = service.store, service.org
         self.worker_sessions, self.knowledge, self.research = worker_sessions, knowledge, research
@@ -275,8 +308,8 @@ class Executor:
             isolation=isolation, evidence_profile=evidence_profile, claude_settings=claude_settings,
             worker_delivery=project_evidence.worker_delivery,
             container_worker_delivery=project_evidence.container_worker_delivery,
-            host_app_server=lambda **kw: codex_app_server.AppServer(**kw, processes=ChokepointProcesses()),
-            claude_runtime=lambda **kw: claude_cli.ClaudeCodeRuntime(**kw, host=CLAUDE_HOST),
+            host_app_server=(_host_app_server if host_transports else _host_transport_refused),
+            claude_runtime=(_host_claude_runtime if host_transports else _host_transport_refused),
             host_hooks=self.host_hooks.configuration)
         interpreter = Path(sys.executable).resolve()
         self.evidence_gate = EvidenceGate(
