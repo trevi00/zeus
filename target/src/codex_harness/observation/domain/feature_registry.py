@@ -81,10 +81,10 @@ FEATURES = {feature.id: feature for feature in (
     Feature("capacity_admission", "coordination", _events(_O, "capacity_refused"), True),
     Feature("tool_calls", "execution", _events(_D, "tool_call_completed"), False, "open (pairing decision, §1.5)"),
     Feature("skill_selection", "context", _events(_D, "skill_selected"), True),
-    Feature("ci_checks", "delivery", _events(_O, "ci_observed"), False,
-            "S10 adapter seam (per-check timing; DESIGN-s9-X §1.5 follow-up)"),
-    Feature("cleanup", "execution", _events(_O, "cleanup_recorded"), False, "S10"),
-    Feature("queue_wait", "coordination", _events(_O, "queue_item_waited"), False, "S10 seam; X2c state reads"),
+    Feature("ci_checks", "delivery", _events(_O, "ci_observed"), True),
+    Feature("cleanup", "execution", _events(_O, "cleanup_recorded"), False,
+            "execution.adapters.containers.cleanup_ledger observer= seam (retire/hold/reconcile); no caller holds an observer"),
+    Feature("queue_wait", "coordination", _events(_O, "queue_item_waited"), True),
     Feature("declined_paths", "observation", _events(_O, "path_declined"), True),
 )}
 

@@ -39,7 +39,8 @@ PRODUCED_SINCE = {"development.role_dispatch_decided",  # X1b-2: produced by Run
                   "operations.worker_replace_requested", "operations.backlog_observed",
                   "operations.capacity_refused", "development.skill_selected",  # S10 A5-2
                   "operations.path_declined",  # S10 A5-2
-                  "operations.collector_started"}  # S10 A5-3
+                  "operations.collector_started",  # S10 A5-3
+                  "operations.ci_observed", "operations.queue_item_waited"}  # S10 A5-4
 
 IDS = ("model_invocation", "task_execution", "worker_sessions", "message_relay", "message_intake", "fleet_backlog",
        "host_delivery", "continuation", "operation_finalization", "autonomous", "discovery_pressure",
