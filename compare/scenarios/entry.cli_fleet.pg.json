@@ -1,0 +1,9 @@
+{
+ "family": "entry.cli_fleet.pg",
+ "description": "The fleet root through main() on a labelled disposable PostgreSQL (one fresh schema, init-db first, no mask) over fixture lane directories at a fixed work path: status with no fleet; register of a file that is not JSON, of a configuration whose repository goes through a symbolic link (path_unresolved) and of one whose repository directory is absent (repository_missing); enqueue, record-delivery, authorize-budget, pause, resume, reconcile-interrupted, relocate and migrate-host of an unregistered fleet; backlog status (every plan, and an unknown plan: exit 1); then a valid register, status, enqueue on an unknown lane and authorize-budget with a stale expected total (the target sets ZEUS_COMPOSITION_PROFILE=development: declared difference E-c21); stdout, stderr and exit code per case, the fixture paths normalized",
+ "reference_driver": "drivers/reference/s10_cli_fleet.py",
+ "target_driver": "drivers/target/s10_cli_fleet.py",
+ "requires": "disposable-postgresql",
+ "golden": "goldens/reference/entry.cli_fleet.pg.json",
+ "slice": "S10"
+}
