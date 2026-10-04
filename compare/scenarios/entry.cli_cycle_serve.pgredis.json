@@ -1,0 +1,9 @@
+{
+ "family": "entry.cli_cycle_serve.pgredis",
+ "description": "The cycle and serve roots through main() on a labelled disposable PostgreSQL AND a labelled disposable Redis (fresh schema, unique Redis namespace, init-db first; the local cycle's clock and the observer's process run id scripted by the drivers, no mask): cycle start, status, handoff and step on an empty queue (the target sets ZEUS_COMPOSITION_PROFILE=development: declared difference E-c21), status of an unknown cycle (M7's refusal) and serve --agent lead:improvement --once on an empty stream; stdout, stderr and exit code per case, the fixture path normalized to <FIXTURE>",
+ "reference_driver": "drivers/reference/s10_cli_cycle_serve.py",
+ "target_driver": "drivers/target/s10_cli_cycle_serve.py",
+ "requires": "disposable-postgresql+redis",
+ "golden": "goldens/reference/entry.cli_cycle_serve.pgredis.json",
+ "slice": "S10"
+}
