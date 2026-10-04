@@ -19,6 +19,7 @@ import driver  # noqa: E402
 driver.start("reference")
 
 import s10_cli_bus  # noqa: E402
+
 from codex_harness.cli import main  # noqa: E402
 
 API = SimpleNamespace(main=main)
