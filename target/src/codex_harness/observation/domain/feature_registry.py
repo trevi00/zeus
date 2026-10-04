@@ -82,8 +82,7 @@ FEATURES = {feature.id: feature for feature in (
     Feature("tool_calls", "execution", _events(_D, "tool_call_completed"), False, "open (pairing decision, §1.5)"),
     Feature("skill_selection", "context", _events(_D, "skill_selected"), True),
     Feature("ci_checks", "delivery", _events(_O, "ci_observed"), True),
-    Feature("cleanup", "execution", _events(_O, "cleanup_recorded"), False,
-            "execution.adapters.containers.cleanup_ledger observer= seam (retire/hold/reconcile); no caller holds an observer"),
+    Feature("cleanup", "execution", _events(_O, "cleanup_recorded"), True),
     Feature("queue_wait", "coordination", _events(_O, "queue_item_waited"), True),
     Feature("declined_paths", "observation", _events(_O, "path_declined"), True),
 )}
