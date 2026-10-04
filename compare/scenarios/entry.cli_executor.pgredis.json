@@ -1,0 +1,9 @@
+{
+ "family": "entry.cli_executor.pgredis",
+ "description": "The seven executor roots execute-one, artifact, cleanup, release-abandon, rebase, research and improve through main() on a labelled disposable PostgreSQL AND a labelled disposable Redis (fresh schema, unique Redis namespace, init-db first, a fixture git repository with a pinned commit): execute-one on an empty queue (M7's idle status), artifact of an unknown reference, cleanup without --apply on an empty store, release-abandon and rebase of unknown ids (M7's refusals), and research and improve (the published message, ids and timestamps through the symmetric scripted() seams, the server-chosen stream id normalized in-driver to <STREAM_ID>); stdout, stderr and exit code per case, the fixture path normalized to <FIXTURE>, no mask; declared difference E-c21: the target side runs with ZEUS_COMPOSITION_PROFILE=development",
+ "reference_driver": "drivers/reference/s10_cli_executor.py",
+ "target_driver": "drivers/target/s10_cli_executor.py",
+ "requires": "disposable-postgresql+redis",
+ "golden": "goldens/reference/entry.cli_executor.pgredis.json",
+ "slice": "S10"
+}

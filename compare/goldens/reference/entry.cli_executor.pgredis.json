@@ -1,0 +1,164 @@
+{
+ "cases": {
+  "artifact_unknown": {
+   "argv": [
+    "artifact",
+    "no-such-artifact"
+   ],
+   "exit": 1,
+   "stderr": {
+    "error": "Invalid artifact reference"
+   },
+   "stdout": ""
+  },
+  "cleanup_dry": {
+   "argv": [
+    "cleanup"
+   ],
+   "exit": 0,
+   "stderr": "",
+   "stdout": {
+    "applied": false,
+    "at": "2026-10-04T00:00:00+00:00",
+    "bytes": 0,
+    "files": 0,
+    "grace_days": 7,
+    "id": "latest",
+    "integrity": "complete",
+    "missing_reference_sample": [],
+    "missing_references": 0,
+    "retained_references": 0
+   }
+  },
+  "execute_one_idle": {
+   "argv": [
+    "execute-one",
+    "--agent",
+    "worker:implementation"
+   ],
+   "exit": 0,
+   "stderr": "",
+   "stdout": {
+    "status": "idle"
+   }
+  },
+  "improve": {
+   "argv": [
+    "improve",
+    "objective",
+    "--acceptance",
+    "accepted"
+   ],
+   "exit": 0,
+   "stderr": "",
+   "stdout": {
+    "correlation_id": "improvement:5eed0000-0003-4000-8000-000000000000",
+    "message_id": "5eed0000-0004-4000-8000-000000000000",
+    "stream_id": "<STREAM_ID>"
+   }
+  },
+  "init_db": {
+   "argv": [
+    "init-db"
+   ],
+   "exit": 0,
+   "stderr": "",
+   "stdout": {
+    "already_applied": [],
+    "applied": [
+     {
+      "module": "core",
+      "version": "1"
+     }
+    ],
+    "migrated": true,
+    "tool": {
+     "filename_contract": "V?<n>(.<n>|_<n>)*(__<description>)?.sql",
+     "name": "zeus-sql-migrator",
+     "version": 1
+    }
+   }
+  },
+  "rebase_unknown": {
+   "argv": [
+    "rebase",
+    "no-such-task",
+    "--onto",
+    "HEAD"
+   ],
+   "exit": 1,
+   "stderr": {
+    "error": "Completed candidate task required"
+   },
+   "stdout": ""
+  },
+  "release_abandon_unknown": {
+   "argv": [
+    "release-abandon",
+    "no-such-release",
+    "--reason",
+    "r"
+   ],
+   "exit": 1,
+   "stderr": {
+    "error": "No prepared promotion to abandon"
+   },
+   "stdout": ""
+  },
+  "research": {
+   "argv": [
+    "research",
+    "github",
+    "--intent",
+    "proactive"
+   ],
+   "exit": 0,
+   "stderr": "",
+   "stdout": {
+    "message": {
+     "causation_id": null,
+     "correlation_id": "research:5eed0000-0001-4000-8000-000000000000",
+     "how": {
+      "acceptance_criteria": [
+       "Preserve normal behavior"
+      ],
+      "constraints": [],
+      "context_ref": null,
+      "result_schema": "six-w.v1"
+     },
+     "message_id": "5eed0000-0002-4000-8000-000000000000",
+     "schema_version": "1.0",
+     "type": "task.assign",
+     "what": {
+      "action": "research",
+      "details": {
+       "intent": "proactive",
+       "source": "github"
+      }
+     },
+     "when": {
+      "after": [],
+      "created_at": "2026-10-04T00:00:00.001000+00:00",
+      "deadline": null
+     },
+     "where": {
+      "allowed_paths": [],
+      "environment": "local",
+      "repository": "codex-harness",
+      "revision": "ca39d9b2cc3422294b664d3b3efb16b9ccb13ee8"
+     },
+     "who": {
+      "owner": "worker:github",
+      "recipient": "worker:github",
+      "sender": "lead:research"
+     },
+     "why": {
+      "evidence_refs": [],
+      "objective": "Improve harness reliability from verified evidence"
+     }
+    },
+    "stream_id": "<STREAM_ID>"
+   }
+  }
+ }
+}
