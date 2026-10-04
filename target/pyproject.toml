@@ -17,6 +17,9 @@ dependencies = [
   "tree-sitter-python>=0.23,<0.26",
 ]
 
+[project.scripts]
+zeus-monitor = "codex_harness.monitor:main"
+
 [dependency-groups]
 dev = ["pytest>=8.3,<10", "ruff>=0.11,<1"]
 
