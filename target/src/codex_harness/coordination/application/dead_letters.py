@@ -14,8 +14,8 @@ records it left. A replay records its intent in one transaction, publishes unbou
 records the outcome: an unfinished `intent` (a crash between the publish and the record) refuses `replay_in_doubt`
 rather than publishing twice. A MessageDeliveryError from the publish is AMBIGUOUS (the XADD may have been accepted and
 the response lost), so it is held on the same `intent` record with the exception class name only, never retried
-(FLEET-REBUILD-S10-ACCEPT F1). An in-doubt replay is resolved by an operator decision outside this command (a
-follow-up), never by an automatic retry. Message-identity idempotency in the workflow makes a duplicate delivery a
+(FLEET-REBUILD-S10-ACCEPT F1). A `failed` record left by the predecessor is in doubt the same way (F1 round 2). An
+in-doubt replay is resolved by an operator decision outside this command (a follow-up), never by an automatic retry. Message-identity idempotency in the workflow makes a duplicate delivery a
 no-op (RSM G1).
 A body is never returned: the group carries its sha256 and size only.
 """
@@ -94,9 +94,10 @@ class DeadLetters:
             previous = tx.get(BUCKET, key)
             status = None if previous is None else previous["status"]
             require(status != COMPLETED, "already_replayed")
-            require(status != INTENT, "replay_in_doubt")
-            # F1: `failed` is no longer produced by replay (an ambiguous publish stays `intent`); it is still read as
-            # retryable only for compatibility with a record written before the correction.
+            # F1 (round 2): `failed` is no longer produced by replay (an ambiguous publish stays `intent`). A `failed`
+            # record written before the correction is readable but carries no proof that nothing was written, so it is
+            # in doubt like `intent`, never retried automatically; the refusal leaves the stored audit unchanged.
+            require(status not in (INTENT, FAILED), "replay_in_doubt")
             record = {"id": key, "status": INTENT, "source": source, "entry_id": entry_id,
                       "dead_letter_ids": list(group["ids"]), "reasons": sorted(group["reasons"]),
                       "body_sha256": self._identity(source, entry_id, group)["body_sha256"],
