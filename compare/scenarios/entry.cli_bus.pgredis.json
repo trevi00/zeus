@@ -1,0 +1,9 @@
+{
+ "family": "entry.cli_bus.pgredis",
+ "description": "The bus/observer roots doctor (online), flush, send and observe status/collect/reconcile through main() on a labelled disposable PostgreSQL AND a labelled disposable Redis (fresh schema, unique Redis namespace, init-db first): doctor, flush on the empty outbox, send of a fixture message (the server-chosen stream id normalized in-driver to <STREAM_ID>), observe status and collect on an empty spool, and observe reconcile of an unknown record (M7's refusal); stdout, stderr and exit code per case, the fixture path normalized to <FIXTURE>, no mask",
+ "reference_driver": "drivers/reference/s10_cli_bus.py",
+ "target_driver": "drivers/target/s10_cli_bus.py",
+ "requires": "disposable-postgresql+redis",
+ "golden": "goldens/reference/entry.cli_bus.pgredis.json",
+ "slice": "S10"
+}

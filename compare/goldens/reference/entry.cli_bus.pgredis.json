@@ -1,0 +1,179 @@
+{
+ "cases": {
+  "doctor": {
+   "argv": [
+    "doctor"
+   ],
+   "exit": 0,
+   "stderr": "",
+   "stdout": {
+    "active_hooks": 0,
+    "hooks": 0,
+    "organization_valid": true,
+    "postgres": true,
+    "redis": true
+   }
+  },
+  "flush_empty": {
+   "argv": [
+    "flush"
+   ],
+   "exit": 0,
+   "stderr": "",
+   "stdout": {
+    "error": 0,
+    "examined": 0,
+    "legacy_sent": 0,
+    "limit": 100,
+    "published": 0,
+    "quarantined": 0,
+    "quarantined_existing": 0,
+    "retry": 0,
+    "skipped": 0
+   }
+  },
+  "init_db": {
+   "argv": [
+    "init-db"
+   ],
+   "exit": 0,
+   "stderr": "",
+   "stdout": {
+    "already_applied": [],
+    "applied": [
+     {
+      "module": "core",
+      "version": "1"
+     }
+    ],
+    "migrated": true,
+    "tool": {
+     "filename_contract": "V?<n>(.<n>|_<n>)*(__<description>)?.sql",
+     "name": "zeus-sql-migrator",
+     "version": 1
+    }
+   }
+  },
+  "observe_collect": {
+   "argv": [
+    "observe",
+    "collect"
+   ],
+   "exit": 0,
+   "stderr": "",
+   "stdout": {
+    "alerts_replayed": 0,
+    "confirmed_audits": 0,
+    "conflicts": 0,
+    "corrupt": 0,
+    "duplicates": 0,
+    "files": 0,
+    "inserted": 0,
+    "per_file": [],
+    "pruned_files": 0,
+    "pruned_runs": 0,
+    "reclaimed_segments": 0,
+    "records": 0,
+    "refused": 0,
+    "sink_failures": 0,
+    "truncated_tail": 0,
+    "unconfirmed_audits": 0
+   }
+  },
+  "observe_reconcile_unknown": {
+   "argv": [
+    "observe",
+    "reconcile",
+    "no-such-record",
+    "--resolution",
+    "discard",
+    "--operator",
+    "op",
+    "--reason",
+    "r"
+   ],
+   "exit": 1,
+   "stderr": {
+    "error": "Unknown or unreadable termination record"
+   },
+   "stdout": ""
+  },
+  "observe_status": {
+   "argv": [
+    "observe",
+    "status"
+   ],
+   "exit": 0,
+   "stderr": "",
+   "stdout": {
+    "alerts": {
+     "pending_locally": null,
+     "recorded": 0
+    },
+    "authority": "informational_only",
+    "buckets": {
+     "observation_alerts": 0,
+     "observation_audit": 0,
+     "observation_collections": 0,
+     "observation_quarantine": 0,
+     "observation_terminations": 0,
+     "observations": 0
+    },
+    "limits": {
+     "finished_run_retention_seconds": 604800,
+     "note": "the per-run limit bounds live producers; the directory total is the sum over producers plus finished runs inside the retention window, not a hard cap",
+     "per_run_unacknowledged_bytes": 33554432,
+     "segment_bytes": 4194304
+    },
+    "live_writer_runs": [],
+    "observer": null,
+    "orphans": {
+     "as_of": "2026-10-04T00:21:39.964908+00:00",
+     "in_progress": [],
+     "note": "orphan means reserved without a live lease; it is an observation, the invocation ledger's reclaim closes it as unsettled_unknown",
+     "orphan": []
+    },
+    "pending_alert_files": {},
+    "pending_terminations": {
+     "local": [],
+     "sink": []
+    },
+    "process_health": [
+     {
+      "component": "cli.flush",
+      "counters": {},
+      "host": "trevi",
+      "inherited_pending_alerts": {},
+      "last_defect": null,
+      "pending_alerts": [],
+      "pid": 1910075,
+      "process_run_id": "3ea2f27025d34492822c4783b0271fea",
+      "role": null,
+      "sequence_next": 1,
+      "sink": "unknown",
+      "spool": {
+       "limit_bytes": 33554432,
+       "rotations": 0,
+       "unacknowledged_bytes": 0
+      },
+      "updated_at": "2026-10-04T00:21:39.951737+00:00"
+     }
+    ],
+    "runtime_directory_bytes": 357,
+    "spool_files": [],
+    "spool_unacknowledged_bytes": 0
+   }
+  },
+  "send": {
+   "argv": [
+    "send",
+    "<FIXTURE>/message.json"
+   ],
+   "exit": 0,
+   "stderr": "",
+   "stdout": {
+    "stream_id": "<STREAM_ID>"
+   }
+  }
+ }
+}
