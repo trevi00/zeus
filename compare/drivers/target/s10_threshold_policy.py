@@ -16,7 +16,6 @@ import driver  # noqa: E402
 driver.start("target")
 
 import s10_threshold_policy as common  # noqa: E402
-
 from codex_harness.research.adapters import threshold_policy as module  # noqa: E402
 
 ROOT = Path(module.__file__).resolve().parents[3]
