@@ -46,6 +46,8 @@ REBUILD_INTEGRATION_STEPS = [("uv sync --frozen --project target", None),  # bef
                              ("python compare/run.py run --only effects.s8_units.pg --pg", None),
                              ("python compare/run.py run --only effects.s9_units.pg --pg", None),
                              ("python compare/run.py run --only entry.cli_store.pg --pg", None),
+                             ("python compare/run.py run --only entry.cli_store_b.pg --pg", None),
+                             ("python compare/run.py run --only entry.cli_knowledge.pg --pg", None),
                              ("python compare/run.py run --only delivery.restore.pg --pg", None),
                              ("python compare/run.py run --only storage.pg --only storage.redis --pg --redis", None),
                              ("python compare/run.py target-integration", None),
