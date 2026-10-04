@@ -101,9 +101,8 @@ Batch P5 (research feedback) adds, each a construction/import adaptation:
 - `monitoring.discovery_pressure_facts(store)` is the observation collector's with its `project` port bound to the target `status` (the
   composition S10 wires; M7's was exactly `status(store)`).
 - `events(empty=False)` is M7 `tests/test_threshold_collection.py`'s helper, verbatim, a labelled copy (that suite is S10-carried, so no
-  ported module exists). `policy_repo` (that suite's fixture) and `current_policy` (`adapters.threshold_policy`) are S10 placeholders:
-  `adapters.threshold_policy` (ledger `codex_harness.research.adapters.threshold_policy`, slice S10) is not on the target, so the fixture
-  raises and every test that builds its world through it is skipped whole for S10.
+  ported module exists). `policy_repo` (that suite's fixture, S10 unit T1) builds its repository from the TARGET constants
+  (`research.adapters.threshold_policy.POLICY_PATHS` under `GIT_PREFIX`, V20 section 18), and `current_policy` is that module's.
 """
 
 from __future__ import annotations
@@ -122,6 +121,7 @@ from m7_coordination import Harness, Workflow, organization, packaged_policy, re
 from m7_coordination import OwnerActions as _OwnerActions
 from m7_delivery import Releases
 
+import codex_harness
 from codex_harness.coordination.application import autonomous as _autonomous
 from codex_harness.coordination.application import council as _council
 from codex_harness.coordination.application import (
@@ -140,7 +140,9 @@ from codex_harness.coordination.application.research_launch_facts import Researc
 from codex_harness.evidence.application.inspections import EvidenceRecords
 from codex_harness.execution.adapters.containers import owned_container
 from codex_harness.execution.adapters.providers.codex_app_server import AppServer
+from codex_harness.execution.domain.output_contracts import VERDICT
 from codex_harness.host_os.adapters import git_source, process_groups
+from codex_harness.host_os.adapters.git_workspace import GitWorkspace
 from codex_harness.intake.application.progress_candidates import ProgressCandidates
 from codex_harness.kernel.ids import SYSTEM_CLOCK, SYSTEM_IDS, canonical, digest, utcnow
 from codex_harness.knowledge.application import promotion as knowledge_promotion
@@ -155,7 +157,9 @@ from codex_harness.research.adapters import research_program as _adapter
 from codex_harness.research.adapters import reverse_source as _reverse_source
 from codex_harness.research.adapters import source_execution as _source_execution
 from codex_harness.research.adapters import source_verification as _source_verification
+from codex_harness.research.adapters import threshold_policy as _threshold_policy
 from codex_harness.research.adapters.council_composition import CouncilCompositionAdmission
+from codex_harness.research.adapters.threshold_reviews import review_threshold
 from codex_harness.research.application import audit_gate, dge
 from codex_harness.research.application import audit_progress as _audit_progress
 from codex_harness.research.application import audit_repair as _audit_repair
@@ -163,6 +167,7 @@ from codex_harness.research.application import discovery_pressure as _discovery_
 from codex_harness.research.application import research as _research
 from codex_harness.research.application import research_program as _application
 from codex_harness.research.application import scheduling as _scheduling
+from codex_harness.research.application.threshold_reviews import ThresholdReviewRecords, ThresholdReviews
 from codex_harness.research.domain.research import PartitionCheckpoint
 from codex_harness.review.domain.check_results import classify_isolated_run
 from codex_harness.storage.adapters import maintenance as _maintenance
@@ -457,6 +462,21 @@ class Executor(m7_executor.Executor):
         super().__init__(*args, **kwargs)
         self.run_task.council, self.run_task.feedback = autonomous_roles, RedactedFeedback()
         self.run_task.composition_admission = CouncilCompositionAdmission()
+        # S10 unit T1: `ReviewDecisions.threshold_review` is M7's `review_threshold(self, lease, VERDICT)` with the V22 ports wired
+        # (coordination's ExecutionRecovery validates a recovered decision, DecisionOwnership records it), and the recovery reads the request row
+        self.recovery.threshold_reviews = ThresholdReviewRecords(self.artifacts)
+        self.decisions.threshold_review = lambda lease: review_threshold(
+            self, lease, VERDICT, decision_validation=self.recovery, decisions=self.decisions.ownership)
+
+    def decide_one(self, agent, expected=None):  # M7 `decide_one` (:1752) with the threshold-review exhaustion rule wired (S10 unit T1)
+        store, org = self.service.store, self.service.org
+        decision = m7_executor.claim_decision(store, org, agent, str(uuid4()), expected, recovery=self.recovery,
+                                              ticket_binding=m7_executor.tickets.ticket_binding,
+                                              TicketSuperseded=m7_executor.tickets.TicketSuperseded,
+                                              threshold_exhausted=ThresholdReviews.exhausted)
+        if not decision:
+            return None
+        return self.decisions.decide(agent, decision)
 
     @property
     def isolation(self):
@@ -487,12 +507,27 @@ def events(empty=False):  # M7 `tests/test_threshold_collection.py::events`, ver
             for i in range(40)]
 
 
-current_policy = unavailable("S10", "adapters.threshold_policy.current_policy")
+current_policy = _threshold_policy.current_policy
 
 
 @pytest.fixture
-def policy_repo(tmp_path):
-    raise NotImplementedError("S10: adapters.threshold_policy (POLICY_PATHS, current_policy) is not on the target")
+def policy_repo(tmp_path):  # M7 `tests/test_threshold_collection.py::policy_repo`; the paths are the TARGET's (V20 section 18: GIT_PREFIX, POLICY_PATHS)
+    root = tmp_path / 'repo'
+    root.mkdir()
+    git = GitWorkspace(str(root), str(tmp_path / 'workspaces'))
+    git._git('init', '-q')
+    git._git('config', 'user.name', 'Fixture')
+    git._git('config', 'user.email', 'fixture@localhost')
+    # The committed fixture must equal the LOADED package, which `current_policy` compares against: under the
+    # release evaluator's two-checkout layout (incumbent tests, candidate package) the tests' own checkout is not it.
+    package = Path(codex_harness.__file__).resolve().parent
+    for entry in _threshold_policy.POLICY_PATHS:
+        target = root / (_threshold_policy.GIT_PREFIX + entry)
+        target.parent.mkdir(parents=True, exist_ok=True)
+        target.write_text((package.parent / entry).read_text(encoding='utf-8'), encoding='utf-8')
+    git._git('add', '.')
+    git._git('commit', '-qm', 'policy fixture')
+    return root, git
 
 
 def deliver(store, artifacts, binding):

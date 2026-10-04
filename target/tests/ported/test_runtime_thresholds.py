@@ -1,10 +1,10 @@
 """Ported SOURCE M7 suite `tests/test_runtime_thresholds.py` (e38aa722) run against the S8 target (DESIGN-s8 §29).
 
 Every assertion is M7's, unchanged. Adaptations, all import-only: `source_policy_repo` (M7 `test_threshold_collection.policy_repo`) is the
-`m7_research` S10 placeholder (`adapters.threshold_policy` is not on the target); `resolve_policy` and the `runtime_thresholds` module the
+`m7_research` fixture (S10 unit T1); `resolve_policy` and the `runtime_thresholds` module the
 `NATIVE_DEFAULTS` patch targets are `codex_harness.research.adapters`'s, `ContractError` is `kernel.errors`'s. The one parametrized test that
-copies the tree and runs `current_policy`/`route_skills`/`ThresholdProposals` in a subprocess needs the S10 `adapters.threshold_policy`, so it is
-kept whole under an S10 skip (its program text is M7's, unchanged)."""
+copies the tree and runs `current_policy`/`route_skills`/`ThresholdProposals` in a subprocess asserts M7's layout (`src/`, `codex_harness.adapters.*`), so it is
+kept whole under an intended-difference skip (V20 §18; its program text is M7's, unchanged)."""
 import json
 import os
 import shutil
@@ -44,7 +44,7 @@ def test_native_default_drift_is_detected(monkeypatch):
         resolve_policy('{"version":1,"overrides":{}}')
 
 
-@pytest.mark.skip(reason='S10: adapters.threshold_policy.current_policy (the policy_repo fixture and the Git-bound policy are not on the target)')
+@pytest.mark.skip(reason='intended difference V20 §18: the policy is bound to the target layout (GIT_PREFIX, POLICY_PATHS)')
 @pytest.mark.parametrize('value,full', [(4, 0), (2, 1), (0, 1), (-1, 1), (3.5, 0)])
 def test_packaged_override_changes_actual_router_and_git_proposer_together(policy_repo, value, full):
     root, git = policy_repo

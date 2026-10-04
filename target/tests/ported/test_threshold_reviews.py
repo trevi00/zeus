@@ -2,10 +2,9 @@
 
 Every assertion is M7's, unchanged. Adaptations, all construction/import-only: `Executor`, `Harness`, `organization`, `events` and `source_policy_repo` (M7
 `test_threshold_collection.policy_repo`) and `current_policy` come from the `m7_research` shim (see its docstring: `events` is a labelled
-copy, `policy_repo` and `current_policy` are S10 placeholders: `adapters.threshold_policy` is not on the target); `ThresholdProposals` and
+copy, `policy_repo` and `current_policy` are built on the target `research.adapters.threshold_policy`, S10 unit T1); `ThresholdProposals` and
 `ThresholdReviews` are `codex_harness.research.application`'s, `FileArtifacts`/`MemoryStore` storage's, `ContractError` is `kernel.errors`'s,
-`canonical`/`digest` `kernel.ids`'s, `POLICY` `kernel.policy`'s. Every test builds its world through `setup_review` (the S10 `current_policy`), so
-every test is kept whole under an S10 skip."""
+`canonical`/`digest` `kernel.ids`'s, `POLICY` `kernel.policy`'s. `setup_review` builds `ThresholdReviews` with the V22 ports (`decision_validation`, `decisions`) wired from the executor, a construction adaptation (S10 unit T1)."""
 import pytest
 from m7_research import Executor, Harness, current_policy, events, organization
 from m7_research import policy_repo as source_policy_repo
@@ -30,7 +29,8 @@ def setup_review(policy_repo, tmp_path):
         tx.put('skill_history', 'project', {'events': events()})
     run = ThresholdProposals(store, artifacts, lambda: current_policy(git)).collect('project')
     executor = Executor(Harness(store, organization()), git, artifacts)
-    reviews = ThresholdReviews(executor.workflow, artifacts)
+    reviews = ThresholdReviews(executor.workflow, artifacts, decision_validation=executor.recovery,
+                               decisions=executor.decisions.ownership)
     request = reviews.request(run['proposals'][0]['id'])
     assert reviews.request(run['proposals'][0]['id']) == request
     return executor, reviews, request
@@ -60,7 +60,6 @@ def runtime(executor, calls, *, accepted=True, blocked=False, wrong_actor=False,
     return run
 
 
-@pytest.mark.skip(reason='S10: adapters.threshold_policy.current_policy (the policy_repo fixture and the Git-bound policy are not on the target)')
 def test_executor_orders_independent_assessments_without_dispatch_or_activation(policy_repo, tmp_path, monkeypatch):
     executor, _, request = setup_review(policy_repo, tmp_path)
     calls = []
@@ -78,7 +77,6 @@ def test_executor_orders_independent_assessments_without_dispatch_or_activation(
     assert executor.decide_one('conductor') is None
 
 
-@pytest.mark.skip(reason='S10: adapters.threshold_policy.current_policy (the policy_repo fixture and the Git-bound policy are not on the target)')
 @pytest.mark.parametrize('blocked', [False, True])
 def test_rejection_or_blockage_cannot_queue_conductor(policy_repo, tmp_path, monkeypatch, blocked):
     executor, _, request = setup_review(policy_repo, tmp_path)
@@ -89,7 +87,6 @@ def test_rejection_or_blockage_cannot_queue_conductor(policy_repo, tmp_path, mon
         assert tx.get('threshold_review_requests', request['id'])['status'] == ('blocked' if blocked else 'rejected')
 
 
-@pytest.mark.skip(reason='S10: adapters.threshold_policy.current_policy (the policy_repo fixture and the Git-bound policy are not on the target)')
 def test_wrong_receipt_identity_cannot_complete_review(policy_repo, tmp_path, monkeypatch):
     executor, _, request = setup_review(policy_repo, tmp_path)
     monkeypatch.setattr(executor, '_run', runtime(executor, [], wrong_actor=True))
@@ -98,7 +95,6 @@ def test_wrong_receipt_identity_cannot_complete_review(policy_repo, tmp_path, mo
         assert tx.get('threshold_review_requests', request['id'])['reviews'] == []
 
 
-@pytest.mark.skip(reason='S10: adapters.threshold_policy.current_policy (the policy_repo fixture and the Git-bound policy are not on the target)')
 @pytest.mark.parametrize('change', ['lease', 'record', 'policy'])
 def test_changed_basis_or_lease_during_execution_cannot_commit(policy_repo, tmp_path, monkeypatch, change):
     executor, _, request = setup_review(policy_repo, tmp_path)
@@ -125,7 +121,6 @@ def test_changed_basis_or_lease_during_execution_cannot_commit(policy_repo, tmp_
         assert not any(row['actor'] == 'conductor' for row in tx.scan('decisions_pending'))
 
 
-@pytest.mark.skip(reason='S10: adapters.threshold_policy.current_policy (the policy_repo fixture and the Git-bound policy are not on the target)')
 @pytest.mark.parametrize('options,status', [({'inspection_blocked': True}, 'blocked'),
     ({'inspection_blocked': True, 'interrupted': True}, 'blocked'),
     ({'interrupted': True}, 'retry'), ({'spoof_blockage': True}, 'retry')])
@@ -140,7 +135,6 @@ def test_execution_blockage_and_interruption_are_taken_from_receipt(policy_repo,
         assert not state['activation_ready']
 
 
-@pytest.mark.skip(reason='S10: adapters.threshold_policy.current_policy (the policy_repo fixture and the Git-bound policy are not on the target)')
 def test_conductor_rejection_and_terminal_request_idempotence(policy_repo, tmp_path, monkeypatch):
     executor, reviews, request = setup_review(policy_repo, tmp_path)
     monkeypatch.setattr(executor, '_run', runtime(executor, []))
@@ -152,7 +146,6 @@ def test_conductor_rejection_and_terminal_request_idempotence(policy_repo, tmp_p
     assert executor.decide_one('lead:improvement') is None
 
 
-@pytest.mark.skip(reason='S10: adapters.threshold_policy.current_policy (the policy_repo fixture and the Git-bound policy are not on the target)')
 def test_attempt_exhaustion_is_visible_on_request(policy_repo, tmp_path):
     from codex_harness.kernel.policy import POLICY
 
@@ -168,7 +161,6 @@ def test_attempt_exhaustion_is_visible_on_request(policy_repo, tmp_path):
     assert failed['status'] == 'failed' and failed['failure'] == 'decision_attempt_budget_exhausted'
 
 
-@pytest.mark.skip(reason='S10: adapters.threshold_policy.current_policy (the policy_repo fixture and the Git-bound policy are not on the target)')
 def test_receipt_from_previous_generation_is_not_reused(policy_repo, tmp_path, monkeypatch):
     executor, _, request = setup_review(policy_repo, tmp_path)
     cached = []
@@ -190,7 +182,6 @@ def test_receipt_from_previous_generation_is_not_reused(policy_repo, tmp_path, m
         assert tx.get('threshold_review_requests', request['id'])['reviews'] == []
 
 
-@pytest.mark.skip(reason='S10: adapters.threshold_policy.current_policy (the policy_repo fixture and the Git-bound policy are not on the target)')
 @pytest.mark.parametrize('override', [{'actor': 'conductor'}, {'_bucket': 'tasks'}])
 def test_caller_cannot_change_lease_actor_or_aggregate(policy_repo, tmp_path, monkeypatch, override):
     executor, reviews, _ = setup_review(policy_repo, tmp_path)
@@ -203,7 +194,6 @@ def test_caller_cannot_change_lease_actor_or_aggregate(policy_repo, tmp_path, mo
     assert executor.decide_one('lead:improvement')['status'] == 'succeeded'
 
 
-@pytest.mark.skip(reason='S10: adapters.threshold_policy.current_policy (the policy_repo fixture and the Git-bound policy are not on the target)')
 def test_empty_execution_answer_cannot_satisfy_assessment(policy_repo, tmp_path, monkeypatch):
     executor, _, request = setup_review(policy_repo, tmp_path)
     original = runtime(executor, [])
@@ -219,7 +209,6 @@ def test_empty_execution_answer_cannot_satisfy_assessment(policy_repo, tmp_path,
         assert tx.get('threshold_review_requests', request['id'])['reviews'] == []
 
 
-@pytest.mark.skip(reason='S10: adapters.threshold_policy.current_policy (the policy_repo fixture and the Git-bound policy are not on the target)')
 def test_collection_run_membership_is_required(policy_repo, tmp_path):
     executor, reviews, request = setup_review(policy_repo, tmp_path)
     with executor.service.store.transaction() as tx:
@@ -231,7 +220,6 @@ def test_collection_run_membership_is_required(policy_repo, tmp_path):
         reviews.request(request['row_id'])
 
 
-@pytest.mark.skip(reason='S10: adapters.threshold_policy.current_policy (the policy_repo fixture and the Git-bound policy are not on the target)')
 def test_post_commit_error_does_not_rewrite_success(policy_repo, tmp_path, monkeypatch):
     executor, reviews, request = setup_review(policy_repo, tmp_path)
     monkeypatch.setattr(executor, '_run', runtime(executor, []))
@@ -249,7 +237,6 @@ def test_post_commit_error_does_not_rewrite_success(policy_repo, tmp_path, monke
         assert tx.get('threshold_review_requests', request['id'])['status'] == 'awaiting_conductor'
 
 
-@pytest.mark.skip(reason='S10: adapters.threshold_policy.current_policy (the policy_repo fixture and the Git-bound policy are not on the target)')
 def test_dirty_attempt_does_not_poison_retry_workspace(policy_repo, tmp_path, monkeypatch):
     from pathlib import Path
 
