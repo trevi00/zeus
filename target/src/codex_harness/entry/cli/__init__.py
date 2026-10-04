@@ -143,7 +143,9 @@ def main() -> None:
             canary,
             cancel,
             context,
+            decision_feedback,
             demo,
+            dge,
             doctor,
             embed,
             execution_recovery,
@@ -176,7 +178,8 @@ def main() -> None:
                     "execution-recovery": execution_recovery.run,
                     "index": index.run, "query": query.run, "embed": embed.run, "project-graph": project_graph.run,
                     "context": context.run, "ticket": ticket.run, "sdd": sdd.run,
-                    "audit-repair": audit_repair.run, "worker-session": worker_session.run}
+                    "audit-repair": audit_repair.run, "worker-session": worker_session.run,
+                    "dge": dge.run, "decision-feedback": decision_feedback.run}
         if args.command not in composed:
             raise RuntimeError("zeus " + args.command + " is not composed in the rebuild yet (DESIGN-s10 §3)")
         composed[args.command](args)
