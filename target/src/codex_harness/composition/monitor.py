@@ -29,8 +29,8 @@ may not import `entry.http.desk` (the entry passes the module itself).
 | registered | `FleetRegistry(store).registered()` | `coordination.application.fleet.registry` |
 
 S10 unit E2b (DESIGN-s10 §15 option (c), rule R-e2b) adds the metrics file: after each snapshot write `run_collector` renders `zeus-metrics.prom` (Prometheus 0.0.4 text through
-`observation.adapters.metrics_exposition.render`) next to `monitoring.json`, atomically (`zeus-metrics.prom.tmp` then `os.replace`), with no listener and no route. `zeus-metrics-health.prom` is
-always rewritten the same way with `zeus_metrics_render_success` (0/1) and, once a render has succeeded, `zeus_metrics_render_last_success_timestamp_seconds` (unix seconds, no sample timestamps). A failed
+`observation.adapters.metrics_exposition.render`) next to `monitoring.json`, atomically (`zeus-metrics.prom.tmp` then `os.replace`), with no listener and no route. `zeus-metrics.prom` holds the producer rows only (DESIGN-s10 §15a); `zeus-metrics-health.prom` is
+always rewritten, after every attempt, the same way with `zeus_metrics_render_success` (0/1) and, once a render has succeeded, `zeus_metrics_render_last_success_timestamp_seconds` (unix seconds, no sample timestamps). A failed
 render leaves the last good `zeus-metrics.prom` in place, journals `metrics_render_failed` with the error type only, and never stops the collector or touches `monitoring.json`.
 
 Row producers (every one S9's tests render through `render(...)`, found by grep):
@@ -105,9 +105,11 @@ def _health_rows(success, last_success):
 
 
 def render_metrics(service, *, clock=time.time):
-    """The exposition text: the S9 row producers over the read-only store, then the health gauges (success 1, now).
+    """The exposition text: the S9 row producers over the read-only store and nothing else (DESIGN-s10 §15a).
 
-    The projected series are read in ONE read transaction (INV-OBSERVATION-001); a producer's failure raises."""
+    The health gauges are written only to `zeus-metrics-health.prom`, so a failed render never leaves a stale
+    success series in the last good main file. The projected series are read in ONE read transaction
+    (INV-OBSERVATION-001); a producer's failure raises."""
     from codex_harness.composition.observation import PROVIDERS
     from codex_harness.observation.adapters.metrics_exposition import render
     from codex_harness.observation.adapters.queue_facts import QueueFacts
@@ -118,7 +120,7 @@ def render_metrics(service, *, clock=time.time):
         rows = MetricsProjector(providers=PROVIDERS).snapshot(tx)
     rows += instrumented_rows()
     rows += QueueFacts(service.store, now=lambda: datetime.fromtimestamp(now, timezone.utc)).rows()
-    return render(rows + _health_rows(True, now))
+    return render(rows)
 
 
 def write_metrics(runtime, text, name=METRICS_FILE):

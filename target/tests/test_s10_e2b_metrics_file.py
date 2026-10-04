@@ -45,22 +45,22 @@ def health(success, last):
     return composition_monitor._health_rows(success, last)
 
 
-def test_the_file_is_the_producers_renders_plus_the_health_rows_and_is_deterministic():
+def test_the_file_is_the_producers_renders_only_and_is_deterministic():
+    # S10 A5-3: DESIGN-s10 §15a
     service = seeded()
     text = composition_monitor.render_metrics(service, clock=lambda: NOW)
-    assert text == render(producer_rows(service) + health(True, NOW))
+    assert text == render(producer_rows(service))
     assert text == composition_monitor.render_metrics(service, clock=lambda: NOW)
     assert f'{FEATURE_USES}{{feature="model_invocation"}} 2\n' in text
     assert text.count("zeus_feature_instrumented{") == len(FEATURES)
     assert "# TYPE zeus_queue_depth gauge" in text
-    assert "zeus_metrics_render_success 1\n" in text
-    assert f"zeus_metrics_render_last_success_timestamp_seconds {NOW}\n" in text
+    assert "zeus_metrics_render_success" not in text and "zeus_metrics_render_last_success" not in text
     assert " " + str(NOW * 1000) not in text
 
 
 def test_an_empty_store_renders():
     text = composition_monitor.render_metrics(SimpleNamespace(store=MemoryStore(), org=None), clock=lambda: NOW)
-    assert "zeus_metrics_render_success 1\n" in text and FEATURE_USES not in text
+    assert "zeus_metrics_render_success" not in text and FEATURE_USES not in text  # S10 A5-3: DESIGN-s10 §15a
 
 
 def test_no_series_or_label_outside_the_catalog():
@@ -69,7 +69,6 @@ def test_no_series_or_label_outside_the_catalog():
     known = {name: list(family.labels) for name, family in FAMILIES.items()}
     known.update(queue)
     known["zeus_feature_instrumented"] = ["feature"]
-    known.update({"zeus_metrics_render_success": [], "zeus_metrics_render_last_success_timestamp_seconds": []})
     samples = [line for line in text.splitlines() if line and not line.startswith("#")]
     assert samples
     for line in samples:
@@ -175,7 +174,8 @@ def test_collect_once_writes_all_three_files(collector):
     for name in ("monitoring.json", "zeus-metrics.prom", "zeus-metrics-health.prom"):
         assert (collector.runtime / name).is_file(), name
     assert not list(collector.runtime.glob("*.tmp"))
-    assert "zeus_metrics_render_success 1\n" in (collector.runtime / "zeus-metrics.prom").read_text("utf-8")
+    assert "zeus_metrics_render_success" not in (collector.runtime / "zeus-metrics.prom").read_text("utf-8")  # S10 A5-3: DESIGN-s10 §15a
+    assert "zeus_metrics_render_success 1\n" in (collector.runtime / "zeus-metrics-health.prom").read_text("utf-8")
     assert [e["event"] for e in events(collector.runtime)] == ["startup", "source_state", "shutdown"]
 
 
