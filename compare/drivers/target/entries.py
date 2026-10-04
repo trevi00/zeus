@@ -22,6 +22,8 @@ import driver  # noqa: E402
 
 driver.start("target")
 
+import codex_harness  # noqa: E402,F401  (R-O: the origin check counts at least one product module)
+
 import hashlib  # noqa: E402
 import json  # noqa: E402
 import os  # noqa: E402
