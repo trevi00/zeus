@@ -238,3 +238,13 @@ return redis.call('XADD', KEYS[2], '*', 'body', ARGV[2])
     @staticmethod
     def decode(fields: dict) -> dict:
         return validate_message(json.loads(fields["body"]))
+
+    def dead_letters(self, limit: int) -> list:
+        """The dead-letter records in stream order, as `(entry_id, fields)`: at most `limit + 1` of them, so a
+        caller can tell a backlog over `limit` from one that fits (S10 A5-1b, DESIGN-s10 §17a)."""
+        if isinstance(limit, bool) or not isinstance(limit, int) or limit < 0:
+            raise ValueError("limit must be a nonnegative integer")
+        try:
+            return list(self.client.xrange(f"{self.namespace}:dead-letter", "-", "+", count=limit + 1))
+        except RedisError as exc:
+            raise MessageDeliveryError(type(exc).__name__) from exc
