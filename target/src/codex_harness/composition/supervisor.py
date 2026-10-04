@@ -13,7 +13,7 @@ M7 passed to the constructor is set on the runner (the runner reads `self.fence`
 `ArtifactMaintenance(...)` are the `composition.cli` and `composition.cli_executor` builders; `DockerSourceRunner` gets the V18 ports
 (`ChokepointProcesses`, `process_groups.run_process`, `classify_isolated_run`) as `composition.operation` wires its sibling `AuditRunner`; the
 `schedule_research` ports (`Outbox`, `Releases.reconcile_audits`) are wired as `composition.operation.Executor` wires them). `run` is M7 `main()`
-after `parse_args()`. The `health` writes are `observation.application.health.HealthRecords.record` (the bucket's owner, as `composition.cli_bus.flusher` binds it).
+after `parse_args()`. The `graph_index` reads and writes are `knowledge.application.graph_index.GraphIndexState`. The `health` writes are `observation.application.health.HealthRecords.record` (the bucket's owner, as `composition.cli_bus.flusher` binds it).
 The observer: `build_observer` returns the `CatalogCheckingObserver` wrapper; M7's `observer.store = service.store` assigned on the wrapper would
 leave the wrapped `Observer.store` None (alerts would not persist), so the assignment reaches the wrapped observer.
 
@@ -48,6 +48,7 @@ from codex_harness.kernel.errors import ContractError
 from codex_harness.kernel.ids import utcnow
 from codex_harness.kernel.policy import POLICY
 from codex_harness.knowledge.adapters.embeddings import LocalEmbeddings
+from codex_harness.knowledge.application.graph_index import GraphIndexState
 from codex_harness.observation.application.health import HealthRecords
 from codex_harness.research.application.scheduling import schedule_research
 
@@ -94,11 +95,11 @@ def maintain_views(service, executor, bus, root, runtime):
     def graph():
         revision = executor.git._git("rev-parse", "HEAD")
         with service.store.transaction() as tx:
-            indexed = tx.get("graph_index", "main")
+            indexed = GraphIndexState().indexed(tx)
         if not indexed or indexed["revision"] != revision:
             index = executor.knowledge.index_python(str(root))
             with service.store.transaction() as tx:
-                tx.put("graph_index", "main", {"id": "main", "revision": revision, **index})
+                GraphIndexState().record(tx, revision, index)
         executor.knowledge.project_runtime(service.store, service.org)
 
     def collect():
