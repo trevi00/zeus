@@ -14,16 +14,19 @@ A/evidence/rebuild/s7/host-delivery-split/split_host_delivery.py); the bodies ar
 
 from __future__ import annotations
 
+import hashlib
 import logging
 from datetime import datetime, timedelta
 
 from codex_harness.delivery.domain.host_delivery import (
     ACTIVE,
     AUTHORITY,
+    AWAITING_CI,
     AWAITING_CONSUMPTION,
     AWAITING_REVIEW,
     BLOCKED,
     CANARY_FLEET,
+    CI_HEAD_CHANGED,
     CI_PASSED,
     CI_PENDING,
     DRAIN_INTENDED,
@@ -504,7 +507,7 @@ class DeliveryState:
                            attributes=attributes)
 
     def emit_check(self, plan: dict, intent: dict, stage: str, verdict: dict,
-                    canary_passed=None) -> None:
+                    canary_passed=None, claim=None) -> None:
         """One evidence-stage transition. A repeated poll with the SAME verdict emits nothing."""
         if self.observer is None or verdict["state"] == intent.get("last_check_state"):
             return
@@ -519,6 +522,28 @@ class DeliveryState:
                                "pending": len(verdict.get("pending") or []),
                                "failed": len(verdict.get("failed") or []),
                                "canary_passed": canary_passed})
+        self._emit_ci_checks(plan, stage, verdict, claim)
+
+    def _emit_ci_checks(self, plan: dict, stage: str, verdict: dict, claim) -> None:
+        """One `operations.ci_observed` per REQUIRED check at a CI-stage transition (DESIGN-s10 §17c, R-a54 (1)).
+
+        `conclusion` is the adapter's normalized state through the verdict's lists (`failed` -> failure, `pending`
+        -> pending, `missing` -> other, else success): the adapter collapses every completion, so no finer value is
+        invented. The adapter drops timings, so `duration_seconds` is null. `attempt` is the claimed release_queue
+        row's `attempt` (the delivery attempt; the intent's `attempts` counts halts only). A canary transition
+        (`awaiting_consumption`) and a moved head (no per-check lists) are not CI observations.
+        """
+        if stage != AWAITING_CI or verdict["state"] == CI_HEAD_CHANGED:
+            return
+        failed, pending = set(verdict.get("failed") or ()), set(verdict.get("pending") or ())
+        missing = set(verdict.get("missing") or ())
+        attempt = int((claim or {}).get("attempt") or 0)
+        for name in plan["required_checks"]:
+            conclusion = ("failure" if name in failed else "pending" if name in pending
+                          else "other" if name in missing else "success")
+            self.observer.emit("operations.ci_observed", "observed", attributes={
+                "check": "sha256:" + hashlib.sha256(name.encode("utf-8")).hexdigest(),
+                "conclusion": conclusion, "duration_seconds": None, "attempt": attempt})
 
     def unclaimed(self, plan: dict) -> str:
         """Why a claim of this plan's release got nothing - an operational fact of its own: another
