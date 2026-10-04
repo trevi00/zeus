@@ -171,6 +171,7 @@ def main() -> None:
             observe,
             operate,
             organization,
+            owner_actions,
             paths,
             project_graph,
             query,
@@ -211,7 +212,7 @@ def main() -> None:
                     "operate": operate.run, "autonomous": autonomous.run,
                     "desk": desk.run, "research-program": research_program.run,
                     "continuation": continuation.run, "fleet": fleet.run,
-                    "host-delivery": host_delivery.run}
+                    "host-delivery": host_delivery.run, "owner-actions": owner_actions.run}
         if args.command not in composed:
             raise RuntimeError("zeus " + args.command + " is not composed in the rebuild yet (DESIGN-s10 §3)")
         composed[args.command](args)
