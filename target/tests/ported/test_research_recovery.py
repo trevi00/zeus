@@ -9,9 +9,8 @@ are M7's own imports from the ported `test_research_investigations` (and `test_a
 `ExecutionEvidence` from `research.adapters.autonomous_evidence`, the domain modules from `codex_harness.research.domain`,
 `Portfolio` from `intake.application.portfolio`, `MemoryStore` from `storage.adapters.memory_store`, `ContractError`/`digest`/`canonical` from `kernel.errors`/`kernel.ids`, `envelope` from `kernel.message`, `Observer` from
 `observation.application.observations`, `Continuation` from `m7_coordination`, `advance` from
-`coordination.application.execution_fence`, `council_module` from `coordination.application.council`. `recover_cli` (the S10
-operator CLI `adapters.research_program_cli.recover`) is `unavailable("S10", ...)`; every test that reaches it is kept whole
-under skip. M7 docstring follows.
+`coordination.application.execution_fence`, `council_module` from `coordination.application.council`. `recover_cli` (the
+operator CLI `adapters.research_program_cli.recover`) is the S10 target `entry.cli.research_program._recover` (R-c26). M7 docstring follows.
 
 Research dispatch transport recovery (research-dispatch-recovery-001, SPEC "Research dispatch
 transport recovery").
@@ -37,7 +36,6 @@ from copy import deepcopy
 from pathlib import Path
 
 import pytest
-from m7_coordination import unavailable
 from m7_research import (
     CouncilRun,
     Harness,
@@ -51,6 +49,7 @@ from test_research_investigations import INVESTIGATION, SOURCE, portfolio
 from test_research_program import POLICY, build
 from test_research_program_fixtures import CANARY, FakeCouncil, config
 
+from codex_harness.entry.cli import research_program as research_program_root
 from codex_harness.intake.application.portfolio import Portfolio
 from codex_harness.kernel.errors import ContractError
 from codex_harness.kernel.ids import digest
@@ -69,7 +68,7 @@ from codex_harness.storage.adapters.memory_store import MemoryStore
 from codex_harness.storage.adapters.message_schema import validate_message
 from codex_harness.storage.ports import MessageDeliveryError
 
-recover_cli = unavailable("S10", "adapters.research_program_cli.recover")
+recover_cli = research_program_root._recover
 
 REPLACEMENT = INVESTIGATION + ".recovery-1"
 
@@ -565,7 +564,6 @@ def test_the_probe_reads_the_run_scoped_bus_only_when_that_run_owns_a_storage_to
     assert observed["absent"] is True and observed["before"] == IDENTITY, "a pre-scoping run reads the configured bus"
 
 
-@pytest.mark.skip(reason="S10: adapters.research_program_cli.recover (the operator CLI `recover`)")
 def test_the_cli_entry_reads_the_owner_file_and_refuses_an_unreachable_bus(tmp_path):
     env, _ = failed_world(tmp_path)
     _, sha = replacement(env)
@@ -706,7 +704,6 @@ def _no_secret(env, *values):
     assert all(SECRET not in json.dumps(value, default=str) for value in values)
 
 
-@pytest.mark.skip(reason="S10: adapters.research_program_cli.recover (the operator CLI `recover`)")
 def test_production_wiring_lost_reply_on_a_then_empty_b_refuses_before_any_replacement(tmp_path, monkeypatch):
     env, servers, url_a, recover = _redis_world(tmp_path, monkeypatch, lose_reply=True)
     assert len(servers[("a.example", 6379)].database(0)["streams"]["ns:agent:lead:researcher"]) == 1, \
@@ -727,7 +724,6 @@ def test_production_wiring_lost_reply_on_a_then_empty_b_refuses_before_any_repla
     _no_secret(env)
 
 
-@pytest.mark.skip(reason="S10: adapters.research_program_cli.recover (the operator CLI `recover`)")
 def test_production_wiring_changed_database_namespace_server_or_storage_refuse_and_a_authorizes(tmp_path, monkeypatch):
     env, servers, url_a, recover = _redis_world(tmp_path, monkeypatch, lose_reply=False)
     a = servers[("a.example", 6379)]
@@ -1112,7 +1108,6 @@ def test_a_failed_replacement_after_revocation_is_held(tmp_path):
     assert isinstance(late_delivery(env), ContractError) and no_execution(env)
 
 
-@pytest.mark.skip(reason="S10: adapters.research_program_cli.recover (the operator CLI `recover`)")
 def test_the_cli_revocation_builds_no_bus(tmp_path, monkeypatch):
     env, _ = legacy_world(tmp_path)
     _, sha = replacement(env)
@@ -1552,7 +1547,6 @@ def test_concurrent_and_restarted_successor_requests_record_one_row_one_head(tmp
     assert ResearchProgram(env.store, clock=env.clock).recover_dispatch(document, None, None)["cached"] is True
 
 
-@pytest.mark.skip(reason="S10: adapters.research_program_cli.recover (the operator CLI `recover`)")
 def test_the_cli_successor_reads_the_executor_artifact_store_and_builds_no_bus(tmp_path, monkeypatch):
     env, council, _ = read_only_world(tmp_path)
     _, sha = replacement(env, "rp-003")
@@ -2057,7 +2051,6 @@ def test_concurrent_and_restarted_contract_requests_record_one_row_one_head(tmp_
     assert ResearchProgram(env.store, clock=env.clock).recover_dispatch(document, None, None)["cached"] is True
 
 
-@pytest.mark.skip(reason="S10: adapters.research_program_cli.recover (the operator CLI `recover`)")
 def test_the_cli_contract_successor_reads_the_artifact_store_and_builds_no_bus(tmp_path, monkeypatch):
     env, council = initial_world(tmp_path)
     _, sha = replacement(env)

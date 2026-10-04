@@ -17,8 +17,9 @@ placeholder, and only tests skipped whole and unrewritten (each with its owning 
 PublicationFailingCouncil, UnreachableBus, ForeignMessageCouncil}`); `Portfolio` is `intake.application.portfolio`'s,
 `ResearchProgram` and `deliver` (the target `correction_feedback.deliver` with observation's `redact_text` injected) come
 from the `m7_research` shim, `RESEARCH_SCHEMA` and `CorrectionFeedbackRefused` from `research.adapters.correction_feedback`.
-Only `adapter`, `continuation_cli` and the local `recover` (S10 CLI modules) remain `unavailable` placeholders; the 7 tests
-that reach them (the parametrized evidence-bytes test and the CLI follow-up test) are skipped whole for S10.
+Only `adapter` and `continuation_cli` (S10 CLI modules) remain `unavailable` placeholders; the 6 tests that reach them (the
+parametrized evidence-bytes test) are skipped whole for S10. The local `recover` is `entry.cli.research_program._recover` (S10 C6c, R-c26),
+so the CLI follow-up test runs (its patch targets are the target homes of `RedisBus` and `ExecutionEvidence`).
 
 M7 docstring follows.
 
@@ -69,6 +70,7 @@ from codex_harness.coordination.application.owner_actions.state import (
     BUCKET_INVESTIGATIONS,
 )
 from codex_harness.coordination.domain import continuation as dc
+from codex_harness.entry.cli import research_program as research_program_root
 from codex_harness.intake.application.portfolio import Portfolio
 from codex_harness.intake.domain.portfolio import family_id
 from codex_harness.kernel.ids import digest
@@ -1689,9 +1691,8 @@ def test_a_failed_follow_up_stays_held_and_is_never_followed_up_again(tmp_path):
     assert refused_code(env.programs.recover_dispatch, again, None) == "followup_predecessor_not_accepted"
 
 
-@pytest.mark.skip(reason='S10: adapters.research_program_cli.recover (the operator CLI `recover`)')
 def test_the_cli_follow_up_reads_the_control_store_only_and_builds_no_bus(tmp_path, monkeypatch):
-    recover = unavailable('S10', 'adapters.research_program_cli.recover')
+    recover = research_program_root._recover  # M7 `adapters.research_program_cli.recover` (S10 R-c26)
 
     world = World(tmp_path)
     env, owner, root, successor, research, investigation, dispatch = accepted_report(world, tmp_path)
@@ -1702,8 +1703,8 @@ def test_the_cli_follow_up_reads_the_control_store_only_and_builds_no_bus(tmp_pa
 
     def forbidden(*args, **kwargs):
         raise AssertionError("the follow-up must not build a bus or an artifact port")
-    monkeypatch.setattr("codex_harness.adapters.bus.RedisBus", forbidden)
-    monkeypatch.setattr("codex_harness.adapters.autonomous_evidence.ExecutionEvidence", forbidden)
+    monkeypatch.setattr("codex_harness.storage.adapters.redis_bus.RedisBus", forbidden)
+    monkeypatch.setattr("codex_harness.research.adapters.autonomous_evidence.ExecutionEvidence", forbidden)
     service, args = type("Service", (), {"store": world.control})(), type("Args", (), {"file": path})()
     result = recover(service, args)
     assert result["exit_code"] == 0 and result["proof"] == "accepted_report_followup" and result["state"] == "authorized"
