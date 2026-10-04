@@ -46,11 +46,37 @@ def test_canary_exit_follows_the_probe(monkeypatch, capsys):
     assert (code, json.loads(out)["passed"], err) == (1, False, "")
 
 
-def test_a_root_not_composed_yet_is_a_json_error_with_exit_one(monkeypatch, capsys):
-    # C8 moves this example to a still-uncomposed root, or retires it when all 51 are composed.
-    code, out, err = run_main(monkeypatch, capsys, "owner-actions", "status")
+def composed_roots() -> set:
+    tree = ast.parse(Path(cli.__file__).resolve().read_text(encoding="utf-8"))
+    tables = [node for node in ast.walk(tree) if isinstance(node, ast.Assign)
+              and any(isinstance(t, ast.Name) and t.id == "composed" for t in node.targets)]
+    return {key.value for key in tables[0].value.keys}
+
+
+def parser_roots() -> set:
+    import argparse
+
+    return {name for action in cli.parser()._actions if isinstance(action, argparse._SubParsersAction)
+            for name in action.choices}
+
+
+def test_the_dispatch_dict_covers_every_parser_root_and_an_unknown_command_still_raises(monkeypatch, capsys):
+    # C8b-3 composed the last root of its lane. `audit-service` (C6b, another lane) is the one parser root this branch's dispatch
+    # does not name yet; once C6b lands the difference is empty and the subset below is an equality.
+    assert composed_roots() <= parser_roots() and parser_roots() - composed_roots() <= {"audit-service"}
+    assert len(parser_roots()) == 51
+    real = cli.parser
+
+    def parser_with_unknown_root():
+        built = real()
+        next(action for action in built._actions if hasattr(action, "choices") and action.choices
+             ).add_parser("zz-unknown")
+        return built
+
+    monkeypatch.setattr(cli, "parser", parser_with_unknown_root)
+    code, out, err = run_main(monkeypatch, capsys, "zz-unknown")
     assert code == 1 and out == ""
-    assert json.loads(err) == {"error": "zeus owner-actions is not composed in the rebuild yet (DESIGN-s10 §3)"}
+    assert json.loads(err) == {"error": "zeus zz-unknown is not composed in the rebuild yet (DESIGN-s10 §3)"}
 
 
 def test_doctor_without_offline_takes_the_online_branch(monkeypatch, capsys):
