@@ -104,8 +104,19 @@ def cleanup_debt(record: dict) -> str | None:
     return None if stops[-1].get("confirmed") is True else "container_stop_unconfirmed"
 
 
+def _emit_cleanup(observer, record: dict, outcome: str, reason: str) -> None:
+    """One `operations.cleanup_recorded` at a terminal cleanup decision (DESIGN-s10 §17c, R-a54 (3)). Optional: with no
+    observer nothing is emitted. `resource` follows the record kind: a verifier run is the verification stack, any
+    other owned run a container. Closed vocabulary only; the record's paths, names and ids are never attributes."""
+    if observer is None:
+        return
+    observer.emit("operations.cleanup_recorded", "observed", attributes={
+        "resource": "verification_stack" if record.get("role") == "verifier" else "container",
+        "cleanup_outcome": outcome, "cleanup_reason": reason})
+
+
 def retire(container, record: dict, result: dict, outcome: str, *, files: dict | None = None,
-           removed: dict | None = None) -> dict:
+           removed: dict | None = None, observer=None) -> dict:
     """Observations first, durably and outside the container; only then is the exact stopped container
     removed. An observation that cannot be written keeps the container and its recovery reference, and
     a record without a full positive cleanup join is never retired: nothing is written or removed."""
@@ -123,10 +134,13 @@ def retire(container, record: dict, result: dict, outcome: str, *, files: dict |
     removal = container.remove()
     if removal["removed"]:
         advance(record, "removed", **(removed or {}))
+        _emit_cleanup(observer, record, "removed", "completed")
+    else:
+        _emit_cleanup(observer, record, "failed", "removal_failed")
     return {**removal, "evidence_written": True, "recovery": None if removal["removed"] else reference}
 
 
-def hold(container, record: dict, body, *, client=None, proof=None, detail=None):
+def hold(container, record: dict, body, *, client=None, proof=None, detail=None, observer=None):
     """The one ownership rule of every started container, worker and verifier alike. The exact
     run/name/label/id is durable at `start_requested` before `body` may start anything; however `body`
     ends (return, cancel, deadline, observer failure, KeyboardInterrupt) the container gets one bounded
@@ -167,15 +181,16 @@ def hold(container, record: dict, body, *, client=None, proof=None, detail=None)
         if not stopped["confirmed"]:
             advance(record, "stop_unconfirmed", stop=stopped, interrupted=interrupted,
                     recovery=recovery_reference(container, record))
+            _emit_cleanup(observer, record, "held", "still_in_use")  # not proven stopped: the run stays unresolved
         else:
             described = detail(value) if detail is not None and interrupted is None else {}
             advance(record, "stop_confirmed", stop=stopped, interrupted=interrupted, **described)
             if interrupted is not None:
-                retire(container, record, {"interrupted": interrupted, "stop": stopped}, "interrupted")
+                retire(container, record, {"interrupted": interrupted, "stop": stopped}, "interrupted", observer=observer)
     return value, stopped
 
 
-def reconcile(run_directory, docker: str = "docker", *, runner) -> dict:
+def reconcile(run_directory, docker: str = "docker", *, runner, observer=None) -> dict:
     """Operator step for a retained run: mark it removed only when the exact named, labelled
     container is absent. It never removes a container and never touches another run. Container
     absence says nothing about the host-side client/capture: recorded unconfirmed client debt is
@@ -183,6 +198,7 @@ def reconcile(run_directory, docker: str = "docker", *, runner) -> dict:
     path = Path(run_directory) / "run.json"
     record = json.loads(path.read_text("utf-8"))
     if cleanup_debt(record) == "client_cleanup_unconfirmed":
+        _emit_cleanup(observer, record, "debt_recorded", "other")  # the record keeps its unconfirmed client debt
         return {"reconciled": False, "run_id": record["run_id"], "container": record.get("container"),
                 "reason": "client_cleanup_unconfirmed"}
     for dependent in record.get("dependents") or []:
@@ -193,6 +209,7 @@ def reconcile(run_directory, docker: str = "docker", *, runner) -> dict:
         except (OSError, ValueError, AttributeError):
             state = "unknown"
         if state not in spec.RESOLVED:
+            _emit_cleanup(observer, record, "held", "still_in_use")
             return {"reconciled": False, "run_id": record["run_id"], "container": record.get("container"),
                     "reason": "dependent_unresolved", "dependent": {"record": str(dependent), "state": state}}
     probe = owned_container.OwnedContainer({"limits": spec.LIMITS, "image": record.get("image")}, docker, record["run_id"],
@@ -200,9 +217,14 @@ def reconcile(run_directory, docker: str = "docker", *, runner) -> dict:
     listed = owned_container.docker_call(runner, docker, ["ps", "-a", "--no-trunc", "--filter", "name=^/" + probe.name + "$",
                                           "--format", "{{.ID}}"], timeout=spec.LIMITS["docker_command_seconds"])
     if listed.returncode != 0 or listed.stdout.split():
+        if listed.returncode != 0:
+            _emit_cleanup(observer, record, "failed", "other")
+        else:
+            _emit_cleanup(observer, record, "held", "still_in_use")
         return {"reconciled": False, "run_id": record["run_id"], "container": record.get("container"),
                 "reason": "docker_unavailable" if listed.returncode != 0 else "container_still_present"}
     record["lifecycle"].append({"state": "removed", "at": time.time(), "by": "reconcile"})
     record["state"] = "removed"
     _write_record(path, record)
+    _emit_cleanup(observer, record, "removed", "completed")
     return {"reconciled": True, "run_id": record["run_id"]}
