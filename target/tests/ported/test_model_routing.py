@@ -11,9 +11,8 @@ PORTING NOTES (S4 ported executor suites; the M7 assertions are unchanged):
   `_run`, exactly as M7 patched `executor._run`.
 - `IMPLEMENTATION` is imported from `execution.domain.output_contracts`; `FileArtifacts`/`MemoryStore` from storage.
 - test_assignment_preserves_trusted_importance_into_implementation, test_plan_passes_trusted_action_and_keeps_review_default:
-  SKIPPED, `S10: EvidenceGate (OWNER-DECISIONS-S10 #7)`: both drive `execute_one('worker:implementation')`, whose implement
-  path runs the M7 `Executor._inspect_evidence`, the EvidenceGate (composition-level orchestration decided at the S10
-  executor composition unit); the shim's `_inspect_evidence` raises on purpose, so the implement task would retry.
+  RUN, bodies unchanged: both drive `execute_one('worker:implementation')`, whose implement path runs the EvidenceGate the shim
+  routes to `composition.evidence_gate` (OWNER-DECISIONS-S10 #7).
 - test_lead_review_projects_only_importance_and_conductor_rework_preserves_it: RUNS, assertions unchanged:
   M7 `Workflow.handle(report)` is `Workflow(service.store, service.org).handle(report)` through the `m7_coordination`
   facade (its `handle` routes to the S5 messages), as the neighbouring hook test does.
@@ -96,7 +95,6 @@ def test_executor_sends_selection_and_seals_it_in_execution_receipt(tmp_path, mo
 ])
 def test_assignment_preserves_trusted_importance_into_implementation(tmp_path, monkeypatch,
                                                                     importance, expected):
-    pytest.skip("S10: EvidenceGate (OWNER-DECISIONS-S10 #7)")
     service = m7_executor.Service(MemoryStore())
     git = SimpleNamespace(
         repository=tmp_path,
@@ -132,7 +130,6 @@ def test_assignment_preserves_trusted_importance_into_implementation(tmp_path, m
 
 
 def test_plan_passes_trusted_action_and_keeps_review_default(tmp_path, monkeypatch):
-    pytest.skip("S10: EvidenceGate (OWNER-DECISIONS-S10 #7)")
     for name in ('ZEUS_CLAUDE_ASSIGNMENTS', 'ZEUS_CLAUDE_MODEL', 'ZEUS_CLAUDE_MAX_BUDGET_USD'):
         monkeypatch.delenv(name, raising=False)
     service = m7_executor.Service(MemoryStore())
