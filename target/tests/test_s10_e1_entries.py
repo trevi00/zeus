@@ -74,7 +74,12 @@ def test_the_cli_shim_reexports_the_entry_callables():
 
 def test_pyproject_scripts_and_packages_name_existing_modules():
     document = tomllib.loads((TARGET / "pyproject.toml").read_text("utf-8"))
-    assert document["project"]["scripts"] == {"zeus": "codex_harness.cli:main", "harness": "codex_harness.cli:main"}
+    # int39 (owner): E3 and E2a add M7's supervisor and monitor scripts; the set AND the order are M7's
+    # (SOURCE e38aa722 pyproject.toml [project.scripts]).
+    assert list(document["project"]["scripts"].items()) == [
+        ("zeus", "codex_harness.cli:main"), ("zeus-supervisor", "codex_harness.supervisor:main"),
+        ("zeus-monitor", "codex_harness.monitor:main"), ("harness", "codex_harness.cli:main"),
+        ("harness-supervisor", "codex_harness.supervisor:main")]
     for target in document["project"]["scripts"].values():
         module, _, name = target.partition(":")
         assert callable(getattr(import_module(module), name))
