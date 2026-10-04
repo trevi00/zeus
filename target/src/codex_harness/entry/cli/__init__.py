@@ -147,6 +147,7 @@ def main() -> None:
             cancel,
             cleanup,
             context,
+            continuation,
             cycle,
             decision_feedback,
             demo,
@@ -203,7 +204,8 @@ def main() -> None:
                     "improve": improve.run, "execute-one": execute_one.run, "rebase": rebase.run,
                     "artifact": artifact.run, "cycle": cycle.run, "serve": serve.run, "rlm": rlm.run,
                     "operate": operate.run, "autonomous": autonomous.run,
-                    "desk": desk.run, "research-program": research_program.run}
+                    "desk": desk.run, "research-program": research_program.run,
+                    "continuation": continuation.run}
         if args.command not in composed:
             raise RuntimeError("zeus " + args.command + " is not composed in the rebuild yet (DESIGN-s10 §3)")
         composed[args.command](args)
