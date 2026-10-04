@@ -224,7 +224,7 @@ def test_profile_symlink_in_git_is_rejected(project):
 
 
 def test_real_skill_history_annotation_and_recovery_survive_other_task_observation(project, monkeypatch, capsys):
-    pytest.skip("S10: entry: the skill-audit CLI main() (M7 adapters/skill_audit.main) moves to entry/composition; only render_text is in the target")
+    pytest.skip("S10 operator-script main (no composed home at 8b60bac1): skill_audit.main is absent; context.adapters.skill_audit holds only render_text")
     root, git, artifacts = project
     (root / '.harness/stages.yaml').write_text('stages: []\n', encoding='utf-8')
     (root / '.harness/skills/python/fastapi/routes.md').write_text(
@@ -308,7 +308,7 @@ def test_selected_skill_symlink_is_rejected(project):
         project_context(git, artifacts, str(root), git._git('rev-parse', 'HEAD'))
 
 
-@pytest.mark.skip(reason="S10: the project_init operator CLI (scripts/project_init.py)")
+@pytest.mark.skip(reason="S10 operator script (no composed home at 8b60bac1): scripts/project_init.py is the M7 script and imports the absent codex_harness.adapters.project_detection/project_skills/domain.model; the test runs it as a subprocess")
 def test_cli_legacy_import_preserves_extra_metadata_and_never_overwrites(tmp_path):
     root = tmp_path / 'project'
     (root / '.claude').mkdir(parents=True)

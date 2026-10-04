@@ -190,7 +190,7 @@ def test_native_sdd_draft_has_exactly_five_pending_scenarios():
         replay_source(spec)
 
 
-@pytest.mark.skip(reason="S10: the `zeus sdd inspect` operator CLI")
+@pytest.mark.skip(reason="S10 unit E: `python -m zeus` (the zeus package and console-script shim, absent at 8b60bac1; entry.cli.sdd.run exists but has no process entry)")
 def test_native_report_and_review_render_stay_blocked_without_release_authority(tmp_path):
     spec = load_json(SPEC)
     report = gate_report(spec)

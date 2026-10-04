@@ -93,7 +93,7 @@ def test_oversized_manifest_and_directory_signal_are_rejected(tmp_path):
         detect_project(tmp_path)
 
 
-@pytest.mark.skip(reason="S10: the project_init operator CLI (scripts/project_init.py)")
+@pytest.mark.skip(reason="S10 operator script (no composed home at 8b60bac1): scripts/project_init.py is the M7 script and imports the absent codex_harness.adapters.project_detection/project_skills/domain.model; the test runs it as a subprocess")
 def test_cli_detect_preview_initialize_and_existing_profile(tmp_path):
     (tmp_path / 'package.json').write_text('{"dependencies":{"react":"^18"}}')
     (tmp_path / 'tsconfig.json').write_text('{}')
@@ -113,7 +113,7 @@ def test_cli_detect_preview_initialize_and_existing_profile(tmp_path):
     assert repeated.returncode == 2 and 'FileExistsError' in repeated.stderr
 
 
-@pytest.mark.skip(reason="S10: the project_init operator CLI (scripts/project_init.py)")
+@pytest.mark.skip(reason="S10 operator script (no composed home at 8b60bac1): scripts/project_init.py is the M7 script and imports the absent codex_harness.adapters.project_detection/project_skills/domain.model; the test runs it as a subprocess")
 def test_unknown_cli_preview_remains_available_but_does_not_freeze_empty_profile(tmp_path):
     script = Path(__file__).resolve().parents[1] / 'scripts/project_init.py'
     env = {**os.environ, 'PYTHONPATH': str(script.parents[1] / 'src')}
@@ -162,7 +162,7 @@ def test_workflow_signal_uses_exact_directory_names(tmp_path, directory):
     assert detect_project(tmp_path)['metadata']['detection']['status'] == 'unknown'
 
 
-@pytest.mark.skip(reason="S10: the project_init operator CLI (scripts/project_init.py)")
+@pytest.mark.skip(reason="S10 operator script (no composed home at 8b60bac1): scripts/project_init.py is the M7 script and imports the absent codex_harness.adapters.project_detection/project_skills/domain.model; the test runs it as a subprocess")
 @pytest.mark.parametrize('signal', ['Dockerfile', '.github/workflows'])
 def test_metadata_only_detection_requires_explicit_stack_before_write(tmp_path, signal):
     if signal == 'Dockerfile':

@@ -209,7 +209,7 @@ def test_imported_claims_never_feed_recurrence(tmp_path):
         assert len(tx.scan('experience_claims')) == 25
 
 
-@pytest.mark.skip(reason="S10: the lesson import operator CLI")
+@pytest.mark.skip(reason="S10 operator-script main (no composed home at 8b60bac1): the lesson import main is absent; knowledge.adapters.experience_import has no main")
 def test_cli_dry_run_writes_nothing_and_import_uses_injected_store(tmp_path, capsys):
     directory = tmp_path / 'lessons'
     directory.mkdir()

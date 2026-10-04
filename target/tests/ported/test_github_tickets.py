@@ -5,7 +5,8 @@ docstring names each): `Tickets` is the moved class with coordination's `Outbox`
 with `run_process` injected (every case here replaces `_call`, as in M7), `FileArtifacts`, `MemoryStore`, `ContractError`,
 `render_ticket` and `digest` are their target homes. The patch target of M7's zero-argument `utcnow`
 (`codex_harness.adapters.github_tickets.utcnow`) is `m7_intake.github_tickets.utcnow` (the facade over the moved module).
-Kept skipped whole, unrewritten: the one test that drives the S10 operator CLI (`cli.ticket_command`).
+The one test that drives the operator CLI (M7 `cli.ticket_command`) runs the S10 target (K1): it is `entry.cli.ticket.run(args)` over the service `composition.build` returns (patched), and the
+`run_process` it forbids is `host_os.adapters.process_groups.run_process`, the runner `composition.cli_tickets.github_tickets` injects.
 """
 import json
 from pathlib import Path
@@ -105,16 +106,16 @@ def test_external_body_change_blocks_overwrite_and_pull_is_only_evidence(setup):
         assert not tx.scan("releases") and not tx.scan("research_approvals")
 
 
-@pytest.mark.skip(reason="S10: the ticket operator CLI (cli.ticket_command)")
 def test_preview_is_pure_and_does_not_call_github(setup, monkeypatch, capsys):
-    from codex_harness import cli
+    from codex_harness import composition
+    from codex_harness.entry.cli import ticket as ticket_root
+    from codex_harness.host_os.adapters import process_groups
     tickets, ticket, _, _ = setup
     with tickets.store.transaction() as tx:
         before = tx.records()
-    monkeypatch.setattr("codex_harness.adapters.github_tickets.run_process",
-                        lambda *a, **kw: pytest.fail("Preview called network"))
-    cli.ticket_command(SimpleNamespace(store=tickets.store, org=tickets.org),
-        SimpleNamespace(ticket_command="sync", preview=True, ticket_id=ticket["id"]))
+    monkeypatch.setattr(process_groups, "run_process", lambda *a, **kw: pytest.fail("Preview called network"))
+    monkeypatch.setattr(composition, "build", lambda: SimpleNamespace(store=tickets.store, org=tickets.org))
+    ticket_root.run(SimpleNamespace(ticket_command="sync", preview=True, ticket_id=ticket["id"]))
     assert capsys.readouterr().out == render_ticket(tickets.get(ticket["id"]))
     with tickets.store.transaction() as tx:
         assert tx.records() == before

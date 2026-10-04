@@ -3,10 +3,7 @@
 Every assertion is M7's, unchanged. Adaptations (construction, import and patch-target only; the shim is `m7_observation`):
 - every `codex_harness` name is `m7_observation`'s (its S9 home); `build` is the ported `test_observation_wiring`'s and `CANARY`, `Interceptor`, `file_observer` the ported `test_observations`';
 - the real child process' script (a string) imports `FileSpool` from `observation.adapters.observation_spool`;
-- `from codex_harness.cli import emit` moves into the S10-skipped test's body.
-
-Kept skipped whole, unrewritten:
-- `test_completion_error_never_reaches_the_result_or_cli` (2 IDs): S10, the operator CLI output (`cli.emit`).
+- `from codex_harness.cli import emit` moves into the test's body as `entry.cli.emit` (S10 K1: `entry.cli.output.emit`, re-exported by `entry.cli`); `test_completion_error_never_reaches_the_result_or_cli` (2 IDs) runs.
 
 M7 docstring:
 Regressions for PR #71 third review (docs/zeus/reviews/claude-work-011/test_boundaries.py).
@@ -212,9 +209,8 @@ def test_second_writer_for_the_same_run_is_refused(tmp_path):
 
 # ---- R4 residual: failures outside _run use the same public wording ----------------------------
 
-@pytest.mark.skip(reason="S10: the operator CLI output (cli.emit)")
 def test_completion_error_never_reaches_the_result_or_cli(tmp_path, monkeypatch, store, capsys):
-    from codex_harness.cli import emit
+    from codex_harness.entry.cli import emit
     """Counterexample inverted: the acceptance-write failure is published as boundary, type and digest."""
     intercepted = Interceptor(store)
     s = build(tmp_path, monkeypatch, intercepted)

@@ -4,8 +4,7 @@ Every assertion is M7's, unchanged. Adaptations (construction, import and patch-
 - every `codex_harness` name is `m7_observation`'s (its S9 home; `Harness`, `ExecutionRecovery`, `organization` the shims' via `m7_coordination`, `Executor` is `m7_intake.Executor`: `m7_executor.Executor` with the evidence gate wired);
 - patch targets: `codex_harness.adapters.executor.AppServer` is `m7_executor.AppServer` (read at open time); `codex_harness.adapters.executor.persist_result` is the `results.persist` seam of the executor's `run_task`; the Harness' `checkpoint` is the `sessions.checkpoint` of the same `run_task` (RunTask's `SessionCheckpoints` port).
 
-Kept skipped whole, unrewritten:
-- `test_l01_real_redis_publish_records_the_actual_stream_entry`: S10, `composition.redis_url` (M7's own `HARNESS_INTEGRATION` skip stays).
+K1: `test_l01_real_redis_publish_records_the_actual_stream_entry` is un-skipped for S10 (`redis_url` is `composition.redis_url` through the shim); M7's own `HARNESS_INTEGRATION` skip stays.
 
 M7 docstring:
 Executor, ledger and outbox wiring for the observation contract (U001 L01, L03, L04, L09, L10).
@@ -320,7 +319,6 @@ def test_l10_observation_record_cannot_be_submitted_or_relayed_as_work(tmp_path,
         assert audits and audits[0]["outcome"] == "blocked" and audits[0]["attributes"]["reason"] == "SchemaInvalid"
 
 
-@pytest.mark.skip(reason="S10: composition.redis_url (bootstrap.redis_url)")
 @pytest.mark.integration
 @pytest.mark.skipif(os.environ.get("HARNESS_INTEGRATION") != "1", reason="Set HARNESS_INTEGRATION=1 for local services")
 def test_l01_real_redis_publish_records_the_actual_stream_entry(tmp_path, monkeypatch, isolated_pgstore):
