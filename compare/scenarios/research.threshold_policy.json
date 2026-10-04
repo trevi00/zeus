@@ -1,6 +1,6 @@
 {
  "family": "research.threshold_policy",
- "description": "S10 (V20 DESIGN-s8 section 18 item 3) M7 adapters/threshold_policy.py current_policy over a LABELLED fake git whose _git serves the policy sources' own texts at one fixed fake commit id: a valid HEAD, revision -x, one source missing from the fake ls-tree, a loaded/committed mismatch (one show returns altered text) and a definition mismatch (the effective policy patched to differ); values, kind, encoding and every refusal are compared; sources and revision (the side's own paths and the fake commit) are recorded by the reference only",
+ "description": "S10 (V20 DESIGN-s8 section 18 item 3) M7 adapters/threshold_policy.py current_policy over a LABELLED fake git whose _git serves the policy sources' own texts at one fixed fake commit id: a valid HEAD, revision -x, one source missing from the fake ls-tree, a loaded/committed mismatch (one show returns altered text) and a definition mismatch (the effective policy patched to differ); values, kind, encoding and every refusal are compared; sources and revision (the side's own paths and the fake commit) are recorded by the reference only; sources_count (the number of served sources) is recorded by the reference only",
  "reference_driver": "drivers/reference/s10_threshold_policy.py",
  "target_driver": "drivers/target/s10_threshold_policy.py",
  "golden": "goldens/reference/research.threshold_policy.json",
@@ -15,6 +15,11 @@
    "path": "$.cases.valid_head.returned.revision",
    "op": "absent",
    "authority": "V20 (DESIGN-s8 section 18 item 3): the revision is the fake commit id the fake git returns, declared absent with the sources"
+  },
+  {
+   "path": "$.sources_count",
+   "op": "absent",
+   "authority": "V20 (DESIGN-s8 section 18 item 3): the count of the sources the fake git serves (24 M7 files against the 32 target homes of a split source) goes with the sources, which are declared absent; this reference-only field was recorded with the golden and the target driver does not record it"
   }
  ]
 }

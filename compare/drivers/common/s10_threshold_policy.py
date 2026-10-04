@@ -62,4 +62,4 @@ def policy_cases(api) -> dict:
              "loaded_committed_mismatch": refusal(lambda: run(FakeGit(tree, altered=paths[VICTIM])))}
     with api.patched_effective_policy({"values": {"skill_match.FULL_BODY_MIN_SCORE": 99}}):
         cases["definition_mismatch"] = refusal(lambda: run(FakeGit(tree)))
-    return {"cases": cases, "sources_count": len(paths)}
+    return {"cases": cases, **({"sources_count": len(paths)} if api.record_source_fields else {})}
