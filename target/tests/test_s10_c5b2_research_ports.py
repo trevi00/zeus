@@ -14,11 +14,13 @@ from codex_harness import composition
 from codex_harness.composition import configuration, operation
 from codex_harness.coordination.application import execution_notices
 from codex_harness.coordination.application.decisions import DecisionOwnership
+from codex_harness.coordination.application.research_admission import PersistedResearchAdmission
 from codex_harness.research.adapters import autonomous_roles, correction_feedback
 from codex_harness.research.adapters.audit_execution import AuditExecution
 from codex_harness.research.adapters.audit_runner import AuditRunner
 from codex_harness.research.adapters.council_composition import CouncilCompositionAdmission
 from codex_harness.research.application.research import ResearchAudits
+from codex_harness.research.application.research_package_policy import ResearchPackagePolicy
 from codex_harness.review.application import decisions as review_decisions
 from codex_harness.routing.adapters.organization_source import packaged_organization
 from codex_harness.storage.adapters.file_artifacts import FileArtifacts
@@ -28,7 +30,6 @@ FIXTURE = Path(__file__).parent / "fixtures" / "s10_connections_subset.json"
 
 # (function, parameter) -> why the built object legitimately holds None here.
 ALLOWED_NONE = {
-    ("RunTask.__init__", "research_admission"): "S10 unit C5b-3 (the RF-RT research-first admission, an intended change)",
     ("RunTask.__init__", "worker_sessions"): "optional: only an entry point holding a trusted continuation binding passes one",
     ("RunTask.__init__", "isolation"): "optional: None is exact host execution; the isolated worker is S10 unit C5c",
     ("RunTask.__init__", "evidence_profile"): "optional: None when the host configured no project-evidence profile",
@@ -92,7 +93,9 @@ def test_council_feedback_and_admission(tmp_path, settings, monkeypatch):
     task = executor.run_task
     assert task.council is autonomous_roles
     assert isinstance(task.composition_admission, CouncilCompositionAdmission)
-    assert task.research_admission is None
+    # G20-D7 (C5b-3): the RF-RT research-first admission is wired, an intended change versus M7.
+    assert isinstance(task.research_admission, PersistedResearchAdmission)
+    assert isinstance(task.research_admission.policy, ResearchPackagePolicy)
     seen = []
     monkeypatch.setattr(correction_feedback, "deliver", lambda *a, **k: seen.append((a, k)) or "delivered")
     assert task.feedback.deliver("store", "artifacts", "binding") == "delivered"

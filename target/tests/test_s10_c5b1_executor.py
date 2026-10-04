@@ -19,6 +19,7 @@ from codex_harness.composition.hook_units import HookUnits
 from codex_harness.composition.invocation_budget import CapacityObservingLedger
 from codex_harness.coordination.application import operation_finalization as operation_finalization_ref
 from codex_harness.coordination.application.continuation.bindings import ContinuationBindings
+from codex_harness.coordination.application.research_admission import PersistedResearchAdmission
 from codex_harness.evidence.adapters.evidence_inspection import EvidenceInspector
 from codex_harness.execution.adapters.providers import codex_app_server
 from codex_harness.execution.adapters.providers.claude_cli import ClaudeHost
@@ -27,6 +28,7 @@ from codex_harness.kernel.errors import IsolationError
 from codex_harness.kernel.message import envelope
 from codex_harness.observation.application.catalog_observer import CatalogCheckingObserver
 from codex_harness.observation.domain.observation import redact_text
+from codex_harness.research.application.research_packages import ResearchPackages
 from codex_harness.routing.adapters.organization_source import packaged_organization
 from codex_harness.storage.adapters.file_artifacts import FileArtifacts
 from codex_harness.storage.adapters.memory_store import MemoryStore
@@ -63,8 +65,8 @@ def test_the_wiring_table(tmp_path, settings):
     assert isinstance(task.continuations, ContinuationBindings)
     assert isinstance(task.hook_candidates.lifecycle, HookUnits)
     assert task.host_python == sys.executable
-    # D13: C5b-2 wires five ports; research_admission stays None until C5b-3.
-    assert task.research_admission is None
+    # D13: C5b-2 wires five ports; G20-D7 (C5b-3) wires research_admission, an intended change versus M7.
+    assert isinstance(task.research_admission, PersistedResearchAdmission)
     for name in ("audit_execution", "roles", "council", "feedback", "composition_admission"):
         assert getattr(task, name) is not None, name
     assert executor.decisions is not None and executor.service.store is task.store
@@ -155,6 +157,10 @@ def test_an_implementation_runs_end_to_end_through_the_real_evidence_gate(tmp_pa
                        "fixture", None)
     message["where"]["revision"] = git._git("rev-parse", "HEAD")
     executor.workflow.submit(message)
+    # G20-D7 (C5b-3) intended change: a substantial implement holds without a package, so the fixture's key is declared
+    # exempt by the operator-recorded exemption (G20-D4 revision); the rest of the path is unchanged.
+    with executor.service.store.transaction() as tx:
+        ResearchPackages().exempt(tx, "correlation:fixture", "objective-quality", "fixture", "operator")
     row = executor.execute_one("worker:implementation")
     assert row["status"] == "succeeded", row.get("error")
     inspection = row["result"]["evidence_inspection"]
