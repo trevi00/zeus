@@ -669,6 +669,37 @@ def migration_rehearsal() -> dict:
             return _owner_pytest(env, work, ["tests/ported/test_host_migration_pg_rehearsal.py"], 1500)
 
 
+def wheel_check(wheel: str, ref: str = "HEAD") -> dict:
+    """S11 A3 (DESIGN-s11 §1): the wheel's RECORD equals the tree (`git ls-files target/src/codex_harness target/src/zeus`,
+    prefix removed), file by file, with the sha256 of the tree bytes (`git show <ref>:target/src/<path>`). Paths only."""
+    import base64
+    import csv
+    import io
+    prefix = "target/src/"
+    tree = [p for p in git("ls-files", "--", prefix + "codex_harness", prefix + "zeus").splitlines() if p]
+    expected = {p[len(prefix):]: p for p in tree}
+    with zipfile.ZipFile(wheel) as zf:
+        records = [n for n in zf.namelist() if n.endswith(".dist-info/RECORD") and n.count("/") == 1]
+        if len(records) != 1:
+            return {"ok": False, "error": "expected exactly one *.dist-info/RECORD", "records": records}
+        rows = list(csv.reader(io.StringIO(zf.read(records[0]).decode("utf-8"))))
+    listed = {}
+    for row in rows:
+        if row and ".dist-info/" not in row[0]:
+            listed[row[0]] = row[1] if len(row) > 1 else ""
+    extra = sorted(set(listed) - set(expected))
+    missing = sorted(set(expected) - set(listed))
+    mismatch = []
+    for path in sorted(set(listed) & set(expected)):
+        digest = hashlib.sha256(git("show", f"{ref}:{expected[path]}", text=False)).digest()
+        want = "sha256=" + base64.urlsafe_b64encode(digest).rstrip(b"=").decode("ascii")
+        if listed[path] != want:
+            mismatch.append(path)
+    if extra or missing or mismatch:
+        return {"ok": False, "extra": extra, "missing": missing, "hash_mismatch": mismatch}
+    return {"ok": True, "files": len(listed)}
+
+
 def main(argv=None) -> int:
     parser = argparse.ArgumentParser(description=__doc__.splitlines()[0])
     sub = parser.add_subparsers(dest="command", required=True)
@@ -678,6 +709,8 @@ def main(argv=None) -> int:
     sub.add_parser("docker-fixture")
     sub.add_parser("verify-stack")
     sub.add_parser("migration-rehearsal")
+    wheel_cmd = sub.add_parser("wheel-check")
+    wheel_cmd.add_argument("wheel")
     run_cmd = sub.add_parser("run")
     run_cmd.add_argument("--record", action="store_true", help="write reference goldens")
     run_cmd.add_argument("--no-bwrap", action="store_true")
@@ -699,6 +732,9 @@ def main(argv=None) -> int:
     elif args.command == "migration-rehearsal":
         report = migration_rehearsal()
         ok = report.get("exit_code") == 0
+    elif args.command == "wheel-check":
+        report = wheel_check(args.wheel)
+        ok = report["ok"]
     elif args.command == "target-integration":
         report = target_integration()
         ok = report.get("exit_code") == 0
