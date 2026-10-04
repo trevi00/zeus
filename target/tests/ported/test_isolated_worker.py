@@ -9,7 +9,7 @@ adaptations); any other adaptation is named in place.
 
 Formerly not ported here (S2-S7 pilots); batch U3 below copies every one of them:
 - test_identity_binds_isolation_only_when_selected: S10 entry (operation_cli identity); runs since S10 C6a against `composition.cli_operation.identity`
-- test_host_isolation_refuses_project_profile_and_never_builds_host_path: S10 composition (bootstrap)
+- test_host_isolation_refuses_project_profile_and_never_builds_host_path: S10 composition (bootstrap); runs since S10 K1 against `composition.operation.host_isolation` (settings patched on `composition.configuration`)
 - test_entry_reuses_the_runtime_contract_and_tags_every_line: S10 entry (isolated_worker_entry shim)
 - test_entry_passes_the_read_only_flag_only_under_its_own_protocol: S10 entry (isolated_worker_entry shim)
 
@@ -214,14 +214,13 @@ def test_preflight_refuses_missing_daemon_image_and_token(config, tmp_path, monk
     assert not any(TOKEN in json.dumps(call) for call in fake.calls)
 
 
-@pytest.mark.skip(reason="S10: composition (bootstrap.host_isolation)")
 def test_host_isolation_refuses_project_profile_and_never_builds_host_path(monkeypatch):
-    from codex_harness import bootstrap
-    monkeypatch.setattr(bootstrap, "settings", lambda: {})
-    assert bootstrap.host_isolation() is None
-    monkeypatch.setattr(bootstrap, "settings", lambda: {"ZEUS_WORKER_ISOLATION": "docker", "ZEUS_WORKER_IMAGE": IMAGE})
+    from codex_harness.composition import configuration, operation
+    monkeypatch.setattr(configuration, "settings", lambda: {})
+    assert operation.host_isolation() is None
+    monkeypatch.setattr(configuration, "settings", lambda: {"ZEUS_WORKER_ISOLATION": "docker", "ZEUS_WORKER_IMAGE": IMAGE})
     with pytest.raises(iw.IsolationError) as refused:
-        bootstrap.host_isolation({"profile_digest": "x"})
+        operation.host_isolation({"profile_digest": "x"})
     assert refused.value.reason_code == "isolation_refuses_project_evidence_profile"
 
 
@@ -487,7 +486,7 @@ def lines(output):
     return [iw.parse_line(line + b"\n", 1 << 20) for line in output.getvalue().splitlines()]
 
 
-@pytest.mark.skip(reason="S10: the isolated worker container entry (isolated_worker_entry)")
+@pytest.mark.skip(reason="S10 unit E: entry.processes.isolated_worker and the codex_harness.adapters.isolated_worker_entry shim (serve; absent at 8b60bac1)")
 def test_entry_reuses_the_runtime_contract_and_tags_every_line():
     request = {"protocol": iw.PROTOCOL, "prompt": "p", "schema": SCHEMA, "timeout": 5, "model": "fable", "session_id": "s",
                "runtime": {"worker_profile": None}, "cwd": iw.WORKSPACE, "evidence_root": iw.EVIDENCE}
@@ -500,7 +499,7 @@ def test_entry_reuses_the_runtime_contract_and_tags_every_line():
     assert entry.serve(io.BytesIO(b"{}"), refused, FixtureRuntime) == 1 and lines(refused)[0]["kind"] == "refused"
 
 
-@pytest.mark.skip(reason="S10: the isolated worker container entry (isolated_worker_entry)")
+@pytest.mark.skip(reason="S10 unit E: entry.processes.isolated_worker and the codex_harness.adapters.isolated_worker_entry shim (serve; absent at 8b60bac1)")
 def test_entry_passes_the_read_only_flag_only_under_its_own_protocol():
     """INV-ROLE-CONTAINER-001: claude-role-ro names READ_ONLY_PROTOCOL and read_only together."""
     seen = []

@@ -4,8 +4,8 @@ Every assertion is M7's, unchanged. Adaptations, all construction/import: `Harne
 `organization` come from the `m7_coordination` shim (its docstring names the routing); `Executor` (the real-executor
 tests) from the `m7_executor` shim; `ContractError` from `kernel.errors`, `envelope` from `kernel.message`,
 `MemoryStore`/`FileArtifacts` from `storage.adapters`, `ClaimGuardRefused` from `coordination.application.workflow`.
-The CLI test needs M7's `codex_harness.cli` (S10, entry) and stays here skipped, whole and unrewritten, with `cli`
-bound to a placeholder that raises. The PostgreSQL test skips as in M7 without the integration database.
+The CLI test drives M7's `codex_harness.cli` and runs the S10 target (K1): `cli.parser()` is `entry.cli.parser()`, `cli.emit` is
+`entry.cli.output.emit` and `cli.cycle_command(svc, args)` is `entry.cli.cycle.run(args)` over the service `composition.build` returns (patched to `svc`). The PostgreSQL test skips as in M7 without the integration database.
 
 LocalCycle: bounded persistent loop. Fixture executors here are stand-ins, not Claude or Codex.
 """
@@ -14,19 +14,16 @@ from types import SimpleNamespace
 import pytest
 from m7_coordination import Harness, LocalCycle, Workflow, organization
 
+from codex_harness import composition
+from codex_harness.entry import cli
+from codex_harness.entry.cli import cycle as cycle_root
+from codex_harness.entry.cli import output
 from codex_harness.kernel.errors import ContractError
 from codex_harness.kernel.message import envelope
 from codex_harness.storage.adapters.memory_store import MemoryStore
 
 CORR = "improvement:cycle-test"
 
-
-class cli:  # noqa: N801 - S10 owns M7 `codex_harness.cli`; only the skipped CLI test below names it
-    @staticmethod
-    def _unowned(*args, **kwargs):
-        raise NotImplementedError("S10: entry CLI (cycle_command, parser, emit)")
-
-    emit = cycle_command = parser = _unowned
 
 
 def service():
@@ -238,14 +235,14 @@ def test_own_message_is_handled_relayed_and_acked_before_execution():
     assert result["messages"][0]["type"] == "task.assign" and result["reason"] == "idle"
 
 
-@pytest.mark.skip(reason="S10: entry CLI (M7 cli.cycle_command, cli.parser, cli.emit)")
 def test_cli_start_and_status_use_local_cycle(monkeypatch):
     svc = service()
     outputs = []
-    monkeypatch.setattr(cli, "emit", outputs.append)
+    monkeypatch.setattr(output, "emit", outputs.append)
+    monkeypatch.setattr(composition, "build", lambda: svc)
     args = cli.parser().parse_args(["cycle", "start", "c1", "--correlation", CORR, "--max-executions", "2"])
-    cli.cycle_command(svc, args)
-    cli.cycle_command(svc, cli.parser().parse_args(["cycle", "status", "c1"]))
+    cycle_root.run(args)
+    cycle_root.run(cli.parser().parse_args(["cycle", "status", "c1"]))
     assert outputs[0]["max_executions"] == 2 and outputs[1]["status"] == "active"
     assert cli.parser().parse_args(["cycle", "step", "c1"]).cycle_command == "step"
 
