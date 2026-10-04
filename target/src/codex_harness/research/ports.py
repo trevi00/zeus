@@ -12,11 +12,12 @@ Owns: OWNED_BUCKETS of the research context; OutboxAppend and EventAppend, the c
     DiscoveryCensusReader that DiscoveryPressure calls (S8 pilot 76); GitBlobSource, the consumer shape of host_os's
     GitSource that the pinned registry reader load_registry calls (S8 pilot 91, V18 R-df1); ExecutionNotices, the shape of
     coordination's execution_notices.record that AuditRepair calls (S8 pilot 100, V18 R-ar1); DecisionRecord, the shape of
-    coordination's DecisionOwnership.record that ThresholdReviews calls (S8 pilot 101, V22 R-tr2)
+    coordination's DecisionOwnership.record that ThresholdReviews calls (S8 pilot 101, V22 R-tr2); ResearchPins, the
+    version-pin lookup ResearchPackagePolicy calls (S10 G20-1a, DESIGN-s10 §14 G20-D5)
 Does not own: the outbox, events, decisions_pending and portfolio_investigations bucket bodies (coordination, intake)
 Entry points: OWNED_BUCKETS, OutboxAppend, EventAppend, AuditArtifacts, SourceVerifier, DecisionValidation,
     PendingDecisions, InvestigationCandidates, ResearchLaunchFacts, ExecutionFences, OutboxQuarantine, DiscoveryCensus,
-    GitBlobSource, ExecutionNotices, DecisionRecord
+    GitBlobSource, ExecutionNotices, DecisionRecord, ResearchPins
 Contracts: INV-RECURRENCE-001, INV-MESSAGE-001
 """
 
@@ -58,7 +59,9 @@ OWNED_BUCKETS = ("inbox", "incidents", "hooks", "research_programs", "dge_sessio
                  "decision_observations", "decision_feedback_groups", "recurring_work_candidates",
                  "decision_feedback_conflicts", "decision_feedback_collections",
                  # S8 batch B3 (V24 R-ae5): the bucket only research.adapters.audit_execution writes (M7 left it undeclared)
-                 "research_proposal_runs")
+                 "research_proposal_runs",
+                 # S10 G20-1a (RF-RT S8 remainder): ResearchPackages
+                 "research_packages")
 
 
 class OutboxAppend(Protocol):
@@ -122,3 +125,7 @@ class ExecutionNotices(Protocol):
 
 class DecisionRecord(Protocol):
     def record(self, tx, current: dict) -> None: ...
+
+
+class ResearchPins(Protocol):
+    def current(self, pin_ref: str) -> str | None: ...
