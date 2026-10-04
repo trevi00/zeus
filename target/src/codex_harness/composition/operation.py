@@ -3,7 +3,7 @@
 Layer: composition
 Owns: HOST_PROFILE, COMPOSITION_PROFILES, composition_profile, host_evidence_profile, host_isolation, build_executor, Executor
 Does not own: RunTask (execution), ReviewDecisions (review), the isolated worker (`composition.isolation`, C5c-1),
-research_admission (S10 unit C5b-3)
+research_admission (wired by S10 unit G20-1b, G20-D7)
 Entry points: build_executor, Executor, composition_profile, host_evidence_profile, host_isolation
 Contracts: INV-PROJECT-EVIDENCE-001, INV-ISOLATED-WORKER-001, INV-OBSERVATION-001, INV-EXECUTION-IDENTITY-001
 
@@ -43,7 +43,7 @@ and constructs no host provider transport: the Executor's `host_app_server` and 
 
 Deltas from M7, named: D-ar: `audit_runner` is not a `build_executor` parameter (the runner is built in `Executor.__init__`
 with `host_execution=True`, as M7 `bootstrap.build_executor` passed it); D12: `isolation` is passed through unchanged; `host_isolation` composes the C5c-1
-`composition.isolation.isolated_worker` for a configured selection (it never falls back to host execution); D13: `research_admission` stays None (S10 unit C5b-3: the RF-RT research-first admission is an intended behaviour
+`composition.isolation.isolated_worker` for a configured selection (it never falls back to host execution); D13: `research_admission` is wired by S10 unit G20-1b (G20-D7: `PersistedResearchAdmission` over `ResearchPackagePolicy`, `UvLockPins`; the RF-RT research-first admission is an intended behaviour
 change M7 did not have); the five ports above are wired by C5b-2; RunTask's own refusals stand.
 """
 from __future__ import annotations
@@ -81,6 +81,7 @@ from codex_harness.coordination.application.execution_records import ExecutionRe
 from codex_harness.coordination.application.execution_recovery import ExecutionRecovery
 from codex_harness.coordination.application.invocation_admission import InvocationBreaker
 from codex_harness.coordination.application.outbox import Outbox
+from codex_harness.coordination.application.research_admission import PersistedResearchAdmission
 from codex_harness.coordination.application.sessions import SessionCheckpoints
 from codex_harness.coordination.application.task_ownership import TaskOwnership
 from codex_harness.evidence.adapters import project_evidence
@@ -111,11 +112,14 @@ from codex_harness.research.adapters import autonomous_roles, correction_feedbac
 from codex_harness.research.adapters.audit_execution import AuditExecution
 from codex_harness.research.adapters.audit_runner import AuditRunner
 from codex_harness.research.adapters.council_composition import CouncilCompositionAdmission
+from codex_harness.research.adapters.research_pins import UvLockPins
 from codex_harness.research.application import audit_gate
 from codex_harness.research.application.audit_gate import inspect_approval
 from codex_harness.research.application.hook_rollback import HookRollback
 from codex_harness.research.application.hooks import HookLifecycle
 from codex_harness.research.application.research import ResearchAudits
+from codex_harness.research.application.research_package_policy import ResearchPackagePolicy
+from codex_harness.research.application.research_packages import ResearchPackages
 from codex_harness.research.application.threshold_reviews import ThresholdReviewRecords, ThresholdReviews
 from codex_harness.research.domain.discovery_pressure import DiscoveryPaused, DiscoveryRefused
 from codex_harness.research.domain.recurrence import hook_apply
@@ -278,8 +282,7 @@ class Executor:
     """The production `coordination.ports.TaskRunner` (OWNER-DECISIONS-S10 #8): execute_one -> RunTask, decide_one ->
     claim_decision + ReviewDecisions; the production counterpart of `tests/ported/m7_executor.Executor`.
 
-    Not wired here: `run_task.research_admission` (S10 unit C5b-3; RunTask's own refusal stands) and
-    `ReviewDecisions.threshold_review` (S8 B6, absent at this head; it keeps ReviewDecisions' refusing default)."""
+    Not wired here: `ReviewDecisions.threshold_review` (S8 B6, absent at this head; it keeps ReviewDecisions' refusing default)."""
 
     def __init__(self, service, git, artifacts, knowledge=None, research=None, observer=None, execution_policy=None,
                  evidence_profile=None, isolation=None, worker_sessions=None, host_transports=True):
@@ -356,7 +359,11 @@ class Executor:
         self.run_task.council = autonomous_roles
         self.run_task.feedback = _Feedback()
         self.run_task.composition_admission = CouncilCompositionAdmission()
-        # run_task.research_admission stays None: the RF-RT research-first admission is S10 unit C5b-3.
+        # G20-D7 (C5b-3): the RF-RT research-first admission, in both profiles; a substantial plan/implement without an
+        # accepted package holds explicitly (an intended change versus M7).
+        self.run_task.research_admission = PersistedResearchAdmission(
+            policy=ResearchPackagePolicy(ResearchPackages(clock=SYSTEM_CLOCK), UvLockPins(configuration.repository_root()),
+                                         clock=SYSTEM_CLOCK), clock=SYSTEM_CLOCK)
         self.hooks = HookLifecycle(org, outbox=Outbox(), events=EventJournal(), ids=SYSTEM_IDS)
         self.decisions = ReviewDecisions(
             store, org, ownership=DecisionOwnership(self.workflow, self.recovery, org, clock=SYSTEM_CLOCK, ids=SYSTEM_IDS),
