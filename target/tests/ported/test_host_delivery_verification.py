@@ -17,6 +17,8 @@ real `ReleaseSuite`, `ReleaseVerifier`, `FenceUnobservable` and `bounded_fence` 
 patched through the runner's injected port). `FixtureServices`, `fake_docker` and `source_repository` are the ported
 `verification_fixtures` helper module (M7 `tests/verification_fixtures.py`), imported as M7 imports them.
 
+S10 unit C8b-4 (R-c31) un-skipped the cases that name only the host-delivery CLI and composition functions (import lines, call names and patch targets only): `cli_host_delivery` is `composition.cli_host_delivery`, `execute` is `entry.cli.host_delivery._execute` and `add_parser` is `entry.cli.host_delivery.add_parser`; the production coordinator is the S7 split owners, so a patched `controller` returns them (`SimpleNamespace(recovery=..., resumption=...)`) and `controller(...)` reading M7's one object is the shim `HostDelivery` over `controller_ports`. Kept skipped: the blocked-PostgreSQL heartbeat stop (integration, not executed by that unit); the legacy-halt resume and the three run-loop cases now run.
+
 M7 docstring follows.
 
 The `verifying` stage and `host-delivery resume` over REAL interfaces (INV-HOST-DELIVERY-VERIFY-001).
@@ -61,7 +63,6 @@ from m7_delivery import (
     organization,
     owner_qualified_canary,
     startup_identity_canary,
-    unavailable,
 )
 from test_host_delivery import (
     Clock,
@@ -76,6 +77,7 @@ from test_host_delivery import (
 )
 from verification_fixtures import FixtureServices, fake_docker, source_repository
 
+from codex_harness.composition import cli_host_delivery as host_delivery
 from codex_harness.delivery.application.host_delivery.state import BUCKET_INTENTS
 from codex_harness.delivery.domain.host_delivery import (
     ACTIVE,
@@ -96,11 +98,11 @@ from codex_harness.delivery.domain.host_delivery import (
     unresolved_attempts,
     validate_plan,
 )
+from codex_harness.entry.cli import host_delivery as entry_host_delivery
 
-host_delivery = unavailable('S10', 'adapters.host_delivery')
-add_parser = unavailable('S10', 'adapters.host_delivery.add_parser')
-execute = unavailable('S10', 'adapters.host_delivery.execute')
-run_loop = unavailable('S10', 'adapters.host_delivery.run_loop')
+execute = entry_host_delivery._execute
+add_parser = entry_host_delivery.add_parser
+run_loop = host_delivery.run_loop
 
 POLICY_CHECKS = {"checks": ["tests", "cli_start", "cli_file_task"], "evaluator": "fixture-incumbent-policy"}
 EVIDENCE = "sha256:" + "ab" * 32
@@ -274,8 +276,8 @@ def cli(system, monkeypatch, *argv):
     monkeypatch.setattr(host_delivery, "_git", lambda _service: system["workspace"])
     monkeypatch.setattr(host_delivery, "_observer", lambda _service: None)
     # The real `controller()` would wire the real GitHub CLI; this delivery carries the labelled
-    # double instead. Parsing, dispatch and the receipt are the shipped CLI path.
-    monkeypatch.setattr(host_delivery, "controller", lambda *_a, **_k: system["delivery"])
+    # double instead (its split owners, as the production `controller()` returns them). Parsing, dispatch and the receipt are the shipped CLI path.
+    monkeypatch.setattr(host_delivery, "controller", lambda *_a, **_k: SimpleNamespace(**system["delivery"].objects))
     return execute(SimpleNamespace(store=system["store"], org=system["org"]), args)
 
 
@@ -286,7 +288,6 @@ def snapshot(store):
                                "host_delivery_plans")}
 
 
-@pytest.mark.skip(reason='S10: the operator CLI (adapters.host_delivery.add_parser and execute; no S8 gap)')
 @binds_a_runtime
 def test_the_merged_unverified_legacy_halt_resumes_once_and_verifies_to_active(tmp_path, monkeypatch, store):
     system = build(tmp_path, monkeypatch, store)
@@ -332,7 +333,6 @@ def test_the_merged_unverified_legacy_halt_resumes_once_and_verifies_to_active(t
 
 
 # ----- L-1: a real child, a real SIGTERM, the real run loop ---------------------------------------
-@pytest.mark.skip(reason='S10: the host-delivery run loop (adapters.host_delivery.run_loop; no S8 gap)')
 def test_sigterm_during_an_evaluation_ends_its_own_children_and_containers_once(tmp_path, monkeypatch):
     system = build(tmp_path, monkeypatch, SerialStore())
     daemon = system["daemon"]
@@ -606,7 +606,6 @@ def test_an_unobservable_fence_settles_and_writes_nothing_through_the_same_unava
     assert all(len(unresolved_attempts(snapshot)) == 1 for snapshot in outage.evaluations)
 
 
-@pytest.mark.skip(reason='S10: the host-delivery run loop (adapters.host_delivery.run_loop; no S8 gap)')
 def test_a_stop_during_a_blocked_fence_touches_no_store_and_a_repeated_signal_is_only_the_flag(
         tmp_path, monkeypatch):
     """The first SIGTERM lands while the heartbeat is blocked (well inside the default fence bound):
@@ -691,7 +690,7 @@ def stop_then_fail_the_heartbeat(system, monkeypatch, outage):
         return receipts[-1]
 
     monkeypatch.setattr(system["artifacts"], "put", put)
-    monkeypatch.setattr(delivery, "tick", tick)
+    monkeypatch.setattr(delivery.objects["controller"], "tick", tick)  # the owner the shim facade routes `tick` to
     sender = threading.Thread(target=deliver, daemon=True)
     sender.start()
     summary = run_loop(delivery, interval=1, max_ticks=3, sleep=lambda _s: None)
@@ -702,7 +701,6 @@ def stop_then_fail_the_heartbeat(system, monkeypatch, outage):
     return {"summary": summary, "receipts": receipts, "failed": failed[0], "returned": returned}
 
 
-@pytest.mark.skip(reason='S10: the host-delivery run loop (adapters.host_delivery.run_loop; no S8 gap)')
 def test_a_stop_during_a_blocked_fence_whose_heartbeat_then_fails_still_settles_nothing(tmp_path, monkeypatch):
     """R1 repair: the heartbeat blocked under a stop FAILS before the evaluation returns, so no
     observation is in flight any more - yet the store never answered it, and the same outage still
@@ -852,7 +850,7 @@ def test_a_blocked_postgres_store_returns_the_whole_tick_unsettled_well_before_l
     assert disk_record(system, attempt["attempt_id"])["state"] == "resolved"
 
 
-@pytest.mark.skip(reason='S10: the host-delivery run loop (adapters.host_delivery.run_loop; no S8 gap)')
+@pytest.mark.skip(reason='integration (disposable PostgreSQL): kept skipped, C8b-4 could not execute it; the owner\'s target-integration run does')
 @pytest.mark.integration
 def test_a_stop_while_a_blocked_postgres_heartbeat_times_out_settles_nothing(
         tmp_path, monkeypatch, isolated_pgstore):

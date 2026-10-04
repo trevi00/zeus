@@ -10,6 +10,8 @@ CLI and lane resolution, S10; the release evaluator and `verification_fixtures`,
 W-B) is an `unavailable(slice, name)` placeholder, and only tests skipped whole and unrewritten (each with its owning
 slice) name it.
 
+S10 unit C8b-4 (R-c31) un-skipped the cases that name only the host-delivery CLI and composition functions (import lines, call names and patch targets only): `cli_host_delivery` is `composition.cli_host_delivery`, `execute` is `entry.cli.host_delivery._execute` and `add_parser` is `entry.cli.host_delivery.add_parser`; the production coordinator is the S7 split owners, so a patched `controller` returns them (`SimpleNamespace(recovery=..., resumption=...)`) and `controller(...)` reading M7's one object is the shim `HostDelivery` over `controller_ports`. Kept skipped: the `isinstance(..., Fleet)` case (the gate authority is `FleetPause`) and the two PostgreSQL cases (integration, not executed by that unit).
+
 M7 docstring follows.
 
 `zeus host-delivery --lane` routing (INV-HOST-DELIVERY-001).
@@ -39,13 +41,16 @@ import pytest
 from m7_coordination import LaunchRefused
 from m7_delivery import (
     Fleet,
+    HostDelivery,
     MemoryStore,
     canary_receipt_file,
     organization,
     owner_qualified_canary,
-    unavailable,
 )
 
+from codex_harness.composition import cli_host_delivery as host_delivery
+from codex_harness.composition.cli_host_delivery import lane_git, resolve_lane
+from codex_harness.coordination.application.fleet.registry import FleetRegistry
 from codex_harness.coordination.application.fleet.state import (
     ACTIVATION_HOLD,
     BUCKET_CONTROL,
@@ -73,13 +78,17 @@ from codex_harness.delivery.domain.host_delivery import (
     DeliveryRefused,
     descriptor_digest,
 )
+from codex_harness.entry import cli
+from codex_harness.entry.cli import host_delivery as entry_host_delivery
 
-cli = unavailable('S10', 'cli')
-host_delivery = unavailable('S10', 'adapters.host_delivery')
-controller = unavailable('S10', 'adapters.host_delivery.controller')
-execute = unavailable('S10', 'adapters.host_delivery.execute')
-lane_git = unavailable('S10', 'adapters.host_delivery.lane_git')
-resolve_lane = unavailable('S10', 'adapters.host_delivery.resolve_lane')
+execute = entry_host_delivery._execute
+
+
+def controller(service, **kwargs):
+    """`composition.cli_host_delivery.controller`'s wiring behind the M7 `HostDelivery` surface: the shim facade over the SAME ports
+    (`controller_ports`), because the production coordinator is the S7 split owners (R-c31) and these cases read M7's one object."""
+    store, ports = host_delivery.controller_ports(service, **kwargs)
+    return HostDelivery(store, service.org, **ports)
 
 CONTROL_DSN = "postgresql://fixture@fixture-host/control"  # a label: nothing connects to it
 LANES = {"harness": "zeus_fleet_harness", "interface": "zeus_fleet_interface"}
@@ -209,7 +218,6 @@ class Unavailable:
 
 
 # ----- the parser ------------------------------------------------------------------------------
-@pytest.mark.skip(reason='S10: the operator CLI / lane resolution (cli)')
 def test_every_owner_command_takes_an_optional_lane_and_defaults_to_none():
     parse = cli.parser().parse_args
     for argv in (["register-targets", "--file", "t.json"],
@@ -220,7 +228,6 @@ def test_every_owner_command_takes_an_optional_lane_and_defaults_to_none():
 
 
 # ----- default: unchanged ------------------------------------------------------------------------
-@pytest.mark.skip(reason='S10: the operator CLI / lane resolution (adapters.host_delivery)')
 def test_without_a_lane_every_command_stays_on_the_control_store(tmp_path, monkeypatch):
     # No Fleet is registered: any lane resolution would refuse, so success proves none happened.
     service = control_service(tmp_path, register=False)
@@ -243,7 +250,6 @@ def test_without_a_lane_every_command_stays_on_the_control_store(tmp_path, monke
 
 
 # ----- routing -------------------------------------------------------------------------------------
-@pytest.mark.skip(reason='S10: the operator CLI / lane resolution (adapters.host_delivery)')
 def test_registration_plan_and_status_route_to_the_named_lane_only(tmp_path, monkeypatch):
     service = control_service(tmp_path)
     stores = LaneStores()
@@ -270,7 +276,6 @@ def test_registration_plan_and_status_route_to_the_named_lane_only(tmp_path, mon
     assert execute(service, args("status", plan="lane-plan-1", lane="interface"))["exit_code"] == 1
 
 
-@pytest.mark.skip(reason='S10: the operator CLI / lane resolution (adapters.host_delivery)')
 def test_a_lane_plan_is_never_read_from_another_lanes_repository(tmp_path, monkeypatch):
     service = control_service(tmp_path)
     stores = LaneStores()
@@ -292,7 +297,7 @@ def _write(tmp_path, document) -> Path:
     return path
 
 
-@pytest.mark.skip(reason='S10: the operator CLI / lane resolution (adapters.host_delivery.resolve_lane)')
+@pytest.mark.skip(reason='S10: the M7 case asserts `isinstance(hosts[kind].fleet, Fleet)` on the M7 `Fleet` object; the production gate authority is the S5 `FleetPause` over the control store (R-c31), covered by `tests/test_s10_c8b4_host_delivery.py`')
 def test_a_lane_controller_owns_lane_records_but_gates_on_the_control_fleet(tmp_path):
     service = control_service(tmp_path)
     stores = LaneStores()
@@ -310,7 +315,6 @@ def test_a_lane_controller_owns_lane_records_but_gates_on_the_control_fleet(tmp_
     assert workspace.remote == "zeus-owner/zeus-harness"
 
 
-@pytest.mark.skip(reason='S10: the operator CLI / lane resolution (adapters.host_delivery.controller)')
 @pytest.mark.parametrize("debt", ["unit_held", "job_reserving", "owner_paused_with_unit"])
 def test_control_debt_refuses_a_managed_activation_even_when_the_lane_is_empty(tmp_path, debt):
     service = control_service(tmp_path)
@@ -336,7 +340,6 @@ def test_control_debt_refuses_a_managed_activation_even_when_the_lane_is_empty(t
     assert rows(lane, BUCKET_CONTROL) == [] and empty(lane)
 
 
-@pytest.mark.skip(reason='S10: the operator CLI / lane resolution (adapters.host_delivery.controller)')
 def test_a_settled_control_fleet_is_what_lets_a_lane_activation_through(tmp_path):
     # The discriminating control: the lane has NO Fleet registry, so the pre-fix gate (Fleet over the
     # lane store) refused here as `fleet_pause_unknown` whatever the real debt was.
@@ -353,7 +356,6 @@ def test_a_settled_control_fleet_is_what_lets_a_lane_activation_through(tmp_path
     assert refused.value.reason_code == "fleet_pause_unknown"
 
 
-@pytest.mark.skip(reason='S10: the operator CLI / lane resolution (adapters.host_delivery.controller)')
 def test_an_unavailable_control_fleet_refuses_the_activation_and_the_lane_resolution(tmp_path):
     lane = LaneStores().lane("harness")
     down = SimpleNamespace(store=Unavailable(), org=organization())
@@ -367,7 +369,6 @@ def test_an_unavailable_control_fleet_refuses_the_activation_and_the_lane_resolu
 
 
 # ----- refusals: no fallback -----------------------------------------------------------------------
-@pytest.mark.skip(reason='S10: the operator CLI / lane resolution (adapters.host_delivery)')
 @pytest.mark.parametrize("case, reason", [
     ("unknown", "lane_unknown"), ("empty", "lane_invalid"), ("unregistered", "lane_registry_unregistered"),
     ("ambiguous", "lane_ambiguous"), ("unprovisioned", "lane_schema_unprovisioned"),
@@ -390,7 +391,7 @@ def test_a_wrong_missing_or_ambiguous_lane_refuses_before_any_store_is_touched(t
         config = fleet_config(tmp_path)
         duplicated = {**config, "lanes": [config["lanes"][0], dict(config["lanes"][0])]}
         # LABELLED: a registry row validation would never store, read back as if it had been.
-        monkeypatch.setattr(Fleet, "registered", lambda self: {"config": duplicated})
+        monkeypatch.setattr(FleetRegistry, "registered", lambda self: {"config": duplicated})
     control_schema = (lambda _store: LANES["harness"]) if case == "is_control" else (lambda _store: "control")
     resolver = functools.partial(resolve_lane, host=host if host is not None else {"HARNESS_DATABASE_URL": CONTROL_DSN},
                                  store_factory=stores, verify=verify or verified([]),
@@ -408,13 +409,11 @@ def test_a_wrong_missing_or_ambiguous_lane_refuses_before_any_store_is_touched(t
     assert empty(service.store), "a refused lane never falls back to the control store"
 
 
-@pytest.mark.skip(reason='S10: the operator CLI / lane resolution (adapters.host_delivery)')
 def test_the_real_control_schema_probe_skips_a_store_without_a_dsn():
     assert host_delivery._control_schema(MemoryStore()) is None
 
 
 # ----- canaries --------------------------------------------------------------------------------------
-@pytest.mark.skip(reason='S10: the operator CLI lane controller (adapters.host_delivery.controller; the patch target adapters.monitoring.host_delivery_facts is composition-injected on the target)')
 def test_the_collect_canary_reads_the_lane_and_the_owner_canary_stays_file_bound(tmp_path, monkeypatch):
     service = control_service(tmp_path)
     lane = LaneStores().lane("harness")
@@ -423,7 +422,7 @@ def test_the_collect_canary_reads_the_lane_and_the_owner_canary_stays_file_bound
     def facts(store):
         read.append(store)
         return {"targets": []}
-    monkeypatch.setattr("codex_harness.adapters.monitoring.host_delivery_facts", facts)
+    monkeypatch.setattr(host_delivery, "_canary_facts", facts)
     wired = controller(service, enabled=False, store=lane)
     target = {"target_id": "aibox-managed-fleet", "state_dir": str(tmp_path / "state")}
     verdict = wired.canaries[CANARY_COLLECT](target, descriptor(), {"instance_id": "i-1"})
@@ -443,7 +442,6 @@ def test_the_collect_canary_reads_the_lane_and_the_owner_canary_stays_file_bound
 
 
 # ----- process environment and observer ----------------------------------------------------------
-@pytest.mark.skip(reason='S10: the operator CLI / lane resolution (adapters.host_delivery)')
 def test_a_lane_tick_leaves_the_process_environment_and_closes_its_lane_observer(tmp_path, monkeypatch):
     service = control_service(tmp_path)
     stores = LaneStores()
@@ -480,7 +478,6 @@ def test_a_lane_tick_leaves_the_process_environment_and_closes_its_lane_observer
     assert Recorder.closed == 2
 
 
-@pytest.mark.skip(reason='S10: the operator CLI / lane resolution (adapters.host_delivery)')
 def test_the_real_lane_observer_uses_the_lane_store_and_the_lane_runtime_spool(tmp_path):
     lane = LaneStores().lane("harness")
     runtime = tmp_path / "runtime-harness"
@@ -533,7 +530,7 @@ def segregated_pg(tmp_path):
                 connection.execute(sql.SQL("DROP SCHEMA IF EXISTS {} CASCADE").format(sql.Identifier(schema)))
 
 
-@pytest.mark.skip(reason='S10: the operator CLI / lane resolution (adapters.host_delivery)')
+@pytest.mark.skip(reason="integration (disposable PostgreSQL): kept skipped, C8b-4 could not execute it; the owner's target-integration run does")
 def test_pg_lane_commands_write_only_the_lane_schema(segregated_pg, tmp_path, monkeypatch):
     service, host, stores = segregated_pg["service"], segregated_pg["host"], segregated_pg["stores"]
     monkeypatch.setattr(host_delivery, "_settings", lambda: dict(host))
@@ -553,7 +550,7 @@ def test_pg_lane_commands_write_only_the_lane_schema(segregated_pg, tmp_path, mo
     assert [row["id"] for row in rows(stores["harness"], BUCKET_TARGETS)] == ["aibox-managed-fleet"]
 
 
-@pytest.mark.skip(reason='S10: the operator CLI / lane resolution (adapters.host_delivery)')
+@pytest.mark.skip(reason="integration (disposable PostgreSQL): kept skipped, C8b-4 could not execute it; the owner's target-integration run does")
 def test_pg_wrong_lanes_refuse_and_the_gate_reads_the_control_schema(segregated_pg):
     service, host, stores = segregated_pg["service"], segregated_pg["host"], segregated_pg["stores"]
     for lane_id, reason in (("ghost", "lane_schema_mismatch"), ("self", "lane_is_control"),
