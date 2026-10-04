@@ -545,6 +545,28 @@ class DeliveryState:
                 "check": "sha256:" + hashlib.sha256(name.encode("utf-8")).hexdigest(),
                 "conclusion": conclusion, "duration_seconds": None, "attempt": attempt})
 
+    def emit_queue_wait(self, claim) -> None:
+        """One `operations.queue_item_waited` per claim of a release_queue row (DESIGN-s10 §17c, R-a54 (2)).
+
+        `wait_seconds` is this controller's claim time minus the row's own enqueue time (`at`, set by
+        `ReleaseQueue.enqueue`). A row without a timezone-aware parseable `at` (or one enqueued after the claim)
+        emits nothing: no guessed wait.
+        """
+        if self.observer is None:
+            return
+        try:
+            queued = datetime.fromisoformat(claim["at"])
+        except (KeyError, TypeError, ValueError):
+            return
+        if queued.tzinfo is None:
+            return
+        wait = (self.now() - queued).total_seconds()
+        if wait < 0:
+            return
+        self.observer.emit("operations.queue_item_waited", "observed", attributes={
+            "queue": "release_queue", "item_ref": "sha256:" + hashlib.sha256(str(claim["id"]).encode("utf-8")).hexdigest(),
+            "wait_seconds": wait, "outcome": "started"})
+
     def unclaimed(self, plan: dict) -> str:
         """Why a claim of this plan's release got nothing - an operational fact of its own: another
         controller holds the single host lease, or this release's own queue row is not runnable."""

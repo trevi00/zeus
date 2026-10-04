@@ -763,6 +763,7 @@ class Recovery:
             # Another controller holds the host lease (or the row is not runnable): the recorded request
             # stays, and the same evidence completes it later; nothing was started here.
             raise DeliveryRefused("resume_controller_running", "release_id")
+        self.state.emit_queue_wait(claim)
         state = "unconfirmed"
         try:
             with self.store.transaction() as tx:

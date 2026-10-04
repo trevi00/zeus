@@ -144,6 +144,7 @@ class DeliveryController:
             return self.state.unavailable(plan, intent, "queue_unavailable", exc, commit=False)
         if claim is None:
             return self.state.result(plan, intent, OUTCOME_BUSY, reason_code=self.state.unclaimed(plan))
+        self.state.emit_queue_wait(claim)
         try:
             result = self._advance(row, intent, claim)
         except AmbiguousEffect as ambiguous:
