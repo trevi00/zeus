@@ -52,23 +52,28 @@ def run_fleet(service, args, *, control=None) -> dict:
     # previous behaviour, never selects work of its own and builds no observer.
     plan_id = fleet_backlog.configured_plan(host)
     backlog_tick = None
+    backlog_observer = continuation_observer = None
     if plan_id is not None:
         # The durable process observer of the configured continuous loop: the backlog's fixed
         # admission, refusal, conflict, unavailability and recovery transitions are collected as
         # structured observations, not only as log lines.
-        backlog_tick = fleet_backlog.backlog_ticker(service.store, config, plan_id,
-                                                    observer=build_observer(service.store, "fleet-backlog"))
+        backlog_observer = build_observer(service.store, "fleet-backlog")
+        backlog_tick = fleet_backlog.backlog_ticker(service.store, config, plan_id, observer=backlog_observer)
     # Opt-in only (INV-CONTINUATION-001): without the host policy setting no continuation pass,
     # lane connection, conductor process or observer is built, and the runner is unchanged.
     # A comma-separated setting names several disjoint policies; the ONE runner ticks them in turn.
     policy_ids = continuation.configured_policies(host)
     continuation_tick = None
     if policy_ids is not None:
+        continuation_observer = build_observer(service.store, "fleet-continuation")
         continuation_tick = continuation.continuation_ticker(
-            service.store, config, host, policy_ids, observer=build_observer(service.store, "fleet-continuation"))
+            service.store, config, host, policy_ids, observer=continuation_observer)
     # The bounded portfolio pass is wired here, in the adapter: the runner keeps no portfolio
     # dependency and a reconciliation outage never blocks admission (operating-portfolio-001).
-    runner = FleetRunner(registry, AdmissionControl(service.store), FleetPause(service.store),
+    # DESIGN-s10 §17 (R-a52): the Fleet's own seams reuse an observer this path already built; none is built here,
+    # so a run without the host settings keeps `observer=None` and emits nothing.
+    fleet_observer = backlog_observer or continuation_observer
+    runner = FleetRunner(registry, AdmissionControl(service.store, observer=fleet_observer), FleetPause(service.store),
                          fleet.lane_launcher(config, host), reconcile=portfolio_reconciler(service.store),
                          backlog=backlog_tick, control=control, continuation=continuation_tick)
     installed = []  # (signal, previous handler) for each handler THIS run replaced

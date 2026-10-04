@@ -41,8 +41,16 @@ from codex_harness.kernel.ids import utcnow
 class AdmissionControl:
     """Serialized admission of Fleet jobs and shared execution units (M7 `Fleet`, admission part)."""
 
-    def __init__(self, store, clock=utcnow, token=lambda: uuid4().hex):
+    def __init__(self, store, clock=utcnow, token=lambda: uuid4().hex, observer=None):
         self.store, self.clock, self.token = store, clock, token
+        # Optional catalog observer (DESIGN-s10 §17, R-a52): `operations.capacity_refused` at the capacity
+        # refusals. None - the default - emits nothing and keeps the exact previous behaviour.
+        self.observer = observer
+
+    def _refused(self, scope: str, reason: str) -> None:
+        if self.observer is not None:
+            self.observer.emit("operations.capacity_refused", "blocked", severity="warning",
+                               attributes={"scope": scope, "refusal_reason": reason, "retry_after_seconds": None})
 
     def admit_one(self, budget_exhausted: bool = False) -> dict:
         """One transaction: choose the oldest admissible queued job and claim it as dispatching
@@ -67,11 +75,19 @@ class AdmissionControl:
                 job.update(status=DISPATCHING, owner_token=self.token(), dispatched_at=now, updated_at=now,
                            reason_code=None)
                 tx.put(BUCKET_JOBS, job["id"], job)
+            refusals = []
             for job_id, reason in decision["blocked"].items():
                 blocked = jobs[job_id]
                 if blocked.get("reason_code") != reason:
                     blocked.update(reason_code=reason, updated_at=now)
                     tx.put(BUCKET_JOBS, job_id, blocked)
+                    # One event per newly recorded reason, not per idle poll (the persisted reason is the edge).
+                    if reason == "capacity":
+                        refusals.append(("fleet_unit", "unit_limit"))
+                    elif reason == "lane_busy":
+                        refusals.append(("lane_slots", "lane_full"))
+        for scope, reason in refusals:  # after the commit: a rolled-back admission reports nothing
+            self._refused(scope, reason)
         return {**decision, "job": job}
 
     # ----- shared execution units: reserve before spawn, release only on exact proof ------
@@ -100,6 +116,7 @@ class AdmissionControl:
                 raise FleetRefused("paused")
             reserving = sum(1 for row in tx.scan(BUCKET_JOBS) if row["status"] in RESERVING)
             if reserving + len(held_units(tx.scan(BUCKET_UNITS))) >= config["max_parallel"]:
+                self._refused("fleet_unit", "unit_limit")
                 raise FleetRefused("capacity")
             if within is not None:
                 within(tx, dict(unit))
