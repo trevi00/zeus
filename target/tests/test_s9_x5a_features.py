@@ -33,7 +33,10 @@ UNPRODUCED_AT_EC681D20 = frozenset({
     "operations.supervisor_error", "operations.supervisor_tick", "operations.worker_replace_requested",
     "operations.worker_wake_requested"})
 
-PRODUCED_SINCE = {"development.role_dispatch_decided"}  # X1b-2: produced by RunTask at the admission boundary
+PRODUCED_SINCE = {"development.role_dispatch_decided",  # X1b-2: produced by RunTask at the admission boundary
+                  # S10 E3: produced by composition.supervisor
+                  "operations.supervisor_tick", "operations.supervisor_error", "operations.worker_wake_requested",
+                  "operations.worker_replace_requested", "operations.backlog_observed"}
 
 IDS = ("model_invocation", "task_execution", "worker_sessions", "message_relay", "message_intake", "fleet_backlog",
        "host_delivery", "continuation", "operation_finalization", "autonomous", "discovery_pressure",
@@ -132,7 +135,8 @@ def test_instrumented_rows_render_25_series():
     text = render(rows)
     lines = [x for x in text.splitlines() if x.startswith("zeus_feature_instrumented{")]
     assert len(lines) == 25
-    assert 'zeus_feature_instrumented{feature="supervisor"} 0' in lines
+    # S10 E3: the supervisor's emitters are composed
+    assert 'zeus_feature_instrumented{feature="supervisor"} 1' in lines
     assert 'zeus_feature_instrumented{feature="model_invocation"} 1' in lines
 
 
