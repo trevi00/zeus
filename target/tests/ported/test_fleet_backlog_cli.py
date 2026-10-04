@@ -6,13 +6,10 @@ provider, bus, budget, observer, Redis or PostgreSQL client exists in this envir
 successful command is itself the evidence that none is built. No model runs.
 
 Ported SOURCE M7 suite `tests/test_fleet_backlog_cli.py` (e38aa722) run against the S8 target. Every assertion is M7's,
-unchanged. This suite drives the `zeus fleet backlog` adapter and the operator CLI: every one of its 19 cases is kept whole
-and skipped, each naming its owner, because each goes through a capability the target does not hold yet:
-- S10 (V33: composition.fleet_backlog): the adapter's loaders (`load_plan`, `load_manifest`, `register_plan`, `tick_plan`,
-  `backlog_ticker`, `configured_plan`, `PLAN_SETTING`): DESIGN-s8 §32 V33 re-sliced the M7 `adapters.fleet_backlog` module to
-  S10 `composition.fleet_backlog` (only `read_blob`/`REGULAR_BLOB` moved ahead, to `intake.adapters.backlog_blobs`); they are
-  placeholders here and nothing is invented;
-- S10: the operator CLI (`fleet_cli.execute`/`refusal`, `cli.parser`, `bootstrap`), also placeholders.
+unchanged. This suite drives the `zeus fleet backlog` adapter and the operator CLI. S10 unit C8b-2 (R-c28) un-skipped 18 of its 19 cases (import lines and
+patch targets only): the adapter's loaders are `composition.fleet_backlog` (V33), `fleet_cli.execute`/`refusal` are `entry.cli.fleet._execute` and `entry.cli.operation.refusal`,
+`fleet_runtime.LaneLauncher` is patched as `composition.fleet.lane_launcher` and `bootstrap.build_observer` as `composition.observation.build_observer`. The one case kept skipped
+is the `cli.parser` one (`cli` stays an `unavailable` placeholder: it is not a fleet_cli case).
 Imports otherwise are target homes: `Fleet`/`FleetRunner`/`packaged_policy` from `m7_coordination`, `FleetBacklog` from `m7_intake`
 (the moved class over the Fleet's registry port), `GitSource` is `host_os.adapters.git_source`'s, `REGULAR_BLOB` the moved
 `backlog_blobs`', the plan grammar `intake.domain.backlog`, the observation names the S9 homes the target holds.
@@ -30,10 +27,22 @@ import pytest
 from m7_coordination import Fleet, FleetRunner, packaged_policy, unavailable
 from m7_intake import FleetBacklog
 
-from codex_harness.coordination.adapters import fleet_runtime
+from codex_harness.composition import fleet as composition_fleet
+from codex_harness.composition import observation
+from codex_harness.composition.fleet_backlog import (
+    PLAN_SETTING,
+    backlog_ticker,
+    configured_plan,
+    load_manifest,
+    load_plan,
+    register_plan,
+    tick_plan,
+)
 from codex_harness.coordination.application.fleet_backlog import BUCKET_INTENTS
 from codex_harness.coordination.domain.fleet import repository_identity
 from codex_harness.coordination.domain.operation import validate_manifest
+from codex_harness.entry.cli import fleet as entry_fleet
+from codex_harness.entry.cli import operation as entry_operation
 from codex_harness.host_os.adapters.git_source import GitSource
 from codex_harness.intake.adapters.backlog_blobs import REGULAR_BLOB
 from codex_harness.intake.application.portfolio import BUCKET_BINDINGS
@@ -43,17 +52,9 @@ from codex_harness.observation.application.observations import MemoryDirectory, 
 from codex_harness.observation.domain.observation import new_process_run_id
 from codex_harness.storage.adapters.memory_store import MemoryStore
 
-_LOADERS = "V33: composition.fleet_backlog (the M7 adapter's loaders)"
-bootstrap = unavailable("S10", "bootstrap")
 cli = unavailable("S10", "cli")
-fleet_cli = unavailable("S10", "fleet_cli")
-PLAN_SETTING = unavailable("S10", _LOADERS + ": PLAN_SETTING")
-backlog_ticker = unavailable("S10", _LOADERS + ": backlog_ticker")
-configured_plan = unavailable("S10", _LOADERS + ": configured_plan")
-load_manifest = unavailable("S10", _LOADERS + ": load_manifest")
-load_plan = unavailable("S10", _LOADERS + ": load_plan")
-register_plan = unavailable("S10", _LOADERS + ": register_plan")
-tick_plan = unavailable("S10", _LOADERS + ": tick_plan")
+# `fleet_cli.execute` / `fleet_cli.refusal` are the S10 entry bodies (R-c28, unit C8b-2): `entry.cli.fleet._execute` and `entry.cli.operation.refusal`.
+fleet_cli = SimpleNamespace(execute=entry_fleet._execute, refusal=entry_operation.refusal)
 
 CANARY = "CANARY-must-never-be-emitted"
 PLAN_PATH = "docs/zeus/backlog.json"
@@ -177,7 +178,6 @@ def register(service, repository, revision=None, path=PLAN_PATH, lane="a"):
                                            revision=revision or repository.revision, path=path))
 
 
-@pytest.mark.skip(reason='S10: V33: composition.fleet_backlog (load_plan, load_manifest, register_plan, tick_plan, backlog_ticker, configured_plan) has no target implementation yet (DESIGN-s8 §32 V33 re-sliced the adapter to S10; only read_blob/REGULAR_BLOB moved ahead)')
 def test_the_plan_and_its_manifests_are_read_at_the_pin_and_never_from_the_working_tree(repository):
     source = GitSource(repository.root)
     loaded = load_plan(source, repository.revision, PLAN_PATH)
@@ -195,7 +195,6 @@ def test_the_plan_and_its_manifests_are_read_at_the_pin_and_never_from_the_worki
                              "bytes": len(GOAL_TEXT.encode("utf-8"))}
 
 
-@pytest.mark.skip(reason='S10: V33: composition.fleet_backlog (load_plan, load_manifest, register_plan, tick_plan, backlog_ticker, configured_plan) has no target implementation yet (DESIGN-s8 §32 V33 re-sliced the adapter to S10; only read_blob/REGULAR_BLOB moved ahead)')
 def test_the_fixture_pins_the_committed_bytes_under_inherited_git_newline_normalization(
         tmp_path, repository, monkeypatch):
     """Portability of THIS test file, not a runtime change (owner Windows gate, 2026-09-22).
@@ -259,7 +258,6 @@ def test_the_fixture_pins_the_committed_bytes_under_inherited_git_newline_normal
     assert load_manifest(source, item_document("three", third, third_revision, third_sha))["bytes"] > 0
 
 
-@pytest.mark.skip(reason='S10: V33: composition.fleet_backlog (load_plan, load_manifest, register_plan, tick_plan, backlog_ticker, configured_plan) has no target implementation yet (DESIGN-s8 §32 V33 re-sliced the adapter to S10; only read_blob/REGULAR_BLOB moved ahead)')
 def test_a_disposable_repository_overrides_an_inherited_global_autocrlf(tmp_path, monkeypatch):
     """The repository's own settings must beat the value the host would otherwise contribute.
 
@@ -289,7 +287,6 @@ def test_a_disposable_repository_overrides_an_inherited_global_autocrlf(tmp_path
     assert load_manifest(source, item_document("one", path, revision, sha))["manifest"]["id"] == "op-one"
 
 
-@pytest.mark.skip(reason='S10: the fleet operator CLI (fleet_cli.execute/refusal, bootstrap)')
 def test_register_tick_and_status_admit_one_approved_successor_through_the_existing_fleet(service, repository):
     registered = register(service, repository)
     assert registered["registered"] is True and registered["cached"] is False and registered["exit_code"] == 0
@@ -325,7 +322,6 @@ def test_register_tick_and_status_admit_one_approved_successor_through_the_exist
     assert CANARY not in text and str(repository.root) not in text and "lane_a" not in text
 
 
-@pytest.mark.skip(reason='S10: V33: composition.fleet_backlog (load_plan, load_manifest, register_plan, tick_plan, backlog_ticker, configured_plan) has no target implementation yet (DESIGN-s8 §32 V33 re-sliced the adapter to S10; only read_blob/REGULAR_BLOB moved ahead)')
 def test_a_manifest_that_moved_under_an_approved_item_is_refused_with_a_fixed_code(service, repository):
     source = GitSource(repository.root)
     moved = dict(repository.items[0], manifest_sha256="0" * 64)
@@ -342,7 +338,6 @@ def test_a_manifest_that_moved_under_an_approved_item_is_refused_with_a_fixed_co
     assert CANARY not in str(info.value)
 
 
-@pytest.mark.skip(reason='S10: V33: composition.fleet_backlog (load_plan, load_manifest, register_plan, tick_plan, backlog_ticker, configured_plan) has no target implementation yet (DESIGN-s8 §32 V33 re-sliced the adapter to S10; only read_blob/REGULAR_BLOB moved ahead)')
 def test_a_manifest_whose_goal_bytes_do_not_match_its_pin_is_refused(tmp_path, repository):
     root = repository.root
     sha = write(root, "docs/zeus/manifests/bad.json",
@@ -356,7 +351,6 @@ def test_a_manifest_whose_goal_bytes_do_not_match_its_pin_is_refused(tmp_path, r
         load_manifest(GitSource(root), item_document("broken", "docs/zeus/manifests/broken.json", revision, sha))
 
 
-@pytest.mark.skip(reason='S10: V33: composition.fleet_backlog (load_plan, load_manifest, register_plan, tick_plan, backlog_ticker, configured_plan) has no target implementation yet (DESIGN-s8 §32 V33 re-sliced the adapter to S10; only read_blob/REGULAR_BLOB moved ahead)')
 def test_a_foreign_repository_an_unknown_lane_and_an_unknown_goal_are_refused(tmp_path, service, repository):
     config_document = Fleet(service.store).registered()["config"]
     foreign = plan_document("7" * 64, repository.items, plan_id="plan-foreign")
@@ -390,7 +384,6 @@ def test_a_foreign_repository_an_unknown_lane_and_an_unknown_goal_are_refused(tm
     assert FleetBacklog(service.store).status()["plans"] == [], "a refused registration stores nothing"
 
 
-@pytest.mark.skip(reason='S10: the fleet operator CLI (fleet_cli.execute/refusal, bootstrap)')
 def test_a_missing_plan_revision_or_path_is_a_fixed_code_never_an_empty_success(service, repository):
     config_document = Fleet(service.store).registered()["config"]
     for revision, path, code in (("0" * 40, PLAN_PATH, "plan_revision_missing"),
@@ -408,7 +401,6 @@ def test_a_missing_plan_revision_or_path_is_a_fixed_code_never_an_empty_success(
     assert listing["plans"] == [] and listing["registered"] is False and listing["exit_code"] == 0
 
 
-@pytest.mark.skip(reason='S10: V33: composition.fleet_backlog (load_plan, load_manifest, register_plan, tick_plan, backlog_ticker, configured_plan) has no target implementation yet (DESIGN-s8 §32 V33 re-sliced the adapter to S10; only read_blob/REGULAR_BLOB moved ahead)')
 def test_a_definition_that_changed_after_registration_refuses_the_item_at_tick(service, repository):
     """The portfolio stays the authority over goals: a criterion that no longer exists refuses the
     item with a reason instead of admitting stale work."""
@@ -423,7 +415,6 @@ def test_a_definition_that_changed_after_registration_refuses_the_item_at_tick(s
     assert service.store.data[BUCKET_INTENTS, "plan-1:one"]["attempts"] == 1
 
 
-@pytest.mark.skip(reason='S10: V33: composition.fleet_backlog (load_plan, load_manifest, register_plan, tick_plan, backlog_ticker, configured_plan) has no target implementation yet (DESIGN-s8 §32 V33 re-sliced the adapter to S10; only read_blob/REGULAR_BLOB moved ahead)')
 def test_the_runner_opt_in_is_absent_by_default(tmp_path):
     assert configured_plan({}) is None and configured_plan({PLAN_SETTING: "   "}) is None
     assert configured_plan({PLAN_SETTING: " plan-1 "}) == "plan-1"
@@ -493,7 +484,6 @@ def manual_job(service, repository, lane="b"):
     return Fleet(service.store).enqueue(lane, validate_manifest(document, packaged_policy()), goal, [])
 
 
-@pytest.mark.skip(reason='S10: the fleet operator CLI (fleet_cli.execute/refusal, bootstrap)')
 def test_a_tick_records_the_portfolio_binding_of_the_job_it_admitted(service, repository):
     """The existing `Portfolio.bind` owner writes the job-to-criterion binding, in its own
     transaction, for the exact project and criterion the approved item names. No acceptance and no
@@ -509,7 +499,6 @@ def test_a_tick_records_the_portfolio_binding_of_the_job_it_admitted(service, re
     assert not [k for k in service.store.data if k[0] == "portfolio_acceptances"]
 
 
-@pytest.mark.skip(reason='S10: the fleet operator CLI (fleet_cli.execute/refusal, bootstrap)')
 def test_the_real_ticker_returning_unavailable_is_a_failed_runner_tick_that_blocks_nothing(service, repository, caplog):
     """R4 over the REAL path: `backlog_ticker` -> `tick_plan` -> the adapter's git read. The tick
     RETURNS `unavailable`; the runner must report that as a failure with the reason and exception
@@ -557,22 +546,21 @@ def test_the_real_ticker_returning_unavailable_is_a_failed_runner_tick_that_bloc
     assert "injected" not in "\n".join(messages) and "OSError" not in "\n".join(messages)
 
 
-@pytest.mark.skip(reason='S10: the fleet operator CLI (fleet_cli.execute/refusal, bootstrap)')
 def test_the_configured_runner_continues_successors_and_emits_the_structured_transitions(
         tmp_path, service, repository, monkeypatch):
     """The shipped `zeus fleet run` entrypoint with the opt-in host setting, not a spy: one runner
     cycle selects, admits, dispatches and finalizes both approved items and then selects the second
     one itself, with no `tick` command in between. Only the launcher and the observer spool are
     fixtures; the observer is the real one the adapter wires."""
-    from codex_harness.adapters import configuration
+    from codex_harness.composition import configuration
 
     register(service, repository)
     observer = Observer(service.store, MemorySpool(new_process_run_id()), component="fleet-backlog",
                         directory=MemoryDirectory())
     FakeLauncher.constructed, FakeLauncher.launched_ids = [], []
     monkeypatch.setattr(configuration, "settings", lambda: {PLAN_SETTING: "plan-1"})
-    monkeypatch.setattr(fleet_runtime, "LaneLauncher", FakeLauncher)
-    monkeypatch.setattr(bootstrap, "build_observer", lambda store, component, role=None: observer)
+    monkeypatch.setattr(composition_fleet, "lane_launcher", FakeLauncher)
+    monkeypatch.setattr(observation, "build_observer", lambda store, component, role=None: observer)
     before = handlers()
     summary = fleet_cli.execute(service, SimpleNamespace(fleet_command="run", once=True))
     assert handlers() == before, "the run hands the process its previous handlers back"
@@ -591,15 +579,14 @@ def test_the_configured_runner_continues_successors_and_emits_the_structured_tra
     assert CANARY not in text and str(repository.root) not in text and "lane_a" not in text
 
 
-@pytest.mark.skip(reason='S10: the fleet operator CLI (fleet_cli.execute/refusal, bootstrap)')
 def test_the_runner_without_the_host_setting_builds_no_backlog_and_no_observer(service, repository, monkeypatch):
-    from codex_harness.adapters import configuration
+    from codex_harness.composition import configuration
 
     register(service, repository)
     FakeLauncher.constructed, FakeLauncher.launched_ids = [], []
     monkeypatch.setattr(configuration, "settings", lambda: {})
-    monkeypatch.setattr(fleet_runtime, "LaneLauncher", FakeLauncher)
-    monkeypatch.setattr(bootstrap, "build_observer",
+    monkeypatch.setattr(composition_fleet, "lane_launcher", FakeLauncher)
+    monkeypatch.setattr(observation, "build_observer",
                         lambda *a, **k: pytest.fail("no observer is built without the opt-in"))
     before = deepcopy(service.store.data)
     installed = handlers()
@@ -621,15 +608,14 @@ def handlers():
 
 def plain_run(service, repository, monkeypatch, launcher):
     """`zeus fleet run` without the opt-in settings: the real runner, lane launcher replaced."""
-    from codex_harness.adapters import configuration
+    from codex_harness.composition import configuration
 
     register(service, repository)
     monkeypatch.setattr(configuration, "settings", lambda: {})
-    monkeypatch.setattr(fleet_runtime, "LaneLauncher", launcher)
+    monkeypatch.setattr(composition_fleet, "lane_launcher", launcher)
     return fleet_cli.execute(service, SimpleNamespace(fleet_command="run", once=False))
 
 
-@pytest.mark.skip(reason='S10: the fleet operator CLI (fleet_cli.execute/refusal, bootstrap)')
 def test_an_actual_signal_while_running_stops_gracefully_and_the_handlers_are_restored(
         service, repository, monkeypatch):
     """Release CI cancellation: the run's handlers close over its runner, so a leaked handler
@@ -657,7 +643,6 @@ def test_an_actual_signal_while_running_stops_gracefully_and_the_handlers_are_re
         signal.signal(signal.SIGINT, incoming)  # this test's own custom handler, not the run's
 
 
-@pytest.mark.skip(reason='S10: the fleet operator CLI (fleet_cli.execute/refusal, bootstrap)')
 def test_a_runner_exception_restores_the_handlers_and_keeps_the_original_error(
         service, repository, monkeypatch):
     before = handlers()
@@ -672,7 +657,6 @@ def test_a_runner_exception_restores_the_handlers_and_keeps_the_original_error(
     assert handlers() == before
 
 
-@pytest.mark.skip(reason='S10: the fleet operator CLI (fleet_cli.execute/refusal, bootstrap)')
 def test_a_partial_handler_installation_restores_only_what_it_installed(service, repository, monkeypatch):
     """INJECTED FAULT: installing the second owned handler fails after the first was replaced."""
     numbers = owned_signals()
@@ -701,7 +685,6 @@ def test_a_partial_handler_installation_restores_only_what_it_installed(service,
     assert handlers() == before
 
 
-@pytest.mark.skip(reason='S10: the fleet operator CLI (fleet_cli.execute/refusal, bootstrap)')
 def test_a_refusal_prints_a_code_and_a_type_never_the_document_or_a_path(tmp_path):
     refusal = fleet_cli.refusal(BacklogRefused("manifest_pin_mismatch", "items[].manifest_sha256"))
     assert refusal == {"status": "refused", "reason_code": "manifest_pin_mismatch",

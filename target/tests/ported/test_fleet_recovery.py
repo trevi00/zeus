@@ -586,10 +586,9 @@ def test_a_proof_from_another_observation_is_refused(tmp_path):
             setup["fleet"].reconcile_interrupted(document, broken)
 
 
-@pytest.mark.skip(reason='S10: the operator CLI (adapters.fleet_cli)')
 def test_the_owner_command_exists_on_the_cli_and_carries_only_codes(tmp_path):
-    from codex_harness.adapters.fleet_cli import refusal
-    from codex_harness.cli import parser
+    from codex_harness.entry.cli import parser
+    from codex_harness.entry.cli.operation import refusal
 
     args = parser().parse_args(["fleet", "reconcile-interrupted", "--file", str(tmp_path / "evidence.json")])
     assert args.fleet_command == "reconcile-interrupted" and args.docker == "docker"
@@ -598,7 +597,6 @@ def test_the_owner_command_exists_on_the_cli_and_carries_only_codes(tmp_path):
                        "error_type": "FleetRefused", "exit_code": 1}
 
 
-@pytest.mark.skip(reason='S10: the operator CLI (adapters.fleet_cli)')
 def test_the_cli_replays_a_committed_recovery_without_observing_anything(tmp_path, monkeypatch):
     """The shipped `zeus fleet reconcile-interrupted` entrypoint, not the application call: once the
     receipt is committed, the command must answer from it even though the container, the lane
@@ -606,7 +604,11 @@ def test_the_cli_replays_a_committed_recovery_without_observing_anything(tmp_pat
     that fails the test if it is reached."""
     from types import SimpleNamespace
 
-    from codex_harness.adapters import configuration, fleet_cli, fleet_recovery, fleet_runtime
+    from m7_delivery import fleet_cli
+
+    from codex_harness.composition import configuration
+    from codex_harness.composition import fleet_recovery as composition_recovery
+    from codex_harness.coordination.adapters import fleet_recovery, fleet_runtime
 
     setup = interrupted(tmp_path)
     document = evidence(setup["job"], config_sha256=setup["config_sha256"])
@@ -620,7 +622,7 @@ def test_the_cli_replays_a_committed_recovery_without_observing_anything(tmp_pat
         raise AssertionError("a committed recovery must not observe any external state")
 
     for module, name in ((fleet_recovery, "collect_recovery_proof"), (fleet_recovery, "LaneReader"),
-                         (fleet_recovery, "docker_state"), (fleet_runtime, "lane_dsn"),
+                         (composition_recovery, "docker_state"), (fleet_runtime, "lane_dsn"),
                          (configuration, "settings")):
         monkeypatch.setattr(module, name, gone)
 
@@ -643,15 +645,20 @@ def cli_reconcile(setup, tmp_path, monkeypatch, *, store=None, document=None, do
     from `LaneDouble`, Docker from `state`, the machine call ledger from `ledger()`, and the
     observation's clock is fixed at `NOW`. The adapter's own lane resolution, its proof collection and
     the application's transaction are the real code under test."""
-    from codex_harness.adapters import configuration, fleet_cli, fleet_recovery, fleet_runtime
+    from m7_delivery import fleet_cli
+
+    from codex_harness.composition import configuration
+    from codex_harness.composition import fleet_recovery as composition_recovery
+    from codex_harness.coordination.adapters import fleet_recovery, fleet_runtime
+    from codex_harness.execution.adapters import call_budget
 
     reader = lane_store(tmp_path) if documents is None else documents
     collect = fleet_recovery.collect_recovery_proof
     monkeypatch.setattr(fleet_recovery, "collect_recovery_proof",
                         lambda *args, **kwargs: collect(*args, **{"clock": lambda: NOW, **kwargs}))
     monkeypatch.setattr(fleet_recovery, "LaneReader", lambda dsn, schema: reader)
-    monkeypatch.setattr(fleet_recovery, "docker_state", lambda container, client="docker": state(container))
-    monkeypatch.setattr(fleet_recovery, "CallBudget", ledger)
+    monkeypatch.setattr(composition_recovery, "docker_state", lambda container, client="docker", **_: state(container))
+    monkeypatch.setattr(call_budget, "CallBudget", ledger)
     monkeypatch.setattr(fleet_runtime, "lane_dsn", lambda url, schema: "postgresql://fixture/" + schema)
     monkeypatch.setattr(configuration, "settings", lambda: {"HARNESS_DATABASE_URL": "postgresql://fixture/0"})
     path = tmp_path / name
@@ -672,7 +679,6 @@ def nested_observer(store, setup, tmp_path, document):
     return observe
 
 
-@pytest.mark.skip(reason='S10: the operator CLI (adapters.fleet_cli)')
 def test_the_cli_first_call_commits_without_a_nested_store_transaction(tmp_path, monkeypatch):
     """The observed defect: `Fleet.reconcile_interrupted` re-reads the observation from INSIDE its
     committing transaction, where a callback that reads the primary store again waits on a lock the
@@ -705,7 +711,6 @@ def test_the_non_reentrant_regression_catches_the_pre_fix_observation(tmp_path):
         assert tx.get(BUCKET_JOBS, document["job_id"])["status"] == "dispatching"
 
 
-@pytest.mark.skip(reason='S10: the operator CLI (adapters.fleet_cli)')
 def test_the_cli_reads_docker_again_inside_the_committing_transaction(tmp_path, monkeypatch):
     """Only the immutable store inputs are reused: the external proof is still observed twice, so a
     container that is running again when the commit re-reads it refuses before the write."""
@@ -727,7 +732,6 @@ def test_the_cli_reads_docker_again_inside_the_committing_transaction(tmp_path, 
         assert tx.get(BUCKET_JOBS, document["job_id"])["status"] == "dispatching"
 
 
-@pytest.mark.skip(reason='S10: the operator CLI (adapters.fleet_cli)')
 def test_the_cli_refuses_a_configuration_that_is_no_longer_the_expected_one(tmp_path, monkeypatch):
     """The lane whose schema and runtime are observed is taken from the registry the evidence
     expects, so an evidence document naming another configuration refuses instead of observing a

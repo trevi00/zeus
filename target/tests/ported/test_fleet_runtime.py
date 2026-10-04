@@ -182,7 +182,7 @@ def test_launcher_spawns_real_child_in_lane_environment_and_reads_exact_receipt(
         launcher.launch(job)
 
 
-@pytest.mark.skip(reason="S10: entry CLI (M7 cli.fleet_command, cli.parser, fleet_cli)")
+@pytest.mark.skip(reason="S10 (C8b-2): kept skipped, structural: the case drives M7 `cli.fleet_command(service, args)` and patches `cli.emit` and `bootstrap`; the target `entry.cli.fleet.run(args)` builds its own service, so it cannot take the case's Harness (the register/enqueue/status/refusal paths are covered by entry.cli_fleet.pg and tests/test_s10_c8b2_fleet.py)")
 def test_cli_register_enqueue_status_and_refusals_are_redacted(tmp_path, monkeypatch):
     root, head = repository(tmp_path)
     svc = Harness(MemoryStore(), organization())

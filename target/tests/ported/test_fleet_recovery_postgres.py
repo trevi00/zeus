@@ -37,7 +37,7 @@ from uuid import uuid4
 
 import psycopg
 import pytest
-from m7_delivery import Fleet, database_url, fleet_cli, fleet_recovery
+from m7_delivery import Fleet, database_url, fleet_cli
 from psycopg import sql
 from test_fleet_host_migration import OLD_REPO, cli_migrate, cli_state, spy, stopped_journal
 from test_fleet_host_migration import fault as observed_again
@@ -54,6 +54,8 @@ from test_fleet_relocation import cli_relocate, request_for
 from test_fleet_relocation import nested_observer as relocation_observer
 from test_fleet_relocation import setup as relocation_setup
 
+from codex_harness.composition import fleet_recovery as composition_recovery
+from codex_harness.coordination.adapters import fleet_recovery as recovery_module
 from codex_harness.coordination.application.fleet.state import (
     BUCKET_HOST_MIGRATION,
     BUCKET_JOBS,
@@ -63,6 +65,7 @@ from codex_harness.coordination.application.fleet.state import (
 )
 from codex_harness.coordination.domain.fleet import FleetRefused, repository_identity
 from codex_harness.coordination.domain.fleet_recovery import INTERRUPTED
+from codex_harness.execution.adapters import call_budget
 
 pytestmark = pytest.mark.integration
 
@@ -72,7 +75,6 @@ def gone(*_, **__):
     raise AssertionError("a committed receipt must be answered without observing anything")
 
 
-@pytest.mark.skip(reason='S10: the operator CLI (adapters.fleet_cli)')
 def test_the_reconcile_cli_first_call_commits_through_postgresql(tmp_path, monkeypatch, isolated_pgstore):
     """The exact failure that rolled back on 2026-09-22: the first call, over a real PostgreSQL
     store, commits one recovery receipt instead of timing out on advisory lock 734219."""
@@ -87,8 +89,8 @@ def test_the_reconcile_cli_first_call_commits_through_postgresql(tmp_path, monke
     assert receipt["id"] == answer["receipt"]["id"] and receipt["evidence"] == document
     assert job["owner_token"] is None and job["recovery"]["receipt_id"] == receipt["id"]
     # The identical CLI replay is answered from PostgreSQL alone; every external reader is a fault.
-    for module, name in ((fleet_recovery, "collect_recovery_proof"), (fleet_recovery, "LaneReader"),
-                         (fleet_recovery, "docker_state"), (fleet_recovery, "CallBudget")):
+    for module, name in ((recovery_module, "collect_recovery_proof"), (recovery_module, "LaneReader"),
+                         (composition_recovery, "docker_state"), (call_budget, "CallBudget")):
         monkeypatch.setattr(module, name, gone)
 
     def run(name, body):
@@ -106,7 +108,6 @@ def test_the_reconcile_cli_first_call_commits_through_postgresql(tmp_path, monke
         assert len(tx.scan(BUCKET_RECOVERY)) == 1
 
 
-@pytest.mark.skip(reason='S10: the operator CLI (adapters.fleet_cli)')
 def test_the_relocate_cli_first_call_commits_through_postgresql(tmp_path, monkeypatch, isolated_pgstore):
     """The same boundary on the cutover command: the first call commits the migration receipt and the
     revised registry in one PostgreSQL transaction, and the identical replay reads no host state."""
@@ -124,7 +125,7 @@ def test_the_relocate_cli_first_call_commits_through_postgresql(tmp_path, monkey
     assert registry["config"]["lanes"][0]["schema"] == "lane_a"
     assert receipt["prior_config_sha256"] == state["config_sha256"]
     assert job["repository"] == repository_identity(str(state["source"]))
-    monkeypatch.setattr(fleet_recovery, "collect_relocation_proof", gone)
+    monkeypatch.setattr(recovery_module, "collect_relocation_proof", gone)
     replay = cli_relocate(state, tmp_path, monkeypatch, store=isolated_pgstore, request=request,
                           docker=gone, name="replay.json")
     assert replay["cached"] is True and replay["receipt"] == answer["receipt"]
@@ -184,7 +185,6 @@ def target_schemas(isolated_pgstore):
                 connection.execute(sql.SQL("DROP SCHEMA {} CASCADE").format(sql.Identifier(name)))
 
 
-@pytest.mark.skip(reason='S10: the operator CLI (adapters.fleet_cli)')
 def test_the_migrate_host_cli_first_call_commits_through_postgresql(tmp_path, monkeypatch, isolated_pgstore,
                                                                      target_schemas):
     """C3, the exact path that exited 1 with `LockNotAvailable`: the shipped command's observation
@@ -207,7 +207,7 @@ def test_the_migrate_host_cli_first_call_commits_through_postgresql(tmp_path, mo
     assert job["status"] == "queued" and job["repository"] == repository_identity(OLD_REPO)  # frozen row kept
     # The identical replay is answered from PostgreSQL alone; every external reader is a fault.
     for name in ("collect_host_migration_proof", "runner_state", "docker_state", "_schema_provisioned"):
-        monkeypatch.setattr(fleet_recovery, name, observed_again)
+        monkeypatch.setattr(recovery_module, name, observed_again)
     state["journal"].unlink()
     replay = cli_migrate(state, tmp_path, name="replay.json")
     assert replay["cached"] is True and replay["receipt"] == answer["receipt"]
@@ -215,7 +215,6 @@ def test_the_migrate_host_cli_first_call_commits_through_postgresql(tmp_path, mo
         assert len(tx.scan(BUCKET_HOST_MIGRATION)) == 1
 
 
-@pytest.mark.skip(reason='S10: the operator CLI (adapters.fleet_cli)')
 def test_a_changed_journal_refuses_the_migrate_host_commit_on_postgresql(tmp_path, monkeypatch, isolated_pgstore,
                                                                         target_schemas):
     """External facts stay fresh: a service run between the two observations changes the proof binding,

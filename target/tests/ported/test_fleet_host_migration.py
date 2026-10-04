@@ -38,6 +38,7 @@ from m7_delivery import (
     run_root,
 )
 
+from codex_harness.coordination.adapters import fleet_recovery as recovery_module
 from codex_harness.coordination.application.fleet.state import BUCKET_JOBS, BUCKET_REGISTRY
 from codex_harness.coordination.domain.fleet import (
     FleetRefused,
@@ -285,7 +286,6 @@ def unit_schema_fixture(monkeypatch):
     return calls
 
 
-@pytest.mark.skip(reason='S10: the operator CLI (adapters.fleet_cli)')
 def test_the_migrate_host_cli_pins_only_jobs_and_observes_external_facts_twice(tmp_path, monkeypatch):
     """C3: the second observation runs inside the commit, so it must not open a primary-store
     transaction; the journal, checkout and schema facts are still read on both observations."""
@@ -300,7 +300,7 @@ def test_the_migrate_host_cli_pins_only_jobs_and_observes_external_facts_twice(t
     assert {lane["id"]: lane["queued_bindings"] for lane in receipt["proof"]["lanes"]} == \
         {"harness": [{"job_id": "op-q", "base_present": True, "goal_matches": True}], "interface": []}
     for name in ("collect_host_migration_proof", "runner_state", "docker_state", "_schema_provisioned"):
-        monkeypatch.setattr(fleet_recovery, name, fault)
+        monkeypatch.setattr(recovery_module, name, fault)
     state["journal"].unlink()
     replay = cli_migrate(state, tmp_path, name="replay.json")
     assert replay["cached"] is True and replay["receipt"] == answer["receipt"]
@@ -328,7 +328,6 @@ def nested_observer(state):
     return observe
 
 
-@pytest.mark.skip(reason='S10: the operator CLI (adapters.fleet_cli)')
 def test_a_journal_change_between_observations_refuses_without_commit(tmp_path, monkeypatch):
     state = cli_state(tmp_path, NonReentrant(MemoryStore()))
     unit_schema_fixture(monkeypatch)
@@ -340,12 +339,11 @@ def test_a_journal_change_between_observations_refuses_without_commit(tmp_path, 
         assert tx.get(BUCKET_REGISTRY, CONFIG["id"])["config_sha256"] == config_digest(CONFIG)
 
 
-@pytest.mark.skip(reason='S10: the operator CLI (adapters.fleet_cli)')
 def test_a_job_queued_after_the_pinned_scan_refuses_on_the_commits_own_queued_set(tmp_path, monkeypatch):
     """The pinned job rows never become the denominator: the commit re-reads the queued set."""
     state = cli_state(tmp_path, NonReentrant(MemoryStore()))
     unit_schema_fixture(monkeypatch)
-    real, observed = fleet_recovery.collect_host_migration_proof, []
+    real, observed = recovery_module.collect_host_migration_proof, []
 
     def first_then_enqueue(*args, **kwargs):
         proof = real(*args, **kwargs)
@@ -355,7 +353,7 @@ def test_a_job_queued_after_the_pinned_scan_refuses_on_the_commits_own_queued_se
                 tx.put(BUCKET_JOBS, "op-late", {**tx.get(BUCKET_JOBS, "op-q"), "id": "op-late"})
         return proof
 
-    monkeypatch.setattr(fleet_recovery, "collect_host_migration_proof", first_then_enqueue)
+    monkeypatch.setattr(recovery_module, "collect_host_migration_proof", first_then_enqueue)
     with pytest.raises(FleetRefused, match="queued_binding_incomplete"):
         cli_migrate(state, tmp_path)
     with state["store"].transaction() as tx:

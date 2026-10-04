@@ -63,7 +63,7 @@ Named adaptations (each is a construction/import/patch-target adaptation, never 
   `run_root` are also module names here) with `state` (a case's own wins), `run_records` and `git_source` supplied as
   `composition.fleet_recovery.collectors()` wires them (`budget` is only `collect_recovery_proof`'s, a case's own);
   `run_records` is the collectors' (M7 `adapters.isolated_worker.run_records`) and `run_process` is
-  `process_groups.run_process` (M7 `adapters.commands.run_process`). `fleet_cli` (the operator CLI, S10) is an `unavailable` placeholder.
+  `process_groups.run_process` (M7 `adapters.commands.run_process`). `fleet_cli` (the operator CLI) is a namespace over the S10 entry bodies of the fleet root (`entry.cli.fleet._execute` / `_check_resolved`, `entry.cli.operation.refusal`; R-c28, unit C8b-2).
 - Release runner (`test_file_canary`, `test_check_binding`, `test_release_runner`, `test_evaluator_code_guard`):
   `ReleaseRunner(service, git, artifacts, auth, auto_merge=True, fence=None, verification_root=None)` is
   `composition.release_verification.release_runner` with what M7's class built itself supplied as the delivery
@@ -175,6 +175,8 @@ from codex_harness.delivery.application.host_delivery.stages.verify import Verif
 from codex_harness.delivery.application.host_delivery.state import DeliveryState
 from codex_harness.delivery.application.host_delivery.withdrawal import Withdrawal
 from codex_harness.delivery.application.host_migration import HostMigrations  # noqa: F401
+from codex_harness.entry.cli import fleet as _entry_fleet
+from codex_harness.entry.cli import operation as _entry_operation
 from codex_harness.host_os.adapters import process_groups
 from codex_harness.host_os.adapters.git_source import GitSource  # noqa: F401
 from codex_harness.host_os.adapters.git_workspace import (  # noqa: F401
@@ -422,7 +424,9 @@ fleet_recovery = _Facade(_fleet_recovery, checkout_identity=checkout_identity,
                          collect_host_migration_proof=collect_host_migration_proof,
                          collect_recovery_proof=collect_recovery_proof,
                          collect_relocation_proof=collect_relocation_proof)
-fleet_cli = unavailable("S10", "adapters.fleet_cli")
+# `adapters.fleet_cli` is the S10 entry bodies of the fleet root (R-c28, unit C8b-2): `execute`, `refusal` and `check_resolved` are private to `entry.cli.fleet` / `entry.cli.operation`.
+fleet_cli = SimpleNamespace(execute=_entry_fleet._execute, refusal=_entry_operation.refusal,
+                            check_resolved=_entry_fleet._check_resolved)
 
 
 def releases_for(store, org):
