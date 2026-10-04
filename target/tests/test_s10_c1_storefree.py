@@ -53,10 +53,33 @@ def test_a_root_not_composed_yet_is_a_json_error_with_exit_one(monkeypatch, caps
     assert json.loads(err) == {"error": "zeus fleet is not composed in the rebuild yet (DESIGN-s10 §3)"}
 
 
-def test_doctor_without_offline_is_the_c2_refusal(monkeypatch, capsys):
+def test_doctor_without_offline_takes_the_online_branch(monkeypatch, capsys):
+    from types import SimpleNamespace
+
+    from codex_harness.composition import cli_bus
+
+    class Tx:
+        def __enter__(self):
+            return self
+
+        def __exit__(self, *exc):
+            return False
+
+        def scan(self, bucket):
+            assert bucket == "hooks"
+            return [{"status": "active"}, {"status": "pending"}]
+
+    class Client:
+        def ping(self):
+            return True
+
+    monkeypatch.setattr("codex_harness.composition.build",
+                        lambda: SimpleNamespace(store=SimpleNamespace(transaction=Tx), org=None))
+    monkeypatch.setattr(cli_bus, "bus", lambda: SimpleNamespace(client=Client()))
     code, out, err = run_main(monkeypatch, capsys, "doctor")
-    assert code == 1 and out == ""
-    assert json.loads(err) == {"error": "zeus doctor without --offline is composed in S10 unit C2"}
+    assert (code, err) == (0, "")
+    assert json.loads(out) == {"postgres": True, "redis": True, "organization_valid": True, "hooks": 2,
+                               "active_hooks": 1}
 
 
 def imports(module: str) -> set[str]:
