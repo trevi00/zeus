@@ -162,6 +162,7 @@ def main() -> None:
             project_graph,
             query,
             release_retry,
+            rlm,
             rollback_hook,
             run_command,
             sdd,
@@ -186,7 +187,7 @@ def main() -> None:
                     "ticket": ticket.run, "sdd": sdd.run,
                     "audit-repair": audit_repair.run, "worker-session": worker_session.run,
                     "dge": dge.run, "decision-feedback": decision_feedback.run,
-                    "cycle": cycle.run, "serve": serve.run}
+                    "cycle": cycle.run, "serve": serve.run, "rlm": rlm.run}
         if args.command not in composed:
             raise RuntimeError("zeus " + args.command + " is not composed in the rebuild yet (DESIGN-s10 §3)")
         composed[args.command](args)
