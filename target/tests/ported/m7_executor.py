@@ -19,9 +19,10 @@ Named adaptations (each is a construction/patch-point adaptation, never a behavi
   `routing.adapters.provider_policy.host_policy`, so `monkeypatch.setenv` before the first run still routes and
   `executor._execution_policy = None` re-reads the environment.
 - `_run` and `_inspect_evidence` are methods of the shim: RunTask's own `_run` and the review invoker call
-  through them, so `monkeypatch.setattr(executor, "_run", ...)` works as it did in M7. `_inspect_evidence` raises
-  ContractError on purpose: M7's `_inspect_evidence` is the EvidenceGate, composition-level orchestration decided at the S10
-  executor composition unit (OWNER-DECISIONS-S10 #7); the shim never builds it, and the tests that reach it are skipped `S10`.
+  through them, so `monkeypatch.setattr(executor, "_run", ...)` works as it did in M7. `_inspect_evidence`
+  forwards to `self.evidence_gate`: #7 is composed by `composition.evidence_gate` (the EvidenceGate and the inspector selection);
+  `evidence` forwards to `evidence_gate.evidence`, and an isolation stand-in without `config`/`root`/`docker` keeps M7's own
+  `isolation.inspector(...)` call.
 - An isolation object without `summary()`/`review_context()` (the M7 tests' stand-ins) is wrapped so the RunTask isolation
   port is met over its `config` (`container_spec.summary`, `owned_container.isolated_review_context`).
 - P9 additions (routes added only; no existing route changed): `Executor._fail_task` is RunTask's, `Executor._open_runtime` is
@@ -67,6 +68,7 @@ from uuid import uuid4
 
 from conftest import NATIVE_THRESHOLDS
 
+from codex_harness.composition.evidence_gate import EvidenceGate, evidence_inspector
 from codex_harness.context.adapters import worker_profile
 from codex_harness.context.adapters.composition_sources import (
     GitRepository,
@@ -90,6 +92,7 @@ from codex_harness.coordination.application.sessions import SessionCheckpoints
 from codex_harness.coordination.application.task_ownership import TaskOwnership
 from codex_harness.coordination.application.workflow import Workflow
 from codex_harness.evidence.adapters import project_evidence
+from codex_harness.evidence.application.evidence_inspection import EvidenceInspections
 from codex_harness.evidence.domain.project_evidence import requires_container, worker_schema
 from codex_harness.execution.adapters import execution_output, output_schema
 from codex_harness.execution.adapters.containers import handoff, owned_container, staging
@@ -114,7 +117,6 @@ from codex_harness.host_os.adapters.process_groups import ChokepointProcesses
 from codex_harness.host_os.adapters.process_tree import ProcessTree, TreeOwnershipLeak
 from codex_harness.host_os.adapters.windows import job_objects, no_console
 from codex_harness.intake.application import tickets
-from codex_harness.kernel.errors import ContractError
 from codex_harness.kernel.ids import SYSTEM_CLOCK, SYSTEM_IDS
 from codex_harness.observation.adapters.observation_spool import MemorySpool
 from codex_harness.observation.application.health import HealthRecords
@@ -402,6 +404,14 @@ class Executor:
         # RunTask reaches its own `_run`; route it through the shim so a test's patch of `executor._run` is seen.
         self._run_task_run = self.run_task._run
         self.run_task._run = lambda *a, **k: self._run(*a, **k)
+        # #7 is composed by `composition.evidence_gate`; an isolation stand-in without `config`/`root`/`docker`
+        # keeps M7's behaviour: its own `inspector(artifacts, profile)` (M7 `IsolatedWorker.inspector`) is called.
+        if isolation is not None and not all(hasattr(isolation, a) for a in ("config", "root", "docker")):
+            inspector = isolation.inspector(
+                artifacts, evidence_profile if evidence_profile is not None and requires_container(evidence_profile) else None)
+        else:
+            inspector = evidence_inspector(artifacts, isolation=isolation, evidence_profile=evidence_profile)
+        self.evidence_gate = EvidenceGate(EvidenceInspections(store, inspector), self.workflow, self.observer)
         self.recovery = ExecutionRecovery(store, org, artifacts)
         self.hooks = HookLifecycle(org, outbox=Outbox(), events=EventJournal(), ids=SYSTEM_IDS)
         self.decisions = ReviewDecisions(
@@ -439,7 +449,15 @@ class Executor:
     _task_session_owner = RunTask._task_session_owner
 
     def _inspect_evidence(self, *args, **kwargs):
-        raise ContractError("Evidence inspection is not wired (S10: EvidenceGate, OWNER-DECISIONS-S10 #7)")
+        return self.evidence_gate.inspect(*args, **kwargs)
+
+    @property
+    def evidence(self):
+        return self.evidence_gate.evidence
+
+    @evidence.setter
+    def evidence(self, value):
+        self.evidence_gate.evidence = value
 
     def execute_one(self, agent, expected=None):
         return self.run_task.execute_one(agent, expected)
