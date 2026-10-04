@@ -580,7 +580,6 @@ def candidate_answers(audits, rejected_partition):
     return answer, draft
 
 
-@pytest.mark.skip(reason="S10: entry.cli.audit_service (AuditServiceRunner, the audit-service runner; no ported module)")
 def test_a_refused_candidate_partition_is_followed_by_a_valid_one_and_is_never_retried(
         connected):  # noqa: F811  the imported fixture is the parameter
     held = first_assignment(connected)
@@ -622,7 +621,6 @@ def test_a_refused_candidate_partition_is_followed_by_a_valid_one_and_is_never_r
     assert held not in {row["partition_id"] for row in restarted._pending()}
 
 
-@pytest.mark.skip(reason="S10: entry.cli.audit_service (AuditServiceRunner, the audit-service runner; no ported module)")
 def test_an_unbindable_refused_candidate_still_stops_the_service(
         connected):  # noqa: F811  the imported fixture is the parameter
     """The control: the same refusal with no retained evidence is an execution failure."""
