@@ -139,18 +139,22 @@ def main() -> None:
         select_repository(args.repository)
     try:
         from codex_harness.entry.cli import (
+            artifact,
             audit_repair,
             canary,
             cancel,
+            cleanup,
             context,
             decision_feedback,
             demo,
             dge,
             doctor,
             embed,
+            execute_one,
             execution_recovery,
             flush,
             goal,
+            improve,
             incident,
             index,
             init_db,
@@ -160,7 +164,10 @@ def main() -> None:
             paths,
             project_graph,
             query,
+            rebase,
+            release_abandon,
             release_retry,
+            research,
             rollback_hook,
             run_command,
             sdd,
@@ -183,7 +190,10 @@ def main() -> None:
                     "context": context.run, "flush": flush.run, "send": send.run, "observe": observe.run,
                     "ticket": ticket.run, "sdd": sdd.run,
                     "audit-repair": audit_repair.run, "worker-session": worker_session.run,
-                    "dge": dge.run, "decision-feedback": decision_feedback.run}
+                    "dge": dge.run, "decision-feedback": decision_feedback.run,
+                    "release-abandon": release_abandon.run, "cleanup": cleanup.run, "research": research.run,
+                    "improve": improve.run, "execute-one": execute_one.run, "rebase": rebase.run,
+                    "artifact": artifact.run}
         if args.command not in composed:
             raise RuntimeError("zeus " + args.command + " is not composed in the rebuild yet (DESIGN-s10 §3)")
         composed[args.command](args)
