@@ -6,8 +6,8 @@ binding)` is the target function with observation's `redact_text` injected as th
 `CorrectionFeedbackRefused` from `codex_harness.research.adapters.correction_feedback`; `iw` from `m7_containers`; `entry` (the in-container
 entry `adapters.isolated_worker_entry`, ledger S10 `entry.processes.isolated_worker`) is `unavailable("S10", ...)`, and the one test that
 serves a request through it is kept whole under an S10 skip; the ten tests that submit an assignment through `Executor.execute_one` with an attached
-continuation binding (44 node IDs) need the S10 executor composition's lane-store port (`RunTask.continuations`, which refuses "Continuation lanes are
-not wired"; no S1-S8 module implements it) and are kept whole under an S10 skip; the five that call `deliver` directly run; `persist_result` from `execution.adapters.execution_output`, `LANE_BINDINGS` from
+continuation binding (44 node IDs) run since S10 K1: the lane-store port (`RunTask.continuations`) is `ContinuationBindings` as `composition.operation.build_executor`
+wires it, added to the `m7_executor` shim; the five that call `deliver` directly run; `persist_result` from `execution.adapters.execution_output`, `LANE_BINDINGS` from
 `coordination.application.continuation.state`, `dc` from `coordination.domain.continuation`, `GitWorkspace` from `host_os.adapters.git_workspace`,
 `digest` from `kernel.ids`, `envelope` from `kernel.message`, `FileArtifacts`/`MemoryStore` from `storage.adapters`, `repository` from the ported
 `test_git_workspace`. The patch targets `codex_harness.adapters.executor.{AppServer,ClaudeCodeRuntime}` are `m7_executor.*` (the executor shim whose names
@@ -181,7 +181,6 @@ def refused(task, code):
 
 
 # ---- the normal path reaches the actual provider input -------------------------------------------
-@pytest.mark.skip(reason="S10: the executor composition's continuation-lanes port (RunTask.continuations, M7 Executor._continuation) and correction-feedback redaction wiring")
 def test_bound_rejected_review_reaches_the_provider_input_readable_redacted_and_digested(tmp_path, monkeypatch):
     world = World(tmp_path, monkeypatch)
     task = world.submit()
@@ -212,7 +211,7 @@ def test_bound_rejected_review_reaches_the_provider_input_readable_redacted_and_
                                         "candidate_revision": world.candidate["revision"]}
 
 
-@pytest.mark.skip(reason='S10: adapters.isolated_worker_entry.serve (the in-container entry, entry.processes.isolated_worker, is not on the target)')
+@pytest.mark.skip(reason='S10 unit E: entry.processes.isolated_worker and the codex_harness.adapters.isolated_worker_entry shim (serve; absent at 8b60bac1)')
 def test_the_rendered_provider_input_crosses_the_real_container_entry_unchanged(tmp_path, monkeypatch):
     """The request the isolated runtime writes to the container's stdin, read by the real entry."""
     world = World(tmp_path, monkeypatch)
@@ -338,7 +337,6 @@ def _foreign_artifact(world):
         tx.put("decisions_pending", "dec-1", row)
 
 
-@pytest.mark.skip(reason="S10: the executor composition's continuation-lanes port (RunTask.continuations, M7 Executor._continuation) and correction-feedback redaction wiring")
 @pytest.mark.parametrize("mutate, code", [
     (_extra_field, "feedback_binding_invalid"),
     (_missing_decision, "feedback_decision_missing"),
@@ -363,7 +361,6 @@ def test_unusable_feedback_refuses_with_a_fixed_code_before_any_provider(tmp_pat
         assert list(tx.scan("invocation_reservations")) == []
 
 
-@pytest.mark.skip(reason="S10: the executor composition's continuation-lanes port (RunTask.continuations, M7 Executor._continuation) and correction-feedback redaction wiring")
 @pytest.mark.parametrize("answer, code", [
     (verdict(reason="  ", risks=[]), "feedback_empty"),
     (verdict(reason="x" * (MAX_FINDINGS_CHARS + 1), risks=[]), "feedback_oversize"),
@@ -376,7 +373,6 @@ def test_empty_oversized_or_unfittable_findings_refuse_and_are_never_trimmed(tmp
     assert world.prompts == []
 
 
-@pytest.mark.skip(reason="S10: the executor composition's continuation-lanes port (RunTask.continuations, M7 Executor._continuation) and correction-feedback redaction wiring")
 def test_an_unreadable_artifact_refuses_without_leaking_the_error(tmp_path, monkeypatch):
     world = World(tmp_path, monkeypatch)
 
@@ -387,7 +383,6 @@ def test_an_unreadable_artifact_refuses_without_leaking_the_error(tmp_path, monk
     assert world.prompts == []
 
 
-@pytest.mark.skip(reason="S10: the executor composition's continuation-lanes port (RunTask.continuations, M7 Executor._continuation) and correction-feedback redaction wiring")
 def test_a_forged_attachment_is_still_refused_by_the_lane_binding_check(tmp_path, monkeypatch):
     world = World(tmp_path, monkeypatch)
     forged = world.binding()
@@ -398,7 +393,6 @@ def test_a_forged_attachment_is_still_refused_by_the_lane_binding_check(tmp_path
 
 
 # ---- other routes and the legacy path are unchanged ----------------------------------------------
-@pytest.mark.skip(reason="S10: the executor composition's continuation-lanes port (RunTask.continuations, M7 Executor._continuation) and correction-feedback redaction wiring")
 def test_non_correction_routes_and_the_legacy_path_deliver_nothing(tmp_path, monkeypatch):
     world = World(tmp_path, monkeypatch)
     assert deliver(world.service.store, world.artifacts, None) is None
@@ -436,7 +430,6 @@ def workspaces(world):
     return sorted(path.name for path in world.git.workspaces.iterdir())
 
 
-@pytest.mark.skip(reason="S10: the executor composition's continuation-lanes port (RunTask.continuations, M7 Executor._continuation) and correction-feedback redaction wiring")
 def test_the_research_evidence_reaches_an_evidence_repair_provider_input_redacted_and_labelled(tmp_path, monkeypatch):
     world = World(tmp_path, monkeypatch)
     ref = world.artifacts.put(RESEARCH_REPORT, "research-council")["ref"]
@@ -521,7 +514,6 @@ def _research_extra_field(world):
     return [world.artifacts.put(RESEARCH_REPORT, "research-council")["ref"]], {"scope": "wider"}
 
 
-@pytest.mark.skip(reason="S10: the executor composition's continuation-lanes port (RunTask.continuations, M7 Executor._continuation) and correction-feedback redaction wiring")
 @pytest.mark.parametrize("mutate, code", [
     (_research_missing, "feedback_research_missing"),
     (_research_tampered, "feedback_research_corrupt"),
@@ -547,7 +539,6 @@ def test_unusable_research_evidence_refuses_before_any_workspace_or_provider(tmp
         assert list(tx.scan("invocation_reservations")) == []
 
 
-@pytest.mark.skip(reason="S10: the executor composition's continuation-lanes port (RunTask.continuations, M7 Executor._continuation) and correction-feedback redaction wiring")
 def test_unreadable_research_evidence_refuses_without_leaking_the_error(tmp_path, monkeypatch):
     world = World(tmp_path, monkeypatch)
     ref = world.artifacts.put(RESEARCH_REPORT, "research-council")["ref"]
@@ -567,7 +558,6 @@ def test_a_research_reference_on_another_route_is_invalid(tmp_path, monkeypatch)
         deliver(world.service.store, world.artifacts, binding)
 
 
-@pytest.mark.skip(reason="S10: the executor composition's continuation-lanes port (RunTask.continuations, M7 Executor._continuation) and correction-feedback redaction wiring")
 def test_research_evidence_that_fits_the_bound_but_not_the_prompt_refuses_untrimmed(tmp_path, monkeypatch):
     world = World(tmp_path, monkeypatch)
     ref = world.artifacts.put("가" * (MAX_FINDINGS_CHARS - 1000), "research-council")["ref"]

@@ -258,7 +258,7 @@ def test_release_already_queued_blocks_recovery_before_attempt(system):
         assert tx.get('decisions_pending', row['id'])['attempt'] == 1
 
 
-@pytest.mark.skip(reason="S10: entry CLI (M7 `python -m zeus execution-recovery`, bootstrap.build)")
+@pytest.mark.skip(reason="S10 unit E: `python -m zeus` (the zeus package and console-script shim, absent at 8b60bac1; entry.cli.execution_recovery.run exists but has no process entry), and the child process imports M7 codex_harness.adapters.*/bootstrap")
 def test_real_cli_recovery_then_new_process_rejects_changed_review_context(isolated_pgstore, tmp_path):
     service = Harness(isolated_pgstore, organization())
     runtime = tmp_path / '의사결정 복구'

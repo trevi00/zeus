@@ -10,7 +10,7 @@ unchanged. Adaptations, all construction/import/patch-target, from the `m7_evide
 the cases that replaced the module global `_capture` of `codex_harness.adapters.project_evidence` replace the same global
 of the moved module (`codex_harness.evidence.adapters.project_evidence._capture`, called with the extra `process_tree`
 keyword: the one replacement that names its parameters, `capture` of `timed`, gains `process_tree=None`); the domain/application/kernel/storage names are their target homes. The case that drives the operator CLI helper `operation_cli.identity` runs against its target home `composition.cli_operation.identity` (S10 C6a, R-c24).
-Kept skipped whole, unrewritten: the case that builds the executor composition from a profile (S10: composition chooses the evidence inspector).
+The case that builds the executor composition from a profile runs since S10 K1 over the `m7_executor` shim (`Executor`, `VERDICT`; the inspector choice is `composition.evidence_gate`, so the two inspector classes it asserts are that composition's own `evidence.adapters` ones, not `m7_evidence`'s subclasses) and `m7_coordination` (`Harness`, `organization`).
 """
 import json
 import os
@@ -497,14 +497,15 @@ def test_operation_identity_binds_the_profile_and_keeps_the_old_shape_without_on
     assert one['evidence_profile'] != two['evidence_profile']
 
 
-@pytest.mark.skip(reason='S10: the executor/entry composition (it builds the project evidence inspector from the profile)')
 def test_executor_gives_worker_and_reviewer_their_own_project_context(tmp_path, monkeypatch):
     """Fake provider seam (labelled fixture runtime, no model): what the executor composes with a profile."""
     from types import SimpleNamespace
 
-    from codex_harness.adapters.executor import VERDICT, Executor
-    from codex_harness.application.service import Harness
-    from codex_harness.bootstrap import organization
+    from m7_coordination import Harness, organization
+    from m7_executor import VERDICT, Executor
+
+    from codex_harness.evidence.adapters.evidence_inspection import EvidenceInspector
+    from codex_harness.evidence.adapters.project_evidence import ProjectEvidenceInspector
 
     prompts = []
 

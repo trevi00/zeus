@@ -6,8 +6,10 @@ shim docstring names the routing): `Continuation`, `LaneEvidence`, `Fleet`, `Fle
 the bucket names and `IntentChanged` from `coordination.application.continuation.state`, `OperationRefused` from
 `coordination.application.operation`, the domain modules from `coordination.domain`, `MemoryStore`, `FileArtifacts`,
 `GitWorkspace`, `MemorySpool`, `WorkerSessions` and `Observer` from their target owners, `ContractError`, `envelope`,
-`digest` and `canonical` from `kernel`. A name whose owner is in a later slice is a `unavailable(slice, name)`
-placeholder, and only tests skipped whole and unrewritten (each with its owning slice) name it.
+`digest` and `canonical` from `kernel`. `Executor` is the `m7_research` shim's (K1: the M7 Executor surface over the composed RunTask and ReviewDecisions, with the lane-store
+`continuations` port `ContinuationBindings` and the correction-feedback port as `composition.operation.build_executor` wires them); the four tests that drive it run.
+`Executor._session_review` is `ReviewDecisions._session_review` (`executor.decisions`), and that test passes a real `FileArtifacts` where M7 passed `None`
+(the target composer reads `artifacts.root` at construction).
 `seed_rejection` is M7's own import from the ported `test_correction_feedback`; `packaged_definitions` is
 `intake.adapters.portfolio`'s and `Portfolio` `intake.application.portfolio`'s. `SessionArchives` is the ported `test_worker_sessions` wrapper over the target's injected `FileArtifacts`.
 
@@ -40,8 +42,8 @@ from m7_coordination import (
     Workflow,
     organization,
     packaged_policy,
-    unavailable,
 )
+from m7_research import Executor
 from test_correction_feedback import seed_rejection
 from test_fleet import config as fleet_config
 from test_git_workspace import repository
@@ -69,8 +71,6 @@ from codex_harness.observation.application.observations import MemoryDirectory, 
 from codex_harness.observation.domain.observation import new_process_run_id
 from codex_harness.storage.adapters.file_artifacts import FileArtifacts
 from codex_harness.storage.adapters.memory_store import MemoryStore
-
-Executor = unavailable('S10', 'adapters.executor.Executor')
 
 CANARY = "CANARY-continuation-objective-never-projected"
 BASE = "a" * 40
@@ -837,7 +837,6 @@ def continuation_executor(tmp_path, monkeypatch, *, origin_status="succeeded", s
     return executor, service, sessions, calls, origin, rejected
 
 
-@pytest.mark.skip(reason='S10: the M7 Executor composition (Executor.execute_one / _session_review over the Harness service)')
 def test_executor_continues_the_workspace_and_passes_the_task_session_as_one_call(tmp_path, monkeypatch):
     executor, service, sessions, calls, origin, rejected = continuation_executor(tmp_path, monkeypatch)
     task = executor.execute_one("worker:implementation")
@@ -852,7 +851,6 @@ def test_executor_continues_the_workspace_and_passes_the_task_session_as_one_cal
     assert sessions.submitted == [("op-1", {k: candidate[k] for k in ("revision", "tree", "base")})]
 
 
-@pytest.mark.skip(reason='S10: the M7 Executor composition (Executor.execute_one / _session_review over the Harness service)')
 @pytest.mark.parametrize("kwargs, message", [({"stored": False}, "lane's own record"),
                                              ({"origin_status": "running"}, "unresolved owner"),
                                              ({"origin_status": "blocked"}, "unresolved owner")])
@@ -863,19 +861,17 @@ def test_executor_refuses_a_forged_binding_or_a_live_origin_before_any_provider(
     assert message in str(task["error"])
 
 
-@pytest.mark.skip(reason='S10: the M7 Executor composition (Executor.execute_one / _session_review over the Harness service)')
 def test_the_committed_lead_review_is_recorded_on_the_session_after_the_commit_only(tmp_path):
     sessions = RecordingSessions()
-    executor = Executor(Harness(MemoryStore(), organization()), None, None, worker_sessions=sessions)
+    executor = Executor(Harness(MemoryStore(), organization()), None, FileArtifacts(str(tmp_path / "artifacts")), worker_sessions=sessions)
     data = {"origin": {"continuation": {"session": {"task_id": "op-1", "repository": "r"}}}}
-    executor._session_review("review_lead", data, {"id": "d-1", "status": "succeeded"})
-    executor._session_review("review_lead", data, {"id": "d-2", "status": "blocked"})
-    executor._session_review("review_conductor", data, {"id": "d-3", "status": "succeeded"})
-    executor._session_review("review_lead", {"origin": {}}, {"id": "d-4", "status": "succeeded"})
+    executor.decisions._session_review("review_lead", data, {"id": "d-1", "status": "succeeded"})
+    executor.decisions._session_review("review_lead", data, {"id": "d-2", "status": "blocked"})
+    executor.decisions._session_review("review_conductor", data, {"id": "d-3", "status": "succeeded"})
+    executor.decisions._session_review("review_lead", {"origin": {}}, {"id": "d-4", "status": "succeeded"})
     assert sessions.reviews == [("op-1", "d-1")]
 
 
-@pytest.mark.skip(reason='S10: the M7 Executor composition (Executor.execute_one / _session_review over the Harness service)')
 def test_an_unadopted_turn_freezes_nothing_on_the_session(tmp_path, monkeypatch):
     executor, _, sessions, calls, _, _ = continuation_executor(tmp_path, monkeypatch, adopted=False)
     assert executor.execute_one("worker:implementation")["status"] == "succeeded"

@@ -231,7 +231,7 @@ def test_decision_and_threshold_request_recovery_are_atomic_and_replay_bound(wor
         recovery.apply(packet)
 
 
-@pytest.mark.skip(reason="S10: entry CLI (M7 `python -m zeus execution-recovery`)")
+@pytest.mark.skip(reason="S10 unit E: `python -m zeus` (the zeus package and console-script shim, absent at 8b60bac1; entry.cli.execution_recovery.run exists but has no process entry)")
 def test_real_pg_cli_prepare_apply_replay_and_process_restart(isolated_pgstore, tmp_path):
     workflow = Workflow(isolated_pgstore, organization())
     task, _ = exhausted(workflow)

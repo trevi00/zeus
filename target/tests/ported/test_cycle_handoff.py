@@ -2,8 +2,11 @@
 
 Every assertion is M7's, unchanged. Adaptations, all construction/import: `Harness`, `LocalCycle` and `organization`
 come from the `m7_coordination` shim (its docstring names the routing); `ContractError` from `kernel.errors`,
-`envelope` from `kernel.message`, `MemoryStore` from `storage.adapters`. The CLI test needs M7's `codex_harness.cli`
-(S10, entry) and stays here skipped, whole and unrewritten, with `cli` bound to a placeholder that raises.
+`envelope` from `kernel.message`, `MemoryStore` from `storage.adapters`. The CLI test drives M7's `codex_harness.cli` and runs the S10 target (K1):
+`cli.parser()` is `entry.cli.parser()`, `cli.emit` is `entry.cli.output.emit`, `cli.cycle_command(svc, args)` is `entry.cli.cycle.run(args)` over the
+service `composition.build` returns (patched to `svc`), and the forbidden-infrastructure names are their target homes (`build_executor` in
+`composition.operation`, `build_observer` in `composition.observation`, `RedisBus` as `composition.cli_bus.bus`, `redis_url` in `composition`,
+`Workflow` as `composition.cli_cycle.serve_handler`).
 
 M7 module docstring follows.
 
@@ -17,17 +20,14 @@ from hashlib import sha256
 import pytest
 from m7_coordination import Harness, LocalCycle, organization
 
+from codex_harness import composition
+from codex_harness.composition import cli_bus, cli_cycle, observation, operation
+from codex_harness.entry import cli
+from codex_harness.entry.cli import cycle as cycle_root
+from codex_harness.entry.cli import output
 from codex_harness.kernel.errors import ContractError
 from codex_harness.kernel.message import envelope
 from codex_harness.storage.adapters.memory_store import MemoryStore
-
-
-class cli:  # noqa: N801 - S10 owns M7 `codex_harness.cli`; only the skipped CLI tests below name it
-    @staticmethod
-    def _unowned(*args, **kwargs):
-        raise NotImplementedError("S10: entry CLI (cycle_command, parser, emit)")
-
-    emit = cycle_command = parser = _unowned
 
 CORR = "improvement:cycle-handoff-test"
 FOREIGN = "improvement:foreign"
@@ -396,20 +396,21 @@ def test_fresh_object_yields_same_view_and_changed_target_is_current_row():
 
 
 # ----- 6. CLI ---------------------------------------------------------------------------------
-@pytest.mark.skip(reason="S10: entry CLI (M7 cli.cycle_command, cli.parser, cli.emit)")
 def test_cli_handoff_builds_no_executor_bus_or_observer(monkeypatch):
     svc = service()
     outputs = []
-    monkeypatch.setattr(cli, "emit", outputs.append)
+    monkeypatch.setattr(output, "emit", outputs.append)
+    monkeypatch.setattr(composition, "build", lambda: svc)
 
     def forbidden(*args, **kwargs):
         raise AssertionError("handoff built infrastructure")
-    for name in ("build_executor", "build_observer", "RedisBus", "redis_url", "Workflow"):
-        monkeypatch.setattr(cli, name, forbidden)
-    cli.cycle_command(svc, cli.parser().parse_args(["cycle", "start", "c1", "--correlation", CORR,
+    for module, name in ((operation, "build_executor"), (observation, "build_observer"), (cli_bus, "bus"),
+                         (composition, "redis_url"), (cli_cycle, "serve_handler")):
+        monkeypatch.setattr(module, name, forbidden)
+    cycle_root.run(cli.parser().parse_args(["cycle", "start", "c1", "--correlation", CORR,
                                                     "--max-executions", "2"]))
-    cli.cycle_command(svc, cli.parser().parse_args(["cycle", "handoff", "c1"]))
-    cli.cycle_command(svc, cli.parser().parse_args(["cycle", "status", "c1"]))
+    cycle_root.run(cli.parser().parse_args(["cycle", "handoff", "c1"]))
+    cycle_root.run(cli.parser().parse_args(["cycle", "status", "c1"]))
     start, view, status = outputs
     assert view["schema"] == "urn:zeus:cycle-handoff:1" and view["automatic_resume"] is False
     assert view["cycle"]["id"] == "c1" and view["target_record"]["availability"] == "none"
@@ -417,6 +418,6 @@ def test_cli_handoff_builds_no_executor_bus_or_observer(monkeypatch):
     assert status["remaining_executions"] == 2 and "target_record" not in status and "schema" not in status
     assert cli.parser().parse_args(["cycle", "step", "c1"]).cycle_command == "step"
     with pytest.raises(AssertionError, match="built infrastructure"):
-        cli.cycle_command(svc, cli.parser().parse_args(["cycle", "step", "c1"]))
+        cycle_root.run(cli.parser().parse_args(["cycle", "step", "c1"]))
     with pytest.raises(ContractError, match="Unknown cycle"):
-        cli.cycle_command(svc, cli.parser().parse_args(["cycle", "handoff", "absent"]))
+        cycle_root.run(cli.parser().parse_args(["cycle", "handoff", "absent"]))
