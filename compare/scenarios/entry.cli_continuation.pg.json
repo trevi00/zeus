@@ -1,0 +1,9 @@
+{
+ "family": "entry.cli_continuation.pg",
+ "description": "The continuation root through main() on a labelled disposable PostgreSQL (one fresh schema, init-db first, no mask) over a fixture directory and a fixture runtime directory: status of an unknown policy and of none; identity, register and tick with no registered fleet; research-accept, research-supplement, capacity-grant and delivery-requalify of a file that is not JSON (the Fleet config is read first, so the refusal is the unregistered fleet's); ownership-reconcile of an unknown intent (the target sets ZEUS_COMPOSITION_PROFILE=development: declared difference E-c21); stdout, stderr and exit code per case, the fixture paths normalized",
+ "reference_driver": "drivers/reference/s10_cli_continuation.py",
+ "target_driver": "drivers/target/s10_cli_continuation.py",
+ "requires": "disposable-postgresql",
+ "golden": "goldens/reference/entry.cli_continuation.pg.json",
+ "slice": "S10"
+}
