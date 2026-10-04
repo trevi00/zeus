@@ -14,9 +14,9 @@ projection, and they are never presented as observed store state.
 
 Ported SOURCE M7 suite `tests/test_portfolio_followups.py` (e38aa722) run against the S8 target. Every assertion is M7's,
 unchanged; only imports and construction differ (`Fleet` is `m7_coordination`'s; `Portfolio`, `packaged_definitions`,
-`portfolio` are the intake ones; the helpers come from the ported `test_portfolio`). The monitor-envelope case is kept whole and
-skipped, naming the owner (S9 collectors exist; `collectors.collect` takes the `CollectorPorts` that S10 composition wires;
-`monitoring` is a placeholder).
+`portfolio` are the intake ones; the helpers come from the ported `test_portfolio`). The monitor-envelope case runs (S10 E2a):
+`monitoring` is the `m7_observation` facade over `collectors.collect` with the `CollectorPorts` that
+`composition.monitor.collector_ports` wires.
 """
 import json
 from concurrent.futures import ThreadPoolExecutor
@@ -24,7 +24,10 @@ from copy import deepcopy
 from types import SimpleNamespace
 
 import pytest
-from m7_coordination import Fleet, unavailable
+from m7_coordination import Fleet
+from m7_observation import (
+    monitoring,  # noqa: E402 - the S9 facade over `collectors.collect` with the CollectorPorts S10 composition wires (collector_ports)
+)
 from test_portfolio import CANARY, CRITERION, PROJECT, REFS, clock, config, enqueue, finish, fleet
 
 from codex_harness.coordination.application.fleet.state import BUCKET_JOBS
@@ -36,8 +39,6 @@ from codex_harness.intake.application.portfolio import (
     status_projection,
 )
 from codex_harness.storage.adapters.memory_store import MemoryStore
-
-monitoring = unavailable("S10", "monitoring.read_only/collect (the monitor composition: collectors.collect needs its CollectorPorts)")
 
 OTHER_CRITERION = "coverage"            # same project, a different criterion
 OTHER_PROJECT = ("research-improvement", "recurrence")
@@ -290,7 +291,6 @@ def test_a_collector_without_follow_up_rows_keeps_the_previous_shape(tmp_path):
     assert stripped == {key: value for key, value in project_view(legacy).items() if key != "activity"}
 
 
-@pytest.mark.skip(reason='S10: the monitor composition (collectors.collect needs the CollectorPorts that composition wires)')
 def test_monitor_envelope_carries_the_additive_fields_without_touching_the_store(tmp_path, monkeypatch):
     monkeypatch.setattr(monitoring, "docker_facts", lambda repository, containers=None: [])
     monkeypatch.setattr(monitoring, "redis_facts", lambda url, agents: [])

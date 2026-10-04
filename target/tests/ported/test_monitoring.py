@@ -4,8 +4,7 @@ Every assertion is M7's, unchanged. Adaptations (construction, import and patch-
 - every `codex_harness` name is `m7_observation`'s (its S9 home, as the ledger's `target_symbol` names it); M7's `from codex_harness.adapters import monitoring` is the shim's `monitoring` facade over `observation.adapters.collectors` (its `collect` supplies the `CollectorPorts` S10 composes: real owner projections, `run_process` the facade's replaceable name, `docker_facts`/`redis_facts` replacements run through a wrapper that drops the seam keyword); `monitoring_web` is `observation.adapters.viewer_http` (`resource`, `asset`, `index_page`, `MAX_ASSET_BYTES`; a patched `resource` lands on that module); the module-level `docker_facts` reads the facade's `run_process` at call time as M7's did; `Fleet`, `Portfolio`, `packaged_definitions`, `validate_manifest`, `new_intent`, `BUCKET_INTENTS` are the S5-S8 owners' names and `FleetBacklog(store, fleet, portfolio=)` is the moved class taking the shim Fleet's registry.
 - the synthetic credential-shaped DSN literal is split in the source (`'postgresql://admin' ':secret@...'`) so check-tree's credential-shape scan does not flag it; the string the test builds is M7's, byte for byte.
 
-Kept skipped whole, unrewritten:
-- `test_collector_entrypoint_is_read_only_and_needs_no_executor`: S10, the monitor operator CLI (`monitor.main`, `bootstrap.build`; the body still names M7's `codex_harness.bootstrap`/`monitor` imports, never executed).
+Kept skipped whole, unrewritten: none since S10 E2a (the collector entrypoint test runs `entry.processes.monitor.main`: `bootstrap` is `codex_harness.composition` for `build`/`redis_url`, `build_executor` the patch target `composition.operation`, and `docker_facts`/`redis_facts` are patched on the moved `collectors` module because the production collect has no facade).
 """
 import hashlib
 import json
@@ -149,15 +148,19 @@ def test_container_scope_unset_keeps_compose_and_named_mode_is_exact(monkeypatch
     assert all(argv[:2] != ['docker', 'inspect'] for argv in commands)
 
 
-@pytest.mark.skip(reason="S10: the monitor operator CLI (monitor.main, bootstrap.build)")
 def test_collector_entrypoint_is_read_only_and_needs_no_executor(monkeypatch, tmp_path):
-    from codex_harness import bootstrap, monitor
-    stubbed_sources(monkeypatch)
+    from codex_harness import composition as bootstrap  # M7 `bootstrap`: `build`, `redis_url`
+    from codex_harness.composition import operation as executor_builder
+    from codex_harness.entry.processes import monitor
+    from codex_harness.observation.adapters import collectors
+    # The production collect runs the moved module directly (no facade): its docker/redis sources take the seam keywords.
+    monkeypatch.setattr(collectors, 'docker_facts', lambda repository, containers=None, *, run_process=None: [])
+    monkeypatch.setattr(collectors, 'redis_facts', lambda url, agents, *, bus_factory=None: [])
     store = MemoryStore()
     with store.transaction() as tx:
         tx.put('metric_observations', 'm1', observation('m', (NOW - timedelta(days=1)).isoformat()))
     monkeypatch.setattr(bootstrap, 'build', lambda: SimpleNamespace(store=store, org=organization()))
-    monkeypatch.setattr(bootstrap, 'build_executor',
+    monkeypatch.setattr(executor_builder, 'build_executor',
                         lambda *a, **k: (_ for _ in ()).throw(AssertionError('monitor must not build the executor')))
     monkeypatch.setattr(bootstrap, 'redis_url', lambda: 'redis://127.0.0.1:1/0')
     monkeypatch.setenv('HARNESS_RUNTIME_DIR', 'runtime')
