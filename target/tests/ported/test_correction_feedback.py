@@ -32,10 +32,10 @@ from pathlib import Path
 
 import pytest
 from m7_containers import iw
-from m7_coordination import unavailable
 from m7_research import Executor, Harness, Workflow, deliver, organization
 from test_git_workspace import repository
 
+from codex_harness.composition import isolated_worker_entry as entry
 from codex_harness.coordination.application.continuation.state import LANE_BINDINGS
 from codex_harness.coordination.domain import continuation as dc
 from codex_harness.execution.adapters.execution_output import persist_result
@@ -50,8 +50,6 @@ from codex_harness.research.adapters.correction_feedback import (
 )
 from codex_harness.storage.adapters.file_artifacts import FileArtifacts
 from codex_harness.storage.adapters.memory_store import MemoryStore
-
-entry = unavailable("S10", "adapters.isolated_worker_entry")
 
 CREDENTIAL = "hunter2-CREDENTIAL-CANARY"
 TRACE = "TRACE-CANARY-provider-events-never-delivered"
@@ -211,7 +209,7 @@ def test_bound_rejected_review_reaches_the_provider_input_readable_redacted_and_
                                         "candidate_revision": world.candidate["revision"]}
 
 
-@pytest.mark.skip(reason='S10 unit E: entry.processes.isolated_worker and the codex_harness.adapters.isolated_worker_entry shim (serve; absent at 8b60bac1)')
+@pytest.mark.skip(reason="S10: the executor composition's continuation-lanes port (RunTask.continuations, M7 Executor._continuation); the in-container serve it then reaches is now composition.isolated_worker_entry")
 def test_the_rendered_provider_input_crosses_the_real_container_entry_unchanged(tmp_path, monkeypatch):
     """The request the isolated runtime writes to the container's stdin, read by the real entry."""
     world = World(tmp_path, monkeypatch)

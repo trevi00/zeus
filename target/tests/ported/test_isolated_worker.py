@@ -18,6 +18,7 @@ Batch U3 (V6 retrofit): the four cases listed above are copied verbatim and skip
 worker container entry (isolated_worker_entry)`); the names only they read stay unresolved by design (file-level F821).
 """
 # ruff: noqa: F821
+import io
 import json
 import os
 import shutil
@@ -31,6 +32,7 @@ import pytest
 from m7_containers import ContractError, cleanup_ledger, install_docker, install_fake, iw, staging_rules
 
 from codex_harness.composition import cli_operation
+from codex_harness.composition import isolated_worker_entry as entry
 
 IMAGE = "sha256:" + "a" * 64
 # Adaptation: the DUMMY fixture token is assembled at run time so the tree carries no credential-shaped
@@ -486,7 +488,6 @@ def lines(output):
     return [iw.parse_line(line + b"\n", 1 << 20) for line in output.getvalue().splitlines()]
 
 
-@pytest.mark.skip(reason="S10 unit E: entry.processes.isolated_worker and the codex_harness.adapters.isolated_worker_entry shim (serve; absent at 8b60bac1)")
 def test_entry_reuses_the_runtime_contract_and_tags_every_line():
     request = {"protocol": iw.PROTOCOL, "prompt": "p", "schema": SCHEMA, "timeout": 5, "model": "fable", "session_id": "s",
                "runtime": {"worker_profile": None}, "cwd": iw.WORKSPACE, "evidence_root": iw.EVIDENCE}
@@ -499,7 +500,6 @@ def test_entry_reuses_the_runtime_contract_and_tags_every_line():
     assert entry.serve(io.BytesIO(b"{}"), refused, FixtureRuntime) == 1 and lines(refused)[0]["kind"] == "refused"
 
 
-@pytest.mark.skip(reason="S10 unit E: entry.processes.isolated_worker and the codex_harness.adapters.isolated_worker_entry shim (serve; absent at 8b60bac1)")
 def test_entry_passes_the_read_only_flag_only_under_its_own_protocol():
     """INV-ROLE-CONTAINER-001: claude-role-ro names READ_ONLY_PROTOCOL and read_only together."""
     seen = []
