@@ -393,6 +393,36 @@ def normalize_checks(rows) -> list[dict]:
     return normalized
 
 
+def check_durations(rows) -> dict[str, int]:
+    """`{name: seconds}` for the provider rows that have a finished, known duration (S10 F2; DESIGN-s10 §17c).
+
+    A parallel mapping to `normalize_checks`, which keeps its `{name, state}` rows and so the verdict and every
+    comparison of them unchanged. A duration is `completedAt - startedAt` (or the `started_at`/`completed_at`
+    spelling) in whole seconds, only when BOTH timestamps are timezone-aware ISO-8601 and the check is not pending:
+    GitHub reports an unfinished check's completion as the zero time, which is earlier than its start and so is
+    never a duration. Anything else is absent: unknown stays unknown, never a guess. A later row of the same name wins.
+    """
+    durations = {}
+    for row in rows or []:
+        normalized = normalize_checks([row])  # the same name and state rule, one row at a time: [] for an unusable row
+        if not normalized:
+            continue
+        name, seconds = normalized[0]["name"], None
+        if normalized[0]["state"] != "pending":
+            try:
+                started = datetime.fromisoformat(str(row.get("startedAt") or row.get("started_at")))
+                completed = datetime.fromisoformat(str(row.get("completedAt") or row.get("completed_at")))
+                if started.tzinfo is not None and completed.tzinfo is not None and completed >= started:
+                    seconds = int((completed - started).total_seconds())
+            except ValueError:
+                pass
+        if seconds is None:
+            durations.pop(name, None)  # the later row of this name is the one the verdict sees
+        else:
+            durations[name] = seconds
+    return durations
+
+
 class GitHubDelivery:
     """Publication, exact-head CI observation and merge for one repository.
 
@@ -427,10 +457,14 @@ class GitHubDelivery:
             return None
         row = next((r for r in rows if r.get("headRefOid") == candidate["revision"]), rows[0])
         merge = row.get("mergeCommit") or {}
-        return {"number": row.get("number"), "url": row.get("url"), "head": row.get("headRefOid"),
-                "state": row.get("state"),
-                "merged_revision": merge.get("oid") if isinstance(merge, dict) else None,
-                "checks": normalize_checks(row.get("statusCheckRollup"))}
+        observed = {"number": row.get("number"), "url": row.get("url"), "head": row.get("headRefOid"),
+                    "state": row.get("state"),
+                    "merged_revision": merge.get("oid") if isinstance(merge, dict) else None,
+                    "checks": normalize_checks(row.get("statusCheckRollup"))}
+        durations = check_durations(row.get("statusCheckRollup"))
+        if durations:  # S10 F2: a side mapping, present only when known; `ci_verdict` never reads it
+            observed["check_durations"] = durations
+        return observed
 
     def publish(self, candidate: dict) -> dict:
         """Publish through the existing workspace contract; the body carries identities only."""

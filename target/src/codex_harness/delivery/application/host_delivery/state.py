@@ -507,7 +507,7 @@ class DeliveryState:
                            attributes=attributes)
 
     def emit_check(self, plan: dict, intent: dict, stage: str, verdict: dict,
-                    canary_passed=None, claim=None) -> None:
+                    canary_passed=None, claim=None, durations=None) -> None:
         """One evidence-stage transition. A repeated poll with the SAME verdict emits nothing."""
         if self.observer is None or verdict["state"] == intent.get("last_check_state"):
             return
@@ -522,14 +522,16 @@ class DeliveryState:
                                "pending": len(verdict.get("pending") or []),
                                "failed": len(verdict.get("failed") or []),
                                "canary_passed": canary_passed})
-        self._emit_ci_checks(plan, stage, verdict, claim)
+        self._emit_ci_checks(plan, stage, verdict, claim, durations)
 
-    def _emit_ci_checks(self, plan: dict, stage: str, verdict: dict, claim) -> None:
+    def _emit_ci_checks(self, plan: dict, stage: str, verdict: dict, claim, durations=None) -> None:
         """One `operations.ci_observed` per REQUIRED check at a CI-stage transition (DESIGN-s10 §17c, R-a54 (1)).
 
         `conclusion` is the adapter's normalized state through the verdict's lists (`failed` -> failure, `pending`
         -> pending, `missing` -> other, else success): the adapter collapses every completion, so no finer value is
-        invented. The adapter drops timings, so `duration_seconds` is null. `attempt` is the claimed release_queue
+        invented. `duration_seconds` is the adapter's per-check duration (`durations`, name -> whole seconds, from
+        `delivery.adapters.host_delivery.check_durations` via the observed PR; S10 F2) for a check that finished, and null when
+        it is unknown: no timestamps, a pending or missing check, or a port that reports none. `attempt` is the claimed release_queue
         row's `attempt` (the delivery attempt; the intent's `attempts` counts halts only). A canary transition
         (`awaiting_consumption`) and a moved head (no per-check lists) are not CI observations.
         """
@@ -543,7 +545,8 @@ class DeliveryState:
                           else "other" if name in missing else "success")
             self.observer.emit("operations.ci_observed", "observed", attributes={
                 "check": "sha256:" + hashlib.sha256(name.encode("utf-8")).hexdigest(),
-                "conclusion": conclusion, "duration_seconds": None, "attempt": attempt})
+                "conclusion": conclusion, "attempt": attempt,
+                "duration_seconds": (durations or {}).get(name) if conclusion in {"success", "failure"} else None})
 
     def emit_queue_wait(self, claim) -> None:
         """One `operations.queue_item_waited` per claim of a release_queue row (DESIGN-s10 §17c, R-a54 (2)).

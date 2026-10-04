@@ -46,7 +46,8 @@ class CiObservation:
             return self.state.halt(plan, intent, BLOCKED, OUTCOME_BLOCKED, "publication_missing", claim=claim)
         verdict = ci_verdict(plan["required_checks"], observed.get("checks"), intent["head"],
                              observed_head=observed.get("head"))
-        self.state.emit_check(plan, intent, AWAITING_CI, verdict, claim=claim)
+        self.state.emit_check(plan, intent, AWAITING_CI, verdict, claim=claim,
+                              durations=observed.get("check_durations"))
         if verdict["state"] == CI_PASSED:
             return self.state.enter(plan, intent, MERGE_INTENDED, claim, stage_deadline=None,
                                last_check_state=CI_PASSED)
