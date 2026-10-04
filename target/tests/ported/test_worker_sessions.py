@@ -931,6 +931,9 @@ class SessionDocker(FakeDocker):
 
 def test_isolated_transport_restores_resumes_and_exports_across_container_recreation(short_root, monkeypatch):
     tmp_path = short_root
+    if len(str(tmp_path)) > WINDOWS_ROOT_ALLOWANCE:  # K2: the fixture's own path budget presumes a root within its allowance
+        pytest.skip(f"test root {len(str(tmp_path))} chars exceeds the fixture's {WINDOWS_ROOT_ALLOWANCE}-char root allowance "
+                    "(a long TMPDIR such as the routine's validate disk TMPDIR; the transcript key embeds the root twice)")
     config = iw.load_isolation({"ZEUS_WORKER_ISOLATION": "docker", "ZEUS_WORKER_IMAGE": IMAGE})
     config["limits"] = {**config["limits"], "inner_grace_seconds": 5, "cleanup_seconds": 5}
     repo = tmp_path / "candidate"
