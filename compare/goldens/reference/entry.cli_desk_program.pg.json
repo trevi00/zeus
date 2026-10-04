@@ -1,0 +1,292 @@
+{
+ "cases": {
+  "desk_status": {
+   "argv": [
+    "desk",
+    "status",
+    "--revision",
+    "0796b71caf97cd49032feb694a14084e293127ce"
+   ],
+   "exit": 0,
+   "stderr": "",
+   "stdout": {
+    "exit_code": 0,
+    "schema": "urn:zeus:desk:1",
+    "sessions": [],
+    "truncated": false
+   }
+  },
+  "desk_status_revision_invalid": {
+   "argv": [
+    "desk",
+    "status",
+    "--revision",
+    "abc"
+   ],
+   "exit": 1,
+   "stderr": "",
+   "stdout": {
+    "error_type": "DeskRefused",
+    "exit_code": 1,
+    "reason_code": "invalid_revision",
+    "status": "refused"
+   }
+  },
+  "fixture_revision": "0796b71caf97cd49032feb694a14084e293127ce",
+  "init_db": {
+   "argv": [
+    "init-db"
+   ],
+   "exit": 0,
+   "stderr": "",
+   "stdout": {
+    "already_applied": [],
+    "applied": [
+     {
+      "module": "core",
+      "version": "1"
+     }
+    ],
+    "migrated": true,
+    "tool": {
+     "filename_contract": "V?<n>(.<n>|_<n>)*(__<description>)?.sql",
+     "name": "zeus-sql-migrator",
+     "version": 1
+    }
+   }
+  },
+  "program_pause": {
+   "argv": [
+    "research-program",
+    "pause",
+    "rp-001"
+   ],
+   "exit": 0,
+   "stderr": "",
+   "stdout": {
+    "active_cycle": null,
+    "exit_code": 0,
+    "id": "rp-001",
+    "state": "paused"
+   }
+  },
+  "program_pause_unknown": {
+   "argv": [
+    "research-program",
+    "pause",
+    "rp-unknown"
+   ],
+   "exit": 1,
+   "stderr": "",
+   "stdout": {
+    "error_type": "ProgramRefused",
+    "exit_code": 1,
+    "reason_code": "unknown_program",
+    "status": "refused"
+   }
+  },
+  "program_recover_unknown_schema": {
+   "argv": [
+    "research-program",
+    "recover",
+    "--file",
+    "<DOCUMENTS>/recovery-unknown.json"
+   ],
+   "exit": 1,
+   "stderr": "",
+   "stdout": {
+    "error_type": "ProgramRefused",
+    "exit_code": 1,
+    "reason_code": "recovery_request_invalid",
+    "status": "refused"
+   }
+  },
+  "program_register": {
+   "argv": [
+    "research-program",
+    "register",
+    "--file",
+    "<DOCUMENTS>/program.json"
+   ],
+   "exit": 0,
+   "stderr": "",
+   "stdout": {
+    "cached": false,
+    "config_sha256": "2da7e029f94e4f4644284f1701eaf72373b51ef0e162261579b2178741946da5",
+    "exit_code": 0,
+    "id": "rp-001",
+    "registered": true,
+    "state": "paused"
+   }
+  },
+  "program_register_cached": {
+   "argv": [
+    "research-program",
+    "register",
+    "--file",
+    "<DOCUMENTS>/program.json"
+   ],
+   "exit": 0,
+   "stderr": "",
+   "stdout": {
+    "cached": true,
+    "config_sha256": "2da7e029f94e4f4644284f1701eaf72373b51ef0e162261579b2178741946da5",
+    "exit_code": 0,
+    "id": "rp-001",
+    "registered": true,
+    "state": "paused"
+   }
+  },
+  "program_register_invalid_json": {
+   "argv": [
+    "research-program",
+    "register",
+    "--file",
+    "<DOCUMENTS>/invalid.json"
+   ],
+   "exit": 1,
+   "stderr": "",
+   "stdout": {
+    "error_type": "ContractError",
+    "exit_code": 1,
+    "reason_code": "contract_refused",
+    "status": "refused"
+   }
+  },
+  "program_resume": {
+   "argv": [
+    "research-program",
+    "resume",
+    "rp-001"
+   ],
+   "exit": 0,
+   "stderr": "",
+   "stdout": {
+    "active_cycle": null,
+    "exit_code": 0,
+    "id": "rp-001",
+    "state": "active"
+   }
+  },
+  "program_resume_unknown": {
+   "argv": [
+    "research-program",
+    "resume",
+    "rp-unknown"
+   ],
+   "exit": 1,
+   "stderr": "",
+   "stdout": {
+    "error_type": "ProgramRefused",
+    "exit_code": 1,
+    "reason_code": "unknown_program",
+    "status": "refused"
+   }
+  },
+  "program_run_cycle_owner_invalid": {
+   "argv": [
+    "research-program",
+    "run",
+    "rp-001",
+    "--ticks",
+    "2",
+    "--intent",
+    "user_request",
+    "--cycle-owner",
+    "nope"
+   ],
+   "exit": 1,
+   "stderr": "",
+   "stdout": {
+    "error_type": "ProgramRefused",
+    "exit_code": 1,
+    "reason_code": "cycle_owner_invalid",
+    "status": "refused"
+   }
+  },
+  "program_run_paused_proactive": {
+   "argv": [
+    "research-program",
+    "run",
+    "rp-001",
+    "--ticks",
+    "1",
+    "--intent",
+    "proactive"
+   ],
+   "exit": 0,
+   "stderr": "",
+   "stdout": {
+    "exit_code": 0,
+    "id": "rp-001",
+    "requested_ticks": 1,
+    "ticks": [
+     {
+      "reason": "paused",
+      "reserved": false,
+      "state": "paused"
+     }
+    ]
+   }
+  },
+  "program_run_paused_user_request": {
+   "argv": [
+    "research-program",
+    "run",
+    "rp-001",
+    "--ticks",
+    "1",
+    "--intent",
+    "user_request"
+   ],
+   "exit": 0,
+   "stderr": "",
+   "stdout": {
+    "exit_code": 0,
+    "id": "rp-001",
+    "requested_ticks": 1,
+    "ticks": [
+     {
+      "reason": "paused",
+      "reserved": false,
+      "state": "paused"
+     }
+    ]
+   }
+  },
+  "program_run_ticks_zero": {
+   "argv": [
+    "research-program",
+    "run",
+    "rp-001",
+    "--ticks",
+    "0",
+    "--intent",
+    "user_request"
+   ],
+   "exit": 1,
+   "stderr": "",
+   "stdout": {
+    "error_type": "ProgramRefused",
+    "exit_code": 1,
+    "reason_code": "ticks_invalid",
+    "status": "refused"
+   }
+  },
+  "program_status_unknown": {
+   "argv": [
+    "research-program",
+    "status",
+    "rp-unknown"
+   ],
+   "exit": 1,
+   "stderr": "",
+   "stdout": {
+    "error_type": "ProgramRefused",
+    "exit_code": 1,
+    "reason_code": "unknown_program",
+    "status": "refused"
+   }
+  }
+ }
+}

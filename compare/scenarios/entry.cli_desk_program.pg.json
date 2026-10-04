@@ -1,0 +1,9 @@
+{
+ "family": "entry.cli_desk_program.pg",
+ "description": "The desk and research-program roots through main() on a labelled disposable PostgreSQL (one fresh schema, init-db first, no mask) over a fixture git repository with one pinned commit and a fixture runtime directory: desk status of a valid and an invalid revision; research-program status, pause and resume of an unknown id; register of a file that is not JSON; run with --ticks 0 and with a malformed --cycle-owner; recover of a request with an unknown schema; then the positive path seeded through the api (M7 tests/test_research_program_fixtures.py config): register (created, cached), a run of the paused program under user_request and proactive intents (reserved false, no feed fetched), resume and pause (the target sets ZEUS_COMPOSITION_PROFILE=development: declared difference E-c21); stdout, stderr and exit code per case, the fixture paths normalized",
+ "reference_driver": "drivers/reference/s10_cli_desk_program.py",
+ "target_driver": "drivers/target/s10_cli_desk_program.py",
+ "requires": "disposable-postgresql",
+ "golden": "goldens/reference/entry.cli_desk_program.pg.json",
+ "slice": "S10"
+}
