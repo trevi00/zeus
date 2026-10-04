@@ -73,7 +73,7 @@ FEATURES = {feature.id: feature for feature in (
             "composition (OWNER-DECISIONS-S10 #7 EvidenceGate)"),
     Feature("supervisor", "coordination", _events(
         _O, "supervisor_tick", "supervisor_error", "worker_wake_requested", "worker_replace_requested",
-        "backlog_observed"), False, "entry.processes.supervisor"),
+        "backlog_observed"), True),
     Feature("process_lifecycle", "coordination", _events(_G, "process_started", "process_idle_exit"), False,
             "entry.cli / entry.processes.supervisor"),
     Feature("maintenance", "storage", _events(_O, "maintenance_job"), False, "none (no producer even in SOURCE)"),
