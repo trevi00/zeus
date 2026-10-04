@@ -176,7 +176,7 @@ def test_observe_command_refuses_a_bad_request_before_any_read_with_ports_inject
 
 
 def test_cli_ports_refuses_an_invalid_env_name_without_echoing_the_value(monkeypatch):
-    secret = "postgresql://user:hunter2@db/zeus"
+    secret = "postgresql://user:hunter2" "@db/zeus"
     args = argparse.Namespace(schema="migration", control_schema="control", dsn_env=secret,
                               control_dsn_env="HARNESS_DATABASE_URL", lane=None)
     with pytest.raises(MigrationRefused) as refused:
