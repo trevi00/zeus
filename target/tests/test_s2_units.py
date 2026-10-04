@@ -63,4 +63,5 @@ def test_context_and_knowledge_declare_their_owned_buckets():
     assert set(context_ports.OWNED_BUCKETS) == {"skill_history", "skill_observations", "legacy_skill_imports"}
     assert set(knowledge_ports.OWNED_BUCKETS) == {
         "experience_claims", "profile_consents", "profile_runs", "promotions", "seam_comparisons",
-        "seam_ledger_imports", "seam_observations", "seam_views", "snapshot_imports"}
+        "seam_ledger_imports", "seam_observations", "seam_views", "snapshot_imports",
+        "graph_index"}  # S10 E3: GraphIndexState
