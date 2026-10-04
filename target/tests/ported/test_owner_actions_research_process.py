@@ -1,16 +1,16 @@
 """Ported SOURCE M7 suite `tests/test_owner_actions_research_process.py` (e38aa722) run against the S6/S8 target.
 
 Every assertion is M7's, unchanged. Adaptations, all construction/import: `ResearchLaunches`, `DEFAULT_ARGV`,
-`launch_directory`, `spawn_guardian` and `unavailable` come from the `m7_coordination` shim (its docstring names the
+`launch_directory`, `spawn_guardian` come from the `m7_coordination` shim (its docstring names the
 guarded-launch routing and the M7 defaults the target made required: `spawn`, `run`); `adapter` is a namespace holding
 the names M7's `adapters.owner_actions` module gave this file (`ResearchLaunches`, `DEFAULT_ARGV`; `tick_policy`,
-`tick_policies` and `policy_list` are `unavailable("S10", ...)`: the owner-actions coordinator and run loop are S10).
+`tick_policies` and `policy_list` are `composition.owner_actions`' since S10 C8b-3, R-c32; the one test that replaces `tick_policy` replaces it on that module, where `tick_policies` looks it up).
 `BUCKET_PROGRAMS` is `coordination.application.owner_actions.state`'s, `do` is `coordination.domain.owner_actions`,
 `ProgramRefused` is `research.domain.research_program`'s, `CONDUCT_MARGIN_SECONDS` is `coordination.adapters.guarded_launch`'s
 and `POLICY` is `kernel.policy`'s. The CLI names (`add_program_parser`, `program_run`: M7
 `adapters.research_program_cli`) are `entry.cli.research_program.add_parser` and `_run` (S10 C6c, R-c26). The sibling helper
 modules (`test_continuation_research`, `test_owner_actions_recovery`) are the ported ones.
-- Skipped whole and unrewritten: the S10 test of the owner process ticking its policies (the research-program CLI option test runs).
+- The test of the owner process ticking its policies runs since S10 C8b-3 (R-c32), with the patch target above.
   The tests that build the ported recovery suite's `Chain` (`build`, `FakeCouncil`, `FakeBudget`) run.
 - Timing adaptation (S9 integration, CI run 37120866708): `stop` also waits for the guardian's own exit after its
   `cleanup.json` proof, because the guardian writes the proof before it exits and `poll` reports `running` while it
@@ -38,10 +38,11 @@ import time
 from types import SimpleNamespace
 
 import pytest
-from m7_coordination import DEFAULT_ARGV, ResearchLaunches, launch_directory, spawn_guardian, unavailable
+from m7_coordination import DEFAULT_ARGV, ResearchLaunches, launch_directory, spawn_guardian
 from test_continuation_research import two_strikes
 from test_owner_actions_recovery import PROGRAM, Chain, accepted, registered_plan, released
 
+from codex_harness.composition import owner_actions as owner_composition
 from codex_harness.coordination.application.owner_actions.state import BUCKET_PROGRAMS
 from codex_harness.coordination.domain import owner_actions as do
 from codex_harness.entry.cli import research_program as research_program_root
@@ -49,10 +50,8 @@ from codex_harness.research.domain.research_program import ProgramRefused
 
 add_program_parser = research_program_root.add_parser  # M7 `adapters.research_program_cli.add_parser` (S10 R-c26)
 program_run = research_program_root._run  # M7 `adapters.research_program_cli.run`
-adapter = SimpleNamespace(ResearchLaunches=ResearchLaunches, DEFAULT_ARGV=DEFAULT_ARGV,
-                          tick_policy=unavailable("S10", "adapters.owner_actions.tick_policy"),
-                          tick_policies=unavailable("S10", "adapters.owner_actions.tick_policies"),
-                          policy_list=unavailable("S10", "adapters.owner_actions.policy_list"))
+adapter = SimpleNamespace(ResearchLaunches=ResearchLaunches, DEFAULT_ARGV=DEFAULT_ARGV, tick_policy=owner_composition.tick_policy,
+                          tick_policies=owner_composition.tick_policies, policy_list=owner_composition.policy_list)
 
 
 def sleeper(seconds):
@@ -296,7 +295,6 @@ def test_the_cycle_owner_option_is_one_tick_and_one_exact_token():
             program_run(service, argparse.Namespace(program_id=PROGRAM, ticks=ticks, cycle_owner=owner, intent="incident"))
 
 
-@pytest.mark.skip(reason="S10: owner-actions coordinator and run loop (adapters.owner_actions.tick_policy/tick_policies/policy_list)")
 def test_one_owner_process_ticks_every_named_policy_and_one_refusal_never_stops_the_others():
     calls = []
 
@@ -308,12 +306,12 @@ def test_one_owner_process_ticks_every_named_policy_and_one_refusal_never_stops_
         if policy_id == "broken":
             raise OSError("store read failed (labelled injected fault)")
         return {"outcome": "progressed" if policy_id == "busy" else "idle", "policy_id": policy_id}
-    original = adapter.tick_policy
-    adapter.tick_policy = tick
+    original = owner_composition.tick_policy
+    owner_composition.tick_policy = tick
     try:
         result = adapter.tick_policies(Owner(), {}, ["broken", "busy", "quiet"])
     finally:
-        adapter.tick_policy = original
+        owner_composition.tick_policy = original
     assert calls == ["broken", "busy", "quiet"] and result["outcome"] == "progressed"
     assert [r["outcome"] for r in result["policies"]] == ["refused", "progressed", "idle"]
     assert result["policies"][0]["error_type"] == "OSError"

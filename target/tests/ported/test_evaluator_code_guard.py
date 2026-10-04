@@ -8,8 +8,8 @@ is patched on it as in M7); `reviewed_record` and `runner_for` are the ported `t
 `Path(deployment.__file__).resolve().parents[3]` (the repository root, `src/codex_harness/adapters/deployment.py`) is
 `parents[4]` here (`target/`, `src/codex_harness/delivery/adapters/deployment.py`), which is the root the moved
 `controller_code_revision` itself resolves. `runtime_revision` is `delivery.adapters.host_delivery`'s. The last test
-(the owner coordinator, `adapters.owner_actions.coordinator`, a composition owner in S10) is kept WHOLE under
-`pytest.mark.skip` with its owning slice, never rewritten.
+(the owner coordinator, `adapters.owner_actions.coordinator`) runs since S10 C8b-3 (R-c32): `adapter` is `composition.owner_actions`, `MemoryStore` and `organization` are the shims', M7's `owner.deliveries` is the `canary` owner's `deliveries` port and its
+`controller_code` (M7's one HostDelivery shared it) is held by the `migration` owner of the S7 split (`delivery.migration`).
 
 M7 docstring follows.
 
@@ -102,25 +102,24 @@ def test_the_running_revision_is_this_checkout_by_the_runtime_revision_ssot():
     assert controller_code_revision() == runtime_revision(root)
 
 
-@pytest.mark.skip(reason='S10: the owner coordinator wiring (adapters.owner_actions.coordinator)')
 def test_the_owner_coordinator_binds_the_runtime_revision_ssot_as_the_trusted_controller_port(tmp_path,
                                                                                                monkeypatch):
     """PR214 review B1: the owner/lane boundary resolves the running controller code through the SAME
     SSOT the runner's own-code guard uses, never through the requester's approval string."""
     from types import SimpleNamespace
 
-    from codex_harness.adapters.store import MemoryStore
-    from codex_harness.bootstrap import organization
+    from m7_coordination import organization
+    from m7_delivery import MemoryStore
 
-    from codex_harness.adapters import owner_actions as adapter
+    from codex_harness.composition import owner_actions as adapter
 
     monkeypatch.setenv("HARNESS_RUNTIME_DIR", str(tmp_path / "runtime"))
     lane = SimpleNamespace(store=MemoryStore())
     owner = adapter.coordinator(SimpleNamespace(store=MemoryStore(), org=organization()), {}, {},
                                 lanes=lambda lane_id: lane, assessments=object(), continuation=object())
-    delivery = owner.deliveries("a")
-    assert delivery.controller_code is deployment.controller_code_revision
-    monkeypatch.setattr(delivery, "controller_code", lambda: "0" * 40)
+    delivery = owner.canary.deliveries("a")
+    assert delivery.migration.controller_code is deployment.controller_code_revision
+    monkeypatch.setattr(delivery.migration, "controller_code", lambda: "0" * 40)
     with pytest.raises(Exception) as caught:
         delivery.require_controller_code("7" * 40)
     assert caught.value.reason_code == "migration_controller_code_mismatch"

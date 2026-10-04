@@ -9,7 +9,7 @@ one `clock`, to their split homes); `organization`, `packaged_policy`, `Workflow
 (`delivery.adapters.target_files`) come from the shims; the owner-action BUCKET_* names, `CONTINUATION_BINDINGS`,
 `lineage_of` and `plan_json` from `coordination.application.owner_actions.state`, the domain modules from
 `coordination.domain` and `delivery.domain`, the adapter names from `delivery.adapters.host_delivery`, `digest` from
-`kernel.ids`. `test_the_owner_coordinator_binds_the_lane_first_activation_port` is kept whole under skip "S10: adapters.owner_actions.coordinator" (the production coordinator, composition).
+`kernel.ids`. `test_the_owner_coordinator_binds_the_lane_first_activation_port` runs since S10 C8b-3 (R-c32): `adapter` is `composition.owner_actions`, the patched `first_activation_facts` is `delivery.adapters.host_delivery`'s (taking the `run`, `source` and `profiles` seams the composition binds) and M7's `owner.first_activation` is the `delivery_plan` owner's.
 
 M7 docstring follows.
 
@@ -310,7 +310,6 @@ def test_an_unbound_successor_waits_staged_with_no_plan_action_then_completes_on
 
 
 # ----- the adapter wiring -------------------------------------------------------------------------------
-@pytest.mark.skip(reason="S10: adapters.owner_actions.coordinator (the production owner-action coordinator, composition)")
 def test_the_owner_coordinator_binds_the_lane_first_activation_port(tmp_path, monkeypatch):
     """The coordinator resolves the tuple through the lane boundary's `first_activation_facts` (imported
     at call time) for the configured lane, the host settings and the candidate revision. The resolver
@@ -320,17 +319,17 @@ def test_the_owner_coordinator_binds_the_lane_first_activation_port(tmp_path, mo
     from m7_coordination import organization
     from m7_delivery import MemoryStore
 
-    import codex_harness.adapters.host_delivery as lane_adapter
-    from codex_harness.adapters import owner_actions as adapter
+    import codex_harness.delivery.adapters.host_delivery as lane_adapter
+    from codex_harness.composition import owner_actions as adapter
 
     monkeypatch.setenv("HARNESS_RUNTIME_DIR", str(tmp_path / "runtime"))
     seen = []
     monkeypatch.setattr(lane_adapter, "first_activation_facts",
-                        lambda lane, host, revision: seen.append((lane, host, revision)) or dict(FIRST_ACTIVATION),
+                        lambda lane, host, revision, **ports: seen.append((lane, host, revision)) or dict(FIRST_ACTIVATION),
                         raising=False)
     config, host = {"lanes": [{"id": "a", "repository": "labelled-repo"}]}, {"labelled": "host"}
     owner = adapter.coordinator(SimpleNamespace(store=MemoryStore(), org=organization()), config, host,
                                 lanes=lambda lane_id: SimpleNamespace(store=MemoryStore()), assessments=object(),
                                 continuation=object())
-    assert owner.first_activation("a", CANDIDATE["revision"]) == FIRST_ACTIVATION
+    assert owner.delivery_plan.first_activation("a", CANDIDATE["revision"]) == FIRST_ACTIVATION
     assert seen == [(config["lanes"][0], host, CANDIDATE["revision"])]
