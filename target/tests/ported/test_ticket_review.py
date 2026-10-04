@@ -3,8 +3,9 @@
 Every assertion is M7's, unchanged. Adaptations, all import: `render_ticket_review` is `intake.adapters.ticket_review`'s,
 `ContractError` and `canonical` the kernel's (via the `m7_intake` shim), and the two lifecycle modules the expired-packet case
 patches for `datetime` are `intake.application.ticket_lifecycle` and `intake.domain.ticket_lifecycle` (`m7_intake`). The
-`lifecycle` fixture is the ported `test_ticket_lifecycle`'s. Kept skipped whole, unrewritten: the test that drives the S10
-operator CLI (`cli.parser`, `ticket_cli`).
+`lifecycle` fixture is the ported `test_ticket_lifecycle`'s. The test that drives the operator CLI (M7 `cli.parser`, `ticket_cli`) runs the S10 target (K1): `cli.parser()` is
+`entry.cli.parser()`, `ticket_cli.build_lifecycle` is `composition.cli_tickets.ticket_lifecycle` (patched there) and `ticket_cli.execute` is
+`entry.cli.ticket._lifecycle_command`.
 """
 from copy import deepcopy
 from datetime import datetime, timedelta
@@ -19,10 +20,10 @@ github_setup = test_ticket_lifecycle.github_setup
 lifecycle = test_ticket_lifecycle.lifecycle
 
 
-@pytest.mark.skip(reason="S10: the ticket operator CLI (cli.parser, ticket_cli)")
 def test_review_cli_is_read_only_and_preserves_canonical_signing_file(lifecycle, tmp_path, monkeypatch):
-    from codex_harness import cli
-    from codex_harness.adapters import ticket_cli
+    from codex_harness.composition import cli_tickets
+    from codex_harness.entry import cli
+    from codex_harness.entry.cli import ticket as ticket_cli
     life, ticket, _, _, prepare, _, _, _ = lifecycle
     prepared = prepare()
     packet = tmp_path / 'packet.json'
@@ -30,13 +31,13 @@ def test_review_cli_is_read_only_and_preserves_canonical_signing_file(lifecycle,
     with life.store.transaction() as tx:
         before = tx.records()
     files = {p.name: p.read_bytes() for p in life.artifacts.root.iterdir()}
-    monkeypatch.setattr(ticket_cli, 'build_lifecycle', lambda _: life)
+    monkeypatch.setattr(cli_tickets, 'ticket_lifecycle', lambda _: life)
     monkeypatch.setattr(life.authority, 'verify', lambda *a, **k: pytest.fail('Review attempted approval verification'))
     args = cli.parser().parse_args(['ticket', 'review-close', ticket['id'], '--packet', str(packet),
                                    '--output', str(tmp_path / 'review.html')])
-    result = ticket_cli.execute(life.tickets, args)
+    result = ticket_cli._lifecycle_command(life.tickets, args)
     assert result['approval_granted'] is False and result['packet_ref'] == prepared['packet_ref']
-    assert ticket_cli.execute(life.tickets, args) == result
+    assert ticket_cli._lifecycle_command(life.tickets, args) == result
     with life.store.transaction() as tx:
         assert tx.records() == before
     assert {p.name: p.read_bytes() for p in life.artifacts.root.iterdir()} == files
@@ -46,7 +47,7 @@ def test_review_cli_is_read_only_and_preserves_canonical_signing_file(lifecycle,
     assert '사람 승인 요구 없음' in page and '서명 기한' in page
     args.output = life.artifacts.root / 'review.html'
     with pytest.raises(ContractError, match='outside artifact'):
-        ticket_cli.execute(life.tickets, args)
+        ticket_cli._lifecycle_command(life.tickets, args)
 
 
 def test_review_escapes_active_content_in_every_displayed_input(lifecycle):

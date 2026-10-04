@@ -147,7 +147,7 @@ def test_concurrent_reimport_and_retention_keep_one_cursor(monkeypatch):
         importer.ingest('project', 'segment', data, 'sha256:wrong')
 
 
-@pytest.mark.skip(reason="S10: the skill import operator CLI")
+@pytest.mark.skip(reason="S10 operator-script main (no composed home at 8b60bac1): skill_import.main is absent; context.adapters.skill_import holds only import_file and scripts/import_skill_telemetry.py imports the absent codex_harness.adapters.skill_import")
 def test_cli_preview_has_no_database_or_artifact_writes_and_audit_selects_legacy(tmp_path, capsys):
     path = tmp_path / 'legacy.jsonl'
     path.write_bytes(row() * 3)

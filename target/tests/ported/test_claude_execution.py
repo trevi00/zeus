@@ -11,12 +11,10 @@ PORTING NOTES (S4 ported executor suites):
 - `m7_executor.Service` gains M7's `flush_outbox(bus, limit, audit, correlation_id)` as an added route over the
   target `OutboxFlusher` (built as `m7_coordination.Harness` builds it); test_the_models_own_six_w_output_carries_no_authority
   RUNS with its assertions unchanged.
-- SKIPPED, at the top of its test with the owner slice:
-  - test_c09_a_canary_printed_by_the_provider_stays_out_of_every_log: S10 `cli.emit` (the operator CLI)
-    is not in the target; `validate_observation` is S9's and exists (batch U relabelled the reason).
+- test_c09_a_canary_printed_by_the_provider_stays_out_of_every_log runs since S10 K1: `cli.emit` is `entry.cli.emit`
+  (`entry.cli.output.emit`) and `validate_observation` is S9's (`observation.adapters.observation_schema`).
 - The `postgres` parameter of the `store` fixture uses the ported conftest's `isolated_pgstore`: it skips
   unless HARNESS_INTEGRATION=1 and a disposable ZEUS_TEST_DSN are set (as in every ported PostgreSQL case).
-- `# noqa: F821` marks the one name (`validate_observation`) that exists only in the skipped body.
 
 M7 module docstring follows.
 
@@ -41,6 +39,7 @@ import pytest
 from m7_executor import ClaudeCodeRuntime
 
 from codex_harness.kernel.message import envelope
+from codex_harness.observation.adapters.observation_schema import validate_observation
 from codex_harness.observation.adapters.observation_spool import MemorySpool
 from codex_harness.observation.application.observations import MemoryDirectory, Observer
 from codex_harness.observation.domain.observation import new_process_run_id
@@ -379,8 +378,7 @@ def test_c07_a_claude_checkpoint_is_not_recovered_into_a_codex_attempt(tmp_path,
 # ---- C09: a secret a provider prints reaches no log ------------------------------------------------
 
 def test_c09_a_canary_printed_by_the_provider_stays_out_of_every_log(tmp_path, monkeypatch, store, capsys):
-    pytest.skip("S10: cli.emit (the operator CLI); validate_observation is S9's and exists")
-    from codex_harness.cli import emit as cli_emit
+    from codex_harness.entry.cli import emit as cli_emit
     s = build(tmp_path, monkeypatch, store, scenario="canary")
     row = run(s)
     assert row["status"] != "succeeded" and s.starts() == 1
@@ -395,7 +393,7 @@ def test_c09_a_canary_printed_by_the_provider_stays_out_of_every_log(tmp_path, m
                   or r["bucket"].startswith("observation")]
     assert CANARY not in json.dumps(public, default=str)
     for record in s.observer.spool.records():
-        validate_observation({k: v for k, v in record.items() if k not in {"payload_hash", "authority"}})  # noqa: F821
+        validate_observation({k: v for k, v in record.items() if k not in {"payload_hash", "authority"}})
 
 
 def test_c09_a_provider_failure_carries_a_digest_not_the_providers_text(tmp_path, monkeypatch, store):

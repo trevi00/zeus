@@ -261,7 +261,7 @@ def test_replay_export_is_idempotent_and_never_overwrites_a_different_draft(tmp_
         write_export(tmp_path / "test_draft.py", source, kind="replay")
 
 
-@pytest.mark.skip(reason="S10: the `zeus sdd` operator CLI")
+@pytest.mark.skip(reason="S10 unit E: `python -m zeus` (the zeus package and console-script shim, absent at 8b60bac1; entry.cli.sdd.run exists but has no process entry)")
 def test_offline_cli_review_runs_without_database_access(tmp_path):
     result = subprocess.run([sys.executable, "-m", "zeus", "sdd", "view", str(SPEC),
                              "--output", str(tmp_path / "review.html")], cwd=ROOT,

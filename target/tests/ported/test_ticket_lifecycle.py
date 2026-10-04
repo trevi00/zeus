@@ -6,8 +6,9 @@ are the moved classes with the production `run_process` injected (`run_process`,
 `TicketClosed`, `TicketSuperseded`, `ContractError`, `canonical`, `digest` and `utcnow` are their target homes); the module M7
 cases patch (`codex_harness.adapters.github_tickets`) is `m7_intake.github_tickets`, the facade over the moved module, and the
 two ticket-lifecycle modules patched for their `datetime` are `intake.application.ticket_lifecycle` and
-`intake.domain.ticket_lifecycle`. Kept skipped whole, unrewritten: the test that drives the S10 operator CLI
-(`cli.parser`, `ticket_cli`).
+`intake.domain.ticket_lifecycle`. The test that drives the operator CLI (M7 `cli.parser`, `ticket_cli`) runs the S10 target (K1): `cli.parser()` is
+`entry.cli.parser()`, `ticket_cli.build_lifecycle` is `composition.cli_tickets.ticket_lifecycle` (patched there) and `ticket_cli.execute` is
+`entry.cli.ticket._lifecycle_command`.
 """
 import json
 from copy import deepcopy
@@ -421,22 +422,22 @@ def test_old_environment_observation_rejected_even_in_same_revision(lifecycle):
         life.close(ref, sign(ref))
 
 
-@pytest.mark.skip(reason="S10: the ticket operator CLI (cli.parser, ticket_cli)")
 def test_cli_close_and_reopen_use_same_verified_application(lifecycle, tmp_path, monkeypatch):
-    from codex_harness import cli
-    from codex_harness.adapters import ticket_cli
+    from codex_harness.composition import cli_tickets
+    from codex_harness.entry import cli
+    from codex_harness.entry.cli import ticket as ticket_cli
     life, ticket, _, _, prepare, sign, _, _ = lifecycle
     packet = prepare()
     signatures = sign(packet["packet_ref"])
     packet_path, signature_path = tmp_path / "cli-packet.json", tmp_path / "cli-packet.sig"
     packet_path.write_text(packet["signing_payload"], encoding="utf-8", newline="\n")
     signature_path.write_text(life.artifacts.text(signatures[0]["signature_ref"], 16384), encoding="utf-8", newline="\n")
-    monkeypatch.setattr(ticket_cli, "build_lifecycle", lambda _: life)
+    monkeypatch.setattr(cli_tickets, "ticket_lifecycle", lambda _: life)
     args = cli.parser().parse_args(["ticket", "close", ticket["id"], "--packet", str(packet_path),
                                    "--signature", signatures[0]["principal"] + "=" + str(signature_path)])
-    assert ticket_cli.execute(life.tickets, args)["verification"] == "performed"
+    assert ticket_cli._lifecycle_command(life.tickets, args)["verification"] == "performed"
     args = cli.parser().parse_args(["ticket", "reopen", ticket["id"], "--revision", "1", "--sequence", "1", "--reason", "CLI recurrence"])
-    assert ticket_cli.execute(life.tickets, args)["decision"]["kind"] == "reopened"
+    assert ticket_cli._lifecycle_command(life.tickets, args)["decision"]["kind"] == "reopened"
 
 
 def test_corrupted_old_event_blocks_new_closure(lifecycle):

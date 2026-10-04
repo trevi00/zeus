@@ -10,7 +10,7 @@ Formerly not ported here (S2-S7 pilots); batch U3 below copies every one of them
 Batch U3 (V6 retrofit): the three cases that had been left out are copied verbatim and skipped whole: the two collection-CLI
 cases `S10: the native routing replay operator CLI` (M7 `threshold_proposals.main`), and test_actual_project_context_manifest_...
 the `policy_repo` fixture is `m7_research`'s (S10 unit T1: the Git-bound policy repository of
-`research.adapters.threshold_policy`). The manifest case stays skipped: its body imports the M7 path `codex_harness.adapters.project_skills`. Names read only by those
+`research.adapters.threshold_policy`). S10 K1: the manifest case runs (its in-body M7 import `codex_harness.adapters.project_skills.project_context` is `m7_review.project_context`, the target `context.adapters.project_skills.project_context` with the native thresholds). Names read only by those
 bodies stay unresolved by design (file-level F821).
 S10 unit T2: the two collection-CLI cases run (the skips are removed; imports only: `main` is `entry.cli.threshold_proposals.main`, plus `json`, `MemoryStore` and `events` from `m7_research`).
 """
@@ -165,9 +165,8 @@ def test_real_collection_cli_archives_native_comparison_with_reference_proposals
     assert json.loads(capsys.readouterr().out) == run
 
 
-@pytest.mark.skip(reason="S10: the body imports the M7 path codex_harness.adapters.project_skills inside the test (a body is never edited; target: context.adapters.project_skills)")
 def test_actual_project_context_manifest_reproduces(policy_repo, tmp_path):
-    from codex_harness.adapters.project_skills import project_context
+    from m7_review import project_context
 
     root, git = policy_repo
     path = root / '.harness/skills/_common/fixture.md'

@@ -3,10 +3,7 @@
 Every assertion is M7's, unchanged. Adaptations (construction, import and patch-target only; the shim is `m7_observation`):
 - every `codex_harness` name is `m7_observation`'s (its S9 home); `build` is the ported `test_observation_wiring`'s and `CANARY`, `Interceptor`, `file_observer` the ported `test_observations`';
 - patch target: `codex_harness.adapters.executor.AppServer` is `m7_executor.AppServer` (read at open time);
-- `from codex_harness.cli import emit` moves into the S10-skipped test's body.
-
-Kept skipped whole, unrewritten:
-- `test_settlement_error_cause_never_reaches_execute_one_result_or_cli` (2 IDs): S10, the operator CLI output (`cli.emit`).
+- `from codex_harness.cli import emit` moves into the test's body as `entry.cli.emit` (S10 K1: `entry.cli.output.emit`, re-exported by `entry.cli`); `test_settlement_error_cause_never_reaches_execute_one_result_or_cli` (2 IDs) runs.
 
 M7 docstring:
 Regressions for PR #71 second review (docs/zeus/reviews/claude-work-010/test_boundaries.py).
@@ -272,9 +269,8 @@ def test_known_token_shape_is_refused_as_identifier(tmp_path, store):
     assert all(token not in surface for surface in surfaces)
 
 
-@pytest.mark.skip(reason="S10: the operator CLI output (cli.emit)")
 def test_settlement_error_cause_never_reaches_execute_one_result_or_cli(tmp_path, monkeypatch, store, capsys):
-    from codex_harness.cli import emit
+    from codex_harness.entry.cli import emit
     """Counterexample inverted: the CLI stdout, the task row and the sink carry type, digest and boundary only."""
     intercepted = Interceptor(store)
     s = build(tmp_path, monkeypatch, intercepted)
