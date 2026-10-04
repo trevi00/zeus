@@ -146,6 +146,7 @@ class IsolatedClaudeRuntime:
     container. It parses no provider stream: events and the result are the inner runtime's."""
 
     enters_on_open = False
+    observer = None  # S10 F2: the executor's process observer, set by `IsolatedWorker.runtime`; None emits nothing
 
     def __init__(self, config: dict, root, *, model: str, runtime: dict | None = None,
                  max_budget_usd: float | None = None, settings_document: dict | None = None,
@@ -338,7 +339,7 @@ class IsolatedClaudeRuntime:
         # External-effect boundary (`start_requested`, written by `hold`): from here on nothing is a
         # refusal that never ran, and the container is stopped however the conversation ends.
         stream, stopped = hold(self.container, self.record, converse, client=self._end_client, detail=lambda value: {
-            "stream": {key: value[key] for key in ("reason", "violation", "lines")}})
+            "stream": {key: value[key] for key in ("reason", "violation", "lines")}}, observer=self.observer)
         if not stopped["confirmed"]:
             raise ContractError("Isolated worker container termination could not be confirmed; the outcome is unknown; "
                                 "recovery record " + str(self.record_path))
@@ -395,7 +396,7 @@ class IsolatedClaudeRuntime:
                          _scrub({"isolation": isolation, "inner_failure": (inner or {}).get("failure"),
                                  "inner_terminal": (inner or {}).get("terminal")}, secret), isolation["outcome"],
                          files={"inner_result.json": _scrub(inner, secret)} if inner is not None else None,
-                         removed={"staging_retained": failure is not None})
+                         removed={"staging_retained": failure is not None}, observer=self.observer)
         isolation["cleanup"] = {**removal, "staging_retained": failure is not None or not removal["removed"]}
         if not removal["evidence_written"]:
             raise ContractError("Isolated worker evidence could not be written; the stopped container and staging are "
@@ -455,7 +456,7 @@ class IsolatedClaudeRuntime:
                 on_enter()
             return self._converse(request, timeout, on_event=on_event, on_tick=on_tick, cancel=cancel)
         stream, stopped = hold(self.container, self.record, converse, client=self._end_client, detail=lambda value: {
-            "stream": {key: value[key] for key in ("reason", "violation", "lines")}})
+            "stream": {key: value[key] for key in ("reason", "violation", "lines")}}, observer=self.observer)
         if not stopped["confirmed"]:
             raise ContractError("Isolated worker container termination could not be confirmed; the outcome is unknown; "
                                 "recovery record " + str(self.record_path))
@@ -479,7 +480,8 @@ class IsolatedClaudeRuntime:
         removal = retire(self.container, self.record,
                          _scrub({"isolation": isolation, "inner_failure": (inner or {}).get("failure"),
                                  "inner_terminal": (inner or {}).get("terminal")}, secret), outcome,
-                         files={"inner_result.json": _scrub(inner, secret)} if inner is not None else None)
+                         files={"inner_result.json": _scrub(inner, secret)} if inner is not None else None,
+                         observer=self.observer)
         isolation["cleanup"] = removal
         if not removal["evidence_written"]:
             raise ContractError("Isolated worker evidence could not be written; the stopped container is retained; "
@@ -631,6 +633,7 @@ class IsolatedCodexRuntime:
     and codex-impl-rw. The protocol, schema, usage and turn semantics are the App Server client's."""
 
     enters_on_open = False
+    observer = None  # S10 F2: the executor's process observer, set by `IsolatedWorker.codex_runtime`; None emits nothing
 
     def __init__(self, config: dict, root, *, profile: str, broker, docker: str = "docker",
                  environment: dict | None = None, watch: tuple = (), context_window=None, handoff=None,
@@ -852,7 +855,8 @@ class IsolatedCodexRuntime:
                 return scrubber.result(value, forwarded)
         try:
             value, stopped = hold(self.container, self.record, converse, client=self._end_client, detail=lambda v: {
-                "turn": {"interrupted": v.get("interrupted"), "failure": (v.get("failure") or {}).get("cause")}})
+                "turn": {"interrupted": v.get("interrupted"), "failure": (v.get("failure") or {}).get("cause")}},
+                observer=self.observer)
         except BaseException as exc:
             # However the turn ended, the credential copy is settled only when the stop was confirmed;
             # an unconfirmed stop keeps the copy and its ledger entry for the next admission's reconcile.
@@ -875,7 +879,7 @@ class IsolatedCodexRuntime:
             # Hold: the store is quarantined; the stopped container is still retired by the one rule,
             # and the per-run home stays as the owner's evidence.
             retire(self.container, self.record, {"credential_hold": exc.reason_code, "detail": str(exc)},
-                      "credential_hold")
+                      "credential_hold", observer=self.observer)
             raise
         isolation = {**summary(self.config), "profile": self.role_profile, "run_id": run_id,
                      "container": {"id": self.container.id, "name": self.container.name, "controls": controls,
@@ -910,7 +914,7 @@ class IsolatedCodexRuntime:
                                                                    "inspection_blocked", "requested_model")})
         removal = retire(self.container, self.record, scrubber.scrub({"isolation": isolation}), isolation["outcome"],
                             files={"codex_result.json": retained},
-                            removed={"staging_retained": failure is not None})
+                            removed={"staging_retained": failure is not None}, observer=self.observer)
         isolation["cleanup"] = removal
         if not removal["evidence_written"]:
             raise ContractError("Codex role container evidence could not be written; the stopped container is "
@@ -1001,7 +1005,8 @@ class IsolatedCodexRuntime:
             return ended
         try:
             state, stopped = hold(container, record, discover, client=end_client,
-                                  detail=lambda value: {"hooks": {"bound": len(value), "digests": list(hook_set.digests)}})
+                                  detail=lambda value: {"hooks": {"bound": len(value), "digests": list(hook_set.digests)}},
+                                  observer=self.observer)
         except BaseException:
             if cleanup_debt(record) is not None:
                 self._advance("hook_discovery_unconfirmed", discovery=str(directory / "run.json"))
@@ -1010,7 +1015,7 @@ class IsolatedCodexRuntime:
             self._advance("hook_discovery_unconfirmed", discovery=str(directory / "run.json"))
             raise ContractError("Codex hook discovery container termination could not be confirmed; recovery record "
                                 + str(directory / "run.json"))
-        removal = retire(container, record, {"hooks_bound": sorted(state)}, "hooks_bound")
+        removal = retire(container, record, {"hooks_bound": sorted(state)}, "hooks_bound", observer=self.observer)
         if not removal.get("removed"):
             raise ContractError("Codex hook discovery container could not be removed; the run's credential copy stays "
                                 "unsettled; recovery record " + str(directory / "run.json"))
@@ -1051,7 +1056,12 @@ class IsolatedCodexRuntime:
 
 class IsolatedWorker:
     """What composition hands the executor: the validated selection, where its runs live and the
-    injected host facilities. (The verifier inspectors move with evidence, S8.)"""
+    injected host facilities. (The verifier inspectors move with evidence, S8.)
+
+    `observer` (S10 F2, class default None; `composition.operation.build_executor` sets it to the executor's process
+    observer): handed to every runtime this worker builds, so their `hold`/`retire` emit `operations.cleanup_recorded`."""
+
+    observer = None
 
     def __init__(self, config: dict, root, docker: str = "docker", *, host: ContainerHost,
                  broker_factory=None, credentials: CredentialBoundary | None = None):
@@ -1068,11 +1078,14 @@ class IsolatedWorker:
 
     def runtime(self, *, model, runtime, max_budget_usd, settings_document,
                 project_delivery=None, profile: str = "claude-impl-rw", handoff=None) -> IsolatedClaudeRuntime:
-        return IsolatedClaudeRuntime(self.config, self.root / "runs", model=model, runtime=runtime,
-                                     max_budget_usd=max_budget_usd, settings_document=settings_document,
-                                     docker=self.docker, watch=(self.root / "replays",),
-                                     project_delivery=project_delivery, profile=profile, handoff=handoff,
-                                     host=self.host)
+        built = IsolatedClaudeRuntime(self.config, self.root / "runs", model=model, runtime=runtime,
+                                      max_budget_usd=max_budget_usd, settings_document=settings_document,
+                                      docker=self.docker, watch=(self.root / "replays",),
+                                      project_delivery=project_delivery, profile=profile, handoff=handoff,
+                                      host=self.host)
+        if self.observer is not None:
+            built.observer = self.observer
+        return built
 
     def codex_runtime(self, *, profile: str, context_window=None, handoff=None, native_hooks=None):
         """INV-ROLE-CONTAINER-001 / INV-CODEX-CREDENTIAL-001: the Codex App Server inside a
@@ -1081,8 +1094,11 @@ class IsolatedWorker:
         require(self.config.get("codex") is not None, "Codex role containers need ZEUS_CODEX_CREDENTIAL_STORE")
         require(self.broker_factory is not None and self.credentials is not None,
                 "Codex role containers need the credentials boundary")
-        return IsolatedCodexRuntime(self.config, self.root / "runs", profile=profile,
-                                    broker=self.broker_factory(self.config["codex"]["credential_store"]),
-                                    docker=self.docker, watch=(self.root / "replays",), context_window=context_window,
-                                    handoff=handoff, state_root=self.root / "codex-state", host=self.host,
-                                    credentials=self.credentials, native_hooks=native_hooks)
+        built = IsolatedCodexRuntime(self.config, self.root / "runs", profile=profile,
+                                     broker=self.broker_factory(self.config["codex"]["credential_store"]),
+                                     docker=self.docker, watch=(self.root / "replays",), context_window=context_window,
+                                     handoff=handoff, state_root=self.root / "codex-state", host=self.host,
+                                     credentials=self.credentials, native_hooks=native_hooks)
+        if self.observer is not None:
+            built.observer = self.observer
+        return built

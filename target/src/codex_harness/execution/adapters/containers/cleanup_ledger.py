@@ -106,7 +106,10 @@ def cleanup_debt(record: dict) -> str | None:
 
 def _emit_cleanup(observer, record: dict, outcome: str, reason: str) -> None:
     """One `operations.cleanup_recorded` at a terminal cleanup decision (DESIGN-s10 §17c, R-a54 (3)). Optional: with no
-    observer nothing is emitted. `resource` follows the record kind: a verifier run is the verification stack, any
+    observer nothing is emitted. Callers that pass one (S10 F2): the isolated runtimes (the executor's observer, set by
+    `composition.operation.build_executor` through `IsolatedWorker.observer`) and `composition.process_entries.isolated_worker_reconcile`
+    (its own `isolated-worker-runs` observer); `ContainerEvidenceReplay` (an S8 AST pin) and the fleet recovery collectors, which only read
+    run records, pass none. `resource` follows the record kind: a verifier run is the verification stack, any
     other owned run a container. Closed vocabulary only; the record's paths, names and ids are never attributes."""
     if observer is None:
         return

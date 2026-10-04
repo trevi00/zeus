@@ -56,9 +56,29 @@ def _docker(docker, args, *, timeout, env=None):
         return subprocess.CompletedProcess([docker, *args], None, "", type(exc).__name__)
 
 
-def isolated_worker_reconcile(root):
+def _reconcile_runner(argv, *, timeout, env=None):
+    """`cleanup_ledger.reconcile`'s runner contract is `runner(argv, timeout=, env=)` (`owned_container.docker_call`); `_docker`
+    keeps M7's `(docker, args)` shape, so the bare `_docker` raised TypeError on the first docker call (found by S10 F2)."""
+    return _docker(argv[0], list(argv[1:]), timeout=timeout, env=env)
+
+
+def isolated_worker_reconcile(root, observer=None):
+    """`isolated_worker_runs reconcile`: the operator step, with its own process observer (S10 F2, FLEET-REBUILD-S10-ACCEPT
+    F2 row 3). The observer is spool-only (no store: this step reads and writes run records, not the runtime database), its
+    component is `isolated-worker-runs`, and a spool that cannot be built leaves the step uninstrumented, never refused."""
     from codex_harness.execution.adapters.containers.cleanup_ledger import reconcile
-    return reconcile(root, runner=_docker)
+    own = observer is None
+    if own:
+        try:
+            from codex_harness.composition.observation import build_observer
+            observer = build_observer(None, "isolated-worker-runs")
+        except Exception:  # noqa: BLE001 - diagnostics must not refuse the operator's reconcile
+            observer = None
+    try:
+        return reconcile(root, runner=_reconcile_runner, observer=observer)
+    finally:
+        if own and observer is not None:
+            observer.close()
 
 
 def service_entry_main(argv, *, cli_main):

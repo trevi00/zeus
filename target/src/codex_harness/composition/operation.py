@@ -214,6 +214,10 @@ def build_executor(service=None, observer=None, execution_policy=None, knowledge
     service = service or composition.build()
     adapter = PostgresKnowledge(composition.database_url()) if knowledge else None
     observer = observer or build_observer(service.store, "executor")
+    if isolated is not None and getattr(isolated, "observer", False) is None:
+        # S10 F2 (FLEET-REBUILD-S10-ACCEPT F2 row 3): the executor's process observer reaches the container cleanup
+        # lifecycle (`cleanup_ledger.hold/retire`); an isolation that already has one, or none to take, is left alone.
+        isolated.observer = observer
     return Executor(service, git, artifacts, adapter,
                     # INV-DISCOVERY-PRESSURE-001: pressure over THIS process's store (a lane store has no Fleet
                     # registry, so proactive fetches hold there; exempt intents are unaffected).
