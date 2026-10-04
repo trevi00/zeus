@@ -26,7 +26,7 @@ uses the owner the shim's PUBLIC routing names for that method (`CONTINUATION_RO
 No call site needs the shim's private routing (`_move`, `_create`, `_note`, `_emit`, `_successor_plan`, `_research_handoff`, `_verify_evidence`). M7's `Fleet(store)` (handed to the settlement and the tick as `fleet`)
 is `fleet_port`: `enqueue` is `FleetRegistry.enqueue`, `reserve_unit` and `settle_unit` are `AdmissionControl`'s (the shim's `Fleet` routes). `ConductorProcesses(config, host)` is `conductor_processes`: the target class with
 M7's default spawn (`composition.guarded_launch.guarded_spawn()`) and M7's default lane environment (`composition.fleet.lane_environment`). `ResearchEvidence` takes `store_factory=FileArtifacts` (V-c27). The other
-seams are the target homes: `read_blob` (`intake.adapters.backlog_blobs`), `_parse` (M7 `adapters/fleet_backlog._parse`, a private copy: its S10 owner is not composed yet), `GitSource`
+seams are the target homes: `read_blob` (`intake.adapters.backlog_blobs`), `_parse` (M7 `adapters/fleet_backlog._parse`, imported from `composition.fleet_backlog`, its owner (R-c28, S10 unit C8b-2)), `GitSource`
 (`host_os.adapters.git_source`), `SessionArchives(FileArtifacts(root))` (the target takes the store, as `composition.cli_sessions.session_archives` builds it), `load_host_isolation`, `lane_dsn`, `PostgresStore`,
 `runtime_dir` and `packaged_policy`. Opt-in only, as in M7: nothing here runs unless the owner registered a Git-pinned policy.
 """
@@ -39,6 +39,7 @@ from pathlib import Path
 from types import SimpleNamespace
 
 from codex_harness.composition.configuration import runtime_dir
+from codex_harness.composition.fleet_backlog import _parse
 from codex_harness.coordination.adapters.continuation import ResearchEvidence
 from codex_harness.coordination.application.continuation.frames import PolicyFrames
 from codex_harness.coordination.application.continuation.grants import CapacityGrants
@@ -62,7 +63,6 @@ from codex_harness.host_os.adapters.git_source import GitSource
 from codex_harness.intake.adapters.backlog_blobs import read_blob
 from codex_harness.intake.application.portfolio_lineage import PortfolioLineage
 from codex_harness.intake.domain.backlog import BacklogRefused
-from codex_harness.kernel.errors import ContractError, require
 from codex_harness.kernel.ids import utcnow
 from codex_harness.routing.adapters.provider_policy import packaged_policy
 from codex_harness.storage.adapters.file_artifacts import FileArtifacts
@@ -108,21 +108,6 @@ def conductor_processes(config: dict, host: dict, **kwargs):
     kwargs.setdefault("spawn", guarded_spawn())
     kwargs.setdefault("environment", lane_environment)
     return ConductorProcesses(config, host, **kwargs)
-
-
-def _parse(data: bytes, reason_code: str) -> dict:
-    """M7 `adapters/fleet_backlog._parse` (:38-50): bounded UTF-8 JSON with duplicate keys refused; the code names the role, never the bytes."""
-    def unique(pairs):
-        result = {}
-        for key, value in pairs:
-            require(key not in result, "Fleet backlog document has a duplicate JSON key")
-            result[key] = value
-        return result
-
-    try:
-        return json.loads(data.decode("utf-8-sig"), object_pairs_hook=unique)
-    except (json.JSONDecodeError, UnicodeDecodeError, ContractError) as exc:
-        raise BacklogRefused(reason_code) from exc
 
 
 def archive_identity(runtime_root) -> str:
