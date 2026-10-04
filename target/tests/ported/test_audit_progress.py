@@ -760,14 +760,14 @@ def test_a_discovery_item_cannot_forge_a_progress_candidate_and_one_claim_wins(t
 
 # ----- the audit service wiring ------------------------------------------------------------------
 def service_runner(connected, progress, **kwargs):   # noqa: F811  the fixture value, not the fixture
-    from m7_research import FixtureBus, FixtureExecutor, Workflow, audit_service
+    from m7_research import FixtureBus, FixtureExecutor, Workflow, audit_service, schedule_audits
     return audit_service.AuditServiceRunner(
         connected.service, connected.audit_id, executor=FixtureExecutor(connected.audits),
         bus=FixtureBus(), workflow=Workflow(connected.store, connected.service.org),
-        progress=progress, revision="audit", release_id="fixture-release", sleep=lambda _: None, **kwargs)
+        progress=progress, revision="audit", release_id="fixture-release", sleep=lambda _: None,
+        schedule=schedule_audits, **kwargs)
 
 
-@pytest.mark.skip(reason="S10: entry.cli.audit_service (AuditServiceRunner, the audit-service runner; no ported module)")
 def test_the_service_takes_a_baseline_before_admission_and_observes_every_settlement(connected, tmp_path):  # noqa: F811
     """The REAL audit service runner over the REAL scheduler, Workflow and checkpoint path with the
     existing labelled fixture executor and bus, and the REAL progress observer on the same store."""
@@ -797,7 +797,6 @@ def test_the_service_takes_a_baseline_before_admission_and_observes_every_settle
     assert CANARY not in json.dumps(view)
 
 
-@pytest.mark.skip(reason="S10: entry.cli.audit_service (AuditServiceRunner, the audit-service runner; no ported module)")
 def test_an_observation_failure_is_degraded_beside_an_unchanged_execution_result(connected, tmp_path):  # noqa: F811
     class Broken:
         """Injected fault: the observer itself fails."""
@@ -829,17 +828,17 @@ def test_an_observation_failure_is_degraded_beside_an_unchanged_execution_result
     assert CANARY not in json.dumps(events)
 
 
-@pytest.mark.skip(reason="S10: bootstrap and the audit-service entry wiring (adapters.audit_service.build_runner)")
 def test_the_production_wiring_gives_the_runner_a_real_observer_on_the_same_store(connected, tmp_path, monkeypatch):  # noqa: F811
     """`build_runner` is the production wiring; only the transport, executor and collector it builds
     are replaced here, because those need Redis, PostgreSQL and a host runtime."""
-    from codex_harness import bootstrap
-    from codex_harness.adapters import audit_service, bus, configuration
+    from m7_research import audit_service
 
-    monkeypatch.setattr(bootstrap, "build_executor", lambda service, observer=None: "executor-stand-in")
-    monkeypatch.setattr(bootstrap, "build_collector", lambda store, observer=None: "collector-stand-in")
-    monkeypatch.setattr(bootstrap, "redis_url", lambda: "redis://fixture/0")
-    monkeypatch.setattr(bus, "RedisBus", lambda url: "bus-stand-in")
+    from codex_harness.composition import cli_bus, configuration, observation, operation
+    from codex_harness.research.application.audit_progress import AuditProgress
+
+    monkeypatch.setattr(operation, "build_executor", lambda service, observer=None: "executor-stand-in")
+    monkeypatch.setattr(observation, "build_collector", lambda store, observer=None: "collector-stand-in")
+    monkeypatch.setattr(cli_bus, "bus", lambda: "bus-stand-in")
     monkeypatch.setattr(configuration, "runtime_dir", lambda: tmp_path)
     args = SimpleNamespace(audit_id=connected.audit_id, max_tasks=None, once=True)
     gate = {"revision": "audit", "release_id": "fixture-release", "partitions": 4}
@@ -852,7 +851,6 @@ def test_the_production_wiring_gives_the_runner_a_real_observer_on_the_same_stor
     assert observed["status"] == "baseline" and observed["audit_id"] == connected.audit_id
 
 
-@pytest.mark.skip(reason="S10: entry.cli.audit_service (AuditServiceRunner, the audit-service runner; no ported module)")
 def test_the_progress_observations_are_declared_events_with_identifiers_and_codes(connected, tmp_path):  # noqa: F811
     from codex_harness.observation.adapters.observation_schema import validate_observation
     from codex_harness.observation.domain.observation import REGISTRY
@@ -875,7 +873,6 @@ def test_the_progress_observations_are_declared_events_with_identifiers_and_code
     assert observer.counters["refused"] == 0
 
 
-@pytest.mark.skip(reason="S10: entry.cli.audit_service (adapters.audit_service.progress_facts, the audit-service CLI module)")
 def test_the_progress_facts_are_allow_listed_and_a_foreign_observation_is_never_a_zeus_code():
     from m7_research import audit_service
 

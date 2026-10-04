@@ -65,8 +65,11 @@ Batch P3 (research audits) adds, each a construction/import adaptation:
   org, artifacts, replay=None, clock=utcnow)` is the target class with `Outbox`, `EventJournal` and the `execution_notices` module.
 - `ArtifactMaintenance(store, artifacts)` is the target class with `EventJournal` and the system clock.
 - `Releases` is `m7_delivery.Releases`; `Portfolio` is intake's; `AppServer` is the execution provider's.
-- `audit_service` is `unavailable("S10", "adapters.audit_service")`: the audit-service CLI (`entry.cli.audit_service`) is not on the
-  target; a test that reaches it is skipped whole for S10.
+- `audit_service` is a namespace over the three R-c25 homes of M7 `adapters/audit_service.py` (S10 unit C6b): `AuditServiceRunner`,
+  `analysis_facts`, `progress_facts` and `PROGRESS_ATTRIBUTES` are `coordination.application.audit_service`'s, `status` and `execute` are
+  `entry.cli.audit_service._status` and `_execute`, and `build_runner` is `composition.cli_audit_service.build_runner`. The target runner takes
+  its `schedule` explicitly (V-c25): this module's `AuditServiceRunner` is the target class defaulting `schedule` to this module's
+  `schedule_audits` (the verbatim `runner` copy below passes none; `test_audit_progress.service_runner` passes it explicitly).
 - `FixtureBus`, `FixtureExecutor`, `connected`, `runner`, `partitions_of`, `spool_observer` and `REVISION` are M7
   `tests/test_audit_service.py`'s helper definitions, verbatim, labelled copies (that suite is S10-carried, so no ported module
   exists): `validate_message` is storage's, `Harness`/`Workflow` the `m7_coordination` ones, `Observer`, `MemorySpool` and
@@ -122,6 +125,8 @@ from m7_coordination import OwnerActions as _OwnerActions
 from m7_delivery import Releases
 
 import codex_harness
+from codex_harness.composition import cli_audit_service as _audit_service_composition
+from codex_harness.coordination.application import audit_service as _audit_service
 from codex_harness.coordination.application import autonomous as _autonomous
 from codex_harness.coordination.application import council as _council
 from codex_harness.coordination.application import (
@@ -137,6 +142,7 @@ from codex_harness.coordination.application.fleet import state as fleet_state
 from codex_harness.coordination.application.operation import Operation as _Operation
 from codex_harness.coordination.application.outbox import Outbox
 from codex_harness.coordination.application.research_launch_facts import ResearchLaunchFacts
+from codex_harness.entry.cli import audit_service as _audit_service_entry
 from codex_harness.evidence.application.inspections import EvidenceRecords
 from codex_harness.execution.adapters.containers import owned_container
 from codex_harness.execution.adapters.providers.codex_app_server import AppServer
@@ -320,7 +326,19 @@ class ArtifactMaintenance(_maintenance.ArtifactMaintenance):
         super().__init__(store, artifacts, EventJournal(), clock=SYSTEM_CLOCK)
 
 
-audit_service = unavailable("S10", "adapters.audit_service")
+class AuditServiceRunner(_audit_service.AuditServiceRunner):
+    """The target runner with the research scheduler this module wires as its default `schedule` (V-c25: the target
+    runner has none, composition injects it); M7's `runner` helper below is a verbatim copy that does not pass one."""
+
+    def __init__(self, *args, schedule=None, **kwargs):
+        super().__init__(*args, schedule=schedule_audits if schedule is None else schedule, **kwargs)
+
+
+audit_service = SimpleNamespace(
+    AuditServiceRunner=AuditServiceRunner, analysis_facts=_audit_service.analysis_facts,
+    progress_facts=_audit_service.progress_facts, PROGRESS_ATTRIBUTES=_audit_service.PROGRESS_ATTRIBUTES,
+    status=_audit_service_entry._status, execute=_audit_service_entry._execute,
+    build_runner=_audit_service_composition.build_runner)
 
 REVISION = "audit"  # the fixture release revision `activate_fixture` promotes
 

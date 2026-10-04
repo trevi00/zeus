@@ -566,7 +566,6 @@ def answer_for_names(ctx, evidence_ref, names):
     return answer
 
 
-@pytest.mark.skip(reason="S10: entry.cli.audit_service (AuditServiceRunner, the audit-service runner; no ported module)")
 def test_a_justified_not_run_disposition_repairs_and_resumes_the_partition(repairable):
     ctx = repairable
     task, ref = rejected_execution(ctx)
@@ -933,7 +932,6 @@ def test_a_failed_notice_publication_is_retried_and_a_duplicate_receive_adds_no_
     assert len(corrections_of(ctx)) == 1
 
 
-@pytest.mark.skip(reason="S10: entry.cli.audit_service (AuditServiceRunner, the audit-service runner; no ported module)")
 def test_the_service_publishes_the_lead_notice_through_the_existing_scoped_relay(repairable):
     ctx = repairable
     task, ref = rejected_execution(ctx)
@@ -1087,7 +1085,6 @@ def test_a_repair_context_is_allow_listed_and_owner_written():
 
 
 # ----- the service tick ---------------------------------------------------------------------------
-@pytest.mark.skip(reason="S10: entry.cli.audit_service (AuditServiceRunner, the audit-service runner; no ported module)")
 def test_the_service_admits_delivers_executes_and_settles_one_successor(repairable):
     ctx = repairable
     task, ref = rejected_execution(ctx)
@@ -1141,7 +1138,6 @@ def test_the_service_admits_delivers_executes_and_settles_one_successor(repairab
     assert SECRET not in canonical([summary, list(observer.spool.records()), published])
 
 
-@pytest.mark.skip(reason="S10: entry.cli.audit_service (AuditServiceRunner, the audit-service runner; no ported module)")
 def test_the_service_admits_the_successor_and_never_reorders_a_queued_assignment(repairable):
     """The correction is an ordinary queued assignment: the existing claim order is unchanged."""
     ctx = repairable
@@ -1169,7 +1165,6 @@ def test_the_service_admits_the_successor_and_never_reorders_a_queued_assignment
                               "notices_published": 0, "error_type": None}
 
 
-@pytest.mark.skip(reason="S10: entry.cli.audit_service (AuditServiceRunner, the audit-service runner; no ported module)")
 def test_a_failed_publication_leaves_one_unexecuted_successor_and_admits_no_second(repairable):
     """The correction's own record survives a transport failure; nothing is duplicated or lost."""
     ctx = repairable
@@ -1204,7 +1199,6 @@ def test_a_failed_publication_leaves_one_unexecuted_successor_and_admits_no_seco
     assert len(corrections_of(ctx)) == 1
 
 
-@pytest.mark.skip(reason="S10: entry.cli.audit_service (AuditServiceRunner, the audit-service runner; no ported module)")
 def test_a_repair_owner_failure_is_a_bounded_fact_and_never_stops_an_execution(repairable):
     ctx = repairable
 

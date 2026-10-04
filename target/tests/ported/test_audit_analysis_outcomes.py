@@ -164,7 +164,6 @@ def test_valid_content_checkpoints_and_binds_partial_progress(
     assert not coverage["whole_analysis_complete"] and not coverage["adoption_eligible"]
 
 
-@pytest.mark.skip(reason="S10: entry.cli.audit_service (AuditServiceRunner, the audit-service runner; no ported module)")
 def test_an_answer_without_executor_evidence_checkpoints_and_stays_unclassified(
         audit, monkeypatch):  # noqa: F811  the parameter is pytest's injection of the imported fixture
     """A binding needs the executor-owned reference; without one the outcome is not asserted.
@@ -416,7 +415,6 @@ def first_assignment(connected):  # noqa: F811  the imported fixture is the para
     return probe._pending()[0]["partition_id"]
 
 
-@pytest.mark.skip(reason="S10: entry.cli.audit_service (AuditServiceRunner, the audit-service runner; no ported module)")
 def test_a_rejected_partition_is_followed_by_a_valid_one_in_one_serial_run(connected):  # noqa: F811
     held_partition = first_assignment(connected)
     before = next(p for p in partitions_of(connected)
@@ -470,7 +468,6 @@ def test_a_rejected_partition_is_followed_by_a_valid_one_in_one_serial_run(conne
     assert SECRET not in projections and "hunter2" not in projections
 
 
-@pytest.mark.skip(reason="S10: entry.cli.audit_service (AuditServiceRunner, the audit-service runner; no ported module)")
 def test_status_counts_the_outcomes_and_lists_the_held_partition(connected):  # noqa: F811
     held_partition = first_assignment(connected)
     answer, draft = serial_answers(connected.audits, held_partition)
@@ -495,7 +492,6 @@ def test_status_counts_the_outcomes_and_lists_the_held_partition(connected):  # 
     assert status["partitions"]["with_remaining_work"] == 4
 
 
-@pytest.mark.skip(reason="S10: entry.cli.audit_service (AuditServiceRunner, the audit-service runner; no ported module)")
 def test_a_repeated_tick_and_a_restart_never_rerun_the_held_generation(connected):  # noqa: F811
     held_partition = first_assignment(connected)
     answer, _ = serial_answers(connected.audits, held_partition)
@@ -540,7 +536,6 @@ def test_a_repeated_tick_and_a_restart_never_rerun_the_held_generation(connected
     assert assignments_of(held_partition) == held_tasks and third.calls == []
 
 
-@pytest.mark.skip(reason="S10: entry.cli.audit_service (AuditServiceRunner, the audit-service runner; no ported module)")
 def test_an_execution_failure_still_stops_the_service(connected):  # noqa: F811
     """The discriminating control: the same refused content, but with no retained evidence.
 
@@ -568,7 +563,6 @@ def test_an_execution_failure_still_stops_the_service(connected):  # noqa: F811
     assert restarted.run(once=True)["stop_reason"] == "task_retry" and second.calls == []
 
 
-@pytest.mark.skip(reason="S10: entry.cli.audit_service (AuditServiceRunner, the audit-service runner; no ported module)")
 @pytest.mark.parametrize("turn", ["planning", "semantic"])
 def test_a_returned_inspection_refusal_stops_the_service_after_one_task(connected, turn):  # noqa: F811
     """The same control at the service: an INJECTED returned envelope, not a real inspection outage.
