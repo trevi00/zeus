@@ -1,0 +1,420 @@
+{
+ "cases": {
+  "base_revision": "3c173a432dd03afc8a170241087607e9fe9befe5",
+  "dge_register": {
+   "argv": [
+    "dge",
+    "register",
+    "--file",
+    "<FIXTURE>/.packets/good.json"
+   ],
+   "exit": 0,
+   "stderr": "",
+   "stdout": {
+    "cached": false,
+    "exit_code": 0,
+    "session": {
+     "base_revision": "3c173a432dd03afc8a170241087607e9fe9befe5",
+     "counts": {
+      "deferred": 0,
+      "events": 0,
+      "findings": 0,
+      "resolved": 0,
+      "sources_verified": 1,
+      "unresolved": 0
+     },
+     "deadline": "2030-01-01T00:00:00+00:00",
+     "decision_event_id": null,
+     "finished_at": null,
+     "history": [],
+     "id": "sess-c7b",
+     "max_rounds": 2,
+     "origin": "operator_submitted",
+     "owner": null,
+     "packet_digest": "22468a1491088e98a9c4d1b6f41eb7ad4587c8a760396454174e44983dde8760",
+     "phase": "proposer",
+     "registered_at": "2026-10-04T00:00:00+00:00",
+     "remaining": "automated research/proposer/attacker/arbiter sessions, authenticated role identities and formal knowledge promotion are not implemented",
+     "repository": "2ad5db1dab205e299076bed0f845455c2345545fb9a76c1d1e11ef77d259922b",
+     "research_question_present": false,
+     "round": 1,
+     "schema": "urn:zeus:debate-status:1",
+     "state": "proposal",
+     "supersedes": null,
+     "terminal": false,
+     "trust": "operator-submitted attestations; structure, sequence and the recorded operator decision are checked, not model execution, citation truth or implementation correctness",
+     "unresolved_finding_ids": [],
+     "updated_at": "2026-10-04T00:00:00+00:00",
+     "version": 0
+    },
+    "status": "registered"
+   }
+  },
+  "dge_register_cached": {
+   "argv": [
+    "dge",
+    "register",
+    "--file",
+    "<FIXTURE>/.packets/good.json"
+   ],
+   "exit": 0,
+   "stderr": "",
+   "stdout": {
+    "cached": true,
+    "exit_code": 0,
+    "session": {
+     "base_revision": "3c173a432dd03afc8a170241087607e9fe9befe5",
+     "counts": {
+      "deferred": 0,
+      "events": 0,
+      "findings": 0,
+      "resolved": 0,
+      "sources_verified": 1,
+      "unresolved": 0
+     },
+     "deadline": "2030-01-01T00:00:00+00:00",
+     "decision_event_id": null,
+     "finished_at": null,
+     "history": [],
+     "id": "sess-c7b",
+     "max_rounds": 2,
+     "origin": "operator_submitted",
+     "owner": null,
+     "packet_digest": "22468a1491088e98a9c4d1b6f41eb7ad4587c8a760396454174e44983dde8760",
+     "phase": "proposer",
+     "registered_at": "2026-10-04T00:00:00+00:00",
+     "remaining": "automated research/proposer/attacker/arbiter sessions, authenticated role identities and formal knowledge promotion are not implemented",
+     "repository": "2ad5db1dab205e299076bed0f845455c2345545fb9a76c1d1e11ef77d259922b",
+     "research_question_present": false,
+     "round": 1,
+     "schema": "urn:zeus:debate-status:1",
+     "state": "proposal",
+     "supersedes": null,
+     "terminal": false,
+     "trust": "operator-submitted attestations; structure, sequence and the recorded operator decision are checked, not model execution, citation truth or implementation correctness",
+     "unresolved_finding_ids": [],
+     "updated_at": "2026-10-04T00:00:00+00:00",
+     "version": 0
+    },
+    "status": "registered"
+   }
+  },
+  "dge_register_mismatch": {
+   "argv": [
+    "dge",
+    "register",
+    "--file",
+    "<FIXTURE>/.packets/mismatch.json"
+   ],
+   "exit": 1,
+   "stderr": "",
+   "stdout": {
+    "error_type": "DgeRefused",
+    "exit_code": 1,
+    "reason_code": "source_digest_mismatch",
+    "status": "refused"
+   }
+  },
+  "dge_status": {
+   "argv": [
+    "dge",
+    "status",
+    "sess-c7b"
+   ],
+   "exit": 0,
+   "stderr": "",
+   "stdout": {
+    "base_revision": "3c173a432dd03afc8a170241087607e9fe9befe5",
+    "counts": {
+     "deferred": 0,
+     "events": 0,
+     "findings": 0,
+     "resolved": 0,
+     "sources_verified": 1,
+     "unresolved": 0
+    },
+    "deadline": "2030-01-01T00:00:00+00:00",
+    "decision_event_id": null,
+    "exit_code": 0,
+    "finished_at": null,
+    "history": [],
+    "id": "sess-c7b",
+    "max_rounds": 2,
+    "origin": "operator_submitted",
+    "owner": null,
+    "packet_digest": "22468a1491088e98a9c4d1b6f41eb7ad4587c8a760396454174e44983dde8760",
+    "phase": "proposer",
+    "registered_at": "2026-10-04T00:00:00+00:00",
+    "remaining": "automated research/proposer/attacker/arbiter sessions, authenticated role identities and formal knowledge promotion are not implemented",
+    "repository": "2ad5db1dab205e299076bed0f845455c2345545fb9a76c1d1e11ef77d259922b",
+    "research_question_present": false,
+    "round": 1,
+    "schema": "urn:zeus:debate-status:1",
+    "state": "proposal",
+    "supersedes": null,
+    "terminal": false,
+    "trust": "operator-submitted attestations; structure, sequence and the recorded operator decision are checked, not model execution, citation truth or implementation correctness",
+    "unresolved_finding_ids": [],
+    "updated_at": "2026-10-04T00:00:00+00:00",
+    "version": 0
+   }
+  },
+  "dge_submit_invalid": {
+   "argv": [
+    "dge",
+    "submit",
+    "sess-c7b",
+    "--file",
+    "<FIXTURE>/.packets/event.json"
+   ],
+   "exit": 1,
+   "stderr": "",
+   "stdout": {
+    "error_type": "EventError",
+    "exit_code": 1,
+    "reason_code": "contract_refused",
+    "status": "refused"
+   }
+  },
+  "feedback_collect": {
+   "argv": [
+    "decision-feedback",
+    "collect",
+    "--registry",
+    "docs/zeus/procedures.json",
+    "--revision",
+    "3c173a432dd03afc8a170241087607e9fe9befe5"
+   ],
+   "exit": 0,
+   "stderr": "",
+   "stdout": {
+    "after": "",
+    "authority": "read-only join of existing executor-owned records; no model, no dispatch, no source row is written and no promotion authority is granted",
+    "candidates": [],
+    "collected_at": "2026-10-04T00:00:00.003000+00:00",
+    "counts": {
+     "candidates_created": 0,
+     "candidates_updated": 0,
+     "conflicts": 0,
+     "eligible": 0,
+     "foreign_repository": 0,
+     "observations_recorded": 0,
+     "observations_stale": 0,
+     "observations_unchanged": 0,
+     "observations_updated": 0,
+     "scanned": 0,
+     "unknown": 0
+    },
+    "exit_code": 0,
+    "id": "collection:24718deebde1e71f994408fd46dd2583040fc6627c5db73751495dcfd02e000e",
+    "limits": [
+     "replay, held-out evaluation and policy activation are not implemented in this delivery",
+     "decision quality stays unknown until an independently reviewed diagnosis is linked",
+     "execution identity is verified against the stored run, session, event and task rows and against the content-addressed execution artifact those rows reference; a matching reference string alone is not credit",
+     "one collect scans a bounded page of run ids and reports a continuation cursor; counts describe that page",
+     "candidate evidence reports at most 50 occurrence references per contract group; the distinct-run count stays exact and names the unreferenced remainder",
+     "distinct-run membership is exact up to 1000 runs per contract group; beyond that the group reports membership_capped and counts no further run",
+     "successful repetition is grouped here and never added to incident recurrence counts (INV-RECURRENCE-001)",
+     "skill or script extraction, promotion and knowledge verification stay with their existing owners"
+    ],
+    "next_cursor": null,
+    "reasons": {},
+    "registry": {
+     "digest": "3ab96a587a45410624253a74bde187b63004e3f5ca7bfa1a28b807893cefa8f1",
+     "entries": 1,
+     "path": "docs/zeus/procedures.json",
+     "revision": "3c173a432dd03afc8a170241087607e9fe9befe5",
+     "sha256": "7e3b3caee0d9d24480f02642ab1ccd78e66895b214d1f504fafbaf58f4041e54"
+    },
+    "repository": "2ad5db1dab205e299076bed0f845455c2345545fb9a76c1d1e11ef77d259922b",
+    "scan_limit": 100,
+    "schema": "urn:zeus:decision-feedback-collection:1",
+    "status": "collected",
+    "truncated": false
+   }
+  },
+  "feedback_collect_missing": {
+   "argv": [
+    "decision-feedback",
+    "collect",
+    "--registry",
+    "docs/zeus/none.json",
+    "--revision",
+    "3c173a432dd03afc8a170241087607e9fe9befe5"
+   ],
+   "exit": 1,
+   "stderr": "",
+   "stdout": {
+    "error_type": "DecisionFeedbackError",
+    "exit_code": 1,
+    "reason_code": "registry_missing_at_revision",
+    "status": "refused"
+   }
+  },
+  "feedback_report": {
+   "argv": [
+    "decision-feedback",
+    "report"
+   ],
+   "exit": 0,
+   "stderr": "",
+   "stdout": {
+    "authority": "read-only join of existing executor-owned records; no model, no dispatch, no source row is written and no promotion authority is granted",
+    "candidates": [],
+    "candidates_truncated": false,
+    "collection": null,
+    "collection_found": false,
+    "conflicts": [],
+    "conflicts_truncated": false,
+    "exit_code": 0,
+    "generated_at": "2026-10-04T00:00:00.004000+00:00",
+    "kind": "report",
+    "limits": [
+     "replay, held-out evaluation and policy activation are not implemented in this delivery",
+     "decision quality stays unknown until an independently reviewed diagnosis is linked",
+     "execution identity is verified against the stored run, session, event and task rows and against the content-addressed execution artifact those rows reference; a matching reference string alone is not credit",
+     "one collect scans a bounded page of run ids and reports a continuation cursor; counts describe that page",
+     "candidate evidence reports at most 50 occurrence references per contract group; the distinct-run count stays exact and names the unreferenced remainder",
+     "distinct-run membership is exact up to 1000 runs per contract group; beyond that the group reports membership_capped and counts no further run",
+     "successful repetition is grouped here and never added to incident recurrence counts (INV-RECURRENCE-001)",
+     "skill or script extraction, promotion and knowledge verification stay with their existing owners"
+    ],
+    "next_cursor": null,
+    "quality": {
+     "basis": "no independently reviewed diagnosis is linked to this decision; downstream success or failure alone never establishes conductor decision quality",
+     "label": "unknown",
+     "requires": "an independently reviewed diagnosis linked to this decision"
+    },
+    "scan_limit": 100,
+    "schema": "urn:zeus:decision-feedback-report:1",
+    "status": "read"
+   }
+  },
+  "feedback_report_empty": {
+   "argv": [
+    "decision-feedback",
+    "report"
+   ],
+   "exit": 0,
+   "stderr": "",
+   "stdout": {
+    "authority": "read-only join of existing executor-owned records; no model, no dispatch, no source row is written and no promotion authority is granted",
+    "candidates": [],
+    "candidates_truncated": false,
+    "collection": null,
+    "collection_found": false,
+    "conflicts": [],
+    "conflicts_truncated": false,
+    "exit_code": 0,
+    "generated_at": "2026-10-04T00:00:00.002000+00:00",
+    "kind": "report",
+    "limits": [
+     "replay, held-out evaluation and policy activation are not implemented in this delivery",
+     "decision quality stays unknown until an independently reviewed diagnosis is linked",
+     "execution identity is verified against the stored run, session, event and task rows and against the content-addressed execution artifact those rows reference; a matching reference string alone is not credit",
+     "one collect scans a bounded page of run ids and reports a continuation cursor; counts describe that page",
+     "candidate evidence reports at most 50 occurrence references per contract group; the distinct-run count stays exact and names the unreferenced remainder",
+     "distinct-run membership is exact up to 1000 runs per contract group; beyond that the group reports membership_capped and counts no further run",
+     "successful repetition is grouped here and never added to incident recurrence counts (INV-RECURRENCE-001)",
+     "skill or script extraction, promotion and knowledge verification stay with their existing owners"
+    ],
+    "next_cursor": null,
+    "quality": {
+     "basis": "no independently reviewed diagnosis is linked to this decision; downstream success or failure alone never establishes conductor decision quality",
+     "label": "unknown",
+     "requires": "an independently reviewed diagnosis linked to this decision"
+    },
+    "scan_limit": 100,
+    "schema": "urn:zeus:decision-feedback-report:1",
+    "status": "read"
+   }
+  },
+  "feedback_status": {
+   "argv": [
+    "decision-feedback",
+    "status"
+   ],
+   "exit": 0,
+   "stderr": "",
+   "stdout": {
+    "authority": "read-only join of existing executor-owned records; no model, no dispatch, no source row is written and no promotion authority is granted",
+    "candidate_status": {
+     "urn:zeus:recurring-work-candidate:1": []
+    },
+    "counts": {
+     "decision_feedback_conflicts": {
+      "counted": 0,
+      "next_cursor": null,
+      "truncated": false
+     },
+     "decision_feedback_groups": {
+      "counted": 0,
+      "next_cursor": null,
+      "truncated": false
+     },
+     "decision_observations": {
+      "counted": 0,
+      "next_cursor": null,
+      "truncated": false
+     },
+     "recurring_work_candidates": {
+      "counted": 0,
+      "next_cursor": null,
+      "truncated": false
+     }
+    },
+    "exit_code": 0,
+    "generated_at": "2026-10-04T00:00:00.001000+00:00",
+    "kind": "status",
+    "limits": [
+     "replay, held-out evaluation and policy activation are not implemented in this delivery",
+     "decision quality stays unknown until an independently reviewed diagnosis is linked",
+     "execution identity is verified against the stored run, session, event and task rows and against the content-addressed execution artifact those rows reference; a matching reference string alone is not credit",
+     "one collect scans a bounded page of run ids and reports a continuation cursor; counts describe that page",
+     "candidate evidence reports at most 50 occurrence references per contract group; the distinct-run count stays exact and names the unreferenced remainder",
+     "distinct-run membership is exact up to 1000 runs per contract group; beyond that the group reports membership_capped and counts no further run",
+     "successful repetition is grouped here and never added to incident recurrence counts (INV-RECURRENCE-001)",
+     "skill or script extraction, promotion and knowledge verification stay with their existing owners"
+    ],
+    "observed_outcomes": {
+     "accepted": 0,
+     "cancelled": 0,
+     "failed": 0,
+     "pending": 0,
+     "rejected": 0,
+     "unknown": 0
+    },
+    "quality": {
+     "basis": "no independently reviewed diagnosis is linked to this decision; downstream success or failure alone never establishes conductor decision quality",
+     "label": "unknown",
+     "requires": "an independently reviewed diagnosis linked to this decision"
+    },
+    "scan_limit": 100,
+    "schema": "urn:zeus:decision-feedback-report:1",
+    "status": "read"
+   }
+  },
+  "init_db": {
+   "argv": [
+    "init-db"
+   ],
+   "exit": 0,
+   "stderr": "",
+   "stdout": {
+    "already_applied": [],
+    "applied": [
+     {
+      "module": "core",
+      "version": "1"
+     }
+    ],
+    "migrated": true,
+    "tool": {
+     "filename_contract": "V?<n>(.<n>|_<n>)*(__<description>)?.sql",
+     "name": "zeus-sql-migrator",
+     "version": 1
+    }
+   }
+  }
+ }
+}
