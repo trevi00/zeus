@@ -297,7 +297,7 @@ def _write(tmp_path, document) -> Path:
     return path
 
 
-@pytest.mark.skip(reason='S10: the M7 case asserts `isinstance(hosts[kind].fleet, Fleet)` on the M7 `Fleet` object; the production gate authority is the S5 `FleetPause` over the control store (R-c31), covered by `tests/test_s10_c8b4_host_delivery.py`')
+@pytest.mark.skip(reason="inapplicable (declared: DESIGN-s5 section F, `Fleet` split into FleetRegistry/AdmissionControl/FleetPause/FleetRecovery; `FleetPause` owns `activation_gate`): the M7 case asserts `isinstance(hosts[kind].fleet, Fleet)` on the M7 monolithic `Fleet`; the target gate object is `coordination.application.fleet.pause.FleetPause` (observed K2: isinstance is False); the assertion stays unedited; the production gate authority (R-c31) is covered by `tests/test_s10_c8b4_host_delivery.py`")
 def test_a_lane_controller_owns_lane_records_but_gates_on_the_control_fleet(tmp_path):
     service = control_service(tmp_path)
     stores = LaneStores()

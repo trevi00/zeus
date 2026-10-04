@@ -1041,7 +1041,7 @@ def test_a_first_managed_start_refuses_on_a_failed_debt_read_or_pause_commit_bef
     assert not state(target, STATE_FILE).exists() and not managed(fleet=authority).running(target)
 
 
-@pytest.mark.skip(reason='S10: the M7 case asserts `isinstance(hosts[KIND_MANAGED].fleet, Fleet)` on the M7 `Fleet` object; the production gate authority is the S5 `FleetPause` over the host store (R-c31), covered by `tests/test_s10_c8b4_host_delivery.py`')
+@pytest.mark.skip(reason="inapplicable (declared: DESIGN-s5 section F, `Fleet` split into FleetRegistry/AdmissionControl/FleetPause/FleetRecovery; `FleetPause` owns `activation_gate`): the M7 case asserts `isinstance(hosts[KIND_MANAGED].fleet, Fleet)` on the M7 monolithic `Fleet`; the target gate object is `coordination.application.fleet.pause.FleetPause` (observed K2: isinstance is False); the assertion stays unedited; the production gate authority (R-c31) is covered by `tests/test_s10_c8b4_host_delivery.py`")
 def test_a_managed_start_without_a_fleet_authority_refuses_before_any_effect(tmp_path, source):
     target = target_for(tmp_path, source["root"])
     host = ManagedFleetTarget(workload="fixture")  # no authority: never read as "no debt"

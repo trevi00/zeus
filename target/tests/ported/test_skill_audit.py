@@ -118,7 +118,7 @@ def test_total_score_matches_upstream_producer_not_pointer_eligibility():
     assert 'base score median: 1' in render_text(report)
 
 
-@pytest.mark.skip(reason="S10 operator-script main (no composed home at 8b60bac1): skill_audit.main is absent; context.adapters.skill_audit holds only render_text and scripts/skill_telemetry_audit.py imports the absent codex_harness.adapters.skill_audit")
+@pytest.mark.skip(reason="S11 (PREP-S11 §9 #3): scripts/skill_telemetry_audit.py imports absent M7 codex_harness.adapters.skill_audit; root-script disposition pending")
 def test_window_cutoff_boundary_and_legacy_slug_cli(capsys, monkeypatch):
     monkeypatch.setattr('codex_harness.domain.skill_audit.MAX_EVENTS', 2)
     boundary = timestamp('2026-09-08T00:00:00Z')
@@ -154,7 +154,7 @@ def test_invalid_base_score_cannot_be_recorded(value):
     assert store.data == {}
 
 
-@pytest.mark.skip(reason="S10 operator-script main (no composed home at 8b60bac1): skill_audit.main is absent; context.adapters.skill_audit holds only render_text and scripts/skill_telemetry_audit.py imports the absent codex_harness.adapters.skill_audit")
+@pytest.mark.skip(reason="S11 (PREP-S11 §9 #3): scripts/skill_telemetry_audit.py imports absent M7 codex_harness.adapters.skill_audit; root-script disposition pending")
 def test_cli_reads_same_project_without_writes_and_replay_preserves_time(capsys):
     store = MemoryStore()
     project_id = str(uuid4())
@@ -186,7 +186,7 @@ def test_cli_reads_same_project_without_writes_and_replay_preserves_time(capsys)
     assert 'Narrow the kw surface' in capsys.readouterr().out
 
 
-@pytest.mark.skip(reason="S10 operator-script main (no composed home at 8b60bac1): skill_audit.main is absent; context.adapters.skill_audit holds only render_text and scripts/skill_telemetry_audit.py imports the absent codex_harness.adapters.skill_audit")
+@pytest.mark.skip(reason="S11 (PREP-S11 §9 #3): scripts/skill_telemetry_audit.py imports absent M7 codex_harness.adapters.skill_audit; root-script disposition pending")
 def test_store_value_error_is_unavailable_not_bad_arguments(capsys):
     class BrokenStore:
         def transaction(self):

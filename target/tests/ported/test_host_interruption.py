@@ -287,7 +287,7 @@ def test_postgres_outage_cannot_extend_durable_deadline(disposable_service, tmp_
              'retained_container_id':original_container})
 
 
-@pytest.mark.skip(reason="S10 host composition script: scripts/host_cycle.py still imports the absent M7 codex_harness.adapters.artifacts/store, application.*, bootstrap and domain.model (no composed unit ports it at 8b60bac1)")
+@pytest.mark.skip(reason="S11 (PREP-S11 §9 #3): scripts/host_cycle.py imports absent M7 codex_harness.adapters.artifacts; root-script disposition pending")
 def test_host_probe_never_falls_back_to_public_tasks(disposable_service, monkeypatch):
     _, store = disposable_service
     monkeypatch.setenv('ZEUS_DATABASE_URL', store.dsn)

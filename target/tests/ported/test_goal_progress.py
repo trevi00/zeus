@@ -301,7 +301,7 @@ def test_row5_unknown_compare_shapes_and_store_failures():
 
 
 # ----- 6. CLI wiring without provider side effects ------------------------------------------------
-@pytest.mark.skip(reason='S10 C5 R-c9: `zeus ticket dispatch` (entry.cli.ticket.run raises "composed in S10 unit C5" at 8b60bac1: the executor git-HEAD wiring is not composed)')
+@pytest.mark.skip(reason='product gap, not S11 (K2): `zeus ticket dispatch` is not composed at ad457fd7 (entry.cli.ticket.run raises "zeus ticket dispatch is composed in S10 unit C5", R-c9: the executor git-HEAD wiring); the case needs that product change, no test edit can reach it')
 def test_row6_cli_report_compare_and_dispatch_options(tmp_path, monkeypatch):
     svc = Harness(MemoryStore(), organization())
     tickets = Tickets(svc.store, svc.org)
