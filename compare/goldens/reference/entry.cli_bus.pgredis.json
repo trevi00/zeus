@@ -128,7 +128,7 @@
     "live_writer_runs": [],
     "observer": null,
     "orphans": {
-     "as_of": "2026-10-04T00:21:39.964908+00:00",
+     "as_of": "<AS_OF>",
      "in_progress": [],
      "note": "orphan means reserved without a live lease; it is an observation, the invocation ledger's reclaim closes it as unsettled_unknown",
      "orphan": []
@@ -138,28 +138,8 @@
      "local": [],
      "sink": []
     },
-    "process_health": [
-     {
-      "component": "cli.flush",
-      "counters": {},
-      "host": "trevi",
-      "inherited_pending_alerts": {},
-      "last_defect": null,
-      "pending_alerts": [],
-      "pid": 1910075,
-      "process_run_id": "3ea2f27025d34492822c4783b0271fea",
-      "role": null,
-      "sequence_next": 1,
-      "sink": "unknown",
-      "spool": {
-       "limit_bytes": 33554432,
-       "rotations": 0,
-       "unacknowledged_bytes": 0
-      },
-      "updated_at": "2026-10-04T00:21:39.951737+00:00"
-     }
-    ],
-    "runtime_directory_bytes": 357,
+    "process_health": [],
+    "runtime_directory_bytes": 0,
     "spool_files": [],
     "spool_unacknowledged_bytes": 0
    }
