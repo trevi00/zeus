@@ -1,9 +1,9 @@
 """The `zeus operate` and `zeus autonomous` composition: the policy, identity and session owner of an operation, and the builders of its adapters.
 
 Layer: composition
-Owns: packaged_policy, execution_policy, identity, session_owner, operation, run_bus, call_budget, execution_evidence, read_only_snapshot, autonomous_run, council_run
-Does not own: the argument shape and the command bodies (entry.cli.operate, entry.cli.autonomous), the helpers shared by the roots (entry.cli.operation) and the use cases (coordination.application)
-Entry points: packaged_policy, execution_policy, identity, session_owner, operation, run_bus, call_budget, execution_evidence, read_only_snapshot, autonomous_run, council_run
+Owns: bind_goal, packaged_policy, execution_policy, identity, session_owner, operation, run_bus, call_budget, execution_evidence, read_only_snapshot, autonomous_run, council_run
+Does not own: the argument shape and the command bodies (entry.cli.operate, entry.cli.autonomous), the other helpers shared by the roots (entry.cli.operation; it re-imports bind_goal from here) and the use cases (coordination.application)
+Entry points: bind_goal, packaged_policy, execution_policy, identity, session_owner, operation, run_bus, call_budget, execution_evidence, read_only_snapshot, autonomous_run, council_run
 Contracts: INV-OPERATION-001, INV-AUTONOMOUS-001, INV-COUNCIL-001, INV-PROJECT-EVIDENCE-001, INV-ISOLATED-WORKER-001, INV-CONTINUATION-001, INV-WORKER-SESSION-001
 
 Moved from M7 `adapters/operation_cli.py` (SOURCE e38aa722) by named rule R-c24 (S10 unit C6a): `execution_policy` (:81-89), `identity` (:92-111) and `session_owner` (:114-128) are M7's bodies
@@ -12,12 +12,24 @@ they need adapters an entry module may not import. The other functions build wha
 `tests/ported/m7_research.Operation` wires it (the S5 class takes the store, the organization, the outbox flusher, the incident use case, the design gate and the evidence records), `run_bus` is
 `RedisBus.for_run(redis_url(), manifest["id"])` (the target bus takes its namespace from the setting M7's read itself), `call_budget` is `CallBudget()`, `execution_evidence` is `ExecutionEvidence(executor.artifacts)`,
 `read_only_snapshot` is `ReadOnlySnapshot(database_url())` and `autonomous_run` / `council_run` are `AutonomousRun` / `CouncilRun` with the ports of `tests/ported/m7_research` (sessions factory, evidence records,
-knowledge promotion and the operation factory). `packaged_policy` re-exports the routing adapter for the entry modules. Imports sit inside the functions, so importing this module stays light.
+knowledge promotion and the operation factory). `bind_goal` is M7 `adapters/operation_cli.py` `bind_goal` (:72-78), verbatim, moved here from `entry.cli.operation` by named rule R-c28 (S10 unit C8b-2) because `composition.fleet_backlog` needs it and
+composition may not import entry. `packaged_policy` re-exports the routing adapter for the entry modules. Imports sit inside the functions, so importing this module stays light.
 """
 
 from dataclasses import replace
 from pathlib import Path
 from types import SimpleNamespace
+
+
+def bind_goal(manifest: dict, source) -> dict:
+    from codex_harness.coordination.application.operation import OperationRefused
+    from codex_harness.coordination.domain.operation import goal_binding
+    if not source.commit_exists(manifest["base_revision"]):
+        raise OperationRefused("base_revision_missing")
+    mode, data = source.blob(manifest["base_revision"], manifest["goal"]["path"])
+    if mode is None:
+        raise OperationRefused("goal_missing_at_base")
+    return goal_binding(manifest, mode, data)
 
 
 def packaged_policy():
