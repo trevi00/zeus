@@ -1,0 +1,384 @@
+{
+ "cases": {
+  "assess_foreign_row": {
+   "argv": [
+    "owner-actions",
+    "assess",
+    "--decision",
+    "d-x",
+    "--correlation",
+    "c-x"
+   ],
+   "exit": 1,
+   "stderr": "",
+   "stdout": {
+    "error_type": "OwnerActionRefused",
+    "exit_code": 1,
+    "reason_code": "assessment_row_foreign",
+    "status": "refused"
+   }
+  },
+  "canary_recover_invalid_json": {
+   "argv": [
+    "owner-actions",
+    "canary-recover",
+    "--document",
+    "<DOCUMENTS>/invalid.json",
+    "--evidence",
+    "sha256:eeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee"
+   ],
+   "exit": 1,
+   "stderr": "",
+   "stdout": {
+    "error_type": "OwnerActionRefused",
+    "exit_code": 1,
+    "reason_code": "canary_recovery_document_unreadable",
+    "status": "refused"
+   }
+  },
+  "canary_recover_no_fleet": {
+   "argv": [
+    "owner-actions",
+    "canary-recover",
+    "--document",
+    "<DOCUMENTS>/invalid.json",
+    "--evidence",
+    "sha256:eeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee"
+   ],
+   "exit": 1,
+   "stderr": "",
+   "stdout": {
+    "error_type": "FleetRefused",
+    "exit_code": 1,
+    "reason_code": "unregistered",
+    "status": "refused"
+   }
+  },
+  "fleet_register_valid": {
+   "argv": [
+    "fleet",
+    "register",
+    "--file",
+    "<DOCUMENTS>/fleet.json"
+   ],
+   "exit": 0,
+   "stderr": "",
+   "stdout": {
+    "cached": false,
+    "config": {
+     "accounting_mode": "finite",
+     "budget": {
+      "per_host": 2,
+      "total": 4
+     },
+     "id": "fleet-c8b3",
+     "lanes": [
+      {
+       "id": "a",
+       "team": "team-a"
+      },
+      {
+       "id": "b",
+       "team": "team-b"
+      }
+     ],
+     "max_parallel": 2,
+     "schema": "urn:zeus:fleet:1"
+    },
+    "config_sha256": "ce0441a4793035533b6c2270f20aa946246272f7a2cdb0f592ab46ada6c6d318",
+    "exit_code": 0,
+    "id": "fleet-c8b3",
+    "registered": true
+   }
+  },
+  "init_db": {
+   "argv": [
+    "init-db"
+   ],
+   "exit": 0,
+   "stderr": "",
+   "stdout": {
+    "already_applied": [],
+    "applied": [
+     {
+      "module": "core",
+      "version": "1"
+     }
+    ],
+    "migrated": true,
+    "tool": {
+     "filename_contract": "V?<n>(.<n>|_<n>)*(__<description>)?.sql",
+     "name": "zeus-sql-migrator",
+     "version": 1
+    }
+   }
+  },
+  "migrate_invalid_json": {
+   "argv": [
+    "owner-actions",
+    "migrate",
+    "--document",
+    "<DOCUMENTS>/invalid.json"
+   ],
+   "exit": 1,
+   "stderr": "",
+   "stdout": {
+    "error_type": "OwnerActionRefused",
+    "exit_code": 1,
+    "reason_code": "migration_document_unreadable",
+    "status": "refused"
+   }
+  },
+  "migrate_missing_file": {
+   "argv": [
+    "owner-actions",
+    "migrate",
+    "--document",
+    "<DOCUMENTS>/absent.json"
+   ],
+   "exit": 1,
+   "stderr": "",
+   "stdout": {
+    "error_type": "OwnerActionRefused",
+    "exit_code": 1,
+    "reason_code": "migration_document_unreadable",
+    "status": "refused"
+   }
+  },
+  "migrate_no_fleet": {
+   "argv": [
+    "owner-actions",
+    "migrate",
+    "--document",
+    "<DOCUMENTS>/invalid.json"
+   ],
+   "exit": 1,
+   "stderr": "",
+   "stdout": {
+    "error_type": "FleetRefused",
+    "exit_code": 1,
+    "reason_code": "unregistered",
+    "status": "refused"
+   }
+  },
+  "register_lane_no_git": {
+   "argv": [
+    "owner-actions",
+    "register",
+    "--lane",
+    "a",
+    "--revision",
+    "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+    "--path",
+    "policy.json"
+   ],
+   "exit": 1,
+   "stderr": "",
+   "stdout": {
+    "error_type": "OwnerActionRefused",
+    "exit_code": 1,
+    "reason_code": "policy_revision_missing",
+    "status": "refused"
+   }
+  },
+  "register_no_fleet": {
+   "argv": [
+    "owner-actions",
+    "register",
+    "--lane",
+    "a",
+    "--revision",
+    "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+    "--path",
+    "policy.json"
+   ],
+   "exit": 1,
+   "stderr": "",
+   "stdout": {
+    "error_type": "FleetRefused",
+    "exit_code": 1,
+    "reason_code": "unregistered",
+    "status": "refused"
+   }
+  },
+  "register_unknown_lane": {
+   "argv": [
+    "owner-actions",
+    "register",
+    "--lane",
+    "nope",
+    "--revision",
+    "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+    "--path",
+    "policy.json"
+   ],
+   "exit": 1,
+   "stderr": "",
+   "stdout": {
+    "error_type": "FleetRefused",
+    "exit_code": 1,
+    "reason_code": "lane_unknown",
+    "status": "refused"
+   }
+  },
+  "run_no_fleet": {
+   "argv": [
+    "owner-actions",
+    "run",
+    "--policy",
+    "p",
+    "--max-ticks",
+    "1"
+   ],
+   "exit": 1,
+   "stderr": "",
+   "stdout": {
+    "error_type": "FleetRefused",
+    "exit_code": 1,
+    "reason_code": "unregistered",
+    "status": "refused"
+   }
+  },
+  "run_once_unregistered_policy": {
+   "argv": [
+    "owner-actions",
+    "run",
+    "--policy",
+    "p",
+    "--max-ticks",
+    "1"
+   ],
+   "exit": 0,
+   "stderr": "",
+   "stdout": {
+    "exit_code": 0,
+    "outcomes": {
+     "idle": 1
+    },
+    "policies": [
+     "p"
+    ],
+    "schema": "urn:zeus:owner-actions-run:1",
+    "stopped": false,
+    "ticks": 1
+   }
+  },
+  "run_repeated_policy": {
+   "argv": [
+    "owner-actions",
+    "run",
+    "--policy",
+    "p",
+    "--policy",
+    "p",
+    "--max-ticks",
+    "1"
+   ],
+   "exit": 1,
+   "stderr": "",
+   "stdout": {
+    "error_type": "OwnerActionRefused",
+    "exit_code": 1,
+    "reason_code": "policy_list_invalid",
+    "status": "refused"
+   }
+  },
+  "status_after_fleet": {
+   "argv": [
+    "owner-actions",
+    "status"
+   ],
+   "exit": 0,
+   "stderr": "",
+   "stdout": {
+    "actions": [],
+    "authority": "owner_actions: server-owned handoff to the existing research-acceptance, host-delivery and canary owners; it approves nothing itself, and a model verdict, a report or a timer is never an acceptance",
+    "counts": {},
+    "exit_code": 0,
+    "held": [],
+    "migrations": [],
+    "policies": [],
+    "schema": "urn:zeus:owner-actions-status:1",
+    "truncated": false
+   }
+  },
+  "status_empty": {
+   "argv": [
+    "owner-actions",
+    "status"
+   ],
+   "exit": 0,
+   "stderr": "",
+   "stdout": {
+    "actions": [],
+    "authority": "owner_actions: server-owned handoff to the existing research-acceptance, host-delivery and canary owners; it approves nothing itself, and a model verdict, a report or a timer is never an acceptance",
+    "counts": {},
+    "exit_code": 0,
+    "held": [],
+    "migrations": [],
+    "policies": [],
+    "schema": "urn:zeus:owner-actions-status:1",
+    "truncated": false
+   }
+  },
+  "status_unknown_policy": {
+   "argv": [
+    "owner-actions",
+    "status",
+    "--policy",
+    "nope"
+   ],
+   "exit": 0,
+   "stderr": "",
+   "stdout": {
+    "actions": [],
+    "authority": "owner_actions: server-owned handoff to the existing research-acceptance, host-delivery and canary owners; it approves nothing itself, and a model verdict, a report or a timer is never an acceptance",
+    "counts": {},
+    "exit_code": 0,
+    "held": [],
+    "migrations": [],
+    "policies": [],
+    "schema": "urn:zeus:owner-actions-status:1",
+    "truncated": false
+   }
+  },
+  "tick_no_fleet": {
+   "argv": [
+    "owner-actions",
+    "tick",
+    "--policy",
+    "p"
+   ],
+   "exit": 1,
+   "stderr": "",
+   "stdout": {
+    "error_type": "FleetRefused",
+    "exit_code": 1,
+    "reason_code": "unregistered",
+    "status": "refused"
+   }
+  },
+  "tick_unregistered_policy": {
+   "argv": [
+    "owner-actions",
+    "tick",
+    "--policy",
+    "p"
+   ],
+   "exit": 0,
+   "stderr": "",
+   "stdout": {
+    "actions": [],
+    "authority": "owner_actions: server-owned handoff to the existing research-acceptance, host-delivery and canary owners; it approves nothing itself, and a model verdict, a report or a timer is never an acceptance",
+    "created": [],
+    "exit_code": 0,
+    "open": 0,
+    "outcome": "unregistered",
+    "policy_id": "p",
+    "reason_code": "policy_unregistered",
+    "schema": "urn:zeus:owner-actions-tick:1",
+    "waits": {}
+   }
+  }
+ }
+}
