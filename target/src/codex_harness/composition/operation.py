@@ -2,8 +2,8 @@
 
 Layer: composition
 Owns: HOST_PROFILE, host_evidence_profile, host_isolation, build_executor, Executor
-Does not own: RunTask (execution), ReviewDecisions (review), the isolated worker composition (S10 unit C5c), the research
-and role ports (S10 unit C5b-2)
+Does not own: RunTask (execution), ReviewDecisions (review), the isolated worker composition (S10 unit C5c), research_admission
+(S10 unit C5b-3)
 Entry points: build_executor, Executor, host_evidence_profile, host_isolation
 Contracts: INV-PROJECT-EVIDENCE-001, INV-ISOLATED-WORKER-001, INV-OBSERVATION-001, INV-EXECUTION-IDENTITY-001
 
@@ -20,11 +20,25 @@ s10-connections.json, rows by function/parameter):
   over `composition.configuration.settings`; continuations (D7): `ContinuationBindings` (GAP #16); hook_candidates (D8):
   `HookCandidates`; thresholds (D9): `research.adapters.runtime_thresholds`; host facts (D10); project_evidence (D11, #17).
 
-Deltas from M7, named: D-ar: `audit_runner` is not passed to `build_executor` (C5b-2 composes AuditExecution; RunTask's own
-refusal stands for audit tasks); D12: `isolation` is passed through unchanged; `host_isolation` raises `IsolationError`
+Research and role ports (C5b-2; the shim wiring of `tests/ported/m7_research.py` :245-280 and :455-460, providers by the
+connections inventory): `audit_execution` = `AuditExecution(self, AuditRunner(runtime_dir()/"audit-sources", artifacts,
+host_execution=True, ChokepointProcesses, process_groups.run_process, classify_isolated_run), audits=ResearchAudits(...),
+notices=execution_notices, decisions=DecisionOwnership(...))` (construction cycle 1, #2: it needs the Executor, RunTask needs
+it; closed by assigning `run_task.audit_execution` after RunTask); `roles` = `_Roles` over `autonomous_roles.execute_role` and
+`frontdesk.execute_frontdesk` with the Executor first (cycle 2; M7 :1471-1479 passed no `snapshot`, so the frontdesk takes its
+own default capture); `council` = the `autonomous_roles` module; `feedback` = `_Feedback` (`correction_feedback.deliver` with
+observation's `redact_text` bound, #9, and `require_context`); `composition_admission` = `CouncilCompositionAdmission()`.
+The decision side is complete as the inventory lists it: `Releases` (events, hooks, ticket_superseded, clock, ids),
+`ExecutionRecovery` (threshold_reviews = `ThresholdReviewRecords`, ticket_binding, audit_binding, clock, ids),
+`ReviewDecisions(audit_execution, clock)`, `claim_decision(threshold_exhausted=ThresholdReviews.exhausted)` (M7 :1752).
+Gap, not written here: `ReviewDecisions.threshold_review` (M7 `review_threshold`, :1787-1789) is still absent at this head
+(S8 B6; `research/adapters` has no `threshold_reviews`), so it keeps ReviewDecisions' own refusing default.
+
+Deltas from M7, named: D-ar: `audit_runner` is not a `build_executor` parameter (the runner is built in `Executor.__init__`
+with `host_execution=True`, as M7 `bootstrap.build_executor` passed it); D12: `isolation` is passed through unchanged; `host_isolation` raises `IsolationError`
 for every configured selection until C5c (a transitional, declared refusal: it never falls back to host execution and never
-constructs a provider or container object); D13: `audit_execution`, `roles`, `council`, `feedback`, `composition_admission`
-and `research_admission` stay None (C5b-2); RunTask's own refusals stand.
+constructs a provider or container object); D13: `research_admission` stays None (S10 unit C5b-3: the RF-RT research-first admission is an intended behaviour
+change M7 did not have); the five ports above are wired by C5b-2; RunTask's own refusals stand.
 """
 from __future__ import annotations
 
@@ -46,11 +60,16 @@ from codex_harness.context.adapters.composition_sources import (
 )
 from codex_harness.context.adapters.review_context import review_context
 from codex_harness.context.application.compose import ContextComposer
+from codex_harness.coordination.application import execution_notices
 from codex_harness.coordination.application.breaker import Breaker
 from codex_harness.coordination.application.continuation.bindings import ContinuationBindings
 from codex_harness.coordination.application.decision_claims import claim_decision
 from codex_harness.coordination.application.decision_recovery import release_review_policy
-from codex_harness.coordination.application.decisions import DecisionFailures, DecisionOwnership
+from codex_harness.coordination.application.decisions import (
+    DecisionFailures,
+    DecisionOwnership,
+    PendingDecisions,
+)
 from codex_harness.coordination.application.events import EventJournal
 from codex_harness.coordination.application.execution_records import ExecutionRecords
 from codex_harness.coordination.application.execution_recovery import ExecutionRecovery
@@ -73,22 +92,31 @@ from codex_harness.execution.domain.output_contracts import DIAGNOSIS, VERDICT
 from codex_harness.host_os.adapters import process_groups
 from codex_harness.host_os.adapters.process_groups import ChokepointProcesses
 from codex_harness.host_os.adapters.process_tree import ProcessTree, TreeOwnershipLeak
+from codex_harness.intake.adapters import frontdesk
 from codex_harness.intake.application import tickets
 from codex_harness.kernel.errors import IsolationError
-from codex_harness.kernel.ids import SYSTEM_IDS
+from codex_harness.kernel.ids import SYSTEM_CLOCK, SYSTEM_IDS
 from codex_harness.observation.application.observations import (
     PostExecutionRecordFailure,
     ReconciliationRequired,
 )
 from codex_harness.observation.domain.observation import redact_text
-from codex_harness.research.adapters import runtime_thresholds
+from codex_harness.research.adapters import autonomous_roles, correction_feedback, runtime_thresholds
+from codex_harness.research.adapters.audit_execution import AuditExecution
+from codex_harness.research.adapters.audit_runner import AuditRunner
+from codex_harness.research.adapters.council_composition import CouncilCompositionAdmission
+from codex_harness.research.application import audit_gate
 from codex_harness.research.application.audit_gate import inspect_approval
+from codex_harness.research.application.hook_rollback import HookRollback
 from codex_harness.research.application.hooks import HookLifecycle
+from codex_harness.research.application.research import ResearchAudits
+from codex_harness.research.application.threshold_reviews import ThresholdReviewRecords, ThresholdReviews
 from codex_harness.research.domain.discovery_pressure import DiscoveryPaused, DiscoveryRefused
 from codex_harness.research.domain.recurrence import hook_apply
 from codex_harness.research.domain.research import require_dispatch
 from codex_harness.review.application.decisions import ReviewDecisions
 from codex_harness.review.application.releases import Releases
+from codex_harness.review.domain.check_results import classify_isolated_run
 from codex_harness.routing.adapters.provider_policy import host_policy
 
 HOST_PROFILE = "host"
@@ -187,12 +215,38 @@ class _ProjectEvidence:
         return worker_schema(profile)
 
 
+class _Roles:
+    """RunTask's `roles` port (cycle 2): the role functions take the Executor first, as M7 `Executor._run` called them
+    (M7 :1471-1479; no `snapshot`, so the frontdesk's own default capture applies)."""
+
+    def __init__(self, executor):
+        self.executor = executor
+
+    def execute_role(self, task, heartbeat):
+        return autonomous_roles.execute_role(self.executor, task, heartbeat)
+
+    def execute_frontdesk(self, task, heartbeat):
+        return frontdesk.execute_frontdesk(self.executor, task, heartbeat)
+
+
+class _Feedback:
+    """RunTask's `feedback` port (OWNER-DECISIONS-S10 #9): the correction feedback with observation's redaction rule bound."""
+
+    @staticmethod
+    def deliver(store, artifacts, continuation):
+        return correction_feedback.deliver(store, artifacts, continuation, redact=redact_text)
+
+    @staticmethod
+    def require_context(rendered_bytes, usable_bytes):
+        return correction_feedback.require_context(rendered_bytes, usable_bytes)
+
+
 class Executor:
     """The production `coordination.ports.TaskRunner` (OWNER-DECISIONS-S10 #8): execute_one -> RunTask, decide_one ->
     claim_decision + ReviewDecisions; the production counterpart of `tests/ported/m7_executor.Executor`.
 
-    Not wired here (S10 unit C5b-2; RunTask's own refusals stand): `audit_execution`, `roles`, `council`, `feedback`,
-    `composition_admission` and `research_admission`."""
+    Not wired here: `run_task.research_admission` (S10 unit C5b-3; RunTask's own refusal stands) and
+    `ReviewDecisions.threshold_review` (S8 B6, absent at this head; it keeps ReviewDecisions' refusing default)."""
 
     def __init__(self, service, git, artifacts, knowledge=None, research=None, observer=None, execution_policy=None,
                  evidence_profile=None, isolation=None, worker_sessions=None):
@@ -204,7 +258,9 @@ class Executor:
         self.observer = observer or build_observer(store, "executor")
         self.workflow = cli.workflow(service)
         self.invocations = CapacityObservingLedger(InvocationLedger(store), self.observer)
-        self.releases = Releases(store, org, ticket_binding=tickets.ticket_binding)
+        self.releases = Releases(store, org, ticket_binding=tickets.ticket_binding,
+                                 ticket_superseded=tickets.TicketSuperseded, events=EventJournal(), hooks=HookRollback(),
+                                 clock=SYSTEM_CLOCK, ids=SYSTEM_IDS)
         self.breaker = Breaker(store)
         units = cli.hook_units(service)
         show = lambda spec, strip=True: self.git._git("show", spec, strip=strip)  # noqa: E731 - read at call time
@@ -245,16 +301,39 @@ class Executor:
                                            channel_environment=process_groups.python_channel_environment,
                                            interpreter=sys.executable),
             continuations=ContinuationBindings(store), ids=SYSTEM_IDS)
-        self.recovery = ExecutionRecovery(store, org, artifacts)
+        self.recovery = ExecutionRecovery(store, org, artifacts, ticket_binding=tickets.ticket_binding,
+                                          audit_binding=audit_gate.binding,
+                                          threshold_reviews=ThresholdReviewRecords(artifacts), clock=SYSTEM_CLOCK,
+                                          ids=SYSTEM_IDS)
+        # Construction cycles (OWNER-DECISIONS-S10 #2): AuditExecution and the roles need this Executor, RunTask needs
+        # them; closed here by assignment, after RunTask exists (the shim wiring of tests/ported/m7_research.py).
+        audit_validation = ExecutionRecovery(store, org, artifacts, audit_binding=audit_gate.binding, clock=SYSTEM_CLOCK,
+                                             ids=SYSTEM_IDS)
+        runner = AuditRunner(configuration.runtime_dir() / "audit-sources", artifacts, host_execution=True,
+                             processes=ChokepointProcesses(), run_process=process_groups.run_process,
+                             classify=classify_isolated_run)
+        self.audit_execution = AuditExecution(
+            self, runner,
+            audits=ResearchAudits(store, None, artifacts, self.workflow, runner, decision_validation=audit_validation,
+                                  outbox=Outbox(), pending_decisions=PendingDecisions()),
+            notices=execution_notices,
+            decisions=DecisionOwnership(self.workflow, audit_validation, org, clock=SYSTEM_CLOCK, ids=SYSTEM_IDS))
+        self.run_task.audit_execution = self.audit_execution
+        self.run_task.roles = _Roles(self)
+        self.run_task.council = autonomous_roles
+        self.run_task.feedback = _Feedback()
+        self.run_task.composition_admission = CouncilCompositionAdmission()
+        # run_task.research_admission stays None: the RF-RT research-first admission is S10 unit C5b-3.
         self.hooks = HookLifecycle(org, outbox=Outbox(), events=EventJournal(), ids=SYSTEM_IDS)
         self.decisions = ReviewDecisions(
-            store, org, ownership=DecisionOwnership(self.workflow, self.recovery, org, ids=SYSTEM_IDS),
+            store, org, ownership=DecisionOwnership(self.workflow, self.recovery, org, clock=SYSTEM_CLOCK, ids=SYSTEM_IDS),
             failures=DecisionFailures(self.workflow, store), outbox=Outbox(), events=EventJournal(),
             releases=self.releases, hooks=self.hooks, observer=self.observer,
             invoker=SimpleNamespace(invoke=self._invoke), git=git, release_policy=release_review_policy,
             ticket_binding=tickets.ticket_binding, TicketSuperseded=tickets.TicketSuperseded,
             require_dispatch=require_dispatch, ReconciliationRequired=ReconciliationRequired,
-            PostExecutionRecordFailure=PostExecutionRecordFailure, worker_sessions=worker_sessions, ids=SYSTEM_IDS)
+            PostExecutionRecordFailure=PostExecutionRecordFailure, worker_sessions=worker_sessions,
+            audit_execution=self.audit_execution, clock=SYSTEM_CLOCK, ids=SYSTEM_IDS)
 
     @property
     def execution_policy(self):
@@ -278,7 +357,8 @@ class Executor:
         store, org = self.service.store, self.service.org
         owner = str(uuid4())
         decision = claim_decision(store, org, agent, owner, expected, recovery=self.recovery,
-                                  ticket_binding=tickets.ticket_binding, TicketSuperseded=tickets.TicketSuperseded)
+                                  ticket_binding=tickets.ticket_binding, TicketSuperseded=tickets.TicketSuperseded,
+                                  threshold_exhausted=ThresholdReviews.exhausted)
         if not decision:
             return None
         return self.decisions.decide(agent, decision)
