@@ -1,0 +1,1147 @@
+{
+ "cases": {
+  "init_db": {
+   "argv": [
+    "init-db"
+   ],
+   "exit": 0,
+   "stderr": "",
+   "stdout": {
+    "already_applied": [],
+    "applied": [
+     {
+      "module": "core",
+      "version": "1"
+     }
+    ],
+    "migrated": true,
+    "tool": {
+     "filename_contract": "V?<n>(.<n>|_<n>)*(__<description>)?.sql",
+     "name": "zeus-sql-migrator",
+     "version": 1
+    }
+   }
+  },
+  "sdd_inspect": {
+   "argv": [
+    "sdd",
+    "inspect",
+    "<FIXTURE>/spec.json"
+   ],
+   "exit": 0,
+   "stderr": "",
+   "stdout": {
+    "report": {
+     "acceptance_passed": false,
+     "denominators": {
+      "assertions_verified": 0,
+      "human_accepted": 0,
+      "note": "imported observations, generated skeletons and marker removal never count as executed or accepted",
+      "observations_imported": 0,
+      "scenarios_declared": 1,
+      "scenarios_executed_by_runner": 0
+     },
+     "human_authority_configured": false,
+     "model_transfer": {
+      "automatic_downshift": false,
+      "design": "gpt-6-astra",
+      "final_validation": "gpt-6-astra",
+      "important_target": "gpt-5.6-sol",
+      "simple_target": "gpt-5.6-terra",
+      "status": "unqualified"
+     },
+     "next_action": "Review the intended user scenarios and configure authenticated human approval",
+     "observation_count": 0,
+     "release_authorized": false,
+     "schema": "zeus.sdd-report.v1",
+     "spec_hash": "0cfa193ccecdd0b9de882c3eb23b1c5071bd98c9b9605d2b2ab56207ba8aa6d3",
+     "stages": [
+      {
+       "authority": "advisory_gate_report",
+       "checks": [
+        {
+         "check": "spec_integrity",
+         "reason": "Native schema validation",
+         "status": "validated_structure"
+        },
+        {
+         "check": "human_scope",
+         "reason": "Authenticated human decision provider required",
+         "status": "not_run"
+        }
+       ],
+       "id": "spec_discussion",
+       "responsible_team": "spec",
+       "status": "blocked",
+       "title": "스펙 논의"
+      },
+      {
+       "authority": "advisory_gate_report",
+       "checks": [
+        {
+         "check": "interaction_design",
+         "reason": "Actual version-bound runner evidence required",
+         "status": "not_run"
+        },
+        {
+         "check": "human_design",
+         "reason": "Authenticated human decision provider required",
+         "status": "not_run"
+        }
+       ],
+       "id": "design_analysis",
+       "responsible_team": "frontend",
+       "status": "blocked",
+       "title": "디자인 분석"
+      },
+      {
+       "authority": "advisory_gate_report",
+       "checks": [
+        {
+         "check": "candidate_build",
+         "reason": "Actual version-bound runner evidence required",
+         "status": "not_run"
+        },
+        {
+         "check": "component_stories",
+         "reason": "Actual version-bound runner evidence required",
+         "status": "not_run"
+        }
+       ],
+       "id": "implementation",
+       "responsible_team": "frontend/backend",
+       "status": "blocked",
+       "title": "코드 작성"
+      },
+      {
+       "authority": "advisory_gate_report",
+       "checks": [
+        {
+         "check": "environment_identity",
+         "reason": "Actual version-bound runner evidence required",
+         "status": "not_run"
+        },
+        {
+         "check": "real_device_e2e",
+         "reason": "Actual version-bound runner evidence required",
+         "status": "not_run"
+        },
+        {
+         "check": "reset_verified",
+         "reason": "Actual version-bound runner evidence required",
+         "status": "not_run"
+        }
+       ],
+       "id": "self_verification",
+       "responsible_team": "qa_qc",
+       "status": "blocked",
+       "title": "자체 검증"
+      },
+      {
+       "authority": "advisory_gate_report",
+       "checks": [
+        {
+         "check": "alpha_receipt",
+         "reason": "Actual version-bound runner evidence required",
+         "status": "not_run"
+        }
+       ],
+       "id": "alpha_deployment",
+       "responsible_team": "devops",
+       "status": "blocked",
+       "title": "알파 배포"
+      },
+      {
+       "authority": "advisory_gate_report",
+       "checks": [
+        {
+         "check": "reviewed_oracles",
+         "reason": "Authenticated human decision provider required",
+         "status": "not_run"
+        },
+        {
+         "check": "human_acceptance",
+         "reason": "Authenticated human decision provider required",
+         "status": "not_run"
+        }
+       ],
+       "id": "qa_evidence",
+       "responsible_team": "qa_qc",
+       "status": "blocked",
+       "title": "QA 및 증적"
+      },
+      {
+       "authority": "advisory_gate_report",
+       "checks": [
+        {
+         "check": "progressive_rollout",
+         "reason": "Actual version-bound runner evidence required",
+         "status": "not_run"
+        },
+        {
+         "check": "rollback_receipt",
+         "reason": "Actual version-bound runner evidence required",
+         "status": "not_run"
+        }
+       ],
+       "id": "live_deployment",
+       "responsible_team": "devops",
+       "status": "blocked",
+       "title": "라이브 배포"
+      },
+      {
+       "authority": "advisory_gate_report",
+       "checks": [
+        {
+         "check": "monitoring",
+         "reason": "Actual version-bound runner evidence required",
+         "status": "not_run"
+        },
+        {
+         "check": "incident_feedback",
+         "reason": "Actual version-bound runner evidence required",
+         "status": "not_run"
+        }
+       ],
+       "id": "cs_response",
+       "responsible_team": "backend/qa_qc/devops",
+       "status": "blocked",
+       "title": "CS 대응"
+      }
+     ]
+    },
+    "source": {
+     "mode": "working_tree_draft",
+     "path": "<FIXTURE>/spec.json",
+     "repository": "<FIXTURE>",
+     "revision": null
+    },
+    "valid": true
+   }
+  },
+  "sdd_inspect_invalid": {
+   "argv": [
+    "sdd",
+    "inspect",
+    "<FIXTURE>/bad-spec.json"
+   ],
+   "exit": 1,
+   "stderr": {
+    "error": "Unsupported SDD schema"
+   },
+   "stdout": ""
+  },
+  "sdd_register": {
+   "argv": [
+    "sdd",
+    "register",
+    "<FIXTURE>/spec.json",
+    "--ticket",
+    "ZEUS-5eed00000001",
+    "--ticket-revision",
+    "2"
+   ],
+   "exit": 0,
+   "stderr": "",
+   "stdout": {
+    "authority": "preparation_only",
+    "created_at": "2026-10-04T00:00:00.005000+00:00",
+    "event_hash": "3cf9c809525edfe89dc4c7480d60bf51b8b4a5ede4580e065a23aa729672f8ae",
+    "id": "9ae941b69668bc5bd159b16bf421399e6cb7d6b893356954866a61b48375bb08",
+    "revision": 1,
+    "sequence": 1,
+    "source": {
+     "mode": "working_tree_draft",
+     "path": "<FIXTURE>/spec.json",
+     "repository": "<FIXTURE>",
+     "revision": null
+    },
+    "spec_hash": "0cfa193ccecdd0b9de882c3eb23b1c5071bd98c9b9605d2b2ab56207ba8aa6d3",
+    "spec_id": "spec.alpha",
+    "spec_ref": "sha256:0cfa193ccecdd0b9de882c3eb23b1c5071bd98c9b9605d2b2ab56207ba8aa6d3",
+    "stage": "spec_discussion",
+    "status": "awaiting_human_scope",
+    "zeus_ticket": {
+     "content_hash": "7ab35394df95384d3c3ca12f4bba7f6e85ef2a3bfb0624e9aa629dd2aeef0ef6",
+     "id": "ZEUS-5eed00000001",
+     "revision": 2
+    }
+   }
+  },
+  "sdd_status": {
+   "argv": [
+    "sdd",
+    "status",
+    "9ae941b69668bc5bd159b16bf421399e6cb7d6b893356954866a61b48375bb08"
+   ],
+   "exit": 0,
+   "stderr": "",
+   "stdout": {
+    "authority": "preparation_only",
+    "created_at": "2026-10-04T00:00:00.005000+00:00",
+    "event_hash": "3cf9c809525edfe89dc4c7480d60bf51b8b4a5ede4580e065a23aa729672f8ae",
+    "events": [
+     {
+      "at": "2026-10-04T00:00:00.006000+00:00",
+      "details": {},
+      "evidence_refs": [
+       "sha256:0cfa193ccecdd0b9de882c3eb23b1c5071bd98c9b9605d2b2ab56207ba8aa6d3"
+      ],
+      "hash": "3cf9c809525edfe89dc4c7480d60bf51b8b4a5ede4580e065a23aa729672f8ae",
+      "iteration_id": "9ae941b69668bc5bd159b16bf421399e6cb7d6b893356954866a61b48375bb08",
+      "kind": "spec_registered",
+      "previous_hash": null,
+      "sequence": 1,
+      "spec_hash": "0cfa193ccecdd0b9de882c3eb23b1c5071bd98c9b9605d2b2ab56207ba8aa6d3"
+     }
+    ],
+    "gates": {
+     "alpha_deployment": {
+      "complete": false,
+      "counts": {
+       "error": 0,
+       "failed": 0,
+       "not_run": 1,
+       "passed": 0,
+       "pending": 0
+      },
+      "cycle": 1,
+      "denominator": 1,
+      "foreign_verdicts": 0,
+      "ignored_sequences": [],
+      "retracted_sequences": [],
+      "run_id": "9ae941b69668bc5bd159b16bf421399e6cb7d6b893356954866a61b48375bb08",
+      "statements": {
+       "alpha_receipt": {
+        "origin": null,
+        "sequence": null,
+        "state": "not_run",
+        "verdict": null
+       }
+      },
+      "unauthenticated_retractions": 0
+     },
+     "cs_response": {
+      "complete": false,
+      "counts": {
+       "error": 0,
+       "failed": 0,
+       "not_run": 2,
+       "passed": 0,
+       "pending": 0
+      },
+      "cycle": 1,
+      "denominator": 2,
+      "foreign_verdicts": 0,
+      "ignored_sequences": [],
+      "retracted_sequences": [],
+      "run_id": "9ae941b69668bc5bd159b16bf421399e6cb7d6b893356954866a61b48375bb08",
+      "statements": {
+       "incident_feedback": {
+        "origin": null,
+        "sequence": null,
+        "state": "not_run",
+        "verdict": null
+       },
+       "monitoring": {
+        "origin": null,
+        "sequence": null,
+        "state": "not_run",
+        "verdict": null
+       }
+      },
+      "unauthenticated_retractions": 0
+     },
+     "design_analysis": {
+      "complete": false,
+      "counts": {
+       "error": 0,
+       "failed": 0,
+       "not_run": 2,
+       "passed": 0,
+       "pending": 0
+      },
+      "cycle": 1,
+      "denominator": 2,
+      "foreign_verdicts": 0,
+      "ignored_sequences": [],
+      "retracted_sequences": [],
+      "run_id": "9ae941b69668bc5bd159b16bf421399e6cb7d6b893356954866a61b48375bb08",
+      "statements": {
+       "human_design": {
+        "origin": null,
+        "sequence": null,
+        "state": "not_run",
+        "verdict": null
+       },
+       "interaction_design": {
+        "origin": null,
+        "sequence": null,
+        "state": "not_run",
+        "verdict": null
+       }
+      },
+      "unauthenticated_retractions": 0
+     },
+     "implementation": {
+      "complete": false,
+      "counts": {
+       "error": 0,
+       "failed": 0,
+       "not_run": 2,
+       "passed": 0,
+       "pending": 0
+      },
+      "cycle": 1,
+      "denominator": 2,
+      "foreign_verdicts": 0,
+      "ignored_sequences": [],
+      "retracted_sequences": [],
+      "run_id": "9ae941b69668bc5bd159b16bf421399e6cb7d6b893356954866a61b48375bb08",
+      "statements": {
+       "candidate_build": {
+        "origin": null,
+        "sequence": null,
+        "state": "not_run",
+        "verdict": null
+       },
+       "component_stories": {
+        "origin": null,
+        "sequence": null,
+        "state": "not_run",
+        "verdict": null
+       }
+      },
+      "unauthenticated_retractions": 0
+     },
+     "live_deployment": {
+      "complete": false,
+      "counts": {
+       "error": 0,
+       "failed": 0,
+       "not_run": 2,
+       "passed": 0,
+       "pending": 0
+      },
+      "cycle": 1,
+      "denominator": 2,
+      "foreign_verdicts": 0,
+      "ignored_sequences": [],
+      "retracted_sequences": [],
+      "run_id": "9ae941b69668bc5bd159b16bf421399e6cb7d6b893356954866a61b48375bb08",
+      "statements": {
+       "progressive_rollout": {
+        "origin": null,
+        "sequence": null,
+        "state": "not_run",
+        "verdict": null
+       },
+       "rollback_receipt": {
+        "origin": null,
+        "sequence": null,
+        "state": "not_run",
+        "verdict": null
+       }
+      },
+      "unauthenticated_retractions": 0
+     },
+     "qa_evidence": {
+      "complete": false,
+      "counts": {
+       "error": 0,
+       "failed": 0,
+       "not_run": 2,
+       "passed": 0,
+       "pending": 0
+      },
+      "cycle": 1,
+      "denominator": 2,
+      "foreign_verdicts": 0,
+      "ignored_sequences": [],
+      "retracted_sequences": [],
+      "run_id": "9ae941b69668bc5bd159b16bf421399e6cb7d6b893356954866a61b48375bb08",
+      "statements": {
+       "human_acceptance": {
+        "origin": null,
+        "sequence": null,
+        "state": "not_run",
+        "verdict": null
+       },
+       "reviewed_oracles": {
+        "origin": null,
+        "sequence": null,
+        "state": "not_run",
+        "verdict": null
+       }
+      },
+      "unauthenticated_retractions": 0
+     },
+     "self_verification": {
+      "complete": false,
+      "counts": {
+       "error": 0,
+       "failed": 0,
+       "not_run": 3,
+       "passed": 0,
+       "pending": 0
+      },
+      "cycle": 1,
+      "denominator": 3,
+      "foreign_verdicts": 0,
+      "ignored_sequences": [],
+      "retracted_sequences": [],
+      "run_id": "9ae941b69668bc5bd159b16bf421399e6cb7d6b893356954866a61b48375bb08",
+      "statements": {
+       "environment_identity": {
+        "origin": null,
+        "sequence": null,
+        "state": "not_run",
+        "verdict": null
+       },
+       "real_device_e2e": {
+        "origin": null,
+        "sequence": null,
+        "state": "not_run",
+        "verdict": null
+       },
+       "reset_verified": {
+        "origin": null,
+        "sequence": null,
+        "state": "not_run",
+        "verdict": null
+       }
+      },
+      "unauthenticated_retractions": 0
+     },
+     "spec_discussion": {
+      "complete": false,
+      "counts": {
+       "error": 0,
+       "failed": 0,
+       "not_run": 2,
+       "passed": 0,
+       "pending": 0
+      },
+      "cycle": 1,
+      "denominator": 2,
+      "foreign_verdicts": 0,
+      "ignored_sequences": [],
+      "retracted_sequences": [],
+      "run_id": "9ae941b69668bc5bd159b16bf421399e6cb7d6b893356954866a61b48375bb08",
+      "statements": {
+       "human_scope": {
+        "origin": null,
+        "sequence": null,
+        "state": "not_run",
+        "verdict": null
+       },
+       "spec_integrity": {
+        "origin": null,
+        "sequence": null,
+        "state": "not_run",
+        "verdict": null
+       }
+      },
+      "unauthenticated_retractions": 0
+     }
+    },
+    "id": "9ae941b69668bc5bd159b16bf421399e6cb7d6b893356954866a61b48375bb08",
+    "notifications": [
+     {
+      "code": "human_authority_missing",
+      "count": 1,
+      "delivery": "local_only",
+      "first_seen": "2026-10-04T00:00:00.007000+00:00",
+      "id": "7b2828d1224af8aaebea5285e15015798a60f1b6995ffca262780ce438d51269",
+      "iteration_id": "9ae941b69668bc5bd159b16bf421399e6cb7d6b893356954866a61b48375bb08",
+      "last_seen": "2026-10-04T00:00:00.008000+00:00",
+      "message": "Review scenario intent; authenticated human approval is not configured",
+      "severity": "warning",
+      "status": "open"
+     }
+    ],
+    "observations": [],
+    "report": {
+     "acceptance_passed": false,
+     "denominators": {
+      "assertions_verified": 0,
+      "human_accepted": 0,
+      "note": "imported observations, generated skeletons and marker removal never count as executed or accepted",
+      "observations_imported": 0,
+      "scenarios_declared": 1,
+      "scenarios_executed_by_runner": 0
+     },
+     "human_authority_configured": false,
+     "model_transfer": {
+      "automatic_downshift": false,
+      "design": "gpt-6-astra",
+      "final_validation": "gpt-6-astra",
+      "important_target": "gpt-5.6-sol",
+      "simple_target": "gpt-5.6-terra",
+      "status": "unqualified"
+     },
+     "next_action": "Review the intended user scenarios and configure authenticated human approval",
+     "observation_count": 0,
+     "release_authorized": false,
+     "schema": "zeus.sdd-report.v1",
+     "spec_hash": "0cfa193ccecdd0b9de882c3eb23b1c5071bd98c9b9605d2b2ab56207ba8aa6d3",
+     "stages": [
+      {
+       "authority": "advisory_gate_report",
+       "checks": [
+        {
+         "check": "spec_integrity",
+         "reason": "Native schema validation",
+         "status": "validated_structure"
+        },
+        {
+         "check": "human_scope",
+         "reason": "Authenticated human decision provider required",
+         "status": "not_run"
+        }
+       ],
+       "id": "spec_discussion",
+       "responsible_team": "spec",
+       "status": "blocked",
+       "title": "스펙 논의"
+      },
+      {
+       "authority": "advisory_gate_report",
+       "checks": [
+        {
+         "check": "interaction_design",
+         "reason": "Actual version-bound runner evidence required",
+         "status": "not_run"
+        },
+        {
+         "check": "human_design",
+         "reason": "Authenticated human decision provider required",
+         "status": "not_run"
+        }
+       ],
+       "id": "design_analysis",
+       "responsible_team": "frontend",
+       "status": "blocked",
+       "title": "디자인 분석"
+      },
+      {
+       "authority": "advisory_gate_report",
+       "checks": [
+        {
+         "check": "candidate_build",
+         "reason": "Actual version-bound runner evidence required",
+         "status": "not_run"
+        },
+        {
+         "check": "component_stories",
+         "reason": "Actual version-bound runner evidence required",
+         "status": "not_run"
+        }
+       ],
+       "id": "implementation",
+       "responsible_team": "frontend/backend",
+       "status": "blocked",
+       "title": "코드 작성"
+      },
+      {
+       "authority": "advisory_gate_report",
+       "checks": [
+        {
+         "check": "environment_identity",
+         "reason": "Actual version-bound runner evidence required",
+         "status": "not_run"
+        },
+        {
+         "check": "real_device_e2e",
+         "reason": "Actual version-bound runner evidence required",
+         "status": "not_run"
+        },
+        {
+         "check": "reset_verified",
+         "reason": "Actual version-bound runner evidence required",
+         "status": "not_run"
+        }
+       ],
+       "id": "self_verification",
+       "responsible_team": "qa_qc",
+       "status": "blocked",
+       "title": "자체 검증"
+      },
+      {
+       "authority": "advisory_gate_report",
+       "checks": [
+        {
+         "check": "alpha_receipt",
+         "reason": "Actual version-bound runner evidence required",
+         "status": "not_run"
+        }
+       ],
+       "id": "alpha_deployment",
+       "responsible_team": "devops",
+       "status": "blocked",
+       "title": "알파 배포"
+      },
+      {
+       "authority": "advisory_gate_report",
+       "checks": [
+        {
+         "check": "reviewed_oracles",
+         "reason": "Authenticated human decision provider required",
+         "status": "not_run"
+        },
+        {
+         "check": "human_acceptance",
+         "reason": "Authenticated human decision provider required",
+         "status": "not_run"
+        }
+       ],
+       "id": "qa_evidence",
+       "responsible_team": "qa_qc",
+       "status": "blocked",
+       "title": "QA 및 증적"
+      },
+      {
+       "authority": "advisory_gate_report",
+       "checks": [
+        {
+         "check": "progressive_rollout",
+         "reason": "Actual version-bound runner evidence required",
+         "status": "not_run"
+        },
+        {
+         "check": "rollback_receipt",
+         "reason": "Actual version-bound runner evidence required",
+         "status": "not_run"
+        }
+       ],
+       "id": "live_deployment",
+       "responsible_team": "devops",
+       "status": "blocked",
+       "title": "라이브 배포"
+      },
+      {
+       "authority": "advisory_gate_report",
+       "checks": [
+        {
+         "check": "monitoring",
+         "reason": "Actual version-bound runner evidence required",
+         "status": "not_run"
+        },
+        {
+         "check": "incident_feedback",
+         "reason": "Actual version-bound runner evidence required",
+         "status": "not_run"
+        }
+       ],
+       "id": "cs_response",
+       "responsible_team": "backend/qa_qc/devops",
+       "status": "blocked",
+       "title": "CS 대응"
+      }
+     ]
+    },
+    "revision": 1,
+    "sequence": 1,
+    "source": {
+     "mode": "working_tree_draft",
+     "path": "<FIXTURE>/spec.json",
+     "repository": "<FIXTURE>",
+     "revision": null
+    },
+    "spec": {
+     "design": {
+      "components": "components",
+      "icons": "icons",
+      "required_stories": [
+       "story"
+      ],
+      "tokens": "tokens"
+     },
+     "devices": [
+      {
+       "conditions": [
+        "portrait"
+       ],
+       "form_factor": "phone",
+       "id": "DEV.a",
+       "manufacturer": "samsung",
+       "physical_required": true,
+       "platform": "android"
+      }
+     ],
+     "id": "spec.alpha",
+     "intent": "Review the scenario intent",
+     "personas": [
+      "owner"
+     ],
+     "requirements": [
+      {
+       "id": "REQ.a",
+       "risk": "normal",
+       "statement": "The owner reviews the intent",
+       "status": "active"
+      }
+     ],
+     "reset_contract": "reset between runs",
+     "scenarios": [
+      {
+       "bindings": [],
+       "device_profiles": [
+        "DEV.a"
+       ],
+       "given": [
+        "a draft"
+       ],
+       "id": "SCN.intent-review",
+       "requirement_ids": [
+        "REQ.a"
+       ],
+       "status": "active",
+       "then": [
+        "the intent is shown"
+       ],
+       "title": "Intent review",
+       "when": [
+        "the owner reads it"
+       ]
+      }
+     ],
+     "schema": "zeus.sdd.v1",
+     "target": {
+      "alpha_url": null,
+      "app_id": null,
+      "build_hash": null,
+      "kind": "unconfigured"
+     },
+     "title": "Alpha"
+    },
+    "spec_hash": "0cfa193ccecdd0b9de882c3eb23b1c5071bd98c9b9605d2b2ab56207ba8aa6d3",
+    "spec_id": "spec.alpha",
+    "spec_ref": "sha256:0cfa193ccecdd0b9de882c3eb23b1c5071bd98c9b9605d2b2ab56207ba8aa6d3",
+    "stage": "spec_discussion",
+    "status": "awaiting_human_scope",
+    "zeus_ticket": {
+     "content_hash": "7ab35394df95384d3c3ca12f4bba7f6e85ef2a3bfb0624e9aa629dd2aeef0ef6",
+     "id": "ZEUS-5eed00000001",
+     "revision": 2
+    }
+   }
+  },
+  "sdd_view": {
+   "argv": [
+    "sdd",
+    "view",
+    "<FIXTURE>/spec.json",
+    "--output",
+    "<FIXTURE>/exports/review.html"
+   ],
+   "exit": 0,
+   "stderr": "",
+   "stdout": {
+    "acceptance_passed": false,
+    "bytes": 14682,
+    "content_hash": "6a51e0b9eab8bbed4f131ce48f78b84547a49bf68868a0f1a09a4b569b0b7dcf",
+    "path": "<FIXTURE>/exports/review.html",
+    "spec_hash": "0cfa193ccecdd0b9de882c3eb23b1c5071bd98c9b9605d2b2ab56207ba8aa6d3",
+    "status": "review_only"
+   }
+  },
+  "ticket_create": {
+   "argv": [
+    "ticket",
+    "create",
+    "--file",
+    "<FIXTURE>/ticket.json"
+   ],
+   "exit": 0,
+   "stderr": "",
+   "stdout": {
+    "content_hash": "254aec87f20e5d2718ebf44e0ea1a72b5a0b0a748e281140b4f89fa66ff12e52",
+    "created_at": "2026-10-04T00:00:00+00:00",
+    "id": "ZEUS-5eed00000001",
+    "revision": 1,
+    "status": "open"
+   }
+  },
+  "ticket_evidence": {
+   "argv": [
+    "ticket",
+    "evidence",
+    "ZEUS-5eed00000001",
+    "--file",
+    "<FIXTURE>/evidence.json"
+   ],
+   "exit": 0,
+   "stderr": "",
+   "stdout": {
+    "at": "2026-10-04T00:00:00.003000+00:00",
+    "authority": "unverified_observation_only",
+    "bytes": 128,
+    "ref": "sha256:fac63486efa99213eae3947c378f02ac52568f20363ec73987bac987c7df7793",
+    "source": "operator-imported-ticket-evidence"
+   }
+  },
+  "ticket_export": {
+   "argv": [
+    "ticket",
+    "export",
+    "ZEUS-5eed00000001"
+   ],
+   "exit": 0,
+   "stderr": "",
+   "stdout": "<!-- zeus-ticket:ZEUS-5eed00000001 -->\n\n# Isolated verification\n\nZeus `ZEUS-5eed00000001` · revision 2 · `7ab35394df95384d3c3ca12f4bba7f6e85ef2a3bfb0624e9aa629dd2aeef0ef6`\n\n> Local ledger is authoritative. Reviews below are advisory, not deployment approval.\n\n## Problem\n\nProduction and tests share endpoints\n\n## Impact\n\nPotential contention\n\n## Rollback\n\nRestore verified image\n\n## Evidence Refs\n\n- fixture:source-inspection\n\n## Scope\n\n- deployment\n- tests\n\n## Acceptance Criteria\n\n- Independent services\n\n## Verification\n\n- Run isolated service integration test\n\n## Reviewer findings\n\n### reviewer-a (independent) — support\n\nThe scope is bounded\n\nEvidence: fixture:review-evidence\n"
+  },
+  "ticket_list": {
+   "argv": [
+    "ticket",
+    "list"
+   ],
+   "exit": 0,
+   "stderr": "",
+   "stdout": [
+    {
+     "claimed_author": "operator",
+     "content": {
+      "acceptance_criteria": [
+       "Independent services"
+      ],
+      "evidence_refs": [
+       "fixture:source-inspection"
+      ],
+      "impact": "Potential contention",
+      "problem": "Production and tests share endpoints",
+      "rollback": "Restore verified image",
+      "scope": [
+       "deployment"
+      ],
+      "title": "Isolated verification",
+      "verification": [
+       "Run isolated service integration test"
+      ]
+     },
+     "content_hash": "254aec87f20e5d2718ebf44e0ea1a72b5a0b0a748e281140b4f89fa66ff12e52",
+     "created_at": "2026-10-04T00:00:00+00:00",
+     "current_revision": 1,
+     "external_observations": [],
+     "github": [],
+     "id": "ZEUS-5eed00000001",
+     "lifecycle_event": null,
+     "lifecycle_history": [],
+     "lifecycle_sequence": 0,
+     "reason": "created",
+     "reviews": [],
+     "revision": 1,
+     "status": "open",
+     "updated_at": "2026-10-04T00:00:00+00:00"
+    }
+   ]
+  },
+  "ticket_prepare_close": {
+   "argv": [
+    "ticket",
+    "prepare-close",
+    "ZEUS-5eed00000001",
+    "--file",
+    "<FIXTURE>/closure.json",
+    "--output",
+    "<FIXTURE>/signing/packet.json"
+   ],
+   "exit": 1,
+   "stderr": {
+    "error": "Out-of-band ZEUS_TICKET_TRUST_COMMIT is required"
+   },
+   "stdout": ""
+  },
+  "ticket_reopen": {
+   "argv": [
+    "ticket",
+    "reopen",
+    "ZEUS-5eed00000001",
+    "--revision",
+    "2",
+    "--sequence",
+    "1",
+    "--reason",
+    "Reopen"
+   ],
+   "exit": 1,
+   "stderr": {
+    "error": "Stale reopen revision, sequence or state"
+   },
+   "stdout": ""
+  },
+  "ticket_review": {
+   "argv": [
+    "ticket",
+    "review",
+    "ZEUS-5eed00000001",
+    "--revision",
+    "2",
+    "--reviewer",
+    "reviewer-a",
+    "--provider",
+    "independent",
+    "--verdict",
+    "support",
+    "--summary",
+    "The scope is bounded",
+    "--evidence",
+    "fixture:review-evidence"
+   ],
+   "exit": 0,
+   "stderr": "",
+   "stdout": {
+    "at": "2026-10-04T00:00:00.002000+00:00",
+    "authority": "advisory_only",
+    "claimed_provider": "independent",
+    "claimed_reviewer": "reviewer-a",
+    "content_hash": "7ab35394df95384d3c3ca12f4bba7f6e85ef2a3bfb0624e9aa629dd2aeef0ef6",
+    "evidence_refs": [
+     "fixture:review-evidence"
+    ],
+    "id": "a6b60149444f80d96114f9ff9541291d60615d3a44f70720dc61338cc6988ca4",
+    "revision": 2,
+    "summary": "The scope is bounded",
+    "ticket_id": "ZEUS-5eed00000001",
+    "verdict": "support"
+   }
+  },
+  "ticket_show": {
+   "argv": [
+    "ticket",
+    "show",
+    "ZEUS-5eed00000001"
+   ],
+   "exit": 0,
+   "stderr": "",
+   "stdout": {
+    "claimed_author": "operator",
+    "content": {
+     "acceptance_criteria": [
+      "Independent services"
+     ],
+     "evidence_refs": [
+      "fixture:source-inspection"
+     ],
+     "impact": "Potential contention",
+     "problem": "Production and tests share endpoints",
+     "rollback": "Restore verified image",
+     "scope": [
+      "deployment"
+     ],
+     "title": "Isolated verification",
+     "verification": [
+      "Run isolated service integration test"
+     ]
+    },
+    "content_hash": "254aec87f20e5d2718ebf44e0ea1a72b5a0b0a748e281140b4f89fa66ff12e52",
+    "created_at": "2026-10-04T00:00:00+00:00",
+    "current_revision": 1,
+    "external_observations": [],
+    "github": [],
+    "id": "ZEUS-5eed00000001",
+    "lifecycle_event": null,
+    "lifecycle_history": [],
+    "lifecycle_sequence": 0,
+    "reason": "created",
+    "reviews": [],
+    "revision": 1,
+    "status": "open",
+    "updated_at": "2026-10-04T00:00:00+00:00"
+   }
+  },
+  "ticket_show_current": {
+   "argv": [
+    "ticket",
+    "show",
+    "ZEUS-5eed00000001"
+   ],
+   "exit": 0,
+   "stderr": "",
+   "stdout": {
+    "claimed_author": "operator",
+    "content": {
+     "acceptance_criteria": [
+      "Independent services"
+     ],
+     "evidence_refs": [
+      "fixture:source-inspection"
+     ],
+     "impact": "Potential contention",
+     "problem": "Production and tests share endpoints",
+     "rollback": "Restore verified image",
+     "scope": [
+      "deployment",
+      "tests"
+     ],
+     "title": "Isolated verification",
+     "verification": [
+      "Run isolated service integration test"
+     ]
+    },
+    "content_hash": "7ab35394df95384d3c3ca12f4bba7f6e85ef2a3bfb0624e9aa629dd2aeef0ef6",
+    "created_at": "2026-10-04T00:00:00+00:00",
+    "current_revision": 2,
+    "external_observations": [],
+    "github": [],
+    "id": "ZEUS-5eed00000001",
+    "lifecycle_event": null,
+    "lifecycle_history": [],
+    "lifecycle_sequence": 0,
+    "reason": "Tighten the scope",
+    "reviews": [],
+    "revision": 2,
+    "status": "open",
+    "updated_at": "2026-10-04T00:00:00.001000+00:00"
+   }
+  },
+  "ticket_show_unknown": {
+   "argv": [
+    "ticket",
+    "show",
+    "ZEUS-unknown000000"
+   ],
+   "exit": 1,
+   "stderr": {
+    "error": "Ticket not found"
+   },
+   "stdout": ""
+  },
+  "ticket_sync_preview": {
+   "argv": [
+    "ticket",
+    "sync",
+    "ZEUS-5eed00000001",
+    "--repo",
+    "fixture/repo",
+    "--preview"
+   ],
+   "exit": 0,
+   "stderr": "",
+   "stdout": "<!-- zeus-ticket:ZEUS-5eed00000001 -->\n\n# Isolated verification\n\nZeus `ZEUS-5eed00000001` · revision 2 · `7ab35394df95384d3c3ca12f4bba7f6e85ef2a3bfb0624e9aa629dd2aeef0ef6`\n\n> Local ledger is authoritative. Reviews below are advisory, not deployment approval.\n\n## Problem\n\nProduction and tests share endpoints\n\n## Impact\n\nPotential contention\n\n## Rollback\n\nRestore verified image\n\n## Evidence Refs\n\n- fixture:source-inspection\n\n## Scope\n\n- deployment\n- tests\n\n## Acceptance Criteria\n\n- Independent services\n\n## Verification\n\n- Run isolated service integration test\n\n## Reviewer findings\n\n### reviewer-a (independent) — support\n\nThe scope is bounded\n\nEvidence: fixture:review-evidence\n"
+  },
+  "ticket_update": {
+   "argv": [
+    "ticket",
+    "update",
+    "ZEUS-5eed00000001",
+    "--revision",
+    "1",
+    "--reason",
+    "Tighten the scope",
+    "--file",
+    "<FIXTURE>/ticket2.json"
+   ],
+   "exit": 0,
+   "stderr": "",
+   "stdout": {
+    "content_hash": "7ab35394df95384d3c3ca12f4bba7f6e85ef2a3bfb0624e9aa629dd2aeef0ef6",
+    "created_at": "2026-10-04T00:00:00+00:00",
+    "id": "ZEUS-5eed00000001",
+    "revision": 2,
+    "status": "open",
+    "updated_at": "2026-10-04T00:00:00.001000+00:00"
+   }
+  }
+ }
+}

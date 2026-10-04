@@ -1,0 +1,9 @@
+{
+ "family": "entry.cli_ticket_sdd.pg",
+ "description": "The ticket and sdd roots through main() on a labelled disposable PostgreSQL (one fresh schema; ids and timestamps scripted by the drivers, no mask): ticket create, list, show, update, review, export, sync --preview, evidence for the current revision, prepare-close (no trust anchor in the fixture repository: M7's refusal), reopen of an open ticket (M7's refusal) and show of an unknown id; sdd inspect and view of a working-tree fixture spec, register against the ticket, status of the iteration and inspect of an invalid spec; stdout, stderr and exit code per case. Excluded by owner rule R-c10: ticket sync without --preview, ticket pull and sdd device-check (network, adb); R-c9: ticket dispatch (C5)",
+ "reference_driver": "drivers/reference/s10_cli_ticket_sdd.py",
+ "target_driver": "drivers/target/s10_cli_ticket_sdd.py",
+ "requires": "disposable-postgresql",
+ "golden": "goldens/reference/entry.cli_ticket_sdd.pg.json",
+ "slice": "S10"
+}
