@@ -20,6 +20,7 @@ dependencies = [
 [project.scripts]
 zeus = "codex_harness.cli:main"
 zeus-supervisor = "codex_harness.supervisor:main"
+zeus-monitor = "codex_harness.monitor:main"
 harness = "codex_harness.cli:main"
 harness-supervisor = "codex_harness.supervisor:main"
 
