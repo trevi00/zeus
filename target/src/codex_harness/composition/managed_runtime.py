@@ -2,21 +2,24 @@
 labelled fixture workload (DESIGN-s7 adapters-move §9, v2 amendment).
 
 Layer: composition
-Owns: `launch`, `entry`, `run_fixture`, `FixtureLauncher`, `fixture_config`, `fixture_manifest` and the wired
-    `supervise` (M7 `adapters/managed_runtime.py` composition roots, SOURCE e38aa722; bodies are M7's apart from the
-    counted rules below)
-Does not own: `fleet_gate` and `run_fleet` (M7 `bootstrap.build` / `fleet_cli`: S10 carry, no target home yet)
-Entry points: entry, launch, supervise, run_fixture
+Owns: `launch`, `entry`, `run_fixture`, `FixtureLauncher`, `fixture_config`, `fixture_manifest`, `fleet_gate`,
+    `run_fleet` and the wired `supervise` (M7 `adapters/managed_runtime.py` composition roots, SOURCE e38aa722;
+    bodies are M7's apart from the counted rules below)
+Entry points: entry, launch, supervise, run_fixture, fleet_gate, run_fleet
 Contracts: INV-HOST-DELIVERY-001, INV-OWNER-ACTIONS-001
 
 Counted rules against M7: the S5 Fleet is the four target objects (registry, admission, pause) composed over the
 labelled in-memory store; `FixtureLauncher` creates its children through the injected `processes`; `entry` reports the
-effective image and profile digest through `startup_receipt` as the 42a service does; `entry(state_dir, "fleet")`
-raises `NotImplementedError` (S10 carry: `run_fleet`); `supervise` is wired with `launcher=launch`, and `gate` stays
-required (`fleet_gate` is S10).
+effective image and profile digest through `startup_receipt` as the 42a service does; `supervise` is wired with
+`launcher=launch`, and `gate` stays required (the entry passes `fleet_gate`, M7's default gate). S10 unit E5d (rule
+R-e5cd): `fleet_gate` is M7's `Fleet(build().store).activation_gate(...)` with the S5 split's owner of
+`activation_gate`, `FleetPause`, over `composition.build().store`; `run_fleet` is M7's `fleet_cli.run(build(),
+Namespace(once=False), control=control)` over `composition.cli_fleet.run_fleet`, and `entry` calls it for the
+`fleet` workload exactly where M7's `entry` did.
 """
 from __future__ import annotations
 
+import argparse
 import subprocess
 import sys
 import time
@@ -170,7 +173,7 @@ def entry(state_dir: str, workload: str) -> int:
     if workload == WORKLOAD_FIXTURE:
         run_fixture(root, control)
     else:
-        raise NotImplementedError("S10 carry: run_fleet (bootstrap/fleet_cli)")
+        run_fleet(control)
     return 0
 
 
@@ -194,6 +197,21 @@ def launch(state_dir: str, descriptor_sha256: str, workload: str) -> int:
     argv = [target["python"], "-m", MODULE, "entry", "--state-dir", str(root), "--workload", workload]
     return run_owned(argv, cwd=descriptor["root"], env=runtime_environment(target, descriptor),
                      journal=root / LAUNCHER_JOURNAL)
+
+
+def fleet_gate(target_id: str, descriptor_sha256: str) -> dict:
+    """The production debt authority of `supervise`: the host store's actual Fleet (M7 `fleet_gate`)."""
+    from codex_harness.composition import build
+
+    return FleetPause(build().store).activation_gate(target_id, descriptor_sha256)
+
+
+def run_fleet(control: RuntimeControl) -> dict:
+    """The REAL existing Fleet CLI runner, with the host store and lanes of this host's own
+    configuration, and the managed control added (M7 `run_fleet`)."""
+    from codex_harness.composition import build, cli_fleet
+
+    return cli_fleet.run_fleet(build(), argparse.Namespace(once=False), control=control)
 
 
 def supervise(state_dir: str, *, gate, launcher=launch) -> int:

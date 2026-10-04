@@ -1,9 +1,9 @@
 """Entry of the managed Fleet child processes: `launch|entry|supervise --state-dir DIR ...` (HOST-RUNTIME.md).
 
 Layer: entry
-Owns: nothing but M7's argument parsing; delegates to composition. The `supervise` subcommand needs the production
-    Fleet gate (`fleet_gate`, S10 carry) and refuses with `NotImplementedError` until then; the wired `supervise`
-    function is re-exported for the unit's ExecStart snippet that imports it by module name
+Owns: nothing but M7's argument parsing; delegates to composition. The `supervise` subcommand runs with the
+    production Fleet gate (`fleet_gate`, M7's default gate); the wired `supervise` function is re-exported for the
+    unit's ExecStart snippet that imports it by module name
 Entry points: main, supervise
 Contracts: INV-HOST-DELIVERY-001
 """
@@ -12,7 +12,7 @@ from __future__ import annotations
 import argparse
 import sys
 
-from codex_harness.composition.managed_runtime import entry, launch, supervise
+from codex_harness.composition.managed_runtime import entry, fleet_gate, launch, supervise
 from codex_harness.delivery.domain.managed_runtime import WORKLOADS
 
 
@@ -33,7 +33,7 @@ def main(argv=None) -> int:
     if args.command == "launch":
         return launch(args.state_dir, args.descriptor_sha256, args.workload)
     if args.command == "supervise":
-        raise NotImplementedError("S10 carry: fleet_gate (bootstrap) for the supervise subcommand")
+        return supervise(args.state_dir, gate=fleet_gate)
     return entry(args.state_dir, args.workload)
 
 
