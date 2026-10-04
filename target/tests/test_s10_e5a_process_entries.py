@@ -13,7 +13,8 @@ import pytest
 
 from codex_harness.composition import process_entries
 from codex_harness.entry import cli
-from codex_harness.entry.processes import experience, isolated_worker, service_entry
+from codex_harness.entry.processes import experience, service_entry
+from codex_harness.entry.processes import isolated_worker_runs as isolated_worker
 from codex_harness.host_os.adapters import service_entry as host_service_entry
 from codex_harness.kernel.errors import ContractError
 
@@ -112,11 +113,11 @@ def test_subprocess_experience_help_exits_0():
 
 
 def test_subprocess_isolated_worker_no_argument_exits_2():
-    assert _run("isolated_worker").returncode == 2
+    assert _run("isolated_worker_runs").returncode == 2
 
 
 def test_subprocess_isolated_worker_status_empty_root(tmp_path):
-    done = _run("isolated_worker", "status", str(tmp_path))
+    done = _run("isolated_worker_runs", "status", str(tmp_path))
     assert (done.returncode, json.loads(done.stdout)) == (0, [])
 
 

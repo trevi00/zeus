@@ -61,10 +61,10 @@ def parser_roots() -> set:
 
 
 def test_the_dispatch_dict_covers_every_parser_root_and_an_unknown_command_still_raises(monkeypatch, capsys):
-    # C8b-3 composed the last root of its lane. `audit-service` (C6b, another lane) is the one parser root this branch's dispatch
-    # does not name yet; once C6b lands the difference is empty and the subset below is an equality.
-    assert composed_roots() <= parser_roots() and parser_roots() - composed_roots() <= {"audit-service"}
-    assert len(parser_roots()) == 51
+    # int38 (owner): every lane's roots are integrated, so the dispatch dict covers EVERY parser root: the 51 M7 roots
+    # plus the declared G20-D6 target addition `research-package` (DESIGN-s10 §14).
+    assert composed_roots() == parser_roots()
+    assert len(parser_roots()) == 52 and "research-package" in parser_roots()
     real = cli.parser
 
     def parser_with_unknown_root():
