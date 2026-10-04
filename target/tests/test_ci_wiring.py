@@ -56,6 +56,7 @@ REBUILD_INTEGRATION_STEPS = [("uv sync --frozen --project target", None),  # bef
                              ("python compare/run.py run --only entry.cli_desk_program.pg --pg", None),
                              ("python compare/run.py run --only entry.cli_continuation.pg --pg", None),
                              ("python compare/run.py run --only entry.cli_fleet.pg --pg", None),
+                             ("python compare/run.py run --only entry.cli_host_delivery.pg --pg", None),
                              ("python compare/run.py run --only entry.cli_bus.pgredis --pg --redis", None),
                              ("python compare/run.py run --only entry.cli_executor.pgredis --pg --redis", None),
                              ("python compare/run.py run --only entry.cli_cycle_serve.pgredis --pg --redis", None),

@@ -141,6 +141,7 @@ jobs:
       - run: python compare/run.py run --only entry.cli_desk_program.pg --pg
       - run: python compare/run.py run --only entry.cli_continuation.pg --pg
       - run: python compare/run.py run --only entry.cli_fleet.pg --pg
+      - run: python compare/run.py run --only entry.cli_host_delivery.pg --pg
       # S10 C4: the combined disposable PostgreSQL + Redis fixture (R-c7).
       - run: python compare/run.py run --only entry.cli_bus.pgredis --pg --redis
       - run: python compare/run.py run --only entry.cli_executor.pgredis --pg --redis
