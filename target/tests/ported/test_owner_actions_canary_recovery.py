@@ -9,7 +9,7 @@ one `clock`, to their split homes); `organization`, `packaged_policy`, `Workflow
 (`delivery.adapters.target_files`) come from the shims; the owner-action BUCKET_* names, `CONTINUATION_BINDINGS`,
 `lineage_of` and `plan_json` from `coordination.application.owner_actions.state`, the domain modules from
 `coordination.domain` and `delivery.domain`, the adapter names from `delivery.adapters.host_delivery`, `digest` from
-`kernel.ids`. `test_the_cli_drives_the_real_recovery_and_refuses_an_unreadable_document` is kept whole under skip "S10: the operator CLI" (`cli.owner_actions_command`, `adapters.owner_actions.add_parser/coordinator`).
+`kernel.ids`. `test_the_cli_drives_the_real_recovery_and_refuses_an_unreadable_document` runs since S10 C8b-3 (R-c32): `cli.owner_actions_command` is `entry.cli.owner_actions.run` (with `composition.build` patched to the case's service, as M7's took it as a parameter), `adapter.coordinator` is `composition.owner_actions.coordinator` returning the owner namespace (`canary` is the shim facade's `canary` object, `objects["canary"]`), `Fleet.registered` is `FleetRegistry.registered`, `configuration.settings` is `composition.configuration`'s and `add_parser` is `entry.cli.owner_actions.add_parser`.
 
 M7 docstring follows.
 
@@ -693,7 +693,6 @@ def _canaries(world):
 
 
 # ----- the thin CLI: `zeus owner-actions canary-recover --document FILE --evidence sha256:<digest>` ----------
-@pytest.mark.skip(reason="S10: the operator CLI (cli.owner_actions_command, adapters.owner_actions.add_parser/coordinator)")
 def test_the_cli_drives_the_real_recovery_and_refuses_an_unreadable_document(tmp_path, monkeypatch, capsys):
     """The real `cli.owner_actions_command` -> `execute` -> `OwnerActions.recover_canary`. LABELLED: the Fleet
     registration read and the coordinator factory (it returns this module's real, labelled-port owner)."""
@@ -701,20 +700,25 @@ def test_the_cli_drives_the_real_recovery_and_refuses_an_unreadable_document(tmp
     import json
     from types import SimpleNamespace
 
-    from codex_harness import cli
-    from codex_harness.adapters import owner_actions as adapter
+    from codex_harness import composition
+    from codex_harness.composition import configuration
+    from codex_harness.composition import owner_actions as adapter
+    from codex_harness.coordination.application.fleet.registry import FleetRegistry
+    from codex_harness.entry.cli import owner_actions as cli
 
     w = world(MemoryStore(), MemoryStore())
-    monkeypatch.setattr("codex_harness.application.fleet.Fleet.registered", lambda self: {"config": {"lanes": []}})
-    monkeypatch.setattr("codex_harness.adapters.configuration.settings", lambda: {})
-    monkeypatch.setattr(adapter, "coordinator", lambda svc, config, host: w["owner"])
+    monkeypatch.setattr(FleetRegistry, "registered", lambda self: {"config": {"lanes": []}})
+    monkeypatch.setattr(configuration, "settings", lambda: {})
+    monkeypatch.setattr(adapter, "coordinator",
+                        lambda svc, config, host: SimpleNamespace(canary=w["owner"].objects["canary"]))
     service = SimpleNamespace(store=w["control"], org=organization())
+    monkeypatch.setattr(composition, "build", lambda: service)
 
     def run(path, evidence):
         args = argparse.Namespace(owner_actions_command="canary-recover", document=str(path), evidence=evidence)
         code = 0
         try:
-            cli.owner_actions_command(service, args)
+            cli.run(args)
         except SystemExit as exc:
             code = exc.code
         return code, json.loads(capsys.readouterr().out)
@@ -731,7 +735,7 @@ def test_the_cli_drives_the_real_recovery_and_refuses_an_unreadable_document(tmp
     code, out = run(path, evidence)
     assert (code or 0) == 0 and out["cached"] is True
     parser = argparse.ArgumentParser()
-    adapter.add_parser(parser.add_subparsers(dest="command"))
+    cli.add_parser(parser.add_subparsers(dest="command"))
     parsed = parser.parse_args(["owner-actions", "canary-recover", "--document", "f.json", "--evidence", evidence])
     assert (parsed.owner_actions_command, parsed.document, parsed.evidence) == ("canary-recover", "f.json", evidence)
 
