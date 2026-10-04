@@ -12,22 +12,26 @@ cases `S10: the native routing replay operator CLI` (M7 `threshold_proposals.mai
 the `policy_repo` fixture is `m7_research`'s (S10 unit T1: the Git-bound policy repository of
 `research.adapters.threshold_policy`). The manifest case stays skipped: its body imports the M7 path `codex_harness.adapters.project_skills`. Names read only by those
 bodies stay unresolved by design (file-level F821).
+S10 unit T2: the two collection-CLI cases run (the skips are removed; imports only: `main` is `entry.cli.threshold_proposals.main`, plus `json`, `MemoryStore` and `events` from `m7_research`).
 """
 # ruff: noqa: F821, F811
 import copy
+import json
 from functools import partial as _partial
 
 import pytest
 from conftest import NATIVE_THRESHOLDS as _THRESHOLDS
-from m7_research import policy_repo  # noqa: F401
+from m7_research import events, policy_repo  # noqa: F401
 
 from codex_harness.context.adapters import project_skills as _project_skills
 from codex_harness.context.adapters import skill_routing as _skill_routing
 from codex_harness.context.adapters.native_routing_replay import NativeRoutingReplay
 from codex_harness.context.adapters.skill_routing import route_skills
 from codex_harness.context.domain.packet import ContextItem
+from codex_harness.entry.cli.threshold_proposals import main
 from codex_harness.kernel.ids import canonical, digest
 from codex_harness.storage.adapters.file_artifacts import FileArtifacts
+from codex_harness.storage.adapters.memory_store import MemoryStore
 
 # Adapted: the native threshold definition reaches context through context.ports.ThresholdPolicySource
 # (research implements it in S8); these suites supply the packaged definition.
@@ -105,7 +109,6 @@ def test_unreproducible_or_missing_evidence_is_not_success(tmp_path, change):
         assert report['manifests'][ref]['detail'] == details[change]
 
 
-@pytest.mark.skip(reason="S10: the native routing replay operator CLI")
 def test_explicit_new_round_recovers_missing_evidence_without_rewriting_old_run(policy_repo, tmp_path, capsys):
     root, _ = policy_repo
     artifacts, manifest, ref, _ = routed(tmp_path)
@@ -138,7 +141,6 @@ def test_explicit_new_round_recovers_missing_evidence_without_rewriting_old_run(
     assert main([*args, '--evaluation-round', '-1'], store=store) == 2
 
 
-@pytest.mark.skip(reason="S10: the native routing replay operator CLI")
 def test_real_collection_cli_archives_native_comparison_with_reference_proposals(policy_repo, tmp_path, capsys):
     root, _ = policy_repo
     artifacts, _, ref, _ = routed(tmp_path)
