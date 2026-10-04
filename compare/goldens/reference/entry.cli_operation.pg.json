@@ -1,0 +1,137 @@
+{
+ "cases": {
+  "autonomous_run_base_revision_missing": {
+   "argv": [
+    "autonomous",
+    "run",
+    "--file",
+    "<MANIFESTS>/autonomous.json"
+   ],
+   "exit": 1,
+   "stderr": "",
+   "stdout": {
+    "error_type": "OperationRefused",
+    "exit_code": 1,
+    "reason_code": "base_revision_missing",
+    "status": "refused"
+   }
+  },
+  "autonomous_run_unsupported_schema": {
+   "argv": [
+    "autonomous",
+    "run",
+    "--file",
+    "<MANIFESTS>/unsupported.json"
+   ],
+   "exit": 1,
+   "stderr": "",
+   "stdout": {
+    "error_type": "AutonomousManifestError",
+    "exit_code": 1,
+    "reason_code": "contract_refused",
+    "status": "refused"
+   }
+  },
+  "autonomous_status_unknown": {
+   "argv": [
+    "autonomous",
+    "status",
+    "auto-unknown"
+   ],
+   "exit": 1,
+   "stderr": "",
+   "stdout": {
+    "error_type": "AutonomousRefused",
+    "exit_code": 1,
+    "reason_code": "unknown_run",
+    "status": "refused"
+   }
+  },
+  "fixture_revision": "957702067a82d7ce6f948d727a61003d866bc862",
+  "init_db": {
+   "argv": [
+    "init-db"
+   ],
+   "exit": 0,
+   "stderr": "",
+   "stdout": {
+    "already_applied": [],
+    "applied": [
+     {
+      "module": "core",
+      "version": "1"
+     }
+    ],
+    "migrated": true,
+    "tool": {
+     "filename_contract": "V?<n>(.<n>|_<n>)*(__<description>)?.sql",
+     "name": "zeus-sql-migrator",
+     "version": 1
+    }
+   }
+  },
+  "operate_run_base_revision_missing": {
+   "argv": [
+    "operate",
+    "run",
+    "--file",
+    "<MANIFESTS>/operation.json"
+   ],
+   "exit": 1,
+   "stderr": "",
+   "stdout": {
+    "error_type": "OperationRefused",
+    "exit_code": 1,
+    "reason_code": "base_revision_missing",
+    "status": "refused"
+   }
+  },
+  "operate_run_duplicate_key": {
+   "argv": [
+    "operate",
+    "run",
+    "--file",
+    "<MANIFESTS>/duplicate.json"
+   ],
+   "exit": 1,
+   "stderr": "",
+   "stdout": {
+    "error_type": "ContractError",
+    "exit_code": 1,
+    "reason_code": "contract_refused",
+    "status": "refused"
+   }
+  },
+  "operate_run_invalid_json": {
+   "argv": [
+    "operate",
+    "run",
+    "--file",
+    "<MANIFESTS>/invalid.json"
+   ],
+   "exit": 1,
+   "stderr": "",
+   "stdout": {
+    "error_type": "ContractError",
+    "exit_code": 1,
+    "reason_code": "contract_refused",
+    "status": "refused"
+   }
+  },
+  "operate_status_unknown": {
+   "argv": [
+    "operate",
+    "status",
+    "op-unknown"
+   ],
+   "exit": 1,
+   "stderr": "",
+   "stdout": {
+    "error_type": "ContractError",
+    "exit_code": 1,
+    "reason_code": "contract_refused",
+    "status": "refused"
+   }
+  }
+ }
+}
