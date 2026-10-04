@@ -61,7 +61,9 @@ OWNED_BUCKETS = ("inbox", "incidents", "hooks", "research_programs", "dge_sessio
                  # S8 batch B3 (V24 R-ae5): the bucket only research.adapters.audit_execution writes (M7 left it undeclared)
                  "research_proposal_runs",
                  # S10 G20-1a (RF-RT S8 remainder): ResearchPackages
-                 "research_packages")
+                 "research_packages",
+                 # S10 G20-1b: declared research exemptions per research key (§14 G20-D4 revision)
+                 "research_exemptions")
 
 
 class OutboxAppend(Protocol):

@@ -11,7 +11,7 @@ Contracts: INV-RESEARCH-001, INV-RESEARCH-004 (addendum A1 v2 RF-RT)
 `admit(tx, lease, action)` answers `{"disposition": admit|exempt|research|blocked, "reason"}` and reads only. It never
 raises for a lease-data problem: an exemption refusal, a research-key conflict or a supersession refusal becomes
 `blocked` with its code (CE-9: never an invented admission). The steps run in this order:
- 1 exemption -> exempt `exempt:<class>`;           2 no package for the key -> research `package_missing`;
+ 1 exemption (the lease's, and the store's active entry for the key; both present and different -> blocked `exemption_conflict`) -> exempt `exempt:<class>`;           2 no package for the key -> research `package_missing`;
  3 not accepted -> research `package_not_accepted`; 4 supersession cycle/missing target -> blocked
  `package_supersession_cycle|missing` (the chain is followed to find the current package, so it is resolved between
  steps 2 and 3); 5 an unopened/unavailable source -> blocked `source_unavailable`; 6 fewer than 3 sources -> blocked
@@ -57,13 +57,20 @@ class ResearchPackagePolicy:
             exempt = exemption(lease)
         except ResearchExemptionRefused as refusal:
             return _answer("blocked", refusal.code)
-        if exempt is not None:
-            return _answer("exempt", "exempt:" + exempt["class"])
         try:
             key = research_key(lease)
         except ContractError as refusal:
+            if exempt is not None:
+                return _answer("exempt", "exempt:" + exempt["class"])
             return _answer("blocked", "research_key_conflict" if "Conflicting" in str(refusal)
                            else "research_key_invalid")
+        # G20-D4 revision: the operator-recorded exemption of the key joins the lease's derived/declared class.
+        recorded = self.packages.active_exemption(tx, key)
+        if recorded is not None and exempt is not None and recorded["class"] != exempt["class"]:
+            return _answer("blocked", "exemption_conflict")
+        chosen = exempt if exempt is not None else recorded
+        if chosen is not None:
+            return _answer("exempt", "exempt:" + chosen["class"])
         try:
             package = self.packages.current(tx, key)
         except PackageRefused as refusal:
