@@ -62,6 +62,7 @@ def parser() -> argparse.ArgumentParser:
         release_abandon,
         release_retry,
         research,
+        research_package,
         research_program,
         rlm,
         rollback_hook,
@@ -127,6 +128,7 @@ def parser() -> argparse.ArgumentParser:
     decision_feedback.add_parser(commands)
     ticket.add_parser(commands)
     goal.add_parser(commands)
+    research_package.add_parser(commands)
     return p
 
 
@@ -174,6 +176,7 @@ def main() -> None:
             release_abandon,
             release_retry,
             research,
+            research_package,
             research_program,
             rlm,
             rollback_hook,
@@ -200,7 +203,7 @@ def main() -> None:
                     "ticket": ticket.run, "sdd": sdd.run,
                     "audit-repair": audit_repair.run, "audit-service": audit_service.run, "worker-session": worker_session.run,
                     "dge": dge.run, "decision-feedback": decision_feedback.run,
-                    "release-abandon": release_abandon.run, "cleanup": cleanup.run, "research": research.run,
+                    "release-abandon": release_abandon.run, "cleanup": cleanup.run, "research": research.run, "research-package": research_package.run,
                     "improve": improve.run, "execute-one": execute_one.run, "rebase": rebase.run,
                     "artifact": artifact.run, "cycle": cycle.run, "serve": serve.run, "rlm": rlm.run,
                     "operate": operate.run, "autonomous": autonomous.run,
