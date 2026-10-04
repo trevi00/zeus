@@ -37,7 +37,7 @@ SRC = Path(operation.__file__)
 
 @pytest.fixture
 def settings(monkeypatch, tmp_path):
-    values = {"HARNESS_RUNTIME_DIR": str(tmp_path / "runtime")}
+    values = {"HARNESS_RUNTIME_DIR": str(tmp_path / "runtime"), "ZEUS_COMPOSITION_PROFILE": "development"}
     monkeypatch.setattr(configuration, "settings", lambda: values)
     return values
 
@@ -83,12 +83,12 @@ def test_the_transport_factories_carry_the_real_host_facilities(tmp_path, settin
     assert isinstance(captured["host"], ClaudeHost) and captured["host"].redact is redact_text
 
 
-def test_host_isolation_refuses_a_configured_selection_until_c5c(settings):
-    settings.update({"ZEUS_WORKER_ISOLATION": "docker", "ZEUS_WORKER_IMAGE": IMAGE})
-    with pytest.raises(IsolationError, match="S10 unit C5c"):
-        operation.host_isolation(None)
-    with pytest.raises(IsolationError, match="S10 unit C5c"):
-        operation.build_executor(service=object(), observer=object(), knowledge=False, evidence_profile=None)
+def test_host_isolation_composes_a_configured_selection_through_c5c1(settings, monkeypatch):
+    from codex_harness.composition import isolation
+    settings.update({"ZEUS_WORKER_ISOLATION": "docker", "ZEUS_WORKER_IMAGE": IMAGE,
+                     "ZEUS_COMPOSITION_PROFILE": "development"})
+    monkeypatch.setattr(isolation, "isolated_worker", lambda config: ("worker", config["image"]))
+    assert operation.host_isolation(None) == ("worker", IMAGE)
 
 
 def test_host_isolation_keeps_the_m7_refusals_and_none_when_unconfigured(settings):
