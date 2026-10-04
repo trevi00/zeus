@@ -39,8 +39,9 @@ def test_the_51_root_modules_each_define_add_parser_and_at_most_run():
                   and not n.name.startswith("_")]
         assert "add_parser" in public and set(public) <= {"add_parser", "run"}, (root, public)
     # operation: entry.cli.operation, the M7 operation_cli helpers (C7a), not a root
-    # entry.cli.threshold_proposals: the M7 argparse main (V27), not a root
-    assert {p.stem for p in PACKAGE.glob("*.py")} == {r.replace("-", "_") for r in roots} | {"__init__", "output", "operation", "threshold_proposals"}
+    # entry.cli.threshold_proposals, threshold_replay, observed_assets: the M7 argparse mains (V27 argparse mains, not roots)
+    assert {p.stem for p in PACKAGE.glob("*.py")} == {r.replace("-", "_") for r in roots} | {"__init__", "output", "operation", "threshold_proposals",
+                                                                                           "threshold_replay", "observed_assets"}
 
 
 def test_parser_root_order_equals_the_golden_root_order():
