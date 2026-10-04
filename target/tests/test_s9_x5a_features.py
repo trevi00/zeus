@@ -36,7 +36,9 @@ UNPRODUCED_AT_EC681D20 = frozenset({
 PRODUCED_SINCE = {"development.role_dispatch_decided",  # X1b-2: produced by RunTask at the admission boundary
                   # S10 E3: produced by composition.supervisor
                   "operations.supervisor_tick", "operations.supervisor_error", "operations.worker_wake_requested",
-                  "operations.worker_replace_requested", "operations.backlog_observed"}
+                  "operations.worker_replace_requested", "operations.backlog_observed",
+                  "operations.capacity_refused", "development.skill_selected",  # S10 A5-2
+                  "operations.path_declined"}  # S10 A5-2
 
 IDS = ("model_invocation", "task_execution", "worker_sessions", "message_relay", "message_intake", "fleet_backlog",
        "host_delivery", "continuation", "operation_finalization", "autonomous", "discovery_pressure",

@@ -78,15 +78,14 @@ FEATURES = {feature.id: feature for feature in (
             "entry.cli / entry.processes.supervisor"),
     Feature("maintenance", "storage", _events(_O, "maintenance_job"), False, "none (no producer even in SOURCE)"),
     Feature("role_dispatch", "execution", _events(_D, "role_dispatch_decided"), True),
-    Feature("capacity_admission", "coordination", _events(_O, "capacity_refused"), False,
-            "S10 (#18b, Fleet composition)"),
+    Feature("capacity_admission", "coordination", _events(_O, "capacity_refused"), True),
     Feature("tool_calls", "execution", _events(_D, "tool_call_completed"), False, "open (pairing decision, §1.5)"),
-    Feature("skill_selection", "context", _events(_D, "skill_selected"), False, "S10"),
+    Feature("skill_selection", "context", _events(_D, "skill_selected"), True),
     Feature("ci_checks", "delivery", _events(_O, "ci_observed"), False,
             "S10 adapter seam (per-check timing; DESIGN-s9-X §1.5 follow-up)"),
     Feature("cleanup", "execution", _events(_O, "cleanup_recorded"), False, "S10"),
     Feature("queue_wait", "coordination", _events(_O, "queue_item_waited"), False, "S10 seam; X2c state reads"),
-    Feature("declined_paths", "observation", _events(_O, "path_declined"), False, "X5b"),
+    Feature("declined_paths", "observation", _events(_O, "path_declined"), True),
 )}
 
 FEATURE_OF = {event_type: feature.id for feature in FEATURES.values() for event_type in feature.proof_events}
