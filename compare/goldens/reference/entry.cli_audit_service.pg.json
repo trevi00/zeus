@@ -1,0 +1,221 @@
+{
+ "cases": {
+  "fixture_commit_length": 40,
+  "init_db": {
+   "argv": [
+    "init-db"
+   ],
+   "exit": 0,
+   "stderr": "",
+   "stdout": {
+    "already_applied": [],
+    "applied": [
+     {
+      "module": "core",
+      "version": "1"
+     }
+    ],
+    "migrated": true,
+    "tool": {
+     "filename_contract": "V?<n>(.<n>|_<n>)*(__<description>)?.sql",
+     "name": "zeus-sql-migrator",
+     "version": 1
+    }
+   }
+  },
+  "run_max_tasks_zero": {
+   "argv": [
+    "audit-service",
+    "run",
+    "--audit-id",
+    "a",
+    "--max-tasks",
+    "0",
+    "--once"
+   ],
+   "exit": 1,
+   "stderr": "",
+   "stdout": {
+    "error_type": "AuditServiceRefused",
+    "exit_code": 1,
+    "reason_code": "activation_inactive",
+    "status": "refused"
+   }
+  },
+  "run_unknown": {
+   "argv": [
+    "audit-service",
+    "run",
+    "--audit-id",
+    "audit-unknown",
+    "--once"
+   ],
+   "exit": 1,
+   "stderr": "",
+   "stdout": {
+    "error_type": "AuditServiceRefused",
+    "exit_code": 1,
+    "reason_code": "activation_inactive",
+    "status": "refused"
+   }
+  },
+  "runtime_listing": [
+   "audit-service.lock",
+   "workspaces"
+  ],
+  "status_seeded": {
+   "argv": [
+    "audit-service",
+    "status",
+    "--audit-id",
+    "audit-seeded"
+   ],
+   "exit": 0,
+   "stderr": "",
+   "stdout": {
+    "activation": {
+     "release_id": "rel-1",
+     "revision": "957702067a82d7ce6f948d727a61003d866bc862",
+     "status": "active"
+    },
+    "admission_blocked": null,
+    "analysis": {
+     "held": [],
+     "held_partitions": 0,
+     "outcomes": {}
+    },
+    "assignments": {
+     "not_submitted": 1
+    },
+    "audit_id": "audit-seeded",
+    "audit_service": "audit_partition",
+    "completed_tasks": 0,
+    "current_task": null,
+    "exit_code": 0,
+    "known_audit": true,
+    "last_collection": null,
+    "last_progress": null,
+    "last_repair": null,
+    "last_task": null,
+    "owner": null,
+    "partitions": {
+     "max_generation": 2,
+     "open_questions": 1,
+     "remaining_paths": 2,
+     "remaining_subsystems": 1,
+     "total": 2,
+     "with_remaining_work": 2
+    },
+    "progress": {
+     "candidate": null,
+     "epoch": null,
+     "last_delta": null,
+     "last_observation": null,
+     "last_verdict": null,
+     "observed": false,
+     "policy_sha256": null,
+     "streak": 0,
+     "windows_completed": 0
+    },
+    "repair": {
+     "corrections": [],
+     "counts": {
+      "admitted": 0,
+      "attempted": 0,
+      "deferred": 0,
+      "reconciliation_required": 0,
+      "repaired": 0,
+      "research_required": 0
+     },
+     "enabled": false,
+     "operator": null,
+     "schema": "urn:zeus:audit-repair:1",
+     "scope": [],
+     "updated_at": null
+    },
+    "started_at": null,
+    "stop_reason": null,
+    "supported_actions": [
+     "audit_partition"
+    ],
+    "updated_at": null
+   }
+  },
+  "status_unknown": {
+   "argv": [
+    "audit-service",
+    "status",
+    "--audit-id",
+    "audit-unknown"
+   ],
+   "exit": 0,
+   "stderr": "",
+   "stdout": {
+    "activation": {
+     "release_id": null,
+     "revision": null,
+     "status": null
+    },
+    "admission_blocked": null,
+    "analysis": {
+     "held": [],
+     "held_partitions": 0,
+     "outcomes": {}
+    },
+    "assignments": {},
+    "audit_id": "audit-unknown",
+    "audit_service": "audit_partition",
+    "completed_tasks": 0,
+    "current_task": null,
+    "exit_code": 0,
+    "known_audit": false,
+    "last_collection": null,
+    "last_progress": null,
+    "last_repair": null,
+    "last_task": null,
+    "owner": null,
+    "partitions": {
+     "max_generation": null,
+     "open_questions": 0,
+     "remaining_paths": 0,
+     "remaining_subsystems": 0,
+     "total": 0,
+     "with_remaining_work": 0
+    },
+    "progress": {
+     "candidate": null,
+     "epoch": null,
+     "last_delta": null,
+     "last_observation": null,
+     "last_verdict": null,
+     "observed": false,
+     "policy_sha256": null,
+     "streak": 0,
+     "windows_completed": 0
+    },
+    "repair": {
+     "corrections": [],
+     "counts": {
+      "admitted": 0,
+      "attempted": 0,
+      "deferred": 0,
+      "reconciliation_required": 0,
+      "repaired": 0,
+      "research_required": 0
+     },
+     "enabled": false,
+     "operator": null,
+     "schema": "urn:zeus:audit-repair:1",
+     "scope": [],
+     "updated_at": null
+    },
+    "started_at": null,
+    "stop_reason": null,
+    "supported_actions": [
+     "audit_partition"
+    ],
+    "updated_at": null
+   }
+  }
+ }
+}

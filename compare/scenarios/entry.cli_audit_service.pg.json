@@ -1,0 +1,9 @@
+{
+ "family": "entry.cli_audit_service.pg",
+ "description": "The audit-service root through main() on a labelled disposable PostgreSQL (one fresh schema, init-db first, a fixture git repository with one pinned commit): status of an unknown audit (known_audit false), run --once of an unknown audit and run --max-tasks 0 --once (both refused by the activation gate before any observer, executor or transport; the runtime directory listing shows only the lock file and the empty workspaces root, no observer spool) and status of a seeded audit (a research_audits row, two research_partitions rows, one unsubmitted schedule row and an active activation row, through the store transaction api); stdout, stderr and exit code per case, the fixture path normalized to <FIXTURE>, no mask. A run that passes the gate enters the executor and is excluded (no provider)",
+ "reference_driver": "drivers/reference/s10_cli_audit_service.py",
+ "target_driver": "drivers/target/s10_cli_audit_service.py",
+ "requires": "disposable-postgresql",
+ "golden": "goldens/reference/entry.cli_audit_service.pg.json",
+ "slice": "S10"
+}
