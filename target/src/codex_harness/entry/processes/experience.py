@@ -20,7 +20,9 @@ from codex_harness.kernel.errors import ContractError
 
 
 def main(argv=None, store=None):
-    parser = argparse.ArgumentParser(description="Import explicitly selected upstream lesson files; never scan user homes automatically.")
+    # M7 `adapters/experience.py:1-4` `__doc__` (the help description), only the module path changed (S10 E5b).
+    parser = argparse.ArgumentParser(description="Import explicitly selected upstream lesson files; never scan user homes automatically.\n\n"
+                                                 "    uv run python -m codex_harness.entry.processes.experience DIR_OR_FILES... --basis observed --dry-run\n")
     parser.add_argument('paths', nargs='+', type=Path, help='Lesson .md files or directories (non-recursive)')
     parser.add_argument('--source', default='harness', help='Upstream source name')
     parser.add_argument('--basis', choices=('pinned', 'observed'), required=True)
