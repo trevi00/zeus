@@ -52,6 +52,8 @@ REBUILD_INTEGRATION_STEPS = [("uv sync --frozen --project target", None),  # bef
                              ("python compare/run.py run --only entry.cli_governance.pg --pg", None),
                              ("python compare/run.py run --only entry.cli_research_gov.pg --pg", None),
                              ("python compare/run.py run --only entry.cli_bus.pgredis --pg --redis", None),
+                             ("python compare/run.py run --only entry.cli_executor.pgredis --pg --redis", None),
+                             ("python compare/run.py run --only entry.cli_cycle_serve.pgredis --pg --redis", None),
                              ("python compare/run.py run --only delivery.restore.pg --pg", None),
                              ("python compare/run.py run --only storage.pg --only storage.redis --pg --redis", None),
                              ("python compare/run.py target-integration", None),
