@@ -68,7 +68,8 @@ def run(args) -> None:
     from codex_harness.composition import build, cli_tickets
     from codex_harness.entry.cli.output import emit
     from codex_harness.intake.application.tickets import render_ticket
-    tickets = cli_tickets.tickets(build())
+    service = build()
+    tickets = cli_tickets.tickets(service)
     command = args.ticket_command
     if command == "list":
         emit(tickets.list())
@@ -85,7 +86,13 @@ def run(args) -> None:
     elif command == "export" or (command == "sync" and args.preview):
         print(render_ticket(tickets.get(args.ticket_id)), end="")
     elif command == "dispatch":
-        raise RuntimeError("zeus ticket dispatch is composed in S10 unit C5")  # R-c9
+        # M7 cli.py:429-433 verbatim over the composed executor (owner, int43: the R-c9 refusal closed; K2 found it).
+        from codex_harness.composition.operation import build_executor
+        from codex_harness.entry.cli.goal import _json_file
+        manifest = _json_file(args.goal_manifest) if args.goal_manifest is not None else None
+        executor = build_executor(service)
+        emit(tickets.dispatch(args.ticket_id, args.revision, executor.git._git("rev-parse", "HEAD"),
+                              goal_manifest=manifest, criterion_id=args.criterion))
     elif command in {"evidence", "prepare-close", "close", "reopen", "review-close"}:
         emit(_lifecycle_command(tickets, args))
     else:

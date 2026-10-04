@@ -79,19 +79,54 @@ def test_the_dispatch_table_holds_ticket_and_sdd():
     assert {"ticket", "sdd"} <= set(dispatch_keys())
 
 
-def test_ticket_dispatch_refuses_until_unit_c5_r_c9(service, recorder, tmp_path):
-    ticket_id = cli_tickets.tickets(service).create(CONTENT)["id"]
-    with pytest.raises(RuntimeError, match=r"^zeus ticket dispatch is composed in S10 unit C5$"):
-        ticket.run(args_of(ticket, "ticket", "dispatch", ticket_id, "--revision", "1"))
+@pytest.fixture
+def dispatched(monkeypatch):
+    """int43 (owner): R-c9 is closed. `ticket dispatch` runs M7 cli.py:429-433 over the composed executor; the executor
+    is a fixture whose git answers the repository HEAD (M7 row 6 of test_goal_progress used the same stand-in)."""
+    from codex_harness.composition import operation
+    from codex_harness.entry.cli import output
+    outputs = []
+    monkeypatch.setattr(operation, "build_executor",
+                        lambda service: SimpleNamespace(git=SimpleNamespace(_git=lambda *a: "head-sha")))
+    monkeypatch.setattr(output, "emit", outputs.append)
+    return outputs
+
+
+def _manifest(row):
+    # test_goal_progress.py:34 `manifest` (the M7 fixture shape).
+    return {"version": 1, "id": "goal-1", "objective": "Resolve the fixture residual", "non_goals": ["Deploy"],
+            "criteria": [{"id": "c1", "acceptance": "Ticket closed with local evidence", "ticket_id": row["id"],
+                          "revision": row["revision"], "content_hash": row["content_hash"]}]}
+
+
+def test_ticket_dispatch_binds_the_executor_head_and_an_optional_goal_criterion(service, recorder, dispatched, tmp_path):
+    from codex_harness.intake.application.goal_progress import definition_hash
+    row = cli_tickets.tickets(service).create(CONTENT)
+    goal = tmp_path / "goal.json"
+    goal.write_text(json.dumps(_manifest(row)), encoding="utf-8")
+    ticket.run(args_of(ticket, "ticket", "dispatch", row["id"], "--revision", "1",
+                       "--goal-manifest", str(goal), "--criterion", "c1"))
+    bound = dispatched[-1]
+    assert bound["goal_binding"] == {"id": "goal-1", "definition_hash": definition_hash(_manifest(row)), "criterion_id": "c1"}
+    ticket.run(args_of(ticket, "ticket", "dispatch", row["id"], "--revision", "1"))
+    assert "goal_binding" not in dispatched[-1] and dispatched[-1]["id"] != bound["id"]
     assert recorder == []
 
 
-def test_the_main_shell_reports_the_dispatch_refusal_as_an_error_document(service, recorder, monkeypatch, capsys):
+def test_ticket_dispatch_refuses_a_criterion_without_its_manifest(service, recorder, dispatched):
+    from codex_harness.kernel.errors import ContractError
+    row = cli_tickets.tickets(service).create(CONTENT)
+    with pytest.raises(ContractError, match="required together"):
+        ticket.run(args_of(ticket, "ticket", "dispatch", row["id"], "--revision", "1", "--criterion", "c1"))
+    assert dispatched == [] and recorder == []
+
+
+def test_the_main_shell_reports_a_dispatch_refusal_as_an_error_document(service, recorder, dispatched, monkeypatch, capsys):
     monkeypatch.setattr("sys.argv", ["zeus", "ticket", "dispatch", "ZEUS-x", "--revision", "1"])
     with pytest.raises(SystemExit) as exit_:
         cli.main()
     assert exit_.value.code == 1
-    assert json.loads(capsys.readouterr().err) == {"error": "zeus ticket dispatch is composed in S10 unit C5"}
+    assert "error" in json.loads(capsys.readouterr().err)
 
 
 def test_ticket_sync_reaches_github_through_the_injected_run_process_r_c10(service, recorder):

@@ -301,7 +301,7 @@ def test_row5_unknown_compare_shapes_and_store_failures():
 
 
 # ----- 6. CLI wiring without provider side effects ------------------------------------------------
-@pytest.mark.skip(reason='product gap, not S11 (K2): `zeus ticket dispatch` is not composed at ad457fd7 (entry.cli.ticket.run raises "zeus ticket dispatch is composed in S10 unit C5", R-c9: the executor git-HEAD wiring); the case needs that product change, no test edit can reach it')
+@pytest.mark.skip(reason='replacement-verified (owner, int43): M7 row 6 drives `cli.ticket_command(service, args)` and `cli.goal_command(service, args)` through the `cli` placeholder; the target roots take `(args)` and build their own service (R-c1). `zeus ticket dispatch` is composed at int43 (R-c9 closed) and its dispatch, goal-binding and required-together assertions run in test_s10_c2c_ticket_sdd_roots.py::test_ticket_dispatch_*')
 def test_row6_cli_report_compare_and_dispatch_options(tmp_path, monkeypatch):
     svc = Harness(MemoryStore(), organization())
     tickets = Tickets(svc.store, svc.org)
