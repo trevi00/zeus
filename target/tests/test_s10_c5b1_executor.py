@@ -63,8 +63,10 @@ def test_the_wiring_table(tmp_path, settings):
     assert isinstance(task.continuations, ContinuationBindings)
     assert isinstance(task.hook_candidates.lifecycle, HookUnits)
     assert task.host_python == sys.executable
-    for name in ("audit_execution", "roles", "council", "feedback", "composition_admission", "research_admission"):
-        assert getattr(task, name) is None, name
+    # D13: C5b-2 wires five ports; research_admission stays None until C5b-3.
+    assert task.research_admission is None
+    for name in ("audit_execution", "roles", "council", "feedback", "composition_admission"):
+        assert getattr(task, name) is not None, name
     assert executor.decisions is not None and executor.service.store is task.store
 
 
@@ -114,7 +116,7 @@ def test_build_executor_takes_its_observer_from_build_observer(tmp_path, setting
     executor = operation.build_executor(knowledge=False)
     assert executor.service is handle and isinstance(executor.observer, CatalogCheckingObserver)
     assert executor.run_task is not None and executor.decisions is not None and executor.knowledge is None
-    assert executor.run_task.audit_execution is None and executor.research.pressure is not None
+    assert executor.run_task.audit_execution is not None and executor.research.pressure is not None
 
 
 def test_an_implementation_runs_end_to_end_through_the_real_evidence_gate(tmp_path, settings, monkeypatch):
