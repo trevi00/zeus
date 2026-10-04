@@ -141,6 +141,7 @@ def main() -> None:
         from codex_harness.entry.cli import (
             artifact,
             audit_repair,
+            autonomous,
             canary,
             cancel,
             cleanup,
@@ -161,6 +162,7 @@ def main() -> None:
             init_db,
             inspect,
             observe,
+            operate,
             organization,
             paths,
             project_graph,
@@ -196,7 +198,8 @@ def main() -> None:
                     "dge": dge.run, "decision-feedback": decision_feedback.run,
                     "release-abandon": release_abandon.run, "cleanup": cleanup.run, "research": research.run,
                     "improve": improve.run, "execute-one": execute_one.run, "rebase": rebase.run,
-                    "artifact": artifact.run, "cycle": cycle.run, "serve": serve.run, "rlm": rlm.run}
+                    "artifact": artifact.run, "cycle": cycle.run, "serve": serve.run, "rlm": rlm.run,
+                    "operate": operate.run, "autonomous": autonomous.run}
         if args.command not in composed:
             raise RuntimeError("zeus " + args.command + " is not composed in the rebuild yet (DESIGN-s10 §3)")
         composed[args.command](args)
