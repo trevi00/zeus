@@ -15,13 +15,21 @@ are `composition.research_program_adapters` (the host_os process runner and Git 
 """
 
 
-def research_program(store, token=None):
-    """`ResearchProgram(store[, token=...])` with its three composition ports wired; `token` is the cycle owner of a `--cycle-owner` run."""
+def research_program(store, token=None, observer=None):
+    """`ResearchProgram(store[, token=...])` with its three composition ports wired; `token` is the cycle owner of a `--cycle-owner` run.
+
+    `observer` (S10 F2-B) is an observer the caller already holds: the program is then the composition wrapper that reports its
+    investigation claims as `queue_item_waited` (`composition.queue_waits`); without one it is the plain `ResearchProgram`."""
     from codex_harness.coordination.application import execution_fence, outbox_relay
     from codex_harness.coordination.application.research_launch_facts import ResearchLaunchFacts
     from codex_harness.research.application.research_program import ResearchProgram
     ports = dict(launch_facts=ResearchLaunchFacts(), fences=execution_fence, outbox_quarantine=outbox_relay)
-    return ResearchProgram(store, **ports) if token is None else ResearchProgram(store, token=token, **ports)
+    if token is not None:
+        ports["token"] = token
+    if observer is not None:
+        from codex_harness.composition.queue_waits import observed_research_program
+        return observed_research_program(store, observer, **ports)
+    return ResearchProgram(store, **ports)
 
 
 def packaged_policy():

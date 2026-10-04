@@ -44,6 +44,7 @@ def build_runner(service, args, observer):
     when this wiring fails."""
     from codex_harness.composition import cli, cli_bus
     from codex_harness.composition.observation import build_collector
+    from codex_harness.composition.queue_waits import ObservedDesk
     from codex_harness.composition.operation import build_executor
     from codex_harness.coordination.application.desk_runner import DeskRunner
     from codex_harness.coordination.application.operation import BudgetedExecutor
@@ -53,6 +54,8 @@ def build_runner(service, args, observer):
 
     base = revision(args.revision)
     desk = front_desk(service, base)
+    # S10 F2-B: the claim is reported through the observer this runner is already built around (composition.queue_waits).
+    desk = ObservedDesk(desk, observer)
     # No knowledge adapter: a conversational turn writes no ontology and promotes nothing.
     executor = build_executor(service, observer=observer, knowledge=False)
     # The explicit Codex model label comes from the existing routing, never from the browser.

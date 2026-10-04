@@ -96,16 +96,21 @@ def _run(service, args) -> dict:
     owner = getattr(args, "cycle_owner", None)
     if owner is not None and not (args.ticks == 1 and CYCLE_OWNER.fullmatch(owner)):
         raise ProgramRefused("cycle_owner_invalid")
-    programs = cli_research_program.research_program(service.store) if owner is None \
-        else cli_research_program.research_program(service.store, token=lambda: owner)
-    repository, runtime = repository_root(), runtime_dir()
-    artifacts = cli_research_program.artifacts(runtime)
-    evaluator = None
+    evaluator, observer = None, None
     if args.intent == PROACTIVE:
         # Only a proactive run consults pressure, and the evaluator's transitions need the mandatory audit
         # observer; exempt runs keep their exact lightweight path (INV-DISCOVERY-PRESSURE-001).
         from codex_harness.composition.observation import build_observer
-        evaluator = cli_research_program.pressure_evaluator(service.store, build_observer(service.store, "discovery-pressure"))
+        observer = build_observer(service.store, "discovery-pressure")
+    # S10 F2-B: the program reports its dispatch claims through the observer a proactive run already holds; an exempt run
+    # builds none and constructs the program exactly as before.
+    ports = {} if observer is None else {"observer": observer}
+    programs = cli_research_program.research_program(service.store, **ports) if owner is None \
+        else cli_research_program.research_program(service.store, token=lambda: owner, **ports)
+    repository, runtime = repository_root(), runtime_dir()
+    artifacts = cli_research_program.artifacts(runtime)
+    if observer is not None:
+        evaluator = cli_research_program.pressure_evaluator(service.store, observer)
     sources = cli_research_program.research_sources(artifacts, pressure=evaluator)
     runner = cli_research_program.program_runner(service, programs, sources, cli_research.git_source(repository),
                                                  cli_research_program.git_capture(repository), cli_research_program.call_budget(),
