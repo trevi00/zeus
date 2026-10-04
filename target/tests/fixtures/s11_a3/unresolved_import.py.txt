@@ -1,0 +1,3 @@
+"""Negative control: an absent module and an absent name."""
+import codex_harness.absent_module
+from codex_harness.present import absent_name

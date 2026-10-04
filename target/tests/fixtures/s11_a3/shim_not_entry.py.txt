@@ -1,0 +1,5 @@
+"""Negative control: the one import is not from codex_harness.entry."""
+from codex_harness.kernel.demo import main
+
+if __name__ == "__main__":
+    main()

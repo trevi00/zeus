@@ -1,0 +1,5 @@
+"""A conforming shim: one entry import, the __main__ guard."""
+from codex_harness.entry.processes.demo import main
+
+if __name__ == "__main__":
+    main()

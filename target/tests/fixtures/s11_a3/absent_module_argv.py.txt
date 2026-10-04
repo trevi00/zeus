@@ -1,0 +1,2 @@
+argv = [python, "-m",
+        "codex_harness.adapters.no_such_module", "run"]

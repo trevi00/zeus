@@ -1,0 +1,4 @@
+"""Negative control: no __main__ guard."""
+from codex_harness.entry.processes.demo import main
+
+main()
