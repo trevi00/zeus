@@ -19,7 +19,9 @@ dependencies = [
 
 [project.scripts]
 zeus = "codex_harness.cli:main"
+zeus-supervisor = "codex_harness.supervisor:main"
 harness = "codex_harness.cli:main"
+harness-supervisor = "codex_harness.supervisor:main"
 
 [dependency-groups]
 dev = ["pytest>=8.3,<10", "ruff>=0.11,<1"]
