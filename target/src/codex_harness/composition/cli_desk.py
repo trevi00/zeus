@@ -44,8 +44,8 @@ def build_runner(service, args, observer):
     when this wiring fails."""
     from codex_harness.composition import cli, cli_bus
     from codex_harness.composition.observation import build_collector
-    from codex_harness.composition.queue_waits import ObservedDesk
     from codex_harness.composition.operation import build_executor
+    from codex_harness.composition.queue_waits import ObservedDesk
     from codex_harness.coordination.application.desk_runner import DeskRunner
     from codex_harness.coordination.application.operation import BudgetedExecutor
     from codex_harness.execution.adapters.call_budget import CallBudget
