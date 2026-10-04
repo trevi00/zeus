@@ -82,10 +82,11 @@ def test_observe_collect_runs_over_the_projecting_store(monkeypatch, capsys, tmp
                          attributes={"outbox_id": "m1", "reason": "bad", "quarantine_id": "q1"}) is not None
     code, out, err = run_main(monkeypatch, capsys, "observe", "collect")
     assert (code, err) == (0, "")
-    assert json.loads(out)["inserted"] == 1
+    # S10 A5-3: the cli.observe Collector start emits operations.collector_started (DESIGN-s10 §17b)
+    assert json.loads(out)["inserted"] == 2
     with store.transaction() as tx:
-        assert len(tx.scan(EVENT_BUCKET)) == 1
+        assert len(tx.scan(EVENT_BUCKET)) == 2
         assert tx.get(METRICS_BUCKET, "family:zeus_metrics_projected_observations_total") is not None
         rows = MetricsProjector(providers=observation_composition.PROVIDERS).snapshot(tx)
     [projected] = [r for r in rows if r["metric"] == "zeus_metrics_projected_observations_total"]
-    assert {tuple(s["labels"]): s["value"] for s in projected["series"]} == {("general",): 1}
+    assert {tuple(s["labels"]): s["value"] for s in projected["series"]} == {("general",): 1, ("operations",): 1}

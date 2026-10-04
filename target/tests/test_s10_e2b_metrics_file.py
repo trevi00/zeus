@@ -100,7 +100,9 @@ def test_publish_writes_the_metrics_and_health_files_after_a_success(runtime):
     journal = Journal()
     last = composition_monitor.publish_metrics(seeded(), runtime, journal, None, clock=lambda: NOW)
     assert last == NOW and journal.lines == []
-    assert (runtime / "zeus-metrics.prom").read_text("utf-8") == composition_monitor.render_metrics(seeded(), clock=lambda: NOW)
+    # S10 A5-3: R-a53 (4): the published main file includes the spool gauges of the runtime
+    assert (runtime / "zeus-metrics.prom").read_text("utf-8") == composition_monitor.render_metrics(
+        seeded(), clock=lambda: NOW, runtime=runtime)
     assert (runtime / "zeus-metrics-health.prom").read_text("utf-8") == render(health(True, NOW))
     assert sorted(p.name for p in runtime.iterdir()) == ["zeus-metrics-health.prom", "zeus-metrics.prom"]
 
