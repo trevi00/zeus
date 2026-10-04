@@ -1,0 +1,9 @@
+{
+ "family": "entry.cli_operation.pg",
+ "description": "The operate and autonomous roots through main() on a labelled disposable PostgreSQL (one fresh schema, init-db first, no mask) over a fixture git repository with one pinned commit: operate status of an unknown id; operate run of a file that is not JSON, of a file with a duplicate key and of a valid manifest (M7 tests/test_operation.py fixture) whose base revision is absent (base_revision_missing); autonomous status of an unknown id; autonomous run of an unsupported schema and of a valid v1 manifest (M7 tests/test_autonomous.py fixture) whose base revision is absent (the target sets ZEUS_COMPOSITION_PROFILE=development: declared difference E-c21); stdout, stderr and exit code per case, the fixture paths normalized",
+ "reference_driver": "drivers/reference/s10_cli_operation.py",
+ "target_driver": "drivers/target/s10_cli_operation.py",
+ "requires": "disposable-postgresql",
+ "golden": "goldens/reference/entry.cli_operation.pg.json",
+ "slice": "S10"
+}
