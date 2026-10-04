@@ -6,7 +6,7 @@ Does not own: dispatch (entry.cli main) and composition (composition, compositio
 Entry points: add_parser, run
 Contracts: none
 
-Moved from M7 cli.py:277-285 (SOURCE e38aa722) by named rules (A/evidence/rebuild/s10/unit-p/transcribe.py); the parser statements are M7's verbatim. `run` is M7 `observe_command` (SOURCE cli.py:157-172) with `service = build()` first `SpoolDirectory(observation_root())` on `composition.cli_bus.spool()` (an entry module may not import an adapter) and the imports remapped (S10 unit C4).
+Moved from M7 cli.py:277-285 (SOURCE e38aa722) by named rules (A/evidence/rebuild/s10/unit-p/transcribe.py); the parser statements are M7's verbatim. `run` is M7 `observe_command` (SOURCE cli.py:157-172) with `service = build()` first `SpoolDirectory(observation_root())` on `composition.cli_bus.spool()` (an entry module may not import an adapter) and the imports remapped (S10 unit C4). `build_collector(…, announce=False)`: the one-shot reporter emits no `collector_started` (owner, int42, DESIGN-s10 §17e).
 """
 
 
@@ -30,7 +30,7 @@ def run(args) -> None:
     service = build()
     if args.observe_command == "collect":
         observer = build_observer(service.store, "cli.observe")
-        result = build_collector(service.store, observer).collect()
+        result = build_collector(service.store, observer, announce=False).collect()
         observer.close()
         emit(result)
     elif args.observe_command == "status":

@@ -14,6 +14,8 @@ S10 unit A5-3 (DESIGN-s10 §17b): `build_collector` emits `operations.collector_
 observer process run (`observations.py` is byte-pinned, so the emit lives here). `previous_exit` is derived from the spool
 health records that already exist: the latest other run of the same component is `clean` when its spool was closed, `unknown`
 while its writer is alive, otherwise `crashed`, which means it ended without closing its spool (a kill is not distinguishable).
+`announce=False` (owner, int42, DESIGN-s10 §17e) is for the one-shot `observe collect` reporter only: it would otherwise
+collect, and report as M7's counts, the lifecycle event it just emitted about itself (the `entry.cli_bus.pgredis` SOURCE golden).
 """
 
 from __future__ import annotations
@@ -95,13 +97,13 @@ def _emit_collector_started(observer):
         pass
 
 
-def build_collector(store, observer=None):
+def build_collector(store, observer=None, *, announce=True):
     from codex_harness.observation.adapters.observation_schema import validate_observation
     from codex_harness.observation.adapters.observation_spool import SpoolDirectory
     from codex_harness.observation.application.metrics_projector import MetricsProjector, ProjectingStore
     from codex_harness.observation.application.observations import Collector
 
-    if observer is not None:
+    if observer is not None and announce:
         _emit_collector_started(observer)
     projecting = ProjectingStore(store, MetricsProjector(providers=PROVIDERS))
     return Collector(projecting, SpoolDirectory(observation_root()), validate=validate_observation,
