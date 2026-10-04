@@ -9,9 +9,8 @@ unchanged. Adaptations, all construction/import/patch-target, from the `m7_evide
 `EvidenceInspector` and `ProjectEvidenceInspector` are the moved classes with the host_os `ProcessTree` class injected;
 the cases that replaced the module global `_capture` of `codex_harness.adapters.project_evidence` replace the same global
 of the moved module (`codex_harness.evidence.adapters.project_evidence._capture`, called with the extra `process_tree`
-keyword: the one replacement that names its parameters, `capture` of `timed`, gains `process_tree=None`); the domain/application/kernel/storage names are their target homes. Kept skipped whole,
-unrewritten: the case that drives the S10 operator CLI helper `operation_cli.identity` and the case that builds the executor
-composition from a profile (S10: composition chooses the evidence inspector).
+keyword: the one replacement that names its parameters, `capture` of `timed`, gains `process_tree=None`); the domain/application/kernel/storage names are their target homes. The case that drives the operator CLI helper `operation_cli.identity` runs against its target home `composition.cli_operation.identity` (S10 C6a, R-c24).
+Kept skipped whole, unrewritten: the case that builds the executor composition from a profile (S10: composition chooses the evidence inspector).
 """
 import json
 import os
@@ -25,9 +24,9 @@ from m7_evidence import (
     execution_instructions,
     load_profile,
     resolve_profile,
-    unavailable,
 )
 
+from codex_harness.composition.cli_operation import identity
 from codex_harness.evidence.application.evidence_inspection import BUCKET, EvidenceInspections
 from codex_harness.evidence.domain.evidence import parse_policy
 from codex_harness.evidence.domain.project_evidence import (
@@ -43,8 +42,6 @@ from codex_harness.execution.adapters.output_schema import preflight
 from codex_harness.kernel.errors import ContractError
 from codex_harness.storage.adapters.file_artifacts import FileArtifacts
 from codex_harness.storage.adapters.memory_store import MemoryStore
-
-identity = unavailable("S10", "operation_cli.identity")
 
 PY = sys.executable
 PROBE = 'zeus_backend_probe'  # a module that exists only under the candidate's backend/src
@@ -488,7 +485,6 @@ def test_worker_schema_is_per_profile_closed_and_inside_the_output_subset():
     preflight(first)
 
 
-@pytest.mark.skip(reason='S10: operation_cli.identity (the operator CLI helper)')
 def test_operation_identity_binds_the_profile_and_keeps_the_old_shape_without_one(tmp_path):
     class Policy:
         def summary(self):

@@ -8,7 +8,7 @@ Import paths and the injected fake are rewritten through `m7_containers` (its do
 adaptations); any other adaptation is named in place.
 
 Formerly not ported here (S2-S7 pilots); batch U3 below copies every one of them:
-- test_identity_binds_isolation_only_when_selected: S10 entry (operation_cli identity)
+- test_identity_binds_isolation_only_when_selected: S10 entry (operation_cli identity); runs since S10 C6a against `composition.cli_operation.identity`
 - test_host_isolation_refuses_project_profile_and_never_builds_host_path: S10 composition (bootstrap)
 - test_entry_reuses_the_runtime_contract_and_tags_every_line: S10 entry (isolated_worker_entry shim)
 - test_entry_passes_the_read_only_flag_only_under_its_own_protocol: S10 entry (isolated_worker_entry shim)
@@ -25,9 +25,12 @@ import subprocess
 import sys
 import time
 from pathlib import Path
+from types import SimpleNamespace
 
 import pytest
 from m7_containers import ContractError, cleanup_ledger, install_docker, install_fake, iw, staging_rules
+
+from codex_harness.composition import cli_operation
 
 IMAGE = "sha256:" + "a" * 64
 # Adaptation: the DUMMY fixture token is assembled at run time so the tree carries no credential-shaped
@@ -186,11 +189,10 @@ def test_absent_configuration_is_host_mode_and_partial_or_unknown_refuses():
     assert one["image"] == IMAGE and one["digest"] != other["digest"]
 
 
-@pytest.mark.skip(reason="S10: the operator CLI identity (operation_cli)")
 def test_identity_binds_isolation_only_when_selected(config, tmp_path):
     policy = SimpleNamespace(summary=lambda: {"policy_digest": "p", "config_digest": "c"})
-    legacy = operation_cli.identity({}, tmp_path, policy, {}, tmp_path)
-    bound = operation_cli.identity({}, tmp_path, policy, {}, tmp_path, isolation=config)
+    legacy = cli_operation.identity({}, tmp_path, policy, {}, tmp_path)
+    bound = cli_operation.identity({}, tmp_path, policy, {}, tmp_path, isolation=config)
     assert "isolation" not in legacy and {k: v for k, v in bound.items() if k != "isolation"} == legacy
     assert bound["isolation"]["image"] == IMAGE and bound["isolation"]["limits"] == config["limits"]
 

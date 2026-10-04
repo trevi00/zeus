@@ -1,6 +1,6 @@
 """Ported SOURCE M7 suite `tests/test_autonomous.py` (e38aa722) run against the S8 target (DESIGN-s8 §29).
 
-Every assertion is M7's, unchanged. Adaptations, all construction/import/patch-target-only: the M7 names `Harness`, `Workflow`, `organization`, `packaged_policy`, `AutonomousRun`, `CouncilRun`, `Operation`, `load_isolation` come from the `m7_research` shim (see its docstring for each) and `Executor` from `m7_executor`; every other name from its target home in `kernel`, `storage`, `research`, `coordination`, `knowledge`, `execution` and `observation`. A patch of M7's `adapters.bus.Redis` targets `storage.adapters.redis_bus.Redis`, of `adapters.executor.AppServer` `m7_executor.AppServer`, and the lazy `application.autonomous`/`application.operation` module imports the `coordination.application` ones. A test that needs a capability
+Every assertion is M7's, unchanged. Adaptations, all construction/import/patch-target-only: the M7 names `Harness`, `Workflow`, `organization`, `packaged_policy`, `AutonomousRun`, `CouncilRun`, `Operation`, `load_isolation` come from the `m7_research` shim (see its docstring for each) and `Executor` from `m7_executor`; every other name from its target home in `kernel`, `storage`, `research`, `coordination`, `knowledge`, `execution` and `observation`. A patch of M7's `adapters.bus.Redis` targets `storage.adapters.redis_bus.Redis`, of `adapters.executor.AppServer` `m7_executor.AppServer`, and the lazy `application.autonomous`/`application.operation` module imports the `coordination.application` ones. `test_the_cli_owner_wires_one_run_scoped_bus_per_run_and_records_it_on_the_receipt` runs since S10 C6a: `autonomous_cli.run` is `entry.cli.autonomous._run` and each patch targets the new home of the name (`composition`, `composition.cli_operation`, `entry.cli.operation`, `entry.cli.dge`, `research.domain.council`). A test that needs a capability
 outside S1-S8 is kept whole under a skip naming its slice. M7 docstring follows.
 
 INV-AUTONOMOUS-001 with labelled fixtures: the executor, budget, artifact port, clock and role
@@ -384,7 +384,6 @@ def test_promotion_is_idempotent_refuses_conflict_and_rolls_back_with_the_receip
 
 
 # ----- run-scoped production wiring (SPEC "Real council progress: isolated delivery", 2026-09-24) ---------
-@pytest.mark.skip(reason="S10: autonomous_cli (the operator CLI) and bootstrap composition")
 def test_the_cli_owner_wires_one_run_scoped_bus_per_run_and_records_it_on_the_receipt(monkeypatch, tmp_path):
     """The REAL `autonomous_cli.run` wiring and the REAL RedisBus constructor (on the LABELLED fixture
     Redis factory, no network); every heavier service it composes is a LABELLED stand-in. The one
@@ -392,8 +391,15 @@ def test_the_cli_owner_wires_one_run_scoped_bus_per_run_and_records_it_on_the_re
     run id gets the same namespace, and the old global namespace is never the run's bus."""
     from test_bus import FakeRedisFactory, FakeRedisServer
 
-    from codex_harness import bootstrap
-    from codex_harness.adapters import autonomous_cli, call_budget, configuration, project_evidence
+    from codex_harness import composition
+    from codex_harness.composition import cli_operation, cli_research, configuration, observation, operation
+    from codex_harness.coordination.application import autonomous as autonomous_run
+    from codex_harness.coordination.application import council as council_run
+    from codex_harness.entry.cli import autonomous as autonomous_cli
+    from codex_harness.entry.cli import dge as dge_cli
+    from codex_harness.entry.cli import operation as operation_cli
+    from codex_harness.execution.adapters import call_budget
+    from codex_harness.research.domain import council
     from codex_harness.storage.adapters.redis_bus import run_namespace
 
     handed = []
@@ -417,20 +423,27 @@ def test_the_cli_owner_wires_one_run_scoped_bus_per_run_and_records_it_on_the_re
     monkeypatch.setattr(configuration, "settings", lambda: {"HARNESS_REDIS_NAMESPACE": "ns"})
     monkeypatch.setattr(configuration, "repository_root", lambda: tmp_path)
     monkeypatch.setattr(configuration, "runtime_dir", lambda: tmp_path)
-    monkeypatch.setattr(project_evidence, "load_profile", lambda host: None)
+    monkeypatch.setattr(operation, "host_evidence_profile", lambda: None)
     monkeypatch.setattr(call_budget, "CallBudget", lambda: None)
-    for name, value in (("redis_url", lambda: "redis://a.example:6379/0"), ("host_isolation", lambda profile: None),
-                        ("build_observer", lambda store, name: Observer()), ("build_collector", lambda store, observer: None),
-                        ("build_executor", lambda service, **kw: type("Executor", (), {"artifacts": None})())):
-        monkeypatch.setattr(bootstrap, name, value)
-    for name, value in (("read_document", lambda path, label: dict(path)), ("validate_any_manifest", lambda doc, policy: doc),
-                        ("packaged_policy", lambda: None), ("execution_policy", lambda manifest, host: None),
-                        ("GitSource", lambda root: None), ("bind_goal", lambda manifest, source: {}),
-                        ("identity", lambda *args, **kwargs: {}), ("repository_identity", lambda root: "r"),
-                        ("profile", lambda manifest: {"version": 1}), ("AutonomousRun", Recording), ("CouncilRun", Recording)):
-        monkeypatch.setattr(autonomous_cli, name, value)
+    for module, name, value in ((composition, "redis_url", lambda: "redis://a.example:6379/0"),
+                                (operation, "host_isolation", lambda profile: None),
+                                (observation, "build_observer", lambda store, name: Observer()),
+                                (observation, "build_collector", lambda store, observer: None),
+                                (operation, "build_executor", lambda service, **kw: type("Executor", (), {"artifacts": None})())):
+        monkeypatch.setattr(module, name, value)
+    for module, name, value in ((operation_cli, "read_document", lambda path, label: dict(path)),
+                                (council, "validate_any_manifest", lambda doc, policy: doc),
+                                (cli_operation, "packaged_policy", lambda: None),
+                                (cli_operation, "execution_policy", lambda manifest, host: None),
+                                (cli_research, "git_source", lambda root: None),
+                                (operation_cli, "bind_goal", lambda manifest, source: {}),
+                                (cli_operation, "identity", lambda *args, **kwargs: {}),
+                                (dge_cli, "_repository_identity", lambda root: "r"),
+                                (council, "profile", lambda manifest: {"version": 1}),
+                                (autonomous_run, "AutonomousRun", Recording), (council_run, "CouncilRun", Recording)):
+        monkeypatch.setattr(module, name, value)
     service = Harness(MemoryStore(), organization())
-    receipts = [autonomous_cli.run(service, type("Args", (), {"file": {"id": run_id}})())
+    receipts = [autonomous_cli._run(service, type("Args", (), {"file": {"id": run_id}})())
                 for run_id in ("rp-002.c001", "rp-003.c001", "rp-002.c001")]
     namespaces = [bus.namespace for bus in handed]
     assert namespaces == [run_namespace("ns", "rp-002.c001"), run_namespace("ns", "rp-003.c001"),
