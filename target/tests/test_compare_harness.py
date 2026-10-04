@@ -355,3 +355,49 @@ def test_a_pair_family_target_side_gets_its_own_fresh_pair(tmp_path, monkeypatch
     run.run(False, False, [], pg=True)
     assert events == [("enter", 1), ("reference", "pair-1"), ("exit", 1),
                       ("enter", 2), ("target", "pair-2"), ("exit", 2)]
+
+
+def test_a_postgresql_and_redis_family_needs_both_flags_and_gets_both_env_names(tmp_path, monkeypatch):
+    """R-c7: `disposable-postgresql+redis` runs only with `--pg` AND `--redis`, starts one PostgreSQL and one Redis
+    in one run, and hands both `ZEUS_REBUILD_PG_DSN` and `ZEUS_REBUILD_REDIS_URL` to the driver."""
+    run = _run_module()
+    events = []
+
+    class Fixture:
+        def __init__(self, work):
+            pass
+
+        def __enter__(self):
+            events.append(("enter", type(self).__name__))
+            return self
+
+        def __exit__(self, *exc):
+            events.append(("exit", type(self).__name__))
+            return False
+
+    class PG(Fixture):
+        dsn = "dsn-x"
+
+    class RD(Fixture):
+        url = "url-x"
+
+    golden = tmp_path / "golden.json"
+    golden.write_text("{}", encoding="utf-8")
+    (tmp_path / "venv-ref" / "bin").mkdir(parents=True)
+    (tmp_path / "venv-ref" / "bin" / "python").write_text("", encoding="utf-8")
+    scenario = {"family": "x.both", "slice": "S10", "requires": "disposable-postgresql+redis",
+                "reference_driver": "unused.py", "golden": str(golden)}
+    monkeypatch.setattr(run, "scenarios", lambda: [scenario])
+    monkeypatch.setattr(run, "SCRATCH", tmp_path)
+    monkeypatch.setattr(run, "DisposablePostgres", PG)
+    monkeypatch.setattr(run, "DisposableRedis", RD)
+    monkeypatch.setattr(run, "run_driver", lambda python, driver, work, extra, use_bwrap, binds=None: (
+        events.append(("reference", extra.get("ZEUS_REBUILD_PG_DSN"), extra.get("ZEUS_REBUILD_REDIS_URL")))
+        or {"origin": {}, "result": {}}))
+    for kwargs in ({}, {"pg": True}, {"redis": True}):
+        report, _ = run.run(False, False, [], **kwargs)
+        row = report["scenarios"]["x.both"]["reference"]
+        assert row.startswith("not requested") and "--pg" in row and "--redis" in row, kwargs
+    assert events == []
+    run.run(False, False, [], pg=True, redis=True)
+    assert events == [("enter", "PG"), ("enter", "RD"), ("reference", "dsn-x", "url-x"), ("exit", "RD"), ("exit", "PG")]

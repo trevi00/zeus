@@ -476,9 +476,14 @@ def run(record: bool, use_bwrap: bool, only: list[str], pg: bool = False,
             continue
         requires = scenario.get("requires")
         needs_pair = requires == "disposable-postgresql-pair"
-        needs_pg, needs_redis = requires == "disposable-postgresql" or needs_pair, requires == "disposable-redis"
+        needs_both = requires == "disposable-postgresql+redis"  # R-c7: one PostgreSQL AND one Redis in one run
+        needs_pg = requires == "disposable-postgresql" or needs_pair or needs_both
+        needs_redis = requires == "disposable-redis" or needs_both
         if (needs_pg and not pg) or (needs_redis and not redis):
-            flag = "--pg: a labelled disposable PostgreSQL" if needs_pg else "--redis: a labelled disposable Redis"
+            if needs_both:
+                flag = "--pg and --redis: a labelled disposable PostgreSQL and a labelled disposable Redis"
+            else:
+                flag = "--pg: a labelled disposable PostgreSQL" if needs_pg else "--redis: a labelled disposable Redis"
             report["scenarios"][family] = {"slice": scenario["slice"], "reference": f"not requested (needs {flag})"}
             continue
         target = scenario.get("target_driver")
@@ -492,15 +497,22 @@ def run(record: bool, use_bwrap: bool, only: list[str], pg: bool = False,
                 dump = work / "dump"
                 dump.mkdir(mode=0o700)
                 fixture = PostgresPair(work, dump)
+            elif needs_both:
+                fixture = None
             else:
                 fixture = DisposablePostgres(work) if needs_pg else DisposableRedis(work) if needs_redis else None
-            with fixture if fixture is not None else contextlib.nullcontext():
-                if needs_pair:
-                    extra[PG_PAIR_ENV] = fixture.description()
-                elif needs_pg:
-                    extra["ZEUS_REBUILD_PG_DSN"] = fixture.dsn
-                if needs_redis:
-                    extra["ZEUS_REBUILD_REDIS_URL"] = fixture.url
+            with contextlib.ExitStack() as stack:
+                if needs_both:
+                    extra["ZEUS_REBUILD_PG_DSN"] = stack.enter_context(DisposablePostgres(work)).dsn
+                    extra["ZEUS_REBUILD_REDIS_URL"] = stack.enter_context(DisposableRedis(work)).url
+                elif fixture is not None:
+                    stack.enter_context(fixture)
+                    if needs_pair:
+                        extra[PG_PAIR_ENV] = fixture.description()
+                    elif needs_pg:
+                        extra["ZEUS_REBUILD_PG_DSN"] = fixture.dsn
+                    if needs_redis:
+                        extra["ZEUS_REBUILD_REDIS_URL"] = fixture.url
                 result = run_driver(python, COMPARE / scenario["reference_driver"], work / "reference-side",
                                     extra, use_bwrap, binds=[work])
                 if target_path is not None and target_path.exists() and not needs_pair:
