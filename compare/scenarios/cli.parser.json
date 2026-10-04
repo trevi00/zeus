@@ -9,26 +9,26 @@
   {
    "path": "$.node_count",
    "op": "replace",
-   "value": 159,
-   "authority": "S10 G20-D6 (DESIGN-s10 section 14, owner 2026-10-04): `zeus research-package` is a declared target addition (RF-RT has no M7 counterpart); the root and its six subcommands are appended after the M7 roots, so the counts, the nodes and the top-level help change in exactly this way and nothing else"
+   "value": 162,
+   "authority": "S10 G20-D6 (DESIGN-s10 section 14, owner 2026-10-04): `zeus research-package` is a declared target addition (RF-RT has no M7 counterpart); the root and its six subcommands are appended after the M7 roots, so the counts, the nodes and the top-level help change in exactly this way and nothing else; S10 A5-1b (DESIGN-s10 section 17a, owner 2026-10-04): `zeus dlq` (list, replay) is a declared target addition (no M7 counterpart), appended after research-package"
   },
   {
    "path": "$.root_count",
    "op": "replace",
-   "value": 52,
-   "authority": "S10 G20-D6 (DESIGN-s10 section 14, owner 2026-10-04): `zeus research-package` is a declared target addition (RF-RT has no M7 counterpart); the root and its six subcommands are appended after the M7 roots, so the counts, the nodes and the top-level help change in exactly this way and nothing else"
+   "value": 53,
+   "authority": "S10 G20-D6 (DESIGN-s10 section 14, owner 2026-10-04): `zeus research-package` is a declared target addition (RF-RT has no M7 counterpart); the root and its six subcommands are appended after the M7 roots, so the counts, the nodes and the top-level help change in exactly this way and nothing else; S10 A5-1b (DESIGN-s10 section 17a, owner 2026-10-04): `zeus dlq` (list, replay) is a declared target addition (no M7 counterpart), appended after research-package"
   },
   {
    "path": "$.top.help_bytes",
    "op": "replace",
-   "value": 3838,
-   "authority": "S10 G20-D6 (DESIGN-s10 section 14, owner 2026-10-04): `zeus research-package` is a declared target addition (RF-RT has no M7 counterpart); the root and its six subcommands are appended after the M7 roots, so the counts, the nodes and the top-level help change in exactly this way and nothing else"
+   "value": 3925,
+   "authority": "S10 G20-D6 (DESIGN-s10 section 14, owner 2026-10-04): `zeus research-package` is a declared target addition (RF-RT has no M7 counterpart); the root and its six subcommands are appended after the M7 roots, so the counts, the nodes and the top-level help change in exactly this way and nothing else; S10 A5-1b (DESIGN-s10 section 17a, owner 2026-10-04): `zeus dlq` (list, replay) is a declared target addition (no M7 counterpart), appended after research-package"
   },
   {
    "path": "$.top.help_sha256",
    "op": "replace",
-   "value": "5f2c5ffc0ca0a27e8843149dcac3860b3a824f50fe59e002be520a06fb5c20bd",
-   "authority": "S10 G20-D6 (DESIGN-s10 section 14, owner 2026-10-04): `zeus research-package` is a declared target addition (RF-RT has no M7 counterpart); the root and its six subcommands are appended after the M7 roots, so the counts, the nodes and the top-level help change in exactly this way and nothing else"
+   "value": "4b27ce0810eef65e4c01c0cb43404185cf01e2faa47621e7fa2fbca1a077c8cd",
+   "authority": "S10 G20-D6 (DESIGN-s10 section 14, owner 2026-10-04): `zeus research-package` is a declared target addition (RF-RT has no M7 counterpart); the root and its six subcommands are appended after the M7 roots, so the counts, the nodes and the top-level help change in exactly this way and nothing else; S10 A5-1b (DESIGN-s10 section 17a, owner 2026-10-04): `zeus dlq` (list, replay) is a declared target addition (no M7 counterpart), appended after research-package"
   },
   {
    "path": "$.nodes",
@@ -4425,9 +4425,81 @@
      "help_sha256": "9e610529570ba80f70408bce2e8a048dd52c7567db0a62110a28deeed7a21cf7",
      "root": false,
      "usage": "usage: zeus research-package unexempt [-h] --reason REASON key"
+    },
+    {
+     "arguments": [],
+     "command": "zeus dlq",
+     "help_bytes": 312,
+     "help_exit": 0,
+     "help_sha256": "5ad4a6eb5500515c1dc1954b48084086cf94a68e9d66a1625b1b82c0d4a2fd1c",
+     "root": true,
+     "usage": "usage: zeus dlq [-h] {list,replay} ..."
+    },
+    {
+     "arguments": [],
+     "command": "zeus dlq list",
+     "help_bytes": 82,
+     "help_exit": 0,
+     "help_sha256": "887c1f03e1e92c3402fb4544f7490264289e9b751a33ece40f20d457ddc2b929",
+     "root": false,
+     "usage": "usage: zeus dlq list [-h]"
+    },
+    {
+     "arguments": [
+      {
+       "action": "_StoreAction",
+       "choices": null,
+       "default": null,
+       "dest": "source",
+       "nargs": null,
+       "options": [
+        "--source"
+       ],
+       "required": true
+      },
+      {
+       "action": "_StoreAction",
+       "choices": null,
+       "default": null,
+       "dest": "entry_id",
+       "nargs": null,
+       "options": [
+        "--entry-id"
+       ],
+       "required": true
+      },
+      {
+       "action": "_StoreAction",
+       "choices": null,
+       "default": null,
+       "dest": "reason",
+       "nargs": null,
+       "options": [
+        "--reason"
+       ],
+       "required": true
+      },
+      {
+       "action": "_StoreAction",
+       "choices": null,
+       "default": null,
+       "dest": "actor",
+       "nargs": null,
+       "options": [
+        "--actor"
+       ],
+       "required": true
+      }
+     ],
+     "command": "zeus dlq replay",
+     "help_bytes": 310,
+     "help_exit": 0,
+     "help_sha256": "0aa4f1b22aedcb992b02626821ca96c40bd208b1d8544bd86e7ee7ea59caf128",
+     "root": false,
+     "usage": "usage: zeus dlq replay [-h] --source SOURCE --entry-id ENTRY_ID --reason REASON --actor ACTOR"
     }
    ],
-   "authority": "S10 G20-D6 (DESIGN-s10 section 14, owner 2026-10-04): `zeus research-package` is a declared target addition (RF-RT has no M7 counterpart); the root and its six subcommands are appended after the M7 roots, so the counts, the nodes and the top-level help change in exactly this way and nothing else"
+   "authority": "S10 G20-D6 (DESIGN-s10 section 14, owner 2026-10-04): `zeus research-package` is a declared target addition (RF-RT has no M7 counterpart); the root and its six subcommands are appended after the M7 roots, so the counts, the nodes and the top-level help change in exactly this way and nothing else; S10 A5-1b (DESIGN-s10 section 17a, owner 2026-10-04): `zeus dlq` (list, replay) is a declared target addition (no M7 counterpart), appended after research-package"
   }
  ]
 }

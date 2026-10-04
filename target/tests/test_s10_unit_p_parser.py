@@ -42,14 +42,16 @@ def test_the_51_root_modules_each_define_add_parser_and_at_most_run():
     # entry.cli.threshold_proposals, threshold_replay, observed_assets: the M7 argparse mains (V27 argparse mains, not roots)
     assert {p.stem for p in PACKAGE.glob("*.py")} == {r.replace("-", "_") for r in roots} | {"__init__", "output", "operation", "threshold_proposals",
                                                                                            "threshold_replay", "observed_assets",
-                                                                                           "research_package"}  # G20-D6: a declared target addition (RF-RT)
+                                                                                           "research_package",
+                                                                                           "dlq"}  # G20-D6: a declared target addition (RF-RT)
+    # S10 A5-1b: dlq, a declared target addition (DESIGN-s10 §17a)
 
 
 def test_parser_root_order_equals_the_golden_root_order():
     from codex_harness.entry import cli
 
     # G20-D6: a declared target addition (RF-RT): `research-package` follows the M7 roots.
-    assert parser_roots(cli.parser()) == golden_roots() + ["research-package"]
+    assert parser_roots(cli.parser()) == golden_roots() + ["research-package", "dlq"]  # S10 A5-1b: dlq, a declared target addition (DESIGN-s10 §17a)
 
 
 def m7_assignment(path, name):

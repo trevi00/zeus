@@ -64,7 +64,8 @@ def test_the_dispatch_dict_covers_every_parser_root_and_an_unknown_command_still
     # int38 (owner): every lane's roots are integrated, so the dispatch dict covers EVERY parser root: the 51 M7 roots
     # plus the declared G20-D6 target addition `research-package` (DESIGN-s10 §14).
     assert composed_roots() == parser_roots()
-    assert len(parser_roots()) == 52 and "research-package" in parser_roots()
+    assert len(parser_roots()) == 53 and {"research-package", "dlq"} <= parser_roots()
+    # S10 A5-1b: dlq, a declared target addition (DESIGN-s10 §17a)
     real = cli.parser
 
     def parser_with_unknown_root():

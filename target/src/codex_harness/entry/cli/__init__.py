@@ -38,6 +38,7 @@ def parser() -> argparse.ArgumentParser:
         demo,
         desk,
         dge,
+        dlq,
         doctor,
         embed,
         execute_one,
@@ -129,6 +130,7 @@ def parser() -> argparse.ArgumentParser:
     ticket.add_parser(commands)
     goal.add_parser(commands)
     research_package.add_parser(commands)
+    dlq.add_parser(commands)
     return p
 
 
@@ -155,6 +157,7 @@ def main() -> None:
             demo,
             desk,
             dge,
+            dlq,
             doctor,
             embed,
             execute_one,
@@ -206,7 +209,7 @@ def main() -> None:
                     "ticket": ticket.run, "sdd": sdd.run,
                     "audit-repair": audit_repair.run, "audit-service": audit_service.run, "worker-session": worker_session.run,
                     "dge": dge.run, "decision-feedback": decision_feedback.run,
-                    "release-abandon": release_abandon.run, "cleanup": cleanup.run, "research": research.run, "research-package": research_package.run,
+                    "release-abandon": release_abandon.run, "cleanup": cleanup.run, "research": research.run, "research-package": research_package.run, "dlq": dlq.run,
                     "improve": improve.run, "execute-one": execute_one.run, "rebase": rebase.run,
                     "artifact": artifact.run, "cycle": cycle.run, "serve": serve.run, "rlm": rlm.run,
                     "operate": operate.run, "autonomous": autonomous.run,
