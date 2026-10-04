@@ -2,10 +2,12 @@
 
 Layer: application
 Context: research
-Owns: bucket research_packages (one row per `(key, version)`, row key `digest({"key", "version"})`), PackageRefused
+Owns: bucket research_packages (one row per `(key, version)`, row key `digest({"key", "version"})`), bucket research_exemptions
+    (append-only rows per research key, row key `digest({"key", "seq"})`), PackageRefused
 Does not own: the admission judgement over a package (research_package_policy), the release of a holding admission when
     a package is accepted (a composition/entry use case, G20-D6), the record shape (research.domain.research_package)
-Entry points: ResearchPackages.record, ResearchPackages.accept, ResearchPackages.withdraw, ResearchPackages.current
+Entry points: ResearchPackages.record, ResearchPackages.accept, ResearchPackages.withdraw, ResearchPackages.current,
+    ResearchPackages.exempt, ResearchPackages.unexempt, ResearchPackages.active_exemption
 Contracts: INV-RESEARCH-001, INV-RESEARCH-004 (addendum A1 v2 RF-RT)
 
 A declared target addition (no M7 counterpart). Every method joins the caller's transaction (§2.9).
@@ -14,15 +16,19 @@ A declared target addition (no M7 counterpart). Every method joins the caller's 
 - The only updates to an existing row are the recorded lifecycle transitions: `accept`, `withdraw` and the
   supersession mark. Each appends an event (with its time) to the row's `history`, so the superseded record is KEPT
   (S4 Nygard: "it was the decision, but is no longer").
+- `exempt` / `unexempt` append operator-recorded exemption rows `{key, seq, class, reason, recorded_by, recorded_at,
+  active}` (G20-D4 revision); the latest row for a key wins, and `active_exemption` reads it (None when absent or
+  unexempted). `seq` orders the rows; the row key is `digest({"key", "seq"})`.
 - `current` follows `superseded_by` from the latest version to the head; a cycle or a missing target is a typed refusal.
 """
 from __future__ import annotations
 
 from codex_harness.kernel.errors import ContractError, require
 from codex_harness.kernel.ids import digest, utcnow
-from codex_harness.research.domain.research_package import DIGEST, validate_package
+from codex_harness.research.domain.research_package import DIGEST, EXEMPTION_CLASSES, validate_package
 
 BUCKET = "research_packages"
+EXEMPTIONS = "research_exemptions"
 
 
 class PackageRefused(ContractError):
@@ -114,3 +120,34 @@ class ResearchPackages:
             if row is None:
                 raise PackageRefused("package_supersession_missing")
         return row
+
+    def _exemption_rows(self, tx, key: str) -> list:
+        return sorted((row for row in tx.scan(EXEMPTIONS) if row.get("key") == key), key=lambda row: row["seq"])
+
+    def _append_exemption(self, tx, key: str, cls: str, reason: str, recorded_by: str, active: bool) -> dict:
+        require(isinstance(recorded_by, str) and bool(recorded_by.strip()), "A research exemption must name its recorder")
+        rows = self._exemption_rows(tx, key)
+        seq = rows[-1]["seq"] + 1 if rows else 1
+        row = {"key": key, "seq": seq, "class": cls, "reason": reason, "recorded_by": recorded_by,
+               "recorded_at": utcnow(self.clock), "active": active}
+        tx.put(EXEMPTIONS, digest({"key": key, "seq": seq}), row)
+        return row
+
+    def exempt(self, tx, key: str, cls: str, reason: str, recorded_by: str) -> dict:
+        """G20-D4 revision: declare `key` exempt from research-first admission; `cls` is one of EXEMPTION_CLASSES."""
+        require(isinstance(key, str) and bool(key.strip()), "Invalid research package key")
+        require(cls in EXEMPTION_CLASSES, "Unknown research exemption class")
+        require(isinstance(reason, str) and 0 < len(reason.strip()) <= 500, "A research exemption must name its reason")
+        return self._append_exemption(tx, key, cls, reason, recorded_by, True)
+
+    def unexempt(self, tx, key: str, reason: str, recorded_by: str) -> dict:
+        """Withdraw the active exemption of `key`; the history stays."""
+        require(isinstance(reason, str) and 0 < len(reason.strip()) <= 500, "A research exemption must name its reason")
+        active = self.active_exemption(tx, key)
+        if active is None:
+            raise PackageRefused("exemption_missing")
+        return self._append_exemption(tx, key, active["class"], reason, recorded_by, False)
+
+    def active_exemption(self, tx, key: str) -> dict | None:
+        rows = self._exemption_rows(tx, key)
+        return rows[-1] if rows and rows[-1]["active"] else None
