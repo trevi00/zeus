@@ -43,7 +43,9 @@ OWNED_BUCKETS = ("tasks", "decisions_pending", "outbox", "events", "execution_fe
                  # S8 pilot 68 (DESIGN-s8 §7 V12): the autonomous cycle is coordination's use case.
                  "autonomous_runs",
                  # S8 pilot 97 (DESIGN-s8 §16 V21): the approved-backlog admission into the Fleet is coordination's use case.
-                 "fleet_backlog_plans", "fleet_backlog_intents")
+                 "fleet_backlog_plans", "fleet_backlog_intents",
+                 # S10 C6b: AuditServiceRunner's narrow state (M7 adapters/audit_service.py STATE_BUCKET)
+                 "audit_service")
 
 
 class TaskRunner(Protocol):
