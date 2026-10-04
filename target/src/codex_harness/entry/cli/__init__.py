@@ -146,11 +146,13 @@ def main() -> None:
             doctor,
             embed,
             execution_recovery,
+            flush,
             goal,
             incident,
             index,
             init_db,
             inspect,
+            observe,
             organization,
             paths,
             project_graph,
@@ -159,6 +161,7 @@ def main() -> None:
             rollback_hook,
             run_command,
             seed_research_backlog,
+            send,
             setup,
             status,
             validate,
@@ -171,7 +174,7 @@ def main() -> None:
                     "demo": demo.run, "seed-research-backlog": seed_research_backlog.run,
                     "execution-recovery": execution_recovery.run,
                     "index": index.run, "query": query.run, "embed": embed.run, "project-graph": project_graph.run,
-                    "context": context.run}
+                    "context": context.run, "flush": flush.run, "send": send.run, "observe": observe.run}
         if args.command not in composed:
             raise RuntimeError("zeus " + args.command + " is not composed in the rebuild yet (DESIGN-s10 §3)")
         composed[args.command](args)
