@@ -15,8 +15,8 @@ target home: `CallBudget` (`execution.adapters.call_budget`), `claude_settings` 
 (`research.domain.research_program`), `UsagePolicyError`, `accounting_mode`, `validate_budget` (`kernel.usage`),
 `ContractError` (`kernel.errors`), `MemoryStore` and `FileArtifacts` (`storage.adapters`). The sibling helper modules
 (`test_claude_cli_process`, `test_fleet`, `test_research_program_fixtures`) are the ported ones.
-- `LaneLauncher` is `unavailable("S10", ...)`: `coordination.adapters.fleet_runtime` has no `LaneLauncher` yet (S10-entry
-  GAP #3, OWNER-DECISIONS-S10 #3), so the one test that builds it is kept whole under a skip naming that gap. `entry`
+- `LaneLauncher` is `m7_executor.fleet_runtime.LaneLauncher`, a subclass of `coordination.adapters.fleet_runtime.LaneLauncher` whose unwired ports default to the
+  `composition.fleet` bindings (S10 C8a, GAP #3). `entry`
   (M7 `adapters.isolated_worker_entry`, ledger S10 `entry.processes.isolated_worker`) is `unavailable("S10", ...)` and the
   one test that serves it is kept whole under an S10 skip.
 
@@ -36,7 +36,7 @@ from types import SimpleNamespace
 import pytest
 from m7_containers import iw
 from m7_coordination import Fleet, organization, packaged_policy, unavailable
-from m7_executor import ClaudeCodeRuntime
+from m7_executor import ClaudeCodeRuntime, fleet_runtime
 from test_claude_cli_process import CHILD, SCHEMA, observation
 from test_fleet import GOAL, config, manifest
 from test_research_program_fixtures import config as program_config
@@ -60,7 +60,6 @@ from codex_harness.research.domain.research_program import validate_config as va
 from codex_harness.routing.domain.providers import parse_configuration, select_execution
 from codex_harness.storage.adapters.memory_store import MemoryStore
 
-LaneLauncher = unavailable("S10", "adapters.fleet_runtime.LaneLauncher")  # S10-entry GAP #3
 entry = unavailable("S10", "adapters.isolated_worker_entry")  # ledger home `entry.processes.isolated_worker`
 
 FINITE, SUB = {"per_host": 2, "total": 4}, {"mode": "subscription", "per_host": 2, "total": 4}
@@ -154,7 +153,6 @@ def test_budgeted_executor_passes_mode_only_for_subscription_and_refuses_unknown
         BudgetedExecutor(NoExecutor(), RecordingLedger(readable=False), SUB, "op", "m").execute_one("w")
 
 
-@pytest.mark.skip(reason="S10: LaneLauncher (OWNER-DECISIONS-S10 #3)")
 def test_fleet_grant_admission_status_and_mismatch(tmp_path):
     f = Fleet(MemoryStore())
     f.register(config(tmp_path, budget=FINITE))
@@ -176,9 +174,9 @@ def test_fleet_grant_admission_status_and_mismatch(tmp_path):
     # Launcher admission under subscription: a ledger far above the numbers is not exhausted; an
     # unreadable reading is. The runtime never reserves and no process is spawned here.
     cfg = validate_config(config(tmp_path, budget=SUB))
-    above = LaneLauncher(cfg, {}, budget=type("L", (), {"counts": staticmethod(lambda: {"this_host": 50, "all_hosts": 90, "unreadable": 0})})())
+    above = fleet_runtime.LaneLauncher(cfg, {}, budget=type("L", (), {"counts": staticmethod(lambda: {"this_host": 50, "all_hosts": 90, "unreadable": 0})})())
     assert above.budget_exhausted(SUB) is False and above.budget_exhausted(FINITE) is True
-    damaged = LaneLauncher(cfg, {}, budget=type("L", (), {"counts": staticmethod(lambda: {"this_host": 1, "all_hosts": 1, "unreadable": 1})})())
+    damaged = fleet_runtime.LaneLauncher(cfg, {}, budget=type("L", (), {"counts": staticmethod(lambda: {"this_host": 1, "all_hosts": 1, "unreadable": 1})})())
     assert damaged.budget_exhausted(SUB) is True and damaged.budget_exhausted(FINITE) is False
     assert f.admit_one(budget_exhausted=True)["blocked"] == {"op-s": "budget_exhausted"}
     assert f.admit_one()["job"]["id"] == "op-s" and projection(f.registered(), False, [])["budget"] == SUB
