@@ -1,0 +1,376 @@
+{
+ "cases": {
+  "authorize_budget_expected_mismatch": {
+   "argv": [
+    "fleet",
+    "authorize-budget",
+    "--per-host",
+    "3",
+    "--total",
+    "5",
+    "--expected-total",
+    "1"
+   ],
+   "exit": 1,
+   "stderr": "",
+   "stdout": {
+    "error_type": "FleetRefused",
+    "exit_code": 1,
+    "reason_code": "budget_expected_mismatch",
+    "status": "refused"
+   }
+  },
+  "authorize_budget_no_fleet": {
+   "argv": [
+    "fleet",
+    "authorize-budget",
+    "--per-host",
+    "1",
+    "--total",
+    "1",
+    "--expected-total",
+    "1"
+   ],
+   "exit": 1,
+   "stderr": "",
+   "stdout": {
+    "error_type": "FleetRefused",
+    "exit_code": 1,
+    "reason_code": "unregistered",
+    "status": "refused"
+   }
+  },
+  "backlog_status_all": {
+   "argv": [
+    "fleet",
+    "backlog",
+    "status"
+   ],
+   "exit": 0,
+   "stderr": "",
+   "stdout": {
+    "authority": "backlog_selection; an accepted job means an accepted lane operation only, never a review verdict, a merge, a release or a deployment",
+    "exit_code": 0,
+    "fleet_paused": false,
+    "plans": [],
+    "registered": false,
+    "schema": "urn:zeus:fleet-backlog-status:1"
+   }
+  },
+  "backlog_status_unknown_plan": {
+   "argv": [
+    "fleet",
+    "backlog",
+    "status",
+    "--plan",
+    "nope"
+   ],
+   "exit": 1,
+   "stderr": "",
+   "stdout": {
+    "authority": "backlog_selection; an accepted job means an accepted lane operation only, never a review verdict, a merge, a release or a deployment",
+    "exit_code": 1,
+    "fleet_paused": false,
+    "next_action": "register_plan",
+    "outcome": "plan_unregistered",
+    "plan_id": "nope",
+    "plans": [],
+    "registered": false,
+    "schema": "urn:zeus:fleet-backlog-status:1"
+   }
+  },
+  "enqueue_no_fleet": {
+   "argv": [
+    "fleet",
+    "enqueue",
+    "--lane",
+    "x",
+    "--file",
+    "<DOCUMENTS>/invalid.json"
+   ],
+   "exit": 1,
+   "stderr": "",
+   "stdout": {
+    "error_type": "FleetRefused",
+    "exit_code": 1,
+    "reason_code": "unregistered",
+    "status": "refused"
+   }
+  },
+  "enqueue_unknown_lane": {
+   "argv": [
+    "fleet",
+    "enqueue",
+    "--lane",
+    "x",
+    "--file",
+    "<DOCUMENTS>/invalid.json"
+   ],
+   "exit": 1,
+   "stderr": "",
+   "stdout": {
+    "error_type": "FleetRefused",
+    "exit_code": 1,
+    "reason_code": "lane_unknown",
+    "status": "refused"
+   }
+  },
+  "init_db": {
+   "argv": [
+    "init-db"
+   ],
+   "exit": 0,
+   "stderr": "",
+   "stdout": {
+    "already_applied": [],
+    "applied": [
+     {
+      "module": "core",
+      "version": "1"
+     }
+    ],
+    "migrated": true,
+    "tool": {
+     "filename_contract": "V?<n>(.<n>|_<n>)*(__<description>)?.sql",
+     "name": "zeus-sql-migrator",
+     "version": 1
+    }
+   }
+  },
+  "migrate_host_invalid_json": {
+   "argv": [
+    "fleet",
+    "migrate-host",
+    "--file",
+    "<DOCUMENTS>/invalid.json",
+    "--journal",
+    "<WORK>/journal.log"
+   ],
+   "exit": 1,
+   "stderr": "",
+   "stdout": {
+    "error_type": "ContractError",
+    "exit_code": 1,
+    "reason_code": "contract_refused",
+    "status": "refused"
+   }
+  },
+  "pause_no_fleet": {
+   "argv": [
+    "fleet",
+    "pause"
+   ],
+   "exit": 1,
+   "stderr": "",
+   "stdout": {
+    "error_type": "FleetRefused",
+    "exit_code": 1,
+    "reason_code": "unregistered",
+    "status": "refused"
+   }
+  },
+  "reconcile_interrupted_no_fleet": {
+   "argv": [
+    "fleet",
+    "reconcile-interrupted",
+    "--file",
+    "<DOCUMENTS>/invalid.json"
+   ],
+   "exit": 1,
+   "stderr": "",
+   "stdout": {
+    "error_type": "ContractError",
+    "exit_code": 1,
+    "reason_code": "contract_refused",
+    "status": "refused"
+   }
+  },
+  "record_delivery_unknown_job": {
+   "argv": [
+    "fleet",
+    "record-delivery",
+    "--job",
+    "nope",
+    "--file",
+    "<DOCUMENTS>/empty.json"
+   ],
+   "exit": 1,
+   "stderr": "",
+   "stdout": {
+    "error_type": "FleetRefused",
+    "exit_code": 1,
+    "reason_code": "delivery_schema",
+    "status": "refused"
+   }
+  },
+  "register_invalid_json": {
+   "argv": [
+    "fleet",
+    "register",
+    "--file",
+    "<DOCUMENTS>/invalid.json"
+   ],
+   "exit": 1,
+   "stderr": "",
+   "stdout": {
+    "error_type": "ContractError",
+    "exit_code": 1,
+    "reason_code": "contract_refused",
+    "status": "refused"
+   }
+  },
+  "register_path_unresolved": {
+   "argv": [
+    "fleet",
+    "register",
+    "--file",
+    "<DOCUMENTS>/unresolved.json"
+   ],
+   "exit": 1,
+   "stderr": "",
+   "stdout": {
+    "error_type": "FleetRefused",
+    "exit_code": 1,
+    "reason_code": "path_unresolved",
+    "status": "refused"
+   }
+  },
+  "register_repository_missing": {
+   "argv": [
+    "fleet",
+    "register",
+    "--file",
+    "<DOCUMENTS>/missing.json"
+   ],
+   "exit": 1,
+   "stderr": "",
+   "stdout": {
+    "error_type": "FleetRefused",
+    "exit_code": 1,
+    "reason_code": "repository_missing",
+    "status": "refused"
+   }
+  },
+  "register_valid": {
+   "argv": [
+    "fleet",
+    "register",
+    "--file",
+    "<DOCUMENTS>/valid.json"
+   ],
+   "exit": 0,
+   "stderr": "",
+   "stdout": {
+    "cached": false,
+    "config": {
+     "accounting_mode": "finite",
+     "budget": {
+      "per_host": 2,
+      "total": 4
+     },
+     "id": "fleet-c8b2",
+     "lanes": [
+      {
+       "id": "a",
+       "team": "team-a"
+      },
+      {
+       "id": "b",
+       "team": "team-b"
+      }
+     ],
+     "max_parallel": 2,
+     "schema": "urn:zeus:fleet:1"
+    },
+    "config_sha256": "a2328c60107cc8c8efdac77f353de1c2a8b5022069035e57321fb7ac49dfd537",
+    "exit_code": 0,
+    "id": "fleet-c8b2",
+    "registered": true
+   }
+  },
+  "relocate_invalid_json": {
+   "argv": [
+    "fleet",
+    "relocate",
+    "--file",
+    "<DOCUMENTS>/invalid.json",
+    "--journal",
+    "<WORK>/journal.log"
+   ],
+   "exit": 1,
+   "stderr": "",
+   "stdout": {
+    "error_type": "ContractError",
+    "exit_code": 1,
+    "reason_code": "contract_refused",
+    "status": "refused"
+   }
+  },
+  "resume_no_fleet": {
+   "argv": [
+    "fleet",
+    "resume"
+   ],
+   "exit": 1,
+   "stderr": "",
+   "stdout": {
+    "error_type": "FleetRefused",
+    "exit_code": 1,
+    "reason_code": "unregistered",
+    "status": "refused"
+   }
+  },
+  "status_no_fleet": {
+   "argv": [
+    "fleet",
+    "status"
+   ],
+   "exit": 0,
+   "stderr": "",
+   "stdout": {
+    "exit_code": 0,
+    "jobs": [],
+    "lanes": [],
+    "reconciliation_required": [],
+    "registered": false,
+    "schema": "urn:zeus:fleet-status:1"
+   }
+  },
+  "status_registered": {
+   "argv": [
+    "fleet",
+    "status"
+   ],
+   "exit": 0,
+   "stderr": "",
+   "stdout": {
+    "accounting_mode": "finite",
+    "budget": {
+     "per_host": 2,
+     "total": 4
+    },
+    "exit_code": 0,
+    "id": "fleet-c8b2",
+    "jobs": [],
+    "lanes": [
+     {
+      "active_job": null,
+      "id": "a",
+      "team": "team-a"
+     },
+     {
+      "active_job": null,
+      "id": "b",
+      "team": "team-b"
+     }
+    ],
+    "max_parallel": 2,
+    "paused": false,
+    "reconciliation_required": [],
+    "registered": true,
+    "schema": "urn:zeus:fleet-status:1",
+    "truncated": false
+   }
+  }
+ }
+}
