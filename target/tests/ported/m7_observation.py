@@ -57,7 +57,7 @@ Named adaptations (each is a construction/import/patch-target adaptation, never 
   takes a clock port (`utcnow(self.clock)`) that reads it.
 - `ArtifactMaintenance(store, artifacts)` is the moved class with the stateless `EventJournal()` it takes (`storage.adapters.maintenance`);
   `postgres_store` is the moved store module (M7 `adapters.store`, whose `psycopg` the connect-budget case replaces).
-- `redis_url` (M7 `bootstrap`) is S10's `composition.redis_url`: only the test skipped whole for it names it.
+- `redis_url` (M7 `bootstrap`) is S10's `composition.redis_url` (K1: read at call time).
 - `unavailable(slice_, name)` is `m7_coordination.unavailable`.
 """
 
@@ -254,7 +254,8 @@ def EvidenceInspector(artifacts, policy=None, interpreter=None):  # noqa: N802 -
 
 
 def redis_url():
-    return unavailable("S10", "composition.redis_url")()
+    from codex_harness.composition import redis_url as composition_redis_url
+    return composition_redis_url()
 
 
 CAPTURE = functools.partial(_capture, process_tree=ProcessTree)
