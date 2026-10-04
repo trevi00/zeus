@@ -21,13 +21,8 @@ Named adaptations (each is a construction/import/patch-target adaptation, never 
   the moved module calls `utcnow(self.clock)` (R-gh1), so an assignment of `utcnow` installs the zero-argument callable
   behind a wrapper that ignores the clock argument, and reads give the callable back. The patch target is written
   `m7_intake.github_tickets.utcnow`.
-- `Executor` is `m7_executor.Executor` with M7's evidence gate wired (`m7_executor` leaves it unwired, S8): M7's
-  `Executor.evidence` is `EvidenceInspections(store, EvidenceInspector(artifacts))` (the legacy inspector: no project
-  profile, no isolation), the target's `evidence.application.evidence_inspection.EvidenceInspections` over
-  `evidence.adapters.evidence_inspection.EvidenceInspector` with `process_tree=ProcessTree` injected (E-4c), and
-  `_inspect_evidence` is M7's method over it: the claims, the lease-bound `LeaseProgress` and ownership guard, the same
-  `inspection_error` result for a failed inspection and the same `{inspection_id, verdict, denominator}` row. M7's two
-  observation events around the inspection are not re-emitted (no ported suite of this batch asserts them). M7's
+- `Executor` is `m7_executor.Executor`; the evidence gate is the base's `composition.evidence_gate` (C5a): M7's two inspection
+  events are emitted. M7's
   `Executor.workflow` held `handle`, `cancel`, `request_rebase` and `context` too: `executor.workflow` is the same
   coordination Workflow with those four names routed to the S5 `MessageHandler` over it (as `m7_coordination.Workflow`).
   `executor.releases` (and the one the decisions use) is `m7_delivery.Releases`: the review `Releases` with intake's
@@ -82,13 +77,9 @@ from codex_harness.coordination.application.sessions import (
     session_action,  # noqa: F401
 )
 from codex_harness.coordination.application.workflow import ClaimGuardRefused  # noqa: F401
-from codex_harness.evidence.adapters.evidence_inspection import EvidenceInspector
-from codex_harness.evidence.application.evidence_inspection import EvidenceInspections
 from codex_harness.execution.adapters.execution_output import completed_output  # noqa: F401
-from codex_harness.execution.application.lease_progress import LeaseProgress
 from codex_harness.host_os.adapters import process_groups
 from codex_harness.host_os.adapters.git_workspace import GitWorkspace  # noqa: F401
-from codex_harness.host_os.adapters.process_tree import ProcessTree
 from codex_harness.intake.adapters import frontdesk as _execute_side
 from codex_harness.intake.adapters import github_tickets as _github_module
 from codex_harness.intake.adapters import ticket_authority as _authority
@@ -260,28 +251,5 @@ class Executor(_Executor):
 
     def __init__(self, service, git, artifacts, *args, **kwargs):
         super().__init__(service, git, artifacts, *args, **kwargs)
-        self.evidence = EvidenceInspections(service.store, EvidenceInspector(artifacts, process_tree=ProcessTree))
         self.workflow = _Messaging(self.workflow)
         self.releases = self.decisions.releases = Releases(service.store, service.org)
-
-    def _inspect_evidence(self, task, result, workspace_path, heartbeat=None):
-        claims = result.get("tests") if isinstance(result.get("tests"), list) else []
-        progress = LeaseProgress(self.workflow, task, heartbeat=heartbeat)
-        ownership_refusals = []
-
-        def guard(tx):
-            try:
-                return self.workflow._owned(tx, task)
-            except BaseException as exc:
-                ownership_refusals.append(exc)
-                raise
-        try:
-            row = self.evidence.inspect(task, result["candidate"], claims, workspace_path, progress=progress,
-                                        guard=guard)
-        except Exception as exc:
-            error_type, message_sha256 = type(exc).__name__, digest(str(exc))[:16]
-            if progress.refusal is exc or any(exc is refusal for refusal in ownership_refusals):
-                raise
-            return {"verdict": "inspection_error", "cause": error_type + ": message_sha256=" + message_sha256,
-                    "claims": len(claims)}
-        return {"inspection_id": row["id"], "verdict": row["verdict"], "denominator": row["denominator"]}
