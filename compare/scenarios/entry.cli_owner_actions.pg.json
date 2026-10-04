@@ -1,0 +1,9 @@
+{
+ "family": "entry.cli_owner_actions.pg",
+ "description": "The owner-actions root through main() on a labelled disposable PostgreSQL (one fresh schema, init-db first, no mask) over fixture directories at a fixed work path: status with nothing registered (every policy and an unknown policy), assess of a decision that is no owner-assessment row, register, tick, run, migrate and canary-recover with no registered fleet, then a valid fleet register and migrate and canary-recover with a file that is not JSON, register of an unknown lane and of a lane repository with no Git history, run with a repeated policy, tick and run --max-ticks 1 of a policy nothing registered, and status (the target sets ZEUS_COMPOSITION_PROFILE=development: declared difference E-c21); stdout, stderr and exit code per case, the fixture paths normalized",
+ "reference_driver": "drivers/reference/s10_cli_owner_actions.py",
+ "target_driver": "drivers/target/s10_cli_owner_actions.py",
+ "requires": "disposable-postgresql",
+ "golden": "goldens/reference/entry.cli_owner_actions.pg.json",
+ "slice": "S10"
+}
