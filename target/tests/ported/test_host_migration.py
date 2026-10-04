@@ -1183,13 +1183,21 @@ def test_canonical_tool_is_resolved_from_this_checkout(tmp_path, monkeypatch):
 
 
 # ----- HostDelivery factory wiring of the systemd control directory ---------------------------------
-@pytest.mark.skip(reason='S10: the operator CLI controller (adapters.host_delivery.controller)')
+def controller(service, **kwargs):
+    """`composition.cli_host_delivery.controller`'s wiring behind the M7 `HostDelivery` surface: the shim facade over the SAME ports
+    (`controller_ports`), because the production coordinator is the S7 split owners (R-c31) and these cases read M7's one object."""
+    from m7_delivery import HostDelivery
+
+    from codex_harness.composition import cli_host_delivery
+
+    store, ports = cli_host_delivery.controller_ports(service, **kwargs)
+    return HostDelivery(store, service.org, **ports)
+
+
 def test_controller_wires_the_configured_control_dir_into_the_systemd_start(tmp_path, monkeypatch):
     from types import SimpleNamespace
 
-    from codex_harness.bootstrap import organization
-
-    from codex_harness.adapters.host_delivery import controller
+    from m7_delivery import organization
 
     root = tmp_path / "srv" / "zeus"
     control = root / "runtime" / "control"
@@ -1215,16 +1223,13 @@ def test_controller_wires_the_configured_control_dir_into_the_systemd_start(tmp_
     assert [call[1:] for call in host.runner.calls if call[1] == "start"] == [["start", "zeus-aibox-fleet.service"]]
 
 
-@pytest.mark.skip(reason='S10: the operator CLI controller (adapters.host_delivery.controller)')
 @pytest.mark.parametrize("setting, reason", [(None, "control_dir_unconfigured"), ("relative/root", "control_dir_invalid"),
                                              pytest.param("link", "control_dir_invalid", marks=needs_symlink)])
 def test_controller_without_a_valid_control_dir_refuses_the_systemd_start_by_name(tmp_path, monkeypatch,
                                                                                     setting, reason):
     from types import SimpleNamespace
 
-    from codex_harness.bootstrap import organization
-
-    from codex_harness.adapters.host_delivery import controller
+    from m7_delivery import organization
 
     if setting is None:
         monkeypatch.delenv("ZEUS_AIBOX_ROOT", raising=False)

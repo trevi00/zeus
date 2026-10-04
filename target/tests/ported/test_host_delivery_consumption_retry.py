@@ -10,6 +10,8 @@ CLI and lane resolution, S10; the release evaluator and `verification_fixtures`,
 W-B) is an `unavailable(slice, name)` placeholder, and only tests skipped whole and unrewritten (each with its owning
 slice) name it.
 
+S10 unit C8b-4 (R-c31) un-skipped the cases that name only the host-delivery CLI and composition functions (import lines, call names and patch targets only): `cli_host_delivery` is `composition.cli_host_delivery`, `execute` is `entry.cli.host_delivery._execute` and `add_parser` is `entry.cli.host_delivery.add_parser`; the production coordinator is the S7 split owners, so a patched `controller` returns them (`SimpleNamespace(recovery=..., resumption=...)`) and `controller(...)` reading M7's one object is the shim `HostDelivery` over `controller_ports`. 
+
 M7 docstring follows.
 
 The first-activation consumption retry (INV-HOST-DELIVERY-FIRST-ACTIVATION-001, extended).
@@ -453,17 +455,16 @@ def test_two_concurrent_retries_retry_the_queue_once(tmp_path, monkeypatch, conc
         stop_target(system)
 
 
-@pytest.mark.skip(reason='S10: the operator CLI / lane resolution (adapters.host_delivery)')
 def test_the_resume_command_dispatches_on_the_document_kind(tmp_path, monkeypatch):
     """`host-delivery resume --document FILE` routes a retry document to `resume_consumption_retry`."""
     import json
     from types import SimpleNamespace
 
-    from m7_delivery import unavailable
-    cli = unavailable('S10', 'cli')
-    from m7_delivery import unavailable
-    host_delivery = unavailable('S10', 'adapters.host_delivery')
     from m7_delivery import organization
+
+    from codex_harness.composition import cli_host_delivery as host_delivery
+    from codex_harness.entry import cli
+    from codex_harness.entry.cli.host_delivery import _execute as execute
 
     body = {"kind": RECOVERY_CONSUMPTION_RETRY}
     path = tmp_path / "retry.json"
@@ -487,13 +488,13 @@ def test_the_resume_command_dispatches_on_the_document_kind(tmp_path, monkeypatc
     monkeypatch.setattr(host_delivery, "lane_git", lambda lane, host: SimpleNamespace(remote="zeus-owner/zeus-harness"))
     monkeypatch.setattr(host_delivery, "_lane_observer", lambda _route: None)
     monkeypatch.setattr(host_delivery, "_settings", lambda: {})
-    monkeypatch.setattr(host_delivery, "controller", lambda _service, **kwargs: Controller())
+    monkeypatch.setattr(host_delivery, "controller", lambda _service, **kwargs: SimpleNamespace(recovery=Controller(), resumption=Controller()))
     service = SimpleNamespace(store=MemoryStore(), org=organization())
-    assert host_delivery.execute(service, cli.parser().parse_args(argv))["exit_code"] == 0
+    assert execute(service, cli.parser().parse_args(argv))["exit_code"] == 0
     assert calls == [("consumption_retry", ("own-plan", "c" * 64, body, "sha256:" + "e" * 64))]
     path.write_text(json.dumps({"kind": RECOVERY_FIRST_ACTIVATION}), encoding="utf-8")
     calls.clear()
-    host_delivery.execute(service, cli.parser().parse_args(argv))
+    execute(service, cli.parser().parse_args(argv))
     assert calls[0][0] == "first_activation"
 
 
