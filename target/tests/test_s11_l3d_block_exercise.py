@@ -39,14 +39,14 @@ def block(n, writes, scope="Svc.unit"):
     return {"key": f"{MODULE}:{scope}#{n}", "line": n * 10, "literal_writes": writes, "module": MODULE, "scope": scope}
 
 
-def join(artifact, helper_writes=("research_rows",), case=CASE, golden=None):
+def join(artifact, helper_writes=("research_rows",), case=CASE, golden=None, elsewhere=frozenset()):
     """The rules 1-3 join of `Svc.unit` plus a `Svc.helper` block that only the artifact can reach."""
     golden = {"unit": {"success": case, "a_failure_at_row": case}} if golden is None else golden
     blocks = [block(1, ["research_rows"]), block(1, list(helper_writes), scope="Svc.helper")]
     path = "compare/drivers/reference/d.py"
     driver = eut.Driver({path: "from codex_harness.application import svc\n" + DRIVER}, path)
     cases = None if artifact is None else {"schema": be.SCHEMA, "family": "effects.fam", "cases": artifact}
-    return eut.join_family("effects.fam", driver, golden, blocks, cases)
+    return eut.join_family("effects.fam", driver, golden, blocks, cases, elsewhere)
 
 
 def exercised(out):
@@ -56,7 +56,8 @@ def exercised(out):
 def test_an_executed_block_with_an_observed_literal_write_is_an_entry():
     out = join({"a_failure_at_row": [HELPER]})
     assert exercised(out) == [{"family": "effects.fam", "golden_unit": "unit", "atomic_unit": HELPER, "block": "#1",
-                               "basis": "block_exercise", "cases": ["a"], "case": "a_failure_at_row",
+                               "basis": "block_exercise", "via": "rule6_case", "cases": ["a"],
+                               "case": "a_failure_at_row",
                                "writes_observed": ["research_rows"]}]
 
 
@@ -83,8 +84,9 @@ def test_the_rows_read_back_from_the_store_count_as_observed_buckets():
     assert entry["writes_observed"] == ["research_rows"]
 
 
-def test_only_a_rule6_case_counts():
-    assert exercised(join({"success": [HELPER]})) == []
+def test_a_case_that_is_neither_rule6_nor_the_success_case_does_not_count():
+    golden = {"unit": {"success": CASE, "a_failure_at_row": CASE, "control_x": CASE}}
+    assert exercised(join({"control_x": [HELPER]}, golden=golden)) == []
 
 
 def test_a_row_joined_by_rules_1_to_3_gets_no_second_resolution():
@@ -104,6 +106,56 @@ def test_the_letters_and_the_first_case_are_those_of_the_cases_that_executed_the
     golden = {"unit": {"success": case, "a_x": case, "b_y": case, "c_z": case}}
     (entry,) = exercised(join({"a_x": [HELPER], "c_z": [HELPER], "success": [HELPER]}, golden=golden))
     assert (entry["cases"], entry["case"]) == (["a", "c"], "a_x")
+
+
+# S11 R-L3d-2 (DESIGN-s11 §17 r6): the additive success-case path. Expected results: r6 (a block executed in the unit's success
+# case, whose literal writes are observed there, joins when the unit holds a rule-6 case; the same-rule-6-case path wins when
+# both apply), and the r3 follow-up (rule (i) is global: a row rules 1-3 join in ANY family gets no R-L3d entry).
+def test_r6_a_block_executed_in_the_success_case_joins_via_the_success_case():
+    (entry,) = exercised(join({"success": [HELPER]}))
+    assert entry == {"family": "effects.fam", "golden_unit": "unit", "atomic_unit": HELPER, "block": "#1", "basis": "block_exercise",
+                     "via": "success_case", "cases": ["a"], "case": "success", "writes_observed": ["research_rows"]}
+
+
+def test_r6_negative_controls_the_success_case_path_needs_observed_writes_and_a_rule6_case():
+    assert exercised(join({"success": [HELPER]}, helper_writes=["other_rows"])) == []  # literal writes not observed
+    (credited,) = exercised(join({"success": [HELPER]}, helper_writes=[]))  # no literal writes: execution alone
+    assert credited["via"] == "success_case" and credited["writes_observed"] is None
+    no_rule6 = {"unit": {"success": CASE, "control_x": CASE}}
+    assert exercised(join({"success": [HELPER]}, golden=no_rule6)) == []  # the unit holds no rule-6 case
+    assert exercised(join({"control_x": [HELPER]}, golden=no_rule6)) == []
+
+
+def test_r6_a_unit_without_a_success_case_uses_its_first_replay_case_which_is_a_rule6_case():
+    replay = {"durable_writes": [["research_rows", ""]]}
+    golden = {"unit": {"success": {"durable_writes": []}, "c_replay": replay, "a_x": replay}}
+    (entry,) = exercised(join({"c_replay": [HELPER], "a_x": []}, golden=golden))
+    assert (entry["via"], entry["case"], entry["cases"]) == ("rule6_case", "c_replay", ["c"])  # both paths: rule6_case wins
+    assert exercised(join({"a_x": [HELPER]}, golden=golden))[0]["case"] == "a_x"
+
+
+def test_r6_the_rule6_case_path_wins_when_both_apply():
+    (entry,) = exercised(join({"success": [HELPER], "a_failure_at_row": [HELPER]}))
+    assert (entry["via"], entry["case"], entry["cases"]) == ("rule6_case", "a_failure_at_row", ["a"])
+
+
+def test_r6_a_row_rules_1_to_3_join_is_not_resolved_again_by_the_success_case():
+    assert [e["atomic_unit"] for e in join({"success": [JOINED, HELPER]})["entries"] if "basis" not in e] == [JOINED]
+    assert [e["atomic_unit"] for e in exercised(join({"success": [JOINED, HELPER]}))] == [HELPER]
+
+
+def test_rule_i_is_global_a_row_joined_by_rules_1_to_3_in_another_family_gets_no_entry():
+    assert exercised(join({"a_failure_at_row": [HELPER]}, elsewhere={HELPER})) == []
+    assert exercised(join({"success": [HELPER]}, elsewhere={HELPER})) == []
+    assert len(exercised(join({"a_failure_at_row": [HELPER]}, elsewhere={JOINED}))) == 1  # another row elsewhere: no effect
+
+
+def test_rule_i_is_global_over_the_committed_table():
+    table = json.loads((ROOT / "coverage/effects-unit-table.json").read_text(encoding="utf-8"))["entries"]
+    plain = {e["atomic_unit"] for e in table if "basis" not in e}
+    rows = [e for e in table if e.get("basis")]
+    assert rows and not plain & {e["atomic_unit"] for e in rows}
+    assert {e["via"] for e in rows} == {"rule6_case", "success_case"}
 
 
 # ---------------------------------------------------------------------------------------------------------- the recorder
@@ -157,6 +209,50 @@ def test_the_recorder_armed_records_the_blocks_executed_inside_a_window_only(mon
     finally:
         be._recorder.release()
     assert sys.monitoring.get_tool(be.TOOL) is None
+
+
+def recorder(monkeypatch, tmp_path):
+    out = tmp_path / "out.json"
+    monkeypatch.setenv(be.ENV, str(out))
+    monkeypatch.setattr(be, "_recorder", be.Recorder({("codex_harness/svc.py", 4): "svc:unit#1"}, out))
+    return be._recorder
+
+
+def test_the_window_binding_refuses_a_case_that_opens_two_windows(monkeypatch, tmp_path):
+    rec = recorder(monkeypatch, tmp_path)
+    try:
+        be.open("case_x")
+        be.close()
+        be.open("case_y")
+        be.close()
+        be.open("case_y")  # a synthetic double open: case_y's second window
+        be.close()
+        with pytest.raises(SystemExit, match="case_y"):
+            be.assign(["x", "y", "z"])  # the total (3 windows, 3 keys) is right: only the binding can tell
+    finally:
+        rec.release()
+
+
+def test_the_window_binding_refuses_a_case_that_opens_no_window(monkeypatch, tmp_path):
+    rec = recorder(monkeypatch, tmp_path)
+    try:
+        be.open("case_x")
+        be.close()  # a synthetic missing open: case_y never opens
+        with pytest.raises(SystemExit, match="opened none"):
+            be.assign(["x", "y"])
+        be.assign(["x"])  # control: one window per case passes
+    finally:
+        rec.release()
+
+
+def test_a_window_opened_inside_an_open_window_is_refused(monkeypatch, tmp_path):
+    rec = recorder(monkeypatch, tmp_path)
+    try:
+        be.open("case_x")
+        with pytest.raises(SystemExit, match="case_y"):
+            be.open("case_y")
+    finally:
+        rec.release()
 
 
 def test_the_artifact_writer_is_deterministic_and_sorted():
@@ -213,7 +309,11 @@ def test_the_committed_exercise_entries_satisfy_the_rule_against_the_committed_r
     for e in rows:
         artifact = json.loads((REFERENCE / f"{e['family']}.blocks.json").read_text(encoding="utf-8"))["cases"]
         golden = json.loads((REFERENCE / f"{e['family']}.json").read_text(encoding="utf-8"))
-        assert e["atomic_unit"] in artifact[e["case"]] and eut.rule6_letter(e["case"]) in e["cases"]
+        assert e["atomic_unit"] in artifact[e["case"]] and e["via"] in ("rule6_case", "success_case")
+        # the rule6_case path names a rule-6 case; the success_case path names the unit's success (or replay) case, and
+        # the unit's `cases` are its rule-6 letters (L3 rule 3)
+        assert (eut.rule6_letter(e["case"]) in e["cases"]) == (e["via"] == "rule6_case") or e["via"] == "success_case"
+        assert e["cases"] and set(e["cases"]) <= set("abcd")
         assert not [t for t in table if t["family"] == e["family"] and t["atomic_unit"] == e["atomic_unit"] and "basis" not in t]
         literal = [w for w in catalogue[e["atomic_unit"]]["literal_writes"] if w != "<dynamic>"]
         if literal:

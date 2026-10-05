@@ -64,6 +64,8 @@ class Recorder:
         return sys.monitoring.DISABLE
 
     def open(self, case: str) -> None:
+        if self.hits is not None:
+            raise SystemExit(f"block exercise: window {case!r} opened inside the open window {self.windows[-1][0]!r}")
         sys.monitoring.restart_events()
         self.hits = set()
         self.windows.append((case, self.hits))
@@ -82,9 +84,16 @@ class Recorder:
         self.out.write_text(json.dumps(self.cases(), sort_keys=True, indent=1) + "\n", encoding="utf-8")
 
     def assign(self, keys: list[str]) -> None:
-        """Name the windows, in opening order, with the golden case keys (the driver evaluates its cases in key order)."""
+        """Name the windows, in opening order, with the golden case keys (the driver evaluates its cases in key order).
+
+        One window per case (S11 R-L3d-2): each `Case` opens its window under its own case name, so a name that opens two
+        windows is a case with a double open, and a missing window shows as a count short of the golden's cases."""
+        names = [name for name, _ in self.windows]
+        doubled = sorted({n for n in names if names.count(n) > 1})
+        if doubled:
+            raise SystemExit(f"block exercise: case(s) {doubled} opened more than one window")
         if len(keys) != len(self.windows):
-            raise SystemExit(f"block exercise: {len(self.windows)} windows for {len(keys)} golden cases")
+            raise SystemExit(f"block exercise: {len(self.windows)} windows for {len(keys)} golden cases (a case opened none)")
         self.windows = [(key, hits) for key, (_, hits) in zip(keys, self.windows)]
         self.write()
 

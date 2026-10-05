@@ -121,7 +121,26 @@
    ],
    "family": "effects.admission_unit",
    "golden_unit": "apply",
+   "via": "rule6_case",
    "writes_observed": null
+  },
+  {
+   "atomic_unit": "codex_harness.application.execution_recovery:ExecutionRecovery.apply#2",
+   "basis": "block_exercise",
+   "block": "#2",
+   "case": "apply_success",
+   "cases": [
+    "a",
+    "b",
+    "c"
+   ],
+   "family": "effects.admission_unit",
+   "golden_unit": "apply",
+   "via": "success_case",
+   "writes_observed": [
+    "events",
+    "execution_recoveries"
+   ]
   },
   {
    "atomic_unit": "codex_harness.application.fleet:Fleet.authorize_budget#1",
@@ -156,6 +175,7 @@
    ],
    "family": "effects.admission_unit",
    "golden_unit": "claim",
+   "via": "rule6_case",
    "writes_observed": null
   },
   {
@@ -180,6 +200,7 @@
    ],
    "family": "effects.admission_unit",
    "golden_unit": "complete",
+   "via": "rule6_case",
    "writes_observed": null
   },
   {
@@ -192,6 +213,7 @@
    ],
    "family": "effects.admission_unit",
    "golden_unit": "depths",
+   "via": "rule6_case",
    "writes_observed": null
   },
   {
@@ -204,6 +226,7 @@
    ],
    "family": "effects.admission_unit",
    "golden_unit": "depths",
+   "via": "rule6_case",
    "writes_observed": [
     "local_cycles"
    ]
@@ -218,6 +241,7 @@
    ],
    "family": "effects.admission_unit",
    "golden_unit": "depths",
+   "via": "rule6_case",
    "writes_observed": null
   },
   {
@@ -240,6 +264,7 @@
    ],
    "family": "effects.admission_unit",
    "golden_unit": "depths",
+   "via": "rule6_case",
    "writes_observed": null
   },
   {
@@ -252,6 +277,7 @@
    ],
    "family": "effects.admission_unit",
    "golden_unit": "depths",
+   "via": "rule6_case",
    "writes_observed": null
   },
   {
@@ -264,6 +290,7 @@
    ],
    "family": "effects.admission_unit",
    "golden_unit": "depths",
+   "via": "rule6_case",
    "writes_observed": null
   },
   {
@@ -276,6 +303,7 @@
    ],
    "family": "effects.admission_unit",
    "golden_unit": "depths",
+   "via": "rule6_case",
    "writes_observed": null
   },
   {
@@ -288,6 +316,7 @@
    ],
    "family": "effects.admission_unit",
    "golden_unit": "depths",
+   "via": "rule6_case",
    "writes_observed": null
   },
   {
@@ -300,6 +329,7 @@
    ],
    "family": "effects.admission_unit",
    "golden_unit": "depths",
+   "via": "rule6_case",
    "writes_observed": [
     "tasks"
    ]
@@ -358,7 +388,25 @@
    ],
    "family": "effects.admission_unit",
    "golden_unit": "migrate_host",
+   "via": "rule6_case",
    "writes_observed": null
+  },
+  {
+   "atomic_unit": "codex_harness.application.fleet:Fleet.migrate_host#2",
+   "basis": "block_exercise",
+   "block": "#2",
+   "case": "migrate_host_success",
+   "cases": [
+    "a",
+    "b",
+    "c"
+   ],
+   "family": "effects.admission_unit",
+   "golden_unit": "migrate_host",
+   "via": "success_case",
+   "writes_observed": [
+    "fleet_host_migrations"
+   ]
   },
   {
    "atomic_unit": "codex_harness.application.operation_finalization:parkable#1",
@@ -393,6 +441,7 @@
    ],
    "family": "effects.admission_unit",
    "golden_unit": "reconcile_interrupted",
+   "via": "rule6_case",
    "writes_observed": null
   },
   {
@@ -440,6 +489,7 @@
    ],
    "family": "effects.admission_unit",
    "golden_unit": "relay",
+   "via": "rule6_case",
    "writes_observed": null
   },
   {
@@ -453,6 +503,7 @@
    ],
    "family": "effects.admission_unit",
    "golden_unit": "relay",
+   "via": "rule6_case",
    "writes_observed": null
   },
   {
@@ -465,6 +516,7 @@
    ],
    "family": "effects.admission_unit",
    "golden_unit": "relay",
+   "via": "rule6_case",
    "writes_observed": null
   },
   {
@@ -491,6 +543,7 @@
    ],
    "family": "effects.admission_unit",
    "golden_unit": "relocate",
+   "via": "rule6_case",
    "writes_observed": null
   },
   {
@@ -561,7 +614,26 @@
    ],
    "family": "effects.admission_unit.pg",
    "golden_unit": "apply",
+   "via": "rule6_case",
    "writes_observed": null
+  },
+  {
+   "atomic_unit": "codex_harness.application.execution_recovery:ExecutionRecovery.apply#2",
+   "basis": "block_exercise",
+   "block": "#2",
+   "case": "apply_success",
+   "cases": [
+    "a",
+    "b",
+    "c"
+   ],
+   "family": "effects.admission_unit.pg",
+   "golden_unit": "apply",
+   "via": "success_case",
+   "writes_observed": [
+    "events",
+    "execution_recoveries"
+   ]
   },
   {
    "atomic_unit": "codex_harness.application.fleet:Fleet.authorize_budget#1",
@@ -596,6 +668,7 @@
    ],
    "family": "effects.admission_unit.pg",
    "golden_unit": "claim",
+   "via": "rule6_case",
    "writes_observed": null
   },
   {
@@ -620,6 +693,7 @@
    ],
    "family": "effects.admission_unit.pg",
    "golden_unit": "complete",
+   "via": "rule6_case",
    "writes_observed": null
   },
   {
@@ -632,6 +706,7 @@
    ],
    "family": "effects.admission_unit.pg",
    "golden_unit": "depths",
+   "via": "rule6_case",
    "writes_observed": null
   },
   {
@@ -644,6 +719,7 @@
    ],
    "family": "effects.admission_unit.pg",
    "golden_unit": "depths",
+   "via": "rule6_case",
    "writes_observed": [
     "local_cycles"
    ]
@@ -658,6 +734,7 @@
    ],
    "family": "effects.admission_unit.pg",
    "golden_unit": "depths",
+   "via": "rule6_case",
    "writes_observed": null
   },
   {
@@ -680,6 +757,7 @@
    ],
    "family": "effects.admission_unit.pg",
    "golden_unit": "depths",
+   "via": "rule6_case",
    "writes_observed": null
   },
   {
@@ -692,6 +770,7 @@
    ],
    "family": "effects.admission_unit.pg",
    "golden_unit": "depths",
+   "via": "rule6_case",
    "writes_observed": null
   },
   {
@@ -704,6 +783,7 @@
    ],
    "family": "effects.admission_unit.pg",
    "golden_unit": "depths",
+   "via": "rule6_case",
    "writes_observed": null
   },
   {
@@ -716,6 +796,7 @@
    ],
    "family": "effects.admission_unit.pg",
    "golden_unit": "depths",
+   "via": "rule6_case",
    "writes_observed": null
   },
   {
@@ -728,6 +809,7 @@
    ],
    "family": "effects.admission_unit.pg",
    "golden_unit": "depths",
+   "via": "rule6_case",
    "writes_observed": null
   },
   {
@@ -740,6 +822,7 @@
    ],
    "family": "effects.admission_unit.pg",
    "golden_unit": "depths",
+   "via": "rule6_case",
    "writes_observed": [
     "tasks"
    ]
@@ -798,7 +881,25 @@
    ],
    "family": "effects.admission_unit.pg",
    "golden_unit": "migrate_host",
+   "via": "rule6_case",
    "writes_observed": null
+  },
+  {
+   "atomic_unit": "codex_harness.application.fleet:Fleet.migrate_host#2",
+   "basis": "block_exercise",
+   "block": "#2",
+   "case": "migrate_host_success",
+   "cases": [
+    "a",
+    "b",
+    "c"
+   ],
+   "family": "effects.admission_unit.pg",
+   "golden_unit": "migrate_host",
+   "via": "success_case",
+   "writes_observed": [
+    "fleet_host_migrations"
+   ]
   },
   {
    "atomic_unit": "codex_harness.application.operation_finalization:parkable#1",
@@ -833,6 +934,7 @@
    ],
    "family": "effects.admission_unit.pg",
    "golden_unit": "reconcile_interrupted",
+   "via": "rule6_case",
    "writes_observed": null
   },
   {
@@ -880,6 +982,7 @@
    ],
    "family": "effects.admission_unit.pg",
    "golden_unit": "relay",
+   "via": "rule6_case",
    "writes_observed": null
   },
   {
@@ -893,6 +996,7 @@
    ],
    "family": "effects.admission_unit.pg",
    "golden_unit": "relay",
+   "via": "rule6_case",
    "writes_observed": null
   },
   {
@@ -905,6 +1009,7 @@
    ],
    "family": "effects.admission_unit.pg",
    "golden_unit": "relay",
+   "via": "rule6_case",
    "writes_observed": null
   },
   {
@@ -931,6 +1036,7 @@
    ],
    "family": "effects.admission_unit.pg",
    "golden_unit": "relocate",
+   "via": "rule6_case",
    "writes_observed": null
   },
   {
@@ -1038,6 +1144,7 @@
    ],
    "family": "effects.decision_unit",
    "golden_unit": "decision_unit",
+   "via": "rule6_case",
    "writes_observed": [
     "decisions_pending",
     "outbox"
@@ -1054,6 +1161,7 @@
    ],
    "family": "effects.decision_unit",
    "golden_unit": "decision_unit",
+   "via": "rule6_case",
    "writes_observed": [
     "decisions_pending"
    ]
@@ -1102,6 +1210,7 @@
    ],
    "family": "effects.decision_unit",
    "golden_unit": "decision_unit",
+   "via": "rule6_case",
    "writes_observed": [
     "decisions_pending"
    ]
@@ -1116,6 +1225,7 @@
    ],
    "family": "effects.decision_unit",
    "golden_unit": "decision_unit",
+   "via": "rule6_case",
    "writes_observed": [
     "events",
     "execution_rejections"
@@ -1132,6 +1242,7 @@
    ],
    "family": "effects.decision_unit",
    "golden_unit": "decision_unit",
+   "via": "rule6_case",
    "writes_observed": null
   },
   {
@@ -1146,6 +1257,7 @@
    ],
    "family": "effects.decision_unit.pg",
    "golden_unit": "decision_unit",
+   "via": "rule6_case",
    "writes_observed": [
     "decisions_pending",
     "outbox"
@@ -1162,6 +1274,7 @@
    ],
    "family": "effects.decision_unit.pg",
    "golden_unit": "decision_unit",
+   "via": "rule6_case",
    "writes_observed": [
     "decisions_pending"
    ]
@@ -1210,6 +1323,7 @@
    ],
    "family": "effects.decision_unit.pg",
    "golden_unit": "decision_unit",
+   "via": "rule6_case",
    "writes_observed": [
     "decisions_pending"
    ]
@@ -1224,6 +1338,7 @@
    ],
    "family": "effects.decision_unit.pg",
    "golden_unit": "decision_unit",
+   "via": "rule6_case",
    "writes_observed": [
     "events",
     "execution_rejections"
@@ -1240,6 +1355,7 @@
    ],
    "family": "effects.decision_unit.pg",
    "golden_unit": "decision_unit",
+   "via": "rule6_case",
    "writes_observed": null
   },
   {

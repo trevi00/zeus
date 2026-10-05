@@ -24,10 +24,14 @@ R-L3d (DESIGN-s11 §17, S11 R-L3d-1) adds, for a family WITH a reference blocks 
 the blocks each golden case executed, recorded on the reference side by `compare/harness/block_exercise.py`), an entry
 `{family, golden_unit, atomic_unit, block, basis: "block_exercise", cases, case, writes_observed}` for a block of a golden unit iff
 ALL hold:
-  (i)   rules 1-3 joined no entry for that atomic-unit row (in the family: one resolution per row);
+  (i)   rules 1-3 joined no entry for that atomic-unit row in ANY family (one resolution per row; S11 R-L3d-2);
   (ii)  the block key is recorded in at least one rule-6 case (a/b/c/d) of that golden unit;
   (iii) if the block lists non-`<dynamic>` literal writes, at least one of them is among that case's durable buckets
         (`writes_observed`); a block without literal writes is credited on execution alone (`writes_observed: null`).
+  The entry carries `"via": "rule6_case"`. S11 R-L3d-2 (DESIGN-s11 §17 r6) adds `"via": "success_case"` (additive; `rule6_case`
+  wins when both apply): (ii') the block is recorded in the unit's success case (else its first replay case: the case rule 2
+  uses), (iii) holds for that case (`case` names it), and (iv) the unit holds at least one rule-6 case (rule 3: `cases` are the
+  unit's letters).
 A family without a blocks artifact gets no such entry (never inferred).
 A call that is not bound or not blocked is listed (`ambiguous`), never an entry; a unit the table cannot join is listed
 (`unmatched`) with the reason. The unit-under-test call is the one whose name is the golden unit's name, except the units named
@@ -184,14 +188,21 @@ def golden_units(golden: dict, run_map: dict[str, list[tuple[str, str]]], family
     return units
 
 
+def selected_case(cases: dict) -> tuple[str, dict] | None:
+    """The golden's success case (else the first replay case `c`) that records durable writes: rule 2's coverage target."""
+    ordered = [(k, c) for k, c in cases.items() if re.search(r"(?:^|_)success", k)] + \
+              [(k, c) for k, c in cases.items() if rule6_letter(k) == "c"]
+    return next(((k, c) for k, c in ordered if any(c.get(key) for key in DURABLE_KEYS)), None)
+
+
 def durable_buckets(cases: dict) -> list[str]:
-    """The buckets the golden's success case (else the first case with durable writes) records: the join's coverage target."""
-    ordered = [c for k, c in cases.items() if re.search(r"(?:^|_)success", k)] + \
-              [c for k, c in cases.items() if rule6_letter(k) == "c"]
-    for case in ordered:
-        for key in DURABLE_KEYS:
-            if case.get(key):
-                return sorted({w[0] if isinstance(w, list) else w for w in case[key]})
+    """The buckets of the selected case: the join's coverage target."""
+    chosen = selected_case(cases)
+    if chosen is None:
+        return []
+    for key in DURABLE_KEYS:
+        if chosen[1].get(key):
+            return sorted({w[0] if isinstance(w, list) else w for w in chosen[1][key]})
     return []
 
 
@@ -205,11 +216,17 @@ def observed_buckets(case: dict) -> set[str]:
 
 
 def block_exercise_entries(family: str, gunits: dict, blocks: dict | None, units: list[dict], joined: set[str]) -> list[dict]:
-    """R-L3d: the entries of the rows rules 1-3 left unjoined, selected by the blocks the golden cases executed."""
+    """R-L3d: the entries of the rows no rules 1-3 entry joins (`joined`: in any family), selected by the blocks executed."""
     if blocks is None:
         return []
     by_key = {u["key"]: u for u in units}
     found: dict[tuple[str, str], dict] = {}
+
+    def observed(block: dict, case: dict) -> tuple[bool, list[str] | None]:
+        literal = sorted(w for w in block["literal_writes"] if w != "<dynamic>")
+        seen = sorted(set(literal) & observed_buckets(case)) if literal else None
+        return (not literal or bool(seen)), seen  # executed, but literal writes not observed in the case: no entry
+
     for unit, (cases, _) in sorted(gunits.items()):
         for case in sorted(cases):
             letter = rule6_letter(case)
@@ -217,20 +234,32 @@ def block_exercise_entries(family: str, gunits: dict, blocks: dict | None, units
                 block = by_key.get(key)
                 if block is None or key in joined:
                     continue
-                literal = sorted(w for w in block["literal_writes"] if w != "<dynamic>")
-                seen = sorted(set(literal) & observed_buckets(cases[case])) if literal else None
-                if literal and not seen:
-                    continue  # executed, but its literal writes were not observed in the case
-                entry = found.setdefault((unit, key), {"letters": set(), "case": case, "writes": seen})
+                ok, seen = observed(block, cases[case])
+                if not ok:
+                    continue
+                entry = found.setdefault((unit, key), {"letters": set(), "case": case, "writes": seen, "via": "rule6_case"})
                 entry["letters"].add(letter)
+        # r6: the block the unit's success case (else first replay case) executed; the unit needs a rule-6 case (rule 3)
+        letters = {rule6_letter(c) for c in cases} - {None}
+        chosen = selected_case(cases)
+        if not letters or chosen is None:
+            continue
+        for key in blocks["cases"].get(chosen[0], []):
+            block = by_key.get(key)
+            if block is None or key in joined or (unit, key) in found:
+                continue
+            ok, seen = observed(block, chosen[1])
+            if ok:
+                found[(unit, key)] = {"letters": letters, "case": chosen[0], "writes": seen, "via": "success_case"}
     return [{"family": family, "golden_unit": unit, "atomic_unit": key, "block": "#" + key.rsplit("#", 1)[1], "basis": BASIS,
-             "cases": sorted(e["letters"]), "case": e["case"], "writes_observed": e["writes"]}
+             "via": e["via"], "cases": sorted(e["letters"]), "case": e["case"], "writes_observed": e["writes"]}
             for (unit, key), e in sorted(found.items())]
 
 
-def join_family(family: str, driver: Driver, golden: dict, units: list[dict], exercised: dict | None = None) -> dict:
-    """-> {entries, ambiguous, unmatched} of one family. `units` is the catalogue's `transaction_blocks.units`; `blocks` the
-    family's reference blocks artifact (R-L3d), or None."""
+def join_family(family: str, driver: Driver, golden: dict, units: list[dict], exercised: dict | None = None,
+                joined_elsewhere: set[str] = frozenset()) -> dict:
+    """-> {entries, ambiguous, unmatched} of one family. `units` is the catalogue's `transaction_blocks.units`; `exercised` the
+    family's reference blocks artifact (R-L3d), or None; `joined_elsewhere` the rows rules 1-3 join in the other families."""
     base = family.removesuffix(".pg").removeprefix("effects.")
     entry_path = next((p for p in driver.funcs if "run" in driver.funcs[p]), driver.entry)
     by_method: dict[str, list[dict]] = {}
@@ -287,7 +316,8 @@ def join_family(family: str, driver: Driver, golden: dict, units: list[dict], ex
         out["entries"].append({"family": family, "golden_unit": unit, "atomic_unit": chosen[0]["key"],
                                "driver_call": f"{path}:{line}", "block": "#" + chosen[0]["key"].rsplit("#", 1)[1],
                                "cases": letters})
-    out["entries"] += block_exercise_entries(family, gunits, exercised, units, {e["atomic_unit"] for e in out["entries"]})
+    out["entries"] += block_exercise_entries(family, gunits, exercised, units,
+                                         {e["atomic_unit"] for e in out["entries"]} | set(joined_elsewhere))
     return out
 
 
@@ -305,6 +335,7 @@ def build(root: Path) -> dict:
     catalogue = json.loads((root / CATALOGUE).read_text(encoding="utf-8"))["transaction_blocks"]["units"]
     table = {"schema": SCHEMA, "sources": {"catalogue": CATALOGUE, "scenarios": "compare/scenarios/effects.*.json"},
              "entries": [], "ambiguous": [], "unmatched": []}
+    families = []  # (family, driver, golden, blocks)
     for scenario in sorted((root / "compare/scenarios").glob("effects.*.json")):
         meta = json.loads(scenario.read_text(encoding="utf-8"))
         entry = meta["reference_driver"]
@@ -322,7 +353,12 @@ def build(root: Path) -> dict:
         golden = json.loads((root / "compare" / meta["golden"]).read_text(encoding="utf-8"))
         blocks_path = root / "compare/goldens/reference" / f"{meta['family']}.blocks.json"
         blocks = json.loads(blocks_path.read_text(encoding="utf-8")) if blocks_path.is_file() else None
-        result = join_family(meta["family"], Driver(sources, f"compare/{entry}"), golden, catalogue, blocks)
+        families.append((meta["family"], Driver(sources, f"compare/{entry}"), golden, blocks))
+    # R-L3d (i) is global: the rows rules 1-3 join in any family (the first pass has no blocks artifact, so it is rules 1-3 only)
+    rules_1_3 = {f: {e["atomic_unit"] for e in join_family(f, d, g, catalogue)["entries"]} for f, d, g, _ in families}
+    for family, driver, golden, blocks in families:
+        elsewhere = {row for f, rows in rules_1_3.items() if f != family for row in rows}
+        result = join_family(family, driver, golden, catalogue, blocks, elsewhere)
         for k in ("entries", "ambiguous", "unmatched"):
             table[k] += result[k]
     for k in ("entries", "ambiguous", "unmatched"):

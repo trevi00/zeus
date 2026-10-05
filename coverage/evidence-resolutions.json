@@ -61,6 +61,16 @@
    "citation": "coverage/effects-unit-table.json#effects.admission_unit/apply; coverage/effects-unit-table.json#effects.admission_unit.pg/apply"
   },
   {
+   "key": "atomic_unit:codex_harness.application.execution_recovery:ExecutionRecovery.apply#2",
+   "pending": "pending: recorder confirmation in the owning slice",
+   "replaced_by": [
+    "compare:effects.admission_unit",
+    "compare:effects.admission_unit.pg"
+   ],
+   "rule": "G1",
+   "citation": "coverage/effects-unit-table.json#effects.admission_unit/apply; coverage/effects-unit-table.json#effects.admission_unit.pg/apply"
+  },
+  {
    "key": "atomic_unit:codex_harness.application.execution_recovery:ExecutionRecovery.prepare#1",
    "pending": "pending: recorder confirmation in the owning slice",
    "replaced_by": [
@@ -112,6 +122,16 @@
   },
   {
    "key": "atomic_unit:codex_harness.application.fleet:Fleet.migrate_host#1",
+   "pending": "pending: recorder confirmation in the owning slice",
+   "replaced_by": [
+    "compare:effects.admission_unit",
+    "compare:effects.admission_unit.pg"
+   ],
+   "rule": "G1",
+   "citation": "coverage/effects-unit-table.json#effects.admission_unit/migrate_host; coverage/effects-unit-table.json#effects.admission_unit.pg/migrate_host"
+  },
+  {
+   "key": "atomic_unit:codex_harness.application.fleet:Fleet.migrate_host#2",
    "pending": "pending: recorder confirmation in the owning slice",
    "replaced_by": [
     "compare:effects.admission_unit",
