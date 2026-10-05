@@ -106,8 +106,9 @@ def test_s1_module_rows_are_all_accounted_for(table):
     assert len(rows) == 27
     # S11 L: the relabel measured the S1 rows: five layer-marker / package-root rows have no resolving code symbol
     # (designed); model, contracts and commands resolve but name unmet evidence (implemented); the rest are verified.
+    # S11 MC2 (R-MC2-3/-5): the package root now resolves as `codex_harness`; four layer markers stay designed.
     partial = {r["key"] for r in rows if r["status"] == "designed"}
-    assert partial == {"module:src/codex_harness/__init__.py", "module:src/codex_harness/resources/__init__.py",
+    assert partial == {"module:src/codex_harness/resources/__init__.py",
                        "module:src/codex_harness/adapters/__init__.py",
                        "module:src/codex_harness/application/__init__.py",
                        "module:src/codex_harness/domain/__init__.py"}
