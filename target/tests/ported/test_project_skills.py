@@ -224,7 +224,6 @@ def test_profile_symlink_in_git_is_rejected(project):
 
 
 def test_real_skill_history_annotation_and_recovery_survive_other_task_observation(project, monkeypatch, capsys):
-    pytest.skip("S11 (PREP-S11 §9 #3): scripts/skill_telemetry_audit.py imports absent M7 codex_harness.adapters.skill_audit; root-script disposition pending")
     root, git, artifacts = project
     (root / '.harness/stages.yaml').write_text('stages: []\n', encoding='utf-8')
     (root / '.harness/skills/python/fastapi/routes.md').write_text(
@@ -273,7 +272,9 @@ def test_real_skill_history_annotation_and_recovery_survive_other_task_observati
     assert artifacts.document(recovery['progress']['ref']) == original_progress
     assert artifacts.document(recovery['checkpoint']['ref']) == checkpoint
     assert 'skill_history_ref' not in resumed['required']['research_context']
-    from codex_harness.adapters.skill_audit import main  # noqa: F401
+    from codex_harness.entry.cli.skill_audit import (
+        main,  # noqa: F401  # S11 R-S7: M7 `codex_harness.adapters.skill_audit.main`
+    )
 
     project_id = resumed['required']['project_skills']['project_id']
     assert main(['--project-id', project_id, '--json'], store=store) == 0

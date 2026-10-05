@@ -11,7 +11,9 @@ Batch U3 (V6 retrofit): the three CLI cases that had been left out are copied ve
 `S10: the skill audit operator CLI` (M7 `skill_audit.main`); the names only they read stay unresolved by design (F821).
 """
 # ruff: noqa: F821
+import copy  # S11 R-S7: names the un-skipped CLI cases read
 import json
+from uuid import uuid4  # S11 R-S7
 
 import pytest
 
@@ -19,7 +21,11 @@ from codex_harness.context.adapters.skill_audit import render_text
 from codex_harness.context.application.skill_history import SkillHistory
 from codex_harness.context.domain.skills.audit import audit_history, duration_seconds, timestamp
 from codex_harness.context.domain.skills.history import assess_history
+from codex_harness.entry.cli.skill_audit import (
+    main,  # S11 R-S7: the entry main (M7 `adapters.skill_audit.main`)
+)
 from codex_harness.kernel.errors import ContractError
+from codex_harness.kernel.ids import digest  # S11 R-S7
 from codex_harness.storage.adapters.memory_store import MemoryStore
 
 
@@ -118,9 +124,9 @@ def test_total_score_matches_upstream_producer_not_pointer_eligibility():
     assert 'base score median: 1' in render_text(report)
 
 
-@pytest.mark.skip(reason="S11 (PREP-S11 §9 #3): scripts/skill_telemetry_audit.py imports absent M7 codex_harness.adapters.skill_audit; root-script disposition pending")
 def test_window_cutoff_boundary_and_legacy_slug_cli(capsys, monkeypatch):
-    monkeypatch.setattr('codex_harness.domain.skill_audit.MAX_EVENTS', 2)
+    # S11 R-S7: patch target is the context domain home of M7 `codex_harness.domain.skill_audit`.
+    monkeypatch.setattr('codex_harness.context.domain.skills.audit.MAX_EVENTS', 2)
     boundary = timestamp('2026-09-08T00:00:00Z')
     report = audit_history([observation(i) for i in range(3)], cutoff=boundary)
     assert report['invocations'] == 2 and report['max_events'] == 2
@@ -154,7 +160,6 @@ def test_invalid_base_score_cannot_be_recorded(value):
     assert store.data == {}
 
 
-@pytest.mark.skip(reason="S11 (PREP-S11 §9 #3): scripts/skill_telemetry_audit.py imports absent M7 codex_harness.adapters.skill_audit; root-script disposition pending")
 def test_cli_reads_same_project_without_writes_and_replay_preserves_time(capsys):
     store = MemoryStore()
     project_id = str(uuid4())
@@ -186,7 +191,6 @@ def test_cli_reads_same_project_without_writes_and_replay_preserves_time(capsys)
     assert 'Narrow the kw surface' in capsys.readouterr().out
 
 
-@pytest.mark.skip(reason="S11 (PREP-S11 §9 #3): scripts/skill_telemetry_audit.py imports absent M7 codex_harness.adapters.skill_audit; root-script disposition pending")
 def test_store_value_error_is_unavailable_not_bad_arguments(capsys):
     class BrokenStore:
         def transaction(self):
