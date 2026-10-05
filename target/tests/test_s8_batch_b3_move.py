@@ -130,6 +130,10 @@ def ae_expected_class():
 
 
 def test_audit_execution_is_m7s_modulo_the_v24_rules():
+    """Structural: move fidelity, `AuditExecution` is M7's class statement for statement modulo the V24 rules (the S8 move
+    rule); behaviour is covered by test_the_blocked_review_refuses_each_unwired_port_with_no_effect,
+    test_the_wired_blocked_review_validates_records_and_notifies_in_one_transaction and
+    test_the_succeeded_review_needs_decisions_but_not_notices_and_does_not_validate."""
     ours, theirs = statements(text_of(ae)), statements(m7_text(AE_M7))
     assert list(ours) == list(theirs)
     for name, node in theirs.items():

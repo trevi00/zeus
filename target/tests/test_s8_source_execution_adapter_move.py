@@ -92,6 +92,10 @@ def test_every_statement_but_bounded_command_and_the_runner_is_m7s_in_order():
 
 
 def test_r_se1_bounded_command_takes_processes_requires_it_first_and_spawns_through_popen():
+    """Structural: the moved `bounded_command` statements equal M7's but for the `processes` port and its `require`
+    (the S8 move rule, R-se1); behaviour is covered by test_bounded_command_without_processes_is_refused_before_any_spawn,
+    test_bounded_command_spawns_once_through_popen_with_the_three_standard_streams and
+    test_bounded_command_through_the_real_chokepoint_runs_a_real_child_and_bounds_its_output."""
     ref, ours = statements(m7_text())[("bounded_command",)], statements(target_text())[("bounded_command",)]
     assert [a.arg for a in ours.args.args] == [a.arg for a in ref.args.args] == ["argv", "timeout"]
     assert [a.arg for a in ours.args.kwonlyargs] == ["processes"] and [ast.unparse(d) for d in ours.args.kw_defaults] == ["None"]

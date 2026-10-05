@@ -325,7 +325,39 @@ def test_the_github_tickets_header_names_the_layer_owner_contract_and_rules():
 
 
 # ---- the spawn chokepoint ---------------------------------------------------------------------------------------------------------
+def test_r_gh1_with_every_spawn_path_patched_to_raise_the_module_still_never_spawns(monkeypatch):
+    """Behaviour: the host_os chokepoint, `subprocess` and `os.system` raise on use; the unwired module refuses (never
+    falling back to a spawn) and the injected runner receives the one `gh` call, so nothing else could have spawned."""
+    import os
+
+    from codex_harness.host_os.adapters import process_groups
+
+    def spawned(*args, **kwargs):
+        raise AssertionError("the module spawned a process")
+
+    monkeypatch.setattr(process_groups, "run_process", spawned)
+    monkeypatch.setattr(subprocess, "Popen", spawned)
+    monkeypatch.setattr(subprocess, "run", spawned)
+    monkeypatch.setattr(os, "system", spawned)
+    store, desk, hub = world()
+    row = desk.create(content())
+    before = records(store)
+    with pytest.raises(ContractError, match="Process runner is not wired"):
+        hub._call(["issue", "view", "7"])
+    assert records(store) == before
+    for operation in (lambda: hub.sync(row["id"], "fixture/zeus"), lambda: hub.pull(row["id"], "fixture/zeus")):
+        with pytest.raises(ContractError):  # sync claims before its first call (M7), so only the refusal is pinned here
+            operation()
+    seen = []
+    _, _, wired = world(run_process=lambda argv, **kwargs: seen.append(list(argv)) or SimpleNamespace(
+        returncode=0, stdout="ok\n", stderr=""))
+    assert wired._call(["issue", "view", "7"]) == "ok" and seen == [["gh", "issue", "view", "7"]]
+
+
 def test_r_gh1_the_module_never_spawns_and_the_one_call_goes_through_the_injected_port():
+    """Structural: no spawn name in the moved source and the one `run_process` call site is the injected port's (the
+    S8 move rule R-gh1); behaviour is covered by
+    test_r_gh1_with_every_spawn_path_patched_to_raise_the_module_still_never_spawns."""
     src = text_of(github)
     body = src.replace(header(github), "")
     for banned in ("subprocess", "Popen", "os.system", "adapters.commands", "host_os", "import run_process"):

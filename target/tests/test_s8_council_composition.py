@@ -117,6 +117,9 @@ def test_r_cd3_the_request_gains_only_additive_defaults():
 
 # ---- R-cd4: RunTask ------------------------------------------------------------------------------------------
 def test_r_cd4_one_early_refusal_before_any_reservation_or_provider_and_no_old_refusal():
+    """Structural: in the unparsed `RunTask._run` the admission refusal text precedes the transaction, invocation,
+    composer and reserve sites (the S8 move rule, R-cd4); behaviour is covered by
+    test_r_cd2_a_delivery_or_feedback_without_admission_refuses_before_any_effect."""
     source = now_text(RUN_TASK)
     assert "composition is not wired" not in source
     run = method(source, "RunTask", "_run")

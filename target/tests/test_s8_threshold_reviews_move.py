@@ -130,6 +130,9 @@ def test_r_tr1_the_lazy_import_and_construction_become_one_require_and_the_injec
 
 
 def test_r_tr2_queue_has_one_require_immediately_before_the_in_place_record_with_the_same_row():
+    """Structural: the moved `_queue` statements equal M7's but for one `require` before the in-place record (the S8 move
+    rule, V22 R-tr2); behaviour is covered by test_request_writes_the_request_then_queues_the_lead_decision and
+    test_r_tr2_unwired_decisions_refuse_request_and_write_nothing_not_even_the_request."""
     m7, ours = methods(m7_text())["_queue"].body, methods(target_text())["_queue"].body
     assert [ast.dump(s) for s in ours[:-2]] == [ast.dump(s) for s in m7[:-1]]
     assert ast.unparse(ours[-2]) == f"require(self.decisions is not None, {DECISIONS_MESSAGE!r})"
@@ -141,6 +144,9 @@ def test_r_tr2_queue_has_one_require_immediately_before_the_in_place_record_with
 
 
 def test_r_tr2_complete_keeps_m7s_write_order_with_the_decision_record_in_place_of_its_put():
+    """Structural: the moved `complete` unit equals M7's statement for statement but for the decision record in place of
+    its put (the S8 move rule, V22 R-tr2); behaviour is covered by
+    test_complete_writes_the_decision_then_the_request_then_the_conductor_decision."""
     m7, ours = methods(m7_text())["complete"], methods(target_text())["complete"]
     block_old = next(n for n in m7.body if isinstance(n, ast.With)).body
     block_new = next(n for n in ours.body if isinstance(n, ast.With)).body
@@ -379,6 +385,44 @@ def test_r_tr2_unwired_decisions_refuse_complete_before_any_write_and_the_wired_
     with world.store.transaction() as tx:
         assert tx.get(BUCKET, request["id"])["status"] == "awaiting_conductor"
         assert sorted((r["actor"], r["status"]) for r in tx.scan("decisions_pending")) == [(CONDUCTOR, "pending"), (LEAD, "succeeded")]
+
+
+def observed_puts(monkeypatch):
+    """Record every `put` any MemoryStore transaction receives, as `(bucket, key)`, in the order issued."""
+    from codex_harness.storage.adapters import memory_store
+
+    log, original = [], memory_store.MemoryTransaction.put
+
+    def put(self, bucket, key, body):
+        log.append((bucket, key))
+        return original(self, bucket, key, body)
+
+    monkeypatch.setattr(memory_store.MemoryTransaction, "put", put)
+    return log
+
+
+def test_request_writes_the_request_then_queues_the_lead_decision(monkeypatch):
+    """Behaviour (INV-THRESHOLD-REVIEW-001; the write order of M7 `request`): the observed write sequence of a new request
+    is the request row, then the lead's pending decision."""
+    world = World()
+    log = observed_puts(monkeypatch)
+    request = world.reviews().request(world.row_id)
+    assert log == [(BUCKET, request["id"]), ("decisions_pending", digest([request["id"], LEAD]))]
+
+
+def test_complete_writes_the_decision_then_the_request_then_the_conductor_decision(monkeypatch):
+    """Behaviour (INV-THRESHOLD-REVIEW-001: lease, exact input and ordered review commit together): the observed write
+    sequence of an accepting lead `complete` is the lead's decision record, the request row, then the conductor's pending
+    decision (M7's order: the decision put, the request put, `_queue`)."""
+    world = World()
+    request = world.reviews().request(world.row_id)
+    lease = world.claim()
+    bundle = world.reviews().prepare(lease)
+    result = world.execution(lease, bundle)
+    log = observed_puts(monkeypatch)
+    world.reviews().complete(lease, bundle, result)
+    assert log == [("decisions_pending", lease["id"]), (BUCKET, request["id"]),
+                   ("decisions_pending", digest([request["id"], CONDUCTOR]))]
 
 
 def test_r_tr3_records_restore_writes_the_request_under_its_id_and_row_is_the_modules_own_rule():

@@ -73,6 +73,9 @@ def test_the_cli_shim_reexports_the_entry_callables():
 
 
 def test_pyproject_scripts_and_packages_name_existing_modules():
+    """Provenance: the `[project.scripts]` set and its order are M7's (SOURCE e38aa722 pyproject.toml), kept as the
+    declared compatibility record of the public entry names; no contract makes the order observable. Each script target
+    also resolves to a callable (behavioural)."""
     document = tomllib.loads((TARGET / "pyproject.toml").read_text("utf-8"))
     # int39 (owner): E3 and E2a add M7's supervisor and monitor scripts; the set AND the order are M7's
     # (SOURCE e38aa722 pyproject.toml [project.scripts]).

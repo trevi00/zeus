@@ -62,7 +62,45 @@ def test_no_target_code_passes_shell_or_a_console_cancelling_flag():
 
 
 def test_the_packaged_hook_resource_spawns_nothing_either():
+    """Structural: the hook resource holds no spawn site, which the single-chokepoint rule above requires of every
+    target file; the runtime property is covered by test_the_packaged_hook_runs_with_every_spawn_path_patched_to_raise."""
     assert spawn_sites(SRC / "codex_harness" / "resources" / "worker_profile_hook.py") == []
+
+
+def test_the_packaged_hook_runs_with_every_spawn_path_patched_to_raise(tmp_path, monkeypatch, capsys):
+    """Behaviour: the hook handles a session start and two failures of one tool (the second emits its research-required
+    context) with the chokepoint, `subprocess` creators and the `os` exec/spawn/system/fork functions all raising, and
+    writes its receipts."""
+    import importlib.util
+    import io
+    import json
+    import os
+    from types import SimpleNamespace
+
+    from codex_harness.host_os.adapters import process_groups
+
+    def spawned(*args, **kwargs):
+        raise AssertionError("the packaged hook spawned a process")
+
+    for owner, names in ((process_groups, ("run", "popen")), (subprocess, tuple(CREATORS)),
+                         (os, tuple(n for n in dir(os) if n.startswith(OS_SPAWN)))):
+        for name in names:
+            if hasattr(owner, name):
+                monkeypatch.setattr(owner, name, spawned)
+    spec = importlib.util.spec_from_file_location(
+        "worker_profile_hook_under_test", SRC / "codex_harness" / "resources" / "worker_profile_hook.py")
+    hook = importlib.util.module_from_spec(spec)
+    spec.loader.exec_module(hook)
+    directory = tmp_path / "receipts"
+    events = [{"hook_event_name": "SessionStart", "session_id": "s-1"}] + [
+        {"hook_event_name": "PostToolUseFailure", "session_id": "s-1", "tool_name": "Bash", "tool_use_id": f"u-{i}",
+         "error": "boom at line 7"} for i in (1, 2)]
+    for body in events:
+        monkeypatch.setattr(hook.sys, "stdin", SimpleNamespace(buffer=io.BytesIO(json.dumps(body).encode())))
+        assert hook.main(["--directory", str(directory), "--profile-digest", "d" * 64]) == 0
+    assert len(list(directory.glob("*.json"))) == 3
+    context = [json.loads(line) for line in capsys.readouterr().out.splitlines()]
+    assert len(context) == 1 and "Two-strike rule: 2 distinct Bash failures" in context[0]["hookSpecificOutput"]["additionalContext"]
 
 
 def test_the_chokepoint_passes_arguments_and_results_unchanged(tmp_path):
