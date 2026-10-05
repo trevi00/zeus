@@ -24,19 +24,21 @@
    "key": "atomic_unit:codex_harness.adapters.executor:Executor.decide_one#2",
    "pending": "pending: recorder confirmation in the owning slice",
    "replaced_by": [
-    "compare:effects.decision_unit"
+    "compare:effects.decision_unit",
+    "compare:effects.decision_unit.pg"
    ],
    "rule": "G1",
-   "citation": "coverage/effects-unit-table.json#effects.decision_unit/decision_unit"
+   "citation": "coverage/effects-unit-table.json#effects.decision_unit/decision_unit; coverage/effects-unit-table.json#effects.decision_unit.pg/decision_unit"
   },
   {
    "key": "atomic_unit:codex_harness.adapters.executor:Executor.decide_one#3",
    "pending": "pending: recorder confirmation in the owning slice",
    "replaced_by": [
-    "compare:effects.decision_unit"
+    "compare:effects.decision_unit",
+    "compare:effects.decision_unit.pg"
    ],
    "rule": "G1",
-   "citation": "coverage/effects-unit-table.json#effects.decision_unit/decision_unit"
+   "citation": "coverage/effects-unit-table.json#effects.decision_unit/decision_unit; coverage/effects-unit-table.json#effects.decision_unit.pg/decision_unit"
   },
   {
    "key": "atomic_unit:codex_harness.application.continuation:Continuation.accept_research#1",

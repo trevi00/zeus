@@ -1155,7 +1155,7 @@
    "atomic_unit": "codex_harness.adapters.executor:Executor._fail_decision#1",
    "basis": "block_exercise",
    "block": "#1",
-   "case": "a_failure_before_decision_review_conductor",
+   "case": "a_failure_at_outcome_blocked",
    "cases": [
     "a",
     "b"
@@ -1170,7 +1170,39 @@
    "atomic_unit": "codex_harness.adapters.executor:Executor.decide_one#1",
    "basis": "block_exercise",
    "block": "#1",
-   "case": "a_failure_before_decision_review_conductor",
+   "case": "a_failure_at_outcome_blocked",
+   "cases": [
+    "a",
+    "b",
+    "c"
+   ],
+   "family": "effects.decision_unit.pg",
+   "golden_unit": "decision_unit",
+   "writes_observed": [
+    "decisions_pending"
+   ]
+  },
+  {
+   "atomic_unit": "codex_harness.adapters.executor:Executor.decide_one#2",
+   "basis": "block_exercise",
+   "block": "#2",
+   "case": "a_failure_at_outcome_inspection_blocked",
+   "cases": [
+    "a",
+    "b",
+    "c"
+   ],
+   "family": "effects.decision_unit.pg",
+   "golden_unit": "decision_unit",
+   "writes_observed": [
+    "decisions_pending"
+   ]
+  },
+  {
+   "atomic_unit": "codex_harness.adapters.executor:Executor.decide_one#3",
+   "basis": "block_exercise",
+   "block": "#3",
+   "case": "a_failure_at_outcome_blocked",
    "cases": [
     "a",
     "b",
@@ -1201,7 +1233,7 @@
    "atomic_unit": "codex_harness.application.observations:Observer.pending_terminations#1",
    "basis": "block_exercise",
    "block": "#1",
-   "case": "a_failure_before_decision_review_conductor",
+   "case": "a_failure_at_outcome_blocked",
    "cases": [
     "a",
     "b"
