@@ -250,3 +250,34 @@ def test_only_provider_stream_artifacts_are_redacted(tmp_path):
     body = json.dumps({"note": TOKEN})
     receipt = artifacts.put(body, "git-rebase")
     assert stored_bytes(raw, receipt) == body.encode() and "redactions" not in receipt
+
+
+@pytest.mark.parametrize("prose", ["secret here", "a password reset email was sent", "the token budget is 5000",
+                                   "authorization: pending review", "api key rotation notes"])
+def test_prose_that_only_names_a_secret_is_stored_byte_identically(tmp_path, prose):
+    from codex_harness.execution.adapters.execution_output import evidence_json
+
+    artifacts, raw = production_artifacts(tmp_path)
+    body = evidence_json(stream_document(prose))
+    receipt = artifacts.put(body, "execution:task-3")
+    assert stored_bytes(raw, receipt) == body.encode("utf-8") and receipt["redactions"] == 0
+
+
+def test_zeus_artifact_serves_the_redacted_artifact_and_not_the_token(tmp_path, monkeypatch, capsys):
+    """The read path: `zeus artifact <ref>` (entry.cli.artifact.run) over the store RunTask wrote through."""
+    from types import SimpleNamespace
+
+    from codex_harness import composition
+    from codex_harness.composition import cli_executor
+    from codex_harness.entry.cli import artifact as artifact_command
+    from codex_harness.execution.adapters.execution_output import evidence_json
+
+    artifacts, raw = production_artifacts(tmp_path)
+    receipt = artifacts.put(evidence_json(stream_document("key " + TOKEN + " end")), "runtime-event:task-4")
+    monkeypatch.setattr(composition, "build", lambda: None)
+    monkeypatch.setattr(cli_executor, "executor", lambda service: SimpleNamespace(artifacts=raw))
+    artifact_command.run(SimpleNamespace(reference=receipt["ref"], start=0, length=8000, search=None))
+    printed = capsys.readouterr().out
+    assert TOKEN not in printed and "[REDACTED token]" in printed
+    artifact_command.run(SimpleNamespace(reference=receipt["ref"], start=0, length=8000, search="REDACTED"))
+    assert TOKEN not in capsys.readouterr().out
