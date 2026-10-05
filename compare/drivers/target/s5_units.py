@@ -22,7 +22,10 @@ import recorder as rec  # noqa: E402
 import s5_coordination_composition as composition  # noqa: E402
 import s5_fleet_composition  # noqa: E402
 import s5_units  # noqa: E402
-from codex_harness.coordination.application import execution_fence, operation_finalization  # noqa: E402
+from codex_harness.coordination.application import (  # noqa: E402
+    execution_fence,
+    operation_finalization,
+)
 from codex_harness.coordination.application.operation import Operation  # noqa: E402
 from codex_harness.coordination.domain import operation as operation_domain  # noqa: E402
 from codex_harness.evidence.application.inspections import EvidenceRecords  # noqa: E402
