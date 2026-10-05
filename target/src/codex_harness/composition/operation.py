@@ -135,9 +135,28 @@ from codex_harness.routing.adapters.provider_policy import host_policy
 HOST_PROFILE = "host"
 COMPOSITION_PROFILES = ("development", "production")
 
+
+
+def _bound_evidence_root(runtime):
+    """S11 XC-6 A7: M7's unset case (`adapters/worker_profile.py:209-214`) read the host runtime directory; the adapter
+    takes it as an argument, so composition binds `configuration.runtime_dir()` (read per call). A configured
+    `profile_evidence_root` still wins (adapter rule)."""
+    return worker_profile.evidence_root(runtime, configuration.runtime_dir())
+
+
+# The worker-profile functions `ClaudeCodeRuntime` reads through `host.worker_profiles` (measured, 11), with
+# `evidence_root` bound to the host runtime directory.
+CLAUDE_WORKER_PROFILES = SimpleNamespace(
+    load_profile=worker_profile.load_profile, verified_interpreter=worker_profile.verified_interpreter,
+    hook_command=worker_profile.hook_command, profile_digest=worker_profile.profile_digest,
+    merge_settings=worker_profile.merge_settings, hook_settings=worker_profile.hook_settings,
+    session_directory=worker_profile.session_directory, evidence_root=_bound_evidence_root,
+    profile_environment=worker_profile.profile_environment, delivery_receipt=worker_profile.delivery_receipt,
+    hook_receipts=worker_profile.hook_receipts)
+
 # One host's Claude facilities (M7 `adapters/claude.py` read these as module names; the target injects them).
 CLAUDE_HOST = claude_cli.ClaudeHost(runner=process_groups.run_process, trees=ProcessTree, tree_leak=TreeOwnershipLeak,
-                                    worker_profiles=worker_profile, redact=redact_text)
+                                    worker_profiles=CLAUDE_WORKER_PROFILES, redact=redact_text)
 
 
 def composition_profile(host_settings):
@@ -234,6 +253,21 @@ def build_executor(service=None, observer=None, execution_policy=None, knowledge
                     **({} if isolated is None else {"isolation": isolated}))
 
 
+class _TransportHooks:
+    """S11 XC-6 A6: the hook source `Transports` hands the Codex role container (`Transports._container_hooks`):
+    `active_hooks` is the lifecycle read of the same `units` object, `read_script(revision, path)` the reviewed script
+    read exactly as `HostHooks.materialize` reads it (the same `show` handle, `revision:path`, `strip=False`)."""
+
+    def __init__(self, units, show):
+        self.units, self.show = units, show
+
+    def active_hooks(self, **kwargs):
+        return self.units.active_hooks(**kwargs)
+
+    def read_script(self, revision, path):
+        return self.show(revision + ":" + path, strip=False)
+
+
 class _LazyPolicy:
     """RunTask reads `execution_policy` as an attribute; it is bound on first use, as M7 did."""
 
@@ -324,7 +358,7 @@ class Executor:
             container_worker_delivery=project_evidence.container_worker_delivery,
             host_app_server=(_host_app_server if host_transports else _host_transport_refused),
             claude_runtime=(_host_claude_runtime if host_transports else _host_transport_refused),
-            host_hooks=self.host_hooks.configuration)
+            host_hooks=self.host_hooks.configuration, hooks=_TransportHooks(units, show))  # S11 XC-6 A6
         interpreter = Path(sys.executable).resolve()
         self.evidence_gate = EvidenceGate(
             EvidenceInspections(store, evidence_inspector(artifacts, isolation=isolation,
