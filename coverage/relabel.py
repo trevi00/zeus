@@ -46,6 +46,13 @@ import generate  # noqa: E402  (stdlib harness module: the one table serialisati
 LEDGER = HERE / "ledger-coverage.json"
 BUNDLE = HERE / "run-evidence.json"
 BUNDLE_SCHEMA = "zeus:s11-run-evidence:1"
+# The M7 SOURCE commit (REBUILD-DESIGN-v2): R-P2 reads a marker's SOURCE file from here, independent of the layout.
+SOURCE_COMMIT = "e38aa722ff1e91dc01ec650689cfe3eebe1ff699"
+# R-L17 (DESIGN-s11 §20.2): USER-APPROVED-U6-20261006 grants U6 (a), (b), (c). U6(d)'s condition is not established.
+U6_AUTHORITY = "USER-APPROVED-U6-20261006"
+U6_GRANTED = ("a", "b", "c")
+RETIRE_U6 = re.compile(r"^retire:U6\((\w*)\)")
+LAYER_MARKERS_INTENT = "change:§4 Layer markers"
 # R-L6 / DESIGN-s11 §5.3: the maintained, cited resolutions of the ledger's `pending:` promises.
 RESOLUTIONS = HERE / "evidence-resolutions.json"
 RESOLUTIONS_SCHEMA = "zeus:s11-evidence-resolutions:1"
@@ -462,6 +469,22 @@ class Tree:
                     continue
             return False
         return True
+
+    def source_is_bare_marker(self, path: str) -> bool:
+        """R-P2 (DESIGN-s11 §20.3): the SOURCE file `path` (`git show SOURCE_COMMIT:path`, never the working tree) is
+        itself a bare package marker. A file that cannot be read at SOURCE is not a marker."""
+        shown = subprocess.run(["git", "-C", str(self.root), "show", f"{SOURCE_COMMIT}:{path}"],
+                               capture_output=True, text=True, encoding="utf-8")
+        if shown.returncode != 0:
+            return False
+        try:
+            return Tree.bare_marker(ast.parse(shown.stdout))
+        except SyntaxError:
+            return False
+
+    def package_present(self, dotted: str) -> bool:
+        """The dotted package exists in the target tree, as a module file or as a directory."""
+        return self.module_file(dotted) is not None or (self.root / "target/src" / dotted.replace(".", "/")).is_dir()
 
     def resolve(self, symbol: str, bases=("target/src", "target")) -> bool:
         """`module`, `module:Qual.name` or `module.Name` exists in the tree (gen_s11 `Tree.resolve`, R-L16)."""
@@ -1129,6 +1152,15 @@ class Relabel:
         if s0.startswith("target/") or s0.startswith("frontend/"):
             ok = (t.exists(s0) or (t.root / s0).is_dir() or (s0.startswith("frontend/") and t.exists("target/" + s0)))
             return ok, f"target path does not exist: {s0}"
+        if kind == "module" and s0.startswith("none:") and row.get("intent", "").startswith(LAYER_MARKERS_INTENT):
+            # R-P2 removed marker (DESIGN-s11 §20.3): accepted only for a bare SOURCE marker whose package is absent.
+            path = row["key"][len("module:"):]
+            if not path.endswith("/__init__.py") or not t.source_is_bare_marker(path):
+                return False, f"removed marker: the SOURCE file is not a bare package marker: {path}"
+            dotted = path.removeprefix("src/")[: -len("/__init__.py")].replace("/", ".")
+            if t.package_present(dotted):
+                return False, f"removed marker: the package is still present in the target: {dotted}"
+            return True, ""
         if s0.startswith("codex_harness") and "." in s0 or s0 == "codex_harness" \
                 or kind == "module_entry" and "." in s0 and " " not in s0:
             if kind in ("module", "public_api") and ":" not in s0 and "." in s0:  # the dotless root is the distribution
@@ -1136,7 +1168,9 @@ class Relabel:
                 # gen_s11: a bare package marker is not the module. DESIGN-s11 §10 R-MC2-3: an `__init__` is a marker only
                 # when bare (docstring, imports, `__all__`); one that defines anything is the module.
                 if mf is not None and mf.endswith("/__init__.py") and Tree.bare_marker(t.tree_of(mf)):
-                    return False, f"target symbol is a package marker: {s0}"
+                    # R-P2 marker <-> marker (DESIGN-s11 §20.3): a `module` row whose SOURCE file is itself bare.
+                    if not (kind == "module" and t.source_is_bare_marker(row["key"][len("module:"):])):
+                        return False, f"target symbol is a package marker: {s0}"
             return t.resolve(s0), f"target symbol does not resolve: {s0}"
         return False, f"target symbol is not a code symbol: {s0[:60]}"
 
@@ -1255,7 +1289,20 @@ class Relabel:
                     blocking = True
                 for text in cap["pending"]:
                     unmet.append("pending: ARCHITECTURE.md PROPOSED row: " + text)
-        if row["intent"].startswith("retire:"):
+        retire = RETIRE_U6.match(row["intent"])
+        if retire:  # R-L17 (DESIGN-s11 §20.2)
+            x = retire.group(1)
+            if x not in U6_GRANTED:
+                raise Refused(f"{row['key']}: retire:U6({x}) is not granted by {U6_AUTHORITY} (a, b, c): its condition is "
+                              "not established")
+            symbols = [sym.split(" (")[0].strip() for sym in row.get("target_symbol") or []]
+            present = [sym for sym in symbols if self.tree.resolve(sym)]
+            if symbols and not present:
+                return "retired-with-authority", {"authority": f"{U6_AUTHORITY} U6({x})", "absent": symbols}
+            unmet.extend(f"retire:U6({x}): target symbol still present: {sym}" for sym in present)
+            if not symbols:
+                unmet.append(f"retire:U6({x}): the row names no target symbol to measure as absent")
+        elif row["intent"].startswith("retire:"):
             unmet.append(f"intent is {row['intent'].split(' ')[0]}")
         if slice_unmet:
             unmet.append(slice_unmet)
@@ -1351,7 +1398,7 @@ class Relabel:
         # R-L4: module rows first, then the rows that inherit through `module:`
         for phase in ("module", None):
             for row in rows:
-                if (row["kind"] == "module") != (phase == "module") or row["status"] == "retired-with-authority":
+                if (row["kind"] == "module") != (phase == "module"):  # R-L17: a retired row is re-measured, never frozen
                     continue
                 status, body = self.evaluate(row)
                 row["status"] = status
