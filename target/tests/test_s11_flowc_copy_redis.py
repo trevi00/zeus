@@ -122,11 +122,18 @@ def test_a_rerun_after_a_partial_copy_restores_only_the_missing_keys():
 
 @needs_redis
 def test_end_to_end_copy_between_two_logical_databases_of_a_real_redis():
-    from redis import Redis
+    from redis import ConnectionPool, Redis
+
+    def client(db):
+        # redis-py `from_url`: a `db` querystring or URL path wins over the `db=` keyword (the target-integration URL
+        # is `unix://.../redis.sock?db=0`), so the keyword alone would put source and target in ONE database
+        base = ConnectionPool.from_url(REDIS_URL)
+        return Redis(connection_pool=ConnectionPool(connection_class=base.connection_class,
+                                                    **{**base.connection_kwargs, "db": db}))
 
     prefix = f"flowc-{uuid4().hex[:12]}"
-    source = Redis.from_url(REDIS_URL, db=14)
-    target = Redis.from_url(REDIS_URL, db=15)
+    source, target = client(14), client(15)
+    assert source.connection_pool.connection_kwargs["db"] == 14 and target.connection_pool.connection_kwargs["db"] == 15
     names = {n: f"{prefix}:{n}" for n in ("plain", "ttl", "present", "dead")}
     try:
         source.set(names["plain"], b"v-plain")
