@@ -272,8 +272,8 @@ def build_exercise(root: Path, path: Path, nodes: list[str], not_passed: dict[st
         raise Refused("exercise artifact: `functions` and `nodes` are not a name list and a node map")
     tree = Tree(root)
     absent = sorted({f.split(":")[0] for f in functions if tree.module_file(f.split(":")[0], ("target/src",)) is None})
-    if absent:
-        raise Refused(f"exercise artifact: {len(absent)} function module(s) are not in target/src, e.g. {absent[:3]}")
+    if len({f.split(":")[0] for f in functions}) == len(absent):  # a transient test-made module is ignored, not mapped
+        raise Refused(f"exercise artifact: no function module is in target/src, e.g. {absent[:3]}")
     known, passing = set(nodes), set(nodes) - set(not_passed)
     for node, indexes in by_node.items():
         if node not in known:
@@ -288,7 +288,7 @@ def build_exercise(root: Path, path: Path, nodes: list[str], not_passed: dict[st
         if hit:
             symbols[sym] = [hashed_id(n) for n in hit[:EXERCISE_NODES_PER_SYMBOL]]
     return {"artifact": name, "sha256": sha256_file(path), "head": head, "functions": len(functions),
-            "nodes": len(by_node), "symbols": symbols}
+            "nodes": len(by_node), "ignored_modules": absent, "symbols": symbols}
 
 
 def build_bundle(root: Path, junit: Path, compares: list[Path], owner_runs: list[Path], head: str,

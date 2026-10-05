@@ -1669,6 +1669,56 @@
    ],
    "rule": "G1b",
    "citation": "DESIGN-s11 \u00a75.6 R-AU4"
+  },
+  {
+   "key": "atomic_unit:codex_harness.adapters.deployment:ReleaseRunner.abandon#1",
+   "pending": "pending: recorder confirmation in the owning slice",
+   "replaced_by": [
+    "exercise:codex_harness.delivery.adapters.deployment:ReleaseRunner.abandon",
+    "target:tests/test_s11_atomic_units.py::test_unit_is_structurally_atomic[codex_harness.adapters.deployment:ReleaseRunner.abandon#1]"
+   ],
+   "rule": "G1b",
+   "citation": "DESIGN-s11 \u00a75.6 R-AU4"
+  },
+  {
+   "key": "atomic_unit:codex_harness.application.autonomous:AutonomousRun._role#1",
+   "pending": "pending: recorder confirmation in the owning slice",
+   "replaced_by": [
+    "exercise:codex_harness.coordination.application.autonomous:AutonomousRun._role",
+    "target:tests/test_s11_atomic_units.py::test_unit_is_structurally_atomic[codex_harness.application.autonomous:AutonomousRun._role#1]"
+   ],
+   "rule": "G1b",
+   "citation": "DESIGN-s11 \u00a75.6 R-AU4"
+  },
+  {
+   "key": "atomic_unit:codex_harness.application.frontdesk:DeskRunner._bound_execution#1",
+   "pending": "pending: recorder confirmation in the owning slice",
+   "replaced_by": [
+    "exercise:codex_harness.coordination.application.desk_runner:DeskRunner._bound_execution",
+    "target:tests/test_s11_atomic_units.py::test_unit_is_structurally_atomic[codex_harness.application.frontdesk:DeskRunner._bound_execution#1]"
+   ],
+   "rule": "G1b",
+   "citation": "DESIGN-s11 \u00a75.6 R-AU4"
+  },
+  {
+   "key": "atomic_unit:codex_harness.application.scheduling:schedule_research#1",
+   "pending": "pending: recorder confirmation in the owning slice",
+   "replaced_by": [
+    "exercise:codex_harness.research.application.scheduling:schedule_research",
+    "target:tests/test_s11_atomic_units.py::test_unit_is_structurally_atomic[codex_harness.application.scheduling:schedule_research#1]"
+   ],
+   "rule": "G1b",
+   "citation": "DESIGN-s11 \u00a75.6 R-AU4"
+  },
+  {
+   "key": "atomic_unit:codex_harness.supervisor:tick#3",
+   "pending": "pending: recorder confirmation in the owning slice",
+   "replaced_by": [
+    "exercise:codex_harness.composition.supervisor:tick",
+    "target:tests/test_s11_atomic_units.py::test_unit_is_structurally_atomic[codex_harness.supervisor:tick#3]"
+   ],
+   "rule": "G1b",
+   "citation": "DESIGN-s11 \u00a75.6 R-AU4"
   }
  ]
 }
