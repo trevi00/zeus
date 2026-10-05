@@ -1,9 +1,9 @@
 """The `zeus dge` and `zeus decision-feedback` composition: the git source, the two use cases and the execution evidence reader.
 
 Layer: composition
-Owns: git_source, debate_sessions, decision_feedback, execution_evidence, load_registry
+Owns: git_source, verify_sources, debate_sessions, decision_feedback, execution_evidence, load_registry
 Does not own: the argument shape and the command bodies (entry.cli.dge, entry.cli.decision_feedback), the use cases (research.application) and the registry rules (research.adapters.decision_feedback)
-Entry points: git_source, debate_sessions, decision_feedback, execution_evidence, load_registry
+Entry points: git_source, verify_sources, debate_sessions, decision_feedback, execution_evidence, load_registry
 Contracts: INV-DGE-001, INV-DECISION-FEEDBACK-001
 
 Built from the construction statements of M7 `adapters/dge_cli.py` (`register`: `GitSource(repository)`, `DebateSessions(service.store)`) and `adapters/decision_feedback_cli.py` (`collect` and the
@@ -16,6 +16,12 @@ def git_source(repository):
     """M7 `GitSource(repository)`: pinned Git bytes through git argv."""
     from codex_harness.host_os.adapters.git_source import GitSource
     return GitSource(repository)
+
+
+def verify_sources(packet: dict, source) -> list:
+    """The canonical dge verifier (`research.adapters.dge_sources.verify_sources`, S8 V14) for the entry, which never imports adapters (S11 XC-9 DUP-1)."""
+    from codex_harness.research.adapters import dge_sources
+    return dge_sources.verify_sources(packet, source)
 
 
 def debate_sessions(service):

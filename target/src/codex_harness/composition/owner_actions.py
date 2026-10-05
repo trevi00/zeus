@@ -257,7 +257,7 @@ def coordinator(service, config: dict, host: dict, *, lanes=None, assessments=No
 
     lanes = lanes or lane_stores(config, host)
     store = service.store
-    continuation = continuation or continuation_port(store, fleet_port(store), lanes, validate=validator(),
+    continuation = continuation or continuation_port(store, fleet_port(store, observer), lanes, validate=validator(),
                                                      evidence=research_evidence())
     root = runtime_dir()
     artifacts = FileArtifacts(str(root / "artifacts"))
@@ -302,7 +302,7 @@ def coordinator(service, config: dict, host: dict, *, lanes=None, assessments=No
                                                  evaluator_pins=evaluator_pins(lane_id),
                                                  controller_code=controller_code_revision),
         publisher=lambda lane_id: publisher_factory(lane_of(config, lane_id)["repository"]),
-        assessments=assessments, targets=TargetFiles(), fleet=fleet_port(store), validate=validator(),
+        assessments=assessments, targets=TargetFiles(), fleet=fleet_port(store, observer), validate=validator(),
         first_activation=first_activation,
         withdrawals=withdrawals, mainline=LaneMainline(config, host),
         requalify=lambda document: requalify_delivery(store, config, host, document, lanes=lanes),
