@@ -247,7 +247,13 @@ def execute(args, receipt: dict, workdir: Path, ready: dict) -> dict:
                            {"plan": {"objective": OBJECTIVE,
                                      "acceptance_criteria": ["every test in test_slug.py passes",
                                                              "only the standard library is used"],
-                                     "allowed_paths": ["slug.py"]}},
+                                     "allowed_paths": ["slug.py"]},
+                            # S11 R-S3: the target admits an `implement` task only after research-first admission (G20-D7,
+                            # composition.operation.Executor: without an accepted package it holds with `package_missing`,
+                            # which M7 did not do). The fixture task is exactly a bugfix whose failing tests exist, a class the
+                            # policy exempts (research.domain.research_package.EXEMPTION_CLASSES), so it declares that.
+                            "research_exemption": {"class": "bugfix-with-failing-test",
+                                                   "reason": "throwaway fixture: test_slug.py already fails"}},
                            "claude-real-call-" + uuid4().hex[:8])
         task = executor.workflow.submit(message)
         receipt["assignment"] = {"task_id": task["id"], "agent": task["agent"],
