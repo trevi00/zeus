@@ -451,6 +451,195 @@
    ]
   },
   {
+   "atomic_unit": "codex_harness.application.local_cycle:LocalCycle._candidate#1",
+   "basis": "block_exercise",
+   "block": "#1",
+   "case": "operation_run_a_failure_at_operations",
+   "cases": [
+    "a",
+    "b"
+   ],
+   "family": "effects.admission_unit",
+   "golden_unit": "operation_run",
+   "via": "rule6_case",
+   "writes_observed": null
+  },
+  {
+   "atomic_unit": "codex_harness.application.local_cycle:LocalCycle._settle#1",
+   "basis": "block_exercise",
+   "block": "#1",
+   "case": "operation_run_a_failure_at_operations",
+   "cases": [
+    "a",
+    "b"
+   ],
+   "family": "effects.admission_unit",
+   "golden_unit": "operation_run",
+   "via": "rule6_case",
+   "writes_observed": [
+    "local_cycles"
+   ]
+  },
+  {
+   "atomic_unit": "codex_harness.application.local_cycle:LocalCycle.handoff#1",
+   "basis": "block_exercise",
+   "block": "#1",
+   "case": "operation_run_a_failure_at_operations",
+   "cases": [
+    "a",
+    "b"
+   ],
+   "family": "effects.admission_unit",
+   "golden_unit": "operation_run",
+   "via": "rule6_case",
+   "writes_observed": null
+  },
+  {
+   "atomic_unit": "codex_harness.application.local_cycle:LocalCycle.status#1",
+   "basis": "block_exercise",
+   "block": "#1",
+   "case": "operation_run_a_failure_at_operations",
+   "cases": [
+    "a",
+    "b"
+   ],
+   "family": "effects.admission_unit",
+   "golden_unit": "operation_run",
+   "via": "rule6_case",
+   "writes_observed": null
+  },
+  {
+   "atomic_unit": "codex_harness.application.operation:Operation._accepted#1",
+   "basis": "block_exercise",
+   "block": "#1",
+   "case": "operation_run_a_failure_at_operations",
+   "cases": [
+    "a",
+    "b"
+   ],
+   "family": "effects.admission_unit",
+   "golden_unit": "operation_run",
+   "via": "rule6_case",
+   "writes_observed": null
+  },
+  {
+   "atomic_unit": "codex_harness.application.operation:Operation._evidence#1",
+   "basis": "block_exercise",
+   "block": "#1",
+   "case": "operation_run_a_failure_at_operations",
+   "cases": [
+    "a",
+    "b"
+   ],
+   "family": "effects.admission_unit",
+   "golden_unit": "operation_run",
+   "via": "rule6_case",
+   "writes_observed": null
+  },
+  {
+   "atomic_unit": "codex_harness.application.operation:Operation._finish#1",
+   "basis": "block_exercise",
+   "block": "#1",
+   "case": "operation_run_a_failure_at_operations",
+   "cases": [
+    "a",
+    "b"
+   ],
+   "family": "effects.admission_unit",
+   "golden_unit": "operation_run",
+   "via": "rule6_case",
+   "writes_observed": [
+    "operations"
+   ]
+  },
+  {
+   "atomic_unit": "codex_harness.application.operation:Operation.claim#1",
+   "basis": "block_exercise",
+   "block": "#1",
+   "case": "operation_run_a_failure_at_operations",
+   "cases": [
+    "a",
+    "b",
+    "c"
+   ],
+   "family": "effects.admission_unit",
+   "golden_unit": "operation_run",
+   "via": "rule6_case",
+   "writes_observed": null
+  },
+  {
+   "atomic_unit": "codex_harness.application.outbox:relay#2",
+   "basis": "block_exercise",
+   "block": "#2",
+   "case": "operation_run_a_failure_at_operations",
+   "cases": [
+    "a",
+    "b"
+   ],
+   "family": "effects.admission_unit",
+   "golden_unit": "operation_run",
+   "via": "rule6_case",
+   "writes_observed": null
+  },
+  {
+   "atomic_unit": "codex_harness.application.outbox:relay#3",
+   "basis": "block_exercise",
+   "block": "#3",
+   "case": "operation_run_a_failure_at_operations",
+   "cases": [
+    "a",
+    "b"
+   ],
+   "family": "effects.admission_unit",
+   "golden_unit": "operation_run",
+   "via": "rule6_case",
+   "writes_observed": null
+  },
+  {
+   "atomic_unit": "codex_harness.application.outbox:relay#4",
+   "basis": "block_exercise",
+   "block": "#4",
+   "case": "operation_run_a_failure_at_operations",
+   "cases": [
+    "a",
+    "b"
+   ],
+   "family": "effects.admission_unit",
+   "golden_unit": "operation_run",
+   "via": "rule6_case",
+   "writes_observed": null
+  },
+  {
+   "atomic_unit": "codex_harness.application.outbox:relay#5",
+   "basis": "block_exercise",
+   "block": "#5",
+   "case": "operation_run_a_failure_at_operations",
+   "cases": [
+    "a",
+    "b"
+   ],
+   "family": "effects.admission_unit",
+   "golden_unit": "operation_run",
+   "via": "rule6_case",
+   "writes_observed": null
+  },
+  {
+   "atomic_unit": "codex_harness.application.workflow:Workflow.submit#1",
+   "basis": "block_exercise",
+   "block": "#1",
+   "case": "operation_run_a_failure_at_operations",
+   "cases": [
+    "a",
+    "b"
+   ],
+   "family": "effects.admission_unit",
+   "golden_unit": "operation_run",
+   "via": "rule6_case",
+   "writes_observed": [
+    "tasks"
+   ]
+  },
+  {
    "atomic_unit": "codex_harness.application.operation_finalization:parkable#1",
    "block": "#1",
    "cases": [
@@ -1599,6 +1788,11 @@
   "scenarios": "compare/scenarios/effects.*.json"
  },
  "unmatched": [
+  {
+   "family": "effects.admission_unit",
+   "golden_unit": "operation_run",
+   "reason": "no driver call of an M7 method named operation_run"
+  },
   {
    "family": "effects.continuation_units",
    "golden_unit": "begin_assessment",

@@ -851,7 +851,7 @@ class RunExecutor:
         return row
 
 
-def run_operation(api, name, *, failure=False, replay=False, worker="succeeded", verdict=True, foreign=False,
+def operation_run(api, name, *, failure=False, replay=False, worker="succeeded", verdict=True, foreign=False,
                   executor=True):
     case = Case(api, name)
     service = api.service(case.store)
@@ -989,13 +989,13 @@ def run(api) -> dict:
         "resume_a_failure_at_control": resume(api, "resume_a_failure", failure=True),
         "resume_c_replay": resume(api, "resume_c_replay", replay=True),
         "resume_unregistered": resume(api, "resume_unregistered", registry=False),
-        "operation_run_success": run_operation(api, "operation_run_success"),
-        "operation_run_a_failure_at_operations": run_operation(api, "operation_run_a_failure", failure=True),
-        "operation_run_b_row_changed_by_another_owner": run_operation(api, "operation_run_b_foreign", foreign=True),
-        "operation_run_c_replay": run_operation(api, "operation_run_c_replay", replay=True),
-        "operation_run_worker_failed": run_operation(api, "operation_run_worker_failed", worker="failed"),
-        "operation_run_lead_rejected": run_operation(api, "operation_run_lead_rejected", verdict=False),
-        "operation_run_no_executor": run_operation(api, "operation_run_no_executor", executor=False),
+        "operation_run_success": operation_run(api, "operation_run_success"),
+        "operation_run_a_failure_at_operations": operation_run(api, "operation_run_a_failure", failure=True),
+        "operation_run_b_row_changed_by_another_owner": operation_run(api, "operation_run_b_foreign", foreign=True),
+        "operation_run_c_replay": operation_run(api, "operation_run_c_replay", replay=True),
+        "operation_run_worker_failed": operation_run(api, "operation_run_worker_failed", worker="failed"),
+        "operation_run_lead_rejected": operation_run(api, "operation_run_lead_rejected", verdict=False),
+        "operation_run_no_executor": operation_run(api, "operation_run_no_executor", executor=False),
     }
     block_exercise.assign(list(out))  # S11 R-L3d: the cases ran in key order, one window each
     return out
