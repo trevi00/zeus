@@ -113,7 +113,7 @@ S8_FAMILIES = {"research.program_tick", "research.capture", "research.program_re
 S9_FAMILIES = {"observation.schema", "observation.file_spool", "observation.frontend_bytes", "observation.measurements",
                "observation.monitoring_projection", "observation.viewer", "observation.collector", "observation.local_facts", "observation.collectors_core",
                "observation.collectors_sources", "observation.frontend_checks", "effects.s9_units", "effects.s9_units.pg"}
-S7_IMPLEMENTED = {"delivery.tooling", "delivery.restore.pg", "delivery.fleet_recovery_collectors", "delivery.release_runner", "delivery.canaries", "delivery.migration_evidence", "delivery.host_migration_transfer", "delivery.host_targets", "delivery.managed_runtime", "delivery.managed_systemd",
+S7_IMPLEMENTED = {"delivery.host_migration_cli", "delivery.migration_evidence_cli", "delivery.tooling", "delivery.restore.pg", "delivery.fleet_recovery_collectors", "delivery.release_runner", "delivery.canaries", "delivery.migration_evidence", "delivery.host_migration_transfer", "delivery.host_targets", "delivery.managed_runtime", "delivery.managed_systemd",  # S11 AR4-T: host_migration_cli, migration_evidence_cli
                   "review.releases_queue", "delivery.registry", "delivery.stages",
                   "delivery.owner_commands", "delivery.migration", "delivery.host_migrations",
                   "coordination.owner_actions_delivery", "coordination.owner_actions_canary",
