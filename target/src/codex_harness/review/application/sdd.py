@@ -5,7 +5,7 @@ Context: review
 Owns: SDD (the versioned SDD iterations, their hash-chained event journal, the gate verdicts, observations, proposals and model transfer candidates; the buckets sdd_events, sdd_iterations, sdd_notifications, sdd_observations, sdd_proposals, sdd_spec_heads and sdd_transfer_candidates)
 Does not own: the ticket rows and their binding rule (intake: the `ticket_binding` function, injected as `ticket_binding`), the clock (kernel `Clock`, injected as `clock`), the artifact store and the human decision provider (injected), the SDD CLI (S10)
 Entry points: SDD
-Contracts: INV-GATE-001, INV-ORACLE-001
+Contracts: INV-GATE-001, INV-ORACLE-001, INV-SDD-002
 
 Moved from M7 `application/sdd.py` (SOURCE e38aa722) through named rules (S8 batch B4, A/evidence/rebuild/s8/batch-b4-move/transcribe.py): R-sdd0 (each name from the target home of the module that defines it), R-sdd1 (the keyword-only `ticket_binding` port; one `require` before each of its two calls), R-sdd2 (the keyword-only `clock` port; the five `utcnow()` become `utcnow(self.clock)`; `_current`, `_append` and `_notify` become instance methods because they now read the ports), R-sdd3 (the seven own buckets are review OWNED_BUCKETS); every other statement is M7's. The first line is M7's module docstring.
 """

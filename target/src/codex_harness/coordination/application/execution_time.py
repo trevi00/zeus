@@ -8,7 +8,7 @@ Owns: DOMAIN, CLOCK_TOLERANCE_SECONDS, ExecutionTimeError, deadline, active, che
 Does not own: the workflow rows' other transitions (coordination.application.workflow, S5 for the rest)
 Entry points: DOMAIN, CLOCK_TOLERANCE_SECONDS, ExecutionTimeError, deadline, active, check_clock, pin_clock,
     observe_domain, contain_with_notice, running
-Contracts: INV-EXECUTION-IDENTITY-001, INV-SESSION-001
+Contracts: INV-EXECUTION-IDENTITY-001, INV-SESSION-001, INV-EXECUTION-TIME-001
 
 Target changes of shape only: the deadline containment records the attempt outcome through
 coordination.domain.attempts (no execution_time <-> workflow import cycle, §2.2); (§5.2 R-D) `active`, `pin_clock` and `running` take optional `clock`/`monotonic`

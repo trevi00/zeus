@@ -6,7 +6,7 @@ Owns: Breaker, DEFAULT_POLICY, result_of, result_of_exception (M7 `application/b
     invocation admission RunTask uses; clock injected)
 Does not own: the provider call (execution)
 Entry points: Breaker, DEFAULT_POLICY, breaker_key, result_of, result_of_exception
-Contracts: INV-RECURRENCE-001
+Contracts: INV-RECURRENCE-001, INV-BREAKER-001
 
 Admission is granted only by a committed state transition, so a store that cannot write never
 returns an admitted token. Every token names the generation it was granted under; a result

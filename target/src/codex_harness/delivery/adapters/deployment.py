@@ -5,7 +5,7 @@ Context: delivery
 Owns: `ReleaseRunner`, the file canary, `attempt_resources`, the evaluator pin and the controller code refusals (M7 `adapters/deployment.py`)
 Does not own: the release rows (review.application.releases, injected as `releases`), the ticket binding (intake, injected), process creation (host_os, injected as `runner`), the release suite and the verification services (S8, injected), the native hooks (S10, injected), the rebase request (S5, injected), the container names (execution, injected as `naming`), the release and queue rows (review, injected as `releases` and `release_queue`), the Compose environment (composition.configuration, injected)
 Entry points: ReleaseRunner, attempt_resources, canary_handoff_script, inspect_canary_file, canary_postcondition, evaluator_patch_sha256, resolve_evaluator_pin, uv_command, controller_code_revision
-Contracts: INV-CHECK-001, INV-CHECK-002, INV-RELEASE-FILE-CANARY-001, INV-RELEASE-EVALUATOR-MIGRATION-001, INV-RELEASE-ENVIRONMENT-REVERIFY-001, INV-HOST-DELIVERY-VERIFY-001, INV-RELEASE-001
+Contracts: INV-CHECK-001, INV-CHECK-002, INV-RELEASE-FILE-CANARY-001, INV-RELEASE-EVALUATOR-MIGRATION-001, INV-RELEASE-ENVIRONMENT-REVERIFY-001, INV-HOST-DELIVERY-VERIFY-001, INV-RELEASE-001, INV-RECOVERY-001
 
 S7 named transcription of M7 `adapters/deployment.py` (SOURCE e38aa722) through the declared rules (DESIGN-s7 adapters-move §13, A/evidence/rebuild/s7/deployment-move/transcribe.py): V6 injection of every cross-context collaborator, the injected clock, `attempt_resources(..., naming=)` and the import homes; every body is otherwise M7's.
 """
