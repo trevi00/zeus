@@ -21,7 +21,9 @@ from codex_harness.composition import cli_bus, cli_dlq
 from codex_harness.composition import observation as observation_composition
 from codex_harness.coordination.application.dead_letters import DeadLetters
 from codex_harness.entry import cli
+from codex_harness.kernel.errors import ContractError
 from codex_harness.routing.adapters.organization_source import packaged_organization
+from codex_harness.storage.adapters import redis_bus
 from codex_harness.storage.adapters.memory_store import MemoryStore
 from codex_harness.storage.adapters.redis_bus import RedisBus
 
@@ -69,10 +71,25 @@ def test_a_body_nested_beyond_the_parser_is_dead_lettered_once_acked_and_the_nex
     first = serve_once(monkeypatch, capsys, tmp_path, bus)
     assert first[-1]["rejected"] == "1-0"
     assert [entry for entry, _ in bus.dead] == ["1-0"] and bus.acked == ["1-0"]
-    assert bus.dead[0][1].startswith("body_invalid")
+    # Which layer refuses depends on the interpreter's C stack: 3.14 bounds C recursion by the real stack size, so a
+    # runner with a large stack parses this body and the schema refuses the top-level list (CI 37285188738, 3.14; owner
+    # check: 3.14 parses it under `ulimit -s 65536`, raises under 8192; 3.12 always raises). Either way it is refused
+    # at decode and dead-lettered, never raised out of the loop. The guard itself is pinned deterministically below.
+    assert bus.dead[0][1].startswith("body_invalid") or bus.dead[0][1] == "[]: type rule violated"
     second = serve_once(monkeypatch, capsys, tmp_path, bus)
     assert second[-1]["message_id"] == MESSAGE["message_id"]
     assert [entry for entry, _ in bus.dead] == ["1-0"] and bus.acked == ["1-0", "2-0"]
+
+
+def test_a_recursion_error_in_decode_is_an_invalid_body_on_every_interpreter(monkeypatch):
+    # XC-1 A1, independent of the stack size: the parser's RecursionError is forced, and decode must turn it into the
+    # invalid-body ContractError every consumer dead-letters (M7 let it escape: a documented bug).
+    def too_deep(_text):
+        raise RecursionError("maximum recursion depth exceeded while decoding a JSON array")
+
+    monkeypatch.setattr(redis_bus.json, "loads", too_deep)
+    with pytest.raises(ContractError, match=r"^body_invalid: nesting too deep$"):
+        RedisBus.decode({"body": "[]"})
 
 
 def test_a_validation_failure_names_the_field_path_and_the_rule_but_never_the_offending_value(
