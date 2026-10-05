@@ -1943,6 +1943,114 @@
    ],
    "rule": "G2",
    "citation": "target/tests/ported/test_scoped_outbox.py:11 (cites the ID in the module docstring, which every passing node of the file carries; the file is named in the ARCHITECTURE.md TARGET row of the storage_artifacts capability that lists the ID, added at S11 D3 under the three conditions: cites, a passing behavioural citing node, imports a symbol listed in that row)"
+  },
+  {
+   "key": "contract:INV-AUDIT-SERVICE-001",
+   "pending": "pending: target characterization test named in the feature-map row (R-U)",
+   "replaced_by": [
+    "target:tests/ported/test_audit_service.py"
+   ],
+   "rule": "G2",
+   "citation": "target/tests/ported/test_audit_service.py:172 (cites the ID in the passing node test_the_gate_refuses_inactive_stale_foreign_and_unknown_scope; the file is named in the ARCHITECTURE.md TARGET row of the intake_backlog, storage_artifacts and cli_composition capability that lists the ID, added at S11 D4 under the three conditions: cites, a passing behavioural citing node, imports a symbol listed in that row (coordination.application.audit_service (a header owner and D3's measured symbol)))"
+  },
+  {
+   "key": "contract:INV-AUTONOMOUS-001",
+   "pending": "pending: target characterization test named in the feature-map row (R-U)",
+   "replaced_by": [
+    "target:tests/ported/test_autonomous.py"
+   ],
+   "rule": "G2",
+   "citation": "target/tests/ported/test_autonomous.py:6 (cites the ID in the module docstring, which every passing node of the file carries; the file is named in the ARCHITECTURE.md TARGET row of the intake_backlog, bounded_context_knowledge, research_self_improvement (two rows), storage_artifacts and cli_composition capability that lists the ID, added at S11 D4 under the three conditions: cites, a passing behavioural citing node, imports a symbol listed in that row (coordination.application.autonomous and research.domain.autonomous))"
+  },
+  {
+   "key": "contract:INV-DECISION-FEEDBACK-001",
+   "pending": "pending: target characterization test named in the feature-map row (R-U)",
+   "replaced_by": [
+    "target:tests/ported/test_decision_feedback.py"
+   ],
+   "rule": "G2",
+   "citation": "target/tests/ported/test_decision_feedback.py:8 (cites the ID in the module docstring, which every passing node of the file carries; the file is named in the ARCHITECTURE.md TARGET row of the research_self_improvement (two rows) capability that lists the ID, added at S11 D4 under the three conditions: cites, a passing behavioural citing node, imports a symbol listed in that row (research.application.decision_feedback))"
+  },
+  {
+   "key": "contract:INV-DGE-001",
+   "pending": "pending: target characterization test named in the feature-map row (R-U)",
+   "replaced_by": [
+    "target:tests/ported/test_dge_cli.py"
+   ],
+   "rule": "G2",
+   "citation": "target/tests/ported/test_dge_cli.py:3 (cites the ID in the module docstring, which every passing node of the file carries; the file is named in the ARCHITECTURE.md TARGET row of the cli_composition capability that lists the ID, added at S11 D4 under the three conditions: cites, a passing behavioural citing node, imports a symbol listed in that row (entry.cli:parser))"
+  },
+  {
+   "key": "contract:INV-OWNER-ACTIONS-MIGRATION-001",
+   "pending": "pending: target characterization test named in the feature-map row (R-U)",
+   "replaced_by": [
+    "target:tests/ported/test_owner_actions_migration.py"
+   ],
+   "rule": "G2",
+   "citation": "target/tests/ported/test_owner_actions_migration.py:16 (cites the ID in the module docstring, which every passing node of the file carries; the file is named in the ARCHITECTURE.md TARGET row of the intake_backlog, storage_artifacts and cli_composition capability that lists the ID, added at S11 D4 under the three conditions: cites, a passing behavioural citing node, imports a symbol listed in that row (coordination.application.owner_actions.state))"
+  },
+  {
+   "key": "contract:INV-RESEARCH-002",
+   "pending": "pending: target characterization test named in the feature-map row (R-U)",
+   "replaced_by": [
+    "target:tests/ported/test_audit_output_identity.py"
+   ],
+   "rule": "G2",
+   "citation": "target/tests/ported/test_audit_output_identity.py:11 (cites the ID in the module docstring, which every passing node of the file carries; the file is named in the ARCHITECTURE.md TARGET row of the bounded_context_knowledge and research_self_improvement (two rows) capability that lists the ID, added at S11 D4 under the three conditions: cites, a passing behavioural citing node, imports a symbol listed in that row (research.adapters.audit_execution))"
+  },
+  {
+   "key": "contract:INV-COMPLETION-001",
+   "pending": "pending: target characterization test named in the feature-map row (R-U)",
+   "replaced_by": [
+    "target:tests/ported/test_completion_authority.py"
+   ],
+   "rule": "G2",
+   "citation": "target/tests/ported/test_completion_authority.py:1 (cites the ID in the module docstring, which every passing node of the file carries; the file is named in the ARCHITECTURE.md TARGET row of the execution_container_credentials capability that lists the ID, added at S11 D4 under the three conditions: cites, a passing behavioural citing node, imports a symbol listed in that row (evidence.application.completion))"
+  },
+  {
+   "key": "contract:INV-COUNCIL-001",
+   "pending": "pending: target characterization test named in the feature-map row (R-U)",
+   "replaced_by": [
+    "target:tests/ported/test_council.py"
+   ],
+   "rule": "G2",
+   "citation": "target/tests/ported/test_council.py:6 (cites the ID in the module docstring, which every passing node of the file carries; the file is named in the ARCHITECTURE.md TARGET row of the research_self_improvement capability that lists the ID, added at S11 D4 under the three conditions: cites, a passing behavioural citing node, imports a symbol listed in that row (research.domain.autonomous))"
+  },
+  {
+   "key": "contract:INV-RESEARCH-004",
+   "pending": "pending: target characterization test named in the feature-map row (R-U)",
+   "replaced_by": [
+    "target:tests/ported/test_research_audits.py"
+   ],
+   "rule": "G2",
+   "citation": "target/tests/ported/test_research_audits.py:1086 (cites the ID inside the passing node test_rollback_between_audit_releases_keeps_dispatch_paused; the file is named in the ARCHITECTURE.md TARGET row of the research_self_improvement (two rows) capability that lists the ID, added at S11 D4 under the three conditions: cites, a passing behavioural citing node, imports a symbol listed in that row (research.application.audit_gate))"
+  },
+  {
+   "key": "contract:INV-THRESHOLD-APPROVAL-001",
+   "pending": "pending: target characterization test named in the feature-map row (R-U)",
+   "replaced_by": [
+    "target:tests/ported/test_threshold_approvals.py"
+   ],
+   "rule": "G2",
+   "citation": "target/tests/ported/test_threshold_approvals.py:9 (cites the ID in the module docstring, which every passing node of the file carries; the file is named in the ARCHITECTURE.md TARGET row of the research_self_improvement (two rows) capability that lists the ID, added at S11 D4 under the three conditions: cites, a passing behavioural citing node, imports a symbol listed in that row (research.application.threshold_approvals))"
+  },
+  {
+   "key": "contract:INV-THRESHOLD-POLICY-001",
+   "pending": "pending: target characterization test named in the feature-map row (R-U)",
+   "replaced_by": [
+    "target:tests/test_s11_contract_citations.py"
+   ],
+   "rule": "G2",
+   "citation": "target/tests/test_s11_contract_citations.py:65 (cites the ID in the docstring of the passing node test_s11_contract_threshold_policy_override_reaches_resolved_values_and_unwired_ones_are_refused; the file is named in the ARCHITECTURE.md TARGET row of the bounded_context_knowledge and research_self_improvement capability that lists the ID, added at S11 D4 under the three conditions: cites, a passing behavioural citing node, imports a symbol listed in that row (research.adapters.runtime_thresholds))"
+  },
+  {
+   "key": "contract:INV-THRESHOLD-REVIEW-001",
+   "pending": "pending: target characterization test named in the feature-map row (R-U)",
+   "replaced_by": [
+    "target:tests/test_s8_threshold_reviews_move.py"
+   ],
+   "rule": "G2",
+   "citation": "target/tests/test_s8_threshold_reviews_move.py:405 (cites the ID in the docstring of the passing behavioural node test_request_writes_the_request_then_queues_the_lead_decision (the file's header node is not relied on); the file is named in the ARCHITECTURE.md TARGET row of the research_self_improvement (two rows) capability that lists the ID, added at S11 D4 under the three conditions: cites, a passing behavioural citing node, imports a symbol listed in that row (research.application.threshold_reviews))"
   }
  ],
  "schema": "zeus:s11-evidence-resolutions:1"
