@@ -81,11 +81,14 @@ def test_roles_call_the_role_functions_with_the_executor_first(tmp_path, setting
     calls = []
     monkeypatch.setattr(autonomous_roles, "execute_role", lambda *a: calls.append(("role", a)) or "role-result")
     from codex_harness.intake.adapters import frontdesk
-    monkeypatch.setattr(frontdesk, "execute_frontdesk", lambda *a: calls.append(("desk", a)) or "desk-result")
+    monkeypatch.setattr(frontdesk, "execute_frontdesk", lambda *a, **k: calls.append(("desk", a, k)) or "desk-result")
     task, heartbeat = {"id": "t"}, object()
     assert executor.run_task.roles.execute_role(task, heartbeat) == "role-result"
     assert executor.run_task.roles.execute_frontdesk(task, heartbeat) == "desk-result"
-    assert calls == [("role", (executor, task, heartbeat)), ("desk", (executor, task, heartbeat))]
+    # S11 XC-5 (TQ-XCUT-PLAN §8 A5): composition supplies the desk capture
+    from codex_harness.observation.adapters import desk_monitoring
+    capture = desk_monitoring.monitoring_evidence(configuration.runtime_dir() / desk_monitoring.MONITORING_FILE)
+    assert calls == [("role", (executor, task, heartbeat)), ("desk", (executor, task, heartbeat), {"snapshot": capture})]
 
 
 def test_council_feedback_and_admission(tmp_path, settings, monkeypatch):

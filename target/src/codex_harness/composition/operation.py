@@ -25,8 +25,9 @@ connections inventory): `audit_execution` = `AuditExecution(self, AuditRunner(ru
 host_execution=True, ChokepointProcesses, process_groups.run_process, classify_isolated_run), audits=ResearchAudits(...),
 notices=execution_notices, decisions=DecisionOwnership(...))` (construction cycle 1, #2: it needs the Executor, RunTask needs
 it; closed by assigning `run_task.audit_execution` after RunTask); `roles` = `_Roles` over `autonomous_roles.execute_role` and
-`frontdesk.execute_frontdesk` with the Executor first (cycle 2; M7 :1471-1479 passed no `snapshot`, so the frontdesk takes its
-own default capture); `council` = the `autonomous_roles` module; `feedback` = `_Feedback` (`correction_feedback.deliver` with
+`frontdesk.execute_frontdesk` with the Executor first (cycle 2; M7 :1471-1479 passed no `snapshot` and the frontdesk took its
+own default capture; since S8 R-f1 the adapter requires one, so `_Roles` supplies `desk_monitoring.monitoring_evidence(
+runtime_dir()/MONITORING_FILE)`, S11 XC-5); `council` = the `autonomous_roles` module; `feedback` = `_Feedback` (`correction_feedback.deliver` with
 observation's `redact_text` bound, #9, and `require_context`); `composition_admission` = `CouncilCompositionAdmission()`.
 The decision side is complete as the inventory lists it: `Releases` (events, hooks, ticket_superseded, clock, ids),
 `ExecutionRecovery` (threshold_reviews = `ThresholdReviewRecords`, ticket_binding, audit_binding, clock, ids),
@@ -104,6 +105,7 @@ from codex_harness.intake.adapters import frontdesk
 from codex_harness.intake.application import tickets
 from codex_harness.kernel.errors import ContractError, IsolationError, require
 from codex_harness.kernel.ids import SYSTEM_CLOCK, SYSTEM_IDS
+from codex_harness.observation.adapters import desk_monitoring
 from codex_harness.observation.application.observations import (
     PostExecutionRecordFailure,
     ReconciliationRequired,
@@ -259,7 +261,9 @@ class _ProjectEvidence:
 
 class _Roles:
     """RunTask's `roles` port (cycle 2): the role functions take the Executor first, as M7 `Executor._run` called them
-    (M7 :1471-1479; no `snapshot`, so the frontdesk's own default capture applies)."""
+    (M7 :1471-1479). The frontdesk adapter requires its monitoring evidence (S8 R-f1), so composition supplies the capture:
+    `monitoring_evidence` over the runtime directory's `MONITORING_FILE`, M7's default capture; an unavailable capture is
+    explicit unknown evidence, not a failure (S11 XC-5, TQ-XCUT-PLAN section 8 A5)."""
 
     def __init__(self, executor):
         self.executor = executor
@@ -268,7 +272,8 @@ class _Roles:
         return autonomous_roles.execute_role(self.executor, task, heartbeat)
 
     def execute_frontdesk(self, task, heartbeat):
-        return frontdesk.execute_frontdesk(self.executor, task, heartbeat)
+        snapshot = desk_monitoring.monitoring_evidence(configuration.runtime_dir() / desk_monitoring.MONITORING_FILE)
+        return frontdesk.execute_frontdesk(self.executor, task, heartbeat, snapshot=snapshot)
 
 
 class _Feedback:
