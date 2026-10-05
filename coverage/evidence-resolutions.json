@@ -1,0 +1,344 @@
+{
+ "schema": "zeus:s11-evidence-resolutions:1",
+ "resolutions": [
+  {
+   "key": "contract:INV-CODEX-CREDENTIAL-001",
+   "pending": "pending: target characterization test named in the feature-map row (R-U)",
+   "replaced_by": [
+    "target:tests/ported/test_role_containers.py"
+   ],
+   "rule": "G2",
+   "citation": "target/tests/ported/test_role_containers.py:1 (cites the ID; the file is named in the ARCHITECTURE.md feature-map row of the capability that lists the ID, or is the ported same-name file of a row-named reference test)"
+  },
+  {
+   "key": "contract:INV-FLEET-BACKLOG-001",
+   "pending": "pending: target characterization test named in the feature-map row (R-U)",
+   "replaced_by": [
+    "target:tests/ported/test_fleet_backlog.py"
+   ],
+   "rule": "G2",
+   "citation": "target/tests/ported/test_fleet_backlog.py:1 (cites the ID; the file is named in the ARCHITECTURE.md feature-map row of the capability that lists the ID, or is the ported same-name file of a row-named reference test)"
+  },
+  {
+   "key": "contract:INV-HOST-DELIVERY-001",
+   "pending": "pending: target characterization test named in the feature-map row (R-U)",
+   "replaced_by": [
+    "target:tests/ported/test_host_delivery.py"
+   ],
+   "rule": "G2",
+   "citation": "target/tests/ported/test_host_delivery.py:19 (cites the ID; the file is named in the ARCHITECTURE.md feature-map row of the capability that lists the ID, or is the ported same-name file of a row-named reference test)"
+  },
+  {
+   "key": "contract:INV-MONITOR-VIEWER-001",
+   "pending": "pending: target characterization test named in the feature-map row (R-U)",
+   "replaced_by": [
+    "target:tests/test_s9_batch_l2b3_move.py"
+   ],
+   "rule": "G2",
+   "citation": "target/tests/test_s9_batch_l2b3_move.py:110 (cites the ID; the file is named in the ARCHITECTURE.md feature-map row of the capability that lists the ID, or is the ported same-name file of a row-named reference test)"
+  },
+  {
+   "key": "contract:INV-OBSERVATION-001",
+   "pending": "pending: target characterization test named in the feature-map row (R-U)",
+   "replaced_by": [
+    "target:tests/test_s9_batch_l2b2_move.py"
+   ],
+   "rule": "G2",
+   "citation": "target/tests/test_s9_batch_l2b2_move.py:119 (cites the ID; the file is named in the ARCHITECTURE.md feature-map row of the capability that lists the ID, or is the ported same-name file of a row-named reference test)"
+  },
+  {
+   "key": "contract:INV-OPERATION-001",
+   "pending": "pending: target characterization test named in the feature-map row (R-U)",
+   "replaced_by": [
+    "target:tests/ported/test_operation.py"
+   ],
+   "rule": "G2",
+   "citation": "target/tests/ported/test_operation.py:11 (cites the ID; the file is named in the ARCHITECTURE.md feature-map row of the capability that lists the ID, or is the ported same-name file of a row-named reference test)"
+  },
+  {
+   "key": "contract:INV-RESEARCH-PROGRAM-001",
+   "pending": "pending: target characterization test named in the feature-map row (R-U)",
+   "replaced_by": [
+    "target:tests/ported/test_research_program.py"
+   ],
+   "rule": "G2",
+   "citation": "target/tests/ported/test_research_program.py:9 (cites the ID; the file is named in the ARCHITECTURE.md feature-map row of the capability that lists the ID, or is the ported same-name file of a row-named reference test)"
+  },
+  {
+   "key": "contract:INV-ROLE-CONTAINER-001",
+   "pending": "pending: target characterization test named in the feature-map row (R-U)",
+   "replaced_by": [
+    "target:tests/ported/test_isolated_worker.py",
+    "target:tests/ported/test_role_containers.py"
+   ],
+   "rule": "G2",
+   "citation": "target/tests/ported/test_isolated_worker.py:504; target/tests/ported/test_role_containers.py:1 (cites the ID; the file is named in the ARCHITECTURE.md feature-map row of the capability that lists the ID, or is the ported same-name file of a row-named reference test)"
+  },
+  {
+   "key": "resource:src/codex_harness/resources/audit-lifecycle.json",
+   "pending": "pending: resource byte-equality check in the owning slice",
+   "replaced_by": [
+    "target:tests/test_s1_storage_units.py::test_packaged_resources_are_the_source_bytes"
+   ],
+   "rule": "G3",
+   "citation": "target/tests/test_s1_storage_units.py:87 (tree(TARGET_RESOURCES) == tree(SOURCE_RESOURCES): sha256 of every packaged resource file equals SOURCE's)"
+  },
+  {
+   "key": "resource:src/codex_harness/resources/audit-progress-policy-v1.json",
+   "pending": "pending: resource byte-equality check in the owning slice",
+   "replaced_by": [
+    "target:tests/test_s1_storage_units.py::test_packaged_resources_are_the_source_bytes"
+   ],
+   "rule": "G3",
+   "citation": "target/tests/test_s1_storage_units.py:87 (tree(TARGET_RESOURCES) == tree(SOURCE_RESOURCES): sha256 of every packaged resource file equals SOURCE's)"
+  },
+  {
+   "key": "resource:src/codex_harness/resources/baldrix_pipeline/overlays/dart.overlay.yaml",
+   "pending": "pending: resource byte-equality check in the owning slice",
+   "replaced_by": [
+    "target:tests/test_s1_storage_units.py::test_packaged_resources_are_the_source_bytes"
+   ],
+   "rule": "G3",
+   "citation": "target/tests/test_s1_storage_units.py:87 (tree(TARGET_RESOURCES) == tree(SOURCE_RESOURCES): sha256 of every packaged resource file equals SOURCE's)"
+  },
+  {
+   "key": "resource:src/codex_harness/resources/baldrix_pipeline/overlays/flutter.overlay.yaml",
+   "pending": "pending: resource byte-equality check in the owning slice",
+   "replaced_by": [
+    "target:tests/test_s1_storage_units.py::test_packaged_resources_are_the_source_bytes"
+   ],
+   "rule": "G3",
+   "citation": "target/tests/test_s1_storage_units.py:87 (tree(TARGET_RESOURCES) == tree(SOURCE_RESOURCES): sha256 of every packaged resource file equals SOURCE's)"
+  },
+  {
+   "key": "resource:src/codex_harness/resources/baldrix_pipeline/overlays/java.overlay.yaml",
+   "pending": "pending: resource byte-equality check in the owning slice",
+   "replaced_by": [
+    "target:tests/test_s1_storage_units.py::test_packaged_resources_are_the_source_bytes"
+   ],
+   "rule": "G3",
+   "citation": "target/tests/test_s1_storage_units.py:87 (tree(TARGET_RESOURCES) == tree(SOURCE_RESOURCES): sha256 of every packaged resource file equals SOURCE's)"
+  },
+  {
+   "key": "resource:src/codex_harness/resources/baldrix_pipeline/overlays/node.overlay.yaml",
+   "pending": "pending: resource byte-equality check in the owning slice",
+   "replaced_by": [
+    "target:tests/test_s1_storage_units.py::test_packaged_resources_are_the_source_bytes"
+   ],
+   "rule": "G3",
+   "citation": "target/tests/test_s1_storage_units.py:87 (tree(TARGET_RESOURCES) == tree(SOURCE_RESOURCES): sha256 of every packaged resource file equals SOURCE's)"
+  },
+  {
+   "key": "resource:src/codex_harness/resources/baldrix_pipeline/overlays/rust.overlay.yaml",
+   "pending": "pending: resource byte-equality check in the owning slice",
+   "replaced_by": [
+    "target:tests/test_s1_storage_units.py::test_packaged_resources_are_the_source_bytes"
+   ],
+   "rule": "G3",
+   "citation": "target/tests/test_s1_storage_units.py:87 (tree(TARGET_RESOURCES) == tree(SOURCE_RESOURCES): sha256 of every packaged resource file equals SOURCE's)"
+  },
+  {
+   "key": "resource:src/codex_harness/resources/baldrix_pipeline/stages-flutter.yaml",
+   "pending": "pending: resource byte-equality check in the owning slice",
+   "replaced_by": [
+    "target:tests/test_s1_storage_units.py::test_packaged_resources_are_the_source_bytes"
+   ],
+   "rule": "G3",
+   "citation": "target/tests/test_s1_storage_units.py:87 (tree(TARGET_RESOURCES) == tree(SOURCE_RESOURCES): sha256 of every packaged resource file equals SOURCE's)"
+  },
+  {
+   "key": "resource:src/codex_harness/resources/baldrix_pipeline/stages-rust.yaml",
+   "pending": "pending: resource byte-equality check in the owning slice",
+   "replaced_by": [
+    "target:tests/test_s1_storage_units.py::test_packaged_resources_are_the_source_bytes"
+   ],
+   "rule": "G3",
+   "citation": "target/tests/test_s1_storage_units.py:87 (tree(TARGET_RESOURCES) == tree(SOURCE_RESOURCES): sha256 of every packaged resource file equals SOURCE's)"
+  },
+  {
+   "key": "resource:src/codex_harness/resources/baldrix_pipeline/stages-skill-lifecycle.yaml",
+   "pending": "pending: resource byte-equality check in the owning slice",
+   "replaced_by": [
+    "target:tests/test_s1_storage_units.py::test_packaged_resources_are_the_source_bytes"
+   ],
+   "rule": "G3",
+   "citation": "target/tests/test_s1_storage_units.py:87 (tree(TARGET_RESOURCES) == tree(SOURCE_RESOURCES): sha256 of every packaged resource file equals SOURCE's)"
+  },
+  {
+   "key": "resource:src/codex_harness/resources/discovery-pressure-policy.json",
+   "pending": "pending: resource byte-equality check in the owning slice",
+   "replaced_by": [
+    "target:tests/test_s1_storage_units.py::test_packaged_resources_are_the_source_bytes"
+   ],
+   "rule": "G3",
+   "citation": "target/tests/test_s1_storage_units.py:87 (tree(TARGET_RESOURCES) == tree(SOURCE_RESOURCES): sha256 of every packaged resource file equals SOURCE's)"
+  },
+  {
+   "key": "resource:src/codex_harness/resources/evidence-policy.json",
+   "pending": "pending: resource byte-equality check in the owning slice",
+   "replaced_by": [
+    "target:tests/test_s1_storage_units.py::test_packaged_resources_are_the_source_bytes"
+   ],
+   "rule": "G3",
+   "citation": "target/tests/test_s1_storage_units.py:87 (tree(TARGET_RESOURCES) == tree(SOURCE_RESOURCES): sha256 of every packaged resource file equals SOURCE's)"
+  },
+  {
+   "key": "resource:src/codex_harness/resources/observation.schema.json",
+   "pending": "pending: resource byte-equality check in the owning slice",
+   "replaced_by": [
+    "target:tests/test_s1_storage_units.py::test_packaged_resources_are_the_source_bytes"
+   ],
+   "rule": "G3",
+   "citation": "target/tests/test_s1_storage_units.py:87 (tree(TARGET_RESOURCES) == tree(SOURCE_RESOURCES): sha256 of every packaged resource file equals SOURCE's)"
+  },
+  {
+   "key": "resource:src/codex_harness/resources/operating-portfolio-v1.json",
+   "pending": "pending: resource byte-equality check in the owning slice",
+   "replaced_by": [
+    "target:tests/test_s1_storage_units.py::test_packaged_resources_are_the_source_bytes"
+   ],
+   "rule": "G3",
+   "citation": "target/tests/test_s1_storage_units.py:87 (tree(TARGET_RESOURCES) == tree(SOURCE_RESOURCES): sha256 of every packaged resource file equals SOURCE's)"
+  },
+  {
+   "key": "resource:src/codex_harness/resources/research-backlog.json",
+   "pending": "pending: resource byte-equality check in the owning slice",
+   "replaced_by": [
+    "target:tests/test_s1_storage_units.py::test_packaged_resources_are_the_source_bytes"
+   ],
+   "rule": "G3",
+   "citation": "target/tests/test_s1_storage_units.py:87 (tree(TARGET_RESOURCES) == tree(SOURCE_RESOURCES): sha256 of every packaged resource file equals SOURCE's)"
+  },
+  {
+   "key": "resource:src/codex_harness/resources/research.schema.json",
+   "pending": "pending: resource byte-equality check in the owning slice",
+   "replaced_by": [
+    "target:tests/test_s1_storage_units.py::test_packaged_resources_are_the_source_bytes"
+   ],
+   "rule": "G3",
+   "citation": "target/tests/test_s1_storage_units.py:87 (tree(TARGET_RESOURCES) == tree(SOURCE_RESOURCES): sha256 of every packaged resource file equals SOURCE's)"
+  },
+  {
+   "key": "resource:src/codex_harness/resources/sdd-review.html",
+   "pending": "pending: resource byte-equality check in the owning slice",
+   "replaced_by": [
+    "target:tests/test_s1_storage_units.py::test_packaged_resources_are_the_source_bytes"
+   ],
+   "rule": "G3",
+   "citation": "target/tests/test_s1_storage_units.py:87 (tree(TARGET_RESOURCES) == tree(SOURCE_RESOURCES): sha256 of every packaged resource file equals SOURCE's)"
+  },
+  {
+   "key": "resource:src/codex_harness/resources/threshold-policy.json",
+   "pending": "pending: resource byte-equality check in the owning slice",
+   "replaced_by": [
+    "target:tests/test_s1_storage_units.py::test_packaged_resources_are_the_source_bytes"
+   ],
+   "rule": "G3",
+   "citation": "target/tests/test_s1_storage_units.py:87 (tree(TARGET_RESOURCES) == tree(SOURCE_RESOURCES): sha256 of every packaged resource file equals SOURCE's)"
+  },
+  {
+   "key": "http:GET /",
+   "pending": "pending: S9 viewer GET/404/403/405 and desk refusal scenarios",
+   "replaced_by": [
+    "target:tests/ported/test_monitoring.py::test_http_rejects_mutations_hosts_and_unavailable_snapshot"
+   ],
+   "rule": "G4",
+   "citation": "target/tests/ported/test_monitoring.py:583 (GET / 200 over a real server; Host 403 and unknown 404 on the same server)"
+  },
+  {
+   "key": "http:GET /legacy",
+   "pending": "pending: S9 viewer GET/404/403/405 and desk refusal scenarios",
+   "replaced_by": [
+    "target:tests/ported/test_monitoring.py::test_http_rejects_mutations_hosts_and_unavailable_snapshot"
+   ],
+   "rule": "G4",
+   "citation": "target/tests/ported/test_monitoring.py:584-586 (GET /legacy 200 with a script; foreign Host -> 403)"
+  },
+  {
+   "key": "http:GET /assets/<name>",
+   "pending": "pending: S9 viewer GET/404/403/405 and desk refusal scenarios",
+   "replaced_by": [
+    "target:tests/ported/test_monitoring.py::test_http_rejects_mutations_hosts_and_unavailable_snapshot"
+   ],
+   "rule": "G4",
+   "citation": "target/tests/ported/test_monitoring.py:587-590 (ten refused /assets/ paths -> 404)"
+  },
+  {
+   "key": "http:GET /api/status",
+   "pending": "pending: S9 viewer GET/404/403/405 and desk refusal scenarios",
+   "replaced_by": [
+    "target:tests/ported/test_monitoring.py::test_http_rejects_mutations_hosts_and_unavailable_snapshot",
+    "target:tests/ported/test_monitor_readiness.py::test_liveness_and_snapshot_api_keep_their_own_contracts"
+   ],
+   "rule": "G4",
+   "citation": "target/tests/ported/test_monitoring.py:569-582 (503 missing/truncated, 200, foreign Host 403, POST 405, /.env 404); target/tests/ported/test_monitor_readiness.py:300"
+  },
+  {
+   "key": "http:GET /health",
+   "pending": "pending: S9 viewer GET/404/403/405 and desk refusal scenarios",
+   "replaced_by": [
+    "target:tests/ported/test_monitor_readiness.py::test_liveness_and_snapshot_api_keep_their_own_contracts"
+   ],
+   "rule": "G4",
+   "citation": "target/tests/ported/test_monitor_readiness.py:299,304 (GET /health 200 with the fixed body, fresh and stale snapshot); the 403/405 cases are exercised on /ready and /api/status only"
+  },
+  {
+   "key": "http:GET /ready",
+   "pending": "pending: S9 viewer GET/404/403/405 and desk refusal scenarios",
+   "replaced_by": [
+    "target:tests/ported/test_monitor_readiness.py::test_host_guard_and_read_only_refusal_cover_the_new_route",
+    "target:tests/ported/test_monitor_readiness.py::test_fresh_snapshot_is_ready_over_http_with_the_fixed_contract"
+   ],
+   "rule": "G4",
+   "citation": "target/tests/ported/test_monitor_readiness.py:370-373 (/ready foreign Host 403, POST 405, /ready/ 404); :120 (200 fresh)"
+  },
+  {
+   "key": "http:GET /api/desk",
+   "pending": "pending: S8 desk Origin/Host/body-bound scenarios",
+   "replaced_by": [
+    "target:tests/ported/test_frontdesk_http.py::test_forbidden_host_is_refused_for_reads_and_writes"
+   ],
+   "rule": "G4",
+   "citation": "target/tests/ported/test_frontdesk_http.py:143 (GET /api/desk with a foreign Host -> 403)"
+  },
+  {
+   "key": "http:POST /api/desk/sessions",
+   "pending": "pending: S8 desk Origin/Host/body-bound scenarios",
+   "replaced_by": [
+    "target:tests/ported/test_frontdesk_http.py::test_forbidden_host_is_refused_for_reads_and_writes",
+    "target:tests/ported/test_frontdesk_http.py::test_state_changing_requests_must_prove_local_intent",
+    "target:tests/ported/test_frontdesk_http.py::test_a_missing_or_oversized_length_is_refused_before_the_body",
+    "target:tests/ported/test_frontdesk_http.py::test_unparsable_bodies_are_refused_without_echoing_them"
+   ],
+   "rule": "G4",
+   "citation": "target/tests/ported/test_frontdesk_http.py:144 (Host), :160-166 (Origin/content-type/custom header), :176-188 (missing length 411, oversized 413), :190-199 (unparsable bodies 400)"
+  },
+  {
+   "key": "module:src/codex_harness/container_main.py",
+   "pending": "pending: characterization before the S10 move (R-U)",
+   "replaced_by": [
+    "compare:entries.safe_matrix"
+   ],
+   "rule": "G6",
+   "citation": "compare/drivers/reference/entries.py:132-136 (rows import_only.codex_harness.container_main; main() itself is in the driver's never column)"
+  },
+  {
+   "key": "module:src/zeus/__init__.py",
+   "pending": "pending: characterization before the S10 move (R-U)",
+   "replaced_by": [
+    "compare:entries.safe_matrix"
+   ],
+   "rule": "G6",
+   "citation": "compare/drivers/reference/entries.py:114-117 (console.zeus --help/--version and `python -m zeus ticket --help`)"
+  },
+  {
+   "key": "module:src/zeus/__main__.py",
+   "pending": "pending: characterization before the S10 move (R-U)",
+   "replaced_by": [
+    "compare:entries.safe_matrix"
+   ],
+   "rule": "G6",
+   "citation": "compare/drivers/reference/entries.py:117 (`python -m zeus ticket --help` runs zeus/__main__.py)"
+  }
+ ]
+}

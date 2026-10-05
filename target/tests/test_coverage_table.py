@@ -76,9 +76,14 @@ def test_only_implemented_slices_claim_implemented_and_nothing_is_verified_early
     for r in implemented:
         assert r["target_owner"] and r["target_symbol"] and r["evidence"], r["key"]
         assert r["verification"]["unmet"], r["key"]  # implemented = resolves and has executable evidence, not verified
+    # S11 L2: the rows stay frozen, so a resolved `pending:` item is still in `evidence`; it must be named by a cited
+    # entry of `coverage/evidence-resolutions.json` (R-L6), and no other pending item may remain on a verified row.
+    resolved = {(e["key"], e["pending"]) for e in json.loads(
+        (ROOT / "coverage" / "evidence-resolutions.json").read_text(encoding="utf-8"))["resolutions"]}
     for r in table["rows"]:
         if r["status"] == "verified":
-            assert r["verification"]["passed"] and not any(e.startswith("pending:") for e in r["evidence"]), r["key"]
+            assert r["verification"]["passed"] and all(
+                (r["key"], e) in resolved for e in r["evidence"] if e.startswith("pending:")), r["key"]
 
 
 def test_implemented_rows_name_modules_that_exist_in_the_target(table):
@@ -186,7 +191,8 @@ def test_s3_rows_are_accounted_for(table):
             and r["key"].split("::")[0].rsplit("/", 1)[-1] in {"isolated_worker.py", "role_containers.py", "app_server.py"}]
     assert apis and all(r["status"] in {"implemented", "verified"} for r in apis)
     for key in ("contract:INV-ROLE-CONTAINER-001", "contract:INV-CODEX-CREDENTIAL-001"):
-        assert rows[key]["status"] == "implemented" and "S4" in rows[key]["slice_progress"]
+        # S11 L2: both contracts are cited by a feature-map-named target test (G2), so the relabel verifies them
+        assert rows[key]["status"] == "verified" and "S4" in rows[key]["slice_progress"]
 
 
 S4_IMPLEMENTED = {"application/invocation_ledger.py", "domain/invocation.py", "adapters/call_budget.py",
