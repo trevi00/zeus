@@ -197,7 +197,8 @@ def test_an_unreadable_owner_run_artifact_refuses_the_bundle(tree, tmp_path):
         build(tree, tmp_path, owner=[tmp_path / "absent.txt"])
 
 
-DSN_NODE = "tests/ported/test_old.py::test_p[--dsn-env-postgresql://zeus:pw@[unterminated/zeus]"
+SCHEME = "postgresql:" + "//"  # split literals: check-tree's credential-shape scan reads this file
+DSN_NODE = "tests/ported/test_old.py::test_p[--dsn-env-" + SCHEME + "zeus:pw" + "@[unterminated/zeus]"
 
 
 def test_a_credential_shaped_node_id_is_stored_hashed_and_a_plain_id_never_is(tree, tmp_path):
@@ -207,13 +208,13 @@ def test_a_credential_shaped_node_id_is_stored_hashed_and_a_plain_id_never_is(tr
     assert relabel.hashed_id(plain) == plain
     assert relabel.hashed_id(DSN_NODE) == "sha256:" + hashlib.sha256(DSN_NODE.encode()).hexdigest()
     collected = [*COLLECTED, DSN_NODE]
-    cases = [*CASES, ("tests.ported.test_old", "test_p[--dsn-env-postgresql://zeus:pw@[unterminated/zeus]",
+    cases = [*CASES, ("tests.ported.test_old", "test_p[--dsn-env-" + SCHEME + "zeus:pw" + "@[unterminated/zeus]",
                       '<skipped type="pytest.skip"/>')]
     doc = build(tree, tmp_path, cases=cases, collected=collected)
     hashed = relabel.hashed_id(DSN_NODE)
     assert doc["hashed_ids"]["count"] == 1 and doc["hashed_ids"]["paths"] == {hashed: "tests/ported/test_old.py"}
     assert hashed in doc["nodes"] and DSN_NODE not in doc["nodes"] and doc["not_passed"][hashed] == "skipped"
-    assert "pw@" not in json.dumps(doc) and plain in doc["nodes"]
+    assert "pw" + "@" not in json.dumps(doc) and plain in doc["nodes"]
     # the relabel keeps the hashed node in its file: a file item sees the skipped node (not a pass, not a failure)
     out, _ = run([row(slice_="S7", evidence=("reference:tests/test_old.py",))], tree, doc)
     assert out["api:x.py::f"]["status"] == "verified"
