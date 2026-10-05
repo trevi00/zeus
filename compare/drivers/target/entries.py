@@ -8,7 +8,7 @@ deploy script and `aibox_data` run from the target tree and the `metadata` rows 
 checkout root, which holds the profile resources.
 
 Never done here (the "never" column, unchanged from the reference): running a CLI handler, `--once`, a
-live monitor `collect`/`web`, a valid isolated-worker request through `-m`, `container_main.main()`, any
+live monitor `collect`/`web`, a valid isolated-worker request through `-m`, any
 subcommand of the delivery/migration modules, `service_entry`/`monitor_frontend_checks` `main()`,
 `zeus_aibox_service` `render`/`launch`/`journal`, and any `aibox_data` transfer.
 """

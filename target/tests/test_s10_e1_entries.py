@@ -1,10 +1,10 @@
 """S10 unit E1: the permanent `codex_harness.cli` shim, the `zeus` package, the console scripts and the two in-container entries (R-e1).
 
 The shims import only ENTRY; `--help` through `python -m codex_harness.cli` and `python -m zeus` equals the entry parser's help;
-`container_main.main` runs with its two host paths (`/runtime/agents`, `/run/secrets/codex-auth`) redirected under `tmp_path` by replacing
-the module's `Path` name (M7's statements are unchanged); `serve` runs over in-memory pipes with a fake runtime factory.
+`container_main` is retired (U6(b), USER-APPROVED-U6-20261006); `serve` runs over in-memory pipes with a fake runtime factory.
 """
 import ast
+import importlib.util
 import io
 import json
 import os
@@ -19,14 +19,12 @@ import pytest
 
 from codex_harness.composition import isolated_worker_entry as worker
 from codex_harness.entry.cli import parser
-from codex_harness.entry.processes import container_main
 from codex_harness.execution.domain.container_spec import ENTRY_MODULE, EVIDENCE, PROTOCOL, WORKSPACE
 
 TARGET = Path(__file__).resolve().parents[1]
 SRC = TARGET / "src"
 SHIM_FILES = {
     "codex_harness.cli": SRC / "codex_harness" / "cli.py",
-    "codex_harness.container_main": SRC / "codex_harness" / "container_main.py",
     "codex_harness.adapters.isolated_worker_entry": SRC / "codex_harness" / "adapters" / "isolated_worker_entry.py",
     "zeus": SRC / "zeus" / "__init__.py",
     "zeus.__main__": SRC / "zeus" / "__main__.py",
@@ -97,43 +95,13 @@ def test_the_isolated_worker_shim_sits_at_the_pinned_entry_module():
     assert SHIM_FILES[ENTRY_MODULE].is_file()
 
 
-def redirect_paths(monkeypatch, tmp_path):
-    def fake(*parts):
-        text = os.path.join(*map(str, parts))
-        if text.startswith("/runtime") or text.startswith("/run/secrets"):
-            text = str(tmp_path) + text
-        return Path(text)
-
-    monkeypatch.setattr(container_main, "Path", fake)
-    monkeypatch.setenv("CODEX_HOME", "unset")
-
-
-def test_container_main_without_agent_only_delegates_to_the_entry_cli(monkeypatch, tmp_path):
-    redirect_paths(monkeypatch, tmp_path)
-    calls = []
-    monkeypatch.setattr("codex_harness.entry.cli.main", lambda: calls.append("cli"))
-    monkeypatch.setattr(sys, "argv", ["container_main", "paths"])
-    container_main.main()
-    assert calls == ["cli"] and os.environ["CODEX_HOME"] == "unset" and list(tmp_path.iterdir()) == []
-
-
-def test_container_main_agent_sets_the_codex_home_copies_the_newer_auth_and_writes_the_config_once(monkeypatch, tmp_path):
-    redirect_paths(monkeypatch, tmp_path)
-    secret = tmp_path / "run" / "secrets" / "codex-auth"
-    secret.parent.mkdir(parents=True)
-    secret.write_text('{"fixture": 1}', encoding="utf-8")
-    calls = []
-    monkeypatch.setattr("codex_harness.entry.cli.main", lambda: calls.append("cli"))
-    monkeypatch.setattr(sys, "argv", ["container_main", "--agent", "role:lead", "paths"])
-    container_main.main()
-    home = tmp_path / "runtime" / "agents" / "role-lead"
-    assert calls == ["cli"] and os.environ["CODEX_HOME"] == str(home)
-    assert (home / "auth.json").read_text("utf-8") == '{"fixture": 1}' and (home / "auth.json").stat().st_mode & 0o777 == 0o600
-    config = (home / "config.toml").read_text("utf-8")
-    assert config.startswith('approval_policy = "never"\n') and config.endswith('model_reasoning_effort = "medium"\n')
-    (home / "config.toml").write_text("kept = true\n", encoding="utf-8")
-    container_main.main()
-    assert (home / "config.toml").read_text("utf-8") == "kept = true\n"
+def test_container_main_is_retired_from_the_target():
+    """U6(b) (USER-APPROVED-U6-20261006; DESIGN-s11 §20.1): the legacy Compose agent entry is gone from the target."""
+    for module in ("codex_harness.container_main", "codex_harness.entry.processes.container_main"):
+        assert importlib.util.find_spec(module) is None, module
+    done = subprocess.run([sys.executable, "-m", "codex_harness.container_main", "--agent", "role:lead", "paths"],
+                          capture_output=True, text=True, timeout=60)
+    assert done.returncode != 0 and "No module named" in done.stderr, (done.returncode, done.stderr[-200:])
 
 
 def request(**fields):
