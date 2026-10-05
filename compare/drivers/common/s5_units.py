@@ -242,6 +242,104 @@ def depths(api, name):
     return case.result(attempt(cycle.step, "cycle-d"))
 
 
+# ----- S11 AU-REC-1: the single-block public Fleet units (one function per method; the call names the method) -----
+UNIT_ID = "e" * 64
+
+
+def lanes():
+    return [{"id": lane, "team": lane, "repository": ROOT + "/repo-" + lane, "schema": "lane_" + lane,
+             "redis_namespace": "fleet-" + lane, "runtime": ROOT + "/rt-" + lane} for lane in ("a", "b")]
+
+
+def config(per_host=4):
+    return {"schema": "urn:zeus:fleet:1", "id": "fleet-1", "max_parallel": 2,
+            "budget": {"per_host": per_host, "total": 8}, "lanes": lanes()}
+
+
+def bare_fleet(api, store):
+    """A Fleet with the same scripted clock and tokens as `fleet`, nothing registered."""
+    counter, stamp = iter(range(1, 100_000)), iter(range(1, 100_000))
+    return api.Fleet(store, lambda: "2026-09-21T00:00:00.%06d+00:00" % next(stamp), lambda: "%032x" % next(counter))
+
+
+def register(api, name, *, failure=False, replay=False, conflict=False):
+    case = Case(api, name)
+    f = bare_fleet(api, case.store)
+    if replay or conflict:
+        f.register(config())
+    case.since()
+    if failure:
+        case.store.arm("fleet_control")
+    return case.result(attempt(f.register, config(per_host=3 if conflict else 4)))
+
+
+def registered(api, name, *, registry=True, repeat=False):
+    case = Case(api, name)
+    f = fleet(api, case.store) if registry else bare_fleet(api, case.store)
+    if repeat:
+        f.registered()
+    case.since()
+    return case.result(attempt(f.registered))
+
+
+def enqueue(api, name, *, failure=False, replay=False, dependency=None):
+    case = Case(api, name)
+    f = fleet(api, case.store)
+    if replay:
+        f.enqueue("a", manifest(api, "op-1"), GOAL, [])
+    case.since()
+    if failure:
+        case.store.arm("fleet_jobs")
+    return case.result(attempt(f.enqueue, "a", manifest(api, "op-1"), GOAL, dependency or []))
+
+
+def authorize_budget(api, name, *, failure=False, replay=False):
+    case = Case(api, name)
+    f = fleet(api, case.store)
+    if replay:
+        f.authorize_budget(4, 9, 8)
+    case.since()
+    if failure:
+        case.store.arm("fleet_control")
+    return case.result(attempt(f.authorize_budget, 4, 9, 8))
+
+
+def reserve_unit(api, name, *, failure=False, replay=False):
+    case = Case(api, name)
+    f = fleet(api, case.store)
+    if replay:
+        f.reserve_unit(UNIT_ID, "conductor", "a", "decision-1")
+    case.since()
+    if failure:
+        case.store.arm("fleet_units")
+    return case.result(attempt(f.reserve_unit, UNIT_ID, "conductor", "a", "decision-1"))
+
+
+def settle_unit(api, name, *, failure=False, replay=False, stale=False):
+    case = Case(api, name)
+    f = fleet(api, case.store)
+    token = f.reserve_unit(UNIT_ID, "conductor", "a", "decision-1")["token"]
+    proof = {"kind": "cleanup", "launch": UNIT_ID, "token": token, "confirmed": True, "exit_code": 0,
+             "parent": {"confirmed": True}, "tree": {"confirmed": True}}
+    if replay:
+        f.settle_unit(UNIT_ID, token, proof)
+    case.since()
+    if failure:
+        case.store.arm("fleet_units")
+    return case.result(attempt(f.settle_unit, UNIT_ID, "0" * 32 if stale else token, proof))
+
+
+def status(api, name, *, registry=True, repeat=False):
+    case = Case(api, name)
+    f = fleet(api, case.store) if registry else bare_fleet(api, case.store)
+    if registry:
+        f.enqueue("a", manifest(api, "op-1"), GOAL, [])
+    if repeat:
+        f.status()
+    case.since()
+    return case.result(attempt(f.status))
+
+
 def run(api) -> dict:
     return {
         "handle_success": handle(api, "handle_success"),
@@ -259,4 +357,28 @@ def run(api) -> dict:
         "finalize_success": finalize(api, "finalize_success"),
         "finalize_b_stale_token": finalize(api, "finalize_b_stale", stale=True),
         "d_depths": depths(api, "d_depths"),
+        "register_success": register(api, "register_success"),
+        "register_a_failure_at_control": register(api, "register_a_failure", failure=True),
+        "register_c_replay": register(api, "register_c_replay", replay=True),
+        "register_conflict": register(api, "register_conflict", conflict=True),
+        "registered_success": registered(api, "registered_success"),
+        "registered_c_repeat": registered(api, "registered_c_repeat", repeat=True),
+        "registered_unregistered": registered(api, "registered_unregistered", registry=False),
+        "enqueue_success": enqueue(api, "enqueue_success"),
+        "enqueue_a_failure_at_jobs": enqueue(api, "enqueue_a_failure", failure=True),
+        "enqueue_c_replay": enqueue(api, "enqueue_c_replay", replay=True),
+        "enqueue_dependency_missing": enqueue(api, "enqueue_dependency_missing", dependency=["job-x"]),
+        "authorize_budget_success": authorize_budget(api, "authorize_budget_success"),
+        "authorize_budget_a_failure_at_control": authorize_budget(api, "authorize_budget_a_failure", failure=True),
+        "authorize_budget_c_replay": authorize_budget(api, "authorize_budget_c_replay", replay=True),
+        "reserve_unit_success": reserve_unit(api, "reserve_unit_success"),
+        "reserve_unit_a_failure_at_units": reserve_unit(api, "reserve_unit_a_failure", failure=True),
+        "reserve_unit_c_replay": reserve_unit(api, "reserve_unit_c_replay", replay=True),
+        "settle_unit_success": settle_unit(api, "settle_unit_success"),
+        "settle_unit_a_failure_at_units": settle_unit(api, "settle_unit_a_failure", failure=True),
+        "settle_unit_b_stale_token": settle_unit(api, "settle_unit_b_stale", stale=True),
+        "settle_unit_c_replay": settle_unit(api, "settle_unit_c_replay", replay=True),
+        "status_success": status(api, "status_success"),
+        "status_c_repeat": status(api, "status_c_repeat", repeat=True),
+        "status_unregistered": status(api, "status_unregistered", registry=False),
     }
