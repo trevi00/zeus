@@ -195,7 +195,11 @@ def test_the_decide_one_example_of_the_design_executes_block_1_and_not_2_or_3():
     table = json.loads((ROOT / "coverage/effects-unit-table.json").read_text(encoding="utf-8"))["entries"]
     base = "codex_harness.adapters.executor:Executor.decide_one"
     assert f"{base}#1" in artifact["a_failure_before_decision_review_lead"]
-    assert not {f"{base}#2", f"{base}#3"} & {k for v in artifact.values() for k in v}
+    # S11 AU-REC-4: blocks #2/#3 are reached only by the cases whose run result is inspection_blocked / blocked
+    for outcome, block in (("inspection_blocked", "#2"), ("blocked", "#3")):
+        reaching = {c for c, v in artifact.items() if f"{base}{block}" in v}
+        assert reaching and all(outcome in c for c in reaching)
+    assert not {f"{base}#2", f"{base}#3"} & {k for c, v in artifact.items() if "blocked" not in c for k in v}
     (entry,) = [e for e in table if e["atomic_unit"] == f"{base}#1" and e["family"] == "effects.decision_unit"]
     assert entry["basis"] == "block_exercise" and entry["writes_observed"] == ["decisions_pending"]
 

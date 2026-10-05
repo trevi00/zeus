@@ -1,5 +1,17 @@
 {
  "cases": {
+  "a_failure_at_outcome_blocked": [
+   "codex_harness.adapters.executor:Executor._fail_decision#1",
+   "codex_harness.adapters.executor:Executor.decide_one#1",
+   "codex_harness.adapters.executor:Executor.decide_one#3",
+   "codex_harness.application.observations:Observer.pending_terminations#1"
+  ],
+  "a_failure_at_outcome_inspection_blocked": [
+   "codex_harness.adapters.executor:Executor._fail_decision#1",
+   "codex_harness.adapters.executor:Executor.decide_one#1",
+   "codex_harness.adapters.executor:Executor.decide_one#2",
+   "codex_harness.application.observations:Observer.pending_terminations#1"
+  ],
   "a_failure_before_decision_review_conductor": [
    "codex_harness.adapters.executor:Executor._commit_decision#1",
    "codex_harness.adapters.executor:Executor._fail_decision#1",
@@ -19,9 +31,35 @@
    "codex_harness.application.execution_rejections:reconcile#1",
    "codex_harness.application.observations:Observer.pending_terminations#1"
   ],
+  "b_stale_lease_blocked": [
+   "codex_harness.adapters.executor:Executor._fail_decision#1",
+   "codex_harness.adapters.executor:Executor.decide_one#1",
+   "codex_harness.adapters.executor:Executor.decide_one#3",
+   "codex_harness.application.execution_rejections:reconcile#1",
+   "codex_harness.application.observations:Observer.pending_terminations#1"
+  ],
+  "b_stale_lease_inspection_blocked": [
+   "codex_harness.adapters.executor:Executor._fail_decision#1",
+   "codex_harness.adapters.executor:Executor.decide_one#1",
+   "codex_harness.adapters.executor:Executor.decide_one#2",
+   "codex_harness.application.execution_rejections:reconcile#1",
+   "codex_harness.application.observations:Observer.pending_terminations#1"
+  ],
+  "blocked_review_lead": [
+   "codex_harness.adapters.executor:Executor.decide_one#1",
+   "codex_harness.adapters.executor:Executor.decide_one#3"
+  ],
   "c_same_key_replay": [
    "codex_harness.adapters.executor:Executor._commit_decision#1",
    "codex_harness.adapters.executor:Executor.decide_one#1"
+  ],
+  "c_same_key_replay_blocked": [
+   "codex_harness.adapters.executor:Executor.decide_one#1",
+   "codex_harness.adapters.executor:Executor.decide_one#3"
+  ],
+  "c_same_key_replay_inspection_blocked": [
+   "codex_harness.adapters.executor:Executor.decide_one#1",
+   "codex_harness.adapters.executor:Executor.decide_one#2"
   ],
   "control_effect_in_unit": [
    "codex_harness.adapters.executor:Executor._commit_decision#1",
@@ -40,6 +78,10 @@
    "codex_harness.adapters.executor:Executor._fail_decision#1",
    "codex_harness.adapters.executor:Executor.decide_one#1",
    "codex_harness.application.observations:Observer.pending_terminations#1"
+  ],
+  "inspection_blocked_review_lead": [
+   "codex_harness.adapters.executor:Executor.decide_one#1",
+   "codex_harness.adapters.executor:Executor.decide_one#2"
   ],
   "success_review_conductor": [
    "codex_harness.adapters.executor:Executor._commit_decision#1",

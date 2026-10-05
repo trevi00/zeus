@@ -99,7 +99,7 @@ class Injected(RuntimeError):
 
 
 def case(root: Path, name: str, phase: str, actor: str, *, failure: str = "none",
-         control: str = "none", replay: bool = False) -> dict:
+         control: str = "none", replay: bool = False, outcome: str = "accepted") -> dict:
     CLOCK.reset()
     IDS.reset()
     clock = CLOCK
@@ -143,8 +143,10 @@ def case(root: Path, name: str, phase: str, actor: str, *, failure: str = "none"
                 row.update(owner="replacement", lease_owner="replacement",
                            generation=row["generation"] + 1)
                 tx.put("decisions_pending", "decision", row)
-        return {"accepted": True, "confirmed": True, "root_cause": "cause", "scope": "scope",
-                "execution_ref": "fixture:review", "reason": "fixture"}
+        # S11 AU-REC-4: the run result that reaches Executor.decide_one blocks #2 / #3 (INV-RELEASE-001)
+        return {"accepted": outcome == "accepted", "confirmed": True, "root_cause": "cause", "scope": "scope",
+                "execution_ref": "fixture:review", "reason": "fixture",
+                **({outcome: True} if outcome != "accepted" else {})}
 
     executor._run = run
     owned = executor.workflow._owned
@@ -165,13 +167,14 @@ def case(root: Path, name: str, phase: str, actor: str, *, failure: str = "none"
         propose = executor.releases.propose
         executor.releases.propose = lambda c, p, transaction=None: propose(c, p)
     block_exercise.open(name)  # S11 R-L3d: the window of the decide_one calls (no-op unless armed)
-    if failure == "before_decision":
+    if failure in {"before_decision", "at_outcome"}:
         write = recorder.write
+        failing = "succeeded" if failure == "before_decision" else outcome
 
         def failing_write(bucket, key, body):
             write(bucket, key, body)
             if bucket == "decisions_pending" and isinstance(body, dict) \
-                    and body.get("status") == "succeeded":
+                    and body.get("status") == failing:
                 raise Injected("fixture failure after release effects, before decision/outbox")
 
         recorder.write = failing_write
@@ -219,6 +222,21 @@ def main() -> None:
                                                            failure="before_decision"),
         "b_stale_lease": dict(phase="review_lead", actor="lead:improvement", failure="stale_lease"),
         "c_same_key_replay": dict(phase="review_lead", actor="lead:improvement", replay=True),
+        "inspection_blocked_review_lead": dict(phase="review_lead", actor="lead:improvement",
+                                               outcome="inspection_blocked"),
+        "a_failure_at_outcome_inspection_blocked": dict(phase="review_lead", actor="lead:improvement",
+                                                        failure="at_outcome", outcome="inspection_blocked"),
+        "b_stale_lease_inspection_blocked": dict(phase="review_lead", actor="lead:improvement",
+                                                 failure="stale_lease", outcome="inspection_blocked"),
+        "c_same_key_replay_inspection_blocked": dict(phase="review_lead", actor="lead:improvement",
+                                                     replay=True, outcome="inspection_blocked"),
+        "blocked_review_lead": dict(phase="review_lead", actor="lead:improvement", outcome="blocked"),
+        "a_failure_at_outcome_blocked": dict(phase="review_lead", actor="lead:improvement",
+                                             failure="at_outcome", outcome="blocked"),
+        "b_stale_lease_blocked": dict(phase="review_lead", actor="lead:improvement",
+                                      failure="stale_lease", outcome="blocked"),
+        "c_same_key_replay_blocked": dict(phase="review_lead", actor="lead:improvement",
+                                          replay=True, outcome="blocked"),
         "control_split_commit": dict(phase="review_lead", actor="lead:improvement",
                                      failure="before_decision", control="split_commit"),
         "control_fence_ignored": dict(phase="review_lead", actor="lead:improvement",

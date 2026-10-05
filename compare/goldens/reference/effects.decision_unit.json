@@ -1,4 +1,334 @@
 {
+ "a_failure_at_outcome_blocked": {
+  "decision_status": "retry",
+  "durable_authority_rows": [],
+  "durable_authority_writes": [],
+  "durable_rows_changed": [
+   [
+    "decisions_pending",
+    "retry"
+   ],
+   [
+    "execution_failures",
+    "retry"
+   ],
+   [
+    "execution_fences",
+    ""
+   ],
+   [
+    "execution_notices",
+    ""
+   ],
+   [
+    "outbox",
+    ""
+   ]
+  ],
+  "effect_protocol": [],
+  "effects": [
+   {
+    "depth": 0,
+    "name": "provider_call"
+   }
+  ],
+  "fences": [
+   true,
+   true
+  ],
+  "outbox_types": [
+   "execution.notice"
+  ],
+  "trace": [
+   {
+    "depth": 0,
+    "kind": "BEGIN",
+    "label": "",
+    "unit": "U2"
+   },
+   {
+    "bucket": "decisions_pending",
+    "kind": "write",
+    "status": "pending",
+    "unit": "U2"
+   },
+   {
+    "bucket": "execution_fences",
+    "kind": "write",
+    "status": null,
+    "unit": "U2"
+   },
+   {
+    "bucket": "decisions_pending",
+    "kind": "write",
+    "status": "running",
+    "unit": "U2"
+   },
+   {
+    "depth": 0,
+    "kind": "COMMIT",
+    "unit": "U2"
+   },
+   {
+    "depth": 0,
+    "kind": "effect",
+    "name": "provider_call"
+   },
+   {
+    "depth": 0,
+    "kind": "BEGIN",
+    "label": "",
+    "unit": "U3"
+   },
+   {
+    "kind": "fence",
+    "name": "lease",
+    "ok": true,
+    "unit": "U3"
+   },
+   {
+    "bucket": "decisions_pending",
+    "kind": "write",
+    "status": "blocked",
+    "unit": "U3"
+   },
+   {
+    "depth": 0,
+    "error": "Injected",
+    "kind": "ROLLBACK",
+    "unit": "U3"
+   },
+   {
+    "depth": 0,
+    "kind": "BEGIN",
+    "label": "",
+    "unit": "U4"
+   },
+   {
+    "depth": 0,
+    "kind": "COMMIT",
+    "unit": "U4"
+   },
+   {
+    "depth": 0,
+    "kind": "BEGIN",
+    "label": "",
+    "unit": "U5"
+   },
+   {
+    "kind": "fence",
+    "name": "lease",
+    "ok": true,
+    "unit": "U5"
+   },
+   {
+    "bucket": "decisions_pending",
+    "kind": "write",
+    "status": "retry",
+    "unit": "U5"
+   },
+   {
+    "bucket": "execution_failures",
+    "kind": "write",
+    "status": "retry",
+    "unit": "U5"
+   },
+   {
+    "bucket": "execution_notices",
+    "kind": "write",
+    "status": null,
+    "unit": "U5"
+   },
+   {
+    "bucket": "outbox",
+    "kind": "write",
+    "status": null,
+    "unit": "U5"
+   },
+   {
+    "depth": 0,
+    "kind": "COMMIT",
+    "unit": "U5"
+   }
+  ],
+  "trace_digests": [
+   "bad04941a9b821ddf7ccc16f426249c9a0b29b0a04269a009713aa69e0bfd019",
+   "a2f24016e4203ff81a32c821a9b0e24ae021edad75a9d95d7f316ba0ff8b04f1",
+   "b3e8e55abc1283e7dcfe794da74a17b687b9aeddef77b9779aa5c4dc2b7030e4",
+   "91c09543328993b13de12044c04ec147a5447d20f1b5ec3c52c6b197dd4e53a6",
+   "4828a2550384dcca9e78cb5cfcb136143dcc27a53155e52b2436ad50c8722f9f",
+   "db673405922393dd487f855ea9f2bed3989ca16913631e7f112438e1735edea2",
+   "075d2acc82f0113233a7f430b7087cb161aa135a3f32dc69723c82c10e659840",
+   "c67c8e80575380c96a7f87536fe03f90c84e633fc70c0768448fc7b0ccc231b7"
+  ],
+  "verdict": "atomic_rollback",
+  "violations": []
+ },
+ "a_failure_at_outcome_inspection_blocked": {
+  "decision_status": "retry",
+  "durable_authority_rows": [],
+  "durable_authority_writes": [],
+  "durable_rows_changed": [
+   [
+    "decisions_pending",
+    "retry"
+   ],
+   [
+    "execution_failures",
+    "retry"
+   ],
+   [
+    "execution_fences",
+    ""
+   ],
+   [
+    "execution_notices",
+    ""
+   ],
+   [
+    "outbox",
+    ""
+   ]
+  ],
+  "effect_protocol": [],
+  "effects": [
+   {
+    "depth": 0,
+    "name": "provider_call"
+   }
+  ],
+  "fences": [
+   true,
+   true
+  ],
+  "outbox_types": [
+   "execution.notice"
+  ],
+  "trace": [
+   {
+    "depth": 0,
+    "kind": "BEGIN",
+    "label": "",
+    "unit": "U2"
+   },
+   {
+    "bucket": "decisions_pending",
+    "kind": "write",
+    "status": "pending",
+    "unit": "U2"
+   },
+   {
+    "bucket": "execution_fences",
+    "kind": "write",
+    "status": null,
+    "unit": "U2"
+   },
+   {
+    "bucket": "decisions_pending",
+    "kind": "write",
+    "status": "running",
+    "unit": "U2"
+   },
+   {
+    "depth": 0,
+    "kind": "COMMIT",
+    "unit": "U2"
+   },
+   {
+    "depth": 0,
+    "kind": "effect",
+    "name": "provider_call"
+   },
+   {
+    "depth": 0,
+    "kind": "BEGIN",
+    "label": "",
+    "unit": "U3"
+   },
+   {
+    "kind": "fence",
+    "name": "lease",
+    "ok": true,
+    "unit": "U3"
+   },
+   {
+    "bucket": "decisions_pending",
+    "kind": "write",
+    "status": "inspection_blocked",
+    "unit": "U3"
+   },
+   {
+    "depth": 0,
+    "error": "Injected",
+    "kind": "ROLLBACK",
+    "unit": "U3"
+   },
+   {
+    "depth": 0,
+    "kind": "BEGIN",
+    "label": "",
+    "unit": "U4"
+   },
+   {
+    "depth": 0,
+    "kind": "COMMIT",
+    "unit": "U4"
+   },
+   {
+    "depth": 0,
+    "kind": "BEGIN",
+    "label": "",
+    "unit": "U5"
+   },
+   {
+    "kind": "fence",
+    "name": "lease",
+    "ok": true,
+    "unit": "U5"
+   },
+   {
+    "bucket": "decisions_pending",
+    "kind": "write",
+    "status": "retry",
+    "unit": "U5"
+   },
+   {
+    "bucket": "execution_failures",
+    "kind": "write",
+    "status": "retry",
+    "unit": "U5"
+   },
+   {
+    "bucket": "execution_notices",
+    "kind": "write",
+    "status": null,
+    "unit": "U5"
+   },
+   {
+    "bucket": "outbox",
+    "kind": "write",
+    "status": null,
+    "unit": "U5"
+   },
+   {
+    "depth": 0,
+    "kind": "COMMIT",
+    "unit": "U5"
+   }
+  ],
+  "trace_digests": [
+   "bad04941a9b821ddf7ccc16f426249c9a0b29b0a04269a009713aa69e0bfd019",
+   "a2f24016e4203ff81a32c821a9b0e24ae021edad75a9d95d7f316ba0ff8b04f1",
+   "b3e8e55abc1283e7dcfe794da74a17b687b9aeddef77b9779aa5c4dc2b7030e4",
+   "11eb7b5c7f16d5ae36f59f464ebbd755f5ba4f9f80c48ce3bd8e16225d816d04",
+   "4828a2550384dcca9e78cb5cfcb136143dcc27a53155e52b2436ad50c8722f9f",
+   "db673405922393dd487f855ea9f2bed3989ca16913631e7f112438e1735edea2",
+   "075d2acc82f0113233a7f430b7087cb161aa135a3f32dc69723c82c10e659840",
+   "c67c8e80575380c96a7f87536fe03f90c84e633fc70c0768448fc7b0ccc231b7"
+  ],
+  "verdict": "atomic_rollback",
+  "violations": []
+ },
  "a_failure_before_decision_review_conductor": {
   "decision_status": "retry",
   "durable_authority_rows": [],
@@ -539,6 +869,459 @@
   "verdict": "atomic_rollback",
   "violations": []
  },
+ "b_stale_lease_blocked": {
+  "decision_status": "running",
+  "durable_authority_rows": [],
+  "durable_authority_writes": [],
+  "durable_rows_changed": [
+   [
+    "decisions_pending",
+    "running"
+   ],
+   [
+    "events",
+    ""
+   ],
+   [
+    "execution_fences",
+    ""
+   ],
+   [
+    "execution_rejections",
+    ""
+   ]
+  ],
+  "effect_protocol": [],
+  "effects": [
+   {
+    "depth": 0,
+    "name": "provider_call"
+   }
+  ],
+  "fences": [
+   false,
+   false
+  ],
+  "outbox_types": [],
+  "trace": [
+   {
+    "depth": 0,
+    "kind": "BEGIN",
+    "label": "",
+    "unit": "U2"
+   },
+   {
+    "bucket": "decisions_pending",
+    "kind": "write",
+    "status": "pending",
+    "unit": "U2"
+   },
+   {
+    "bucket": "execution_fences",
+    "kind": "write",
+    "status": null,
+    "unit": "U2"
+   },
+   {
+    "bucket": "decisions_pending",
+    "kind": "write",
+    "status": "running",
+    "unit": "U2"
+   },
+   {
+    "depth": 0,
+    "kind": "COMMIT",
+    "unit": "U2"
+   },
+   {
+    "depth": 0,
+    "kind": "effect",
+    "name": "provider_call"
+   },
+   {
+    "depth": 0,
+    "kind": "BEGIN",
+    "label": "",
+    "unit": "U3"
+   },
+   {
+    "bucket": "decisions_pending",
+    "kind": "write",
+    "status": "running",
+    "unit": "U3"
+   },
+   {
+    "depth": 0,
+    "kind": "COMMIT",
+    "unit": "U3"
+   },
+   {
+    "depth": 0,
+    "kind": "BEGIN",
+    "label": "",
+    "unit": "U4"
+   },
+   {
+    "kind": "fence",
+    "name": "lease",
+    "ok": false,
+    "unit": "U4"
+   },
+   {
+    "depth": 0,
+    "error": "ContractError",
+    "kind": "ROLLBACK",
+    "unit": "U4"
+   },
+   {
+    "depth": 0,
+    "kind": "BEGIN",
+    "label": "",
+    "unit": "U5"
+   },
+   {
+    "depth": 0,
+    "kind": "COMMIT",
+    "unit": "U5"
+   },
+   {
+    "depth": 0,
+    "kind": "BEGIN",
+    "label": "",
+    "unit": "U6"
+   },
+   {
+    "kind": "fence",
+    "name": "lease",
+    "ok": false,
+    "unit": "U6"
+   },
+   {
+    "depth": 0,
+    "error": "ContractError",
+    "kind": "ROLLBACK",
+    "unit": "U6"
+   },
+   {
+    "depth": 0,
+    "kind": "BEGIN",
+    "label": "",
+    "unit": "U7"
+   },
+   {
+    "bucket": "execution_rejections",
+    "kind": "write",
+    "status": null,
+    "unit": "U7"
+   },
+   {
+    "bucket": "events",
+    "kind": "write",
+    "status": null,
+    "unit": "U7"
+   },
+   {
+    "depth": 0,
+    "kind": "COMMIT",
+    "unit": "U7"
+   }
+  ],
+  "trace_digests": [
+   "bad04941a9b821ddf7ccc16f426249c9a0b29b0a04269a009713aa69e0bfd019",
+   "a2f24016e4203ff81a32c821a9b0e24ae021edad75a9d95d7f316ba0ff8b04f1",
+   "b3e8e55abc1283e7dcfe794da74a17b687b9aeddef77b9779aa5c4dc2b7030e4",
+   "092846adef15bb8daf56823fc1dc3adab8addc116709a9e69eb96ed38938252d",
+   "516fa5c82a5e41bfba211e309e0e3e4b302f66e9cb9b1c2b2faff1190d8ebc90",
+   "0058a7981c57ee237b910ffe2fec83681f3943c559a6fbe0b518050cdf67bfa0"
+  ],
+  "verdict": "atomic_rollback",
+  "violations": []
+ },
+ "b_stale_lease_inspection_blocked": {
+  "decision_status": "running",
+  "durable_authority_rows": [],
+  "durable_authority_writes": [],
+  "durable_rows_changed": [
+   [
+    "decisions_pending",
+    "running"
+   ],
+   [
+    "events",
+    ""
+   ],
+   [
+    "execution_fences",
+    ""
+   ],
+   [
+    "execution_rejections",
+    ""
+   ]
+  ],
+  "effect_protocol": [],
+  "effects": [
+   {
+    "depth": 0,
+    "name": "provider_call"
+   }
+  ],
+  "fences": [
+   false,
+   false
+  ],
+  "outbox_types": [],
+  "trace": [
+   {
+    "depth": 0,
+    "kind": "BEGIN",
+    "label": "",
+    "unit": "U2"
+   },
+   {
+    "bucket": "decisions_pending",
+    "kind": "write",
+    "status": "pending",
+    "unit": "U2"
+   },
+   {
+    "bucket": "execution_fences",
+    "kind": "write",
+    "status": null,
+    "unit": "U2"
+   },
+   {
+    "bucket": "decisions_pending",
+    "kind": "write",
+    "status": "running",
+    "unit": "U2"
+   },
+   {
+    "depth": 0,
+    "kind": "COMMIT",
+    "unit": "U2"
+   },
+   {
+    "depth": 0,
+    "kind": "effect",
+    "name": "provider_call"
+   },
+   {
+    "depth": 0,
+    "kind": "BEGIN",
+    "label": "",
+    "unit": "U3"
+   },
+   {
+    "bucket": "decisions_pending",
+    "kind": "write",
+    "status": "running",
+    "unit": "U3"
+   },
+   {
+    "depth": 0,
+    "kind": "COMMIT",
+    "unit": "U3"
+   },
+   {
+    "depth": 0,
+    "kind": "BEGIN",
+    "label": "",
+    "unit": "U4"
+   },
+   {
+    "kind": "fence",
+    "name": "lease",
+    "ok": false,
+    "unit": "U4"
+   },
+   {
+    "depth": 0,
+    "error": "ContractError",
+    "kind": "ROLLBACK",
+    "unit": "U4"
+   },
+   {
+    "depth": 0,
+    "kind": "BEGIN",
+    "label": "",
+    "unit": "U5"
+   },
+   {
+    "depth": 0,
+    "kind": "COMMIT",
+    "unit": "U5"
+   },
+   {
+    "depth": 0,
+    "kind": "BEGIN",
+    "label": "",
+    "unit": "U6"
+   },
+   {
+    "kind": "fence",
+    "name": "lease",
+    "ok": false,
+    "unit": "U6"
+   },
+   {
+    "depth": 0,
+    "error": "ContractError",
+    "kind": "ROLLBACK",
+    "unit": "U6"
+   },
+   {
+    "depth": 0,
+    "kind": "BEGIN",
+    "label": "",
+    "unit": "U7"
+   },
+   {
+    "bucket": "execution_rejections",
+    "kind": "write",
+    "status": null,
+    "unit": "U7"
+   },
+   {
+    "bucket": "events",
+    "kind": "write",
+    "status": null,
+    "unit": "U7"
+   },
+   {
+    "depth": 0,
+    "kind": "COMMIT",
+    "unit": "U7"
+   }
+  ],
+  "trace_digests": [
+   "bad04941a9b821ddf7ccc16f426249c9a0b29b0a04269a009713aa69e0bfd019",
+   "a2f24016e4203ff81a32c821a9b0e24ae021edad75a9d95d7f316ba0ff8b04f1",
+   "b3e8e55abc1283e7dcfe794da74a17b687b9aeddef77b9779aa5c4dc2b7030e4",
+   "092846adef15bb8daf56823fc1dc3adab8addc116709a9e69eb96ed38938252d",
+   "516fa5c82a5e41bfba211e309e0e3e4b302f66e9cb9b1c2b2faff1190d8ebc90",
+   "0058a7981c57ee237b910ffe2fec83681f3943c559a6fbe0b518050cdf67bfa0"
+  ],
+  "verdict": "atomic_rollback",
+  "violations": []
+ },
+ "blocked_review_lead": {
+  "decision_status": "blocked",
+  "durable_authority_rows": [],
+  "durable_authority_writes": [],
+  "durable_rows_changed": [
+   [
+    "decisions_pending",
+    "blocked"
+   ],
+   [
+    "execution_fences",
+    ""
+   ],
+   [
+    "execution_notices",
+    ""
+   ],
+   [
+    "outbox",
+    ""
+   ]
+  ],
+  "effect_protocol": [],
+  "effects": [
+   {
+    "depth": 0,
+    "name": "provider_call"
+   }
+  ],
+  "fences": [
+   true
+  ],
+  "outbox_types": [
+   "execution.notice"
+  ],
+  "trace": [
+   {
+    "depth": 0,
+    "kind": "BEGIN",
+    "label": "",
+    "unit": "U2"
+   },
+   {
+    "bucket": "decisions_pending",
+    "kind": "write",
+    "status": "pending",
+    "unit": "U2"
+   },
+   {
+    "bucket": "execution_fences",
+    "kind": "write",
+    "status": null,
+    "unit": "U2"
+   },
+   {
+    "bucket": "decisions_pending",
+    "kind": "write",
+    "status": "running",
+    "unit": "U2"
+   },
+   {
+    "depth": 0,
+    "kind": "COMMIT",
+    "unit": "U2"
+   },
+   {
+    "depth": 0,
+    "kind": "effect",
+    "name": "provider_call"
+   },
+   {
+    "depth": 0,
+    "kind": "BEGIN",
+    "label": "",
+    "unit": "U3"
+   },
+   {
+    "kind": "fence",
+    "name": "lease",
+    "ok": true,
+    "unit": "U3"
+   },
+   {
+    "bucket": "decisions_pending",
+    "kind": "write",
+    "status": "blocked",
+    "unit": "U3"
+   },
+   {
+    "bucket": "execution_notices",
+    "kind": "write",
+    "status": null,
+    "unit": "U3"
+   },
+   {
+    "bucket": "outbox",
+    "kind": "write",
+    "status": null,
+    "unit": "U3"
+   },
+   {
+    "depth": 0,
+    "kind": "COMMIT",
+    "unit": "U3"
+   }
+  ],
+  "trace_digests": [
+   "bad04941a9b821ddf7ccc16f426249c9a0b29b0a04269a009713aa69e0bfd019",
+   "a2f24016e4203ff81a32c821a9b0e24ae021edad75a9d95d7f316ba0ff8b04f1",
+   "b3e8e55abc1283e7dcfe794da74a17b687b9aeddef77b9779aa5c4dc2b7030e4",
+   "91c09543328993b13de12044c04ec147a5447d20f1b5ec3c52c6b197dd4e53a6",
+   "8567139ae07990c813fc18a0588557a17f248d477c16c0c570debac95ab52854",
+   "cda608637a01520520d4ba97628fb76f868a88673e52b3b72b2031a0ae25cc99"
+  ],
+  "verdict": "atomic_rollback",
+  "violations": []
+ },
  "c_same_key_replay": {
   "decision_status": "succeeded",
   "durable_authority_rows": [
@@ -686,6 +1469,262 @@
    "2cdaec435c491399ef0bef6aebc997584e400509eb67de5a6dce569c03f94e38"
   ],
   "verdict": "atomic_commit",
+  "violations": []
+ },
+ "c_same_key_replay_blocked": {
+  "decision_status": "blocked",
+  "durable_authority_rows": [],
+  "durable_authority_writes": [],
+  "durable_rows_changed": [
+   [
+    "decisions_pending",
+    "blocked"
+   ],
+   [
+    "execution_fences",
+    ""
+   ],
+   [
+    "execution_notices",
+    ""
+   ],
+   [
+    "outbox",
+    ""
+   ]
+  ],
+  "effect_protocol": [],
+  "effects": [
+   {
+    "depth": 0,
+    "name": "provider_call"
+   }
+  ],
+  "fences": [
+   true
+  ],
+  "outbox_types": [
+   "execution.notice"
+  ],
+  "trace": [
+   {
+    "depth": 0,
+    "kind": "BEGIN",
+    "label": "",
+    "unit": "U2"
+   },
+   {
+    "bucket": "decisions_pending",
+    "kind": "write",
+    "status": "pending",
+    "unit": "U2"
+   },
+   {
+    "bucket": "execution_fences",
+    "kind": "write",
+    "status": null,
+    "unit": "U2"
+   },
+   {
+    "bucket": "decisions_pending",
+    "kind": "write",
+    "status": "running",
+    "unit": "U2"
+   },
+   {
+    "depth": 0,
+    "kind": "COMMIT",
+    "unit": "U2"
+   },
+   {
+    "depth": 0,
+    "kind": "effect",
+    "name": "provider_call"
+   },
+   {
+    "depth": 0,
+    "kind": "BEGIN",
+    "label": "",
+    "unit": "U3"
+   },
+   {
+    "kind": "fence",
+    "name": "lease",
+    "ok": true,
+    "unit": "U3"
+   },
+   {
+    "bucket": "decisions_pending",
+    "kind": "write",
+    "status": "blocked",
+    "unit": "U3"
+   },
+   {
+    "bucket": "execution_notices",
+    "kind": "write",
+    "status": null,
+    "unit": "U3"
+   },
+   {
+    "bucket": "outbox",
+    "kind": "write",
+    "status": null,
+    "unit": "U3"
+   },
+   {
+    "depth": 0,
+    "kind": "COMMIT",
+    "unit": "U3"
+   },
+   {
+    "depth": 0,
+    "kind": "BEGIN",
+    "label": "",
+    "unit": "U4"
+   },
+   {
+    "depth": 0,
+    "kind": "COMMIT",
+    "unit": "U4"
+   }
+  ],
+  "trace_digests": [
+   "bad04941a9b821ddf7ccc16f426249c9a0b29b0a04269a009713aa69e0bfd019",
+   "a2f24016e4203ff81a32c821a9b0e24ae021edad75a9d95d7f316ba0ff8b04f1",
+   "b3e8e55abc1283e7dcfe794da74a17b687b9aeddef77b9779aa5c4dc2b7030e4",
+   "91c09543328993b13de12044c04ec147a5447d20f1b5ec3c52c6b197dd4e53a6",
+   "8567139ae07990c813fc18a0588557a17f248d477c16c0c570debac95ab52854",
+   "cda608637a01520520d4ba97628fb76f868a88673e52b3b72b2031a0ae25cc99"
+  ],
+  "verdict": "atomic_rollback",
+  "violations": []
+ },
+ "c_same_key_replay_inspection_blocked": {
+  "decision_status": "inspection_blocked",
+  "durable_authority_rows": [],
+  "durable_authority_writes": [],
+  "durable_rows_changed": [
+   [
+    "decisions_pending",
+    "inspection_blocked"
+   ],
+   [
+    "execution_fences",
+    ""
+   ],
+   [
+    "execution_notices",
+    ""
+   ],
+   [
+    "outbox",
+    ""
+   ]
+  ],
+  "effect_protocol": [],
+  "effects": [
+   {
+    "depth": 0,
+    "name": "provider_call"
+   }
+  ],
+  "fences": [
+   true
+  ],
+  "outbox_types": [
+   "execution.notice"
+  ],
+  "trace": [
+   {
+    "depth": 0,
+    "kind": "BEGIN",
+    "label": "",
+    "unit": "U2"
+   },
+   {
+    "bucket": "decisions_pending",
+    "kind": "write",
+    "status": "pending",
+    "unit": "U2"
+   },
+   {
+    "bucket": "execution_fences",
+    "kind": "write",
+    "status": null,
+    "unit": "U2"
+   },
+   {
+    "bucket": "decisions_pending",
+    "kind": "write",
+    "status": "running",
+    "unit": "U2"
+   },
+   {
+    "depth": 0,
+    "kind": "COMMIT",
+    "unit": "U2"
+   },
+   {
+    "depth": 0,
+    "kind": "effect",
+    "name": "provider_call"
+   },
+   {
+    "depth": 0,
+    "kind": "BEGIN",
+    "label": "",
+    "unit": "U3"
+   },
+   {
+    "kind": "fence",
+    "name": "lease",
+    "ok": true,
+    "unit": "U3"
+   },
+   {
+    "bucket": "decisions_pending",
+    "kind": "write",
+    "status": "inspection_blocked",
+    "unit": "U3"
+   },
+   {
+    "bucket": "execution_notices",
+    "kind": "write",
+    "status": null,
+    "unit": "U3"
+   },
+   {
+    "bucket": "outbox",
+    "kind": "write",
+    "status": null,
+    "unit": "U3"
+   },
+   {
+    "depth": 0,
+    "kind": "COMMIT",
+    "unit": "U3"
+   },
+   {
+    "depth": 0,
+    "kind": "BEGIN",
+    "label": "",
+    "unit": "U4"
+   },
+   {
+    "depth": 0,
+    "kind": "COMMIT",
+    "unit": "U4"
+   }
+  ],
+  "trace_digests": [
+   "bad04941a9b821ddf7ccc16f426249c9a0b29b0a04269a009713aa69e0bfd019",
+   "a2f24016e4203ff81a32c821a9b0e24ae021edad75a9d95d7f316ba0ff8b04f1",
+   "b3e8e55abc1283e7dcfe794da74a17b687b9aeddef77b9779aa5c4dc2b7030e4",
+   "11eb7b5c7f16d5ae36f59f464ebbd755f5ba4f9f80c48ce3bd8e16225d816d04",
+   "3a39dce97238f71a8daeec16cefd951047829c898c2c2a7cc2f683302a0d9d5b",
+   "32a5c3b78024cba0e2e6b91d8a9744397fd1a420f3dd97110894029e60b7c108"
+  ],
+  "verdict": "atomic_rollback",
   "violations": []
  },
  "control_effect_in_unit": {
@@ -1316,6 +2355,123 @@
   "violations": [
    "nested_begin"
   ]
+ },
+ "inspection_blocked_review_lead": {
+  "decision_status": "inspection_blocked",
+  "durable_authority_rows": [],
+  "durable_authority_writes": [],
+  "durable_rows_changed": [
+   [
+    "decisions_pending",
+    "inspection_blocked"
+   ],
+   [
+    "execution_fences",
+    ""
+   ],
+   [
+    "execution_notices",
+    ""
+   ],
+   [
+    "outbox",
+    ""
+   ]
+  ],
+  "effect_protocol": [],
+  "effects": [
+   {
+    "depth": 0,
+    "name": "provider_call"
+   }
+  ],
+  "fences": [
+   true
+  ],
+  "outbox_types": [
+   "execution.notice"
+  ],
+  "trace": [
+   {
+    "depth": 0,
+    "kind": "BEGIN",
+    "label": "",
+    "unit": "U2"
+   },
+   {
+    "bucket": "decisions_pending",
+    "kind": "write",
+    "status": "pending",
+    "unit": "U2"
+   },
+   {
+    "bucket": "execution_fences",
+    "kind": "write",
+    "status": null,
+    "unit": "U2"
+   },
+   {
+    "bucket": "decisions_pending",
+    "kind": "write",
+    "status": "running",
+    "unit": "U2"
+   },
+   {
+    "depth": 0,
+    "kind": "COMMIT",
+    "unit": "U2"
+   },
+   {
+    "depth": 0,
+    "kind": "effect",
+    "name": "provider_call"
+   },
+   {
+    "depth": 0,
+    "kind": "BEGIN",
+    "label": "",
+    "unit": "U3"
+   },
+   {
+    "kind": "fence",
+    "name": "lease",
+    "ok": true,
+    "unit": "U3"
+   },
+   {
+    "bucket": "decisions_pending",
+    "kind": "write",
+    "status": "inspection_blocked",
+    "unit": "U3"
+   },
+   {
+    "bucket": "execution_notices",
+    "kind": "write",
+    "status": null,
+    "unit": "U3"
+   },
+   {
+    "bucket": "outbox",
+    "kind": "write",
+    "status": null,
+    "unit": "U3"
+   },
+   {
+    "depth": 0,
+    "kind": "COMMIT",
+    "unit": "U3"
+   }
+  ],
+  "trace_digests": [
+   "bad04941a9b821ddf7ccc16f426249c9a0b29b0a04269a009713aa69e0bfd019",
+   "a2f24016e4203ff81a32c821a9b0e24ae021edad75a9d95d7f316ba0ff8b04f1",
+   "b3e8e55abc1283e7dcfe794da74a17b687b9aeddef77b9779aa5c4dc2b7030e4",
+   "11eb7b5c7f16d5ae36f59f464ebbd755f5ba4f9f80c48ce3bd8e16225d816d04",
+   "3a39dce97238f71a8daeec16cefd951047829c898c2c2a7cc2f683302a0d9d5b",
+   "32a5c3b78024cba0e2e6b91d8a9744397fd1a420f3dd97110894029e60b7c108"
+  ],
+  "verdict": "atomic_rollback",
+  "violations": []
  },
  "success_review_conductor": {
   "decision_status": "succeeded",
