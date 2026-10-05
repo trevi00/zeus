@@ -173,6 +173,31 @@ INTENT = {
     "bootstrap": "change:§4 Role authority (production composition requires isolation; S10)",
     "adapters/executor": "change:§4 Documented limitations (S3b Codex native hooks inside containers)",
 }
+# S11 §20 (USER-APPROVED-U6-20261006; R-L17, R-P1, R-P2): the intent of one ROW (any kind), by key. It takes precedence
+# over the module INTENT table and is applied once every row is built.
+_U6A = "retire:U6(a) Windows scheduled-task host target (W-B; USER-APPROVED-U6-20261006)"
+_U6B = "retire:U6(b) legacy Compose agent path (container_main; USER-APPROVED-U6-20261006)"
+_SHB = ("change:§4 Entry surface (S11 SH-b: python -m codex_harness.adapters.{m} ran no behaviour at SOURCE; "
+        "reached through zeus <root>)")
+_SHC = "change:§4 Entry surface (S11 SH-c/E5b: the -m argv moved to {t}; persisted-argv reconciliation R2 carried)"
+_MARK = "change:§4 Layer markers (empty M7 package replaced by the per-context layer packages; S11 §20 R-P2)"
+KEY_INTENT = {
+    "api:src/codex_harness/adapters/host_delivery.py::ScheduledTaskHostTarget": _U6A,
+    "module:src/codex_harness/container_main.py": _U6B,
+    "module_entry:codex_harness.container_main": _U6B,
+    "api:src/codex_harness/container_main.py::main": _U6B,
+    **{f"module_entry:codex_harness.adapters.{m}": _SHB.format(m=m) for m in (
+        "audit_repair_cli", "audit_service", "autonomous_cli", "continuation_cli",
+        "decision_feedback_cli", "dge_cli", "fleet_cli", "frontdesk_cli",
+        "owner_actions", "research_program_cli", "sdd_cli", "skill_audit",
+        "skill_import", "threshold_proposals", "threshold_replay", "worker_sessions")},
+    "module_entry:codex_harness.adapters.experience": _SHC.format(t="codex_harness.entry.processes.experience:main"),
+    "module_entry:codex_harness.adapters.observed_assets": _SHC.format(t="codex_harness.entry.cli.observed_assets:main"),
+    "module_entry:codex_harness.adapters.isolated_worker": _SHC.format(
+        t="codex_harness.entry.processes.isolated_worker_runs"),
+    "module:src/codex_harness/application/__init__.py": _MARK,
+    "module:src/codex_harness/domain/__init__.py": _MARK,
+}
 CONTRACT_OWNERS = {
     "kernel": "ENCODING-001",
     "storage": "ARTIFACT-001 MIGRATION-001 RESOURCE-001",
@@ -810,6 +835,8 @@ def build(ledger: dict, static: dict) -> dict:
     rows += unit_rows
     apply_s1(rows)
     apply_s2(rows)
+    for r in rows:
+        r["intent"] = KEY_INTENT.get(r["key"], r["intent"])
     counts = {}
     for r in rows:
         counts[r["kind"]] = counts.get(r["kind"], 0) + 1
