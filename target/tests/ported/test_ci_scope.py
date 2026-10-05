@@ -19,13 +19,15 @@ import pytest
 import yaml
 
 ROOT = Path(__file__).resolve().parents[3]  # S11 M B6: the repo root from target/tests/ported
+# S11 R-S1: the project root (target/ now, the repo root after the promotion) that holds scripts/
+PROJECT = next(p for p in Path(__file__).resolve().parents if (p / "src" / "codex_harness").is_dir())
 DOC = "docs/zeus/operations/ci-separation-001/OPERATIONS.md"
 SHA_A = "a" * 40
 
 
 @pytest.fixture(scope="module")
 def scope():
-    spec = importlib.util.spec_from_file_location("zeus_ci_scope", ROOT / "scripts" / "ci_scope.py")
+    spec = importlib.util.spec_from_file_location("zeus_ci_scope", PROJECT / "scripts" / "ci_scope.py")  # S11 R-S1: the ported copy
     module = importlib.util.module_from_spec(spec)
     sys.modules[spec.name] = module  # dataclasses resolve annotations through sys.modules
     spec.loader.exec_module(module)

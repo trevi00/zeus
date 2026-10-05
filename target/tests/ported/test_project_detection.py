@@ -7,19 +7,26 @@ Formerly not ported here (S2-S7 pilots); batch U3 below copies every one of them
 - test_unknown_cli_preview_remains_available_but_does_not_freeze_empty_profile: S10 entry: the CLI main()/script moves to entry/composition
 - test_metadata_only_detection_requires_explicit_stack_before_write: S10 entry: the CLI main()/script moves to entry/composition
 
-Batch U3 (V6 retrofit): the three cases that had been left out (four node IDs) are copied verbatim and skipped whole,
-`S10: the project_init operator CLI (scripts/project_init.py)`; the names only they read stay unresolved by design (F821).
+Batch U3 (V6 retrofit): the three cases that had been left out (four node IDs) are copied verbatim; S11 R-S1 un-skipped them
+and pointed them at the ported `scripts/project_init.py` (PROJECT).
 """
 # ruff: noqa: F821
 import hashlib
 import json
+import os  # S11 R-S1: read by the un-skipped project_init CLI nodes
+import subprocess  # S11 R-S1
+import sys  # S11 R-S1
 from pathlib import Path
 
 import pytest
 
 from codex_harness.context.adapters.project_detection import detect_project
+from codex_harness.context.adapters.project_skills import parse_profile
 from codex_harness.context.domain.project_skills import eligible_paths
 from codex_harness.kernel.errors import ContractError
+
+# S11 R-S1: the project root (target/ now, the repo root after the promotion) that holds scripts/ and src/
+PROJECT = next(p for p in Path(__file__).resolve().parents if (p / "src" / "codex_harness").is_dir())
 
 
 def test_all_upstream_project_types_are_retained_without_executing_files(tmp_path):
@@ -93,12 +100,11 @@ def test_oversized_manifest_and_directory_signal_are_rejected(tmp_path):
         detect_project(tmp_path)
 
 
-@pytest.mark.skip(reason="S11 (PREP-S11 §9 #3): scripts/project_init.py imports absent M7 codex_harness.adapters.project_detection; root-script disposition pending")
 def test_cli_detect_preview_initialize_and_existing_profile(tmp_path):
     (tmp_path / 'package.json').write_text('{"dependencies":{"react":"^18"}}')
     (tmp_path / 'tsconfig.json').write_text('{}')
-    script = Path(__file__).resolve().parents[1] / 'scripts/project_init.py'
-    env = {**os.environ, 'PYTHONPATH': str(script.parents[1] / 'src')}
+    script = PROJECT / 'scripts/project_init.py'  # S11 R-S1: the ported script under the project root (target/ now, repo root after the promotion)
+    env = {**os.environ, 'PYTHONPATH': str(PROJECT / 'src')}  # S11 R-S1
     command = [sys.executable, str(script), str(tmp_path), '--detect']
     preview = subprocess.run(command + ['--preview'], env=env, capture_output=True, text=True)
     assert preview.returncode == 0, preview.stderr
@@ -113,10 +119,9 @@ def test_cli_detect_preview_initialize_and_existing_profile(tmp_path):
     assert repeated.returncode == 2 and 'FileExistsError' in repeated.stderr
 
 
-@pytest.mark.skip(reason="S11 (PREP-S11 §9 #3): scripts/project_init.py imports absent M7 codex_harness.adapters.project_detection; root-script disposition pending")
 def test_unknown_cli_preview_remains_available_but_does_not_freeze_empty_profile(tmp_path):
-    script = Path(__file__).resolve().parents[1] / 'scripts/project_init.py'
-    env = {**os.environ, 'PYTHONPATH': str(script.parents[1] / 'src')}
+    script = PROJECT / 'scripts/project_init.py'  # S11 R-S1: the ported script under the project root (target/ now, repo root after the promotion)
+    env = {**os.environ, 'PYTHONPATH': str(PROJECT / 'src')}  # S11 R-S1
     command = [sys.executable, str(script), str(tmp_path), '--detect']
     preview = subprocess.run(command + ['--preview'], env=env, capture_output=True, text=True)
     assert preview.returncode == 0
@@ -162,7 +167,6 @@ def test_workflow_signal_uses_exact_directory_names(tmp_path, directory):
     assert detect_project(tmp_path)['metadata']['detection']['status'] == 'unknown'
 
 
-@pytest.mark.skip(reason="S11 (PREP-S11 §9 #3): scripts/project_init.py imports absent M7 codex_harness.adapters.project_detection; root-script disposition pending")
 @pytest.mark.parametrize('signal', ['Dockerfile', '.github/workflows'])
 def test_metadata_only_detection_requires_explicit_stack_before_write(tmp_path, signal):
     if signal == 'Dockerfile':
@@ -172,8 +176,8 @@ def test_metadata_only_detection_requires_explicit_stack_before_write(tmp_path, 
     profile = detect_project(tmp_path)
     assert profile['stacks'] == []
     assert profile['metadata']['detection']['status'] == 'detected'
-    script = Path(__file__).resolve().parents[1] / 'scripts/project_init.py'
-    env = {**os.environ, 'PYTHONPATH': str(script.parents[1] / 'src')}
+    script = PROJECT / 'scripts/project_init.py'  # S11 R-S1: the ported script under the project root (target/ now, repo root after the promotion)
+    env = {**os.environ, 'PYTHONPATH': str(PROJECT / 'src')}  # S11 R-S1
     result = subprocess.run([sys.executable, str(script), str(tmp_path), '--detect'],
                             env=env, capture_output=True, text=True)
     assert result.returncode == 2 and 'Only metadata signals' in result.stderr
