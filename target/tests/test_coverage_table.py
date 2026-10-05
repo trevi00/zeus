@@ -113,7 +113,7 @@ def test_s1_module_rows_are_all_accounted_for(table):
                        "module:src/codex_harness/application/__init__.py",
                        "module:src/codex_harness/domain/__init__.py"}
     assert {r["key"] for r in rows if r["status"] == "implemented"} == {"module:src/codex_harness/adapters/commands.py"}
-    assert sum(r["status"] == "verified" for r in rows) == 21
+    assert sum(r["status"] == "verified" for r in rows) == 22  # S11 MC2: 21 + the package root
     assert all(r.get("slice_progress") for r in rows if r["key"].endswith(("model.py", "contracts.py")))
 
 
