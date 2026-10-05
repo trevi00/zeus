@@ -1922,6 +1922,28 @@
    "rule": "G4"
   },
   {
+   "citation": "target/tests/test_s11_ru1.py:50 (POST /api/desk/messages, Host example.com -> 403 'Forbidden host', nothing queued), :76-83 (Origin missing/null/foreign, content-type, X-Zeus-Desk gates, fixed codes, no CORS grant), :85-95 (chunked/no length 411, 40000-char body 413, nothing queued); target/tests/ported/test_frontdesk_http.py:218 (the route's accepted/replayed/conflict contract)",
+   "key": "http:POST /api/desk/messages",
+   "pending": "pending: S8 desk Origin/Host/body-bound scenarios",
+   "replaced_by": [
+    "target:tests/test_s11_ru1.py::test_messages_route_refuses_a_forbidden_host_before_anything_else",
+    "target:tests/test_s11_ru1.py::test_messages_route_requires_local_intent",
+    "target:tests/test_s11_ru1.py::test_messages_route_refuses_a_missing_or_oversized_length_before_the_body",
+    "target:tests/ported/test_frontdesk_http.py::test_message_submission_is_accepted_replayed_and_conflict_checked"
+   ],
+   "rule": "G4"
+  },
+  {
+   "citation": "target/tests/test_s11_ru1.py:58 (GET /api/desk/session/<id>, Host example.com -> 403 'Forbidden host'; the loopback Host is served 200); target/tests/ported/test_frontdesk_http.py:290 (path identifier: not-a-uuid 400 invalid_id, unknown uuid 404 session_unknown)",
+   "key": "http:GET /api/desk/session/<id>",
+   "pending": "pending: S8 desk Origin/Host/body-bound scenarios",
+   "replaced_by": [
+    "target:tests/test_s11_ru1.py::test_session_read_route_refuses_a_forbidden_host",
+    "target:tests/ported/test_frontdesk_http.py::test_a_bad_session_identifier_in_the_path_is_400"
+   ],
+   "rule": "G4"
+  },
+  {
    "citation": "compare/drivers/reference/entries.py:132-136 (rows import_only.codex_harness.container_main; main() itself is in the driver's never column)",
    "key": "module:src/codex_harness/container_main.py",
    "pending": "pending: characterization before the S10 move (R-U)",
@@ -1945,6 +1967,35 @@
    "pending": "pending: characterization before the S10 move (R-U)",
    "replaced_by": [
     "compare:entries.safe_matrix"
+   ],
+   "rule": "G6"
+  },
+  {
+   "citation": "compare/scenarios/cli.parser.json (the 152-node parser golden builds the `zeus sdd` parser: entry.cli.sdd.add_parser, target equal to M7 adapters/sdd_cli.py); compare/drivers/target/s10_cli_ticket_sdd.py (sdd inspect, view, register, status and the invalid-spec refusal through main(): entry.cli.sdd.run; entry.cli_ticket_sdd.pg target equal to M7 sdd_cli.execute)",
+   "key": "module:src/codex_harness/adapters/sdd_cli.py",
+   "pending": "pending: characterization before the S10 move (R-U)",
+   "replaced_by": [
+    "compare:cli.parser",
+    "compare:entry.cli_ticket_sdd.pg"
+   ],
+   "rule": "G6"
+  },
+  {
+   "citation": "target/tests/ported/test_threshold_reviews.py (M7 same-name suite; 19 of its nodes start research.adapters.threshold_reviews.review_threshold, measured with a call profiler); target/tests/test_s10_t1_threshold_set.py:144 (the keyword-only V22 ports reach ThresholdReviews)",
+   "key": "module:src/codex_harness/adapters/threshold_reviews.py",
+   "pending": "pending: characterization before the S8 move (R-U)",
+   "replaced_by": [
+    "target:tests/ported/test_threshold_reviews.py",
+    "target:tests/test_s10_t1_threshold_set.py::test_review_threshold_hands_the_v22_ports_to_threshold_reviews"
+   ],
+   "rule": "G6"
+  },
+  {
+   "citation": "target/tests/ported/test_completion_authority.py (M7 same-name suite through CompletionAuthority; 8 of its nodes start evidence.domain.completion.parse_verdict and parse_timestamp, 6 start latest, measured with a call profiler)",
+   "key": "module:src/codex_harness/domain/completion.py",
+   "pending": "pending: characterization before the S8 move (R-U)",
+   "replaced_by": [
+    "target:tests/ported/test_completion_authority.py"
    ],
    "rule": "G6"
   },
