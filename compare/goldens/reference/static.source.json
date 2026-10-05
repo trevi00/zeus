@@ -3580,10 +3580,12 @@
    "codex_harness.adapters.host_migration": {
     "keep_shim": true,
     "pinning_references": [
+     "docs/contracts.md:4074",
      "src/codex_harness/adapters/host_migration_evidence.py:5"
     ],
     "references_by_class": {
-     "docs_history": 2,
+     "contract_docs": 1,
+     "docs_history": 1,
      "src": 1
     }
    },
@@ -3642,10 +3644,13 @@
     }
    },
    "codex_harness.adapters.service_entry": {
-    "keep_shim": false,
-    "pinning_references": [],
+    "keep_shim": true,
+    "pinning_references": [
+     "docs/contracts.md:2561"
+    ],
     "references_by_class": {
-     "docs_history": 4,
+     "contract_docs": 1,
+     "docs_history": 3,
      "tests": 2
     }
    }
