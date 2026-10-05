@@ -2619,6 +2619,42 @@
     "target:tests/test_s11_ct5.py"
    ],
    "rule": "G2"
+  },
+  {
+   "citation": "target/tests/test_s11_ct6.py:267 (cites the ID; the file is named in the ARCHITECTURE.md feature-map row of the capability that lists the ID, or is the ported same-name file of a row-named reference test)",
+   "key": "contract:INV-DGE-001",
+   "pending": "pending: target characterization test named in the feature-map row (R-U)",
+   "replaced_by": [
+    "target:tests/test_s11_ct6.py"
+   ],
+   "rule": "G2"
+  },
+  {
+   "citation": "target/tests/test_s11_ct6.py:171 (cites the ID; the file is named in the ARCHITECTURE.md feature-map row of the capability that lists the ID, or is the ported same-name file of a row-named reference test)",
+   "key": "contract:INV-GOAL-PROGRESS-001",
+   "pending": "pending: target characterization test named in the feature-map row (R-U)",
+   "replaced_by": [
+    "target:tests/test_s11_ct6.py"
+   ],
+   "rule": "G2"
+  },
+  {
+   "citation": "target/tests/test_s11_ct6.py:53 (cites the ID; the file is named in the ARCHITECTURE.md feature-map row of the capability that lists the ID, or is the ported same-name file of a row-named reference test)",
+   "key": "contract:INV-RECURRENCE-001",
+   "pending": "pending: target characterization test named in the feature-map row (R-U)",
+   "replaced_by": [
+    "target:tests/test_s11_ct6.py"
+   ],
+   "rule": "G2"
+  },
+  {
+   "citation": "target/tests/test_s11_ct6.py:125 (cites the ID; the file is named in the ARCHITECTURE.md feature-map row of the capability that lists the ID, or is the ported same-name file of a row-named reference test)",
+   "key": "contract:INV-TICKET-001",
+   "pending": "pending: target characterization test named in the feature-map row (R-U)",
+   "replaced_by": [
+    "target:tests/test_s11_ct6.py"
+   ],
+   "rule": "G2"
   }
  ],
  "schema": "zeus:s11-evidence-resolutions:1"
