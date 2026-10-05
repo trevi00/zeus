@@ -11,6 +11,15 @@
    "citation": "coverage/effects-unit-table.json#effects.continuation_units/accept_research; coverage/effects-unit-table.json#effects.continuation_units.pg/accept_research"
   },
   {
+   "key": "atomic_unit:codex_harness.application.execution_recovery:ExecutionRecovery.prepare#1",
+   "pending": "pending: recorder confirmation in the owning slice",
+   "replaced_by": [
+    "compare:effects.admission_unit"
+   ],
+   "rule": "G1",
+   "citation": "coverage/effects-unit-table.json#effects.admission_unit/prepare"
+  },
+  {
    "key": "atomic_unit:codex_harness.application.fleet:Fleet.authorize_budget#1",
    "pending": "pending: recorder confirmation in the owning slice",
    "replaced_by": [
@@ -119,6 +128,15 @@
    ],
    "rule": "G1",
    "citation": "coverage/effects-unit-table.json#effects.admission_unit/parkable; coverage/effects-unit-table.json#effects.admission_unit.pg/parkable"
+  },
+  {
+   "key": "atomic_unit:codex_harness.application.outbox:relay#6",
+   "pending": "pending: recorder confirmation in the owning slice",
+   "replaced_by": [
+    "compare:effects.admission_unit"
+   ],
+   "rule": "G1",
+   "citation": "coverage/effects-unit-table.json#effects.admission_unit/relay"
   },
   {
    "key": "atomic_unit:codex_harness.application.research_program:ResearchProgram.fail_cycle#1",

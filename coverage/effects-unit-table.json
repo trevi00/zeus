@@ -1,15 +1,35 @@
 {
  "ambiguous": [
   {
+   "candidates": [
+    "codex_harness.application.execution_recovery:ExecutionRecovery.apply#1",
+    "codex_harness.application.execution_recovery:ExecutionRecovery.apply#2"
+   ],
+   "driver_call": "compare/drivers/common/s5_units.py:637",
+   "family": "effects.admission_unit",
+   "golden_unit": "apply",
+   "reason": "0 of 2 blocks of ExecutionRecovery.apply cover the golden buckets ['events', 'execution_fences', 'execution_notices', 'execution_recoveries', 'outbox', 'tasks']"
+  },
+  {
    "candidates": [],
-   "driver_call": "compare/drivers/common/s5_units.py:195",
+   "driver_call": "compare/drivers/common/s5_units.py:199",
    "family": "effects.admission_unit",
    "golden_unit": "complete",
    "reason": "complete is in no M7 module the driver imports"
   },
   {
+   "candidates": [
+    "codex_harness.application.fleet:Fleet.migrate_host#1",
+    "codex_harness.application.fleet:Fleet.migrate_host#2"
+   ],
+   "driver_call": "compare/drivers/common/s5_units.py:554",
+   "family": "effects.admission_unit",
+   "golden_unit": "migrate_host",
+   "reason": "0 of 2 blocks of Fleet.migrate_host cover the golden buckets ['fleet_host_migrations', 'fleet_registry']"
+  },
+  {
    "candidates": [],
-   "driver_call": "compare/drivers/common/s5_units.py:195",
+   "driver_call": "compare/drivers/common/s5_units.py:199",
    "family": "effects.admission_unit.pg",
    "golden_unit": "complete",
    "reason": "complete is in no M7 module the driver imports"
@@ -65,7 +85,7 @@
     "a",
     "c"
    ],
-   "driver_call": "compare/drivers/common/s5_units.py:168",
+   "driver_call": "compare/drivers/common/s5_units.py:172",
    "family": "effects.admission_unit",
    "golden_unit": "admit"
   },
@@ -76,7 +96,7 @@
     "a",
     "c"
    ],
-   "driver_call": "compare/drivers/common/s5_units.py:300",
+   "driver_call": "compare/drivers/common/s5_units.py:304",
    "family": "effects.admission_unit",
    "golden_unit": "authorize_budget"
   },
@@ -87,7 +107,7 @@
     "a",
     "c"
    ],
-   "driver_call": "compare/drivers/common/s5_units.py:507",
+   "driver_call": "compare/drivers/common/s5_units.py:511",
    "family": "effects.admission_unit",
    "golden_unit": "cancel"
   },
@@ -98,7 +118,7 @@
     "a",
     "c"
    ],
-   "driver_call": "compare/drivers/common/s5_units.py:151",
+   "driver_call": "compare/drivers/common/s5_units.py:155",
    "family": "effects.admission_unit",
    "golden_unit": "claim"
   },
@@ -108,7 +128,7 @@
    "cases": [
     "d"
    ],
-   "driver_call": "compare/drivers/common/s5_units.py:242",
+   "driver_call": "compare/drivers/common/s5_units.py:246",
    "family": "effects.admission_unit",
    "golden_unit": "depths"
   },
@@ -119,7 +139,7 @@
     "a",
     "c"
    ],
-   "driver_call": "compare/drivers/common/s5_units.py:289",
+   "driver_call": "compare/drivers/common/s5_units.py:293",
    "family": "effects.admission_unit",
    "golden_unit": "enqueue"
   },
@@ -129,7 +149,7 @@
    "cases": [
     "c"
    ],
-   "driver_call": "compare/drivers/common/s5_units.py:481",
+   "driver_call": "compare/drivers/common/s5_units.py:485",
    "family": "effects.admission_unit",
    "golden_unit": "evidence_gate"
   },
@@ -139,7 +159,7 @@
    "cases": [
     "b"
    ],
-   "driver_call": "compare/drivers/common/s5_units.py:205",
+   "driver_call": "compare/drivers/common/s5_units.py:209",
    "family": "effects.admission_unit",
    "golden_unit": "finalize"
   },
@@ -150,7 +170,7 @@
     "a",
     "c"
    ],
-   "driver_call": "compare/drivers/common/s5_units.py:137",
+   "driver_call": "compare/drivers/common/s5_units.py:141",
    "family": "effects.admission_unit",
    "golden_unit": "handle"
   },
@@ -160,9 +180,20 @@
    "cases": [
     "c"
    ],
-   "driver_call": "compare/drivers/common/s5_units.py:494",
+   "driver_call": "compare/drivers/common/s5_units.py:498",
    "family": "effects.admission_unit",
    "golden_unit": "parkable"
+  },
+  {
+   "atomic_unit": "codex_harness.application.execution_recovery:ExecutionRecovery.prepare#1",
+   "block": "#1",
+   "cases": [
+    "b",
+    "c"
+   ],
+   "driver_call": "compare/drivers/common/s5_units.py:624",
+   "family": "effects.admission_unit",
+   "golden_unit": "prepare"
   },
   {
    "atomic_unit": "codex_harness.application.fleet:Fleet.reconcile_interrupted#1",
@@ -172,7 +203,7 @@
     "b",
     "c"
    ],
-   "driver_call": "compare/drivers/common/s5_units.py:413",
+   "driver_call": "compare/drivers/common/s5_units.py:417",
    "family": "effects.admission_unit",
    "golden_unit": "reconcile_interrupted"
   },
@@ -183,7 +214,7 @@
     "a",
     "c"
    ],
-   "driver_call": "compare/drivers/common/s5_units.py:269",
+   "driver_call": "compare/drivers/common/s5_units.py:273",
    "family": "effects.admission_unit",
    "golden_unit": "register"
   },
@@ -193,9 +224,21 @@
    "cases": [
     "c"
    ],
-   "driver_call": "compare/drivers/common/s5_units.py:280",
+   "driver_call": "compare/drivers/common/s5_units.py:284",
    "family": "effects.admission_unit",
    "golden_unit": "registered"
+  },
+  {
+   "atomic_unit": "codex_harness.application.outbox:relay#6",
+   "block": "#6",
+   "cases": [
+    "a",
+    "c",
+    "d"
+   ],
+   "driver_call": "compare/drivers/common/s5_units.py:687",
+   "family": "effects.admission_unit",
+   "golden_unit": "relay"
   },
   {
    "atomic_unit": "codex_harness.application.fleet:Fleet.relocate#1",
@@ -205,7 +248,7 @@
     "b",
     "c"
    ],
-   "driver_call": "compare/drivers/common/s5_units.py:451",
+   "driver_call": "compare/drivers/common/s5_units.py:455",
    "family": "effects.admission_unit",
    "golden_unit": "relocate"
   },
@@ -216,7 +259,7 @@
     "a",
     "c"
    ],
-   "driver_call": "compare/drivers/common/s5_units.py:311",
+   "driver_call": "compare/drivers/common/s5_units.py:315",
    "family": "effects.admission_unit",
    "golden_unit": "reserve_unit"
   },
@@ -228,7 +271,7 @@
     "b",
     "c"
    ],
-   "driver_call": "compare/drivers/common/s5_units.py:325",
+   "driver_call": "compare/drivers/common/s5_units.py:329",
    "family": "effects.admission_unit",
    "golden_unit": "settle_unit"
   },
@@ -238,7 +281,7 @@
    "cases": [
     "c"
    ],
-   "driver_call": "compare/drivers/common/s5_units.py:338",
+   "driver_call": "compare/drivers/common/s5_units.py:342",
    "family": "effects.admission_unit",
    "golden_unit": "status"
   },
@@ -249,7 +292,7 @@
     "a",
     "c"
    ],
-   "driver_call": "compare/drivers/common/s5_units.py:168",
+   "driver_call": "compare/drivers/common/s5_units.py:172",
    "family": "effects.admission_unit.pg",
    "golden_unit": "admit"
   },
@@ -260,7 +303,7 @@
     "a",
     "c"
    ],
-   "driver_call": "compare/drivers/common/s5_units.py:300",
+   "driver_call": "compare/drivers/common/s5_units.py:304",
    "family": "effects.admission_unit.pg",
    "golden_unit": "authorize_budget"
   },
@@ -271,7 +314,7 @@
     "a",
     "c"
    ],
-   "driver_call": "compare/drivers/common/s5_units.py:507",
+   "driver_call": "compare/drivers/common/s5_units.py:511",
    "family": "effects.admission_unit.pg",
    "golden_unit": "cancel"
   },
@@ -282,7 +325,7 @@
     "a",
     "c"
    ],
-   "driver_call": "compare/drivers/common/s5_units.py:151",
+   "driver_call": "compare/drivers/common/s5_units.py:155",
    "family": "effects.admission_unit.pg",
    "golden_unit": "claim"
   },
@@ -292,7 +335,7 @@
    "cases": [
     "d"
    ],
-   "driver_call": "compare/drivers/common/s5_units.py:242",
+   "driver_call": "compare/drivers/common/s5_units.py:246",
    "family": "effects.admission_unit.pg",
    "golden_unit": "depths"
   },
@@ -303,7 +346,7 @@
     "a",
     "c"
    ],
-   "driver_call": "compare/drivers/common/s5_units.py:289",
+   "driver_call": "compare/drivers/common/s5_units.py:293",
    "family": "effects.admission_unit.pg",
    "golden_unit": "enqueue"
   },
@@ -313,7 +356,7 @@
    "cases": [
     "c"
    ],
-   "driver_call": "compare/drivers/common/s5_units.py:481",
+   "driver_call": "compare/drivers/common/s5_units.py:485",
    "family": "effects.admission_unit.pg",
    "golden_unit": "evidence_gate"
   },
@@ -323,7 +366,7 @@
    "cases": [
     "b"
    ],
-   "driver_call": "compare/drivers/common/s5_units.py:205",
+   "driver_call": "compare/drivers/common/s5_units.py:209",
    "family": "effects.admission_unit.pg",
    "golden_unit": "finalize"
   },
@@ -334,7 +377,7 @@
     "a",
     "c"
    ],
-   "driver_call": "compare/drivers/common/s5_units.py:137",
+   "driver_call": "compare/drivers/common/s5_units.py:141",
    "family": "effects.admission_unit.pg",
    "golden_unit": "handle"
   },
@@ -344,7 +387,7 @@
    "cases": [
     "c"
    ],
-   "driver_call": "compare/drivers/common/s5_units.py:494",
+   "driver_call": "compare/drivers/common/s5_units.py:498",
    "family": "effects.admission_unit.pg",
    "golden_unit": "parkable"
   },
@@ -356,7 +399,7 @@
     "b",
     "c"
    ],
-   "driver_call": "compare/drivers/common/s5_units.py:413",
+   "driver_call": "compare/drivers/common/s5_units.py:417",
    "family": "effects.admission_unit.pg",
    "golden_unit": "reconcile_interrupted"
   },
@@ -367,7 +410,7 @@
     "a",
     "c"
    ],
-   "driver_call": "compare/drivers/common/s5_units.py:269",
+   "driver_call": "compare/drivers/common/s5_units.py:273",
    "family": "effects.admission_unit.pg",
    "golden_unit": "register"
   },
@@ -377,7 +420,7 @@
    "cases": [
     "c"
    ],
-   "driver_call": "compare/drivers/common/s5_units.py:280",
+   "driver_call": "compare/drivers/common/s5_units.py:284",
    "family": "effects.admission_unit.pg",
    "golden_unit": "registered"
   },
@@ -389,7 +432,7 @@
     "b",
     "c"
    ],
-   "driver_call": "compare/drivers/common/s5_units.py:451",
+   "driver_call": "compare/drivers/common/s5_units.py:455",
    "family": "effects.admission_unit.pg",
    "golden_unit": "relocate"
   },
@@ -400,7 +443,7 @@
     "a",
     "c"
    ],
-   "driver_call": "compare/drivers/common/s5_units.py:311",
+   "driver_call": "compare/drivers/common/s5_units.py:315",
    "family": "effects.admission_unit.pg",
    "golden_unit": "reserve_unit"
   },
@@ -412,7 +455,7 @@
     "b",
     "c"
    ],
-   "driver_call": "compare/drivers/common/s5_units.py:325",
+   "driver_call": "compare/drivers/common/s5_units.py:329",
    "family": "effects.admission_unit.pg",
    "golden_unit": "settle_unit"
   },
@@ -422,7 +465,7 @@
    "cases": [
     "c"
    ],
-   "driver_call": "compare/drivers/common/s5_units.py:338",
+   "driver_call": "compare/drivers/common/s5_units.py:342",
    "family": "effects.admission_unit.pg",
    "golden_unit": "status"
   },
