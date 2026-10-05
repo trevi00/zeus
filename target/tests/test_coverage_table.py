@@ -69,7 +69,8 @@ IMPLEMENTED_OWNERS = S1_OWNERS | S2_OWNERS | S3_OWNERS | S4_EARLY_OWNERS | S6_EA
 def test_only_implemented_slices_claim_implemented_and_nothing_is_verified_early(table):
     # S11 L: every slice is accepted, so rows are verified by `coverage/relabel.py` (R-L3), never by hand: a verified
     # row names no pending item, its verification record lists the passing items, and no row is retired or unmapped.
-    assert {r["status"] for r in table["rows"]} <= {"designed", "implemented", "verified"}
+    # S11 §20 R-L17: `retired-with-authority` is now a measured status (USER-APPROVED-U6-20261006 U6(a)/(b)).
+    assert {r["status"] for r in table["rows"]} <= {"designed", "implemented", "verified", "retired-with-authority"}
     assert table["adapters"] == []
     implemented = [r for r in table["rows"] if r["status"] == "implemented"]
     assert implemented

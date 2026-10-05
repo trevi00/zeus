@@ -305,6 +305,128 @@ def test_a_changed_bound_input_at_bundle_time_refuses(tree, tmp_path):
         relabel.build_bundle(tree, junit(tmp_path, *CASES), [report], [], "HEAD", COLLECTED)
 
 
+# ------------------------------------------------------------------------------- S11 §20: R-L17 and the R-P2 markers
+
+U6A = "retire:U6(a) Windows scheduled-task host target (W-B; USER-APPROVED-U6-20261006)"
+
+
+def retire_row(intent=U6A, symbol="codex_harness.research.gone:Thing"):
+    return row(slice_="S7", intent=intent, symbol=(symbol,), evidence=("target:tests/test_b.py",))
+
+
+def test_a_retire_intent_with_every_target_symbol_absent_is_retired_with_authority(tree):
+    out, _ = run([retire_row()], tree)
+    r = out["api:x.py::f"]
+    assert r["status"] == "retired-with-authority"
+    assert r["verification"] == {"head": HEAD, "authority": "USER-APPROVED-U6-20261006 U6(a)",
+                                 "absent": ["codex_harness.research.gone:Thing"]}
+
+
+def test_a_retire_intent_whose_target_symbol_is_present_is_not_retired_and_names_it(tree):
+    out, _ = run([retire_row(symbol="codex_harness.research.mod:Thing")], tree)
+    r = out["api:x.py::f"]
+    assert r["status"] != "retired-with-authority"
+    assert "retire:U6(a): target symbol still present: codex_harness.research.mod:Thing" in r["verification"]["unmet"]
+    # one present symbol among absent ones keeps the row out of the retirement too
+    out, _ = run([row(slice_="S7", intent=U6A, symbol=("codex_harness.research.gone:Thing", "codex_harness.research.mod:Thing"))],
+                 tree)
+    assert out["api:x.py::f"]["status"] != "retired-with-authority"
+
+
+def test_a_previously_retired_row_is_measured_again_and_loses_the_status_when_the_symbol_is_present(tree):
+    stale = {**retire_row(symbol="codex_harness.research.mod:Thing"), "status": "retired-with-authority"}
+    out, _ = run([stale], tree)
+    assert out["api:x.py::f"]["status"] != "retired-with-authority"
+
+
+@pytest.mark.parametrize("granted", ["b", "c"])
+def test_the_other_granted_u6_items_retire_too(tree, granted):
+    out, _ = run([retire_row(intent=f"retire:U6({granted}) text")], tree)
+    r = out["api:x.py::f"]
+    assert r["status"] == "retired-with-authority"
+    assert r["verification"]["authority"] == f"USER-APPROVED-U6-20261006 U6({granted})"
+
+
+@pytest.mark.parametrize("item", ["d", "e", ""])
+def test_a_retire_intent_for_an_ungranted_u6_item_refuses(tree, item):
+    with pytest.raises(relabel.Refused, match="not granted"):
+        run([retire_row(intent=f"retire:U6({item}) Codex legacy exec")], tree)
+
+
+def test_the_check_exits_1_for_a_u6_d_retire_intent(tree, capsys):
+    write(tree, "coverage/ledger-coverage.json", json.dumps({"rows": [retire_row(intent="retire:U6(d) x")]}))
+    write(tree, "coverage/run-evidence.json", json.dumps(bundle_for()))
+    assert relabel.main(["--root", str(tree), "--check"]) == 1
+    assert "not granted" in capsys.readouterr().err
+
+
+SOURCE_BARE = '"""A bare marker."""\n'
+SOURCE_CODE = '"""Not a marker."""\n\n\ndef f():\n    pass\n'
+
+
+@pytest.fixture()
+def source_repo(tree, monkeypatch):
+    """A git history whose first commit is the SOURCE (`relabel.SOURCE_COMMIT`); the working tree is the target."""
+    def at_source(files):
+        for rel, text in files.items():
+            write(tree, rel, text)
+        git_repo(tree)
+        sha = subprocess.run(["git", "-C", str(tree), "rev-parse", "HEAD"], check=True, capture_output=True, text=True).stdout.strip()
+        monkeypatch.setattr(relabel, "SOURCE_COMMIT", sha)
+        for rel in files:
+            (tree / rel).unlink()
+    return at_source
+
+
+def marker_row(path, symbol, intent="preserve"):
+    return row(kind="module", key=f"module:{path}", slice_="S1", symbol=(symbol,), intent=intent,
+               evidence=("target:tests/test_b.py",))
+
+
+def test_a_marker_symbol_is_accepted_only_for_a_module_whose_source_file_is_also_a_bare_marker(tree, source_repo):
+    source_repo({"src/codex_harness/pkgm/__init__.py": SOURCE_BARE, "src/codex_harness/pkgc/__init__.py": SOURCE_CODE})
+    write(tree, "target/src/codex_harness/pkgm/__init__.py", '"""Target marker."""\n')
+    write(tree, "target/src/codex_harness/pkgc/__init__.py", '"""Target marker."""\n')
+    out, _ = run([marker_row("src/codex_harness/pkgm/__init__.py", "codex_harness.pkgm")], tree)
+    assert out["module:src/codex_harness/pkgm/__init__.py"]["status"] == "verified"
+    # a NON-marker SOURCE module whose target symbol is a bare marker is still refused (R-MC2-3)
+    out, _ = run([marker_row("src/codex_harness/pkgc/__init__.py", "codex_harness.pkgc")], tree)
+    r = out["module:src/codex_harness/pkgc/__init__.py"]
+    assert r["status"] != "verified" and has_unmet(r, "target symbol is a package marker")
+
+
+def test_a_marker_symbol_is_refused_when_the_source_file_is_missing_or_the_row_is_not_a_module(tree, source_repo):
+    source_repo({"src/codex_harness/pkgm/__init__.py": SOURCE_BARE})
+    write(tree, "target/src/codex_harness/pkgm/__init__.py", '"""Target marker."""\n')
+    out, _ = run([marker_row("src/codex_harness/nowhere/__init__.py", "codex_harness.pkgm")], tree)
+    assert has_unmet(out["module:src/codex_harness/nowhere/__init__.py"], "target symbol is a package marker")
+    out, _ = run([row(kind="public_api", key="api:src/codex_harness/pkgm/__init__.py::x", symbol=("codex_harness.pkgm",),
+                      slice_="S1")], tree)
+    assert has_unmet(out["api:src/codex_harness/pkgm/__init__.py::x"], "target symbol is a package marker")
+
+
+REMOVED = "none: removed by design (S11 §20 R-P2)"
+LAYER = "change:§4 Layer markers (empty M7 package replaced; S11 §20 R-P2)"
+
+
+def test_a_removed_marker_is_accepted_only_when_the_source_is_bare_and_the_package_is_absent(tree, source_repo):
+    source_repo({"src/codex_harness/gone/__init__.py": SOURCE_BARE, "src/codex_harness/gonec/__init__.py": SOURCE_CODE,
+                 "src/codex_harness/kept/__init__.py": SOURCE_BARE})
+    write(tree, "target/src/codex_harness/kept/__init__.py", '"""Still here."""\n')
+    out, _ = run([marker_row("src/codex_harness/gone/__init__.py", REMOVED, LAYER)], tree)
+    assert out["module:src/codex_harness/gone/__init__.py"]["status"] == "verified"
+    # the package is still present in the target: refused
+    out, _ = run([marker_row("src/codex_harness/kept/__init__.py", REMOVED, LAYER)], tree)
+    r = out["module:src/codex_harness/kept/__init__.py"]
+    assert r["status"] != "verified" and has_unmet(r, "removed marker: the package is still present")
+    # a SOURCE file that is not a bare marker: refused
+    out, _ = run([marker_row("src/codex_harness/gonec/__init__.py", REMOVED, LAYER)], tree)
+    assert has_unmet(out["module:src/codex_harness/gonec/__init__.py"], "removed marker: the SOURCE file is not")
+    # without the Layer markers intent the `none:` symbol is not a code symbol
+    out, _ = run([marker_row("src/codex_harness/gone/__init__.py", REMOVED, "preserve")], tree)
+    assert has_unmet(out["module:src/codex_harness/gone/__init__.py"], "target symbol is not a code symbol")
+
+
 # ---------------------------------------------------------------------------------------------- the rules per row
 
 def test_a_row_with_a_passing_item_and_a_resolving_symbol_is_verified(tree):
@@ -765,6 +887,10 @@ def test_every_row_records_its_verification_at_the_bundle_head(ledger, committed
         v = r["verification"]
         assert v["head"] == committed["head"], r["key"]
         assert bool(v.get("passed")) == (r["status"] == "verified"), r["key"]
+        if r["status"] == "retired-with-authority":
+            # S11 §20 R-L17: a retired row records its authority and the measured absence, not an unmet list.
+            assert v["authority"].startswith("USER-APPROVED-U6-20261006 U6(") and v["absent"], r["key"]
+            continue
         assert bool(v.get("unmet")) == (r["status"] != "verified"), r["key"]
         if r["status"] != "verified":
             assert r["status"] in {"unmapped", "designed", "implemented"}, r["key"]
