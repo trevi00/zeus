@@ -224,10 +224,11 @@
    "key": "atomic_unit:codex_harness.application.operation:Operation._finish#1",
    "pending": "pending: recorder confirmation in the owning slice",
    "replaced_by": [
-    "compare:effects.admission_unit"
+    "compare:effects.admission_unit",
+    "compare:effects.admission_unit.pg"
    ],
    "rule": "G1",
-   "citation": "coverage/effects-unit-table.json#effects.admission_unit/operation_run"
+   "citation": "coverage/effects-unit-table.json#effects.admission_unit/operation_run; coverage/effects-unit-table.json#effects.admission_unit.pg/operation_run"
   },
   {
    "key": "atomic_unit:codex_harness.application.operation:Operation.evidence_gate#1",
@@ -257,7 +258,7 @@
     "compare:effects.admission_unit.pg"
    ],
    "rule": "G1",
-   "citation": "coverage/effects-unit-table.json#effects.admission_unit/depths; coverage/effects-unit-table.json#effects.admission_unit/operation_run; coverage/effects-unit-table.json#effects.admission_unit.pg/depths"
+   "citation": "coverage/effects-unit-table.json#effects.admission_unit/depths; coverage/effects-unit-table.json#effects.admission_unit/operation_run; coverage/effects-unit-table.json#effects.admission_unit.pg/depths; coverage/effects-unit-table.json#effects.admission_unit.pg/operation_run"
   },
   {
    "key": "atomic_unit:codex_harness.application.outbox:relay#3",
@@ -267,7 +268,7 @@
     "compare:effects.admission_unit.pg"
    ],
    "rule": "G1",
-   "citation": "coverage/effects-unit-table.json#effects.admission_unit/depths; coverage/effects-unit-table.json#effects.admission_unit/operation_run; coverage/effects-unit-table.json#effects.admission_unit/relay; coverage/effects-unit-table.json#effects.admission_unit.pg/depths; coverage/effects-unit-table.json#effects.admission_unit.pg/relay"
+   "citation": "coverage/effects-unit-table.json#effects.admission_unit/depths; coverage/effects-unit-table.json#effects.admission_unit/operation_run; coverage/effects-unit-table.json#effects.admission_unit/relay; coverage/effects-unit-table.json#effects.admission_unit.pg/depths; coverage/effects-unit-table.json#effects.admission_unit.pg/operation_run; coverage/effects-unit-table.json#effects.admission_unit.pg/relay"
   },
   {
    "key": "atomic_unit:codex_harness.application.outbox:relay#4",
@@ -277,7 +278,7 @@
     "compare:effects.admission_unit.pg"
    ],
    "rule": "G1",
-   "citation": "coverage/effects-unit-table.json#effects.admission_unit/depths; coverage/effects-unit-table.json#effects.admission_unit/operation_run; coverage/effects-unit-table.json#effects.admission_unit/relay; coverage/effects-unit-table.json#effects.admission_unit.pg/depths; coverage/effects-unit-table.json#effects.admission_unit.pg/relay"
+   "citation": "coverage/effects-unit-table.json#effects.admission_unit/depths; coverage/effects-unit-table.json#effects.admission_unit/operation_run; coverage/effects-unit-table.json#effects.admission_unit/relay; coverage/effects-unit-table.json#effects.admission_unit.pg/depths; coverage/effects-unit-table.json#effects.admission_unit.pg/operation_run; coverage/effects-unit-table.json#effects.admission_unit.pg/relay"
   },
   {
    "key": "atomic_unit:codex_harness.application.outbox:relay#5",
@@ -287,7 +288,7 @@
     "compare:effects.admission_unit.pg"
    ],
    "rule": "G1",
-   "citation": "coverage/effects-unit-table.json#effects.admission_unit/depths; coverage/effects-unit-table.json#effects.admission_unit/operation_run; coverage/effects-unit-table.json#effects.admission_unit.pg/depths"
+   "citation": "coverage/effects-unit-table.json#effects.admission_unit/depths; coverage/effects-unit-table.json#effects.admission_unit/operation_run; coverage/effects-unit-table.json#effects.admission_unit.pg/depths; coverage/effects-unit-table.json#effects.admission_unit.pg/operation_run"
   },
   {
    "key": "atomic_unit:codex_harness.application.outbox:relay#6",
