@@ -18604,44 +18604,44 @@
   "target": "target/tests/ported/test_portfolio_followups.py::test_two_concurrent_links_for_one_failure_leave_exactly_one_row"
  },
  "tests/test_probe_ownership.py::test_a_container_already_gone_is_still_reported_as_removed": {
-  "kind": "pending_root_script",
-  "reason": "PREP-S11 §9 #3: the root-script disposition at unit P"
+  "kind": "ported",
+  "target": "target/tests/ported/test_probe_ownership.py::test_a_container_already_gone_is_still_reported_as_removed"
  },
  "tests/test_probe_ownership.py::test_a_failed_start_with_nothing_to_find_deletes_nothing": {
-  "kind": "pending_root_script",
-  "reason": "PREP-S11 §9 #3: the root-script disposition at unit P"
+  "kind": "ported",
+  "target": "target/tests/ported/test_probe_ownership.py::test_a_failed_start_with_nothing_to_find_deletes_nothing"
  },
  "tests/test_probe_ownership.py::test_a_failure_in_the_middle_still_removes_what_this_run_created": {
-  "kind": "pending_root_script",
-  "reason": "PREP-S11 §9 #3: the root-script disposition at unit P"
+  "kind": "ported",
+  "target": "target/tests/ported/test_probe_ownership.py::test_a_failure_in_the_middle_still_removes_what_this_run_created"
  },
  "tests/test_probe_ownership.py::test_a_refused_publish_does_not_leave_a_container_behind": {
-  "kind": "pending_root_script",
-  "reason": "PREP-S11 §9 #3: the root-script disposition at unit P"
+  "kind": "ported",
+  "target": "target/tests/ported/test_probe_ownership.py::test_a_refused_publish_does_not_leave_a_container_behind"
  },
  "tests/test_probe_ownership.py::test_a_removal_that_cannot_happen_is_reported_rather_than_assumed": {
-  "kind": "pending_root_script",
-  "reason": "PREP-S11 §9 #3: the root-script disposition at unit P"
+  "kind": "ported",
+  "target": "target/tests/ported/test_probe_ownership.py::test_a_removal_that_cannot_happen_is_reported_rather_than_assumed"
  },
  "tests/test_probe_ownership.py::test_a_second_probe_does_not_take_the_first_ones_container": {
-  "kind": "pending_root_script",
-  "reason": "PREP-S11 §9 #3: the root-script disposition at unit P"
+  "kind": "ported",
+  "target": "target/tests/ported/test_probe_ownership.py::test_a_second_probe_does_not_take_the_first_ones_container"
  },
  "tests/test_probe_ownership.py::test_every_report_carries_what_the_cleanup_did": {
-  "kind": "pending_root_script",
-  "reason": "PREP-S11 §9 #3: the root-script disposition at unit P"
+  "kind": "ported",
+  "target": "target/tests/ported/test_probe_ownership.py::test_every_report_carries_what_the_cleanup_did"
  },
  "tests/test_probe_ownership.py::test_the_occupant_socket_is_released_even_when_the_body_raises": {
-  "kind": "pending_root_script",
-  "reason": "PREP-S11 §9 #3: the root-script disposition at unit P"
+  "kind": "ported",
+  "target": "target/tests/ported/test_probe_ownership.py::test_the_occupant_socket_is_released_even_when_the_body_raises"
  },
  "tests/test_probe_ownership.py::test_the_record_carries_the_cleanup_that_actually_happened": {
-  "kind": "pending_root_script",
-  "reason": "PREP-S11 §9 #3: the root-script disposition at unit P"
+  "kind": "ported",
+  "target": "target/tests/ported/test_probe_ownership.py::test_the_record_carries_the_cleanup_that_actually_happened"
  },
  "tests/test_probe_ownership.py::test_two_containers_of_the_same_run_never_share_a_name": {
-  "kind": "pending_root_script",
-  "reason": "PREP-S11 §9 #3: the root-script disposition at unit P"
+  "kind": "ported",
+  "target": "target/tests/ported/test_probe_ownership.py::test_two_containers_of_the_same_run_never_share_a_name"
  },
  "tests/test_profile_privacy.py::test_consent_binds_to_the_policy_hash_and_keeps_cancel_and_questionnaire": {
   "kind": "ported",

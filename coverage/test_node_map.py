@@ -41,8 +41,10 @@ ARCHITECTURE = {
         "targets": ["target/tests/test_s11_fa009.py::test_wiring_detector_has_positive_and_negative_controls"],
         "reason": "FA-009 detector controls retargeted at target/tests"},
 }
-# R-M4: PREP-S11 §9 #3. Unit P resolves the root scripts and makes this set empty.
-PENDING_FILES = ("tests/test_probe_ownership.py", "tests/test_runner_evidence.py")
+# R-M4: PREP-S11 §9 #3, narrowed by DESIGN-s11 §7 R-S4: wsl_port_probe and its test_probe_ownership (10) are ported. The
+# claude_real_call port and test_runner_evidence (23) are held out of int48 (5 PG-gated nodes fail in the owner TI: a
+# finding under correction), so that file stays pending until the corrected port lands.
+PENDING_FILES: tuple[str, ...] = ("tests/test_runner_evidence.py",)
 PENDING_REASON = "PREP-S11 §9 #3: the root-script disposition at unit P"
 
 

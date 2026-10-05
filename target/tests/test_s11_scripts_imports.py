@@ -44,7 +44,7 @@ def test_every_script_import_resolves_in_the_target_tree():
 def test_the_ported_scripts_are_present_and_scanned():
     scanned = {p.name for p in (PROJECT / "scripts").glob("*.py")}
     expected = {"request_threshold_review.py", "smoke_bus.py", "verify_failed_canary.py", "verify_rlm.py",
-                "verify_runtime.py", "claude_real_call.py", "host_cycle.py"}
+                "verify_runtime.py", "host_cycle.py"}  # S11 int48: claude_real_call held out (its PG nodes fail; under correction)
     assert expected <= scanned, sorted(expected - scanned)
 
 

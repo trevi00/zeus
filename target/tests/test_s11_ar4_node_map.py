@@ -22,7 +22,7 @@ gen = importlib.util.module_from_spec(SPEC)
 SPEC.loader.exec_module(gen)
 
 # Unit P (the root-script disposition, PREP-S11 §9 #3) resolves these nodes and makes this count 0.
-PENDING_COUNT = 33
+PENDING_COUNT = 23  # S11 R-S4: test_probe_ownership ported (10); test_runner_evidence (23) pending its corrected port
 COLLECTION_SECONDS = 90
 
 
@@ -63,13 +63,13 @@ def test_map_is_complete_over_the_m7_nodes(mapping, target_ids):
     m7_ids = gen.read_m7_ids()
     assert len(m7_ids) == len(set(m7_ids)) == 6569
     assert problems(mapping, m7_ids, target_ids) == []
-    assert Counter(v["kind"] for v in mapping.values()) == {"ported": 6532, "architecture": 4, "pending_root_script": 33}
+    assert Counter(v["kind"] for v in mapping.values()) == {"ported": 6542, "architecture": 4, "pending_root_script": 23}
 
 
 def test_pending_nodes_are_exactly_the_two_root_script_files(mapping):
     # PREP-S11 §9 #3: probe_ownership 10 + runner_evidence 23; unit P makes PENDING_COUNT (and this set) 0.
     files = Counter(k.partition("::")[0] for k, v in mapping.items() if v["kind"] == "pending_root_script")
-    assert files == {"tests/test_probe_ownership.py": 10, "tests/test_runner_evidence.py": 23}
+    assert files == {"tests/test_runner_evidence.py": 23}  # S11 R-S4: probe_ownership ported
 
 
 def test_generator_regenerates_the_map_byte_equal(target_ids):
