@@ -505,6 +505,16 @@ class Executor:
     def evidence(self, value):
         self.evidence_gate.evidence = value
 
+    # S11 M B2 (declared exact addition; new names only): M7 `Executor.container_profile` (whether the evidence profile is a
+    # container one) and `Executor._project_instructions(cwd)` (RunTask's, over the `project_evidence` port), read by
+    # `test_isolated_project_evidence`.
+    @property
+    def container_profile(self):
+        return requires_container(self.evidence_profile) if self.evidence_profile is not None else False
+
+    def _project_instructions(self, cwd):
+        return self.run_task._project_instructions(cwd)
+
     def execute_one(self, agent, expected=None):
         return self.run_task.execute_one(agent, expected)
 
