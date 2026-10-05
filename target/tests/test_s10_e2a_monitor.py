@@ -140,12 +140,16 @@ def test_serve_desk_passes_the_entry_http_desk_module_and_serve_web_passes_none(
     monkeypatch.setattr(viewer_http, "serve", lambda *args, **kwargs: served.append((args, kwargs)))
     monkeypatch.setattr(composition_monitor, "desk_service", lambda: "the-desk")
     monkeypatch.setattr(composition_monitor, "viewer_port", lambda environ=None: 8787)
+    # S11 XC-2b B2: composition also injects the refusal observer (built per process; a sentinel here, no spool is opened).
+    monkeypatch.setattr(composition_monitor, "refusal_observer", lambda component: "observer:" + component)
     snapshot = tmp_path / "monitoring.json"
     composition_monitor.serve_web(snapshot, None)
     composition_monitor.serve_web(snapshot, 9000)
     composition_monitor.serve_desk(snapshot, 8790, desk_http=desk_module)
-    assert served == [((snapshot, 8787), {}), ((snapshot, 9000), {}),
-                      ((snapshot, 8790), {"desk": "the-desk", "viewer_port": 8787, "desk_http": desk_module})]
+    assert served == [((snapshot, 8787), {"observer": "observer:monitor.web"}),
+                      ((snapshot, 9000), {"observer": "observer:monitor.web"}),
+                      ((snapshot, 8790), {"desk": "the-desk", "viewer_port": 8787, "desk_http": desk_module,
+                                          "observer": "observer:monitor.desk"})]
 
 
 def test_the_entry_main_dispatches_each_mode_and_refuses_before_any_listener(monkeypatch, tmp_path):

@@ -47,19 +47,19 @@ IDS = ("model_invocation", "task_execution", "worker_sessions", "message_relay",
        "host_delivery", "continuation", "operation_finalization", "autonomous", "discovery_pressure",
        "observation_pipeline", "audit_service", "evidence_inspection", "supervisor", "process_lifecycle",
        "maintenance", "role_dispatch", "capacity_admission", "tool_calls", "skill_selection", "ci_checks", "cleanup",
-       "queue_wait", "declined_paths")
+       "queue_wait", "declined_paths", "http_refusals")  # + S11 XC-2b B2
 
 
 def test_every_registry_type_is_in_exactly_one_feature_and_no_proof_event_is_outside_it():
     proofs = [event for feature in FEATURES.values() for event in feature.proof_events]
     assert len(proofs) == len(set(proofs))
-    assert set(proofs) == set(REGISTRY) and len(REGISTRY) == 76
+    assert set(proofs) == set(REGISTRY) and len(REGISTRY) == 77  # 76 + S11 XC-2b B2 `operations.http_request_refused`
     assert FEATURE_OF == {event: feature.id for feature in FEATURES.values() for event in feature.proof_events}
     assert all(feature.id == key for key, feature in FEATURES.items())
 
 
-def test_the_ids_are_the_25_of_the_table():
-    assert set(FEATURES) == set(IDS) and len(FEATURES) == 25
+def test_the_ids_are_the_26_of_the_table():
+    assert set(FEATURES) == set(IDS) and len(FEATURES) == 26
 
 
 def test_instrumented_is_false_exactly_when_every_proof_event_is_unproduced():
@@ -132,14 +132,14 @@ def test_unmapped_row_alone_writes_no_feature_series():
     assert all(row["metric"] != USES for row in snapshot(base))
 
 
-def test_instrumented_rows_render_25_series():
+def test_instrumented_rows_render_26_series():
     rows = instrumented_rows()
     [row] = rows
     assert row["type"] == "gauge" and row["labels"] == ["feature"]
     assert [item["labels"] for item in row["series"]] == [[i] for i in sorted(FEATURES)]
     text = render(rows)
     lines = [x for x in text.splitlines() if x.startswith("zeus_feature_instrumented{")]
-    assert len(lines) == 25
+    assert len(lines) == 26
     # S10 E3: the supervisor's emitters are composed
     assert 'zeus_feature_instrumented{feature="supervisor"} 1' in lines
     assert 'zeus_feature_instrumented{feature="model_invocation"} 1' in lines

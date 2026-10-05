@@ -12,7 +12,7 @@ Does not own: the desk HTTP routes themselves (`frontdesk_http`, S10 `entry.http
 Entry points: handler, serve, resource, asset, index_page, VIEWER_PORT, ASSET_NAME, ASSET_TYPES, MAX_ASSET_BYTES, CSP
 Contracts: INV-MONITOR-VIEWER-001
 
-Moved from M7 `adapters/monitoring_web.py` (SOURCE e38aa722) through named rules (S9 batch L2-B3, A/evidence/rebuild/s9/l2-b3/transcribe.py, OWNER-DECISIONS-S9 D2.1): R-v0 (imports; `frontdesk_http` is replaced by the injected `observation.ports.DeskHttp`), R-v1 (`handler` takes the keyword-only `desk_http` and refuses a desk without it first; each `frontdesk_http.` becomes `desk_http.`), R-v2 (`serve` forwards it); every other statement is M7's and in M7's order. With no desk the behaviour is M7's byte for byte and `desk_http` is never read. The first paragraphs are M7's module docstring.
+Moved from M7 `adapters/monitoring_web.py` (SOURCE e38aa722) through named rules (S9 batch L2-B3, A/evidence/rebuild/s9/l2-b3/transcribe.py, OWNER-DECISIONS-S9 D2.1): R-v0 (imports; `frontdesk_http` is replaced by the injected `observation.ports.DeskHttp`), R-v1 (`handler` takes the keyword-only `desk_http` and refuses a desk without it first; each `frontdesk_http.` becomes `desk_http.`), R-v2 (`serve` forwards it), R-v3 (S11 XC-1 A4: `Handler.timeout = 5`), R-v4 (S11 XC-2b B2: `handler` and `serve` take the keyword-only `observer`, `Handler.respond` begins with `self.refused(status, body)`, before the response is written and `Handler.refused` emits `operations.http_request_refused` through it, `observation.adapters.http_refusal`); every other statement is M7's and in M7's order. With no desk the behaviour is M7's byte for byte and `desk_http` is never read. The first paragraphs are M7's module docstring.
 """
 import json
 import re
@@ -65,7 +65,7 @@ def index_page():
     return resource('monitor.html').read_bytes()
 
 
-def handler(snapshot_path, desk=None, *, desk_http=None):
+def handler(snapshot_path, desk=None, *, desk_http=None, observer=None):
     """`desk` is the opt-in local front-door service (local-operations-desk-001, part B).
 
     Without it this handler is exactly what it was: every GET route below is read-only, unknown
@@ -79,6 +79,7 @@ def handler(snapshot_path, desk=None, *, desk_http=None):
         timeout = 5
 
         def respond(self, status, body, content_type):
+            self.refused(status, body)
             self.send_response(status)
             self.send_header('Content-Type', content_type)
             self.send_header('Content-Length', str(len(body)))
@@ -87,6 +88,12 @@ def handler(snapshot_path, desk=None, *, desk_http=None):
             self.send_header('Content-Security-Policy', CSP)
             self.end_headers()
             self.wfile.write(body)
+
+        def refused(self, status, body):
+            """S11 XC-2b B2: a refusal (status >= 400) is one `operations.http_request_refused` through the injected observer."""
+            if observer is not None and status >= 400:
+                from codex_harness.observation.adapters.http_refusal import emit_refusal
+                emit_refusal(observer, self.path, status, body)
 
         def authority(self):
             """The existing exact loopback authority; every desk route reuses it unchanged."""
@@ -168,7 +175,7 @@ def handler(snapshot_path, desk=None, *, desk_http=None):
 VIEWER_PORT = 8787
 
 
-def serve(snapshot_path, port=VIEWER_PORT, desk=None, *, viewer_port=VIEWER_PORT, desk_http=None):
+def serve(snapshot_path, port=VIEWER_PORT, desk=None, *, viewer_port=VIEWER_PORT, desk_http=None, observer=None):
     if desk is not None and port == viewer_port:
         raise ValueError('The desk is never served on the viewer listener ' + str(viewer_port))
-    ThreadingHTTPServer(('127.0.0.1', port), handler(snapshot_path, desk, desk_http=desk_http)).serve_forever()
+    ThreadingHTTPServer(('127.0.0.1', port), handler(snapshot_path, desk, desk_http=desk_http, observer=observer)).serve_forever()

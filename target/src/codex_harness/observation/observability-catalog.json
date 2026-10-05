@@ -338,6 +338,54 @@
     }
    },
    "producer_sites": "measured at X1b"
+  },
+  "operations.http_request_refused": {
+   "owner_context": "observation",
+   "category": "operations",
+   "severity": "info",
+   "boundary": "http_refusal",
+   "attributes": {
+    "route": {
+     "type": "string",
+     "enum": [
+      "/",
+      "/legacy",
+      "/assets",
+      "/api/status",
+      "/health",
+      "/ready",
+      "/api/desk",
+      "/api/desk/session",
+      "/api/desk/sessions",
+      "/api/desk/messages",
+      "other"
+     ]
+    },
+    "status": {
+     "type": "integer"
+    },
+    "code": {
+     "type": "string",
+     "enum": [
+      "host",
+      "origin",
+      "desk_header",
+      "content_type",
+      "content_length",
+      "body_too_large",
+      "body_unreadable",
+      "invalid_json",
+      "invalid_body",
+      "desk_refused",
+      "desk_unavailable",
+      "method_not_allowed",
+      "not_found",
+      "snapshot_unavailable",
+      "other"
+     ]
+    }
+   },
+   "producer_sites": "observation.adapters.viewer_http.Handler (S11 XC-2b B2)"
   }
  },
  "separate_logs": {
