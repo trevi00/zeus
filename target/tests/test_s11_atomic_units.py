@@ -24,7 +24,6 @@ import pytest
 
 ROOT = Path(__file__).resolve().parents[2]
 SRC = ROOT / "target/src"
-FIXTURES = Path(__file__).parent / "fixtures/s11_au"
 AU1 = "R-AU1:"
 UNIT_PREFIX = "atomic_unit:"
 G1B_PENDING = "pending: recorder confirmation in the owning slice"
@@ -256,8 +255,69 @@ def test_r_au1_mapped_every_prose_unit_with_a_measured_method_and_left_the_ambig
 
 # ------------------------------------------------------------------------------------------------ negative controls
 
+# Synthetic controls (inline: a support file under target/tests/fixtures would make the evidence bundle stale, R-L13).
+CONTROLS = {
+    "good_unit.py.txt": (
+        '"""Positive control of the R-AU2 structural test: one block, `tx` passed to the owner operation, no external effect."""\n'
+        'from codex_harness.host_os.adapters import process_groups\n'
+        '\n'
+        '\n'
+        'class Unit:\n'
+        '    def commit(self, task):\n'
+        '        with self.store.transaction() as tx:\n'
+        '            row = tx.get("tasks", task)\n'
+        '            self.ops.record(tx, row)\n'
+        '        process_groups.popen(["true"])  # outside the block: an external effect after the commit is allowed\n'
+        '        return row\n'
+    ),
+    "no_transaction.py.txt": (
+        '"""Negative control, rule 1: the method opens no `transaction()` block."""\n'
+        '\n'
+        '\n'
+        'class Unit:\n'
+        '    def commit(self, task):\n'
+        '        row = self.store.get("tasks", task)\n'
+        '        self.ops.record(None, row)\n'
+        '        return row\n'
+    ),
+    "renamed_callee.py.txt": (
+        '"""The owner operation `record` is passed `tx` under the name `append` (a table-cited rename)."""\n'
+        '\n'
+        '\n'
+        'class Unit:\n'
+        '    def commit(self, task):\n'
+        '        with self.store.transaction() as tx:\n'
+        '            self.ops.append(tx, task)\n'
+        '        return task\n'
+    ),
+    "spawns_inside_block.py.txt": (
+        '"""Negative control, rule 3: an external-effect port (the host_os spawn chokepoint) is called inside the block."""\n'
+        'from codex_harness.host_os.adapters import process_groups\n'
+        '\n'
+        '\n'
+        'class Unit:\n'
+        '    def commit(self, task):\n'
+        '        with self.store.transaction() as tx:\n'
+        '            self.ops.record(tx, task)\n'
+        '            process_groups.popen(["true"])\n'
+        '        return task\n'
+    ),
+    "tx_not_passed.py.txt": (
+        '"""Negative control, rule 2: the block calls the owner operation without the bound `tx`."""\n'
+        '\n'
+        '\n'
+        'class Unit:\n'
+        '    def commit(self, task):\n'
+        '        with self.store.transaction() as tx:\n'
+        '            row = tx.get("tasks", task)\n'
+        '            self.ops.record(row)\n'
+        '        return row\n'
+    ),
+}
+
+
 def fixture(name: str) -> str:
-    return (FIXTURES / name).read_text(encoding="utf-8")
+    return CONTROLS[name]
 
 
 def test_the_positive_control_meets_every_rule():
@@ -292,7 +352,7 @@ def test_a_renamed_callee_passes_only_through_the_cited_table():
     source = fixture("renamed_callee.py.txt")
     assert analyse(source, "Unit.commit", ["self.ops.record"])["missing"] == ["record"]
     try:
-        RENAMES["record"] = ("append", "tests/fixtures/s11_au/renamed_callee.py.txt:7")
+        RENAMES["record"] = ("append", "the renamed_callee control, line 7")
         assert analyse(source, "Unit.commit", ["self.ops.record"])["missing"] == []
     finally:
         del RENAMES["record"]
