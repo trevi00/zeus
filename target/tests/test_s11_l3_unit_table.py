@@ -141,4 +141,5 @@ def test_the_g1_resolutions_are_the_table_entries_on_rows_that_carry_the_pending
     # no other pending item was touched: the rows with no entry keep it
     resolved = {e["key"] for e in g1}
     left = [r for r in ledger["rows"] if r["kind"] == "atomic_unit" and eut.PENDING in r["verification"].get("unmet", [])]
-    assert left and not {r["key"] for r in left} & resolved
+    # S11 AU-REC-6a: _finish#1 was the last row to carry the item in its unmet list; with it joined none remains
+    assert not left and not {r["key"] for r in left} & resolved
