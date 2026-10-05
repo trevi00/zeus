@@ -60,6 +60,7 @@ G1B_PENDING = "pending: recorder confirmation in the owning slice"
 G1B_NODE_FILE = "tests/test_s11_atomic_units.py"
 G1B_NODE = "test_unit_is_structurally_atomic"
 AU1_MARK = "R-AU1:"
+OWNER_RULED_MARK = "S11 owner ruling (DESIGN-s11 §5.6)"  # the 5 survey-ambiguous units the owner ruled on at int51
 
 # R-L14: the record that accepted each slice (named, never read). S10: S10-CLOSURE.md (ACCEPTED at 8f7fed5f).
 ACCEPTED = {f"S{n}": f"FLEET-REBUILD-S{n}-ACCEPT.md" for n in range(1, 10)}
@@ -873,11 +874,13 @@ class Relabel:
         """G1b (R-AU4): only an atomic unit mapped under R-AU1, its recorder promise, the cited section, and exactly
         the symbol's exercise item plus the unit's own structural node. (That node passing is the item's own state.)"""
         key = entry["key"]
-        if row is None or row["kind"] != "atomic_unit" or not str(row.get("mapping_correction", "")).startswith(AU1_MARK):
-            raise Refused(f"G1b applies only to an atomic unit mapped under R-AU1: {key}")
+        if row is None or row["kind"] != "atomic_unit" or not str(row.get("mapping_correction", "")).startswith(
+                (AU1_MARK, OWNER_RULED_MARK)):
+            raise Refused(f"G1b applies only to an atomic unit mapped under R-AU1 or ruled by the owner: {key}")
         if entry["pending"] != G1B_PENDING or entry["citation"] != G1B_CITATION:
             raise Refused(f"G1b resolves the recorder promise and cites {G1B_CITATION}: {key}")
-        want = [f"exercise:{(row.get('target_symbol') or [''])[0]}",
+        # One exercise item per target symbol (an owner-ruled split unit names two owners), then the unit's node.
+        want = [*(f"exercise:{symbol}" for symbol in (row.get("target_symbol") or [""])),
                 f"target:{G1B_NODE_FILE}::{G1B_NODE}[{key[len('atomic_unit:'):]}]"]
         if entry["replaced_by"] != want:
             raise Refused(f"G1b replaced_by is not the exercise item and the unit node: {key}")

@@ -17,7 +17,8 @@ Owner rulings (resume 1, 2026-10-05):
 - R-AU2-a: rule 3 lists EFFECTS only (REBUILD-DESIGN-v2 §2.9 rule 4: provider calls, process/container spawns, Git
   push/merge, Docker, HTTP). A read-only local Git query (`is_ancestor`, `rev-parse`, `show`) is not an external effect.
 - R-AU2-b: when the row records no `tx_passing_calls`, rule 2 requires that a block uses its own bound `tx` for store
-  operations (at least one `<tx>.<op>(` call) and opens no nested `transaction()`. The behavioural half of a unit's evidence is `exercise:` (R-AU3).
+  operations (at least one `<tx>.<op>(` call) and opens no nested `transaction()`. Refined at int51 (owner): passing the
+  bound `tx` to a call (`transaction=tx`, §2.9 rule 2's own pattern) also satisfies it. The behavioural half of a unit's evidence is `exercise:` (R-AU3).
 """
 
 import ast
@@ -84,14 +85,10 @@ RENAMES = {
 }
 
 # The measured findings (R-AU2 rule 2 or 3), by unit key without the `atomic_unit:` prefix: exact, see the docstring.
-R_AU2_FINDINGS: dict[str, str] = {
-    'codex_harness.adapters.deployment:ReleaseRunner.run#1':
-        'rule 2: the row records no tx_passing_calls and the block makes no <tx>.<op>() call',
-    'codex_harness.supervisor:refresh_embeddings#1':
-        'rule 2: the row records no tx_passing_calls and the block makes no <tx>.<op>() call',
-    'codex_harness.supervisor:maintain_views#1':
-        'rule 2: the row records no tx_passing_calls and the block makes no <tx>.<op>() call',
-}
+# Empty at int51: the 3 earlier rule-2 findings (ReleaseRunner.run#1, supervisor refresh_embeddings#1/maintain_views#1)
+# pass their bound tx to owner operations (record_superseded, record, indexed), which R-AU2-b as refined at int51 accepts
+# (DESIGN-s11 §5.6). A new finding still fails the exact-set test below.
+R_AU2_FINDINGS: dict[str, str] = {}
 
 
 # ----------------------------------------------------------------------------------------------------- the analysis
@@ -191,8 +188,9 @@ def verdict(result: dict, expected: list[str]) -> str | None:
     """None when the unit meets rules 2 and 3, else the finding text; rule 1 is the caller's assertion."""
     findings = []
     if not expected:  # R-AU2-b
-        if not result["own_ops"]:
-            findings.append("rule 2: the row records no tx_passing_calls and the block makes no <tx>.<op>() call")
+        if not result["own_ops"] and not result["passed_to"]:  # R-AU2-b as refined at int51 (DESIGN-s11 §5.6)
+            findings.append("rule 2: the row records no tx_passing_calls and the block neither makes a <tx>.<op>() call"
+                            " nor passes tx to a call")
         if result["nested"]:
             findings.append("rule 2: a nested transaction() block")
     elif result["missing"]:
@@ -214,8 +212,12 @@ def ledger_rows() -> list[dict]:
     return json.loads((ROOT / "coverage/ledger-coverage.json").read_text(encoding="utf-8"))["rows"]
 
 
+OWNER_RULED = "S11 owner ruling (DESIGN-s11 §5.6)"  # the 5 survey-ambiguous units the owner ruled on at int51
+
+
 def mapped_units() -> list[dict]:
-    return [r for r in ledger_rows() if r["kind"] == "atomic_unit" and str(r.get("mapping_correction", "")).startswith(AU1)]
+    return [r for r in ledger_rows() if r["kind"] == "atomic_unit"
+            and str(r.get("mapping_correction", "")).startswith((AU1, OWNER_RULED))]
 
 
 def unit_id(row: dict) -> str:
@@ -223,9 +225,16 @@ def unit_id(row: dict) -> str:
 
 
 def measure(row: dict) -> tuple[dict, str | None]:
-    source, qualname = symbol_source(row["target_symbol"][0])
-    result = analyse(source, qualname, row["tx_passing_calls"])
-    return result, verdict(result, row["tx_passing_calls"])
+    """Every target symbol of the row is measured (an owner-ruled split unit names two owners with the same body);
+    the row is found and has blocks only if each symbol does, and the first finding of any symbol is the row's."""
+    results, findings = [], []
+    for symbol in row["target_symbol"]:
+        source, qualname = symbol_source(symbol)
+        result = analyse(source, qualname, row["tx_passing_calls"])
+        results.append(result)
+        findings.append(verdict(result, row["tx_passing_calls"]))
+    merged = {**results[0], "found": all(r["found"] for r in results), "blocks": min(r["blocks"] for r in results)}
+    return merged, next((f for f in findings if f), None)
 
 
 @pytest.mark.parametrize("row", mapped_units(), ids=unit_id)
@@ -249,11 +258,12 @@ def test_the_pinned_findings_name_mapped_units_only():
 def test_r_au1_mapped_every_prose_unit_with_a_measured_method_and_left_the_ambiguous_ones():
     rows = [r for r in ledger_rows() if r["kind"] == "atomic_unit"]
     ambiguous = [r for r in rows if str(r.get("mapping_correction", "")).startswith("ambiguous (survey):")]
-    assert len(mapped_units()) == 144 and len(ambiguous) == 5
+    # S11 int51: the owner ruled on the 5 survey-ambiguous units (DESIGN-s11 §5.6): 144 + 5 mapped, 0 ambiguous.
+    assert len(mapped_units()) == 149 and len(ambiguous) == 0
     for r in mapped_units():
-        assert re.fullmatch(r"codex_harness(\.\w+)+:\w+(\.\w+)*", r["target_symbol"][0]) and len(r["target_symbol"]) == 1
-    for r in ambiguous:  # the owner rules on these: the symbol is still the prose rule text
-        assert r["target_symbol"][0].startswith("one Store.transaction()"), r["key"]
+        assert all(re.fullmatch(r"codex_harness(\.\w+)+:\w+(\.\w+)*", s) for s in r["target_symbol"])
+        split = str(r.get("mapping_correction", "")).startswith(OWNER_RULED) and "split into two owners" in r["mapping_correction"]
+        assert len(r["target_symbol"]) == (2 if split else 1), r["key"]
 
 
 # ------------------------------------------------------------------------------------------------ negative controls
@@ -399,7 +409,7 @@ def test_without_tx_passing_calls_the_block_must_use_its_own_tx_and_not_nest():
     own = "class U:\n    def go(self):\n        with self.s.transaction() as tx:\n            tx.put('b', 1)\n"
     assert verdict(analyse(own, "U.go", []), []) is None
     none = "class U:\n    def go(self):\n        with self.s.transaction() as tx:\n            self.ops.f(1)\n"
-    assert "no <tx>.<op>() call" in verdict(analyse(none, "U.go", []), [])
+    assert "neither makes a <tx>.<op>() call" in verdict(analyse(none, "U.go", []), [])
     nest = ("class U:\n    def go(self):\n        with self.s.transaction() as tx:\n            tx.put('b', 1)\n"
             "            with self.s.transaction() as t2:\n                t2.put('c', 1)\n")
     assert "nested" in verdict(analyse(nest, "U.go", []), [])
@@ -450,5 +460,5 @@ def test_g1b_resolves_exactly_the_mapped_units_that_pass_and_carry_the_recorder_
         e = entries.get(row["key"])
         if e:
             assert e["pending"] == G1B_PENDING and e["citation"] == "DESIGN-s11 §5.6 R-AU4"
-            assert e["replaced_by"] == [f"exercise:{row['target_symbol'][0]}",
+            assert e["replaced_by"] == [*(f"exercise:{symbol}" for symbol in row["target_symbol"]),
                                         f"target:tests/test_s11_atomic_units.py::{NODE}[{unit_id(row)}]"]
