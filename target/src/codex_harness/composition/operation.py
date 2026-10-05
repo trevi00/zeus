@@ -92,6 +92,7 @@ from codex_harness.execution.adapters.containers import handoff, owned_container
 from codex_harness.execution.adapters.providers import claude_cli, codex_app_server
 from codex_harness.execution.adapters.providers.claude_cli import claude_settings
 from codex_harness.execution.adapters.providers.native_hooks import HookCandidates, HostHooks
+from codex_harness.execution.adapters.redacting_artifacts import RedactingArtifacts
 from codex_harness.execution.adapters.transports import Transports
 from codex_harness.execution.application.invocation_ledger import InvocationLedger
 from codex_harness.execution.application.run_task import RunTask
@@ -324,8 +325,10 @@ class Executor:
             EvidenceInspections(store, evidence_inspector(artifacts, isolation=isolation,
                                                           evidence_profile=evidence_profile)),
             self.workflow, self.observer)
+        # S11 XC-2b B3: RunTask's provider-stream artifacts (`runtime-event:`, `execution:`) are redacted at write by
+        # observation's `redact_text`, injected here (execution may not import observation).
         self.run_task = RunTask(
-            store, org, git, artifacts,
+            store, org, git, RedactingArtifacts(artifacts, redact_text),
             ledger=TaskOwnership(self.workflow, store=store, ids=SYSTEM_IDS),
             admission=InvocationBreaker(self.breaker), invocations=self.invocations,
             sessions=SessionCheckpoints(store, org, workflow=self.workflow, ids=SYSTEM_IDS),

@@ -79,7 +79,8 @@ class MessageBus(Protocol):
 
 class ArtifactStore(Protocol):
     # `lock_timeout` (S2b): a display-only writer's short wait before it drops its record.
-    def put(self, body: str, source: str, lock_timeout: float = 30) -> dict: ...
+    # `redactions` (S11 XC-2b B3): the count of credential spans redacted from `body`, recorded in the receipt when given.
+    def put(self, body: str, source: str, lock_timeout: float = 30, redactions: int | None = None) -> dict: ...
     def read(self, reference: str, start: int = 0, length: int = 8000) -> str: ...
 
 
