@@ -1,0 +1,8 @@
+"""The owner operation `record` is passed `tx` under the name `append` (a table-cited rename)."""
+
+
+class Unit:
+    def commit(self, task):
+        with self.store.transaction() as tx:
+            self.ops.append(tx, task)
+        return task

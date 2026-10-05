@@ -1,0 +1,9 @@
+"""Negative control, rule 2: the block calls the owner operation without the bound `tx`."""
+
+
+class Unit:
+    def commit(self, task):
+        with self.store.transaction() as tx:
+            row = tx.get("tasks", task)
+            self.ops.record(row)
+        return row
