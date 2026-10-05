@@ -17,6 +17,7 @@ import subprocess
 from pathlib import Path
 
 import pytest
+from _layout import REPO, TARGET
 
 from codex_harness.coordination.application import execution_notices
 from codex_harness.coordination.application.events import EventJournal
@@ -30,8 +31,7 @@ from codex_harness.research.application.audit_repair import AuditRepair
 from codex_harness.routing.adapters.organization_source import packaged_organization
 from codex_harness.storage.adapters.memory_store import MemoryStore
 
-REPO = Path(__file__).resolve().parents[2]
-SRC = REPO / "target" / "src" / "codex_harness"
+SRC = TARGET / "src" / "codex_harness"
 SOURCE = "e38aa722"
 M7_PATH = "src/codex_harness/application/audit_repair.py"
 REWRITTEN = ["__init__", "_commit", "_notify"]

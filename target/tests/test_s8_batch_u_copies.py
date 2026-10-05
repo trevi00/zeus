@@ -18,12 +18,11 @@ import subprocess
 from pathlib import Path
 
 import pytest
+from _layout import REPO
 
 SOURCE_COMMIT = "e38aa722"
 PORTED = Path(__file__).resolve().parent / "ported"
-REPO = Path(__file__).resolve().parents[2]
 
-# (shim module file, M7 SOURCE path, copied top-level names)
 COPIES = [
     ("m7_research.py", "src/codex_harness/adapters/dge_cli.py", ["repository_identity"]),
     ("m7_research.py", "tests/test_audit_service.py",

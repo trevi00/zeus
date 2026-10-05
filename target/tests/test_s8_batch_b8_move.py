@@ -18,6 +18,7 @@ from pathlib import Path
 from types import SimpleNamespace
 
 import pytest
+from _layout import REPO
 
 from codex_harness.coordination.application import sessions
 from codex_harness.kernel import strict_json
@@ -25,7 +26,6 @@ from codex_harness.kernel.errors import ContractError
 from codex_harness.kernel.policy import POLICY
 from codex_harness.review.adapters import sdd as module
 
-REPO = Path(__file__).resolve().parents[2]
 SOURCE = "e38aa722"
 BASE_HEAD = "14a66bdf6312c87db61717cde39469acd6c35780"
 SDD_M7 = "src/codex_harness/adapters/sdd.py"

@@ -13,6 +13,8 @@ import subprocess
 from pathlib import Path
 from types import SimpleNamespace
 
+from _layout import REPO
+
 from codex_harness.composition import release_verification
 from codex_harness.composition import release_verifier as module
 from codex_harness.delivery.adapters import deployment
@@ -23,7 +25,6 @@ from codex_harness.host_os.adapters import verification as verification_module
 from codex_harness.intake.application import tickets
 from codex_harness.kernel import errors, ids
 
-REPO = Path(__file__).resolve().parents[2]
 SOURCE = "e38aa722"
 RELEASE_VERIFIER_M7 = "src/codex_harness/adapters/release_verifier.py"
 RULE_SITES = {"docker_call": 1, "owned_container_runner": 1, "attempt_resources_naming": 3}

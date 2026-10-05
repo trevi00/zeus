@@ -11,8 +11,9 @@ import subprocess
 import textwrap
 from pathlib import Path
 
-REPO = Path(__file__).resolve().parents[2]
-SRC = REPO / "target" / "src" / "codex_harness"
+from _layout import REPO, TARGET
+
+SRC = TARGET / "src" / "codex_harness"
 SOURCE = "e38aa722"
 APP, ADAPTER = "codex_harness.research.application.discovery_pressure", "codex_harness.research.adapters.discovery_pressure"
 M7_APP, M7_ADAPTER = "src/codex_harness/application/discovery_pressure.py", "src/codex_harness/adapters/discovery_pressure.py"

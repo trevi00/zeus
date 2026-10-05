@@ -9,15 +9,14 @@ from __future__ import annotations
 
 import ast
 import subprocess
-from pathlib import Path
 
 import pytest
+from _layout import REPO
 
 from codex_harness.kernel.errors import ContractError
 from codex_harness.observation.domain import observation as obs
 from codex_harness.observation.domain.event_catalog import check_catalog_attributes, load_catalog
 
-REPO = Path(__file__).resolve().parents[2]
 SOURCE = "e38aa722"
 M7_OBSERVATION = "src/codex_harness/domain/observation.py"
 CANARY = "CANARY-9f3b1c7e2a5d4f6b8e0c1d2a3b4c5d6e"

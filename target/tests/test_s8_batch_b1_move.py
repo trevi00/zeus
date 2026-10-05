@@ -18,6 +18,7 @@ from pathlib import Path
 from types import SimpleNamespace
 
 import pytest
+from _layout import REPO
 
 from codex_harness.intake.adapters import ticket_authority as authority
 from codex_harness.intake.application import goal_progress as goal
@@ -25,7 +26,6 @@ from codex_harness.kernel.errors import ContractError
 from codex_harness.kernel.ids import SYSTEM_CLOCK, canonical
 from codex_harness.review.application import releases
 
-REPO = Path(__file__).resolve().parents[2]
 SOURCE = "e38aa722"
 GOAL_M7 = "src/codex_harness/application/goal_progress.py"
 AUTH_M7 = "src/codex_harness/adapters/ticket_authority.py"

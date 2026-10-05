@@ -11,11 +11,11 @@ from __future__ import annotations
 import hashlib
 import json
 import subprocess
-from pathlib import Path
 
-REPO = Path(__file__).resolve().parents[2]
+from _layout import REPO, TARGET
+
 FRONTEND = REPO / "frontend" / "monitor"
-RESOURCES = REPO / "target" / "src" / "codex_harness" / "resources"
+RESOURCES = TARGET / "src" / "codex_harness" / "resources"
 SOURCE = "e38aa722"
 MANIFEST = json.loads((REPO / "compare" / "goldens" / "reference" / "observation.frontend_bytes.json").read_text(encoding="utf-8"))
 LEDGER = json.loads((REPO / "coverage" / "ledger-coverage.json").read_text(encoding="utf-8"))["rows"]

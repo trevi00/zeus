@@ -16,10 +16,10 @@ from pathlib import Path
 from types import SimpleNamespace
 
 import pytest
+from _layout import REPO
 
 from codex_harness.kernel.errors import ContractError
 
-REPO = Path(__file__).resolve().parents[2]
 SOURCE = "e38aa722"
 M7_PATH = "src/codex_harness/adapters/frontdesk.py"
 FRONT = "codex_harness.intake.adapters.frontdesk"

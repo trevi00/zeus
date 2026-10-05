@@ -11,7 +11,8 @@ import subprocess
 from pathlib import Path
 from types import SimpleNamespace
 
-REPO = Path(__file__).resolve().parents[2]
+from _layout import REPO
+
 SOURCE = "e38aa722"
 APP = "codex_harness.coordination.application.council"
 M7_PATH = "src/codex_harness/application/council.py"

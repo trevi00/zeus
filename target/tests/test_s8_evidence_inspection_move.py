@@ -10,7 +10,8 @@ import importlib
 import subprocess
 from pathlib import Path
 
-REPO = Path(__file__).resolve().parents[2]
+from _layout import REPO, TARGET
+
 SOURCE = "e38aa722"
 APP = "codex_harness.evidence.application.evidence_inspection"
 S5 = "codex_harness.evidence.application.inspections"
@@ -195,7 +196,7 @@ def test_v4_evidence_owns_the_inspection_buckets():
 def test_only_the_evidence_inspection_application_writes_the_inspection_buckets():
     # Literals of the two bucket names occur only in the ports, the writer and the S5 read; coordination reads the
     # ledger through its own constant and `tx.get` (never a put), and nothing else names either bucket.
-    src = REPO / "target" / "src" / "codex_harness"
+    src = TARGET / "src" / "codex_harness"
     allowed = {"evidence/application/evidence_inspection.py", "evidence/application/inspections.py", "evidence/ports.py",
                "coordination/application/operation.py"}
     named = [path.relative_to(src).as_posix() for path in sorted(src.rglob("*.py"))

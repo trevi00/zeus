@@ -14,12 +14,11 @@ import json
 import os
 import subprocess
 import sys
-from pathlib import Path
 from types import SimpleNamespace
 
 import pytest
+from _layout import REPO as ROOT
 
-ROOT = Path(__file__).resolve().parents[2]
 sys.path[:0] = [str(ROOT / "compare" / "drivers" / "common")]
 
 import s3_containers  # noqa: E402

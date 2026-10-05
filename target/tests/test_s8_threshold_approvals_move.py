@@ -12,8 +12,8 @@ from datetime import datetime, timedelta, timezone
 from pathlib import Path
 
 import pytest
+from _layout import REPO, TARGET
 
-REPO = Path(__file__).resolve().parents[2]
 SOURCE = "e38aa722"
 MODULE = "codex_harness.research.application.threshold_approvals"
 M7_PATH = "src/codex_harness/application/threshold_approvals.py"
@@ -114,7 +114,7 @@ def test_research_owns_the_threshold_approval_buckets():
 
 
 def test_only_this_module_names_the_threshold_approval_buckets_in_the_target_source():
-    src = REPO / "target" / "src" / "codex_harness"
+    src = TARGET / "src" / "codex_harness"
     named = [path.relative_to(src).as_posix() for path in sorted(src.rglob("*.py"))
              if any(f"'{b}'" in path.read_text() or f'"{b}"' in path.read_text() for b in ("threshold_approvals", "threshold_approval_events"))]
     assert named == ["research/application/threshold_approvals.py", "research/ports.py"], named

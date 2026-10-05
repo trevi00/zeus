@@ -10,9 +10,9 @@ fields its authority names.
 import ast
 import json
 import re
-from pathlib import Path
 
-ROOT = Path(__file__).resolve().parents[2]
+from _layout import REPO as ROOT
+
 COMPARE = ROOT / "compare"
 SCENARIO = json.loads((COMPARE / "scenarios/entries.safe_matrix.json").read_text(encoding="utf-8"))
 GOLDEN = json.loads((COMPARE / "goldens/reference/entries.safe_matrix.json").read_text(encoding="utf-8"))["rows"]

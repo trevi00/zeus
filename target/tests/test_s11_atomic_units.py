@@ -25,12 +25,12 @@ import ast
 import json
 import re
 from functools import lru_cache
-from pathlib import Path
 
 import pytest
+from _layout import REPO as ROOT
+from _layout import TARGET
 
-ROOT = Path(__file__).resolve().parents[2]
-SRC = ROOT / "target/src"
+SRC = TARGET / "src"
 AU1 = "R-AU1:"
 UNIT_PREFIX = "atomic_unit:"
 G1B_PENDING = "pending: recorder confirmation in the owning slice"

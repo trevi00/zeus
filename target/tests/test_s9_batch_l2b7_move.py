@@ -37,6 +37,7 @@ from types import SimpleNamespace
 
 import import_rules
 import pytest
+from _layout import REPO, TARGET
 
 from codex_harness.adapters import monitor_frontend_checks as shim
 from codex_harness.composition import monitor_frontend_checks as composition
@@ -46,8 +47,7 @@ from codex_harness.host_os.adapters import process_tree
 from codex_harness.kernel.errors import ContractError
 from codex_harness.observation.adapters import monitor_frontend_checks as module
 
-REPO = Path(__file__).resolve().parents[2]
-TARGET_SRC = REPO / "target" / "src"
+TARGET_SRC = TARGET / "src"
 SOURCE = "e38aa722"
 M7 = "src/codex_harness/adapters/monitor_frontend_checks.py"
 TEXT = Path(module.__file__).read_text(encoding="utf-8")
@@ -218,7 +218,7 @@ def test_the_import_homes_resolve_in_the_target_alone_and_observation_imports_no
 
 
 def test_no_layer_or_cycle_violation_touches_the_new_files_and_the_shim_is_declared():
-    violations = import_rules.check(REPO / "target" / "src")
+    violations = import_rules.check(TARGET / "src")
     assert violations == []
     assert "codex_harness.adapters.monitor_frontend_checks" in import_rules.SHIMS
     assert import_rules.classify("codex_harness.adapters.monitor_frontend_checks") == ("SHIM", None)

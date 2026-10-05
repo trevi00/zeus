@@ -18,6 +18,7 @@ import subprocess
 from pathlib import Path
 
 import pytest
+from _layout import REPO, TARGET
 from test_spawn_chokepoint import spawn_sites
 
 from codex_harness.kernel.errors import ContractError
@@ -25,8 +26,7 @@ from codex_harness.observation import ports as observation_ports
 from codex_harness.observation.adapters import observation_schema as schema_module
 from codex_harness.observation.adapters import observation_spool as spool_module
 
-REPO = Path(__file__).resolve().parents[2]
-SRC = REPO / "target" / "src" / "codex_harness"
+SRC = TARGET / "src" / "codex_harness"
 SOURCE = "e38aa722"
 BASE = "06c3aa79"
 CONTRACTS_M7 = "src/codex_harness/adapters/contracts.py"

@@ -32,13 +32,13 @@ from pathlib import Path
 from threading import Thread
 
 import pytest
+from _layout import REPO, TARGET
 
 from codex_harness.kernel.errors import ContractError
 from codex_harness.observation import ports
 from codex_harness.observation.adapters import viewer_http as viewer
 
-REPO = Path(__file__).resolve().parents[2]
-SRC = REPO / "target" / "src" / "codex_harness"
+SRC = TARGET / "src" / "codex_harness"
 SOURCE = "e38aa722"
 M7 = "src/codex_harness/adapters/monitoring_web.py"
 TEXT = Path(viewer.__file__).read_text()

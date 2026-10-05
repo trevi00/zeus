@@ -15,11 +15,12 @@ import subprocess
 from pathlib import Path
 from types import SimpleNamespace
 
+from _layout import REPO
+
 from codex_harness.composition import release_verification
 from codex_harness.host_os.adapters import port_diagnosis, process_groups, published_ports
 from codex_harness.host_os.adapters import verification as module
 
-REPO = Path(__file__).resolve().parents[2]
 SOURCE = "e38aa722"
 BASE_HEAD = "fad804900d962dae723c60558dda191d83c3bfe3"
 VERIFICATION_M7 = "src/codex_harness/adapters/verification.py"

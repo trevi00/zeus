@@ -14,6 +14,7 @@ from pathlib import Path
 from types import SimpleNamespace
 
 import pytest
+from _layout import REPO, TARGET
 
 from codex_harness.coordination.application.outbox import Outbox
 from codex_harness.kernel.errors import ContractError
@@ -24,8 +25,7 @@ from codex_harness.research.application.scheduling import schedule_audits, sched
 from codex_harness.routing.adapters.organization_source import packaged_organization
 from codex_harness.storage.adapters.memory_store import MemoryStore
 
-REPO = Path(__file__).resolve().parents[2]
-SRC = REPO / "target" / "src" / "codex_harness"
+SRC = TARGET / "src" / "codex_harness"
 SOURCE = "e38aa722"
 M7_PATH = "src/codex_harness/application/scheduling.py"
 NOW = 1_800_000_000.0

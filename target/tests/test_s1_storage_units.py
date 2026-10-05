@@ -8,6 +8,7 @@ import time
 from pathlib import Path
 
 import pytest
+from _layout import REFERENCE
 
 from codex_harness.storage import ports
 from codex_harness.storage.adapters import message_schema, redis_bus
@@ -15,9 +16,8 @@ from codex_harness.storage.adapters.file_artifacts import FileArtifacts
 from codex_harness.storage.adapters.maintenance import ArtifactMaintenance
 from codex_harness.storage.adapters.memory_store import MemoryStore
 
-ROOT = Path(__file__).resolve().parents[2]
 TARGET_RESOURCES = Path(message_schema.__file__).resolve().parents[2] / "resources"
-SOURCE_RESOURCES = ROOT / "src" / "codex_harness" / "resources"
+SOURCE_RESOURCES = REFERENCE / "src" / "codex_harness" / "resources"
 
 
 class RecordingJournal:

@@ -15,6 +15,7 @@ from datetime import datetime, timedelta, timezone
 from pathlib import Path
 
 import pytest
+from _layout import REPO, TARGET
 
 from codex_harness.intake.application import tickets
 from codex_harness.kernel.errors import ContractError
@@ -27,8 +28,7 @@ from codex_harness.review.domain.releases import reverification_successor_id
 from codex_harness.routing.adapters.organization_source import packaged_organization
 from codex_harness.storage.adapters.memory_store import MemoryStore
 
-REPO = Path(__file__).resolve().parents[2]
-SRC = REPO / "target" / "src" / "codex_harness"
+SRC = TARGET / "src" / "codex_harness"
 SOURCE = "e38aa722"
 M7_PATH = "src/codex_harness/application/releases.py"
 NEW = ["reconcile_audits", "request_reverification"]

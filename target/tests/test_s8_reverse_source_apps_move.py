@@ -12,8 +12,8 @@ from dataclasses import asdict
 from pathlib import Path
 
 import pytest
+from _layout import REPO, TARGET
 
-REPO = Path(__file__).resolve().parents[2]
 SOURCE = "e38aa722"
 MODULES = {"reverse_progress": "codex_harness.research.application.reverse_progress",
            "source_execution": "codex_harness.research.application.source_execution"}
@@ -156,7 +156,7 @@ def test_research_is_the_single_owner_of_the_five_buckets():
     owned = OWN_BUCKETS["reverse_progress"] | OWN_BUCKETS["source_execution"]
     for bucket in owned:
         assert ports.OWNED_BUCKETS.count(bucket) == 1, bucket
-    src = REPO / "target" / "src" / "codex_harness"
+    src = TARGET / "src" / "codex_harness"
     for context in sorted(p.name for p in src.iterdir() if (p / "ports.py").is_file() and p.name != "research"):
         other = importlib.import_module(f"codex_harness.{context}.ports")
         assert not owned & set(getattr(other, "OWNED_BUCKETS", ())), context

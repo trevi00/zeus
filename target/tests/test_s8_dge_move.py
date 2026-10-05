@@ -9,7 +9,8 @@ import importlib
 import subprocess
 from pathlib import Path
 
-REPO = Path(__file__).resolve().parents[2]
+from _layout import REPO, TARGET
+
 SOURCE = "e38aa722"
 APP = "codex_harness.research.application.dge"
 DOMAIN = "codex_harness.research.domain.dge"
@@ -97,7 +98,7 @@ def test_v4_research_owns_the_dge_buckets():
 def test_only_the_dge_application_writes_the_dge_buckets():
     # M7 and the target alike: the bucket names occur as store keys only in this module; the other readers import the
     # constants (autonomous, decision_feedback, research_program read `SESSIONS`/`EVENTS`).
-    src = REPO / "target" / "src" / "codex_harness"
+    src = TARGET / "src" / "codex_harness"
     # V9 (S8 pilot 68, R-a2): a reader that defines its own local constant for the published-language name may contain the
     # literal; it must never write it.
     v9_readers = {"coordination/application/autonomous.py"}

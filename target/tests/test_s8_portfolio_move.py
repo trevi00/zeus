@@ -9,7 +9,8 @@ import importlib
 import subprocess
 from pathlib import Path
 
-REPO = Path(__file__).resolve().parents[2]
+from _layout import REPO
+
 SOURCE = "e38aa722"
 APP = "codex_harness.intake.application.portfolio"
 ADAPTER = "codex_harness.intake.adapters.portfolio"

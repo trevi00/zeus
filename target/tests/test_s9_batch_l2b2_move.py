@@ -21,13 +21,14 @@ import inspect
 import subprocess
 from pathlib import Path
 
+from _layout import REPO, TARGET
+
 from codex_harness.kernel.policy import POLICY
 from codex_harness.observation.application import measurements as app_module
 from codex_harness.observation.application import monitoring as monitoring_module
 from codex_harness.observation.domain import measurements as domain_module
 
-REPO = Path(__file__).resolve().parents[2]
-SRC = REPO / "target" / "src" / "codex_harness"
+SRC = TARGET / "src" / "codex_harness"
 SOURCE = "e38aa722"
 DOMAIN_M7 = "src/codex_harness/domain/measurements.py"
 APP_M7 = "src/codex_harness/application/measurements.py"

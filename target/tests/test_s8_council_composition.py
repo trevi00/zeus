@@ -8,10 +8,10 @@ import ast
 import dataclasses
 import inspect
 import subprocess
-from pathlib import Path
 from types import SimpleNamespace
 
 import pytest
+from _layout import REPO, TARGET
 
 from codex_harness.context import ports
 from codex_harness.context.application.compose import ContextComposer
@@ -21,8 +21,7 @@ from codex_harness.research.adapters import correction_feedback
 from codex_harness.research.adapters.council_composition import CouncilCompositionAdmission
 from codex_harness.research.domain import council_input
 
-REPO = Path(__file__).resolve().parents[2]
-SRC = REPO / "target" / "src" / "codex_harness"
+SRC = TARGET / "src" / "codex_harness"
 BASE = "c943966d2604f0d0dced782d3a37416cf09ee3da"
 COMPOSE = "target/src/codex_harness/context/application/compose.py"
 REQUEST = "target/src/codex_harness/context/domain/composition.py"

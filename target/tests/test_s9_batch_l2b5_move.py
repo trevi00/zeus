@@ -42,13 +42,13 @@ from pathlib import Path
 
 import import_rules
 import pytest
+from _layout import REPO, TARGET
 
 from codex_harness.execution.application import worker_sessions as owner
 from codex_harness.observation.adapters import collectors
 from codex_harness.storage.adapters.memory_store import MemoryStore
 
-REPO = Path(__file__).resolve().parents[2]
-SRC = REPO / "target" / "src" / "codex_harness"
+SRC = TARGET / "src" / "codex_harness"
 SOURCE = "e38aa722"
 M7_MON = "src/codex_harness/adapters/monitoring.py"
 TEXT = Path(collectors.__file__).read_text(encoding="utf-8")
@@ -324,7 +324,7 @@ def test_no_new_spawn_site_and_no_process_or_thread_machinery_inside_u6():
 
 
 def test_no_layer_or_cycle_violation_touches_the_module():
-    violations = import_rules.check(REPO / "target" / "src")
+    violations = import_rules.check(TARGET / "src")
     assert [v for v in violations if "observation.adapters.collectors" in v.module] == []
     assert violations == []
     assert not re.search(r"(?m)^\s*(?:from|import) codex_harness\.(?!kernel|execution\.domain|research\.domain)", U6_TEXT)

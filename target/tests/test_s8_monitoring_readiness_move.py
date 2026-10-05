@@ -13,8 +13,8 @@ from datetime import datetime, timedelta, timezone
 from pathlib import Path
 
 import pytest
+from _layout import REPO
 
-REPO = Path(__file__).resolve().parents[2]
 SOURCE = "e38aa722"
 MODULE = "codex_harness.observation.adapters.monitoring_readiness"
 M7_PATH = "src/codex_harness/adapters/monitoring_readiness.py"

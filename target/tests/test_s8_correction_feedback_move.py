@@ -13,6 +13,7 @@ import subprocess
 from pathlib import Path
 
 import pytest
+from _layout import REPO
 
 from codex_harness.execution import ports
 from codex_harness.kernel.errors import ContractError
@@ -25,7 +26,6 @@ from codex_harness.research.adapters.correction_feedback import (
 )
 from codex_harness.storage.adapters.memory_store import MemoryStore
 
-REPO = Path(__file__).resolve().parents[2]
 SOURCE = "e38aa722"
 UNWIRED = "correction feedback needs the redaction rule"
 REWRITTEN = (("deliver",), ("_research",))

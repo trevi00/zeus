@@ -9,12 +9,12 @@ import importlib
 import io
 import json
 import subprocess
-from pathlib import Path
 
 import pytest
+from _layout import REPO as ROOT
+from _layout import TARGET
 
-ROOT = Path(__file__).resolve().parents[2]
-PACKAGE = ROOT / "target" / "src" / "codex_harness" / "entry" / "cli"
+PACKAGE = TARGET / "src" / "codex_harness" / "entry" / "cli"
 GOLDEN = ROOT / "compare" / "goldens" / "reference" / "cli.parser.json"
 SOURCE = "e38aa722"
 

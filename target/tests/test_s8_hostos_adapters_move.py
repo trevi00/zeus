@@ -15,11 +15,11 @@ from pathlib import Path
 from types import SimpleNamespace
 
 import pytest
+from _layout import REPO
 
 from codex_harness.kernel.errors import ContractError
 from codex_harness.research import ports
 
-REPO = Path(__file__).resolve().parents[2]
 SOURCE = "e38aa722"
 NAMES = ("decision_feedback", "reverse_source", "source_verification")
 HOMES = {

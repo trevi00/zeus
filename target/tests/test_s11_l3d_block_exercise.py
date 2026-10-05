@@ -10,11 +10,10 @@ module file. The committed artifacts are checked against the committed goldens a
 import json
 import os
 import sys
-from pathlib import Path
 
 import pytest
+from _layout import REPO as ROOT
 
-ROOT = Path(__file__).resolve().parents[2]
 sys.path[:0] = [str(ROOT / "coverage"), str(ROOT / "compare/harness")]
 try:
     import block_exercise as be

@@ -5,6 +5,7 @@ from contextlib import contextmanager
 from pathlib import Path
 
 import pytest
+from _layout import REPO as ROOT
 
 sys.path.insert(0, str(Path(__file__).resolve().parent / "ported"))
 
@@ -74,7 +75,7 @@ def test_public_methods_equal_the_fixture_units():
     assert public == set(HOOK_UNITS) and set(CALLS) == public
 
 
-ROOT = Path(__file__).resolve().parents[2]
+
 HOOK_ID = "hook-ab97ba09554daa5aec289867"
 
 

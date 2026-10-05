@@ -7,9 +7,9 @@ takes its expected results from the contract text in docs/contracts.md, not from
 import json
 from copy import deepcopy
 from datetime import datetime, timedelta, timezone
-from pathlib import Path
 
 import pytest
+from _layout import REPO as ROOT
 
 from codex_harness.composition.release_verification import verification_environment
 from codex_harness.coordination.application.outbox import Outbox
@@ -23,7 +23,6 @@ from codex_harness.routing.adapters.organization_source import packaged_organiza
 from codex_harness.storage.adapters.file_artifacts import FileArtifacts
 from codex_harness.storage.adapters.memory_store import MemoryStore
 
-ROOT = Path(__file__).resolve().parents[2]
 NOW = datetime(2026, 10, 5, 12, 0, tzinfo=timezone.utc)
 FIRST_ATTEMPT = next(d for d in DEFINITIONS if d.metric_id == "task_first_attempt_success")
 
