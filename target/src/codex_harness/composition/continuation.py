@@ -91,11 +91,12 @@ def continuation_owners(store, fleet=None, lanes=None, conductor=None, validate=
                            ownership=OwnershipReconciliation(store, successors=successors))
 
 
-def fleet_port(store) -> SimpleNamespace:
+def fleet_port(store, observer=None) -> SimpleNamespace:
     """M7 `Fleet(store)` as the continuation uses it: `enqueue` (the registry's), `reserve_unit` and `settle_unit` (admission's),
     each on the S5 owner of the shim's `Fleet` routes, plus M7 `Fleet.store`: `LaunchSettlement.dispatch` refuses
-    `fleet_unconfigured` unless the port's store is the control store (S11 M, AR4 port of tests/test_continuation_cli.py)."""
-    registry, admission = FleetRegistry(store), AdmissionControl(store)
+    `fleet_unconfigured` unless the port's store is the control store (S11 M, AR4 port of tests/test_continuation_cli.py). `observer` is the continuation's own (S11 XC-8 G4): the capacity refusal `operations.capacity_refused` is
+    emitted only when composition injects it (DESIGN-s10 section 17 A5-2); None keeps the silent default."""
+    registry, admission = FleetRegistry(store), AdmissionControl(store, observer=observer)
     return SimpleNamespace(store=store, enqueue=registry.enqueue, reserve_unit=admission.reserve_unit,
                            settle_unit=admission.settle_unit)
 
@@ -312,7 +313,7 @@ def validator():
 
 def coordinator(store, config: dict, host: dict, *, lanes=None, conductor=None, observer=None,
                 evidence=None) -> SimpleNamespace:
-    return continuation_owners(store, fleet_port(store), lanes or lane_stores(config, host),
+    return continuation_owners(store, fleet_port(store, observer), lanes or lane_stores(config, host),
                                conductor if conductor is not None else conductor_processes(config, host),
                                validate=validator(), observer=observer, evidence=evidence or research_evidence())
 

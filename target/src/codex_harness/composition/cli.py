@@ -105,13 +105,15 @@ def artifacts(directory):
 
 
 def execution_recovery(service, artifacts):
-    """The ExecutionRecovery of `service`, wired as `tests/ported/m7_coordination.ExecutionRecovery` wires it (M7 `ExecutionRecovery(store, org, artifacts)`)."""
+    """The ExecutionRecovery of `service`, wired as `tests/ported/m7_coordination.ExecutionRecovery` wires it (M7 `ExecutionRecovery(store, org, artifacts)`) with `threshold_reviews` as `m7_research.py:485` wires it (S11 XC-8 G3)."""
     from codex_harness.coordination.application import execution_recovery as recovery
     from codex_harness.intake.application import tickets
     from codex_harness.kernel.ids import SYSTEM_CLOCK, SYSTEM_IDS
     from codex_harness.research.application.audit_gate import binding as audit_binding
+    from codex_harness.research.application.threshold_reviews import ThresholdReviewRecords
     return recovery.ExecutionRecovery(service.store, service.org, artifacts, ticket_binding=tickets.ticket_binding,
-                                      audit_binding=audit_binding, clock=SYSTEM_CLOCK, ids=SYSTEM_IDS)
+                                      audit_binding=audit_binding, threshold_reviews=ThresholdReviewRecords(artifacts),
+                                      clock=SYSTEM_CLOCK, ids=SYSTEM_IDS)
 
 
 def research_audits(service, artifacts):

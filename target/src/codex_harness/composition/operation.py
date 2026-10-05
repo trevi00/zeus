@@ -32,8 +32,9 @@ observation's `redact_text` bound, #9, and `require_context`); `composition_admi
 The decision side is complete as the inventory lists it: `Releases` (events, hooks, ticket_superseded, clock, ids),
 `ExecutionRecovery` (threshold_reviews = `ThresholdReviewRecords`, ticket_binding, audit_binding, clock, ids),
 `ReviewDecisions(audit_execution, clock)`, `claim_decision(threshold_exhausted=ThresholdReviews.exhausted)` (M7 :1752).
-Gap, not written here: `ReviewDecisions.threshold_review` (M7 `review_threshold`, :1787-1789) is still absent at this head
-(S8 B6; `research/adapters` has no `threshold_reviews`), so it keeps ReviewDecisions' own refusing default.
+`ReviewDecisions.threshold_review` is M7 `review_threshold` (:1787-1789) as `research.adapters.threshold_reviews.review_threshold`
+with the V22 ports wired (this recovery validates a recovered decision, `DecisionOwnership` records it), the S10 unit T1 wiring of
+`tests/ported/m7_research.py:483-486` (S11 XC-8 G1; it had kept ReviewDecisions' refusing default).
 
 Composition profile (C5c-2; OWNER-DECISIONS-S10 #10, REBUILD-DESIGN-v2 section 4 row 8): `ZEUS_COMPOSITION_PROFILE` is
 `development` or `production`. There is no default: an absent, empty or other value is unknown and the composition refuses
@@ -59,6 +60,7 @@ from codex_harness.composition import cli, configuration
 from codex_harness.composition.evidence_gate import EvidenceGate, evidence_inspector
 from codex_harness.composition.invocation_budget import CapacityObservingLedger
 from codex_harness.composition.observation import build_observer
+from codex_harness.composition.research_program_adapters import discovery_pressure
 from codex_harness.context.adapters import worker_profile
 from codex_harness.context.adapters.composition_sources import (
     GitRepository,
@@ -116,6 +118,7 @@ from codex_harness.research.adapters.audit_execution import AuditExecution
 from codex_harness.research.adapters.audit_runner import AuditRunner
 from codex_harness.research.adapters.council_composition import CouncilCompositionAdmission
 from codex_harness.research.adapters.research_pins import UvLockPins
+from codex_harness.research.adapters.threshold_reviews import review_threshold
 from codex_harness.research.application import audit_gate
 from codex_harness.research.application.audit_gate import inspect_approval
 from codex_harness.research.application.hook_rollback import HookRollback
@@ -224,7 +227,6 @@ def build_executor(service=None, observer=None, execution_policy=None, knowledge
         raise IsolationError("production_requires_isolation")
     from codex_harness.host_os.adapters.git_workspace import GitWorkspace
     from codex_harness.knowledge.adapters.postgres_knowledge import PostgresKnowledge
-    from codex_harness.research.adapters import discovery_pressure
     from codex_harness.research.adapters.research import ResearchSources
     from codex_harness.storage.adapters.file_artifacts import FileArtifacts
 
@@ -241,9 +243,10 @@ def build_executor(service=None, observer=None, execution_policy=None, knowledge
         # lifecycle (`cleanup_ledger.hold/retire`); an isolation that already has one, or none to take, is left alone.
         isolated.observer = observer
     return Executor(service, git, artifacts, adapter,
-                    # INV-DISCOVERY-PRESSURE-001: pressure over THIS process's store (a lane store has no Fleet
-                    # registry, so proactive fetches hold there; exempt intents are unaffected).
-                    ResearchSources(artifacts, pressure=discovery_pressure.pressure(service.store, observer)),
+                    # INV-DISCOVERY-PRESSURE-001: pressure over THIS process's store through the one wired factory (host
+                    # call ledger + Fleet census; S11 XC-8 A8). A lane store has no Fleet registry, so the census holds
+                    # proactive fetches there (`fleet_unregistered`, recorded); exempt intents are unaffected.
+                    ResearchSources(artifacts, pressure=discovery_pressure(service.store, observer)),
                     observer=observer,
                     execution_policy=execution_policy, evidence_profile=profile,
                     host_transports=(chosen == "development"),
@@ -421,6 +424,9 @@ class Executor:
             require_dispatch=require_dispatch, ReconciliationRequired=ReconciliationRequired,
             PostExecutionRecordFailure=PostExecutionRecordFailure, worker_sessions=worker_sessions,
             audit_execution=self.audit_execution, clock=SYSTEM_CLOCK, ids=SYSTEM_IDS)
+        # S11 XC-8 G1: the S10 T1 wiring (`tests/ported/m7_research.py:486`), M7 `review_threshold(self, lease, VERDICT)`.
+        self.decisions.threshold_review = lambda lease: review_threshold(
+            self, lease, VERDICT, decision_validation=self.recovery, decisions=self.decisions.ownership)
 
     @property
     def execution_policy(self):
