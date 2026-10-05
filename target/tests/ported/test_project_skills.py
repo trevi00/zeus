@@ -14,12 +14,15 @@ PORTING NOTES (S4 ported executor suites; the M7 assertions are unchanged):
   step calls the skill-audit CLI `main([...], store=store)` (M7 `adapters/skill_audit.main`), which is not in the
   target (`context.adapters.skill_audit` keeps only `render_text`). The body is kept unchanged.
 
-Batch U3 (V6 retrofit): test_cli_legacy_import_preserves_extra_metadata_and_never_overwrites is copied verbatim and skipped
-whole, `S10: the project_init operator CLI (scripts/project_init.py)`; the names only it reads stay unresolved by design (F821).
+Batch U3 (V6 retrofit): test_cli_legacy_import_preserves_extra_metadata_and_never_overwrites is copied verbatim; S11 R-S1 un-skipped it
+and pointed it at the ported `scripts/project_init.py` (PROJECT).
 """
 # ruff: noqa: F821
 
 import json
+import os  # S11 R-S1: read by the un-skipped project_init CLI node
+import subprocess  # S11 R-S1
+import sys  # S11 R-S1
 from functools import partial as _partial
 from pathlib import Path
 
@@ -36,6 +39,9 @@ from codex_harness.host_os.adapters.git_workspace import GitWorkspace
 from codex_harness.kernel.errors import ContractError
 from codex_harness.storage.adapters.file_artifacts import FileArtifacts
 from codex_harness.storage.adapters.memory_store import MemoryStore
+
+# S11 R-S1: the project root (target/ now, the repo root after the promotion) that holds scripts/ and src/
+PROJECT = next(p for p in Path(__file__).resolve().parents if (p / "src" / "codex_harness").is_dir())
 
 # Adapted: the native threshold definition reaches context through context.ports.ThresholdPolicySource
 # (research implements it in S8); these suites supply the packaged definition.
@@ -309,7 +315,6 @@ def test_selected_skill_symlink_is_rejected(project):
         project_context(git, artifacts, str(root), git._git('rev-parse', 'HEAD'))
 
 
-@pytest.mark.skip(reason="S11 (PREP-S11 §9 #3): scripts/project_init.py imports absent M7 codex_harness.adapters.project_detection; root-script disposition pending")
 def test_cli_legacy_import_preserves_extra_metadata_and_never_overwrites(tmp_path):
     root = tmp_path / 'project'
     (root / '.claude').mkdir(parents=True)
@@ -318,8 +323,8 @@ def test_cli_legacy_import_preserves_extra_metadata_and_never_overwrites(tmp_pat
               'database: {type: mysql, version: 5.7}\norm: mybatis\n'
               'mobile: {framework: android}\n')
     legacy.write_text(source)
-    script = Path(__file__).resolve().parents[1] / 'scripts/project_init.py'
-    env = {**os.environ, 'PYTHONPATH': str(script.parents[1] / 'src')}
+    script = PROJECT / 'scripts/project_init.py'  # S11 R-S1: the ported script under the project root (target/ now, repo root after the promotion)
+    env = {**os.environ, 'PYTHONPATH': str(PROJECT / 'src')}  # S11 R-S1
     argv = [sys.executable, str(script), str(root), '--from-claude']
     first = subprocess.run(argv, env=env, capture_output=True, text=True)
     assert first.returncode == 0, first.stderr

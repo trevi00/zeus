@@ -12,7 +12,9 @@ from pathlib import Path
 
 import pytest
 
-SPEC = importlib.util.spec_from_file_location('environment_evidence', Path(__file__).resolve().parents[3] / 'scripts' / 'environment_evidence.py')
+# S11 R-S1: the project root (target/ now, the repo root after the promotion) that holds scripts/
+PROJECT = next(p for p in Path(__file__).resolve().parents if (p / "src" / "codex_harness").is_dir())
+SPEC = importlib.util.spec_from_file_location('environment_evidence', PROJECT / 'scripts' / 'environment_evidence.py')  # S11 R-S1: the ported copy
 evidence = importlib.util.module_from_spec(SPEC)
 SPEC.loader.exec_module(evidence)
 
