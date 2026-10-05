@@ -33,12 +33,13 @@ class FileArtifacts:
         self.root = Path(root).resolve()
         self.root.mkdir(parents=True, exist_ok=True)
 
-    def put(self, body: str, source: str, lock_timeout: float = 30) -> dict:
+    def put(self, body: str, source: str, lock_timeout: float = 30, redactions: int | None = None) -> dict:
         # A display-only writer (S2b activity) passes a short `lock_timeout` and drops its record on timeout.
+        # `redactions` (S11 XC-2b B3): the credential spans redacted from `body` before this write, recorded in the receipt.
         with FileLock(str(self.root.parent / "artifacts.lock"), timeout=lock_timeout):
-            return self._put(body, source)
+            return self._put(body, source, redactions)
 
-    def _put(self, body: str, source: str) -> dict:
+    def _put(self, body: str, source: str, redactions: int | None = None) -> dict:
         data = body.encode("utf-8")
         key = hashlib.sha256(data).hexdigest()
         path = self.root / (key + ".txt")
@@ -52,6 +53,8 @@ class FileArtifacts:
             except FileExistsError:
                 require(path.read_bytes() == data, "Concurrent artifact integrity failure")
         receipt = {"ref": "sha256:" + key, "source": source, "bytes": len(data), "at": utcnow(self.clock)}
+        if redactions is not None:
+            receipt["redactions"] = redactions
         metadata = self.root / (key + ".json")
         if not metadata.exists():
             metadata.write_text(canonical(receipt), encoding="utf-8")

@@ -183,3 +183,70 @@ def test_an_observer_that_raises_does_not_change_the_http_response(served, tmp_p
     for kwargs in (dict(headers={"Origin": "http://evil.example"}), dict(body=b"{x"), dict(host="evil.example")):
         assert broken.post(**kwargs) == plain.post(**kwargs)
     assert broken.request("GET", "/missing") == plain.request("GET", "/missing")
+
+
+# ---- B3: credential-pattern redaction of persisted provider-stream artifacts ------------------------------------------------
+# A GitHub-token-shaped string, assembled at run time so no scanner sees a literal token in the repository.
+TOKEN = "ghp_" + "A1b2C3d4E5f6G7h8I9j0K1l2M3n4O5p6Q7r8"
+
+
+def stream_document(text):
+    """The shape RunTask persists as `execution:<key>`: provider events with assistant text and tool results."""
+    return {"thread_id": "t1", "events": [
+        {"method": "claude/assistant", "params": {"text": text}},
+        {"method": "claude/tool_completed", "params": {"tool_result": "output: " + text}}],
+        "answer": {"summary": "done"}, "stderr_tail": [text]}
+
+
+def production_artifacts(tmp_path):
+    """RunTask's artifact store exactly as the production composition wires it (`composition.operation.Executor`)."""
+    from types import SimpleNamespace
+
+    from codex_harness import composition
+    from codex_harness.composition import operation
+    from codex_harness.routing.adapters.organization_source import packaged_organization
+    from codex_harness.storage.adapters.file_artifacts import FileArtifacts
+    from codex_harness.storage.adapters.memory_store import MemoryStore
+
+    service = composition.ServiceHandle(MemoryStore(), packaged_organization())
+    git = SimpleNamespace(_git=lambda *a, **k: "revision", repository=tmp_path)
+    raw = FileArtifacts(str(tmp_path / "artifacts"))
+    return operation.Executor(service, git, raw, knowledge=None).run_task.artifacts, raw
+
+
+def stored_bytes(raw, receipt):
+    return (raw.root / (receipt["ref"][7:] + ".txt")).read_bytes()
+
+
+@pytest.mark.parametrize("source", ["execution:task-1", "runtime-event:task-1"])
+def test_a_credential_in_a_provider_stream_artifact_is_redacted_before_it_is_written(tmp_path, source):
+    import hashlib
+
+    from codex_harness.execution.adapters.execution_output import evidence_json
+
+    artifacts, raw = production_artifacts(tmp_path)
+    receipt = artifacts.put(evidence_json(stream_document("the key is " + TOKEN)), source)
+    data = stored_bytes(raw, receipt)
+    assert TOKEN.encode() not in data and b"[REDACTED token]" in data
+    assert TOKEN not in raw.read(receipt["ref"], 0, 32000)  # what `zeus artifact` serves
+    assert TOKEN not in json.dumps(raw.search(receipt["ref"], "ghp_"))  # and its --search
+    assert receipt["redactions"] >= 1 and raw.inspect(receipt["ref"])["metadata"]["redactions"] == receipt["redactions"]
+    assert receipt["ref"] == "sha256:" + hashlib.sha256(data).hexdigest() and receipt["bytes"] == len(data)
+    json.loads(data)  # the artifact is still the (redacted) JSON document
+
+
+def test_a_stream_without_a_credential_is_stored_byte_identically_with_a_zero_count(tmp_path):
+    from codex_harness.execution.adapters.execution_output import evidence_json
+
+    artifacts, raw = production_artifacts(tmp_path)
+    body = evidence_json(stream_document("구현을 마쳤습니다 (an ordinary assistant message)"))
+    receipt = artifacts.put(body, "execution:task-2")
+    assert stored_bytes(raw, receipt) == body.encode("utf-8") and receipt["redactions"] == 0
+    assert raw.put(body, "execution:task-2")["ref"] == receipt["ref"]  # the same bytes as an unwrapped store
+
+
+def test_only_provider_stream_artifacts_are_redacted(tmp_path):
+    artifacts, raw = production_artifacts(tmp_path)
+    body = json.dumps({"note": TOKEN})
+    receipt = artifacts.put(body, "git-rebase")
+    assert stored_bytes(raw, receipt) == body.encode() and "redactions" not in receipt
