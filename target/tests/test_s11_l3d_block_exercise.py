@@ -296,6 +296,10 @@ def test_the_decide_one_example_of_the_design_executes_block_1_and_not_2_or_3():
         reaching = {c for c, v in artifact.items() if f"{base}{block}" in v}
         assert reaching and all(outcome in c for c in reaching)
     assert not {f"{base}#2", f"{base}#3"} & {k for c, v in artifact.items() if "blocked" not in c for k in v}
+    # S11 AU-REC-6b: Executor._block_for_reconciliation#1 is reached only by the cases whose run raises ReconciliationRequired
+    reconciliation = "codex_harness.adapters.executor:Executor._block_for_reconciliation#1"
+    reaching = {c for c, v in artifact.items() if reconciliation in v}
+    assert reaching and all("reconciliation_required" in c for c in reaching)
     (entry,) = [e for e in table if e["atomic_unit"] == f"{base}#1" and e["family"] == "effects.decision_unit"]
     assert entry["basis"] == "block_exercise" and entry["writes_observed"] == ["decisions_pending"]
 

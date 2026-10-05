@@ -88,7 +88,7 @@
     "codex_harness.adapters.executor:Executor.decide_one#2",
     "codex_harness.adapters.executor:Executor.decide_one#3"
    ],
-   "driver_call": "compare/drivers/reference/decision_unit.py:181",
+   "driver_call": "compare/drivers/reference/decision_unit.py:188",
    "family": "effects.decision_unit",
    "golden_unit": "decision_unit",
    "reason": "0 of 3 blocks of Executor.decide_one cover the golden buckets ['release_queue', 'releases']"
@@ -99,7 +99,7 @@
     "codex_harness.adapters.executor:Executor.decide_one#2",
     "codex_harness.adapters.executor:Executor.decide_one#3"
    ],
-   "driver_call": "compare/drivers/reference/decision_unit.py:181",
+   "driver_call": "compare/drivers/reference/decision_unit.py:188",
    "family": "effects.decision_unit.pg",
    "golden_unit": "decision_unit",
    "reason": "0 of 3 blocks of Executor.decide_one cover the golden buckets ['release_queue', 'releases']"
@@ -1432,6 +1432,21 @@
    "driver_call": "compare/drivers/common/s6_research.py:285",
    "family": "effects.continuation_units.pg",
    "golden_unit": "grant_capacity"
+  },
+  {
+   "atomic_unit": "codex_harness.adapters.executor:Executor._block_for_reconciliation#1",
+   "basis": "block_exercise",
+   "block": "#1",
+   "case": "a_failure_at_outcome_reconciliation_required",
+   "cases": [
+    "a",
+    "b",
+    "c"
+   ],
+   "family": "effects.decision_unit",
+   "golden_unit": "decision_unit",
+   "via": "rule6_case",
+   "writes_observed": null
   },
   {
    "atomic_unit": "codex_harness.adapters.executor:Executor._commit_decision#1",
