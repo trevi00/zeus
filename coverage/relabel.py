@@ -194,6 +194,8 @@ def read_compare(path: Path) -> dict[str, dict]:
         raise Refused(f"compare report {path.name}: ok is not true")
     out = {}
     for fam, entry in (report.get("scenarios") or {}).items():
+        if entry.get("target") is None and str(entry.get("reference", "")).startswith("not requested"):
+            continue  # a .pg/.pgredis family this run did not execute (the owner ran those in their own report)
         out[fam] = {k: entry.get(k) for k in ("target", "reference", "origin_ok", "target_origin_ok")}
     return out
 
@@ -247,16 +249,16 @@ def build_bundle(root: Path, junit: Path, compares: list[Path], owner_runs: list
 
 
 def working_tree_drift(root: Path, head: str) -> list[str]:
-    """Bound inputs whose working tree differs from `head` (R-L13 set); test modules added later do not count."""
-    problems = []
+    """Bound inputs whose working tree differs from `head` (R-L13 set). A test module is not checked here: a changed
+    collection fails the JUnit mapping, and a changed evidence module is `freshness`'s finding."""
     diff = git(root, "diff", "--name-status", "--no-renames", head, "--", "target/src", "compare",
                "target/pyproject.toml", "target/uv.lock", "target/tests")
+    out = []
     for line in diff.splitlines():
         status, path = line.split("\t", 1)
-        if path.startswith("target/tests/") and is_test_module(path) and status == "A":
-            continue
-        problems.append(f"{status} {path}")
-    return problems
+        if not is_test_module(path):
+            out.append(f"{status} {path}")
+    return out
 
 
 def dump_json(document: dict) -> str:
@@ -370,7 +372,8 @@ class Tree:
 
     def capabilities(self) -> dict[str, dict]:
         """ARCHITECTURE.md `## Capabilities`: TARGET symbols and tests, and the PROPOSED rows that still say pending."""
-        text = self.read(CAPABILITY_DOC).split("\n## Capabilities", 1)[1].split("\n## ", 1)[0]
+        text = re.split(r"^## ", re.split(r"^## Capabilities$", self.read(CAPABILITY_DOC), maxsplit=1, flags=re.M)[1],
+                        maxsplit=1, flags=re.M)[0]
         out: dict[str, dict] = collections.defaultdict(lambda: {"symbols": [], "tests": [], "pending": []})
         for line in text.splitlines():
             if not line.startswith("|"):
@@ -528,11 +531,19 @@ class Relabel:
 
     # -- the target symbol (R-L3, R-L9, R-L11) ---------------------------------------------------------------------
     def symbol(self, row: dict):
-        """-> (resolves, reason)."""
-        kind, syms = row["kind"], row.get("target_symbol") or []
+        """-> (resolves, reason): every target symbol of the row resolves (R-L3), the first failure is the reason."""
+        syms = row.get("target_symbol") or []
         if not syms:
             return False, "no target symbol"
-        s0 = syms[0].split(" (")[0].strip()
+        for sym in syms:
+            ok, why = self.one_symbol(row, sym)
+            if not ok:
+                return False, why
+        return True, ""
+
+    def one_symbol(self, row: dict, sym: str):
+        kind, syms = row["kind"], [sym]
+        s0 = sym.split(" (")[0].strip()
         t = self.tree
         if kind == "contract":
             cid = row["key"][len("contract:"):]
