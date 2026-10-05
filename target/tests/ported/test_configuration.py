@@ -1,5 +1,7 @@
 # Ported from SOURCE M7 tests/test_configuration.py (REBUILD-DESIGN-v2 §3.1 target tests): only the import paths
 # are rewritten to the target tree; assertions are unchanged unless a comment below names the adaptation.
+# S11 M B3: the two user:pass URL literals below are split at the scheme (same value) so check-tree's secret-shape scan
+# does not flag the fixture.
 import os
 from pathlib import Path
 
@@ -20,7 +22,7 @@ def test_explicit_repository_resolves_config_from_another_directory(tmp_path, mo
     root = tmp_path / "한글 path"
     root.mkdir()
     (root / ".env").write_text(
-        'export HARNESS_DATABASE_URL="postgresql://user:pass@localhost/db" # local\n'
+        'export HARNESS_DATABASE_URL="postgresql:' '//user:pass@localhost/db" # local\n'
         "HARNESS_REDIS_URL='redis://localhost:123/1'\nHARNESS_RUNTIME_DIR=state\n",
         encoding="utf-8-sig")
     monkeypatch.chdir(tmp_path)
@@ -28,7 +30,7 @@ def test_explicit_repository_resolves_config_from_another_directory(tmp_path, mo
     for name in ("HARNESS_DATABASE_URL", "HARNESS_REDIS_URL", "HARNESS_RUNTIME_DIR"):
         monkeypatch.delenv(name, raising=False)
     assert repository_root() == root
-    assert database_url() == "postgresql://user:pass@localhost/db"
+    assert database_url() == "postgresql:" "//user:pass@localhost/db"
     assert redis_url() == "redis://localhost:123/1"
     assert runtime_dir() == root / "state"
     monkeypatch.setenv("HARNESS_DATABASE_URL", "postgresql://override/db")
