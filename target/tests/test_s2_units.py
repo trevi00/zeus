@@ -37,6 +37,7 @@ def test_exact_metadata_command_from_the_target_checkout_root(child_env):
 
 
 def test_overflow_refuses_and_optional_items_are_omitted_not_truncated():
+    # Cites INV-CONTEXT-001 (S11 CT; DESIGN-s11 §5 R-L9): this test exercises the contract's stated behaviour.
     with pytest.raises(ContractError, match="Required contract exceeds budget; split task"):
         compile_context("a", "t", "s", {**REQUIRED, "objective": "x" * 5000}, [], 4000, 0)
     packet = compile_context("a", "t", "s", REQUIRED, [ContextItem("big", "y" * 5000, "ref", "rev", 1),

@@ -80,6 +80,7 @@ def test_temporal_partition_and_sample_floors():
 
 
 def test_closed_registry_and_direction_enforcement(monkeypatch):
+    # Cites INV-THRESHOLD-PROPOSAL-001 (S11 CT; DESIGN-s11 §5 R-L9): this test exercises the contract's stated behaviour.
     validate_registry()
     assert len(REGISTRY) == 5 and len(LOCKED_DENY) == 12
     entry = replace(REGISTRY[NAME], direction_safety='raise_safe')

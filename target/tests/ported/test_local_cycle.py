@@ -72,6 +72,7 @@ class FakeExecutor:
 
 
 def test_start_is_idempotent_and_refuses_a_different_policy():
+    # Cites INV-LOCAL-CYCLE-001 (S11 CT; DESIGN-s11 §5 R-L9): this test exercises the contract's stated behaviour.
     svc = service()
     first = LocalCycle(svc).start("c1", CORR, 2)
     assert LocalCycle(svc).start("c1", CORR, 2) == first

@@ -80,6 +80,7 @@ def test_time_containment_retains_first_observation_on_redelivery(backend, reque
     (0, float('nan'), 'InvalidExecutionClock'), (0, float('inf'), 'InvalidExecutionClock')])
 def test_clock_comparison_contract(wall_delta, mono_delta, reason):
     # Pure input matrix, not a claim that the operating-system clock was changed.
+    # Cites INV-EXECUTION-TIME-001 (S11 CT; DESIGN-s11 §5 R-L9): this test exercises the contract's stated behaviour.
     wall = datetime(2026, 1, 1, tzinfo=timezone.utc)
     row = {'execution_clock': {'version': 1, 'domain': 'sample', 'wall': wall.isoformat(),
            'monotonic': 100, 'lease_seconds': 600, 'deadline_remaining': None}}

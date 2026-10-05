@@ -166,6 +166,7 @@ def test_an_uncaught_exception_is_one_and_names_only_a_builtin_type(journal, mon
 
 
 def test_an_exception_defined_outside_builtins_is_unknown_not_its_name(journal, monkeypatch):
+    # Cites INV-SERVICE-DIAGNOSTICS-001 (S11 CT; DESIGN-s11 §5 R-L9): this test exercises the contract's stated behaviour.
     class SecretLookingError(RuntimeError):
         pass
 

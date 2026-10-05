@@ -1,5 +1,6 @@
 # Ported from SOURCE M7 tests/test_graph_topology.py (REBUILD-DESIGN-v2 §3.1 target tests): only the import paths
 # are rewritten to the target tree; assertions are unchanged unless a comment below names the adaptation.
+# Cites INV-GRAPH-001 (S11 CT; DESIGN-s11 §5 R-L9): this test exercises the contract's stated behaviour.
 from codex_harness.knowledge.adapters.postgres_knowledge import extract_python
 
 

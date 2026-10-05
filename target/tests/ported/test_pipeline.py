@@ -91,6 +91,7 @@ def test_node_missing_stage_definitions_remain_visible():
 
 
 def test_git_override_boost_is_stack_filtered_and_changes_only_after_commit(tmp_path):
+    # Cites INV-PIPELINE-001 (S11 CT; DESIGN-s11 §5 R-L9): this test exercises the contract's stated behaviour.
     root = tmp_path / 'project'
     root.mkdir()
     git = GitWorkspace(str(root), str(tmp_path / 'workspaces'))

@@ -169,6 +169,7 @@ def foreign_audit(connected, audit_id="foreign-audit-fixture"):
 
 # ----- the run gate: only a matching active release and an explicitly selected audit ------------
 def test_the_gate_refuses_inactive_stale_foreign_and_unknown_scope(connected):
+    # Cites INV-AUDIT-SERVICE-001 (S11 CT; DESIGN-s11 §5 R-L9): this test exercises the contract's stated behaviour.
     store, org = connected.store, connected.service.org
     assert gate.activation(store, org, connected.audit_id, REVISION)["partitions"] == 4
     with pytest.raises(gate.AuditServiceRefused, match="unknown_audit"):

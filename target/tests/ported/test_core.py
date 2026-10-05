@@ -147,6 +147,7 @@ def test_failure_never_activates_and_pass_survives_new_service(service):
 
 
 def test_checkpoint_generation_fences_old_session(service):
+    # Cites INV-SESSION-001 (S11 CT; DESIGN-s11 §5 R-L9): this test exercises the contract's stated behaviour.
     state = {"next_action": "verify", "source_revision": "abc", "graph_snapshot": "123"}
     assert service.checkpoint("worker:implementation", 0, state)["generation"] == 1
     with pytest.raises(ContractError, match="Stale session"):

@@ -147,6 +147,7 @@ def test_frontmatter_requires_a_bare_closing_fence():
 
 def test_inline_comments_never_enter_matcher_values():
     # FA-011: the upstream template copied with its inline comments must route, not corrupt.
+    # Cites INV-SKILL-001 (S11 CT; DESIGN-s11 §5 R-L9): this test exercises the contract's stated behaviour.
     from codex_harness.context.adapters.skill_routing import frontmatter
     meta, body = frontmatter('---\nkeywords: [alpha, "beta gamma"]   # 매칭 키워드\n'
                              'intent: 구현해 # 의도\nmin_score: 2  # 전문 본문 임계\n'

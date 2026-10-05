@@ -83,6 +83,7 @@ def test_replay_matches_actual_bodies_and_uses_base_instead_of_boosted_score(tmp
 
 @pytest.mark.parametrize('change', ['hash', 'model', 'body', 'eligibility', 'duplicate'])
 def test_unreproducible_or_missing_evidence_is_not_success(tmp_path, change):
+    # Cites INV-NATIVE-REPLAY-001 (S11 CT; DESIGN-s11 §5 R-L9): this test exercises the contract's stated behaviour.
     artifacts, manifest, _, _ = routed(tmp_path)
     if change == 'model':
         manifest['routing'].pop('admission_model')

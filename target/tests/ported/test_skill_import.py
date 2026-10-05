@@ -37,6 +37,7 @@ def row(ts='2020-01-01T00:00:00Z', **changes):
 
 
 def test_replay_append_torn_tail_and_changed_prefix_preserve_source(tmp_path):
+    # Cites INV-SKILL-IMPORT-001 (S11 CT; DESIGN-s11 §5 R-L9): this test exercises the contract's stated behaviour.
     source = tmp_path / 'skill-match.jsonl'
     artifacts, store = FileArtifacts(str(tmp_path / 'artifacts')), MemoryStore()
     source.write_bytes(row() + row() + b'{"ts":')

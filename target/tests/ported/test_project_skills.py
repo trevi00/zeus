@@ -122,6 +122,7 @@ def test_packaged_skills_are_collected_at_any_depth_and_underscore_directories_a
     'project_id: invalid', 'project_id: 00000000-0000-0000-0000-000000000000',
 ], ids=lambda text: f'yaml-{len(text)}')
 def test_invalid_profile_never_falls_back_to_all_skills(text):
+    # Cites INV-PROJECT-001 (S11 CT; DESIGN-s11 §5 R-L9): this test exercises the contract's stated behaviour.
     with pytest.raises(ContractError):
         parse_profile(text)
 

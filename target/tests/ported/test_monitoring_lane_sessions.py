@@ -146,6 +146,7 @@ def resolver(stores):
 
 
 def test_lane_sessions_show_lane_executions_the_control_store_does_not_hold(tmp_path):
+    # Cites INV-LANE-SESSIONS-001 (S11 CT; DESIGN-s11 §5 R-L9): this test exercises the contract's stated behaviour.
     control, stores = registered(tmp_path), {'a': lane_a_fixture(), 'b': lane_b_fixture()}
     before = {name: deepcopy(store.data) for name, store in {'control': control, **stores}.items()}
     facts = monitoring.lane_session_facts(monitoring.ReadOnlyStore(control), resolver(stores))

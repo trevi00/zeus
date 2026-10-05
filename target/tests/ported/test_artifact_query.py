@@ -127,6 +127,7 @@ def test_index_pages_every_path_without_including_huge_values():
 
 @pytest.mark.parametrize("limit", [511, 32001, True, 512.0])
 def test_invalid_output_budgets_are_rejected(limit):
+    # Cites INV-ARTIFACT-001 (S11 CT; DESIGN-s11 §5 R-L9): this test exercises the contract's stated behaviour.
     with pytest.raises(artifact_query.ArtifactQueryError, match="Output limit"):
         artifact_query.page("sha256:" + "f" * 64, "x", limit=limit)
 

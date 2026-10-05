@@ -56,6 +56,7 @@ def observation_data():
 
 
 def test_missing_spec_empty_coverage_and_unknown_authority_fields_rejected():
+    # Cites INV-SDD-001 (S11 CT; DESIGN-s11 §5 R-L9): this test exercises the contract's stated behaviour.
     with pytest.raises(ContractError):
         validate_spec({})
     for key, value in (("scenarios", []), ("requirements", []), ("human_approved", True)):

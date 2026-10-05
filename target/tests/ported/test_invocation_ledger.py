@@ -60,6 +60,7 @@ def running_lease(store, owner='owner-1', seconds=60, agent='worker:implementati
 
 
 def test_request_matrix_refuses_unknown_and_unsupported_options_before_execution():
+    # Cites INV-INVOCATION-001 (S11 CT; DESIGN-s11 §5 R-L9): this test exercises the contract's stated behaviour.
     accepted = parse_request('app_server', {'model': 'gpt-5-codex', 'timeout': 30, 'output_schema': SCHEMA,
                                             'read_only': False})
     assert accepted['options'] == {'model': 'gpt-5-codex', 'timeout': 30, 'output_schema': SCHEMA, 'read_only': False}

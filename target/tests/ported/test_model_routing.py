@@ -45,6 +45,7 @@ from codex_harness.storage.adapters.memory_store import MemoryStore
     ('implementation', 'unknown', 'gpt-6-astra'),
 ])
 def test_conservative_domain_routing(workload, importance, model):
+    # Cites INV-MODEL-001 (S11 CT; DESIGN-s11 §5 R-L9): this test exercises the contract's stated behaviour.
     selection = select_model(workload, importance)
     assert selection.requested_model == model
     assert selection.importance == ('unknown' if workload == 'implementation' and importance is None

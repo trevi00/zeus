@@ -187,6 +187,7 @@ def test_unlocked_store_is_the_failure_control(isolated_pgstore, tmp_path):
 
 @pytest.mark.parametrize('operation', ['record_incident', 'claim'])
 def test_memory_store_threads_serialize_with_the_same_pause(monkeypatch, operation):
+    # Cites INV-IDEMPOTENCY-001 (S11 CT; DESIGN-s11 §5 R-L9): this test exercises the contract's stated behaviour.
     store = MemoryStore()
     original = MemoryTransaction.scan
 

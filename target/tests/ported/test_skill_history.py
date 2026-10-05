@@ -189,6 +189,7 @@ def test_advisory_failures_degrade_but_ownership_failure_still_stops_work(tmp_pa
 def test_budget_omission_is_recorded_as_omitted_not_full(tmp_path):
     # Review counterexample (PR #45): a 50,000-char full skill under a 22,000-byte budget never reached
     # the packet, yet the audit counted delivery.full=1. The record now comes from the sealed packet.
+    # Cites INV-SKILL-HISTORY-001 (S11 CT; DESIGN-s11 §5 R-L9): this test exercises the contract's stated behaviour.
     from codex_harness.context.adapters.skill_history import finalize_delivery, record_history
     store, artifacts = MemoryStore(), FileArtifacts(str(tmp_path / 'artifacts'))
     body = 'X' * 50_000
