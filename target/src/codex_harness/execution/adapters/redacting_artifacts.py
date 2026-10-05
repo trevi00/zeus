@@ -5,13 +5,13 @@ Context: execution
 Owns: `RedactingArtifacts`, an artifact-store decorator that redacts the persisted provider-stream artifacts
     (`runtime-event:` and `execution:` sources) and records the count in the artifact's receipt
 Does not own: the artifact store and its digest (storage), the credential-pattern redaction itself (observation's
-    `redact_text`, injected by composition: execution may not import observation), the other artifact sources
+    `redact_credential_shapes`, injected by composition: execution may not import observation), the other artifact sources
 Entry points: RedactingArtifacts, STREAM_SOURCES, redact_document
 Contracts: INV-ARTIFACT-001, INV-OBSERVATION-001
 
 S11 XC-2b B3 (TQ-XCUT-PLAN B3): the provider's text (assistant text, tool results, result text, stderr tail) is persisted by
 RunTask as `runtime-event:<key>` and `execution:<key>` artifacts and served verbatim by `zeus artifact`. The document is parsed,
-every string in it (keys included) goes through the injected `redact(text) -> (text, count)`, and the artifact is the
+every string in it (keys included) goes through the injected `redact(text) -> (text, count)` (credential SHAPES only: other bytes, prose included, are unchanged), and the artifact is the
 redacted document: the store's digest is of the redacted bytes. With no credential-shaped span the body is passed through
 unchanged (byte-identical to before) and the receipt records `redactions: 0`. Other artifacts are never touched.
 """

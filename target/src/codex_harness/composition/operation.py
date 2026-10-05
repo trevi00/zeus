@@ -108,7 +108,7 @@ from codex_harness.observation.application.observations import (
     PostExecutionRecordFailure,
     ReconciliationRequired,
 )
-from codex_harness.observation.domain.observation import redact_text
+from codex_harness.observation.domain.observation import redact_credential_shapes, redact_text
 from codex_harness.research.adapters import autonomous_roles, correction_feedback, runtime_thresholds
 from codex_harness.research.adapters.audit_execution import AuditExecution
 from codex_harness.research.adapters.audit_runner import AuditRunner
@@ -328,7 +328,7 @@ class Executor:
         # S11 XC-2b B3: RunTask's provider-stream artifacts (`runtime-event:`, `execution:`) are redacted at write by
         # observation's `redact_text`, injected here (execution may not import observation).
         self.run_task = RunTask(
-            store, org, git, RedactingArtifacts(artifacts, redact_text),
+            store, org, git, RedactingArtifacts(artifacts, redact_credential_shapes),
             ledger=TaskOwnership(self.workflow, store=store, ids=SYSTEM_IDS),
             admission=InvocationBreaker(self.breaker), invocations=self.invocations,
             sessions=SessionCheckpoints(store, org, workflow=self.workflow, ids=SYSTEM_IDS),
