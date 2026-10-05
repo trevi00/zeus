@@ -40,9 +40,8 @@ ALLOWED_NONE = {
     ("Transports.__init__", "hooks"): "container hooks serve only the isolated Codex role container (S10 unit C5c)",
 }
 # Parameters whose provider is absent at this head: the object holds its own refusing default, never a silent one.
-ALLOWED_UNWIRED = {
-    ("ReviewDecisions.__init__", "threshold_review"): review_decisions._threshold_review_unwired,  # S8 B6 (M7 review_threshold)
-}
+# S11 XC-8 G1: none now; `threshold_review` is wired (the refusing default is asserted gone in test_s11_xc8).
+ALLOWED_UNWIRED = {}
 # parameter -> attribute, where the class stores it under another name.
 ATTRIBUTE = {"Workflow.__init__": {"organization": "org"}, "ExecutionRecovery.__init__": {"organization": "org"},
              "Releases.__init__": {"organization": "org"}}
@@ -136,6 +135,8 @@ def test_every_inventory_row_is_wired(tmp_path, settings):
             key = (function, parameter)
             if key in ALLOWED_UNWIRED:
                 assert value is ALLOWED_UNWIRED[key], key
+            elif key == ("ReviewDecisions.__init__", "threshold_review"):  # S11 XC-8: wired, not the refusing default
+                assert value is not review_decisions._threshold_review_unwired, key
             elif value is None and key not in ALLOWED_NONE:
                 unwired.append(key)
     assert unwired == []
