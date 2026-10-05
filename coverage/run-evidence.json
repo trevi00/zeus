@@ -1057,6 +1057,16 @@
    "target_origin_ok": true
   }
  },
+ "hashed_ids": {
+  "count": 4,
+  "paths": {
+   "sha256:038621eec4ed3cb78950470032fe8f5e0f3328f34aee49c53b514462b1870c6a": "tests/ported/test_host_migration_evidence.py",
+   "sha256:21213cf9af0adcf92f8ea43d9ee74ddf853ba36b8b9b2468c17dbe44cd586b82": "tests/ported/test_host_migration_evidence.py",
+   "sha256:97c05ad5eb62c20e0701a093bd663a90e73128f73a6d6b7c7a43306c051afacc": "tests/ported/test_host_migration_evidence.py",
+   "sha256:d0f8199df7184f81c23c7af997ae6ce979472305a03f62ef001d4d14e4262636": "tests/ported/test_host_migration_evidence.py"
+  },
+  "reason": "check-tree SECRET_SHAPES; IDs unchanged in the tests (R-M1)"
+ },
  "head": "143a3bca268932065c0166cc6a66f87c3d30681d",
  "ids": {
   "compare": "4ec341d8d3dd00601bc33419af5ed40524c6bf39",
@@ -1094,6 +1104,10 @@
   "A/evidence/rebuild/s11/integration/ti-143a3bca.junit.xml": "36f9e054ce2ced3cfb1d6412eb897ae4f6fdbf1831c01911aec8a13f554d3fa3"
  },
  "nodes": [
+  "sha256:038621eec4ed3cb78950470032fe8f5e0f3328f34aee49c53b514462b1870c6a",
+  "sha256:21213cf9af0adcf92f8ea43d9ee74ddf853ba36b8b9b2468c17dbe44cd586b82",
+  "sha256:97c05ad5eb62c20e0701a093bd663a90e73128f73a6d6b7c7a43306c051afacc",
+  "sha256:d0f8199df7184f81c23c7af997ae6ce979472305a03f62ef001d4d14e4262636",
   "tests/ported/test_aibox_data_manifest.py::test_allowlist_rejects_mapping_an_immutable_bucket",
   "tests/ported/test_aibox_data_manifest.py::test_artifact_store_accepts_real_file_artifacts_output",
   "tests/ported/test_aibox_data_manifest.py::test_artifact_store_verification_matches_file_artifacts_rules",
@@ -4157,11 +4171,7 @@
   "tests/ported/test_host_migration_evidence.py::test_a_credential_given_as_an_env_name_is_refused_and_never_echoed[--dsn]",
   "tests/ported/test_host_migration_evidence.py::test_a_fifo_in_place_of_a_file_is_unknown_and_never_blocks",
   "tests/ported/test_host_migration_evidence.py::test_a_link_in_place_of_a_file_is_unknown",
-  "tests/ported/test_host_migration_evidence.py::test_a_malformed_dsn_or_a_secret_variable_is_refused_without_its_value[--control-dsn-env-postgresql://zeus:hun%zzter2@127.0.0.1/zeus]",
-  "tests/ported/test_host_migration_evidence.py::test_a_malformed_dsn_or_a_secret_variable_is_refused_without_its_value[--control-dsn-env-postgresql://zeus:hunter2@[unterminated/zeus]",
   "tests/ported/test_host_migration_evidence.py::test_a_malformed_dsn_or_a_secret_variable_is_refused_without_its_value[--control-dsn-env-sk-live-hunter2-secret]",
-  "tests/ported/test_host_migration_evidence.py::test_a_malformed_dsn_or_a_secret_variable_is_refused_without_its_value[--dsn-env-postgresql://zeus:hun%zzter2@127.0.0.1/zeus]",
-  "tests/ported/test_host_migration_evidence.py::test_a_malformed_dsn_or_a_secret_variable_is_refused_without_its_value[--dsn-env-postgresql://zeus:hunter2@[unterminated/zeus]",
   "tests/ported/test_host_migration_evidence.py::test_a_malformed_dsn_or_a_secret_variable_is_refused_without_its_value[--dsn-env-sk-live-hunter2-secret]",
   "tests/ported/test_host_migration_evidence.py::test_a_reused_pid_keeps_only_an_argv_digest_and_its_arguments_never_reach_the_output[entry]",
   "tests/ported/test_host_migration_evidence.py::test_a_reused_pid_keeps_only_an_argv_digest_and_its_arguments_never_reach_the_output[supervisor]",

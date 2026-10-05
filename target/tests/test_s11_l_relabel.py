@@ -197,6 +197,40 @@ def test_an_unreadable_owner_run_artifact_refuses_the_bundle(tree, tmp_path):
         build(tree, tmp_path, owner=[tmp_path / "absent.txt"])
 
 
+DSN_NODE = "tests/ported/test_old.py::test_p[--dsn-env-postgresql://zeus:pw@[unterminated/zeus]"
+
+
+def test_a_credential_shaped_node_id_is_stored_hashed_and_a_plain_id_never_is(tree, tmp_path):
+    import hashlib
+
+    plain = "tests/test_b.py::test_other"
+    assert relabel.hashed_id(plain) == plain
+    assert relabel.hashed_id(DSN_NODE) == "sha256:" + hashlib.sha256(DSN_NODE.encode()).hexdigest()
+    collected = [*COLLECTED, DSN_NODE]
+    cases = [*CASES, ("tests.ported.test_old", "test_p[--dsn-env-postgresql://zeus:pw@[unterminated/zeus]",
+                      '<skipped type="pytest.skip"/>')]
+    doc = build(tree, tmp_path, cases=cases, collected=collected)
+    hashed = relabel.hashed_id(DSN_NODE)
+    assert doc["hashed_ids"]["count"] == 1 and doc["hashed_ids"]["paths"] == {hashed: "tests/ported/test_old.py"}
+    assert hashed in doc["nodes"] and DSN_NODE not in doc["nodes"] and doc["not_passed"][hashed] == "skipped"
+    assert "pw@" not in json.dumps(doc) and plain in doc["nodes"]
+    # the relabel keeps the hashed node in its file: a file item sees the skipped node (not a pass, not a failure)
+    out, _ = run([row(slice_="S7", evidence=("reference:tests/test_old.py",))], tree, doc)
+    assert out["api:x.py::f"]["status"] == "verified"
+    doc["not_passed"][hashed] = "failure"
+    out, _ = run([row(slice_="S7", evidence=("reference:tests/test_old.py",))], tree, doc)
+    assert has_unmet(out["api:x.py::f"], "reference test not passing")
+
+
+def test_the_secret_shapes_equal_compare_run():
+    import ast
+
+    tree = ast.parse((ROOT / "compare/run.py").read_text(encoding="utf-8"))
+    node = next(n for n in tree.body if isinstance(n, ast.Assign) and n.targets[0].id == "SECRET_SHAPES")
+    patterns = [c.value for c in ast.walk(node.value) if isinstance(c, ast.Constant) and isinstance(c.value, str)]
+    assert patterns == [p.pattern for p in relabel.SECRET_SHAPES]
+
+
 def test_a_test_module_added_after_the_evidence_head_is_not_part_of_the_evidence(tree, tmp_path):
     git_repo(tree)
     write(tree, "target/tests/test_new.py", "def test_new():\n    pass\n")
@@ -246,9 +280,12 @@ def test_a_missing_evidence_file_or_node_is_unmet(tree):
 
 
 def test_a_compare_family_without_a_target_driver_or_a_report_is_unmet(tree):
-    out, _ = run([row(slice_="S7", evidence=("compare:nodrv",)), row(key="api:y", slice_="S7", evidence=("compare:other",))],
-                 tree)
-    assert has_unmet(out["api:x.py::f"], "compare family has no target driver")
+    out, engine = run([row(slice_="S7", evidence=("compare:nodrv",)),
+                       row(key="api:y", slice_="S7", evidence=("compare:other",)),
+                       row(key="api:z", slice_="S7", evidence=("compare:nodrv", "compare:fam"))], tree)
+    # R-L2b: a family with no target driver is context: neither passing nor missing
+    assert has_unmet(out["api:x.py::f"], "no passing executable item") and out["api:x.py::f"]["status"] == "designed"
+    assert out["api:z"]["status"] == "verified" and engine.reference_only == {"nodrv"}
     assert has_unmet(out["api:y"], "compare scenario absent")
     out, _ = run([row(slice_="S7", evidence=("compare:fam#part (a note)",))], tree,
                  bundle_for(compare={"fam": {"target": "diverged", "reference": "equal", "origin_ok": True,
@@ -303,9 +340,22 @@ def test_a_reference_item_needs_the_same_name_ported_file_with_every_node_passin
     ok, _ = run([row(slice_="S7", evidence=("reference:tests/test_old.py",))], tree)
     assert ok["api:x.py::f"]["status"] == "verified"
     none, _ = run([row(slice_="S7", evidence=("reference:tests/test_nothere.py",)),
-                   row(key="api:y", slice_="S7", evidence=("reference:+3 more test files",))], tree)
+                   row(key="api:y", slice_="S7", evidence=("reference:+3 more test files", "target:tests/test_b.py"))], tree)
     assert has_unmet(none["api:x.py::f"], "reference has no same-name ported file")
-    assert has_unmet(none["api:y"], "unnamed reference test files")
+    assert none["api:y"]["status"] == "verified"  # R-L2d: the unnamed truncation is context
+    # R-L2c: a file item passes with >=1 passing node and none failed (skips are never passes)
+    write(tree, "target/tests/ported/test_two.py", "def test_a():\n    pass\n\n\ndef test_b():\n    pass\n")
+    nodes = [*NODES, "tests/ported/test_two.py::test_a", "tests/ported/test_two.py::test_b"]
+    item = ("reference:tests/test_two.py",)
+    mixed, _ = run([row(slice_="S7", evidence=item)], tree,
+                   bundle_for(nodes=nodes, not_passed={"tests/ported/test_two.py::test_b": "skipped"}))
+    assert mixed["api:x.py::f"]["status"] == "verified"
+    failed, _ = run([row(slice_="S7", evidence=item)], tree,
+                    bundle_for(nodes=nodes, not_passed={"tests/ported/test_two.py::test_b": "failure"}))
+    assert has_unmet(failed["api:x.py::f"], "reference test not passing")
+    allskip, _ = run([row(slice_="S7", evidence=item)], tree, bundle_for(
+        nodes=nodes, not_passed={"tests/ported/test_two.py::test_a": "skipped", "tests/ported/test_two.py::test_b": "skipped"}))
+    assert has_unmet(allskip["api:x.py::f"], "reference test not passing")
 
 
 def test_an_owner_run_item_passes_only_when_the_bundle_lists_the_artifact(tree):
