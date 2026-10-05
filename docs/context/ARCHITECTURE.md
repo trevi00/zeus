@@ -165,6 +165,19 @@ is pending the disposable rehearsal (R2); until then no shim is dropped.
 - Goldens under `compare/goldens/reference/` come only from reference runs; they are never rewritten
   to match new code, and masks change only through the closed list in `compare/masks.json`.
 
+## Local trust boundary (XC-2a B5, owner 2026-10-05)
+
+`docs/contracts.md` is a reference-fixed path in this rebuild, so the statement lives here, beside the layer map.
+
+- The bus and the CLI trust the local OS user, exactly as the desk does (`entry/http/desk.py`): a sender, actor or
+  approver named in a message or a CLI argument is an asserted string, not an authenticated identity.
+- Authority for a review, report or result comes from durable rows, never from the asserted sender: a `review.result` or
+  `task.result` is accepted only when a stored decision or task row binds that sender and that result
+  (`MessageHandler.handle`, "Unproven decision result" / "Unproven task result"; pinned by
+  `target/tests/test_s11_xc2a.py`).
+- Redis must stay loopback-only and/or ACL'd. That is deployment configuration, recorded for the R/C review; the
+  product does not enforce it.
+
 ## Guardrail index
 
 `compare/run.py` (manifest check, reference environment, differential runs), `compare/baseline.json`
