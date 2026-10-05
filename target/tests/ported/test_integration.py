@@ -10,7 +10,7 @@ from m7_intake import Harness, organization
 from psycopg import sql
 from psycopg.conninfo import make_conninfo
 
-from codex_harness.composition import database_url, redis_url
+from codex_harness.composition import redis_url
 from codex_harness.kernel.errors import ContractError
 from codex_harness.kernel.ids import canonical, digest
 from codex_harness.kernel.message import envelope
@@ -20,6 +20,16 @@ from codex_harness.storage.adapters.redis_bus import RedisBus
 
 pytestmark = [pytest.mark.integration, pytest.mark.skipif(
     os.environ.get("HARNESS_INTEGRATION") != "1", reason="Set HARNESS_INTEGRATION=1 for local services")]
+
+
+def database_url() -> str:
+    # S11 M B2: M7's integration job configured HARNESS_DATABASE_URL through `harness setup`; the target integration run
+    # provides the disposable ZEUS_TEST_DSN instead (the source of tests/ported/conftest.py `isolated_pgstore`, whose
+    # production-port refusal applies). HARNESS_REDIS_URL is provided as in M7, so `redis_url` is unchanged.
+    dsn = os.environ.get("ZEUS_TEST_DSN")
+    if not dsn:
+        raise RuntimeError("Set ZEUS_TEST_DSN to a disposable PostgreSQL (the target integration run provides it)")
+    return dsn
 
 
 @pytest.fixture
