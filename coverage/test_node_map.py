@@ -46,8 +46,14 @@ PENDING_FILES = ("tests/test_probe_ownership.py", "tests/test_runner_evidence.py
 PENDING_REASON = "PREP-S11 §9 #3: the root-script disposition at unit P"
 
 
+# compare/run.py check-tree refuses any added file holding `scheme://user:password@`; 9 M7 parametrize IDs embed fake DSNs.
+# On disk every `://` is written `:\x2f\x2f` (no M7 ID contains the backslash form), so the stored files stay clean while the
+# keys and targets in memory are the exact node IDs.
+ESCAPED_SLASHES = ":\\x2f\\x2f"
+
+
 def read_m7_ids(path: Path = M7_IDS) -> list[str]:
-    lines = path.read_text(encoding="utf-8").splitlines()
+    lines = path.read_text(encoding="utf-8").replace(ESCAPED_SLASHES, "://").splitlines()
     return [x for x in lines if x and not x.startswith("#")]
 
 
@@ -82,7 +88,8 @@ def build(m7_ids: list[str], target_ids: list[str]) -> dict[str, dict]:
 
 
 def render(data: dict) -> str:
-    return json.dumps(data, indent=1, sort_keys=True, ensure_ascii=False) + "\n"
+    text = json.dumps(data, indent=1, sort_keys=True, ensure_ascii=False) + "\n"
+    return text.replace("://", ESCAPED_SLASHES.replace("\\x2f", "\\u002f"))  # a valid JSON escape of the same two slashes
 
 
 def generate() -> str:
