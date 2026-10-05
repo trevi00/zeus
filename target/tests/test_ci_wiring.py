@@ -10,12 +10,11 @@ Removing any of them fails here.
 
 import copy
 import json
-from pathlib import Path
 
 import pytest
 import yaml
+from _layout import REPO as ROOT
 
-ROOT = Path(__file__).resolve().parents[2]
 WORKFLOW = ROOT / ".github" / "workflows" / "validation.yml"
 SOURCE = json.loads((ROOT / "compare" / "baseline.json").read_text(encoding="utf-8"))["source"]["commit"]
 SOURCE_DIR = "${{ runner.temp }}/zeus-source"

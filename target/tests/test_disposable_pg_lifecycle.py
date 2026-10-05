@@ -10,11 +10,9 @@ from __future__ import annotations
 
 import importlib.util
 import subprocess
-from pathlib import Path
 
 import pytest
-
-ROOT = Path(__file__).resolve().parents[2]
+from _layout import REPO as ROOT
 
 
 def _load():

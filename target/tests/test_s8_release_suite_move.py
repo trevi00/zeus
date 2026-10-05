@@ -15,6 +15,7 @@ import subprocess
 from pathlib import Path
 
 import pytest
+from _layout import REPO, TARGET
 
 from codex_harness.host_os import ports
 from codex_harness.host_os.adapters import process_groups
@@ -23,7 +24,6 @@ from codex_harness.observation.domain.observation import redact_text, redact_val
 from codex_harness.review.adapters import release_suite as module
 from codex_harness.review.adapters.release_suite import ReleaseSuite, bounded_log
 
-REPO = Path(__file__).resolve().parents[2]
 SOURCE = "e38aa722"
 REWRITTEN = (("bounded_log",), ("ReleaseSuite",))
 HOMES = {"__future__": ["annotations"], "hashlib": [], "json": [], "os": [], "tempfile": [], "pathlib": ["Path"],
@@ -257,7 +257,7 @@ def test_the_delivery_consumer_constructs_and_calls_it_positionally():
     suite = factory(Artifacts(), lambda: None)
     assert isinstance(suite, ReleaseSuite) and suite.batch_nodes == module.BATCH_NODES
     assert factory(Artifacts(), lambda: None, 3).batch_nodes == 3
-    consumer = (REPO / "target/src/codex_harness/delivery/adapters/deployment.py").read_text()
+    consumer = (TARGET / "src/codex_harness/delivery/adapters/deployment.py").read_text()
     assert "self.release_suite(self.artifacts, self.fence).check(argv, cwd=cwd, timeout=timeout" in consumer
 
 

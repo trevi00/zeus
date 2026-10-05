@@ -11,8 +11,8 @@ import subprocess
 from pathlib import Path
 
 import pytest
+from _layout import REPO, TARGET
 
-REPO = Path(__file__).resolve().parents[2]
 SOURCE = "e38aa722"
 MODULE = "codex_harness.evidence.application.completion"
 M7_PATH = "src/codex_harness/application/completion.py"
@@ -111,7 +111,7 @@ def test_evidence_owns_the_completion_buckets():
 
 
 def test_only_this_module_names_the_completion_buckets_in_the_target_source():
-    src = REPO / "target" / "src" / "codex_harness"
+    src = TARGET / "src" / "codex_harness"
     named = [path.relative_to(src).as_posix() for path in sorted(src.rglob("*.py"))
              if any(f"'{b}'" in path.read_text() or f'"{b}"' in path.read_text() for b in ("completion_verdicts", "completion_rejections"))]
     assert named == ["evidence/application/completion.py", "evidence/ports.py"], named

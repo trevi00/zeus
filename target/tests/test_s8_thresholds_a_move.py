@@ -13,6 +13,7 @@ import subprocess
 from pathlib import Path
 
 import pytest
+from _layout import REPO, TARGET
 
 from codex_harness.context.domain.skills import history as skill_history
 from codex_harness.context.domain.skills import import_ as skill_import
@@ -22,7 +23,6 @@ from codex_harness.kernel.ids import digest
 from codex_harness.research import ports
 from codex_harness.storage.adapters.memory_store import MemoryStore
 
-REPO = Path(__file__).resolve().parents[2]
 SOURCE = "e38aa722"
 MODULES = {
     "runtime_thresholds": ("adapters", "codex_harness.research.adapters.runtime_thresholds"),
@@ -116,7 +116,7 @@ def test_r_t2_policy_file_only_climbs_one_directory_more():
     ours = statements(target_text("runtime_thresholds"))[("POLICY_FILE",)]
     assert ast.unparse(ref).count("parents[1]") == 1 and ast.unparse(ours) == ast.unparse(ref).replace("parents[1]", "parents[2]")
     policy = module("runtime_thresholds").POLICY_FILE
-    assert policy == REPO / "target/src/codex_harness/resources/threshold-policy.json" and policy.is_file()
+    assert policy == TARGET / "src/codex_harness/resources/threshold-policy.json" and policy.is_file()
 
 
 @pytest.mark.parametrize("name", CASES)
@@ -281,7 +281,7 @@ def test_research_owns_the_three_proposal_buckets_once_each_and_only_threshold_p
     # the context-owned corpus is read by literal and never written here
     assert {ast.unparse(n.args[0]) for n in calls if n.func.attr == "get"} >= {"bucket", "'threshold_collection_inputs'", "'threshold_proposal_runs'"}
     assert "'skill_history'" in target_text("threshold_proposals") and "'legacy_skill_imports'" in target_text("threshold_proposals")
-    src = REPO / "target" / "src" / "codex_harness"
+    src = TARGET / "src" / "codex_harness"
     writers = [path.relative_to(src).as_posix() for path in sorted(src.rglob("*.py"))
                if any(f"put('{b}'" in path.read_text() or f'put("{b}"' in path.read_text() for b in BUCKETS)]
     assert writers == ["research/application/threshold_proposals.py"], writers

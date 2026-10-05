@@ -44,6 +44,7 @@ from pathlib import Path
 
 import import_rules
 import pytest
+from _layout import REPO, TARGET
 
 from codex_harness.kernel.ids import utcnow
 from codex_harness.kernel.policy import POLICY
@@ -53,8 +54,7 @@ from codex_harness.observation.adapters import observation_spool
 from codex_harness.observation.application import observations as obs
 from codex_harness.observation.domain import observation as domain
 
-REPO = Path(__file__).resolve().parents[2]
-SRC = REPO / "target" / "src" / "codex_harness"
+SRC = TARGET / "src" / "codex_harness"
 SOURCE = "e38aa722"
 BASE = "0aa71de3948485547a5191943c2fe39d9de353a0"
 M7_OBS = "src/codex_harness/application/observations.py"
@@ -276,7 +276,7 @@ def test_the_six_buckets_are_declared_and_written_only_by_the_observation_applic
     assert BUCKETS <= set(ports.OWNED_BUCKETS) and len(BUCKETS) == 6
     writers = {p.relative_to(SRC).as_posix() for p in SRC.rglob("*.py") if put_sites(p)}
     assert writers == {"observation/application/observations.py"}
-    assert import_rules.single_writer_violations(import_rules.Tree(REPO / "target" / "src")) == []
+    assert import_rules.single_writer_violations(import_rules.Tree(TARGET / "src")) == []
     # the literal form of the same rule: no other module spells a bucket name in a `tx.put(...)`
     for path in SRC.rglob("*.py"):
         if path.name != "observations.py":
@@ -284,7 +284,7 @@ def test_the_six_buckets_are_declared_and_written_only_by_the_observation_applic
 
 
 def test_no_layer_or_cycle_violation_touches_either_module():
-    violations = import_rules.check(REPO / "target" / "src")
+    violations = import_rules.check(TARGET / "src")
     assert [v for v in violations if "observation.application.observations" in v.module or "monitoring_observations" in v.module] == []
     assert violations == []
 

@@ -11,10 +11,10 @@ from pathlib import Path
 from types import SimpleNamespace
 
 import pytest
+from _layout import REPO
 
 from codex_harness.kernel.errors import ContractError
 
-REPO = Path(__file__).resolve().parents[2]
 SOURCE = "e38aa722"
 BASE_HEAD = "c794de5271601ff24a4dc8540e01a6b1286092bf"
 M7 = "src/codex_harness/domain/"

@@ -6,8 +6,9 @@ from pathlib import Path
 import masks
 import origin
 import pytest
+from _layout import REPO as ROOT
+from _layout import TARGET
 
-ROOT = Path(__file__).resolve().parents[2]
 COMPARE = ROOT / "compare"
 
 
@@ -201,7 +202,7 @@ def test_the_pinned_argv_scan_sees_a_multi_line_argv_display():
     reader = shims["codex_harness.adapters.artifact_reader"]
     assert reader["keep_shim"] is True
     assert "src/codex_harness/adapters/executor.py:253" in reader["pinning_references"]
-    composition = (ROOT / "target/src/codex_harness/context/domain/composition.py").read_text(encoding="utf-8")
+    composition = (TARGET / "src/codex_harness/context/domain/composition.py").read_text(encoding="utf-8")
     assert '"-m", "codex_harness.adapters.artifact_reader"' in composition
 
 

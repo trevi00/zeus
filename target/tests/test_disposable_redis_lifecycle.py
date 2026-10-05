@@ -12,8 +12,8 @@ import subprocess
 from pathlib import Path
 
 import pytest
+from _layout import REPO as ROOT
 
-ROOT = Path(__file__).resolve().parents[2]
 spec = importlib.util.spec_from_file_location("s1_compare_run", ROOT / "compare" / "run.py")
 RUN = importlib.util.module_from_spec(spec)
 spec.loader.exec_module(RUN)

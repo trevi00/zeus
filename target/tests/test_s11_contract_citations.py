@@ -7,9 +7,9 @@ existing target test already covers behaviourally are not duplicated here; they 
 
 import json
 from copy import deepcopy
-from pathlib import Path
 
 import pytest
+from _layout import REPO as ROOT
 
 from codex_harness.coordination.application.outbox import Outbox
 from codex_harness.intake.application import tickets as ticket_module
@@ -25,7 +25,6 @@ from codex_harness.routing.adapters.organization_source import packaged_organiza
 from codex_harness.storage.adapters.file_artifacts import FileArtifacts
 from codex_harness.storage.adapters.memory_store import MemoryStore
 
-ROOT = Path(__file__).resolve().parents[2]
 BASE = "a" * 40
 
 

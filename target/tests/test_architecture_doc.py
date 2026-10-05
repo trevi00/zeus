@@ -6,11 +6,12 @@ import re
 from pathlib import Path
 
 import pytest
+from _layout import REFERENCE, TARGET
+from _layout import REPO as ROOT
 
-ROOT = Path(__file__).resolve().parents[2]
 DOC = ROOT / "docs" / "context" / "ARCHITECTURE.md"
-REFERENCE_SRC = ROOT / "src"
-TARGET_SRC = ROOT / "target" / "src"
+REFERENCE_SRC = REFERENCE / "src"
+TARGET_SRC = TARGET / "src"
 CONTRACTS = (ROOT / "docs" / "contracts.md").read_text(encoding="utf-8")
 
 

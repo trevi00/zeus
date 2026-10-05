@@ -19,6 +19,7 @@ from pathlib import Path
 from types import SimpleNamespace
 
 import pytest
+from _layout import REPO, TARGET
 
 from codex_harness.intake import ports
 from codex_harness.intake.adapters import github_tickets as github
@@ -28,8 +29,7 @@ from codex_harness.kernel.ids import digest
 from codex_harness.routing.adapters.organization_source import packaged_organization
 from codex_harness.storage.adapters.memory_store import MemoryStore
 
-REPO = Path(__file__).resolve().parents[2]
-SRC = REPO / "target" / "src" / "codex_harness"
+SRC = TARGET / "src" / "codex_harness"
 SOURCE = "e38aa722"
 BASE = "0831cc33"   # the batch's base head: the S4 move-ahead names are compared against the file as it stood there
 TK_M7 = "src/codex_harness/application/tickets.py"

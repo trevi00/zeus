@@ -10,13 +10,13 @@ import subprocess
 from pathlib import Path
 
 import pytest
+from _layout import REPO
 
 from codex_harness.kernel.errors import ContractError
 from codex_harness.research.domain.recurrence import hook_apply
 from codex_harness.review.adapters import canary as module
 from codex_harness.review.adapters.canary import executable_canary
 
-REPO = Path(__file__).resolve().parents[2]
 SOURCE = "e38aa722"
 HOMES = {"__future__": ["annotations"], "subprocess": [], "codex_harness.kernel.errors": ["require"]}
 REQUIRE = "require(hook_apply is not None and probe is not None, 'canary needs the hook rule and the Codex probe')"

@@ -11,9 +11,9 @@ import subprocess
 from pathlib import Path
 
 import pytest
+from _layout import REPO, TARGET
 
-REPO = Path(__file__).resolve().parents[2]
-SRC = REPO / "target" / "src" / "codex_harness"
+SRC = TARGET / "src" / "codex_harness"
 SOURCE = "e38aa722"
 MOD = "codex_harness.research.adapters.research_program"
 M7_PATH = "src/codex_harness/adapters/research_program.py"

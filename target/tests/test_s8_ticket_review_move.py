@@ -11,7 +11,8 @@ import subprocess
 from html.parser import HTMLParser
 from pathlib import Path
 
-REPO = Path(__file__).resolve().parents[2]
+from _layout import REPO
+
 SOURCE = "e38aa722"
 MODULE = "codex_harness.intake.adapters.ticket_review"
 M7_PATH = "src/codex_harness/adapters/ticket_review.py"

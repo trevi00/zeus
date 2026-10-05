@@ -12,8 +12,9 @@ import inspect
 import subprocess
 from pathlib import Path
 
-REPO = Path(__file__).resolve().parents[2]
-SRC = REPO / "target" / "src" / "codex_harness"
+from _layout import REPO, TARGET
+
+SRC = TARGET / "src" / "codex_harness"
 SOURCE = "e38aa722"
 APP = "codex_harness.coordination.application.fleet_backlog"
 M7_PATH = "src/codex_harness/application/fleet_backlog.py"

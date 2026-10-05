@@ -17,6 +17,7 @@ import sys
 from pathlib import Path
 
 import pytest
+from _layout import REPO
 
 from codex_harness.host_os import ports
 from codex_harness.host_os.adapters.process_groups import ChokepointProcesses
@@ -32,7 +33,6 @@ from codex_harness.research.domain.research import SourceIdentity
 from codex_harness.review.domain.check_results import classify_isolated_run
 from codex_harness.storage.adapters.file_artifacts import FileArtifacts
 
-REPO = Path(__file__).resolve().parents[2]
 SOURCE = "e38aa722"
 REWRITTEN = (("bounded_command",), ("DockerSourceRunner",))
 HOMES = {"base64": [], "hashlib": [], "os": [], "platform": [], "re": [], "subprocess": [], "tempfile": [], "threading": [], "time": [],

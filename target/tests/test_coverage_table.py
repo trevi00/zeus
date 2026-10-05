@@ -14,11 +14,11 @@ import json
 import os
 import subprocess
 import sys
-from pathlib import Path
 
 import pytest
+from _layout import REPO as ROOT
+from _layout import TARGET
 
-ROOT = Path(__file__).resolve().parents[2]
 TABLE = ROOT / "coverage" / "ledger-coverage.json"
 PINNED = {"module": 289, "contract": 91, "cli_node": 152, "console_script": 5, "module_entry": 36,
           "http_route": 10, "resource": 33, "capability": 10, "bucket": 169, "flow": 5,
@@ -89,7 +89,7 @@ def test_only_implemented_slices_claim_implemented_and_nothing_is_verified_early
 
 
 def test_implemented_rows_name_modules_that_exist_in_the_target(table):
-    src = ROOT / "target" / "src"
+    src = TARGET / "src"
     for r in table["rows"]:
         if r["status"] != "implemented" or r["kind"] not in {"module", "public_api"}:
             continue

@@ -30,6 +30,7 @@ from pathlib import Path
 from typing import Protocol, get_type_hints
 
 import pytest
+from _layout import REPO, TARGET
 
 from codex_harness.evidence import ports
 from codex_harness.evidence.adapters import container_contract as cc
@@ -42,8 +43,7 @@ from codex_harness.execution.adapters.containers import owned_container as oc
 from codex_harness.execution.domain import container_spec as spec
 from codex_harness.kernel.errors import ContractError
 
-REPO = Path(__file__).resolve().parents[2]
-SRC = REPO / "target" / "src" / "codex_harness"
+SRC = TARGET / "src" / "codex_harness"
 SOURCE = "e38aa722"
 M7_ISOLATED = "src/codex_harness/adapters/isolated_evidence.py"
 M7_PROJECT = "src/codex_harness/adapters/project_evidence.py"

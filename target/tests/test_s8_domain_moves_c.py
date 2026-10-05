@@ -9,7 +9,8 @@ import importlib
 import subprocess
 from pathlib import Path
 
-REPO = Path(__file__).resolve().parents[2]
+from _layout import REPO
+
 SOURCE = "e38aa722"
 M7 = "src/codex_harness/domain/"
 CENSUS = "codex_harness.coordination.domain.discovery_census"

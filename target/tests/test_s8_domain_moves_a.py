@@ -10,10 +10,10 @@ import subprocess
 from pathlib import Path
 
 import pytest
+from _layout import REPO
 
 from codex_harness.kernel.errors import ContractError
 
-REPO = Path(__file__).resolve().parents[2]
 SOURCE = "e38aa722"
 M7 = "src/codex_harness/domain/"
 MODULES = {

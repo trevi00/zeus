@@ -33,6 +33,7 @@ from types import SimpleNamespace
 
 import import_rules
 import pytest
+from _layout import REPO, TARGET
 
 from codex_harness.coordination.domain import fleet as coordination_fleet
 from codex_harness.kernel.errors import ContractError
@@ -41,7 +42,6 @@ from codex_harness.observation.application import monitoring as application_moni
 from codex_harness.observation.ports import CollectorPorts
 from codex_harness.storage.adapters.memory_store import MemoryStore
 
-REPO = Path(__file__).resolve().parents[2]
 SOURCE = "e38aa722"
 M7_MON = "src/codex_harness/adapters/monitoring.py"
 TEXT = Path(collectors.__file__).read_text(encoding="utf-8")
@@ -476,7 +476,7 @@ def test_no_new_spawn_site_the_only_pool_is_m7s_one_inside_collect():
 
 
 def test_no_layer_or_cycle_violation_touches_the_module():
-    violations = import_rules.check(REPO / "target" / "src")
+    violations = import_rules.check(TARGET / "src")
     assert [v for v in violations if "observation.adapters.collectors" in v.module] == []
     assert violations == []
     assert not re.search(r"(?m)^(?:from|import) codex_harness\.(?!kernel|execution\.domain|research\.domain|coordination\.domain|observation\.)", TEXT)
