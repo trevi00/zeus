@@ -121,6 +121,23 @@
     "digest": "b03e77ffd8435ec176bbf53f1fbcc1b21f1bb0155407407c4b864a611ef4edc2"
    },
    "authority": "OBSERVABILITY-COVERAGE-20261002 via OWNER-DECISIONS-S9 D4; DESIGN-s9-X §1"
+  },
+  {
+   "path": "$.registry_size",
+   "op": "replace",
+   "value": 77,
+   "authority": "S11 XC-2b B2 (TQ-XCUT-PLAN B2): the catalogued operations.http_request_refused event; spec 6dae6df833ec7eaa67955330406853a11ee4f2803cfc5dacb3689fd797a8e2db"
+  },
+  {
+   "path": "$.registry_valid",
+   "op": "add",
+   "key": "operations.http_request_refused",
+   "value": {
+    "accepted": true,
+    "same_object": true,
+    "digest": "0c8ee3ce84b1631f3598254fcaa65e27212711f470258fe61d948aeda0b89769"
+   },
+   "authority": "S11 XC-2b B2 (TQ-XCUT-PLAN B2): the catalogued operations.http_request_refused event; spec 6dae6df833ec7eaa67955330406853a11ee4f2803cfc5dacb3689fd797a8e2db"
   }
  ]
 }
