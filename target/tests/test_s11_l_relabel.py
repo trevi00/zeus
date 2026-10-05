@@ -154,12 +154,13 @@ CASES = [("tests.test_a", "test_one", ""), ("tests.test_a", "test_two", '<skippe
          ("tests.test_architecture", "test_target_tree_has_no_violation_and_no_exception", "")]
 
 
-def build(tree, tmp_path, cases=CASES, collected=COLLECTED, compare=None, owner=()):
-    git_repo(tree)
+def build(tree, tmp_path, cases=CASES, collected=COLLECTED, compare=None, owner=(), exercise=None):
+    if not (tree / ".git").exists():
+        git_repo(tree)
     report = tmp_path / "c.json"
     report.write_text(json.dumps(compare or {"ok": True, "scenarios": {"fam": {
         "target": "equal", "reference": "equal", "origin_ok": True, "target_origin_ok": True}}}))
-    return relabel.build_bundle(tree, junit(tmp_path, *cases), [report], list(owner), "HEAD", list(collected), None)
+    return relabel.build_bundle(tree, junit(tmp_path, *cases), [report], list(owner), "HEAD", list(collected), None, exercise)
 
 
 def test_the_bundle_records_the_outcomes_ids_and_compare_reports(tree, tmp_path):
@@ -631,3 +632,143 @@ def test_the_committed_resolutions_are_cited_valid_and_all_applied(ledger):
         seen.add((e["key"], e["pending"]))
         if rows[e["key"]]["status"] == "verified":  # a verified row's passing items include the resolution's replacements
             assert set(e["replaced_by"]) <= set(rows[e["key"]]["verification"]["passed"]), e["key"]
+
+
+# ------------------------------------------------------------------- S11 AU: `exercise:` (R-L2e) and G1b (R-AU4)
+
+SYMBOL = "codex_harness.research.mod:Thing.go"
+EXERCISE_FUNCTIONS = ["codex_harness.research.mod:Thing.go", "codex_harness.research.mod:CONST"]
+
+
+def exercise_file(tmp_path, nodes, functions=None, root="/x/target/src", schema=None):
+    import gzip
+    path = tmp_path / "exercise.json.gz"
+    doc = {"schema": schema or relabel.EXERCISE_SCHEMA, "root": root, "functions": functions or EXERCISE_FUNCTIONS, "nodes": nodes}
+    with gzip.open(path, "wt", encoding="utf-8") as f:
+        json.dump(doc, f)
+    return path
+
+
+def build_exercised(tree, tmp_path, nodes, **more):
+    write(tree, "coverage/ledger-coverage.json", json.dumps({"rows": [row(symbol=(SYMBOL,)), row(key="api:y", symbol=("one Store.transaction()",))]}))
+    return build(tree, tmp_path, exercise=exercise_file(tmp_path, nodes, **more))
+
+
+def test_the_bundle_stores_up_to_three_passing_nodes_per_symbol_and_the_artifact_identity(tree, tmp_path):
+    nodes = {"tests/test_a.py::test_two": [0], "tests/test_b.py::test_other": [0], "tests/test_a.py::test_one": [0, 1],
+             "tests/ported/test_old.py::test_p": [0], relabel.SINGLE_WRITER_NODE: [0]}
+    doc = build_exercised(tree, tmp_path, nodes)
+    ex = doc["exercise"]
+    # test_two is skipped in CASES: not passing, so never stored; of the four passing nodes the first three sorted are kept
+    assert ex["symbols"] == {SYMBOL: ["tests/ported/test_old.py::test_p", "tests/test_a.py::test_one", "tests/test_architecture.py::"
+                                     "test_target_tree_has_no_violation_and_no_exception"]}
+    assert ex["sha256"] == relabel.sha256_file(tmp_path / "exercise.json.gz") and ex["head"] == doc["head"]
+    assert ex["functions"] == 2 and ex["nodes"] == 5
+
+
+def test_a_class_symbol_counts_any_of_its_methods_and_a_constant_is_never_exercised(tree, tmp_path):
+    write(tree, "coverage/ledger-coverage.json", json.dumps({"rows": [
+        row(symbol=("codex_harness.research.mod:Thing",)), row(key="api:c", symbol=("codex_harness.research.mod:CONST",))]}))
+    git_repo(tree)
+    path = exercise_file(tmp_path, {"tests/test_b.py::test_other": [0]})
+    doc = build(tree, tmp_path, exercise=path)
+    assert doc["exercise"]["symbols"] == {"codex_harness.research.mod:Thing": ["tests/test_b.py::test_other"]}
+
+
+def test_a_credential_shaped_exercise_node_is_stored_hashed(tree, tmp_path):
+    secret = "tests/test_a.py::test_one[sk-ant-" + "A" * 12 + "]"
+    write(tree, "coverage/ledger-coverage.json", json.dumps({"rows": [row(symbol=(SYMBOL,))]}))
+    git_repo(tree)
+    path = exercise_file(tmp_path, {secret: [0]})
+    ex = relabel.build_exercise(tree, path, [secret], {}, HEAD, "A/x")
+    assert ex["symbols"] == {SYMBOL: [relabel.hashed_id(secret)]} and ex["symbols"][SYMBOL][0].startswith("sha256:")
+
+
+@pytest.mark.parametrize("kwargs, nodes, why", [
+    ({"schema": "zeus:other:1"}, {}, "schema is not"),
+    ({"root": "/x/target/tests"}, {}, "root is not the target source root"),
+    ({"functions": ["codex_harness.absent.mod:f"]}, {}, "function module"),
+    ({}, {"tests/test_a.py::test_ghost": [0]}, "matches no collected node"),
+    ({}, {"tests/test_b.py::test_other": [7]}, "function index outside"),
+])
+def test_a_mismatching_exercise_record_refuses_the_bundle(tree, tmp_path, kwargs, nodes, why):
+    with pytest.raises(relabel.Refused, match=why):
+        build_exercised(tree, tmp_path, nodes, **kwargs)
+
+
+def exercised_bundle(symbols, not_passed=None, nodes=None):
+    return {**bundle_for(not_passed=not_passed, nodes=nodes), "exercise": {"symbols": symbols}}
+
+
+def exercise_row(**more):
+    return row(slice_="S7", evidence=("exercise:" + SYMBOL,), symbol=(SYMBOL,), **more)
+
+
+def test_exercise_passes_iff_a_stored_node_is_collected_and_passing(tree):
+    out, engine = run([exercise_row()], tree, exercised_bundle({SYMBOL: ["tests/test_b.py::test_other"]}))
+    r = out["api:x.py::f"]
+    assert r["status"] == "verified" and r["verification"]["passed"] == ["exercise:" + SYMBOL]
+    assert "tests/test_b.py" in engine.supplying, "a changed evidence test module makes the bundle stale (R-L13)"
+
+
+@pytest.mark.parametrize("bundle, why", [
+    (bundle_for(), "no passing node exercised the symbol"),  # a bundle without an exercise record
+    (exercised_bundle({}), "no passing node exercised the symbol"),
+    (exercised_bundle({SYMBOL: []}), "no passing node exercised the symbol"),
+    (exercised_bundle({SYMBOL: ["tests/test_b.py::test_other"]}, not_passed={"tests/test_b.py::test_other": "failure"}),
+     "no passing node exercised the symbol"),
+    (exercised_bundle({SYMBOL: ["tests/test_b.py::test_gone"]}), "no passing node exercised the symbol"),
+])
+def test_exercise_without_a_live_passing_node_is_unmet_and_the_row_stays_implemented(tree, bundle, why):
+    out, _ = run([exercise_row()], tree, bundle)
+    r = out["api:x.py::f"]
+    assert r["status"] == "implemented" and has_unmet(r, why)
+
+
+AU_KEY = "atomic_unit:codex_harness.application.svc:Svc.unit#1"
+AU_NODE = f"target:tests/test_s11_atomic_units.py::test_unit_is_structurally_atomic[{AU_KEY[len('atomic_unit:'):]}]"
+
+
+def au_row(**more):
+    return row(kind="atomic_unit", key=AU_KEY, evidence=(PENDING,), symbol=(SYMBOL,), slice_="S7",
+               mapping_correction=relabel.AU1_MARK + " symbol survey", **more)
+
+
+def g1b(**more):
+    return {"key": AU_KEY, "pending": PENDING, "replaced_by": ["exercise:" + SYMBOL, AU_NODE], "rule": "G1b",
+            "citation": relabel.G1B_CITATION, **more}
+
+
+def test_g1b_replaces_the_recorder_promise_with_the_exercise_and_the_unit_node(tree):
+    unit = AU_NODE[len("target:"):]
+    write(tree, "target/tests/test_s11_atomic_units.py", "def test_unit_is_structurally_atomic():\n    pass\n")
+    bundle = exercised_bundle({SYMBOL: ["tests/test_b.py::test_other"]}, nodes=[*NODES, unit])
+    new, _ = relabel.relabel({"rows": [au_row()]}, bundle, tree, [g1b()])
+    r = new["rows"][0]
+    assert r["status"] == "verified" and r["verification"]["passed"] == sorted(["exercise:" + SYMBOL, AU_NODE])
+    assert r["evidence"] == [PENDING], "the row stays frozen"
+    failing = {**bundle, "not_passed": {unit: "xfail"}}  # a FINDING unit ends xfail: never a pass
+    again, _ = relabel.relabel({"rows": [au_row()]}, failing, tree, [g1b()])
+    assert again["rows"][0]["status"] == "implemented" and has_unmet(again["rows"][0], "target test not passing")
+    absent, _ = relabel.relabel({"rows": [au_row()]}, exercised_bundle({}, nodes=[*NODES, unit]), tree, [g1b()])
+    assert absent["rows"][0]["status"] == "implemented" and has_unmet(absent["rows"][0], "no passing node exercised")
+
+
+@pytest.mark.parametrize("entry, why", [
+    (g1b(replaced_by=["exercise:" + SYMBOL]), "exercise item and the unit node"),
+    (g1b(replaced_by=["exercise:other:Sym", AU_NODE]), "exercise item and the unit node"),
+    (g1b(citation="DESIGN-s11 §5.5"), "cites DESIGN-s11"),
+])
+def test_a_malformed_g1b_is_refused(tree, entry, why):
+    with pytest.raises(relabel.Refused, match=why):
+        relabel.relabel({"rows": [au_row()]}, bundle_for(), tree, [entry])
+
+
+def test_g1b_is_refused_for_a_row_not_mapped_under_r_au1_or_not_an_atomic_unit(tree):
+    unmapped = au_row()
+    del unmapped["mapping_correction"]
+    with pytest.raises(relabel.Refused, match="mapped under R-AU1"):
+        relabel.relabel({"rows": [unmapped]}, bundle_for(), tree, [g1b()])
+    other = pending_row(key=AU_KEY)
+    with pytest.raises(relabel.Refused, match="mapped under R-AU1"):
+        relabel.relabel({"rows": [other]}, bundle_for(), tree, [g1b()])
