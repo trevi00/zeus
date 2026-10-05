@@ -1,13 +1,13 @@
 """The `zeus dge` argument parser (M7 adapters/dge_cli.py).
 
 Layer: entry
-Owns: add_parser (the argument shape of `zeus dge`), run (its body: M7 dge_command) and the private register, submit, status, execute, verify_sources and repository_identity (M7 dge_cli)
+Owns: add_parser (the argument shape of `zeus dge`), run (its body: M7 dge_command) and the private register, submit, status, execute and repository_identity (M7 dge_cli)
 Does not own: dispatch (entry.cli main) and composition (composition.cli_research)
 Entry points: add_parser, run
 Contracts: INV-DGE-001
 
 Moved from M7 adapters/dge_cli.py:69-78 (SOURCE e38aa722) by named rules (A/evidence/rebuild/s10/unit-p/transcribe.py); the parser statements are M7's verbatim. `run` is M7 `cli.py` `dge_command` (:486-493) and
-`_repository_identity` (:25-28), `_verify_sources` (:31-45), `_register` (:48-55), `_submit` (:58-61), `_status` (:64-66) and `_execute` (:81-90) are `adapters/dge_cli.py` (R-c12, S10 unit C7b): the bodies are M7's
+`_repository_identity` (:25-28), `_register` (:48-55), `_submit` (:58-61), `_status` (:64-66) and `_execute` (:81-90) are `adapters/dge_cli.py` (R-c12, S10 unit C7b): the bodies are M7's
 verbatim except that the service is built first (as M7 `main()` did), `read_document` and `refusal` are `entry.cli.operation`, the repository is `composition.configuration.repository_root` and the git source and the
 use case are the builders of `composition.cli_research`.
 """
@@ -46,26 +46,6 @@ def _repository_identity(repository) -> str:
     return digest(str(Path(repository).resolve()))
 
 
-def _verify_sources(packet: dict, source) -> list:
-    """Every source must be a regular blob at base whose bytes hash to the pinned digest.
-    Directories, symlinks and submodules are not regular blobs and are refused."""
-    from codex_harness.kernel.errors import ContractError
-    from codex_harness.research.application.dge import DgeRefused
-    from codex_harness.research.domain.dge import source_binding
-    if not source.commit_exists(packet["base_revision"]):
-        raise DgeRefused("base_revision_missing")
-    bound = []
-    for entry in packet["sources"]:
-        mode, data = source.blob(packet["base_revision"], entry["path"])
-        if mode is None:
-            raise DgeRefused("source_missing_at_base")
-        try:
-            bound.append(source_binding(entry, mode, data))
-        except ContractError as exc:
-            raise DgeRefused("source_not_regular" if mode != "100644" else "source_digest_mismatch") from exc
-    return bound
-
-
 def _register(service, args) -> dict:
     from codex_harness.composition import cli_research
     from codex_harness.composition.configuration import repository_root
@@ -74,7 +54,7 @@ def _register(service, args) -> dict:
     from codex_harness.research.domain.dge import validate_packet
     packet = validate_packet(read_document(args.file, "Research packet"))
     repository = repository_root()
-    bound = _verify_sources(packet, cli_research.git_source(repository))
+    bound = cli_research.verify_sources(packet, cli_research.git_source(repository))
     result = cli_research.debate_sessions(service).register(packet, _repository_identity(repository), bound)
     return {"status": "registered", "cached": result["cached"], "exit_code": 0,
             "session": DebateSessions._safe(result["session"])}

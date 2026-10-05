@@ -91,11 +91,11 @@ def continuation_owners(store, fleet=None, lanes=None, conductor=None, validate=
                            ownership=OwnershipReconciliation(store, successors=successors))
 
 
-def fleet_port(store) -> SimpleNamespace:
+def fleet_port(store, observer=None) -> SimpleNamespace:
     """M7 `Fleet(store)` as the continuation uses it: `enqueue` (the registry's), `reserve_unit` and `settle_unit` (admission's),
     each on the S5 owner of the shim's `Fleet` routes, plus M7 `Fleet.store`: `LaunchSettlement.dispatch` refuses
-    `fleet_unconfigured` unless the port's store is the control store (S11 M, AR4 port of tests/test_continuation_cli.py)."""
-    registry, admission = FleetRegistry(store), AdmissionControl(store)
+    `fleet_unconfigured` unless the port's store is the control store (S11 M, AR4 port of tests/test_continuation_cli.py). `observer` is the caller's own (S11 XC-9 G4b, as XC-8 G4): the capacity refusal `operations.capacity_refused` is emitted only when composition injects it (DESIGN-s10 section 17 A5-2); None keeps the silent default."""
+    registry, admission = FleetRegistry(store), AdmissionControl(store, observer=observer)
     return SimpleNamespace(store=store, enqueue=registry.enqueue, reserve_unit=admission.reserve_unit,
                            settle_unit=admission.settle_unit)
 

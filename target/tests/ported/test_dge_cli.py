@@ -14,13 +14,14 @@ from test_research_program_fixtures import repository as program_repository
 
 from codex_harness import composition
 from codex_harness.composition import cli_operation as operation_cli
+from codex_harness.composition import cli_research  # S11 XC-9 DUP-1
 from codex_harness.coordination.domain.operation import validate_manifest
 from codex_harness.entry.cli import dge as dge_cli
 from codex_harness.entry.cli import operation as operation_documents
 
 # S11 M B4: `cli` is entry.cli.output (M7 `cli.emit`); `operation_documents.read_document`/`MAX_DOCUMENT_BYTES` are entry.cli.operation's
-# `read_document`/`MAX_MANIFEST_BYTES`; `verify_sources`, `repository_identity`, `register`, `status` and `execute` are the private
-# `_verify_sources`, `_repository_identity`, `_register`, `_status` and `_execute` of entry.cli.dge (same signatures).
+# `read_document`/`MAX_MANIFEST_BYTES`; `repository_identity`, `register`, `status` and `execute` are the private
+# `_repository_identity`, `_register`, `_status` and `_execute` of entry.cli.dge (same signatures); `verify_sources` is `composition.cli_research.verify_sources` (S11 XC-9).
 from codex_harness.entry.cli import output as cli
 from codex_harness.entry.cli import parser
 from codex_harness.host_os.adapters.git_source import GitSource
@@ -134,19 +135,19 @@ def test_read_document_refuses_malformed_bytes_and_counts_the_bom_against_the_bu
 def test_verify_sources_binds_regular_blobs_and_refuses_missing_symlink_tree_and_corrupt_bytes(tmp_path):
     root, head = repository(tmp_path)
     valid = validate_packet(packet(head))
-    assert dge_cli._verify_sources(valid, GitSource(root)) == [
+    assert cli_research.verify_sources(valid, GitSource(root)) == [
         {"id": "s1", "path": "docs/research/note.md", "sha256": valid["sources"][0]["sha256"], "bytes": len(NOTE)}]
     (root / "docs" / "research" / "note.md").write_bytes(b"changed after base\n")  # the working tree may move on
-    assert dge_cli._verify_sources(valid, GitSource(root))[0]["sha256"] == valid["sources"][0]["sha256"]
+    assert cli_research.verify_sources(valid, GitSource(root))[0]["sha256"] == valid["sources"][0]["sha256"]
     source = valid["sources"][0]
     for path, code in (("docs/absent.md", "source_missing_at_base"), ("docs/link.md", "source_not_regular"),
                        ("docs/research", "source_not_regular")):
         with pytest.raises(DgeRefused, match=code):
-            dge_cli._verify_sources({**valid, "sources": [{**source, "path": path}]}, GitSource(root))
+            cli_research.verify_sources({**valid, "sources": [{**source, "path": path}]}, GitSource(root))
     with pytest.raises(DgeRefused, match="source_digest_mismatch"):
-        dge_cli._verify_sources({**valid, "sources": [{**source, "sha256": "0" * 64}]}, GitSource(root))
+        cli_research.verify_sources({**valid, "sources": [{**source, "sha256": "0" * 64}]}, GitSource(root))
     with pytest.raises(DgeRefused, match="base_revision_missing"):
-        dge_cli._verify_sources({**valid, "base_revision": "0" * 40}, GitSource(root))
+        cli_research.verify_sources({**valid, "base_revision": "0" * 40}, GitSource(root))
 
 
 def test_repository_identity_matches_the_operate_identity_digest(tmp_path):

@@ -79,14 +79,14 @@ def test_load_registry_reads_through_the_injected_source():
 def test_verify_sources_binds_regular_blobs_and_refuses_the_rest():
     data = b"text\n"
     good = packet(hashlib.sha256(data).hexdigest())
-    assert len(dge._verify_sources(good, FakeSource({"docs/a.md": ("100644", data)}))) == 1
+    assert len(cli_research.verify_sources(good, FakeSource({"docs/a.md": ("100644", data)}))) == 1
     for source, packet_, code in (
             (FakeSource({"docs/a.md": ("100644", data)}, commits=()), good, "base_revision_missing"),
             (FakeSource({}), good, "source_missing_at_base"),
             (FakeSource({"docs/a.md": ("120000", data)}), good, "source_not_regular"),
             (FakeSource({"docs/a.md": ("100644", data)}), packet("b" * 64), "source_digest_mismatch")):
         with pytest.raises(DgeRefused) as caught:
-            dge._verify_sources(packet_, source)
+            cli_research.verify_sources(packet_, source)
         assert caught.value.reason_code == code
 
 

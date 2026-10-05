@@ -3,7 +3,7 @@
 Layer: ports
 Context: execution
 Owns: OWNED_BUCKETS of the execution context; the consumer-owned Protocols RunTask depends on
-    (ProviderRuntime and the rest arrive with RunTask; ARCHITECTURE.md keeps them PROPOSED until then)
+    (the ProviderRuntime Protocol is a declared design deviation, DESIGN-s11 section 6.2: it is carried by the concrete isolated runtimes)
 Does not own: their implementations (coordination implements TaskLedger in S5, research/evidence
     implement ResearchAdmission in S8; composition wires them in S10)
 Entry points: OWNED_BUCKETS, TaskLedger, ResearchAdmission, TaskLifecycle, InvocationAdmission, SessionCheckpoint, ExecutionRecords,
