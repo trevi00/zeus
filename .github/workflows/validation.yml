@@ -83,6 +83,8 @@ jobs:
       - run: uv run pytest -q
         working-directory: target
       - run: uv build --project target
+      # S11 A3 (AR3): the built wheel's RECORD equals the target tree, file by file with sha256 (DESIGN-s11 §1).
+      - run: python compare/run.py wheel-check target/dist/*.whl
       - if: matrix.python == '3.12'
         run: python compare/run.py prepare
       - if: matrix.python == '3.12'

@@ -35,6 +35,7 @@ REBUILD_TEST_STEPS = [("python compare/run.py check-tree", None),
                       ("uv run --project target ruff check target", None),
                       ("uv run pytest -q", "target"),
                       ("uv build --project target", None),
+                      ("python compare/run.py wheel-check target/dist/*.whl", None),  # S11 A3 (AR3)
                       ("python compare/run.py prepare", None),
                       ("python compare/run.py run", None)]
 REBUILD_INTEGRATION_STEPS = [("uv sync --frozen --project target", None),  # before the decision unit (S4 target)
