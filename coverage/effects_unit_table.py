@@ -49,6 +49,11 @@ DURABLE_KEYS = ("durable_writes", "durable_authority_writes")
 DECLARED_CALLS = {
     ("decision_unit", "decision_unit"): "decide_one",  # F2: Executor.decide_one -> _commit_decision, cases a_/b_/c_/control_
     ("s8_units", "fail_cycle_dispatch"): "fail_cycle",  # the same call with a dispatch in flight
+    # S11 AU-L3b. A `Class.method` value names the class too, where the driver imports two classes with the method's name and
+    # the receiver is the only thing that tells them apart; the AST still has to find a call of the method name.
+    ("admission_unit", "admit"): "admit_one",  # s5_units.py:172: `attempt(f.admit_one)`, f = the Fleet of :119
+    ("admission_unit", "claim"): "Operation.claim",  # s5_units.py:159: `attempt(operation.claim, ...)`, `operation = api.operation(...)` (:146)
+    ("admission_unit", "depths"): "step",  # s5_units.py:242: `attempt(cycle.step, "cycle-d")`, the LocalCycle of :236 whose depths the unit records
 }
 
 
@@ -205,14 +210,15 @@ def join_family(family: str, driver: Driver, golden: dict, units: list[dict]) ->
         hits: list[tuple[str, str, int]] = []
         for path, func in roots:
             hits += driver.closure(path, [func])
-        method = DECLARED_CALLS.get((base, unit), unit)
+        declared = DECLARED_CALLS.get((base, unit), unit)
+        owner, _, method = declared.rpartition(".")  # `Class.method` names the class as well; a bare name binds by rule 1
         calls = sorted({h for h in hits if h[0].lstrip("_") == method.lstrip("_") and h[0] in by_method})
         if not calls:
             reject("unmatched", unit, f"no driver call of an M7 method named {method}")
             continue
         attr, path, line = calls[0]
         # rule 1: the name binds to one Class.method among the M7 modules the driver files import
-        candidates = sorted({u["scope"] for u in by_method[attr] if imported(driver, u)})
+        candidates = sorted({u["scope"] for u in by_method[attr] if imported(driver, u) and (not owner or u["scope"] == declared)})
         if len(candidates) != 1:
             reject("ambiguous", unit, f"{attr} binds to {len(candidates)} imported M7 methods" if candidates
                    else f"{attr} is in no M7 module the driver imports", driver_call=f"{path}:{line}", candidates=candidates)

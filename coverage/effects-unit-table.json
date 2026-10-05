@@ -1,31 +1,11 @@
 {
  "ambiguous": [
   {
-   "candidates": [
-    "Operation.claim",
-    "Workflow.claim"
-   ],
-   "driver_call": "compare/drivers/common/s5_units.py:151",
-   "family": "effects.admission_unit",
-   "golden_unit": "claim",
-   "reason": "claim binds to 2 imported M7 methods"
-  },
-  {
    "candidates": [],
    "driver_call": "compare/drivers/common/s5_units.py:195",
    "family": "effects.admission_unit",
    "golden_unit": "complete",
    "reason": "complete is in no M7 module the driver imports"
-  },
-  {
-   "candidates": [
-    "Operation.claim",
-    "Workflow.claim"
-   ],
-   "driver_call": "compare/drivers/common/s5_units.py:151",
-   "family": "effects.admission_unit.pg",
-   "golden_unit": "claim",
-   "reason": "claim binds to 2 imported M7 methods"
   },
   {
    "candidates": [],
@@ -79,6 +59,38 @@
  ],
  "entries": [
   {
+   "atomic_unit": "codex_harness.application.fleet:Fleet.admit_one#1",
+   "block": "#1",
+   "cases": [
+    "a",
+    "c"
+   ],
+   "driver_call": "compare/drivers/common/s5_units.py:168",
+   "family": "effects.admission_unit",
+   "golden_unit": "admit"
+  },
+  {
+   "atomic_unit": "codex_harness.application.operation:Operation.claim#2",
+   "block": "#2",
+   "cases": [
+    "a",
+    "c"
+   ],
+   "driver_call": "compare/drivers/common/s5_units.py:151",
+   "family": "effects.admission_unit",
+   "golden_unit": "claim"
+  },
+  {
+   "atomic_unit": "codex_harness.application.local_cycle:LocalCycle.step#1",
+   "block": "#1",
+   "cases": [
+    "d"
+   ],
+   "driver_call": "compare/drivers/common/s5_units.py:242",
+   "family": "effects.admission_unit",
+   "golden_unit": "depths"
+  },
+  {
    "atomic_unit": "codex_harness.application.fleet:Fleet.finalize#1",
    "block": "#1",
    "cases": [
@@ -98,6 +110,38 @@
    "driver_call": "compare/drivers/common/s5_units.py:137",
    "family": "effects.admission_unit",
    "golden_unit": "handle"
+  },
+  {
+   "atomic_unit": "codex_harness.application.fleet:Fleet.admit_one#1",
+   "block": "#1",
+   "cases": [
+    "a",
+    "c"
+   ],
+   "driver_call": "compare/drivers/common/s5_units.py:168",
+   "family": "effects.admission_unit.pg",
+   "golden_unit": "admit"
+  },
+  {
+   "atomic_unit": "codex_harness.application.operation:Operation.claim#2",
+   "block": "#2",
+   "cases": [
+    "a",
+    "c"
+   ],
+   "driver_call": "compare/drivers/common/s5_units.py:151",
+   "family": "effects.admission_unit.pg",
+   "golden_unit": "claim"
+  },
+  {
+   "atomic_unit": "codex_harness.application.local_cycle:LocalCycle.step#1",
+   "block": "#1",
+   "cases": [
+    "d"
+   ],
+   "driver_call": "compare/drivers/common/s5_units.py:242",
+   "family": "effects.admission_unit.pg",
+   "golden_unit": "depths"
   },
   {
    "atomic_unit": "codex_harness.application.fleet:Fleet.finalize#1",
@@ -293,26 +337,6 @@
   "scenarios": "compare/scenarios/effects.*.json"
  },
  "unmatched": [
-  {
-   "family": "effects.admission_unit",
-   "golden_unit": "admit",
-   "reason": "no driver call of an M7 method named admit"
-  },
-  {
-   "family": "effects.admission_unit",
-   "golden_unit": "depths",
-   "reason": "no driver call of an M7 method named depths"
-  },
-  {
-   "family": "effects.admission_unit.pg",
-   "golden_unit": "admit",
-   "reason": "no driver call of an M7 method named admit"
-  },
-  {
-   "family": "effects.admission_unit.pg",
-   "golden_unit": "depths",
-   "reason": "no driver call of an M7 method named depths"
-  },
   {
    "family": "effects.continuation_units",
    "golden_unit": "begin_assessment",
