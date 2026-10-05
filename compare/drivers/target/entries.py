@@ -43,11 +43,9 @@ ARGV_MAP = {
                                           "codex_harness.entry.processes.experience"),  # E5a
     "module.adapters.observed_assets --help": ("codex_harness.adapters.observed_assets",
                                                "codex_harness.entry.cli.observed_assets"),
-    # import-only rows: DESIGN-s10 section 16 int38 note (isolated_worker), E5a (service_entry)
+    # import-only row: DESIGN-s10 section 16 int38 note (isolated_worker); service_entry is a kept shim (S11 SH-1)
     "import_only.codex_harness.adapters.isolated_worker": ("codex_harness.adapters.isolated_worker",
                                                            "codex_harness.entry.processes.isolated_worker_runs"),
-    "import_only.codex_harness.adapters.service_entry": ("codex_harness.adapters.service_entry",
-                                                         "codex_harness.entry.processes.service_entry"),
 }
 
 

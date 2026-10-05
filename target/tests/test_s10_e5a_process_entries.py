@@ -127,7 +127,8 @@ def test_subprocess_service_entry_bad_argv_exits_125():
     assert done.stderr.strip() == host_service_entry.USAGE
 
 
-@pytest.mark.parametrize("name", ["experience", "service_entry"])
+# S11 SH-1 (DESIGN-s11 §8 SH-a): service_entry is a kept shim at its M7 path, so only `experience` is absent.
+@pytest.mark.parametrize("name", ["experience"])
 def test_no_module_at_the_m7_dotted_path(name):
     assert importlib.util.find_spec(f"codex_harness.adapters.{name}") is None
 
