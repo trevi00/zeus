@@ -117,6 +117,24 @@ def test_s1_module_rows_are_all_accounted_for(table):
     assert all(r.get("slice_progress") for r in rows if r["key"].endswith(("model.py", "contracts.py")))
 
 
+def test_flow_rows_are_step_lists_verified_only_when_every_step_has_a_passing_item(table):
+    # S11 FLOW (DESIGN-s11 §11 R-FLOW): the 5 flow rows list the measured step symbols (no prose); a flow is verified
+    # only with no pending item, and a step with no driving item is named by a pending item and keeps its row implemented.
+    rows = {r["key"]: r for r in table["rows"] if r["kind"] == "flow"}
+    assert len(rows) == 5
+    for key, r in rows.items():
+        assert all(sym.startswith("codex_harness.") and ":" in sym for sym in r["target_symbol"]), key
+        pending = [e for e in r["evidence"] if e.startswith("pending:")]
+        assert (r["status"] == "verified") == (not pending), key
+        assert r["status"] in {"verified", "implemented"}, key
+    assert {k.split(":", 1)[1]: r["status"] for k, r in rows.items()} == {
+        "Fleet backlog → operation → review → release → HostDelivery → consumption": "verified",
+        "owner-actions → research-program child": "verified",
+        "continuation observe/tick": "implemented",
+        "host-migration advance": "implemented",
+        "monitor collect/web": "implemented"}
+
+
 def test_untraced_rows_stay_explicit(table):
     rows = table["rows"]
     modules = [r for r in rows if r["kind"] == "module"]
