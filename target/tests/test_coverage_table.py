@@ -130,7 +130,7 @@ def test_flow_rows_are_step_lists_verified_only_when_every_step_has_a_passing_it
     assert {k.split(":", 1)[1]: r["status"] for k, r in rows.items()} == {
         "Fleet backlog → operation → review → release → HostDelivery → consumption": "verified",
         "owner-actions → research-program child": "verified",
-        "continuation observe/tick": "implemented",
+        "continuation observe/tick": "verified",  # S11 FLOW-b: step 6 migration/supplement items measured
         "host-migration advance": "implemented",
         "monitor collect/web": "implemented"}
 
