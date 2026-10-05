@@ -23604,96 +23604,96 @@
   "target": "target/tests/ported/test_runner_categories.py::test_runner_receipts_carry_category_denominator_and_attempt"
  },
  "tests/test_runner_evidence.py::test_a_a_file_whose_size_cannot_be_read_is_still_evidence": {
-  "kind": "pending_root_script",
-  "reason": "PREP-S11 §9 #3: the root-script disposition at unit P"
+  "kind": "ported",
+  "target": "target/tests/ported/test_runner_evidence.py::test_a_a_file_whose_size_cannot_be_read_is_still_evidence"
  },
  "tests/test_runner_evidence.py::test_a_a_scratch_that_really_is_empty_is_still_accepted": {
-  "kind": "pending_root_script",
-  "reason": "PREP-S11 §9 #3: the root-script disposition at unit P"
+  "kind": "ported",
+  "target": "target/tests/ported/test_runner_evidence.py::test_a_a_scratch_that_really_is_empty_is_still_accepted"
  },
  "tests/test_runner_evidence.py::test_a_an_empty_selection_is_not_a_determination_that_nothing_was_produced[capped]": {
-  "kind": "pending_root_script",
-  "reason": "PREP-S11 §9 #3: the root-script disposition at unit P"
+  "kind": "ported",
+  "target": "target/tests/ported/test_runner_evidence.py::test_a_an_empty_selection_is_not_a_determination_that_nothing_was_produced[capped]"
  },
  "tests/test_runner_evidence.py::test_a_an_empty_selection_is_not_a_determination_that_nothing_was_produced[missing_reference]": {
-  "kind": "pending_root_script",
-  "reason": "PREP-S11 §9 #3: the root-script disposition at unit P"
+  "kind": "ported",
+  "target": "target/tests/ported/test_runner_evidence.py::test_a_an_empty_selection_is_not_a_determination_that_nothing_was_produced[missing_reference]"
  },
  "tests/test_runner_evidence.py::test_a_an_evidence_directory_that_cannot_be_listed_is_not_an_empty_one": {
-  "kind": "pending_root_script",
-  "reason": "PREP-S11 §9 #3: the root-script disposition at unit P"
+  "kind": "ported",
+  "target": "target/tests/ported/test_runner_evidence.py::test_a_an_evidence_directory_that_cannot_be_listed_is_not_an_empty_one"
  },
  "tests/test_runner_evidence.py::test_b_a_destination_that_cannot_be_created_is_reported_and_the_scratch_is_kept": {
-  "kind": "pending_root_script",
-  "reason": "PREP-S11 §9 #3: the root-script disposition at unit P"
+  "kind": "ported",
+  "target": "target/tests/ported/test_runner_evidence.py::test_b_a_destination_that_cannot_be_created_is_reported_and_the_scratch_is_kept"
  },
  "tests/test_runner_evidence.py::test_b_a_settled_slot_on_a_clean_run_still_passes": {
-  "kind": "pending_root_script",
-  "reason": "PREP-S11 §9 #3: the root-script disposition at unit P"
+  "kind": "ported",
+  "target": "target/tests/ported/test_runner_evidence.py::test_b_a_settled_slot_on_a_clean_run_still_passes"
  },
  "tests/test_runner_evidence.py::test_b_a_slot_that_cannot_be_settled_fails_the_run": {
-  "kind": "pending_root_script",
-  "reason": "PREP-S11 §9 #3: the root-script disposition at unit P"
+  "kind": "ported",
+  "target": "target/tests/ported/test_runner_evidence.py::test_b_a_slot_that_cannot_be_settled_fails_the_run"
  },
  "tests/test_runner_evidence.py::test_b_the_ledger_is_settled_even_when_preservation_fails": {
-  "kind": "pending_root_script",
-  "reason": "PREP-S11 §9 #3: the root-script disposition at unit P"
+  "kind": "ported",
+  "target": "target/tests/ported/test_runner_evidence.py::test_b_the_ledger_is_settled_even_when_preservation_fails"
  },
  "tests/test_runner_evidence.py::test_c_a_clean_run_still_passes": {
-  "kind": "pending_root_script",
-  "reason": "PREP-S11 §9 #3: the root-script disposition at unit P"
+  "kind": "ported",
+  "target": "target/tests/ported/test_runner_evidence.py::test_c_a_clean_run_still_passes"
  },
  "tests/test_runner_evidence.py::test_c_a_late_collection_error_does_not_exit_as_a_success": {
-  "kind": "pending_root_script",
-  "reason": "PREP-S11 §9 #3: the root-script disposition at unit P"
+  "kind": "ported",
+  "target": "target/tests/ported/test_runner_evidence.py::test_c_a_late_collection_error_does_not_exit_as_a_success"
  },
  "tests/test_runner_evidence.py::test_r1_a_repeated_label_cannot_touch_the_first_runs_evidence": {
-  "kind": "pending_root_script",
-  "reason": "PREP-S11 §9 #3: the root-script disposition at unit P"
+  "kind": "ported",
+  "target": "target/tests/ported/test_runner_evidence.py::test_r1_a_repeated_label_cannot_touch_the_first_runs_evidence"
  },
  "tests/test_runner_evidence.py::test_r1_evidence_is_never_written_through_even_by_the_same_run": {
-  "kind": "pending_root_script",
-  "reason": "PREP-S11 §9 #3: the root-script disposition at unit P"
+  "kind": "ported",
+  "target": "target/tests/ported/test_runner_evidence.py::test_r1_evidence_is_never_written_through_even_by_the_same_run"
  },
  "tests/test_runner_evidence.py::test_r1_the_receipt_and_its_evidence_carry_the_same_run_id": {
-  "kind": "pending_root_script",
-  "reason": "PREP-S11 §9 #3: the root-script disposition at unit P"
+  "kind": "ported",
+  "target": "target/tests/ported/test_runner_evidence.py::test_r1_the_receipt_and_its_evidence_carry_the_same_run_id"
  },
  "tests/test_runner_evidence.py::test_r2_an_artifact_in_the_scratch_that_is_not_kept_is_incomplete": {
-  "kind": "pending_root_script",
-  "reason": "PREP-S11 §9 #3: the root-script disposition at unit P"
+  "kind": "ported",
+  "target": "target/tests/ported/test_runner_evidence.py::test_r2_an_artifact_in_the_scratch_that_is_not_kept_is_incomplete"
  },
  "tests/test_runner_evidence.py::test_r2_an_artifact_on_disk_is_never_deleted_because_the_list_was_empty": {
-  "kind": "pending_root_script",
-  "reason": "PREP-S11 §9 #3: the root-script disposition at unit P"
+  "kind": "ported",
+  "target": "target/tests/ported/test_runner_evidence.py::test_r2_an_artifact_on_disk_is_never_deleted_because_the_list_was_empty"
  },
  "tests/test_runner_evidence.py::test_r2_no_evidence_produced_is_a_different_answer_from_no_list": {
-  "kind": "pending_root_script",
-  "reason": "PREP-S11 §9 #3: the root-script disposition at unit P"
+  "kind": "ported",
+  "target": "target/tests/ported/test_runner_evidence.py::test_r2_no_evidence_produced_is_a_different_answer_from_no_list"
  },
  "tests/test_runner_evidence.py::test_r3_a_diff_that_really_is_empty_is_still_complete": {
-  "kind": "pending_root_script",
-  "reason": "PREP-S11 §9 #3: the root-script disposition at unit P"
+  "kind": "ported",
+  "target": "target/tests/ported/test_runner_evidence.py::test_r3_a_diff_that_really_is_empty_is_still_complete"
  },
  "tests/test_runner_evidence.py::test_r3_a_failed_diff_command_is_not_a_verified_empty_diff": {
-  "kind": "pending_root_script",
-  "reason": "PREP-S11 §9 #3: the root-script disposition at unit P"
+  "kind": "ported",
+  "target": "target/tests/ported/test_runner_evidence.py::test_r3_a_failed_diff_command_is_not_a_verified_empty_diff"
  },
  "tests/test_runner_evidence.py::test_r3_a_timed_out_evidence_command_is_not_complete": {
-  "kind": "pending_root_script",
-  "reason": "PREP-S11 §9 #3: the root-script disposition at unit P"
+  "kind": "ported",
+  "target": "target/tests/ported/test_runner_evidence.py::test_r3_a_timed_out_evidence_command_is_not_complete"
  },
  "tests/test_runner_evidence.py::test_r4_a_receipt_that_cannot_be_written_still_reports_and_fails": {
-  "kind": "pending_root_script",
-  "reason": "PREP-S11 §9 #3: the root-script disposition at unit P"
+  "kind": "ported",
+  "target": "target/tests/ported/test_runner_evidence.py::test_r4_a_receipt_that_cannot_be_written_still_reports_and_fails"
  },
  "tests/test_runner_evidence.py::test_r4_a_run_that_lost_its_required_evidence_does_not_pass": {
-  "kind": "pending_root_script",
-  "reason": "PREP-S11 §9 #3: the root-script disposition at unit P"
+  "kind": "ported",
+  "target": "target/tests/ported/test_runner_evidence.py::test_r4_a_run_that_lost_its_required_evidence_does_not_pass"
  },
  "tests/test_runner_evidence.py::test_r4_the_task_and_the_evidence_are_recorded_as_two_claims": {
-  "kind": "pending_root_script",
-  "reason": "PREP-S11 §9 #3: the root-script disposition at unit P"
+  "kind": "ported",
+  "target": "target/tests/ported/test_runner_evidence.py::test_r4_the_task_and_the_evidence_are_recorded_as_two_claims"
  },
  "tests/test_runtime_projection.py::test_blocked_decision_is_projected_with_owner_and_evidence": {
   "kind": "ported",
