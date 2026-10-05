@@ -3,6 +3,7 @@ boundaries the target introduced (injected namespace and event journal), the own
 resource bytes identical to SOURCE (REBUILD-DESIGN-v2 §2.7, §3.1 resources, §5.3 S1)."""
 
 import hashlib
+import json
 import os
 import time
 from pathlib import Path
@@ -84,4 +85,14 @@ def test_packaged_resources_are_the_source_bytes():
         return {p.relative_to(root).as_posix(): hashlib.sha256(p.read_bytes()).hexdigest()
                 for p in sorted(root.rglob("*")) if p.is_file() and "__pycache__" not in p.parts}
 
-    assert tree(TARGET_RESOURCES) == tree(SOURCE_RESOURCES)
+    # S11 XC-2b B4 (declared addition, TQ-XCUT-PLAN B4): the one difference from SOURCE is the optional string property
+    # `spec_digest` of the observation execution identity (not required, so a record without it stays valid).
+    SCHEMA = "observation.schema.json"
+    target, source = tree(TARGET_RESOURCES), tree(SOURCE_RESOURCES)
+    declared = json.loads((TARGET_RESOURCES / SCHEMA).read_text(encoding="utf-8"))
+    addition = declared["properties"]["execution"]["properties"].pop("spec_digest")
+    assert addition == {"type": "string", "minLength": 1, "maxLength": 255}
+    assert "spec_digest" not in declared["properties"]["execution"]["required"]
+    assert declared == json.loads((SOURCE_RESOURCES / SCHEMA).read_text(encoding="utf-8"))
+    assert target.pop(SCHEMA) != source.pop(SCHEMA)
+    assert target == source
