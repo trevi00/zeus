@@ -2423,6 +2423,42 @@
    ],
    "rule": "G2",
    "citation": "target/tests/test_s11_ct1.py:204 (cites the ID in the docstring of the passing behavioural node test_s11_contract_oracle_imported_observations_carry_no_expected_outcome_or_authority; the file is named in the ARCHITECTURE.md TARGET row of the independent_review_promotion capability that lists the ID (placed there at S11 CT-1), and the three conditions hold: cites, a passing behavioural citing node, imports a symbol listed in that row (review.application.releases:Releases, review.application.sdd))"
+  },
+  {
+   "citation": "target/tests/test_s11_ct2.py:64 (cites the ID in the docstring of the passing behavioural node test_s11_contract_research_001_inventory_never_implies_review_and_observed_assets_stay_outside_the_tracked_denominator; the file is named in the ARCHITECTURE.md TARGET row(s) of the research_self_improvement capability that lists the ID (S11 CT-2) and imports a symbol listed in that row (research.application.research, research.domain.research))",
+   "key": "contract:INV-RESEARCH-001",
+   "pending": "pending: target characterization test named in the feature-map row (R-U)",
+   "replaced_by": [
+    "target:tests/test_s11_ct2.py"
+   ],
+   "rule": "G2"
+  },
+  {
+   "citation": "target/tests/test_s11_ct2.py:97 (cites the ID in the docstring of the passing behavioural node test_s11_contract_research_003_unknown_path_dispositions_are_refused_and_unexecuted_work_is_not_completion; the file is named in the ARCHITECTURE.md TARGET row(s) of the research_self_improvement capability that lists the ID (S11 CT-2) and imports a symbol listed in that row (research.domain.research))",
+   "key": "contract:INV-RESEARCH-003",
+   "pending": "pending: target characterization test named in the feature-map row (R-U)",
+   "replaced_by": [
+    "target:tests/test_s11_ct2.py"
+   ],
+   "rule": "G2"
+  },
+  {
+   "citation": "target/tests/test_s11_ct2.py:141 (cites the ID in the docstring of the passing behavioural node test_s11_contract_reverse_001_records_bind_a_clean_source_and_are_idempotent_fenced_and_ordered; the file is named in the ARCHITECTURE.md TARGET row(s) of the research_self_improvement capability that lists the ID (S11 CT-2) and imports a symbol listed in that row (research.application.reverse_progress))",
+   "key": "contract:INV-REVERSE-001",
+   "pending": "pending: target characterization test named in the feature-map row (R-U)",
+   "replaced_by": [
+    "target:tests/test_s11_ct2.py"
+   ],
+   "rule": "G2"
+  },
+  {
+   "citation": "target/tests/test_s11_ct2.py:223 (cites the ID in the docstring of the passing behavioural node test_s11_contract_runner_001_an_isolated_run_is_named_by_where_it_ended_and_what_it_produced; the file is named in the ARCHITECTURE.md TARGET row(s) of the research_self_improvement capability that lists the ID (S11 CT-2) and imports a symbol listed in that row (research.adapters.source_execution))",
+   "key": "contract:INV-RUNNER-001",
+   "pending": "pending: target characterization test named in the feature-map row (R-U)",
+   "replaced_by": [
+    "target:tests/test_s11_ct2.py"
+   ],
+   "rule": "G2"
   }
  ],
  "schema": "zeus:s11-evidence-resolutions:1"
