@@ -887,6 +887,11 @@ def test_a_stop_while_a_blocked_postgres_heartbeat_times_out_settles_nothing(
 
 # ----- L-11: the evaluator split keeps the legacy contract ---------------------------------------
 def test_the_evaluator_writes_nothing_to_the_store_and_legacy_names_stay_random(tmp_path, monkeypatch):
+    """INV-HOST-DELIVERY-VERIFY-001: "`ReleaseRunner.evaluate(release_id, attempt=)` is the legacy runner's own check
+    sequence in the same order ... and writes NOTHING to the store" (S11 CT-7).
+
+    The owned-attempt port's `runner(...).evaluate` returns the checked verdict and a receipt naming the attempt's
+    `zeus-verify-<id>` compose project, and every store bucket is unchanged afterwards."""
     system = build(tmp_path, monkeypatch, SerialStore())
     store = system["store"]
     runner = system["verifier"].runner(lambda: None)

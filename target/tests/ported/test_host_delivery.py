@@ -1099,6 +1099,11 @@ def test_a_descriptor_that_names_another_image_than_the_runtime_is_not_consumed(
 # ----- canary and rollback ------------------------------------------------------------------------------
 @binds_a_runtime
 def test_a_failed_canary_restores_the_exact_predecessor_and_proves_it_was_consumed(tmp_path):
+    """INV-RECOVERY-001: "An external host controller restores the previous deployment without Codex." (S11 CT-7)
+
+    A failed canary on the successor makes the host controller (a real process target, no provider or model) write
+    the exact predecessor descriptor back, prove the restored runtime is the one running, and leave the failed
+    candidate out of the active deployment."""
     verdicts = {"passed": True}
 
     def canary(target, descriptor, startup):
