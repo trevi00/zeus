@@ -31,6 +31,15 @@
    "citation": "coverage/effects-unit-table.json#effects.admission_unit/enqueue; coverage/effects-unit-table.json#effects.admission_unit.pg/enqueue"
   },
   {
+   "key": "atomic_unit:codex_harness.application.fleet:Fleet.reconcile_interrupted#1",
+   "pending": "pending: recorder confirmation in the owning slice",
+   "replaced_by": [
+    "compare:effects.admission_unit"
+   ],
+   "rule": "G1",
+   "citation": "coverage/effects-unit-table.json#effects.admission_unit/reconcile_interrupted"
+  },
+  {
    "key": "atomic_unit:codex_harness.application.fleet:Fleet.register#1",
    "pending": "pending: recorder confirmation in the owning slice",
    "replaced_by": [
@@ -49,6 +58,15 @@
    ],
    "rule": "G1",
    "citation": "coverage/effects-unit-table.json#effects.admission_unit/registered; coverage/effects-unit-table.json#effects.admission_unit.pg/registered"
+  },
+  {
+   "key": "atomic_unit:codex_harness.application.fleet:Fleet.relocate#1",
+   "pending": "pending: recorder confirmation in the owning slice",
+   "replaced_by": [
+    "compare:effects.admission_unit"
+   ],
+   "rule": "G1",
+   "citation": "coverage/effects-unit-table.json#effects.admission_unit/relocate"
   },
   {
    "key": "atomic_unit:codex_harness.application.fleet:Fleet.reserve_unit#1",
@@ -81,6 +99,24 @@
    "citation": "coverage/effects-unit-table.json#effects.admission_unit/status; coverage/effects-unit-table.json#effects.admission_unit.pg/status"
   },
   {
+   "key": "atomic_unit:codex_harness.application.operation:Operation.evidence_gate#1",
+   "pending": "pending: recorder confirmation in the owning slice",
+   "replaced_by": [
+    "compare:effects.admission_unit"
+   ],
+   "rule": "G1",
+   "citation": "coverage/effects-unit-table.json#effects.admission_unit/evidence_gate"
+  },
+  {
+   "key": "atomic_unit:codex_harness.application.operation_finalization:parkable#1",
+   "pending": "pending: recorder confirmation in the owning slice",
+   "replaced_by": [
+    "compare:effects.admission_unit"
+   ],
+   "rule": "G1",
+   "citation": "coverage/effects-unit-table.json#effects.admission_unit/parkable"
+  },
+  {
    "key": "atomic_unit:codex_harness.application.research_program:ResearchProgram.fail_cycle#1",
    "pending": "pending: recorder confirmation in the owning slice",
    "replaced_by": [
@@ -99,6 +135,15 @@
    ],
    "rule": "G1",
    "citation": "coverage/effects-unit-table.json#effects.s8_units/record_collection; coverage/effects-unit-table.json#effects.s8_units.pg/record_collection"
+  },
+  {
+   "key": "atomic_unit:codex_harness.application.workflow:Workflow.cancel#1",
+   "pending": "pending: recorder confirmation in the owning slice",
+   "replaced_by": [
+    "compare:effects.admission_unit"
+   ],
+   "rule": "G1",
+   "citation": "coverage/effects-unit-table.json#effects.admission_unit/cancel"
   },
   {
    "citation": "DESIGN-s11 \u00a75.6 R-AU4",
