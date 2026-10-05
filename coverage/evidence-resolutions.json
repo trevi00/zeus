@@ -1810,15 +1810,6 @@
    "rule": "G2"
   },
   {
-   "citation": "target/tests/test_s8_audit_repair_move.py:189 (cites the ID inside a passing node; the file is named in the ARCHITECTURE.md TARGET row of the storage_artifacts capability that lists the ID)",
-   "key": "contract:INV-AUDIT-REPAIR-001",
-   "pending": "pending: target characterization test named in the feature-map row (R-U)",
-   "replaced_by": [
-    "target:tests/test_s8_audit_repair_move.py"
-   ],
-   "rule": "G2"
-  },
-  {
    "citation": "target/tests/ported/test_claude_assignment.py:168 (cites the ID inside a passing node; the file is named in the ARCHITECTURE.md TARGET row of the bounded_context_knowledge capability that lists the ID)",
    "key": "contract:INV-CLAUDE-WORKER-001",
    "pending": "pending: target characterization test named in the feature-map row (R-U)",
@@ -1864,15 +1855,6 @@
    "rule": "G2"
   },
   {
-   "citation": "target/tests/test_s8_batch_b7b_move.py:170 (cites the ID inside a passing node; the file is named in the ARCHITECTURE.md TARGET row of the independent_review_promotion capability that lists the ID)",
-   "key": "contract:INV-HOST-DELIVERY-VERIFY-001",
-   "pending": "pending: target characterization test named in the feature-map row (R-U)",
-   "replaced_by": [
-    "target:tests/test_s8_batch_b7b_move.py"
-   ],
-   "rule": "G2"
-  },
-  {
    "citation": "target/tests/ported/test_host_migration_evidence.py:17 (cites the ID inside a passing node; the file is named in the ARCHITECTURE.md TARGET row of the deployment_recovery capability that lists the ID)",
    "key": "contract:INV-HOST-MIGRATION-001",
    "pending": "pending: target characterization test named in the feature-map row (R-U)",
@@ -1887,15 +1869,6 @@
    "pending": "pending: target characterization test named in the feature-map row (R-U)",
    "replaced_by": [
     "target:tests/ported/test_isolated_worker.py"
-   ],
-   "rule": "G2"
-  },
-  {
-   "citation": "target/tests/test_s9_batch_l2b2_move.py:118 (cites the ID inside a passing node; the file is named in the ARCHITECTURE.md TARGET row of the monitoring_operator_security capability that lists the ID)",
-   "key": "contract:INV-METRIC-001",
-   "pending": "pending: target characterization test named in the feature-map row (R-U)",
-   "replaced_by": [
-    "target:tests/test_s9_batch_l2b2_move.py"
    ],
    "rule": "G2"
   },
