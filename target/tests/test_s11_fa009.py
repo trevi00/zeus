@@ -227,6 +227,9 @@ def test_scan_covers_the_target_test_tree():
 
 
 def test_wiring_detector_has_positive_and_negative_controls():
+    """M7's controls. TQ-1 B7 changed one line of M7's negative control: its read-then-`assert parse(body)` form is now a
+    flagged read-then-assert (rule a), so the control reads `body` without asserting on it; the flagged form is a positive
+    control in test_wiring_detector_flags_a_read_then_assert_and_a_script_constant_order."""
     positive = (
         "from pathlib import Path\n"
         "def test_x():\n"
