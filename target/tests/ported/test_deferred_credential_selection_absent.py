@@ -5,13 +5,13 @@ configured service, CLI command or Fleet dispatch can reach it. The H1 launch us
 through the managed unit's environment; a provider refusal of that credential is contained (tests/test_usage_limit.py),
 never answered by switching to another credential."""
 import importlib
-from pathlib import Path
 
 import pytest
+from _layout import TARGET
 
 from codex_harness import cli
 
-SRC = Path(__file__).resolve().parents[2] / "src" / "codex_harness"  # S11 M B3: target/tests/ported -> target/src
+SRC = TARGET / "src" / "codex_harness"  # S11 M B3: target/tests/ported -> target/src
 
 
 @pytest.mark.parametrize("module", ["codex_harness.domain.worker_credentials",

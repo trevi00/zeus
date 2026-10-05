@@ -3,10 +3,10 @@
 Every assertion is M7's, unchanged. Adaptations, all construction/import/patch-target (each is named in the `m7_executor` shim docstring, the P9 additions included): `Executor`, `Harness` (the carrier `m7_executor.Service`) and `organization` come from the shims, every other M7 `codex_harness.adapters|application|domain` name from its target home (`kernel`, `storage`, `execution`, `research`, `host_os`, `evidence`, `context`, `coordination`, `review`), and the patch target `codex_harness.adapters.executor.AppServer` is `m7_executor.AppServer`. `NativeHooks` is `m7_executor.NativeHooks`; `Harness` is `m7_intake.Harness` (hook lifecycle routed); the repository root (`harness_hooks/`) is `parents[3]` (this file is `target/tests/ported/`).
 """
 import json
-from pathlib import Path
 from types import SimpleNamespace
 
 import pytest
+from _layout import REPO as ROOT
 from m7_coordination import organization
 from m7_executor import NativeHooks
 from m7_intake import Harness
@@ -17,7 +17,6 @@ from codex_harness.kernel.message import envelope
 from codex_harness.storage.adapters.file_artifacts import FileArtifacts
 from codex_harness.storage.adapters.memory_store import MemoryStore
 
-ROOT = Path(__file__).resolve().parents[3]
 HOOK_ID = 'hook-ab97ba09554daa5aec289867'
 
 

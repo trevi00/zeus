@@ -12,6 +12,7 @@ import sys
 from pathlib import Path
 
 import pytest
+from _layout import REPO
 
 from codex_harness.composition import configuration
 from codex_harness.host_os.adapters import process_groups
@@ -21,7 +22,7 @@ from codex_harness.intake.adapters.backlog_blobs import REGULAR_BLOB, read_blob
 from codex_harness.intake.domain.backlog import BacklogRefused
 from codex_harness.kernel.errors import ContractError
 
-sys.path.insert(0, str(Path(__file__).resolve().parents[2] / "compare" / "drivers" / "common"))
+sys.path.insert(0, str(REPO / "compare" / "drivers" / "common"))
 from s7_host_targets import pinned_environment, pinned_git  # noqa: E402
 
 M7_ROOT = os.environ.get("ZEUS_REBUILD_SOURCE_ROOT")

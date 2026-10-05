@@ -10,13 +10,14 @@ import ast
 from pathlib import Path
 from types import SimpleNamespace
 
+from _layout import TARGET, TESTS
+
 from codex_harness.observation.adapters.metrics_exposition import render
 from codex_harness.observation.adapters.resource_facts import ResourceFacts
 from codex_harness.observation.application.metrics_projector import METRICS_BUCKET
 from codex_harness.observation.ports import OWNED_BUCKETS
 
-TESTS = Path(__file__).resolve().parent
-SRC = TESTS.parent / "src" / "codex_harness"
+SRC = TARGET / "src" / "codex_harness"
 FIXTURES = TESTS / "fixtures" / "s9_x3a"
 
 

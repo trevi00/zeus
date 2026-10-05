@@ -6,13 +6,12 @@ import ast
 import json
 import subprocess
 import sys
-from pathlib import Path
 
 import import_rules
 import pytest
+from _layout import REPO, TARGET
 
-TARGET = Path(__file__).resolve().parents[1]
-GOLDEN = json.loads((TARGET.parent / "compare/goldens/reference/static.source.json").read_text(encoding="utf-8"))
+GOLDEN = json.loads((REPO / "compare/goldens/reference/static.source.json").read_text(encoding="utf-8"))
 CONDITIONAL = GOLDEN["shims"]["conditional"]
 # S11 U6(b) (USER-APPROVED-U6-20261006; DESIGN-s11 §20.1): the legacy Compose agent entry is retired from the target, so
 # the SOURCE scan still marks it `keep_shim: true` but it is deliberately not a target shim.

@@ -11,9 +11,8 @@ line (tighter than M7's per-file allowlist, so a new source-text assertion in th
 
 import ast
 import re
-from pathlib import Path
 
-TESTS = Path(__file__).resolve().parent
+from _layout import TESTS
 
 SOURCE_TEXT_READERS = re.compile(r"\b(read_text|read_bytes|getsource|ast\.parse|ast\.walk|ast\.dump)\s*\(")
 PRODUCTION_LOCATIONS = re.compile(r"(src/|scripts/|harness_hooks/|codex_harness[./])")

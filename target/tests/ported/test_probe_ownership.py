@@ -15,13 +15,13 @@ from __future__ import annotations
 
 import importlib.util
 import os
-import pathlib
 import subprocess
 
 import pytest
 
 # S11 R-S1: the project root (target/ now, the repo root after the promotion) that holds scripts/
-PROJECT = next(p for p in pathlib.Path(__file__).resolve().parents if (p / "src" / "codex_harness").is_dir())
+from _layout import TARGET as PROJECT
+
 PROBE = PROJECT / "scripts" / "wsl_port_probe.py"  # S11 R-S1: the ported copy
 docker_only = pytest.mark.skipif(os.environ.get("ZEUS_TEST_DOCKER") != "1",
                                  reason="Explicit disposable Docker validation required")

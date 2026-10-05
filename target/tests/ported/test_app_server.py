@@ -4,14 +4,13 @@ adaptation.
 """
 import copy
 import json
-from pathlib import Path
 
 import pytest
+from _layout import REPO as ROOT
 
 from codex_harness.execution.adapters.providers.codex_app_server import READ_ONLY_INSTRUCTIONS, AppServer
 from codex_harness.kernel.errors import ContractError
 
-ROOT = Path(__file__).resolve().parents[3]  # adaptation: the repository root, where harness_hooks/ lives
 MANIFEST = json.loads((ROOT / 'harness_hooks/hook-ab97ba09554daa5aec289867.json').read_text())
 SCHEMA = {'type': 'object', 'properties': {'accepted': {'type': 'boolean'}}, 'required': ['accepted']}
 

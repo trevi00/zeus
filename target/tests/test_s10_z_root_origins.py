@@ -36,11 +36,11 @@ from pathlib import Path
 
 import import_rules
 import provider_guard
+from _layout import REPO as ROOT
+from _layout import TARGET
 
 from codex_harness.entry import cli as entry_cli
 
-TARGET = Path(__file__).resolve().parents[1]
-ROOT = TARGET.parent
 SRC = TARGET / "src"
 PKG = SRC / "codex_harness"
 BUILT = {"composition", "execute-one"}

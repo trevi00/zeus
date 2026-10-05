@@ -11,13 +11,14 @@ failed by collection order. `tests/ported/conftest.py` re-exports these same obj
 """
 
 import json
-from pathlib import Path
+
+from _layout import TARGET
 
 from codex_harness.kernel.ids import digest
 
 ATTESTED = {}
 
-RESOURCES = Path(__file__).resolve().parents[2] / "src" / "codex_harness" / "resources"
+RESOURCES = TARGET / "src" / "codex_harness" / "resources"
 
 
 class NativeThresholds:

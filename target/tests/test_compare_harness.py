@@ -210,7 +210,7 @@ def test_import_audit_refuses_a_codex_harness_origin_outside_the_target(tmp_path
     foreign = tmp_path / "codex_harness"
     foreign.mkdir()
     (foreign / "__init__.py").write_text("")
-    finder = origin._AuditFinder((Path(__file__).resolve().parents[1] / "src",))
+    finder = origin._AuditFinder((TARGET / "src",))
     with pytest.raises(origin.OriginError):
         finder.find_spec("codex_harness", [str(tmp_path)])
 
@@ -218,8 +218,8 @@ def test_import_audit_refuses_a_codex_harness_origin_outside_the_target(tmp_path
 def test_loaded_target_modules_come_from_the_target_tree():
     import codex_harness
 
-    assert Path(codex_harness.__file__).resolve().is_relative_to(Path(__file__).resolve().parents[1] / "src")
-    origin.assert_tree_origins(Path(__file__).resolve().parents[1] / "src")
+    assert Path(codex_harness.__file__).resolve().is_relative_to(TARGET / "src")
+    origin.assert_tree_origins(TARGET / "src")
 
 
 DISCRIMINATOR_FIELDS = ("verdict", "violations", "effect_protocol", "effects", "fences", "decision_status",

@@ -14,6 +14,7 @@ import sys
 from pathlib import Path
 
 import pytest
+from _layout import REPO as ROOT
 from m7_review import (
     ContractError,
     FileArtifacts,
@@ -30,7 +31,6 @@ from m7_review import (
     validate_spec,
 )
 
-ROOT = Path(__file__).resolve().parents[3]
 PACK = ROOT / 'examples/code-tutor-ai'
 SPEC = PACK / 'sdd/learning-loop.spec.json'
 OBJECTIVE = 'codetutor learning submission'

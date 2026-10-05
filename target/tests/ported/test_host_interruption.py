@@ -22,6 +22,7 @@ from uuid import uuid4
 
 import psycopg
 import pytest
+from _layout import TARGET
 from m7_coordination import Workflow, organization
 from m7_review import FileArtifacts, VerificationServices
 from psycopg import sql
@@ -292,7 +293,7 @@ def test_host_probe_never_falls_back_to_public_tasks(disposable_service, monkeyp
     monkeypatch.setenv('ZEUS_DATABASE_URL', store.dsn)
     monkeypatch.setenv('HARNESS_DATABASE_URL', store.dsn)
     # S11 R-S1/R-S4: the ported host_cycle at PROJECT/scripts (target/ now, the repository root after the promotion)
-    PROJECT = next(p for p in Path(__file__).resolve().parents if (p / 'src' / 'codex_harness').is_dir())
+    PROJECT = TARGET
     api = runpy.run_path(str(PROJECT/'scripts/host_cycle.py'))
     public = Workflow(store, organization())
     public.submit(assignment())  # Canary in this disposable database, never the real ledger.

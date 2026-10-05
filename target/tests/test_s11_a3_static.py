@@ -31,9 +31,9 @@ from pathlib import Path
 
 import import_rules
 import pytest
+from _layout import REPO as ROOT
+from _layout import TARGET, TARGET_PREFIX
 
-TARGET = Path(__file__).resolve().parents[1]
-ROOT = TARGET.parent
 SRC = TARGET / "src"
 FIXTURES = Path(__file__).resolve().parent / "fixtures" / "s11_a3"
 SOURCE_COMMIT = "e38aa722"
@@ -62,7 +62,7 @@ def _digest(data: bytes) -> str:
 
 
 def _tree_files():
-    prefix = "target/src/"
+    prefix = TARGET_PREFIX + "src/"
     names = _git("ls-files", "--", prefix + "codex_harness", prefix + "zeus").split()
     return {n[len(prefix):]: _git("show", f"HEAD:{n}", text=False) for n in names}
 
@@ -316,13 +316,13 @@ def unresolved_argv(modules, tree) -> list:
 
 
 def _argv_inputs():
-    return _git("ls-files", "--", "target/deploy", "target/Dockerfile.worker").split()
+    return _git("ls-files", "--", TARGET_PREFIX + "deploy", TARGET_PREFIX + "Dockerfile.worker").split()
 
 
 def test_every_pinned_argv_names_a_shim_or_a_tree_module():
     tree = import_rules.Tree(SRC)
     inputs, pinned = _argv_inputs(), {}
-    assert "target/Dockerfile.worker" in inputs and "target/deploy/aibox/zeus_aibox_service.py" in inputs
+    assert TARGET_PREFIX + "Dockerfile.worker" in inputs and TARGET_PREFIX + "deploy/aibox/zeus_aibox_service.py" in inputs
     for name in inputs:
         for module in argv_modules(name, (ROOT / name).read_text(encoding="utf-8", errors="replace")):
             pinned.setdefault(module, []).append(name)

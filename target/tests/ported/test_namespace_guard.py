@@ -5,13 +5,12 @@ import hashlib
 import json
 import subprocess
 import sys
-from pathlib import Path
 
 import pytest
+from _layout import REPO as ROOT
 
 from codex_harness.execution.adapters.providers.codex_app_server import namespace_failure
 
-ROOT = Path(__file__).resolve().parents[3]  # S11 M B6: the repo root from target/tests/ported
 SCRIPT = ROOT / 'harness_hooks/codex_namespace_guard.py'
 MANIFEST = json.loads((ROOT / 'harness_hooks/hook-ab97ba09554daa5aec289867.json').read_text())
 

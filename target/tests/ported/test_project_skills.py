@@ -28,6 +28,9 @@ from pathlib import Path
 
 import m7_executor
 import pytest
+
+# S11 R-S1: the project root (target/ now, the repo root after the promotion) that holds scripts/ and src/
+from _layout import TARGET as PROJECT
 from ported_support import NATIVE_THRESHOLDS as _THRESHOLDS
 
 from codex_harness.context.adapters import project_skills as _project_skills
@@ -39,9 +42,6 @@ from codex_harness.host_os.adapters.git_workspace import GitWorkspace
 from codex_harness.kernel.errors import ContractError
 from codex_harness.storage.adapters.file_artifacts import FileArtifacts
 from codex_harness.storage.adapters.memory_store import MemoryStore
-
-# S11 R-S1: the project root (target/ now, the repo root after the promotion) that holds scripts/ and src/
-PROJECT = next(p for p in Path(__file__).resolve().parents if (p / "src" / "codex_harness").is_dir())
 
 # Adapted: the native threshold definition reaches context through context.ports.ThresholdPolicySource
 # (research implements it in S8); these suites supply the packaged definition.

@@ -13,9 +13,9 @@ import subprocess
 import sys
 from concurrent.futures import ThreadPoolExecutor
 from copy import deepcopy
-from pathlib import Path
 
 import pytest
+from _layout import REPO as ROOT
 from m7_review import (
     ENVIRONMENT_FIELDS,
     SDD,
@@ -35,7 +35,6 @@ from m7_review import (
     write_export,
 )
 
-ROOT = Path(__file__).resolve().parents[3]
 SPEC = ROOT / "docs/sdd/zeus-sdd.spec.json"
 SOURCE = {"mode": "working_tree_draft", "repository": "contract-test", "revision": None, "path": "spec.json"}
 

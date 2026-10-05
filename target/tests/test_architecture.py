@@ -2,15 +2,14 @@
 
 import json
 import re
-from pathlib import Path
 
 import import_rules
 import pytest
+from _layout import REPO, TARGET, TESTS
 
-HERE = Path(__file__).resolve().parent
-FIXTURES = HERE / "fixtures" / "import_rules"
-TARGET_SRC = HERE.parent / "src"
-CONTRACTS = HERE.parents[1] / "docs" / "contracts.md"
+FIXTURES = TESTS / "fixtures" / "import_rules"
+TARGET_SRC = TARGET / "src"
+CONTRACTS = REPO / "docs" / "contracts.md"
 CASES = sorted(p for p in FIXTURES.iterdir() if p.is_dir())
 
 

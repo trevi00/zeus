@@ -7,9 +7,9 @@ import hashlib
 import json
 import os
 from datetime import datetime, timedelta, timezone
-from pathlib import Path
 
 import pytest
+from _layout import REPO as ROOT
 from m7_coordination import Workflow, organization
 from m7_executor import Executor
 from test_app_server import failure as inspection_failure
@@ -21,8 +21,6 @@ from codex_harness.kernel.errors import ContractError, ExecutionFailure
 from codex_harness.kernel.message import envelope
 from codex_harness.storage.adapters.memory_store import MemoryStore
 from codex_harness.storage.adapters.postgres_store import PostgresStore
-
-ROOT = Path(__file__).resolve().parents[3]  # S11 M B2: the repo root from target/tests/ported/
 
 
 @pytest.fixture

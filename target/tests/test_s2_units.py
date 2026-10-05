@@ -3,16 +3,15 @@
 import json
 import subprocess
 import sys
-from pathlib import Path
 
 import import_rules
 import pytest
+from _layout import TARGET
 
 from codex_harness.context.domain.packet import ContextItem, compile_context
 from codex_harness.kernel.errors import ContractError
 from codex_harness.routing.domain.profiles import IsolationError, select_profile
 
-TARGET = Path(__file__).resolve().parents[1]
 REQUIRED = {"role": "r", "objective": "o", "acceptance_criteria": ["a"], "policy": "p"}
 
 

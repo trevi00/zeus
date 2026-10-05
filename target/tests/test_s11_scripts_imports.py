@@ -10,9 +10,9 @@ the promotion.
 from pathlib import Path
 
 import import_rules
+from _layout import TARGET as PROJECT
 from test_s11_a3_static import unresolved_imports
 
-PROJECT = next(p for p in Path(__file__).resolve().parents if (p / "src" / "codex_harness").is_dir())
 PREFIX = "s11_scripts."
 
 

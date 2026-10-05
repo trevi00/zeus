@@ -39,6 +39,7 @@ from pathlib import Path
 from types import SimpleNamespace
 
 import pytest
+from _layout import TARGET
 from m7_coordination import FleetRunner
 from m7_delivery import HostMigrations, MemoryStore
 from m7_delivery import host_migration as adapter
@@ -1212,7 +1213,7 @@ def test_postgres_two_successors_of_one_head_race_to_exactly_one_record(isolated
 
 
 # ----- the unchanged launcher as a real process under a temporary root ----------------------------------
-LAUNCHER = Path(__file__).resolve().parents[2] / "deploy" / "aibox" / "zeus_aibox_service.py"
+LAUNCHER = TARGET / "deploy" / "aibox" / "zeus_aibox_service.py"
 
 
 def dry_run(h, role: str) -> tuple[int, dict]:

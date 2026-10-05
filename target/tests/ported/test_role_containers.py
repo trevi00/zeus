@@ -44,6 +44,7 @@ from types import SimpleNamespace
 
 import m7_executor
 import pytest
+from _layout import TARGET as ROOT
 from m7_containers import ContractError, install_fake, iw, rc
 
 from codex_harness.execution.adapters.containers import owned_container
@@ -55,7 +56,6 @@ IMAGE = "sha256:" + "a" * 64
 # literal (compare/run.py check-tree); the values the tests see are the M7 values.
 CLAUDE_TOKEN = "sk-" + "ant-oat01-FIXTURE-DUMMY-NOT-A-TOKEN"
 SCHEMA = {"type": "object", "properties": {"summary": {"type": "string"}}, "required": ["summary"]}
-ROOT = Path(__file__).resolve().parents[2]  # the target tree (its Dockerfile.worker)
 
 JWT = "eyJhbGciOiJub25lIn0.eyJzdWIiOiJEVU1NWSJ9.c2lnLURVTU1Z"  # {"alg":"none"}.{"sub":"DUMMY"}.DUMMY
 ISSUED = ("rt-DUMMY-NOT-A-TOKEN", "at-DUMMY-NOT-A-TOKEN", "idt-DUMMY", "acct-dummy-0001")

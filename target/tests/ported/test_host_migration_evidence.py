@@ -45,6 +45,7 @@ from datetime import datetime, timedelta, timezone
 from pathlib import Path
 
 import pytest
+from _layout import TARGET as ROOT
 from m7_delivery import HostFacts, HostMigrations, MemoryStore
 from m7_delivery import host_migration as adapter
 from m7_delivery import host_migration_evidence as producer
@@ -85,7 +86,7 @@ pytestmark = pytest.mark.skipif(os.name != "posix", reason=(
     "INV-HOST-MIGRATION-001 Linux producer: systemd unit, journald launch lines, /proc identities and the "
     "deploy/aibox launcher are POSIX-only; there is no non-POSIX managed limited_active observation"))
 
-ROOT = Path(__file__).resolve().parents[2]  # adaptation: the target tree
+
 MID = "aibox-migration-001"
 INTENT_REV = "c" * 40      # the recorded intent (ced20281 analogue); also the registered interpreter's release
 ACT_REV = "5" * 40         # the effective successor: launch authority and `current` (5aa220f analogue)

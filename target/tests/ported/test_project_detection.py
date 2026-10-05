@@ -20,13 +20,13 @@ from pathlib import Path
 
 import pytest
 
+# S11 R-S1: the project root (target/ now, the repo root after the promotion) that holds scripts/ and src/
+from _layout import TARGET as PROJECT
+
 from codex_harness.context.adapters.project_detection import detect_project
 from codex_harness.context.adapters.project_skills import parse_profile
 from codex_harness.context.domain.project_skills import eligible_paths
 from codex_harness.kernel.errors import ContractError
-
-# S11 R-S1: the project root (target/ now, the repo root after the promotion) that holds scripts/ and src/
-PROJECT = next(p for p in Path(__file__).resolve().parents if (p / "src" / "codex_harness").is_dir())
 
 
 def test_all_upstream_project_types_are_retained_without_executing_files(tmp_path):

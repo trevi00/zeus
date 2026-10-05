@@ -11,9 +11,9 @@ import os
 import shutil
 import subprocess
 import uuid
-from pathlib import Path
 
 import pytest
+from _layout import TARGET
 
 # S11 TISO-1 (owner): the shared objects live in `ported_support` (a unique module name), so a ported module's
 # `from ported_support import …` can never resolve to the top-level `tests/conftest.py`, which pytest also registers
@@ -57,7 +57,7 @@ def pytest_collectstart(collector):
         return
     base = collector.config._tmp_path_factory.getbasetemp()
     root = base / "attested-runtime"
-    shutil.copytree(Path(__file__).resolve().parents[2] / "src" / "codex_harness", root / "src" / "codex_harness",
+    shutil.copytree(TARGET / "src" / "codex_harness", root / "src" / "codex_harness",
                     ignore=shutil.ignore_patterns("__pycache__", "*.pyc"))
     empty = base / "empty-gitconfig"
     empty.write_text("", encoding="utf-8")
