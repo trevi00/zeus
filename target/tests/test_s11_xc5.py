@@ -9,11 +9,11 @@ import json
 from datetime import datetime, timedelta, timezone
 
 import pytest
+from test_s8_frontdesk_adapter_move import REVISION, SUPPLIED, FakeGit, document, executor, turn
 
 from codex_harness.composition import configuration, operation
 from codex_harness.intake.adapters.frontdesk import execute_frontdesk
 from codex_harness.kernel.errors import ContractError
-from test_s8_frontdesk_adapter_move import REVISION, SUPPLIED, FakeGit, document, executor, turn
 
 
 @pytest.fixture
