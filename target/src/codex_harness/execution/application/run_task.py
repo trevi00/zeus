@@ -15,7 +15,7 @@ Does not own: the lease rules and coordination writes (coordination, through Tas
     execution, native hook candidates) refuse when absent; the S5 continuation lanes likewise
 Entry points: RunTask.execute_one, ResearchRequired
 Contracts: INV-INVOCATION-001, INV-SESSION-001, INV-OBSERVATION-001, INV-CONTEXT-001, INV-WORKER-SESSION-001,
-    INV-CLAUDE-WORKER-001, INV-RELEASE-001, INV-RECURRENCE-001, INV-EVIDENCE-001
+    INV-CLAUDE-WORKER-001, INV-RELEASE-001, INV-RECURRENCE-001, INV-EVIDENCE-001, INV-EXECUTION-TIME-001
 
 CHANGE (S8 V32, DESIGN-s8 §30/§30.1): council delivery and correction feedback are composed. `delivery` and
 `correction_feedback` pass into the context request and the injected `composition_admission` (context.ports.
