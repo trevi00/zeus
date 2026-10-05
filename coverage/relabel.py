@@ -421,6 +421,21 @@ class Tree:
                         names.setdefault(k, v)
         return names
 
+    @staticmethod
+    def bare_marker(tree) -> bool:
+        """An `__init__` body that holds only a docstring, imports and `__all__` (R-MC2-3); an unparsable one is bare."""
+        for node in (tree.body if tree is not None else []):
+            if isinstance(node, (ast.Import, ast.ImportFrom)):
+                continue
+            if isinstance(node, ast.Expr) and isinstance(node.value, ast.Constant) and isinstance(node.value.value, str):
+                continue
+            if isinstance(node, (ast.Assign, ast.AnnAssign, ast.AugAssign)):
+                targets = node.targets if isinstance(node, ast.Assign) else [node.target]
+                if all(isinstance(x, ast.Name) and x.id == "__all__" for x in targets):
+                    continue
+            return False
+        return True
+
     def resolve(self, symbol: str, bases=("target/src", "target")) -> bool:
         """`module`, `module:Qual.name` or `module.Name` exists in the tree (gen_s11 `Tree.resolve`, R-L16)."""
         mod, _, qual = symbol.partition(":")
@@ -842,10 +857,13 @@ class Relabel:
         if s0.startswith("target/") or s0.startswith("frontend/"):
             ok = (t.exists(s0) or (t.root / s0).is_dir() or (s0.startswith("frontend/") and t.exists("target/" + s0)))
             return ok, f"target path does not exist: {s0}"
-        if s0.startswith("codex_harness") and "." in s0 or kind == "module_entry" and "." in s0 and " " not in s0:
-            if kind in ("module", "public_api") and ":" not in s0:
+        if s0.startswith("codex_harness") and "." in s0 or s0 == "codex_harness" \
+                or kind == "module_entry" and "." in s0 and " " not in s0:
+            if kind in ("module", "public_api") and ":" not in s0 and "." in s0:  # the dotless root is the distribution
                 mf = t.module_file(s0.split(":")[0])
-                if mf is not None and mf.endswith("/__init__.py"):  # gen_s11: a bare package marker is not the module
+                # gen_s11: a bare package marker is not the module. DESIGN-s11 §10 R-MC2-3: an `__init__` is a marker only
+                # when bare (docstring, imports, `__all__`); one that defines anything is the module.
+                if mf is not None and mf.endswith("/__init__.py") and Tree.bare_marker(t.tree_of(mf)):
                     return False, f"target symbol is a package marker: {s0}"
             return t.resolve(s0), f"target symbol does not resolve: {s0}"
         return False, f"target symbol is not a code symbol: {s0[:60]}"

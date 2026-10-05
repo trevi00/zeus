@@ -915,3 +915,36 @@ def test_a_transient_module_in_the_exercise_record_is_ignored_and_named(tree, tm
     path = exercise_file(tmp_path, {"tests/test_b.py::test_other": [0, 2]}, functions=[*EXERCISE_FUNCTIONS, "codex_harness.adapters._probe:deep"])
     ex = relabel.build_exercise(tree, path, ["tests/test_b.py::test_other"], {}, HEAD, "A/x")
     assert ex["ignored_modules"] == ["codex_harness.adapters._probe"] and list(ex["symbols"]) == [SYMBOL]
+
+
+# ------------------------------------------------------------- R-MC2-3: a package `__init__` is a marker only when bare
+
+def module_rows(tree, **symbols):
+    rows = [row(kind="module", key=f"module:{k}", slice_="S7", symbol=(v,)) for k, v in symbols.items()]
+    out, _ = run(rows, tree)
+    return {k: out[f"module:{k}"] for k in symbols}
+
+
+def test_a_bare_package_init_is_still_refused_as_the_module(tree):
+    """DESIGN-s11 §10 R-MC2-3 control: an `__init__` of a docstring, imports and `__all__` is a marker, not the module."""
+    write(tree, "target/src/codex_harness/research/__init__.py",
+          '"""A layer."""\n\nfrom codex_harness.research import mod\n\n__all__ = ["mod"]\n')
+    got = module_rows(tree, bare="codex_harness.research")["bare"]
+    assert got["status"] == "designed"
+    assert "target symbol is a package marker: codex_harness.research" in got["verification"]["unmet"]
+
+
+def test_a_package_init_that_defines_behaviour_resolves_as_the_module(tree):
+    """DESIGN-s11 §10 R-MC2-3 positive control (the `entry.cli` shape: `parser`/`main` defined in the `__init__`)."""
+    write(tree, "target/src/codex_harness/research/__init__.py", '"""Entry."""\n\n\ndef parser():\n    pass\n\n\ndef main():\n    pass\n')
+    assert module_rows(tree, entry="codex_harness.research")["entry"]["status"] == "verified"
+
+
+def test_the_dotless_top_level_package_resolves_and_a_nonexistent_dotless_name_does_not(tree):
+    """DESIGN-s11 §10 R-MC2-3: `codex_harness` is the distribution package; an unknown dotless name is no symbol."""
+    got = module_rows(tree, root="codex_harness", ghost="codex_ghost")
+    assert got["root"]["status"] == "verified"
+    assert got["ghost"]["status"] == "designed"
+    assert any(u.startswith("target symbol is not a code symbol") for u in got["ghost"]["verification"]["unmet"])
+    absent = module_rows(tree, nowhere="codex_harness.nowhere")["nowhere"]
+    assert absent["status"] == "designed"
