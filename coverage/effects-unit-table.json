@@ -1,0 +1,487 @@
+{
+ "ambiguous": [
+  {
+   "candidates": [
+    "Operation.claim",
+    "Workflow.claim"
+   ],
+   "driver_call": "compare/drivers/common/s5_units.py:151",
+   "family": "effects.admission_unit",
+   "golden_unit": "claim",
+   "reason": "claim binds to 2 imported M7 methods"
+  },
+  {
+   "candidates": [],
+   "driver_call": "compare/drivers/common/s5_units.py:195",
+   "family": "effects.admission_unit",
+   "golden_unit": "complete",
+   "reason": "complete is in no M7 module the driver imports"
+  },
+  {
+   "candidates": [
+    "Operation.claim",
+    "Workflow.claim"
+   ],
+   "driver_call": "compare/drivers/common/s5_units.py:151",
+   "family": "effects.admission_unit.pg",
+   "golden_unit": "claim",
+   "reason": "claim binds to 2 imported M7 methods"
+  },
+  {
+   "candidates": [],
+   "driver_call": "compare/drivers/common/s5_units.py:195",
+   "family": "effects.admission_unit.pg",
+   "golden_unit": "complete",
+   "reason": "complete is in no M7 module the driver imports"
+  },
+  {
+   "candidates": [
+    "codex_harness.adapters.executor:Executor.decide_one#1",
+    "codex_harness.adapters.executor:Executor.decide_one#2",
+    "codex_harness.adapters.executor:Executor.decide_one#3"
+   ],
+   "driver_call": "compare/drivers/reference/decision_unit.py:176",
+   "family": "effects.decision_unit",
+   "golden_unit": "decision_unit",
+   "reason": "0 of 3 blocks of Executor.decide_one cover the golden buckets ['release_queue', 'releases']"
+  },
+  {
+   "candidates": [
+    "codex_harness.adapters.executor:Executor.decide_one#1",
+    "codex_harness.adapters.executor:Executor.decide_one#2",
+    "codex_harness.adapters.executor:Executor.decide_one#3"
+   ],
+   "driver_call": "compare/drivers/reference/decision_unit.py:176",
+   "family": "effects.decision_unit.pg",
+   "golden_unit": "decision_unit",
+   "reason": "0 of 3 blocks of Executor.decide_one cover the golden buckets ['release_queue', 'releases']"
+  },
+  {
+   "candidates": [
+    "FrontDesk.submit",
+    "Workflow.submit"
+   ],
+   "driver_call": "compare/drivers/common/s8_units.py:244",
+   "family": "effects.s8_units",
+   "golden_unit": "submit",
+   "reason": "submit binds to 2 imported M7 methods"
+  },
+  {
+   "candidates": [
+    "FrontDesk.submit",
+    "Workflow.submit"
+   ],
+   "driver_call": "compare/drivers/common/s8_units.py:244",
+   "family": "effects.s8_units.pg",
+   "golden_unit": "submit",
+   "reason": "submit binds to 2 imported M7 methods"
+  }
+ ],
+ "entries": [
+  {
+   "atomic_unit": "codex_harness.application.fleet:Fleet.finalize#1",
+   "block": "#1",
+   "cases": [
+    "b"
+   ],
+   "driver_call": "compare/drivers/common/s5_units.py:205",
+   "family": "effects.admission_unit",
+   "golden_unit": "finalize"
+  },
+  {
+   "atomic_unit": "codex_harness.application.workflow:Workflow.handle#2",
+   "block": "#2",
+   "cases": [
+    "a",
+    "c"
+   ],
+   "driver_call": "compare/drivers/common/s5_units.py:137",
+   "family": "effects.admission_unit",
+   "golden_unit": "handle"
+  },
+  {
+   "atomic_unit": "codex_harness.application.fleet:Fleet.finalize#1",
+   "block": "#1",
+   "cases": [
+    "b"
+   ],
+   "driver_call": "compare/drivers/common/s5_units.py:205",
+   "family": "effects.admission_unit.pg",
+   "golden_unit": "finalize"
+  },
+  {
+   "atomic_unit": "codex_harness.application.workflow:Workflow.handle#2",
+   "block": "#2",
+   "cases": [
+    "a",
+    "c"
+   ],
+   "driver_call": "compare/drivers/common/s5_units.py:137",
+   "family": "effects.admission_unit.pg",
+   "golden_unit": "handle"
+  },
+  {
+   "atomic_unit": "codex_harness.application.continuation:Continuation.accept_research#1",
+   "block": "#1",
+   "cases": [
+    "a",
+    "b",
+    "c"
+   ],
+   "driver_call": "compare/drivers/common/s6_units.py:355",
+   "family": "effects.continuation_units",
+   "golden_unit": "accept_research"
+  },
+  {
+   "atomic_unit": "codex_harness.application.continuation:Continuation.grant_capacity#2",
+   "block": "#2",
+   "cases": [
+    "a",
+    "b",
+    "c"
+   ],
+   "driver_call": "compare/drivers/common/s6_research.py:285",
+   "family": "effects.continuation_units",
+   "golden_unit": "grant_capacity"
+  },
+  {
+   "atomic_unit": "codex_harness.application.continuation:Continuation.accept_research#1",
+   "block": "#1",
+   "cases": [
+    "a",
+    "b",
+    "c"
+   ],
+   "driver_call": "compare/drivers/common/s6_units.py:355",
+   "family": "effects.continuation_units.pg",
+   "golden_unit": "accept_research"
+  },
+  {
+   "atomic_unit": "codex_harness.application.continuation:Continuation.grant_capacity#2",
+   "block": "#2",
+   "cases": [
+    "a",
+    "b",
+    "c"
+   ],
+   "driver_call": "compare/drivers/common/s6_research.py:285",
+   "family": "effects.continuation_units.pg",
+   "golden_unit": "grant_capacity"
+  },
+  {
+   "atomic_unit": "codex_harness.application.research_program:ResearchProgram.fail_cycle#1",
+   "block": "#1",
+   "cases": [
+    "a",
+    "b",
+    "c"
+   ],
+   "driver_call": "compare/drivers/common/s8_units.py:200",
+   "family": "effects.s8_units",
+   "golden_unit": "fail_cycle"
+  },
+  {
+   "atomic_unit": "codex_harness.application.research_program:ResearchProgram.fail_cycle#1",
+   "block": "#1",
+   "cases": [
+    "a",
+    "c"
+   ],
+   "driver_call": "compare/drivers/common/s8_units.py:200",
+   "family": "effects.s8_units",
+   "golden_unit": "fail_cycle_dispatch"
+  },
+  {
+   "atomic_unit": "codex_harness.application.research_program:ResearchProgram.record_collection#1",
+   "block": "#1",
+   "cases": [
+    "a",
+    "b",
+    "c"
+   ],
+   "driver_call": "compare/drivers/common/s8_program_records.py:75",
+   "family": "effects.s8_units",
+   "golden_unit": "record_collection"
+  },
+  {
+   "atomic_unit": "codex_harness.application.research_program:ResearchProgram.fail_cycle#1",
+   "block": "#1",
+   "cases": [
+    "a",
+    "b",
+    "c"
+   ],
+   "driver_call": "compare/drivers/common/s8_units.py:200",
+   "family": "effects.s8_units.pg",
+   "golden_unit": "fail_cycle"
+  },
+  {
+   "atomic_unit": "codex_harness.application.research_program:ResearchProgram.fail_cycle#1",
+   "block": "#1",
+   "cases": [
+    "a",
+    "c"
+   ],
+   "driver_call": "compare/drivers/common/s8_units.py:200",
+   "family": "effects.s8_units.pg",
+   "golden_unit": "fail_cycle_dispatch"
+  },
+  {
+   "atomic_unit": "codex_harness.application.research_program:ResearchProgram.record_collection#1",
+   "block": "#1",
+   "cases": [
+    "a",
+    "b",
+    "c"
+   ],
+   "driver_call": "compare/drivers/common/s8_program_records.py:75",
+   "family": "effects.s8_units.pg",
+   "golden_unit": "record_collection"
+  },
+  {
+   "atomic_unit": "codex_harness.application.observations:Collector.collect#1",
+   "block": "#1",
+   "cases": [
+    "a",
+    "b",
+    "c"
+   ],
+   "driver_call": "compare/drivers/common/s9_units.py:176",
+   "family": "effects.s9_units",
+   "golden_unit": "collect"
+  },
+  {
+   "atomic_unit": "codex_harness.application.observations:Observer.resolve_termination#1",
+   "block": "#1",
+   "cases": [
+    "a",
+    "b",
+    "c"
+   ],
+   "driver_call": "compare/drivers/common/s9_units.py:266",
+   "family": "effects.s9_units",
+   "golden_unit": "resolve_termination"
+  },
+  {
+   "atomic_unit": "codex_harness.application.observations:Collector.collect#1",
+   "block": "#1",
+   "cases": [
+    "a",
+    "b",
+    "c"
+   ],
+   "driver_call": "compare/drivers/common/s9_units.py:176",
+   "family": "effects.s9_units.pg",
+   "golden_unit": "collect"
+  },
+  {
+   "atomic_unit": "codex_harness.application.observations:Observer.resolve_termination#1",
+   "block": "#1",
+   "cases": [
+    "a",
+    "b",
+    "c"
+   ],
+   "driver_call": "compare/drivers/common/s9_units.py:266",
+   "family": "effects.s9_units.pg",
+   "golden_unit": "resolve_termination"
+  }
+ ],
+ "schema": "zeus:s11-effects-unit-table:1",
+ "sources": {
+  "catalogue": "compare/goldens/reference/static.source.json",
+  "scenarios": "compare/scenarios/effects.*.json"
+ },
+ "unmatched": [
+  {
+   "family": "effects.admission_unit",
+   "golden_unit": "admit",
+   "reason": "no driver call of an M7 method named admit"
+  },
+  {
+   "family": "effects.admission_unit",
+   "golden_unit": "depths",
+   "reason": "no driver call of an M7 method named depths"
+  },
+  {
+   "family": "effects.admission_unit.pg",
+   "golden_unit": "admit",
+   "reason": "no driver call of an M7 method named admit"
+  },
+  {
+   "family": "effects.admission_unit.pg",
+   "golden_unit": "depths",
+   "reason": "no driver call of an M7 method named depths"
+  },
+  {
+   "family": "effects.continuation_units",
+   "golden_unit": "begin_assessment",
+   "reason": "no driver call of an M7 method named begin_assessment"
+  },
+  {
+   "family": "effects.continuation_units",
+   "golden_unit": "dispatch",
+   "reason": "no driver call of an M7 method named dispatch"
+  },
+  {
+   "family": "effects.continuation_units",
+   "golden_unit": "publish",
+   "reason": "no driver call of an M7 method named publish"
+  },
+  {
+   "family": "effects.continuation_units",
+   "golden_unit": "requalification",
+   "reason": "no driver call of an M7 method named requalification"
+  },
+  {
+   "family": "effects.continuation_units",
+   "golden_unit": "settle",
+   "reason": "no driver call of an M7 method named settle"
+  },
+  {
+   "family": "effects.continuation_units.pg",
+   "golden_unit": "begin_assessment",
+   "reason": "no driver call of an M7 method named begin_assessment"
+  },
+  {
+   "family": "effects.continuation_units.pg",
+   "golden_unit": "dispatch",
+   "reason": "no driver call of an M7 method named dispatch"
+  },
+  {
+   "family": "effects.continuation_units.pg",
+   "golden_unit": "publish",
+   "reason": "no driver call of an M7 method named publish"
+  },
+  {
+   "family": "effects.continuation_units.pg",
+   "golden_unit": "requalification",
+   "reason": "no driver call of an M7 method named requalification"
+  },
+  {
+   "family": "effects.continuation_units.pg",
+   "golden_unit": "settle",
+   "reason": "no driver call of an M7 method named settle"
+  },
+  {
+   "family": "effects.delivery_units",
+   "golden_unit": "consume_descriptor",
+   "reason": "no driver call of an M7 method named consume_descriptor"
+  },
+  {
+   "family": "effects.delivery_units",
+   "golden_unit": "promote",
+   "reason": "no driver call of an M7 method named promote"
+  },
+  {
+   "family": "effects.delivery_units",
+   "golden_unit": "record_merge",
+   "reason": "no driver call of an M7 method named record_merge"
+  },
+  {
+   "family": "effects.delivery_units",
+   "golden_unit": "record_publish",
+   "reason": "no driver call of an M7 method named record_publish"
+  },
+  {
+   "family": "effects.delivery_units",
+   "golden_unit": "record_superseded",
+   "reason": "no driver call of an M7 method named record_superseded"
+  },
+  {
+   "family": "effects.delivery_units",
+   "golden_unit": "record_switch",
+   "reason": "no driver call of an M7 method named record_switch"
+  },
+  {
+   "family": "effects.delivery_units",
+   "golden_unit": "stage_write",
+   "reason": "no driver call of an M7 method named stage_write"
+  },
+  {
+   "family": "effects.delivery_units",
+   "golden_unit": "verification_attempt",
+   "reason": "no driver call of an M7 method named verification_attempt"
+  },
+  {
+   "family": "effects.delivery_units",
+   "golden_unit": "verification_verdict",
+   "reason": "no driver call of an M7 method named verification_verdict"
+  },
+  {
+   "family": "effects.delivery_units.pg",
+   "golden_unit": "consume_descriptor",
+   "reason": "no driver call of an M7 method named consume_descriptor"
+  },
+  {
+   "family": "effects.delivery_units.pg",
+   "golden_unit": "promote",
+   "reason": "no driver call of an M7 method named promote"
+  },
+  {
+   "family": "effects.delivery_units.pg",
+   "golden_unit": "record_merge",
+   "reason": "no driver call of an M7 method named record_merge"
+  },
+  {
+   "family": "effects.delivery_units.pg",
+   "golden_unit": "record_publish",
+   "reason": "no driver call of an M7 method named record_publish"
+  },
+  {
+   "family": "effects.delivery_units.pg",
+   "golden_unit": "record_superseded",
+   "reason": "no driver call of an M7 method named record_superseded"
+  },
+  {
+   "family": "effects.delivery_units.pg",
+   "golden_unit": "record_switch",
+   "reason": "no driver call of an M7 method named record_switch"
+  },
+  {
+   "family": "effects.delivery_units.pg",
+   "golden_unit": "stage_write",
+   "reason": "no driver call of an M7 method named stage_write"
+  },
+  {
+   "family": "effects.delivery_units.pg",
+   "golden_unit": "verification_attempt",
+   "reason": "no driver call of an M7 method named verification_attempt"
+  },
+  {
+   "family": "effects.delivery_units.pg",
+   "golden_unit": "verification_verdict",
+   "reason": "no driver call of an M7 method named verification_verdict"
+  },
+  {
+   "family": "effects.s8_units",
+   "golden_unit": "evaluator_completion",
+   "reason": "no driver call of an M7 method named evaluator_completion"
+  },
+  {
+   "family": "effects.s8_units",
+   "golden_unit": "evaluator_completion_unreachable",
+   "reason": "no driver call of an M7 method named evaluator_completion_unreachable"
+  },
+  {
+   "family": "effects.s8_units.pg",
+   "golden_unit": "evaluator_completion",
+   "reason": "no driver call of an M7 method named evaluator_completion"
+  },
+  {
+   "family": "effects.s8_units.pg",
+   "golden_unit": "evaluator_completion_unreachable",
+   "reason": "no driver call of an M7 method named evaluator_completion_unreachable"
+  },
+  {
+   "family": "effects.s9_units",
+   "golden_unit": "record_alert",
+   "reason": "no driver call of an M7 method named record_alert"
+  },
+  {
+   "family": "effects.s9_units.pg",
+   "golden_unit": "record_alert",
+   "reason": "no driver call of an M7 method named record_alert"
+  }
+ ]
+}

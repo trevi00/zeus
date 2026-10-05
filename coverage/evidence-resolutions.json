@@ -2,6 +2,36 @@
  "schema": "zeus:s11-evidence-resolutions:1",
  "resolutions": [
   {
+   "key": "atomic_unit:codex_harness.application.continuation:Continuation.accept_research#1",
+   "pending": "pending: recorder confirmation in the owning slice",
+   "replaced_by": [
+    "compare:effects.continuation_units",
+    "compare:effects.continuation_units.pg"
+   ],
+   "rule": "G1",
+   "citation": "coverage/effects-unit-table.json#effects.continuation_units/accept_research; coverage/effects-unit-table.json#effects.continuation_units.pg/accept_research"
+  },
+  {
+   "key": "atomic_unit:codex_harness.application.research_program:ResearchProgram.fail_cycle#1",
+   "pending": "pending: recorder confirmation in the owning slice",
+   "replaced_by": [
+    "compare:effects.s8_units",
+    "compare:effects.s8_units.pg"
+   ],
+   "rule": "G1",
+   "citation": "coverage/effects-unit-table.json#effects.s8_units/fail_cycle; coverage/effects-unit-table.json#effects.s8_units/fail_cycle_dispatch; coverage/effects-unit-table.json#effects.s8_units.pg/fail_cycle; coverage/effects-unit-table.json#effects.s8_units.pg/fail_cycle_dispatch"
+  },
+  {
+   "key": "atomic_unit:codex_harness.application.research_program:ResearchProgram.record_collection#1",
+   "pending": "pending: recorder confirmation in the owning slice",
+   "replaced_by": [
+    "compare:effects.s8_units",
+    "compare:effects.s8_units.pg"
+   ],
+   "rule": "G1",
+   "citation": "coverage/effects-unit-table.json#effects.s8_units/record_collection; coverage/effects-unit-table.json#effects.s8_units.pg/record_collection"
+  },
+  {
    "key": "contract:INV-CODEX-CREDENTIAL-001",
    "pending": "pending: target characterization test named in the feature-map row (R-U)",
    "replaced_by": [
