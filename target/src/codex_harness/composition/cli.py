@@ -28,7 +28,7 @@ def codex_runtime():
     return CodexRuntime(runner=run_process, redact=redact_text)  # S11 XC-1 A3: stderr tail redaction
 
 
-def workflow(service):
+def workflow(service, observer=None):
     """The task Workflow of `service`, wired as `tests/ported/m7_coordination.Workflow.__init__` wires it (M7 `Workflow(store, org)`)."""
     from codex_harness.coordination.application import operation_finalization
     from codex_harness.coordination.application.workflow import Workflow
@@ -37,13 +37,14 @@ def workflow(service):
     from codex_harness.research.application.audit_gate import require_adoption
     return Workflow(service.store, service.org, ticket_binding=tickets.ticket_binding,
                     TicketSuperseded=tickets.TicketSuperseded, adoption=require_adoption,
-                    park_terminal=operation_finalization.park, clock=SYSTEM_CLOCK, ids=SYSTEM_IDS)
+                    park_terminal=operation_finalization.park, clock=SYSTEM_CLOCK, ids=SYSTEM_IDS,
+                    observer=observer)  # S11 XC-3: the injected observation port for `operations.task_spec_bound`
 
 
-def messages(service):
+def messages(service, observer=None):
     """The MessageHandler over `workflow(service)`, as `tests/ported/m7_coordination.Workflow.__init__` builds `self.messages`."""
     from codex_harness.coordination.application.messages import MessageHandler
-    return MessageHandler(workflow(service))
+    return MessageHandler(workflow(service, observer))
 
 
 def release_queue(service):

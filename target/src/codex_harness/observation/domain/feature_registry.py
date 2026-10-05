@@ -41,7 +41,7 @@ FEATURES = {feature.id: feature for feature in (
         "invocation_abandoned", "output_evaluated", "usage_split_recorded", "termination_recorded",
         "progress_recorded", "reconciliation_required", "reconciliation_resolved"), True),
     Feature("task_execution", "coordination", (*_events(_D, "task_completed", "task_failed"),
-                                                *_events(_O, "lease_renewed")), True),
+                                                *_events(_O, "lease_renewed", "task_spec_bound")), True),  # + S11 XC-3
     Feature("worker_sessions", "execution", (*_events(_D, "worker_session_transition"),
                                               *_events(_O, "worker_session_blocked"),
                                               *_events(_D, "checkpoint_recorded")), True),

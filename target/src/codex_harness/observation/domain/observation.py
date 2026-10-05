@@ -288,6 +288,9 @@ REGISTRY = {
     # S11 XC-2b B2 (TQ-XCUT-PLAN B2): a refused desk/viewer request: route and code are closed enums in the catalog, the
     # status is the HTTP status; no body, header or client address is carried.
     "operations.http_request_refused": {"route": _S, "status": _I, "code": _S},
+    # S11 XC-3 (TQ-XCUT-PLAN B4 redesign): the task row created from a message that binds one Zeus ticket; the digest is
+    # that binding's content_hash. A separate event: no existing payload or execution identity carries it.
+    "operations.task_spec_bound": {"task_id": _S, "spec_digest": _S},
 }
 
 

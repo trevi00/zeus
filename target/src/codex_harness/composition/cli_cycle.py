@@ -20,10 +20,10 @@ def incident_recorder(service):
     return cli.incidents(service).record_incident
 
 
-def serve_handler(service):
+def serve_handler(service, observer=None):
     """The message handler of `serve` and of the cycle step: `workflow.handle` of M7 (`composition.cli.messages`)."""
     from codex_harness.composition import cli
-    return cli.messages(service)
+    return cli.messages(service, observer)
 
 
 def local_cycle(service, executor=None, bus=None, workflow=None, observer=None):

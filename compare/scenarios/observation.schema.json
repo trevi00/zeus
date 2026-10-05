@@ -125,8 +125,8 @@
   {
    "path": "$.registry_size",
    "op": "replace",
-   "value": 77,
-   "authority": "S11 XC-2b B2 (TQ-XCUT-PLAN B2): the catalogued operations.http_request_refused event; spec 6dae6df833ec7eaa67955330406853a11ee4f2803cfc5dacb3689fd797a8e2db"
+   "value": 78,
+   "authority": "S11 XC-2b B2 (TQ-XCUT-PLAN B2): the catalogued operations.http_request_refused event, spec 6dae6df833ec7eaa67955330406853a11ee4f2803cfc5dacb3689fd797a8e2db; S11 XC-3 (TQ-XCUT-PLAN B4 redesign): the catalogued operations.task_spec_bound event, spec c47fe3e6854d8bf0ebf20b7ed027ce2aefc0d8a7949af2634c1a294b1e5804b2"
   },
   {
    "path": "$.registry_valid",
@@ -138,6 +138,17 @@
     "digest": "0c8ee3ce84b1631f3598254fcaa65e27212711f470258fe61d948aeda0b89769"
    },
    "authority": "S11 XC-2b B2 (TQ-XCUT-PLAN B2): the catalogued operations.http_request_refused event; spec 6dae6df833ec7eaa67955330406853a11ee4f2803cfc5dacb3689fd797a8e2db"
+  },
+  {
+   "path": "$.registry_valid",
+   "op": "add",
+   "key": "operations.task_spec_bound",
+   "value": {
+    "accepted": true,
+    "same_object": true,
+    "digest": "97b18765ee7f87aefa2a340ecf3e62cd9c15059af52a85b0a9043fbd495409dd"
+   },
+   "authority": "S11 XC-3 (TQ-XCUT-PLAN B4 redesign): the catalogued operations.task_spec_bound event; spec c47fe3e6854d8bf0ebf20b7ed027ce2aefc0d8a7949af2634c1a294b1e5804b2"
   }
  ]
 }

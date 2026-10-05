@@ -40,7 +40,7 @@ def run(args) -> None:
         from codex_harness.composition.operation import build_executor
         observer = build_observer(service.store, "cli.cycle")
         executor = build_executor(service, observer=observer)
-        cycle = cli_cycle.local_cycle(service, executor, cli_bus.bus(), cli_cycle.serve_handler(service), observer=observer)
+        cycle = cli_cycle.local_cycle(service, executor, cli_bus.bus(), cli_cycle.serve_handler(service, observer), observer=observer)
         try:
             emit(cycle.step(args.cycle_id))
         finally:

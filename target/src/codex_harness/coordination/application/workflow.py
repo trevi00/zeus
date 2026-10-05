@@ -96,8 +96,9 @@ class Workflow:
     adoption gate `adoption(tx, details)` are injected, as are the clock, the id source and the monotonic clock."""
 
     def __init__(self, store, organization, *, ticket_binding, TicketSuperseded, adoption, park_terminal=None,
-                 clock=None, ids=None, monotonic=None):
+                 clock=None, ids=None, monotonic=None, observer=None):
         self.store, self.org = store, organization
+        self.observer = observer  # S11 XC-3: the composition-injected observation port (diagnostic emit only)
         self.ticket_binding, self.TicketSuperseded, self.adoption = ticket_binding, TicketSuperseded, adoption
         self.park_terminal = park_terminal
         self.clock, self.ids, self.monotonic = clock, ids, monotonic
@@ -108,7 +109,7 @@ class Workflow:
         deadline_time(message["when"]["deadline"])
         task_id = message["message_id"]
         with self.store.transaction() as tx:
-            self.ticket_binding(tx, message["what"]["details"])
+            bound = self.ticket_binding(tx, message["what"]["details"])
             if message["what"]["action"] in {"plan", "implement"}:
                 self.adoption(tx, message["what"]["details"])
             old = tx.get("tasks", task_id)
@@ -134,7 +135,19 @@ class Workflow:
                     "generation": 0, "lease_until": None, "lease_owner": None,
                     "result": None, "error": None, "created_at": utcnow(self.clock)}
             tx.put("tasks", task_id, task)
-            return task
+        self._spec_bound(task_id, bound)
+        return task
+
+    def _spec_bound(self, task_id, bound):
+        """S11 XC-3 (TQ-XCUT-PLAN B4 redesign): one `operations.task_spec_bound` for a task row just created from a
+        message that binds a ticket, after its unit committed. Diagnostic: an observer that fails changes nothing."""
+        if self.observer is None or bound is None:
+            return
+        try:
+            self.observer.emit("operations.task_spec_bound", "observed",
+                               attributes={"task_id": task_id, "spec_digest": bound["content_hash"]})
+        except Exception:  # noqa: BLE001 - a diagnostic must never fail a committed submission
+            pass
 
     _attempt_outcome = staticmethod(attempt_outcome)
 
