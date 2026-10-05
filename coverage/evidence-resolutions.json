@@ -1799,6 +1799,150 @@
     "target:tests/test_s1_storage_units.py::test_packaged_resources_are_the_source_bytes"
    ],
    "rule": "G3"
+  },
+  {
+   "citation": "target/tests/ported/test_audit_progress.py:11 (cites the ID inside a passing node; the file is named in the ARCHITECTURE.md TARGET row of the research_self_improvement capability that lists the ID)",
+   "key": "contract:INV-AUDIT-PROGRESS-001",
+   "pending": "pending: target characterization test named in the feature-map row (R-U)",
+   "replaced_by": [
+    "target:tests/ported/test_audit_progress.py"
+   ],
+   "rule": "G2"
+  },
+  {
+   "citation": "target/tests/test_s8_audit_repair_move.py:189 (cites the ID inside a passing node; the file is named in the ARCHITECTURE.md TARGET row of the storage_artifacts capability that lists the ID)",
+   "key": "contract:INV-AUDIT-REPAIR-001",
+   "pending": "pending: target characterization test named in the feature-map row (R-U)",
+   "replaced_by": [
+    "target:tests/test_s8_audit_repair_move.py"
+   ],
+   "rule": "G2"
+  },
+  {
+   "citation": "target/tests/ported/test_claude_assignment.py:168 (cites the ID inside a passing node; the file is named in the ARCHITECTURE.md TARGET row of the bounded_context_knowledge capability that lists the ID)",
+   "key": "contract:INV-CLAUDE-WORKER-001",
+   "pending": "pending: target characterization test named in the feature-map row (R-U)",
+   "replaced_by": [
+    "target:tests/ported/test_claude_assignment.py"
+   ],
+   "rule": "G2"
+  },
+  {
+   "citation": "target/tests/ported/test_continuation_research.py:26 (cites the ID inside a passing node; the file is named in the ARCHITECTURE.md TARGET row of the bounded_context_knowledge capability that lists the ID)",
+   "key": "contract:INV-CONTINUATION-001",
+   "pending": "pending: target characterization test named in the feature-map row (R-U)",
+   "replaced_by": [
+    "target:tests/ported/test_continuation_research.py"
+   ],
+   "rule": "G2"
+  },
+  {
+   "citation": "target/tests/test_coordination_discovery_census_reader.py:2 (cites the ID inside a passing node; the file is named in the ARCHITECTURE.md TARGET row of the intake_backlog capability that lists the ID)",
+   "key": "contract:INV-DISCOVERY-PRESSURE-001",
+   "pending": "pending: target characterization test named in the feature-map row (R-U)",
+   "replaced_by": [
+    "target:tests/test_coordination_discovery_census_reader.py"
+   ],
+   "rule": "G2"
+  },
+  {
+   "citation": "target/tests/ported/test_evidence_inspection.py:2 (cites the ID inside a passing node; the file is named in the ARCHITECTURE.md TARGET row of the execution_container_credentials capability that lists the ID)",
+   "key": "contract:INV-EVIDENCE-001",
+   "pending": "pending: target characterization test named in the feature-map row (R-U)",
+   "replaced_by": [
+    "target:tests/ported/test_evidence_inspection.py"
+   ],
+   "rule": "G2"
+  },
+  {
+   "citation": "target/tests/ported/test_owner_actions_canary_rearm.py:16 (cites the ID inside a passing node; the file is named in the ARCHITECTURE.md TARGET row of the deployment_recovery capability that lists the ID)",
+   "key": "contract:INV-HOST-DELIVERY-FIRST-ACTIVATION-001",
+   "pending": "pending: target characterization test named in the feature-map row (R-U)",
+   "replaced_by": [
+    "target:tests/ported/test_owner_actions_canary_rearm.py"
+   ],
+   "rule": "G2"
+  },
+  {
+   "citation": "target/tests/test_s8_batch_b7b_move.py:170 (cites the ID inside a passing node; the file is named in the ARCHITECTURE.md TARGET row of the independent_review_promotion capability that lists the ID)",
+   "key": "contract:INV-HOST-DELIVERY-VERIFY-001",
+   "pending": "pending: target characterization test named in the feature-map row (R-U)",
+   "replaced_by": [
+    "target:tests/test_s8_batch_b7b_move.py"
+   ],
+   "rule": "G2"
+  },
+  {
+   "citation": "target/tests/ported/test_host_migration_evidence.py:17 (cites the ID inside a passing node; the file is named in the ARCHITECTURE.md TARGET row of the deployment_recovery capability that lists the ID)",
+   "key": "contract:INV-HOST-MIGRATION-001",
+   "pending": "pending: target characterization test named in the feature-map row (R-U)",
+   "replaced_by": [
+    "target:tests/ported/test_host_migration_evidence.py"
+   ],
+   "rule": "G2"
+  },
+  {
+   "citation": "target/tests/ported/test_isolated_worker.py:1 (cites the ID inside a passing node; the file is named in the ARCHITECTURE.md TARGET row of the execution_container_credentials capability that lists the ID)",
+   "key": "contract:INV-ISOLATED-WORKER-001",
+   "pending": "pending: target characterization test named in the feature-map row (R-U)",
+   "replaced_by": [
+    "target:tests/ported/test_isolated_worker.py"
+   ],
+   "rule": "G2"
+  },
+  {
+   "citation": "target/tests/test_s9_batch_l2b2_move.py:118 (cites the ID inside a passing node; the file is named in the ARCHITECTURE.md TARGET row of the monitoring_operator_security capability that lists the ID)",
+   "key": "contract:INV-METRIC-001",
+   "pending": "pending: target characterization test named in the feature-map row (R-U)",
+   "replaced_by": [
+    "target:tests/test_s9_batch_l2b2_move.py"
+   ],
+   "rule": "G2"
+  },
+  {
+   "citation": "target/tests/ported/test_operation.py:320 (cites the ID inside a passing node; the ID is listed in the ARCHITECTURE.md TARGET row of cli_composition, and the file is the ported same-name file of the row-named reference test tests/test_operation.py)",
+   "key": "contract:INV-OPERATION-FINALIZATION-001",
+   "pending": "pending: target characterization test named in the feature-map row (R-U)",
+   "replaced_by": [
+    "target:tests/ported/test_operation.py"
+   ],
+   "rule": "G2"
+  },
+  {
+   "citation": "target/tests/ported/test_owner_actions_canary_rearm.py:16 (cites the ID inside a passing node; the file is named in the ARCHITECTURE.md TARGET row of the deployment_recovery capability that lists the ID)",
+   "key": "contract:INV-OWNER-ACTIONS-001",
+   "pending": "pending: target characterization test named in the feature-map row (R-U)",
+   "replaced_by": [
+    "target:tests/ported/test_owner_actions_canary_rearm.py"
+   ],
+   "rule": "G2"
+  },
+  {
+   "citation": "target/tests/ported/test_isolated_project_evidence.py:3 (cites the ID inside a passing node; the file is named in the ARCHITECTURE.md TARGET row of the execution_container_credentials capability that lists the ID)",
+   "key": "contract:INV-PROJECT-EVIDENCE-001",
+   "pending": "pending: target characterization test named in the feature-map row (R-U)",
+   "replaced_by": [
+    "target:tests/ported/test_isolated_project_evidence.py"
+   ],
+   "rule": "G2"
+  },
+  {
+   "citation": "target/tests/ported/test_evaluator_code_guard.py:16 (cites the ID inside a passing node; the file is named in the ARCHITECTURE.md TARGET row of the deployment_recovery capability that lists the ID)",
+   "key": "contract:INV-RELEASE-ENVIRONMENT-REVERIFY-001",
+   "pending": "pending: target characterization test named in the feature-map row (R-U)",
+   "replaced_by": [
+    "target:tests/ported/test_evaluator_code_guard.py"
+   ],
+   "rule": "G2"
+  },
+  {
+   "citation": "target/tests/ported/test_research_attempt_scope_chain.py:14 (cites the ID inside a passing node; the file is named in the ARCHITECTURE.md TARGET row of the research_self_improvement capability that lists the ID)",
+   "key": "contract:INV-RESEARCH-ATTEMPT-SCOPE-001",
+   "pending": "pending: target characterization test named in the feature-map row (R-U)",
+   "replaced_by": [
+    "target:tests/ported/test_research_attempt_scope_chain.py"
+   ],
+   "rule": "G2"
   }
  ],
  "schema": "zeus:s11-evidence-resolutions:1"
