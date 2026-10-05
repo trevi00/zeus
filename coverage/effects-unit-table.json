@@ -69,6 +69,20 @@
    "reason": "0 of 2 blocks of Fleet.migrate_host cover the golden buckets ['fleet_host_migrations', 'fleet_registry']"
   },
   {
+   "candidates": [],
+   "driver_call": "compare/drivers/common/s5_units.py:746",
+   "family": "effects.admission_unit.pg",
+   "golden_unit": "pause",
+   "reason": "pause is in no M7 module the driver imports"
+  },
+  {
+   "candidates": [],
+   "driver_call": "compare/drivers/common/s5_units.py:759",
+   "family": "effects.admission_unit.pg",
+   "golden_unit": "resume",
+   "reason": "resume is in no M7 module the driver imports"
+  },
+  {
    "candidates": [
     "codex_harness.adapters.executor:Executor.decide_one#1",
     "codex_harness.adapters.executor:Executor.decide_one#2",
@@ -915,6 +929,20 @@
    "golden_unit": "finalize"
   },
   {
+   "atomic_unit": "codex_harness.application.workflow:Workflow.handle#1",
+   "basis": "block_exercise",
+   "block": "#1",
+   "case": "handle_notice_a_failure_at_inbox",
+   "cases": [
+    "a",
+    "c"
+   ],
+   "family": "effects.admission_unit.pg",
+   "golden_unit": "handle",
+   "via": "rule6_case",
+   "writes_observed": null
+  },
+  {
    "atomic_unit": "codex_harness.application.workflow:Workflow.handle#2",
    "block": "#2",
    "cases": [
@@ -966,6 +994,20 @@
    "driver_call": "compare/drivers/common/s5_units.py:505",
    "family": "effects.admission_unit.pg",
    "golden_unit": "parkable"
+  },
+  {
+   "atomic_unit": "codex_harness.application.fleet:Fleet._set_paused#1",
+   "basis": "block_exercise",
+   "block": "#1",
+   "case": "pause_a_failure_at_control",
+   "cases": [
+    "a",
+    "c"
+   ],
+   "family": "effects.admission_unit.pg",
+   "golden_unit": "pause",
+   "via": "rule6_case",
+   "writes_observed": null
   },
   {
    "atomic_unit": "codex_harness.application.execution_recovery:ExecutionRecovery.prepare#1",
@@ -1117,6 +1159,20 @@
    "driver_call": "compare/drivers/common/s5_units.py:322",
    "family": "effects.admission_unit.pg",
    "golden_unit": "reserve_unit"
+  },
+  {
+   "atomic_unit": "codex_harness.application.fleet:Fleet._set_paused#1",
+   "basis": "block_exercise",
+   "block": "#1",
+   "case": "resume_a_failure_at_control",
+   "cases": [
+    "a",
+    "c"
+   ],
+   "family": "effects.admission_unit.pg",
+   "golden_unit": "resume",
+   "via": "rule6_case",
+   "writes_observed": null
   },
   {
    "atomic_unit": "codex_harness.application.fleet:Fleet.settle_unit#1",

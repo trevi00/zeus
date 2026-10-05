@@ -134,6 +134,21 @@
   "handle_c_replay": [
    "codex_harness.application.workflow:Workflow.handle#2"
   ],
+  "handle_notice_a_failure_at_inbox": [
+   "codex_harness.application.workflow:Workflow.handle#1"
+  ],
+  "handle_notice_c_replay": [
+   "codex_harness.application.workflow:Workflow.handle#1"
+  ],
+  "handle_notice_parked_terminal": [
+   "codex_harness.application.workflow:Workflow.handle#1"
+  ],
+  "handle_notice_success": [
+   "codex_harness.application.workflow:Workflow.handle#1"
+  ],
+  "handle_notice_unproven": [
+   "codex_harness.application.workflow:Workflow.handle#1"
+  ],
   "handle_success": [
    "codex_harness.application.workflow:Workflow.handle#2"
   ],
@@ -177,6 +192,18 @@
    "codex_harness.application.operation_finalization:parkable#1"
   ],
   "parkable_unparkable_type": [],
+  "pause_a_failure_at_control": [
+   "codex_harness.application.fleet:Fleet._set_paused#1"
+  ],
+  "pause_c_replay": [
+   "codex_harness.application.fleet:Fleet._set_paused#1"
+  ],
+  "pause_success": [
+   "codex_harness.application.fleet:Fleet._set_paused#1"
+  ],
+  "pause_unregistered": [
+   "codex_harness.application.fleet:Fleet._set_paused#1"
+  ],
   "prepare_b_unrelated_state": [
    "codex_harness.application.execution_recovery:ExecutionRecovery.prepare#1"
   ],
@@ -296,6 +323,18 @@
   ],
   "reserve_unit_success": [
    "codex_harness.application.fleet:Fleet.reserve_unit#1"
+  ],
+  "resume_a_failure_at_control": [
+   "codex_harness.application.fleet:Fleet._set_paused#1"
+  ],
+  "resume_c_replay": [
+   "codex_harness.application.fleet:Fleet._set_paused#1"
+  ],
+  "resume_success": [
+   "codex_harness.application.fleet:Fleet._set_paused#1"
+  ],
+  "resume_unregistered": [
+   "codex_harness.application.fleet:Fleet._set_paused#1"
   ],
   "settle_unit_a_failure_at_units": [
    "codex_harness.application.fleet:Fleet.settle_unit#1"
