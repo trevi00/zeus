@@ -31,9 +31,12 @@ from codex_harness.kernel.ids import canonical
 class CodexRuntime:
     """Noninteractive Codex transport. Prompts travel over stdin, never a shell string."""
 
-    def __init__(self, executable: str | None = None, *, runner):
+    def __init__(self, executable: str | None = None, *, runner, redact=None):
         self.executable = executable or resolve_codex()
         self.runner = runner
+        # XC-1 A3: observation's `redact_text`, injected by composition as the Claude adapter's `redact` is
+        # (execution may not import observation); None keeps the raw tail.
+        self.redact = redact
         if not self.executable:
             raise ContractError("Codex CLI not installed")
 
@@ -56,8 +59,10 @@ class CodexRuntime:
             except subprocess.TimeoutExpired as exc:
                 raise ContractError("Codex invocation timed out") from exc
             if result.returncode != 0 or not output.exists():
-                raise ContractError(f"Codex execution failed (exit={result.returncode}): "
-                                    + result.stderr[-1000:])
+                tail = result.stderr[-1000:]
+                if self.redact is not None:
+                    tail = self.redact(tail)[0]
+                raise ContractError(f"Codex execution failed (exit={result.returncode}): " + tail)
             from jsonschema import validate
 
             answer = json.loads(output.read_text(encoding="utf-8"))
