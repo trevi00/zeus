@@ -9,7 +9,7 @@ Contracts: INV-RESEARCH-PROGRAM-001, INV-DISCOVERY-PRESSURE-001
 Moved from M7 adapters/research_program_cli.py:29-55 (SOURCE e38aa722) by named rules (A/evidence/rebuild/s10/unit-p/transcribe.py); the parser statements are M7's verbatim.
 `run` is M7 `cli.py` `research_program_command` (:626-633) and `_register`, `_run`, `_recover` and `_execute` are `adapters/research_program_cli.py` `register` (:58-69), `run` (:72-101), `recover` (:104-138) and `execute`
 (:141-157), with `MAX_TICKS` and `CYCLE_OWNER` (:26-27) (R-c26, S10 unit C6c): the bodies are M7's verbatim except that the service is built first (as M7 `main()` did), `read_document`, `bind_goal` and `refusal` are
-`entry.cli.operation`, `repository_identity` and `verify_sources` are the private `_repository_identity` and `_verify_sources` of `entry.cli.dge`, `GitSource` is `composition.cli_research.git_source`, every other adapter
+`entry.cli.operation`, `repository_identity` is the private `_repository_identity` of `entry.cli.dge`, `verify_sources` is `composition.cli_research.verify_sources` (S11 XC-9 DUP-1), `GitSource` is `composition.cli_research.git_source`, every other adapter
 construction is a builder of `composition.cli_research_program`, the schemas are `research.domain.research_investigations`, `ProgramRefused` and `validate_config` are `research.domain.research_program`, `DgeRefused` is
 `research.application.dge` and `build_observer` is `composition.observation`. `_run` passes `council=` the autonomous `_run` (`entry.cli.autonomous`): an ENTRY to ENTRY call, so it stays in entry (composition may not import entry).
 """
@@ -67,7 +67,7 @@ def run(args) -> None:
 def _register(service, args) -> dict:
     from codex_harness.composition import cli_research, cli_research_program
     from codex_harness.composition.configuration import repository_root
-    from codex_harness.entry.cli.dge import _repository_identity, _verify_sources
+    from codex_harness.entry.cli.dge import _repository_identity
     from codex_harness.entry.cli.operation import bind_goal, read_document
     from codex_harness.research.application.dge import DgeRefused
     from codex_harness.research.domain.research_program import ProgramRefused, validate_config
@@ -76,7 +76,7 @@ def _register(service, args) -> dict:
     source = cli_research.git_source(repository)
     bind_goal(config["template"], source)  # goal bytes at base; a mismatch refuses before any row exists
     try:
-        verified = _verify_sources({"base_revision": config["base_revision"], "sources": config["local_candidates"]}, source) \
+        verified = cli_research.verify_sources({"base_revision": config["base_revision"], "sources": config["local_candidates"]}, source) \
             if config["local_candidates"] else []
     except DgeRefused as exc:
         raise ProgramRefused("local_" + exc.reason_code) from exc

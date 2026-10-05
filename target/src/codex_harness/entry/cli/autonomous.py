@@ -8,8 +8,8 @@ Contracts: INV-AUTONOMOUS-001, INV-COUNCIL-001, INV-PROJECT-EVIDENCE-001, INV-IS
 
 Moved from M7 adapters/autonomous_cli.py:82-89 (SOURCE e38aa722) by named rules (A/evidence/rebuild/s10/unit-p/transcribe.py); the parser statements are M7's verbatim.
 `run` is M7 `cli.py` `autonomous_command` (:578-585) and `_run`, `_status` and `_execute` are `adapters/autonomous_cli.py` `run` (:25-75), `status` (:78-79) and `execute` (:92-96) (R-c24, S10 unit C6a): the bodies are M7's
-verbatim except that the service is built first (as M7 `main()` did), `read_document` and `refusal` are `entry.cli.operation`, `repository_identity` and `verify_sources` are the private `_repository_identity` and `_verify_sources` of
-`entry.cli.dge`, the policy, identity, bus, budget, evidence, snapshot and the two use cases are builders of `composition.cli_operation` (they need adapters), `load_profile(host)` is
+verbatim except that the service is built first (as M7 `main()` did), `read_document` and `refusal` are `entry.cli.operation`, `repository_identity` is the private `_repository_identity` of
+`entry.cli.dge`, `verify_sources` is `composition.cli_research.verify_sources` (S11 XC-9 DUP-1), the policy, identity, bus, budget, evidence, snapshot and the two use cases are builders of `composition.cli_operation` (they need adapters), `load_profile(host)` is
 `composition.operation.host_evidence_profile()` and `GitSource` is `composition.cli_research.git_source`.
 """
 
@@ -43,7 +43,7 @@ def _run(service, args) -> dict:
     from codex_harness.composition.configuration import repository_root, runtime_dir, settings
     from codex_harness.composition.observation import build_collector, build_observer
     from codex_harness.composition.operation import build_executor, host_evidence_profile, host_isolation
-    from codex_harness.entry.cli.dge import _repository_identity, _verify_sources
+    from codex_harness.entry.cli.dge import _repository_identity
     from codex_harness.entry.cli.operation import bind_goal, read_document
     from codex_harness.research.domain.council import profile, validate_any_manifest
 
@@ -66,7 +66,7 @@ def _run(service, args) -> dict:
                                   evidence_profile=evidence_profile,
                                   **({} if isolated is None else {"isolation": isolated}))
         # The evidence port reads the very artifact store the executor persists execution results to.
-        wiring = dict(verify_sources=lambda packet: _verify_sources(packet, source), repository=_repository_identity(repository),
+        wiring = dict(verify_sources=lambda packet: cli_research.verify_sources(packet, source), repository=_repository_identity(repository),
                       observer=observer, evidence=cli_operation.execution_evidence(executor.artifacts))
         # SPEC "Real council progress: isolated delivery": ONE run-scoped bus for every publisher and
         # consumer of this run (outbox relay, role drains, the Operation), derived from the manifest id,
