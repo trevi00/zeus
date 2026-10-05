@@ -4,7 +4,6 @@ import sys
 from types import SimpleNamespace
 
 import pytest
-
 from m7_coordination import Harness, organization
 
 from codex_harness.composition import supervisor
