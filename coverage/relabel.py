@@ -3,12 +3,18 @@
 Layer: harness (never shipped); standard library only; no product import.
 
     python coverage/relabel.py bundle --junit <xml> --compare <json>... --owner-run <path>... --head <sha>
+                                      [--exercise <json.gz>]
     python coverage/relabel.py apply            # rewrite statuses + `verification` from rows + tree + bundle
     python coverage/relabel.py --check          # byte equality with the committed ledger (the CI guard)
     python coverage/relabel.py --check-fresh    # --check, and the evidence inputs are unchanged since the bundle head
 
 `coverage/evidence-resolutions.json` (DESIGN-s11 §5.3, R-L6) names, per cited entry, the items that replace one `pending:` item of
 one row; the rows stay frozen and `--check` refuses a malformed, unknown, non-pending or duplicate entry.
+
+`exercise:<module:qualname>` (R-L2e, DESIGN-s11 §5.6 R-AU3) is the runtime evidence that a passing test started the symbol:
+`bundle --exercise` reads the owner's `sys.monitoring` record and stores, per ledger target symbol, up to three passing
+node IDs. The rule G1b (R-AU4) resolves an atomic unit's `pending:` recorder promise to that item plus the unit's
+structural node in `tests/test_s11_atomic_units.py`.
 
 The relabel never reads `A/` (the artifact store) and never runs tests. `bundle` is the one command that reads owner
 artifacts: it maps the TI JUnit XML (xunit2) onto the collected node list at the evidence head (L3: classname = dotted
@@ -22,6 +28,7 @@ import argparse
 import ast
 import collections
 import copy
+import gzip
 import hashlib
 import json
 import re
@@ -42,7 +49,17 @@ BUNDLE_SCHEMA = "zeus:s11-run-evidence:1"
 # R-L6 / DESIGN-s11 §5.3: the maintained, cited resolutions of the ledger's `pending:` promises.
 RESOLUTIONS = HERE / "evidence-resolutions.json"
 RESOLUTIONS_SCHEMA = "zeus:s11-evidence-resolutions:1"
-RESOLUTION_RULES = ("G1", "G2", "G3", "G4", "G5", "G6")
+RESOLUTION_RULES = ("G1", "G2", "G3", "G4", "G5", "G6", "G1b")
+
+# R-L2e / R-AU3: the owner's sys.monitoring record (plugin `unit_exercise.py`) and the nodes kept per symbol.
+EXERCISE_SCHEMA = "zeus:s11-unit-exercise:1"
+EXERCISE_NODES_PER_SYMBOL = 3
+# G1b / R-AU4: the unit's structural node, the marker of a row mapped under R-AU1 and the one citation.
+G1B_CITATION = "DESIGN-s11 §5.6 R-AU4"
+G1B_PENDING = "pending: recorder confirmation in the owning slice"
+G1B_NODE_FILE = "tests/test_s11_atomic_units.py"
+G1B_NODE = "test_unit_is_structurally_atomic"
+AU1_MARK = "R-AU1:"
 
 # R-L14: the record that accepted each slice (named, never read). S10: S10-CLOSURE.md (ACCEPTED at 8f7fed5f).
 ACCEPTED = {f"S{n}": f"FLEET-REBUILD-S{n}-ACCEPT.md" for n in range(1, 10)}
@@ -223,8 +240,60 @@ def read_compare(path: Path) -> dict[str, dict]:
     return out
 
 
+def exercise_symbols(rows: list[dict]) -> list[str]:
+    """The `module:qualname` target symbols of the ledger rows (a class counts its methods; see `build_exercise`)."""
+    out = set()
+    for r in rows:
+        for sym in r.get("target_symbol") or []:
+            s0 = sym.split(" (")[0].strip()
+            if re.fullmatch(r"[\w.]+:[\w.]+", s0):
+                out.add(s0)
+    return sorted(out)
+
+
+def build_exercise(root: Path, path: Path, nodes: list[str], not_passed: dict[str, str], head: str, name: str) -> dict:
+    """R-L2e: per ledger target symbol, up to `EXERCISE_NODES_PER_SYMBOL` PASSING collected nodes that started it.
+
+    `nodes`/`not_passed` carry the real node IDs; stored IDs are hashed as in R-L2a. A symbol that is a class counts any
+    of its methods (`Class.m`); a function counts its own start (and the closures it defined). Refuses a record whose
+    schema, root or function modules do not match the target tree, or that names a node the run did not collect."""
+    try:
+        with gzip.open(path, "rt", encoding="utf-8") as f:
+            doc = json.load(f)
+    except (OSError, ValueError) as exc:
+        raise Refused(f"exercise artifact {path}: not a readable gzip JSON ({exc})") from exc
+    if not isinstance(doc, dict) or doc.get("schema") != EXERCISE_SCHEMA:
+        raise Refused(f"exercise artifact: schema is not {EXERCISE_SCHEMA}")
+    if not str(doc.get("root", "")).replace("\\", "/").rstrip("/").endswith("target/src"):
+        raise Refused(f"exercise artifact: root is not the target source root: {doc.get('root')!r}")
+    functions, by_node = doc.get("functions"), doc.get("nodes")
+    if not (isinstance(functions, list) and all(isinstance(f, str) and ":" in f for f in functions)
+            and isinstance(by_node, dict)):
+        raise Refused("exercise artifact: `functions` and `nodes` are not a name list and a node map")
+    tree = Tree(root)
+    absent = sorted({f.split(":")[0] for f in functions if tree.module_file(f.split(":")[0], ("target/src",)) is None})
+    if absent:
+        raise Refused(f"exercise artifact: {len(absent)} function module(s) are not in target/src, e.g. {absent[:3]}")
+    known, passing = set(nodes), set(nodes) - set(not_passed)
+    for node, indexes in by_node.items():
+        if node not in known:
+            raise Refused(f"exercise node matches no collected node: {node}")
+        if not (isinstance(indexes, list) and all(isinstance(i, int) and 0 <= i < len(functions) for i in indexes)):
+            raise Refused(f"exercise node has a function index outside `functions`: {node}")
+    started = {node: {functions[i] for i in indexes} for node, indexes in by_node.items() if node in passing}
+    ledger = json.loads((root / "coverage/ledger-coverage.json").read_text(encoding="utf-8"))
+    symbols: dict[str, list[str]] = {}
+    for sym in exercise_symbols(ledger["rows"]):
+        hit = sorted(n for n, fns in started.items() if any(f == sym or f.startswith(sym + ".") for f in fns))
+        if hit:
+            symbols[sym] = [hashed_id(n) for n in hit[:EXERCISE_NODES_PER_SYMBOL]]
+    return {"artifact": name, "sha256": sha256_file(path), "head": head, "functions": len(functions),
+            "nodes": len(by_node), "symbols": symbols}
+
+
 def build_bundle(root: Path, junit: Path, compares: list[Path], owner_runs: list[Path], head: str,
-                 collected: list[str] | None = None, artifact_names: dict[Path, str] | None = None) -> dict:
+                 collected: list[str] | None = None, artifact_names: dict[Path, str] | None = None,
+                 exercise: Path | None = None) -> dict:
     head = git(root, "rev-parse", "--verify", head + "^{commit}").strip()
     files = head_files(root, head)
     modules = {p: b for p, b in files.items() if is_test_module(p)}
@@ -252,6 +321,10 @@ def build_bundle(root: Path, junit: Path, compares: list[Path], owner_runs: list
         if key not in outcomes:
             raise Refused(f"collected node with no testcase: {node}")
     not_passed = {mangled[k]: o for k, o in sorted(outcomes.items()) if o != "passed"}
+    exercised = None
+    if exercise is not None:
+        exercised = build_exercise(root, exercise, nodes, not_passed, head,
+                                   (artifact_names or {}).get(exercise) or repo_or_artifact_path(str(exercise), root))
     paths = {hashed_id(n): n.split("::")[0] for n in nodes if hashed_id(n) != n}
     nodes = sorted(hashed_id(n) for n in nodes)
     not_passed = {hashed_id(n): o for n, o in sorted(not_passed.items(), key=lambda kv: hashed_id(kv[0]))}
@@ -269,10 +342,13 @@ def build_bundle(root: Path, junit: Path, compares: list[Path], owner_runs: list
         except OSError as exc:
             raise Refused(f"owner-run artifact {path}: sha256 cannot be computed ({exc.strerror})") from exc
     inputs = {names.get(p) or repo_or_artifact_path(str(p), root): sha256_file(p) for p in [junit, *compares]}
-    return {"schema": BUNDLE_SCHEMA, "head": head, "ids": bound_ids(root, head), "support": support,
-            "hashed_ids": {"count": len(paths), "reason": HASHED_REASON, "paths": dict(sorted(paths.items()))},
-            "test_modules": modules, "nodes": nodes, "not_passed": not_passed, "compare": dict(sorted(compare.items())),
-            "owner_run": dict(sorted(owner.items())), "inputs": dict(sorted(inputs.items()))}
+    doc = {"schema": BUNDLE_SCHEMA, "head": head, "ids": bound_ids(root, head), "support": support,
+           "hashed_ids": {"count": len(paths), "reason": HASHED_REASON, "paths": dict(sorted(paths.items()))},
+           "test_modules": modules, "nodes": nodes, "not_passed": not_passed, "compare": dict(sorted(compare.items())),
+           "owner_run": dict(sorted(owner.items())), "inputs": dict(sorted(inputs.items()))}
+    if exercised is not None:
+        doc["exercise"] = exercised
+    return doc
 
 
 def working_tree_drift(root: Path, head: str) -> list[str]:
@@ -532,6 +608,14 @@ class Relabel:
             if e in self.module_rows:
                 return (EXEC, "pass", "") if e in self.verified_modules else (EXEC, "fail", f"module row not verified: {e}")
             return EXEC, "missing", f"module row absent: {e}"
+        if e.startswith("exercise:"):  # R-L2e: >=1 stored passing node started the symbol
+            nodes = (self.bundle.get("exercise") or {}).get("symbols", {}).get(e[len("exercise:"):], [])
+            live = [n for n in nodes if n in self.collected and n not in self.not_passed]
+            if live:
+                hashed = self.bundle.get("hashed_ids", {}).get("paths", {})
+                self.supplying.update(hashed.get(n) or n.split("::")[0] for n in live)
+                return EXEC, "pass", ""
+            return EXEC, "missing", f"no passing node exercised the symbol: {e}"
         if e.startswith("owner-run:"):
             found = PATH_ITEM.search(e)
             if found and found.group(0) in self.bundle["owner_run"]:
@@ -771,6 +855,8 @@ class Relabel:
                 raise Refused(f"resolution replaced_by must be non-empty evidence items, none pending: {key}")
             if key not in by_key:
                 raise Refused(f"resolution for an unknown key: {key}")
+            if entry["rule"] == "G1b":
+                self.check_g1b(entry, by_key.get(key))
             if (key, pending) in seen:
                 raise Refused(f"duplicate resolution: {key} / {pending}")
             seen.add((key, pending))
@@ -781,6 +867,20 @@ class Relabel:
                 raise Refused(f"resolution pending text is not in the row: {key} / {pending}")
             at = current.index(pending)
             self.effective[key] = current[:at] + [i for i in items if i not in current] + current[at + 1:]
+
+    @staticmethod
+    def check_g1b(entry: dict, row: dict | None) -> None:
+        """G1b (R-AU4): only an atomic unit mapped under R-AU1, its recorder promise, the cited section, and exactly
+        the symbol's exercise item plus the unit's own structural node. (That node passing is the item's own state.)"""
+        key = entry["key"]
+        if row is None or row["kind"] != "atomic_unit" or not str(row.get("mapping_correction", "")).startswith(AU1_MARK):
+            raise Refused(f"G1b applies only to an atomic unit mapped under R-AU1: {key}")
+        if entry["pending"] != G1B_PENDING or entry["citation"] != G1B_CITATION:
+            raise Refused(f"G1b resolves the recorder promise and cites {G1B_CITATION}: {key}")
+        want = [f"exercise:{(row.get('target_symbol') or [''])[0]}",
+                f"target:{G1B_NODE_FILE}::{G1B_NODE}[{key[len('atomic_unit:'):]}]"]
+        if entry["replaced_by"] != want:
+            raise Refused(f"G1b replaced_by is not the exercise item and the unit node: {key}")
 
     def run(self, ledger: dict) -> dict:
         out = copy.deepcopy(ledger)
@@ -860,6 +960,7 @@ def main(argv=None) -> int:
     b.add_argument("--compare", required=True, nargs="+", type=Path)
     b.add_argument("--owner-run", nargs="*", default=[], type=Path)
     b.add_argument("--head", required=True)
+    b.add_argument("--exercise", type=Path, help="the owner's sys.monitoring record (gzip JSON), R-L2e")
     b.add_argument("--collected", type=Path, help="a saved `--collect-only -q` output instead of collecting")
     sub.add_parser("apply")
     args = parser.parse_args(argv)
@@ -868,12 +969,14 @@ def main(argv=None) -> int:
     try:
         if args.cmd == "bundle":
             collected = parse_collected(args.collected.read_text()) if args.collected else None
-            names = {p: repo_or_artifact_path(str(p), root) for p in [args.junit, *args.compare, *args.owner_run]}
-            doc = build_bundle(root, args.junit, args.compare, args.owner_run, args.head, collected, names)
+            names = {p: repo_or_artifact_path(str(p), root)
+                     for p in [args.junit, *args.compare, *args.owner_run, *([args.exercise] if args.exercise else [])]}
+            doc = build_bundle(root, args.junit, args.compare, args.owner_run, args.head, collected, names, args.exercise)
             bundle_path.write_text(dump_json(doc), encoding="utf-8")
             print(json.dumps({"written": "coverage/run-evidence.json", "head": doc["head"], "nodes": len(doc["nodes"]),
                               "not_passed": len(doc["not_passed"]), "compare_families": len(doc["compare"]),
-                              "owner_run": len(doc["owner_run"])}))
+                              "owner_run": len(doc["owner_run"]),
+                              "exercise_symbols": len(doc.get("exercise", {}).get("symbols", {}))}))
             return 0
         ledger = json.loads(ledger_path.read_text(encoding="utf-8"))
         bundle = json.loads(bundle_path.read_text(encoding="utf-8"))
