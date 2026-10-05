@@ -414,6 +414,19 @@ def test_a_reference_item_needs_the_same_name_ported_file_with_every_node_passin
     assert has_unmet(allskip["api:x.py::f"], "reference test not passing")
 
 
+def test_a_reference_conftest_is_fixture_context_only_when_its_ported_conftest_exists(tree):
+    """S11 R-L2c-c (owner): a conftest holds fixtures, never test nodes, so it is context, not a missing test file."""
+    item = ("reference:tests/conftest.py", "target:tests/test_b.py")
+    write(tree, "target/tests/ported/conftest.py", "import pytest\n")
+    out, _ = run([row(slice_="S7", evidence=item)], tree)
+    assert out["api:x.py::f"]["status"] == "verified"
+    alone, _ = run([row(slice_="S7", evidence=item[:1])], tree)
+    assert alone["api:x.py::f"]["status"] != "verified"  # context alone is no passing executable item
+    (tree / "target/tests/ported/conftest.py").unlink()
+    gone, _ = run([row(slice_="S7", evidence=item)], tree)
+    assert has_unmet(gone["api:x.py::f"], "reference conftest has no same-name ported conftest")
+
+
 def test_an_owner_run_item_passes_only_when_the_bundle_lists_the_artifact(tree):
     item = "owner-run:promtool (A/evidence/x.txt)"
     out, _ = run([row(slice_="S7", evidence=(item,))], tree, bundle_for(owner_run={"A/evidence/x.txt": "ab" * 32}))

@@ -1026,6 +1026,12 @@ class Relabel:
             if not name.endswith(".py"):
                 raise Refused(f"unrecognised reference item: {e}")
             ported = "tests/ported/" + name
+            if name.rsplit("/", 1)[-1] == "conftest.py":
+                # R-L2c-c (owner, S11): a conftest holds fixtures, never test nodes; like the R-L2d truncation it is
+                # context, exercised through the nodes that use it. A missing ported conftest stays missing.
+                if self.tree.exists("target/" + ported):
+                    return CONTEXT, "context", ""
+                return EXEC, "missing", f"reference conftest has no same-name ported conftest: {e}"
             nodes = self.by_path.get(ported, [])
             if not nodes:
                 return EXEC, "missing", f"reference has no same-name ported file (AR4 map owed): {e}"
