@@ -76,6 +76,22 @@ UNMAPPED_BUCKETS = {
         "add_evidence": [HOST_MIGRATION_TEST]},
 }
 
+# R-L2a: node IDs that check-tree would flag are stored hashed. Copied from `compare/run.py` `SECRET_SHAPES` (not
+# imported: run.py installs the provider guard); `test_the_secret_shapes_equal_compare_run` pins the copy.
+SECRET_SHAPES = [re.compile(p) for p in (
+    r"[a-z]+://[^\s/@:\"']+:[^\s/@\"']+@",
+    r"sk-ant-[A-Za-z0-9_-]{8,}", r"sk-[A-Za-z0-9]{32,}", r"gh[pousr]_[A-Za-z0-9]{20,}",
+    r"-----BEGIN [A-Z ]*PRIVATE KEY-----")]
+HASHED_REASON = "check-tree SECRET_SHAPES; IDs unchanged in the tests (R-M1)"
+
+
+def hashed_id(node: str) -> str:
+    """The bundle form of a node ID: `sha256:<hex>` when it is credential-shaped, else the ID itself."""
+    if any(p.search(node) for p in SECRET_SHAPES):
+        return "sha256:" + hashlib.sha256(node.encode()).hexdigest()
+    return node
+
+
 EXEC = "exec"  # an executable item: it can pass or fail
 CONTEXT = "context"  # a declaration or a SOURCE fact: never passing evidence
 PENDING = "pending"  # an owed promise
@@ -229,6 +245,9 @@ def build_bundle(root: Path, junit: Path, compares: list[Path], owner_runs: list
         if key not in outcomes:
             raise Refused(f"collected node with no testcase: {node}")
     not_passed = {mangled[k]: o for k, o in sorted(outcomes.items()) if o != "passed"}
+    paths = {hashed_id(n): n.split("::")[0] for n in nodes if hashed_id(n) != n}
+    nodes = sorted(hashed_id(n) for n in nodes)
+    not_passed = {hashed_id(n): o for n, o in sorted(not_passed.items(), key=lambda kv: hashed_id(kv[0]))}
     compare: dict[str, dict] = {}
     for path in compares:
         for fam, entry in read_compare(path).items():
@@ -244,6 +263,7 @@ def build_bundle(root: Path, junit: Path, compares: list[Path], owner_runs: list
             raise Refused(f"owner-run artifact {path}: sha256 cannot be computed ({exc.strerror})") from exc
     inputs = {names.get(p) or repo_or_artifact_path(str(p), root): sha256_file(p) for p in [junit, *compares]}
     return {"schema": BUNDLE_SCHEMA, "head": head, "ids": bound_ids(root, head), "support": support,
+            "hashed_ids": {"count": len(paths), "reason": HASHED_REASON, "paths": dict(sorted(paths.items()))},
             "test_modules": modules, "nodes": nodes, "not_passed": not_passed, "compare": dict(sorted(compare.items())),
             "owner_run": dict(sorted(owner.items())), "inputs": dict(sorted(inputs.items()))}
 
@@ -433,10 +453,12 @@ class Relabel:
         self.root, self.bundle, self.tree = root, bundle, Tree(root)
         self.collected = bundle["nodes"]
         self.by_path: dict[str, list[str]] = collections.defaultdict(list)
+        hashed = bundle.get("hashed_ids", {}).get("paths", {})
         for node in self.collected:
-            self.by_path[node.split("::")[0]].append(node)
+            self.by_path[hashed.get(node) or node.split("::")[0]].append(node)
         self.not_passed = bundle["not_passed"]
         self.verified_modules: set[str] = set()
+        self.reference_only: set[str] = set()
         self.supplying: set[str] = set()
         self._buckets = self._cites = self._caps = self._ids = None
 
@@ -474,9 +496,10 @@ class Relabel:
                 return EXEC, "missing", f"target node not collected: {e}"
             return (EXEC, *self.node_state(exact, e, False))
         if e.startswith("compare:"):
-            return (EXEC, *self.family(re.split(r"[ #]", e[len("compare:"):], maxsplit=1)[0], e))
-        if e.startswith("reference:+"):
-            return EXEC, "missing", f"unnamed reference test files (AR4 map owed): {e}"
+            state, why = self.family(re.split(r"[ #]", e[len("compare:"):], maxsplit=1)[0], e)
+            return (CONTEXT if state == "context" else EXEC), state, why
+        if e.startswith("reference:+"):  # R-L2d: the S0 inventory truncation is context
+            return CONTEXT, "context", ""
         if e.startswith("reference:tests/"):
             name = e[len("reference:tests/"):]
             if not name.endswith(".py"):
@@ -485,7 +508,7 @@ class Relabel:
             nodes = self.by_path.get(ported, [])
             if not nodes:
                 return EXEC, "missing", f"reference has no same-name ported file (AR4 map owed): {e}"
-            return (EXEC, *self.node_state(nodes, e, False, "reference test"))
+            return (EXEC, *self.node_state(nodes, e, True, "reference test"))  # R-L2c: as a target file item
         if e.startswith("module:"):
             if e in self.module_rows:
                 return (EXEC, "pass", "") if e in self.verified_modules else (EXEC, "fail", f"module row not verified: {e}")
@@ -506,10 +529,14 @@ class Relabel:
         if not scenario.is_file():
             return "missing", f"compare scenario absent: {label}"
         if not json.loads(scenario.read_text(encoding="utf-8")).get("target_driver"):
-            return "missing", f"compare family has no target driver: {label}"
+            self.reference_only.add(fam)  # R-L2b: a reference-only characterization is context
+            return "context", ""
         report = self.bundle["compare"].get(fam)
         if report is None:
             return "missing", f"compare report absent for the family: {label}"
+        if str(report["target"]).startswith("pending:"):  # R-L2b: no target implementation yet
+            self.reference_only.add(fam)
+            return "context", ""
         if (report["target"], report["reference"], report["origin_ok"], report["target_origin_ok"]) \
                 != ("equal", "equal", True, True):
             return "fail", f"compare not equal: {label} (target {report['target']}, reference {report['reference']})"
@@ -805,7 +832,7 @@ def main(argv=None) -> int:
         text = generate.dump(new)
         if args.cmd == "apply":
             ledger_path.write_text(text, encoding="utf-8")
-            print(json.dumps(summary(ledger, new), indent=1))
+            print(json.dumps({**summary(ledger, new), "reference_only_families": sorted(engine.reference_only)}, indent=1))
             return 0
         if args.check or args.check_fresh:
             same = ledger_path.read_text(encoding="utf-8") == text

@@ -106,10 +106,8 @@ def test_s1_module_rows_are_all_accounted_for(table):
                        "module:src/codex_harness/adapters/__init__.py",
                        "module:src/codex_harness/application/__init__.py",
                        "module:src/codex_harness/domain/__init__.py"}
-    assert {r["key"] for r in rows if r["status"] == "implemented"} == {
-        "module:src/codex_harness/domain/model.py", "module:src/codex_harness/adapters/contracts.py",
-        "module:src/codex_harness/adapters/commands.py"}
-    assert sum(r["status"] == "verified" for r in rows) == 19
+    assert {r["key"] for r in rows if r["status"] == "implemented"} == {"module:src/codex_harness/adapters/commands.py"}
+    assert sum(r["status"] == "verified" for r in rows) == 21
     assert all(r.get("slice_progress") for r in rows if r["key"].endswith(("model.py", "contracts.py")))
 
 
@@ -165,7 +163,7 @@ def test_s2_module_rows_are_all_accounted_for(table):
     assert replay["target_owner"] == "context" and replay["mapping_correction"]
     for key in ("module:src/codex_harness/adapters/executor.py", "module:src/codex_harness/domain/model.py"):
         row = next(r for r in table["rows"] if r["key"] == key)
-        assert "S2 implemented" in row["slice_progress"] and row["status"] == "implemented"  # S11 L: was designed
+        assert "S2 implemented" in row["slice_progress"] and row["status"] == "verified"  # S11 L: was designed
     s2_contracts = [r for r in table["rows"] if r["kind"] == "contract" and r["target_owner"] in S2_OWNERS]
     assert len(s2_contracts) == 16 and all(r["status"] in {"implemented", "verified"} for r in s2_contracts)  # S11 L
 
@@ -176,12 +174,12 @@ S3_MODULES = {"isolated_worker.py", "role_containers.py", "app_server.py", "outp
 
 def test_s3_rows_are_accounted_for(table):
     rows = {r["key"]: r for r in table["rows"]}
-    # S11 L: measured by the relabel. Every S3 module row resolves; those whose items all pass are verified, app_server
-    # and hooks name `compare:hooks.native_container`, a family with no target driver, and stay implemented.
+    # S11 L: measured by the relabel. Every S3 module row resolves and all its items pass (R-L2b: app_server and hooks name
+    # `compare:hooks.native_container`, a reference-only family, which is context): all verified.
     statuses = {name: rows["module:src/codex_harness/adapters/" + name]["status"] for name in S3_MODULES}
     assert statuses == {"isolated_worker.py": "verified", "role_containers.py": "verified", "output_schema.py": "verified",
-                        "execution_output.py": "verified", "codex.py": "verified", "app_server.py": "implemented",
-                        "hooks.py": "implemented"}
+                        "execution_output.py": "verified", "codex.py": "verified", "app_server.py": "verified",
+                        "hooks.py": "verified"}
     for name in S3_MODULES:
         assert "S3" in rows["module:src/codex_harness/adapters/" + name]["slice_progress"], name
     apis = [r for r in table["rows"] if r["kind"] == "public_api"
@@ -200,14 +198,14 @@ S4_REMAINING = {"adapters/executor.py", "adapters/worker_sessions.py"}
 def test_s4_rows_moved_so_far_are_implemented_and_the_rest_stay_designed(table):
     """S4 (in progress): only the modules with a target move and compare/target evidence are implemented."""
     rows = {r["key"]: r for r in table["rows"]}
-    # S11 L: the relabel verified the rows whose items all pass (`adapters/hooks.py` names the target-driverless family)
+    # S11 L: the relabel verified the rows whose items all pass (R-L2b: a target-driverless family is context)
     for name in S4_IMPLEMENTED:
         row = rows["module:src/codex_harness/" + name]
-        assert row["status"] == ("implemented" if name == "adapters/hooks.py" else "verified"), name
+        assert row["status"] == "verified", name
         assert "S4 implemented" in row["slice_progress"], name
         assert any(e.startswith(("compare:", "target:tests/")) for e in row["evidence"]), name
     assert {name: rows["module:src/codex_harness/" + name]["status"] for name in S4_REMAINING} == {
-        "adapters/executor.py": "implemented", "adapters/worker_sessions.py": "verified"}
+        "adapters/executor.py": "verified", "adapters/worker_sessions.py": "verified"}
 
 
 def _generator():
