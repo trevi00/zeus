@@ -51,7 +51,8 @@ def test_row_fields_and_values(table):
         assert r["intent"] == "preserve" or r["intent"].startswith(("change:§4 ", "retire:U", "addition:")), r["key"]
         if r["intent"].startswith("addition:"):  # an addition has an authority, a target and its own tests (D4)
             assert r["kind"] == "addition" and len(r["intent"]) > len("addition:") and r["target_symbol"], r["key"]
-        if r["status"] in {"designed", "implemented", "verified"}:  # S11 L: `verified` rows are mapped rows too
+        # S11 L: `verified` rows are mapped rows too; S11 §20 R-L17: so is a `retired-with-authority` row
+        if r["status"] in {"designed", "implemented", "verified", "retired-with-authority"}:
             assert r["target_owner"] and r["target_symbol"] and r["evidence"], r["key"]
         else:
             assert r["status"] == "unmapped" and not r["target_symbol"], r["key"]
@@ -107,14 +108,12 @@ def test_s1_module_rows_are_all_accounted_for(table):
     assert len(rows) == 27
     # S11 L: the relabel measured the S1 rows: five layer-marker / package-root rows have no resolving code symbol
     # (designed); model, contracts and commands resolve but name unmet evidence (implemented); the rest are verified.
-    # S11 MC2 (R-MC2-3/-5): the package root now resolves as `codex_harness`; four layer markers stay designed.
-    partial = {r["key"] for r in rows if r["status"] == "designed"}
-    assert partial == {"module:src/codex_harness/resources/__init__.py",
-                       "module:src/codex_harness/adapters/__init__.py",
-                       "module:src/codex_harness/application/__init__.py",
-                       "module:src/codex_harness/domain/__init__.py"}
-    assert {r["key"] for r in rows if r["status"] == "implemented"} == {"module:src/codex_harness/adapters/commands.py"}
-    assert sum(r["status"] == "verified" for r in rows) == 22  # S11 MC2: 21 + the package root
+    # S11 MC2 (R-MC2-3/-5): the package root now resolves as `codex_harness`; four layer markers stayed designed.
+    # S11 §20: R-P2 closes the four markers (adapters/resources marker<->marker, application/domain removed by design)
+    # and the U6(a) ruling retires the Windows launcher test as evidence of `commands.py`: all 27 rows are verified.
+    assert {r["key"] for r in rows if r["status"] == "designed"} == set()
+    assert {r["key"] for r in rows if r["status"] == "implemented"} == set()
+    assert sum(r["status"] == "verified" for r in rows) == 27  # S11 §20: 22 + the four markers + commands.py
     assert all(r.get("slice_progress") for r in rows if r["key"].endswith(("model.py", "contracts.py")))
 
 
