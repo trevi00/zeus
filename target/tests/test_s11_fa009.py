@@ -89,6 +89,10 @@ PIN_GROUPS: list[tuple[str, dict[str, list[int]]]] = [
      "the domain declares (group 6's contract)", {
         "ported/test_audit_output_vocabulary.py": [72],
     }),
+    ("KNOWN FALSE POSITIVE (DESIGN-s11 §13): a packaged data golden used as the expected value of a behavioural call; "
+     "the detector cannot yet tell goldens from source-text subjects (follow-up FA-009c)", {
+        "ported/test_pipeline.py": [48],
+    }),
     ("TQ-1 B8 restated structural pins: each docstring names its structural contract and the behavioural tests", {
         "test_s10_a5_1a_dead_letter_drain.py": [53, 56],
         "test_s4_decision_owners.py": [166],
