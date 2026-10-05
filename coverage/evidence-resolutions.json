@@ -4,19 +4,21 @@
    "key": "atomic_unit:codex_harness.adapters.executor:Executor._fail_decision#1",
    "pending": "pending: recorder confirmation in the owning slice",
    "replaced_by": [
-    "compare:effects.decision_unit"
+    "compare:effects.decision_unit",
+    "compare:effects.decision_unit.pg"
    ],
    "rule": "G1",
-   "citation": "coverage/effects-unit-table.json#effects.decision_unit/decision_unit"
+   "citation": "coverage/effects-unit-table.json#effects.decision_unit/decision_unit; coverage/effects-unit-table.json#effects.decision_unit.pg/decision_unit"
   },
   {
    "key": "atomic_unit:codex_harness.adapters.executor:Executor.decide_one#1",
    "pending": "pending: recorder confirmation in the owning slice",
    "replaced_by": [
-    "compare:effects.decision_unit"
+    "compare:effects.decision_unit",
+    "compare:effects.decision_unit.pg"
    ],
    "rule": "G1",
-   "citation": "coverage/effects-unit-table.json#effects.decision_unit/decision_unit"
+   "citation": "coverage/effects-unit-table.json#effects.decision_unit/decision_unit; coverage/effects-unit-table.json#effects.decision_unit.pg/decision_unit"
   },
   {
    "key": "atomic_unit:codex_harness.application.continuation:Continuation.accept_research#1",
@@ -32,37 +34,41 @@
    "key": "atomic_unit:codex_harness.application.execution_recovery:ExecutionRecovery.apply#1",
    "pending": "pending: recorder confirmation in the owning slice",
    "replaced_by": [
-    "compare:effects.admission_unit"
+    "compare:effects.admission_unit",
+    "compare:effects.admission_unit.pg"
    ],
    "rule": "G1",
-   "citation": "coverage/effects-unit-table.json#effects.admission_unit/apply"
+   "citation": "coverage/effects-unit-table.json#effects.admission_unit/apply; coverage/effects-unit-table.json#effects.admission_unit.pg/apply"
   },
   {
    "key": "atomic_unit:codex_harness.application.execution_recovery:ExecutionRecovery.prepare#1",
    "pending": "pending: recorder confirmation in the owning slice",
    "replaced_by": [
-    "compare:effects.admission_unit"
+    "compare:effects.admission_unit",
+    "compare:effects.admission_unit.pg"
    ],
    "rule": "G1",
-   "citation": "coverage/effects-unit-table.json#effects.admission_unit/prepare"
+   "citation": "coverage/effects-unit-table.json#effects.admission_unit/prepare; coverage/effects-unit-table.json#effects.admission_unit.pg/prepare"
   },
   {
    "key": "atomic_unit:codex_harness.application.fleet:Fleet._recovery_replay#1",
    "pending": "pending: recorder confirmation in the owning slice",
    "replaced_by": [
-    "compare:effects.admission_unit"
+    "compare:effects.admission_unit",
+    "compare:effects.admission_unit.pg"
    ],
    "rule": "G1",
-   "citation": "coverage/effects-unit-table.json#effects.admission_unit/reconcile_interrupted"
+   "citation": "coverage/effects-unit-table.json#effects.admission_unit/reconcile_interrupted; coverage/effects-unit-table.json#effects.admission_unit.pg/reconcile_interrupted"
   },
   {
    "key": "atomic_unit:codex_harness.application.fleet:Fleet._relocation_replay#1",
    "pending": "pending: recorder confirmation in the owning slice",
    "replaced_by": [
-    "compare:effects.admission_unit"
+    "compare:effects.admission_unit",
+    "compare:effects.admission_unit.pg"
    ],
    "rule": "G1",
-   "citation": "coverage/effects-unit-table.json#effects.admission_unit/relocate"
+   "citation": "coverage/effects-unit-table.json#effects.admission_unit/relocate; coverage/effects-unit-table.json#effects.admission_unit.pg/relocate"
   },
   {
    "key": "atomic_unit:codex_harness.application.fleet:Fleet.authorize_budget#1",
@@ -88,10 +94,11 @@
    "key": "atomic_unit:codex_harness.application.fleet:Fleet.migrate_host#1",
    "pending": "pending: recorder confirmation in the owning slice",
    "replaced_by": [
-    "compare:effects.admission_unit"
+    "compare:effects.admission_unit",
+    "compare:effects.admission_unit.pg"
    ],
    "rule": "G1",
-   "citation": "coverage/effects-unit-table.json#effects.admission_unit/migrate_host"
+   "citation": "coverage/effects-unit-table.json#effects.admission_unit/migrate_host; coverage/effects-unit-table.json#effects.admission_unit.pg/migrate_host"
   },
   {
    "key": "atomic_unit:codex_harness.application.fleet:Fleet.reconcile_interrupted#1",
@@ -187,46 +194,51 @@
    "key": "atomic_unit:codex_harness.application.outbox:relay#2",
    "pending": "pending: recorder confirmation in the owning slice",
    "replaced_by": [
-    "compare:effects.admission_unit"
+    "compare:effects.admission_unit",
+    "compare:effects.admission_unit.pg"
    ],
    "rule": "G1",
-   "citation": "coverage/effects-unit-table.json#effects.admission_unit/depths"
+   "citation": "coverage/effects-unit-table.json#effects.admission_unit/depths; coverage/effects-unit-table.json#effects.admission_unit.pg/depths"
   },
   {
    "key": "atomic_unit:codex_harness.application.outbox:relay#3",
    "pending": "pending: recorder confirmation in the owning slice",
    "replaced_by": [
-    "compare:effects.admission_unit"
+    "compare:effects.admission_unit",
+    "compare:effects.admission_unit.pg"
    ],
    "rule": "G1",
-   "citation": "coverage/effects-unit-table.json#effects.admission_unit/depths; coverage/effects-unit-table.json#effects.admission_unit/relay"
+   "citation": "coverage/effects-unit-table.json#effects.admission_unit/depths; coverage/effects-unit-table.json#effects.admission_unit/relay; coverage/effects-unit-table.json#effects.admission_unit.pg/depths; coverage/effects-unit-table.json#effects.admission_unit.pg/relay"
   },
   {
    "key": "atomic_unit:codex_harness.application.outbox:relay#4",
    "pending": "pending: recorder confirmation in the owning slice",
    "replaced_by": [
-    "compare:effects.admission_unit"
+    "compare:effects.admission_unit",
+    "compare:effects.admission_unit.pg"
    ],
    "rule": "G1",
-   "citation": "coverage/effects-unit-table.json#effects.admission_unit/depths; coverage/effects-unit-table.json#effects.admission_unit/relay"
+   "citation": "coverage/effects-unit-table.json#effects.admission_unit/depths; coverage/effects-unit-table.json#effects.admission_unit/relay; coverage/effects-unit-table.json#effects.admission_unit.pg/depths; coverage/effects-unit-table.json#effects.admission_unit.pg/relay"
   },
   {
    "key": "atomic_unit:codex_harness.application.outbox:relay#5",
    "pending": "pending: recorder confirmation in the owning slice",
    "replaced_by": [
-    "compare:effects.admission_unit"
+    "compare:effects.admission_unit",
+    "compare:effects.admission_unit.pg"
    ],
    "rule": "G1",
-   "citation": "coverage/effects-unit-table.json#effects.admission_unit/depths"
+   "citation": "coverage/effects-unit-table.json#effects.admission_unit/depths; coverage/effects-unit-table.json#effects.admission_unit.pg/depths"
   },
   {
    "key": "atomic_unit:codex_harness.application.outbox:relay#6",
    "pending": "pending: recorder confirmation in the owning slice",
    "replaced_by": [
-    "compare:effects.admission_unit"
+    "compare:effects.admission_unit",
+    "compare:effects.admission_unit.pg"
    ],
    "rule": "G1",
-   "citation": "coverage/effects-unit-table.json#effects.admission_unit/relay"
+   "citation": "coverage/effects-unit-table.json#effects.admission_unit/relay; coverage/effects-unit-table.json#effects.admission_unit.pg/relay"
   },
   {
    "key": "atomic_unit:codex_harness.application.research_program:ResearchProgram.fail_cycle#1",

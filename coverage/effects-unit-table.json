@@ -28,11 +28,31 @@
    "reason": "0 of 2 blocks of Fleet.migrate_host cover the golden buckets ['fleet_host_migrations', 'fleet_registry']"
   },
   {
+   "candidates": [
+    "codex_harness.application.execution_recovery:ExecutionRecovery.apply#1",
+    "codex_harness.application.execution_recovery:ExecutionRecovery.apply#2"
+   ],
+   "driver_call": "compare/drivers/common/s5_units.py:642",
+   "family": "effects.admission_unit.pg",
+   "golden_unit": "apply",
+   "reason": "0 of 2 blocks of ExecutionRecovery.apply cover the golden buckets ['events', 'execution_fences', 'execution_notices', 'execution_recoveries', 'outbox', 'tasks']"
+  },
+  {
    "candidates": [],
    "driver_call": "compare/drivers/common/s5_units.py:204",
    "family": "effects.admission_unit.pg",
    "golden_unit": "complete",
    "reason": "complete is in no M7 module the driver imports"
+  },
+  {
+   "candidates": [
+    "codex_harness.application.fleet:Fleet.migrate_host#1",
+    "codex_harness.application.fleet:Fleet.migrate_host#2"
+   ],
+   "driver_call": "compare/drivers/common/s5_units.py:559",
+   "family": "effects.admission_unit.pg",
+   "golden_unit": "migrate_host",
+   "reason": "0 of 2 blocks of Fleet.migrate_host cover the golden buckets ['fleet_host_migrations', 'fleet_registry']"
   },
   {
    "candidates": [
@@ -530,6 +550,20 @@
    "golden_unit": "admit"
   },
   {
+   "atomic_unit": "codex_harness.application.execution_recovery:ExecutionRecovery.apply#1",
+   "basis": "block_exercise",
+   "block": "#1",
+   "case": "apply_a_failure_at_recoveries",
+   "cases": [
+    "a",
+    "b",
+    "c"
+   ],
+   "family": "effects.admission_unit.pg",
+   "golden_unit": "apply",
+   "writes_observed": null
+  },
+  {
    "atomic_unit": "codex_harness.application.fleet:Fleet.authorize_budget#1",
    "block": "#1",
    "cases": [
@@ -552,6 +586,19 @@
    "golden_unit": "cancel"
   },
   {
+   "atomic_unit": "codex_harness.application.operation:Operation.claim#1",
+   "basis": "block_exercise",
+   "block": "#1",
+   "case": "claim_a_failure_at_outbox",
+   "cases": [
+    "a",
+    "c"
+   ],
+   "family": "effects.admission_unit.pg",
+   "golden_unit": "claim",
+   "writes_observed": null
+  },
+  {
    "atomic_unit": "codex_harness.application.operation:Operation.claim#2",
    "block": "#2",
    "cases": [
@@ -563,6 +610,57 @@
    "golden_unit": "claim"
   },
   {
+   "atomic_unit": "codex_harness.application.workflow:Workflow._execution_transaction#1",
+   "basis": "block_exercise",
+   "block": "#1",
+   "case": "complete_a_failure_in_accept",
+   "cases": [
+    "a",
+    "b"
+   ],
+   "family": "effects.admission_unit.pg",
+   "golden_unit": "complete",
+   "writes_observed": null
+  },
+  {
+   "atomic_unit": "codex_harness.application.local_cycle:LocalCycle._candidate#1",
+   "basis": "block_exercise",
+   "block": "#1",
+   "case": "d_depths",
+   "cases": [
+    "d"
+   ],
+   "family": "effects.admission_unit.pg",
+   "golden_unit": "depths",
+   "writes_observed": null
+  },
+  {
+   "atomic_unit": "codex_harness.application.local_cycle:LocalCycle._settle#1",
+   "basis": "block_exercise",
+   "block": "#1",
+   "case": "d_depths",
+   "cases": [
+    "d"
+   ],
+   "family": "effects.admission_unit.pg",
+   "golden_unit": "depths",
+   "writes_observed": [
+    "local_cycles"
+   ]
+  },
+  {
+   "atomic_unit": "codex_harness.application.local_cycle:LocalCycle.status#1",
+   "basis": "block_exercise",
+   "block": "#1",
+   "case": "d_depths",
+   "cases": [
+    "d"
+   ],
+   "family": "effects.admission_unit.pg",
+   "golden_unit": "depths",
+   "writes_observed": null
+  },
+  {
    "atomic_unit": "codex_harness.application.local_cycle:LocalCycle.step#1",
    "block": "#1",
    "cases": [
@@ -571,6 +669,80 @@
    "driver_call": "compare/drivers/common/s5_units.py:251",
    "family": "effects.admission_unit.pg",
    "golden_unit": "depths"
+  },
+  {
+   "atomic_unit": "codex_harness.application.outbox:relay#2",
+   "basis": "block_exercise",
+   "block": "#2",
+   "case": "d_depths",
+   "cases": [
+    "d"
+   ],
+   "family": "effects.admission_unit.pg",
+   "golden_unit": "depths",
+   "writes_observed": null
+  },
+  {
+   "atomic_unit": "codex_harness.application.outbox:relay#3",
+   "basis": "block_exercise",
+   "block": "#3",
+   "case": "d_depths",
+   "cases": [
+    "d"
+   ],
+   "family": "effects.admission_unit.pg",
+   "golden_unit": "depths",
+   "writes_observed": null
+  },
+  {
+   "atomic_unit": "codex_harness.application.outbox:relay#4",
+   "basis": "block_exercise",
+   "block": "#4",
+   "case": "d_depths",
+   "cases": [
+    "d"
+   ],
+   "family": "effects.admission_unit.pg",
+   "golden_unit": "depths",
+   "writes_observed": null
+  },
+  {
+   "atomic_unit": "codex_harness.application.outbox:relay#5",
+   "basis": "block_exercise",
+   "block": "#5",
+   "case": "d_depths",
+   "cases": [
+    "d"
+   ],
+   "family": "effects.admission_unit.pg",
+   "golden_unit": "depths",
+   "writes_observed": null
+  },
+  {
+   "atomic_unit": "codex_harness.application.workflow:Workflow._execution_transaction#1",
+   "basis": "block_exercise",
+   "block": "#1",
+   "case": "d_depths",
+   "cases": [
+    "d"
+   ],
+   "family": "effects.admission_unit.pg",
+   "golden_unit": "depths",
+   "writes_observed": null
+  },
+  {
+   "atomic_unit": "codex_harness.application.workflow:Workflow.claim#1",
+   "basis": "block_exercise",
+   "block": "#1",
+   "case": "d_depths",
+   "cases": [
+    "d"
+   ],
+   "family": "effects.admission_unit.pg",
+   "golden_unit": "depths",
+   "writes_observed": [
+    "tasks"
+   ]
   },
   {
    "atomic_unit": "codex_harness.application.fleet:Fleet.enqueue#1",
@@ -615,6 +787,20 @@
    "golden_unit": "handle"
   },
   {
+   "atomic_unit": "codex_harness.application.fleet:Fleet.migrate_host#1",
+   "basis": "block_exercise",
+   "block": "#1",
+   "case": "migrate_host_a_failure_at_registry",
+   "cases": [
+    "a",
+    "b",
+    "c"
+   ],
+   "family": "effects.admission_unit.pg",
+   "golden_unit": "migrate_host",
+   "writes_observed": null
+  },
+  {
    "atomic_unit": "codex_harness.application.operation_finalization:parkable#1",
    "block": "#1",
    "cases": [
@@ -623,6 +809,31 @@
    "driver_call": "compare/drivers/common/s5_units.py:503",
    "family": "effects.admission_unit.pg",
    "golden_unit": "parkable"
+  },
+  {
+   "atomic_unit": "codex_harness.application.execution_recovery:ExecutionRecovery.prepare#1",
+   "block": "#1",
+   "cases": [
+    "b",
+    "c"
+   ],
+   "driver_call": "compare/drivers/common/s5_units.py:629",
+   "family": "effects.admission_unit.pg",
+   "golden_unit": "prepare"
+  },
+  {
+   "atomic_unit": "codex_harness.application.fleet:Fleet._recovery_replay#1",
+   "basis": "block_exercise",
+   "block": "#1",
+   "case": "reconcile_interrupted_a_failure_at_jobs",
+   "cases": [
+    "a",
+    "b",
+    "c"
+   ],
+   "family": "effects.admission_unit.pg",
+   "golden_unit": "reconcile_interrupted",
+   "writes_observed": null
   },
   {
    "atomic_unit": "codex_harness.application.fleet:Fleet.reconcile_interrupted#1",
@@ -656,6 +867,71 @@
    "driver_call": "compare/drivers/common/s5_units.py:289",
    "family": "effects.admission_unit.pg",
    "golden_unit": "registered"
+  },
+  {
+   "atomic_unit": "codex_harness.application.outbox:relay#1",
+   "basis": "block_exercise",
+   "block": "#1",
+   "case": "relay_a_failure_at_health",
+   "cases": [
+    "a",
+    "c",
+    "d"
+   ],
+   "family": "effects.admission_unit.pg",
+   "golden_unit": "relay",
+   "writes_observed": null
+  },
+  {
+   "atomic_unit": "codex_harness.application.outbox:relay#3",
+   "basis": "block_exercise",
+   "block": "#3",
+   "case": "relay_c_replay",
+   "cases": [
+    "c",
+    "d"
+   ],
+   "family": "effects.admission_unit.pg",
+   "golden_unit": "relay",
+   "writes_observed": null
+  },
+  {
+   "atomic_unit": "codex_harness.application.outbox:relay#4",
+   "basis": "block_exercise",
+   "block": "#4",
+   "case": "relay_d_publish_depth",
+   "cases": [
+    "d"
+   ],
+   "family": "effects.admission_unit.pg",
+   "golden_unit": "relay",
+   "writes_observed": null
+  },
+  {
+   "atomic_unit": "codex_harness.application.outbox:relay#6",
+   "block": "#6",
+   "cases": [
+    "a",
+    "c",
+    "d"
+   ],
+   "driver_call": "compare/drivers/common/s5_units.py:692",
+   "family": "effects.admission_unit.pg",
+   "golden_unit": "relay"
+  },
+  {
+   "atomic_unit": "codex_harness.application.fleet:Fleet._relocation_replay#1",
+   "basis": "block_exercise",
+   "block": "#1",
+   "case": "relocate_a_failure_at_registry",
+   "cases": [
+    "a",
+    "b",
+    "c"
+   ],
+   "family": "effects.admission_unit.pg",
+   "golden_unit": "relocate",
+   "writes_observed": null
   },
   {
    "atomic_unit": "codex_harness.application.fleet:Fleet.relocate#1",
@@ -823,6 +1099,82 @@
     "b"
    ],
    "family": "effects.decision_unit",
+   "golden_unit": "decision_unit",
+   "writes_observed": null
+  },
+  {
+   "atomic_unit": "codex_harness.adapters.executor:Executor._commit_decision#1",
+   "basis": "block_exercise",
+   "block": "#1",
+   "case": "a_failure_before_decision_review_conductor",
+   "cases": [
+    "a",
+    "b",
+    "c"
+   ],
+   "family": "effects.decision_unit.pg",
+   "golden_unit": "decision_unit",
+   "writes_observed": [
+    "decisions_pending",
+    "outbox"
+   ]
+  },
+  {
+   "atomic_unit": "codex_harness.adapters.executor:Executor._fail_decision#1",
+   "basis": "block_exercise",
+   "block": "#1",
+   "case": "a_failure_before_decision_review_conductor",
+   "cases": [
+    "a",
+    "b"
+   ],
+   "family": "effects.decision_unit.pg",
+   "golden_unit": "decision_unit",
+   "writes_observed": [
+    "decisions_pending"
+   ]
+  },
+  {
+   "atomic_unit": "codex_harness.adapters.executor:Executor.decide_one#1",
+   "basis": "block_exercise",
+   "block": "#1",
+   "case": "a_failure_before_decision_review_conductor",
+   "cases": [
+    "a",
+    "b",
+    "c"
+   ],
+   "family": "effects.decision_unit.pg",
+   "golden_unit": "decision_unit",
+   "writes_observed": [
+    "decisions_pending"
+   ]
+  },
+  {
+   "atomic_unit": "codex_harness.application.execution_rejections:reconcile#1",
+   "basis": "block_exercise",
+   "block": "#1",
+   "case": "b_stale_lease",
+   "cases": [
+    "b"
+   ],
+   "family": "effects.decision_unit.pg",
+   "golden_unit": "decision_unit",
+   "writes_observed": [
+    "events",
+    "execution_rejections"
+   ]
+  },
+  {
+   "atomic_unit": "codex_harness.application.observations:Observer.pending_terminations#1",
+   "basis": "block_exercise",
+   "block": "#1",
+   "case": "a_failure_before_decision_review_conductor",
+   "cases": [
+    "a",
+    "b"
+   ],
+   "family": "effects.decision_unit.pg",
    "golden_unit": "decision_unit",
    "writes_observed": null
   },

@@ -111,6 +111,449 @@
   ],
   "violations": []
  },
+ "apply_a_failure_at_recoveries": {
+  "durable_units": 0,
+  "durable_writes": [],
+  "effects": [],
+  "outcome": {
+   "message": "injected failure at execution_recoveries",
+   "refused": "Injected"
+  },
+  "rows": [
+   [
+    "execution_failures",
+    "9134adecd0e0ceb3fc82b8874e11275310f0119d08f49b4dd4a0792591e44cbe",
+    "retry"
+   ],
+   [
+    "execution_fences",
+    "tasks:5eed0000-0000-4000-8000-000000000001",
+    ""
+   ],
+   [
+    "execution_notices",
+    "0defd6415852bd6fd4fa3833d99c99e1705116f33e42252cd2e78206298fe644",
+    ""
+   ],
+   [
+    "execution_notices",
+    "9433887a0d0792ea5b749e3746b0cfffd8de9d12ced18c390eeed2cf3bbd9df8",
+    ""
+   ],
+   [
+    "outbox",
+    "0defd6415852bd6fd4fa3833d99c99e1705116f33e42252cd2e78206298fe644",
+    ""
+   ],
+   [
+    "outbox",
+    "9433887a0d0792ea5b749e3746b0cfffd8de9d12ced18c390eeed2cf3bbd9df8",
+    ""
+   ],
+   [
+    "tasks",
+    "5eed0000-0000-4000-8000-000000000001",
+    "failed"
+   ]
+  ],
+  "units": [
+   "COMMIT",
+   "ROLLBACK"
+  ],
+  "violations": []
+ },
+ "apply_b_stale_snapshot": {
+  "durable_units": 0,
+  "durable_writes": [],
+  "effects": [],
+  "outcome": {
+   "message": "Recovery snapshot changed",
+   "refused": "ContractError"
+  },
+  "rows": [
+   [
+    "execution_failures",
+    "9134adecd0e0ceb3fc82b8874e11275310f0119d08f49b4dd4a0792591e44cbe",
+    "retry"
+   ],
+   [
+    "execution_fences",
+    "tasks:5eed0000-0000-4000-8000-000000000001",
+    ""
+   ],
+   [
+    "execution_notices",
+    "0defd6415852bd6fd4fa3833d99c99e1705116f33e42252cd2e78206298fe644",
+    ""
+   ],
+   [
+    "execution_notices",
+    "9433887a0d0792ea5b749e3746b0cfffd8de9d12ced18c390eeed2cf3bbd9df8",
+    ""
+   ],
+   [
+    "execution_notices",
+    "e6cfb3cce77420c00ba122c7b903d635cccca20c75bd2bc87b3eb0e1ab8d1c5f",
+    ""
+   ],
+   [
+    "outbox",
+    "0defd6415852bd6fd4fa3833d99c99e1705116f33e42252cd2e78206298fe644",
+    ""
+   ],
+   [
+    "outbox",
+    "9433887a0d0792ea5b749e3746b0cfffd8de9d12ced18c390eeed2cf3bbd9df8",
+    ""
+   ],
+   [
+    "outbox",
+    "e6cfb3cce77420c00ba122c7b903d635cccca20c75bd2bc87b3eb0e1ab8d1c5f",
+    ""
+   ],
+   [
+    "tasks",
+    "5eed0000-0000-4000-8000-000000000001",
+    "cancelled"
+   ]
+  ],
+  "units": [
+   "COMMIT",
+   "ROLLBACK"
+  ],
+  "violations": []
+ },
+ "apply_c_replay": {
+  "durable_units": 0,
+  "durable_writes": [],
+  "effects": [],
+  "outcome": {
+   "keys": [
+    "execution",
+    "receipt_id",
+    "replayed"
+   ],
+   "scalars": {
+    "receipt_id": "22ffe286695cd4386f8eb8f5ce5641204106c5fab2fe61cef390692b5b4a419d",
+    "replayed": true
+   },
+   "value": "8ab000d32c7211c950bfcff838842351164a59261c115e218875c5b4bf6503c0"
+  },
+  "rows": [
+   [
+    "events",
+    "22ffe286695cd4386f8eb8f5ce5641204106c5fab2fe61cef390692b5b4a419d",
+    ""
+   ],
+   [
+    "execution_failures",
+    "9134adecd0e0ceb3fc82b8874e11275310f0119d08f49b4dd4a0792591e44cbe",
+    "retry"
+   ],
+   [
+    "execution_fences",
+    "tasks:5eed0000-0000-4000-8000-000000000001",
+    ""
+   ],
+   [
+    "execution_notices",
+    "0defd6415852bd6fd4fa3833d99c99e1705116f33e42252cd2e78206298fe644",
+    ""
+   ],
+   [
+    "execution_notices",
+    "9433887a0d0792ea5b749e3746b0cfffd8de9d12ced18c390eeed2cf3bbd9df8",
+    ""
+   ],
+   [
+    "execution_notices",
+    "bf307a4229d9c24b9b6d6b50722ed5432ca04b56792246c84f03fd18a468e249",
+    ""
+   ],
+   [
+    "execution_recoveries",
+    "22ffe286695cd4386f8eb8f5ce5641204106c5fab2fe61cef390692b5b4a419d",
+    ""
+   ],
+   [
+    "outbox",
+    "0defd6415852bd6fd4fa3833d99c99e1705116f33e42252cd2e78206298fe644",
+    ""
+   ],
+   [
+    "outbox",
+    "9433887a0d0792ea5b749e3746b0cfffd8de9d12ced18c390eeed2cf3bbd9df8",
+    ""
+   ],
+   [
+    "outbox",
+    "bf307a4229d9c24b9b6d6b50722ed5432ca04b56792246c84f03fd18a468e249",
+    ""
+   ],
+   [
+    "tasks",
+    "5eed0000-0000-4000-8000-000000000001",
+    "retry"
+   ]
+  ],
+  "units": [
+   "COMMIT"
+  ],
+  "violations": []
+ },
+ "apply_evidence_lost": {
+  "durable_units": 0,
+  "durable_writes": [],
+  "effects": [],
+  "outcome": {
+   "message": "Recovery evidence unavailable",
+   "refused": "ContractError"
+  },
+  "rows": [
+   [
+    "execution_failures",
+    "9134adecd0e0ceb3fc82b8874e11275310f0119d08f49b4dd4a0792591e44cbe",
+    "retry"
+   ],
+   [
+    "execution_fences",
+    "tasks:5eed0000-0000-4000-8000-000000000001",
+    ""
+   ],
+   [
+    "execution_notices",
+    "0defd6415852bd6fd4fa3833d99c99e1705116f33e42252cd2e78206298fe644",
+    ""
+   ],
+   [
+    "execution_notices",
+    "9433887a0d0792ea5b749e3746b0cfffd8de9d12ced18c390eeed2cf3bbd9df8",
+    ""
+   ],
+   [
+    "outbox",
+    "0defd6415852bd6fd4fa3833d99c99e1705116f33e42252cd2e78206298fe644",
+    ""
+   ],
+   [
+    "outbox",
+    "9433887a0d0792ea5b749e3746b0cfffd8de9d12ced18c390eeed2cf3bbd9df8",
+    ""
+   ],
+   [
+    "tasks",
+    "5eed0000-0000-4000-8000-000000000001",
+    "failed"
+   ]
+  ],
+  "units": [
+   "COMMIT"
+  ],
+  "violations": []
+ },
+ "apply_expired_packet": {
+  "durable_units": 0,
+  "durable_writes": [],
+  "effects": [],
+  "outcome": {
+   "message": "Recovery packet expired or not yet valid",
+   "refused": "ContractError"
+  },
+  "rows": [
+   [
+    "execution_failures",
+    "9134adecd0e0ceb3fc82b8874e11275310f0119d08f49b4dd4a0792591e44cbe",
+    "retry"
+   ],
+   [
+    "execution_fences",
+    "tasks:5eed0000-0000-4000-8000-000000000001",
+    ""
+   ],
+   [
+    "execution_notices",
+    "0defd6415852bd6fd4fa3833d99c99e1705116f33e42252cd2e78206298fe644",
+    ""
+   ],
+   [
+    "execution_notices",
+    "9433887a0d0792ea5b749e3746b0cfffd8de9d12ced18c390eeed2cf3bbd9df8",
+    ""
+   ],
+   [
+    "outbox",
+    "0defd6415852bd6fd4fa3833d99c99e1705116f33e42252cd2e78206298fe644",
+    ""
+   ],
+   [
+    "outbox",
+    "9433887a0d0792ea5b749e3746b0cfffd8de9d12ced18c390eeed2cf3bbd9df8",
+    ""
+   ],
+   [
+    "tasks",
+    "5eed0000-0000-4000-8000-000000000001",
+    "failed"
+   ]
+  ],
+  "units": [
+   "COMMIT",
+   "ROLLBACK"
+  ],
+  "violations": []
+ },
+ "apply_success": {
+  "durable_units": 1,
+  "durable_writes": [
+   [
+    "events",
+    ""
+   ],
+   [
+    "execution_fences",
+    ""
+   ],
+   [
+    "execution_notices",
+    ""
+   ],
+   [
+    "execution_recoveries",
+    ""
+   ],
+   [
+    "outbox",
+    ""
+   ],
+   [
+    "tasks",
+    "retry"
+   ]
+  ],
+  "effects": [],
+  "outcome": {
+   "keys": [
+    "execution",
+    "receipt_id",
+    "replayed"
+   ],
+   "scalars": {
+    "receipt_id": "22ffe286695cd4386f8eb8f5ce5641204106c5fab2fe61cef390692b5b4a419d",
+    "replayed": false
+   },
+   "value": "b9c7ae8b94f54193cc0ccb897419401091a3ca2a2d9549ff6f7d4ff2a1ef42f1"
+  },
+  "rows": [
+   [
+    "events",
+    "22ffe286695cd4386f8eb8f5ce5641204106c5fab2fe61cef390692b5b4a419d",
+    ""
+   ],
+   [
+    "execution_failures",
+    "9134adecd0e0ceb3fc82b8874e11275310f0119d08f49b4dd4a0792591e44cbe",
+    "retry"
+   ],
+   [
+    "execution_fences",
+    "tasks:5eed0000-0000-4000-8000-000000000001",
+    ""
+   ],
+   [
+    "execution_notices",
+    "0defd6415852bd6fd4fa3833d99c99e1705116f33e42252cd2e78206298fe644",
+    ""
+   ],
+   [
+    "execution_notices",
+    "9433887a0d0792ea5b749e3746b0cfffd8de9d12ced18c390eeed2cf3bbd9df8",
+    ""
+   ],
+   [
+    "execution_notices",
+    "bf307a4229d9c24b9b6d6b50722ed5432ca04b56792246c84f03fd18a468e249",
+    ""
+   ],
+   [
+    "execution_recoveries",
+    "22ffe286695cd4386f8eb8f5ce5641204106c5fab2fe61cef390692b5b4a419d",
+    ""
+   ],
+   [
+    "outbox",
+    "0defd6415852bd6fd4fa3833d99c99e1705116f33e42252cd2e78206298fe644",
+    ""
+   ],
+   [
+    "outbox",
+    "9433887a0d0792ea5b749e3746b0cfffd8de9d12ced18c390eeed2cf3bbd9df8",
+    ""
+   ],
+   [
+    "outbox",
+    "bf307a4229d9c24b9b6d6b50722ed5432ca04b56792246c84f03fd18a468e249",
+    ""
+   ],
+   [
+    "tasks",
+    "5eed0000-0000-4000-8000-000000000001",
+    "retry"
+   ]
+  ],
+  "units": [
+   "COMMIT",
+   "COMMIT"
+  ],
+  "violations": []
+ },
+ "apply_wrong_role": {
+  "durable_units": 0,
+  "durable_writes": [],
+  "effects": [],
+  "outcome": {
+   "message": "Actor lacks required role",
+   "refused": "ContractError"
+  },
+  "rows": [
+   [
+    "execution_failures",
+    "9134adecd0e0ceb3fc82b8874e11275310f0119d08f49b4dd4a0792591e44cbe",
+    "retry"
+   ],
+   [
+    "execution_fences",
+    "tasks:5eed0000-0000-4000-8000-000000000001",
+    ""
+   ],
+   [
+    "execution_notices",
+    "0defd6415852bd6fd4fa3833d99c99e1705116f33e42252cd2e78206298fe644",
+    ""
+   ],
+   [
+    "execution_notices",
+    "9433887a0d0792ea5b749e3746b0cfffd8de9d12ced18c390eeed2cf3bbd9df8",
+    ""
+   ],
+   [
+    "outbox",
+    "0defd6415852bd6fd4fa3833d99c99e1705116f33e42252cd2e78206298fe644",
+    ""
+   ],
+   [
+    "outbox",
+    "9433887a0d0792ea5b749e3746b0cfffd8de9d12ced18c390eeed2cf3bbd9df8",
+    ""
+   ],
+   [
+    "tasks",
+    "5eed0000-0000-4000-8000-000000000001",
+    "failed"
+   ]
+  ],
+  "units": [],
+  "violations": []
+ },
  "authorize_budget_a_failure_at_control": {
   "durable_units": 0,
   "durable_writes": [],
@@ -1146,6 +1589,283 @@
   ],
   "violations": []
  },
+ "migrate_host_a_failure_at_registry": {
+  "durable_units": 0,
+  "durable_writes": [],
+  "effects": [],
+  "outcome": {
+   "message": "injected failure at fleet_registry",
+   "reason_code": null,
+   "refused": "Injected"
+  },
+  "rows": [
+   [
+    "fleet_control",
+    "admission",
+    ""
+   ],
+   [
+    "fleet_registry",
+    "fleet-1",
+    ""
+   ]
+  ],
+  "units": [
+   "COMMIT",
+   "ROLLBACK"
+  ],
+  "violations": []
+ },
+ "migrate_host_b_stale_digest": {
+  "durable_units": 0,
+  "durable_writes": [],
+  "effects": [],
+  "outcome": {
+   "message": "fleet refused: config_expected_mismatch (expected_config_sha256)",
+   "reason_code": "config_expected_mismatch",
+   "refused": "FleetRefused"
+  },
+  "rows": [
+   [
+    "fleet_control",
+    "admission",
+    ""
+   ],
+   [
+    "fleet_registry",
+    "fleet-1",
+    ""
+   ]
+  ],
+  "units": [
+   "COMMIT",
+   "ROLLBACK"
+  ],
+  "violations": []
+ },
+ "migrate_host_c_replay": {
+  "durable_units": 0,
+  "durable_writes": [],
+  "effects": [],
+  "outcome": {
+   "value": {
+    "cached": true,
+    "config_sha256": "0e8939f79d696ac1da54cd18339e9722b8f9f42f6e679ba0935d351c4927d5c2",
+    "migrated": true,
+    "receipt": {
+     "authority": "owner_host_migration; lane repository, runtime and schema bindings only; lane/team identity, Redis namespaces, history and provider authority unchanged",
+     "config_sha256": "0e8939f79d696ac1da54cd18339e9722b8f9f42f6e679ba0935d351c4927d5c2",
+     "fleet": "fleet-1",
+     "id": "da5905448194cc14f07aaa4b8cce2e10c3d6cd11c216506a1e367883a9b3a495",
+     "lanes": [
+      {
+       "id": "a",
+       "schema": "moved_a"
+      },
+      {
+       "id": "b",
+       "schema": "moved_b"
+      }
+     ],
+     "migration_id": "move-1",
+     "operator": "owner",
+     "prior_config_sha256": "2ca414330a3575287d9a75b36904cee274af319c6e5d54723479dad70457ab31",
+     "recorded_at": "2026-09-21T00:00:00.000004+00:00",
+     "schema": "urn:zeus:fleet-host-migration-receipt:1"
+    }
+   }
+  },
+  "rows": [
+   [
+    "fleet_control",
+    "admission",
+    ""
+   ],
+   [
+    "fleet_host_migrations",
+    "da5905448194cc14f07aaa4b8cce2e10c3d6cd11c216506a1e367883a9b3a495",
+    ""
+   ],
+   [
+    "fleet_registry",
+    "fleet-1",
+    ""
+   ]
+  ],
+  "units": [
+   "COMMIT"
+  ],
+  "violations": []
+ },
+ "migrate_host_conflict": {
+  "durable_units": 0,
+  "durable_writes": [],
+  "effects": [],
+  "outcome": {
+   "message": "fleet refused: host_migration_conflict",
+   "reason_code": "host_migration_conflict",
+   "refused": "FleetRefused"
+  },
+  "rows": [
+   [
+    "fleet_control",
+    "admission",
+    ""
+   ],
+   [
+    "fleet_host_migrations",
+    "da5905448194cc14f07aaa4b8cce2e10c3d6cd11c216506a1e367883a9b3a495",
+    ""
+   ],
+   [
+    "fleet_registry",
+    "fleet-1",
+    ""
+   ]
+  ],
+  "units": [
+   "ROLLBACK"
+  ],
+  "violations": []
+ },
+ "migrate_host_incomplete_lanes": {
+  "durable_units": 0,
+  "durable_writes": [],
+  "effects": [],
+  "outcome": {
+   "message": "fleet refused: host_migration_lanes_incomplete (lanes)",
+   "reason_code": "host_migration_lanes_incomplete",
+   "refused": "FleetRefused"
+  },
+  "rows": [
+   [
+    "fleet_control",
+    "admission",
+    ""
+   ],
+   [
+    "fleet_registry",
+    "fleet-1",
+    ""
+   ]
+  ],
+  "units": [
+   "COMMIT",
+   "ROLLBACK"
+  ],
+  "violations": []
+ },
+ "migrate_host_not_paused": {
+  "durable_units": 0,
+  "durable_writes": [],
+  "effects": [],
+  "outcome": {
+   "message": "fleet refused: fleet_not_paused",
+   "reason_code": "fleet_not_paused",
+   "refused": "FleetRefused"
+  },
+  "rows": [
+   [
+    "fleet_control",
+    "admission",
+    ""
+   ],
+   [
+    "fleet_registry",
+    "fleet-1",
+    ""
+   ]
+  ],
+  "units": [
+   "COMMIT",
+   "ROLLBACK"
+  ],
+  "violations": []
+ },
+ "migrate_host_success": {
+  "durable_units": 1,
+  "durable_writes": [
+   [
+    "fleet_host_migrations",
+    ""
+   ],
+   [
+    "fleet_registry",
+    ""
+   ]
+  ],
+  "effects": [],
+  "outcome": {
+   "value": {
+    "cached": false,
+    "config": {
+     "accounting_mode": "finite",
+     "budget": {
+      "per_host": 4,
+      "total": 8
+     },
+     "id": "fleet-1",
+     "lanes": [
+      {
+       "id": "a",
+       "team": "a"
+      },
+      {
+       "id": "b",
+       "team": "b"
+      }
+     ],
+     "max_parallel": 2,
+     "schema": "urn:zeus:fleet:1"
+    },
+    "config_sha256": "0e8939f79d696ac1da54cd18339e9722b8f9f42f6e679ba0935d351c4927d5c2",
+    "migrated": true,
+    "receipt": {
+     "authority": "owner_host_migration; lane repository, runtime and schema bindings only; lane/team identity, Redis namespaces, history and provider authority unchanged",
+     "config_sha256": "0e8939f79d696ac1da54cd18339e9722b8f9f42f6e679ba0935d351c4927d5c2",
+     "fleet": "fleet-1",
+     "id": "da5905448194cc14f07aaa4b8cce2e10c3d6cd11c216506a1e367883a9b3a495",
+     "lanes": [
+      {
+       "id": "a",
+       "schema": "moved_a"
+      },
+      {
+       "id": "b",
+       "schema": "moved_b"
+      }
+     ],
+     "migration_id": "move-1",
+     "operator": "owner",
+     "prior_config_sha256": "2ca414330a3575287d9a75b36904cee274af319c6e5d54723479dad70457ab31",
+     "recorded_at": "2026-09-21T00:00:00.000004+00:00",
+     "schema": "urn:zeus:fleet-host-migration-receipt:1"
+    }
+   }
+  },
+  "rows": [
+   [
+    "fleet_control",
+    "admission",
+    ""
+   ],
+   [
+    "fleet_host_migrations",
+    "da5905448194cc14f07aaa4b8cce2e10c3d6cd11c216506a1e367883a9b3a495",
+    ""
+   ],
+   [
+    "fleet_registry",
+    "fleet-1",
+    ""
+   ]
+  ],
+  "units": [
+   "COMMIT",
+   "COMMIT"
+  ],
+  "violations": []
+ },
  "parkable_c_repeat": {
   "durable_units": 0,
   "durable_writes": [],
@@ -1262,6 +1982,414 @@
    [
     "operations",
     "op-1",
+    "failed"
+   ]
+  ],
+  "units": [],
+  "violations": []
+ },
+ "prepare_b_unrelated_state": {
+  "durable_units": 0,
+  "durable_writes": [],
+  "effects": [],
+  "outcome": {
+   "message": "Only budget or deadline exhaustion can resume",
+   "refused": "ContractError"
+  },
+  "rows": [
+   [
+    "execution_failures",
+    "9134adecd0e0ceb3fc82b8874e11275310f0119d08f49b4dd4a0792591e44cbe",
+    "retry"
+   ],
+   [
+    "execution_fences",
+    "tasks:5eed0000-0000-4000-8000-000000000001",
+    ""
+   ],
+   [
+    "execution_notices",
+    "0defd6415852bd6fd4fa3833d99c99e1705116f33e42252cd2e78206298fe644",
+    ""
+   ],
+   [
+    "execution_notices",
+    "9433887a0d0792ea5b749e3746b0cfffd8de9d12ced18c390eeed2cf3bbd9df8",
+    ""
+   ],
+   [
+    "outbox",
+    "0defd6415852bd6fd4fa3833d99c99e1705116f33e42252cd2e78206298fe644",
+    ""
+   ],
+   [
+    "outbox",
+    "9433887a0d0792ea5b749e3746b0cfffd8de9d12ced18c390eeed2cf3bbd9df8",
+    ""
+   ],
+   [
+    "tasks",
+    "5eed0000-0000-4000-8000-000000000001",
+    "succeeded"
+   ]
+  ],
+  "units": [
+   "ROLLBACK"
+  ],
+  "violations": []
+ },
+ "prepare_c_repeat": {
+  "durable_units": 0,
+  "durable_writes": [],
+  "effects": [],
+  "outcome": {
+   "keys": [
+    "actor",
+    "authority",
+    "bucket",
+    "deadline",
+    "evidence_refs",
+    "expected_hash",
+    "expires_at",
+    "issued_at",
+    "max_attempts",
+    "operation",
+    "operator",
+    "previous",
+    "reason",
+    "related_hash",
+    "task_id",
+    "version"
+   ],
+   "scalars": {
+    "actor": "conductor",
+    "authority": "trusted_local_operator",
+    "bucket": "tasks",
+    "expected_hash": "a37f45cdaa7c4750a2d9fba0d9dee649887faa6ac1193e3174e6025437d6f256",
+    "expires_at": "2026-01-01T00:15:04+00:00",
+    "issued_at": "2026-01-01T00:00:04+00:00",
+    "max_attempts": 2,
+    "operation": "resume",
+    "operator": "test-operator",
+    "reason": "Investigated transient failure",
+    "related_hash": "74234e98afe7498fb5daf1f36ac2d78acc339464f950703b8c019892f982b90b",
+    "task_id": "5eed0000-0000-4000-8000-000000000001",
+    "version": 1
+   },
+   "value": "22ffe286695cd4386f8eb8f5ce5641204106c5fab2fe61cef390692b5b4a419d"
+  },
+  "rows": [
+   [
+    "execution_failures",
+    "9134adecd0e0ceb3fc82b8874e11275310f0119d08f49b4dd4a0792591e44cbe",
+    "retry"
+   ],
+   [
+    "execution_fences",
+    "tasks:5eed0000-0000-4000-8000-000000000001",
+    ""
+   ],
+   [
+    "execution_notices",
+    "0defd6415852bd6fd4fa3833d99c99e1705116f33e42252cd2e78206298fe644",
+    ""
+   ],
+   [
+    "execution_notices",
+    "9433887a0d0792ea5b749e3746b0cfffd8de9d12ced18c390eeed2cf3bbd9df8",
+    ""
+   ],
+   [
+    "outbox",
+    "0defd6415852bd6fd4fa3833d99c99e1705116f33e42252cd2e78206298fe644",
+    ""
+   ],
+   [
+    "outbox",
+    "9433887a0d0792ea5b749e3746b0cfffd8de9d12ced18c390eeed2cf3bbd9df8",
+    ""
+   ],
+   [
+    "tasks",
+    "5eed0000-0000-4000-8000-000000000001",
+    "failed"
+   ]
+  ],
+  "units": [
+   "COMMIT"
+  ],
+  "violations": []
+ },
+ "prepare_ceiling_not_above_attempts": {
+  "durable_units": 0,
+  "durable_writes": [],
+  "effects": [],
+  "outcome": {
+   "message": "Recovery ceiling must exceed attempts already spent",
+   "refused": "ContractError"
+  },
+  "rows": [
+   [
+    "execution_failures",
+    "9134adecd0e0ceb3fc82b8874e11275310f0119d08f49b4dd4a0792591e44cbe",
+    "retry"
+   ],
+   [
+    "execution_fences",
+    "tasks:5eed0000-0000-4000-8000-000000000001",
+    ""
+   ],
+   [
+    "execution_notices",
+    "0defd6415852bd6fd4fa3833d99c99e1705116f33e42252cd2e78206298fe644",
+    ""
+   ],
+   [
+    "execution_notices",
+    "9433887a0d0792ea5b749e3746b0cfffd8de9d12ced18c390eeed2cf3bbd9df8",
+    ""
+   ],
+   [
+    "outbox",
+    "0defd6415852bd6fd4fa3833d99c99e1705116f33e42252cd2e78206298fe644",
+    ""
+   ],
+   [
+    "outbox",
+    "9433887a0d0792ea5b749e3746b0cfffd8de9d12ced18c390eeed2cf3bbd9df8",
+    ""
+   ],
+   [
+    "tasks",
+    "5eed0000-0000-4000-8000-000000000001",
+    "failed"
+   ]
+  ],
+  "units": [
+   "ROLLBACK"
+  ],
+  "violations": []
+ },
+ "prepare_no_reason": {
+  "durable_units": 0,
+  "durable_writes": [],
+  "effects": [],
+  "outcome": {
+   "message": "Recovery reason required",
+   "refused": "ContractError"
+  },
+  "rows": [
+   [
+    "execution_failures",
+    "9134adecd0e0ceb3fc82b8874e11275310f0119d08f49b4dd4a0792591e44cbe",
+    "retry"
+   ],
+   [
+    "execution_fences",
+    "tasks:5eed0000-0000-4000-8000-000000000001",
+    ""
+   ],
+   [
+    "execution_notices",
+    "0defd6415852bd6fd4fa3833d99c99e1705116f33e42252cd2e78206298fe644",
+    ""
+   ],
+   [
+    "execution_notices",
+    "9433887a0d0792ea5b749e3746b0cfffd8de9d12ced18c390eeed2cf3bbd9df8",
+    ""
+   ],
+   [
+    "outbox",
+    "0defd6415852bd6fd4fa3833d99c99e1705116f33e42252cd2e78206298fe644",
+    ""
+   ],
+   [
+    "outbox",
+    "9433887a0d0792ea5b749e3746b0cfffd8de9d12ced18c390eeed2cf3bbd9df8",
+    ""
+   ],
+   [
+    "tasks",
+    "5eed0000-0000-4000-8000-000000000001",
+    "failed"
+   ]
+  ],
+  "units": [],
+  "violations": []
+ },
+ "prepare_past_deadline": {
+  "durable_units": 0,
+  "durable_writes": [],
+  "effects": [],
+  "outcome": {
+   "message": "Recovery deadline must be future",
+   "refused": "ContractError"
+  },
+  "rows": [
+   [
+    "execution_failures",
+    "9134adecd0e0ceb3fc82b8874e11275310f0119d08f49b4dd4a0792591e44cbe",
+    "retry"
+   ],
+   [
+    "execution_fences",
+    "tasks:5eed0000-0000-4000-8000-000000000001",
+    ""
+   ],
+   [
+    "execution_notices",
+    "0defd6415852bd6fd4fa3833d99c99e1705116f33e42252cd2e78206298fe644",
+    ""
+   ],
+   [
+    "execution_notices",
+    "9433887a0d0792ea5b749e3746b0cfffd8de9d12ced18c390eeed2cf3bbd9df8",
+    ""
+   ],
+   [
+    "outbox",
+    "0defd6415852bd6fd4fa3833d99c99e1705116f33e42252cd2e78206298fe644",
+    ""
+   ],
+   [
+    "outbox",
+    "9433887a0d0792ea5b749e3746b0cfffd8de9d12ced18c390eeed2cf3bbd9df8",
+    ""
+   ],
+   [
+    "tasks",
+    "5eed0000-0000-4000-8000-000000000001",
+    "failed"
+   ]
+  ],
+  "units": [],
+  "violations": []
+ },
+ "prepare_success": {
+  "durable_units": 0,
+  "durable_writes": [],
+  "effects": [],
+  "outcome": {
+   "keys": [
+    "actor",
+    "authority",
+    "bucket",
+    "deadline",
+    "evidence_refs",
+    "expected_hash",
+    "expires_at",
+    "issued_at",
+    "max_attempts",
+    "operation",
+    "operator",
+    "previous",
+    "reason",
+    "related_hash",
+    "task_id",
+    "version"
+   ],
+   "scalars": {
+    "actor": "conductor",
+    "authority": "trusted_local_operator",
+    "bucket": "tasks",
+    "expected_hash": "a37f45cdaa7c4750a2d9fba0d9dee649887faa6ac1193e3174e6025437d6f256",
+    "expires_at": "2026-01-01T00:15:04+00:00",
+    "issued_at": "2026-01-01T00:00:04+00:00",
+    "max_attempts": 2,
+    "operation": "resume",
+    "operator": "test-operator",
+    "reason": "Investigated transient failure",
+    "related_hash": "74234e98afe7498fb5daf1f36ac2d78acc339464f950703b8c019892f982b90b",
+    "task_id": "5eed0000-0000-4000-8000-000000000001",
+    "version": 1
+   },
+   "value": "22ffe286695cd4386f8eb8f5ce5641204106c5fab2fe61cef390692b5b4a419d"
+  },
+  "rows": [
+   [
+    "execution_failures",
+    "9134adecd0e0ceb3fc82b8874e11275310f0119d08f49b4dd4a0792591e44cbe",
+    "retry"
+   ],
+   [
+    "execution_fences",
+    "tasks:5eed0000-0000-4000-8000-000000000001",
+    ""
+   ],
+   [
+    "execution_notices",
+    "0defd6415852bd6fd4fa3833d99c99e1705116f33e42252cd2e78206298fe644",
+    ""
+   ],
+   [
+    "execution_notices",
+    "9433887a0d0792ea5b749e3746b0cfffd8de9d12ced18c390eeed2cf3bbd9df8",
+    ""
+   ],
+   [
+    "outbox",
+    "0defd6415852bd6fd4fa3833d99c99e1705116f33e42252cd2e78206298fe644",
+    ""
+   ],
+   [
+    "outbox",
+    "9433887a0d0792ea5b749e3746b0cfffd8de9d12ced18c390eeed2cf3bbd9df8",
+    ""
+   ],
+   [
+    "tasks",
+    "5eed0000-0000-4000-8000-000000000001",
+    "failed"
+   ]
+  ],
+  "units": [
+   "COMMIT"
+  ],
+  "violations": []
+ },
+ "prepare_wrong_role": {
+  "durable_units": 0,
+  "durable_writes": [],
+  "effects": [],
+  "outcome": {
+   "message": "Actor lacks required role",
+   "refused": "ContractError"
+  },
+  "rows": [
+   [
+    "execution_failures",
+    "9134adecd0e0ceb3fc82b8874e11275310f0119d08f49b4dd4a0792591e44cbe",
+    "retry"
+   ],
+   [
+    "execution_fences",
+    "tasks:5eed0000-0000-4000-8000-000000000001",
+    ""
+   ],
+   [
+    "execution_notices",
+    "0defd6415852bd6fd4fa3833d99c99e1705116f33e42252cd2e78206298fe644",
+    ""
+   ],
+   [
+    "execution_notices",
+    "9433887a0d0792ea5b749e3746b0cfffd8de9d12ced18c390eeed2cf3bbd9df8",
+    ""
+   ],
+   [
+    "outbox",
+    "0defd6415852bd6fd4fa3833d99c99e1705116f33e42252cd2e78206298fe644",
+    ""
+   ],
+   [
+    "outbox",
+    "9433887a0d0792ea5b749e3746b0cfffd8de9d12ced18c390eeed2cf3bbd9df8",
+    ""
+   ],
+   [
+    "tasks",
+    "5eed0000-0000-4000-8000-000000000001",
     "failed"
    ]
   ],
@@ -1754,6 +2882,402 @@
   },
   "rows": [],
   "units": [
+   "COMMIT"
+  ],
+  "violations": []
+ },
+ "relay_a_failure_at_health": {
+  "audits": [],
+  "durable_units": 0,
+  "durable_writes": [],
+  "effects": [],
+  "outcome": {
+   "message": "injected failure at health",
+   "refused": "Injected"
+  },
+  "published": 0,
+  "rows": [],
+  "units": [
+   "COMMIT",
+   "ROLLBACK"
+  ],
+  "violations": []
+ },
+ "relay_c_replay": {
+  "audits": [
+   [
+    "general.message_published",
+    "succeeded",
+    null
+   ]
+  ],
+  "durable_units": 2,
+  "durable_writes": [
+   [
+    "health",
+    "observed"
+   ],
+   [
+    "outbox",
+    ""
+   ],
+   [
+    "outbox_control",
+    ""
+   ],
+   [
+    "outbox_delivery",
+    "delivered"
+   ]
+  ],
+  "effects": [],
+  "outcome": {
+   "value": {
+    "error": 0,
+    "examined": 1,
+    "legacy_sent": 0,
+    "limit": 100,
+    "published": 0,
+    "quarantined": 0,
+    "quarantined_existing": 0,
+    "retry": 0,
+    "skipped": 1
+   }
+  },
+  "published": 1,
+  "rows": [
+   [
+    "health",
+    "outbox",
+    "observed"
+   ],
+   [
+    "outbox",
+    "5eed0000-0000-4000-8000-000000000001",
+    ""
+   ],
+   [
+    "outbox_attempts",
+    "5eed0000-0000-4000-8000-000000000002",
+    "delivered"
+   ],
+   [
+    "outbox_control",
+    "relay",
+    ""
+   ],
+   [
+    "outbox_delivery",
+    "5eed0000-0000-4000-8000-000000000001",
+    "delivered"
+   ]
+  ],
+  "units": [
+   "COMMIT",
+   "COMMIT",
+   "COMMIT"
+  ],
+  "violations": [
+   "effect_inside_unit"
+  ]
+ },
+ "relay_d_publish_depth": {
+  "audits": [
+   [
+    "general.message_published",
+    "succeeded",
+    null
+   ]
+  ],
+  "durable_units": 3,
+  "durable_writes": [
+   [
+    "health",
+    "observed"
+   ],
+   [
+    "outbox",
+    ""
+   ],
+   [
+    "outbox_attempts",
+    "delivered"
+   ],
+   [
+    "outbox_attempts",
+    "started"
+   ],
+   [
+    "outbox_control",
+    ""
+   ],
+   [
+    "outbox_delivery",
+    "delivered"
+   ],
+   [
+    "outbox_delivery",
+    "publishing"
+   ]
+  ],
+  "effects": [
+   [
+    "bus.publish",
+    1
+   ]
+  ],
+  "outcome": {
+   "value": {
+    "error": 0,
+    "examined": 1,
+    "legacy_sent": 0,
+    "limit": 100,
+    "published": 1,
+    "quarantined": 0,
+    "quarantined_existing": 0,
+    "retry": 0,
+    "skipped": 0
+   }
+  },
+  "published": 1,
+  "rows": [
+   [
+    "health",
+    "outbox",
+    "observed"
+   ],
+   [
+    "outbox",
+    "5eed0000-0000-4000-8000-000000000001",
+    ""
+   ],
+   [
+    "outbox_attempts",
+    "5eed0000-0000-4000-8000-000000000002",
+    "delivered"
+   ],
+   [
+    "outbox_control",
+    "relay",
+    ""
+   ],
+   [
+    "outbox_delivery",
+    "5eed0000-0000-4000-8000-000000000001",
+    "delivered"
+   ]
+  ],
+  "units": [
+   "COMMIT",
+   "COMMIT",
+   "COMMIT",
+   "COMMIT"
+  ],
+  "violations": [
+   "effect_inside_unit"
+  ]
+ },
+ "relay_poison_record": {
+  "audits": [
+   [
+    "general.message_quarantined",
+    "blocked",
+    "InvalidOutboxRecord"
+   ]
+  ],
+  "durable_units": 2,
+  "durable_writes": [
+   [
+    "events",
+    ""
+   ],
+   [
+    "health",
+    "attention"
+   ],
+   [
+    "outbox_control",
+    ""
+   ],
+   [
+    "outbox_delivery",
+    "quarantined"
+   ],
+   [
+    "outbox_quarantine",
+    ""
+   ]
+  ],
+  "effects": [],
+  "outcome": {
+   "value": {
+    "error": 0,
+    "examined": 1,
+    "legacy_sent": 0,
+    "limit": 100,
+    "published": 0,
+    "quarantined": 1,
+    "quarantined_existing": 0,
+    "retry": 0,
+    "skipped": 0
+   }
+  },
+  "published": 0,
+  "rows": [
+   [
+    "events",
+    "4df4a78176dd8472e40bde20267610a0ceb9ac331bc39b8552e65f6f0c94776b",
+    ""
+   ],
+   [
+    "health",
+    "outbox",
+    "attention"
+   ],
+   [
+    "outbox",
+    "poison-shape",
+    ""
+   ],
+   [
+    "outbox_control",
+    "relay",
+    ""
+   ],
+   [
+    "outbox_delivery",
+    "poison-shape",
+    "quarantined"
+   ],
+   [
+    "outbox_quarantine",
+    "4df4a78176dd8472e40bde20267610a0ceb9ac331bc39b8552e65f6f0c94776b",
+    ""
+   ]
+  ],
+  "units": [
+   "COMMIT",
+   "COMMIT",
+   "COMMIT"
+  ],
+  "violations": []
+ },
+ "relay_scoped_publish": {
+  "audits": [
+   [
+    "general.message_published",
+    "succeeded",
+    null
+   ]
+  ],
+  "durable_units": 2,
+  "durable_writes": [
+   [
+    "outbox",
+    ""
+   ],
+   [
+    "outbox_attempts",
+    "delivered"
+   ],
+   [
+    "outbox_attempts",
+    "started"
+   ],
+   [
+    "outbox_delivery",
+    "delivered"
+   ],
+   [
+    "outbox_delivery",
+    "publishing"
+   ]
+  ],
+  "effects": [
+   [
+    "bus.publish",
+    1
+   ]
+  ],
+  "outcome": {
+   "value": {
+    "complete": true,
+    "correlation_id": "corr-relay",
+    "error": 0,
+    "examined": 1,
+    "legacy_sent": 0,
+    "limit": 100,
+    "out_of_scope": 0,
+    "published": 1,
+    "quarantined": 0,
+    "quarantined_existing": 0,
+    "remaining": 0,
+    "retry": 0,
+    "skipped": 0,
+    "unfinished": 0
+   }
+  },
+  "published": 1,
+  "rows": [
+   [
+    "outbox",
+    "5eed0000-0000-4000-8000-000000000001",
+    ""
+   ],
+   [
+    "outbox_attempts",
+    "5eed0000-0000-4000-8000-000000000002",
+    "delivered"
+   ],
+   [
+    "outbox_delivery",
+    "5eed0000-0000-4000-8000-000000000001",
+    "delivered"
+   ]
+  ],
+  "units": [
+   "COMMIT",
+   "COMMIT",
+   "COMMIT",
+   "COMMIT"
+  ],
+  "violations": [
+   "effect_inside_unit"
+  ]
+ },
+ "relay_success": {
+  "audits": [],
+  "durable_units": 1,
+  "durable_writes": [
+   [
+    "health",
+    "observed"
+   ]
+  ],
+  "effects": [],
+  "outcome": {
+   "value": {
+    "error": 0,
+    "examined": 0,
+    "legacy_sent": 0,
+    "limit": 100,
+    "published": 0,
+    "quarantined": 0,
+    "quarantined_existing": 0,
+    "retry": 0,
+    "skipped": 0
+   }
+  },
+  "published": 0,
+  "rows": [
+   [
+    "health",
+    "outbox",
+    "observed"
+   ]
+  ],
+  "units": [
+   "COMMIT",
    "COMMIT"
   ],
   "violations": []

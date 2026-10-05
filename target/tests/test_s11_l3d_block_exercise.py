@@ -172,7 +172,9 @@ def test_the_environment_variable_is_the_only_arming_route():
 
 
 # --------------------------------------------------------------------------------------------- the committed artifacts
-FAMILIES = ("effects.admission_unit", "effects.decision_unit")
+FAMILIES = ("effects.admission_unit", "effects.decision_unit",
+            # S11 R-L3d (owner, int57): the .pg variants' blocks artifacts, recorded on the disposable PostgreSQL
+            "effects.admission_unit.pg", "effects.decision_unit.pg")
 REFERENCE = ROOT / "compare/goldens/reference"
 
 
@@ -214,5 +216,10 @@ def test_the_committed_exercise_entries_satisfy_the_rule_against_the_committed_r
             assert e["writes_observed"] and set(e["writes_observed"]) <= set(literal) & eut.observed_buckets(golden[e["case"]])
         else:
             assert e["writes_observed"] is None
-    pg = [e for e in table if e["family"].endswith(".pg") and e.get("basis")]
-    assert pg == []  # the `.pg` blocks artifacts are recorded by the owner at integration
+    # S11 R-L3d (owner, int57): the owner recorded the `.pg` blocks artifacts on the disposable PostgreSQL; each `.pg`
+    # family joins exactly what its memory-backend twin joins
+    pg = {(e["family"].removesuffix(".pg"), e["golden_unit"], e["atomic_unit"], e["case"])
+          for e in table if e["family"].endswith(".pg") and e.get("basis")}
+    memory = {(e["family"], e["golden_unit"], e["atomic_unit"], e["case"])
+              for e in table if not e["family"].endswith(".pg") and e.get("basis")}
+    assert pg and pg == memory

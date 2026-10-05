@@ -1,0 +1,324 @@
+{
+ "cases": {
+  "admit_a_failure_at_jobs": [
+   "codex_harness.application.fleet:Fleet.admit_one#1"
+  ],
+  "admit_c_again": [
+   "codex_harness.application.fleet:Fleet.admit_one#1"
+  ],
+  "admit_success": [
+   "codex_harness.application.fleet:Fleet.admit_one#1"
+  ],
+  "apply_a_failure_at_recoveries": [
+   "codex_harness.application.execution_recovery:ExecutionRecovery.apply#1",
+   "codex_harness.application.execution_recovery:ExecutionRecovery.apply#2"
+  ],
+  "apply_b_stale_snapshot": [
+   "codex_harness.application.execution_recovery:ExecutionRecovery.apply#1",
+   "codex_harness.application.execution_recovery:ExecutionRecovery.apply#2"
+  ],
+  "apply_c_replay": [
+   "codex_harness.application.execution_recovery:ExecutionRecovery.apply#1"
+  ],
+  "apply_evidence_lost": [
+   "codex_harness.application.execution_recovery:ExecutionRecovery.apply#1"
+  ],
+  "apply_expired_packet": [
+   "codex_harness.application.execution_recovery:ExecutionRecovery.apply#1",
+   "codex_harness.application.execution_recovery:ExecutionRecovery.apply#2"
+  ],
+  "apply_success": [
+   "codex_harness.application.execution_recovery:ExecutionRecovery.apply#1",
+   "codex_harness.application.execution_recovery:ExecutionRecovery.apply#2"
+  ],
+  "apply_wrong_role": [],
+  "authorize_budget_a_failure_at_control": [
+   "codex_harness.application.fleet:Fleet.authorize_budget#1"
+  ],
+  "authorize_budget_c_replay": [
+   "codex_harness.application.fleet:Fleet.authorize_budget#1"
+  ],
+  "authorize_budget_success": [
+   "codex_harness.application.fleet:Fleet.authorize_budget#1"
+  ],
+  "cancel_a_failure_at_outbox": [
+   "codex_harness.application.workflow:Workflow.cancel#1"
+  ],
+  "cancel_a_failure_at_tasks": [
+   "codex_harness.application.workflow:Workflow.cancel#1"
+  ],
+  "cancel_c_repeat": [
+   "codex_harness.application.workflow:Workflow.cancel#1"
+  ],
+  "cancel_no_reason": [
+   "codex_harness.application.workflow:Workflow.cancel#1"
+  ],
+  "cancel_success": [
+   "codex_harness.application.workflow:Workflow.cancel#1"
+  ],
+  "cancel_unauthorized": [
+   "codex_harness.application.workflow:Workflow.cancel#1"
+  ],
+  "claim_a_failure_at_outbox": [
+   "codex_harness.application.operation:Operation.claim#1",
+   "codex_harness.application.operation:Operation.claim#2"
+  ],
+  "claim_c_replay": [
+   "codex_harness.application.operation:Operation.claim#1",
+   "codex_harness.application.operation:Operation.claim#2"
+  ],
+  "claim_success": [
+   "codex_harness.application.operation:Operation.claim#1",
+   "codex_harness.application.operation:Operation.claim#2"
+  ],
+  "complete_a_failure_in_accept": [
+   "codex_harness.application.workflow:Workflow._execution_transaction#1"
+  ],
+  "complete_b_stale_fence": [
+   "codex_harness.application.workflow:Workflow._execution_transaction#1"
+  ],
+  "complete_success": [
+   "codex_harness.application.workflow:Workflow._execution_transaction#1"
+  ],
+  "d_depths": [
+   "codex_harness.application.local_cycle:LocalCycle._candidate#1",
+   "codex_harness.application.local_cycle:LocalCycle._settle#1",
+   "codex_harness.application.local_cycle:LocalCycle.status#1",
+   "codex_harness.application.local_cycle:LocalCycle.step#1",
+   "codex_harness.application.outbox:relay#2",
+   "codex_harness.application.outbox:relay#3",
+   "codex_harness.application.outbox:relay#4",
+   "codex_harness.application.outbox:relay#5",
+   "codex_harness.application.workflow:Workflow._execution_transaction#1",
+   "codex_harness.application.workflow:Workflow.claim#1"
+  ],
+  "enqueue_a_failure_at_jobs": [
+   "codex_harness.application.fleet:Fleet.enqueue#1"
+  ],
+  "enqueue_c_replay": [
+   "codex_harness.application.fleet:Fleet.enqueue#1"
+  ],
+  "enqueue_dependency_missing": [
+   "codex_harness.application.fleet:Fleet.enqueue#1"
+  ],
+  "enqueue_success": [
+   "codex_harness.application.fleet:Fleet.enqueue#1"
+  ],
+  "evidence_gate_binding_mismatch": [
+   "codex_harness.application.operation:Operation.evidence_gate#1"
+  ],
+  "evidence_gate_c_repeat": [
+   "codex_harness.application.operation:Operation.evidence_gate#1"
+  ],
+  "evidence_gate_decision_mismatch": [
+   "codex_harness.application.operation:Operation.evidence_gate#1"
+  ],
+  "evidence_gate_inspection_missing": [
+   "codex_harness.application.operation:Operation.evidence_gate#1"
+  ],
+  "evidence_gate_inspection_not_all_checked": [
+   "codex_harness.application.operation:Operation.evidence_gate#1"
+  ],
+  "evidence_gate_success": [
+   "codex_harness.application.operation:Operation.evidence_gate#1"
+  ],
+  "finalize_b_stale_token": [
+   "codex_harness.application.fleet:Fleet.finalize#1"
+  ],
+  "finalize_success": [
+   "codex_harness.application.fleet:Fleet.finalize#1"
+  ],
+  "handle_a_failure_at_inbox": [
+   "codex_harness.application.workflow:Workflow.handle#2"
+  ],
+  "handle_c_replay": [
+   "codex_harness.application.workflow:Workflow.handle#2"
+  ],
+  "handle_success": [
+   "codex_harness.application.workflow:Workflow.handle#2"
+  ],
+  "migrate_host_a_failure_at_registry": [
+   "codex_harness.application.fleet:Fleet.migrate_host#1",
+   "codex_harness.application.fleet:Fleet.migrate_host#2"
+  ],
+  "migrate_host_b_stale_digest": [
+   "codex_harness.application.fleet:Fleet.migrate_host#1",
+   "codex_harness.application.fleet:Fleet.migrate_host#2"
+  ],
+  "migrate_host_c_replay": [
+   "codex_harness.application.fleet:Fleet.migrate_host#1"
+  ],
+  "migrate_host_conflict": [
+   "codex_harness.application.fleet:Fleet.migrate_host#1"
+  ],
+  "migrate_host_incomplete_lanes": [
+   "codex_harness.application.fleet:Fleet.migrate_host#1",
+   "codex_harness.application.fleet:Fleet.migrate_host#2"
+  ],
+  "migrate_host_not_paused": [
+   "codex_harness.application.fleet:Fleet.migrate_host#1",
+   "codex_harness.application.fleet:Fleet.migrate_host#2"
+  ],
+  "migrate_host_success": [
+   "codex_harness.application.fleet:Fleet.migrate_host#1",
+   "codex_harness.application.fleet:Fleet.migrate_host#2"
+  ],
+  "parkable_c_repeat": [
+   "codex_harness.application.operation_finalization:parkable#1"
+  ],
+  "parkable_foreign_correlation": [
+   "codex_harness.application.operation_finalization:parkable#1"
+  ],
+  "parkable_foreign_recipient": [],
+  "parkable_owner_not_terminal": [
+   "codex_harness.application.operation_finalization:parkable#1"
+  ],
+  "parkable_success": [
+   "codex_harness.application.operation_finalization:parkable#1"
+  ],
+  "parkable_unparkable_type": [],
+  "prepare_b_unrelated_state": [
+   "codex_harness.application.execution_recovery:ExecutionRecovery.prepare#1"
+  ],
+  "prepare_c_repeat": [
+   "codex_harness.application.execution_recovery:ExecutionRecovery.prepare#1"
+  ],
+  "prepare_ceiling_not_above_attempts": [
+   "codex_harness.application.execution_recovery:ExecutionRecovery.prepare#1"
+  ],
+  "prepare_no_reason": [],
+  "prepare_past_deadline": [],
+  "prepare_success": [
+   "codex_harness.application.execution_recovery:ExecutionRecovery.prepare#1"
+  ],
+  "prepare_wrong_role": [],
+  "reconcile_interrupted_a_failure_at_jobs": [
+   "codex_harness.application.fleet:Fleet._recovery_replay#1",
+   "codex_harness.application.fleet:Fleet.reconcile_interrupted#1"
+  ],
+  "reconcile_interrupted_b_stale_owner": [
+   "codex_harness.application.fleet:Fleet._recovery_replay#1",
+   "codex_harness.application.fleet:Fleet.reconcile_interrupted#1"
+  ],
+  "reconcile_interrupted_c_replay": [
+   "codex_harness.application.fleet:Fleet._recovery_replay#1"
+  ],
+  "reconcile_interrupted_not_paused": [
+   "codex_harness.application.fleet:Fleet._recovery_replay#1",
+   "codex_harness.application.fleet:Fleet.reconcile_interrupted#1"
+  ],
+  "reconcile_interrupted_proof_changed": [
+   "codex_harness.application.fleet:Fleet._recovery_replay#1",
+   "codex_harness.application.fleet:Fleet.reconcile_interrupted#1"
+  ],
+  "reconcile_interrupted_success": [
+   "codex_harness.application.fleet:Fleet._recovery_replay#1",
+   "codex_harness.application.fleet:Fleet.reconcile_interrupted#1"
+  ],
+  "register_a_failure_at_control": [
+   "codex_harness.application.fleet:Fleet.register#1"
+  ],
+  "register_c_replay": [
+   "codex_harness.application.fleet:Fleet.register#1"
+  ],
+  "register_conflict": [
+   "codex_harness.application.fleet:Fleet.register#1"
+  ],
+  "register_success": [
+   "codex_harness.application.fleet:Fleet.register#1"
+  ],
+  "registered_c_repeat": [
+   "codex_harness.application.fleet:Fleet.registered#1"
+  ],
+  "registered_success": [
+   "codex_harness.application.fleet:Fleet.registered#1"
+  ],
+  "registered_unregistered": [
+   "codex_harness.application.fleet:Fleet.registered#1"
+  ],
+  "relay_a_failure_at_health": [
+   "codex_harness.application.outbox:relay#1",
+   "codex_harness.application.outbox:relay#6"
+  ],
+  "relay_c_replay": [
+   "codex_harness.application.outbox:relay#1",
+   "codex_harness.application.outbox:relay#3",
+   "codex_harness.application.outbox:relay#6"
+  ],
+  "relay_d_publish_depth": [
+   "codex_harness.application.outbox:relay#1",
+   "codex_harness.application.outbox:relay#3",
+   "codex_harness.application.outbox:relay#4",
+   "codex_harness.application.outbox:relay#6"
+  ],
+  "relay_poison_record": [
+   "codex_harness.application.outbox:relay#1",
+   "codex_harness.application.outbox:relay#3",
+   "codex_harness.application.outbox:relay#6"
+  ],
+  "relay_scoped_publish": [
+   "codex_harness.application.outbox:relay#2",
+   "codex_harness.application.outbox:relay#3",
+   "codex_harness.application.outbox:relay#4",
+   "codex_harness.application.outbox:relay#5"
+  ],
+  "relay_success": [
+   "codex_harness.application.outbox:relay#1",
+   "codex_harness.application.outbox:relay#6"
+  ],
+  "relocate_a_failure_at_registry": [
+   "codex_harness.application.fleet:Fleet._relocation_replay#1",
+   "codex_harness.application.fleet:Fleet.relocate#1"
+  ],
+  "relocate_b_stale_digest": [
+   "codex_harness.application.fleet:Fleet._relocation_replay#1",
+   "codex_harness.application.fleet:Fleet.relocate#1"
+  ],
+  "relocate_c_replay": [
+   "codex_harness.application.fleet:Fleet._relocation_replay#1"
+  ],
+  "relocate_conflict": [
+   "codex_harness.application.fleet:Fleet._relocation_replay#1"
+  ],
+  "relocate_not_paused": [
+   "codex_harness.application.fleet:Fleet._relocation_replay#1",
+   "codex_harness.application.fleet:Fleet.relocate#1"
+  ],
+  "relocate_success": [
+   "codex_harness.application.fleet:Fleet._relocation_replay#1",
+   "codex_harness.application.fleet:Fleet.relocate#1"
+  ],
+  "reserve_unit_a_failure_at_units": [
+   "codex_harness.application.fleet:Fleet.reserve_unit#1"
+  ],
+  "reserve_unit_c_replay": [
+   "codex_harness.application.fleet:Fleet.reserve_unit#1"
+  ],
+  "reserve_unit_success": [
+   "codex_harness.application.fleet:Fleet.reserve_unit#1"
+  ],
+  "settle_unit_a_failure_at_units": [
+   "codex_harness.application.fleet:Fleet.settle_unit#1"
+  ],
+  "settle_unit_b_stale_token": [
+   "codex_harness.application.fleet:Fleet.settle_unit#1"
+  ],
+  "settle_unit_c_replay": [
+   "codex_harness.application.fleet:Fleet.settle_unit#1"
+  ],
+  "settle_unit_success": [
+   "codex_harness.application.fleet:Fleet.settle_unit#1"
+  ],
+  "status_c_repeat": [
+   "codex_harness.application.fleet:Fleet.status#1"
+  ],
+  "status_success": [
+   "codex_harness.application.fleet:Fleet.status#1"
+  ],
+  "status_unregistered": [
+   "codex_harness.application.fleet:Fleet.status#1"
+  ]
+ },
+ "family": "effects.admission_unit.pg",
+ "schema": "zeus:s11-block-exercise:1"
+}
