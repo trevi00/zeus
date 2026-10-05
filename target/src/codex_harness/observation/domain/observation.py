@@ -6,7 +6,7 @@ Owns: the observation event contract (M7 `domain/observation.py`, moved ahead in
     Option A, the Observer write path RunTask/ReviewDecisions need); S9 verifies the schema/collector side
 Does not own: the analysis projection (ANALYSIS_*, ARTIFACT_REFERENCE, safe_code, analysis_facts:
     `kernel.analysis`, imported here so this module still exposes them) and REASON_CODE (`kernel.ports`)
-Entry points: build_event, content_hash, execution_identity, lease_identity, redact_text, redact_value,
+Entry points: build_event, content_hash, execution_identity, lease_identity, redact_credential_shapes, redact_text, redact_value,
     opaque_identifier, check_attributes, REGISTRY
 Contracts: INV-OBSERVATION-001
 
@@ -332,6 +332,19 @@ def redact_text(text: str) -> tuple[str, int]:
     text = sub(_BEARER, "Bearer [REDACTED token]", text)
     text = sub(_ASSIGNED_SECRET, r"\1\2[REDACTED credential]", text)
     text = sub(_TOKEN_SHAPES, "[REDACTED token]", text)
+    return text, count
+
+
+def redact_credential_shapes(text: str) -> tuple[str, int]:
+    """Replace credential-SHAPED spans only (private keys, URL userinfo passwords, bearer tokens, token shapes) with the
+    same patterns `redact_text` uses; the assigned-secret rule is not applied, so prose that merely names a secret
+    ("password reset email", "token budget") is returned byte-identical (S11 XC-2b B3)."""
+    require(type(text) is str, "Only text is redacted")
+    count = 0
+    for pattern, replacement in ((_PRIVATE_KEY, "[REDACTED private_key]"), (_URL_CREDENTIALS, r"\1[REDACTED credential]@"),
+                                 (_BEARER, "Bearer [REDACTED token]"), (_TOKEN_SHAPES, "[REDACTED token]")):
+        text, n = pattern.subn(replacement, text)
+        count += n
     return text, count
 
 
