@@ -1178,6 +1178,7 @@
    ],
    "family": "effects.decision_unit",
    "golden_unit": "decision_unit",
+   "via": "rule6_case",
    "writes_observed": [
     "decisions_pending"
    ]
@@ -1194,6 +1195,7 @@
    ],
    "family": "effects.decision_unit",
    "golden_unit": "decision_unit",
+   "via": "rule6_case",
    "writes_observed": [
     "decisions_pending"
    ]
@@ -1291,6 +1293,7 @@
    ],
    "family": "effects.decision_unit.pg",
    "golden_unit": "decision_unit",
+   "via": "rule6_case",
    "writes_observed": [
     "decisions_pending"
    ]
@@ -1307,6 +1310,7 @@
    ],
    "family": "effects.decision_unit.pg",
    "golden_unit": "decision_unit",
+   "via": "rule6_case",
    "writes_observed": [
     "decisions_pending"
    ]
