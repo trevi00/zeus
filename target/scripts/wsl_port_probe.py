@@ -319,8 +319,8 @@ def residual():
 
 
 def after_fix(rounds=3):
-    from codex_harness.storage.adapters.file_artifacts import FileArtifacts
     from codex_harness.host_os.adapters.verification import VerificationServices
+    from codex_harness.storage.adapters.file_artifacts import FileArtifacts
 
     span = published_ports.window()
     allocator = ephemeral_range()

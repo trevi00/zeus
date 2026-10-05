@@ -2,10 +2,10 @@
 import argparse
 import json
 
-from codex_harness.storage.adapters.file_artifacts import FileArtifacts
+from codex_harness.composition import build
 from codex_harness.research.adapters.reverse_source import observe_source
 from codex_harness.research.application.reverse_progress import STAGES, STATUSES, ReverseProgress
-from codex_harness.composition import build
+from codex_harness.storage.adapters.file_artifacts import FileArtifacts
 
 
 def main():
