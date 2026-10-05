@@ -246,6 +246,17 @@ return redis.call('XADD', KEYS[2], '*', 'body', ARGV[2])
         except RecursionError as exc:
             raise ContractError("body_invalid: nesting too deep") from exc
 
+    def trim_dead_letters(self, ids: list) -> int:
+        """Delete the named dead-letter records (XC-2a B1: the caller decides which; an id already gone counts 0)."""
+        if not isinstance(ids, (list, tuple)) or not all(isinstance(i, str) and i for i in ids):
+            raise ValueError("ids must be a list of dead-letter entry ids")
+        if not ids:
+            return 0
+        try:
+            return int(self.client.xdel(f"{self.namespace}:dead-letter", *ids))
+        except RedisError as exc:
+            raise MessageDeliveryError(type(exc).__name__) from exc
+
     def dead_letters(self, limit: int) -> list:
         """The dead-letter records in stream order, as `(entry_id, fields)`: at most `limit + 1` of them, so a
         caller can tell a backlog over `limit` from one that fits (S10 A5-1b, DESIGN-s10 §17a)."""
