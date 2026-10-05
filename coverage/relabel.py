@@ -7,6 +7,9 @@ Layer: harness (never shipped); standard library only; no product import.
     python coverage/relabel.py --check          # byte equality with the committed ledger (the CI guard)
     python coverage/relabel.py --check-fresh    # --check, and the evidence inputs are unchanged since the bundle head
 
+`coverage/evidence-resolutions.json` (DESIGN-s11 §5.3, R-L6) names, per cited entry, the items that replace one `pending:` item of
+one row; the rows stay frozen and `--check` refuses a malformed, unknown, non-pending or duplicate entry.
+
 The relabel never reads `A/` (the artifact store) and never runs tests. `bundle` is the one command that reads owner
 artifacts: it maps the TI JUnit XML (xunit2) onto the collected node list at the evidence head (L3: classname = dotted
 path without `.py` plus class parts, name = function plus `[params]`) and refuses on any mismatch. No status is
