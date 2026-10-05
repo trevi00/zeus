@@ -407,3 +407,29 @@ def test_a_postgresql_and_redis_family_needs_both_flags_and_gets_both_env_names(
     assert events == []
     run.run(False, False, [], pg=True, redis=True)
     assert events == [("enter", "PG"), ("enter", "RD"), ("reference", "dsn-x", "url-x"), ("exit", "RD"), ("exit", "PG")]
+
+
+def test_target_integration_names_every_failing_node_even_when_skips_fill_the_tail(monkeypatch, tmp_path):
+    """S11 (owner, int57 CI): the report keeps the 15-line tail and adds every FAILED/ERROR summary line, so a failure
+    is named in the CI log however many skip lines follow it; the exit code is the suite's own."""
+    import contextlib
+    import subprocess
+    run = _run_module()
+    fixture = type("F", (), {"dsn": "dsn-x", "url": "url-x"})()
+    monkeypatch.setattr(run, "TARGET_PYTHON", tmp_path)  # exists
+    monkeypatch.setattr(run, "SCRATCH", tmp_path)
+    monkeypatch.setattr(run, "DisposablePostgres", lambda work: contextlib.nullcontext(fixture))
+    monkeypatch.setattr(run, "DisposableRedis", lambda work: contextlib.nullcontext(fixture))
+    monkeypatch.setattr(run.provider_guard, "child_environment", lambda path, extra: dict(extra))
+    out = ["FAILED tests/test_x.py::test_one - AssertionError", "ERROR tests/test_y.py::test_two - RuntimeError",
+           *[f"SKIPPED [1] tests/test_s.py:{n}: gated" for n in range(30)], "1 failed, 1 error, 9 passed, 30 skipped"]
+    seen = []
+
+    def fake_run(argv, **kwargs):
+        seen.append(argv)
+        return subprocess.CompletedProcess(argv, 1, stdout="\n".join(out) + "\n", stderr="")
+    monkeypatch.setattr(run.subprocess, "run", fake_run)
+    report = run.target_integration()
+    assert "-rfEs" in seen[0]
+    assert report["exit_code"] == 1 and report["summary"] == out[-1] and len(report["tail"]) == 15
+    assert report["failures"] == out[:2]

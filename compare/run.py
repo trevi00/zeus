@@ -598,11 +598,15 @@ def target_integration() -> dict:
         with DisposablePostgres(work) as database, DisposableRedis(work) as redis_fixture:
             env = provider_guard.child_environment(work / "env", extra={
                 "HARNESS_INTEGRATION": "1", "ZEUS_TEST_DSN": database.dsn, "HARNESS_REDIS_URL": redis_fixture.url})
-            done = subprocess.run([str(TARGET_PYTHON), "-m", "pytest", "-q", "-p", "no:cacheprovider", "-rs",
+            done = subprocess.run([str(TARGET_PYTHON), "-m", "pytest", "-q", "-p", "no:cacheprovider", "-rfEs",
                                    "--basetemp", str(work / "pytest")], cwd=str(ROOT / "target"), env=env,
                                   capture_output=True, text=True, timeout=1800)
-    tail = done.stdout.strip().splitlines()[-15:]
-    return {"exit_code": done.returncode, "summary": tail[-1] if tail else "", "tail": tail}
+    lines = done.stdout.strip().splitlines()
+    tail = lines[-15:]
+    # S11 (owner, int57 CI): the 15-line tail is all skip lines, so a failing node was never named in the CI log;
+    # every FAILED/ERROR summary line is reported in full (observation only: the exit code is unchanged)
+    failures = [line for line in lines if line.startswith(("FAILED ", "ERROR "))]
+    return {"exit_code": done.returncode, "summary": tail[-1] if tail else "", "failures": failures, "tail": tail}
 
 
 def docker_fixture() -> dict:
