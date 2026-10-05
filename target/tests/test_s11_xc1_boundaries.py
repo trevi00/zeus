@@ -107,3 +107,34 @@ def test_a_validation_failure_names_the_field_path_and_the_rule_but_never_the_of
 def test_a_reason_that_names_no_value_is_unchanged():
     with pytest.raises(Exception, match=r"^\[\]: 'who' is a required property$"):
         RedisBus.decode({"body": json.dumps({k: v for k, v in MESSAGE.items() if k != "who"})})
+
+
+def test_a_failing_codex_exec_prints_its_error_without_the_provider_stderr_token(monkeypatch, capsys):
+    """A3: the COMPOSED runtime (`composition.cli.codex_runtime`, what `zeus canary --live` builds) runs a fake
+    `codex` that exits 1 with a credential-shaped stderr. The printed error keeps its shape and exit code
+    (`{"error": "Codex execution failed (exit=1): ..."}`, exit 1) but not the token. M7 printed the raw tail:
+    a documented bug, not a compatibility requirement (REBUILD-DESIGN-v2 rule)."""
+    from types import SimpleNamespace
+
+    from codex_harness.composition import cli as composition_cli
+    from codex_harness.execution.adapters.providers import codex_exec
+
+    secret = "sk-ant-api03-" + "A1b2C3d4" * 6
+    stderr = f"auth failed for Authorization: Bearer {secret} please retry"
+
+    def fake_codex(argv, **kwargs):
+        if argv[1:] == ["--version"]:
+            return SimpleNamespace(returncode=0, stdout="codex 0.0\n", stderr="")
+        return SimpleNamespace(returncode=1, stdout="", stderr=stderr)
+
+    monkeypatch.setattr(codex_exec, "resolve_codex", lambda: "fake-codex")
+    monkeypatch.setattr(composition_cli, "run_process", fake_codex)
+    monkeypatch.setattr(sys, "argv", ["zeus", "canary", "--live"])
+    with pytest.raises(SystemExit) as caught:
+        cli.main()
+    captured = capsys.readouterr()
+    assert caught.value.code == 1
+    error = json.loads(captured.err)["error"]
+    assert error.startswith("Codex execution failed (exit=1): ")
+    assert secret not in captured.err + captured.out
+    assert "auth failed" in error
