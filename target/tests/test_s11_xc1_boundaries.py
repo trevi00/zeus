@@ -138,3 +138,38 @@ def test_a_failing_codex_exec_prints_its_error_without_the_provider_stderr_token
     assert error.startswith("Codex execution failed (exit=1): ")
     assert secret not in captured.err + captured.out
     assert "auth failed" in error
+
+
+def test_an_idle_viewer_connection_is_closed_by_the_server_and_requests_still_work(tmp_path):
+    """A4: a loopback viewer (production handler, default timeout) closes a connection that sends nothing, within
+    the desk POST read timeout (5 s, `entry/http/desk.py` READ_TIMEOUT_SECONDS) plus a margin; M7 held the thread
+    forever on GETs (documented bug, not a compatibility requirement). A normal GET still answers."""
+    import socket
+    from http.client import HTTPConnection
+    from http.server import ThreadingHTTPServer
+    from threading import Thread
+
+    from codex_harness.observation.adapters import viewer_http
+
+    snapshot = tmp_path / "monitoring.json"
+    snapshot.write_text('{"sources": {}}')
+    server = ThreadingHTTPServer(("127.0.0.1", 0), viewer_http.handler(snapshot))
+    server.daemon_threads = True
+    Thread(target=server.serve_forever, daemon=True).start()
+    try:
+        idle = socket.create_connection(("127.0.0.1", server.server_port))
+        idle.settimeout(8)
+        try:
+            assert idle.recv(1) == b"", "the server must close the idle connection"
+        except socket.timeout:
+            pytest.fail("the idle connection was still open after 8 s")
+        finally:
+            idle.close()
+        connection = HTTPConnection("127.0.0.1", server.server_port, timeout=5)
+        connection.request("GET", "/health")
+        response = connection.getresponse()
+        assert response.status == 200 and b"harness-monitor" in response.read()
+        connection.close()
+    finally:
+        server.shutdown()
+        server.server_close()
