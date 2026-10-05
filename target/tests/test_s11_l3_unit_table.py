@@ -117,7 +117,7 @@ def test_every_entry_has_its_driver_call_a_catalogue_block_and_a_rule6_case(tabl
     catalogue = {u["key"]: u for u in json.loads(
         (ROOT / eut.CATALOGUE).read_text(encoding="utf-8"))["transaction_blocks"]["units"]}
     assert table["entries"]
-    for e in table["entries"]:
+    for e in (e for e in table["entries"] if e.get("basis") is None):  # S11 R-L3d-1: rules 1-3 entries; the block_exercise ones are pinned in test_s11_l3d_block_exercise.py
         assert e["atomic_unit"] in catalogue and e["block"] == "#" + e["atomic_unit"].rsplit("#", 1)[1], e
         assert e["cases"] and set(e["cases"]) <= set("abcd"), e
         path, _, line = e["driver_call"].rpartition(":")

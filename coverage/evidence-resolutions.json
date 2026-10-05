@@ -1,6 +1,24 @@
 {
  "resolutions": [
   {
+   "key": "atomic_unit:codex_harness.adapters.executor:Executor._fail_decision#1",
+   "pending": "pending: recorder confirmation in the owning slice",
+   "replaced_by": [
+    "compare:effects.decision_unit"
+   ],
+   "rule": "G1",
+   "citation": "coverage/effects-unit-table.json#effects.decision_unit/decision_unit"
+  },
+  {
+   "key": "atomic_unit:codex_harness.adapters.executor:Executor.decide_one#1",
+   "pending": "pending: recorder confirmation in the owning slice",
+   "replaced_by": [
+    "compare:effects.decision_unit"
+   ],
+   "rule": "G1",
+   "citation": "coverage/effects-unit-table.json#effects.decision_unit/decision_unit"
+  },
+  {
    "key": "atomic_unit:codex_harness.application.continuation:Continuation.accept_research#1",
    "pending": "pending: recorder confirmation in the owning slice",
    "replaced_by": [
@@ -18,6 +36,24 @@
    ],
    "rule": "G1",
    "citation": "coverage/effects-unit-table.json#effects.admission_unit/prepare"
+  },
+  {
+   "key": "atomic_unit:codex_harness.application.fleet:Fleet._recovery_replay#1",
+   "pending": "pending: recorder confirmation in the owning slice",
+   "replaced_by": [
+    "compare:effects.admission_unit"
+   ],
+   "rule": "G1",
+   "citation": "coverage/effects-unit-table.json#effects.admission_unit/reconcile_interrupted"
+  },
+  {
+   "key": "atomic_unit:codex_harness.application.fleet:Fleet._relocation_replay#1",
+   "pending": "pending: recorder confirmation in the owning slice",
+   "replaced_by": [
+    "compare:effects.admission_unit"
+   ],
+   "rule": "G1",
+   "citation": "coverage/effects-unit-table.json#effects.admission_unit/relocate"
   },
   {
    "key": "atomic_unit:codex_harness.application.fleet:Fleet.authorize_budget#1",
@@ -128,6 +164,42 @@
    ],
    "rule": "G1",
    "citation": "coverage/effects-unit-table.json#effects.admission_unit/parkable; coverage/effects-unit-table.json#effects.admission_unit.pg/parkable"
+  },
+  {
+   "key": "atomic_unit:codex_harness.application.outbox:relay#2",
+   "pending": "pending: recorder confirmation in the owning slice",
+   "replaced_by": [
+    "compare:effects.admission_unit"
+   ],
+   "rule": "G1",
+   "citation": "coverage/effects-unit-table.json#effects.admission_unit/depths"
+  },
+  {
+   "key": "atomic_unit:codex_harness.application.outbox:relay#3",
+   "pending": "pending: recorder confirmation in the owning slice",
+   "replaced_by": [
+    "compare:effects.admission_unit"
+   ],
+   "rule": "G1",
+   "citation": "coverage/effects-unit-table.json#effects.admission_unit/depths"
+  },
+  {
+   "key": "atomic_unit:codex_harness.application.outbox:relay#4",
+   "pending": "pending: recorder confirmation in the owning slice",
+   "replaced_by": [
+    "compare:effects.admission_unit"
+   ],
+   "rule": "G1",
+   "citation": "coverage/effects-unit-table.json#effects.admission_unit/depths"
+  },
+  {
+   "key": "atomic_unit:codex_harness.application.outbox:relay#5",
+   "pending": "pending: recorder confirmation in the owning slice",
+   "replaced_by": [
+    "compare:effects.admission_unit"
+   ],
+   "rule": "G1",
+   "citation": "coverage/effects-unit-table.json#effects.admission_unit/depths"
   },
   {
    "key": "atomic_unit:codex_harness.application.outbox:relay#6",
