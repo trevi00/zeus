@@ -5,7 +5,7 @@ is M7's, unchanged. Adaptations, all import and construction (the `m7_review` sh
 `storage.adapters.postgres_store`, `VerificationServices` is `host_os.adapters.verification`, `FileArtifacts` the storage
 adapter, `ContractError` the kernel's. The child worker's SOURCE text imports the same target names, and `launch` puts this
 directory on the child's `PYTHONPATH` so the child can import the shim. The host-cycle probe case runs
-`scripts/host_cycle.py`, the host composition script (S10), and is kept whole under a skip; the other cases keep M7's own
+`scripts/host_cycle.py`, ported at S11 (R-S4: it needs no Windows host, so it runs where PostgreSQL does); the other cases keep M7's own
 gates (a disposable PostgreSQL, `ZEUS_TEST_DOCKER`).
 """
 import ctypes
@@ -287,12 +287,13 @@ def test_postgres_outage_cannot_extend_durable_deadline(disposable_service, tmp_
              'retained_container_id':original_container})
 
 
-@pytest.mark.skip(reason="S11 (PREP-S11 §9 #3): scripts/host_cycle.py imports absent M7 codex_harness.adapters.artifacts; root-script disposition pending")
 def test_host_probe_never_falls_back_to_public_tasks(disposable_service, monkeypatch):
     _, store = disposable_service
     monkeypatch.setenv('ZEUS_DATABASE_URL', store.dsn)
     monkeypatch.setenv('HARNESS_DATABASE_URL', store.dsn)
-    api = runpy.run_path(str(Path(__file__).resolve().parents[3]/'scripts/host_cycle.py'))
+    # S11 R-S1/R-S4: the ported host_cycle at PROJECT/scripts (target/ now, the repository root after the promotion)
+    PROJECT = next(p for p in Path(__file__).resolve().parents if (p / 'src' / 'codex_harness').is_dir())
+    api = runpy.run_path(str(PROJECT/'scripts/host_cycle.py'))
     public = Workflow(store, organization())
     public.submit(assignment())  # Canary in this disposable database, never the real ledger.
     with store.transaction() as tx:
