@@ -621,19 +621,24 @@ def docker_fixture() -> dict:
 OWNER_DOCKER_SKIP_MARKERS = ("Explicit disposable Docker", "Two disposable PostgreSQL 17 + pgvector")
 
 
-def _owner_pytest(env: dict, work: Path, files: list[str], timeout: int) -> dict:
+def _owner_pytest(env: dict, work: Path, files: list[str], timeout: int, junit: str | None = None) -> dict:
+    # S11 RH-1: `--junit PATH` keeps a per-node JUnit of the owner run, which `relabel.py bundle --junit` merges (R-L2f)
+    junit = str(Path(junit).resolve()) if junit else None  # pytest runs in target/: a relative path would move
     done = subprocess.run([str(TARGET_PYTHON), "-m", "pytest", "-q", "-p", "no:cacheprovider", "-rs",
-                           "--basetemp", str(work / "pytest"), *files],
+                           "--basetemp", str(work / "pytest"), *(["--junitxml", junit] if junit else []), *files],
                           cwd=str(ROOT / "target"), env=env, capture_output=True, text=True, timeout=timeout)
     lines = done.stdout.strip().splitlines()
     summary = lines[-1] if lines else ""
     missed = [line for line in lines if line.startswith("SKIPPED") and any(m in line for m in OWNER_DOCKER_SKIP_MARKERS)]
     ok = done.returncode == 0 and " passed" in summary and not missed
-    return {"exit_code": 0 if ok else (done.returncode or 1), "summary": summary,
-            "skipped": [line for line in lines if line.startswith("SKIPPED")], "tail": lines[-15:]}
+    report = {"exit_code": 0 if ok else (done.returncode or 1), "summary": summary,
+              "skipped": [line for line in lines if line.startswith("SKIPPED")], "tail": lines[-15:]}
+    if junit:
+        report["junit"] = junit
+    return report
 
 
-def verify_stack() -> dict:
+def verify_stack(junit: str | None = None) -> dict:
     """The ported VerificationServices Docker tests on real disposable compose stacks, under the guard with the
     fixture opt-in plus `ZEUS_TEST_DOCKER_VERIFY_STACK` (exactly the stack's admitted forms; provider_guard.py)."""
     if not TARGET_PYTHON.exists():
@@ -645,10 +650,10 @@ def verify_stack() -> dict:
             provider_guard.DOCKER_OPT_IN_ENV: "1", provider_guard.DOCKER_VERIFY_STACK_ENV: "1"})
         (work / "env" / "fakebin" / "docker").unlink()
         return _owner_pytest(env, work, ["tests/ported/test_verification.py", "tests/ported/test_host_interruption.py"],
-                             2400)
+                             2400, junit)
 
 
-def migration_rehearsal() -> dict:
+def migration_rehearsal(junit: str | None = None) -> dict:
     """The ported PostgreSQL migration rehearsal on the `disposable-postgresql-pair` fixture (PostgresPair), under the
     guard with only its `docker exec` pg tool forms (DOCKER_PGEXEC), as the restore.pg families run."""
     if not TARGET_PYTHON.exists():
@@ -666,7 +671,7 @@ def migration_rehearsal() -> dict:
                 "ZEUS_MIGRATION_TEST_PG_TARGET_SOCKET": str(pair.target.socket),
                 provider_guard.DOCKER_OPT_IN_ENV: "1", provider_guard.DOCKER_PGEXEC_ENV: "1"})
             (work / "env" / "fakebin" / "docker").unlink(missing_ok=True)
-            return _owner_pytest(env, work, ["tests/ported/test_host_migration_pg_rehearsal.py"], 1500)
+            return _owner_pytest(env, work, ["tests/ported/test_host_migration_pg_rehearsal.py"], 1500, junit)
 
 
 def wheel_check(wheel: str, ref: str = "HEAD") -> dict:
@@ -707,8 +712,8 @@ def main(argv=None) -> int:
     sub.add_parser("prepare")
     sub.add_parser("target-integration")
     sub.add_parser("docker-fixture")
-    sub.add_parser("verify-stack")
-    sub.add_parser("migration-rehearsal")
+    for owner_cmd in ("verify-stack", "migration-rehearsal"):  # S11 RH-1
+        sub.add_parser(owner_cmd).add_argument("--junit", help="also write the pytest per-node JUnit to this path")
     wheel_cmd = sub.add_parser("wheel-check")
     wheel_cmd.add_argument("wheel")
     run_cmd = sub.add_parser("run")
@@ -727,10 +732,10 @@ def main(argv=None) -> int:
         report = docker_fixture()
         ok = report.get("exit_code") == 0
     elif args.command == "verify-stack":
-        report = verify_stack()
+        report = verify_stack(args.junit)
         ok = report.get("exit_code") == 0
     elif args.command == "migration-rehearsal":
-        report = migration_rehearsal()
+        report = migration_rehearsal(args.junit)
         ok = report.get("exit_code") == 0
     elif args.command == "wheel-check":
         report = wheel_check(args.wheel)

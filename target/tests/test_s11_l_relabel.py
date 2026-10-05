@@ -112,9 +112,9 @@ def test_the_junit_mangling_maps_nodes_to_classname_and_name():
     assert relabel.mangle("tests/test_x.py::TestC::test_m[a::b-1]") == ("tests.test_x.TestC", "test_m[a::b-1]")
 
 
-def junit(tmp_path, *cases):
+def junit(tmp_path, *cases, name="j.xml"):
     body = "".join(f'<testcase classname="{c}" name="{n}" time="0.0">{child}</testcase>' for c, n, child in cases)
-    path = tmp_path / "j.xml"
+    path = tmp_path / name
     path.write_text(f'<?xml version="1.0"?><testsuites><testsuite name="pytest">{body}</testsuite></testsuites>',
                     encoding="utf-8")
     return path
@@ -171,6 +171,60 @@ def test_the_bundle_records_the_outcomes_ids_and_compare_reports(tree, tmp_path)
     assert doc["compare"]["fam"]["target"] == "equal" and set(doc["ids"]) == {
         "target/src", "compare", "target/pyproject.toml", "target/uv.lock"}
     assert "target/tests/conftest.py" in doc["support"] and "target/tests/test_a.py" in doc["test_modules"]
+
+
+# S11 RH-1 (R-L2f, R-L2c): several same-head JUnits merge per node; the owner run may cover a subset.
+SKIP = '<skipped type="pytest.skip"/>'
+OWNER_NODE = ("tests.test_a", "test_two")  # skipped in CASES (the TI)
+
+
+def merged_bundle(tree, tmp_path, owner_cases, ti_cases=CASES):
+    if not (tree / ".git").exists():
+        git_repo(tree)
+    report = tmp_path / "c.json"
+    report.write_text(json.dumps({"ok": True, "scenarios": {}}))
+    paths = [junit(tmp_path, *ti_cases), junit(tmp_path, *owner_cases, name="owner.xml")]
+    return relabel.build_bundle(tree, paths, [report], [], "HEAD", list(COLLECTED)), paths
+
+
+def test_a_node_skipped_in_the_ti_and_passed_in_the_owner_run_is_passed_and_counted(tree, tmp_path):
+    doc, paths = merged_bundle(tree, tmp_path, [(*OWNER_NODE, "")])
+    assert doc["not_passed"] == {}
+    assert list(doc["junit_upgrades"].values()) == [0, 1]
+    assert {relabel.sha256_file(p) for p in paths} <= set(doc["inputs"].values())
+
+
+def test_a_node_failed_in_the_owner_run_is_failed_even_when_the_ti_passed(tree, tmp_path):
+    doc, _ = merged_bundle(tree, tmp_path, [("tests.test_b", "test_other", '<failure message="f"/>')])
+    assert doc["not_passed"] == {"tests/test_a.py::test_two": "skipped", "tests/test_b.py::test_other": "failure"}
+    assert list(doc["junit_upgrades"].values()) == [0, 0]
+
+
+def test_a_node_skipped_in_both_runs_stays_skipped(tree, tmp_path):
+    doc, _ = merged_bundle(tree, tmp_path, [(*OWNER_NODE, SKIP)])
+    assert doc["not_passed"] == {"tests/test_a.py::test_two": "skipped"}
+    assert list(doc["junit_upgrades"].values()) == [0, 0]
+
+
+def test_a_failure_in_the_ti_is_not_rescued_by_an_owner_pass(tree, tmp_path):
+    ti = [(*OWNER_NODE, '<error message="e"/>') if c[:2] == OWNER_NODE else c for c in CASES]
+    doc, _ = merged_bundle(tree, tmp_path, [(*OWNER_NODE, "")], ti)
+    assert doc["not_passed"] == {"tests/test_a.py::test_two": "error"}
+
+
+def test_an_owner_run_naming_an_uncollected_node_refuses_the_bundle(tree, tmp_path):
+    with pytest.raises(relabel.Refused, match="matches no collected node"):
+        merged_bundle(tree, tmp_path, [("tests.test_b", "test_ghost", "")])
+
+
+def test_a_single_junit_bundle_is_the_same_whether_given_as_a_path_or_a_list(tree, tmp_path):
+    git_repo(tree)
+    report = tmp_path / "c.json"
+    report.write_text(json.dumps({"ok": True, "scenarios": {}}))
+    path = junit(tmp_path, *CASES)
+    one = relabel.build_bundle(tree, path, [report], [], "HEAD", list(COLLECTED))
+    listed = relabel.build_bundle(tree, [path], [report], [], "HEAD", list(COLLECTED))
+    assert relabel.dump_json(one) == relabel.dump_json(listed) and "junit_upgrades" not in one
 
 
 def test_an_unmatched_testcase_refuses_the_bundle(tree, tmp_path):

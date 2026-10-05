@@ -292,7 +292,30 @@ def build_exercise(root: Path, path: Path, nodes: list[str], not_passed: dict[st
             "nodes": len(by_node), "ignored_modules": absent, "symbols": symbols}
 
 
-def build_bundle(root: Path, junit: Path, compares: list[Path], owner_runs: list[Path], head: str,
+def merge_junits(junits: list[Path]) -> tuple[dict[tuple[str, str], str], list[int]]:
+    """R-L2f: per node across the JUnits, failure/error in ANY -> that failure; else passed in ANY -> passed; else the
+    skip. Also, per input, how many nodes it upgraded from skipped/xfail (in the inputs before it) to passed."""
+    merged: dict[tuple[str, str], str] = {}
+    upgraded: list[int] = []
+    rank = ("passed", "xfail", "skipped", "failure", "error")
+    for path in junits:
+        count = 0
+        for key, outcome in read_junit(path).items():
+            before = merged.get(key)
+            if before is None:
+                merged[key] = outcome
+            elif before in ("failure", "error") or outcome in ("failure", "error"):
+                merged[key] = max((before, outcome), key=rank.index)
+            elif outcome == "passed":
+                count += before != "passed"
+                merged[key] = "passed"
+            elif before != "passed":
+                merged[key] = max((before, outcome), key=rank.index)
+        upgraded.append(count)
+    return merged, upgraded
+
+
+def build_bundle(root: Path, junit: Path | list[Path], compares: list[Path], owner_runs: list[Path], head: str,
                  collected: list[str] | None = None, artifact_names: dict[Path, str] | None = None,
                  exercise: Path | None = None) -> dict:
     head = git(root, "rev-parse", "--verify", head + "^{commit}").strip()
@@ -314,7 +337,8 @@ def build_bundle(root: Path, junit: Path, compares: list[Path], owner_runs: list
         if key in mangled:
             raise Refused(f"duplicate node after mangling: {node} and {mangled[key]}")
         mangled[key] = node
-    outcomes = read_junit(junit)
+    junits = [junit] if isinstance(junit, Path) else list(junit)  # S11 RH-1: the first is the TI's, the rest owner-run
+    outcomes, upgraded = merge_junits(junits)
     for key in sorted(outcomes):
         if key not in mangled:
             raise Refused(f"testcase matches no collected node: {key[0]}::{key[1]}")
@@ -342,11 +366,14 @@ def build_bundle(root: Path, junit: Path, compares: list[Path], owner_runs: list
             owner[names.get(path) or repo_or_artifact_path(str(path), root)] = sha256_file(path)
         except OSError as exc:
             raise Refused(f"owner-run artifact {path}: sha256 cannot be computed ({exc.strerror})") from exc
-    inputs = {names.get(p) or repo_or_artifact_path(str(p), root): sha256_file(p) for p in [junit, *compares]}
+    inputs = {names.get(p) or repo_or_artifact_path(str(p), root): sha256_file(p) for p in [*junits, *compares]}
     doc = {"schema": BUNDLE_SCHEMA, "head": head, "ids": bound_ids(root, head), "support": support,
            "hashed_ids": {"count": len(paths), "reason": HASHED_REASON, "paths": dict(sorted(paths.items()))},
            "test_modules": modules, "nodes": nodes, "not_passed": not_passed, "compare": dict(sorted(compare.items())),
            "owner_run": dict(sorted(owner.items())), "inputs": dict(sorted(inputs.items()))}
+    if len(junits) > 1:  # a single JUnit keeps the bundle bytes of before RH-1
+        doc["junit_upgrades"] = {(names.get(p) or repo_or_artifact_path(str(p), root)): n
+                                 for p, n in sorted(zip(junits, upgraded), key=lambda pn: str(pn[0]))}
     if exercised is not None:
         doc["exercise"] = exercised
     return doc
@@ -1190,7 +1217,8 @@ def main(argv=None) -> int:
     parser.add_argument("--root", type=Path, default=ROOT, help=argparse.SUPPRESS)
     sub = parser.add_subparsers(dest="cmd")
     b = sub.add_parser("bundle")
-    b.add_argument("--junit", required=True, type=Path)
+    b.add_argument("--junit", required=True, action="append", type=Path,
+                   help="repeatable: the TI JUnit first, then owner-run JUnits (R-L2f)")
     b.add_argument("--compare", required=True, nargs="+", type=Path)
     b.add_argument("--owner-run", nargs="*", default=[], type=Path)
     b.add_argument("--head", required=True)
@@ -1204,7 +1232,7 @@ def main(argv=None) -> int:
         if args.cmd == "bundle":
             collected = parse_collected(args.collected.read_text()) if args.collected else None
             names = {p: repo_or_artifact_path(str(p), root)
-                     for p in [args.junit, *args.compare, *args.owner_run, *([args.exercise] if args.exercise else [])]}
+                     for p in [*args.junit, *args.compare, *args.owner_run, *([args.exercise] if args.exercise else [])]}
             doc = build_bundle(root, args.junit, args.compare, args.owner_run, args.head, collected, names, args.exercise)
             bundle_path.write_text(dump_json(doc), encoding="utf-8")
             print(json.dumps({"written": "coverage/run-evidence.json", "head": doc["head"], "nodes": len(doc["nodes"]),
