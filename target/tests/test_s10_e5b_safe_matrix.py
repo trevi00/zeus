@@ -69,9 +69,9 @@ def test_each_declaration_differs_only_in_the_fields_its_authority_names():
     for key in ("module.adapters.host_migration --help", "module.adapters.migrations --help",
                 "artifact_reader --help", "artifact_reader.index_fixture"):
         assert key not in ARGV_MAP and key not in DECLARED, key
-    for key in ("import_only.codex_harness.adapters.isolated_worker",
-                "import_only.codex_harness.adapters.service_entry"):
-        assert differing(key) == {"argv"}
+    # S11 SH-1 (DESIGN-s11 §8 SH-a): service_entry is a kept shim now, so its row is not declared or mapped
+    assert "import_only.codex_harness.adapters.service_entry" not in ARGV_MAP | DECLARED
+    assert differing("import_only.codex_harness.adapters.isolated_worker") == {"argv"}
 
 
 def test_dotted_path_stdout_differs_only_by_the_module_path():

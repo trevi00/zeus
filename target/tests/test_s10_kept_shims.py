@@ -1,7 +1,7 @@
 """S10 owner correction int44 (DESIGN-s10 §16b, disclosure 29): the §3.5 shim set follows the CORRECTED S0 pinned-argv
 scan (`compare/goldens/reference/static.source.json` `shims.conditional`, OWNER-DECISIONS-S11 #11). Every conditional
-module with `keep_shim: true` is a shim in `import_rules.SHIMS` and every `false` one is not; the three restored shims
-(`artifact_reader`, `host_migration`, `migrations`) only delegate to `entry` and answer `--help` through M7's argv."""
+module with `keep_shim: true` is a shim in `import_rules.SHIMS` and every `false` one is not; the restored shims
+(`artifact_reader`, `host_migration`, `migrations`; `service_entry` since S11 SH-1) only delegate to `entry` and answer `--help` through M7's argv."""
 import ast
 import json
 import subprocess
@@ -15,7 +15,7 @@ TARGET = Path(__file__).resolve().parents[1]
 GOLDEN = json.loads((TARGET.parent / "compare/goldens/reference/static.source.json").read_text(encoding="utf-8"))
 CONDITIONAL = GOLDEN["shims"]["conditional"]
 RESTORED = ("codex_harness.adapters.artifact_reader", "codex_harness.adapters.host_migration",
-            "codex_harness.adapters.migrations")
+            "codex_harness.adapters.migrations", "codex_harness.adapters.service_entry")
 
 
 def test_the_conditional_shims_are_exactly_the_scan_keep_set():
@@ -46,3 +46,11 @@ def test_help_answers_through_the_m7_argv(module, usage):
     done = subprocess.run([sys.executable, "-m", module, "--help"], capture_output=True, text=True, timeout=60)
     assert done.returncode == 0, done.stderr
     assert done.stdout.startswith(usage), done.stdout[:200]
+
+
+def test_service_entry_without_arguments_prints_the_m7_usage_and_exits_with_m7_code():
+    """Expected result from SOURCE `adapters/service_entry.py` USAGE and its diagnostics exit code (125)."""
+    done = subprocess.run([sys.executable, "-m", "codex_harness.adapters.service_entry"],
+                          capture_output=True, text=True, timeout=60)
+    assert done.returncode == 125, done.stderr
+    assert done.stderr.strip() == "usage: python -m codex_harness.adapters.service_entry --journal PATH -- CLI_ARGS"

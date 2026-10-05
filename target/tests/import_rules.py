@@ -39,7 +39,10 @@ SHIMS = frozenset({"codex_harness.cli", "codex_harness.monitor", "codex_harness.
                    # S10 int44 (owner, DESIGN-s10 §16b): the rest of the corrected S0 scan's keep_shim set
                    # (static.source.json shims.conditional; OWNER-DECISIONS-S11 #11).
                    "codex_harness.adapters.artifact_reader", "codex_harness.adapters.host_migration",
-                   "codex_harness.adapters.migrations"})
+                   "codex_harness.adapters.migrations",
+                   # S11 SH-1 (owner, DESIGN-s11 §8 SH-a): docs/contracts.md is a contract document to the scan, so the
+                   # INV-SERVICE-DIAGNOSTICS-001 argv (contracts.md:2561) is a pin.
+                   "codex_harness.adapters.service_entry"})
 # Package __init__ modules that only hold shims/resources; they must not import anything.
 PACKAGE_INITS = frozenset({"codex_harness.adapters", "codex_harness.resources"})
 RES = frozenset({"codex_harness.resources.worker_profile_hook"})

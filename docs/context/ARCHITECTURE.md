@@ -149,8 +149,9 @@ and `src/zeus`. The conditional set follows the S0 pinned-argv scan of tracked s
 (`compare/goldens/reference/static.source.json`, `shims.conditional`): kept for `artifact_reader`
 (the multi-line reader argv of M7 `executor.py:252-253`, which the target's
 `context.domain.composition.artifact_reader_handle` emits too), `continuation_process`, `host_delivery`,
-`host_migration`, `managed_runtime`, `migrations`, `monitor_frontend_checks`; no tracked pin found for
-`experience`, `isolated_worker`, `observed_assets`, `service_entry`. Reconciliation with argv persisted in records
+`host_migration`, `managed_runtime`, `migrations`, `monitor_frontend_checks`, `service_entry` (the
+INV-SERVICE-DIAGNOSTICS-001 argv of `docs/contracts.md`, which the scan classes as a contract document); no tracked
+pin found for `experience`, `isolated_worker`, `observed_assets`. Reconciliation with argv persisted in records
 is pending the disposable rehearsal (R2); until then no shim is dropped.
 
 ## Named changes and bugs not retained

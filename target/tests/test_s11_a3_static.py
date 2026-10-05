@@ -338,7 +338,12 @@ def test_help_text_and_docstring_mentions_are_not_an_argv():
         text = (SRC / rel).read_text(encoding="utf-8")
         assert "-m codex_harness.adapters." in text  # the mention exists...
         assert argv_modules(rel, text) == []  # ...and parsing excludes it
-        assert unresolved_argv([m for rx in TEXT_ARGV for m in rx.findall(text)], tree)  # a regex scan would flag it
+        flagged = unresolved_argv([m for rx in TEXT_ARGV for m in rx.findall(text)], tree)
+        if rel.startswith("codex_harness/host_os/"):
+            # S11 SH-1 (DESIGN-s11 §8 SH-a): the kept shim exists, so the mention now resolves.
+            assert flagged == []
+        else:
+            assert flagged  # a regex scan would flag it
 
 
 def test_a_deploy_text_naming_an_absent_module_fails():

@@ -83,26 +83,6 @@
   {
    "path": "$.rows",
    "op": "replace",
-   "key": "import_only.codex_harness.adapters.service_entry",
-   "value": {
-    "argv": [
-     "python",
-     "-c",
-     "import importlib, sys; importlib.import_module(sys.argv[1]); print('imported')",
-     "codex_harness.entry.processes.service_entry"
-    ],
-    "exit": 0,
-    "stderr_last_line": [],
-    "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
-    "stdout": "imported\n",
-    "stdout_bytes": 9,
-    "stdout_sha256": "db4ad2be31430992bcc7d620722087520d152617c22424e66cb46b25b85a5723"
-   },
-   "authority": "S10 E5b (DESIGN-s10 section 16 (b), owner 2026-10-04): codex_harness.adapters.service_entry is not kept at its M7 path (REBUILD-DESIGN-v2 section 3.5, S0's pinned-argv scan); its target entry is codex_harness.entry.processes.service_entry"
-  },
-  {
-   "path": "$.rows",
-   "op": "replace",
    "key": "module.adapters.experience --help",
    "value": {
     "argv": [
