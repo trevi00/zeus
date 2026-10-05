@@ -74,6 +74,10 @@ def handler(snapshot_path, desk=None, *, desk_http=None):
     """
     require(desk is None or desk_http is not None, "desk_http is not wired")
     class Handler(BaseHTTPRequestHandler):
+        # XC-1 A4: a socket timeout for every request, so an idle connection frees its thread. The value is the
+        # desk POST read timeout (`entry/http/desk.py:32` READ_TIMEOUT_SECONDS; observation may not import entry).
+        timeout = 5
+
         def respond(self, status, body, content_type):
             self.send_response(status)
             self.send_header('Content-Type', content_type)
