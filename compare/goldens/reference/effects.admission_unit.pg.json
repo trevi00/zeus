@@ -204,6 +204,192 @@
   ],
   "violations": []
  },
+ "cancel_a_failure_at_outbox": {
+  "durable_units": 0,
+  "durable_writes": [],
+  "effects": [],
+  "outcome": {
+   "message": "injected failure at outbox",
+   "refused": "Injected"
+  },
+  "rows": [
+   [
+    "execution_fences",
+    "tasks:5eed0000-0000-4000-8000-000000000001",
+    ""
+   ],
+   [
+    "tasks",
+    "5eed0000-0000-4000-8000-000000000001",
+    "running"
+   ]
+  ],
+  "units": [
+   "ROLLBACK"
+  ],
+  "violations": []
+ },
+ "cancel_a_failure_at_tasks": {
+  "durable_units": 0,
+  "durable_writes": [],
+  "effects": [],
+  "outcome": {
+   "message": "injected failure at tasks",
+   "refused": "Injected"
+  },
+  "rows": [
+   [
+    "execution_fences",
+    "tasks:5eed0000-0000-4000-8000-000000000001",
+    ""
+   ],
+   [
+    "tasks",
+    "5eed0000-0000-4000-8000-000000000001",
+    "running"
+   ]
+  ],
+  "units": [
+   "ROLLBACK"
+  ],
+  "violations": []
+ },
+ "cancel_c_repeat": {
+  "durable_units": 0,
+  "durable_writes": [],
+  "effects": [],
+  "outcome": {
+   "message": "Task already terminal",
+   "refused": "ContractError"
+  },
+  "rows": [
+   [
+    "execution_fences",
+    "tasks:5eed0000-0000-4000-8000-000000000001",
+    ""
+   ],
+   [
+    "execution_notices",
+    "e6cfb3cce77420c00ba122c7b903d635cccca20c75bd2bc87b3eb0e1ab8d1c5f",
+    ""
+   ],
+   [
+    "outbox",
+    "e6cfb3cce77420c00ba122c7b903d635cccca20c75bd2bc87b3eb0e1ab8d1c5f",
+    ""
+   ],
+   [
+    "tasks",
+    "5eed0000-0000-4000-8000-000000000001",
+    "cancelled"
+   ]
+  ],
+  "units": [
+   "ROLLBACK"
+  ],
+  "violations": []
+ },
+ "cancel_no_reason": {
+  "durable_units": 0,
+  "durable_writes": [],
+  "effects": [],
+  "outcome": {
+   "message": "Task and cancellation reason required",
+   "refused": "ContractError"
+  },
+  "rows": [
+   [
+    "execution_fences",
+    "tasks:5eed0000-0000-4000-8000-000000000001",
+    ""
+   ],
+   [
+    "tasks",
+    "5eed0000-0000-4000-8000-000000000001",
+    "running"
+   ]
+  ],
+  "units": [
+   "ROLLBACK"
+  ],
+  "violations": []
+ },
+ "cancel_success": {
+  "durable_units": 1,
+  "durable_writes": [
+   [
+    "execution_fences",
+    ""
+   ],
+   [
+    "execution_notices",
+    ""
+   ],
+   [
+    "outbox",
+    ""
+   ],
+   [
+    "tasks",
+    "cancelled"
+   ]
+  ],
+  "effects": [],
+  "outcome": {
+   "ok": true
+  },
+  "rows": [
+   [
+    "execution_fences",
+    "tasks:5eed0000-0000-4000-8000-000000000001",
+    ""
+   ],
+   [
+    "execution_notices",
+    "e6cfb3cce77420c00ba122c7b903d635cccca20c75bd2bc87b3eb0e1ab8d1c5f",
+    ""
+   ],
+   [
+    "outbox",
+    "e6cfb3cce77420c00ba122c7b903d635cccca20c75bd2bc87b3eb0e1ab8d1c5f",
+    ""
+   ],
+   [
+    "tasks",
+    "5eed0000-0000-4000-8000-000000000001",
+    "cancelled"
+   ]
+  ],
+  "units": [
+   "COMMIT"
+  ],
+  "violations": []
+ },
+ "cancel_unauthorized": {
+  "durable_units": 0,
+  "durable_writes": [],
+  "effects": [],
+  "outcome": {
+   "message": "Cannot cancel task",
+   "refused": "ContractError"
+  },
+  "rows": [
+   [
+    "execution_fences",
+    "tasks:5eed0000-0000-4000-8000-000000000001",
+    ""
+   ],
+   [
+    "tasks",
+    "5eed0000-0000-4000-8000-000000000001",
+    "running"
+   ]
+  ],
+  "units": [
+   "ROLLBACK"
+  ],
+  "violations": []
+ },
  "claim_a_failure_at_outbox": {
   "durable_units": 0,
   "durable_writes": [],
@@ -617,6 +803,198 @@
   ],
   "violations": []
  },
+ "evidence_gate_binding_mismatch": {
+  "durable_units": 0,
+  "durable_writes": [],
+  "effects": [],
+  "outcome": {
+   "message": "operation refused: evidence_inspection_refused",
+   "reason_code": "evidence_inspection_refused",
+   "refused": "EvidenceGateRefused"
+  },
+  "rows": [
+   [
+    "decisions_pending",
+    "decision-1",
+    "pending"
+   ],
+   [
+    "evidence_inspections",
+    "inspection-1",
+    ""
+   ],
+   [
+    "tasks",
+    "task-1",
+    "succeeded"
+   ]
+  ],
+  "units": [
+   "ROLLBACK"
+  ],
+  "violations": []
+ },
+ "evidence_gate_c_repeat": {
+  "durable_units": 0,
+  "durable_writes": [],
+  "effects": [],
+  "outcome": {
+   "value": {
+    "decision_id": "decision-1",
+    "inspection_id": "inspection-1",
+    "source_revision": "cccccccccccccccccccccccccccccccccccccccc",
+    "task_id": "task-1"
+   }
+  },
+  "rows": [
+   [
+    "decisions_pending",
+    "decision-1",
+    "pending"
+   ],
+   [
+    "evidence_inspections",
+    "inspection-1",
+    ""
+   ],
+   [
+    "tasks",
+    "task-1",
+    "succeeded"
+   ]
+  ],
+  "units": [
+   "COMMIT"
+  ],
+  "violations": []
+ },
+ "evidence_gate_decision_mismatch": {
+  "durable_units": 0,
+  "durable_writes": [],
+  "effects": [],
+  "outcome": {
+   "message": "operation refused: review_decision_mismatch",
+   "reason_code": "review_decision_mismatch",
+   "refused": "EvidenceGateRefused"
+  },
+  "rows": [
+   [
+    "decisions_pending",
+    "decision-1",
+    "pending"
+   ],
+   [
+    "evidence_inspections",
+    "inspection-1",
+    ""
+   ],
+   [
+    "tasks",
+    "task-1",
+    "succeeded"
+   ]
+  ],
+  "units": [
+   "ROLLBACK"
+  ],
+  "violations": []
+ },
+ "evidence_gate_inspection_missing": {
+  "durable_units": 0,
+  "durable_writes": [],
+  "effects": [],
+  "outcome": {
+   "message": "operation refused: evidence_inspection_missing",
+   "reason_code": "evidence_inspection_missing",
+   "refused": "EvidenceGateRefused"
+  },
+  "rows": [
+   [
+    "decisions_pending",
+    "decision-1",
+    "pending"
+   ],
+   [
+    "evidence_inspections",
+    "inspection-1",
+    ""
+   ],
+   [
+    "tasks",
+    "task-1",
+    "succeeded"
+   ]
+  ],
+  "units": [
+   "ROLLBACK"
+  ],
+  "violations": []
+ },
+ "evidence_gate_inspection_not_all_checked": {
+  "durable_units": 0,
+  "durable_writes": [],
+  "effects": [],
+  "outcome": {
+   "message": "operation refused: evidence_inspection_refused",
+   "reason_code": "evidence_inspection_refused",
+   "refused": "EvidenceGateRefused"
+  },
+  "rows": [
+   [
+    "decisions_pending",
+    "decision-1",
+    "pending"
+   ],
+   [
+    "evidence_inspections",
+    "inspection-1",
+    ""
+   ],
+   [
+    "tasks",
+    "task-1",
+    "succeeded"
+   ]
+  ],
+  "units": [
+   "ROLLBACK"
+  ],
+  "violations": []
+ },
+ "evidence_gate_success": {
+  "durable_units": 0,
+  "durable_writes": [],
+  "effects": [],
+  "outcome": {
+   "value": {
+    "decision_id": "decision-1",
+    "inspection_id": "inspection-1",
+    "source_revision": "cccccccccccccccccccccccccccccccccccccccc",
+    "task_id": "task-1"
+   }
+  },
+  "rows": [
+   [
+    "decisions_pending",
+    "decision-1",
+    "pending"
+   ],
+   [
+    "evidence_inspections",
+    "inspection-1",
+    ""
+   ],
+   [
+    "tasks",
+    "task-1",
+    "succeeded"
+   ]
+  ],
+  "units": [
+   "COMMIT"
+  ],
+  "violations": []
+ },
  "finalize_b_stale_token": {
   "durable_units": 0,
   "durable_writes": [],
@@ -764,6 +1142,460 @@
    ]
   ],
   "units": [
+   "COMMIT"
+  ],
+  "violations": []
+ },
+ "parkable_c_repeat": {
+  "durable_units": 0,
+  "durable_writes": [],
+  "effects": [],
+  "outcome": {
+   "value": {
+    "assignment_message_id": "message-1",
+    "correlation_id": "operation:op-1",
+    "cycle_id": "operation:op-1",
+    "id": "op-1",
+    "status": "failed"
+   }
+  },
+  "rows": [
+   [
+    "operations",
+    "op-1",
+    "failed"
+   ]
+  ],
+  "units": [
+   "COMMIT"
+  ],
+  "violations": []
+ },
+ "parkable_foreign_correlation": {
+  "durable_units": 0,
+  "durable_writes": [],
+  "effects": [],
+  "outcome": {
+   "value": null
+  },
+  "rows": [
+   [
+    "operations",
+    "op-1",
+    "failed"
+   ]
+  ],
+  "units": [
+   "COMMIT"
+  ],
+  "violations": []
+ },
+ "parkable_foreign_recipient": {
+  "durable_units": 0,
+  "durable_writes": [],
+  "effects": [],
+  "outcome": {
+   "value": null
+  },
+  "rows": [
+   [
+    "operations",
+    "op-1",
+    "failed"
+   ]
+  ],
+  "units": [],
+  "violations": []
+ },
+ "parkable_owner_not_terminal": {
+  "durable_units": 0,
+  "durable_writes": [],
+  "effects": [],
+  "outcome": {
+   "value": null
+  },
+  "rows": [
+   [
+    "operations",
+    "op-1",
+    "running"
+   ]
+  ],
+  "units": [
+   "COMMIT"
+  ],
+  "violations": []
+ },
+ "parkable_success": {
+  "durable_units": 0,
+  "durable_writes": [],
+  "effects": [],
+  "outcome": {
+   "value": {
+    "assignment_message_id": "message-1",
+    "correlation_id": "operation:op-1",
+    "cycle_id": "operation:op-1",
+    "id": "op-1",
+    "status": "failed"
+   }
+  },
+  "rows": [
+   [
+    "operations",
+    "op-1",
+    "failed"
+   ]
+  ],
+  "units": [
+   "COMMIT"
+  ],
+  "violations": []
+ },
+ "parkable_unparkable_type": {
+  "durable_units": 0,
+  "durable_writes": [],
+  "effects": [],
+  "outcome": {
+   "value": null
+  },
+  "rows": [
+   [
+    "operations",
+    "op-1",
+    "failed"
+   ]
+  ],
+  "units": [],
+  "violations": []
+ },
+ "reconcile_interrupted_a_failure_at_jobs": {
+  "durable_units": 0,
+  "durable_writes": [],
+  "effects": [],
+  "outcome": {
+   "message": "injected failure at fleet_jobs",
+   "reason_code": null,
+   "refused": "Injected"
+  },
+  "rows": [
+   [
+    "fleet_control",
+    "admission",
+    ""
+   ],
+   [
+    "fleet_jobs",
+    "op-1",
+    "unknown"
+   ],
+   [
+    "fleet_registry",
+    "fleet-1",
+    ""
+   ]
+  ],
+  "units": [
+   "COMMIT",
+   "ROLLBACK"
+  ],
+  "violations": []
+ },
+ "reconcile_interrupted_b_stale_owner": {
+  "durable_units": 0,
+  "durable_writes": [],
+  "effects": [],
+  "outcome": {
+   "message": "fleet refused: owner_mismatch (expected.owner_token)",
+   "reason_code": "owner_mismatch",
+   "refused": "FleetRefused"
+  },
+  "rows": [
+   [
+    "fleet_control",
+    "admission",
+    ""
+   ],
+   [
+    "fleet_jobs",
+    "op-1",
+    "unknown"
+   ],
+   [
+    "fleet_registry",
+    "fleet-1",
+    ""
+   ]
+  ],
+  "units": [
+   "COMMIT",
+   "ROLLBACK"
+  ],
+  "violations": []
+ },
+ "reconcile_interrupted_c_replay": {
+  "durable_units": 0,
+  "durable_writes": [],
+  "effects": [],
+  "outcome": {
+   "value": {
+    "cached": true,
+    "job": {
+     "calls": {
+      "reserved": null,
+      "settled": null
+     },
+     "created_at": "2026-09-21T00:00:00.000003+00:00",
+     "dependencies": [],
+     "dispatched_at": "2026-09-21T00:00:00.000004+00:00",
+     "error_type": null,
+     "exit_code": null,
+     "finished_at": "2026-09-21T00:00:00.000007+00:00",
+     "goal": {
+      "base_revision": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+      "criterion": "c",
+      "path": "docs/GOAL.md",
+      "sha256": "bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb"
+     },
+     "id": "op-1",
+     "lane": "a",
+     "manifest_sha256": "bfde21ada564a3fe3ae7ee3d3e2484a0ff1eac12fe21a5a6b68afa182b55355a",
+     "operation_id": "op-1",
+     "owner_handoff": null,
+     "reason_code": "interrupted_unknown",
+     "status": "failed",
+     "team": "a",
+     "updated_at": "2026-09-21T00:00:00.000007+00:00"
+    },
+    "receipt": {
+     "authority": "owner_recovery; paused fleet, worker services stopped; a re-read cross-store observation, not a distributed atomic transaction",
+     "container": {
+      "run_id": "1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a",
+      "state": "exited"
+     },
+     "fleet": "fleet-1",
+     "id": "68abe971253d97b647e7142c50a7fac16e9aa6f7e1ce713ed5aba2d1a920df41",
+     "invocation": {
+      "reservation_id": "d4d4d4d4d4d4d4d4d4d4d4d4d4d4d4d4d4d4d4d4d4d4d4d4d4d4d4d4d4d4d4d4",
+      "status": "unsettled_unknown"
+     },
+     "job_id": "op-1",
+     "lane_operation": {
+      "correlation_id": "operation:op-1",
+      "generation": 2,
+      "id": "op-1",
+      "task_id": "task-92b13b20"
+     },
+     "machine_slot": {
+      "id": "e9e9e9e9e9e9e9e9e9e9e9e9e9e9e9e9",
+      "outcome": "unknown"
+     },
+     "operator": "owner",
+     "outcome": {
+      "calls": "preserved_as_recorded",
+      "reason_code": "interrupted_unknown",
+      "status": "failed",
+      "usage": "unknown"
+     },
+     "recorded_at": "2026-09-21T00:00:00.000007+00:00",
+     "schema": "urn:zeus:fleet-recovery-receipt:1"
+    },
+    "reconciled": true
+   }
+  },
+  "rows": [
+   [
+    "fleet_control",
+    "admission",
+    ""
+   ],
+   [
+    "fleet_jobs",
+    "op-1",
+    "failed"
+   ],
+   [
+    "fleet_recovery_receipts",
+    "op-1",
+    ""
+   ],
+   [
+    "fleet_registry",
+    "fleet-1",
+    ""
+   ]
+  ],
+  "units": [
+   "COMMIT"
+  ],
+  "violations": []
+ },
+ "reconcile_interrupted_not_paused": {
+  "durable_units": 0,
+  "durable_writes": [],
+  "effects": [],
+  "outcome": {
+   "message": "fleet refused: fleet_not_paused",
+   "reason_code": "fleet_not_paused",
+   "refused": "FleetRefused"
+  },
+  "rows": [
+   [
+    "fleet_control",
+    "admission",
+    ""
+   ],
+   [
+    "fleet_jobs",
+    "op-1",
+    "unknown"
+   ],
+   [
+    "fleet_registry",
+    "fleet-1",
+    ""
+   ]
+  ],
+  "units": [
+   "COMMIT",
+   "ROLLBACK"
+  ],
+  "violations": []
+ },
+ "reconcile_interrupted_proof_changed": {
+  "durable_units": 0,
+  "durable_writes": [],
+  "effects": [],
+  "outcome": {
+   "message": "fleet refused: proof_changed",
+   "reason_code": "proof_changed",
+   "refused": "FleetRefused"
+  },
+  "rows": [
+   [
+    "fleet_control",
+    "admission",
+    ""
+   ],
+   [
+    "fleet_jobs",
+    "op-1",
+    "unknown"
+   ],
+   [
+    "fleet_registry",
+    "fleet-1",
+    ""
+   ]
+  ],
+  "units": [
+   "COMMIT",
+   "ROLLBACK"
+  ],
+  "violations": []
+ },
+ "reconcile_interrupted_success": {
+  "durable_units": 1,
+  "durable_writes": [
+   [
+    "fleet_jobs",
+    "failed"
+   ],
+   [
+    "fleet_recovery_receipts",
+    ""
+   ]
+  ],
+  "effects": [],
+  "outcome": {
+   "value": {
+    "cached": false,
+    "job": {
+     "calls": {
+      "reserved": null,
+      "settled": null
+     },
+     "created_at": "2026-09-21T00:00:00.000003+00:00",
+     "dependencies": [],
+     "dispatched_at": "2026-09-21T00:00:00.000004+00:00",
+     "error_type": null,
+     "exit_code": null,
+     "finished_at": "2026-09-21T00:00:00.000007+00:00",
+     "goal": {
+      "base_revision": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+      "criterion": "c",
+      "path": "docs/GOAL.md",
+      "sha256": "bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb"
+     },
+     "id": "op-1",
+     "lane": "a",
+     "manifest_sha256": "bfde21ada564a3fe3ae7ee3d3e2484a0ff1eac12fe21a5a6b68afa182b55355a",
+     "operation_id": "op-1",
+     "owner_handoff": null,
+     "reason_code": "interrupted_unknown",
+     "status": "failed",
+     "team": "a",
+     "updated_at": "2026-09-21T00:00:00.000007+00:00"
+    },
+    "receipt": {
+     "authority": "owner_recovery; paused fleet, worker services stopped; a re-read cross-store observation, not a distributed atomic transaction",
+     "container": {
+      "run_id": "1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a",
+      "state": "exited"
+     },
+     "fleet": "fleet-1",
+     "id": "68abe971253d97b647e7142c50a7fac16e9aa6f7e1ce713ed5aba2d1a920df41",
+     "invocation": {
+      "reservation_id": "d4d4d4d4d4d4d4d4d4d4d4d4d4d4d4d4d4d4d4d4d4d4d4d4d4d4d4d4d4d4d4d4",
+      "status": "unsettled_unknown"
+     },
+     "job_id": "op-1",
+     "lane_operation": {
+      "correlation_id": "operation:op-1",
+      "generation": 2,
+      "id": "op-1",
+      "task_id": "task-92b13b20"
+     },
+     "machine_slot": {
+      "id": "e9e9e9e9e9e9e9e9e9e9e9e9e9e9e9e9",
+      "outcome": "unknown"
+     },
+     "operator": "owner",
+     "outcome": {
+      "calls": "preserved_as_recorded",
+      "reason_code": "interrupted_unknown",
+      "status": "failed",
+      "usage": "unknown"
+     },
+     "recorded_at": "2026-09-21T00:00:00.000007+00:00",
+     "schema": "urn:zeus:fleet-recovery-receipt:1"
+    },
+    "reconciled": true
+   }
+  },
+  "rows": [
+   [
+    "fleet_control",
+    "admission",
+    ""
+   ],
+   [
+    "fleet_jobs",
+    "op-1",
+    "failed"
+   ],
+   [
+    "fleet_recovery_receipts",
+    "op-1",
+    ""
+   ],
+   [
+    "fleet_registry",
+    "fleet-1",
+    ""
+   ]
+  ],
+  "units": [
+   "COMMIT",
    "COMMIT"
   ],
   "violations": []
@@ -922,6 +1754,300 @@
   },
   "rows": [],
   "units": [
+   "COMMIT"
+  ],
+  "violations": []
+ },
+ "relocate_a_failure_at_registry": {
+  "durable_units": 0,
+  "durable_writes": [],
+  "effects": [],
+  "outcome": {
+   "message": "injected failure at fleet_registry",
+   "reason_code": null,
+   "refused": "Injected"
+  },
+  "rows": [
+   [
+    "fleet_control",
+    "admission",
+    ""
+   ],
+   [
+    "fleet_jobs",
+    "op-q",
+    "queued"
+   ],
+   [
+    "fleet_registry",
+    "fleet-1",
+    ""
+   ]
+  ],
+  "units": [
+   "COMMIT",
+   "ROLLBACK"
+  ],
+  "violations": []
+ },
+ "relocate_b_stale_digest": {
+  "durable_units": 0,
+  "durable_writes": [],
+  "effects": [],
+  "outcome": {
+   "message": "fleet refused: config_expected_mismatch (expected_config_sha256)",
+   "reason_code": "config_expected_mismatch",
+   "refused": "FleetRefused"
+  },
+  "rows": [
+   [
+    "fleet_control",
+    "admission",
+    ""
+   ],
+   [
+    "fleet_jobs",
+    "op-q",
+    "queued"
+   ],
+   [
+    "fleet_registry",
+    "fleet-1",
+    ""
+   ]
+  ],
+  "units": [
+   "COMMIT",
+   "ROLLBACK"
+  ],
+  "violations": []
+ },
+ "relocate_c_replay": {
+  "durable_units": 0,
+  "durable_writes": [],
+  "effects": [],
+  "outcome": {
+   "value": {
+    "cached": true,
+    "config": {
+     "accounting_mode": "finite",
+     "budget": {
+      "per_host": 4,
+      "total": 8
+     },
+     "id": "fleet-1",
+     "lanes": [
+      {
+       "id": "a",
+       "team": "a"
+      },
+      {
+       "id": "b",
+       "team": "b"
+      }
+     ],
+     "max_parallel": 2,
+     "schema": "urn:zeus:fleet:1"
+    },
+    "config_sha256": "509a7e62afed57ff0a16c7d38ae027fc498f2e45b740a818aa9fff74874e2a10",
+    "receipt": {
+     "authority": "owner_relocation; lane repository and runtime paths only; history, goal identity and provider authority unchanged",
+     "config_sha256": "509a7e62afed57ff0a16c7d38ae027fc498f2e45b740a818aa9fff74874e2a10",
+     "copy_manifest_sha256": "cccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccc",
+     "fleet": "fleet-1",
+     "id": "8e035f91b8ceb4885620a1071303e0e17b61e63698af196cd29a10975703c243",
+     "lanes": [
+      {
+       "id": "a",
+       "repository": true,
+       "runtime": true
+      }
+     ],
+     "operator": "owner",
+     "prior_config_sha256": "2ca414330a3575287d9a75b36904cee274af319c6e5d54723479dad70457ab31",
+     "recorded_at": "2026-09-21T00:00:00.000005+00:00",
+     "schema": "urn:zeus:fleet-relocation-receipt:1"
+    },
+    "relocated": true
+   }
+  },
+  "rows": [
+   [
+    "fleet_control",
+    "admission",
+    ""
+   ],
+   [
+    "fleet_jobs",
+    "op-q",
+    "queued"
+   ],
+   [
+    "fleet_registry",
+    "fleet-1",
+    ""
+   ],
+   [
+    "fleet_relocations",
+    "8e035f91b8ceb4885620a1071303e0e17b61e63698af196cd29a10975703c243",
+    ""
+   ]
+  ],
+  "units": [
+   "COMMIT"
+  ],
+  "violations": []
+ },
+ "relocate_conflict": {
+  "durable_units": 0,
+  "durable_writes": [],
+  "effects": [],
+  "outcome": {
+   "message": "fleet refused: relocation_conflict",
+   "reason_code": "relocation_conflict",
+   "refused": "FleetRefused"
+  },
+  "rows": [
+   [
+    "fleet_control",
+    "admission",
+    ""
+   ],
+   [
+    "fleet_jobs",
+    "op-q",
+    "queued"
+   ],
+   [
+    "fleet_registry",
+    "fleet-1",
+    ""
+   ],
+   [
+    "fleet_relocations",
+    "8e035f91b8ceb4885620a1071303e0e17b61e63698af196cd29a10975703c243",
+    ""
+   ]
+  ],
+  "units": [
+   "ROLLBACK"
+  ],
+  "violations": []
+ },
+ "relocate_not_paused": {
+  "durable_units": 0,
+  "durable_writes": [],
+  "effects": [],
+  "outcome": {
+   "message": "fleet refused: fleet_not_paused",
+   "reason_code": "fleet_not_paused",
+   "refused": "FleetRefused"
+  },
+  "rows": [
+   [
+    "fleet_control",
+    "admission",
+    ""
+   ],
+   [
+    "fleet_jobs",
+    "op-q",
+    "queued"
+   ],
+   [
+    "fleet_registry",
+    "fleet-1",
+    ""
+   ]
+  ],
+  "units": [
+   "COMMIT",
+   "ROLLBACK"
+  ],
+  "violations": []
+ },
+ "relocate_success": {
+  "durable_units": 1,
+  "durable_writes": [
+   [
+    "fleet_registry",
+    ""
+   ],
+   [
+    "fleet_relocations",
+    ""
+   ]
+  ],
+  "effects": [],
+  "outcome": {
+   "value": {
+    "cached": false,
+    "config": {
+     "accounting_mode": "finite",
+     "budget": {
+      "per_host": 4,
+      "total": 8
+     },
+     "id": "fleet-1",
+     "lanes": [
+      {
+       "id": "a",
+       "team": "a"
+      },
+      {
+       "id": "b",
+       "team": "b"
+      }
+     ],
+     "max_parallel": 2,
+     "schema": "urn:zeus:fleet:1"
+    },
+    "config_sha256": "509a7e62afed57ff0a16c7d38ae027fc498f2e45b740a818aa9fff74874e2a10",
+    "receipt": {
+     "authority": "owner_relocation; lane repository and runtime paths only; history, goal identity and provider authority unchanged",
+     "config_sha256": "509a7e62afed57ff0a16c7d38ae027fc498f2e45b740a818aa9fff74874e2a10",
+     "copy_manifest_sha256": "cccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccc",
+     "fleet": "fleet-1",
+     "id": "8e035f91b8ceb4885620a1071303e0e17b61e63698af196cd29a10975703c243",
+     "lanes": [
+      {
+       "id": "a",
+       "repository": true,
+       "runtime": true
+      }
+     ],
+     "operator": "owner",
+     "prior_config_sha256": "2ca414330a3575287d9a75b36904cee274af319c6e5d54723479dad70457ab31",
+     "recorded_at": "2026-09-21T00:00:00.000005+00:00",
+     "schema": "urn:zeus:fleet-relocation-receipt:1"
+    },
+    "relocated": true
+   }
+  },
+  "rows": [
+   [
+    "fleet_control",
+    "admission",
+    ""
+   ],
+   [
+    "fleet_jobs",
+    "op-q",
+    "queued"
+   ],
+   [
+    "fleet_registry",
+    "fleet-1",
+    ""
+   ],
+   [
+    "fleet_relocations",
+    "8e035f91b8ceb4885620a1071303e0e17b61e63698af196cd29a10975703c243",
+    ""
+   ]
+  ],
+  "units": [
+   "COMMIT",
    "COMMIT"
   ],
   "violations": []
