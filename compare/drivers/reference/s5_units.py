@@ -7,6 +7,7 @@ own migrator; the durable `documents` rows are read back per case). Fake clock a
 
 import os
 import sys
+import tempfile
 from pathlib import Path
 
 HERE = Path(__file__).resolve().parents[1]
@@ -22,6 +23,7 @@ import determinism  # noqa: E402
 import recorder as rec  # noqa: E402
 import s5_units  # noqa: E402
 
+from codex_harness.adapters.artifacts import FileArtifacts  # noqa: E402
 from codex_harness.adapters.contracts import validate_message  # noqa: E402
 from codex_harness.adapters.providers import packaged_policy  # noqa: E402
 from codex_harness.adapters.store import MemoryStore, PostgresStore  # noqa: E402
@@ -31,8 +33,10 @@ from codex_harness.application import (  # noqa: E402,F401
     local_cycle,
     operation,
     operation_finalization,
+    outbox,
     workflow,
 )
+from codex_harness.application.execution_recovery import ExecutionRecovery  # noqa: E402
 from codex_harness.application.fleet import Fleet  # noqa: E402
 from codex_harness.application.service import Harness  # noqa: E402
 from codex_harness.bootstrap import organization  # noqa: E402
@@ -95,7 +99,9 @@ API = SimpleNamespace(
     validate_message=validate_message,
     advance_fence=lambda tx, bucket, row_id, generation, owner: execution_fence.advance(tx, bucket, row_id,
                                                                                        generation, owner),
-    envelope=envelope, operation_finalization=operation_finalization)
+    envelope=envelope, operation_finalization=operation_finalization, outbox=outbox, org=ORG,
+    recovery=lambda store, root: ExecutionRecovery(store, ORG, FileArtifacts(Path(root))),
+    artifact_root=lambda: tempfile.mkdtemp(prefix="zeus-s5-units-recovery-"))
 
 if __name__ == "__main__":
     driver.finish("reference", SCENARIO, s5_units.run(API))

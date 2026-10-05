@@ -7,9 +7,12 @@ target migrator; the durable `documents` rows are read back per case). The units
 objects) with the scripted clock and ids reset per case, as the reference resets its patched sources.
 """
 
+import functools
 import os
 import sys
+import tempfile
 from pathlib import Path
+from types import SimpleNamespace
 
 HERE = Path(__file__).resolve().parents[1]
 sys.path[:0] = [str(HERE.parent / "harness"), str(HERE / "common")]
@@ -24,15 +27,23 @@ import s5_fleet_composition  # noqa: E402
 import s5_units  # noqa: E402
 from codex_harness.coordination.application import (  # noqa: E402
     execution_fence,
+    execution_recovery,
+    execution_time,
     operation_finalization,
+    outbox_relay,
 )
 from codex_harness.coordination.application.operation import Operation  # noqa: E402
 from codex_harness.coordination.domain import operation as operation_domain  # noqa: E402
 from codex_harness.evidence.application.inspections import EvidenceRecords  # noqa: E402
+from codex_harness.intake.application import tickets  # noqa: E402
+from codex_harness.observation.application.health import HealthRecords  # noqa: E402
 from codex_harness.routing.adapters.provider_policy import packaged_policy  # noqa: E402
+from codex_harness.storage.adapters.file_artifacts import FileArtifacts  # noqa: E402
 from codex_harness.storage.adapters.memory_store import MemoryStore  # noqa: E402
 from codex_harness.storage.adapters.postgres_store import PostgresStore  # noqa: E402
 
+# the recovery rows carry the clock-domain identity of the execution clock: the reference driver's, as the S4 drivers do
+execution_time.DOMAIN = "00000000-0000-4000-8000-00000000a5a5"  # the reference's clock-domain identity
 PG_DSN = os.environ.get("ZEUS_REBUILD_PG_DSN")
 SCENARIO = "effects.admission_unit.pg" if PG_DSN else "effects.admission_unit"
 POLICY = packaged_policy()
@@ -81,9 +92,20 @@ def operation(service):
                      evidence_records=EvidenceRecords(), clock=composition.PORT, ids=composition.IDPORT)
 
 
+def recovery(store, root):
+    return execution_recovery.ExecutionRecovery(store, composition.ORG, FileArtifacts(str(root), clock=composition.PORT),
+                                                ticket_binding=tickets.ticket_binding, clock=composition.PORT,
+                                                ids=composition.IDPORT)
+
+
+# the moved relay runs with observation's health owner operation and the injected clock and id source
+OUTBOX = SimpleNamespace(relay=functools.partial(outbox_relay.relay, health=HealthRecords().record,
+                                                 clock=composition.PORT, ids=composition.IDPORT))
+
 API = composition.api(
     backend=Backend, reset=reset, recording=lambda store: rec.RecordingStore(store), operation=operation,
     Fleet=s5_fleet_composition.FleetFacade, operation_finalization=operation_finalization,
+    outbox=OUTBOX, recovery=recovery, artifact_root=lambda: tempfile.mkdtemp(prefix="zeus-s5-units-recovery-"),
     validate_manifest=lambda document: operation_domain.validate_manifest(document, POLICY),
     advance_fence=lambda tx, bucket, row_id, generation, owner: execution_fence.advance(
         tx, bucket, row_id, generation, owner, clock=composition.PORT))

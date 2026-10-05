@@ -22,7 +22,11 @@ and status), the recorder violations, the effect depths and the durable rows rea
 
 from __future__ import annotations
 
+import copy
+import hashlib
 import json
+import shutil
+from pathlib import Path
 
 BASE = "a" * 40
 ROOT = "/zeus-rebuild-s5-fleet"
@@ -511,6 +515,198 @@ def cancel(api, name, *, failure=None, repeat=False, actor="conductor", reason="
     return case.result(attempt(wf.cancel, task["id"], actor, reason))
 
 
+# ----- S11 AU-REC-3: Fleet.migrate_host, ExecutionRecovery.prepare/apply and the outbox relay (the call names the method) -----
+NEW_HOST = "/zeus-rebuild-s5-host"
+FUTURE = "2027-01-01T00:00:00+00:00"
+RECOVERY_REASON = "Investigated transient failure"
+
+
+def host_migration(digest_, **overrides):
+    document = {"schema": "urn:zeus:fleet-host-migration:1", "fleet": "fleet-1", "operator": "owner",
+                "migration_id": "move-1", "manifest_sha256": "d" * 64, "expected_config_sha256": digest_,
+                "source_repository_identity": "e" * 64,
+                "lanes": [{"lane": lane, "repository": {"from": ROOT + "/repo-" + lane, "to": NEW_HOST + "/repo-" + lane},
+                           "runtime": {"from": ROOT + "/rt-" + lane, "to": NEW_HOST + "/rt-" + lane},
+                           "schema": {"from": "lane_" + lane, "to": "moved_" + lane}} for lane in ("a", "b")],
+                "recorded_at": "2026-09-22T00:00:00+00:00"}
+    document.update(overrides)
+    return document
+
+
+def host_proof(**overrides):
+    document = {"schema": "urn:zeus:fleet-host-migration-proof:1", "runner": {"state": "stopped"},
+                "lanes": [{"id": lane, "active_runs": 0,
+                           "repository": {"independent": True, "target_identity": "e" * 64},
+                           "runtime": {"writable": True}, "schema": {"name": "moved_" + lane, "provisioned": True},
+                           "queued_bindings": []} for lane in ("a", "b")],
+                "observed_at": "2026-09-22T00:00:01+00:00"}
+    document.update(overrides)
+    return document
+
+
+def migrate_host(api, name, *, failure=False, replay=False, stale=False, paused=True, conflict=False, incomplete=False):
+    case = Case(api, name)
+    f = bare_fleet(api, case.store)
+    digest_ = f.register(config())["config_sha256"]
+    if paused:
+        f.pause()
+    if replay or conflict:
+        f.migrate_host(host_migration(digest_), host_proof())
+    case.since()
+    if failure:
+        case.store.arm("fleet_registry")  # the registry row is the unit's last write, after the receipt
+    request = host_migration(digest_)
+    if conflict:
+        request = host_migration(digest_, operator="someone-else")
+    elif stale:
+        request = host_migration("f" * 64)
+    elif incomplete:
+        request = host_migration(digest_, lanes=request["lanes"][:1])
+    return case.result(answer(f.migrate_host, request, host_proof()))
+
+
+def digested(fn, *args, **kwargs):
+    """`attempt` for a recovery call: the answer as its digest, keys and top-level scalars (a packet holds issue times)."""
+    try:
+        value = fn(*args, **kwargs)
+    except Exception as exc:  # the refusal is the characterized result
+        return {"refused": type(exc).__name__, "message": str(exc)[:200]}
+    scalars = {k: v for k, v in value.items() if isinstance(v, (bool, int, str))} if isinstance(value, dict) else {}
+    return {"value": digest(value), "keys": sorted(value) if isinstance(value, dict) else None, "scalars": scalars}
+
+
+def digest(value) -> str:
+    return hashlib.sha256(json.dumps(value, sort_keys=True, ensure_ascii=False, separators=(",", ":"))
+                          .encode("utf-8")).hexdigest()
+
+
+class Recovery:
+    """A recovery case: the exhausted task, an evidence artifact and the side's ExecutionRecovery over its FileArtifacts."""
+
+    def __init__(self, api, case):
+        self.api, self.case = api, case
+        self.root = api.artifact_root()
+        self.recovery = api.recovery(case.store, self.root)
+        self.wf = api.workflow(case.store)
+        message = api.envelope("task.assign", LEAD, WORKER, "implement", {"objective": "fixture"}, "test")
+        self.task = self.wf.submit(message)
+        api.advance(1)
+        self.lease = self.wf.claim(WORKER, "owner", max_attempts=1)
+        api.advance(1)
+        self.wf.fail(self.lease, "Actual failure API input")
+        api.advance(1)
+        self.wf.claim(WORKER, "after-failure")  # finds the budget spent
+        api.advance(1)
+        self.ref = self.recovery.artifacts.put("Operator recovery rationale test fixture", "unit-test")["ref"]
+
+    def request(self, **overrides):
+        return {"operation": "resume", "max_attempts": 2, "deadline": None, "reason": RECOVERY_REASON,
+                "operator": "test-operator", "evidence_refs": [self.ref], **overrides}
+
+    def packet(self):
+        return self.recovery.prepare("tasks", self.task["id"], **self.request())
+
+    def close(self):
+        shutil.rmtree(self.root, ignore_errors=True)
+
+
+def prepare(api, name, *, repeat=False, status=None, **changes):
+    case = Case(api, name)
+    world = Recovery(api, case)
+    task_id = world.task["id"]
+    try:
+        if status is not None:
+            with case.store.transaction() as tx:
+                row = tx.get("tasks", task_id)
+                row["status"] = status
+                tx.put("tasks", task_id, row)
+        if repeat:
+            world.recovery.prepare("tasks", task_id, **world.request())
+        case.since()
+        return case.result(digested(world.recovery.prepare, "tasks", task_id, **world.request(**changes)))
+    finally:
+        world.close()
+
+
+def apply(api, name, *, failure=False, replay=False, stale=False, expired=False, actor="conductor", evidence_lost=False):
+    case = Case(api, name)
+    world = Recovery(api, case)
+    try:
+        packet = world.packet()
+        if replay:
+            world.recovery.apply(copy.deepcopy(packet))
+        if stale:  # the task is cancelled after the packet was issued
+            world.wf.cancel(world.task["id"], "conductor", "Operator cancelled while reviewing")
+        if expired:
+            packet.update(issued_at="2000-01-01T00:00:00+00:00", expires_at="2000-01-01T00:01:00+00:00")
+        if evidence_lost:
+            for path in Path(world.root).rglob(world.ref.split(":")[1] + "*"):
+                path.unlink()
+        case.since()
+        if failure:
+            case.store.arm("execution_recoveries")  # the receipt is written after the task row and its fence
+        return case.result(digested(world.recovery.apply, packet, actor=actor))
+    finally:
+        world.close()
+
+
+class RelayBus:
+    """A bus whose publish is an effect of the recorder (recorded at the depth it happens)."""
+
+    def __init__(self, api, recorder, published):
+        self.api, self.recorder, self.published = api, recorder, published
+
+    def validate(self, message):
+        return self.api.validate_message(message)
+
+    def publish(self, message):
+        self.recorder.effect("bus.publish")
+        self.published.append(message["message_id"])
+        return "entry-" + str(len(self.published))
+
+
+def queue_message(api, case, correlation, objective="o", sent=False, poison=False):
+    if poison:
+        identity, body = "poison-shape", {"message": {"x": 1}, "sent": "no"}
+    else:
+        message = api.envelope("task.assign", "conductor", LEAD, "plan", {"plan": {"objective": objective}}, correlation)
+        identity, body = message["message_id"], {"message": message, "sent": sent}
+    with case.store.transaction() as tx:
+        tx.put("outbox", identity, body)
+
+
+def relay(api, name, *, queued=0, poison=False, replay=False, failure=False, scope=None):
+    case = Case(api, name)
+    published, audits = [], []
+
+    def audit(tx, kind, outcome, **kw):
+        audits.append([kind, outcome, kw.get("reason_code")])
+
+    def batch():
+        try:
+            counts = api.outbox.relay(case.store, api.org, RelayBus(api, case.recording.recorder, published), 100, audit,
+                                      scope)
+        except Exception as exc:  # the refusal is the characterized result
+            return {"refused": type(exc).__name__, "message": str(exc)[:160]}
+        return {"value": counts}
+    for index in range(queued):
+        queue_message(api, case, "corr-relay", "r" + str(index))
+    if poison:
+        queue_message(api, case, "corr-relay", poison=True)
+    if queued or poison:
+        api.advance(1)
+    if replay:
+        batch()
+        api.advance(1)
+    case.since()
+    if failure:
+        case.store.arm("health")
+    outcome = batch()
+    out = case.result(outcome)
+    out["published"], out["audits"] = len(published), audits
+    return json.loads(json.dumps(out))
+
+
 def run(api) -> dict:
     return {
         "handle_success": handle(api, "handle_success"),
@@ -586,4 +782,31 @@ def run(api) -> dict:
         "cancel_c_repeat": cancel(api, "cancel_c_repeat", repeat=True),
         "cancel_unauthorized": cancel(api, "cancel_unauthorized", actor="stranger"),
         "cancel_no_reason": cancel(api, "cancel_no_reason", reason=""),
+        "migrate_host_success": migrate_host(api, "migrate_host_success"),
+        "migrate_host_a_failure_at_registry": migrate_host(api, "migrate_host_a_failure", failure=True),
+        "migrate_host_b_stale_digest": migrate_host(api, "migrate_host_b_stale", stale=True),
+        "migrate_host_c_replay": migrate_host(api, "migrate_host_c_replay", replay=True),
+        "migrate_host_not_paused": migrate_host(api, "migrate_host_not_paused", paused=False),
+        "migrate_host_conflict": migrate_host(api, "migrate_host_conflict", conflict=True),
+        "migrate_host_incomplete_lanes": migrate_host(api, "migrate_host_incomplete", incomplete=True),
+        "prepare_success": prepare(api, "prepare_success"),
+        "prepare_c_repeat": prepare(api, "prepare_c_repeat", repeat=True),
+        "prepare_b_unrelated_state": prepare(api, "prepare_b_unrelated", status="succeeded"),
+        "prepare_ceiling_not_above_attempts": prepare(api, "prepare_ceiling", max_attempts=1),
+        "prepare_no_reason": prepare(api, "prepare_no_reason", reason=""),
+        "prepare_past_deadline": prepare(api, "prepare_past_deadline", deadline="2000-01-01T00:00:00+00:00"),
+        "prepare_wrong_role": prepare(api, "prepare_wrong_role", actor=WORKER),
+        "apply_success": apply(api, "apply_success"),
+        "apply_a_failure_at_recoveries": apply(api, "apply_a_failure", failure=True),
+        "apply_b_stale_snapshot": apply(api, "apply_b_stale", stale=True),
+        "apply_c_replay": apply(api, "apply_c_replay", replay=True),
+        "apply_expired_packet": apply(api, "apply_expired", expired=True),
+        "apply_wrong_role": apply(api, "apply_wrong_role", actor=WORKER),
+        "apply_evidence_lost": apply(api, "apply_evidence_lost", evidence_lost=True),
+        "relay_success": relay(api, "relay_success"),
+        "relay_a_failure_at_health": relay(api, "relay_a_failure", failure=True),
+        "relay_c_replay": relay(api, "relay_c_replay", queued=1, replay=True),
+        "relay_d_publish_depth": relay(api, "relay_d_publish_depth", queued=1),
+        "relay_poison_record": relay(api, "relay_poison_record", poison=True),
+        "relay_scoped_publish": relay(api, "relay_scoped_publish", queued=1, scope="corr-relay"),
     }
