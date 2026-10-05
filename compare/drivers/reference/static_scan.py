@@ -134,7 +134,9 @@ def tracked_files():
 
 def path_class(path: str) -> str:
     top = path.split("/", 1)[0]
-    if path.startswith("docs/context/") or path in {"AGENTS.md"}:
+    # DESIGN-s11 section 8 SH-a: docs/contracts.md is the contract SSOT (AGENTS.md), so a pinned argv named there is a
+    # pin, not history; the rest of docs/** stays docs_history (the int44 procedure, DESIGN-s10 section 16b).
+    if path.startswith("docs/context/") or path in {"AGENTS.md", "docs/contracts.md"}:
         return "contract_docs"
     return {"src": "src", "tests": "tests", "deploy": "deploy", "scripts": "scripts",
             "docs": "docs_history"}.get(top, "other")
