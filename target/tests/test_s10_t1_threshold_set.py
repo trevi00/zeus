@@ -12,6 +12,7 @@ from pathlib import Path
 from types import SimpleNamespace
 
 import pytest
+from _layout import REPO
 
 from codex_harness.entry.cli import threshold_proposals
 from codex_harness.host_os.adapters.git_workspace import GitWorkspace
@@ -21,7 +22,6 @@ from codex_harness.research.adapters.runtime_thresholds import effective_policy
 from codex_harness.storage.adapters.memory_store import MemoryStore
 
 PACKAGE = Path(threshold_policy.__file__).resolve().parents[2]
-REPO = PACKAGE.parents[2]
 PROJECT_ID = "2f6f5f64-8d3c-4c6e-9b1e-1f0a5f3e7a11"
 
 
