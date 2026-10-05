@@ -12279,25 +12279,25 @@
   "kind": "ported",
   "target": "target/tests/ported/test_host_migration_evidence.py::test_a_link_in_place_of_a_file_is_unknown"
  },
- "tests/test_host_migration_evidence.py::test_a_malformed_dsn_or_a_secret_variable_is_refused_without_its_value[--control-dsn-env-postgresql://zeus:hun%zzter2@127.0.0.1/zeus]": {
+ "tests/test_host_migration_evidence.py::test_a_malformed_dsn_or_a_secret_variable_is_refused_without_its_value[--control-dsn-env-postgresql:\u002f\u002fzeus:hun%zzter2@127.0.0.1/zeus]": {
   "kind": "ported",
-  "target": "target/tests/ported/test_host_migration_evidence.py::test_a_malformed_dsn_or_a_secret_variable_is_refused_without_its_value[--control-dsn-env-postgresql://zeus:hun%zzter2@127.0.0.1/zeus]"
+  "target": "target/tests/ported/test_host_migration_evidence.py::test_a_malformed_dsn_or_a_secret_variable_is_refused_without_its_value[--control-dsn-env-postgresql:\u002f\u002fzeus:hun%zzter2@127.0.0.1/zeus]"
  },
- "tests/test_host_migration_evidence.py::test_a_malformed_dsn_or_a_secret_variable_is_refused_without_its_value[--control-dsn-env-postgresql://zeus:hunter2@[unterminated/zeus]": {
+ "tests/test_host_migration_evidence.py::test_a_malformed_dsn_or_a_secret_variable_is_refused_without_its_value[--control-dsn-env-postgresql:\u002f\u002fzeus:hunter2@[unterminated/zeus]": {
   "kind": "ported",
-  "target": "target/tests/ported/test_host_migration_evidence.py::test_a_malformed_dsn_or_a_secret_variable_is_refused_without_its_value[--control-dsn-env-postgresql://zeus:hunter2@[unterminated/zeus]"
+  "target": "target/tests/ported/test_host_migration_evidence.py::test_a_malformed_dsn_or_a_secret_variable_is_refused_without_its_value[--control-dsn-env-postgresql:\u002f\u002fzeus:hunter2@[unterminated/zeus]"
  },
  "tests/test_host_migration_evidence.py::test_a_malformed_dsn_or_a_secret_variable_is_refused_without_its_value[--control-dsn-env-sk-live-hunter2-secret]": {
   "kind": "ported",
   "target": "target/tests/ported/test_host_migration_evidence.py::test_a_malformed_dsn_or_a_secret_variable_is_refused_without_its_value[--control-dsn-env-sk-live-hunter2-secret]"
  },
- "tests/test_host_migration_evidence.py::test_a_malformed_dsn_or_a_secret_variable_is_refused_without_its_value[--dsn-env-postgresql://zeus:hun%zzter2@127.0.0.1/zeus]": {
+ "tests/test_host_migration_evidence.py::test_a_malformed_dsn_or_a_secret_variable_is_refused_without_its_value[--dsn-env-postgresql:\u002f\u002fzeus:hun%zzter2@127.0.0.1/zeus]": {
   "kind": "ported",
-  "target": "target/tests/ported/test_host_migration_evidence.py::test_a_malformed_dsn_or_a_secret_variable_is_refused_without_its_value[--dsn-env-postgresql://zeus:hun%zzter2@127.0.0.1/zeus]"
+  "target": "target/tests/ported/test_host_migration_evidence.py::test_a_malformed_dsn_or_a_secret_variable_is_refused_without_its_value[--dsn-env-postgresql:\u002f\u002fzeus:hun%zzter2@127.0.0.1/zeus]"
  },
- "tests/test_host_migration_evidence.py::test_a_malformed_dsn_or_a_secret_variable_is_refused_without_its_value[--dsn-env-postgresql://zeus:hunter2@[unterminated/zeus]": {
+ "tests/test_host_migration_evidence.py::test_a_malformed_dsn_or_a_secret_variable_is_refused_without_its_value[--dsn-env-postgresql:\u002f\u002fzeus:hunter2@[unterminated/zeus]": {
   "kind": "ported",
-  "target": "target/tests/ported/test_host_migration_evidence.py::test_a_malformed_dsn_or_a_secret_variable_is_refused_without_its_value[--dsn-env-postgresql://zeus:hunter2@[unterminated/zeus]"
+  "target": "target/tests/ported/test_host_migration_evidence.py::test_a_malformed_dsn_or_a_secret_variable_is_refused_without_its_value[--dsn-env-postgresql:\u002f\u002fzeus:hunter2@[unterminated/zeus]"
  },
  "tests/test_host_migration_evidence.py::test_a_malformed_dsn_or_a_secret_variable_is_refused_without_its_value[--dsn-env-sk-live-hunter2-secret]": {
   "kind": "ported",
