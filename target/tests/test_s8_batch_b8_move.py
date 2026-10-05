@@ -18,7 +18,7 @@ from pathlib import Path
 from types import SimpleNamespace
 
 import pytest
-from _layout import REPO
+from _layout import REPO, TARGET
 
 from codex_harness.coordination.application import sessions
 from codex_harness.kernel import strict_json
@@ -196,12 +196,12 @@ def test_device_probe_without_adb_spawns_nothing_and_needs_no_run_process(tmp_pa
 # ----- session_action ------------------------------------------------------------------------------------------------------------------------
 def test_session_action_is_m7s_function_and_the_rest_of_sessions_is_unchanged():
     theirs = statements(git_show(SOURCE, MODEL_M7))["session_action"]
-    ours = statements(Path(REPO / SESSIONS).read_text())
+    ours = statements(Path(TARGET / SESSIONS.removeprefix("target/")).read_text())
     assert ast.dump(ours["session_action"]) == ast.dump(theirs)
     base = statements(git_show(BASE_HEAD, SESSIONS))
     assert [k for k in ours if k != "session_action"] == list(base)
     assert all(ast.dump(ours[k]) == ast.dump(base[k]) for k in base)
-    assert import_modules(Path(REPO / SESSIONS).read_text()) == ["__future__", "codex_harness.kernel.errors", "codex_harness.kernel.ids",
+    assert import_modules(Path(TARGET / SESSIONS.removeprefix("target/")).read_text()) == ["__future__", "codex_harness.kernel.errors", "codex_harness.kernel.ids",
                                                                    "codex_harness.kernel.policy"]
     assert sessions.POLICY is POLICY
 

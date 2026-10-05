@@ -13,6 +13,7 @@ from pathlib import Path
 from types import SimpleNamespace
 
 import pytest
+from _layout import REPO, TESTS
 
 from codex_harness import composition
 from codex_harness.composition import cli_host_delivery as wiring
@@ -41,9 +42,8 @@ from codex_harness.kernel.errors import ContractError
 from codex_harness.routing.adapters.organization_source import packaged_organization
 from codex_harness.storage.adapters.memory_store import MemoryStore
 
-TESTS = Path(__file__).resolve().parent
 SHIM = TESTS / "ported" / "m7_delivery.py"
-COMPOSITION_DRIVER = TESTS.parents[1] / "compare" / "drivers" / "target" / "s7_delivery_composition.py"
+COMPOSITION_DRIVER = REPO / "compare" / "drivers" / "target" / "s7_delivery_composition.py"
 CONTROL_DSN = "postgresql://fixture@fixture-host/control"  # a label: nothing connects to it
 
 

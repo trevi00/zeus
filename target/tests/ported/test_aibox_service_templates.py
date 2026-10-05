@@ -30,6 +30,7 @@ from pathlib import Path
 from types import SimpleNamespace
 
 import pytest
+from _layout import TARGET as ROOT
 
 
 def _linux_tool_importable() -> bool:
@@ -50,7 +51,7 @@ if not _linux_tool_importable():
     pytest.skip("aibox service tooling is Linux-only (needs POSIX fcntl/pwd); not supported on "
                 "this platform", allow_module_level=True)
 
-ROOT = Path(__file__).resolve().parents[2]
+
 TOOL = ROOT / "deploy" / "aibox" / "zeus_aibox_service.py"
 REVISION = "a" * 40
 

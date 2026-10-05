@@ -36,7 +36,7 @@ def base_text(path):
 
 
 def now_text(path):
-    return (REPO / path).read_text()
+    return (TARGET / path.removeprefix("target/")).read_text()
 
 
 def method(src, klass, name):

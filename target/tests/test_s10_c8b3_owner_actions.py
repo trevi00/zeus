@@ -13,6 +13,7 @@ from pathlib import Path
 from types import SimpleNamespace
 
 import pytest
+from _layout import TESTS
 
 from codex_harness import composition
 from codex_harness.composition import configuration
@@ -29,7 +30,6 @@ from codex_harness.kernel.ids import SYSTEM_CLOCK, SYSTEM_IDS, utcnow
 from codex_harness.routing.adapters.organization_source import packaged_organization
 from codex_harness.storage.adapters.memory_store import MemoryStore
 
-TESTS = Path(__file__).resolve().parent
 PORTED = TESTS / "ported"
 CONTROL_DSN = "postgresql://fixture@fixture-host/control"  # a label: nothing connects to it
 CANDIDATE = "a" * 40

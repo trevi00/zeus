@@ -14,6 +14,7 @@ import sys
 from pathlib import Path
 
 import pytest
+from _layout import TARGET
 
 from codex_harness import composition
 from codex_harness.composition import (
@@ -111,7 +112,7 @@ def test_the_entry_module_has_no_unimplemented_carry():
 
 
 # ----- E5c: the host-migration CLI process -------------------------------------------------------------------------------------------
-TARGET = Path(__file__).resolve().parents[1]
+
 M7_SOURCE = Path("/home/trevi/workspaces/zeus/scratch/m7-source-e38aa722/src")
 
 

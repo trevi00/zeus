@@ -16,14 +16,13 @@ A/evidence/rebuild/s9/integration/x4a-promtool.txt.
 from __future__ import annotations
 
 import re
-from pathlib import Path
 
 import yaml
+from _layout import TARGET
 
 from codex_harness.observation.adapters.resource_facts import _FAMILIES as RESOURCE_FAMILIES
 from codex_harness.observation.domain.metric_families import FAMILIES
 
-TARGET = Path(__file__).resolve().parents[1]
 RULES_DIR = TARGET / "deploy" / "observability" / "prometheus" / "rules"
 RULES = RULES_DIR / "zeus-s9.yml"
 TESTS = RULES_DIR / "zeus-s9.test.yml"

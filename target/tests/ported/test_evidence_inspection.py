@@ -25,6 +25,7 @@ import time
 from pathlib import Path
 
 import pytest
+from _layout import TARGET
 from m7_coordination import Workflow, organization
 from m7_evidence import (
     POLICY_FILE,
@@ -240,7 +241,7 @@ def test_the_profile_metadata_module_replays_only_as_its_exact_argv(tmp_path):
     assert authorized(['python', '-m', 'pytest', '-q'], packaged) and authorized(['python', '-m', 'ruff', 'check', '.'], packaged)
     assert not authorized(exact, parse_policy(policy())), 'no policy entry, no grant'
     insp = EvidenceInspector(FileArtifacts(str(tmp_path / 'artifacts')))
-    checkout = Path(__file__).resolve().parents[2]  # adapted: the target checkout (cwd of the packaged command) is `target/`
+    checkout = TARGET
     report = insp.inspect([' '.join(exact), ' '.join(exact) + ' --help', 'python -m codex_harness.adapters.worker_profile'],
                           checkout, {'task_id': 't', 'attempt': 1})
     checked, extra, other = report['findings']

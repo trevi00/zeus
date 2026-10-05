@@ -10,7 +10,9 @@ import subprocess
 import sys
 from pathlib import Path
 
-SRC = Path(__file__).resolve().parents[1] / "src"
+from _layout import TARGET
+
+SRC = TARGET / "src"
 CHOKEPOINT = SRC / "codex_harness" / "host_os" / "adapters" / "process_groups.py"
 CREATORS = {"Popen", "run", "call", "check_call", "check_output", "getoutput", "getstatusoutput"}
 OS_SPAWN = ("exec", "spawn", "posix_spawn", "system", "popen", "fork")

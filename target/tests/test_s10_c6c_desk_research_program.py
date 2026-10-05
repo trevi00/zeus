@@ -11,6 +11,7 @@ from pathlib import Path
 from types import SimpleNamespace
 
 import pytest
+from _layout import REPO
 from filelock import FileLock
 
 from codex_harness import composition
@@ -264,7 +265,7 @@ def test_recover_of_a_revocation_builds_no_probe_and_a_successor_reads_the_evide
 
 
 def program_document(head: str) -> dict:
-    path = Path(__file__).resolve().parents[2] / "compare" / "drivers" / "common" / "s10_cli_desk_program.py"
+    path = REPO / "compare" / "drivers" / "common" / "s10_cli_desk_program.py"
     spec = importlib.util.spec_from_file_location("s10_cli_desk_program", path)
     module = importlib.util.module_from_spec(spec)
     spec.loader.exec_module(module)

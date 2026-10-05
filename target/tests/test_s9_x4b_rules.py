@@ -11,9 +11,9 @@ docstring on `zeus-s9b.yml` and `zeus-s9b.test.yml`. No docker runs here.
 from __future__ import annotations
 
 import re
-from pathlib import Path
 
 import yaml
+from _layout import TARGET
 
 from codex_harness.observation.adapters.queue_facts import _FAMILIES as QUEUE_FAMILIES
 from codex_harness.observation.adapters.redis_stream_facts import _FAMILIES as REDIS_FAMILIES
@@ -21,7 +21,6 @@ from codex_harness.observation.adapters.resource_facts import _FAMILIES as RESOU
 from codex_harness.observation.domain.feature_registry import INSTRUMENTED
 from codex_harness.observation.domain.metric_families import FAMILIES
 
-TARGET = Path(__file__).resolve().parents[1]
 RULES_DIR = TARGET / "deploy" / "observability" / "prometheus" / "rules"
 RULES = RULES_DIR / "zeus-s9b.yml"
 OTHER_RULES = RULES_DIR / "zeus-s9.yml"

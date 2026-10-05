@@ -16,6 +16,7 @@ from pathlib import Path
 from types import SimpleNamespace
 
 import pytest
+from _layout import REPO
 
 sys.path.insert(0, str(Path(__file__).resolve().parent))
 sys.path.insert(0, str(Path(__file__).resolve().parent / "ported"))
@@ -209,8 +210,8 @@ def test_the_isolated_worker_passes_the_hook_builder_to_the_codex_role_container
 
 
 # ---- the host hook configuration equals the SOURCE rows of the hooks.native_container golden --------------
-GOLDEN = Path(__file__).resolve().parents[2] / "compare" / "goldens" / "reference" / "hooks.native_container.json"
-sys.path.insert(0, str(GOLDEN.parents[2] / "drivers" / "common"))
+GOLDEN = REPO / "compare" / "goldens" / "reference" / "hooks.native_container.json"
+sys.path.insert(0, str(REPO / "compare" / "drivers" / "common"))
 from s1_common import outcome, relative  # noqa: E402
 
 

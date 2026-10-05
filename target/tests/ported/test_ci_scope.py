@@ -17,10 +17,11 @@ from pathlib import Path
 
 import pytest
 import yaml
+from _layout import REPO as ROOT
 
-ROOT = Path(__file__).resolve().parents[3]  # S11 M B6: the repo root from target/tests/ported
 # S11 R-S1: the project root (target/ now, the repo root after the promotion) that holds scripts/
-PROJECT = next(p for p in Path(__file__).resolve().parents if (p / "src" / "codex_harness").is_dir())
+from _layout import TARGET as PROJECT
+
 DOC = "docs/zeus/operations/ci-separation-001/OPERATIONS.md"
 SHA_A = "a" * 40
 

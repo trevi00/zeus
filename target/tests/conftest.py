@@ -11,12 +11,11 @@
 
 import os
 import sys
-from pathlib import Path
 
 import pytest
+from _layout import REPO as ROOT
+from _layout import TARGET
 
-TARGET = Path(__file__).resolve().parents[1]
-ROOT = TARGET.parent
 TARGET_SRC = TARGET / "src"
 sys.path.insert(0, str(ROOT / "compare" / "guard"))
 sys.path.insert(0, str(ROOT / "compare" / "harness"))

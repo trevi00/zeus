@@ -4,9 +4,9 @@ import copy
 import json
 import re
 from importlib.resources import files
-from pathlib import Path
 
 import pytest
+from _layout import TARGET
 
 from codex_harness.context.adapters.role_examples import load_role_examples
 from codex_harness.context.domain.role_examples import FORBIDDEN, MAX_FIELD, select, validate
@@ -15,7 +15,8 @@ from codex_harness.kernel.errors import ContractError
 AGENTS = [a["id"] for a in json.loads(
     files("codex_harness.resources").joinpath("organization.json").read_text())["agents"]]
 RAW = json.loads(files("codex_harness.context").joinpath("role-examples-v1.json").read_text())
-SRC = Path(__file__).resolve().parents[1] / "src"
+
+SRC = TARGET / "src"
 
 
 def test_packaged_file_validates_against_organization():

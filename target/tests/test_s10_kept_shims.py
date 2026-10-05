@@ -6,13 +6,12 @@ import ast
 import json
 import subprocess
 import sys
-from pathlib import Path
 
 import import_rules
 import pytest
+from _layout import REPO, TARGET
 
-TARGET = Path(__file__).resolve().parents[1]
-GOLDEN = json.loads((TARGET.parent / "compare/goldens/reference/static.source.json").read_text(encoding="utf-8"))
+GOLDEN = json.loads((REPO / "compare/goldens/reference/static.source.json").read_text(encoding="utf-8"))
 CONDITIONAL = GOLDEN["shims"]["conditional"]
 RESTORED = ("codex_harness.adapters.artifact_reader", "codex_harness.adapters.host_migration",
             "codex_harness.adapters.migrations", "codex_harness.adapters.service_entry")

@@ -11,10 +11,10 @@ import subprocess
 import sys
 import time
 from datetime import datetime, timedelta, timezone
-from pathlib import Path
 from types import SimpleNamespace
 
 import pytest
+from _layout import TARGET
 from filelock import FileLock
 
 from codex_harness.composition import ServiceHandle, supervisor
@@ -22,7 +22,7 @@ from codex_harness.kernel.errors import ContractError
 from codex_harness.observation.application.catalog_observer import CatalogCheckingObserver
 from codex_harness.storage.adapters.memory_store import MemoryStore
 
-TARGET_SRC = Path(__file__).resolve().parent.parent / "src"
+TARGET_SRC = TARGET / "src"
 SHIM = TARGET_SRC / "codex_harness" / "supervisor.py"
 UP = ["docker", "compose", "up", "-d", "--wait", "postgres", "redis"]
 PS = ["docker", "compose", "ps", "--all", "--format", "json"]

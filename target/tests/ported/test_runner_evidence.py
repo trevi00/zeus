@@ -28,11 +28,12 @@ from types import SimpleNamespace
 
 import pytest
 
-from codex_harness.host_os.adapters.scratch import Scratch, file_digest
-
 # S11 R-S1: the repository root is the project that holds `src/codex_harness` (target/ now, the repository root after the promotion);
 # the ported script lives at PROJECT/scripts and the protocol child is copied beside this file.
-PROJECT = next(p for p in Path(__file__).resolve().parents if (p / "src" / "codex_harness").is_dir())
+from _layout import TARGET as PROJECT
+
+from codex_harness.host_os.adapters.scratch import Scratch, file_digest
+
 CHILD = Path(__file__).resolve().parent / "claude_protocol_child.py"
 
 

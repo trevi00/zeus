@@ -11,12 +11,10 @@ import subprocess
 import sys
 import time
 from collections import Counter
-from pathlib import Path
 
 import pytest
+from _layout import REPO, TARGET, TARGET_PREFIX
 
-TARGET = Path(__file__).resolve().parents[1]
-REPO = TARGET.parent
 SPEC = importlib.util.spec_from_file_location("test_node_map", REPO / "coverage" / "test_node_map.py")
 gen = importlib.util.module_from_spec(SPEC)
 SPEC.loader.exec_module(gen)
@@ -33,7 +31,7 @@ def target_ids():
     done = subprocess.run([sys.executable, "-m", "pytest", "--collect-only", "-q", "-p", "no:cacheprovider", "tests"],
                           cwd=TARGET, capture_output=True, text=True, check=True, timeout=COLLECTION_SECONDS)
     assert time.monotonic() - start < COLLECTION_SECONDS
-    return sorted("target/" + x for x in done.stdout.splitlines() if "::" in x)
+    return sorted(TARGET_PREFIX + x for x in done.stdout.splitlines() if "::" in x)
 
 
 @pytest.fixture(scope="module")

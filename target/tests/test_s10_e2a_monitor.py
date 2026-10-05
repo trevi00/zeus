@@ -7,10 +7,10 @@ import ast
 import json
 import subprocess
 import sys
-from pathlib import Path
 from types import SimpleNamespace
 
 import pytest
+from _layout import TARGET
 from filelock import FileLock
 
 from codex_harness.composition import monitor as composition_monitor
@@ -22,7 +22,8 @@ from codex_harness.observation.adapters import collectors, viewer_http
 from codex_harness.storage.adapters.memory_store import MemoryStore
 
 REVISION = "a" * 40
-SRC = Path(__file__).resolve().parents[1] / "src" / "codex_harness"
+
+SRC = TARGET / "src" / "codex_harness"
 
 
 # ----- listener_refusal (INV-MONITOR-VIEWER-001) ---------------------------------------------------------------------------------------

@@ -20,6 +20,7 @@ Every assertion is M7's, unchanged. Adaptations, all construction/import/patch-p
 from datetime import datetime, timedelta, timezone
 
 import pytest
+from _layout import REPO
 from m7_coordination import Workflow, organization
 from m7_delivery import Releases
 
@@ -199,7 +200,6 @@ def test_executor_blocked_inspection_never_records_release_review(tmp_path, monk
 
 def test_executor_persists_blocked_command_evidence_before_returning(tmp_path, monkeypatch):
     import json
-    from pathlib import Path
     from types import SimpleNamespace
 
     from m7_executor import Executor
@@ -208,7 +208,7 @@ def test_executor_persists_blocked_command_evidence_before_returning(tmp_path, m
     from codex_harness.execution.domain.output_contracts import VERDICT
     from codex_harness.storage.adapters.file_artifacts import FileArtifacts
 
-    manifest = json.loads((Path(__file__).resolve().parents[3] /
+    manifest = json.loads((REPO /
                            'harness_hooks/hook-ab97ba09554daa5aec289867.json').read_text())
     failure = manifest['cases']['reproduction'][0]['input']
     runtime_result = {'answer': None, 'model_answer_text': '{"accepted":true}',
@@ -257,7 +257,6 @@ def test_blocked_transport_end_to_end(tmp_path, monkeypatch, ending, phase, acto
     import signal
     import subprocess
     import sys
-    from pathlib import Path
     from types import SimpleNamespace
 
     from m7_executor import Executor
@@ -266,7 +265,7 @@ def test_blocked_transport_end_to_end(tmp_path, monkeypatch, ending, phase, acto
     from codex_harness.execution.adapters.providers.codex_app_server import AppServer
     from codex_harness.storage.adapters.file_artifacts import FileArtifacts
 
-    manifest = json.loads((Path(__file__).resolve().parents[3] /
+    manifest = json.loads((REPO /
                            'harness_hooks/hook-ab97ba09554daa5aec289867.json').read_text())
     failure = manifest['cases']['reproduction'][0]['input']
     clock = SimpleNamespace(now=0)

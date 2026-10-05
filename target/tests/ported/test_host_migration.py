@@ -38,6 +38,7 @@ from contextlib import contextmanager
 from pathlib import Path
 
 import pytest
+from _layout import TARGET as ROOT
 from m7_delivery import HostMigrations, MemoryStore
 from m7_delivery import host_migration as adapter
 
@@ -54,8 +55,6 @@ from codex_harness.delivery.domain.host_delivery import (
 from codex_harness.delivery.domain.host_migration import MigrationRefused
 from codex_harness.entry.processes import host_migration as entry_cli
 from codex_harness.kernel.ids import canonical, digest
-
-ROOT = Path(__file__).resolve().parents[2]  # adaptation: the target tree
 
 
 def _tool(name: str):
