@@ -386,6 +386,23 @@
     }
    },
    "producer_sites": "observation.adapters.viewer_http.Handler (S11 XC-2b B2)"
+  },
+  "operations.task_spec_bound": {
+   "owner_context": "coordination",
+   "category": "operations",
+   "severity": "info",
+   "boundary": "task_submission",
+   "attributes": {
+    "task_id": {
+     "type": "string",
+     "opaque": true
+    },
+    "spec_digest": {
+     "type": "string",
+     "opaque": true
+    }
+   },
+   "producer_sites": "coordination.application.workflow.Workflow.submit (S11 XC-3)"
   }
  },
  "separate_logs": {

@@ -36,12 +36,12 @@ def _serve(service, agent: str, once: bool, execute: bool = False, observer=None
     bus = cli_bus.bus()
     consumer = f"{agent}:{uuid4()}"
     last_activity = time.monotonic()
-    workflow = cli_cycle.serve_handler(service)
     record_incident = cli_cycle.incident_recorder(service)
     flusher = cli_bus.flusher(service)
     # INV-OBSERVATION-001: one process run, one spool; message receipt, ledger acceptance and the
     # transport acknowledgement are three separate general-log facts, none of them a task result.
     observer = observer or build_observer(service.store, "cli.serve", agent)
+    workflow = cli_cycle.serve_handler(service, observer)  # S11 XC-3: task_spec_bound goes through this observer
     if execute:
         from codex_harness.composition.operation import build_executor
         executor = build_executor(service, observer=observer)

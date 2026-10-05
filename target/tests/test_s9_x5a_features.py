@@ -53,7 +53,7 @@ IDS = ("model_invocation", "task_execution", "worker_sessions", "message_relay",
 def test_every_registry_type_is_in_exactly_one_feature_and_no_proof_event_is_outside_it():
     proofs = [event for feature in FEATURES.values() for event in feature.proof_events]
     assert len(proofs) == len(set(proofs))
-    assert set(proofs) == set(REGISTRY) and len(REGISTRY) == 77  # 76 + S11 XC-2b B2 `operations.http_request_refused`
+    assert set(proofs) == set(REGISTRY) and len(REGISTRY) == 78  # 76 + S11 XC-2b B2 `operations.http_request_refused` + S11 XC-3 `operations.task_spec_bound`
     assert FEATURE_OF == {event: feature.id for feature in FEATURES.values() for event in feature.proof_events}
     assert all(feature.id == key for key, feature in FEATURES.items())
 

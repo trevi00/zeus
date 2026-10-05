@@ -22,13 +22,13 @@ SOURCE = "e38aa722"
 M7_OBSERVATION = "src/codex_harness/domain/observation.py"
 CANARY = "CANARY-9f3b1c7e2a5d4f6b8e0c1d2a3b4c5d6e"
 TYPE_KEYS = {"_S": obs._S, "_I": obs._I, "_B": obs._B, "_F": obs._F, "_N": obs._N, "_NI": obs._NI, "_NB": obs._NB}
-OPAQUE_NAMES = {"role", "provider", "check", "feature", "collector"}
+OPAQUE_NAMES = {"role", "provider", "check", "feature", "collector", "spec_digest"}  # + S11 XC-3 `spec_digest`
 NEW = {"operations.queue_item_waited", "development.role_dispatch_decided", "operations.capacity_refused",
        "development.tool_call_completed", "development.skill_selected", "operations.ci_observed",
        "operations.cleanup_recorded", "operations.collector_started", "operations.path_declined",
        "development.usage_split_recorded"}
 # S11 XC-2b B2 (declared addition): the eleventh catalog event; its producer is the viewer/desk handler, not "measured at X1b".
-S11_ADDED = {"operations.http_request_refused"}
+S11_ADDED = {"operations.http_request_refused", "operations.task_spec_bound"}  # + S11 XC-3
 
 
 def m7_registry():
