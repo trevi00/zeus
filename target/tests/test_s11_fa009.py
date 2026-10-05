@@ -5,7 +5,8 @@ test text both reads source (`read_text`/`read_bytes`/`getsource`/`ast.parse`/`a
 location. The detector regexes, `wiring_assertions` and the positive/negative controls are M7's, verbatim; only the scanned
 tree moves from M7 `tests/` to the target test tree (the top level and `ported/`; `fixtures/` holds data, not tests). M7
 exempts exactly `test_architecture.py` (a structural policy test), kept here by name. A flagged test is a finding for the
-owner, never an allowlist entry: `OWNER_PENDING` below lists any file the owner has not yet ruled on, with file and line.
+owner, never a silent allowlist entry. `STRUCTURAL_PINS` below holds the assertions the owner has ruled on, by file and
+line (tighter than M7's per-file allowlist, so a new source-text assertion in those files is still found).
 """
 
 import ast
@@ -20,7 +21,11 @@ PRODUCTION_LOCATIONS = re.compile(r"(src/|scripts/|harness_hooks/|codex_harness[
 WIRING_ALLOWLIST = {"test_architecture.py"}
 # FINDINGS awaiting an owner ruling, not waivers: the detector flags these S8/S10 move-pin assertions (AST/source-text
 # checks of production code). {file relative to target/tests: [assert lines]}. Each entry is removed by a ruling.
-OWNER_PENDING: dict[str, list[int]] = {
+# Owner ruling (DESIGN-s11 §6.1, 2026-10-05): these 8 assertions are in the S8 move-fidelity pins. They are structural
+# policy tests by purpose: they pin the import sets and moved-symbol shapes of the S8 moves. That is M7's own exempt
+# category ("Structural policy tests inspect source deliberately"). The moved code's behaviour is covered by its ported
+# suites and compare families. They are exempt line by line, never whole files.
+STRUCTURAL_PINS: dict[str, list[int]] = {
     "test_s8_audit_progress_move.py": [134],
     "test_s8_batch_b5a_move.py": [187],
     "test_s8_batch_b7a_move.py": [82, 133],
@@ -58,7 +63,7 @@ def test_tests_assert_behavior_not_source_text():
             continue
         rel = test.relative_to(TESTS).as_posix()
         offenders += [(rel, line, text) for line, text in wiring_assertions(test.read_text(encoding="utf-8-sig"))
-                      if line not in OWNER_PENDING.get(rel, [])]
+                      if line not in STRUCTURAL_PINS.get(rel, [])]
     assert offenders == [], offenders
 
 
