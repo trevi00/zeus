@@ -47,6 +47,7 @@ def test_freshness(offset, reason):
 
 
 def test_missing_invalid_zero_insufficient_and_legacy():
+    # Cites INV-METRIC-001 (S11 CT; DESIGN-s11 §5 R-L9): this test exercises the contract's stated behaviour.
     for data in (None, {}, evidence(), evidence(task(), task())):
         assert evaluate(DEFINITIONS[0], data, NOW).value is None
     insufficient = evaluate(replace(DEFINITIONS[0], minimum_samples=2), evidence(task()), NOW)
