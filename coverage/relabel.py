@@ -980,6 +980,11 @@ class Relabel:
             cls, state, reason = self.item(e) if non_bucket or e.startswith("pending:") else (CONTEXT, "context", "")
             if cls == PENDING:
                 unmet.append(e)
+            elif kind == "flow" and cls != EXEC:
+                # R-FLOW (DESIGN-s11 §11): every listed item of a flow row is one step's driving item and must pass;
+                # a context item (reference-only family, static pointer) drives nothing, so it never counts.
+                unmet.append(f"flow item is not an executable item: {e}")
+                blocking = True
             elif cls == EXEC:
                 exec_exist = True
                 if state == "pass":

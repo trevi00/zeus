@@ -960,3 +960,55 @@ def test_the_dotless_top_level_package_resolves_and_a_nonexistent_dotless_name_d
     assert any(u.startswith("target symbol is not a code symbol") for u in got["ghost"]["verification"]["unmet"])
     absent = module_rows(tree, nowhere="codex_harness.nowhere")["nowhere"]
     assert absent["status"] == "designed"
+
+
+# ------------------------------------------------------------------------------------ flow rows (DESIGN-s11 §11 R-FLOW)
+
+FLOW_STEPS = ("codex_harness.research.mod:Thing", "codex_harness.research.mod:Thing.go")
+FLOW_ITEMS = ("compare:fam", "target:tests/test_b.py::test_other")
+
+
+def flow(evidence=FLOW_ITEMS, symbol=FLOW_STEPS):
+    return row(kind="flow", key="flow:a traced flow", evidence=evidence, symbol=symbol, owner="research", slice_="S7")
+
+
+def test_a_flow_is_verified_when_every_step_symbol_resolves_and_every_item_passes(tree):
+    out, _ = run([flow()], tree)
+    assert out["flow:a traced flow"]["status"] == "verified"
+    assert out["flow:a traced flow"]["verification"]["passed"] == sorted(FLOW_ITEMS)
+
+
+@pytest.mark.parametrize("failed", FLOW_ITEMS)
+def test_one_failing_item_leaves_the_flow_implemented_and_names_the_item(tree, failed):
+    # R-FLOW: one passing family never verifies a whole flow.
+    compare = {"fam": {"target": "equal", "reference": "equal", "origin_ok": True, "target_origin_ok": True}}
+    if failed.startswith("compare:"):
+        compare["fam"]["target"] = "differs"
+        bundle = bundle_for(compare=compare)
+    else:
+        bundle = bundle_for(not_passed={"tests/test_b.py::test_other": "failure"})
+    out, _ = run([flow()], tree, bundle)
+    assert out["flow:a traced flow"]["status"] == "implemented"
+    assert has_unmet(out["flow:a traced flow"], "compare not equal: compare:fam" if failed.startswith("compare:")
+                     else "target test not passing: target:tests/test_b.py::test_other")
+
+
+def test_a_missing_step_symbol_leaves_the_flow_unverified(tree):
+    out, _ = run([flow(symbol=(*FLOW_STEPS, "codex_harness.research.mod:Absent"))], tree)
+    assert out["flow:a traced flow"]["status"] == "designed"
+    assert has_unmet(out["flow:a traced flow"], "target symbol does not resolve: codex_harness.research.mod:Absent")
+
+
+@pytest.mark.parametrize("extra, prefix", [("compare:nodrv", "flow item is not an executable item: compare:nodrv"),
+                                           ("static:compare/x.json#y", "flow item is not an executable item: static:"),
+                                           ("pending: flow scenarios in the owning slices", "pending: flow scenarios")])
+def test_a_context_or_pending_item_never_verifies_a_flow_step(tree, extra, prefix):
+    out, _ = run([flow(evidence=(*FLOW_ITEMS, extra))], tree)
+    assert out["flow:a traced flow"]["status"] != "verified"
+    assert has_unmet(out["flow:a traced flow"], prefix)
+
+
+def test_a_flow_with_no_listed_item_is_not_verified(tree):
+    out, _ = run([flow(evidence=())], tree)
+    assert out["flow:a traced flow"]["status"] == "designed"
+    assert has_unmet(out["flow:a traced flow"], "no passing executable item")
