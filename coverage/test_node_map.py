@@ -46,7 +46,7 @@ PENDING_FILES = ("tests/test_probe_ownership.py", "tests/test_runner_evidence.py
 PENDING_REASON = "PREP-S11 §9 #3: the root-script disposition at unit P"
 
 
-# compare/run.py check-tree refuses any added file holding `scheme://user:password@`; 9 M7 parametrize IDs embed fake DSNs.
+# compare/run.py check-tree refuses any added file holding a URL with a password in its userinfo; 9 M7 parametrize IDs embed fake DSNs.
 # On disk every `://` is written `:\x2f\x2f` (no M7 ID contains the backslash form), so the stored files stay clean while the
 # keys and targets in memory are the exact node IDs.
 ESCAPED_SLASHES = ":\\x2f\\x2f"
