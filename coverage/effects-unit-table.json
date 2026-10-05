@@ -8,17 +8,6 @@
    "reason": "complete is in no M7 module the driver imports"
   },
   {
-   "candidates": [
-    "Fleet.status",
-    "LocalCycle.status",
-    "Operation.status"
-   ],
-   "driver_call": "compare/drivers/common/s5_units.py:338",
-   "family": "effects.admission_unit",
-   "golden_unit": "status",
-   "reason": "status binds to 3 imported M7 methods"
-  },
-  {
    "candidates": [],
    "driver_call": "compare/drivers/common/s5_units.py:195",
    "family": "effects.admission_unit.pg",
@@ -189,6 +178,16 @@
    "golden_unit": "settle_unit"
   },
   {
+   "atomic_unit": "codex_harness.application.fleet:Fleet.status#1",
+   "block": "#1",
+   "cases": [
+    "c"
+   ],
+   "driver_call": "compare/drivers/common/s5_units.py:338",
+   "family": "effects.admission_unit",
+   "golden_unit": "status"
+  },
+  {
    "atomic_unit": "codex_harness.application.fleet:Fleet.admit_one#1",
    "block": "#1",
    "cases": [
@@ -198,6 +197,17 @@
    "driver_call": "compare/drivers/common/s5_units.py:168",
    "family": "effects.admission_unit.pg",
    "golden_unit": "admit"
+  },
+  {
+   "atomic_unit": "codex_harness.application.fleet:Fleet.authorize_budget#1",
+   "block": "#1",
+   "cases": [
+    "a",
+    "c"
+   ],
+   "driver_call": "compare/drivers/common/s5_units.py:300",
+   "family": "effects.admission_unit.pg",
+   "golden_unit": "authorize_budget"
   },
   {
    "atomic_unit": "codex_harness.application.operation:Operation.claim#2",
@@ -221,6 +231,17 @@
    "golden_unit": "depths"
   },
   {
+   "atomic_unit": "codex_harness.application.fleet:Fleet.enqueue#1",
+   "block": "#1",
+   "cases": [
+    "a",
+    "c"
+   ],
+   "driver_call": "compare/drivers/common/s5_units.py:289",
+   "family": "effects.admission_unit.pg",
+   "golden_unit": "enqueue"
+  },
+  {
    "atomic_unit": "codex_harness.application.fleet:Fleet.finalize#1",
    "block": "#1",
    "cases": [
@@ -240,6 +261,60 @@
    "driver_call": "compare/drivers/common/s5_units.py:137",
    "family": "effects.admission_unit.pg",
    "golden_unit": "handle"
+  },
+  {
+   "atomic_unit": "codex_harness.application.fleet:Fleet.register#1",
+   "block": "#1",
+   "cases": [
+    "a",
+    "c"
+   ],
+   "driver_call": "compare/drivers/common/s5_units.py:269",
+   "family": "effects.admission_unit.pg",
+   "golden_unit": "register"
+  },
+  {
+   "atomic_unit": "codex_harness.application.fleet:Fleet.registered#1",
+   "block": "#1",
+   "cases": [
+    "c"
+   ],
+   "driver_call": "compare/drivers/common/s5_units.py:280",
+   "family": "effects.admission_unit.pg",
+   "golden_unit": "registered"
+  },
+  {
+   "atomic_unit": "codex_harness.application.fleet:Fleet.reserve_unit#1",
+   "block": "#1",
+   "cases": [
+    "a",
+    "c"
+   ],
+   "driver_call": "compare/drivers/common/s5_units.py:311",
+   "family": "effects.admission_unit.pg",
+   "golden_unit": "reserve_unit"
+  },
+  {
+   "atomic_unit": "codex_harness.application.fleet:Fleet.settle_unit#1",
+   "block": "#1",
+   "cases": [
+    "a",
+    "b",
+    "c"
+   ],
+   "driver_call": "compare/drivers/common/s5_units.py:325",
+   "family": "effects.admission_unit.pg",
+   "golden_unit": "settle_unit"
+  },
+  {
+   "atomic_unit": "codex_harness.application.fleet:Fleet.status#1",
+   "block": "#1",
+   "cases": [
+    "c"
+   ],
+   "driver_call": "compare/drivers/common/s5_units.py:338",
+   "family": "effects.admission_unit.pg",
+   "golden_unit": "status"
   },
   {
    "atomic_unit": "codex_harness.application.continuation:Continuation.accept_research#1",

@@ -111,6 +111,99 @@
   ],
   "violations": []
  },
+ "authorize_budget_a_failure_at_control": {
+  "durable_units": 0,
+  "durable_writes": [],
+  "effects": [],
+  "outcome": {
+   "message": "injected failure at fleet_control",
+   "refused": "Injected"
+  },
+  "rows": [
+   [
+    "fleet_control",
+    "admission",
+    ""
+   ],
+   [
+    "fleet_registry",
+    "fleet-1",
+    ""
+   ]
+  ],
+  "units": [
+   "ROLLBACK"
+  ],
+  "violations": []
+ },
+ "authorize_budget_c_replay": {
+  "durable_units": 0,
+  "durable_writes": [],
+  "effects": [],
+  "outcome": {
+   "message": "fleet refused: budget_expected_mismatch (expected_total)",
+   "refused": "FleetRefused"
+  },
+  "rows": [
+   [
+    "fleet_budget_grants",
+    "grant-00000001",
+    ""
+   ],
+   [
+    "fleet_control",
+    "admission",
+    ""
+   ],
+   [
+    "fleet_registry",
+    "fleet-1",
+    ""
+   ]
+  ],
+  "units": [
+   "ROLLBACK"
+  ],
+  "violations": []
+ },
+ "authorize_budget_success": {
+  "durable_units": 1,
+  "durable_writes": [
+   [
+    "fleet_budget_grants",
+    ""
+   ],
+   [
+    "fleet_control",
+    ""
+   ]
+  ],
+  "effects": [],
+  "outcome": {
+   "ok": true
+  },
+  "rows": [
+   [
+    "fleet_budget_grants",
+    "grant-00000001",
+    ""
+   ],
+   [
+    "fleet_control",
+    "admission",
+    ""
+   ],
+   [
+    "fleet_registry",
+    "fleet-1",
+    ""
+   ]
+  ],
+  "units": [
+   "COMMIT"
+  ],
+  "violations": []
+ },
  "claim_a_failure_at_outbox": {
   "durable_units": 0,
   "durable_writes": [],
@@ -411,6 +504,119 @@
    "effect_inside_unit"
   ]
  },
+ "enqueue_a_failure_at_jobs": {
+  "durable_units": 0,
+  "durable_writes": [],
+  "effects": [],
+  "outcome": {
+   "message": "injected failure at fleet_jobs",
+   "refused": "Injected"
+  },
+  "rows": [
+   [
+    "fleet_control",
+    "admission",
+    ""
+   ],
+   [
+    "fleet_registry",
+    "fleet-1",
+    ""
+   ]
+  ],
+  "units": [
+   "ROLLBACK"
+  ],
+  "violations": []
+ },
+ "enqueue_c_replay": {
+  "durable_units": 0,
+  "durable_writes": [],
+  "effects": [],
+  "outcome": {
+   "ok": true
+  },
+  "rows": [
+   [
+    "fleet_control",
+    "admission",
+    ""
+   ],
+   [
+    "fleet_jobs",
+    "op-1",
+    "queued"
+   ],
+   [
+    "fleet_registry",
+    "fleet-1",
+    ""
+   ]
+  ],
+  "units": [
+   "COMMIT"
+  ],
+  "violations": []
+ },
+ "enqueue_dependency_missing": {
+  "durable_units": 0,
+  "durable_writes": [],
+  "effects": [],
+  "outcome": {
+   "message": "fleet refused: dependency_missing",
+   "refused": "FleetRefused"
+  },
+  "rows": [
+   [
+    "fleet_control",
+    "admission",
+    ""
+   ],
+   [
+    "fleet_registry",
+    "fleet-1",
+    ""
+   ]
+  ],
+  "units": [
+   "ROLLBACK"
+  ],
+  "violations": []
+ },
+ "enqueue_success": {
+  "durable_units": 1,
+  "durable_writes": [
+   [
+    "fleet_jobs",
+    "queued"
+   ]
+  ],
+  "effects": [],
+  "outcome": {
+   "ok": true
+  },
+  "rows": [
+   [
+    "fleet_control",
+    "admission",
+    ""
+   ],
+   [
+    "fleet_jobs",
+    "op-1",
+    "queued"
+   ],
+   [
+    "fleet_registry",
+    "fleet-1",
+    ""
+   ]
+  ],
+  "units": [
+   "COMMIT"
+  ],
+  "violations": []
+ },
  "finalize_b_stale_token": {
   "durable_units": 0,
   "durable_writes": [],
@@ -557,6 +763,446 @@
     ""
    ]
   ],
+  "units": [
+   "COMMIT"
+  ],
+  "violations": []
+ },
+ "register_a_failure_at_control": {
+  "durable_units": 0,
+  "durable_writes": [],
+  "effects": [],
+  "outcome": {
+   "message": "injected failure at fleet_control",
+   "refused": "Injected"
+  },
+  "rows": [],
+  "units": [
+   "ROLLBACK"
+  ],
+  "violations": []
+ },
+ "register_c_replay": {
+  "durable_units": 0,
+  "durable_writes": [],
+  "effects": [],
+  "outcome": {
+   "ok": true
+  },
+  "rows": [
+   [
+    "fleet_control",
+    "admission",
+    ""
+   ],
+   [
+    "fleet_registry",
+    "fleet-1",
+    ""
+   ]
+  ],
+  "units": [
+   "COMMIT"
+  ],
+  "violations": []
+ },
+ "register_conflict": {
+  "durable_units": 0,
+  "durable_writes": [],
+  "effects": [],
+  "outcome": {
+   "message": "fleet refused: registration_conflict",
+   "refused": "FleetRefused"
+  },
+  "rows": [
+   [
+    "fleet_control",
+    "admission",
+    ""
+   ],
+   [
+    "fleet_registry",
+    "fleet-1",
+    ""
+   ]
+  ],
+  "units": [
+   "ROLLBACK"
+  ],
+  "violations": []
+ },
+ "register_success": {
+  "durable_units": 1,
+  "durable_writes": [
+   [
+    "fleet_control",
+    ""
+   ],
+   [
+    "fleet_registry",
+    ""
+   ]
+  ],
+  "effects": [],
+  "outcome": {
+   "ok": true
+  },
+  "rows": [
+   [
+    "fleet_control",
+    "admission",
+    ""
+   ],
+   [
+    "fleet_registry",
+    "fleet-1",
+    ""
+   ]
+  ],
+  "units": [
+   "COMMIT"
+  ],
+  "violations": []
+ },
+ "registered_c_repeat": {
+  "durable_units": 0,
+  "durable_writes": [],
+  "effects": [],
+  "outcome": {
+   "ok": true
+  },
+  "rows": [
+   [
+    "fleet_control",
+    "admission",
+    ""
+   ],
+   [
+    "fleet_registry",
+    "fleet-1",
+    ""
+   ]
+  ],
+  "units": [
+   "COMMIT"
+  ],
+  "violations": []
+ },
+ "registered_success": {
+  "durable_units": 0,
+  "durable_writes": [],
+  "effects": [],
+  "outcome": {
+   "ok": true
+  },
+  "rows": [
+   [
+    "fleet_control",
+    "admission",
+    ""
+   ],
+   [
+    "fleet_registry",
+    "fleet-1",
+    ""
+   ]
+  ],
+  "units": [
+   "COMMIT"
+  ],
+  "violations": []
+ },
+ "registered_unregistered": {
+  "durable_units": 0,
+  "durable_writes": [],
+  "effects": [],
+  "outcome": {
+   "message": "fleet refused: unregistered",
+   "refused": "FleetRefused"
+  },
+  "rows": [],
+  "units": [
+   "COMMIT"
+  ],
+  "violations": []
+ },
+ "reserve_unit_a_failure_at_units": {
+  "durable_units": 0,
+  "durable_writes": [],
+  "effects": [],
+  "outcome": {
+   "message": "injected failure at fleet_units",
+   "refused": "Injected"
+  },
+  "rows": [
+   [
+    "fleet_control",
+    "admission",
+    ""
+   ],
+   [
+    "fleet_registry",
+    "fleet-1",
+    ""
+   ]
+  ],
+  "units": [
+   "ROLLBACK"
+  ],
+  "violations": []
+ },
+ "reserve_unit_c_replay": {
+  "durable_units": 0,
+  "durable_writes": [],
+  "effects": [],
+  "outcome": {
+   "ok": true
+  },
+  "rows": [
+   [
+    "fleet_control",
+    "admission",
+    ""
+   ],
+   [
+    "fleet_registry",
+    "fleet-1",
+    ""
+   ],
+   [
+    "fleet_units",
+    "eeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee",
+    ""
+   ]
+  ],
+  "units": [
+   "COMMIT"
+  ],
+  "violations": []
+ },
+ "reserve_unit_success": {
+  "durable_units": 1,
+  "durable_writes": [
+   [
+    "fleet_units",
+    ""
+   ]
+  ],
+  "effects": [],
+  "outcome": {
+   "ok": true
+  },
+  "rows": [
+   [
+    "fleet_control",
+    "admission",
+    ""
+   ],
+   [
+    "fleet_registry",
+    "fleet-1",
+    ""
+   ],
+   [
+    "fleet_units",
+    "eeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee",
+    ""
+   ]
+  ],
+  "units": [
+   "COMMIT"
+  ],
+  "violations": []
+ },
+ "settle_unit_a_failure_at_units": {
+  "durable_units": 0,
+  "durable_writes": [],
+  "effects": [],
+  "outcome": {
+   "message": "injected failure at fleet_units",
+   "refused": "Injected"
+  },
+  "rows": [
+   [
+    "fleet_control",
+    "admission",
+    ""
+   ],
+   [
+    "fleet_registry",
+    "fleet-1",
+    ""
+   ],
+   [
+    "fleet_units",
+    "eeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee",
+    ""
+   ]
+  ],
+  "units": [
+   "ROLLBACK"
+  ],
+  "violations": []
+ },
+ "settle_unit_b_stale_token": {
+  "durable_units": 0,
+  "durable_writes": [],
+  "effects": [],
+  "outcome": {
+   "message": "fleet refused: owner_mismatch (token)",
+   "refused": "FleetRefused"
+  },
+  "rows": [
+   [
+    "fleet_control",
+    "admission",
+    ""
+   ],
+   [
+    "fleet_registry",
+    "fleet-1",
+    ""
+   ],
+   [
+    "fleet_units",
+    "eeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee",
+    ""
+   ]
+  ],
+  "units": [
+   "ROLLBACK"
+  ],
+  "violations": []
+ },
+ "settle_unit_c_replay": {
+  "durable_units": 0,
+  "durable_writes": [],
+  "effects": [],
+  "outcome": {
+   "ok": true
+  },
+  "rows": [
+   [
+    "fleet_control",
+    "admission",
+    ""
+   ],
+   [
+    "fleet_registry",
+    "fleet-1",
+    ""
+   ],
+   [
+    "fleet_units",
+    "eeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee",
+    ""
+   ]
+  ],
+  "units": [
+   "COMMIT"
+  ],
+  "violations": []
+ },
+ "settle_unit_success": {
+  "durable_units": 1,
+  "durable_writes": [
+   [
+    "fleet_units",
+    ""
+   ]
+  ],
+  "effects": [],
+  "outcome": {
+   "ok": true
+  },
+  "rows": [
+   [
+    "fleet_control",
+    "admission",
+    ""
+   ],
+   [
+    "fleet_registry",
+    "fleet-1",
+    ""
+   ],
+   [
+    "fleet_units",
+    "eeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee",
+    ""
+   ]
+  ],
+  "units": [
+   "COMMIT"
+  ],
+  "violations": []
+ },
+ "status_c_repeat": {
+  "durable_units": 0,
+  "durable_writes": [],
+  "effects": [],
+  "outcome": {
+   "ok": true
+  },
+  "rows": [
+   [
+    "fleet_control",
+    "admission",
+    ""
+   ],
+   [
+    "fleet_jobs",
+    "op-1",
+    "queued"
+   ],
+   [
+    "fleet_registry",
+    "fleet-1",
+    ""
+   ]
+  ],
+  "units": [
+   "COMMIT"
+  ],
+  "violations": []
+ },
+ "status_success": {
+  "durable_units": 0,
+  "durable_writes": [],
+  "effects": [],
+  "outcome": {
+   "ok": true
+  },
+  "rows": [
+   [
+    "fleet_control",
+    "admission",
+    ""
+   ],
+   [
+    "fleet_jobs",
+    "op-1",
+    "queued"
+   ],
+   [
+    "fleet_registry",
+    "fleet-1",
+    ""
+   ]
+  ],
+  "units": [
+   "COMMIT"
+  ],
+  "violations": []
+ },
+ "status_unregistered": {
+  "durable_units": 0,
+  "durable_writes": [],
+  "effects": [],
+  "outcome": {
+   "ok": true
+  },
+  "rows": [],
   "units": [
    "COMMIT"
   ],

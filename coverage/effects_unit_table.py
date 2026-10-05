@@ -54,6 +54,8 @@ DECLARED_CALLS = {
     ("admission_unit", "admit"): "admit_one",  # s5_units.py:172: `attempt(f.admit_one)`, f = the Fleet of :119
     ("admission_unit", "claim"): "Operation.claim",  # s5_units.py:159: `attempt(operation.claim, ...)`, `operation = api.operation(...)` (:146)
     ("admission_unit", "depths"): "step",  # s5_units.py:242: `attempt(cycle.step, "cycle-d")`, the LocalCycle of :236 whose depths the unit records
+    # S11 AU-REC-1 (owner): `status` binds to Fleet/LocalCycle/Operation.status; the receiver is the Fleet of s5_units.py:334
+    ("admission_unit", "status"): "Fleet.status",  # s5_units.py:340: `attempt(f.status)`, f = fleet(...) or bare_fleet(...) (:334)
 }
 
 

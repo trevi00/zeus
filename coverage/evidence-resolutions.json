@@ -14,55 +14,71 @@
    "key": "atomic_unit:codex_harness.application.fleet:Fleet.authorize_budget#1",
    "pending": "pending: recorder confirmation in the owning slice",
    "replaced_by": [
-    "compare:effects.admission_unit"
+    "compare:effects.admission_unit",
+    "compare:effects.admission_unit.pg"
    ],
    "rule": "G1",
-   "citation": "coverage/effects-unit-table.json#effects.admission_unit/authorize_budget"
+   "citation": "coverage/effects-unit-table.json#effects.admission_unit/authorize_budget; coverage/effects-unit-table.json#effects.admission_unit.pg/authorize_budget"
   },
   {
    "key": "atomic_unit:codex_harness.application.fleet:Fleet.enqueue#1",
    "pending": "pending: recorder confirmation in the owning slice",
    "replaced_by": [
-    "compare:effects.admission_unit"
+    "compare:effects.admission_unit",
+    "compare:effects.admission_unit.pg"
    ],
    "rule": "G1",
-   "citation": "coverage/effects-unit-table.json#effects.admission_unit/enqueue"
+   "citation": "coverage/effects-unit-table.json#effects.admission_unit/enqueue; coverage/effects-unit-table.json#effects.admission_unit.pg/enqueue"
   },
   {
    "key": "atomic_unit:codex_harness.application.fleet:Fleet.register#1",
    "pending": "pending: recorder confirmation in the owning slice",
    "replaced_by": [
-    "compare:effects.admission_unit"
+    "compare:effects.admission_unit",
+    "compare:effects.admission_unit.pg"
    ],
    "rule": "G1",
-   "citation": "coverage/effects-unit-table.json#effects.admission_unit/register"
+   "citation": "coverage/effects-unit-table.json#effects.admission_unit/register; coverage/effects-unit-table.json#effects.admission_unit.pg/register"
   },
   {
    "key": "atomic_unit:codex_harness.application.fleet:Fleet.registered#1",
    "pending": "pending: recorder confirmation in the owning slice",
    "replaced_by": [
-    "compare:effects.admission_unit"
+    "compare:effects.admission_unit",
+    "compare:effects.admission_unit.pg"
    ],
    "rule": "G1",
-   "citation": "coverage/effects-unit-table.json#effects.admission_unit/registered"
+   "citation": "coverage/effects-unit-table.json#effects.admission_unit/registered; coverage/effects-unit-table.json#effects.admission_unit.pg/registered"
   },
   {
    "key": "atomic_unit:codex_harness.application.fleet:Fleet.reserve_unit#1",
    "pending": "pending: recorder confirmation in the owning slice",
    "replaced_by": [
-    "compare:effects.admission_unit"
+    "compare:effects.admission_unit",
+    "compare:effects.admission_unit.pg"
    ],
    "rule": "G1",
-   "citation": "coverage/effects-unit-table.json#effects.admission_unit/reserve_unit"
+   "citation": "coverage/effects-unit-table.json#effects.admission_unit/reserve_unit; coverage/effects-unit-table.json#effects.admission_unit.pg/reserve_unit"
   },
   {
    "key": "atomic_unit:codex_harness.application.fleet:Fleet.settle_unit#1",
    "pending": "pending: recorder confirmation in the owning slice",
    "replaced_by": [
-    "compare:effects.admission_unit"
+    "compare:effects.admission_unit",
+    "compare:effects.admission_unit.pg"
    ],
    "rule": "G1",
-   "citation": "coverage/effects-unit-table.json#effects.admission_unit/settle_unit"
+   "citation": "coverage/effects-unit-table.json#effects.admission_unit/settle_unit; coverage/effects-unit-table.json#effects.admission_unit.pg/settle_unit"
+  },
+  {
+   "key": "atomic_unit:codex_harness.application.fleet:Fleet.status#1",
+   "pending": "pending: recorder confirmation in the owning slice",
+   "replaced_by": [
+    "compare:effects.admission_unit",
+    "compare:effects.admission_unit.pg"
+   ],
+   "rule": "G1",
+   "citation": "coverage/effects-unit-table.json#effects.admission_unit/status; coverage/effects-unit-table.json#effects.admission_unit.pg/status"
   },
   {
    "key": "atomic_unit:codex_harness.application.research_program:ResearchProgram.fail_cycle#1",
