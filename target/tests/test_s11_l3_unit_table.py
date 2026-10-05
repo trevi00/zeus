@@ -84,6 +84,25 @@ def test_a_method_name_in_two_imported_classes_is_ambiguous_and_an_unimported_on
     assert join(imports="")["ambiguous"][0]["reason"].endswith("in no M7 module the driver imports")
 
 
+def test_s11_au_l3b_a_class_method_declaration_binds_the_named_class_among_two_imported(monkeypatch):
+    """A `Class.method` entry of DECLARED_CALLS (REBUILD-DESIGN-v2 §2.9 rule 1): the receiver the AST cannot type is named."""
+    two = [block(1, ["research_rows"]), block(1, ["research_rows"], scope="Other.unit")]
+    monkeypatch.setitem(eut.DECLARED_CALLS, ("fam", "unit"), "Other.unit")
+    out = join(blocks=two)
+    assert [e["atomic_unit"] for e in out["entries"]] == ["codex_harness.application.svc:Other.unit#1"] and not out["ambiguous"]
+    # control: the declared class is not among the catalogue blocks the driver imports -> no entry, never the other class
+    monkeypatch.setitem(eut.DECLARED_CALLS, ("fam", "unit"), "Missing.unit")
+    out = join(blocks=two)
+    assert out["entries"] == [] and out["ambiguous"][0]["candidates"] == []
+    assert out["ambiguous"][0]["reason"].endswith("in no M7 module the driver imports")
+
+
+def test_s11_au_l3b_a_class_method_declaration_still_needs_the_driver_call(monkeypatch):
+    monkeypatch.setitem(eut.DECLARED_CALLS, ("fam", "unit"), "Svc.other")  # the driver calls `unit`, never `other`
+    out = join(blocks=[block(1, ["research_rows"]), block(1, ["research_rows"], scope="Svc.other")])
+    assert out["entries"] == [] and "no driver call of an M7 method named other" in out["unmatched"][0]["reason"]
+
+
 @pytest.fixture(scope="module")
 def table():
     return json.loads((ROOT / "coverage/effects-unit-table.json").read_text(encoding="utf-8"))
