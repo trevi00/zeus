@@ -37,7 +37,9 @@ ALLOWED_NONE = {
     ("ReviewDecisions.__init__", "worker_sessions"): "optional, as RunTask's",
     ("Transports.__init__", "isolation"): "optional, as RunTask's",
     ("Transports.__init__", "evidence_profile"): "optional, as RunTask's",
-    ("Transports.__init__", "hooks"): "container hooks serve only the isolated Codex role container (S10 unit C5c)",
+    # S11 XC-6 (owner, TQ-XCUT-PLAN §9 A6): ("Transports.__init__", "hooks") is no longer an allowed None. That row
+    # recorded the defect itself: the isolated Codex role container IS the production path, and composition now passes
+    # the active hooks.
 }
 # Parameters whose provider is absent at this head: the object holds its own refusing default, never a silent one.
 ALLOWED_UNWIRED = {
