@@ -36,6 +36,10 @@ import generate  # noqa: E402  (stdlib harness module: the one table serialisati
 LEDGER = HERE / "ledger-coverage.json"
 BUNDLE = HERE / "run-evidence.json"
 BUNDLE_SCHEMA = "zeus:s11-run-evidence:1"
+# R-L6 / DESIGN-s11 §5.3: the maintained, cited resolutions of the ledger's `pending:` promises.
+RESOLUTIONS = HERE / "evidence-resolutions.json"
+RESOLUTIONS_SCHEMA = "zeus:s11-evidence-resolutions:1"
+RESOLUTION_RULES = ("G1", "G2", "G3", "G4", "G5", "G6")
 
 # R-L14: the record that accepted each slice (named, never read). S10: S10-CLOSURE.md (ACCEPTED at 8f7fed5f).
 ACCEPTED = {f"S{n}": f"FLEET-REBUILD-S{n}-ACCEPT.md" for n in range(1, 10)}
@@ -448,9 +452,21 @@ class Tree:
 PATH_ITEM = re.compile(r"A/[^\s)]+")
 
 
+def load_resolutions(path: Path) -> list[dict]:
+    """The resolution entries of `coverage/evidence-resolutions.json`; an absent file resolves nothing."""
+    if not path.is_file():
+        return []
+    doc = json.loads(path.read_text(encoding="utf-8"))
+    if not isinstance(doc, dict) or doc.get("schema") != RESOLUTIONS_SCHEMA or not isinstance(doc.get("resolutions"), list):
+        raise Refused(f"{path.name}: not a {RESOLUTIONS_SCHEMA} document")
+    return doc["resolutions"]
+
+
 class Relabel:
-    def __init__(self, root: Path, bundle: dict):
+    def __init__(self, root: Path, bundle: dict, resolutions: list[dict] | None = None):
         self.root, self.bundle, self.tree = root, bundle, Tree(root)
+        self.resolutions = load_resolutions(root / "coverage/evidence-resolutions.json") if resolutions is None else resolutions
+        self.effective: dict[str, list[str]] = {}  # row key -> evidence after its resolutions (the row itself is frozen)
         self.collected = bundle["nodes"]
         self.by_path: dict[str, list[str]] = collections.defaultdict(list)
         hashed = bundle.get("hashed_ids", {}).get("paths", {})
@@ -646,7 +662,7 @@ class Relabel:
             resolves = len(owners) == 1
             why = f"bucket declared in {len(owners)} OWNED_BUCKETS (need exactly 1): {','.join(owners)}"
         blocking = False
-        for e in row["evidence"]:
+        for e in self.effective.get(row["key"], row["evidence"]):
             cls, state, reason = self.item(e) if non_bucket or e.startswith("pending:") else (CONTEXT, "context", "")
             if cls == PENDING:
                 unmet.append(e)
@@ -734,6 +750,35 @@ class Relabel:
             self._caps = self.tree.capabilities()
         return self._caps
 
+    def resolve_pending(self, rows: list[dict]) -> None:
+        """R-L6: substitute each resolution's `replaced_by` for exactly its `pending:` item (rows stay frozen; a resolution
+        never sets a status: R-L1..R-L16 then run over the substituted evidence). Any malformed entry refuses."""
+        by_key = {r["key"]: r for r in rows}
+        seen: set[tuple[str, str]] = set()
+        for entry in self.resolutions:
+            if not isinstance(entry, dict) or set(entry) != {"key", "pending", "replaced_by", "rule", "citation"}:
+                raise Refused(f"resolution entry is not {{key, pending, replaced_by, rule, citation}}: {str(entry)[:120]}")
+            key, pending, items = entry["key"], entry["pending"], entry["replaced_by"]
+            if entry["rule"] not in RESOLUTION_RULES:
+                raise Refused(f"resolution rule is not one of {RESOLUTION_RULES}: {key}")
+            if not (isinstance(entry["citation"], str) and entry["citation"].strip()):
+                raise Refused(f"resolution has no citation: {key}")
+            if not (isinstance(items, list) and items and all(isinstance(i, str) for i in items)) \
+                    or any(i.startswith("pending:") for i in items):
+                raise Refused(f"resolution replaced_by must be non-empty evidence items, none pending: {key}")
+            if key not in by_key:
+                raise Refused(f"resolution for an unknown key: {key}")
+            if (key, pending) in seen:
+                raise Refused(f"duplicate resolution: {key} / {pending}")
+            seen.add((key, pending))
+            if not (isinstance(pending, str) and pending.startswith("pending:")):
+                raise Refused(f"resolution would remove a non-pending item: {key} / {str(pending)[:80]}")
+            current = self.effective.get(key, by_key[key]["evidence"])
+            if pending not in current:
+                raise Refused(f"resolution pending text is not in the row: {key} / {pending}")
+            at = current.index(pending)
+            self.effective[key] = current[:at] + [i for i in items if i not in current] + current[at + 1:]
+
     def run(self, ledger: dict) -> dict:
         out = copy.deepcopy(ledger)
         rows = out["rows"]
@@ -743,6 +788,7 @@ class Relabel:
                 row["target_owner"], row["target_symbol"] = fix["target_owner"], list(fix["target_symbol"])
                 row["mapping_correction"] = fix["mapping_correction"]
                 row["evidence"] += [e for e in fix.get("add_evidence", []) if e not in row["evidence"]]
+        self.resolve_pending(rows)
         self.module_rows = {r["key"]: r for r in rows if r["kind"] == "module"}
         self.module_row_by_path = {k[len("module:"):]: r for k, r in self.module_rows.items()}
         # R-L4: module rows first, then the rows that inherit through `module:`
@@ -758,8 +804,8 @@ class Relabel:
         return out
 
 
-def relabel(ledger: dict, bundle: dict, root: Path = ROOT):
-    engine = Relabel(root, bundle)
+def relabel(ledger: dict, bundle: dict, root: Path = ROOT, resolutions: list[dict] | None = None):
+    engine = Relabel(root, bundle, resolutions)
     return engine.run(ledger), engine
 
 
@@ -832,7 +878,8 @@ def main(argv=None) -> int:
         text = generate.dump(new)
         if args.cmd == "apply":
             ledger_path.write_text(text, encoding="utf-8")
-            print(json.dumps({**summary(ledger, new), "reference_only_families": sorted(engine.reference_only)}, indent=1))
+            print(json.dumps({**summary(ledger, new), "reference_only_families": sorted(engine.reference_only),
+                              "resolutions_applied": len(engine.resolutions)}, indent=1))
             return 0
         if args.check or args.check_fresh:
             same = ledger_path.read_text(encoding="utf-8") == text
