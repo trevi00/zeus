@@ -30,6 +30,7 @@ from codex_harness.application import (  # noqa: E402,F401
     execution_time,
     local_cycle,
     operation,
+    operation_finalization,
     workflow,
 )
 from codex_harness.application.fleet import Fleet  # noqa: E402
@@ -94,7 +95,7 @@ API = SimpleNamespace(
     validate_message=validate_message,
     advance_fence=lambda tx, bucket, row_id, generation, owner: execution_fence.advance(tx, bucket, row_id,
                                                                                        generation, owner),
-    envelope=envelope)
+    envelope=envelope, operation_finalization=operation_finalization)
 
 if __name__ == "__main__":
     driver.finish("reference", SCENARIO, s5_units.run(API))

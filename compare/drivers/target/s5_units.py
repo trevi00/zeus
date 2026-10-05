@@ -22,7 +22,7 @@ import recorder as rec  # noqa: E402
 import s5_coordination_composition as composition  # noqa: E402
 import s5_fleet_composition  # noqa: E402
 import s5_units  # noqa: E402
-from codex_harness.coordination.application import execution_fence  # noqa: E402
+from codex_harness.coordination.application import execution_fence, operation_finalization  # noqa: E402
 from codex_harness.coordination.application.operation import Operation  # noqa: E402
 from codex_harness.coordination.domain import operation as operation_domain  # noqa: E402
 from codex_harness.evidence.application.inspections import EvidenceRecords  # noqa: E402
@@ -80,7 +80,7 @@ def operation(service):
 
 API = composition.api(
     backend=Backend, reset=reset, recording=lambda store: rec.RecordingStore(store), operation=operation,
-    Fleet=s5_fleet_composition.FleetFacade,
+    Fleet=s5_fleet_composition.FleetFacade, operation_finalization=operation_finalization,
     validate_manifest=lambda document: operation_domain.validate_manifest(document, POLICY),
     advance_fence=lambda tx, bucket, row_id, generation, owner: execution_fence.advance(
         tx, bucket, row_id, generation, owner, clock=composition.PORT))

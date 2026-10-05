@@ -340,6 +340,177 @@ def status(api, name, *, registry=True, repeat=False):
     return case.result(attempt(f.status))
 
 
+# ----- S11 AU-REC-2: five more single-block units (the call names the method; a read-only unit records what it answers) -----
+LEAD, WORKER = "lead:improvement", "worker:implementation"
+OPERATION, TASK, RUN = "op-1", "task-92b13b20", "1a" * 16
+CONTAINER, RESERVATION, SLOT = "c7" * 32, "d4" * 32, "e9" * 16
+MOVED = "/zeus-rebuild-s5-moved"
+
+
+def answer(fn, *args, **kwargs):
+    """`attempt` that keeps the value: the characterized result of a unit that answers (or refuses) without a write."""
+    try:
+        value = fn(*args, **kwargs)
+    except Exception as exc:  # the refusal is the characterized result
+        return {"refused": type(exc).__name__, "reason_code": getattr(exc, "reason_code", None),
+                "message": str(exc)[:160]}
+    return {"value": value}
+
+
+def evidence(job, config_sha256, **overrides):
+    document = {"schema": "urn:zeus:fleet-recovery-evidence:1", "job_id": job["id"], "operator": "owner",
+                "expected": {"status": job["status"], "owner_token": job["owner_token"], "lane": job["lane"],
+                             "config_sha256": config_sha256},
+                "lane_operation": {"id": OPERATION, "correlation_id": "operation:" + OPERATION, "task_id": TASK,
+                                   "generation": 2},
+                "container": {"run_id": RUN, "role": "worker", "name": "zeus-worker-" + RUN, "id": CONTAINER},
+                "invocation": {"reservation_id": RESERVATION, "status": "unsettled_unknown"},
+                "machine_slot": {"id": SLOT, "outcome": "unknown"},
+                "recorded_at": "2026-09-21T00:00:00+00:00"}
+    for key, value in overrides.items():
+        outer, _, inner = key.partition(".")
+        document[outer] = {**document[outer], inner: value} if inner else value
+    return document
+
+
+def recovery_proof(**overrides):
+    document = {"schema": "urn:zeus:fleet-recovery-proof:1",
+                "lane_operation": {"id": OPERATION, "correlation_id": "operation:" + OPERATION},
+                "task": {"id": TASK, "generation": 2, "status": "cancelled", "lease_live": False},
+                "container": {"run_id": RUN, "name": "zeus-worker-" + RUN, "id": CONTAINER,
+                              "bound_worktree": True, "state": "exited"},
+                "invocation": {"reservation_id": RESERVATION, "status": "unsettled_unknown"},
+                "machine_slot": {"id": SLOT, "outcome": "unknown", "bound_by": "ledger_purpose",
+                                 "bound_operation": OPERATION, "status": "used"},
+                "observed_at": "2026-09-21T00:00:01+00:00"}
+    for key, value in overrides.items():
+        outer, _, inner = key.partition(".")
+        document[outer] = {**document[outer], inner: value} if inner else value
+    return document
+
+
+def interrupted(api, case, *, pause=True):
+    """A registered, paused fleet holding one job finalized `unknown` (the interrupted job), and the config digest."""
+    f = bare_fleet(api, case.store)
+    digest_ = f.register(config())["config_sha256"]
+    f.enqueue("a", manifest(api, OPERATION), GOAL, [])
+    job = f.admit_one()["job"]
+    f.finalize(job["id"], job["owner_token"], {"status": "unknown", "reason_code": "receipt_missing"})
+    if pause:
+        f.pause()
+    with case.store.transaction() as tx:
+        job = tx.get("fleet_jobs", job["id"])
+    return f, job, digest_
+
+
+def reconcile_interrupted(api, name, *, failure=False, replay=False, stale=False, paused=True, changed=False):
+    case = Case(api, name)
+    f, job, digest_ = interrupted(api, case, pause=paused)
+    good = evidence(job, digest_)
+    reread = (lambda: recovery_proof(**{"container.state": "dead"})) if changed else \
+        (lambda: recovery_proof(observed_at="2026-09-21T00:00:02+00:00"))
+    if replay:
+        f.reconcile_interrupted(good, recovery_proof(), reread=reread)
+    case.since()
+    if failure:
+        case.store.arm("fleet_jobs")
+    document = evidence(job, digest_, **{"expected.owner_token": "0" * 32}) if stale else good
+    return case.result(answer(f.reconcile_interrupted, document, recovery_proof(), reread=reread))
+
+
+def relocation(digest_, **overrides):
+    document = {"schema": "urn:zeus:fleet-relocation:1", "fleet": "fleet-1", "operator": "owner",
+                "expected_config_sha256": digest_,
+                "moves": [{"lane": "a", "repository": {"from": ROOT + "/repo-a", "to": MOVED + "/repo-a"},
+                           "runtime": {"from": ROOT + "/rt-a", "to": MOVED + "/rt-a"}}],
+                "copy_manifest": {"path": MOVED + "/copy-manifest.json", "sha256": "c" * 64, "entries": 12},
+                "recorded_at": "2026-09-22T00:00:00+00:00"}
+    document.update(overrides)
+    return document
+
+
+def relocation_proof():
+    return {"schema": "urn:zeus:fleet-relocation-proof:1", "runner": {"state": "stopped"},
+            "copy_manifest": {"sha256": "c" * 64, "entries": 12, "verified": 12, "bound": True,
+                              "ownership": "resolved_paths"},
+            "lanes": [{"id": "a", "active_runs": 0,
+                       "repository": {"independent": True, "source_identity": "r" * 64, "target_identity": "r" * 64},
+                       "runtime": {"writable": True},
+                       "queued_bindings": [{"job_id": "op-q", "base_present": True, "goal_matches": True}]}],
+            "observed_at": "2026-09-22T00:00:01+00:00"}
+
+
+def relocate(api, name, *, failure=False, replay=False, stale=False, paused=True, conflict=False):
+    case = Case(api, name)
+    f = bare_fleet(api, case.store)
+    digest_ = f.register(config())["config_sha256"]
+    f.enqueue("a", manifest(api, "op-q"), GOAL, [])
+    if paused:
+        f.pause()
+    if replay or conflict:
+        f.relocate(relocation(digest_), relocation_proof())
+    case.since()
+    if failure:
+        case.store.arm("fleet_registry")  # the registry row is the unit's last write
+    request = relocation(digest_, operator="someone-else") if conflict else relocation("f" * 64 if stale else digest_)
+    return case.result(answer(f.relocate, request, relocation_proof()))
+
+
+def review_state(api, case, *, correlation="corr-gate", inspected=True, verdict="all_checked", bound=True):
+    """A pending review decision, its succeeded candidate task and the inspection row the gate requires (hand-built)."""
+    result = {"candidate": {"revision": "c" * 40, "tree": "d" * 40, "base": "e" * 40}, "summary": "s"}
+    if inspected:
+        result["evidence_inspection"] = {"inspection_id": "inspection-1"}
+    with case.store.transaction() as tx:
+        tx.put("tasks", "task-1", {"id": "task-1", "status": "succeeded", "agent": WORKER, "generation": 2,
+                                   "attempt": 1, "result": result, "message": {"correlation_id": correlation}})
+        tx.put("decisions_pending", "decision-1", {
+            "id": "decision-1", "status": "pending", "phase": "review_lead", "actor": LEAD, "input": result,
+            "message": {"correlation_id": correlation, "what": {"details": {"task_id": "task-1"}}}})
+        tx.put("evidence_inspections", "inspection-1", {
+            "id": "inspection-1", "verdict": verdict, "policy_hash": "p" * 64,
+            "denominator": {"claims": 1, "checked": 1 if verdict == "all_checked" else 0, "unchecked": 0 if verdict == "all_checked" else 1},
+            "binding": {"task_id": "task-1", "generation": 2 if bound else 7, "attempt": 1, "source_revision": "c" * 40}})
+
+
+def evidence_gate(api, name, *, repeat=False, correlation="corr-gate", **state):
+    case = Case(api, name)
+    operation = api.operation(api.service(case.store))
+    review_state(api, case, **state)
+    if repeat:
+        operation.evidence_gate({"id": "decision-1", "correlation_id": "corr-gate"})
+    case.since()
+    return case.result(answer(operation.evidence_gate, {"id": "decision-1", "correlation_id": correlation}))
+
+
+def parkable(api, name, *, repeat=False, status="failed", recipient=WORKER, kind="task.result",
+             correlation="operation:op-1"):
+    case = Case(api, name)
+    with case.store.transaction() as tx:
+        tx.put("operations", OPERATION, {"id": OPERATION, "status": status, "correlation_id": "operation:op-1",
+                                         "cycle_id": "operation:op-1", "assignment_message_id": "message-1"})
+    message = {"type": kind, "who": {"recipient": recipient}, "correlation_id": correlation}
+    if repeat:
+        api.operation_finalization.parkable(case.store, message)
+    case.since()
+    return case.result(answer(api.operation_finalization.parkable, case.store, message))
+
+
+def cancel(api, name, *, failure=None, repeat=False, actor="conductor", reason="stop"):
+    case = Case(api, name)
+    wf = api.workflow(case.store)
+    wf.submit(api.envelope("task.assign", LEAD, WORKER, "implement", {"plan": {"objective": "x"}}, "corr-cancel"))
+    api.advance(1)
+    task = wf.claim(WORKER, "owner-a")
+    api.advance(1)
+    if repeat:
+        wf.cancel(task["id"], "conductor", "stop")
+    case.since()
+    if failure:
+        case.store.arm(failure)
+    return case.result(attempt(wf.cancel, task["id"], actor, reason))
+
+
 def run(api) -> dict:
     return {
         "handle_success": handle(api, "handle_success"),
@@ -381,4 +552,38 @@ def run(api) -> dict:
         "status_success": status(api, "status_success"),
         "status_c_repeat": status(api, "status_c_repeat", repeat=True),
         "status_unregistered": status(api, "status_unregistered", registry=False),
+        "reconcile_interrupted_success": reconcile_interrupted(api, "reconcile_interrupted_success"),
+        "reconcile_interrupted_a_failure_at_jobs": reconcile_interrupted(api, "reconcile_interrupted_a_failure",
+                                                                         failure=True),
+        "reconcile_interrupted_b_stale_owner": reconcile_interrupted(api, "reconcile_interrupted_b_stale", stale=True),
+        "reconcile_interrupted_c_replay": reconcile_interrupted(api, "reconcile_interrupted_c_replay", replay=True),
+        "reconcile_interrupted_not_paused": reconcile_interrupted(api, "reconcile_interrupted_not_paused",
+                                                                  paused=False),
+        "reconcile_interrupted_proof_changed": reconcile_interrupted(api, "reconcile_interrupted_proof_changed",
+                                                                     changed=True),
+        "relocate_success": relocate(api, "relocate_success"),
+        "relocate_a_failure_at_registry": relocate(api, "relocate_a_failure", failure=True),
+        "relocate_b_stale_digest": relocate(api, "relocate_b_stale", stale=True),
+        "relocate_c_replay": relocate(api, "relocate_c_replay", replay=True),
+        "relocate_not_paused": relocate(api, "relocate_not_paused", paused=False),
+        "relocate_conflict": relocate(api, "relocate_conflict", conflict=True),
+        "evidence_gate_success": evidence_gate(api, "evidence_gate_success"),
+        "evidence_gate_c_repeat": evidence_gate(api, "evidence_gate_c_repeat", repeat=True),
+        "evidence_gate_decision_mismatch": evidence_gate(api, "evidence_gate_decision_mismatch", correlation="corr-x"),
+        "evidence_gate_inspection_missing": evidence_gate(api, "evidence_gate_inspection_missing", inspected=False),
+        "evidence_gate_inspection_not_all_checked": evidence_gate(api, "evidence_gate_not_all_checked",
+                                                                  verdict="partial"),
+        "evidence_gate_binding_mismatch": evidence_gate(api, "evidence_gate_binding_mismatch", bound=False),
+        "parkable_success": parkable(api, "parkable_success"),
+        "parkable_c_repeat": parkable(api, "parkable_c_repeat", repeat=True),
+        "parkable_owner_not_terminal": parkable(api, "parkable_owner_not_terminal", status="running"),
+        "parkable_foreign_recipient": parkable(api, "parkable_foreign_recipient", recipient="conductor"),
+        "parkable_unparkable_type": parkable(api, "parkable_unparkable_type", kind="status.report"),
+        "parkable_foreign_correlation": parkable(api, "parkable_foreign_correlation", correlation="operation:op-9"),
+        "cancel_success": cancel(api, "cancel_success"),
+        "cancel_a_failure_at_tasks": cancel(api, "cancel_a_failure", failure="tasks"),
+        "cancel_a_failure_at_outbox": cancel(api, "cancel_a_failure_outbox", failure="outbox"),
+        "cancel_c_repeat": cancel(api, "cancel_c_repeat", repeat=True),
+        "cancel_unauthorized": cancel(api, "cancel_unauthorized", actor="stranger"),
+        "cancel_no_reason": cancel(api, "cancel_no_reason", reason=""),
     }
