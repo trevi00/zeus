@@ -2459,6 +2459,42 @@
     "target:tests/test_s11_ct2.py"
    ],
    "rule": "G2"
+  },
+  {
+   "key": "contract:INV-CYCLE-HANDOFF-001",
+   "pending": "pending: target characterization test named in the feature-map row (R-U)",
+   "replaced_by": [
+    "target:tests/test_s11_ct3.py"
+   ],
+   "rule": "G2",
+   "citation": "target/tests/test_s11_ct3.py:116 (cites the ID in the docstring of the passing behavioural node test_s11_ct3_cycle_handoff_is_a_read_only_projection_with_a_digested_reason; the file is named in the ARCHITECTURE.md TARGET row of the cli_composition capability that lists the ID, and imports a symbol listed in that row (coordination.application.local_cycle:LocalCycle) - S11 CT-3)"
+  },
+  {
+   "key": "contract:INV-IDEMPOTENCY-001",
+   "pending": "pending: target characterization test named in the feature-map row (R-U)",
+   "replaced_by": [
+    "target:tests/test_s11_ct3.py"
+   ],
+   "rule": "G2",
+   "citation": "target/tests/test_s11_ct3.py:161 (cites the ID in the docstring of the passing behavioural node test_s11_ct3_idempotency_redelivery_returns_the_recorded_result_or_is_rejected_on_changed_content; the file is named in the ARCHITECTURE.md TARGET row of the cli_composition capability that lists the ID, and imports a symbol listed in that row (coordination.application.messages:MessageHandler) - S11 CT-3)"
+  },
+  {
+   "key": "contract:INV-LOCAL-CYCLE-001",
+   "pending": "pending: target characterization test named in the feature-map row (R-U)",
+   "replaced_by": [
+    "target:tests/test_s11_ct3.py"
+   ],
+   "rule": "G2",
+   "citation": "target/tests/test_s11_ct3.py:68 (cites the ID in the docstring of the passing behavioural node test_s11_ct3_local_cycle_policy_is_durable_and_one_executor_start_per_step; the file is named in the ARCHITECTURE.md TARGET row of the cli_composition capability that lists the ID, and imports a symbol listed in that row (coordination.application.local_cycle:LocalCycle) - S11 CT-3)"
+  },
+  {
+   "key": "contract:INV-SESSION-001",
+   "pending": "pending: target characterization test named in the feature-map row (R-U)",
+   "replaced_by": [
+    "target:tests/test_s11_ct3.py"
+   ],
+   "rule": "G2",
+   "citation": "target/tests/test_s11_ct3.py:195 (cites the ID in the docstring of the passing behavioural node test_s11_ct3_session_a_stale_generation_cannot_commit_decision_effects; the file is named in the ARCHITECTURE.md TARGET row of the independent_review_promotion capability that lists the ID, and imports a symbol listed in that row (review.application.decisions:ReviewDecisions) - S11 CT-3)"
   }
  ],
  "schema": "zeus:s11-evidence-resolutions:1"
