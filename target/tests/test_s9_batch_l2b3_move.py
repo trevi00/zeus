@@ -67,7 +67,7 @@ def statements(src):
 
 
 class InverseOfRules(ast.NodeTransformer):
-    """The inverse of R-v1 and R-v2 on the target AST: M7's `frontdesk_http`, no `desk_http` parameter, no `require`, no forwarded keyword."""
+    """The inverse of R-v1, R-v2 and R-v3 (S11 XC-1 A4: `Handler.timeout = 5`) on the target AST: M7's `frontdesk_http`, no `desk_http` parameter, no `require`, no forwarded keyword."""
 
     def visit_Attribute(self, node):
         self.generic_visit(node)
@@ -81,6 +81,13 @@ class InverseOfRules(ast.NodeTransformer):
             node.args.kw_defaults = node.args.kw_defaults[:len(node.args.kwonlyargs)]
         if node.name == "handler":
             node.body = [s for s in node.body if not (isinstance(s, ast.Expr) and isinstance(s.value, ast.Call) and getattr(s.value.func, "id", "") == "require")]
+        self.generic_visit(node)
+        return node
+
+    def visit_ClassDef(self, node):
+        # R-v3 (S11 XC-1 A4): `Handler.timeout`, one class attribute, is the only addition to the class body.
+        if node.name == "Handler":
+            node.body = [s for s in node.body if not (isinstance(s, ast.Assign) and [t.id for t in s.targets] == ["timeout"])]
         self.generic_visit(node)
         return node
 
