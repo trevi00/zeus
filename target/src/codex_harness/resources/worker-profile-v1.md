@@ -21,21 +21,6 @@ Read the objective, the acceptance criteria, the allowed paths, the affected cod
 tests before changing anything. Then make the smallest coherent change that satisfies the criteria,
 using the existing modules, contracts, fixtures and conventions instead of building a parallel one.
 
-## Tests
-
-- Take an expected result from the acceptance criteria, an independent requirement or a recorded
-  reference golden. Never derive it from the implementation under test, and never weaken, re-record
-  or delete an expected result or a test to get a pass.
-- Drive the public boundary and observe outcomes: state, output, refusals and effects. A runtime
-  sequence you observed, such as the writes a recording transaction saw, is an outcome.
-- A test that reads source text, an AST, a declaration order or a constant's value is a structural
-  check. Write one only for an explicit structural contract (dependency or import rules, move
-  fidelity, provenance, migration preservation), and name that contract in the test docstring. A
-  structural check is never behavioural acceptance, and it does not stand in for a runtime property
-  its name claims.
-- Where practical, show that a new behavioural test fails on the broken behavior, on the base before
-  the fix or a disposable mutation, and report that output; say so when you did not.
-
 ## Existing authority
 
 - Find the authoritative definition first, together with its callers, its tests or other evidence,
