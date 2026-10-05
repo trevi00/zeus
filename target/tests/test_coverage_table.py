@@ -4,7 +4,8 @@ Always checked: the pinned ledger identity, the per-kind counts, the key-set dig
 status/intent values, an owner/symbol/evidence on every mapped row, explicit untraced flags and
 bucket candidates, and that only the rows of an implemented slice (S1: kernel, storage, host_os) claim
 `implemented`, each with target evidence and a resolvable target module; nothing is `verified` before
-Codex accepts the slice. With `ZEUS_REBUILD_LEDGER` naming
+Codex accepts the slice (S11 L: `coverage/relabel.py` now computes every status from the evidence; the checks below
+that pinned the pre-relabel statuses carry `# S11 L`). With `ZEUS_REBUILD_LEDGER` naming
 the pinned ledger file, the table is regenerated and must be byte-identical (key set included).
 """
 
@@ -50,7 +51,7 @@ def test_row_fields_and_values(table):
         assert r["intent"] == "preserve" or r["intent"].startswith(("change:§4 ", "retire:U", "addition:")), r["key"]
         if r["intent"].startswith("addition:"):  # an addition has an authority, a target and its own tests (D4)
             assert r["kind"] == "addition" and len(r["intent"]) > len("addition:") and r["target_symbol"], r["key"]
-        if r["status"] in {"designed", "implemented"}:
+        if r["status"] in {"designed", "implemented", "verified"}:  # S11 L: `verified` rows are mapped rows too
             assert r["target_owner"] and r["target_symbol"] and r["evidence"], r["key"]
         else:
             assert r["status"] == "unmapped" and not r["target_symbol"], r["key"]
@@ -66,13 +67,18 @@ IMPLEMENTED_OWNERS = S1_OWNERS | S2_OWNERS | S3_OWNERS | S4_EARLY_OWNERS | S6_EA
 
 
 def test_only_implemented_slices_claim_implemented_and_nothing_is_verified_early(table):
-    assert {r["status"] for r in table["rows"]} <= {"designed", "unmapped", "implemented"}
+    # S11 L: every slice is accepted, so rows are verified by `coverage/relabel.py` (R-L3), never by hand: a verified
+    # row names no pending item, its verification record lists the passing items, and no row is retired or unmapped.
+    assert {r["status"] for r in table["rows"]} <= {"designed", "implemented", "verified"}
     assert table["adapters"] == []
     implemented = [r for r in table["rows"] if r["status"] == "implemented"]
-    assert implemented and all(r["target_owner"] in IMPLEMENTED_OWNERS for r in implemented)
+    assert implemented
     for r in implemented:
-        assert any(e.startswith(("target:", "compare:", "codex_harness.")) for e in r["evidence"]), r["key"]
-        assert not any(e.startswith("pending:") for e in r["evidence"]), r["key"]
+        assert r["target_owner"] and r["target_symbol"] and r["evidence"], r["key"]
+        assert r["verification"]["unmet"], r["key"]  # implemented = resolves and has executable evidence, not verified
+    for r in table["rows"]:
+        if r["status"] == "verified":
+            assert r["verification"]["passed"] and not any(e.startswith("pending:") for e in r["evidence"]), r["key"]
 
 
 def test_implemented_rows_name_modules_that_exist_in_the_target(table):
@@ -85,17 +91,25 @@ def test_implemented_rows_name_modules_that_exist_in_the_target(table):
             if not module.startswith("codex_harness."):
                 continue
             base = src.joinpath(*module.split("."))
+            if ":" not in symbol.split(" ")[0] and not (base.with_suffix(".py").is_file() or (base / "__init__.py").is_file()):
+                base = base.parent  # S11 L: `module.Name` (the relabel resolves the last component as the symbol)
             assert base.with_suffix(".py").is_file() or (base / "__init__.py").is_file(), (r["key"], symbol)
 
 
 def test_s1_module_rows_are_all_accounted_for(table):
     rows = [r for r in table["rows"] if r["kind"] == "module" and r["target_owner"] in S1_OWNERS]
     assert len(rows) == 27
+    # S11 L: the relabel measured the S1 rows: five layer-marker / package-root rows have no resolving code symbol
+    # (designed); model, contracts and commands resolve but name unmet evidence (implemented); the rest are verified.
     partial = {r["key"] for r in rows if r["status"] == "designed"}
-    assert partial == {"module:src/codex_harness/domain/model.py", "module:src/codex_harness/adapters/contracts.py",
+    assert partial == {"module:src/codex_harness/__init__.py", "module:src/codex_harness/resources/__init__.py",
                        "module:src/codex_harness/adapters/__init__.py",
                        "module:src/codex_harness/application/__init__.py",
                        "module:src/codex_harness/domain/__init__.py"}
+    assert {r["key"] for r in rows if r["status"] == "implemented"} == {
+        "module:src/codex_harness/domain/model.py", "module:src/codex_harness/adapters/contracts.py",
+        "module:src/codex_harness/adapters/commands.py"}
+    assert sum(r["status"] == "verified" for r in rows) == 19
     assert all(r.get("slice_progress") for r in rows if r["key"].endswith(("model.py", "contracts.py")))
 
 
@@ -110,8 +124,17 @@ def test_untraced_rows_stay_explicit(table):
 
 
 def test_unmapped_rows_are_named(table):
-    unmapped = sorted(r["key"] for r in table["rows"] if r["status"] == "unmapped")
-    assert unmapped == sorted("bucket:" + n for n in table["extra_counts"]["static_bucket_scan"]["ledger_only"])
+    # S11 L (R-L7, S10-PACKET §4b): the four formerly unmapped buckets are traced; none stays unmapped. One is a real
+    # bucket, three are constants of host_migration.py (mapping_correction), each verified by the relabel.
+    rows = {r["key"]: r for r in table["rows"]}
+    assert not [r for r in rows.values() if r["status"] == "unmapped"]
+    ledger_only = sorted("bucket:" + n for n in table["extra_counts"]["static_bucket_scan"]["ledger_only"])
+    assert ledger_only == ["bucket:discovery_pressure", "bucket:fleet-owner.json", "bucket:urn:zeus:aibox-fleet-owner:1",
+                           "bucket:zeus-aibox-fleet.service"]
+    for key in ledger_only:
+        assert rows[key]["status"] == "verified" and rows[key]["mapping_correction"], key
+    assert [k for k in ledger_only if rows[k]["mapping_correction"].startswith("not a bucket (S10-PACKET §4b)")] == \
+        ledger_only[1:]
 
 
 def test_decision_unit_row_is_recorder_confirmed(table):
@@ -133,17 +156,18 @@ def test_table_regenerates_from_the_pinned_ledger():
 def test_s2_module_rows_are_all_accounted_for(table):
     rows = [r for r in table["rows"] if r["kind"] == "module" and r["target_owner"] in S2_OWNERS]
     assert len(rows) == 41
-    partial = {r["key"] for r in rows if r["status"] == "designed"}
-    assert partial == {"module:src/codex_harness/adapters/skill_import.py", "module:src/codex_harness/adapters/skill_audit.py",
-                       "module:src/codex_harness/adapters/experience.py"}
+    # S11 L: S10 moved the three entry mains; every S2 module row is now verified by the relabel
+    partial = {"module:src/codex_harness/adapters/skill_import.py", "module:src/codex_harness/adapters/skill_audit.py",
+               "module:src/codex_harness/adapters/experience.py"}
+    assert {r["status"] for r in rows} == {"verified"}
     assert all("S10" in r["slice_progress"] for r in rows if r["key"] in partial)
     replay = next(r for r in rows if r["key"].endswith("native_routing_replay.py"))
     assert replay["target_owner"] == "context" and replay["mapping_correction"]
     for key in ("module:src/codex_harness/adapters/executor.py", "module:src/codex_harness/domain/model.py"):
         row = next(r for r in table["rows"] if r["key"] == key)
-        assert "S2 implemented" in row["slice_progress"] and row["status"] == "designed"
+        assert "S2 implemented" in row["slice_progress"] and row["status"] == "implemented"  # S11 L: was designed
     s2_contracts = [r for r in table["rows"] if r["kind"] == "contract" and r["target_owner"] in S2_OWNERS]
-    assert len(s2_contracts) == 16 and all(r["status"] == "implemented" for r in s2_contracts)
+    assert len(s2_contracts) == 16 and all(r["status"] in {"implemented", "verified"} for r in s2_contracts)  # S11 L
 
 
 S3_MODULES = {"isolated_worker.py", "role_containers.py", "app_server.py", "output_schema.py", "execution_output.py",
@@ -152,20 +176,19 @@ S3_MODULES = {"isolated_worker.py", "role_containers.py", "app_server.py", "outp
 
 def test_s3_rows_are_accounted_for(table):
     rows = {r["key"]: r for r in table["rows"]}
-    implemented = {"module:src/codex_harness/adapters/" + name for name in
-                   ("role_containers.py", "output_schema.py", "execution_output.py")}
-    assert all(rows[key]["status"] == "implemented" for key in implemented)
+    # S11 L: measured by the relabel. Every S3 module row resolves; those whose items all pass are verified, app_server
+    # and hooks name `compare:hooks.native_container`, a family with no target driver, and stay implemented.
+    statuses = {name: rows["module:src/codex_harness/adapters/" + name]["status"] for name in S3_MODULES}
+    assert statuses == {"isolated_worker.py": "verified", "role_containers.py": "verified", "output_schema.py": "verified",
+                        "execution_output.py": "verified", "codex.py": "verified", "app_server.py": "implemented",
+                        "hooks.py": "implemented"}
     for name in S3_MODULES:
-        row = rows["module:src/codex_harness/adapters/" + name]
-        assert "S3" in row["slice_progress"], name
-        if row["key"] not in implemented and "S4 implemented" not in row["slice_progress"]:
-            assert row["status"] == "designed" and ("S4" in row["slice_progress"] or "S8" in row["slice_progress"]
-                                                    or "S10" in row["slice_progress"]), name
+        assert "S3" in rows["module:src/codex_harness/adapters/" + name]["slice_progress"], name
     apis = [r for r in table["rows"] if r["kind"] == "public_api"
             and r["key"].split("::")[0].rsplit("/", 1)[-1] in {"isolated_worker.py", "role_containers.py", "app_server.py"}]
-    assert apis and all(r["status"] == "implemented" for r in apis)
+    assert apis and all(r["status"] in {"implemented", "verified"} for r in apis)
     for key in ("contract:INV-ROLE-CONTAINER-001", "contract:INV-CODEX-CREDENTIAL-001"):
-        assert rows[key]["status"] == "designed" and "S4" in rows[key]["slice_progress"]
+        assert rows[key]["status"] == "implemented" and "S4" in rows[key]["slice_progress"]
 
 
 S4_IMPLEMENTED = {"application/invocation_ledger.py", "domain/invocation.py", "adapters/call_budget.py",
@@ -177,12 +200,14 @@ S4_REMAINING = {"adapters/executor.py", "adapters/worker_sessions.py"}
 def test_s4_rows_moved_so_far_are_implemented_and_the_rest_stay_designed(table):
     """S4 (in progress): only the modules with a target move and compare/target evidence are implemented."""
     rows = {r["key"]: r for r in table["rows"]}
+    # S11 L: the relabel verified the rows whose items all pass (`adapters/hooks.py` names the target-driverless family)
     for name in S4_IMPLEMENTED:
         row = rows["module:src/codex_harness/" + name]
-        assert row["status"] == "implemented" and "S4 implemented" in row["slice_progress"], name
+        assert row["status"] == ("implemented" if name == "adapters/hooks.py" else "verified"), name
+        assert "S4 implemented" in row["slice_progress"], name
         assert any(e.startswith(("compare:", "target:tests/")) for e in row["evidence"]), name
-    for name in S4_REMAINING:
-        assert rows["module:src/codex_harness/" + name]["status"] == "designed", name
+    assert {name: rows["module:src/codex_harness/" + name]["status"] for name in S4_REMAINING} == {
+        "adapters/executor.py": "implemented", "adapters/worker_sessions.py": "verified"}
 
 
 def _generator():
