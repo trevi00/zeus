@@ -24,7 +24,8 @@ def organization():
 
 
 def codex_runtime():
-    return CodexRuntime(runner=run_process)
+    from codex_harness.observation.domain.observation import redact_text
+    return CodexRuntime(runner=run_process, redact=redact_text)  # S11 XC-1 A3: stderr tail redaction
 
 
 def workflow(service):
