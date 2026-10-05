@@ -526,6 +526,149 @@ class Tree:
                         out[cid].append(entry)
         return dict(out)
 
+    def structural_scopes(self, rel: str) -> set[tuple[str, ...]]:
+        """R-L9b: the function/method scopes of a test module that have >=1 assert and whose every assert the FA-009
+        detector flags. A node with no assert (an expectation raised through `pytest.raises`, a fixture's own check)
+        asserts no source text, so it is not structural."""
+        text = self.read(rel)
+        tree = self.tree_of(rel)
+        if tree is None:
+            return set()
+        flagged = {line for line, _ in wiring_assertions(text)}
+        out = set()
+
+        def visit(fn, scope):
+            lines = [n.lineno for n in ast.walk(fn) if isinstance(n, ast.Assert)]
+            if lines and all(line in flagged for line in lines):
+                out.add(scope)
+        for node in tree.body:
+            if isinstance(node, (ast.FunctionDef, ast.AsyncFunctionDef)):
+                visit(node, (node.name,))
+            elif isinstance(node, ast.ClassDef):
+                for sub in node.body:
+                    if isinstance(sub, (ast.FunctionDef, ast.AsyncFunctionDef)):
+                        visit(sub, (node.name, sub.name))
+        return out
+
+
+# ------------------------------------------------------------------------------------- the structural-node classifier
+# R-L9b (RETRO-PROPOSALS row 3; TEST-QUALITY-AND-RETROSPECTIVE-20261005): a citation counts only through a node with at
+# least one assertion the FA-009 detector does not flag. The detector below is COPIED VERBATIM from
+# `target/tests/test_s11_fa009.py` (`wiring_assertions` and its helpers, as extended by TQ-1 B7); the script cannot import
+# a test module, and `test_the_structural_classifier_equals_test_s11_fa009` pins the two to the same classification.
+SOURCE_TEXT_READERS = re.compile(r"\b(read_text|read_bytes|getsource|ast\.parse|ast\.walk|ast\.dump)\s*\(")
+PRODUCTION_LOCATIONS = re.compile(r"(src/|scripts/|harness_hooks/|codex_harness[./])")
+
+CONSTANT_SUFFIXES = ("_SCRIPT", "_SOURCE", "_TEMPLATE")
+
+
+def _imports_from_harness(tree):
+    """Names the module binds from `codex_harness` (`from codex_harness... import X`, `import codex_harness...`)."""
+    names = set()
+    for node in ast.walk(tree):
+        if isinstance(node, ast.ImportFrom) and (node.module or "").split(".")[0] == "codex_harness" and not node.level:
+            names |= {alias.asname or alias.name for alias in node.names}
+        elif isinstance(node, ast.Import):
+            names |= {(alias.asname or alias.name).split(".")[0] for alias in node.names
+                      if alias.name.split(".")[0] == "codex_harness"}
+    return names
+
+
+def _bound_names(target):
+    return {n.id for n in ast.walk(target) if isinstance(n, ast.Name)}
+
+
+def _is_harness_constant(node, imported):
+    """A `<Name>_SCRIPT|_SOURCE|_TEMPLATE` reference (bare, or an attribute such as `RedisBus._X_SCRIPT`) whose root
+    name is imported from `codex_harness`, or which is itself imported from there (B7 b)."""
+    if isinstance(node, ast.Attribute) and node.attr.endswith(CONSTANT_SUFFIXES):
+        root = node
+        while isinstance(root, ast.Attribute):
+            root = root.value
+        return isinstance(root, ast.Name) and root.id in imported
+    return isinstance(node, ast.Name) and node.id.endswith(CONSTANT_SUFFIXES) and node.id in imported
+
+
+def _function_bindings(function, imported):
+    """Names bound inside one function, as `{name: first binding line}`: `source` holds names bound from a statement that
+    reads production source (the reader regex and a production location in the statement; a reader statement that
+    names an already-bound source name extends the set, e.g. `tree = ast.parse(text)`), `constant` names bound from a
+    harness `*_SCRIPT|*_SOURCE|*_TEMPLATE` constant."""
+    statements = []
+    for node in ast.walk(function):
+        if isinstance(node, (ast.Assign, ast.AnnAssign, ast.AugAssign)) and node.value is not None:
+            targets = node.targets if isinstance(node, ast.Assign) else [node.target]
+            statements.append((node.lineno, node.value, set().union(*map(_bound_names, targets))))
+        elif isinstance(node, (ast.With, ast.AsyncWith)):
+            statements += [(node.lineno, item.context_expr, _bound_names(item.optional_vars))
+                           for item in node.items if item.optional_vars is not None]
+    source: dict[str, int] = {}
+    constant: dict[str, int] = {}
+    for line, value, names in sorted(statements, key=lambda s: s[0]):
+        if isinstance(value, ast.Constant):  # a string that merely contains the words is not a read
+            continue
+        text = ast.unparse(value)
+        reads = SOURCE_TEXT_READERS.search(text)
+        if reads and (PRODUCTION_LOCATIONS.search(text) or any(n.id in source for n in ast.walk(value)
+                                                               if isinstance(n, ast.Name))):
+            source.update({name: source.get(name, line) for name in names})
+        if any(_is_harness_constant(n, imported) or (isinstance(n, ast.Name) and n.id in constant)
+               for n in ast.walk(value)):
+            constant.update({name: constant.get(name, line) for name in names})
+    return source, constant
+
+
+def _constant_operands(node, imported, constant):
+    """True when the subtree names a harness constant, or a local name bound from one."""
+    return any(_is_harness_constant(n, imported) or (isinstance(n, ast.Name) and n.id in constant)
+               for n in ast.walk(node))
+
+
+def _constant_text_assertion(test, imported, constant):
+    """`.index(`, `.startswith(` or `in` applied to a harness script/source/template constant (B7 b)."""
+    for n in ast.walk(test):
+        if (isinstance(n, ast.Call) and isinstance(n.func, ast.Attribute) and n.func.attr in ("index", "startswith")
+                and _constant_operands(n.func.value, imported, constant)):
+            return True
+        if isinstance(n, ast.Compare) and any(
+                isinstance(op, ast.In) and _constant_operands(comparator, imported, constant)
+                for op, comparator in zip(n.ops, n.comparators)):
+            return True
+    return False
+
+
+def wiring_assertions(source: str):
+    """FA-009: assertions that only check production source text, not executed behavior.
+
+    A `<literal> in <production file text>` or an AST-shape assertion proves that a string was
+    typed, never that the wiring runs. Reading fixtures or generated runtime files is fine.
+
+    Beyond M7's one-assert form (S11 unit TQ-1, B7; the measured blind spots of TQ-XCUT-PLAN §1 B7), a test function is
+    also flagged when (a) an earlier statement reads production source and the assert names a variable bound from that
+    read, or (b) the assert applies `.index(`, `.startswith(` or `in` to a module constant named `*_SCRIPT`, `*_SOURCE`
+    or `*_TEMPLATE` imported from `codex_harness` (or to a local name bound from one).
+    """
+    tree = ast.parse(source)
+    imported = _imports_from_harness(tree)
+    findings = {}
+    for node in ast.walk(tree):
+        if isinstance(node, ast.Assert):
+            text = ast.unparse(node.test)
+            if SOURCE_TEXT_READERS.search(text) and PRODUCTION_LOCATIONS.search(text):
+                findings[node.lineno] = text[:120]
+    for function in ast.walk(tree):
+        if not isinstance(function, (ast.FunctionDef, ast.AsyncFunctionDef)):
+            continue
+        read, constant = _function_bindings(function, imported)
+        for node in ast.walk(function):
+            if not isinstance(node, ast.Assert) or node.lineno in findings:
+                continue
+            names = {n.id for n in ast.walk(node.test) if isinstance(n, ast.Name)}
+            if any(read.get(name, node.lineno) < node.lineno for name in names) or \
+                    _constant_text_assertion(node.test, imported, constant):
+                findings[node.lineno] = ast.unparse(node.test)[:120]
+    return sorted(findings.items())
+
 
 # ---------------------------------------------------------------------------------------------------- the relabel
 
@@ -556,6 +699,7 @@ class Relabel:
         self.verified_modules: set[str] = set()
         self.reference_only: set[str] = set()
         self.supplying: set[str] = set()
+        self._structural: dict[str, set] = {}
         self._buckets = self._cites = self._caps = self._ids = None
 
     # -- evidence items (R-L2) -------------------------------------------------------------------------------------
@@ -719,14 +863,21 @@ class Relabel:
         prefix = path + "::" + "::".join(scope)
         return [n for n in nodes if n == prefix or n.startswith(prefix + "[") or n.startswith(prefix + "::")]
 
-    def any_passed(self, scopes) -> bool:
-        """>=1 node of the given (path, scope) set passed."""
+    def passing_nodes(self, scopes) -> tuple[list[str], list[str]]:
+        """R-L9b: the passing nodes of the given (path, scope) set -> (behavioural, structural-only). A node is
+        structural when it has asserts and the FA-009 detector flags every one (module-level citations apply per node)."""
+        behavioural, structural = [], []
         for path, scope in scopes:
             ok = [n for n in self.node_set(path, scope) if n not in self.not_passed]
             if ok:
                 self.supplying.add(path)
-                return True
-        return False
+            if path not in self._structural:
+                self._structural[path] = self.tree.structural_scopes("target/" + path)
+            for n in ok:
+                parts = n.split("::")[1:]
+                key = tuple(parts[:-1] + [parts[-1].split("[")[0]]) if parts else ()
+                (structural if key in self._structural[path] else behavioural).append(n)
+        return behavioural, structural
 
     # -- one row -----------------------------------------------------------------------------------------------
     def evaluate(self, row: dict):
@@ -774,8 +925,13 @@ class Relabel:
             cid = row["key"][len("contract:"):]
             scopes = self.cites.get(cid, [])
             exec_exist = exec_exist or bool(scopes)
-            if self.any_passed(scopes):
+            behavioural, structural = self.passing_nodes(scopes)
+            if behavioural:
                 passed.append(f"cites:{cid}")
+            elif structural:  # R-L9b
+                only = sorted({n.split("[")[0] for n in structural})
+                unmet.append(f"cited only by structural nodes: {', '.join(only)}")
+                blocking = True
             else:
                 unmet.append(f"no passing target test cites the contract: {cid}")
                 blocking = True

@@ -437,6 +437,141 @@ def test_a_contract_needs_the_id_in_the_registry_and_a_passing_citing_test(tree)
     assert has_unmet(out["contract:INV-Y-001"], "no passing target test cites the contract")
 
 
+# S11 R-L9b: a citation counts only through a node with >=1 assert the FA-009 detector does not flag.
+STRUCTURAL_NODE = (
+    "def test_reads_source():\n"
+    "    # INV-X-001 is cited in a node that only reads production source text\n"
+    "    text = (ROOT / 'src/codex_harness/research/mod.py').read_text()\n"
+    "    assert 'Thing' in text\n"
+    "    assert 'class' in (ROOT / 'src/codex_harness/research/mod.py').read_text()\n")
+BEHAVIOURAL_NODE = (
+    "def test_runs_behaviour():\n"
+    "    # INV-X-001 is cited in a node that asserts an executed result\n"
+    "    assert service.go() == 1\n")
+MIXED_NODE = (
+    "def test_mixed():\n"
+    "    # INV-X-001 is cited in a node with one structural and one behavioural assert\n"
+    "    text = (ROOT / 'src/codex_harness/research/mod.py').read_text()\n"
+    "    assert 'Thing' in text\n"
+    "    assert service.go() == 1\n")
+NO_ASSERT_NODE = (
+    "def test_expects_a_refusal():\n"
+    "    # INV-X-001 is cited in a node that asserts through pytest.raises only\n"
+    "    with pytest.raises(ValueError):\n"
+    "        service.go()\n")
+
+
+def cited_by(tree, *nodes, module_doc=""):
+    """Replace test_a.py with `nodes` (INV-X-001 cited inside each) and return (X's ledger row, bundle)."""
+    write(tree, "target/tests/test_a.py", module_doc + "\n\n".join(nodes))
+    names = [n.split("(")[0][len("def "):] for node in nodes for n in node.split("\n") if n.startswith("def ")]
+    bundle = bundle_for(nodes=[f"tests/test_a.py::{n}" for n in names] + NODES[2:])
+    c = row(kind="contract", key="contract:INV-X-001", symbol=("docs/contracts.md#INV-X-001 enforced in x",),
+            evidence=("compare:fam",), slice_="S7")
+    return c, bundle
+
+
+def test_a_contract_cited_only_by_a_structural_node_is_not_verified(tree):
+    c, bundle = cited_by(tree, STRUCTURAL_NODE)
+    out, _ = run([c], tree, bundle)
+    r = out["contract:INV-X-001"]
+    assert r["status"] == "implemented"
+    assert r["verification"]["unmet"] == ["cited only by structural nodes: tests/test_a.py::test_reads_source"]
+    assert "cites:INV-X-001" not in r["verification"].get("passed", [])
+
+
+def test_a_contract_cited_by_a_node_with_a_behavioural_assert_is_verified(tree):
+    c, bundle = cited_by(tree, BEHAVIOURAL_NODE)
+    out, _ = run([c], tree, bundle)
+    assert out["contract:INV-X-001"]["status"] == "verified"
+    assert "cites:INV-X-001" in out["contract:INV-X-001"]["verification"]["passed"]
+
+
+def test_a_mixed_node_with_one_behavioural_assert_counts(tree):
+    c, bundle = cited_by(tree, MIXED_NODE)
+    out, _ = run([c], tree, bundle)
+    assert out["contract:INV-X-001"]["status"] == "verified"
+
+
+def test_a_node_without_any_assert_is_not_structural(tree):
+    c, bundle = cited_by(tree, NO_ASSERT_NODE)
+    out, _ = run([c], tree, bundle)
+    assert out["contract:INV-X-001"]["status"] == "verified"
+
+
+def test_a_structural_node_does_not_count_beside_a_non_passing_behavioural_one(tree):
+    c, bundle = cited_by(tree, STRUCTURAL_NODE, BEHAVIOURAL_NODE)
+    bundle["not_passed"] = {"tests/test_a.py::test_runs_behaviour": "failure"}
+    out, _ = run([c], tree, bundle)
+    assert out["contract:INV-X-001"]["status"] == "implemented"
+    assert has_unmet(out["contract:INV-X-001"], "cited only by structural nodes: tests/test_a.py::test_reads_source")
+
+
+def test_a_module_level_citation_applies_per_node_under_the_same_rule(tree):
+    doc = '"""Cites INV-X-001 at module level."""\n\n\n'
+    structural_module = doc + "def test_s1():\n    text = (ROOT / 'src/codex_harness/a.py').read_text()\n    assert 'a' in text\n"
+    c, bundle = cited_by(tree, structural_module.replace(doc, ""), module_doc=doc)
+    out, _ = run([c], tree, bundle)
+    assert out["contract:INV-X-001"]["status"] == "implemented"
+    assert has_unmet(out["contract:INV-X-001"], "cited only by structural nodes: tests/test_a.py::test_s1")
+    # one behavioural node in the module restores the citation
+    c, bundle = cited_by(tree, "def test_s1():\n    text = (ROOT / 'src/codex_harness/a.py').read_text()\n    assert 'a' in text\n",
+                         "def test_s2():\n    assert service.go() == 1\n", module_doc=doc)
+    out, _ = run([c], tree, bundle)
+    assert out["contract:INV-X-001"]["status"] == "verified"
+
+
+FA009_PATH = Path(__file__).resolve().parent / "test_s11_fa009.py"
+CLASSIFIER_FIXTURES = [
+    # M7 and TQ-1 positive/negative controls, and the module-level / class-method / async / nested shapes
+    "def test_x():\n    assert 'record_incident' in (ROOT / 'src/codex_harness/cli.py').read_text()\n"
+    "    assert 'fence' in Path('scripts/check.py').read_bytes().decode()\n"
+    "    tree = ast.parse((ROOT / 'src/codex_harness/x.py').read_text())\n"
+    "    assert any(isinstance(n, ast.Call) for n in ast.walk(ast.parse(source_of('codex_harness.x'))))\n",
+    "def test_y(tmp_path):\n    assert (tmp_path / 'lease.json').read_text() == '{}'\n"
+    "    assert service.record_incident(message)['occurrences'] == 1\n"
+    "    assert 'FASTAPI_ELIGIBLE' in prompts[0]['body']\n"
+    "    body = (ROOT / 'src/codex_harness/cli.py').read_text()\n    assert service.version() == 1\n",
+    "from codex_harness.storage.adapters.redis_bus import RedisBus\n"
+    "def test_read_then_assert():\n    text = (ROOT / 'src/codex_harness/x.py').read_text()\n    assert 'needle' in text\n"
+    "def test_parsed_then_asserted():\n    tree = ast.parse((ROOT / 'src/codex_harness/x.py').read_text())\n"
+    "    names = [n.name for n in ast.walk(tree)]\n    assert names == ['a', 'b']\n"
+    "def test_lua_order():\n    script = RedisBus._DEAD_LETTER_SCRIPT\n"
+    "    assert script.index('XADD') < script.index('XACK')\n    assert 'KEYS[1]' in script\n"
+    "def test_constant_in_the_assert():\n    assert 'XACK' in RedisBus._DEAD_LETTER_SCRIPT\n"
+    "    assert RedisBus._PUBLISH_SCRIPT.startswith('local')\n",
+    "from codex_harness.x import TEMPLATE_X_TEMPLATE\ndef test_template():\n    assert 'slot' in TEMPLATE_X_TEMPLATE\n",
+    "from codex_harness.storage.adapters.redis_bus import RedisBus\nLEGACY_SOURCE = {'topic': 'storage'}\n"
+    "def test_fixture(tmp_path):\n    text = (tmp_path / 'lease.json').read_text()\n    assert 'x' in text\n"
+    "def test_runtime_output():\n    out = run_cli(['--help'])\n    assert 'XADD' in out\n"
+    "def test_reads_here():\n    text = (ROOT / 'src/codex_harness/x.py').read_text()\n    return text\n"
+    "def test_asserts_elsewhere(text):\n    assert 'needle' in text\n"
+    "def test_own_data_constant():\n    assert 'topic' in LEGACY_SOURCE\n"
+    "def test_recorded_sequence(bus):\n    assert bus.client.calls == [('eval', (RedisBus._DEAD_LETTER_SCRIPT, 2))]\n",
+    "class TestC:\n    def test_m(self):\n        t = (ROOT / 'scripts/x.sh').read_text()\n        assert 'set -e' in t\n"
+    "    def test_n(self):\n        assert run() == 0\n"
+    "async def test_a():\n    t = Path('src/codex_harness/y.py').read_text()\n    assert t\n",
+    STRUCTURAL_NODE, BEHAVIOURAL_NODE, MIXED_NODE, NO_ASSERT_NODE,
+]
+
+
+def test_the_structural_classifier_equals_test_s11_fa009():
+    """The copied detector (relabel.wiring_assertions) and test_s11_fa009.wiring_assertions classify one fixture set
+    identically: the copy cannot diverge silently (RETRO-PROPOSALS row 3)."""
+    import importlib.util
+    spec = importlib.util.spec_from_file_location("s11_fa009_for_relabel", FA009_PATH)
+    fa009 = importlib.util.module_from_spec(spec)
+    spec.loader.exec_module(fa009)
+    flagged_somewhere = 0
+    for source in CLASSIFIER_FIXTURES:
+        assert relabel.wiring_assertions(source) == fa009.wiring_assertions(source), source
+        flagged_somewhere += bool(fa009.wiring_assertions(source))
+    assert flagged_somewhere >= 5  # the set is not vacuous: the structural shapes really are flagged
+    assert relabel.SOURCE_TEXT_READERS.pattern == fa009.SOURCE_TEXT_READERS.pattern
+    assert relabel.PRODUCTION_LOCATIONS.pattern == fa009.PRODUCTION_LOCATIONS.pattern
+    assert relabel.CONSTANT_SUFFIXES == fa009.CONSTANT_SUFFIXES
+
+
 def test_a_capability_needs_its_target_symbols_and_a_passing_named_test_and_no_pending_proposed_row(tree):
     a = row(kind="capability", key="capability:cap_a", symbol=("codex_harness.research",), slice_="S7",
             evidence=("docs/context/ARCHITECTURE.md#capabilities",))
