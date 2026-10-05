@@ -92,6 +92,13 @@ def operation(service):
                      evidence_records=EvidenceRecords(), clock=composition.PORT, ids=composition.IDPORT)
 
 
+def operation_with(service, executor, bus, workflow, budget, collector):
+    # S11 AU-REC-6a: the run needs the executor, bus, workflow, budget and collector M7's Operation takes positionally
+    return Operation(service.store, service.org, flusher=service.flusher, incidents=service.record_incident,
+                     evidence_records=EvidenceRecords(), clock=composition.PORT, ids=composition.IDPORT,
+                     executor=executor, bus=bus, workflow=workflow, budget=budget, collector=collector)
+
+
 def recovery(store, root):
     return execution_recovery.ExecutionRecovery(store, composition.ORG, FileArtifacts(str(root), clock=composition.PORT),
                                                 ticket_binding=tickets.ticket_binding, clock=composition.PORT,
@@ -104,6 +111,7 @@ OUTBOX = SimpleNamespace(relay=functools.partial(outbox_relay.relay, health=Heal
 
 API = composition.api(
     backend=Backend, reset=reset, recording=lambda store: rec.RecordingStore(store), operation=operation,
+    operation_with=operation_with,
     Fleet=s5_fleet_composition.FleetFacade, operation_finalization=operation_finalization,
     outbox=OUTBOX, recovery=recovery, artifact_root=lambda: tempfile.mkdtemp(prefix="zeus-s5-units-recovery-"),
     validate_manifest=lambda document: operation_domain.validate_manifest(document, POLICY),

@@ -2068,6 +2068,1421 @@
   ],
   "violations": []
  },
+ "operation_run_a_failure_at_operations": {
+  "durable_units": 13,
+  "durable_writes": [
+   [
+    "decisions_pending",
+    "pending"
+   ],
+   [
+    "decisions_pending",
+    "succeeded"
+   ],
+   [
+    "evidence_inspections",
+    ""
+   ],
+   [
+    "local_cycles",
+    "active"
+   ],
+   [
+    "local_cycles",
+    "awaiting_operator"
+   ],
+   [
+    "operations",
+    "running"
+   ],
+   [
+    "outbox",
+    ""
+   ],
+   [
+    "outbox_attempts",
+    "delivered"
+   ],
+   [
+    "outbox_attempts",
+    "started"
+   ],
+   [
+    "outbox_delivery",
+    "delivered"
+   ],
+   [
+    "outbox_delivery",
+    "publishing"
+   ],
+   [
+    "tasks",
+    "queued"
+   ],
+   [
+    "tasks",
+    "succeeded"
+   ],
+   [
+    "workflow_inbox",
+    ""
+   ]
+  ],
+  "effects": [],
+  "outcome": {
+   "message": "injected failure at operations",
+   "reason_code": null,
+   "refused": "Injected"
+  },
+  "rows": [
+   [
+    "decisions_pending",
+    "5eed0000-0000-4000-8000-000000000003",
+    "succeeded"
+   ],
+   [
+    "evidence_inspections",
+    "insp-b7c43a3b-df0c-56c2-8b7d-ce30f4c468ad",
+    ""
+   ],
+   [
+    "local_cycles",
+    "operation:op-1",
+    "awaiting_operator"
+   ],
+   [
+    "operations",
+    "op-1",
+    "running"
+   ],
+   [
+    "outbox",
+    "5eed0000-0000-4000-8000-000000000003",
+    ""
+   ],
+   [
+    "outbox",
+    "b7c43a3b-df0c-56c2-8b7d-ce30f4c468ad",
+    ""
+   ],
+   [
+    "outbox_attempts",
+    "5eed0000-0000-4000-8000-000000000002",
+    "delivered"
+   ],
+   [
+    "outbox_attempts",
+    "5eed0000-0000-4000-8000-000000000004",
+    "delivered"
+   ],
+   [
+    "outbox_delivery",
+    "5eed0000-0000-4000-8000-000000000003",
+    "delivered"
+   ],
+   [
+    "outbox_delivery",
+    "b7c43a3b-df0c-56c2-8b7d-ce30f4c468ad",
+    "delivered"
+   ],
+   [
+    "tasks",
+    "b7c43a3b-df0c-56c2-8b7d-ce30f4c468ad",
+    "succeeded"
+   ],
+   [
+    "workflow_inbox",
+    "5eed0000-0000-4000-8000-000000000003",
+    ""
+   ]
+  ],
+  "units": [
+   "COMMIT",
+   "COMMIT",
+   "COMMIT",
+   "COMMIT",
+   "COMMIT",
+   "COMMIT",
+   "COMMIT",
+   "COMMIT",
+   "COMMIT",
+   "COMMIT",
+   "COMMIT",
+   "COMMIT",
+   "COMMIT",
+   "COMMIT",
+   "COMMIT",
+   "COMMIT",
+   "COMMIT",
+   "COMMIT",
+   "COMMIT",
+   "COMMIT",
+   "COMMIT",
+   "COMMIT",
+   "COMMIT",
+   "COMMIT",
+   "COMMIT",
+   "COMMIT",
+   "COMMIT",
+   "COMMIT",
+   "COMMIT",
+   "COMMIT",
+   "COMMIT",
+   "COMMIT",
+   "COMMIT",
+   "COMMIT",
+   "COMMIT",
+   "COMMIT",
+   "ROLLBACK"
+  ],
+  "violations": []
+ },
+ "operation_run_b_row_changed_by_another_owner": {
+  "durable_units": 14,
+  "durable_writes": [
+   [
+    "decisions_pending",
+    "pending"
+   ],
+   [
+    "decisions_pending",
+    "succeeded"
+   ],
+   [
+    "evidence_inspections",
+    ""
+   ],
+   [
+    "local_cycles",
+    "active"
+   ],
+   [
+    "local_cycles",
+    "awaiting_operator"
+   ],
+   [
+    "operations",
+    "failed"
+   ],
+   [
+    "operations",
+    "running"
+   ],
+   [
+    "outbox",
+    ""
+   ],
+   [
+    "outbox_attempts",
+    "delivered"
+   ],
+   [
+    "outbox_attempts",
+    "started"
+   ],
+   [
+    "outbox_delivery",
+    "delivered"
+   ],
+   [
+    "outbox_delivery",
+    "publishing"
+   ],
+   [
+    "tasks",
+    "queued"
+   ],
+   [
+    "tasks",
+    "succeeded"
+   ],
+   [
+    "workflow_inbox",
+    ""
+   ]
+  ],
+  "effects": [],
+  "outcome": {
+   "message": "Operation row changed during the run",
+   "reason_code": null,
+   "refused": "ContractError"
+  },
+  "rows": [
+   [
+    "decisions_pending",
+    "5eed0000-0000-4000-8000-000000000003",
+    "succeeded"
+   ],
+   [
+    "evidence_inspections",
+    "insp-b7c43a3b-df0c-56c2-8b7d-ce30f4c468ad",
+    ""
+   ],
+   [
+    "local_cycles",
+    "operation:op-1",
+    "awaiting_operator"
+   ],
+   [
+    "operations",
+    "op-1",
+    "failed"
+   ],
+   [
+    "outbox",
+    "5eed0000-0000-4000-8000-000000000003",
+    ""
+   ],
+   [
+    "outbox",
+    "b7c43a3b-df0c-56c2-8b7d-ce30f4c468ad",
+    ""
+   ],
+   [
+    "outbox_attempts",
+    "5eed0000-0000-4000-8000-000000000002",
+    "delivered"
+   ],
+   [
+    "outbox_attempts",
+    "5eed0000-0000-4000-8000-000000000004",
+    "delivered"
+   ],
+   [
+    "outbox_delivery",
+    "5eed0000-0000-4000-8000-000000000003",
+    "delivered"
+   ],
+   [
+    "outbox_delivery",
+    "b7c43a3b-df0c-56c2-8b7d-ce30f4c468ad",
+    "delivered"
+   ],
+   [
+    "tasks",
+    "b7c43a3b-df0c-56c2-8b7d-ce30f4c468ad",
+    "succeeded"
+   ],
+   [
+    "workflow_inbox",
+    "5eed0000-0000-4000-8000-000000000003",
+    ""
+   ]
+  ],
+  "units": [
+   "COMMIT",
+   "COMMIT",
+   "COMMIT",
+   "COMMIT",
+   "COMMIT",
+   "COMMIT",
+   "COMMIT",
+   "COMMIT",
+   "COMMIT",
+   "COMMIT",
+   "COMMIT",
+   "COMMIT",
+   "COMMIT",
+   "COMMIT",
+   "COMMIT",
+   "COMMIT",
+   "COMMIT",
+   "COMMIT",
+   "COMMIT",
+   "COMMIT",
+   "COMMIT",
+   "COMMIT",
+   "COMMIT",
+   "COMMIT",
+   "COMMIT",
+   "COMMIT",
+   "COMMIT",
+   "COMMIT",
+   "COMMIT",
+   "COMMIT",
+   "COMMIT",
+   "COMMIT",
+   "COMMIT",
+   "COMMIT",
+   "COMMIT",
+   "COMMIT",
+   "COMMIT",
+   "ROLLBACK"
+  ],
+  "violations": []
+ },
+ "operation_run_c_replay": {
+  "durable_units": 0,
+  "durable_writes": [],
+  "effects": [],
+  "outcome": {
+   "value": {
+    "accounting_mode": "finite",
+    "assignment_message_id": "b7c43a3b-df0c-56c2-8b7d-ce30f4c468ad",
+    "authority": "operation_receipt; not merge, deploy or completion",
+    "cached": true,
+    "calls": {
+     "reserved": 2,
+     "settled": 2,
+     "slots": [
+      {
+       "agent": "worker:implementation",
+       "id": "slot-1",
+       "kind": "task",
+       "outcome": "succeeded",
+       "provider": "claude",
+       "settle_error": null,
+       "settled": true
+      },
+      {
+       "agent": "lead:improvement",
+       "id": "slot-2",
+       "kind": "decision",
+       "outcome": "succeeded",
+       "provider": "codex",
+       "settle_error": null,
+       "settled": true
+      }
+     ]
+    },
+    "claimed_at": "2026-01-01T00:00:00+00:00",
+    "collection": null,
+    "correlation_id": "operation:op-1",
+    "cycle": {
+     "authority": "observation_only",
+     "automatic_resume": false,
+     "cycle": {
+      "correlation_id": "operation:op-1",
+      "created_at": "2026-01-01T00:00:00+00:00",
+      "executions": 2,
+      "id": "operation:op-1",
+      "in_flight": null,
+      "last_execution": {
+       "agent": "lead:improvement",
+       "at": "2026-01-01T00:00:00+00:00",
+       "claimed": true,
+       "id": "5eed0000-0000-4000-8000-000000000003",
+       "kind": "decision",
+       "result_id": "5eed0000-0000-4000-8000-000000000003",
+       "status": "succeeded"
+      },
+      "max_executions": 2,
+      "status": "awaiting_operator",
+      "stopped_reason": null,
+      "stopped_reason_sha256": null,
+      "updated_at": "2026-01-01T00:00:00+00:00"
+     },
+     "remaining_executions": 0,
+     "schema": "urn:zeus:cycle-handoff:1",
+     "target_record": {
+      "attempt": 0,
+      "availability": "found",
+      "generation": null,
+      "id": "5eed0000-0000-4000-8000-000000000003",
+      "kind": "decision",
+      "phase": "review_lead",
+      "result": {
+       "accepted": true,
+       "candidate": null,
+       "evidence_verdict": null,
+       "execution_ref": "sha256:ffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff"
+      },
+      "status": "succeeded"
+     }
+    },
+    "cycle_id": "operation:op-1",
+    "decision_id": "5eed0000-0000-4000-8000-000000000003",
+    "design": null,
+    "evidence": {
+     "candidate": {
+      "base": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+      "diff_hash": "dddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddd",
+      "revision": "cccccccccccccccccccccccccccccccccccccccc",
+      "tree": "7777777777777777777777777777777777777777"
+     },
+     "execution_ref": "sha256:eeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee",
+     "inspection_id": "insp-b7c43a3b-df0c-56c2-8b7d-ce30f4c468ad",
+     "review_execution_ref": "sha256:ffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff"
+    },
+    "exit_code": 0,
+    "finalization": {
+     "already_terminal": 2,
+     "at": "2026-01-01T00:00:00+00:00",
+     "authority": "cleanup_summary; not the operation outcome",
+     "disposition_ids": [],
+     "observed_after_collection": true,
+     "operation_id": "op-1",
+     "reason_code": "operation_terminal",
+     "retired": {
+      "decisions_pending": [],
+      "tasks": []
+     },
+     "schema": "urn:zeus:operation-finalization:1",
+     "unresolved": []
+    },
+    "finished_at": "2026-01-01T00:00:00+00:00",
+    "goal": {
+     "base_revision": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+     "bytes": 3,
+     "criterion": "c",
+     "path": "docs/GOAL.md",
+     "sha256": "bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb"
+    },
+    "id": "op-1",
+    "identity": {
+     "provider": {
+      "config_digest": "y",
+      "policy_digest": "x"
+     },
+     "repository": "r",
+     "runtime": "d",
+     "runtime_policy": "p"
+    },
+    "lead_accepted": true,
+    "manifest_sha256": "bfde21ada564a3fe3ae7ee3d3e2484a0ff1eac12fe21a5a6b68afa182b55355a",
+    "owner_handoff": null,
+    "reason_code": "lead_accepted",
+    "schema": "urn:zeus:operation-receipt:1",
+    "status": "accepted",
+    "task_id": "b7c43a3b-df0c-56c2-8b7d-ce30f4c468ad",
+    "updated_at": "2026-01-01T00:00:00+00:00"
+   }
+  },
+  "rows": [
+   [
+    "decisions_pending",
+    "5eed0000-0000-4000-8000-000000000003",
+    "succeeded"
+   ],
+   [
+    "evidence_inspections",
+    "insp-b7c43a3b-df0c-56c2-8b7d-ce30f4c468ad",
+    ""
+   ],
+   [
+    "local_cycles",
+    "operation:op-1",
+    "awaiting_operator"
+   ],
+   [
+    "operations",
+    "op-1",
+    "accepted"
+   ],
+   [
+    "outbox",
+    "5eed0000-0000-4000-8000-000000000003",
+    ""
+   ],
+   [
+    "outbox",
+    "b7c43a3b-df0c-56c2-8b7d-ce30f4c468ad",
+    ""
+   ],
+   [
+    "outbox_attempts",
+    "5eed0000-0000-4000-8000-000000000002",
+    "delivered"
+   ],
+   [
+    "outbox_attempts",
+    "5eed0000-0000-4000-8000-000000000004",
+    "delivered"
+   ],
+   [
+    "outbox_delivery",
+    "5eed0000-0000-4000-8000-000000000003",
+    "delivered"
+   ],
+   [
+    "outbox_delivery",
+    "b7c43a3b-df0c-56c2-8b7d-ce30f4c468ad",
+    "delivered"
+   ],
+   [
+    "tasks",
+    "b7c43a3b-df0c-56c2-8b7d-ce30f4c468ad",
+    "succeeded"
+   ],
+   [
+    "workflow_inbox",
+    "5eed0000-0000-4000-8000-000000000003",
+    ""
+   ]
+  ],
+  "units": [
+   "COMMIT",
+   "COMMIT"
+  ],
+  "violations": []
+ },
+ "operation_run_lead_rejected": {
+  "durable_units": 14,
+  "durable_writes": [
+   [
+    "decisions_pending",
+    "pending"
+   ],
+   [
+    "decisions_pending",
+    "succeeded"
+   ],
+   [
+    "evidence_inspections",
+    ""
+   ],
+   [
+    "local_cycles",
+    "active"
+   ],
+   [
+    "operations",
+    "rejected"
+   ],
+   [
+    "operations",
+    "running"
+   ],
+   [
+    "outbox",
+    ""
+   ],
+   [
+    "outbox_attempts",
+    "delivered"
+   ],
+   [
+    "outbox_attempts",
+    "started"
+   ],
+   [
+    "outbox_delivery",
+    "delivered"
+   ],
+   [
+    "outbox_delivery",
+    "publishing"
+   ],
+   [
+    "tasks",
+    "queued"
+   ],
+   [
+    "tasks",
+    "succeeded"
+   ],
+   [
+    "workflow_inbox",
+    ""
+   ]
+  ],
+  "effects": [],
+  "outcome": {
+   "value": {
+    "accounting_mode": "finite",
+    "assignment_message_id": "b7c43a3b-df0c-56c2-8b7d-ce30f4c468ad",
+    "authority": "operation_receipt; not merge, deploy or completion",
+    "cached": false,
+    "calls": {
+     "reserved": 2,
+     "settled": 2,
+     "slots": [
+      {
+       "agent": "worker:implementation",
+       "id": "slot-1",
+       "kind": "task",
+       "outcome": "succeeded",
+       "provider": "claude",
+       "settle_error": null,
+       "settled": true
+      },
+      {
+       "agent": "lead:improvement",
+       "id": "slot-2",
+       "kind": "decision",
+       "outcome": "succeeded",
+       "provider": "codex",
+       "settle_error": null,
+       "settled": true
+      }
+     ]
+    },
+    "claimed_at": "2026-01-01T00:00:00+00:00",
+    "collection": null,
+    "correlation_id": "operation:op-1",
+    "cycle": {
+     "authority": "observation_only",
+     "automatic_resume": false,
+     "cycle": {
+      "correlation_id": "operation:op-1",
+      "created_at": "2026-01-01T00:00:00+00:00",
+      "executions": 2,
+      "id": "operation:op-1",
+      "in_flight": null,
+      "last_execution": {
+       "agent": "lead:improvement",
+       "at": "2026-01-01T00:00:00+00:00",
+       "claimed": true,
+       "id": "5eed0000-0000-4000-8000-000000000003",
+       "kind": "decision",
+       "result_id": "5eed0000-0000-4000-8000-000000000003",
+       "status": "succeeded"
+      },
+      "max_executions": 2,
+      "status": "active",
+      "stopped_reason": null,
+      "stopped_reason_sha256": null,
+      "updated_at": "2026-01-01T00:00:00+00:00"
+     },
+     "remaining_executions": 0,
+     "schema": "urn:zeus:cycle-handoff:1",
+     "target_record": {
+      "attempt": 0,
+      "availability": "found",
+      "generation": null,
+      "id": "5eed0000-0000-4000-8000-000000000003",
+      "kind": "decision",
+      "phase": "review_lead",
+      "result": {
+       "accepted": false,
+       "candidate": null,
+       "evidence_verdict": null,
+       "execution_ref": "sha256:ffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff"
+      },
+      "status": "succeeded"
+     }
+    },
+    "cycle_id": "operation:op-1",
+    "decision_id": "5eed0000-0000-4000-8000-000000000003",
+    "design": null,
+    "evidence": {
+     "candidate": {
+      "base": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+      "diff_hash": "dddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddd",
+      "revision": "cccccccccccccccccccccccccccccccccccccccc",
+      "tree": "7777777777777777777777777777777777777777"
+     },
+     "execution_ref": "sha256:eeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee",
+     "inspection_id": "insp-b7c43a3b-df0c-56c2-8b7d-ce30f4c468ad",
+     "review_execution_ref": "sha256:ffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff"
+    },
+    "exit_code": 1,
+    "finalization": {
+     "already_terminal": 2,
+     "at": "2026-01-01T00:00:00+00:00",
+     "authority": "cleanup_summary; not the operation outcome",
+     "disposition_ids": [],
+     "observed_after_collection": true,
+     "operation_id": "op-1",
+     "reason_code": "operation_terminal",
+     "retired": {
+      "decisions_pending": [],
+      "tasks": []
+     },
+     "schema": "urn:zeus:operation-finalization:1",
+     "unresolved": []
+    },
+    "finished_at": "2026-01-01T00:00:00+00:00",
+    "goal": {
+     "base_revision": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+     "bytes": 3,
+     "criterion": "c",
+     "path": "docs/GOAL.md",
+     "sha256": "bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb"
+    },
+    "id": "op-1",
+    "identity": {
+     "provider": {
+      "config_digest": "y",
+      "policy_digest": "x"
+     },
+     "repository": "r",
+     "runtime": "d",
+     "runtime_policy": "p"
+    },
+    "lead_accepted": false,
+    "manifest_sha256": "bfde21ada564a3fe3ae7ee3d3e2484a0ff1eac12fe21a5a6b68afa182b55355a",
+    "owner_handoff": null,
+    "reason_code": "lead_rejected",
+    "schema": "urn:zeus:operation-receipt:1",
+    "status": "rejected",
+    "task_id": "b7c43a3b-df0c-56c2-8b7d-ce30f4c468ad",
+    "updated_at": "2026-01-01T00:00:00+00:00"
+   }
+  },
+  "rows": [
+   [
+    "decisions_pending",
+    "5eed0000-0000-4000-8000-000000000003",
+    "succeeded"
+   ],
+   [
+    "evidence_inspections",
+    "insp-b7c43a3b-df0c-56c2-8b7d-ce30f4c468ad",
+    ""
+   ],
+   [
+    "local_cycles",
+    "operation:op-1",
+    "active"
+   ],
+   [
+    "operations",
+    "op-1",
+    "rejected"
+   ],
+   [
+    "outbox",
+    "5eed0000-0000-4000-8000-000000000003",
+    ""
+   ],
+   [
+    "outbox",
+    "b7c43a3b-df0c-56c2-8b7d-ce30f4c468ad",
+    ""
+   ],
+   [
+    "outbox_attempts",
+    "5eed0000-0000-4000-8000-000000000002",
+    "delivered"
+   ],
+   [
+    "outbox_attempts",
+    "5eed0000-0000-4000-8000-000000000004",
+    "delivered"
+   ],
+   [
+    "outbox_delivery",
+    "5eed0000-0000-4000-8000-000000000003",
+    "delivered"
+   ],
+   [
+    "outbox_delivery",
+    "b7c43a3b-df0c-56c2-8b7d-ce30f4c468ad",
+    "delivered"
+   ],
+   [
+    "tasks",
+    "b7c43a3b-df0c-56c2-8b7d-ce30f4c468ad",
+    "succeeded"
+   ],
+   [
+    "workflow_inbox",
+    "5eed0000-0000-4000-8000-000000000003",
+    ""
+   ]
+  ],
+  "units": [
+   "COMMIT",
+   "COMMIT",
+   "COMMIT",
+   "COMMIT",
+   "COMMIT",
+   "COMMIT",
+   "COMMIT",
+   "COMMIT",
+   "COMMIT",
+   "COMMIT",
+   "COMMIT",
+   "COMMIT",
+   "COMMIT",
+   "COMMIT",
+   "COMMIT",
+   "COMMIT",
+   "COMMIT",
+   "COMMIT",
+   "COMMIT",
+   "COMMIT",
+   "COMMIT",
+   "COMMIT",
+   "COMMIT",
+   "COMMIT",
+   "COMMIT",
+   "COMMIT",
+   "COMMIT",
+   "COMMIT",
+   "COMMIT",
+   "COMMIT",
+   "COMMIT",
+   "COMMIT",
+   "COMMIT",
+   "COMMIT",
+   "COMMIT",
+   "COMMIT",
+   "COMMIT"
+  ],
+  "violations": []
+ },
+ "operation_run_no_executor": {
+  "durable_units": 1,
+  "durable_writes": [
+   [
+    "local_cycles",
+    "active"
+   ],
+   [
+    "operations",
+    "running"
+   ],
+   [
+    "outbox",
+    ""
+   ]
+  ],
+  "effects": [],
+  "outcome": {
+   "message": "Operation run needs an executor and a call budget",
+   "reason_code": null,
+   "refused": "ContractError"
+  },
+  "rows": [
+   [
+    "local_cycles",
+    "operation:op-1",
+    "active"
+   ],
+   [
+    "operations",
+    "op-1",
+    "running"
+   ],
+   [
+    "outbox",
+    "b7c43a3b-df0c-56c2-8b7d-ce30f4c468ad",
+    ""
+   ]
+  ],
+  "units": [
+   "COMMIT",
+   "COMMIT"
+  ],
+  "violations": []
+ },
+ "operation_run_success": {
+  "durable_units": 14,
+  "durable_writes": [
+   [
+    "decisions_pending",
+    "pending"
+   ],
+   [
+    "decisions_pending",
+    "succeeded"
+   ],
+   [
+    "evidence_inspections",
+    ""
+   ],
+   [
+    "local_cycles",
+    "active"
+   ],
+   [
+    "local_cycles",
+    "awaiting_operator"
+   ],
+   [
+    "operations",
+    "accepted"
+   ],
+   [
+    "operations",
+    "running"
+   ],
+   [
+    "outbox",
+    ""
+   ],
+   [
+    "outbox_attempts",
+    "delivered"
+   ],
+   [
+    "outbox_attempts",
+    "started"
+   ],
+   [
+    "outbox_delivery",
+    "delivered"
+   ],
+   [
+    "outbox_delivery",
+    "publishing"
+   ],
+   [
+    "tasks",
+    "queued"
+   ],
+   [
+    "tasks",
+    "succeeded"
+   ],
+   [
+    "workflow_inbox",
+    ""
+   ]
+  ],
+  "effects": [],
+  "outcome": {
+   "value": {
+    "accounting_mode": "finite",
+    "assignment_message_id": "b7c43a3b-df0c-56c2-8b7d-ce30f4c468ad",
+    "authority": "operation_receipt; not merge, deploy or completion",
+    "cached": false,
+    "calls": {
+     "reserved": 2,
+     "settled": 2,
+     "slots": [
+      {
+       "agent": "worker:implementation",
+       "id": "slot-1",
+       "kind": "task",
+       "outcome": "succeeded",
+       "provider": "claude",
+       "settle_error": null,
+       "settled": true
+      },
+      {
+       "agent": "lead:improvement",
+       "id": "slot-2",
+       "kind": "decision",
+       "outcome": "succeeded",
+       "provider": "codex",
+       "settle_error": null,
+       "settled": true
+      }
+     ]
+    },
+    "claimed_at": "2026-01-01T00:00:00+00:00",
+    "collection": null,
+    "correlation_id": "operation:op-1",
+    "cycle": {
+     "authority": "observation_only",
+     "automatic_resume": false,
+     "cycle": {
+      "correlation_id": "operation:op-1",
+      "created_at": "2026-01-01T00:00:00+00:00",
+      "executions": 2,
+      "id": "operation:op-1",
+      "in_flight": null,
+      "last_execution": {
+       "agent": "lead:improvement",
+       "at": "2026-01-01T00:00:00+00:00",
+       "claimed": true,
+       "id": "5eed0000-0000-4000-8000-000000000003",
+       "kind": "decision",
+       "result_id": "5eed0000-0000-4000-8000-000000000003",
+       "status": "succeeded"
+      },
+      "max_executions": 2,
+      "status": "awaiting_operator",
+      "stopped_reason": null,
+      "stopped_reason_sha256": null,
+      "updated_at": "2026-01-01T00:00:00+00:00"
+     },
+     "remaining_executions": 0,
+     "schema": "urn:zeus:cycle-handoff:1",
+     "target_record": {
+      "attempt": 0,
+      "availability": "found",
+      "generation": null,
+      "id": "5eed0000-0000-4000-8000-000000000003",
+      "kind": "decision",
+      "phase": "review_lead",
+      "result": {
+       "accepted": true,
+       "candidate": null,
+       "evidence_verdict": null,
+       "execution_ref": "sha256:ffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff"
+      },
+      "status": "succeeded"
+     }
+    },
+    "cycle_id": "operation:op-1",
+    "decision_id": "5eed0000-0000-4000-8000-000000000003",
+    "design": null,
+    "evidence": {
+     "candidate": {
+      "base": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+      "diff_hash": "dddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddd",
+      "revision": "cccccccccccccccccccccccccccccccccccccccc",
+      "tree": "7777777777777777777777777777777777777777"
+     },
+     "execution_ref": "sha256:eeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee",
+     "inspection_id": "insp-b7c43a3b-df0c-56c2-8b7d-ce30f4c468ad",
+     "review_execution_ref": "sha256:ffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff"
+    },
+    "exit_code": 0,
+    "finalization": {
+     "already_terminal": 2,
+     "at": "2026-01-01T00:00:00+00:00",
+     "authority": "cleanup_summary; not the operation outcome",
+     "disposition_ids": [],
+     "observed_after_collection": true,
+     "operation_id": "op-1",
+     "reason_code": "operation_terminal",
+     "retired": {
+      "decisions_pending": [],
+      "tasks": []
+     },
+     "schema": "urn:zeus:operation-finalization:1",
+     "unresolved": []
+    },
+    "finished_at": "2026-01-01T00:00:00+00:00",
+    "goal": {
+     "base_revision": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+     "bytes": 3,
+     "criterion": "c",
+     "path": "docs/GOAL.md",
+     "sha256": "bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb"
+    },
+    "id": "op-1",
+    "identity": {
+     "provider": {
+      "config_digest": "y",
+      "policy_digest": "x"
+     },
+     "repository": "r",
+     "runtime": "d",
+     "runtime_policy": "p"
+    },
+    "lead_accepted": true,
+    "manifest_sha256": "bfde21ada564a3fe3ae7ee3d3e2484a0ff1eac12fe21a5a6b68afa182b55355a",
+    "owner_handoff": null,
+    "reason_code": "lead_accepted",
+    "schema": "urn:zeus:operation-receipt:1",
+    "status": "accepted",
+    "task_id": "b7c43a3b-df0c-56c2-8b7d-ce30f4c468ad",
+    "updated_at": "2026-01-01T00:00:00+00:00"
+   }
+  },
+  "rows": [
+   [
+    "decisions_pending",
+    "5eed0000-0000-4000-8000-000000000003",
+    "succeeded"
+   ],
+   [
+    "evidence_inspections",
+    "insp-b7c43a3b-df0c-56c2-8b7d-ce30f4c468ad",
+    ""
+   ],
+   [
+    "local_cycles",
+    "operation:op-1",
+    "awaiting_operator"
+   ],
+   [
+    "operations",
+    "op-1",
+    "accepted"
+   ],
+   [
+    "outbox",
+    "5eed0000-0000-4000-8000-000000000003",
+    ""
+   ],
+   [
+    "outbox",
+    "b7c43a3b-df0c-56c2-8b7d-ce30f4c468ad",
+    ""
+   ],
+   [
+    "outbox_attempts",
+    "5eed0000-0000-4000-8000-000000000002",
+    "delivered"
+   ],
+   [
+    "outbox_attempts",
+    "5eed0000-0000-4000-8000-000000000004",
+    "delivered"
+   ],
+   [
+    "outbox_delivery",
+    "5eed0000-0000-4000-8000-000000000003",
+    "delivered"
+   ],
+   [
+    "outbox_delivery",
+    "b7c43a3b-df0c-56c2-8b7d-ce30f4c468ad",
+    "delivered"
+   ],
+   [
+    "tasks",
+    "b7c43a3b-df0c-56c2-8b7d-ce30f4c468ad",
+    "succeeded"
+   ],
+   [
+    "workflow_inbox",
+    "5eed0000-0000-4000-8000-000000000003",
+    ""
+   ]
+  ],
+  "units": [
+   "COMMIT",
+   "COMMIT",
+   "COMMIT",
+   "COMMIT",
+   "COMMIT",
+   "COMMIT",
+   "COMMIT",
+   "COMMIT",
+   "COMMIT",
+   "COMMIT",
+   "COMMIT",
+   "COMMIT",
+   "COMMIT",
+   "COMMIT",
+   "COMMIT",
+   "COMMIT",
+   "COMMIT",
+   "COMMIT",
+   "COMMIT",
+   "COMMIT",
+   "COMMIT",
+   "COMMIT",
+   "COMMIT",
+   "COMMIT",
+   "COMMIT",
+   "COMMIT",
+   "COMMIT",
+   "COMMIT",
+   "COMMIT",
+   "COMMIT",
+   "COMMIT",
+   "COMMIT",
+   "COMMIT",
+   "COMMIT",
+   "COMMIT",
+   "COMMIT",
+   "COMMIT"
+  ],
+  "violations": []
+ },
+ "operation_run_worker_failed": {
+  "durable_units": 8,
+  "durable_writes": [
+   [
+    "local_cycles",
+    "active"
+   ],
+   [
+    "local_cycles",
+    "stopped"
+   ],
+   [
+    "operations",
+    "failed"
+   ],
+   [
+    "operations",
+    "running"
+   ],
+   [
+    "outbox",
+    ""
+   ],
+   [
+    "outbox_attempts",
+    "delivered"
+   ],
+   [
+    "outbox_attempts",
+    "started"
+   ],
+   [
+    "outbox_delivery",
+    "delivered"
+   ],
+   [
+    "outbox_delivery",
+    "publishing"
+   ],
+   [
+    "tasks",
+    "failed"
+   ],
+   [
+    "tasks",
+    "queued"
+   ]
+  ],
+  "effects": [],
+  "outcome": {
+   "value": {
+    "accounting_mode": "finite",
+    "assignment_message_id": "b7c43a3b-df0c-56c2-8b7d-ce30f4c468ad",
+    "authority": "operation_receipt; not merge, deploy or completion",
+    "cached": false,
+    "calls": {
+     "reserved": 1,
+     "settled": 1,
+     "slots": [
+      {
+       "agent": "worker:implementation",
+       "id": "slot-1",
+       "kind": "task",
+       "outcome": "failed",
+       "provider": "claude",
+       "settle_error": null,
+       "settled": true
+      }
+     ]
+    },
+    "claimed_at": "2026-01-01T00:00:00+00:00",
+    "collection": null,
+    "correlation_id": "operation:op-1",
+    "cycle": {
+     "authority": "observation_only",
+     "automatic_resume": false,
+     "cycle": {
+      "correlation_id": "operation:op-1",
+      "created_at": "2026-01-01T00:00:00+00:00",
+      "executions": 1,
+      "id": "operation:op-1",
+      "in_flight": null,
+      "last_execution": {
+       "agent": "worker:implementation",
+       "at": "2026-01-01T00:00:00+00:00",
+       "claimed": true,
+       "id": "b7c43a3b-df0c-56c2-8b7d-ce30f4c468ad",
+       "kind": "task",
+       "result_id": "b7c43a3b-df0c-56c2-8b7d-ce30f4c468ad",
+       "status": "failed"
+      },
+      "max_executions": 2,
+      "status": "stopped",
+      "stopped_reason": "execution_failed",
+      "stopped_reason_sha256": "b98b0a54576363ff4eb0e015b8f6fcbec61b2c92046259a0f6bf25dc6853fca9",
+      "updated_at": "2026-01-01T00:00:00+00:00"
+     },
+     "remaining_executions": 1,
+     "schema": "urn:zeus:cycle-handoff:1",
+     "target_record": {
+      "attempt": 1,
+      "availability": "found",
+      "generation": 1,
+      "id": "b7c43a3b-df0c-56c2-8b7d-ce30f4c468ad",
+      "kind": "task",
+      "phase": null,
+      "result": {
+       "accepted": null,
+       "candidate": null,
+       "evidence_verdict": null,
+       "execution_ref": null
+      },
+      "status": "failed"
+     }
+    },
+    "cycle_id": "operation:op-1",
+    "decision_id": null,
+    "design": null,
+    "evidence": {
+     "candidate": null,
+     "execution_ref": null,
+     "inspection_id": null,
+     "review_execution_ref": null
+    },
+    "exit_code": 1,
+    "finalization": {
+     "already_terminal": 1,
+     "at": "2026-01-01T00:00:00+00:00",
+     "authority": "cleanup_summary; not the operation outcome",
+     "disposition_ids": [],
+     "observed_after_collection": true,
+     "operation_id": "op-1",
+     "reason_code": "operation_terminal",
+     "retired": {
+      "decisions_pending": [],
+      "tasks": []
+     },
+     "schema": "urn:zeus:operation-finalization:1",
+     "unresolved": []
+    },
+    "finished_at": "2026-01-01T00:00:00+00:00",
+    "goal": {
+     "base_revision": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+     "bytes": 3,
+     "criterion": "c",
+     "path": "docs/GOAL.md",
+     "sha256": "bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb"
+    },
+    "id": "op-1",
+    "identity": {
+     "provider": {
+      "config_digest": "y",
+      "policy_digest": "x"
+     },
+     "repository": "r",
+     "runtime": "d",
+     "runtime_policy": "p"
+    },
+    "lead_accepted": false,
+    "manifest_sha256": "bfde21ada564a3fe3ae7ee3d3e2484a0ff1eac12fe21a5a6b68afa182b55355a",
+    "owner_handoff": null,
+    "reason_code": "execution_failed",
+    "schema": "urn:zeus:operation-receipt:1",
+    "status": "failed",
+    "task_id": null,
+    "updated_at": "2026-01-01T00:00:00+00:00"
+   }
+  },
+  "rows": [
+   [
+    "local_cycles",
+    "operation:op-1",
+    "stopped"
+   ],
+   [
+    "operations",
+    "op-1",
+    "failed"
+   ],
+   [
+    "outbox",
+    "b7c43a3b-df0c-56c2-8b7d-ce30f4c468ad",
+    ""
+   ],
+   [
+    "outbox_attempts",
+    "5eed0000-0000-4000-8000-000000000002",
+    "delivered"
+   ],
+   [
+    "outbox_delivery",
+    "b7c43a3b-df0c-56c2-8b7d-ce30f4c468ad",
+    "delivered"
+   ],
+   [
+    "tasks",
+    "b7c43a3b-df0c-56c2-8b7d-ce30f4c468ad",
+    "failed"
+   ]
+  ],
+  "units": [
+   "COMMIT",
+   "COMMIT",
+   "COMMIT",
+   "COMMIT",
+   "COMMIT",
+   "COMMIT",
+   "COMMIT",
+   "COMMIT",
+   "COMMIT",
+   "COMMIT",
+   "COMMIT",
+   "COMMIT",
+   "COMMIT",
+   "COMMIT",
+   "COMMIT",
+   "COMMIT",
+   "COMMIT",
+   "COMMIT",
+   "COMMIT",
+   "COMMIT"
+  ],
+  "violations": []
+ },
  "parkable_c_repeat": {
   "durable_units": 0,
   "durable_writes": [],

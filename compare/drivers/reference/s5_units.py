@@ -93,7 +93,10 @@ def reset():
 API = SimpleNamespace(
     backend=Backend, reset=reset, advance=CLOCK.advance, recording=lambda store: rec.RecordingStore(store),
     workflow=lambda store: workflow.Workflow(store, ORG), service=lambda store: Harness(store, ORG),
-    operation=lambda service: operation.Operation(service), LocalCycle=local_cycle.LocalCycle,
+    operation=lambda service: operation.Operation(service),
+    operation_with=lambda service, executor, bus, workflow, budget, collector: operation.Operation(
+        service, executor, bus, workflow, budget, collector),
+    LocalCycle=local_cycle.LocalCycle,
     Fleet=lambda store, clock, token: Fleet(store, clock=clock, token=token),
     validate_manifest=lambda document: operation_domain.validate_manifest(document, POLICY),
     validate_message=validate_message,

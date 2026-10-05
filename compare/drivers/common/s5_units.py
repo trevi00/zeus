@@ -763,6 +763,117 @@ def resume(api, name, *, failure=False, replay=False, registry=True):
     return case.result(answer(f.resume))
 
 
+# ----- S11 AU-REC-6a: Operation.run to its finish (the call names the public method `run`) -----
+RUN_IDENTITY = {"repository": "r", "runtime": "d", "runtime_policy": "p",
+                "provider": {"policy_digest": "x", "config_digest": "y"}}
+
+
+class RunBus:
+    def __init__(self, api):
+        self.api, self.queued, self.acked = api, [], []
+
+    def receive(self, agent, consumer):
+        for entry in self.queued:
+            if entry[1]["who"]["recipient"] == agent and entry[0] not in self.acked:
+                return entry[0], {"body": entry[1]}
+        return None
+
+    @staticmethod
+    def decode(fields):
+        return fields["body"]
+
+    def ack(self, agent, entry_id):
+        self.acked.append(entry_id)
+
+    def dead_letter(self, agent, entry_id, fields, reason):
+        self.acked.append(entry_id)
+
+    def validate(self, message):
+        return self.api.validate_message(message)
+
+    def publish(self, message):
+        entry = str(len(self.queued) + 1) + "-0"
+        self.queued.append((entry, message))
+        return entry
+
+
+class RunBudget:
+    def __init__(self):
+        self.reserved, self.settled = [], []
+
+    def reserve(self, *, per_host, total, purpose, provider, model):
+        slot = {"id": "slot-" + str(len(self.reserved) + 1), "reserved_at": "t", "purpose": purpose}
+        self.reserved.append(slot)
+        return slot
+
+    def settle(self, slot_id, *, outcome, detail=None):
+        self.settled.append((slot_id, outcome))
+
+
+class RunExecutor:
+    """Settles the guarded rows the way the real executor would; `after_decision` runs once the review verdict is written."""
+
+    def __init__(self, api, store, worker="succeeded", verdict=True, after_decision=None):
+        self.api, self.store, self.worker, self.verdict, self.after_decision = api, store, worker, verdict, after_decision
+
+    def execute_one(self, agent, expected=None):
+        with self.store.transaction() as tx:
+            task = tx.get("tasks", expected["id"])
+            task.update(status=self.worker, attempt=1, generation=1, lease_owner="fixture")
+            if self.worker == "succeeded":
+                candidate = {"revision": "c" * 40, "base": BASE, "tree": "7" * 40, "diff_hash": "d" * 64, "path": "p"}
+                inspection_id = "insp-" + task["id"]
+                binding = {"task_id": task["id"], "generation": 1, "attempt": 1, "source_revision": candidate["revision"]}
+                tx.put("evidence_inspections", inspection_id, {
+                    "id": inspection_id, "binding": binding, "policy_hash": "ph", "verdict": "all_checked",
+                    "findings": [{"claim": {"kind": "project_check", "check_id": "unit", "status": "executed",
+                                            "argv": ["python", "-m", "pytest"]}, "state": "checked", "cause": None}],
+                    "denominator": {"claims": 1, "checked": 1, "not_checked": 0}})
+                task["result"] = {"summary": "s", "candidate": candidate, "execution_ref": "sha256:" + "e" * 64,
+                                  "evidence_inspection": {"inspection_id": inspection_id, "verdict": "all_checked"}}
+                report = self.api.envelope("task.result", task["agent"], LEAD, "implement",
+                                           {"task_id": task["id"], "result": task["result"]},
+                                           task["message"]["correlation_id"])
+                tx.put("outbox", report["message_id"], {"message": report, "sent": False})
+            else:
+                task["error"] = "provider failed"
+            tx.put("tasks", task["id"], task)
+            return task
+
+    def decide_one(self, agent, expected=None):
+        with self.store.transaction() as tx:
+            row = tx.get("decisions_pending", expected["id"])
+            row.update(status="succeeded", result={"accepted": self.verdict, "reason": "r",
+                                                   "execution_ref": "sha256:" + "f" * 64})
+            tx.put("decisions_pending", row["id"], row)
+        if self.after_decision is not None:
+            self.after_decision()
+        return row
+
+
+def run_operation(api, name, *, failure=False, replay=False, worker="succeeded", verdict=True, foreign=False,
+                  executor=True):
+    case = Case(api, name)
+    service = api.service(case.store)
+    document = manifest(api, "op-1")
+    after = None
+    if failure:
+        after = lambda: case.store.arm("operations")  # noqa: E731 - the next operations put is the finish
+    if foreign:
+        def after():  # another owner ends the operation before this run finishes it
+            with case.store.transaction() as tx:
+                row = tx.get("operations", "op-1")
+                row["status"] = "failed"
+                tx.put("operations", "op-1", row)
+    run_executor = RunExecutor(api, case.store, worker, verdict, after) if executor else None
+    operation = api.operation_with(service, run_executor, RunBus(api), api.workflow(case.store),
+                                   RunBudget() if executor else None, None)
+    if replay:
+        operation.run(document, RUN_IDENTITY, GOAL)
+    case.since()
+    return case.result(answer(operation.run, document, RUN_IDENTITY, GOAL))
+
+
 def run(api) -> dict:
     out = {
         "handle_success": handle(api, "handle_success"),
@@ -878,6 +989,13 @@ def run(api) -> dict:
         "resume_a_failure_at_control": resume(api, "resume_a_failure", failure=True),
         "resume_c_replay": resume(api, "resume_c_replay", replay=True),
         "resume_unregistered": resume(api, "resume_unregistered", registry=False),
+        "operation_run_success": run_operation(api, "operation_run_success"),
+        "operation_run_a_failure_at_operations": run_operation(api, "operation_run_a_failure", failure=True),
+        "operation_run_b_row_changed_by_another_owner": run_operation(api, "operation_run_b_foreign", foreign=True),
+        "operation_run_c_replay": run_operation(api, "operation_run_c_replay", replay=True),
+        "operation_run_worker_failed": run_operation(api, "operation_run_worker_failed", worker="failed"),
+        "operation_run_lead_rejected": run_operation(api, "operation_run_lead_rejected", verdict=False),
+        "operation_run_no_executor": run_operation(api, "operation_run_no_executor", executor=False),
     }
     block_exercise.assign(list(out))  # S11 R-L3d: the cases ran in key order, one window each
     return out
