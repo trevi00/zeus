@@ -20,6 +20,10 @@ from codex_harness.context.adapters.skill_import import import_file
 from codex_harness.context.application.skill_import import SkillImport
 from codex_harness.context.domain.skills.audit import timestamp
 from codex_harness.context.domain.skills.import_ import project_jsonl, source_document
+from codex_harness.entry.cli.skill_audit import (
+    main as audit_cli,  # S11 R-S7: the entry mains (M7 `adapters.skill_audit.main`, `adapters.skill_import.main`)
+)
+from codex_harness.entry.cli.skill_import import main  # S11 R-S7
 from codex_harness.kernel.errors import ContractError
 from codex_harness.kernel.ids import digest
 from codex_harness.storage.adapters.file_artifacts import FileArtifacts
@@ -147,7 +151,6 @@ def test_concurrent_reimport_and_retention_keep_one_cursor(monkeypatch):
         importer.ingest('project', 'segment', data, 'sha256:wrong')
 
 
-@pytest.mark.skip(reason="S11 (PREP-S11 §9 #3): scripts/import_skill_telemetry.py imports absent M7 codex_harness.adapters.skill_import; root-script disposition pending")
 def test_cli_preview_has_no_database_or_artifact_writes_and_audit_selects_legacy(tmp_path, capsys):
     path = tmp_path / 'legacy.jsonl'
     path.write_bytes(row() * 3)
