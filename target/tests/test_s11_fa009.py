@@ -72,6 +72,23 @@ PIN_GROUPS: list[tuple[str, dict[str, list[int]]]] = [
         "ported/test_native_hooks.py": [106, 107],
         "ported/test_output_schema.py": [110],
     }),
+    ("S8/S9 move fidelity: the moved module's header is M7's docstring plus the DESIGN-s11 §3.2 fields (layer, context, "
+     "owner, contracts, SOURCE, rule ids); a provenance contract, asserted through the `header()` helper (FA-009b)", {
+        "test_s8_batch_b1_move.py": [77, 79, 121, 124],
+        "test_s8_batch_b2_move.py": [171, 174, 321, 324],
+        "test_s9_batch_l2b1_move.py": [85, 86, 156, 157, 159],
+        "test_s9_batch_l2b2_move.py": [82, 108, 110, 117, 118, 119, 121, 123],
+    }),
+    ("S8 move rules R-ta1 (the spawn chokepoint), R-tk2 and R-gh1 (the injected clock and port): the moved module's body, "
+     "outside its header, carries no spawn name and no bare `utcnow()` (FA-009b; the behaviour is covered by the same "
+     "files' behavioural tests)", {
+        "test_s8_batch_b1_move.py": [131],
+        "test_s8_batch_b2_move.py": [263, 364, 431],
+    }),
+    ("packaged-resource declaration, read through a helper (FA-009b): the shipped research schema declares the vocabulary "
+     "the domain declares (group 6's contract)", {
+        "ported/test_audit_output_vocabulary.py": [72],
+    }),
     ("TQ-1 B8 restated structural pins: each docstring names its structural contract and the behavioural tests", {
         "test_s10_a5_1a_dead_letter_drain.py": [53, 56],
         "test_s4_decision_owners.py": [166],
@@ -113,11 +130,59 @@ def _is_harness_constant(node, imported):
     return isinstance(node, ast.Name) and node.id.endswith(CONSTANT_SUFFIXES) and node.id in imported
 
 
-def _function_bindings(function, imported):
+PRODUCTION_TEXT = re.compile(r"__doc__|\b(getsource|getdoc|get_docstring)\s*\(")
+
+
+def _is_production_text(text):
+    """A module `__doc__`, `getsource`/`getdoc`/`ast.get_docstring`, or `read_text`/`read_bytes` of a production location."""
+    return bool(PRODUCTION_TEXT.search(text) or
+                (re.search(r"\b(read_text|read_bytes)\s*\(", text) and PRODUCTION_LOCATIONS.search(text)))
+
+
+def _function_returns(function):
+    """The `return` statements of one function, not those of a function nested in it."""
+    stack, out = list(function.body), []
+    while stack:
+        node = stack.pop()
+        if isinstance(node, ast.Return) and node.value is not None:
+            out.append(node)
+        if not isinstance(node, (ast.FunctionDef, ast.AsyncFunctionDef, ast.Lambda)):
+            stack.extend(ast.iter_child_nodes(node))
+    return out
+
+
+def _local_readers(tree):
+    """Names of functions defined in the module whose return value is production text (FA-009b, one level of helper):
+    a returned expression that is production text, or a returned name bound in that function from production text."""
+    readers = set()
+    for function in ast.walk(tree):
+        if not isinstance(function, (ast.FunctionDef, ast.AsyncFunctionDef)):
+            continue
+        bound = {}
+        for node in ast.walk(function):
+            if isinstance(node, (ast.Assign, ast.AnnAssign)) and node.value is not None:
+                targets = node.targets if isinstance(node, ast.Assign) else [node.target]
+                if not isinstance(node.value, ast.Constant) and _is_production_text(ast.unparse(node.value)):
+                    bound.update({name: node.lineno for target in targets for name in _bound_names(target)})
+        for ret in _function_returns(function):
+            if isinstance(ret.value, ast.Constant):
+                continue
+            names = {n.id for n in ast.walk(ret.value) if isinstance(n, ast.Name)}
+            if _is_production_text(ast.unparse(ret.value)) or any(bound.get(n, ret.lineno) < ret.lineno for n in names):
+                readers.add(function.name)
+    return readers
+
+
+def _calls_reader(node, readers):
+    return any(isinstance(n, ast.Call) and isinstance(n.func, ast.Name) and n.func.id in readers for n in ast.walk(node))
+
+
+def _function_bindings(function, imported, readers=frozenset()):
     """Names bound inside one function, as `{name: first binding line}`: `source` holds names bound from a statement that
     reads production source (the reader regex and a production location in the statement; a reader statement that
     names an already-bound source name extends the set, e.g. `tree = ast.parse(text)`), `constant` names bound from a
-    harness `*_SCRIPT|*_SOURCE|*_TEMPLATE` constant."""
+    harness `*_SCRIPT|*_SOURCE|*_TEMPLATE` constant. A statement that calls a local reader (`readers`, FA-009b) also
+    binds `source`."""
     statements = []
     for node in ast.walk(function):
         if isinstance(node, (ast.Assign, ast.AnnAssign, ast.AugAssign)) and node.value is not None:
@@ -133,6 +198,8 @@ def _function_bindings(function, imported):
             continue
         text = ast.unparse(value)
         reads = SOURCE_TEXT_READERS.search(text)
+        if _calls_reader(value, readers):
+            source.update({name: source.get(name, line) for name in names})
         if reads and (PRODUCTION_LOCATIONS.search(text) or any(n.id in source for n in ast.walk(value)
                                                                if isinstance(n, ast.Name))):
             source.update({name: source.get(name, line) for name in names})
@@ -171,19 +238,26 @@ def wiring_assertions(source: str):
     also flagged when (a) an earlier statement reads production source and the assert names a variable bound from that
     read, or (b) the assert applies `.index(`, `.startswith(` or `in` to a module constant named `*_SCRIPT`, `*_SOURCE`
     or `*_TEMPLATE` imported from `codex_harness` (or to a local name bound from one).
+
+    S11 unit FA-009b: a function defined in the same module whose return value is production text (a module `__doc__`,
+    `inspect.getsource`/`getdoc`, `ast.get_docstring`, or `read_text`/`read_bytes` of a production location) is a READER;
+    an assert on a reader's call result, directly or through a variable bound to it, is flagged like a direct read. One
+    level of helper only: a helper that merely calls another reader is not itself a reader.
     """
     tree = ast.parse(source)
     imported = _imports_from_harness(tree)
+    readers = _local_readers(tree)
     findings = {}
     for node in ast.walk(tree):
         if isinstance(node, ast.Assert):
             text = ast.unparse(node.test)
-            if SOURCE_TEXT_READERS.search(text) and PRODUCTION_LOCATIONS.search(text):
+            if SOURCE_TEXT_READERS.search(text) and PRODUCTION_LOCATIONS.search(text) or \
+                    _calls_reader(node.test, readers):
                 findings[node.lineno] = text[:120]
     for function in ast.walk(tree):
         if not isinstance(function, (ast.FunctionDef, ast.AsyncFunctionDef)):
             continue
-        read, constant = _function_bindings(function, imported)
+        read, constant = _function_bindings(function, imported, readers)
         for node in ast.walk(function):
             if not isinstance(node, ast.Assert) or node.lineno in findings:
                 continue
@@ -299,3 +373,61 @@ def test_wiring_detector_leaves_fixture_reads_runtime_outputs_and_foreign_consta
         "def test_recorded_sequence(bus):\n"
         "    assert bus.client.calls == [('eval', (RedisBus._DEAD_LETTER_SCRIPT, 2))]\n")
     assert wiring_assertions(negative) == []
+
+
+def test_wiring_detector_flags_assertions_on_production_text_read_through_a_local_helper():
+    """FA-009b positive controls (RETRO-PROPOSALS row 4): a function defined in the same module whose return value is
+    production text (a module `__doc__`, `getsource`/`getdoc`, `ast.get_docstring`, or `read_text`/`read_bytes` of a
+    production location) is a reader; an assert on its call result, directly or through a variable bound to it, is
+    flagged like a direct read. One level of helper only."""
+    positive = (
+        "def header(m):\n"
+        "    return m.__doc__\n"
+        "def test_direct():\n"
+        "    assert 'INV-METRIC-001' in header(domain_module)\n"  # 4
+        "def test_through_a_variable():\n"
+        "    doc = header(domain_module)\n"
+        "    assert 'Layer: domain' in doc\n"  # 7
+        "def header_lines(m):\n"
+        "    return ast.get_docstring(ast.parse(text_of(m)))\n"
+        "def source(m):\n"
+        "    return inspect.getsource(m)\n"
+        "def packaged():\n"
+        "    body = (ROOT / 'src/codex_harness/x.py').read_text()\n"
+        "    return body\n"
+        "def test_other_readers():\n"
+        "    assert 'a' in header_lines(m)\n"  # 16
+        "    assert 'b' in source(m)\n"  # 17
+        "    assert 'c' in packaged()\n")  # 18
+    assert [line for line, _ in wiring_assertions(positive)] == [4, 7, 16, 17, 18]
+
+
+def test_wiring_detector_leaves_non_reader_helpers_alone():
+    """FA-009b negative controls: a helper that builds an object, one that returns fixture text, a helper that only
+    calls a reader (one level of helper is enough), and a name read in another function."""
+    negative = (
+        "def build():\n"
+        "    return Store()\n"
+        "def fixture(tmp_path):\n"
+        "    return (tmp_path / 'lease.json').read_text()\n"
+        "def header(m):\n"
+        "    return m.__doc__\n"
+        "def outer(m):\n"
+        "    return header(m)\n"
+        "def test_a(tmp_path):\n"
+        "    assert build().count() == 0\n"
+        "    assert 'x' in fixture(tmp_path)\n"
+        "    assert 'y' in outer(m)\n"
+        "def test_b():\n"
+        "    doc = header(m)\n"
+        "    return doc\n"
+        "def test_c(doc):\n"
+        "    assert 'z' in doc\n")
+    assert wiring_assertions(negative) == []
+
+
+def test_the_measured_helper_read_miss_is_flagged():
+    """FA-009b expected result 2: `test_s9_batch_l2b2_move.py:118` asserts INV-METRIC-001 on `header(module)` text (the
+    miss R-L9b measured, RETRO-PROPOSALS row 4); it must be a flagged line, not only a pinned one."""
+    flagged = {line for line, _ in wiring_assertions((TESTS / "test_s9_batch_l2b2_move.py").read_text(encoding="utf-8-sig"))}
+    assert 118 in flagged

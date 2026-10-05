@@ -551,6 +551,18 @@ CLASSIFIER_FIXTURES = [
     "class TestC:\n    def test_m(self):\n        t = (ROOT / 'scripts/x.sh').read_text()\n        assert 'set -e' in t\n"
     "    def test_n(self):\n        assert run() == 0\n"
     "async def test_a():\n    t = Path('src/codex_harness/y.py').read_text()\n    assert t\n",
+    # FA-009b: reads through a local helper (positive: `__doc__`, get_docstring, getsource, a production read_text, a
+    # variable bound to the call; negative: object builders, fixture text, a helper that only calls a reader)
+    "def header(m):\n    return m.__doc__\ndef header_lines(m):\n    return ast.get_docstring(ast.parse(text_of(m)))\n"
+    "def source(m):\n    return inspect.getsource(m)\n"
+    "def packaged():\n    body = (ROOT / 'src/codex_harness/x.py').read_text()\n    return body\n"
+    "def test_direct():\n    assert 'INV-METRIC-001' in header(domain_module)\n"
+    "def test_through_a_variable():\n    doc = header(domain_module)\n    assert 'Layer: domain' in doc\n"
+    "def test_other_readers():\n    assert 'a' in header_lines(m)\n    assert 'b' in source(m)\n    assert 'c' in packaged()\n",
+    "def build():\n    return Store()\ndef fixture(tmp_path):\n    return (tmp_path / 'lease.json').read_text()\n"
+    "def header(m):\n    return m.__doc__\ndef outer(m):\n    return header(m)\n"
+    "def test_a(tmp_path):\n    assert build().count() == 0\n    assert 'x' in fixture(tmp_path)\n    assert 'y' in outer(m)\n"
+    "def test_b():\n    doc = header(m)\n    return doc\ndef test_c(doc):\n    assert 'z' in doc\n",
     STRUCTURAL_NODE, BEHAVIOURAL_NODE, MIXED_NODE, NO_ASSERT_NODE,
 ]
 
@@ -566,7 +578,7 @@ def test_the_structural_classifier_equals_test_s11_fa009():
     for source in CLASSIFIER_FIXTURES:
         assert relabel.wiring_assertions(source) == fa009.wiring_assertions(source), source
         flagged_somewhere += bool(fa009.wiring_assertions(source))
-    assert flagged_somewhere >= 5  # the set is not vacuous: the structural shapes really are flagged
+    assert flagged_somewhere >= 6  # the set is not vacuous: the structural shapes really are flagged
     assert relabel.SOURCE_TEXT_READERS.pattern == fa009.SOURCE_TEXT_READERS.pattern
     assert relabel.PRODUCTION_LOCATIONS.pattern == fa009.PRODUCTION_LOCATIONS.pattern
     assert relabel.CONSTANT_SUFFIXES == fa009.CONSTANT_SUFFIXES

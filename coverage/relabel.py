@@ -554,8 +554,8 @@ class Tree:
 # ------------------------------------------------------------------------------------- the structural-node classifier
 # R-L9b (RETRO-PROPOSALS row 3; TEST-QUALITY-AND-RETROSPECTIVE-20261005): a citation counts only through a node with at
 # least one assertion the FA-009 detector does not flag. The detector below is COPIED VERBATIM from
-# `target/tests/test_s11_fa009.py` (`wiring_assertions` and its helpers, as extended by TQ-1 B7); the script cannot import
-# a test module, and `test_the_structural_classifier_equals_test_s11_fa009` pins the two to the same classification.
+# `target/tests/test_s11_fa009.py` (`wiring_assertions` and its helpers, as extended by TQ-1 B7 and by FA-009b: reads
+# through a local helper); the script cannot import a test module, and `test_the_structural_classifier_equals_test_s11_fa009` pins the two to the same classification.
 SOURCE_TEXT_READERS = re.compile(r"\b(read_text|read_bytes|getsource|ast\.parse|ast\.walk|ast\.dump)\s*\(")
 PRODUCTION_LOCATIONS = re.compile(r"(src/|scripts/|harness_hooks/|codex_harness[./])")
 
@@ -589,11 +589,59 @@ def _is_harness_constant(node, imported):
     return isinstance(node, ast.Name) and node.id.endswith(CONSTANT_SUFFIXES) and node.id in imported
 
 
-def _function_bindings(function, imported):
+PRODUCTION_TEXT = re.compile(r"__doc__|\b(getsource|getdoc|get_docstring)\s*\(")
+
+
+def _is_production_text(text):
+    """A module `__doc__`, `getsource`/`getdoc`/`ast.get_docstring`, or `read_text`/`read_bytes` of a production location."""
+    return bool(PRODUCTION_TEXT.search(text) or
+                (re.search(r"\b(read_text|read_bytes)\s*\(", text) and PRODUCTION_LOCATIONS.search(text)))
+
+
+def _function_returns(function):
+    """The `return` statements of one function, not those of a function nested in it."""
+    stack, out = list(function.body), []
+    while stack:
+        node = stack.pop()
+        if isinstance(node, ast.Return) and node.value is not None:
+            out.append(node)
+        if not isinstance(node, (ast.FunctionDef, ast.AsyncFunctionDef, ast.Lambda)):
+            stack.extend(ast.iter_child_nodes(node))
+    return out
+
+
+def _local_readers(tree):
+    """Names of functions defined in the module whose return value is production text (FA-009b, one level of helper):
+    a returned expression that is production text, or a returned name bound in that function from production text."""
+    readers = set()
+    for function in ast.walk(tree):
+        if not isinstance(function, (ast.FunctionDef, ast.AsyncFunctionDef)):
+            continue
+        bound = {}
+        for node in ast.walk(function):
+            if isinstance(node, (ast.Assign, ast.AnnAssign)) and node.value is not None:
+                targets = node.targets if isinstance(node, ast.Assign) else [node.target]
+                if not isinstance(node.value, ast.Constant) and _is_production_text(ast.unparse(node.value)):
+                    bound.update({name: node.lineno for target in targets for name in _bound_names(target)})
+        for ret in _function_returns(function):
+            if isinstance(ret.value, ast.Constant):
+                continue
+            names = {n.id for n in ast.walk(ret.value) if isinstance(n, ast.Name)}
+            if _is_production_text(ast.unparse(ret.value)) or any(bound.get(n, ret.lineno) < ret.lineno for n in names):
+                readers.add(function.name)
+    return readers
+
+
+def _calls_reader(node, readers):
+    return any(isinstance(n, ast.Call) and isinstance(n.func, ast.Name) and n.func.id in readers for n in ast.walk(node))
+
+
+def _function_bindings(function, imported, readers=frozenset()):
     """Names bound inside one function, as `{name: first binding line}`: `source` holds names bound from a statement that
     reads production source (the reader regex and a production location in the statement; a reader statement that
     names an already-bound source name extends the set, e.g. `tree = ast.parse(text)`), `constant` names bound from a
-    harness `*_SCRIPT|*_SOURCE|*_TEMPLATE` constant."""
+    harness `*_SCRIPT|*_SOURCE|*_TEMPLATE` constant. A statement that calls a local reader (`readers`, FA-009b) also
+    binds `source`."""
     statements = []
     for node in ast.walk(function):
         if isinstance(node, (ast.Assign, ast.AnnAssign, ast.AugAssign)) and node.value is not None:
@@ -609,6 +657,8 @@ def _function_bindings(function, imported):
             continue
         text = ast.unparse(value)
         reads = SOURCE_TEXT_READERS.search(text)
+        if _calls_reader(value, readers):
+            source.update({name: source.get(name, line) for name in names})
         if reads and (PRODUCTION_LOCATIONS.search(text) or any(n.id in source for n in ast.walk(value)
                                                                if isinstance(n, ast.Name))):
             source.update({name: source.get(name, line) for name in names})
@@ -647,19 +697,26 @@ def wiring_assertions(source: str):
     also flagged when (a) an earlier statement reads production source and the assert names a variable bound from that
     read, or (b) the assert applies `.index(`, `.startswith(` or `in` to a module constant named `*_SCRIPT`, `*_SOURCE`
     or `*_TEMPLATE` imported from `codex_harness` (or to a local name bound from one).
+
+    S11 unit FA-009b: a function defined in the same module whose return value is production text (a module `__doc__`,
+    `inspect.getsource`/`getdoc`, `ast.get_docstring`, or `read_text`/`read_bytes` of a production location) is a READER;
+    an assert on a reader's call result, directly or through a variable bound to it, is flagged like a direct read. One
+    level of helper only: a helper that merely calls another reader is not itself a reader.
     """
     tree = ast.parse(source)
     imported = _imports_from_harness(tree)
+    readers = _local_readers(tree)
     findings = {}
     for node in ast.walk(tree):
         if isinstance(node, ast.Assert):
             text = ast.unparse(node.test)
-            if SOURCE_TEXT_READERS.search(text) and PRODUCTION_LOCATIONS.search(text):
+            if SOURCE_TEXT_READERS.search(text) and PRODUCTION_LOCATIONS.search(text) or \
+                    _calls_reader(node.test, readers):
                 findings[node.lineno] = text[:120]
     for function in ast.walk(tree):
         if not isinstance(function, (ast.FunctionDef, ast.AsyncFunctionDef)):
             continue
-        read, constant = _function_bindings(function, imported)
+        read, constant = _function_bindings(function, imported, readers)
         for node in ast.walk(function):
             if not isinstance(node, ast.Assert) or node.lineno in findings:
                 continue
