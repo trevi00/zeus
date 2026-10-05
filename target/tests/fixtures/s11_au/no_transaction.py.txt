@@ -1,0 +1,8 @@
+"""Negative control, rule 1: the method opens no `transaction()` block."""
+
+
+class Unit:
+    def commit(self, task):
+        row = self.store.get("tasks", task)
+        self.ops.record(None, row)
+        return row
