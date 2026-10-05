@@ -285,6 +285,9 @@ REGISTRY = {
     "operations.collector_started": {"collector": _S, "previous_exit": _S},
     "operations.path_declined": {"feature": _S, "decline_reason": _S},
     "development.usage_split_recorded": {"reservation_id": _S, "provider_session_ref": _N, "input_tokens": _NI, "output_tokens": _NI, "cache_read_tokens": _NI, "cache_write_tokens": _NI, "usage_source": _S},
+    # S11 XC-2b B2 (TQ-XCUT-PLAN B2): a refused desk/viewer request: route and code are closed enums in the catalog, the
+    # status is the HTTP status; no body, header or client address is carried.
+    "operations.http_request_refused": {"route": _S, "status": _I, "code": _S},
 }
 
 

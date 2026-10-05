@@ -27,6 +27,8 @@ NEW = {"operations.queue_item_waited", "development.role_dispatch_decided", "ope
        "development.tool_call_completed", "development.skill_selected", "operations.ci_observed",
        "operations.cleanup_recorded", "operations.collector_started", "operations.path_declined",
        "development.usage_split_recorded"}
+# S11 XC-2b B2 (declared addition): the eleventh catalog event; its producer is the viewer/desk handler, not "measured at X1b".
+S11_ADDED = {"operations.http_request_refused"}
 
 
 def m7_registry():
@@ -38,14 +40,14 @@ def m7_registry():
     raise AssertionError("REGISTRY not found in SOURCE")
 
 
-def test_the_catalog_loads_and_names_exactly_the_ten_new_events():
+def test_the_catalog_loads_and_names_exactly_the_ten_new_events_and_the_s11_addition():
     catalog = load_catalog()
     assert catalog["catalog_version"] == 4
-    assert set(catalog["events"]) == NEW
+    assert set(catalog["events"]) == NEW | S11_ADDED
     for name, entry in catalog["events"].items():
         assert {"owner_context", "category", "severity", "boundary", "attributes", "producer_sites"} <= set(entry)
         assert entry["category"] == name.split(".")[0] and entry["attributes"]
-        assert entry["severity"] in obs.SEVERITIES and entry["producer_sites"] == "measured at X1b"
+        assert entry["severity"] in obs.SEVERITIES and (entry["producer_sites"] == "measured at X1b") == (name not in S11_ADDED)
 
 
 def test_catalog_and_registry_agree_in_both_directions():

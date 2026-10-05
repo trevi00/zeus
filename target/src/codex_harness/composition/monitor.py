@@ -292,13 +292,26 @@ def collector_ports():
         registered=lambda store: FleetRegistry(store).registered())
 
 
+def refusal_observer(component):
+    """S11 XC-2b B2: the process observer the HTTP handler reports refusals through, or None when it cannot be built.
+
+    A refusal event is diagnostic: no store is needed for `emit` (spool only), and a failure to build the observer
+    never stops the listener from serving."""
+    try:
+        from codex_harness.composition.observation import build_observer
+        return build_observer(None, component)
+    except Exception:  # noqa: BLE001 - diagnostics must not stop a listener from starting
+        return None
+
+
 def serve_web(snapshot, port):
     """M7 `main`'s web branch: the viewer listener, read-only, no desk, whatever the environment says."""
     from codex_harness.observation.adapters.viewer_http import VIEWER_PORT, serve
-    serve(snapshot, VIEWER_PORT if port is None else port)
+    serve(snapshot, VIEWER_PORT if port is None else port, observer=refusal_observer('monitor.web'))
 
 
 def serve_desk(snapshot, port, *, desk_http):
     """M7 `main`'s desk branch; `desk_http` is the `observation.ports.DeskHttp` module the entry passes."""
     from codex_harness.observation.adapters.viewer_http import serve
-    serve(snapshot, port, desk=desk_service(), viewer_port=viewer_port(), desk_http=desk_http)
+    serve(snapshot, port, desk=desk_service(), viewer_port=viewer_port(), desk_http=desk_http,
+          observer=refusal_observer('monitor.desk'))

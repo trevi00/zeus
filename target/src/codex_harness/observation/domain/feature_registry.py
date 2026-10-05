@@ -85,6 +85,7 @@ FEATURES = {feature.id: feature for feature in (
     Feature("cleanup", "execution", _events(_O, "cleanup_recorded"), True),
     Feature("queue_wait", "coordination", _events(_O, "queue_item_waited"), True),
     Feature("declined_paths", "observation", _events(_O, "path_declined"), True),
+    Feature("http_refusals", "observation", _events(_O, "http_request_refused"), True),  # S11 XC-2b B2
 )}
 
 FEATURE_OF = {event_type: feature.id for feature in FEATURES.values() for event_type in feature.proof_events}

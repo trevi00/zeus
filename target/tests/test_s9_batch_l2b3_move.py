@@ -67,7 +67,7 @@ def statements(src):
 
 
 class InverseOfRules(ast.NodeTransformer):
-    """The inverse of R-v1, R-v2 and R-v3 (S11 XC-1 A4: `Handler.timeout = 5`) on the target AST: M7's `frontdesk_http`, no `desk_http` parameter, no `require`, no forwarded keyword."""
+    """The inverse of R-v1, R-v2, R-v3 (S11 XC-1 A4: `Handler.timeout = 5`) and R-v4 (S11 XC-2b B2: the keyword-only `observer`, `Handler.refused` and the one `self.refused(...)` call opening `respond`) on the target AST: M7's `frontdesk_http`, no `desk_http` parameter, no `require`, no forwarded keyword."""
 
     def visit_Attribute(self, node):
         self.generic_visit(node)
@@ -77,8 +77,11 @@ class InverseOfRules(ast.NodeTransformer):
 
     def visit_FunctionDef(self, node):
         if node.name in ("handler", "serve"):
-            node.args.kwonlyargs = [a for a in node.args.kwonlyargs if a.arg != "desk_http"]
+            node.args.kwonlyargs = [a for a in node.args.kwonlyargs if a.arg not in ("desk_http", "observer")]
             node.args.kw_defaults = node.args.kw_defaults[:len(node.args.kwonlyargs)]
+        if node.name == "respond":
+            node.body = [s for s in node.body if not (isinstance(s, ast.Expr) and isinstance(s.value, ast.Call)
+                                                      and getattr(s.value.func, "attr", "") == "refused")]
         if node.name == "handler":
             node.body = [s for s in node.body if not (isinstance(s, ast.Expr) and isinstance(s.value, ast.Call) and getattr(s.value.func, "id", "") == "require")]
         self.generic_visit(node)
@@ -87,13 +90,14 @@ class InverseOfRules(ast.NodeTransformer):
     def visit_ClassDef(self, node):
         # R-v3 (S11 XC-1 A4): `Handler.timeout`, one class attribute, is the only addition to the class body.
         if node.name == "Handler":
-            node.body = [s for s in node.body if not (isinstance(s, ast.Assign) and [t.id for t in s.targets] == ["timeout"])]
+            node.body = [s for s in node.body if not (isinstance(s, ast.Assign) and [t.id for t in s.targets] == ["timeout"])
+                         and not (isinstance(s, ast.FunctionDef) and s.name == "refused")]  # R-v4
         self.generic_visit(node)
         return node
 
     def visit_Call(self, node):
         self.generic_visit(node)
-        node.keywords = [k for k in node.keywords if k.arg != "desk_http"]
+        node.keywords = [k for k in node.keywords if k.arg not in ("desk_http", "observer")]
         return node
 
 
@@ -141,11 +145,11 @@ def test_import_homes_and_no_frontdesk_entry_or_intake_import():
 def test_names_and_call_shapes_are_m7s_with_desk_http_keyword_only():
     assert not hasattr(viewer, "ViewerHandler")
     handler_params = inspect.signature(viewer.handler).parameters
-    assert list(handler_params) == ["snapshot_path", "desk", "desk_http"]
+    assert list(handler_params) == ["snapshot_path", "desk", "desk_http", "observer"]  # R-v4: observer is keyword-only, default None
     assert handler_params["desk"].default is None and handler_params["desk_http"].default is None
     assert handler_params["desk_http"].kind is inspect.Parameter.KEYWORD_ONLY
     serve_params = inspect.signature(viewer.serve).parameters
-    assert list(serve_params) == ["snapshot_path", "port", "desk", "viewer_port", "desk_http"]
+    assert list(serve_params) == ["snapshot_path", "port", "desk", "viewer_port", "desk_http", "observer"]
     assert serve_params["port"].default == viewer.VIEWER_PORT == 8787 and serve_params["viewer_port"].default == viewer.VIEWER_PORT
     assert serve_params["viewer_port"].kind is serve_params["desk_http"].kind is inspect.Parameter.KEYWORD_ONLY
     # M7 monitor.py:176-182 (S10): web mode `serve(snapshot, port)`, desk mode `serve(snapshot, port, desk=..., viewer_port=...)`.
