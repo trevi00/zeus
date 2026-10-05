@@ -544,3 +544,90 @@ def test_the_bundle_binds_the_evidence_inputs(committed):
     assert set(committed["not_passed"]) <= set(committed["nodes"])
     assert set(committed["not_passed"].values()) <= {"skipped", "xfail"}  # a failing evidence run is never bundled
     assert not any(p.startswith("/") for p in [*committed["owner_run"], *committed["inputs"]])
+
+
+# ----------------------------------------------------------------------------- pending resolutions (S11 L2, R-L6)
+PENDING = "pending: recorder confirmation in the owning slice"
+
+
+def resolution(items=("compare:fam",), key="api:x.py::f", pending=PENDING, rule="G1", citation="compare/scenarios/fam.json"):
+    return {"key": key, "pending": pending, "replaced_by": list(items), "rule": rule, "citation": citation}
+
+
+def pending_row(**more):
+    return row(slice_="S7", evidence=("target:tests/test_b.py", PENDING), **more)
+
+
+def test_a_resolution_replaces_exactly_its_pending_item_and_the_row_can_verify(tree):
+    frozen = pending_row()
+    out, _ = run([frozen], tree)
+    assert out["api:x.py::f"]["status"] == "implemented" and out["api:x.py::f"]["verification"]["unmet"] == [PENDING]
+    new, _ = relabel.relabel({"rows": [pending_row()]}, bundle_for(), tree, [resolution()])
+    r = new["rows"][0]
+    assert r["status"] == "verified" and r["verification"] == {"head": HEAD, "passed": ["compare:fam", "target:tests/test_b.py"]}
+    assert r["evidence"] == frozen["evidence"], "the row itself stays frozen: the pending text is still in it"
+
+
+def test_a_resolution_never_sets_a_status_so_a_failing_replacement_leaves_the_row_unmet(tree):
+    bundle = bundle_for(not_passed={"tests/test_a.py::test_one": "skipped"})
+    new, _ = relabel.relabel({"rows": [pending_row()]}, bundle, tree,
+                             [resolution(items=("target:tests/test_a.py::test_one",))])
+    r = new["rows"][0]
+    assert r["status"] == "implemented"
+    assert r["verification"]["unmet"] == ["target test not passing: target:tests/test_a.py::test_one (skipped in test_one)"]
+    new, _ = relabel.relabel({"rows": [pending_row()]}, bundle_for(compare={}), tree, [resolution()])
+    assert new["rows"][0]["status"] == "implemented" and has_unmet(new["rows"][0], "compare report absent")
+
+
+def test_an_unresolved_pending_item_still_blocks_and_an_unrelated_resolution_changes_nothing(tree):
+    other = pending_row(key="api:y.py::g")
+    new, _ = relabel.relabel({"rows": [pending_row(), other]}, bundle_for(), tree, [resolution()])
+    assert [r["status"] for r in new["rows"]] == ["verified", "implemented"]
+    assert new["rows"][1]["verification"]["unmet"] == [PENDING]
+
+
+@pytest.mark.parametrize("entry, why", [
+    (resolution(key="api:nope.py::f"), "unknown key"),
+    (resolution(pending="pending: something the row never promised"), "not in the row"),
+    (resolution(pending="target:tests/test_b.py"), "non-pending item"),
+    (resolution(items=(PENDING,)), "none pending"),
+    (resolution(items=()), "non-empty"),
+    (resolution(rule="G9"), "rule"),
+    (resolution(citation=" "), "citation"),
+    ({"key": "api:x.py::f", "pending": PENDING}, "resolution entry is not"),
+])
+def test_a_malformed_resolution_is_refused(tree, entry, why):
+    with pytest.raises(relabel.Refused, match=why):
+        relabel.relabel({"rows": [pending_row()]}, bundle_for(), tree, [entry])
+
+
+def test_a_duplicate_resolution_is_refused(tree):
+    with pytest.raises(relabel.Refused, match="duplicate resolution"):
+        relabel.relabel({"rows": [pending_row()]}, bundle_for(), tree, [resolution(), resolution(items=("target:tests/test_a.py",))])
+
+
+def test_check_refuses_with_exit_1_on_a_bad_resolutions_file(tmp_path, ledger, capsys):
+    (tmp_path / "coverage").mkdir()
+    (tmp_path / "coverage/ledger-coverage.json").write_text((ROOT / "coverage/ledger-coverage.json").read_text(encoding="utf-8"))
+    (tmp_path / "coverage/run-evidence.json").write_text((ROOT / "coverage/run-evidence.json").read_text(encoding="utf-8"))
+    (tmp_path / "target").mkdir()
+    for rel in ("docs", "compare", "target/src", "target/tests", "target/pyproject.toml"):
+        (tmp_path / rel).symlink_to(ROOT / rel)
+    doc = {"schema": relabel.RESOLUTIONS_SCHEMA, "resolutions": [resolution(key="api:nope.py::f")]}
+    (tmp_path / "coverage/evidence-resolutions.json").write_text(json.dumps(doc), encoding="utf-8")
+    assert relabel.main(["--root", str(tmp_path), "--check"]) == 1
+    assert "unknown key" in capsys.readouterr().err
+
+
+def test_the_committed_resolutions_are_cited_valid_and_all_applied(ledger):
+    doc = json.loads((ROOT / "coverage/evidence-resolutions.json").read_text(encoding="utf-8"))
+    assert doc["schema"] == relabel.RESOLUTIONS_SCHEMA
+    rows = {r["key"]: r for r in ledger["rows"]}
+    seen = set()
+    for e in doc["resolutions"]:
+        assert set(e) == {"key", "pending", "replaced_by", "rule", "citation"} and e["rule"] in relabel.RESOLUTION_RULES
+        assert e["pending"] in rows[e["key"]]["evidence"] and e["pending"].startswith("pending:") and e["citation"].strip()
+        assert (e["key"], e["pending"]) not in seen
+        seen.add((e["key"], e["pending"]))
+        if rows[e["key"]]["status"] == "verified":  # a verified row's passing items include the resolution's replacements
+            assert set(e["replaced_by"]) <= set(rows[e["key"]]["verification"]["passed"]), e["key"]
