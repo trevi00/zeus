@@ -1,6 +1,6 @@
 {
  "family": "entries.safe_matrix",
- "description": "\u00a75.2a safe per-entry characterization (F3)",
+ "description": "§5.2a safe per-entry characterization (F3)",
  "reference_driver": "drivers/reference/entries.py",
  "target_driver": "drivers/target/entries.py",
  "golden": "goldens/reference/entries.safe_matrix.json",
@@ -139,6 +139,44 @@
     "stdout_sha256": "784c1aa7adaf55af27067e9b2c7d31ba57f534398afb1f8cc0cb53e2a8b6c0d7"
    },
    "authority": "S10 E5b (DESIGN-s10 section 16 (b), owner 2026-10-04): codex_harness.adapters.observed_assets is not kept at its M7 path (REBUILD-DESIGN-v2 section 3.5, S0's pinned-argv scan); its target entry is codex_harness.entry.cli.observed_assets; the stdout, its sha256 and bytes change only by that dotted path (argparse usage/description text), a direct consequence of the mapping"
+  },
+  {
+   "path": "$.rows",
+   "op": "replace",
+   "value": {
+    "argv": [
+     "python",
+     "-m",
+     "codex_harness.adapters.worker_profile_metadata"
+    ],
+    "exit": 0,
+    "json": [
+     {
+      "authority": "metadata observation only; worker_profile.load_profile decides validity",
+      "character_limit": 15000,
+      "characters": 9732,
+      "digest_matches": true,
+      "document": "worker-profile-v1.md",
+      "document_sha256": "53c80432728c998c52e0c5fe60c246a913a1ab21c7ed524309cab962c5ebb530",
+      "hook": "worker_profile_hook.py",
+      "hook_digest_matches": true,
+      "hook_sha256": "fd6ecaf37282071107d4d38fa3cddc17a7197bfb20dd9cf5134e0142d5927b82",
+      "hook_status": "verified",
+      "manifest": "worker-profile-v1.json",
+      "profile": "worker-v1",
+      "schema": "zeus.worker-profile-metadata/v1",
+      "status": "ok",
+      "within_limit": true
+     }
+    ],
+    "stderr_last_line": [],
+    "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "stdout": "{\"authority\": \"metadata observation only; worker_profile.load_profile decides validity\", \"character_limit\": 15000, \"characters\": 9732, \"digest_matches\": true, \"document\": \"worker-profile-v1.md\", \"document_sha256\": \"53c80432728c998c52e0c5fe60c246a913a1ab21c7ed524309cab962c5ebb530\", \"hook\": \"worker_profile_hook.py\", \"hook_digest_matches\": true, \"hook_sha256\": \"fd6ecaf37282071107d4d38fa3cddc17a7197bfb20dd9cf5134e0142d5927b82\", \"hook_status\": \"verified\", \"manifest\": \"worker-profile-v1.json\", \"profile\": \"worker-v1\", \"schema\": \"zeus.worker-profile-metadata/v1\", \"status\": \"ok\", \"within_limit\": true}\n",
+    "stdout_bytes": 600,
+    "stdout_sha256": "4a9856996ed7978c30ecc292319c98532e8fa63972ef585981e9b7cb4fae2de5"
+   },
+   "authority": "TQ-1 B6 (TEST-QUALITY-AND-RETROSPECTIVE-20261005, TQ-XCUT-PLAN §1 B6): the packaged worker profile gains the Tests rules, so the packaged document's character count and sha256 change; the manifest digest was recomputed with the AGENTS.md metadata command",
+   "key": "metadata.no_arguments_from_checkout_root"
   }
  ]
 }
