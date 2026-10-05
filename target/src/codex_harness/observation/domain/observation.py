@@ -416,15 +416,19 @@ def new_process_run_id() -> str:
 
 def execution_identity(kind: str, *, process_run_id: str, role=None, provider=None, session_id=None,
                        bucket=None, task_id=None, generation=None, attempt=None, invocation_id=None,
-                       revision=None) -> dict:
-    """The execution an event belongs to. System events say their task and session are absent."""
+                       revision=None, spec_digest=None) -> dict:
+    """The execution an event belongs to. System events say their task and session are absent.
+
+    `spec_digest` (S11 XC-2b B4, TQ-XCUT-PLAN B4) is the content digest of the task's specification where the task carries
+    one (`lease_spec_digest`), else the literal `"unknown"`; it is fixed when the identity is built, never read later."""
     require(kind in EXECUTION_KINDS, "Unknown execution kind")
     require(type(process_run_id) is str and IDENTIFIER.fullmatch(process_run_id) is not None,
             "process_run_id must be a 32-hex process identifier")
     identity = {"kind": kind, "role": role, "provider": provider, "process_run_id": process_run_id,
                 "session_id": session_id, "bucket": bucket, "task_id": task_id, "generation": generation,
-                "attempt": attempt, "invocation_id": invocation_id, "revision": revision}
-    for key in ("role", "provider", "session_id", "task_id", "invocation_id", "revision"):
+                "attempt": attempt, "invocation_id": invocation_id, "revision": revision,
+                "spec_digest": UNKNOWN_SPEC if spec_digest is None else spec_digest}
+    for key in ("role", "provider", "session_id", "task_id", "invocation_id", "revision", "spec_digest"):
         if identity[key] is not None:
             opaque_identifier(identity[key], f"execution.{key}", 255)
     for key in ("generation", "attempt"):
@@ -442,6 +446,43 @@ def execution_identity(kind: str, *, process_run_id: str, role=None, provider=No
     return identity
 
 
+UNKNOWN_SPEC = "unknown"
+
+
+def lease_spec_digest(lease):
+    """The content digest of the specification a task carries, or None.
+
+    A task's specification is the Zeus ticket revision its message binds (`what.details.zeus_ticket`, the binding
+    `intake.application.tickets.ticket_binding` validates): its `content_hash` is the digest of the ticket content. Read from
+    the lease row itself (the message is immutable once submitted), never from live state; no binding, several different
+    bindings or a value that is not an opaque identifier mean None."""
+    message = lease.get("message") if isinstance(lease, dict) else None
+    what = message.get("what") if isinstance(message, dict) else None
+    details = what.get("details") if isinstance(what, dict) else None
+    found = set()
+
+    def visit(item):
+        if isinstance(item, dict):
+            bound = item.get("zeus_ticket")
+            if isinstance(bound, dict) and type(bound.get("content_hash")) is str:
+                found.add(bound["content_hash"])
+            for key, child in item.items():
+                if key != "zeus_ticket":
+                    visit(child)
+        elif isinstance(item, list):
+            for child in item:
+                visit(child)
+
+    visit(details)
+    if len(found) != 1:
+        return None
+    value = next(iter(found))
+    try:
+        return opaque_identifier(value, "spec_digest", 255)
+    except ContractError:
+        return None
+
+
 def lease_identity(lease: dict, *, process_run_id: str, role: str, provider=None, session_id=None,
                    invocation_id=None, revision=None) -> dict:
     """Identity of the execution a lease row names (tasks or decisions_pending)."""
@@ -449,7 +490,7 @@ def lease_identity(lease: dict, *, process_run_id: str, role: str, provider=None
     return execution_identity("execution", process_run_id=process_run_id, role=role, provider=provider,
                               session_id=session_id, bucket=lease.get("_bucket", "tasks"), task_id=lease["id"],
                               generation=lease.get("generation"), attempt=lease.get("attempt"),
-                              invocation_id=invocation_id, revision=revision)
+                              invocation_id=invocation_id, revision=revision, spec_digest=lease_spec_digest(lease))
 
 
 def _timestamp(value, name):
