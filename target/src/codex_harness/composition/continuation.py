@@ -93,9 +93,10 @@ def continuation_owners(store, fleet=None, lanes=None, conductor=None, validate=
 
 def fleet_port(store) -> SimpleNamespace:
     """M7 `Fleet(store)` as the continuation uses it: `enqueue` (the registry's), `reserve_unit` and `settle_unit` (admission's),
-    each on the S5 owner of the shim's `Fleet` routes."""
+    each on the S5 owner of the shim's `Fleet` routes, plus M7 `Fleet.store`: `LaunchSettlement.dispatch` refuses
+    `fleet_unconfigured` unless the port's store is the control store (S11 M, AR4 port of tests/test_continuation_cli.py)."""
     registry, admission = FleetRegistry(store), AdmissionControl(store)
-    return SimpleNamespace(enqueue=registry.enqueue, reserve_unit=admission.reserve_unit,
+    return SimpleNamespace(store=store, enqueue=registry.enqueue, reserve_unit=admission.reserve_unit,
                            settle_unit=admission.settle_unit)
 
 

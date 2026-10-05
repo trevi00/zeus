@@ -117,7 +117,9 @@ def test_a_standalone_tick_reserves_through_the_same_fleet_authority_as_the_runn
     config = world.fleet.registered()["config"]
     adapter.register_policy(world.control, config, "a", revision, "ops/continuation.json")
     owner = adapter.coordinator(world.control, config, HOST, lanes=world.lanes, conductor=world.conductor)
-    assert owner.fleet.store is world.control, "the standalone coordinator uses the control store's Fleet"
+    # S11 M: M7 `Continuation.fleet` is the split owners' `tick.fleet` (= `settlement.fleet`; test_s10_c8b1 pins both
+    # identities and the owner key set)
+    assert owner.tick.fleet.store is world.control, "the standalone coordinator uses the control store's Fleet"
     world.enqueue("op-1")
     adapter.tick_policy(world.control, config, HOST, "policy-1", lanes=world.lanes, conductor=world.conductor,
                         runtime=world.runtime)
