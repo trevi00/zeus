@@ -20,6 +20,7 @@ import json
 from redis import Redis
 from redis.exceptions import RedisError, ResponseError
 
+from codex_harness.kernel.errors import ContractError
 from codex_harness.kernel.ids import SYSTEM_IDS, canonical, digest
 from codex_harness.kernel.ports import IdSource
 from codex_harness.storage.adapters.message_schema import validate_message
@@ -237,7 +238,13 @@ return redis.call('XADD', KEYS[2], '*', 'body', ARGV[2])
 
     @staticmethod
     def decode(fields: dict) -> dict:
-        return validate_message(json.loads(fields["body"]))
+        # XC-1 A1 (TQ-XCUT-PLAN): a body nested beyond the parser's or validator's recursion limit is an invalid
+        # body like any other (a `ContractError`, which every consumer dead-letters), never a `RecursionError`
+        # that escapes the loop and crashes the next consumer. M7 let it escape: a documented bug.
+        try:
+            return validate_message(json.loads(fields["body"]))
+        except RecursionError as exc:
+            raise ContractError("body_invalid: nesting too deep") from exc
 
     def dead_letters(self, limit: int) -> list:
         """The dead-letter records in stream order, as `(entry_id, fields)`: at most `limit + 1` of them, so a
