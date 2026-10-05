@@ -329,6 +329,100 @@
   "verdict": "atomic_rollback",
   "violations": []
  },
+ "a_failure_at_outcome_reconciliation_required": {
+  "decision_status": "running",
+  "durable_authority_rows": [],
+  "durable_authority_writes": [],
+  "durable_rows_changed": [
+   [
+    "decisions_pending",
+    "running"
+   ],
+   [
+    "execution_fences",
+    ""
+   ]
+  ],
+  "effect_protocol": [],
+  "effects": [
+   {
+    "depth": 0,
+    "name": "provider_call"
+   }
+  ],
+  "fences": [
+   true
+  ],
+  "outbox_types": [],
+  "trace": [
+   {
+    "depth": 0,
+    "kind": "BEGIN",
+    "label": "",
+    "unit": "U2"
+   },
+   {
+    "bucket": "decisions_pending",
+    "kind": "write",
+    "status": "pending",
+    "unit": "U2"
+   },
+   {
+    "bucket": "execution_fences",
+    "kind": "write",
+    "status": null,
+    "unit": "U2"
+   },
+   {
+    "bucket": "decisions_pending",
+    "kind": "write",
+    "status": "running",
+    "unit": "U2"
+   },
+   {
+    "depth": 0,
+    "kind": "COMMIT",
+    "unit": "U2"
+   },
+   {
+    "depth": 0,
+    "kind": "effect",
+    "name": "provider_call"
+   },
+   {
+    "depth": 0,
+    "kind": "BEGIN",
+    "label": "",
+    "unit": "U3"
+   },
+   {
+    "kind": "fence",
+    "name": "lease",
+    "ok": true,
+    "unit": "U3"
+   },
+   {
+    "bucket": "decisions_pending",
+    "kind": "write",
+    "status": "blocked",
+    "unit": "U3"
+   },
+   {
+    "depth": 0,
+    "error": "Injected",
+    "kind": "ROLLBACK",
+    "unit": "U3"
+   }
+  ],
+  "trace_digests": [
+   "bad04941a9b821ddf7ccc16f426249c9a0b29b0a04269a009713aa69e0bfd019",
+   "a2f24016e4203ff81a32c821a9b0e24ae021edad75a9d95d7f316ba0ff8b04f1",
+   "b3e8e55abc1283e7dcfe794da74a17b687b9aeddef77b9779aa5c4dc2b7030e4",
+   "58e6e1ac89e7342fb0751b8f12899aa744a74c69021b2dc81b68149cea021ed5"
+  ],
+  "verdict": "atomic_rollback",
+  "violations": []
+ },
  "a_failure_before_decision_review_conductor": {
   "decision_status": "retry",
   "durable_authority_rows": [],
@@ -1205,6 +1299,144 @@
   "verdict": "atomic_rollback",
   "violations": []
  },
+ "b_stale_lease_reconciliation_required": {
+  "decision_status": "running",
+  "durable_authority_rows": [],
+  "durable_authority_writes": [],
+  "durable_rows_changed": [
+   [
+    "decisions_pending",
+    "running"
+   ],
+   [
+    "events",
+    ""
+   ],
+   [
+    "execution_fences",
+    ""
+   ],
+   [
+    "execution_rejections",
+    ""
+   ]
+  ],
+  "effect_protocol": [],
+  "effects": [
+   {
+    "depth": 0,
+    "name": "provider_call"
+   }
+  ],
+  "fences": [
+   false
+  ],
+  "outbox_types": [],
+  "trace": [
+   {
+    "depth": 0,
+    "kind": "BEGIN",
+    "label": "",
+    "unit": "U2"
+   },
+   {
+    "bucket": "decisions_pending",
+    "kind": "write",
+    "status": "pending",
+    "unit": "U2"
+   },
+   {
+    "bucket": "execution_fences",
+    "kind": "write",
+    "status": null,
+    "unit": "U2"
+   },
+   {
+    "bucket": "decisions_pending",
+    "kind": "write",
+    "status": "running",
+    "unit": "U2"
+   },
+   {
+    "depth": 0,
+    "kind": "COMMIT",
+    "unit": "U2"
+   },
+   {
+    "depth": 0,
+    "kind": "effect",
+    "name": "provider_call"
+   },
+   {
+    "depth": 0,
+    "kind": "BEGIN",
+    "label": "",
+    "unit": "U3"
+   },
+   {
+    "bucket": "decisions_pending",
+    "kind": "write",
+    "status": "running",
+    "unit": "U3"
+   },
+   {
+    "depth": 0,
+    "kind": "COMMIT",
+    "unit": "U3"
+   },
+   {
+    "depth": 0,
+    "kind": "BEGIN",
+    "label": "",
+    "unit": "U4"
+   },
+   {
+    "kind": "fence",
+    "name": "lease",
+    "ok": false,
+    "unit": "U4"
+   },
+   {
+    "depth": 0,
+    "error": "ContractError",
+    "kind": "ROLLBACK",
+    "unit": "U4"
+   },
+   {
+    "depth": 0,
+    "kind": "BEGIN",
+    "label": "",
+    "unit": "U5"
+   },
+   {
+    "bucket": "execution_rejections",
+    "kind": "write",
+    "status": null,
+    "unit": "U5"
+   },
+   {
+    "bucket": "events",
+    "kind": "write",
+    "status": null,
+    "unit": "U5"
+   },
+   {
+    "depth": 0,
+    "kind": "COMMIT",
+    "unit": "U5"
+   }
+  ],
+  "trace_digests": [
+   "bad04941a9b821ddf7ccc16f426249c9a0b29b0a04269a009713aa69e0bfd019",
+   "a2f24016e4203ff81a32c821a9b0e24ae021edad75a9d95d7f316ba0ff8b04f1",
+   "b3e8e55abc1283e7dcfe794da74a17b687b9aeddef77b9779aa5c4dc2b7030e4",
+   "092846adef15bb8daf56823fc1dc3adab8addc116709a9e69eb96ed38938252d",
+   "9e0c8ac58bdc4e3f1b636bae4971e034a9b22b8749391b2bbd50e890a87c2fb7",
+   "0058a7981c57ee237b910ffe2fec83681f3943c559a6fbe0b518050cdf67bfa0"
+  ],
+  "verdict": "atomic_rollback",
+  "violations": []
+ },
  "blocked_review_lead": {
   "decision_status": "blocked",
   "durable_authority_rows": [],
@@ -1723,6 +1955,156 @@
    "11eb7b5c7f16d5ae36f59f464ebbd755f5ba4f9f80c48ce3bd8e16225d816d04",
    "3a39dce97238f71a8daeec16cefd951047829c898c2c2a7cc2f683302a0d9d5b",
    "32a5c3b78024cba0e2e6b91d8a9744397fd1a420f3dd97110894029e60b7c108"
+  ],
+  "verdict": "atomic_rollback",
+  "violations": []
+ },
+ "c_same_key_replay_reconciliation_required": {
+  "decision_status": "blocked",
+  "durable_authority_rows": [],
+  "durable_authority_writes": [],
+  "durable_rows_changed": [
+   [
+    "decisions_pending",
+    "blocked"
+   ],
+   [
+    "events",
+    ""
+   ],
+   [
+    "execution_fences",
+    ""
+   ],
+   [
+    "execution_notices",
+    ""
+   ],
+   [
+    "observation_audit",
+    ""
+   ],
+   [
+    "outbox",
+    ""
+   ]
+  ],
+  "effect_protocol": [],
+  "effects": [
+   {
+    "depth": 0,
+    "name": "provider_call"
+   }
+  ],
+  "fences": [
+   true
+  ],
+  "outbox_types": [
+   "execution.notice"
+  ],
+  "trace": [
+   {
+    "depth": 0,
+    "kind": "BEGIN",
+    "label": "",
+    "unit": "U2"
+   },
+   {
+    "bucket": "decisions_pending",
+    "kind": "write",
+    "status": "pending",
+    "unit": "U2"
+   },
+   {
+    "bucket": "execution_fences",
+    "kind": "write",
+    "status": null,
+    "unit": "U2"
+   },
+   {
+    "bucket": "decisions_pending",
+    "kind": "write",
+    "status": "running",
+    "unit": "U2"
+   },
+   {
+    "depth": 0,
+    "kind": "COMMIT",
+    "unit": "U2"
+   },
+   {
+    "depth": 0,
+    "kind": "effect",
+    "name": "provider_call"
+   },
+   {
+    "depth": 0,
+    "kind": "BEGIN",
+    "label": "",
+    "unit": "U3"
+   },
+   {
+    "kind": "fence",
+    "name": "lease",
+    "ok": true,
+    "unit": "U3"
+   },
+   {
+    "bucket": "decisions_pending",
+    "kind": "write",
+    "status": "blocked",
+    "unit": "U3"
+   },
+   {
+    "bucket": "events",
+    "kind": "write",
+    "status": null,
+    "unit": "U3"
+   },
+   {
+    "bucket": "execution_notices",
+    "kind": "write",
+    "status": null,
+    "unit": "U3"
+   },
+   {
+    "bucket": "outbox",
+    "kind": "write",
+    "status": null,
+    "unit": "U3"
+   },
+   {
+    "bucket": "observation_audit",
+    "kind": "write",
+    "status": null,
+    "unit": "U3"
+   },
+   {
+    "depth": 0,
+    "kind": "COMMIT",
+    "unit": "U3"
+   },
+   {
+    "depth": 0,
+    "kind": "BEGIN",
+    "label": "",
+    "unit": "U4"
+   },
+   {
+    "depth": 0,
+    "kind": "COMMIT",
+    "unit": "U4"
+   }
+  ],
+  "trace_digests": [
+   "bad04941a9b821ddf7ccc16f426249c9a0b29b0a04269a009713aa69e0bfd019",
+   "a2f24016e4203ff81a32c821a9b0e24ae021edad75a9d95d7f316ba0ff8b04f1",
+   "b3e8e55abc1283e7dcfe794da74a17b687b9aeddef77b9779aa5c4dc2b7030e4",
+   "58e6e1ac89e7342fb0751b8f12899aa744a74c69021b2dc81b68149cea021ed5",
+   "b7aaca637cac08b0038e30e4f604f945f090a00248840f0762f672057d87e2f2",
+   "b405b8be2a870b841fbcb3bc47cb7611376ab0fefd65239239ab7def6912c684",
+   "f8c66f1f885e60ea65f20d5a270bf50d41f13ae9fa013735cdfb1323d984fde7",
+   "48238ab4ec43a1c45ec1213dcddde7e751fc88f7133f0deb46998e719798742c"
   ],
   "verdict": "atomic_rollback",
   "violations": []
@@ -2469,6 +2851,145 @@
    "11eb7b5c7f16d5ae36f59f464ebbd755f5ba4f9f80c48ce3bd8e16225d816d04",
    "3a39dce97238f71a8daeec16cefd951047829c898c2c2a7cc2f683302a0d9d5b",
    "32a5c3b78024cba0e2e6b91d8a9744397fd1a420f3dd97110894029e60b7c108"
+  ],
+  "verdict": "atomic_rollback",
+  "violations": []
+ },
+ "reconciliation_required_review_lead": {
+  "decision_status": "blocked",
+  "durable_authority_rows": [],
+  "durable_authority_writes": [],
+  "durable_rows_changed": [
+   [
+    "decisions_pending",
+    "blocked"
+   ],
+   [
+    "events",
+    ""
+   ],
+   [
+    "execution_fences",
+    ""
+   ],
+   [
+    "execution_notices",
+    ""
+   ],
+   [
+    "observation_audit",
+    ""
+   ],
+   [
+    "outbox",
+    ""
+   ]
+  ],
+  "effect_protocol": [],
+  "effects": [
+   {
+    "depth": 0,
+    "name": "provider_call"
+   }
+  ],
+  "fences": [
+   true
+  ],
+  "outbox_types": [
+   "execution.notice"
+  ],
+  "trace": [
+   {
+    "depth": 0,
+    "kind": "BEGIN",
+    "label": "",
+    "unit": "U2"
+   },
+   {
+    "bucket": "decisions_pending",
+    "kind": "write",
+    "status": "pending",
+    "unit": "U2"
+   },
+   {
+    "bucket": "execution_fences",
+    "kind": "write",
+    "status": null,
+    "unit": "U2"
+   },
+   {
+    "bucket": "decisions_pending",
+    "kind": "write",
+    "status": "running",
+    "unit": "U2"
+   },
+   {
+    "depth": 0,
+    "kind": "COMMIT",
+    "unit": "U2"
+   },
+   {
+    "depth": 0,
+    "kind": "effect",
+    "name": "provider_call"
+   },
+   {
+    "depth": 0,
+    "kind": "BEGIN",
+    "label": "",
+    "unit": "U3"
+   },
+   {
+    "kind": "fence",
+    "name": "lease",
+    "ok": true,
+    "unit": "U3"
+   },
+   {
+    "bucket": "decisions_pending",
+    "kind": "write",
+    "status": "blocked",
+    "unit": "U3"
+   },
+   {
+    "bucket": "events",
+    "kind": "write",
+    "status": null,
+    "unit": "U3"
+   },
+   {
+    "bucket": "execution_notices",
+    "kind": "write",
+    "status": null,
+    "unit": "U3"
+   },
+   {
+    "bucket": "outbox",
+    "kind": "write",
+    "status": null,
+    "unit": "U3"
+   },
+   {
+    "bucket": "observation_audit",
+    "kind": "write",
+    "status": null,
+    "unit": "U3"
+   },
+   {
+    "depth": 0,
+    "kind": "COMMIT",
+    "unit": "U3"
+   }
+  ],
+  "trace_digests": [
+   "bad04941a9b821ddf7ccc16f426249c9a0b29b0a04269a009713aa69e0bfd019",
+   "a2f24016e4203ff81a32c821a9b0e24ae021edad75a9d95d7f316ba0ff8b04f1",
+   "b3e8e55abc1283e7dcfe794da74a17b687b9aeddef77b9779aa5c4dc2b7030e4",
+   "58e6e1ac89e7342fb0751b8f12899aa744a74c69021b2dc81b68149cea021ed5",
+   "b7aaca637cac08b0038e30e4f604f945f090a00248840f0762f672057d87e2f2",
+   "b405b8be2a870b841fbcb3bc47cb7611376ab0fefd65239239ab7def6912c684",
+   "f8c66f1f885e60ea65f20d5a270bf50d41f13ae9fa013735cdfb1323d984fde7",
+   "48238ab4ec43a1c45ec1213dcddde7e751fc88f7133f0deb46998e719798742c"
   ],
   "verdict": "atomic_rollback",
   "violations": []

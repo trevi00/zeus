@@ -42,6 +42,7 @@ import masks  # noqa: E402
 import recorder as rec  # noqa: E402
 from codex_harness.coordination.application import execution_time  # noqa: E402
 from codex_harness.kernel.message import envelope  # noqa: E402
+from codex_harness.observation.application.observations import ReconciliationRequired  # noqa: E402
 from codex_harness.routing.adapters.organization_source import packaged_organization  # noqa: E402
 from codex_harness.storage.adapters.memory_store import MemoryStore  # noqa: E402
 from codex_harness.storage.adapters.postgres_store import PostgresStore  # noqa: E402
@@ -118,6 +119,8 @@ def case(root: Path, name: str, phase: str, actor: str, *, failure: str = "none"
                           review_workspace=lambda *a: str(tmp),
                           _git=lambda *a, **k: "" if a[0] == "status" else "revision")
     executor = Composition(store, ORG, git, clock=PORT, ids=PIDS, monotonic=CLOCK.monotonic)
+    # S11 AU-REC-6b: the audit rows of a reconciliation block carry the observer's host and pid
+    executor.observer.source.update(host="fixture-host", pid=1)
     candidate = {"revision": "revision", "base": "base", "tree": "tree",
                  "author": "worker:implementation"}
     data = {"candidate": candidate, "source_actor": "worker:implementation",
@@ -147,6 +150,8 @@ def case(root: Path, name: str, phase: str, actor: str, *, failure: str = "none"
                 row.update(owner="replacement", lease_owner="replacement",
                            generation=row["generation"] + 1)
                 tx.put("decisions_pending", "decision", row)
+        if outcome == "reconciliation_required":  # S11 AU-REC-6b: a pending termination (INV-OBSERVATION-001)
+            raise ReconciliationRequired("decision", [{"record_id": "record"}])
         # S11 AU-REC-4: the run result that reaches Executor.decide_one blocks #2 / #3 (INV-RELEASE-001)
         return {"accepted": outcome == "accepted", "confirmed": True, "root_cause": "cause", "scope": "scope",
                 "execution_ref": "fixture:review", "reason": "fixture",
@@ -172,7 +177,8 @@ def case(root: Path, name: str, phase: str, actor: str, *, failure: str = "none"
         executor.releases.propose = lambda c, p, transaction=None: propose(c, p)
     if failure in {"before_decision", "at_outcome"}:
         write = recorder.write
-        failing = "succeeded" if failure == "before_decision" else outcome
+        failing = "succeeded" if failure == "before_decision" else (
+            "blocked" if outcome == "reconciliation_required" else outcome)
 
         def failing_write(bucket, key, body):
             write(bucket, key, body)
@@ -181,8 +187,13 @@ def case(root: Path, name: str, phase: str, actor: str, *, failure: str = "none"
                 raise Injected("fixture failure after release effects, before decision/outbox")
 
         recorder.write = failing_write
-        executor.decide_one(actor)
-        del recorder.write
+        try:
+            executor.decide_one(actor)
+        except Injected:  # S11 AU-REC-6b: _block_for_reconciliation catches only ContractError, so the failure escapes
+            if outcome != "reconciliation_required":
+                raise
+        finally:
+            del recorder.write
     else:
         executor.decide_one(actor)
     if replay:
@@ -239,6 +250,14 @@ def main() -> None:
                                       failure="stale_lease", outcome="blocked"),
         "c_same_key_replay_blocked": dict(phase="review_lead", actor="lead:improvement",
                                           replay=True, outcome="blocked"),
+        "reconciliation_required_review_lead": dict(phase="review_lead", actor="lead:improvement",
+                                                    outcome="reconciliation_required"),
+        "a_failure_at_outcome_reconciliation_required": dict(
+            phase="review_lead", actor="lead:improvement", failure="at_outcome", outcome="reconciliation_required"),
+        "b_stale_lease_reconciliation_required": dict(
+            phase="review_lead", actor="lead:improvement", failure="stale_lease", outcome="reconciliation_required"),
+        "c_same_key_replay_reconciliation_required": dict(
+            phase="review_lead", actor="lead:improvement", replay=True, outcome="reconciliation_required"),
         "control_split_commit": dict(phase="review_lead", actor="lead:improvement",
                                      failure="before_decision", control="split_commit"),
         "control_fence_ignored": dict(phase="review_lead", actor="lead:improvement",
