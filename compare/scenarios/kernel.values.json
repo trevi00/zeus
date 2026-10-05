@@ -4,5 +4,35 @@
  "reference_driver": "drivers/reference/s1_kernel.py",
  "target_driver": "drivers/target/s1_kernel.py",
  "golden": "goldens/reference/kernel.values.json",
- "slice": "S1"
+ "slice": "S1",
+ "intended_differences": [
+  {
+   "path": "$.validate_message.additional_property",
+   "op": "replace",
+   "key": "message",
+   "value": "[]: additionalProperties rule violated",
+   "authority": "S11 XC-1 A2 (TQ-XCUT-PLAN section 1, owner 2026-10-05): a documented M7 bug, not a compatibility requirement (REBUILD-DESIGN-v2 rule): the jsonschema message echoed the offending value into the dead-letter reason and the `serve` output; the target names the field path and the rule keyword only (a `required` failure keeps its schema-derived text)"
+  },
+  {
+   "path": "$.validate_message.schema_version",
+   "op": "replace",
+   "key": "message",
+   "value": "['schema_version']: const rule violated",
+   "authority": "S11 XC-1 A2 (TQ-XCUT-PLAN section 1, owner 2026-10-05): a documented M7 bug, not a compatibility requirement (REBUILD-DESIGN-v2 rule): the jsonschema message echoed the offending value into the dead-letter reason and the `serve` output; the target names the field path and the rule keyword only (a `required` failure keeps its schema-derived text)"
+  },
+  {
+   "path": "$.validate_message.unknown_type",
+   "op": "replace",
+   "key": "message",
+   "value": "['type']: enum rule violated",
+   "authority": "S11 XC-1 A2 (TQ-XCUT-PLAN section 1, owner 2026-10-05): a documented M7 bug, not a compatibility requirement (REBUILD-DESIGN-v2 rule): the jsonschema message echoed the offending value into the dead-letter reason and the `serve` output; the target names the field path and the rule keyword only (a `required` failure keeps its schema-derived text)"
+  },
+  {
+   "path": "$.validate_message.what_not_object",
+   "op": "replace",
+   "key": "message",
+   "value": "['what']: type rule violated",
+   "authority": "S11 XC-1 A2 (TQ-XCUT-PLAN section 1, owner 2026-10-05): a documented M7 bug, not a compatibility requirement (REBUILD-DESIGN-v2 rule): the jsonschema message echoed the offending value into the dead-letter reason and the `serve` output; the target names the field path and the rule keyword only (a `required` failure keeps its schema-derived text)"
+  }
+ ]
 }

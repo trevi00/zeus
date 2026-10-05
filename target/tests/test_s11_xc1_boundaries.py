@@ -13,6 +13,8 @@ import json
 import sys
 
 import pytest
+from test_s10_a5_1b_dlq import FixedClock
+from test_s10_c5e_cycle_serve import MESSAGE, documents
 
 from codex_harness import composition
 from codex_harness.composition import cli_bus, cli_dlq
@@ -22,9 +24,6 @@ from codex_harness.entry import cli
 from codex_harness.routing.adapters.organization_source import packaged_organization
 from codex_harness.storage.adapters.memory_store import MemoryStore
 from codex_harness.storage.adapters.redis_bus import RedisBus
-
-from test_s10_c5e_cycle_serve import MESSAGE, documents
-from test_s10_a5_1b_dlq import FixedClock
 
 AGENT = "lead:improvement"
 TOKEN = "Bearer-TOKEN-ABCDEFGH12345678"
