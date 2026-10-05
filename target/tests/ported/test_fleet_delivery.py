@@ -9,7 +9,6 @@ assert exactly that boundary, not that a deployment happened.
 import json
 
 import pytest
-
 from m7_coordination import Fleet, packaged_policy
 
 from codex_harness.coordination.application.fleet.state import BUCKET_JOBS

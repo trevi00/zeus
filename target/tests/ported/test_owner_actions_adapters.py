@@ -218,8 +218,8 @@ def test_subscription_accounting_counts_and_settles_the_assessment_after_histori
 
 
 def test_finite_accounting_keeps_the_fleet_ceiling_and_refuses_before_any_provider_entry(tmp_path):
-    from codex_harness.execution.adapters.call_budget import CallBudget
     from codex_harness.coordination.application.operation import BudgetRefused
+    from codex_harness.execution.adapters.call_budget import CallBudget
 
     store = fleet_store(tmp_path, {"per_host": 12, "total": 12})
     ledger_with_history(tmp_path / "ledger")
@@ -236,8 +236,8 @@ def test_finite_accounting_keeps_the_fleet_ceiling_and_refuses_before_any_provid
 
 
 def test_an_unreadable_ledger_under_subscription_refuses_before_any_provider_entry(tmp_path):
-    from codex_harness.execution.adapters.call_budget import CallBudget
     from codex_harness.coordination.application.operation import BudgetRefused
+    from codex_harness.execution.adapters.call_budget import CallBudget
 
     store = fleet_store(tmp_path, {"per_host": 4, "total": 8, "mode": "subscription"})
     ledger_with_history(tmp_path / "ledger", 2)

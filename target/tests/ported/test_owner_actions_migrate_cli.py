@@ -15,7 +15,9 @@ from unittest import mock
 import pytest
 from m7_coordination import OwnerActions, organization
 
-from codex_harness.entry.cli import owner_actions as adapter  # S11 M B5: M7 adapters.owner_actions (the parser and the command body)
+from codex_harness.entry.cli import (
+    owner_actions as adapter,  # S11 M B5: M7 adapters.owner_actions (the parser and the command body)
+)
 from codex_harness.storage.adapters.memory_store import MemoryStore
 
 # S11 M B5: the M7 coordinator carried `.request_migration`; the target's owner exposes the split `.migration` owner, and the
