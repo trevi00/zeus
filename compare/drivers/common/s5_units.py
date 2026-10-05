@@ -135,9 +135,11 @@ def fleet(api, store):
     return f
 
 
-def handle(api, name, *, failure=False, replay=False):
+def handle(api, name, *, failure=False, replay=False, notice=None):
     case = Case(api, name)
     wf = api.workflow(case.store)
+    if notice is not None:
+        return handle_notice(api, case, wf, notice, failure=failure, replay=replay)
     with case.store.transaction() as tx:
         tx.put("hooks", "hook-1", {"id": "hook-1", "status": "required", "fingerprint": "f" * 64})
     message = api.envelope("hook.required", "lead:improvement", "conductor", "implement_hook",
@@ -712,6 +714,55 @@ def relay(api, name, *, queued=0, poison=False, replay=False, failure=False, sco
     return json.loads(json.dumps(out))
 
 
+# ----- S11 AU-REC-5: the execution.notice branch of Workflow.handle, Fleet.pause and Fleet.resume (the call names the method) -----
+def handle_notice(api, case, wf, mode, *, failure=False, replay=False):
+    """`Workflow.handle` of a persisted `execution.notice`: a cancelled task's notice, read back from the outbox.
+    `mode` "unproven" delivers a notice whose bytes differ from the persisted one; "parked" ends the owning operation first."""
+    wf.submit(api.envelope("task.assign", LEAD, WORKER, "implement", {"plan": {"objective": "x"}}, "operation:op-1"))
+    api.advance(1)
+    task = wf.claim(WORKER, "owner-a")
+    api.advance(1)
+    wf.cancel(task["id"], "conductor", "stop")
+    with case.store.transaction() as tx:
+        message = next(row["message"] for row in tx.scan("outbox") if row["message"]["type"] == "execution.notice")
+    if mode == "parked":
+        with case.store.transaction() as tx:
+            tx.put("operations", OPERATION, {"id": OPERATION, "status": "failed", "correlation_id": "operation:op-1",
+                                             "cycle_id": "operation:op-1", "assignment_message_id": "message-1"})
+    if mode == "unproven":
+        message = {**message, "why": {**message["why"], "objective": "tampered"}}
+    if replay:
+        wf.handle(message)
+    case.since()
+    if failure:
+        case.store.arm("workflow_inbox")
+    return case.result(attempt(wf.handle, message))
+
+
+def pause(api, name, *, failure=False, replay=False, registry=True):
+    case = Case(api, name)
+    f = fleet(api, case.store) if registry else bare_fleet(api, case.store)
+    if replay:
+        f.pause()
+    case.since()
+    if failure:
+        case.store.arm("fleet_control")
+    return case.result(answer(f.pause))
+
+
+def resume(api, name, *, failure=False, replay=False, registry=True):
+    case = Case(api, name)
+    f = fleet(api, case.store) if registry else bare_fleet(api, case.store)
+    if registry:
+        f.pause()
+    if replay:
+        f.resume()
+    case.since()
+    if failure:
+        case.store.arm("fleet_control")
+    return case.result(answer(f.resume))
+
+
 def run(api) -> dict:
     out = {
         "handle_success": handle(api, "handle_success"),
@@ -814,6 +865,19 @@ def run(api) -> dict:
         "relay_d_publish_depth": relay(api, "relay_d_publish_depth", queued=1),
         "relay_poison_record": relay(api, "relay_poison_record", poison=True),
         "relay_scoped_publish": relay(api, "relay_scoped_publish", queued=1, scope="corr-relay"),
+        "handle_notice_success": handle(api, "handle_notice_success", notice="receive"),
+        "handle_notice_a_failure_at_inbox": handle(api, "handle_notice_a_failure", notice="receive", failure=True),
+        "handle_notice_c_replay": handle(api, "handle_notice_c_replay", notice="receive", replay=True),
+        "handle_notice_parked_terminal": handle(api, "handle_notice_parked", notice="parked"),
+        "handle_notice_unproven": handle(api, "handle_notice_unproven", notice="unproven"),
+        "pause_success": pause(api, "pause_success"),
+        "pause_a_failure_at_control": pause(api, "pause_a_failure", failure=True),
+        "pause_c_replay": pause(api, "pause_c_replay", replay=True),
+        "pause_unregistered": pause(api, "pause_unregistered", registry=False),
+        "resume_success": resume(api, "resume_success"),
+        "resume_a_failure_at_control": resume(api, "resume_a_failure", failure=True),
+        "resume_c_replay": resume(api, "resume_c_replay", replay=True),
+        "resume_unregistered": resume(api, "resume_unregistered", registry=False),
     }
     block_exercise.assign(list(out))  # S11 R-L3d: the cases ran in key order, one window each
     return out

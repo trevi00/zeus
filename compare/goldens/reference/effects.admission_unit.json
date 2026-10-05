@@ -1551,6 +1551,208 @@
   ],
   "violations": []
  },
+ "handle_notice_a_failure_at_inbox": {
+  "durable_units": 0,
+  "durable_writes": [],
+  "effects": [],
+  "outcome": {
+   "message": "injected failure at workflow_inbox",
+   "refused": "Injected"
+  },
+  "rows": [
+   [
+    "execution_fences",
+    "tasks:5eed0000-0000-4000-8000-000000000001",
+    ""
+   ],
+   [
+    "execution_notices",
+    "e6cfb3cce77420c00ba122c7b903d635cccca20c75bd2bc87b3eb0e1ab8d1c5f",
+    ""
+   ],
+   [
+    "outbox",
+    "e6cfb3cce77420c00ba122c7b903d635cccca20c75bd2bc87b3eb0e1ab8d1c5f",
+    ""
+   ],
+   [
+    "tasks",
+    "5eed0000-0000-4000-8000-000000000001",
+    "cancelled"
+   ]
+  ],
+  "units": [
+   "ROLLBACK"
+  ],
+  "violations": []
+ },
+ "handle_notice_c_replay": {
+  "durable_units": 0,
+  "durable_writes": [],
+  "effects": [],
+  "outcome": {
+   "ok": true
+  },
+  "rows": [
+   [
+    "execution_fences",
+    "tasks:5eed0000-0000-4000-8000-000000000001",
+    ""
+   ],
+   [
+    "execution_notices",
+    "e6cfb3cce77420c00ba122c7b903d635cccca20c75bd2bc87b3eb0e1ab8d1c5f",
+    ""
+   ],
+   [
+    "outbox",
+    "e6cfb3cce77420c00ba122c7b903d635cccca20c75bd2bc87b3eb0e1ab8d1c5f",
+    ""
+   ],
+   [
+    "tasks",
+    "5eed0000-0000-4000-8000-000000000001",
+    "cancelled"
+   ],
+   [
+    "workflow_inbox",
+    "e6cfb3cce77420c00ba122c7b903d635cccca20c75bd2bc87b3eb0e1ab8d1c5f",
+    ""
+   ]
+  ],
+  "units": [
+   "COMMIT"
+  ],
+  "violations": []
+ },
+ "handle_notice_parked_terminal": {
+  "durable_units": 1,
+  "durable_writes": [
+   [
+    "operation_message_dispositions",
+    ""
+   ]
+  ],
+  "effects": [],
+  "outcome": {
+   "ok": true
+  },
+  "rows": [
+   [
+    "execution_fences",
+    "tasks:5eed0000-0000-4000-8000-000000000001",
+    ""
+   ],
+   [
+    "execution_notices",
+    "e6cfb3cce77420c00ba122c7b903d635cccca20c75bd2bc87b3eb0e1ab8d1c5f",
+    ""
+   ],
+   [
+    "operation_message_dispositions",
+    "c5123b34cdb90d5cf58b6b910f721406c4e250773c2de7924db404fe7d3f0d50",
+    ""
+   ],
+   [
+    "operations",
+    "op-1",
+    "failed"
+   ],
+   [
+    "outbox",
+    "e6cfb3cce77420c00ba122c7b903d635cccca20c75bd2bc87b3eb0e1ab8d1c5f",
+    ""
+   ],
+   [
+    "tasks",
+    "5eed0000-0000-4000-8000-000000000001",
+    "cancelled"
+   ]
+  ],
+  "units": [
+   "COMMIT"
+  ],
+  "violations": []
+ },
+ "handle_notice_success": {
+  "durable_units": 1,
+  "durable_writes": [
+   [
+    "workflow_inbox",
+    ""
+   ]
+  ],
+  "effects": [],
+  "outcome": {
+   "ok": true
+  },
+  "rows": [
+   [
+    "execution_fences",
+    "tasks:5eed0000-0000-4000-8000-000000000001",
+    ""
+   ],
+   [
+    "execution_notices",
+    "e6cfb3cce77420c00ba122c7b903d635cccca20c75bd2bc87b3eb0e1ab8d1c5f",
+    ""
+   ],
+   [
+    "outbox",
+    "e6cfb3cce77420c00ba122c7b903d635cccca20c75bd2bc87b3eb0e1ab8d1c5f",
+    ""
+   ],
+   [
+    "tasks",
+    "5eed0000-0000-4000-8000-000000000001",
+    "cancelled"
+   ],
+   [
+    "workflow_inbox",
+    "e6cfb3cce77420c00ba122c7b903d635cccca20c75bd2bc87b3eb0e1ab8d1c5f",
+    ""
+   ]
+  ],
+  "units": [
+   "COMMIT"
+  ],
+  "violations": []
+ },
+ "handle_notice_unproven": {
+  "durable_units": 0,
+  "durable_writes": [],
+  "effects": [],
+  "outcome": {
+   "message": "Unproven execution notice",
+   "refused": "ContractError"
+  },
+  "rows": [
+   [
+    "execution_fences",
+    "tasks:5eed0000-0000-4000-8000-000000000001",
+    ""
+   ],
+   [
+    "execution_notices",
+    "e6cfb3cce77420c00ba122c7b903d635cccca20c75bd2bc87b3eb0e1ab8d1c5f",
+    ""
+   ],
+   [
+    "outbox",
+    "e6cfb3cce77420c00ba122c7b903d635cccca20c75bd2bc87b3eb0e1ab8d1c5f",
+    ""
+   ],
+   [
+    "tasks",
+    "5eed0000-0000-4000-8000-000000000001",
+    "cancelled"
+   ]
+  ],
+  "units": [
+   "ROLLBACK"
+  ],
+  "violations": []
+ },
  "handle_success": {
   "durable_units": 1,
   "durable_writes": [
@@ -1986,6 +2188,119 @@
    ]
   ],
   "units": [],
+  "violations": []
+ },
+ "pause_a_failure_at_control": {
+  "durable_units": 0,
+  "durable_writes": [],
+  "effects": [],
+  "outcome": {
+   "message": "injected failure at fleet_control",
+   "reason_code": null,
+   "refused": "Injected"
+  },
+  "rows": [
+   [
+    "fleet_control",
+    "admission",
+    ""
+   ],
+   [
+    "fleet_registry",
+    "fleet-1",
+    ""
+   ]
+  ],
+  "units": [
+   "ROLLBACK"
+  ],
+  "violations": []
+ },
+ "pause_c_replay": {
+  "durable_units": 1,
+  "durable_writes": [
+   [
+    "fleet_control",
+    ""
+   ]
+  ],
+  "effects": [],
+  "outcome": {
+   "value": {
+    "budget": {
+     "per_host": 4,
+     "total": 8
+    },
+    "paused": true,
+    "updated_at": "2026-09-21T00:00:00.000004+00:00"
+   }
+  },
+  "rows": [
+   [
+    "fleet_control",
+    "admission",
+    ""
+   ],
+   [
+    "fleet_registry",
+    "fleet-1",
+    ""
+   ]
+  ],
+  "units": [
+   "COMMIT"
+  ],
+  "violations": []
+ },
+ "pause_success": {
+  "durable_units": 1,
+  "durable_writes": [
+   [
+    "fleet_control",
+    ""
+   ]
+  ],
+  "effects": [],
+  "outcome": {
+   "value": {
+    "budget": {
+     "per_host": 4,
+     "total": 8
+    },
+    "paused": true,
+    "updated_at": "2026-09-21T00:00:00.000003+00:00"
+   }
+  },
+  "rows": [
+   [
+    "fleet_control",
+    "admission",
+    ""
+   ],
+   [
+    "fleet_registry",
+    "fleet-1",
+    ""
+   ]
+  ],
+  "units": [
+   "COMMIT"
+  ],
+  "violations": []
+ },
+ "pause_unregistered": {
+  "durable_units": 0,
+  "durable_writes": [],
+  "effects": [],
+  "outcome": {
+   "message": "fleet refused: unregistered",
+   "reason_code": "unregistered",
+   "refused": "FleetRefused"
+  },
+  "rows": [],
+  "units": [
+   "ROLLBACK"
+  ],
   "violations": []
  },
  "prepare_b_unrelated_state": {
@@ -3661,6 +3976,119 @@
   ],
   "units": [
    "COMMIT"
+  ],
+  "violations": []
+ },
+ "resume_a_failure_at_control": {
+  "durable_units": 0,
+  "durable_writes": [],
+  "effects": [],
+  "outcome": {
+   "message": "injected failure at fleet_control",
+   "reason_code": null,
+   "refused": "Injected"
+  },
+  "rows": [
+   [
+    "fleet_control",
+    "admission",
+    ""
+   ],
+   [
+    "fleet_registry",
+    "fleet-1",
+    ""
+   ]
+  ],
+  "units": [
+   "ROLLBACK"
+  ],
+  "violations": []
+ },
+ "resume_c_replay": {
+  "durable_units": 1,
+  "durable_writes": [
+   [
+    "fleet_control",
+    ""
+   ]
+  ],
+  "effects": [],
+  "outcome": {
+   "value": {
+    "budget": {
+     "per_host": 4,
+     "total": 8
+    },
+    "paused": false,
+    "updated_at": "2026-09-21T00:00:00.000005+00:00"
+   }
+  },
+  "rows": [
+   [
+    "fleet_control",
+    "admission",
+    ""
+   ],
+   [
+    "fleet_registry",
+    "fleet-1",
+    ""
+   ]
+  ],
+  "units": [
+   "COMMIT"
+  ],
+  "violations": []
+ },
+ "resume_success": {
+  "durable_units": 1,
+  "durable_writes": [
+   [
+    "fleet_control",
+    ""
+   ]
+  ],
+  "effects": [],
+  "outcome": {
+   "value": {
+    "budget": {
+     "per_host": 4,
+     "total": 8
+    },
+    "paused": false,
+    "updated_at": "2026-09-21T00:00:00.000004+00:00"
+   }
+  },
+  "rows": [
+   [
+    "fleet_control",
+    "admission",
+    ""
+   ],
+   [
+    "fleet_registry",
+    "fleet-1",
+    ""
+   ]
+  ],
+  "units": [
+   "COMMIT"
+  ],
+  "violations": []
+ },
+ "resume_unregistered": {
+  "durable_units": 0,
+  "durable_writes": [],
+  "effects": [],
+  "outcome": {
+   "message": "fleet refused: unregistered",
+   "reason_code": "unregistered",
+   "refused": "FleetRefused"
+  },
+  "rows": [],
+  "units": [
+   "ROLLBACK"
   ],
   "violations": []
  },
