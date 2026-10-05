@@ -50,7 +50,6 @@ Named adaptations (each is a construction/import/patch-target adaptation, never 
 
 from __future__ import annotations
 
-from conftest import NATIVE_THRESHOLDS
 from m7_coordination import organization, unavailable  # noqa: F401
 from m7_delivery import HostDelivery as _HostDelivery
 from m7_delivery import (  # noqa: F401
@@ -60,6 +59,7 @@ from m7_delivery import (  # noqa: F401
     Releases,
 )
 from m7_intake import Tickets  # noqa: F401
+from ported_support import NATIVE_THRESHOLDS
 
 from codex_harness.composition import configuration
 from codex_harness.composition.release_verification import (  # noqa: F401

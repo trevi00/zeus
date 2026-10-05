@@ -20,8 +20,8 @@ import json
 from functools import partial as _partial
 
 import pytest
-from conftest import NATIVE_THRESHOLDS as _THRESHOLDS
 from m7_research import events, policy_repo  # noqa: F401
+from ported_support import NATIVE_THRESHOLDS as _THRESHOLDS
 
 from codex_harness.context.adapters import project_skills as _project_skills
 from codex_harness.context.adapters import skill_routing as _skill_routing

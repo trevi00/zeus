@@ -67,7 +67,7 @@ from pathlib import Path
 from types import SimpleNamespace
 from uuid import uuid4
 
-from conftest import NATIVE_THRESHOLDS
+from ported_support import NATIVE_THRESHOLDS
 
 from codex_harness.composition import fleet as _fleet_composition
 from codex_harness.composition.evidence_gate import EvidenceGate, evidence_inspector

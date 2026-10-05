@@ -28,7 +28,7 @@ from pathlib import Path
 
 import m7_executor
 import pytest
-from conftest import NATIVE_THRESHOLDS as _THRESHOLDS
+from ported_support import NATIVE_THRESHOLDS as _THRESHOLDS
 
 from codex_harness.context.adapters import project_skills as _project_skills
 from codex_harness.context.adapters import skill_routing as _skill_routing

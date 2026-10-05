@@ -112,12 +112,12 @@ from contextlib import nullcontext
 from types import SimpleNamespace
 
 import pytest
-from conftest import ATTESTED
 from m7_coordination import Fleet as _Fleet
 from m7_coordination import (
     Harness,  # noqa: F401
     unavailable,
 )
+from ported_support import ATTESTED
 from verification_fixtures import git as _fixture_git  # noqa: F401
 from verification_fixtures import source_repository  # noqa: F401
 

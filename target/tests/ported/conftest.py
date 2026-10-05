@@ -7,7 +7,6 @@
   context receives the definition through `context.ports.ThresholdPolicySource`.
 """
 
-import json
 import os
 import shutil
 import subprocess
@@ -16,23 +15,12 @@ from pathlib import Path
 
 import pytest
 
-from codex_harness.kernel.ids import digest
+# S11 TISO-1 (owner): the shared objects live in `ported_support` (a unique module name), so a ported module's
+# `from ported_support import …` can never resolve to the top-level `tests/conftest.py`, which pytest also registers
+# as `conftest`. They are re-exported here unchanged (the same objects).
+from ported_support import ATTESTED, NATIVE_THRESHOLDS, RESOURCES, NativeThresholds  # noqa: E402,F401
+
 from codex_harness.storage.adapters.postgres_store import PostgresStore
-
-ATTESTED = {}  # the git-attested runtime root of the ported delivery suites, built before the first ported module is imported
-
-RESOURCES = Path(__file__).resolve().parents[2] / "src" / "codex_harness" / "resources"
-
-
-class NativeThresholds:
-    def effective_policy(self):
-        text = (RESOURCES / "threshold-policy.json").read_text(encoding="utf-8")
-        policy = json.loads(text)
-        values = {"skill_match.FULL_BODY_MIN_SCORE": 3, **policy["overrides"]}
-        return {"values": values, "definition_hash": digest(text), "definition": policy}
-
-
-NATIVE_THRESHOLDS = NativeThresholds()
 
 
 @pytest.fixture
