@@ -14,6 +14,9 @@ import pytest
 TARGET = Path(__file__).resolve().parents[1]
 GOLDEN = json.loads((TARGET.parent / "compare/goldens/reference/static.source.json").read_text(encoding="utf-8"))
 CONDITIONAL = GOLDEN["shims"]["conditional"]
+# S11 U6(b) (USER-APPROVED-U6-20261006; DESIGN-s11 §20.1): the legacy Compose agent entry is retired from the target, so
+# the SOURCE scan still marks it `keep_shim: true` but it is deliberately not a target shim.
+RETIRED_U6 = {"codex_harness.container_main"}
 RESTORED = ("codex_harness.adapters.artifact_reader", "codex_harness.adapters.host_migration",
             "codex_harness.adapters.migrations", "codex_harness.adapters.service_entry")
 
@@ -21,7 +24,8 @@ RESTORED = ("codex_harness.adapters.artifact_reader", "codex_harness.adapters.ho
 def test_the_conditional_shims_are_exactly_the_scan_keep_set():
     kept = {name for name, row in CONDITIONAL.items() if row["keep_shim"]}
     dropped = set(CONDITIONAL) - kept
-    assert kept <= import_rules.SHIMS
+    assert kept - RETIRED_U6 <= import_rules.SHIMS
+    assert not RETIRED_U6 & import_rules.SHIMS
     assert not dropped & import_rules.SHIMS
     assert set(RESTORED) <= kept
 

@@ -119,6 +119,28 @@
     "stdout_sha256": "784c1aa7adaf55af27067e9b2c7d31ba57f534398afb1f8cc0cb53e2a8b6c0d7"
    },
    "authority": "S10 E5b (DESIGN-s10 section 16 (b), owner 2026-10-04): codex_harness.adapters.observed_assets is not kept at its M7 path (REBUILD-DESIGN-v2 section 3.5, S0's pinned-argv scan); its target entry is codex_harness.entry.cli.observed_assets; the stdout, its sha256 and bytes change only by that dotted path (argparse usage/description text), a direct consequence of the mapping"
+  },
+  {
+   "path": "$.rows",
+   "op": "replace",
+   "key": "import_only.codex_harness.container_main",
+   "value": {
+    "argv": [
+     "python",
+     "-c",
+     "import importlib, sys; importlib.import_module(sys.argv[1]); print('imported')",
+     "codex_harness.container_main"
+    ],
+    "exit": 1,
+    "stderr_last_line": [
+     "ModuleNotFoundError: No module named 'codex_harness.container_main'"
+    ],
+    "stderr_sha256": "0f94f333c5c4f2d7524483e9237e450a8e6ee4c082ed589537554fa07c2fbb9f",
+    "stdout": "",
+    "stdout_bytes": 0,
+    "stdout_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+   },
+   "authority": "retired: U6(b) USER-APPROVED-U6-20261006 (DESIGN-s11 \u00a720.1)"
   }
  ]
 }

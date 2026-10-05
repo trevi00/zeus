@@ -33,7 +33,7 @@ DAG = {
 SHIMS = frozenset({"codex_harness.cli", "codex_harness.monitor", "codex_harness.supervisor",
                    "codex_harness.adapters.isolated_worker_entry", "codex_harness.adapters.continuation_process",
                    "codex_harness.adapters.host_delivery", "codex_harness.adapters.managed_runtime",
-                   "codex_harness.adapters.worker_profile_metadata", "codex_harness.container_main",
+                   "codex_harness.adapters.worker_profile_metadata",
                    # S9 U9 (OWNER-DECISIONS-S9 D3.1): the pinned `-m` argv of the frontend checks.
                    "codex_harness.adapters.monitor_frontend_checks",
                    # S10 int44 (owner, DESIGN-s10 §16b): the rest of the corrected S0 scan's keep_shim set

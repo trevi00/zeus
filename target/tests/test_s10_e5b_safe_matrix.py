@@ -24,6 +24,10 @@ STDOUT = {"stdout", "stdout_bytes", "stdout_sha256"}
 PATH_STDOUT = {"module.adapters.experience --help", "module.adapters.observed_assets --help"}
 HELP_ROWS = {"console.zeus --help", "console.harness --help"}
 VERSION_ROW = "console.zeus --version"
+# S11 U6(b) (USER-APPROVED-U6-20261006; DESIGN-s11 §20.1): the reference row stays, the target no longer has the module,
+# so the same argv now exits non-zero with ModuleNotFoundError on stderr and no stdout.
+RETIRED_ROW = "import_only.codex_harness.container_main"
+RETIRED_FIELDS = {"exit", "stderr_last_line", "stderr_sha256"} | STDOUT
 
 
 def differing(key):
@@ -62,6 +66,8 @@ def test_no_unmapped_row_has_an_argv_difference():
 def test_each_declaration_differs_only_in_the_fields_its_authority_names():
     for key in DECLARED:
         allowed = {"argv"} if key in ARGV_MAP else set()
+        if key == RETIRED_ROW:
+            allowed |= RETIRED_FIELDS
         if key in PATH_STDOUT or key in HELP_ROWS or key == VERSION_ROW:
             allowed |= STDOUT
         assert differing(key) <= allowed, key
@@ -101,3 +107,14 @@ def test_the_version_row_changes_only_the_version_text():
     value = DECLARED[VERSION_ROW]["value"]
     assert GOLDEN[VERSION_ROW]["stdout"] == "Zeus 0.2.0\n" and value["stdout"] == "Zeus 0.3.0.dev0\n"
     assert value["stdout_bytes"] == len(value["stdout"].encode("utf-8"))
+
+
+def test_the_retired_container_main_row_is_declared_as_a_failed_import_of_the_same_argv():
+    """The reference row is kept (SOURCE had the module); the target row declares the retirement and nothing else."""
+    assert RETIRED_ROW in GOLDEN and RETIRED_ROW in DECLARED and RETIRED_ROW not in ARGV_MAP
+    value = DECLARED[RETIRED_ROW]["value"]
+    assert GOLDEN[RETIRED_ROW]["exit"] == 0 and GOLDEN[RETIRED_ROW]["stdout"] == "imported\n"
+    assert "argv" not in differing(RETIRED_ROW) and differing(RETIRED_ROW) == RETIRED_FIELDS
+    assert value["exit"] != 0 and value["stdout"] == "" and value["stdout_bytes"] == 0
+    assert value["stderr_last_line"] == ["ModuleNotFoundError: No module named 'codex_harness.container_main'"]
+    assert DECLARED[RETIRED_ROW]["authority"] == "retired: U6(b) USER-APPROVED-U6-20261006 (DESIGN-s11 §20.1)"
