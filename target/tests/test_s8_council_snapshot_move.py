@@ -90,6 +90,8 @@ def test_imports_are_only_the_sdk_kernel_and_research_homes():
 
 
 def test_the_module_never_writes():
+    """Structural: no write word and no `.put(`/`transaction(` in the moved source (S8 move rule); the runtime property
+    is covered by test_observe_never_issues_a_write_statement_and_runs_in_a_read_only_transaction."""
     module = importlib.import_module(MODULE)
     src = target_text()
     for word in ("INSERT", "UPDATE", "DELETE", "COMMIT", "CREATE", ".put(", "transaction("):
@@ -144,6 +146,26 @@ def test_observe_issues_the_five_statements_in_order_and_reduces_through_the_res
     assert "SET LOCAL statement_timeout = '250ms'" in log
     assert [r["state"] for r in envelope["records"]] == ["found", "missing"]
     assert envelope["expires_at"] == "2029-01-01T00:10:00+00:00" and "SECRET" not in repr(envelope)
+
+
+def test_observe_never_issues_a_write_statement_and_runs_in_a_read_only_transaction():
+    """Behaviour: observe over a connection that fails on any write statement completes, and its one transaction is
+    declared READ ONLY (the only statements are BEGIN, SET LOCAL, SELECT and ROLLBACK)."""
+    writes = ("INSERT", "UPDATE", "DELETE", "COMMIT", "CREATE", "DROP", "ALTER", "TRUNCATE", "GRANT", "COPY", "MERGE")
+
+    class WriteRefusingConn(Conn):
+        def execute(self, statement, params=None):
+            assert not any(word in statement.upper().split() for word in writes), f"a write statement: {statement}"
+            return super().execute(statement, params)
+
+    log = []
+    module = importlib.import_module(MODULE)
+    envelope = module.ReadOnlySnapshot("dsn", connect=lambda dsn, **kw: WriteRefusingConn(log),
+                                       clock=lambda: "2029-01-01T00:00:00+00:00").observe(SELECTION, **BINDING)
+    assert [r["state"] for r in envelope["records"]] == ["found", "missing"]
+    statements = [s for s in log if s != "exit"]
+    assert statements[0] == "BEGIN ISOLATION LEVEL REPEATABLE READ READ ONLY" and statements[-1] == "ROLLBACK"
+    assert {s.split(" ")[0] for s in statements} == {"BEGIN", "SET", "SELECT", "ROLLBACK"}
 
 
 @pytest.mark.parametrize("fail", ["BEGIN", "SET LOCAL", "current_database", "unnest"])

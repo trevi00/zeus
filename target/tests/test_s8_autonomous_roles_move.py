@@ -100,12 +100,56 @@ def test_imports_are_only_inner_homes_and_the_module_never_writes():
 
 
 def test_the_module_has_no_raise_and_no_except_every_refusal_is_a_require():
+    """Structural: the moved source carries no `Raise`/`ExceptHandler` node (the S8 move rule); behaviour is covered by
+    test_every_refusal_path_raises_a_contract_error_with_its_message."""
     tree = ast.parse(target_text())
     assert not [n for n in ast.walk(tree) if isinstance(n, (ast.Raise, ast.ExceptHandler))]
 
 
 def roles():
     return importlib.import_module(MODULE)
+
+
+def _refuse_role_objective():
+    roles().role_objective("research_lead", "not an object")
+
+
+REFUSALS = [
+    (_refuse_role_objective, "Role details must be an object"),
+    (lambda: roles().council_delivery("attacker", details("attacker")), "Council delivery is defined for the debate roles only"),
+    (lambda: roles().council_delivery("conductor", details("research_lead")), "Council delivery role mismatch"),
+    (lambda: roles().council_delivery("conductor", {k: v for k, v in details("conductor").items() if k != "ssot"}),
+     "Council delivery input missing: ssot"),
+    (lambda: roles().council_delivery("conductor", details("conductor", packet=[])),
+     "Council delivery packet and dba_report must be objects"),
+    (lambda: roles().admitted_delivery("conductor", "task", True, "dge:conductor", details("conductor"), {}),
+     "Council delivery requires a read-only dge_role execution"),
+    (lambda: roles().admitted_delivery("conductor", "dge_role", True, "dge:conductor", details("conductor"), {}),
+     "Council delivery names no debate role"),
+    (lambda: roles().admitted_delivery("conductor", "dge_role", True, "dge:attacker", details("conductor"),
+                                       roles().council_delivery("conductor", details("conductor"))),
+     "Council delivery role, stage and agent must agree"),
+    (lambda: roles().admitted_delivery("conductor", "dge_role", True, "dge:conductor", details("conductor", round=2),
+                                       roles().council_delivery("conductor", details("conductor"))),
+     "Council delivery is not the projection of this task"),
+    (lambda: roles().isolation_reference({"mode": "m"}), "Isolation configuration carries no digest"),
+    (lambda: roles().isolation_reference({"mode": "m", "digest": ""}), "Isolation configuration carries no digest"),
+    (lambda: roles().role_schema("attacker", {}), "Role details must carry the pinned plan acceptance_criteria"),
+    (lambda: roles().role_schema("attacker", {"acceptance_criteria": ["a", "a"]}),
+     "Role details must carry the pinned plan acceptance_criteria"),
+]
+
+
+@pytest.mark.parametrize("refuse,message", REFUSALS, ids=[m + f" #{i}" for i, (_, m) in enumerate(REFUSALS)])
+def test_every_refusal_path_raises_a_contract_error_with_its_message(refuse, message):
+    """Behaviour: each pure refusal path of the module, driven through the public functions, raises `ContractError`
+    carrying that path's declared message (the `execute_role` refusals need an executor and are driven in
+    ported/test_autonomous_roles.py)."""
+    from codex_harness.kernel.errors import ContractError
+
+    with pytest.raises(ContractError) as info:
+        refuse()
+    assert str(info.value) == message
 
 
 def details(role, **overrides):

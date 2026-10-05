@@ -85,7 +85,40 @@ def test_rule_sites_pinned_by_name():
     assert "@staticmethod\n    def _queue_review" in m7 and "def _queue_review(self, tx," in text
 
 
+def test_an_existing_row_draws_no_id():
+    """Behaviour (R-r4'): `_queue_review` queues one pending decision and draws one message id; asked again for the same
+    binding (the row exists) it draws no id and writes nothing."""
+    from codex_harness.coordination.application.decisions import PendingDecisions
+    from codex_harness.kernel import message
+    from codex_harness.storage.adapters.memory_store import MemoryStore
+
+    class CountingIds:
+        def __init__(self):
+            self.draws = 0
+
+        def uuid4(self):
+            self.draws += 1
+            return f"00000000-0000-4000-8000-{self.draws:012d}"
+
+    ids = CountingIds()
+    audits = importlib.import_module(APP).ResearchAudits(MemoryStore(), None, None, None,
+                                                         pending_decisions=PendingDecisions())
+    store = MemoryStore()
+    original, message.SYSTEM_IDS = message.SYSTEM_IDS, ids
+    try:
+        with store.transaction() as tx:
+            audits._queue_review(tx, "audit-1", {"author": "worker:a"}, "binding-1", "conductor")
+            assert ids.draws == 1 and len(tx.scan("decisions_pending")) == 1
+            before = tx.scan("decisions_pending")
+            audits._queue_review(tx, "audit-1", {"author": "worker:a"}, "binding-1", "conductor")
+            assert ids.draws == 1 and tx.scan("decisions_pending") == before
+    finally:
+        message.SYSTEM_IDS = original
+
+
 def test_r_r4_prime_order_exists_before_envelope_before_queue():
+    """Structural: the call order exists, envelope, queue and the early return between the first two are M7's
+    (the S8 move rule); behaviour is covered by test_an_existing_row_draws_no_id."""
     body = methods(target_text())["_queue_review"]
     lines = {}
     for call in ast.walk(body):

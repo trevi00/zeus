@@ -44,6 +44,11 @@ def test_dead_letter_is_one_eval_with_the_script_keys_and_argv_in_order():
 
 
 def test_the_script_xadds_before_it_xacks_and_keeps_the_four_fields_in_order():
+    """Structural: the packaged Lua text orders XADD before XACK and its four fields, a source-text pin of the atomic
+    script (the S10 A5-1a script rule, R-a51a); the behaviour is covered by
+    test_s10_a5_1b_dlq.py::test_end_to_end_dead_letter_list_replay_against_a_real_redis (needs HARNESS_REDIS_URL) and
+    the `storage.redis` compare family (compare/drivers/common/s1_redis.py), and the eval argv by
+    test_dead_letter_is_one_eval_with_the_script_keys_and_argv_in_order above."""
     text = RedisBus._DEAD_LETTER_SCRIPT
     assert text.index("XADD") < text.index("XACK")
     fields = [text.index(f"'{name}'") for name in ("source", "entry_id", "body", "reason")]

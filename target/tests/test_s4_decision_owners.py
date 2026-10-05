@@ -121,8 +121,45 @@ def test_decision_failures_pass_the_unit_transaction_and_injected_clocks(monkeyp
     assert tx.puts == []
 
 
+class ClosedStore:
+    """A store that refuses to open a unit: any `transaction()` is the failure."""
+
+    def __init__(self):
+        self.opened = 0
+
+    def transaction(self):
+        self.opened += 1
+        raise AssertionError("an owner operation opened a transaction of its own")
+
+
+def test_owner_operations_complete_in_the_callers_unit_over_a_store_that_refuses_to_open_one(monkeypatch):
+    """Behaviour for §2.9 rule 2: given the caller's `tx`, every owner operation completes with no transaction opened,
+    even where the owner holds a store whose `transaction()` raises (RecordingTx raises on a nested unit as well)."""
+    store, tx = ClosedStore(), RecordingTx()
+    workflow = SimpleNamespace(_owned=lambda t, lease: {"id": "d1"}, heartbeat=lambda lease: None,
+                               fail_execution=lambda lease, error, *, transaction: {"failed": transaction is tx},
+                               contain_time=lambda lease, error: None)
+    monkeypatch.setattr(decisions_module.execution_notices, "record", lambda *args, **kwargs: None)
+    Outbox().append(tx, {"message_id": "m-1"})
+    EventJournal().append(tx, "e-1", {"type": "hook.required"})
+    owner = DecisionOwnership(workflow, SimpleNamespace(validate_decision=lambda t, row: None), object())
+    assert owner.owned(tx, {"id": "d1"}) == {"id": "d1"}
+    owner.validate(tx, {"id": "d1"})
+    owner.record(tx, {"id": "d1", "status": "succeeded"})
+    owner.notice(tx, {"id": "d1"}, "decision_blocked", "2026-01-01T00:00:00+00:00")
+    owner.heartbeat({"id": "d1"})
+    failures = DecisionFailures(workflow, store)
+    assert failures.fail(tx, {"id": "d1"}, RuntimeError("x")) == {"failed": True}
+    failures.contain_time({"id": "d1"}, RuntimeError("x"))
+    assert store.opened == 0
+    assert [(bucket, key) for bucket, key, _ in tx.puts] == [("outbox", "m-1"), ("events", "e-1"),
+                                                             ("decisions_pending", "d1")]
+
+
 @pytest.mark.parametrize("module", ["outbox", "events", "decisions"])
 def test_owner_modules_never_open_a_transaction(module):
+    """Structural: the owner modules carry no `.transaction(` call (§2.9 rule 2, source rule); the runtime property is
+    covered by test_owner_operations_complete_in_the_callers_unit_over_a_store_that_refuses_to_open_one."""
     import importlib
     import inspect
     source = inspect.getsource(importlib.import_module(f"codex_harness.coordination.application.{module}"))

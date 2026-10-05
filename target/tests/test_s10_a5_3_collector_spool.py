@@ -140,7 +140,10 @@ def test_the_dropped_gauge_sums_each_reason_over_readable_records(spool):
     assert rows[DROPPED]["type"] == "gauge" and rows[DROPPED]["labels"] == ["reason"]
     assert {tuple(s["labels"]): s["value"] for s in rows[DROPPED]["series"]} == {
         ("spool_full",): 7, ("append_failed",): 1, ("run_refused",): 2, ("refused",): 5, ("alerts_pending_dropped",): 7}
-    assert [reason for reason, _ in REASONS] == ["spool_full", "append_failed", "run_refused", "refused", "alerts_pending_dropped"]
+    # the reasons are a set: this test is about the sums, and no contract makes the declaration order of REASONS observable
+    # (the series above are compared as a mapping); the count keeps a duplicate or an extra reason visible
+    assert {reason for reason, _ in REASONS} == {"spool_full", "append_failed", "run_refused", "refused", "alerts_pending_dropped"}
+    assert len(REASONS) == 5
     assert [s["value"] for s in rows[AVAILABLE]["series"]] == [1]
     assert [s["value"] for s in rows[UNREADABLE]["series"]] == [0]
     assert "can decrease" in rows[DROPPED]["help"]
