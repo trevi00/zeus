@@ -28,6 +28,8 @@ import json
 import shutil
 from pathlib import Path
 
+import block_exercise
+
 BASE = "a" * 40
 ROOT = "/zeus-rebuild-s5-fleet"
 GOAL = {"path": "docs/GOAL.md", "sha256": "b" * 64, "criterion": "c", "base_revision": BASE, "bytes": 3}
@@ -87,6 +89,7 @@ def attempt(fn, *args, **kwargs):
 class Case:
     def __init__(self, api, name):
         api.reset()
+        self.name = name
         self.api, self.backend = api, api.backend(name)
         self.recording = api.recording(self.backend.store)
         self.store = FaultStore(self.recording)
@@ -94,8 +97,10 @@ class Case:
 
     def since(self):
         self.mark = len(self.recording.recorder.events)
+        block_exercise.open(self.name)  # S11 R-L3d: the window of the unit-under-test call (no-op unless armed)
 
     def result(self, outcome):
+        block_exercise.close()
         recorder = self.recording.recorder
         events = recorder.events[self.mark:]
         outcomes = recorder.unit_outcomes()
@@ -708,7 +713,7 @@ def relay(api, name, *, queued=0, poison=False, replay=False, failure=False, sco
 
 
 def run(api) -> dict:
-    return {
+    out = {
         "handle_success": handle(api, "handle_success"),
         "handle_a_failure_at_inbox": handle(api, "handle_a_failure", failure=True),
         "handle_c_replay": handle(api, "handle_c_replay", replay=True),
@@ -810,3 +815,5 @@ def run(api) -> dict:
         "relay_poison_record": relay(api, "relay_poison_record", poison=True),
         "relay_scoped_publish": relay(api, "relay_scoped_publish", queued=1, scope="corr-relay"),
     }
+    block_exercise.assign(list(out))  # S11 R-L3d: the cases ran in key order, one window each
+    return out

@@ -27,6 +27,7 @@ driver.start("reference")
 
 from types import SimpleNamespace  # noqa: E402
 
+import block_exercise  # noqa: E402
 import determinism  # noqa: E402
 import masks  # noqa: E402
 import recorder as rec  # noqa: E402
@@ -163,6 +164,7 @@ def case(root: Path, name: str, phase: str, actor: str, *, failure: str = "none"
     if control == "split_commit":
         propose = executor.releases.propose
         executor.releases.propose = lambda c, p, transaction=None: propose(c, p)
+    block_exercise.open(name)  # S11 R-L3d: the window of the decide_one calls (no-op unless armed)
     if failure == "before_decision":
         write = recorder.write
 
@@ -180,6 +182,7 @@ def case(root: Path, name: str, phase: str, actor: str, *, failure: str = "none"
     if replay:
         clock.advance(1)
         executor.decide_one(actor)
+    block_exercise.close()
     events = recorder.events[setup_events:]
     durable = recorder.durable_writes(setup_events)
     with store.transaction() as tx:

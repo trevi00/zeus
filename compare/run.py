@@ -44,6 +44,11 @@ ROOT = COMPARE.parent
 sys.path.insert(0, str(COMPARE / "guard"))
 import provider_guard  # noqa: E402
 
+sys.path.insert(0, str(COMPARE / "harness"))
+import block_exercise  # noqa: E402
+
+sys.path.remove(str(COMPARE / "harness"))
+
 # Every docker call of this runner passes the same default-deny guard as the tests (R-P, S0 F1).
 provider_guard.install()
 # The disposable fixture images are pinned by DIGEST, not by moving tag: the recorded goldens capture the image's
@@ -493,6 +498,7 @@ def run(record: bool, use_bwrap: bool, only: list[str], pg: bool = False,
             work = Path(raw)
             (work / "reference-side").mkdir()
             extra = {"ZEUS_REBUILD_SOURCE_ROOT": str(SCRATCH / "source")}
+            blocks_out = work / "reference-side" / "block-exercise.json"
             if needs_pair:
                 dump = work / "dump"
                 dump.mkdir(mode=0o700)
@@ -513,8 +519,12 @@ def run(record: bool, use_bwrap: bool, only: list[str], pg: bool = False,
                         extra["ZEUS_REBUILD_PG_DSN"] = fixture.dsn
                     if needs_redis:
                         extra["ZEUS_REBUILD_REDIS_URL"] = fixture.url
+                # S11 R-L3d: only the REFERENCE side of a record run is armed (DESIGN-s11 §17 item 1)
+                armed = {block_exercise.ENV: str(blocks_out)} if record else {}
                 result = run_driver(python, COMPARE / scenario["reference_driver"], work / "reference-side",
-                                    extra, use_bwrap, binds=[work])
+                                    {**extra, **armed}, use_bwrap, binds=[work])
+                # read inside the run root: it is removed with the run (a driver without windows writes no file)
+                blocks = (json.loads(blocks_out.read_text(encoding="utf-8")) if blocks_out.is_file() else None)
                 if target_path is not None and target_path.exists() and not needs_pair:
                     target_result = run_target(target_path, work, extra, use_bwrap)
             if needs_pair and target_path is not None and target_path.exists():
@@ -538,6 +548,9 @@ def run(record: bool, use_bwrap: bool, only: list[str], pg: bool = False,
             if record:
                 golden_path.write_text(json.dumps(result["result"], sort_keys=True, indent=1,
                                                   ensure_ascii=False) + "\n", encoding="utf-8")
+                if blocks is not None:
+                    golden_path.with_name(f"{family}.blocks.json").write_text(
+                        block_exercise.artifact(family, blocks), encoding="utf-8")
             golden = json.loads(golden_path.read_text(encoding="utf-8")) if golden_path.exists() else None
             equal = golden == result["result"]
             if not equal:
