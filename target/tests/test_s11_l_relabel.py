@@ -687,7 +687,7 @@ def test_a_credential_shaped_exercise_node_is_stored_hashed(tree, tmp_path):
 @pytest.mark.parametrize("kwargs, nodes, why", [
     ({"schema": "zeus:other:1"}, {}, "schema is not"),
     ({"root": "/x/target/tests"}, {}, "root is not the target source root"),
-    ({"functions": ["codex_harness.absent.mod:f"]}, {}, "function module"),
+    ({"functions": ["codex_harness.absent.mod:f"]}, {}, "no function module is in target/src"),
     ({}, {"tests/test_a.py::test_ghost": [0]}, "matches no collected node"),
     ({}, {"tests/test_b.py::test_other": [7]}, "function index outside"),
 ])
@@ -772,3 +772,11 @@ def test_g1b_is_refused_for_a_row_not_mapped_under_r_au1_or_not_an_atomic_unit(t
     other = pending_row(key=AU_KEY)
     with pytest.raises(relabel.Refused, match="mapped under R-AU1"):
         relabel.relabel({"rows": [other]}, bundle_for(), tree, [g1b()])
+
+
+def test_a_transient_module_in_the_exercise_record_is_ignored_and_named(tree, tmp_path):
+    write(tree, "coverage/ledger-coverage.json", json.dumps({"rows": [row(symbol=(SYMBOL,))]}))
+    git_repo(tree)
+    path = exercise_file(tmp_path, {"tests/test_b.py::test_other": [0, 2]}, functions=[*EXERCISE_FUNCTIONS, "codex_harness.adapters._probe:deep"])
+    ex = relabel.build_exercise(tree, path, ["tests/test_b.py::test_other"], {}, HEAD, "A/x")
+    assert ex["ignored_modules"] == ["codex_harness.adapters._probe"] and list(ex["symbols"]) == [SYMBOL]

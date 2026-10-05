@@ -9,9 +9,15 @@ for each atomic-unit row mapped under R-AU1 (`mapping_correction` starts `R-AU1:
    cited in `RENAMES`) inside its blocks;
 3. call no external-effect port inside any of its blocks (`EXTERNAL_PORTS`, the closed list measured in `target/src`).
 
-Rule 1 is an assertion. Rules 2 and 3 are FINDINGS when they do not hold: the unit's node then ends `xfail` (never a
-pass, so rule G1b leaves its `pending:` item) and `FINDINGS` pins the measured finding, so a fix or a new finding both
-fail the suite until the pin is edited. The behavioural half of a unit's evidence is `exercise:` (R-AU3).
+Rule 1 is an assertion. Rules 2 and 3 are FINDINGS when they do not hold. `R_AU2_FINDINGS` is the exact pinned set
+{row key: reason}; `test_the_computed_findings_equal_the_pinned_set` fails on a new finding and on a fixed one that is
+still pinned (no xfail/skip: SKIPPED-TEST-CLOSURE). Rule G1b is withheld for a pinned row.
+
+Owner rulings (resume 1, 2026-10-05):
+- R-AU2-a: rule 3 lists EFFECTS only (REBUILD-DESIGN-v2 §2.9 rule 4: provider calls, process/container spawns, Git
+  push/merge, Docker, HTTP). A read-only local Git query (`is_ancestor`, `rev-parse`, `show`) is not an external effect.
+- R-AU2-b: when the row records no `tx_passing_calls`, rule 2 requires that a block uses its own bound `tx` for store
+  operations (at least one `<tx>.<op>(` call) and opens no nested `transaction()`. The behavioural half of a unit's evidence is `exercise:` (R-AU3).
 """
 
 import ast
@@ -36,8 +42,7 @@ PROVIDER_METHODS = {"start", "run"}
 SPAWN_METHODS = {"popen"}  # any receiver: the ProcessGroups port method (host_os/ports.py:78, ChokepointProcesses)
 SPAWN_ON_MODULE = {"process_groups": {"popen", "run"}, "subprocess": {"run", "Popen", "check_output", "check_call", "call"}}
 SPAWN_FUNCTIONS = {"guarded_spawn", "popen"}
-GIT_RECEIVER = re.compile(r"(?i)(^|_)git($|_)")  # any method of a git adapter
-GIT_METHODS = {"push", "merge"}
+GIT_METHODS = {"push", "merge"}  # §2.9 rule 4 effects; read-only queries (is_ancestor) are not ports (R-AU2-a)
 DOCKER_RECEIVER = re.compile(r"(?i)^docker$")
 DOCKER_FUNCTIONS = {"docker_call", "docker_environment", "docker_state"}
 HTTP_FUNCTIONS = {"urlopen", "fetch", "github_detail"}
@@ -52,7 +57,6 @@ PORT_CITATIONS = {
                                  ("host_os/adapters/process_groups.py", "ChokepointProcesses.popen"),
                                  ("composition/guarded_launch.py", "guarded_spawn")],
     "git push/merge adapters": [("host_os/adapters/git_workspace.py", "GitWorkspace.merge"),
-                                ("host_os/adapters/git_workspace.py", "GitWorkspace.is_ancestor"),
                                 ("delivery/adapters/host_delivery.py", "GitHubDelivery.merge")],
     "docker": [("execution/adapters/containers/owned_container.py", "docker_call"),
                ("execution/adapters/containers/owned_container.py", "docker_environment"),
@@ -79,25 +83,14 @@ RENAMES = {
     "repository_aliases": ("observe", "research/application/discovery_pressure.py:84 (as `control`)"),
 }
 
-# The measured findings (R-AU2 rule 2 or 3) at the time of writing, by unit key without the `atomic_unit:` prefix. They
-# are findings for the owner, not passes: the unit's node is `xfail` and rule G1b does not resolve its pending item.
-FINDINGS: dict[str, str] = {
+# The measured findings (R-AU2 rule 2 or 3), by unit key without the `atomic_unit:` prefix: exact, see the docstring.
+R_AU2_FINDINGS: dict[str, str] = {
     'codex_harness.adapters.deployment:ReleaseRunner.run#1':
-        'rule 2: the row records no tx_passing_calls; tx reaches record_superseded',
-    'codex_harness.adapters.deployment:ReleaseRunner.abandon#1':
-        'rule 2: the row records no tx_passing_calls; tx reaches cancel | rule 3: line 618 git adapter git.is_ancestor()',
-    'codex_harness.application.autonomous:AutonomousRun._role#1':
-        'rule 2: the row records no tx_passing_calls; tx reaches verify_execution',
-    'codex_harness.application.frontdesk:DeskRunner._bound_execution#1':
-        'rule 2: the row records no tx_passing_calls; tx reaches nothing',
-    'codex_harness.application.scheduling:schedule_research#1':
-        'rule 2: the row records no tx_passing_calls; tx reaches append',
+        'rule 2: the row records no tx_passing_calls and the block makes no <tx>.<op>() call',
     'codex_harness.supervisor:refresh_embeddings#1':
-        'rule 2: the row records no tx_passing_calls; tx reaches record',
+        'rule 2: the row records no tx_passing_calls and the block makes no <tx>.<op>() call',
     'codex_harness.supervisor:maintain_views#1':
-        'rule 2: the row records no tx_passing_calls; tx reaches indexed, record',
-    'codex_harness.supervisor:tick#3':
-        'rule 2: the row records no tx_passing_calls; tx reaches record',
+        'rule 2: the row records no tx_passing_calls and the block makes no <tx>.<op>() call',
 }
 
 
@@ -159,7 +152,7 @@ def external_effect(call: ast.Call) -> str | None:
         return f"spawn chokepoint .{method}()"
     if PROVIDER_RECEIVER.search(receiver) and method in PROVIDER_METHODS:
         return f"provider runtime {receiver}.{method}()"
-    if GIT_RECEIVER.search(receiver) or method in GIT_METHODS:
+    if method in GIT_METHODS:
         return f"git adapter {receiver}.{method}()"
     if DOCKER_RECEIVER.search(receiver) or method in DOCKER_FUNCTIONS:
         return f"docker {receiver}.{method}()"
@@ -172,28 +165,36 @@ def analyse(source: str, qualname: str, expected: list[str]) -> dict:
     """{'found': bool, 'blocks': int, 'missing': [...], 'effects': [(line, port)], 'passed_to': [...]}"""
     fn = find_function(ast.parse(source), qualname)
     if fn is None:
-        return {"found": False, "blocks": 0, "missing": [], "effects": [], "passed_to": []}
+        return {"found": False, "blocks": 0, "missing": [], "effects": [], "passed_to": [], "own_ops": 0, "nested": 0}
     blocks = transaction_blocks(fn)
-    passed, effects = set(), []
+    passed, effects, own_ops, nested = set(), [], 0, 0
     for block, tx in blocks:
+        nested += sum(1 for other, _ in blocks if other is not block and any(n is other for n in ast.walk(block)))
         for call in (n for n in ast.walk(block) if isinstance(n, ast.Call)):
             args = [a for a in (*call.args, *(k.value for k in call.keywords))]
             if tx and any(isinstance(a, ast.Name) and a.id == tx for a in args) and last_name(call.func):
                 passed.add(normal(last_name(call.func)))
+            if tx and isinstance(call.func, ast.Attribute) and isinstance(call.func.value, ast.Name) \
+                    and call.func.value.id == tx:
+                own_ops += 1
             port = external_effect(call)
             if port:
                 effects.append((call.lineno, port))
     wanted = {normal(c) for c in expected}
     missing = sorted(w for w in wanted if RENAMES.get(w, (w,))[0] not in passed and w not in passed)
     return {"found": True, "blocks": len(blocks), "missing": missing, "effects": sorted(set(effects)),
-            "passed_to": sorted(passed)}
+            "passed_to": sorted(passed),
+            "own_ops": own_ops, "nested": nested}
 
 
 def verdict(result: dict, expected: list[str]) -> str | None:
     """None when the unit meets rules 2 and 3, else the finding text; rule 1 is the caller's assertion."""
     findings = []
-    if not expected:
-        findings.append("rule 2: the row records no tx_passing_calls; tx reaches " + ", ".join(result["passed_to"] or ["nothing"]))
+    if not expected:  # R-AU2-b
+        if not result["own_ops"]:
+            findings.append("rule 2: the row records no tx_passing_calls and the block makes no <tx>.<op>() call")
+        if result["nested"]:
+            findings.append("rule 2: a nested transaction() block")
     elif result["missing"]:
         findings.append("rule 2: tx is not passed to " + ", ".join(result["missing"]))
     if result["effects"]:
@@ -230,17 +231,19 @@ def measure(row: dict) -> tuple[dict, str | None]:
 @pytest.mark.parametrize("row", mapped_units(), ids=unit_id)
 def test_unit_is_structurally_atomic(row):
     """The structural contract (REBUILD-DESIGN-v2 §2.9 rules 2-4): one transaction block, `tx` to the owner operations, no
-    external effect inside. A finding is `xfail` (never a pass); the pinned `FINDINGS` must equal the measurement."""
+    external effect inside. The node passes when rule 1 holds; findings are compared as a set by the next test."""
     result, finding = measure(row)
     assert result["found"], f"the mapped method does not exist: {row['target_symbol'][0]}"
     assert result["blocks"] >= 1, f"rule 1: the method opens no transaction() block: {row['target_symbol'][0]}"
-    assert FINDINGS.get(unit_id(row)) == finding, f"measured {finding!r}; pinned {FINDINGS.get(unit_id(row))!r}"
-    if finding:
-        pytest.xfail("FINDING " + finding)
+
+
+def test_the_computed_findings_equal_the_pinned_set():
+    computed = {unit_id(r): f for r in mapped_units() for f in [measure(r)[1]] if f}
+    assert computed == R_AU2_FINDINGS
 
 
 def test_the_pinned_findings_name_mapped_units_only():
-    assert set(FINDINGS) <= {unit_id(r) for r in mapped_units()}
+    assert set(R_AU2_FINDINGS) <= {unit_id(r) for r in mapped_units()}
 
 
 def test_r_au1_mapped_every_prose_unit_with_a_measured_method_and_left_the_ambiguous_ones():
@@ -343,9 +346,10 @@ def test_negative_control_a_block_that_does_not_pass_tx_is_a_rule_2_finding():
     assert verdict(result, ["self.ops.record"]) == "rule 2: tx is not passed to record"
 
 
-def test_a_missing_owner_operation_list_is_a_finding_not_a_pass():
-    result = analyse(fixture("good_unit.py.txt"), "Unit.commit", [])
-    assert "no tx_passing_calls" in verdict(result, [])
+def test_a_missing_owner_operation_list_needs_the_blocks_own_tx_operations_else_a_finding():
+    assert verdict(analyse(fixture("good_unit.py.txt"), "Unit.commit", []), []) is None  # `tx.get` (R-AU2-b)
+    source = "class U:\n    def go(self):\n        with self.s.transaction() as tx:\n            self.ops.f(1)\n"
+    assert "no tx_passing_calls" in verdict(analyse(source, "U.go", []), [])
 
 
 def test_a_renamed_callee_passes_only_through_the_cited_table():
@@ -372,7 +376,6 @@ def test_a_leading_underscore_is_not_a_rename_but_a_different_operation_is():
     ("process_groups.run(argv)", "spawn chokepoint process_groups.run()"),
     ("subprocess.run(argv)", "spawn chokepoint subprocess.run()"),
     ("guarded_spawn()", "spawn chokepoint guarded_spawn()"),
-    ("self.git.is_ancestor(a, b)", "git adapter git.is_ancestor()"),
     ("self.repo.push(ref)", "git adapter repo.push()"),
     ("self.host.merge(c)", "git adapter host.merge()"),
     ("docker_call(r, d, a, timeout=1)", "docker docker_call()"),
@@ -385,6 +388,21 @@ def test_every_port_family_is_detected_inside_a_block_and_not_outside(code, port
     outside = f"class U:\n    def go(self):\n        with self.s.transaction() as tx:\n            self.ops.record(tx)\n        {code}\n"
     assert [p for _, p in analyse(inside, "U.go", ["record"])["effects"]] == [port]
     assert analyse(outside, "U.go", ["record"])["effects"] == []
+
+
+def test_a_read_only_git_query_is_not_an_external_effect():
+    source = "class U:\n    def go(self):\n        with self.s.transaction() as tx:\n            self.git.is_ancestor(a, b)\n"
+    assert analyse(source, "U.go", [])["effects"] == []
+
+
+def test_without_tx_passing_calls_the_block_must_use_its_own_tx_and_not_nest():
+    own = "class U:\n    def go(self):\n        with self.s.transaction() as tx:\n            tx.put('b', 1)\n"
+    assert verdict(analyse(own, "U.go", []), []) is None
+    none = "class U:\n    def go(self):\n        with self.s.transaction() as tx:\n            self.ops.f(1)\n"
+    assert "no <tx>.<op>() call" in verdict(analyse(none, "U.go", []), [])
+    nest = ("class U:\n    def go(self):\n        with self.s.transaction() as tx:\n            tx.put('b', 1)\n"
+            "            with self.s.transaction() as t2:\n                t2.put('c', 1)\n")
+    assert "nested" in verdict(analyse(nest, "U.go", []), [])
 
 
 def test_an_owner_operation_is_not_an_external_port():
@@ -426,7 +444,7 @@ def test_g1b_resolves_exactly_the_mapped_units_that_pass_and_carry_the_recorder_
     resolved = json.loads((ROOT / "coverage/evidence-resolutions.json").read_text(encoding="utf-8"))["resolutions"]
     earlier = {e["key"] for e in resolved if e["rule"] != "G1b" and e["pending"] == G1B_PENDING}  # a recorder family (G1)
     want = {r["key"] for r in mapped_units()
-            if G1B_PENDING in r["evidence"] and unit_id(r) not in FINDINGS and r["key"] not in earlier}
+            if G1B_PENDING in r["evidence"] and unit_id(r) not in R_AU2_FINDINGS and r["key"] not in earlier}
     assert set(entries) == want and want
     for row in mapped_units():
         e = entries.get(row["key"])
