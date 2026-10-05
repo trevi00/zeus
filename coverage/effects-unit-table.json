@@ -90,6 +90,20 @@
    "golden_unit": "admit"
   },
   {
+   "atomic_unit": "codex_harness.application.execution_recovery:ExecutionRecovery.apply#1",
+   "basis": "block_exercise",
+   "block": "#1",
+   "case": "apply_a_failure_at_recoveries",
+   "cases": [
+    "a",
+    "b",
+    "c"
+   ],
+   "family": "effects.admission_unit",
+   "golden_unit": "apply",
+   "writes_observed": null
+  },
+  {
    "atomic_unit": "codex_harness.application.fleet:Fleet.authorize_budget#1",
    "block": "#1",
    "cases": [
@@ -313,6 +327,20 @@
    "golden_unit": "handle"
   },
   {
+   "atomic_unit": "codex_harness.application.fleet:Fleet.migrate_host#1",
+   "basis": "block_exercise",
+   "block": "#1",
+   "case": "migrate_host_a_failure_at_registry",
+   "cases": [
+    "a",
+    "b",
+    "c"
+   ],
+   "family": "effects.admission_unit",
+   "golden_unit": "migrate_host",
+   "writes_observed": null
+  },
+  {
    "atomic_unit": "codex_harness.application.operation_finalization:parkable#1",
    "block": "#1",
    "cases": [
@@ -379,6 +407,45 @@
    "driver_call": "compare/drivers/common/s5_units.py:289",
    "family": "effects.admission_unit",
    "golden_unit": "registered"
+  },
+  {
+   "atomic_unit": "codex_harness.application.outbox:relay#1",
+   "basis": "block_exercise",
+   "block": "#1",
+   "case": "relay_a_failure_at_health",
+   "cases": [
+    "a",
+    "c",
+    "d"
+   ],
+   "family": "effects.admission_unit",
+   "golden_unit": "relay",
+   "writes_observed": null
+  },
+  {
+   "atomic_unit": "codex_harness.application.outbox:relay#3",
+   "basis": "block_exercise",
+   "block": "#3",
+   "case": "relay_c_replay",
+   "cases": [
+    "c",
+    "d"
+   ],
+   "family": "effects.admission_unit",
+   "golden_unit": "relay",
+   "writes_observed": null
+  },
+  {
+   "atomic_unit": "codex_harness.application.outbox:relay#4",
+   "basis": "block_exercise",
+   "block": "#4",
+   "case": "relay_d_publish_depth",
+   "cases": [
+    "d"
+   ],
+   "family": "effects.admission_unit",
+   "golden_unit": "relay",
+   "writes_observed": null
   },
   {
    "atomic_unit": "codex_harness.application.outbox:relay#6",
