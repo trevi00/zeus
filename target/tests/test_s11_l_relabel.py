@@ -617,6 +617,20 @@ CLASSIFIER_FIXTURES = [
     "def header(m):\n    return m.__doc__\ndef outer(m):\n    return header(m)\n"
     "def test_a(tmp_path):\n    assert build().count() == 0\n    assert 'x' in fixture(tmp_path)\n    assert 'y' in outer(m)\n"
     "def test_b():\n    doc = header(m)\n    return doc\ndef test_c(doc):\n    assert 'z' in doc\n",
+    # FA-009c: a packaged data golden compared with a target call result (behavioural; the two data-golden controls and
+    # their flagged counterparts: source text, a docstring, a code suffix, a data read with no call result)
+    "def load(name):\n    return load_yaml(files('codex_harness.resources').joinpath(name).read_text())\n"
+    "def header(m):\n    return m.__doc__\n"
+    "def test_golden_vs_call():\n    expected = load('stages.yaml')\n    assert len(merge(a, b)) == len(expected)\n"
+    "def test_golden_through_a_variable():\n    merged = merge(load('a.yaml'), load('b.yaml'))\n"
+    "    assert merged == load('stages.yaml')\n    assert load('stages.yaml')['k'] in merged\n"
+    "def test_source_text():\n    text = Path('src/x.py').read_text()\n    assert 'def f' in text\n"
+    "def test_docstring():\n    doc = header(module)\n    assert 'INV-1' in doc\n"
+    "def test_data_without_a_call():\n    data = load('k.json')\n    assert data['k'] == 1\n"
+    "def test_code_text_with_a_call():\n    text = (ROOT / 'src/codex_harness/x.py').read_text()\n"
+    "    assert len(merge(a, b)) == len(text)\n    assert merge(a, b) == load('x.py')\n"
+    "def test_mixed_leaves():\n    expected = load('stages.yaml')\n"
+    "    assert len(merge(a, b)) == len(expected) and 'x' in header(module)\n",
     STRUCTURAL_NODE, BEHAVIOURAL_NODE, MIXED_NODE, NO_ASSERT_NODE,
 ]
 
@@ -636,6 +650,11 @@ def test_the_structural_classifier_equals_test_s11_fa009():
     assert relabel.SOURCE_TEXT_READERS.pattern == fa009.SOURCE_TEXT_READERS.pattern
     assert relabel.PRODUCTION_LOCATIONS.pattern == fa009.PRODUCTION_LOCATIONS.pattern
     assert relabel.CONSTANT_SUFFIXES == fa009.CONSTANT_SUFFIXES
+    assert relabel.CODE_SUFFIXES == fa009.CODE_SUFFIXES and relabel.DATA_SUFFIXES == fa009.DATA_SUFFIXES
+    assert relabel.DATA_PARSERS.pattern == fa009.DATA_PARSERS.pattern and relabel.NEUTRAL_CALLS == fa009.NEUTRAL_CALLS
+    # FA-009c: the golden fixtures above are classified by the rule in both copies (flagged lines, not just equal)
+    golden = CLASSIFIER_FIXTURES[-5]
+    assert [line for line, _ in fa009.wiring_assertions(golden)] == [14, 17, 20, 23, 24, 27]
 
 
 def test_a_capability_needs_its_target_symbols_and_a_passing_named_test_and_no_pending_proposed_row(tree):

@@ -27,6 +27,8 @@ WIRING_ALLOWLIST = {"test_architecture.py"}
 # structural policy tests by purpose: they pin the import sets and moved-symbol shapes of the S8 moves. That is M7's own
 # exempt category ("Structural policy tests inspect source deliberately"). The moved code's behaviour is covered by its
 # ported suites and compare families.
+# FA-009c removed the KNOWN FALSE POSITIVE group (`ported/test_pipeline.py:48`, a packaged YAML golden compared with the
+# result of `merge_stages`): it is behavioural and no longer flagged. No other pin changed.
 # Groups 2-7 (S11 unit TQ-1, B7): the hits the extended detector (read-then-assert, `*_SCRIPT|*_SOURCE|*_TEMPLATE`
 # constants) found in the target suite, each classified by the contract it pins; none is behavioural acceptance.
 PIN_GROUPS: list[tuple[str, dict[str, list[int]]]] = [
@@ -89,10 +91,6 @@ PIN_GROUPS: list[tuple[str, dict[str, list[int]]]] = [
      "the domain declares (group 6's contract)", {
         "ported/test_audit_output_vocabulary.py": [72],
     }),
-    ("KNOWN FALSE POSITIVE (DESIGN-s11 §13): a packaged data golden used as the expected value of a behavioural call; "
-     "the detector cannot yet tell goldens from source-text subjects (follow-up FA-009c)", {
-        "ported/test_pipeline.py": [48],
-    }),
     ("TQ-1 B8 restated structural pins: each docstring names its structural contract and the behavioural tests", {
         "test_s10_a5_1a_dead_letter_drain.py": [53, 56],
         "test_s4_decision_owners.py": [166],
@@ -105,6 +103,18 @@ for _contract, _pins in PIN_GROUPS:
 
 
 CONSTANT_SUFFIXES = ("_SCRIPT", "_SOURCE", "_TEMPLATE")
+# FA-009c: a packaged DATA resource is named by one of these suffixes (or parsed by one of these loaders) and by none of
+# the code/template suffixes. The code list is the one the detector treats as source: `.py` is the only one the target
+# tests read from a production location today (measured 2026-10-05); `.sh`, `.ps1`, `.service` and `.in` are the
+# scripts/unit/template files named by the owner rule. Code evidence always wins.
+CODE_SUFFIXES = (".py", ".sh", ".ps1", ".service", ".in")
+DATA_SUFFIXES = (".json", ".yaml", ".yml", ".toml")
+DATA_PARSERS = re.compile(r"\b(json\.loads?|yaml\.(safe_)?load|tomllib\.loads?|load_yaml)\s*\(")
+READ_TEXT_CALL = re.compile(r"\b(read_text|read_bytes)\s*\(")
+# Call roots that are not the behaviour under test (builtins, parsers, path and AST helpers).
+NEUTRAL_CALLS = frozenset({"len", "set", "list", "tuple", "dict", "sorted", "str", "int", "float", "bool", "isinstance",
+                           "min", "max", "sum", "any", "all", "enumerate", "zip", "range", "reversed", "frozenset",
+                           "repr", "type", "Path", "files", "json", "yaml", "tomllib", "ast", "inspect", "load_yaml"})
 
 
 def _imports_from_harness(tree):
@@ -181,12 +191,8 @@ def _calls_reader(node, readers):
     return any(isinstance(n, ast.Call) and isinstance(n.func, ast.Name) and n.func.id in readers for n in ast.walk(node))
 
 
-def _function_bindings(function, imported, readers=frozenset()):
-    """Names bound inside one function, as `{name: first binding line}`: `source` holds names bound from a statement that
-    reads production source (the reader regex and a production location in the statement; a reader statement that
-    names an already-bound source name extends the set, e.g. `tree = ast.parse(text)`), `constant` names bound from a
-    harness `*_SCRIPT|*_SOURCE|*_TEMPLATE` constant. A statement that calls a local reader (`readers`, FA-009b) also
-    binds `source`."""
+def _function_statements(function):
+    """The binding statements of one function as `(line, value expression, bound names)`."""
     statements = []
     for node in ast.walk(function):
         if isinstance(node, (ast.Assign, ast.AnnAssign, ast.AugAssign)) and node.value is not None:
@@ -195,6 +201,16 @@ def _function_bindings(function, imported, readers=frozenset()):
         elif isinstance(node, (ast.With, ast.AsyncWith)):
             statements += [(node.lineno, item.context_expr, _bound_names(item.optional_vars))
                            for item in node.items if item.optional_vars is not None]
+    return statements
+
+
+def _function_bindings(function, imported, readers=frozenset()):
+    """Names bound inside one function, as `{name: first binding line}`: `source` holds names bound from a statement that
+    reads production source (the reader regex and a production location in the statement; a reader statement that
+    names an already-bound source name extends the set, e.g. `tree = ast.parse(text)`), `constant` names bound from a
+    harness `*_SCRIPT|*_SOURCE|*_TEMPLATE` constant. A statement that calls a local reader (`readers`, FA-009b) also
+    binds `source`."""
+    statements = _function_statements(function)
     source: dict[str, int] = {}
     constant: dict[str, int] = {}
     for line, value, names in sorted(statements, key=lambda s: s[0]):
@@ -232,6 +248,164 @@ def _constant_text_assertion(test, imported, constant):
     return False
 
 
+def _constants(node):
+    return [n.value for n in ast.walk(node) if isinstance(n, ast.Constant) and isinstance(n.value, str)]
+
+
+def _data_evidence(node):
+    """FA-009c: the subtree names a DATA resource: a `DATA_SUFFIXES` string (or an f-string part) or a data loader call,
+    and no `CODE_SUFFIXES` string, `__doc__`, `getsource`, `getdoc` or `get_docstring`. Code evidence always wins."""
+    text = ast.unparse(node)
+    constants = _constants(node)
+    if PRODUCTION_TEXT.search(text) or any(c.endswith(CODE_SUFFIXES) for c in constants):
+        return False
+    return any(c.endswith(DATA_SUFFIXES) for c in constants) or bool(DATA_PARSERS.search(text))
+
+
+def _local_data_readers(tree, readers):
+    """The local readers whose own body (docstring aside) names a data resource and no code text (FA-009c)."""
+    out = set()
+    for function in ast.walk(tree):
+        if isinstance(function, (ast.FunctionDef, ast.AsyncFunctionDef)) and function.name in readers:
+            body = function.body
+            if body and isinstance(body[0], ast.Expr) and isinstance(body[0].value, ast.Constant):
+                body = body[1:]
+            if body and _data_evidence(ast.Module(body=body, type_ignores=[])):
+                out.add(function.name)
+    return out
+
+
+def _reader_call_is_data(call, data_readers):
+    """A call to a local reader reads data when the helper does and no code suffix is passed, or the arguments name data."""
+    arguments = ast.Module(body=[ast.Expr(value=a) for a in [*call.args, *(k.value for k in call.keywords)]],
+                           type_ignores=[])
+    if any(c.endswith(CODE_SUFFIXES) for c in _constants(arguments)):
+        return False
+    return call.func.id in data_readers or _data_evidence(arguments)
+
+
+def _text_kinds(node, readers, data_readers, data_names):
+    """`(data, code)`: whether the subtree derives from production DATA text (a data reader call, a data-resource read,
+    or a name bound from one) and whether it derives from production CODE text (a non-data reader call, a source read,
+    `__doc__`/`getsource`/`getdoc`/`get_docstring`)."""
+    data = code = False
+    for n in ast.walk(node):
+        if isinstance(n, ast.Call) and isinstance(n.func, ast.Name) and n.func.id in readers:
+            if _reader_call_is_data(n, data_readers):
+                data = True
+            else:
+                code = True
+        elif isinstance(n, ast.Name) and n.id in data_names:
+            data = True
+    text = ast.unparse(node)
+    if READ_TEXT_CALL.search(text) and PRODUCTION_LOCATIONS.search(text) and _data_evidence(node):
+        data = True
+    elif SOURCE_TEXT_READERS.search(text) or PRODUCTION_TEXT.search(text):
+        code = True
+    return data, code
+
+
+def _has_target_call(node, readers, bound):
+    """A call to a function or method other than a reader, a builtin/parser/path helper, or a method of a name already
+    bound from data or from a call result (FA-009c: the behaviour under test)."""
+    for n in ast.walk(node):
+        if not isinstance(n, ast.Call):
+            continue
+        root = n.func
+        while isinstance(root, (ast.Attribute, ast.Subscript)):
+            root = root.value
+        if not isinstance(root, ast.Name):
+            continue  # a call on a literal, an operator result or another call: the inner call is visited on its own
+        if root.id in readers or root.id in NEUTRAL_CALLS or (isinstance(n.func, ast.Attribute) and root.id in bound):
+            continue
+        return True
+    return False
+
+
+def _value_bindings(function, readers, data_readers):
+    """`(data_names, call_names)` of one function (one level of dataflow, as FA-009b): a name is DATA when bound from a
+    statement deriving from data text, CALL when bound from a statement that calls target code (it may be both)."""
+    data_names: dict[str, int] = {}
+    call_names: dict[str, int] = {}
+    for line, value, names in sorted(_function_statements(function), key=lambda s: s[0]):
+        if isinstance(value, ast.Constant):
+            continue
+        if _text_kinds(value, readers, data_readers, data_names)[0]:
+            data_names.update({name: data_names.get(name, line) for name in names})
+        if _has_target_call(value, readers, {*data_names, *call_names}) or any(
+                isinstance(n, ast.Name) and n.id in call_names for n in ast.walk(value)):
+            call_names.update({name: call_names.get(name, line) for name in names})
+    return data_names, call_names
+
+
+def _assert_leaves(test):
+    """The conjunct/disjunct/negated leaves of an assert test."""
+    if isinstance(test, ast.BoolOp):
+        return [leaf for value in test.values for leaf in _assert_leaves(value)]
+    if isinstance(test, ast.UnaryOp) and isinstance(test.op, ast.Not):
+        return _assert_leaves(test.operand)
+    return [test]
+
+
+def _golden_comparison(leaf, readers, data_readers, data_names, call_names, code_read, line):
+    """FA-009c: a comparison (`==`, `!=`, `in`, `not in`, including `len(a) == len(b)`) of packaged DATA text (the golden)
+    against the result of a call to target code (the behaviour under test), neither side derived from code text."""
+    if not isinstance(leaf, ast.Compare):
+        return False
+    data_bound = {name for name, bound in data_names.items() if bound < line}
+    call_bound = {name for name, bound in call_names.items() if bound < line}
+    sides = [leaf.left, *leaf.comparators]
+    for left, op, right in zip(sides, leaf.ops, sides[1:]):
+        if not isinstance(op, (ast.Eq, ast.NotEq, ast.In, ast.NotIn)):
+            continue
+        for golden, behaviour in ((left, right), (right, left)):
+            golden_data, golden_code = _text_kinds(golden, readers, data_readers, data_bound)
+            behaviour_data, behaviour_code = _text_kinds(behaviour, readers, data_readers, data_bound)
+            called = _has_target_call(behaviour, readers, {*data_bound, *call_bound}) or any(
+                isinstance(n, ast.Name) and n.id in call_bound for n in ast.walk(behaviour))
+            pure = golden_data and not _has_target_call(golden, readers, {*data_bound, *call_bound}) and not any(
+                isinstance(n, ast.Name) and n.id in call_bound for n in ast.walk(golden))
+            code_names = {n.id for n in (*ast.walk(golden), *ast.walk(behaviour)) if isinstance(n, ast.Name)}
+            if pure and called and not golden_code and not behaviour_code and not code_names & code_read:
+                return True
+    return False
+
+
+def _drop_golden_comparisons(tree, findings, readers, imported):
+    """FA-009c: remove the findings whose assertion compares a packaged DATA golden with the result of a call to target
+    code. Every flagged leaf of the assert must be such a comparison; an assertion whose subject is the text itself
+    (`'X' in text`, a docstring, a code read) keeps its flag."""
+    data_readers = _local_data_readers(tree, readers)
+    parents = {child: parent for parent in ast.walk(tree) for child in ast.iter_child_nodes(parent)}
+    kept = dict(findings)
+    for node in ast.walk(tree):
+        if not isinstance(node, ast.Assert) or node.lineno not in findings:
+            continue
+        function = node
+        while function is not None and not isinstance(function, (ast.FunctionDef, ast.AsyncFunctionDef)):
+            function = parents.get(function)
+        if function is None:
+            read, constant, data_names, call_names = {}, {}, {}, {}
+        else:
+            read, constant = _function_bindings(function, imported, readers)
+            data_names, call_names = _value_bindings(function, readers, data_readers)
+        code_read = {name for name, line in read.items()
+                     if line < node.lineno and name not in data_names and name not in call_names}
+        qualifying, flagged_leaves = 0, 0
+        for leaf in _assert_leaves(node.test):
+            if _golden_comparison(leaf, readers, data_readers, data_names, call_names, code_read, node.lineno):
+                qualifying += 1
+                continue
+            names = {n.id for n in ast.walk(leaf) if isinstance(n, ast.Name)}
+            if (SOURCE_TEXT_READERS.search(ast.unparse(leaf)) and PRODUCTION_LOCATIONS.search(ast.unparse(leaf))) or \
+                    _calls_reader(leaf, readers) or any(read.get(name, node.lineno) < node.lineno for name in names) or \
+                    _constant_text_assertion(leaf, imported, constant):
+                flagged_leaves += 1
+        if qualifying and not flagged_leaves:
+            del kept[node.lineno]
+    return kept
+
+
 def wiring_assertions(source: str):
     """FA-009: assertions that only check production source text, not executed behavior.
 
@@ -247,6 +421,12 @@ def wiring_assertions(source: str):
     `inspect.getsource`/`getdoc`, `ast.get_docstring`, or `read_text`/`read_bytes` of a production location) is a READER;
     an assert on a reader's call result, directly or through a variable bound to it, is flagged like a direct read. One
     level of helper only: a helper that merely calls another reader is not itself a reader.
+
+    S11 unit FA-009c (golden precision, DESIGN-s11 §13): an assertion is NOT structural when it is a comparison (`==`,
+    `!=`, `in`, `not in`, `len(a) == len(b)`) one side of which derives from production text read from a packaged DATA
+    resource (a data suffix or loader and no code suffix; one level of dataflow) and whose other side derives from a call
+    to a target function or method other than a reader. Reads of code/template text, docstrings and an assertion whose
+    subject is the text itself keep their classification; so does a data golden compared with no call result.
     """
     tree = ast.parse(source)
     imported = _imports_from_harness(tree)
@@ -269,7 +449,7 @@ def wiring_assertions(source: str):
             if any(read.get(name, node.lineno) < node.lineno for name in names) or \
                     _constant_text_assertion(node.test, imported, constant):
                 findings[node.lineno] = ast.unparse(node.test)[:120]
-    return sorted(findings.items())
+    return sorted(_drop_golden_comparisons(tree, findings, readers, imported).items())
 
 
 def scanned_tests():
@@ -435,3 +615,49 @@ def test_the_measured_helper_read_miss_is_flagged():
     miss R-L9b measured, RETRO-PROPOSALS row 4); it must be a flagged line, not only a pinned one."""
     flagged = {line for line, _ in wiring_assertions((TESTS / "test_s9_batch_l2b2_move.py").read_text(encoding="utf-8-sig"))}
     assert 118 in flagged
+
+
+GOLDEN_FIXTURE = (
+    "from importlib.resources import files\n"
+    "def load(name):\n"
+    "    return load_yaml(files('codex_harness.resources').joinpath(name).read_text())\n"
+    "def load_json(name):\n"
+    "    return json.loads((ROOT / f'harness_hooks/{name}').read_text())\n"
+    "def header(m):\n"
+    "    return m.__doc__\n"
+    "def test_golden_vs_call():\n"
+    "    expected = load('stages.yaml')\n"
+    "    assert len(merge(a, b)) == len(expected)\n"  # 10: control 1, not flagged
+    "def test_golden_vs_call_through_a_variable():\n"
+    "    merged = merge(load('a.yaml'), load('b.yaml'))\n"
+    "    expected = load('stages.yaml')\n"
+    "    assert merged == expected\n"  # 14: not flagged
+    "    assert load_json('x.json')['k'] in merged\n"  # 15: not flagged
+    "    assert len(merged) != len(expected) and merged != load_json('x.json')\n"  # 16: not flagged
+    "def test_source_text():\n"
+    "    text = Path('src/x.py').read_text()\n"
+    "    assert 'def f' in text\n"  # 19: control 2, flagged
+    "def test_docstring():\n"
+    "    doc = header(module)\n"
+    "    assert 'INV-1' in doc\n"  # 22: control 3, flagged
+    "def test_data_without_a_call():\n"
+    "    data = load('k.json')\n"
+    "    assert data['k'] == 1\n"  # 25: control 4, flagged
+    "    assert data['k'] == len('x')\n"  # 26: builtin call is not a target call, flagged
+    "def test_code_text_with_a_call():\n"
+    "    text = (ROOT / 'src/codex_harness/x.py').read_text()\n"
+    "    assert len(merge(a, b)) == len(text)\n"  # 29: code text, flagged
+    "    assert len(merge(a, b)) == len(header(module))\n"  # 30: docstring, flagged
+    "    assert merge(a, b) == load('x.py')\n"  # 31: code suffix wins, flagged
+    "def test_data_golden_mixed_with_a_source_subject():\n"
+    "    expected = load('stages.yaml')\n"
+    "    assert len(merge(a, b)) == len(expected) and 'x' in header(module)\n"  # 34: flagged leaf remains
+)
+
+
+def test_wiring_detector_golden_precision_controls():
+    """FA-009c controls (DESIGN-s11 §13; the profile's independent-golden rule): a comparison of packaged DATA text with
+    the result of a target call is behavioural; a source-text subject, a docstring, a code-suffix read, and a data read
+    compared with no call result stay flagged."""
+    flagged = [line for line, _ in wiring_assertions(GOLDEN_FIXTURE)]
+    assert flagged == [19, 22, 25, 26, 29, 30, 31, 34]
