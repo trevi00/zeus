@@ -12,7 +12,8 @@ two declared v2 corrections: `platform` is named `host_os`, and `adapters/contra
 PROPOSED: the §3.1 tree where it names one, else `codex_harness.<context>.<layer>.<module>`. S0
 assigned `designed` or `unmapped` only. A slice moves exactly its own rows to `implemented` (target
 code and target tests exist; `SLICE_ROWS` below, with evidence links); `verified` additionally needs
-Codex's slice acceptance and is never set by this generator before it is recorded.
+Codex's slice acceptance and is never set by this generator: since S11 `coverage/relabel.py` computes every status
+(and the maintained `verification` field) from the rows, the tree and its run-evidence bundle.
 Untraced rows keep their ledger trace status. Bucket rows stay candidates. Atomic-unit rows are an
 explicit extension keyed by M7 symbol (`compare/goldens/reference/static.source.json`).
 """
@@ -843,8 +844,10 @@ def build(ledger: dict, static: dict) -> dict:
 # everything else: the SOURCE-derived skeleton of row keys, kinds, layers, traces and every other field. `--check`
 # therefore compares skeletons, and writing a fresh table over a maintained one is refused (it would discard every
 # integration edit). SKIPPED-TEST-CLOSURE-20261004 B (`test_table_regenerates_from_the_pinned_ledger`).
+# Since S11 L the statuses are `coverage/relabel.py`'s output (DESIGN-s11 §5): it also owns `verification`, the
+# per-row record of the unmet conditions (or the passing items) at the evidence head of `coverage/run-evidence.json`.
 MAINTAINED_FIELDS = frozenset({"evidence", "mapping_correction", "slice", "slice_progress", "status", "symbol_basis",
-                               "target_owner", "target_symbol", "writer_contexts"})
+                               "target_owner", "target_symbol", "verification", "writer_contexts"})
 ADDITION = "addition"
 ADDITION_INTENT = "addition:<authority>"
 
