@@ -239,8 +239,10 @@ def scenarios() -> list[dict]:
 
 
 def run_driver(python: Path, driver: Path, work: Path, extra_env: dict, use_bwrap: bool,
-               binds: list[Path] | None = None) -> dict:
+               binds: list[Path] | None = None, pythonpath_append: Path | None = None) -> dict:
     env = provider_guard.child_environment(work / "env", extra=extra_env)
+    if pythonpath_append is not None:  # the guard owns PYTHONPATH (its sitecustomize): append, never substitute
+        env["PYTHONPATH"] = os.pathsep.join(p for p in (env.get("PYTHONPATH"), str(pythonpath_append)) if p)
     if extra_env.get(PG_PAIR_ENV):
         # The pair families run the M7 `docker exec` tool forms against their two owned fixtures: the fake
         # `docker` gives way to the real client, and the guard admits exactly those forms (DOCKER_PGEXEC_ENV).
@@ -545,13 +547,57 @@ def apply_intended_differences(golden, declarations) -> tuple[object, list[str]]
     return expected, problems
 
 
+# S11 unit P (owner; DESIGN-s11 §20.5 follow-up): the target side runs from an exact copy of the target distribution
+# OUTSIDE any Git checkout, as the reference side runs from its installed wheel. After the promotion the package's
+# grandparent is the repository root, a checkout, so code that reads the runtime revision of the package's own root
+# (`delivery.adapters.deployment`: M7's `codex_harness.__file__` parents[2] rule) saw a checkout on the target side
+# only (`delivery.host_targets`, 2026-10-06): an environment asymmetry, not a product difference. Before the promotion
+# `target/` was no checkout root either, so the copy restores the compared conditions on both layouts.
+TARGET_COPY_PATHS = ("src", "deploy", "scripts", "pyproject.toml")
+
+
+def tree_digest(root: Path) -> str:
+    """sha256 over (relative path, bytes) of every file under `root`, bytecode excluded."""
+    digest = hashlib.sha256()
+    for path in sorted(p for p in root.rglob("*") if p.is_file() and "__pycache__" not in p.parts
+                       and p.suffix != ".pyc"):
+        digest.update(path.relative_to(root).as_posix().encode() + b"\0" + path.read_bytes() + b"\0")
+    return digest.hexdigest()
+
+
+def target_tree_copy(work: Path) -> tuple[Path, str]:
+    """-> (<work>/target-tree, the digest of its `src`): the run copy of the target distribution, no bytecode, never
+    a checkout. Refuses when the copied `src` is not byte-identical to TARGET_SRC."""
+    dest = work / "target-tree"
+    dest.mkdir()
+    for rel in TARGET_COPY_PATHS:
+        source = TARGET_DIR / rel
+        if source.is_dir():
+            shutil.copytree(source, dest / rel, ignore=shutil.ignore_patterns("__pycache__", "*.pyc"))
+        elif source.is_file():
+            shutil.copy2(source, dest / rel)
+    digest = tree_digest(dest / "src")
+    if digest != tree_digest(TARGET_SRC) or (dest / ".git").exists():
+        raise RuntimeError("the target run copy differs from TARGET_SRC or is a checkout")
+    return dest, digest
+
+
 def run_target(driver_path: Path, work: Path, extra: dict, use_bwrap: bool) -> dict:
     if not TARGET_PYTHON.exists():
         return {"error": TARGET_VENV_MISSING}
     target_work = work / "target-side"
     target_work.mkdir()
-    return run_driver(TARGET_PYTHON, driver_path, target_work,
-                      {**extra, "ZEUS_REBUILD_TARGET_SRC": str(TARGET_SRC)}, use_bwrap, binds=[work])
+    copy, digest = target_tree_copy(work)
+    result = run_driver(TARGET_PYTHON, driver_path, target_work,
+                        {**extra, "ZEUS_REBUILD_TARGET_SRC": str(copy / "src")}, use_bwrap, binds=[work],
+                        pythonpath_append=copy / "src")
+    origin = result.get("origin") if isinstance(result, dict) else None
+    if isinstance(origin, dict):
+        # R-O: every product module came from the run copy, which is byte-identical to TARGET_SRC (digest above)
+        exact = origin.get("tree") == str(copy / "src")
+        result["origin"] = {**origin, "tree": str(TARGET_SRC) if exact else origin.get("tree"),
+                            "run_copy": str(copy / "src"), "copy_digest": digest}
+    return result
 
 
 def run(record: bool, use_bwrap: bool, only: list[str], pg: bool = False,
