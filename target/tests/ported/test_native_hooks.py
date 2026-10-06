@@ -20,6 +20,7 @@ from codex_harness.storage.adapters.memory_store import MemoryStore
 HOOK_ID = 'hook-ab97ba09554daa5aec289867'
 
 
+
 @pytest.fixture(params=[
     ("hook-ec928b6c78b06bb571eb45cb", "codex-provider-usage-limit-exceeded", "worker:github/codex-turn"),
     (HOOK_ID, "codex-bubblewrap-namespace-creation-denied", "docker/linux/codex-read-only-review"),

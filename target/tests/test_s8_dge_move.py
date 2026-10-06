@@ -17,7 +17,6 @@ DOMAIN = "codex_harness.research.domain.dge"
 M7_PATH = "src/codex_harness/application/dge.py"
 MOVED = {("DgeRefused",)}  # R-d2: moved ahead in S5, imported here
 
-
 def m7_text(path=M7_PATH):
     return subprocess.run(["git", "-C", str(REPO), "show", f"{SOURCE}:{path}"], check=True, capture_output=True,
                           text=True).stdout

@@ -26,7 +26,6 @@ BASE_HEAD = "fad804900d962dae723c60558dda191d83c3bfe3"
 VERIFICATION_M7 = "src/codex_harness/adapters/verification.py"
 COMPOSITION = "target/src/codex_harness/composition/release_verification.py"
 
-
 def git_show(rev, path):
     return subprocess.run(["git", "-C", str(REPO), "show", f"{rev}:{path}"], check=True, capture_output=True, text=True).stdout
 

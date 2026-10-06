@@ -36,7 +36,6 @@ MONITORING_M7 = "src/codex_harness/application/monitoring.py"
 FORBIDDEN_HOMES = ("codex_harness.adapters", "codex_harness.domain", "codex_harness.application", "codex_harness.ports")
 UNITS = [(domain_module, DOMAIN_M7), (app_module, APP_M7), (monitoring_module, MONITORING_M7)]
 
-
 def show(rev, path):
     return subprocess.run(["git", "-C", str(REPO), "show", f"{rev}:{path}"], check=True, capture_output=True, text=True).stdout
 

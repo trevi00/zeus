@@ -18,7 +18,6 @@ S5 = "codex_harness.evidence.application.inspections"
 M7_PATH = "src/codex_harness/application/evidence_inspection.py"
 ADDED = {("RECORDS",)}  # R-e1: the one EvidenceRecords instance the delegation reads through
 
-
 def m7_text(path=M7_PATH):
     return subprocess.run(["git", "-C", str(REPO), "show", f"{SOURCE}:{path}"], check=True, capture_output=True,
                           text=True).stdout

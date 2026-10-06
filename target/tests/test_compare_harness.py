@@ -11,7 +11,6 @@ from _layout import TARGET
 
 COMPARE = ROOT / "compare"
 
-
 def load(path):
     return json.loads(path.read_text(encoding="utf-8"))
 

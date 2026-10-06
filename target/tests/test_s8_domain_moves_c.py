@@ -23,7 +23,6 @@ R_P63_NAMES = {"DISPATCHING", "EXHAUSTED", "FAILED", "QUEUED", "REJECTED", "SAFE
 # S8 pilot 76 (V15 R2): the two backlog bucket names moved ahead from M7 `application/fleet_backlog.py`
 R_P76_NAMES = {"BUCKET_PLANS", "BUCKET_INTENTS"}
 
-
 def m7_text(path):
     return subprocess.run(["git", "-C", str(REPO), "show", f"{SOURCE}:{path}"], check=True, capture_output=True,
                           text=True).stdout
