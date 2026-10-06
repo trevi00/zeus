@@ -13,6 +13,7 @@ from __future__ import annotations
 import hashlib
 import json
 import os
+import shutil
 import subprocess
 import sys
 
@@ -82,6 +83,11 @@ class World:
         self.launcher = tmp / "usr" / "bin" / "python3"  # the managed unit's ExecStart argv[0]
         self.launcher.parent.mkdir(parents=True)
         self.launcher.write_bytes(b"launcher-bin")
+        self.script = tmp / "deploy" / "zeus_aibox_service.py"  # the launcher script ExecStart argv[1] names
+        self.script.parent.mkdir(parents=True)
+        self.script.write_bytes(b"script-1")
+        self.managed_fragment = self.unit_dir / MANAGED
+        self.managed_fragment.write_bytes(b"[Service]\nExecStart=managed\n")
         self.version = "3.12.3 (main) [GCC]"
 
     def write_managed(self, revision=REV_M, **overrides):
@@ -114,6 +120,22 @@ class World:
         (self.proc / str(pid)).mkdir(parents=True, exist_ok=True)
         (self.proc / str(pid) / "cmdline").write_bytes(b"\0".join(argv) + b"\0")
 
+    def add_managed_child(self, pid, release, sub, *, ppid=1, cwd=None, argv0=None):
+        """A cgroup child of the managed unit: `<release>/.venv/bin/python -m <module> <sub> --state-dir S`."""
+        (self.cg / MANAGED).mkdir(parents=True, exist_ok=True)
+        procs = self.cg / MANAGED / "cgroup.procs"
+        procs.write_text(procs.read_text() + f"{pid}\n" if procs.exists() else f"{pid}\n")
+        argv = [argv0 or str(self.srv / "releases" / release / ".venv" / "bin" / "python"), "-m",
+                "codex_harness.adapters.managed_runtime"]
+        argv += [sub, "--state-dir", "/state"] if sub else []
+        (self.proc / str(pid)).mkdir(parents=True, exist_ok=True)
+        (self.proc / str(pid) / "cmdline").write_bytes(b"\0".join(a.encode() for a in argv) + b"\0")
+        (self.proc / str(pid) / "stat").write_text(f"{pid} (python) S {ppid} {pid} 0 0\n")
+        if os.path.lexists(self.proc / str(pid) / "cwd"):
+            os.unlink(self.proc / str(pid) / "cwd")
+        if cwd is not None:
+            os.symlink(cwd, self.proc / str(pid) / "cwd")
+
     def systemctl(self, argv):
         if argv[1] == "list-unit-files":
             return f"{UNIT} static\nzeus-aibox.target static\n"
@@ -121,8 +143,9 @@ class World:
         props = [a[2:] for a in argv[3:]]
         frag = str(self.fragment) if unit == UNIT else str(self.unit_dir / unit)
         if unit == MANAGED:
-            return "".join(f"{p}={{ path={self.launcher} ; argv[]={self.launcher} -m zeus ; code=exited}}\n"
-                           for p in props if p == "ExecStart")
+            table = {"ExecStart": f"{{ path={self.launcher} ; argv[]={self.launcher} {self.script} launch --role x ; code=exited}}",
+                     "FragmentPath": str(self.managed_fragment)}
+            return "".join(f"{p}={table[p]}\n" for p in props if p in table)
         table = {"FragmentPath": frag, "DropInPaths": " ".join(self.effective if unit == UNIT else []),
                  "ExecStart": f"{{ path={self.srv}/releases/{REV_A}/.venv/bin/python ; argv[]=x -m zeus ; stop_time=[now]; code=exited}}",
                  "EnvironmentFiles": f"{self.env_file} (ignore_errors=no)", "Id": unit, "ActiveState": "active",
@@ -490,10 +513,12 @@ def _runtime_dir_world(world):
     receipt = _read_managed(world, "startup-receipt.json")
     receipt.update(runtime_root=str(base), module_root=str(base / "src"))
     world.write_managed(**{"startup-receipt.json": receipt})
+    world.add_managed_child(100, REV_A, "supervise", ppid=1, cwd="/state")
+    world.add_managed_child(200, REV_M, "entry", ppid=100, cwd=str(base))
     return base
 
 
-def test_shape1_the_runtime_dir_shape_binds_digests_and_the_launching_units_interpreter(world):
+def test_shape1_the_runtime_dir_shape_binds_digests_and_the_launcher(world):
     base = _runtime_dir_world(world)
     record = world.collect()
     facts = record["stable"]["managed_payload"]["releases"][str(base)]
@@ -501,8 +526,9 @@ def test_shape1_the_runtime_dir_shape_binds_digests_and_the_launching_units_inte
     assert (facts["runtime_json_sha256"], facts["runtime_files_json_sha256"]) == (
         sha((base / "runtime.json").read_bytes()), sha(b"[1]"))
     assert (facts["uv_lock_sha256"], facts["pyproject_toml_sha256"]) == (sha(b"lock"), sha(b"proj"))
-    assert facts["interpreter_realpath"] == str(world.launcher) and facts["interpreter_sha256"] == sha(b"launcher-bin")
-    assert facts["interpreter_version"] == world.version
+    assert facts["launcher"] == {"realpath": str(world.launcher), "sha256": sha(b"launcher-bin"),
+                                 "sys_version": world.version, "script_sha256": sha(b"script-1")}
+    assert "interpreter_realpath" not in facts  # the launcher is no longer presented as the payload interpreter
     assert record["complete"] is True and record["incomplete"] == []
 
 
@@ -514,15 +540,15 @@ def test_shape2_changing_a_runtime_dir_file_changes_the_baseline(world, name, da
     assert {**before, "at": ""} != {**world.collect(), "at": ""}
 
 
-def test_shape3_the_interpreter_identity_comes_from_the_unit_not_the_runtime_dir(world):
+def test_shape3_the_launcher_identity_comes_from_the_unit_not_the_runtime_dir(world):
     base = _runtime_dir_world(world)
     (base / "src" / "python3").write_bytes(b"decoy")  # nothing inside the payload is a source of identity
     before = world.collect()
     world.launcher.write_bytes(b"launcher-2")
     world.version = "3.13.0"
     facts = world.collect()["stable"]["managed_payload"]["releases"][str(base)]
-    assert facts["interpreter_sha256"] == sha(b"launcher-2") and facts["interpreter_version"] == "3.13.0"
-    assert before["stable"]["managed_payload"]["releases"][str(base)]["interpreter_sha256"] == sha(b"launcher-bin")
+    assert facts["launcher"]["sha256"] == sha(b"launcher-2") and facts["launcher"]["sys_version"] == "3.13.0"
+    assert before["stable"]["managed_payload"]["releases"][str(base)]["launcher"]["sha256"] == sha(b"launcher-bin")
 
 
 def test_shape3b_a_launcher_inside_the_payload_dir_or_a_failed_version_probe_is_incomplete(world):
@@ -548,3 +574,89 @@ def test_shape5_the_release_shape_is_unchanged_and_never_asks_the_launching_unit
     record = world.collect()
     facts = record["stable"]["managed_payload"]["releases"][str(world.srv / "releases" / REV_M)]
     assert "shape" not in facts and facts["interpreter_sha256"] == sha(b"py-bin") and record["complete"] is True
+
+
+# ----- RH-7: the managed payload's ACTUAL executable comes from the unit's cgroup children, never the launcher -----
+def _payload(record):
+    return next(iter(record["stable"]["managed_payload"]["releases"].values()))
+
+
+def test_rh7a_the_payload_executable_is_the_entry_childs_interpreter_and_both_releases_are_recorded(world):
+    _runtime_dir_world(world)  # supervisor child on REV_A, payload (entry) child on REV_M
+    record = world.collect()
+    facts = _payload(record)
+    assert record["complete"] is True and record["incomplete"] == []
+    assert facts["payload_executable"] == {
+        "realpath": str(world.srv / "releases" / REV_M / ".venv" / "bin" / "python"),
+        "release": str(world.srv / "releases" / REV_M), "subcommand": "entry", "interpreter_sha256": sha(b"py-bin"),
+        "parent_subcommand": "supervise", "cwd_is_payload_location": True}
+    assert facts["launcher"]["realpath"] == str(world.launcher)  # the ExecStart one, a different file
+    assert facts["unit_template_sha256"] == sha(b"[Service]\nExecStart=managed\n")
+    assert [(e["release"], e["subcommand"]) for e in facts["runtime_executables"]] == sorted(
+        [(str(world.srv / "releases" / REV_A), "supervise"), (str(world.srv / "releases" / REV_M), "entry")])
+    assert all("pid" not in e for e in facts["runtime_executables"])
+    assert {str(world.srv / "releases" / REV_A), str(world.srv / "releases" / REV_M)} <= set(record["stable"]["releases"])
+
+
+def test_rh7b_children_that_cannot_be_told_apart_leave_the_payload_executable_unresolved_and_main_exits_1(world, tmp_path, capsys):
+    base = _runtime_dir_world(world)
+    unresolved = "managed_payload:payload_executable:unresolved"
+    # (1) the observed shape: both children are `-m managed_runtime` with no command word
+    for pid, rev in ((100, REV_A), (200, REV_M)):
+        world.add_managed_child(pid, rev, None, ppid=1)
+    record = world.collect()
+    assert record["complete"] is False and unresolved in record["incomplete"]
+    assert "payload_executable" not in _payload(record)  # and the launcher is not substituted
+    assert _payload(record)["launcher"]["realpath"] == str(world.launcher)
+    # (2) two entry children under the supervisor
+    world.add_managed_child(100, REV_A, "supervise", ppid=1)
+    world.add_managed_child(200, REV_M, "entry", ppid=100, cwd=str(base))
+    world.add_managed_child(300, REV_A, "entry", ppid=100, cwd=str(base))
+    assert unresolved in world.collect()["incomplete"]
+    # (3) the only entry child hangs off no supervisor, or its readable cwd is another directory, or no children at all
+    (world.cg / MANAGED / "cgroup.procs").write_text("100\n200\n")
+    for ppid, cwd in ((7, str(base)), (100, "/elsewhere")):
+        world.add_managed_child(200, REV_M, "entry", ppid=ppid, cwd=cwd)
+        assert unresolved in world.collect()["incomplete"]
+    shutil.rmtree(world.cg / MANAGED)
+    assert unresolved in world.collect()["incomplete"]
+    out = tmp_path / "out.json"
+    assert r0.main(str(out), world.env()) == 1
+    assert json.loads(out.read_text())["complete"] is False
+    capsys.readouterr()
+
+
+def test_rh7c_a_child_under_a_release_root_without_runtime_json_or_of_another_shape_is_incomplete_naming_it(world):
+    _runtime_dir_world(world)
+    rev = "9" * 40
+    (world.srv / "releases" / rev / ".venv" / "bin").mkdir(parents=True)  # a release root with no runtime.json
+    (world.srv / "releases" / rev / ".venv" / "bin" / "python").write_bytes(b"py9")
+    world.add_managed_child(300, rev, "launch", ppid=100)
+    record = world.collect()
+    assert f"release:{world.srv / 'releases' / rev}:runtime.json" in record["incomplete"]
+    assert str(world.srv / "releases" / rev) in record["stable"]["releases"] and record["complete"] is False
+    world.add_managed_child(400, REV_A, "launch", ppid=100, argv0=str(world.srv / "releases" / "current" / ".venv" / "bin" / "python"))
+    assert f"children:{MANAGED}:release_shape" in world.collect()["incomplete"]
+
+
+def test_rh7d_a_changed_launcher_script_changes_the_baseline_but_a_changed_child_pid_alone_does_not(world):
+    _runtime_dir_world(world)
+    before = world.collect()
+    for pid, new in ((100, 1100), (200, 1200)):  # the same two children, restarted under other pids
+        os.rename(world.proc / str(pid), world.proc / str(new))
+    (world.cg / MANAGED / "cgroup.procs").write_text("1100\n1200\n")
+    (world.proc / "1200" / "stat").write_text("1200 (python) S 1100 1 0 0\n")
+    after = world.collect()
+    assert before["stable"] == after["stable"] and before["complete"] and after["complete"]
+    world.script.write_bytes(b"script-2")
+    changed = world.collect()
+    assert changed["stable"] != after["stable"]
+    assert _payload(changed)["launcher"]["script_sha256"] == sha(b"script-2")
+
+
+def test_rh7e_the_payload_discriminators_never_read_environ_or_secrets(world):
+    _runtime_dir_world(world)
+    (world.proc / "200" / "environ").write_bytes(b"TOKEN=SECRETVALUE\0")
+    (world.proc / "200" / "environ").chmod(0)
+    text = json.dumps(world.collect())
+    assert "SECRETVALUE" not in text and sha(b"TOKEN=SECRETVALUE\0") not in text
