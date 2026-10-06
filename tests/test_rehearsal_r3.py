@@ -124,8 +124,8 @@ def test_every_node_is_classified_with_a_reason_or_citations_and_the_disputed_se
             assert all(entry["cites"][s] for s in ("A", "B")) and entry["argv"], command
         else:
             assert entry["reason"].strip(), command
-    assert len(catalog["nodes"]) == 165 and len(classes["disputed"]) / len(catalog["nodes"]) < 0.10
-    assert r3.disputed(catalog) == ["zeus sdd view"]
+    assert len(catalog["nodes"]) == 165 and len(classes.get("disputed", [])) / len(catalog["nodes"]) < 0.10
+    assert r3.disputed(catalog) == []  # owner ruling 2026-10-06: `zeus sdd view` writes --output, so it is excluded
     # the spec's examples
     assert catalog["nodes"]["zeus fleet status"]["class"] == "read_only"
     maintain = catalog["nodes"]["zeus host-delivery maintain"]

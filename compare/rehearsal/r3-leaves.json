@@ -2082,7 +2082,7 @@
    "reason": "store write (SDD.record_transfer)"
   },
   "zeus sdd view": {
-   "class": "disputed",
+   "class": "excluded",
    "revisions": [
     "A",
     "B",
@@ -2091,7 +2091,7 @@
     "ced20281",
     "5c67f099"
    ],
-   "reason": "write_export (adapters/sdd.py:write_export, open 'xb') writes the --output HTML file; the design lists sdd view as a read-only candidate but the file write is not declared there. The OWNER decides whether an export under the namespace /tmp counts as read-only (a declared write) or the leaf is excluded."
+   "reason": "OWNER RULING 2026-10-06: excluded, not read-only. write_export (adapters/sdd.py, open 'xb') writes the --output HTML file, and R3 admits no undeclared writes; consistent with `zeus sdd view-iteration` (excluded for the same write)."
   },
   "zeus sdd view-iteration": {
    "class": "excluded",
