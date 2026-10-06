@@ -113,7 +113,7 @@ class SyntheticHost:
         if argv[1] == "exec":
             return "dump" if "pg_dump" in argv else "psql"
         if argv[1] == "run":
-            return "check" if "redis-check-aof" in argv else "snap"
+            return "check" if any("redis-check-aof" in a for a in argv) else "snap"  # the check runs inside sh -c (owner, 67cbf0c4+)
         raise AssertionError(f"unexpected command {argv}")
 
     def _start_helper(self, argv):

@@ -294,8 +294,12 @@ class PhaseP:
         check = self.host.run(
             ["docker", "run", "--rm", "--network", "none", *helper_labels(self.run8),
              "--name", helper_name(self.run8, "aof-check"), "--memory", "1g",
-             "--mount", f"type=bind,src={out},dst=/c,readonly", "--entrypoint", "redis-check-aof", REDIS_IMAGE,
-             "/c/" + manifests[0][2:]], timeout=900)
+             # redis-check-aof opens the BASE file read-write even without --fix, so it aborts on the read-only copy:
+             # it checks a byte-identical duplicate in the helper's tmpfs, and the sealed copy stays read-only. The
+             # manifest name is AOF_MANIFEST_NAME-validated above, so it is safe in the sh -c string.
+             "--tmpfs", "/tmp", "--mount", f"type=bind,src={out},dst=/c,readonly", "--entrypoint", "sh", REDIS_IMAGE,
+             "-c", "cp -a /c /tmp/k && exec redis-check-aof /tmp/k/" + manifests[0][2:].rsplit("/", 1)[1]],
+            timeout=900)
         facts["aof_check_exit"] = check.returncode
         need(step, "aof_check", check)
         facts["ok"] = True
