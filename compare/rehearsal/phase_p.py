@@ -268,7 +268,7 @@ class PhaseP:
              "--name", helper_name(self.run8, "redis-snap"), "--memory", "1g",
              "--mount", f"type=volume,src={self.targets.redis_volume},dst=/src,readonly,volume-nocopy",
              "--mount", f"type=bind,src={out},dst=/out", "--mount", f"type=bind,src={meta},dst=/meta",
-             "--entrypoint", "bash", REDIS_IMAGE, "-c", redis_script(os.getuid(), os.getgid())], timeout=900)
+             "--entrypoint", "sh", REDIS_IMAGE, "-c", redis_script(os.getuid(), os.getgid())], timeout=900)
         facts["exit"] = proc.returncode
         need(step, "redis_copy", proc)
         with open(os.path.join(meta, "before")) as fh:
