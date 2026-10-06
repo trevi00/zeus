@@ -98,6 +98,16 @@ INSPECT_FORMAT = ('{"image":{{json .Image}},"user":{{json .Config.User}},"networ
                   '"pid_mode":{{json .HostConfig.PidMode}},"ipc_mode":{{json .HostConfig.IpcMode}},'
                   '"uts_mode":{{json .HostConfig.UTSMode}},"userns_mode":{{json .HostConfig.UsernsMode}},'
                   '"cap_add":{{json .HostConfig.CapAdd}},"devices":{{json .HostConfig.Devices}}}')
+# INV-ISOLATED-WORKER-001 / CUT-INT WN-1: the production worker network is the host's guarded user-defined
+# bridge (U3 D5a, I2 v2 E1). Every value below is the producer's (tests/fixtures/worker_network/i2-v2-producer.txt:
+# the E1.2 create argv, the guard script identity lines and the guard unit's After=/PartOf= line).
+WORKER_NETWORK = "zeus-workers"
+WORKER_BRIDGE = "br-zeus-workers"
+WORKER_SUBNET = "10.231.65.0/24"
+WORKER_LABELS = {"zeus.owner": "aibox-migration-001", "zeus.role": "workers"}
+GUARD_UNIT = "zeus-aibox-network-guard.service"
+GUARD_AFTER = ("docker.service", "docker-user-fw.service")
+
 # INV-ROLE-CONTAINER-001: bind sources no profile may ever observe, whatever it declared.
 FORBIDDEN_SOURCES = ("/var/run/docker.sock", "/run/docker.sock", "/")
 
@@ -122,8 +132,11 @@ def load_isolation(host_settings, *, driver_sha256: str) -> dict | None:
         raise IsolationError("isolation_config_invalid", "ZEUS_WORKER_ISOLATION must be 'docker' when a worker image is set")
     if IMAGE.fullmatch(image) is None:
         raise IsolationError("isolation_config_invalid", "ZEUS_WORKER_IMAGE must be an immutable sha256:<64hex> image id")
+    # CUT-INT WN-1: only the production composition profile selects the guarded network; every other value
+    # keeps the default bridge, so a non-production body (and digest, for an equal driver hash) is unchanged.
+    worker = WORKER_NETWORK if host_settings.get("ZEUS_COMPOSITION_PROFILE") == "production" else "bridge"
     body = {"mode": MODE, "image": image, "limits": dict(LIMITS), "driver_sha256": driver_sha256,
-            "protocol": PROTOCOL, "network": {"worker": "bridge", "verifier": "none"}}
+            "protocol": PROTOCOL, "network": {"worker": worker, "verifier": "none"}}
     # INV-CODEX-CREDENTIAL-001: the Codex role profiles exist only with a configured credential store.
     # Absent, a Codex selection under isolation refuses before spawn (never the host AppServer), and
     # the identity of an unchanged Claude-only configuration is exactly what it was.

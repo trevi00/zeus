@@ -201,12 +201,14 @@ def test_the_isolated_worker_passes_the_hook_builder_to_the_codex_role_container
             seen.update(kwargs)
 
     monkeypatch.setattr(launcher, "IsolatedCodexRuntime", Recorder)
-    worker = launcher.IsolatedWorker({"codex": {"credential_store": "/store"}}, tmp_path, host="host",
+    worker = launcher.IsolatedWorker({"codex": {"credential_store": "/store"}, "network": {"worker": "bridge", "verifier": "none"}},
+                                     tmp_path, host="host",
                                      broker_factory=lambda path: ("broker", path), credentials="boundary")
     builder = object()
     worker.codex_runtime(profile="codex-role-ro", native_hooks=builder)
     assert seen["native_hooks"] is builder and seen["broker"] == ("broker", "/store")
     assert seen["host"] == "host" and seen["credentials"] == "boundary"
+    assert seen["network"] == "bridge"
 
 
 # ---- the host hook configuration equals the SOURCE rows of the hooks.native_container golden --------------

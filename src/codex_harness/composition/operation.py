@@ -221,6 +221,13 @@ def build_executor(service=None, observer=None, execution_policy=None, knowledge
     chosen = profile if profile is not None else composition_profile(configuration.settings())
     require(chosen in COMPOSITION_PROFILES, "composition_profile_unknown")
     profile = host_evidence_profile() if evidence_profile == HOST_PROFILE else evidence_profile
+    if (chosen == "production" and isolation == HOST_PROFILE
+            and configuration.settings().get("ZEUS_COMPOSITION_PROFILE") != "production"
+            and owned_container.load_host_isolation(configuration.settings()) is not None):
+        # CUT-INT WN-1: `load_isolation` selects the guarded network only from that setting, so a `profile=` override
+        # of a non-production host would compose the default bridge under production: refused before any preflight.
+        # An unconfigured selection stays `production_requires_isolation` below.
+        raise IsolationError("worker_network_required")
     # Same sentinel: by default the host selection is read (and refused) here, before the executor.
     isolated = host_isolation(profile) if isolation == HOST_PROFILE else isolation
     if chosen == "production" and isolated is None:

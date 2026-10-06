@@ -182,7 +182,8 @@ class IsolatedClaudeRuntime:
         self.used = False
 
     def __enter__(self):
-        self.preflight = preflight(self.config, self.docker, self.environment_source, runner=self.host.runner)
+        self.preflight = preflight(self.config, self.docker, self.environment_source, runner=self.host.runner,
+                                   network=self.config["network"]["worker"])
         return self
 
     def __exit__(self, *_):
@@ -300,7 +301,8 @@ class IsolatedClaudeRuntime:
                              {"task_session": {"mode": session_request["mode"], "session_id": session_id}}))
             entry = [TRUSTED_PYTHON, "-I", "-m", ENTRY_MODULE]
             environment = worker_environment()
-            args = container_args(self.config, name=self.container.name, run_id=run_id, role="worker", network="bridge",
+            args = container_args(self.config, name=self.container.name, run_id=run_id, role="worker",
+                                  network=self.config["network"]["worker"],
                                   mounts=[(str(staging.resolve()), WORKSPACE), (str(evidence.resolve()), EVIDENCE)],
                                   environment=environment, pass_names=(TOKEN_NAME,), entry=entry, workdir="/",
                                   user=host_user())
@@ -313,7 +315,7 @@ class IsolatedClaudeRuntime:
             self.record["container"] = container_id
             try:
                 self._advance("created", container=container_id)
-                controls = self.container.verify({WORKSPACE, EVIDENCE}, "bridge")
+                controls = self.container.verify({WORKSPACE, EVIDENCE}, self.config["network"]["worker"])
             except IsolationError as exc:
                 removal = self.container.remove()  # never started: exact id, not forced
                 self._advance("refused" if removal["removed"] else "created", reason=exc.reason_code)
@@ -423,7 +425,7 @@ class IsolatedClaudeRuntime:
             entry = [TRUSTED_PYTHON, "-I", "-m", ENTRY_MODULE]
             environment = worker_environment()
             args = container_args(self.config, name=self.container.name, run_id=self.container.run_id, role="worker",
-                                  network="bridge", mounts=mounts, environment=environment, pass_names=(TOKEN_NAME,),
+                                  network=self.config["network"]["worker"], mounts=mounts, environment=environment, pass_names=(TOKEN_NAME,),
                                   entry=entry, workdir="/", user=host_user())
             require(secret is None or all(secret not in part for part in args), "A credential value reached an argv")
             try:
@@ -434,7 +436,7 @@ class IsolatedClaudeRuntime:
             self.record["container"] = container_id
             try:
                 self._advance("created", container=container_id)
-                controls = self.container.verify(expected, "bridge")
+                controls = self.container.verify(expected, self.config["network"]["worker"])
             except IsolationError as exc:
                 removal = self.container.remove()
                 self._advance("refused" if removal["removed"] else "created", reason=exc.reason_code)
@@ -657,7 +659,8 @@ class IsolatedCodexRuntime:
 
     def __enter__(self):
         # No Claude token is required or forwarded: a Codex container holds exactly one provider credential.
-        self.preflight = preflight(self.config, self.docker, self.environment_source, token=False, runner=self.host.runner)
+        self.preflight = preflight(self.config, self.docker, self.environment_source, token=False, runner=self.host.runner,
+                                   network=self.network)
         return self
 
     def __exit__(self, *_):
@@ -1098,7 +1101,8 @@ class IsolatedWorker:
                                      broker=self.broker_factory(self.config["codex"]["credential_store"]),
                                      docker=self.docker, watch=(self.root / "replays",), context_window=context_window,
                                      handoff=handoff, state_root=self.root / "codex-state", host=self.host,
-                                     credentials=self.credentials, native_hooks=native_hooks)
+                                     credentials=self.credentials, native_hooks=native_hooks,
+                                     network=self.config["network"]["worker"])
         if self.observer is not None:
             built.observer = self.observer
         return built

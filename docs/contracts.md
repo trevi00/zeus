@@ -1439,6 +1439,19 @@ copy, not a symlink, and the build runs the profile-selected `python -m pytest`/
 actual profile-derived environment and the pinned Claude version check, without a model call. This is worker/verifier isolation for trusted repositories: on its own it does not contain the
 lead (INV-ROLE-CONTAINER-001 does), restrict worker egress or protect against a host administrator.
 
+  Worker network (cut-int-wn1-worker-network-binding): under the production composition profile
+  (`ZEUS_COMPOSITION_PROFILE=production`) the worker network is `zeus-workers`, the host's guarded
+  user-defined bridge (U3 D5a, I2 v2 E1), and the launcher never creates, connects or repairs it. At
+  launch, before any reservation, container create or provider entry, it verifies the network's identity
+  (bridge driver, bridge name `br-zeus-workers`, the owner and role labels, subnet `10.231.65.0/24`, no
+  IPv6, not internal) and the guard unit's state (loaded, active/exited/success, applied after the current
+  start of the units it follows), and refuses with `worker_network_unavailable`,
+  `worker_network_identity_mismatch` or `worker_network_guard_unready`. A host-composed production
+  executor whose settings are not production refuses `worker_network_required`. Before start it verifies
+  that exactly one network is attached, and a mismatch is `container_controls_mismatch`. Any other profile
+  keeps the default bridge, with an unchanged network selection and configuration body. Egress restriction
+  itself is the host guard's, not the container's.
+
 - INV-ROLE-CONTAINER-001: With isolation selected, the host isolated-worker launcher is the one broker
 for every product model invocation of both providers. The existing routing result `(provider, action,
 read_only)` maps to exactly one fixed profile - `(claude, implement, rw)` -> `claude-impl-rw` (the
