@@ -13,9 +13,8 @@ driver.start("target")
 
 from types import SimpleNamespace  # noqa: E402
 
-import s9_frontend_bytes  # noqa: E402
-
 import codex_harness.resources as resources  # noqa: E402  (the packaged location itself, so the origin audit sees a target module)
+import s9_frontend_bytes  # noqa: E402
 
 ROOT = HERE.parents[1]
 API = SimpleNamespace(frontend=ROOT / "frontend" / "monitor", resources=Path(resources.__file__).resolve().parent)

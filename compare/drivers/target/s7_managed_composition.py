@@ -8,6 +8,7 @@ their own defaults. Names come from their target homes."""
 
 from pathlib import Path
 
+import codex_harness
 import s5_fleet_composition
 from codex_harness.composition import configuration, delivery_hosts
 from codex_harness.composition import managed_runtime as composition
@@ -19,8 +20,6 @@ from codex_harness.delivery.domain import host_delivery as domain
 from codex_harness.delivery.domain import managed_runtime as domain_managed
 from codex_harness.host_os.adapters.process_groups import ChokepointProcesses, run_process
 from codex_harness.storage.adapters.memory_store import MemoryStore
-
-import codex_harness
 
 
 class _Recognizes(type):

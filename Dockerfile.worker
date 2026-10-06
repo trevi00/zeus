@@ -1,5 +1,5 @@
 # REBUILD-DESIGN-v2 §5.3 S3 target worker image, built from the TARGET tree with the repository root as
-# the build context (`docker build -f target/Dockerfile.worker .`). Same pins, digest checks, user,
+# the build context (`docker build -f Dockerfile.worker .`). Same pins, digest checks, user,
 # layout and entry module path as SOURCE M7 `Dockerfile.worker`; only the Python package source
 # differs (target/pyproject.toml, target/uv.lock, target/src). The entry module
 # `codex_harness.adapters.isolated_worker_entry` is a permanent entry shim that lands with S10 (design
@@ -58,8 +58,8 @@ RUN test -f /opt/zeus-monitor/package.json && test -f /opt/zeus-monitor/package-
 # Trusted package, locked dependencies, pytest and ruff live in /opt/zeus, installed non-editable so
 # nothing under /workspace can shadow the entrypoint or the pinned profile hook.
 WORKDIR /build
-COPY target/pyproject.toml target/uv.lock ./
-COPY target/src ./src
+COPY pyproject.toml uv.lock ./
+COPY src ./src
 ENV UV_PROJECT_ENVIRONMENT=/opt/zeus
 # The venv interpreter is a COPY, never a symlink: the worker profile resolves its interpreter
 # (Path.resolve) and puts that directory first on PATH, and a symlinked venv python resolves out to

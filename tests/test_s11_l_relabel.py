@@ -16,6 +16,7 @@ from pathlib import Path
 
 import pytest
 from _layout import REPO as ROOT
+from _layout import TARGET_PREFIX as TP
 
 sys.path.insert(0, str(ROOT / "coverage"))
 try:
@@ -44,28 +45,29 @@ ARCH = """## Capabilities
 
 ## Bucket ownership
 """
+ARCH = ARCH.replace("`target/", "`" + TP)  # S11 unit P: the fixture follows the layout
 
 
 def make_tree(root: Path) -> None:
-    write(root, "target/src/codex_harness/__init__.py")
-    write(root, "target/src/codex_harness/research/__init__.py")
-    write(root, "target/src/codex_harness/research/mod.py", "class Thing:\n    def go(self):\n        pass\n\nCONST = 1\n")
-    write(root, "target/src/codex_harness/research/ports.py", 'OWNED_BUCKETS = ("alpha", "beta")\n')
-    write(root, "target/src/codex_harness/coordination/__init__.py")
-    write(root, "target/src/codex_harness/coordination/ports.py", 'OWNED_BUCKETS = ("beta", "gamma")\n')
-    write(root, "target/pyproject.toml", '[project.scripts]\nharness = "codex_harness.research.mod:Thing"\n')
-    write(root, "target/uv.lock", "lock\n")
+    write(root, TP + "src/codex_harness/__init__.py")
+    write(root, TP + "src/codex_harness/research/__init__.py")
+    write(root, TP + "src/codex_harness/research/mod.py", "class Thing:\n    def go(self):\n        pass\n\nCONST = 1\n")
+    write(root, TP + "src/codex_harness/research/ports.py", 'OWNED_BUCKETS = ("alpha", "beta")\n')
+    write(root, TP + "src/codex_harness/coordination/__init__.py")
+    write(root, TP + "src/codex_harness/coordination/ports.py", 'OWNED_BUCKETS = ("beta", "gamma")\n')
+    write(root, TP + "pyproject.toml", '[project.scripts]\nharness = "codex_harness.research.mod:Thing"\n')
+    write(root, TP + "uv.lock", "lock\n")
     write(root, "docs/contracts.md", "| ID | C |\n|---|---|\n| INV-X-001 | a |\n| INV-Y-001 | b |\n")
     write(root, "docs/context/ARCHITECTURE.md", ARCH)
     write(root, "compare/scenarios/fam.json", json.dumps({"family": "fam", "target_driver": "drivers/fam.py"}))
     write(root, "compare/scenarios/nodrv.json", json.dumps({"family": "nodrv", "target_driver": None}))
-    write(root, "target/tests/conftest.py", "# conftest\n")
-    write(root, "target/tests/test_a.py",
+    write(root, TP + "tests/conftest.py", "# conftest\n")
+    write(root, TP + "tests/test_a.py",
           '"""Cites INV-X-001 at module level only in this docstring."""\n\n\ndef test_one():\n    pass\n\n\n'
           'def test_two():\n    # INV-Y-001 is cited only here\n    pass\n')
-    write(root, "target/tests/test_b.py", "def test_other():\n    pass\n")
-    write(root, "target/tests/ported/test_old.py", "def test_p():\n    pass\n")
-    write(root, "target/tests/test_architecture.py", "def test_target_tree_has_no_violation_and_no_exception():\n    pass\n")
+    write(root, TP + "tests/test_b.py", "def test_other():\n    pass\n")
+    write(root, TP + "tests/ported/test_old.py", "def test_p():\n    pass\n")
+    write(root, TP + "tests/test_architecture.py", "def test_target_tree_has_no_violation_and_no_exception():\n    pass\n")
 
 
 NODES = ["tests/test_a.py::test_one", "tests/test_a.py::test_two", "tests/test_b.py::test_other",
@@ -169,8 +171,8 @@ def test_the_bundle_records_the_outcomes_ids_and_compare_reports(tree, tmp_path)
                                          text=True).stdout.strip()
     assert doc["not_passed"] == {"tests/test_a.py::test_two": "skipped"}
     assert doc["compare"]["fam"]["target"] == "equal" and set(doc["ids"]) == {
-        "target/src", "compare", "target/pyproject.toml", "target/uv.lock"}
-    assert "target/tests/conftest.py" in doc["support"] and "target/tests/test_a.py" in doc["test_modules"]
+        TP + "src", "compare", TP + "pyproject.toml", TP + "uv.lock"}
+    assert TP + "tests/conftest.py" in doc["support"] and TP + "tests/test_a.py" in doc["test_modules"]
 
 
 # S11 RH-1 (R-L2f, R-L2c): several same-head JUnits merge per node; the owner run may cover a subset.
@@ -289,7 +291,7 @@ def test_the_secret_shapes_equal_compare_run():
 
 def test_a_test_module_added_after_the_evidence_head_is_not_part_of_the_evidence(tree, tmp_path):
     git_repo(tree)
-    write(tree, "target/tests/test_new.py", "def test_new():\n    pass\n")
+    write(tree, TP + "tests/test_new.py", "def test_new():\n    pass\n")
     report = tmp_path / "c.json"
     report.write_text(json.dumps({"ok": True, "scenarios": {}}))
     doc = relabel.build_bundle(tree, junit(tmp_path, *CASES), [report], [], "HEAD", [*COLLECTED, "tests/test_new.py::test_new"])
@@ -298,7 +300,7 @@ def test_a_test_module_added_after_the_evidence_head_is_not_part_of_the_evidence
 
 def test_a_changed_bound_input_at_bundle_time_refuses(tree, tmp_path):
     git_repo(tree)
-    write(tree, "target/src/codex_harness/research/mod.py", "changed = 1\n")
+    write(tree, TP + "src/codex_harness/research/mod.py", "changed = 1\n")
     report = tmp_path / "c.json"
     report.write_text(json.dumps({"ok": True, "scenarios": {}}))
     with pytest.raises(relabel.Refused, match="differs from the evidence head"):
@@ -375,6 +377,10 @@ def source_repo(tree, monkeypatch):
         monkeypatch.setattr(relabel, "SOURCE_COMMIT", sha)
         for rel in files:
             (tree / rel).unlink()
+            parent = (tree / rel).parent  # S11 unit P: git keeps no empty SOURCE directory either
+            while parent != tree and not any(parent.iterdir()):
+                parent.rmdir()
+                parent = parent.parent
     return at_source
 
 
@@ -385,8 +391,8 @@ def marker_row(path, symbol, intent="preserve"):
 
 def test_a_marker_symbol_is_accepted_only_for_a_module_whose_source_file_is_also_a_bare_marker(tree, source_repo):
     source_repo({"src/codex_harness/pkgm/__init__.py": SOURCE_BARE, "src/codex_harness/pkgc/__init__.py": SOURCE_CODE})
-    write(tree, "target/src/codex_harness/pkgm/__init__.py", '"""Target marker."""\n')
-    write(tree, "target/src/codex_harness/pkgc/__init__.py", '"""Target marker."""\n')
+    write(tree, TP + "src/codex_harness/pkgm/__init__.py", '"""Target marker."""\n')
+    write(tree, TP + "src/codex_harness/pkgc/__init__.py", '"""Target marker."""\n')
     out, _ = run([marker_row("src/codex_harness/pkgm/__init__.py", "codex_harness.pkgm")], tree)
     assert out["module:src/codex_harness/pkgm/__init__.py"]["status"] == "verified"
     # a NON-marker SOURCE module whose target symbol is a bare marker is still refused (R-MC2-3)
@@ -397,7 +403,7 @@ def test_a_marker_symbol_is_accepted_only_for_a_module_whose_source_file_is_also
 
 def test_a_marker_symbol_is_refused_when_the_source_file_is_missing_or_the_row_is_not_a_module(tree, source_repo):
     source_repo({"src/codex_harness/pkgm/__init__.py": SOURCE_BARE})
-    write(tree, "target/src/codex_harness/pkgm/__init__.py", '"""Target marker."""\n')
+    write(tree, TP + "src/codex_harness/pkgm/__init__.py", '"""Target marker."""\n')
     out, _ = run([marker_row("src/codex_harness/nowhere/__init__.py", "codex_harness.pkgm")], tree)
     assert has_unmet(out["module:src/codex_harness/nowhere/__init__.py"], "target symbol is a package marker")
     out, _ = run([row(kind="public_api", key="api:src/codex_harness/pkgm/__init__.py::x", symbol=("codex_harness.pkgm",),
@@ -412,7 +418,7 @@ LAYER = "change:§4 Layer markers (empty M7 package replaced; S11 §20 R-P2)"
 def test_a_removed_marker_is_accepted_only_when_the_source_is_bare_and_the_package_is_absent(tree, source_repo):
     source_repo({"src/codex_harness/gone/__init__.py": SOURCE_BARE, "src/codex_harness/gonec/__init__.py": SOURCE_CODE,
                  "src/codex_harness/kept/__init__.py": SOURCE_BARE})
-    write(tree, "target/src/codex_harness/kept/__init__.py", '"""Still here."""\n')
+    write(tree, TP + "src/codex_harness/kept/__init__.py", '"""Still here."""\n')
     out, _ = run([marker_row("src/codex_harness/gone/__init__.py", REMOVED, LAYER)], tree)
     assert out["module:src/codex_harness/gone/__init__.py"]["status"] == "verified"
     # the package is still present in the target: refused
@@ -522,7 +528,7 @@ def test_a_reference_item_needs_the_same_name_ported_file_with_every_node_passin
     assert has_unmet(none["api:x.py::f"], "reference has no same-name ported file")
     assert none["api:y"]["status"] == "verified"  # R-L2d: the unnamed truncation is context
     # R-L2c: a file item passes with >=1 passing node and none failed (skips are never passes)
-    write(tree, "target/tests/ported/test_two.py", "def test_a():\n    pass\n\n\ndef test_b():\n    pass\n")
+    write(tree, TP + "tests/ported/test_two.py", "def test_a():\n    pass\n\n\ndef test_b():\n    pass\n")
     nodes = [*NODES, "tests/ported/test_two.py::test_a", "tests/ported/test_two.py::test_b"]
     item = ("reference:tests/test_two.py",)
     mixed, _ = run([row(slice_="S7", evidence=item)], tree,
@@ -539,12 +545,12 @@ def test_a_reference_item_needs_the_same_name_ported_file_with_every_node_passin
 def test_a_reference_conftest_is_fixture_context_only_when_its_ported_conftest_exists(tree):
     """S11 R-L2c-c (owner): a conftest holds fixtures, never test nodes, so it is context, not a missing test file."""
     item = ("reference:tests/conftest.py", "target:tests/test_b.py")
-    write(tree, "target/tests/ported/conftest.py", "import pytest\n")
+    write(tree, TP + "tests/ported/conftest.py", "import pytest\n")
     out, _ = run([row(slice_="S7", evidence=item)], tree)
     assert out["api:x.py::f"]["status"] == "verified"
     alone, _ = run([row(slice_="S7", evidence=item[:1])], tree)
     assert alone["api:x.py::f"]["status"] != "verified"  # context alone is no passing executable item
-    (tree / "target/tests/ported/conftest.py").unlink()
+    (tree / (TP + "tests/ported/conftest.py")).unlink()
     gone, _ = run([row(slice_="S7", evidence=item)], tree)
     assert has_unmet(gone["api:x.py::f"], "reference conftest has no same-name ported conftest")
 
@@ -593,12 +599,12 @@ def test_a_bucket_whose_single_writer_node_did_not_pass_is_not_verified(tree):
 def test_the_four_unmapped_buckets_follow_the_s10_trace_and_the_rule_is_idempotent(tree):
     rows = [row(kind="bucket", key=k, status="unmapped", evidence=["ledger only (not a tx literal access)"], symbol=(),
                 owner=None) for k in relabel.UNMAPPED_BUCKETS]
-    write(tree, "target/src/codex_harness/delivery/__init__.py")
-    write(tree, "target/src/codex_harness/delivery/adapters/__init__.py")
-    write(tree, "target/src/codex_harness/delivery/adapters/host_migration.py",
+    write(tree, TP + "src/codex_harness/delivery/__init__.py")
+    write(tree, TP + "src/codex_harness/delivery/adapters/__init__.py")
+    write(tree, TP + "src/codex_harness/delivery/adapters/host_migration.py",
           'FLEET_OWNER_FILE = "fleet-owner.json"\nFLEET_OWNER_SCHEMA = "urn"\nSWITCH_UNITS = ("a",)\n')
-    write(tree, "target/tests/ported/test_host_migration_successor.py", "def test_h():\n    pass\n")
-    write(tree, "target/src/codex_harness/research/ports.py", 'OWNED_BUCKETS = ("alpha", "discovery_pressure")\n')
+    write(tree, TP + "tests/ported/test_host_migration_successor.py", "def test_h():\n    pass\n")
+    write(tree, TP + "src/codex_harness/research/ports.py", 'OWNED_BUCKETS = ("alpha", "discovery_pressure")\n')
     bundle = bundle_for(nodes=[*NODES, "tests/ported/test_host_migration_successor.py::test_h"])
     out, _ = run(rows, tree, bundle)
     assert {r["status"] for r in out.values()} == {"verified"}
@@ -652,7 +658,7 @@ NO_ASSERT_NODE = (
 
 def cited_by(tree, *nodes, module_doc=""):
     """Replace test_a.py with `nodes` (INV-X-001 cited inside each) and return (X's ledger row, bundle)."""
-    write(tree, "target/tests/test_a.py", module_doc + "\n\n".join(nodes))
+    write(tree, TP + "tests/test_a.py", module_doc + "\n\n".join(nodes))
     names = [n.split("(")[0][len("def "):] for node in nodes for n in node.split("\n") if n.startswith("def ")]
     bundle = bundle_for(nodes=[f"tests/test_a.py::{n}" for n in names] + NODES[2:])
     c = row(kind="contract", key="contract:INV-X-001", symbol=("docs/contracts.md#INV-X-001 enforced in x",),
@@ -822,31 +828,31 @@ def test_the_bundle_goes_stale_with_an_evidence_module_conftest_or_target_src_an
     doc = build(tree, tmp_path)
     supplying = {"tests/test_b.py"}
     assert relabel.freshness(tree, doc, supplying) == []
-    write(tree, "target/tests/test_unrelated_new.py", "def test_new():\n    pass\n")
+    write(tree, TP + "tests/test_unrelated_new.py", "def test_new():\n    pass\n")
     commit(tree)
     assert relabel.freshness(tree, doc, supplying) == []  # a new, unrelated test module
-    write(tree, "target/tests/test_a.py", "def test_one():\n    assert True\n")
+    write(tree, TP + "tests/test_a.py", "def test_one():\n    assert True\n")
     commit(tree)
     assert relabel.freshness(tree, doc, supplying) == []  # a changed module that supplies no evidence
-    write(tree, "target/tests/test_b.py", "def test_other():\n    assert 1\n")
+    write(tree, TP + "tests/test_b.py", "def test_other():\n    assert 1\n")
     commit(tree)
     assert any("test_b.py" in p for p in relabel.freshness(tree, doc, supplying))  # a changed evidence module
-    git_repo_reset = ["checkout", "-q", "HEAD~1", "--", "target/tests/test_b.py"]
+    git_repo_reset = ["checkout", "-q", "HEAD~1", "--", TP + "tests/test_b.py"]
     subprocess.run(["git", "-C", str(tree), *git_repo_reset], check=True, capture_output=True)
     commit(tree)
     assert relabel.freshness(tree, doc, supplying) == []
-    write(tree, "target/tests/conftest.py", "# changed\n")
+    write(tree, TP + "tests/conftest.py", "# changed\n")
     commit(tree)
     assert any("conftest.py" in p for p in relabel.freshness(tree, doc, supplying))
-    subprocess.run(["git", "-C", str(tree), "checkout", "-q", "HEAD~1", "--", "target/tests/conftest.py"], check=True)
-    write(tree, "target/src/codex_harness/research/mod.py", "class Thing:\n    pass\n")
+    subprocess.run(["git", "-C", str(tree), "checkout", "-q", "HEAD~1", "--", TP + "tests/conftest.py"], check=True)
+    write(tree, TP + "src/codex_harness/research/mod.py", "class Thing:\n    pass\n")
     commit(tree)
-    assert any(p.startswith("target/src changed") for p in relabel.freshness(tree, doc, supplying))
+    assert any(p.startswith(TP + "src changed") for p in relabel.freshness(tree, doc, supplying))
 
 
 def test_a_new_support_file_under_target_tests_makes_the_bundle_stale(tree, tmp_path):
     doc = build(tree, tmp_path)
-    write(tree, "target/tests/fixtures/extra.json", "{}")
+    write(tree, TP + "tests/fixtures/extra.json", "{}")
     commit(tree)
     assert any("extra.json added" in p for p in relabel.freshness(tree, doc, set()))
 
@@ -877,7 +883,7 @@ def test_a_hand_edited_status_fails_the_check(tmp_path, ledger):
     (tmp_path / "coverage/ledger-coverage.json").write_text(relabel.generate.dump(edited), encoding="utf-8")
     (tmp_path / "coverage/run-evidence.json").write_text((ROOT / "coverage/run-evidence.json").read_text(encoding="utf-8"))
     (tmp_path / "target").mkdir()
-    for rel in ("docs", "compare", "target/src", "target/tests", "target/pyproject.toml"):
+    for rel in ("docs", "compare", TP + "src", TP + "tests", TP + "pyproject.toml"):
         (tmp_path / rel).symlink_to(ROOT / rel)
     assert relabel.main(["--root", str(tmp_path), "--check"]) == 1
 
@@ -898,8 +904,8 @@ def test_every_row_records_its_verification_at_the_bundle_head(ledger, committed
 
 def test_the_bundle_binds_the_evidence_inputs(committed):
     assert committed["schema"] == relabel.BUNDLE_SCHEMA and len(committed["head"]) == 40
-    assert set(committed["ids"]) == {"target/src", "compare", "target/pyproject.toml", "target/uv.lock"}
-    assert "target/tests/conftest.py" in committed["support"]
+    assert set(committed["ids"]) == {TP + "src", "compare", TP + "pyproject.toml", TP + "uv.lock"}
+    assert TP + "tests/conftest.py" in committed["support"]
     assert not any(p.rsplit("/", 1)[-1].startswith("test_") for p in committed["support"])
     assert set(committed["not_passed"]) <= set(committed["nodes"])
     assert set(committed["not_passed"].values()) <= {"skipped", "xfail"}  # a failing evidence run is never bundled
@@ -971,7 +977,7 @@ def test_check_refuses_with_exit_1_on_a_bad_resolutions_file(tmp_path, ledger, c
     (tmp_path / "coverage/ledger-coverage.json").write_text((ROOT / "coverage/ledger-coverage.json").read_text(encoding="utf-8"))
     (tmp_path / "coverage/run-evidence.json").write_text((ROOT / "coverage/run-evidence.json").read_text(encoding="utf-8"))
     (tmp_path / "target").mkdir()
-    for rel in ("docs", "compare", "target/src", "target/tests", "target/pyproject.toml"):
+    for rel in ("docs", "compare", TP + "src", TP + "tests", TP + "pyproject.toml"):
         (tmp_path / rel).symlink_to(ROOT / rel)
     doc = {"schema": relabel.RESOLUTIONS_SCHEMA, "resolutions": [resolution(key="api:nope.py::f")]}
     (tmp_path / "coverage/evidence-resolutions.json").write_text(json.dumps(doc), encoding="utf-8")
@@ -1046,7 +1052,7 @@ def test_a_credential_shaped_exercise_node_is_stored_hashed(tree, tmp_path):
 @pytest.mark.parametrize("kwargs, nodes, why", [
     ({"schema": "zeus:other:1"}, {}, "schema is not"),
     ({"root": "/x/target/tests"}, {}, "root is not the target source root"),
-    ({"functions": ["codex_harness.absent.mod:f"]}, {}, "no function module is in target/src"),
+    ({"functions": ["codex_harness.absent.mod:f"]}, {}, "no function module is in " + TP + "src"),
     ({}, {"tests/test_a.py::test_ghost": [0]}, "matches no collected node"),
     ({}, {"tests/test_b.py::test_other": [7]}, "function index outside"),
 ])
@@ -1100,7 +1106,7 @@ def g1b(**more):
 
 def test_g1b_replaces_the_recorder_promise_with_the_exercise_and_the_unit_node(tree):
     unit = AU_NODE[len("target:"):]
-    write(tree, "target/tests/test_s11_atomic_units.py", "def test_unit_is_structurally_atomic():\n    pass\n")
+    write(tree, TP + "tests/test_s11_atomic_units.py", "def test_unit_is_structurally_atomic():\n    pass\n")
     bundle = exercised_bundle({SYMBOL: ["tests/test_b.py::test_other"]}, nodes=[*NODES, unit])
     new, _ = relabel.relabel({"rows": [au_row()]}, bundle, tree, [g1b()])
     r = new["rows"][0]
@@ -1151,7 +1157,7 @@ def module_rows(tree, **symbols):
 
 def test_a_bare_package_init_is_still_refused_as_the_module(tree):
     """DESIGN-s11 §10 R-MC2-3 control: an `__init__` of a docstring, imports and `__all__` is a marker, not the module."""
-    write(tree, "target/src/codex_harness/research/__init__.py",
+    write(tree, TP + "src/codex_harness/research/__init__.py",
           '"""A layer."""\n\nfrom codex_harness.research import mod\n\n__all__ = ["mod"]\n')
     got = module_rows(tree, bare="codex_harness.research")["bare"]
     assert got["status"] == "designed"
@@ -1160,7 +1166,7 @@ def test_a_bare_package_init_is_still_refused_as_the_module(tree):
 
 def test_a_package_init_that_defines_behaviour_resolves_as_the_module(tree):
     """DESIGN-s11 §10 R-MC2-3 positive control (the `entry.cli` shape: `parser`/`main` defined in the `__init__`)."""
-    write(tree, "target/src/codex_harness/research/__init__.py", '"""Entry."""\n\n\ndef parser():\n    pass\n\n\ndef main():\n    pass\n')
+    write(tree, TP + "src/codex_harness/research/__init__.py", '"""Entry."""\n\n\ndef parser():\n    pass\n\n\ndef main():\n    pass\n')
     assert module_rows(tree, entry="codex_harness.research")["entry"]["status"] == "verified"
 
 

@@ -1,0 +1,6 @@
+# S11 unit P (DESIGN-s11 §20.5): the comparison harness imports the package under test from a separate venv,
+# never as its own first-party code; its import blocks keep the ordering they were written and checked with.
+extend = "../pyproject.toml"
+
+[lint.isort]
+known-third-party = ["codex_harness"]

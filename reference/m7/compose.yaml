@@ -1,0 +1,86 @@
+name: ${COMPOSE_PROJECT_NAME:-codex-harness}
+services:
+  postgres:
+    image: pgvector/pgvector:pg17
+    environment:
+      POSTGRES_USER: harness
+      POSTGRES_DB: harness
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:?Run scripts/setup.py first}
+    ports: ["127.0.0.1:55432:5432"]
+    volumes: ["postgres-data:/var/lib/postgresql/data"]
+    mem_limit: 512m
+    cpus: 1.0
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U harness -d harness"]
+      interval: 3s
+      timeout: 3s
+      retries: 30
+  redis:
+    image: redis:7.4-alpine
+    command: ["redis-server", "--appendonly", "yes", "--maxmemory", "96mb", "--maxmemory-policy", "noeviction"]
+    ports: ["127.0.0.1:56379:6379"]
+    volumes: ["redis-data:/data"]
+    mem_limit: 128m
+    cpus: 0.5
+    healthcheck:
+      test: ["CMD", "redis-cli", "ping"]
+      interval: 3s
+      timeout: 3s
+      retries: 30
+  conductor:
+    &agent
+    build: .
+    image: ${ZEUS_AGENT_IMAGE:-${HARNESS_AGENT_IMAGE:-zeus:bootstrap}}
+    profiles: ["agents"]
+    environment:
+      HARNESS_DATABASE_URL: postgresql://harness:${POSTGRES_PASSWORD}@postgres:5432/harness
+      HARNESS_REDIS_URL: redis://redis:6379/0
+      HARNESS_REPOSITORY: /repository
+      HARNESS_RUNTIME_DIR: /runtime
+      ZEUS_DATABASE_URL: postgresql://harness:${POSTGRES_PASSWORD}@postgres:5432/harness
+      ZEUS_REDIS_URL: redis://redis:6379/0
+      ZEUS_REPOSITORY: /repository
+      ZEUS_RUNTIME_DIR: /runtime
+      ZEUS_REDIS_NAMESPACE: ${ZEUS_REDIS_NAMESPACE:-${HARNESS_REDIS_NAMESPACE:-codex-harness}}
+    volumes:
+      - .:/repository
+      - type: volume
+        source: repository-venv
+        target: /repository/.venv
+        volume:
+          nocopy: true
+      - ${ZEUS_RUNTIME_DIR:-${HARNESS_RUNTIME_DIR:-./.runtime}}:/runtime
+      - type: bind
+        source: ${ZEUS_CODEX_AUTH:-${HARNESS_CODEX_AUTH:-${USERPROFILE:-${HOME}}/.codex/auth.json}}
+        target: /run/secrets/codex-auth
+        read_only: true
+        bind:
+          create_host_path: false
+    command: ["serve", "--agent", "conductor", "--execute"]
+    depends_on:
+      postgres: {condition: service_healthy}
+      redis: {condition: service_healthy}
+    mem_limit: 768m
+    cpus: 1.0
+  research-lead:
+    <<: *agent
+    command: ["serve", "--agent", "lead:research", "--execute"]
+  improvement-lead:
+    <<: *agent
+    command: ["serve", "--agent", "lead:improvement", "--execute"]
+  implementation-worker:
+    <<: *agent
+    profiles: ["workers"]
+    command: ["serve", "--agent", "worker:implementation", "--execute"]
+  github-worker:
+    <<: *agent
+    profiles: ["workers"]
+    command: ["serve", "--agent", "worker:github", "--execute"]
+  geeknews-worker:
+    <<: *agent
+    profiles: ["workers"]
+    command: ["serve", "--agent", "worker:geeknews", "--execute"]
+volumes:
+  postgres-data:
+  redis-data:
+  repository-venv:

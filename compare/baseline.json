@@ -24,16 +24,16 @@
  },
  "approved_rebaselines": [],
  "target": {
-  "tree": "target/",
-  "project": "target/pyproject.toml",
-  "lock": "target/uv.lock",
+  "tree": "/",
+  "project": "pyproject.toml",
+  "lock": "uv.lock",
   "package": "codex_harness",
-  "status": "S1 implemented (kernel, storage, host_os); later contexts pending their slices"
+  "status": "S11 unit P: the promoted root distribution; SOURCE archived under reference/m7/"
  },
  "environments": {
   "python": "3.12",
   "reference_venv": "$ZEUS_REBUILD_SCRATCH/venv-ref (local: /home/trevi/workspaces/zeus/scratch/zeus-rebuild-001/venv-ref), built from the SOURCE archive wheel and the SOURCE uv.lock runtime dependencies (uv export --frozen --no-dev)",
-  "target_venv": "target/.venv from target/uv.lock (uv sync --frozen --project target)",
+  "target_venv": ".venv from uv.lock (uv sync --frozen at the repository root)",
   "separation": "separate processes and interpreters; neither environment has a path to the other; R-O origin assertions in every driver and in the target conftest",
   "isolation": "R-P: audit hook (parent and child interpreters via compare/guard/sitecustomize.py), fail-loud fake claude/codex/docker first on PATH, empty HOME/CODEX_HOME/CLAUDE_CONFIG_DIR, credential-named variables removed by name, bwrap --unshare-net with tmpfs over credential directories where available",
   "production": "no production endpoint, DSN, token or credential file is copied into the worktree or either environment"
@@ -53,24 +53,17 @@
   }
  },
  "layout": {
+  "mode": "promoted",
   "worktree": "/home/trevi/workspaces/zeus/worktrees/zeus-rebuild-001",
   "branch": "rebuild/zeus-rebuild-001",
   "implementation_owner": "one Claude implementer (no duplicate owner; no other rebuild/rewrite worktree or branch existed at creation)",
-  "allowed_changed_paths": [
-   "target/",
-   "compare/",
-   "coverage/",
-   "docs/context/ARCHITECTURE.md",
-   "docs/context/README.md",
-   "docs/design.md",
-   ".github/workflows/validation.yml",
-   "AGENTS.md"
-  ],
+  "reference_root": "reference/m7",
+  "rule": "DESIGN-s11 §20.5 archive rule: every SOURCE path has its SOURCE bytes at the root path or at reference/m7/<path> (or is additions-only); every file under reference/ is reference/README.md or a reference/m7/<q> equal to SOURCE's <q>; no credential-shaped string in a changed path",
   "additions_only": {
    "docs/context/README.md": 3,
    "docs/design.md": 3,
    "AGENTS.md": 14
   },
-  "reference": "every other tracked path stays byte-identical to SOURCE (python compare/run.py check-tree)"
+  "promoted_from": "the two-tree layout (allowed_changed_paths target/, compare/, coverage/, docs/context/ARCHITECTURE.md, docs/context/README.md, docs/design.md, .github/workflows/validation.yml, AGENTS.md)"
  }
 }

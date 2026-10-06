@@ -58,11 +58,11 @@ provider_guard.install()
 PG_IMAGE = "pgvector/pgvector@sha256:cf134a767f474095eeba57e0117be8e568e011a63f33fbf252f14c9b760f8e6f"
 REDIS_IMAGE = "redis@sha256:858f009f9709ce576febc734aa78b8f6d624b82571f9ddb6bda4377c833b3499"
 # The one layout constant of this tool: the promotion sets ROOT; DESIGN-s11 §20.5.
-TARGET_DIR = ROOT / "target"
-TARGET_PREFIX = "target/"  # the repo-relative git prefix of TARGET_DIR; the promotion sets ROOT
+TARGET_DIR = ROOT  # promoted (S11 unit P)
+TARGET_PREFIX = ""  # the repo-relative git prefix of TARGET_DIR (promoted: the root)
 TARGET_PYTHON = TARGET_DIR / ".venv" / "bin" / "python"
 TARGET_SRC = TARGET_DIR / "src"
-TARGET_VENV_MISSING = f"target venv missing: run `uv sync --frozen --project {TARGET_PREFIX.rstrip('/')}`"
+TARGET_VENV_MISSING = "target venv missing: run `uv sync --frozen` at the repository root"
 
 BASELINE = json.loads((COMPARE / "baseline.json").read_text(encoding="utf-8"))
 SOURCE_COMMIT = BASELINE["source"]["commit"]
@@ -173,8 +173,11 @@ def _check_tree_promoted(root: Path, source_commit: str, baseline: dict) -> dict
                and not (p.startswith(archive) and source.get(p[len(archive):]) == working.get(p))]
     changed = [p for p in git("diff", "--name-only", source_commit, "--", cwd=root).splitlines() if p]
     changed += [p for p in git("ls-files", "--others", "--exclude-standard", cwd=root).splitlines() if p]
+    # S11 unit P (owner): an archive file equal to SOURCE's is SOURCE's own bytes (rule (b)), not new content; its
+    # fixture DSNs and token-shaped test strings were never a candidate change, so (c) scans only new or changed bytes.
+    archived_equal = {p for p in reference if p.startswith(archive) and source.get(p[len(archive):]) == working.get(p)}
     shaped = []
-    for path in sorted(set(changed)):
+    for path in sorted(set(changed) - archived_equal):
         file = root / path
         if not file.is_file():
             continue

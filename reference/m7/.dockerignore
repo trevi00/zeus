@@ -9,7 +9,3 @@ __pycache__
 **/node_modules
 frontend/monitor/node_modules
 frontend/monitor/dist
-# S11 unit P: the archived SOURCE tree and the never-shipped harnesses stay out of the build context.
-reference
-compare
-coverage

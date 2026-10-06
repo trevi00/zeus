@@ -8,7 +8,7 @@ Entry points: current_policy, POLICY_PATHS, GIT_PREFIX
 Contracts: INV-THRESHOLD-PROPOSAL-001
 
 Moved from M7 `adapters/threshold_policy.py` (SOURCE e38aa722) by rule R-c19 R-t3 (S10 unit T1, DESIGN-s8 section 18 V20). `POLICY_PATHS` lists the target homes of M7's 24 sources (a split source lists every home), relative to the package root `codex_harness/`. `GIT_PREFIX` is where those paths sit in the Git tree: the `ls-tree` and `show` paths are `GIT_PREFIX + entry`.
-S11 carry: `GIT_PREFIX` ("target/src/") is the ONE place the S11 cutover changes (the target becomes the repository root layout).
+S11 unit P (DESIGN-s11 §20.5): `GIT_PREFIX` is "src/" since the promotion made the target the repository root (it was "target/src/" before; the S10 T1 carry).
 Owner correction of the V20 text: V20 section 18 says `parents[2]` while also writing the paths with `codex_harness/`; only `parents[3]` (`target/src/`) resolves them, so the loaded file is `Path(__file__).resolve().parents[3] / entry`. The `sources` dict is keyed by the package-relative entry. Every other statement is M7's.
 """
 from pathlib import Path
@@ -17,7 +17,7 @@ from codex_harness.kernel.errors import require
 from codex_harness.kernel.ids import digest
 from codex_harness.research.adapters.runtime_thresholds import effective_policy, resolve_policy
 
-GIT_PREFIX = 'target/src/'
+GIT_PREFIX = 'src/'
 
 POLICY_PATHS = (
     'codex_harness/context/domain/skills/ranking.py',

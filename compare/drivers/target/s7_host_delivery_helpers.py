@@ -25,6 +25,7 @@ driver.start("target")
 
 from types import SimpleNamespace  # noqa: E402
 
+import codex_harness  # noqa: E402
 import s7_delivery_composition  # noqa: E402
 import s7_host_delivery_helpers  # noqa: E402
 from codex_harness.composition import configuration, delivery_hosts  # noqa: E402
@@ -36,8 +37,6 @@ from codex_harness.host_os.adapters import process_groups  # noqa: E402
 from codex_harness.host_os.adapters.git_source import GitSource  # noqa: E402
 from codex_harness.intake.adapters import backlog_blobs  # noqa: E402
 from codex_harness.storage.adapters.memory_store import MemoryStore  # noqa: E402
-
-import codex_harness  # noqa: E402
 
 
 def host_settings():

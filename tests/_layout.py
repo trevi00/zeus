@@ -12,6 +12,6 @@ from pathlib import Path
 
 TESTS = Path(__file__).resolve().parent
 TARGET = TESTS.parent  # the target distribution root (pyproject.toml, src/, tests/, scripts/, deploy/)
-REPO = TARGET.parent  # the repository root (compare/, coverage/, docs/, .github/, frontend/, AGENTS.md)
-REFERENCE = REPO  # the root of the SOURCE M7 trees the promotion moves: REFERENCE / "src", REFERENCE / "tests"
-TARGET_PREFIX = "target/"  # the target tree as a repo-relative git path prefix ("" after the promotion)
+REPO = TARGET  # the repository root (compare/, coverage/, docs/, .github/, frontend/, AGENTS.md)
+REFERENCE = REPO / "reference" / "m7"  # the root of the SOURCE M7 trees the promotion moves: REFERENCE / "src", REFERENCE / "tests"
+TARGET_PREFIX = ""  # the target tree as a repo-relative git path prefix ("" after the promotion)

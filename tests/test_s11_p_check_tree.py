@@ -160,6 +160,29 @@ def test_a_credential_shaped_string_in_a_changed_path_is_refused(fixture):
     assert [item["path"] for item in report["credential_shaped_strings"]] == ["src/b.py"]
 
 
+def test_archived_source_fixture_strings_are_not_new_content_but_the_same_string_added_is(tmp_path):
+    """S11 unit P owner correction: SOURCE's own fixture DSNs, archived byte-identical under reference/m7/ (rule (b)),
+    are not candidate content; the same string in a path new or changed vs SOURCE is still refused (rule (c))."""
+    root = tmp_path / "repo"
+    root.mkdir()
+    _git(root, "init", "-q")
+    dsn = "postgresql://" + "user:" + "pw" + "@db/x"  # built at runtime: this file is scanned too
+    _write(root, "tests/test_dsn.py", f"DSN = '{dsn}'\n")
+    _write(root, "pyproject.toml", "[project]\n")
+    _git(root, "add", "-A")
+    _git(root, "commit", "-q", "-m", "source")
+    commit, tree = _git(root, "rev-parse", "HEAD"), _git(root, "rev-parse", "HEAD^{tree}")
+    _write(root, "reference/m7/tests/test_dsn.py", f"DSN = '{dsn}'\n")
+    (root / "tests" / "test_dsn.py").unlink()
+    check = _run_module().check_tree
+    report = check(root=root, source_commit=commit, baseline=_baseline(tree, mode="promoted"))
+    assert report["ok"] is True and report["credential_shaped_strings"] == []
+    _write(root, "tests/test_new.py", f"DSN = '{dsn}'\n")
+    report = check(root=root, source_commit=commit, baseline=_baseline(tree, mode="promoted"))
+    assert report["ok"] is False
+    assert [item["path"] for item in report["credential_shaped_strings"]] == ["tests/test_new.py"]
+
+
 def test_a_source_tree_id_that_differs_from_the_baseline_is_refused(fixture):
     root, commit, _ = fixture
     _promote(root)

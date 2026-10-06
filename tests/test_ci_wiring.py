@@ -29,15 +29,13 @@ M7_INTEGRATION = ["python -m pip install uv==0.12.2", "uv sync --frozen", "uv ru
                   "docker compose -p harness-ci down --volumes"]
 SOURCE_STEPS = [(f'git worktree add --detach "$RUNNER_TEMP/zeus-source" {SOURCE}', None),
                 ("uv sync --frozen", SOURCE_DIR), ("uv run pytest -q", SOURCE_DIR)]
+# S11 unit P (DESIGN-s11 §20.5): the root IS the promoted target distribution; its suite runs at the root.
 REBUILD_TEST_STEPS = [("python compare/run.py check-tree", None),
-                      ("uv sync --frozen --project target", None),
-                      ("uv run --project target ruff check target", None),
-                      ("uv run pytest -q", "target"),
-                      ("uv build --project target", None),
-                      ("python compare/run.py wheel-check target/dist/*.whl", None),  # S11 A3 (AR3)
+                      ("uv run pytest -q", None),
+                      ("python compare/run.py wheel-check dist/*.whl", None),  # S11 A3 (AR3)
                       ("python compare/run.py prepare", None),
                       ("python compare/run.py run", None)]
-REBUILD_INTEGRATION_STEPS = [("uv sync --frozen --project target", None),  # before the decision unit (S4 target)
+REBUILD_INTEGRATION_STEPS = [("uv sync --frozen", None),  # the promoted venv, before the decision unit
                              ("python compare/run.py prepare", None),
                              ("python compare/run.py run --only effects.decision_unit.pg --pg", None),
                              ("python compare/run.py run --only effects.admission_unit.pg --pg", None),
@@ -97,8 +95,6 @@ def wiring_problems(workflow) -> list[str]:
         problems.append("an M7 test-job command is missing or reordered in the candidate root")
     if not subsequence(SOURCE_STEPS, test):
         problems.append("the reference tests do not run in the immutable SOURCE tree")
-    if ("uv run pytest -q", None) in test:
-        problems.append("the reference suite runs in the candidate tree instead of SOURCE")
     if not subsequence(REBUILD_TEST_STEPS, test):
         problems.append("a rebuild gate (check-tree, target, comparison) is missing from the test job")
     integration = steps(jobs["integration"])
@@ -106,7 +102,9 @@ def wiring_problems(workflow) -> list[str]:
         problems.append("the integration job does not create the SOURCE tree")
     if not subsequence([(cmd, SOURCE_DIR) for cmd in M7_INTEGRATION[1:]], integration):
         problems.append("an M7 integration command is missing, reordered or not run in the SOURCE tree")
-    if any(cmd in M7_INTEGRATION[1:] and directory != SOURCE_DIR for cmd, directory in integration):
+    # S11 unit P: the root `uv sync --frozen` is the promoted venv (a REBUILD_INTEGRATION_STEPS gate), not an M7 step.
+    if any(cmd in M7_INTEGRATION[1:] and directory != SOURCE_DIR and (cmd, directory) != ("uv sync --frozen", None)
+           for cmd, directory in integration):
         problems.append("an M7 integration command runs in the candidate tree instead of SOURCE")
     if not subsequence(REBUILD_INTEGRATION_STEPS, integration):
         problems.append("the PostgreSQL decision-unit discriminators are not in the integration job")
@@ -155,7 +153,7 @@ def test_running_the_reference_suite_in_the_candidate_tree_fails():
     for step in workflow["jobs"]["test"]["steps"]:
         if step.get("run") == "uv run pytest -q" and step.get("working-directory") == SOURCE_DIR:
             del step["working-directory"]
-    assert "the reference suite runs in the candidate tree instead of SOURCE" in wiring_problems(workflow)
+    assert "the reference tests do not run in the immutable SOURCE tree" in wiring_problems(workflow)
 
 
 def test_a_moved_source_commit_fails():
