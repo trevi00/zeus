@@ -116,6 +116,19 @@ class ClaudeRefused:
         raise AssertionError("ClaudeCodeRuntime reached in the R5 fixture")
 
 
+def tap_observer(observer) -> list:
+    """Record `(event, outcome)` of every `emit` (the spool sequence counts these appends); returns the live list."""
+    seen: list = []
+    inner = observer.emit
+
+    def emit(event, outcome, *args, **kwargs):
+        seen.append([event, outcome])
+        return inner(event, outcome, *args, **kwargs)
+
+    observer.emit = emit
+    return seen
+
+
 def write_result(path: str, side: str, origin: dict, scenario: dict, recorder, audit: SpawnAudit, extra: dict) -> None:
     document = {"side": side, "origin": origin, "profile": "harness-fixture (ZEUS_COMPOSITION_PROFILE not set)",
                 "production_profile_set": os.environ.get("ZEUS_COMPOSITION_PROFILE") == "production",

@@ -106,8 +106,12 @@ class Scenario:
         self.api.run_task.submit_plan(PLAN)
         self.api.advance(1)
         outcome = self.api.run_task.execute("lead:improvement")
-        return {"status": None if outcome is None else outcome.get("status"),
-                "provider_calls": self.api.run_task.provider_calls()}
+        status = None if outcome is None else outcome.get("status")
+        if status != "succeeded":
+            # The executor records a transport error on the task row instead of raising: fail the scenario closed here, with
+            # the recorded error (this is how an unstubbed or unexpected transport surfaces).
+            raise RuntimeError(f"task ended {status!r}: {str((outcome or {}).get('error'))[:160]}")
+        return {"status": status, "provider_calls": self.api.run_task.provider_calls()}
 
     def _review(self, phase: str, actor: str) -> dict:
         decisions = self.api.decisions

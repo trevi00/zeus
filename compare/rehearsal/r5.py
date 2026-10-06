@@ -43,9 +43,14 @@ DECLARATIONS = HERE / "r5-declarations.json"
 DRIVERS = HERE / "r5_drivers"
 SIDES = ("A", "B")
 MAX_RECORD_ITEMS = 4096
-SECTION = re.compile(r"AMD-1 [A-D]|S2R [0-9a-f]{7,40}:[\w/.\-]+")
+# An intended difference is tied to an AMD-1 section, an S2R hunk, or (owner ratification pending, see the RH-5 notes) the
+# accepted rebuild slice design that introduced it (`DESIGN-s9-X §1.3`).
+SECTION = re.compile(r"AMD-1 [A-D]|S2R [0-9a-f]{7,40}:[\w/.\-]+|DESIGN-s[0-9]+(?:-[A-Z])? §[0-9]+(?:\.[0-9]+)*")
 KINDS = frozenset({"only_a", "only_b", "changed"})
 ROOT_TOKEN = "<ROOT>"
+# Process identity facts are maskable (compare/masks.json: "Pids and OS temporary names are not injected; they are maskable");
+# no owner, generation, attempt, lease, status, authorization result, digest or ref is ever masked (r3.NEVER_MASKED).
+DEFAULT_MASKS = {"pid": "rehearsal.r5.process_id", "host": "rehearsal.r5.host_name"}
 
 
 class R5Failed(Refused):
@@ -133,6 +138,10 @@ def store_write_set(before: dict, after: dict, masks: dict[str, str] | None = No
     return sorted(out)
 
 
+def before_differs(before: dict, bucket: str, key: str, body) -> bool:
+    return before.get((bucket, key)) != body
+
+
 def file_tree(root: Path, roots: tuple[str, ...] = ()) -> dict[str, str]:
     """`{relative path: sha256 of the content with each ROOT path rewritten to <ROOT>}` (symlinks recorded, not followed)."""
     tree: dict[str, str] = {}
@@ -175,15 +184,29 @@ def differences(a: list[list[str]], b: list[list[str]], width: int) -> list[dict
     return out
 
 
-def undeclared(diffs: list[dict], declarations: dict, kind: str) -> tuple[list[dict], list[str]]:
-    """(the differences no declaration matches, the ids of the declarations that matched)."""
+def _explained_by_fields(entry: dict, identity: list[str], bodies: dict | None, masks: dict | None) -> bool:
+    """A `changed` difference declared with `ignore_fields` holds only when the two bodies are EQUAL once those field names
+    are masked: the declaration explains those fields, never a change to anything else in the row."""
+    if not entry.get("ignore_fields"):
+        return True
+    if not bodies or tuple(identity) not in bodies["A"] or tuple(identity) not in bodies["B"]:
+        return False
+    mask = {**(masks or {}), **{f: "declared" for f in entry["ignore_fields"]}}
+    return all(_canonical(_mask_value(bodies[n][tuple(identity)], mask)) == _canonical(_mask_value(bodies["A"][tuple(identity)], mask))
+               for n in SIDES)
+
+
+def undeclared(diffs: list[dict], declarations: dict, kind: str, bodies: dict | None = None, masks: dict | None = None) -> tuple[list[dict], list[str]]:
+    """(the differences no declaration matches, the ids of the declarations that matched). `bodies` is `{side: {(bucket,
+    key): body}}` for entries that declare `ignore_fields`."""
     left, used = [], set()
     for diff in diffs:
         identity = diff["identity"]
         bucket, key = (identity[0], identity[1]) if kind == "store" else (None, identity[0])
         for entry in declarations["declared"]:
             if (entry["kind"] == kind and diff["differs"] in entry["differs"]
-                    and (kind == "file" or entry["bucket"] == bucket) and re.fullmatch(entry.get("key_pattern", ".*"), key)):
+                    and (kind == "file" or entry["bucket"] == bucket) and re.fullmatch(entry.get("key_pattern", ".*"), key)
+                    and _explained_by_fields(entry, identity, bodies, masks)):
                 used.add(entry["id"])
                 break
         else:
@@ -194,15 +217,22 @@ def undeclared(diffs: list[dict], declarations: dict, kind: str) -> tuple[list[d
 # ---- unit boundaries ----
 
 def boundaries(result: dict) -> list[list]:
-    """Per step, per unit in order: `[step, outcome, sorted writes]`; labels and ordinal ids carry no information."""
+    """Per step, per WRITE-BEARING unit in order: `[step, outcome, depth, sorted writes]`; labels and ordinal ids carry no
+    information. A unit that wrote nothing is a read, not a state boundary: it is counted by `readonly_units` instead."""
     out = []
     for name, step in result["steps"].items():
         for unit in step.get("units", []):
-            out.append([name, unit["outcome"], unit["depth"], ",".join(sorted("/".join(w) for w in unit["writes"]))])
+            if unit["writes"] or unit["outcome"] != "COMMIT":
+                out.append([name, unit["outcome"], unit["depth"], ",".join(sorted("/".join(w) for w in unit["writes"]))])
     return out
 
 
 # ---- the S2R hold fact ----
+
+def readonly_units(result: dict) -> dict[str, int]:
+    return {name: sum(1 for u in step.get("units", []) if not u["writes"] and u["outcome"] == "COMMIT")
+            for name, step in result["steps"].items()}
+
 
 def s2r_hold_fact(documents: dict) -> dict:
     """G1 fact (not a pass/fail): rows of the copy that look like an open S2R maintenance intent (a body carrying
@@ -245,13 +275,16 @@ def drop_database(socket: Path, name: str) -> None:
 
 
 def run_r5(sides: dict[str, SideSpec], copy, database: str, work: Path, out, *, run8: str, declarations: dict | None = None,
-           masks: dict[str, str] | None = None, runtime_dir: Path | None = None, timeout: float = 300.0,
+           masks: dict[str, str] | None = DEFAULT_MASKS, runtime_dir: Path | None = None, timeout: float = 300.0,
            runner: Callable = subprocess_runner, extra: dict[str, list[str]] | None = None, clock=_utc_now,
-           faults: dict[str, str] | None = None, inject: dict[str, str] | None = None) -> dict:
+           faults: dict[str, str] | None = None, shared: Path | None = None, inject: dict[str, str] | None = None) -> dict:
     """Run the scenario on A and B over clones of `copy`'s `database`; write `out/r5.json`; raise `R5Failed` after writing
     on any failure. `extra` adds per-side driver argv (tests), `faults`/`inject` are the TEST-ONLY driver flags."""
     declarations = declarations if declarations is not None else load_declarations()
     work = Path(work)
+    # Stable across runs: the composed context embeds these paths and the store records its digest, so run-to-run
+    # determinism needs the same path every time (a per-run work dir would differ).
+    shared = Path(shared) if shared is not None else work.parent / f"r5-shared-{run8}"
     failures: list[str] = []
     baseline = snapshot(copy, database)
     clones = {name: f"{database}_r5{name.lower()}" for name in SIDES}
@@ -271,12 +304,18 @@ def run_r5(sides: dict[str, SideSpec], copy, database: str, work: Path, out, *, 
         for name in SIDES:
             spec, dsn = sides[name], pg_dsn(copy.pg_socket, clones[name])
             side_dir = work / name.lower()
-            artifacts, scratch, runtime = side_dir / "artifacts", side_dir / "scratch", side_dir / "runtime"
+            # One scratch path for both sides, emptied between them: the composed context embeds the workspace path, so a
+            # per-side path would put a path difference into every context digest the store records.
+            # The same holds for the artifacts dir (the context's artifact-reader argv embeds it): it is shared, emptied before
+            # each side and moved to `<side>/artifacts-after` once its write set is read.
+            artifacts, scratch, runtime = shared / "artifacts", shared / "scratch", side_dir / "runtime"
             for directory in (artifacts, scratch):
+                shutil.rmtree(directory, ignore_errors=True)
                 directory.mkdir(parents=True, exist_ok=True)
             if runtime_dir is not None and not runtime.exists():
                 shutil.copytree(runtime_dir, runtime, symlinks=True)
-            roots = (str(side_dir), str(work))
+            roots = (str(side_dir) + "/", str(shared), str(work))  # `<work>/a/` first: a bare `<work>/a` would also eat `<work>/artifacts`
+            side_dir.mkdir(parents=True, exist_ok=True)
             doc_before, art_before, rt_before = export_documents(dsn), file_tree(artifacts, roots), file_tree(runtime, roots)
             if s2r is None:
                 s2r = s2r_hold_fact(doc_before)
@@ -294,11 +333,17 @@ def run_r5(sides: dict[str, SideSpec], copy, database: str, work: Path, out, *, 
             else:
                 failures.append(f"driver_no_result:{name}:exit {code}:{(stderr.strip().splitlines() or [''])[-1][:120]}")
             doc_after, art_after, rt_after = export_documents(dsn), file_tree(artifacts, roots), file_tree(runtime, roots)
+            shutil.move(str(artifacts), str(side_dir / "artifacts-after"))
+            # Raw bodies stay under the run's work dir (never in the evidence record), for tracing a difference.
+            (side_dir / "store-write-bodies.json").write_text(json.dumps(
+                {f"{b}/{k}": body for (b, k), body in doc_after.items() if before_differs(doc_before, b, k, body)},
+                sort_keys=True, indent=1, default=str), encoding="utf-8")
             run |= {"store": store_write_set(doc_before, doc_after, masks), "artifacts": file_write_set(art_before, art_after),
                     "runtime": file_write_set(rt_before, rt_after)}
+            run["bodies"] = doc_after
             runs[name] = run
         facts["s2r_hold"] = s2r
-        _judge(runs, sides, declarations, facts, failures)
+        _judge(runs, sides, declarations, facts, failures, masks)
         after = snapshot(copy, database)
         drift = [k for k in ("catalog_sha256", "redis_dbs", "redis_prefixes") if after[k] != baseline[k]]
         facts["d1_equals_d0"] = not drift
@@ -317,7 +362,7 @@ def run_r5(sides: dict[str, SideSpec], copy, database: str, work: Path, out, *, 
     return document
 
 
-def _judge(runs: dict, sides: dict, declarations: dict, facts: dict, failures: list[str]) -> None:
+def _judge(runs: dict, sides: dict, declarations: dict, facts: dict, failures: list[str], facts_masks: dict | None = None) -> None:
     results = {n: r.get("result") for n, r in runs.items()}
     for name, result in results.items():
         if result is None:
@@ -341,7 +386,8 @@ def _judge(runs: dict, sides: dict, declarations: dict, facts: dict, failures: l
     facts["buckets_written"] = {n: sorted({row[0] for row in r["store"]}) for n, r in runs.items()}
     for kind, key, width in (("store", "store", 2), ("file", "artifacts", 1), ("file", "runtime", 1)):
         diffs = differences(runs["A"][key], runs["B"][key], width)
-        left, used = undeclared(diffs, declarations, kind)
+        left, used = undeclared(diffs, declarations, kind, {n: runs[n]["bodies"] for n in SIDES} if kind == "store" else None,
+                                masks=facts_masks)
         facts[f"{key}_differences"] = len(diffs)
         facts[f"{key}_declared_used"] = used
         facts[f"{key}_undeclared"] = [{"identity": d["identity"], "differs": d["differs"], "a": d["a"], "b": d["b"]}
@@ -349,6 +395,7 @@ def _judge(runs: dict, sides: dict, declarations: dict, facts: dict, failures: l
         failures += [f"{key}_undeclared:{'/'.join(d['identity'])}:{d['differs']}" for d in left]
     if all(results.values()):
         ba, bb = boundaries(results["A"]), boundaries(results["B"])
+        facts["readonly_units"] = {n: readonly_units(results[n]) for n in SIDES}  # informational: reads are not state
         facts["unit_boundaries_equal"] = ba == bb
         facts["units"] = {"A": len(ba), "B": len(bb)}
         if ba != bb:

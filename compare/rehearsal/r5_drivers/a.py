@@ -81,6 +81,7 @@ class A:
         git = SimpleNamespace(repository=scratch, _git=lambda *a, **kw: "" if a and a[0] == "status" else "revision",
                               inspect=lambda *a: {}, review_workspace=lambda *a: str(scratch))
         self.executor = Executor(self.service, git, FileArtifacts(ARGS.artifacts))
+        self.observed = common.tap_observer(self.executor.observer)
         self.run_task = SimpleNamespace(submit_plan=self._submit_plan, execute=self.executor.execute_one,
                                         provider_calls=lambda: len(self.calls))
         self.decisions = SimpleNamespace(seed=self._seed, decide=self._decide, latest_release_id=self._latest_release)
@@ -138,7 +139,7 @@ def main() -> int:
         with side.store.transaction() as tx:
             tx.put(bucket, key, {"id": key, "injected": True})
     common.write_result(ARGS.out, "A", {"src": str(Path(ARGS.src).resolve()), "package": sys.modules["codex_harness"].__file__},
-                        result, side.log, AUDIT, {"provider_calls": len(side.calls)})
+                        result, side.log, AUDIT, {"provider_calls": len(side.calls), "observer_events": side.observed})
     return 0 if len(result["completed"]) == len(steps.STEPS) else 3
 
 

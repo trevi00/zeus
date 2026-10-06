@@ -79,6 +79,29 @@ def test_differences_are_found_in_both_directions_and_an_undeclared_one_is_repor
     assert [d["identity"] for d in left] == [["b", "k2"]] and used == ["d"]
 
 
+def test_a_field_declaration_explains_only_its_field_and_never_another_change_in_the_row():
+    declared = {"closed": True, "declared": [{"id": "d", "kind": "store", "bucket": "obs", "key_pattern": ".*", "differs": ["changed"],
+                                              "ignore_fields": ["number"], "section": "DESIGN-s9-X §1.3", "reason": "r"}]}
+    diff = [{"identity": ["obs", "k"], "differs": "changed", "a": ["insert", "x"], "b": ["insert", "y"]}]
+    same_but_number = {"A": {("obs", "k"): {"seq": {"number": 6}, "kind": "k"}}, "B": {("obs", "k"): {"seq": {"number": 7}, "kind": "k"}}}
+    other_change = {"A": {("obs", "k"): {"seq": {"number": 6}, "kind": "k"}}, "B": {("obs", "k"): {"seq": {"number": 7}, "kind": "OTHER"}}}
+    assert r5.undeclared(diff, declared, "store", same_but_number) == ([], ["d"])
+    assert r5.undeclared(diff, declared, "store", other_change)[0] == diff
+    assert r5.undeclared(diff, declared, "store", None)[0] == diff  # no bodies: not explained
+
+
+def test_a_unit_that_wrote_nothing_is_not_a_state_boundary_but_is_counted():
+    def result(*units):
+        return {"steps": {"s": {"units": list(units)}}}
+
+    wrote = {"label": "", "outcome": "COMMIT", "writes": [["b", "k"]], "depth": 0}
+    read = {"label": "", "outcome": "COMMIT", "writes": [], "depth": 0}
+    assert r5.boundaries(result(wrote, read, read)) == r5.boundaries(result(read, wrote)) == [["s", "COMMIT", 0, "b/k"]]
+    assert r5.readonly_units(result(wrote, read, read)) == {"s": 2}
+    rolled = {"label": "", "outcome": "ROLLBACK", "writes": [], "depth": 0}
+    assert r5.boundaries(result(rolled)) == [["s", "ROLLBACK", 0, ""]]  # a rollback is a boundary even without writes
+
+
 def test_unit_boundaries_compare_outcome_depth_and_written_keys_not_ordinal_ids():
     def result(units):
         return {"steps": {"s": {"units": units}}}
@@ -170,12 +193,24 @@ def test_a_and_b_write_the_same_records_or_every_difference_is_declared_and_the_
     assert document["status"] == "ok" and facts["failures"] == []
     assert facts["steps_completed_A"] == facts["steps_completed_B"] == SPEC_STEPS
     assert facts["unit_boundaries_equal"] is True and facts["units"]["A"] == facts["units"]["B"] > 0
+    assert facts["store_declared_used"] == ["x1b2-observer-spool-sequence"]  # the one declared difference, and it was needed
     assert facts["store_undeclared"] == [] and facts["artifacts_undeclared"] == [] and facts["runtime_undeclared"] == []
     # the flow's authority writes are in BOTH write sets (the spec's example: fleet_control update, backlog insert, ...)
     for side in ("A", "B"):
         assert {"fleet_control", "release_queue", "releases", "operations", "tasks"} <= set(facts["buckets_written"][side]) | {"fleet_control"}
     assert facts["d1_equals_d0"] is True and facts["catalog_sha256_d0"] == world.baseline  # the copy itself is untouched
     assert facts["s2r_hold"]["evaluated"] is False and "ZEUS_COMPOSITION_PROFILE is not set" in facts["profile"]
+
+
+@needs_docker
+def test_without_the_declaration_the_only_difference_is_the_observer_spool_sequence_of_two_b_only_events(world):
+    """Independent source: B's `run_task.py` emits `development.role_dispatch_decided` and `development.usage_split_recorded`
+    (X1b-2, DESIGN-s9-X §1.3/§1.5) and M7's executor does not, so a later observation_audit row's spool sequence number is higher
+    on B. With no declaration that single row must be the ONLY undeclared difference."""
+    caught = _failed(world, declarations={"closed": True, "declared": []})
+    assert [f.split(":")[0] for f in caught.failures] == ["store_undeclared"], caught.failures
+    assert caught.failures[0].startswith("store_undeclared:observation_audit/") and caught.failures[0].endswith(":changed")
+    assert caught.document["facts"]["unit_boundaries_equal"] is True
 
 
 @needs_docker
@@ -194,20 +229,26 @@ def test_an_undeclared_injected_difference_fails_and_the_record_names_it(world):
     caught = _failed(world, inject={"A": "rh_injected/extra-1"})
     assert any(f.startswith("store_undeclared:rh_injected/extra-1:only_a") for f in caught.failures), caught.failures
     assert json.loads((world.out / f"r{world.runs}" / "r5.json").read_text())["status"] == "failed"  # evidence exists
-    declared = {"closed": True, "declared": [{"id": "inj", "kind": "store", "bucket": "rh_injected", "key_pattern": "extra-1",
-                                              "differs": ["only_a"], "section": "AMD-1 A", "reason": "test declaration"}]}
+    declared = r5.load_declarations()
+    declared["declared"].append({"id": "inj", "kind": "store", "bucket": "rh_injected", "key_pattern": "extra-1",
+                                 "differs": ["only_a"], "section": "AMD-1 A", "reason": "test declaration"})
     document = _run(world, inject={"A": "rh_injected/extra-1"}, declarations=declared)
-    assert document["status"] == "ok" and document["facts"]["store_declared_used"] == ["inj"]
+    assert document["status"] == "ok" and "inj" in document["facts"]["store_declared_used"]
 
 
 @needs_docker
-@pytest.mark.parametrize("fault,error", [("codex_unstubbed", None), ("claude_reached", "AssertionError")])
-def test_an_unstubbed_or_unexpected_transport_raises_and_fails_the_run(world, fault, error):
+@pytest.mark.parametrize("fault", ["codex_unstubbed", "claude_reached"])
+def test_an_unstubbed_or_unexpected_transport_raises_and_fails_the_run(world, fault):
+    """`codex_unstubbed`: B's REAL host App Server is left in place (the provider guard refuses it); `claude_reached`: the
+    stubbed-loud Claude runtime is constructed by the fixture transport. Either way the task must NOT succeed and the scenario
+    stops at that step, so no later step runs on a state the failed step did not make."""
     caught = _failed(world, faults={"B": fault})
     assert any(f.startswith("steps:B:") and "run_task" in f for f in caught.failures), caught.failures
     result = json.loads((world.work / f"run{world.runs}" / "b" / "result.json").read_text())
     step = result["steps"]["run_task"]
-    assert step["ok"] is False and (error is None or step["error"] == error)
+    assert step["ok"] is False and step["error"] == "RuntimeError" and step["message"].startswith("task ended ")
+    assert "succeeded" not in step["message"].split(":")[0]
+    assert result["spawn_events"] == [] and result["production_profile_set"] is False
     assert "review_lead" not in result["steps"]  # fail closed: later steps do not run on a state the failed step did not make
 
 

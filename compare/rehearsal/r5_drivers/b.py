@@ -91,6 +91,10 @@ class B:
                                         provider_calls=lambda: len(self.calls))
         self.composition = s4_decision_composition.Composition(self.store, ORG, git, clock=PORT, ids=IDPORT,
                                                                monotonic=CLOCK.monotonic)
+        # M7's one Executor owns ONE observer (one spool sequence) for the task and the decisions; the target compare
+        # composition built two (run_task_for, Composition), which would renumber the spool appends: share the first.
+        self.composition.decisions.observer = run_task.observer
+        self.observed = common.tap_observer(run_task.observer)
         self.decisions = SimpleNamespace(seed=self._seed, decide=self._decide, latest_release_id=self._latest_release)
 
     def advance(self, seconds):
@@ -136,7 +140,7 @@ def main() -> int:
         with side.store.transaction() as tx:
             tx.put(bucket, key, {"id": key, "injected": True})
     common.write_result(ARGS.out, "B", {"src": str(Path(ARGS.src).resolve()), "package": sys.modules["codex_harness"].__file__},
-                        result, side.log, AUDIT, {"provider_calls": len(side.calls)})
+                        result, side.log, AUDIT, {"provider_calls": len(side.calls), "observer_events": side.observed})
     return 0 if len(result["completed"]) == len(steps.STEPS) else 3
 
 
