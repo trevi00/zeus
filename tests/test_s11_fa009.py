@@ -33,7 +33,7 @@ WIRING_ALLOWLIST = {"test_architecture.py"}
 PIN_GROUPS: list[tuple[str, dict[str, list[int]]]] = [
     ("S8 move fidelity: import sets and moved-symbol shapes (DESIGN-s11 §6.1)", {
         "test_s8_audit_progress_move.py": [134],
-        "test_s8_batch_b5a_move.py": [187],
+        "test_s8_batch_b5a_move.py": [188],
         "test_s8_batch_b7a_move.py": [82, 133],
         "test_s8_batch_b8_move.py": [204],
         "test_s8_domain_moves_c.py": [153],
@@ -60,13 +60,13 @@ PIN_GROUPS: list[tuple[str, dict[str, list[int]]]] = [
     ("S8 move fidelity: the moved declaration is M7's (`__all__` surface, moved-out name, ports class, injectable rule)", {
         "test_s8_portfolio_move.py": [75, 173],
         "test_s8_research_app_move.py": [184],
-        "test_s8_thresholds_a_move.py": [185],
+        "test_s8_thresholds_a_move.py": [186],
     }),
     ("S8 move fidelity: the composed consumer still makes the call the moved producer's signature serves", {
         "test_s8_release_suite_move.py": [261],
     }),
     ("OWNER-DECISIONS-S11 #11: the product's own composition names the module that static.source's keep_shim pins", {
-        "test_compare_harness.py": [205],
+        "test_compare_harness.py": [206],
     }),
     ("packaged-resource declaration: the shipped hook manifest and the shipped research schema state what the profile and "
      "the output contract declare (data, not code; the replay and canary behaviour is covered by the ported suites)", {
@@ -76,7 +76,7 @@ PIN_GROUPS: list[tuple[str, dict[str, list[int]]]] = [
     ("S8/S9 move fidelity: the moved module's header is M7's docstring plus the DESIGN-s11 §3.2 fields (layer, context, "
      "owner, contracts, SOURCE, rule ids); a provenance contract, asserted through the `header()` helper (FA-009b)", {
         "test_s8_batch_b1_move.py": [77, 79, 121, 124],
-        "test_s8_batch_b2_move.py": [171, 174, 321, 324],
+        "test_s8_batch_b2_move.py": [174, 177, 324, 327],
         "test_s9_batch_l2b1_move.py": [85, 86, 156, 157, 159],
         "test_s9_batch_l2b2_move.py": [82, 108, 110, 117, 118, 119, 121, 123],
     }),
@@ -84,7 +84,7 @@ PIN_GROUPS: list[tuple[str, dict[str, list[int]]]] = [
      "outside its header, carries no spawn name and no bare `utcnow()` (FA-009b; the behaviour is covered by the same "
      "files' behavioural tests)", {
         "test_s8_batch_b1_move.py": [131],
-        "test_s8_batch_b2_move.py": [263, 364, 431],
+        "test_s8_batch_b2_move.py": [266, 367, 434],
     }),
     ("packaged-resource declaration, read through a helper (FA-009b): the shipped research schema declares the vocabulary "
      "the domain declares (group 6's contract)", {
