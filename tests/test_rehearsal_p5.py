@@ -337,3 +337,40 @@ def test_phase_p_controls_and_fileroots_load_in_a_fresh_interpreter_without_the_
                           timeout=120)
     assert done.returncode == 0, done.stderr[-400:]
     assert done.stdout.strip() == "False False [] True"
+
+
+# ---- the control runner's srv refusal (before any effect) ----
+
+class NoEffects:
+    def __init__(self):
+        self.calls = []
+
+    def run(self, argv, **kw):
+        self.calls.append(argv)
+        raise AssertionError("an effect before the refusal")
+
+
+def test_validate_targets_admits_the_stand_in_srv_and_refuses_production_or_foreign_paths(tmp_path, monkeypatch):
+    scratch = tmp_path / "scratch"
+    good = pc.standin_targets(RUN8, scratch)
+    pc.validate_targets(good, RUN8, scratch)
+    assert good.srv == str(scratch / "srv")
+    host = NoEffects()
+
+    def refused(srv, code):
+        with pytest.raises(Refused) as caught:
+            pc.StandIns(host, RUN8, scratch, dataclasses.replace(good, srv=str(srv)))
+        assert caught.value.code == code and host.calls == []
+
+    refused(fileroots.SRV, "production_path")
+    refused(REAL + "/runtime", "production_path")
+    refused(tmp_path / "elsewhere", "standin_path")
+    with monkeypatch.context() as patched:  # a lexical match refuses before any resolve is attempted
+        patched.setattr(os.path, "realpath", lambda *_a, **_k: pytest.fail("resolved before the lexical refusal"))
+        refused(REAL + "/x", "production_path")
+    fake_prod = tmp_path / "fake-prod"  # a symlink to a production root (the root itself monkeypatched to a tmp dir)
+    fake_prod.mkdir()
+    scratch.mkdir()
+    (scratch / "link").symlink_to(fake_prod)
+    monkeypatch.setattr(fileroots, "SRV", str(fake_prod))
+    refused(scratch / "link", "production_path")

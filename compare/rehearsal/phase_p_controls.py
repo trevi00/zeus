@@ -12,8 +12,9 @@ before any effect, unless its name matches that pattern; the production names ar
 
 Controls (each its own stand-ins, torn down by name and proven absent): positive; docker_diff (a file planted in the
 stand-in pg before P4); redis_write_during_copy (a bounded writer on the stand-in Redis while P3's helper copies);
-restart (the stand-in pg restarted before P4); paused_false. Outcomes are step, reason and
-booleans only.
+restart (the stand-in pg restarted before P4); paused_false; stable_write_during_p5 (a new file written into the
+stand-in srv's `repo` at P5's first cp). Six controls. P5 acquires a synthetic stand-in srv under the scratch directory
+(never `/srv/zeus`: `validate_targets` refuses it before any effect). Outcomes are step, reason and booleans only.
 
 usage (cwd compare/): python3 -m rehearsal.phase_p_controls RUN8 SCRATCH_DIR OUT_JSON   (SCRATCH_DIR and OUT_JSON must not exist;
 SCRATCH_DIR should be short: the disposable copy's sockets live under it)
@@ -24,6 +25,7 @@ from __future__ import annotations
 import json
 import os
 import re
+import stat
 import subprocess
 import sys
 import time
@@ -35,13 +37,14 @@ from .constants import PG_IMAGE, PRODUCTION_PREFIX, REDIS_IMAGE, create_root, pr
 
 STANDIN_LABEL = "zeus.rehearsal.standin"
 NAME = re.compile(r"^zeus-test-fixture-rh-([0-9a-f]{8})-prod-(pg|redis|redisdata)$")
-CONTROLS = ("positive", "docker_diff", "redis_write_during_copy", "restart", "paused_false")
+CONTROLS = ("positive", "docker_diff", "redis_write_during_copy", "restart", "paused_false", "stable_write_during_p5")
 EXPECTED = {
     "positive": {"step": "P4", "reason": "ok"},
     "docker_diff": {"step": "P4", "reason": "docker_diff_changed"},
     "redis_write_during_copy": {"step": "P3", "reason": "redis_bracket_unequal"},
     "restart": {"step": "P4", "reason": "container_restarted"},
     "paused_false": {"step": "P0", "reason": "not_paused_or_not_quiet"},
+    "stable_write_during_p5": {"step": "P5", "reason": "volatile_undeclared"},
 }
 # fixed relative paths inside the stand-in srv that `positive_facts` reads back from the seal
 CANARY = "runtime/lanes/harness/workspaces/review-canary-0123456789abcdef/.venv/bin/python"
@@ -53,12 +56,17 @@ PSQL = ["psql", "-U", "zeus", "-h", "/var/run/postgresql", "-XAtq", "-v", "ON_ER
 def standin_targets(run8: str, scratch) -> pp.Targets:
     prefix = f"{provider_guard.FIXTURE_NAME_PREFIX}rh-{check_run8(run8)}-prod-"
     return pp.Targets(pg=prefix + "pg", redis=prefix + "redis", redis_volume=prefix + "redisdata",
-                      monitoring=str(Path(scratch) / "monitoring.json"), heartbeat=str(Path(scratch) / "heartbeat.json"))
+                      monitoring=str(Path(scratch) / "monitoring.json"), heartbeat=str(Path(scratch) / "heartbeat.json"),
+                      srv=str(Path(scratch) / "srv"))
 
 
 def validate_targets(targets: pp.Targets, run8: str, scratch) -> None:
     """Refuse (before any effect) any target that is not this run's labelled stand-in; production names explicitly."""
     check_run8(run8)
+    srv = targets.srv
+    under = lambda path, top: path == top or path.startswith(top.rstrip("/") + "/")  # noqa: E731
+    if under(os.path.normpath(srv), os.path.normpath(fileroots.SRV)):  # lexical, before any resolve
+        raise Refused("production_path", srv)
     for name, kind in ((targets.pg, "pg"), (targets.redis, "redis"), (targets.redis_volume, "redisdata")):
         if name in (pp.PG, pp.REDIS, pp.REDIS_VOLUME) or name.startswith(PRODUCTION_PREFIX):
             raise Refused("production_name", name)
@@ -68,6 +76,10 @@ def validate_targets(targets: pp.Targets, run8: str, scratch) -> None:
     for path in (targets.monitoring, targets.heartbeat):
         if path in (pp.MONITORING, pp.HEARTBEAT) or not Path(path).resolve().is_relative_to(Path(scratch).resolve()):
             raise Refused("standin_path", path)
+    if under(os.path.realpath(srv), os.path.realpath(fileroots.SRV)):  # the symlink case (SRV read at call time)
+        raise Refused("production_path", srv)
+    if not Path(srv).resolve().is_relative_to(Path(scratch).resolve()):
+        raise Refused("standin_path", srv)
 
 
 def build_standin_srv(srv) -> None:
@@ -151,6 +163,7 @@ class StandIns:
         # catalog TOC per database (an empty zeus_aibox_migration made `all(toc)` false; owner, run 5).
         for db in pp.DB_SCOPE:
             self.sql("CREATE TABLE rh_ctl(x text); INSERT INTO rh_ctl VALUES ('seed')", db)
+        build_standin_srv(self.targets.srv)  # the file roots P5 acquires: synthetic, under the scratch directory
         self.set_paused(True)
 
     def verify_labels(self) -> None:
@@ -164,6 +177,10 @@ class StandIns:
     # -- mutations (stand-in only) --
     def plant_file(self) -> None:
         need("plant file", self.docker("exec", self.targets.pg, "touch", "/tmp/rh-planted"))
+
+    def write_stable(self) -> None:
+        """One new file in the stand-in srv's stable `repo` root (the stable_write_during_p5 mutation)."""
+        (Path(self.targets.srv) / "repo" / "rh-p5-late.txt").write_text("late\n")
 
     def restart(self) -> None:
         need("restart", self.docker("restart", self.targets.pg, timeout=120))
@@ -205,7 +222,7 @@ class ControlHost:
     """Wraps the real (or stub) host and applies one control's mutation at its point in the Phase P sequence."""
 
     def __init__(self, host, stand, plan: str | None):
-        self.host, self.stand, self.plan, self.inspects = host, stand, plan, 0
+        self.host, self.stand, self.plan, self.inspects, self.wrote = host, stand, plan, 0, False
 
     def open(self, path, mode="r"):
         return self.host.open(path, mode)
@@ -216,6 +233,9 @@ class ControlHost:
             self.inspects += 1
             if self.inspects == 3:  # P4's first inspect: after P0 (two) and everything between
                 {"docker_diff": self.stand.plant_file, "restart": self.stand.restart}.get(self.plan, lambda: None)()
+        if self.plan == "stable_write_during_p5" and not self.wrote and argv[0] == fileroots.CP:
+            self.wrote = True  # P5's first cp: the stable root changes after the survey, before the staging finishes
+            self.stand.write_stable()
         copying = self.plan == "redis_write_during_copy" and argv[1] == "run" and "redis-snap" in argv[argv.index("--name") + 1]
         if copying:
             self.stand.start_writer()
@@ -250,33 +270,51 @@ class Runner:
     def __init__(self, host, run8: str, scratch, *, stand_factory=StandIns):
         self.host, self.run8, self.scratch = host, check_run8(run8), Path(scratch)
         self.stand_factory = stand_factory
+        self.inspects = 0
 
     def phase(self, work: Path, stand, plan):
         root, evidence = work / "root", work / "evidence"
         create_root(root, self.run8)
         os.makedirs(root / "p", mode=0o700)
         os.makedirs(evidence, mode=0o700)
-        phase = pp.PhaseP(str(root), str(evidence), self.run8, ControlHost(self.host, stand, plan), stand.targets)
-        code = phase.run()
+        chost = ControlHost(self.host, stand, plan)
+        phase = pp.PhaseP(str(root), str(evidence), self.run8, chost, stand.targets)
+        try:
+            code = phase.run()
+        finally:
+            self.inspects = chost.inspects
         return phase, code, json.loads((evidence / "phase-p.json").read_text())
 
     def positive_facts(self, stand, root: Path, rec: dict) -> dict:
         steps = {s["step"]: s for s in rec["steps"]}
         toc = {tag: [stand.toc(root / "p" / f"{db}.{tag}.dump") for db in pp.DB_SCOPE] for tag in ("d0a", "d0b")}
+        seal, tree = root / "seal", root / "seal" / "tree"
+        try:
+            verified = rec.get("verdict") == "ok" and bool(fileroots.verify_seal(seal, steps["P5"], rec["run8"]))
+        except Refused:
+            verified = False
+        mode = lambda path: stat.S_IMODE(os.lstat(path).st_mode)  # noqa: E731
+        fidelity = (mode(tree / RO_FILE) == 0o444 and mode(tree / EXEC_FILE) == 0o755 and (tree / EMPTY_DIR).is_dir()
+                    and not os.listdir(tree / EMPTY_DIR)
+                    and os.readlink(tree / CANARY) == fileroots.SYMLINK_ALLOWANCE[0]["target"]
+                    and os.lstat(tree / LINK_PAIR[0]).st_ino == os.lstat(tree / LINK_PAIR[1]).st_ino)
         return {"dumps_equal": toc["d0a"] == toc["d0b"] and all(toc["d0a"]),
                 "redis_bracket_identical": steps["P3"].get("manifest_equal") is True and steps["P3"].get("ok") is True,
                 "helpers_settled": rec.get("helpers_before") == {"removed": 0, "residue": []}
-                and rec.get("helpers_after") == {"removed": 0, "residue": []}}
+                and rec.get("helpers_after") == {"removed": 0, "residue": []},
+                "seal_verified": verified, "tokobs_absent": not (tree / "runtime" / "tokobs").exists(),
+                "boundary_0700": all(mode(path) == 0o700 for path in (root, seal, tree, seal / "meta")),
+                "fidelity": fidelity}
 
     def control(self, name: str) -> dict:
         work = self.scratch / name
         stand = self.stand_factory(self.host, self.run8, work)
-        outcome, facts = {}, {}
+        outcome, facts, self.inspects = {}, {}, 0
         try:
             stand.create()
             if name == "paused_false":
                 stand.set_paused(False)
-            plan = name if name in ("docker_diff", "redis_write_during_copy", "restart") else None
+            plan = name if name in ("docker_diff", "redis_write_during_copy", "restart", "stable_write_during_p5") else None
             _phase, code, rec = self.phase(work, stand, plan)
             outcome = classify(code, rec)
             steps = [s["step"] for s in rec["steps"]]
@@ -287,12 +325,15 @@ class Runner:
                 facts = {"stopped_before_p2b": "P2b" not in steps}
             elif name == "paused_false":
                 facts = {"no_acquisition": steps == ["P0"] and not (root / "p" / "redis").exists()
-                         and not list((root / "p").glob("*.dump"))}
+                         and not list((root / "p").glob("*.dump")) and not (root / "seal").exists()}
+            elif name == "stable_write_during_p5":
+                facts = {"stopped_before_p4": "P4" not in steps}
             matched = self.judge(name, outcome, facts)
         except Exception as exc:  # bounded: the type only
             matched, facts = False, {**facts, "error": type(exc).__name__}
         torn = stand.remove()
-        return {"control": name, "outcome": outcome, "facts": facts, "matched": matched and torn["absent"], "teardown": torn}
+        return {"control": name, "outcome": outcome, "facts": facts, "inspects": self.inspects, "matched": matched and torn["absent"],
+                "teardown": torn}
 
     @staticmethod
     def judge(name: str, outcome: dict, facts: dict) -> bool:

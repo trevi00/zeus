@@ -11,21 +11,68 @@ Expected outcomes come from the spec's Examples and What 2 (step/reason per cont
 
 from __future__ import annotations
 
+import dataclasses
 import json
+import os
 import subprocess
 import sys
+import uuid
 
 import pytest
 from _layout import REPO
-from test_rehearsal_phase_p import SyntheticHost
+from test_rehearsal_phase_p import SHIPPED, SyntheticHost
 
 sys.path.insert(0, str(REPO / "compare"))
-from rehearsal import Refused  # noqa: E402
+from rehearsal import (
+    Refused,  # noqa: E402
+    fileroots,  # noqa: E402
+)
 from rehearsal import phase_p as pp  # noqa: E402
 from rehearsal import phase_p_controls as pc  # noqa: E402
 
 RUN8 = "9a8b7c6d"
 ABSENT = {"containers_left": 0, "volumes_left": 0, "absent": True}
+REAL = "/srv/zeus"
+_state = {"active": False, "hits": []}
+
+
+def _hook(event, args):
+    """ONE module-level audit hook, inert unless the autouse fixture activates it (see test_rehearsal_phase_p)."""
+    if not _state["active"]:
+        return
+    if event == "subprocess.Popen":
+        scanned = [str(a) for a in (args[0], *args[1], *args[2:3])]
+    elif event in ("open", "os.scandir", "os.listdir"):
+        scanned = [str(args[0])] if args else []
+    else:
+        return
+    if any(REAL in text for text in scanned):
+        _state["hits"].append((event, scanned))
+        raise AssertionError(f"tripwire: {event} names the real {REAL}")
+
+
+sys.addaudithook(_hook)
+
+
+@pytest.fixture(autouse=True)
+def standin_srv(tmp_path, monkeypatch):
+    srv = tmp_path / "standin-srv"
+    pc.build_standin_srv(srv)
+    monkeypatch.setattr(pp, "DEFAULT_TARGETS", dataclasses.replace(SHIPPED, srv=str(srv)))
+    monkeypatch.setattr(pp, "RUN_LOCK", f"zeus-rehearsal-test-{uuid.uuid4().hex}")
+    real_acquire = fileroots.acquire
+
+    def acquire(host, source, *args, **kwargs):
+        if os.path.normpath(str(source)) == REAL or os.path.normpath(str(source)).startswith(REAL + "/"):
+            _state["hits"].append(("acquire", str(source)))
+            raise AssertionError("acquire refused: the srv names the real /srv/zeus")
+        return real_acquire(host, source, *args, **kwargs)
+
+    monkeypatch.setattr(fileroots, "acquire", acquire)
+    _state.update(active=True, hits=[])
+    yield srv
+    _state["active"] = False
+    assert _state["hits"] == []
 
 
 class ControlHostStub(SyntheticHost):
@@ -58,11 +105,17 @@ class FakeStand(pc.StandIns):
         self.events.append("create")
         self.host.planted = self.host.restarted = self.host.bracket_change = False  # fresh stand-ins per control
         self.host.inspects = 0
+        pc.build_standin_srv(self.targets.srv)  # no event: the srv is not a control's mutation
         self.set_paused(True)
 
     def plant_file(self):
         self.events.append(("plant_file", len(self.host.calls)))
         self.host.planted = self.effective
+
+    def write_stable(self):
+        self.events.append(("write_stable", len(self.host.calls)))  # only when ControlHost fires it
+        if self.effective:
+            super().write_stable()
 
     def restart(self):
         self.events.append(("restart", len(self.host.calls)))
@@ -97,7 +150,9 @@ def test_every_control_reaches_its_expected_step_and_reason_and_each_tears_down(
                    "docker_diff": {"step": "P4", "reason": "docker_diff_changed"},
                    "redis_write_during_copy": {"step": "P3", "reason": "redis_bracket_unequal"},
                    "restart": {"step": "P4", "reason": "container_restarted"},
-                   "paused_false": {"step": "P0", "reason": "not_paused_or_not_quiet"}}
+                   "paused_false": {"step": "P0", "reason": "not_paused_or_not_quiet"},
+                   "stable_write_during_p5": {"step": "P5", "reason": "volatile_undeclared"}}
+    assert [r["inspects"] for r in result["controls"]] == [4, 4, 2, 4, 2, 2]  # in CONTROLS order
     assert result["all_matched"] and [r["control"] for r in result["controls"]] == list(pc.CONTROLS)
     assert all(r["teardown"] == ABSENT and s.events[0] == "create" and s.events[-1] == "remove"
                for r, s in zip(result["controls"], FakeStand.registry))
@@ -116,6 +171,10 @@ def test_each_mutation_is_applied_at_its_point_in_the_phase_sequence(tmp_path):
     assert [e if isinstance(e, str) else e[0] for e in by["redis_write_during_copy"].events] == [
         "create", "start_writer", "stop_writer", "remove"]
     assert by["paused_false"].events == ["create", "remove"]
+    (_, at), = [e for e in by["stable_write_during_p5"].events if isinstance(e, tuple)]
+    assert host.calls[at][0] == fileroots.CP  # just before P5's first cp
+    assert [e if isinstance(e, str) else e[0] for e in by["stable_write_during_p5"].events] == [
+        "create", "write_stable", "remove"]
 
 
 def test_the_redis_write_control_stops_before_p2b_and_paused_false_acquires_nothing(tmp_path):
@@ -123,10 +182,13 @@ def test_the_redis_write_control_stops_before_p2b_and_paused_false_acquires_noth
     by = {r["control"]: r for r in run.run_all()["controls"]}
     assert by["redis_write_during_copy"]["facts"] == {"stopped_before_p2b": True}
     assert by["paused_false"]["facts"] == {"no_acquisition": True}
-    assert by["positive"]["facts"] == {"dumps_equal": True, "redis_bracket_identical": True, "helpers_settled": True}
+    assert by["stable_write_during_p5"]["facts"] == {"stopped_before_p4": True}
+    assert by["positive"]["facts"] == {"dumps_equal": True, "redis_bracket_identical": True, "helpers_settled": True,
+                                       "seal_verified": True, "tokobs_absent": True, "boundary_0700": True,
+                                       "fidelity": True}
 
 
-@pytest.mark.parametrize("control", ["docker_diff", "redis_write_during_copy", "restart"])
+@pytest.mark.parametrize("control", ["docker_diff", "redis_write_during_copy", "restart", "stable_write_during_p5"])
 def test_a_control_whose_mutation_has_no_effect_is_not_matched(tmp_path, control, monkeypatch):
     """Negative control: if the planted change did nothing, Phase P passes and the control must NOT count as matched."""
     monkeypatch.setattr(FakeStand, "effective", False)
