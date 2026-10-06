@@ -40,4 +40,4 @@ def test_target_tree_has_no_violation_and_no_exception():
 
 
 def test_contract_registry_is_readable():
-    assert len(contract_ids()) == 91
+    assert len(contract_ids()) == 92
