@@ -5,7 +5,7 @@ Context: delivery
 Owns: load_plan, GitHubDelivery, HostTargetBase, ProcessHostTarget (M7 `adapters/host_delivery.py` S7 core: the target lifecycle, the descriptor and receipt files, the fixed canary checks and the launched service)
 Does not own: the CLI and composition functions (S10), `host_ports` (composition, after the managed_runtime and host_migration moves), the scheduled-task target (W-B, classified, not moved), process creation (the host_os chokepoint, injected as `processes`/`runner`/`run`)
 Entry points: ProcessHostTarget, GitHubDelivery, load_plan, first_activation_facts, canary_checks, startup_receipt, serve
-Contracts: INV-HOST-DELIVERY-001, INV-HOST-DELIVERY-FIRST-ACTIVATION-001
+Contracts: INV-HOST-DELIVERY-001, INV-HOST-DELIVERY-FIRST-ACTIVATION-001, INV-HOST-DELIVERY-MAINTENANCE-001
 
 S7 named transcription of M7 `adapters/host_delivery.py` (SOURCE e38aa722) through the declared rules (DESIGN-s7 adapters-move §8/§9, A/evidence/rebuild/s7/host-delivery-adapter/transcribe.py): the excluded symbols, the injected process creation and collaborators, and the import homes; every body is otherwise M7's. M7 docstring follows.
 
@@ -77,6 +77,7 @@ from codex_harness.delivery.domain.host_delivery import (
     CANARY_FLEET,
     CANARY_STARTUP,
     INSTANCE_INTENDED,
+    KIND_MANAGED_SYSTEMD,
     KIND_PROCESS,
     RECEIPT_SCHEMA,
     REPLACEABLE_INSTANCES,
@@ -92,6 +93,7 @@ from codex_harness.delivery.domain.host_delivery import (
     validate_descriptor,
     validate_plan,
 )
+from codex_harness.delivery.domain.maintenance import classify_restart
 from codex_harness.host_os.ports import GitBlobSource
 from codex_harness.kernel.errors import ContractError, require
 
@@ -676,7 +678,7 @@ class HostTargetBase:
         raise NotImplementedError
 
     # --- the one protected service lifecycle -----------------------------------------------------
-    def start(self, target: dict, descriptor: dict, *, authorize=None, replaces=None) -> dict:
+    def start(self, target: dict, descriptor: dict, *, authorize=None, replaces=None, restarts=None) -> dict:
         """Reconcile, classify, stop, retire, launch and publish the new state, in one guard.
 
         Two facts are checked, in this order and both before any effect. The descriptor on the
@@ -692,6 +694,10 @@ class HostTargetBase:
         permission to end one. Ownership is proven again after the bounded stop, which can outlive
         a lease, and never after a mutation it would have to undo.
         """
+        # INV-HOST-DELIVERY-MAINTENANCE-001: only a typed restart authority takes the maintenance path;
+        # without one (the default) everything below is the unchanged legacy lifecycle.
+        if restarts is not None:
+            return self._restart_generation(target, descriptor, authorize, restarts)
         with self.guard(target, authorize):
             context = self._prepare(target, descriptor)
             self._reconcile(target, descriptor)
@@ -746,6 +752,122 @@ class HostTargetBase:
 
     def _launch(self, target: dict, descriptor: dict, context) -> dict:
         raise NotImplementedError
+
+    # --- active-generation maintenance (INV-HOST-DELIVERY-MAINTENANCE-001) -----------------------
+    def _restart_generation(self, target: dict, descriptor: dict, authorize, restarts) -> dict:
+        """Replace ONLY the recorded incumbent generation of the exact active descriptor, in one guard.
+
+        `restarts` is the coordinator's durable request (committed BEFORE this call): the maintenance
+        id, the retiring instance, its unit invocation and launch digest, and when it was requested.
+        Inside the target guard the instance that is actually there is classified against it by the
+        pure domain policy (`classify_restart`), which selects exactly one path or refuses:
+
+        * `replace` - the live instance IS the retiring incumbent, idle: the incumbent lifecycle
+          (activation gate, graceful stop, ownership recheck, gate, target-file identity, retire,
+          one `systemctl start`). No signal and no `systemctl restart`.
+        * `launch` - the incumbent was already proven stopped (a replay after a lost stop response):
+          gate, target-file identity, retire, one start.
+        * `recognized` - the one launch bound to THIS request already happened: nothing is started.
+
+        A foreign, unproved, drifted or unobservable instance refuses BEFORE any effect. Once the
+        stop succeeded, a lost fence, a refused second gate or a changed target file is an
+        interrupted lifecycle (`LifecycleInterrupted`), never a refusal; so is a stop that raised
+        instead of answering, and a start whose outcome is unknown after the incumbent's files were
+        retired. A stop that answered "not stopped" (busy or unknown work) refuses with its own code
+        and leaves the incumbent running behind its pause, as in legacy. Nothing here launches twice.
+        """
+        if getattr(self, "kind", None) != KIND_MANAGED_SYSTEMD:
+            # Only the systemd-supervised managed target has a recorded unit invocation to bind to.
+            raise DeliveryRefused("maintenance_not_active", "target_id")
+        with self.guard(target, authorize):
+            context = self._prepare(target, descriptor)
+            self._reconcile(target, descriptor)
+            try:
+                observation = self.generation_observation(target)
+            except DeliveryRefused:
+                raise
+            except Exception as exc:
+                raise DeliveryRefused("maintenance_invocation_mismatch", "observation") from exc
+            decision = classify_restart(descriptor, observation, restarts)
+            path = decision["path"]
+            if path is None:
+                raise DeliveryRefused(decision["reason_code"], decision["field"])
+            if path == "recognized":
+                return {"started": False, "recovered": True, "path": "recognized",
+                        "launch": self.launch_record(target), "pid": None}
+            stopped_here = False
+            if path == "replace":
+                self._activation_gate(target, descriptor)
+                try:
+                    stopped = self.stop(target)
+                except Exception as exc:
+                    # The graceful stop may already have paused or asked the incumbent to exit.
+                    raise LifecycleInterrupted("service_stop_unconfirmed", exc) from exc
+                if not stopped["stopped"]:
+                    # Busy or unknown work keeps the incumbent running with its pause, as in legacy.
+                    raise DeliveryRefused(stopped.get("reason_code") or "previous_instance_unconfirmed",
+                                          "target_id")
+                stopped_here = True
+                self._still_owned(authorize, "service_stopped")
+            try:
+                self._activation_gate(target, descriptor)
+                # Byte identity of the owner target snapshot, repeated right before anything is retired:
+                # a differing file refuses; it is never rewritten or touched (S2M-18).
+                if not self._target_file_matches(target):
+                    raise DeliveryRefused("maintenance_stale", "target_file")
+            except DeliveryRefused as exc:
+                if stopped_here:
+                    raise LifecycleInterrupted("service_stopped", exc) from exc
+                raise
+            try:
+                self._retire(target)
+                # S2R F1: the persisted launch request carries THIS maintenance request's own `requested_at`,
+                # written before the one start, so a replay after an unconfirmed start recognizes its own
+                # attempt (and never launches again) through the existing launch-request protocol.
+                started = self._launch(target, descriptor, {**context, "requested_at": restarts["requested_at"]})
+            except Exception as exc:
+                # The incumbent's files are retired (and, on `replace`, it was stopped): the start's
+                # outcome is unknown and is reconciled by a same-request replay, never redone blindly.
+                raise LifecycleInterrupted("service_stopped" if stopped_here else "service_start_unconfirmed",
+                                           exc) from exc
+            return {**started, "recovered": False, "path": path}
+
+    def generation_observation(self, target: dict) -> dict:
+        """The read-only managed generation facts of INV-HOST-DELIVERY-MAINTENANCE-001; only the
+        systemd-supervised managed target has them."""
+        raise DeliveryRefused("maintenance_not_active", "target_id")
+
+    def _target_file_matches(self, target: dict) -> bool:
+        """Whether the owner target snapshot on the target is byte-identical to the registry entry.
+        Target kinds without one have nothing to compare; the managed kinds override this."""
+        return True
+
+    # --- the owner's canary files of one plan, read only ------------------------------------------
+    def _owner_file(self, target: dict, name) -> dict | None:
+        """One plan-scoped owner canary file: None when nothing is there, `{"unreadable": True}` when
+        an entry exists that is not a bounded regular JSON object (a link included). Never written."""
+        path = self.path(target, name)
+        if not os.path.lexists(path):
+            return None
+        if path.is_symlink() or not path.is_file():
+            return {"unreadable": True}
+        document = _read_json(path)
+        return document if isinstance(document, dict) else {"unreadable": True}
+
+    def owner_canary(self, target: dict, plan_id) -> dict | None:
+        """The owner's canary receipt of exactly this plan (INV-HOST-DELIVERY-MAINTENANCE-001 bind)."""
+        return self._owner_file(target, self._canary_name(canary_receipt_file, plan_id))
+
+    def owner_canary_request(self, target: dict, plan_id) -> dict | None:
+        """The owner's canary request of exactly this plan, read the same way."""
+        return self._owner_file(target, self._canary_name(canary_request_file, plan_id))
+
+    @staticmethod
+    def _canary_name(name_of, plan_id) -> str:
+        try:
+            return name_of(plan_id)
+        except ValueError as exc:
+            raise DeliveryRefused("maintenance_invalid", "plan_id") from exc
 
 
 def _reaped(pid) -> bool:

@@ -4,7 +4,7 @@ Layer: entry
 Owns: add_parser (the argument shape of `zeus host-delivery`), run (its body: M7 host_delivery_command) and the private _execute and _refusal (M7 execute and refusal)
 Does not own: dispatch (entry.cli main), the coordinator, the lane routing and the run loop (composition.cli_host_delivery)
 Entry points: add_parser, run
-Contracts: INV-HOST-DELIVERY-001, INV-HOST-DELIVERY-FIRST-ACTIVATION-001
+Contracts: INV-HOST-DELIVERY-001, INV-HOST-DELIVERY-FIRST-ACTIVATION-001, INV-HOST-DELIVERY-MAINTENANCE-001
 
 Moved from M7 adapters/host_delivery.py:1096-1137 and LANE_HELP at adapters/host_delivery.py:1092-1093 (SOURCE e38aa722) by named rules (A/evidence/rebuild/s10/unit-p/transcribe.py); the parser statements are M7's verbatim.
 `run` is M7 `cli.py` `host_delivery_command` (:510-521) and `_execute` and `_refusal` are `adapters/host_delivery.py` `execute` (:1290-1345) and `refusal` (:1140-1146) (R-c31, S10 unit C8b-4): the bodies are M7's verbatim except that the service is built first (as M7
@@ -15,10 +15,18 @@ SOURCE golden of `entry.cli_host_delivery.pg` pins. Imports sit inside the funct
 """
 
 import json
+import re
 from pathlib import Path
 
 from codex_harness.delivery.domain.host_delivery import WITHDRAW_REASONS
 
+# The operator phases of INV-HOST-DELIVERY-MAINTENANCE-001, spelled as the domain spells them.
+MAINTAIN_PHASES = ("restart",)  # arm/bind: the named remainder of PR-3 (ALL-PRIMARY-20260930)
+# A refusal field is printed only when it is a fixed identifier of a maintenance refusal: never a value.
+REFUSAL_FIELD = re.compile(r"^[a-z][a-z0-9_.]{0,63}$")
+# The typed `maintain` result keys (INV-HOST-DELIVERY-MAINTENANCE-001); the CLI prints nothing else.
+MAINTENANCE_RESULT_KEYS = ("schema", "maintenance_id", "phase", "check", "applicable", "state", "cached",
+                           "pending", "reason_code", "field", "identities", "deadline", "evidence", "authority")
 LANE_HELP = ("One registered Fleet lane whose store, repository and runtime own this delivery; "
              "omitted keeps the control store. The Fleet activation gate stays the control store's")
 
@@ -63,7 +71,22 @@ def add_parser(commands) -> None:
                              "urn:zeus:host-delivery-consumption-retry:1, -generation-restart:1 or "
                              "-consumption-rearm:1, by its kind); "
                              "--evidence must be sha256 of its canonical JSON")
-    for command in (targets, register, tick, run_command, status, withdraw, resume):
+    maintain = sub.add_parser(
+        "maintain", help="Owner: one phase of the active-generation maintenance of one ACTIVE, consumed "
+                         "managed_fleet_systemd delivery (INV-HOST-DELIVERY-MAINTENANCE-001); read-only with "
+                         "--check; takes no token, credential or command arguments")
+    maintain.add_argument("--phase", required=True, choices=MAINTAIN_PHASES,
+                          help="restart (replace the recorded incumbent under the controller hold and record the "
+                               "new generation, not re-qualified); arm and bind are not in this release")
+    maintain.add_argument("--document", required=True,
+                          help="The typed maintenance document (urn:zeus:host-delivery-active-generation:1); "
+                               "the same document is replayed for every phase")
+    maintain.add_argument("--evidence", required=True,
+                          help="sha256:<64 hex> of the document's canonical JSON")
+    maintain.add_argument("--check", action="store_true",
+                          help="Report applicability, fixed reasons and exact identities only: no lease, "
+                               "admission, artifact, file or store write, and no host or provider effect")
+    for command in (targets, register, tick, run_command, status, withdraw, resume, maintain):
         command.add_argument("--lane", default=None, help=LANE_HELP)
 
 
@@ -84,14 +107,21 @@ def run(args) -> None:
 
 
 def _refusal(exc: Exception) -> dict:
-    """What the CLI prints for a failure: a code and a type, never raw text, a path or a value."""
+    """What the CLI prints for a failure: a code and a type, never raw text, a path or a value.
+
+    A maintenance refusal (INV-HOST-DELIVERY-MAINTENANCE-001) also names its allowlisted field."""
     from codex_harness.kernel.errors import ContractError
 
     code = getattr(exc, "reason_code", None)
     if code is None and isinstance(exc, ContractError):
         code = "contract_refused"
-    return {"status": "refused", "reason_code": code or "error", "error_type": type(exc).__name__,
-            "exit_code": 1}
+    printed = {"status": "refused", "reason_code": code or "error", "error_type": type(exc).__name__,
+               "exit_code": 1}
+    field = getattr(exc, "field", None)
+    if type(code) is str and code.startswith("maintenance_") and type(field) is str \
+            and REFUSAL_FIELD.fullmatch(field):
+        printed["field"] = field
+    return printed
 
 
 def _execute(service, args) -> dict:
@@ -126,6 +156,18 @@ def _execute(service, args) -> dict:
             enabled=composition.configured_enabled(composition._settings())).registry.status(args.plan)
         return {**projection, **routed,
                 "exit_code": 0 if projection.get("registered") or args.plan is None else 1}
+    if command == "maintain":
+        # INV-HOST-DELIVERY-MAINTENANCE-001: routed BEFORE the observer, Git and the ordinary controller, so
+        # no phase (and no `--check`) builds a tick observer, a workspace, an executor or a verifier.
+        document = composition.read_document(Path(args.document))
+        if not isinstance(document, dict):
+            raise DeliveryRefused("maintenance_invalid", "document")
+        check = bool(args.check)
+        delivery = composition.maintenance_controller(service, store=store, check=check)
+        result = delivery.maintenance.maintain(document, args.evidence, args.phase, check=check)
+        printed = {key: result[key] for key in MAINTENANCE_RESULT_KEYS if key in result}
+        ok = bool(printed.get("applicable", True)) and not printed.get("pending")
+        return {**printed, **routed, "exit_code": 0 if ok else 1}
     observer = composition._observer(service) if route is None else composition._lane_observer(route)
     try:
         git = (composition._git(service) if route is None

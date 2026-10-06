@@ -1,10 +1,10 @@
 """The `zeus host-delivery` composition: the production coordinator, the lane routing and the run loop (INV-HOST-DELIVERY-001).
 
 Layer: composition
-Owns: host_delivery_owners (the builder of the S7 split), controller, controller_ports, release_verifier, resolve_lane, lane_git, run_loop, load_plan, configured_enabled, read_json and the private _host_settings, _settings, _control_schema, _lane_observer, _git, _observer
+Owns: host_delivery_owners (the builder of the S7 split), maintenance_controller, read_document (S2R, G1-13 batch b), controller, controller_ports, release_verifier, resolve_lane, lane_git, run_loop, load_plan, configured_enabled, read_json and the private _host_settings, _settings, _control_schema, _lane_observer, _git, _observer
 Does not own: the argument shape and the command bodies (entry.cli.host_delivery), the core adapters (delivery.adapters.host_delivery), `host_ports` (composition.delivery_hosts) and the launched service (entry.processes.delivery_service)
 Entry points: host_delivery_owners, controller, controller_ports, release_verifier, resolve_lane, lane_git, run_loop
-Contracts: INV-HOST-DELIVERY-001, INV-HOST-DELIVERY-VERIFY-001, INV-HOST-DELIVERY-FIRST-ACTIVATION-001
+Contracts: INV-HOST-DELIVERY-001, INV-HOST-DELIVERY-VERIFY-001, INV-HOST-DELIVERY-FIRST-ACTIVATION-001, INV-HOST-DELIVERY-MAINTENANCE-001
 
 Moved from M7 `adapters/host_delivery.py` (SOURCE e38aa722) by named rule R-c31 (S10 unit C8b-4), the documented S10 carry of S7's move of the core: `_host_settings` (:352-360), `release_verifier` (:1149-1169), `controller` (:1172-1198),
 `_control_schema` (:1202-1215), `resolve_lane` (:1218-1262), `lane_git` (:1265-1272), `_lane_observer` (:1275-1280), `_git` (:1283-1287), `_settings` (:1348-1351), `_observer` (:1354-1357) and `run_loop` (:1360-1407).
@@ -37,7 +37,10 @@ layer may not import from an adapter) and `controller_ports` (the ports `control
 """
 from __future__ import annotations
 
+import json
+import os
 import signal
+import stat
 import time
 from pathlib import Path
 from types import SimpleNamespace
@@ -47,7 +50,8 @@ from codex_harness.delivery.domain.host_delivery import DeliveryRefused
 
 def host_delivery_owners(store, org=None, *, github=None, hosts=None, canaries=None, clock=None, observer=None, enabled=False,
                          releases=None, queue=None, resume_seconds=None, verifier=None, evaluator_pins=None,
-                         controller_code=None, first_activation=None) -> SimpleNamespace:
+                         controller_code=None, first_activation=None, authorities=None, artifacts=None, canary_records=None,
+                         maintenance_fleet=None) -> SimpleNamespace:
     """The S7 split of M7's `HostDelivery(store, org, **ports)`: the objects by key, as the module docstring tables."""
     import inspect
 
@@ -55,6 +59,7 @@ def host_delivery_owners(store, org=None, *, github=None, hosts=None, canaries=N
     from codex_harness.coordination.application.events import EventJournal
     from codex_harness.delivery.application.host_delivery import state as delivery_state
     from codex_harness.delivery.application.host_delivery.controller import DeliveryController
+    from codex_harness.delivery.application.host_delivery.maintenance import DeliveryMaintenance
     from codex_harness.delivery.application.host_delivery.migration import DeliveryMigration
     from codex_harness.delivery.application.host_delivery.recovery import Recovery
     from codex_harness.delivery.application.host_delivery.registry import DeliveryRegistry
@@ -82,7 +87,8 @@ def host_delivery_owners(store, org=None, *, github=None, hosts=None, canaries=N
                         ("preparation", SwitchPreparation), ("draining", Drain), ("switching", Switch),
                         ("rollback", Rollback), ("consumption", Consumption), ("controller", DeliveryController),
                         ("withdrawal", Withdrawal), ("resumption", Resumption), ("recovery", Recovery),
-                        ("migration", DeliveryMigration))
+                        ("migration", DeliveryMigration),
+                        ("maintenance", DeliveryMaintenance))
     queue = queue if queue is not None else ReleaseQueue(store, ticket_binding=tickets.ticket_binding,
                                                          fences=execution_fence, clock=SYSTEM_CLOCK, ids=SYSTEM_IDS)
     values = {"store": store, "org": org, "github": github, "hosts": hosts or {}, "canaries": canaries or {},
@@ -90,10 +96,12 @@ def host_delivery_owners(store, org=None, *, github=None, hosts=None, canaries=N
               "releases": releases if releases is not None else Releases(
                   store, org, ticket_binding=tickets.ticket_binding, ticket_superseded=tickets.TicketSuperseded,
                   events=EventJournal(), hooks=HookRollback(), clock=SYSTEM_CLOCK, ids=SYSTEM_IDS),
-              "claims": queue, "settlement": queue,
+              "claims": queue, "settlement": queue, "lease": queue,
               "resume_seconds": delivery_state.RESUME_SECONDS if resume_seconds is None else resume_seconds,
               "verifier": verifier, "evaluator_pins": evaluator_pins, "controller_code": controller_code,
-              "first_activation": first_activation, "ticket_binding": tickets.ticket_binding}
+              "first_activation": first_activation, "ticket_binding": tickets.ticket_binding,
+              "authorities": authorities, "artifacts": artifacts, "canary_records": canary_records,
+              "maintenance_fleet": maintenance_fleet}
     objects: dict = {}
     for key, cls in objects_in_order:
         params = [p for p in inspect.signature(cls.__init__).parameters if p not in ("self", "store")]
@@ -236,6 +244,75 @@ def controller(service, *, enabled=None, observer=None, git=None, store=None) ->
     """
     store, ports = controller_ports(service, enabled=enabled, observer=observer, git=git, store=store)
     return host_delivery_owners(store, service.org, **ports)
+
+
+def read_document(path: Path):
+    """S2R `_read_document(path)` (INV-HOST-DELIVERY-MAINTENANCE-001): the operator's maintenance document, one bounded regular JSON
+    file, or None.
+
+    Opened without blocking and checked to be a regular file by `fstat`, so a FIFO or a device named as the document is refused
+    instead of waiting forever; malformed, oversized or unreadable is None."""
+    from codex_harness.delivery.adapters.host_delivery import MAX_STATE_BYTES
+
+    try:
+        descriptor = os.open(path, os.O_RDONLY | os.O_NONBLOCK | getattr(os, "O_CLOEXEC", 0))
+    except OSError:
+        return None
+    try:
+        if not stat.S_ISREG(os.fstat(descriptor).st_mode):
+            return None
+        with os.fdopen(descriptor, "rb", closefd=False) as stream:
+            data = stream.read(MAX_STATE_BYTES + 1)
+    except OSError:
+        return None
+    finally:
+        os.close(descriptor)
+    if len(data) > MAX_STATE_BYTES:
+        return None
+    try:
+        return json.loads(data.decode("utf-8"))
+    except ValueError:
+        return None
+
+
+def maintenance_controller(service, *, store, check: bool) -> SimpleNamespace:
+    """The coordinator of INV-HOST-DELIVERY-MAINTENANCE-001 with exactly its ports (S2R `maintenance_controller`).
+
+    `store` holds this delivery's records (the control store, or the `--lane` store). The Fleet readiness, the owner-action rows
+    and the authority and artifact ports are the CONTROL runtime's, as for the activation gate: `FleetPause(service.store)` is
+    both the managed target's activation gate and the `FleetReadiness` port. No tick observer, Git workspace, verifier or GitHub
+    port is built, and `--check` builds no artifact store: it can create nothing. Nothing here prints a DSN or accepts a token;
+    every import is lazy. The maintenance use case is the `maintenance` attribute of the returned owners (S2R's one
+    `HostDelivery.maintain`). This release carries the restart phase only (ALL-PRIMARY-20260930; arm/bind are PR-3's remainder).
+    """
+    from codex_harness.composition.configuration import runtime_dir
+    from codex_harness.composition.delivery_hosts import host_ports
+    from codex_harness.coordination.application.fleet.pause import FleetPause
+    from codex_harness.delivery.adapters.host_delivery import (
+        canary_checks,
+        configured_enabled,
+        systemd_control_dir,
+    )
+    from codex_harness.delivery.adapters.maintenance_evidence import (
+        LazyArtifacts,
+        control_action_reader,
+        trusted_authority_reader,
+    )
+
+    def file_artifacts(root):
+        from codex_harness.storage.adapters.file_artifacts import FileArtifacts
+
+        return FileArtifacts(root)
+
+    host = _settings()
+    fleet = FleetPause(service.store)
+    root = runtime_dir() / "artifacts"
+    return host_delivery_owners(store, service.org,
+                                hosts=host_ports(fleet=fleet, systemd_control=systemd_control_dir(host)),
+                                canaries=canary_checks(store, facts=_canary_facts), observer=None,
+                                enabled=configured_enabled(host), authorities=trusted_authority_reader(root),
+                                artifacts=None if check else LazyArtifacts(root, file_artifacts),
+                                canary_records=control_action_reader(service.store), maintenance_fleet=fleet)
 
 
 # ----- explicit lane routing -----------------------------------------------------------------------
