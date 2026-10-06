@@ -194,6 +194,12 @@ def _redis_coverage(socket: Path, forced) -> tuple[dict, dict, list[str]]:
     return dbs, prefixes_out, failures
 
 
+def redis_facts(socket: Path, prefixes=None) -> tuple[dict, dict, list[str]]:
+    """The per-db DBSIZE coverage and the per-prefix key/stream digests of the copy's Redis (read-only; R3 compares them
+    before and after every leaf). `prefixes` forces the list (tests only)."""
+    return _redis_coverage(Path(socket), prefixes)
+
+
 def collect(copy, b_release, database: str, *, prefixes=None) -> dict:
     """The D0 facts of `copy` (a `copies.Copy`); `facts["failures"]` is empty exactly when the record passes."""
     from codex_harness.delivery.adapters.host_migration import catalog_digest, pg_catalog

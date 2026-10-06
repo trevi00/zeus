@@ -1,0 +1,38 @@
+{
+ "version": 1,
+ "closed": true,
+ "proposal": true,
+ "note": "PROPOSAL (RH-4a): the closed rehearsal.r3.* list for R3 A-vs-B digests. It is NOT merged into compare/masks.json; Codex reviews it first. A mask names exact JSON field names (or the ROOT path rewrite) and nothing else. Owners, generations, attempts, leases, statuses, authorization results, digests and refs are never masked (r3.validate_masks refuses such a field).",
+ "masks": [
+  {
+   "id": "rehearsal.r3.wall_clock",
+   "kind": "nondeterministic_os",
+   "fields": [
+    "generated_at"
+   ],
+   "reason": "the wall-clock time at which decision-feedback status/report builds its projection (DecisionFeedback.status/report: generated_at = self.clock())"
+  },
+  {
+   "id": "rehearsal.r3.age",
+   "kind": "nondeterministic_os",
+   "fields": [
+    "elapsed_seconds"
+   ],
+   "reason": "a duration computed from the wall clock at read time (domain/audit_progress.py status view: elapsed_seconds, shown by audit-service status); stored timestamps are identical on A and B over one copy and are not masked"
+  },
+  {
+   "id": "rehearsal.r3.pid",
+   "kind": "nondeterministic_os",
+   "fields": [
+    "pid"
+   ],
+   "reason": "the OS pid of a writer process in the observation health records (domain/observation.py: source pid), shown by observe status process_health"
+  },
+  {
+   "id": "rehearsal.r3.root_path",
+   "kind": "host_path",
+   "rewrite": "root",
+   "reason": "the per-run scratch ROOT (and ROOT/X) path in plain text is rewritten to <ROOT>; it differs per run, never between A and B"
+  }
+ ]
+}

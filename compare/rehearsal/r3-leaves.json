@@ -1,0 +1,2505 @@
+{
+ "version": 1,
+ "note": "R3 leaf catalog (RH-4a, rehearsal design '5. R3', critique #15). Every parser node of every revision is read_only (cited on A and B), excluded (reason) or disputed (the OWNER decides; never defaulted to read-only). Generated, not hand-typed.",
+ "revisions": {
+  "A": {
+   "label": "M7 reference (SOURCE e38aa722)",
+   "nodes": 152
+  },
+  "B": {
+   "label": "the rebuilt target (this tree)",
+   "nodes": 163
+  },
+  "08bb9a44": {
+   "label": "R0 release",
+   "commit": "08bb9a4449938624e69c2914990ebd470dc3dcf3",
+   "nodes": 153
+  },
+  "5aa220fd": {
+   "label": "R0 release",
+   "commit": "5aa220fdb53fc52ec6f020aeacb5f96289f62f4e",
+   "nodes": 149
+  },
+  "ced20281": {
+   "label": "R0 release",
+   "commit": "ced20281ba10fa3b16280cb73a20279b7e94052a",
+   "nodes": 147
+  },
+  "5c67f099": {
+   "label": "R0 release",
+   "commit": "5c67f0999ff2365fe666180d3b36c75b2e44a63a",
+   "nodes": 152
+  }
+ },
+ "citation_roots": {
+  "A": "reference/m7/src/codex_harness",
+  "B": "src/codex_harness"
+ },
+ "nodes": {
+  "zeus artifact": {
+   "class": "excluded",
+   "revisions": [
+    "A",
+    "B",
+    "08bb9a44",
+    "5aa220fd",
+    "ced20281",
+    "5c67f099"
+   ],
+   "reason": "not in the design's R3 candidate list; not traced for R3 (the owner may promote it); builds the executor"
+  },
+  "zeus audit-repair": {
+   "class": "excluded",
+   "revisions": [
+    "A",
+    "B",
+    "08bb9a44",
+    "5aa220fd",
+    "ced20281",
+    "5c67f099"
+   ],
+   "reason": "group node: argparse requires a subcommand, no handler runs"
+  },
+  "zeus audit-repair disable": {
+   "class": "excluded",
+   "revisions": [
+    "A",
+    "B",
+    "08bb9a44",
+    "5aa220fd",
+    "ced20281",
+    "5c67f099"
+   ],
+   "reason": "records a deactivation: store write"
+  },
+  "zeus audit-repair enable": {
+   "class": "excluded",
+   "revisions": [
+    "A",
+    "B",
+    "08bb9a44",
+    "5aa220fd",
+    "ced20281",
+    "5c67f099"
+   ],
+   "reason": "records an activation: store write"
+  },
+  "zeus audit-repair inspect": {
+   "class": "read_only",
+   "revisions": [
+    "A",
+    "B",
+    "08bb9a44",
+    "5aa220fd",
+    "ced20281",
+    "5c67f099"
+   ],
+   "argv": [
+    "audit-repair",
+    "inspect",
+    "--audit-id",
+    "{audit_id}"
+   ],
+   "params": [
+    "audit_id"
+   ],
+   "cites": {
+    "A": [
+     "cli.py:audit_repair_command",
+     "adapters/audit_repair_cli.py:execute",
+     "adapters/audit_repair.py:build_repair",
+     "application/audit_repair.py:AuditRepair.inspect"
+    ],
+    "B": [
+     "entry/cli/audit_repair.py:run",
+     "entry/cli/audit_repair.py:_execute",
+     "composition/audit_repair.py:build_repair",
+     "research/application/audit_repair.py:AuditRepair.inspect"
+    ]
+   },
+   "declared_writes": [
+    "runtime/artifacts directory (FileArtifacts.__init__ mkdir parents exist_ok)"
+   ],
+   "note": "creates no task, record or activation (AuditRepair.inspect docstring); reads artifacts"
+  },
+  "zeus audit-repair status": {
+   "class": "read_only",
+   "revisions": [
+    "A",
+    "B",
+    "08bb9a44",
+    "5aa220fd",
+    "ced20281",
+    "5c67f099"
+   ],
+   "argv": [
+    "audit-repair",
+    "status",
+    "--audit-id",
+    "{audit_id}"
+   ],
+   "params": [
+    "audit_id"
+   ],
+   "cites": {
+    "A": [
+     "cli.py:audit_repair_command",
+     "adapters/audit_repair_cli.py:execute",
+     "adapters/audit_repair.py:build_repair",
+     "application/audit_repair.py:AuditRepair.status"
+    ],
+    "B": [
+     "entry/cli/audit_repair.py:run",
+     "entry/cli/audit_repair.py:_execute",
+     "composition/audit_repair.py:build_repair",
+     "research/application/audit_repair.py:AuditRepair.status"
+    ]
+   },
+   "declared_writes": [
+    "runtime/artifacts directory (FileArtifacts.__init__ mkdir parents exist_ok)"
+   ]
+  },
+  "zeus audit-service": {
+   "class": "excluded",
+   "revisions": [
+    "A",
+    "B",
+    "08bb9a44",
+    "5aa220fd",
+    "ced20281",
+    "5c67f099"
+   ],
+   "reason": "group node: argparse requires a subcommand, no handler runs"
+  },
+  "zeus audit-service run": {
+   "class": "excluded",
+   "revisions": [
+    "A",
+    "B",
+    "08bb9a44",
+    "5aa220fd",
+    "ced20281",
+    "5c67f099"
+   ],
+   "reason": "runs the audit service: store writes and provider calls"
+  },
+  "zeus audit-service status": {
+   "class": "read_only",
+   "revisions": [
+    "A",
+    "B",
+    "08bb9a44",
+    "5aa220fd",
+    "ced20281",
+    "5c67f099"
+   ],
+   "argv": [
+    "audit-service",
+    "status",
+    "--audit-id",
+    "{audit_id}"
+   ],
+   "params": [
+    "audit_id"
+   ],
+   "cites": {
+    "A": [
+     "cli.py:audit_service_command",
+     "adapters/audit_service.py:execute",
+     "adapters/audit_service.py:status"
+    ],
+    "B": [
+     "entry/cli/audit_service.py:run",
+     "entry/cli/audit_service.py:_execute",
+     "entry/cli/audit_service.py:_status"
+    ]
+   }
+  },
+  "zeus autonomous": {
+   "class": "excluded",
+   "revisions": [
+    "A",
+    "B",
+    "08bb9a44",
+    "5aa220fd",
+    "ced20281",
+    "5c67f099"
+   ],
+   "reason": "group node: argparse requires a subcommand, no handler runs"
+  },
+  "zeus autonomous run": {
+   "class": "excluded",
+   "revisions": [
+    "A",
+    "B",
+    "08bb9a44",
+    "5aa220fd",
+    "ced20281",
+    "5c67f099"
+   ],
+   "reason": "runs the autonomous cycle: store, Redis and provider effects"
+  },
+  "zeus autonomous status": {
+   "class": "read_only",
+   "revisions": [
+    "A",
+    "B",
+    "08bb9a44",
+    "5aa220fd",
+    "ced20281",
+    "5c67f099"
+   ],
+   "argv": [
+    "autonomous",
+    "status",
+    "{run_id}"
+   ],
+   "params": [
+    "run_id"
+   ],
+   "cites": {
+    "A": [
+     "cli.py:autonomous_command",
+     "adapters/autonomous_cli.py:execute",
+     "adapters/autonomous_cli.py:status",
+     "application/autonomous.py:AutonomousRun.status"
+    ],
+    "B": [
+     "entry/cli/autonomous.py:run",
+     "entry/cli/autonomous.py:_execute",
+     "entry/cli/autonomous.py:_status",
+     "coordination/application/autonomous.py:AutonomousRun.status"
+    ]
+   }
+  },
+  "zeus canary": {
+   "class": "excluded",
+   "revisions": [
+    "A",
+    "B",
+    "08bb9a44",
+    "5aa220fd",
+    "ced20281",
+    "5c67f099"
+   ],
+   "reason": "runs the Codex canary (provider call with --live)"
+  },
+  "zeus cancel": {
+   "class": "excluded",
+   "revisions": [
+    "A",
+    "B",
+    "08bb9a44",
+    "5aa220fd",
+    "ced20281",
+    "5c67f099"
+   ],
+   "reason": "cancels a task: store write"
+  },
+  "zeus cleanup": {
+   "class": "excluded",
+   "revisions": [
+    "A",
+    "B",
+    "08bb9a44",
+    "5aa220fd",
+    "ced20281",
+    "5c67f099"
+   ],
+   "reason": "artifact maintenance (collect --apply deletes artifacts)"
+  },
+  "zeus context": {
+   "class": "excluded",
+   "revisions": [
+    "A",
+    "B",
+    "08bb9a44",
+    "5aa220fd",
+    "ced20281",
+    "5c67f099"
+   ],
+   "reason": "not in the design's R3 candidate list; not traced for R3 (the owner may promote it)"
+  },
+  "zeus continuation": {
+   "class": "excluded",
+   "revisions": [
+    "A",
+    "B",
+    "08bb9a44",
+    "5aa220fd",
+    "ced20281",
+    "5c67f099"
+   ],
+   "reason": "group node: argparse requires a subcommand, no handler runs"
+  },
+  "zeus continuation capacity-grant": {
+   "class": "excluded",
+   "revisions": [
+    "A",
+    "B",
+    "08bb9a44",
+    "5aa220fd",
+    "ced20281",
+    "5c67f099"
+   ],
+   "reason": "records a capacity grant: store write"
+  },
+  "zeus continuation conduct": {
+   "class": "excluded",
+   "revisions": [
+    "A",
+    "B",
+    "08bb9a44",
+    "5aa220fd",
+    "ced20281",
+    "5c67f099"
+   ],
+   "reason": "claims and conducts a decision: store, executor and provider effects"
+  },
+  "zeus continuation delivery-requalify": {
+   "class": "excluded",
+   "revisions": [
+    "A",
+    "B",
+    "08bb9a44",
+    "5aa220fd",
+    "5c67f099"
+   ],
+   "reason": "records a requalification: store write"
+  },
+  "zeus continuation identity": {
+   "class": "read_only",
+   "revisions": [
+    "A",
+    "B",
+    "08bb9a44",
+    "5aa220fd",
+    "ced20281",
+    "5c67f099"
+   ],
+   "argv": [
+    "continuation",
+    "identity",
+    "--lane",
+    "{lane}"
+   ],
+   "params": [
+    "lane"
+   ],
+   "cites": {
+    "A": [
+     "cli.py:continuation_command",
+     "adapters/continuation_cli.py:execute",
+     "adapters/continuation.py:archive_identity"
+    ],
+    "B": [
+     "entry/cli/continuation.py:run",
+     "entry/cli/continuation.py:_execute",
+     "composition/continuation.py:archive_identity"
+    ]
+   },
+   "note": "reads the registered Fleet config and digests the lane runtime PATH string; no file is read or created"
+  },
+  "zeus continuation ownership-reconcile": {
+   "class": "excluded",
+   "revisions": [
+    "A",
+    "B",
+    "08bb9a44",
+    "5aa220fd",
+    "ced20281",
+    "5c67f099"
+   ],
+   "reason": "reconciles ownership: store write"
+  },
+  "zeus continuation register": {
+   "class": "excluded",
+   "revisions": [
+    "A",
+    "B",
+    "08bb9a44",
+    "5aa220fd",
+    "ced20281",
+    "5c67f099"
+   ],
+   "reason": "registers a continuation policy: store write"
+  },
+  "zeus continuation research-accept": {
+   "class": "excluded",
+   "revisions": [
+    "A",
+    "B",
+    "08bb9a44",
+    "5aa220fd",
+    "ced20281",
+    "5c67f099"
+   ],
+   "reason": "records an owner research receipt: store write"
+  },
+  "zeus continuation research-supplement": {
+   "class": "excluded",
+   "revisions": [
+    "A",
+    "B",
+    "08bb9a44",
+    "5aa220fd",
+    "ced20281",
+    "5c67f099"
+   ],
+   "reason": "records an owner scope supplement: store write"
+  },
+  "zeus continuation status": {
+   "class": "read_only",
+   "revisions": [
+    "A",
+    "B",
+    "08bb9a44",
+    "5aa220fd",
+    "ced20281",
+    "5c67f099"
+   ],
+   "argv": [
+    "continuation",
+    "status"
+   ],
+   "cites": {
+    "A": [
+     "cli.py:continuation_command",
+     "adapters/continuation_cli.py:execute",
+     "application/continuation.py:Continuation.status"
+    ],
+    "B": [
+     "entry/cli/continuation.py:run",
+     "entry/cli/continuation.py:_execute",
+     "coordination/application/continuation/frames.py:PolicyFrames.status"
+    ]
+   },
+   "params": []
+  },
+  "zeus continuation tick": {
+   "class": "excluded",
+   "revisions": [
+    "A",
+    "B",
+    "08bb9a44",
+    "5aa220fd",
+    "ced20281",
+    "5c67f099"
+   ],
+   "reason": "advances continuation: store writes and fleet admission"
+  },
+  "zeus cycle": {
+   "class": "excluded",
+   "revisions": [
+    "A",
+    "B",
+    "08bb9a44",
+    "5aa220fd",
+    "ced20281",
+    "5c67f099"
+   ],
+   "reason": "group node: argparse requires a subcommand, no handler runs"
+  },
+  "zeus cycle handoff": {
+   "class": "excluded",
+   "revisions": [
+    "A",
+    "B",
+    "08bb9a44",
+    "5aa220fd",
+    "ced20281",
+    "5c67f099"
+   ],
+   "reason": "not in the design's R3 candidate list; not traced for R3 (the owner may promote it) (INV-CYCLE-HANDOFF-001 states store read only)"
+  },
+  "zeus cycle start": {
+   "class": "excluded",
+   "revisions": [
+    "A",
+    "B",
+    "08bb9a44",
+    "5aa220fd",
+    "ced20281",
+    "5c67f099"
+   ],
+   "reason": "creates a cycle row: store write"
+  },
+  "zeus cycle status": {
+   "class": "read_only",
+   "revisions": [
+    "A",
+    "B",
+    "08bb9a44",
+    "5aa220fd",
+    "ced20281",
+    "5c67f099"
+   ],
+   "argv": [
+    "cycle",
+    "status",
+    "{cycle_id}"
+   ],
+   "params": [
+    "cycle_id"
+   ],
+   "cites": {
+    "A": [
+     "cli.py:cycle_command",
+     "application/local_cycle.py:LocalCycle.status"
+    ],
+    "B": [
+     "entry/cli/cycle.py:run",
+     "coordination/application/local_cycle.py:LocalCycle.status"
+    ]
+   }
+  },
+  "zeus cycle step": {
+   "class": "excluded",
+   "revisions": [
+    "A",
+    "B",
+    "08bb9a44",
+    "5aa220fd",
+    "ced20281",
+    "5c67f099"
+   ],
+   "reason": "executes a cycle step: store, Redis and provider effects"
+  },
+  "zeus decision-feedback": {
+   "class": "excluded",
+   "revisions": [
+    "A",
+    "B",
+    "08bb9a44",
+    "5aa220fd",
+    "ced20281",
+    "5c67f099"
+   ],
+   "reason": "group node: argparse requires a subcommand, no handler runs"
+  },
+  "zeus decision-feedback collect": {
+   "class": "excluded",
+   "revisions": [
+    "A",
+    "B",
+    "08bb9a44",
+    "5aa220fd",
+    "ced20281",
+    "5c67f099"
+   ],
+   "reason": "records a collection: store writes and git reads"
+  },
+  "zeus decision-feedback report": {
+   "class": "read_only",
+   "revisions": [
+    "A",
+    "B",
+    "08bb9a44",
+    "5aa220fd",
+    "ced20281",
+    "5c67f099"
+   ],
+   "argv": [
+    "decision-feedback",
+    "report"
+   ],
+   "cites": {
+    "A": [
+     "cli.py:decision_feedback_command",
+     "adapters/decision_feedback_cli.py:execute",
+     "adapters/decision_feedback_cli.py:report",
+     "application/decision_feedback.py:DecisionFeedback.report"
+    ],
+    "B": [
+     "entry/cli/decision_feedback.py:run",
+     "entry/cli/decision_feedback.py:_execute",
+     "entry/cli/decision_feedback.py:_report",
+     "research/application/decision_feedback.py:DecisionFeedback.report"
+    ]
+   },
+   "note": "output carries generated_at (wall clock): masked by rehearsal.r3.wall_clock",
+   "params": []
+  },
+  "zeus decision-feedback status": {
+   "class": "read_only",
+   "revisions": [
+    "A",
+    "B",
+    "08bb9a44",
+    "5aa220fd",
+    "ced20281",
+    "5c67f099"
+   ],
+   "argv": [
+    "decision-feedback",
+    "status"
+   ],
+   "cites": {
+    "A": [
+     "cli.py:decision_feedback_command",
+     "adapters/decision_feedback_cli.py:execute",
+     "adapters/decision_feedback_cli.py:status",
+     "application/decision_feedback.py:DecisionFeedback.status"
+    ],
+    "B": [
+     "entry/cli/decision_feedback.py:run",
+     "entry/cli/decision_feedback.py:_execute",
+     "entry/cli/decision_feedback.py:_status",
+     "research/application/decision_feedback.py:DecisionFeedback.status"
+    ]
+   },
+   "note": "output carries generated_at (wall clock): masked by rehearsal.r3.wall_clock",
+   "params": []
+  },
+  "zeus demo": {
+   "class": "excluded",
+   "revisions": [
+    "A",
+    "B",
+    "08bb9a44",
+    "5aa220fd",
+    "ced20281",
+    "5c67f099"
+   ],
+   "reason": "records a demo scenario: store writes"
+  },
+  "zeus desk": {
+   "class": "excluded",
+   "revisions": [
+    "A",
+    "B",
+    "08bb9a44",
+    "5aa220fd",
+    "ced20281",
+    "5c67f099"
+   ],
+   "reason": "group node: argparse requires a subcommand, no handler runs"
+  },
+  "zeus desk run": {
+   "class": "excluded",
+   "revisions": [
+    "A",
+    "B",
+    "08bb9a44",
+    "5aa220fd",
+    "ced20281",
+    "5c67f099"
+   ],
+   "reason": "runs the front desk: store writes and provider calls"
+  },
+  "zeus desk status": {
+   "class": "read_only",
+   "revisions": [
+    "A",
+    "B",
+    "08bb9a44",
+    "5aa220fd",
+    "ced20281",
+    "5c67f099"
+   ],
+   "argv": [
+    "desk",
+    "status",
+    "--revision",
+    "{revision}"
+   ],
+   "params": [
+    "revision"
+   ],
+   "cites": {
+    "A": [
+     "cli.py:desk_command",
+     "adapters/frontdesk_cli.py:execute",
+     "adapters/frontdesk_cli.py:status",
+     "application/frontdesk.py:FrontDesk.sessions"
+    ],
+    "B": [
+     "entry/cli/desk.py:run",
+     "entry/cli/desk.py:_execute",
+     "entry/cli/desk.py:_status",
+     "intake/application/frontdesk.py:FrontDesk.sessions"
+    ]
+   }
+  },
+  "zeus dge": {
+   "class": "excluded",
+   "revisions": [
+    "A",
+    "B",
+    "08bb9a44",
+    "5aa220fd",
+    "ced20281",
+    "5c67f099"
+   ],
+   "reason": "group node: argparse requires a subcommand, no handler runs"
+  },
+  "zeus dge register": {
+   "class": "excluded",
+   "revisions": [
+    "A",
+    "B",
+    "08bb9a44",
+    "5aa220fd",
+    "ced20281",
+    "5c67f099"
+   ],
+   "reason": "registers a design packet: store write"
+  },
+  "zeus dge status": {
+   "class": "read_only",
+   "revisions": [
+    "A",
+    "B",
+    "08bb9a44",
+    "5aa220fd",
+    "ced20281",
+    "5c67f099"
+   ],
+   "argv": [
+    "dge",
+    "status",
+    "{session_id}"
+   ],
+   "params": [
+    "session_id"
+   ],
+   "cites": {
+    "A": [
+     "cli.py:dge_command",
+     "adapters/dge_cli.py:execute",
+     "adapters/dge_cli.py:status",
+     "application/dge.py:DebateSessions.status"
+    ],
+    "B": [
+     "entry/cli/dge.py:run",
+     "entry/cli/dge.py:_execute",
+     "entry/cli/dge.py:_status",
+     "research/application/dge.py:DebateSessions.status"
+    ]
+   }
+  },
+  "zeus dge submit": {
+   "class": "excluded",
+   "revisions": [
+    "A",
+    "B",
+    "08bb9a44",
+    "5aa220fd",
+    "ced20281",
+    "5c67f099"
+   ],
+   "reason": "records a debate event: store write"
+  },
+  "zeus dlq": {
+   "class": "excluded",
+   "revisions": [
+    "B"
+   ],
+   "reason": "group node: argparse requires a subcommand, no handler runs"
+  },
+  "zeus dlq list": {
+   "class": "excluded",
+   "revisions": [
+    "B"
+   ],
+   "reason": "B-only node (absent in A and in every R0 revision): no A counterpart, so no parity; not in the design's R3 candidate list"
+  },
+  "zeus dlq replay": {
+   "class": "excluded",
+   "revisions": [
+    "B"
+   ],
+   "reason": "B-only node (absent in A and in every R0 revision): no A counterpart, so no parity; not in the design's R3 candidate list"
+  },
+  "zeus dlq trim": {
+   "class": "excluded",
+   "revisions": [
+    "B"
+   ],
+   "reason": "B-only node (absent in A and in every R0 revision): no A counterpart, so no parity; not in the design's R3 candidate list"
+  },
+  "zeus doctor": {
+   "class": "excluded",
+   "revisions": [
+    "A",
+    "B",
+    "08bb9a44",
+    "5aa220fd",
+    "ced20281",
+    "5c67f099"
+   ],
+   "reason": "not in the design's R3 candidate list; not traced for R3 (the owner may promote it); checks live PostgreSQL/Redis reachability and, offline, host tools"
+  },
+  "zeus embed": {
+   "class": "excluded",
+   "revisions": [
+    "A",
+    "B",
+    "08bb9a44",
+    "5aa220fd",
+    "ced20281",
+    "5c67f099"
+   ],
+   "reason": "writes embeddings to the knowledge graph"
+  },
+  "zeus execute-one": {
+   "class": "excluded",
+   "revisions": [
+    "A",
+    "B",
+    "08bb9a44",
+    "5aa220fd",
+    "ced20281",
+    "5c67f099"
+   ],
+   "reason": "executes one task: store, Redis and provider effects"
+  },
+  "zeus execution-recovery": {
+   "class": "excluded",
+   "revisions": [
+    "A",
+    "B",
+    "08bb9a44",
+    "5aa220fd",
+    "ced20281",
+    "5c67f099"
+   ],
+   "reason": "group node: argparse requires a subcommand, no handler runs"
+  },
+  "zeus execution-recovery apply": {
+   "class": "excluded",
+   "revisions": [
+    "A",
+    "B",
+    "08bb9a44",
+    "5aa220fd",
+    "ced20281",
+    "5c67f099"
+   ],
+   "reason": "applies a recovery packet: store writes"
+  },
+  "zeus execution-recovery prepare": {
+   "class": "excluded",
+   "revisions": [
+    "A",
+    "B",
+    "08bb9a44",
+    "5aa220fd",
+    "ced20281",
+    "5c67f099"
+   ],
+   "reason": "writes a recovery packet file; reads execution state"
+  },
+  "zeus fleet": {
+   "class": "excluded",
+   "revisions": [
+    "A",
+    "B",
+    "08bb9a44",
+    "5aa220fd",
+    "ced20281",
+    "5c67f099"
+   ],
+   "reason": "group node: argparse requires a subcommand, no handler runs"
+  },
+  "zeus fleet authorize-budget": {
+   "class": "excluded",
+   "revisions": [
+    "A",
+    "B",
+    "08bb9a44",
+    "5aa220fd",
+    "ced20281",
+    "5c67f099"
+   ],
+   "reason": "records a budget grant: store write"
+  },
+  "zeus fleet backlog": {
+   "class": "excluded",
+   "revisions": [
+    "A",
+    "B",
+    "08bb9a44",
+    "5aa220fd",
+    "ced20281",
+    "5c67f099"
+   ],
+   "reason": "group node: argparse requires a subcommand, no handler runs"
+  },
+  "zeus fleet backlog register": {
+   "class": "excluded",
+   "revisions": [
+    "A",
+    "B",
+    "08bb9a44",
+    "5aa220fd",
+    "ced20281",
+    "5c67f099"
+   ],
+   "reason": "registers a backlog plan: store write and git reads"
+  },
+  "zeus fleet backlog status": {
+   "class": "read_only",
+   "revisions": [
+    "A",
+    "B",
+    "08bb9a44",
+    "5aa220fd",
+    "ced20281",
+    "5c67f099"
+   ],
+   "argv": [
+    "fleet",
+    "backlog",
+    "status"
+   ],
+   "cites": {
+    "A": [
+     "cli.py:fleet_command",
+     "adapters/fleet_cli.py:execute",
+     "adapters/fleet_cli.py:backlog",
+     "application/fleet_backlog.py:FleetBacklog.status"
+    ],
+    "B": [
+     "entry/cli/fleet.py:run",
+     "entry/cli/fleet.py:_execute",
+     "entry/cli/fleet.py:_backlog",
+     "coordination/application/fleet_backlog.py:FleetBacklog.status"
+    ]
+   },
+   "params": []
+  },
+  "zeus fleet backlog tick": {
+   "class": "excluded",
+   "revisions": [
+    "A",
+    "B",
+    "08bb9a44",
+    "5aa220fd",
+    "ced20281",
+    "5c67f099"
+   ],
+   "reason": "admits backlog items: store writes"
+  },
+  "zeus fleet enqueue": {
+   "class": "excluded",
+   "revisions": [
+    "A",
+    "B",
+    "08bb9a44",
+    "5aa220fd",
+    "ced20281",
+    "5c67f099"
+   ],
+   "reason": "admits a job: store write"
+  },
+  "zeus fleet migrate-host": {
+   "class": "excluded",
+   "revisions": [
+    "A",
+    "B",
+    "08bb9a44",
+    "5aa220fd",
+    "ced20281",
+    "5c67f099"
+   ],
+   "reason": "rebinds lanes to the target host: store writes"
+  },
+  "zeus fleet pause": {
+   "class": "excluded",
+   "revisions": [
+    "A",
+    "B",
+    "08bb9a44",
+    "5aa220fd",
+    "ced20281",
+    "5c67f099"
+   ],
+   "reason": "sets the pause control row: store write"
+  },
+  "zeus fleet reconcile-interrupted": {
+   "class": "excluded",
+   "revisions": [
+    "A",
+    "B",
+    "08bb9a44",
+    "5aa220fd",
+    "ced20281",
+    "5c67f099"
+   ],
+   "reason": "settles an interrupted job: store write and docker inspect"
+  },
+  "zeus fleet record-delivery": {
+   "class": "excluded",
+   "revisions": [
+    "A",
+    "B",
+    "08bb9a44",
+    "5aa220fd",
+    "ced20281",
+    "5c67f099"
+   ],
+   "reason": "records owner delivery evidence: store write"
+  },
+  "zeus fleet register": {
+   "class": "excluded",
+   "revisions": [
+    "A",
+    "B",
+    "08bb9a44",
+    "5aa220fd",
+    "ced20281",
+    "5c67f099"
+   ],
+   "reason": "registers the fleet configuration: store write"
+  },
+  "zeus fleet relocate": {
+   "class": "excluded",
+   "revisions": [
+    "A",
+    "B",
+    "08bb9a44",
+    "5aa220fd",
+    "ced20281",
+    "5c67f099"
+   ],
+   "reason": "moves lane paths: store writes and file effects"
+  },
+  "zeus fleet resume": {
+   "class": "excluded",
+   "revisions": [
+    "A",
+    "B",
+    "08bb9a44",
+    "5aa220fd",
+    "ced20281",
+    "5c67f099"
+   ],
+   "reason": "clears the pause control row: store write"
+  },
+  "zeus fleet run": {
+   "class": "excluded",
+   "revisions": [
+    "A",
+    "B",
+    "08bb9a44",
+    "5aa220fd",
+    "ced20281",
+    "5c67f099"
+   ],
+   "reason": "admits and dispatches jobs: store writes and process effects"
+  },
+  "zeus fleet status": {
+   "class": "read_only",
+   "revisions": [
+    "A",
+    "B",
+    "08bb9a44",
+    "5aa220fd",
+    "ced20281",
+    "5c67f099"
+   ],
+   "argv": [
+    "fleet",
+    "status"
+   ],
+   "cites": {
+    "A": [
+     "cli.py:main",
+     "cli.py:fleet_command",
+     "adapters/fleet_cli.py:execute",
+     "adapters/fleet_cli.py:status",
+     "application/fleet.py:Fleet.status",
+     "application/fleet.py:Fleet.reconciliation_required"
+    ],
+    "B": [
+     "entry/cli/fleet.py:run",
+     "entry/cli/fleet.py:_execute",
+     "entry/cli/fleet.py:_status",
+     "coordination/application/fleet/registry.py:FleetRegistry.status",
+     "coordination/application/fleet/registry.py:FleetRegistry.reconciliation_required"
+    ]
+   },
+   "params": []
+  },
+  "zeus flush": {
+   "class": "excluded",
+   "revisions": [
+    "A",
+    "B",
+    "08bb9a44",
+    "5aa220fd",
+    "ced20281",
+    "5c67f099"
+   ],
+   "reason": "flushes the outbox to Redis: store and Redis writes"
+  },
+  "zeus goal": {
+   "class": "excluded",
+   "revisions": [
+    "A",
+    "B",
+    "08bb9a44",
+    "5aa220fd",
+    "ced20281",
+    "5c67f099"
+   ],
+   "reason": "group node: argparse requires a subcommand, no handler runs"
+  },
+  "zeus goal compare": {
+   "class": "read_only",
+   "revisions": [
+    "A",
+    "B",
+    "08bb9a44",
+    "5aa220fd",
+    "ced20281",
+    "5c67f099"
+   ],
+   "argv": [
+    "goal",
+    "compare",
+    "{before}",
+    "{after}"
+   ],
+   "params": [
+    "before",
+    "after"
+   ],
+   "cites": {
+    "A": [
+     "cli.py:main",
+     "cli.py:goal_command",
+     "application/goal_progress.py:compare_reports"
+    ],
+    "B": [
+     "entry/cli/goal.py:run",
+     "intake/application/goal_progress.py:compare_reports"
+    ]
+   },
+   "note": "store-free: M7 tried it before build()"
+  },
+  "zeus goal report": {
+   "class": "read_only",
+   "revisions": [
+    "A",
+    "B",
+    "08bb9a44",
+    "5aa220fd",
+    "ced20281",
+    "5c67f099"
+   ],
+   "argv": [
+    "goal",
+    "report",
+    "{manifest}"
+   ],
+   "params": [
+    "manifest"
+   ],
+   "cites": {
+    "A": [
+     "cli.py:main",
+     "cli.py:goal_command",
+     "application/goal_progress.py:GoalProgress.report"
+    ],
+    "B": [
+     "entry/cli/goal.py:run",
+     "intake/application/goal_progress.py:GoalProgress.report"
+    ]
+   },
+   "note": "INV-GOAL-PROGRESS-001: store read only; the manifest is a file read"
+  },
+  "zeus host-delivery": {
+   "class": "excluded",
+   "revisions": [
+    "A",
+    "B",
+    "08bb9a44",
+    "5aa220fd",
+    "ced20281",
+    "5c67f099"
+   ],
+   "reason": "group node: argparse requires a subcommand, no handler runs"
+  },
+  "zeus host-delivery maintain": {
+   "class": "excluded",
+   "revisions": [
+    "08bb9a44"
+   ],
+   "reason": "a maintenance effect (present only in revision 08bb9a44): host-delivery maintenance surface"
+  },
+  "zeus host-delivery register": {
+   "class": "excluded",
+   "revisions": [
+    "A",
+    "B",
+    "08bb9a44",
+    "5aa220fd",
+    "ced20281",
+    "5c67f099"
+   ],
+   "reason": "registers a delivery plan: store write"
+  },
+  "zeus host-delivery register-targets": {
+   "class": "excluded",
+   "revisions": [
+    "A",
+    "B",
+    "08bb9a44",
+    "5aa220fd",
+    "ced20281",
+    "5c67f099"
+   ],
+   "reason": "registers host targets: store write"
+  },
+  "zeus host-delivery resume": {
+   "class": "excluded",
+   "revisions": [
+    "A",
+    "B",
+    "08bb9a44",
+    "5c67f099"
+   ],
+   "reason": "resumes a held plan: store write"
+  },
+  "zeus host-delivery run": {
+   "class": "excluded",
+   "revisions": [
+    "A",
+    "B",
+    "08bb9a44",
+    "5aa220fd",
+    "ced20281",
+    "5c67f099"
+   ],
+   "reason": "runs the delivery controller: publish, merge, switch effects"
+  },
+  "zeus host-delivery status": {
+   "class": "read_only",
+   "revisions": [
+    "A",
+    "B",
+    "08bb9a44",
+    "5aa220fd",
+    "ced20281",
+    "5c67f099"
+   ],
+   "argv": [
+    "host-delivery",
+    "status"
+   ],
+   "cites": {
+    "A": [
+     "cli.py:host_delivery_command",
+     "adapters/host_delivery.py:execute",
+     "application/host_delivery.py:HostDelivery.status"
+    ],
+    "B": [
+     "entry/cli/host_delivery.py:run",
+     "entry/cli/host_delivery.py:_execute",
+     "delivery/application/host_delivery/registry.py:DeliveryRegistry.status"
+    ]
+   },
+   "note": "no --lane: the default store is read",
+   "params": []
+  },
+  "zeus host-delivery tick": {
+   "class": "excluded",
+   "revisions": [
+    "A",
+    "B",
+    "08bb9a44",
+    "5aa220fd",
+    "ced20281",
+    "5c67f099"
+   ],
+   "reason": "advances delivery: publish, merge, switch effects"
+  },
+  "zeus host-delivery withdraw": {
+   "class": "excluded",
+   "revisions": [
+    "A",
+    "B",
+    "08bb9a44",
+    "5aa220fd",
+    "5c67f099"
+   ],
+   "reason": "withdraws a plan: store write"
+  },
+  "zeus improve": {
+   "class": "excluded",
+   "revisions": [
+    "A",
+    "B",
+    "08bb9a44",
+    "5aa220fd",
+    "ced20281",
+    "5c67f099"
+   ],
+   "reason": "publishes an improvement task to Redis"
+  },
+  "zeus incident": {
+   "class": "excluded",
+   "revisions": [
+    "A",
+    "B",
+    "08bb9a44",
+    "5aa220fd",
+    "ced20281",
+    "5c67f099"
+   ],
+   "reason": "records an incident: store write"
+  },
+  "zeus index": {
+   "class": "excluded",
+   "revisions": [
+    "A",
+    "B",
+    "08bb9a44",
+    "5aa220fd",
+    "ced20281",
+    "5c67f099"
+   ],
+   "reason": "indexes a source tree: knowledge-graph writes"
+  },
+  "zeus init-db": {
+   "class": "excluded",
+   "revisions": [
+    "A",
+    "B",
+    "08bb9a44",
+    "5aa220fd",
+    "ced20281",
+    "5c67f099"
+   ],
+   "reason": "runs the migrator: DDL and migration records (store.migrate)"
+  },
+  "zeus inspect": {
+   "class": "excluded",
+   "revisions": [
+    "A",
+    "B",
+    "08bb9a44",
+    "5aa220fd",
+    "ced20281",
+    "5c67f099"
+   ],
+   "reason": "not in the design's R3 candidate list; not traced for R3 (the owner may promote it)"
+  },
+  "zeus observe": {
+   "class": "excluded",
+   "revisions": [
+    "A",
+    "B",
+    "08bb9a44",
+    "5aa220fd",
+    "ced20281",
+    "5c67f099"
+   ],
+   "reason": "group node: argparse requires a subcommand, no handler runs"
+  },
+  "zeus observe collect": {
+   "class": "excluded",
+   "revisions": [
+    "A",
+    "B",
+    "08bb9a44",
+    "5aa220fd",
+    "ced20281",
+    "5c67f099"
+   ],
+   "reason": "runs the collector: observation records and spool writes"
+  },
+  "zeus observe reconcile": {
+   "class": "excluded",
+   "revisions": [
+    "A",
+    "B",
+    "08bb9a44",
+    "5aa220fd",
+    "ced20281",
+    "5c67f099"
+   ],
+   "reason": "resolves a termination record: store write"
+  },
+  "zeus observe status": {
+   "class": "read_only",
+   "revisions": [
+    "A",
+    "B",
+    "08bb9a44",
+    "5aa220fd",
+    "ced20281",
+    "5c67f099"
+   ],
+   "argv": [
+    "observe",
+    "status"
+   ],
+   "cites": {
+    "A": [
+     "cli.py:main",
+     "cli.py:observe_command",
+     "application/observations.py:status_report",
+     "adapters/observation_spool.py:SpoolDirectory.read_health"
+    ],
+    "B": [
+     "entry/cli/observe.py:run",
+     "composition/cli_bus.py:spool",
+     "observation/application/observations.py:status_report"
+    ]
+   },
+   "note": "reads the observation spool directory (no mkdir at construction: SpoolDirectory.__init__ only stores the path)",
+   "params": []
+  },
+  "zeus operate": {
+   "class": "excluded",
+   "revisions": [
+    "A",
+    "B",
+    "08bb9a44",
+    "5aa220fd",
+    "ced20281",
+    "5c67f099"
+   ],
+   "reason": "group node: argparse requires a subcommand, no handler runs"
+  },
+  "zeus operate run": {
+   "class": "excluded",
+   "revisions": [
+    "A",
+    "B",
+    "08bb9a44",
+    "5aa220fd",
+    "ced20281",
+    "5c67f099"
+   ],
+   "reason": "runs an operation manifest: store and executor effects"
+  },
+  "zeus operate status": {
+   "class": "read_only",
+   "revisions": [
+    "A",
+    "B",
+    "08bb9a44",
+    "5aa220fd",
+    "ced20281",
+    "5c67f099"
+   ],
+   "argv": [
+    "operate",
+    "status",
+    "{operation_id}"
+   ],
+   "params": [
+    "operation_id"
+   ],
+   "cites": {
+    "A": [
+     "cli.py:operate_command",
+     "adapters/operation_cli.py:status",
+     "application/operation.py:Operation.status"
+    ],
+    "B": [
+     "entry/cli/operate.py:run",
+     "entry/cli/operate.py:_status",
+     "coordination/application/operation.py:Operation.status"
+    ]
+   }
+  },
+  "zeus organization": {
+   "class": "excluded",
+   "revisions": [
+    "A",
+    "B",
+    "08bb9a44",
+    "5aa220fd",
+    "ced20281",
+    "5c67f099"
+   ],
+   "reason": "not in the design's R3 candidate list; not traced for R3 (the owner may promote it)"
+  },
+  "zeus owner-actions": {
+   "class": "excluded",
+   "revisions": [
+    "A",
+    "B",
+    "08bb9a44",
+    "5aa220fd",
+    "ced20281",
+    "5c67f099"
+   ],
+   "reason": "group node: argparse requires a subcommand, no handler runs"
+  },
+  "zeus owner-actions assess": {
+   "class": "excluded",
+   "revisions": [
+    "A",
+    "B",
+    "08bb9a44",
+    "5aa220fd",
+    "ced20281",
+    "5c67f099"
+   ],
+   "reason": "guarded independent assessment: provider call and store writes"
+  },
+  "zeus owner-actions canary-recover": {
+   "class": "excluded",
+   "revisions": [
+    "A",
+    "B",
+    "08bb9a44",
+    "5c67f099"
+   ],
+   "reason": "recovers a canary: store writes and effects"
+  },
+  "zeus owner-actions migrate": {
+   "class": "excluded",
+   "revisions": [
+    "A",
+    "B",
+    "08bb9a44",
+    "5c67f099"
+   ],
+   "reason": "requests a host migration: store writes and effects"
+  },
+  "zeus owner-actions register": {
+   "class": "excluded",
+   "revisions": [
+    "A",
+    "B",
+    "08bb9a44",
+    "5aa220fd",
+    "ced20281",
+    "5c67f099"
+   ],
+   "reason": "registers an owner-action policy: store write"
+  },
+  "zeus owner-actions run": {
+   "class": "excluded",
+   "revisions": [
+    "A",
+    "B",
+    "08bb9a44",
+    "5aa220fd",
+    "ced20281",
+    "5c67f099"
+   ],
+   "reason": "runs the owner-action coordinator: store writes and effects"
+  },
+  "zeus owner-actions status": {
+   "class": "read_only",
+   "revisions": [
+    "A",
+    "B",
+    "08bb9a44",
+    "5aa220fd",
+    "ced20281",
+    "5c67f099"
+   ],
+   "argv": [
+    "owner-actions",
+    "status"
+   ],
+   "cites": {
+    "A": [
+     "cli.py:owner_actions_command",
+     "adapters/owner_actions.py:execute",
+     "application/owner_actions.py:OwnerActions.status"
+    ],
+    "B": [
+     "entry/cli/owner_actions.py:run",
+     "entry/cli/owner_actions.py:_execute",
+     "coordination/application/owner_actions/scheduler.py:OwnerActionScheduler.status"
+    ]
+   },
+   "params": []
+  },
+  "zeus owner-actions tick": {
+   "class": "excluded",
+   "revisions": [
+    "A",
+    "B",
+    "08bb9a44",
+    "5aa220fd",
+    "ced20281",
+    "5c67f099"
+   ],
+   "reason": "advances owner actions: store writes and effects"
+  },
+  "zeus paths": {
+   "class": "read_only",
+   "revisions": [
+    "A",
+    "B",
+    "08bb9a44",
+    "5aa220fd",
+    "ced20281",
+    "5c67f099"
+   ],
+   "argv": [
+    "paths"
+   ],
+   "cites": {
+    "A": [
+     "cli.py:main",
+     "adapters/configuration.py:repository_root",
+     "adapters/configuration.py:runtime_dir",
+     "adapters/configuration.py:settings"
+    ],
+    "B": [
+     "entry/cli/paths.py:run",
+     "composition/configuration.py:repository_root",
+     "composition/configuration.py:runtime_dir",
+     "composition/configuration.py:settings"
+    ]
+   },
+   "note": "prints absolute repository/runtime paths: R3 runs it with --repository pinned identically on A and B (params.repository); touches no store",
+   "params": []
+  },
+  "zeus project-graph": {
+   "class": "excluded",
+   "revisions": [
+    "A",
+    "B",
+    "08bb9a44",
+    "5aa220fd",
+    "ced20281",
+    "5c67f099"
+   ],
+   "reason": "projects runtime records into the knowledge graph: writes"
+  },
+  "zeus query": {
+   "class": "excluded",
+   "revisions": [
+    "A",
+    "B",
+    "08bb9a44",
+    "5aa220fd",
+    "ced20281",
+    "5c67f099"
+   ],
+   "reason": "not in the design's R3 candidate list; not traced for R3 (the owner may promote it); semantic mode loads a local embedding model"
+  },
+  "zeus rebase": {
+   "class": "excluded",
+   "revisions": [
+    "A",
+    "B",
+    "08bb9a44",
+    "5aa220fd",
+    "ced20281",
+    "5c67f099"
+   ],
+   "reason": "requests a rebase: store write and Redis flush"
+  },
+  "zeus release-abandon": {
+   "class": "excluded",
+   "revisions": [
+    "A",
+    "B",
+    "08bb9a44",
+    "5aa220fd",
+    "ced20281",
+    "5c67f099"
+   ],
+   "reason": "release runner abandon: store writes"
+  },
+  "zeus release-retry": {
+   "class": "excluded",
+   "revisions": [
+    "A",
+    "B",
+    "08bb9a44",
+    "5aa220fd",
+    "ced20281",
+    "5c67f099"
+   ],
+   "reason": "release queue retry: store write"
+  },
+  "zeus research": {
+   "class": "excluded",
+   "revisions": [
+    "A",
+    "B",
+    "08bb9a44",
+    "5aa220fd",
+    "ced20281",
+    "5c67f099"
+   ],
+   "reason": "publishes a research task to Redis"
+  },
+  "zeus research-package": {
+   "class": "excluded",
+   "revisions": [
+    "B"
+   ],
+   "reason": "group node: argparse requires a subcommand, no handler runs"
+  },
+  "zeus research-package accept": {
+   "class": "excluded",
+   "revisions": [
+    "B"
+   ],
+   "reason": "B-only node (absent in A and in every R0 revision): no A counterpart, so no parity; not in the design's R3 candidate list"
+  },
+  "zeus research-package exempt": {
+   "class": "excluded",
+   "revisions": [
+    "B"
+   ],
+   "reason": "B-only node (absent in A and in every R0 revision): no A counterpart, so no parity; not in the design's R3 candidate list"
+  },
+  "zeus research-package record": {
+   "class": "excluded",
+   "revisions": [
+    "B"
+   ],
+   "reason": "B-only node (absent in A and in every R0 revision): no A counterpart, so no parity; not in the design's R3 candidate list"
+  },
+  "zeus research-package status": {
+   "class": "excluded",
+   "revisions": [
+    "B"
+   ],
+   "reason": "B-only node (absent in A and in every R0 revision): no A counterpart, so no parity; not in the design's R3 candidate list"
+  },
+  "zeus research-package unexempt": {
+   "class": "excluded",
+   "revisions": [
+    "B"
+   ],
+   "reason": "B-only node (absent in A and in every R0 revision): no A counterpart, so no parity; not in the design's R3 candidate list"
+  },
+  "zeus research-package withdraw": {
+   "class": "excluded",
+   "revisions": [
+    "B"
+   ],
+   "reason": "B-only node (absent in A and in every R0 revision): no A counterpart, so no parity; not in the design's R3 candidate list"
+  },
+  "zeus research-program": {
+   "class": "excluded",
+   "revisions": [
+    "A",
+    "B",
+    "08bb9a44",
+    "5aa220fd",
+    "ced20281",
+    "5c67f099"
+   ],
+   "reason": "group node: argparse requires a subcommand, no handler runs"
+  },
+  "zeus research-program pause": {
+   "class": "excluded",
+   "revisions": [
+    "A",
+    "B",
+    "08bb9a44",
+    "5aa220fd",
+    "ced20281",
+    "5c67f099"
+   ],
+   "reason": "pauses a program: store write"
+  },
+  "zeus research-program recover": {
+   "class": "excluded",
+   "revisions": [
+    "A",
+    "B",
+    "08bb9a44",
+    "5aa220fd",
+    "ced20281",
+    "5c67f099"
+   ],
+   "reason": "recovers a program: store writes"
+  },
+  "zeus research-program register": {
+   "class": "excluded",
+   "revisions": [
+    "A",
+    "B",
+    "08bb9a44",
+    "5aa220fd",
+    "ced20281",
+    "5c67f099"
+   ],
+   "reason": "registers a research program: store write"
+  },
+  "zeus research-program resume": {
+   "class": "excluded",
+   "revisions": [
+    "A",
+    "B",
+    "08bb9a44",
+    "5aa220fd",
+    "ced20281",
+    "5c67f099"
+   ],
+   "reason": "resumes a program: store write"
+  },
+  "zeus research-program run": {
+   "class": "excluded",
+   "revisions": [
+    "A",
+    "B",
+    "08bb9a44",
+    "5aa220fd",
+    "ced20281",
+    "5c67f099"
+   ],
+   "reason": "runs a research program: store writes and provider calls"
+  },
+  "zeus research-program status": {
+   "class": "read_only",
+   "revisions": [
+    "A",
+    "B",
+    "08bb9a44",
+    "5aa220fd",
+    "ced20281",
+    "5c67f099"
+   ],
+   "argv": [
+    "research-program",
+    "status",
+    "{program_id}"
+   ],
+   "params": [
+    "program_id"
+   ],
+   "cites": {
+    "A": [
+     "cli.py:research_program_command",
+     "adapters/research_program_cli.py:execute",
+     "application/research_program.py:ResearchProgram.status"
+    ],
+    "B": [
+     "entry/cli/research_program.py:run",
+     "entry/cli/research_program.py:_execute",
+     "research/application/research_program.py:ResearchProgram.status"
+    ]
+   }
+  },
+  "zeus rlm": {
+   "class": "excluded",
+   "revisions": [
+    "A",
+    "B",
+    "08bb9a44",
+    "5aa220fd",
+    "ced20281",
+    "5c67f099"
+   ],
+   "reason": "runs a model-driven recursive analysis: provider effects"
+  },
+  "zeus rollback-hook": {
+   "class": "excluded",
+   "revisions": [
+    "A",
+    "B",
+    "08bb9a44",
+    "5aa220fd",
+    "ced20281",
+    "5c67f099"
+   ],
+   "reason": "rolls back a hook: store write"
+  },
+  "zeus run-command": {
+   "class": "excluded",
+   "revisions": [
+    "A",
+    "B",
+    "08bb9a44",
+    "5aa220fd",
+    "ced20281",
+    "5c67f099"
+   ],
+   "reason": "runs an arbitrary host command"
+  },
+  "zeus sdd": {
+   "class": "excluded",
+   "revisions": [
+    "A",
+    "B",
+    "08bb9a44",
+    "5aa220fd",
+    "ced20281",
+    "5c67f099"
+   ],
+   "reason": "group node: argparse requires a subcommand, no handler runs"
+  },
+  "zeus sdd advance": {
+   "class": "excluded",
+   "revisions": [
+    "A",
+    "B",
+    "08bb9a44",
+    "5aa220fd",
+    "ced20281",
+    "5c67f099"
+   ],
+   "reason": "store write (SDD.request_advance)"
+  },
+  "zeus sdd device-check": {
+   "class": "excluded",
+   "revisions": [
+    "A",
+    "B",
+    "08bb9a44",
+    "5aa220fd",
+    "ced20281",
+    "5c67f099"
+   ],
+   "reason": "runs a device probe (adapters/sdd.py:device_probe)"
+  },
+  "zeus sdd export-replay": {
+   "class": "excluded",
+   "revisions": [
+    "A",
+    "B",
+    "08bb9a44",
+    "5aa220fd",
+    "ced20281",
+    "5c67f099"
+   ],
+   "reason": "writes the replay draft file at --output (write_export)"
+  },
+  "zeus sdd import-log": {
+   "class": "excluded",
+   "revisions": [
+    "A",
+    "B",
+    "08bb9a44",
+    "5aa220fd",
+    "ced20281",
+    "5c67f099"
+   ],
+   "reason": "imports observations: store writes (SDD.observe)"
+  },
+  "zeus sdd inspect": {
+   "class": "read_only",
+   "revisions": [
+    "A",
+    "B",
+    "08bb9a44",
+    "5aa220fd",
+    "ced20281",
+    "5c67f099"
+   ],
+   "argv": [
+    "sdd",
+    "inspect",
+    "{spec_file}"
+   ],
+   "params": [
+    "spec_file"
+   ],
+   "cites": {
+    "A": [
+     "cli.py:main",
+     "adapters/sdd_cli.py:execute",
+     "adapters/sdd.py:read_spec",
+     "domain/sdd.py:gate_report"
+    ],
+    "B": [
+     "entry/cli/sdd.py:run",
+     "entry/cli/sdd.py:_execute",
+     "review/domain/sdd.py:gate_report"
+    ]
+   },
+   "note": "reads the spec file (or a git revision); no store is built"
+  },
+  "zeus sdd propose": {
+   "class": "excluded",
+   "revisions": [
+    "A",
+    "B",
+    "08bb9a44",
+    "5aa220fd",
+    "ced20281",
+    "5c67f099"
+   ],
+   "reason": "store write (SDD.propose)"
+  },
+  "zeus sdd register": {
+   "class": "excluded",
+   "revisions": [
+    "A",
+    "B",
+    "08bb9a44",
+    "5aa220fd",
+    "ced20281",
+    "5c67f099"
+   ],
+   "reason": "registers an SDD iteration: store writes (SDD.register)"
+  },
+  "zeus sdd status": {
+   "class": "read_only",
+   "revisions": [
+    "A",
+    "B",
+    "08bb9a44",
+    "5aa220fd",
+    "ced20281",
+    "5c67f099"
+   ],
+   "argv": [
+    "sdd",
+    "status",
+    "{iteration_id}"
+   ],
+   "params": [
+    "iteration_id"
+   ],
+   "cites": {
+    "A": [
+     "cli.py:main",
+     "adapters/sdd_cli.py:execute",
+     "application/sdd.py:SDD.status"
+    ],
+    "B": [
+     "entry/cli/sdd.py:run",
+     "entry/cli/sdd.py:_execute",
+     "review/application/sdd.py:SDD.status"
+    ]
+   },
+   "declared_writes": [
+    "runtime/artifacts directory (FileArtifacts.__init__ mkdir parents exist_ok)"
+   ]
+  },
+  "zeus sdd transfer-record": {
+   "class": "excluded",
+   "revisions": [
+    "A",
+    "B",
+    "08bb9a44",
+    "5aa220fd",
+    "ced20281",
+    "5c67f099"
+   ],
+   "reason": "store write (SDD.record_transfer)"
+  },
+  "zeus sdd view": {
+   "class": "disputed",
+   "revisions": [
+    "A",
+    "B",
+    "08bb9a44",
+    "5aa220fd",
+    "ced20281",
+    "5c67f099"
+   ],
+   "reason": "write_export (adapters/sdd.py:write_export, open 'xb') writes the --output HTML file; the design lists sdd view as a read-only candidate but the file write is not declared there. The OWNER decides whether an export under the namespace /tmp counts as read-only (a declared write) or the leaf is excluded."
+  },
+  "zeus sdd view-iteration": {
+   "class": "excluded",
+   "revisions": [
+    "A",
+    "B",
+    "08bb9a44",
+    "5aa220fd",
+    "ced20281",
+    "5c67f099"
+   ],
+   "reason": "writes the review export file at --output (write_export)"
+  },
+  "zeus seed-research-backlog": {
+   "class": "excluded",
+   "revisions": [
+    "A",
+    "B",
+    "08bb9a44",
+    "5aa220fd",
+    "ced20281",
+    "5c67f099"
+   ],
+   "reason": "seeds the research backlog: store writes"
+  },
+  "zeus send": {
+   "class": "excluded",
+   "revisions": [
+    "A",
+    "B",
+    "08bb9a44",
+    "5aa220fd",
+    "ced20281",
+    "5c67f099"
+   ],
+   "reason": "publishes a message to Redis"
+  },
+  "zeus serve": {
+   "class": "excluded",
+   "revisions": [
+    "A",
+    "B",
+    "08bb9a44",
+    "5aa220fd",
+    "ced20281",
+    "5c67f099"
+   ],
+   "reason": "long-running agent loop: store and Redis writes"
+  },
+  "zeus setup": {
+   "class": "excluded",
+   "revisions": [
+    "A",
+    "B",
+    "08bb9a44",
+    "5aa220fd",
+    "ced20281",
+    "5c67f099"
+   ],
+   "reason": "initializes configuration and creates the runtime directory"
+  },
+  "zeus status": {
+   "class": "excluded",
+   "revisions": [
+    "A",
+    "B",
+    "08bb9a44",
+    "5aa220fd",
+    "ced20281",
+    "5c67f099"
+   ],
+   "reason": "not in the design's R3 candidate list; not traced for R3 (the owner may promote it)"
+  },
+  "zeus ticket": {
+   "class": "excluded",
+   "revisions": [
+    "A",
+    "B",
+    "08bb9a44",
+    "5aa220fd",
+    "ced20281",
+    "5c67f099"
+   ],
+   "reason": "group node: argparse requires a subcommand, no handler runs"
+  },
+  "zeus ticket close": {
+   "class": "excluded",
+   "revisions": [
+    "A",
+    "B",
+    "08bb9a44",
+    "5aa220fd",
+    "ced20281",
+    "5c67f099"
+   ],
+   "reason": "closes a ticket: store and GitHub effects"
+  },
+  "zeus ticket create": {
+   "class": "excluded",
+   "revisions": [
+    "A",
+    "B",
+    "08bb9a44",
+    "5aa220fd",
+    "ced20281",
+    "5c67f099"
+   ],
+   "reason": "creates a ticket: store write"
+  },
+  "zeus ticket dispatch": {
+   "class": "excluded",
+   "revisions": [
+    "A",
+    "B",
+    "08bb9a44",
+    "5aa220fd",
+    "ced20281",
+    "5c67f099"
+   ],
+   "reason": "dispatches a ticket: executor and store effects"
+  },
+  "zeus ticket evidence": {
+   "class": "excluded",
+   "revisions": [
+    "A",
+    "B",
+    "08bb9a44",
+    "5aa220fd",
+    "ced20281",
+    "5c67f099"
+   ],
+   "reason": "records lifecycle evidence: store write"
+  },
+  "zeus ticket export": {
+   "class": "read_only",
+   "revisions": [
+    "A",
+    "B",
+    "08bb9a44",
+    "5aa220fd",
+    "ced20281",
+    "5c67f099"
+   ],
+   "argv": [
+    "ticket",
+    "export",
+    "{ticket_id}"
+   ],
+   "params": [
+    "ticket_id"
+   ],
+   "cites": {
+    "A": [
+     "cli.py:ticket_command",
+     "application/tickets.py:Tickets.get",
+     "application/tickets.py:render_ticket"
+    ],
+    "B": [
+     "entry/cli/ticket.py:run",
+     "intake/application/tickets.py:Tickets.get",
+     "intake/application/tickets.py:render_ticket"
+    ]
+   },
+   "note": "prints rendered text (not JSON): only the ROOT path rewrite applies"
+  },
+  "zeus ticket list": {
+   "class": "read_only",
+   "revisions": [
+    "A",
+    "B",
+    "08bb9a44",
+    "5aa220fd",
+    "ced20281",
+    "5c67f099"
+   ],
+   "argv": [
+    "ticket",
+    "list"
+   ],
+   "cites": {
+    "A": [
+     "cli.py:main",
+     "cli.py:ticket_command",
+     "application/tickets.py:Tickets.list"
+    ],
+    "B": [
+     "entry/cli/ticket.py:run",
+     "intake/application/tickets.py:Tickets.list"
+    ]
+   },
+   "params": []
+  },
+  "zeus ticket prepare-close": {
+   "class": "excluded",
+   "revisions": [
+    "A",
+    "B",
+    "08bb9a44",
+    "5aa220fd",
+    "ced20281",
+    "5c67f099"
+   ],
+   "reason": "prepares a close: store writes"
+  },
+  "zeus ticket pull": {
+   "class": "excluded",
+   "revisions": [
+    "A",
+    "B",
+    "08bb9a44",
+    "5aa220fd",
+    "ced20281",
+    "5c67f099"
+   ],
+   "reason": "pulls from GitHub: network and store effects"
+  },
+  "zeus ticket reopen": {
+   "class": "excluded",
+   "revisions": [
+    "A",
+    "B",
+    "08bb9a44",
+    "5aa220fd",
+    "ced20281",
+    "5c67f099"
+   ],
+   "reason": "reopens a ticket: store and GitHub effects"
+  },
+  "zeus ticket review": {
+   "class": "excluded",
+   "revisions": [
+    "A",
+    "B",
+    "08bb9a44",
+    "5aa220fd",
+    "ced20281",
+    "5c67f099"
+   ],
+   "reason": "records a review: store write"
+  },
+  "zeus ticket review-close": {
+   "class": "excluded",
+   "revisions": [
+    "A",
+    "B",
+    "08bb9a44",
+    "5aa220fd",
+    "ced20281",
+    "5c67f099"
+   ],
+   "reason": "records a close review: store write"
+  },
+  "zeus ticket show": {
+   "class": "read_only",
+   "revisions": [
+    "A",
+    "B",
+    "08bb9a44",
+    "5aa220fd",
+    "ced20281",
+    "5c67f099"
+   ],
+   "argv": [
+    "ticket",
+    "show",
+    "{ticket_id}"
+   ],
+   "params": [
+    "ticket_id"
+   ],
+   "cites": {
+    "A": [
+     "cli.py:ticket_command",
+     "application/tickets.py:Tickets.get"
+    ],
+    "B": [
+     "entry/cli/ticket.py:run",
+     "intake/application/tickets.py:Tickets.get"
+    ]
+   }
+  },
+  "zeus ticket sync": {
+   "class": "excluded",
+   "revisions": [
+    "A",
+    "B",
+    "08bb9a44",
+    "5aa220fd",
+    "ced20281",
+    "5c67f099"
+   ],
+   "reason": "syncs with GitHub: network and store effects"
+  },
+  "zeus ticket update": {
+   "class": "excluded",
+   "revisions": [
+    "A",
+    "B",
+    "08bb9a44",
+    "5aa220fd",
+    "ced20281",
+    "5c67f099"
+   ],
+   "reason": "updates a ticket: store write"
+  },
+  "zeus validate": {
+   "class": "excluded",
+   "revisions": [
+    "A",
+    "B",
+    "08bb9a44",
+    "5aa220fd",
+    "ced20281",
+    "5c67f099"
+   ],
+   "reason": "not in the design's R3 candidate list; not traced for R3 (the owner may promote it)"
+  },
+  "zeus worker-session": {
+   "class": "excluded",
+   "revisions": [
+    "A",
+    "B",
+    "08bb9a44",
+    "5aa220fd",
+    "ced20281",
+    "5c67f099"
+   ],
+   "reason": "group node: argparse requires a subcommand, no handler runs"
+  },
+  "zeus worker-session close": {
+   "class": "excluded",
+   "revisions": [
+    "A",
+    "B",
+    "08bb9a44",
+    "5aa220fd",
+    "ced20281",
+    "5c67f099"
+   ],
+   "reason": "explicit session close: store write and archive effects"
+  },
+  "zeus worker-session status": {
+   "class": "read_only",
+   "revisions": [
+    "A",
+    "B",
+    "08bb9a44",
+    "5aa220fd",
+    "ced20281",
+    "5c67f099"
+   ],
+   "argv": [
+    "worker-session",
+    "status"
+   ],
+   "cites": {
+    "A": [
+     "cli.py:worker_session_command",
+     "adapters/worker_sessions.py:execute",
+     "application/worker_sessions.py:WorkerSessions.status"
+    ],
+    "B": [
+     "entry/cli/worker_session.py:run",
+     "entry/cli/worker_session.py:_execute",
+     "execution/application/worker_sessions.py:WorkerSessions.status"
+    ]
+   },
+   "declared_writes": [
+    "runtime/worker-sessions directory (FileArtifacts.__init__ mkdir parents exist_ok)"
+   ],
+   "note": "SessionArchives/FileArtifacts construction creates the archive root; no evidence store is opened for status",
+   "params": []
+  },
+  "zeus-monitor collect --once": {
+   "class": "read_only",
+   "program": "monitor",
+   "revisions": [
+    "A",
+    "B"
+   ],
+   "argv": [
+    "collect",
+    "--once"
+   ],
+   "params": [],
+   "cites": {
+    "A": [
+     "monitor.py:main",
+     "adapters/monitoring.py:read_only",
+     "adapters/monitoring.py:ReadOnlyStore.transaction",
+     "adapters/monitoring.py:ReadOnlyTransaction.put",
+     "adapters/monitoring.py:redis_facts"
+    ],
+    "B": [
+     "entry/processes/monitor.py:main",
+     "composition/monitor.py:run_collector",
+     "observation/adapters/collectors.py:ReadOnlyStore.transaction",
+     "observation/adapters/collectors.py:ReadOnlyTransaction.put",
+     "observation/adapters/collectors.py:redis_facts"
+    ]
+   },
+   "declared_writes": [
+    "ROOT/X/runtime/monitoring.json (atomic replace) and its .tmp",
+    "runtime/monitor-collector.log (rotated copies) and monitor-collector.lock",
+    "runtime directory and runtime/artifacts (mkdir)",
+    "docker is shelled out by the docker source: unavailable in the namespace, recorded as a source state in the snapshot"
+   ],
+   "note": "the store is wrapped read-only (put raises); Redis use is exists/xinfo/xlen only; stdout is empty: parity is the exit code"
+  }
+ }
+}
