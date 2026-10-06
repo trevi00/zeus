@@ -1,0 +1,1513 @@
+"""Fleet control plane: registry, enqueue, atomic admission, finalization and the runner (INV-FLEET-001).
+
+Every admission is one existing store transaction (PostgresStore serializes it with the control
+advisory lock; MemoryStore with its lock): at most `max_parallel` reserving jobs, one per lane,
+no allowed-path conflict within a repository, all dependencies accepted, no pause and no exhausted
+machine ledger. Every observed blocking reason of a queued job is persisted in that same
+transaction (timestamps move only when the reason changes) and cleared on admission. The claim is
+durable as `dispatching` with a fresh owner token before any process exists; only that owner
+finalizes. The runner waits on children outside every transaction, never relaunches a
+dispatching/unknown job after a restart, never retries or merges. The only ceiling change is the
+explicit operator `authorize_budget` (compare-and-swap, idle fleet only, immutable grant record);
+the dispatcher and the model never invoke it. Execution itself is the existing `zeus operate run`
+in a lane environment, behind a launcher port.
+"""
+from __future__ import annotations
+
+import logging
+import re
+import time
+from uuid import uuid4
+
+from codex_harness.application.operation import HANDOFF_SCHEMA
+from codex_harness.domain.fleet import (
+    ACCEPTED,
+    DISPATCHING,
+    FAILED,
+    QUEUED,
+    RESERVING,
+    TERMINAL,
+    UNIT_RELEASED,
+    UNKNOWN,
+    FleetRefused,
+    binding,
+    check_unit_proof,
+    config_digest,
+    delivery_view,
+    effective_config,
+    held_units,
+    lane_of,
+    maintenance_readiness,
+    new_job,
+    new_unit,
+    projection,
+    safe_code,
+    sanitized_config,
+    select_admission,
+    unit_binding,
+    unit_view,
+    validate_config,
+    validate_delivery,
+    validate_grant,
+    validate_job_manifest,
+)
+from codex_harness.domain.fleet_backlog import runner_state
+from codex_harness.domain.fleet_backlog import safe_error_type as safe_backlog_error_type
+from codex_harness.domain.fleet_maintenance import (
+    ADMITTED,
+    CLOSE_REASONS,
+    CLOSED,
+    EXECUTION_SCHEMA,
+    FORWARD_CANDIDATE,
+    GRANTED,
+    MAINTENANCE_EXPIRED,
+    MAINTENANCE_ID,
+    OWNER_ACTIONS_BUCKET,
+    UNLAUNCHED_REASONS,
+    check_backlog_item,
+    check_canary_job,
+    check_forward_job,
+    check_owner_action,
+    deadline_passed,
+    kind_of,
+    open_permit,
+    owner_action_matches,
+    permit_view,
+    validate_permit,
+    validate_proof,
+)
+from codex_harness.domain.fleet_recovery import (
+    INTERRUPTED,
+    canonical_repositories,
+    check_host_migration_proof,
+    check_recovery_proof,
+    check_relocation_proof,
+    host_migrated_config,
+    host_migration_receipt,
+    host_migration_receipt_id,
+    host_migration_view,
+    proof_binding,
+    recovery_receipt,
+    recovery_receipt_id,
+    recovery_view,
+    relocated_config,
+    relocation_receipt,
+    relocation_receipt_id,
+    relocation_view,
+    validate_host_migration_request,
+    validate_recovery_evidence,
+    validate_relocation_request,
+)
+from codex_harness.domain.model import digest, require, utcnow
+from codex_harness.domain.operation import manifest_digest
+from codex_harness.domain.usage_policy import MODES, SUBSCRIPTION, accounting_mode
+
+BUCKET_REGISTRY, BUCKET_CONTROL, BUCKET_JOBS = "fleet_registry", "fleet_control", "fleet_jobs"
+BUCKET_GRANTS = "fleet_budget_grants"
+BUCKET_DELIVERY = "fleet_delivery"
+BUCKET_RECOVERY = "fleet_recovery_receipts"
+BUCKET_RELOCATION = "fleet_relocations"
+BUCKET_HOST_MIGRATION = "fleet_host_migrations"
+BUCKET_UNITS = "fleet_units"
+# INV-FLEET-001 maintenance amendment (INV-HOST-DELIVERY-MAINTENANCE-001): one durable one-job canary
+# permit per maintenance id; `granted` -> `admitted` -> `closed`, or `granted` -> `closed`.
+BUCKET_MAINTENANCE = "fleet_maintenance_admissions"
+# The owner-registered backlog plans (`application.fleet_backlog.BUCKET_PLANS`), READ by the
+# `forward_candidate` permit; the name is repeated because that module imports this one.
+BUCKET_BACKLOG_PLANS = "fleet_backlog_plans"
+# Control-row field naming the managed host activation that paused admission (`activation_gate`).
+ACTIVATION_HOLD = "activation_hold"
+CONTROL_KEY = "admission"
+LOGGER = logging.getLogger("zeus.fleet.runner")
+
+
+SAFE_HANDOFF_VALUE = re.compile(r"[A-Za-z0-9_.:-]{1,80}\Z")
+
+
+def _safe_value(value):
+    """A short identifier or code, or None. Unlike `safe_code` nothing is truncated at a colon: an
+    owner (`lead:improvement`) and a digest id keep their whole value or are dropped entirely."""
+    return value if type(value) is str and SAFE_HANDOFF_VALUE.fullmatch(value) else None
+
+
+def owner_handoff_view(record) -> dict | None:
+    """The fleet-visible projection of a lane operation's owner handoff, or None.
+
+    Identities, codes, a bound flag and counts only: no check items, causes, output or manifest
+    text cross this boundary, and an unrecognized document is dropped rather than relayed. It is
+    delivery VISIBILITY - the job's status, verdict and authority are untouched by it.
+
+    Progress counts are relayed only when the record states BOTH `bound` and `known` as exactly
+    true. This check is independent of the writer: a retained older handoff that carries populated
+    item lists beside an unbound or unknown inspection shows null progress here, so foreign or
+    unidentified evidence cannot be read as work this job completed.
+    """
+    if not isinstance(record, dict) or record.get("schema") != HANDOFF_SCHEMA:
+        return None
+    inspection = record.get("inspection") if isinstance(record.get("inspection"), dict) else {}
+    credited = inspection.get("bound") is True and inspection.get("known") is True
+    counted = lambda key: len(inspection[key]) if credited and isinstance(inspection.get(key), list) else None  # noqa: E731
+    return {"schema": HANDOFF_SCHEMA, "id": _safe_value(record.get("id")), "status": _safe_value(record.get("status")),
+            "owner": _safe_value(record.get("owner")), "next_action": _safe_value(record.get("next_action")),
+            "reason_code": _safe_value(record.get("reason_code")),
+            "operation_id": _safe_value(record.get("operation_id")),
+            "inspection_id": _safe_value(inspection.get("id")),
+            "inspection_bound": inspection.get("bound") is True,
+            "inspection_known": inspection.get("known") is True,
+            "inspection_reason_code": _safe_value(inspection.get("reason_code")),
+            "passed": counted("passed"), "remaining": counted("remaining"),
+            "authority": "owner_handoff; visibility only, never a retry, acceptance or release"}
+
+
+class LaunchRefused(FleetRefused):
+    """A definite refusal before any process was created; the job may end `failed`."""
+
+
+class Fleet:
+    def __init__(self, store, clock=utcnow, token=lambda: uuid4().hex):
+        self.store, self.clock, self.token = store, clock, token
+
+    # ----- registry -----------------------------------------------------------------------
+    @staticmethod
+    def _registry(tx) -> dict | None:
+        rows = tx.scan(BUCKET_REGISTRY)
+        require(len(rows) <= 1, "Fleet registry holds more than one fleet")
+        return rows[0] if rows else None
+
+    def register(self, document) -> dict:
+        """Idempotent for the identical canonical configuration; any other configuration while
+        one is registered is refused (no mutation, no replacement, no second fleet)."""
+        config = validate_config(document)
+        sha = config_digest(config)
+        with self.store.transaction() as tx:
+            existing = self._registry(tx)
+            if existing is not None:
+                if existing["config_sha256"] == sha:
+                    return {"registered": True, "cached": True, "id": existing["id"],
+                            "config_sha256": sha, "config": sanitized_config(existing["config"])}
+                raise FleetRefused("registration_conflict")
+            row = {"id": config["id"], "schema": config["schema"], "config_sha256": sha, "config": config,
+                   "registered_at": self.clock()}
+            tx.put(BUCKET_REGISTRY, config["id"], row)
+            if tx.get(BUCKET_CONTROL, CONTROL_KEY) is None:
+                tx.put(BUCKET_CONTROL, CONTROL_KEY, {"paused": False, "budget": dict(config["budget"]),
+                                                     "updated_at": self.clock()})
+        return {"registered": True, "cached": False, "id": config["id"], "config_sha256": sha,
+                "config": sanitized_config(config)}
+
+    @staticmethod
+    def _control(tx) -> dict:
+        """Pause flag and effective budget; an older row without a budget keeps the registered one."""
+        return tx.get(BUCKET_CONTROL, CONTROL_KEY) or {"paused": False}
+
+    def registered(self) -> dict:
+        """The registry row with `config` carrying the effective ceilings (a grant replaces the
+        registered budget for new work); `config_sha256` stays the original registration digest."""
+        with self.store.transaction() as tx:
+            registry = self._registry(tx)
+            control = self._control(tx)
+        if registry is None:
+            raise FleetRefused("unregistered")
+        return {**registry, "config": effective_config(registry["config"], control)}
+
+    # ----- enqueue ------------------------------------------------------------------------
+    def enqueue(self, lane_id: str, manifest: dict, goal: dict, dependencies) -> dict:
+        """`manifest` is the canonical validated operation manifest and `goal` its binding at the
+        lane repository's base (both produced by the existing operate adapter)."""
+        dependencies = list(dependencies or [])
+        require(all(type(d) is str and d for d in dependencies) and len(set(dependencies)) == len(dependencies),
+                "Fleet dependencies must be distinct job ids")
+        with self.store.transaction() as tx:
+            registry = self._registry(tx)
+            if registry is None:
+                raise FleetRefused("unregistered")
+            config = effective_config(registry["config"], self._control(tx))
+            lane = lane_of(config, lane_id)
+            validate_job_manifest(manifest, config)  # the effective ceilings, never a stale budget
+            job = new_job(manifest, manifest_digest(manifest), lane, goal, dependencies, self.clock())
+            if job["id"] in dependencies:
+                raise FleetRefused("dependency_self")
+            for dependency in dependencies:
+                if tx.get(BUCKET_JOBS, dependency) is None:
+                    raise FleetRefused("dependency_missing")
+            old = tx.get(BUCKET_JOBS, job["id"])
+            if old is not None:
+                if binding(old) != binding(job):
+                    raise FleetRefused("binding_conflict")
+                return {"job": self._view(old), "cached": True}
+            tx.put(BUCKET_JOBS, job["id"], job)
+        return {"job": self._view(job), "cached": False}
+
+    @staticmethod
+    def _view(job: dict) -> dict:
+        keys = ("id", "operation_id", "lane", "team", "status", "reason_code", "manifest_sha256", "goal",
+                "dependencies", "calls", "exit_code", "error_type", "owner_handoff", "created_at", "updated_at",
+                "dispatched_at", "finished_at")
+        return {k: job.get(k) for k in keys}
+
+    # ----- admission control --------------------------------------------------------------
+    def _set_paused(self, paused: bool) -> dict:
+        with self.store.transaction() as tx:
+            if self._registry(tx) is None:
+                raise FleetRefused("unregistered")
+            if not paused and self._maintenance_debt(tx):
+                # INV-FLEET-001 maintenance amendment: general admission stays closed until every
+                # maintenance permit is closed and no stale canary of one is still queued or reserving.
+                raise FleetRefused("maintenance_debt_unsettled", "maintenance")
+            # Only the flag changes: a granted effective budget survives pause/resume. An owner pause
+            # or resume takes the pause over, so a host activation hold never outlives it.
+            control = {key: value for key, value in self._control(tx).items() if key != ACTIVATION_HOLD}
+            row = {**control, "paused": paused, "updated_at": self.clock()}
+            tx.put(BUCKET_CONTROL, CONTROL_KEY, row)
+        return row
+
+    def pause(self) -> dict:
+        """Stops NEW admissions durably; dispatching work is allowed to finish."""
+        return self._set_paused(True)
+
+    def resume(self) -> dict:
+        return self._set_paused(False)
+
+    @staticmethod
+    def _hold_key(control: dict):
+        """The pause authority of a control row: paused, and whose activation hold (if any)."""
+        hold = control.get(ACTIVATION_HOLD)
+        hold = (hold.get("target_id"), hold.get("descriptor_sha256")) if isinstance(hold, dict) else None
+        return control.get("paused") is True, hold
+
+    def activation_gate(self, target_id: str, descriptor_sha256: str) -> dict:
+        """Commit a durable admission pause, THEN read the Fleet's execution debt in a second transaction.
+
+        The managed host target calls this under its own lifecycle guard before it stops an
+        instance and again before it launches one (HOST-RUNTIME.md "Activation gate"). Because every
+        admission and unit reservation checks the pause under the same serialization, nothing can
+        be reserved after the first transaction commits. That transaction scans no debt, so a failed
+        debt read can never roll the pause back. The pause is left in place: a running fleet was not
+        paused by an owner, so it carries an `activation_hold` naming the target and the descriptor
+        being activated, which only that exact runtime may release (`release_activation_hold`); an
+        owner pause is kept as it is.
+
+        A failure of the pause transaction itself (write, commit or a lost acknowledgement) raises:
+        no durable pause is claimed, and a retry reconciles the same hold. The debt read re-checks the
+        pause authority in its own transaction: a failed read returns `reason_code` `debt_unknown`, a
+        pause that changed between the two (an owner resume, pause or another hold) `control_changed`,
+        both with unknown debt (None) and never `settled`. `settled` is True only when the pause is
+        exactly the committed one, no worker job is reserving and no execution unit is held."""
+        with self.store.transaction() as tx:
+            if self._registry(tx) is None:
+                raise FleetRefused("unregistered")
+            control = self._control(tx)
+            hold = control.get(ACTIVATION_HOLD)
+            ours = not control.get("paused") or (isinstance(hold, dict) and hold.get("target_id") == target_id)
+            if ours:
+                hold = {"target_id": target_id, "descriptor_sha256": descriptor_sha256, "at": self.clock()}
+                control = {**control, "paused": True, ACTIVATION_HOLD: hold, "updated_at": self.clock()}
+                tx.put(BUCKET_CONTROL, CONTROL_KEY, control)
+            committed = self._hold_key(control)
+        unknown = {"paused": True, "hold": ours, "reserving": None, "units_held": None, "settled": False}
+        try:
+            with self.store.transaction() as tx:
+                current = self._hold_key(self._control(tx))
+                if current == committed:
+                    reserving = sorted(row["id"] for row in tx.scan(BUCKET_JOBS) if row["status"] in RESERVING)
+                    units = held_units(tx.scan(BUCKET_UNITS))
+        except Exception as exc:
+            return {**unknown, "reason_code": "debt_unknown", "error_type": safe_code(type(exc).__name__)}
+        if current != committed:
+            return {**unknown, "paused": current[0], "hold": False, "reason_code": "control_changed"}
+        return {"paused": True, "hold": ours, "reserving": reserving, "units_held": units,
+                "settled": not reserving and not units}
+
+    def release_activation_hold(self, descriptor_sha256: str) -> dict:
+        """Resume admission paused by `activation_gate`, only for the runtime it was held for.
+
+        Called by a managed runtime that is running exactly that descriptor, so the code releasing
+        the pause is code that counts execution units. A predecessor that predates this never calls
+        it and stays paused for its owner. Any other pause (an owner's, another descriptor's hold)
+        is left untouched."""
+        with self.store.transaction() as tx:
+            if self._registry(tx) is None:
+                raise FleetRefused("unregistered")
+            if self._maintenance_debt(tx):
+                # INV-FLEET-001 maintenance amendment: a runtime's hold release is a resume too, so it
+                # releases nothing while any maintenance permit or its stale canary is unsettled.
+                return {"released": False}
+            control = self._control(tx)
+            hold = control.get(ACTIVATION_HOLD)
+            if not (control.get("paused") and isinstance(hold, dict)
+                    and hold.get("descriptor_sha256") == descriptor_sha256):
+                return {"released": False}
+            row = {key: value for key, value in control.items() if key != ACTIVATION_HOLD}
+            tx.put(BUCKET_CONTROL, CONTROL_KEY, {**row, "paused": False, "updated_at": self.clock()})
+        return {"released": True}
+
+    def authorize_budget(self, per_host, total, expected_total, mode=None) -> dict:
+        """Explicit operator grant over the effective budget, one transaction: the expected total
+        must equal the current effective total, numbers valid and nondecreasing, either a number
+        increases or the accounting `mode` changes (None keeps the current mode; unknown modes
+        refuse), and no queued/dispatching/unknown job (queued work carries frozen budgets;
+        reserving work holds the machine ledger). The registered config and digest stay immutable;
+        the control row takes the new budget beside the untouched pause flag and an immutable
+        `fleet_budget_grants` record keeps prior/new budget, both modes and time. No resume, and
+        nothing here is called by the dispatcher or a model run."""
+        with self.store.transaction() as tx:
+            registry = self._registry(tx)
+            if registry is None:
+                raise FleetRefused("unregistered")
+            control = self._control(tx)
+            prior = effective_config(registry["config"], control)["budget"]
+            requested = {"per_host": per_host, "total": total}
+            if mode is None:
+                mode = accounting_mode(prior)
+            if type(mode) is not str or mode not in MODES:
+                raise FleetRefused("config_invalid", "mode")
+            if mode == SUBSCRIPTION:
+                requested["mode"] = mode
+            budget = validate_grant(prior, requested, expected_total)
+            if any(row["status"] == QUEUED or row["status"] in RESERVING for row in tx.scan(BUCKET_JOBS)) \
+                    or held_units(tx.scan(BUCKET_UNITS)):
+                raise FleetRefused("fleet_not_idle")
+            now = self.clock()
+            grant_id = "grant-%08d" % (len(tx.scan(BUCKET_GRANTS)) + 1)
+            require(tx.get(BUCKET_GRANTS, grant_id) is None, "Fleet budget grant record already exists")
+            grant = {"id": grant_id, "fleet": registry["id"], "config_sha256": registry["config_sha256"],
+                     "prior": dict(prior), "budget": budget, "expected_total": expected_total,
+                     "prior_mode": accounting_mode(prior), "mode": accounting_mode(budget), "granted_at": now}
+            tx.put(BUCKET_GRANTS, grant_id, grant)
+            row = {**control, "paused": bool(control.get("paused")), "budget": budget, "updated_at": now}
+            tx.put(BUCKET_CONTROL, CONTROL_KEY, row)
+        return {"granted": True, "grant_id": grant_id, "prior": grant["prior"], "budget": dict(budget),
+                "prior_mode": grant["prior_mode"], "mode": grant["mode"], "paused": row["paused"], "granted_at": now}
+
+    def budget_grants(self) -> list[dict]:
+        with self.store.transaction() as tx:
+            return tx.scan(BUCKET_GRANTS)
+
+    def admit_one(self, budget_exhausted: bool = False) -> dict:
+        """One transaction: choose the oldest admissible queued job and claim it as dispatching
+        with a fresh owner token. Returns `job` None with the blocking reasons when nothing fits.
+        Every observed reason (paused, budget_exhausted, budget_stale, capacity, lane_busy,
+        dependency_*, path_conflict) is persisted on its queued job in this transaction; the row
+        and its `updated_at` change only when the reason differs from the recorded one."""
+        with self.store.transaction() as tx:
+            registry = self._registry(tx)
+            if registry is None:
+                raise FleetRefused("unregistered")
+            control = self._control(tx)
+            config = effective_config(registry["config"], control)  # refreshed every admission
+            jobs = {row["id"]: row for row in tx.scan(BUCKET_JOBS)}
+            # Held execution units (a reserved, running or cleanup-unknown conductor) take the same
+            # `max_parallel` slots, read in this same serialized transaction.
+            decision = select_admission(config, bool(control.get("paused")), jobs, budget_exhausted,
+                                        self._repository_aliases(tx), units=len(held_units(tx.scan(BUCKET_UNITS))))
+            job = decision["job"]
+            now = self.clock()
+            if job is not None:
+                job.update(status=DISPATCHING, owner_token=self.token(), dispatched_at=now, updated_at=now,
+                           reason_code=None)
+                tx.put(BUCKET_JOBS, job["id"], job)
+            for job_id, reason in decision["blocked"].items():
+                blocked = jobs[job_id]
+                if blocked.get("reason_code") != reason:
+                    blocked.update(reason_code=reason, updated_at=now)
+                    tx.put(BUCKET_JOBS, job_id, blocked)
+        return {**decision, "job": job}
+
+    # ----- shared execution units: reserve before spawn, release only on exact proof ------
+    def reserve_unit(self, unit_id: str, kind: str, lane_id: str, subject: str, *, within=None) -> dict:
+        """Reserve one non-job execution unit (a conductor decision) BEFORE anything is spawned.
+
+        One transaction under the same serialization as `admit_one` (PostgresStore's control advisory
+        lock; MemoryStore's lock), so every controller and a standalone tick compete for the same
+        `max_parallel` slots as worker jobs: reserving jobs plus held units must stay below it. A
+        paused fleet reserves nothing. `within(tx, unit)` runs inside this transaction before the
+        commit - the caller's write-ahead record (the `dispatched` intent carrying the unit's token)
+        commits with the reservation or not at all. The same unit id replays its reservation
+        (`cached`, `within` not run); a different binding under that id is `unit_conflict`."""
+        with self.store.transaction() as tx:
+            registry = self._registry(tx)
+            if registry is None:
+                raise FleetRefused("unregistered")
+            old = tx.get(BUCKET_UNITS, unit_id)
+            config = effective_config(registry["config"], self._control(tx))
+            unit = new_unit(unit_id, kind, lane_of(config, lane_id), subject, self.token(), self.clock())
+            if old is not None:
+                if unit_binding(old) != unit_binding(unit):
+                    raise FleetRefused("unit_conflict", "id")
+                return {"unit": unit_view(old), "token": old["token"], "cached": True}
+            if bool(self._control(tx).get("paused")):
+                raise FleetRefused("paused")
+            reserving = sum(1 for row in tx.scan(BUCKET_JOBS) if row["status"] in RESERVING)
+            if reserving + len(held_units(tx.scan(BUCKET_UNITS))) >= config["max_parallel"]:
+                raise FleetRefused("capacity")
+            if within is not None:
+                within(tx, dict(unit))
+            tx.put(BUCKET_UNITS, unit_id, unit)
+        return {"unit": unit_view(unit), "token": unit["token"], "cached": False}
+
+    def settle_unit(self, unit_id: str, token: str, proof, *, within=None) -> dict:
+        """Release one unit on its exact proof (`domain.fleet.check_unit_proof`), in one transaction
+        with the caller's settlement write (`within(tx, unit)`, e.g. the intent leaving `dispatched`).
+
+        The token must be the reservation's; the proof must name this unit id (and, for a cleanup
+        receipt, this token) and confirm the parent AND the tree. A failed commit leaves the unit
+        held and the local proof intact, so the next pass settles it exactly once; an identical
+        replay after a lost response is `cached` (`within` not run); a different proof for a
+        released unit is `settlement_conflict`."""
+        with self.store.transaction() as tx:
+            unit = tx.get(BUCKET_UNITS, unit_id)
+            if unit is None:
+                raise FleetRefused("unit_unknown")
+            if not token or unit.get("token") != token:
+                raise FleetRefused("owner_mismatch", "token")
+            settlement = check_unit_proof(unit, proof)
+            if unit["state"] == UNIT_RELEASED:
+                if (unit.get("settlement") or {}).get("proof_sha256") != settlement["proof_sha256"]:
+                    raise FleetRefused("settlement_conflict")
+                return {"unit": unit_view(unit), "cached": True}
+            if within is not None:
+                within(tx, dict(unit))
+            now = self.clock()
+            unit.update(state=UNIT_RELEASED, released_at=now, settlement=settlement)
+            tx.put(BUCKET_UNITS, unit_id, unit)
+        return {"unit": unit_view(unit), "cached": False}
+
+    def units(self) -> list[dict]:
+        """Every execution unit's safe view (no token), held ones first."""
+        with self.store.transaction() as tx:
+            rows = tx.scan(BUCKET_UNITS)
+        return [unit_view(row) for row in sorted(rows, key=lambda r: (r.get("state") == UNIT_RELEASED,
+                                                                       str(r.get("reserved_at")), r["id"]))]
+
+    def held_units(self) -> list[str]:
+        """Units still consuming capacity: reserved, running or with unproven cleanup."""
+        with self.store.transaction() as tx:
+            return held_units(tx.scan(BUCKET_UNITS))
+
+    def maintenance_readiness(self) -> dict:
+        """INV-HOST-DELIVERY-MAINTENANCE-001: the owner pause, activation hold, reserving jobs and held units an
+        active-generation restart requires, read in ONE transaction; an unregistered Fleet reports
+        `registered: False`. Reads only; admits, reserves and writes nothing."""
+        with self.store.transaction() as tx:
+            registry = self._registry(tx)
+            control = self._control(tx)
+            jobs = tx.scan(BUCKET_JOBS)
+            units = held_units(tx.scan(BUCKET_UNITS))
+            open_ids = self._open_permits(tx)
+        return maintenance_readiness(registry, control, jobs, units, ACTIVATION_HOLD, open_ids)
+
+    def finalize(self, job_id: str, owner_token: str, outcome: dict) -> dict:
+        """Only the dispatching owner records the terminal fact. `unknown` stays reserving."""
+        status = outcome.get("status")
+        require(status in TERMINAL, "Fleet outcome must be terminal")
+        with self.store.transaction() as tx:
+            job = tx.get(BUCKET_JOBS, job_id)
+            if job is None:
+                raise FleetRefused("job_unknown")
+            if job["status"] != DISPATCHING:
+                raise FleetRefused("not_dispatching")
+            if not owner_token or job.get("owner_token") != owner_token:
+                raise FleetRefused("owner_mismatch")
+            now = self.clock()
+            calls = outcome.get("calls") if isinstance(outcome.get("calls"), dict) else {}
+            # INV-OPERATION-001: an evidence-refused lane operation hands its bounded owner request up
+            # with the job, so `pending_owner` is visible here instead of looking like finished work.
+            handoff = owner_handoff_view(outcome.get("owner_handoff"))
+            job.update(status=status, reason_code=safe_code(outcome.get("reason_code")),
+                       exit_code=outcome.get("exit_code") if type(outcome.get("exit_code")) is int else None,
+                       calls={"reserved": calls.get("reserved"), "settled": calls.get("settled")},
+                       owner_handoff=handoff,
+                       receipt={"operation_status": outcome.get("operation_status"), "owner_handoff": handoff},
+                       error_type=outcome.get("error_type") if isinstance(outcome.get("error_type"), str) else None,
+                       updated_at=now, finished_at=now)
+            tx.put(BUCKET_JOBS, job_id, job)
+        return self._view(job)
+
+    # ----- owner delivery records ---------------------------------------------------------
+    def record_delivery(self, job_id: str, document) -> dict:
+        """Record one immutable owner-reported delivery for an ACCEPTED job (trusted owner CLI only).
+
+        The complete document replays idempotently; any other document for the same job is refused
+        and nothing is overwritten. No web request and no model run reaches this method. The job's
+        status, review verdict and authority are untouched: this record is delivery VISIBILITY, not
+        a release approval gate, and it is not an independent GitHub or network verification.
+        """
+        record = validate_delivery(document)
+        if record["job_id"] != job_id:
+            raise FleetRefused("delivery_job_mismatch", "job_id")
+        with self.store.transaction() as tx:
+            job = tx.get(BUCKET_JOBS, job_id)
+            if job is None:
+                raise FleetRefused("job_unknown")
+            if job["status"] != ACCEPTED:
+                raise FleetRefused("job_not_accepted")
+            old = tx.get(BUCKET_DELIVERY, job_id)
+            if old is not None:
+                if old["document"] != record:
+                    raise FleetRefused("delivery_conflict")
+                return {"recorded": True, "cached": True, "delivery": delivery_view(old)}
+            row = {"id": job_id, "job_id": job_id, "document": record, "source": "owner_cli",
+                   "authority": "owner_recorded", "recorded_by": "owner", "created_at": self.clock()}
+            tx.put(BUCKET_DELIVERY, job_id, row)
+        return {"recorded": True, "cached": False, "delivery": delivery_view(row)}
+
+    def delivery(self, job_id: str) -> dict | None:
+        with self.store.transaction() as tx:
+            row = tx.get(BUCKET_DELIVERY, job_id)
+        return delivery_view(row) if row is not None else None
+
+    # ----- owner recovery and relocation (storage-recovery-001) ---------------------------
+    @staticmethod
+    def _repository_aliases(tx) -> dict:
+        """Every repository identity this fleet has used -> the one canonical identity of its
+        repository, folded from the immutable relocation receipts in their recorded order.
+
+        Job rows are never rewritten, so this map is how a job frozen before a move is still
+        compared against the repository it belongs to. Folding the receipts' edges into one
+        equivalence class per repository (`canonical_repositories`) is what keeps that true after
+        repeated moves and after a rollback: A->B->A is a cycle, and a plain chain walk over it
+        would answer differently depending on which identity a job happens to carry."""
+        rows = tx.scan(BUCKET_RELOCATION) + tx.scan(BUCKET_HOST_MIGRATION)
+        return canonical_repositories(row.get("repository_aliases") or {}
+                                      for row in sorted(rows, key=lambda r: (r["recorded_at"], r["id"])))
+
+    def _recovery_replay(self, document: dict) -> dict | None:
+        """The committed answer for this evidence, read BEFORE anything is observed.
+
+        A recovery that already committed is finished: its receipt is the durable fact, and asking
+        Docker, the lane store or the machine ledger about a container, a schema or a slot that has
+        since been removed would turn a settled job into a refusal. Identical evidence therefore
+        replays from the receipt alone; any other evidence for that job still conflicts here.
+        """
+        with self.store.transaction() as tx:
+            if self._registry(tx) is None:
+                raise FleetRefused("unregistered")
+            old = tx.get(BUCKET_RECOVERY, document["job_id"])
+            if old is None:
+                return None
+            if old["evidence"] != document:
+                raise FleetRefused("recovery_conflict")
+            return {"reconciled": True, "cached": True, "receipt": recovery_view(old),
+                    "job": self._view(tx.get(BUCKET_JOBS, document["job_id"]) or {})}
+
+    def reconcile_interrupted(self, evidence, proof=None, *, observe=None, reread=None) -> dict:
+        """Settle ONE interrupted job whose external effects the owner proved dead (trusted CLI).
+
+        The committed receipt is consulted first: an identical replay is answered from it without
+        observing anything, so a vanished container or an unreachable lane store cannot withdraw a
+        recovery that already happened, and a conflicting document for the same job refuses just as
+        early. Only when no receipt exists is the observation taken - supply it as `proof`, or as
+        `observe()` for a caller that must not pay for it on a replay.
+
+        The fleet must be paused, the registered configuration must still be the one the evidence
+        names, and the job must still be the exact reservation it names (status, owner token,
+        lane, operation id). `proof` is the adapter's cross-store observation; `reread()` is the
+        same observation taken again inside this transaction, directly before the write, so a
+        container, reservation or task that changed in between refuses instead of committing. That
+        re-read is an owner-controlled recovery step with the worker services stopped, not a
+        distributed atomic transaction, and the receipt says so; it does cross-store reads while
+        this transaction is open, which is accepted because this is a paused, owner-only operation
+        that runs once, never on the dispatcher's path.
+
+        The job becomes terminal `failed` with the fixed `interrupted_unknown` reason, which clears
+        that one reservation. Nothing is retried, resumed, relaunched or credited: the frozen
+        manifest, goal, dependencies, exit code and call counts stay exactly as they were and the
+        unknown usage stays unknown. The identical evidence replays idempotently; any other
+        evidence for the same job is refused and nothing is overwritten.
+        """
+        document = validate_recovery_evidence(evidence)
+        require(proof is not None or observe is not None, "Fleet recovery needs an observation")
+        replay = self._recovery_replay(document)
+        if replay is not None:
+            return replay
+        if proof is None:
+            proof = observe()
+        check_recovery_proof(document, proof)
+        with self.store.transaction() as tx:
+            registry = self._registry(tx)
+            if registry is None:
+                raise FleetRefused("unregistered")
+            old = tx.get(BUCKET_RECOVERY, document["job_id"])
+            if old is not None:
+                # A second owner committed between the read above and this transaction; the
+                # reservation is already cleared, so the durable receipt is still the answer.
+                if old["evidence"] != document:
+                    raise FleetRefused("recovery_conflict")
+                return {"reconciled": True, "cached": True, "receipt": recovery_view(old),
+                        "job": self._view(tx.get(BUCKET_JOBS, document["job_id"]) or {})}
+            if not bool(self._control(tx).get("paused")):
+                raise FleetRefused("fleet_not_paused")
+            if registry["config_sha256"] != document["expected"]["config_sha256"]:
+                raise FleetRefused("config_expected_mismatch", "expected.config_sha256")
+            job = tx.get(BUCKET_JOBS, document["job_id"])
+            if job is None:
+                raise FleetRefused("job_unknown")
+            if job["status"] not in RESERVING or job["status"] != document["expected"]["status"]:
+                raise FleetRefused("job_not_interrupted", "expected.status")
+            if not job.get("owner_token") or job["owner_token"] != document["expected"]["owner_token"]:
+                raise FleetRefused("owner_mismatch", "expected.owner_token")
+            if job["lane"] != document["expected"]["lane"]:
+                raise FleetRefused("lane_mismatch", "expected.lane")
+            if job["operation_id"] != document["lane_operation"]["id"]:
+                raise FleetRefused("operation_mismatch", "lane_operation.id")
+            fresh = proof if reread is None else reread()
+            check_recovery_proof(document, fresh)
+            if proof_binding(fresh) != proof_binding(proof):
+                raise FleetRefused("proof_changed")
+            now = self.clock()
+            receipt = recovery_receipt(document, fresh, registry["id"], registry["config_sha256"], now)
+            require(recovery_receipt_id(document) == receipt["id"], "Fleet recovery receipt identity mismatch")
+            tx.put(BUCKET_RECOVERY, document["job_id"], receipt)
+            job.update(status=FAILED, reason_code=INTERRUPTED, owner_token=None, updated_at=now,
+                       finished_at=now, recovery={"receipt_id": receipt["id"], "operator": document["operator"],
+                                                  "recorded_at": now})
+            tx.put(BUCKET_JOBS, job["id"], job)
+        return {"reconciled": True, "cached": False, "receipt": recovery_view(receipt), "job": self._view(job)}
+
+    def recovery(self, job_id: str) -> dict | None:
+        with self.store.transaction() as tx:
+            row = tx.get(BUCKET_RECOVERY, job_id)
+        return recovery_view(row) if row is not None else None
+
+    def _relocation_replay(self, document: dict) -> dict | None:
+        """The committed answer for this exact request, read BEFORE anything is observed.
+
+        A relocation that already committed is finished, and the old source paths it moved away
+        from may well be gone; re-observing them would refuse a request the registry has already
+        satisfied. The identical request therefore replays from its receipt, and a different
+        request against the same expected digest conflicts here rather than after a host read.
+        """
+        with self.store.transaction() as tx:
+            registry = self._registry(tx)
+            if registry is None:
+                raise FleetRefused("unregistered")
+            old = tx.get(BUCKET_RELOCATION, relocation_receipt_id(document))
+            if old is not None:
+                return {"relocated": True, "cached": True, "receipt": relocation_view(old),
+                        "config": sanitized_config(registry["config"]),
+                        "config_sha256": registry["config_sha256"]}
+            if any(row["request"]["expected_config_sha256"] == document["expected_config_sha256"]
+                   for row in tx.scan(BUCKET_RELOCATION)):
+                raise FleetRefused("relocation_conflict")
+            return None
+
+    def relocate(self, request, proof=None, *, observe=None, reread=None) -> dict:
+        """Move lane repository and runtime PATHS to already-copied targets (trusted owner CLI).
+
+        The committed receipt is consulted first: the identical request replays from it without
+        observing the host, and a conflicting request against the same expected digest refuses
+        there. Only when neither applies is the observation taken - supply it as `proof`, or as
+        `observe()` for a caller that must not pay for it on a replay.
+
+        One transaction, compare-and-swap on the registered configuration digest: the fleet must be
+        paused, hold no dispatching or unknown reservation, and the adapter's host observation must
+        show the runner stopped, no active lane run, verified copied evidence and target checkouts
+        that carry every queued job's pinned base and goal. Only the stated paths change; the lane
+        id, team, schema, Redis namespace, concurrency, budget and provider authority are compared
+        and must be identical.
+
+        Frozen job rows, manifests, goals, operation identities and delivery or recovery receipts
+        are never rewritten: the immutable relocation receipt keeps the prior configuration and its
+        digest, and admission resolves the old repository identities through it. The identical
+        request replays idempotently; a different request against the same expected digest is
+        refused.
+        """
+        document = validate_relocation_request(request)
+        require(proof is not None or observe is not None, "Fleet relocation needs an observation")
+        replay = self._relocation_replay(document)
+        if replay is not None:
+            return replay
+        if proof is None:
+            proof = observe()
+        with self.store.transaction() as tx:
+            registry = self._registry(tx)
+            if registry is None:
+                raise FleetRefused("unregistered")
+            receipt_id = relocation_receipt_id(document)
+            old = tx.get(BUCKET_RELOCATION, receipt_id)
+            if old is not None:
+                return {"relocated": True, "cached": True, "receipt": relocation_view(old),
+                        "config": sanitized_config(registry["config"]), "config_sha256": registry["config_sha256"]}
+            if any(row["expected_config_sha256"] == document["expected_config_sha256"]
+                   for row in (r["request"] for r in tx.scan(BUCKET_RELOCATION))):
+                raise FleetRefused("relocation_conflict")
+            if registry["id"] != document["fleet"]:
+                raise FleetRefused("fleet_mismatch", "fleet")
+            if not bool(self._control(tx).get("paused")):
+                raise FleetRefused("fleet_not_paused")
+            if registry["config_sha256"] != document["expected_config_sha256"]:
+                raise FleetRefused("config_expected_mismatch", "expected_config_sha256")
+            jobs = tx.scan(BUCKET_JOBS)
+            if any(row["status"] in RESERVING for row in jobs) or held_units(tx.scan(BUCKET_UNITS)):
+                raise FleetRefused("fleet_not_idle")
+            new = relocated_config(registry["config"], document)
+            queued = {move["lane"]: sorted(row["id"] for row in jobs
+                                           if row["status"] == QUEUED and row["lane"] == move["lane"])
+                      for move in document["moves"]}
+            check_relocation_proof(document, proof, queued)
+            fresh = proof if reread is None else reread()
+            check_relocation_proof(document, fresh, queued)
+            if proof_binding(fresh) != proof_binding(proof):
+                raise FleetRefused("proof_changed")
+            now = self.clock()
+            receipt = relocation_receipt(document, fresh, registry, new, now)
+            tx.put(BUCKET_RELOCATION, receipt["id"], receipt)
+            # The registry row keeps its identity and registration time; only the lane paths and the
+            # digest that pins them move, and the prior pair lives on in the immutable receipt.
+            tx.put(BUCKET_REGISTRY, registry["id"], {**registry, "config": new,
+                                                     "config_sha256": receipt["config_sha256"],
+                                                     "relocated_at": now, "relocation_id": receipt["id"]})
+        return {"relocated": True, "cached": False, "receipt": relocation_view(receipt),
+                "config": sanitized_config(new), "config_sha256": receipt["config_sha256"]}
+
+    def migrate_host(self, request, proof=None, *, observe=None, reread=None) -> dict:
+        """Rebind EVERY lane's repository, runtime and schema to the target host (trusted owner CLI).
+
+        INV-HOST-MIGRATION-001: the restored registry of the source moves to the target host's
+        paths and renamed schemas. The same guards as `relocate` apply - paused fleet, nothing
+        dispatching or held, compare-and-swap on the registered digest, the observation taken
+        twice and compared - with a target-host proof: the checkout is the source repository by
+        root commits, queued jobs' bases are present, runtimes are writable and every target
+        schema is provisioned. Lane/team ids and Redis namespaces stay. Frozen job rows,
+        manifests and history keep their original paths; the receipt keeps the prior config and
+        its digest, and admission resolves old repository identities through its aliases.
+        """
+        document = validate_host_migration_request(request)
+        require(proof is not None or observe is not None, "Fleet host migration needs an observation")
+        receipt_id = host_migration_receipt_id(document)
+        with self.store.transaction() as tx:
+            if self._registry(tx) is None:
+                raise FleetRefused("unregistered")
+            old = tx.get(BUCKET_HOST_MIGRATION, receipt_id)
+            if old is not None:
+                return {"migrated": True, "cached": True, "receipt": host_migration_view(old),
+                        "config_sha256": old["config_sha256"]}
+            if any(row["request"]["expected_config_sha256"] == document["expected_config_sha256"]
+                   for row in tx.scan(BUCKET_HOST_MIGRATION)):
+                raise FleetRefused("host_migration_conflict")
+        if proof is None:
+            proof = observe()
+        with self.store.transaction() as tx:
+            registry = self._registry(tx)
+            if tx.get(BUCKET_HOST_MIGRATION, receipt_id) is not None:
+                raise FleetRefused("host_migration_conflict")
+            if registry["id"] != document["fleet"]:
+                raise FleetRefused("fleet_mismatch", "fleet")
+            if not bool(self._control(tx).get("paused")):
+                raise FleetRefused("fleet_not_paused")
+            if registry["config_sha256"] != document["expected_config_sha256"]:
+                raise FleetRefused("config_expected_mismatch", "expected_config_sha256")
+            jobs = tx.scan(BUCKET_JOBS)
+            if any(row["status"] in RESERVING for row in jobs) or held_units(tx.scan(BUCKET_UNITS)):
+                raise FleetRefused("fleet_not_idle")
+            new = host_migrated_config(registry["config"], document)
+            queued = {row["lane"]: sorted(job["id"] for job in jobs
+                                          if job["status"] == QUEUED and job["lane"] == row["lane"])
+                      for row in document["lanes"]}
+            check_host_migration_proof(document, proof, queued)
+            fresh = proof if reread is None else reread()
+            check_host_migration_proof(document, fresh, queued)
+            if proof_binding(fresh) != proof_binding(proof):
+                raise FleetRefused("proof_changed")
+            now = self.clock()
+            receipt = host_migration_receipt(document, fresh, registry, new, now)
+            tx.put(BUCKET_HOST_MIGRATION, receipt["id"], receipt)
+            tx.put(BUCKET_REGISTRY, registry["id"], {**registry, "config": new,
+                                                     "config_sha256": receipt["config_sha256"],
+                                                     "host_migrated_at": now, "host_migration_id": receipt["id"]})
+        return {"migrated": True, "cached": False, "receipt": host_migration_view(receipt),
+                "config": sanitized_config(new), "config_sha256": receipt["config_sha256"]}
+
+    def relocations(self) -> list[dict]:
+        with self.store.transaction() as tx:
+            rows = tx.scan(BUCKET_RELOCATION)
+        return [relocation_view(row) for row in sorted(rows, key=lambda r: (r["recorded_at"], r["id"]))]
+
+    # ----- active-generation maintenance: the one-job canary permit ------------------------
+    # INV-FLEET-001 maintenance amendment (INV-HOST-DELIVERY-MAINTENANCE-001). Each method is ONE
+    # control-store transaction and every refusal is a fixed `FleetRefused` with nothing written. The
+    # Fleet stays owner-paused throughout: nothing here pauses, resumes or releases a hold, and the
+    # ordinary dispatcher (`admit_one`, `reserve_unit`, `FleetRunner.run`) gains no authority.
+    @staticmethod
+    def _owner_paused(control: dict) -> None:
+        """An OWNER pause: paused, and not merely a managed runtime's activation hold."""
+        if not (control.get("paused") is True and control.get(ACTIVATION_HOLD) is None):
+            raise FleetRefused("maintenance_pause_required", "fleet")
+
+    @staticmethod
+    def _open_permits(tx) -> list[str]:
+        """Maintenance ids whose control debt is unsettled: a permit not closed, or a closed one whose
+        canary job is still queued or reserving (`domain.fleet_maintenance.open_permit`). A fleet that
+        never held a permit scans one empty bucket and reads nothing else."""
+        open_ids = []
+        for row in tx.scan(BUCKET_MAINTENANCE):
+            job = Fleet._permit_job(tx, row["permit"]) if row.get("state") == CLOSED else None
+            if open_permit(row, job):
+                open_ids.append(row["id"])
+        return sorted(open_ids)
+
+    @staticmethod
+    def _permit_job(tx, permit: dict) -> dict | None:
+        """The one job a permit may admit: the canary's deterministic id, or for a `forward_candidate` the
+        job whose manifest digest the permit binds (the digest contains the operation id, so it is unique)."""
+        if kind_of(permit) != FORWARD_CANDIDATE:
+            return tx.get(BUCKET_JOBS, permit["job_id"])
+        return next((job for job in tx.scan(BUCKET_JOBS) if job.get("manifest_sha256") == permit["manifest_sha256"]),
+                    None)
+
+    @staticmethod
+    def _job_is_permits(permit: dict, action, job) -> bool:
+        """The stored job belongs to this permit: the real owner action for a canary, the bound lane for a
+        forward candidate (its digest already matched)."""
+        if kind_of(permit) == FORWARD_CANDIDATE:
+            return isinstance(job, dict) and job.get("lane") == permit["lane"]
+        return owner_action_matches(permit, action)
+
+    @classmethod
+    def _maintenance_debt(cls, tx) -> bool:
+        return bool(cls._open_permits(tx))
+
+    @staticmethod
+    def _history(row: dict, state: str, now: str, reason: str | None) -> list:
+        return list(row.get("history") or []) + [{"state": state, "at": now, "reason": reason}]
+
+    def grant_maintenance_canary(self, permit) -> dict:
+        """Record the one-job permit of one maintenance generation (lane request -> THIS grant -> lane
+        acknowledgement, DN-4), before owner-actions can queue the job, so a stranded canary always
+        has an open permit that blocks every ordinary resume.
+
+        The Fleet must be owner-paused and the deadline fresh; another maintenance's unsettled permit
+        conflicts. The same id replays `cached` in any state only for the identical permit digest; any
+        other permit under that id is `maintenance_conflict`. It admits and launches nothing."""
+        permit = validate_permit(permit)
+        sha, mid = digest(permit), permit["maintenance_id"]
+        with self.store.transaction() as tx:
+            if self._registry(tx) is None:
+                raise FleetRefused("unregistered")
+            self._owner_paused(self._control(tx))
+            now = self.clock()
+            if deadline_passed(permit["deadline"], now):
+                raise FleetRefused("maintenance_expired", "deadline")
+            if kind_of(permit) == FORWARD_CANDIDATE:
+                # G1-04c issuance gate: never while a maintenance generation (a canary permit) is open;
+                # the owner registered the item before this permit, and nothing of maintenance is touched.
+                open_ids = self._open_permits(tx)
+                if any(kind_of(tx.get(BUCKET_MAINTENANCE, other)["permit"]) != FORWARD_CANDIDATE
+                       for other in open_ids):
+                    raise FleetRefused("maintenance_open", "maintenance")
+                check_backlog_item(permit, tx.scan(BUCKET_BACKLOG_PLANS), "maintenance_invalid")
+            if any(other != mid for other in self._open_permits(tx)):
+                raise FleetRefused("maintenance_conflict", "maintenance_id")
+            old = tx.get(BUCKET_MAINTENANCE, mid)
+            if old is not None:
+                if old["permit_sha256"] != sha:
+                    raise FleetRefused("maintenance_conflict", "permit")
+                return {"granted": True, "cached": True, "maintenance_id": mid, "permit_sha256": sha,
+                        "state": old["state"]}
+            row = {"id": mid, "maintenance_id": mid, "permit": permit, "permit_sha256": sha, "state": GRANTED,
+                   "granted_at": now, "lane": None, "manifest_sha256": None, "owner_token": None,
+                   "admitted_at": None, "lane_ack": None, "closed_at": None, "close_reason": None,
+                   "job_status": None, "launched": None, "history": [{"state": GRANTED, "at": now, "reason": None}]}
+            tx.put(BUCKET_MAINTENANCE, mid, row)
+        return {"granted": True, "cached": False, "maintenance_id": mid, "permit_sha256": sha, "state": GRANTED}
+
+    def admit_maintenance_canary(self, maintenance_id: str, *, permit_sha256: str, proof: dict,
+                                 budget_exhausted: bool) -> dict:
+        """Claim exactly this permit's owner canary job as `dispatching`, in ONE transaction.
+
+        Required together: an owner-paused Fleet, the granted (never admitted) permit under the same
+        digest, the lane's acknowledged ARMED-generation proof, a fresh deadline, the REAL owner action
+        still REQUESTED under the permit's binding, its canary job still QUEUED, no reserving job and no
+        held execution unit. The ordinary selection then decides over a one-job candidate set with ONLY
+        the pause lifted: budget, stale ceilings, capacity, lane, path and dependency blockers all still
+        refuse. The claim takes a fresh owner token exactly as `admit_one`, and the permit is spent in
+        the same transaction. Other queued jobs are not read-modified. Any refusal writes nothing."""
+        with self.store.transaction() as tx:
+            registry = self._registry(tx)
+            if registry is None:
+                raise FleetRefused("unregistered")
+            control = self._control(tx)
+            self._owner_paused(control)
+            valid_id = type(maintenance_id) is str and MAINTENANCE_ID.fullmatch(maintenance_id) is not None
+            row = tx.get(BUCKET_MAINTENANCE, maintenance_id) if valid_id else None
+            if row is None:
+                raise FleetRefused("maintenance_admission_refused", "permit")
+            if type(permit_sha256) is not str or row["permit_sha256"] != permit_sha256:
+                raise FleetRefused("maintenance_conflict", "permit")
+            if row["state"] != GRANTED:
+                raise FleetRefused("maintenance_already_used", "state")
+            permit = row["permit"]
+            proof = validate_proof(proof, permit, permit_sha256)
+            now = self.clock()
+            if deadline_passed(permit["deadline"], now):
+                raise FleetRefused("maintenance_expired", "deadline")
+            forward = kind_of(permit) == FORWARD_CANDIDATE
+            if forward:
+                check_backlog_item(permit, tx.scan(BUCKET_BACKLOG_PLANS))
+                job = self._permit_job(tx, permit)
+                check_forward_job(permit, job)
+            else:
+                check_owner_action(permit, tx.get(OWNER_ACTIONS_BUCKET, permit["action_id"]))
+                job = tx.get(BUCKET_JOBS, permit["job_id"])
+                check_canary_job(permit, job)
+            jobs = {other["id"]: other for other in tx.scan(BUCKET_JOBS)}
+            units = held_units(tx.scan(BUCKET_UNITS))
+            if units or any(other["status"] in RESERVING for other in jobs.values()):
+                raise FleetRefused("maintenance_debt_unsettled", "fleet")
+            config = effective_config(registry["config"], control)
+            candidates = {job["id"]: job, **{key: other for key, other in jobs.items() if other["status"] != QUEUED}}
+            # The ONLY exception to ordinary admission: `paused=False` for this one candidate.
+            decision = select_admission(config, False, candidates, bool(budget_exhausted),
+                                        self._repository_aliases(tx), units=len(units))
+            if decision["job"] is None or decision["job"]["id"] != job["id"]:
+                raise FleetRefused("maintenance_admission_refused", decision["blocked"].get(job["id"], "capacity"))
+            job.update(status=DISPATCHING, owner_token=self.token(), dispatched_at=now, updated_at=now,
+                       reason_code=None)
+            tx.put(BUCKET_JOBS, job["id"], job)
+            row.update(state=ADMITTED, admitted_at=now, lane=job["lane"], manifest_sha256=job["manifest_sha256"],
+                       owner_token=job["owner_token"], lane_ack={"proof_sha256": digest(proof), "at": now},
+                       history=self._history(row, ADMITTED, now, None))
+            if forward:
+                row["job_id"] = job["id"]
+            tx.put(BUCKET_MAINTENANCE, row["id"], row)
+        return {"admitted": True, "maintenance_id": row["id"], "job": dict(job)}
+
+    def close_maintenance_canary(self, permit, reason: str) -> dict:
+        """Close one permit, in ONE transaction; never a general Fleet cancel.
+
+        `maintenance_expired` (only at or after the deadline) and `maintenance_cancelled` apply to an
+        UNADMITTED permit: its still-queued canary job - verified against the stored owner action, a
+        foreign job is `maintenance_conflict` - becomes terminal `failed` with that reason and a record
+        that no process was launched. Admitted or reserving work is never expired: it is
+        `maintenance_reconciliation_required` until it settles. `maintenance_settled` needs the
+        admitted permit and its job finalized (not reserving). A missing permit row is created closed;
+        a closed one replays `cached` with its recorded reason, and a canary job queued after an
+        unlaunched close is failed by that replay too, so no stale canary survives to a resume."""
+        permit = validate_permit(permit)
+        if type(reason) is not str or reason not in CLOSE_REASONS:
+            raise FleetRefused("maintenance_invalid", "reason")
+        sha, mid = digest(permit), permit["maintenance_id"]
+        with self.store.transaction() as tx:
+            if self._registry(tx) is None:
+                raise FleetRefused("unregistered")
+            row = tx.get(BUCKET_MAINTENANCE, mid)
+            if row is not None and row["permit_sha256"] != sha:
+                raise FleetRefused("maintenance_conflict", "permit")
+            job = self._permit_job(tx, permit)
+            action = None if kind_of(permit) == FORWARD_CANDIDATE else tx.get(OWNER_ACTIONS_BUCKET, permit["action_id"])
+            now = self.clock()
+            if row is not None and row["state"] == CLOSED:
+                if row.get("close_reason") in UNLAUNCHED_REASONS and job is not None and job["status"] == QUEUED:
+                    if not self._job_is_permits(permit, action, job):
+                        raise FleetRefused("maintenance_conflict", "job")
+                    self._fail_unlaunched(tx, job, mid, row["close_reason"], now)
+                    row.update(job_status=job["status"],
+                               history=self._history(row, CLOSED, now, "stale_canary_failed"))
+                    tx.put(BUCKET_MAINTENANCE, mid, row)
+                return {"closed": True, "cached": True, "maintenance_id": mid, "close_reason": row["close_reason"],
+                        "job_status": row.get("job_status"), "launched": row.get("launched")}
+            if reason in UNLAUNCHED_REASONS:
+                if (row is not None and row["state"] == ADMITTED) or (job is not None and job["status"] in RESERVING):
+                    raise FleetRefused("maintenance_reconciliation_required", "job")
+                if reason == MAINTENANCE_EXPIRED and not deadline_passed(permit["deadline"], now):
+                    raise FleetRefused("maintenance_stale", "deadline")
+                if job is not None:
+                    # Only the exact queued canary of this permit's owner action; a job that is already
+                    # terminal was never this permit's to close.
+                    if job["status"] != QUEUED or not self._job_is_permits(permit, action, job):
+                        raise FleetRefused("maintenance_conflict", "job")
+                    self._fail_unlaunched(tx, job, mid, reason, now)
+                launched = False
+            else:
+                if row is None or row["state"] != ADMITTED or job is None or job["status"] in RESERVING \
+                        or job["status"] == QUEUED:
+                    raise FleetRefused("maintenance_reconciliation_required", "job")
+                launched = True
+            if row is None:
+                row = {"id": mid, "maintenance_id": mid, "permit": permit, "permit_sha256": sha, "state": CLOSED,
+                       "granted_at": None, "lane": None, "manifest_sha256": None, "owner_token": None,
+                       "admitted_at": None, "lane_ack": None, "history": []}
+            row.update(state=CLOSED, closed_at=now, close_reason=reason,
+                       job_status=job["status"] if job is not None else None, launched=launched,
+                       history=self._history(row, CLOSED, now, reason))
+            tx.put(BUCKET_MAINTENANCE, mid, row)
+        return {"closed": True, "cached": False, "maintenance_id": mid, "close_reason": reason,
+                "job_status": row["job_status"], "launched": launched}
+
+    @staticmethod
+    def _fail_unlaunched(tx, job: dict, maintenance_id: str, reason: str, now: str) -> None:
+        """The queued canary becomes terminal without any process: nothing was ever claimed or spawned."""
+        job.update(status=FAILED, reason_code=reason, updated_at=now, finished_at=now,
+                   maintenance={"maintenance_id": maintenance_id, "launched": False, "reason": reason})
+        tx.put(BUCKET_JOBS, job["id"], job)
+
+    def maintenance_permit(self, maintenance_id: str) -> dict | None:
+        """The safe view of one permit (never its owner token), or None."""
+        if type(maintenance_id) is not str:
+            return None
+        with self.store.transaction() as tx:
+            row = tx.get(BUCKET_MAINTENANCE, maintenance_id)
+        return permit_view(row) if row is not None else None
+
+    def job(self, job_id: str) -> dict | None:
+        """One job's safe view (no owner token), or None."""
+        if type(job_id) is not str:
+            return None
+        with self.store.transaction() as tx:
+            row = tx.get(BUCKET_JOBS, job_id)
+        return self._view(row) if row is not None else None
+
+    # ----- read-only ----------------------------------------------------------------------
+    def reconciliation_required(self) -> list[str]:
+        """Dispatching/unknown jobs: never relaunched, never cleared by an operator command here."""
+        with self.store.transaction() as tx:
+            rows = tx.scan(BUCKET_JOBS)
+        return sorted(row["id"] for row in rows if row["status"] in RESERVING)
+
+    def status(self) -> dict:
+        """The `urn:zeus:fleet-status:1` projection from PG reads only.
+
+        A job with an owner delivery record carries its safe `delivery` projection; a job without
+        one is unchanged, and its delivery stays unknown."""
+        with self.store.transaction() as tx:
+            registry = self._registry(tx)
+            control = self._control(tx)
+            rows = tx.scan(BUCKET_JOBS)
+            deliveries = {row["job_id"]: row for row in tx.scan(BUCKET_DELIVERY)}
+            permits = tx.scan(BUCKET_MAINTENANCE)
+        if registry is not None:
+            registry = {**registry, "config": effective_config(registry["config"], control)}
+        view = projection(registry, bool(control.get("paused")), rows, deliveries)
+        # A job whose lane operation was refused on evidence carries its already-safe counts-only
+        # handoff here too, so `pending_owner` is visible in the status a reader actually polls. A
+        # job without one keeps its exact previous shape.
+        handoffs = {row["id"]: row.get("owner_handoff") for row in rows if row.get("owner_handoff")}
+        view = {**view, "jobs": [job if job["id"] not in handoffs else {**job, "owner_handoff": handoffs[job["id"]]}
+                                 for job in view["jobs"]]}
+        if permits:
+            # INV-FLEET-001 maintenance amendment: permits are visible (safe view, never an owner
+            # token); a fleet that never held one keeps its exact previous status shape.
+            view["maintenance"] = [permit_view(row) for row in sorted(
+                permits, key=lambda r: (str(r.get("granted_at") or r.get("closed_at")), r["id"]))]
+        return view
+
+
+class FleetRunner:
+    """Bounded dispatcher over a launcher port: `launch(job) -> handle`, `wait(handles, seconds)
+    -> finished handles`, `outcome(handle, job) -> outcome`, `budget_exhausted(budget) -> bool`.
+    Children are bounded by `max_parallel`, waited for outside transactions, and every claimed
+    job this process launched is finalized by it even if another runner races."""
+
+    def __init__(self, fleet: Fleet, launcher, sleep=time.sleep, interval: float = 5.0, reconcile=None,
+                 backlog=None, control=None, continuation=None):
+        self.fleet, self.launcher, self.sleep, self.interval = fleet, launcher, sleep, interval
+        # Optional descriptor-bound runtime control of a managed host target (HOST-RUNTIME.md):
+        # `admission_open() -> bool`, `stop_requested() -> bool` and `heartbeat(state)`. A closed
+        # admission stops the backlog tick and new admissions while owned children are still waited
+        # for and finalized; a stop request is the same graceful `stop()`. None - the default -
+        # keeps this runner's exact previous behaviour and writes no heartbeat.
+        self.control = control
+        self.admission = "open"
+        # Optional bounded read/group pass run once per tick BEFORE admission, in its own
+        # transaction (the adapter supplies it, so this layer keeps no portfolio dependency).
+        self.reconcile = reconcile
+        # Optional bounded approved-backlog tick (INV-FLEET-BACKLOG-001), also supplied by the
+        # adapter and also in its own transactions. None - the default - keeps this runner's exact
+        # previous behaviour: it invents no successor, no retry and no merge.
+        self.backlog = backlog
+        # Optional opt-in conductor continuation pass (INV-CONTINUATION-001), supplied by the adapter
+        # and run in its own transactions after the backlog tick and before admission, so a
+        # successor or an initial session binding it records is visible to this same admission.
+        # It never waits for a conductor decision: it starts an owned child and polls it on later
+        # passes. When it also offers `owned()`, `unresolved()` and `drain()`, pending conductors
+        # take admission slots, count as active/unresolved work in the heartbeat, keep a graceful
+        # stop draining, and are settled by `drain()` while admission is closed. None - the
+        # default - keeps this runner's exact previous behaviour.
+        self.continuation = continuation
+        self.continuation_state = None
+        # Last logged reconciliation state, so repeated identical failures stay silent and only a
+        # real transition is written.
+        self.reconciliation_state = None
+        self.backlog_state = None
+        self.children: dict[str, tuple[dict, object]] = {}
+        self.stopping = False
+        # What the conductor stop request reached (`_forward_stop`); None until a stop is forwarded.
+        self.stop_request = None
+        # Whether this runtime's own activation hold was released (`_release_hold`); None until tried.
+        self.hold_state = None
+
+    def stop(self) -> None:
+        """Graceful stop: close admission and drain owned children; nothing is killed.
+
+        A continuation that offers `request_stop()` is asked HERE, before any store access, to have
+        the guardians of its conductor launches end their trees. That request is local and DB-free
+        (SPEC stop correction), so a blocked or unavailable store cannot hold it back; it proves no
+        cleanup - each guardian still writes its own proof, and each unit stays held until the Fleet
+        settles it. Worker jobs are never signalled. It never raises: a stop may come from a signal."""
+        self.stopping = True
+        self._forward_stop()
+
+    def _forward_stop(self) -> None:
+        """Ask the continuation's guardians to stop; repeated calls ask only launches not yet asked.
+
+        The outcome is kept in `stop_request` and reported in the run summary: a request that could
+        not be written is `failed` with its error type, never counted as asked, and the guardian's
+        own deadline still bounds that launch."""
+        request = getattr(self.continuation, "request_stop", None)
+        if request is None:
+            return
+        prior = self.stop_request or {"asked": [], "failed": []}
+        try:
+            result = request()
+            asked = sorted(set(prior["asked"]) | set(result.get("asked") or []))
+            failed = [row for row in result.get("failed") or [] if row.get("launch") not in asked]
+            error_type = None
+        except Exception as exc:
+            asked, failed, error_type = prior["asked"], prior["failed"], type(exc).__name__
+        state = "failed" if failed or error_type else "requested" if asked else "none"
+        self.stop_request = {"state": state, "asked": asked, "failed": failed, "error_type": error_type}
+
+    def run(self, once: bool) -> dict:
+        self.fleet.registered()  # refuse early when unregistered; ceilings are re-read per scan
+        summary = {"admitted": [], "finalized": [], "finalize_failures": [], "blocked": {}, "stopped": False,
+                   "reconciliation": {"state": "disabled", "error_type": None},
+                   "backlog": {"state": "disabled", "outcome": None, "reason_code": None,
+                               "error_type": None}}
+        if self.continuation is not None:
+            summary["continuation"] = {"state": "disabled", "outcome": None, "reason_code": None, "error_type": None}
+        while True:
+            self._release_hold(summary)
+            admitting = self._admission_open(summary)
+            if self.stopping:
+                # Every stopping pass forwards the stop BEFORE any store access of that pass, so a
+                # launch started just before the stop, or a request that failed, is asked again.
+                self._forward_stop()
+            self._reconcile(summary)
+            progressed = False
+            if admitting and not self.stopping:
+                self._backlog(summary)
+                progressed = self._continue(summary)
+                progressed = self._admit(summary) or progressed
+            else:
+                self._drain_continuation(summary)
+            progressed = self._reap(summary) or progressed
+            self._heartbeat(summary)
+            if self.children or progressed:
+                continue
+            if self._conductors():
+                # A pending conductor child is polled on the next pass, never waited on here; a
+                # graceful stop or `--once` keeps draining it rather than leaving it behind.
+                self.sleep(self.interval)
+                continue
+            if once or self.stopping:
+                break
+            self.sleep(self.interval)
+        summary["stopped"] = self.stopping
+        if self.stop_request is not None:
+            summary["stop_request"] = dict(self.stop_request)
+        summary["reconciliation_required"] = self.fleet.reconciliation_required()
+        if self.continuation is not None:
+            # A stop never reports idle past owned debt: execution units still held (a conductor
+            # awaiting cleanup proof or settlement) are listed; an unreadable list is unknown.
+            try:
+                summary["units_held"] = self.fleet.held_units()
+            except Exception as exc:
+                summary["units_held"] = {"state": "unknown", "error_type": type(exc).__name__}
+        return summary
+
+    def _release_hold(self, summary: dict) -> None:
+        """Release the host activation hold THIS runtime was started under, once.
+
+        A control offering `activation()` names the descriptor digest this runtime is running;
+        `Fleet.release_activation_hold` resumes admission only when the pause is exactly that
+        activation's hold. A failed read leaves admission paused (safe) and is tried again on the
+        next pass; any other pause is not this runner's to lift."""
+        if self.hold_state is not None or self.stopping:
+            return
+        activation = getattr(self.control, "activation", None)
+        if activation is None:
+            self.hold_state = "none"
+            return
+        try:
+            released = self.fleet.release_activation_hold(activation())["released"]
+        except Exception as exc:
+            summary["activation_hold"] = {"state": "unavailable", "error_type": type(exc).__name__}
+            return
+        self.hold_state = "released" if released else "none"
+        summary["activation_hold"] = {"state": self.hold_state, "error_type": None}
+
+    def _admission_open(self, summary: dict) -> bool:
+        """Whether new work may be selected or admitted on this pass. Always true without control.
+
+        A control that cannot be read closes admission rather than opening it: an unknown pause is
+        treated as a pause, never as permission to take new work.
+        """
+        if self.control is None:
+            return True
+        try:
+            if self.control.stop_requested():
+                self.stop()
+            open_ = not self.stopping and bool(self.control.admission_open())
+        except Exception as exc:
+            summary["control"] = {"state": "unavailable", "error_type": type(exc).__name__}
+            open_ = False
+        self.admission = "stopping" if self.stopping else "open" if open_ else "paused"
+        return open_
+
+    def _heartbeat(self, summary: dict) -> None:
+        """Report the work this runner ACTUALLY owns, plus Fleet reservations nobody here owns.
+
+        `active` is the number of children this process launched and has not finalized; `unresolved`
+        is every dispatching or unknown job that is not one of them, which a successor could not
+        account for either. A heartbeat that cannot be computed or written is simply not written:
+        its reader then sees a stale or missing heartbeat, which is unknown and never idle.
+        """
+        if self.control is None:
+            return
+        try:
+            owned = set(self.children)
+            unresolved = [job for job in self.fleet.reconciliation_required() if job not in owned]
+            # Conductor children this process owns are active work; dispatched launches it does not
+            # own (a previous owner's, an unconfirmed start) are unresolved. A failure to read them
+            # skips the heartbeat rather than under-reporting work.
+            pending = getattr(self.continuation, "unresolved", None)
+            conductors = self._conductors()
+            unresolved_conductors = list(pending()) if pending is not None else []
+            self.control.heartbeat({"admission": self.admission, "active": len(owned) + len(conductors),
+                                    "unresolved": len(unresolved) + len(unresolved_conductors)})
+        except Exception as exc:
+            summary["heartbeat"] = {"state": "unavailable", "error_type": type(exc).__name__}
+        else:
+            summary["heartbeat"] = {"state": "ok", "error_type": None}
+
+    def _reconcile(self, summary: dict) -> None:
+        """One bounded reconciliation per tick, before admission and outside every other
+        transaction. It never admits, launches, finalizes or retries anything, and its failure is
+        recorded as a fixed `unavailable` state with the exception TYPE only: unrelated Fleet
+        admission and finalization keep running.
+
+        A long-running service only returns its summary when it stops, so each state TRANSITION is
+        also logged once: a fixed message on entering `unavailable` and one on recovery. Repeated
+        identical failures stay silent, and no traceback, exception text or message is logged."""
+        if self.reconcile is None:
+            return
+        try:
+            self.reconcile()
+        except Exception as exc:
+            summary["reconciliation"] = {"state": "unavailable", "error_type": type(exc).__name__}
+            if self.reconciliation_state != "unavailable":
+                LOGGER.warning("portfolio reconciliation unavailable; fleet admission continues")
+            self.reconciliation_state = "unavailable"
+        else:
+            summary["reconciliation"] = {"state": "ok", "error_type": None}
+            if self.reconciliation_state == "unavailable":
+                LOGGER.info("portfolio reconciliation recovered")
+            self.reconciliation_state = "ok"
+
+    def _backlog(self, summary: dict) -> None:
+        """One bounded approved-backlog tick per cycle, before admission and outside every other
+        transaction. Disabled unless the adapter wired one, and skipped once a graceful stop has
+        begun, so a stopping runner admits no new work.
+
+        It selects at most one already approved item and hands it to the ordinary `Fleet.enqueue`;
+        it never admits, launches, finalizes, retries or merges anything.
+
+        A tick that RETURNS a failure is a failure of that tick, exactly like one that raises: an
+        `unavailable`, `refused`, `conflict` or `plan_unregistered` answer is reported with its own
+        fixed reason code and exception TYPE, never as `ok` merely because the call returned. Idle,
+        blocked and both pauses are healthy. Unrelated admission and finalization keep running, and
+        only a state TRANSITION is logged - repeated identical failures, repeated idle polls, raw
+        exception text and raw messages never reach a log line.
+        """
+        if self.backlog is None or self.stopping:
+            return
+        try:
+            result = self.backlog()
+        except Exception as exc:
+            self._backlog_state(summary, "unavailable", None, None, type(exc).__name__)
+        else:
+            row = result if isinstance(result, dict) else {}
+            outcome = row.get("outcome")
+            self._backlog_state(summary, runner_state(outcome), outcome, row.get("reason_code"),
+                                row.get("error_type"))
+
+    def _backlog_state(self, summary: dict, state: str, outcome, reason_code, error_type) -> None:
+        summary["backlog"] = {"state": state, "outcome": outcome,
+                              "reason_code": safe_code(reason_code) if reason_code is not None else None,
+                              "error_type": safe_backlog_error_type(error_type)}
+        if state == self.backlog_state:
+            return
+        if state == "unavailable":
+            LOGGER.warning("approved backlog unavailable; fleet admission continues")
+        elif state != "ok":
+            LOGGER.warning("approved backlog %s; fleet admission continues reason=%s", state,
+                           summary["backlog"]["reason_code"])
+        elif self.backlog_state is not None:
+            LOGGER.info("approved backlog recovered")
+        self.backlog_state = state
+
+    def _continue(self, summary: dict) -> bool:
+        """One bounded continuation pass per cycle. Its failure is its own `unavailable` state with
+        the exception TYPE only; unrelated admission and finalization keep running. Returns whether
+        it recorded progress (so `--once` drains a successor it just admitted)."""
+        if self.continuation is None or self.stopping:
+            return False
+        try:
+            result = self.continuation()
+        except Exception as exc:
+            state, row = "unavailable", {"error_type": type(exc).__name__}
+        else:
+            row = result if isinstance(result, dict) else {}
+            state = {"refused": "refused", "disabled": "disabled"}.get(row.get("outcome"), "ok")
+        summary["continuation"] = {"state": state, "outcome": row.get("outcome"),
+                                   "reason_code": safe_code(row["reason_code"]) if row.get("reason_code") else None,
+                                   "error_type": row.get("error_type") if isinstance(row.get("error_type"), str) else None}
+        if state != self.continuation_state and state in {"unavailable", "refused"}:
+            LOGGER.warning("conductor continuation %s; fleet admission continues", state)
+        self.continuation_state = state
+        return state == "ok" and any(action.get("effect") in {"admitted", "session_bound"}
+                                     for action in row.get("actions") or [] if isinstance(action, dict))
+
+    def _conductors(self) -> list:
+        """Conductor launches this runner's continuation owns and has not settled (none without)."""
+        owned = getattr(self.continuation, "owned", None)
+        return list(owned()) if owned is not None else []
+
+    def _drain_continuation(self, summary: dict) -> None:
+        """Admission is closed (graceful stop or host pause): only already started conductor
+        launches are polled and settled, under the binding they were started with. No new effect."""
+        drain = getattr(self.continuation, "drain", None)
+        if drain is None:
+            return
+        try:
+            result = drain()
+        except Exception as exc:
+            state, row = "unavailable", {"error_type": type(exc).__name__}
+        else:
+            state, row = "draining", result if isinstance(result, dict) else {}
+        summary["continuation"] = {"state": state, "outcome": row.get("outcome"), "reason_code": None,
+                                   "error_type": row.get("error_type") if isinstance(row.get("error_type"), str) else None}
+        if state != self.continuation_state and state == "unavailable":
+            LOGGER.warning("conductor continuation %s; fleet admission continues", state)
+        self.continuation_state = state
+
+    def _admit(self, summary: dict) -> bool:
+        progressed = False
+        # Effective ceilings are refreshed before every admission scan: a grant made while this
+        # service sleeps applies to the next scan without a restart and without any hidden reset.
+        config = self.fleet.registered()["config"]
+        # `admit_one` is the only capacity authority: its transaction counts reserving jobs AND held
+        # execution units (a conductor of any controller or standalone tick), so no local count here
+        # authorizes a start or counts a durable reservation twice. `children` only bounds the loop.
+        while not self.stopping and len(self.children) < config["max_parallel"]:
+            exhausted = bool(self.launcher.budget_exhausted(config["budget"]))
+            decision = self.fleet.admit_one(budget_exhausted=exhausted)
+            summary["blocked"] = decision["blocked"]
+            job = decision["job"]
+            if job is None:
+                break
+            progressed = True
+            self._launch_claimed(job, summary)
+        return progressed
+
+    def _launch_claimed(self, job: dict, summary: dict) -> bool:
+        """Launch one job this runner's process already claimed as `dispatching`; True if a child exists.
+
+        The one launch/outcome protocol shared by `_admit` and `run_preclaimed`: a definite pre-spawn
+        refusal finalizes `failed`, an uncertain spawn `unknown` (reserving, never relaunched), and a
+        started child is waited for and finalized by `_reap`."""
+        summary["admitted"].append(job["id"])
+        try:
+            handle = self.launcher.launch(job)
+        except LaunchRefused as exc:
+            self._finalize(job, {"status": FAILED, "reason_code": exc.reason_code}, summary)
+        except Exception as exc:
+            # The process may or may not exist: the claim, lane and paths stay reserved.
+            self._finalize(job, {"status": UNKNOWN, "reason_code": "spawn_uncertain",
+                                 "error_type": type(exc).__name__}, summary)
+        else:
+            self.children[job["id"]] = (job, handle)
+            return True
+        return False
+
+    def run_preclaimed(self, job: dict, *, max_wait_seconds: float) -> dict:
+        """Launch, wait for and finalize exactly ONE job `Fleet.admit_maintenance_canary` already claimed.
+
+        INV-FLEET-001 maintenance amendment: no activation-hold release, admission, reconciliation,
+        backlog, continuation or heartbeat pass runs here, so this is an explicitly owned one-job
+        executor, never a second general runner. A job that is not `dispatching` with an owner token
+        is refused before any launch. The wait is bounded: a child still running at the bound is left
+        to the OS, never killed or relaunched, and its job stays reserving for proof-based
+        reconciliation. `state` is `finished` (reaped and finalized), `running` (the bound elapsed) or
+        `not_launched` (a definite refusal finalized `failed`, or an uncertain spawn `unknown`)."""
+        if not (isinstance(job, dict) and job.get("status") == DISPATCHING and type(job.get("id")) is str
+                and type(job.get("owner_token")) is str and job["owner_token"]):
+            raise FleetRefused("maintenance_admission_refused", "job")
+        summary = {"admitted": [], "finalized": [], "finalize_failures": []}
+        deadline = time.monotonic() + max(0.0, float(max_wait_seconds))
+        launched = self._launch_claimed(job, summary)
+        while self.children and time.monotonic() < deadline:
+            self._reap(summary)
+        state = "running" if self.children else "finished" if launched else "not_launched"
+        return {"job_id": job["id"], "state": state, "finalized": summary["finalized"],
+                "finalize_failures": summary["finalize_failures"]}
+
+    def _reap(self, summary: dict) -> bool:
+        if not self.children:
+            return False
+        finished = self.launcher.wait([handle for _, handle in self.children.values()], self.interval)
+        progressed = False
+        for handle in finished:
+            job, _ = self.children.pop(handle["job_id"])
+            try:
+                outcome = self.launcher.outcome(handle, job)
+            except Exception as exc:
+                outcome = {"status": UNKNOWN, "reason_code": "outcome_uncertain", "error_type": type(exc).__name__}
+            self._finalize(job, outcome, summary)
+            progressed = True
+        return progressed
+
+    def _finalize(self, job: dict, outcome: dict, summary: dict) -> None:
+        try:
+            row = self.fleet.finalize(job["id"], job["owner_token"], outcome)
+        except Exception as exc:
+            # The row stays dispatching and is reported as reconciliation_required; no retry here.
+            summary["finalize_failures"].append({"id": job["id"], "error_type": type(exc).__name__})
+            return
+        summary["finalized"].append({"id": row["id"], "status": row["status"], "reason_code": row["reason_code"]})
+
+
+class MaintenanceCanaryExecutor:
+    """The one-job executor of an armed maintenance generation (INV-FLEET-001 maintenance amendment).
+
+    `execute` consults the machine ledger exactly as the ordinary runner does, admits the permit's
+    canary through `Fleet.admit_maintenance_canary` (whose `FleetRefused` propagates with nothing
+    launched) and runs that one claimed job through `FleetRunner.run_preclaimed` with the same
+    launcher, lane isolation and finalization. It never admits anything else, never resumes the
+    Fleet and never retries: a replay after an admission is `maintenance_already_used`."""
+
+    def __init__(self, fleet: Fleet, launcher, *, sleep=time.sleep, interval: float = 5.0):
+        self.fleet, self.launcher, self.sleep, self.interval = fleet, launcher, sleep, interval
+
+    def execute(self, maintenance_id: str, *, permit_sha256: str, proof: dict, max_wait_seconds: float) -> dict:
+        config = self.fleet.registered()["config"]
+        try:
+            exhausted = bool(self.launcher.budget_exhausted(config["budget"]))
+        except Exception as exc:
+            # An unreadable ledger admits nothing (fail closed); no exception text leaves here.
+            raise FleetRefused("maintenance_admission_refused", "budget_unknown") from exc
+        admitted = self.fleet.admit_maintenance_canary(maintenance_id, permit_sha256=permit_sha256, proof=proof,
+                                                       budget_exhausted=exhausted)
+        runner = FleetRunner(self.fleet, self.launcher, sleep=self.sleep, interval=self.interval)
+        summary = runner.run_preclaimed(admitted["job"], max_wait_seconds=max_wait_seconds)
+        try:
+            job_status = (self.fleet.job(summary["job_id"]) or {}).get("status")
+        except Exception:
+            job_status = None  # unknown here; the lane reads the job again before it binds anything
+        return {"schema": EXECUTION_SCHEMA, "maintenance_id": maintenance_id, "job_id": summary["job_id"],
+                "admitted": True, "state": summary["state"], "job_status": job_status}
+
+
+__all__ = ["ACTIVATION_HOLD", "BUCKET_CONTROL","BUCKET_DELIVERY", "BUCKET_GRANTS", "BUCKET_JOBS", "BUCKET_MAINTENANCE",
+           "BUCKET_RECOVERY", "BUCKET_REGISTRY", "BUCKET_RELOCATION", "BUCKET_UNITS", "Fleet", "FleetRunner",
+           "LaunchRefused", "MaintenanceCanaryExecutor", "QUEUED"]

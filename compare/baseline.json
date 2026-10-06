@@ -58,6 +58,47 @@
     "package_files_digest_method": "sha256 over sorted '<path>,sha256=<b64>' RECORD rows of codex_harness/ and zeus/ (the M7 method); enforced by run --reference rebaseline:<id>",
     "wheel_record_sha256": "42adb85f4aa1a131fcc1cf03207f18d613d2f3c3dc6f0a78e9a90d6abbf78a3a"
    }
+  },
+  {
+   "id": "pr3-bb579d5",
+   "commit": "bb579d558cd5902fa9d6493fad9b92ebd5be4b68",
+   "tree": "936dec623dc9cf266ef465c723499b723a9040bd",
+   "parent_source": "e38aa722ff1e91dc01ec650689cfe3eebe1ff699",
+   "delta_paths": [
+    "docs/contracts.md",
+    "src/codex_harness/adapters/host_delivery.py",
+    "src/codex_harness/adapters/maintenance_evidence.py",
+    "src/codex_harness/adapters/managed_runtime.py",
+    "src/codex_harness/application/fleet.py",
+    "src/codex_harness/application/host_delivery.py",
+    "src/codex_harness/application/release_queue.py",
+    "src/codex_harness/domain/fleet.py",
+    "src/codex_harness/domain/fleet_maintenance.py",
+    "src/codex_harness/domain/host_delivery.py",
+    "tests/host_delivery_maintenance_fixtures.py",
+    "tests/test_fleet_forward_candidate.py",
+    "tests/test_fleet_maintenance.py",
+    "tests/test_fleet_maintenance_postgres.py",
+    "tests/test_fleet_maintenance_readiness.py",
+    "tests/test_fleet_maintenance_runner.py",
+    "tests/test_host_delivery_maintenance.py",
+    "tests/test_host_delivery_maintenance_adapter.py",
+    "tests/test_host_delivery_maintenance_cli.py",
+    "tests/test_host_delivery_maintenance_domain.py",
+    "tests/test_host_delivery_maintenance_e2e.py",
+    "tests/test_host_delivery_maintenance_guards.py",
+    "tests/test_maintenance_evidence.py",
+    "tests/test_release_queue_maintenance.py"
+   ],
+   "archive_root": "reference/pr3-bb579d5",
+   "decision": "/home/trevi/workspaces/zeus/artifacts/aibox-migration-001/evidence/rebuild/cutover/G1-09F-RELEASE-BRANCH-ONLY.md",
+   "rebaseline_wheel": {
+    "filename": "zeus_harness-0.2.0-py3-none-any.whl",
+    "package_files": 277,
+    "package_files_digest": "776d392a6e7e12e7f689d8017ca49cd172d41a50df6d17334d9bcc4cdf06b07f",
+    "package_files_digest_method": "sha256 over sorted '<path>,sha256=<b64>' RECORD rows of codex_harness/ and zeus/ (the M7 method); enforced by run --reference rebaseline:<id>",
+    "wheel_record_sha256": "b612b8036096110d2af92e1a6bc3aeaf144504f192877e6ed7a1436054c19213"
+   }
   }
  ],
  "target": {
