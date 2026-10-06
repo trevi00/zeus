@@ -5,5 +5,301 @@
  "requires": "disposable-postgresql",
  "target_driver": "drivers/target/s7_units.py",
  "golden": "goldens/reference/effects.delivery_units.pg.json",
- "slice": "S7"
+ "slice": "S7",
+ "intended_differences": [
+  {
+   "layer": "rebaseline",
+   "path": "$.consume_descriptor.a_failure_at_consumed.units.COMMIT",
+   "op": "replace",
+   "value": 10,
+   "authority": "REBASELINE-MAIN-S2R (A/evidence/rebuild/cutover/REBASELINE-MAIN-S2R.md; reference/main-s2r-b9d8f15, commit b9d8f15bc6ab2d84ec57906d1b938bd8accc2fe8): `application/host_delivery.py` `HostDelivery._act` and `HostDelivery._advance` each begin with `self._maintenance_held(target_id)` (INV-HOST-DELIVERY-MAINTENANCE-001), a read store transaction (`with self.store.transaction()`), so every tick's unit log gains exactly two COMMIT boundaries (_prepare_switch adds the same read at the switch preparation); no write, effect or ordering changes. Observed on the rebaseline wheel: M7 8 -> S2R 10"
+  },
+  {
+   "layer": "rebaseline",
+   "path": "$.consume_descriptor.a_failure_at_startup_observed.units.COMMIT",
+   "op": "replace",
+   "value": 9,
+   "authority": "REBASELINE-MAIN-S2R (A/evidence/rebuild/cutover/REBASELINE-MAIN-S2R.md; reference/main-s2r-b9d8f15, commit b9d8f15bc6ab2d84ec57906d1b938bd8accc2fe8): `application/host_delivery.py` `HostDelivery._act` and `HostDelivery._advance` each begin with `self._maintenance_held(target_id)` (INV-HOST-DELIVERY-MAINTENANCE-001), a read store transaction (`with self.store.transaction()`), so every tick's unit log gains exactly two COMMIT boundaries (_prepare_switch adds the same read at the switch preparation); no write, effect or ordering changes. Observed on the rebaseline wheel: M7 7 -> S2R 9"
+  },
+  {
+   "layer": "rebaseline",
+   "path": "$.consume_descriptor.b_lease_moved_at_consumed.units.COMMIT",
+   "op": "replace",
+   "value": 8,
+   "authority": "REBASELINE-MAIN-S2R (A/evidence/rebuild/cutover/REBASELINE-MAIN-S2R.md; reference/main-s2r-b9d8f15, commit b9d8f15bc6ab2d84ec57906d1b938bd8accc2fe8): `application/host_delivery.py` `HostDelivery._act` and `HostDelivery._advance` each begin with `self._maintenance_held(target_id)` (INV-HOST-DELIVERY-MAINTENANCE-001), a read store transaction (`with self.store.transaction()`), so every tick's unit log gains exactly two COMMIT boundaries (_prepare_switch adds the same read at the switch preparation); no write, effect or ordering changes. Observed on the rebaseline wheel: M7 6 -> S2R 8"
+  },
+  {
+   "layer": "rebaseline",
+   "path": "$.consume_descriptor.b_lease_moved_at_startup_observed.units.COMMIT",
+   "op": "replace",
+   "value": 7,
+   "authority": "REBASELINE-MAIN-S2R (A/evidence/rebuild/cutover/REBASELINE-MAIN-S2R.md; reference/main-s2r-b9d8f15, commit b9d8f15bc6ab2d84ec57906d1b938bd8accc2fe8): `application/host_delivery.py` `HostDelivery._act` and `HostDelivery._advance` each begin with `self._maintenance_held(target_id)` (INV-HOST-DELIVERY-MAINTENANCE-001), a read store transaction (`with self.store.transaction()`), so every tick's unit log gains exactly two COMMIT boundaries (_prepare_switch adds the same read at the switch preparation); no write, effect or ordering changes. Observed on the rebaseline wheel: M7 5 -> S2R 7"
+  },
+  {
+   "layer": "rebaseline",
+   "path": "$.consume_descriptor.c_replay_after_failure.units.COMMIT",
+   "op": "replace",
+   "value": 12,
+   "authority": "REBASELINE-MAIN-S2R (A/evidence/rebuild/cutover/REBASELINE-MAIN-S2R.md; reference/main-s2r-b9d8f15, commit b9d8f15bc6ab2d84ec57906d1b938bd8accc2fe8): `application/host_delivery.py` `HostDelivery._act` and `HostDelivery._advance` each begin with `self._maintenance_held(target_id)` (INV-HOST-DELIVERY-MAINTENANCE-001), a read store transaction (`with self.store.transaction()`), so every tick's unit log gains exactly two COMMIT boundaries (_prepare_switch adds the same read at the switch preparation); no write, effect or ordering changes. Observed on the rebaseline wheel: M7 10 -> S2R 12"
+  },
+  {
+   "layer": "rebaseline",
+   "path": "$.consume_descriptor.success.units.COMMIT",
+   "op": "replace",
+   "value": 12,
+   "authority": "REBASELINE-MAIN-S2R (A/evidence/rebuild/cutover/REBASELINE-MAIN-S2R.md; reference/main-s2r-b9d8f15, commit b9d8f15bc6ab2d84ec57906d1b938bd8accc2fe8): `application/host_delivery.py` `HostDelivery._act` and `HostDelivery._advance` each begin with `self._maintenance_held(target_id)` (INV-HOST-DELIVERY-MAINTENANCE-001), a read store transaction (`with self.store.transaction()`), so every tick's unit log gains exactly two COMMIT boundaries (_prepare_switch adds the same read at the switch preparation); no write, effect or ordering changes. Observed on the rebaseline wheel: M7 10 -> S2R 12"
+  },
+  {
+   "layer": "rebaseline",
+   "path": "$.promote.a_failure_at_last_write.units.COMMIT",
+   "op": "replace",
+   "value": 11,
+   "authority": "REBASELINE-MAIN-S2R (A/evidence/rebuild/cutover/REBASELINE-MAIN-S2R.md; reference/main-s2r-b9d8f15, commit b9d8f15bc6ab2d84ec57906d1b938bd8accc2fe8): `application/host_delivery.py` `HostDelivery._act` and `HostDelivery._advance` each begin with `self._maintenance_held(target_id)` (INV-HOST-DELIVERY-MAINTENANCE-001), a read store transaction (`with self.store.transaction()`), so every tick's unit log gains exactly two COMMIT boundaries (_prepare_switch adds the same read at the switch preparation); no write, effect or ordering changes. Observed on the rebaseline wheel: M7 9 -> S2R 11"
+  },
+  {
+   "layer": "rebaseline",
+   "path": "$.promote.b_lease_moved.units.COMMIT",
+   "op": "replace",
+   "value": 9,
+   "authority": "REBASELINE-MAIN-S2R (A/evidence/rebuild/cutover/REBASELINE-MAIN-S2R.md; reference/main-s2r-b9d8f15, commit b9d8f15bc6ab2d84ec57906d1b938bd8accc2fe8): `application/host_delivery.py` `HostDelivery._act` and `HostDelivery._advance` each begin with `self._maintenance_held(target_id)` (INV-HOST-DELIVERY-MAINTENANCE-001), a read store transaction (`with self.store.transaction()`), so every tick's unit log gains exactly two COMMIT boundaries (_prepare_switch adds the same read at the switch preparation); no write, effect or ordering changes. Observed on the rebaseline wheel: M7 7 -> S2R 9"
+  },
+  {
+   "layer": "rebaseline",
+   "path": "$.promote.b_pointer_moved.units.COMMIT",
+   "op": "replace",
+   "value": 11,
+   "authority": "REBASELINE-MAIN-S2R (A/evidence/rebuild/cutover/REBASELINE-MAIN-S2R.md; reference/main-s2r-b9d8f15, commit b9d8f15bc6ab2d84ec57906d1b938bd8accc2fe8): `application/host_delivery.py` `HostDelivery._act` and `HostDelivery._advance` each begin with `self._maintenance_held(target_id)` (INV-HOST-DELIVERY-MAINTENANCE-001), a read store transaction (`with self.store.transaction()`), so every tick's unit log gains exactly two COMMIT boundaries (_prepare_switch adds the same read at the switch preparation); no write, effect or ordering changes. Observed on the rebaseline wheel: M7 9 -> S2R 11"
+  },
+  {
+   "layer": "rebaseline",
+   "path": "$.promote.c_replay_after_stage_write_failure.units.COMMIT",
+   "op": "replace",
+   "value": 12,
+   "authority": "REBASELINE-MAIN-S2R (A/evidence/rebuild/cutover/REBASELINE-MAIN-S2R.md; reference/main-s2r-b9d8f15, commit b9d8f15bc6ab2d84ec57906d1b938bd8accc2fe8): `application/host_delivery.py` `HostDelivery._act` and `HostDelivery._advance` each begin with `self._maintenance_held(target_id)` (INV-HOST-DELIVERY-MAINTENANCE-001), a read store transaction (`with self.store.transaction()`), so every tick's unit log gains exactly two COMMIT boundaries (_prepare_switch adds the same read at the switch preparation); no write, effect or ordering changes. Observed on the rebaseline wheel: M7 10 -> S2R 12"
+  },
+  {
+   "layer": "rebaseline",
+   "path": "$.promote.success.units.COMMIT",
+   "op": "replace",
+   "value": 12,
+   "authority": "REBASELINE-MAIN-S2R (A/evidence/rebuild/cutover/REBASELINE-MAIN-S2R.md; reference/main-s2r-b9d8f15, commit b9d8f15bc6ab2d84ec57906d1b938bd8accc2fe8): `application/host_delivery.py` `HostDelivery._act` and `HostDelivery._advance` each begin with `self._maintenance_held(target_id)` (INV-HOST-DELIVERY-MAINTENANCE-001), a read store transaction (`with self.store.transaction()`), so every tick's unit log gains exactly two COMMIT boundaries (_prepare_switch adds the same read at the switch preparation); no write, effect or ordering changes. Observed on the rebaseline wheel: M7 10 -> S2R 12"
+  },
+  {
+   "layer": "rebaseline",
+   "path": "$.record_merge.a_failure_at_stage_write.units.COMMIT",
+   "op": "replace",
+   "value": 11,
+   "authority": "REBASELINE-MAIN-S2R (A/evidence/rebuild/cutover/REBASELINE-MAIN-S2R.md; reference/main-s2r-b9d8f15, commit b9d8f15bc6ab2d84ec57906d1b938bd8accc2fe8): `application/host_delivery.py` `HostDelivery._act` and `HostDelivery._advance` each begin with `self._maintenance_held(target_id)` (INV-HOST-DELIVERY-MAINTENANCE-001), a read store transaction (`with self.store.transaction()`), so every tick's unit log gains exactly two COMMIT boundaries (_prepare_switch adds the same read at the switch preparation); no write, effect or ordering changes. Observed on the rebaseline wheel: M7 9 -> S2R 11"
+  },
+  {
+   "layer": "rebaseline",
+   "path": "$.record_merge.b_lease_moved.units.COMMIT",
+   "op": "replace",
+   "value": 9,
+   "authority": "REBASELINE-MAIN-S2R (A/evidence/rebuild/cutover/REBASELINE-MAIN-S2R.md; reference/main-s2r-b9d8f15, commit b9d8f15bc6ab2d84ec57906d1b938bd8accc2fe8): `application/host_delivery.py` `HostDelivery._act` and `HostDelivery._advance` each begin with `self._maintenance_held(target_id)` (INV-HOST-DELIVERY-MAINTENANCE-001), a read store transaction (`with self.store.transaction()`), so every tick's unit log gains exactly two COMMIT boundaries (_prepare_switch adds the same read at the switch preparation); no write, effect or ordering changes. Observed on the rebaseline wheel: M7 7 -> S2R 9"
+  },
+  {
+   "layer": "rebaseline",
+   "path": "$.record_merge.c_replay_after_failure.units.COMMIT",
+   "op": "replace",
+   "value": 9,
+   "authority": "REBASELINE-MAIN-S2R (A/evidence/rebuild/cutover/REBASELINE-MAIN-S2R.md; reference/main-s2r-b9d8f15, commit b9d8f15bc6ab2d84ec57906d1b938bd8accc2fe8): `application/host_delivery.py` `HostDelivery._act` and `HostDelivery._advance` each begin with `self._maintenance_held(target_id)` (INV-HOST-DELIVERY-MAINTENANCE-001), a read store transaction (`with self.store.transaction()`), so every tick's unit log gains exactly two COMMIT boundaries (_prepare_switch adds the same read at the switch preparation); no write, effect or ordering changes. Observed on the rebaseline wheel: M7 7 -> S2R 9"
+  },
+  {
+   "layer": "rebaseline",
+   "path": "$.record_merge.success.units.COMMIT",
+   "op": "replace",
+   "value": 11,
+   "authority": "REBASELINE-MAIN-S2R (A/evidence/rebuild/cutover/REBASELINE-MAIN-S2R.md; reference/main-s2r-b9d8f15, commit b9d8f15bc6ab2d84ec57906d1b938bd8accc2fe8): `application/host_delivery.py` `HostDelivery._act` and `HostDelivery._advance` each begin with `self._maintenance_held(target_id)` (INV-HOST-DELIVERY-MAINTENANCE-001), a read store transaction (`with self.store.transaction()`), so every tick's unit log gains exactly two COMMIT boundaries (_prepare_switch adds the same read at the switch preparation); no write, effect or ordering changes. Observed on the rebaseline wheel: M7 9 -> S2R 11"
+  },
+  {
+   "layer": "rebaseline",
+   "path": "$.record_publish.a_failure_at_stage_write.units.COMMIT",
+   "op": "replace",
+   "value": 10,
+   "authority": "REBASELINE-MAIN-S2R (A/evidence/rebuild/cutover/REBASELINE-MAIN-S2R.md; reference/main-s2r-b9d8f15, commit b9d8f15bc6ab2d84ec57906d1b938bd8accc2fe8): `application/host_delivery.py` `HostDelivery._act` and `HostDelivery._advance` each begin with `self._maintenance_held(target_id)` (INV-HOST-DELIVERY-MAINTENANCE-001), a read store transaction (`with self.store.transaction()`), so every tick's unit log gains exactly two COMMIT boundaries (_prepare_switch adds the same read at the switch preparation); no write, effect or ordering changes. Observed on the rebaseline wheel: M7 8 -> S2R 10"
+  },
+  {
+   "layer": "rebaseline",
+   "path": "$.record_publish.b_lease_moved.units.COMMIT",
+   "op": "replace",
+   "value": 8,
+   "authority": "REBASELINE-MAIN-S2R (A/evidence/rebuild/cutover/REBASELINE-MAIN-S2R.md; reference/main-s2r-b9d8f15, commit b9d8f15bc6ab2d84ec57906d1b938bd8accc2fe8): `application/host_delivery.py` `HostDelivery._act` and `HostDelivery._advance` each begin with `self._maintenance_held(target_id)` (INV-HOST-DELIVERY-MAINTENANCE-001), a read store transaction (`with self.store.transaction()`), so every tick's unit log gains exactly two COMMIT boundaries (_prepare_switch adds the same read at the switch preparation); no write, effect or ordering changes. Observed on the rebaseline wheel: M7 6 -> S2R 8"
+  },
+  {
+   "layer": "rebaseline",
+   "path": "$.record_publish.c_replay_after_failure.units.COMMIT",
+   "op": "replace",
+   "value": 9,
+   "authority": "REBASELINE-MAIN-S2R (A/evidence/rebuild/cutover/REBASELINE-MAIN-S2R.md; reference/main-s2r-b9d8f15, commit b9d8f15bc6ab2d84ec57906d1b938bd8accc2fe8): `application/host_delivery.py` `HostDelivery._act` and `HostDelivery._advance` each begin with `self._maintenance_held(target_id)` (INV-HOST-DELIVERY-MAINTENANCE-001), a read store transaction (`with self.store.transaction()`), so every tick's unit log gains exactly two COMMIT boundaries (_prepare_switch adds the same read at the switch preparation); no write, effect or ordering changes. Observed on the rebaseline wheel: M7 7 -> S2R 9"
+  },
+  {
+   "layer": "rebaseline",
+   "path": "$.record_publish.success.units.COMMIT",
+   "op": "replace",
+   "value": 10,
+   "authority": "REBASELINE-MAIN-S2R (A/evidence/rebuild/cutover/REBASELINE-MAIN-S2R.md; reference/main-s2r-b9d8f15, commit b9d8f15bc6ab2d84ec57906d1b938bd8accc2fe8): `application/host_delivery.py` `HostDelivery._act` and `HostDelivery._advance` each begin with `self._maintenance_held(target_id)` (INV-HOST-DELIVERY-MAINTENANCE-001), a read store transaction (`with self.store.transaction()`), so every tick's unit log gains exactly two COMMIT boundaries (_prepare_switch adds the same read at the switch preparation); no write, effect or ordering changes. Observed on the rebaseline wheel: M7 8 -> S2R 10"
+  },
+  {
+   "layer": "rebaseline",
+   "path": "$.record_superseded.a_failure_at_last_write.units.COMMIT",
+   "op": "replace",
+   "value": 12,
+   "authority": "REBASELINE-MAIN-S2R (A/evidence/rebuild/cutover/REBASELINE-MAIN-S2R.md; reference/main-s2r-b9d8f15, commit b9d8f15bc6ab2d84ec57906d1b938bd8accc2fe8): `application/host_delivery.py` `HostDelivery._act` and `HostDelivery._advance` each begin with `self._maintenance_held(target_id)` (INV-HOST-DELIVERY-MAINTENANCE-001), a read store transaction (`with self.store.transaction()`), so every tick's unit log gains exactly two COMMIT boundaries (_prepare_switch adds the same read at the switch preparation); no write, effect or ordering changes. Observed on the rebaseline wheel: M7 10 -> S2R 12"
+  },
+  {
+   "layer": "rebaseline",
+   "path": "$.record_superseded.b_intent_moved.units.COMMIT",
+   "op": "replace",
+   "value": 11,
+   "authority": "REBASELINE-MAIN-S2R (A/evidence/rebuild/cutover/REBASELINE-MAIN-S2R.md; reference/main-s2r-b9d8f15, commit b9d8f15bc6ab2d84ec57906d1b938bd8accc2fe8): `application/host_delivery.py` `HostDelivery._act` and `HostDelivery._advance` each begin with `self._maintenance_held(target_id)` (INV-HOST-DELIVERY-MAINTENANCE-001), a read store transaction (`with self.store.transaction()`), so every tick's unit log gains exactly two COMMIT boundaries (_prepare_switch adds the same read at the switch preparation); no write, effect or ordering changes. Observed on the rebaseline wheel: M7 9 -> S2R 11"
+  },
+  {
+   "layer": "rebaseline",
+   "path": "$.record_superseded.b_lease_moved.units.COMMIT",
+   "op": "replace",
+   "value": 10,
+   "authority": "REBASELINE-MAIN-S2R (A/evidence/rebuild/cutover/REBASELINE-MAIN-S2R.md; reference/main-s2r-b9d8f15, commit b9d8f15bc6ab2d84ec57906d1b938bd8accc2fe8): `application/host_delivery.py` `HostDelivery._act` and `HostDelivery._advance` each begin with `self._maintenance_held(target_id)` (INV-HOST-DELIVERY-MAINTENANCE-001), a read store transaction (`with self.store.transaction()`), so every tick's unit log gains exactly two COMMIT boundaries (_prepare_switch adds the same read at the switch preparation); no write, effect or ordering changes. Observed on the rebaseline wheel: M7 8 -> S2R 10"
+  },
+  {
+   "layer": "rebaseline",
+   "path": "$.record_superseded.b_release_moved.units.COMMIT",
+   "op": "replace",
+   "value": 12,
+   "authority": "REBASELINE-MAIN-S2R (A/evidence/rebuild/cutover/REBASELINE-MAIN-S2R.md; reference/main-s2r-b9d8f15, commit b9d8f15bc6ab2d84ec57906d1b938bd8accc2fe8): `application/host_delivery.py` `HostDelivery._act` and `HostDelivery._advance` each begin with `self._maintenance_held(target_id)` (INV-HOST-DELIVERY-MAINTENANCE-001), a read store transaction (`with self.store.transaction()`), so every tick's unit log gains exactly two COMMIT boundaries (_prepare_switch adds the same read at the switch preparation); no write, effect or ordering changes. Observed on the rebaseline wheel: M7 10 -> S2R 12"
+  },
+  {
+   "layer": "rebaseline",
+   "path": "$.record_superseded.success.units.COMMIT",
+   "op": "replace",
+   "value": 12,
+   "authority": "REBASELINE-MAIN-S2R (A/evidence/rebuild/cutover/REBASELINE-MAIN-S2R.md; reference/main-s2r-b9d8f15, commit b9d8f15bc6ab2d84ec57906d1b938bd8accc2fe8): `application/host_delivery.py` `HostDelivery._act` and `HostDelivery._advance` each begin with `self._maintenance_held(target_id)` (INV-HOST-DELIVERY-MAINTENANCE-001), a read store transaction (`with self.store.transaction()`), so every tick's unit log gains exactly two COMMIT boundaries (_prepare_switch adds the same read at the switch preparation); no write, effect or ordering changes. Observed on the rebaseline wheel: M7 10 -> S2R 12"
+  },
+  {
+   "layer": "rebaseline",
+   "path": "$.record_switch.a_failure_at_descriptor_record.units.COMMIT",
+   "op": "replace",
+   "value": 14,
+   "authority": "REBASELINE-MAIN-S2R (A/evidence/rebuild/cutover/REBASELINE-MAIN-S2R.md; reference/main-s2r-b9d8f15, commit b9d8f15bc6ab2d84ec57906d1b938bd8accc2fe8): `application/host_delivery.py` `HostDelivery._act` and `HostDelivery._advance` each begin with `self._maintenance_held(target_id)` (INV-HOST-DELIVERY-MAINTENANCE-001), a read store transaction (`with self.store.transaction()`), so every tick's unit log gains exactly two COMMIT boundaries (_prepare_switch adds the same read at the switch preparation); no write, effect or ordering changes. Observed on the rebaseline wheel: M7 12 -> S2R 14"
+  },
+  {
+   "layer": "rebaseline",
+   "path": "$.record_switch.a_failure_at_stage_write.units.COMMIT",
+   "op": "replace",
+   "value": 15,
+   "authority": "REBASELINE-MAIN-S2R (A/evidence/rebuild/cutover/REBASELINE-MAIN-S2R.md; reference/main-s2r-b9d8f15, commit b9d8f15bc6ab2d84ec57906d1b938bd8accc2fe8): `application/host_delivery.py` `HostDelivery._act` and `HostDelivery._advance` each begin with `self._maintenance_held(target_id)` (INV-HOST-DELIVERY-MAINTENANCE-001), a read store transaction (`with self.store.transaction()`), so every tick's unit log gains exactly two COMMIT boundaries (_prepare_switch adds the same read at the switch preparation); no write, effect or ordering changes. Observed on the rebaseline wheel: M7 13 -> S2R 15"
+  },
+  {
+   "layer": "rebaseline",
+   "path": "$.record_switch.b_lease_moved.units.COMMIT",
+   "op": "replace",
+   "value": 12,
+   "authority": "REBASELINE-MAIN-S2R (A/evidence/rebuild/cutover/REBASELINE-MAIN-S2R.md; reference/main-s2r-b9d8f15, commit b9d8f15bc6ab2d84ec57906d1b938bd8accc2fe8): `application/host_delivery.py` `HostDelivery._act` and `HostDelivery._advance` each begin with `self._maintenance_held(target_id)` (INV-HOST-DELIVERY-MAINTENANCE-001), a read store transaction (`with self.store.transaction()`), so every tick's unit log gains exactly two COMMIT boundaries (_prepare_switch adds the same read at the switch preparation); no write, effect or ordering changes. Observed on the rebaseline wheel: M7 10 -> S2R 12"
+  },
+  {
+   "layer": "rebaseline",
+   "path": "$.record_switch.c_replay_after_failure.units.COMMIT",
+   "op": "replace",
+   "value": 10,
+   "authority": "REBASELINE-MAIN-S2R (A/evidence/rebuild/cutover/REBASELINE-MAIN-S2R.md; reference/main-s2r-b9d8f15, commit b9d8f15bc6ab2d84ec57906d1b938bd8accc2fe8): `application/host_delivery.py` `HostDelivery._act` and `HostDelivery._advance` each begin with `self._maintenance_held(target_id)` (INV-HOST-DELIVERY-MAINTENANCE-001), a read store transaction (`with self.store.transaction()`), so every tick's unit log gains exactly two COMMIT boundaries (_prepare_switch adds the same read at the switch preparation); no write, effect or ordering changes. Observed on the rebaseline wheel: M7 8 -> S2R 10"
+  },
+  {
+   "layer": "rebaseline",
+   "path": "$.record_switch.success.units.COMMIT",
+   "op": "replace",
+   "value": 15,
+   "authority": "REBASELINE-MAIN-S2R (A/evidence/rebuild/cutover/REBASELINE-MAIN-S2R.md; reference/main-s2r-b9d8f15, commit b9d8f15bc6ab2d84ec57906d1b938bd8accc2fe8): `application/host_delivery.py` `HostDelivery._act` and `HostDelivery._advance` each begin with `self._maintenance_held(target_id)` (INV-HOST-DELIVERY-MAINTENANCE-001), a read store transaction (`with self.store.transaction()`), so every tick's unit log gains exactly two COMMIT boundaries (_prepare_switch adds the same read at the switch preparation); no write, effect or ordering changes. Observed on the rebaseline wheel: M7 13 -> S2R 15"
+  },
+  {
+   "layer": "rebaseline",
+   "path": "$.stage_write.a_failure_at_stage_write.units.COMMIT",
+   "op": "replace",
+   "value": 9,
+   "authority": "REBASELINE-MAIN-S2R (A/evidence/rebuild/cutover/REBASELINE-MAIN-S2R.md; reference/main-s2r-b9d8f15, commit b9d8f15bc6ab2d84ec57906d1b938bd8accc2fe8): `application/host_delivery.py` `HostDelivery._act` and `HostDelivery._advance` each begin with `self._maintenance_held(target_id)` (INV-HOST-DELIVERY-MAINTENANCE-001), a read store transaction (`with self.store.transaction()`), so every tick's unit log gains exactly two COMMIT boundaries (_prepare_switch adds the same read at the switch preparation); no write, effect or ordering changes. Observed on the rebaseline wheel: M7 7 -> S2R 9"
+  },
+  {
+   "layer": "rebaseline",
+   "path": "$.stage_write.b_lease_moved.units.COMMIT",
+   "op": "replace",
+   "value": 7,
+   "authority": "REBASELINE-MAIN-S2R (A/evidence/rebuild/cutover/REBASELINE-MAIN-S2R.md; reference/main-s2r-b9d8f15, commit b9d8f15bc6ab2d84ec57906d1b938bd8accc2fe8): `application/host_delivery.py` `HostDelivery._act` and `HostDelivery._advance` each begin with `self._maintenance_held(target_id)` (INV-HOST-DELIVERY-MAINTENANCE-001), a read store transaction (`with self.store.transaction()`), so every tick's unit log gains exactly two COMMIT boundaries (_prepare_switch adds the same read at the switch preparation); no write, effect or ordering changes. Observed on the rebaseline wheel: M7 5 -> S2R 7"
+  },
+  {
+   "layer": "rebaseline",
+   "path": "$.stage_write.c_replay_after_failure.units.COMMIT",
+   "op": "replace",
+   "value": 9,
+   "authority": "REBASELINE-MAIN-S2R (A/evidence/rebuild/cutover/REBASELINE-MAIN-S2R.md; reference/main-s2r-b9d8f15, commit b9d8f15bc6ab2d84ec57906d1b938bd8accc2fe8): `application/host_delivery.py` `HostDelivery._act` and `HostDelivery._advance` each begin with `self._maintenance_held(target_id)` (INV-HOST-DELIVERY-MAINTENANCE-001), a read store transaction (`with self.store.transaction()`), so every tick's unit log gains exactly two COMMIT boundaries (_prepare_switch adds the same read at the switch preparation); no write, effect or ordering changes. Observed on the rebaseline wheel: M7 7 -> S2R 9"
+  },
+  {
+   "layer": "rebaseline",
+   "path": "$.stage_write.success.units.COMMIT",
+   "op": "replace",
+   "value": 9,
+   "authority": "REBASELINE-MAIN-S2R (A/evidence/rebuild/cutover/REBASELINE-MAIN-S2R.md; reference/main-s2r-b9d8f15, commit b9d8f15bc6ab2d84ec57906d1b938bd8accc2fe8): `application/host_delivery.py` `HostDelivery._act` and `HostDelivery._advance` each begin with `self._maintenance_held(target_id)` (INV-HOST-DELIVERY-MAINTENANCE-001), a read store transaction (`with self.store.transaction()`), so every tick's unit log gains exactly two COMMIT boundaries (_prepare_switch adds the same read at the switch preparation); no write, effect or ordering changes. Observed on the rebaseline wheel: M7 7 -> S2R 9"
+  },
+  {
+   "layer": "rebaseline",
+   "path": "$.verification_attempt.a_failure_at_intent.units.COMMIT",
+   "op": "replace",
+   "value": 11,
+   "authority": "REBASELINE-MAIN-S2R (A/evidence/rebuild/cutover/REBASELINE-MAIN-S2R.md; reference/main-s2r-b9d8f15, commit b9d8f15bc6ab2d84ec57906d1b938bd8accc2fe8): `application/host_delivery.py` `HostDelivery._act` and `HostDelivery._advance` each begin with `self._maintenance_held(target_id)` (INV-HOST-DELIVERY-MAINTENANCE-001), a read store transaction (`with self.store.transaction()`), so every tick's unit log gains exactly two COMMIT boundaries (_prepare_switch adds the same read at the switch preparation); no write, effect or ordering changes. Observed on the rebaseline wheel: M7 9 -> S2R 11"
+  },
+  {
+   "layer": "rebaseline",
+   "path": "$.verification_attempt.b_intent_moved.units.COMMIT",
+   "op": "replace",
+   "value": 10,
+   "authority": "REBASELINE-MAIN-S2R (A/evidence/rebuild/cutover/REBASELINE-MAIN-S2R.md; reference/main-s2r-b9d8f15, commit b9d8f15bc6ab2d84ec57906d1b938bd8accc2fe8): `application/host_delivery.py` `HostDelivery._act` and `HostDelivery._advance` each begin with `self._maintenance_held(target_id)` (INV-HOST-DELIVERY-MAINTENANCE-001), a read store transaction (`with self.store.transaction()`), so every tick's unit log gains exactly two COMMIT boundaries (_prepare_switch adds the same read at the switch preparation); no write, effect or ordering changes. Observed on the rebaseline wheel: M7 8 -> S2R 10"
+  },
+  {
+   "layer": "rebaseline",
+   "path": "$.verification_attempt.b_lease_moved.units.COMMIT",
+   "op": "replace",
+   "value": 9,
+   "authority": "REBASELINE-MAIN-S2R (A/evidence/rebuild/cutover/REBASELINE-MAIN-S2R.md; reference/main-s2r-b9d8f15, commit b9d8f15bc6ab2d84ec57906d1b938bd8accc2fe8): `application/host_delivery.py` `HostDelivery._act` and `HostDelivery._advance` each begin with `self._maintenance_held(target_id)` (INV-HOST-DELIVERY-MAINTENANCE-001), a read store transaction (`with self.store.transaction()`), so every tick's unit log gains exactly two COMMIT boundaries (_prepare_switch adds the same read at the switch preparation); no write, effect or ordering changes. Observed on the rebaseline wheel: M7 7 -> S2R 9"
+  },
+  {
+   "layer": "rebaseline",
+   "path": "$.verification_attempt.success.units.COMMIT",
+   "op": "replace",
+   "value": 13,
+   "authority": "REBASELINE-MAIN-S2R (A/evidence/rebuild/cutover/REBASELINE-MAIN-S2R.md; reference/main-s2r-b9d8f15, commit b9d8f15bc6ab2d84ec57906d1b938bd8accc2fe8): `application/host_delivery.py` `HostDelivery._act` and `HostDelivery._advance` each begin with `self._maintenance_held(target_id)` (INV-HOST-DELIVERY-MAINTENANCE-001), a read store transaction (`with self.store.transaction()`), so every tick's unit log gains exactly two COMMIT boundaries (_prepare_switch adds the same read at the switch preparation); no write, effect or ordering changes. Observed on the rebaseline wheel: M7 11 -> S2R 13"
+  },
+  {
+   "layer": "rebaseline",
+   "path": "$.verification_verdict.a_failure_at_intent.units.COMMIT",
+   "op": "replace",
+   "value": 13,
+   "authority": "REBASELINE-MAIN-S2R (A/evidence/rebuild/cutover/REBASELINE-MAIN-S2R.md; reference/main-s2r-b9d8f15, commit b9d8f15bc6ab2d84ec57906d1b938bd8accc2fe8): `application/host_delivery.py` `HostDelivery._act` and `HostDelivery._advance` each begin with `self._maintenance_held(target_id)` (INV-HOST-DELIVERY-MAINTENANCE-001), a read store transaction (`with self.store.transaction()`), so every tick's unit log gains exactly two COMMIT boundaries (_prepare_switch adds the same read at the switch preparation); no write, effect or ordering changes. Observed on the rebaseline wheel: M7 11 -> S2R 13"
+  },
+  {
+   "layer": "rebaseline",
+   "path": "$.verification_verdict.b_intent_moved.units.COMMIT",
+   "op": "replace",
+   "value": 12,
+   "authority": "REBASELINE-MAIN-S2R (A/evidence/rebuild/cutover/REBASELINE-MAIN-S2R.md; reference/main-s2r-b9d8f15, commit b9d8f15bc6ab2d84ec57906d1b938bd8accc2fe8): `application/host_delivery.py` `HostDelivery._act` and `HostDelivery._advance` each begin with `self._maintenance_held(target_id)` (INV-HOST-DELIVERY-MAINTENANCE-001), a read store transaction (`with self.store.transaction()`), so every tick's unit log gains exactly two COMMIT boundaries (_prepare_switch adds the same read at the switch preparation); no write, effect or ordering changes. Observed on the rebaseline wheel: M7 10 -> S2R 12"
+  },
+  {
+   "layer": "rebaseline",
+   "path": "$.verification_verdict.b_lease_moved.units.COMMIT",
+   "op": "replace",
+   "value": 11,
+   "authority": "REBASELINE-MAIN-S2R (A/evidence/rebuild/cutover/REBASELINE-MAIN-S2R.md; reference/main-s2r-b9d8f15, commit b9d8f15bc6ab2d84ec57906d1b938bd8accc2fe8): `application/host_delivery.py` `HostDelivery._act` and `HostDelivery._advance` each begin with `self._maintenance_held(target_id)` (INV-HOST-DELIVERY-MAINTENANCE-001), a read store transaction (`with self.store.transaction()`), so every tick's unit log gains exactly two COMMIT boundaries (_prepare_switch adds the same read at the switch preparation); no write, effect or ordering changes. Observed on the rebaseline wheel: M7 9 -> S2R 11"
+  },
+  {
+   "layer": "rebaseline",
+   "path": "$.verification_verdict.c_replay_cleanup_unconfirmed.units.COMMIT",
+   "op": "replace",
+   "value": 9,
+   "authority": "REBASELINE-MAIN-S2R (A/evidence/rebuild/cutover/REBASELINE-MAIN-S2R.md; reference/main-s2r-b9d8f15, commit b9d8f15bc6ab2d84ec57906d1b938bd8accc2fe8): `application/host_delivery.py` `HostDelivery._act` and `HostDelivery._advance` each begin with `self._maintenance_held(target_id)` (INV-HOST-DELIVERY-MAINTENANCE-001), a read store transaction (`with self.store.transaction()`), so every tick's unit log gains exactly two COMMIT boundaries (_prepare_switch adds the same read at the switch preparation); no write, effect or ordering changes. Observed on the rebaseline wheel: M7 7 -> S2R 9"
+  },
+  {
+   "layer": "rebaseline",
+   "path": "$.verification_verdict.success.units.COMMIT",
+   "op": "replace",
+   "value": 13,
+   "authority": "REBASELINE-MAIN-S2R (A/evidence/rebuild/cutover/REBASELINE-MAIN-S2R.md; reference/main-s2r-b9d8f15, commit b9d8f15bc6ab2d84ec57906d1b938bd8accc2fe8): `application/host_delivery.py` `HostDelivery._act` and `HostDelivery._advance` each begin with `self._maintenance_held(target_id)` (INV-HOST-DELIVERY-MAINTENANCE-001), a read store transaction (`with self.store.transaction()`), so every tick's unit log gains exactly two COMMIT boundaries (_prepare_switch adds the same read at the switch preparation); no write, effect or ordering changes. Observed on the rebaseline wheel: M7 11 -> S2R 13"
+  }
+ ]
 }

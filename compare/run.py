@@ -7,6 +7,7 @@ Layer: harness (never shipped); standard library only. Usage from the worktree r
     python compare/run.py prepare --rebaseline ID   # the approved rebaseline's wheel (SOURCE + delta archive)
     python compare/run.py run                 # run every scenario; compare with committed goldens
     python compare/run.py run --record        # reference-only: (re)write reference goldens
+    python compare/run.py run --reference rebaseline:ID [--target-vs-reference]   # G1-13c: S2R rebaseline reference
     python compare/run.py run --pg            # also the scenarios that need a disposable PostgreSQL
     python compare/run.py run --redis         # also the scenarios that need a disposable Redis
     python compare/run.py target-integration  # target suite with its integration tests on fixtures
@@ -618,7 +619,10 @@ def differing_paths(expected, actual, path="$") -> list[str]:
     return [] if expected == actual else [path]
 
 
-INTENDED_OPS = frozenset({"absent", "remove_item", "replace", "add"})
+INTENDED_OPS = frozenset({"absent", "remove_item", "replace", "add", "append_items"})
+# G1-13c: a declaration of layer `rebaseline` is a difference between the M7 golden and the approved rebaseline's own
+# result (every entry cites REBASELINE-MAIN-S2R and the S2R hunk); the rest are the target's declared differences.
+LAYERS = frozenset({None, "rebaseline"})
 
 
 def apply_intended_differences(golden, declarations) -> tuple[object, list[str]]:
@@ -629,7 +633,8 @@ def apply_intended_differences(golden, declarations) -> tuple[object, list[str]]
     an ASSERTION, not a mask:
     - the path must exist in the reference golden (a stale declaration is refused);
     - the target must then differ in exactly that way (the key absent, exactly that one list item removed, the value
-      at the path exactly `value`, or the member `key` of the object at the path exactly `value`);
+      at the path exactly `value`, the member `key` of the object at the path exactly `value`, or the list at the path
+      followed by exactly the items of `value` for `append_items`);
     - every other byte must be equal.
     `path` is split on `.`, so a member whose name contains a dot is addressed only as a literal `key` under its
     parent path: `add` names the EXISTING object in `path` and a `key` that must be ABSENT there (an existing one is
@@ -645,10 +650,12 @@ def apply_intended_differences(golden, declarations) -> tuple[object, list[str]]
         literal = declaration.get("key")
         if (not isinstance(path, str) or not path.startswith("$.") or op not in INTENDED_OPS
                 or not str(declaration.get("authority") or "").strip()
+                or declaration.get("layer") not in LAYERS
                 or (op in ("replace", "add") and "value" not in declaration)
+                or (op == "append_items" and not isinstance(declaration.get("value"), list))
                 or (op == "add" and not isinstance(literal, str))
                 or (op == "replace" and "key" in declaration and not isinstance(literal, str))
-                or (op in ("absent", "remove_item") and "key" in declaration)):
+                or (op in ("absent", "remove_item", "append_items") and "key" in declaration)):
             problems.append(f"intended_differences[{index}]: invalid declaration")
             continue
         keys = path[2:].split(".")
@@ -679,6 +686,11 @@ def apply_intended_differences(golden, declarations) -> tuple[object, list[str]]
             del node[last]
         elif op == "replace":
             node[last] = declaration["value"]
+        elif op == "append_items":
+            if not isinstance(node[last], list):
+                problems.append(f"intended_differences[{index}]: {path} is not a list in the reference golden (stale)")
+                continue
+            node[last] = node[last] + declaration["value"]
         else:
             value = node[last]
             if not isinstance(value, list) or value.count(declaration.get("item")) != 1:
@@ -686,6 +698,97 @@ def apply_intended_differences(golden, declarations) -> tuple[object, list[str]]
                 continue
             value.remove(declaration["item"])
     return expected, problems
+
+
+def split_layers(declarations) -> tuple[list, list]:
+    """-> (the `rebaseline`-layer declarations, the others), each in declared order (G1-13c)."""
+    declared = list(declarations or [])
+    return ([d for d in declared if d.get("layer") == "rebaseline"],
+            [d for d in declared if d.get("layer") != "rebaseline"])
+
+
+# G1-13c (owner decision G1-13C-COMPARE-DECISION rule 4, R-G1-12b): the approved rebaseline's sealed runtime tree is the
+# S2R delta, so the runtime revision (a content hash) and every value derived from it differ from M7's. The closed mask
+# `rebaseline_runtime_revision` (compare/masks.json) is applied ONLY in a rebaseline-reference run, ONLY to its listed
+# families, and equality-preservingly: it never hides whether two values were equal.
+HEX40 = re.compile(r"[0-9a-f]{40}")
+REVISION_LEAVES = frozenset({"revision", "attested_revision", "runtime_revision"})
+REVISION_MASK_ID = "rebaseline_runtime_revision"
+
+
+def rebaseline_revision_mask(family: str) -> dict | None:
+    document = json.loads((COMPARE / "masks.json").read_text(encoding="utf-8"))
+    for mask in document["masks"]:
+        if mask["id"] == REVISION_MASK_ID and family in mask["scenarios"]:
+            return mask
+    return None
+
+
+def _revision_pairs(expected, actual, path=()):
+    """(path, expected revision, actual revision) at every revision leaf the two results share and differ in."""
+    if isinstance(expected, dict) and isinstance(actual, dict):
+        for key in sorted(set(expected) & set(actual)):
+            yield from _revision_pairs(expected[key], actual[key], path + (key,))
+    elif isinstance(expected, list) and isinstance(actual, list) and len(expected) == len(actual):
+        for index, (e, a) in enumerate(zip(expected, actual)):
+            yield from _revision_pairs(e, a, path + (str(index),))
+    elif (isinstance(expected, str) and isinstance(actual, str) and path and path[-1] in REVISION_LEAVES
+          and HEX40.fullmatch(expected) and HEX40.fullmatch(actual) and expected != actual):
+        yield path, expected, actual
+
+
+def _replace_revisions(value, table: dict):
+    if isinstance(value, dict):
+        return {HEX40.sub(lambda m: table.get(m.group(0), m.group(0)), str(k)): _replace_revisions(v, table)
+                for k, v in value.items()}
+    if isinstance(value, list):
+        return [_replace_revisions(v, table) for v in value]
+    if isinstance(value, str):
+        return HEX40.sub(lambda m: table.get(m.group(0), m.group(0)), value)
+    return value
+
+
+def _alpha_leaves(value, leaves: frozenset, names: dict):
+    if isinstance(value, dict):
+        out = {}
+        for key in sorted(value, key=str):
+            item = value[key]
+            if key in leaves and not isinstance(item, (dict, list)):
+                table = names.setdefault(key, {})
+                out[key] = f"<{key}:{table.setdefault(json.dumps(item), len(table) + 1)}>"
+            else:
+                out[key] = _alpha_leaves(item, leaves, names)
+        return out
+    if isinstance(value, list):
+        return [_alpha_leaves(v, leaves, names) for v in value]
+    return value
+
+
+def rebaseline_normalise(family: str, expected, actual) -> tuple[object, object, bool]:
+    """-> (expected, actual, masked) with the closed mask applied. A runtime revision is masked only where the two
+    results hold different revisions at the SAME revision leaf, and only as a bijection (one expected revision for one
+    actual revision); it becomes `<REV:n>` in values AND keys. The mask's `leaves` (digests and counts of the sealed
+    runtime tree) become `<leaf:n>` by first appearance in sorted key order, so equal values stay equal and unequal
+    values stay unequal."""
+    mask = rebaseline_revision_mask(family)
+    if mask is None:
+        return expected, actual, False
+    pairs = sorted(_revision_pairs(expected, actual))
+    forward: dict[str, str] = {}
+    backward: dict[str, str] = {}
+    for _, e, a in pairs:
+        if forward.setdefault(e, a) != a or backward.setdefault(a, e) != e:
+            forward.pop(e, None)  # not a bijection: both stay raw, the difference is reported
+            backward.pop(a, None)
+    tokens = {}
+    for _, e, a in pairs:
+        if forward.get(e) == a and e not in tokens:
+            tokens[e] = f"<REV:{len(tokens) + 1}>"
+    to_expected = tokens
+    to_actual = {forward[e]: token for e, token in tokens.items()}
+    leaves = frozenset(mask.get("leaves", []))
+    return (_alpha_leaves(_replace_revisions(expected, to_expected), leaves, {}),
+            _alpha_leaves(_replace_revisions(actual, to_actual), leaves, {}), True)
 
 
 # S11 unit P (owner; DESIGN-s11 §20.5 follow-up): the target side runs from an exact copy of the target distribution
@@ -741,23 +844,52 @@ def run_target(driver_path: Path, work: Path, extra: dict, use_bwrap: bool) -> d
     return result
 
 
-def resolve_reference(reference: str, record: bool) -> tuple[Path, Path, str | None]:
+GOLDENS_REBASELINE = COMPARE / "goldens" / "rebaseline"
+
+
+def rebaseline_record_refusal(entry_id: str, only: list[str]) -> str | None:
+    """Why `--record` with `--reference rebaseline:<entry_id>` is refused, or None when every selected family is a
+    scenario that declares `"reference": "rebaseline:<entry_id>"` and keeps its golden under
+    `goldens/rebaseline/<entry_id>/` (G1-13c decision rule 5). A family referenced by M7 is never recordable here."""
+    if not only:
+        return "it needs --only <family> of scenarios that declare their rebaseline reference"
+    by_family = {s["family"]: s for s in scenarios()}
+    home = (GOLDENS_REBASELINE / entry_id).resolve()
+    for family in only:
+        scenario = by_family.get(family)
+        if scenario is None:
+            return f"unknown family {family!r}"
+        if scenario.get("reference") != f"rebaseline:{entry_id}":
+            return f"{family} is referenced by M7"
+        if home not in (COMPARE / scenario["golden"]).resolve().parents:
+            return f"{family} keeps its golden outside goldens/rebaseline/{entry_id}/"
+    return None
+
+
+def resolve_reference(reference: str, record: bool, only: list[str] | None = None) -> tuple[Path, Path, str | None]:
     """-> (reference venv, SOURCE root for the drivers, rebaseline id or None). `m7` (the default) is the SOURCE wheel;
-    `rebaseline:<id>` is the approved rebaseline's wheel (G1-11) and is never recorded: goldens stay M7's."""
+    `rebaseline:<id>` is the approved rebaseline's wheel (G1-11). A rebaseline is recorded only for the scenarios that
+    declare it as their reference (`rebaseline_record_refusal`): every M7 golden stays M7's."""
     if reference == "m7":
         return SCRATCH / "venv-ref", SCRATCH / "source", None
     kind, _, entry_id = reference.partition(":")
     if kind != "rebaseline" or not entry_id:
         sys.exit(f"unknown --reference {reference!r}: expected m7 or rebaseline:<id>")
-    if record:
-        sys.exit("refused: --record with a rebaseline reference; goldens stay M7's (collect rebaseline output from stdout)")
     entry = rebaseline_entry(entry_id)
+    if record:
+        reason = rebaseline_record_refusal(entry["id"], only or [])
+        if reason:
+            sys.exit(f"refused: --record with a rebaseline reference; goldens stay M7's ({reason}; "
+                     "collect other rebaseline output from stdout)")
     return SCRATCH / f"venv-rb-{entry['id']}", SCRATCH / f"rebaseline-{entry['id']}" / "source", entry["id"]
 
 
 def run(record: bool, use_bwrap: bool, only: list[str], pg: bool = False,
-        redis: bool = False, reference: str = "m7") -> tuple[dict, bool]:
-    ref_venv, source_root, rebaseline = resolve_reference(reference, record)
+        redis: bool = False, reference: str = "m7", target_vs_reference: bool = False) -> tuple[dict, bool]:
+    if target_vs_reference and (record or not reference.startswith("rebaseline:")):
+        sys.exit("refused: --target-vs-reference compares the target with a rebaseline reference result "
+                 "(--reference rebaseline:<id>, never with --record)")
+    ref_venv, source_root, rebaseline = resolve_reference(reference, record, only)
     python = ref_venv / "bin" / "python"
     if not python.exists():
         sys.exit("reference venv missing: run `python compare/run.py prepare"
@@ -769,6 +901,12 @@ def run(record: bool, use_bwrap: bool, only: list[str], pg: bool = False,
     for scenario in scenarios():
         family = scenario["family"]
         if only and family not in only:
+            continue
+        if scenario.get("reference") and scenario["reference"] != f"rebaseline:{rebaseline}":
+            # G1-13c rule 5: M7 has no such behaviour; the scenario's reference exists only in its rebaseline wheel
+            report["scenarios"][family] = {"slice": scenario["slice"],
+                                           "reference": f"not requested (its reference is {scenario['reference']}: "
+                                                        f"run with --reference {scenario['reference']})"}
             continue
         requires = scenario.get("requires")
         needs_pair = requires == "disposable-postgresql-pair"
@@ -843,9 +981,22 @@ def run(record: bool, use_bwrap: bool, only: list[str], pg: bool = False,
                     golden_path.with_name(f"{family}.blocks.json").write_text(
                         block_exercise.artifact(family, blocks), encoding="utf-8")
             golden = json.loads(golden_path.read_text(encoding="utf-8")) if golden_path.exists() else None
-            equal = golden == result["result"]
-            if not equal:
-                row["differing_paths"] = differing_paths(golden, result["result"])[:20]
+            ref_expected, ref_actual, ref_masked = golden, result["result"], False
+            if rebaseline and golden is not None:
+                # G1-13c: the rebaseline's own result is the M7 golden plus its declared, S2R-authorized layer, under
+                # the closed revision mask where the family has one (R-G1-12b)
+                layer, _ = split_layers(scenario.get("intended_differences"))
+                ref_expected, ref_problems = apply_intended_differences(golden, layer)
+                if ref_problems:
+                    row["rebaseline_difference_problems"] = ref_problems
+                    ref_expected = None
+                else:
+                    ref_expected, ref_actual, ref_masked = rebaseline_normalise(family, ref_expected, ref_actual)
+            equal = ref_expected is not None and ref_expected == ref_actual
+            if not equal and ref_expected is not None:
+                row["differing_paths"] = differing_paths(ref_expected, ref_actual)[:20]
+            if ref_masked:
+                row["masks"] = [REVISION_MASK_ID]
             row.update(reference="equal" if equal else "DIFFERENT", origin_ok=origin_ok,
                        origin={k: origin.get(k) for k in ("modules_checked", "python", "package_files",
                                                            "package_files_digest")})
@@ -863,14 +1014,28 @@ def run(record: bool, use_bwrap: bool, only: list[str], pg: bool = False,
             t_origin_ok = (t_origin.get("tree") == str(TARGET_SRC) and t_origin.get("modules_checked", 0) > 0
                            and target_result.get("side") == "target")
             declared = scenario.get("intended_differences") or []
-            target_expected, problems = apply_intended_differences(golden, declared) if golden is not None else (None, [])
-            equal = golden is not None and not problems and target_expected == target_result["result"]
+            layer, others = split_layers(declared)
+            if target_vs_reference:
+                # G1-13c rule 3: the target against the reference result of THIS run (no stored golden); only the
+                # target's own declared differences (the non-rebaseline layer) and the closed mask apply
+                base, applied = result.get("result") if "error" not in result else None, others
+            else:
+                base, applied = golden, layer + others
+            target_expected, problems = apply_intended_differences(base, applied) if base is not None else (None, [])
+            target_actual, masked = target_result["result"], False
+            if target_vs_reference and target_expected is not None and not problems:
+                target_expected, target_actual, masked = rebaseline_normalise(family, target_expected, target_actual)
+            equal = base is not None and not problems and target_expected == target_actual
             if declared:
                 row["intended_differences"] = len(declared)
             if problems:
                 row["intended_difference_problems"] = problems
+            if masked:
+                row["target_masks"] = [REVISION_MASK_ID]
             if not equal and target_expected is not None:
-                row["target_differing_paths"] = differing_paths(target_expected, target_result["result"])[:20]
+                row["target_differing_paths"] = differing_paths(target_expected, target_actual)[:20]
+            if target_vs_reference:
+                row["target_vs_reference"] = True
             row.update(target="equal" if equal else "DIFFERENT", target_origin_ok=t_origin_ok,
                        target_origin={k: t_origin.get(k) for k in ("modules_checked", "python")})
             ok = ok and equal and t_origin_ok
@@ -1028,7 +1193,10 @@ def main(argv=None) -> int:
     run_cmd = sub.add_parser("run")
     run_cmd.add_argument("--record", action="store_true", help="write reference goldens")
     run_cmd.add_argument("--reference", default="m7", metavar="m7|rebaseline:<id>",
-                         help="the reference side: SOURCE M7 (default) or an approved rebaseline (never with --record)")
+                         help="the reference side: SOURCE M7 (default) or an approved rebaseline (--record only for "
+                              "scenarios that declare it as their reference)")
+    run_cmd.add_argument("--target-vs-reference", action="store_true",
+                         help="compare the target with the rebaseline reference result of the same run (G1-13c)")
     run_cmd.add_argument("--no-bwrap", action="store_true")
     run_cmd.add_argument("--only", action="append", default=[])
     run_cmd.add_argument("--pg", action="store_true",
@@ -1060,9 +1228,12 @@ def main(argv=None) -> int:
         ok = report["wheel_record_matches_baseline"]
     else:
         use_bwrap = provider_guard.bwrap_available() and not args.no_bwrap
-        resolve_reference(args.reference, args.record)  # refuse before anything is created
+        if args.target_vs_reference and (args.record or not args.reference.startswith("rebaseline:")):
+            parser.error("--target-vs-reference needs --reference rebaseline:<id> and never --record")
+        resolve_reference(args.reference, args.record, args.only)  # refuse before anything is created
         SCRATCH.mkdir(parents=True, exist_ok=True)
-        report, ok = run(args.record, use_bwrap, args.only, args.pg, args.redis, args.reference)
+        report, ok = run(args.record, use_bwrap, args.only, args.pg, args.redis, args.reference,
+                         args.target_vs_reference)
     print(json.dumps({"command": args.command, "ok": ok, **report}, indent=1, sort_keys=True))
     return 0 if ok else 1
 

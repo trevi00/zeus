@@ -7,30 +7,14 @@
  "slice": "S10",
  "intended_differences": [
   {
+   "layer": "rebaseline",
    "path": "$.node_count",
    "op": "replace",
-   "value": 163,
-   "authority": "S10 G20-D6 (DESIGN-s10 section 14, owner 2026-10-04): `zeus research-package` is a declared target addition (RF-RT has no M7 counterpart); the root and its six subcommands are appended after the M7 roots, so the counts, the nodes and the top-level help change in exactly this way and nothing else; S10 A5-1b (DESIGN-s10 section 17a, owner 2026-10-04): `zeus dlq` (list, replay) is a declared target addition (no M7 counterpart), appended after research-package; S11 XC-2a B1 (TQ-XCUT-PLAN, owner 2026-10-05): `zeus dlq trim [--retention-seconds N]` is a declared target addition (bounded dead-letter retention), so `zeus dlq`'s usage and help change and the node `zeus dlq trim` is added after `zeus dlq list`; the top-level help and the root count do not change"
+   "value": 153,
+   "authority": "REBASELINE-MAIN-S2R (A/evidence/rebuild/cutover/REBASELINE-MAIN-S2R.md; reference/main-s2r-b9d8f15, commit b9d8f15bc6ab2d84ec57906d1b938bd8accc2fe8): `adapters/host_delivery.py` `add_parser` adds the `maintain` subparser (`zeus host-delivery maintain`, its --phase/--document/--evidence/--check arguments) and the `host-delivery` help that lists it; `execute` dispatches it. The M7 nodes and every other help digest are unchanged"
   },
   {
-   "path": "$.root_count",
-   "op": "replace",
-   "value": 53,
-   "authority": "S10 G20-D6 (DESIGN-s10 section 14, owner 2026-10-04): `zeus research-package` is a declared target addition (RF-RT has no M7 counterpart); the root and its six subcommands are appended after the M7 roots, so the counts, the nodes and the top-level help change in exactly this way and nothing else; S10 A5-1b (DESIGN-s10 section 17a, owner 2026-10-04): `zeus dlq` (list, replay) is a declared target addition (no M7 counterpart), appended after research-package; S11 XC-2a B1 (TQ-XCUT-PLAN, owner 2026-10-05): `zeus dlq trim [--retention-seconds N]` is a declared target addition (bounded dead-letter retention), so `zeus dlq`'s usage and help change and the node `zeus dlq trim` is added after `zeus dlq list`; the top-level help and the root count do not change"
-  },
-  {
-   "path": "$.top.help_bytes",
-   "op": "replace",
-   "value": 3925,
-   "authority": "S10 G20-D6 (DESIGN-s10 section 14, owner 2026-10-04): `zeus research-package` is a declared target addition (RF-RT has no M7 counterpart); the root and its six subcommands are appended after the M7 roots, so the counts, the nodes and the top-level help change in exactly this way and nothing else; S10 A5-1b (DESIGN-s10 section 17a, owner 2026-10-04): `zeus dlq` (list, replay) is a declared target addition (no M7 counterpart), appended after research-package; S11 XC-2a B1 (TQ-XCUT-PLAN, owner 2026-10-05): `zeus dlq trim [--retention-seconds N]` is a declared target addition (bounded dead-letter retention), so `zeus dlq`'s usage and help change and the node `zeus dlq trim` is added after `zeus dlq list`; the top-level help and the root count do not change"
-  },
-  {
-   "path": "$.top.help_sha256",
-   "op": "replace",
-   "value": "4b27ce0810eef65e4c01c0cb43404185cf01e2faa47621e7fa2fbca1a077c8cd",
-   "authority": "S10 G20-D6 (DESIGN-s10 section 14, owner 2026-10-04): `zeus research-package` is a declared target addition (RF-RT has no M7 counterpart); the root and its six subcommands are appended after the M7 roots, so the counts, the nodes and the top-level help change in exactly this way and nothing else; S10 A5-1b (DESIGN-s10 section 17a, owner 2026-10-04): `zeus dlq` (list, replay) is a declared target addition (no M7 counterpart), appended after research-package; S11 XC-2a B1 (TQ-XCUT-PLAN, owner 2026-10-05): `zeus dlq trim [--retention-seconds N]` is a declared target addition (bounded dead-letter retention), so `zeus dlq`'s usage and help change and the node `zeus dlq trim` is added after `zeus dlq list`; the top-level help and the root count do not change"
-  },
-  {
+   "layer": "rebaseline",
    "path": "$.nodes",
    "op": "replace",
    "value": [
@@ -2305,11 +2289,11 @@
     {
      "arguments": [],
      "command": "zeus host-delivery",
-     "help_bytes": 1043,
+     "help_bytes": 1402,
      "help_exit": 0,
-     "help_sha256": "53533e2fef579ebf8707579124c9b7a063831a6fc6d2182a3d24321b7de7a997",
+     "help_sha256": "6fc0408988a8c749af1f241fc8e6955825354e08d491fe198040fe88b1df277c",
      "root": true,
-     "usage": "usage: zeus host-delivery [-h] {register-targets,register,tick,run,status,withdraw,resume} ..."
+     "usage": "usage: zeus host-delivery [-h]"
     },
     {
      "arguments": [
@@ -2637,6 +2621,73 @@
      "help_sha256": "a8f21f7bbadba8e97c4130881b994ea4a029e5cb130ea91d3d8b6bfafa4a3780",
      "root": false,
      "usage": "usage: zeus host-delivery resume [-h] --plan PLAN --plan-sha256 PLAN_SHA256 --evidence EVIDENCE"
+    },
+    {
+     "arguments": [
+      {
+       "action": "_StoreAction",
+       "choices": [
+        "restart"
+       ],
+       "default": null,
+       "dest": "phase",
+       "nargs": null,
+       "options": [
+        "--phase"
+       ],
+       "required": true
+      },
+      {
+       "action": "_StoreAction",
+       "choices": null,
+       "default": null,
+       "dest": "document",
+       "nargs": null,
+       "options": [
+        "--document"
+       ],
+       "required": true
+      },
+      {
+       "action": "_StoreAction",
+       "choices": null,
+       "default": null,
+       "dest": "evidence",
+       "nargs": null,
+       "options": [
+        "--evidence"
+       ],
+       "required": true
+      },
+      {
+       "action": "_StoreTrueAction",
+       "choices": null,
+       "default": false,
+       "dest": "check",
+       "nargs": 0,
+       "options": [
+        "--check"
+       ],
+       "required": false
+      },
+      {
+       "action": "_StoreAction",
+       "choices": null,
+       "default": null,
+       "dest": "lane",
+       "nargs": null,
+       "options": [
+        "--lane"
+       ],
+       "required": false
+      }
+     ],
+     "command": "zeus host-delivery maintain",
+     "help_bytes": 1113,
+     "help_exit": 0,
+     "help_sha256": "1c0251500d47bb314596c60758051e82972eef8d0355f45ab70f3bbd67adb11c",
+     "root": false,
+     "usage": "usage: zeus host-delivery maintain [-h] --phase {restart} --document DOCUMENT --evidence EVIDENCE"
     },
     {
      "arguments": [],
@@ -4227,7 +4278,38 @@
      "help_sha256": "e0dbd4aa2832cb1d06da51dcc97b94ccfcf463621871623c8d75ba266c116b52",
      "root": false,
      "usage": "usage: zeus goal compare [-h] before after"
-    },
+    }
+   ],
+   "authority": "REBASELINE-MAIN-S2R (A/evidence/rebuild/cutover/REBASELINE-MAIN-S2R.md; reference/main-s2r-b9d8f15, commit b9d8f15bc6ab2d84ec57906d1b938bd8accc2fe8): `adapters/host_delivery.py` `add_parser` adds the `maintain` subparser (`zeus host-delivery maintain`, its --phase/--document/--evidence/--check arguments) and the `host-delivery` help that lists it; `execute` dispatches it. The M7 nodes and every other help digest are unchanged"
+  },
+  {
+   "path": "$.node_count",
+   "op": "replace",
+   "value": 164,
+   "authority": "S10 G20-D6 (DESIGN-s10 section 14, owner 2026-10-04): `zeus research-package` is a declared target addition (RF-RT has no M7 counterpart); the root and its six subcommands are appended after the M7 roots, so the counts, the nodes and the top-level help change in exactly this way and nothing else; S10 A5-1b (DESIGN-s10 section 17a, owner 2026-10-04): `zeus dlq` (list, replay) is a declared target addition (no M7 counterpart), appended after research-package; S11 XC-2a B1 (TQ-XCUT-PLAN, owner 2026-10-05): `zeus dlq trim [--retention-seconds N]` is a declared target addition (bounded dead-letter retention), so `zeus dlq`'s usage and help change and the node `zeus dlq trim` is added after `zeus dlq list`; the top-level help and the root count do not change"
+  },
+  {
+   "path": "$.root_count",
+   "op": "replace",
+   "value": 53,
+   "authority": "S10 G20-D6 (DESIGN-s10 section 14, owner 2026-10-04): `zeus research-package` is a declared target addition (RF-RT has no M7 counterpart); the root and its six subcommands are appended after the M7 roots, so the counts, the nodes and the top-level help change in exactly this way and nothing else; S10 A5-1b (DESIGN-s10 section 17a, owner 2026-10-04): `zeus dlq` (list, replay) is a declared target addition (no M7 counterpart), appended after research-package; S11 XC-2a B1 (TQ-XCUT-PLAN, owner 2026-10-05): `zeus dlq trim [--retention-seconds N]` is a declared target addition (bounded dead-letter retention), so `zeus dlq`'s usage and help change and the node `zeus dlq trim` is added after `zeus dlq list`; the top-level help and the root count do not change"
+  },
+  {
+   "path": "$.top.help_bytes",
+   "op": "replace",
+   "value": 3925,
+   "authority": "S10 G20-D6 (DESIGN-s10 section 14, owner 2026-10-04): `zeus research-package` is a declared target addition (RF-RT has no M7 counterpart); the root and its six subcommands are appended after the M7 roots, so the counts, the nodes and the top-level help change in exactly this way and nothing else; S10 A5-1b (DESIGN-s10 section 17a, owner 2026-10-04): `zeus dlq` (list, replay) is a declared target addition (no M7 counterpart), appended after research-package; S11 XC-2a B1 (TQ-XCUT-PLAN, owner 2026-10-05): `zeus dlq trim [--retention-seconds N]` is a declared target addition (bounded dead-letter retention), so `zeus dlq`'s usage and help change and the node `zeus dlq trim` is added after `zeus dlq list`; the top-level help and the root count do not change"
+  },
+  {
+   "path": "$.top.help_sha256",
+   "op": "replace",
+   "value": "4b27ce0810eef65e4c01c0cb43404185cf01e2faa47621e7fa2fbca1a077c8cd",
+   "authority": "S10 G20-D6 (DESIGN-s10 section 14, owner 2026-10-04): `zeus research-package` is a declared target addition (RF-RT has no M7 counterpart); the root and its six subcommands are appended after the M7 roots, so the counts, the nodes and the top-level help change in exactly this way and nothing else; S10 A5-1b (DESIGN-s10 section 17a, owner 2026-10-04): `zeus dlq` (list, replay) is a declared target addition (no M7 counterpart), appended after research-package; S11 XC-2a B1 (TQ-XCUT-PLAN, owner 2026-10-05): `zeus dlq trim [--retention-seconds N]` is a declared target addition (bounded dead-letter retention), so `zeus dlq`'s usage and help change and the node `zeus dlq trim` is added after `zeus dlq list`; the top-level help and the root count do not change"
+  },
+  {
+   "path": "$.nodes",
+   "op": "append_items",
+   "value": [
     {
      "arguments": [],
      "command": "zeus research-package",
@@ -4520,7 +4602,7 @@
      "usage": "usage: zeus dlq replay [-h] --source SOURCE --entry-id ENTRY_ID --reason REASON --actor ACTOR"
     }
    ],
-   "authority": "S10 G20-D6 (DESIGN-s10 section 14, owner 2026-10-04): `zeus research-package` is a declared target addition (RF-RT has no M7 counterpart); the root and its six subcommands are appended after the M7 roots, so the counts, the nodes and the top-level help change in exactly this way and nothing else; S10 A5-1b (DESIGN-s10 section 17a, owner 2026-10-04): `zeus dlq` (list, replay) is a declared target addition (no M7 counterpart), appended after research-package; S11 XC-2a B1 (TQ-XCUT-PLAN, owner 2026-10-05): `zeus dlq trim [--retention-seconds N]` is a declared target addition (bounded dead-letter retention), so `zeus dlq`'s usage and help change and the node `zeus dlq trim` is added after `zeus dlq list`; the top-level help and the root count do not change"
+   "authority": "S10 G20-D6 (DESIGN-s10 section 14, owner 2026-10-04): `zeus research-package` is a declared target addition (RF-RT has no M7 counterpart); the root and its six subcommands are appended after the M7 roots, so the counts, the nodes and the top-level help change in exactly this way and nothing else; S10 A5-1b (DESIGN-s10 section 17a, owner 2026-10-04): `zeus dlq` (list, replay) is a declared target addition (no M7 counterpart), appended after research-package; S11 XC-2a B1 (TQ-XCUT-PLAN, owner 2026-10-05): `zeus dlq trim [--retention-seconds N]` is a declared target addition (bounded dead-letter retention), so `zeus dlq`'s usage and help change and the node `zeus dlq trim` is added after `zeus dlq list`; the top-level help and the root count do not change Declared here as the items appended after the rebaseline's own nodes (G1-13c): the 11 appended nodes are `zeus research-package` (root + six subcommands) and `zeus dlq` (root + three subcommands)."
   }
  ]
 }
