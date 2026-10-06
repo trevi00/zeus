@@ -29,6 +29,16 @@
    "label": "R0 release",
    "commit": "5c67f0999ff2365fe666180d3b36c75b2e44a63a",
    "nodes": 152
+  },
+  "1b9d746c": {
+   "label": "R0 rollback release after G1-10 (PR-3)",
+   "commit": "1b9d746c52ab1a116beda5c72a23f86903aeb4f3",
+   "nodes": 153
+  },
+  "ec8aa0a2": {
+   "label": "managed payload runtime",
+   "commit": "ec8aa0a2947f964eeb94faed20cb6cf05e0681f6",
+   "nodes": 152
   }
  },
  "citation_roots": {
@@ -36,6 +46,150 @@
   "B": "src/codex_harness"
  },
  "nodes": {
+  "python -m codex_harness.adapters.host_migration activation-switch --check": {
+   "class": "read_only",
+   "program": "python",
+   "revisions": [
+    "08bb9a44",
+    "1b9d746c",
+    "ec8aa0a2"
+   ],
+   "argv": [
+    "-m",
+    "codex_harness.adapters.host_migration",
+    "activation-switch",
+    "--check",
+    "--migration-id",
+    "{migration_id}",
+    "--schema",
+    "{schema}",
+    "--control-dir",
+    "{control_dir}",
+    "--releases-dir",
+    "{releases_dir}",
+    "--managed-state-dir",
+    "{managed_state_dir}"
+   ],
+   "params": [
+    "migration_id",
+    "schema",
+    "control_dir",
+    "releases_dir",
+    "managed_state_dir"
+   ],
+   "cites": {
+    "08bb9a44": [
+     "adapters/host_migration.py:main",
+     "adapters/host_migration.py:execute",
+     "adapters/host_migration.py:parser",
+     "adapters/host_migration.py:schema_store",
+     "adapters/host_migration.py:switch_effect",
+     "adapters/host_migration.py:classify_activation_files",
+     "adapters/host_migration.py:recovery_preconditions",
+     "adapters/fleet_runtime.py:lane_dsn",
+     "adapters/fleet_runtime.py:verify_lane_schema",
+     "adapters/store.py:PostgresStore.transaction",
+     "application/host_migration.py:HostMigrations.activation_switch"
+    ],
+    "1b9d746c": [
+     "adapters/host_migration.py:main",
+     "adapters/host_migration.py:execute",
+     "adapters/host_migration.py:parser",
+     "adapters/host_migration.py:schema_store",
+     "adapters/host_migration.py:switch_effect",
+     "adapters/host_migration.py:classify_activation_files",
+     "adapters/host_migration.py:recovery_preconditions",
+     "adapters/fleet_runtime.py:lane_dsn",
+     "adapters/fleet_runtime.py:verify_lane_schema",
+     "adapters/store.py:PostgresStore.transaction",
+     "application/host_migration.py:HostMigrations.activation_switch"
+    ],
+    "ec8aa0a2": [
+     "adapters/host_migration.py:main",
+     "adapters/host_migration.py:execute",
+     "adapters/host_migration.py:parser",
+     "adapters/host_migration.py:schema_store",
+     "adapters/host_migration.py:switch_effect",
+     "adapters/host_migration.py:classify_activation_files",
+     "adapters/host_migration.py:recovery_preconditions",
+     "adapters/fleet_runtime.py:lane_dsn",
+     "adapters/fleet_runtime.py:verify_lane_schema",
+     "adapters/store.py:PostgresStore.transaction",
+     "application/host_migration.py:HostMigrations.activation_switch"
+    ]
+   },
+   "declared_writes": [
+    "PostgreSQL: the coordinator transaction takes pg_advisory_xact_lock(734219) and writes no row (activation_switch only get()s and calls effect; the check effect classifies)"
+   ],
+   "note": "the host-delivery activation switch in classify-only mode (D-rev rollback leaf, rehearsal design '8. R6'): switch_effect(check=True) returns classify_activation_files plus recovery_preconditions (reads, `systemctl show`, /proc) before any write branch; the receipt write and `_replace_current` sit after the check return. Not a `zeus` parser node (python -m module of the release)"
+  },
+  "python -m codex_harness.adapters.host_migration observe-limited-active": {
+   "class": "read_only",
+   "program": "python",
+   "revisions": [
+    "08bb9a44",
+    "1b9d746c"
+   ],
+   "argv": [
+    "-m",
+    "codex_harness.adapters.host_migration",
+    "observe-limited-active",
+    "--migration-id",
+    "{migration_id}",
+    "--expected-id",
+    "{expected_id}",
+    "--target-id",
+    "{target_id}",
+    "--plan-id",
+    "{plan_id}",
+    "--actor",
+    "{actor}",
+    "--root",
+    "{aibox_root}",
+    "--schema",
+    "{schema}",
+    "--control-schema",
+    "{control_schema}"
+   ],
+   "params": [
+    "migration_id",
+    "expected_id",
+    "target_id",
+    "plan_id",
+    "actor",
+    "aibox_root",
+    "schema",
+    "control_schema"
+   ],
+   "cites": {
+    "08bb9a44": [
+     "adapters/host_migration.py:main",
+     "adapters/host_migration.py:execute",
+     "adapters/host_migration.py:parser",
+     "adapters/host_migration_evidence.py:observe_command",
+     "adapters/host_migration_evidence.py:cli_ports",
+     "adapters/host_migration_evidence.py:observe",
+     "adapters/host_migration_evidence.py:HostReader.file",
+     "adapters/host_migration_evidence.py:bounded_run",
+     "adapters/monitoring.py:LaneSnapshotStore.transaction",
+     "adapters/monitoring.py:LaneSnapshotTransaction.put"
+    ],
+    "1b9d746c": [
+     "adapters/host_migration.py:main",
+     "adapters/host_migration.py:execute",
+     "adapters/host_migration.py:parser",
+     "adapters/host_migration_evidence.py:observe_command",
+     "adapters/host_migration_evidence.py:cli_ports",
+     "adapters/host_migration_evidence.py:observe",
+     "adapters/host_migration_evidence.py:HostReader.file",
+     "adapters/host_migration_evidence.py:bounded_run",
+     "adapters/monitoring.py:LaneSnapshotStore.transaction",
+     "adapters/monitoring.py:LaneSnapshotTransaction.put"
+    ]
+   },
+   "declared_writes": [],
+   "note": "read-only producer of the managed limited_active observation (INV-HOST-MIGRATION-001, no apply mode): every store read is a LaneSnapshotStore transaction (READ ONLY, rolled back, no advisory lock), host files are opened O_RDONLY, the only commands are systemctl show and journalctl; exit 1 when the observation is not ok (an unobservable copy host is a fact, not a write). Absent at 5aa220fd and ec8aa0a2 (no such subcommand)"
+  },
   "zeus artifact": {
    "class": "excluded",
    "revisions": [
@@ -44,7 +198,9 @@
     "08bb9a44",
     "5aa220fd",
     "ced20281",
-    "5c67f099"
+    "5c67f099",
+    "1b9d746c",
+    "ec8aa0a2"
    ],
    "reason": "not in the design's R3 candidate list; not traced for R3 (the owner may promote it); builds the executor"
   },
@@ -56,7 +212,9 @@
     "08bb9a44",
     "5aa220fd",
     "ced20281",
-    "5c67f099"
+    "5c67f099",
+    "1b9d746c",
+    "ec8aa0a2"
    ],
    "reason": "group node: argparse requires a subcommand, no handler runs"
   },
@@ -68,7 +226,9 @@
     "08bb9a44",
     "5aa220fd",
     "ced20281",
-    "5c67f099"
+    "5c67f099",
+    "1b9d746c",
+    "ec8aa0a2"
    ],
    "reason": "records a deactivation: store write"
   },
@@ -80,7 +240,9 @@
     "08bb9a44",
     "5aa220fd",
     "ced20281",
-    "5c67f099"
+    "5c67f099",
+    "1b9d746c",
+    "ec8aa0a2"
    ],
    "reason": "records an activation: store write"
   },
@@ -92,7 +254,9 @@
     "08bb9a44",
     "5aa220fd",
     "ced20281",
-    "5c67f099"
+    "5c67f099",
+    "1b9d746c",
+    "ec8aa0a2"
    ],
    "argv": [
     "audit-repair",
@@ -130,7 +294,9 @@
     "08bb9a44",
     "5aa220fd",
     "ced20281",
-    "5c67f099"
+    "5c67f099",
+    "1b9d746c",
+    "ec8aa0a2"
    ],
    "argv": [
     "audit-repair",
@@ -167,7 +333,9 @@
     "08bb9a44",
     "5aa220fd",
     "ced20281",
-    "5c67f099"
+    "5c67f099",
+    "1b9d746c",
+    "ec8aa0a2"
    ],
    "reason": "group node: argparse requires a subcommand, no handler runs"
   },
@@ -179,7 +347,9 @@
     "08bb9a44",
     "5aa220fd",
     "ced20281",
-    "5c67f099"
+    "5c67f099",
+    "1b9d746c",
+    "ec8aa0a2"
    ],
    "reason": "runs the audit service: store writes and provider calls"
   },
@@ -191,7 +361,9 @@
     "08bb9a44",
     "5aa220fd",
     "ced20281",
-    "5c67f099"
+    "5c67f099",
+    "1b9d746c",
+    "ec8aa0a2"
    ],
    "argv": [
     "audit-service",
@@ -223,7 +395,9 @@
     "08bb9a44",
     "5aa220fd",
     "ced20281",
-    "5c67f099"
+    "5c67f099",
+    "1b9d746c",
+    "ec8aa0a2"
    ],
    "reason": "group node: argparse requires a subcommand, no handler runs"
   },
@@ -235,7 +409,9 @@
     "08bb9a44",
     "5aa220fd",
     "ced20281",
-    "5c67f099"
+    "5c67f099",
+    "1b9d746c",
+    "ec8aa0a2"
    ],
    "reason": "runs the autonomous cycle: store, Redis and provider effects"
   },
@@ -247,7 +423,9 @@
     "08bb9a44",
     "5aa220fd",
     "ced20281",
-    "5c67f099"
+    "5c67f099",
+    "1b9d746c",
+    "ec8aa0a2"
    ],
    "argv": [
     "autonomous",
@@ -280,7 +458,9 @@
     "08bb9a44",
     "5aa220fd",
     "ced20281",
-    "5c67f099"
+    "5c67f099",
+    "1b9d746c",
+    "ec8aa0a2"
    ],
    "reason": "runs the Codex canary (provider call with --live)"
   },
@@ -292,7 +472,9 @@
     "08bb9a44",
     "5aa220fd",
     "ced20281",
-    "5c67f099"
+    "5c67f099",
+    "1b9d746c",
+    "ec8aa0a2"
    ],
    "reason": "cancels a task: store write"
   },
@@ -304,7 +486,9 @@
     "08bb9a44",
     "5aa220fd",
     "ced20281",
-    "5c67f099"
+    "5c67f099",
+    "1b9d746c",
+    "ec8aa0a2"
    ],
    "reason": "artifact maintenance (collect --apply deletes artifacts)"
   },
@@ -316,7 +500,9 @@
     "08bb9a44",
     "5aa220fd",
     "ced20281",
-    "5c67f099"
+    "5c67f099",
+    "1b9d746c",
+    "ec8aa0a2"
    ],
    "reason": "not in the design's R3 candidate list; not traced for R3 (the owner may promote it)"
   },
@@ -328,7 +514,9 @@
     "08bb9a44",
     "5aa220fd",
     "ced20281",
-    "5c67f099"
+    "5c67f099",
+    "1b9d746c",
+    "ec8aa0a2"
    ],
    "reason": "group node: argparse requires a subcommand, no handler runs"
   },
@@ -340,7 +528,9 @@
     "08bb9a44",
     "5aa220fd",
     "ced20281",
-    "5c67f099"
+    "5c67f099",
+    "1b9d746c",
+    "ec8aa0a2"
    ],
    "reason": "records a capacity grant: store write"
   },
@@ -352,7 +542,9 @@
     "08bb9a44",
     "5aa220fd",
     "ced20281",
-    "5c67f099"
+    "5c67f099",
+    "1b9d746c",
+    "ec8aa0a2"
    ],
    "reason": "claims and conducts a decision: store, executor and provider effects"
   },
@@ -363,7 +555,9 @@
     "B",
     "08bb9a44",
     "5aa220fd",
-    "5c67f099"
+    "5c67f099",
+    "1b9d746c",
+    "ec8aa0a2"
    ],
    "reason": "records a requalification: store write"
   },
@@ -375,7 +569,9 @@
     "08bb9a44",
     "5aa220fd",
     "ced20281",
-    "5c67f099"
+    "5c67f099",
+    "1b9d746c",
+    "ec8aa0a2"
    ],
    "argv": [
     "continuation",
@@ -408,7 +604,9 @@
     "08bb9a44",
     "5aa220fd",
     "ced20281",
-    "5c67f099"
+    "5c67f099",
+    "1b9d746c",
+    "ec8aa0a2"
    ],
    "reason": "reconciles ownership: store write"
   },
@@ -420,7 +618,9 @@
     "08bb9a44",
     "5aa220fd",
     "ced20281",
-    "5c67f099"
+    "5c67f099",
+    "1b9d746c",
+    "ec8aa0a2"
    ],
    "reason": "registers a continuation policy: store write"
   },
@@ -432,7 +632,9 @@
     "08bb9a44",
     "5aa220fd",
     "ced20281",
-    "5c67f099"
+    "5c67f099",
+    "1b9d746c",
+    "ec8aa0a2"
    ],
    "reason": "records an owner research receipt: store write"
   },
@@ -444,7 +646,9 @@
     "08bb9a44",
     "5aa220fd",
     "ced20281",
-    "5c67f099"
+    "5c67f099",
+    "1b9d746c",
+    "ec8aa0a2"
    ],
    "reason": "records an owner scope supplement: store write"
   },
@@ -456,7 +660,9 @@
     "08bb9a44",
     "5aa220fd",
     "ced20281",
-    "5c67f099"
+    "5c67f099",
+    "1b9d746c",
+    "ec8aa0a2"
    ],
    "argv": [
     "continuation",
@@ -484,7 +690,9 @@
     "08bb9a44",
     "5aa220fd",
     "ced20281",
-    "5c67f099"
+    "5c67f099",
+    "1b9d746c",
+    "ec8aa0a2"
    ],
    "reason": "advances continuation: store writes and fleet admission"
   },
@@ -496,7 +704,9 @@
     "08bb9a44",
     "5aa220fd",
     "ced20281",
-    "5c67f099"
+    "5c67f099",
+    "1b9d746c",
+    "ec8aa0a2"
    ],
    "reason": "group node: argparse requires a subcommand, no handler runs"
   },
@@ -508,7 +718,9 @@
     "08bb9a44",
     "5aa220fd",
     "ced20281",
-    "5c67f099"
+    "5c67f099",
+    "1b9d746c",
+    "ec8aa0a2"
    ],
    "reason": "not in the design's R3 candidate list; not traced for R3 (the owner may promote it) (INV-CYCLE-HANDOFF-001 states store read only)"
   },
@@ -520,7 +732,9 @@
     "08bb9a44",
     "5aa220fd",
     "ced20281",
-    "5c67f099"
+    "5c67f099",
+    "1b9d746c",
+    "ec8aa0a2"
    ],
    "reason": "creates a cycle row: store write"
   },
@@ -532,7 +746,9 @@
     "08bb9a44",
     "5aa220fd",
     "ced20281",
-    "5c67f099"
+    "5c67f099",
+    "1b9d746c",
+    "ec8aa0a2"
    ],
    "argv": [
     "cycle",
@@ -561,7 +777,9 @@
     "08bb9a44",
     "5aa220fd",
     "ced20281",
-    "5c67f099"
+    "5c67f099",
+    "1b9d746c",
+    "ec8aa0a2"
    ],
    "reason": "executes a cycle step: store, Redis and provider effects"
   },
@@ -573,7 +791,9 @@
     "08bb9a44",
     "5aa220fd",
     "ced20281",
-    "5c67f099"
+    "5c67f099",
+    "1b9d746c",
+    "ec8aa0a2"
    ],
    "reason": "group node: argparse requires a subcommand, no handler runs"
   },
@@ -585,7 +805,9 @@
     "08bb9a44",
     "5aa220fd",
     "ced20281",
-    "5c67f099"
+    "5c67f099",
+    "1b9d746c",
+    "ec8aa0a2"
    ],
    "reason": "records a collection: store writes and git reads"
   },
@@ -597,7 +819,9 @@
     "08bb9a44",
     "5aa220fd",
     "ced20281",
-    "5c67f099"
+    "5c67f099",
+    "1b9d746c",
+    "ec8aa0a2"
    ],
    "argv": [
     "decision-feedback",
@@ -628,7 +852,9 @@
     "08bb9a44",
     "5aa220fd",
     "ced20281",
-    "5c67f099"
+    "5c67f099",
+    "1b9d746c",
+    "ec8aa0a2"
    ],
    "argv": [
     "decision-feedback",
@@ -659,7 +885,9 @@
     "08bb9a44",
     "5aa220fd",
     "ced20281",
-    "5c67f099"
+    "5c67f099",
+    "1b9d746c",
+    "ec8aa0a2"
    ],
    "reason": "records a demo scenario: store writes"
   },
@@ -671,7 +899,9 @@
     "08bb9a44",
     "5aa220fd",
     "ced20281",
-    "5c67f099"
+    "5c67f099",
+    "1b9d746c",
+    "ec8aa0a2"
    ],
    "reason": "group node: argparse requires a subcommand, no handler runs"
   },
@@ -683,7 +913,9 @@
     "08bb9a44",
     "5aa220fd",
     "ced20281",
-    "5c67f099"
+    "5c67f099",
+    "1b9d746c",
+    "ec8aa0a2"
    ],
    "reason": "runs the front desk: store writes and provider calls"
   },
@@ -695,7 +927,9 @@
     "08bb9a44",
     "5aa220fd",
     "ced20281",
-    "5c67f099"
+    "5c67f099",
+    "1b9d746c",
+    "ec8aa0a2"
    ],
    "argv": [
     "desk",
@@ -729,7 +963,9 @@
     "08bb9a44",
     "5aa220fd",
     "ced20281",
-    "5c67f099"
+    "5c67f099",
+    "1b9d746c",
+    "ec8aa0a2"
    ],
    "reason": "group node: argparse requires a subcommand, no handler runs"
   },
@@ -741,7 +977,9 @@
     "08bb9a44",
     "5aa220fd",
     "ced20281",
-    "5c67f099"
+    "5c67f099",
+    "1b9d746c",
+    "ec8aa0a2"
    ],
    "reason": "registers a design packet: store write"
   },
@@ -753,7 +991,9 @@
     "08bb9a44",
     "5aa220fd",
     "ced20281",
-    "5c67f099"
+    "5c67f099",
+    "1b9d746c",
+    "ec8aa0a2"
    ],
    "argv": [
     "dge",
@@ -786,7 +1026,9 @@
     "08bb9a44",
     "5aa220fd",
     "ced20281",
-    "5c67f099"
+    "5c67f099",
+    "1b9d746c",
+    "ec8aa0a2"
    ],
    "reason": "records a debate event: store write"
   },
@@ -826,7 +1068,9 @@
     "08bb9a44",
     "5aa220fd",
     "ced20281",
-    "5c67f099"
+    "5c67f099",
+    "1b9d746c",
+    "ec8aa0a2"
    ],
    "reason": "not in the design's R3 candidate list; not traced for R3 (the owner may promote it); checks live PostgreSQL/Redis reachability and, offline, host tools"
   },
@@ -838,7 +1082,9 @@
     "08bb9a44",
     "5aa220fd",
     "ced20281",
-    "5c67f099"
+    "5c67f099",
+    "1b9d746c",
+    "ec8aa0a2"
    ],
    "reason": "writes embeddings to the knowledge graph"
   },
@@ -850,7 +1096,9 @@
     "08bb9a44",
     "5aa220fd",
     "ced20281",
-    "5c67f099"
+    "5c67f099",
+    "1b9d746c",
+    "ec8aa0a2"
    ],
    "reason": "executes one task: store, Redis and provider effects"
   },
@@ -862,7 +1110,9 @@
     "08bb9a44",
     "5aa220fd",
     "ced20281",
-    "5c67f099"
+    "5c67f099",
+    "1b9d746c",
+    "ec8aa0a2"
    ],
    "reason": "group node: argparse requires a subcommand, no handler runs"
   },
@@ -874,7 +1124,9 @@
     "08bb9a44",
     "5aa220fd",
     "ced20281",
-    "5c67f099"
+    "5c67f099",
+    "1b9d746c",
+    "ec8aa0a2"
    ],
    "reason": "applies a recovery packet: store writes"
   },
@@ -886,7 +1138,9 @@
     "08bb9a44",
     "5aa220fd",
     "ced20281",
-    "5c67f099"
+    "5c67f099",
+    "1b9d746c",
+    "ec8aa0a2"
    ],
    "reason": "writes a recovery packet file; reads execution state"
   },
@@ -898,7 +1152,9 @@
     "08bb9a44",
     "5aa220fd",
     "ced20281",
-    "5c67f099"
+    "5c67f099",
+    "1b9d746c",
+    "ec8aa0a2"
    ],
    "reason": "group node: argparse requires a subcommand, no handler runs"
   },
@@ -910,7 +1166,9 @@
     "08bb9a44",
     "5aa220fd",
     "ced20281",
-    "5c67f099"
+    "5c67f099",
+    "1b9d746c",
+    "ec8aa0a2"
    ],
    "reason": "records a budget grant: store write"
   },
@@ -922,7 +1180,9 @@
     "08bb9a44",
     "5aa220fd",
     "ced20281",
-    "5c67f099"
+    "5c67f099",
+    "1b9d746c",
+    "ec8aa0a2"
    ],
    "reason": "group node: argparse requires a subcommand, no handler runs"
   },
@@ -934,7 +1194,9 @@
     "08bb9a44",
     "5aa220fd",
     "ced20281",
-    "5c67f099"
+    "5c67f099",
+    "1b9d746c",
+    "ec8aa0a2"
    ],
    "reason": "registers a backlog plan: store write and git reads"
   },
@@ -946,7 +1208,9 @@
     "08bb9a44",
     "5aa220fd",
     "ced20281",
-    "5c67f099"
+    "5c67f099",
+    "1b9d746c",
+    "ec8aa0a2"
    ],
    "argv": [
     "fleet",
@@ -977,7 +1241,9 @@
     "08bb9a44",
     "5aa220fd",
     "ced20281",
-    "5c67f099"
+    "5c67f099",
+    "1b9d746c",
+    "ec8aa0a2"
    ],
    "reason": "admits backlog items: store writes"
   },
@@ -989,7 +1255,9 @@
     "08bb9a44",
     "5aa220fd",
     "ced20281",
-    "5c67f099"
+    "5c67f099",
+    "1b9d746c",
+    "ec8aa0a2"
    ],
    "reason": "admits a job: store write"
   },
@@ -1001,7 +1269,9 @@
     "08bb9a44",
     "5aa220fd",
     "ced20281",
-    "5c67f099"
+    "5c67f099",
+    "1b9d746c",
+    "ec8aa0a2"
    ],
    "reason": "rebinds lanes to the target host: store writes"
   },
@@ -1013,7 +1283,9 @@
     "08bb9a44",
     "5aa220fd",
     "ced20281",
-    "5c67f099"
+    "5c67f099",
+    "1b9d746c",
+    "ec8aa0a2"
    ],
    "reason": "sets the pause control row: store write"
   },
@@ -1025,7 +1297,9 @@
     "08bb9a44",
     "5aa220fd",
     "ced20281",
-    "5c67f099"
+    "5c67f099",
+    "1b9d746c",
+    "ec8aa0a2"
    ],
    "reason": "settles an interrupted job: store write and docker inspect"
   },
@@ -1037,7 +1311,9 @@
     "08bb9a44",
     "5aa220fd",
     "ced20281",
-    "5c67f099"
+    "5c67f099",
+    "1b9d746c",
+    "ec8aa0a2"
    ],
    "reason": "records owner delivery evidence: store write"
   },
@@ -1049,7 +1325,9 @@
     "08bb9a44",
     "5aa220fd",
     "ced20281",
-    "5c67f099"
+    "5c67f099",
+    "1b9d746c",
+    "ec8aa0a2"
    ],
    "reason": "registers the fleet configuration: store write"
   },
@@ -1061,7 +1339,9 @@
     "08bb9a44",
     "5aa220fd",
     "ced20281",
-    "5c67f099"
+    "5c67f099",
+    "1b9d746c",
+    "ec8aa0a2"
    ],
    "reason": "moves lane paths: store writes and file effects"
   },
@@ -1073,7 +1353,9 @@
     "08bb9a44",
     "5aa220fd",
     "ced20281",
-    "5c67f099"
+    "5c67f099",
+    "1b9d746c",
+    "ec8aa0a2"
    ],
    "reason": "clears the pause control row: store write"
   },
@@ -1085,7 +1367,9 @@
     "08bb9a44",
     "5aa220fd",
     "ced20281",
-    "5c67f099"
+    "5c67f099",
+    "1b9d746c",
+    "ec8aa0a2"
    ],
    "reason": "admits and dispatches jobs: store writes and process effects"
   },
@@ -1097,7 +1381,9 @@
     "08bb9a44",
     "5aa220fd",
     "ced20281",
-    "5c67f099"
+    "5c67f099",
+    "1b9d746c",
+    "ec8aa0a2"
    ],
    "argv": [
     "fleet",
@@ -1130,7 +1416,9 @@
     "08bb9a44",
     "5aa220fd",
     "ced20281",
-    "5c67f099"
+    "5c67f099",
+    "1b9d746c",
+    "ec8aa0a2"
    ],
    "reason": "flushes the outbox to Redis: store and Redis writes"
   },
@@ -1142,7 +1430,9 @@
     "08bb9a44",
     "5aa220fd",
     "ced20281",
-    "5c67f099"
+    "5c67f099",
+    "1b9d746c",
+    "ec8aa0a2"
    ],
    "reason": "group node: argparse requires a subcommand, no handler runs"
   },
@@ -1154,7 +1444,9 @@
     "08bb9a44",
     "5aa220fd",
     "ced20281",
-    "5c67f099"
+    "5c67f099",
+    "1b9d746c",
+    "ec8aa0a2"
    ],
    "argv": [
     "goal",
@@ -1187,7 +1479,9 @@
     "08bb9a44",
     "5aa220fd",
     "ced20281",
-    "5c67f099"
+    "5c67f099",
+    "1b9d746c",
+    "ec8aa0a2"
    ],
    "argv": [
     "goal",
@@ -1218,16 +1512,19 @@
     "08bb9a44",
     "5aa220fd",
     "ced20281",
-    "5c67f099"
+    "5c67f099",
+    "1b9d746c",
+    "ec8aa0a2"
    ],
    "reason": "group node: argparse requires a subcommand, no handler runs"
   },
   "zeus host-delivery maintain": {
    "class": "excluded",
    "revisions": [
-    "08bb9a44"
+    "08bb9a44",
+    "1b9d746c"
    ],
-   "reason": "a maintenance effect (present only in revision 08bb9a44): host-delivery maintenance surface"
+   "reason": "a maintenance effect (present only in revisions 08bb9a44 and 1b9d746c): host-delivery maintenance surface"
   },
   "zeus host-delivery register": {
    "class": "excluded",
@@ -1237,7 +1534,9 @@
     "08bb9a44",
     "5aa220fd",
     "ced20281",
-    "5c67f099"
+    "5c67f099",
+    "1b9d746c",
+    "ec8aa0a2"
    ],
    "reason": "registers a delivery plan: store write"
   },
@@ -1249,7 +1548,9 @@
     "08bb9a44",
     "5aa220fd",
     "ced20281",
-    "5c67f099"
+    "5c67f099",
+    "1b9d746c",
+    "ec8aa0a2"
    ],
    "reason": "registers host targets: store write"
   },
@@ -1259,7 +1560,9 @@
     "A",
     "B",
     "08bb9a44",
-    "5c67f099"
+    "5c67f099",
+    "1b9d746c",
+    "ec8aa0a2"
    ],
    "reason": "resumes a held plan: store write"
   },
@@ -1271,7 +1574,9 @@
     "08bb9a44",
     "5aa220fd",
     "ced20281",
-    "5c67f099"
+    "5c67f099",
+    "1b9d746c",
+    "ec8aa0a2"
    ],
    "reason": "runs the delivery controller: publish, merge, switch effects"
   },
@@ -1283,7 +1588,9 @@
     "08bb9a44",
     "5aa220fd",
     "ced20281",
-    "5c67f099"
+    "5c67f099",
+    "1b9d746c",
+    "ec8aa0a2"
    ],
    "argv": [
     "host-delivery",
@@ -1312,7 +1619,9 @@
     "08bb9a44",
     "5aa220fd",
     "ced20281",
-    "5c67f099"
+    "5c67f099",
+    "1b9d746c",
+    "ec8aa0a2"
    ],
    "reason": "advances delivery: publish, merge, switch effects"
   },
@@ -1323,7 +1632,9 @@
     "B",
     "08bb9a44",
     "5aa220fd",
-    "5c67f099"
+    "5c67f099",
+    "1b9d746c",
+    "ec8aa0a2"
    ],
    "reason": "withdraws a plan: store write"
   },
@@ -1335,7 +1646,9 @@
     "08bb9a44",
     "5aa220fd",
     "ced20281",
-    "5c67f099"
+    "5c67f099",
+    "1b9d746c",
+    "ec8aa0a2"
    ],
    "reason": "publishes an improvement task to Redis"
   },
@@ -1347,7 +1660,9 @@
     "08bb9a44",
     "5aa220fd",
     "ced20281",
-    "5c67f099"
+    "5c67f099",
+    "1b9d746c",
+    "ec8aa0a2"
    ],
    "reason": "records an incident: store write"
   },
@@ -1359,7 +1674,9 @@
     "08bb9a44",
     "5aa220fd",
     "ced20281",
-    "5c67f099"
+    "5c67f099",
+    "1b9d746c",
+    "ec8aa0a2"
    ],
    "reason": "indexes a source tree: knowledge-graph writes"
   },
@@ -1371,7 +1688,9 @@
     "08bb9a44",
     "5aa220fd",
     "ced20281",
-    "5c67f099"
+    "5c67f099",
+    "1b9d746c",
+    "ec8aa0a2"
    ],
    "reason": "runs the migrator: DDL and migration records (store.migrate)"
   },
@@ -1383,7 +1702,9 @@
     "08bb9a44",
     "5aa220fd",
     "ced20281",
-    "5c67f099"
+    "5c67f099",
+    "1b9d746c",
+    "ec8aa0a2"
    ],
    "reason": "not in the design's R3 candidate list; not traced for R3 (the owner may promote it)"
   },
@@ -1395,7 +1716,9 @@
     "08bb9a44",
     "5aa220fd",
     "ced20281",
-    "5c67f099"
+    "5c67f099",
+    "1b9d746c",
+    "ec8aa0a2"
    ],
    "reason": "group node: argparse requires a subcommand, no handler runs"
   },
@@ -1407,7 +1730,9 @@
     "08bb9a44",
     "5aa220fd",
     "ced20281",
-    "5c67f099"
+    "5c67f099",
+    "1b9d746c",
+    "ec8aa0a2"
    ],
    "reason": "runs the collector: observation records and spool writes"
   },
@@ -1419,7 +1744,9 @@
     "08bb9a44",
     "5aa220fd",
     "ced20281",
-    "5c67f099"
+    "5c67f099",
+    "1b9d746c",
+    "ec8aa0a2"
    ],
    "reason": "resolves a termination record: store write"
   },
@@ -1431,7 +1758,9 @@
     "08bb9a44",
     "5aa220fd",
     "ced20281",
-    "5c67f099"
+    "5c67f099",
+    "1b9d746c",
+    "ec8aa0a2"
    ],
    "argv": [
     "observe",
@@ -1461,7 +1790,9 @@
     "08bb9a44",
     "5aa220fd",
     "ced20281",
-    "5c67f099"
+    "5c67f099",
+    "1b9d746c",
+    "ec8aa0a2"
    ],
    "reason": "group node: argparse requires a subcommand, no handler runs"
   },
@@ -1473,7 +1804,9 @@
     "08bb9a44",
     "5aa220fd",
     "ced20281",
-    "5c67f099"
+    "5c67f099",
+    "1b9d746c",
+    "ec8aa0a2"
    ],
    "reason": "runs an operation manifest: store and executor effects"
   },
@@ -1485,7 +1818,9 @@
     "08bb9a44",
     "5aa220fd",
     "ced20281",
-    "5c67f099"
+    "5c67f099",
+    "1b9d746c",
+    "ec8aa0a2"
    ],
    "argv": [
     "operate",
@@ -1516,7 +1851,9 @@
     "08bb9a44",
     "5aa220fd",
     "ced20281",
-    "5c67f099"
+    "5c67f099",
+    "1b9d746c",
+    "ec8aa0a2"
    ],
    "reason": "not in the design's R3 candidate list; not traced for R3 (the owner may promote it)"
   },
@@ -1528,7 +1865,9 @@
     "08bb9a44",
     "5aa220fd",
     "ced20281",
-    "5c67f099"
+    "5c67f099",
+    "1b9d746c",
+    "ec8aa0a2"
    ],
    "reason": "group node: argparse requires a subcommand, no handler runs"
   },
@@ -1540,7 +1879,9 @@
     "08bb9a44",
     "5aa220fd",
     "ced20281",
-    "5c67f099"
+    "5c67f099",
+    "1b9d746c",
+    "ec8aa0a2"
    ],
    "reason": "guarded independent assessment: provider call and store writes"
   },
@@ -1550,7 +1891,9 @@
     "A",
     "B",
     "08bb9a44",
-    "5c67f099"
+    "5c67f099",
+    "1b9d746c",
+    "ec8aa0a2"
    ],
    "reason": "recovers a canary: store writes and effects"
   },
@@ -1560,7 +1903,9 @@
     "A",
     "B",
     "08bb9a44",
-    "5c67f099"
+    "5c67f099",
+    "1b9d746c",
+    "ec8aa0a2"
    ],
    "reason": "requests a host migration: store writes and effects"
   },
@@ -1572,7 +1917,9 @@
     "08bb9a44",
     "5aa220fd",
     "ced20281",
-    "5c67f099"
+    "5c67f099",
+    "1b9d746c",
+    "ec8aa0a2"
    ],
    "reason": "registers an owner-action policy: store write"
   },
@@ -1584,7 +1931,9 @@
     "08bb9a44",
     "5aa220fd",
     "ced20281",
-    "5c67f099"
+    "5c67f099",
+    "1b9d746c",
+    "ec8aa0a2"
    ],
    "reason": "runs the owner-action coordinator: store writes and effects"
   },
@@ -1596,7 +1945,9 @@
     "08bb9a44",
     "5aa220fd",
     "ced20281",
-    "5c67f099"
+    "5c67f099",
+    "1b9d746c",
+    "ec8aa0a2"
    ],
    "argv": [
     "owner-actions",
@@ -1624,7 +1975,9 @@
     "08bb9a44",
     "5aa220fd",
     "ced20281",
-    "5c67f099"
+    "5c67f099",
+    "1b9d746c",
+    "ec8aa0a2"
    ],
    "reason": "advances owner actions: store writes and effects"
   },
@@ -1636,7 +1989,9 @@
     "08bb9a44",
     "5aa220fd",
     "ced20281",
-    "5c67f099"
+    "5c67f099",
+    "1b9d746c",
+    "ec8aa0a2"
    ],
    "argv": [
     "paths"
@@ -1666,7 +2021,9 @@
     "08bb9a44",
     "5aa220fd",
     "ced20281",
-    "5c67f099"
+    "5c67f099",
+    "1b9d746c",
+    "ec8aa0a2"
    ],
    "reason": "projects runtime records into the knowledge graph: writes"
   },
@@ -1678,7 +2035,9 @@
     "08bb9a44",
     "5aa220fd",
     "ced20281",
-    "5c67f099"
+    "5c67f099",
+    "1b9d746c",
+    "ec8aa0a2"
    ],
    "reason": "not in the design's R3 candidate list; not traced for R3 (the owner may promote it); semantic mode loads a local embedding model"
   },
@@ -1690,7 +2049,9 @@
     "08bb9a44",
     "5aa220fd",
     "ced20281",
-    "5c67f099"
+    "5c67f099",
+    "1b9d746c",
+    "ec8aa0a2"
    ],
    "reason": "requests a rebase: store write and Redis flush"
   },
@@ -1702,7 +2063,9 @@
     "08bb9a44",
     "5aa220fd",
     "ced20281",
-    "5c67f099"
+    "5c67f099",
+    "1b9d746c",
+    "ec8aa0a2"
    ],
    "reason": "release runner abandon: store writes"
   },
@@ -1714,7 +2077,9 @@
     "08bb9a44",
     "5aa220fd",
     "ced20281",
-    "5c67f099"
+    "5c67f099",
+    "1b9d746c",
+    "ec8aa0a2"
    ],
    "reason": "release queue retry: store write"
   },
@@ -1726,7 +2091,9 @@
     "08bb9a44",
     "5aa220fd",
     "ced20281",
-    "5c67f099"
+    "5c67f099",
+    "1b9d746c",
+    "ec8aa0a2"
    ],
    "reason": "publishes a research task to Redis"
   },
@@ -1787,7 +2154,9 @@
     "08bb9a44",
     "5aa220fd",
     "ced20281",
-    "5c67f099"
+    "5c67f099",
+    "1b9d746c",
+    "ec8aa0a2"
    ],
    "reason": "group node: argparse requires a subcommand, no handler runs"
   },
@@ -1799,7 +2168,9 @@
     "08bb9a44",
     "5aa220fd",
     "ced20281",
-    "5c67f099"
+    "5c67f099",
+    "1b9d746c",
+    "ec8aa0a2"
    ],
    "reason": "pauses a program: store write"
   },
@@ -1811,7 +2182,9 @@
     "08bb9a44",
     "5aa220fd",
     "ced20281",
-    "5c67f099"
+    "5c67f099",
+    "1b9d746c",
+    "ec8aa0a2"
    ],
    "reason": "recovers a program: store writes"
   },
@@ -1823,7 +2196,9 @@
     "08bb9a44",
     "5aa220fd",
     "ced20281",
-    "5c67f099"
+    "5c67f099",
+    "1b9d746c",
+    "ec8aa0a2"
    ],
    "reason": "registers a research program: store write"
   },
@@ -1835,7 +2210,9 @@
     "08bb9a44",
     "5aa220fd",
     "ced20281",
-    "5c67f099"
+    "5c67f099",
+    "1b9d746c",
+    "ec8aa0a2"
    ],
    "reason": "resumes a program: store write"
   },
@@ -1847,7 +2224,9 @@
     "08bb9a44",
     "5aa220fd",
     "ced20281",
-    "5c67f099"
+    "5c67f099",
+    "1b9d746c",
+    "ec8aa0a2"
    ],
    "reason": "runs a research program: store writes and provider calls"
   },
@@ -1859,7 +2238,9 @@
     "08bb9a44",
     "5aa220fd",
     "ced20281",
-    "5c67f099"
+    "5c67f099",
+    "1b9d746c",
+    "ec8aa0a2"
    ],
    "argv": [
     "research-program",
@@ -1890,7 +2271,9 @@
     "08bb9a44",
     "5aa220fd",
     "ced20281",
-    "5c67f099"
+    "5c67f099",
+    "1b9d746c",
+    "ec8aa0a2"
    ],
    "reason": "runs a model-driven recursive analysis: provider effects"
   },
@@ -1902,7 +2285,9 @@
     "08bb9a44",
     "5aa220fd",
     "ced20281",
-    "5c67f099"
+    "5c67f099",
+    "1b9d746c",
+    "ec8aa0a2"
    ],
    "reason": "rolls back a hook: store write"
   },
@@ -1914,7 +2299,9 @@
     "08bb9a44",
     "5aa220fd",
     "ced20281",
-    "5c67f099"
+    "5c67f099",
+    "1b9d746c",
+    "ec8aa0a2"
    ],
    "reason": "runs an arbitrary host command"
   },
@@ -1926,7 +2313,9 @@
     "08bb9a44",
     "5aa220fd",
     "ced20281",
-    "5c67f099"
+    "5c67f099",
+    "1b9d746c",
+    "ec8aa0a2"
    ],
    "reason": "group node: argparse requires a subcommand, no handler runs"
   },
@@ -1938,7 +2327,9 @@
     "08bb9a44",
     "5aa220fd",
     "ced20281",
-    "5c67f099"
+    "5c67f099",
+    "1b9d746c",
+    "ec8aa0a2"
    ],
    "reason": "store write (SDD.request_advance)"
   },
@@ -1950,7 +2341,9 @@
     "08bb9a44",
     "5aa220fd",
     "ced20281",
-    "5c67f099"
+    "5c67f099",
+    "1b9d746c",
+    "ec8aa0a2"
    ],
    "reason": "runs a device probe (adapters/sdd.py:device_probe)"
   },
@@ -1962,7 +2355,9 @@
     "08bb9a44",
     "5aa220fd",
     "ced20281",
-    "5c67f099"
+    "5c67f099",
+    "1b9d746c",
+    "ec8aa0a2"
    ],
    "reason": "writes the replay draft file at --output (write_export)"
   },
@@ -1974,7 +2369,9 @@
     "08bb9a44",
     "5aa220fd",
     "ced20281",
-    "5c67f099"
+    "5c67f099",
+    "1b9d746c",
+    "ec8aa0a2"
    ],
    "reason": "imports observations: store writes (SDD.observe)"
   },
@@ -1986,7 +2383,9 @@
     "08bb9a44",
     "5aa220fd",
     "ced20281",
-    "5c67f099"
+    "5c67f099",
+    "1b9d746c",
+    "ec8aa0a2"
    ],
    "argv": [
     "sdd",
@@ -2019,7 +2418,9 @@
     "08bb9a44",
     "5aa220fd",
     "ced20281",
-    "5c67f099"
+    "5c67f099",
+    "1b9d746c",
+    "ec8aa0a2"
    ],
    "reason": "store write (SDD.propose)"
   },
@@ -2031,7 +2432,9 @@
     "08bb9a44",
     "5aa220fd",
     "ced20281",
-    "5c67f099"
+    "5c67f099",
+    "1b9d746c",
+    "ec8aa0a2"
    ],
    "reason": "registers an SDD iteration: store writes (SDD.register)"
   },
@@ -2043,7 +2446,9 @@
     "08bb9a44",
     "5aa220fd",
     "ced20281",
-    "5c67f099"
+    "5c67f099",
+    "1b9d746c",
+    "ec8aa0a2"
    ],
    "argv": [
     "sdd",
@@ -2077,7 +2482,9 @@
     "08bb9a44",
     "5aa220fd",
     "ced20281",
-    "5c67f099"
+    "5c67f099",
+    "1b9d746c",
+    "ec8aa0a2"
    ],
    "reason": "store write (SDD.record_transfer)"
   },
@@ -2089,7 +2496,9 @@
     "08bb9a44",
     "5aa220fd",
     "ced20281",
-    "5c67f099"
+    "5c67f099",
+    "1b9d746c",
+    "ec8aa0a2"
    ],
    "reason": "OWNER RULING 2026-10-06: excluded, not read-only. write_export (adapters/sdd.py, open 'xb') writes the --output HTML file, and R3 admits no undeclared writes; consistent with `zeus sdd view-iteration` (excluded for the same write)."
   },
@@ -2101,7 +2510,9 @@
     "08bb9a44",
     "5aa220fd",
     "ced20281",
-    "5c67f099"
+    "5c67f099",
+    "1b9d746c",
+    "ec8aa0a2"
    ],
    "reason": "writes the review export file at --output (write_export)"
   },
@@ -2113,7 +2524,9 @@
     "08bb9a44",
     "5aa220fd",
     "ced20281",
-    "5c67f099"
+    "5c67f099",
+    "1b9d746c",
+    "ec8aa0a2"
    ],
    "reason": "seeds the research backlog: store writes"
   },
@@ -2125,7 +2538,9 @@
     "08bb9a44",
     "5aa220fd",
     "ced20281",
-    "5c67f099"
+    "5c67f099",
+    "1b9d746c",
+    "ec8aa0a2"
    ],
    "reason": "publishes a message to Redis"
   },
@@ -2137,7 +2552,9 @@
     "08bb9a44",
     "5aa220fd",
     "ced20281",
-    "5c67f099"
+    "5c67f099",
+    "1b9d746c",
+    "ec8aa0a2"
    ],
    "reason": "long-running agent loop: store and Redis writes"
   },
@@ -2149,7 +2566,9 @@
     "08bb9a44",
     "5aa220fd",
     "ced20281",
-    "5c67f099"
+    "5c67f099",
+    "1b9d746c",
+    "ec8aa0a2"
    ],
    "reason": "initializes configuration and creates the runtime directory"
   },
@@ -2161,7 +2580,9 @@
     "08bb9a44",
     "5aa220fd",
     "ced20281",
-    "5c67f099"
+    "5c67f099",
+    "1b9d746c",
+    "ec8aa0a2"
    ],
    "reason": "not in the design's R3 candidate list; not traced for R3 (the owner may promote it)"
   },
@@ -2173,7 +2594,9 @@
     "08bb9a44",
     "5aa220fd",
     "ced20281",
-    "5c67f099"
+    "5c67f099",
+    "1b9d746c",
+    "ec8aa0a2"
    ],
    "reason": "group node: argparse requires a subcommand, no handler runs"
   },
@@ -2185,7 +2608,9 @@
     "08bb9a44",
     "5aa220fd",
     "ced20281",
-    "5c67f099"
+    "5c67f099",
+    "1b9d746c",
+    "ec8aa0a2"
    ],
    "reason": "closes a ticket: store and GitHub effects"
   },
@@ -2197,7 +2622,9 @@
     "08bb9a44",
     "5aa220fd",
     "ced20281",
-    "5c67f099"
+    "5c67f099",
+    "1b9d746c",
+    "ec8aa0a2"
    ],
    "reason": "creates a ticket: store write"
   },
@@ -2209,7 +2636,9 @@
     "08bb9a44",
     "5aa220fd",
     "ced20281",
-    "5c67f099"
+    "5c67f099",
+    "1b9d746c",
+    "ec8aa0a2"
    ],
    "reason": "dispatches a ticket: executor and store effects"
   },
@@ -2221,7 +2650,9 @@
     "08bb9a44",
     "5aa220fd",
     "ced20281",
-    "5c67f099"
+    "5c67f099",
+    "1b9d746c",
+    "ec8aa0a2"
    ],
    "reason": "records lifecycle evidence: store write"
   },
@@ -2233,7 +2664,9 @@
     "08bb9a44",
     "5aa220fd",
     "ced20281",
-    "5c67f099"
+    "5c67f099",
+    "1b9d746c",
+    "ec8aa0a2"
    ],
    "argv": [
     "ticket",
@@ -2265,7 +2698,9 @@
     "08bb9a44",
     "5aa220fd",
     "ced20281",
-    "5c67f099"
+    "5c67f099",
+    "1b9d746c",
+    "ec8aa0a2"
    ],
    "argv": [
     "ticket",
@@ -2292,7 +2727,9 @@
     "08bb9a44",
     "5aa220fd",
     "ced20281",
-    "5c67f099"
+    "5c67f099",
+    "1b9d746c",
+    "ec8aa0a2"
    ],
    "reason": "prepares a close: store writes"
   },
@@ -2304,7 +2741,9 @@
     "08bb9a44",
     "5aa220fd",
     "ced20281",
-    "5c67f099"
+    "5c67f099",
+    "1b9d746c",
+    "ec8aa0a2"
    ],
    "reason": "pulls from GitHub: network and store effects"
   },
@@ -2316,7 +2755,9 @@
     "08bb9a44",
     "5aa220fd",
     "ced20281",
-    "5c67f099"
+    "5c67f099",
+    "1b9d746c",
+    "ec8aa0a2"
    ],
    "reason": "reopens a ticket: store and GitHub effects"
   },
@@ -2328,7 +2769,9 @@
     "08bb9a44",
     "5aa220fd",
     "ced20281",
-    "5c67f099"
+    "5c67f099",
+    "1b9d746c",
+    "ec8aa0a2"
    ],
    "reason": "records a review: store write"
   },
@@ -2340,7 +2783,9 @@
     "08bb9a44",
     "5aa220fd",
     "ced20281",
-    "5c67f099"
+    "5c67f099",
+    "1b9d746c",
+    "ec8aa0a2"
    ],
    "reason": "records a close review: store write"
   },
@@ -2352,7 +2797,9 @@
     "08bb9a44",
     "5aa220fd",
     "ced20281",
-    "5c67f099"
+    "5c67f099",
+    "1b9d746c",
+    "ec8aa0a2"
    ],
    "argv": [
     "ticket",
@@ -2381,7 +2828,9 @@
     "08bb9a44",
     "5aa220fd",
     "ced20281",
-    "5c67f099"
+    "5c67f099",
+    "1b9d746c",
+    "ec8aa0a2"
    ],
    "reason": "syncs with GitHub: network and store effects"
   },
@@ -2393,7 +2842,9 @@
     "08bb9a44",
     "5aa220fd",
     "ced20281",
-    "5c67f099"
+    "5c67f099",
+    "1b9d746c",
+    "ec8aa0a2"
    ],
    "reason": "updates a ticket: store write"
   },
@@ -2405,7 +2856,9 @@
     "08bb9a44",
     "5aa220fd",
     "ced20281",
-    "5c67f099"
+    "5c67f099",
+    "1b9d746c",
+    "ec8aa0a2"
    ],
    "reason": "not in the design's R3 candidate list; not traced for R3 (the owner may promote it)"
   },
@@ -2417,7 +2870,9 @@
     "08bb9a44",
     "5aa220fd",
     "ced20281",
-    "5c67f099"
+    "5c67f099",
+    "1b9d746c",
+    "ec8aa0a2"
    ],
    "reason": "group node: argparse requires a subcommand, no handler runs"
   },
@@ -2429,7 +2884,9 @@
     "08bb9a44",
     "5aa220fd",
     "ced20281",
-    "5c67f099"
+    "5c67f099",
+    "1b9d746c",
+    "ec8aa0a2"
    ],
    "reason": "explicit session close: store write and archive effects"
   },
@@ -2441,7 +2898,9 @@
     "08bb9a44",
     "5aa220fd",
     "ced20281",
-    "5c67f099"
+    "5c67f099",
+    "1b9d746c",
+    "ec8aa0a2"
    ],
    "argv": [
     "worker-session",
@@ -2470,7 +2929,11 @@
    "program": "monitor",
    "revisions": [
     "A",
-    "B"
+    "B",
+    "5aa220fd",
+    "08bb9a44",
+    "1b9d746c",
+    "ec8aa0a2"
    ],
    "argv": [
     "collect",
@@ -2491,6 +2954,46 @@
      "observation/adapters/collectors.py:ReadOnlyStore.transaction",
      "observation/adapters/collectors.py:ReadOnlyTransaction.put",
      "observation/adapters/collectors.py:redis_facts"
+    ],
+    "5aa220fd": [
+     "monitor.py:main",
+     "monitor.py:run_collector",
+     "adapters/monitoring.py:read_only",
+     "adapters/monitoring.py:ReadOnlyStore.transaction",
+     "adapters/monitoring.py:ReadOnlyTransaction.put",
+     "adapters/monitoring.py:redis_facts"
+    ],
+    "ec8aa0a2": [
+     "monitor.py:main",
+     "monitor.py:run_collector",
+     "adapters/monitoring.py:read_only",
+     "adapters/monitoring.py:ReadOnlyStore.transaction",
+     "adapters/monitoring.py:ReadOnlyTransaction.put",
+     "adapters/monitoring.py:redis_facts"
+    ],
+    "08bb9a44": [
+     "monitor.py:main",
+     "monitor.py:run_collector",
+     "adapters/monitoring.py:read_only",
+     "adapters/monitoring.py:ReadOnlyStore.transaction",
+     "adapters/monitoring.py:ReadOnlyTransaction.put",
+     "adapters/monitoring.py:redis_facts",
+     "adapters/monitoring.py:lane_resolver",
+     "adapters/monitoring.py:lane_artifact_resolver",
+     "adapters/monitoring.py:LaneSnapshotStore.transaction",
+     "adapters/monitoring.py:LaneSnapshotTransaction.put"
+    ],
+    "1b9d746c": [
+     "monitor.py:main",
+     "monitor.py:run_collector",
+     "adapters/monitoring.py:read_only",
+     "adapters/monitoring.py:ReadOnlyStore.transaction",
+     "adapters/monitoring.py:ReadOnlyTransaction.put",
+     "adapters/monitoring.py:redis_facts",
+     "adapters/monitoring.py:lane_resolver",
+     "adapters/monitoring.py:lane_artifact_resolver",
+     "adapters/monitoring.py:LaneSnapshotStore.transaction",
+     "adapters/monitoring.py:LaneSnapshotTransaction.put"
     ]
    },
    "declared_writes": [
@@ -2499,7 +3002,7 @@
     "runtime directory and runtime/artifacts (mkdir)",
     "docker is shelled out by the docker source: unavailable in the namespace, recorded as a source state in the snapshot"
    ],
-   "note": "the store is wrapped read-only (put raises); Redis use is exists/xinfo/xlen only; stdout is empty: parity is the exit code"
+   "note": "the store is wrapped read-only (put raises); Redis use is exists/xinfo/xlen only; stdout is empty: parity is the exit code. Per revision (RH-4d): the file writes are bounded to the declared_writes, all under the copy's runtime directory (`runtime_dir()`: monitor.py:main mkdirs it, run_collector opens only its log and lock there and the snapshot is written to <runtime>/monitoring.json through a .tmp and os.replace); no control-store or Redis write exists, so D1 == D0 holds. 5aa220fd and ec8aa0a2 predate the lane resolvers (their collect() takes no lanes: the control store only); 08bb9a44 and 1b9d746c read each registered lane through LaneSnapshotStore (REPEATABLE READ READ ONLY, always rolled back, put refused)"
   }
  }
 }

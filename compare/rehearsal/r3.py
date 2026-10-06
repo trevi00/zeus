@@ -44,7 +44,9 @@ MASKS = HERE / "r3-masks.json"
 MAX_RECORD_ITEMS = 4096
 CLASSES = frozenset({"read_only", "excluded", "disputed"})
 SIDES = ("A", "B")
-PROGRAMS = ("zeus", "monitor")
+# `python`: a release module run as `<python> -m <module>` (its argv starts with `-m`), e.g. the host-migration CLI, which is not
+# a `zeus` parser node.
+PROGRAMS = ("zeus", "monitor", "python")
 PLACEHOLDER = re.compile(r"\{([a-z_]+)\}")
 MASK_ID = re.compile(r"rehearsal\.r3\.[a-z_]+")
 # masks.json: "Owners, generations, attempts, leases, statuses, authorization results, digests and refs are never masked."
@@ -144,6 +146,10 @@ def validate_catalog(catalog: object) -> dict:
             if not isinstance(argv, list) or not all(isinstance(a, str) for a in argv):
                 bad("argv")
             wanted = [side for side in SIDES if side in revisions]
+            if entry.get("program", "zeus") != "zeus":
+                # No parser inventory proves a monitor/module leaf is the same code in a release: every listed revision
+                # carries its own citations (RH-4d).
+                wanted = list(revisions)
             cites = entry.get("cites", {})
             for side in wanted:
                 if not cites.get(side) or not all(re.fullmatch(r"[\w/.]+\.py:[A-Za-z_][\w.]*", c) for c in cites[side]):
@@ -287,11 +293,11 @@ def bind_argv(entry: dict, params: dict) -> list[str]:
 
 
 def read_only_leaves(catalog: dict) -> tuple[list[str], list[str]]:
-    """(leaves present on BOTH A and B, read-only commands present on one side only)."""
+    """(leaves present on BOTH A and B, read-only commands present on one of A/B only; D-revision-only leaves are R6's)."""
     both, one = [], []
     for command, entry in sorted(catalog["nodes"].items()):
-        if entry["class"] != "read_only":
-            continue
+        if entry["class"] != "read_only" or not any(side in entry["revisions"] for side in SIDES):
+            continue  # a leaf of D revisions only belongs to R6, not to the A-vs-B parity run
         (both if all(s in entry["revisions"] for s in SIDES) else one).append(command)
     return both, one
 
