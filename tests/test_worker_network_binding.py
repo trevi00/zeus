@@ -1,5 +1,5 @@
 """CUT-INT WN-1 (cut-int-wn1-worker-network-binding): the production isolated worker is bound to the guarded
-`zeus-workers` network or refused before any reservation, create or provider call.
+`zeus-workers` network or refused before any container create or provider call.
 
 Behavioural: every check drives the public boundary (`load_isolation`, `preflight`, `OwnedContainer.verify`, the
 runtimes' `__enter__`, `build_executor`) over an injected fake runner that records its argv. The expected network
