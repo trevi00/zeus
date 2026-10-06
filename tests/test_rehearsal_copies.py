@@ -94,6 +94,23 @@ def test_run_argv_refuses_a_production_name_a_foreign_name_and_a_non_absolute_mo
     assert caught.value.code == "named_volume"
 
 
+def test_trace_mode_is_off_by_default_and_opt_in_adds_only_the_statement_log_in_the_pgdata(tmp_path):
+    """RH-4c: the default postgres command is the pre-trace one; the opt-in adds the collector, a log directory INSIDE the
+    bind-mounted pgdata (the host reads it from ROOT, never `docker logs`) and statement logging; the guard admits it."""
+    assert cp.pg_command() == cp.pg_command(False) == ["-c", "listen_addresses="]
+    traced = cp.pg_command(True)
+    assert traced[:2] == ["-c", "listen_addresses="]
+    assert traced[2:] == ["-c", "logging_collector=on", "-c", f"log_directory={cp.PGDATA}/{cp.TRACE_LOG_DIR}",
+                          "-c", "log_statement=all"]
+    assert cp.TRACE_LOG_DIR and not cp.TRACE_LOG_DIR.startswith("/") and ".." not in cp.TRACE_LOG_DIR
+    for trace in (False, True):
+        argv = cp.run_argv(cp.fixture_name(RUN8, "S", "pg"), image=cp.PG_IMAGE, labels=[guard.FIXTURE_LABEL, f"{cp.RUN_LABEL}={RUN8}"],
+                           mounts=[(tmp_path / "pgdata", cp.PGDATA, False)], uid=1000, gid=1000, memory="4g",
+                           command=cp.pg_command(trace))
+        guard.docker_policy(["docker", *argv], {guard.DOCKER_OPT_IN_ENV: "1", guard.DOCKER_BIND_ROOT_ENV: str(tmp_path)})
+    assert cp.Copy("S", "p", "r", tmp_path, tmp_path).trace_dir is None  # a copy without trace mode has no log directory
+
+
 @pytest.mark.parametrize("run8", ["", "1A2B3C4D", "1a2b3c4", "1a2b3c4d5", "1a2b3c4g", "../../etc", None, 12345678])
 def test_a_bad_run8_is_refused_everywhere(tmp_path, run8):
     for build in (lambda: Evidence(run8, tmp_path / "e"), lambda: cp.Copies(run8, tmp_path / "r"),

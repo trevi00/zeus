@@ -31,16 +31,18 @@ import ast
 import json
 import re
 import subprocess
+import time
 from collections.abc import Callable
 from dataclasses import dataclass
 from pathlib import Path
 
 from . import Refused, r3
-from .evidence import _utc_now, write_record
+from .evidence import _utc_now, check_facts, write_record
 
 HERE = Path(__file__).resolve().parent
 REPO = HERE.parents[1]
 READERS = HERE / "r4-readers.json"
+COVERAGE = HERE / "r4-coverage.json"
 MAX_RECORD_ITEMS = 4096
 CALLS = {"body": 1, "id_body": 2}
 CITATION = re.compile(r"[\w/]+\.py:[A-Za-z_][\w.]*")
@@ -409,6 +411,254 @@ def write_catalog(catalog: dict, path: Path | str = READERS) -> None:
     Path(path).write_text(json.dumps(catalog, indent=1, ensure_ascii=False), encoding="utf-8")
 
 
+# ---- the read-coverage map (RH-4c; DD-19, critic #14 / AC7) ----
+#
+# Per column and D0 bucket: `typed` (the column has a typed reader), `leaf_covered` (a read-only R3 leaf of that column was
+# OBSERVED reading the bucket on a trace copy) or `uncovered`. `uncovered > 0` is reported and is never a PASS: the record
+# has a `verdict` (`uncovered`, `complete` or `not_observed`), never `pass`. The statement log is parsed host-side from ROOT
+# (`copies.Copy.trace_dir`); a statement on the records table that cannot be parsed fails the run closed.
+
+RECORDS_TABLE = re.compile(r"\b(?:FROM|JOIN|INTO|UPDATE|TABLE|COPY)\s+(?:ONLY\s+)?(?:IF\s+(?:NOT\s+)?EXISTS\s+)?(?:\"?\w+\"?\.)?\"?documents\b", re.I)
+LOG_HEAD = re.compile(r"^\d{4}-\d\d-\d\d \d\d:\d\d:\d\d(?:\.\d+)? \S+ \[\d+\] (\w+):  (.*)$")
+LOG_SQL = re.compile(r"^(?:statement|execute [^:]*): (.*)$", re.S)
+LOG_PARAM = re.compile(r"\$(\d+) = (NULL|'(?:[^']|'')*')(?:, |$)")
+BUCKET_EQ = re.compile(r"\bbucket\s*=\s*(\$\d+|'(?:[^']|'')*')", re.I)
+WRITE_VERBS = frozenset({"INSERT", "UPDATE", "DELETE", "TRUNCATE", "MERGE"})
+DDL_VERBS = frozenset({"CREATE", "ALTER", "DROP", "COMMENT", "GRANT", "REVOKE"})
+STATUSES = ("typed", "leaf_covered", "uncovered")
+
+
+class LogUnparseable(Refused):
+    """A trace-log line or a records-table statement could not be parsed; carries a class and a line number, never text."""
+
+    def __init__(self, why: str, line: int):
+        super().__init__("coverage_log_unparseable", f"{why} at log line {line}")
+
+
+def _unquote(literal: str) -> str:
+    return literal[1:-1].replace("''", "'")
+
+
+def _statements(text: str):
+    """`(line, sql, parameters_text | None)` of every `statement:`/`execute` log entry of `text`; a line that is neither an
+    entry header nor a continuation (tab/space-led) of one is a `LogUnparseable`."""
+    entries: list[list] = []  # [line, level, message]
+    for number, line in enumerate(text.splitlines(), 1):
+        head = LOG_HEAD.match(line)
+        if head:
+            entries.append([number, head.group(1), head.group(2)])
+        elif line[:1] in ("\t", " ") and entries:
+            entries[-1][2] += "\n" + line.lstrip("\t")
+        elif line.strip():
+            raise LogUnparseable("line is not a log entry", number)
+    for index, (number, level, message) in enumerate(entries):
+        found = LOG_SQL.match(message) if level == "LOG" else None
+        if found is None:
+            continue
+        nxt = entries[index + 1] if index + 1 < len(entries) else None
+        # PostgreSQL 17 writes `Parameters:`, earlier releases `parameters:`
+        params = nxt[2][len("parameters: "):] if nxt and nxt[1] == "DETAIL" and nxt[2].lower().startswith("parameters: ") \
+            else None
+        yield number, found.group(1), params
+
+
+def _params(text: str | None, line: int) -> dict[str, str | None]:
+    if text is None:
+        raise LogUnparseable("statement parameters missing", line)
+    out, position = {}, 0
+    while position < len(text):
+        found = LOG_PARAM.match(text, position)
+        if found is None:
+            raise LogUnparseable("parameters unparseable", line)
+        out[found.group(1)] = None if found.group(2) == "NULL" else _unquote(found.group(2))
+        position = found.end()
+    return out
+
+
+def parse_statement_log(text: str) -> dict:
+    """What the statements of `text` did to the records table (`documents`): `{"buckets": sorted names read by a
+    bucket predicate, "all_buckets_reads": n of whole-table reads (no WHERE; they name no bucket and cover none), "writes":
+    n, "ddl": n, "statements": n}`. Fails closed (`LogUnparseable`): a line that is no log entry, a read whose `WHERE` has no
+    `bucket = $n|'literal'` predicate, a predicate whose parameter is missing or unparseable, or a records-table
+    statement of any other verb."""
+    buckets: set[str] = set()
+    whole = writes = ddl = total = 0
+    for line, sql, param_text in _statements(text):
+        total += 1
+        if not RECORDS_TABLE.search(sql):
+            continue
+        verb = sql.lstrip("( \t\n").split(None, 1)[0].upper() if sql.strip() else ""
+        if verb in WRITE_VERBS:
+            writes += 1
+        elif verb in DDL_VERBS:
+            ddl += 1
+        elif verb in ("SELECT", "WITH"):
+            if not re.search(r"\bWHERE\b", sql, re.I):
+                whole += 1
+                continue
+            predicates = BUCKET_EQ.findall(sql)
+            if not predicates:
+                raise LogUnparseable("records read without a bucket predicate", line)
+            params = None
+            for predicate in predicates:
+                if predicate.startswith("$"):
+                    params = params if params is not None else _params(param_text, line)
+                    value = params.get(predicate[1:])
+                    if value is None:
+                        raise LogUnparseable("bucket parameter missing", line)
+                else:
+                    value = _unquote(predicate)
+                buckets.add(value)
+        else:
+            raise LogUnparseable("records statement of an unknown kind", line)
+    return {"buckets": sorted(buckets), "all_buckets_reads": whole, "writes": writes, "ddl": ddl, "statements": total}
+
+
+def read_trace_log(trace_dir: Path | str) -> str:
+    """The whole statement log under ROOT (every `*.log` of the trace directory, in name order)."""
+    directory = Path(trace_dir)
+    if not directory.is_dir():
+        raise Refused("trace_off", "the copy has no statement log directory (started without trace mode?)")
+    return "".join(f.read_text(encoding="utf-8", errors="replace") for f in sorted(directory.glob("*.log")))
+
+
+def _mark(copy, database: str, marker: str, trace_dir: Path, *, wait: float = 30.0) -> None:
+    """Run one marker statement over the copy and wait until the collector wrote it to the log (the log is asynchronous)."""
+    import psycopg
+
+    from .copies import pg_dsn
+
+    with psycopg.connect(pg_dsn(copy.pg_socket, database), autocommit=True, connect_timeout=10) as conn:
+        conn.execute("SELECT %s", (marker,))
+    deadline = time.monotonic() + wait
+    while marker not in read_trace_log(trace_dir):
+        if time.monotonic() > deadline:
+            raise Refused("trace_log_stalled", "a marker statement did not reach the statement log")
+        time.sleep(0.1)
+
+
+def _window(text: str, before: str, after: str) -> str:
+    """The log lines between the two marker statements (whole lines; the marker lines themselves excluded)."""
+    start = text.index(before)
+    start = text.find("\n", start) + 1
+    end = text.rfind("\n", 0, text.index(after)) + 1
+    return text[start:end]
+
+
+def leaves_of(leaf_catalog: dict, column: str) -> list[str]:
+    """The read-only R3 leaf commands whose catalog entry lists the revision `column`, sorted."""
+    return sorted(c for c, e in leaf_catalog["nodes"].items() if e["class"] == "read_only" and column in e["revisions"])
+
+
+def observe_column(column: str, side: r3.Side, copy, database: str, leaf_catalog: dict, *, params: dict, runner: Callable,
+                   timeout: float, repository: str | None = None, wait: float = 30.0) -> dict:
+    """Run each read-only leaf of `column` on `side` over the trace `copy`, one marker-bounded log window per leaf, and
+    return `{"leaves": n, "buckets": [...], "results": [{node, exit, buckets, all_buckets_reads}], "errors": [...]}`. Run
+    errors (a leaf that timed out, wrote the records table or could not be bound, an unparseable log) go in `errors`; a
+    window that cannot be parsed is an error for that leaf and its buckets are NOT counted."""
+    trace_dir = copy.trace_dir
+    if trace_dir is None:
+        raise Refused("trace_off", "the copy was not started in trace mode")
+    results, errors, seen = [], [], set()
+    nonce = f"{time.time_ns():x}"  # a marker is unique to this observation, so an earlier run's marker never satisfies it
+    for number, command in enumerate(leaves_of(leaf_catalog, column)):
+        entry = leaf_catalog["nodes"][command]
+        program = entry.get("program", "zeus")
+        try:
+            argv = r3.bind_argv(entry, params)
+        except Refused as exc:
+            errors.append(f"{command}:{exc.code}:{exc.detail}")
+            continue
+        if repository is not None and program == "zeus":
+            argv = ["--repository", repository, *argv]
+        pre, post = (f"rh-trace-{nonce}-{column}-{number}-{kind}" for kind in ("pre", "post"))
+        _mark(copy, database, pre, trace_dir, wait=wait)
+        result = runner(side, [*side.commands[program], *argv], timeout)
+        _mark(copy, database, post, trace_dir, wait=wait)
+        row = {"node": command, "exit": result.returncode}
+        if result.timed_out:
+            errors.append(f"{command}:timeout")
+        try:
+            seen_here = parse_statement_log(_window(read_trace_log(trace_dir), pre, post))
+        except LogUnparseable as exc:
+            errors.append(f"{command}:{exc.code}:{exc.detail}")
+            results.append(row)
+            continue
+        if seen_here["writes"]:
+            errors.append(f"{command}:leaf_wrote_records:{seen_here['writes']}")
+        row |= {"buckets": seen_here["buckets"], "all_buckets_reads": seen_here["all_buckets_reads"]}
+        seen |= set(seen_here["buckets"])
+        results.append(row)
+    return {"leaves": len(results), "buckets": sorted(seen), "results": results, "errors": errors}
+
+
+def _entry_of(row: dict, column: str) -> dict:
+    return row[column] if column in ("A", "B") else row["D"][column]
+
+
+def coverage_map(catalog: dict, observed: dict[str, dict] | None = None, buckets: list[str] | None = None) -> dict:
+    """The per-column classification (pure). `buckets` is the universe (default: every cataloged bucket; a D0 record's
+    buckets when given); `observed[column]` the `observe_column` result (a column without one has `observation:
+    "not_run"` and its untyped buckets are `uncovered`). Redis namespaces are not records-table buckets and are not
+    classified. `verdict` is `uncovered` while any bucket of any column is, `not_observed` when the only gap is a
+    column that was not observed, else `complete`; never a pass."""
+    observed = observed or {}
+    names = sorted(buckets if buckets is not None else catalog["buckets"])
+    columns = {"A": "A", "B": "B", **{d: d for d in catalog["trees"]["D"]}}
+    out: dict[str, dict] = {}
+    for column in columns:
+        seen = set((observed.get(column) or {}).get("buckets", ()))
+        typed = [b for b in names if b in catalog["buckets"] and _entry_of(catalog["buckets"][b], column).get("reader")]
+        leaf = [b for b in names if b not in typed and b in seen]
+        gap = [b for b in names if b not in typed and b not in seen]
+        out[column] = {"observation": "not_run" if column not in observed else
+                       "observed" if observed[column].get("leaves") else "no_leaves",
+                       "leaves": (observed.get(column) or {}).get("leaves", 0), "typed": len(typed),
+                       "leaf_covered": len(leaf), "uncovered": len(gap), "leaf_covered_buckets": leaf,
+                       "uncovered_buckets": gap}
+    unobserved = [c for c, v in out.items() if v["observation"] == "not_run"]
+    verdict = "complete" if not any(v["uncovered"] for v in out.values()) else \
+        "uncovered" if len(unobserved) < len(out) else "not_observed"
+    return {"universe": len(names), "columns": out, "verdict": verdict}
+
+
+def _no_pass(document: dict) -> dict:
+    check_facts(document["facts"], max_items=MAX_RECORD_ITEMS)
+    return document
+
+
+def run_coverage_map(sides: dict[str, r3.Side], copy, database: str, catalog: dict, leaf_catalog: dict, d0_record: dict,
+                     out, *, params: dict | None = None, runner: Callable = r3.namespace_runner, timeout: float = 120.0,
+                     repository: str | None = None, clock=_utc_now, wait: float = 30.0) -> dict:
+    """Observe every column in `sides` (column name -> `r3.Side`; a column with no catalogued leaf is observed with zero
+    leaves) over the trace `copy` and write `out/r4-coverage.json`. Raises `R4Failed` after writing when a run error
+    occurred; `uncovered > 0` alone is reported in the record (`verdict: uncovered`) and is never a pass."""
+    validate_catalog(catalog)
+    observed, errors = {}, []
+    for column, side in sides.items():
+        observed[column] = observe_column(column, side, copy, database, leaf_catalog, params=dict(params or {}),
+                                          runner=runner, timeout=timeout, repository=repository, wait=wait)
+        errors += [f"{column}:{e}" for e in observed[column]["errors"]]
+    universe = sorted({b for names in d0_buckets(d0_record["facts"]).values() for b in names})
+    result = coverage_map(catalog, observed, universe)
+    facts = {**result, "failures": sorted(errors),
+             "observed_leaves": {c: [{k: v for k, v in r.items() if k != "buckets"} for r in o["results"]]
+                                 for c, o in observed.items()}}
+    document = _no_pass({"at": clock(), "status": "failed" if errors else "ok", "facts": facts})
+    out = Path(out)
+    out.mkdir(parents=True, exist_ok=True)
+    write_record(out / "r4-coverage.json", document, max_items=MAX_RECORD_ITEMS)
+    if errors:
+        raise R4Failed(document)
+    return document
+
+
+def static_map(catalog: dict) -> dict:
+    """The no-observation baseline record over the cataloged buckets: typed counts are exact, the rest is `uncovered`
+    with `observation: "not_run"` until a trace copy run measures the leaves."""
+    return _no_pass({"source": "catalog", "status": "ok", "facts": {**coverage_map(catalog), "failures": []}})
+
+
 # ---- coverage ----
 
 def d0_buckets(facts: dict) -> dict[str, list[str]]:
@@ -570,11 +820,18 @@ def main(argv: list[str] | None = None) -> int:
     parser = argparse.ArgumentParser(prog="r4", description=main.__doc__)
     sub = parser.add_subparsers(dest="command", required=True)
     sub.add_parser("regenerate", help="re-pin the catalog columns and re-trace every typed reader")
+    sub.add_parser("coverage-map", help="write the no-observation baseline r4-coverage.json (typed counts exact; the rest "
+                                        "uncovered until a trace-copy run observes the leaves: run_coverage_map)")
     args = parser.parse_args(argv)
     if args.command == "regenerate":
         write_catalog(regenerate(load_catalog()))
         load_catalog()
         print(f"wrote {READERS}")
+    else:
+        document = static_map(load_catalog())
+        COVERAGE.write_text(json.dumps(document, indent=1, sort_keys=True) + "\n", encoding="utf-8")
+        counts = {c: {k: v[k] for k in STATUSES} for c, v in document["facts"]["columns"].items()}
+        print(f"wrote {COVERAGE}: verdict {document['facts']['verdict']}: {json.dumps(counts, sort_keys=True)}")
     return 0
 
 
@@ -583,4 +840,5 @@ if __name__ == "__main__":
 
 
 __all__ = ["R4Failed", "R4Side", "load_catalog", "validate_catalog", "coverage", "reader_problem", "reader_signature",
-           "sweep_side", "declared_split", "run_r4"]
+           "sweep_side", "declared_split", "run_r4", "regenerate", "coverage_map", "run_coverage_map", "observe_column",
+           "parse_statement_log", "static_map", "LogUnparseable"]

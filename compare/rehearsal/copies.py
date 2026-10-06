@@ -51,6 +51,8 @@ SOCKET_LIMIT = 107  # sun_path
 MARKER = ".rehearsal-root"
 IDENT = re.compile(r"^[A-Za-z0-9][A-Za-z0-9_.-]{0,127}$")
 TOC_LINE = re.compile(r"^\d+;\s+\d+\s+\d+\s+\S")
+PGDATA = "/var/lib/postgresql/data"
+TRACE_LOG_DIR = "rh-trace-log"  # inside the bind-mounted pgdata: the host reads it from ROOT, never `docker logs` (RH-4c)
 
 
 def fixture_name(run8: str, copy: str, kind: str) -> str:
@@ -109,6 +111,15 @@ def toc_roles(listing: str) -> list[str]:
         if owner != "-" and IDENT.match(owner) and owner not in roles:
             roles.append(owner)
     return sorted(roles)
+
+
+def pg_command(trace: bool = False) -> list[str]:
+    """The postgres server arguments of a copy. `trace` (opt-in, RH-4c; OFF by default) adds the statement log the R4
+    read-coverage map parses: the logging collector writing every statement under `TRACE_LOG_DIR` inside the pgdata."""
+    command = ["-c", "listen_addresses="]
+    if trace:
+        command += ["-c", "logging_collector=on", "-c", f"log_directory={PGDATA}/{TRACE_LOG_DIR}", "-c", "log_statement=all"]
+    return command
 
 
 def key_pattern(key: str) -> str:
@@ -177,6 +188,7 @@ class Copy:
     redis_name: str
     pg_socket: Path
     redis_socket: Path
+    trace_dir: Path | None = None  # the host path of the statement log directory (trace copies only)
 
 
 class Copies:
@@ -214,7 +226,7 @@ class Copies:
         if found.returncode != 0:
             raise Refused("image_missing", "the pinned image is not present locally; never pulled")
 
-    def start(self, copy: str, *, publish=(), volumes=()) -> Copy:
+    def start(self, copy: str, *, publish=(), volumes=(), trace: bool = False) -> Copy:
         if copy not in COPY_NAMES:
             raise Refused("unknown_copy", copy)
         if copy in self.copies:
@@ -233,10 +245,10 @@ class Copies:
         names = {kind: fixture_name(self.run8, copy, kind) for kind in ("pg", "redis")}
         labels = self._labels(copy, owner)
         pg = run_argv(names["pg"], image=PG_IMAGE, labels=labels, uid=uid, gid=gid, memory="4g", memory_swap="4g",
-                      mounts=[(base / "pgdata", "/var/lib/postgresql/data", False),
+                      mounts=[(base / "pgdata", PGDATA, False),
                               (base / "pgsock", PG_SOCKET_DIR, False), (self.source, "/dump", True)],
                       env=[f"POSTGRES_USER={PG_USER}", "POSTGRES_HOST_AUTH_METHOD=trust"],
-                      command=["-c", "listen_addresses="], publish=publish, volumes=volumes)
+                      command=pg_command(trace), publish=publish, volumes=volumes)
         redis = run_argv(names["redis"], image=REDIS_IMAGE, labels=labels, uid=uid, gid=gid, memory="1g",
                          mounts=[(base / "redis", "/data", False), (base / "redsock", REDIS_SOCKET_DIR, False)],
                          command=["redis-server", "--port", "0", "--unixsocket", f"{REDIS_SOCKET_DIR}/redis.sock",
@@ -257,7 +269,8 @@ class Copies:
             shutil.copytree(self.source / "redis", base / "redis", symlinks=True)
         else:
             (base / "redis").mkdir()
-        handle = Copy(copy, names["pg"], names["redis"], base / "pgsock", base / "redsock")
+        handle = Copy(copy, names["pg"], names["redis"], base / "pgsock", base / "redsock",
+                      base / "pgdata" / TRACE_LOG_DIR if trace else None)
         self.copies[copy] = handle
         started = []
         try:
@@ -284,6 +297,23 @@ class Copies:
         raise RuntimeError(f"{name} did not become ready")
 
     def _pg_ready(self, handle: Copy) -> None:
+        if handle.trace_dir is not None:
+            # the collector moves the server log into the pgdata, so `docker logs` never shows "ready to accept
+            # connections": after the entrypoint's init-complete line (its temp server is already stopped), the first
+            # connection over the socket is the real server
+            self._wait_log(handle.pg_name, lambda text: "PostgreSQL init process complete" in text, 120)
+            import psycopg
+
+            deadline = time.monotonic() + 60
+            while True:
+                try:
+                    psycopg.connect(pg_dsn(handle.pg_socket), connect_timeout=2).close()
+                    return
+                except psycopg.OperationalError:
+                    if time.monotonic() > deadline:
+                        raise RuntimeError(f"{handle.pg_name} did not become ready") from None
+                    time.sleep(0.5)
+
         def ready(text: str) -> bool:
             done = text.find("PostgreSQL init process complete")
             return done >= 0 and "ready to accept connections" in text[done:]
