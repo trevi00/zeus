@@ -19,13 +19,43 @@ Refusal reasons (`Refused.code`; `RefusedFacts.facts` carries names only, up to 
     aibox_data_origin_foreign aibox_data / codex_harness would be imported from outside the tooling checkout
 
 Run: `cd compare && /usr/bin/python3 -B -m rehearsal.fileroots check [--srv PATH] --out FILE` (exit 0 ok, 1 refusal, 2 usage).
+
+ACQUISITION (RH-2 P5b-1, E9 Phase P step P5): `acquire(host, srv, seal, run8)` copies the four file roots into `seal` and
+`verify_seal(seal, p5, run8)` re-proves a finished seal. Both are guard-free library functions (no Phase P edit here).
+
+Seal layout (`seal` = ROOT/seal, every directory 0700, every meta file and volatile/single copy 0600):
+    seal/tree/{runtime,managed-fleet,repo,worktrees}   minus runtime/tokobs; the stable roots are `gnucp -a -T` copies
+    seal/meta/<id>.manifest.json x8, <id>.verify.json x8, single.json, scan-after.tsv, complete.json (written LAST)
+Validity rule: a ROOT without a passing `verify_seal` and Phase P verdict `ok` is INVALID and is kept for diagnosis (the
+owner deletes it per the rehearsal disposal rule; it stays 0700). Accepted residual (D14): a secret-named file created in
+a stable root after its lstat walk and manifest but before its cp is content-copied by cp, then STOPs (the staged lstat
+walk re-applies the secret-name check, so the reason is `secret_path_in_root`).
+
+Time (D11): `DEADLINE_S` from the start of `acquire`, checked before each root's re-check and before each cp; one cp has
+`CP_TIMEOUT_S`. The verify after the last admitted cp is outside the deadline; the phase's RuntimeMaxSec is the backstop.
+
+Every refusal leaving `acquire` is a `RefusedFacts` (D17: detail <= 512 chars with no absolute path, facts pass
+`check_facts`) with one of these codes (`<id>` is a STABLE_ROOTS id):
+    bad_run8, seal_overlaps_source, aibox_data_origin_foreign, cp_identity (see above), source_root_missing,
+    source_root_symlink, source_root_not_directory, partition_unclassified, secret_path_in_root, external_symlink_unallowed,
+    git_lock_present, seal_exists, seal_write_failed, source_entry_vanished, source_access_denied, stable_file_changed,
+    deadline_exceeded, scan_after_inconsistent, evidence_unbounded,
+    inventory_<id>_vanished, inventory_<id>_blocking, inventory_<id>_external_symlink,
+    cp_<id>_exit_<n>, cp_<id>_spawn_failed,
+    verify_<id>_mismatch, verify_<id>_mtime, verify_<id>_dirs, verify_<id>_mode, verify_<id>_links,
+    and the snapshot codes passed through (re-rendered): volatile_undeclared (facts: count, paths), volatile_symlink,
+    volatile_not_regular, volatile_unreadable, volatile_excluded, volatile_path_bad.
+`subprocess.TimeoutExpired` (a cp over CP_TIMEOUT_S) and `KeyboardInterrupt` propagate; the umask is always restored.
+Any other OSError reading the source maps to `source_access_denied`; writing under the seal to `seal_write_failed`.
 """
 
 from __future__ import annotations
 
 import argparse
+import contextlib
 import fnmatch
 import hashlib
+import importlib
 import json
 import os
 import re
@@ -36,8 +66,18 @@ import sys
 import time
 from pathlib import Path
 
-from . import Refused
-from .snapshot import EXCLUDED_PATHS, VOLATILE_PATHS, _rel_parts
+from . import Refused, check_run8, snapshot
+from .evidence import check_facts
+from .snapshot import (
+    EXCLUDED_PATHS,
+    VOLATILE_PATHS,
+    _covered,
+    _read_once,
+    _rel_parts,
+    copy_once,
+    scan_tree,
+    stable_sha256,
+)
 
 SRV = "/srv/zeus"
 FILE_ROOTS = ("runtime", "managed-fleet", "repo", "worktrees")
@@ -76,6 +116,12 @@ AIBOX_FILES = (
 AIBOX_MODULES = (("aibox_data", ("aibox_data.inventory", "aibox_data.transfer")),
                  ("codex_harness", ("codex_harness.kernel.ids",)))
 SCHEMA = "zeus:aibox-migration-001:rehearsal:fileroots-check:1"
+SINGLE_SCHEMA = "zeus:aibox-migration-001:rehearsal:p5-single:1"
+COMPLETE_SCHEMA = "zeus:aibox-migration-001:rehearsal:p5-complete:1"
+DEADLINE_S = 2700  # D11: from the start of `acquire`
+CP_TIMEOUT_S = 1800  # D11: one cp
+DETAIL_LIMIT = 512
+LISTED_PATHS = 64  # redacted paths per category in a verify record
 PATH_LIMIT = 160  # characters of one rendered path fact
 LISTED = 16  # names listed in a refusal or a fact; the count is always exact
 
@@ -208,12 +254,13 @@ def _secret_basename(base: str) -> bool:
             or base.startswith(SECRET_BASENAME_PREFIXES))
 
 
-def secret_names(scan_paths) -> list:
-    """Refuse a secret or credential NAME anywhere in the given relative paths (files and directories); names only."""
+def secret_names(scan_paths, where: str | None = None) -> list:
+    """Refuse a secret or credential NAME anywhere in the given relative paths (files and directories); names only.
+    `where` (optional) names the acquisition step that applied the check."""
     hits = sorted(p for p in scan_paths if _secret_name(p))
     if hits:
         raise RefusedFacts("secret_path_in_root", f"{len(hits)} secret-like name(s)",
-                           {"count": len(hits), "paths": _named(hits)})
+                           {"count": len(hits), "paths": _named(hits), **({"where": where} if where else {})})
     return []
 
 
@@ -252,11 +299,14 @@ def symlink_facts(srv, found: dict | None = None) -> dict:
     return {"total": len(links), "allowed": len(allowed), "allowed_paths": _named(allowed)}
 
 
+def _git_lock_name(rel: str) -> bool:
+    return rel.split("/")[0] in ("repo", "worktrees") and ".git" in rel.split("/")[1:-1] and rel.endswith(".lock")
+
+
 def git_locks(srv, found: dict | None = None) -> list:
     """`*.lock` entries below a `.git` directory under `repo` or `worktrees` (a `.git` FILE is a pointer, not a lock)."""
     scan = found if found is not None else survey(srv)
-    names = [r for r in scan["files"] if r.split("/")[0] in ("repo", "worktrees")
-             and ".git" in r.split("/")[1:-1] and r.endswith(".lock")]
+    names = [r for r in scan["files"] if _git_lock_name(r)]
     if names:
         raise RefusedFacts("git_lock_present", f"{len(names)} git lock file(s)", {"count": len(names), "paths": _named(names)})
     return []
@@ -328,6 +378,377 @@ def run_check(srv, repo=None) -> dict:
     facts["elapsed_s"] = round(time.monotonic() - started, 3)
     facts["peak_rss_kb"] = resource.getrusage(resource.RUSAGE_SELF).ru_maxrss
     return facts
+
+
+# ---- acquisition (P5b-1) ----
+
+_ABSOLUTE = re.compile(r"(?<![\w.<>\-])/[^\s'\"]*")
+
+
+def _scrub(text: str) -> str:
+    """A refusal detail as a bounded fact (D17): secret components redacted, any absolute path replaced."""
+    return _redact(_ABSOLUTE.sub("<path>", str(text)))[:DETAIL_LIMIT]
+
+
+def _rerender(error: Refused) -> RefusedFacts:
+    facts = dict(getattr(error, "facts", None) or {})
+    detail, paths = error.detail, getattr(error, "paths", None)
+    if error.code == "volatile_undeclared" and paths is not None:
+        detail = f"{len(paths)} path(s) changed outside the closed list"
+        facts.update(count=len(paths), paths=_named(paths))
+    return RefusedFacts(error.code, _scrub(detail), facts)
+
+
+@contextlib.contextmanager
+def _source(vanished: str = "source_entry_vanished"):
+    """OSError while reading the source -> a named refusal (a file or directory that disappears is `vanished`)."""
+    try:
+        yield
+    except FileNotFoundError:
+        raise RefusedFacts(vanished) from None
+    except OSError:
+        raise RefusedFacts("source_access_denied") from None
+
+
+@contextlib.contextmanager
+def _seal_writes():
+    try:
+        yield
+    except FileExistsError:
+        raise RefusedFacts("seal_exists") from None
+    except OSError:
+        raise RefusedFacts("seal_write_failed") from None
+
+
+def _lstat_walk(base: Path) -> dict:
+    """lstat only, no content (D3): every entry name, the directory modes (the root is `""`, empty directories
+    included), the regular-file modes and the hard-link groups (2+ non-directory paths sharing `(st_dev, st_ino)`)."""
+    dirs = {"": stat.S_IMODE(os.lstat(base).st_mode)}
+    files, names, inodes = {}, [], {}
+    pending = [(base, "")]
+    while pending:
+        directory, prefix = pending.pop()
+        with os.scandir(directory) as scanned:
+            entries = list(scanned)
+        for entry in entries:
+            rel = prefix + entry.name
+            info = entry.stat(follow_symlinks=False)
+            names.append(rel)
+            if stat.S_ISDIR(info.st_mode):
+                dirs[rel] = stat.S_IMODE(info.st_mode)
+                pending.append((Path(entry.path), rel + "/"))
+                continue
+            if stat.S_ISREG(info.st_mode):
+                files[rel] = stat.S_IMODE(info.st_mode)
+            inodes.setdefault((info.st_dev, info.st_ino), []).append(rel)
+    return {"names": names, "dirs": dirs, "files": files,
+            "groups": frozenset(frozenset(group) for group in inodes.values() if len(group) > 1)}
+
+
+def _sha256_bytes(data: bytes) -> str:
+    return hashlib.sha256(data).hexdigest()
+
+
+def _ancestors(rels) -> list[str]:
+    found = set()
+    for rel in rels:
+        parts = rel.split("/")
+        found.update("/".join(parts[:i]) for i in range(1, len(parts)))
+    return sorted(found)
+
+
+class _Acquisition:
+    def __init__(self, host, srv: Path, seal: Path, run8: str, monotonic, repo: Path):
+        self.host, self.srv, self.seal, self.run8, self.monotonic, self.repo = host, srv, seal, run8, monotonic, repo
+        self.tree, self.meta = seal / "tree", seal / "meta"
+        self.t0 = 0.0
+        self.old_umask: int | None = None
+        self.roots: dict = {}
+        self.singles: list = []
+        self.created_for: list = []
+
+    # -- helpers
+    def put(self, name: str, text: str) -> None:
+        with _seal_writes():
+            with self.host.open(self.meta / name, "x") as handle:
+                handle.write(text)
+
+    def put_json(self, name: str, document) -> None:
+        self.put(name, json.dumps(document, sort_keys=True) + "\n")
+
+    def disk_sha256(self, name: str) -> str:
+        with _seal_writes(), self.host.open(self.meta / name, "rb") as handle:
+            return _sha256_bytes(handle.read())
+
+    def deadline(self) -> None:
+        if self.monotonic() - self.t0 > DEADLINE_S:
+            raise RefusedFacts("deadline_exceeded", f"more than {DEADLINE_S} s since the start")
+
+    # -- the steps
+    def run(self) -> dict:
+        srv, seal = self.srv, self.seal
+        self.t0 = self.monotonic()
+        real_seal, real_srv = Path(os.path.realpath(seal.parent)), Path(os.path.realpath(srv))
+        if real_seal == real_srv or real_seal.is_relative_to(real_srv) or real_srv.is_relative_to(real_seal):
+            raise RefusedFacts("seal_overlaps_source", "the seal's parent and the source contain one another")
+        tools = {"aibox_data": load_aibox_data(self.repo), "cp": cp_identity(),
+                 "python_version": ".".join(str(n) for n in sys.version_info[:3])}
+        try:
+            self.inventory = importlib.import_module("aibox_data.inventory")
+        except ImportError:
+            raise RefusedFacts("aibox_data_origin_foreign", "aibox_data.inventory cannot be imported") from None
+        self.old_umask = os.umask(0o077)
+        with _source():
+            partition = classify(srv)
+            found = survey(srv)
+        secret_names([*found["files"], *found["dirs"]], where="survey")
+        symlinks = symlink_facts(srv, found)
+        git_locks(srv, found)
+        for path in (seal, self.tree, self.meta):
+            with _seal_writes():
+                os.mkdir(path, 0o700)
+                os.chmod(path, 0o700)
+        with _source():
+            manifest = snapshot.snapshot_volatile(
+                srv, self.tree, scan_roots=FILE_ROOTS, during=lambda: self.stage(partition),
+                admit=lambda paths: secret_names(paths, where="volatile"))
+        return self.finish(manifest, partition, symlinks, tools)
+
+    def stage(self, partition: dict) -> None:
+        srv = self.srv
+        for rel in partition["stable_files"]:
+            try:
+                done = copy_once(srv / rel, self.tree / rel, label=rel)
+            except Refused as error:
+                if error.code == "volatile_unreadable":
+                    raise RefusedFacts("source_access_denied", rel) from None
+                if error.code.startswith("volatile_"):
+                    raise RefusedFacts("stable_file_changed", rel) from None
+                raise
+            if done is None:
+                raise RefusedFacts("stable_file_changed", rel)
+            self.singles.append({"path": rel, **done})
+        for root_id, rel in STABLE_ROOTS:
+            self.stage_root(root_id, rel)
+
+    def stage_root(self, root_id: str, rel: str) -> None:
+        srv, inv = self.srv, self.inventory
+        vanished = f"inventory_{root_id}_vanished"
+        self.deadline()
+        _lstat_dir(srv, rel)
+        with _source(vanished):
+            source_walk = _lstat_walk(srv / rel)
+        secret_names([f"{rel}/{n}" for n in source_walk["names"]], where=f"inventory:{root_id}")
+        try:
+            manifest = inv.build_manifest("rh-" + self.run8, {root_id: str(srv / rel)}, "rehearsal")
+        except (ValueError, FileNotFoundError):
+            raise RefusedFacts(vanished) from None
+        except OSError:
+            raise RefusedFacts(f"inventory_{root_id}_blocking") from None
+        root = manifest["roots"][root_id]
+        entries = root["entries"]
+        secret_names([f"{rel}/{e['path']}" for e in entries] + [f"{rel}/{u['path']}" for u in root["unreadable"]],
+                     where=f"inventory:{root_id}")
+        self.put_json(f"{root_id}.manifest.json", manifest)
+        blocking = inv.blocking_findings(root)
+        if blocking["source_unreadable"] or blocking["special_files"]:
+            raise RefusedFacts(f"inventory_{root_id}_blocking", "",
+                               {"unreadable": len(blocking["source_unreadable"]),
+                                "special": len(blocking["special_files"])})
+        allowed = sorted(e["path"] for e in entries if e.get("escapes_root"))
+        for entry in entries:
+            if entry.get("escapes_root") and not _allowed(f"{rel}/{entry['path']}", entry["link_target"]):
+                raise RefusedFacts(f"inventory_{root_id}_external_symlink", "",
+                                   {"count": len(allowed), "paths": _named([entry["path"]])})
+        locks = [e["path"] for e in entries if _git_lock_name(f"{rel}/{e['path']}")]
+        if locks:
+            raise RefusedFacts("git_lock_present", "", {"count": len(locks), "paths": _named(locks)})
+        dst = self.tree / rel
+        if os.path.lexists(dst):
+            raise RefusedFacts("seal_exists", "a staged root already exists")
+        with _seal_writes():
+            os.makedirs(dst.parent, 0o700, exist_ok=True)
+        self.deadline()
+        try:
+            done = self.host.run([CP, "-a", "-T", "--", str(srv / rel), str(dst)], timeout=CP_TIMEOUT_S)
+        except OSError:
+            raise RefusedFacts(f"cp_{root_id}_spawn_failed") from None
+        if done.returncode != 0:
+            raise RefusedFacts(f"cp_{root_id}_exit_{done.returncode}", "",
+                               {"exit": done.returncode, "stderr_lines": len((done.stderr or "").splitlines())})
+        try:
+            if not stat.S_ISDIR(os.lstat(dst).st_mode):
+                raise RefusedFacts(f"verify_{root_id}_dirs", "the staged root is not a real directory")
+        except FileNotFoundError:
+            raise RefusedFacts(f"verify_{root_id}_dirs", "the staged root is missing") from None
+        except OSError:
+            raise RefusedFacts(f"verify_{root_id}_mismatch") from None
+        if not inv.verify_manifest_digest(manifest):
+            raise RefusedFacts(f"verify_{root_id}_mismatch", "the manifest digest does not verify")
+        try:
+            staged = inv.scan_root(dst)
+            staged_walk = _lstat_walk(dst)
+        except (OSError, ValueError):
+            raise RefusedFacts(f"verify_{root_id}_mismatch", "the staged tree cannot be read") from None
+        secret_names([f"{rel}/{n}" for n in staged_walk["names"]], where=f"staged:{root_id}")
+        compared = inv.compare_roots(root, staged)
+        want = {e["path"]: e["mtime_ns"] for e in entries if e["kind"] == "file"}
+        have = {e["path"]: e["mtime_ns"] for e in staged["entries"] if e["kind"] == "file"}
+        mtime_bad = sorted(p for p in want.keys() & have.keys() if want[p] != have[p])
+        counts = {"missing": len(compared["missing"]), "extra": len(compared["extra"]),
+                  "mismatched": len(compared["mismatched"]), "unreadable": len(compared["unreadable"]),
+                  "mtime_mismatch": len(mtime_bad)}
+        listed = {"missing": compared["missing"], "extra": compared["extra"], "mismatched": compared["mismatched"],
+                  "unreadable": compared["unreadable"], "mtime_mismatch": mtime_bad}
+        self.put_json(f"{root_id}.verify.json", {
+            "root": root_id, "counts": counts,
+            "paths": {k: [_redact(p) for p in sorted(v)[:LISTED_PATHS]] for k, v in listed.items()}})
+        if (compared["missing"] or compared["extra"] or compared["mismatched"] or compared["unreadable"]
+                or sorted(compared["external_symlinks"]) != allowed):
+            raise RefusedFacts(f"verify_{root_id}_mismatch", "", counts)
+        if mtime_bad:
+            raise RefusedFacts(f"verify_{root_id}_mtime", "", counts)
+        if source_walk["dirs"].keys() != staged_walk["dirs"].keys():
+            raise RefusedFacts(f"verify_{root_id}_dirs", "", counts)
+        if source_walk["dirs"] != staged_walk["dirs"] or source_walk["files"] != staged_walk["files"]:
+            raise RefusedFacts(f"verify_{root_id}_mode", "", counts)
+        if source_walk["groups"] != staged_walk["groups"]:
+            raise RefusedFacts(f"verify_{root_id}_links", "", counts)
+        files = [e for e in entries if e["kind"] == "file"]
+        self.roots[root_id] = {
+            "files": len(files), "bytes": sum(e["bytes"] for e in files), "entries": len(entries),
+            "symlinks": sum(1 for e in entries if e["kind"] == "symlink"), "external_allowed": len(allowed),
+            "manifest_digest": manifest["digest"], "cp_exit": done.returncode, "dirs": len(source_walk["dirs"]),
+            "modes_compared": len(source_walk["dirs"]) + len(source_walk["files"]),
+            "link_groups": len(source_walk["groups"]), "verify": counts, "ok": True}
+
+    def finish(self, manifest: dict, partition: dict, symlinks: dict, tools: dict) -> dict:
+        srv = self.srv
+        for entry in self.singles:
+            try:
+                got = _read_once(srv / entry["path"], entry["path"])
+            except Refused as error:
+                raise RefusedFacts("source_access_denied" if error.code == "volatile_unreadable"
+                                   else "stable_file_changed", entry["path"]) from None
+            if got is None or _sha256_bytes(got[0]) != entry["sha256"]:
+                raise RefusedFacts("stable_file_changed", entry["path"])
+        with _source():
+            after = scan_tree(srv, FILE_ROOTS)
+        secret_names(list(after), where="scan_after")
+        self.put("scan-after.tsv", "".join(f"{json.dumps(rel)}\t{m}\t{n}\n" for rel, (m, n) in sorted(after.items())))
+        stable = manifest["stable"]
+        single_paths = {e["path"] for e in self.singles}
+        stable_tops = [rel for _id, rel in STABLE_ROOTS]
+        if stable_sha256(after) != stable["sha256_after"] or not all(
+                any(_inside(rel, top) for top in stable_tops) or _covered(rel, VOLATILE_PATHS)
+                or _covered(rel, EXCLUDED_PATHS) or rel in single_paths for rel in after):
+            raise RefusedFacts("scan_after_inconsistent")
+        copied = [e["path"] for e in manifest["files"]] + sorted(single_paths) + stable_tops
+        dirs = {}
+        with _source():
+            for rel in _ancestors(copied):
+                info = os.lstat(srv / rel)
+                dirs[rel] = {"mode": stat.S_IMODE(info.st_mode), "mtime_ns": info.st_mtime_ns}
+        self.put_json("single.json", {"schema": SINGLE_SCHEMA, "volatile": manifest["files"], "stable": self.singles,
+                                      "skipped": manifest["skipped"], "skew_ns": manifest["skew_ns"], "dirs": dirs})
+        names = sorted([f"{i}.manifest.json" for i, _r in STABLE_ROOTS] + [f"{i}.verify.json" for i, _r in STABLE_ROOTS]
+                       + ["single.json", "scan-after.tsv"])
+        files = {name: self.disk_sha256(name) for name in names}
+        self.put_json("complete.json", {"schema": COMPLETE_SCHEMA, "run8": self.run8, "files": files})
+        complete_sha = self.disk_sha256("complete.json")
+        for root_id, _rel in STABLE_ROOTS:
+            self.roots[root_id]["manifest_sha256"] = files[f"{root_id}.manifest.json"]
+            self.roots[root_id]["verify_sha256"] = files[f"{root_id}.verify.json"]
+        facts = {
+            "input_kind": "observed" if str(srv) == SRV else "synthetic",
+            "partition": {"containers": len(partition["containers"]), "stable_roots": len(partition["stable_roots"]),
+                          "volatile_present": _named(partition["volatile_present"]),
+                          "excluded": _named(partition["excluded"])},
+            "stable_files": {"count": len(partition["stable_files"]), "paths": _named(partition["stable_files"])},
+            "symlinks": symlinks, "roots": self.roots,
+            "single": {"volatile": len(manifest["files"]), "stable": len(self.singles),
+                       "skipped": len(manifest["skipped"]), "dirs": len(dirs)},
+            "stable": stable, "scan_after_sha256": files["scan-after.tsv"], "complete_sha256": complete_sha,
+            "volatile_read_span_ns": manifest["skew_ns"], "tool": tools,
+            "elapsed_s": round(self.monotonic() - self.t0, 3),
+            "peak_rss_kb": resource.getrusage(resource.RUSAGE_SELF).ru_maxrss}
+        try:
+            check_facts(facts)
+        except Refused as error:
+            raise RefusedFacts("evidence_unbounded", error.code, {"rule": error.code}) from None
+        facts["ok"] = True
+        return facts
+
+
+def acquire(host, srv, seal, run8, *, monotonic=time.monotonic, repo=None) -> dict:
+    """Copy the four file roots from `srv` into `seal` (ROOT/seal), verified and sealed last by `meta/complete.json`
+    (E9 Phase P step P5; see the module docstring for the layout, the closed reason list and the bounds).
+
+    `host` offers `run(argv, *, timeout)` and `open(path, mode)` (phase_p.Host's interface). Raises only `RefusedFacts`,
+    plus `subprocess.TimeoutExpired` and `KeyboardInterrupt`; the umask is always restored. Returns the bounded facts
+    with `ok: True` set only after they pass `check_facts`."""
+    repo = Path(repo) if repo is not None else Path(__file__).resolve().parents[2]
+    run = _Acquisition(host, Path(srv), Path(seal), run8, monotonic, repo)
+    try:
+        check_run8(run8)
+        return run.run()
+    except Refused as error:
+        raise _rerender(error) from None
+    finally:
+        if run.old_umask is not None:
+            os.umask(run.old_umask)
+
+
+def verify_seal(seal, p5: dict, run8: str) -> dict:
+    """Re-prove a finished seal from `seal/meta` alone: `complete.json` is a regular file with this schema and run8, its
+    names equal the other regular files of `meta` (and `meta` holds nothing else), every sha256 matches, and the Phase P
+    facts `p5` carry that complete.json's digest and `ok: True`. Refuses `Refused("seal_invalid", <rule>)`."""
+    meta = Path(seal) / "meta"
+
+    def bad(rule: str):
+        return Refused("seal_invalid", rule)
+
+    def read(path: Path) -> bytes:
+        try:
+            fd = os.open(path, os.O_RDONLY | os.O_NOFOLLOW | os.O_CLOEXEC)
+        except OSError:
+            raise bad("meta_unreadable") from None
+        with os.fdopen(fd, "rb") as handle:
+            return handle.read()
+
+    try:
+        if any(not stat.S_ISDIR(os.lstat(p).st_mode) for p in (Path(seal), meta)):
+            raise bad("meta_missing")
+        listing = {entry.name: entry.stat(follow_symlinks=False) for entry in os.scandir(meta)}
+    except OSError:
+        raise bad("meta_missing") from None
+    info = listing.get("complete.json")
+    if info is None or not stat.S_ISREG(info.st_mode):
+        raise bad("complete_missing")
+    body = read(meta / "complete.json")
+    try:
+        document = json.loads(body)
+    except ValueError:
+        raise bad("complete_not_json") from None
+    if not isinstance(document, dict) or document.get("schema") != COMPLETE_SCHEMA:
+        raise bad("complete_schema")
+    if document.get("run8") != run8:
+        raise bad("complete_run8")
+    files = document.get("files")
+    if not isinstance(files, dict) or not all(isinstance(v, str) for v in files.values()):
+        raise bad("complete_files")
+    if any(not stat.S_ISREG(i.st_mode) for i in listing.values()):
+        raise bad("meta_not_regular")
+    if set(files) != set(listing) - {"complete.json"}:
+        raise bad("meta_names")
+    for name in sorted(files):
+        if _sha256_bytes(read(meta / name)) != files[name]:
+            raise bad("sha256_mismatch")
+    if not isinstance(p5, dict) or p5.get("complete_sha256") != _sha256_bytes(body):
+        raise bad("complete_sha256_mismatch")
+    if p5.get("ok") is not True:
+        raise bad("p5_not_ok")
+    return {"files": len(files), "complete_sha256": _sha256_bytes(body)}
 
 
 def _record(srv: str, refused, facts: dict) -> dict:
