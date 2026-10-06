@@ -240,3 +240,125 @@ def test_an_existing_d0_json_is_never_overwritten(world):
     with pytest.raises(d0.Refused) as caught:
         d0.record_d0(world.handle, B_RELEASE, out, database=DATABASE)
     assert caught.value.code == "evidence_exists" and (out / "d0.json").read_bytes() == before
+
+
+# ---- RH-1b: the d0a/d0b restored-catalog bracket (`compare/rehearsal/bracket.py`) ----
+# Expected results: the rehearsal design "2. PHASE P" verdicts ("If equal: production was quiescent ... If unequal:
+# D0 := d0a. List the differing relations and declare the cross-store skew; PEL-owner checks are then informational").
+# The oracle is the fixture's own history (a row is added between the dumps), never the bracket's output.
+
+from rehearsal import bracket as brk  # noqa: E402
+
+BRACKET_RUN8, BRACKET_DB = "b4c7e19a", "rhb"
+
+
+def _catalog(rows, sha, extra=None):
+    relations = {"items": {"kind": "r", "columns": [["id", "integer"]], "rows": rows, "rows_sha256": sha}}
+    relations.update(extra or {})
+    return {"schema": "x", "database": "rhb", "server_version_num": 170000, "extensions": [], "extension_members": [],
+            "schemas": {"app": {"owner": "zeus", "acl": None, "comment": None, "relations": relations, "indexes": [],
+                                "constraints": [], "sequences": [], "views": [], "functions": [], "triggers": []}}}
+
+
+def test_equal_catalogs_are_quiescent_and_keep_the_pel_owner_checks_enforced():
+    facts = brk.compare_catalogs(_catalog(3, "a" * 64), _catalog(3, "a" * 64))
+    assert facts["quiescent"] is True and facts["cross_store_skew"] is False and facts["differing"] == []
+    assert facts["d0"] == "d0a" and facts["pel_owner_checks"] == "enforced" and "catalog_only_difference" not in facts
+    assert facts["catalog_sha256"]["d0a"] == facts["catalog_sha256"]["d0b"]
+
+
+def test_a_relation_with_one_more_row_declares_the_skew_names_it_and_keeps_d0_a():
+    facts = brk.compare_catalogs(_catalog(3, "a" * 64), _catalog(4, "b" * 64))
+    assert facts["quiescent"] is False and facts["cross_store_skew"] is True and facts["d0"] == "d0a"
+    assert facts["differing"] == ["app.items"] and facts["differing_counts"] == {"app.items": {"d0a": 3, "d0b": 4}}
+    assert facts["pel_owner_checks"] == "informational" and facts["catalog_only_difference"] is False
+
+
+def test_a_relation_present_on_one_side_only_and_a_same_count_digest_change_are_differences():
+    extra = {"added": {"kind": "r", "columns": [], "rows": 2, "rows_sha256": "c" * 64}}
+    facts = brk.compare_catalogs(_catalog(3, "a" * 64), _catalog(3, "b" * 64, extra))
+    assert facts["differing"] == ["app.added", "app.items"]
+    assert facts["differing_counts"] == {"app.added": {"d0a": None, "d0b": 2}, "app.items": {"d0a": 3, "d0b": 3}}
+
+
+def test_a_catalog_difference_outside_the_row_digests_is_skew_with_no_named_relation():
+    other = _catalog(3, "a" * 64)
+    other["schemas"]["app"]["owner"] = "someone_else"
+    facts = brk.compare_catalogs(_catalog(3, "a" * 64), other)
+    assert facts["quiescent"] is False and facts["differing"] == [] and facts["catalog_only_difference"] is True
+
+
+@pytest.fixture(scope="module")
+def bracket_world(tmp_path_factory):
+    if not DOCKER:
+        pytest.skip("needs ZEUS_TEST_DOCKER=1 and ZEUS_TEST_DOCKER_PGEXEC=1")
+    import psycopg
+
+    w = World()
+    w.root, w.out = tmp_path_factory.mktemp("brk"), tmp_path_factory.mktemp("brkout")
+    w.copies = cp.Copies(BRACKET_RUN8, w.root)
+    try:
+        src = w.copies.start("A")
+        with psycopg.connect(cp.pg_dsn(src.pg_socket), autocommit=True) as conn:
+            conn.execute(f"CREATE DATABASE {BRACKET_DB}")
+        with psycopg.connect(cp.pg_dsn(src.pg_socket, BRACKET_DB), autocommit=True) as conn:
+            conn.execute("CREATE SCHEMA app")
+            conn.execute("CREATE TABLE app.fleet_jobs (id integer PRIMARY KEY, name text)")
+            conn.execute("CREATE TABLE app.steady (id integer PRIMARY KEY)")
+            conn.execute("INSERT INTO app.fleet_jobs SELECT g, 'job-' || g FROM generate_series(1, 5) g")
+            conn.execute("INSERT INTO app.steady SELECT g FROM generate_series(1, 3) g")
+            _dump(w, "d0a.dump")
+            _dump(w, "d0b-equal.dump")
+            conn.execute("INSERT INTO app.fleet_jobs VALUES (6, 'job-6')")  # production moved between the dumps
+            _dump(w, "d0b-skew.dump")
+        for name, dump in (("S", "d0a.dump"), ("seal-b", "d0b-equal.dump"), ("B", "d0b-skew.dump")):
+            w.copies.start(name)
+            w.copies.restore(name, dump, BRACKET_DB)
+        yield w
+    finally:
+        sweep(BRACKET_RUN8, w.root)
+
+
+def _dump(world, name):
+    import subprocess
+
+    env = {**os.environ, guard.DOCKER_OPT_IN_ENV: "1", guard.DOCKER_PGEXEC_ENV: "1",
+           guard.DOCKER_BIND_ROOT_ENV: str(world.root)}
+    argv = ["docker", "exec", world.copies.copies["A"].pg_name, "pg_dump", "-U", "zeus", "-h", cp.PG_SOCKET_DIR, "-Fc",
+            BRACKET_DB]
+    guard.docker_policy(argv, env)
+    done = subprocess.run(argv, env=env, capture_output=True, timeout=300)
+    assert done.returncode == 0, done.stderr[-300:]
+    (world.copies.source / name).write_bytes(done.stdout)
+
+
+@needs_docker
+def test_equal_restored_dumps_are_quiescent(bracket_world):
+    c = bracket_world.copies.copies
+    facts = brk.bracket(c["S"], c["seal-b"], BRACKET_DB)
+    assert facts["quiescent"] is True and facts["differing"] == [] and facts["relations_compared"] == 2
+    assert facts["catalog_sha256"]["d0a"] == bracket_world.copies.catalog_sha256("S", BRACKET_DB)
+
+
+@needs_docker
+def test_a_row_added_between_the_dumps_declares_the_skew_with_that_relation_and_d0_is_d0a(bracket_world):
+    c = bracket_world.copies.copies
+    facts = brk.bracket(c["S"], c["B"], BRACKET_DB)
+    assert facts["quiescent"] is False and facts["cross_store_skew"] is True and facts["d0"] == "d0a"
+    assert facts["differing"] == ["app.fleet_jobs"]  # app.steady did not move
+    assert facts["differing_counts"] == {"app.fleet_jobs": {"d0a": 5, "d0b": 6}}
+    assert facts["pel_owner_checks"] == "informational"
+
+
+@needs_docker
+def test_d0_json_carries_the_bracket_and_a_bracket_that_is_not_d0a_fails_the_record(bracket_world):
+    c = bracket_world.copies.copies
+    facts = brk.bracket(c["S"], c["B"], BRACKET_DB)
+    document = d0.record_d0(c["S"], B_RELEASE, bracket_world.out / "ok", database=BRACKET_DB, bracket=facts)
+    assert document["status"] == "ok" and document["facts"]["bracket"] == facts
+    on_disk = json.loads((bracket_world.out / "ok" / "d0.json").read_text())
+    assert on_disk["facts"]["bracket"]["differing"] == ["app.fleet_jobs"] and on_disk["facts"]["failures"] == []
+    swapped = brk.bracket(c["B"], c["S"], BRACKET_DB)  # d0a would be the copy B, not S
+    with pytest.raises(d0.D0Failed) as info:
+        d0.record_d0(c["S"], B_RELEASE, bracket_world.out / "swapped", database=BRACKET_DB, bracket=swapped)
+    assert "bracket_d0a_is_not_this_copy" in info.value.failures
