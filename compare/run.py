@@ -169,24 +169,109 @@ def _check_rebaseline_entry(root: Path, entry: dict, blobs: dict[str, str]) -> d
             and sorted(blobs) == sorted(entry["delta_paths"])}
 
 
+def _git_try(*args: str, cwd: Path, text: bool = True) -> subprocess.CompletedProcess:
+    """A git call that never raises on a non-zero exit (the caller reads returncode)."""
+    return subprocess.run(["git", *args], cwd=cwd, check=False, capture_output=True, text=text)
+
+
+def _tree_blobs(root: Path, commit: str) -> dict[str, str]:
+    """path -> blob id of a commit's tree (gitlinks are not blobs)."""
+    blobs = {}
+    for entry in git("ls-tree", "-r", "-z", commit, cwd=root).split("\0"):
+        if entry:
+            meta, path = entry.split("\t", 1)
+            if meta.split()[1] == "blob":
+                blobs[path] = meta.split()[2]
+    return blobs
+
+
+def _promotion_commit_facts(root: Path, pinned: str) -> dict:
+    """Whether the pinned P resolves to a commit and is an ancestor of HEAD; any git failure is a false field."""
+    done = _git_try("rev-parse", "--verify", "--quiet", f"{pinned}^{{commit}}", cwd=root)
+    resolves = done.returncode == 0 and bool(done.stdout.strip())
+    sha = done.stdout.strip() if resolves else None
+    is_ancestor = resolves and _git_try("merge-base", "--is-ancestor", sha, "HEAD", cwd=root).returncode == 0
+    return {"resolves": resolves, "is_ancestor": is_ancestor, "valid": resolves and is_ancestor, "sha": sha}
+
+
+def _numstat_cap(root: Path, base: str, head: str, path: str, limit: int) -> dict:
+    """`git diff --numstat base head -- path` against a no-deletion, added <= limit cap."""
+    numstat = _git_try("diff", "--numstat", base, head, "--", path, cwd=root).stdout.split()
+    if numstat and not (numstat[0].isdigit() and numstat[1].isdigit()):  # binary or unreadable: not provable
+        return {"added": None, "deleted": None, "ok": False}
+    added, deleted = (int(numstat[0]), int(numstat[1])) if numstat else (0, 0)
+    return {"added": added, "deleted": deleted, "ok": deleted == 0 and added <= limit}
+
+
+def _blob_bytes(root: Path, commit: str, path: str) -> bytes | None:
+    """The bytes of `commit:path`, None when the commit does not hold it."""
+    done = _git_try("cat-file", "blob", f"{commit}:{path}", cwd=root, text=False)
+    return done.stdout if done.returncode == 0 else None
+
+
+def _check_append_only(root: Path, source_commit: str, promotion: str | None, path: str, limit: int) -> dict:
+    """An append-only path: (i) the cumulative SOURCE->working-tree budget; (ii) SOURCE's bytes are a prefix of P's;
+    (iii) across every parent edge of every commit in P..HEAD the parent's bytes are a prefix of the commit's (absent
+    = empty; a deletion fails); (iv) HEAD's bytes are a prefix of the working tree's. `promotion` None (an invalid P)
+    leaves (ii) and (iii) unevaluated (prefix_ok None)."""
+    numstat = git("diff", "--numstat", source_commit, "--", path, cwd=root).split()
+    added, deleted = (int(numstat[0]), int(numstat[1])) if numstat else (0, 0)
+    violations = []
+    if promotion is not None:
+        if not (_blob_bytes(root, promotion, path) or b"").startswith(_blob_bytes(root, source_commit, path) or b""):
+            violations.append(promotion)
+        cache: dict[str, bytes | None] = {}
+
+        def at(commit: str) -> bytes | None:
+            if commit not in cache:
+                cache[commit] = _blob_bytes(root, commit, path)
+            return cache[commit]
+
+        for row in git("rev-list", "--parents", f"{promotion}..HEAD", cwd=root).splitlines():
+            commit, *parents = row.split()
+            for parent in parents:
+                before, after = at(parent), at(commit)
+                if before != after and (after is None or not after.startswith(before or b"")):
+                    violations.append(commit)
+                    break
+    head, working = _blob_bytes(root, "HEAD", path), (root / path)
+    if head is not None and (not working.is_file() or not working.read_bytes().startswith(head)):
+        violations.append("working-tree")
+    prefix_ok = None if promotion is None else not violations
+    return {"added": added, "deleted": deleted, "prefix_ok": prefix_ok, "prefix_violations": violations[:LIST_BOUND],
+            "prefix_violations_count": len(violations),
+            "ok": deleted == 0 and added <= limit and prefix_ok is True}
+
+
 def _check_tree_promoted(root: Path, source_commit: str, baseline: dict) -> dict:
     """DESIGN-s11 §20.5 archive rule (promoted layout): (a) every SOURCE path has its SOURCE blob at the root path or at
     `reference/m7/<path>` (or is an additions-only path); (b) everything under `reference/` is `reference/README.md` or
     a `reference/m7/<q>` equal to SOURCE's `<q>`; (c) no credential-shaped string in a path changed vs SOURCE; (d) the
-    SOURCE tree id equals the baseline's. Dormant until the baseline's layout mode is "promoted"."""
+    SOURCE tree id equals the baseline's. Dormant until the baseline's layout mode is "promoted".
+
+    DESIGN-s11 §20.5 (post-promotion amendment, Codex ruling FLEET-G2W1F-RULINGS D): a layout carrying
+    `promotion_commit` P (an ancestor of HEAD that must resolve; anything else is ok false, never a pass) evaluates
+    rule (a) on P's tree, not the working tree. Historical root-only preservation therefore relies on the pinned P,
+    while archived content stays checked in the current tree: rule (b) plus the presence check that every SOURCE path
+    archived at P is still at `reference/m7/<path>` with SOURCE's blob. Rules (b), (c), (d) and the rebaseline entry
+    checks are unchanged. Two additions-only classes replace `additions_only`:
+    `promotion_allowances` (deleted == 0 and added <= cap on SOURCE->P only; later changes are not refused) and
+    `append_only` (the ongoing QUALIFICATION-B2-LOG: the cumulative SOURCE->working-tree budget is never reset, and
+    since SOURCE numstat alone cannot prove that later records stay immutable, each recorded byte string must also stay
+    a prefix across SOURCE->P, every parent edge of every commit in P..HEAD (a merge is checked against EACH parent,
+    never first-parent only) and HEAD->working tree)."""
     layout = baseline["layout"]
     archive = "reference/m7/"
-    listing = git("ls-tree", "-r", "-z", source_commit, cwd=root)
-    source = {}  # path -> blob id (gitlinks are not blobs)
-    for entry in listing.split("\0"):
-        if not entry:
-            continue
-        meta, path = entry.split("\t", 1)
-        mode, kind, blob = meta.split()
-        if kind == "blob":
-            source[path] = blob
+    post_promotion = "promotion_commit" in layout
+    if post_promotion:
+        if "additions_only" in layout or not {"promotion_allowances", "append_only"} <= set(layout):
+            raise ValueError("a layout with promotion_commit needs promotion_allowances and append_only, "
+                             "and no additions_only")
+        pinned = _promotion_commit_facts(root, layout["promotion_commit"])
+        p_blobs = _tree_blobs(root, pinned["sha"]) if pinned["valid"] else None
+    source = _tree_blobs(root, source_commit)  # path -> blob id (gitlinks are not blobs)
     additions_only = {}
-    for path, limit in layout["additions_only"].items():
+    for path, limit in ({} if post_promotion else layout["additions_only"]).items():
         numstat = git("diff", "--numstat", source_commit, "--", path, cwd=root).split()
         added, deleted = (int(numstat[0]), int(numstat[1])) if numstat else (0, 0)
         additions_only[path] = {"added": added, "deleted": deleted, "ok": deleted == 0 and added <= limit}
@@ -197,9 +282,22 @@ def _check_tree_promoted(root: Path, source_commit: str, baseline: dict) -> dict
     rebaseline_blobs = {entry["id"]: _rebaseline_blobs(root, entry) for entry in rebaselines}
     rebaseline_files = {f"{entry['archive_root'].rstrip('/')}/{q}": blob
                         for entry in rebaselines for q, blob in rebaseline_blobs[entry["id"]].items()}
-    working = _hash_working_files(root, [*source, *(archive + p for p in source), *reference, *rebaseline_files])
-    missing = sorted(p for p, blob in source.items() if p not in layout["additions_only"]
-                     and working.get(p) != blob and working.get(archive + p) != blob)
+    if post_promotion:
+        exempt = set(layout["promotion_allowances"]) | set(layout["append_only"])
+        missing = missing_archive = None
+        required = []
+        if p_blobs is not None:
+            # Rule (a) at P: the SOURCE blob was at its root path or its archive path at promotion.
+            missing = sorted(p for p, blob in source.items() if p not in exempt
+                             and p_blobs.get(p) != blob and p_blobs.get(archive + p) != blob)
+            required = sorted(p for p, blob in source.items() if p_blobs.get(archive + p) == blob)
+        working = _hash_working_files(root, [*(archive + p for p in required), *reference, *rebaseline_files])
+        if p_blobs is not None:  # archived content stays in the current tree (3b)
+            missing_archive = [archive + p for p in required if working.get(archive + p) != source[p]]
+    else:
+        working = _hash_working_files(root, [*source, *(archive + p for p in source), *reference, *rebaseline_files])
+        missing = sorted(p for p, blob in source.items() if p not in layout["additions_only"]
+                         and working.get(p) != blob and working.get(archive + p) != blob)
     # G1-11: rule (b) also accepts `reference/<entry.id>/<q>` for a delta path q whose blob equals the entry commit's.
     foreign = [p for p in reference if p != "reference/README.md"
                and not (p.startswith(archive) and source.get(p[len(archive):]) == working.get(p))
@@ -224,16 +322,36 @@ def _check_tree_promoted(root: Path, source_commit: str, baseline: dict) -> dict
     head_tree = git("rev-parse", f"{source_commit}^{{tree}}", cwd=root).strip()
     entries = [_check_rebaseline_entry(root, entry, rebaseline_blobs[entry["id"]]) for entry in rebaselines]
     extra = {"rebaselines": entries} if entries else {}
+    common_ok = (not foreign and not shaped and all(e["ok"] for e in entries)
+                 and head_tree == baseline["source"]["tree"])
+    if post_promotion:
+        allowances = None if p_blobs is None else {
+            path: _numstat_cap(root, source_commit, pinned["sha"], path, limit)
+            for path, limit in layout["promotion_allowances"].items()}
+        append_only = {path: _check_append_only(root, source_commit, pinned["sha"] if p_blobs is not None else None,
+                                                path, limit) for path, limit in layout["append_only"].items()}
+        return {"mode": "promoted", "source_commit": source_commit, "source_tree": head_tree, **extra,
+                "source_tree_matches_baseline": head_tree == baseline["source"]["tree"],
+                "promotion_commit": layout["promotion_commit"],
+                "promotion_commit_resolves": pinned["resolves"],
+                "promotion_commit_is_ancestor": pinned["is_ancestor"],
+                "missing_source_paths": None if missing is None else missing[:LIST_BOUND],
+                "missing_source_paths_count": None if missing is None else len(missing),
+                "missing_archive_paths": None if missing_archive is None else missing_archive[:LIST_BOUND],
+                "missing_archive_paths_count": None if missing_archive is None else len(missing_archive),
+                "foreign_reference_paths": foreign[:LIST_BOUND], "foreign_reference_paths_count": len(foreign),
+                "changed_paths": len(set(changed)), "credential_shaped_strings": shaped,
+                "promotion_allowances": allowances, "append_only": append_only,
+                "ok": pinned["valid"] and not missing and not missing_archive
+                and all(v["ok"] for v in allowances.values())
+                and all(v["ok"] for v in append_only.values()) and common_ok}
     return {"mode": "promoted", "source_commit": source_commit, "source_tree": head_tree, **extra,
             "source_tree_matches_baseline": head_tree == baseline["source"]["tree"],
             "missing_source_paths": missing[:LIST_BOUND], "missing_source_paths_count": len(missing),
             "foreign_reference_paths": foreign[:LIST_BOUND], "foreign_reference_paths_count": len(foreign),
             "changed_paths": len(set(changed)), "credential_shaped_strings": shaped,
             "additions_only": additions_only,
-            "ok": not missing and not foreign and not shaped
-            and all(v["ok"] for v in additions_only.values())
-            and all(e["ok"] for e in entries)
-            and head_tree == baseline["source"]["tree"]}
+            "ok": not missing and all(v["ok"] for v in additions_only.values()) and common_ok}
 
 
 def prepare() -> dict:

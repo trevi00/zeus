@@ -136,11 +136,14 @@
   "branch": "rebuild/zeus-rebuild-001",
   "implementation_owner": "one Claude implementer (no duplicate owner; no other rebuild/rewrite worktree or branch existed at creation)",
   "reference_root": "reference/m7",
-  "rule": "DESIGN-s11 §20.5 archive rule: every SOURCE path has its SOURCE bytes at the root path or at reference/m7/<path> (or is additions-only); every file under reference/ is reference/README.md or a reference/m7/<q> equal to SOURCE's <q>; no credential-shaped string in a changed path",
-  "additions_only": {
-   "docs/context/README.md": 3,
-   "docs/design.md": 3,
+  "rule": "DESIGN-s11 §20.5 (post-promotion amendment, Codex ruling FLEET-G2W1F-RULINGS D): rule (a) is evaluated on the pinned promotion commit P (an ancestor of HEAD), where every SOURCE path had its SOURCE bytes at the root path or at reference/m7/<path> (the three promotion_allowances aside, checked SOURCE->P only) and archived content must stay at reference/m7/<path> in the current tree; every file under reference/ is reference/README.md or a reference/m7/<q> equal to SOURCE's <q>; no credential-shaped string in a changed path; the append_only log keeps its cumulative SOURCE budget and every recorded byte as a prefix across P..HEAD (each merge parent) and the working tree",
+  "promotion_commit": "9b8642daaeb50e0da03d7ad176d3d1186348f28f",
+  "promotion_allowances": {
    "AGENTS.md": 14,
+   "docs/design.md": 3,
+   "docs/context/README.md": 3
+  },
+  "append_only": {
    "docs/zeus/operations/aibox-migration-001/QUALIFICATION-B2-LOG.md": 10
   },
   "promoted_from": "the two-tree layout (allowed_changed_paths target/, compare/, coverage/, docs/context/ARCHITECTURE.md, docs/context/README.md, docs/design.md, .github/workflows/validation.yml, AGENTS.md)"
