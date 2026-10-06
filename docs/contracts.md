@@ -1606,8 +1606,9 @@ under `NON_SHIPPED_PREFIXES` (`docs/cutover/`; no `..`, absolute, backslash or g
 (granted or admitted, not yet settled, cancelled or expired) and writes no maintenance state. Admission reuses the
 one-transaction claim for exactly the QUEUED job of that digest, lane and base revision whose paths lie inside the
 permit's, while the Fleet stays owner-paused; every other blocker, expiry, response-loss and replay rule is the
-canary's, an unknown dispatch is never relaunched, and the Fleet control row is never written. This paragraph and the
-kind are subject to the G1-06 ruling on their tension with S2MAINT D2.6 OUT.
+canary's, an unknown dispatch is never relaunched, and the Fleet control row is never written. G1-06 accepted this
+kind within exactly this scope (DEC-CAND option 1; it is not general paused admission); CUT-REV rules it again for
+the rebuilt payload.
 
 ## INV-FLEET-BACKLOG-001
 
