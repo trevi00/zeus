@@ -60,6 +60,11 @@ REBUILD_INTEGRATION_STEPS = [("uv sync --frozen", None),  # the promoted venv, b
                              ("python compare/run.py run --only entry.cli_executor.pgredis --pg --redis", None),
                              ("python compare/run.py run --only entry.cli_cycle_serve.pgredis --pg --redis", None),
                              ("python compare/run.py run --only delivery.restore.pg --pg", None),
+                             ("python compare/run.py prepare --rebaseline pr3-bb579d5", None),  # G1-13 maintenance
+                             ("python compare/run.py run --reference rebaseline:pr3-bb579d5 --only delivery.maintenance",
+                              None),
+                             ("python compare/run.py run --reference rebaseline:pr3-bb579d5"
+                              " --only delivery.maintenance.pg --pg", None),
                              ("python compare/run.py run --only storage.pg --only storage.redis --pg --redis", None),
                              ("python compare/run.py target-integration", None),
                              ("python compare/run.py docker-fixture", None)]
