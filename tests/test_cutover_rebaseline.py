@@ -32,6 +32,7 @@ import pytest
 from _layout import REPO
 
 ENTRY_ID = "main-s2r-b9d8f15"
+PR3_ID = "pr3-bb579d5"  # G1-14c: entry 2, the reviewed PR-3 head (G1-09F-RELEASE-BRANCH-ONLY)
 
 
 def _run_module():
@@ -76,9 +77,9 @@ def test_check_tree_on_the_real_tree_accepts_the_archive():
     report = _run_module().check_tree()
     assert report["ok"] is True
     assert report["foreign_reference_paths"] == [] and report["credential_shaped_strings"] == []
-    (row,) = report["rebaselines"]
-    assert row == {"id": ENTRY_ID, "tree_matches": True, "delta_paths_match": True,
-                   "delta_paths_in_commit": True, "ok": True}
+    assert report["rebaselines"] == [
+        {"id": eid, "tree_matches": True, "delta_paths_match": True, "delta_paths_in_commit": True, "ok": True}
+        for eid in (ENTRY_ID, PR3_ID)]
 
 
 # --- rule (b) with fixture repositories ----------------------------------------------------------------------------
@@ -262,7 +263,7 @@ def test_rebaseline_entry_pins_its_own_package_file_identity():
 def test_a_rebaseline_record_is_refused_for_an_m7_referenced_family_and_when_mixed_or_unknown():
     module = _run_module()
     reference = f"rebaseline:{ENTRY_ID}"
-    for only in (["cli.parser"], ["delivery.maintenance", "cli.parser"], ["no.such.family"], []):
+    for only in (["cli.parser"], ["delivery.maintenance.pg", "cli.parser"], ["no.such.family"], []):
         with pytest.raises(SystemExit) as refused:
             module.resolve_reference(reference, True, only)
         assert str(refused.value.code).startswith("refused: --record with a rebaseline reference")
@@ -275,13 +276,16 @@ def test_a_rebaseline_record_is_refused_for_an_m7_referenced_family_and_when_mix
 def test_a_rebaseline_record_is_allowed_for_the_scenarios_that_declare_it_and_only_under_the_rebaseline_golden_dir(
         monkeypatch, tmp_path):
     module = _run_module()
-    reference = f"rebaseline:{ENTRY_ID}"
-    assert module.resolve_reference(reference, True, ["delivery.maintenance", "delivery.maintenance.pg"])[2] == ENTRY_ID
+    # G1-14c: delivery.maintenance moved to entry 2; its .pg pair stays on entry 1 until the owner records its entry-2
+    # golden against a live PostgreSQL (the owner repoints it in the same step).
+    homes = {"delivery.maintenance": PR3_ID, "delivery.maintenance.pg": ENTRY_ID}
     declared = {s["family"]: s for s in module.scenarios() if s.get("reference")}
-    assert set(declared) == {"delivery.maintenance", "delivery.maintenance.pg"}
-    for scenario in declared.values():
-        assert scenario["reference"] == reference
-        assert scenario["golden"] == f"goldens/rebaseline/{ENTRY_ID}/{scenario['family']}.json"
+    assert set(declared) == set(homes)
+    for family, entry_id in homes.items():
+        assert module.resolve_reference(f"rebaseline:{entry_id}", True, [family])[2] == entry_id
+        assert declared[family]["reference"] == f"rebaseline:{entry_id}"
+        assert declared[family]["golden"] == f"goldens/rebaseline/{entry_id}/{family}.json"
+    reference = f"rebaseline:{ENTRY_ID}"
     # a scenario that declares the reference but keeps its golden elsewhere (e.g. under the M7 goldens) is refused
     strays = [{"family": "x.stray", "reference": reference, "golden": "goldens/reference/x.stray.json"}]
     monkeypatch.setattr(module, "scenarios", lambda: strays)
@@ -481,15 +485,73 @@ def test_split_layers_separates_the_rebaseline_layer_in_declared_order():
 
 def test_the_s2r_declarations_of_the_affected_families_cite_the_rebaseline_and_a_hunk():
     """Structural (provenance contract of G1-13C-COMPARE-DECISION rule 2): every rebaseline-layer declaration of the
-    S2R-affected families names REBASELINE-MAIN-S2R and the source file it comes from."""
+    S2R-affected families names REBASELINE-MAIN-S2R (or, for the PR-3 hunk, G1-09F-RELEASE-BRANCH-ONLY) and the source file it comes from."""
     module = _run_module()
     by_family = {s["family"]: s for s in module.scenarios()}
     for family in ("cli.parser", "static.source", "effects.delivery_units", "effects.delivery_units.pg"):
         layer, _ = module.split_layers(by_family[family].get("intended_differences"))
         assert layer, family
         for declaration in layer:
-            assert "REBASELINE-MAIN-S2R" in declaration["authority"]
+            assert ("REBASELINE-MAIN-S2R" in declaration["authority"]
+                    or "G1-09F-RELEASE-BRANCH-ONLY" in declaration["authority"])
             assert any(name in declaration["authority"] for name in
                        ("adapters/host_delivery.py", "application/host_delivery.py", "domain/host_delivery.py",
                         "docs/contracts.md", "adapters/managed_runtime.py", "adapters/maintenance_evidence.py",
                         "the delta adds")), declaration["path"]
+
+
+# --- entry 2 (pr3-bb579d5, G1-14c): the same controls on the real entry --------------------------------------------
+
+def _entry2() -> dict:
+    return _baseline()["approved_rebaselines"][1]
+
+
+def test_entry_two_pins_the_reviewed_pr3_head_and_its_archive_is_exactly_the_delta():
+    entry = _entry2()
+    assert (entry["id"], entry["commit"], entry["tree"], entry["parent_source"], entry["archive_root"]) == (
+        PR3_ID, "bb579d558cd5902fa9d6493fad9b92ebd5be4b68", "936dec623dc9cf266ef465c723499b723a9040bd", "e38aa722ff1e91dc01ec650689cfe3eebe1ff699", f"reference/{PR3_ID}")
+    delta = subprocess.run(["git", "diff", "--name-only", entry["parent_source"], entry["commit"]], cwd=REPO,
+                           check=True, capture_output=True, text=True).stdout.split()
+    assert entry["delta_paths"] == sorted(delta) and len(delta) == 24
+    archive = REPO / entry["archive_root"]
+    assert sorted(str(p.relative_to(archive)) for p in archive.rglob("*") if p.is_file()) == entry["delta_paths"]
+    for rel in entry["delta_paths"]:
+        want = subprocess.run(["git", "show", f"{entry['commit']}:{rel}"], cwd=REPO, check=True,
+                              capture_output=True).stdout
+        assert (archive / rel).read_bytes() == want
+
+
+def test_entry_two_a_wrong_delta_list_and_a_wrong_tree_are_each_not_ok():
+    module = _run_module()
+    base = _baseline()
+    wrong_list = copy.deepcopy(base)
+    wrong_list["approved_rebaselines"][1]["delta_paths"] = sorted(
+        [*wrong_list["approved_rebaselines"][1]["delta_paths"], "docs/research-standard.md"])
+    report = module.check_tree(baseline=wrong_list)
+    row = next(r for r in report["rebaselines"] if r["id"] == PR3_ID)
+    assert report["ok"] is False and row["delta_paths_match"] is False and row["ok"] is False
+    wrong_tree = copy.deepcopy(base)
+    wrong_tree["approved_rebaselines"][1]["tree"] = "0" * 40
+    report = module.check_tree(baseline=wrong_tree)
+    row = next(r for r in report["rebaselines"] if r["id"] == PR3_ID)
+    assert report["ok"] is False and row["tree_matches"] is False and row["ok"] is False
+
+
+def test_entry_two_a_modified_delta_file_is_foreign(tmp_path):
+    """A shared clone without checkout (the commits' objects, no working files) plus a copy of entry 2's archive: the
+    faithful copy has no foreign path, one appended byte makes exactly that path foreign."""
+    module = _run_module()
+    entry = _entry2()
+    clone = tmp_path / "clone"
+    subprocess.run(["git", "clone", "-q", "--shared", "--no-checkout", str(REPO), str(clone)], check=True)
+    shutil.copytree(REPO / entry["archive_root"], clone / entry["archive_root"])
+    base = copy.deepcopy(_baseline())
+    base["approved_rebaselines"] = [entry]
+    clean = module.check_tree(root=clone, baseline=base)
+    assert clean["foreign_reference_paths"] == [] and clean["rebaselines"][0]["ok"] is True
+    target = entry["delta_paths"][0]
+    with (clone / entry["archive_root"] / target).open("ab") as handle:
+        handle.write(b"\n")
+    report = module.check_tree(root=clone, baseline=base)
+    assert report["ok"] is False
+    assert report["foreign_reference_paths"] == [f"{entry['archive_root']}/{target}"]

@@ -4,7 +4,7 @@
  "reference_driver": "drivers/reference/s2r_maintenance.py",
  "target_driver": "drivers/target/s2r_maintenance.py",
  "slice": "G1-13",
- "reference": "rebaseline:pr3-bb579d5",
- "golden": "goldens/rebaseline/pr3-bb579d5/delivery.maintenance.pg.json",
+ "reference": "rebaseline:main-s2r-b9d8f15",
+ "golden": "goldens/rebaseline/main-s2r-b9d8f15/delivery.maintenance.pg.json",
  "requires": "disposable-postgresql"
 }

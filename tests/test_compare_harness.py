@@ -20,7 +20,7 @@ def test_baseline_pins_source_and_leaves_deployment_pending():
     assert base["source"]["commit"] == "e38aa722ff1e91dc01ec650689cfe3eebe1ff699"
     assert base["source"]["tree"] == "5a3622304ab4b20902ad541a363d36526b829ca9"
     assert base["deployment"]["status"] == "pending" and base["deployment"]["collected_at"] is None
-    assert [(e["id"], e["commit"], e["tree"], len(e["delta_paths"])) for e in base["approved_rebaselines"]] == [S2R]
+    assert [(e["id"], e["commit"], e["tree"], len(e["delta_paths"])) for e in base["approved_rebaselines"]] == [S2R, PR3]
     assert base["layout"]["branch"] == "rebuild/zeus-rebuild-001"
 
 
@@ -438,3 +438,5 @@ def test_target_integration_names_every_failing_node_even_when_skips_fill_the_ta
 # G1-11's one approved rebaseline (REBASELINE-MAIN-S2R). Defined at the end so that the FA-009 line-addressed pins of
 # the flagged assertions above keep their line numbers.
 S2R = ("main-s2r-b9d8f15", "b9d8f15bc6ab2d84ec57906d1b938bd8accc2fe8", "87c62dc3c04952ec48244d9062fa6efca137c4d0", 19)
+# G1-14c's second approved rebaseline: the reviewed PR-3 head (AMD-1 errata E2, G1-09F-RELEASE-BRANCH-ONLY).
+PR3 = ("pr3-bb579d5", "bb579d558cd5902fa9d6493fad9b92ebd5be4b68", "936dec623dc9cf266ef465c723499b723a9040bd", 24)
