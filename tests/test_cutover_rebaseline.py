@@ -276,9 +276,9 @@ def test_a_rebaseline_record_is_refused_for_an_m7_referenced_family_and_when_mix
 def test_a_rebaseline_record_is_allowed_for_the_scenarios_that_declare_it_and_only_under_the_rebaseline_golden_dir(
         monkeypatch, tmp_path):
     module = _run_module()
-    # G1-14c: delivery.maintenance moved to entry 2; its .pg pair stays on entry 1 until the owner records its entry-2
-    # golden against a live PostgreSQL (the owner repoints it in the same step).
-    homes = {"delivery.maintenance": PR3_ID, "delivery.maintenance.pg": ENTRY_ID}
+    # G1-14c: both maintenance families are on entry 2; the owner recorded the .pg golden against a live PostgreSQL
+    # and repointed it (144dcf7d).
+    homes = {"delivery.maintenance": PR3_ID, "delivery.maintenance.pg": PR3_ID}
     declared = {s["family"]: s for s in module.scenarios() if s.get("reference")}
     assert set(declared) == set(homes)
     for family, entry_id in homes.items():
