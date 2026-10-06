@@ -69,10 +69,10 @@ def check_facts(facts: object, *, _depth: int = 0, max_items: int = MAX_ITEMS) -
         raise Refused("fact_type", type(facts).__name__)
 
 
-def _create(path: Path, data: bytes = b"", *, append: bool = False) -> int:
+def _create(path: Path, data: bytes = b"", *, append: bool = False, mode: int = 0o644) -> int:
     flags = os.O_WRONLY | os.O_CREAT | os.O_EXCL | (os.O_APPEND if append else 0)
     try:
-        fd = os.open(path, flags, 0o644)
+        fd = os.open(path, flags, mode)
     except FileExistsError:
         raise Refused("evidence_exists", path.name) from None
     if data:
@@ -85,10 +85,11 @@ def _create(path: Path, data: bytes = b"", *, append: bool = False) -> int:
     return fd
 
 
-def write_record(path: Path, document: dict, *, max_items: int = MAX_ITEMS) -> None:
-    """Write one standalone evidence record (never overwritten): `document["facts"]` passes `check_facts` first."""
+def write_record(path: Path, document: dict, *, max_items: int = MAX_ITEMS, mode: int = 0o644) -> None:
+    """Write one standalone evidence record (never overwritten): `document["facts"]` passes `check_facts` first.
+    `mode` is the creation mode (RH-6a: the R6/R7 records are owner-only, 0o600)."""
     check_facts(document.get("facts", {}), max_items=max_items)
-    _create(Path(path), _line(document))
+    _create(Path(path), _line(document), mode=mode)
 
 
 def _line(obj: dict) -> bytes:
