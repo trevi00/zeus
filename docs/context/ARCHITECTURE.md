@@ -3,12 +3,11 @@
 **Purpose.** One navigation map from each capability to its code, ports, contracts and tests, for the
 whole-architecture rebuild (`REBUILD-DESIGN-v2`, SOURCE = M7 `e38aa722`). **Owner:** the rebuild
 implementation owner, through ordinary slice review. **When to read:** before moving or adding code
-in the target tree `target/`, or when tracing where a capability lives today.
+in the promoted tree (the repository root: `src/`, `tests/`), or when tracing where a capability lives today.
 
 **Reference-only.** Per [DELIVERY.md](DELIVERY.md) this document is never delivered to a provider,
 starts no loader and grants no authority. `docs/contracts.md` stays the invariant registry,
-`src/codex_harness/domain/policy.py` the runtime-limit owner, and DELIVERY.md's ownership table stays
-as written until the corresponding implementation is promoted (S11).
+`src/codex_harness/kernel/policy.py` the runtime-limit owner.
 
 **Not a status table.** Status lives only in `coverage/ledger-coverage.json` (`unmapped`, `designed`,
 `implemented`, `verified`, `retired-with-authority`), generated from the pinned ledger. File counts and
@@ -18,10 +17,11 @@ line diffs are never parity evidence. Parity evidence is the differential harnes
 
 Every symbol cell carries one label, checked by `tests/test_architecture_doc.py`:
 
-- **CURRENT** — the reference (SOURCE M7) symbol at the worktree root. It must resolve in `src/`.
-- **PROPOSED** — the planned target symbol. It must *not* resolve in `target/src` yet: once a slice
+- **CURRENT** — the reference (SOURCE M7) symbol, archived byte-identical under `reference/m7/`. It must
+  resolve in `reference/m7/src`.
+- **PROPOSED** — the planned target symbol. It must *not* resolve in `src` yet: once a slice
   implements it, the slice relabels it TARGET in the same change.
-- **TARGET** — an implemented target symbol. It must resolve in `target/src`. S0 has none.
+- **TARGET** — an implemented target symbol. It must resolve in `src`.
 
 Symbols are `module` or `module:Qualname`; tests are `path::function` or `path`. No line numbers.
 
@@ -144,15 +144,18 @@ rows read back from the database.
 Kept unconditionally, as at most 10-line target modules delegating to `entry`:
 `codex_harness.cli`, `codex_harness.monitor`, `codex_harness.supervisor`,
 `codex_harness.adapters.isolated_worker_entry`, `codex_harness.adapters.worker_profile_metadata`,
-`codex_harness.container_main` (retired: U6(b), USER-APPROVED-U6-20261006; DESIGN-s11 §20.1), the packaged `codex_harness.resources.worker_profile_hook`,
-and `src/zeus`. The conditional set follows the S0 pinned-argv scan of tracked sources
+the packaged `codex_harness.resources.worker_profile_hook`, and `src/zeus`. `codex_harness.container_main` is
+retired and not in the kept list (U6(b), USER-APPROVED-U6-20261006; DESIGN-s11 §20.1). The conditional set follows the S0 pinned-argv scan of tracked sources
 (`compare/goldens/reference/static.source.json`, `shims.conditional`): kept for `artifact_reader`
 (the multi-line reader argv of M7 `executor.py:252-253`, which the target's
 `context.domain.composition.artifact_reader_handle` emits too), `continuation_process`, `host_delivery`,
 `host_migration`, `managed_runtime`, `migrations`, `monitor_frontend_checks`, `service_entry` (the
-INV-SERVICE-DIAGNOSTICS-001 argv of `docs/contracts.md`, which the scan classes as a contract document); no tracked
-pin found for `experience`, `isolated_worker`, `observed_assets`. Reconciliation with argv persisted in records
-is pending the disposable rehearsal (R2); until then no shim is dropped.
+INV-SERVICE-DIAGNOSTICS-001 argv of `docs/contracts.md`, which the scan classes as a contract document); the 16
+SH-b modules are not `-m` entries (M7 ran no behaviour for `python -m`; their function is `zeus <root>`;
+DESIGN-s11 §8 SH-b); `experience`, `observed_assets` and `isolated_worker` moved to target entries
+(`entry.processes.experience:main`, `entry.cli.observed_assets:main`, `entry.processes.isolated_worker_runs`;
+DESIGN-s11 §20.3 R-P1). Reconciliation of the `-m` argv persisted in records (R2) is a carried rehearsal
+residual.
 
 ## Named changes and bugs not retained
 

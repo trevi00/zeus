@@ -11,12 +11,12 @@
 | INV-SESSION-001 | Current context at 70% requests safe-point handoff. Checkpoint generation and execution lease fence stale writers. Busy agents do not hibernate; identity survives replacement. |
 | INV-GRAPH-001 | Git owns definitions; PostgreSQL owns runtime facts. Graph/vectors are versioned derived views. Unchanged symbols retain IDs; stale evidence cannot enter commit-bound review. |
 | INV-RECOVERY-001 | An external host controller restores the previous deployment without Codex. Images are pinned; rollback withdraws that release's hook. Destructive schema downgrade is outside this contract. |
-| INV-RESOURCE-001 | Runtime limits have one definition in domain/policy.py. Collection retains pending messages, referenced artifacts and transitive evidence; only aged unreferenced artifacts are removed. A referenced artifact that is missing is reported as lost evidence with a durable event, and a corrupted one aborts collection before any deletion; neither is folded into a healthy result. Hash-linked journals fail closed on any break, and an appended well-formed record never softens that verdict. |
+| INV-RESOURCE-001 | Runtime limits have one definition in kernel/policy.py. Collection retains pending messages, referenced artifacts and transitive evidence; only aged unreferenced artifacts are removed. A referenced artifact that is missing is reported as lost evidence with a durable event, and a corrupted one aborts collection before any deletion; neither is folded into a healthy result. Hash-linked journals fail closed on any break, and an appended well-formed record never softens that verdict. |
 
 Comments cite invariant IDs and explain non-obvious local reasons, without duplicating policy definitions.
 Organization SSOT: `src/codex_harness/resources/organization.json`.
 Wire schema SSOT: `src/codex_harness/resources/message.schema.json`.
-Runtime policy SSOT: `src/codex_harness/domain/policy.py`.
+Runtime policy SSOT: `src/codex_harness/kernel/policy.py`.
 Guidance-document conventions (layers, one owner per rule, actual delivery): `docs/context/README.md`.
 The trusted local-process identity boundary is documented in status.md; validation is not authentication.
 
@@ -265,7 +265,7 @@ bounded recovery with cause and evidence. The five-second tolerance also bounds
 the optional injected scheduling time; normal execution samples host time.
 
 One execution's time limit is a ceiling built from the shortest applicable source, never a grant:
-the single policy default for the role (`domain/policy.py`, a worker task or a decision), the
+the single policy default for the role (`kernel/policy.py`, a worker task or a decision), the
 remaining time of the execution's own durable deadline, and any explicit provider control the host
 configuration declares. Changing a default changes what is allowed at most; it never extends a
 recorded deadline, a lease, a heartbeat interval, a command-evidence replay window or a retry, and
@@ -2253,8 +2253,8 @@ reasons `attempt_scope_eligible`/`attempt_scope_ineligible`; owner outcome `rese
 receipt `research_scope_foreign`/`_mismatch`/`_membership`/`_claimed`/`_original_only` (a mixed receipt or scope
 supplement naming a scope). Log events `attempt_scope_scanned`, `attempt_scope_claimed`, `attempt_scope_result`.
 
-Tests: tests/test_research_attempt_scope_program.py, tests/test_research_attempt_scope_owner.py,
-tests/test_research_attempt_scope_receipt.py (labelled synthetic fixtures only).
+Tests: tests/ported/test_research_attempt_scope_program.py, tests/ported/test_research_attempt_scope_owner.py,
+tests/ported/test_research_attempt_scope_receipt.py (labelled synthetic fixtures only).
 
 ## INV-AUDIT-SERVICE-001
 
@@ -3582,7 +3582,7 @@ and neither completes nor pauses the item; a plan of this target for another rev
 wait with no write. Completion and pause record `delivery_plan {plan_id, plan_sha256, stage}`.
 
 Fixture tests prove the composition with labelled worker/lead/conductor executors; the child
-ownership is proven with real local sleeping children (tests/test_continuation_process.py), never a
+ownership is proven with real local sleeping children (tests/ported/test_continuation_process.py), never a
 model. They do not prove real PostgreSQL/Redis behaviour, a real two-turn model session, the managed
 Fleet, native Windows execution or two useful unattended jobs; those are owner qualification gates.
 
@@ -3632,7 +3632,7 @@ refused with `Conflicting reverification request`. Concurrent requests serialize
 transaction (the PostgreSQL advisory lock), so a source never gets two children. A failure inside
 the transaction leaves no successor and no event.
 
-tests/test_release_reverification.py runs these cases on the memory store. It runs the
+tests/ported/test_release_reverification.py runs these cases on the memory store. It runs the
 PostgreSQL-backed cases (creation, fresh-check gate, replay, concurrency, fault rollback) only with
 `HARNESS_INTEGRATION=1`. Without it they skip and prove nothing about PostgreSQL. The runner
 integration uses labelled fixture checks, never an actual release verification.
@@ -4352,7 +4352,7 @@ exports, and the manifest/receipt/coordinator policy.
 
 ### Tests
 
-tests/test_host_migration.py runs these cases on fixture data and the memory store:
+tests/ported/test_host_migration.py runs these cases on fixture data and the memory store:
 
 - policy and coordinator;
 - the writer-start/receipt-gap interruption;
@@ -4366,8 +4366,8 @@ tests/test_host_migration.py runs these cases on fixture data and the memory sto
 The Redis round trip runs only with `ZEUS_MIGRATION_TEST_REDIS_SOURCE`/`_TARGET`. Without them it
 skips and proves nothing about Redis.
 
-tests/test_fleet_host_migration.py runs the D2 policy on the memory store.
-tests/test_host_migration_pg_rehearsal.py runs the D1-D3 rehearsal only with
+tests/ported/test_fleet_host_migration.py runs the D2 policy on the memory store.
+tests/ported/test_host_migration_pg_rehearsal.py runs the D1-D3 rehearsal only with
 `ZEUS_MIGRATION_TEST_PG_{SOURCE,TARGET}_{CONTAINER,SOCKET}` naming disposable PG17 + pgvector
 servers. Without them it skips and proves nothing about PostgreSQL.
 
@@ -4470,11 +4470,11 @@ existing owners: `Continuation.accept_research`, the guarded `decide_one` of the
   re-validates request, target, descriptor, sealed manifest, stop request, previous-instance liveness and
   the Fleet activation gate before the incumbent `launch`.
 
-Tests: tests/test_owner_actions.py, tests/test_owner_delivery.py, tests/test_owner_canary_plan.py,
-tests/test_managed_systemd.py, tests/test_owner_actions_recovery.py (the two-family chain on one lane
+Tests: tests/ported/test_owner_actions.py, tests/ported/test_owner_delivery.py, tests/ported/test_owner_canary_plan.py,
+tests/ported/test_managed_systemd.py, tests/ported/test_owner_actions_recovery.py (the two-family chain on one lane
 store and target, the requalification restart/concurrency/new-base matrix and the ported RO-1 table),
-tests/test_owner_actions_research_process.py (the actual guardian lifecycle with a labelled child),
-tests/test_owner_actions_adapters.py, tests/test_aibox_owner_units.py. Models, the canary executor and
+tests/ported/test_owner_actions_research_process.py (the actual guardian lifecycle with a labelled child),
+tests/ported/test_owner_actions_adapters.py, tests/ported/test_aibox_owner_units.py. Models, the canary executor and
 systemd are labelled fixtures or a labelled simulation there. Live qualification is out of their scope.
 
 ## INV-LANE-SESSIONS-001
@@ -4566,11 +4566,11 @@ terminal or a screen, and it is not a transcript. The executor keeps only progre
   the other entries; a row whose activity cannot be projected is `unavailable`, and its session facts stay. An
   empty retained list with malformed events is `malformed_not_in_recent`. The separate malformed ring is not read.
 
-Tests: tests/test_monitoring_activity.py (S2a, matrix S2-1..S2-9 on temporary artifact roots), tests/test_progress_activity.py and
-tests/test_progress_activity_producer.py (S2b, matrix S2B-1..S2B-19), tests/test_monitoring_lane_sessions.py (labelled synthetic lane rows and a fake connection, with no
+Tests: tests/ported/test_monitoring_activity.py (S2a, matrix S2-1..S2-9 on temporary artifact roots), tests/ported/test_progress_activity.py and
+tests/ported/test_progress_activity_producer.py (S2b, matrix S2B-1..S2B-19), tests/ported/test_monitoring_lane_sessions.py (labelled synthetic lane rows and a fake connection, with no
 provider, process or database; plus one integration test on real PostgreSQL, run with
 `HARNESS_INTEGRATION=1`, showing that a lane snapshot is not blocked by a held writer lock) and the
-collector entrypoint test in tests/test_monitoring.py.
+collector entrypoint test in tests/ported/test_monitoring.py.
 
 ## INV-DISCOVERY-PRESSURE-001
 
@@ -4649,6 +4649,6 @@ decision, not a failure. The periodic research scheduler states `proactive`.
 that turn the incomplete cases into exact counts are a named follow-up (T1b). T1b will also cover:
 - a conductor `awaiting_owner` intent that its controller may still redispatch (not counted in T1a).
 
-Tests: tests/test_discovery_pressure.py (labelled fixtures; the real-PostgreSQL concurrency case runs with
+Tests: tests/ported/test_discovery_pressure.py (labelled fixtures; the real-PostgreSQL concurrency case runs with
 `HARNESS_INTEGRATION=1`), plus the explicit intents in the research, owner-actions and continuation-research
 tests.
