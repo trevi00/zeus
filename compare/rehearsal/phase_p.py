@@ -298,7 +298,7 @@ class PhaseP:
              # it checks a byte-identical duplicate in the helper's tmpfs, and the sealed copy stays read-only. The
              # manifest name is AOF_MANIFEST_NAME-validated above, so it is safe in the sh -c string.
              "--tmpfs", "/tmp", "--mount", f"type=bind,src={out},dst=/c,readonly", "--entrypoint", "sh", REDIS_IMAGE,
-             "-c", "cp -a /c /tmp/k && exec redis-check-aof /tmp/k/" + manifests[0][2:].rsplit("/", 1)[1]],
+             "-c", "cp -a /c /tmp/k && exec redis-check-aof /tmp/k/appendonlydir/" + manifests[0][2:].rsplit("/", 1)[1]],
             timeout=900)
         facts["aof_check_exit"] = check.returncode
         need(step, "aof_check", check)
