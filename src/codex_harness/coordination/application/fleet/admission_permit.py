@@ -37,7 +37,9 @@ from codex_harness.coordination.domain.fleet_admission_permit import (
     PERMIT_EXPIRED,
     PERMIT_ID,
     UNLAUNCHED_REASONS,
+    VERIFICATION_JOB,
     build_permit,
+    build_verification_permit,
     consumption_deadline,
     expired,
     permit_id_of,
@@ -102,6 +104,8 @@ class FleetAdmissionPermits:
         template = validate_template(template)
         if type(template_digest) is not str or digest(template) != template_digest:
             raise FleetRefused("permit_invalid", "template")
+        if template["kind"] == VERIFICATION_JOB:
+            return self._grant_verification(template, template_digest)
         intent = self.consumption(template["plan_id"])
         with self.store.transaction() as tx:
             if state.registry(tx) is None:
@@ -147,15 +151,48 @@ class FleetAdmissionPermits:
                 if old["permit_sha256"] != sha:
                     raise FleetRefused("permit_conflict", "permit")
                 return self._cached(old)
-            row = {"id": pid, "permit": permit, "permit_sha256": sha, "state": ACKNOWLEDGED, "granted_at": now,
-                   "acknowledged_at": now, "lane": permit["lane"], "manifest_sha256": permit["manifest_sha256"],
-                   "owner_token": None, "admitted_at": None, "closed_at": None, "close_reason": None,
-                   "job_status": None, "launched": None,
-                   "ack": {"template_sha256": template_digest, "at": now},
-                   "history": [{"state": GRANTED, "at": now, "reason": None},
-                               {"state": ACKNOWLEDGED, "at": now, "reason": None}]}
+            row = self._row(permit, sha, template_digest, now)
             tx.put(BUCKET_PERMITS, pid, row)
         return {"granted": True, "cached": False, "permit_id": pid, "permit_sha256": sha, "state": ACKNOWLEDGED}
+
+    def _grant_verification(self, template: dict, template_digest: str) -> dict:
+        """The `verification_job` grant (Amendment A4), in ONE transaction: the owner-paused Fleet, the template's own
+        enumerated job still QUEUED under exactly its lane and manifest digest, a fresh deadline, and no owner canary
+        action naming that job. The FA-VPLAN row id and digest are bound as recorded, never read."""
+        with self.store.transaction() as tx:
+            if state.registry(tx) is None:
+                raise FleetRefused("unregistered")
+            self._owner_paused(state.control(tx))
+            now = self.clock()
+            job = tx.get(BUCKET_JOBS, template["job_id"])
+            if not (isinstance(job, dict) and job.get("status") == QUEUED and job.get("lane") == template["lane"]
+                    and job.get("manifest_sha256") == template["manifest_sha256"]):
+                raise FleetRefused("permit_refused", "job")
+            if any(row.get("job_id") == job["id"] for row in tx.scan(OWNER_ACTIONS_BUCKET)):
+                raise FleetRefused("permit_refused", "action")
+            permit = build_verification_permit(template, template_digest, now)
+            sha, pid = digest(permit), permit["permit_id"]
+            if self._maintenance_names(tx, permit["job_id"], set()):
+                raise FleetRefused("permit_conflict", "maintenance")
+            if any(row["id"] != pid and row.get("state") != CLOSED for row in tx.scan(BUCKET_PERMITS)):
+                raise FleetRefused("permit_conflict", "permit_id")
+            old = tx.get(BUCKET_PERMITS, pid)
+            if old is not None:
+                if old["permit_sha256"] != sha and old["state"] not in {ADMITTED, CLOSED}:
+                    raise FleetRefused("permit_conflict", "permit")
+                return self._cached(old)
+            tx.put(BUCKET_PERMITS, pid, self._row(permit, sha, template_digest, now))
+        return {"granted": True, "cached": False, "permit_id": pid, "permit_sha256": sha, "state": ACKNOWLEDGED}
+
+    @staticmethod
+    def _row(permit: dict, sha: str, template_digest: str, now: str) -> dict:
+        return {"id": permit["permit_id"], "permit": permit, "permit_sha256": sha, "state": ACKNOWLEDGED,
+                "granted_at": now, "acknowledged_at": now, "lane": permit["lane"],
+                "manifest_sha256": permit["manifest_sha256"], "owner_token": None, "admitted_at": None,
+                "closed_at": None, "close_reason": None, "job_status": None, "launched": None,
+                "ack": {"template_sha256": template_digest, "at": now},
+                "history": [{"state": GRANTED, "at": now, "reason": None},
+                            {"state": ACKNOWLEDGED, "at": now, "reason": None}]}
 
     def admit_admission_permit(self, permit_id: str, *, budget_exhausted: bool, permit_sha256: str | None = None) -> dict:
         """Claim exactly this permit's owner canary job as `dispatching`, in ONE transaction.
@@ -183,19 +220,21 @@ class FleetAdmissionPermits:
             if row["state"] != ACKNOWLEDGED:
                 raise FleetRefused("permit_unacknowledged", "state")
             permit = validate_permit(row["permit"])
-            if digest(permit) != row["permit_sha256"] or permit_id_of(permit["action_id"]) != permit_id:
+            if digest(permit) != row["permit_sha256"] or permit["permit_id"] != permit_id:
                 raise FleetRefused("permit_conflict", "permit")
             now = self.clock()
             if expired(permit["deadline"], now):
                 raise FleetRefused("permit_expired", "deadline")
-            action = tx.get(OWNER_ACTIONS_BUCKET, permit["action_id"])
-            if not (owner_action_matches(permit, action) and action.get("state") == REQUESTED):
-                raise FleetRefused("permit_refused", "action")
+            canary = permit["kind"] == DELIVERY_CANARY
+            if canary:
+                action = tx.get(OWNER_ACTIONS_BUCKET, permit["action_id"])
+                if not (owner_action_matches(permit, action) and action.get("state") == REQUESTED):
+                    raise FleetRefused("permit_refused", "action")
             job = tx.get(BUCKET_JOBS, permit["job_id"])
             if not (isinstance(job, dict) and job.get("id") == permit["job_id"] and job.get("status") == QUEUED
                     and job.get("lane") == permit["lane"] and job.get("manifest_sha256") == permit["manifest_sha256"]):
                 raise FleetRefused("permit_refused", "job")
-            if self._maintenance_names(tx, job["id"], {permit["action_id"]}):
+            if self._maintenance_names(tx, job["id"], {permit["action_id"]} if canary else set()):
                 raise FleetRefused("permit_refused", "maintenance")
             job = claim_queued_job(tx, registry, control, job, now=now, token=self.token,
                                    budget_exhausted=budget_exhausted, debt_code="permit_debt_unsettled",
@@ -236,8 +275,8 @@ class FleetAdmissionPermits:
                     raise FleetRefused("permit_stale", "deadline")
                 if job is not None:
                     # Only the exact queued job of this permit's owner action; a terminal job was never its to close.
-                    if job["status"] != QUEUED or not owner_action_matches(permit, tx.get(OWNER_ACTIONS_BUCKET,
-                                                                                          permit["action_id"])):
+                    if job["status"] != QUEUED or not (permit["kind"] != DELIVERY_CANARY or owner_action_matches(
+                            permit, tx.get(OWNER_ACTIONS_BUCKET, permit["action_id"]))):
                         raise FleetRefused("permit_conflict", "job")
                     fail_unlaunched_job(tx, job, reason, now,
                                         admission_permit={"permit_id": permit_id, "launched": False, "reason": reason})

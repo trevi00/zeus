@@ -309,7 +309,7 @@ def test_an_admitted_job_stays_owned_until_settlement(tmp_path):
 
 
 # ---- test 5: refusals before any claim ----------------------------------------------------------------
-@pytest.mark.parametrize("kind", ["maintenance_canary", "forward_candidate", "verification_job", "other", 7, None])
+@pytest.mark.parametrize("kind", ["maintenance_canary", "forward_candidate", "other", 7, None])
 def test_an_unknown_kind_is_refused_before_any_write(tmp_path, kind):
     w = World(tmp_path).request_canary()
     template = w.template(kind=kind)
@@ -637,3 +637,104 @@ def test_the_grant_permit_leaf_grants_through_the_store_and_refuses_with_the_clo
     with pytest.raises(FleetRefused) as info:
         _grant_permit(service, SimpleNamespace(template="0" * 64, file=path))
     assert (info.value.reason_code, info.value.field) == ("permit_invalid", "template")
+
+
+# ---- `verification_job` (Amendment A4; its own revertible commit) ---------------------------------------------
+VPLAN_ROW = "vplan-n1"
+
+
+class VerificationWorld(World):
+    """An owner-paused Fleet with one enumerated V job queued (no OA action, no delivery record)."""
+
+    def __init__(self, tmp_path, **kwargs):
+        super().__init__(tmp_path, **kwargs)
+        self.job = self.registry.enqueue("a", manifest("v-job-1", ["docs/v.md"]), GOAL, [])["job"]
+
+    def template(self, **overrides) -> dict:
+        return {"schema": fa.TEMPLATE_SCHEMA, "kind": "verification_job", "job_id": self.job["id"], "lane": "a",
+                "manifest_sha256": self.job["manifest_sha256"], "vplan_row_id": VPLAN_ROW,
+                "vplan_row_sha256": "7" * 64, "evidence_ref": EVIDENCE,
+                "deadline": (NOW + timedelta(seconds=WINDOW)).isoformat(), "issuer": "owner",
+                "approver": "conductor", **overrides}
+
+    def grant(self, **overrides) -> dict:
+        template = self.template(**overrides)
+        return self.permits.grant_admission_permit(digest(template), template)
+
+    @property
+    def permit_id(self) -> str:
+        return fa.verification_permit_id(self.template())
+
+
+def test_a_verification_job_permit_binds_the_enumerated_job_and_its_vplan_row(tmp_path):
+    w = VerificationWorld(tmp_path)
+    assert w.grant()["state"] == "acknowledged"
+    permit = w.row("fleet_admission_permits", w.permit_id)["permit"]
+    assert (permit["job_id"], permit["lane"], permit["manifest_sha256"]) == ("v-job-1", "a", w.job["manifest_sha256"])
+    assert (permit["vplan_row_id"], permit["vplan_row_sha256"], permit["kind"]) == (VPLAN_ROW, "7" * 64,
+                                                                                   "verification_job")
+    assert permit["deadline"] == (NOW + timedelta(seconds=WINDOW)).isoformat()
+    assert w.grant()["cached"] is True
+
+
+def test_a_verification_job_admits_only_its_exact_job_and_the_control_row_is_byte_identical(tmp_path):
+    w = VerificationWorld(tmp_path)
+    other = w.registry.enqueue("b", manifest("op-concurrent", ["docs/other.md"]), GOAL, [])["job"]
+    other_row = w.row("fleet_jobs", other["id"])
+    w.grant()
+    control = w.control_bytes()
+    launcher = CountingLauncher({w.job["id"]: ACCEPTED})
+    result = w.executor(launcher).execute(w.permit_id, max_wait_seconds=30)
+    assert (result["job_status"], result["closed"]) == ("accepted", True)
+    assert launcher.attempts == [w.job["id"]]
+    assert w.row("fleet_jobs", other["id"]) == other_row and w.control_bytes() == control
+    refused(w.admit, "permit_already_used", "state")
+
+
+@pytest.mark.parametrize("case, code, field", [
+    ("manifest_mismatch", "permit_refused", "job"),
+    ("lane_mismatch", "permit_refused", "job"),
+    ("unknown_job", "permit_refused", "job"),
+    ("expired", "permit_expired", "deadline"),
+    ("too_long", "permit_invalid", "deadline"),
+    ("approver_equals_issuer", "permit_invalid", "approver"),
+    ("bad_row_digest", "permit_invalid", "vplan_row_sha256"),
+    ("named_by_owner_action", "permit_refused", "action"),
+])
+def test_a_verification_job_grant_refuses_before_any_write(tmp_path, case, code, field):
+    w = VerificationWorld(tmp_path)
+    overrides = {"manifest_mismatch": {"manifest_sha256": "5" * 64}, "lane_mismatch": {"lane": "b"},
+                 "unknown_job": {"job_id": "v-absent"}, "expired": {"deadline": NOW.isoformat()},
+                 "too_long": {"deadline": (NOW + timedelta(seconds=901)).isoformat()},
+                 "approver_equals_issuer": {"approver": "owner"}, "bad_row_digest": {"vplan_row_sha256": "x"},
+                 "named_by_owner_action": {}}[case]
+    if case == "named_by_owner_action":
+        put_row(w.store, "owner_actions", "a" * 64, {"id": "a" * 64, "kind": "delivery_canary", "job_id": w.job["id"]})
+    before = w.snapshot()
+    refused(lambda: w.grant(**overrides), code, field)
+    assert w.snapshot() == before
+
+
+def test_a_verification_job_whose_queued_job_moved_is_refused_and_expiry_fails_it_without_a_spawn(tmp_path):
+    w = VerificationWorld(tmp_path)
+    w.grant()
+    put_row(w.store, "fleet_jobs", w.job["id"], {**w.row("fleet_jobs", w.job["id"]), "manifest_sha256": "4" * 64})
+    before = w.snapshot()
+    refused(w.admit, "permit_refused", "job")
+    assert w.snapshot() == before
+    put_row(w.store, "fleet_jobs", w.job["id"], w.job | {"manifest_sha256": w.job["manifest_sha256"]})
+    launcher = CountingLauncher({})
+    w.clock.advance(WINDOW)
+    refused(lambda: w.executor(launcher).execute(w.permit_id, max_wait_seconds=30), "permit_expired", "deadline")
+    job = w.row("fleet_jobs", w.job["id"])
+    assert (job["status"], job["reason_code"]) == ("failed", "permit_expired") and launcher.attempts == []
+
+
+def test_a_verification_job_never_names_a_pr3_job_and_the_pr3_bucket_is_unchanged(tmp_path):
+    w = VerificationWorld(tmp_path)
+    pr3 = {"id": "active_generation_1:" + "a" * 64, "state": "granted",
+           "permit": {"schema": PR3_SCHEMA, "action_id": "c" * 64, "job_id": w.job["id"]}}
+    put_row(w.store, "fleet_maintenance_admissions", pr3["id"], pr3)
+    before = w.snapshot()
+    refused(w.grant, "permit_conflict", "maintenance")
+    assert w.snapshot() == before

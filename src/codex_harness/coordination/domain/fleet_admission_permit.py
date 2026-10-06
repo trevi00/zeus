@@ -4,13 +4,13 @@ Layer: domain
 Context: coordination
 Owns: the permit and template grammar, the closed kind set, the consumption-deadline derivation, the state and close vocabulary and the safe view of the Fleet's admission permits
 Does not own: the store, the permit bucket's writes (coordination.application.fleet.admission_permit), the PR-3 maintenance permit (coordination.domain.fleet_maintenance)
-Entry points: validate_template, validate_permit, kind_of, build_permit, consumption_deadline, permit_id_of, permit_view, permit_names_job, expired
+Entry points: validate_template, validate_permit, kind_of, build_permit, build_verification_permit, verification_permit_id, consumption_deadline, permit_id_of, permit_view, permit_names_job, expired
 Contracts: INV-FLEET-001
 
 A separate bucket from PR-3's `fleet_maintenance_admissions` (Amendment A1): the PR-3 kinds are not generalized and
 this module never reads their grammar except to refuse a job a PR-3 permit already names. The closed kind set is
-{`delivery_canary`} (+ `verification_job` in its own revertible commit); an unknown kind is refused before any write.
-The permit admits ONE job, bound to the OA `delivery_canary` action's immutable canary binding; the template
+{`delivery_canary`, `verification_job`} (the latter added in its own revertible commit, Amendment A4); an unknown kind is refused before any write.
+The `delivery_canary` permit admits ONE job, bound to the OA action's immutable canary binding; the `verification_job` permit admits ONE enumerated V job, bound to its job id, lane, manifest digest and an FA-VPLAN row id and digest (recorded, not interpreted here); the template
 (digest-bound, issuer and approver distinct) carries only the window-independent fields. Everything is pure policy over
 dictionaries; a refusal carries a fixed code and at most a fixed field name, never a value.
 """
@@ -35,17 +35,26 @@ from codex_harness.coordination.domain.owner_actions import (
     canary_job_id,
 )
 from codex_harness.delivery.domain.host_delivery import AWAITING_CONSUMPTION, MAX_CONSUMPTION_TIMEOUT
+from codex_harness.kernel.ids import digest
 
 PERMIT_SCHEMA = "urn:zeus:fleet-admission-permit:1"
 TEMPLATE_SCHEMA = "urn:zeus:fleet-admission-permit-template:1"
 EXECUTION_SCHEMA = "urn:zeus:fleet-admission-execution:1"
 # The closed kind set (FA-SPEC §2, Amendment A1/A4). `maintenance_canary` and `forward_candidate` stay PR-3's.
-KINDS = frozenset({DELIVERY_CANARY})
+VERIFICATION_JOB = "verification_job"
+KINDS = frozenset({DELIVERY_CANARY, VERIFICATION_JOB})
 PERMIT_ID = re.compile(r"^fleet_admission:[0-9a-f]{64}$")
 TEMPLATE_FIELDS = frozenset({"schema", "kind", "plan_id", "plan_sha256", "target_id", "lane", "evidence_ref",
                              "issuer", "approver"})
 PERMIT_FIELDS = frozenset({"schema", "kind", "permit_id", "evidence_ref", *BINDING_FIELDS, "action_id", "job_id",
                            "lane", "manifest_sha256", "deadline", "issuer", "approver", "template_sha256"})
+# `verification_job` (Amendment A4): the V job's own binding, no owner action and no consumption record; the deadline is
+# the template's (each V job gets a manifest digest and a deadline in the owner record).
+VERIFICATION_BINDING = ("job_id", "lane", "manifest_sha256", "vplan_row_id", "vplan_row_sha256")
+VERIFICATION_TEMPLATE_FIELDS = frozenset({"schema", "kind", "evidence_ref", "deadline", "issuer", "approver",
+                                          *VERIFICATION_BINDING})
+VERIFICATION_PERMIT_FIELDS = frozenset({"schema", "kind", "permit_id", "evidence_ref", "deadline", "issuer", "approver",
+                                        "template_sha256", *VERIFICATION_BINDING})
 
 GRANTED, ACKNOWLEDGED, ADMITTED, CLOSED = "granted", "acknowledged", "admitted", "closed"
 PERMIT_STATES = frozenset({GRANTED, ACKNOWLEDGED, ADMITTED, CLOSED})
@@ -78,7 +87,8 @@ def permit_id_of(identity: str) -> str:
 
 def validate_template(template) -> dict:
     """Exact keys and grammar of the digest-bound permit template; returns the canonical copy."""
-    kind_of(template)
+    if kind_of(template) == VERIFICATION_JOB:
+        return _validate_verification_template(template)
     if not isinstance(template, dict) or set(template) != TEMPLATE_FIELDS:
         raise FleetRefused("permit_invalid", "template")
     if template["schema"] != TEMPLATE_SCHEMA:
@@ -90,6 +100,45 @@ def validate_template(template) -> dict:
     if template["issuer"] == template["approver"]:
         raise FleetRefused("permit_invalid", "approver")
     return {key: template[key] for key in sorted(TEMPLATE_FIELDS)}
+
+
+def _validate_verification_template(template: dict) -> dict:
+    if set(template) != VERIFICATION_TEMPLATE_FIELDS:
+        raise FleetRefused("permit_invalid", "template")
+    if template["schema"] != TEMPLATE_SCHEMA:
+        raise FleetRefused("permit_invalid", "schema")
+    for key, pattern in (("job_id", TOKEN), ("lane", TOKEN), ("manifest_sha256", DIGEST_HEX), ("vplan_row_id", TOKEN),
+                         ("vplan_row_sha256", DIGEST_HEX), ("evidence_ref", EVIDENCE_REF), ("issuer", ACTOR),
+                         ("approver", ACTOR)):
+        if not _str(template[key], pattern):
+            raise FleetRefused("permit_invalid", key)
+    if template["issuer"] == template["approver"]:
+        raise FleetRefused("permit_invalid", "approver")
+    if instant(template["deadline"]) is None:
+        raise FleetRefused("permit_invalid", "deadline")
+    return {key: template[key] for key in sorted(VERIFICATION_TEMPLATE_FIELDS)}
+
+
+def verification_permit_id(binding: dict) -> str:
+    """One permit per enumerated V job binding: the deterministic id of exactly these fields."""
+    return permit_id_of(digest({"kind": VERIFICATION_JOB, **{key: binding[key] for key in VERIFICATION_BINDING}}))
+
+
+def build_verification_permit(template: dict, template_sha256: str, now: str) -> dict:
+    """The permit of ONE enumerated V job: every field is the owner-approved template's, none caller-supplied; the
+    deadline must be fresh and at most the consumption maximum away."""
+    end, current = instant(template["deadline"]), instant(now)
+    if end is None or current is None:
+        raise FleetRefused("permit_invalid", "deadline")
+    if current >= end:
+        raise FleetRefused("permit_expired", "deadline")
+    if end - current > timedelta(seconds=MAX_CONSUMPTION_TIMEOUT):
+        raise FleetRefused("permit_invalid", "deadline")
+    permit = {"schema": PERMIT_SCHEMA, "kind": VERIFICATION_JOB, "permit_id": verification_permit_id(template),
+              "evidence_ref": template["evidence_ref"], "deadline": template["deadline"],
+              "issuer": template["issuer"], "approver": template["approver"], "template_sha256": template_sha256,
+              **{key: template[key] for key in VERIFICATION_BINDING}}
+    return validate_permit(permit)
 
 
 def build_permit(template: dict, template_sha256: str, action: dict, job: dict, deadline: str) -> dict:
@@ -112,7 +161,8 @@ def validate_permit(permit) -> dict:
     The action id must be the owner action identity of exactly the binding and the job id the owner canary job id of
     that action, so a permit can only name the canary job the unchanged owner-actions code creates for the new
     instance. The kind is checked first: an unknown kind never reaches a store."""
-    kind_of(permit)
+    if kind_of(permit) == VERIFICATION_JOB:
+        return _validate_verification_permit(permit)
     if not isinstance(permit, dict) or set(permit) != PERMIT_FIELDS:
         raise FleetRefused("permit_invalid", "permit")
     if permit["schema"] != PERMIT_SCHEMA:
@@ -135,6 +185,25 @@ def validate_permit(permit) -> dict:
     if instant(permit["deadline"]) is None:
         raise FleetRefused("permit_invalid", "deadline")
     return {key: permit[key] for key in sorted(PERMIT_FIELDS)}
+
+
+def _validate_verification_permit(permit: dict) -> dict:
+    if set(permit) != VERIFICATION_PERMIT_FIELDS:
+        raise FleetRefused("permit_invalid", "permit")
+    if permit["schema"] != PERMIT_SCHEMA:
+        raise FleetRefused("permit_invalid", "schema")
+    for key, pattern in (("permit_id", PERMIT_ID), ("job_id", TOKEN), ("lane", TOKEN), ("manifest_sha256", DIGEST_HEX),
+                         ("vplan_row_id", TOKEN), ("vplan_row_sha256", DIGEST_HEX), ("evidence_ref", EVIDENCE_REF),
+                         ("issuer", ACTOR), ("approver", ACTOR), ("template_sha256", DIGEST_HEX)):
+        if not _str(permit[key], pattern):
+            raise FleetRefused("permit_invalid", key)
+    if permit["permit_id"] != verification_permit_id(permit):
+        raise FleetRefused("permit_invalid", "permit_id")
+    if permit["issuer"] == permit["approver"]:
+        raise FleetRefused("permit_invalid", "approver")
+    if instant(permit["deadline"]) is None:
+        raise FleetRefused("permit_invalid", "deadline")
+    return {key: permit[key] for key in sorted(VERIFICATION_PERMIT_FIELDS)}
 
 
 def expired(deadline: str, now: str) -> bool:
@@ -182,6 +251,8 @@ def permit_view(row: dict) -> dict:
 
 __all__ = ["ACKNOWLEDGED", "ADMITTED", "CLOSED", "CLOSE_REASONS", "EXECUTION_SCHEMA", "GRANTED", "KINDS",
            "PERMIT_CANCELLED", "PERMIT_EXPIRED", "PERMIT_FIELDS", "PERMIT_ID", "PERMIT_SCHEMA", "PERMIT_SETTLED",
-           "PERMIT_STATES", "PERMIT_VIEW_FIELDS", "TEMPLATE_FIELDS", "TEMPLATE_SCHEMA", "UNLAUNCHED_REASONS",
+           "PERMIT_STATES", "PERMIT_VIEW_FIELDS", "TEMPLATE_FIELDS", "TEMPLATE_SCHEMA", "UNLAUNCHED_REASONS", "VERIFICATION_BINDING", "VERIFICATION_JOB",
+           "VERIFICATION_PERMIT_FIELDS", "VERIFICATION_TEMPLATE_FIELDS", "build_verification_permit",
+           "verification_permit_id",
            "build_permit", "consumption_deadline", "expired", "kind_of", "permit_id_of",
            "permit_names_job", "permit_view", "validate_permit", "validate_template"]

@@ -1629,8 +1629,11 @@ job `permit_expired` or `permit_cancelled` without a spawn and never expires an 
 (`permit_reconciliation_required`). `codex_harness.coordination.application.fleet.runner.AdmissionPermitExecutor`
 (the owner CLI leaves `zeus fleet grant-permit --template <digest>` and `zeus fleet admit-permit --permit <id>`)
 shares the one-job launch with `MaintenanceCanaryExecutor`, settles the permit when the job is finalized and never
-relaunches an unknown dispatch. The Fleet control row (`paused`, `updated_at`) is never written, and the permit is not a
-maintenance closure or a resume.
+relaunches an unknown dispatch. The closed kind set adds `verification_job` (Amendment A4; a separately revertible
+step): one enumerated V job bound to its `job_id`, `lane`, `manifest_sha256` and an FA-VPLAN row id and digest (recorded,
+not interpreted) with the template's own deadline, granted only for that exact QUEUED job and never for a job an owner
+action or a maintenance permit names. The Fleet control row (`paused`, `updated_at`) is never written, and the permit is
+not a maintenance closure or a resume.
 
 ## INV-FLEET-BACKLOG-001
 
