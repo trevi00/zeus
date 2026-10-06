@@ -36,6 +36,7 @@ import os
 import re
 import subprocess
 import sys
+from dataclasses import dataclass
 from pathlib import Path
 
 from . import Refused, check_run8
@@ -54,6 +55,21 @@ DUMP_MAGIC = b"PGDMP"
 MANIFEST_LINE = re.compile(r"^(\./.+) (\d+) (\d+) ([0-9a-f]{64})$")
 AOF_MANIFEST_NAME = re.compile(r"^[A-Za-z0-9._-]+\.manifest$")
 SCHEMA = "zeus:aibox-migration-001:rehearsal:phase-p:2"
+
+
+@dataclass(frozen=True)
+class Targets:
+    """The resources Phase P reads. The default is exactly the production set; only a caller in code (the owner-run
+    control runner, over labelled stand-ins) passes another, and `main` never accepts one from the command line."""
+
+    pg: str = PG
+    redis: str = REDIS
+    redis_volume: str = REDIS_VOLUME
+    monitoring: str = MONITORING
+    heartbeat: str = HEARTBEAT
+
+
+DEFAULT_TARGETS = Targets()
 
 
 class StepFailed(Exception):
@@ -181,7 +197,8 @@ def redis_script(uid: int, gid: int) -> str:
 
 
 class PhaseP:
-    def __init__(self, root, evidence, run8, host=None):
+    def __init__(self, root, evidence, run8, host=None, targets=None):
+        self.targets = targets or DEFAULT_TARGETS
         self.root, self.evidence, self.run8 = str(root), str(evidence), check_run8(run8)
         self.host = host or Host()
         self.step = "init"
@@ -190,14 +207,14 @@ class PhaseP:
     # -- production reads (every command's success is required) --
 
     def gate(self, step: str) -> dict:
-        with self.host.open(MONITORING) as fh:
+        with self.host.open(self.targets.monitoring) as fh:
             mon = json.load(fh)
         paused = (((mon.get("sources") or {}).get("fleet") or {}).get("data") or {}).get("paused") is True
-        with self.host.open(HEARTBEAT) as fh:
+        with self.host.open(self.targets.heartbeat) as fh:
             hb = json.load(fh)
         quiet = hb.get("active") == 0 and hb.get("unresolved") == 0
         facts = {}
-        for name in (PG, REDIS):
+        for name in (self.targets.pg, self.targets.redis):
             inspected = self.host.run(["docker", "inspect", "--format", INSPECT, name])
             need(step, f"inspect_{name}", inspected)
             raw = json.loads(inspected.stdout)
@@ -211,7 +228,7 @@ class PhaseP:
                 "containers": facts}
 
     def psql(self, step: str, what: str, sql: str):
-        done = self.host.run(["docker", "exec", PG, "psql", "-U", "zeus", "-h", "/var/run/postgresql", "-d", "postgres",
+        done = self.host.run(["docker", "exec", self.targets.pg, "psql", "-U", "zeus", "-h", "/var/run/postgresql", "-d", "postgres",
                               "-XAtq", "-v", "ON_ERROR_STOP=1", "-c", sql])
         need(step, what, done)
         return done
@@ -219,7 +236,7 @@ class PhaseP:
     def dump(self, db: str, tag: str) -> dict:
         path = os.path.join(self.root, "p", f"{db}.{tag}.dump")
         with self.host.open(path, "xb") as out:
-            proc = self.host.run(["docker", "exec", PG, "pg_dump", "-U", "zeus", "-h", "/var/run/postgresql", "-d", db,
+            proc = self.host.run(["docker", "exec", self.targets.pg, "pg_dump", "-U", "zeus", "-h", "/var/run/postgresql", "-d", db,
                                   "-Fc", "--lock-wait-timeout=30000", "--no-password"], timeout=3600, stdout=out)
         size, digest = sha256_file(path)
         with open(path, "rb") as fh:
@@ -249,7 +266,7 @@ class PhaseP:
         proc = self.host.run(
             ["docker", "run", "--rm", "--network", "none", *helper_labels(self.run8),
              "--name", helper_name(self.run8, "redis-snap"), "--memory", "1g",
-             "--mount", f"type=volume,src={REDIS_VOLUME},dst=/src,readonly,volume-nocopy",
+             "--mount", f"type=volume,src={self.targets.redis_volume},dst=/src,readonly,volume-nocopy",
              "--mount", f"type=bind,src={out},dst=/out", "--mount", f"type=bind,src={meta},dst=/meta",
              "--entrypoint", "bash", REDIS_IMAGE, "-c", redis_script(os.getuid(), os.getgid())], timeout=900)
         facts["exit"] = proc.returncode
@@ -313,7 +330,7 @@ class PhaseP:
         self.step = "P4"
         p4 = self.gate("P4")
         self.rec["steps"].append({"step": "P4", **p4})
-        same = all(p0["containers"][n][k] == p4["containers"][n][k] for n in (PG, REDIS)
+        same = all(p0["containers"][n][k] == p4["containers"][n][k] for n in (self.targets.pg, self.targets.redis)
                    for k in ("Id", "StartedAt", "RestartCount", "diff_sha256"))
         self.rec["verdict"] = "ok" if same and p4["paused"] and p4["quiet"] else "STOP: production changed during Phase P"
         return 0 if self.rec["verdict"] == "ok" else 1
