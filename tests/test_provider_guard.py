@@ -260,6 +260,321 @@ def test_the_verification_stack_refuses_a_broader_definition(monkeypatch, tmp_pa
     assert refused(compose(verify_stack(tmp_path, mutate), "up", "-d", "--wait"))
 
 
+# ---- fourth opt-in: OwnedContainer worker containers (S9 skip-closure DISPOSITION B17-20) -----------
+WORKER_IMAGE_ID = "sha256:" + "a" * 64
+CODEX_IMAGE_ID = "sha256:" + "b" * 64
+RUN_ID = "0123456789abcdef0123456789abcdef"
+CONTAINER_ID = "c" * 64
+WORKER_NAME = "zeus-worker-" + RUN_ID
+
+
+FAKE_DOCKER = """#!/bin/sh
+printf '%s\\n' "$*" >> "$FAKE_DOCKER_LOG"
+[ "$1" = inspect ] || exit 3
+for last; do :; done
+[ -f "$FAKE_DOCKER_ANSWERS/$last" ] || exit 1
+cat "$FAKE_DOCKER_ANSWERS/$last"
+"""
+
+
+@pytest.fixture
+def worker(monkeypatch, tmp_path):
+    """The four opt-ins plus a fake docker that records argv and answers only the guard's own inspect."""
+    fake = tmp_path / "fake" / "docker"
+    fake.parent.mkdir()
+    fake.write_text(FAKE_DOCKER, encoding="utf-8")
+    fake.chmod(0o755)
+    answers = tmp_path / "answers"
+    answers.mkdir()
+    monkeypatch.setenv(provider_guard.DOCKER_OPT_IN_ENV, "1")
+    monkeypatch.setenv(provider_guard.DOCKER_WORKER_ENV, "1")
+    monkeypatch.setenv("ZEUS_TEST_WORKER_IMAGE", WORKER_IMAGE_ID)
+    monkeypatch.setenv("ZEUS_TEST_CODEX_IMAGE", CODEX_IMAGE_ID)
+    monkeypatch.setenv(provider_guard.DOCKER_BIND_ROOT_ENV, str(tmp_path / "bind"))
+    (tmp_path / "bind").mkdir()
+    monkeypatch.setenv("FAKE_DOCKER_LOG", str(tmp_path / "log"))
+    monkeypatch.setenv("FAKE_DOCKER_ANSWERS", str(answers))
+    (tmp_path / "log").write_text("")
+
+    class Fixture:
+        docker = str(fake)
+        bind = tmp_path / "bind"
+
+        def answer(self, operand, labels=None, image=WORKER_IMAGE_ID):
+            labels = {"zeus.isolated.run": RUN_ID} if labels is None else labels
+            (answers / operand).write_text(json.dumps({"labels": labels, "image": image}), encoding="utf-8")
+
+        def calls(self):
+            return (tmp_path / "log").read_text().splitlines()
+
+        def argv(self, *args):
+            return [self.docker, *args]
+
+    return Fixture()
+
+
+def create_args(image=WORKER_IMAGE_ID, *, source=None, network="none", user="1000:1000", role="worker",
+                run_id=RUN_ID, name=None):
+    from codex_harness.execution.domain import container_spec as spec
+
+    config = {"limits": spec.LIMITS, "image": image}
+    return spec.container_args(config, name=name or f"zeus-{role}-{run_id}", run_id=run_id, role=role,
+                               network=network, mounts=[(str(source), spec.WORKSPACE)] if source else [],
+                               environment=spec.worker_environment(), pass_names=("CLAUDE_CODE_OAUTH_TOKEN",),
+                               entry=["/opt/zeus/bin/python", "-c", "pass"], workdir="/", user=user)
+
+
+def test_worker_create_admits_exactly_what_container_args_composes(worker):
+    for image, role in ((WORKER_IMAGE_ID, "worker"), (CODEX_IMAGE_ID, "codex"), (WORKER_IMAGE_ID, "verifier")):
+        provider_guard.check_spawn(None, worker.argv(*create_args(image, source=worker.bind / "ws", role=role)))
+    provider_guard.check_spawn(None, worker.argv("container", *create_args(source=worker.bind)))
+    assert worker.calls() == []  # create is judged on its argv alone: the guard never inspects for it
+
+
+def test_worker_forms_are_refused_without_both_opt_ins(worker, monkeypatch):
+    create = worker.argv(*create_args())
+    worker.answer(CONTAINER_ID)
+    forms = [create, worker.argv("start", "--attach", "--interactive", CONTAINER_ID), worker.argv("kill", CONTAINER_ID),
+             worker.argv("rm", CONTAINER_ID), worker.argv("image", "inspect", WORKER_IMAGE_ID),
+             worker.argv("ps", "-a", "--filter", "label=zeus.isolated.run=" + RUN_ID, "--format", "{{.ID}}")]
+    for argv in forms:
+        provider_guard.check_spawn(None, argv)
+    monkeypatch.delenv(provider_guard.DOCKER_WORKER_ENV)
+    assert all(refused(argv) for argv in forms)
+    monkeypatch.setenv(provider_guard.DOCKER_WORKER_ENV, "1")
+    monkeypatch.delenv(provider_guard.DOCKER_OPT_IN_ENV)
+    assert all(refused(argv) for argv in forms)
+    monkeypatch.setenv(provider_guard.DOCKER_WORKER_ENV, "0")
+    monkeypatch.setenv(provider_guard.DOCKER_OPT_IN_ENV, "1")
+    assert all(refused(argv) for argv in forms)
+
+
+@pytest.mark.parametrize("extra", [
+    ["--privileged"], ["--pid", "host"], ["--pid=host"], ["--ipc", "host"], ["--uts", "host"], ["--userns", "host"],
+    ["--cap-add", "SYS_ADMIN"], ["--device", "/dev/kvm"], ["-v", "/:/host"], ["--volume", "/srv:/srv"],
+    ["--network", "bridge"], ["--network", "host"], ["--net", "none"], ["--network", "none"],
+    ["--security-opt", "seccomp=unconfined"], ["--cap-drop", "NET_RAW"], ["--publish", "80:80"], ["-p", "80:80"],
+    ["--rm"], ["--group-add", "0"], ["--env-file", "/etc/passwd"], ["--volumes-from", "x"], ["--label", "extra=1"],
+    ["--user", "0"], ["--add-host", "x:1.1.1.1"], ["--dns", "1.1.1.1"], ["--restart", "always"],
+    ["--mount", "type=volume,source=v,target=/v"], ["--mount", "type=bind,source=/etc,target=/e"],
+    ["--mount", "type=bind,source=%BIND%/x,target=/x,bind-propagation=rshared"],
+    ["--mount", "type=bind,source=%BIND%/x,target=/x,readonly=false"],
+    ["--mount", "type=bind,source=%BIND%/x,source=/etc,target=/x"],
+    ["--mount", "type=bind,source=/var/run/docker.sock,target=/var/run/docker.sock"],
+    ["--mount", "type=bind,source=%BIND%/docker.sock,target=/var/run/docker.sock"],
+    ["--mount", "type=bind,source=%BIND%/../x,target=/x"], ["--mount", "type=tmpfs,target=/x"],
+    ["--tmpfs", "/x:exec,suid"], ["-e", "1BAD=x"], ["--health-cmd", "x"],
+])
+def test_worker_create_refuses_every_option_container_args_never_composes(worker, extra):
+    base = create_args()
+    extra = [part.replace("%BIND%", str(worker.bind)) for part in extra]
+    assert not refused(worker.argv(*base))
+    assert refused(worker.argv(base[0], *extra, *base[1:])), extra
+
+
+@pytest.mark.parametrize("user", ["0", "root", "0:0", "0:1000", "root:root", ""])
+def test_worker_create_refuses_a_root_user(worker, user):
+    assert refused(worker.argv(*create_args(user=user)))
+
+
+def drop(args, option, *, count=2):
+    """`args` without every `option value` pair (or the lone flag when count is 1)."""
+    out, i = [], 0
+    while i < len(args):
+        if args[i] == option:
+            i += count
+        else:
+            out.append(args[i])
+            i += 1
+    return out
+
+
+@pytest.mark.parametrize("option,count", [("--network", 2), ("--read-only", 1), ("--cap-drop", 2),
+                                          ("--security-opt", 2), ("--user", 2), ("--name", 2), ("--memory", 2),
+                                          ("--cpus", 2), ("--pids-limit", 2), ("-w", 2), ("--entrypoint", 2)])
+def test_worker_create_refuses_a_missing_control(worker, option, count):
+    assert refused(worker.argv(*drop(create_args(), option, count=count)))
+
+
+def test_worker_create_refuses_a_missing_or_foreign_label(worker):
+    args = create_args()
+    run_label, role_label = f"zeus.isolated.run={RUN_ID}", "zeus.isolated.role=worker"
+    for label in (run_label, role_label):
+        index = args.index(label)
+        assert refused(worker.argv(*args[:index - 1], *args[index + 1:])), label
+    assert refused(worker.argv(*[a.replace(run_label, "zeus.isolated.run=" + "f" * 32) for a in args]))
+    assert refused(worker.argv(*[a.replace(role_label, "zeus.isolated.role=verifier") for a in args]))
+    assert refused(worker.argv(*[a.replace(run_label, "zeus.test.fixture=1") for a in args]))
+
+
+@pytest.mark.parametrize("name", ["zeus-worker", "worker-" + RUN_ID, "zeus-test-fixture-worker", "zeus-prod-postgres",
+                                  "zeus-worker-" + RUN_ID.upper(), "zeus-worker-" + RUN_ID + "-x"])
+def test_worker_create_refuses_a_name_that_is_not_zeus_role_runid(worker, name):
+    assert refused(worker.argv(*[name if a == WORKER_NAME else a for a in create_args()]))
+
+
+def test_worker_create_image_must_be_exactly_an_admitted_immutable_id(worker, monkeypatch):
+    for image in ("sha256:" + "d" * 64, WORKER_IMAGE_ID[:20], "ubuntu", "zeus-worker:latest", WORKER_IMAGE_ID + "x",
+                  "pgvector/pgvector:pg17"):
+        assert refused(worker.argv(*create_args(image))), image
+    monkeypatch.setenv("ZEUS_TEST_WORKER_IMAGE", "zeus-worker:latest")  # a mutable tag is not an admitted value
+    assert refused(worker.argv(*create_args("zeus-worker:latest")))
+    monkeypatch.setenv("ZEUS_TEST_WORKER_IMAGE", "sha256:" + "A" * 64)
+    assert refused(worker.argv(*create_args("sha256:" + "A" * 64)))
+    monkeypatch.setenv("ZEUS_TEST_WORKER_IMAGE", "")
+    monkeypatch.delenv("ZEUS_TEST_CODEX_IMAGE")
+    assert refused(worker.argv(*create_args(WORKER_IMAGE_ID)))
+    monkeypatch.setenv("ZEUS_TEST_CODEX_IMAGE", CODEX_IMAGE_ID)
+    provider_guard.check_spawn(None, worker.argv(*create_args(CODEX_IMAGE_ID)))
+    image_less = create_args()
+    image_less.remove(WORKER_IMAGE_ID)
+    assert refused(worker.argv(*image_less))
+
+
+def test_worker_create_binds_stay_under_the_bind_root_and_never_name_a_socket(worker, monkeypatch, tmp_path):
+    assert not refused(worker.argv(*create_args(source=worker.bind / "ws")))
+    for source in (tmp_path / "elsewhere", Path("/"), Path("/var/run/docker.sock"), Path("/run/docker.sock"),
+                   worker.bind / "docker.sock"):
+        assert refused(worker.argv(*create_args(source=source))), source
+    monkeypatch.delenv(provider_guard.DOCKER_BIND_ROOT_ENV)
+    assert refused(worker.argv(*create_args(source=worker.bind / "ws")))
+    link = worker.bind / "link"
+    link.symlink_to("/var/run")  # a symlink out of the root resolves outside it
+    assert refused(worker.argv(*create_args(source=link)))
+
+
+def test_worker_run_is_never_admitted_only_create(worker):
+    assert refused(worker.argv("run", *create_args()[1:]))
+    assert refused(worker.argv("container", "run", *create_args()[1:]))
+
+
+LIFECYCLES = [("start", "--attach", "--interactive"), ("start", "-a", "-i"), ("start",),
+              ("inspect", "--format", "{{.State.Status}} {{.State.ExitCode}} {{.State.OOMKilled}}"),
+              ("inspect", "-f", "{{json .Mounts}}"), ("kill",), ("kill", "-s", "KILL"), ("rm",), ("stop", "-t", "5"),
+              ("wait",)]
+
+
+@pytest.mark.parametrize("form", LIFECYCLES, ids=[" ".join(f) for f in LIFECYCLES])
+@pytest.mark.parametrize("operand", [CONTAINER_ID, WORKER_NAME])
+def test_worker_lifecycle_is_admitted_after_the_guard_inspects_an_owned_container(worker, form, operand):
+    worker.answer(operand)
+    provider_guard.check_spawn(None, worker.argv(*form, operand))
+    assert worker.calls() == [f"inspect --type container --format {provider_guard.WORKER_INSPECT_FORMAT} {operand}"]
+
+
+@pytest.mark.parametrize("form", LIFECYCLES, ids=[" ".join(f) for f in LIFECYCLES])
+def test_worker_lifecycle_refuses_unlabelled_foreign_or_uninspectable_containers(worker, form):
+    argv = worker.argv(*form, CONTAINER_ID)
+    assert refused(argv)  # the fake has no answer: the inspect fails
+    worker.answer(CONTAINER_ID, labels={})
+    assert refused(argv)
+    worker.answer(CONTAINER_ID, labels={"zeus.test.fixture": "1"})
+    assert refused(argv)
+    worker.answer(CONTAINER_ID, labels=None, image="sha256:" + "d" * 64)
+    assert refused(argv)
+    worker.answer(CONTAINER_ID, labels=None, image="ubuntu")
+    assert refused(argv)
+    worker.answer(CONTAINER_ID, labels={"zeus.isolated.run": ""})
+    assert refused(argv)
+    (Path(os.environ["FAKE_DOCKER_ANSWERS"]) / CONTAINER_ID).write_text("not json")
+    assert refused(argv)
+    (Path(os.environ["FAKE_DOCKER_ANSWERS"]) / CONTAINER_ID).write_text("[]")
+    assert refused(argv)
+    worker.answer(CONTAINER_ID)
+    provider_guard.check_spawn(None, argv)
+
+
+def test_worker_lifecycle_inspects_every_operand_and_only_well_formed_ones(worker):
+    other = "e" * 64
+    worker.answer(CONTAINER_ID)
+    assert refused(worker.argv("rm", CONTAINER_ID, other))  # the second has no answer
+    worker.answer(other)
+    provider_guard.check_spawn(None, worker.argv("rm", CONTAINER_ID, other))
+    for operand in ("zeus-prod-postgres", "harness-ci-postgres-1", "abc123", "$(id)", "-f", "zeus-worker-x/../y"):
+        if "/" not in operand:
+            worker.answer(operand)  # even an owned-looking answer cannot admit a malformed operand
+        assert refused(worker.argv("rm", operand)), operand
+    assert refused(worker.argv("rm"))
+    assert refused(worker.argv("start", "--attach", CONTAINER_ID, other))
+    for option in ("--force", "-f", "--volumes", "--link", "--detach-keys=x", "--checkpoint", "-d"):
+        assert refused(worker.argv("rm", option, CONTAINER_ID)), option
+
+
+@pytest.mark.parametrize("argv", [["exec", CONTAINER_ID, "sh"], ["cp", CONTAINER_ID + ":/x", "/tmp"],
+                                  ["logs", CONTAINER_ID], ["pause", CONTAINER_ID], ["restart", CONTAINER_ID],
+                                  ["update", CONTAINER_ID], ["commit", CONTAINER_ID, "x"],
+                                  ["attach", CONTAINER_ID], ["top", CONTAINER_ID], ["export", CONTAINER_ID],
+                                  ["network", "connect", "bridge", CONTAINER_ID], ["pull", WORKER_IMAGE_ID],
+                                  ["rmi", WORKER_IMAGE_ID], ["image", "rm", WORKER_IMAGE_ID],
+                                  ["build", "-t", "zeus-worker:x", "."], ["save", WORKER_IMAGE_ID],
+                                  ["container", "prune", "-f"], ["compose", "up"]])
+def test_worker_opt_in_admits_no_other_docker_command(worker, argv):
+    worker.answer(CONTAINER_ID)
+    assert refused(worker.argv(*argv)), argv
+
+
+def test_the_guards_own_inspect_is_exact_and_admits_nothing_else(worker):
+    worker.answer(CONTAINER_ID)
+    provider_guard.check_spawn(None, worker.argv("kill", CONTAINER_ID))
+    assert len(worker.calls()) == 1
+    # after the inspect finished its exemption is gone: the same argv is no longer admitted by itself
+    assert refused(worker.argv("inspect", "--type", "container", "--format", provider_guard.WORKER_INSPECT_FORMAT,
+                               "f" * 64))
+    assert provider_guard._GUARD_STATE.expected is None
+    assert refused(worker.argv("--host", "tcp://x", "inspect", CONTAINER_ID))
+
+
+RUN_FILTER = "label=zeus.isolated.run=" + RUN_ID
+
+
+@pytest.mark.parametrize("args", [
+    ["ps", "-a", "--filter", RUN_FILTER, "--format", "{{.ID}}"],
+    ["ps", "--filter", RUN_FILTER, "--format", "{{.ID}}"],
+    ["ps", "-a", "--no-trunc", "--filter", "name=^/" + WORKER_NAME + "$", "--filter", RUN_FILTER,
+     "--format", "{{.ID}}"],
+])
+def test_worker_ps_admits_the_run_label_listing_forms(worker, args):
+    provider_guard.check_spawn(None, worker.argv(*args))
+    assert worker.calls() == []
+
+
+@pytest.mark.parametrize("args", [
+    ["ps", "-a"], ["ps", "-a", "--format", "{{.ID}}"], ["ps", "-a", "--filter", RUN_FILTER],
+    ["ps", "-a", "--filter", RUN_FILTER, "--format", "{{.Names}}"],
+    ["ps", "-a", "--filter", "label=zeus.isolated.run", "--format", "{{.ID}}"],
+    ["ps", "-a", "--filter", "label=other=" + RUN_ID, "--format", "{{.ID}}"],
+    ["ps", "-a", "--filter", "name=^/zeus-worker-" + RUN_ID + "$", "--format", "{{.ID}}"],
+    ["ps", "-a", "--filter", RUN_FILTER, "--filter", RUN_FILTER, "--format", "{{.ID}}"],
+    ["ps", "-a", "--filter", RUN_FILTER, "--filter", "name=zeus", "--format", "{{.ID}}"],
+    ["ps", "-a", "--filter", RUN_FILTER, "--format", "{{.ID}}", "x"], ["ps", "-aq", "--filter", RUN_FILTER],
+    ["ps", "-a", "--filter", RUN_FILTER, "--format", "{{.ID}}", "--size"],
+])
+def test_worker_ps_refuses_every_other_listing(worker, args):
+    assert refused(worker.argv(*args)), args
+
+
+def test_worker_image_inspect_names_only_an_admitted_immutable_id(worker, monkeypatch):
+    for form in (["image", "inspect", "--format", "{{.Id}}", WORKER_IMAGE_ID], ["image", "inspect", CODEX_IMAGE_ID],
+                 ["version", "--format", "{{.Server.Version}}"]):
+        provider_guard.check_spawn(None, worker.argv(*form))
+    for form in (["image", "inspect", "--format", "{{.Id}}", "sha256:" + "d" * 64], ["image", "inspect", "ubuntu"],
+                 ["image", "inspect", WORKER_IMAGE_ID, "ubuntu"], ["image", "inspect"],
+                 ["image", "inspect", "--format", "{{.Id}}", WORKER_IMAGE_ID[:30]]):
+        assert refused(worker.argv(*form)), form
+    monkeypatch.setenv("ZEUS_TEST_WORKER_IMAGE", "zeus-worker:latest")
+    monkeypatch.setenv("ZEUS_TEST_CODEX_IMAGE", "")
+    assert refused(worker.argv("image", "inspect", "zeus-worker:latest"))
+
+
+def test_worker_opt_in_leaves_the_fixture_and_other_opt_in_rules_unchanged(worker, monkeypatch):
+    provider_guard.check_spawn(None, worker.argv("run", *FIXTURE_RUN))
+    provider_guard.check_spawn(None, worker.argv("rm", "-f", "zeus-test-fixture-worker"))
+    assert worker.calls() == []  # owned fixture names never need the worker inspect
+    assert refused(worker.argv("exec", "zeus-test-fixture-worker", "codex"))
+    assert refused(worker.argv("ps", "-aq", "--filter", LABEL_FILTER))
+    assert refused(worker.argv("create", "--network", "none", "--name", "zeus-test-fixture-x", "ubuntu"))
+
+
 def test_docker_marker_does_not_admit_a_real_provider_spawn(monkeypatch):
     monkeypatch.setenv(provider_guard.DOCKER_OPT_IN_ENV, "1")
     with pytest.raises(provider_guard.ProviderSpawnRefused):

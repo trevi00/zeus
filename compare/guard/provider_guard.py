@@ -35,6 +35,16 @@ complete forms are admitted:
   (fixture images, loopback-only publications, one named volume, allow-listed service keys: nothing privileged, no
   network mode, no binds), with the stack's own subcommand forms, plus the project-scoped read-only `ps`/`volume ls`
   label filters its removal check uses.
+- the OwnedContainer worker-container forms, ONLY with the fourth opt-in `ZEUS_TEST_DOCKER_WORKER=1` (set by the
+  owner for the B17-20 checks alone; effective only together with `ZEUS_TEST_DOCKER=1`), against the admitted
+  immutable images `ZEUS_TEST_WORKER_IMAGE` / `ZEUS_TEST_CODEX_IMAGE` (each a full `sha256:<64 hex>` id, anything
+  else admits nothing): `create` exactly as `container_spec.container_args` composes it (`zeus-<role>-<hex>` name,
+  both `zeus.isolated.*` labels, one `--network none`, `--read-only`, `--cap-drop ALL`, `--security-opt
+  no-new-privileges`, a non-root `--user`, limit and tmpfs forms, binds only under the bind root and never a Docker
+  socket, `-e`, `-w`, `--entrypoint`, the image operand exactly an admitted id; every other option refuses);
+  `start`/`inspect`/`kill`/`rm`/`stop`/`wait` on a container id or `zeus-<role>-<hex>` name ONLY after the guard
+  itself ran one read-only `docker inspect --type container` of it and saw a `zeus.isolated.run` label and an
+  admitted image; the run-label `ps` filter forms of `OwnedContainer.recover_id`; `image inspect` of an admitted id.
 Everything else (`cp`, `pull`, other `compose`, `network`, `volume`, `system`, other `exec` forms, ...) is refused.
 """
 
@@ -47,6 +57,7 @@ import shlex
 import shutil
 import stat
 import sys
+import threading
 from pathlib import Path
 
 PROVIDERS = frozenset({"claude", "codex", "docker"})
@@ -56,6 +67,19 @@ DOCKER_IMAGES_ENV = "ZEUS_TEST_DOCKER_FIXTURE_IMAGES"  # extra EXACT image refs,
 DOCKER_BIND_ROOT_ENV = "ZEUS_TEST_DOCKER_BIND_ROOT"
 DOCKER_PGEXEC_ENV = "ZEUS_TEST_DOCKER_PGEXEC"  # second opt-in: the restore family's `docker exec` tool forms
 DOCKER_VERIFY_STACK_ENV = "ZEUS_TEST_DOCKER_VERIFY_STACK"  # third opt-in: the owner-run VerificationServices stack
+DOCKER_WORKER_ENV = "ZEUS_TEST_DOCKER_WORKER"  # fourth opt-in: OwnedContainer worker containers (B17-20)
+WORKER_IMAGE_ENVS = ("ZEUS_TEST_WORKER_IMAGE", "ZEUS_TEST_CODEX_IMAGE")
+WORKER_IMAGE = re.compile(r"sha256:[0-9a-f]{64}")
+WORKER_CONTAINER_ID = re.compile(r"[0-9a-f]{64}")  # container_spec.CONTAINER_ID
+WORKER_NAME = re.compile(r"zeus-[a-z]+-[0-9a-f]{16,32}")  # OwnedContainer.name = zeus-<role>-<run id hex>
+WORKER_RUN_LABEL, WORKER_ROLE_LABEL = "zeus.isolated.run", "zeus.isolated.role"  # container_spec.LABEL, ROLE_LABEL
+WORKER_VALUE_OPTIONS = frozenset({"--name", "--label", "--network", "--user", "--memory", "--cpus", "--pids-limit",
+                                  "--tmpfs", "--mount", "--security-opt", "--cap-drop", "-e", "-w", "--entrypoint"})
+WORKER_FLAGS = frozenset({"--read-only", "--init", "--interactive"})
+WORKER_LIFECYCLE = {"start": ({"-a", "--attach", "-i", "--interactive"}, set()), "inspect": (set(), {"-f", "--format"}),
+                    "kill": (set(), {"-s", "--signal"}), "rm": (set(), set()), "stop": (set(), {"-t", "--time"}),
+                    "wait": (set(), set())}
+WORKER_INSPECT_FORMAT = '{"labels":{{json .Config.Labels}},"image":{{json .Image}}}'
 VERIFY_PROJECT = re.compile(r"^zeus-verify-[0-9a-f]{32}$")
 VERIFY_SERVICES = {"postgres": "5432", "redis": "6379"}
 VERIFY_SERVICE_KEYS = {"postgres": frozenset({"image", "environment", "ports", "volumes", "mem_limit", "cpus",
@@ -84,6 +108,7 @@ DOCKER_ALIASES = {("container", "run"): "run", ("container", "create"): "create"
                   ("image", "rm"): "rmi"}
 DOCKER_TOP = frozenset({"run", "create", "build", "rm", "stop", "kill", "inspect", "logs", "wait",
                         "rmi", "image-inspect", "version", "info"})
+_GUARD_STATE = threading.local()  # the guard's own inspect: `expected` is its exact argv while it runs
 RUN_VALUE_OPTIONS = frozenset({"--name", "--label", "-l", "--network", "--net", "--user", "-u",
                                "--workdir", "-w", "--env", "-e", "--memory", "-m", "--cpus",
                                "--pids-limit", "--entrypoint", "--tmpfs", "--mount", "--security-opt",
@@ -312,11 +337,149 @@ def _check_verify_stack(command: str, args: list[str], env) -> None:
         raise DockerRefused(f"compose {sub} is not a verification-stack form")
 
 
+def _env_value(name: str, env) -> str:
+    return (env or {}).get(name) or os.environ.get(name) or ""
+
+
+def _worker_enabled(env) -> bool:
+    return _env_value(DOCKER_WORKER_ENV, env) == "1" and _env_value(DOCKER_OPT_IN_ENV, env) == "1"
+
+
+def _worker_images(env) -> set[str]:
+    """The admitted immutable worker/codex image ids: only full `sha256:<64 hex>` values, never a tag."""
+    return {v for v in (_env_value(n, env) for n in WORKER_IMAGE_ENVS) if WORKER_IMAGE.fullmatch(v)}
+
+
+def _check_worker_create(args: list[str], env) -> None:
+    """`container_spec.container_args` and nothing else (INV-ROLE-CONTAINER-001)."""
+    opts, operands = _options(args, WORKER_VALUE_OPTIONS, WORKER_FLAGS)
+    one = {}
+    for key in ("--name", "--network", "--user", "--security-opt", "-w", "--entrypoint", "--memory", "--cpus",
+                "--pids-limit"):
+        values = [v for k, v in opts if k == key]
+        if len(values) != 1:
+            raise DockerRefused(f"worker create needs exactly one {key}")
+        one[key] = values[0]
+    if not WORKER_NAME.fullmatch(one["--name"]):
+        raise DockerRefused("worker create needs --name zeus-<role>-<hex>")
+    if one["--network"] != "none":
+        raise DockerRefused("worker create needs exactly one network option equal to none")
+    if one["--security-opt"] != "no-new-privileges":
+        raise DockerRefused("worker create needs --security-opt no-new-privileges only")
+    user = one["--user"]
+    if user in ("", "0", "root") or user.startswith(("0:", "root:")):
+        raise DockerRefused("worker create needs a non-root --user")
+    flags = [k for k, _ in opts if k in WORKER_FLAGS]
+    if "--read-only" not in flags or len(flags) != len(set(flags)):
+        raise DockerRefused("worker create needs --read-only")
+    if [v for k, v in opts if k == "--cap-drop"] != ["ALL"]:
+        raise DockerRefused("worker create needs exactly --cap-drop ALL")
+    labels = [v for k, v in opts if k == "--label"]
+    role = one["--name"].split("-")[1]
+    run_id = one["--name"].rsplit("-", 1)[1]
+    if sorted(labels) != sorted([f"{WORKER_RUN_LABEL}={run_id}", f"{WORKER_ROLE_LABEL}={role}"]):
+        raise DockerRefused("worker create needs exactly the zeus.isolated.run and zeus.isolated.role labels")
+    root = _env_value(DOCKER_BIND_ROOT_ENV, env)
+    for key, value in opts:
+        if key == "--tmpfs" and not re.fullmatch(r"/[A-Za-z0-9/_.-]*:rw,nosuid,nodev,size=[0-9]+m,mode=1777", value):
+            raise DockerRefused("worker create tmpfs is not the container_args form")
+        if key == "-e" and not re.fullmatch(r"[A-Za-z_][A-Za-z0-9_]*(=.*)?", value, re.DOTALL):
+            raise DockerRefused("worker create -e is NAME or NAME=VALUE")
+        if key == "--mount":
+            parts = value.split(",")
+            fields = dict(part.partition("=")[::2] for part in parts)
+            source = fields.get("source")
+            if len(fields) != len(parts) or set(fields) - {"type", "source", "target", "readonly"} \
+                    or fields.get("type") != "bind" or not source or not fields.get("target") \
+                    or fields.get("readonly", "true") != "true":
+                raise DockerRefused("worker create mounts are type=bind,source=,target=[,readonly=true]")
+            resolved = Path(source).resolve()
+            if "docker.sock" in source or resolved.name == "docker.sock" or not root \
+                    or not resolved.is_relative_to(Path(root).resolve()):
+                raise DockerRefused("worker create binds only under the bind root, never a Docker socket")
+    if len(operands) < 1 or operands[0] not in _worker_images(env):
+        raise DockerRefused("worker create image operand is not an admitted immutable worker image")
+
+
+def _guard_inspect(docker: str, operand: str, env) -> dict | None:
+    """The guard's own ONE read-only inspect, through the real docker binary and outside the policy recursion."""
+    import subprocess
+
+    local = _GUARD_STATE
+    if getattr(local, "expected", None) is not None:
+        return None
+    argv = [docker, "inspect", "--type", "container", "--format", WORKER_INSPECT_FORMAT, operand]
+    local.expected = argv
+    try:
+        done = subprocess.run(argv, capture_output=True, text=True, timeout=30, env=env if env else None)
+        body = json.loads(done.stdout) if done.returncode == 0 else None
+    except (OSError, ValueError, subprocess.SubprocessError):
+        return None
+    finally:
+        local.expected = None
+    return body if isinstance(body, dict) else None
+
+
+def _worker_owned(docker: str, operand: str, env) -> bool:
+    if not (WORKER_CONTAINER_ID.fullmatch(operand) or WORKER_NAME.fullmatch(operand)):
+        return False
+    body = _guard_inspect(docker, operand, env)
+    labels = body.get("labels") if body else None
+    return isinstance(labels, dict) and bool(labels.get(WORKER_RUN_LABEL)) and body.get("image") in _worker_images(env)
+
+
+def _check_worker_lifecycle(command: str, args: list[str], env, docker: str) -> None:
+    flags, values = WORKER_LIFECYCLE[command]
+    _, operands = _options(args, values, flags)
+    if not operands or (command in {"start", "inspect"} and len(operands) != 1) \
+            or not all(_worker_owned(docker, o, env) for o in operands):
+        raise DockerRefused(f"docker {command} may name inspected owned worker containers only")
+
+
+def _check_worker_ps(args: list[str], env) -> None:
+    """`OwnedContainer.recover_id` and the owner checks' own listing: scoped by the run label, ids only."""
+    opts, operands = _options(args, {"--filter", "--format"}, {"-a", "--all", "--no-trunc"})
+    filters = [v for k, v in opts if k == "--filter"]
+    labels = [f for f in filters if f.startswith("label=")]
+    if operands or [v for k, v in opts if k == "--format"] != ["{{.ID}}"] or len(labels) != 1 \
+            or not re.fullmatch(r"label=zeus\.isolated\.run=[0-9a-f]{16,32}", labels[0]) \
+            or any(f != labels[0] and not re.fullmatch(r"name=\^/zeus-[a-z]+-[0-9a-f]{16,32}\$", f) for f in filters):
+        raise DockerRefused("worker ps needs the zeus.isolated.run label filter and --format {{.ID}}")
+
+
+def _check_worker_image_inspect(args: list[str], env) -> None:
+    _, operands = _options(args, {"-f", "--format"}, set())
+    if len(operands) != 1 or operands[0] not in _worker_images(env):
+        raise DockerRefused("worker image inspect names an admitted immutable image only")
+
+
+def _admits(check, *args) -> bool:
+    try:
+        check(*args)
+    except DockerRefused:
+        return False
+    return True
+
+
+def _check_fixture_lifecycle(command: str, rest: list[str]) -> None:
+    flags, values = LIFECYCLE_OPTIONS[command]
+    _, operands = _options(rest, values, flags)
+    if not operands or not all(_owned(o) for o in operands):
+        raise DockerRefused(f"docker {command} may name owned fixture containers only")
+
+
+def _check_fixture_image_inspect(rest: list[str], env) -> None:
+    _, operands = _options(rest, {"-f", "--format"}, set())
+    if not operands or not all(_fixture_image(o, env) for o in operands):
+        raise DockerRefused("docker image-inspect may name fixture images only")
+
+
 def docker_policy(argv: list[str], env=None) -> str:
     """Return the normalized admitted subcommand, or raise DockerRefused (default-deny)."""
     if ((env or {}).get(DOCKER_OPT_IN_ENV) or os.environ.get(DOCKER_OPT_IN_ENV)) != "1":
         raise DockerRefused(f"{DOCKER_OPT_IN_ENV}=1 is not set")
     args = [os.fsdecode(a) for a in argv[1:]]
+    args_docker = os.fsdecode(argv[0])
     if not args or args[0].startswith("-"):
         raise DockerRefused("global docker options and bare docker are refused")
     command, rest = args[0], args[1:]
@@ -325,20 +488,30 @@ def docker_policy(argv: list[str], env=None) -> str:
     if command == "exec":
         _check_exec(rest, env)
         return command
+    worker = _worker_enabled(env)
+    if command == "ps" and worker and _admits(_check_worker_ps, rest, env):
+        return command
     if command in {"compose", "ps", "volume"}:
         _check_verify_stack(command, rest, env)
         return command
+    if command == "start" and worker:
+        _check_worker_lifecycle(command, rest, env, args_docker)
+        return command
     if command not in DOCKER_TOP:
         raise DockerRefused(f"docker {command} is not a supported fixture form")
-    if command in {"run", "create"}:
+    if command == "create" and worker and not _admits(_check_run, rest, env):
+        _check_worker_create(rest, env)
+    elif command in {"run", "create"}:
         _check_run(rest, env)
     elif command == "build":
         _check_build(rest, env)
     elif command in LIFECYCLE_OPTIONS:
-        flags, values = LIFECYCLE_OPTIONS[command]
-        _, operands = _options(rest, values, flags)
-        if not operands or not all(_owned(o) for o in operands):
-            raise DockerRefused(f"docker {command} may name owned fixture containers only")
+        if worker and command in WORKER_LIFECYCLE and not _admits(_check_fixture_lifecycle, command, rest):
+            _check_worker_lifecycle(command, rest, env, args_docker)
+        else:
+            _check_fixture_lifecycle(command, rest)
+    elif command == "image-inspect" and worker and not _admits(_check_fixture_image_inspect, rest, env):
+        _check_worker_image_inspect(rest, env)
     elif command in {"rmi", "image-inspect"}:
         _, operands = _options(rest, {"-f", "--format"} if command == "image-inspect" else set(),
                                {"-f", "--force"} if command == "rmi" else set())
@@ -395,6 +568,8 @@ def check_spawn(executable, argv, env=None) -> None:
         resolved = _resolve(token, env)
         if fixture is not None and resolved is not None and resolved.is_relative_to(fixture):
             continue
+        if stem == "docker" and argv_list and argv_list == getattr(_GUARD_STATE, "expected", None):
+            continue  # the guard's own read-only inspect (`_guard_inspect`), outside the policy recursion
         if stem == "docker" and argv_list and _stem(argv_list[0]) == "docker" \
                 and _docker_allowed(argv_list, env):
             continue
