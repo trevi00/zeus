@@ -214,7 +214,9 @@ class Copies:
         if found.returncode != 0:
             raise Refused("image_missing", "the pinned image is not present locally; never pulled")
 
-    def start(self, copy: str, *, publish=(), volumes=()) -> Copy:
+    def start(self, copy: str, *, publish=(), volumes=(), empty_redis: bool = False) -> Copy:
+        """Start one copy. `empty_redis` starts its Redis EMPTY instead of over a working copy of the source AOF directory
+        (a restore target, `r7a`: the data must arrive through the restore tooling, never through the seed)."""
         if copy not in COPY_NAMES:
             raise Refused("unknown_copy", copy)
         if copy in self.copies:
@@ -253,7 +255,7 @@ class Copies:
             (base / directory).mkdir()
         (base / "pgdata").chmod(0o700)
         # This copy's OWN working copy of the AOF directory, never the source copy itself.
-        if (self.source / "redis").is_dir():
+        if not empty_redis and (self.source / "redis").is_dir():
             shutil.copytree(self.source / "redis", base / "redis", symlinks=True)
         else:
             (base / "redis").mkdir()
