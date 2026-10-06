@@ -252,6 +252,18 @@
    "target": "equal",
    "target_origin_ok": true
   },
+  "delivery.maintenance": {
+   "origin_ok": true,
+   "reference": "equal",
+   "target": "equal",
+   "target_origin_ok": true
+  },
+  "delivery.maintenance.pg": {
+   "origin_ok": true,
+   "reference": "equal",
+   "target": "equal",
+   "target_origin_ok": true
+  },
   "delivery.managed_runtime": {
    "origin_ok": true,
    "reference": "equal",
@@ -1058,14 +1070,14 @@
   }
  },
  "exercise": {
-  "artifact": "A/evidence/rebuild/s11/integration/exercise-61f89952.json.gz",
-  "functions": 4921,
-  "head": "61f89952709a986f0e64bac1ac2b5afdfb5e705e",
+  "artifact": "A/evidence/rebuild/cutover/int63-h0/exercise-d14418c5.json.gz",
+  "functions": 5201,
+  "head": "d14418c5e03a37572d5ecd7bb08af05cd85a887e",
   "ignored_modules": [
    "codex_harness.adapters._probe"
   ],
-  "nodes": 7801,
-  "sha256": "a4d5346b3691239c4130459839c9296e2f56cd3be083cb5afd83a5d8a22eabd3",
+  "nodes": 8345,
+  "sha256": "fea1c218eb3192fb1705a4c48a56efafaf2aad0ce46704393c2ad36f6de4ac74",
   "symbols": {
    "codex_harness.composition.audit_repair:build_repair": [
     "tests/ported/test_audit_progress.py::test_the_production_wiring_gives_the_runner_a_real_observer_on_the_same_store",
@@ -1404,14 +1416,14 @@
     "tests/test_s10_e5cd_entries.py::test_the_fleet_workload_of_entry_runs_run_fleet_with_the_runtime_control"
    ],
    "codex_harness.composition.managed_runtime:fixture_config": [
+    "tests/ported/test_host_delivery_maintenance_e2e.py::test_one_active_generation_is_restarted_armed_and_bound_end_to_end",
     "tests/ported/test_managed_runtime.py::test_a_bad_runtime_is_refused_before_the_running_instance_is_touched",
-    "tests/ported/test_managed_runtime.py::test_a_child_that_outlives_its_killed_launcher_is_still_running_and_stops_gracefully",
-    "tests/ported/test_managed_runtime.py::test_a_clean_start_a_restart_and_a_repeated_start_launch_exactly_once"
+    "tests/ported/test_managed_runtime.py::test_a_child_that_outlives_its_killed_launcher_is_still_running_and_stops_gracefully"
    ],
    "codex_harness.composition.managed_runtime:fixture_manifest": [
+    "tests/ported/test_host_delivery_maintenance_e2e.py::test_one_active_generation_is_restarted_armed_and_bound_end_to_end",
     "tests/ported/test_managed_runtime.py::test_a_first_rollback_gate_whose_debt_read_fails_after_the_pause_never_starts_the_predecessor",
-    "tests/ported/test_managed_runtime.py::test_a_settled_rollback_starts_the_exact_predecessor_once_and_no_reservation_enters_the_gap",
-    "tests/test_s10_a5_2_seams.py::test_a_job_behind_its_busy_lane_emits_lane_full"
+    "tests/ported/test_managed_runtime.py::test_a_settled_rollback_starts_the_exact_predecessor_once_and_no_reservation_enters_the_gap"
    ],
    "codex_harness.composition.managed_runtime:fleet_gate": [
     "tests/test_s10_e5cd_entries.py::test_fleet_gate_commits_the_pause_and_reports_settled_debt_of_the_host_store",
@@ -2072,8 +2084,8 @@
    ],
    "codex_harness.coordination.adapters.guarded_launch:observe": [
     "tests/ported/test_continuation_process.py::test_a_failed_spawn_is_fenced_as_absent_and_the_identity_is_never_spawned_again",
-    "tests/ported/test_continuation_process.py::test_a_guardian_supervises_its_tree_without_blocking_the_controller_and_proves_cleanup",
-    "tests/ported/test_continuation_process.py::test_a_killed_guardian_leaves_unknown_debt_that_holds_its_slot_and_is_never_rerun"
+    "tests/ported/test_continuation_process.py::test_a_failed_stop_request_is_observable_fabricates_no_cleanup_and_keeps_the_deadline",
+    "tests/ported/test_continuation_process.py::test_a_guardian_supervises_its_tree_without_blocking_the_controller_and_proves_cleanup"
    ],
    "codex_harness.coordination.adapters.owner_actions:GitPlanPublisher": [
     "tests/ported/test_owner_actions_adapters.py::test_the_plan_commit_is_deterministic_and_another_owners_ref_is_a_conflict",
@@ -2504,6 +2516,31 @@
     "tests/ported/test_continuation.py::test_a_dispatching_worker_fills_the_fleet_and_the_conductor_waits_without_starting",
     "tests/ported/test_continuation.py::test_a_succeeded_decision_with_unknown_cleanup_neither_completes_nor_retries"
    ],
+   "codex_harness.coordination.application.fleet.admission_permit:FleetAdmissionPermits": [
+    "tests/test_fleet_admission_permit.py::test_a_closed_permit_of_another_action_does_not_block_a_new_grant",
+    "tests/test_fleet_admission_permit.py::test_a_delivery_canary_receipt_that_does_not_bind_the_new_instance_fails_the_canary",
+    "tests/test_fleet_admission_permit.py::test_a_double_arm_claims_exactly_once"
+   ],
+   "codex_harness.coordination.application.fleet.admission_permit:store_consumption": [
+    "tests/test_fleet_admission_permit.py::test_a_closed_permit_of_another_action_does_not_block_a_new_grant",
+    "tests/test_fleet_admission_permit.py::test_a_delivery_canary_receipt_that_does_not_bind_the_new_instance_fails_the_canary",
+    "tests/test_fleet_admission_permit.py::test_a_double_arm_claims_exactly_once"
+   ],
+   "codex_harness.coordination.application.fleet.maintenance:FleetMaintenance": [
+    "tests/ported/test_continuation.py::test_a_changed_model_refuses_and_a_non_member_scope_is_never_this_policys_work",
+    "tests/ported/test_continuation.py::test_a_conductor_reserves_the_shared_slot_before_its_start_and_a_worker_waits_for_it",
+    "tests/ported/test_continuation.py::test_a_dispatching_worker_fills_the_fleet_and_the_conductor_waits_without_starting"
+   ],
+   "codex_harness.coordination.application.fleet.maintenance:claim_queued_job": [
+    "tests/ported/test_fleet_forward_candidate.py::test_a_maintenance_permit_without_kind_validates_and_admits_exactly_as_before",
+    "tests/ported/test_fleet_forward_candidate.py::test_a_paused_forward_candidate_admits_only_its_exact_job_and_never_writes_the_control_row",
+    "tests/ported/test_fleet_forward_candidate.py::test_admitted_work_is_never_expired_and_a_foreign_lane_job_is_never_failed"
+   ],
+   "codex_harness.coordination.application.fleet.maintenance:fail_unlaunched_job": [
+    "tests/ported/test_fleet_forward_candidate.py::test_expiry_fails_the_unadmitted_candidate_without_a_launch_and_response_loss_is_safe",
+    "tests/ported/test_fleet_forward_candidate.py::test_issuance_is_refused_while_a_maintenance_generation_is_open_and_allowed_after_it_binds",
+    "tests/ported/test_fleet_maintenance.py::test_a_canary_queued_after_an_unlaunched_close_is_failed_on_replay_and_blocks_resume_until_then"
+   ],
    "codex_harness.coordination.application.fleet.pause:FleetPause": [
     "tests/ported/test_continuation.py::test_a_changed_model_refuses_and_a_non_member_scope_is_never_this_policys_work",
     "tests/ported/test_continuation.py::test_a_conductor_reserves_the_shared_slot_before_its_start_and_a_worker_waits_for_it",
@@ -2584,10 +2621,20 @@
     "tests/ported/test_fleet.py::test_a_runner_releases_only_its_own_activation_hold_once",
     "tests/ported/test_fleet.py::test_admission_blocks_a_queued_job_with_stale_ceilings"
    ],
+   "codex_harness.coordination.application.fleet.runner:AdmissionPermitExecutor": [
+    "tests/test_fleet_admission_permit.py::test_a_full_permit_cycle_leaves_the_control_row_and_the_pr3_bucket_byte_identical",
+    "tests/test_fleet_admission_permit.py::test_a_verification_job_admits_only_its_exact_job_and_the_control_row_is_byte_identical",
+    "tests/test_fleet_admission_permit.py::test_a_verification_job_whose_queued_job_moved_is_refused_and_expiry_fails_it_without_a_spawn"
+   ],
    "codex_harness.coordination.application.fleet.runner:FleetRunner": [
     "tests/ported/test_continuation.py::test_fleet_runner_drives_first_item_rejection_correction_and_acceptance_without_relay",
     "tests/ported/test_continuation.py::test_runner_counts_a_pending_conductor_as_owned_work_takes_a_slot_and_drains_it_on_stop",
     "tests/ported/test_continuation.py::test_runner_without_continuation_is_unchanged_and_an_outage_never_blocks_admission"
+   ],
+   "codex_harness.coordination.application.fleet.runner:MaintenanceCanaryExecutor": [
+    "tests/ported/test_fleet_maintenance_runner.py::test_a_canary_that_settles_after_the_deadline_stays_owned_and_an_unadmitted_one_never_spawns",
+    "tests/ported/test_fleet_maintenance_runner.py::test_executor_consults_the_ledger_and_launches_nothing_on_refusal",
+    "tests/ported/test_fleet_maintenance_runner.py::test_executor_runs_the_admitted_canary_to_its_finalized_status"
    ],
    "codex_harness.coordination.application.fleet.state:owner_handoff_view": [
     "tests/ported/test_continuation.py::test_a_changed_model_refuses_and_a_non_member_scope_is_never_this_policys_work",
@@ -3543,29 +3590,29 @@
     "tests/ported/test_environment_reverification_chain.py::test_a_wrong_environment_approval_is_refused_before_any_read_or_effect[<lambda>-approval1]"
    ],
    "codex_harness.coordination.domain.owner_actions:canary_binding": [
-    "tests/ported/test_owner_actions_canary_rearm.py::test_after_the_retry_expires_again_the_same_canary_is_rearmed_once_and_the_delivery_is_consumed",
-    "tests/ported/test_owner_actions_canary_recovery.py::test_after_a_host_restart_the_real_owner_rebinds_the_same_canary_to_the_restarted_generation",
-    "tests/ported/test_owner_actions_canary_recovery.py::test_the_real_owner_and_real_lane_recover_the_halted_canary_end_to_end"
+    "tests/ported/test_host_delivery_maintenance.py::test_unchanged_owner_actions_owe_exactly_one_new_instance_canary",
+    "tests/ported/test_host_delivery_maintenance_e2e.py::test_one_active_generation_is_restarted_armed_and_bound_end_to_end",
+    "tests/ported/test_owner_actions_canary_rearm.py::test_after_the_retry_expires_again_the_same_canary_is_rearmed_once_and_the_delivery_is_consumed"
    ],
    "codex_harness.coordination.domain.owner_actions:canary_job_id": [
-    "tests/ported/test_owner_actions_canary_rearm.py::test_after_the_retry_expires_again_the_same_canary_is_rearmed_once_and_the_delivery_is_consumed",
-    "tests/ported/test_owner_actions_canary_recovery.py::test_a_changed_policy_row_writes_nothing[memory]",
-    "tests/ported/test_owner_actions_canary_recovery.py::test_a_changed_policy_row_writes_nothing[postgres]"
+    "tests/ported/test_fleet_forward_candidate.py::test_a_maintenance_canary_cannot_be_granted_beside_an_open_forward_permit_and_replay_is_cached",
+    "tests/ported/test_fleet_forward_candidate.py::test_a_maintenance_permit_without_kind_validates_and_admits_exactly_as_before",
+    "tests/ported/test_fleet_forward_candidate.py::test_an_unknown_kind_is_refused_before_any_write[5]"
    ],
    "codex_harness.coordination.domain.owner_actions:canary_manifest": [
+    "tests/ported/test_host_delivery_maintenance.py::test_unchanged_owner_actions_owe_exactly_one_new_instance_canary",
     "tests/ported/test_owner_actions_canary_rearm.py::test_after_the_retry_expires_again_the_same_canary_is_rearmed_once_and_the_delivery_is_consumed",
-    "tests/ported/test_owner_actions_canary_recovery.py::test_after_a_host_restart_the_real_owner_rebinds_the_same_canary_to_the_restarted_generation",
-    "tests/ported/test_owner_actions_canary_recovery.py::test_the_real_owner_and_real_lane_recover_the_halted_canary_end_to_end"
+    "tests/ported/test_owner_actions_canary_recovery.py::test_after_a_host_restart_the_real_owner_rebinds_the_same_canary_to_the_restarted_generation"
    ],
    "codex_harness.coordination.domain.owner_actions:canary_outcome": [
+    "tests/ported/test_host_delivery_maintenance.py::test_unchanged_owner_actions_owe_exactly_one_new_instance_canary",
     "tests/ported/test_owner_actions_canary_rearm.py::test_after_the_retry_expires_again_the_same_canary_is_rearmed_once_and_the_delivery_is_consumed",
-    "tests/ported/test_owner_actions_canary_recovery.py::test_after_a_host_restart_the_real_owner_rebinds_the_same_canary_to_the_restarted_generation",
-    "tests/ported/test_owner_actions_canary_recovery.py::test_the_real_owner_and_real_lane_recover_the_halted_canary_end_to_end"
+    "tests/ported/test_owner_actions_canary_recovery.py::test_after_a_host_restart_the_real_owner_rebinds_the_same_canary_to_the_restarted_generation"
    ],
    "codex_harness.coordination.domain.owner_actions:canary_receipt": [
-    "tests/ported/test_host_migration_evidence.py::test_a_credential_given_as_an_env_name_is_refused_and_never_echoed[--control-dsn-env]",
-    "tests/ported/test_host_migration_evidence.py::test_a_credential_given_as_an_env_name_is_refused_and_never_echoed[--dsn-env]",
-    "tests/ported/test_host_migration_evidence.py::test_a_credential_given_as_an_env_name_is_refused_and_never_echoed[--dsn]"
+    "tests/ported/test_host_delivery_maintenance.py::test_a_canary_that_settles_after_the_deadline_fails_without_binding_or_rollback",
+    "tests/ported/test_host_delivery_maintenance.py::test_a_rejected_or_changed_canary_fails_the_generation_without_rollback[changed live instance]",
+    "tests/ported/test_host_delivery_maintenance.py::test_a_rejected_or_changed_canary_fails_the_generation_without_rollback[rejected canary]"
    ],
    "codex_harness.coordination.domain.owner_actions:canary_request": [
     "tests/ported/test_environment_reverification_chain.py::test_a_source_moved_before_planning_refuses_and_never_resumes",
@@ -3584,9 +3631,9 @@
     "tests/ported/test_owner_actions.py::test_the_mixed_cause_family_is_assembled_as_a_schema2_receipt_and_released_once"
    ],
    "codex_harness.coordination.domain.owner_actions:linked_restart": [
+    "tests/ported/test_host_delivery_maintenance.py::test_unchanged_owner_actions_owe_exactly_one_new_instance_canary",
     "tests/ported/test_owner_actions_canary_rearm.py::test_after_the_retry_expires_again_the_same_canary_is_rearmed_once_and_the_delivery_is_consumed",
-    "tests/ported/test_owner_actions_canary_recovery.py::test_a_lane_that_was_not_retried_for_this_instance_writes_nothing[memory-change2-canary_recovery_instance_mismatch]",
-    "tests/ported/test_owner_actions_canary_recovery.py::test_a_lane_that_was_not_retried_for_this_instance_writes_nothing[postgres-change2-canary_recovery_instance_mismatch]"
+    "tests/ported/test_owner_actions_canary_recovery.py::test_a_lane_that_was_not_retried_for_this_instance_writes_nothing[memory-change2-canary_recovery_instance_mismatch]"
    ],
    "codex_harness.coordination.domain.owner_actions:moved": [
     "tests/ported/test_environment_reverification_chain.py::test_a_source_moved_before_planning_refuses_and_never_resumes",
@@ -3624,9 +3671,9 @@
     "tests/ported/test_environment_reverification_chain.py::test_a_wrong_environment_approval_is_refused_before_any_read_or_effect[<lambda>-approval1]"
    ],
    "codex_harness.coordination.domain.owner_actions:rearm_owed_canary": [
+    "tests/ported/test_host_delivery_maintenance.py::test_unchanged_owner_actions_owe_exactly_one_new_instance_canary",
     "tests/ported/test_owner_actions_canary_rearm.py::test_after_the_retry_expires_again_the_same_canary_is_rearmed_once_and_the_delivery_is_consumed",
-    "tests/ported/test_owner_actions_canary_recovery.py::test_after_a_host_restart_the_real_owner_rebinds_the_same_canary_to_the_restarted_generation",
-    "tests/ported/test_owner_actions_canary_recovery.py::test_the_real_owner_and_real_lane_recover_the_halted_canary_end_to_end"
+    "tests/ported/test_owner_actions_canary_recovery.py::test_after_a_host_restart_the_real_owner_rebinds_the_same_canary_to_the_restarted_generation"
    ],
    "codex_harness.coordination.domain.owner_actions:recovered_canary": [
     "tests/ported/test_owner_actions_canary_rearm.py::test_after_the_retry_expires_again_the_same_canary_is_rearmed_once_and_the_delivery_is_consumed",
@@ -3694,9 +3741,9 @@
     "tests/ported/test_environment_reverification_chain.py::test_a_wrong_environment_approval_is_refused_before_any_read_or_effect[<lambda>-approval1]"
    ],
    "codex_harness.coordination.domain.owner_actions:restart_owed_canary": [
+    "tests/ported/test_host_delivery_maintenance.py::test_unchanged_owner_actions_owe_exactly_one_new_instance_canary",
     "tests/ported/test_owner_actions_canary_rearm.py::test_after_the_retry_expires_again_the_same_canary_is_rearmed_once_and_the_delivery_is_consumed",
-    "tests/ported/test_owner_actions_canary_recovery.py::test_a_retry_observing_another_instance_without_a_linked_restart_is_refused",
-    "tests/ported/test_owner_actions_canary_recovery.py::test_after_a_host_restart_the_real_owner_rebinds_the_same_canary_to_the_restarted_generation"
+    "tests/ported/test_owner_actions_canary_recovery.py::test_a_retry_observing_another_instance_without_a_linked_restart_is_refused"
    ],
    "codex_harness.coordination.domain.owner_actions:reusable_assessment": [
     "tests/ported/test_owner_actions.py::test_a_changed_attempt_refuses_the_stale_action_and_only_a_new_exact_binding_is_assessed",
@@ -3853,12 +3900,12 @@
    "codex_harness.delivery.adapters.host_delivery:canary_receipt_file": [
     "tests/ported/test_host_delivery.py::test_an_owner_qualified_canary_needs_the_owners_own_receipt",
     "tests/ported/test_host_delivery_lane_routing.py::test_the_collect_canary_reads_the_lane_and_the_owner_canary_stays_file_bound",
-    "tests/ported/test_host_migration_evidence.py::test_a_source_gone_during_the_recheck_refuses_changed_not_unavailable[activation_file_gone]"
+    "tests/ported/test_host_delivery_maintenance.py::test_a_canary_that_settles_after_the_deadline_fails_without_binding_or_rollback"
    ],
    "codex_harness.delivery.adapters.host_delivery:canary_request_file": [
     "tests/ported/test_host_delivery.py::test_an_owner_qualified_canary_needs_the_owners_own_receipt",
     "tests/ported/test_host_delivery_lane_routing.py::test_the_collect_canary_reads_the_lane_and_the_owner_canary_stays_file_bound",
-    "tests/ported/test_host_delivery_requalification.py::test_a_crash_between_the_withdrawal_and_the_queue_finish_is_completed_by_the_replay"
+    "tests/ported/test_host_delivery_maintenance.py::test_bind_binds_only_the_genuine_new_instance_receipt"
    ],
    "codex_harness.delivery.adapters.host_delivery:checkout_revision": [
     "tests/ported/test_evaluator_code_guard.py::test_the_running_revision_is_this_checkout_by_the_runtime_revision_ssot",
@@ -3909,7 +3956,7 @@
    "codex_harness.delivery.adapters.host_delivery:owner_qualified_canary": [
     "tests/ported/test_host_delivery.py::test_an_owner_qualified_canary_needs_the_owners_own_receipt",
     "tests/ported/test_host_delivery_lane_routing.py::test_the_collect_canary_reads_the_lane_and_the_owner_canary_stays_file_bound",
-    "tests/ported/test_host_migration_evidence.py::test_a_source_gone_during_the_recheck_refuses_changed_not_unavailable[activation_file_gone]"
+    "tests/ported/test_host_delivery_maintenance.py::test_a_canary_that_settles_after_the_deadline_fails_without_binding_or_rollback"
    ],
    "codex_harness.delivery.adapters.host_delivery:runtime_revision": [
     "tests/ported/test_evaluator_code_guard.py::test_the_running_revision_is_this_checkout_by_the_runtime_revision_ssot",
@@ -4018,14 +4065,17 @@
     "tests/ported/test_host_migration_evidence.py::test_a_reused_pid_keeps_only_an_argv_digest_and_its_arguments_never_reach_the_output[entry]"
    ],
    "codex_harness.delivery.adapters.host_migration_evidence:HostReader": [
-    "tests/ported/test_host_migration_evidence.py::test_a_fifo_in_place_of_a_file_is_unknown_and_never_blocks",
-    "tests/ported/test_host_migration_evidence.py::test_a_link_in_place_of_a_file_is_unknown",
-    "tests/ported/test_host_migration_evidence.py::test_a_reused_pid_keeps_only_an_argv_digest_and_its_arguments_never_reach_the_output[entry]"
+    "tests/ported/test_host_delivery_maintenance_cli.py::test_maintenance_controller_wires_every_port",
+    "tests/ported/test_host_delivery_maintenance_e2e.py::test_one_active_generation_is_restarted_armed_and_bound_end_to_end",
+    "tests/ported/test_host_migration_evidence.py::test_a_fifo_in_place_of_a_file_is_unknown_and_never_blocks"
    ],
    "codex_harness.delivery.adapters.host_migration_evidence:_capture": [
     "tests/ported/test_host_migration_evidence.py::test_a_fifo_in_place_of_a_file_is_unknown_and_never_blocks",
     "tests/ported/test_host_migration_evidence.py::test_a_link_in_place_of_a_file_is_unknown",
     "tests/ported/test_host_migration_evidence.py::test_a_reused_pid_keeps_only_an_argv_digest_and_its_arguments_never_reach_the_output[entry]"
+   ],
+   "codex_harness.delivery.adapters.host_migration_evidence:boottime_offset_usec": [
+    "tests/ported/test_host_delivery_maintenance_e2e.py::test_one_active_generation_is_restarted_armed_and_bound_end_to_end"
    ],
    "codex_harness.delivery.adapters.host_migration_evidence:bounded_run": [
     "tests/ported/test_host_migration_evidence.py::test_bounded_run_caps_output_kills_on_the_deadline_and_passes_only_the_given_environment",
@@ -4047,9 +4097,9 @@
     "tests/ported/test_host_delivery_lane_routing.py::test_a_settled_control_fleet_is_what_lets_a_lane_activation_through"
    ],
    "codex_harness.delivery.adapters.managed_runtime:Materializer": [
+    "tests/ported/test_host_delivery_maintenance_e2e.py::test_one_active_generation_is_restarted_armed_and_bound_end_to_end",
     "tests/ported/test_host_migration_evidence.py::test_a_reused_pid_keeps_only_an_argv_digest_and_its_arguments_never_reach_the_output[entry]",
-    "tests/ported/test_host_migration_evidence.py::test_a_source_gone_during_the_recheck_refuses_changed_not_unavailable[activation_file_gone]",
-    "tests/ported/test_host_migration_evidence.py::test_a_source_gone_during_the_recheck_refuses_changed_not_unavailable[canary_receipt_gone]"
+    "tests/ported/test_host_migration_evidence.py::test_a_source_gone_during_the_recheck_refuses_changed_not_unavailable[activation_file_gone]"
    ],
    "codex_harness.delivery.adapters.managed_runtime:RuntimeControl": [
     "tests/test_s10_e5cd_entries.py::test_the_fleet_workload_of_entry_runs_run_fleet_with_the_runtime_control"
@@ -4066,28 +4116,28 @@
    ],
    "codex_harness.delivery.adapters.managed_runtime:launcher_environment": [
     "tests/ported/test_host_delivery_lane_routing.py::test_a_lane_tick_leaves_the_process_environment_and_closes_its_lane_observer",
+    "tests/ported/test_host_delivery_maintenance_e2e.py::test_one_active_generation_is_restarted_armed_and_bound_end_to_end",
+    "tests/ported/test_managed_runtime.py::test_a_bad_runtime_is_refused_before_the_running_instance_is_touched"
+   ],
+   "codex_harness.delivery.adapters.managed_runtime:owner_target": [
+    "tests/ported/test_host_delivery_maintenance_adapter.py::test_generation_observation_parses_bounded_safe_facts",
+    "tests/ported/test_host_delivery_maintenance_adapter.py::test_generation_observation_variants_stay_typed_and_never_raise[bad_request_time]",
+    "tests/ported/test_host_delivery_maintenance_adapter.py::test_generation_observation_variants_stay_typed_and_never_raise[dup_drop_ins]"
+   ],
+   "codex_harness.delivery.adapters.managed_runtime:runtime_environment": [
+    "tests/ported/test_host_delivery_maintenance_e2e.py::test_one_active_generation_is_restarted_armed_and_bound_end_to_end",
     "tests/ported/test_managed_runtime.py::test_a_bad_runtime_is_refused_before_the_running_instance_is_touched",
     "tests/ported/test_managed_runtime.py::test_a_child_that_outlives_its_killed_launcher_is_still_running_and_stops_gracefully"
    ],
-   "codex_harness.delivery.adapters.managed_runtime:owner_target": [
-    "tests/ported/test_managed_runtime.py::test_a_bad_runtime_is_refused_before_the_running_instance_is_touched",
-    "tests/ported/test_managed_runtime.py::test_a_child_that_outlives_its_killed_launcher_is_still_running_and_stops_gracefully",
-    "tests/ported/test_managed_runtime.py::test_a_clean_start_a_restart_and_a_repeated_start_launch_exactly_once"
-   ],
-   "codex_harness.delivery.adapters.managed_runtime:runtime_environment": [
-    "tests/ported/test_managed_runtime.py::test_a_bad_runtime_is_refused_before_the_running_instance_is_touched",
-    "tests/ported/test_managed_runtime.py::test_a_child_that_outlives_its_killed_launcher_is_still_running_and_stops_gracefully",
-    "tests/ported/test_managed_runtime.py::test_a_clean_start_a_restart_and_a_repeated_start_launch_exactly_once"
-   ],
    "codex_harness.delivery.adapters.managed_runtime:runtime_image": [
+    "tests/ported/test_host_delivery_maintenance_e2e.py::test_one_active_generation_is_restarted_armed_and_bound_end_to_end",
     "tests/ported/test_managed_runtime.py::test_a_bad_runtime_is_refused_before_the_running_instance_is_touched",
-    "tests/ported/test_managed_runtime.py::test_a_child_that_outlives_its_killed_launcher_is_still_running_and_stops_gracefully",
-    "tests/ported/test_managed_runtime.py::test_a_clean_start_a_restart_and_a_repeated_start_launch_exactly_once"
+    "tests/ported/test_managed_runtime.py::test_a_child_that_outlives_its_killed_launcher_is_still_running_and_stops_gracefully"
    ],
    "codex_harness.delivery.adapters.managed_runtime:scan": [
+    "tests/ported/test_host_delivery_maintenance_e2e.py::test_one_active_generation_is_restarted_armed_and_bound_end_to_end",
     "tests/ported/test_host_migration_evidence.py::test_a_reused_pid_keeps_only_an_argv_digest_and_its_arguments_never_reach_the_output[entry]",
-    "tests/ported/test_host_migration_evidence.py::test_a_source_gone_during_the_recheck_refuses_changed_not_unavailable[activation_file_gone]",
-    "tests/ported/test_host_migration_evidence.py::test_a_source_gone_during_the_recheck_refuses_changed_not_unavailable[canary_receipt_gone]"
+    "tests/ported/test_host_migration_evidence.py::test_a_source_gone_during_the_recheck_refuses_changed_not_unavailable[activation_file_gone]"
    ],
    "codex_harness.delivery.adapters.managed_runtime:supervise": [
     "tests/ported/test_managed_systemd.py::test_supervise_launches_exactly_the_persisted_request_once_the_checks_hold",
@@ -4095,14 +4145,14 @@
     "tests/ported/test_managed_systemd.py::test_supervise_refuses_before_any_launch_and_names_why[changed_manifest-runtime_manifest_changed]"
    ],
    "codex_harness.delivery.adapters.managed_runtime:validate_launch_request": [
-    "tests/ported/test_managed_systemd.py::test_a_failed_candidate_rolls_back_to_the_predecessor_through_the_same_unit",
-    "tests/ported/test_managed_systemd.py::test_a_failed_unit_restarts_under_the_same_checks_and_a_requested_stop_is_never_restarted",
-    "tests/ported/test_managed_systemd.py::test_a_restart_whose_old_child_survived_refuses_instead_of_running_a_second_fleet"
+    "tests/ported/test_host_delivery_maintenance_adapter.py::test_generation_observation_parses_bounded_safe_facts",
+    "tests/ported/test_host_delivery_maintenance_adapter.py::test_generation_observation_variants_stay_typed_and_never_raise[bad_request_time]",
+    "tests/ported/test_host_delivery_maintenance_adapter.py::test_generation_observation_variants_stay_typed_and_never_raise[dup_drop_ins]"
    ],
    "codex_harness.delivery.adapters.target_files:TargetFiles": [
-    "tests/ported/test_owner_actions_canary_rearm.py::test_after_the_retry_expires_again_the_same_canary_is_rearmed_once_and_the_delivery_is_consumed",
-    "tests/ported/test_owner_actions_canary_recovery.py::test_after_a_host_restart_the_real_owner_rebinds_the_same_canary_to_the_restarted_generation",
-    "tests/ported/test_owner_actions_canary_recovery.py::test_an_unreadable_existing_canary_receipt_is_unknown_never_absent"
+    "tests/ported/test_host_delivery_maintenance.py::test_unchanged_owner_actions_owe_exactly_one_new_instance_canary",
+    "tests/ported/test_host_delivery_maintenance_e2e.py::test_one_active_generation_is_restarted_armed_and_bound_end_to_end",
+    "tests/ported/test_owner_actions_canary_rearm.py::test_after_the_retry_expires_again_the_same_canary_is_rearmed_once_and_the_delivery_is_consumed"
    ],
    "codex_harness.delivery.application.host_delivery.controller:DeliveryController": [
     "tests/ported/test_environment_reverification_chain.py::test_code_that_changes_after_the_request_waits_and_never_consumes_the_successor[memory]",
@@ -4118,6 +4168,11 @@
     "tests/ported/test_host_delivery.py::test_a_blocked_delivery_emits_one_operations_alert_with_its_stage",
     "tests/ported/test_host_delivery.py::test_a_descriptor_hand_edited_after_the_merge_is_still_refused_by_the_switch_cas",
     "tests/ported/test_host_delivery.py::test_a_descriptor_that_moved_under_the_plan_refuses_before_any_merge"
+   ],
+   "codex_harness.delivery.application.host_delivery.maintenance:DeliveryMaintenance": [
+    "tests/ported/test_environment_reverification_chain.py::test_code_that_changes_after_the_request_waits_and_never_consumes_the_successor[memory]",
+    "tests/ported/test_environment_reverification_chain.py::test_code_that_changes_after_the_request_waits_and_never_consumes_the_successor[postgres]",
+    "tests/ported/test_environment_reverification_chain.py::test_the_real_lane_environment_kind_completes_from_a_separate_control_store[memory-False]"
    ],
    "codex_harness.delivery.application.host_delivery.migration:DeliveryMigration": [
     "tests/ported/test_environment_reverification_chain.py::test_code_that_changes_after_the_request_waits_and_never_consumes_the_successor[memory]",
@@ -4315,7 +4370,8 @@
    ],
    "codex_harness.delivery.domain.host_delivery:LifecycleInterrupted": [
     "tests/ported/test_host_delivery.py::test_a_fence_lost_during_the_bounded_stop_preserves_the_effect_and_starts_nothing",
-    "tests/ported/test_host_delivery.py::test_a_supersession_during_the_switch_stop_is_reported_as_an_ambiguous_effect"
+    "tests/ported/test_host_delivery.py::test_a_supersession_during_the_switch_stop_is_reported_as_an_ambiguous_effect",
+    "tests/ported/test_host_delivery_maintenance.py::test_ownership_lost_after_the_stop_needs_reconciliation"
    ],
    "codex_harness.delivery.domain.host_delivery:attempt_resolved": [
     "tests/ported/test_environment_reverification_chain.py::test_code_that_changes_after_the_request_waits_and_never_consumes_the_successor[memory]",
@@ -4330,7 +4386,7 @@
    "codex_harness.delivery.domain.host_delivery:canary_request_matches": [
     "tests/ported/test_host_delivery.py::test_an_owner_qualified_canary_needs_the_owners_own_receipt",
     "tests/ported/test_host_delivery_lane_routing.py::test_the_collect_canary_reads_the_lane_and_the_owner_canary_stays_file_bound",
-    "tests/ported/test_host_migration_evidence.py::test_a_source_gone_during_the_recheck_refuses_changed_not_unavailable[activation_file_gone]"
+    "tests/ported/test_host_delivery_maintenance.py::test_bind_refuses_every_unbound_receipt[request mismatch]"
    ],
    "codex_harness.delivery.domain.host_delivery:ci_verdict": [
     "tests/ported/test_host_delivery.py::test_a_blocked_delivery_emits_one_operations_alert_with_its_stage",
@@ -4403,9 +4459,9 @@
     "tests/ported/test_host_delivery.py::test_a_failed_canary_restores_the_exact_predecessor_and_proves_it_was_consumed"
    ],
    "codex_harness.delivery.domain.host_delivery:managed_runtime_root": [
-    "tests/ported/test_host_migration_evidence.py::test_a_reused_pid_keeps_only_an_argv_digest_and_its_arguments_never_reach_the_output[entry]",
-    "tests/ported/test_host_migration_evidence.py::test_a_source_gone_during_the_recheck_refuses_changed_not_unavailable[activation_file_gone]",
-    "tests/ported/test_host_migration_evidence.py::test_a_source_gone_during_the_recheck_refuses_changed_not_unavailable[canary_receipt_gone]"
+    "tests/ported/test_host_delivery_maintenance.py::test_a_canary_that_settles_after_the_deadline_fails_without_binding_or_rollback",
+    "tests/ported/test_host_delivery_maintenance.py::test_a_rejected_or_changed_canary_fails_the_generation_without_rollback[changed live instance]",
+    "tests/ported/test_host_delivery_maintenance.py::test_a_rejected_or_changed_canary_fails_the_generation_without_rollback[rejected canary]"
    ],
    "codex_harness.delivery.domain.host_delivery:migration_kind": [
     "tests/ported/test_environment_reverification_chain.py::test_code_that_changes_after_the_request_waits_and_never_consumes_the_successor[memory]",
@@ -4563,9 +4619,9 @@
     "tests/ported/test_host_delivery.py::test_a_fence_lost_during_the_bounded_stop_preserves_the_effect_and_starts_nothing"
    ],
    "codex_harness.delivery.domain.host_migration:MigrationRefused": [
-    "tests/ported/test_host_migration.py::test_a_failing_unknown_or_inconsistent_receipt_never_advances[bad0-gate_evidence_failed]",
-    "tests/ported/test_host_migration.py::test_a_failing_unknown_or_inconsistent_receipt_never_advances[bad1-evidence_inconsistent]",
-    "tests/ported/test_host_migration.py::test_a_failing_unknown_or_inconsistent_receipt_never_advances[bad2-evidence_inconsistent]"
+    "tests/ported/test_host_delivery_maintenance.py::test_bind_refuses_every_unbound_receipt[no instance]",
+    "tests/ported/test_host_delivery_maintenance.py::test_bind_refuses_every_unbound_receipt[old receipt]",
+    "tests/ported/test_host_delivery_maintenance.py::test_bind_refuses_every_unbound_receipt[passed is a truthy string]"
    ],
    "codex_harness.delivery.domain.host_migration:activation_id": [
     "tests/ported/test_host_migration.py::test_controller_wires_the_configured_control_dir_into_the_systemd_start",
@@ -4623,9 +4679,9 @@
     "tests/ported/test_host_migration.py::test_per_schema_comparison_with_registry_delta_only_on_public"
    ],
    "codex_harness.delivery.domain.host_migration:refuse_secrets": [
-    "tests/ported/test_host_migration.py::test_a_failing_unknown_or_inconsistent_receipt_never_advances[bad0-gate_evidence_failed]",
-    "tests/ported/test_host_migration.py::test_a_failing_unknown_or_inconsistent_receipt_never_advances[bad1-evidence_inconsistent]",
-    "tests/ported/test_host_migration.py::test_a_failing_unknown_or_inconsistent_receipt_never_advances[bad2-evidence_inconsistent]"
+    "tests/ported/test_host_delivery_maintenance.py::test_bind_binds_only_the_genuine_new_instance_receipt",
+    "tests/ported/test_host_delivery_maintenance.py::test_bind_refuses_every_unbound_receipt[no instance]",
+    "tests/ported/test_host_delivery_maintenance.py::test_bind_refuses_every_unbound_receipt[old receipt]"
    ],
    "codex_harness.delivery.domain.host_migration:rename_plan": [
     "tests/ported/test_host_migration.py::test_rename_plan_is_total_and_allows_public_only_as_the_control_ledger"
@@ -4692,9 +4748,9 @@
     "tests/ported/test_host_migration.py::test_intent_is_recorded_only_in_restored_paused_and_blocks_further_forward_restore"
    ],
    "codex_harness.delivery.domain.host_migration:validate_managed_lineage": [
-    "tests/ported/test_host_migration.py::test_ph4_10_a_failed_transaction_leaves_no_partial_transition_or_history",
-    "tests/ported/test_host_migration.py::test_ph4_10_exact_managed_replay_is_cached_and_nothing_overwrites_it",
-    "tests/ported/test_host_migration.py::test_ph4_13_the_coordinator_checks_archived_bindings_only_and_samples_no_live_state"
+    "tests/ported/test_host_delivery_maintenance.py::test_bind_binds_only_the_genuine_new_instance_receipt",
+    "tests/ported/test_host_delivery_maintenance.py::test_bind_refuses_every_unbound_receipt[no instance]",
+    "tests/ported/test_host_delivery_maintenance.py::test_bind_refuses_every_unbound_receipt[old receipt]"
    ],
    "codex_harness.delivery.domain.host_migration:validate_manifest": [
     "tests/ported/test_host_migration.py::test_a_failing_unknown_or_inconsistent_receipt_never_advances[bad0-gate_evidence_failed]",
@@ -4717,14 +4773,14 @@
     "tests/ported/test_host_migration_evidence.py::test_f1_a_pre_submit_change_only_in_dropped_content_is_still_refused[history_excluded_key]"
    ],
    "codex_harness.delivery.domain.host_migration_evidence:delivery_view": [
-    "tests/ported/test_host_migration_evidence.py::test_a_fifo_in_place_of_a_file_is_unknown_and_never_blocks",
-    "tests/ported/test_host_migration_evidence.py::test_a_link_in_place_of_a_file_is_unknown",
-    "tests/ported/test_host_migration_evidence.py::test_a_reused_pid_keeps_only_an_argv_digest_and_its_arguments_never_reach_the_output[entry]"
+    "tests/ported/test_host_delivery_maintenance.py::test_pr2_observer_refuses_during_maintenance_and_accepts_after_bind",
+    "tests/ported/test_host_delivery_maintenance_e2e.py::test_one_active_generation_is_restarted_armed_and_bound_end_to_end",
+    "tests/ported/test_host_migration_evidence.py::test_a_fifo_in_place_of_a_file_is_unknown_and_never_blocks"
    ],
    "codex_harness.delivery.domain.host_migration_evidence:diagnostic": [
-    "tests/ported/test_host_migration_evidence.py::test_a_fifo_in_place_of_a_file_is_unknown_and_never_blocks",
-    "tests/ported/test_host_migration_evidence.py::test_a_link_in_place_of_a_file_is_unknown",
-    "tests/ported/test_host_migration_evidence.py::test_a_reused_pid_keeps_only_an_argv_digest_and_its_arguments_never_reach_the_output[entry]"
+    "tests/ported/test_host_delivery_maintenance.py::test_bind_refuses_every_unbound_receipt[old receipt]",
+    "tests/ported/test_host_delivery_maintenance.py::test_bind_refuses_every_unbound_receipt[wrong descriptor]",
+    "tests/ported/test_host_delivery_maintenance.py::test_bind_refuses_every_unbound_receipt[wrong instance]"
    ],
    "codex_harness.delivery.domain.host_migration_evidence:entry_facts": [
     "tests/ported/test_host_migration_evidence.py::test_a_source_gone_during_the_recheck_refuses_changed_not_unavailable[activation_file_gone]",
@@ -4757,14 +4813,14 @@
     "tests/ported/test_host_migration_evidence.py::test_a_reused_pid_keeps_only_an_argv_digest_and_its_arguments_never_reach_the_output[entry]"
    ],
    "codex_harness.delivery.domain.host_migration_evidence:record_view": [
-    "tests/ported/test_host_migration_evidence.py::test_a_source_gone_during_the_recheck_refuses_changed_not_unavailable[activation_file_gone]",
-    "tests/ported/test_host_migration_evidence.py::test_a_source_gone_during_the_recheck_refuses_changed_not_unavailable[canary_receipt_gone]",
-    "tests/ported/test_host_migration_evidence.py::test_a_source_gone_during_the_recheck_refuses_changed_not_unavailable[canary_record_gone]"
+    "tests/ported/test_host_delivery_maintenance.py::test_a_canary_that_settles_after_the_deadline_fails_without_binding_or_rollback",
+    "tests/ported/test_host_delivery_maintenance.py::test_a_rejected_or_changed_canary_fails_the_generation_without_rollback[changed live instance]",
+    "tests/ported/test_host_delivery_maintenance.py::test_a_rejected_or_changed_canary_fails_the_generation_without_rollback[rejected canary]"
    ],
    "codex_harness.delivery.domain.host_migration_evidence:refused": [
-    "tests/ported/test_host_migration_evidence.py::test_a_reused_pid_keeps_only_an_argv_digest_and_its_arguments_never_reach_the_output[entry]",
-    "tests/ported/test_host_migration_evidence.py::test_a_reused_pid_keeps_only_an_argv_digest_and_its_arguments_never_reach_the_output[supervisor]",
-    "tests/ported/test_host_migration_evidence.py::test_a_source_gone_during_the_recheck_refuses_changed_not_unavailable[unit_stopped]"
+    "tests/ported/test_host_delivery_maintenance.py::test_bind_refuses_every_unbound_receipt[no instance]",
+    "tests/ported/test_host_delivery_maintenance.py::test_bind_refuses_every_unbound_receipt[old receipt]",
+    "tests/ported/test_host_delivery_maintenance.py::test_bind_refuses_every_unbound_receipt[passed is a truthy string]"
    ],
    "codex_harness.delivery.domain.host_migration_evidence:require_activation_file": [
     "tests/ported/test_host_migration_evidence.py::test_a_fifo_in_place_of_a_file_is_unknown_and_never_blocks",
@@ -4772,14 +4828,14 @@
     "tests/ported/test_host_migration_evidence.py::test_a_reused_pid_keeps_only_an_argv_digest_and_its_arguments_never_reach_the_output[entry]"
    ],
    "codex_harness.delivery.domain.host_migration_evidence:require_canary": [
-    "tests/ported/test_host_migration_evidence.py::test_a_source_gone_during_the_recheck_refuses_changed_not_unavailable[activation_file_gone]",
-    "tests/ported/test_host_migration_evidence.py::test_a_source_gone_during_the_recheck_refuses_changed_not_unavailable[canary_receipt_gone]",
-    "tests/ported/test_host_migration_evidence.py::test_a_source_gone_during_the_recheck_refuses_changed_not_unavailable[canary_record_gone]"
+    "tests/ported/test_host_delivery_maintenance.py::test_bind_binds_only_the_genuine_new_instance_receipt",
+    "tests/ported/test_host_delivery_maintenance.py::test_bind_refuses_every_unbound_receipt[no instance]",
+    "tests/ported/test_host_delivery_maintenance.py::test_bind_refuses_every_unbound_receipt[old receipt]"
    ],
    "codex_harness.delivery.domain.host_migration_evidence:require_consumption": [
-    "tests/ported/test_host_migration_evidence.py::test_a_reused_pid_keeps_only_an_argv_digest_and_its_arguments_never_reach_the_output[entry]",
-    "tests/ported/test_host_migration_evidence.py::test_a_source_gone_during_the_recheck_refuses_changed_not_unavailable[activation_file_gone]",
-    "tests/ported/test_host_migration_evidence.py::test_a_source_gone_during_the_recheck_refuses_changed_not_unavailable[canary_receipt_gone]"
+    "tests/ported/test_host_delivery_maintenance.py::test_pr2_observer_refuses_during_maintenance_and_accepts_after_bind",
+    "tests/ported/test_host_delivery_maintenance_e2e.py::test_one_active_generation_is_restarted_armed_and_bound_end_to_end",
+    "tests/ported/test_host_migration_evidence.py::test_a_reused_pid_keeps_only_an_argv_digest_and_its_arguments_never_reach_the_output[entry]"
    ],
    "codex_harness.delivery.domain.host_migration_evidence:require_current": [
     "tests/ported/test_host_migration_evidence.py::test_a_fifo_in_place_of_a_file_is_unknown_and_never_blocks",
@@ -4837,9 +4893,9 @@
     "tests/ported/test_host_migration_evidence.py::test_a_reused_pid_keeps_only_an_argv_digest_and_its_arguments_never_reach_the_output[entry]"
    ],
    "codex_harness.delivery.domain.host_migration_evidence:usec_of": [
-    "tests/ported/test_host_migration_evidence.py::test_a_fifo_in_place_of_a_file_is_unknown_and_never_blocks",
-    "tests/ported/test_host_migration_evidence.py::test_a_link_in_place_of_a_file_is_unknown",
-    "tests/ported/test_host_migration_evidence.py::test_a_reused_pid_keeps_only_an_argv_digest_and_its_arguments_never_reach_the_output[entry]"
+    "tests/ported/test_host_delivery_maintenance.py::test_bind_binds_only_the_genuine_new_instance_receipt",
+    "tests/ported/test_host_delivery_maintenance.py::test_bind_refuses_every_unbound_receipt[recorded before the startup]",
+    "tests/ported/test_host_delivery_maintenance.py::test_bind_refuses_every_unbound_receipt[request mismatch]"
    ],
    "codex_harness.delivery.domain.host_migration_evidence:utc_from_usec": [
     "tests/ported/test_host_migration_evidence.py::test_a_fifo_in_place_of_a_file_is_unknown_and_never_blocks",
@@ -4862,59 +4918,59 @@
     "tests/ported/test_managed_runtime.py::test_an_unresolved_revision_or_unqualified_environment_writes_nothing"
    ],
    "codex_harness.delivery.domain.managed_runtime:blob_id": [
+    "tests/ported/test_host_delivery_maintenance_e2e.py::test_one_active_generation_is_restarted_armed_and_bound_end_to_end",
     "tests/ported/test_host_migration_evidence.py::test_a_credential_given_as_an_env_name_is_refused_and_never_echoed[--control-dsn-env]",
-    "tests/ported/test_host_migration_evidence.py::test_a_credential_given_as_an_env_name_is_refused_and_never_echoed[--dsn-env]",
-    "tests/ported/test_host_migration_evidence.py::test_a_credential_given_as_an_env_name_is_refused_and_never_echoed[--dsn]"
+    "tests/ported/test_host_migration_evidence.py::test_a_credential_given_as_an_env_name_is_refused_and_never_echoed[--dsn-env]"
    ],
    "codex_harness.delivery.domain.managed_runtime:check_environment": [
+    "tests/ported/test_host_delivery_maintenance_e2e.py::test_one_active_generation_is_restarted_armed_and_bound_end_to_end",
     "tests/ported/test_host_migration_evidence.py::test_a_reused_pid_keeps_only_an_argv_digest_and_its_arguments_never_reach_the_output[entry]",
-    "tests/ported/test_host_migration_evidence.py::test_a_source_gone_during_the_recheck_refuses_changed_not_unavailable[activation_file_gone]",
-    "tests/ported/test_host_migration_evidence.py::test_a_source_gone_during_the_recheck_refuses_changed_not_unavailable[canary_receipt_gone]"
+    "tests/ported/test_host_migration_evidence.py::test_a_source_gone_during_the_recheck_refuses_changed_not_unavailable[activation_file_gone]"
    ],
    "codex_harness.delivery.domain.managed_runtime:check_runtime_path": [
-    "tests/ported/test_host_migration_evidence.py::test_a_reused_pid_keeps_only_an_argv_digest_and_its_arguments_never_reach_the_output[entry]",
-    "tests/ported/test_host_migration_evidence.py::test_a_source_gone_during_the_recheck_refuses_changed_not_unavailable[activation_file_gone]",
-    "tests/ported/test_host_migration_evidence.py::test_a_source_gone_during_the_recheck_refuses_changed_not_unavailable[canary_receipt_gone]"
+    "tests/ported/test_host_delivery_maintenance.py::test_pr2_observer_refuses_during_maintenance_and_accepts_after_bind",
+    "tests/ported/test_host_delivery_maintenance_e2e.py::test_one_active_generation_is_restarted_armed_and_bound_end_to_end",
+    "tests/ported/test_host_migration_evidence.py::test_a_reused_pid_keeps_only_an_argv_digest_and_its_arguments_never_reach_the_output[entry]"
    ],
    "codex_harness.delivery.domain.managed_runtime:check_sealed": [
+    "tests/ported/test_host_delivery_maintenance_e2e.py::test_one_active_generation_is_restarted_armed_and_bound_end_to_end",
     "tests/ported/test_host_migration_evidence.py::test_a_reused_pid_keeps_only_an_argv_digest_and_its_arguments_never_reach_the_output[entry]",
-    "tests/ported/test_host_migration_evidence.py::test_a_source_gone_during_the_recheck_refuses_changed_not_unavailable[activation_file_gone]",
-    "tests/ported/test_host_migration_evidence.py::test_a_source_gone_during_the_recheck_refuses_changed_not_unavailable[canary_receipt_gone]"
+    "tests/ported/test_host_migration_evidence.py::test_a_source_gone_during_the_recheck_refuses_changed_not_unavailable[activation_file_gone]"
    ],
    "codex_harness.delivery.domain.managed_runtime:content_digest": [
+    "tests/ported/test_host_delivery_maintenance_e2e.py::test_one_active_generation_is_restarted_armed_and_bound_end_to_end",
     "tests/ported/test_host_migration_evidence.py::test_a_credential_given_as_an_env_name_is_refused_and_never_echoed[--control-dsn-env]",
-    "tests/ported/test_host_migration_evidence.py::test_a_credential_given_as_an_env_name_is_refused_and_never_echoed[--dsn-env]",
-    "tests/ported/test_host_migration_evidence.py::test_a_credential_given_as_an_env_name_is_refused_and_never_echoed[--dsn]"
+    "tests/ported/test_host_migration_evidence.py::test_a_credential_given_as_an_env_name_is_refused_and_never_echoed[--dsn-env]"
    ],
    "codex_harness.delivery.domain.managed_runtime:manifest_digest": [
-    "tests/ported/test_host_migration_evidence.py::test_a_reused_pid_keeps_only_an_argv_digest_and_its_arguments_never_reach_the_output[entry]",
-    "tests/ported/test_host_migration_evidence.py::test_a_source_gone_during_the_recheck_refuses_changed_not_unavailable[activation_file_gone]",
-    "tests/ported/test_host_migration_evidence.py::test_a_source_gone_during_the_recheck_refuses_changed_not_unavailable[canary_receipt_gone]"
+    "tests/ported/test_host_delivery_maintenance_adapter.py::test_identical_target_file_is_never_rewritten_and_a_differing_one_is_refused_under_maintenance",
+    "tests/ported/test_host_delivery_maintenance_adapter.py::test_the_real_launch_persists_this_requests_launch_request_before_its_one_start[show lost after the start took effect]",
+    "tests/ported/test_host_delivery_maintenance_adapter.py::test_the_real_launch_persists_this_requests_launch_request_before_its_one_start[start outcome unknown]"
    ],
    "codex_harness.delivery.domain.managed_runtime:new_manifest": [
+    "tests/ported/test_host_delivery_maintenance_e2e.py::test_one_active_generation_is_restarted_armed_and_bound_end_to_end",
     "tests/ported/test_host_migration_evidence.py::test_a_credential_given_as_an_env_name_is_refused_and_never_echoed[--control-dsn-env]",
-    "tests/ported/test_host_migration_evidence.py::test_a_credential_given_as_an_env_name_is_refused_and_never_echoed[--dsn-env]",
-    "tests/ported/test_host_migration_evidence.py::test_a_credential_given_as_an_env_name_is_refused_and_never_echoed[--dsn]"
+    "tests/ported/test_host_migration_evidence.py::test_a_credential_given_as_an_env_name_is_refused_and_never_echoed[--dsn-env]"
    ],
    "codex_harness.delivery.domain.managed_runtime:safe_runtime_path": [
+    "tests/ported/test_host_delivery_maintenance_e2e.py::test_one_active_generation_is_restarted_armed_and_bound_end_to_end",
     "tests/ported/test_host_migration_evidence.py::test_a_credential_given_as_an_env_name_is_refused_and_never_echoed[--control-dsn-env]",
-    "tests/ported/test_host_migration_evidence.py::test_a_credential_given_as_an_env_name_is_refused_and_never_echoed[--dsn-env]",
-    "tests/ported/test_host_migration_evidence.py::test_a_credential_given_as_an_env_name_is_refused_and_never_echoed[--dsn]"
+    "tests/ported/test_host_migration_evidence.py::test_a_credential_given_as_an_env_name_is_refused_and_never_echoed[--dsn-env]"
    ],
    "codex_harness.delivery.domain.managed_runtime:validate_listing": [
+    "tests/ported/test_host_delivery_maintenance_e2e.py::test_one_active_generation_is_restarted_armed_and_bound_end_to_end",
     "tests/ported/test_host_migration_evidence.py::test_a_credential_given_as_an_env_name_is_refused_and_never_echoed[--control-dsn-env]",
-    "tests/ported/test_host_migration_evidence.py::test_a_credential_given_as_an_env_name_is_refused_and_never_echoed[--dsn-env]",
-    "tests/ported/test_host_migration_evidence.py::test_a_credential_given_as_an_env_name_is_refused_and_never_echoed[--dsn]"
+    "tests/ported/test_host_migration_evidence.py::test_a_credential_given_as_an_env_name_is_refused_and_never_echoed[--dsn-env]"
    ],
    "codex_harness.delivery.domain.managed_runtime:validate_manifest": [
+    "tests/ported/test_host_delivery_maintenance_e2e.py::test_one_active_generation_is_restarted_armed_and_bound_end_to_end",
     "tests/ported/test_host_migration_evidence.py::test_a_credential_given_as_an_env_name_is_refused_and_never_echoed[--control-dsn-env]",
-    "tests/ported/test_host_migration_evidence.py::test_a_credential_given_as_an_env_name_is_refused_and_never_echoed[--dsn-env]",
-    "tests/ported/test_host_migration_evidence.py::test_a_credential_given_as_an_env_name_is_refused_and_never_echoed[--dsn]"
+    "tests/ported/test_host_migration_evidence.py::test_a_credential_given_as_an_env_name_is_refused_and_never_echoed[--dsn-env]"
    ],
    "codex_harness.delivery.domain.managed_runtime:work_verdict": [
-    "tests/ported/test_managed_runtime.py::test_a_child_that_outlives_its_killed_launcher_is_still_running_and_stops_gracefully",
-    "tests/ported/test_managed_runtime.py::test_a_clean_start_a_restart_and_a_repeated_start_launch_exactly_once",
-    "tests/ported/test_managed_runtime.py::test_a_failed_candidate_restores_the_predecessor_which_runs_its_old_code"
+    "tests/ported/test_host_delivery_maintenance_adapter.py::test_generation_observation_parses_bounded_safe_facts",
+    "tests/ported/test_host_delivery_maintenance_adapter.py::test_generation_observation_variants_stay_typed_and_never_raise[bad_request_time]",
+    "tests/ported/test_host_delivery_maintenance_adapter.py::test_generation_observation_variants_stay_typed_and_never_raise[dup_drop_ins]"
    ],
    "codex_harness.entry.cli.audit_repair:_execute": [
     "tests/ported/test_audit_repair_cli.py::test_a_refusal_prints_a_code_and_a_type_only[argv0-unknown_audit]",
@@ -5112,8 +5168,8 @@
    ],
    "codex_harness.entry.cli.host_delivery:_refusal": [
     "tests/ported/test_host_delivery_cli.py::test_refusals_print_a_code_and_a_type_and_never_a_value",
-    "tests/test_s10_c8b4_host_delivery.py::test_an_absent_composition_profile_refuses_where_the_executor_is_built",
-    "tests/test_s10_c8b4_host_delivery.py::test_register_targets_reads_the_file_as_m7_did"
+    "tests/ported/test_host_delivery_maintenance_cli.py::test_refusal_prints_only_allowlisted_fields",
+    "tests/ported/test_host_delivery_maintenance_cli.py::test_unreadable_or_oversized_document_is_maintenance_invalid"
    ],
    "codex_harness.entry.cli.host_delivery:add_parser": [
     "tests/ported/test_audit_repair_cli.py::test_a_refusal_prints_a_code_and_a_type_only[argv0-unknown_audit]",
@@ -5121,6 +5177,7 @@
     "tests/ported/test_audit_repair_cli.py::test_a_refusal_prints_a_code_and_a_type_only[argv2-unknown_audit]"
    ],
    "codex_harness.entry.cli.host_delivery:run": [
+    "tests/ported/test_host_delivery_maintenance_cli.py::test_refusal_prints_only_allowlisted_fields",
     "tests/test_s10_c8b4_host_delivery.py::test_the_entry_body_emits_a_refusal_and_exits_one"
    ],
    "codex_harness.entry.cli.observe:run": [
@@ -6188,9 +6245,9 @@
     "tests/ported/test_git_merge_cas.py::test_a_remote_failure_after_the_update_is_unknown_and_reconciled_without_a_second_push"
    ],
    "codex_harness.host_os.adapters.host_facts:HostFacts": [
+    "tests/ported/test_host_delivery_maintenance_e2e.py::test_one_active_generation_is_restarted_armed_and_bound_end_to_end",
     "tests/ported/test_host_delivery_verification.py::test_a_blocked_postgres_store_returns_the_whole_tick_unsettled_well_before_lock_timeout",
-    "tests/ported/test_host_delivery_verification.py::test_a_check_that_executed_and_failed_rejects_without_publication[memory]",
-    "tests/ported/test_host_delivery_verification.py::test_a_check_that_executed_and_failed_rejects_without_publication[postgres]"
+    "tests/ported/test_host_delivery_verification.py::test_a_check_that_executed_and_failed_rejects_without_publication[memory]"
    ],
    "codex_harness.host_os.adapters.port_diagnosis:context": [
     "tests/ported/test_port_diagnosis.py::test_a_lookup_that_fails_leaves_the_container_unasked_rather_than_guilty",
@@ -8931,8 +8988,8 @@
    ],
    "codex_harness.research.domain.research:PathDisposition": [
     "tests/ported/test_audit_analysis_outcomes.py::test_a_refused_draft_is_retained_without_checkpoint_coverage_or_history[generated_without_link]",
-    "tests/ported/test_audit_analysis_outcomes.py::test_missing_or_unreadable_rejection_evidence_stays_a_failure[absent]",
-    "tests/ported/test_audit_analysis_outcomes.py::test_missing_or_unreadable_rejection_evidence_stays_a_failure[modified_artifact]"
+    "tests/ported/test_audit_analysis_outcomes.py::test_a_rejected_partition_is_followed_by_a_valid_one_in_one_serial_run",
+    "tests/ported/test_audit_analysis_outcomes.py::test_a_repeated_tick_and_a_restart_never_rerun_the_held_generation"
    ],
    "codex_harness.research.domain.research:SourceIdentity": [
     "tests/ported/test_audit_analysis_outcomes.py::test_a_refused_draft_is_retained_without_checkpoint_coverage_or_history[generated_without_link]",
@@ -8941,8 +8998,8 @@
    ],
    "codex_harness.research.domain.research:SubsystemAnalysis": [
     "tests/ported/test_audit_analysis_outcomes.py::test_a_refused_draft_is_retained_without_checkpoint_coverage_or_history[missing_subsystem_trace]",
-    "tests/ported/test_audit_analysis_outcomes.py::test_a_rejected_partition_is_followed_by_a_valid_one_in_one_serial_run",
-    "tests/ported/test_audit_analysis_outcomes.py::test_a_repeated_tick_and_a_restart_never_rerun_the_held_generation"
+    "tests/ported/test_audit_checkpoint_outcomes.py::test_a_late_reconciliation_rejection_rolls_back_rows_it_already_staged",
+    "tests/ported/test_audit_checkpoint_outcomes.py::test_a_late_typed_rejection_rolls_back_then_the_owned_task_still_completes[memory]"
    ],
    "codex_harness.research.domain.research:parse_record": [
     "tests/ported/test_audit_analysis_outcomes.py::test_a_refused_draft_is_retained_without_checkpoint_coverage_or_history[generated_without_link]",
@@ -9891,46 +9948,49 @@
   },
   "reason": "check-tree SECRET_SHAPES; IDs unchanged in the tests (R-M1)"
  },
- "head": "61f89952709a986f0e64bac1ac2b5afdfb5e705e",
+ "head": "d14418c5e03a37572d5ecd7bb08af05cd85a887e",
  "ids": {
-  "compare": "4a4b4186db5794a80e8c3ea020b540da2b2691b5",
+  "compare": "bbe8d65bd68cd850be9d2d7065e908f48c1a4249",
   "pyproject.toml": "e78cd7dab61ff6cea3bf35aa5e49dbc535a1fd8d",
-  "src": "e1b282a78dce1a7539a5f48e7e852a4095780af3",
+  "src": "fb15960fe7b9c6b6300eaee9454d9bd230d9a940",
   "uv.lock": "35c1a8ce8a1c032baeb834be7b8d024c196a3698"
  },
  "inputs": {
-  "A/evidence/rebuild/s11/integration/compare-run-61f89952.json": "d409cc57746fe3281523fe62f5878792939dcab637b81a2e66c6ee14a75f3a5f",
-  "A/evidence/rebuild/s11/integration/ct-json-61f89952/delivery.restore.pg.json": "c7be2a9c959ca7f5e192efbbbc2255866f32a844350d600bc0e1d378d6e36c56",
-  "A/evidence/rebuild/s11/integration/ct-json-61f89952/effects.admission_unit.pg.json": "c42b2e46878c39d24c27606c14a4cc42032ceb17400a9410cbc648e0d31a6967",
-  "A/evidence/rebuild/s11/integration/ct-json-61f89952/effects.continuation_units.pg.json": "eed1501cc618075534180a89251ac5dacff5a66e8e28fb640577b640e3a6e305",
-  "A/evidence/rebuild/s11/integration/ct-json-61f89952/effects.decision_unit.pg.json": "c58edc5820930fca3c91eec0a23449d46c1b2beb81b284719b0b5ed0fe7b7896",
-  "A/evidence/rebuild/s11/integration/ct-json-61f89952/effects.delivery_units.pg.json": "59ff39933cf941a408fdff3177e7669d4cd5065b3eabe13717de93f396c33bb1",
-  "A/evidence/rebuild/s11/integration/ct-json-61f89952/effects.s8_units.pg.json": "cfac1526140c5a1f6e30a26809c7f7491c42485ba2870eeead9149bd3f9267bb",
-  "A/evidence/rebuild/s11/integration/ct-json-61f89952/effects.s9_units.pg.json": "ea1bce85afd8194fb256136cf22956e5fd5899ecab04cdf63149401ac56ef68b",
-  "A/evidence/rebuild/s11/integration/ct-json-61f89952/entry.cli_audit_service.pg.json": "e9e0ed84821279259b30e6a462e90dc8aee82bb8f9bdf3dcc577b14ae78f1ba5",
-  "A/evidence/rebuild/s11/integration/ct-json-61f89952/entry.cli_bus.pgredis.json": "144d5e4782059ec36f970e47365fc28bea482602534c9b1bd0840877ec492d5e",
-  "A/evidence/rebuild/s11/integration/ct-json-61f89952/entry.cli_continuation.pg.json": "403e11f6a859f6aa05ef6f9d9a377f3f355a983a990d0aa03e5885370f444952",
-  "A/evidence/rebuild/s11/integration/ct-json-61f89952/entry.cli_cycle_serve.pgredis.json": "58c52864d26c1c3ff5ffa9da53aef8a3f972742ab248be4e00aed00fd388d4d8",
-  "A/evidence/rebuild/s11/integration/ct-json-61f89952/entry.cli_desk_program.pg.json": "76ce16c0dceffaeb0f51ddd0773ce1de69c89bfd6bca0f87cc8674b2440ef36e",
-  "A/evidence/rebuild/s11/integration/ct-json-61f89952/entry.cli_executor.pgredis.json": "76d9924086eb3769248a950b23a70ee3379ed8ab0215447950bf9f8d98d3bc42",
-  "A/evidence/rebuild/s11/integration/ct-json-61f89952/entry.cli_fleet.pg.json": "7bf0787df4adebc6ac894919305922877d958e84e7c88ec2420360ba5aa120db",
-  "A/evidence/rebuild/s11/integration/ct-json-61f89952/entry.cli_governance.pg.json": "f59ce63a9b2b2f5a664513ce91658c2b0e2127db7ec92b42543de7323e153437",
-  "A/evidence/rebuild/s11/integration/ct-json-61f89952/entry.cli_host_delivery.pg.json": "259ffc2913966a51876cd110dc1ddb7367495411a0ef7fa7d7f128420d6fc52c",
-  "A/evidence/rebuild/s11/integration/ct-json-61f89952/entry.cli_knowledge.pg.json": "f77f63be76af3e903017dce68bc51c7b694a21ee63255e5070013969284683f5",
-  "A/evidence/rebuild/s11/integration/ct-json-61f89952/entry.cli_operation.pg.json": "fdab943b518397a6dfd969f96d6540cf290da23d06c745aae44714c2861e0b77",
-  "A/evidence/rebuild/s11/integration/ct-json-61f89952/entry.cli_owner_actions.pg.json": "bbd2d44ed30ffaced7ca88c32e429ea55a911ae8855a480ac161d78e4c5ceb9d",
-  "A/evidence/rebuild/s11/integration/ct-json-61f89952/entry.cli_research_gov.pg.json": "4f1989f428b468aa9f962b258b7445ef23c13cbdcb98f549173eb0154fcdfc79",
-  "A/evidence/rebuild/s11/integration/ct-json-61f89952/entry.cli_store.pg.json": "5f65d97284f2c9f7ab9d036e422d6b7573494e5b7f1d544146c7f3c257c3c4d1",
-  "A/evidence/rebuild/s11/integration/ct-json-61f89952/entry.cli_store_b.pg.json": "a4d5965449ab5a23bd61aed0599aeb6dad2c7c0e351b872341621b9e028be9f3",
-  "A/evidence/rebuild/s11/integration/ct-json-61f89952/entry.cli_ticket_sdd.pg.json": "68a1714b1f09256275a657fbce316c7e691ad24dfedca6e5a432ca92dd8710f8",
-  "A/evidence/rebuild/s11/integration/ct-json-61f89952/prepare.json": "c0d96df9f7870d4d72d7f25d832f8ccbf6e7b7f852036d3aaca872565692143e",
-  "A/evidence/rebuild/s11/integration/ct-json-61f89952/storage.pg.json": "65c4ead4d8955fd1c338e9447f4675d6a1b07deb76e161525fe96cdd391037d6",
-  "A/evidence/rebuild/s11/integration/rehearsal-61f89952.junit.xml": "16db417c747cd1ef88c9f573edeb0ae26a01115bb6bfbcccec2c9c41c449a5a8",
-  "A/evidence/rebuild/s11/integration/ti-61f89952.junit.xml": "e99b26ea903a0b0aa24e6c5435ac830152310cff263745fbcbb5cc6ea75f3a4f"
+  "A/evidence/rebuild/cutover/int63-h0/compare-run-d14418c5.json": "e8d4d2cedd63382f4aba0fb7dd165a4a24da8e151809b8a272a3e4a28e9c7a6b",
+  "A/evidence/rebuild/cutover/int63-h0/ct-json-d14418c5/delivery.maintenance.json": "57c7cfa705c4134946e00c8c006bc2560316937f84f74d4f1ae55fd49cfea2ba",
+  "A/evidence/rebuild/cutover/int63-h0/ct-json-d14418c5/delivery.maintenance.pg.json": "69c5851c047e9df1a33cb58670d6d326a8792ced49db07a45414db064b4cc8b4",
+  "A/evidence/rebuild/cutover/int63-h0/ct-json-d14418c5/delivery.restore.pg.json": "9d4623cb28dbc03bcf3dc2a1dc10c95eaf79e0749aa23623f9952671d97d2ce7",
+  "A/evidence/rebuild/cutover/int63-h0/ct-json-d14418c5/effects.admission_unit.pg.json": "a2ea0b898790124d9f224b53a196d704069bcfbdec37d209ecffda03d2c85ca3",
+  "A/evidence/rebuild/cutover/int63-h0/ct-json-d14418c5/effects.continuation_units.pg.json": "7747e0c1a94480726011902b0c35177e1e662994b3e857bf67c7db04933e21f1",
+  "A/evidence/rebuild/cutover/int63-h0/ct-json-d14418c5/effects.decision_unit.pg.json": "c58edc5820930fca3c91eec0a23449d46c1b2beb81b284719b0b5ed0fe7b7896",
+  "A/evidence/rebuild/cutover/int63-h0/ct-json-d14418c5/effects.delivery_units.pg.json": "09f8ea47df28e1068d0a161bdb931fa8643ad799e3d66ca3089649a2b1c75182",
+  "A/evidence/rebuild/cutover/int63-h0/ct-json-d14418c5/effects.s8_units.pg.json": "b739255e1c873ae94c39f02a8eb19cdb0725f31ea03f39d3abeae11824b74119",
+  "A/evidence/rebuild/cutover/int63-h0/ct-json-d14418c5/effects.s9_units.pg.json": "ea1bce85afd8194fb256136cf22956e5fd5899ecab04cdf63149401ac56ef68b",
+  "A/evidence/rebuild/cutover/int63-h0/ct-json-d14418c5/entry.cli_audit_service.pg.json": "e9e0ed84821279259b30e6a462e90dc8aee82bb8f9bdf3dcc577b14ae78f1ba5",
+  "A/evidence/rebuild/cutover/int63-h0/ct-json-d14418c5/entry.cli_bus.pgredis.json": "144d5e4782059ec36f970e47365fc28bea482602534c9b1bd0840877ec492d5e",
+  "A/evidence/rebuild/cutover/int63-h0/ct-json-d14418c5/entry.cli_continuation.pg.json": "6f3443e26a2a5cbec982a368ea0bb67f3bf0c7394ab19416492faa1159fe08e6",
+  "A/evidence/rebuild/cutover/int63-h0/ct-json-d14418c5/entry.cli_cycle_serve.pgredis.json": "bd55a5823df1ec98e76be401b9f1fda9bace6f2e2418770ea159301583655423",
+  "A/evidence/rebuild/cutover/int63-h0/ct-json-d14418c5/entry.cli_desk_program.pg.json": "bbdc5d30c907eff39e77285c93e372444ade27c6ba026fe0b112a61716ddfce3",
+  "A/evidence/rebuild/cutover/int63-h0/ct-json-d14418c5/entry.cli_executor.pgredis.json": "78700e565e2d33cd2faa2dd68643aa75fd39b22e9a3a9c4d9d484b4171bd2ba9",
+  "A/evidence/rebuild/cutover/int63-h0/ct-json-d14418c5/entry.cli_fleet.pg.json": "439b1583a91f29a6c8157c8e4d9a3e84603cfd65f66577b9f9c26dbd5d63d98c",
+  "A/evidence/rebuild/cutover/int63-h0/ct-json-d14418c5/entry.cli_governance.pg.json": "f59ce63a9b2b2f5a664513ce91658c2b0e2127db7ec92b42543de7323e153437",
+  "A/evidence/rebuild/cutover/int63-h0/ct-json-d14418c5/entry.cli_host_delivery.pg.json": "2ffab1d3a73aad44649fde6a560c47ea16de74b0eb633891da8ae32d5bb99ca1",
+  "A/evidence/rebuild/cutover/int63-h0/ct-json-d14418c5/entry.cli_knowledge.pg.json": "f77f63be76af3e903017dce68bc51c7b694a21ee63255e5070013969284683f5",
+  "A/evidence/rebuild/cutover/int63-h0/ct-json-d14418c5/entry.cli_operation.pg.json": "bc5bae6bdc2c938faedf4edcc22ec1b7575c4c00ee38f568a29e4cea8bd09e72",
+  "A/evidence/rebuild/cutover/int63-h0/ct-json-d14418c5/entry.cli_owner_actions.pg.json": "8827528c0d1922f09ecccdc608b1a1fd9c163fdec93213ad3f77c53b08638823",
+  "A/evidence/rebuild/cutover/int63-h0/ct-json-d14418c5/entry.cli_research_gov.pg.json": "4f1989f428b468aa9f962b258b7445ef23c13cbdcb98f549173eb0154fcdfc79",
+  "A/evidence/rebuild/cutover/int63-h0/ct-json-d14418c5/entry.cli_store.pg.json": "5f65d97284f2c9f7ab9d036e422d6b7573494e5b7f1d544146c7f3c257c3c4d1",
+  "A/evidence/rebuild/cutover/int63-h0/ct-json-d14418c5/entry.cli_store_b.pg.json": "a4d5965449ab5a23bd61aed0599aeb6dad2c7c0e351b872341621b9e028be9f3",
+  "A/evidence/rebuild/cutover/int63-h0/ct-json-d14418c5/entry.cli_ticket_sdd.pg.json": "68a1714b1f09256275a657fbce316c7e691ad24dfedca6e5a432ca92dd8710f8",
+  "A/evidence/rebuild/cutover/int63-h0/ct-json-d14418c5/prepare-rebaseline-pr3-bb579d5.json": "561dd115fb2313365b2bdae9c2501ee4502804d452abed60b7fc5390c78c8d6c",
+  "A/evidence/rebuild/cutover/int63-h0/ct-json-d14418c5/prepare.json": "c0d96df9f7870d4d72d7f25d832f8ccbf6e7b7f852036d3aaca872565692143e",
+  "A/evidence/rebuild/cutover/int63-h0/ct-json-d14418c5/storage.pg.json": "65c4ead4d8955fd1c338e9447f4675d6a1b07deb76e161525fe96cdd391037d6",
+  "A/evidence/rebuild/cutover/int63-h0/rehearsal-d14418c5.junit.xml": "353122aefa05bf97f2e68f06ec6a3e415f162200ea342c40b33879fde66f40e1",
+  "A/evidence/rebuild/cutover/int63-h0/ti-d14418c5.junit.xml": "7c2aeba9fb285f37658bcac89f80c11656e67e92978bca8c191a6f49b36f0f74"
  },
  "junit_upgrades": {
-  "A/evidence/rebuild/s11/integration/rehearsal-61f89952.junit.xml": 2,
-  "A/evidence/rebuild/s11/integration/ti-61f89952.junit.xml": 0
+  "A/evidence/rebuild/cutover/int63-h0/rehearsal-d14418c5.junit.xml": 2,
+  "A/evidence/rebuild/cutover/int63-h0/ti-d14418c5.junit.xml": 0
  },
  "nodes": [
   "sha256:038621eec4ed3cb78950470032fe8f5e0f3328f34aee49c53b514462b1870c6a",
@@ -12127,6 +12187,52 @@
   "tests/ported/test_fleet_delivery.py::test_the_document_must_name_its_own_job",
   "tests/ported/test_fleet_delivery.py::test_the_projection_carries_no_paths_schemas_or_manifest_text",
   "tests/ported/test_fleet_delivery.py::test_unknown_or_missing_fields_are_refused",
+  "tests/ported/test_fleet_forward_candidate.py::test_a_job_that_is_not_the_exact_bound_candidate_is_refused",
+  "tests/ported/test_fleet_forward_candidate.py::test_a_maintenance_canary_cannot_be_granted_beside_an_open_forward_permit_and_replay_is_cached",
+  "tests/ported/test_fleet_forward_candidate.py::test_a_maintenance_permit_without_kind_validates_and_admits_exactly_as_before",
+  "tests/ported/test_fleet_forward_candidate.py::test_a_path_outside_the_non_shipped_prefix_is_refused_before_any_write[../x]",
+  "tests/ported/test_fleet_forward_candidate.py::test_a_path_outside_the_non_shipped_prefix_is_refused_before_any_write[./docs/cutover/a.md]",
+  "tests/ported/test_fleet_forward_candidate.py::test_a_path_outside_the_non_shipped_prefix_is_refused_before_any_write[/abs]",
+  "tests/ported/test_fleet_forward_candidate.py::test_a_path_outside_the_non_shipped_prefix_is_refused_before_any_write[]",
+  "tests/ported/test_fleet_forward_candidate.py::test_a_path_outside_the_non_shipped_prefix_is_refused_before_any_write[docs/cutover/*.md]",
+  "tests/ported/test_fleet_forward_candidate.py::test_a_path_outside_the_non_shipped_prefix_is_refused_before_any_write[docs/cutover/../../uv.lock]",
+  "tests/ported/test_fleet_forward_candidate.py::test_a_path_outside_the_non_shipped_prefix_is_refused_before_any_write[docs/cutover//a.md]",
+  "tests/ported/test_fleet_forward_candidate.py::test_a_path_outside_the_non_shipped_prefix_is_refused_before_any_write[docs/cutover/]",
+  "tests/ported/test_fleet_forward_candidate.py::test_a_path_outside_the_non_shipped_prefix_is_refused_before_any_write[docs/cutoverX/a.md]",
+  "tests/ported/test_fleet_forward_candidate.py::test_a_path_outside_the_non_shipped_prefix_is_refused_before_any_write[docs/cutover]",
+  "tests/ported/test_fleet_forward_candidate.py::test_a_path_outside_the_non_shipped_prefix_is_refused_before_any_write[docs/other.md]",
+  "tests/ported/test_fleet_forward_candidate.py::test_a_path_outside_the_non_shipped_prefix_is_refused_before_any_write[docs\\\\cutover\\\\a.md]",
+  "tests/ported/test_fleet_forward_candidate.py::test_a_path_outside_the_non_shipped_prefix_is_refused_before_any_write[src/x.py]",
+  "tests/ported/test_fleet_forward_candidate.py::test_a_path_outside_the_non_shipped_prefix_is_refused_before_any_write[uv.lock]",
+  "tests/ported/test_fleet_forward_candidate.py::test_a_paused_forward_candidate_admits_only_its_exact_job_and_never_writes_the_control_row",
+  "tests/ported/test_fleet_forward_candidate.py::test_admitted_work_is_never_expired_and_a_foreign_lane_job_is_never_failed",
+  "tests/ported/test_fleet_forward_candidate.py::test_an_unacknowledged_or_foreign_proof_cannot_admit",
+  "tests/ported/test_fleet_forward_candidate.py::test_an_unknown_kind_is_refused_before_any_write[5]",
+  "tests/ported/test_fleet_forward_candidate.py::test_an_unknown_kind_is_refused_before_any_write[FORWARD_CANDIDATE]",
+  "tests/ported/test_fleet_forward_candidate.py::test_an_unknown_kind_is_refused_before_any_write[None]",
+  "tests/ported/test_fleet_forward_candidate.py::test_an_unknown_kind_is_refused_before_any_write[]",
+  "tests/ported/test_fleet_forward_candidate.py::test_an_unknown_kind_is_refused_before_any_write[kind5]",
+  "tests/ported/test_fleet_forward_candidate.py::test_an_unknown_kind_is_refused_before_any_write[maintenance_candidate]",
+  "tests/ported/test_fleet_forward_candidate.py::test_an_unrelated_job_enqueued_concurrently_stays_queued",
+  "tests/ported/test_fleet_forward_candidate.py::test_every_other_blocker_still_refuses",
+  "tests/ported/test_fleet_forward_candidate.py::test_expiry_fails_the_unadmitted_candidate_without_a_launch_and_response_loss_is_safe",
+  "tests/ported/test_fleet_forward_candidate.py::test_forward_permit_grammar_is_exact[change0-allowed_paths]",
+  "tests/ported/test_fleet_forward_candidate.py::test_forward_permit_grammar_is_exact[change1-allowed_paths]",
+  "tests/ported/test_fleet_forward_candidate.py::test_forward_permit_grammar_is_exact[change10-deadline]",
+  "tests/ported/test_fleet_forward_candidate.py::test_forward_permit_grammar_is_exact[change11-permit]",
+  "tests/ported/test_fleet_forward_candidate.py::test_forward_permit_grammar_is_exact[change12-evidence_ref]",
+  "tests/ported/test_fleet_forward_candidate.py::test_forward_permit_grammar_is_exact[change13-schema]",
+  "tests/ported/test_fleet_forward_candidate.py::test_forward_permit_grammar_is_exact[change2-allowed_paths]",
+  "tests/ported/test_fleet_forward_candidate.py::test_forward_permit_grammar_is_exact[change3-base_revision]",
+  "tests/ported/test_fleet_forward_candidate.py::test_forward_permit_grammar_is_exact[change4-base_revision]",
+  "tests/ported/test_fleet_forward_candidate.py::test_forward_permit_grammar_is_exact[change5-manifest_sha256]",
+  "tests/ported/test_fleet_forward_candidate.py::test_forward_permit_grammar_is_exact[change6-lane]",
+  "tests/ported/test_fleet_forward_candidate.py::test_forward_permit_grammar_is_exact[change7-backlog_item_id]",
+  "tests/ported/test_fleet_forward_candidate.py::test_forward_permit_grammar_is_exact[change8-issuer]",
+  "tests/ported/test_fleet_forward_candidate.py::test_forward_permit_grammar_is_exact[change9-approver]",
+  "tests/ported/test_fleet_forward_candidate.py::test_grant_requires_the_owner_pause_and_a_fresh_deadline",
+  "tests/ported/test_fleet_forward_candidate.py::test_issuance_is_refused_while_a_maintenance_generation_is_open_and_allowed_after_it_binds",
+  "tests/ported/test_fleet_forward_candidate.py::test_the_backlog_item_must_be_owner_registered_under_the_bound_lane_and_digest",
   "tests/ported/test_fleet_host_migration.py::test_a_job_queued_after_the_pinned_scan_refuses_on_the_commits_own_queued_set",
   "tests/ported/test_fleet_host_migration.py::test_a_journal_change_between_observations_refuses_without_commit",
   "tests/ported/test_fleet_host_migration.py::test_d2_rebinds_every_lane_keeps_identities_and_resolves_frozen_history",
@@ -12143,6 +12249,78 @@
   "tests/ported/test_fleet_host_migration.py::test_the_migrate_host_cli_pins_only_jobs_and_observes_external_facts_twice",
   "tests/ported/test_fleet_host_migration.py::test_the_pre_fix_migrate_host_observation_reads_the_store_inside_the_commit",
   "tests/ported/test_fleet_host_migration.py::test_unpaused_fleet_or_running_runner_refuses",
+  "tests/ported/test_fleet_maintenance.py::test_a_canary_queued_after_an_unlaunched_close_is_failed_on_replay_and_blocks_resume_until_then",
+  "tests/ported/test_fleet_maintenance.py::test_admission_admits_exactly_the_owned_canary_while_owner_paused",
+  "tests/ported/test_fleet_maintenance.py::test_admission_never_trusts_a_caller_job_or_a_moved_action[binding]",
+  "tests/ported/test_fleet_maintenance.py::test_admission_never_trusts_a_caller_job_or_a_moved_action[binding_sha256]",
+  "tests/ported/test_fleet_maintenance.py::test_admission_never_trusts_a_caller_job_or_a_moved_action[completed]",
+  "tests/ported/test_fleet_maintenance.py::test_admission_never_trusts_a_caller_job_or_a_moved_action[intended]",
+  "tests/ported/test_fleet_maintenance.py::test_admission_never_trusts_a_caller_job_or_a_moved_action[job_id]",
+  "tests/ported/test_fleet_maintenance.py::test_admission_never_trusts_a_caller_job_or_a_moved_action[kind]",
+  "tests/ported/test_fleet_maintenance.py::test_admission_never_trusts_a_caller_job_or_a_moved_action[missing]",
+  "tests/ported/test_fleet_maintenance.py::test_admission_never_trusts_a_caller_job_or_a_moved_action[unknown]",
+  "tests/ported/test_fleet_maintenance.py::test_admission_refuses_a_job_that_is_not_the_exact_queued_canary",
+  "tests/ported/test_fleet_maintenance.py::test_admitted_work_is_never_expired_only_settled",
+  "tests/ported/test_fleet_maintenance.py::test_an_orphan_or_unacknowledged_grant_cannot_launch[None]",
+  "tests/ported/test_fleet_maintenance.py::test_an_orphan_or_unacknowledged_grant_cannot_launch[proof_change0]",
+  "tests/ported/test_fleet_maintenance.py::test_an_orphan_or_unacknowledged_grant_cannot_launch[proof_change1]",
+  "tests/ported/test_fleet_maintenance.py::test_an_orphan_or_unacknowledged_grant_cannot_launch[proof_change2]",
+  "tests/ported/test_fleet_maintenance.py::test_an_orphan_or_unacknowledged_grant_cannot_launch[proof_change3]",
+  "tests/ported/test_fleet_maintenance.py::test_an_orphan_or_unacknowledged_grant_cannot_launch[proof_change4]",
+  "tests/ported/test_fleet_maintenance.py::test_an_orphan_or_unacknowledged_grant_cannot_launch[proof_change5]",
+  "tests/ported/test_fleet_maintenance.py::test_an_orphan_or_unacknowledged_grant_cannot_launch[proof_change6]",
+  "tests/ported/test_fleet_maintenance.py::test_an_orphan_or_unacknowledged_grant_cannot_launch[proof_change7]",
+  "tests/ported/test_fleet_maintenance.py::test_an_orphan_or_unacknowledged_grant_cannot_launch[proof_change8]",
+  "tests/ported/test_fleet_maintenance.py::test_an_orphan_or_unacknowledged_grant_cannot_launch[proof_change9]",
+  "tests/ported/test_fleet_maintenance.py::test_every_other_blocker_still_refuses",
+  "tests/ported/test_fleet_maintenance.py::test_expired_unadmitted_canary_fails_without_launch_and_closes",
+  "tests/ported/test_fleet_maintenance.py::test_general_resume_and_activation_release_stay_closed_while_a_permit_is_open",
+  "tests/ported/test_fleet_maintenance.py::test_grant_requires_owner_pause_and_replays_only_the_whole_binding",
+  "tests/ported/test_fleet_maintenance.py::test_legacy_fleet_paths_are_unchanged_without_maintenance_rows",
+  "tests/ported/test_fleet_maintenance.py::test_permit_grammar_is_exact[<lambda>-action_id]",
+  "tests/ported/test_fleet_maintenance.py::test_permit_grammar_is_exact[<lambda>-deadline0]",
+  "tests/ported/test_fleet_maintenance.py::test_permit_grammar_is_exact[<lambda>-deadline1]",
+  "tests/ported/test_fleet_maintenance.py::test_permit_grammar_is_exact[<lambda>-deadline2]",
+  "tests/ported/test_fleet_maintenance.py::test_permit_grammar_is_exact[<lambda>-descriptor_sha256]",
+  "tests/ported/test_fleet_maintenance.py::test_permit_grammar_is_exact[<lambda>-evidence_ref0]",
+  "tests/ported/test_fleet_maintenance.py::test_permit_grammar_is_exact[<lambda>-evidence_ref1]",
+  "tests/ported/test_fleet_maintenance.py::test_permit_grammar_is_exact[<lambda>-instance_id0]",
+  "tests/ported/test_fleet_maintenance.py::test_permit_grammar_is_exact[<lambda>-instance_id1]",
+  "tests/ported/test_fleet_maintenance.py::test_permit_grammar_is_exact[<lambda>-job_id0]",
+  "tests/ported/test_fleet_maintenance.py::test_permit_grammar_is_exact[<lambda>-job_id1]",
+  "tests/ported/test_fleet_maintenance.py::test_permit_grammar_is_exact[<lambda>-maintenance_id0]",
+  "tests/ported/test_fleet_maintenance.py::test_permit_grammar_is_exact[<lambda>-maintenance_id1]",
+  "tests/ported/test_fleet_maintenance.py::test_permit_grammar_is_exact[<lambda>-permit0]",
+  "tests/ported/test_fleet_maintenance.py::test_permit_grammar_is_exact[<lambda>-permit1]",
+  "tests/ported/test_fleet_maintenance.py::test_permit_grammar_is_exact[<lambda>-plan_id]",
+  "tests/ported/test_fleet_maintenance.py::test_permit_grammar_is_exact[<lambda>-plan_sha256]",
+  "tests/ported/test_fleet_maintenance.py::test_permit_grammar_is_exact[<lambda>-schema]",
+  "tests/ported/test_fleet_maintenance.py::test_permit_grammar_is_exact[<lambda>-target_id]",
+  "tests/ported/test_fleet_maintenance.py::test_second_admission_is_already_used_and_never_a_second_claim",
+  "tests/ported/test_fleet_maintenance.py::test_views_and_readiness_are_read_only_and_carry_no_owner_token",
+  "tests/ported/test_fleet_maintenance_postgres.py::test_concurrent_admissions_claim_once_on_postgres",
+  "tests/ported/test_fleet_maintenance_postgres.py::test_concurrent_unrelated_enqueue_and_admit_one_stay_unadmitted",
+  "tests/ported/test_fleet_maintenance_postgres.py::test_resume_refused_while_a_permit_is_open_on_postgres",
+  "tests/ported/test_fleet_maintenance_readiness.py::test_an_activation_hold_is_not_an_owner_pause",
+  "tests/ported/test_fleet_maintenance_readiness.py::test_an_owner_paused_quiet_fleet_is_ready_and_the_read_writes_nothing",
+  "tests/ported/test_fleet_maintenance_readiness.py::test_an_unpaused_fleet_is_not_owner_paused",
+  "tests/ported/test_fleet_maintenance_readiness.py::test_an_unregistered_fleet_is_reported_and_nothing_is_written",
+  "tests/ported/test_fleet_maintenance_readiness.py::test_reserving_jobs_and_held_units_are_named",
+  "tests/ported/test_fleet_maintenance_runner.py::test_a_canary_that_settles_after_the_deadline_stays_owned_and_an_unadmitted_one_never_spawns",
+  "tests/ported/test_fleet_maintenance_runner.py::test_executor_consults_the_ledger_and_launches_nothing_on_refusal",
+  "tests/ported/test_fleet_maintenance_runner.py::test_executor_runs_the_admitted_canary_to_its_finalized_status",
+  "tests/ported/test_fleet_maintenance_runner.py::test_ordinary_runner_admission_is_unchanged_by_the_factoring",
+  "tests/ported/test_fleet_maintenance_runner.py::test_refused_launch_fails_and_uncertain_spawn_stays_unknown_never_relaunched[explode-unknown]",
+  "tests/ported/test_fleet_maintenance_runner.py::test_refused_launch_fails_and_uncertain_spawn_stays_unknown_never_relaunched[refuse-failed]",
+  "tests/ported/test_fleet_maintenance_runner.py::test_run_preclaimed_launches_waits_and_finalizes_exactly_one_job",
+  "tests/ported/test_fleet_maintenance_runner.py::test_run_preclaimed_refuses_a_job_not_dispatching_or_without_owner[None]",
+  "tests/ported/test_fleet_maintenance_runner.py::test_run_preclaimed_refuses_a_job_not_dispatching_or_without_owner[change0]",
+  "tests/ported/test_fleet_maintenance_runner.py::test_run_preclaimed_refuses_a_job_not_dispatching_or_without_owner[change1]",
+  "tests/ported/test_fleet_maintenance_runner.py::test_run_preclaimed_refuses_a_job_not_dispatching_or_without_owner[change2]",
+  "tests/ported/test_fleet_maintenance_runner.py::test_run_preclaimed_refuses_a_job_not_dispatching_or_without_owner[change3]",
+  "tests/ported/test_fleet_maintenance_runner.py::test_run_preclaimed_refuses_a_job_not_dispatching_or_without_owner[change4]",
+  "tests/ported/test_fleet_maintenance_runner.py::test_two_executors_race_to_one_spawn",
+  "tests/ported/test_fleet_maintenance_runner.py::test_wait_bound_leaves_the_child_reserving_and_never_kills",
   "tests/ported/test_fleet_recovery.py::test_a_call_slot_must_be_bound_to_this_operation_by_a_record_the_host_wrote",
   "tests/ported/test_fleet_recovery.py::test_a_concurrent_second_owner_finds_the_reservation_already_settled",
   "tests/ported/test_fleet_recovery.py::test_a_proof_from_another_observation_is_refused",
@@ -12774,6 +12952,270 @@
   "tests/ported/test_host_delivery_lane_routing.py::test_the_real_control_schema_probe_skips_a_store_without_a_dsn",
   "tests/ported/test_host_delivery_lane_routing.py::test_the_real_lane_observer_uses_the_lane_store_and_the_lane_runtime_spool",
   "tests/ported/test_host_delivery_lane_routing.py::test_without_a_lane_every_command_stays_on_the_control_store",
+  "tests/ported/test_host_delivery_maintenance.py::test_a_canary_that_settles_after_the_deadline_fails_without_binding_or_rollback",
+  "tests/ported/test_host_delivery_maintenance.py::test_a_rejected_or_changed_canary_fails_the_generation_without_rollback[changed live instance]",
+  "tests/ported/test_host_delivery_maintenance.py::test_a_rejected_or_changed_canary_fails_the_generation_without_rollback[rejected canary]",
+  "tests/ported/test_host_delivery_maintenance.py::test_a_rejected_or_changed_canary_fails_the_generation_without_rollback[rejected job]",
+  "tests/ported/test_host_delivery_maintenance.py::test_a_window_beyond_the_qualification_deadline_is_refused",
+  "tests/ported/test_host_delivery_maintenance.py::test_admitted_reserving_job_is_never_expired",
+  "tests/ported/test_host_delivery_maintenance.py::test_an_unknown_dispatch_is_never_executed_again",
+  "tests/ported/test_host_delivery_maintenance.py::test_applicability_refusals_write_nothing_before_any_effect[N1 on the host]",
+  "tests/ported/test_host_delivery_maintenance.py::test_applicability_refusals_write_nothing_before_any_effect[N1 via the document]",
+  "tests/ported/test_host_delivery_maintenance.py::test_applicability_refusals_write_nothing_before_any_effect[activation hold]",
+  "tests/ported/test_host_delivery_maintenance.py::test_applicability_refusals_write_nothing_before_any_effect[blocked first activation]",
+  "tests/ported/test_host_delivery_maintenance.py::test_applicability_refusals_write_nothing_before_any_effect[canary not passed]",
+  "tests/ported/test_host_delivery_maintenance.py::test_applicability_refusals_write_nothing_before_any_effect[competing intent]",
+  "tests/ported/test_host_delivery_maintenance.py::test_applicability_refusals_write_nothing_before_any_effect[controller lease]",
+  "tests/ported/test_host_delivery_maintenance.py::test_applicability_refusals_write_nothing_before_any_effect[descriptor row not consumed]",
+  "tests/ported/test_host_delivery_maintenance.py::test_applicability_refusals_write_nothing_before_any_effect[fleet not owner-paused]",
+  "tests/ported/test_host_delivery_maintenance.py::test_applicability_refusals_write_nothing_before_any_effect[foreign descriptor]",
+  "tests/ported/test_host_delivery_maintenance.py::test_applicability_refusals_write_nothing_before_any_effect[foreign pin]",
+  "tests/ported/test_host_delivery_maintenance.py::test_applicability_refusals_write_nothing_before_any_effect[foreign plan]",
+  "tests/ported/test_host_delivery_maintenance.py::test_applicability_refusals_write_nothing_before_any_effect[foreign pointer]",
+  "tests/ported/test_host_delivery_maintenance.py::test_applicability_refusals_write_nothing_before_any_effect[foreign target]",
+  "tests/ported/test_host_delivery_maintenance.py::test_applicability_refusals_write_nothing_before_any_effect[from drift]",
+  "tests/ported/test_host_delivery_maintenance.py::test_applicability_refusals_write_nothing_before_any_effect[held successor]",
+  "tests/ported/test_host_delivery_maintenance.py::test_applicability_refusals_write_nothing_before_any_effect[held unit]",
+  "tests/ported/test_host_delivery_maintenance.py::test_applicability_refusals_write_nothing_before_any_effect[not a systemd target]",
+  "tests/ported/test_host_delivery_maintenance.py::test_applicability_refusals_write_nothing_before_any_effect[old canary action missing]",
+  "tests/ported/test_host_delivery_maintenance.py::test_applicability_refusals_write_nothing_before_any_effect[old owner receipt missing]",
+  "tests/ported/test_host_delivery_maintenance.py::test_applicability_refusals_write_nothing_before_any_effect[queue row missing]",
+  "tests/ported/test_host_delivery_maintenance.py::test_applicability_refusals_write_nothing_before_any_effect[release not active]",
+  "tests/ported/test_host_delivery_maintenance.py::test_applicability_refusals_write_nothing_before_any_effect[reserving job]",
+  "tests/ported/test_host_delivery_maintenance.py::test_applicability_refusals_write_nothing_before_any_effect[reserving migration]",
+  "tests/ported/test_host_delivery_maintenance.py::test_arm_refuses_before_started_and_without_verified_primary",
+  "tests/ported/test_host_delivery_maintenance.py::test_arm_requests_grants_acknowledges_then_arms_one_deadline",
+  "tests/ported/test_host_delivery_maintenance.py::test_bind_binds_only_the_genuine_new_instance_receipt",
+  "tests/ported/test_host_delivery_maintenance.py::test_bind_refuses_every_unbound_receipt[canary still requested]",
+  "tests/ported/test_host_delivery_maintenance.py::test_bind_refuses_every_unbound_receipt[no instance]",
+  "tests/ported/test_host_delivery_maintenance.py::test_bind_refuses_every_unbound_receipt[old receipt]",
+  "tests/ported/test_host_delivery_maintenance.py::test_bind_refuses_every_unbound_receipt[passed is a truthy string]",
+  "tests/ported/test_host_delivery_maintenance.py::test_bind_refuses_every_unbound_receipt[passed is one]",
+  "tests/ported/test_host_delivery_maintenance.py::test_bind_refuses_every_unbound_receipt[recorded before the startup]",
+  "tests/ported/test_host_delivery_maintenance.py::test_bind_refuses_every_unbound_receipt[request mismatch]",
+  "tests/ported/test_host_delivery_maintenance.py::test_bind_refuses_every_unbound_receipt[unreadable receipt]",
+  "tests/ported/test_host_delivery_maintenance.py::test_bind_refuses_every_unbound_receipt[unreadable request]",
+  "tests/ported/test_host_delivery_maintenance.py::test_bind_refuses_every_unbound_receipt[wrong action]",
+  "tests/ported/test_host_delivery_maintenance.py::test_bind_refuses_every_unbound_receipt[wrong descriptor]",
+  "tests/ported/test_host_delivery_maintenance.py::test_bind_refuses_every_unbound_receipt[wrong instance]",
+  "tests/ported/test_host_delivery_maintenance.py::test_bind_replay_cached_drift_refused_history_kept_settlement_held",
+  "tests/ported/test_host_delivery_maintenance.py::test_check_mode_has_zero_effects_across_phases",
+  "tests/ported/test_host_delivery_maintenance.py::test_document_authority_and_approver_refusals",
+  "tests/ported/test_host_delivery_maintenance.py::test_every_lane_write_and_hold_is_one_transaction_never_nested",
+  "tests/ported/test_host_delivery_maintenance.py::test_expiry_before_admission_fails_without_launch_or_rollback",
+  "tests/ported/test_host_delivery_maintenance.py::test_expiry_without_any_grant_or_job_closes_the_permit_and_fails",
+  "tests/ported/test_host_delivery_maintenance.py::test_failure_never_rolls_back_resets_supersedes_or_consumes_twice",
+  "tests/ported/test_host_delivery_maintenance.py::test_host_identity_drift_refuses_before_stop[invocation]",
+  "tests/ported/test_host_delivery_maintenance.py::test_host_identity_drift_refuses_before_stop[launch digest]",
+  "tests/ported/test_host_delivery_maintenance.py::test_host_identity_drift_refuses_before_stop[liveness unknown]",
+  "tests/ported/test_host_delivery_maintenance.py::test_host_identity_drift_refuses_before_stop[not running]",
+  "tests/ported/test_host_delivery_maintenance.py::test_host_identity_drift_refuses_before_stop[pid reuse]",
+  "tests/ported/test_host_delivery_maintenance.py::test_host_identity_drift_refuses_before_stop[reload pending]",
+  "tests/ported/test_host_delivery_maintenance.py::test_host_identity_drift_refuses_before_stop[reload unknown]",
+  "tests/ported/test_host_delivery_maintenance.py::test_host_identity_drift_refuses_before_stop[service user]",
+  "tests/ported/test_host_delivery_maintenance.py::test_host_identity_drift_refuses_before_stop[stopped under an active unit]",
+  "tests/ported/test_host_delivery_maintenance.py::test_host_identity_drift_refuses_before_stop[target file]",
+  "tests/ported/test_host_delivery_maintenance.py::test_host_identity_drift_refuses_before_stop[unobservable]",
+  "tests/ported/test_host_delivery_maintenance.py::test_host_identity_drift_refuses_before_stop[work busy]",
+  "tests/ported/test_host_delivery_maintenance.py::test_lost_control_or_lane_acknowledgements_and_two_arms_spawn_once",
+  "tests/ported/test_host_delivery_maintenance.py::test_n1_after_the_request_is_an_observation_never_adopted",
+  "tests/ported/test_host_delivery_maintenance.py::test_ownership_lost_after_the_stop_needs_reconciliation",
+  "tests/ported/test_host_delivery_maintenance.py::test_pr2_observer_refuses_during_maintenance_and_accepts_after_bind",
+  "tests/ported/test_host_delivery_maintenance.py::test_response_loss_reconciles_with_at_most_one_launch[after launch before the record]",
+  "tests/ported/test_host_delivery_maintenance.py::test_response_loss_reconciles_with_at_most_one_launch[after stop]",
+  "tests/ported/test_host_delivery_maintenance.py::test_response_loss_reconciles_with_at_most_one_launch[after the durable result]",
+  "tests/ported/test_host_delivery_maintenance.py::test_response_loss_reconciles_with_at_most_one_launch[after the launch record, before the receipt]",
+  "tests/ported/test_host_delivery_maintenance.py::test_response_loss_reconciles_with_at_most_one_launch[before stop]",
+  "tests/ported/test_host_delivery_maintenance.py::test_restart_records_requested_before_the_one_guarded_start",
+  "tests/ported/test_host_delivery_maintenance.py::test_restart_replay_after_started_is_cached",
+  "tests/ported/test_host_delivery_maintenance.py::test_unchanged_owner_actions_owe_exactly_one_new_instance_canary",
+  "tests/ported/test_host_delivery_maintenance_adapter.py::test_a_replay_after_an_unconfirmed_start_is_held_and_launches_nothing[2026-09-29T00:00:00+00:00]",
+  "tests/ported/test_host_delivery_maintenance_adapter.py::test_a_replay_after_an_unconfirmed_start_is_held_and_launches_nothing[2026-09-29T00:00:05+00:00]",
+  "tests/ported/test_host_delivery_maintenance_adapter.py::test_a_replay_after_an_unconfirmed_start_is_held_and_launches_nothing[None]",
+  "tests/ported/test_host_delivery_maintenance_adapter.py::test_generation_observation_parses_bounded_safe_facts",
+  "tests/ported/test_host_delivery_maintenance_adapter.py::test_generation_observation_variants_stay_typed_and_never_raise[bad_request_time]",
+  "tests/ported/test_host_delivery_maintenance_adapter.py::test_generation_observation_variants_stay_typed_and_never_raise[dup_drop_ins]",
+  "tests/ported/test_host_delivery_maintenance_adapter.py::test_generation_observation_variants_stay_typed_and_never_raise[entry_replaced]",
+  "tests/ported/test_host_delivery_maintenance_adapter.py::test_generation_observation_variants_stay_typed_and_never_raise[invocation_empty]",
+  "tests/ported/test_host_delivery_maintenance_adapter.py::test_generation_observation_variants_stay_typed_and_never_raise[main_pid_zero]",
+  "tests/ported/test_host_delivery_maintenance_adapter.py::test_generation_observation_variants_stay_typed_and_never_raise[no_heartbeat]",
+  "tests/ported/test_host_delivery_maintenance_adapter.py::test_generation_observation_variants_stay_typed_and_never_raise[no_receipt]",
+  "tests/ported/test_host_delivery_maintenance_adapter.py::test_generation_observation_variants_stay_typed_and_never_raise[one_env_file]",
+  "tests/ported/test_host_delivery_maintenance_adapter.py::test_generation_observation_variants_stay_typed_and_never_raise[other_cgroup]",
+  "tests/ported/test_host_delivery_maintenance_adapter.py::test_generation_observation_variants_stay_typed_and_never_raise[other_parent]",
+  "tests/ported/test_host_delivery_maintenance_adapter.py::test_generation_observation_variants_stay_typed_and_never_raise[pid_reuse]",
+  "tests/ported/test_host_delivery_maintenance_adapter.py::test_generation_observation_variants_stay_typed_and_never_raise[proc_unreadable]",
+  "tests/ported/test_host_delivery_maintenance_adapter.py::test_generation_observation_variants_stay_typed_and_never_raise[reload_other]",
+  "tests/ported/test_host_delivery_maintenance_adapter.py::test_generation_observation_variants_stay_typed_and_never_raise[reload_yes]",
+  "tests/ported/test_host_delivery_maintenance_adapter.py::test_generation_observation_variants_stay_typed_and_never_raise[show_fails]",
+  "tests/ported/test_host_delivery_maintenance_adapter.py::test_generation_observation_variants_stay_typed_and_never_raise[show_raises]",
+  "tests/ported/test_host_delivery_maintenance_adapter.py::test_identical_target_file_is_never_rewritten_and_a_differing_one_is_refused_under_maintenance",
+  "tests/ported/test_host_delivery_maintenance_adapter.py::test_launch_after_proved_stop_and_recognized_own_launch_start_at_most_once",
+  "tests/ported/test_host_delivery_maintenance_adapter.py::test_legacy_start_is_byte_for_byte_unchanged_without_restarts[False]",
+  "tests/ported/test_host_delivery_maintenance_adapter.py::test_legacy_start_is_byte_for_byte_unchanged_without_restarts[True]",
+  "tests/ported/test_host_delivery_maintenance_adapter.py::test_malformed_authority_or_unreadable_observation_refuses_before_any_effect",
+  "tests/ported/test_host_delivery_maintenance_adapter.py::test_n1_pid_reuse_reload_and_target_drift_refuse_before_any_effect[changed_launch_before_request]",
+  "tests/ported/test_host_delivery_maintenance_adapter.py::test_n1_pid_reuse_reload_and_target_drift_refuse_before_any_effect[changed_launch_foreign_descriptor]",
+  "tests/ported/test_host_delivery_maintenance_adapter.py::test_n1_pid_reuse_reload_and_target_drift_refuse_before_any_effect[changed_launch_not_running_it]",
+  "tests/ported/test_host_delivery_maintenance_adapter.py::test_n1_pid_reuse_reload_and_target_drift_refuse_before_any_effect[changed_launch_request_not_this_attempt]",
+  "tests/ported/test_host_delivery_maintenance_adapter.py::test_n1_pid_reuse_reload_and_target_drift_refuse_before_any_effect[changed_launch_request_outside_window]",
+  "tests/ported/test_host_delivery_maintenance_adapter.py::test_n1_pid_reuse_reload_and_target_drift_refuse_before_any_effect[extra_observation_key]",
+  "tests/ported/test_host_delivery_maintenance_adapter.py::test_n1_pid_reuse_reload_and_target_drift_refuse_before_any_effect[liveness_unknown]",
+  "tests/ported/test_host_delivery_maintenance_adapter.py::test_n1_pid_reuse_reload_and_target_drift_refuse_before_any_effect[n1_new_invocation]",
+  "tests/ported/test_host_delivery_maintenance_adapter.py::test_n1_pid_reuse_reload_and_target_drift_refuse_before_any_effect[other_cgroup]",
+  "tests/ported/test_host_delivery_maintenance_adapter.py::test_n1_pid_reuse_reload_and_target_drift_refuse_before_any_effect[other_receipt_instance]",
+  "tests/ported/test_host_delivery_maintenance_adapter.py::test_n1_pid_reuse_reload_and_target_drift_refuse_before_any_effect[pid_reuse]",
+  "tests/ported/test_host_delivery_maintenance_adapter.py::test_n1_pid_reuse_reload_and_target_drift_refuse_before_any_effect[reload_pending]",
+  "tests/ported/test_host_delivery_maintenance_adapter.py::test_n1_pid_reuse_reload_and_target_drift_refuse_before_any_effect[reload_unknown]",
+  "tests/ported/test_host_delivery_maintenance_adapter.py::test_n1_pid_reuse_reload_and_target_drift_refuse_before_any_effect[service_user]",
+  "tests/ported/test_host_delivery_maintenance_adapter.py::test_n1_pid_reuse_reload_and_target_drift_refuse_before_any_effect[stopped_but_other_invocation_active]",
+  "tests/ported/test_host_delivery_maintenance_adapter.py::test_n1_pid_reuse_reload_and_target_drift_refuse_before_any_effect[supervisor_not_main]",
+  "tests/ported/test_host_delivery_maintenance_adapter.py::test_n1_pid_reuse_reload_and_target_drift_refuse_before_any_effect[target_file_drift]",
+  "tests/ported/test_host_delivery_maintenance_adapter.py::test_n1_pid_reuse_reload_and_target_drift_refuse_before_any_effect[work_busy]",
+  "tests/ported/test_host_delivery_maintenance_adapter.py::test_n1_pid_reuse_reload_and_target_drift_refuse_before_any_effect[wrong_parent]",
+  "tests/ported/test_host_delivery_maintenance_adapter.py::test_non_systemd_kinds_refuse_restart_authority",
+  "tests/ported/test_host_delivery_maintenance_adapter.py::test_owner_canary_reads_are_bounded_and_read_only",
+  "tests/ported/test_host_delivery_maintenance_adapter.py::test_ownership_loss_or_gate_refusal_after_stop_is_an_interrupted_lifecycle",
+  "tests/ported/test_host_delivery_maintenance_adapter.py::test_replace_path_only_for_the_matching_intended_incumbent",
+  "tests/ported/test_host_delivery_maintenance_adapter.py::test_the_real_launch_persists_this_requests_launch_request_before_its_one_start[show lost after the start took effect]",
+  "tests/ported/test_host_delivery_maintenance_adapter.py::test_the_real_launch_persists_this_requests_launch_request_before_its_one_start[start outcome unknown]",
+  "tests/ported/test_host_delivery_maintenance_cli.py::test_check_builds_no_observer_git_executor_or_artifact_store",
+  "tests/ported/test_host_delivery_maintenance_cli.py::test_execute_routes_phase_check_and_exit_codes",
+  "tests/ported/test_host_delivery_maintenance_cli.py::test_maintenance_controller_wires_every_port",
+  "tests/ported/test_host_delivery_maintenance_cli.py::test_parser_exposes_maintain_with_exact_options_and_no_token_argument",
+  "tests/ported/test_host_delivery_maintenance_cli.py::test_refusal_prints_only_allowlisted_fields",
+  "tests/ported/test_host_delivery_maintenance_cli.py::test_resume_document_never_routes_to_maintenance",
+  "tests/ported/test_host_delivery_maintenance_cli.py::test_unreadable_or_oversized_document_is_maintenance_invalid",
+  "tests/ported/test_host_delivery_maintenance_domain.py::test_a_bound_primary_record_is_returned_as_booleans_and_ids_only",
+  "tests/ported/test_host_delivery_maintenance_domain.py::test_classify_restart_matrix[N1 with its own receipt]",
+  "tests/ported/test_host_delivery_maintenance_domain.py::test_classify_restart_matrix[N1: another invocation, same controller-state]",
+  "tests/ported/test_host_delivery_maintenance_domain.py::test_classify_restart_matrix[a foreign descriptor receipt]",
+  "tests/ported/test_host_delivery_maintenance_domain.py::test_classify_restart_matrix[another cgroup]",
+  "tests/ported/test_host_delivery_maintenance_domain.py::test_classify_restart_matrix[another incumbent receipt]",
+  "tests/ported/test_host_delivery_maintenance_domain.py::test_classify_restart_matrix[changed launch before the request (reboot)]",
+  "tests/ported/test_host_delivery_maintenance_domain.py::test_classify_restart_matrix[changed launch of another descriptor]",
+  "tests/ported/test_host_delivery_maintenance_domain.py::test_classify_restart_matrix[controller-state gone]",
+  "tests/ported/test_host_delivery_maintenance_domain.py::test_classify_restart_matrix[inconsistent launch digest]",
+  "tests/ported/test_host_delivery_maintenance_domain.py::test_classify_restart_matrix[launch after a proved stop, receipt retained]",
+  "tests/ported/test_host_delivery_maintenance_domain.py::test_classify_restart_matrix[launch after the retire, receipt absent]",
+  "tests/ported/test_host_delivery_maintenance_domain.py::test_classify_restart_matrix[launch request after the launch]",
+  "tests/ported/test_host_delivery_maintenance_domain.py::test_classify_restart_matrix[launch request before the maintenance request]",
+  "tests/ported/test_host_delivery_maintenance_domain.py::test_classify_restart_matrix[launch request inside the window but not this attempt's]",
+  "tests/ported/test_host_delivery_maintenance_domain.py::test_classify_restart_matrix[liveness unknown]",
+  "tests/ported/test_host_delivery_maintenance_domain.py::test_classify_restart_matrix[malformed observation]",
+  "tests/ported/test_host_delivery_maintenance_domain.py::test_classify_restart_matrix[no launch request]",
+  "tests/ported/test_host_delivery_maintenance_domain.py::test_classify_restart_matrix[pid reuse]",
+  "tests/ported/test_host_delivery_maintenance_domain.py::test_classify_restart_matrix[recognized own request-bound launch]",
+  "tests/ported/test_host_delivery_maintenance_domain.py::test_classify_restart_matrix[reload pending]",
+  "tests/ported/test_host_delivery_maintenance_domain.py::test_classify_restart_matrix[reload unknown]",
+  "tests/ported/test_host_delivery_maintenance_domain.py::test_classify_restart_matrix[replace]",
+  "tests/ported/test_host_delivery_maintenance_domain.py::test_classify_restart_matrix[service user unknown]",
+  "tests/ported/test_host_delivery_maintenance_domain.py::test_classify_restart_matrix[stopped while another invocation is active]",
+  "tests/ported/test_host_delivery_maintenance_domain.py::test_classify_restart_matrix[stopped with a foreign receipt]",
+  "tests/ported/test_host_delivery_maintenance_domain.py::test_classify_restart_matrix[stopped, a launch request after this request]",
+  "tests/ported/test_host_delivery_maintenance_domain.py::test_classify_restart_matrix[stopped, but this attempt's launch request persisted]",
+  "tests/ported/test_host_delivery_maintenance_domain.py::test_classify_restart_matrix[stopped, the launch request unreadable]",
+  "tests/ported/test_host_delivery_maintenance_domain.py::test_classify_restart_matrix[supervisor is not the main pid]",
+  "tests/ported/test_host_delivery_maintenance_domain.py::test_classify_restart_matrix[target file differs]",
+  "tests/ported/test_host_delivery_maintenance_domain.py::test_classify_restart_matrix[truthy non-bool flag]",
+  "tests/ported/test_host_delivery_maintenance_domain.py::test_classify_restart_matrix[unit runs yet another invocation]",
+  "tests/ported/test_host_delivery_maintenance_domain.py::test_classify_restart_matrix[work busy]",
+  "tests/ported/test_host_delivery_maintenance_domain.py::test_classify_restart_matrix[work unknown]",
+  "tests/ported/test_host_delivery_maintenance_domain.py::test_classify_restart_matrix[wrong parent]",
+  "tests/ported/test_host_delivery_maintenance_domain.py::test_credential_evidence_is_strict_and_identity_bound[PRIMARY-record]",
+  "tests/ported/test_host_delivery_maintenance_domain.py::test_credential_evidence_is_strict_and_identity_bound[record0-supervisor]",
+  "tests/ported/test_host_delivery_maintenance_domain.py::test_credential_evidence_is_strict_and_identity_bound[record1-entry]",
+  "tests/ported/test_host_delivery_maintenance_domain.py::test_credential_evidence_is_strict_and_identity_bound[record10-record]",
+  "tests/ported/test_host_delivery_maintenance_domain.py::test_credential_evidence_is_strict_and_identity_bound[record11-entry]",
+  "tests/ported/test_host_delivery_maintenance_domain.py::test_credential_evidence_is_strict_and_identity_bound[record2-entry]",
+  "tests/ported/test_host_delivery_maintenance_domain.py::test_credential_evidence_is_strict_and_identity_bound[record3-supervisor]",
+  "tests/ported/test_host_delivery_maintenance_domain.py::test_credential_evidence_is_strict_and_identity_bound[record4-entry]",
+  "tests/ported/test_host_delivery_maintenance_domain.py::test_credential_evidence_is_strict_and_identity_bound[record5-supervisor]",
+  "tests/ported/test_host_delivery_maintenance_domain.py::test_credential_evidence_is_strict_and_identity_bound[record6-entry]",
+  "tests/ported/test_host_delivery_maintenance_domain.py::test_credential_evidence_is_strict_and_identity_bound[record7-record]",
+  "tests/ported/test_host_delivery_maintenance_domain.py::test_credential_evidence_is_strict_and_identity_bound[record8-record]",
+  "tests/ported/test_host_delivery_maintenance_domain.py::test_credential_evidence_is_strict_and_identity_bound[record9-record]",
+  "tests/ported/test_host_delivery_maintenance_domain.py::test_fleet_readiness_needs_the_owner_pause_and_settled_debt[None-expected3]",
+  "tests/ported/test_host_delivery_maintenance_domain.py::test_fleet_readiness_needs_the_owner_pause_and_settled_debt[readiness0-None]",
+  "tests/ported/test_host_delivery_maintenance_domain.py::test_fleet_readiness_needs_the_owner_pause_and_settled_debt[readiness1-None]",
+  "tests/ported/test_host_delivery_maintenance_domain.py::test_fleet_readiness_needs_the_owner_pause_and_settled_debt[readiness10-expected10]",
+  "tests/ported/test_host_delivery_maintenance_domain.py::test_fleet_readiness_needs_the_owner_pause_and_settled_debt[readiness2-None]",
+  "tests/ported/test_host_delivery_maintenance_domain.py::test_fleet_readiness_needs_the_owner_pause_and_settled_debt[readiness4-expected4]",
+  "tests/ported/test_host_delivery_maintenance_domain.py::test_fleet_readiness_needs_the_owner_pause_and_settled_debt[readiness5-expected5]",
+  "tests/ported/test_host_delivery_maintenance_domain.py::test_fleet_readiness_needs_the_owner_pause_and_settled_debt[readiness6-expected6]",
+  "tests/ported/test_host_delivery_maintenance_domain.py::test_fleet_readiness_needs_the_owner_pause_and_settled_debt[readiness7-expected7]",
+  "tests/ported/test_host_delivery_maintenance_domain.py::test_fleet_readiness_needs_the_owner_pause_and_settled_debt[readiness8-expected8]",
+  "tests/ported/test_host_delivery_maintenance_domain.py::test_fleet_readiness_needs_the_owner_pause_and_settled_debt[readiness9-expected9]",
+  "tests/ported/test_host_delivery_maintenance_domain.py::test_generation_id_and_evidence_follow_the_canonical_digest",
+  "tests/ported/test_host_delivery_maintenance_domain.py::test_generation_transitions_are_a_closed_table",
+  "tests/ported/test_host_delivery_maintenance_domain.py::test_legacy_projection_is_unchanged_without_generations",
+  "tests/ported/test_host_delivery_maintenance_domain.py::test_maintenance_view_is_an_allowlist",
+  "tests/ported/test_host_delivery_maintenance_domain.py::test_open_failed_and_bound_generations_hold_and_release_exactly",
+  "tests/ported/test_host_delivery_maintenance_domain.py::test_the_document_grammar_is_exact[approved_by-value30]",
+  "tests/ported/test_host_delivery_maintenance_domain.py::test_the_document_grammar_is_exact[authority-value28]",
+  "tests/ported/test_host_delivery_maintenance_domain.py::test_the_document_grammar_is_exact[authority-value29]",
+  "tests/ported/test_host_delivery_maintenance_domain.py::test_the_document_grammar_is_exact[canary_window_seconds-value24]",
+  "tests/ported/test_host_delivery_maintenance_domain.py::test_the_document_grammar_is_exact[canary_window_seconds-value25]",
+  "tests/ported/test_host_delivery_maintenance_domain.py::test_the_document_grammar_is_exact[canary_window_seconds-value26]",
+  "tests/ported/test_host_delivery_maintenance_domain.py::test_the_document_grammar_is_exact[canary_window_seconds-value27]",
+  "tests/ported/test_host_delivery_maintenance_domain.py::test_the_document_grammar_is_exact[descriptor_sha256-value13]",
+  "tests/ported/test_host_delivery_maintenance_domain.py::test_the_document_grammar_is_exact[document-not a document]",
+  "tests/ported/test_host_delivery_maintenance_domain.py::test_the_document_grammar_is_exact[document-value1]",
+  "tests/ported/test_host_delivery_maintenance_domain.py::test_the_document_grammar_is_exact[document-value2]",
+  "tests/ported/test_host_delivery_maintenance_domain.py::test_the_document_grammar_is_exact[document-value3]",
+  "tests/ported/test_host_delivery_maintenance_domain.py::test_the_document_grammar_is_exact[document-value4]",
+  "tests/ported/test_host_delivery_maintenance_domain.py::test_the_document_grammar_is_exact[document-value5]",
+  "tests/ported/test_host_delivery_maintenance_domain.py::test_the_document_grammar_is_exact[from-value14]",
+  "tests/ported/test_host_delivery_maintenance_domain.py::test_the_document_grammar_is_exact[from-value15]",
+  "tests/ported/test_host_delivery_maintenance_domain.py::test_the_document_grammar_is_exact[from-value16]",
+  "tests/ported/test_host_delivery_maintenance_domain.py::test_the_document_grammar_is_exact[from-value17]",
+  "tests/ported/test_host_delivery_maintenance_domain.py::test_the_document_grammar_is_exact[from-value18]",
+  "tests/ported/test_host_delivery_maintenance_domain.py::test_the_document_grammar_is_exact[kind-value7]",
+  "tests/ported/test_host_delivery_maintenance_domain.py::test_the_document_grammar_is_exact[pin_sha256-value12]",
+  "tests/ported/test_host_delivery_maintenance_domain.py::test_the_document_grammar_is_exact[plan_id-value8]",
+  "tests/ported/test_host_delivery_maintenance_domain.py::test_the_document_grammar_is_exact[plan_sha256-value11]",
+  "tests/ported/test_host_delivery_maintenance_domain.py::test_the_document_grammar_is_exact[reason-value23]",
+  "tests/ported/test_host_delivery_maintenance_domain.py::test_the_document_grammar_is_exact[release_id-value9]",
+  "tests/ported/test_host_delivery_maintenance_domain.py::test_the_document_grammar_is_exact[retiring-value19]",
+  "tests/ported/test_host_delivery_maintenance_domain.py::test_the_document_grammar_is_exact[retiring-value20]",
+  "tests/ported/test_host_delivery_maintenance_domain.py::test_the_document_grammar_is_exact[retiring-value21]",
+  "tests/ported/test_host_delivery_maintenance_domain.py::test_the_document_grammar_is_exact[retiring-value22]",
+  "tests/ported/test_host_delivery_maintenance_domain.py::test_the_document_grammar_is_exact[schema-value6]",
+  "tests/ported/test_host_delivery_maintenance_domain.py::test_the_document_grammar_is_exact[target_id-value10]",
+  "tests/ported/test_host_delivery_maintenance_domain.py::test_the_exact_document_is_accepted_as_a_copy_with_its_bounds",
+  "tests/ported/test_host_delivery_maintenance_domain.py::test_the_live_identity_must_be_exactly_the_started_generation[observed0-None]",
+  "tests/ported/test_host_delivery_maintenance_domain.py::test_the_live_identity_must_be_exactly_the_started_generation[observed1-expected1]",
+  "tests/ported/test_host_delivery_maintenance_domain.py::test_the_live_identity_must_be_exactly_the_started_generation[observed10-expected10]",
+  "tests/ported/test_host_delivery_maintenance_domain.py::test_the_live_identity_must_be_exactly_the_started_generation[observed11-expected11]",
+  "tests/ported/test_host_delivery_maintenance_domain.py::test_the_live_identity_must_be_exactly_the_started_generation[observed12-expected12]",
+  "tests/ported/test_host_delivery_maintenance_domain.py::test_the_live_identity_must_be_exactly_the_started_generation[observed13-expected13]",
+  "tests/ported/test_host_delivery_maintenance_domain.py::test_the_live_identity_must_be_exactly_the_started_generation[observed2-expected2]",
+  "tests/ported/test_host_delivery_maintenance_domain.py::test_the_live_identity_must_be_exactly_the_started_generation[observed3-expected3]",
+  "tests/ported/test_host_delivery_maintenance_domain.py::test_the_live_identity_must_be_exactly_the_started_generation[observed4-expected4]",
+  "tests/ported/test_host_delivery_maintenance_domain.py::test_the_live_identity_must_be_exactly_the_started_generation[observed5-expected5]",
+  "tests/ported/test_host_delivery_maintenance_domain.py::test_the_live_identity_must_be_exactly_the_started_generation[observed6-expected6]",
+  "tests/ported/test_host_delivery_maintenance_domain.py::test_the_live_identity_must_be_exactly_the_started_generation[observed7-expected7]",
+  "tests/ported/test_host_delivery_maintenance_domain.py::test_the_live_identity_must_be_exactly_the_started_generation[observed8-expected8]",
+  "tests/ported/test_host_delivery_maintenance_domain.py::test_the_live_identity_must_be_exactly_the_started_generation[observed9-expected9]",
+  "tests/ported/test_host_delivery_maintenance_domain.py::test_the_observation_copy_replaces_the_receipt_by_its_validated_form",
+  "tests/ported/test_host_delivery_maintenance_domain.py::test_the_restart_authority_is_narrowly_typed[restart-everything]",
+  "tests/ported/test_host_delivery_maintenance_domain.py::test_the_restart_authority_is_narrowly_typed[restarts0]",
+  "tests/ported/test_host_delivery_maintenance_domain.py::test_the_restart_authority_is_narrowly_typed[restarts1]",
+  "tests/ported/test_host_delivery_maintenance_domain.py::test_the_restart_authority_is_narrowly_typed[restarts2]",
+  "tests/ported/test_host_delivery_maintenance_domain.py::test_the_restart_authority_is_narrowly_typed[restarts3]",
+  "tests/ported/test_host_delivery_maintenance_domain.py::test_the_twenty_one_codes_are_exact",
+  "tests/ported/test_host_delivery_maintenance_e2e.py::test_one_active_generation_is_restarted_armed_and_bound_end_to_end",
+  "tests/ported/test_host_delivery_maintenance_guards.py::test_a_failed_maintenance_after_an_arm_failure_keeps_holding_and_a_bound_one_releases",
+  "tests/ported/test_host_delivery_maintenance_guards.py::test_a_failed_maintenance_keeps_holding_and_a_bound_one_releases",
+  "tests/ported/test_host_delivery_maintenance_guards.py::test_legacy_delivery_recovery_queue_paths_add_no_generations_key",
+  "tests/ported/test_host_delivery_maintenance_guards.py::test_legacy_managed_paths_add_no_generations_key",
+  "tests/ported/test_host_delivery_maintenance_guards.py::test_migration_staging_refuses_a_held_target",
+  "tests/ported/test_host_delivery_maintenance_guards.py::test_old_controller_hazard_is_real_and_the_new_controller_holds[missing queue row]",
+  "tests/ported/test_host_delivery_maintenance_guards.py::test_old_controller_hazard_is_real_and_the_new_controller_holds[refused gate]",
+  "tests/ported/test_host_delivery_maintenance_guards.py::test_old_controller_hazard_on_an_armed_intent_is_real_and_the_new_controller_holds[missing queue row]",
+  "tests/ported/test_host_delivery_maintenance_guards.py::test_old_controller_hazard_on_an_armed_intent_is_real_and_the_new_controller_holds[refused gate]",
+  "tests/ported/test_host_delivery_maintenance_guards.py::test_open_maintenance_holds_selection_registration_staging_and_resume_on_the_target",
+  "tests/ported/test_host_delivery_maintenance_guards.py::test_the_deployment_precondition_is_the_documented_requirement",
   "tests/ported/test_host_delivery_migration.py::test_a_competing_plan_and_the_migration_admit_exactly_one_owner_of_the_target",
   "tests/ported/test_host_delivery_migration.py::test_a_crash_between_steps_leaves_a_named_pending_handoff_never_a_free_target[memory]",
   "tests/ported/test_host_delivery_migration.py::test_a_crash_between_steps_leaves_a_named_pending_handoff_never_a_free_target[postgres]",
@@ -13465,6 +13907,32 @@
   "tests/ported/test_maintenance.py::test_missing_referenced_evidence_is_reported_not_folded_into_a_healthy_result",
   "tests/ported/test_maintenance.py::test_old_orphans_are_collected_but_transitive_evidence_and_recent_files_survive",
   "tests/ported/test_maintenance.py::test_research_schedule_deduplicates_each_interval",
+  "tests/ported/test_maintenance_evidence.py::test_an_observer_without_an_injected_popen_refuses_and_starts_nothing",
+  "tests/ported/test_maintenance_evidence.py::test_authority_reader_verifies_bytes_refuses_forged_modified_symlinked_or_oversized_and_creates_nothing",
+  "tests/ported/test_maintenance_evidence.py::test_helper_runs_with_no_inherited_environment",
+  "tests/ported/test_maintenance_evidence.py::test_lazy_artifacts_create_nothing_until_the_first_put",
+  "tests/ported/test_maintenance_evidence.py::test_pid_restart_during_observation_refuses",
+  "tests/ported/test_maintenance_evidence.py::test_pinned_helper_yields_identity_bound_booleans_only",
+  "tests/ported/test_maintenance_evidence.py::test_sha_mismatch_missing_helper_nonzero_exit_malformed_or_extra_output_refuse[bad_invocation]",
+  "tests/ported/test_maintenance_evidence.py::test_sha_mismatch_missing_helper_nonzero_exit_malformed_or_extra_output_refuse[extra_identity]",
+  "tests/ported/test_maintenance_evidence.py::test_sha_mismatch_missing_helper_nonzero_exit_malformed_or_extra_output_refuse[extra_key]",
+  "tests/ported/test_maintenance_evidence.py::test_sha_mismatch_missing_helper_nonzero_exit_malformed_or_extra_output_refuse[malformed]",
+  "tests/ported/test_maintenance_evidence.py::test_sha_mismatch_missing_helper_nonzero_exit_malformed_or_extra_output_refuse[missing]",
+  "tests/ported/test_maintenance_evidence.py::test_sha_mismatch_missing_helper_nonzero_exit_malformed_or_extra_output_refuse[nonzero_exit]",
+  "tests/ported/test_maintenance_evidence.py::test_sha_mismatch_missing_helper_nonzero_exit_malformed_or_extra_output_refuse[oversized]",
+  "tests/ported/test_maintenance_evidence.py::test_sha_mismatch_missing_helper_nonzero_exit_malformed_or_extra_output_refuse[rewritten_during_run]",
+  "tests/ported/test_maintenance_evidence.py::test_sha_mismatch_missing_helper_nonzero_exit_malformed_or_extra_output_refuse[same_pid_twice]",
+  "tests/ported/test_maintenance_evidence.py::test_sha_mismatch_missing_helper_nonzero_exit_malformed_or_extra_output_refuse[sha_mismatch]",
+  "tests/ported/test_maintenance_evidence.py::test_sha_mismatch_missing_helper_nonzero_exit_malformed_or_extra_output_refuse[symlinked]",
+  "tests/ported/test_maintenance_evidence.py::test_sha_mismatch_missing_helper_nonzero_exit_malformed_or_extra_output_refuse[timeout]",
+  "tests/ported/test_maintenance_evidence.py::test_sha_mismatch_missing_helper_nonzero_exit_malformed_or_extra_output_refuse[traceback]",
+  "tests/ported/test_maintenance_evidence.py::test_sha_mismatch_missing_helper_nonzero_exit_malformed_or_extra_output_refuse[truthy_int]",
+  "tests/ported/test_maintenance_evidence.py::test_sha_mismatch_missing_helper_nonzero_exit_malformed_or_extra_output_refuse[truthy_string]",
+  "tests/ported/test_maintenance_evidence.py::test_sha_mismatch_missing_helper_nonzero_exit_malformed_or_extra_output_refuse[wrong_pid]",
+  "tests/ported/test_maintenance_evidence.py::test_the_canary_executor_is_built_only_when_arm_dispatches",
+  "tests/ported/test_maintenance_evidence.py::test_the_helper_is_configured_only_by_an_absolute_path_and_a_pinned_digest",
+  "tests/ported/test_maintenance_evidence.py::test_the_owner_action_reader_reads_one_row_and_nothing_else",
+  "tests/ported/test_maintenance_evidence.py::test_the_qualification_deadline_is_an_aware_time_or_absent",
   "tests/ported/test_managed_runtime.py::test_a_bad_runtime_is_refused_before_the_running_instance_is_touched",
   "tests/ported/test_managed_runtime.py::test_a_changed_or_foreign_directory_is_refused_and_never_overwritten",
   "tests/ported/test_managed_runtime.py::test_a_child_that_outlives_its_killed_launcher_is_still_running_and_stops_gracefully",
@@ -14933,6 +15401,11 @@
   "tests/ported/test_release_health.py::test_observation_errors_are_distinct_from_executed_failures[timeout]",
   "tests/ported/test_release_health.py::test_recreated_container_keeps_service_failure_history",
   "tests/ported/test_release_health.py::test_success_resets_failure_counter_across_controller_restart",
+  "tests/ported/test_release_queue_maintenance.py::test_a_corrupted_maintenance_fence_fails_closed",
+  "tests/ported/test_release_queue_maintenance.py::test_hold_excludes_claim_and_retry_and_touches_no_queue_row",
+  "tests/ported/test_release_queue_maintenance.py::test_owned_heartbeat_and_release_are_exact_owner_only",
+  "tests/ported/test_release_queue_maintenance.py::test_postgres_concurrent_hold_and_claim_have_one_owner",
+  "tests/ported/test_release_queue_maintenance.py::test_within_commits_with_the_hold_or_rolls_back_with_it",
   "tests/ported/test_release_recovery.py::test_abandon_uses_real_ancestry_and_preserves_uncertain_merges[merged]",
   "tests/ported/test_release_recovery.py::test_abandon_uses_real_ancestry_and_preserves_uncertain_merges[remote_uncertain]",
   "tests/ported/test_release_recovery.py::test_abandon_uses_real_ancestry_and_preserves_uncertain_merges[unrelated]",
@@ -16622,6 +17095,7 @@
   "tests/test_ci_wiring.py::test_omitting_an_integration_step_fails[docker compose -p harness-ci up -d --wait postgres redis-${{ runner.temp }}/zeus-source]",
   "tests/test_ci_wiring.py::test_omitting_an_integration_step_fails[docker compose version-${{ runner.temp }}/zeus-source]",
   "tests/test_ci_wiring.py::test_omitting_an_integration_step_fails[python compare/run.py docker-fixture-None]",
+  "tests/test_ci_wiring.py::test_omitting_an_integration_step_fails[python compare/run.py prepare --rebaseline pr3-bb579d5-None]",
   "tests/test_ci_wiring.py::test_omitting_an_integration_step_fails[python compare/run.py prepare-None]",
   "tests/test_ci_wiring.py::test_omitting_an_integration_step_fails[python compare/run.py run --only delivery.restore.pg --pg-None]",
   "tests/test_ci_wiring.py::test_omitting_an_integration_step_fails[python compare/run.py run --only effects.admission_unit.pg --pg-None]",
@@ -16647,6 +17121,8 @@
   "tests/test_ci_wiring.py::test_omitting_an_integration_step_fails[python compare/run.py run --only entry.cli_store_b.pg --pg-None]",
   "tests/test_ci_wiring.py::test_omitting_an_integration_step_fails[python compare/run.py run --only entry.cli_ticket_sdd.pg --pg-None]",
   "tests/test_ci_wiring.py::test_omitting_an_integration_step_fails[python compare/run.py run --only storage.pg --only storage.redis --pg --redis-None]",
+  "tests/test_ci_wiring.py::test_omitting_an_integration_step_fails[python compare/run.py run --reference rebaseline:pr3-bb579d5 --only delivery.maintenance-None]",
+  "tests/test_ci_wiring.py::test_omitting_an_integration_step_fails[python compare/run.py run --reference rebaseline:pr3-bb579d5 --only delivery.maintenance.pg --pg-None]",
   "tests/test_ci_wiring.py::test_omitting_an_integration_step_fails[python compare/run.py target-integration-None]",
   "tests/test_ci_wiring.py::test_omitting_an_integration_step_fails[uv run harness setup-${{ runner.temp }}/zeus-source]",
   "tests/test_ci_wiring.py::test_omitting_an_integration_step_fails[uv run pytest -q tests/test_verification.py tests/test_host_interruption.py-${{ runner.temp }}/zeus-source]",
@@ -16682,6 +17158,21 @@
   "tests/test_coordination_research_launch_facts.py::test_wrong_id_is_not_authentic",
   "tests/test_coordination_research_launch_facts.py::test_wrong_launch_id_or_launch_count_is_not_authentic",
   "tests/test_coordination_research_launch_facts.py::test_wrong_state_is_not_authentic",
+  "tests/test_coverage_additions.py::test_bad_seed_evidence_refuses_without_writing",
+  "tests/test_coverage_additions.py::test_check_passes_on_head",
+  "tests/test_coverage_additions.py::test_check_refuses_stale_metadata[count-count_mismatch]",
+  "tests/test_coverage_additions.py::test_check_refuses_stale_metadata[digest-digest_mismatch]",
+  "tests/test_coverage_additions.py::test_maintained_values_are_preserved",
+  "tests/test_coverage_additions.py::test_refusal_leaves_file_unchanged[--check-drift-owned_field_drift]",
+  "tests/test_coverage_additions.py::test_refusal_leaves_file_unchanged[--check-duplicate-duplicate_key]",
+  "tests/test_coverage_additions.py::test_refusal_leaves_file_unchanged[--check-evidence-evidence_form]",
+  "tests/test_coverage_additions.py::test_refusal_leaves_file_unchanged[--check-undeclared-undeclared_addition]",
+  "tests/test_coverage_additions.py::test_refusal_leaves_file_unchanged[--write-drift-owned_field_drift]",
+  "tests/test_coverage_additions.py::test_refusal_leaves_file_unchanged[--write-duplicate-duplicate_key]",
+  "tests/test_coverage_additions.py::test_refusal_leaves_file_unchanged[--write-evidence-evidence_form]",
+  "tests/test_coverage_additions.py::test_refusal_leaves_file_unchanged[--write-undeclared-undeclared_addition]",
+  "tests/test_coverage_additions.py::test_write_appends_only_and_is_idempotent",
+  "tests/test_coverage_additions.py::test_write_recomputes_digest",
   "tests/test_coverage_table.py::test_decision_unit_row_is_recorder_confirmed",
   "tests/test_coverage_table.py::test_flow_rows_are_step_lists_verified_only_when_every_step_has_a_passing_item",
   "tests/test_coverage_table.py::test_implemented_rows_name_modules_that_exist_in_the_target",
@@ -16692,10 +17183,60 @@
   "tests/test_coverage_table.py::test_s2_module_rows_are_all_accounted_for",
   "tests/test_coverage_table.py::test_s3_rows_are_accounted_for",
   "tests/test_coverage_table.py::test_s4_rows_moved_so_far_are_implemented_and_the_rest_stay_designed",
+  "tests/test_coverage_table.py::test_table_contracts_and_addition_contracts_cover_the_registry",
   "tests/test_coverage_table.py::test_table_regenerates_from_the_pinned_ledger",
   "tests/test_coverage_table.py::test_the_regeneration_check_compares_the_generated_skeleton_and_still_sees_skeleton_drift",
   "tests/test_coverage_table.py::test_unmapped_rows_are_named",
   "tests/test_coverage_table.py::test_untraced_rows_stay_explicit",
+  "tests/test_cutover_rebaseline.py::test_a_credential_shaped_string_in_a_modified_delta_file_is_still_scanned",
+  "tests/test_cutover_rebaseline.py::test_a_differing_overlay_is_refused_before_any_build",
+  "tests/test_cutover_rebaseline.py::test_a_faithful_delta_archive_is_ok",
+  "tests/test_cutover_rebaseline.py::test_a_family_that_declares_its_rebaseline_reference_is_skipped_by_the_default_reference",
+  "tests/test_cutover_rebaseline.py::test_a_file_outside_the_delta_list_is_foreign_even_when_it_is_the_commits_blob",
+  "tests/test_cutover_rebaseline.py::test_a_missing_archive_file_is_refused_with_its_path",
+  "tests/test_cutover_rebaseline.py::test_a_missing_delta_file_is_foreign",
+  "tests/test_cutover_rebaseline.py::test_a_rebaseline_record_is_allowed_for_the_scenarios_that_declare_it_and_only_under_the_rebaseline_golden_dir",
+  "tests/test_cutover_rebaseline.py::test_a_rebaseline_record_is_refused_for_an_m7_referenced_family_and_when_mixed_or_unknown",
+  "tests/test_cutover_rebaseline.py::test_a_scoped_rebaseline_record_writes_the_golden_under_the_rebaseline_dir",
+  "tests/test_cutover_rebaseline.py::test_a_wrong_delta_list_is_named",
+  "tests/test_cutover_rebaseline.py::test_a_wrong_tree_is_named",
+  "tests/test_cutover_rebaseline.py::test_an_appended_byte_is_foreign",
+  "tests/test_cutover_rebaseline.py::test_an_extra_file_is_foreign",
+  "tests/test_cutover_rebaseline.py::test_an_unknown_reference_selector_is_refused",
+  "tests/test_cutover_rebaseline.py::test_append_items_extends_the_list_and_a_stale_or_invalid_declaration_is_refused",
+  "tests/test_cutover_rebaseline.py::test_check_tree_on_the_real_tree_accepts_the_archive",
+  "tests/test_cutover_rebaseline.py::test_entry_two_a_modified_delta_file_is_foreign",
+  "tests/test_cutover_rebaseline.py::test_entry_two_a_wrong_delta_list_and_a_wrong_tree_are_each_not_ok",
+  "tests/test_cutover_rebaseline.py::test_entry_two_pins_the_reviewed_pr3_head_and_its_archive_is_exactly_the_delta",
+  "tests/test_cutover_rebaseline.py::test_filtered_blob_ids_follow_the_bases_own_gitattributes_not_the_callers_config",
+  "tests/test_cutover_rebaseline.py::test_package_file_identity_follows_the_origin_record_method",
+  "tests/test_cutover_rebaseline.py::test_rebaseline_entry_pins_its_own_package_file_identity",
+  "tests/test_cutover_rebaseline.py::test_run_record_with_a_rebaseline_reference_is_refused",
+  "tests/test_cutover_rebaseline.py::test_split_layers_separates_the_rebaseline_layer_in_declared_order",
+  "tests/test_cutover_rebaseline.py::test_target_vs_reference_compares_the_target_with_the_reference_result_of_the_same_run",
+  "tests/test_cutover_rebaseline.py::test_target_vs_reference_needs_a_rebaseline_reference_and_never_record",
+  "tests/test_cutover_rebaseline.py::test_the_baseline_holds_the_one_entry_and_its_archive_is_exactly_the_delta",
+  "tests/test_cutover_rebaseline.py::test_the_default_target_comparison_applies_the_rebaseline_layer_then_the_target_declarations",
+  "tests/test_cutover_rebaseline.py::test_the_overlay_proof_names_only_the_swapped_path_without_caller_git_config",
+  "tests/test_cutover_rebaseline.py::test_the_revision_mask_applies_only_to_its_families_and_is_a_declared_closed_entry",
+  "tests/test_cutover_rebaseline.py::test_the_revision_mask_hides_a_revision_and_its_derivatives_but_nothing_behavioural",
+  "tests/test_cutover_rebaseline.py::test_the_s2r_declarations_of_the_affected_families_cite_the_rebaseline_and_a_hunk",
+  "tests/test_cutover_rebaseline.py::test_the_selector_picks_the_rebaseline_venv_and_overlay_and_the_default_stays_m7",
+  "tests/test_cutover_rebaseline.py::test_without_entries_the_report_has_no_rebaselines_key",
+  "tests/test_cutover_two_checkout.py::test_audit_root_anchor_table[editable-project-dir]",
+  "tests/test_cutover_two_checkout.py::test_audit_root_anchor_table[editable-src]",
+  "tests/test_cutover_two_checkout.py::test_audit_root_anchor_table[missing-direct-url]",
+  "tests/test_cutover_two_checkout.py::test_audit_root_anchor_table[no-pyproject]",
+  "tests/test_cutover_two_checkout.py::test_audit_root_anchor_table[non-file-url]",
+  "tests/test_cutover_two_checkout.py::test_audit_root_anchor_table[not-editable]",
+  "tests/test_cutover_two_checkout.py::test_audit_root_anchor_table[other-project]",
+  "tests/test_cutover_two_checkout.py::test_audit_root_anchor_table[reference-tree]",
+  "tests/test_cutover_two_checkout.py::test_audit_root_anchor_table[third-directory]",
+  "tests/test_cutover_two_checkout.py::test_audit_root_anchor_table[wheel]",
+  "tests/test_cutover_two_checkout.py::test_audit_root_refuses_a_checkout_under_a_reference_path",
+  "tests/test_cutover_two_checkout.py::test_control_shadowing_path_entry_resolves_codex_harness_outside_b_src_and_fails_with_r_o",
+  "tests/test_cutover_two_checkout.py::test_control_without_the_ported_path_line_fails_collection_on_ported_support",
+  "tests/test_cutover_two_checkout.py::test_two_checkout_run_passes",
   "tests/test_disposable_pg_lifecycle.py::test_a_pair_member_starts_with_its_user_and_dump_bind_through_admitted_forms_only",
   "tests/test_disposable_pg_lifecycle.py::test_a_pair_whose_target_fails_to_start_removes_the_started_source",
   "tests/test_disposable_pg_lifecycle.py::test_every_other_exec_form_is_refused[env0-argv0-needs ZEUS_TEST_DOCKER_PGEXEC]",
@@ -16743,6 +17284,76 @@
   "tests/test_effect_recorder.py::test_trace_holds_digests_not_bodies",
   "tests/test_effect_recorder.py::test_uncommitted_intent_does_not_count",
   "tests/test_effect_recorder.py::test_write_outside_any_unit_is_a_violation",
+  "tests/test_fleet_admission_permit.py::test_a_closed_permit_of_another_action_does_not_block_a_new_grant",
+  "tests/test_fleet_admission_permit.py::test_a_delivery_canary_receipt_that_does_not_bind_the_new_instance_fails_the_canary",
+  "tests/test_fleet_admission_permit.py::test_a_double_arm_claims_exactly_once",
+  "tests/test_fleet_admission_permit.py::test_a_full_permit_cycle_leaves_the_control_row_and_the_pr3_bucket_byte_identical",
+  "tests/test_fleet_admission_permit.py::test_a_job_that_differs_from_the_permit_binding_is_refused_before_any_claim[change0]",
+  "tests/test_fleet_admission_permit.py::test_a_job_that_differs_from_the_permit_binding_is_refused_before_any_claim[change1]",
+  "tests/test_fleet_admission_permit.py::test_a_missing_acknowledgement_is_refused_before_any_claim",
+  "tests/test_fleet_admission_permit.py::test_a_moved_action_binding_is_refused_before_any_claim[descriptor_sha256]",
+  "tests/test_fleet_admission_permit.py::test_a_moved_action_binding_is_refused_before_any_claim[instance_id]",
+  "tests/test_fleet_admission_permit.py::test_a_moved_action_binding_is_refused_before_any_claim[plan_sha256]",
+  "tests/test_fleet_admission_permit.py::test_a_paused_permit_admits_only_its_exact_job_and_a_concurrent_enqueue_stays_queued",
+  "tests/test_fleet_admission_permit.py::test_a_stored_permit_of_an_unknown_kind_is_not_admitted",
+  "tests/test_fleet_admission_permit.py::test_a_template_with_a_different_digest_is_refused_before_any_write",
+  "tests/test_fleet_admission_permit.py::test_a_verification_job_admits_only_its_exact_job_and_the_control_row_is_byte_identical",
+  "tests/test_fleet_admission_permit.py::test_a_verification_job_grant_refuses_before_any_write[approver_equals_issuer-permit_invalid-approver]",
+  "tests/test_fleet_admission_permit.py::test_a_verification_job_grant_refuses_before_any_write[bad_row_digest-permit_invalid-vplan_row_sha256]",
+  "tests/test_fleet_admission_permit.py::test_a_verification_job_grant_refuses_before_any_write[expired-permit_expired-deadline]",
+  "tests/test_fleet_admission_permit.py::test_a_verification_job_grant_refuses_before_any_write[lane_mismatch-permit_refused-job]",
+  "tests/test_fleet_admission_permit.py::test_a_verification_job_grant_refuses_before_any_write[manifest_mismatch-permit_refused-job]",
+  "tests/test_fleet_admission_permit.py::test_a_verification_job_grant_refuses_before_any_write[named_by_owner_action-permit_refused-action]",
+  "tests/test_fleet_admission_permit.py::test_a_verification_job_grant_refuses_before_any_write[too_long-permit_invalid-deadline]",
+  "tests/test_fleet_admission_permit.py::test_a_verification_job_grant_refuses_before_any_write[unknown_job-permit_refused-job]",
+  "tests/test_fleet_admission_permit.py::test_a_verification_job_never_names_a_pr3_job_and_the_pr3_bucket_is_unchanged",
+  "tests/test_fleet_admission_permit.py::test_a_verification_job_permit_binds_the_enumerated_job_and_its_vplan_row",
+  "tests/test_fleet_admission_permit.py::test_a_verification_job_whose_queued_job_moved_is_refused_and_expiry_fails_it_without_a_spawn",
+  "tests/test_fleet_admission_permit.py::test_an_admitted_job_stays_owned_until_settlement",
+  "tests/test_fleet_admission_permit.py::test_an_expired_deadline_is_refused_before_any_claim_and_writes_nothing",
+  "tests/test_fleet_admission_permit.py::test_an_expired_unadmitted_permit_fails_the_queued_job_without_a_spawn",
+  "tests/test_fleet_admission_permit.py::test_an_unknown_kind_is_refused_before_any_write[7]",
+  "tests/test_fleet_admission_permit.py::test_an_unknown_kind_is_refused_before_any_write[None]",
+  "tests/test_fleet_admission_permit.py::test_an_unknown_kind_is_refused_before_any_write[forward_candidate]",
+  "tests/test_fleet_admission_permit.py::test_an_unknown_kind_is_refused_before_any_write[maintenance_canary]",
+  "tests/test_fleet_admission_permit.py::test_an_unknown_kind_is_refused_before_any_write[other]",
+  "tests/test_fleet_admission_permit.py::test_an_unknown_permit_id_and_a_malformed_one_are_refused",
+  "tests/test_fleet_admission_permit.py::test_every_other_blocker_still_refuses_and_writes_nothing[budget-permit_refused-budget_exhausted]",
+  "tests/test_fleet_admission_permit.py::test_every_other_blocker_still_refuses_and_writes_nothing[debt_unit-permit_debt_unsettled-fleet]",
+  "tests/test_fleet_admission_permit.py::test_every_other_blocker_still_refuses_and_writes_nothing[dependency-permit_refused-dependency_failed]",
+  "tests/test_fleet_admission_permit.py::test_every_other_blocker_still_refuses_and_writes_nothing[lane-permit_debt_unsettled-fleet]",
+  "tests/test_fleet_admission_permit.py::test_every_other_blocker_still_refuses_and_writes_nothing[path-permit_debt_unsettled-fleet]",
+  "tests/test_fleet_admission_permit.py::test_every_other_blocker_still_refuses_and_writes_nothing[stale_ceilings-permit_refused-budget_stale]",
+  "tests/test_fleet_admission_permit.py::test_expiry_is_not_a_cancel_before_the_deadline_and_cancel_fails_the_job_without_a_spawn",
+  "tests/test_fleet_admission_permit.py::test_fa_never_admits_a_maintenance_canary_or_forward_candidate_job",
+  "tests/test_fleet_admission_permit.py::test_only_one_fa_permit_is_unsettled_at_a_time",
+  "tests/test_fleet_admission_permit.py::test_only_the_still_queued_job_is_admitted[accepted]",
+  "tests/test_fleet_admission_permit.py::test_only_the_still_queued_job_is_admitted[dispatching]",
+  "tests/test_fleet_admission_permit.py::test_only_the_still_queued_job_is_admitted[failed]",
+  "tests/test_fleet_admission_permit.py::test_readers_tolerate_a_store_holding_granted_admitted_and_closed_permit_rows",
+  "tests/test_fleet_admission_permit.py::test_response_loss_replays_are_refused_and_an_unknown_dispatch_is_held_never_relaunched",
+  "tests/test_fleet_admission_permit.py::test_the_cli_parser_carries_the_two_leaves_and_grant_permit_takes_no_secret_on_argv",
+  "tests/test_fleet_admission_permit.py::test_the_executor_refuses_an_unreadable_ledger_with_nothing_launched",
+  "tests/test_fleet_admission_permit.py::test_the_executor_settles_nothing_while_the_job_still_runs_and_never_kills",
+  "tests/test_fleet_admission_permit.py::test_the_grant_needs_the_owner_pause_and_exactly_one_requested_action",
+  "tests/test_fleet_admission_permit.py::test_the_grant_permit_leaf_grants_through_the_store_and_refuses_with_the_closed_grammar",
+  "tests/test_fleet_admission_permit.py::test_the_grant_refuses_before_any_write[approver_equals_issuer-permit_invalid-approver]",
+  "tests/test_fleet_admission_permit.py::test_the_grant_refuses_before_any_write[consumption_expired-permit_expired-deadline]",
+  "tests/test_fleet_admission_permit.py::test_the_grant_refuses_before_any_write[descriptor_moved-permit_refused-consumption]",
+  "tests/test_fleet_admission_permit.py::test_the_grant_refuses_before_any_write[job_not_queued-permit_refused-job]",
+  "tests/test_fleet_admission_permit.py::test_the_grant_refuses_before_any_write[lane_mismatch-permit_refused-job]",
+  "tests/test_fleet_admission_permit.py::test_the_grant_refuses_before_any_write[no_consumption-permit_refused-consumption]",
+  "tests/test_fleet_admission_permit.py::test_the_grant_refuses_before_any_write[not_requested-permit_refused-action]",
+  "tests/test_fleet_admission_permit.py::test_the_grant_refuses_before_any_write[plan_digest_mismatch-permit_refused-action]",
+  "tests/test_fleet_admission_permit.py::test_the_grant_refuses_before_any_write[target_mismatch-permit_refused-action]",
+  "tests/test_fleet_admission_permit.py::test_the_grant_refuses_before_any_write[window_too_long-permit_invalid-deadline]",
+  "tests/test_fleet_admission_permit.py::test_the_in_window_grant_derives_exactly_the_oa_actions_binding_and_the_consumption_deadline",
+  "tests/test_fleet_admission_permit.py::test_the_isolation_blocker_refuses_at_launch_and_the_job_is_never_relaunched",
+  "tests/test_fleet_admission_permit.py::test_the_owner_pause_is_required_and_an_activation_hold_is_not_a_pause[control0]",
+  "tests/test_fleet_admission_permit.py::test_the_owner_pause_is_required_and_an_activation_hold_is_not_a_pause[control1]",
+  "tests/test_fleet_admission_permit_postgres.py::test_concurrent_admissions_claim_the_exact_job_once_on_postgres",
+  "tests/test_fleet_admission_permit_postgres.py::test_concurrent_grants_write_one_permit_row_on_postgres",
+  "tests/test_fleet_admission_permit_postgres.py::test_concurrent_unrelated_enqueue_and_ordinary_admission_stay_unadmitted_on_postgres",
   "tests/test_provider_guard.py::test_absolute_path_provider_is_refused_before_exec",
   "tests/test_provider_guard.py::test_bare_provider_name_is_refused_in_process[argv0]",
   "tests/test_provider_guard.py::test_bare_provider_name_is_refused_in_process[argv1]",
@@ -17715,6 +18326,16 @@
   "tests/test_s11_ar4_node_map.py::test_negative_control_renamed_target_node",
   "tests/test_s11_ar4_node_map.py::test_negative_control_stale_pending_count",
   "tests/test_s11_ar4_node_map.py::test_pending_nodes_are_exactly_the_two_root_script_files",
+  "tests/test_s11_ar4_rebaseline_map.py::test_entries_are_the_two_approved_rebaselines",
+  "tests/test_s11_ar4_rebaseline_map.py::test_map_is_complete_and_every_target_is_collected",
+  "tests/test_s11_ar4_rebaseline_map.py::test_negative_control_extra_node",
+  "tests/test_s11_ar4_rebaseline_map.py::test_negative_control_missing_target",
+  "tests/test_s11_ar4_rebaseline_map.py::test_negative_control_superseded_by_itself",
+  "tests/test_s11_ar4_rebaseline_map.py::test_negative_control_unknown_kind",
+  "tests/test_s11_ar4_rebaseline_map.py::test_per_entry_counts",
+  "tests/test_s11_ar4_rebaseline_map.py::test_rebaseline_check_is_byte_equal",
+  "tests/test_s11_ar4_rebaseline_map.py::test_the_m7_map_is_not_changed_by_the_rebaseline_nodes",
+  "tests/test_s11_ar4_rebaseline_map.py::test_writer_refuses_an_unmapped_node",
   "tests/test_s11_atomic_units.py::test_a_leading_underscore_is_not_a_rename_but_a_different_operation_is",
   "tests/test_s11_atomic_units.py::test_a_missing_owner_operation_list_needs_the_blocks_own_tx_operations_else_a_finding",
   "tests/test_s11_atomic_units.py::test_a_read_only_git_query_is_not_an_external_effect",
@@ -18092,6 +18713,7 @@
   "tests/test_s11_l_relabel.py::test_a_symbol_that_does_not_resolve_is_designed_or_implemented_by_its_items",
   "tests/test_s11_l_relabel.py::test_a_test_module_added_after_the_evidence_head_is_not_part_of_the_evidence",
   "tests/test_s11_l_relabel.py::test_a_transient_module_in_the_exercise_record_is_ignored_and_named",
+  "tests/test_s11_l_relabel.py::test_addition_contract_requires_registry_and_behavioural_citation",
   "tests/test_s11_l_relabel.py::test_an_owner_run_item_passes_only_when_the_bundle_lists_the_artifact",
   "tests/test_s11_l_relabel.py::test_an_owner_run_naming_an_uncollected_node_refuses_the_bundle",
   "tests/test_s11_l_relabel.py::test_an_unaccepted_slice_is_not_verified",
@@ -18113,6 +18735,7 @@
   "tests/test_s11_l_relabel.py::test_module_rows_come_first_and_their_rows_inherit_through_module_items",
   "tests/test_s11_l_relabel.py::test_one_failing_item_leaves_the_flow_implemented_and_names_the_item[compare:fam]",
   "tests/test_s11_l_relabel.py::test_one_failing_item_leaves_the_flow_implemented_and_names_the_item[target:tests/test_b.py::test_other]",
+  "tests/test_s11_l_relabel.py::test_real_addition_contract_passes_registry_and_citation_rule",
   "tests/test_s11_l_relabel.py::test_the_bundle_binds_the_evidence_inputs",
   "tests/test_s11_l_relabel.py::test_the_bundle_goes_stale_with_an_evidence_module_conftest_or_target_src_and_not_with_a_new_test_module",
   "tests/test_s11_l_relabel.py::test_the_bundle_records_the_outcomes_ids_and_compare_reports",
@@ -18148,6 +18771,16 @@
   "tests/test_s11_p_check_tree.py::test_two_tree_mode_refuses_a_promoted_tree",
   "tests/test_s11_p_target_copy.py::test_a_copy_that_differs_from_the_target_tree_is_refused",
   "tests/test_s11_p_target_copy.py::test_the_run_copy_is_byte_identical_and_is_no_checkout",
+  "tests/test_s11_root_dockerfile.py::test_each_check_fails_on_a_mutated_copy[codex_stage]",
+  "tests/test_s11_root_dockerfile.py::test_each_check_fails_on_a_mutated_copy[entrypoint]",
+  "tests/test_s11_root_dockerfile.py::test_each_check_fails_on_a_mutated_copy[no_package_or_build_context]",
+  "tests/test_s11_root_dockerfile.py::test_each_check_fails_on_a_mutated_copy[pins]",
+  "tests/test_s11_root_dockerfile.py::test_each_check_fails_on_a_mutated_copy[runs_as_root]",
+  "tests/test_s11_root_dockerfile.py::test_root_dockerfile_satisfies_the_release_canary_image_contract[codex_stage]",
+  "tests/test_s11_root_dockerfile.py::test_root_dockerfile_satisfies_the_release_canary_image_contract[entrypoint]",
+  "tests/test_s11_root_dockerfile.py::test_root_dockerfile_satisfies_the_release_canary_image_contract[no_package_or_build_context]",
+  "tests/test_s11_root_dockerfile.py::test_root_dockerfile_satisfies_the_release_canary_image_contract[pins]",
+  "tests/test_s11_root_dockerfile.py::test_root_dockerfile_satisfies_the_release_canary_image_contract[runs_as_root]",
   "tests/test_s11_ru1.py::test_a_run_that_needs_reconciliation_blocks_the_review_decision_without_a_lease",
   "tests/test_s11_ru1.py::test_messages_route_refuses_a_forbidden_host_before_anything_else",
   "tests/test_s11_ru1.py::test_messages_route_refuses_a_missing_or_oversized_length_before_the_body",
@@ -19490,7 +20123,71 @@
   "tests/test_spawn_chokepoint.py::test_the_chokepoint_passes_arguments_and_results_unchanged",
   "tests/test_spawn_chokepoint.py::test_the_packaged_hook_resource_spawns_nothing_either",
   "tests/test_spawn_chokepoint.py::test_the_packaged_hook_runs_with_every_spawn_path_patched_to_raise",
-  "tests/test_spawn_chokepoint.py::test_windows_modules_are_pure_on_posix"
+  "tests/test_spawn_chokepoint.py::test_windows_modules_are_pure_on_posix",
+  "tests/test_worker_network_binding.py::test_a_guard_that_is_not_applied_after_docker_is_refused[applied before docker restarted]",
+  "tests/test_worker_network_binding.py::test_a_guard_that_is_not_applied_after_docker_is_refused[docker inactive]",
+  "tests/test_worker_network_binding.py::test_a_guard_that_is_not_applied_after_docker_is_refused[failed result]",
+  "tests/test_worker_network_binding.py::test_a_guard_that_is_not_applied_after_docker_is_refused[not applied]",
+  "tests/test_worker_network_binding.py::test_a_guard_that_is_not_applied_after_docker_is_refused[running not exited]",
+  "tests/test_worker_network_binding.py::test_a_guard_that_is_not_applied_after_docker_is_refused[user-fw zero stamp]",
+  "tests/test_worker_network_binding.py::test_a_production_override_of_a_non_production_host_refuses_before_any_preflight",
+  "tests/test_worker_network_binding.py::test_a_spawn_failure_of_the_network_call_is_a_refusal_not_an_exception",
+  "tests/test_worker_network_binding.py::test_a_systemctl_spawn_failure_is_a_refusal_not_an_exception",
+  "tests/test_worker_network_binding.py::test_a_wrong_network_identity_is_refused[another bridge name]",
+  "tests/test_worker_network_binding.py::test_a_wrong_network_identity_is_refused[another subnet]",
+  "tests/test_worker_network_binding.py::test_a_wrong_network_identity_is_refused[bridge name option absent (as on zeus-aibox)]",
+  "tests/test_worker_network_binding.py::test_a_wrong_network_identity_is_refused[driver]",
+  "tests/test_worker_network_binding.py::test_a_wrong_network_identity_is_refused[internal]",
+  "tests/test_worker_network_binding.py::test_a_wrong_network_identity_is_refused[ipv6]",
+  "tests/test_worker_network_binding.py::test_a_wrong_network_identity_is_refused[name]",
+  "tests/test_worker_network_binding.py::test_a_wrong_network_identity_is_refused[no labels]",
+  "tests/test_worker_network_binding.py::test_a_wrong_network_identity_is_refused[short id]",
+  "tests/test_worker_network_binding.py::test_a_wrong_network_identity_is_refused[two subnets]",
+  "tests/test_worker_network_binding.py::test_a_wrong_network_identity_is_refused[wrong owner label]",
+  "tests/test_worker_network_binding.py::test_absent_network_is_refused_with_the_observed_failure_shape",
+  "tests/test_worker_network_binding.py::test_an_equal_guard_stamp_is_ready_and_block_order_is_irrelevant",
+  "tests/test_worker_network_binding.py::test_claude_launch_refuses_an_unguarded_network_and_is_otherwise_the_base_calls",
+  "tests/test_worker_network_binding.py::test_codex_launch_on_the_default_bridge_issues_the_base_calls",
+  "tests/test_worker_network_binding.py::test_constants_equal_the_producer_record",
+  "tests/test_worker_network_binding.py::test_create_argv_carries_the_configured_network_for_every_profile[claude-impl-rw]",
+  "tests/test_worker_network_binding.py::test_create_argv_carries_the_configured_network_for_every_profile[claude-role-ro]",
+  "tests/test_worker_network_binding.py::test_create_argv_carries_the_configured_network_for_every_profile[codex-impl-rw]",
+  "tests/test_worker_network_binding.py::test_create_argv_carries_the_configured_network_for_every_profile[codex-role-ro]",
+  "tests/test_worker_network_binding.py::test_default_bridge_preflight_issues_exactly_the_base_calls[settings0]",
+  "tests/test_worker_network_binding.py::test_default_bridge_preflight_issues_exactly_the_base_calls[settings1]",
+  "tests/test_worker_network_binding.py::test_isolated_worker_hands_the_configured_network_to_the_codex_runtime",
+  "tests/test_worker_network_binding.py::test_missing_failed_or_unparsable_guard_output_is_refused[answer0]",
+  "tests/test_worker_network_binding.py::test_missing_failed_or_unparsable_guard_output_is_refused[answer1]",
+  "tests/test_worker_network_binding.py::test_missing_failed_or_unparsable_guard_output_is_refused[answer2]",
+  "tests/test_worker_network_binding.py::test_missing_failed_or_unparsable_guard_output_is_refused[answer3]",
+  "tests/test_worker_network_binding.py::test_non_production_keeps_the_default_bridge_body_and_digest[settings0]",
+  "tests/test_worker_network_binding.py::test_non_production_keeps_the_default_bridge_body_and_digest[settings1]",
+  "tests/test_worker_network_binding.py::test_non_production_keeps_the_default_bridge_body_and_digest[settings2]",
+  "tests/test_worker_network_binding.py::test_production_codex_launch_passes_with_a_healthy_guarded_network",
+  "tests/test_worker_network_binding.py::test_production_codex_launch_refuses_before_anything_else_when_the_network_is_absent",
+  "tests/test_worker_network_binding.py::test_production_composition_makes_no_network_or_systemctl_call",
+  "tests/test_worker_network_binding.py::test_production_preflight_returns_the_network_and_guard_and_only_reads",
+  "tests/test_worker_network_binding.py::test_production_selects_the_guarded_network_and_keeps_the_verifier_unreachable",
+  "tests/test_worker_network_binding.py::test_the_guard_probe_never_receives_the_worker_token",
+  "tests/test_worker_network_binding.py::test_the_none_network_issues_exactly_the_base_calls",
+  "tests/test_worker_network_binding.py::test_the_observed_unguarded_host_state_is_refused",
+  "tests/test_worker_network_binding.py::test_unparsable_or_multiple_network_output_is_an_identity_mismatch[[1]\\n]",
+  "tests/test_worker_network_binding.py::test_unparsable_or_multiple_network_output_is_an_identity_mismatch[not json\\n]",
+  "tests/test_worker_network_binding.py::test_unparsable_or_multiple_network_output_is_an_identity_mismatch[{\"Attachable\": false, \"ConfigFrom\": {\"Network\": \"\"}, \"ConfigOnly\": false, \"Driver\": \"bridge\", \"EnableIPv4\": true, \"EnableIPv6\": false, \"IPAM\": null, \"Id\": \"cccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccc\", \"Ingress\": false, \"Internal\": false, \"Labels\": {\"zeus.owner\": \"aibox-migration-001\", \"zeus.role\": \"workers\"}, \"Name\": \"zeus-workers\", \"Options\": {\"com.docker.network.bridge.name\": \"br-zeus-workers\"}, \"Scope\": \"local\", \"Status\": {\"IPAM\": {\"Subnets\": {\"10.231.64.0/24\": {\"DynamicIPsAvailable\": 251, \"IPsInUse\": 5}}}}}\\n]",
+  "tests/test_worker_network_binding.py::test_unparsable_or_multiple_network_output_is_an_identity_mismatch[{\"Attachable\": false, \"ConfigFrom\": {\"Network\": \"\"}, \"ConfigOnly\": false, \"Driver\": \"bridge\", \"EnableIPv4\": true, \"EnableIPv6\": false, \"IPAM\": {\"Config\": [{\"Subnet\": \"10.231.65.0/24\", \"Gateway\": \"10.231.65.1\"}], \"Driver\": \"default\", \"Options\": null}, \"Id\": \"cccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccc\", \"Ingress\": false, \"Internal\": false, \"Labels\": [], \"Name\": \"zeus-workers\", \"Options\": {\"com.docker.network.bridge.name\": \"br-zeus-workers\"}, \"Scope\": \"local\", \"Status\": {\"IPAM\": {\"Subnets\": {\"10.231.64.0/24\": {\"DynamicIPsAvailable\": 251, \"IPsInUse\": 5}}}}}\\n]",
+  "tests/test_worker_network_binding.py::test_unparsable_or_multiple_network_output_is_an_identity_mismatch[{\"Attachable\": false, \"ConfigFrom\": {\"Network\": \"\"}, \"ConfigOnly\": false, \"Driver\": \"bridge\", \"EnableIPv4\": true, \"EnableIPv6\": false, \"IPAM\": {\"Config\": [{\"Subnet\": \"10.231.65.0/24\", \"Gateway\": \"10.231.65.1\"}], \"Driver\": \"default\", \"Options\": null}, \"Id\": \"cccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccc\", \"Ingress\": false, \"Internal\": false, \"Labels\": {\"zeus.owner\": \"aibox-migration-001\", \"zeus.role\": \"workers\"}, \"Name\": \"zeus-workers\", \"Options\": {\"com.docker.network.bridge.name\": \"br-zeus-workers\"}, \"Scope\": \"local\", \"Status\": {\"IPAM\": {\"Subnets\": {\"10.231.64.0/24\": {\"DynamicIPsAvailable\": 251, \"IPsInUse\": 5}}}}}\\n{\"Attachable\": false, \"ConfigFrom\": {\"Network\": \"\"}, \"ConfigOnly\": false, \"Driver\": \"bridge\", \"EnableIPv4\": true, \"EnableIPv6\": false, \"IPAM\": {\"Config\": [{\"Subnet\": \"10.231.65.0/24\", \"Gateway\": \"10.231.65.1\"}], \"Driver\": \"default\", \"Options\": null}, \"Id\": \"cccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccc\", \"Ingress\": false, \"Internal\": false, \"Labels\": {\"zeus.owner\": \"aibox-migration-001\", \"zeus.role\": \"workers\"}, \"Name\": \"zeus-workers\", \"Options\": {\"com.docker.network.bridge.name\": \"br-zeus-workers\"}, \"Scope\": \"local\", \"Status\": {\"IPAM\": {\"Subnets\": {\"10.231.64.0/24\": {\"DynamicIPsAvailable\": 251, \"IPsInUse\": 5}}}}}\\n]",
+  "tests/test_worker_network_binding.py::test_verify_on_bridge_or_none_issues_no_extra_call[bridge]",
+  "tests/test_worker_network_binding.py::test_verify_on_bridge_or_none_issues_no_extra_call[none]",
+  "tests/test_worker_network_binding.py::test_verify_on_the_guarded_network_checks_exactly_one_attached_network",
+  "tests/test_worker_network_binding.py::test_verify_refuses_any_other_attached_network_set[attached0]",
+  "tests/test_worker_network_binding.py::test_verify_refuses_any_other_attached_network_set[attached1]",
+  "tests/test_worker_network_binding.py::test_verify_refuses_any_other_attached_network_set[attached2]",
+  "tests/test_worker_network_binding.py::test_verify_refuses_any_other_attached_network_set[attached3]",
+  "tests/test_worker_network_binding.py::test_verify_refuses_any_other_attached_network_set[garbage]",
+  "tests/test_worker_network_run_task.py::test_every_launch_refusal_books_the_same_as_the_existing_image_refusal[claude]",
+  "tests/test_worker_network_run_task.py::test_every_launch_refusal_books_the_same_as_the_existing_image_refusal[codex]",
+  "tests/test_worker_network_run_task.py::test_healthy_launch_reserves_before_the_first_create_and_reaches_the_provider[claude]",
+  "tests/test_worker_network_run_task.py::test_healthy_launch_reserves_before_the_first_create_and_reaches_the_provider[codex]"
  ],
  "not_passed": {
   "tests/ported/test_background_processes.py::test_every_listed_spawn_goes_through_the_helper": "skipped",
@@ -19555,8 +20252,9 @@
  },
  "schema": "zeus:s11-run-evidence:1",
  "support": {
+  "tests/_audit_root.py": "71e624a5d882a72d9d5e86606bd91cdd02969085",
   "tests/_layout.py": "ca117054fa7568799cb28b9f03cb7195234186a6",
-  "tests/conftest.py": "170c3a6c2f852eba5a4d80565d3ba7acc561acf0",
+  "tests/conftest.py": "a50eb0cd48de856a6d13564f082933b50f13b4d2",
   "tests/fixtures/import_rules/n01_app_to_other_app/codex_harness/execution/application/a.py": "ed6b7b86c0d201b87b033be4efc37dca74ff9523",
   "tests/fixtures/import_rules/n01_app_to_other_app/codex_harness/review/application/decisions.py": "8efd733dfb5735308ae6dce47c8150794ee279a3",
   "tests/fixtures/import_rules/n01_app_to_other_app/expect.json": "0e55a03cf6f16edef59897596b8cdfd47350094c",
@@ -19684,12 +20382,15 @@
   "tests/fixtures/s9_x3a/proc/pressure/cpu": "a5390c07019c14b9d13d1e28a5c5bd583be28451",
   "tests/fixtures/s9_x3a/proc/pressure/io": "357026acff72f7e07ec5c1982b2ec0fd29f963c3",
   "tests/fixtures/s9_x3a/proc/pressure/memory": "866e4f5a11bc18beacd6ff58a84fb5b57b092f53",
+  "tests/fixtures/worker_network/i2-v2-producer.txt": "483a636876f3caceb73de3d0aac8375fb6448851",
+  "tests/fixtures/worker_network/observed-shapes.json": "c591300f72d2bdd2180b57118040bc44b6d9526e",
   "tests/import_rules.py": "2457e2bdee261a6e2708539846f98d8bf88a2729",
   "tests/ported/claude_protocol_child.py": "c88fd1bd5a653edf04f1a13616772efbf80ee7fd",
   "tests/ported/conftest.py": "f5551b475f0294e8647cb50c7b18d8b1ccc4a66e",
+  "tests/ported/host_delivery_maintenance_fixtures.py": "8ce2a987a4de9d1e30771195b5e1944a44746d58",
   "tests/ported/m7_containers.py": "b6a7730e08263d9c80db8a13ffd4809d2cd89b47",
-  "tests/ported/m7_coordination.py": "128cdd23bf03579de66570e78ef55c08020ab2cb",
-  "tests/ported/m7_delivery.py": "ef38e412ade45d74834e1c51bbeae78933b98be2",
+  "tests/ported/m7_coordination.py": "fd5213016a6d8db858259ebda9de767a71d68af9",
+  "tests/ported/m7_delivery.py": "976b07a969944e9dfb66cfc88246105fe694c2f2",
   "tests/ported/m7_evidence.py": "ecb4d1fd6d632763f23670212dfebc34359587d2",
   "tests/ported/m7_executor.py": "ec4421c28204c0ea4c14f5f8c63b141b7bb5d081",
   "tests/ported/m7_intake.py": "5891e45bacf0823e882799f01f468895933bc1c4",
@@ -19777,7 +20478,12 @@
   "tests/ported/test_fleet_backlog_cli.py": "ee2974e3974f8f4939d4c0e6acd8ebda519e7613",
   "tests/ported/test_fleet_cli.py": "6ed35c54d7a6bb9a299bcbb3bc0660cdebabf8a0",
   "tests/ported/test_fleet_delivery.py": "4afec1e6576b095ceab1b51ce0f7bdcdaf4e86f1",
+  "tests/ported/test_fleet_forward_candidate.py": "47ad7643e4ad7dce8277ccd99b339989260ee2f2",
   "tests/ported/test_fleet_host_migration.py": "0ae8ef121c42013385edf7c6de9db2a3ee375c6a",
+  "tests/ported/test_fleet_maintenance.py": "a2a2f253502c7998304a951fe6495b23cbcd79d7",
+  "tests/ported/test_fleet_maintenance_postgres.py": "7667422cb13d0e5af5e653fe9f6a7adde752ea69",
+  "tests/ported/test_fleet_maintenance_readiness.py": "f11b7bca40406dc9c7bb77c9014765e9dcda9898",
+  "tests/ported/test_fleet_maintenance_runner.py": "54f9b6a135577ee05f4d082a73114a9d5d384af5",
   "tests/ported/test_fleet_recovery.py": "08439824fb06fc8705eb0eed5d4f000db0337497",
   "tests/ported/test_fleet_recovery_postgres.py": "5fedf2722f81ab31a8525dc1ea14c207c515c168",
   "tests/ported/test_fleet_relocation.py": "eab5601b743c7212142fddcc5b7c49b8940150b1",
@@ -19799,6 +20505,12 @@
   "tests/ported/test_host_delivery_first_activation.py": "636255d02d435201ac8575f39f63a18b32e8e7cb",
   "tests/ported/test_host_delivery_generation_restart.py": "5f5dabeb0dea76189ad82cf8a8ffb4df2c9395d2",
   "tests/ported/test_host_delivery_lane_routing.py": "2ae005f22c18055283fadf59131d67d73986aae7",
+  "tests/ported/test_host_delivery_maintenance.py": "765bb134936a9d8297f753900216b5c45861044c",
+  "tests/ported/test_host_delivery_maintenance_adapter.py": "edb15761200139adb5ab35cadaba952758dc0657",
+  "tests/ported/test_host_delivery_maintenance_cli.py": "55a24ce463a4d72b5125306d43299d078416e2de",
+  "tests/ported/test_host_delivery_maintenance_domain.py": "2f20d898e134f5987beec160e4076293d14ad62a",
+  "tests/ported/test_host_delivery_maintenance_e2e.py": "146c622e7ec6e74d29f653589cc3ac8fa9a63c70",
+  "tests/ported/test_host_delivery_maintenance_guards.py": "b899e2b3aa28720f3b7f71173ecd2c179c9d60b1",
   "tests/ported/test_host_delivery_migration.py": "2c1c07869faf8fb5538a1d5af2a4481400014ea0",
   "tests/ported/test_host_delivery_requalification.py": "c0b62290366993b5b2120c0f86dfbf106d8baf5f",
   "tests/ported/test_host_delivery_verification.py": "7e3b6c362cb9608f5584bf1b6e5bc704fd038435",
@@ -19817,6 +20529,7 @@
   "tests/ported/test_isolated_worker_preparation.py": "ef3123442e57bdfc0c7b471216aa7aa99471bfe2",
   "tests/ported/test_local_cycle.py": "79409894a32550a4267a682d9ba1cc7305ba1631",
   "tests/ported/test_maintenance.py": "3f0759862bc65f04184c87326cb36245e611484d",
+  "tests/ported/test_maintenance_evidence.py": "9ee98cd6ab5136c3d93785ac6c2a43515760a71e",
   "tests/ported/test_managed_runtime.py": "63c189babab9563273091802086bb2d64f944413",
   "tests/ported/test_managed_systemd.py": "b341df3ac9f1672c99da479fe9e6083b7fdbf30b",
   "tests/ported/test_measurements.py": "115e3978d51d6a084270f5d881ef4010b51fc4b9",
@@ -19880,6 +20593,7 @@
   "tests/ported/test_release_environment_reverification.py": "573f3ff04cc05fa98d184dd1ad27cdb00d487b6c",
   "tests/ported/test_release_evaluator_migration.py": "a226b24e07ddaf8db7f9dae107f40092dada9baf",
   "tests/ported/test_release_health.py": "e033c6e476356d49224fc88497beb850ae89738e",
+  "tests/ported/test_release_queue_maintenance.py": "7a6ba7d3c3e094da56af2e0a8b47f4a2cabc7103",
   "tests/ported/test_release_recovery.py": "c9c08e0dbd45b83117fbc08648186f061d54a729",
   "tests/ported/test_release_reverification.py": "cd1e75f630877632615e61f98801fca67c5cc586",
   "tests/ported/test_release_runner.py": "7b5d471c282f619fe5896c42c91d5376a74b199a",
@@ -19942,22 +20656,27 @@
   "tests/ported/test_worker_sessions.py": "7320eaeaad2e4619e42ff5674b7ed96d69c4ec40",
   "tests/ported/test_workflow.py": "51f374c15ebaf8ec251f4e55bd14c9c092bac63e",
   "tests/ported/test_zeus_configuration.py": "a8562a06d9a6381e7b9517835f20e9b203d85b7e",
-  "tests/test_architecture.py": "447de953802f9070d25f86807c6c00c957bb4aa6",
+  "tests/test_architecture.py": "7d66f6a659d4dfef1330cdf9b239d4661c4cf030",
   "tests/test_architecture_doc.py": "33f56fbe6e00a4ad870fd3c803c753b2fed692b9",
-  "tests/test_ci_wiring.py": "464ad4e0da83ef79ceb836e21f3d6c1288171e76",
-  "tests/test_compare_harness.py": "d8f2b4f2c0c678f5fefb96869f2e0dd343a5a77c",
+  "tests/test_ci_wiring.py": "8efe032b20023e0da42aaa501f70fa39b6816f39",
+  "tests/test_compare_harness.py": "a9a6d793044b0c5406101e9d1c287b3ed772c06f",
   "tests/test_coordination_discovery_census_reader.py": "1168976a48c00eaf66e29fb2e28acfc5bdb3df05",
   "tests/test_coordination_research_launch_facts.py": "dd9831dd617945b08f8827102aae7097114f637f",
-  "tests/test_coverage_table.py": "1c18e422ed84b859607c85e9a9ebf0d7e46e7f14",
+  "tests/test_coverage_additions.py": "e119422e98d0574ccc030cdbc03f6fc982c5e6ee",
+  "tests/test_coverage_table.py": "548974e0a106c0cc9eabc70318819eaa20d29ff6",
+  "tests/test_cutover_rebaseline.py": "a85988149eb08939ccf370b7d93fbe21b5cf4c7f",
+  "tests/test_cutover_two_checkout.py": "1468c525272d4366ae459de37e820c95c30718e6",
   "tests/test_disposable_pg_lifecycle.py": "8cd2eda9c84a3f3caafac6acbe90cc830c8526e8",
   "tests/test_disposable_redis_lifecycle.py": "5613ad2c3f160c5152620ee71430ef75b035a5a0",
   "tests/test_effect_recorder.py": "139611bce8f7f48ad4cc564de3d478d11114df06",
+  "tests/test_fleet_admission_permit.py": "baf5e9e28ad9a1b2001739eb52e108d1f04822a3",
+  "tests/test_fleet_admission_permit_postgres.py": "2fcc73857bd10be56c7a4829d4715d3a3dc06c24",
   "tests/test_provider_guard.py": "b67f8ee48b4597a605ec8de57ffee4c7456a9353",
   "tests/test_s10_a5_1a_dead_letter_drain.py": "1df206c0695438f410c246e3ab46cf44ad31c679",
   "tests/test_s10_a5_1b_dlq.py": "6bbda1f1a57324964346d00f9c4ae3cd01d45f20",
-  "tests/test_s10_a5_2_seams.py": "5186aafb5930dcab6e50eea419397e70b9c0d7aa",
+  "tests/test_s10_a5_2_seams.py": "d874202533023a6f6c3f9e31494413d39c78cfe6",
   "tests/test_s10_a5_3_collector_spool.py": "d3cb150e39e89f77671b0fd554684012346f7116",
-  "tests/test_s10_a5_4_seams.py": "05ab8f6db8a45a5a577156204ba14f18d9c2558b",
+  "tests/test_s10_a5_4_seams.py": "ad7a01141c34ec0647f2f54bd137b667c4e862aa",
   "tests/test_s10_c1_storefree.py": "6b2074168e1356057574fe6a4da3a447a8baa211",
   "tests/test_s10_c2a_store_roots.py": "594fcaf4eb4f3dc96afac3eb3d64ea975c4b63a2",
   "tests/test_s10_c2b_hook_recovery_roots.py": "4d45c04b1b2572db0f464d844d05a67faf746b88",
@@ -19981,7 +20700,7 @@
   "tests/test_s10_c8b1_continuation.py": "499f7b9428210812008ee1fde8de25e6c83634d4",
   "tests/test_s10_c8b2_fleet.py": "a788f834687ad692854b707cee859a841091d5dd",
   "tests/test_s10_c8b3_owner_actions.py": "274004fe7b9dddcfef19047cc6064219efdcba79",
-  "tests/test_s10_c8b4_host_delivery.py": "4d31f4ce076460a11cf7864c14756e965fba2c34",
+  "tests/test_s10_c8b4_host_delivery.py": "0e7d5d0ab91e4d95bd0125baa8ea0e41bf98dc9b",
   "tests/test_s10_capacity_observer.py": "51fd3ffeba3243c4b3f5d99c9d016cbec7cc3ac9",
   "tests/test_s10_e1_entries.py": "c07c52c4a8fbae5d7296043350ac6502a7d65e08",
   "tests/test_s10_e2a_monitor.py": "00ce20756f29a337b86c5c5904566359802f5594",
@@ -20003,8 +20722,9 @@
   "tests/test_s10_t2_entries.py": "fe470c7b863167c757348116bf807d3ff38f8cb4",
   "tests/test_s10_unit_p_parser.py": "a178853e2e5c53c9c9fa39ead4982cb78d9854f5",
   "tests/test_s10_z_root_origins.py": "be8bd1dc841339175f537edaa7bdad2c0c453e37",
-  "tests/test_s11_a3_static.py": "8fe89fb6b4113967297fce7242b3539ef801ecf3",
+  "tests/test_s11_a3_static.py": "0a0042d283fcb15a6b4b08e4ec85bf5ad9f8c52c",
   "tests/test_s11_ar4_node_map.py": "961599943108ad1823a4bdd4b02922544d127025",
+  "tests/test_s11_ar4_rebaseline_map.py": "3d2e4d79d129d031dd2d7eab0367089b1bf41942",
   "tests/test_s11_atomic_units.py": "fdddeadcd897910c27c60a3f5f65a57bd2887a4a",
   "tests/test_s11_contract_citations.py": "073c79c89f1500cd06b4a61300f69ab705635762",
   "tests/test_s11_ct1.py": "7d706f7ec68585c6eb781f23fafdda09fac54226",
@@ -20019,10 +20739,11 @@
   "tests/test_s11_flowc_copy_redis.py": "a33fd6ee7e81b3271e6062eb696be01fa7c3809e",
   "tests/test_s11_l3_unit_table.py": "4ee728857f73e849447a31a18605adfd07b109e0",
   "tests/test_s11_l3d_block_exercise.py": "26828d8a30392ab4be4397df5da8e73b98d40168",
-  "tests/test_s11_l_relabel.py": "d0f43aaf2f4e70dd941830523fcb09cce67d7e7b",
+  "tests/test_s11_l_relabel.py": "1ecb9698b6002c2d4b482d9fc42568692c7e68e3",
   "tests/test_s11_p2_doc_references.py": "fc79e4eb0fa22ce1c8b15a3781a294cb44f6ccab",
   "tests/test_s11_p_check_tree.py": "c140442dfe41ce3dbfc142d5a913b10e5385b4d8",
   "tests/test_s11_p_target_copy.py": "442b163b2422029d679f89a0056164672998a334",
+  "tests/test_s11_root_dockerfile.py": "193916b05f09df44b6cef86f77bd51d7ee2691f8",
   "tests/test_s11_ru1.py": "daf6318b5d0059278446802dad43d570167ca937",
   "tests/test_s11_scripts_imports.py": "28d8bb93c9856f2dc2e9124b0896f84911bf1c7d",
   "tests/test_s11_xc10.py": "c557aae19c64489100515a069c5b019e04b50b53",
@@ -20047,7 +20768,7 @@
   "tests/test_s4_review_decisions.py": "cd7b49136f496dcbb14f38006b19fbaa9dc87f11",
   "tests/test_s4_role_examples.py": "1a34dc415eea72b3b23add9061614620a2dac81b",
   "tests/test_s4_run_task.py": "704d8e75aa4ce037ba55e1035007b08cf98da573",
-  "tests/test_s4_transports.py": "bf84a2d9d20770341ce326a4bffbed9eb8a934db",
+  "tests/test_s4_transports.py": "ad7f6d37b3eb2a774bab41458afbc2a6b92a1a36",
   "tests/test_s5_boundaries.py": "c7bb75fff168b92e11805f6386d6d3cc780c69c5",
   "tests/test_s5_research_admission.py": "4a9201587ec9b0788c192a08f2599d460aa7b0ce",
   "tests/test_s6_relocations.py": "2bdcdb60c5eb65a40d67cada67113c9b61bed173",
@@ -20135,6 +20856,8 @@
   "tests/test_s9_x4a_rules.py": "41f8f25f7f535dcef40a44bdc18df581f3158299",
   "tests/test_s9_x4b_rules.py": "279dfe4e8a29e8dc5dcf866771b62b1d3ce80726",
   "tests/test_s9_x5a_features.py": "d03da56a8aa9354262eb12d7153055bbdad36b4c",
-  "tests/test_spawn_chokepoint.py": "098ef46052858fc3bb48a474885a8538477d445d"
+  "tests/test_spawn_chokepoint.py": "098ef46052858fc3bb48a474885a8538477d445d",
+  "tests/test_worker_network_binding.py": "d6e6e882e80ec700cfadbe5a1174d2beec1c0dc5",
+  "tests/test_worker_network_run_task.py": "e8e15980422cde836fa8f64beb5be432805f079e"
  }
 }
