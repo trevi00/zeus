@@ -187,6 +187,10 @@ class Copies:
             raise Refused("unknown_copy", copy)
         if copy in self.copies:
             raise Refused("copy_exists", copy)
+        if publish:
+            raise Refused("published_port")
+        if volumes:
+            raise Refused("named_volume")
         base = self.root / copy
         sockets = {"pgsock": len("/.s.PGSQL.5432"), "redsock": len("/redis.sock")}
         for directory, tail in sockets.items():
