@@ -34,7 +34,7 @@ def test_volatile_file_still_points_at_the_unchanged_document():
 def test_importing_snapshot_and_fileroots_loads_neither_copies_nor_run_and_installs_no_guard():
     compare = str(REPO / "compare")
     code = ("import sys; sys.path.insert(0, %r)\n"
-            "import rehearsal.snapshot\n"
+            "import rehearsal.snapshot, rehearsal.fileroots\n"
             "assert 'rehearsal.copies' not in sys.modules\n"
             "assert 'rehearsal_compare_run' not in sys.modules\n"
             "assert not getattr(sys, '_zeus_rebuild_provider_guard_installed', False)\n"
