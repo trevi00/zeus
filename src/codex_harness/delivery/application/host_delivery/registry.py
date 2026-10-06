@@ -19,6 +19,7 @@ from codex_harness.delivery.application.host_delivery.state import (
     BUCKET_MIGRATIONS,
     BUCKET_PLANS,
     BUCKET_TARGETS,
+    maintenance_hold_in,
 )
 from codex_harness.delivery.domain.host_delivery import (
     AUTHORITY,
@@ -102,6 +103,10 @@ class DeliveryRegistry:
                 return True
             if intent is not None and intent.get("stage") != REGISTERED:
                 raise DeliveryRefused("delivery_in_flight", "plan_id")
+        if maintenance_hold_in(tx, plan["target_id"]) is not None:
+            # INV-HOST-DELIVERY-MAINTENANCE-001: an open (or failed) maintenance holds its target for every
+            # other registration, including a migration's own successor.
+            raise DeliveryRefused("maintenance_target_busy", "target_id")
         if first_activation_unbound(plan):
             # INV-HOST-DELIVERY-FIRST-ACTIVATION-001: a NEW plan that expects no predecessor yet says
             # `unchanged` could never resolve; only the identical, already stored plan replays above.

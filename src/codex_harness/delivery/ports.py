@@ -5,11 +5,13 @@ Context: delivery
 Owns: OWNED_BUCKETS of the delivery context (the host delivery and host migration buckets, and the release runner's `promotion_intents` and `health_probes`: in M7 only `adapters/deployment.py` writes them); the consumer-declared Protocols HostDelivery's objects call on review's
     release owner, and `WorkerProfiles` (the worker profile the host_delivery adapter reads through context's
     worker_profile adapter) and `ContainerNaming` (the owned verification container names and labels the release runner
-    asks execution's rule for). Each has at most 6 methods; the implementations (review's Releases and ReleaseQueue) are
+    asks execution's rule for), `FleetReadiness` (coordination's Fleet, read-only) and `MaintenanceLease` (review's
+    ReleaseQueue maintenance hold), both for the active-generation maintenance. Each has at most 6 methods; the implementations (review's Releases and ReleaseQueue) are
     structural and never import this module; composition wires them
 Does not own: the release rows (review), the host targets, GitHub and canary adapters (S7 adapter step)
-Entry points: OWNED_BUCKETS, ReleaseAuthority, ReleaseClaims, ReleaseSettlement, WorkerProfiles, ContainerNaming
-Contracts: INV-HOST-DELIVERY-001, INV-RELEASE-001
+Entry points: OWNED_BUCKETS, ReleaseAuthority, ReleaseClaims, ReleaseSettlement, WorkerProfiles, ContainerNaming,
+    FleetReadiness, MaintenanceLease
+Contracts: INV-HOST-DELIVERY-001, INV-RELEASE-001, INV-HOST-DELIVERY-MAINTENANCE-001
 """
 
 from __future__ import annotations
@@ -87,3 +89,26 @@ class ContainerNaming(Protocol):
     def name(self, run_id, role) -> str: ...
 
     def labels(self, run_id, role) -> list[str]: ...
+
+
+class FleetReadiness(Protocol):
+    """coordination: what an active-generation restart needs to know of the Fleet, read in one transaction and never
+    written (INV-HOST-DELIVERY-MAINTENANCE-001). Implemented structurally by coordination's Fleet pause object
+    (`FleetPause`); delivery never imports coordination, composition passes it in."""
+
+    def maintenance_readiness(self) -> dict: ...
+
+
+class MaintenanceLease(Protocol):
+    """review: the short controller hold of ONE maintenance phase over the single host controller lease
+    (INV-HOST-DELIVERY-MAINTENANCE-001). Implemented structurally by review's ReleaseQueue, kept apart from
+    `ReleaseClaims` (which stays at its release-claim methods) because no release row, attempt or generation is
+    borrowed by it."""
+
+    def hold_maintenance(self, maintenance_id, *, now=None, within=None): ...
+
+    def owned_maintenance(self, tx, claim, now=None): ...
+
+    def heartbeat_maintenance(self, claim, now=None): ...
+
+    def release_maintenance(self, claim, now=None): ...

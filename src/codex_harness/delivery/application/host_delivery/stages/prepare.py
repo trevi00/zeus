@@ -18,6 +18,7 @@ from codex_harness.delivery.domain.host_delivery import (
     BLOCKED,
     DRAIN_INTENDED,
     OUTCOME_BLOCKED,
+    OUTCOME_BUSY,
     OUTCOME_REFUSED,
     RECOVERY_FIRST_ACTIVATION,
     descriptor_digest,
@@ -48,6 +49,9 @@ class SwitchPreparation:
         running instance is not the one this delivery's own records name is a disagreement to
         reconcile (`target_instance_mismatch`), not something to switch on top of.
         """
+        if self.state.maintenance_held(plan["target_id"]):
+            # INV-HOST-DELIVERY-MAINTENANCE-001: nothing is bound or materialized on a held target.
+            return self.state.result(plan, intent, OUTCOME_BUSY, reason_code="maintenance_target_busy")
         gate = self.state.gate(plan)
         if gate["status"] not in {"verified", "active"}:
             # The incumbent checks of this candidate are the evaluator's, not this controller's.

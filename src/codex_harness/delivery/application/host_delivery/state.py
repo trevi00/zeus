@@ -52,6 +52,7 @@ from codex_harness.delivery.domain.host_delivery import (
     safe_error_type,
     stage_next_action,
 )
+from codex_harness.delivery.domain.maintenance import maintenance_hold, maintenance_open
 from codex_harness.kernel.errors import ContractError
 from codex_harness.kernel.ids import utcnow
 from codex_harness.kernel.policy import POLICY
@@ -90,6 +91,12 @@ RESUME_SECONDS = 15
 MAX_SCAN = 64
 
 
+def maintenance_hold_in(tx, target_id: str, exclude_plan_id=None):
+    """INV-HOST-DELIVERY-MAINTENANCE-001: the first intent whose open (or failed) maintenance holds `target_id`
+    (other than `exclude_plan_id`), read inside the caller's transaction, or None."""
+    return maintenance_hold(tx.scan(BUCKET_INTENTS), target_id, exclude_plan_id=exclude_plan_id)
+
+
 class AmbiguousEffect(Exception):
     """An external effect happened and the fence was gone when this controller tried to record it.
 
@@ -117,7 +124,8 @@ def predecessor_in(tx, plan: dict) -> str:
         unsettled = stage in {BLOCKED, FAILED} and other.get("descriptor") is not None \
             and not (other.get("rollback") or {}).get("verified")
         merged_verifying = stage == VERIFYING and bool(other.get("merged_revision"))
-        if stage in POST_MERGE_OPEN or unsettled or merged_verifying:
+        # INV-HOST-DELIVERY-MAINTENANCE-001: another delivery's open maintenance is in flight on the host.
+        if stage in POST_MERGE_OPEN or unsettled or merged_verifying or maintenance_open(other):
             return "in_flight"
     current = (current_row or {}).get("descriptor")
     current_sha = None if current is None else descriptor_digest(current)
@@ -449,6 +457,11 @@ class DeliveryState:
         One store read under the controller's serialization; the switch keeps its own CAS."""
         with self.store.transaction() as tx:
             return predecessor_in(tx, plan)
+
+    def maintenance_held(self, target_id: str) -> bool:
+        """One read transaction: an open (or failed) maintenance holds this target (INV-HOST-DELIVERY-MAINTENANCE-001)."""
+        with self.store.transaction() as tx:
+            return maintenance_hold_in(tx, target_id) is not None
 
     def leased(self, row: dict) -> bool:
         try:

@@ -60,6 +60,7 @@ from codex_harness.delivery.domain.host_delivery import (
     validate_first_activation,
     validate_generation_restart,
 )
+from codex_harness.delivery.domain.maintenance import maintenance_hold
 from codex_harness.kernel.errors import ContractError
 from codex_harness.kernel.ids import digest, utcnow
 
@@ -297,6 +298,8 @@ class Recovery:
     def _first_activation_host(self, plan: dict, current_row, active: dict, others: list, lock: dict) -> None:
         """No predecessor descriptor, no active deployment of this release, no other open delivery of
         the target and no running controller: a first activation replaces nothing and races nothing."""
+        if maintenance_hold(others, plan["target_id"]) is not None:
+            raise DeliveryRefused("maintenance_target_busy", "target_id")   # INV-HOST-DELIVERY-MAINTENANCE-001
         if current_row is not None:
             raise DeliveryRefused("first_activation_predecessor_present", "target_id")
         if active.get("release_id") == plan["release_id"]:
@@ -821,6 +824,8 @@ class Recovery:
 
     def _retry_host(self, plan: dict, record, active: dict, others: list, lock: dict) -> None:
         """No active pointer or promotion of this release, no competing delivery, no running controller."""
+        if maintenance_hold(others, plan["target_id"]) is not None:
+            raise DeliveryRefused("maintenance_target_busy", "target_id")   # INV-HOST-DELIVERY-MAINTENANCE-001
         if active.get("release_id") == plan["release_id"] or (record or {}).get("status") == "active":
             raise DeliveryRefused("consumption_retry_release_active", "release_id")
         for other in others:

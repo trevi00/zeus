@@ -20,6 +20,7 @@ from codex_harness.delivery.application.host_delivery.state import (
     BUCKET_MIGRATIONS,
     BUCKET_PLANS,
     LOGGER,
+    maintenance_hold_in,
     predecessor_in,
 )
 from codex_harness.delivery.domain.host_delivery import (
@@ -211,6 +212,8 @@ class DeliveryMigration:
         plan, key = row["plan"], row["plan_id"]
         if tx.get(BUCKET_PLANS, key) != row or tx.get(BUCKET_INTENTS, key) != intent:
             raise DeliveryRefused("migration_intent_changed", "old_plan_id")
+        if maintenance_hold_in(tx, plan["target_id"]) is not None:
+            raise DeliveryRefused("maintenance_target_busy", "target_id")   # INV-HOST-DELIVERY-MAINTENANCE-001
         lock = tx.get("deployment_locks", "controller") or {}
         if (lock.get("lease_until") and datetime.fromisoformat(lock["lease_until"]) > self.state.now()) \
                 or (tx.get("release_queue", plan["release_id"]) or {}).get("status") == "running":

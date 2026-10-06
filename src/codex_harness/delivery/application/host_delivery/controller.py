@@ -55,6 +55,7 @@ from codex_harness.delivery.domain.host_delivery import (
     release_gate,
     safe_error_type,
 )
+from codex_harness.delivery.domain.maintenance import maintenance_open
 from codex_harness.delivery.domain.managed_runtime import EnvironmentUnqualified
 from codex_harness.kernel.errors import ContractError
 from codex_harness.kernel.ids import utcnow
@@ -114,6 +115,10 @@ class DeliveryController:
         if (intent or {}).get("held"):
             # Defensive: `_select` never chooses a held intent; nothing is enqueued or claimed.
             return self.state.result(plan, intent, OUTCOME_BUSY, reason_code=str(intent["held"]))
+        if self.state.maintenance_held(plan["target_id"]):
+            # INV-HOST-DELIVERY-MAINTENANCE-001: BEFORE the gate and the queue, so a refused gate or a missing
+            # queue row can never halt (mutate) an intent whose target an open maintenance holds.
+            return self.state.result(plan, intent, OUTCOME_BUSY, reason_code="maintenance_target_busy")
         if not self.enabled:
             # Registration, reconciliation and projection stay available; nothing external happens.
             # S10 A5-2: the state's own Observer (if any) records the declined path.
@@ -245,6 +250,9 @@ class DeliveryController:
                     if intent.get("stage") in TARGET_BUSY_STAGES}
             reserved = {record["target_id"]: record for record in tx.scan(BUCKET_MIGRATIONS)
                         if record.get("state") in MIGRATION_RESERVING}
+            # INV-HOST-DELIVERY-MAINTENANCE-001: a target whose maintenance is open (or failed) is held for
+            # EVERY delivery of it, the maintained one included; computed once per selection.
+            maintained = {other.get("target_id") for other in intents.values() if maintenance_open(other)}
             blocked, chosen, chosen_intent, waiting = {}, None, None, None
             for index, row in enumerate(sorted(rows, key=lambda r: r["plan_id"])):
                 intent = intents.get(row["plan_id"])
@@ -257,6 +265,9 @@ class DeliveryController:
                     # evaluated or even projected as the waiting selection until its durable
                     # control acknowledgement (`finalize_migration`) clears the hold.
                     blocked[row["plan_id"]] = str(intent["held"])
+                    continue
+                if row["target_id"] in maintained:
+                    blocked[row["plan_id"]] = "maintenance_target_busy"
                     continue
                 if stage == ACTIVE or stage in STOPPED_STAGES:
                     blocked[row["plan_id"]] = stage
@@ -324,6 +335,9 @@ class DeliveryController:
     # ----- the stages -------------------------------------------------------------------------
     def _advance(self, row: dict, intent: dict, claim) -> dict:
         plan, stage = row["plan"], intent["stage"]
+        if self.state.maintenance_held(plan["target_id"]):
+            # INV-HOST-DELIVERY-MAINTENANCE-001: re-checked under the claim; no intent write, the claim defers.
+            return self.state.result(plan, intent, OUTCOME_BUSY, reason_code="maintenance_target_busy")
         if stage in {REGISTERED, AWAITING_REVIEW}:
             # An already verified (or active) release keeps today's path; a reviewed one is verified
             # by the incumbent evaluator BEFORE anything is published (INV-HOST-DELIVERY-VERIFY-001).

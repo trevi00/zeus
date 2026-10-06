@@ -1,5 +1,6 @@
 """HostDelivery (INV-HOST-DELIVERY-001), split by responsibility (DESIGN-s7 V8): state, controller,
-registry, the stage handlers (stages/*), withdrawal, resumption, recovery and migration. There is no
+registry, the stage handlers (stages/*), withdrawal, resumption, recovery, migration and, ported from S2R (G1-13a),
+the active-generation maintenance (maintenance.py, INV-HOST-DELIVERY-MAINTENANCE-001). There is no
 facade: composition (S10) wires the objects. M7 module docstring:
 
 Durable delivery of a reviewed release to an actual host target (INV-HOST-DELIVERY-001).
