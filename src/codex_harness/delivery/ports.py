@@ -99,6 +99,29 @@ class FleetReadiness(Protocol):
     def maintenance_readiness(self) -> dict: ...
 
 
+class MaintenanceFleet(Protocol):
+    """coordination: the Fleet's narrow maintenance seam for arm and bind (INV-HOST-DELIVERY-MAINTENANCE-001, INV-FLEET-001
+    maintenance amendment): readiness plus the one-job permit (`grant`/`close`) and the permit and job reads. Composition
+    builds one object over coordination's `FleetPause` and `FleetMaintenance`; delivery never imports coordination. A refusal
+    is a ContractError carrying a fixed `reason_code` and `field` (coordination's `FleetRefused`)."""
+
+    def maintenance_readiness(self) -> dict: ...
+
+    def grant_maintenance_canary(self, permit) -> dict: ...
+
+    def close_maintenance_canary(self, permit, reason: str) -> dict: ...
+
+    def maintenance_permit(self, maintenance_id: str) -> dict | None: ...
+
+    def job(self, job_id: str) -> dict | None: ...
+
+
+class CanaryExecutor(Protocol):
+    """coordination: the one-job canary executor (`MaintenanceCanaryExecutor`) a maintenance `arm` dispatches once."""
+
+    def execute(self, maintenance_id: str, *, permit_sha256: str, proof: dict, max_wait_seconds: float) -> dict: ...
+
+
 class MaintenanceLease(Protocol):
     """review: the short controller hold of ONE maintenance phase over the single host controller lease
     (INV-HOST-DELIVERY-MAINTENANCE-001). Implemented structurally by review's ReleaseQueue, kept apart from

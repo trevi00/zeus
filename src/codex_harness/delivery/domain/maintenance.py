@@ -60,6 +60,7 @@ from codex_harness.delivery.domain.host_delivery import (
     receipt_identity,
     validate_receipt,
 )
+from codex_harness.delivery.domain.host_migration_evidence import DELIVERY_CANARY
 from codex_harness.kernel.ids import digest
 
 # ----- active-generation maintenance (INV-HOST-DELIVERY-MAINTENANCE-001) -----------------------------
@@ -74,6 +75,7 @@ MAINTENANCE_ID_PREFIX = "active_generation_1:"
 MAINTENANCE_ID = re.compile(r"^active_generation_1:[0-9a-f]{64}$")
 MAINTENANCE_RESULT_SCHEMA = "urn:zeus:host-delivery-maintenance:1"
 GENERATION_OBSERVATION_SCHEMA = "urn:zeus:managed-generation-observation:1"
+CREDENTIAL_EVIDENCE_SCHEMA = "urn:zeus:maintenance-credential-evidence:1"
 MAINTENANCE_FIELDS = frozenset({"schema", "kind", "plan_id", "plan_sha256", "pin_sha256", "target_id", "release_id",
                                 "descriptor_sha256", "from", "retiring", "reason", "canary_window_seconds",
                                 "authority", "approved_by"})
@@ -123,6 +125,8 @@ OBSERVATION_WORK_FIELDS = frozenset({"state", "reason_code", "active", "unresolv
 PROCESS_STATES = frozenset({"present", "absent", "replaced", "unknown"})
 WORK_STATES = frozenset({"idle", "busy", "unknown"})
 ENTRY_FLAGS = ("parent_is_supervisor", "in_unit_cgroup", "started_before_receipt")
+CREDENTIAL_FIELDS = frozenset({"schema", "observed_at", "invocation_id", "helper_sha256", "supervisor", "entry"})
+CREDENTIAL_PROCESS_FIELDS = frozenset({"pid", "start_ticks", "has_token", "is_primary", "is_secondary"})
 UNIT_STATE = re.compile(r"^[a-z][a-z0-9-]{0,31}$")
 REASON_CODE = re.compile(r"^[A-Za-z0-9_.:-]{1,80}$")
 # The stages at which ANOTHER delivery of the same target competes with a maintenance for the host.
@@ -520,6 +524,57 @@ def new_generation_refusal(descriptor: dict, observation, generation: dict) -> t
     return None
 
 
+# The owner-action vocabulary of the canary obligation (INV-OWNER-ACTIONS-001): the identity, job id and the row
+# states a bound canary is read by, with the values and derivations of `coordination.domain.owner_actions`. Delivery must
+# not import coordination; the Fleet's own permit validation re-derives both ids and refuses a mismatch.
+OWNER_ACTION_REQUESTED = "requested"
+OWNER_ACTION_REJECTED = "rejected"
+
+
+def canary_action_id(binding: dict) -> str:
+    """`owner_actions.action_id(DELIVERY_CANARY, binding)`: the one action a canary binding names."""
+    return digest(["owner-action", DELIVERY_CANARY, binding])
+
+
+def canary_job_id(identity: str) -> str:
+    """`owner_actions.canary_job_id`: the deterministic id of the canary's one queued job."""
+    return "canary-" + identity[:24]
+
+
+def validate_credential_evidence(record, observation: dict) -> dict:
+    """The credential observation helper's safe record, bound to THIS observed generation.
+
+    Booleans only (strict: a truthy non-bool refuses), the helper's pinned digest and the process
+    identities; both the supervisor and the entry must hold a token selected as PRIMARY and not
+    SECONDARY. No token, value or credential digest is accepted or returned. Any defect is
+    `maintenance_primary_unverified` naming `record`, `supervisor` or `entry`."""
+    def refused(field: str):
+        return DeliveryRefused("maintenance_primary_unverified", field)
+
+    if not (isinstance(record, dict) and set(record) == CREDENTIAL_FIELDS and record["schema"] == CREDENTIAL_EVIDENCE_SCHEMA
+            and _aware(record["observed_at"]) is not None and _hex(record["invocation_id"], INVOCATION)
+            and _hex(record["helper_sha256"], SHA256)):
+        raise refused("record")
+    unit = (observation or {}).get("unit") or {}
+    if record["invocation_id"] != unit.get("invocation_id"):
+        raise refused("record")
+    typed = {}
+    for name in ("supervisor", "entry"):
+        part = record[name]
+        observed = (observation or {}).get(name) or {}
+        if not (isinstance(part, dict) and set(part) == CREDENTIAL_PROCESS_FIELDS and _count(part["pid"], 1)
+                and _count(part["start_ticks"]) and all(type(part[key]) is bool
+                                                        for key in ("has_token", "is_primary", "is_secondary"))):
+            raise refused(name)
+        if part["pid"] != observed.get("pid") or part["start_ticks"] != observed.get("start_ticks"):
+            raise refused(name)
+        if not (part["has_token"] is True and part["is_primary"] is True and part["is_secondary"] is False):
+            raise refused(name)
+        typed[name] = {key: part[key] for key in sorted(CREDENTIAL_PROCESS_FIELDS)}
+    return {"schema": CREDENTIAL_EVIDENCE_SCHEMA, "observed_at": record["observed_at"],
+            "invocation_id": record["invocation_id"], "helper_sha256": record["helper_sha256"], **typed}
+
+
 def selection_of(observation: dict) -> dict:
     """The unit's source-selection provenance: the digest of its environment files and its drop-in count."""
     unit = (observation or {}).get("unit") or {}
@@ -527,7 +582,7 @@ def selection_of(observation: dict) -> dict:
             "drop_in_count": unit.get("drop_in_count")}
 
 
-__all__ = ["COMPETING_STAGES", "GENERATION_ARMED", "GENERATION_BOUND", "GENERATION_FAILED", "GENERATION_LAUNCHED",
+__all__ = ["COMPETING_STAGES", "OWNER_ACTION_REJECTED", "OWNER_ACTION_REQUESTED", "canary_action_id", "canary_job_id", "CREDENTIAL_EVIDENCE_SCHEMA", "GENERATION_ARMED", "GENERATION_BOUND", "GENERATION_FAILED", "GENERATION_LAUNCHED",
            "GENERATION_OBSERVATION_SCHEMA", "GENERATION_REQUESTED", "GENERATION_STARTED", "GENERATION_STATES",
            "GENERATION_TRANSITIONS", "INVOCATION", "MAINTENANCE_CODES", "MAINTENANCE_FAILURE_CODES",
            "MAINTENANCE_FIELDS", "MAINTENANCE_FROM_FIELDS", "MAINTENANCE_ID", "MAINTENANCE_ID_PREFIX",
@@ -536,5 +591,6 @@ __all__ = ["COMPETING_STAGES", "GENERATION_ARMED", "GENERATION_BOUND", "GENERATI
            "NEXT_PHASE", "RESTART_LAUNCH", "RESTART_RECOGNIZED", "RESTART_REPLACE", "classify_restart",
            "competing_intent", "fleet_ready_refusal", "generation_id", "maintenance_applicable", "maintenance_hold",
            "maintenance_of", "maintenance_open", "maintenance_transition", "maintenance_view",
-           "new_generation_refusal", "selection_of", "validate_active_generation", "validate_generation_observation",
+           "new_generation_refusal", "selection_of", "validate_active_generation", "validate_credential_evidence",
+           "validate_generation_observation",
            "validate_restart_authority"]

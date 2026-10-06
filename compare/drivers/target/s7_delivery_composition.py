@@ -13,7 +13,8 @@ are normalized once, so every object shares the same mapping, as M7's one attrib
 
 S2R maintenance (G1-13a, INV-HOST-DELIVERY-MAINTENANCE-001): the `maintenance` object (`DeliveryMaintenance`) owns
 `maintain` and `maintain_restart`; its `lease` is the one queue, and `authorities`, `artifacts`, `canary_records`
-and `maintenance_fleet` are the injected ports, all absent by default - as `tests/ported/m7_delivery.py` builds it.
+`credentials`, `maintenance_fleet`, `canary_executor` and `qualification_deadline` are the injected ports (the last three are PR-3's, G1-14b),
+all absent by default - as `tests/ported/m7_delivery.py` builds it.
 """
 
 import inspect
@@ -83,7 +84,8 @@ SHARED = {"github": ("github",), "hosts": ("hosts",), "canaries": ("canaries",),
           "evaluator_pins": ("evaluator_pins",), "controller_code": ("controller_code",),
           "resume_seconds": ("resume_seconds",), "org": ("org",), "store": ("store",),
           "authorities": ("authorities",), "artifacts": ("artifacts",), "canary_records": ("canary_records",),
-          "maintenance_fleet": ("maintenance_fleet",)}
+          "credentials": ("credentials",), "maintenance_fleet": ("maintenance_fleet",),
+          "canary_executor": ("canary_executor",), "qualification_deadline": ("qualification_deadline",)}
 
 
 def releases_for(store, org):
@@ -100,7 +102,8 @@ class HostDelivery:
     def __init__(self, store, org=None, *, github=None, hosts=None, canaries=None, clock=utcnow, observer=None,
                  enabled=False, releases=None, queue=None, resume_seconds=delivery_state.RESUME_SECONDS,
                  verifier=None, evaluator_pins=None, controller_code=None, first_activation=None, authorities=None,
-                 artifacts=None, canary_records=None, maintenance_fleet=None):
+                 artifacts=None, canary_records=None, credentials=None, maintenance_fleet=None,
+                 canary_executor=None, qualification_deadline=None):
         queue = queue if queue is not None else queue_for(store)
         values = {"store": store, "org": org, "github": github, "hosts": hosts or {}, "canaries": canaries or {},
                   "clock": clock, "observer": observer, "enabled": enabled,
@@ -110,7 +113,8 @@ class HostDelivery:
                   "evaluator_pins": evaluator_pins, "controller_code": controller_code,
                   "first_activation": first_activation, "ticket_binding": tickets.ticket_binding,
                   "authorities": authorities, "artifacts": artifacts, "canary_records": canary_records,
-                  "maintenance_fleet": maintenance_fleet}
+                  "credentials": credentials, "maintenance_fleet": maintenance_fleet,
+                  "canary_executor": canary_executor, "qualification_deadline": qualification_deadline}
         objects = {}
         for key, cls in OBJECTS:
             params = [p for p in inspect.signature(cls.__init__).parameters if p not in ("self", "store")]

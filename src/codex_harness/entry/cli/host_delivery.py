@@ -21,7 +21,7 @@ from pathlib import Path
 from codex_harness.delivery.domain.host_delivery import WITHDRAW_REASONS
 
 # The operator phases of INV-HOST-DELIVERY-MAINTENANCE-001, spelled as the domain spells them.
-MAINTAIN_PHASES = ("restart",)  # arm/bind: the named remainder of PR-3 (ALL-PRIMARY-20260930)
+MAINTAIN_PHASES = ("restart", "arm", "bind")
 # A refusal field is printed only when it is a fixed identifier of a maintenance refusal: never a value.
 REFUSAL_FIELD = re.compile(r"^[a-z][a-z0-9_.]{0,63}$")
 # The typed `maintain` result keys (INV-HOST-DELIVERY-MAINTENANCE-001); the CLI prints nothing else.
@@ -76,8 +76,9 @@ def add_parser(commands) -> None:
                          "managed_fleet_systemd delivery (INV-HOST-DELIVERY-MAINTENANCE-001); read-only with "
                          "--check; takes no token, credential or command arguments")
     maintain.add_argument("--phase", required=True, choices=MAINTAIN_PHASES,
-                          help="restart (replace the recorded incumbent under the controller hold and record the "
-                               "new generation, not re-qualified); arm and bind are not in this release")
+                          help="restart (replace the recorded incumbent), arm (the new instance's owner canary "
+                               "obligation and its one admitted job) or bind (consumption after its accepted "
+                               "canary); each is a separate owner step")
     maintain.add_argument("--document", required=True,
                           help="The typed maintenance document (urn:zeus:host-delivery-active-generation:1); "
                                "the same document is replayed for every phase")
