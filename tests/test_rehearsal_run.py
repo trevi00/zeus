@@ -206,7 +206,7 @@ def test_plan_json_names_the_run_identities_root_labels_images_and_tool_digests_
     assert plan["run8"] == RUN8 and plan["root"] == str(root) and plan["identities"] == IDENTITIES
     assert plan["labels"] == [f"zeus.rehearsal.run={RUN8}"]
     assert plan["images"]["worker"].endswith("9" * 64) and "@sha256:" in plan["images"]["postgres"]
-    assert "rehearsal/run.py" in plan["tool_sha256"] and "rehearsal/volatile.json" in plan["tool_sha256"]
+    assert "compare/rehearsal/run.py" in plan["tool_sha256"] and "compare/rehearsal/volatile.json" in plan["tool_sha256"]
     assert all(len(v) == 64 for v in plan["tool_sha256"].values())
     for name in ("plan.json", "run-start.json", "steps.jsonl", "run-exit.json", "SHA256SUMS"):
         assert stat.S_IMODE(os.stat(ev / name).st_mode) == 0o600, name

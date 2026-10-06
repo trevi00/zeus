@@ -30,8 +30,8 @@ from collections.abc import Callable, Sequence
 from dataclasses import dataclass
 from pathlib import Path
 
-from . import Refused, check_run8
-from .copies import COMPARE, COPY_NAMES, PG_IMAGE, REDIS_IMAGE, RUN_LABEL, VOLATILE_FILE
+from . import Refused, check_run8, fileroots
+from .copies import COMPARE, COPY_NAMES, PG_IMAGE, REDIS_IMAGE, RUN_LABEL
 from .evidence import Evidence, _utc_now, write_record
 from .phase_p import HEARTBEAT, MONITORING
 
@@ -79,10 +79,14 @@ def _sha(data: bytes) -> str:
 
 
 def tool_sha256s(paths: Sequence[Path] | None = None) -> dict[str, str]:
-    """`{name: sha256}` of the rehearsal tools (every `compare/rehearsal/*.py`, the volatile list and the guard)."""
+    """`{repo-relative path: sha256}` of the tool identity (D13): every `compare/rehearsal/**/*.py` and `*.json` at its top,
+    the guard, and the seven aibox_data files P5 imports (`fileroots.AIBOX_FILES`)."""
+    repo = COMPARE.parent
     if paths is None:
-        paths = [*sorted((COMPARE / "rehearsal").glob("*.py")), VOLATILE_FILE, COMPARE / "guard" / "provider_guard.py"]
-    return {Path(p).relative_to(COMPARE).as_posix(): _sha(Path(p).read_bytes()) for p in paths}
+        rehearsal = COMPARE / "rehearsal"
+        paths = [*sorted(rehearsal.rglob("*.py")), *sorted(rehearsal.glob("*.json")), COMPARE / "guard" / "provider_guard.py",
+                 *(repo / rel for rel in fileroots.AIBOX_FILES)]
+    return {Path(p).relative_to(repo).as_posix(): _sha(Path(p).read_bytes()) for p in paths}
 
 
 def check_identities(identities: dict) -> dict:

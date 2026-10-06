@@ -374,3 +374,16 @@ def test_validate_targets_admits_the_stand_in_srv_and_refuses_production_or_fore
     (scratch / "link").symlink_to(fake_prod)
     monkeypatch.setattr(fileroots, "SRV", str(fake_prod))
     refused(scratch / "link", "production_path")
+
+
+# ---- the plan's tool identity (D13) ----
+
+def test_the_tool_identity_covers_every_rehearsal_file_the_guard_and_the_seven_aibox_data_files():
+    from rehearsal.run import tool_sha256s
+
+    got = tool_sha256s()
+    for key in ("compare/rehearsal/r5_drivers/a.py", "compare/rehearsal/volatile.json", "compare/rehearsal/fileroots.py",
+                "compare/guard/provider_guard.py"):
+        assert key in got, key
+    assert sorted(k for k in got if k.startswith(("scripts/", "src/"))) == sorted(fileroots.AIBOX_FILES) and len(fileroots.AIBOX_FILES) == 7
+    assert all(len(v) == 64 and set(v) <= set("0123456789abcdef") for v in got.values())
