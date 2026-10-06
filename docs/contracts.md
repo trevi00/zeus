@@ -4019,6 +4019,18 @@ record stays failed. The contract is:
 - Removal of the temporary directory is recorded truthfully. A cleanup failure is kept as recorded debt and never
   turns a failure into a pass; the existing container removal is unchanged.
 
+The root `Dockerfile` builds the release CLI-canary image consumed by `cli_start` and `cli_file_task`: the pinned
+Codex CLI on `python:3.13-slim-bookworm`, root as the default user and `codex` as the entrypoint. It is never an
+agent image (U6(b)) and never a worker image (`Dockerfile.worker`, INV-ISOLATED-WORKER-001). Four dormant consumers of
+the release `images` record must NOT run against it: `composition/supervisor.py` (`HARNESS_AGENT_IMAGE`, the legacy
+`--profile agents`, retired by U6(b)), `research/adapters/source_execution.py` (`--entrypoint /usr/bin/timeout`, which
+also needs a workspace and tools the image does not hold), the `delivery/adapters/deployment.py` `monitor()`
+probe (`--entrypoint codex … --version`) and `scripts/verify_failed_canary.py`. Two facts about those consumers: the
+`monitor()` probe's `codex --version` is satisfied by the image's own build assertion (`codex --version | grep -Fx`
+and the `/usr/local/bin/codex` link), and whether `/usr/bin/timeout` is present in `python:3.13-slim-bookworm`
+(coreutils is an Essential Debian package, but no built image was observed) is unverified until the owner build
+(G2-R2). This paragraph is a contract addition.
+
 ## INV-RELEASE-ENVIRONMENT-REVERIFY-001
 
 This is the one supported re-verification of a REJECTED EVALUATOR-MIGRATED successor (INV-RELEASE-EVALUATOR-MIGRATION-001)
