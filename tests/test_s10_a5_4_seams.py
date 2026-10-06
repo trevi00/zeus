@@ -139,7 +139,8 @@ def test_the_controller_tick_emits_once_per_claim_and_nothing_for_a_busy_release
         controller._advance = lambda *args: {"claim": "unsettled", "outcome": "progressed"}
         state.unclaimed = lambda plan: "controller_lease_held"
         state.result = lambda *args, **kwargs: {"outcome": kwargs.get("reason_code") or args[2]}
-        return controller._act({"plan": {"plan": {"plan_id": "p1", "release_id": "r1"}}, "intent": {"stage": "x"}})
+        plan = {"plan_id": "p1", "release_id": "r1", "target_id": "t1"}  # G1-13a: the hold reads the target; none is open
+        return controller._act({"plan": {"plan": plan}, "intent": {"stage": "x"}})
 
     recorder, observer = observed()
     claimed = tick(row, observer)

@@ -254,19 +254,21 @@ def test_a_disabled_host_delivery_controller_emits_through_the_state_observer():
     sentinel = object()
 
     def act(observer):
-        state = SimpleNamespace(observer=observer, result=lambda *args, **kwargs: (args, kwargs))
+        state = SimpleNamespace(observer=observer, result=lambda *args, **kwargs: (args, kwargs),
+                                maintenance_held=lambda target_id: False)  # G1-13a: no open maintenance holds t1
         controller = DeliveryController(MemoryStore(), enabled=False, state=state)
-        return controller._act({"plan": {"plan": {"plan_id": "d1"}}, "intent": {"stage": sentinel}})
+        return controller._act({"plan": {"plan": {"plan_id": "d1", "target_id": "t1"}}, "intent": {"stage": sentinel}})
 
     recorder, observer = observed()
     with_observer, without = act(observer), act(None)
     assert with_observer[1] == without[1] and with_observer[0][2:] == without[0][2:]
     assert only(recorder) == declined("host_delivery", "disabled")
     enabled_recorder, enabled_observer = observed()
-    state = SimpleNamespace(observer=enabled_observer, gate=lambda plan: (_ for _ in ()).throw(RuntimeError("stop")))
+    state = SimpleNamespace(observer=enabled_observer, gate=lambda plan: (_ for _ in ()).throw(RuntimeError("stop")),
+                            maintenance_held=lambda target_id: False)
     with pytest.raises(RuntimeError):
         DeliveryController(MemoryStore(), enabled=True, state=state)._act(
-            {"plan": {"plan": {"plan_id": "d1"}}, "intent": {"stage": "x"}})
+            {"plan": {"plan": {"plan_id": "d1", "target_id": "t1"}}, "intent": {"stage": "x"}})
     assert enabled_recorder.events == []  # an enabled controller declines nothing
 
 

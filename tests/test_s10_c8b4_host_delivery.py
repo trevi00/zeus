@@ -131,7 +131,8 @@ def test_the_entry_calls_only_tabled_owners():
     execute = next(node for node in ast.walk(tree) if isinstance(node, ast.FunctionDef) and node.name == "_execute")
     owners = {node.attr for node in ast.walk(execute) if isinstance(node, ast.Attribute)
               and isinstance(node.value, ast.Name) and node.value.id == "delivery"}
-    assert owners <= {"withdrawal", "resumption", "recovery", "controller", "verification"}
+    # G1-13a: `maintain` routes to the S2R maintenance owner (INV-HOST-DELIVERY-MAINTENANCE-001).
+    assert owners <= {"withdrawal", "resumption", "recovery", "controller", "verification", "maintenance"}
 
 
 # ----- controller ---------------------------------------------------------------------------------------------------------------------

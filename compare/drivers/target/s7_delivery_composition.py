@@ -10,6 +10,10 @@ journal, research's hook rollback, and the scripted clock/id ports.
 M7's `HostDelivery` held ONE value per collaborator, so a case that replaces one (`delivery.github = None`,
 `delivery.hosts = {}`, `delivery._emit = racing`) replaces it in every object that holds it; `hosts` and `canaries`
 are normalized once, so every object shares the same mapping, as M7's one attribute did.
+
+S2R maintenance (G1-13a, INV-HOST-DELIVERY-MAINTENANCE-001): the `maintenance` object (`DeliveryMaintenance`) owns
+`maintain` and `maintain_restart`; its `lease` is the one queue, and `authorities`, `artifacts`, `canary_records`
+and `maintenance_fleet` are the injected ports, all absent by default - as `tests/ported/m7_delivery.py` builds it.
 """
 
 import inspect
@@ -21,6 +25,7 @@ from codex_harness.coordination.application import execution_fence
 from codex_harness.coordination.application.events import EventJournal
 from codex_harness.delivery.application.host_delivery import state as delivery_state
 from codex_harness.delivery.application.host_delivery.controller import DeliveryController
+from codex_harness.delivery.application.host_delivery.maintenance import DeliveryMaintenance
 from codex_harness.delivery.application.host_delivery.migration import DeliveryMigration
 from codex_harness.delivery.application.host_delivery.recovery import Recovery
 from codex_harness.delivery.application.host_delivery.registry import DeliveryRegistry
@@ -60,21 +65,25 @@ OBJECTS = (("state", DeliveryState), ("registry", DeliveryRegistry), ("verificat
            ("publication", Publication), ("ci", CiObservation), ("merging", Merge),
            ("preparation", SwitchPreparation), ("draining", Drain), ("switching", Switch), ("rollback", Rollback),
            ("consumption", Consumption), ("controller", DeliveryController), ("withdrawal", Withdrawal),
-           ("resumption", Resumption), ("recovery", Recovery), ("migration", DeliveryMigration))
+           ("resumption", Resumption), ("recovery", Recovery), ("migration", DeliveryMigration),
+           ("maintenance", DeliveryMaintenance))
 ROUTES = {"register_targets": "registry", "register": "registry", "approval": "registry", "plan": "registry",
           "status": "registry", "tick": "controller", "withdraw": "withdrawal", "resume": "resumption",
           "resume_first_activation": "recovery", "resume_consumption_retry": "recovery",
           "resume_consumption_rearm": "recovery", "resume_generation_restart": "recovery",
+          "maintain": "maintenance", "maintain_restart": "maintenance",
           "stage_migration": "migration", "require_controller_code": "migration",
           "register_migration_plan": "migration", "finalize_migration": "migration"}
 # The M7 private helpers the common cases use (`_emit` is also replaced by a race case): their DeliveryState names.
 PRIVATE = {"_emit": "emit", "_deadline": "deadline"}
 # M7 attribute -> the objects' parameter names holding it
 SHARED = {"github": ("github",), "hosts": ("hosts",), "canaries": ("canaries",), "verifier": ("verifier",),
-          "releases": ("releases",), "queue": ("claims", "settlement"), "observer": ("observer",),
+          "releases": ("releases",), "queue": ("claims", "settlement", "lease"), "observer": ("observer",),
           "enabled": ("enabled",), "clock": ("clock",), "first_activation": ("first_activation",),
           "evaluator_pins": ("evaluator_pins",), "controller_code": ("controller_code",),
-          "resume_seconds": ("resume_seconds",), "org": ("org",), "store": ("store",)}
+          "resume_seconds": ("resume_seconds",), "org": ("org",), "store": ("store",),
+          "authorities": ("authorities",), "artifacts": ("artifacts",), "canary_records": ("canary_records",),
+          "maintenance_fleet": ("maintenance_fleet",)}
 
 
 def releases_for(store, org):
@@ -90,14 +99,18 @@ def queue_for(store):
 class HostDelivery:
     def __init__(self, store, org=None, *, github=None, hosts=None, canaries=None, clock=utcnow, observer=None,
                  enabled=False, releases=None, queue=None, resume_seconds=delivery_state.RESUME_SECONDS,
-                 verifier=None, evaluator_pins=None, controller_code=None, first_activation=None):
+                 verifier=None, evaluator_pins=None, controller_code=None, first_activation=None, authorities=None,
+                 artifacts=None, canary_records=None, maintenance_fleet=None):
         queue = queue if queue is not None else queue_for(store)
         values = {"store": store, "org": org, "github": github, "hosts": hosts or {}, "canaries": canaries or {},
                   "clock": clock, "observer": observer, "enabled": enabled,
                   "releases": releases if releases is not None else releases_for(store, org),
-                  "claims": queue, "settlement": queue, "resume_seconds": resume_seconds, "verifier": verifier,
+                  "claims": queue, "settlement": queue, "lease": queue, "resume_seconds": resume_seconds,
+                  "verifier": verifier,
                   "evaluator_pins": evaluator_pins, "controller_code": controller_code,
-                  "first_activation": first_activation, "ticket_binding": tickets.ticket_binding}
+                  "first_activation": first_activation, "ticket_binding": tickets.ticket_binding,
+                  "authorities": authorities, "artifacts": artifacts, "canary_records": canary_records,
+                  "maintenance_fleet": maintenance_fleet}
         objects = {}
         for key, cls in OBJECTS:
             params = [p for p in inspect.signature(cls.__init__).parameters if p not in ("self", "store")]
