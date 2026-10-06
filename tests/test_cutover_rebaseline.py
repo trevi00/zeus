@@ -555,3 +555,37 @@ def test_entry_two_a_modified_delta_file_is_foreign(tmp_path):
     report = module.check_tree(root=clone, baseline=base)
     assert report["ok"] is False
     assert report["foreign_reference_paths"] == [f"{entry['archive_root']}/{target}"]
+
+
+def _no_caller_git_config(monkeypatch):
+    # The TI/CI child environment: no global or system git configuration (no core.autocrlf from ~/.gitconfig).
+    monkeypatch.setenv("GIT_CONFIG_GLOBAL", "/dev/null")
+    monkeypatch.setenv("GIT_CONFIG_NOSYSTEM", "1")
+
+
+def test_filtered_blob_ids_follow_the_bases_own_gitattributes_not_the_callers_config(monkeypatch, tmp_path):
+    """CUT-INT int63: `_blob_ids(filters=True)` normalises a CRLF `*.ps1` through the base's `.gitattributes`, so the
+    result equals the LF blob with no caller configuration (it used to depend on ~/.gitconfig core.autocrlf)."""
+    _no_caller_git_config(monkeypatch)
+    (tmp_path / ".gitattributes").write_text("* text=auto eol=lf\n*.ps1 text eol=crlf\n")
+    (tmp_path / "a.ps1").write_bytes(b"Write-Host hi\r\nexit 0\r\n")
+    lf_blob = subprocess.run(["git", "hash-object", "--no-filters", "--stdin"], input=b"Write-Host hi\nexit 0\n",
+                             check=True, capture_output=True).stdout.decode().strip()
+    run = _run_module()
+    assert run._blob_ids(tmp_path, ["a.ps1"], filters=True) == {"a.ps1": lf_blob}
+    assert run._blob_ids(tmp_path, ["a.ps1"]) != {"a.ps1": lf_blob}  # without filters the CRLF bytes are hashed as-is
+
+
+def test_the_overlay_proof_names_only_the_swapped_path_without_caller_git_config(monkeypatch, tmp_path):
+    """CUT-INT int63: the differing-overlay refusal under the TI/CI environment names exactly the swapped delta path,
+    with no `.ps1` line-ending noise from the extracted SOURCE archive."""
+    _no_caller_git_config(monkeypatch)
+    entry = _baseline()["approved_rebaselines"][0]
+    archive_base = tmp_path / "archive"
+    shutil.copytree(REPO / entry["archive_root"], archive_base / entry["archive_root"])
+    swapped = "src/codex_harness/adapters/host_delivery.py"
+    (archive_base / entry["archive_root"] / swapped).write_bytes(
+        subprocess.run(["git", "show", f"{entry['parent_source']}:{swapped}"], cwd=REPO, check=True,
+                       capture_output=True).stdout)
+    facts = _run_module().prepare_rebaseline(ENTRY_ID, scratch=tmp_path / "scratch", archive_base=archive_base)
+    assert facts["overlay_matches_tree"] is False and facts["differing_paths"] == [swapped], facts

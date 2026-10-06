@@ -275,11 +275,24 @@ def prepare() -> dict:
 def _blob_ids(base: Path, paths: list[str], filters: bool = False) -> dict[str, str]:
     """Blob ids of the files under `base` (`git hash-object`, no object writes; a symlink hashes its link text).
     `filters=True` hashes through the tree's own `.gitattributes` clean filters."""
-    flag = [] if filters else ["--no-filters"]
     files = [p for p in paths if not (base / p).is_symlink()]
-    ids = dict(zip(files, subprocess.run(
-        ["git", "hash-object", *flag, "--stdin-paths"], cwd=base, check=True, capture_output=True,
-        text=True, input="".join(p + "\n" for p in files)).stdout.split())) if files else {}
+    ids = {}
+    if files and not filters:
+        ids = dict(zip(files, subprocess.run(
+            ["git", "hash-object", "--no-filters", "--stdin-paths"], cwd=base, check=True, capture_output=True,
+            text=True, input="".join(p + "\n" for p in files)).stdout.split()))
+    elif files:
+        # CUT-INT int63 (owner): in a directory that is not a repository `git hash-object` ignores `base`'s own
+        # .gitattributes and only the CALLER's core.autocrlf normalised the CRLF `*.ps1` files, so the overlay proof
+        # passed with the operator's ~/.gitconfig (autocrlf=input) and failed in the TI/CI child environment. Hash
+        # through a throwaway git dir with `base` as the work tree, so `base/.gitattributes` decides, and pin
+        # core.autocrlf=false so no caller configuration does.
+        with tempfile.TemporaryDirectory(prefix="zeus-blob-ids-") as git_dir:
+            subprocess.run(["git", "init", "-q", "--bare", git_dir], check=True, capture_output=True)
+            ids = dict(zip(files, subprocess.run(
+                ["git", "-c", "core.autocrlf=false", "--git-dir", git_dir, "--work-tree", str(base), "hash-object",
+                 "--stdin-paths"], cwd=base, check=True, capture_output=True, text=True,
+                input="".join(p + "\n" for p in files)).stdout.split()))
     for p in paths:
         if (base / p).is_symlink():
             ids[p] = subprocess.run(["git", "hash-object", "--no-filters", "--stdin"], check=True, capture_output=True,
