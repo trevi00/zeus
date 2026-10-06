@@ -200,8 +200,11 @@ def redis_facts(socket: Path, prefixes=None) -> tuple[dict, dict, list[str]]:
     return _redis_coverage(Path(socket), prefixes)
 
 
-def collect(copy, b_release, database: str, *, prefixes=None) -> dict:
-    """The D0 facts of `copy` (a `copies.Copy`); `facts["failures"]` is empty exactly when the record passes."""
+def collect(copy, b_release, database: str, *, prefixes=None, bracket=None) -> dict:
+    """The D0 facts of `copy` (a `copies.Copy`); `facts["failures"]` is empty exactly when the record passes.
+
+    `bracket` (RH-1b, `bracket.bracket`) is the d0a/d0b verdict; it is recorded as `facts.bracket` and D0 must BE d0a: a
+    bracket whose d0a digest is not this copy's catalog fails the record. A skew is declared, not a failure."""
     from codex_harness.delivery.adapters.host_migration import catalog_digest, pg_catalog
     from codex_harness.delivery.domain.host_migration import catalog_schemas
 
@@ -260,7 +263,9 @@ def collect(copy, b_release, database: str, *, prefixes=None) -> dict:
     after = catalog_digest(pg_catalog(dsn, database))
     if after != before:
         failures.append("copy_changed_during_read")
-    return {"database": database, "b_release": Path(b_release).name, "catalog_sha256": before,
+    if bracket is not None and bracket["catalog_sha256"]["d0a"] != before:
+        failures.append("bracket_d0a_is_not_this_copy")
+    facts = {"database": database, "b_release": Path(b_release).name, "catalog_sha256": before,
             "catalog_sha256_after": after, "read_only": after == before, "schemas_exported": exported,
             "schemas_without_documents": without, "schema_totals": schema_totals, "buckets": buckets,
             "knowledge": knowledge, "migrations": migrations, "redis_dbs": redis_dbs,
@@ -268,13 +273,17 @@ def collect(copy, b_release, database: str, *, prefixes=None) -> dict:
             "hooks": {"documents_present": bool(exported), "active": hooks.get("active", 0),
                       "by_status": dict(sorted(hooks.items()))},
             "argv_modules": argv_modules, "argv_unresolved": unresolved, "failures": sorted(failures)}
+    if bracket is not None:
+        facts["bracket"] = bracket
+    return facts
 
 
-def record_d0(copy, b_release, out, *, database: str, prefixes=None, clock=_utc_now) -> dict:
+def record_d0(copy, b_release, out, *, database: str, prefixes=None, bracket=None, clock=_utc_now) -> dict:
     """Write `out/d0.json` for `copy` and return the record; raise `D0Failed` (after writing it) on any failure.
 
-    `prefixes` replaces the derived Redis prefix list (tests only: it proves the DBSIZE coverage check)."""
-    facts = collect(copy, b_release, database, prefixes=prefixes)
+    `prefixes` replaces the derived Redis prefix list (tests only: it proves the DBSIZE coverage check). `bracket` is the
+    d0a/d0b verdict of `bracket.py`, stored under `facts.bracket`."""
+    facts = collect(copy, b_release, database, prefixes=prefixes, bracket=bracket)
     out = Path(out)
     out.mkdir(parents=True, exist_ok=True)
     document = {"at": clock(), "status": "failed" if facts["failures"] else "ok", "facts": facts}

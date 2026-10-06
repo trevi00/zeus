@@ -489,3 +489,108 @@ def test_the_sweep_leaves_no_labelled_container_and_no_root_and_spares_a_one_lab
     gone = cp.guarded_docker(["inspect", "--format", "{{.Id}}", control])
     assert gone.returncode != 0
     assert sweep(run8, world.root) == {"removed": 0, "residue": [], "root_removed": True}
+
+
+# ---- RH-1b: the closed, evidence-derived volatile list and its fail-closed snapshot ----
+# Expected results: RH-8's review ("RH integration must supply the actual paths, stable-subtree verification and declared
+# skew") and the rehearsal design R1 file roots. The observed names are the two read-only listings of 2026-10-06 (60 s
+# apart): `runtime/control/monitoring.json`, new `runtime/control/observations/health/<id>.json` files and
+# `runtime/managed-fleet/heartbeat.json` changed.
+
+OBSERVED_CHANGING = ("runtime/control/monitoring.json", "runtime/control/observations/health/0123456789abcdef.json",
+                     "runtime/managed-fleet/heartbeat.json")
+
+
+def volatile_fixture(tmp_path):
+    src = tmp_path / "prod"
+    for rel, text in (("runtime/control/monitoring.json", "m0"), ("runtime/managed-fleet/heartbeat.json", "h0"),
+                      ("runtime/control/observations/health/a.json", "a0"), ("runtime/tokobs/ledger.sqlite3", "t0"),
+                      ("runtime/control/stable.json", "s0"), ("runtime/lanes/harness/x.txt", "x0"),
+                      ("managed-fleet/runtimes/r1/file", "r0")):
+        path = src / rel
+        path.parent.mkdir(parents=True, exist_ok=True)
+        path.write_text(text, encoding="ascii")
+    return src
+
+
+def test_every_observed_changing_path_is_in_the_closed_list():
+    for path in OBSERVED_CHANGING:
+        assert cp._covered(path, cp.VOLATILE_PATHS), path
+    assert cp.undeclared_changes({}, {p: (1, 1) for p in OBSERVED_CHANGING}) == []
+    assert cp._covered("runtime/tokobs/ledger.sqlite3", cp.EXCLUDED_PATHS)
+
+
+def test_each_volatile_entry_cites_a_writer_that_resolves_in_its_r0_tree():
+    document = cp.load_volatile()
+    assert set(document["r0_revisions"]) == {"5aa220fd", "ced20281", "08bb9a44", "1b9d746c", "5c67f099"}
+    for entry in document["volatile"]:
+        assert entry["writers"], entry["path"]
+        for writer in entry["writers"]:
+            shown = subprocess.run(["git", "show", f"{writer['rev']}:{writer['file']}"], cwd=REPO, capture_output=True,
+                                   text=True)
+            assert shown.returncode == 0, f"{writer['rev']}:{writer['file']} does not resolve"
+            lines = shown.stdout.splitlines()
+            assert 1 <= writer["line"] <= len(lines) and writer["text"] in lines[writer["line"] - 1], (entry["path"], writer)
+    assert {e["path"] for e in document["volatile"]} == set(cp.VOLATILE_PATHS)
+
+
+def test_an_entry_without_a_writer_citation_is_refused(tmp_path):
+    document = cp.load_volatile()
+    document["volatile"][0]["writers"] = []
+    bad = tmp_path / "volatile.json"
+    bad.write_text(json.dumps(document), encoding="utf-8")
+    with pytest.raises(Refused) as info:
+        cp.load_volatile(bad)
+    assert info.value.code == "volatile_entry_bad"
+
+
+def test_an_undeclared_changing_path_refuses_volatile_undeclared(tmp_path):
+    src = volatile_fixture(tmp_path)
+
+    def rewrite_a_stable_file():
+        (src / "runtime/control/stable.json").write_text("s1-changed", encoding="ascii")
+
+    with pytest.raises(Refused) as info:
+        cp.snapshot_volatile(src, tmp_path / "dst", during=rewrite_a_stable_file)
+    assert info.value.code == "volatile_undeclared" and "runtime/control/stable.json" in info.value.detail
+    # a new file and a vanished file are changes too
+    with pytest.raises(Refused) as info:
+        cp.snapshot_volatile(src, tmp_path / "dst2", during=lambda: (src / "runtime/lanes/harness/new.txt").write_text("n"))
+    assert info.value.code == "volatile_undeclared" and "runtime/lanes/harness/new.txt" in info.value.detail
+    with pytest.raises(Refused) as info:
+        cp.snapshot_volatile(src, tmp_path / "dst3", during=lambda: (src / "managed-fleet/runtimes/r1/file").unlink())
+    assert info.value.code == "volatile_undeclared"
+
+
+def test_a_declared_path_changing_during_the_snapshot_is_snapshotted_once_and_an_excluded_one_is_skipped(tmp_path, monkeypatch):
+    src, dst = volatile_fixture(tmp_path), tmp_path / "dst"
+    reads = []
+    original = cp.Path.read_bytes
+
+    def counting(self):
+        reads.append(self.name)
+        return original(self)
+
+    def writers():
+        (src / "runtime/control/monitoring.json").write_text("m1-after-the-read", encoding="ascii")
+        (src / "runtime/managed-fleet/heartbeat.json").write_text("h1-after-the-read", encoding="ascii")
+        (src / "runtime/control/observations/health/b.json").write_text("b", encoding="ascii")
+        (src / "runtime/tokobs/ledger.sqlite3").write_text("t1-excluded", encoding="ascii")
+
+    monkeypatch.setattr(cp.Path, "read_bytes", counting)
+    manifest = cp.snapshot_volatile(src, dst, during=writers)
+    assert reads.count("monitoring.json") == 1 and reads.count("heartbeat.json") == 1 and reads.count("a.json") == 1
+    assert (dst / "runtime/control/monitoring.json").read_text() == "m0"  # the single read, before the change
+    assert not (dst / "runtime/control/observations/health/b.json").exists()
+    assert not (dst / "runtime/tokobs").exists() and manifest["excluded"] == ["runtime/tokobs"]
+    stable = manifest["stable"]
+    assert stable["unchanged"] and stable["sha256"] == stable["sha256_after"] and stable["files"] == 3  # stable.json, x.txt, r1/file
+
+
+def test_the_stable_digest_covers_only_stable_files_and_moves_when_one_changes(tmp_path):
+    src = volatile_fixture(tmp_path)
+    first = cp.scan_tree(src)
+    (src / "runtime/control/monitoring.json").write_text("m-different-length", encoding="ascii")
+    assert cp.stable_sha256(cp.scan_tree(src)) == cp.stable_sha256(first)
+    (src / "runtime/control/stable.json").write_text("longer-stable", encoding="ascii")
+    assert cp.stable_sha256(cp.scan_tree(src)) != cp.stable_sha256(first)
