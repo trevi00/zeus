@@ -14,8 +14,7 @@ import pytest
 from _layout import REPO
 
 sys.path.insert(0, str(REPO / "compare"))
-from rehearsal import Refused  # noqa: E402
-from rehearsal import cl2  # noqa: E402
+from rehearsal import Refused, cl2  # noqa: E402
 
 RUN8 = "9a8b7c6d"
 FACTS = {"Id": "i1", "StartedAt": "t1", "RestartCount": 0, "diff_sha256": "d1"}
