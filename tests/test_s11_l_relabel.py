@@ -1230,3 +1230,33 @@ def test_a_flow_with_no_listed_item_is_not_verified(tree):
     out, _ = run([flow(evidence=())], tree)
     assert out["flow:a traced flow"]["status"] == "designed"
     assert has_unmet(out["flow:a traced flow"], "no passing executable item")
+
+
+def test_addition_contract_requires_registry_and_behavioural_citation(tree):
+    c, bundle = cited_by(tree, BEHAVIOURAL_NODE)
+    c.update(kind='addition', key='addition:delivery/contract/INV-X-001', intent='addition:owner')
+    unknown = dict(c, key='addition:delivery/contract/INV-Z-001')
+    uncited = dict(c, key='addition:delivery/contract/INV-Y-001')
+    out, _ = run([c, unknown, uncited], tree, bundle)
+    assert out[c['key']]['status'] == 'verified'
+    assert 'cites:INV-X-001' in out[c['key']]['verification']['passed']
+    assert has_unmet(out[unknown['key']], 'contract not in docs/contracts.md')
+    assert has_unmet(out[uncited['key']], 'no passing target test cites the contract')
+    c, bundle = cited_by(tree, STRUCTURAL_NODE)
+    c.update(kind='addition', key='addition:delivery/contract/INV-X-001', intent='addition:owner')
+    out, _ = run([c], tree, bundle)
+    assert has_unmet(out[c['key']], 'cited only by structural nodes')
+
+
+def test_real_addition_contract_passes_registry_and_citation_rule():
+    ledger = json.loads((ROOT / 'coverage/ledger-coverage.json').read_text())
+    r = next(r for r in ledger['rows'] if r['key'] ==
+             'addition:delivery/contract/INV-HOST-DELIVERY-MAINTENANCE-001')
+    bundle = json.loads((ROOT / 'coverage/run-evidence.json').read_text())
+    engine = relabel.Relabel(ROOT, bundle)
+    status, verification = engine.evaluate(r)
+    assert engine.symbol(r)[0]
+    assert 'cites:INV-HOST-DELIVERY-MAINTENANCE-001' in verification.get('passed', [])
+    assert not any('contract not in' in u or 'test cites the contract' in u
+                   for u in verification.get('unmet', []))
+    assert status in {'implemented', 'verified'}

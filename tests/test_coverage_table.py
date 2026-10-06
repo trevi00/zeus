@@ -23,8 +23,9 @@ TABLE = ROOT / "coverage" / "ledger-coverage.json"
 PINNED = {"module": 289, "contract": 91, "cli_node": 152, "console_script": 5, "module_entry": 36,
           "http_route": 10, "resource": 33, "capability": 10, "bucket": 169, "flow": 5,
           "public_api": 1769,
-          "addition": 25}  # S9 D4 additive rows, no SOURCE counterpart: X1a 12 (DESIGN-s9-X §1); X1b-1 catalog_observer,
+          "addition": 40}  # S9 D4 additive rows, no SOURCE counterpart: X1a 12 (DESIGN-s9-X §1); X1b-1 catalog_observer,
 #                            X2a bucket + 3 modules (§2.2), X3a resource_facts (§3), X4a rules + runbook (§4),
+# CUT-INT rule 7 adds 15 S2R/PR-3/FA rows.
 #                            X2c queue_facts (§2.4), X5a feature_registry (§5.1), G3 redis_stream_facts, X4b rules + runbook
 
 
@@ -264,3 +265,13 @@ def test_the_regeneration_check_compares_the_generated_skeleton_and_still_sees_s
     removed["rows"] = [r for r in removed["rows"] if r["kind"] == generate.ADDITION or r is not removed["rows"][0]]
     assert generate.skeleton(removed) != base
     assert not generate.MAINTAINED_FIELDS & {"key", "kind", "layer", "trace", "untraced", "intent", "candidate"}
+
+
+def test_table_contracts_and_addition_contracts_cover_the_registry(table):
+    from test_architecture import contract_ids
+
+    ids = {r['key'][len('contract:'):] for r in table['rows'] if r['kind'] == 'contract'}
+    ids.update(r['key'].split('/contract/', 1)[1] for r in table['rows']
+               if r['kind'] == 'addition' and '/contract/' in r['key'])
+    assert ids == contract_ids()
+    assert len(ids) == 92

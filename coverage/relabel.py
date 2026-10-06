@@ -1140,8 +1140,8 @@ class Relabel:
         kind, syms = row["kind"], [sym]
         s0 = sym.split(" (")[0].strip()
         t = self.tree
-        if kind == "contract":
-            cid = row["key"][len("contract:"):]
+        if kind == "contract" or re.fullmatch(r"addition:[^/]+/contract/[^/]+", row["key"]):
+            cid = row["key"].split("/contract/", 1)[1] if kind == "addition" else row["key"][len("contract:"):]
             return (cid in self.ids, f"contract not in docs/contracts.md: {cid}")
         if kind == "console_script":
             name = row["key"][len("script:"):]
@@ -1261,8 +1261,8 @@ class Relabel:
             else:
                 unmet.append(f"single-writer node did not pass: {SINGLE_WRITER_NODE}")
                 blocking = True
-        elif kind == "contract":
-            cid = row["key"][len("contract:"):]
+        elif kind == "contract" or re.fullmatch(r"addition:[^/]+/contract/[^/]+", row["key"]):
+            cid = row["key"].split("/contract/", 1)[1] if kind == "addition" else row["key"][len("contract:"):]
             scopes = self.cites.get(cid, [])
             exec_exist = exec_exist or bool(scopes)
             behavioural, structural = self.passing_nodes(scopes)
