@@ -372,6 +372,18 @@ def test_worker_create_refuses_every_option_container_args_never_composes(worker
     assert refused(worker.argv(base[0], *extra, *base[1:])), extra
 
 
+@pytest.mark.parametrize("network", ["bridge", "host", "container:x", "my-net", ""])
+def test_worker_create_refuses_a_network_other_than_none(worker, network):
+    assert refused(worker.argv(*create_args(network=network)))
+
+
+def test_worker_create_refuses_a_security_option_other_than_no_new_privileges(worker):
+    args = create_args()
+    for option in ("seccomp=unconfined", "apparmor=unconfined", "no-new-privileges=false", "label=disable"):
+        assert refused(worker.argv(*[option if a == "no-new-privileges" else a for a in args])), option
+    assert not refused(worker.argv(*args))
+
+
 @pytest.mark.parametrize("user", ["0", "root", "0:0", "0:1000", "root:root", ""])
 def test_worker_create_refuses_a_root_user(worker, user):
     assert refused(worker.argv(*create_args(user=user)))
@@ -411,6 +423,21 @@ def test_worker_create_refuses_a_missing_or_foreign_label(worker):
                                   "zeus-worker-" + RUN_ID.upper(), "zeus-worker-" + RUN_ID + "-x"])
 def test_worker_create_refuses_a_name_that_is_not_zeus_role_runid(worker, name):
     assert refused(worker.argv(*[name if a == WORKER_NAME else a for a in create_args()]))
+
+
+@pytest.mark.parametrize("role,run_id", [("prod", "postgres"), ("test", "fixture"), ("worker", "x"),
+                                         ("Worker", RUN_ID), ("worker", "0" * 33), ("a1", RUN_ID)])
+def test_worker_create_refuses_a_name_outside_the_owned_container_rule_even_with_matching_labels(worker, role, run_id):
+    assert refused(worker.argv(*create_args(role=role, run_id=run_id)))
+
+
+def test_worker_create_refuses_a_bind_mount_that_is_not_type_bind_even_under_the_root(worker):
+    args = create_args(source=worker.bind / "ws")
+    bind = next(a for a in args if a.startswith("--mount") or a.startswith("type=bind"))
+    for replacement in ("type=volume", "type=tmpfs", "type=npipe"):
+        assert refused(worker.argv(*[a.replace("type=bind", replacement) for a in args])), replacement
+    assert bind and not refused(worker.argv(*args))
+    assert refused(worker.argv(*[a.replace("type=bind,", "") for a in args]))
 
 
 def test_worker_create_image_must_be_exactly_an_admitted_immutable_id(worker, monkeypatch):
