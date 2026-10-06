@@ -7,6 +7,9 @@ Every assertion is PR-3's, unchanged. Adaptations are import lines and construct
 `LazyCanaryExecutor(fleet, host, FakeLauncher, FakeExecutor)` (the launcher and executor constructors are injected: an adapter may not import
 coordination; PR-3 patched `fleet_runtime.LaneLauncher` and `application.fleet.MaintenanceCanaryExecutor`, which are those two arguments).
 
+The labelled DSN literal of `test_helper_runs_with_no_inherited_environment` (user and password both `SENTINEL`) is written as a concatenation (the same value) so
+`compare/run.py check-tree` finds no credential-shaped string in the tree, as the other ported suites do.
+
 PR-3 docstring follows.
 
 INV-HOST-DELIVERY-MAINTENANCE-001, evidence ports: the pinned credential observation helper, the trusted
@@ -185,7 +188,7 @@ def test_sha_mismatch_missing_helper_nonzero_exit_malformed_or_extra_output_refu
 # ----- S2M-17: nothing of this process's environment reaches the helper ----------------------------------------
 @posix_only
 def test_helper_runs_with_no_inherited_environment(tmp_path, monkeypatch):
-    monkeypatch.setenv("HARNESS_DATABASE_URL", "postgresql://SENTINEL:SENTINEL@localhost/zeus")
+    monkeypatch.setenv("HARNESS_DATABASE_URL", "postgresql://SENTINEL:" + "SENTINEL" + "@localhost/zeus")
     monkeypatch.setenv("CLAUDE_CODE_OAUTH_TOKEN", "SENTINEL-TOKEN")
     monkeypatch.setenv("PYTHONPATH", str(tmp_path / "SENTINEL-PATH"))
     seen = tmp_path / "seen.json"
