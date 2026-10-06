@@ -8,7 +8,8 @@ Does not own: the maintenance use case (`application/host_delivery/maintenance.p
 intent and its projection (`host_delivery.py`: `maintenance_of`, `maintenance_view`), the host adapters
 Entry points: validate_active_generation, generation_id, maintenance_applicable, classify_restart,
 new_generation_refusal, fleet_ready_refusal, validate_generation_observation, maintenance_hold
-Contracts: INV-HOST-DELIVERY-MAINTENANCE-001
+Contracts: INV-HOST-DELIVERY-001
+(Contract label INV-HOST-DELIVERY-MAINTENANCE-001: its text in docs/contracts.md lands with G1-13 batch b, so the `Contracts:` line above cannot resolve it yet.)
 
 Ported from main b9d8f15 (S2R, reviewed) `domain/host_delivery.py` (the hunks after M7 e38aa722); the bodies are S2R's.
 The generation state names, `maintenance_of`, `maintenance_open` and `maintenance_view` stay in `host_delivery.py`

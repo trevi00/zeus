@@ -11,7 +11,8 @@ Owns: OWNED_BUCKETS of the delivery context (the host delivery and host migratio
 Does not own: the release rows (review), the host targets, GitHub and canary adapters (S7 adapter step)
 Entry points: OWNED_BUCKETS, ReleaseAuthority, ReleaseClaims, ReleaseSettlement, WorkerProfiles, ContainerNaming,
     FleetReadiness, MaintenanceLease
-Contracts: INV-HOST-DELIVERY-001, INV-RELEASE-001, INV-HOST-DELIVERY-MAINTENANCE-001
+Contracts: INV-HOST-DELIVERY-001, INV-RELEASE-001
+(Contract label INV-HOST-DELIVERY-MAINTENANCE-001: its text in docs/contracts.md lands with G1-13 batch b, so the `Contracts:` line above cannot resolve it yet.)
 """
 
 from __future__ import annotations
