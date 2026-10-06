@@ -23,22 +23,24 @@ from pathlib import Path
 
 HERE = Path(__file__).resolve().parent
 ROOT = HERE.parent
+sys.path.insert(0, str(HERE))
+from layout import TARGET_DIR, TARGET_PREFIX  # noqa: E402  (the one layout constant per tool; DESIGN-s11 §20.5)
 M7_IDS = HERE / "m7-node-ids.txt"
 OUT = HERE / "test-node-map.json"
 
 # R-M3: the 4 nodes of M7 tests/test_architecture.py, each mapped to the named target node(s) enforcing the same rule.
 ARCHITECTURE = {
     "tests/test_architecture.py::test_inner_layers_do_not_import_adapters_or_sdk": {
-        "targets": ["target/tests/test_architecture.py::test_target_tree_has_no_violation_and_no_exception"],
+        "targets": [TARGET_PREFIX + "tests/test_architecture.py::test_target_tree_has_no_violation_and_no_exception"],
         "reason": "target layer rule: import_rules.check over target/src (domain/application never reach adapters or SDKs)"},
     "tests/test_architecture.py::test_invariant_comments_resolve_to_contract_registry": {
-        "targets": ["target/tests/test_s11_ar4_node_map.py::test_invariant_comments_resolve_to_contract_registry"],
+        "targets": [TARGET_PREFIX + "tests/test_s11_ar4_node_map.py::test_invariant_comments_resolve_to_contract_registry"],
         "reason": "no pre-existing target test checked @invariant comments (finding); the same check is retargeted at target/src"},
     "tests/test_architecture.py::test_tests_assert_behavior_not_source_text": {
-        "targets": ["target/tests/test_s11_fa009.py::test_tests_assert_behavior_not_source_text"],
+        "targets": [TARGET_PREFIX + "tests/test_s11_fa009.py::test_tests_assert_behavior_not_source_text"],
         "reason": "FA-009 detector retargeted at target/tests"},
     "tests/test_architecture.py::test_wiring_detector_has_positive_and_negative_controls": {
-        "targets": ["target/tests/test_s11_fa009.py::test_wiring_detector_has_positive_and_negative_controls"],
+        "targets": [TARGET_PREFIX + "tests/test_s11_fa009.py::test_wiring_detector_has_positive_and_negative_controls"],
         "reason": "FA-009 detector controls retargeted at target/tests"},
 }
 # R-M4: PREP-S11 §9 #3. Emptied by DESIGN-s11 §7 R-S4: wsl_port_probe and claude_real_call are ported to target/scripts,
@@ -61,8 +63,8 @@ def read_m7_ids(path: Path = M7_IDS) -> list[str]:
 def collect_target_ids() -> list[str]:
     """Target collection at the working tree, IDs prefixed `target/` (nodeids are relative to `target/`)."""
     done = subprocess.run(["uv", "run", "--frozen", "pytest", "--collect-only", "-q", "-p", "no:cacheprovider", "tests"],
-                          cwd=ROOT / "target", capture_output=True, text=True, check=True)
-    return sorted("target/" + x for x in done.stdout.splitlines() if "::" in x)
+                          cwd=ROOT / TARGET_DIR, capture_output=True, text=True, check=True)
+    return sorted(TARGET_PREFIX + x for x in done.stdout.splitlines() if "::" in x)
 
 
 def build(m7_ids: list[str], target_ids: list[str]) -> dict[str, dict]:
@@ -71,7 +73,7 @@ def build(m7_ids: list[str], target_ids: list[str]) -> dict[str, dict]:
     bad: list[str] = []
     for node in m7_ids:
         file = node.partition("::")[0]
-        twin = "target/tests/ported/" + node[len("tests/"):]
+        twin = TARGET_PREFIX + "tests/ported/" + node[len("tests/"):]
         if file in PENDING_FILES:
             result[node] = {"kind": "pending_root_script", "reason": PENDING_REASON}
         elif node in ARCHITECTURE:
