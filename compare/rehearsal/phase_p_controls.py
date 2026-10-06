@@ -1,8 +1,9 @@
-"""Cutover RH-2b (owner-run, NOT a pytest test): real-docker controls for Phase P over labelled stand-ins, plus CL2 post.
+"""Cutover RH-2b (owner-run, NOT a pytest test): real-docker controls for Phase P over labelled stand-ins.
 
 The test guard admits none of the forms these controls need (`docker diff`, `exec touch`, `restart`, a volume mount), and
 it is not widened: the owner runs this module once, recorded, as AC2 evidence. It spawns docker through `phase_p.Host`
-and `copies.Copies`, never under the pytest audit hook. Pytest drives only its refusal logic and sequencing (stubs).
+and imports no guard-installing module (`copies`, `sweep`, `r5_drivers`, `run.py`: RH-2c, D-RH2-RUNNER-GUARD); the
+CL2 disposable-copy controls are a guarded fixture test (tests/test_rehearsal_cl2_controls.py), not part of this runner. Pytest drives only its refusal logic and sequencing (stubs).
 
 Stand-ins are `zeus-test-fixture-rh-<run8>-prod-{pg,redis}` and the volume `...-prod-redisdata`, labelled
 `zeus.test.fixture=1` and `zeus.rehearsal.standin=<run8>` (NOT the run label: a run-labelled container that is not a Phase P
@@ -11,7 +12,7 @@ before any effect, unless its name matches that pattern; the production names ar
 
 Controls (each its own stand-ins, torn down by name and proven absent): positive; docker_diff (a file planted in the
 stand-in pg before P4); redis_write_during_copy (a bounded writer on the stand-in Redis while P3's helper copies);
-restart (the stand-in pg restarted before P4); paused_false; cl2_clean; cl2_planted_nonce. Outcomes are step, reason and
+restart (the stand-in pg restarted before P4); paused_false. Outcomes are step, reason and
 booleans only.
 
 usage (cwd compare/): python3 -m rehearsal.phase_p_controls RUN8 SCRATCH_DIR OUT_JSON   (SCRATCH_DIR and OUT_JSON must not exist;
@@ -28,14 +29,13 @@ import sys
 import time
 from pathlib import Path
 
-from . import Refused, check_run8, cl2
+from . import Refused, check_run8
 from . import phase_p as pp
-from .copies import PG_IMAGE, PRODUCTION_PREFIX, REDIS_IMAGE, Copies, create_root, pg_dsn, provider_guard
-from .sweep import sweep
+from .constants import PG_IMAGE, PRODUCTION_PREFIX, REDIS_IMAGE, create_root, provider_guard
 
 STANDIN_LABEL = "zeus.rehearsal.standin"
 NAME = re.compile(r"^zeus-test-fixture-rh-([0-9a-f]{8})-prod-(pg|redis|redisdata)$")
-CONTROLS = ("positive", "docker_diff", "redis_write_during_copy", "restart", "paused_false", "cl2_clean", "cl2_planted_nonce")
+CONTROLS = ("positive", "docker_diff", "redis_write_during_copy", "restart", "paused_false")
 EXPECTED = {
     "positive": {"step": "P4", "reason": "ok"},
     "docker_diff": {"step": "P4", "reason": "docker_diff_changed"},
@@ -44,8 +44,6 @@ EXPECTED = {
     "paused_false": {"step": "P0", "reason": "not_paused_or_not_quiet"},
 }
 PSQL = ["psql", "-U", "zeus", "-h", "/var/run/postgresql", "-XAtq", "-v", "ON_ERROR_STOP=1"]
-MANIFEST_SH = ("cd /src && find . -type f | LC_ALL=C sort | while IFS= read -r f; do printf '%s %s %s %s\\n' \"$f\" "
-               "\"$(stat -c %s \"$f\")\" \"$(stat -c %Y \"$f\")\" \"$(sha256sum \"$f\" | cut -d' ' -f1)\"; done")
 
 
 def standin_targets(run8: str, scratch) -> pp.Targets:
@@ -81,7 +79,6 @@ class StandIns:
         self.targets = targets or standin_targets(run8, scratch)
         validate_targets(self.targets, run8, scratch)  # before any effect
         self.writer = None
-        self.nonce_planted = False
 
     def docker(self, *args, timeout=120):
         return self.host.run(["docker", *args], timeout=timeout)
@@ -142,10 +139,6 @@ class StandIns:
     def restart(self) -> None:
         need("restart", self.docker("restart", self.targets.pg, timeout=120))
 
-    def write_nonce(self) -> None:
-        self.sql(f"INSERT INTO rh_ctl VALUES ('{cl2.nonce(self.run8)}-planted')", "zeus_aibox")
-        self.nonce_planted = True
-
     def start_writer(self) -> None:
         """A bounded writer (about 5 s at most) on the stand-in Redis; its docker client's pid is the only one stopped."""
         self.writer = subprocess.Popen(["docker", "exec", self.targets.redis, "redis-cli", "-r", "5000", "-i", "0.001",
@@ -165,14 +158,6 @@ class StandIns:
                                   capture_output=True, text=True, timeout=300)
         need("pg_restore -l", done)
         return [line for line in done.stdout.splitlines() if not line.startswith(";")]
-
-    def redis_manifest(self) -> dict:
-        done = self.docker("run", "--rm", "--network", "none", *pp.helper_labels(self.run8), "--name",
-                           pp.helper_name(self.run8, "redis-post"), "--mount",
-                           f"type=volume,src={self.targets.redis_volume},dst=/src,readonly,volume-nocopy", "--entrypoint",
-                           "bash", REDIS_IMAGE, "-c", MANIFEST_SH, timeout=300)
-        need("redis manifest", done)
-        return pp.parse_manifest(done.stdout, "CL2", "post")
 
     # -- teardown --
     def remove(self) -> dict:
@@ -232,15 +217,10 @@ def classify(code: int, rec: dict) -> dict:
     return {"step": "?", "reason": "unclassified"}
 
 
-def default_systemctl(argv):
-    return subprocess.run(argv, capture_output=True, text=True, timeout=60)
-
-
 class Runner:
-    def __init__(self, host, run8: str, scratch, *, stand_factory=StandIns, cl2_runner=None, systemctl=default_systemctl):
+    def __init__(self, host, run8: str, scratch, *, stand_factory=StandIns):
         self.host, self.run8, self.scratch = host, check_run8(run8), Path(scratch)
-        self.stand_factory, self.systemctl = stand_factory, systemctl
-        self.cl2_runner = cl2_runner or self.real_cl2
+        self.stand_factory = stand_factory
 
     def phase(self, work: Path, stand, plan):
         root, evidence = work / "root", work / "evidence"
@@ -259,27 +239,6 @@ class Runner:
                 "helpers_settled": rec.get("helpers_before") == {"removed": 0, "residue": []}
                 and rec.get("helpers_after") == {"removed": 0, "residue": []}}
 
-    def real_cl2(self, phase, stand, root: Path, rec: dict) -> dict:
-        import psycopg
-
-        docker = lambda *args, timeout=120: self.host.run(["docker", *args], timeout=timeout)  # noqa: E731
-        p0 = next(s for s in rec["steps"] if s["step"] == "P0")
-        p0_redis = pp.parse_manifest((root / "p" / "redis-meta" / "before").read_text(), "CL2", "p0")
-        dump = phase.dump("zeus_aibox", "dpost")
-        if not dump["ok"]:
-            return {"ok": False, "failed": ["d_post_dump"], "checks": {}}
-        copies = Copies(self.run8, root)
-        copy = copies.start("D")
-        copies.restore("D", "zeus_aibox.dpost.dump", "zeus_aibox")
-
-        def count():
-            with psycopg.connect(pg_dsn(copy.pg_socket, "zeus_aibox")) as conn:
-                return cl2.count_nonce(conn, self.run8)
-
-        return cl2.post(self.run8, p0=p0, p0_redis=p0_redis, gate_now=lambda: phase.gate("CL2"),
-                        redis_now=stand.redis_manifest, nonce_count=count,
-                        sweep_now=lambda: sweep(self.run8, docker=docker), runner=self.systemctl)
-
     def control(self, name: str) -> dict:
         work = self.scratch / name
         stand = self.stand_factory(self.host, self.run8, work)
@@ -289,7 +248,7 @@ class Runner:
             if name == "paused_false":
                 stand.set_paused(False)
             plan = name if name in ("docker_diff", "redis_write_during_copy", "restart") else None
-            phase, code, rec = self.phase(work, stand, plan)
+            _phase, code, rec = self.phase(work, stand, plan)
             outcome = classify(code, rec)
             steps = [s["step"] for s in rec["steps"]]
             root = work / "root"
@@ -300,14 +259,6 @@ class Runner:
             elif name == "paused_false":
                 facts = {"no_acquisition": steps == ["P0"] and not (root / "p" / "redis").exists()
                          and not list((root / "p").glob("*.dump"))}
-            elif name.startswith("cl2_"):
-                if outcome != EXPECTED["positive"]:
-                    facts = {"phase_p_failed": True}
-                else:
-                    if name == "cl2_planted_nonce":
-                        stand.write_nonce()
-                    post = self.cl2_runner(phase, stand, root, rec)
-                    facts = {"cl2_ok": post["ok"], "cl2_failed": post["failed"]}
             matched = self.judge(name, outcome, facts)
         except Exception as exc:  # bounded: the type only
             matched, facts = False, {**facts, "error": type(exc).__name__}
@@ -316,10 +267,6 @@ class Runner:
 
     @staticmethod
     def judge(name: str, outcome: dict, facts: dict) -> bool:
-        if name.startswith("cl2_"):
-            want_ok = name == "cl2_clean"
-            return outcome == EXPECTED["positive"] and facts.get("cl2_ok") is want_ok and (
-                facts.get("cl2_failed") == ([] if want_ok else ["nonce_rows"]))
         return outcome == EXPECTED[name] and all(v is True for v in facts.values())
 
     def run_all(self) -> dict:

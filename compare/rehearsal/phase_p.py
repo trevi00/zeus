@@ -40,7 +40,7 @@ from dataclasses import dataclass
 from pathlib import Path
 
 from . import Refused, check_run8
-from .copies import PRODUCTION_PREFIX, RUN_LABEL, create_root, provider_guard
+from .constants import PRODUCTION_PREFIX, RUN_LABEL, create_root, provider_guard
 
 PG, REDIS = "zeus-aibox-postgres", "zeus-aibox-redis"
 REDIS_VOLUME = "zeus-aibox-redisdata"

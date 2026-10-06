@@ -3,7 +3,9 @@
 Layer: harness tooling tests (never shipped). The real-docker controls are NOT pytest tests (the test guard admits none of
 their forms and is not widened); the owner runs the runner once, recorded. Here: the refusal logic (every target must be
 this run's labelled stand-in; production names refused before any effect), the shape of the commands that create the
-stand-ins, and the control sequencing/outcome judgement through the `Host` stub with a recording fake stand-in.
+stand-ins, and the control sequencing/outcome judgement through the `Host` stub with a recording fake stand-in. RH-2c adds the
+no-guard-bypass contract: the runner's import chain installs no audit hook (the CL2 controls live in
+tests/test_rehearsal_cl2_controls.py, guarded).
 Expected outcomes come from the spec's Examples and What 2 (step/reason per control), written literally below.
 """
 
@@ -73,10 +75,6 @@ class FakeStand(pc.StandIns):
     def stop_writer(self):
         self.events.append("stop_writer")
 
-    def write_nonce(self):
-        self.events.append("write_nonce")
-        self.nonce_planted = True
-
     def toc(self, dump_path):
         return ["entry"]
 
@@ -85,14 +83,10 @@ class FakeStand(pc.StandIns):
         return dict(ABSENT)
 
 
-def fake_cl2(phase, stand, root, rec):
-    return {"ok": not stand.nonce_planted, "failed": ["nonce_rows"] if stand.nonce_planted else [], "checks": {}}
-
-
 def runner(tmp_path):
     FakeStand.registry = []
     host = ControlHostStub()
-    return pc.Runner(host, RUN8, tmp_path / "scratch", stand_factory=FakeStand, cl2_runner=fake_cl2), host
+    return pc.Runner(host, RUN8, tmp_path / "scratch", stand_factory=FakeStand), host
 
 
 def test_every_control_reaches_its_expected_step_and_reason_and_each_tears_down(tmp_path):
@@ -103,8 +97,7 @@ def test_every_control_reaches_its_expected_step_and_reason_and_each_tears_down(
                    "docker_diff": {"step": "P4", "reason": "docker_diff_changed"},
                    "redis_write_during_copy": {"step": "P3", "reason": "redis_bracket_unequal"},
                    "restart": {"step": "P4", "reason": "container_restarted"},
-                   "paused_false": {"step": "P0", "reason": "not_paused_or_not_quiet"},
-                   "cl2_clean": {"step": "P4", "reason": "ok"}, "cl2_planted_nonce": {"step": "P4", "reason": "ok"}}
+                   "paused_false": {"step": "P0", "reason": "not_paused_or_not_quiet"}}
     assert result["all_matched"] and [r["control"] for r in result["controls"]] == list(pc.CONTROLS)
     assert all(r["teardown"] == ABSENT and s.events[0] == "create" and s.events[-1] == "remove"
                for r, s in zip(result["controls"], FakeStand.registry))
@@ -131,13 +124,6 @@ def test_the_redis_write_control_stops_before_p2b_and_paused_false_acquires_noth
     assert by["redis_write_during_copy"]["facts"] == {"stopped_before_p2b": True}
     assert by["paused_false"]["facts"] == {"no_acquisition": True}
     assert by["positive"]["facts"] == {"dumps_equal": True, "redis_bracket_identical": True, "helpers_settled": True}
-
-
-def test_cl2_controls_pass_clean_and_fail_exactly_the_nonce_check_when_planted(tmp_path):
-    run, _ = runner(tmp_path)
-    by = {r["control"]: r for r in run.run_all()["controls"]}
-    assert by["cl2_clean"]["facts"] == {"cl2_ok": True, "cl2_failed": []}
-    assert by["cl2_planted_nonce"]["facts"] == {"cl2_ok": False, "cl2_failed": ["nonce_rows"]}
 
 
 @pytest.mark.parametrize("control", ["docker_diff", "redis_write_during_copy", "restart"])
@@ -242,3 +228,38 @@ def test_remove_names_only_the_stand_ins_and_proves_absence_by_label(tmp_path):
     assert removals == [["docker", "rm", "-f", "-v", stand.targets.pg], ["docker", "rm", "-f", "-v", stand.targets.redis],
                         ["docker", "volume", "rm", "-f", stand.targets.redis_volume]]
     assert [f"label={pc.STANDIN_LABEL}={RUN8}" in c for c in host.calls[-2:]] == [True, True]
+
+
+# ---- RH-2c: the runner never imports a guard-installing module (D-RH2-RUNNER-GUARD) ----
+
+def _fresh(code: str) -> str:
+    done = subprocess.run([sys.executable, "-B", "-c", code], cwd=REPO / "compare", capture_output=True, text=True, timeout=120)
+    assert done.returncode == 0, done.stderr[-400:]
+    return done.stdout.strip()
+
+
+def test_importing_the_runner_installs_no_audit_hook_and_loads_no_guard_installer():
+    """Behavioural, in a fresh interpreter: the runner (and phase_p) leave the provider guard uninstalled."""
+    probe = ("import sys; hooks=[]; sys.addaudithook(lambda e, a: None)\n"
+             "from guard import provider_guard as g\n"
+             "before = g.installed()\n"
+             "import rehearsal.phase_p_controls, rehearsal.phase_p\n"
+             "print(before, g.installed(), sorted(m for m in sys.modules if m in "
+             "('rehearsal.copies', 'rehearsal.sweep', 'rehearsal_compare_run')))")
+    assert _fresh(probe) == "False False []"
+
+
+def test_the_guard_installing_path_is_the_control_here_importing_copies_does_install_it():
+    """Positive control for the probe above: the same probe over `rehearsal.copies` reports the guard installed."""
+    probe = ("from guard import provider_guard as g\nimport rehearsal.copies\nprint(g.installed())")
+    assert _fresh(probe) == "True"
+
+
+def test_the_guard_free_constants_equal_the_copies_values_they_stand_in_for():
+    """STRUCTURAL (drift contract): constants.py mirrors run.py's image pins (it cannot import run.py) and `copies` re-exports it."""
+    from rehearsal import constants as k
+    from rehearsal import copies as cp
+
+    assert (k.PG_IMAGE, k.REDIS_IMAGE) == (cp.PG_IMAGE, cp.REDIS_IMAGE)
+    assert (k.PRODUCTION_PREFIX, k.RUN_LABEL, k.MARKER, k.create_root) == (
+        cp.PRODUCTION_PREFIX, cp.RUN_LABEL, cp.MARKER, cp.create_root)
