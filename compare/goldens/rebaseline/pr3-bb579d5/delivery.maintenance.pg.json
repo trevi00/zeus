@@ -1,0 +1,963 @@
+{
+ "check_restart_replay": {
+  "check": {
+   "applicable": true,
+   "authority": "host_delivery; approval remains the existing Releases lead+conductor record and the ReleaseQueue fence. A delivery receipt proves publication, observed CI, merge, an atomically switched descriptor and a consumed startup identity - never a review verdict, a semantic acceptance or a qualified live host",
+   "cached": false,
+   "check": true,
+   "deadline": null,
+   "evidence": {
+    "authority": "sha256:<d:1>",
+    "document": "sha256:<d:2>",
+    "prior": null
+   },
+   "field": null,
+   "identities": {
+    "action_id": null,
+    "descriptor_sha256": "<d:3>",
+    "job_id": null,
+    "new_instance_id": null,
+    "new_invocation_id": null,
+    "plan_id": "maintained-plan",
+    "release_id": "<d:4>",
+    "retiring_instance_id": "0000000000000000000000000f00d001",
+    "retiring_invocation_id": "00000000000000000000000000abc001",
+    "target_id": "fleet-host"
+   },
+   "maintenance_id": "active_generation_1:<d:2>",
+   "pending": false,
+   "phase": "restart",
+   "reason_code": null,
+   "schema": "urn:zeus:host-delivery-maintenance:1",
+   "state": null
+  },
+  "check_wrote_nothing": true,
+  "descriptor_row_after": {
+   "consumed": true,
+   "descriptor": {
+    "predecessor": null,
+    "profile_digest": "<d:5>",
+    "revision": "2222222222222222222222222222222222222222",
+    "root": "<tmp>/managed-root/runtimes/2222222222222222222222222222222222222222",
+    "schema": "urn:zeus:host-descriptor:1",
+    "target_id": "fleet-host",
+    "worker_image": "zeus-worker@sha256:<d:6>"
+   },
+   "descriptor_sha256": "<d:3>",
+   "history": [],
+   "id": "fleet-host",
+   "instance_id": "0000000000000000000000000f00d001",
+   "observed_instance_id": "0000000000000000000000000f00d001",
+   "observed_revision": "2222222222222222222222222222222222222222",
+   "observed_runtime_root": "<tmp>/managed-root/runtimes/2222222222222222222222222222222222222222",
+   "plan_id": "maintained-plan",
+   "release_id": "<d:4>",
+   "rolled_back": false,
+   "startup_observed": true,
+   "target_id": "fleet-host",
+   "updated_at": "2026-09-22T00:00:07+00:00"
+  },
+  "generation": {
+   "arm": null,
+   "canary": null,
+   "credential_evidence": [],
+   "document": {
+    "approved_by": "conductor",
+    "authority": "sha256:<d:1>",
+    "canary_window_seconds": 600,
+    "descriptor_sha256": "<d:3>",
+    "from": {
+     "stage": "active",
+     "updated_at": "2026-09-22T00:00:07+00:00"
+    },
+    "kind": "active_generation_restart",
+    "pin_sha256": "<d:7>",
+    "plan_id": "maintained-plan",
+    "plan_sha256": "<d:8>",
+    "reason": "unit_environment_changed",
+    "release_id": "<d:4>",
+    "retiring": {
+     "instance_id": "0000000000000000000000000f00d001",
+     "invocation_id": "00000000000000000000000000abc001",
+     "launch_sha256": "<d:9>"
+    },
+    "schema": "urn:zeus:host-delivery-active-generation:1",
+    "target_id": "fleet-host"
+   },
+   "evidence_ref": "sha256:<d:2>",
+   "failure": null,
+   "id": "active_generation_1:<d:2>",
+   "launched": {
+    "at": "2026-09-22T00:00:08+00:00",
+    "invocation_id": "00000000000000000000000000abc002",
+    "launch": {
+     "descriptor_sha256": "<d:3>",
+     "invocation_id": "00000000000000000000000000abc002",
+     "manifest_sha256": "<d:10>",
+     "pid": 1002,
+     "service": "zeus-aibox-managed-fleet",
+     "started_at": "2026-09-22T00:00:08+00:00"
+    },
+    "launch_sha256": "<d:11>",
+    "path": "replace",
+    "receipt": {
+     "at": "2026-09-22T00:00:08+00:00",
+     "instance_id": "0000000000000000000000000f00d002",
+     "invocation_id": "00000000000000000000000000abc002",
+     "module_root": "<tmp>/managed-root/runtimes/2222222222222222222222222222222222222222/src/codex_harness",
+     "pid": 2002,
+     "revision": "2222222222222222222222222222222222222222",
+     "runtime_root": "<tmp>/managed-root/runtimes/2222222222222222222222222222222222222222",
+     "started_at": "2026-09-22T00:00:08+00:00"
+    },
+    "request_sha256": "<d:2>",
+    "selection": {
+     "drop_in_count": 1,
+     "environment_files_sha256": "<d:5>"
+    }
+   },
+   "observations": [
+    {
+     "at": "2026-09-22T00:00:08+00:00",
+     "field": null,
+     "phase": "restart",
+     "reason_code": null,
+     "state": "requested"
+    },
+    {
+     "at": "2026-09-22T00:00:08+00:00",
+     "field": null,
+     "phase": "restart",
+     "reason_code": null,
+     "state": "launched"
+    },
+    {
+     "at": "2026-09-22T00:00:08+00:00",
+     "field": null,
+     "phase": "restart",
+     "reason_code": null,
+     "state": "started"
+    }
+   ],
+   "prior": {
+    "descriptor_row": {
+     "consumed": true,
+     "descriptor": {
+      "predecessor": null,
+      "profile_digest": "<d:5>",
+      "revision": "2222222222222222222222222222222222222222",
+      "root": "<tmp>/managed-root/runtimes/2222222222222222222222222222222222222222",
+      "schema": "urn:zeus:host-descriptor:1",
+      "target_id": "fleet-host",
+      "worker_image": "zeus-worker@sha256:<d:6>"
+     },
+     "descriptor_sha256": "<d:3>",
+     "history_count": 0,
+     "instance_id": "0000000000000000000000000f00d001",
+     "observed_instance_id": "0000000000000000000000000f00d001",
+     "observed_revision": "2222222222222222222222222222222222222222",
+     "plan_id": "maintained-plan",
+     "release_id": "<d:4>",
+     "rolled_back": false,
+     "startup_observed": true,
+     "target_id": "fleet-host",
+     "updated_at": "2026-09-22T00:00:07+00:00"
+    },
+    "descriptor_row_sha256": "<d:12>",
+    "evidence_refs": {
+     "launch_record": "sha256:<d:9>",
+     "owner_canary_action": "sha256:<d:13>",
+     "owner_canary_receipt": "sha256:<d:14>",
+     "startup_receipt": "sha256:<d:15>"
+    },
+    "intent": {
+     "canary": {
+      "check_id": "fleet_worker_operation",
+      "evidence": {
+       "action_id": "<d:16>",
+       "decision_id": "lead-old",
+       "execution_ref": "sha256:<d:17>",
+       "job_id": "canary-<d:18>",
+       "operation_id": "canary-<d:18>",
+       "plan_id": "maintained-plan"
+      },
+      "passed": true,
+      "reason_code": null
+     },
+     "candidate_instance_id": null,
+     "candidate_launch": {
+      "descriptor_sha256": "<d:3>",
+      "invocation_id": "00000000000000000000000000abc001",
+      "manifest_sha256": "<d:10>",
+      "pid": 1001,
+      "service": "zeus-aibox-managed-fleet",
+      "started_at": "2026-09-22T00:00:06+00:00"
+     },
+     "descriptor_sha256": "<d:3>",
+     "instance_id": "0000000000000000000000000f00d001",
+     "outcome": "active",
+     "previous_instance_id": null,
+     "previous_launch": null,
+     "stage": "active",
+     "stage_deadline": null,
+     "stage_entered_at": "2026-09-22T00:00:07+00:00",
+     "updated_at": "2026-09-22T00:00:07+00:00"
+    },
+    "intent_sha256": "<d:19>",
+    "launch": {
+     "invocation_id": "00000000000000000000000000abc001",
+     "launch_request_sha256": "<d:20>",
+     "launch_sha256": "<d:9>"
+    },
+    "owner_canary_action": {
+     "binding": {
+      "descriptor_sha256": "<d:3>",
+      "instance_id": "0000000000000000000000000f00d001",
+      "plan_id": "maintained-plan",
+      "plan_sha256": "<d:8>",
+      "target_id": "fleet-host"
+     },
+     "binding_sha256": "<d:21>",
+     "id": "<d:16>",
+     "kind": "delivery_canary",
+     "outcome": {
+      "evidence": {
+       "decision_id": "lead-old",
+       "execution_ref": "sha256:<d:17>",
+       "job_id": "canary-<d:18>",
+       "operation_id": "canary-<d:18>"
+      },
+      "reason_code": "canary_accepted",
+      "state": "accepted"
+     },
+     "reason_code": "canary_accepted",
+     "state": "completed",
+     "updated_at": "2026-09-22T00:00:00+00:00",
+     "version": 3
+    },
+    "owner_canary_receipt": {
+     "descriptor_sha256": "<d:3>",
+     "evidence": {
+      "action_id": "<d:16>",
+      "decision_id": "lead-old",
+      "execution_ref": "sha256:<d:17>",
+      "job_id": "canary-<d:18>",
+      "operation_id": "canary-<d:18>",
+      "plan_id": "maintained-plan"
+     },
+     "instance_id": "0000000000000000000000000f00d001",
+     "passed": true,
+     "reason_code": "canary_accepted",
+     "recorded_at": "2026-09-22T00:00:07+00:00",
+     "schema": "urn:zeus:owner-canary-receipt:1"
+    },
+    "pointer": {
+     "release_id": "<d:4>"
+    },
+    "queue_sha256": "<d:22>",
+    "release_sha256": "<d:23>",
+    "startup_receipt": {
+     "descriptor_sha256": "<d:3>",
+     "instance_id": "0000000000000000000000000f00d001",
+     "module_root": "<tmp>/managed-root/runtimes/2222222222222222222222222222222222222222/src/codex_harness",
+     "pid": 2001,
+     "profile_digest": "<d:5>",
+     "revision": "2222222222222222222222222222222222222222",
+     "runtime_root": "<tmp>/managed-root/runtimes/2222222222222222222222222222222222222222",
+     "schema": "urn:zeus:host-startup-receipt:1",
+     "started_at": "2026-09-22T00:00:06+00:00",
+     "target_id": "fleet-host",
+     "worker_image": "zeus-worker@sha256:<d:6>"
+    }
+   },
+   "requested_at": "2026-09-22T00:00:08+00:00",
+   "retiring": {
+    "instance_id": "0000000000000000000000000f00d001",
+    "invocation_id": "00000000000000000000000000abc001",
+    "launch_sha256": "<d:9>",
+    "observed": {
+     "control_group_sha256": "<d:24>",
+     "entry_pid": 2001,
+     "entry_start_ticks": 60001,
+     "launch_request_sha256": "<d:20>",
+     "observed_at": "2026-09-22T00:00:08+00:00",
+     "supervisor_pid": 1001,
+     "supervisor_start_ticks": 50001
+    },
+    "selection": {
+     "drop_in_count": 1,
+     "environment_files_sha256": "<d:5>"
+    }
+   },
+   "state": "started",
+   "updated_at": "2026-09-22T00:00:08+00:00"
+  },
+  "intent_after": {
+   "attempts": 0,
+   "canary": {
+    "check_id": "fleet_worker_operation",
+    "evidence": {
+     "action_id": "<d:16>",
+     "decision_id": "lead-old",
+     "execution_ref": "sha256:<d:17>",
+     "job_id": "canary-<d:18>",
+     "operation_id": "canary-<d:18>",
+     "plan_id": "maintained-plan"
+    },
+    "passed": true,
+    "reason_code": null
+   },
+   "candidate_instance_id": null,
+   "candidate_launch": {
+    "descriptor_sha256": "<d:3>",
+    "invocation_id": "00000000000000000000000000abc001",
+    "manifest_sha256": "<d:10>",
+    "pid": 1001,
+    "service": "zeus-aibox-managed-fleet",
+    "started_at": "2026-09-22T00:00:06+00:00"
+   },
+   "created_at": "2026-09-22T00:00:00+00:00",
+   "descriptor": {
+    "predecessor": null,
+    "profile_digest": "<d:5>",
+    "revision": "2222222222222222222222222222222222222222",
+    "root": "<tmp>/managed-root/runtimes/2222222222222222222222222222222222222222",
+    "schema": "urn:zeus:host-descriptor:1",
+    "target_id": "fleet-host",
+    "worker_image": "zeus-worker@sha256:<d:6>"
+   },
+   "descriptor_sha256": "<d:3>",
+   "error_type": null,
+   "evidence": [],
+   "expected_active": null,
+   "expected_active_set": true,
+   "generations": [
+    {
+     "arm": null,
+     "canary": null,
+     "credential_evidence": [],
+     "document": {
+      "approved_by": "conductor",
+      "authority": "sha256:<d:1>",
+      "canary_window_seconds": 600,
+      "descriptor_sha256": "<d:3>",
+      "from": {
+       "stage": "active",
+       "updated_at": "2026-09-22T00:00:07+00:00"
+      },
+      "kind": "active_generation_restart",
+      "pin_sha256": "<d:7>",
+      "plan_id": "maintained-plan",
+      "plan_sha256": "<d:8>",
+      "reason": "unit_environment_changed",
+      "release_id": "<d:4>",
+      "retiring": {
+       "instance_id": "0000000000000000000000000f00d001",
+       "invocation_id": "00000000000000000000000000abc001",
+       "launch_sha256": "<d:9>"
+      },
+      "schema": "urn:zeus:host-delivery-active-generation:1",
+      "target_id": "fleet-host"
+     },
+     "evidence_ref": "sha256:<d:2>",
+     "failure": null,
+     "id": "active_generation_1:<d:2>",
+     "launched": {
+      "at": "2026-09-22T00:00:08+00:00",
+      "invocation_id": "00000000000000000000000000abc002",
+      "launch": {
+       "descriptor_sha256": "<d:3>",
+       "invocation_id": "00000000000000000000000000abc002",
+       "manifest_sha256": "<d:10>",
+       "pid": 1002,
+       "service": "zeus-aibox-managed-fleet",
+       "started_at": "2026-09-22T00:00:08+00:00"
+      },
+      "launch_sha256": "<d:11>",
+      "path": "replace",
+      "receipt": {
+       "at": "2026-09-22T00:00:08+00:00",
+       "instance_id": "0000000000000000000000000f00d002",
+       "invocation_id": "00000000000000000000000000abc002",
+       "module_root": "<tmp>/managed-root/runtimes/2222222222222222222222222222222222222222/src/codex_harness",
+       "pid": 2002,
+       "revision": "2222222222222222222222222222222222222222",
+       "runtime_root": "<tmp>/managed-root/runtimes/2222222222222222222222222222222222222222",
+       "started_at": "2026-09-22T00:00:08+00:00"
+      },
+      "request_sha256": "<d:2>",
+      "selection": {
+       "drop_in_count": 1,
+       "environment_files_sha256": "<d:5>"
+      }
+     },
+     "observations": [
+      {
+       "at": "2026-09-22T00:00:08+00:00",
+       "field": null,
+       "phase": "restart",
+       "reason_code": null,
+       "state": "requested"
+      },
+      {
+       "at": "2026-09-22T00:00:08+00:00",
+       "field": null,
+       "phase": "restart",
+       "reason_code": null,
+       "state": "launched"
+      },
+      {
+       "at": "2026-09-22T00:00:08+00:00",
+       "field": null,
+       "phase": "restart",
+       "reason_code": null,
+       "state": "started"
+      }
+     ],
+     "prior": {
+      "descriptor_row": {
+       "consumed": true,
+       "descriptor": {
+        "predecessor": null,
+        "profile_digest": "<d:5>",
+        "revision": "2222222222222222222222222222222222222222",
+        "root": "<tmp>/managed-root/runtimes/2222222222222222222222222222222222222222",
+        "schema": "urn:zeus:host-descriptor:1",
+        "target_id": "fleet-host",
+        "worker_image": "zeus-worker@sha256:<d:6>"
+       },
+       "descriptor_sha256": "<d:3>",
+       "history_count": 0,
+       "instance_id": "0000000000000000000000000f00d001",
+       "observed_instance_id": "0000000000000000000000000f00d001",
+       "observed_revision": "2222222222222222222222222222222222222222",
+       "plan_id": "maintained-plan",
+       "release_id": "<d:4>",
+       "rolled_back": false,
+       "startup_observed": true,
+       "target_id": "fleet-host",
+       "updated_at": "2026-09-22T00:00:07+00:00"
+      },
+      "descriptor_row_sha256": "<d:12>",
+      "evidence_refs": {
+       "launch_record": "sha256:<d:9>",
+       "owner_canary_action": "sha256:<d:13>",
+       "owner_canary_receipt": "sha256:<d:14>",
+       "startup_receipt": "sha256:<d:15>"
+      },
+      "intent": {
+       "canary": {
+        "check_id": "fleet_worker_operation",
+        "evidence": {
+         "action_id": "<d:16>",
+         "decision_id": "lead-old",
+         "execution_ref": "sha256:<d:17>",
+         "job_id": "canary-<d:18>",
+         "operation_id": "canary-<d:18>",
+         "plan_id": "maintained-plan"
+        },
+        "passed": true,
+        "reason_code": null
+       },
+       "candidate_instance_id": null,
+       "candidate_launch": {
+        "descriptor_sha256": "<d:3>",
+        "invocation_id": "00000000000000000000000000abc001",
+        "manifest_sha256": "<d:10>",
+        "pid": 1001,
+        "service": "zeus-aibox-managed-fleet",
+        "started_at": "2026-09-22T00:00:06+00:00"
+       },
+       "descriptor_sha256": "<d:3>",
+       "instance_id": "0000000000000000000000000f00d001",
+       "outcome": "active",
+       "previous_instance_id": null,
+       "previous_launch": null,
+       "stage": "active",
+       "stage_deadline": null,
+       "stage_entered_at": "2026-09-22T00:00:07+00:00",
+       "updated_at": "2026-09-22T00:00:07+00:00"
+      },
+      "intent_sha256": "<d:19>",
+      "launch": {
+       "invocation_id": "00000000000000000000000000abc001",
+       "launch_request_sha256": "<d:20>",
+       "launch_sha256": "<d:9>"
+      },
+      "owner_canary_action": {
+       "binding": {
+        "descriptor_sha256": "<d:3>",
+        "instance_id": "0000000000000000000000000f00d001",
+        "plan_id": "maintained-plan",
+        "plan_sha256": "<d:8>",
+        "target_id": "fleet-host"
+       },
+       "binding_sha256": "<d:21>",
+       "id": "<d:16>",
+       "kind": "delivery_canary",
+       "outcome": {
+        "evidence": {
+         "decision_id": "lead-old",
+         "execution_ref": "sha256:<d:17>",
+         "job_id": "canary-<d:18>",
+         "operation_id": "canary-<d:18>"
+        },
+        "reason_code": "canary_accepted",
+        "state": "accepted"
+       },
+       "reason_code": "canary_accepted",
+       "state": "completed",
+       "updated_at": "2026-09-22T00:00:00+00:00",
+       "version": 3
+      },
+      "owner_canary_receipt": {
+       "descriptor_sha256": "<d:3>",
+       "evidence": {
+        "action_id": "<d:16>",
+        "decision_id": "lead-old",
+        "execution_ref": "sha256:<d:17>",
+        "job_id": "canary-<d:18>",
+        "operation_id": "canary-<d:18>",
+        "plan_id": "maintained-plan"
+       },
+       "instance_id": "0000000000000000000000000f00d001",
+       "passed": true,
+       "reason_code": "canary_accepted",
+       "recorded_at": "2026-09-22T00:00:07+00:00",
+       "schema": "urn:zeus:owner-canary-receipt:1"
+      },
+      "pointer": {
+       "release_id": "<d:4>"
+      },
+      "queue_sha256": "<d:22>",
+      "release_sha256": "<d:23>",
+      "startup_receipt": {
+       "descriptor_sha256": "<d:3>",
+       "instance_id": "0000000000000000000000000f00d001",
+       "module_root": "<tmp>/managed-root/runtimes/2222222222222222222222222222222222222222/src/codex_harness",
+       "pid": 2001,
+       "profile_digest": "<d:5>",
+       "revision": "2222222222222222222222222222222222222222",
+       "runtime_root": "<tmp>/managed-root/runtimes/2222222222222222222222222222222222222222",
+       "schema": "urn:zeus:host-startup-receipt:1",
+       "started_at": "2026-09-22T00:00:06+00:00",
+       "target_id": "fleet-host",
+       "worker_image": "zeus-worker@sha256:<d:6>"
+      }
+     },
+     "requested_at": "2026-09-22T00:00:08+00:00",
+     "retiring": {
+      "instance_id": "0000000000000000000000000f00d001",
+      "invocation_id": "00000000000000000000000000abc001",
+      "launch_sha256": "<d:9>",
+      "observed": {
+       "control_group_sha256": "<d:24>",
+       "entry_pid": 2001,
+       "entry_start_ticks": 60001,
+       "launch_request_sha256": "<d:20>",
+       "observed_at": "2026-09-22T00:00:08+00:00",
+       "supervisor_pid": 1001,
+       "supervisor_start_ticks": 50001
+      },
+      "selection": {
+       "drop_in_count": 1,
+       "environment_files_sha256": "<d:5>"
+      }
+     },
+     "state": "started",
+     "updated_at": "2026-09-22T00:00:08+00:00"
+    }
+   ],
+   "head": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+   "id": "maintained-plan",
+   "instance_id": "0000000000000000000000000f00d001",
+   "last_check_state": "passed",
+   "merged_revision": "9999999999999999999999999999999999999999",
+   "outcome": "active",
+   "plan_id": "maintained-plan",
+   "plan_sha256": "<d:8>",
+   "pr_number": 181,
+   "pr_url": "https://example.invalid/pull/181",
+   "previous_descriptor": null,
+   "previous_descriptor_sha256": null,
+   "previous_instance_id": null,
+   "previous_launch": null,
+   "previous_stage": "awaiting_consumption",
+   "reason_code": null,
+   "release_id": "<d:4>",
+   "revision": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+   "rollback": null,
+   "stage": "active",
+   "stage_deadline": null,
+   "stage_entered_at": "2026-09-22T00:00:07+00:00",
+   "switch": {
+    "at": "2026-09-22T00:00:06+00:00",
+    "recovered": false,
+    "started": true,
+    "written": true
+   },
+   "target_id": "fleet-host",
+   "updated_at": "2026-09-22T00:00:07+00:00"
+  },
+  "pointer_after": {
+   "at": "<wall-clock>",
+   "previous": null,
+   "release_id": "<d:4>",
+   "revision": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa"
+  },
+  "pointer_unchanged": true,
+  "queue_after": {
+   "at": "<wall-clock>",
+   "attempt": 1,
+   "attempts": [
+    {
+     "at": "2026-09-22T00:00:00+00:00",
+     "attempt": 1,
+     "deferred": true,
+     "result": {
+      "stage": "publishing",
+      "status": "progressed"
+     }
+    },
+    {
+     "at": "2026-09-22T00:00:01+00:00",
+     "attempt": 1,
+     "deferred": true,
+     "result": {
+      "stage": "awaiting_ci",
+      "status": "progressed"
+     }
+    },
+    {
+     "at": "2026-09-22T00:00:02+00:00",
+     "attempt": 1,
+     "deferred": true,
+     "result": {
+      "stage": "merge_intended",
+      "status": "progressed"
+     }
+    },
+    {
+     "at": "2026-09-22T00:00:03+00:00",
+     "attempt": 1,
+     "deferred": true,
+     "result": {
+      "stage": "merged",
+      "status": "progressed"
+     }
+    },
+    {
+     "at": "2026-09-22T00:00:04+00:00",
+     "attempt": 1,
+     "deferred": true,
+     "result": {
+      "stage": "drain_intended",
+      "status": "progressed"
+     }
+    },
+    {
+     "at": "2026-09-22T00:00:05+00:00",
+     "attempt": 1,
+     "deferred": true,
+     "result": {
+      "stage": "switching",
+      "status": "progressed"
+     }
+    },
+    {
+     "at": "2026-09-22T00:00:06+00:00",
+     "attempt": 1,
+     "deferred": true,
+     "result": {
+      "stage": "awaiting_consumption",
+      "status": "progressed"
+     }
+    },
+    {
+     "at": "2026-09-22T00:00:07+00:00",
+     "attempt": 1,
+     "result": {
+      "release_id": "<d:4>",
+      "status": "active"
+     }
+    }
+   ],
+   "generation": 8,
+   "id": "<d:4>",
+   "lease_until": null,
+   "owner": null,
+   "reason": "host delivery plan maintained-plan",
+   "result": {
+    "release_id": "<d:4>",
+    "status": "active"
+   },
+   "retry_at": null,
+   "status": "active"
+  },
+  "release_after": {
+   "candidate": {
+    "author": "worker:implementation",
+    "base": "bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb",
+    "branch": "harness/delivery-1",
+    "objective": "CANARY-must-never-be-emitted",
+    "repository": "github:zeus-owner/zeus-harness",
+    "revision": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+    "task_id": "delivery-1",
+    "tree": "<d:24>"
+   },
+   "checks": {
+    "tests": {
+     "evidence": "fixture-incumbent-check-receipt",
+     "passed": true
+    }
+   },
+   "created_at": "<wall-clock>",
+   "id": "<d:4>",
+   "policy": {
+    "checks": [
+     "tests"
+    ],
+    "evaluator": "fixture-incumbent-policy"
+   },
+   "policy_hash": "<d:25>",
+   "reviews": [
+    {
+     "accepted": true,
+     "actor": "lead:improvement",
+     "evidence": "fixture-lead-review-evidence",
+     "revision": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa"
+    },
+    {
+     "accepted": true,
+     "actor": "conductor",
+     "evidence": "fixture-conductor-review-evidence",
+     "revision": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa"
+    }
+   ],
+   "status": "active"
+  },
+  "replay": {
+   "applicable": true,
+   "authority": "host_delivery; approval remains the existing Releases lead+conductor record and the ReleaseQueue fence. A delivery receipt proves publication, observed CI, merge, an atomically switched descriptor and a consumed startup identity - never a review verdict, a semantic acceptance or a qualified live host",
+   "cached": true,
+   "check": false,
+   "deadline": null,
+   "evidence": {
+    "authority": "sha256:<d:1>",
+    "document": "sha256:<d:2>",
+    "prior": {
+     "launch_record": "sha256:<d:9>",
+     "owner_canary_action": "sha256:<d:13>",
+     "owner_canary_receipt": "sha256:<d:14>",
+     "startup_receipt": "sha256:<d:15>"
+    }
+   },
+   "field": null,
+   "identities": {
+    "action_id": null,
+    "descriptor_sha256": "<d:3>",
+    "job_id": null,
+    "new_instance_id": "0000000000000000000000000f00d002",
+    "new_invocation_id": "00000000000000000000000000abc002",
+    "plan_id": "maintained-plan",
+    "release_id": "<d:4>",
+    "retiring_instance_id": "0000000000000000000000000f00d001",
+    "retiring_invocation_id": "00000000000000000000000000abc001",
+    "target_id": "fleet-host"
+   },
+   "maintenance_id": "active_generation_1:<d:2>",
+   "pending": false,
+   "phase": "restart",
+   "reason_code": null,
+   "schema": "urn:zeus:host-delivery-maintenance:1",
+   "state": "started"
+  },
+  "rows_after_replay_equal": true,
+  "started": {
+   "applicable": true,
+   "authority": "host_delivery; approval remains the existing Releases lead+conductor record and the ReleaseQueue fence. A delivery receipt proves publication, observed CI, merge, an atomically switched descriptor and a consumed startup identity - never a review verdict, a semantic acceptance or a qualified live host",
+   "cached": false,
+   "check": false,
+   "deadline": null,
+   "evidence": {
+    "authority": "sha256:<d:1>",
+    "document": "sha256:<d:2>",
+    "prior": {
+     "launch_record": "sha256:<d:9>",
+     "owner_canary_action": "sha256:<d:13>",
+     "owner_canary_receipt": "sha256:<d:14>",
+     "startup_receipt": "sha256:<d:15>"
+    }
+   },
+   "field": null,
+   "identities": {
+    "action_id": null,
+    "descriptor_sha256": "<d:3>",
+    "job_id": null,
+    "new_instance_id": "0000000000000000000000000f00d002",
+    "new_invocation_id": "00000000000000000000000000abc002",
+    "plan_id": "maintained-plan",
+    "release_id": "<d:4>",
+    "retiring_instance_id": "0000000000000000000000000f00d001",
+    "retiring_invocation_id": "00000000000000000000000000abc001",
+    "target_id": "fleet-host"
+   },
+   "maintenance_id": "active_generation_1:<d:2>",
+   "pending": false,
+   "phase": "restart",
+   "reason_code": null,
+   "schema": "urn:zeus:host-delivery-maintenance:1",
+   "state": "started"
+  }
+ },
+ "held_target": {
+  "intent_stage": "active",
+  "pointer_unchanged": true,
+  "queue": {
+   "at": "<wall-clock>",
+   "attempt": 1,
+   "attempts": [
+    {
+     "at": "2026-09-22T00:00:00+00:00",
+     "attempt": 1,
+     "deferred": true,
+     "result": {
+      "stage": "publishing",
+      "status": "progressed"
+     }
+    },
+    {
+     "at": "2026-09-22T00:00:01+00:00",
+     "attempt": 1,
+     "deferred": true,
+     "result": {
+      "stage": "awaiting_ci",
+      "status": "progressed"
+     }
+    },
+    {
+     "at": "2026-09-22T00:00:02+00:00",
+     "attempt": 1,
+     "deferred": true,
+     "result": {
+      "stage": "merge_intended",
+      "status": "progressed"
+     }
+    },
+    {
+     "at": "2026-09-22T00:00:03+00:00",
+     "attempt": 1,
+     "deferred": true,
+     "result": {
+      "stage": "merged",
+      "status": "progressed"
+     }
+    },
+    {
+     "at": "2026-09-22T00:00:04+00:00",
+     "attempt": 1,
+     "deferred": true,
+     "result": {
+      "stage": "drain_intended",
+      "status": "progressed"
+     }
+    },
+    {
+     "at": "2026-09-22T00:00:05+00:00",
+     "attempt": 1,
+     "deferred": true,
+     "result": {
+      "stage": "switching",
+      "status": "progressed"
+     }
+    },
+    {
+     "at": "2026-09-22T00:00:06+00:00",
+     "attempt": 1,
+     "deferred": true,
+     "result": {
+      "stage": "awaiting_consumption",
+      "status": "progressed"
+     }
+    },
+    {
+     "at": "2026-09-22T00:00:07+00:00",
+     "attempt": 1,
+     "result": {
+      "release_id": "<d:1>",
+      "status": "active"
+     }
+    }
+   ],
+   "generation": 8,
+   "id": "<d:1>",
+   "lease_until": null,
+   "owner": null,
+   "reason": "host delivery plan maintained-plan",
+   "result": {
+    "release_id": "<d:1>",
+    "status": "active"
+   },
+   "retry_at": null,
+   "status": "active"
+  },
+  "state": "started",
+  "tick": {
+   "returned": {
+    "active": null,
+    "ambiguous_effect": null,
+    "at": "2026-09-22T00:00:08+00:00",
+    "attempts": 0,
+    "authority": "host_delivery; approval remains the existing Releases lead+conductor record and the ReleaseQueue fence. A delivery receipt proves publication, observed CI, merge, an atomically switched descriptor and a consumed startup identity - never a review verdict, a semantic acceptance or a qualified live host",
+    "blocked": {
+     "maintained-plan": "maintenance_target_busy"
+    },
+    "canary": null,
+    "descriptor_sha256": null,
+    "error_type": null,
+    "head": null,
+    "instance_id": null,
+    "merged_revision": null,
+    "next_action": "tick",
+    "outcome": "idle",
+    "plan_id": null,
+    "pr_number": null,
+    "previous_descriptor_sha256": null,
+    "reason_code": null,
+    "release_id": null,
+    "rollback": null,
+    "schema": "urn:zeus:host-delivery-tick:1",
+    "stage": null,
+    "target_id": null
+   }
+  }
+ },
+ "refusals": {
+  "evidence_mismatch": {
+   "field": "evidence",
+   "reason_code": "maintenance_invalid",
+   "refused": "DeliveryRefused"
+  },
+  "phase_arm": {
+   "field": "state",
+   "reason_code": "maintenance_phase",
+   "refused": "DeliveryRefused"
+  },
+  "phase_bind": {
+   "field": "state",
+   "reason_code": "maintenance_phase",
+   "refused": "DeliveryRefused"
+  },
+  "rows_unchanged": true,
+  "tampered_plan_sha256": {
+   "field": "evidence",
+   "reason_code": "maintenance_invalid",
+   "refused": "DeliveryRefused"
+  },
+  "wrong_reason": {
+   "field": "reason",
+   "reason_code": "maintenance_invalid",
+   "refused": "DeliveryRefused"
+  }
+ }
+}
