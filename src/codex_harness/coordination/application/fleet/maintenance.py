@@ -61,6 +61,38 @@ from codex_harness.coordination.domain.fleet_maintenance import (
 from codex_harness.kernel.ids import digest, utcnow
 
 
+def claim_queued_job(tx, registry: dict, control: dict, job: dict, *, now: str, token, budget_exhausted: bool,
+                     debt_code: str, refused_code: str) -> dict:
+    """Claim exactly `job` as `dispatching` inside the caller's open transaction: the one claim shared by the PR-3
+    maintenance permit and the FA admission permit (INV-FLEET-001, factored out of `admit_maintenance_canary`).
+
+    No reserving job and no held execution unit may exist (`debt_code`). The ordinary selection then decides over a
+    one-job candidate set with ONLY the pause lifted: budget, stale ceilings, capacity, lane, path and dependency
+    blockers all still refuse (`refused_code`, the blocker as its field). The claim takes a fresh owner token exactly
+    as `admit_one`. Every other queued job is neither read-modified nor written; a refusal writes nothing."""
+    jobs = {other["id"]: other for other in tx.scan(BUCKET_JOBS)}
+    units = held_units(tx.scan(BUCKET_UNITS))
+    if units or any(other["status"] in RESERVING for other in jobs.values()):
+        raise FleetRefused(debt_code, "fleet")
+    config = effective_config(registry["config"], control)
+    candidates = {job["id"]: job, **{key: other for key, other in jobs.items() if other["status"] != QUEUED}}
+    # The ONLY exception to ordinary admission: `paused=False` for this one candidate.
+    decision = select_admission(config, False, candidates, bool(budget_exhausted),
+                                state.repository_aliases(tx), units=len(units))
+    if decision["job"] is None or decision["job"]["id"] != job["id"]:
+        raise FleetRefused(refused_code, decision["blocked"].get(job["id"], "capacity"))
+    job.update(status=DISPATCHING, owner_token=token(), dispatched_at=now, updated_at=now, reason_code=None)
+    tx.put(BUCKET_JOBS, job["id"], job)
+    return job
+
+
+def fail_unlaunched_job(tx, job: dict, reason: str, now: str, **marker) -> None:
+    """The queued job becomes terminal `failed` with `reason` and `marker` recorded: nothing was ever claimed or
+    spawned (shared by the PR-3 close and the FA close)."""
+    job.update(status=FAILED, reason_code=reason, updated_at=now, finished_at=now, **marker)
+    tx.put(BUCKET_JOBS, job["id"], job)
+
+
 class FleetMaintenance:
     """The one-job canary and forward-candidate permits (PR-3 `Fleet`, maintenance part)."""
 
@@ -164,20 +196,8 @@ class FleetMaintenance:
                 check_owner_action(permit, tx.get(OWNER_ACTIONS_BUCKET, permit["action_id"]))
                 job = tx.get(BUCKET_JOBS, permit["job_id"])
                 check_canary_job(permit, job)
-            jobs = {other["id"]: other for other in tx.scan(BUCKET_JOBS)}
-            units = held_units(tx.scan(BUCKET_UNITS))
-            if units or any(other["status"] in RESERVING for other in jobs.values()):
-                raise FleetRefused("maintenance_debt_unsettled", "fleet")
-            config = effective_config(registry["config"], control)
-            candidates = {job["id"]: job, **{key: other for key, other in jobs.items() if other["status"] != QUEUED}}
-            # The ONLY exception to ordinary admission: `paused=False` for this one candidate.
-            decision = select_admission(config, False, candidates, bool(budget_exhausted),
-                                        state.repository_aliases(tx), units=len(units))
-            if decision["job"] is None or decision["job"]["id"] != job["id"]:
-                raise FleetRefused("maintenance_admission_refused", decision["blocked"].get(job["id"], "capacity"))
-            job.update(status=DISPATCHING, owner_token=self.token(), dispatched_at=now, updated_at=now,
-                       reason_code=None)
-            tx.put(BUCKET_JOBS, job["id"], job)
+            job = claim_queued_job(tx, registry, control, job, now=now, token=self.token, budget_exhausted=budget_exhausted,
+                                   debt_code="maintenance_debt_unsettled", refused_code="maintenance_admission_refused")
             row.update(state=ADMITTED, admitted_at=now, lane=job["lane"], manifest_sha256=job["manifest_sha256"],
                        owner_token=job["owner_token"], lane_ack={"proof_sha256": digest(proof), "at": now},
                        history=self._history(row, ADMITTED, now, None))
@@ -251,9 +271,8 @@ class FleetMaintenance:
     @staticmethod
     def _fail_unlaunched(tx, job: dict, maintenance_id: str, reason: str, now: str) -> None:
         """The queued canary becomes terminal without any process: nothing was ever claimed or spawned."""
-        job.update(status=FAILED, reason_code=reason, updated_at=now, finished_at=now,
-                   maintenance={"maintenance_id": maintenance_id, "launched": False, "reason": reason})
-        tx.put(BUCKET_JOBS, job["id"], job)
+        fail_unlaunched_job(tx, job, reason, now,
+                            maintenance={"maintenance_id": maintenance_id, "launched": False, "reason": reason})
 
     def maintenance_permit(self, maintenance_id: str) -> dict | None:
         """The safe view of one permit (never its owner token), or None."""

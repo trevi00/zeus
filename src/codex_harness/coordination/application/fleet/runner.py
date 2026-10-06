@@ -5,7 +5,7 @@ Layer: application
 Context: coordination
 Owns: the children this process launched (process lifetime)
 Does not own: the Fleet buckets (the three Fleet objects it drives), lane processes (the launcher)
-Entry points: FleetRunner.run, FleetRunner.stop, FleetRunner.run_preclaimed, MaintenanceCanaryExecutor.execute
+Entry points: FleetRunner.run, FleetRunner.stop, FleetRunner.run_preclaimed, MaintenanceCanaryExecutor.execute, AdmissionPermitExecutor.execute
 Contracts: INV-FLEET-001, INV-FLEET-BACKLOG-001, INV-HOST-DELIVERY-MAINTENANCE-001
 
 Moved from M7 `application/fleet.py` (SOURCE e38aa722) by the named split (DESIGN-s5 §F); the method
@@ -21,11 +21,16 @@ import time
 from codex_harness.coordination.domain.fleet import (
     DISPATCHING,
     FAILED,
+    RESERVING,
     UNKNOWN,
     FleetRefused,
     LaunchRefused,
     safe_code,
 )
+from codex_harness.coordination.domain.fleet_admission_permit import (
+    EXECUTION_SCHEMA as ADMISSION_EXECUTION_SCHEMA,
+)
+from codex_harness.coordination.domain.fleet_admission_permit import PERMIT_EXPIRED, PERMIT_SETTLED
 from codex_harness.coordination.domain.fleet_maintenance import EXECUTION_SCHEMA
 from codex_harness.intake.domain.backlog import runner_state
 from codex_harness.intake.domain.backlog import safe_error_type as safe_backlog_error_type
@@ -428,7 +433,30 @@ class FleetRunner:
         summary["finalized"].append({"id": row["id"], "status": row["status"], "reason_code": row["reason_code"]})
 
 
-class MaintenanceCanaryExecutor:
+class _OneJobExecutor:
+    """The shared one-job execution of a permit-claimed job (INV-FLEET-001): the ledger read that fails closed, and the
+    launch/wait/finalize of the ONE claimed job through `FleetRunner.run_preclaimed` with the same launcher, lane
+    isolation and finalization. It admits nothing itself, never resumes the Fleet and never retries."""
+
+    def __init__(self, registry, admission, pause, launcher, *, sleep=time.sleep, interval: float = 5.0):
+        self.fleet_registry, self.fleet_admission, self.fleet_pause = registry, admission, pause
+        self.launcher, self.sleep, self.interval = launcher, sleep, interval
+
+    def _budget_exhausted(self, refusal_code: str) -> bool:
+        config = self.fleet_registry.registered()["config"]
+        try:
+            return bool(self.launcher.budget_exhausted(config["budget"]))
+        except Exception as exc:
+            # An unreadable ledger admits nothing (fail closed); no exception text leaves here.
+            raise FleetRefused(refusal_code, "budget_unknown") from exc
+
+    def _run_claimed(self, job: dict, max_wait_seconds: float) -> dict:
+        runner = FleetRunner(self.fleet_registry, self.fleet_admission, self.fleet_pause, self.launcher,
+                             sleep=self.sleep, interval=self.interval)
+        return runner.run_preclaimed(job, max_wait_seconds=max_wait_seconds)
+
+
+class MaintenanceCanaryExecutor(_OneJobExecutor):
     """The one-job executor of an armed maintenance generation (INV-FLEET-001 maintenance amendment).
 
     `execute` consults the machine ledger exactly as the ordinary runner does, admits the permit's
@@ -439,25 +467,57 @@ class MaintenanceCanaryExecutor:
 
     def __init__(self, registry, maintenance, admission, pause, launcher, *, sleep=time.sleep, interval: float = 5.0):
         # DESIGN-s5 F: PR-3 held one `Fleet`; the target's executor holds the Fleet objects it drives.
-        self.fleet_registry, self.fleet_maintenance = registry, maintenance
-        self.fleet_admission, self.fleet_pause = admission, pause
-        self.launcher, self.sleep, self.interval = launcher, sleep, interval
+        super().__init__(registry, admission, pause, launcher, sleep=sleep, interval=interval)
+        self.fleet_maintenance = maintenance
 
     def execute(self, maintenance_id: str, *, permit_sha256: str, proof: dict, max_wait_seconds: float) -> dict:
-        config = self.fleet_registry.registered()["config"]
-        try:
-            exhausted = bool(self.launcher.budget_exhausted(config["budget"]))
-        except Exception as exc:
-            # An unreadable ledger admits nothing (fail closed); no exception text leaves here.
-            raise FleetRefused("maintenance_admission_refused", "budget_unknown") from exc
+        exhausted = self._budget_exhausted("maintenance_admission_refused")
         admitted = self.fleet_maintenance.admit_maintenance_canary(maintenance_id, permit_sha256=permit_sha256,
                                                                    proof=proof, budget_exhausted=exhausted)
-        runner = FleetRunner(self.fleet_registry, self.fleet_admission, self.fleet_pause, self.launcher,
-                             sleep=self.sleep, interval=self.interval)
-        summary = runner.run_preclaimed(admitted["job"], max_wait_seconds=max_wait_seconds)
+        summary = self._run_claimed(admitted["job"], max_wait_seconds)
         try:
             job_status = (self.fleet_maintenance.job(summary["job_id"]) or {}).get("status")
         except Exception:
             job_status = None  # unknown here; the lane reads the job again before it binds anything
         return {"schema": EXECUTION_SCHEMA, "maintenance_id": maintenance_id, "job_id": summary["job_id"],
                 "admitted": True, "state": summary["state"], "job_status": job_status}
+
+
+class AdmissionPermitExecutor(_OneJobExecutor):
+    """The owner-run one-job executor of a typed admission permit (INV-FLEET-001, FA-SPEC §4).
+
+    `execute` consults the machine ledger exactly as the ordinary runner does, admits the permit's job through
+    `FleetAdmissionPermits.admit_admission_permit` (whose `FleetRefused` propagates with nothing launched), runs that
+    one claimed job through `FleetRunner.run_preclaimed` and, when the job is finalized, settles the permit. A permit
+    refused as expired fails its still-queued job `permit_expired` without a spawn before the refusal propagates. It
+    never admits anything else, never resumes the Fleet, never retries and never relaunches an unknown dispatch: a
+    replay after an admission is `permit_already_used`."""
+
+    def __init__(self, registry, permits, admission, pause, launcher, *, sleep=time.sleep, interval: float = 5.0):
+        super().__init__(registry, admission, pause, launcher, sleep=sleep, interval=interval)
+        self.fleet_permits = permits
+
+    def execute(self, permit_id: str, *, max_wait_seconds: float) -> dict:
+        exhausted = self._budget_exhausted("permit_refused")
+        try:
+            admitted = self.fleet_permits.admit_admission_permit(permit_id, budget_exhausted=exhausted)
+        except FleetRefused as exc:
+            if exc.reason_code == "permit_expired":
+                try:
+                    self.fleet_permits.close_admission_permit(permit_id, PERMIT_EXPIRED)
+                except FleetRefused:
+                    pass  # an admitted or unknown permit stays owned; the original refusal is the answer
+            raise
+        summary = self._run_claimed(admitted["job"], max_wait_seconds)
+        try:
+            job_status = (self.fleet_permits.job(summary["job_id"]) or {}).get("status")
+        except Exception:
+            job_status = None  # unknown here; the permit stays admitted until the job settles
+        closed = False
+        if job_status is not None and job_status not in RESERVING:
+            try:
+                closed = bool(self.fleet_permits.close_admission_permit(permit_id, PERMIT_SETTLED)["closed"])
+            except FleetRefused:
+                closed = False
+        return {"schema": ADMISSION_EXECUTION_SCHEMA, "permit_id": permit_id, "job_id": summary["job_id"],
+                "admitted": True, "state": summary["state"], "job_status": job_status, "closed": closed}

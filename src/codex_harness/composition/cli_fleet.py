@@ -1,9 +1,9 @@
 """The `zeus fleet` composition: the runner, the configuration check and the three owner recovery commands.
 
 Layer: composition
-Owns: run_fleet (M7 `fleet_cli.run`), reconcile_interrupted, migrate_host, relocate and the private _resolved
+Owns: run_fleet (M7 `fleet_cli.run`), admit_permit (FA-IMPL), reconcile_interrupted, migrate_host, relocate and the private _resolved
 Does not own: the argument shape, the owner documents' read and the other command bodies (entry.cli.fleet), the backlog and continuation tickers (composition.fleet_backlog, composition.continuation), the lane launcher (composition.fleet) and the recovery collectors (composition.fleet_recovery)
-Entry points: run_fleet, reconcile_interrupted, migrate_host, relocate
+Entry points: run_fleet, admit_permit, reconcile_interrupted, migrate_host, relocate
 Contracts: INV-FLEET-001, INV-FLEET-BACKLOG-001, INV-CONTINUATION-001, INV-HOST-MIGRATION-001
 
 Moved from M7 `adapters/fleet_cli.py` (SOURCE e38aa722) by named rule R-c28 (S10 unit C8b-2): `run` (:135-188) is `run_fleet`, `_resolved` (:80-105), `reconcile_interrupted` (:198-240), `migrate_host` (:243-273) and
@@ -99,6 +99,25 @@ def run_fleet(service, args, *, control=None) -> dict:
             with suppress(Exception):  # a restore failure never replaces the original outcome
                 signal.signal(number, previous)
     return {**summary, "exit_code": 0}
+
+
+def admit_permit(service, args) -> dict:
+    """`zeus fleet admit-permit --permit <id>` (INV-FLEET-001, FA-SPEC §4): the owner-run one-job executor over the
+    permit's Fleet objects and the lane launcher. A refusal propagates with nothing launched; the Fleet stays
+    owner-paused and the runner of a managed runtime is never involved."""
+    from codex_harness.composition import fleet
+    from codex_harness.composition.configuration import settings
+    from codex_harness.coordination.application.fleet.admission import AdmissionControl
+    from codex_harness.coordination.application.fleet.admission_permit import FleetAdmissionPermits
+    from codex_harness.coordination.application.fleet.pause import FleetPause
+    from codex_harness.coordination.application.fleet.registry import FleetRegistry
+    from codex_harness.coordination.application.fleet.runner import AdmissionPermitExecutor
+
+    registry = FleetRegistry(service.store)
+    config = registry.registered()["config"]
+    executor = AdmissionPermitExecutor(registry, FleetAdmissionPermits(service.store), AdmissionControl(service.store),
+                                       FleetPause(service.store), fleet.lane_launcher(config, settings()))
+    return {**executor.execute(args.permit, max_wait_seconds=max(0, args.max_wait_seconds)), "exit_code": 0}
 
 
 def _resolved(read):

@@ -1,7 +1,7 @@
 """The `zeus fleet` root: the argument parser and the command bodies (M7 adapters/fleet_cli.py, cli.py fleet_command).
 
 Layer: entry
-Owns: add_parser (the argument shape of `zeus fleet`), run (its body: M7 fleet_command) and the private _check_resolved, _register, _enqueue, _record_delivery, _status, _backlog and _execute (M7 fleet_cli)
+Owns: add_parser (the argument shape of `zeus fleet`), run (its body: M7 fleet_command) and the private _check_resolved, _register, _enqueue, _record_delivery, _grant_permit, _status, _backlog and _execute (M7 fleet_cli)
 Does not own: dispatch (entry.cli main), the runner, the backlog and recovery wiring (composition.cli_fleet, composition.fleet_backlog) and the shared helpers (entry.cli.operation)
 Entry points: add_parser, run
 Contracts: INV-FLEET-001, INV-FLEET-BACKLOG-001
@@ -44,6 +44,16 @@ def add_parser(commands) -> None:
                               "accepted job (urn:zeus:owner-delivery:1); trusted owner CLI only")
     delivery.add_argument("--job", required=True, help="Existing accepted fleet job id")
     delivery.add_argument("--file", type=Path, required=True, help="Owner delivery document JSON")
+    grant_permit = sub.add_parser("grant-permit", help="Grant and acknowledge the one-use admission permit of the "
+                                  "OA delivery canary a digest-bound template names (urn:zeus:fleet-admission-permit:1); "
+                                  "owner-paused fleet, trusted owner CLI only")
+    grant_permit.add_argument("--template", required=True, help="sha256 digest of the approved template document")
+    grant_permit.add_argument("--file", type=Path, required=True, help="The approved template document JSON")
+    admit_permit = sub.add_parser("admit-permit", help="Claim, launch and settle the one job of a granted admission "
+                                  "permit; owner-paused fleet, trusted owner CLI only")
+    admit_permit.add_argument("--permit", required=True, help="Permit id")
+    admit_permit.add_argument("--max-wait-seconds", type=int, default=900, dest="max_wait_seconds",
+                              help="Bound of the wait for the one launched job; a child still running is never killed")
     reconcile = sub.add_parser("reconcile-interrupted", help="Settle one interrupted job from proven-dead "
                                "evidence (urn:zeus:fleet-recovery-evidence:1); paused fleet, owner CLI only")
     reconcile.add_argument("--file", type=Path, required=True, help="Owner recovery evidence document JSON")
@@ -141,6 +151,16 @@ def _record_delivery(service, args) -> dict:
     return {**FleetRegistry(service.store).record_delivery(args.job, document), "exit_code": 0}
 
 
+def _grant_permit(service, args) -> dict:
+    """INV-FLEET-001 (FA-SPEC A2): the digest on argv names the approved template; the document is validated against
+    it before any store read, and the binding and deadline are derived from the store, never from argv."""
+    from codex_harness.coordination.application.fleet.admission_permit import FleetAdmissionPermits
+    from codex_harness.entry.cli.operation import read_manifest
+
+    return {**FleetAdmissionPermits(service.store).grant_admission_permit(args.template, read_manifest(args.file)),
+            "exit_code": 0}
+
+
 def _status(service, args) -> dict:
     from codex_harness.coordination.application.fleet.registry import FleetRegistry
 
@@ -192,6 +212,10 @@ def _execute(service, args) -> dict:
         return _record_delivery(service, args)
     if command == "backlog":
         return _backlog(service, args)
+    if command == "grant-permit":
+        return _grant_permit(service, args)
+    if command == "admit-permit":
+        return cli_fleet.admit_permit(service, args)
     if command == "reconcile-interrupted":
         return cli_fleet.reconcile_interrupted(service, args, read_manifest(args.file))
     if command == "relocate":

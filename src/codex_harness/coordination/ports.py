@@ -47,7 +47,11 @@ OWNED_BUCKETS = ("tasks", "decisions_pending", "outbox", "events", "execution_fe
                  # S10 C6b: AuditServiceRunner's narrow state (M7 adapters/audit_service.py STATE_BUCKET)
                  "audit_service",
                  # S10 A5-1b: DLQ replay records (DESIGN-s10 §17a)
-                 "dead_letter_replays")
+                 "dead_letter_replays",
+                 # G1-14a omission: PR-3's one-job maintenance permits were written by coordination since G1-14a but never declared.
+                 "fleet_maintenance_admissions",
+                 # FA-IMPL (FA-SPEC Amendment A1): the typed one-use Fleet admission permits, a separate bucket.
+                 "fleet_admission_permits")
 
 
 class TaskRunner(Protocol):

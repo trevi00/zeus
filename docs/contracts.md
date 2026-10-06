@@ -1610,6 +1610,28 @@ canary's, an unknown dispatch is never relaunched, and the Fleet control row is 
 kind within exactly this scope (DEC-CAND option 1; it is not general paused admission); CUT-REV rules it again for
 the rebuilt payload.
 
+The typed one-use Fleet admission permit (FA-SPEC + Amendment A; AMD-1 B) is a SEPARATE bucket,
+`fleet_admission_permits` (one row per permit id, `acknowledged -> admitted -> closed{settled, expired, cancelled}`,
+history appended, a settled row never rewritten), that never generalizes or writes `fleet_maintenance_admissions`. Its
+schema is `urn:zeus:fleet-admission-permit:1` with the closed kind `delivery_canary` (any other kind is
+`permit_invalid(kind)` before a write). `codex_harness.coordination.application.fleet.admission_permit.FleetAdmissionPermits.grant_admission_permit`
+takes the digest of an approved template (`urn:zeus:fleet-admission-permit-template:1`; the issuer and a distinct
+`approver`, refused as `permit_invalid(template)` before anything is read when its digest differs), derives the binding
+from the one REQUESTED owner `delivery_canary` action under the template's plan, the lane and manifest digest from that
+action's QUEUED job and the one immutable `deadline` from the delivery's consumption record (`stage_deadline`, at most
+900 seconds), and grants AND acknowledges in ONE transaction while the Fleet is owner-paused. `admit_admission_permit`
+claims exactly that job in ONE transaction through the claim shared with the maintenance permit
+(`codex_harness.coordination.application.fleet.maintenance.claim_queued_job`; the permit codes are `permit_*`): an
+owner-paused Fleet (an activation hold is not a pause), the acknowledged permit, a fresh deadline, the action and the
+job still equal to the binding, and no maintenance permit naming that job; budget, capacity, lane, path, dependency
+and debt blockers still refuse and no other queued job is touched. `close_admission_permit` fails an unadmitted queued
+job `permit_expired` or `permit_cancelled` without a spawn and never expires an admitted or reserving one
+(`permit_reconciliation_required`). `codex_harness.coordination.application.fleet.runner.AdmissionPermitExecutor`
+(the owner CLI leaves `zeus fleet grant-permit --template <digest>` and `zeus fleet admit-permit --permit <id>`)
+shares the one-job launch with `MaintenanceCanaryExecutor`, settles the permit when the job is finalized and never
+relaunches an unknown dispatch. The Fleet control row (`paused`, `updated_at`) is never written, and the permit is not a
+maintenance closure or a resume.
+
 ## INV-FLEET-BACKLOG-001
 
 `zeus fleet backlog register|tick|status` admits ALREADY APPROVED work into the existing

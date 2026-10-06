@@ -37,6 +37,9 @@ BUCKET_UNITS = "fleet_units"
 # INV-FLEET-001 maintenance amendment (INV-HOST-DELIVERY-MAINTENANCE-001): one durable one-job permit per
 # maintenance id; `granted` -> `admitted` -> `closed`, or `granted` -> `closed`.
 BUCKET_MAINTENANCE = "fleet_maintenance_admissions"
+# FA-SPEC Amendment A1: the separate bucket of the typed one-use admission permits (`delivery_canary`), one row per
+# permit id; `acknowledged` -> `admitted` -> `closed`. PR-3's bucket above is never generalized or written by it.
+BUCKET_PERMITS = "fleet_admission_permits"
 # The owner-registered backlog plans, READ by the `forward_candidate` permit (`intake.domain.backlog`).
 BUCKET_BACKLOG_PLANS = BUCKET_PLANS
 # Control-row field naming the managed host activation that paused admission (`activation_gate`).
