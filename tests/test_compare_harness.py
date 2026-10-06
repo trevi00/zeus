@@ -141,18 +141,21 @@ S10_IMPLEMENTED = {"cli.parser", "entries.safe_matrix", "entry.cli_storefree", "
                    "coordination.continuation_binding", "entry.cli_governance.pg", "entry.cli_research_gov.pg",
                    "research.threshold_policy", "entry.cli_executor.pgredis", "entry.cli_cycle_serve.pgredis",
                    "entry.cli_operation.pg", "entry.cli_audit_service.pg", "entry.cli_desk_program.pg", "entry.cli_continuation.pg", "entry.cli_fleet.pg", "entry.cli_host_delivery.pg", "entry.cli_owner_actions.pg"}
+# G1-13c: the S2R maintenance families; M7 has no maintenance, so each declares its rebaseline reference and keeps its
+# golden under goldens/rebaseline/ (G1-13C-COMPARE-DECISION rule 5)
+G1_13_FAMILIES = {"delivery.maintenance", "delivery.maintenance.pg"}
 IMPLEMENTED = {**{f: "S1" for f in S1_FAMILIES}, **{f: "S2" for f in S2_FAMILIES},
                **{f: "S3" for f in S3_IMPLEMENTED}, **{f: "S4" for f in S4_IMPLEMENTED},
                **{f: "S5" for f in S5_IMPLEMENTED}, **{f: "S6" for f in S6_IMPLEMENTED},
                **{f: "S7" for f in S7_IMPLEMENTED}, **{f: "S8" for f in S8_IMPLEMENTED}, **{f: "S9" for f in S9_IMPLEMENTED},
-               **{f: "S10" for f in S10_IMPLEMENTED}}
+               **{f: "S10" for f in S10_IMPLEMENTED}, **{f: "G1-13" for f in G1_13_FAMILIES}}
 
 
 def test_every_scenario_has_a_reference_golden_and_only_implemented_slices_have_a_target():
     scenarios = [load(p) for p in sorted((COMPARE / "scenarios").glob("*.json"))]
     assert {s["family"] for s in scenarios} == (S0_FAMILIES | S1_FAMILIES | S2_FAMILIES | S3_FAMILIES
                                                 | S4_FAMILIES | S5_FAMILIES | S6_FAMILIES
-                                                | S7_FAMILIES | S8_FAMILIES | S9_FAMILIES | S10_FAMILIES)
+                                                | S7_FAMILIES | S8_FAMILIES | S9_FAMILIES | S10_FAMILIES | G1_13_FAMILIES)
     for s in scenarios:
         assert (COMPARE / s["reference_driver"]).is_file()
         assert (COMPARE / s["golden"]).is_file()

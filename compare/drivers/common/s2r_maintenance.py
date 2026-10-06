@@ -48,12 +48,20 @@ def maintain(system, document, evidence, phase="restart", **kwargs):
     return system["delivery"].maintain(document, evidence, phase, startup_seconds=0, poll_seconds=0, **kwargs)
 
 
+def wall(row: dict, field: str) -> dict:
+    """The row with one UNINJECTED wall-clock reading replaced by a label (documented normalization): `Releases` stamps
+    `created_at`, `ReleaseQueue` and the active pointer stamp `at` from the module's own `utcnow()`, which no fixture
+    injects, so the value is the run's real time on both sides. Every other field, including the injected clock's
+    `at` values inside the attempts, is kept."""
+    return None if row is None else {**row, field: "<wall-clock>"}
+
+
 def rows(system) -> dict:
     F = A.F
     return {"intent": F.intent_of(system), "plan_row": F.plan_row_of(system), "descriptor_row": F.row_of(system),
-            "queue": F.read(system["store"], "release_queue", system["release"]["id"]),
-            "release": F.read(system["store"], "releases", system["release"]["id"]),
-            "pointer": F.read(system["store"], "deployment", "active")}
+            "queue": wall(F.read(system["store"], "release_queue", system["release"]["id"]), "at"),
+            "release": wall(F.read(system["store"], "releases", system["release"]["id"]), "created_at"),
+            "pointer": wall(F.read(system["store"], "deployment", "active"), "at")}
 
 
 def check_restart_replay(root: Path) -> dict:

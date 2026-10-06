@@ -40,16 +40,11 @@ for _args in (("init", "-q", "-b", "main"), ("add", "--all"), ("commit", "-q", "
     assert _done.returncode == 0, _done.stderr[-500:]
 ported_support.ATTESTED["root"] = str(_root)
 
-import determinism  # noqa: E402
-import host_delivery_maintenance_fixtures as F  # noqa: E402
-import s2r_maintenance  # noqa: E402
 from types import SimpleNamespace  # noqa: E402
 
+import host_delivery_maintenance_fixtures as F  # noqa: E402
+import s2r_maintenance  # noqa: E402
 from codex_harness.storage.adapters.postgres_store import PostgresStore  # noqa: E402
-
-# The modules' own `utcnow()`/`uuid4()` (release `created_at`, the active pointer and queue `at`) follow one fake timeline
-# at the fixtures' START (2026-09-22), as the s7 delivery drivers do; the fixtures' injected Clock is unchanged.
-determinism.install(determinism.FakeClock(F.Clock().at), determinism.FakeIds())
 
 PG_DSN = os.environ.get("ZEUS_REBUILD_PG_DSN")
 SCENARIO = "delivery.maintenance.pg" if PG_DSN else "delivery.maintenance"
