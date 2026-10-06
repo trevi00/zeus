@@ -28,6 +28,8 @@ from pathlib import Path
 
 HERE = Path(__file__).resolve().parent
 ROOT = HERE.parent
+sys.path.insert(0, str(HERE))
+from layout import TARGET_DIR, TARGET_PREFIX  # noqa: E402  (the one layout constant per tool; DESIGN-s11 §20.5)
 OUT = HERE / "ledger-coverage.json"
 LEDGER_SHA256 = "38a84d48e4ede80839850fa087e87d526d885fdd32aa452193cb0ad307c048ee"
 STATUSES = ("unmapped", "designed", "implemented", "verified", "retired-with-authority")
@@ -248,7 +250,7 @@ UNTRACED_SLICE = {"kernel": "S1", "storage": "S1", "host_os": "S1", "routing": "
 
 
 # --- slice progress (§1.5): rows a slice has implemented, with their evidence --------------------
-TARGET_SRC = ROOT / "target" / "src"
+TARGET_SRC = ROOT / TARGET_DIR / "src"
 S1_TESTS = {
     "kernel": ["target:tests/test_s1_kernel.py", "compare:kernel.values"],
     "storage": ["target:tests/test_s1_storage_units.py", "compare:storage.memory", "compare:storage.pg",
@@ -680,9 +682,9 @@ def module_symbols(path: str, ctx: str) -> tuple[list[str], str]:
         return [f"frontend/{path.split('/', 1)[1]} (unchanged bytes; built assets packaged as target resources)"], \
             "design §3.1"
     if path.startswith("deploy/aibox") or path.startswith("scripts/aibox_data"):
-        return [f"target/{path} (S7 delivery tooling; invocation form kept)"], "design §3.1"
+        return [f"{TARGET_PREFIX}{path} (S7 delivery tooling; invocation form kept)"], "design §3.1"
     if path.startswith("src/zeus"):
-        return ["target/src/zeus (compatibility entry shim)"], "design §3.5"
+        return [f"{TARGET_PREFIX}src/zeus (compatibility entry shim)"], "design §3.5"
     layer, _, name = key.partition("/")
     if not name:
         return [f"codex_harness.{ctx}.{layer}"], "rule"
@@ -773,7 +775,7 @@ def build(ledger: dict, static: dict) -> dict:
         loaders = [ld["provenance"]["path"] for ld in r["loaders"]]
         ctx = next((module_context(p) for p in loaders if module_context(p)), None) or "kernel"
         rows.append(row(f"resource:{r['path']}", "resource", ctx,
-                        [f"target/{r['path']} (unchanged bytes)"], basis="design §3.1 resources",
+                        [f"{TARGET_PREFIX}{r['path']} (unchanged bytes)"], basis="design §3.1 resources",
                         evidence=["pending: resource byte-equality check in the owning slice"],
                         trace=r["status"], loader_basis="loader module" if loaders else "no loader listed"))
     for cap in ledger["capabilities"]:

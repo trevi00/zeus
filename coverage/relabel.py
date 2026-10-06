@@ -42,6 +42,7 @@ HERE = Path(__file__).resolve().parent
 ROOT = HERE.parent
 sys.path.insert(0, str(HERE))
 import generate  # noqa: E402  (stdlib harness module: the one table serialisation)
+from layout import TARGET_DIR, TARGET_PREFIX  # noqa: E402  (the one layout constant per tool; DESIGN-s11 §20.5)
 
 LEDGER = HERE / "ledger-coverage.json"
 BUNDLE = HERE / "run-evidence.json"
@@ -183,7 +184,7 @@ def read_junit(path: Path) -> dict[tuple[str, str], str]:
 def collect_nodes(root: Path) -> list[str]:
     """The node list of `cd target && uv run --frozen pytest --collect-only -q -p no:cacheprovider`."""
     done = subprocess.run(["uv", "run", "--frozen", "pytest", "--collect-only", "-q", "-p", "no:cacheprovider"],
-                          cwd=root / "target", capture_output=True, text=True)
+                          cwd=root / TARGET_DIR, capture_output=True, text=True)
     if done.returncode:
         raise Refused(f"collect-only exited {done.returncode}: {done.stdout[-300:]}{done.stderr[-300:]}")
     return parse_collected(done.stdout)
@@ -198,21 +199,28 @@ def parse_collected(text: str) -> list[str]:
 
 
 def is_test_module(path: str) -> bool:
-    return path.startswith("target/tests/") and path.endswith(".py") and Path(path).name.startswith("test_")
+    return path.startswith(TARGET_PREFIX + "tests/") and path.endswith(".py") and Path(path).name.startswith("test_")
 
 
 def head_files(root: Path, rev: str) -> dict[str, str]:
-    """`git ls-tree -r <rev> target/tests` -> path -> blob id."""
+    """`git ls-tree -r <rev> <target tests>` -> path -> blob id."""
     out = {}
-    for line in git(root, "ls-tree", "-r", rev, "--", "target/tests").splitlines():
+    for line in git(root, "ls-tree", "-r", rev, "--", TARGET_PREFIX + "tests").splitlines():
         meta, path = line.split("\t", 1)
         out[path] = meta.split()[2]
     return out
 
 
+def is_path_symbol(symbol: str) -> bool:
+    """A ledger target symbol is a repo-relative PATH when its first whitespace-separated token contains `/`; a dotted
+    symbol (`codex_harness.x:Y`) never does (0 of the ledger's 2683 `codex_harness` symbols). Independent of the
+    target prefix, so the promotion does not edit it (DESIGN-s11 §20.5)."""
+    return "/" in (symbol.split() or [""])[0]
+
+
 def bound_ids(root: Path, rev: str) -> dict[str, str]:
     return {p: git(root, "rev-parse", f"{rev}:{p}").strip()
-            for p in ("target/src", "compare", "target/pyproject.toml", "target/uv.lock")}
+            for p in (TARGET_PREFIX + "src", "compare", TARGET_PREFIX + "pyproject.toml", TARGET_PREFIX + "uv.lock")}
 
 
 def artifact_path(path: str) -> str:
@@ -272,16 +280,16 @@ def build_exercise(root: Path, path: Path, nodes: list[str], not_passed: dict[st
         raise Refused(f"exercise artifact {path}: not a readable gzip JSON ({exc})") from exc
     if not isinstance(doc, dict) or doc.get("schema") != EXERCISE_SCHEMA:
         raise Refused(f"exercise artifact: schema is not {EXERCISE_SCHEMA}")
-    if not str(doc.get("root", "")).replace("\\", "/").rstrip("/").endswith("target/src"):
+    if not str(doc.get("root", "")).replace("\\", "/").rstrip("/").endswith(TARGET_PREFIX + "src"):
         raise Refused(f"exercise artifact: root is not the target source root: {doc.get('root')!r}")
     functions, by_node = doc.get("functions"), doc.get("nodes")
     if not (isinstance(functions, list) and all(isinstance(f, str) and ":" in f for f in functions)
             and isinstance(by_node, dict)):
         raise Refused("exercise artifact: `functions` and `nodes` are not a name list and a node map")
     tree = Tree(root)
-    absent = sorted({f.split(":")[0] for f in functions if tree.module_file(f.split(":")[0], ("target/src",)) is None})
+    absent = sorted({f.split(":")[0] for f in functions if tree.module_file(f.split(":")[0], (TARGET_PREFIX + "src",)) is None})
     if len({f.split(":")[0] for f in functions}) == len(absent):  # a transient test-made module is ignored, not mapped
-        raise Refused(f"exercise artifact: no function module is in target/src, e.g. {absent[:3]}")
+        raise Refused(f"exercise artifact: no function module is in {TARGET_PREFIX}src, e.g. {absent[:3]}")
     known, passing = set(nodes), set(nodes) - set(not_passed)
     for node, indexes in by_node.items():
         if node not in known:
@@ -337,7 +345,7 @@ def build_bundle(root: Path, junit: Path | list[Path], compares: list[Path], own
         dup = [n for n, c in collections.Counter(listed).items() if c > 1]
         raise Refused(f"duplicate collected node: {dup[0]}")
     # a test module added after the evidence head has no testcase in the run: it is not part of this evidence
-    nodes = sorted(n for n in listed if "target/" + n.split("::")[0] in files)
+    nodes = sorted(n for n in listed if TARGET_PREFIX + n.split("::")[0] in files)
     mangled: dict[tuple[str, str], str] = {}
     for node in nodes:
         key = mangle(node)
@@ -389,8 +397,8 @@ def build_bundle(root: Path, junit: Path | list[Path], compares: list[Path], own
 def working_tree_drift(root: Path, head: str) -> list[str]:
     """Bound inputs whose working tree differs from `head` (R-L13 set). A test module is not checked here: a changed
     collection fails the JUnit mapping, and a changed evidence module is `freshness`'s finding."""
-    diff = git(root, "diff", "--name-status", "--no-renames", head, "--", "target/src", "compare",
-               "target/pyproject.toml", "target/uv.lock", "target/tests")
+    diff = git(root, "diff", "--name-status", "--no-renames", head, "--", TARGET_PREFIX + "src", "compare",
+               TARGET_PREFIX + "pyproject.toml", TARGET_PREFIX + "uv.lock", TARGET_PREFIX + "tests")
     out = []
     for line in diff.splitlines():
         status, path = line.split("\t", 1)
@@ -418,9 +426,9 @@ class Tree:
     def read(self, rel: str) -> str:
         return (self.root / rel).read_text(encoding="utf-8")
 
-    def module_file(self, dotted: str, bases=("target/src", "target")) -> str | None:
+    def module_file(self, dotted: str, bases=(TARGET_PREFIX + "src", TARGET_DIR)) -> str | None:
         for base in bases:
-            stem = f"{base}/" + dotted.replace(".", "/")
+            stem = (f"{base}/" if base else "") + dotted.replace(".", "/")
             for cand in (stem + ".py", stem + "/__init__.py"):
                 if self.exists(cand):
                     return cand
@@ -484,9 +492,9 @@ class Tree:
 
     def package_present(self, dotted: str) -> bool:
         """The dotted package exists in the target tree, as a module file or as a directory."""
-        return self.module_file(dotted) is not None or (self.root / "target/src" / dotted.replace(".", "/")).is_dir()
+        return self.module_file(dotted) is not None or (self.root / TARGET_PREFIX / "src" / dotted.replace(".", "/")).is_dir()
 
-    def resolve(self, symbol: str, bases=("target/src", "target")) -> bool:
+    def resolve(self, symbol: str, bases=(TARGET_PREFIX + "src", TARGET_DIR)) -> bool:
         """`module`, `module:Qual.name` or `module.Name` exists in the tree (gen_s11 `Tree.resolve`, R-L16)."""
         mod, _, qual = symbol.partition(":")
         file = self.module_file(mod, bases)
@@ -511,7 +519,7 @@ class Tree:
     def owned_buckets(self) -> dict[str, list[str]]:
         """bucket -> contexts whose `<ctx>/ports.py` declares it in OWNED_BUCKETS (AST; names resolved in the file)."""
         out: dict[str, list[str]] = collections.defaultdict(list)
-        for ports in sorted((self.root / "target/src/codex_harness").glob("*/ports.py")):
+        for ports in sorted((self.root / TARGET_PREFIX / "src/codex_harness").glob("*/ports.py")):
             rel = str(ports.relative_to(self.root))
             tree = self.tree_of(rel)
             if tree is None:
@@ -537,7 +545,7 @@ class Tree:
         return set(re.findall(r"INV-[A-Z0-9-]+-\d{3}", self.read("docs/contracts.md")))
 
     def scripts(self) -> dict[str, str]:
-        return tomllib.loads(self.read("target/pyproject.toml")).get("project", {}).get("scripts", {})
+        return tomllib.loads(self.read(TARGET_PREFIX + "pyproject.toml")).get("project", {}).get("scripts", {})
 
     def capabilities(self) -> dict[str, dict]:
         """ARCHITECTURE.md `## Capabilities`: TARGET symbols and tests, and the PROPOSED rows that still say pending."""
@@ -560,11 +568,11 @@ class Tree:
         return dict(out)
 
     def cites(self) -> dict[str, list[tuple[str, tuple[str, ...]]]]:
-        """contract ID -> [(test path relative to target, scope)] for every `target/tests/**/test_*.py` citation.
+        """contract ID -> [(test path relative to target, scope)] for every target `tests/**/test_*.py` citation.
 
         scope is () for a module-level citation, ('f',) a function, ('C', 'm') a method, ('C',) a class body."""
         out: dict[str, list] = collections.defaultdict(list)
-        for path in sorted((self.root / "target/tests").rglob("test_*.py")):
+        for path in sorted((self.root / TARGET_PREFIX / "tests").rglob("test_*.py")):
             rel = str(path.relative_to(self.root))
             text = self.read(rel)
             if "INV-" not in text:
@@ -586,7 +594,7 @@ class Tree:
                 for cid in set(re.findall(r"INV-[A-Z0-9-]+-\d{3}", line)):
                     inner = [s for s in spans if s[0] <= lineno <= s[1]]
                     scope = max(inner, key=lambda s: len(s[2]))[2] if inner else ()
-                    entry = (rel[len("target/"):], scope)
+                    entry = (rel[len(TARGET_PREFIX):], scope)
                     if entry not in out[cid]:
                         out[cid].append(entry)
         return dict(out)
@@ -1031,7 +1039,7 @@ class Relabel:
             path, _, node = e[len("target:"):].partition("::")
             if not (path.startswith("tests/") and path.endswith(".py")):
                 raise Refused(f"unrecognised target item: {e}")
-            if not self.tree.exists("target/" + path):
+            if not self.tree.exists(TARGET_PREFIX + path):
                 return EXEC, "missing", f"target file absent: {e}"
             if not node:
                 return (EXEC, *self.node_state(self.by_path.get(path, []), e, True))
@@ -1052,7 +1060,7 @@ class Relabel:
             if name.rsplit("/", 1)[-1] == "conftest.py":
                 # R-L2c-c (owner, S11): a conftest holds fixtures, never test nodes; like the R-L2d truncation it is
                 # context, exercised through the nodes that use it. A missing ported conftest stays missing.
-                if self.tree.exists("target/" + ported):
+                if self.tree.exists(TARGET_PREFIX + ported):
                     return CONTEXT, "context", ""
                 return EXEC, "missing", f"reference conftest has no same-name ported conftest: {e}"
             nodes = self.by_path.get(ported, [])
@@ -1143,14 +1151,15 @@ class Relabel:
             return True, ""
         if kind == "cli_node":  # `module:sub-command`: the sub-command label is not a Python name
             return t.resolve(s0.split(":")[0]), f"target module does not resolve: {s0}"
-        if kind == "public_api" and s0.startswith("target/"):
-            m = re.match(r"^(target/\S+\.py) \(.*\):(.+)$", syms[0])
+        path_symbol = is_path_symbol(sym)
+        if kind == "public_api" and path_symbol:
+            m = re.match(r"^(\S+\.py) \(.*\):(.+)$", syms[0])
             if not m or not t.exists(m.group(1)):
                 return False, f"target file does not exist: {syms[0].split(' (')[0]}"
             tree = t.tree_of(m.group(1))
             return (tree is not None and m.group(2) in Tree._bound(tree.body)), f"target symbol does not resolve: {syms[0]}"
-        if s0.startswith("target/") or s0.startswith("frontend/"):
-            ok = (t.exists(s0) or (t.root / s0).is_dir() or (s0.startswith("frontend/") and t.exists("target/" + s0)))
+        if path_symbol:
+            ok = (t.exists(s0) or (t.root / s0).is_dir() or (s0.startswith("frontend/") and t.exists(TARGET_PREFIX + s0)))
             return ok, f"target path does not exist: {s0}"
         if kind == "module" and s0.startswith("none:") and row.get("intent", "").startswith(LAYER_MARKERS_INTENT):
             # R-P2 removed marker (DESIGN-s11 §20.3): accepted only for a bare SOURCE marker whose package is absent.
@@ -1196,7 +1205,7 @@ class Relabel:
             if ok:
                 self.supplying.add(path)
             if path not in self._structural:
-                self._structural[path] = self.tree.structural_scopes("target/" + path)
+                self._structural[path] = self.tree.structural_scopes(TARGET_PREFIX + path)
             for n in ok:
                 parts = n.split("::")[1:]
                 key = tuple(parts[:-1] + [parts[-1].split("[")[0]]) if parts else ()
@@ -1280,10 +1289,10 @@ class Relabel:
                     if m:
                         if self.family(m.group(1), tok)[0] == "pass":
                             good, passed = True, passed + [f"compare:{m.group(1)}"]
-                    elif tok.startswith("target/tests/"):
-                        st = self.item("target:" + tok[len("target/"):])
+                    elif tok.startswith(TARGET_PREFIX + "tests/"):
+                        st = self.item("target:" + tok[len(TARGET_PREFIX):])
                         if st[1] == "pass":
-                            good, passed = True, passed + ["target:" + tok[len("target/"):]]
+                            good, passed = True, passed + ["target:" + tok[len(TARGET_PREFIX):]]
                 if not good:
                     unmet.append("no named TARGET-row test passed (ARCHITECTURE.md)")
                     blocking = True
@@ -1428,8 +1437,8 @@ def freshness(root: Path, bundle: dict, supplying: set[str]) -> list[str]:
         if current.get(path) != bundle["support"].get(path):
             problems.append(f"{path} {'added' if path not in bundle['support'] else 'removed' if path not in current else 'changed'}")
     for path in sorted(supplying):
-        if files.get("target/" + path) != bundle["test_modules"].get("target/" + path):
-            problems.append(f"target/{path} (evidence test module) changed")
+        if files.get(TARGET_PREFIX + path) != bundle["test_modules"].get(TARGET_PREFIX + path):
+            problems.append(f"{TARGET_PREFIX}{path} (evidence test module) changed")
     return problems
 
 
