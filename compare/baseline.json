@@ -53,6 +53,9 @@
    "decision": "/home/trevi/workspaces/zeus/artifacts/aibox-migration-001/evidence/rebuild/cutover/REBASELINE-MAIN-S2R.md",
    "rebaseline_wheel": {
     "filename": "zeus_harness-0.2.0-py3-none-any.whl",
+    "package_files": 276,
+    "package_files_digest": "5886acd023c736d6e2ecd717c403f21e9d6550d23a16bb9bbcced49b7df5e3f7",
+    "package_files_digest_method": "sha256 over sorted '<path>,sha256=<b64>' RECORD rows of codex_harness/ and zeus/ (the M7 method); enforced by run --reference rebaseline:<id>",
     "wheel_record_sha256": "42adb85f4aa1a131fcc1cf03207f18d613d2f3c3dc6f0a78e9a90d6abbf78a3a"
    }
   }

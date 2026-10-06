@@ -220,3 +220,27 @@ def test_the_selector_picks_the_rebaseline_venv_and_overlay_and_the_default_stay
     venv, source, entry_id = module.resolve_reference(f"rebaseline:{ENTRY_ID}", False)
     assert (venv, source, entry_id) == (module.SCRATCH / f"venv-rb-{ENTRY_ID}",
                                         module.SCRATCH / f"rebaseline-{ENTRY_ID}" / "source", ENTRY_ID)
+
+
+def test_package_file_identity_follows_the_origin_record_method():
+    """The rebaseline wheel's pinned identity uses the method the drivers' origin check applies to the installed
+    distribution (`origin.record_files`): sorted `<path>,sha256=<b64>` rows of codex_harness/ and zeus/ only, rows
+    without a hash excluded. A different package file changes the digest (G1-11 owner correction)."""
+    import hashlib
+
+    run = _run_module()
+    record = (b"codex_harness/a.py,sha256=AAA,10\r\nzeus/b.py,sha256=BBB,5\r\nother/c.py,sha256=CCC,1\r\n"
+              b"zeus_harness-0.2.0.dist-info/RECORD,,\r\n")
+    identity = run.package_file_identity(record)
+    expected_rows = sorted(["codex_harness/a.py,sha256=AAA", "zeus/b.py,sha256=BBB"])
+    assert identity == {"package_files": 2,
+                        "package_files_digest": hashlib.sha256("\n".join(expected_rows).encode()).hexdigest()}
+    changed = run.package_file_identity(record.replace(b"sha256=BBB", b"sha256=BBC"))
+    assert changed["package_files"] == 2 and changed["package_files_digest"] != identity["package_files_digest"]
+
+
+def test_rebaseline_entry_pins_its_own_package_file_identity():
+    run = _run_module()
+    entry = run.rebaseline_entry("main-s2r-b9d8f15")["rebaseline_wheel"]
+    assert entry["package_files"] == 276 and len(entry["package_files_digest"]) == 64
+    assert entry["package_files_digest"] != run.BASELINE["source"]["reference_wheel"]["package_files_digest"]

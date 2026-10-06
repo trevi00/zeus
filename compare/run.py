@@ -28,7 +28,9 @@ from __future__ import annotations
 
 import argparse
 import contextlib
+import csv
 import hashlib
+import io
 import json
 import os
 import re
@@ -351,10 +353,25 @@ def prepare_rebaseline(entry_id: str, scratch: Path | None = None, archive_base:
                    check=True)
     with zipfile.ZipFile(wheel) as archive_file:
         record = next(n for n in archive_file.namelist() if n.endswith(".dist-info/RECORD"))
-        facts["wheel_record_sha256"] = hashlib.sha256(archive_file.read(record)).hexdigest()
+        record_bytes = archive_file.read(record)
+        facts["wheel_record_sha256"] = hashlib.sha256(record_bytes).hexdigest()
+    # The package-file identity the drivers' origin check enforces (compare/harness/origin.py record_files: sorted
+    # '<path>,sha256=<b64>' RECORD rows of codex_harness/ and zeus/), computed here from the built wheel's own RECORD.
+    facts.update(package_file_identity(record_bytes))
     facts["wheel_filename_matches_baseline"] = wheel.name == expected["filename"]
-    facts["wheel_record_matches_baseline"] = facts["wheel_record_sha256"] == expected["wheel_record_sha256"]
+    facts["wheel_record_matches_baseline"] = (facts["wheel_record_sha256"] == expected["wheel_record_sha256"]
+                                              and facts["package_files"] == expected.get("package_files")
+                                              and facts["package_files_digest"] == expected.get("package_files_digest"))
     return facts
+
+
+def package_file_identity(record_bytes: bytes) -> dict:
+    """`package_files` and `package_files_digest` of a wheel RECORD, by the method of `origin.record_files`."""
+    rows = []
+    for row in csv.reader(io.StringIO(record_bytes.decode("utf-8"))):
+        if len(row) >= 2 and row[1] and row[0].split("/", 1)[0] in ("codex_harness", "zeus"):
+            rows.append(f"{row[0]},{row[1]}")
+    return {"package_files": len(rows), "package_files_digest": hashlib.sha256("\n".join(sorted(rows)).encode()).hexdigest()}
 
 
 def scenarios() -> list[dict]:
@@ -745,7 +762,9 @@ def run(record: bool, use_bwrap: bool, only: list[str], pg: bool = False,
     if not python.exists():
         sys.exit("reference venv missing: run `python compare/run.py prepare"
                  + (f" --rebaseline {rebaseline}`" if rebaseline else "`") + " first")
-    expected = BASELINE["source"]["reference_wheel"]
+    # A rebaseline reference is held to its own pinned package-file identity (G1-11 owner correction): the origin
+    # check proves the drivers ran on the rebaseline wheel, exactly as it proves M7 for the default reference.
+    expected = rebaseline_entry(rebaseline)["rebaseline_wheel"] if rebaseline else BASELINE["source"]["reference_wheel"]
     report, ok = {"bwrap": use_bwrap, "scenarios": {}}, True
     for scenario in scenarios():
         family = scenario["family"]
@@ -815,9 +834,7 @@ def run(record: bool, use_bwrap: bool, only: list[str], pg: bool = False,
             ok = False
         else:
             origin = result["origin"]
-            # The M7 package-file digest does not describe a rebaseline wheel (its delta changes package files); its
-            # identity is the RECORD sha `prepare --rebaseline` checks, so the origin facts are reported, not compared.
-            origin_ok = (True if rebaseline else origin.get("package_files_digest") == expected["package_files_digest"]
+            origin_ok = (origin.get("package_files_digest") == expected["package_files_digest"]
                          and origin.get("package_files") == expected["package_files"])
             if record:
                 golden_path.write_text(json.dumps(result["result"], sort_keys=True, indent=1,
