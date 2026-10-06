@@ -261,6 +261,154 @@ def reader_problem(entry: dict, tree: dict) -> str | None:
     return None if facts["required"] <= CALLS[entry["call"]] else "too_many_parameters"
 
 
+# ---- the column scan (regenerates the columns of the catalog; never by hand) ----
+
+# The cutover columns (owner decisions DD-19/DD-20, AMD-1 errata E2/E6): the oracle A is rebaseline entry 2, B the lane3
+# head at CUT-INT, and the PR-3 release and the managed payload join the D columns.
+CUTOVER_TREES = {
+    "A": {"rev": "bb579d558cd5902fa9d6493fad9b92ebd5be4b68", "root": "src/codex_harness",
+          "label": "the rebaseline wheel (AMD-1 A), rebaseline entry 2 (G1-09F): bb579d55"},
+    "B": {"rev": "8be54d0a336bf0e8c7b609274ec1334e16468a37", "root": "src/codex_harness",
+          "label": "final regeneration at CUT-INT on H: the lane3 head 8be54d0a (S2R port G1-13, PR-3 batch a G1-14a)"},
+    "D": {"1b9d746c": {"rev": "1b9d746c52ab1a116beda5c72a23f86903aeb4f3", "root": "src/codex_harness",
+                       "label": "the PR-3 release"},
+          "ec8aa0a2": {"rev": "ec8aa0a2947f964eeb94faed20cb6cf05e0681f6", "root": "src/codex_harness",
+                       "label": "the managed payload runtime"}},
+}
+# The PR-3 bucket: its row, and the reader traced in the PR-3 trees (`permit_view` projects one permit row).
+PR3_BUCKET = "fleet_maintenance_admissions"
+PR3_ROW = {"owner": "coordination", "amd1": "B", "reader": "domain/fleet_maintenance.py:permit_view", "call": "body"}
+PR3_ABSENT = "bucket introduced by PR-3"
+
+
+def _git(*args: str) -> subprocess.CompletedProcess:
+    return subprocess.run(["git", *args], cwd=REPO, capture_output=True, check=False)
+
+
+def tree_files(tree: dict) -> list[str]:
+    """The python files of a pinned tree, relative to its root."""
+    done = _git("ls-tree", "-r", "--name-only", tree["rev"], "--", tree["root"])
+    prefix = tree["root"] + "/"
+    return sorted(f[len(prefix):] for f in done.stdout.decode().splitlines() if f.endswith(".py"))
+
+
+def tree_mentions(tree: dict, text: str) -> bool:
+    """Whether `text` occurs anywhere under the tree's root at its commit (`git grep -F`)."""
+    return _git("grep", "-q", "-F", text, tree["rev"], "--", tree["root"]).returncode == 0
+
+
+def locate(citation: str, tree: dict) -> str | None:
+    """The citation itself when its def exists in `tree`, else the same def (file basename and dotted name) elsewhere in
+    the tree (a context move), else None."""
+    if reader_signature(citation, tree) is not None:
+        return citation
+    path, _, dotted = citation.partition(":")
+    base = path.rsplit("/", 1)[-1]
+    return next((f"{c}:{dotted}" for c in tree_files(tree)
+                 if c.rsplit("/", 1)[-1] == base and reader_signature(f"{c}:{dotted}", tree)), None)
+
+
+def trace_entry(seed: dict, tree: dict) -> dict:
+    """The typed entry for the seed `{"reader", "call"}` traced in `tree`, or a `none` entry saying why it is not callable."""
+    found = locate(seed["reader"], tree)
+    if found is not None:
+        entry = {"reader": found, "call": seed["call"]}
+        problem = reader_problem(entry, tree)
+        if problem is None:
+            return entry
+        return {"reader": None, "reason": f"the reader ({found}) is not callable in {tree['rev'][:8]}: {problem}"}
+    return {"reader": None, "reason": f"the reader ({seed['reader']}) is not callable in {tree['rev'][:8]}: unresolved"}
+
+
+def _column(old: dict | None, seeds: list[dict], tree: dict, *, gate: str | None, absent: str, default: str,
+            carried_from: str | None) -> dict:
+    """One regenerated column entry. `gate`: a bucket name that must occur in the tree, else the entry is `none` with
+    `absent`. Seeds are traced in order (the first that resolves wins; none resolving leaves the last reason). With no
+    typed seed the old untyped entry is carried (reason annotated with the scan it came from), else `default`."""
+    if gate and not tree_mentions(tree, gate):
+        return {"reader": None, "reason": absent}
+    entry = None
+    for seed in seeds:
+        entry = trace_entry(seed, tree)
+        if entry["reader"] is not None:
+            return entry
+    if entry is not None:
+        return entry
+    if old is None or carried_from is None:
+        return {"reader": None, "reason": default}
+    return {"reader": None, "reason": f"{old['reason']} [carried from the {carried_from} scan]"}
+
+
+def _typed(entry: dict | None) -> list[dict]:
+    return [entry] if entry and entry.get("reader") else []
+
+
+def regenerate(catalog: dict, trees: dict = CUTOVER_TREES) -> dict:
+    """The catalog with the cutover columns: A and B re-pinned with every typed reader re-traced in the new tree (the old
+    citation, else the same def elsewhere in it; B also tries A's new citation, which is how the S2R readers move in),
+    the new D columns traced from A's new citation, and the PR-3 bucket row added (a reader per column, or `none` +
+    "bucket introduced by PR-3" where the tree lacks the bucket name). Untyped entries are carried with their reason.
+    A column already pinned at its new rev is left as it is, so a second run changes nothing."""
+    out = json.loads(json.dumps(catalog))
+    old_trees = out["trees"]
+    pin = {c: old_trees[c]["rev"] != trees[c]["rev"] for c in ("A", "B")}
+    old_rev = {c: (old_trees[c]["rev"] or "")[:8] or "checkout" for c in ("A", "B")}
+    new_d = [n for n in trees["D"] if n not in old_trees["D"]]
+    out["trees"] = {"A": dict(trees["A"]) if pin["A"] else old_trees["A"], "B": dict(trees["B"]) if pin["B"] else old_trees["B"],
+                    "D": {**old_trees["D"], **{n: dict(trees["D"][n]) for n in new_d}}}
+    tree = {"A": out["trees"]["A"], "B": out["trees"]["B"], **out["trees"]["D"]}
+    if PR3_BUCKET not in out["buckets"]:
+        out["buckets"][PR3_BUCKET] = {"owner": PR3_ROW["owner"], "amd1": PR3_ROW["amd1"], "A": None, "B": None,
+                                      "D": {n: None for n in old_trees["D"]}}
+    permit = {"reader": PR3_ROW["reader"], "call": PR3_ROW["call"]}
+    for name, row in {**out["buckets"], **out["redis"]}.items():
+        pr3, fa = name == PR3_BUCKET, name == "fleet_admission_permits"
+        gate = name if pr3 or fa else None
+        gone = PR3_ABSENT if pr3 else "the bucket name does not occur in the pinned tree"
+        seeds = [permit] if pr3 else None
+        if pr3 or pin["A"]:
+            row["A"] = _column(row["A"], seeds or _typed(row["A"]), tree["A"], gate=gate, default="",
+                               absent=PR3_ABSENT if pr3 else (row["A"] or {}).get("reason", ""), carried_from=old_rev["A"])
+        if pr3 or pin["B"]:
+            row["B"] = _column(row["B"], seeds or _typed(row["B"]) + _typed(row["A"]), tree["B"], gate=gate, default="",
+                               absent=gone, carried_from=old_rev["B"])
+        for revname in [*old_trees["D"], *new_d]:
+            if row["D"].get(revname) is not None:
+                continue
+            row["D"][revname] = _column(None, seeds or _typed(row["A"]), tree[revname], gate=gate, absent=gone,
+                                        default="no typed reader on A for this bucket (same untyped-dict reading in "
+                                                "the R0 release)", carried_from=None)
+        row["D"] = {n: row["D"][n] for n in out["trees"]["D"]}
+    if out["trees"]["B"]["rev"] == trees["B"]["rev"]:
+        _s2r(out)
+    return out
+
+
+S2R_B = {  # the S2R shape rows' B texts, each citation verified in the B tree by `regenerate` (G1-13a placed them)
+    "intent `generations`": ("delivery/domain/host_delivery.py:maintenance_of (and validate_active_generation for one row: "
+                             "delivery/domain/maintenance.py:validate_active_generation)"),
+    "maintenance rows": "delivery/domain/host_delivery.py:maintenance_of",
+    "release-queue": ("review/application/release_queue.py:MAINTENANCE_SCOPE, read by ReleaseQueue.owned_maintenance "
+                      "(needs a transaction: no single-record reader)"),
+}
+
+
+def _s2r(out: dict) -> None:
+    """Set each S2R shape row's B text from `S2R_B`, refusing a citation that does not resolve in the B tree."""
+    for item in out["s2r"]:
+        key = next(k for k in S2R_B if item["shape"].startswith(k))
+        text = S2R_B[key]
+        cites = re.findall(r"[\w/]+\.py:[A-Za-z_][\w.]*", text)
+        if any(reader_signature(c, out["trees"]["B"]) is None and not c.endswith("MAINTENANCE_SCOPE") for c in cites) \
+                or not tree_mentions(out["trees"]["B"], "MAINTENANCE_SCOPE"):
+            raise Refused("catalog_malformed", f"s2r B citation unresolved: {key}")
+        item["B"] = text
+
+
+def write_catalog(catalog: dict, path: Path | str = READERS) -> None:
+    Path(path).write_text(json.dumps(catalog, indent=1, ensure_ascii=False), encoding="utf-8")
+
+
 # ---- coverage ----
 
 def d0_buckets(facts: dict) -> dict[str, list[str]]:
@@ -413,6 +561,25 @@ def run_r4(sides: dict[str, R4Side], copy, database: str, catalog: dict, d0_reco
     if failures:
         raise R4Failed(document)
     return document
+
+
+def main(argv: list[str] | None = None) -> int:
+    """`regenerate`: rewrite `r4-readers.json` with the cutover columns (the AST scan of `regenerate`)."""
+    import argparse
+
+    parser = argparse.ArgumentParser(prog="r4", description=main.__doc__)
+    sub = parser.add_subparsers(dest="command", required=True)
+    sub.add_parser("regenerate", help="re-pin the catalog columns and re-trace every typed reader")
+    args = parser.parse_args(argv)
+    if args.command == "regenerate":
+        write_catalog(regenerate(load_catalog()))
+        load_catalog()
+        print(f"wrote {READERS}")
+    return 0
+
+
+if __name__ == "__main__":
+    raise SystemExit(main())
 
 
 __all__ = ["R4Failed", "R4Side", "load_catalog", "validate_catalog", "coverage", "reader_problem", "reader_signature",

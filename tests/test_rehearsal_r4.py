@@ -54,8 +54,10 @@ def test_the_catalog_owners_are_the_target_owned_buckets_and_every_owned_bucket_
     assert len(owned) == 185
     assert {b: row["owner"] for b, row in catalog["buckets"].items() if "amd1" not in row} == owned
     declared = {b for b, row in catalog["buckets"].items() if "amd1" in row}
-    assert declared == {"fleet_admission_permits"}  # the FA permit bucket (AMD-1 B) is the one bucket beyond OWNED_BUCKETS
+    # the FA permit bucket (AMD-1 B) and its PR-3 successor are the buckets beyond this checkout's OWNED_BUCKETS
+    assert declared == {"fleet_admission_permits", "fleet_maintenance_admissions"}
     assert catalog["buckets"]["fleet_admission_permits"]["amd1"] == "B"
+    assert catalog["buckets"]["fleet_maintenance_admissions"]["owner"] == "coordination"
 
 
 def test_the_s2r_shapes_and_the_fa_permit_bucket_are_listed_explicitly(catalog):
@@ -63,9 +65,10 @@ def test_the_s2r_shapes_and_the_fa_permit_bucket_are_listed_explicitly(catalog):
     assert shapes == {"intent `generations`", "maintenance rows", "release-queue maintenance scope `host_delivery_maintenance`"}
     assert {item["bucket"] for item in catalog["s2r"]} == {"host_delivery_intents", "release_queue"}
     assert catalog["buckets"]["host_delivery_intents"]["A"]["reader"].endswith(":maintenance_of")
-    # this tree has no S2R reader: B is `none` with the reason naming its unit, so the sweep fails here by design
-    assert catalog["buckets"]["host_delivery_intents"]["B"]["reader"] is None
-    assert "G1" in catalog["buckets"]["host_delivery_intents"]["B"]["reason"]
+    # the B tree (G1-13a) carries the S2R reader: the intent bucket's B entry is that reader, in the delivery context
+    assert catalog["buckets"]["host_delivery_intents"]["B"]["reader"] == "delivery/domain/host_delivery.py:maintenance_of"
+    assert all(item["B"].startswith(("delivery/domain/host_delivery.py:maintenance_of", "review/application/release_queue.py"))
+               for item in catalog["s2r"])
     assert catalog["buckets"]["fleet_admission_permits"]["B"]["reader"] is None
 
 
@@ -106,6 +109,44 @@ def test_a_malformed_catalog_is_refused(catalog, mutate):
     with pytest.raises(r4.Refused) as caught:
         r4.validate_catalog(broken)
     assert caught.value.code == "catalog_malformed"
+
+
+# ---- the cutover columns and the PR-3 bucket (RH-4c; AMD-1 errata E2/E6, reconciliation DD-19/DD-20) ----
+
+PINS = {"A": "bb579d558cd5902fa9d6493fad9b92ebd5be4b68", "B": "8be54d0a336bf0e8c7b609274ec1334e16468a37",
+        "1b9d746c": "1b9d746c52ab1a116beda5c72a23f86903aeb4f3", "ec8aa0a2": "ec8aa0a2947f964eeb94faed20cb6cf05e0681f6"}
+OLD_D = ["08bb9a44", "5aa220fd", "ced20281", "5c67f099"]
+
+
+def test_the_columns_are_the_cutover_pins_and_the_existing_d_columns_stay(catalog):
+    """The pinned revisions are the owner decisions (spec RH-4c item 1), not read back from the catalog's own output."""
+    trees = catalog["trees"]
+    assert trees["A"]["rev"] == PINS["A"] and "rebaseline entry 2" in trees["A"]["label"]
+    assert trees["B"]["rev"] == PINS["B"] and "final regeneration at CUT-INT on H" in trees["B"]["label"]
+    assert list(trees["D"]) == [*OLD_D, "1b9d746c", "ec8aa0a2"]
+    assert {n: trees["D"][n]["rev"] for n in ("1b9d746c", "ec8aa0a2")} == {n: PINS[n] for n in ("1b9d746c", "ec8aa0a2")}
+    assert all(t["root"] == "src/codex_harness" for t in [trees["A"], trees["B"], *trees["D"].values()])
+    for row in [*catalog["buckets"].values(), *catalog["redis"].values()]:
+        assert list(row["D"]) == [*OLD_D, "1b9d746c", "ec8aa0a2"]
+
+
+def test_the_pr3_bucket_has_a_reader_per_column_or_the_pr3_reason(catalog):
+    row = catalog["buckets"]["fleet_maintenance_admissions"]
+    assert row["owner"] == "coordination"
+    for column in OLD_D + ["ec8aa0a2"]:  # trees that predate PR-3 (or the stripped payload): no such bucket
+        assert row["D"][column] == {"reader": None, "reason": "bucket introduced by PR-3"}, column
+    assert row["A"] == {"reader": "domain/fleet_maintenance.py:permit_view", "call": "body"}  # bb579d55 carries it
+    assert row["D"]["1b9d746c"] == row["A"]
+    assert row["B"] == {"reader": "coordination/domain/fleet_maintenance.py:permit_view", "call": "body"}
+
+
+def test_the_scan_is_idempotent_and_refuses_a_citation_it_cannot_trace(catalog):
+    assert r4.regenerate(catalog) == catalog
+    older = copy.deepcopy(catalog)
+    older["trees"]["B"] = {"rev": None, "root": "src/codex_harness", "label": "this checkout"}  # force a re-scan of B
+    again = r4.regenerate(older)
+    assert again["buckets"]["host_delivery_intents"]["B"] == catalog["buckets"]["host_delivery_intents"]["B"]
+    assert r4.trace_entry({"reader": "domain/nope.py:missing", "call": "body"}, catalog["trees"]["A"])["reader"] is None
 
 
 # ---- coverage ----
