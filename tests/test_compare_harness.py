@@ -20,7 +20,9 @@ def test_baseline_pins_source_and_leaves_deployment_pending():
     assert base["source"]["commit"] == "e38aa722ff1e91dc01ec650689cfe3eebe1ff699"
     assert base["source"]["tree"] == "5a3622304ab4b20902ad541a363d36526b829ca9"
     assert base["deployment"]["status"] == "pending" and base["deployment"]["collected_at"] is None
-    assert base["approved_rebaselines"] == []
+    (entry,) = base["approved_rebaselines"]
+    assert entry["id"] == "main-s2r-b9d8f15" and entry["commit"] == "b9d8f15bc6ab2d84ec57906d1b938bd8accc2fe8"
+    assert entry["tree"] == "87c62dc3c04952ec48244d9062fa6efca137c4d0" and len(entry["delta_paths"]) == 19
     assert base["layout"]["branch"] == "rebuild/zeus-rebuild-001"
 
 

@@ -4,6 +4,7 @@ Layer: harness (never shipped); standard library only. Usage from the worktree r
 
     python compare/run.py check-tree          # S0 check 1: reference bytes, allowed paths, no secrets
     python compare/run.py prepare             # build the reference wheel from `git archive SOURCE`
+    python compare/run.py prepare --rebaseline ID   # the approved rebaseline's wheel (SOURCE + delta archive)
     python compare/run.py run                 # run every scenario; compare with committed goldens
     python compare/run.py run --record        # reference-only: (re)write reference goldens
     python compare/run.py run --pg            # also the scenarios that need a disposable PostgreSQL
@@ -142,6 +143,29 @@ def _hash_working_files(root: Path, paths: list[str]) -> dict[str, str]:
     return dict(zip(present, done.stdout.split()))
 
 
+def _rebaseline_blobs(root: Path, entry: dict) -> dict[str, str]:
+    """The entry commit's blob id for each of its delta paths (a path the commit does not hold is absent)."""
+    listing = git("ls-tree", "-r", "-z", entry["commit"], "--", *entry["delta_paths"], cwd=root)
+    blobs = {}
+    for row in listing.split("\0"):
+        if row:
+            meta, path = row.split("\t", 1)
+            blobs[path] = meta.split()[2]
+    return blobs
+
+
+def _check_rebaseline_entry(root: Path, entry: dict, blobs: dict[str, str]) -> dict:
+    """G1-11: the entry's own identity facts (AMD-1 A): `commit^{tree}` equals `tree` and `delta_paths` equals
+    `git diff --name-only parent_source commit`. The archive-file comparison itself is rule (b) above."""
+    tree = git("rev-parse", f"{entry['commit']}^{{tree}}", cwd=root).strip()
+    diff = sorted(p for p in git("diff", "--name-only", entry["parent_source"], entry["commit"], cwd=root).splitlines() if p)
+    return {"id": entry["id"], "tree_matches": tree == entry["tree"],
+            "delta_paths_match": diff == sorted(entry["delta_paths"]) == list(entry["delta_paths"]),
+            "delta_paths_in_commit": sorted(blobs) == sorted(entry["delta_paths"]),
+            "ok": tree == entry["tree"] and diff == sorted(entry["delta_paths"]) == list(entry["delta_paths"])
+            and sorted(blobs) == sorted(entry["delta_paths"])}
+
+
 def _check_tree_promoted(root: Path, source_commit: str, baseline: dict) -> dict:
     """DESIGN-s11 §20.5 archive rule (promoted layout): (a) every SOURCE path has its SOURCE blob at the root path or at
     `reference/m7/<path>` (or is an additions-only path); (b) everything under `reference/` is `reference/README.md` or
@@ -166,16 +190,25 @@ def _check_tree_promoted(root: Path, source_commit: str, baseline: dict) -> dict
     tracked_reference = git("ls-files", "-z", "--", "reference", cwd=root).split("\0")
     untracked_reference = git("ls-files", "-z", "--others", "--exclude-standard", "--", "reference", cwd=root).split("\0")
     reference = sorted({p for p in tracked_reference + untracked_reference if p and (root / p).is_file()})
-    working = _hash_working_files(root, [*source, *(archive + p for p in source), *reference])
+    rebaselines = baseline.get("approved_rebaselines", [])
+    rebaseline_blobs = {entry["id"]: _rebaseline_blobs(root, entry) for entry in rebaselines}
+    rebaseline_files = {f"{entry['archive_root'].rstrip('/')}/{q}": blob
+                        for entry in rebaselines for q, blob in rebaseline_blobs[entry["id"]].items()}
+    working = _hash_working_files(root, [*source, *(archive + p for p in source), *reference, *rebaseline_files])
     missing = sorted(p for p, blob in source.items() if p not in layout["additions_only"]
                      and working.get(p) != blob and working.get(archive + p) != blob)
+    # G1-11: rule (b) also accepts `reference/<entry.id>/<q>` for a delta path q whose blob equals the entry commit's.
     foreign = [p for p in reference if p != "reference/README.md"
-               and not (p.startswith(archive) and source.get(p[len(archive):]) == working.get(p))]
+               and not (p.startswith(archive) and source.get(p[len(archive):]) == working.get(p))
+               and not (p in rebaseline_files and rebaseline_files[p] == working.get(p))]
+    foreign += sorted(p for p in rebaseline_files if p not in set(reference))  # a missing delta file
+    foreign = sorted(set(foreign))
     changed = [p for p in git("diff", "--name-only", source_commit, "--", cwd=root).splitlines() if p]
     changed += [p for p in git("ls-files", "--others", "--exclude-standard", cwd=root).splitlines() if p]
     # S11 unit P (owner): an archive file equal to SOURCE's is SOURCE's own bytes (rule (b)), not new content; its
     # fixture DSNs and token-shaped test strings were never a candidate change, so (c) scans only new or changed bytes.
     archived_equal = {p for p in reference if p.startswith(archive) and source.get(p[len(archive):]) == working.get(p)}
+    archived_equal |= {p for p in reference if p in rebaseline_files and rebaseline_files[p] == working.get(p)}
     shaped = []
     for path in sorted(set(changed) - archived_equal):
         file = root / path
@@ -186,7 +219,9 @@ def _check_tree_promoted(root: Path, source_commit: str, baseline: dict) -> dict
             if pattern.search(text):
                 shaped.append({"path": path, "pattern": pattern.pattern})
     head_tree = git("rev-parse", f"{source_commit}^{{tree}}", cwd=root).strip()
-    return {"mode": "promoted", "source_commit": source_commit, "source_tree": head_tree,
+    entries = [_check_rebaseline_entry(root, entry, rebaseline_blobs[entry["id"]]) for entry in rebaselines]
+    extra = {"rebaselines": entries} if entries else {}
+    return {"mode": "promoted", "source_commit": source_commit, "source_tree": head_tree, **extra,
             "source_tree_matches_baseline": head_tree == baseline["source"]["tree"],
             "missing_source_paths": missing[:LIST_BOUND], "missing_source_paths_count": len(missing),
             "foreign_reference_paths": foreign[:LIST_BOUND], "foreign_reference_paths_count": len(foreign),
@@ -194,6 +229,7 @@ def _check_tree_promoted(root: Path, source_commit: str, baseline: dict) -> dict
             "additions_only": additions_only,
             "ok": not missing and not foreign and not shaped
             and all(v["ok"] for v in additions_only.values())
+            and all(e["ok"] for e in entries)
             and head_tree == baseline["source"]["tree"]}
 
 
@@ -230,6 +266,94 @@ def prepare() -> dict:
     facts["wheel_sha256_matches_baseline"] = facts["wheel_sha256"] == expected["sha256"]
     facts["wheel_record_matches_baseline"] = (facts["wheel_record_sha256"]
                                               == expected["wheel_record_sha256"])
+    return facts
+
+
+def _blob_ids(base: Path, paths: list[str], filters: bool = False) -> dict[str, str]:
+    """Blob ids of the files under `base` (`git hash-object`, no object writes; a symlink hashes its link text).
+    `filters=True` hashes through the tree's own `.gitattributes` clean filters."""
+    flag = [] if filters else ["--no-filters"]
+    files = [p for p in paths if not (base / p).is_symlink()]
+    ids = dict(zip(files, subprocess.run(
+        ["git", "hash-object", *flag, "--stdin-paths"], cwd=base, check=True, capture_output=True,
+        text=True, input="".join(p + "\n" for p in files)).stdout.split())) if files else {}
+    for p in paths:
+        if (base / p).is_symlink():
+            ids[p] = subprocess.run(["git", "hash-object", "--no-filters", "--stdin"], check=True, capture_output=True,
+                                    text=True, input=os.readlink(base / p)).stdout.strip()
+    return ids
+
+
+def rebaseline_entry(entry_id: str, baseline: dict | None = None) -> dict:
+    entries = (BASELINE if baseline is None else baseline).get("approved_rebaselines", [])
+    found = [e for e in entries if e["id"] == entry_id]
+    if not found:
+        sys.exit(f"unknown rebaseline id {entry_id!r}; approved: {[e['id'] for e in entries]}")
+    return found[0]
+
+
+def prepare_rebaseline(entry_id: str, scratch: Path | None = None, archive_base: Path | None = None) -> dict:
+    """G1-11 (AMD-1 A): SCRATCH/rebaseline-<id>/source = the SOURCE archive overlaid with the entry's delta archive,
+    proven equal to the pinned commit's tree (path -> blob) BEFORE any build; then the same `uv build --wheel` and
+    install as `prepare`, into `venv-rb-<id>`. Plain `prepare` is untouched."""
+    entry = rebaseline_entry(entry_id)
+    scratch = SCRATCH if scratch is None else scratch
+    archive_dir = (ROOT if archive_base is None else archive_base) / entry["archive_root"]
+    base = scratch / f"rebaseline-{entry['id']}"
+    source, dist, venv = base / "source", base / "dist", scratch / f"venv-rb-{entry['id']}"
+    for path in (source, dist):
+        shutil.rmtree(path, ignore_errors=True)
+        path.mkdir(parents=True)
+    subprocess.run(["tar", "-x", "-C", str(source)], check=True,
+                   input=subprocess.run(["git", "archive", SOURCE_COMMIT], cwd=ROOT, check=True,
+                                        capture_output=True).stdout)
+    for rel in entry["delta_paths"]:
+        target = source / rel
+        target.parent.mkdir(parents=True, exist_ok=True)
+        target.unlink(missing_ok=True)
+        if (archive_dir / rel).is_file():  # a missing archive file stays absent: the proof below names it
+            shutil.copyfile(archive_dir / rel, target)
+    overlay_paths = sorted(str(p.relative_to(source)) for p in source.rglob("*") if p.is_file() or p.is_symlink())
+    pinned = {}
+    for row in git("ls-tree", "-r", "-z", entry["commit"]).split("\0"):
+        if row:
+            meta, path = row.split("\t", 1)
+            if meta.split()[1] == "blob":
+                pinned[path] = meta.split()[2]
+    overlay = _blob_ids(source, overlay_paths)
+    # `git archive` applies the SOURCE tree's own `.gitattributes` eol rules (`*.ps1` is CRLF in the extraction), so a
+    # non-delta path may equal its pinned blob only through the clean filter; a delta path is the commit's bytes
+    # copied verbatim and must equal its blob exactly (a CRLF-tampered delta file cannot pass through a filter).
+    unmatched = [p for p in overlay_paths if p not in entry["delta_paths"] and overlay[p] != pinned.get(p)]
+    overlay.update({p: b for p, b in _blob_ids(source, unmatched, filters=True).items() if b == pinned.get(p)})
+    differing = sorted(p for p in overlay.keys() | pinned.keys() if overlay.get(p) != pinned.get(p))
+    facts = {"rebaseline": entry["id"], "overlay_paths": len(overlay), "pinned_paths": len(pinned),
+             "overlay_matches_tree": not differing, "differing_paths": differing[:LIST_BOUND],
+             "differing_paths_count": len(differing)}
+    if differing:
+        facts["refused"] = f"the overlay does not reproduce tree {entry['tree']}; nothing was built"
+        facts["wheel_record_matches_baseline"] = False
+        return facts
+    uv = shutil.which("uv") or sys.exit("uv is required to build the rebaseline wheel")
+    subprocess.run([uv, "build", "--wheel", "--out-dir", str(dist)], cwd=source, check=True, capture_output=True)
+    wheel = next(dist.glob("*.whl"))
+    expected = entry["rebaseline_wheel"]
+    facts.update(wheel=wheel.name, wheel_sha256=hashlib.sha256(wheel.read_bytes()).hexdigest())
+    requirements = base / "rb-requirements.txt"
+    requirements.write_text(subprocess.run(
+        [uv, "export", "--frozen", "--no-dev", "--no-emit-project", "--no-hashes", "--format",
+         "requirements.txt", "-q"], cwd=source, check=True, capture_output=True, text=True).stdout)
+    python = venv / "bin" / "python"
+    if not python.exists():
+        subprocess.run([uv, "venv", "-q", "--python", BASELINE["environments"]["python"], str(venv)], check=True)
+    subprocess.run([uv, "pip", "install", "-q", "--python", str(python), "-r", str(requirements)], check=True)
+    subprocess.run([uv, "pip", "install", "-q", "--python", str(python), "--no-deps", "--reinstall", str(wheel)],
+                   check=True)
+    with zipfile.ZipFile(wheel) as archive_file:
+        record = next(n for n in archive_file.namelist() if n.endswith(".dist-info/RECORD"))
+        facts["wheel_record_sha256"] = hashlib.sha256(archive_file.read(record)).hexdigest()
+    facts["wheel_filename_matches_baseline"] = wheel.name == expected["filename"]
+    facts["wheel_record_matches_baseline"] = facts["wheel_record_sha256"] == expected["wheel_record_sha256"]
     return facts
 
 
@@ -600,11 +724,27 @@ def run_target(driver_path: Path, work: Path, extra: dict, use_bwrap: bool) -> d
     return result
 
 
+def resolve_reference(reference: str, record: bool) -> tuple[Path, Path, str | None]:
+    """-> (reference venv, SOURCE root for the drivers, rebaseline id or None). `m7` (the default) is the SOURCE wheel;
+    `rebaseline:<id>` is the approved rebaseline's wheel (G1-11) and is never recorded: goldens stay M7's."""
+    if reference == "m7":
+        return SCRATCH / "venv-ref", SCRATCH / "source", None
+    kind, _, entry_id = reference.partition(":")
+    if kind != "rebaseline" or not entry_id:
+        sys.exit(f"unknown --reference {reference!r}: expected m7 or rebaseline:<id>")
+    if record:
+        sys.exit("refused: --record with a rebaseline reference; goldens stay M7's (collect rebaseline output from stdout)")
+    entry = rebaseline_entry(entry_id)
+    return SCRATCH / f"venv-rb-{entry['id']}", SCRATCH / f"rebaseline-{entry['id']}" / "source", entry["id"]
+
+
 def run(record: bool, use_bwrap: bool, only: list[str], pg: bool = False,
-        redis: bool = False) -> tuple[dict, bool]:
-    python = SCRATCH / "venv-ref" / "bin" / "python"
+        redis: bool = False, reference: str = "m7") -> tuple[dict, bool]:
+    ref_venv, source_root, rebaseline = resolve_reference(reference, record)
+    python = ref_venv / "bin" / "python"
     if not python.exists():
-        sys.exit("reference venv missing: run `python compare/run.py prepare` first")
+        sys.exit("reference venv missing: run `python compare/run.py prepare"
+                 + (f" --rebaseline {rebaseline}`" if rebaseline else "`") + " first")
     expected = BASELINE["source"]["reference_wheel"]
     report, ok = {"bwrap": use_bwrap, "scenarios": {}}, True
     for scenario in scenarios():
@@ -629,7 +769,7 @@ def run(record: bool, use_bwrap: bool, only: list[str], pg: bool = False,
         with tempfile.TemporaryDirectory(prefix="zeus-s0-run-", dir=SCRATCH) as raw:
             work = Path(raw)
             (work / "reference-side").mkdir()
-            extra = {"ZEUS_REBUILD_SOURCE_ROOT": str(SCRATCH / "source")}
+            extra = {"ZEUS_REBUILD_SOURCE_ROOT": str(source_root)}
             blocks_out = work / "reference-side" / "block-exercise.json"
             if needs_pair:
                 dump = work / "dump"
@@ -675,7 +815,9 @@ def run(record: bool, use_bwrap: bool, only: list[str], pg: bool = False,
             ok = False
         else:
             origin = result["origin"]
-            origin_ok = (origin.get("package_files_digest") == expected["package_files_digest"]
+            # The M7 package-file digest does not describe a rebaseline wheel (its delta changes package files); its
+            # identity is the RECORD sha `prepare --rebaseline` checks, so the origin facts are reported, not compared.
+            origin_ok = (True if rebaseline else origin.get("package_files_digest") == expected["package_files_digest"]
                          and origin.get("package_files") == expected["package_files"])
             if record:
                 golden_path.write_text(json.dumps(result["result"], sort_keys=True, indent=1,
@@ -858,7 +1000,8 @@ def main(argv=None) -> int:
     parser = argparse.ArgumentParser(description=__doc__.splitlines()[0])
     sub = parser.add_subparsers(dest="command", required=True)
     sub.add_parser("check-tree")
-    sub.add_parser("prepare")
+    sub.add_parser("prepare").add_argument("--rebaseline", metavar="ID",
+                                           help="build the approved rebaseline's wheel (G1-11) instead of M7's")
     sub.add_parser("target-integration")
     sub.add_parser("docker-fixture")
     for owner_cmd in ("verify-stack", "migration-rehearsal"):  # S11 RH-1
@@ -867,6 +1010,8 @@ def main(argv=None) -> int:
     wheel_cmd.add_argument("wheel")
     run_cmd = sub.add_parser("run")
     run_cmd.add_argument("--record", action="store_true", help="write reference goldens")
+    run_cmd.add_argument("--reference", default="m7", metavar="m7|rebaseline:<id>",
+                         help="the reference side: SOURCE M7 (default) or an approved rebaseline (never with --record)")
     run_cmd.add_argument("--no-bwrap", action="store_true")
     run_cmd.add_argument("--only", action="append", default=[])
     run_cmd.add_argument("--pg", action="store_true",
@@ -893,13 +1038,14 @@ def main(argv=None) -> int:
         report = target_integration()
         ok = report.get("exit_code") == 0
     elif args.command == "prepare":
-        report = prepare()
+        report = prepare_rebaseline(args.rebaseline) if args.rebaseline else prepare()
         # The wheel sha256 depends on the unpinned build backend; the RECORD rows are the identity.
         ok = report["wheel_record_matches_baseline"]
     else:
         use_bwrap = provider_guard.bwrap_available() and not args.no_bwrap
+        resolve_reference(args.reference, args.record)  # refuse before anything is created
         SCRATCH.mkdir(parents=True, exist_ok=True)
-        report, ok = run(args.record, use_bwrap, args.only, args.pg, args.redis)
+        report, ok = run(args.record, use_bwrap, args.only, args.pg, args.redis, args.reference)
     print(json.dumps({"command": args.command, "ok": ok, **report}, indent=1, sort_keys=True))
     return 0 if ok else 1
 

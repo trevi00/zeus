@@ -1,0 +1,2057 @@
+"""Owner-approved host delivery plans and their durable stage policy (INV-HOST-DELIVERY-001).
+
+A delivery plan is one owner-authored document (`urn:zeus:host-delivery:1`) that lives in Git and
+is read at an explicit commit. It names an EXISTING release candidate (release id, revision, tree,
+the incumbent policy hash it was evaluated under and the canonical repository), the named CI checks
+that must finish successfully for that exact head, the host target it activates and the descriptor
+that target must end up consuming. It is strict versioned JSON: no shell command, no argv, no
+source text, no path and no credential is ever accepted from a plan, and nothing in a plan is
+executed or interpreted as an instruction.
+
+What a target IS - its root, its state files, its service identity and its kind - is host
+configuration (`urn:zeus:host-delivery-targets:1`), registered separately by the owner. A plan may
+only NAME a registered target id, so a candidate can never select another scheduled task, another
+path or another policy for itself. The canary is the same: a plan names one incumbent fixed check
+id from `CANARY_CHECKS`, never executable text.
+
+Everything here is pure policy over dictionaries: no store, process, git, subprocess or provider
+access, and no value ever reaches an error message - only the field name does. (`os.path.normcase`
+and `os.path.normpath` are used for host paths: both are pure text functions that touch no
+filesystem.) Approval is not granted here either: this module can only RECOGNIZE the approval that
+`application.releases` already recorded, and a plan that claims a review, a check or an activation
+proves nothing.
+"""
+from __future__ import annotations
+
+import copy
+import os.path
+import re
+from datetime import datetime
+
+from codex_harness.domain.model import ContractError, digest
+from codex_harness.domain.operation import safe_relative_path
+
+PLAN_SCHEMA = "urn:zeus:host-delivery:1"
+REGISTRY_SCHEMA = "urn:zeus:host-delivery-targets:1"
+DESCRIPTOR_SCHEMA = "urn:zeus:host-descriptor:1"
+RECEIPT_SCHEMA = "urn:zeus:host-startup-receipt:1"
+STATUS_SCHEMA = "urn:zeus:host-delivery-status:1"
+TICK_SCHEMA = "urn:zeus:host-delivery-tick:1"
+
+PLAN_FIELDS = {"schema", "plan_id", "release_id", "revision", "tree", "policy_hash", "repository",
+               "required_checks", "target_id", "expected_descriptor", "target_descriptor",
+               "canary_check_id", "ci_timeout_seconds", "consumption_timeout_seconds"}
+TARGET_DESCRIPTOR_FIELDS = {"revision", "worker_image", "profile_digest"}
+REGISTRY_FIELDS = {"schema", "targets"}
+TARGET_FIELDS = {"target_id", "kind", "root", "state_dir", "service"}
+# The managed Fleet target adds exactly the owner facts an immutable runtime needs: the source
+# repository its revisions are resolved from (also the host configuration root of its child), the
+# fixed interpreter and the digest of the dependency lockfile that interpreter was qualified for.
+MANAGED_TARGET_FIELDS = TARGET_FIELDS | {"source", "python", "environment_lock"}
+DESCRIPTOR_FIELDS = ("schema", "target_id", "root", "revision", "worker_image", "profile_digest",
+                     "predecessor")
+RECEIPT_FIELDS = {"schema", "target_id", "instance_id", "pid", "started_at", "runtime_root",
+                  "module_root", "descriptor_sha256", "revision", "worker_image", "profile_digest"}
+PIN_FIELDS = {"revision", "path", "sha256"}
+
+# Host target kinds this harness knows how to own. The Windows scheduled task is the current host's
+# real service; `process` is the owned-child-process target used on POSIX and in tests. Both carry
+# the identical descriptor, switch and startup-receipt contract.
+KIND_SCHEDULED_TASK = "windows_scheduled_task"
+KIND_PROCESS = "process"
+# The opt-in managed Fleet target (HOST-RUNTIME.md): `root` is a managed root of sealed per-revision
+# runtime directories, and the descriptor names the one directory of its revision. The two kinds
+# above keep their registry fields and their meaning unchanged.
+KIND_MANAGED = "managed_fleet"
+# The Linux service target (INV-HOST-MIGRATION-001): an owner-installed systemd unit named by
+# `service`, with the same registry fields, descriptor, switch and startup-receipt contract.
+KIND_SYSTEMD = "systemd_unit"
+# The managed Fleet target supervised by ONE owner-fixed systemd unit (INV-OWNER-ACTIONS-001, aibox SPEC
+# s14 G3): the same sealed runtime, descriptor, entry, receipt, heartbeat and drain as `managed_fleet`;
+# only who launches and supervises the guardian changes. Its `service` must be exactly this unit, so a
+# registry can never point the binding at another unit and a plan can never name one at all.
+KIND_MANAGED_SYSTEMD = "managed_fleet_systemd"
+MANAGED_SYSTEMD_UNIT = "zeus-aibox-managed-fleet"
+MANAGED_KINDS = (KIND_MANAGED, KIND_MANAGED_SYSTEMD)
+TARGET_KINDS = (KIND_SCHEDULED_TASK, KIND_PROCESS, KIND_MANAGED, KIND_SYSTEMD, KIND_MANAGED_SYSTEMD)
+# Where the sealed runtime of one revision lives under a managed root.
+RUNTIMES_DIR = "runtimes"
+
+# What the instance ACTUALLY on a target is, relative to the authority to replace it. Descriptor
+# identity and authority over a running instance are two different facts: a receipt that does not
+# match the descriptor being started says only that this is not the intended instance - never that
+# whatever is running there may be stopped and retired.
+INSTANCE_INTENDED = "intended"
+INSTANCE_AUTHORIZED = "authorized_predecessor"
+INSTANCE_INTERRUPTED = "owned_stopped"
+INSTANCE_ABSENT = "absent"
+INSTANCE_FOREIGN = "foreign"
+INSTANCE_UNKNOWN = "unknown"
+# The three states a start may act on. Everything else refuses BEFORE the stop and the cleanup.
+REPLACEABLE_INSTANCES = frozenset({INSTANCE_AUTHORIZED, INSTANCE_INTERRUPTED, INSTANCE_ABSENT})
+# A managed start refused by its activation gate (Fleet debt held or unreadable after the committed
+# pause, the pause changed between commit and read, the pause itself not committed or acknowledged,
+# or no authority): nothing was launched, and any pause already committed stays. A restoration waits.
+ACTIVATION_GATE_CODES = frozenset({"fleet_debt_held", "fleet_debt_unknown", "fleet_control_changed",
+                                   "fleet_pause_unknown", "fleet_authority_unconfigured"})
+
+# The incumbent fixed canary check ids. A plan selects one of these by id; the check itself lives in
+# the adapter and exercises the ACTUAL service contract of the target it was written for.
+CANARY_COLLECT = "collect_monitor_source"
+CANARY_FLEET = "fleet_worker_operation"
+CANARY_STARTUP = "startup_identity"
+CANARY_CHECKS = (CANARY_COLLECT, CANARY_FLEET, CANARY_STARTUP)
+
+# The owner's actual qualified canary (INV-OWNER-ACTIONS-001, aibox SPEC s14 G2): the server owner files
+# a request naming the exact plan it published BEFORE registering it; while that request matches the
+# descriptor being consumed and no owner receipt exists yet, `fleet_worker_operation` is PENDING rather
+# than failed, but only until the plan's own consumption deadline - then the missing receipt is the
+# same refusal as before. Without a matching request nothing changes: a missing receipt fails at once.
+# The request and the receipt belong to ONE plan: another plan registered on the same target never
+# grants, replaces or answers this plan's wait (G-H1 finding: a target-global request let a later
+# registration turn the consuming plan's wait into an immediate failure).
+CANARY_REQUEST_SCHEMA = "urn:zeus:owner-canary-request:1"
+CANARY_REQUEST_FIELDS = {"schema", "action_id", "plan_id", "plan_sha256", "target_id", "revision",
+                         "expected_descriptor", "requested_at"}
+OWNER_CANARY_RECEIPT_SCHEMA = "urn:zeus:owner-canary-receipt:1"
+
+
+def canary_request_matches(request, target: dict, descriptor: dict, plan: dict) -> bool:
+    """Whether an owner canary request names exactly this plan, target, revision and predecessor."""
+    return (isinstance(request, dict) and set(request) == CANARY_REQUEST_FIELDS
+            and request["schema"] == CANARY_REQUEST_SCHEMA and request["plan_id"] == plan.get("plan_id")
+            and request["plan_sha256"] == plan_digest(plan) and request["target_id"] == target.get("target_id")
+            == descriptor.get("target_id") and request["revision"] == descriptor.get("revision")
+            and request["expected_descriptor"] == descriptor.get("predecessor"))
+
+
+# "the image or the profile does not change in this delivery", stated explicitly rather than left
+# out: an absent binding would be indistinguishable from an unknown one.
+UNCHANGED = "unchanged"
+
+MAX_REQUIRED_CHECKS = 16
+MAX_TARGETS = 16
+# Two distinct definite failures of one stage stop the delivery and hand it to the owner.
+MAX_STAGE_ATTEMPTS = 2
+MIN_CI_TIMEOUT, MAX_CI_TIMEOUT = 60, 6 * 3600
+MIN_CONSUMPTION_TIMEOUT, MAX_CONSUMPTION_TIMEOUT = 10, 900
+
+TOKEN = re.compile(r"^[A-Za-z0-9][A-Za-z0-9._-]{0,63}$")
+REVISION = re.compile(r"^[0-9a-f]{40}$")
+SHA256 = re.compile(r"^[0-9a-f]{64}$")
+# A Git tree object id exactly as `git rev-parse <revision>^{tree}` prints it: 40 hex in a SHA-1
+# repository, 64 in a SHA-256 one. It is an object id, not a content digest, so it is validated
+# apart from the SHA256 fields above and compared only by exact equality, never padded or rehashed.
+TREE_ID = re.compile(r"^(?:[0-9a-f]{40}|[0-9a-f]{64})$")
+# A GitHub check or status context name as it is reported, and nothing that could be a command.
+CHECK_NAME = re.compile(r"^[A-Za-z0-9][A-Za-z0-9 ._/()#:-]{0,119}$")
+# `github:owner/repo` or `local:/path` as `adapters.git.GitWorkspace.target_identity` writes it.
+REPOSITORY = re.compile(r"^(github:[a-z0-9][a-z0-9-]{0,38}/[a-z0-9_.-]{1,100}|local:[^\s]{1,400})$")
+IMAGE = re.compile(r"^[A-Za-z0-9][A-Za-z0-9._:/@-]{0,200}$")
+INSTANCE = re.compile(r"^[0-9a-f]{32}$")
+
+# The durable stage path of one delivery. Every stage before `active` is an open state a restart
+# must resume; a stage is entered by writing the durable intent BEFORE the external action it
+# names, so a lost response can only ever reconcile what already happened.
+REGISTERED = "registered"
+AWAITING_REVIEW = "awaiting_review"
+# INV-HOST-DELIVERY-VERIFY-001: a reviewed, not yet verified release is evaluated by the existing
+# incumbent evaluator BEFORE publication, under this delivery's release fence. Nothing on GitHub or
+# the host is touched here; the evaluation's own external resources are owned per attempt.
+VERIFYING = "verifying"
+PUBLISHING = "publishing"
+AWAITING_CI = "awaiting_ci"
+MERGE_INTENDED = "merge_intended"
+MERGED = "merged"
+DRAIN_INTENDED = "drain_intended"
+SWITCHING = "switching"
+AWAITING_CONSUMPTION = "awaiting_consumption"
+ACTIVE = "active"
+# Explicit non-progress states. Each preserves the stage it left, the error type, the evidence and
+# the next action; none of them is ever rewritten into a success.
+BLOCKED = "blocked"
+ROLLING_BACK = "rolling_back"
+ROLLED_BACK = "rolled_back"
+FAILED = "failed"
+# The owner's explicit retirement of a delivery whose reviewed base or expected predecessor no
+# longer holds, taken only while the host was never touched (`HostDelivery.withdraw`). The plan, its
+# owner action, its canary request and any PR stay exactly as they were; a new candidate is the
+# continuation's requalification, never this plan again.
+WITHDRAWN = "withdrawn"
+
+STAGE_ORDER = (REGISTERED, AWAITING_REVIEW, VERIFYING, PUBLISHING, AWAITING_CI, MERGE_INTENDED, MERGED,
+               DRAIN_INTENDED, SWITCHING, AWAITING_CONSUMPTION, ACTIVE)
+TERMINAL_STAGES = frozenset({ACTIVE, ROLLED_BACK, FAILED, WITHDRAWN})
+HALTED_STAGES = frozenset({BLOCKED, ROLLING_BACK, ROLLED_BACK, FAILED, WITHDRAWN})
+# The stages a tick may no longer advance at all. `rolling_back` is deliberately NOT one of them:
+# a restoration is owed work, and a controller that stopped selecting it would leave the host on a
+# descriptor that failed its own canary.
+STOPPED_STAGES = frozenset({BLOCKED, ROLLED_BACK, FAILED, WITHDRAWN})
+OPEN_STAGES = frozenset(STAGE_ORDER) - {ACTIVE}
+# Another plan of the same target in one of these has merged and not yet settled the host: a new
+# merge for the target waits for it (INV-HOST-DELIVERY-001 pre-merge predecessor binding).
+POST_MERGE_OPEN = frozenset({MERGED, DRAIN_INTENDED, SWITCHING, AWAITING_CONSUMPTION, ROLLING_BACK})
+# Where the owner may still withdraw: nothing on the host was bound or touched yet. A `blocked` or
+# `failed` delivery qualifies only while it never bound a descriptor (checked by the caller).
+WITHDRAWABLE_STAGES = frozenset({REGISTERED, AWAITING_REVIEW, VERIFYING, PUBLISHING, AWAITING_CI,
+                                 MERGE_INTENDED, BLOCKED, FAILED})
+WITHDRAW_REASONS = ("reviewed_base_moved", "descriptor_predecessor_moved", "merged_tree_mismatch")
+# The owner's decision record a withdrawal names: a content-addressed evidence reference only.
+EVIDENCE_REF = re.compile(r"^sha256:[0-9a-f]{64}$")
+# The one supported recovery (INV-HOST-DELIVERY-VERIFY-001): a delivery that merged a reviewed but
+# never verified release and halted before the host was touched is moved back to `verifying`.
+RECOVERY_VERIFICATION_MISSING = "release_verification_missing"
+# INV-HOST-DELIVERY-FIRST-ACTIVATION-001: the second recovery kind. A FIRST managed deployment (no
+# predecessor descriptor) whose plan said `unchanged` halted at `merged` before touching the host; the
+# owner binds the concrete, re-derived worker image and profile digest and the delivery re-enters
+# `merged`. The binding is used ONLY where `unchanged` has nothing to resolve against.
+RECOVERY_FIRST_ACTIVATION = "first_activation_binding"
+FIRST_ACTIVATION_SCHEMA = "urn:zeus:host-delivery-first-activation:1"
+FIRST_ACTIVATION_FIELDS = {"schema", "kind", "plan_id", "plan_sha256", "pin_sha256", "target_id", "release_id",
+                           "candidate_revision", "candidate_tree", "halt", "expected_descriptor", "predecessor",
+                           "worker_image", "profile_digest", "qualification", "approved_by"}
+FIRST_ACTIVATION_HALT_FIELDS = {"stage", "previous_stage", "reason_code", "updated_at"}
+FIRST_ACTIVATION_QUALIFICATION_FIELDS = {"image_source_revision", "evidence"}
+# INV-HOST-DELIVERY-FIRST-ACTIVATION-001 (extended): the third recovery kind. A bound first activation
+# whose started instance was observed but whose owner canary receipt was still PENDING when the
+# consumption deadline expired halts at `no_known_good_predecessor`; the owner retries consumption
+# of that SAME observed instance once, in a fresh interval derived from the plan.
+RECOVERY_CONSUMPTION_RETRY = "first_activation_consumption_retry"
+CONSUMPTION_RETRY_SCHEMA = "urn:zeus:host-delivery-consumption-retry:1"
+CONSUMPTION_RETRY_FIELDS = {"schema", "kind", "plan_id", "plan_sha256", "pin_sha256", "target_id", "release_id",
+                            "candidate_revision", "candidate_tree", "halt", "first_activation_evidence",
+                            "descriptor_sha256", "observed_instance_id", "approved_by"}
+CONSUMPTION_RETRY_HALT_FIELDS = {"stage", "previous_stage", "reason_code", "updated_at", "stage_deadline"}
+# INV-HOST-DELIVERY-FIRST-ACTIVATION-001 (extended): the fourth recovery kind. The observed instance of that
+# SAME halted first activation is POSITIVELY no longer running (a host restart ended it; its receipt remains),
+# so the one consumption retry has nothing live to consume. The owner restarts the SAME bound descriptor ONCE
+# through the target's own guarded lifecycle; the fresh startup receipt names the new generation, and the one
+# consumption retry then consumes exactly that linked instance. The halt, its expired deadline, the release
+# verification and every earlier recovery stay as they were; nothing else is started, retried or re-verified.
+RECOVERY_GENERATION_RESTART = "first_activation_generation_restart"
+GENERATION_RESTART_SCHEMA = "urn:zeus:host-delivery-generation-restart:1"
+GENERATION_RESTART_FIELDS = {"schema", "kind", "plan_id", "plan_sha256", "pin_sha256", "target_id", "release_id",
+                             "candidate_revision", "candidate_tree", "halt", "first_activation_evidence",
+                             "descriptor_sha256", "stopped_instance_id", "reason", "approved_by"}
+GENERATION_RESTART_REASONS = frozenset({"host_restarted", "generation_exited"})
+# The restart record's own states: persisted `requested` BEFORE the one start, `launched` once the start
+# returned without a confirming receipt yet, `started` once the fresh receipt names the new instance.
+RESTART_REQUESTED, RESTART_LAUNCHED, RESTART_STARTED = "requested", "launched", "started"
+# The consumption retry that follows a restart names it (the link is explicit, never inferred).
+CONSUMPTION_RETRY_RESTART_FIELD = "generation_restart_evidence"
+# INV-HOST-DELIVERY-FIRST-ACTIVATION-001 (extended): the fifth recovery kind. The ONE consumption retry of that SAME
+# halted first activation expired AGAIN with the owner canary still PENDING (the retry is exhausted). ONE explicit
+# owner re-arm, bound to the exhausted halt, the spent retry, the linked restart (when one is recorded) and the
+# recorded user decision (`authority`), opens ONE further consumption interval of an EXPLICIT length
+# (`window_seconds`, at most CONSUMPTION_REARM_MAX_SECONDS) for the SAME observed instance. It never restarts,
+# re-verifies, replays the retry or rewrites an earlier halt or deadline; a further expiry is final.
+RECOVERY_CONSUMPTION_REARM = "first_activation_consumption_rearm"
+CONSUMPTION_REARM_SCHEMA = "urn:zeus:host-delivery-consumption-rearm:1"
+CONSUMPTION_REARM_FIELDS = CONSUMPTION_RETRY_FIELDS | {"retry_evidence", "window_seconds", "authority"}
+CONSUMPTION_REARM_MAX_SECONDS = 3600
+CANARY_RECEIPT_PENDING = "canary_owner_receipt_pending"
+WORKER_IMAGE_ID = re.compile(r"^sha256:[0-9a-f]{64}$")
+DIGEST_HEX = re.compile(r"^[0-9a-f]{64}$")
+# An organization actor id (`conductor`, `lead:improvement`); the organization decides its role.
+ACTOR_ID = re.compile(r"^[A-Za-z0-9][A-Za-z0-9._:-]{0,63}$")
+# The cleanup states that close one verification attempt: its exact resources were proven gone,
+# or - for an attempt that never wrote its disk record - proven never to have existed.
+ATTEMPT_RESOLVED = frozenset({"confirmed", "never_started"})
+# The stages that have already changed something outside this store: a restart reconciles the
+# external identity before it is allowed to act again.
+EXTERNAL_STAGES = frozenset({PUBLISHING, AWAITING_CI, MERGE_INTENDED, MERGED, DRAIN_INTENDED,
+                             SWITCHING, AWAITING_CONSUMPTION, ROLLING_BACK})
+
+# One tick's outcome. `pending` is an external wait that released its lease, not a failure and not
+# a success; `unavailable` is an outage with its exception TYPE; `blocked` and `refused` are
+# definite and exit nonzero.
+OUTCOME_PROGRESSED = "progressed"
+OUTCOME_PENDING = "pending"
+OUTCOME_ACTIVE = "active"
+OUTCOME_IDLE = "idle"
+OUTCOME_BUSY = "controller_busy"
+OUTCOME_DISABLED = "disabled"
+OUTCOME_BLOCKED = "blocked"
+OUTCOME_REFUSED = "refused"
+OUTCOME_CONFLICT = "conflict"
+OUTCOME_UNAVAILABLE = "unavailable"
+OUTCOME_ROLLED_BACK = "rolled_back"
+OUTCOME_UNREGISTERED = "plan_unregistered"
+FAILED_OUTCOMES = frozenset({OUTCOME_BLOCKED, OUTCOME_REFUSED, OUTCOME_CONFLICT,
+                             OUTCOME_UNAVAILABLE, OUTCOME_UNREGISTERED})
+
+# CI states. Only every required check FINISHED SUCCESSFULLY for the intended head is a pass;
+# missing, queued, in progress, skipped, cancelled, neutral and failed are all not-a-pass, each
+# under its own code.
+CI_PASSED, CI_PENDING, CI_FAILED, CI_HEAD_CHANGED = "passed", "pending", "failed", "head_changed"
+
+# The structured transitions of this component (domain.observation REGISTRY): scheduling is
+# general, the evidence/check stages are development, and the switch, the rollback and every
+# operational block are operations.
+EVENT_STAGE = "general.delivery_stage_entered"
+EVENT_CHECK = "development.delivery_check_observed"
+EVENT_SWITCHED = "operations.delivery_switched"
+EVENT_ROLLBACK = "operations.delivery_rollback"
+EVENT_BLOCKED = "operations.delivery_blocked"
+
+AUTHORITY = ("host_delivery; approval remains the existing Releases lead+conductor record and the "
+             "ReleaseQueue fence. A delivery receipt proves publication, observed CI, merge, an "
+             "atomically switched descriptor and a consumed startup identity - never a review "
+             "verdict, a semantic acceptance or a qualified live host")
+
+
+class DeliveryRefused(ContractError):
+    """Refused; the message carries a fixed reason code and at most a field name, never a value."""
+
+    def __init__(self, reason_code: str, field: str | None = None):
+        super().__init__("host delivery refused: " + reason_code + (" (" + field + ")" if field else ""))
+        self.reason_code, self.field = reason_code, field
+
+
+class LifecycleInterrupted(Exception):
+    """Ownership ended DURING a lifecycle operation that had already changed the host.
+
+    It is deliberately not a `ContractError`: a refusal means nothing happened, while this names an
+    effect that is already out in the world - the service of this target was stopped, and only then
+    did the fence turn out to be gone. The operation stops there: nothing is cleaned up, nothing is
+    started, and the coordinator reports an ambiguous effect so the next owner reconciles this
+    target. The stopped instance's own evidence is preserved rather than erased or called cancelled.
+    """
+
+    def __init__(self, effect: str, cause: Exception):
+        super().__init__(effect)
+        self.effect, self.cause = effect, cause
+
+
+def _token(value) -> bool:
+    return type(value) is str and TOKEN.fullmatch(value) is not None
+
+
+def _hex(value, pattern) -> bool:
+    return type(value) is str and pattern.fullmatch(value) is not None
+
+
+def _fields(document, expected, name: str) -> None:
+    if not isinstance(document, dict):
+        raise DeliveryRefused("plan_invalid", name)
+    if set(document) != expected:
+        raise DeliveryRefused("plan_fields", name)
+
+
+def _bounded_int(value, low: int, high: int) -> bool:
+    # `bool` is refused here exactly as everywhere else: its type is bool, not int.
+    return type(value) is int and low <= value <= high
+
+
+def normal_path(value) -> str:
+    """One comparable spelling of a host path. Pure text: nothing is resolved or opened here."""
+    text = str(value or "").strip().replace("\\", "/").rstrip("/")
+    return os.path.normcase(os.path.normpath(text)) if text else ""
+
+
+def same_path(left, right) -> bool:
+    return bool(normal_path(left)) and normal_path(left) == normal_path(right)
+
+
+def within_path(child, root) -> bool:
+    """Whether `child` IS `root` or lies under it; a sibling with a shared prefix does not."""
+    parent, inner = normal_path(root), normal_path(child)
+    if not parent or not inner:
+        return False
+    return inner == parent or inner.startswith(parent.rstrip(os.sep) + os.sep)
+
+
+def safe_error_type(value) -> str | None:
+    """An exception TYPE name and nothing else; any other text is `unknown` rather than relayed."""
+    if value is None:
+        return None
+    return value if _token(value) else "unknown"
+
+
+def validate_pin(pin) -> dict:
+    """The Git pin the plan itself was read from: a commit, a safe relative path, exact bytes."""
+    _fields(pin, PIN_FIELDS, "pin")
+    if not _hex(pin["revision"], REVISION):
+        raise DeliveryRefused("pin_invalid", "pin.revision")
+    if not safe_relative_path(pin["path"]):
+        raise DeliveryRefused("pin_invalid", "pin.path")
+    if not _hex(pin["sha256"], SHA256):
+        raise DeliveryRefused("pin_invalid", "pin.sha256")
+    return {key: pin[key] for key in sorted(PIN_FIELDS)}
+
+
+def _target_descriptor(document) -> dict:
+    """The candidate side of a descriptor: a clean host revision and the two immutable bindings,
+    each either an exact identity or the explicit word `unchanged`."""
+    _fields(document, TARGET_DESCRIPTOR_FIELDS, "target_descriptor")
+    if not _hex(document["revision"], REVISION):
+        raise DeliveryRefused("descriptor_invalid", "target_descriptor.revision")
+    image = document["worker_image"]
+    if image != UNCHANGED and not (type(image) is str and IMAGE.fullmatch(image) is not None):
+        raise DeliveryRefused("descriptor_invalid", "target_descriptor.worker_image")
+    profile = document["profile_digest"]
+    if profile != UNCHANGED and not _hex(profile, SHA256):
+        raise DeliveryRefused("descriptor_invalid", "target_descriptor.profile_digest")
+    return {key: document[key] for key in sorted(TARGET_DESCRIPTOR_FIELDS)}
+
+
+def validate_plan(document) -> dict:
+    """Strict validation of one owner-approved delivery plan; returns the canonical copy.
+
+    Unknown or missing fields, a malformed identity, an empty or oversized check list, a duplicate
+    check name, a canary id this harness does not implement and an out-of-range timeout are refused
+    before anything is stored. Nothing here contacts a release, a repository or a host: this says
+    only that the DOCUMENT is well formed.
+    """
+    if not isinstance(document, dict) or document.get("schema") != PLAN_SCHEMA:
+        raise DeliveryRefused("plan_schema")
+    _fields(document, PLAN_FIELDS, "root")
+    for key in ("plan_id", "release_id", "target_id"):
+        if not _token(document[key]):
+            raise DeliveryRefused("plan_invalid", key)
+    if not _hex(document["revision"], REVISION):
+        raise DeliveryRefused("plan_invalid", "revision")
+    if not _hex(document["tree"], TREE_ID):
+        raise DeliveryRefused("plan_invalid", "tree")
+    if not _hex(document["policy_hash"], SHA256):
+        raise DeliveryRefused("plan_invalid", "policy_hash")
+    repository = document["repository"]
+    if not (type(repository) is str and REPOSITORY.fullmatch(repository) is not None):
+        raise DeliveryRefused("plan_invalid", "repository")
+    checks = document["required_checks"]
+    if not (isinstance(checks, list) and 1 <= len(checks) <= MAX_REQUIRED_CHECKS
+            and all(type(c) is str and CHECK_NAME.fullmatch(c) is not None for c in checks)):
+        raise DeliveryRefused("plan_invalid", "required_checks")
+    if len(set(checks)) != len(checks):
+        raise DeliveryRefused("plan_duplicate", "required_checks")
+    expected = document["expected_descriptor"]
+    # `null` is the first activation of a target that has no descriptor yet; it is not a wildcard.
+    if expected is not None and not _hex(expected, SHA256):
+        raise DeliveryRefused("plan_invalid", "expected_descriptor")
+    if document["canary_check_id"] not in CANARY_CHECKS:
+        raise DeliveryRefused("plan_invalid", "canary_check_id")
+    if not _bounded_int(document["ci_timeout_seconds"], MIN_CI_TIMEOUT, MAX_CI_TIMEOUT):
+        raise DeliveryRefused("plan_invalid", "ci_timeout_seconds")
+    if not _bounded_int(document["consumption_timeout_seconds"], MIN_CONSUMPTION_TIMEOUT,
+                        MAX_CONSUMPTION_TIMEOUT):
+        raise DeliveryRefused("plan_invalid", "consumption_timeout_seconds")
+    return {"schema": PLAN_SCHEMA, "plan_id": document["plan_id"], "release_id": document["release_id"],
+            "revision": document["revision"], "tree": document["tree"],
+            "policy_hash": document["policy_hash"], "repository": repository,
+            "required_checks": list(checks), "target_id": document["target_id"],
+            "expected_descriptor": expected,
+            "target_descriptor": _target_descriptor(document["target_descriptor"]),
+            "canary_check_id": document["canary_check_id"],
+            "ci_timeout_seconds": document["ci_timeout_seconds"],
+            "consumption_timeout_seconds": document["consumption_timeout_seconds"]}
+
+
+def plan_digest(plan: dict) -> str:
+    return digest(plan)
+
+
+def _target(entry, index: int) -> dict:
+    name = "targets[" + str(index) + "]"
+    managed = isinstance(entry, dict) and entry.get("kind") in MANAGED_KINDS
+    fields = MANAGED_TARGET_FIELDS if managed else TARGET_FIELDS
+    _fields(entry, fields, name)
+    if not _token(entry["target_id"]):
+        raise DeliveryRefused("target_invalid", name + ".target_id")
+    if entry["kind"] not in TARGET_KINDS:
+        raise DeliveryRefused("target_invalid", name + ".kind")
+    paths = ("root", "state_dir", "source", "python") if managed else ("root", "state_dir")
+    for key in paths:
+        # A host path IS owner configuration here, but it is still never taken from a candidate and
+        # never interpolated into a command line.
+        if not (type(entry[key]) is str and entry[key].strip() and len(entry[key]) <= 400):
+            raise DeliveryRefused("target_invalid", name + "." + key)
+    if not (type(entry["service"]) is str and TOKEN.fullmatch(entry["service"]) is not None):
+        raise DeliveryRefused("target_invalid", name + ".service")
+    if entry["kind"] == KIND_MANAGED_SYSTEMD and entry["service"] != MANAGED_SYSTEMD_UNIT:
+        # The supervising unit is owner-fixed code configuration, not a registry choice.
+        raise DeliveryRefused("target_unit_not_allowed", name + ".service")
+    if managed:
+        _managed_target(entry, name)
+    return {key: entry[key] for key in sorted(fields)}
+
+
+def _managed_target(entry: dict, name: str) -> None:
+    """The extra owner facts of a managed target: absolute, and three disjoint trees.
+
+    The managed root, the state directory and the source checkout may not contain one another, so
+    sealing a runtime can never write into the live checkout, a state file can never land inside a
+    sealed runtime, and a runtime can never be sealed from inside itself.
+    """
+    for key in ("root", "state_dir", "source", "python"):
+        if not os.path.isabs(entry[key]):
+            raise DeliveryRefused("target_invalid", name + "." + key)
+    for left, right in (("root", "state_dir"), ("root", "source"), ("state_dir", "source")):
+        if within_path(entry[left], entry[right]) or within_path(entry[right], entry[left]):
+            raise DeliveryRefused("target_overlap", name + "." + left)
+    if not _hex(entry["environment_lock"], SHA256):
+        raise DeliveryRefused("target_invalid", name + ".environment_lock")
+
+
+def managed_runtime_root(target: dict, revision: str) -> str:
+    """The sealed runtime directory of one revision under a managed root. Pure text: the path is
+    derived from the owner registry and the reviewed revision, never taken from a plan."""
+    return os.path.join(target["root"], RUNTIMES_DIR, revision)
+
+
+def validate_targets(document) -> dict:
+    """The authorized host target registry: what a target id MEANS on this host.
+
+    This is host configuration, registered by the owner and deliberately separate from candidate
+    content. A plan may name one of these ids and nothing else; it can never introduce a root, a
+    state directory, a service or a kind of its own.
+    """
+    if not isinstance(document, dict) or document.get("schema") != REGISTRY_SCHEMA:
+        raise DeliveryRefused("registry_schema")
+    _fields(document, REGISTRY_FIELDS, "root")
+    targets = document["targets"]
+    if not (isinstance(targets, list) and 1 <= len(targets) <= MAX_TARGETS):
+        raise DeliveryRefused("registry_invalid", "targets")
+    entries = [_target(entry, index) for index, entry in enumerate(targets)]
+    identifiers = [entry["target_id"] for entry in entries]
+    if len(set(identifiers)) != len(identifiers):
+        raise DeliveryRefused("registry_duplicate", "targets[].target_id")
+    return {"schema": REGISTRY_SCHEMA, "targets": entries}
+
+
+def resolve_descriptor(target: dict, plan: dict, current: dict | None, binding: dict | None = None) -> dict:
+    """The COMPLETE descriptor this delivery must make the target consume.
+
+    The root comes from the registered target, never from the plan; for a managed target it is the
+    sealed directory of the descriptor's revision under the registered managed root, so the
+    predecessor and the candidate always name two different immutable runtimes. `unchanged` is resolved against
+    the descriptor the target is actually running now, and a target with no current descriptor
+    cannot resolve it at all - that is a refusal, never a guess or an empty binding. `predecessor`
+    is the digest of exactly the descriptor this switch replaces, so a rollback restores a full
+    tuple rather than a remembered revision.
+
+    `binding` (INV-HOST-DELIVERY-FIRST-ACTIVATION-001) is consulted ONLY for a first activation: no
+    current descriptor AND a plan that expected none. Everywhere else it is ignored, so an upgrade
+    still resolves `unchanged` against the running descriptor and `predecessor` is never invented.
+    """
+    plan_descriptor = plan["target_descriptor"]
+    first = current is None and plan.get("expected_descriptor") is None and isinstance(binding, dict)
+    resolved = {}
+    for key in ("worker_image", "profile_digest"):
+        value = plan_descriptor[key]
+        if value != UNCHANGED:
+            resolved[key] = value
+            continue
+        if first and type(binding.get(key)) is str and binding[key] not in ("", UNCHANGED):
+            resolved[key] = binding[key]
+            continue
+        if not isinstance(current, dict) or current.get(key) in (None, UNCHANGED):
+            raise DeliveryRefused("unchanged_without_predecessor", "target_descriptor." + key)
+        resolved[key] = current[key]
+    root = (managed_runtime_root(target, plan_descriptor["revision"])
+            if target.get("kind") in MANAGED_KINDS else target["root"])
+    return {"schema": DESCRIPTOR_SCHEMA, "target_id": target["target_id"], "root": root,
+            "revision": plan_descriptor["revision"], "worker_image": resolved["worker_image"],
+            "profile_digest": resolved["profile_digest"],
+            "predecessor": None if current is None else descriptor_digest(current)}
+
+
+def descriptor_digest(descriptor: dict) -> str:
+    """One identity per descriptor, over exactly the bound fields and in a fixed order."""
+    return digest({key: descriptor.get(key) for key in DESCRIPTOR_FIELDS})
+
+
+def validate_descriptor(document) -> dict:
+    """A descriptor read back from the host: the file a service was pointed at, checked as data."""
+    if not isinstance(document, dict) or document.get("schema") != DESCRIPTOR_SCHEMA:
+        raise DeliveryRefused("descriptor_schema")
+    if set(document) != set(DESCRIPTOR_FIELDS):
+        raise DeliveryRefused("descriptor_fields")
+    if not _token(document["target_id"]):
+        raise DeliveryRefused("descriptor_invalid", "target_id")
+    if not _hex(document["revision"], REVISION):
+        raise DeliveryRefused("descriptor_invalid", "revision")
+    if not (type(document["root"]) is str and document["root"].strip()):
+        raise DeliveryRefused("descriptor_invalid", "root")
+    if not (type(document["worker_image"]) is str and IMAGE.fullmatch(document["worker_image"])):
+        raise DeliveryRefused("descriptor_invalid", "worker_image")
+    if not _hex(document["profile_digest"], SHA256):
+        raise DeliveryRefused("descriptor_invalid", "profile_digest")
+    if document["predecessor"] is not None and not _hex(document["predecessor"], SHA256):
+        raise DeliveryRefused("descriptor_invalid", "predecessor")
+    return {key: document[key] for key in DESCRIPTOR_FIELDS}
+
+
+def validate_receipt(document) -> dict:
+    """The startup evidence a launched process reports about ITSELF, checked as untrusted data."""
+    if not isinstance(document, dict) or document.get("schema") != RECEIPT_SCHEMA:
+        raise DeliveryRefused("receipt_schema")
+    if set(document) != RECEIPT_FIELDS:
+        raise DeliveryRefused("receipt_fields")
+    if not _token(document["target_id"]):
+        raise DeliveryRefused("receipt_invalid", "target_id")
+    if not _hex(document["instance_id"], INSTANCE):
+        raise DeliveryRefused("receipt_invalid", "instance_id")
+    if not _bounded_int(document["pid"], 1, 2 ** 31 - 1):
+        raise DeliveryRefused("receipt_invalid", "pid")
+    for key in ("started_at", "runtime_root", "module_root"):
+        if not (type(document[key]) is str and document[key].strip() and len(document[key]) <= 400):
+            raise DeliveryRefused("receipt_invalid", key)
+    if not _hex(document["descriptor_sha256"], SHA256):
+        raise DeliveryRefused("receipt_invalid", "descriptor_sha256")
+    if not _hex(document["revision"], REVISION):
+        raise DeliveryRefused("receipt_invalid", "revision")
+    if not (type(document["worker_image"]) is str and IMAGE.fullmatch(document["worker_image"])):
+        raise DeliveryRefused("receipt_invalid", "worker_image")
+    if not _hex(document["profile_digest"], SHA256):
+        raise DeliveryRefused("receipt_invalid", "profile_digest")
+    return {key: document[key] for key in sorted(RECEIPT_FIELDS)}
+
+
+def _check_row(row) -> dict | None:
+    """One observed CI row reduced to (name, state); anything unreadable is dropped, not guessed."""
+    if not isinstance(row, dict):
+        return None
+    name, state = row.get("name"), row.get("state")
+    if type(name) is not str or type(state) is not str:
+        return None
+    return {"name": name, "state": state}
+
+
+def ci_verdict(required, observed, head: str, observed_head=None) -> dict:
+    """Whether the named checks all finished successfully for EXACTLY the intended head.
+
+    `observed` is a list of `{name, state}` rows the adapter normalized from the provider, where
+    `state` is `success`, `pending` or `failure`. A required check that is absent, still running,
+    skipped, cancelled, neutral or failed is not a pass - each under its own code - and a head that
+    moved is `head_changed`, which goes to requalification rather than being rebased into the old
+    acceptance. Extra checks the plan does not require are ignored: the plan is the authority over
+    what must pass, never the provider's current workflow list.
+    """
+    if observed_head is not None and observed_head != head:
+        return {"state": CI_HEAD_CHANGED, "reason_code": "ci_head_changed", "missing": [],
+                "failed": [], "pending": [], "head": observed_head}
+    rows = {row["name"]: row["state"] for row in (_check_row(r) for r in observed or []) if row}
+    missing = sorted(name for name in required if name not in rows)
+    failed = sorted(name for name in required if rows.get(name) == "failure")
+    pending = sorted(name for name in required if rows.get(name) == "pending")
+    if failed:
+        return {"state": CI_FAILED, "reason_code": "ci_check_failed", "missing": missing,
+                "failed": failed, "pending": pending, "head": head}
+    if missing or pending:
+        return {"state": CI_PENDING,
+                "reason_code": "ci_check_missing" if missing else "ci_check_pending",
+                "missing": missing, "failed": failed, "pending": pending, "head": head}
+    return {"state": CI_PASSED, "reason_code": None, "missing": [], "failed": [], "pending": [],
+            "head": head}
+
+
+def consumption_verdict(descriptor: dict, receipt, *, expected_instance=None) -> dict:
+    """Whether the process that started is REALLY running the descriptor that was switched to.
+
+    Every bound field is compared, and the runtime identity is compared FIRST: the root the process
+    says it actually imported from must be exactly the owner-registered root of this target, and the
+    package it says it loaded must lie inside that root. Only then do the revision, the effective
+    worker image and the effective profile digest the runtime OBSERVED about itself have to equal
+    the ones this delivery requested - which is what makes an old runtime started with a new
+    descriptor a refusal rather than an activation, however alive its pid is.
+
+    A receipt that is absent, malformed, from another target, from another root, from the previous
+    instance or bound to any other identity never grants activation; it is a definite mismatch with
+    its own code, not a retryable unknown.
+    """
+    if receipt is None:
+        return {"consumed": False, "reason_code": "receipt_missing", "instance_id": None}
+    try:
+        checked = validate_receipt(receipt)
+    except DeliveryRefused as exc:
+        return {"consumed": False, "reason_code": exc.reason_code, "instance_id": None}
+    observed = {"instance_id": checked["instance_id"], "pid": checked["pid"],
+                "runtime_root": checked["runtime_root"], "module_root": checked["module_root"],
+                "revision": checked["revision"]}
+    if not same_path(checked["runtime_root"], descriptor["root"]):
+        # The process is running from somewhere other than the root this target is registered at.
+        return {"consumed": False, "reason_code": "receipt_runtime_root_mismatch", **observed}
+    if not within_path(checked["module_root"], checked["runtime_root"]):
+        # It imported its code from outside the root it claims to be running: not this runtime.
+        return {"consumed": False, "reason_code": "receipt_module_root_foreign", **observed}
+    expected_digest = descriptor_digest(descriptor)
+    for key, expected in (("target_id", descriptor["target_id"]), ("revision", descriptor["revision"]),
+                          ("worker_image", descriptor["worker_image"]),
+                          ("profile_digest", descriptor["profile_digest"]),
+                          ("descriptor_sha256", expected_digest)):
+        if checked[key] != expected:
+            return {"consumed": False, "reason_code": "receipt_" + key + "_mismatch", **observed}
+    if expected_instance is not None and checked["instance_id"] == expected_instance:
+        # The file still describes the process that was there BEFORE this switch: a stale receipt is
+        # not evidence of the new one, however well its fields match.
+        return {"consumed": False, "reason_code": "receipt_stale_instance", **observed}
+    return {"consumed": True, "reason_code": None, **observed}
+
+
+def validate_replacement(authorization) -> dict | None:
+    """The durable authority to replace ONE observed instance of a target, checked as data.
+
+    It is produced by the coordinator from its own durable intent - the identity captured before
+    the descriptor was replaced, or the candidate this intent itself launched - and never by the
+    host adapter from whatever receipt happens to be lying on the target. `None` is the honest
+    "nothing here may be replaced": a clean target may still be started, and a running instance may
+    not be touched at all.
+    """
+    if authorization is None:
+        return None
+    if not isinstance(authorization, dict):
+        raise DeliveryRefused("replacement_invalid", "replaces")
+    descriptor_sha256 = authorization.get("descriptor_sha256")
+    instance_id = authorization.get("instance_id")
+    launch = authorization.get("launch")
+    if descriptor_sha256 is not None and not _hex(descriptor_sha256, SHA256):
+        raise DeliveryRefused("replacement_invalid", "replaces.descriptor_sha256")
+    if instance_id is not None and not _hex(instance_id, INSTANCE):
+        raise DeliveryRefused("replacement_invalid", "replaces.instance_id")
+    if launch is not None and not isinstance(launch, dict):
+        raise DeliveryRefused("replacement_invalid", "replaces.launch")
+    return {"descriptor_sha256": descriptor_sha256, "instance_id": instance_id,
+            "launch": dict(launch) if isinstance(launch, dict) else None}
+
+
+def receipt_identity(receipt, *, present: bool = False) -> dict:
+    """WHO the receipt on a target says is running there, as untrusted data.
+
+    Three different facts, deliberately not collapsed: `absent` (no receipt file at all), `valid`
+    (a well formed receipt that names an instance) and `unreadable` (a file that exists but is
+    missing, malformed, oversized or contradictory). An unreadable receipt identifies nobody, and is
+    never read as an absence.
+    """
+    if receipt is None:
+        return {"state": "unreadable" if present else "absent", "instance_id": None,
+                "descriptor_sha256": None, "target_id": None}
+    try:
+        checked = validate_receipt(receipt)
+    except DeliveryRefused:
+        return {"state": "unreadable", "instance_id": None, "descriptor_sha256": None,
+                "target_id": None}
+    return {"state": "valid", "instance_id": checked["instance_id"],
+            "descriptor_sha256": checked["descriptor_sha256"], "target_id": checked["target_id"]}
+
+
+def same_launch(observed, authorized) -> bool:
+    """Whether the launch record on the target is EXACTLY the one this delivery recorded writing.
+
+    The record is written only by this component, under the target's lifecycle guard, and names the
+    descriptor, the start time and the process or service identity of that launch. Exact equality -
+    not a live pid alone - is what binds a running instance to a transition this delivery made.
+    """
+    return bool(observed) and isinstance(observed, dict) and observed == authorized
+
+
+def _instance(state: str, reason_code, instance_id=None, evidence=None) -> dict:
+    return {"state": state, "reason_code": reason_code, "instance_id": instance_id,
+            "evidence": evidence}
+
+
+def instance_authority(descriptor: dict, observed, authorization=None) -> dict:
+    """Classify the instance actually on this target, and say whether it may be replaced.
+
+    `observed` is what the adapter READ from the target before touching anything: the receipt
+    document and whether that file exists at all, the launch record this component wrote and
+    whether that file exists at all, and whether an instance is running (`None` when that could not
+    be observed). `authorization` is the durable authority above.
+
+    * `intended` - the incumbent `consumption_verdict` shows the live instance is really running
+      exactly this descriptor: recognized, never stopped, retired or started again.
+    * `authorized_predecessor` - the running instance is the exact instance the durable transition
+      named, by its own receipt or by this delivery's own launch record.
+    * `owned_stopped` - an instance this delivery owns is no longer running and its transition was
+      interrupted: its recorded effect is reconciled and the start is resumed once.
+    * `absent` - POSITIVE evidence of an empty target: no receipt, no launch record, nothing alive.
+    * `foreign` / `unknown` - anything else, including a missing, malformed, contradictory or
+      simply unauthorized instance. These refuse before any stop or cleanup, because an instance
+      that is not the intended one is not thereby a replaceable one.
+    """
+    authority = validate_replacement(authorization)
+    observation = observed or {}
+    running = observation.get("running")
+    if running is None:
+        # The target could not be observed at all; an unknown is never a licence to replace.
+        return _instance(INSTANCE_UNKNOWN, "instance_liveness_unknown", evidence="liveness")
+    receipt = observation.get("receipt")
+    verdict = consumption_verdict(descriptor, receipt)
+    if verdict["consumed"]:
+        if running:
+            return _instance(INSTANCE_INTENDED, None, verdict["instance_id"], "receipt")
+        # This delivery's own instance, proven by its own receipt, is gone: resume the transition.
+        return _instance(INSTANCE_INTERRUPTED, "instance_intended_stopped", verdict["instance_id"],
+                         "receipt")
+    identity = receipt_identity(receipt, present=bool(observation.get("receipt_present")))
+    launch = observation.get("launch")
+    owned_launch = (authority is not None and authority["launch"] is not None
+                    and same_launch(launch, authority["launch"]))
+    if identity["state"] == "valid":
+        authorized = (authority is not None
+                      and identity["descriptor_sha256"] == authority["descriptor_sha256"]
+                      and (identity["instance_id"] == authority["instance_id"]
+                           or (authority["instance_id"] is None and owned_launch)))
+        if not authorized:
+            contradictory = (authority is not None
+                             and identity["instance_id"] == authority["instance_id"])
+            return _instance(INSTANCE_FOREIGN,
+                             "instance_contradictory" if contradictory else "instance_not_authorized",
+                             identity["instance_id"], "receipt")
+        if running:
+            return _instance(INSTANCE_AUTHORIZED, None, identity["instance_id"], "receipt")
+        return _instance(INSTANCE_INTERRUPTED, "instance_authorized_stopped",
+                         identity["instance_id"], "receipt")
+    if identity["state"] == "unreadable":
+        # A receipt file that says nothing identifies nobody, alive or not.
+        return _instance(INSTANCE_UNKNOWN, "instance_receipt_unreadable", evidence="receipt")
+    if owned_launch:
+        # No startup identity was ever confirmed, so the trusted launch record of THIS delivery is
+        # what reconciles the instance it started.
+        return _instance(INSTANCE_AUTHORIZED if running else INSTANCE_INTERRUPTED,
+                         None if running else "instance_authorized_stopped", None, "launch")
+    if running:
+        return _instance(INSTANCE_UNKNOWN, "instance_unidentified", evidence="liveness")
+    if observation.get("launch_present") or isinstance(launch, dict):
+        owned = (isinstance(launch, dict)
+                 and launch.get("descriptor_sha256") in _owned_digests(descriptor, authority))
+        if owned:
+            return _instance(INSTANCE_INTERRUPTED, "instance_launch_stopped", None, "launch")
+        return _instance(INSTANCE_UNKNOWN, "instance_absence_unknown", evidence="launch")
+    return _instance(INSTANCE_ABSENT, None, None, "absence")
+
+
+def _owned_digests(descriptor: dict, authority) -> set:
+    """The descriptors an interrupted launch record of THIS delivery may legitimately name."""
+    digests = {descriptor_digest(descriptor)}
+    if authority is not None and authority["descriptor_sha256"] is not None:
+        digests.add(authority["descriptor_sha256"])
+    return digests
+
+
+def release_gate(record, plan: dict, parent: str | None) -> dict:
+    """What the EXISTING release record says about this exact plan; nothing here approves anything.
+
+    The reviews are re-derived from the record - the author's own lead and a conductor, both
+    accepting exactly this revision with evidence - and the candidate's revision, tree, evaluator
+    policy hash and canonical repository must be exactly the ones the plan names. A plan can
+    therefore never introduce an approval, relax an evaluator or point a reviewed acceptance at
+    another tree. `awaiting_review` is a real projected state: registration may legitimately precede
+    the review, and it never runs.
+    """
+    if not isinstance(record, dict):
+        return {"state": OUTCOME_REFUSED, "reason_code": "release_missing", "status": None}
+    candidate = record.get("candidate") or {}
+    status = record.get("status")
+    for key, expected in (("revision", plan["revision"]), ("tree", plan["tree"])):
+        if candidate.get(key) != expected:
+            return {"state": OUTCOME_REFUSED, "reason_code": "release_" + key + "_mismatch",
+                    "status": status}
+    if record.get("policy_hash") != plan["policy_hash"]:
+        return {"state": OUTCOME_REFUSED, "reason_code": "release_policy_mismatch", "status": status}
+    if candidate.get("repository") != plan["repository"]:
+        # A legacy candidate without a recorded repository is `legacy_unverified` for the merge
+        # owner; for an activation of this host it is simply not a verified target.
+        return {"state": OUTCOME_REFUSED, "reason_code": "release_repository_mismatch", "status": status}
+    accepted = {review.get("actor") for review in record.get("reviews") or []
+                if review.get("accepted") is True and review.get("revision") == plan["revision"]
+                and review.get("evidence")}
+    if status in {"rejected", "cancelled", "rolled_back"} or str(status).startswith("superseded"):
+        return {"state": OUTCOME_REFUSED, "reason_code": "release_" + str(status), "status": status}
+    if parent is None or parent not in accepted or "conductor" not in accepted:
+        return {"state": AWAITING_REVIEW, "reason_code": "release_reviews_incomplete", "status": status}
+    if status not in {"reviewed", "verified", "active"}:
+        return {"state": AWAITING_REVIEW, "reason_code": "release_not_reviewed", "status": status}
+    return {"state": "approved", "reason_code": None, "status": status}
+
+
+def new_intent(plan: dict, plan_sha256: str, now: str) -> dict:
+    """The durable intent of one delivery, written before any external effect of any stage."""
+    return {"id": plan["plan_id"], "plan_id": plan["plan_id"], "release_id": plan["release_id"],
+            "target_id": plan["target_id"], "plan_sha256": plan_sha256, "stage": REGISTERED,
+            "previous_stage": None, "outcome": None, "reason_code": None, "error_type": None,
+            "attempts": 0, "revision": plan["revision"], "head": None, "pr_number": None,
+            "pr_url": None, "merged_revision": None, "descriptor_sha256": None,
+            "previous_descriptor_sha256": None, "descriptor": None, "previous_descriptor": None,
+            # The identity of the instance this delivery may replace, captured BEFORE the
+            # descriptor is replaced, and the identity of the candidate it launches itself. A
+            # rollback replaces the candidate, never the predecessor it is restoring.
+            "previous_instance_id": None, "previous_launch": None,
+            "candidate_instance_id": None, "candidate_launch": None,
+            "instance_id": None, "expected_active": None,
+            "expected_active_set": False, "canary": None, "rollback": None, "stage_deadline": None,
+            "stage_entered_at": now, "created_at": now, "updated_at": now, "evidence": []}
+
+
+def attempts_of(intent) -> list:
+    """The verification attempts one delivery recorded, oldest first; an old row has none."""
+    verification = (intent or {}).get("verification")
+    rows = verification.get("attempts") if isinstance(verification, dict) else None
+    return [row for row in rows or [] if isinstance(row, dict)]
+
+
+def attempt_resolved(attempt: dict) -> bool:
+    """An attempt is closed only by a recorded cleanup whose state proves its resources gone."""
+    cleanup = attempt.get("cleanup")
+    return isinstance(cleanup, dict) and cleanup.get("state") in ATTEMPT_RESOLVED
+
+
+def unresolved_attempts(intent) -> list:
+    return [row for row in attempts_of(intent) if not attempt_resolved(row)]
+
+
+def recoveries_of(intent, kind: str = RECOVERY_VERIFICATION_MISSING) -> list:
+    return [row for row in (intent or {}).get("recoveries") or []
+            if isinstance(row, dict) and row.get("kind") == kind]
+
+
+def resumable(intent) -> bool:
+    """The ONE shape `resume` may move (INV-HOST-DELIVERY-VERIFY-001), from the record alone.
+
+    A delivery that merged its reviewed candidate and halted at `merged` because the release was
+    never verified, and that never bound, wrote or started anything on the host. Everything else -
+    a mismatched merged tree, a bound descriptor, a rollback, another halt - is not this recovery.
+    A recovery of this kind already recorded is never repeated: its replay is recognized by the
+    caller from its evidence reference, and a second one is exhausted.
+    """
+    if not isinstance(intent, dict):
+        return False
+    return (intent.get("stage") in {BLOCKED, FAILED}
+            and intent.get("reason_code") == "release_not_verified"
+            and intent.get("previous_stage") == MERGED
+            and bool(intent.get("merged_revision"))
+            and all(intent.get(key) is None for key in ("descriptor", "descriptor_sha256", "instance_id",
+                                                        "candidate_instance_id", "rollback"))
+            and not recoveries_of(intent))
+
+
+def first_activation_unbound(plan) -> bool:
+    """A plan that can never resolve on a first activation (INV-HOST-DELIVERY-FIRST-ACTIVATION-001):
+    no expected predecessor, yet `unchanged` for the image or the profile. NEW registrations refuse
+    it; `validate_plan` does not, so an already stored plan stays readable history."""
+    descriptor = (plan or {}).get("target_descriptor") or {}
+    return (plan or {}).get("expected_descriptor") is None and UNCHANGED in (
+        descriptor.get("worker_image"), descriptor.get("profile_digest"))
+
+
+def first_activation_resumable(intent) -> bool:
+    """The ONE shape `resume_first_activation` may move (INV-HOST-DELIVERY-FIRST-ACTIVATION-001).
+
+    A delivery that merged its verified candidate and halted binding its descriptor because
+    `unchanged` had no predecessor to resolve against, and that bound, sealed or started nothing on
+    the host. It never matches `resumable()` (a different halt reason)."""
+    if not isinstance(intent, dict):
+        return False
+    return (intent.get("stage") == BLOCKED
+            and intent.get("reason_code") == "unchanged_without_predecessor"
+            and intent.get("previous_stage") == MERGED
+            and bool(intent.get("merged_revision"))
+            and all(intent.get(key) is None for key in ("descriptor", "descriptor_sha256", "runtime",
+                                                        "instance_id", "previous_descriptor")))
+
+
+def _first_activation_refused(field: str):
+    return DeliveryRefused("first_activation_invalid", field)
+
+
+def validate_first_activation(document) -> dict:
+    """The owner's first-activation binding document, exactly (INV-HOST-DELIVERY-FIRST-ACTIVATION-001).
+
+    Identity of the plan, pin, release and candidate; the recorded halt it answers; the explicit
+    absence of a predecessor; the concrete image id and profile digest; the qualification refs and
+    the approver. Its values are claims only: the lane re-derives image and profile from trusted
+    ports before anything is written. Every defect is `first_activation_invalid` naming the field."""
+    if not isinstance(document, dict) or set(document) != FIRST_ACTIVATION_FIELDS:
+        raise _first_activation_refused("document")
+    if document["schema"] != FIRST_ACTIVATION_SCHEMA:
+        raise _first_activation_refused("schema")
+    if document["kind"] != RECOVERY_FIRST_ACTIVATION:
+        raise _first_activation_refused("kind")
+    for key in ("plan_id", "release_id", "target_id"):
+        if not _token(document[key]):
+            raise _first_activation_refused(key)
+    if not _hex(document["approved_by"], ACTOR_ID):
+        raise _first_activation_refused("approved_by")
+    for key in ("plan_sha256", "pin_sha256", "profile_digest"):
+        if not _hex(document[key], DIGEST_HEX):
+            raise _first_activation_refused(key)
+    if not _hex(document["candidate_revision"], REVISION):
+        raise _first_activation_refused("candidate_revision")
+    if not _hex(document["candidate_tree"], TREE_ID):
+        raise _first_activation_refused("candidate_tree")
+    halt = document["halt"]
+    if not isinstance(halt, dict) or set(halt) != FIRST_ACTIVATION_HALT_FIELDS:
+        raise _first_activation_refused("halt")
+    if (halt["stage"], halt["previous_stage"], halt["reason_code"]) != (
+            BLOCKED, MERGED, "unchanged_without_predecessor") or not (
+            type(halt["updated_at"]) is str and 0 < len(halt["updated_at"]) <= 64):
+        raise _first_activation_refused("halt")
+    if document["expected_descriptor"] is not None:
+        raise _first_activation_refused("expected_descriptor")
+    if document["predecessor"] is not None:
+        raise _first_activation_refused("predecessor")
+    if not _hex(document["worker_image"], WORKER_IMAGE_ID):
+        raise _first_activation_refused("worker_image")
+    qualification = document["qualification"]
+    if not isinstance(qualification, dict) or set(qualification) != FIRST_ACTIVATION_QUALIFICATION_FIELDS:
+        raise _first_activation_refused("qualification")
+    if not _hex(qualification["image_source_revision"], REVISION):
+        raise _first_activation_refused("qualification.image_source_revision")
+    if not _hex(qualification["evidence"], EVIDENCE_REF):
+        raise _first_activation_refused("qualification.evidence")
+    return {**document, "halt": dict(halt), "qualification": dict(qualification)}
+
+
+def _consumption_halt(intent) -> bool:
+    """The halted shape a consumption retry answers, recoveries aside (INV-HOST-DELIVERY-FIRST-ACTIVATION-001).
+
+    A bound first activation stopped at `no_known_good_predecessor` from `awaiting_consumption`
+    because the owner canary was still PENDING at the deadline: the rollback was only requested, and
+    the canary neither passed nor failed. A canary that actually failed never matches."""
+    if not isinstance(intent, dict):
+        return False
+    rollback, canary = intent.get("rollback"), intent.get("canary")
+    return (intent.get("stage") == BLOCKED
+            and intent.get("reason_code") == "no_known_good_predecessor"
+            and intent.get("previous_stage") == AWAITING_CONSUMPTION
+            and rollback == {"requested": True, "restored": False, "verified": False,
+                             "reason_code": CANARY_RECEIPT_PENDING}
+            and isinstance(canary, dict) and canary.get("pending") is True and canary.get("passed") is False
+            and canary.get("reason_code") == CANARY_RECEIPT_PENDING
+            and intent.get("previous_descriptor") is None
+            and isinstance(intent.get("descriptor"), dict) and bool(intent.get("descriptor_sha256"))
+            and len(recoveries_of(intent, RECOVERY_FIRST_ACTIVATION)) == 1)
+
+
+def consumption_retryable(intent) -> bool:
+    """The ONE shape `resume_consumption_retry` may move (INV-HOST-DELIVERY-FIRST-ACTIVATION-001):
+    the pending-canary halt of a bound first activation, with exactly one binding and no retry yet. A
+    generation restart, when recorded, must have STARTED (its fresh receipt named the new instance)."""
+    restarts = recoveries_of(intent, RECOVERY_GENERATION_RESTART)
+    return (_consumption_halt(intent) and not recoveries_of(intent, RECOVERY_CONSUMPTION_RETRY)
+            and (not restarts or (len(restarts) == 1 and restarts[0].get("state") == RESTART_STARTED)))
+
+
+def generation_restartable(intent) -> bool:
+    """The ONE shape `resume_generation_restart` may move: the same consumption halt, before any retry and
+    before any restart (INV-HOST-DELIVERY-FIRST-ACTIVATION-001). One restart per delivery."""
+    return (_consumption_halt(intent) and not recoveries_of(intent, RECOVERY_CONSUMPTION_RETRY)
+            and not recoveries_of(intent, RECOVERY_GENERATION_RESTART))
+
+
+def generation_restart_of(intent) -> dict | None:
+    """The recorded restart of this delivery, or None. Pure."""
+    restarts = recoveries_of(intent, RECOVERY_GENERATION_RESTART)
+    return restarts[-1] if restarts else None
+
+
+def _without_consumption_windows(intent) -> dict:
+    """The intent with its consumption retry/re-arm rows set aside (the halt shape is judged without them)."""
+    others = [row for row in (intent or {}).get("recoveries") or []
+              if not (isinstance(row, dict) and row.get("kind") in (RECOVERY_CONSUMPTION_RETRY,
+                                                                    RECOVERY_CONSUMPTION_REARM))]
+    return {**(intent or {}), "recoveries": others}
+
+
+def consumption_retry_exhausted(intent) -> bool:
+    """The same halt again after the one retry already recorded: exhausted, never retried twice."""
+    return _consumption_halt(_without_consumption_windows(intent))
+
+
+def consumption_rearmable(intent) -> bool:
+    """The ONE shape `resume_consumption_rearm` may move (INV-HOST-DELIVERY-FIRST-ACTIVATION-001, extended): the
+    same pending-canary halt AGAIN after exactly one consumption retry, whose row is the LATEST recovery (nothing
+    happened after it), and no re-arm yet. A recorded generation restart must have STARTED."""
+    if not isinstance(intent, dict):
+        return False
+    recoveries = [row for row in intent.get("recoveries") or [] if isinstance(row, dict)]
+    retries = recoveries_of(intent, RECOVERY_CONSUMPTION_RETRY)
+    restarts = recoveries_of(intent, RECOVERY_GENERATION_RESTART)
+    return (consumption_retry_exhausted(intent) and len(retries) == 1 and bool(recoveries)
+            and recoveries[-1].get("kind") == RECOVERY_CONSUMPTION_RETRY
+            and not recoveries_of(intent, RECOVERY_CONSUMPTION_REARM)
+            and (not restarts or (len(restarts) == 1 and restarts[0].get("state") == RESTART_STARTED)))
+
+
+def consumption_rearm_exhausted(intent) -> bool:
+    """The same halt again after the one re-arm already recorded: final, never re-armed twice."""
+    return bool(recoveries_of(intent, RECOVERY_CONSUMPTION_REARM)) and consumption_retry_exhausted(intent)
+
+
+def _consumption_retry_refused(field: str):
+    return DeliveryRefused("consumption_retry_invalid", field)
+
+
+def validate_consumption_retry(document) -> dict:
+    """The owner's consumption-retry document, exactly (INV-HOST-DELIVERY-FIRST-ACTIVATION-001).
+
+    Identity of the plan, pin, release and candidate; the recorded halt INCLUDING its expired stage
+    deadline; the first-activation evidence it builds on; the bound descriptor and the observed
+    instance; the approver. Its values are claims only: the lane compares them with its records and
+    the live host before anything is written. Every defect is `consumption_retry_invalid`."""
+    if not isinstance(document, dict) or set(document) not in (
+            CONSUMPTION_RETRY_FIELDS, CONSUMPTION_RETRY_FIELDS | {CONSUMPTION_RETRY_RESTART_FIELD}):
+        raise _consumption_retry_refused("document")
+    if CONSUMPTION_RETRY_RESTART_FIELD in document and not _hex(document[CONSUMPTION_RETRY_RESTART_FIELD],
+                                                                 EVIDENCE_REF):
+        raise _consumption_retry_refused(CONSUMPTION_RETRY_RESTART_FIELD)
+    if document["schema"] != CONSUMPTION_RETRY_SCHEMA:
+        raise _consumption_retry_refused("schema")
+    if document["kind"] != RECOVERY_CONSUMPTION_RETRY:
+        raise _consumption_retry_refused("kind")
+    for key in ("plan_id", "release_id", "target_id", "observed_instance_id"):
+        if not _token(document[key]):
+            raise _consumption_retry_refused(key)
+    if not _hex(document["approved_by"], ACTOR_ID):
+        raise _consumption_retry_refused("approved_by")
+    for key in ("plan_sha256", "pin_sha256", "descriptor_sha256"):
+        if not _hex(document[key], DIGEST_HEX):
+            raise _consumption_retry_refused(key)
+    if not _hex(document["candidate_revision"], REVISION):
+        raise _consumption_retry_refused("candidate_revision")
+    if not _hex(document["candidate_tree"], TREE_ID):
+        raise _consumption_retry_refused("candidate_tree")
+    if not _hex(document["first_activation_evidence"], EVIDENCE_REF):
+        raise _consumption_retry_refused("first_activation_evidence")
+    halt = document["halt"]
+    if not isinstance(halt, dict) or set(halt) != CONSUMPTION_RETRY_HALT_FIELDS:
+        raise _consumption_retry_refused("halt")
+    if (halt["stage"], halt["previous_stage"], halt["reason_code"]) != (
+            BLOCKED, AWAITING_CONSUMPTION, "no_known_good_predecessor") or not all(
+            type(halt[key]) is str and 0 < len(halt[key]) <= 64 for key in ("updated_at", "stage_deadline")):
+        raise _consumption_retry_refused("halt")
+    return {**document, "halt": dict(halt)}
+
+
+def _consumption_rearm_refused(field: str):
+    return DeliveryRefused("consumption_rearm_invalid", field)
+
+
+def validate_consumption_rearm(document) -> dict:
+    """The owner's consumption re-arm document, exactly (INV-HOST-DELIVERY-FIRST-ACTIVATION-001, extended).
+
+    Everything a consumption retry binds (plan, pin, release, candidate, the recorded halt INCLUDING its expired
+    deadline, the first-activation evidence, the bound descriptor, the observed instance, the approver, the
+    restart link when one is recorded), plus the SPENT retry's evidence, the explicit window length in whole
+    seconds (1..CONSUMPTION_REARM_MAX_SECONDS) and the evidence of the recorded user decision (`authority`).
+    Its values are claims only. Every defect is `consumption_rearm_invalid`."""
+    if not isinstance(document, dict) or set(document) not in (
+            CONSUMPTION_REARM_FIELDS, CONSUMPTION_REARM_FIELDS | {CONSUMPTION_RETRY_RESTART_FIELD}):
+        raise _consumption_rearm_refused("document")
+    if document.get("schema") != CONSUMPTION_REARM_SCHEMA:
+        raise _consumption_rearm_refused("schema")
+    if document.get("kind") != RECOVERY_CONSUMPTION_REARM:
+        raise _consumption_rearm_refused("kind")
+    window = document["window_seconds"]
+    if type(window) is not int or not 0 < window <= CONSUMPTION_REARM_MAX_SECONDS:
+        raise _consumption_rearm_refused("window_seconds")
+    for key in ("retry_evidence", "authority"):
+        if not _hex(document[key], EVIDENCE_REF):
+            raise _consumption_rearm_refused(key)
+    shaped = {key: value for key, value in document.items() if key not in ("retry_evidence", "window_seconds",
+                                                                            "authority")}
+    try:
+        validate_consumption_retry({**shaped, "schema": CONSUMPTION_RETRY_SCHEMA, "kind": RECOVERY_CONSUMPTION_RETRY})
+    except DeliveryRefused as exc:
+        raise _consumption_rearm_refused(exc.field) from None
+    return {**document, "halt": dict(document["halt"])}
+
+
+def _generation_restart_refused(field: str):
+    return DeliveryRefused("generation_restart_invalid", field)
+
+
+def validate_generation_restart(document) -> dict:
+    """The owner's generation-restart document, exactly (INV-HOST-DELIVERY-FIRST-ACTIVATION-001, extended).
+
+    The same identity as a consumption retry (plan, pin, release, candidate, the recorded halt INCLUDING its
+    expired deadline, the first-activation evidence, the bound descriptor), plus the STOPPED instance it names,
+    why it stopped, and the approver. Its values are claims only; every defect is `generation_restart_invalid`."""
+    if not isinstance(document, dict) or set(document) != GENERATION_RESTART_FIELDS:
+        raise _generation_restart_refused("document")
+    if document["schema"] != GENERATION_RESTART_SCHEMA:
+        raise _generation_restart_refused("schema")
+    if document["kind"] != RECOVERY_GENERATION_RESTART:
+        raise _generation_restart_refused("kind")
+    for key in ("plan_id", "release_id", "target_id", "stopped_instance_id"):
+        if not _token(document[key]):
+            raise _generation_restart_refused(key)
+    if document["reason"] not in GENERATION_RESTART_REASONS:
+        raise _generation_restart_refused("reason")
+    if not _hex(document["approved_by"], ACTOR_ID):
+        raise _generation_restart_refused("approved_by")
+    for key in ("plan_sha256", "pin_sha256", "descriptor_sha256"):
+        if not _hex(document[key], DIGEST_HEX):
+            raise _generation_restart_refused(key)
+    if not _hex(document["candidate_revision"], REVISION):
+        raise _generation_restart_refused("candidate_revision")
+    if not _hex(document["candidate_tree"], TREE_ID):
+        raise _generation_restart_refused("candidate_tree")
+    if not _hex(document["first_activation_evidence"], EVIDENCE_REF):
+        raise _generation_restart_refused("first_activation_evidence")
+    halt = document["halt"]
+    if not isinstance(halt, dict) or set(halt) != CONSUMPTION_RETRY_HALT_FIELDS:
+        raise _generation_restart_refused("halt")
+    if (halt["stage"], halt["previous_stage"], halt["reason_code"]) != (
+            BLOCKED, AWAITING_CONSUMPTION, "no_known_good_predecessor") or not all(
+            type(halt[key]) is str and 0 < len(halt[key]) <= 64 for key in ("updated_at", "stage_deadline")):
+        raise _generation_restart_refused("halt")
+    return {**document, "halt": dict(halt)}
+
+
+# ----- active-generation maintenance (INV-HOST-DELIVERY-MAINTENANCE-001) -----------------------------
+# An explicit, evidence-bound owner operation on an ACTIVE, consumed `managed_fleet_systemd` delivery: it
+# changes only the EXECUTING generation of the exact active descriptor (restart -> arm -> bind). It never
+# publishes, promotes, changes the descriptor, the release, the pointer or any recovery. Everything below
+# is pure policy over dictionaries; a refusal carries a fixed code and at most a fixed field name.
+MAINTENANCE_SCHEMA = "urn:zeus:host-delivery-active-generation:1"
+MAINTENANCE_KIND = "active_generation_restart"
+MAINTENANCE_REASON = "unit_environment_changed"
+MAINTENANCE_ID_PREFIX = "active_generation_1:"
+MAINTENANCE_ID = re.compile(r"^active_generation_1:[0-9a-f]{64}$")
+MAINTENANCE_RESULT_SCHEMA = "urn:zeus:host-delivery-maintenance:1"
+GENERATION_OBSERVATION_SCHEMA = "urn:zeus:managed-generation-observation:1"
+MAINTENANCE_FIELDS = frozenset({"schema", "kind", "plan_id", "plan_sha256", "pin_sha256", "target_id", "release_id",
+                                "descriptor_sha256", "from", "retiring", "reason", "canary_window_seconds",
+                                "authority", "approved_by"})
+MAINTENANCE_FROM_FIELDS = frozenset({"stage", "updated_at"})
+MAINTENANCE_RETIRING_FIELDS = frozenset({"instance_id", "invocation_id", "launch_sha256"})
+MAINTENANCE_WINDOW_MAX = 3600
+# A systemd InvocationID: 128 bits as 32 lower-case hex digits.
+INVOCATION = re.compile(r"^[0-9a-f]{32}$")
+# The generation lifecycle. `failed` is terminal and stays OPEN (the target stays held until a separately
+# reviewed resolution); only `bound` closes the maintenance.
+GENERATION_REQUESTED, GENERATION_LAUNCHED, GENERATION_STARTED = "requested", "launched", "started"
+GENERATION_ARMED, GENERATION_BOUND, GENERATION_FAILED = "armed", "bound", "failed"
+GENERATION_STATES = (GENERATION_REQUESTED, GENERATION_LAUNCHED, GENERATION_STARTED, GENERATION_ARMED,
+                     GENERATION_BOUND, GENERATION_FAILED)
+GENERATION_TRANSITIONS = {
+    GENERATION_REQUESTED: frozenset({GENERATION_LAUNCHED, GENERATION_STARTED, GENERATION_FAILED}),
+    GENERATION_LAUNCHED: frozenset({GENERATION_STARTED, GENERATION_FAILED}),
+    GENERATION_STARTED: frozenset({GENERATION_ARMED, GENERATION_FAILED}),
+    GENERATION_ARMED: frozenset({GENERATION_BOUND, GENERATION_FAILED}),
+    GENERATION_BOUND: frozenset(),
+    GENERATION_FAILED: frozenset(),
+}
+MAINTENANCE_PHASES = ("restart", "arm", "bind")
+# The 21 fixed codes of INV-HOST-DELIVERY-MAINTENANCE-001 (spec D2.4); no other maintenance code exists.
+MAINTENANCE_CODES = ("maintenance_invalid", "maintenance_authority_unverified", "maintenance_conflict",
+                     "maintenance_not_active", "maintenance_already_used", "maintenance_phase",
+                     "maintenance_target_busy", "maintenance_controller_busy", "maintenance_stale",
+                     "maintenance_pause_required", "maintenance_debt_unsettled", "maintenance_invocation_mismatch",
+                     "maintenance_reload_pending", "maintenance_launch_unconfirmed", "maintenance_primary_unverified",
+                     "maintenance_canary_pending", "maintenance_canary_unbound", "maintenance_expired",
+                     "maintenance_failed", "maintenance_admission_refused", "maintenance_reconciliation_required")
+# The only codes a generation FAILS with; every other refusal leaves the last proved state in place.
+MAINTENANCE_FAILURE_CODES = frozenset({"maintenance_expired", "maintenance_invocation_mismatch", "maintenance_failed"})
+# How the adapter's restart authority may proceed: replace the matching intended incumbent (graceful stop,
+# then one launch), launch after a proved stop, or recognize the request-bound launch already made.
+RESTART_REPLACE, RESTART_LAUNCH, RESTART_RECOGNIZED = "replace", "launch", "recognized"
+# The existing clock-skew rule between a wall-clock timestamp a process wrote and another clock (the PR-2
+# observer's SKEW_USEC is the same two seconds).
+MAINTENANCE_SKEW_SECONDS = 2
+RESTART_AUTHORITY_FIELDS = frozenset({"maintenance_id", "instance_id", "invocation_id", "launch_sha256",
+                                      "requested_at"})
+OBSERVATION_FIELDS = frozenset({"schema", "observed_at", "running", "receipt", "receipt_present", "launch",
+                                "launch_present", "launch_sha256", "launch_request_sha256",
+                                "launch_request_requested_at", "target_file_matches", "control_user_matches",
+                                "unit", "supervisor", "entry", "work"})
+OBSERVATION_UNIT_FIELDS = frozenset({"active_state", "invocation_id", "main_pid", "exec_main_pid",
+                                     "need_daemon_reload", "control_group_sha256", "environment_files_sha256",
+                                     "drop_in_count"})
+OBSERVATION_SUPERVISOR_FIELDS = frozenset({"pid", "state", "start_ticks", "is_main_pid"})
+OBSERVATION_ENTRY_FIELDS = frozenset({"pid", "state", "start_ticks", "parent_is_supervisor", "in_unit_cgroup",
+                                      "started_before_receipt"})
+OBSERVATION_WORK_FIELDS = frozenset({"state", "reason_code", "active", "unresolved"})
+PROCESS_STATES = frozenset({"present", "absent", "replaced", "unknown"})
+WORK_STATES = frozenset({"idle", "busy", "unknown"})
+ENTRY_FLAGS = ("parent_is_supervisor", "in_unit_cgroup", "started_before_receipt")
+UNIT_STATE = re.compile(r"^[a-z][a-z0-9-]{0,31}$")
+REASON_CODE = re.compile(r"^[A-Za-z0-9_.:-]{1,80}$")
+# The stages at which ANOTHER delivery of the same target competes with a maintenance for the host.
+COMPETING_STAGES = POST_MERGE_OPEN | {DRAIN_INTENDED, SWITCHING, AWAITING_CONSUMPTION, ROLLING_BACK}
+NEXT_PHASE = {GENERATION_REQUESTED: "restart", GENERATION_LAUNCHED: "restart", GENERATION_STARTED: "arm",
+              GENERATION_ARMED: "bind", GENERATION_BOUND: None, GENERATION_FAILED: "owner_review"}
+
+
+def _maintenance_refused(field: str):
+    return DeliveryRefused("maintenance_invalid", field)
+
+
+def _aware(value) -> datetime | None:
+    """An aware ISO timestamp of at most 64 characters, or None."""
+    if type(value) is not str or not 0 < len(value) <= 64:
+        return None
+    try:
+        moment = datetime.fromisoformat(value)
+    except ValueError:
+        return None
+    return moment if moment.tzinfo is not None else None
+
+
+def validate_active_generation(document) -> dict:
+    """The owner's active-generation maintenance document, exactly (INV-HOST-DELIVERY-MAINTENANCE-001).
+
+    Identity of the plan, pin, release, target and descriptor; the ACTIVE intent version it answers
+    (`from`); the retiring host generation; the one fixed reason; the canary window; the trusted
+    authority reference and the approver. There is no free-text reason, token, command, environment or
+    `supersedes` field, so any extra key refuses. Its values are claims only; every defect is
+    `maintenance_invalid` naming the field."""
+    if not isinstance(document, dict) or set(document) != MAINTENANCE_FIELDS:
+        raise _maintenance_refused("document")
+    if document["schema"] != MAINTENANCE_SCHEMA:
+        raise _maintenance_refused("schema")
+    if document["kind"] != MAINTENANCE_KIND:
+        raise _maintenance_refused("kind")
+    for key in ("plan_id", "release_id", "target_id"):
+        if not _token(document[key]):
+            raise _maintenance_refused(key)
+    for key in ("plan_sha256", "pin_sha256", "descriptor_sha256"):
+        if not _hex(document[key], DIGEST_HEX):
+            raise _maintenance_refused(key)
+    source = document["from"]
+    if not (isinstance(source, dict) and set(source) == MAINTENANCE_FROM_FIELDS and source["stage"] == ACTIVE
+            and _aware(source["updated_at"]) is not None):
+        raise _maintenance_refused("from")
+    retiring = document["retiring"]
+    if not (isinstance(retiring, dict) and set(retiring) == MAINTENANCE_RETIRING_FIELDS
+            and _hex(retiring["instance_id"], INSTANCE) and _hex(retiring["invocation_id"], INVOCATION)
+            and _hex(retiring["launch_sha256"], SHA256)):
+        raise _maintenance_refused("retiring")
+    if document["reason"] != MAINTENANCE_REASON:
+        raise _maintenance_refused("reason")
+    if not _bounded_int(document["canary_window_seconds"], 1, MAINTENANCE_WINDOW_MAX):
+        raise _maintenance_refused("canary_window_seconds")
+    if not _hex(document["authority"], EVIDENCE_REF):
+        raise _maintenance_refused("authority")
+    if not _hex(document["approved_by"], ACTOR_ID):
+        raise _maintenance_refused("approved_by")
+    return {**document, "from": dict(source), "retiring": dict(retiring)}
+
+
+def generation_id(document) -> str:
+    """The maintenance (= generation) id: the schema tag and the canonical digest of the validated document."""
+    return MAINTENANCE_ID_PREFIX + digest(validate_active_generation(document))
+
+
+def maintenance_of(intent) -> dict | None:
+    """The recorded maintenance generation of one intent (v1 holds at most one), or None for a legacy row."""
+    generations = intent.get("generations") if isinstance(intent, dict) else None
+    rows = [row for row in generations if isinstance(row, dict)] if isinstance(generations, list) else []
+    return rows[-1] if rows else None
+
+
+def maintenance_open(intent) -> bool:
+    """A generation that is not `bound` holds its target; a `failed` one stays open until a separately
+    reviewed resolution (v1 has none)."""
+    generation = maintenance_of(intent)
+    return generation is not None and generation.get("state") != GENERATION_BOUND
+
+
+def maintenance_hold(intents, target_id: str, *, exclude_plan_id=None) -> dict | None:
+    """The first intent on `target_id` (other than `exclude_plan_id`) whose maintenance is open, or None."""
+    for other in intents or []:
+        if (isinstance(other, dict) and other.get("target_id") == target_id
+                and other.get("plan_id") != exclude_plan_id and maintenance_open(other)):
+            return other
+    return None
+
+
+def maintenance_transition(generation: dict, target: str) -> None:
+    """The closed generation transition table; anything else is `maintenance_phase`."""
+    state = (generation or {}).get("state")
+    if target not in GENERATION_TRANSITIONS.get(state, frozenset()):
+        raise DeliveryRefused("maintenance_phase", "state")
+
+
+def competing_intent(other, target_id: str, plan_id: str) -> bool:
+    """Another plan's intent that competes with a maintenance for this target's host.
+
+    Deliberately NOT "non-terminal": an untouched blocked plan does not compete. It competes while it has
+    merged and not settled the host, while a bound descriptor of it is unsettled (the `_predecessor_in`
+    rule), while a merged verification is in flight, while it is a held migration successor, or while its
+    own maintenance is open."""
+    if not isinstance(other, dict) or other.get("target_id") != target_id or other.get("plan_id") == plan_id:
+        return False
+    stage = other.get("stage")
+    unsettled = (stage in {BLOCKED, FAILED} and other.get("descriptor") is not None
+                 and not (other.get("rollback") or {}).get("verified"))
+    merged_verifying = stage == VERIFYING and bool(other.get("merged_revision"))
+    return (stage in COMPETING_STAGES or unsettled or merged_verifying or bool(other.get("held"))
+            or maintenance_open(other))
+
+
+def _lease_held(lock, now: datetime) -> bool:
+    lease = (lock or {}).get("lease_until")
+    if not lease:
+        return False
+    try:
+        return datetime.fromisoformat(lease) > now
+    except (TypeError, ValueError):
+        return True   # an unreadable lease is never read as free
+
+
+def maintenance_applicable(document, *, plan_row, intent, descriptor_row, target, release_record, gate, pointer,
+                           queue_row, intents, migrations, lock, now: datetime) -> tuple | None:
+    """The FIRST refusal of a first maintenance request, or None when it may be requested.
+
+    Read-only facts of one lane snapshot: the exact ACTIVE, consumed, owner-canary-qualified managed
+    delivery of this plan, its bound descriptor row naming the retiring instance, the active approved
+    release, the pointer and the active queue row, no competing delivery or reserving migration on the
+    target and no running controller. Every refusal happens before any write or host effect."""
+    doc = validate_active_generation(document)
+    if target is None:
+        return ("maintenance_stale", "target_id")
+    if target.get("kind") != KIND_MANAGED_SYSTEMD:
+        return ("maintenance_not_active", "target_id")
+    plan = (plan_row or {}).get("plan") or {}
+    if (plan_row or {}).get("plan_sha256") != doc["plan_sha256"]:
+        return ("maintenance_stale", "plan_sha256")
+    if ((plan_row or {}).get("pin") or {}).get("sha256") != doc["pin_sha256"]:
+        return ("maintenance_stale", "pin_sha256")
+    for key in ("plan_id", "release_id", "target_id"):
+        if plan.get(key) != doc[key]:
+            return ("maintenance_stale", key)
+    if target.get("target_id") != doc["target_id"]:
+        return ("maintenance_stale", "target_id")
+    if plan.get("canary_check_id") != CANARY_FLEET:
+        return ("maintenance_not_active", "canary_check_id")
+    if not isinstance(intent, dict) or intent.get("stage") != ACTIVE:
+        return ("maintenance_not_active", "stage")
+    if intent.get("outcome") != OUTCOME_ACTIVE or (intent.get("canary") or {}).get("passed") is not True:
+        return ("maintenance_not_active", "canary")
+    if doc["from"] != {"stage": ACTIVE, "updated_at": intent.get("updated_at")}:
+        return ("maintenance_stale", "from")
+    descriptor = intent.get("descriptor")
+    if (doc["descriptor_sha256"] != intent.get("descriptor_sha256") or not isinstance(descriptor, dict)
+            or descriptor_digest(descriptor) != intent.get("descriptor_sha256")):
+        return ("maintenance_stale", "descriptor_sha256")
+    row = descriptor_row if isinstance(descriptor_row, dict) else None
+    if (row is None or row.get("descriptor_sha256") != doc["descriptor_sha256"] or row.get("consumed") is not True
+            or row.get("rolled_back") or row.get("plan_id") != doc["plan_id"]):
+        return ("maintenance_not_active", "descriptor_row")
+    if not (row.get("instance_id") == row.get("observed_instance_id") == intent.get("instance_id")
+            == doc["retiring"]["instance_id"]):
+        return ("maintenance_invocation_mismatch", "instance_id")
+    if (release_record or {}).get("status") != "active" or (gate or {}).get("state") != "approved":
+        return ("maintenance_not_active", "release_id")
+    if (pointer or {}).get("release_id") != doc["release_id"]:
+        return ("maintenance_not_active", "pointer")
+    if not isinstance(queue_row, dict) or queue_row.get("status") != "active":
+        return ("maintenance_not_active", "queue")
+    if any(competing_intent(other, doc["target_id"], doc["plan_id"]) for other in intents or []):
+        return ("maintenance_target_busy", "target_id")
+    if any(isinstance(m, dict) and m.get("target_id") == doc["target_id"] and m.get("state") in MIGRATION_RESERVING
+           for m in migrations or []):
+        return ("maintenance_target_busy", "target_id")
+    if _lease_held(lock, now):
+        return ("maintenance_controller_busy", "controller")
+    return None
+
+
+def fleet_ready_refusal(readiness, *, maintenance_id: str, own_job_id=None) -> tuple | None:
+    """The Fleet as a maintenance needs it: registered, OWNER-paused with no activation hold, no reserving
+    job but this generation's own, no held execution unit and no other open maintenance permit. Unknown
+    debt is never settled."""
+    if not isinstance(readiness, dict) or readiness.get("registered") is not True:
+        return ("maintenance_debt_unsettled", "fleet")
+    if readiness.get("owner_paused") is not True or readiness.get("activation_hold") is not False:
+        return ("maintenance_pause_required", "fleet")
+    reserving, units, permits = (readiness.get("reserving"), readiness.get("units_held"),
+                                 readiness.get("open_permits"))
+    if not (isinstance(reserving, list) and isinstance(units, list) and isinstance(permits, list)):
+        return ("maintenance_debt_unsettled", "fleet")
+    if set(reserving) - {own_job_id} or units:
+        return ("maintenance_debt_unsettled", "fleet")
+    if set(permits) - {maintenance_id}:
+        return ("maintenance_debt_unsettled", "fleet")
+    return None
+
+
+def _nullable(value, check) -> bool:
+    return value is None or check(value)
+
+
+def _flag(value) -> bool:
+    return value is None or type(value) is bool
+
+
+def _count(value, low: int = 0) -> bool:
+    return type(value) is int and low <= value <= 2 ** 63 - 1
+
+
+def _observation_part(value, fields, name: str) -> dict:
+    if not isinstance(value, dict) or set(value) != fields:
+        raise DeliveryRefused("maintenance_invocation_mismatch", "observation")
+    return dict(value)
+
+
+def validate_generation_observation(observation) -> dict:
+    """The adapter's read-only generation observation, checked as untrusted data (exact keys and types).
+
+    A missing fact is `None`, never a guess. The receipt is replaced by its validated copy when valid;
+    otherwise it is `None` and `receipt_state` names why (`absent` or `unreadable`). Any defect is
+    `maintenance_invocation_mismatch` naming `observation`."""
+    def bad():
+        return DeliveryRefused("maintenance_invocation_mismatch", "observation")
+
+    if not isinstance(observation, dict) or set(observation) != OBSERVATION_FIELDS:
+        raise bad()
+    if observation["schema"] != GENERATION_OBSERVATION_SCHEMA or _aware(observation["observed_at"]) is None:
+        raise bad()
+    for key in ("running", "control_user_matches"):
+        if not _flag(observation[key]):
+            raise bad()
+    for key in ("receipt_present", "launch_present", "target_file_matches"):
+        if type(observation[key]) is not bool:
+            raise bad()
+    receipt, launch = observation["receipt"], observation["launch"]
+    if not (receipt is None or isinstance(receipt, dict)) or not (launch is None or isinstance(launch, dict)):
+        raise bad()
+    launch_sha256 = observation["launch_sha256"]
+    if (launch is None) != (launch_sha256 is None) or (launch is not None and launch_sha256 != digest(launch)):
+        raise bad()
+    if not _nullable(observation["launch_request_sha256"], lambda v: _hex(v, SHA256)):
+        raise bad()
+    if not _nullable(observation["launch_request_requested_at"], lambda v: _aware(v) is not None):
+        raise bad()
+    unit = _observation_part(observation["unit"], OBSERVATION_UNIT_FIELDS, "unit")
+    if not (_nullable(unit["active_state"], lambda v: _hex(v, UNIT_STATE))
+            and _nullable(unit["invocation_id"], lambda v: _hex(v, INVOCATION))
+            and _nullable(unit["main_pid"], lambda v: _count(v, 1))
+            and _nullable(unit["exec_main_pid"], _count) and _flag(unit["need_daemon_reload"])
+            and _nullable(unit["control_group_sha256"], lambda v: _hex(v, SHA256))
+            and _nullable(unit["environment_files_sha256"], lambda v: _hex(v, SHA256))
+            and _nullable(unit["drop_in_count"], _count)):
+        raise bad()
+    processes = {}
+    for name, fields, flags in (("supervisor", OBSERVATION_SUPERVISOR_FIELDS, ("is_main_pid",)),
+                                ("entry", OBSERVATION_ENTRY_FIELDS, ENTRY_FLAGS)):
+        part = _observation_part(observation[name], fields, name)
+        if not (_nullable(part["pid"], lambda v: _count(v, 1)) and part["state"] in PROCESS_STATES
+                and _nullable(part["start_ticks"], _count) and all(_flag(part[flag]) for flag in flags)):
+            raise bad()
+        processes[name] = part
+    work = _observation_part(observation["work"], OBSERVATION_WORK_FIELDS, "work")
+    if not (work["state"] in WORK_STATES and _nullable(work["reason_code"], lambda v: _hex(v, REASON_CODE))
+            and _nullable(work["active"], _count) and _nullable(work["unresolved"], _count)):
+        raise bad()
+    named = receipt_identity(receipt, present=observation["receipt_present"])
+    return {**{key: observation[key] for key in OBSERVATION_FIELDS - {"receipt", "launch", "unit", "supervisor",
+                                                                      "entry", "work"}},
+            "receipt": validate_receipt(receipt) if named["state"] == "valid" else None,
+            "receipt_state": named["state"], "launch": copy.deepcopy(launch), "unit": unit,
+            "supervisor": processes["supervisor"], "entry": processes["entry"], "work": work}
+
+
+def validate_restart_authority(restarts) -> dict:
+    """The narrowly typed restart authority `HostTargetBase.start(restarts=)` is handed, exactly."""
+    if not (isinstance(restarts, dict) and set(restarts) == RESTART_AUTHORITY_FIELDS
+            and _hex(restarts["maintenance_id"], MAINTENANCE_ID) and _hex(restarts["instance_id"], INSTANCE)
+            and _hex(restarts["invocation_id"], INVOCATION) and _hex(restarts["launch_sha256"], SHA256)
+            and _aware(restarts["requested_at"]) is not None):
+        raise DeliveryRefused("maintenance_invalid", "restarts")
+    return dict(restarts)
+
+
+def _decision(path=None, reason_code=None, field=None) -> dict:
+    return {"path": path, "reason_code": reason_code, "field": field}
+
+
+def classify_restart(descriptor: dict, observation, restarts) -> dict:
+    """Which restart path the observed host allows for this exact authority, or the first refusal.
+
+    `replace`: the controller-state is still the retiring launch and the running instance is EXACTLY the
+    recorded incumbent (its consumed receipt, its unit invocation and launch, a supervisor that is the
+    unit's main pid, an entry that is its child in its control group and started before its receipt, and
+    idle work). `launch`: the same retiring launch, positively stopped (no other instance, receipt absent
+    or the retiring one, the unit not active under another invocation) and no launch request of this or a
+    later request persisted (S2R F1: such a request is a start of unproven outcome, held). `recognized`: the
+    controller-state changed to a launch of this descriptor under a NEW invocation, started after the
+    request, whose persisted launch request carries exactly this request's time, and which the unit is
+    running now.
+    Anything else refuses before any effect; an arbitrary changed launch (a reboot, an unrecorded N1
+    replacement) is never adopted."""
+    try:
+        authority = validate_restart_authority(restarts)
+        observed = validate_generation_observation(observation)
+    except DeliveryRefused as exc:
+        return _decision(None, exc.reason_code, exc.field)
+    unit, supervisor, entry = observed["unit"], observed["supervisor"], observed["entry"]
+    if observed["control_user_matches"] is not True:
+        return _decision(None, "maintenance_invalid", "service_user")
+    if observed["target_file_matches"] is not True:
+        return _decision(None, "maintenance_stale", "target_file")
+    if unit["need_daemon_reload"] is not False:
+        return _decision(None, "maintenance_reload_pending", "unit")
+    running = observed["running"]
+    if running is None:
+        return _decision(None, "maintenance_launch_unconfirmed", "running")
+    receipt, launch = observed["receipt"], observed["launch"]
+    consumed = receipt is not None and consumption_verdict(descriptor, receipt)["consumed"]
+    names_retiring = consumed and receipt["instance_id"] == authority["instance_id"]
+    if observed["launch_sha256"] == authority["launch_sha256"]:
+        if running:
+            if unit["invocation_id"] != authority["invocation_id"]:
+                # N1: the unit runs another invocation than the recorded incumbent's.
+                return _decision(None, "maintenance_invocation_mismatch", "invocation_id")
+            if not names_retiring:
+                return _decision(None, "maintenance_invocation_mismatch", "instance_id")
+            if launch.get("invocation_id") != authority["invocation_id"]:
+                return _decision(None, "maintenance_invocation_mismatch", "launch")
+            if supervisor["is_main_pid"] is not True:
+                return _decision(None, "maintenance_invocation_mismatch", "supervisor")
+            if not all(entry[flag] is True for flag in ENTRY_FLAGS):
+                # PID reuse, a wrong parent or another control group: not the recorded incumbent.
+                return _decision(None, "maintenance_invocation_mismatch", "entry")
+            if observed["work"]["state"] != "idle":
+                return _decision(None, "maintenance_debt_unsettled", "work")
+            return _decision(RESTART_REPLACE)
+        absent = receipt is None and observed["receipt_state"] == "absent"
+        if ((absent or names_retiring) and unit["invocation_id"] in (None, authority["invocation_id"])
+                and unit["active_state"] in (None, "inactive", "failed")):
+            # S2R F1: the one launch of THIS request persists its launch request (stamped with the request's
+            # own time) BEFORE its start. Such a request (or any launch request not older than this
+            # maintenance request) with the controller-state still the retiring launch means a start whose
+            # outcome is unproven: hold, never launch a second time. An unreadable request proves nothing.
+            request_at = _aware(observed["launch_request_requested_at"])
+            if request_at is None or request_at >= _aware(authority["requested_at"]):
+                return _decision(None, "maintenance_launch_unconfirmed", "launch")
+            return _decision(RESTART_LAUNCH)
+        return _decision(None, "maintenance_invocation_mismatch", "instance_id")
+    requested = _aware(authority["requested_at"])
+    started = _aware((launch or {}).get("started_at")) if isinstance(launch, dict) else None
+    request_at = _aware(observed["launch_request_requested_at"])
+    # Recognition is bound to THIS attempt: the persisted launch request carries exactly the request's time.
+    if (isinstance(launch, dict) and launch.get("descriptor_sha256") == descriptor_digest(descriptor)
+            and _hex(launch.get("invocation_id"), INVOCATION) and launch["invocation_id"] != authority["invocation_id"]
+            and started is not None and started >= requested and request_at is not None
+            and request_at == requested and unit["invocation_id"] == launch["invocation_id"]):
+        return _decision(RESTART_RECOGNIZED)
+    return _decision(None, "maintenance_launch_unconfirmed", "launch")
+
+
+def new_generation_refusal(descriptor: dict, observation, generation: dict) -> tuple | None:
+    """Whether the live identity is EXACTLY the started generation, or the first refusal.
+
+    A definite difference (the started instance stopped, another receipt, invocation, launch, or a
+    process identity flag that is False) is `maintenance_invocation_mismatch`, which the caller turns into
+    a generation failure. An UNKNOWN fact (liveness, receipt, unit or a flag not observable) is
+    `maintenance_launch_unconfirmed` and keeps the last proved state (spec D2.2: uncertainty is a named
+    reason, not an automatic failure). A pending daemon reload is `maintenance_reload_pending`."""
+    try:
+        observed = validate_generation_observation(observation)
+    except DeliveryRefused:
+        # An unreadable observation is not evidence that the generation changed.
+        return ("maintenance_launch_unconfirmed", "observation")
+    launched = (generation or {}).get("launched") or {}
+    started = launched.get("receipt") or {}
+    retiring = (generation or {}).get("retiring") or {}
+    unit = observed["unit"]
+    if observed["running"] is None:
+        return ("maintenance_launch_unconfirmed", "running")
+    if observed["running"] is not True:
+        return ("maintenance_invocation_mismatch", "running")
+    if observed["receipt"] is None:
+        return ("maintenance_launch_unconfirmed", "receipt")
+    verdict = consumption_verdict(descriptor, observed["receipt"], expected_instance=retiring.get("instance_id"))
+    if not verdict["consumed"]:
+        return ("maintenance_invocation_mismatch", "receipt")
+    if verdict["instance_id"] != started.get("instance_id"):
+        return ("maintenance_invocation_mismatch", "instance_id")
+    if unit["invocation_id"] is None:
+        return ("maintenance_launch_unconfirmed", "unit")
+    if unit["invocation_id"] != launched.get("invocation_id"):
+        return ("maintenance_invocation_mismatch", "invocation_id")
+    if observed["launch_sha256"] is None:
+        return ("maintenance_launch_unconfirmed", "launch")
+    if observed["launch_sha256"] != launched.get("launch_sha256"):
+        return ("maintenance_invocation_mismatch", "launch")
+    for name, flags in (("supervisor", ("is_main_pid",)), ("entry", ENTRY_FLAGS)):
+        values = [observed[name][flag] for flag in flags]
+        if any(value is False for value in values):
+            return ("maintenance_invocation_mismatch", name)
+        if any(value is not True for value in values):
+            return ("maintenance_launch_unconfirmed", name)
+    if unit["need_daemon_reload"] is not False:
+        return ("maintenance_reload_pending", "unit")
+    return None
+
+
+def selection_of(observation: dict) -> dict:
+    """The unit's source-selection provenance: the digest of its environment files and its drop-in count."""
+    unit = (observation or {}).get("unit") or {}
+    return {"environment_files_sha256": unit.get("environment_files_sha256"),
+            "drop_in_count": unit.get("drop_in_count")}
+
+
+def _part(record, name: str) -> dict:
+    value = (record or {}).get(name)
+    return value if isinstance(value, dict) else {}
+
+
+def maintenance_view(generation) -> dict | None:
+    """The allowlisted projection of one generation: ids, digests, states, codes and times only."""
+    if not isinstance(generation, dict):
+        return None
+    state = generation.get("state")
+    retiring, launched = _part(generation, "retiring"), generation.get("launched")
+    arm, canary, failure = generation.get("arm"), generation.get("canary"), generation.get("failure")
+    new = None
+    if isinstance(launched, dict):
+        new = {"instance_id": _part(launched, "receipt").get("instance_id"),
+               "invocation_id": launched.get("invocation_id")}
+    arm = arm if isinstance(arm, dict) else None
+    return {"maintenance_id": generation.get("id"), "state": state, "open": state != GENERATION_BOUND,
+            "qualified": state == GENERATION_BOUND, "requested_at": generation.get("requested_at"),
+            "updated_at": generation.get("updated_at"),
+            "retiring": {"instance_id": retiring.get("instance_id"), "invocation_id": retiring.get("invocation_id")},
+            "new": new, "deadline": None if arm is None else arm.get("deadline"),
+            "admission": None if arm is None else _part(arm, "control").get("state"),
+            "dispatch": None if arm is None or not isinstance(arm.get("dispatch"), dict)
+            else arm["dispatch"].get("state"),
+            "canary": None if not isinstance(canary, dict) else {
+                "action_id": canary.get("action_id"), "job_id": canary.get("job_id"),
+                "state": _part(canary, "outcome").get("state")},
+            "failure": None if not isinstance(failure, dict) else {"code": failure.get("code"),
+                                                                    "at": failure.get("at")},
+            "evidence_ref": generation.get("evidence_ref"), "next_phase": NEXT_PHASE.get(state)}
+
+
+def next_stage(stage: str) -> str:
+    """The stage that follows a completed one; `active` is terminal and follows nothing."""
+    if stage not in STAGE_ORDER:
+        raise DeliveryRefused("stage_unknown", "stage")
+    index = STAGE_ORDER.index(stage)
+    return STAGE_ORDER[min(index + 1, len(STAGE_ORDER) - 1)]
+
+
+def stage_next_action(stage: str, outcome=None) -> str:
+    """The bounded next action for one delivery; never a command and never an authorization."""
+    if stage == ACTIVE:
+        return "observe_active_runtime"
+    if stage == ROLLING_BACK:
+        return "restore_predecessor"
+    if stage in {BLOCKED, FAILED}:
+        return "owner_review"
+    if stage in {ROLLED_BACK, WITHDRAWN}:
+        return "owner_requalify_candidate"
+    if stage == AWAITING_REVIEW:
+        return "await_independent_review"
+    if stage == VERIFYING:
+        return "await_incumbent_verification"
+    if stage == AWAITING_CI:
+        return "await_required_checks"
+    if stage == AWAITING_CONSUMPTION:
+        return "await_startup_receipt"
+    if outcome == OUTCOME_UNAVAILABLE:
+        return "await_dependency"
+    return "tick"
+
+
+def delivery_progress(row: dict, intent, descriptor_row) -> dict:
+    """What one registered plan looks like now: identities, digests, stage, fixed codes and counts.
+
+    No path, no descriptor body, no check output, no PR title, no exception message and no
+    credential is projected: a reader gets ids, digests, states and reason codes only. An absent
+    intent is `registered`, never invented progress, and an absent descriptor is unknown rather
+    than an empty tuple. `startup_observed` is the launched instance's OWN accepted receipt and is
+    deliberately separate from `consumed`: a runtime is observed BEFORE the canary that decides
+    whether it may become the active one, and only `consumed` is that activation.
+    """
+    plan = row["plan"]
+    stage = (intent or {}).get("stage") or REGISTERED
+    active = (descriptor_row or {}).get("descriptor") or None
+    view = {"plan_id": plan["plan_id"], "release_id": plan["release_id"], "target_id": plan["target_id"],
+            "revision": plan["revision"], "plan_sha256": row["plan_sha256"], "pin": dict(row["pin"]),
+            "required_checks": len(plan["required_checks"]), "canary_check_id": plan["canary_check_id"],
+            "stage": stage, "outcome": (intent or {}).get("outcome"),
+            "reason_code": (intent or {}).get("reason_code"),
+            "error_type": (intent or {}).get("error_type"),
+            "attempts": int((intent or {}).get("attempts") or 0),
+            "head": (intent or {}).get("head"), "pr_number": (intent or {}).get("pr_number"),
+            "merged_revision": (intent or {}).get("merged_revision"),
+            "intended_descriptor_sha256": (intent or {}).get("descriptor_sha256"),
+            "instance_id": (intent or {}).get("instance_id"),
+            "canary": (intent or {}).get("canary"), "rollback": (intent or {}).get("rollback"),
+            "active_descriptor_sha256": None if active is None else descriptor_digest(active),
+            "active_revision": None if active is None else active.get("revision"),
+            "startup_observed": bool((descriptor_row or {}).get("startup_observed")),
+            "consumed": bool((descriptor_row or {}).get("consumed")),
+            "runtime": _runtime_view((intent or {}).get("runtime")),
+            "work": _work_view((intent or {}).get("work")),
+            "withdrawal": _withdrawal_view((intent or {}).get("withdrawal")),
+            # Additive (INV-HOST-DELIVERY-VERIFY-001): where verification leads, the last recovery
+            # and the last attempt with its cleanup state; codes and ids only.
+            "after_verification": (intent or {}).get("after_verification"),
+            "recovery": _recovery_view(((intent or {}).get("recoveries") or [None])[-1]),
+            # Additive (INV-HOST-DELIVERY-FIRST-ACTIVATION-001): every recovery's kind, evidence and
+            # bound tuple (ids and digests only), so a first-activation binding keeps its provenance.
+            "recoveries": [_recoveries_view(record) for record in (intent or {}).get("recoveries") or []
+                           if isinstance(record, dict)],
+            "verification": _attempt_view((attempts_of(intent) or [None])[-1]),
+            # Additive (INV-HOST-DELIVERY-FIRST-ACTIVATION-001): the current stage deadline.
+            "stage_deadline": (intent or {}).get("stage_deadline"),
+            "updated_at": (intent or {}).get("updated_at") or row.get("updated_at")}
+    view["next_action"] = stage_next_action(stage, view["outcome"])
+    if maintenance_of(intent) is not None:
+        # Additive (INV-HOST-DELIVERY-MAINTENANCE-001), ONLY for an intent that carries generations, so a
+        # legacy row projects byte-identically: open/not qualified until bound, ids and states only.
+        view["maintenance"] = maintenance_view(maintenance_of(intent))
+    return view
+
+
+def _withdrawal_view(record) -> dict | None:
+    """The owner's withdrawal: its reason, evidence ref and what was observed; codes and ids only."""
+    if not isinstance(record, dict):
+        return None
+    return {key: record.get(key) for key in ("reason_code", "evidence_ref", "previous_stage", "main_effect",
+                                             "merged_revision", "observed", "at")}
+
+
+def _recovery_view(record) -> dict | None:
+    if not isinstance(record, dict):
+        return None
+    return {"kind": record.get("kind"), "evidence_ref": record.get("evidence_ref"),
+            "halted_reason_code": (record.get("halted") or {}).get("reason_code"), "at": record.get("at")}
+
+
+def _recoveries_view(record: dict) -> dict:
+    binding = record.get("binding")
+    view = {"kind": record.get("kind"), "evidence_ref": record.get("evidence_ref"),
+            "binding": dict(binding) if isinstance(binding, dict) else None, "at": record.get("at")}
+    if record.get("kind") == RECOVERY_GENERATION_RESTART:
+        # Additive for the restart kind only: the stopped and the started generation, ids and times only.
+        stopped, started = record.get("stopped") or {}, record.get("started") or {}
+        view.update({"state": record.get("state"), "reason": record.get("reason"),
+                     "stopped": {key: stopped.get(key) for key in ("instance_id", "descriptor_sha256")},
+                     "started": {key: started.get(key) for key in ("instance_id", "revision", "started_at")},
+                     "halted": {key: (record.get("halted") or {}).get(key)
+                                for key in ("stage", "previous_stage", "reason_code", "updated_at",
+                                            "stage_deadline")}})
+    if record.get("kind") in (RECOVERY_CONSUMPTION_RETRY, RECOVERY_CONSUMPTION_REARM):
+        # Additive for the retry and re-arm kinds only (INV-HOST-DELIVERY-FIRST-ACTIVATION-001): the ORIGINAL
+        # halt's timing, the new interval and the observed identity; ids, digests and times only.
+        halted = record.get("halted") or {}
+        interval = record.get("interval") or {}
+        observed = record.get("observed") or {}
+        # The EXACT halt the owner document binds (stage, previous stage, reason, time, expired deadline), plus
+        # the halted stage entry and the pending-canary facts, so a gate verifies it without a store read.
+        rollback = halted.get("rollback") if isinstance(halted.get("rollback"), dict) else {}
+        canary = halted.get("canary") if isinstance(halted.get("canary"), dict) else {}
+        view.update({"halted": {**{key: halted.get(key) for key in ("stage", "previous_stage", "reason_code",
+                                                                     "outcome", "updated_at", "stage_deadline",
+                                                                     "stage_entered_at", "candidate_instance_id")},
+                                "rollback": {key: rollback.get(key) for key in ("requested", "restored", "verified",
+                                                                                 "reason_code")},
+                                "canary": {key: canary.get(key) for key in ("passed", "pending", "reason_code")}},
+                     "interval": {key: interval.get(key) for key in ("started_at", "deadline")},
+                     "observed": {**{key: observed.get(key) for key in ("observed_instance_id",
+                                                                         "descriptor_sha256")},
+                                  **({CONSUMPTION_RETRY_RESTART_FIELD: observed[CONSUMPTION_RETRY_RESTART_FIELD]}
+                                     if CONSUMPTION_RETRY_RESTART_FIELD in observed else {})}})
+    if record.get("kind") == RECOVERY_CONSUMPTION_REARM:
+        # The re-arm names the spent retry, its explicit window and the recorded user decision.
+        view.update({key: record.get(key) for key in ("retry_evidence", "window_seconds", "authority")})
+    return view
+
+
+def _attempt_view(record) -> dict | None:
+    if not isinstance(record, dict):
+        return None
+    return {"attempt_id": record.get("attempt_id"), "state": record.get("state"),
+            "cleanup": (record.get("cleanup") or {}).get("state"), "outcome": record.get("outcome")}
+
+
+def _runtime_view(record) -> dict | None:
+    """The sealed runtime a managed delivery bound, as a digest and a revision; never its path."""
+    if not isinstance(record, dict):
+        return None
+    return {"revision": record.get("revision"), "manifest_sha256": record.get("manifest_sha256"),
+            "files": record.get("files"), "recovered": bool(record.get("recovered"))}
+
+
+def _work_view(record) -> dict | None:
+    """The last drain observation of a managed target: a state, a code and two counts."""
+    if not isinstance(record, dict):
+        return None
+    return {key: record.get(key) for key in ("state", "reason_code", "active", "unresolved",
+                                             "paused")}
+
+
+def delivery_status(rows, intents: dict, descriptors: dict, *, enabled: bool) -> dict:
+    """`urn:zeus:host-delivery-status:1`: the read-only projection of every registered plan.
+
+    A collected status is a projection of durable records only. It is never evidence of an active
+    host, a qualified release or a successful canary - `stage` says what was PROVEN, and every
+    absent observation stays unknown.
+    """
+    plans = [delivery_progress(row, intents.get(row["plan_id"]), descriptors.get(row["plan"]["target_id"]))
+             for row in sorted(rows, key=lambda r: r["plan_id"])]
+    counts = {stage: sum(1 for view in plans if view["stage"] == stage)
+              for stage in (*STAGE_ORDER, BLOCKED, ROLLING_BACK, ROLLED_BACK, FAILED, WITHDRAWN)}
+    return {"schema": STATUS_SCHEMA, "registered": bool(plans), "enabled": bool(enabled),
+            "deliveries": plans, "counts": {k: v for k, v in counts.items() if v},
+            "targets": [target_progress(descriptors[target_id]) for target_id in sorted(descriptors)],
+            "authority": AUTHORITY}
+
+
+def target_progress(row: dict) -> dict:
+    """What ONE host target is recorded as running: digests, ids and states, never a descriptor
+    body, a root, a service name or a path. `consumed` false is a switch that was not an
+    activation, and an absent row is simply not listed - never an empty tuple that reads as clean."""
+    return {"target_id": row["target_id"], "descriptor_sha256": row.get("descriptor_sha256"),
+            "startup_observed": bool(row.get("startup_observed")),
+            "observed_instance_id": row.get("observed_instance_id"),
+            "observed_revision": row.get("observed_revision"),
+            "revision": (row.get("descriptor") or {}).get("revision"),
+            "worker_image": (row.get("descriptor") or {}).get("worker_image"),
+            "profile_digest": (row.get("descriptor") or {}).get("profile_digest"),
+            "predecessor": (row.get("descriptor") or {}).get("predecessor"),
+            "consumed": bool(row.get("consumed")), "instance_id": row.get("instance_id"),
+            "plan_id": row.get("plan_id"), "release_id": row.get("release_id"),
+            "rolled_back": bool(row.get("rolled_back")), "updated_at": row.get("updated_at"),
+            "history": len(row.get("history") or [])}
+
+
+# ----- evaluator migration of a rejected, merged delivery (INV-HOST-DELIVERY-MIGRATION-001) -------
+# The lane half of the ordered control/lane handoff: `staged` (old intent truthfully superseded,
+# reviewed successor release created, target reserved), `registered` (the migration's own exact plan
+# registered HELD), `active` (the durable control acknowledgement cleared the hold and queued the
+# successor). A reserving migration holds its target for every other plan.
+MIGRATION_STAGED = "staged"
+MIGRATION_REGISTERED = "registered"
+MIGRATION_ACTIVE = "active"
+MIGRATION_RESERVING = frozenset({MIGRATION_STAGED, MIGRATION_REGISTERED})
+MIGRATION_HELD = "migration_unacknowledged"
+MIGRATION_REQUEST_FIELDS = frozenset({"migration_id", "old_plan_id", "old_plan_sha256", "source_release_id",
+                                      "source_policy_hash", "candidate_revision", "target_id", "actor",
+                                      "approval"})
+# INV-RELEASE-ENVIRONMENT-REVERIFY-001: the optional request `kind`; absent means the original
+# evaluator migration, so every existing request body, identity and record keeps its bytes.
+MIGRATION_KIND_EVALUATOR = "evaluator_migration"
+MIGRATION_KIND_ENVIRONMENT = "environment_reverification"
+MIGRATION_KINDS = frozenset({MIGRATION_KIND_EVALUATOR, MIGRATION_KIND_ENVIRONMENT})
+# The environment approval must name exactly the request's own source, plan and target.
+_ENVIRONMENT_BOUND = ("source_release_id", "source_policy_hash", "old_plan_id", "old_plan_sha256", "target_id")
+MIGRATION_ACK_FIELDS = frozenset({"control_action_id", "plan_id", "plan_sha256", "request_sha256",
+                                  "canary_request_id", "lineage_sha256"})
+_HEX64 = re.compile(r"^[0-9a-f]{64}$")
+
+
+def migration_request_id(request: dict) -> str:
+    """The migration identity: the canonical digest of the request body WITHOUT `migration_id`."""
+    return digest({key: value for key, value in request.items() if key != "migration_id"})
+
+
+def migration_kind(request: dict) -> str:
+    """The request kind; a request without `kind` is the original evaluator migration."""
+    return request.get("kind", MIGRATION_KIND_EVALUATOR)
+
+
+def validate_migration_request(request) -> dict:
+    """The exact prepared control request; its `migration_id` must be its own body digest."""
+    if not isinstance(request, dict) or set(request) - {"kind"} != MIGRATION_REQUEST_FIELDS:
+        raise DeliveryRefused("migration_request_invalid", "request")
+    if type(migration_kind(request)) is not str or migration_kind(request) not in MIGRATION_KINDS:
+        raise DeliveryRefused("migration_request_invalid", "kind")
+    for key in MIGRATION_REQUEST_FIELDS - {"approval"}:
+        if type(request[key]) is not str or not request[key]:
+            raise DeliveryRefused("migration_request_invalid", key)
+    if not REVISION.fullmatch(request["candidate_revision"]) or not TOKEN.fullmatch(request["old_plan_id"]):
+        raise DeliveryRefused("migration_request_invalid", "candidate_revision")
+    if not _HEX64.fullmatch(request["old_plan_sha256"]) or not isinstance(request["approval"], dict):
+        raise DeliveryRefused("migration_request_invalid", "old_plan_sha256")
+    if migration_kind(request) == MIGRATION_KIND_ENVIRONMENT:
+        approval = request["approval"]
+        if approval.get("kind") != MIGRATION_KIND_ENVIRONMENT or any(
+                approval.get(key) != request[key] for key in _ENVIRONMENT_BOUND):
+            raise DeliveryRefused("migration_request_invalid", "approval")
+    if request["migration_id"] != migration_request_id(request):
+        raise DeliveryRefused("migration_request_invalid", "migration_id")
+    return request
+
+
+def migration_lineage_digest(source_release_id: str, successor_release_id: str, old_plan_id: str,
+                             plan_id: str, migration_id: str) -> str:
+    """The `lineage_sha256` a migration readiness acknowledgement must carry: the canonical digest
+    of exactly these five identities, the same keys control's lineage record uses."""
+    return digest({"source_release_id": source_release_id, "successor_release_id": successor_release_id,
+                   "old_plan_id": old_plan_id, "plan_id": plan_id, "migration_id": migration_id})
+
+
+def validate_migration_ack(ack) -> dict:
+    if not isinstance(ack, dict) or set(ack) != MIGRATION_ACK_FIELDS or any(
+            type(value) is not str or not value.strip() for value in ack.values()):
+        raise DeliveryRefused("migration_ack_invalid", "ack")
+    canary = ack["canary_request_id"]
+    if canary != "not_requested" and not _HEX64.fullmatch(canary.removeprefix("sha256:")):
+        raise DeliveryRefused("migration_ack_invalid", "canary_request_id")
+    return ack
+
+
+def migration_rejected_source(intent, plan: dict, request: dict) -> str | None:
+    """Why this old intent is NOT the exact rejected, merged, host-untouched shape; None when it is."""
+    if not isinstance(intent, dict) or intent.get("stage") not in {BLOCKED, FAILED} \
+            or intent.get("reason_code") != "release_rejected":
+        return "migration_not_applicable"
+    if (plan["release_id"], plan["target_id"], plan["policy_hash"]) != (
+            request["source_release_id"], request["target_id"], request["source_policy_hash"]) \
+            or intent.get("release_id") != plan["release_id"]:
+        return "migration_source_mismatch"
+    if not intent.get("merged_revision") or intent.get("merged_revision") != request["candidate_revision"] \
+            or plan["revision"] != request["candidate_revision"]:
+        return "migration_candidate_mismatch"
+    if any(intent.get(key) is not None for key in ("descriptor", "descriptor_sha256", "instance_id",
+                                                    "candidate_instance_id", "rollback", "canary")):
+        return "migration_host_touched"
+    if unresolved_attempts(intent):
+        return "migration_attempt_debt"
+    return None
+
+
+__all__ = ["COMPETING_STAGES", "GENERATION_ARMED", "GENERATION_BOUND",
+           "GENERATION_FAILED", "GENERATION_LAUNCHED", "GENERATION_OBSERVATION_SCHEMA", "GENERATION_REQUESTED",
+           "GENERATION_STARTED", "GENERATION_STATES", "GENERATION_TRANSITIONS", "INVOCATION", "MAINTENANCE_CODES",
+           "MAINTENANCE_FAILURE_CODES", "MAINTENANCE_FIELDS", "MAINTENANCE_FROM_FIELDS", "MAINTENANCE_ID",
+           "MAINTENANCE_ID_PREFIX", "MAINTENANCE_KIND", "MAINTENANCE_PHASES", "MAINTENANCE_REASON",
+           "MAINTENANCE_RESULT_SCHEMA", "MAINTENANCE_RETIRING_FIELDS", "MAINTENANCE_SCHEMA",
+           "MAINTENANCE_SKEW_SECONDS", "MAINTENANCE_WINDOW_MAX", "RESTART_LAUNCH", "RESTART_RECOGNIZED",
+           "RESTART_REPLACE", "classify_restart", "competing_intent", "fleet_ready_refusal", "generation_id",
+           "maintenance_applicable", "maintenance_hold", "maintenance_of", "maintenance_open",
+           "maintenance_transition", "maintenance_view", "new_generation_refusal", "selection_of",
+           "validate_active_generation", "validate_generation_observation",
+           "validate_restart_authority",
+           "MIGRATION_KIND_ENVIRONMENT", "MIGRATION_KIND_EVALUATOR", "MIGRATION_KINDS", "migration_kind",
+           "MIGRATION_ACK_FIELDS", "MIGRATION_ACTIVE", "MIGRATION_HELD", "MIGRATION_REGISTERED",
+           "MIGRATION_REQUEST_FIELDS", "MIGRATION_RESERVING", "MIGRATION_STAGED", "migration_rejected_source",
+           "migration_lineage_digest", "migration_request_id", "validate_migration_ack", "validate_migration_request",
+           "ATTEMPT_RESOLVED", "RECOVERY_VERIFICATION_MISSING", "VERIFYING", "attempt_resolved",
+           "attempts_of", "recoveries_of", "resumable", "unresolved_attempts",
+           "ACTIVATION_GATE_CODES", "ACTIVE", "AUTHORITY", "AWAITING_CI", "AWAITING_CONSUMPTION", "AWAITING_REVIEW",
+           "BLOCKED", "CANARY_CHECKS", "CANARY_COLLECT", "CANARY_FLEET", "CANARY_REQUEST_FIELDS",
+           "CANARY_REQUEST_SCHEMA", "CANARY_STARTUP", "OWNER_CANARY_RECEIPT_SCHEMA", "canary_request_matches",
+           "CI_FAILED", "CI_HEAD_CHANGED", "CI_PASSED", "CI_PENDING", "DESCRIPTOR_FIELDS",
+           "DESCRIPTOR_SCHEMA", "EVENT_BLOCKED", "EVENT_CHECK", "EVENT_ROLLBACK", "EVENT_STAGE",
+           "EVENT_SWITCHED", "EXTERNAL_STAGES", "FAILED", "FAILED_OUTCOMES", "HALTED_STAGES",
+           "INSTANCE_ABSENT", "INSTANCE_AUTHORIZED", "INSTANCE_FOREIGN", "INSTANCE_INTENDED",
+           "INSTANCE_INTERRUPTED", "INSTANCE_UNKNOWN", "REPLACEABLE_INSTANCES",
+           "KIND_MANAGED", "KIND_MANAGED_SYSTEMD", "KIND_PROCESS", "KIND_SCHEDULED_TASK", "KIND_SYSTEMD",
+           "MANAGED_KINDS", "MANAGED_SYSTEMD_UNIT", "MANAGED_TARGET_FIELDS",
+           "MAX_STAGE_ATTEMPTS", "MERGED", "MERGE_INTENDED", "RUNTIMES_DIR",
+           "EVIDENCE_REF", "POST_MERGE_OPEN", "WITHDRAWABLE_STAGES", "WITHDRAWN", "WITHDRAW_REASONS",
+           "OPEN_STAGES", "OUTCOME_ACTIVE", "OUTCOME_BLOCKED", "OUTCOME_BUSY", "OUTCOME_CONFLICT",
+           "OUTCOME_DISABLED", "OUTCOME_IDLE", "OUTCOME_PENDING", "OUTCOME_PROGRESSED",
+           "OUTCOME_REFUSED", "OUTCOME_ROLLED_BACK", "OUTCOME_UNAVAILABLE", "OUTCOME_UNREGISTERED",
+           "PLAN_SCHEMA", "PUBLISHING", "RECEIPT_SCHEMA", "REGISTERED", "REGISTRY_SCHEMA",
+           "ROLLED_BACK", "ROLLING_BACK", "STAGE_ORDER", "STATUS_SCHEMA", "STOPPED_STAGES",
+           "SWITCHING",
+           "TARGET_KINDS", "TERMINAL_STAGES", "TICK_SCHEMA", "UNCHANGED", "DeliveryRefused",
+           "LifecycleInterrupted",
+           "ci_verdict", "consumption_verdict", "delivery_progress", "delivery_status",
+           "descriptor_digest", "instance_authority", "managed_runtime_root", "new_intent",
+           "next_stage", "normal_path",
+           "plan_digest", "receipt_identity",
+           "release_gate", "resolve_descriptor", "safe_error_type", "same_launch", "same_path",
+           "stage_next_action", "target_progress", "validate_descriptor",
+           "validate_pin", "validate_plan", "validate_receipt", "validate_replacement",
+           "validate_targets", "within_path"]
