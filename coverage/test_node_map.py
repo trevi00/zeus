@@ -24,7 +24,9 @@ from pathlib import Path
 HERE = Path(__file__).resolve().parent
 ROOT = HERE.parent
 sys.path.insert(0, str(HERE))
-from layout import TARGET_DIR, TARGET_PREFIX  # noqa: E402  (the one layout constant per tool; DESIGN-s11 §20.5)
+# the one layout constant per tool (DESIGN-s11 §20.5)
+from layout import TARGET_DIR, TARGET_PREFIX  # noqa: E402
+
 M7_IDS = HERE / "m7-node-ids.txt"
 OUT = HERE / "test-node-map.json"
 

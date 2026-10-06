@@ -29,7 +29,9 @@ from pathlib import Path
 HERE = Path(__file__).resolve().parent
 ROOT = HERE.parent
 sys.path.insert(0, str(HERE))
-from layout import TARGET_DIR, TARGET_PREFIX  # noqa: E402  (the one layout constant per tool; DESIGN-s11 §20.5)
+# the one layout constant per tool (DESIGN-s11 §20.5)
+from layout import TARGET_DIR, TARGET_PREFIX  # noqa: E402
+
 OUT = HERE / "ledger-coverage.json"
 LEDGER_SHA256 = "38a84d48e4ede80839850fa087e87d526d885fdd32aa452193cb0ad307c048ee"
 STATUSES = ("unmapped", "designed", "implemented", "verified", "retired-with-authority")

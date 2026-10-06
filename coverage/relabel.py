@@ -42,7 +42,9 @@ HERE = Path(__file__).resolve().parent
 ROOT = HERE.parent
 sys.path.insert(0, str(HERE))
 import generate  # noqa: E402  (stdlib harness module: the one table serialisation)
-from layout import TARGET_DIR, TARGET_PREFIX  # noqa: E402  (the one layout constant per tool; DESIGN-s11 §20.5)
+
+# the one layout constant per tool (DESIGN-s11 §20.5)
+from layout import TARGET_DIR, TARGET_PREFIX  # noqa: E402
 
 LEDGER = HERE / "ledger-coverage.json"
 BUNDLE = HERE / "run-evidence.json"
