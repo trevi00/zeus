@@ -8,8 +8,7 @@ Does not own: review's releases and release_queue rows and the controller lease 
 Fleet's pause and held units (the FleetReadiness port, read only), the host target and its generation observation
 (the host port), the authority, artifact and owner-action stores (injected callables and objects)
 Entry points: DeliveryMaintenance.maintain, .maintain_restart
-Contracts: INV-HOST-DELIVERY-001
-(Contract label INV-HOST-DELIVERY-MAINTENANCE-001: its text in docs/contracts.md lands with G1-13 batch b, so the `Contracts:` line above cannot resolve it yet.)
+Contracts: INV-HOST-DELIVERY-MAINTENANCE-001
 
 Ported from main b9d8f15 (S2R) `application/host_delivery.py` (the hunks after M7 e38aa722): the bodies are S2R's,
 placed in the target's split HostDelivery as its own object (`maintain` is `Recovery`'s sibling); S2R's `self._host`,

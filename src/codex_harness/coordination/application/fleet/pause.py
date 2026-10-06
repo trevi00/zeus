@@ -5,8 +5,7 @@ Context: coordination
 Owns: buckets fleet_control, fleet_budget_grants
 Does not own: admission itself (fleet.admission); the delivery FleetDrain port it will implement (S7)
 Entry points: FleetPause.pause, .resume, .activation_gate, .release_activation_hold, .authorize_budget, .budget_grants, .maintenance_readiness
-Contracts: INV-FLEET-001
-(Contract label INV-HOST-DELIVERY-MAINTENANCE-001: its text in docs/contracts.md lands with G1-13 batch b, so the `Contracts:` line above cannot resolve it yet.)
+Contracts: INV-FLEET-001, INV-HOST-DELIVERY-MAINTENANCE-001
 
 Moved from M7 `application/fleet.py` (SOURCE e38aa722) by the named split (DESIGN-s5 §F); the method
 bodies are M7's. `maintenance_readiness` is ported from main b9d8f15 (S2R `application/fleet.py`).

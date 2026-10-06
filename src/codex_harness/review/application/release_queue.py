@@ -6,8 +6,7 @@ Owns: the `release_queue` rows and review's `deployment_locks:controller` lease
 Does not own: the execution fence rows (coordination's `execution_fences`, through the injected ExecutionFences
     port), ticket binding (intake, injected), what a claimant does with its claim (delivery)
 Entry points: ReleaseQueue.retry, .enqueue, .claim, .owned, .heartbeat, .defer, .finish, .cancel, .hold_maintenance, .owned_maintenance, .heartbeat_maintenance, .release_maintenance, MAINTENANCE_SCOPE
-Contracts: INV-RELEASE-001, INV-HOST-DELIVERY-VERIFY-001, INV-HOST-DELIVERY-MIGRATION-001
-(Contract label INV-HOST-DELIVERY-MAINTENANCE-001: its text in docs/contracts.md lands with G1-13 batch b, so the `Contracts:` line above cannot resolve it yet.)
+Contracts: INV-RELEASE-001, INV-HOST-DELIVERY-VERIFY-001, INV-HOST-DELIVERY-MIGRATION-001, INV-HOST-DELIVERY-MAINTENANCE-001
 
 S7 named transcription (DESIGN-s7 V3/V5, A/evidence/rebuild/s7/review-move/transcribe.py): M7's bodies with the
 R1/R3/R4/R7 seams; `cancel` is the V5 owner operation of M7 ReleaseRunner.abandon's queue write.
