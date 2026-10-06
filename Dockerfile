@@ -10,7 +10,11 @@ FROM node:22-bookworm-slim AS codex
 RUN npm install -g @openai/codex@0.156.1
 
 FROM python:3.13-slim-bookworm
-RUN apt-get update && apt-get install -y --no-install-recommends ca-certificates && rm -rf /var/lib/apt/lists/*
+# The base already carries ca-certificates and coreutils (observed in python:3.13-slim-bookworm@sha256:2325bb28…:
+# ca-certificates 20250419~deb12u1, coreutils 9.1-1), so the build needs no package download: an apt layer made the
+# owner build depend on the Debian mirror and exceed the 600 s bound (cutover G2-R2). The build fails if the bundle
+# is missing instead of fetching it.
+RUN test -s /etc/ssl/certs/ca-certificates.crt
 # The digest check hook: the build fails unless the copied binary is exactly the pinned 0.156.1 linux-x64
 # musl build (INV-ROLE-CONTAINER-001, CODEX_CLI_SHA256) and answers its version.
 ARG CODEX_CLI_VERSION=0.156.1
