@@ -19,6 +19,7 @@ from test_worker_network_binding import OBSERVED, PRODUCTION, Fake, _network, co
 
 from codex_harness.execution.adapters.containers import launcher
 from codex_harness.execution.adapters.transports import Transports
+from codex_harness.execution.application.invocation_ledger import UNKNOWN_USAGE
 from codex_harness.execution.domain import container_spec as spec
 from codex_harness.observation.application.observations import TERMINATION_BUCKET
 from codex_harness.routing.adapters.provider_policy import host_policy
@@ -74,19 +75,40 @@ def bookkeeping(store):
 
 
 @pytest.mark.parametrize("path", sorted(PATHS))
-def test_every_launch_refusal_books_the_same_as_the_existing_image_refusal(tmp_path, path):
+def test_every_launch_refusal_books_the_same_as_the_existing_image_refusal(tmp_path, path, monkeypatch):
+    entries, provider_calls = [], []
+
+    def wrap_enter(original):
+        def enter(runtime):
+            entries.append(type(runtime).__name__)
+            return original(runtime)
+        return enter
+
+    def provider_entered(runtime, *args, **kwargs):
+        provider_calls.append(type(runtime).__name__)
+        raise AssertionError("provider entered")
+
+    for runtime_class in (launcher.IsolatedClaudeRuntime, launcher.IsolatedCodexRuntime):
+        monkeypatch.setattr(runtime_class, "__enter__", wrap_enter(runtime_class.__enter__))
+        monkeypatch.setattr(runtime_class, "run", provider_entered)
+
     seen = {}
     for code, answers in CASES:
+        entries.clear()
+        provider_calls.clear()
         fake = Recording(image_ok=code != "worker_image_unavailable", **answers)
-        run_task, store, calls = wired(tmp_path / code, fake, path)
+        run_task, store, _ = wired(tmp_path / code, fake, path)
         out = run_task.execute_one(PATHS[path][0])
+        assert entries == [{"codex": "IsolatedCodexRuntime", "claude": "IsolatedClaudeRuntime"}[path]]
+        assert provider_calls == []
         assert out["status"] in {"retry", "failed"} and code in (out.get("error") or ""), (code, out)
         rows = reservations(store)
         assert len(rows) == 1 and rows[0]["status"] == "unsettled_unknown"
+        assert rows[0]["usage"] == UNKNOWN_USAGE  # the producer's own unknown-usage record (invocation_ledger.py:36)
         _, markers = bookkeeping(store)
         assert markers == [("closed", "not_entered")]
-        assert calls == [] and "create" not in fake.verbs()
-        seen[code] = bookkeeping(store)[0]
+        assert "create" not in fake.verbs()
+        seen[code] = (*bookkeeping(store)[0], tuple(sorted(rows[0]["usage"].items())), len(entries))
         verbs = {"worker_image_unavailable": ["version", "image"],
                  "worker_network_unavailable": ["version", "image", "network"],
                  "worker_network_identity_mismatch": ["version", "image", "network"],
