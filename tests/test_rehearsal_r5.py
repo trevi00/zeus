@@ -213,9 +213,21 @@ def test_without_the_declaration_the_only_difference_is_the_observer_spool_seque
     assert caught.document["facts"]["unit_boundaries_equal"] is True
 
 
+def _without_network(world):
+    """The existing guard's namespace (`provider_guard.bwrap_prefix`: `--unshare-net`, credential dirs hidden, only the given
+    paths writable), wrapped around each driver argv through `run_r5`'s `runner` hook."""
+    if not guard.bwrap_available():
+        pytest.fail("bwrap is required for the no-network run (a skip is a failure under the opt-ins)")
+    prefix = guard.bwrap_prefix([world.root, world.work])
+    return lambda argv, timeout: r5.subprocess_runner([*prefix, *argv], timeout)
+
+
 @needs_docker
 def test_the_fixture_provider_transport_ran_once_and_no_process_was_spawned_without_network(world):
-    document = _run(world)
+    runner = _without_network(world)
+    probe = runner([PYTHON, "-I", "-c", "import socket; socket.create_connection(('1.1.1.1', 53), timeout=3)"], 30)
+    assert probe[0] != 0, "the wrapper did not remove the network"  # an independent proof that the namespace has none
+    document = _run(world, runner=runner)
     facts = document["facts"]
     assert facts["provider_calls_A"] == facts["provider_calls_B"] == 1
     for side in ("A", "B"):

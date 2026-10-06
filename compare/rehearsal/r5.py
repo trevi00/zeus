@@ -395,7 +395,9 @@ def _judge(runs: dict, sides: dict, declarations: dict, facts: dict, failures: l
         failures += [f"{key}_undeclared:{'/'.join(d['identity'])}:{d['differs']}" for d in left]
     if all(results.values()):
         ba, bb = boundaries(results["A"]), boundaries(results["B"])
-        facts["readonly_units"] = {n: readonly_units(results[n]) for n in SIDES}  # informational: reads are not state
+        facts["readonly_units"] = {n: readonly_units(results[n]) for n in SIDES}
+        # NOT a pass condition (reads are not state), but never silent: an A/B difference in read-only units is on the record.
+        facts["readonly_units_equal"] = facts["readonly_units"]["A"] == facts["readonly_units"]["B"]
         facts["unit_boundaries_equal"] = ba == bb
         facts["units"] = {"A": len(ba), "B": len(bb)}
         if ba != bb:
