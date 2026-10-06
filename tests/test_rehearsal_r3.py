@@ -15,9 +15,12 @@ exists in its tree); it is not behavioural acceptance of the leaf.
 from __future__ import annotations
 
 import copy
+import io
 import json
 import os
+import subprocess
 import sys
+import tarfile
 
 import pytest
 from _layout import REPO
@@ -114,6 +117,141 @@ def test_an_inventory_that_imported_another_tree_is_refused_not_passed_vacuously
     assert caught.value.code in {"inventory_origin", "inventory_failed"}
 
 
+# ---- RH-4d: the post-G1-10 R0 revisions' trees (read from this object store) ----
+
+COMMITS = {"08bb9a44": "08bb9a4449938624e69c2914990ebd470dc3dcf3", "5aa220fd": "5aa220fdb53fc52ec6f020aeacb5f96289f62f4e",
+           "ced20281": "ced20281ba10fa3b16280cb73a20279b7e94052a", "5c67f099": "5c67f0999ff2365fe666180d3b36c75b2e44a63a",
+           "1b9d746c": "1b9d746c52ab1a116beda5c72a23f86903aeb4f3", "ec8aa0a2": "ec8aa0a2947f964eeb94faed20cb6cf05e0681f6"}
+NEW_REVISIONS = ("1b9d746c", "ec8aa0a2")
+HM = "-m codex_harness.adapters.host_migration "
+SWITCH = f"python {HM}activation-switch --check"
+OBSERVE = f"python {HM}observe-limited-active"
+MONITOR = "zeus-monitor collect --once"
+
+
+@pytest.fixture(scope="module")
+def trees(tmp_path_factory):
+    """`src/` of each pinned R0 commit, extracted with `git archive` (nothing is checked out or imported from the repo)."""
+    base = tmp_path_factory.mktemp("r4d-trees")
+    for revision, commit in COMMITS.items():
+        archive = subprocess.run(["git", "archive", commit, "src"], cwd=REPO, capture_output=True, check=False)
+        if archive.returncode != 0:
+            pytest.fail(f"commit {commit} ({revision}) is not in this object store: {archive.stderr.decode()[:200]}")
+        target = base / revision
+        target.mkdir()
+        with tarfile.open(fileobj=io.BytesIO(archive.stdout)) as tar:
+            tar.extractall(target, filter="data")
+    return {revision: base / revision for revision in COMMITS}
+
+
+@pytest.fixture(scope="module")
+def release_inventories(trees):
+    return {revision: r3.parser_inventory(trees[revision] / "src") for revision in COMMITS}
+
+
+def test_the_two_new_revisions_are_in_the_catalog_with_their_generated_inventories(catalog, release_inventories):
+    for revision in NEW_REVISIONS:
+        row = catalog["revisions"][revision]
+        assert row["commit"] == COMMITS[revision]
+        assert row["nodes"] == len(release_inventories[revision]) > 0, revision
+        # every parser node of the revision has a class (coverage: no unclassified, no stale entry)
+        listed = {c for c, e in catalog["nodes"].items() if revision in e["revisions"] and e.get("program", "zeus") == "zeus"}
+        assert listed == set(r3.commands(release_inventories[revision])), revision
+        assert all(catalog["nodes"][c]["class"] in r3.CLASSES for c in listed)
+    assert catalog["revisions"]["1b9d746c"]["label"] == "R0 rollback release after G1-10 (PR-3)"
+    assert catalog["revisions"]["ec8aa0a2"]["label"] == "managed payload runtime"
+
+
+def test_the_pr3_release_has_the_maintenance_nodes_of_08bb9a44_and_the_older_payload_lacks_maintain(release_inventories):
+    """Independent oracle: `git diff 08bb9a44 1b9d746c -- src/codex_harness/cli.py` is empty (PR-3 adds no parser node) and
+    `host-delivery maintain` is the one node the older payload runtime (ec8aa0a2, whose adapter has no maintain route) lacks."""
+    first, pr3, payload = (set(r3.commands(release_inventories[r])) for r in ("08bb9a44", "1b9d746c", "ec8aa0a2"))
+    assert pr3 == first
+    assert pr3 - payload == {"zeus host-delivery maintain"} and not payload - pr3
+
+
+def test_coverage_holds_for_all_eight_revisions(catalog, inventories, release_inventories):
+    every = {rev: r3.commands(nodes) for rev, nodes in {**inventories, **release_inventories}.items()}
+    assert sorted(every) == sorted(["A", "B", *COMMITS]) and len(every) == 8
+    r3.assert_covered(catalog, every)
+    assert r3.coverage(catalog, every) == {rev: {"unclassified": [], "stale": []} for rev in every}
+
+
+def _module_subcommands(src) -> set[str]:
+    code = ("import sys, argparse\nsys.path.insert(0, sys.argv[1])\n"
+            "from codex_harness.adapters import host_migration as m\n"
+            "root = m.parser()\n"
+            "print(sorted(c for a in root._actions if isinstance(a, argparse._SubParsersAction) for c in a.choices))")
+    done = subprocess.run([sys.executable, "-I", "-c", code, str(src)], capture_output=True, check=True,
+                          env={"PATH": "/usr/bin:/bin", "PYTHONDONTWRITEBYTECODE": "1"})
+    return set(eval(done.stdout.decode().strip().splitlines()[-1]))  # noqa: S307 - our own child's list of str
+
+
+def test_the_d_rev_leaves_exist_as_parser_paths_exactly_in_the_revisions_that_list_them(catalog, trees):
+    """Behavioural: each release's own `host_migration.parser()` is asked which subcommands it has."""
+    subcommands = {rev: _module_subcommands(trees[rev] / "src") for rev in ("5aa220fd", "08bb9a44", "1b9d746c", "ec8aa0a2")}
+    for command, name in ((SWITCH, "activation-switch"), (OBSERVE, "observe-limited-active")):
+        have = {rev for rev, found in subcommands.items() if name in found}
+        assert set(catalog["nodes"][command]["revisions"]) == have, command
+    assert subcommands["5aa220fd"].isdisjoint({"activation-switch", "observe-limited-active"})
+    assert "observe-limited-active" not in subcommands["ec8aa0a2"] and "activation-switch" in subcommands["ec8aa0a2"]
+
+
+def _unresolved(entry, trees, catalog):
+    return [(rev, cite) for rev in entry["revisions"] for cite in entry["cites"].get(rev, [])
+            if not r3.resolve_citation(cite, trees[rev] / "src" / "codex_harness")]
+
+
+@pytest.mark.parametrize("command", [SWITCH, OBSERVE, MONITOR])
+def test_each_d_rev_leaf_is_read_only_with_per_revision_citations_that_resolve_in_that_revisions_tree(catalog, trees, command):
+    """STRUCTURAL (provenance): a citation names a def that exists in its own revision's tree; it is not behavioural
+    acceptance of the leaf. The classification itself is asserted here as the RH-4d owner decision (cited, not defaulted)."""
+    entry = catalog["nodes"][command]
+    assert entry["class"] == "read_only" and entry["program"] in ("python", "monitor")
+    revisions = [rev for rev in entry["revisions"] if rev not in ("A", "B")]
+    assert revisions and all(entry["cites"].get(rev) for rev in revisions)
+    unresolved = [(rev, cite) for rev in revisions for cite in entry["cites"][rev]
+                  if not r3.resolve_citation(cite, trees[rev] / "src" / "codex_harness")]
+    assert unresolved == []
+
+
+def test_the_monitor_leaf_is_listed_for_5aa220fd_1b9d746c_and_08bb9a44_with_the_lane_readers_only_where_the_tree_has_them(
+        catalog, trees):
+    entry = catalog["nodes"][MONITOR]
+    assert {"5aa220fd", "1b9d746c", "08bb9a44"} <= set(entry["revisions"])
+    root = {rev: trees[rev] / "src" / "codex_harness" for rev in ("5aa220fd", "08bb9a44", "1b9d746c")}
+    lane = "adapters/monitoring.py:lane_resolver"
+    assert not r3.resolve_citation(lane, root["5aa220fd"])  # the older tree has no lane reader: its entry must not cite one
+    assert r3.resolve_citation(lane, root["08bb9a44"]) and r3.resolve_citation(lane, root["1b9d746c"])
+    assert lane not in entry["cites"]["5aa220fd"] and lane in entry["cites"]["08bb9a44"] and lane in entry["cites"]["1b9d746c"]
+    assert any("monitoring.json" in w for w in entry["declared_writes"]) and "runtime directory" in entry["note"]
+
+
+@pytest.mark.parametrize("command,revision", [(SWITCH, "1b9d746c"), (OBSERVE, "1b9d746c"), (MONITOR, "08bb9a44"),
+                                              (MONITOR, "5aa220fd"), (SWITCH, "ec8aa0a2")])
+def test_a_d_rev_leaf_without_citations_for_a_listed_revision_is_refused(catalog, command, revision):
+    broken = copy.deepcopy(catalog)
+    del broken["nodes"][command]["cites"][revision]
+    with pytest.raises(r3.Refused) as caught:
+        r3.validate_catalog(broken)
+    assert caught.value.code == "catalog_malformed" and "citations" in caught.value.detail and command in caught.value.detail
+
+
+def test_a_citation_that_names_no_def_in_its_revisions_tree_is_found_unresolved(catalog, trees):
+    entry = copy.deepcopy(catalog["nodes"][OBSERVE])
+    entry["cites"]["1b9d746c"].append("adapters/host_migration_evidence.py:no_such_reader")
+    assert _unresolved(entry, trees, catalog) == [("1b9d746c", "adapters/host_migration_evidence.py:no_such_reader")]
+
+
+def test_every_read_only_leaf_of_the_new_revisions_is_cited(catalog):
+    for revision in NEW_REVISIONS:
+        leaves = [(c, e) for c, e in catalog["nodes"].items() if e["class"] == "read_only" and revision in e["revisions"]]
+        assert leaves, revision
+        for command, entry in leaves:
+            sides = entry["cites"] if entry.get("program", "zeus") == "zeus" else {revision: entry["cites"].get(revision)}
+            assert all(sides.values()) and (sides.get("A") or sides.get(revision)), (command, revision)
+
+
 # ---- the catalog ----
 
 def test_every_node_is_classified_with_a_reason_or_citations_and_the_disputed_set_is_the_owners(catalog):
@@ -121,15 +259,16 @@ def test_every_node_is_classified_with_a_reason_or_citations_and_the_disputed_se
     for command, entry in catalog["nodes"].items():
         classes.setdefault(entry["class"], []).append(command)
         if entry["class"] == "read_only":
-            assert all(entry["cites"][s] for s in ("A", "B")) and entry["argv"], command
+            wanted = entry["revisions"] if entry.get("program", "zeus") != "zeus" else ("A", "B")
+            assert all(entry["cites"][s] for s in wanted) and entry["argv"], command
         else:
             assert entry["reason"].strip(), command
-    assert len(catalog["nodes"]) == 165 and len(classes.get("disputed", [])) / len(catalog["nodes"]) < 0.10
+    assert len(catalog["nodes"]) == 167 and len(classes.get("disputed", [])) / len(catalog["nodes"]) < 0.10
     assert r3.disputed(catalog) == []  # owner ruling 2026-10-06: `zeus sdd view` writes --output, so it is excluded
     # the spec's examples
     assert catalog["nodes"]["zeus fleet status"]["class"] == "read_only"
     maintain = catalog["nodes"]["zeus host-delivery maintain"]
-    assert maintain["class"] == "excluded" and maintain["revisions"] == ["08bb9a44"]
+    assert maintain["class"] == "excluded" and maintain["revisions"] == ["08bb9a44", "1b9d746c"]
     monitor = catalog["nodes"]["zeus-monitor collect --once"]
     assert monitor["class"] == "read_only" and any("monitoring.json" in w for w in monitor["declared_writes"])
 

@@ -73,6 +73,17 @@ def test_a_payload_with_no_resolved_executable_a_unknown_shape_or_a_repeated_col
     assert caught.value.code == "r0_malformed"
 
 
+def test_the_shipped_leaf_catalog_has_a_column_for_the_pr3_release_and_the_payload_runtime():
+    """RH-4d: with the shipped catalog the `r6_column_missing:...:r3` case no longer occurs for 1b9d746c (the PR-3 release,
+    AMD-1 E6) or ec8aa0a2 (the managed payload runtime); the PR-3 release's leaves include the D-rev rollback leaves."""
+    catalog = r3.load_catalog()
+    for column in ("1b9d746c", "ec8aa0a2"):
+        assert column in catalog["revisions"], column
+    leaves = {c for c, e in catalog["nodes"].items() if e["class"] == "read_only" and "1b9d746c" in e["revisions"]}
+    assert {"zeus-monitor collect --once", "zeus fleet status"} <= leaves
+    assert any("activation-switch --check" in c for c in leaves) and any("observe-limited-active" in c for c in leaves)
+
+
 def test_a_payload_that_is_also_a_release_is_one_revision(tmp_path):
     record, release = _r0(tmp_path)
     record["stable"]["managed_payload"]["releases"] = {release: record["stable"]["releases"][release]}
