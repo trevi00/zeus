@@ -23,7 +23,6 @@ MOVED = {("BUCKET_BINDINGS",), ("BUCKET_INVESTIGATIONS",), ("FAMILY_MINIMUM",),
          ("RESEARCH_REQUIRED", "RESEARCHED", "DEFERRED"), ("PortfolioRefused",), ("family_id",),
          ("LINEAGE_AUTHORITY",), ("inherit_binding",)}
 
-
 def m7_text(path):
     return subprocess.run(["git", "-C", str(REPO), "show", f"{SOURCE}:{path}"], check=True, capture_output=True,
                           text=True).stdout

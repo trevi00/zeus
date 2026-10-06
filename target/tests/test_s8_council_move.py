@@ -18,7 +18,6 @@ APP = "codex_harness.coordination.application.council"
 M7_PATH = "src/codex_harness/application/council.py"
 PORTS = ("sessions_factory", "evidence_records", "promotion", "operation_factory")
 
-
 def m7_text(path=M7_PATH):
     return subprocess.run(["git", "-C", str(REPO), "show", f"{SOURCE}:{path}"], check=True, capture_output=True,
                           text=True).stdout
