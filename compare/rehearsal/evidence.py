@@ -34,12 +34,14 @@ def _secret_path(text: str) -> bool:
     return SECRET_PART in [part.lower() for part in text.replace("\\", "/").split("/")]
 
 
-def check_facts(facts: object, *, _depth: int = 0) -> None:
-    """Refuse a fact that is not bounded; the refusal names the rule, never the offending value."""
+def check_facts(facts: object, *, _depth: int = 0, max_items: int = MAX_ITEMS) -> None:
+    """Refuse a fact that is not bounded; the refusal names the rule, never the offending value.
+
+    `max_items` widens only the per-container item bound (the D0 record lists every schema/bucket/module)."""
     if _depth > MAX_DEPTH:
         raise Refused("fact_too_deep")
     if isinstance(facts, dict):
-        if len(facts) > MAX_ITEMS:
+        if len(facts) > max_items:
             raise Refused("fact_too_large")
         for key, value in facts.items():
             if not isinstance(key, str):
@@ -50,12 +52,12 @@ def check_facts(facts: object, *, _depth: int = 0) -> None:
                 raise Refused("record_body_fact", key)
             if _secret_path(key):
                 raise Refused("secret_path_fact", "key")
-            check_facts(value, _depth=_depth + 1)
+            check_facts(value, _depth=_depth + 1, max_items=max_items)
     elif isinstance(facts, (list, tuple)):
-        if len(facts) > MAX_ITEMS:
+        if len(facts) > max_items:
             raise Refused("fact_too_large")
         for value in facts:
-            check_facts(value, _depth=_depth + 1)
+            check_facts(value, _depth=_depth + 1, max_items=max_items)
     elif isinstance(facts, str):
         if len(facts) > MAX_STRING:
             raise Refused("record_body_fact", "string over the bound")
@@ -81,6 +83,12 @@ def _create(path: Path, data: bytes = b"", *, append: bool = False) -> int:
         os.close(fd)
         return -1
     return fd
+
+
+def write_record(path: Path, document: dict, *, max_items: int = MAX_ITEMS) -> None:
+    """Write one standalone evidence record (never overwritten): `document["facts"]` passes `check_facts` first."""
+    check_facts(document.get("facts", {}), max_items=max_items)
+    _create(Path(path), _line(document))
 
 
 def _line(obj: dict) -> bytes:
