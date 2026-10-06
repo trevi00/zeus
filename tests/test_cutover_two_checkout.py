@@ -6,7 +6,7 @@ results: the g2 critique #4 (ported helper imports under importlib) and #5 (a tr
 from the import system), and the R-O contract (REBUILD-DESIGN-v2 §5.2): the audit refuses every other origin.
 
 Behavioural: the anchor table drives `audit_root` with injected inputs; the miniature runs a real pytest subprocess
-over a small copy of A against this checkout as B, and each negative control applies the mutation its name states.
+over a small copy of A against the checkout that holds the package under test as B, and each negative control applies the mutation its name states.
 """
 
 import re
@@ -17,7 +17,7 @@ from pathlib import Path
 
 import provider_guard
 import pytest
-from _audit_root import audit_root
+from _audit_root import PACKAGE_SRC, audit_root
 from _layout import TARGET
 
 DEFAULT = Path("/x/tests-tree/src")
@@ -64,8 +64,8 @@ PORTED_LINE = "sys.path.insert(0, str(TESTS / \"ported\"))\n"
 
 def copy_checkout_a(root: Path) -> Path:
     """A = the tests' tree reduced to what the session imports: both conftests, `_layout`, `_audit_root`, the helpers,
-    two test files, the guard and harness modules, the root pyproject and a copy of `src/codex_harness` (the ported
-    conftest attests a copy of its own tree's package; A's `src` is never on `sys.path`, so A's package is never loaded)."""
+    two test files, the guard and harness modules and the root pyproject. A has no `src`: the package under test is B's
+    (`PACKAGE_SRC`), which the ported conftest attests by copying the imported `codex_harness`."""
     a = root / "evaluator-1"
     (a / "tests" / "ported").mkdir(parents=True)
     for name in ("conftest.py", "_layout.py", "_audit_root.py", REAL_TEST):
@@ -74,14 +74,12 @@ def copy_checkout_a(root: Path) -> Path:
         shutil.copy2(TARGET / "tests" / "ported" / name, a / "tests" / "ported" / name)
     for part in ("guard", "harness"):
         shutil.copytree(TARGET / "compare" / part, a / "compare" / part, ignore=shutil.ignore_patterns("__pycache__"))
-    shutil.copytree(TARGET / "src" / "codex_harness", a / "src" / "codex_harness",
-                    ignore=shutil.ignore_patterns("__pycache__", "*.pyc"))
     shutil.copy2(TARGET / "pyproject.toml", a / "pyproject.toml")
     return a
 
 
 def run_incumbent(a: Path, root: Path, *, extra_pythonpath: Path | None = None):
-    """The controller's incumbent run: cwd = B (this checkout), PYTHONPATH = A/tests, importlib mode."""
+    """The controller's incumbent run: cwd = B (the checkout holding the package under test), PYTHONPATH = A/tests, importlib mode."""
     pythonpath = str(a / "tests")
     if extra_pythonpath is not None:
         pythonpath = str(extra_pythonpath) + ":" + pythonpath
@@ -89,7 +87,7 @@ def run_incumbent(a: Path, root: Path, *, extra_pythonpath: Path | None = None):
     argv = [sys.executable, "-m", "pytest", str(a / "tests" / REAL_TEST), str(a / "tests" / "ported" / PORTED_TEST),
             "-c", str(a / "pyproject.toml"), "--import-mode=importlib", "-q", "-p", "no:cacheprovider",
             f"--basetemp={root / 'bt'}"]
-    return subprocess.run(argv, cwd=TARGET, env=env, capture_output=True, text=True, timeout=540)
+    return subprocess.run(argv, cwd=PACKAGE_SRC.parent, env=env, capture_output=True, text=True, timeout=540)
 
 
 def tail(result) -> str:

@@ -12,6 +12,9 @@ from types import SimpleNamespace
 
 import pytest
 
+# git_workspace binds `process_groups.run_process` by name at its first import, so it must load before any patch of
+# `process_groups.run_process`; first imported under a patch it keeps the fake for the rest of the session.
+import codex_harness.host_os.adapters.git_workspace  # noqa: F401
 from codex_harness import composition
 from codex_harness.composition import cli_tickets
 from codex_harness.entry import cli

@@ -18,7 +18,8 @@ from pathlib import Path
 from types import SimpleNamespace
 
 import pytest
-from _layout import REPO, TARGET
+from _audit_root import PACKAGE_SRC
+from _layout import REPO
 
 from codex_harness.execution import ports as execution_ports
 from codex_harness.kernel.errors import ContractError
@@ -27,7 +28,7 @@ from codex_harness.research.adapters import audit_execution as ae
 from codex_harness.research.adapters import audit_runner as ar
 from codex_harness.storage.adapters.memory_store import MemoryStore
 
-SRC = TARGET / "src" / "codex_harness"
+SRC = PACKAGE_SRC / "codex_harness"
 SOURCE = "e38aa722"
 AE_M7 = "src/codex_harness/adapters/audit_execution.py"
 AR_M7 = "src/codex_harness/adapters/audit_runner.py"

@@ -23,12 +23,15 @@ pytestmark = [pytest.mark.integration, pytest.mark.skipif(
 
 
 def database_url() -> str:
-    # S11 M B2: M7's integration job configured HARNESS_DATABASE_URL through `harness setup`; the target integration run
-    # provides the disposable ZEUS_TEST_DSN instead (the source of tests/ported/conftest.py `isolated_pgstore`, whose
-    # production-port refusal applies). HARNESS_REDIS_URL is provided as in M7, so `redis_url` is unchanged.
-    dsn = os.environ.get("ZEUS_TEST_DSN")
+    # S11 M B2: the target integration run provides the disposable ZEUS_TEST_DSN (the source of tests/ported/conftest.py
+    # `isolated_pgstore`). M7 parity (reference/m7/tests/test_integration.py:14,23): M7's job used HARNESS_DATABASE_URL, which
+    # the release evaluator also provides under its verification environment, so it is accepted. R-X (tests/conftest.py:31-44)
+    # still refuses a production port in either variable before any test. os.environ only: `configuration.settings()` would
+    # also read <repo>/.env, which R-X does not check. HARNESS_REDIS_URL is provided as in M7, so `redis_url` is unchanged.
+    dsn = os.environ.get("ZEUS_TEST_DSN") or os.environ.get("HARNESS_DATABASE_URL")
     if not dsn:
-        raise RuntimeError("Set ZEUS_TEST_DSN to a disposable PostgreSQL (the target integration run provides it)")
+        raise RuntimeError("Set ZEUS_TEST_DSN or HARNESS_DATABASE_URL to a disposable PostgreSQL "
+                           "(the target integration run provides ZEUS_TEST_DSN)")
     return dsn
 
 

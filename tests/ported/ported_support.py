@@ -13,6 +13,7 @@ failed by collection order. `tests/ported/conftest.py` re-exports these same obj
 import json
 from pathlib import Path
 
+import codex_harness
 from codex_harness.kernel.ids import digest
 
 # Module-relative on purpose (owner, S11 int61): `tests/ported/` -> parents[2] is the distribution root in BOTH layouts,
@@ -21,7 +22,11 @@ TARGET = Path(__file__).resolve().parents[2]
 
 ATTESTED = {}
 
-RESOURCES = TARGET / "src" / "codex_harness" / "resources"
+# The package under test is the codex_harness this process imported, not this checkout's `src` (cutover G2-W1 W1a): the
+# incumbent suite runs against the candidate package from a second checkout. Children import this module with only
+# `tests/ported` on sys.path, so the anchor here is the import system, not `_audit_root`.
+PACKAGE = Path(codex_harness.__spec__.origin).resolve().parent
+RESOURCES = PACKAGE / "resources"
 
 
 class NativeThresholds:

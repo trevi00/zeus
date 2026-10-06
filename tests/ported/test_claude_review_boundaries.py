@@ -23,7 +23,7 @@ import time
 from pathlib import Path
 
 import pytest
-from _layout import TARGET
+from _audit_root import PACKAGE_SRC
 from test_claude_cli_process import CHILD, RUNTIME, SCHEMA, ClaudeCodeRuntime, execute, observation, transport
 
 from codex_harness.execution.adapters.call_budget import CallBudget, host_identity
@@ -233,7 +233,7 @@ def test_r4_two_runners_cannot_both_take_the_last_slot(tmp_path):
                "    print(json.dumps({'taken': True}))\n"
                "except ContractError as exc:\n"
                "    print(json.dumps({'taken': False, 'why': str(exc)[:60]}))\n")
-    source = str(TARGET / "src")
+    source = str(PACKAGE_SRC)
     done = subprocess.run([sys.executable, "-c", program, source, str(ledger.root)],
                           capture_output=True, text=True, timeout=120)
     assert json.loads(done.stdout.strip())["taken"] is True, "the second slot was free"

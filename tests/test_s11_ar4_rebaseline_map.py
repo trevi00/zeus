@@ -12,12 +12,14 @@ import sys
 from collections import Counter
 
 import pytest
+from _audit_root import PACKAGE_SRC
 from _layout import REPO
 
 SPEC = importlib.util.spec_from_file_location("test_node_map", REPO / "coverage" / "test_node_map.py")
 gen = importlib.util.module_from_spec(SPEC)
 SPEC.loader.exec_module(gen)
 
+COLLECTION_SECONDS = 300
 MAIN, PR3 = "main-s2r-b9d8f15", "pr3-bb579d5"
 COLLECTED = {MAIN: 232, PR3: 412}  # node counts collected at each entry's own commit (header of each ids file)
 REPLACED = {
@@ -28,7 +30,7 @@ REPLACED = {
 
 @pytest.fixture(scope="module")
 def target_ids():
-    return gen.collect_target_ids()
+    return gen.collect_target_ids(cwd=PACKAGE_SRC.parent, timeout=COLLECTION_SECONDS)
 
 
 @pytest.fixture(scope="module")
@@ -82,7 +84,7 @@ def test_map_is_complete_and_every_target_is_collected(mapping, entry_ids, targe
 
 def test_rebaseline_check_is_byte_equal():
     done = subprocess.run([sys.executable, "-B", str(REPO / "coverage" / "test_node_map.py"), "--rebaseline", "--check"],
-                          capture_output=True, text=True, timeout=600)
+                          capture_output=True, text=True, timeout=600, cwd=PACKAGE_SRC.parent)
     assert done.returncode == 0, done.stdout
 
 

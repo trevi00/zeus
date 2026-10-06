@@ -21,6 +21,9 @@ from types import SimpleNamespace
 import pytest
 from _layout import REPO, TARGET
 
+# git_workspace binds `process_groups.run_process` by name at its first import, so it must load before any patch of
+# `process_groups.run_process`; first imported under a patch it keeps the fake for the rest of the session.
+import codex_harness.host_os.adapters.git_workspace  # noqa: F401
 from codex_harness.intake import ports
 from codex_harness.intake.adapters import github_tickets as github
 from codex_harness.intake.application import tickets

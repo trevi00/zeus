@@ -30,7 +30,7 @@ write it. Nothing here touches a production host, Docker daemon, credential or m
 import threading
 
 import pytest
-from _layout import TARGET
+from _audit_root import PACKAGE_SRC
 from m7_delivery import HostDelivery, MemoryStore, digest
 from test_host_delivery import (
     PROFILE,
@@ -420,7 +420,7 @@ def test_the_committed_profile_digest_equals_the_incumbent_packaged_digest():
 
     from m7_delivery import GitSource, committed_profile_digest, effective_profile_digest
 
-    root = TARGET
+    root = PACKAGE_SRC.parent
     head = subprocess.run(["git", "-C", str(root), "rev-parse", "HEAD"], capture_output=True, text=True)
     dirty = subprocess.run(["git", "-C", str(root), "status", "--porcelain", "--", "src/codex_harness/resources"],
                            capture_output=True, text=True)

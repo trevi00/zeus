@@ -25,6 +25,10 @@ from m7_intake import (
 )
 from test_tickets import content
 
+# git_workspace binds `process_groups.run_process` by name at its first import, so it must load before any patch of
+# `process_groups.run_process`; first imported under a patch it keeps the fake for the rest of the session.
+import codex_harness.host_os.adapters.git_workspace  # noqa: F401
+
 
 @pytest.fixture(params=["memory", "postgres"])
 def setup(request, tmp_path, monkeypatch):

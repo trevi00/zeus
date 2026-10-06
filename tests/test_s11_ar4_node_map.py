@@ -7,13 +7,12 @@ Every M7 pytest node ID is a key; every `ported`/`architecture` target node exis
 import importlib.util
 import json
 import re
-import subprocess
-import sys
 import time
 from collections import Counter
 
 import pytest
-from _layout import REPO, TARGET, TARGET_PREFIX
+from _audit_root import PACKAGE_SRC
+from _layout import REPO, TARGET
 
 SPEC = importlib.util.spec_from_file_location("test_node_map", REPO / "coverage" / "test_node_map.py")
 gen = importlib.util.module_from_spec(SPEC)
@@ -28,10 +27,9 @@ COLLECTION_SECONDS = 90
 def target_ids():
     """Target collection at HEAD, `target/`-prefixed; bounded."""
     start = time.monotonic()
-    done = subprocess.run([sys.executable, "-m", "pytest", "--collect-only", "-q", "-p", "no:cacheprovider", "tests"],
-                          cwd=TARGET, capture_output=True, text=True, check=True, timeout=COLLECTION_SECONDS)
+    ids = gen.collect_target_ids(cwd=PACKAGE_SRC.parent, timeout=COLLECTION_SECONDS)
     assert time.monotonic() - start < COLLECTION_SECONDS
-    return sorted(TARGET_PREFIX + x for x in done.stdout.splitlines() if "::" in x)
+    return ids
 
 
 @pytest.fixture(scope="module")

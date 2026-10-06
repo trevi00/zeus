@@ -16,7 +16,8 @@ import subprocess
 from pathlib import Path
 
 import pytest
-from _layout import REPO, TARGET
+from _audit_root import PACKAGE_SRC
+from _layout import REPO
 
 from codex_harness.coordination.application import autonomous as coordination
 from codex_harness.intake.application.tickets import ticket_binding
@@ -28,7 +29,7 @@ from codex_harness.review import ports as review_ports
 from codex_harness.review.application import sdd as sdd_module
 from codex_harness.storage.adapters.memory_store import MemoryStore
 
-SRC = TARGET / "src" / "codex_harness"
+SRC = PACKAGE_SRC / "codex_harness"
 SOURCE = "e38aa722"
 DF_M7 = "src/codex_harness/application/decision_feedback.py"
 SDD_M7 = "src/codex_harness/application/sdd.py"

@@ -13,6 +13,7 @@ import subprocess
 from pathlib import Path
 
 import pytest
+from _audit_root import PACKAGE_SRC
 from _layout import REPO, TARGET
 
 from codex_harness.context.domain.skills import history as skill_history
@@ -116,7 +117,7 @@ def test_r_t2_policy_file_only_climbs_one_directory_more():
     ours = statements(target_text("runtime_thresholds"))[("POLICY_FILE",)]
     assert ast.unparse(ref).count("parents[1]") == 1 and ast.unparse(ours) == ast.unparse(ref).replace("parents[1]", "parents[2]")
     policy = module("runtime_thresholds").POLICY_FILE
-    assert policy == TARGET / "src/codex_harness/resources/threshold-policy.json" and policy.is_file()
+    assert policy == PACKAGE_SRC / "codex_harness/resources/threshold-policy.json" and policy.is_file()
 
 
 @pytest.mark.parametrize("name", CASES)

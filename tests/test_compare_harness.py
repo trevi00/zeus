@@ -6,6 +6,7 @@ from pathlib import Path
 import masks
 import origin
 import pytest
+from _audit_root import PACKAGE_SRC
 from _layout import REPO as ROOT
 from _layout import TARGET
 
@@ -217,8 +218,8 @@ def test_import_audit_refuses_a_codex_harness_origin_outside_the_target(tmp_path
 def test_loaded_target_modules_come_from_the_target_tree():
     import codex_harness
 
-    assert Path(codex_harness.__file__).resolve().is_relative_to(TARGET / "src")
-    origin.assert_tree_origins(TARGET / "src")
+    assert Path(codex_harness.__file__).resolve().is_relative_to(PACKAGE_SRC)
+    origin.assert_tree_origins(PACKAGE_SRC)
 
 
 DISCRIMINATOR_FIELDS = ("verdict", "violations", "effect_protocol", "effects", "fences", "decision_status",

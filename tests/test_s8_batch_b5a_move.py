@@ -28,7 +28,8 @@ import sys
 from pathlib import Path
 
 import pytest
-from _layout import REPO, TARGET
+from _audit_root import PACKAGE_SRC
+from _layout import REPO
 
 from codex_harness.composition import guarded_launch
 from codex_harness.evidence.adapters import evidence_inspection as module
@@ -37,7 +38,7 @@ from codex_harness.host_os.adapters import process_tree
 from codex_harness.kernel.errors import ContractError
 from codex_harness.storage.adapters.file_artifacts import FileArtifacts
 
-SRC = TARGET / "src" / "codex_harness"
+SRC = PACKAGE_SRC / "codex_harness"
 SOURCE = "e38aa722"
 M7 = "src/codex_harness/adapters/evidence_inspection.py"
 PY = sys.executable

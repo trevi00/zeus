@@ -13,12 +13,18 @@ import subprocess
 import uuid
 
 import pytest
-from _layout import TARGET
+from _audit_root import PACKAGE_SRC
 
 # S11 TISO-1 (owner): the shared objects live in `ported_support` (a unique module name), so a ported module's
 # `from ported_support import …` can never resolve to the top-level `tests/conftest.py`, which pytest also registers
 # as `conftest`. They are re-exported here unchanged (the same objects).
-from ported_support import ATTESTED, NATIVE_THRESHOLDS, RESOURCES, NativeThresholds  # noqa: E402,F401
+from ported_support import (  # noqa: E402,F401
+    ATTESTED,
+    NATIVE_THRESHOLDS,
+    PACKAGE,
+    RESOURCES,
+    NativeThresholds,
+)
 
 from codex_harness.storage.adapters.postgres_store import PostgresStore
 
@@ -50,14 +56,15 @@ GIT_FIXED = {"GIT_AUTHOR_NAME": "Zeus Fixture", "GIT_AUTHOR_EMAIL": "fixture@zeu
 
 
 def pytest_collectstart(collector):
-    """LABELLED: `<basetemp>/attested-runtime` is a git repository holding a COPY of the target `src/codex_harness`
-    (no bytecode), committed once under a pinned identity, as `compare/drivers/common/s7_host_targets.attested_repository`
+    """LABELLED: `<basetemp>/attested-runtime` is a git repository holding a COPY of the package under test (the
+    imported `codex_harness`, which is `PACKAGE_SRC/codex_harness`, not this checkout's `src` in the evaluator layout; no bytecode), committed once under a pinned identity, as `compare/drivers/common/s7_host_targets.attested_repository`
     builds its root. The ported delivery suites bind it as their runtime root (m7_delivery.loaded_runtime)."""
     if ATTESTED:
         return
     base = collector.config._tmp_path_factory.getbasetemp()
     root = base / "attested-runtime"
-    shutil.copytree(TARGET / "src" / "codex_harness", root / "src" / "codex_harness",
+    assert PACKAGE.parent == PACKAGE_SRC, (PACKAGE, PACKAGE_SRC)
+    shutil.copytree(PACKAGE, root / "src" / "codex_harness",
                     ignore=shutil.ignore_patterns("__pycache__", "*.pyc"))
     empty = base / "empty-gitconfig"
     empty.write_text("", encoding="utf-8")

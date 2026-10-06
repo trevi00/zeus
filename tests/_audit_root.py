@@ -19,6 +19,8 @@ from importlib import metadata
 from pathlib import Path
 from urllib.parse import unquote, urlparse
 
+from _layout import TARGET
+
 DISTRIBUTION = "zeus-harness"
 
 
@@ -79,3 +81,10 @@ def session_audit_root(default: Path, cwd: Path | None = None) -> Path:
     except OSError:
         text = None
     return audit_root(installed_direct_url(), cwd, text, default)
+
+
+# The ONE trusted anchor for "the codex_harness this pytest process imports" (cutover G2-W1 follow-up W1a). A test locates
+# the package under test from PACKAGE_SRC and never from its own checkout `_layout.TARGET`; a child-process helper uses
+# `Path(codex_harness.__spec__.origin).parent`. TARGET locates only the tests' own tree (tests/, compare/, coverage/,
+# docs/). In a same-checkout run (CI, TI, the candidate suite) PACKAGE_SRC == TARGET / "src", so nothing changes there.
+PACKAGE_SRC = session_audit_root(TARGET / "src")

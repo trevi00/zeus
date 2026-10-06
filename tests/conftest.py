@@ -13,13 +13,13 @@ import os
 import sys
 
 import pytest
-from _audit_root import session_audit_root
+from _audit_root import PACKAGE_SRC
 from _layout import REPO as ROOT
-from _layout import TARGET, TESTS
+from _layout import TESTS
 
 # G2-W1: the incumbent controller runs these tests against the candidate package from a second checkout; the audit
 # root is then the trusted editable install at the invocation cwd (`_audit_root`), otherwise this tree's `src`.
-TARGET_SRC = session_audit_root(TARGET / "src")
+TARGET_SRC = PACKAGE_SRC
 # `--import-mode=importlib` leaves `sys.path` alone, so the ported helpers (`ported_support`, `m7_*`) are put on it here.
 sys.path.insert(0, str(TESTS / "ported"))
 sys.path.insert(0, str(ROOT / "compare" / "guard"))

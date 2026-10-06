@@ -5,11 +5,11 @@ root-script disposition (S11 unit M; DESIGN-s11 §4 R-M1..R-M4, §6).
 Layer: harness (never shipped); standard library only. Reuses the exact-ID rule of the unit M preparation
 (`evidence/rebuild/s11/m-prep-e8edcca1/gen_node_map.py`, `build`), reduced to the three kinds the owner defined.
 
-    python3 coverage/test_node_map.py            # write coverage/test-node-map.json
-    python3 coverage/test_node_map.py --check    # regenerate in memory; exit 0 only when byte-equal to the written file
-    python3 coverage/test_node_map.py --stats    # kind counts
-    python3 coverage/test_node_map.py --rebaseline          # write coverage/rebaseline-node-map.json
-    python3 coverage/test_node_map.py --rebaseline --check  # regenerate in memory; byte equality (--stats works too)
+    uv run python coverage/test_node_map.py            # write coverage/test-node-map.json
+    uv run python coverage/test_node_map.py --check    # regenerate in memory; exit 0 only when byte-equal to the written file
+    uv run python coverage/test_node_map.py --stats    # kind counts
+    uv run python coverage/test_node_map.py --rebaseline          # write coverage/rebaseline-node-map.json
+    uv run python coverage/test_node_map.py --rebaseline --check  # regenerate in memory; byte equality (--stats works too)
 
 Rebaseline mode (AR4, the two approved rebaselines of compare/baseline.json): inputs are
 `coverage/rebaseline-node-ids/<entry id>.txt`, the node IDs collected at that entry's own commit over its delta test
@@ -90,10 +90,15 @@ def rebaseline_entries() -> list[str]:
     return [e["id"] for e in data["approved_rebaselines"]]
 
 
-def collect_target_ids() -> list[str]:
-    """Target collection at the working tree, IDs prefixed `target/` (nodeids are relative to `target/`)."""
-    done = subprocess.run(["uv", "run", "--frozen", "pytest", "--collect-only", "-q", "-p", "no:cacheprovider", "tests"],
-                          cwd=ROOT / TARGET_DIR, capture_output=True, text=True, check=True)
+def collect_target_ids(cwd: Path | None = None, timeout: float | None = None) -> list[str]:
+    """Target collection at the working tree, IDs prefixed `target/` (nodeids are relative to `-c`'s directory).
+
+    Never `uv`: the release evaluator runs this with a restricted PATH. `sys.executable` is the interpreter that holds the
+    package under test; `-c` makes the tests' own tree the rootdir, so the ids are the same whatever the cwd is."""
+    tree = ROOT / TARGET_DIR
+    done = subprocess.run([sys.executable, "-m", "pytest", "--collect-only", "-q", "-p", "no:cacheprovider",
+                           str(tree / "tests"), "-c", str(tree / "pyproject.toml")],
+                          cwd=Path.cwd() if cwd is None else cwd, capture_output=True, text=True, check=True, timeout=timeout)
     return sorted(TARGET_PREFIX + x for x in done.stdout.splitlines() if "::" in x)
 
 

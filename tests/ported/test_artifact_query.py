@@ -12,7 +12,7 @@ import sys
 from pathlib import Path
 
 import pytest
-from _layout import TARGET
+from _audit_root import PACKAGE_SRC
 
 from codex_harness.storage.application import artifact_query
 
@@ -144,7 +144,7 @@ def test_standalone_reader_uses_only_stdlib_and_rejects_missing_or_tampered_arti
     reference = _write_artifact(tmp_path, '{"message":"한글 \\\"quoted\\\" \\\\ path"}')
     # Adapted: the ported file sits one level deeper (target/tests/ported) and the reader's target
     # module path is storage.adapters.artifact_reader (the M7 dotted path is an S10 entry-shim question).
-    environment = {**os.environ, "PYTHONPATH": str(TARGET / "src")}
+    environment = {**os.environ, "PYTHONPATH": str(PACKAGE_SRC)}
     command = [
         sys.executable,
         "-S",
