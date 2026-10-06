@@ -110,7 +110,7 @@ DOCKER_TOP = frozenset({"run", "create", "build", "rm", "stop", "kill", "inspect
                         "rmi", "image-inspect", "version", "info"})
 _GUARD_STATE = threading.local()  # the guard's own inspect: `expected` is its exact argv while it runs
 RUN_VALUE_OPTIONS = frozenset({"--name", "--label", "-l", "--network", "--net", "--user", "-u",
-                               "--workdir", "-w", "--env", "-e", "--memory", "-m", "--cpus",
+                               "--workdir", "-w", "--env", "-e", "--memory", "--memory-swap", "-m", "--cpus",
                                "--pids-limit", "--entrypoint", "--tmpfs", "--mount", "--security-opt",
                                "--cap-drop", "--stop-timeout"})
 RUN_FLAGS = frozenset({"--rm", "-i", "--interactive", "--read-only", "--init", "-d", "--detach"})
@@ -453,6 +453,18 @@ def _check_worker_image_inspect(args: list[str], env) -> None:
         raise DockerRefused("worker image inspect names an admitted immutable image only")
 
 
+REHEARSAL_PS = re.compile(r"label=zeus\.rehearsal\.run=[0-9a-f]{8}")
+
+
+def _check_rehearsal_ps(args: list[str]) -> None:
+    """AMD-1 C.12/C.13: the rehearsal sweep's listing, exactly
+    `ps -a --filter label=zeus.rehearsal.run=<8 hex> [--filter label=zeus.test.fixture=1] --format {{.ID}}|{{.Names}}`."""
+    if len(args) not in {5, 7} or args[0] != "-a" or args[1] != "--filter" or not REHEARSAL_PS.fullmatch(args[2]) \
+            or args[-2] != "--format" or args[-1] not in {"{{.ID}}", "{{.Names}}"} \
+            or (len(args) == 7 and args[3:5] != ["--filter", f"label={FIXTURE_LABEL}"]):
+        raise DockerRefused("only the rehearsal run-label listing is admitted")
+
+
 def _admits(check, *args) -> bool:
     try:
         check(*args)
@@ -490,6 +502,8 @@ def docker_policy(argv: list[str], env=None) -> str:
         return command
     worker = _worker_enabled(env)
     if command == "ps" and worker and _admits(_check_worker_ps, rest, env):
+        return command
+    if command == "ps" and _admits(_check_rehearsal_ps, rest):
         return command
     if command in {"compose", "ps", "volume"}:
         _check_verify_stack(command, rest, env)

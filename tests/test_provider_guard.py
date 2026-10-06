@@ -654,3 +654,73 @@ def test_bwrap_layer_has_no_network_and_empty_credential_dirs():
         path = Path(os.path.expanduser(raw))
         if path.is_dir():
             assert not any(path.iterdir()), raw
+
+
+# AMD-1 C.12/C.13 (cutover RH-1a): the rehearsal listing and `--memory-swap`. Expected results are the owner's
+# ruling text: exactly `ps -a --filter label=zeus.rehearsal.run=<8 hex> [--filter label=zeus.test.fixture=1]
+# --format {{.ID}}|{{.Names}}` under ZEUS_TEST_DOCKER=1, and `--memory-swap` as one more run value option.
+REHEARSAL_RUN = "label=zeus.rehearsal.run=1a2b3c4d"
+REHEARSAL_BOTH = ["ps", "-a", "--filter", REHEARSAL_RUN, "--filter", "label=zeus.test.fixture=1", "--format"]
+
+
+@pytest.mark.parametrize("args", [
+    ["ps", "-a", "--filter", REHEARSAL_RUN, "--format", "{{.ID}}"],
+    ["ps", "-a", "--filter", REHEARSAL_RUN, "--format", "{{.Names}}"],
+    [*REHEARSAL_BOTH, "{{.ID}}"], [*REHEARSAL_BOTH, "{{.Names}}"],
+])
+def test_rehearsal_ps_admits_exactly_the_run_label_listing(monkeypatch, args):
+    monkeypatch.setenv(provider_guard.DOCKER_OPT_IN_ENV, "1")
+    provider_guard.check_spawn(None, ["docker", *args])
+
+
+@pytest.mark.parametrize("args", [
+    ["ps", "-a"], ["ps", "-a", "--format", "{{.ID}}"], ["ps", "-a", "--filter", REHEARSAL_RUN],
+    ["ps", "-a", "--filter", "label=zeus.test.fixture=1", "--format", "{{.ID}}"],  # no rehearsal label
+    ["ps", "-a", "--filter", "label=zeus.rehearsal.run", "--format", "{{.ID}}"],  # key without a value
+    ["ps", "-a", "--filter", "label=zeus.rehearsal.other=1a2b3c4d", "--format", "{{.ID}}"],  # another label key
+    ["ps", "-a", "--filter", "label=zeus.rehearsal.run=1A2B3C4D", "--format", "{{.ID}}"],  # not lower-case hex
+    ["ps", "-a", "--filter", "label=zeus.rehearsal.run=1a2b3c4", "--format", "{{.ID}}"],  # 7 digits
+    ["ps", "-a", "--filter", "label=zeus.rehearsal.run=1a2b3c4d5", "--format", "{{.ID}}"],  # 9 digits
+    ["ps", "-a", "--filter", "label=zeus.rehearsal.run=1a2b3c4g", "--format", "{{.ID}}"],  # not hex
+    ["ps", "-a", "--filter", REHEARSAL_RUN, "--filter", "name=zeus", "--format", "{{.ID}}"],  # an extra filter
+    ["ps", "-a", "--filter", REHEARSAL_RUN, "--filter", "label=zeus.test.fixture=0", "--format", "{{.ID}}"],
+    ["ps", "-a", "--filter", REHEARSAL_RUN, "--filter", REHEARSAL_RUN, "--format", "{{.ID}}"],
+    ["ps", "-a", "--filter", REHEARSAL_RUN, "--filter", "label=zeus.test.fixture=1",
+     "--filter", "label=zeus.test.fixture=1", "--format", "{{.ID}}"],
+    ["ps", "-a", "--filter", REHEARSAL_RUN, "--format", "{{.ID}}", "--no-trunc"],  # an extra option
+    ["ps", "-a", "--no-trunc", "--filter", REHEARSAL_RUN, "--format", "{{.ID}}"],
+    ["ps", "-a", "--size", "--filter", REHEARSAL_RUN, "--format", "{{.ID}}"],
+    ["ps", "-aq", "--filter", REHEARSAL_RUN, "--format", "{{.ID}}"],
+    ["ps", "--filter", REHEARSAL_RUN, "--format", "{{.ID}}"],
+    ["ps", "-a", "--filter", REHEARSAL_RUN, "--format", "{{.Image}}"],  # another format
+    ["ps", "-a", "--filter", REHEARSAL_RUN, "--format", "{{.ID}}", "x"],  # an operand
+    ["ps", "-a", "--filter", "label=zeus.test.fixture=1", "--filter", REHEARSAL_RUN, "--format", "{{.ID}}"],
+])
+def test_rehearsal_ps_refuses_every_other_listing(monkeypatch, args):
+    monkeypatch.setenv(provider_guard.DOCKER_OPT_IN_ENV, "1")
+    monkeypatch.delenv(provider_guard.DOCKER_VERIFY_STACK_ENV, raising=False)
+    assert refused(["docker", *args]), args
+
+
+def test_rehearsal_ps_needs_the_docker_opt_in_and_opens_no_other_form(monkeypatch):
+    monkeypatch.delenv(provider_guard.DOCKER_OPT_IN_ENV, raising=False)
+    assert refused(["docker", "ps", "-a", "--filter", REHEARSAL_RUN, "--format", "{{.ID}}"])
+    monkeypatch.setenv(provider_guard.DOCKER_OPT_IN_ENV, "1")
+    monkeypatch.delenv(provider_guard.DOCKER_VERIFY_STACK_ENV, raising=False)
+    for argv in (["docker", "ps"], ["docker", "ps", "-a"], ["docker", "ps", "-aq", "--filter", LABEL_FILTER],
+                 ["docker", "volume", "ls", "-q", "--filter", REHEARSAL_RUN], ["docker", "images"]):
+        assert refused(argv), argv
+
+
+def test_memory_swap_is_one_more_run_value_option(monkeypatch):
+    monkeypatch.setenv(provider_guard.DOCKER_OPT_IN_ENV, "1")
+    run = ["docker", "run", "--network", "none", "--label", "zeus.test.fixture=1", "--name",
+           "zeus-test-fixture-swap", "--memory", "4g", "--memory-swap", "4g", "zeus-test-fixture/worker:1"]
+    provider_guard.check_spawn(None, run)
+    provider_guard.check_spawn(None, [*run[:-1][:run.index("--memory-swap")], "--memory-swap=4g", run[-1]])
+    assert "--memory-swap" in provider_guard.RUN_VALUE_OPTIONS
+    # The addition widens nothing else: a swap option still needs its value, and its neighbours stay refused.
+    assert refused(["docker", "run", "--network", "none", "--label", "zeus.test.fixture=1", "--name",
+                    "zeus-test-fixture-swap", "--memory-swap"])
+    for option in ("--memory-reservation", "--memory-swappiness", "--kernel-memory", "--oom-kill-disable"):
+        assert refused([*run[:-1], option, "1", run[-1]]), option
