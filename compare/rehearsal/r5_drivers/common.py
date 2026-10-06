@@ -32,6 +32,7 @@ def parse(argv=None) -> argparse.Namespace:
     parser.add_argument("--mode", choices=("seed", "run"), default="run")
     parser.add_argument("--fault", choices=FAULTS, default=None)
     parser.add_argument("--inject-extra", default=None, help="TEST ONLY: one extra store put on this side, bucket/key")
+    parser.add_argument("--inject-readonly", action="store_true", help="TEST ONLY: one extra read-only unit in step fleet_resume")
     return parser.parse_args(argv)
 
 
@@ -114,6 +115,55 @@ class ClaudeRefused:
 
     def __init__(self, *args, **kwargs):
         raise AssertionError("ClaudeCodeRuntime reached in the R5 fixture")
+
+
+class _ReadProxy:
+    def __init__(self, tx, recorder):
+        self._tx, self._recorder = tx, recorder
+
+    def _read(self, bucket, key):
+        unit = self._recorder._stack[-1]["unit"] if self._recorder._stack else None
+        self._recorder._event("read", unit=unit, bucket=bucket, key=str(key))
+
+    def get(self, bucket, key):
+        self._read(bucket, key)
+        return self._tx.get(bucket, key)
+
+    def scan(self, bucket):
+        self._read(bucket, "*")
+        return self._tx.scan(bucket)
+
+    def records(self):
+        self._read("*", "*")
+        return self._tx.records()
+
+    def entries(self, bucket, *args, **kwargs):
+        self._read(bucket, "*")
+        return self._tx.entries(bucket, *args, **kwargs)
+
+    def __getattr__(self, name):
+        return getattr(self._tx, name)
+
+
+class ReadLoggingStore:
+    """R5-wrapper-only read logging (`compare/harness/recorder.py` is untouched): each `get`/`scan`/`records`/`entries` of a
+    unit is logged as a `read` event of the recorder, so a read-only unit's reads can be named."""
+
+    def __init__(self, store):
+        self._store = store
+
+    def transaction(self, *args, **kwargs):
+        from contextlib import contextmanager
+
+        @contextmanager
+        def unit():
+            with self._store.transaction(*args, **kwargs) as tx:
+                yield _ReadProxy(tx, self._store.recorder)
+
+        return unit()
+
+    def __getattr__(self, name):
+        return getattr(self._store, name)
 
 
 def tap_observer(observer) -> list:

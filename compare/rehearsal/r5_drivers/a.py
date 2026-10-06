@@ -59,7 +59,7 @@ class A:
         interpreter.chmod(0o755)
         sys.executable = str(interpreter)
         self.recorder = rec.Recorder()
-        self.store = rec.RecordingStore(PostgresStore(ARGS.dsn), self.recorder)
+        self.store = common.ReadLoggingStore(rec.RecordingStore(PostgresStore(ARGS.dsn), self.recorder))
         self.log = steps.UnitLog(self.recorder)
         self.org = organization()
         self.service = Harness(self.store, self.org)
@@ -132,6 +132,12 @@ def main() -> int:
         side.fleet.pause()
         steps.dump(Path(ARGS.out), {"seeded": True})
         return 0
+    if ARGS.inject_readonly:
+        def _ro():
+            with side.store.transaction() as tx:
+                tx.get("rh_injected", "read-only")
+
+        side.inject_readonly = _ro
     scenario = steps.Scenario(side, ARGS.run8)
     result = scenario.run()
     if ARGS.inject_extra:

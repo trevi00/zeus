@@ -69,6 +69,8 @@ class Scenario:
         marker = self.api.log.mark()
         try:
             value = {"ok": True, "value": call()}
+            if name == "fleet_resume" and getattr(self.api, "inject_readonly", None):
+                self.api.inject_readonly()  # TEST ONLY
         except Exception as exc:  # a refusal is a recorded step result, never silently dropped
             value = {"ok": False, "error": type(exc).__name__, "message": str(exc)[:200],
                      "trace": traceback.format_exc().splitlines()[-3:]}
@@ -139,10 +141,12 @@ class UnitLog:
         order: list[str] = []
         for event in self.recorder.events[mark:]:
             if event["kind"] == "BEGIN":
-                units[event["unit"]] = {"label": event.get("label", ""), "outcome": None, "writes": [], "depth": event["depth"]}
+                units[event["unit"]] = {"label": event.get("label", ""), "outcome": None, "writes": [], "reads": [], "depth": event["depth"]}
                 order.append(event["unit"])
             elif event["kind"] == "write" and event["unit"] in units:
                 units[event["unit"]]["writes"].append([event["bucket"], event["key"]])
+            elif event["kind"] == "read" and event["unit"] in units:
+                units[event["unit"]]["reads"].append(event["bucket"] + "/" + event["key"])
             elif event["kind"] in ("COMMIT", "ROLLBACK") and event["unit"] in units:
                 units[event["unit"]]["outcome"] = event["kind"]
         return [units[u] for u in order]

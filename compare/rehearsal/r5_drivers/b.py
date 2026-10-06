@@ -36,6 +36,7 @@ from codex_harness.coordination.application.operation import Operation  # noqa: 
 from codex_harness.coordination.domain import fleet as fleet_domain  # noqa: E402
 from codex_harness.coordination.domain import operation as operation_domain  # noqa: E402
 from codex_harness.evidence.application.inspections import EvidenceRecords  # noqa: E402
+from codex_harness.execution.adapters.providers.native_hooks import HostHooks  # noqa: E402
 from codex_harness.intake.domain import backlog as backlog_domain  # noqa: E402
 from codex_harness.kernel import ids as kernel_ids  # noqa: E402
 from codex_harness.kernel.errors import ContractError  # noqa: E402
@@ -59,7 +60,7 @@ class B:
         interpreter.write_text("#!/bin/sh\nexit 97\n", encoding="utf-8")
         interpreter.chmod(0o755)
         self.recorder = rec.Recorder()
-        self.store = rec.RecordingStore(PostgresStore(ARGS.dsn), self.recorder)
+        self.store = common.ReadLoggingStore(rec.RecordingStore(PostgresStore(ARGS.dsn), self.recorder))
         self.log = steps.UnitLog(self.recorder)
         policy = packaged_policy()
         self.validate_manifest = lambda document: operation_domain.validate_manifest(document, policy)
@@ -94,6 +95,15 @@ class B:
         # M7's one Executor owns ONE observer (one spool sequence) for the task and the decisions; the target compare
         # composition built two (run_task_for, Composition), which would renumber the spool appends: share the first.
         self.composition.decisions.observer = run_task.observer
+        # M7's host App Server path reads the active hooks (`NativeHooks.configuration` -> `active_hooks`, one read-only unit
+        # scanning `hooks`). The compare composition stubs `host_hooks=lambda: {}`, which would drop that unit; B's own
+        # HostHooks over the lifecycle owner's read restores it (the S4 packet's "Transports' `host_hooks`" row).
+        def active_hooks():
+            with self.store.transaction() as tx:
+                return self.composition.hooks.active_hooks(transaction=tx)
+
+        run_task.transports.host_hooks = HostHooks(SimpleNamespace(active_hooks=active_hooks), lambda *a, **k: "", artifacts,
+                                                   str(interpreter)).configuration
         self.observed = common.tap_observer(run_task.observer)
         self.decisions = SimpleNamespace(seed=self._seed, decide=self._decide, latest_release_id=self._latest_release)
 
@@ -133,6 +143,12 @@ def main() -> int:
     if ARGS.mode == "seed":
         steps.dump(Path(ARGS.out), {"seeded": False, "reason": "the fixture copy is seeded by A's driver only"})
         return 0
+    if ARGS.inject_readonly:
+        def _ro():
+            with side.store.transaction() as tx:
+                tx.get("rh_injected", "read-only")
+
+        side.inject_readonly = _ro
     scenario = steps.Scenario(side, ARGS.run8)
     result = scenario.run()
     if ARGS.inject_extra:

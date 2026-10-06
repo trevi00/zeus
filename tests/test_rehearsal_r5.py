@@ -90,16 +90,35 @@ def test_a_field_declaration_explains_only_its_field_and_never_another_change_in
     assert r5.undeclared(diff, declared, "store", None)[0] == diff  # no bodies: not explained
 
 
-def test_a_unit_that_wrote_nothing_is_not_a_state_boundary_but_is_counted():
-    def result(*units):
-        return {"steps": {"s": {"units": list(units)}}}
+def _units(*units):
+    return {"steps": {"s": {"units": list(units)}}}
 
-    wrote = {"label": "", "outcome": "COMMIT", "writes": [["b", "k"]], "depth": 0}
-    read = {"label": "", "outcome": "COMMIT", "writes": [], "depth": 0}
-    assert r5.boundaries(result(wrote, read, read)) == r5.boundaries(result(read, wrote)) == [["s", "COMMIT", 0, "b/k"]]
-    assert r5.readonly_units(result(wrote, read, read)) == {"s": 2}
-    rolled = {"label": "", "outcome": "ROLLBACK", "writes": [], "depth": 0}
-    assert r5.boundaries(result(rolled)) == [["s", "ROLLBACK", 0, ""]]  # a rollback is a boundary even without writes
+
+WROTE = {"label": "", "outcome": "COMMIT", "writes": [["b", "k"]], "reads": [], "depth": 0}
+READ = {"label": "", "outcome": "COMMIT", "writes": [], "reads": ["hooks/*"], "depth": 0}
+
+
+def test_a_read_only_unit_is_a_boundary_and_an_extra_one_is_identified_by_ordinal_and_reads():
+    """Design 7. R5 / AC8: equal recorder unit boundaries means ALL units; a read-only unit counts."""
+    a, b = _units(WROTE, READ, READ), _units(WROTE, READ)
+    assert r5.boundaries(a) != r5.boundaries(b)
+    assert r5.boundaries(_units(WROTE, READ)) == r5.boundaries(_units(WROTE, {**READ, "label": "x", "reads": []}))
+    (diff,) = r5.unit_differences(a, b)
+    assert (diff["step"], diff["extra_in"], diff["aligned"], len(diff["extra"])) == ("s", "A", True, 1)
+    assert diff["extra"][0]["writes"] == 0 and diff["extra"][0]["reads"] == ["hooks/*"]
+    assert r5.unit_differences(a, a) == []
+
+
+def test_an_extra_read_only_unit_is_declared_only_by_a_matching_units_entry():
+    diffs = r5.unit_differences(_units(WROTE, READ, READ), _units(WROTE, READ))
+    entry = {"id": "u", "kind": "units", "step": "s", "extra_in": "A", "count": 1, "read_pattern": "^hooks/", "section": "AMD-1 A",
+             "reason": "r"}
+    r5.validate_declarations({"closed": True, "declared": [entry]})
+    assert r5.undeclared_units(diffs, {"declared": [entry]}) == ([], ["u"])
+    for wrong in ({"extra_in": "B"}, {"count": 2}, {"read_pattern": "^other/"}, {"step": "t"}):
+        assert r5.undeclared_units(diffs, {"declared": [{**entry, **wrong}]})[0] == diffs
+    writer = _units(WROTE, WROTE, READ)  # the extra unit WROTE: a state boundary, never explained by a read declaration
+    assert r5.undeclared_units(r5.unit_differences(writer, _units(WROTE, READ)), {"declared": [entry]})[0]
 
 
 def test_unit_boundaries_compare_outcome_depth_and_written_keys_not_ordinal_ids():
@@ -193,6 +212,9 @@ def test_a_and_b_write_the_same_records_or_every_difference_is_declared_and_the_
     assert document["status"] == "ok" and facts["failures"] == []
     assert facts["steps_completed_A"] == facts["steps_completed_B"] == SPEC_STEPS
     assert facts["unit_boundaries_equal"] is True and facts["units"]["A"] == facts["units"]["B"] > 0
+    assert facts["unit_differences"] == [] and facts["unit_boundaries_pass"] is True  # all units, read-only included
+    assert set(facts["mask_reach"]["A"]) == {"pid", "host"} and set(facts["not_exercised"]) >= {
+        k for k in facts["not_exercised"] if k.startswith(("row 2", "row 4", "row 11"))} and len(facts["not_exercised"]) == 4
     assert facts["store_declared_used"] == ["x1b2-observer-spool-sequence"]  # the one declared difference, and it was needed
     assert facts["store_undeclared"] == [] and facts["artifacts_undeclared"] == [] and facts["runtime_undeclared"] == []
     # the flow's authority writes are in BOTH write sets (the spec's example: fleet_control update, backlog insert, ...)
@@ -234,6 +256,19 @@ def test_the_fixture_provider_transport_ran_once_and_no_process_was_spawned_with
         result = json.loads((world.work / f"run{world.runs}" / side.lower() / "result.json").read_text())
         assert result["spawn_events"] == [] and result["production_profile_set"] is False
         assert result["steps"]["run_task"]["ok"] is True and result["recorder_violations"] == []
+
+
+@needs_docker
+def test_an_injected_undeclared_read_only_unit_difference_fails_the_run(world):
+    caught = _failed(world, inject_readonly=("A",))
+    assert caught.failures == ["units_undeclared:fleet_resume:A+1"], caught.failures
+    (diff,) = caught.document["facts"]["unit_differences"]
+    assert diff["extra"][0].endswith("writes=0 reads=rh_injected/read-only")
+    declared = r5.load_declarations()
+    declared["declared"].append({"id": "ro", "kind": "units", "step": "fleet_resume", "extra_in": "A", "count": 1,
+                                 "read_pattern": "^rh_injected/", "section": "AMD-1 A", "reason": "test declaration"})
+    document = _run(world, inject_readonly=("A",), declarations=declared)
+    assert document["status"] == "ok" and "ro" in document["facts"]["units_declared_used"]
 
 
 @needs_docker

@@ -43,7 +43,7 @@ DECLARATIONS = HERE / "r5-declarations.json"
 DRIVERS = HERE / "r5_drivers"
 SIDES = ("A", "B")
 MAX_RECORD_ITEMS = 4096
-# An intended difference is tied to an AMD-1 section, an S2R hunk, or (owner ratification pending, see the RH-5 notes) the
+# An intended difference is tied to an AMD-1 section, an S2R hunk, or (owner-ratified 2026-10-06, RH-5 ruling 1) the
 # accepted rebuild slice design that introduced it (`DESIGN-s9-X §1.3`).
 SECTION = re.compile(r"AMD-1 [A-D]|S2R [0-9a-f]{7,40}:[\w/.\-]+|DESIGN-s[0-9]+(?:-[A-Z])? §[0-9]+(?:\.[0-9]+)*")
 KINDS = frozenset({"only_a", "only_b", "changed"})
@@ -100,6 +100,15 @@ def validate_declarations(document: object) -> dict:
             raise Refused("declaration_uncited", f"{entry['id']}: section must cite an AMD-1 section or an S2R hunk")
         if not str(entry.get("reason", "")).strip():
             raise Refused("declarations_malformed", f"{entry['id']}: reason")
+        if entry.get("kind") == "units":
+            if (not str(entry.get("step", "")).strip() or entry.get("extra_in") not in SIDES
+                    or not isinstance(entry.get("count"), int) or entry["count"] < 1):
+                raise Refused("declarations_malformed", f"{entry['id']}: units step/extra_in/count")
+            try:
+                re.compile(str(entry.get("read_pattern", "")))
+            except re.error:
+                raise Refused("declarations_malformed", f"{entry['id']}: read_pattern") from None
+            continue
         if entry.get("kind") not in ("store", "file"):
             raise Refused("declarations_malformed", f"{entry['id']}: kind")
         if not set(entry.get("differs", [])) or not set(entry["differs"]) <= KINDS:
@@ -216,22 +225,100 @@ def undeclared(diffs: list[dict], declarations: dict, kind: str, bodies: dict | 
 
 # ---- unit boundaries ----
 
+def signatures(step: dict) -> list[tuple]:
+    """One step's units in order, ALL of them (read-only included): `(outcome, depth, sorted writes)`; labels and ordinal
+    ids carry no information (design 7. R5: equal recorder unit boundaries)."""
+    return [(u["outcome"], u["depth"], ",".join(sorted("/".join(w) for w in u["writes"]))) for u in step.get("units", [])]
+
+
 def boundaries(result: dict) -> list[list]:
-    """Per step, per WRITE-BEARING unit in order: `[step, outcome, depth, sorted writes]`; labels and ordinal ids carry no
-    information. A unit that wrote nothing is a read, not a state boundary: it is counted by `readonly_units` instead."""
+    return [[name, *sig] for name, step in result["steps"].items() for sig in signatures(step)]
+
+
+def unit_differences(ra: dict, rb: dict) -> list[dict]:
+    """Per step whose unit sequences differ: which side has extra units and which (ordinal, reads, writes). Extra units are
+    found by removing `count` units of the longer side until the sequences are equal; `aligned: false` when no removal does."""
+    from itertools import combinations
+
     out = []
-    for name, step in result["steps"].items():
-        for unit in step.get("units", []):
-            if unit["writes"] or unit["outcome"] != "COMMIT":
-                out.append([name, unit["outcome"], unit["depth"], ",".join(sorted("/".join(w) for w in unit["writes"]))])
+    for name in ra["steps"]:
+        a, b = signatures(ra["steps"][name]), signatures(rb["steps"].get(name, {}))
+        if a == b:
+            continue
+        side, longer, shorter = ("A", ra, b) if len(a) > len(b) else ("B", rb, a)
+        units = longer["steps"][name]["units"]
+        sigs = signatures(longer["steps"][name])
+        row = {"step": name, "a_units": len(a), "b_units": len(b), "extra_in": side, "aligned": False, "extra": []}
+        if len(sigs) > len(shorter):
+            for drop in combinations(range(len(sigs)), len(sigs) - len(shorter)):
+                if [g for i, g in enumerate(sigs) if i not in drop] == shorter:
+                    row["aligned"], row["extra"] = True, [
+                        {"ordinal": i, "outcome": units[i]["outcome"], "writes": len(units[i]["writes"]),
+                         "reads": units[i].get("reads", [])[:12]} for i in drop]
+                    break
+        out.append(row)
     return out
 
 
-# ---- the S2R hold fact ----
+def undeclared_units(diffs: list[dict], declarations: dict) -> tuple[list[dict], list[str]]:
+    left, used = [], set()
+    for diff in diffs:
+        for entry in declarations["declared"]:
+            if (entry["kind"] == "units" and entry["step"] == diff["step"] and entry["extra_in"] == diff["extra_in"]
+                    and diff["aligned"] and entry["count"] == len(diff["extra"])
+                    and all(e["writes"] == 0 and e["outcome"] == "COMMIT"
+                            and re.search(entry["read_pattern"], ",".join(e["reads"])) for e in diff["extra"])):
+                used.add(entry["id"])
+                break
+        else:
+            left.append(diff)
+    return left, sorted(used)
+
 
 def readonly_units(result: dict) -> dict[str, int]:
     return {name: sum(1 for u in step.get("units", []) if not u["writes"] and u["outcome"] == "COMMIT")
             for name, step in result["steps"].items()}
+
+
+# ---- the S2R hold fact ----
+
+def _has_field(value, names: set[str], found: set[str]) -> None:
+    if isinstance(value, dict):
+        for k, v in value.items():
+            if k in names:
+                found.add(k)
+            _has_field(v, names, found)
+    elif isinstance(value, list):
+        for v in value:
+            _has_field(v, names, found)
+
+
+def mask_reach(rows: list[list[str]], bodies: dict, masks: dict[str, str]) -> dict[str, dict[str, int]]:
+    """For each masked field name, the buckets of the WRITTEN rows whose body carries that field and how many rows: the reach
+    of a field-name mask, so a reviewer can see what it could have hidden."""
+    reach: dict[str, dict[str, int]] = {name: {} for name in masks}
+    for bucket, key, op, _ in rows:
+        found: set[str] = set()
+        _has_field(bodies.get((bucket, key)), set(masks), found)
+        for name in found:
+            reach[name][bucket] = reach[name].get(bucket, 0) + 1
+    return reach
+
+
+# F-1 rows this scenario does not exercise (owner ruling 3): reason and the rehearsal row that covers each.
+NOT_EXERCISED = {
+    "row 2 lane launcher (fleet_runtime: builds the lane env/schema and `operate run` argv)": {
+        "reason": "launching a lane starts a child process (guarded launch); R5 runs with no process spawn",
+        "covered_by": "uncovered (argv byte-identity is a compare golden, not an R-row)"},
+    "row 4 operate-run argv (adapters/operation_cli)": {
+        "reason": "the CLI wiring builds RedisBus/CallBudget/Executor for a real lane and spawns it; R5 builds the use cases in-process",
+        "covered_by": "R3 (read-only parser inventory of `zeus operate` nodes); the write path is uncovered"},
+    "row 11 owner-action delivery registration (OwnerActionScheduler)": {
+        "reason": "discovery runs the live scheduler over host/delivery state and launches guarded children; no fixture-transport form",
+        "covered_by": "uncovered"},
+    "rows 13-15 publish, CI, merge, switch, consume": {
+        "reason": "R5 stops before publish by design", "covered_by": "R7b (HostDelivery rollback stage) and C"},
+}
 
 
 def s2r_hold_fact(documents: dict) -> dict:
@@ -277,7 +364,8 @@ def drop_database(socket: Path, name: str) -> None:
 def run_r5(sides: dict[str, SideSpec], copy, database: str, work: Path, out, *, run8: str, declarations: dict | None = None,
            masks: dict[str, str] | None = DEFAULT_MASKS, runtime_dir: Path | None = None, timeout: float = 300.0,
            runner: Callable = subprocess_runner, extra: dict[str, list[str]] | None = None, clock=_utc_now,
-           faults: dict[str, str] | None = None, shared: Path | None = None, inject: dict[str, str] | None = None) -> dict:
+           faults: dict[str, str] | None = None, shared: Path | None = None, inject: dict[str, str] | None = None,
+           inject_readonly: tuple[str, ...] = ()) -> dict:
     """Run the scenario on A and B over clones of `copy`'s `database`; write `out/r5.json`; raise `R5Failed` after writing
     on any failure. `extra` adds per-side driver argv (tests), `faults`/`inject` are the TEST-ONLY driver flags."""
     declarations = declarations if declarations is not None else load_declarations()
@@ -324,6 +412,8 @@ def run_r5(sides: dict[str, SideSpec], copy, database: str, work: Path, out, *, 
                     str(scratch), "--artifacts", str(artifacts), "--out", str(result_path), *(extra or {}).get(name, [])]
             if faults and name in faults:
                 argv += ["--fault", faults[name]]
+            if name in inject_readonly:
+                argv += ["--inject-readonly"]
             if inject and name in inject:
                 argv += ["--inject-extra", inject[name]]
             code, stdout, stderr = runner(argv, timeout)
@@ -363,6 +453,7 @@ def run_r5(sides: dict[str, SideSpec], copy, database: str, work: Path, out, *, 
 
 
 def _judge(runs: dict, sides: dict, declarations: dict, facts: dict, failures: list[str], facts_masks: dict | None = None) -> None:
+    masks_arg = facts_masks
     results = {n: r.get("result") for n, r in runs.items()}
     for name, result in results.items():
         if result is None:
@@ -382,6 +473,9 @@ def _judge(runs: dict, sides: dict, declarations: dict, facts: dict, failures: l
         facts[f"provider_calls_{name}"] = result.get("provider_calls")
     facts["write_set_sizes"] = {n: {"store": len(r["store"]), "artifacts": len(r["artifacts"]), "runtime": len(r["runtime"])}
                                 for n, r in runs.items()}
+    facts["mask_reach"] = {n: mask_reach(r["store"], r["bodies"], DEFAULT_MASKS if masks_arg is None else masks_arg)
+                           for n, r in runs.items()}
+    facts["not_exercised"] = NOT_EXERCISED
     facts["write_set_sha256"] = {n: _sha(_canonical([r["store"], r["artifacts"], r["runtime"]])) for n, r in runs.items()}
     facts["buckets_written"] = {n: sorted({row[0] for row in r["store"]}) for n, r in runs.items()}
     for kind, key, width in (("store", "store", 2), ("file", "artifacts", 1), ("file", "runtime", 1)):
@@ -396,12 +490,14 @@ def _judge(runs: dict, sides: dict, declarations: dict, facts: dict, failures: l
     if all(results.values()):
         ba, bb = boundaries(results["A"]), boundaries(results["B"])
         facts["readonly_units"] = {n: readonly_units(results[n]) for n in SIDES}
-        # NOT a pass condition (reads are not state), but never silent: an A/B difference in read-only units is on the record.
-        facts["readonly_units_equal"] = facts["readonly_units"]["A"] == facts["readonly_units"]["B"]
-        facts["unit_boundaries_equal"] = ba == bb
         facts["units"] = {"A": len(ba), "B": len(bb)}
-        if ba != bb:
-            first = next((i for i, (x, y) in enumerate(zip(ba, bb, strict=False)) if x != y), min(len(ba), len(bb)))
-            failures.append(f"unit_boundaries_differ:index {first}")
-            facts["unit_boundaries_first_difference"] = {"index": first, "a": ba[first] if first < len(ba) else None,
-                                                         "b": bb[first] if first < len(bb) else None}
+        diffs = unit_differences(results["A"], results["B"])
+        left, used = undeclared_units(diffs, declarations)
+        facts["unit_differences"] = [  # flattened: the evidence writer bounds nesting depth
+            {"step": d["step"], "extra_in": d["extra_in"], "a_units": d["a_units"], "b_units": d["b_units"], "aligned": d["aligned"],
+             "extra": [f"ordinal {e['ordinal']} {e['outcome']} writes={e['writes']} reads=" + ",".join(e["reads"])[:300]
+                       for e in d["extra"]]} for d in diffs[:16]]
+        facts["units_declared_used"] = used
+        facts["unit_boundaries_equal"] = ba == bb  # raw; the verdict is `unit_boundaries_pass` (declared extras removed)
+        facts["unit_boundaries_pass"] = not left
+        failures += [f"units_undeclared:{d['step']}:{d['extra_in']}+{len(d['extra']) or d['a_units'] - d['b_units']}" for d in left]
