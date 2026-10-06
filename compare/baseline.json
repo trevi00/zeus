@@ -140,7 +140,8 @@
   "additions_only": {
    "docs/context/README.md": 3,
    "docs/design.md": 3,
-   "AGENTS.md": 14
+   "AGENTS.md": 14,
+   "docs/zeus/operations/aibox-migration-001/QUALIFICATION-B2-LOG.md": 10
   },
   "promoted_from": "the two-tree layout (allowed_changed_paths target/, compare/, coverage/, docs/context/ARCHITECTURE.md, docs/context/README.md, docs/design.md, .github/workflows/validation.yml, AGENTS.md)"
  }
