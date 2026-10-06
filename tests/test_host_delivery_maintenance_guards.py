@@ -14,6 +14,7 @@ import pytest
 from host_delivery_maintenance_fixtures import (
     TARGET,
     active_system,
+    armed,
     generation_of,
     intent_of,
     put,
@@ -39,6 +40,8 @@ import codex_harness.application.host_delivery as application
 from codex_harness.application.host_delivery import BUCKET_INTENTS, BUCKET_PLANS, HostDelivery
 from codex_harness.domain.host_delivery import (
     ACTIVE,
+    AWAITING_CONSUMPTION,
+    BLOCKED,
     PUBLISHING,
     REGISTERED,
     REGISTRY_SCHEMA,
@@ -188,6 +191,62 @@ def test_old_controller_hazard_is_real_and_the_new_controller_holds(tmp_path, mo
     monkeypatch.setattr(application, "maintenance_open", lambda intent: False)
     monkeypatch.setattr(application, "maintenance_hold", lambda *args, **kwargs: None)
     assert system["delivery"].register(waiting, pin(path="docs/zeus/operations/second.json"))["registered"] is True
+
+
+def test_a_failed_maintenance_after_an_arm_failure_keeps_holding_and_a_bound_one_releases(tmp_path):
+    system = active_system(tmp_path)
+    document, evidence, _ = restarted(system)
+    system["host"].n1(system["target"])
+    with pytest.raises(DeliveryRefused):
+        system["delivery"].maintain(document, evidence, "arm")
+    assert generation_of(system)["state"] == "failed"
+    waiting = second_plan_on(system)
+    with pytest.raises(DeliveryRefused) as refused:
+        system["delivery"].register(waiting, pin(path="docs/zeus/operations/second.json"))
+    assert refused.value.reason_code == "maintenance_target_busy"
+    # Bound: the logical hold ends and ordinary registration is possible again.
+    intent = intent_of(system)
+    put(system["store"], BUCKET_INTENTS, system["plan_id"], {
+        **intent, "generations": [{**intent["generations"][-1], "state": "bound"}]})
+    assert system["delivery"].register(waiting, pin(path="docs/zeus/operations/second.json"))["registered"] is True
+
+
+def hazard_inputs(system):
+    """An ARMED maintained intent (stage `awaiting_consumption`, the new candidate) with two old-code
+    triggers available: its queue row missing, or its release gate refused."""
+    armed(system)
+    assert intent_of(system)["stage"] == AWAITING_CONSUMPTION
+    return intent_of(system)
+
+
+@pytest.mark.parametrize("trigger", ["missing queue row", "refused gate"])
+def test_old_controller_hazard_on_an_armed_intent_is_real_and_the_new_controller_holds(tmp_path, monkeypatch, trigger):
+    system = active_system(tmp_path)
+    before = hazard_inputs(system)
+    release_id = system["release"]["id"]
+    if trigger == "missing queue row":
+        system["store"].data.pop(("release_queue", release_id))
+    else:
+        record = read(system["store"], "releases", release_id)
+        put(system["store"], "releases", release_id, {**record, "candidate": {**record["candidate"],
+                                                                                "tree": "0" * 64}})
+    # PR-3 controller: the tick selects nothing on the held target and writes nothing at all.
+    state = snapshot(system["store"], system["control"])
+    tick = system["delivery"].tick()
+    assert tick["blocked"][system["plan_id"]] == "maintenance_target_busy"
+    with system["store"].transaction() as tx:
+        row = tx.get(BUCKET_PLANS, system["plan_id"])
+    acted = system["delivery"]._act({"plan": row, "intent": before, "blocked": {}})
+    assert (acted["outcome"], acted["reason_code"]) == ("controller_busy", "maintenance_target_busy")
+    assert snapshot(system["store"], system["control"]) == state
+    # "Old code": the same controller with the maintenance guards removed MUTATES the armed intent on a
+    # refused gate or a missing queue row. That is the deployment hazard.
+    monkeypatch.setattr(HostDelivery, "_maintenance_held", lambda self, target_id: False)
+    monkeypatch.setattr(application, "maintenance_open", lambda intent: False)
+    old = system["delivery"].tick()
+    mutated = intent_of(system)
+    assert old["plan_id"] == system["plan_id"] and mutated != before
+    assert mutated["stage"] == BLOCKED and mutated["reason_code"] in {"queue_refused", "release_tree_mismatch"}
 
 
 def test_the_deployment_precondition_is_the_documented_requirement():

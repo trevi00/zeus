@@ -1214,7 +1214,7 @@ def serve(state_dir: str, max_seconds: int = SERVICE_MAX_SECONDS) -> int:
 
 # ----- CLI -----------------------------------------------------------------------------------------
 # The operator phases of INV-HOST-DELIVERY-MAINTENANCE-001, spelled as the domain spells them.
-MAINTAIN_PHASES = ("restart",)  # arm/bind: the named remainder of PR-3 (ALL-PRIMARY-20260930)
+MAINTAIN_PHASES = ("restart", "arm", "bind")
 LANE_HELP = ("One registered Fleet lane whose store, repository and runtime own this delivery; "
              "omitted keeps the control store. The Fleet activation gate stays the control store's")
 
@@ -1264,8 +1264,9 @@ def add_parser(commands) -> None:
                          "managed_fleet_systemd delivery (INV-HOST-DELIVERY-MAINTENANCE-001); read-only with "
                          "--check; takes no token, credential or command arguments")
     maintain.add_argument("--phase", required=True, choices=MAINTAIN_PHASES,
-                          help="restart (replace the recorded incumbent under the controller hold and record the "
-                               "new generation, not re-qualified); arm and bind are not in this release")
+                          help="restart (replace the recorded incumbent), arm (the new instance's owner canary "
+                               "obligation and its one admitted job) or bind (consumption after its accepted "
+                               "canary); each is a separate owner step")
     maintain.add_argument("--document", required=True,
                           help="The typed maintenance document (urn:zeus:host-delivery-active-generation:1); "
                                "the same document is replayed for every phase")
@@ -1541,21 +1542,27 @@ def _read_document(path: Path):
 def maintenance_controller(service, *, store, check: bool) -> HostDelivery:
     """The coordinator of INV-HOST-DELIVERY-MAINTENANCE-001 with exactly its ports.
 
-    `store` holds this delivery's records (the control store, or the `--lane` store). The Fleet readiness,
-    the owner-action rows and the authority and artifact ports are the CONTROL runtime's, as for the
-    activation gate. No tick observer, Git workspace, verifier or GitHub port is built, and `--check` builds
-    no artifact store: it can create nothing. Nothing here prints a DSN or accepts a token; every import is
-    lazy. This release carries the restart phase only (ALL-PRIMARY-20260930; arm/bind are PR-3's remainder).
+    `store` holds this delivery's records (the control store, or the `--lane` store). The Fleet, the
+    owner-action rows and the credential, authority and artifact ports are the CONTROL runtime's, as
+    for the activation gate. No tick observer, Git workspace, verifier or GitHub port is built, and
+    `--check` builds no artifact store and no canary executor: it can create nothing. Nothing here
+    prints a DSN or accepts a token; every import is lazy.
     """
     from codex_harness.adapters.configuration import runtime_dir
     from codex_harness.adapters.maintenance_evidence import (
         LazyArtifacts,
+        LazyCanaryExecutor,
         control_action_reader,
+        credential_observer,
+        qualification_deadline,
         trusted_authority_reader,
     )
     from codex_harness.application.fleet import Fleet
 
     host = _settings()
+    # G1-03 ruling (c): the credential helper's path and pin and the qualification bound come from THIS
+    # invocation's environment only, never from the persisted configuration file `_settings()` also reads.
+    invocation = _invocation_environment()
     fleet = Fleet(service.store)
     root = runtime_dir() / "artifacts"
     return HostDelivery(store, service.org,
@@ -1563,13 +1570,31 @@ def maintenance_controller(service, *, store, check: bool) -> HostDelivery:
                         canaries=canary_checks(store), observer=None, enabled=configured_enabled(host),
                         authorities=trusted_authority_reader(root),
                         artifacts=None if check else LazyArtifacts(root),
-                        canary_records=control_action_reader(service.store), maintenance_fleet=fleet)
+                        canary_records=control_action_reader(service.store),
+                        credentials=credential_observer(invocation), maintenance_fleet=fleet,
+                        canary_executor=None if check else LazyCanaryExecutor(fleet, host),
+                        qualification_deadline=qualification_deadline(invocation))
 
 
 def _settings() -> dict:
     from codex_harness.adapters.configuration import settings
 
     return settings()
+
+
+def _invocation_environment() -> dict:
+    """The maintenance inputs the CLI invocation itself carries (G1-03 ruling (c)): exactly these process
+    environment variables, never the persisted configuration file."""
+    import os
+
+    from codex_harness.adapters.maintenance_evidence import (
+        HELPER_SETTING,
+        HELPER_SHA256_SETTING,
+        QUALIFICATION_DEADLINE_SETTING,
+    )
+
+    names = (HELPER_SETTING, HELPER_SHA256_SETTING, QUALIFICATION_DEADLINE_SETTING)
+    return {name: os.environ[name] for name in names if name in os.environ}
 
 
 def _observer(service):

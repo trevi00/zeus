@@ -1573,6 +1573,23 @@ or generated work. `sources.fleet` in the monitor snapshot (an additive source b
 the persisted queued reasons), call counts, effective `budget`, last 100 jobs with `truncated`,
 `active_job` from all reserving jobs; never manifests, paths, schemas, DSNs or raw output.
 
+Maintenance amendment (INV-HOST-DELIVERY-MAINTENANCE-001), and nothing wider: `fleet_maintenance_admissions`
+holds one row per maintenance id (`granted -> admitted -> closed`), an operator-authorized one-job permit
+bound to the exact generation, plan, descriptor, new instance, owner action, job, evidence ref and
+deadline - not a budget or scheduler grant. `grant_maintenance_canary` requires the owner pause with no
+activation hold and replays only the whole binding; `admit_maintenance_canary` admits, in ONE control
+transaction and while owner-paused, exactly this generation's owner-created QUEUED canary job after
+validating the real owner action and its immutable binding, the acknowledged lane proof and a fresh
+deadline, with no reserving job or held unit, through the domain selection with a one-job candidate set and
+ONLY the pause exception (budget, capacity, lane, path and dependency blockers all still refuse); it records
+the normal DISPATCHING owner token and the spent permit atomically, and other queued jobs stay unadmitted.
+`close_maintenance_canary` fails an unadmitted queued canary on expiry or cancellation with no launch, and
+closes admitted work only once it settled; admitted or unknown work keeps its reservation and is reconciled,
+never retried. The one-job `FleetRunner.run_preclaimed` / `MaintenanceCanaryExecutor` reuses the runner's
+launch, reap and finalize protocol for that ONE preclaimed job (no backlog, continuation, reconcile or
+general admission pass). While any permit is not closed, `resume` refuses `maintenance_debt_unsettled` and
+`release_activation_hold` releases nothing. The dispatcher never gains general resume authority.
+
 ## INV-FLEET-BACKLOG-001
 
 `zeus fleet backlog register|tick|status` admits ALREADY APPROVED work into the existing
@@ -2897,6 +2914,12 @@ and emits nothing, and a switch with `consumed: false` is never read as an activ
 status is a durable-record projection: it is never evidence of a qualified live host, a passed owner
 canary or a semantically accepted release.
 
+ACTIVE stays terminal to automatic selection. The only change of an active delivery's executing
+generation is INV-HOST-DELIVERY-MAINTENANCE-001 (an explicit owner operation on the same descriptor), and
+while a maintenance generation is open or failed its target is held for every other delivery and effect:
+selection, the tick's gate and queue handling, advance, switch preparation, registration, migration
+staging and the recoveries.
+
 ## INV-HOST-DELIVERY-VERIFY-001
 
 Host delivery drives the ONE existing incumbent evaluator before publication; it adds no evaluator,
@@ -3912,17 +3935,6 @@ no current descriptor to be unchanged from.
 
 ## INV-HOST-DELIVERY-MAINTENANCE-001
 
-**This release (ALL-PRIMARY-20260930): the `restart` phase only.** The normative operation below keeps all three
-phases. This release implements `restart`, the ReleaseQueue maintenance hold, the target hold and guards, the
-status projection and the read-only Fleet `maintenance_readiness` (registered, owner-paused with no activation
-hold, no reserving job, no held unit; no maintenance permit can exist, so `open_permits` is always empty).
-`arm`, `bind`, the Fleet one-job maintenance admission (`fleet_maintenance_admissions`, the executor) and the
-pinned credential-observation port are PR-3's named remainder: the CLI accepts `--phase restart` only, and the use
-case refuses `arm`/`bind` with `maintenance_phase(phase)` before anything. A restarted generation therefore stays
-open (`started`, not re-qualified) and keeps holding its target; the Fleet stays owner-paused until the remainder
-is reviewed and run. The operator binds the new generation's PRIMARY selection booleans to the recorded
-invocation, instance and process identities outside the product record.
-
 Active-generation maintenance is an explicit, evidence-bound owner operation on an ACTIVE, consumed
 `managed_fleet_systemd` delivery. It changes only the executing generation of the exact active descriptor.
 It neither publishes/promotes a release nor changes the descriptor revision, tree, image, profile,
@@ -4105,13 +4117,12 @@ rule reports another open maintenance as `in_flight`. Unrelated targets keep mov
 unchanged when no intent carries `generations`.
 
 **DEPLOYMENT PRECONDITION**: the PR-3 HostDelivery controller must be deployed before any maintenance. A
-mixed old controller running beside it is unsupported: an old controller accepts a competing plan on a held
-target (tests prove it on the started shape) and, on the armed shape of the remainder, mutates the intent on a
-refused gate or a missing queue row. No runtime probe of another controller's code exists (it would need tick
-writes).
+mixed old controller running beside it is unsupported: the old `_act` still mutates an intent on a refused
+gate or a missing queue row, which tests prove on the armed shape. No runtime probe of another controller's
+code exists (it would need tick writes).
 
-**CLI**: `zeus host-delivery maintain --lane <id> --phase restart --document FILE --evidence sha256:...
-[--check]` (`arm|bind` in the remainder), as the service user with the normal accepted in-process secret loader; no sudo, no
+**CLI**: `zeus host-delivery maintain --lane <id> --phase restart|arm|bind --document FILE --evidence
+sha256:... [--check]`, as the service user with the normal accepted in-process secret loader; no sudo, no
 DSN in output, no token argument. With `--check` every refusal is RETURNED (`applicable: false`), nothing
 is held, put, written, granted, admitted, executed or started, and no provider is probed; it is not a
 reservation. The result (`urn:zeus:host-delivery-maintenance:1`) is a typed allowlist: maintenance id,
@@ -4139,11 +4150,15 @@ never a synthetic suite success.
 
 Tests: tests/test_host_delivery_maintenance_domain.py, tests/test_host_delivery_maintenance.py,
 tests/test_host_delivery_maintenance_guards.py, tests/test_release_queue_maintenance.py,
-tests/test_fleet_maintenance_readiness.py, tests/test_host_delivery_maintenance_adapter.py,
+tests/test_fleet_maintenance.py, tests/test_fleet_maintenance_runner.py,
+tests/test_fleet_maintenance_readiness.py, tests/test_fleet_maintenance_postgres.py,
+tests/test_host_delivery_maintenance_adapter.py,
 tests/test_maintenance_evidence.py, tests/test_host_delivery_maintenance_cli.py and
 tests/test_host_delivery_maintenance_e2e.py (helper: tests/host_delivery_maintenance_fixtures.py). The
-PostgreSQL-gated tests skip without `HARNESS_INTEGRATION=1`; a skip is not evidence. Hosts and systemd are
-labelled fakes there; the Fleet is the real one over an in-memory control store.
+PostgreSQL-gated tests skip without `HARNESS_INTEGRATION=1`; a skip is not evidence. Hosts, systemd, the
+credential helper and the launcher of the canary executor are labelled fakes there; the Fleet is the real one
+over an in-memory control store.
+
 ## INV-HOST-DELIVERY-MIGRATION-001
 
 The lane half of an evaluator migration, keyed by the old plan in `host_delivery_migrations`
@@ -4426,7 +4441,10 @@ another release revision of the same host. It never rewrites the intent.
    The consumption and canary provenance the observer checks is defined by INV-HOST-DELIVERY-001
    (descriptor delivery and its consumption verdict), INV-HOST-DELIVERY-FIRST-ACTIVATION-001
    (descriptor resolution on a target's first activation) and INV-OWNER-ACTIONS-001 (the owner
-   canary hand-off). This contract cites them and does not amend their semantics.
+   canary hand-off). This contract cites them and does not amend their semantics. The PR-2 observer
+   predicates are unchanged by INV-HOST-DELIVERY-MAINTENANCE-001: during an open maintenance they refuse
+   (`instance_binding` while the new generation only started, `delivery_not_active` while it is armed)
+   and they accept the new instance only after it is bound.
 4. `activation-switch` writes `host-activation.json`, then replaces `releases/current` (a fresh
    temporary symlink renamed over it, then a directory fsync; only its own temporary link is ever
    removed).
@@ -4704,6 +4722,11 @@ existing owners: `Continuation.accept_research`, the guarded `decide_one` of the
   writes `managed-launch.json` and runs `systemctl start` of that unit. The unit's `supervise`
   re-validates request, target, descriptor, sealed manifest, stop request, previous-instance liveness and
   the Fleet activation gate before the incumbent `launch`.
+- An armed active-generation maintenance (INV-HOST-DELIVERY-MAINTENANCE-001: the intent
+  `awaiting_consumption` with the NEW candidate instance) is discovered by the UNCHANGED
+  `_discover`/`_canary_binding`/`_advance_canary` as a new instance-bound `delivery_canary` action and its
+  fixed job; the old completed action and job are untouched. Its queued job runs only through the Fleet's
+  one-use maintenance admission (INV-FLEET-001 amendment), never through a general resume.
 
 Tests: tests/test_owner_actions.py, tests/test_owner_delivery.py, tests/test_owner_canary_plan.py,
 tests/test_managed_systemd.py, tests/test_owner_actions_recovery.py (the two-family chain on one lane
