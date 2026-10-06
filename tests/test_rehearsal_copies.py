@@ -15,7 +15,6 @@ import shutil
 import subprocess
 import sys
 import time
-from pathlib import Path
 
 import pytest
 from _layout import REPO
