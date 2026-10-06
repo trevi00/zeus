@@ -20,6 +20,7 @@ from codex_harness.coordination.application.fleet.state import (
     BUCKET_CONTROL,
     BUCKET_DELIVERY,
     BUCKET_JOBS,
+    BUCKET_MAINTENANCE,
     BUCKET_REGISTRY,
     CONTROL_KEY,
 )
@@ -39,6 +40,7 @@ from codex_harness.coordination.domain.fleet import (
     validate_delivery,
     validate_job_manifest,
 )
+from codex_harness.coordination.domain.fleet_maintenance import permit_view
 from codex_harness.coordination.domain.operation import manifest_digest
 from codex_harness.kernel.errors import require
 from codex_harness.kernel.ids import utcnow
@@ -159,6 +161,7 @@ class FleetRegistry:
             control = state.control(tx)
             rows = tx.scan(BUCKET_JOBS)
             deliveries = {row["job_id"]: row for row in tx.scan(BUCKET_DELIVERY)}
+            permits = tx.scan(BUCKET_MAINTENANCE)
         if registry is not None:
             registry = {**registry, "config": effective_config(registry["config"], control)}
         view = projection(registry, bool(control.get("paused")), rows, deliveries)
@@ -166,5 +169,11 @@ class FleetRegistry:
         # handoff here too, so `pending_owner` is visible in the status a reader actually polls. A
         # job without one keeps its exact previous shape.
         handoffs = {row["id"]: row.get("owner_handoff") for row in rows if row.get("owner_handoff")}
-        return {**view, "jobs": [job if job["id"] not in handoffs else {**job, "owner_handoff": handoffs[job["id"]]}
+        view = {**view, "jobs": [job if job["id"] not in handoffs else {**job, "owner_handoff": handoffs[job["id"]]}
                                  for job in view["jobs"]]}
+        if permits:
+            # INV-FLEET-001 maintenance amendment: permits are visible (safe view, never an owner
+            # token); a fleet that never held one keeps its exact previous status shape.
+            view["maintenance"] = [permit_view(row) for row in sorted(
+                permits, key=lambda r: (str(r.get("granted_at") or r.get("closed_at")), r["id"]))]
+        return view

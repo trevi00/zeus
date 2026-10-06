@@ -8,7 +8,8 @@ Entry points: FleetPause.pause, .resume, .activation_gate, .release_activation_h
 Contracts: INV-FLEET-001, INV-HOST-DELIVERY-MAINTENANCE-001
 
 Moved from M7 `application/fleet.py` (SOURCE e38aa722) by the named split (DESIGN-s5 §F); the method
-bodies are M7's. `maintenance_readiness` is ported from main b9d8f15 (S2R `application/fleet.py`).
+bodies are M7's. `maintenance_readiness` is ported from main b9d8f15 (S2R `application/fleet.py`); its open permits and the two
+maintenance-debt gates are PR-3's (e6e15f00).
 """
 
 from __future__ import annotations
@@ -50,6 +51,10 @@ class FleetPause:
         with self.store.transaction() as tx:
             if state.registry(tx) is None:
                 raise FleetRefused("unregistered")
+            if not paused and state.maintenance_debt(tx):
+                # INV-FLEET-001 maintenance amendment: general admission stays closed until every
+                # maintenance permit is closed and no stale canary of one is still queued or reserving.
+                raise FleetRefused("maintenance_debt_unsettled", "maintenance")
             # Only the flag changes: a granted effective budget survives pause/resume. An owner pause
             # or resume takes the pause over, so a host activation hold never outlives it.
             control = {key: value for key, value in state.control(tx).items() if key != ACTIVATION_HOLD}
@@ -117,6 +122,10 @@ class FleetPause:
         with self.store.transaction() as tx:
             if state.registry(tx) is None:
                 raise FleetRefused("unregistered")
+            if state.maintenance_debt(tx):
+                # INV-FLEET-001 maintenance amendment: a runtime's hold release is a resume too, so it
+                # releases nothing while any maintenance permit or its stale canary is unsettled.
+                return {"released": False}
             control = state.control(tx)
             hold = control.get(ACTIVATION_HOLD)
             if not (control.get("paused") and isinstance(hold, dict)
@@ -177,4 +186,5 @@ class FleetPause:
             control = state.control(tx)
             jobs = tx.scan(BUCKET_JOBS)
             units = held_units(tx.scan(BUCKET_UNITS))
-        return maintenance_readiness(registry, control, jobs, units, ACTIVATION_HOLD)
+            open_ids = state.open_permits(tx)
+        return maintenance_readiness(registry, control, jobs, units, ACTIVATION_HOLD, open_ids)

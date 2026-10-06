@@ -11,6 +11,10 @@ Named adaptations (each is a construction/import adaptation, never a behaviour c
   route table and to nothing else (an unrouted name raises AttributeError, never a fallback). It exposes `.store`
   (so `.store.data` reads as in M7) and the four owners as `.registry`, `.admission`, `.pause_control`,
   `.recovery_control`. Its `pause` and `resume` routes are the `FleetPause` methods of the same names.
+- PR-3 (e6e15f00): the maintenance route (`FleetMaintenance`: the grant/admit/close permit methods, `maintenance_permit`, `job`) is the
+  fifth owner, `.maintenance_control`; the facade also carries `.clock` and `.token` (PR-3's `Fleet` fields);
+  `MaintenanceCanaryExecutor(fleet, launcher, *, sleep, interval)` builds the target executor over the Fleet's
+  registry, maintenance, admission and pause objects.
 - `FleetRunner(fleet, launcher, sleep=time.sleep, interval=5.0, **ports)` builds the target
   `fleet.runner.FleetRunner(fleet.registry, fleet.admission, fleet.pause_control, launcher, ...)`: M7's runner held
   one `Fleet`, the target's holds the three objects it drives.
@@ -105,10 +109,14 @@ from codex_harness.coordination.application.continuation.successors import Succe
 from codex_harness.coordination.application.continuation.tick import ContinuationTick
 from codex_harness.coordination.application.events import EventJournal
 from codex_harness.coordination.application.fleet.admission import AdmissionControl
+from codex_harness.coordination.application.fleet.maintenance import FleetMaintenance
 from codex_harness.coordination.application.fleet.pause import FleetPause
 from codex_harness.coordination.application.fleet.recovery import FleetRecovery
 from codex_harness.coordination.application.fleet.registry import FleetRegistry
 from codex_harness.coordination.application.fleet.runner import FleetRunner as _FleetRunner
+from codex_harness.coordination.application.fleet.runner import (
+    MaintenanceCanaryExecutor as _MaintenanceCanaryExecutor,
+)
 from codex_harness.coordination.application.local_cycle import LocalCycle as _LocalCycle
 from codex_harness.coordination.application.messages import MessageHandler
 from codex_harness.coordination.application.operation import Operation as _Operation
@@ -139,7 +147,7 @@ from codex_harness.routing.adapters.provider_policy import packaged_policy
 from codex_harness.storage.adapters.file_artifacts import FileArtifacts
 
 __all__ = ["ConductorProcesses", "Continuation", "DEFAULT_ARGV", "ExecutionRecovery", "Fleet", "FleetRunner", "Harness",
-           "LaneEvidence", "LaunchRefused", "LocalCycle", "Operation", "OwnerActions", "ResearchEvidence",
+           "LaneEvidence", "LaunchRefused", "LocalCycle", "MaintenanceCanaryExecutor", "Operation", "OwnerActions", "ResearchEvidence",
            "ResearchLaunches", "Workflow", "_prepare", "_publish", "flush_outbox", "guard", "launch_directory", "main",
            "observe", "organization", "packaged_policy", "pin_route", "relay", "schedule_research", "spawn_guardian",
            "unavailable"]
@@ -151,17 +159,20 @@ ROUTES = {
     "pause": ("pause", "resume", "activation_gate", "release_activation_hold", "authorize_budget", "budget_grants",
               "maintenance_readiness"),
     "recovery": ("reconcile_interrupted", "recovery", "relocate", "migrate_host", "relocations"),
+    "maintenance": ("grant_maintenance_canary", "admit_maintenance_canary", "close_maintenance_canary",
+                    "maintenance_permit", "job"),
 }
 OWNER = {method: owner for owner, methods in ROUTES.items() for method in methods}
 
 
 class Fleet:
     def __init__(self, store, clock=utcnow, token=lambda: uuid4().hex):
-        self.store = store
+        self.store, self.clock, self.token = store, clock, token
         self.registry = FleetRegistry(store, clock=clock, token=token)
         self.admission = AdmissionControl(store, clock=clock, token=token)
         self.pause_control = FleetPause(store, clock=clock, token=token)
         self.recovery_control = FleetRecovery(store, clock=clock, token=token)
+        self.maintenance_control = FleetMaintenance(store, clock=clock, token=token)
 
     def __getattr__(self, name):  # an unrouted name is never a fallback (every routed one is a class attribute)
         raise AttributeError(name)
@@ -169,7 +180,8 @@ class Fleet:
 
 def _routed(name):
     owner = {"registry": "registry", "admission": "admission", "pause": "pause_control",
-             "recovery": "recovery_control"}[OWNER[name]]
+             "recovery": "recovery_control",
+             "maintenance": "maintenance_control"}[OWNER[name]]
 
     def method(self, *args, **kwargs):
         return getattr(getattr(self, owner), name)(*args, **kwargs)
@@ -184,6 +196,11 @@ for _name in OWNER:
 def FleetRunner(fleet, launcher, sleep=time.sleep, interval=5.0, **ports):  # noqa: N802 - the M7 constructor name
     return _FleetRunner(fleet.registry, fleet.admission, fleet.pause_control, launcher, sleep=sleep,
                         interval=interval, **ports)
+
+
+def MaintenanceCanaryExecutor(fleet, launcher, *, sleep=time.sleep, interval=5.0):  # noqa: N802 - the PR-3 constructor name
+    return _MaintenanceCanaryExecutor(fleet.registry, fleet.maintenance_control, fleet.admission, fleet.pause_control,
+                                      launcher, sleep=sleep, interval=interval)
 
 
 class Workflow:

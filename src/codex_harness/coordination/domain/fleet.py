@@ -441,11 +441,12 @@ def held_units(units) -> list[str]:
     return sorted(unit["id"] for unit in units if unit.get("state") != UNIT_RELEASED)
 
 
-def maintenance_readiness(registry, control: dict, jobs: list, units_held: list, hold_key: str) -> dict:
+def maintenance_readiness(registry, control: dict, jobs: list, units_held: list, hold_key: str,
+                          open_permits: list) -> dict:
     """INV-HOST-DELIVERY-MAINTENANCE-001: what an active-generation restart needs to know of the Fleet, read in ONE
-    transaction by the caller. `owner_paused` is an owner pause, not a managed runtime's activation hold. This
-    release admits no maintenance canary (the arm phase is PR-3's remainder), so no maintenance permit can exist
-    and `open_permits` is always empty."""
+    transaction by the caller. `owner_paused` is an owner pause, not a managed runtime's activation hold.
+    `open_permits` names the maintenance ids whose control debt is unsettled (INV-FLEET-001 maintenance amendment,
+    `domain.fleet_maintenance.open_permit`); a Fleet that never held a permit reports none."""
     if registry is None:
         return {"registered": False, "paused": False, "owner_paused": False, "activation_hold": False,
                 "reserving": [], "units_held": [], "open_permits": []}
@@ -453,7 +454,7 @@ def maintenance_readiness(registry, control: dict, jobs: list, units_held: list,
     hold = control.get(hold_key) is not None
     return {"registered": True, "paused": paused, "owner_paused": paused and not hold, "activation_hold": hold,
             "reserving": sorted(job["id"] for job in jobs if job.get("status") in RESERVING),
-            "units_held": list(units_held), "open_permits": []}
+            "units_held": list(units_held), "open_permits": sorted(open_permits)}
 
 
 def check_unit_proof(unit: dict, proof) -> dict:

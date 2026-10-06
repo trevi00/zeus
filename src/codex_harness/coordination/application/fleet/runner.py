@@ -5,11 +5,12 @@ Layer: application
 Context: coordination
 Owns: the children this process launched (process lifetime)
 Does not own: the Fleet buckets (the three Fleet objects it drives), lane processes (the launcher)
-Entry points: FleetRunner.run, FleetRunner.stop
-Contracts: INV-FLEET-001, INV-FLEET-BACKLOG-001
+Entry points: FleetRunner.run, FleetRunner.stop, FleetRunner.run_preclaimed, MaintenanceCanaryExecutor.execute
+Contracts: INV-FLEET-001, INV-FLEET-BACKLOG-001, INV-HOST-DELIVERY-MAINTENANCE-001
 
 Moved from M7 `application/fleet.py` (SOURCE e38aa722) by the named split (DESIGN-s5 §F); the method
-bodies are M7's.
+bodies are M7's. `run_preclaimed`, `_launch_claimed` (the shared launch protocol factored out of `_admit`) and
+`MaintenanceCanaryExecutor` are ported from PR-3 (e6e15f00, `application/fleet.py`).
 """
 
 from __future__ import annotations
@@ -17,7 +18,15 @@ from __future__ import annotations
 import logging
 import time
 
-from codex_harness.coordination.domain.fleet import FAILED, UNKNOWN, LaunchRefused, safe_code
+from codex_harness.coordination.domain.fleet import (
+    DISPATCHING,
+    FAILED,
+    UNKNOWN,
+    FleetRefused,
+    LaunchRefused,
+    safe_code,
+)
+from codex_harness.coordination.domain.fleet_maintenance import EXECUTION_SCHEMA
 from codex_harness.intake.domain.backlog import runner_state
 from codex_harness.intake.domain.backlog import safe_error_type as safe_backlog_error_type
 
@@ -349,18 +358,50 @@ class FleetRunner:
             if job is None:
                 break
             progressed = True
-            summary["admitted"].append(job["id"])
-            try:
-                handle = self.launcher.launch(job)
-            except LaunchRefused as exc:
-                self._finalize(job, {"status": FAILED, "reason_code": exc.reason_code}, summary)
-            except Exception as exc:
-                # The process may or may not exist: the claim, lane and paths stay reserved.
-                self._finalize(job, {"status": UNKNOWN, "reason_code": "spawn_uncertain",
-                                     "error_type": type(exc).__name__}, summary)
-            else:
-                self.children[job["id"]] = (job, handle)
+            self._launch_claimed(job, summary)
         return progressed
+
+    def _launch_claimed(self, job: dict, summary: dict) -> bool:
+        """Launch one job this runner's process already claimed as `dispatching`; True if a child exists.
+
+        The one launch/outcome protocol shared by `_admit` and `run_preclaimed`: a definite pre-spawn
+        refusal finalizes `failed`, an uncertain spawn `unknown` (reserving, never relaunched), and a
+        started child is waited for and finalized by `_reap`."""
+        summary["admitted"].append(job["id"])
+        try:
+            handle = self.launcher.launch(job)
+        except LaunchRefused as exc:
+            self._finalize(job, {"status": FAILED, "reason_code": exc.reason_code}, summary)
+        except Exception as exc:
+            # The process may or may not exist: the claim, lane and paths stay reserved.
+            self._finalize(job, {"status": UNKNOWN, "reason_code": "spawn_uncertain",
+                                 "error_type": type(exc).__name__}, summary)
+        else:
+            self.children[job["id"]] = (job, handle)
+            return True
+        return False
+
+    def run_preclaimed(self, job: dict, *, max_wait_seconds: float) -> dict:
+        """Launch, wait for and finalize exactly ONE job `FleetMaintenance.admit_maintenance_canary` already claimed.
+
+        INV-FLEET-001 maintenance amendment: no activation-hold release, admission, reconciliation,
+        backlog, continuation or heartbeat pass runs here, so this is an explicitly owned one-job
+        executor, never a second general runner. A job that is not `dispatching` with an owner token
+        is refused before any launch. The wait is bounded: a child still running at the bound is left
+        to the OS, never killed or relaunched, and its job stays reserving for proof-based
+        reconciliation. `state` is `finished` (reaped and finalized), `running` (the bound elapsed) or
+        `not_launched` (a definite refusal finalized `failed`, or an uncertain spawn `unknown`)."""
+        if not (isinstance(job, dict) and job.get("status") == DISPATCHING and type(job.get("id")) is str
+                and type(job.get("owner_token")) is str and job["owner_token"]):
+            raise FleetRefused("maintenance_admission_refused", "job")
+        summary = {"admitted": [], "finalized": [], "finalize_failures": []}
+        deadline = time.monotonic() + max(0.0, float(max_wait_seconds))
+        launched = self._launch_claimed(job, summary)
+        while self.children and time.monotonic() < deadline:
+            self._reap(summary)
+        state = "running" if self.children else "finished" if launched else "not_launched"
+        return {"job_id": job["id"], "state": state, "finalized": summary["finalized"],
+                "finalize_failures": summary["finalize_failures"]}
 
     def _reap(self, summary: dict) -> bool:
         if not self.children:
@@ -385,3 +426,38 @@ class FleetRunner:
             summary["finalize_failures"].append({"id": job["id"], "error_type": type(exc).__name__})
             return
         summary["finalized"].append({"id": row["id"], "status": row["status"], "reason_code": row["reason_code"]})
+
+
+class MaintenanceCanaryExecutor:
+    """The one-job executor of an armed maintenance generation (INV-FLEET-001 maintenance amendment).
+
+    `execute` consults the machine ledger exactly as the ordinary runner does, admits the permit's
+    canary through `FleetMaintenance.admit_maintenance_canary` (whose `FleetRefused` propagates with
+    nothing launched) and runs that one claimed job through `FleetRunner.run_preclaimed` with the same
+    launcher, lane isolation and finalization. It never admits anything else, never resumes the
+    Fleet and never retries: a replay after an admission is `maintenance_already_used`."""
+
+    def __init__(self, registry, maintenance, admission, pause, launcher, *, sleep=time.sleep, interval: float = 5.0):
+        # DESIGN-s5 F: PR-3 held one `Fleet`; the target's executor holds the Fleet objects it drives.
+        self.fleet_registry, self.fleet_maintenance = registry, maintenance
+        self.fleet_admission, self.fleet_pause = admission, pause
+        self.launcher, self.sleep, self.interval = launcher, sleep, interval
+
+    def execute(self, maintenance_id: str, *, permit_sha256: str, proof: dict, max_wait_seconds: float) -> dict:
+        config = self.fleet_registry.registered()["config"]
+        try:
+            exhausted = bool(self.launcher.budget_exhausted(config["budget"]))
+        except Exception as exc:
+            # An unreadable ledger admits nothing (fail closed); no exception text leaves here.
+            raise FleetRefused("maintenance_admission_refused", "budget_unknown") from exc
+        admitted = self.fleet_maintenance.admit_maintenance_canary(maintenance_id, permit_sha256=permit_sha256,
+                                                                   proof=proof, budget_exhausted=exhausted)
+        runner = FleetRunner(self.fleet_registry, self.fleet_admission, self.fleet_pause, self.launcher,
+                             sleep=self.sleep, interval=self.interval)
+        summary = runner.run_preclaimed(admitted["job"], max_wait_seconds=max_wait_seconds)
+        try:
+            job_status = (self.fleet_maintenance.job(summary["job_id"]) or {}).get("status")
+        except Exception:
+            job_status = None  # unknown here; the lane reads the job again before it binds anything
+        return {"schema": EXECUTION_SCHEMA, "maintenance_id": maintenance_id, "job_id": summary["job_id"],
+                "admitted": True, "state": summary["state"], "job_status": job_status}

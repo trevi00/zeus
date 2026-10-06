@@ -5,7 +5,7 @@ Layer: application
 Context: coordination
 Owns: the Fleet bucket names and read-only views over them (no writes)
 Does not own: any write (the four Fleet objects own them)
-Entry points: registry, control, view, hold_key, repository_aliases, owner_handoff_view
+Entry points: registry, control, view, hold_key, repository_aliases, owner_handoff_view, open_permits, maintenance_debt, permit_job
 Contracts: INV-FLEET-001
 
 Moved from M7 `application/fleet.py` (SOURCE e38aa722) by the named split (DESIGN-s5 §F); the method
@@ -16,8 +16,15 @@ from __future__ import annotations
 
 import re
 
+from codex_harness.coordination.domain.fleet_maintenance import (
+    CLOSED,
+    FORWARD_CANDIDATE,
+    kind_of,
+    open_permit,
+)
 from codex_harness.coordination.domain.fleet_recovery import canonical_repositories
 from codex_harness.coordination.domain.operation import HANDOFF_SCHEMA
+from codex_harness.intake.domain.backlog import BUCKET_PLANS
 from codex_harness.kernel.errors import require
 
 BUCKET_REGISTRY, BUCKET_CONTROL, BUCKET_JOBS = "fleet_registry", "fleet_control", "fleet_jobs"
@@ -27,6 +34,11 @@ BUCKET_RECOVERY = "fleet_recovery_receipts"
 BUCKET_RELOCATION = "fleet_relocations"
 BUCKET_HOST_MIGRATION = "fleet_host_migrations"
 BUCKET_UNITS = "fleet_units"
+# INV-FLEET-001 maintenance amendment (INV-HOST-DELIVERY-MAINTENANCE-001): one durable one-job permit per
+# maintenance id; `granted` -> `admitted` -> `closed`, or `granted` -> `closed`.
+BUCKET_MAINTENANCE = "fleet_maintenance_admissions"
+# The owner-registered backlog plans, READ by the `forward_candidate` permit (`intake.domain.backlog`).
+BUCKET_BACKLOG_PLANS = BUCKET_PLANS
 # Control-row field naming the managed host activation that paused admission (`activation_gate`).
 ACTIVATION_HOLD = "activation_hold"
 CONTROL_KEY = "admission"
@@ -105,3 +117,27 @@ def repository_aliases(tx) -> dict:
     rows = tx.scan(BUCKET_RELOCATION) + tx.scan(BUCKET_HOST_MIGRATION)
     return canonical_repositories(row.get("repository_aliases") or {}
                                   for row in sorted(rows, key=lambda r: (r["recorded_at"], r["id"])))
+
+
+def permit_job(tx, permit: dict) -> dict | None:
+    """The one job a permit may admit: the canary's deterministic id, or for a `forward_candidate` the
+    job whose manifest digest the permit binds (the digest contains the operation id, so it is unique)."""
+    if kind_of(permit) != FORWARD_CANDIDATE:
+        return tx.get(BUCKET_JOBS, permit["job_id"])
+    return next((job for job in tx.scan(BUCKET_JOBS) if job.get("manifest_sha256") == permit["manifest_sha256"]), None)
+
+
+def open_permits(tx) -> list[str]:
+    """Maintenance ids whose control debt is unsettled: a permit not closed, or a closed one whose canary
+    job is still queued or reserving (`domain.fleet_maintenance.open_permit`). A fleet that never held a
+    permit scans one empty bucket and reads nothing else."""
+    open_ids = []
+    for row in tx.scan(BUCKET_MAINTENANCE):
+        job = permit_job(tx, row["permit"]) if row.get("state") == CLOSED else None
+        if open_permit(row, job):
+            open_ids.append(row["id"])
+    return sorted(open_ids)
+
+
+def maintenance_debt(tx) -> bool:
+    return bool(open_permits(tx))
