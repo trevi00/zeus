@@ -79,6 +79,10 @@ class World:
         self.effective = [str(self.dropdir / "10-a.conf")]
         self.docker = {"image_ls": [f"zeus-worker:tag1 {IMAGE}"], "fail": set()}
         self.env_file = str(self.srv / "secrets" / "zeus.env")
+        self.launcher = tmp / "usr" / "bin" / "python3"  # the managed unit's ExecStart argv[0]
+        self.launcher.parent.mkdir(parents=True)
+        self.launcher.write_bytes(b"launcher-bin")
+        self.version = "3.12.3 (main) [GCC]"
 
     def write_managed(self, revision=REV_M, **overrides):
         """The five recorded managed records in their observed shapes; none of them carries a plan id."""
@@ -116,6 +120,9 @@ class World:
         unit = argv[2]
         props = [a[2:] for a in argv[3:]]
         frag = str(self.fragment) if unit == UNIT else str(self.unit_dir / unit)
+        if unit == MANAGED:
+            return "".join(f"{p}={{ path={self.launcher} ; argv[]={self.launcher} -m zeus ; code=exited}}\n"
+                           for p in props if p == "ExecStart")
         table = {"FragmentPath": frag, "DropInPaths": " ".join(self.effective if unit == UNIT else []),
                  "ExecStart": f"{{ path={self.srv}/releases/{REV_A}/.venv/bin/python ; argv[]=x -m zeus ; stop_time=[now]; code=exited}}",
                  "EnvironmentFiles": f"{self.env_file} (ignore_errors=no)", "Id": unit, "ActiveState": "active",
@@ -128,6 +135,9 @@ class World:
         key = " ".join(argv[:3])
         if key in self.docker["fail"]:
             return subprocess.CompletedProcess(argv, 1, "", "boom")
+        if argv[0] == str(self.launcher):
+            assert argv[1:] == ["-c", "import sys;print(sys.version)"]
+            return ok(self.version + "\n")
         if argv[0] == "systemctl":
             if argv[1] == "show" and f"show:{argv[2]}" in self.docker["fail"]:
                 return subprocess.CompletedProcess(argv, 1, "", "boom")
@@ -463,3 +473,78 @@ def test_control5b_an_unresolved_payload_location_shape_stays_incomplete_and_no_
     del receipt["runtime_root"], receipt["module_root"]
     world.write_managed(**{"startup-receipt.json": receipt})
     assert "managed_payload:location" in world.collect()["incomplete"]
+
+
+def make_runtime_dir(base, rev=REV_M, files=None):
+    """The observed managed payload shape: runtime.json, runtime-files.json, pyproject.toml, uv.lock, src/; no .venv."""
+    base.mkdir(parents=True)
+    (base / "src").mkdir()
+    (base / "runtime.json").write_text(json.dumps({"revision": rev, "tree": "t", "built_at": "b"}))
+    for name, data in {"runtime-files.json": b"[1]", "uv.lock": b"lock", "pyproject.toml": b"proj", **(files or {})}.items():
+        (base / name).write_bytes(data)
+    return base
+
+
+def _runtime_dir_world(world):
+    base = make_runtime_dir(world.srv / "runtimes" / REV_M)
+    receipt = _read_managed(world, "startup-receipt.json")
+    receipt.update(runtime_root=str(base), module_root=str(base / "src"))
+    world.write_managed(**{"startup-receipt.json": receipt})
+    return base
+
+
+def test_shape1_the_runtime_dir_shape_binds_digests_and_the_launching_units_interpreter(world):
+    base = _runtime_dir_world(world)
+    record = world.collect()
+    facts = record["stable"]["managed_payload"]["releases"][str(base)]
+    assert facts["shape"] == "runtime_dir" and facts["runtime"] == {"revision": REV_M, "tree": "t", "built_at": "b"}
+    assert (facts["runtime_json_sha256"], facts["runtime_files_json_sha256"]) == (
+        sha((base / "runtime.json").read_bytes()), sha(b"[1]"))
+    assert (facts["uv_lock_sha256"], facts["pyproject_toml_sha256"]) == (sha(b"lock"), sha(b"proj"))
+    assert facts["interpreter_realpath"] == str(world.launcher) and facts["interpreter_sha256"] == sha(b"launcher-bin")
+    assert facts["interpreter_version"] == world.version
+    assert record["complete"] is True and record["incomplete"] == []
+
+
+@pytest.mark.parametrize("name,data", [("runtime-files.json", b"[2]"), ("uv.lock", b"lock2"), ("pyproject.toml", b"p2")])
+def test_shape2_changing_a_runtime_dir_file_changes_the_baseline(world, name, data):
+    base = _runtime_dir_world(world)
+    before = world.collect()
+    (base / name).write_bytes(data)
+    assert {**before, "at": ""} != {**world.collect(), "at": ""}
+
+
+def test_shape3_the_interpreter_identity_comes_from_the_unit_not_the_runtime_dir(world):
+    base = _runtime_dir_world(world)
+    (base / "src" / "python3").write_bytes(b"decoy")  # nothing inside the payload is a source of identity
+    before = world.collect()
+    world.launcher.write_bytes(b"launcher-2")
+    world.version = "3.13.0"
+    facts = world.collect()["stable"]["managed_payload"]["releases"][str(base)]
+    assert facts["interpreter_sha256"] == sha(b"launcher-2") and facts["interpreter_version"] == "3.13.0"
+    assert before["stable"]["managed_payload"]["releases"][str(base)]["interpreter_sha256"] == sha(b"launcher-bin")
+
+
+def test_shape3b_a_launcher_inside_the_payload_dir_or_a_failed_version_probe_is_incomplete(world):
+    base = _runtime_dir_world(world)
+    world.docker["fail"].add(f"{world.launcher} -c import sys;print(sys.version)")
+    record = world.collect()
+    assert f"payload:{base}:interpreter_version" in record["incomplete"]
+    world.docker["fail"].clear()
+    world.launcher = base / "src" / "python3"  # would execute code from the runtime dir: refused
+    world.launcher.write_bytes(b"x")
+    assert f"payload:{base}:launching_executable" in world.collect()["incomplete"]
+
+
+def test_shape4_a_directory_of_neither_shape_is_incomplete_naming_the_shape(world):
+    base = _runtime_dir_world(world)
+    (base / "uv.lock").unlink()
+    record = world.collect()
+    assert record["complete"] is False and f"managed_payload:shape:{base}" in record["incomplete"]
+    assert record["stable"]["managed_payload"]["releases"][str(base)]["shape"] == "unknown"
+
+
+def test_shape5_the_release_shape_is_unchanged_and_never_asks_the_launching_unit(world):
+    record = world.collect()
+    facts = record["stable"]["managed_payload"]["releases"][str(world.srv / "releases" / REV_M)]
+    assert "shape" not in facts and facts["interpreter_sha256"] == sha(b"py-bin") and record["complete"] is True

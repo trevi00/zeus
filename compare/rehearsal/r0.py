@@ -9,7 +9,10 @@ Rehearsal design R0 + plan RH-7 (critique #7: stable vs per-invocation fields). 
 - per release dir named by an ExecStart or WorkingDirectory, releases/current and every directory that carries the
   MANAGED payload (bound from the descriptor/startup receipt revision or a path field, even outside releases/current):
   runtime.json (revision, tree, built_at) and its sha256, pyvenv.cfg sha256, the zeus-harness dist-info RECORD sha256,
-  the interpreter realpath and the interpreter sha256;
+  the interpreter realpath and the interpreter sha256; a payload directory without a `.venv` that holds runtime.json,
+  runtime-files.json, uv.lock and src/ is the `runtime_dir` shape: the sha256 of those files and pyproject.toml, and the
+  executable identity of the LAUNCHING unit's ExecStart argv[0] (realpath, sha256, `sys.version`; nothing in the
+  payload directory is executed); a directory of neither shape is incomplete;
 - managed-fleet state ids (explicit per-record key allowlists) and the authoritative managed binding `managed.binding`
   (plan_id, descriptor_sha256, instance_id, revision) taken from the injected lane-status JSON row of the managed
   target and cross-checked against the startup receipt, controller state and heartbeat (RH-8 F3 final); the payload
@@ -55,6 +58,8 @@ MANAGED_STABLE = {
     "heartbeat.json": ("descriptor_sha256", "schema")}
 MANAGED_INVOCATION = {"startup-receipt.json": ("instance_id",), "controller-state.json": ("invocation_id",),
                       "heartbeat.json": ("instance_id",)}
+MANAGED_UNIT = "zeus-aibox-managed-fleet.service"
+RUNTIME_DIR_FILES = ("runtime.json", "runtime-files.json", "uv.lock")
 BINDING_FIELDS = ("plan_id", "descriptor_sha256", "instance_id", "revision")
 IMAGE_LINE = re.compile(r"^(\S+) (sha256:[0-9a-f]{64})$")
 ENV_NAME = re.compile(r"\.(env|environment)$")
@@ -204,6 +209,45 @@ class Recorder:
 
     # -- the managed payload --
 
+    def payload_facts(self, location: str) -> dict:
+        """The release shape (`.venv`) is bound by `release_facts`; the runtime-dir shape (runtime.json +
+        runtime-files.json + uv.lock + src/, no `.venv`) by `runtime_dir_facts`; any other shape is incomplete."""
+        if os.path.isdir(os.path.join(location, ".venv")):
+            return self.release_facts(location)
+        if all(os.path.isfile(os.path.join(location, n)) for n in RUNTIME_DIR_FILES) and os.path.isdir(
+                os.path.join(location, "src")):
+            return self.runtime_dir_facts(location)
+        self.miss(f"managed_payload:shape:{location}")
+        return {"dir": location, "shape": "unknown"}
+
+    def runtime_dir_facts(self, location: str) -> dict:
+        facts = {"dir": location, "shape": "runtime_dir"}
+        name = f"payload:{location}"
+        try:
+            with open(os.path.join(location, "runtime.json")) as fh:
+                rt = json.load(fh)
+            facts["runtime"] = {k: rt.get(k) for k in ("revision", "tree", "built_at")}
+        except (OSError, ValueError, AttributeError) as exc:
+            self.miss(f"{name}:runtime.json")
+            facts["runtime"] = f"unreadable:{type(exc).__name__}"
+        for fname in (*RUNTIME_DIR_FILES, "pyproject.toml"):
+            facts[fname.replace(".", "_").replace("-", "_") + "_sha256"] = self.sha(
+                f"{name}:{fname}", os.path.join(location, fname))
+        # the executable is the LAUNCHING unit's ExecStart argv[0], never anything inside the payload directory
+        exec_start = self.show(MANAGED_UNIT, ("ExecStart",)).get("ExecStart", "")
+        hit = re.search(r"argv\[\]=(\S+)", exec_start) or re.search(r"path=(\S+)", exec_start)
+        argv0 = hit.group(1) if hit else ""
+        real = os.path.realpath(argv0) if argv0.startswith("/") else ""
+        if not real or real == os.path.realpath(location) or real.startswith(os.path.realpath(location) + os.sep):
+            self.miss(f"{name}:launching_executable")
+            facts["interpreter_realpath"] = real or None
+            return facts
+        facts["interpreter_realpath"] = real
+        facts["interpreter_sha256"] = self.sha(f"{name}:interpreter", real)
+        facts["interpreter_version"] = self.cmd(f"{name}:interpreter_version", real, "-c",
+                                                "import sys;print(sys.version)").strip()
+        return facts
+
     def lane_target(self, target_id) -> dict:
         """The AUTHORITATIVE lane-status row of the managed target (the plan id lives only there); {} when the status
         is unreadable, the target is unknown or ambiguous. Never inferred from a revision."""
@@ -303,7 +347,7 @@ class Recorder:
         locations = self.payload_location(receipt) if receipt else set()
         payload = {}
         for location in sorted(locations):
-            facts = self.release_facts(location)
+            facts = self.payload_facts(location)
             payload[location] = facts
             runtime = facts.get("runtime")
             if isinstance(runtime, dict) and revisions and runtime.get("revision") not in revisions:
