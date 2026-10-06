@@ -2934,6 +2934,12 @@ and emits nothing, and a switch with `consumed: false` is never read as an activ
 status is a durable-record projection: it is never evidence of a qualified live host, a passed owner
 canary or a semantically accepted release.
 
+ACTIVE stays terminal to automatic selection. The only change of an active delivery's executing
+generation is INV-HOST-DELIVERY-MAINTENANCE-001 (an explicit owner operation on the same descriptor), and
+while a maintenance generation is open or failed its target is held for every other delivery and effect:
+selection, the tick's gate and queue handling, advance, switch preparation, registration, migration
+staging and the recoveries.
+
 ## INV-HOST-DELIVERY-VERIFY-001
 
 Host delivery drives the ONE existing incumbent evaluator before publication; it adds no evaluator,
@@ -3948,17 +3954,6 @@ no current descriptor to be unchanged from.
     - While it is owed, owner discovery holds `canary_recovery_owed` and never creates a second canary for the plan.
 ## INV-HOST-DELIVERY-MAINTENANCE-001
 
-**This release (ALL-PRIMARY-20260930): the `restart` phase only.** The normative operation below keeps all three
-phases. This release implements `restart`, the ReleaseQueue maintenance hold, the target hold and guards, the
-status projection and the read-only Fleet `maintenance_readiness` (`codex_harness.coordination.application.fleet.pause.FleetPause`: registered, owner-paused with no activation
-hold, no reserving job, no held unit; no maintenance permit can exist, so `open_permits` is always empty).
-`arm`, `bind`, the Fleet one-job maintenance admission (`fleet_maintenance_admissions`, the executor) and the
-pinned credential-observation port are PR-3's named remainder: the CLI accepts `--phase restart` only, and the use
-case refuses `arm`/`bind` with `maintenance_phase(phase)` before anything. A restarted generation therefore stays
-open (`started`, not re-qualified) and keeps holding its target; the Fleet stays owner-paused until the remainder
-is reviewed and run. The operator binds the new generation's PRIMARY selection booleans to the recorded
-invocation, instance and process identities outside the product record.
-
 Active-generation maintenance is an explicit, evidence-bound owner operation on an ACTIVE, consumed
 `managed_fleet_systemd` delivery. It changes only the executing generation of the exact active descriptor.
 It neither publishes/promotes a release nor changes the descriptor revision, tree, image, profile,
@@ -4141,13 +4136,12 @@ rule (`DeliveryState.predecessor`) reports another open maintenance as `in_fligh
 unchanged when no intent carries `generations`.
 
 **DEPLOYMENT PRECONDITION**: the PR-3 HostDelivery controller must be deployed before any maintenance. A
-mixed old controller running beside it is unsupported: an old controller accepts a competing plan on a held
-target (tests prove it on the started shape) and, on the armed shape of the remainder, mutates the intent on a
-refused gate or a missing queue row. No runtime probe of another controller's code exists (it would need tick
-writes).
+mixed old controller running beside it is unsupported: the old controller's `_act` (`DeliveryController._act` here) still mutates an intent on a refused
+gate or a missing queue row, which tests prove on the armed shape. No runtime probe of another controller's
+code exists (it would need tick writes).
 
-**CLI**: `zeus host-delivery maintain --lane <id> --phase restart --document FILE --evidence sha256:...
-[--check]` (`arm|bind` in the remainder), as the service user with the normal accepted in-process secret loader; no sudo, no
+**CLI**: `zeus host-delivery maintain --lane <id> --phase restart|arm|bind --document FILE --evidence
+sha256:... [--check]`, as the service user with the normal accepted in-process secret loader; no sudo, no
 DSN in output, no token argument. With `--check` every refusal is RETURNED (`applicable: false`), nothing
 is held, put, written, granted, admitted, executed or started, and no provider is probed; it is not a
 reservation. The result (`urn:zeus:host-delivery-maintenance:1`) is a typed allowlist: maintenance id,
@@ -4177,18 +4171,33 @@ Adapters: the host target's typed restart authority is `restarts=` of `HostTarge
 (`codex_harness.delivery.adapters.host_delivery`) and the managed generation observation, the owner target snapshot and the
 launch request bound to the restart's own `requested_at` are `SystemdManagedFleetTarget` /
 `ManagedFleetTarget` (`codex_harness.delivery.adapters.managed_runtime`; its `/proc` reader is injected by
-`codex_harness.composition.delivery_hosts.process_reader`). The trusted authority reader, the lazy artifact store and the
-control owner-action reader are `codex_harness.delivery.adapters.maintenance_evidence`. The CLI parser and body are
+`codex_harness.composition.delivery_hosts.process_reader`). The trusted authority reader, the lazy artifact store, the control
+owner-action reader, the pinned credential observer (`CredentialObserver`, `credential_observer`), the qualification deadline
+(`qualification_deadline`) and the lazy canary executor (`LazyCanaryExecutor`) are `codex_harness.delivery.adapters.maintenance_evidence`;
+the observer's `/proc` reader and the executor's launcher and executor constructors are injected by composition. The use case is
+`DeliveryMaintenance` (`codex_harness.delivery.application.host_delivery.maintenance`: `maintain`, `maintain_restart`, `maintain_arm`,
+`maintain_bind`); delivery imports no coordination, so the owner-action identities are `canary_action_id` / `canary_job_id` of
+`codex_harness.delivery.domain.maintenance` (the derivations of `coordination.domain.owner_actions`, which the Fleet's permit
+validation re-derives and refuses on a mismatch), a Fleet refusal is recognised by its fixed `reason_code`, and the
+`MaintenanceFleet` port (`codex_harness.delivery.ports`) is one object over `FleetPause` (readiness) and `FleetMaintenance` (permit and
+job reads, `grant_maintenance_canary` / `close_maintenance_canary`) built by `maintenance_fleet` of
+`codex_harness.composition.cli_host_delivery`, whose `MaintenanceCanaryExecutor` (`codex_harness.coordination.application.fleet.runner`) is
+the `canary_executor` port. The credential helper path, its pinned digest and the qualification bound are read from the invocation's own
+process environment only (`_invocation_environment`: exactly `ZEUS_MAINTENANCE_CREDENTIAL_HELPER`, `ZEUS_MAINTENANCE_CREDENTIAL_HELPER_SHA256` and
+`ZEUS_MAINTENANCE_QUALIFICATION_DEADLINE`), never from the persisted configuration file. The CLI parser and body are
 `codex_harness.entry.cli.host_delivery` and its coordinator is `maintenance_controller` of
 `codex_harness.composition.cli_host_delivery`.
 
 Tests: tests/ported/test_host_delivery_maintenance_domain.py, tests/ported/test_host_delivery_maintenance.py,
 tests/ported/test_host_delivery_maintenance_guards.py, tests/ported/test_release_queue_maintenance.py,
-tests/ported/test_fleet_maintenance_readiness.py, tests/ported/test_host_delivery_maintenance_adapter.py,
+tests/ported/test_fleet_maintenance.py, tests/ported/test_fleet_maintenance_runner.py,
+tests/ported/test_fleet_maintenance_readiness.py, tests/ported/test_fleet_maintenance_postgres.py,
+tests/ported/test_host_delivery_maintenance_adapter.py,
 tests/ported/test_maintenance_evidence.py, tests/ported/test_host_delivery_maintenance_cli.py and
 tests/ported/test_host_delivery_maintenance_e2e.py (helper: tests/ported/host_delivery_maintenance_fixtures.py). The
-PostgreSQL-gated tests skip without `HARNESS_INTEGRATION=1`; a skip is not evidence. Hosts and systemd are
-labelled fakes there; the Fleet is the real one over an in-memory control store.
+PostgreSQL-gated tests skip without `HARNESS_INTEGRATION=1`; a skip is not evidence. Hosts, systemd, the
+credential helper and the launcher of the canary executor are labelled fakes there; the Fleet is the real one
+over an in-memory control store.
 
 ## INV-HOST-DELIVERY-MIGRATION-001
 
@@ -4472,7 +4481,10 @@ another release revision of the same host. It never rewrites the intent.
    The consumption and canary provenance the observer checks is defined by INV-HOST-DELIVERY-001
    (descriptor delivery and its consumption verdict), INV-HOST-DELIVERY-FIRST-ACTIVATION-001
    (descriptor resolution on a target's first activation) and INV-OWNER-ACTIONS-001 (the owner
-   canary hand-off). This contract cites them and does not amend their semantics.
+   canary hand-off). This contract cites them and does not amend their semantics. The PR-2 observer
+   predicates are unchanged by INV-HOST-DELIVERY-MAINTENANCE-001: during an open maintenance they refuse
+   (`instance_binding` while the new generation only started, `delivery_not_active` while it is armed)
+   and they accept the new instance only after it is bound.
 4. `activation-switch` writes `host-activation.json`, then replaces `releases/current` (a fresh
    temporary symlink renamed over it, then a directory fsync; only its own temporary link is ever
    removed).
@@ -4750,6 +4762,11 @@ existing owners: `Continuation.accept_research`, the guarded `decide_one` of the
   writes `managed-launch.json` and runs `systemctl start` of that unit. The unit's `supervise`
   re-validates request, target, descriptor, sealed manifest, stop request, previous-instance liveness and
   the Fleet activation gate before the incumbent `launch`.
+- An armed active-generation maintenance (INV-HOST-DELIVERY-MAINTENANCE-001: the intent
+  `awaiting_consumption` with the NEW candidate instance) is discovered by the UNCHANGED
+  `OwnerActionScheduler._discover` and `CanaryFamily.canary_binding` / `.advance` as a new instance-bound `delivery_canary` action and its
+  fixed job; the old completed action and job are untouched. Its queued job runs only through the Fleet's
+  one-use maintenance admission (INV-FLEET-001 amendment), never through a general resume.
 
 Tests: tests/ported/test_owner_actions.py, tests/ported/test_owner_delivery.py, tests/ported/test_owner_canary_plan.py,
 tests/ported/test_managed_systemd.py, tests/ported/test_owner_actions_recovery.py (the two-family chain on one lane
