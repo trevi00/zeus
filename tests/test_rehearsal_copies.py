@@ -347,7 +347,8 @@ def test_the_copy_redis_inventory_equals_the_source_aof_inventory(world):
     assert world.source_inventory["keys"] == 9 and set(world.source_inventory["types"]) == {
         "string", "hash", "list", "set", "zset", "stream"}  # the seeded data, so equality is not vacuous
     assert inventory == world.source_inventory
-    assert world.source_inventory["streams"] == {"rh:stream:*": {"keys": 3, "entries": 7}}
+    assert world.source_inventory["streams"] == {  # the seeded streams: 1+1+5 entries, and the hex-id key
+        "rh:other:*": {"keys": 1, "entries": 1}, "rh:stream:*": {"keys": 3, "entries": 7}}
     # this copy runs over its OWN working copy of the AOF, not the source's directory
     assert (world.root / "S" / "redis" / "appendonlydir").is_dir()
     assert (world.root / "S" / "redis") != (world.dst.source / "redis")
@@ -395,11 +396,12 @@ def test_the_sweep_leaves_no_labelled_container_and_no_root_and_spares_a_one_lab
     control = f"zeus-test-fixture-rh-{run8}-ctl-redis"  # the run's own naming, but only the fixture label
     argv = cp.run_argv(control, image=cp.REDIS_IMAGE, labels=[guard.FIXTURE_LABEL, f"{cp.OWNER_KEY}=ctl"], mounts=[],
                        uid=os.getuid(), gid=os.getgid(), memory="256m",
-                       command=["redis-server", "--port", "0", "--save", ""])
+                       command=["redis-server", "--port", "0", "--unixsocket", "/tmp/c.sock", "--save", ""])
     started = cp.guarded_docker(argv, root=world.root)
     assert started.returncode == 0, started.stderr
     control_id = started.stdout.strip()
     try:
+        assert cp.guarded_docker(["inspect", "--format", "{{.Id}}", control]).stdout.strip() == control_id
         before = _labelled_ids(run8)
         assert len(before) == 2 and control_id not in " ".join(before)  # listing needs the rehearsal label
         result = sweep(run8, world.root)
