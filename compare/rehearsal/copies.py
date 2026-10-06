@@ -19,6 +19,7 @@ import importlib.util
 import os
 import re
 import shutil
+import stat
 import subprocess
 import sys
 import time
@@ -145,6 +146,30 @@ def catalog_sha256(socket: Path, database: str) -> str:
     return catalog_digest(pg_catalog(pg_dsn(socket, database), database))
 
 
+def create_root(root: Path, run8: str) -> None:
+    """Create ROOT itself, exclusively and umask-proof 0700, with the run marker (RH-8 F4); its parent may be created."""
+    root = Path(root)
+    root.parent.mkdir(parents=True, exist_ok=True)
+    os.mkdir(root, 0o700)  # exclusive: FileExistsError if anything (even a symlink) is already there
+    os.chmod(root, 0o700)  # the umask may have cleared bits mkdir would otherwise keep
+    marker = os.open(root / MARKER, os.O_WRONLY | os.O_CREAT | os.O_EXCL, 0o600)
+    with os.fdopen(marker, "w", encoding="ascii") as handle:
+        handle.write(run8 + "\n")
+
+
+def verify_root(root: Path) -> None:
+    """Refuse (before any acquisition) a ROOT that is not a real directory owned by this uid with mode exactly 0700."""
+    info = os.lstat(root)
+    if stat.S_ISLNK(info.st_mode):
+        raise Refused("root_symlink", "the rehearsal root is a symlink")
+    if not stat.S_ISDIR(info.st_mode):
+        raise Refused("root_not_directory", "the rehearsal root is not a directory")
+    if info.st_uid != os.getuid():
+        raise Refused("root_foreign_owner", "the rehearsal root is owned by another uid")
+    if stat.S_IMODE(info.st_mode) != 0o700:
+        raise Refused("root_mode", f"the rehearsal root mode is {stat.S_IMODE(info.st_mode):04o}, not 0700")
+
+
 @dataclass(frozen=True)
 class Copy:
     copy: str
@@ -169,14 +194,20 @@ class Copies:
                 "zeus.rebuild=rehearsal", f"{OWNER_KEY}={owner}"]
 
     def prepare_root(self) -> None:
-        self.root.mkdir(parents=True, exist_ok=True)
-        marker = self.root / MARKER
-        if marker.exists():
-            if marker.read_text(encoding="ascii").strip() != self.run8:
-                raise Refused("root_foreign", "the root belongs to another run")
+        """Create ROOT exclusively as 0700 (RH-8 F4), or attach to an existing owner-only run root; never adopt a
+        permissive, symlinked or foreign one."""
+        if os.path.lexists(self.root):
+            verify_root(self.root)
+            marker = self.root / MARKER
+            if marker.exists():
+                if marker.read_text(encoding="ascii").strip() != self.run8:
+                    raise Refused("root_foreign", "the root belongs to another run")
+            else:
+                marker.write_text(self.run8 + "\n", encoding="ascii")
         else:
-            marker.write_text(self.run8 + "\n", encoding="ascii")
+            create_root(self.root, self.run8)
         self.source.mkdir(exist_ok=True)
+        self.source.chmod(0o700)
 
     def _require_image(self, image: str) -> None:
         found = self.docker("image", "inspect", "--format", "{{.Id}}", image)

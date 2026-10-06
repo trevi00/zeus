@@ -243,6 +243,65 @@ def test_the_sweep_removes_only_a_root_this_run_marked(tmp_path):
     assert sweep(RUN8, mine, docker=FakeDocker())["root_removed"] is True  # already gone: still proven absent
 
 
+# ---- RH-8 F4: ROOT itself is a private 0700 directory (source: FLEET-RH8-REVIEW.md F4 "Verification") ----
+
+def _mode(path):
+    return os.lstat(path).st_mode & 0o777
+
+
+def test_root_is_created_0700_under_a_022_umask_and_continuation_is_supported(tmp_path):
+    old = os.umask(0o022)
+    try:
+        root = tmp_path / "parent" / "r"
+        copies = cp.Copies(RUN8, root, docker=FakeDocker())
+        copies.prepare_root()
+        assert _mode(root) == 0o700 and _mode(copies.source) == 0o700
+        assert (root / cp.MARKER).read_text().strip() == RUN8
+        copies.prepare_root()  # an existing safe owned root: continuation still works
+        assert _mode(root) == 0o700
+    finally:
+        os.umask(old)
+
+
+@pytest.mark.parametrize("kind,code", [("permissive", "root_mode"), ("symlink", "root_symlink"),
+                                       ("file", "root_not_directory")])
+def test_an_unsafe_pre_existing_root_is_refused_before_any_effect(tmp_path, kind, code):
+    root, real = tmp_path / "r", tmp_path / "real"
+    real.mkdir()
+    if kind == "permissive":
+        root.mkdir()
+        root.chmod(0o755)
+    elif kind == "symlink":
+        os.symlink(real, root)
+    else:
+        root.write_text("x")
+    fake = FakeDocker()
+    with pytest.raises(Refused) as caught:
+        cp.Copies(RUN8, root, docker=fake).start("S")
+    assert caught.value.code == code and fake.calls == []
+    assert not (real / cp.MARKER).exists() and not (real / "p").exists()  # nothing was adopted through the link
+    if kind == "permissive":
+        assert not (root / cp.MARKER).exists() and not (root / "p").exists()
+
+
+def test_a_root_owned_by_another_uid_is_refused(tmp_path, monkeypatch):
+    root = tmp_path / "r"
+    root.mkdir(mode=0o700)
+    real_uid = os.getuid()
+    monkeypatch.setattr(cp.os, "getuid", lambda: real_uid + 1)
+    with pytest.raises(Refused) as caught:
+        cp.Copies(RUN8, root, docker=FakeDocker()).prepare_root()
+    assert caught.value.code == "root_foreign_owner" and not (root / cp.MARKER).exists()
+
+
+def test_a_root_marked_for_another_run_is_still_refused(tmp_path):
+    root = tmp_path / "r"
+    cp.create_root(root, SRC8)
+    with pytest.raises(Refused) as caught:
+        cp.Copies(RUN8, root, docker=FakeDocker()).prepare_root()
+    assert caught.value.code == "root_foreign"
+
+
 # ---- real Docker (ZEUS_TEST_DOCKER=1): copies, restore, inventory, sweep ----
 
 DATABASE = "rhdb"
