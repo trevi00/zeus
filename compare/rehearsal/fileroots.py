@@ -218,11 +218,15 @@ def secret_names(scan_paths) -> list:
 
 
 def _escapes(link_rel: str, target: str) -> bool:
-    """True when the target is absolute or, normalised lexically from the link's directory, leaves the link's top."""
+    """True when the target is absolute or, normalised lexically from the link's directory, leaves the STABLE ROOT that
+    contains the link (D8; as `aibox_data.inventory` judges it: relative to the scanned root). A link inside no stable
+    root escapes, so the second `check` predicts P5's per-root refusal."""
     if target.startswith("/"):
         return True
+    top = next((rel for _id, rel in STABLE_ROOTS if _inside(link_rel, rel) and link_rel != rel), None)
+    if top is None:
+        return True
     joined = os.path.normpath(os.path.join(os.path.dirname(link_rel), target))
-    top = link_rel.split("/")[0]
     return not (joined == top or joined.startswith(top + "/"))
 
 

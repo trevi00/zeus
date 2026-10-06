@@ -215,6 +215,28 @@ def test_a_relative_link_inside_its_top_is_counted_but_needs_no_allowance(srv):
     assert fr.symlink_facts(srv)["total"] == 2
 
 
+@pytest.mark.parametrize("rel,target", [
+    ("runtime/lanes/harness/escape-to-control", "../../control/fleet-owner.json"),  # inside `runtime`, outside the root
+    ("runtime/control/observations/health/alias.json", "h.json"),  # inside no stable root (D8)
+])
+def test_a_link_leaving_its_stable_root_or_in_none_refuses_even_when_relative(srv, rel, target):
+    """D8: a link is judged against the containing stable root (as aibox_data's inventory does), not the top."""
+    (srv / rel).symlink_to(target)
+    with pytest.raises(Refused) as caught:
+        fr.symlink_facts(srv)
+    assert caught.value.code == "external_symlink_unallowed"
+
+
+def test_venv_internal_relative_links_in_a_lanes_venv_pass(srv):
+    venv = srv / "runtime/lanes/harness/workspaces/w1/.venv"
+    (venv / "bin").mkdir(parents=True)
+    (venv / "lib").mkdir()
+    (venv / "bin/python3").symlink_to("python")
+    (venv / "lib64").symlink_to("lib")
+    facts = fr.symlink_facts(srv)
+    assert (facts["total"], facts["allowed"]) == (3, 1)  # the canary link plus two internal links
+
+
 def test_the_allowance_target_lies_under_the_uv_python_directory_the_namespace_binds():
     assert fr.SYMLINK_ALLOWANCE[0]["target"].startswith(uv_python_dir() + "/")
 
