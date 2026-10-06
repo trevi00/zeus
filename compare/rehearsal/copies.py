@@ -14,6 +14,7 @@ only `pg_restore` runs through `docker exec` (the guard's PGEXEC opt-in). Catalo
 
 from __future__ import annotations
 
+import hashlib
 import importlib.util
 import os
 import re
@@ -311,3 +312,65 @@ class Copies:
 
     def redis_inventory(self, copy: str) -> dict:
         return redis_inventory(self.copies[copy].redis_socket / "redis.sock")
+
+
+# Critique #5: the live roots are written continuously, so a sealed whole-tree copy would refuse; these paths are copied
+# as point-in-time single-file snapshots instead. Names beyond the critique's three are placeholders for RH-2 to confirm.
+VOLATILE_PATHS = ("runtime/control/observations/health", "runtime/monitoring.json", "managed-fleet/heartbeat")
+EXCLUDED_PATHS = ("runtime/tokobs",)  # the tokobs collector's ledger is not Zeus state
+
+
+def _rel_parts(rel: str) -> tuple[str, ...]:
+    parts = tuple(p for p in rel.split("/") if p)
+    if not parts or ".." in parts or rel.startswith("/"):
+        raise Refused("volatile_path_bad", rel)
+    return parts
+
+
+def snapshot_volatile(source: Path, dest: Path, volatile=VOLATILE_PATHS, excluded=EXCLUDED_PATHS) -> dict:
+    """Copy each declared volatile file (or the regular files of a declared directory) from `source` to `dest` once,
+    reading it a single time so the recorded size/mtime/sha256 describe exactly the bytes written; the copy is a new
+    inode, so a later change on either side never reaches the other. Symlinks and excluded paths are refused/skipped."""
+    source, dest = Path(source), Path(dest)
+    excl = [_rel_parts(e) for e in excluded]
+    files, skipped = [], []
+    for rel in volatile:
+        parts = _rel_parts(rel)
+        if any(parts[: len(e)] == e or e[: len(parts)] == parts for e in excl):
+            raise Refused("volatile_excluded", rel)
+        base = source.joinpath(*parts)
+        if any(source.joinpath(*parts[: i + 1]).is_symlink() for i in range(len(parts))):
+            raise Refused("volatile_symlink", rel)
+        if base.is_dir():
+            files += [(rel_file, f) for rel_file, f in _walk(source, base)]
+        elif base.is_file():
+            files.append((rel, base))
+        else:
+            skipped.append(rel)
+    entries = []
+    for rel, path in sorted(files):
+        if any(tuple(rel.split("/"))[: len(e)] == e for e in excl):
+            skipped.append(rel)
+            continue
+        before = path.stat()
+        data = path.read_bytes()
+        read_at = time.time_ns()
+        target = dest.joinpath(*rel.split("/"))
+        target.parent.mkdir(parents=True, exist_ok=True)
+        with open(target, "xb") as handle:
+            handle.write(data)
+        entries.append({"path": rel, "size": len(data), "mtime_ns": before.st_mtime_ns, "read_at_ns": read_at,
+                        "sha256": hashlib.sha256(data).hexdigest()})
+    reads = [e["read_at_ns"] for e in entries]
+    return {"files": entries, "skipped": sorted(set(skipped)), "excluded": list(excluded),
+            "skew_ns": (max(reads) - min(reads)) if reads else 0}
+
+
+def _walk(source: Path, base: Path):
+    for dirpath, dirnames, filenames in os.walk(base, followlinks=False):
+        dirnames[:] = sorted(d for d in dirnames if not (Path(dirpath) / d).is_symlink())
+        for name in sorted(filenames):
+            full = Path(dirpath) / name
+            if full.is_symlink():
+                raise Refused("volatile_symlink", name)
+            yield full.relative_to(source).as_posix(), full

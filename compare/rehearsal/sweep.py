@@ -7,7 +7,9 @@ pattern alone never selects anything, and a production name is refused even when
 
 from __future__ import annotations
 
+import os
 import shutil
+import stat
 from pathlib import Path
 
 from . import Refused, check_run8
@@ -26,6 +28,17 @@ def _list(docker, run8: str, field: str) -> list[str]:
     if done.returncode != 0:
         raise RuntimeError("labelled container listing failed: " + done.stderr.strip()[-300:])
     return [line for line in done.stdout.split() if line]
+
+
+def open_dirs(root: Path) -> None:
+    """An overlay work dir that a namespace run leaves is mode 000 (`d---------`); make every directory under the root
+    owner-accessible (symlinks are never followed) so `rmtree` can remove it."""
+    for dirpath, dirnames, _ in os.walk(root, followlinks=False):
+        for name in [".", *dirnames]:
+            path = os.path.join(dirpath, name)
+            if not os.path.islink(path) and (os.lstat(path).st_mode & 0o700) != 0o700:
+                os.chmod(path, stat.S_IMODE(os.lstat(path).st_mode) | 0o700)
+        dirnames[:] = [d for d in dirnames if not os.path.islink(os.path.join(dirpath, d))]
 
 
 def sweep(run8: str, root: Path | None = None, *, docker=None) -> dict:
@@ -54,6 +67,7 @@ def sweep(run8: str, root: Path | None = None, *, docker=None) -> dict:
         if root.exists():
             if root.is_symlink() or not marker.is_file() or marker.read_text(encoding="ascii").strip() != run8:
                 raise Refused("root_not_owned", "the directory is not this run's rehearsal root")
+            open_dirs(root)
             shutil.rmtree(root)
         if root.exists():
             raise RuntimeError("the rehearsal root is still present after removal")
