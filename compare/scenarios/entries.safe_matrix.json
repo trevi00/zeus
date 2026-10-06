@@ -135,7 +135,7 @@
     "stderr_last_line": [
      "ModuleNotFoundError: No module named 'codex_harness.container_main'"
     ],
-    "stderr_sha256": "0f94f333c5c4f2d7524483e9237e450a8e6ee4c082ed589537554fa07c2fbb9f",
+    "stderr_sha256": "e71a5b079ccdf89e429a8057078c891034de41767fff7a5a425bf246a0a4fa10",
     "stdout": "",
     "stdout_bytes": 0,
     "stdout_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"

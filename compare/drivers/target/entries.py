@@ -63,6 +63,19 @@ def sha(data: bytes) -> str:
     return hashlib.sha256(data).hexdigest()
 
 
+TRACEBACK = "Traceback (most recent call last):"
+
+
+def collapse_traceback(text: str) -> str:
+    """A Python traceback's frames name the interpreter's own files and line numbers, which differ by version and install
+    path (int61 CI 37401999157: CPython 3.12.14 on the runner vs 3.13.15 on aibox), so only its exception line is an
+    observable of the entry. No row that compares equal carries a traceback (it would already differ across versions);
+    the one target row that does is the declared U6(b) retirement (owner, S11 unit P)."""
+    if TRACEBACK not in text:
+        return text
+    return "<traceback>\n" + text.rstrip("\n").splitlines()[-1] + "\n"
+
+
 class Runner:
     def __init__(self, work: Path):
         self.work = work
@@ -83,7 +96,7 @@ class Runner:
                "exit": proc.returncode,
                "stdout_sha256": sha(self.text(proc.stdout).encode()),
                "stdout_bytes": len(proc.stdout),
-               "stderr_sha256": sha(self.text(proc.stderr).encode()),
+               "stderr_sha256": sha(collapse_traceback(self.text(proc.stderr)).encode()),
                "stderr_last_line": self.text(proc.stderr).strip().splitlines()[-1:]}
         if keep_stdout:
             row["stdout"] = self.text(proc.stdout)
