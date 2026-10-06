@@ -54,8 +54,10 @@ def test_the_catalog_owners_are_the_target_owned_buckets_and_every_owned_bucket_
     assert len(owned) == 185
     assert {b: row["owner"] for b, row in catalog["buckets"].items() if "amd1" not in row} == owned
     declared = {b for b, row in catalog["buckets"].items() if "amd1" in row}
-    assert declared == {"fleet_admission_permits"}  # the FA permit bucket (AMD-1 B) is the one bucket beyond OWNED_BUCKETS
+    # the FA permit bucket (AMD-1 B) and its PR-3 successor are the buckets beyond this checkout's OWNED_BUCKETS
+    assert declared == {"fleet_admission_permits", "fleet_maintenance_admissions"}
     assert catalog["buckets"]["fleet_admission_permits"]["amd1"] == "B"
+    assert catalog["buckets"]["fleet_maintenance_admissions"]["owner"] == "coordination"
 
 
 def test_the_s2r_shapes_and_the_fa_permit_bucket_are_listed_explicitly(catalog):
@@ -63,9 +65,10 @@ def test_the_s2r_shapes_and_the_fa_permit_bucket_are_listed_explicitly(catalog):
     assert shapes == {"intent `generations`", "maintenance rows", "release-queue maintenance scope `host_delivery_maintenance`"}
     assert {item["bucket"] for item in catalog["s2r"]} == {"host_delivery_intents", "release_queue"}
     assert catalog["buckets"]["host_delivery_intents"]["A"]["reader"].endswith(":maintenance_of")
-    # this tree has no S2R reader: B is `none` with the reason naming its unit, so the sweep fails here by design
-    assert catalog["buckets"]["host_delivery_intents"]["B"]["reader"] is None
-    assert "G1" in catalog["buckets"]["host_delivery_intents"]["B"]["reason"]
+    # the B tree (G1-13a) carries the S2R reader: the intent bucket's B entry is that reader, in the delivery context
+    assert catalog["buckets"]["host_delivery_intents"]["B"]["reader"] == "delivery/domain/host_delivery.py:maintenance_of"
+    assert all(item["B"].startswith(("delivery/domain/host_delivery.py:maintenance_of", "review/application/release_queue.py"))
+               for item in catalog["s2r"])
     assert catalog["buckets"]["fleet_admission_permits"]["B"]["reader"] is None
 
 
@@ -106,6 +109,44 @@ def test_a_malformed_catalog_is_refused(catalog, mutate):
     with pytest.raises(r4.Refused) as caught:
         r4.validate_catalog(broken)
     assert caught.value.code == "catalog_malformed"
+
+
+# ---- the cutover columns and the PR-3 bucket (RH-4c; AMD-1 errata E2/E6, reconciliation DD-19/DD-20) ----
+
+PINS = {"A": "bb579d558cd5902fa9d6493fad9b92ebd5be4b68", "B": "8be54d0a336bf0e8c7b609274ec1334e16468a37",
+        "1b9d746c": "1b9d746c52ab1a116beda5c72a23f86903aeb4f3", "ec8aa0a2": "ec8aa0a2947f964eeb94faed20cb6cf05e0681f6"}
+OLD_D = ["08bb9a44", "5aa220fd", "ced20281", "5c67f099"]
+
+
+def test_the_columns_are_the_cutover_pins_and_the_existing_d_columns_stay(catalog):
+    """The pinned revisions are the owner decisions (spec RH-4c item 1), not read back from the catalog's own output."""
+    trees = catalog["trees"]
+    assert trees["A"]["rev"] == PINS["A"] and "rebaseline entry 2" in trees["A"]["label"]
+    assert trees["B"]["rev"] == PINS["B"] and "final regeneration at CUT-INT on H" in trees["B"]["label"]
+    assert list(trees["D"]) == [*OLD_D, "1b9d746c", "ec8aa0a2"]
+    assert {n: trees["D"][n]["rev"] for n in ("1b9d746c", "ec8aa0a2")} == {n: PINS[n] for n in ("1b9d746c", "ec8aa0a2")}
+    assert all(t["root"] == "src/codex_harness" for t in [trees["A"], trees["B"], *trees["D"].values()])
+    for row in [*catalog["buckets"].values(), *catalog["redis"].values()]:
+        assert list(row["D"]) == [*OLD_D, "1b9d746c", "ec8aa0a2"]
+
+
+def test_the_pr3_bucket_has_a_reader_per_column_or_the_pr3_reason(catalog):
+    row = catalog["buckets"]["fleet_maintenance_admissions"]
+    assert row["owner"] == "coordination"
+    for column in OLD_D + ["ec8aa0a2"]:  # trees that predate PR-3 (or the stripped payload): no such bucket
+        assert row["D"][column] == {"reader": None, "reason": "bucket introduced by PR-3"}, column
+    assert row["A"] == {"reader": "domain/fleet_maintenance.py:permit_view", "call": "body"}  # bb579d55 carries it
+    assert row["D"]["1b9d746c"] == row["A"]
+    assert row["B"] == {"reader": "coordination/domain/fleet_maintenance.py:permit_view", "call": "body"}
+
+
+def test_the_scan_is_idempotent_and_refuses_a_citation_it_cannot_trace(catalog):
+    assert r4.regenerate(catalog) == catalog
+    older = copy.deepcopy(catalog)
+    older["trees"]["B"] = {"rev": None, "root": "src/codex_harness", "label": "this checkout"}  # force a re-scan of B
+    again = r4.regenerate(older)
+    assert again["buckets"]["host_delivery_intents"]["B"] == catalog["buckets"]["host_delivery_intents"]["B"]
+    assert r4.trace_entry({"reader": "domain/nope.py:missing", "call": "body"}, catalog["trees"]["A"])["reader"] is None
 
 
 # ---- coverage ----
@@ -368,3 +409,208 @@ def test_the_copy_is_unchanged_by_the_sweep(world):
     before = r3.snapshot(world.handle, DATABASE)
     _run(world, _mini())
     assert r3.snapshot(world.handle, DATABASE) == before
+
+
+# ---- the read-coverage map (RH-4c; reconciliation DD-19, critic #14 / AC7) ----
+# Expected results: PostgreSQL's `log_statement=all` format (`LOG:  execute <name>: <sql>` then `DETAIL:  Parameters:
+# $1 = '...'`; observed on the pinned PostgreSQL 17 image, earlier releases print `parameters:`) and the spec's rules:
+# typed / leaf-covered / uncovered, the parse fails closed on an unparseable records-table statement, and
+# `uncovered > 0` is never a pass.
+
+HEAD = "2026-10-06 12:00:00.123 UTC [77] "
+
+
+def _log(*entries):
+    """Entries are `(level, message)`; a message with newlines continues on tab-led lines like PostgreSQL's own."""
+    return "".join(HEAD + f"{level}:  " + message.replace("\n", "\n\t") + "\n" for level, message in entries)
+
+
+def test_the_log_parser_reads_the_bucket_of_a_parameterized_a_literal_and_a_multiline_statement():
+    text = _log(("LOG", "execute <unnamed>: SELECT body FROM documents WHERE bucket=$1 ORDER BY id"),
+                ("DETAIL", "Parameters: $1 = 'tasks'"),
+                ("LOG", "execute _pg3_0: SELECT body FROM lane_a.documents WHERE bucket=$1\nAND id=$2"),
+                ("DETAIL", "Parameters: $1 = 'events', $2 = 'it''s'"),
+                ("LOG", "statement: SELECT id FROM documents WHERE bucket = 'outbox'"),
+                ("LOG", "execute <unnamed>: SELECT 1"))
+    found = r4.parse_statement_log(text)
+    assert found["buckets"] == ["events", "outbox", "tasks"] and found["writes"] == 0 and found["all_buckets_reads"] == 0
+
+
+def test_the_lowercase_parameters_label_of_earlier_releases_is_read_too():
+    text = _log(("LOG", "execute <unnamed>: SELECT 1 FROM documents WHERE bucket=$1"), ("DETAIL", "parameters: $1 = 'tasks'"))
+    assert r4.parse_statement_log(text)["buckets"] == ["tasks"]
+
+
+def test_a_whole_table_read_covers_no_bucket_a_write_and_ddl_are_counted_apart_and_other_tables_are_ignored():
+    text = _log(("LOG", "execute <unnamed>: SELECT bucket,id,body FROM documents ORDER BY bucket,id"),
+                ("LOG", "execute <unnamed>: INSERT INTO documents(bucket,id,body) VALUES ($1,$2,$3)"),
+                ("DETAIL", "Parameters: $1 = 'tasks', $2 = 'x', $3 = '{}'"),
+                ("LOG", "statement: CREATE TABLE IF NOT EXISTS documents (bucket text)"),
+                ("LOG", "execute <unnamed>: SELECT 1 FROM information_schema.tables WHERE table_name = 'documents'"),
+                ("ERROR", "relation \"x\" does not exist"),
+                ("STATEMENT", "SELECT * FROM documents WHERE nothing"))
+    assert r4.parse_statement_log(text) == {"buckets": [], "all_buckets_reads": 1, "writes": 1, "ddl": 1, "statements": 4}
+
+
+@pytest.mark.parametrize("text", [
+    "this is not a log line\n",  # a corrupted line
+    _log(("LOG", "execute <unnamed>: SELECT body FROM documents WHERE bucket=$1")),  # parameters missing
+    _log(("LOG", "execute <unnamed>: SELECT body FROM documents WHERE bucket=$1"), ("DETAIL", "Parameters: $1 = tasks")),
+    _log(("LOG", "execute <unnamed>: SELECT body FROM documents WHERE bucket=$1"), ("DETAIL", "Parameters: $2 = 'x'")),
+    _log(("LOG", "execute <unnamed>: SELECT body FROM documents WHERE bucket=$1"), ("DETAIL", "Parameters: $1 = NULL")),
+    _log(("LOG", "execute <unnamed>: SELECT body FROM documents WHERE id=$1"), ("DETAIL", "Parameters: $1 = 'x'")),
+    _log(("LOG", "execute <unnamed>: SELECT body FROM documents WHERE bucket IN ($1,$2)"),
+         ("DETAIL", "Parameters: $1 = 'a', $2 = 'b'")),
+    _log(("LOG", "statement: COPY documents TO STDOUT")),
+])
+def test_an_unparseable_statement_on_the_records_table_fails_closed(text):
+    with pytest.raises(r4.LogUnparseable) as caught:
+        r4.parse_statement_log(text)
+    assert caught.value.code == "coverage_log_unparseable"
+    assert "tasks" not in caught.value.detail  # the failure names a class and a line, never log text
+
+
+def _map_catalog():
+    entry = {"reader": None, "reason": "fixture: no typed reader"}
+    return {"version": 1, "trees": {"A": {"rev": None, "root": "x"}, "B": {"rev": None, "root": "x"}, "D": {"d1": {}}},
+            "buckets": {"typed_z": {"owner": "f", "A": {"reader": "fx/r.py:read", "call": "body"}, "B": entry,
+                                    "D": {"d1": entry}},
+                        "read_x": {"owner": "f", "A": entry, "B": entry, "D": {"d1": entry}},
+                        "unread_y": {"owner": "f", "A": entry, "B": entry, "D": {"d1": entry}}},
+            "redis": {}}
+
+
+def test_the_map_classifies_typed_leaf_covered_and_uncovered_and_an_uncovered_bucket_is_never_a_pass():
+    result = r4.coverage_map(_map_catalog(), {"A": {"leaves": 1, "buckets": ["read_x", "typed_z"]}})
+    column = result["columns"]["A"]
+    assert (column["typed"], column["leaf_covered"], column["uncovered"]) == (1, 1, 1)
+    assert column["leaf_covered_buckets"] == ["read_x"]  # a typed bucket is `typed`, not also leaf-covered
+    assert column["uncovered_buckets"] == ["unread_y"] and column["observation"] == "observed"
+    assert result["columns"]["B"]["observation"] == "not_run" and result["columns"]["B"]["uncovered"] == 3
+    assert result["verdict"] == "uncovered" and "pass" not in json.dumps(result).lower()
+    full = r4.coverage_map({**_map_catalog(), "buckets": {"typed_z": _map_catalog()["buckets"]["typed_z"]}},
+                           {c: {"leaves": 1, "buckets": []} for c in ("A", "B", "d1")})
+    assert full["columns"]["A"]["uncovered"] == 0 and full["columns"]["B"]["uncovered"] == 1  # B has no typed reader
+    assert full["verdict"] == "uncovered"
+
+
+def test_the_committed_baseline_is_the_catalog_typed_counts_with_every_untyped_bucket_uncovered_provenance_check(catalog):
+    """STRUCTURAL (generated-file freshness): `r4-coverage.json` is exactly what `static_map` derives from the catalog."""
+    committed = json.loads(r4.COVERAGE.read_text(encoding="utf-8"))
+    assert committed == json.loads(json.dumps(r4.static_map(catalog)))
+    facts = committed["facts"]
+    assert facts["verdict"] == "not_observed" and facts["universe"] == len(catalog["buckets"]) == 187
+    assert facts["columns"]["B"]["typed"] == 14 and facts["columns"]["B"]["uncovered"] == 173  # 13 + the PR-3 bucket
+    assert all(c["observation"] == "not_run" and c["leaf_covered"] == 0 for c in facts["columns"].values())
+    assert set(facts["columns"]) == {"A", "B", *catalog["trees"]["D"]}
+
+
+# ---- the map over a real trace copy ----
+
+RUN8T = "e3a9c5d7"
+LEAF = r'''
+import json, os, sys
+import psycopg
+mode, arg = sys.argv[1], sys.argv[2]
+with psycopg.connect(os.environ["DSN"], connect_timeout=10) as conn:
+    if mode == "read":
+        conn.execute("SELECT id, body FROM lane_a.documents WHERE bucket = %s ORDER BY id", (arg,)).fetchall()
+    elif mode == "byid":
+        conn.execute("SELECT body FROM lane_a.documents WHERE id = %s", (arg,)).fetchall()
+    elif mode == "write":
+        conn.execute("INSERT INTO lane_a.documents VALUES (%s, 'w1', '{}') ON CONFLICT DO NOTHING", (arg,))
+print(json.dumps({"mode": mode}))
+'''
+
+
+@pytest.fixture(scope="module")
+def tworld(tmp_path_factory):
+    if not DOCKER:
+        pytest.skip("needs ZEUS_TEST_DOCKER=1 and ZEUS_TEST_DOCKER_PGEXEC=1")
+    import psycopg
+
+    w = World()
+    w.root, w.out = tmp_path_factory.mktemp("r4t"), tmp_path_factory.mktemp("r4tout")
+    w.copies = cp.Copies(RUN8T, w.root)
+    try:
+        w.handle = w.copies.start("S", trace=True)
+        with psycopg.connect(cp.pg_dsn(w.handle.pg_socket, DATABASE), autocommit=True) as conn:
+            conn.execute("CREATE SCHEMA lane_a")
+            conn.execute("CREATE TABLE lane_a.documents (bucket text NOT NULL, id text NOT NULL, body jsonb NOT NULL, "
+                         "PRIMARY KEY (bucket, id))")
+            for bucket in ("typed_z", "read_x", "unread_y"):
+                conn.execute("INSERT INTO lane_a.documents VALUES (%s, 'r1', '{\"n\": 1}')", (bucket,))
+        w.script = w.root / "leaf.py"
+        w.script.write_text(LEAF)
+        w.dsn = cp.pg_dsn(w.handle.pg_socket, DATABASE)
+        w.runs = 0
+        yield w
+    finally:
+        sweep(RUN8T, w.root)
+
+
+def _leaf(argv, revisions=("A",)):
+    return {"class": "read_only", "revisions": list(revisions), "argv": argv, "params": [], "cites": {}}
+
+
+def _trace_run(tworld, leaves, runner=r3.host_runner, catalog=None):
+    tworld.runs += 1
+    side = r3.Side("A", {"DSN": tworld.dsn}, {"zeus": [PYTHON, str(tworld.script)]})
+    return r4.run_coverage_map({"A": side}, tworld.handle, DATABASE, catalog or _map_catalog(),
+                               {"version": 1, "nodes": leaves}, _d0({"lane_a": {"typed_z": {}, "read_x": {}, "unread_y": {}}}),
+                               tworld.out / f"m{tworld.runs}", runner=runner, timeout=120.0, wait=20.0)
+
+
+@needs_docker
+def test_a_leaf_that_reads_bucket_x_makes_x_leaf_covered_y_uncovered_and_z_typed_on_a_real_trace_copy(tworld):
+    document = _trace_run(tworld, {"zeus fixture read-x": _leaf(["read", "read_x"])})
+    column = document["facts"]["columns"]["A"]
+    assert (column["typed"], column["leaf_covered"], column["uncovered"]) == (1, 1, 1)
+    assert column["leaf_covered_buckets"] == ["read_x"] and column["uncovered_buckets"] == ["unread_y"]
+    assert document["status"] == "ok" and document["facts"]["verdict"] == "uncovered"
+    assert document["facts"]["observed_leaves"]["A"] == [{"node": "zeus fixture read-x", "exit": 0, "all_buckets_reads": 0}]
+    written = (tworld.out / f"m{tworld.runs}" / "r4-coverage.json").read_text()
+    assert "n\": 1" not in written and "'r1'" not in written  # no body or id value reaches the evidence
+
+
+@needs_docker
+def test_a_corrupted_log_line_inside_a_leaf_window_fails_the_run_closed_and_counts_no_bucket(tworld):
+    def corrupting(side, command, timeout):
+        done = r3.host_runner(side, command, timeout)
+        log = sorted(tworld.handle.trace_dir.glob("*.log"))[-1]
+        with open(log, "a", encoding="utf-8") as handle:
+            handle.write("garbage that is no log entry\n")
+        return done
+
+    with pytest.raises(r4.R4Failed) as caught:
+        _trace_run(tworld, {"zeus fixture read-x": _leaf(["read", "read_x"])}, runner=corrupting)
+    assert any("coverage_log_unparseable" in f for f in caught.value.failures)
+    assert caught.value.document["facts"]["columns"]["A"]["leaf_covered"] == 0  # the unparsed window counted nothing
+
+
+@needs_docker
+def test_a_real_records_read_without_a_bucket_predicate_and_a_leaf_that_writes_are_run_failures(tworld):
+    with pytest.raises(r4.R4Failed) as caught:
+        _trace_run(tworld, {"zeus fixture by-id": _leaf(["byid", "r1"])})
+    assert any("coverage_log_unparseable" in f for f in caught.value.failures)
+    with pytest.raises(r4.R4Failed) as wrote:
+        _trace_run(tworld, {"zeus fixture write": _leaf(["write", "read_x"])})
+    assert wrote.value.failures == ["A:zeus fixture write:leaf_wrote_records:1"]
+
+
+@needs_docker
+def test_trace_mode_is_off_on_a_default_copy_and_on_for_the_trace_copy(world, tworld):
+    import psycopg
+
+    def setting(handle, name):
+        with psycopg.connect(cp.pg_dsn(handle.pg_socket, DATABASE)) as conn:
+            return conn.execute(f"SHOW {name}").fetchone()[0]  # noqa: S608 - fixed names
+
+    assert (setting(world.handle, "log_statement"), setting(world.handle, "logging_collector")) == ("none", "off")
+    assert world.handle.trace_dir is None
+    assert (setting(tworld.handle, "log_statement"), setting(tworld.handle, "logging_collector")) == ("all", "on")
+    assert tworld.handle.trace_dir == tworld.root / "S" / "pgdata" / cp.TRACE_LOG_DIR and tworld.handle.trace_dir.is_dir()
+    assert r4.read_trace_log(tworld.handle.trace_dir)  # the host reads the log from ROOT
+    with pytest.raises(r4.Refused) as off:
+        r4.observe_column("A", None, world.handle, DATABASE, {"nodes": {}}, params={}, runner=None, timeout=1)
+    assert off.value.code == "trace_off"
