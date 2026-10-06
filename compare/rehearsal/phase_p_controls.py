@@ -121,7 +121,10 @@ class StandIns:
             text.find("PostgreSQL init process complete")))
         for db in pp.DB_SCOPE:
             self.sql(f"CREATE DATABASE {db}")
-        self.sql("CREATE TABLE rh_ctl(x text); INSERT INTO rh_ctl VALUES ('seed')", "zeus_aibox")
+        # Every scope database is seeded, as production's are non-empty: the positive judge needs a non-empty
+        # catalog TOC per database (an empty zeus_aibox_migration made `all(toc)` false; owner, run 5).
+        for db in pp.DB_SCOPE:
+            self.sql("CREATE TABLE rh_ctl(x text); INSERT INTO rh_ctl VALUES ('seed')", db)
         self.set_paused(True)
 
     def verify_labels(self) -> None:
