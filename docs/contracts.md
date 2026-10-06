@@ -4335,7 +4335,7 @@ record stays failed. The contract is:
   turns a failure into a pass; the existing container removal is unchanged.
 
 The root `Dockerfile` builds the release CLI-canary image consumed by `cli_start` and `cli_file_task`: the pinned
-Codex CLI on `python:3.13-slim-bookworm` (its own ca-certificates; the build downloads no package), root as the default user and `codex` as the entrypoint. It is never an
+Codex CLI on `python:3.13-slim-bookworm` (its own ca-certificates; the final stage downloads no OS package, while the `codex` stage's `npm install -g @openai/codex@0.156.1` needs the npm registry unless cached), root as the default user and `codex` as the entrypoint. It is never an
 agent image (U6(b)) and never a worker image (`Dockerfile.worker`, INV-ISOLATED-WORKER-001). Four dormant consumers of
 the release `images` record must NOT run against it: `composition/supervisor.py` (`HARNESS_AGENT_IMAGE`, the legacy
 `--profile agents`, retired by U6(b)), `research/adapters/source_execution.py` (`--entrypoint /usr/bin/timeout`, which
