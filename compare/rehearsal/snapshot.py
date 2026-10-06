@@ -117,20 +117,23 @@ def _read_once(path, label: str):
             raise Refused("volatile_not_regular", label) from None
         raise Refused("volatile_unreadable", label) from None
     try:
-        info = os.fstat(fd)
-        if not stat.S_ISREG(info.st_mode):
-            raise Refused("volatile_not_regular", label)
-        chunks = []
         try:
+            info = os.fstat(fd)
+            if not stat.S_ISREG(info.st_mode):
+                raise Refused("volatile_not_regular", label)
+            chunks = []
             while True:
                 chunk = os.read(fd, 1 << 20)
                 if not chunk:
                     break
                 chunks.append(chunk)
-        except OSError:
+        except OSError:  # the descriptor's metadata or content cannot be read: a named refusal, never a bare OSError
             raise Refused("volatile_unreadable", label) from None
     finally:
-        os.close(fd)
+        try:
+            os.close(fd)
+        except OSError:
+            raise Refused("volatile_unreadable", label) from None
     return b"".join(chunks), info
 
 

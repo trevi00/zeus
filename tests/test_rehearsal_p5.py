@@ -201,6 +201,45 @@ def test_a_root_or_evidence_dir_overlapping_the_source_is_refused_before_any_eff
     assert caught.value.code == "seal_overlaps_source" and host.calls == []
 
 
+# ---- round-1 F1 and the final scan ----
+
+def hooked_final_reread(monkeypatch, effect):
+    """Run `effect(real)` in place of fileroots' final stable-single reread (the staging reads use snapshot's own)."""
+    real = fileroots._read_once
+    monkeypatch.setattr(fileroots, "_read_once", lambda path, label: effect(real, path, label))
+
+
+def test_a_metadata_read_failure_in_the_final_stable_single_reread_is_source_access_denied(tmp_path, monkeypatch):
+    def eio_fstat(fd):
+        raise OSError(5, "injected")
+
+    def effect(real, path, label):
+        with monkeypatch.context() as patched:
+            patched.setattr(os, "fstat", eio_fstat)
+            return real(path, label)
+
+    hooked_final_reread(monkeypatch, effect)
+    old = os.umask(0o022)
+    try:
+        code, rec, root, _ = attempt(tmp_path, SyntheticHost())
+        assert os.umask(0o022) == 0o022
+    finally:
+        os.umask(old)
+    entry = assert_p5_failed(code, rec, root, "source_access_denied")
+    assert set(entry) == {"step", "started_at"} and not (root / "seal/meta/complete.json").exists()
+    assert rec["helpers_after"] == {"removed": 0, "residue": []}
+
+
+def test_a_stable_root_changed_after_the_snapshot_is_scan_after_inconsistent(tmp_path, standin_srv, monkeypatch):
+    def effect(real, path, label):
+        (standin_srv / "repo" / "after.txt").write_text("after the snapshot")
+        return real(path, label)
+
+    hooked_final_reread(monkeypatch, effect)
+    code, rec, root, _ = attempt(tmp_path, SyntheticHost())
+    assert_p5_failed(code, rec, root, "scan_after_inconsistent")
+
+
 # ---- interruption, lock, signals (D4, D5) ----
 
 def test_a_keyboard_interrupt_in_p5_is_receipted_settled_and_releases_the_lock(tmp_path):

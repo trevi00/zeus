@@ -11,6 +11,7 @@ rename-replace at the content open. FIFO cases are bounded by `signal.alarm` so 
 from __future__ import annotations
 
 import contextlib
+import errno
 import hashlib
 import os
 import signal
@@ -197,6 +198,39 @@ def test_an_unreadable_file_is_refused_unreadable(src, tmp_path):
         assert info.value.code == "volatile_unreadable" and info.value.detail == "runtime/control/monitoring.json"
     finally:
         path.chmod(0o644)
+
+
+def test_a_metadata_read_failure_on_the_open_descriptor_is_volatile_unreadable_and_the_descriptor_is_closed(
+        tmp_path, monkeypatch):
+    """P5b round-1 F1: an fstat OSError after a successful open maps to the named refusal; the fd is not leaked."""
+    source = tmp_path / "s.json"
+    write(source, "payload")
+    opened, real_open = [], os.open
+
+    def recording_open(*args, **kw):
+        opened.append(real_open(*args, **kw))
+        return opened[-1]
+
+    def failing_fstat(fd):
+        raise OSError(errno.EIO, "injected")
+
+    with monkeypatch.context() as patched:
+        patched.setattr(os, "open", recording_open)
+        patched.setattr(os, "fstat", failing_fstat)
+        with pytest.raises(Refused) as info:
+            sn.copy_once(source, tmp_path / "out.json", label="s.json")
+    assert info.value.code == "volatile_unreadable" and info.value.detail == "s.json"
+    assert not (tmp_path / "out.json").exists() and len(opened) == 1
+    with pytest.raises(OSError) as closed:
+        os.fstat(opened[0])
+    assert closed.value.errno == errno.EBADF
+
+
+def test_a_healthy_single_descriptor_read_still_returns_the_bytes_and_the_inode_facts(tmp_path):
+    source = tmp_path / "s.json"
+    write(source, "payload")
+    data, info = sn._read_once(source, "s.json")
+    assert data == b"payload" and info.st_size == 7
 
 
 def test_copy_once_writes_a_new_0600_file_and_refuses_an_existing_target(tmp_path):
