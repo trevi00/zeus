@@ -14,7 +14,7 @@ CASES = sorted(p for p in FIXTURES.iterdir() if p.is_dir())
 
 
 def contract_ids() -> set[str]:
-    # The ledger's 91 ids: every INV id the registry declares (summary table, sections, list items).
+    # The registry's 92 ids: every INV id the registry declares (summary table, sections, list items).
     return set(re.findall(r"INV-[A-Z0-9-]+-\d{3}", CONTRACTS.read_text(encoding="utf-8")))
 
 
