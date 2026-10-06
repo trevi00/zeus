@@ -1573,6 +1573,42 @@ or generated work. `sources.fleet` in the monitor snapshot (an additive source b
 the persisted queued reasons), call counts, effective `budget`, last 100 jobs with `truncated`,
 `active_job` from all reserving jobs; never manifests, paths, schemas, DSNs or raw output.
 
+Maintenance amendment (INV-HOST-DELIVERY-MAINTENANCE-001), and nothing wider: `fleet_maintenance_admissions`
+holds one row per maintenance id (`granted -> admitted -> closed`), an operator-authorized one-job permit
+bound to the exact generation, plan, descriptor, new instance, owner action, job, evidence ref and
+deadline - not a budget or scheduler grant. The permit grammar and its checks are pure policy in
+`codex_harness.coordination.domain.fleet_maintenance`; the permit bucket's writes are
+`codex_harness.coordination.application.fleet.maintenance.FleetMaintenance`.
+`grant_maintenance_canary` requires the owner pause with no
+activation hold and replays only the whole binding; `admit_maintenance_canary` admits, in ONE control
+transaction and while owner-paused, exactly this generation's owner-created QUEUED canary job after
+validating the real owner action and its immutable binding, the acknowledged lane proof and a fresh
+deadline, with no reserving job or held unit, through the domain selection with a one-job candidate set and
+ONLY the pause exception (budget, capacity, lane, path and dependency blockers all still refuse); it records
+the normal DISPATCHING owner token and the spent permit atomically, and other queued jobs stay unadmitted.
+`close_maintenance_canary` fails an unadmitted queued canary on expiry or cancellation with no launch, and
+closes admitted work only once it settled; admitted or unknown work keeps its reservation and is reconciled,
+never retried. The one-job `codex_harness.coordination.application.fleet.runner.FleetRunner.run_preclaimed` /
+`MaintenanceCanaryExecutor` reuses the runner's
+launch, reap and finalize protocol for that ONE preclaimed job (no backlog, continuation, reconcile or
+general admission pass). While any permit is not closed, `FleetPause.resume` refuses `maintenance_debt_unsettled` and
+`release_activation_hold` releases nothing, and `FleetPause.maintenance_readiness` reports the open permits. The
+dispatcher never gains general resume authority.
+
+The permit has a closed `kind` (G1-04c; G1-03 ruling (g), AMD-1 D.2/D.6): `maintenance_canary` - the row above and
+the meaning of every permit without a `kind`, whose canonical form and digest are unchanged - and
+`forward_candidate`; any other kind is `maintenance_invalid(kind)` before a write. A `forward_candidate` permit binds
+an owner-registered backlog item (it must exist, under the bound lane and manifest digest, in a plan registered
+through `codex_harness.coordination.application.fleet_backlog.FleetBacklog.register`), the job `manifest_sha256`, the `lane`, a full 40-hex `base_revision`, one immutable
+`deadline`, the `issuer` and a distinct `approver`, and a non-empty `allowed_paths` list in which EVERY entry lies
+under `NON_SHIPPED_PREFIXES` (`docs/cutover/`; no `..`, absolute, backslash or glob form), else
+`path_not_non_shipped(allowed_paths)`. Issuance is `maintenance_open` while any maintenance generation permit is open
+(granted or admitted, not yet settled, cancelled or expired) and writes no maintenance state. Admission reuses the
+one-transaction claim for exactly the QUEUED job of that digest, lane and base revision whose paths lie inside the
+permit's, while the Fleet stays owner-paused; every other blocker, expiry, response-loss and replay rule is the
+canary's, an unknown dispatch is never relaunched, and the Fleet control row is never written. This paragraph and the
+kind are subject to the G1-06 ruling on their tension with S2MAINT D2.6 OUT.
+
 ## INV-FLEET-BACKLOG-001
 
 `zeus fleet backlog register|tick|status` admits ALREADY APPROVED work into the existing
