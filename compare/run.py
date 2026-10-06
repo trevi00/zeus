@@ -714,10 +714,11 @@ def split_layers(declarations) -> tuple[list, list]:
 HEX40 = re.compile(r"[0-9a-f]{40}")
 REVISION_LEAVES = frozenset({"revision", "attested_revision", "runtime_revision"})
 REVISION_MASK_ID = "rebaseline_runtime_revision"
+MASKS_FILE = COMPARE / "masks.json"
 
 
 def rebaseline_revision_mask(family: str) -> dict | None:
-    document = json.loads((COMPARE / "masks.json").read_text(encoding="utf-8"))
+    document = json.loads(MASKS_FILE.read_text(encoding="utf-8"))
     for mask in document["masks"]:
         if mask["id"] == REVISION_MASK_ID and family in mask["scenarios"]:
             return mask
@@ -975,6 +976,7 @@ def run(record: bool, use_bwrap: bool, only: list[str], pg: bool = False,
             origin_ok = (origin.get("package_files_digest") == expected["package_files_digest"]
                          and origin.get("package_files") == expected["package_files"])
             if record:
+                golden_path.parent.mkdir(parents=True, exist_ok=True)
                 golden_path.write_text(json.dumps(result["result"], sort_keys=True, indent=1,
                                                   ensure_ascii=False) + "\n", encoding="utf-8")
                 if blocks is not None:

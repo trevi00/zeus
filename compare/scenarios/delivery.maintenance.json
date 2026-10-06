@@ -1,0 +1,9 @@
+{
+ "family": "delivery.maintenance",
+ "description": "G1-13 S2R active-generation maintenance, restart phase (INV-HOST-DELIVERY-MAINTENANCE-001), through the use case `HostDelivery.maintain` on the LABELLED S2R fixtures: `restart --check` writes nothing, `restart` replaces the incumbent (`started`) and a replay is cached; an unsupported phase, a wrong evidence reference, a tampered document and a wrong reason are refused by name; an open generation holds its target. M7 has no maintenance: the reference is the approved rebaseline wheel (main-s2r-b9d8f15) and its golden lives under goldens/rebaseline/ (G1-13C-COMPARE-DECISION rule 5)",
+ "reference_driver": "drivers/reference/s2r_maintenance.py",
+ "target_driver": "drivers/target/s2r_maintenance.py",
+ "slice": "G1-13",
+ "reference": "rebaseline:main-s2r-b9d8f15",
+ "golden": "goldens/rebaseline/main-s2r-b9d8f15/delivery.maintenance.json"
+}

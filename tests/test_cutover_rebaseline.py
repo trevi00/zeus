@@ -7,7 +7,18 @@ REBASELINE-MAIN-S2R, not from the implementation:
     entry commit's blob; a missing delta file, an extra file and a differing blob are each `foreign_reference_paths`;
   - the entry's `delta_paths` equal `git diff --name-only parent_source commit` and `commit^{tree}` equals `tree`;
   - the overlay (SOURCE archive + delta archive) must reproduce the pinned tree BEFORE any build;
-  - `run --record` with a rebaseline reference is refused (goldens stay M7's).
+  - `run --record` with a rebaseline reference is refused (goldens stay M7's), except `--only <family>` of scenarios
+    that declare that rebaseline as their reference (G1-13c).
+
+Cutover G1-13c (decision G1-13C-COMPARE-DECISION rules 3-5): the expected results are the decision's rules, not the
+implementation's output:
+  - `--target-vs-reference` compares the target with the reference result of the SAME run (never a stored golden), needs
+    a rebaseline reference and never `--record`;
+  - a rebaseline record writes only the goldens of scenarios that declare `"reference": "rebaseline:<id>"`, under
+    `goldens/rebaseline/<id>/`; every M7-referenced family stays refused;
+  - the closed mask `rebaseline_runtime_revision` hides only a runtime revision (at a shared revision leaf, as a
+    bijection) and the listed leaves, equality-preservingly; a changed state or result is never hidden;
+  - `rebaseline`-layer declarations are the M7 golden -> rebaseline difference, the other declarations are the target's.
 """
 
 import copy
@@ -244,3 +255,236 @@ def test_rebaseline_entry_pins_its_own_package_file_identity():
     entry = run.rebaseline_entry("main-s2r-b9d8f15")["rebaseline_wheel"]
     assert entry["package_files"] == 276 and len(entry["package_files_digest"]) == 64
     assert entry["package_files_digest"] != run.BASELINE["source"]["reference_wheel"]["package_files_digest"]
+
+
+# --- G1-13c: the rebaseline modes of `run` --------------------------------------------------------------------------
+
+def test_a_rebaseline_record_is_refused_for_an_m7_referenced_family_and_when_mixed_or_unknown():
+    module = _run_module()
+    reference = f"rebaseline:{ENTRY_ID}"
+    for only in (["cli.parser"], ["delivery.maintenance", "cli.parser"], ["no.such.family"], []):
+        with pytest.raises(SystemExit) as refused:
+            module.resolve_reference(reference, True, only)
+        assert str(refused.value.code).startswith("refused: --record with a rebaseline reference")
+    with pytest.raises(SystemExit):
+        module.main(["run", "--record", "--reference", reference, "--only", "cli.parser"])
+    with pytest.raises(SystemExit):
+        module.resolve_reference("m7", True, ["delivery.maintenance"]) and (_ for _ in ()).throw(SystemExit)
+
+
+def test_a_rebaseline_record_is_allowed_for_the_scenarios_that_declare_it_and_only_under_the_rebaseline_golden_dir(
+        monkeypatch, tmp_path):
+    module = _run_module()
+    reference = f"rebaseline:{ENTRY_ID}"
+    assert module.resolve_reference(reference, True, ["delivery.maintenance", "delivery.maintenance.pg"])[2] == ENTRY_ID
+    declared = {s["family"]: s for s in module.scenarios() if s.get("reference")}
+    assert set(declared) == {"delivery.maintenance", "delivery.maintenance.pg"}
+    for scenario in declared.values():
+        assert scenario["reference"] == reference
+        assert scenario["golden"] == f"goldens/rebaseline/{ENTRY_ID}/{scenario['family']}.json"
+    # a scenario that declares the reference but keeps its golden elsewhere (e.g. under the M7 goldens) is refused
+    strays = [{"family": "x.stray", "reference": reference, "golden": "goldens/reference/x.stray.json"}]
+    monkeypatch.setattr(module, "scenarios", lambda: strays)
+    with pytest.raises(SystemExit) as refused:
+        module.resolve_reference(reference, True, ["x.stray"])
+    assert "outside goldens/rebaseline" in str(refused.value.code)
+
+
+def test_target_vs_reference_needs_a_rebaseline_reference_and_never_record():
+    module = _run_module()
+    for argv in (["run", "--target-vs-reference"], ["run", "--target-vs-reference", "--reference", "m7"],
+                 ["run", "--target-vs-reference", "--record", "--reference", f"rebaseline:{ENTRY_ID}"]):
+        with pytest.raises(SystemExit) as refused:
+            module.main(argv)
+        assert refused.value.code == 2
+    with pytest.raises(SystemExit):
+        module.run(False, False, [], reference="m7", target_vs_reference=True)
+
+
+def _synthetic(module, monkeypatch, tmp_path, *, golden, reference_result, target_result, declared=(), family="x.fam",
+               reference_field=None):
+    """`run` over ONE synthetic scenario with LABELLED stub drivers: the reference driver returns
+    `reference_result`, the target driver `target_result`; the venv python and the golden are files in `tmp_path`."""
+    entry = {"id": ENTRY_ID, "rebaseline_wheel": {"package_files": 1, "package_files_digest": "d"}}
+    monkeypatch.setattr(module, "SCRATCH", tmp_path)
+    monkeypatch.setattr(module, "rebaseline_entry", lambda entry_id, baseline=None: entry)
+    for venv in (f"venv-rb-{ENTRY_ID}", "venv-ref"):
+        (tmp_path / venv / "bin").mkdir(parents=True, exist_ok=True)
+        (tmp_path / venv / "bin" / "python").write_text("")
+    golden_path = tmp_path / "golden.json"
+    if golden is not None:
+        golden_path.write_text(json.dumps(golden), encoding="utf-8")
+    scenario = {"family": family, "slice": "T", "reference_driver": "ref.py", "target_driver": "target.py",
+                "golden": str(golden_path), "intended_differences": list(declared)}
+    if reference_field:
+        scenario["reference"] = reference_field
+    monkeypatch.setattr(module, "scenarios", lambda: [scenario])
+    wheel = module.BASELINE["source"]["reference_wheel"]  # the default (M7) reference is held to the M7 identity
+    origins = {a: {"package_files": 1, "package_files_digest": "d", "modules_checked": 1} for a in ("rebaseline",)}
+    origins["m7"] = {"package_files": wheel["package_files"], "package_files_digest": wheel["package_files_digest"],
+                     "modules_checked": 1}
+    monkeypatch.setattr(module, "run_driver", lambda python, *a, **k: {
+        "origin": origins["rebaseline" if "venv-rb-" in str(python) else "m7"], "result": reference_result})
+    (tmp_path / "target.py").write_text("")
+    monkeypatch.setattr(module, "COMPARE", tmp_path)
+    monkeypatch.setattr(module, "run_target", lambda *a, **k: {
+        "side": "target", "origin": {"tree": str(module.TARGET_SRC), "modules_checked": 1}, "result": target_result})
+    return golden_path
+
+
+def _row(report, family="x.fam"):
+    return report["scenarios"][family]
+
+
+def test_target_vs_reference_compares_the_target_with_the_reference_result_of_the_same_run(monkeypatch, tmp_path):
+    """Expected (decision rule 3): golden {o: {n: 1}}; S2R makes the reference {o: {n: 2, extra: 7}} (rebaseline-layer
+    declarations); the target declares one OWN difference (a new key) on top. Equal only when the target equals the
+    REFERENCE result plus its own declaration, and a target that keeps the M7 value is DIFFERENT."""
+    module = _run_module()
+    s2r = [{"layer": "rebaseline", "path": "$.o.n", "op": "replace", "value": 2,
+            "authority": "REBASELINE-MAIN-S2R hunk A"},
+           {"layer": "rebaseline", "path": "$.o", "op": "add", "key": "extra", "value": 7,
+            "authority": "REBASELINE-MAIN-S2R hunk B"}]
+    own = [{"path": "$.o", "op": "add", "key": "mine", "value": "m", "authority": "S10 own addition"}]
+    reference = f"rebaseline:{ENTRY_ID}"
+    _synthetic(module, monkeypatch, tmp_path, golden={"o": {"n": 1}}, reference_result={"o": {"n": 2, "extra": 7}},
+               target_result={"o": {"n": 2, "extra": 7, "mine": "m"}}, declared=s2r + own)
+    report, ok = module.run(False, False, [], reference=reference, target_vs_reference=True)
+    row = _row(report)
+    assert (row["reference"], row["target"], row["target_vs_reference"]) == ("equal", "equal", True), row
+    assert ok
+    # the target equals the M7 golden plus its own declaration, not the S2R reference: DIFFERENT against the reference
+    _synthetic(module, monkeypatch, tmp_path, golden={"o": {"n": 1}}, reference_result={"o": {"n": 2, "extra": 7}},
+               target_result={"o": {"n": 1, "mine": "m"}}, declared=s2r + own)
+    report, ok = module.run(False, False, [], reference=reference, target_vs_reference=True)
+    assert not ok and (_row(report)["reference"], _row(report)["target"]) == ("equal", "DIFFERENT")
+    assert sorted(_row(report)["target_differing_paths"]) == ["$.o.extra (missing on one side)", "$.o.n"]
+    # the reference result is not what the declared S2R layer says: the reference row is DIFFERENT
+    _synthetic(module, monkeypatch, tmp_path, golden={"o": {"n": 1}}, reference_result={"o": {"n": 3, "extra": 7}},
+               target_result={"o": {"n": 3, "extra": 7, "mine": "m"}}, declared=s2r + own)
+    report, ok = module.run(False, False, [], reference=reference, target_vs_reference=True)
+    assert not ok and (_row(report)["reference"], _row(report)["target"]) == ("DIFFERENT", "equal")
+
+
+def test_the_default_target_comparison_applies_the_rebaseline_layer_then_the_target_declarations(monkeypatch, tmp_path):
+    module = _run_module()
+    s2r = [{"layer": "rebaseline", "path": "$.o.n", "op": "replace", "value": 2, "authority": "REBASELINE-MAIN-S2R"}]
+    own = [{"path": "$.o", "op": "add", "key": "mine", "value": "m", "authority": "S10"}]
+    _synthetic(module, monkeypatch, tmp_path, golden={"o": {"n": 1}}, reference_result={"o": {"n": 1}},
+               target_result={"o": {"n": 2, "mine": "m"}}, declared=s2r + own)
+    report, ok = module.run(False, False, [])  # the default (M7) reference: reference == the raw golden
+    assert (_row(report)["reference"], _row(report)["target"]) == ("equal", "equal"), _row(report)
+    assert ok
+
+
+def test_a_family_that_declares_its_rebaseline_reference_is_skipped_by_the_default_reference(monkeypatch, tmp_path):
+    module = _run_module()
+    _synthetic(module, monkeypatch, tmp_path, golden={"a": 1}, reference_result={"a": 1}, target_result={"a": 1},
+               reference_field=f"rebaseline:{ENTRY_ID}")
+    report, ok = module.run(False, False, [])
+    assert ok and _row(report)["reference"].startswith("not requested (its reference is rebaseline:")
+    assert "target" not in _row(report)
+
+
+def test_a_scoped_rebaseline_record_writes_the_golden_under_the_rebaseline_dir(monkeypatch, tmp_path):
+    module = _run_module()
+    reference = f"rebaseline:{ENTRY_ID}"
+    home = tmp_path / "goldens" / "rebaseline"
+    monkeypatch.setattr(module, "GOLDENS_REBASELINE", home)
+    golden_path = home / ENTRY_ID / "x.fam.json"
+    _synthetic(module, monkeypatch, tmp_path, golden=None, reference_result={"a": 1}, target_result={"a": 1},
+               reference_field=reference)
+    scenario = module.scenarios()[0]
+    scenario["golden"] = str(golden_path)
+    report, ok = module.run(True, False, ["x.fam"], reference=reference)
+    assert ok and json.loads(golden_path.read_text(encoding="utf-8")) == {"a": 1}
+    assert _row(report)["reference"] == "equal" and _row(report)["target"] == "equal"
+    with pytest.raises(SystemExit):  # the same scenario without the declaration is an M7 family: refused
+        scenario.pop("reference")
+        module.run(True, False, ["x.fam"], reference=reference)
+
+
+# --- the closed revision mask -----------------------------------------------------------------------------------------
+
+REV_A, REV_B = "a" * 40, "b" * 40
+FAMILY = "delivery.managed_runtime"
+
+
+def test_the_revision_mask_hides_a_revision_and_its_derivatives_but_nothing_behavioural():
+    module = _run_module()
+    golden = {"d": {"revision": REV_A, "root": f"<root>/runtimes/{REV_A}", "status": "running"},
+              "runtime_dirs": {f"runtimes.{REV_A}": {"files": 274, "sha256": "1" * 64}},
+              "launch": {"manifest_sha256": "2" * 64, "again": {"manifest_sha256": "2" * 64}}}
+    actual = {"d": {"revision": REV_B, "root": f"<root>/runtimes/{REV_B}", "status": "running"},
+              "runtime_dirs": {f"runtimes.{REV_B}": {"files": 275, "sha256": "3" * 64}},
+              "launch": {"manifest_sha256": "4" * 64, "again": {"manifest_sha256": "4" * 64}}}
+    expected, observed, masked = module.rebaseline_normalise(FAMILY, golden, actual)
+    assert masked and expected == observed
+    # a state change is never hidden
+    changed = json.loads(json.dumps(actual))
+    changed["d"]["status"] = "stopped"
+    expected, observed, _ = module.rebaseline_normalise(FAMILY, golden, changed)
+    assert expected != observed
+    # the golden's two equal digests became unequal on the actual side: equality is preserved, so it is DIFFERENT
+    unequal = json.loads(json.dumps(actual))
+    unequal["launch"]["again"]["manifest_sha256"] = "5" * 64
+    expected, observed, _ = module.rebaseline_normalise(FAMILY, golden, unequal)
+    assert expected != observed
+    # a revision-looking value that is NOT at a revision leaf is not masked
+    other = json.loads(json.dumps(actual))
+    other["d"]["root"] = f"<root>/runtimes/{'c' * 40}"
+    expected, observed, _ = module.rebaseline_normalise(FAMILY, golden, other)
+    assert expected != observed
+    # a non-bijective pairing (one expected revision, two actual ones) is reported, not masked
+    golden2 = {"x": {"revision": REV_A}, "y": {"revision": REV_A}}
+    actual2 = {"x": {"revision": REV_B}, "y": {"revision": "c" * 40}}
+    expected, observed, _ = module.rebaseline_normalise(FAMILY, golden2, actual2)
+    assert expected != observed
+
+
+def test_the_revision_mask_applies_only_to_its_families_and_is_a_declared_closed_entry():
+    module = _run_module()
+    values = ({"revision": REV_A}, {"revision": REV_B})
+    assert module.rebaseline_normalise("cli.parser", *values) == (values[0], values[1], False)
+    mask = module.rebaseline_revision_mask(FAMILY)
+    assert mask["id"] == "rebaseline_runtime_revision" and mask["reason"]
+    assert set(mask["scenarios"]) == {"delivery.host_targets", "delivery.managed_runtime", "delivery.managed_systemd"}
+    assert module.rebaseline_revision_mask("effects.delivery_units") is None
+
+
+# --- the declaration ops and layers ------------------------------------------------------------------------------------
+
+def test_append_items_extends_the_list_and_a_stale_or_invalid_declaration_is_refused():
+    module = _run_module()
+    ok = {"path": "$.nodes", "op": "append_items", "value": [3, 4], "authority": "A"}
+    expected, problems = module.apply_intended_differences({"nodes": [1, 2]}, [ok])
+    assert (expected, problems) == ({"nodes": [1, 2, 3, 4]}, [])
+    for bad in ({**ok, "value": 3}, {**ok, "layer": "other"}, {**ok, "key": "k"}, {**ok, "authority": ""}):
+        _, problems = module.apply_intended_differences({"nodes": [1, 2]}, [bad])
+        assert problems == ["intended_differences[0]: invalid declaration"]
+    _, problems = module.apply_intended_differences({"nodes": "x"}, [ok])
+    assert problems and "not a list" in problems[0]
+    _, problems = module.apply_intended_differences({}, [ok])
+    assert problems and "stale" in problems[0]
+
+
+def test_split_layers_separates_the_rebaseline_layer_in_declared_order():
+    module = _run_module()
+    a, b, c = ({"layer": "rebaseline", "n": 1}, {"n": 2}, {"layer": "rebaseline", "n": 3})
+    assert module.split_layers([a, b, c]) == ([a, c], [b]) and module.split_layers(None) == ([], [])
+
+
+def test_the_s2r_declarations_of_the_affected_families_cite_the_rebaseline_and_a_hunk():
+    """Structural (provenance contract of G1-13C-COMPARE-DECISION rule 2): every rebaseline-layer declaration of the
+    S2R-affected families names REBASELINE-MAIN-S2R and the source file it comes from."""
+    module = _run_module()
+    by_family = {s["family"]: s for s in module.scenarios()}
+    for family in ("cli.parser", "static.source", "effects.delivery_units", "effects.delivery_units.pg"):
+        layer, _ = module.split_layers(by_family[family].get("intended_differences"))
+        assert layer, family
+        for declaration in layer:
+            assert "REBASELINE-MAIN-S2R" in declaration["authority"]
+            assert any(name in declaration["authority"] for name in
+                       ("adapters/host_delivery.py", "application/host_delivery.py", "domain/host_delivery.py",
+                        "docs/contracts.md", "adapters/managed_runtime.py", "adapters/maintenance_evidence.py",
+                        "the delta adds")), declaration["path"]
