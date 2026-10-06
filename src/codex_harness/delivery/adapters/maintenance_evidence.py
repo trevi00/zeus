@@ -36,6 +36,7 @@ and each port refuses with one fixed code and one allowlisted field, never a val
 """
 from __future__ import annotations
 
+import functools
 import hashlib
 import json
 import os
@@ -86,11 +87,14 @@ def _pid(value) -> bool:
     return type(value) is int and 0 < value < 2 ** 31
 
 
-def run_helper(argv: list, *, timeout: float, env: dict, limit: int, cwd: str = "/") -> subprocess.CompletedProcess:
+def run_helper(argv: list, *, timeout: float, env: dict, limit: int, cwd: str = "/",
+               popen) -> subprocess.CompletedProcess:
     """Run the helper once: exactly `env`, `cwd`, no stdin, its own session. Its stdout is read up to
     `limit` bytes within `timeout`; more, or the deadline, ends its session and is `Unreadable`. Its
-    stderr is discarded unread, so no diagnostic text of the helper can reach a record or a log."""
-    process = subprocess.Popen(argv, stdin=subprocess.DEVNULL, stdout=subprocess.PIPE, stderr=subprocess.DEVNULL,
+    stderr is discarded unread, so no diagnostic text of the helper can reach a record or a log.
+    `popen` is the process chokepoint (`host_os.adapters.process_groups.popen`), injected by composition: only that module
+    creates processes."""
+    process = popen(argv, stdin=subprocess.DEVNULL, stdout=subprocess.PIPE, stderr=subprocess.DEVNULL,
                                env=env, cwd=cwd, close_fds=True, start_new_session=True)
     output = bytearray()
     deadline = time.monotonic() + timeout
@@ -134,9 +138,10 @@ class CredentialObserver:
     """
 
     def __init__(self, helper: str, helper_sha256: str, *, python: str = sys.executable, runner=None,
-                 process_reader=None, timeout: float = HELPER_TIMEOUT):
+                 process_reader=None, popen=None, timeout: float = HELPER_TIMEOUT):
         self.helper, self.helper_sha256 = str(helper), helper_sha256
-        self.python, self.runner, self.timeout = python, runner or run_helper, timeout
+        self.python, self.timeout, self.popen = python, timeout, popen
+        self.runner = runner or (None if popen is None else functools.partial(run_helper, popen=popen))
         self.process_reader = process_reader
 
     def _read_process(self, pid: int):
@@ -167,6 +172,9 @@ class CredentialObserver:
 
     def _booleans(self, pid: int) -> dict:
         """One helper run for one pid: its exact boolean document, or a refusal."""
+        if self.runner is None:
+            # No injected process chokepoint: nothing may start a process here, and there is no fallback.
+            raise _primary_unverified("credentials")
         self._verify_helper()
         try:
             result = self.runner([self.python, "-B", self.helper, "process", str(pid)], timeout=self.timeout,
@@ -212,7 +220,7 @@ class CredentialObserver:
                 "supervisor": supervisor, "entry": entry}
 
 
-def credential_observer(settings: dict, process_reader=None) -> CredentialObserver | None:
+def credential_observer(settings: dict, process_reader=None, popen=None) -> CredentialObserver | None:
     """The owner-configured helper (an absolute path) and its pinned sha256, or None when either is
     absent or malformed - which the use case refuses as `maintenance_primary_unverified`."""
     settings = settings or {}
@@ -222,7 +230,7 @@ def credential_observer(settings: dict, process_reader=None) -> CredentialObserv
     path = Path(helper)
     if not path.is_absolute() or ".." in path.parts:
         return None
-    return CredentialObserver(str(path), pinned, process_reader=process_reader)
+    return CredentialObserver(str(path), pinned, process_reader=process_reader, popen=popen)
 
 
 def trusted_authority_reader(root: Path):

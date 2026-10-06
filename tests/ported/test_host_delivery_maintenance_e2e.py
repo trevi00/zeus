@@ -5,7 +5,7 @@ Every assertion is PR-3's, unchanged. Adaptations are import lines and construct
 `owner_qualified_canary` and the wired `SystemdManagedFleetTarget` come from the `m7_delivery` shim, `Fleet` and `MaintenanceCanaryExecutor(fleet, launcher, interval=)` from the `m7_coordination`
 facade (the executor over the Fleet objects of its routes), `FakeLauncher` from the ported `test_fleet`; the target adapters are `delivery.adapters.*` (`TargetFiles` is `delivery.adapters.target_files`), `HostFacts` is
 `host_os.adapters.host_facts`; `LazyArtifacts(root)` is `LazyArtifacts(root, FileArtifacts)` (the store constructor is injected); and the
-systemd target and the `CredentialObserver` are given the `process_reader` composition injects (`delivery_hosts.process_reader()`: the real `/proc` reader; PR-3's observer built `HostReader()` itself).
+systemd target and the `CredentialObserver` are given the `process_reader` composition injects (`delivery_hosts.process_reader()`: the real `/proc` reader; PR-3's observer built `HostReader()` itself) and the `popen` of `host_os.adapters.process_groups` (PR-3 started the helper with `subprocess.Popen`).
 
 PR-3 docstring follows.
 
@@ -102,6 +102,7 @@ from codex_harness.delivery.domain.host_delivery import (
     validate_plan,
 )
 from codex_harness.delivery.domain.host_migration import MigrationRefused
+from codex_harness.host_os.adapters import process_groups
 from codex_harness.host_os.adapters.host_facts import HostFacts
 from codex_harness.kernel.ids import digest
 from codex_harness.storage.adapters.file_artifacts import FileArtifacts
@@ -187,7 +188,7 @@ def system_for(tmp_path, source):
         resume_seconds=0, authorities=trusted_authority_reader(authorities), artifacts=LazyArtifacts(authorities, FileArtifacts),
         canary_records=control_action_reader(control),
         credentials=CredentialObserver(str(helper), hashlib.sha256(HELPER.encode()).hexdigest(),
-                                      process_reader=delivery_hosts.process_reader()),
+                                      process_reader=delivery_hosts.process_reader(), popen=process_groups.popen),
         maintenance_fleet=fleet, canary_executor=MaintenanceCanaryExecutor(fleet, launcher, interval=0.05))
     delivery.register_targets(document)
     plan = plan_document(release, plan_id="managed-plan-1", target_id=TARGET_ID, image=runtime_image(source["root"]),

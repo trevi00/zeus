@@ -375,6 +375,7 @@ def maintenance_controller(service, *, store, check: bool) -> SimpleNamespace:
         qualification_deadline,
         trusted_authority_reader,
     )
+    from codex_harness.host_os.adapters import process_groups
 
     def file_artifacts(root):
         from codex_harness.storage.adapters.file_artifacts import FileArtifacts
@@ -393,7 +394,9 @@ def maintenance_controller(service, *, store, check: bool) -> SimpleNamespace:
                                 enabled=configured_enabled(host), authorities=trusted_authority_reader(root),
                                 artifacts=None if check else LazyArtifacts(root, file_artifacts),
                                 canary_records=control_action_reader(service.store),
-                                credentials=credential_observer(invocation, delivery_hosts.process_reader()), maintenance_fleet=fleet,
+                                credentials=credential_observer(invocation, delivery_hosts.process_reader(),
+                                                               process_groups.popen),
+                                maintenance_fleet=fleet,
                                 canary_executor=(None if check else LazyCanaryExecutor(fleet, host, _lane_launcher, build_canary_executor)),
                                 qualification_deadline=qualification_deadline(invocation))
 

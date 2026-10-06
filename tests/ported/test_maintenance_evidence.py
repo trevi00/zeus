@@ -1,6 +1,6 @@
 """Ported PR-3 (`feat/host-delivery-maintain-pr3` 09e596ce) suite `tests/test_maintenance_evidence.py` run against the target (G1-14b).
 
-Every assertion is PR-3's, unchanged. Adaptations are import lines and constructions only: the adapter is
+Every assertion is PR-3's, unchanged. Adaptations are import lines and constructions only (every `CredentialObserver(...)` gets `popen=process_groups.popen`, the process chokepoint composition injects; PR-3 started the helper with `subprocess.Popen`): the adapter is
 `delivery.adapters.maintenance_evidence`, `MemoryStore` / `FileArtifacts` / `DeliveryRefused` / `BUCKET_ACTIONS` come from their target homes,
 `policy` is `delivery.domain.maintenance` (the home of `validate_credential_evidence`), `LazyArtifacts(root)` is `LazyArtifacts(root, FileArtifacts)`
 (the store constructor is injected: an adapter may not import `storage.adapters`) and `LazyCanaryExecutor(fleet, host)` is
@@ -48,6 +48,7 @@ from codex_harness.delivery.adapters.maintenance_evidence import (
 )
 from codex_harness.delivery.domain import maintenance as policy
 from codex_harness.delivery.domain.host_delivery import DeliveryRefused
+from codex_harness.host_os.adapters.process_groups import popen
 from codex_harness.storage.adapters.file_artifacts import FileArtifacts
 from codex_harness.storage.adapters.memory_store import MemoryStore
 
@@ -106,7 +107,7 @@ def refused_field(excinfo) -> str:
 def test_pinned_helper_yields_identity_bound_booleans_only(tmp_path):
     helper, pinned = helper_script(tmp_path, ANSWER)
     reader = stable_processes()
-    observer = CredentialObserver(helper, pinned, process_reader=reader)
+    observer = CredentialObserver(helper, pinned, popen=popen, process_reader=reader)
     record = observer({"target_id": "managed-fleet"}, identity())
     assert set(record) == {"schema", "observed_at", "invocation_id", "helper_sha256", "supervisor", "entry"}
     assert record["schema"] == CREDENTIAL_EVIDENCE_SCHEMA and record["invocation_id"] == INVOCATION
@@ -123,7 +124,7 @@ def test_pinned_helper_yields_identity_bound_booleans_only(tmp_path):
     secondary, pinned_secondary = helper_script(
         tmp_path, "emit({'pid': pid, 'has_token': True, 'is_primary': False, 'is_secondary': True})\n",
         name="secondary.py")
-    record = CredentialObserver(secondary, pinned_secondary, process_reader=stable_processes())(
+    record = CredentialObserver(secondary, pinned_secondary, popen=popen, process_reader=stable_processes())(
         {}, identity())
     assert record["entry"]["is_secondary"] is True
     with pytest.raises(DeliveryRefused) as refused:
@@ -177,7 +178,7 @@ DEFECTS = ["sha_mismatch", "missing", "symlinked", "nonzero_exit", "traceback", 
 @pytest.mark.parametrize("defect", DEFECTS)
 def test_sha_mismatch_missing_helper_nonzero_exit_malformed_or_extra_output_refuse(tmp_path, defect):
     helper, pinned, asked, field = _defects(tmp_path)[defect]
-    observer = CredentialObserver(helper, pinned, process_reader=stable_processes(), timeout=2)
+    observer = CredentialObserver(helper, pinned, popen=popen, process_reader=stable_processes(), timeout=2)
     with pytest.raises(DeliveryRefused) as refused:
         observer({}, asked)
     assert refused_field(refused) == field
@@ -195,7 +196,7 @@ def test_helper_runs_with_no_inherited_environment(tmp_path, monkeypatch):
     helper, pinned = helper_script(
         tmp_path, "json.dump({'keys': sorted(os.environ), 'cwd': os.getcwd(), 'no_bytecode': sys.dont_write_bytecode,"
                   " 'stdin': sys.stdin.read()}, open(" + repr(str(seen)) + ", 'w'))\n" + ANSWER)
-    record = CredentialObserver(helper, pinned, process_reader=stable_processes())({}, identity())
+    record = CredentialObserver(helper, pinned, popen=popen, process_reader=stable_processes())({}, identity())
     facts = json.loads(seen.read_text("utf-8"))
     assert set(facts["keys"]) <= {"PATH", "LANG", "LC_CTYPE"}, facts["keys"]
     assert not any(key.startswith(("CLAUDE", "HARNESS", "ZEUS", "PYTHON")) for key in facts["keys"])
@@ -216,7 +217,7 @@ def test_pid_restart_during_observation_refuses(tmp_path):
         ticks = 9999 if pid == 101 and calls["count"] == 4 else 5000 + pid - 100
         return {"pid": pid, "state": "present", "start_ticks": ticks}
     with pytest.raises(DeliveryRefused) as refused:
-        CredentialObserver(helper, pinned, process_reader=restarted)({}, identity())
+        CredentialObserver(helper, pinned, popen=popen, process_reader=restarted)({}, identity())
     assert refused_field(refused) == "identity"
     for answer in ({"pid": 101, "state": "absent"}, {"pid": 101, "state": "replaced"},
                    {"pid": 101, "state": "present", "start_ticks": None}, {"pid": 7, "state": "present",
@@ -224,13 +225,13 @@ def test_pid_restart_during_observation_refuses(tmp_path):
         def reader(value, answer=answer):
             return answer if value == 101 else {"pid": value, "state": "present", "start_ticks": 5000}
         with pytest.raises(DeliveryRefused) as refused:
-            CredentialObserver(helper, pinned, process_reader=reader)({}, identity())
+            CredentialObserver(helper, pinned, popen=popen, process_reader=reader)({}, identity())
         assert refused_field(refused) == "identity"
 
     def unreadable(pid):
         raise OSError("proc unreadable (labelled)")
     with pytest.raises(DeliveryRefused) as refused:
-        CredentialObserver(helper, pinned, process_reader=unreadable)({}, identity())
+        CredentialObserver(helper, pinned, popen=popen, process_reader=unreadable)({}, identity())
     assert refused_field(refused) == "identity"
 
 
@@ -358,3 +359,13 @@ def test_the_canary_executor_is_built_only_when_arm_dispatches(monkeypatch):
     assert [entry[0] for entry in built] == ["launcher", "executor"] and fleet.registry_reads == 1
     assert built[0][2] is host and executor._executor.calls[0][3] == 5.0 and len(executor._executor.calls) == 2
 
+
+
+# ----- G1-14b: the process chokepoint is injected, never a fallback ----------------------------------------
+@posix_only
+def test_an_observer_without_an_injected_popen_refuses_and_starts_nothing(tmp_path):
+    """Target-only (chokepoint rule): only `host_os.adapters.process_groups` creates processes."""
+    helper, pinned = helper_script(tmp_path, ANSWER)
+    with pytest.raises(DeliveryRefused) as excinfo:
+        CredentialObserver(helper, pinned, process_reader=stable_processes())({}, identity())
+    assert refused_field(excinfo) == "credentials"
