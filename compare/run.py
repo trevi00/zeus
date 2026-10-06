@@ -57,8 +57,12 @@ provider_guard.install()
 # goldens were recorded with (the pg17 index of 2026-08-13; redis 7.4-alpine).
 PG_IMAGE = "pgvector/pgvector@sha256:cf134a767f474095eeba57e0117be8e568e011a63f33fbf252f14c9b760f8e6f"
 REDIS_IMAGE = "redis@sha256:858f009f9709ce576febc734aa78b8f6d624b82571f9ddb6bda4377c833b3499"
-TARGET_PYTHON = ROOT / "target" / ".venv" / "bin" / "python"
-TARGET_SRC = ROOT / "target" / "src"
+# The one layout constant of this tool: the promotion sets ROOT; DESIGN-s11 §20.5.
+TARGET_DIR = ROOT / "target"
+TARGET_PREFIX = "target/"  # the repo-relative git prefix of TARGET_DIR; the promotion sets ROOT
+TARGET_PYTHON = TARGET_DIR / ".venv" / "bin" / "python"
+TARGET_SRC = TARGET_DIR / "src"
+TARGET_VENV_MISSING = f"target venv missing: run `uv sync --frozen --project {TARGET_PREFIX.rstrip('/')}`"
 
 BASELINE = json.loads((COMPARE / "baseline.json").read_text(encoding="utf-8"))
 SOURCE_COMMIT = BASELINE["source"]["commit"]
@@ -74,41 +78,120 @@ def git(*args: str, cwd: Path = ROOT, text: bool = True):
     return subprocess.run(["git", *args], cwd=cwd, check=True, capture_output=True, text=text).stdout
 
 
-def check_tree() -> dict:
+def check_tree(root: Path | None = None, source_commit: str | None = None, baseline: dict | None = None) -> dict:
+    """The layout check, dispatched on `baseline["layout"]["mode"]` (absent = "two-tree"). The arguments default to the
+    module globals; tests pass a fixture repository."""
+    root = ROOT if root is None else root
+    source_commit = SOURCE_COMMIT if source_commit is None else source_commit
+    baseline = BASELINE if baseline is None else baseline
+    mode = baseline["layout"].get("mode", "two-tree")
+    if mode == "promoted":
+        return _check_tree_promoted(root, source_commit, baseline)
+    if mode != "two-tree":
+        raise ValueError(f"unknown layout mode {mode!r}")
+    return _check_tree_two_tree(root, source_commit, baseline)
+
+
+def _check_tree_two_tree(root: Path, source_commit: str, baseline: dict) -> dict:
     """Reference bytes unchanged; only allowed paths changed; no credential-shaped strings added."""
-    allowed = BASELINE["layout"]["allowed_changed_paths"]
+    allowed = baseline["layout"]["allowed_changed_paths"]
     excludes = [f":(exclude){a.rstrip('/')}" for a in allowed]
-    unchanged = subprocess.run(["git", "diff", "--quiet", SOURCE_COMMIT, "--", ".", *excludes],
-                               cwd=ROOT).returncode == 0
+    unchanged = subprocess.run(["git", "diff", "--quiet", source_commit, "--", ".", *excludes],
+                               cwd=root).returncode == 0
     # The docs index and the design SSOT may only gain a link/pointer line (§3.1).
     additions_only = {}
-    for path, limit in BASELINE["layout"]["additions_only"].items():
-        numstat = git("diff", "--numstat", SOURCE_COMMIT, "--", path).split()
+    for path, limit in baseline["layout"]["additions_only"].items():
+        numstat = git("diff", "--numstat", source_commit, "--", path, cwd=root).split()
         added, deleted = (int(numstat[0]), int(numstat[1])) if numstat else (0, 0)
         additions_only[path] = {"added": added, "deleted": deleted,
                                 "ok": deleted == 0 and added <= limit}
-    changed = [p for p in git("diff", "--name-only", SOURCE_COMMIT, "--").splitlines() if p]
-    changed += [p for p in git("ls-files", "--others", "--exclude-standard").splitlines() if p]
+    changed = [p for p in git("diff", "--name-only", source_commit, "--", cwd=root).splitlines() if p]
+    changed += [p for p in git("ls-files", "--others", "--exclude-standard", cwd=root).splitlines() if p]
     outside = sorted(p for p in set(changed)
                      if not any(p == a or p.startswith(a.rstrip("/") + "/") for a in allowed))
     shaped = []
     for path in sorted(set(changed)):
-        file = ROOT / path
+        file = root / path
         if not file.is_file():
             continue
         text = file.read_text(encoding="utf-8", errors="replace")
         for pattern in SECRET_SHAPES:
             if pattern.search(text):
                 shaped.append({"path": path, "pattern": pattern.pattern})
-    head_tree = git("rev-parse", f"{SOURCE_COMMIT}^{{tree}}").strip()
-    return {"source_commit": SOURCE_COMMIT, "source_tree": head_tree,
-            "source_tree_matches_baseline": head_tree == BASELINE["source"]["tree"],
+    head_tree = git("rev-parse", f"{source_commit}^{{tree}}", cwd=root).strip()
+    return {"source_commit": source_commit, "source_tree": head_tree,
+            "source_tree_matches_baseline": head_tree == baseline["source"]["tree"],
             "reference_paths_unchanged": unchanged, "changed_paths": len(set(changed)),
             "changed_outside_allowed": outside, "credential_shaped_strings": shaped,
             "additions_only": additions_only,
             "ok": unchanged and not outside and not shaped
             and all(v["ok"] for v in additions_only.values())
-            and head_tree == BASELINE["source"]["tree"]}
+            and head_tree == baseline["source"]["tree"]}
+
+
+LIST_BOUND = 50
+
+
+def _hash_working_files(root: Path, paths: list[str]) -> dict[str, str]:
+    """Blob ids of the working-tree files among `paths` (modified and untracked included)."""
+    present = [p for p in paths if (root / p).is_file()]
+    if not present:
+        return {}
+    done = subprocess.run(["git", "hash-object", "--stdin-paths"], cwd=root, check=True, capture_output=True,
+                          text=True, input="\n".join(present) + "\n")
+    return dict(zip(present, done.stdout.split()))
+
+
+def _check_tree_promoted(root: Path, source_commit: str, baseline: dict) -> dict:
+    """DESIGN-s11 §20.5 archive rule (promoted layout): (a) every SOURCE path has its SOURCE blob at the root path or at
+    `reference/m7/<path>` (or is an additions-only path); (b) everything under `reference/` is `reference/README.md` or
+    a `reference/m7/<q>` equal to SOURCE's `<q>`; (c) no credential-shaped string in a path changed vs SOURCE; (d) the
+    SOURCE tree id equals the baseline's. Dormant until the baseline's layout mode is "promoted"."""
+    layout = baseline["layout"]
+    archive = "reference/m7/"
+    listing = git("ls-tree", "-r", "-z", source_commit, cwd=root)
+    source = {}  # path -> blob id (gitlinks are not blobs)
+    for entry in listing.split("\0"):
+        if not entry:
+            continue
+        meta, path = entry.split("\t", 1)
+        mode, kind, blob = meta.split()
+        if kind == "blob":
+            source[path] = blob
+    additions_only = {}
+    for path, limit in layout["additions_only"].items():
+        numstat = git("diff", "--numstat", source_commit, "--", path, cwd=root).split()
+        added, deleted = (int(numstat[0]), int(numstat[1])) if numstat else (0, 0)
+        additions_only[path] = {"added": added, "deleted": deleted, "ok": deleted == 0 and added <= limit}
+    tracked_reference = git("ls-files", "-z", "--", "reference", cwd=root).split("\0")
+    untracked_reference = git("ls-files", "-z", "--others", "--exclude-standard", "--", "reference", cwd=root).split("\0")
+    reference = sorted({p for p in tracked_reference + untracked_reference if p and (root / p).is_file()})
+    working = _hash_working_files(root, [*source, *(archive + p for p in source), *reference])
+    missing = sorted(p for p, blob in source.items() if p not in layout["additions_only"]
+                     and working.get(p) != blob and working.get(archive + p) != blob)
+    foreign = [p for p in reference if p != "reference/README.md"
+               and not (p.startswith(archive) and source.get(p[len(archive):]) == working.get(p))]
+    changed = [p for p in git("diff", "--name-only", source_commit, "--", cwd=root).splitlines() if p]
+    changed += [p for p in git("ls-files", "--others", "--exclude-standard", cwd=root).splitlines() if p]
+    shaped = []
+    for path in sorted(set(changed)):
+        file = root / path
+        if not file.is_file():
+            continue
+        text = file.read_text(encoding="utf-8", errors="replace")
+        for pattern in SECRET_SHAPES:
+            if pattern.search(text):
+                shaped.append({"path": path, "pattern": pattern.pattern})
+    head_tree = git("rev-parse", f"{source_commit}^{{tree}}", cwd=root).strip()
+    return {"mode": "promoted", "source_commit": source_commit, "source_tree": head_tree,
+            "source_tree_matches_baseline": head_tree == baseline["source"]["tree"],
+            "missing_source_paths": missing[:LIST_BOUND], "missing_source_paths_count": len(missing),
+            "foreign_reference_paths": foreign[:LIST_BOUND], "foreign_reference_paths_count": len(foreign),
+            "changed_paths": len(set(changed)), "credential_shaped_strings": shaped,
+            "additions_only": additions_only,
+            "ok": not missing and not foreign and not shaped
+            and all(v["ok"] for v in additions_only.values())
+            and head_tree == baseline["source"]["tree"]}
 
 
 def prepare() -> dict:
@@ -461,7 +544,7 @@ def apply_intended_differences(golden, declarations) -> tuple[object, list[str]]
 
 def run_target(driver_path: Path, work: Path, extra: dict, use_bwrap: bool) -> dict:
     if not TARGET_PYTHON.exists():
-        return {"error": "target venv missing: run `uv sync --frozen --project target`"}
+        return {"error": TARGET_VENV_MISSING}
     target_work = work / "target-side"
     target_work.mkdir()
     return run_driver(TARGET_PYTHON, driver_path, target_work,
@@ -591,7 +674,7 @@ def target_integration() -> dict:
     """The target test suite with its integration tests enabled against a labelled disposable
     PostgreSQL and Redis (§5.1 integration job; R-X: never the host's production ports)."""
     if not TARGET_PYTHON.exists():
-        return {"error": "target venv missing: run `uv sync --frozen --project target`"}
+        return {"error": TARGET_VENV_MISSING}
     SCRATCH.mkdir(parents=True, exist_ok=True)
     with tempfile.TemporaryDirectory(prefix="zeus-s1-integration-", dir=SCRATCH) as raw:
         work = Path(raw)
@@ -599,7 +682,7 @@ def target_integration() -> dict:
             env = provider_guard.child_environment(work / "env", extra={
                 "HARNESS_INTEGRATION": "1", "ZEUS_TEST_DSN": database.dsn, "HARNESS_REDIS_URL": redis_fixture.url})
             done = subprocess.run([str(TARGET_PYTHON), "-m", "pytest", "-q", "-p", "no:cacheprovider", "-rfEs",
-                                   "--basetemp", str(work / "pytest")], cwd=str(ROOT / "target"), env=env,
+                                   "--basetemp", str(work / "pytest")], cwd=str(TARGET_DIR), env=env,
                                   capture_output=True, text=True, timeout=1800)
     lines = done.stdout.strip().splitlines()
     tail = lines[-15:]
@@ -615,7 +698,7 @@ def docker_fixture() -> dict:
     default-deny except for exactly these forms; the fake `docker` of the child environment is removed so
     the admitted calls reach the real client, while the fake provider CLIs stay first on PATH."""
     if not TARGET_PYTHON.exists():
-        return {"error": "target venv missing: run `uv sync --frozen --project target`"}
+        return {"error": TARGET_VENV_MISSING}
     SCRATCH.mkdir(parents=True, exist_ok=True)
     with tempfile.TemporaryDirectory(prefix="zeus-s3-docker-", dir=SCRATCH) as raw:
         work = Path(raw)
@@ -626,7 +709,7 @@ def docker_fixture() -> dict:
         (work / "env" / "fakebin" / "docker").unlink()
         done = subprocess.run([str(TARGET_PYTHON), "-m", "pytest", "-q", "-p", "no:cacheprovider", "-rs",
                                "--basetemp", str(work / "pytest"), "tests/test_s3_docker_fixture.py"],
-                              cwd=str(ROOT / "target"), env=env, capture_output=True, text=True, timeout=900)
+                              cwd=str(TARGET_DIR), env=env, capture_output=True, text=True, timeout=900)
     tail = done.stdout.strip().splitlines()[-15:]
     summary = tail[-1] if tail else ""
     ok = done.returncode == 0 and " passed" in summary and "skipped" not in summary
@@ -643,7 +726,7 @@ def _owner_pytest(env: dict, work: Path, files: list[str], timeout: int, junit: 
     junit = str(Path(junit).resolve()) if junit else None  # pytest runs in target/: a relative path would move
     done = subprocess.run([str(TARGET_PYTHON), "-m", "pytest", "-q", "-p", "no:cacheprovider", "-rs",
                            "--basetemp", str(work / "pytest"), *(["--junitxml", junit] if junit else []), *files],
-                          cwd=str(ROOT / "target"), env=env, capture_output=True, text=True, timeout=timeout)
+                          cwd=str(TARGET_DIR), env=env, capture_output=True, text=True, timeout=timeout)
     lines = done.stdout.strip().splitlines()
     summary = lines[-1] if lines else ""
     missed = [line for line in lines if line.startswith("SKIPPED") and any(m in line for m in OWNER_DOCKER_SKIP_MARKERS)]
@@ -659,7 +742,7 @@ def verify_stack(junit: str | None = None) -> dict:
     """The ported VerificationServices Docker tests on real disposable compose stacks, under the guard with the
     fixture opt-in plus `ZEUS_TEST_DOCKER_VERIFY_STACK` (exactly the stack's admitted forms; provider_guard.py)."""
     if not TARGET_PYTHON.exists():
-        return {"error": "target venv missing: run `uv sync --frozen --project target`"}
+        return {"error": TARGET_VENV_MISSING}
     SCRATCH.mkdir(parents=True, exist_ok=True)
     with tempfile.TemporaryDirectory(prefix="zeus-verify-stack-", dir=SCRATCH) as raw:
         work = Path(raw)
@@ -674,7 +757,7 @@ def migration_rehearsal(junit: str | None = None) -> dict:
     """The ported PostgreSQL migration rehearsal on the `disposable-postgresql-pair` fixture (PostgresPair), under the
     guard with only its `docker exec` pg tool forms (DOCKER_PGEXEC), as the restore.pg families run."""
     if not TARGET_PYTHON.exists():
-        return {"error": "target venv missing: run `uv sync --frozen --project target`"}
+        return {"error": TARGET_VENV_MISSING}
     SCRATCH.mkdir(parents=True, exist_ok=True)
     with tempfile.TemporaryDirectory(prefix="zeus-pg-rehearsal-", dir=SCRATCH) as raw:
         work = Path(raw)
@@ -697,7 +780,7 @@ def wheel_check(wheel: str, ref: str = "HEAD") -> dict:
     import base64
     import csv
     import io
-    prefix = "target/src/"
+    prefix = TARGET_PREFIX + "src/"
     tree = [p for p in git("ls-files", "--", prefix + "codex_harness", prefix + "zeus").splitlines() if p]
     expected = {p[len(prefix):]: p for p in tree}
     with zipfile.ZipFile(wheel) as zf:
