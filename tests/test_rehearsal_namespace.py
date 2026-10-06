@@ -425,11 +425,11 @@ def make_source(tmp_path):
     health = src / "runtime" / "control" / "observations" / "health"
     health.mkdir(parents=True)
     (health / "h1.json").write_text('{"n": 1}', encoding="ascii")
-    (src / "runtime" / "monitoring.json").write_text('{"m": 1}', encoding="ascii")
+    (src / "runtime" / "control" / "monitoring.json").write_text('{"m": 1}', encoding="ascii")
     (src / "runtime" / "tokobs").mkdir()
     (src / "runtime" / "tokobs" / "ledger.sqlite3").write_bytes(b"tokobs-ledger")
-    (src / "managed-fleet").mkdir()
-    (src / "managed-fleet" / "heartbeat").write_text("beat", encoding="ascii")
+    (src / "runtime" / "managed-fleet").mkdir()
+    (src / "runtime" / "managed-fleet" / "heartbeat.json").write_text("beat", encoding="ascii")
     return src
 
 
@@ -438,19 +438,20 @@ def test_a_file_added_after_the_snapshot_is_not_in_the_copy_and_copy_edits_never
     manifest = cp.snapshot_volatile(src, dst)
     (src / "runtime" / "control" / "observations" / "health" / "late.json").write_text("late", encoding="ascii")
     assert not (dst / "runtime" / "control" / "observations" / "health" / "late.json").exists()
-    copy = dst / "runtime" / "monitoring.json"
+    copy = dst / "runtime" / "control" / "monitoring.json"
     assert copy.read_text() == '{"m": 1}'
     copy.write_text('{"m": "changed in the copy"}', encoding="ascii")
-    assert (src / "runtime" / "monitoring.json").read_text() == '{"m": 1}'
-    assert os.stat(copy).st_ino != os.stat(src / "runtime" / "monitoring.json").st_ino
+    assert (src / "runtime" / "control" / "monitoring.json").read_text() == '{"m": 1}'
+    assert os.stat(copy).st_ino != os.stat(src / "runtime" / "control" / "monitoring.json").st_ino
     assert {e["path"] for e in manifest["files"]} == {
-        "runtime/control/observations/health/h1.json", "runtime/monitoring.json", "managed-fleet/heartbeat"}
+        "runtime/control/observations/health/h1.json", "runtime/control/monitoring.json",
+        "runtime/managed-fleet/heartbeat.json"}
     assert all(len(e["sha256"]) == 64 and e["mtime_ns"] > 0 for e in manifest["files"]) and manifest["skew_ns"] >= 0
 
 
 def test_tokobs_is_excluded_and_a_declared_path_inside_the_exclusion_is_refused(tmp_path):
     src, dst = make_source(tmp_path), tmp_path / "dst"
-    manifest = cp.snapshot_volatile(src, dst, volatile=("runtime/monitoring.json", "runtime/tokobs/ledger.sqlite3")[:1])
+    manifest = cp.snapshot_volatile(src, dst, volatile=("runtime/control/monitoring.json",))
     assert not (dst / "runtime" / "tokobs").exists() and manifest["excluded"] == ["runtime/tokobs"]
     with pytest.raises(Refused) as info:
         cp.snapshot_volatile(src, tmp_path / "dst2", volatile=("runtime/tokobs/ledger.sqlite3",))
@@ -462,7 +463,7 @@ def test_tokobs_is_excluded_and_a_declared_path_inside_the_exclusion_is_refused(
 
 def test_the_snapshot_succeeds_while_a_writer_keeps_touching_a_volatile_file_and_records_what_it_wrote(tmp_path):
     src, dst = make_source(tmp_path), tmp_path / "dst"
-    target, stop = src / "runtime" / "monitoring.json", threading.Event()
+    target, stop = src / "runtime" / "control" / "monitoring.json", threading.Event()
 
     def writer():
         n = 0
@@ -477,16 +478,16 @@ def test_the_snapshot_succeeds_while_a_writer_keeps_touching_a_volatile_file_and
     finally:
         stop.set()
         thread.join()
-    entry = next(e for e in manifest["files"] if e["path"] == "runtime/monitoring.json")
+    entry = next(e for e in manifest["files"] if e["path"] == "runtime/control/monitoring.json")
     import hashlib
 
-    data = (dst / "runtime" / "monitoring.json").read_bytes()
+    data = (dst / "runtime" / "control" / "monitoring.json").read_bytes()
     assert hashlib.sha256(data).hexdigest() == entry["sha256"] and entry["size"] == len(data)
 
 
 def test_a_symlinked_volatile_path_is_refused(tmp_path):
     src = make_source(tmp_path)
-    (src / "runtime" / "link.json").symlink_to(src / "runtime" / "monitoring.json")
+    (src / "runtime" / "link.json").symlink_to(src / "runtime" / "control" / "monitoring.json")
     with pytest.raises(Refused) as info:
         cp.snapshot_volatile(src, tmp_path / "dst", volatile=("runtime/link.json",))
     assert info.value.code == "volatile_symlink"

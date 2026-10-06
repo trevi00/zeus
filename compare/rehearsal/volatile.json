@@ -1,0 +1,659 @@
+{
+ "base": "/srv/zeus",
+ "excluded": [
+  {
+   "path": "runtime/tokobs",
+   "reason": "the tokobs collector's ledger is not Zeus state (critique #5); it is never staged or compared"
+  }
+ ],
+ "observation": {
+  "at": "2026-10-06T08:52:13Z",
+  "changed_between_listings": [
+   "runtime/control/monitoring.json",
+   "runtime/control/observations/health/*.json",
+   "runtime/managed-fleet/heartbeat.json"
+  ],
+  "dir_mtime_only": [
+   "runtime/control",
+   "runtime/control/observations/health",
+   "runtime/managed-fleet"
+  ],
+  "entries_per_listing": 358490,
+  "interval_s": 60,
+  "method": "find runtime managed-fleet -printf '%P %T@\\n' twice, 60 s apart, names and mtimes only; runtime/tokobs pruned; no content read"
+ },
+ "r0_revisions": [
+  "5aa220fd",
+  "ced20281",
+  "08bb9a44",
+  "1b9d746c",
+  "5c67f099"
+ ],
+ "schema": "rehearsal-volatile/1",
+ "volatile": [
+  {
+   "kind": "file",
+   "observed_changing": true,
+   "path": "runtime/control/monitoring.json",
+   "why": "the monitor-collect timer unit replaces the snapshot atomically on every collection",
+   "writers": [
+    {
+     "file": "src/codex_harness/monitor.py",
+     "line": 86,
+     "rev": "5aa220fd",
+     "text": "os.replace(temp, snapshot)"
+    },
+    {
+     "file": "src/codex_harness/monitor.py",
+     "line": 86,
+     "rev": "ced20281",
+     "text": "os.replace(temp, snapshot)"
+    },
+    {
+     "file": "src/codex_harness/monitor.py",
+     "line": 97,
+     "rev": "08bb9a44",
+     "text": "os.replace(temp, snapshot)"
+    },
+    {
+     "file": "src/codex_harness/monitor.py",
+     "line": 97,
+     "rev": "1b9d746c",
+     "text": "os.replace(temp, snapshot)"
+    },
+    {
+     "file": "src/codex_harness/monitor.py",
+     "line": 97,
+     "rev": "5c67f099",
+     "text": "os.replace(temp, snapshot)"
+    }
+   ]
+  },
+  {
+   "kind": "file",
+   "observed_changing": false,
+   "path": "runtime/control/monitor-collector.log",
+   "why": "the monitor-collect unit appends its run journal",
+   "writers": [
+    {
+     "file": "src/codex_harness/monitor.py",
+     "line": 60,
+     "rev": "5aa220fd",
+     "text": "Journal(runtime / 'monitor-collector.log')"
+    },
+    {
+     "file": "src/codex_harness/monitor.py",
+     "line": 60,
+     "rev": "ced20281",
+     "text": "Journal(runtime / 'monitor-collector.log')"
+    },
+    {
+     "file": "src/codex_harness/monitor.py",
+     "line": 66,
+     "rev": "08bb9a44",
+     "text": "Journal(runtime / 'monitor-collector.log')"
+    },
+    {
+     "file": "src/codex_harness/monitor.py",
+     "line": 66,
+     "rev": "1b9d746c",
+     "text": "Journal(runtime / 'monitor-collector.log')"
+    },
+    {
+     "file": "src/codex_harness/monitor.py",
+     "line": 66,
+     "rev": "5c67f099",
+     "text": "Journal(runtime / 'monitor-collector.log')"
+    }
+   ]
+  },
+  {
+   "kind": "file",
+   "observed_changing": false,
+   "path": "runtime/control/monitor-collector.lock",
+   "why": "the monitor-collect unit takes this file lock on every run",
+   "writers": [
+    {
+     "file": "src/codex_harness/monitor.py",
+     "line": 70,
+     "rev": "5aa220fd",
+     "text": "FileLock(str(runtime / 'monitor-collector.lock'), timeout=0)"
+    },
+    {
+     "file": "src/codex_harness/monitor.py",
+     "line": 70,
+     "rev": "ced20281",
+     "text": "FileLock(str(runtime / 'monitor-collector.lock'), timeout=0)"
+    },
+    {
+     "file": "src/codex_harness/monitor.py",
+     "line": 76,
+     "rev": "08bb9a44",
+     "text": "FileLock(str(runtime / 'monitor-collector.lock'), timeout=0)"
+    },
+    {
+     "file": "src/codex_harness/monitor.py",
+     "line": 76,
+     "rev": "1b9d746c",
+     "text": "FileLock(str(runtime / 'monitor-collector.lock'), timeout=0)"
+    },
+    {
+     "file": "src/codex_harness/monitor.py",
+     "line": 76,
+     "rev": "5c67f099",
+     "text": "FileLock(str(runtime / 'monitor-collector.lock'), timeout=0)"
+    }
+   ]
+  },
+  {
+   "kind": "dir",
+   "observed_changing": true,
+   "path": "runtime/control/observations/health",
+   "why": "every executor process run rewrites its own health record here",
+   "writers": [
+    {
+     "file": "src/codex_harness/adapters/observation_spool.py",
+     "line": 604,
+     "rev": "5aa220fd",
+     "text": "path = self.root / \"health\" / (process_run_id + \".json\")"
+    },
+    {
+     "file": "src/codex_harness/adapters/observation_spool.py",
+     "line": 604,
+     "rev": "ced20281",
+     "text": "path = self.root / \"health\" / (process_run_id + \".json\")"
+    },
+    {
+     "file": "src/codex_harness/adapters/observation_spool.py",
+     "line": 604,
+     "rev": "08bb9a44",
+     "text": "path = self.root / \"health\" / (process_run_id + \".json\")"
+    },
+    {
+     "file": "src/codex_harness/adapters/observation_spool.py",
+     "line": 604,
+     "rev": "1b9d746c",
+     "text": "path = self.root / \"health\" / (process_run_id + \".json\")"
+    },
+    {
+     "file": "src/codex_harness/adapters/observation_spool.py",
+     "line": 604,
+     "rev": "5c67f099",
+     "text": "path = self.root / \"health\" / (process_run_id + \".json\")"
+    }
+   ]
+  },
+  {
+   "kind": "file",
+   "observed_changing": false,
+   "path": "runtime/control/fleet-service-journal.jsonl",
+   "why": "the fleet unit appends a start and an exit line (ExecStartPre / ExecStopPost)",
+   "writers": [
+    {
+     "file": "deploy/aibox/systemd/zeus-aibox-fleet.service.in",
+     "line": 34,
+     "rev": "5aa220fd",
+     "text": "journal start --role fleet --journal"
+    },
+    {
+     "file": "deploy/aibox/systemd/zeus-aibox-fleet.service.in",
+     "line": 34,
+     "rev": "ced20281",
+     "text": "journal start --role fleet --journal"
+    },
+    {
+     "file": "deploy/aibox/systemd/zeus-aibox-fleet.service.in",
+     "line": 34,
+     "rev": "08bb9a44",
+     "text": "journal start --role fleet --journal"
+    },
+    {
+     "file": "deploy/aibox/systemd/zeus-aibox-fleet.service.in",
+     "line": 34,
+     "rev": "1b9d746c",
+     "text": "journal start --role fleet --journal"
+    },
+    {
+     "file": "deploy/aibox/systemd/zeus-aibox-fleet.service.in",
+     "line": 34,
+     "rev": "5c67f099",
+     "text": "journal start --role fleet --journal"
+    },
+    {
+     "file": "deploy/aibox/systemd/zeus-aibox-fleet.service.in",
+     "line": 38,
+     "rev": "5aa220fd",
+     "text": "journal exit --role fleet --journal"
+    },
+    {
+     "file": "deploy/aibox/systemd/zeus-aibox-fleet.service.in",
+     "line": 38,
+     "rev": "ced20281",
+     "text": "journal exit --role fleet --journal"
+    },
+    {
+     "file": "deploy/aibox/systemd/zeus-aibox-fleet.service.in",
+     "line": 38,
+     "rev": "08bb9a44",
+     "text": "journal exit --role fleet --journal"
+    },
+    {
+     "file": "deploy/aibox/systemd/zeus-aibox-fleet.service.in",
+     "line": 38,
+     "rev": "1b9d746c",
+     "text": "journal exit --role fleet --journal"
+    },
+    {
+     "file": "deploy/aibox/systemd/zeus-aibox-fleet.service.in",
+     "line": 38,
+     "rev": "5c67f099",
+     "text": "journal exit --role fleet --journal"
+    }
+   ]
+  },
+  {
+   "kind": "file",
+   "observed_changing": true,
+   "path": "runtime/managed-fleet/heartbeat.json",
+   "why": "the managed Fleet instance rewrites its heartbeat every cycle",
+   "writers": [
+    {
+     "file": "src/codex_harness/adapters/managed_runtime.py",
+     "line": 657,
+     "rev": "5aa220fd",
+     "text": "_write_json(self.root / HEARTBEAT_FILE,"
+    },
+    {
+     "file": "src/codex_harness/adapters/managed_runtime.py",
+     "line": 657,
+     "rev": "ced20281",
+     "text": "_write_json(self.root / HEARTBEAT_FILE,"
+    },
+    {
+     "file": "src/codex_harness/adapters/managed_runtime.py",
+     "line": 906,
+     "rev": "08bb9a44",
+     "text": "_write_json(self.root / HEARTBEAT_FILE,"
+    },
+    {
+     "file": "src/codex_harness/adapters/managed_runtime.py",
+     "line": 906,
+     "rev": "1b9d746c",
+     "text": "_write_json(self.root / HEARTBEAT_FILE,"
+    },
+    {
+     "file": "src/codex_harness/adapters/managed_runtime.py",
+     "line": 657,
+     "rev": "5c67f099",
+     "text": "_write_json(self.root / HEARTBEAT_FILE,"
+    }
+   ]
+  },
+  {
+   "kind": "file",
+   "observed_changing": false,
+   "path": "runtime/managed-fleet/controller-state.json",
+   "why": "the host-delivery controller rewrites the launch record on every (re)launch",
+   "writers": [
+    {
+     "file": "src/codex_harness/adapters/host_delivery.py",
+     "line": 783,
+     "rev": "5aa220fd",
+     "text": "_write_json(self.path(target, STATE_FILE), record)"
+    },
+    {
+     "file": "src/codex_harness/adapters/host_delivery.py",
+     "line": 827,
+     "rev": "5aa220fd",
+     "text": "_write_json(self.path(target, STATE_FILE), record)"
+    },
+    {
+     "file": "src/codex_harness/adapters/host_delivery.py",
+     "line": 759,
+     "rev": "ced20281",
+     "text": "_write_json(self.path(target, STATE_FILE), record)"
+    },
+    {
+     "file": "src/codex_harness/adapters/host_delivery.py",
+     "line": 803,
+     "rev": "ced20281",
+     "text": "_write_json(self.path(target, STATE_FILE), record)"
+    },
+    {
+     "file": "src/codex_harness/adapters/host_delivery.py",
+     "line": 988,
+     "rev": "08bb9a44",
+     "text": "_write_json(self.path(target, STATE_FILE), record)"
+    },
+    {
+     "file": "src/codex_harness/adapters/host_delivery.py",
+     "line": 1032,
+     "rev": "08bb9a44",
+     "text": "_write_json(self.path(target, STATE_FILE), record)"
+    },
+    {
+     "file": "src/codex_harness/adapters/host_delivery.py",
+     "line": 988,
+     "rev": "1b9d746c",
+     "text": "_write_json(self.path(target, STATE_FILE), record)"
+    },
+    {
+     "file": "src/codex_harness/adapters/host_delivery.py",
+     "line": 1032,
+     "rev": "1b9d746c",
+     "text": "_write_json(self.path(target, STATE_FILE), record)"
+    },
+    {
+     "file": "src/codex_harness/adapters/host_delivery.py",
+     "line": 864,
+     "rev": "5c67f099",
+     "text": "_write_json(self.path(target, STATE_FILE), record)"
+    },
+    {
+     "file": "src/codex_harness/adapters/host_delivery.py",
+     "line": 908,
+     "rev": "5c67f099",
+     "text": "_write_json(self.path(target, STATE_FILE), record)"
+    },
+    {
+     "file": "src/codex_harness/adapters/managed_runtime.py",
+     "line": 367,
+     "rev": "5aa220fd",
+     "text": "_write_json(self.path(target, STATE_FILE), record)"
+    },
+    {
+     "file": "src/codex_harness/adapters/managed_runtime.py",
+     "line": 569,
+     "rev": "5aa220fd",
+     "text": "_write_json(self.path(target, STATE_FILE), record)"
+    },
+    {
+     "file": "src/codex_harness/adapters/managed_runtime.py",
+     "line": 367,
+     "rev": "ced20281",
+     "text": "_write_json(self.path(target, STATE_FILE), record)"
+    },
+    {
+     "file": "src/codex_harness/adapters/managed_runtime.py",
+     "line": 569,
+     "rev": "ced20281",
+     "text": "_write_json(self.path(target, STATE_FILE), record)"
+    },
+    {
+     "file": "src/codex_harness/adapters/managed_runtime.py",
+     "line": 402,
+     "rev": "08bb9a44",
+     "text": "_write_json(self.path(target, STATE_FILE), record)"
+    },
+    {
+     "file": "src/codex_harness/adapters/managed_runtime.py",
+     "line": 609,
+     "rev": "08bb9a44",
+     "text": "_write_json(self.path(target, STATE_FILE), record)"
+    },
+    {
+     "file": "src/codex_harness/adapters/managed_runtime.py",
+     "line": 402,
+     "rev": "1b9d746c",
+     "text": "_write_json(self.path(target, STATE_FILE), record)"
+    },
+    {
+     "file": "src/codex_harness/adapters/managed_runtime.py",
+     "line": 609,
+     "rev": "1b9d746c",
+     "text": "_write_json(self.path(target, STATE_FILE), record)"
+    },
+    {
+     "file": "src/codex_harness/adapters/managed_runtime.py",
+     "line": 367,
+     "rev": "5c67f099",
+     "text": "_write_json(self.path(target, STATE_FILE), record)"
+    },
+    {
+     "file": "src/codex_harness/adapters/managed_runtime.py",
+     "line": 569,
+     "rev": "5c67f099",
+     "text": "_write_json(self.path(target, STATE_FILE), record)"
+    }
+   ]
+  },
+  {
+   "kind": "file",
+   "observed_changing": false,
+   "path": "runtime/managed-fleet/managed-launch.json",
+   "why": "the controller rewrites the launch request on every (re)launch",
+   "writers": [
+    {
+     "file": "src/codex_harness/adapters/managed_runtime.py",
+     "line": 559,
+     "rev": "5aa220fd",
+     "text": "_write_json(self.path(target, LAUNCH_REQUEST_FILE), request)"
+    },
+    {
+     "file": "src/codex_harness/adapters/managed_runtime.py",
+     "line": 559,
+     "rev": "ced20281",
+     "text": "_write_json(self.path(target, LAUNCH_REQUEST_FILE), request)"
+    },
+    {
+     "file": "src/codex_harness/adapters/managed_runtime.py",
+     "line": 599,
+     "rev": "08bb9a44",
+     "text": "_write_json(self.path(target, LAUNCH_REQUEST_FILE), request)"
+    },
+    {
+     "file": "src/codex_harness/adapters/managed_runtime.py",
+     "line": 599,
+     "rev": "1b9d746c",
+     "text": "_write_json(self.path(target, LAUNCH_REQUEST_FILE), request)"
+    },
+    {
+     "file": "src/codex_harness/adapters/managed_runtime.py",
+     "line": 559,
+     "rev": "5c67f099",
+     "text": "_write_json(self.path(target, LAUNCH_REQUEST_FILE), request)"
+    }
+   ]
+  },
+  {
+   "kind": "file",
+   "observed_changing": false,
+   "path": "runtime/managed-fleet/managed-target.json",
+   "why": "the controller republishes the owner target snapshot when it differs",
+   "writers": [
+    {
+     "file": "src/codex_harness/adapters/managed_runtime.py",
+     "line": 357,
+     "rev": "5aa220fd",
+     "text": "_write_json(self.path(target, TARGET_FILE), owner_target(target))"
+    },
+    {
+     "file": "src/codex_harness/adapters/managed_runtime.py",
+     "line": 553,
+     "rev": "5aa220fd",
+     "text": "_write_json(self.path(target, TARGET_FILE), owner_target(target))"
+    },
+    {
+     "file": "src/codex_harness/adapters/managed_runtime.py",
+     "line": 357,
+     "rev": "ced20281",
+     "text": "_write_json(self.path(target, TARGET_FILE), owner_target(target))"
+    },
+    {
+     "file": "src/codex_harness/adapters/managed_runtime.py",
+     "line": 553,
+     "rev": "ced20281",
+     "text": "_write_json(self.path(target, TARGET_FILE), owner_target(target))"
+    },
+    {
+     "file": "src/codex_harness/adapters/managed_runtime.py",
+     "line": 388,
+     "rev": "08bb9a44",
+     "text": "_write_json(self.path(target, TARGET_FILE), owner_target(target))"
+    },
+    {
+     "file": "src/codex_harness/adapters/managed_runtime.py",
+     "line": 388,
+     "rev": "1b9d746c",
+     "text": "_write_json(self.path(target, TARGET_FILE), owner_target(target))"
+    },
+    {
+     "file": "src/codex_harness/adapters/managed_runtime.py",
+     "line": 357,
+     "rev": "5c67f099",
+     "text": "_write_json(self.path(target, TARGET_FILE), owner_target(target))"
+    },
+    {
+     "file": "src/codex_harness/adapters/managed_runtime.py",
+     "line": 553,
+     "rev": "5c67f099",
+     "text": "_write_json(self.path(target, TARGET_FILE), owner_target(target))"
+    }
+   ]
+  },
+  {
+   "kind": "file",
+   "observed_changing": false,
+   "path": "runtime/managed-fleet/startup-receipt.json",
+   "why": "the launched instance writes its startup receipt on every start",
+   "writers": [
+    {
+     "file": "src/codex_harness/adapters/managed_runtime.py",
+     "line": 757,
+     "rev": "5aa220fd",
+     "text": "_write_json(root / RECEIPT_FILE, receipt)"
+    },
+    {
+     "file": "src/codex_harness/adapters/managed_runtime.py",
+     "line": 757,
+     "rev": "ced20281",
+     "text": "_write_json(root / RECEIPT_FILE, receipt)"
+    },
+    {
+     "file": "src/codex_harness/adapters/managed_runtime.py",
+     "line": 1006,
+     "rev": "08bb9a44",
+     "text": "_write_json(root / RECEIPT_FILE, receipt)"
+    },
+    {
+     "file": "src/codex_harness/adapters/managed_runtime.py",
+     "line": 1006,
+     "rev": "1b9d746c",
+     "text": "_write_json(root / RECEIPT_FILE, receipt)"
+    },
+    {
+     "file": "src/codex_harness/adapters/managed_runtime.py",
+     "line": 757,
+     "rev": "5c67f099",
+     "text": "_write_json(root / RECEIPT_FILE, receipt)"
+    },
+    {
+     "file": "src/codex_harness/adapters/host_delivery.py",
+     "line": 1001,
+     "rev": "5aa220fd",
+     "text": "_write_json(root / RECEIPT_FILE, startup_receipt(descriptor))"
+    },
+    {
+     "file": "src/codex_harness/adapters/host_delivery.py",
+     "line": 973,
+     "rev": "ced20281",
+     "text": "_write_json(root / RECEIPT_FILE, startup_receipt(descriptor))"
+    },
+    {
+     "file": "src/codex_harness/adapters/host_delivery.py",
+     "line": 1206,
+     "rev": "08bb9a44",
+     "text": "_write_json(root / RECEIPT_FILE, startup_receipt(descriptor))"
+    },
+    {
+     "file": "src/codex_harness/adapters/host_delivery.py",
+     "line": 1206,
+     "rev": "1b9d746c",
+     "text": "_write_json(root / RECEIPT_FILE, startup_receipt(descriptor))"
+    },
+    {
+     "file": "src/codex_harness/adapters/host_delivery.py",
+     "line": 1082,
+     "rev": "5c67f099",
+     "text": "_write_json(root / RECEIPT_FILE, startup_receipt(descriptor))"
+    }
+   ]
+  },
+  {
+   "kind": "file",
+   "observed_changing": false,
+   "path": "runtime/managed-fleet/supervisor-journal.jsonl",
+   "why": "the supervisor appends its journal",
+   "writers": [
+    {
+     "file": "src/codex_harness/adapters/managed_runtime.py",
+     "line": 585,
+     "rev": "5aa220fd",
+     "text": "open(root / SUPERVISOR_JOURNAL, \"a\""
+    },
+    {
+     "file": "src/codex_harness/adapters/managed_runtime.py",
+     "line": 585,
+     "rev": "ced20281",
+     "text": "open(root / SUPERVISOR_JOURNAL, \"a\""
+    },
+    {
+     "file": "src/codex_harness/adapters/managed_runtime.py",
+     "line": 834,
+     "rev": "08bb9a44",
+     "text": "open(root / SUPERVISOR_JOURNAL, \"a\""
+    },
+    {
+     "file": "src/codex_harness/adapters/managed_runtime.py",
+     "line": 834,
+     "rev": "1b9d746c",
+     "text": "open(root / SUPERVISOR_JOURNAL, \"a\""
+    },
+    {
+     "file": "src/codex_harness/adapters/managed_runtime.py",
+     "line": 585,
+     "rev": "5c67f099",
+     "text": "open(root / SUPERVISOR_JOURNAL, \"a\""
+    }
+   ]
+  },
+  {
+   "kind": "file",
+   "observed_changing": false,
+   "path": "runtime/managed-fleet/launcher-journal.jsonl",
+   "why": "the launcher appends its journal",
+   "writers": [
+    {
+     "file": "src/codex_harness/adapters/managed_runtime.py",
+     "line": 788,
+     "rev": "5aa220fd",
+     "text": "journal=root / LAUNCHER_JOURNAL"
+    },
+    {
+     "file": "src/codex_harness/adapters/managed_runtime.py",
+     "line": 788,
+     "rev": "ced20281",
+     "text": "journal=root / LAUNCHER_JOURNAL"
+    },
+    {
+     "file": "src/codex_harness/adapters/managed_runtime.py",
+     "line": 1037,
+     "rev": "08bb9a44",
+     "text": "journal=root / LAUNCHER_JOURNAL"
+    },
+    {
+     "file": "src/codex_harness/adapters/managed_runtime.py",
+     "line": 1037,
+     "rev": "1b9d746c",
+     "text": "journal=root / LAUNCHER_JOURNAL"
+    },
+    {
+     "file": "src/codex_harness/adapters/managed_runtime.py",
+     "line": 788,
+     "rev": "5c67f099",
+     "text": "journal=root / LAUNCHER_JOURNAL"
+    }
+   ]
+  }
+ ]
+}
