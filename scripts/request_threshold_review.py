@@ -3,11 +3,11 @@ import argparse
 import json
 import sys
 
-from codex_harness.adapters.artifacts import FileArtifacts
-from codex_harness.application.threshold_reviews import ThresholdReviews
-from codex_harness.application.workflow import Workflow
-from codex_harness.bootstrap import build
-from codex_harness.domain.model import ContractError
+from codex_harness.composition import build
+from codex_harness.composition.cli import workflow
+from codex_harness.kernel.errors import ContractError
+from codex_harness.research.application.threshold_reviews import ThresholdReviews
+from codex_harness.storage.adapters.file_artifacts import FileArtifacts
 
 
 def main():
@@ -17,7 +17,10 @@ def main():
     args = parser.parse_args()
     try:
         service = build()
-        result = ThresholdReviews(Workflow(service.store, service.org), FileArtifacts(args.artifacts)).request(args.proposal_id)
+        # S11 R-S3: Workflow is no longer constructible as Workflow(store, org); composition.cli.workflow(service) wires the
+        # ticket binding, TicketSuperseded and adoption ports it needs (DESIGN-s11 §7 R-S3; build() returns a ServiceHandle,
+        # OWNER-DECISIONS-S10 #12).
+        result = ThresholdReviews(workflow(service), FileArtifacts(args.artifacts)).request(args.proposal_id)
         print(json.dumps(result, ensure_ascii=True, allow_nan=False))
         return 0
     except ContractError:

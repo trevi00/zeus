@@ -1,78 +1,43 @@
-import ast
+"""§3.6 allowed-edge checker: fixture verdicts and the target tree itself (S0 exit check 6)."""
+
+import json
 import re
-from pathlib import Path
 
-ROOT = Path(__file__).resolve().parents[1]
+import import_rules
+import pytest
+from _layout import REPO, TARGET, TESTS
 
-
-def test_inner_layers_do_not_import_adapters_or_sdk():
-    banned = {"psycopg", "redis", "tree_sitter", "tree_sitter_python", "subprocess", "jsonschema",
-              "aibox_data", "scripts"}  # the canonical offline tooling is reached only by adapters
-    for folder in ("domain", "application"):
-        for source in (ROOT / "src/codex_harness" / folder).rglob("*.py"):
-            tree = ast.parse(source.read_text(encoding="utf-8"))
-            for node in ast.walk(tree):
-                imports = ([node.module or ""] if isinstance(node, ast.ImportFrom)
-                           else [a.name for a in node.names] if isinstance(node, ast.Import) else [])
-                for module in imports:
-                    assert module.split(".")[0] not in banned, (source, module)
-                    assert not module.startswith("codex_harness.adapters"), (source, module)
-                    assert not module.startswith("codex_harness.bootstrap"), (source, module)
+FIXTURES = TESTS / "fixtures" / "import_rules"
+TARGET_SRC = TARGET / "src"
+CONTRACTS = REPO / "docs" / "contracts.md"
+CASES = sorted(p for p in FIXTURES.iterdir() if p.is_dir())
 
 
-SOURCE_TEXT_READERS = re.compile(r"\b(read_text|read_bytes|getsource|ast\.parse|ast\.walk|ast\.dump)\s*\(")
-PRODUCTION_LOCATIONS = re.compile(r"(src/|scripts/|harness_hooks/|codex_harness[./])")
-# Structural policy tests inspect source deliberately; behavior tests may not.
-WIRING_ALLOWLIST = {"test_architecture.py"}
+def contract_ids() -> set[str]:
+    # The ledger's 91 ids: every INV id the registry declares (summary table, sections, list items).
+    return set(re.findall(r"INV-[A-Z0-9-]+-\d{3}", CONTRACTS.read_text(encoding="utf-8")))
 
 
-def wiring_assertions(source: str):
-    """FA-009: assertions that only check production source text, not executed behavior.
-
-    A `<literal> in <production file text>` or an AST-shape assertion proves that a string was
-    typed, never that the wiring runs. Reading fixtures or generated runtime files is fine.
-    """
-    findings = []
-    for node in ast.walk(ast.parse(source)):
-        if not isinstance(node, ast.Assert):
-            continue
-        text = ast.unparse(node.test)
-        if SOURCE_TEXT_READERS.search(text) and PRODUCTION_LOCATIONS.search(text):
-            findings.append((node.lineno, text[:120]))
-    return findings
+@pytest.mark.parametrize("case", CASES, ids=[c.name for c in CASES])
+def test_fixture_verdict(case):
+    expect = json.loads((case / "expect.json").read_text(encoding="utf-8"))
+    violations = import_rules.check(case, contract_ids())
+    verdict = "forbidden" if violations else "allowed"
+    assert verdict == expect["verdict"], violations
+    if expect["verdict"] == "forbidden":
+        assert any(expect["rule_contains"] in v.rule for v in violations), violations
 
 
-def test_tests_assert_behavior_not_source_text():
-    offenders = []
-    for test in sorted((ROOT / "tests").glob("test_*.py")):
-        if test.name in WIRING_ALLOWLIST:
-            continue
-        offenders += [(test.name, line, text) for line, text in
-                      wiring_assertions(test.read_text(encoding="utf-8-sig"))]
-    assert offenders == [], offenders
+def test_fixture_set_covers_the_design_list():
+    names = {c.name for c in CASES}
+    assert sum(n.startswith("p") for n in names) >= 12
+    assert sum(n.startswith("n") for n in names) >= 16
 
 
-def test_wiring_detector_has_positive_and_negative_controls():
-    positive = (
-        "from pathlib import Path\n"
-        "def test_x():\n"
-        "    assert 'record_incident' in (ROOT / 'src/codex_harness/cli.py').read_text()\n"
-        "    assert 'fence' in Path('scripts/check.py').read_bytes().decode()\n"
-        "    tree = ast.parse((ROOT / 'src/codex_harness/x.py').read_text())\n"
-        "    assert any(isinstance(n, ast.Call) for n in ast.walk(ast.parse(source_of('codex_harness.x'))))\n")
-    assert [line for line, _ in wiring_assertions(positive)] == [3, 4, 6]
-    negative = (
-        "def test_y(tmp_path):\n"
-        "    assert (tmp_path / 'lease.json').read_text() == '{}'\n"  # generated runtime file
-        "    assert service.record_incident(message)['occurrences'] == 1\n"  # executed behavior
-        "    assert 'FASTAPI_ELIGIBLE' in prompts[0]['body']\n"  # observed output of a run
-        "    body = (ROOT / 'src/codex_harness/cli.py').read_text()\n"  # read outside an assert
-        "    assert parse(body)['version'] == 1\n")
-    assert wiring_assertions(negative) == []
+def test_target_tree_has_no_violation_and_no_exception():
+    assert import_rules.EXCEPTIONS == ()
+    assert import_rules.check(TARGET_SRC, contract_ids()) == []
 
 
-def test_invariant_comments_resolve_to_contract_registry():
-    contracts = (ROOT / "docs/contracts.md").read_text(encoding="utf-8")
-    for source in (ROOT / "src").rglob("*.py"):
-        for identifier in re.findall(r"@invariant\s+(INV-[A-Z0-9-]+)", source.read_text(encoding="utf-8")):
-            assert identifier in contracts, (source, identifier)
+def test_contract_registry_is_readable():
+    assert len(contract_ids()) == 91

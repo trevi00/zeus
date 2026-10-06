@@ -1,3 +1,11 @@
+# REBUILD-DESIGN-v2 §5.3 S3 target worker image, built from the TARGET tree with the repository root as
+# the build context (`docker build -f target/Dockerfile.worker .`). Same pins, digest checks, user,
+# layout and entry module path as SOURCE M7 `Dockerfile.worker`; only the Python package source
+# differs (target/pyproject.toml, target/uv.lock, target/src). The entry module
+# `codex_harness.adapters.isolated_worker_entry` is a permanent entry shim that lands with S10 (design
+# §3.5); until then this image is declared, not buildable into a working worker (evidence/rebuild/s3/
+# pending.json). The pinned CLIs are the S3 contract checked by tests/ported/test_role_containers.py.
+#
 # INV-ISOLATED-WORKER-001: the fixed worker/verifier image. Built by the owner; referenced only by
 # its immutable id (ZEUS_WORKER_IMAGE=sha256:<64hex>). No credential, ~/.claude, personal agent,
 # command or MCP asset is copied in; the token arrives at run time by environment name only.
@@ -50,8 +58,8 @@ RUN test -f /opt/zeus-monitor/package.json && test -f /opt/zeus-monitor/package-
 # Trusted package, locked dependencies, pytest and ruff live in /opt/zeus, installed non-editable so
 # nothing under /workspace can shadow the entrypoint or the pinned profile hook.
 WORKDIR /build
-COPY pyproject.toml uv.lock README.md ./
-COPY src ./src
+COPY target/pyproject.toml target/uv.lock ./
+COPY target/src ./src
 ENV UV_PROJECT_ENVIRONMENT=/opt/zeus
 # The venv interpreter is a COPY, never a symlink: the worker profile resolves its interpreter
 # (Path.resolve) and puts that directory first on PATH, and a symlinked venv python resolves out to
@@ -70,9 +78,9 @@ USER 10001:10001
 WORKDIR /
 # Again as the unprivileged runtime user, through PATH, exactly as the inner runtime resolves it.
 RUN claude --version | grep -F "2.1.280" && codex --version | grep -Fx "codex-cli ${CODEX_CLI_VERSION}"
-# The ACTUAL worker profile selection, not merely /opt/zeus/bin/python -m: the interpreter the profile
-# verifies, the environment it derives from the allow-listed child environment, `python` found through
-# that PATH, then the profile-selected pytest and ruff under exactly that environment. No credential,
-# no network and no model call is involved.
-RUN /opt/zeus/bin/python -I -c "import shutil, subprocess; from pathlib import Path; from codex_harness.adapters.claude_cli import child_environment; from codex_harness.adapters.worker_profile import profile_environment, verified_interpreter; interpreter = verified_interpreter(); assert interpreter.parent == Path('/opt/zeus/bin'), interpreter; env = profile_environment(child_environment()[0], '/workspace', interpreter)[0]; python = shutil.which('python', path=env['PATH']); assert python is not None and Path(python).resolve().parent == Path('/opt/zeus/bin'), python; [subprocess.run([python, '-m', tool, '--version'], env=env, cwd='/workspace', check=True) for tool in ('pytest', 'ruff')]"
+# The worker profile's interpreter selection (context.adapters.worker_profile, moved in S2), the environment it
+# derives from the Claude CLI transport's allow-listed child environment (execution.adapters.providers.claude_cli,
+# moved in S4), `python` found through that PATH, then the profile-selected pytest and ruff under exactly that
+# environment: the M7 check, restored. No credential, no network and no model call is involved.
+RUN /opt/zeus/bin/python -I -c "import shutil, subprocess; from pathlib import Path; from codex_harness.execution.adapters.providers.claude_cli import child_environment; from codex_harness.context.adapters.worker_profile import profile_environment, verified_interpreter; interpreter = verified_interpreter(); assert interpreter.parent == Path('/opt/zeus/bin'), interpreter; env = profile_environment(child_environment()[0], '/workspace', interpreter)[0]; python = shutil.which('python', path=env['PATH']); assert python is not None and Path(python).resolve().parent == Path('/opt/zeus/bin'), python; [subprocess.run([python, '-m', tool, '--version'], env=env, cwd='/workspace', check=True) for tool in ('pytest', 'ruff')]"
 ENTRYPOINT ["/opt/zeus/bin/python", "-I", "-m", "codex_harness.adapters.isolated_worker_entry"]

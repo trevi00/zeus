@@ -3,12 +3,14 @@ import json
 import time
 from uuid import uuid4
 
-from codex_harness.adapters.bus import RedisBus
-from codex_harness.bootstrap import build, redis_url
-from codex_harness.domain.model import envelope
+from codex_harness.composition import build
+from codex_harness.composition.cli_bus import bus as namespaced_bus
+from codex_harness.kernel.message import envelope
 
 service = build()
-bus = RedisBus(redis_url())
+# S11 R-S3: RedisBus requires its namespace (S1); composition.cli_bus.bus() is RedisBus(redis_url(), HARNESS_REDIS_NAMESPACE or
+# "codex-harness"), the namespace M7's RedisBus read itself (DESIGN-s11 §7 R-S3).
+bus = namespaced_bus()
 scope = "compose-smoke-" + uuid4().hex
 for _ in range(2):
     bus.publish(envelope("incident.report", "worker:implementation", "lead:improvement", "record_incident",

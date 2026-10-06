@@ -15,7 +15,7 @@ import json
 import re
 from pathlib import Path
 
-from codex_harness.domain.model import canonical
+from codex_harness.kernel.ids import canonical
 
 PG_SCHEMA = "zeus.aibox-pg-inventory/1"
 REDIS_SCHEMA = "zeus.aibox-redis-inventory/1"

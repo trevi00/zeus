@@ -2,10 +2,11 @@
 import json
 import tempfile
 
-from codex_harness.adapters.app_server import AppServer
-from codex_harness.application.rlm import RecursiveContext
-from codex_harness.bootstrap import build_executor
-from codex_harness.domain.model import canonical
+from codex_harness.composition.operation import build_executor
+from codex_harness.context.application.rlm import RecursiveContext
+from codex_harness.execution.adapters.providers.codex_app_server import AppServer
+from codex_harness.host_os.adapters.process_groups import ChokepointProcesses
+from codex_harness.kernel.ids import canonical
 
 
 def main():
@@ -13,7 +14,9 @@ def main():
     source = "Fixture fact A: alpha equals 17.\n".ljust(200) + "Fixture fact B: beta equals 25.\n"
     reference = executor.artifacts.put(source, "verification:synthetic-rlm-input")["ref"]
     with tempfile.TemporaryDirectory(prefix="harness-rlm-canary-") as cwd:
-        with AppServer() as runtime:
+        # S11 R-S3: a host App Server refuses without an injected process creator; this is the creator
+        # composition.operation._host_app_server injects, the spawn chokepoint (S3/S4; DESIGN-s11 §7 R-S3).
+        with AppServer(processes=ChokepointProcesses()) as runtime:
             rlm = RecursiveContext(executor.artifacts, runtime, cwd, max_calls=3, chunk_size=200)
             result = rlm.analyze(reference, "Extract alpha and beta. When both are available, calculate "
                                  "their sum in decimal digits. Preserve individual known values in partial "

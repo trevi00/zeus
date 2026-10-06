@@ -1,0 +1,53 @@
+[project]
+name = "zeus-harness"
+version = "0.2.0"
+description = "Zeus: evidence-driven work, independent review, and recoverable Codex operations"
+requires-python = ">=3.12"
+dependencies = [
+  "fastembed>=0.8.0",
+  "filelock>=3.20,<4",
+  "jsonschema[format]>=4.23,<5",
+  "psycopg[binary]>=3.2,<4",
+  "PyYAML>=6,<7",
+  "redis>=5.2,<7",
+  "tree-sitter>=0.24,<0.26",
+  "tree-sitter-python>=0.23,<0.26",
+]
+
+[project.scripts]
+zeus = "codex_harness.cli:main"
+zeus-supervisor = "codex_harness.supervisor:main"
+zeus-monitor = "codex_harness.monitor:main"
+harness = "codex_harness.cli:main"
+harness-supervisor = "codex_harness.supervisor:main"
+
+[dependency-groups]
+dev = ["pytest>=8.3,<10", "ruff>=0.11,<1"]
+
+[build-system]
+requires = ["hatchling"]
+build-backend = "hatchling.build"
+
+[tool.hatch.build.targets.wheel]
+packages = ["src/codex_harness", "src/zeus"]
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]
+markers = ["integration: requires the project's PostgreSQL and Redis services"]
+
+[tool.ruff]
+line-length = 100
+target-version = "py312"
+
+[tool.ruff.lint]
+select = ["E4", "E7", "E9", "F", "I"]
+
+[tool.ruff.lint.per-file-ignores]
+# Preserve recorded reviewer probe bytes; these are evidence, not shipped runtime code.
+"docs/full-analysis/**/*.py" = ["E401", "E701", "E702", "F401", "I001"]
+# WSL execution receipts bind these reviewer programs to their original bytes.
+"docs/zeus/wsl-validation/*.py" = ["F401", "I001"]
+# Review archives keep Codex's counterexample programs byte-for-byte (sys.path setup precedes imports,
+# and the probes are written dense: several statements or imports to a line). manifest.json pins a
+# sha256 for each of these files, so reformatting them would break the review's own integrity record.
+"docs/zeus/reviews/**/*.py" = ["E401", "E402", "E701", "E702", "F401", "I001"]

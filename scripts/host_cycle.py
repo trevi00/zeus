@@ -20,12 +20,14 @@ from psycopg import sql
 from psycopg.conninfo import make_conninfo
 
 import codex_harness
-from codex_harness.adapters.artifacts import FileArtifacts
-from codex_harness.adapters.store import PostgresStore
-from codex_harness.application.execution_rejections import reconcile
-from codex_harness.application.workflow import Workflow
-from codex_harness.bootstrap import database_url, organization
-from codex_harness.domain.model import ContractError, envelope
+from codex_harness.composition import ServiceHandle, database_url
+from codex_harness.composition.cli import workflow as task_workflow
+from codex_harness.coordination.application.execution_rejections import reconcile
+from codex_harness.kernel.errors import ContractError
+from codex_harness.kernel.message import envelope
+from codex_harness.routing.adapters.organization_source import packaged_organization
+from codex_harness.storage.adapters.file_artifacts import FileArtifacts
+from codex_harness.storage.adapters.postgres_store import PostgresStore
 
 REPO = Path(__file__).resolve().parents[1]
 ROOT = REPO/'.runtime/host-cycle'
@@ -84,8 +86,11 @@ def runtime_hash():
 def workflow(state):
     schema = state['schema']
     assert schema.startswith('host_probe_') and len(schema) == 43 and schema[11:].isalnum()
-    return Workflow(PostgresStore(make_conninfo(database_url(), options=f'-c search_path={schema}')),
-                    organization())
+    # S11 R-S3: Workflow(store, org) is no longer constructible; composition.cli.workflow(service) wires its ticket binding,
+    # TicketSuperseded and adoption ports over a ServiceHandle (OWNER-DECISIONS-S10 #12); `organization()` is routing's
+    # `packaged_organization` (DESIGN-s11 §7 R-S3, R-S4).
+    return task_workflow(ServiceHandle(PostgresStore(make_conninfo(database_url(), options=f'-c search_path={schema}')),
+                                       packaged_organization()))
 
 
 def remove_probe_schema(state):

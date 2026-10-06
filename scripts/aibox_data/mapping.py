@@ -11,7 +11,7 @@ from __future__ import annotations
 import hashlib
 import re
 
-from codex_harness.domain.model import canonical
+from codex_harness.kernel.ids import canonical
 
 ALLOWLIST_SCHEMA = "zeus.aibox-mapping-allowlist/1"
 DRIVE = re.compile(r"^[A-Za-z]:/")

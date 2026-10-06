@@ -6,11 +6,11 @@ from pathlib import Path
 
 from jsonschema import validate
 
-from codex_harness.adapters.audit_execution import AuditExecution
-from codex_harness.adapters.codex import CodexRuntime
-from codex_harness.adapters.commands import run_process
-from codex_harness.adapters.output_schema import preflight
-from codex_harness.domain.model import canonical
+from codex_harness.execution.adapters.output_schema import preflight
+from codex_harness.execution.adapters.providers.codex_exec import CodexRuntime
+from codex_harness.host_os.adapters.process_groups import run_process
+from codex_harness.kernel.ids import canonical
+from codex_harness.research.adapters.audit_execution import AuditExecution
 
 
 def main():
@@ -25,7 +25,9 @@ def main():
     revision, tree = git('rev-parse', 'HEAD'), git('rev-parse', 'HEAD^{tree}')
     destination = root / '.runtime' / 'schema-rework' / revision
     destination.mkdir(parents=True, exist_ok=False)
-    runtime = CodexRuntime()
+    # S11 R-S6: ported because U6(d) does not retire the Codex exec transport (reachable through zeus canary; DESIGN-s11 §20.1);
+    # the target transport takes its process runner explicitly.
+    runtime = CodexRuntime(runner=run_process)
     probe = runtime.probe()
     results = []
     for kind in ('AdaptationProposal', 'IndependentReview', 'partition'):

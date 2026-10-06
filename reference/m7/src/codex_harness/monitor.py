@@ -1,0 +1,188 @@
+"""Separate host collector and read-only web processes.
+
+The collector reads facts only: it builds the plain service and an artifact reader wrapped
+read-only, never the executor (no provider, isolation or OAuth preflight, no knowledge writes).
+"""
+import argparse
+import json
+import logging
+import os
+import re
+import time
+from datetime import datetime, timezone
+from logging.handlers import RotatingFileHandler
+from pathlib import Path
+
+from filelock import FileLock, Timeout
+
+from codex_harness.adapters.configuration import (
+    repository_root,
+    runtime_dir,
+    select_repository,
+    settings,
+)
+
+LOG_BYTES, LOG_BACKUPS = 1024 * 1024, 2
+# Sanitized operational log: event/type names and small integers only; never DSNs, env values,
+# payloads or raw exception text.
+LOG_FIELDS = frozenset({'mode', 'once', 'scope', 'containers', 'source', 'status', 'error', 'reason'})
+LOG_VALUE = re.compile(r'[A-Za-z0-9_.:-]{1,64}')
+
+
+class Journal:
+    def __init__(self, path):
+        self.logger = logging.getLogger('zeus.monitor.collector')
+        self.logger.propagate = False
+        self.logger.setLevel(logging.INFO)
+        handler = RotatingFileHandler(path, maxBytes=LOG_BYTES, backupCount=LOG_BACKUPS, encoding='utf-8')
+        handler.setFormatter(logging.Formatter('%(message)s'))
+        for old in list(self.logger.handlers):
+            self.logger.removeHandler(old)
+            old.close()
+        self.logger.addHandler(handler)
+
+    def write(self, event, **fields):
+        safe = {key: value for key, value in fields.items() if key in LOG_FIELDS and (
+            value is None or isinstance(value, bool) or type(value) is int
+            or (isinstance(value, str) and LOG_VALUE.fullmatch(value)))}
+        self.logger.info(json.dumps({'at': datetime.now(timezone.utc).isoformat(), 'event': event, **safe},
+                                    sort_keys=True))
+
+
+def source_states(result):
+    return {name: (envelope.get('status'), envelope.get('error')) for name, envelope in result['sources'].items()}
+
+
+def run_collector(args, root, runtime, snapshot):
+    from codex_harness.adapters.artifacts import FileArtifacts
+    from codex_harness.adapters.monitoring import (
+        collect,
+        container_scope,
+        lane_artifact_resolver,
+        lane_resolver,
+        read_only,
+    )
+    from codex_harness.bootstrap import build, redis_url
+    journal = Journal(runtime / 'monitor-collector.log')
+    config = settings()
+    try:
+        containers = container_scope(config.get('ZEUS_MONITOR_CONTAINERS'))
+    except ValueError as exc:
+        journal.write('startup_refused', reason='config_invalid', error=type(exc).__name__)
+        raise
+    scope = config.get('ZEUS_MONITOR_SCOPE')
+    os.chdir(root)
+    try:
+        with FileLock(str(runtime / 'monitor-collector.lock'), timeout=0):
+            service, artifacts = read_only(build(), FileArtifacts(str(runtime / 'artifacts')))
+            # Registered lanes are read through their own schemas (read-only, cached per lane).
+            lanes = lane_resolver(config.get('HARNESS_DATABASE_URL'))
+            # S2a: each lane's registered artifact root, read-only and never created.
+            lane_artifacts = lane_artifact_resolver()
+            url = redis_url()
+            journal.write('startup', mode='collect', once=bool(args.once),
+                          scope='named' if containers is not None else 'compose',
+                          containers=len(containers) if containers is not None else None)
+            previous = {}
+            while True:
+                result = collect(service, artifacts, str(root), url, containers, scope, runtime=runtime, lanes=lanes,
+                                 lane_artifacts=lane_artifacts)
+                for name, state in source_states(result).items():
+                    if previous.get(name) != state:
+                        journal.write('source_state', source=name, status=state[0], error=state[1])
+                previous = source_states(result)
+                try:
+                    temp = snapshot.with_suffix('.tmp')
+                    temp.write_text(json.dumps(result, ensure_ascii=False), 'utf-8')
+                    os.replace(temp, snapshot)
+                except OSError as exc:
+                    journal.write('snapshot_write_failed', error=type(exc).__name__)
+                    raise
+                if args.once:
+                    journal.write('shutdown', reason='once')
+                    return
+                time.sleep(5)
+    except Timeout:
+        journal.write('startup_refused', reason='collector_lock_busy')
+        return
+    except KeyboardInterrupt:
+        journal.write('shutdown', reason='interrupt')
+        return
+    except Exception as exc:
+        journal.write('shutdown', reason='failure', error=type(exc).__name__)
+        raise
+
+
+def desk_service():
+    """The opt-in local front door (local-operations-desk-001), or None.
+
+    The web process serves the desk only when the owner configured ZEUS_DESK_REVISION as a full
+    40-hex Git revision; that configured revision is the base every request is captured at. An
+    unset value keeps the web process exactly read-only, and a malformed one refuses to start
+    rather than serving a half-enabled desk. No store connection is opened here: an unreachable
+    PostgreSQL is answered per request, never with a local fallback.
+    """
+    configured = settings().get('ZEUS_DESK_REVISION')
+    if not configured:
+        return None
+    from codex_harness.application.frontdesk import FrontDesk
+    from codex_harness.bootstrap import build
+
+    return FrontDesk(build(), configured)
+
+
+def viewer_port(environ=None) -> int:
+    """The viewer listener's port: the aibox unit's ZEUS_AIBOX_WEB_PORT when set, else 8787."""
+    from codex_harness.adapters.monitoring_web import VIEWER_PORT
+
+    value = str((os.environ if environ is None else environ).get('ZEUS_AIBOX_WEB_PORT') or '')
+    return int(value) if value.isdigit() else VIEWER_PORT
+
+
+def listener_refusal(mode, port, desk_revision, viewer=None):
+    """INV-MONITOR-VIEWER-001 (D6), checked before any listener binds: the viewer web service refuses to
+    start while ZEUS_DESK_REVISION is set, and the local-operator desk runs only as its own mode on an
+    explicit port that is neither 8787 nor the configured viewer port. Returns the refusal text, or None."""
+    from codex_harness.adapters.monitoring_web import VIEWER_PORT
+
+    viewer = viewer_port() if viewer is None else viewer
+    if mode == 'web' and desk_revision:
+        return ('monitor web refuses to start with ZEUS_DESK_REVISION set: the viewer listener never serves the '
+                'desk; run the separately bound local-operator mode (monitor desk --port <other>) instead')
+    if mode == 'desk':
+        if not desk_revision:
+            return 'monitor desk needs ZEUS_DESK_REVISION'
+        if port is None or port in (VIEWER_PORT, viewer):
+            return 'monitor desk needs its own --port, never the viewer port ' + str(viewer)
+    return None
+
+
+def main():
+    parser = argparse.ArgumentParser()
+    parser.add_argument('mode', choices=['collect', 'web', 'desk'])
+    parser.add_argument('--once', action='store_true')
+    parser.add_argument('--repository', type=Path)
+    parser.add_argument('--port', type=int, default=None)
+    args = parser.parse_args()
+    refusal = listener_refusal(args.mode, args.port, settings().get('ZEUS_DESK_REVISION'))
+    if refusal is not None:
+        raise SystemExit(refusal)
+    if args.repository:
+        select_repository(args.repository)
+    root = repository_root()
+    runtime = runtime_dir()
+    runtime.mkdir(parents=True, exist_ok=True)
+    snapshot = runtime / 'monitoring.json'
+    if args.mode in ('web', 'desk'):
+        from codex_harness.adapters.monitoring_web import VIEWER_PORT, serve
+        if args.mode == 'web':
+            # The viewer listener: read-only, no desk, whatever the environment says (checked above).
+            serve(snapshot, VIEWER_PORT if args.port is None else args.port)
+        else:
+            serve(snapshot, args.port, desk=desk_service(), viewer_port=viewer_port())
+        return
+    run_collector(args, root, runtime, snapshot)
+
+
+if __name__ == '__main__':
+    main()

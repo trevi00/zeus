@@ -1,3 +1,3 @@
-from codex_harness.cli import main
+from codex_harness.entry.cli import main
 
 main()

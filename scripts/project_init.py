@@ -5,9 +5,9 @@ from pathlib import Path
 
 import yaml
 
-from codex_harness.adapters.project_detection import detect_project
-from codex_harness.adapters.project_skills import initialize
-from codex_harness.domain.model import ContractError, require
+from codex_harness.context.adapters.project_detection import detect_project
+from codex_harness.context.adapters.project_skills import initialize
+from codex_harness.kernel.errors import ContractError, require
 
 
 def main():

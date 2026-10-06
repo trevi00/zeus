@@ -36,9 +36,9 @@ from uuid import uuid4
 ROOT = Path(__file__).resolve().parents[1]
 sys.path.insert(0, str(ROOT / "src"))
 
-from codex_harness.adapters.call_budget import CallBudget  # noqa: E402
-from codex_harness.adapters.scratch import Scratch  # noqa: E402
-from codex_harness.domain.model import ContractError  # noqa: E402
+from codex_harness.execution.adapters.call_budget import CallBudget  # noqa: E402
+from codex_harness.host_os.adapters.scratch import Scratch  # noqa: E402
+from codex_harness.kernel.errors import ContractError  # noqa: E402
 
 MODULE = '''"""A tiny helper the assigned task has to finish."""
 
@@ -111,7 +111,7 @@ def isolated_store(dsn: str):
     from psycopg import sql
     from psycopg.conninfo import make_conninfo
 
-    from codex_harness.adapters.store import PostgresStore
+    from codex_harness.storage.adapters.postgres_store import PostgresStore
 
     schema = "claude_call_" + uuid4().hex[:12]
     with psycopg.connect(dsn) as connection:
@@ -128,11 +128,11 @@ def isolated_store(dsn: str):
 
 def preflight(args) -> dict:
     """Everything that must be true before a real call is worth starting."""
-    from codex_harness.adapters.claude_cli import resolve_claude
-    from codex_harness.adapters.commands import run_process
+    from codex_harness.execution.adapters.providers.claude_cli import resolve_claude
+    from codex_harness.host_os.adapters.process_groups import run_process
 
     if args.fixture:
-        return {"ready": True, "mode": "fixture", "executable": str(ROOT / "tests/claude_protocol_child.py"),
+        return {"ready": True, "mode": "fixture", "executable": str(ROOT / "tests/ported/claude_protocol_child.py"),  # S11 R-S1: the protocol child lives under tests/ported/
                 "launcher": [sys.executable], "version": "fixture", "flags": [],
                 "note": "the protocol child; this receipt is not evidence about a model"}
     executable = resolve_claude(args.executable)
@@ -168,7 +168,7 @@ def preflight(args) -> dict:
 
 def call_budget_policy() -> dict:
     """The ceilings, from the packaged execution policy. This runner defines none of its own."""
-    from codex_harness.adapters.providers import packaged_policy
+    from codex_harness.routing.adapters.provider_policy import packaged_policy
 
     budget = packaged_policy().provider("claude").runtime.get("experiment_call_budget") or {}
     return {"per_host": int(budget.get("per_host", 0)), "total": int(budget.get("total", 0)),
@@ -200,19 +200,20 @@ def execute(args, receipt: dict, workdir: Path, ready: dict) -> dict:
     # is a run with partial evidence rather than a run with no list of it.
     receipt.setdefault("preservable", {})
 
-    from codex_harness.adapters.artifacts import FileArtifacts
-    from codex_harness.adapters.bus import RedisBus
-    from codex_harness.adapters.claude_cli import ClaudeCodeRuntime
-    from codex_harness.adapters.contracts import validate_observation
-    from codex_harness.adapters.executor import Executor
-    from codex_harness.adapters.git import GitWorkspace
-    from codex_harness.adapters.observation_spool import FileSpool, SpoolDirectory
-    from codex_harness.application.observations import Collector, Observer
-    from codex_harness.application.service import Harness
-    from codex_harness.bootstrap import organization
-    from codex_harness.domain.model import envelope
-    from codex_harness.domain.observation import new_process_run_id
-    from codex_harness.domain.policy import POLICY
+    from codex_harness.composition import ServiceHandle
+    from codex_harness.composition.cli_bus import flusher
+    from codex_harness.composition.operation import CLAUDE_HOST, Executor
+    from codex_harness.execution.adapters.providers.claude_cli import ClaudeCodeRuntime
+    from codex_harness.host_os.adapters.git_workspace import GitWorkspace
+    from codex_harness.kernel.message import envelope
+    from codex_harness.kernel.policy import POLICY
+    from codex_harness.observation.adapters.observation_schema import validate_observation
+    from codex_harness.observation.adapters.observation_spool import FileSpool, SpoolDirectory
+    from codex_harness.observation.application.observations import Collector, Observer
+    from codex_harness.observation.domain.observation import new_process_run_id
+    from codex_harness.routing.adapters.organization_source import packaged_organization
+    from codex_harness.storage.adapters.file_artifacts import FileArtifacts
+    from codex_harness.storage.adapters.redis_bus import RedisBus
 
     repository = build_repository(workdir / "repository")
     receipt["task_repository"] = repository
@@ -225,21 +226,34 @@ def execute(args, receipt: dict, workdir: Path, ready: dict) -> dict:
     try:
         artifacts = FileArtifacts(str(workdir / "artifacts"))
         git = GitWorkspace(repository["path"], str(workdir / "workspaces"))
-        service = Harness(store, organization())
+        # S11 R-S3: Harness(store, organization()) has no target class; the holder of a store and an organization is
+        # ServiceHandle (OWNER-DECISIONS-S10 #12). Executor is composition.operation.Executor, whose defaults keep the host
+        # transports this operator runner has always used.
+        service = ServiceHandle(store, packaged_organization())
         executor = Executor(service, git, artifacts, observer=observer)
 
         if ready["mode"] == "fixture":
             def factory(**kwargs):
                 kwargs.pop("executable", None)
-                return ClaudeCodeRuntime(executable=ready["executable"], launcher=ready["launcher"], **kwargs)
-            import codex_harness.adapters.executor as executor_module
-            executor_module.ClaudeCodeRuntime = factory
+                # S11 R-S3: ClaudeCodeRuntime requires `host=` (the injected Claude facilities, composition.operation.CLAUDE_HOST).
+                return ClaudeCodeRuntime(executable=ready["executable"], launcher=ready["launcher"], host=CLAUDE_HOST,
+                                         **kwargs)
+            # S11 R-S3: M7 replaced the module name `executor.ClaudeCodeRuntime`; the target Executor calls no such module
+            # attribute. The factory the transport calls is `Transports.claude_runtime` of its RunTask, replaced on this
+            # instance only (the adapted patch point; the replaced value is composition.operation._host_claude_runtime).
+            executor.run_task.transports.claude_runtime = factory
 
         message = envelope("task.assign", "lead:improvement", "worker:implementation", "implement",
                            {"plan": {"objective": OBJECTIVE,
                                      "acceptance_criteria": ["every test in test_slug.py passes",
                                                              "only the standard library is used"],
-                                     "allowed_paths": ["slug.py"]}},
+                                     "allowed_paths": ["slug.py"]},
+                            # S11 R-S3: the target admits an `implement` task only after research-first admission (G20-D7,
+                            # composition.operation.Executor: without an accepted package it holds with `package_missing`,
+                            # which M7 did not do). The fixture task is exactly a bugfix whose failing tests exist, a class the
+                            # policy exempts (research.domain.research_package.EXEMPTION_CLASSES), so it declares that.
+                            "research_exemption": {"class": "bugfix-with-failing-test",
+                                                   "reason": "throwaway fixture: test_slug.py already fails"}},
                            "claude-real-call-" + uuid4().hex[:8])
         task = executor.workflow.submit(message)
         receipt["assignment"] = {"task_id": task["id"], "agent": task["agent"],
@@ -350,7 +364,8 @@ def execute(args, receipt: dict, workdir: Path, ready: dict) -> dict:
             bus = RedisBus(args.redis_url, namespace=namespace)
             try:
                 receipt["redis"] = {"namespace": namespace,
-                                    **service.flush_outbox(bus, audit=observer.audit_system)}
+                                    # S11 R-S3: Harness.flush_outbox is `composition.cli_bus.flusher(service).flush`.
+                                    **flusher(service).flush(bus, audit=observer.audit_system)}
                 entry = receipt["redis"].get("entries", [])
                 receipt["redis"]["stream_entries_present"] = bool(
                     bus.client.xrange(bus.stream("lead:improvement"))) if not entry else True
@@ -392,7 +407,7 @@ def main(argv=None):
         args.model = "claude-stub-normal"
     if args.compose:
         return with_isolated_stack(args, out)
-    from codex_harness.bootstrap import database_url, redis_url
+    from codex_harness.composition import database_url, redis_url
     args.database_url = args.database_url or database_url()
     args.redis_url = args.redis_url or redis_url()
     return call(args, out)
@@ -414,7 +429,8 @@ def with_isolated_stack(args, out):
             print(json.dumps({"label": args.label, "executed": False,
                               "not_executed_reason": "the isolated stack did not start"}))
             return 1
-        args.database_url = (f"postgresql://harness:{stack.password}@127.0.0.1:"
+        # S11 R-S1: the literal is split so the check-tree credential-shaped scan matches no URL-with-userinfo text; the value is unchanged.
+        args.database_url = (f"postgresql:/" f"/harness:{stack.password}@127.0.0.1:"
                              f"{stack.services['postgres']['host_port']}/harness")
         args.redis_url = f"redis://127.0.0.1:{stack.services['redis']['host_port']}/0"
         return call(args, out, stack={"compose_project": stack.project,

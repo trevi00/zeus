@@ -43,7 +43,7 @@ import uuid
 
 sys.path.insert(0, str(pathlib.Path(__file__).resolve().parent.parent / "src"))
 
-from codex_harness.adapters import port_diagnosis, published_ports  # noqa: E402
+from codex_harness.host_os.adapters import port_diagnosis, published_ports  # noqa: E402
 
 IMAGE = "redis:7-alpine"
 INSIDE = "6379"
@@ -319,8 +319,8 @@ def residual():
 
 
 def after_fix(rounds=3):
-    from codex_harness.adapters.artifacts import FileArtifacts
-    from codex_harness.adapters.verification import VerificationServices
+    from codex_harness.host_os.adapters.verification import VerificationServices
+    from codex_harness.storage.adapters.file_artifacts import FileArtifacts
 
     span = published_ports.window()
     allocator = ephemeral_range()

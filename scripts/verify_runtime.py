@@ -7,7 +7,15 @@ import sys
 import tempfile
 from pathlib import Path
 
-from codex_harness.adapters.app_server import AppServer
+from codex_harness.execution.adapters.providers.codex_app_server import AppServer
+from codex_harness.host_os.adapters.process_groups import ChokepointProcesses
+
+
+def host_app_server(**kwargs):
+    # S11 R-S3: a host App Server refuses without an injected process creator ('No process creator was injected for a host
+    # App Server'); this is the creator composition.operation._host_app_server injects, the spawn chokepoint (S3/S4;
+    # DESIGN-s11 §7 R-S3). The other arguments are M7's.
+    return AppServer(**kwargs, processes=ChokepointProcesses())
 
 
 def main():
@@ -23,13 +31,13 @@ def main():
         hooks = {"PostToolUse": [{"matcher": "Bash", "hooks": [{"type": "command", "command": command}]}]}
         schema = {"type": "object", "additionalProperties": False,
                   "properties": {"value": {"type": "string"}}, "required": ["value"]}
-        with AppServer(hooks=hooks) as runtime:
+        with host_app_server(hooks=hooks) as runtime:
             result = runtime.run("Use the shell to write HARNESS_RUNTIME_OK to output.txt. Return value done.",
                                  directory, schema, 120)
-        with AppServer() as runtime:
+        with host_app_server() as runtime:
             fresh = runtime.run("Read output.txt. Return its contents, stripped of whitespace, in value.",
                                 directory, schema, 120, read_only=True)
-        with AppServer(context_window=20000) as runtime:
+        with host_app_server(context_window=20000) as runtime:
             threshold = runtime.run("Inspect output.txt with a shell tool, then inspect it again in a separate "
                                     "tool call, then return value checked.", directory, schema, 120)
         checks = {"file_task": (root / "output.txt").read_text("utf-8").strip() == "HARNESS_RUNTIME_OK",

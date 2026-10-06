@@ -15,7 +15,7 @@ import stat
 from collections import defaultdict
 from pathlib import Path, PurePosixPath
 
-from codex_harness.domain.model import canonical, utcnow
+from codex_harness.kernel.ids import canonical, utcnow
 
 MANIFEST_SCHEMA = "zeus.aibox-data-manifest/1"
 CHUNK = 1024 * 1024
