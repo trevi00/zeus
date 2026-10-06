@@ -226,13 +226,13 @@ def reader_signature(citation: str, tree: dict) -> dict | None:
     text = _source(tree, path)
     if text is None:
         return None
-    scope, owner, found = ast.parse(text).body, None, None
+    scope, found = ast.parse(text).body, None
     for part in dotted.split("."):
         found = next((n for n in scope if isinstance(n, (ast.FunctionDef, ast.AsyncFunctionDef, ast.ClassDef))
                       and n.name == part), None)
         if found is None:
             return None
-        scope, owner = found.body, found
+        scope = found.body
     if not isinstance(found, ast.FunctionDef):
         return None
     decorators = {d.id for d in found.decorator_list if isinstance(d, ast.Name)}
