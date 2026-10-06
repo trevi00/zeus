@@ -1,0 +1,35 @@
+# Sealed producer record for the CUT-INT worker-network binding (WN-1): the approved U3 E1 host effect, I2 v2 package.
+# Copied verbatim by the owner on 2026-10-06 from the user-approved package (sha256sum -c SHA256SUMS.v2: 18/18 OK):
+#   README.v2.md                     aeba726d06d6f6435369fc6f6a51be983a4c10f0ccce9c36ed42797398e84a8f  (E1.2, lines 140-142)
+#   zeus-network-guard.v2.sh         30a872e8f0e509f7da5c248fd64663711f223b9a0ebacdaeecd65e09be353216  (lines 41-44)
+#   zeus-aibox-network-guard.service 26db4ff49f339ac4d5de0df93a01d45ef64a182bd855c7cc213d0e6afef0f4c7  (whole file)
+#   README.v2.md lines 158 and 165 (the installed unit name and its expected verified state)
+# The product never runs these: E1.2 creation and the guard install are the attended host effect. Tests derive the
+# launcher's expected network identity and guard-unit dependencies from these bytes; never edit them to fit code.
+[e1.2-create]
+  docker network create --driver bridge --subnet 10.231.65.0/24 --gateway 10.231.65.1 --ipv6=false \
+    --opt com.docker.network.bridge.name=br-zeus-workers \
+    --label zeus.owner=aibox-migration-001 --label zeus.role=workers zeus-workers
+[guard-script-identity]
+WORKERS_NET_NAME=zeus-workers
+WORKERS_BRIDGE=br-zeus-workers
+STORE_NET_NAME=zeus-aibox
+OWNER_LABEL=aibox-migration-001
+[guard-install]
+  sudo install -o root -g root -m 0644 $P/zeus-aibox-network-guard.service /etc/systemd/system/zeus-aibox-network-guard.service
+  systemctl show -p ActiveState,SubState,Result zeus-aibox-network-guard.service   # active/exited/success
+[guard-unit]
+[Unit]
+Description=Zeus aibox network guard: zeus-workers public egress with private/host denial, zeus-aibox store ingress (W0 D5)
+After=docker.service docker-user-fw.service
+Requires=docker.service
+PartOf=docker.service docker-user-fw.service
+
+[Service]
+Type=oneshot
+RemainAfterExit=yes
+EnvironmentFile=/etc/default/zeus-aibox-network-guard
+ExecStart=/usr/local/sbin/zeus-network-guard.sh install
+
+[Install]
+WantedBy=multi-user.target docker.service docker-user-fw.service

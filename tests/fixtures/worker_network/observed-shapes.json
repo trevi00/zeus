@@ -1,0 +1,107 @@
+{
+ "_comment": "OBSERVED live shapes (owner, read-only, aibox) for WN-1 test fakes. Keys/values exactly as the producers printed them; 'Containers' and 'Created' dropped. Never edit to fit code; a zeus-workers success shape is SYNTHETIC and must be built in the test from i2-v2-producer.txt.",
+ "created_container_networks_command": "docker inspect --format '{{json .NetworkSettings.Networks}}' <created, not started container on the default bridge>",
+ "created_container_networks_observed_at": "2026-10-06T14:48:32Z (Docker 29.8.1; NetworkID is empty before start)",
+ "created_container_networks_stdout": "{\"bridge\":{\"IPAMConfig\":null,\"Links\":null,\"Aliases\":null,\"DriverOpts\":null,\"GwPriority\":0,\"NetworkID\":\"\",\"EndpointID\":\"\",\"Gateway\":\"\",\"IPAddress\":\"\",\"MacAddress\":\"\",\"IPPrefixLen\":0,\"IPv6Gateway\":\"\",\"GlobalIPv6Address\":\"\",\"GlobalIPv6PrefixLen\":0,\"DNSNames\":null}}",
+ "docker_server_version": "29.8.1",
+ "network_inspect": {
+  "bridge": {
+   "Attachable": false,
+   "ConfigFrom": {
+    "Network": ""
+   },
+   "ConfigOnly": false,
+   "Driver": "bridge",
+   "EnableIPv4": true,
+   "EnableIPv6": false,
+   "IPAM": {
+    "Config": [
+     {
+      "Gateway": "172.17.0.1",
+      "Subnet": "172.17.0.0/16"
+     }
+    ],
+    "Driver": "default",
+    "Options": null
+   },
+   "Id": "1e075e6bbb4759389840f0b87bbd37ce376a8694b7e5b4f6c8a856ffe613932d",
+   "Ingress": false,
+   "Internal": false,
+   "Labels": {},
+   "Name": "bridge",
+   "Options": {
+    "com.docker.network.bridge.default_bridge": "true",
+    "com.docker.network.bridge.enable_icc": "true",
+    "com.docker.network.bridge.enable_ip_masquerade": "true",
+    "com.docker.network.bridge.host_binding_ipv4": "0.0.0.0",
+    "com.docker.network.bridge.name": "docker0",
+    "com.docker.network.driver.mtu": "1500"
+   },
+   "Scope": "local",
+   "Status": {
+    "IPAM": {
+     "Subnets": {
+      "172.17.0.0/16": {
+       "DynamicIPsAvailable": 65533,
+       "IPsInUse": 3
+      }
+     }
+    }
+   }
+  },
+  "zeus-aibox": {
+   "Attachable": false,
+   "ConfigFrom": {
+    "Network": ""
+   },
+   "ConfigOnly": false,
+   "Driver": "bridge",
+   "EnableIPv4": true,
+   "EnableIPv6": false,
+   "IPAM": {
+    "Config": [
+     {
+      "Gateway": "10.231.64.1",
+      "Subnet": "10.231.64.0/24"
+     }
+    ],
+    "Driver": "default",
+    "Options": null
+   },
+   "Id": "85828a416e8bd18354ec3ed55d3e5f520df34bd0c54ac0da6356fc504bb665cf",
+   "Ingress": false,
+   "Internal": false,
+   "Labels": {
+    "com.docker.compose.config-hash": "44573f820eb708f78c90ffad89f91cef7984cf5be8081ad6e71051fa02b2e1ad",
+    "com.docker.compose.network": "zeus-aibox",
+    "com.docker.compose.project": "zeus-aibox",
+    "com.docker.compose.version": "5.5.1",
+    "zeus.owner": "aibox-migration-001"
+   },
+   "Name": "zeus-aibox",
+   "Options": {},
+   "Scope": "local",
+   "Status": {
+    "IPAM": {
+     "Subnets": {
+      "10.231.64.0/24": {
+       "DynamicIPsAvailable": 251,
+       "IPsInUse": 5
+      }
+     }
+    }
+   }
+  }
+ },
+ "network_inspect_absent": {
+  "name": "zeus-workers",
+  "returncode": 1,
+  "stderr": "Error response from daemon: network zeus-workers not found\n",
+  "stdout": "\n"
+ },
+ "network_inspect_command": "docker network inspect --format '{{json .}}' <name>",
+ "observed_at": "2026-10-06T15:26:02Z",
+ "systemctl_show_command": "systemctl show zeus-aibox-network-guard docker.service docker-user-fw.service -p Id,LoadState,ActiveState,SubState,Result,ExecMainExitTimestampMonotonic,ActiveEnterTimestampMonotonic",
+ "systemctl_show_observed_at": "2026-10-06T14:44:36Z (guard not installed: E1 not applied)",
+ "systemctl_show_stdout": "Id=zeus-aibox-network-guard.service\nLoadState=not-found\nActiveState=inactive\nSubState=dead\nActiveEnterTimestampMonotonic=0\nResult=success\nExecMainExitTimestampMonotonic=0\n\nId=docker.service\nLoadState=loaded\nActiveState=active\nSubState=running\nActiveEnterTimestampMonotonic=8190928\nResult=success\nExecMainExitTimestampMonotonic=0\n\nId=docker-user-fw.service\nLoadState=loaded\nActiveState=active\nSubState=exited\nActiveEnterTimestampMonotonic=8090822141\nResult=success\nExecMainExitTimestampMonotonic=8090821996\n"
+}

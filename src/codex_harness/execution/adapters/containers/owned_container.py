@@ -87,8 +87,71 @@ def docker_call(runner, docker, args, *, timeout, env=None):
         return subprocess.CompletedProcess([docker, *args], None, "", type(exc).__name__)
 
 
-def preflight(config: dict, docker: str = "docker", environment=None, *, token: bool = True, runner) -> dict:
-    """Refuse before any provider entry: no daemon, no such immutable image, or no worker token."""
+def _worker_network_identity(runner, docker, seconds, env) -> dict:
+    """CUT-INT WN-1: the named network is the host's guarded `zeus-workers` bridge, by the producer's identity
+    (I2 v2 E1.2). A read-only inspect; this module never creates, connects or repairs a network."""
+    shown = docker_call(runner, docker, ["network", "inspect", "--format", "{{json .}}", spec.WORKER_NETWORK],
+                        timeout=seconds, env=env)
+    if shown.returncode != 0 or not (shown.stdout or "").strip():
+        raise IsolationError("worker_network_unavailable", "the worker network is not present")
+    lines = [line for line in (shown.stdout or "").split("\n") if line.strip()]
+    try:
+        body = json.loads(lines[0]) if len(lines) == 1 else None
+        options, labels = body.get("Options") or {}, body.get("Labels") or {}
+        subnets = [config.get("Subnet") for config in (body.get("IPAM") or {}).get("Config") or []]
+        identity = (body.get("Name") == spec.WORKER_NETWORK and isinstance(body.get("Id"), str)
+                    and spec.CONTAINER_ID.fullmatch(body["Id"]) is not None and body.get("Driver") == "bridge"
+                    and body.get("EnableIPv6") is False and body.get("Internal") is False
+                    and options.get("com.docker.network.bridge.name") == spec.WORKER_BRIDGE
+                    and all(labels.get(key) == value for key, value in spec.WORKER_LABELS.items())
+                    and subnets == [spec.WORKER_SUBNET])
+    except (ValueError, AttributeError, TypeError):
+        identity = False
+    if not identity:
+        raise IsolationError("worker_network_identity_mismatch", "the worker network is not the guarded zeus-workers bridge")
+    return {"name": spec.WORKER_NETWORK, "id": body["Id"]}
+
+
+def _guard_blocks(stdout: str) -> dict:
+    blocks = {}
+    for text in (stdout or "").split("\n\n"):
+        fields = dict(line.split("=", 1) for line in text.splitlines() if "=" in line)
+        if "Id" in fields:
+            blocks[fields["Id"]] = fields
+    return blocks
+
+
+def _worker_network_guard(runner, seconds, env) -> dict:
+    """CUT-INT WN-1: the guard unit was (re)applied after the current start of each unit it follows (I2 v2:
+    After=/PartOf=; systemd propagates a restart), and is in the producer's expected state active/exited/success.
+    Read-only `systemctl show`; blocks are bound by `Id=`, never by order."""
+    argv = ["systemctl", "show", "--property=Id,LoadState,ActiveState,SubState,Result,ActiveEnterTimestampMonotonic",
+            spec.GUARD_UNIT, *spec.GUARD_AFTER]
+    try:
+        shown = runner(argv, timeout=seconds, env=env)
+    except (OSError, subprocess.TimeoutExpired):
+        shown = None
+    ready = False
+    if shown is not None and shown.returncode == 0:
+        blocks = _guard_blocks(shown.stdout)
+        try:
+            guard = blocks[spec.GUARD_UNIT]
+            stamps = {name: int(blocks[name]["ActiveEnterTimestampMonotonic"]) for name in (spec.GUARD_UNIT, *spec.GUARD_AFTER)}
+            ready = (guard["LoadState"] == "loaded" and guard["ActiveState"] == "active" and guard["SubState"] == "exited"
+                     and guard["Result"] == "success" and all(blocks[name]["ActiveState"] == "active" for name in spec.GUARD_AFTER)
+                     and all(stamp > 0 for stamp in stamps.values())
+                     and all(stamps[spec.GUARD_UNIT] >= stamps[name] for name in spec.GUARD_AFTER))
+        except (KeyError, ValueError):
+            ready = False
+    if not ready:
+        raise IsolationError("worker_network_guard_unready", "the worker network guard unit is not applied after docker")
+    return {"unit": spec.GUARD_UNIT, "ready": True}
+
+
+def preflight(config: dict, docker: str = "docker", environment=None, *, token: bool = True, runner,
+              network: str | None = None) -> dict:
+    """Refuse before any provider entry: no daemon, no such immutable image, no worker token, and (CUT-INT WN-1,
+    only for `network == zeus-workers`) a worker network that is absent, not the guarded bridge, or unguarded."""
     seconds = config["limits"]["docker_command_seconds"]
     env = docker_environment(environment)
     daemon = docker_call(runner, docker, ["version", "--format", "{{.Server.Version}}"], timeout=seconds, env=env)
@@ -98,11 +161,16 @@ def preflight(config: dict, docker: str = "docker", environment=None, *, token: 
                         timeout=seconds, env=env)
     if image.returncode != 0 or image.stdout.strip() != config["image"]:
         raise IsolationError("worker_image_unavailable")
+    guarded = {}
+    if network == spec.WORKER_NETWORK:
+        guarded = {"network": _worker_network_identity(runner, docker, seconds, env),
+                   "guard": _worker_network_guard(runner, seconds, env)}
     source = os.environ if environment is None else environment
     if token and not source.get(spec.TOKEN_NAME):
         raise IsolationError("worker_token_missing", spec.TOKEN_NAME + " is not set for this process")
     return {"docker_server": daemon.stdout.strip(), "image": config["image"],
-            "token": {"name": spec.TOKEN_NAME, "present": bool(source.get(spec.TOKEN_NAME))} if token else None}
+            "token": {"name": spec.TOKEN_NAME, "present": bool(source.get(spec.TOKEN_NAME))} if token else None,
+            **guarded}
 
 
 class OwnedContainer:
@@ -159,6 +227,16 @@ class OwnedContainer:
         if spec.controls_mismatch(observed, image=self.config["image"], run_id=self.run_id, expected=expected,
                                   network=network, home=operator_home()):
             raise IsolationError("container_controls_mismatch")
+        if network == spec.WORKER_NETWORK:
+            # CUT-INT WN-1: exactly one attached network. The NetworkID is empty before start (observed), so
+            # only the key set is compared; NetworkMode equality above is the name check.
+            shown = self._call(["inspect", "--format", "{{json .NetworkSettings.Networks}}", self.id], timeout=self.seconds)
+            try:
+                attached = json.loads(shown.stdout) if shown.returncode == 0 else None
+            except ValueError:
+                attached = None
+            if not isinstance(attached, dict) or set(attached) != {network}:
+                raise IsolationError("container_controls_mismatch")
         return observed
 
     def state(self, timeout: float | None = None) -> dict | None:
