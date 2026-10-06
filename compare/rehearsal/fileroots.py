@@ -11,6 +11,7 @@ direct regular files of `STABLE_FILE_DIRS` that are not volatile are stable sing
 Refusal reasons (`Refused.code`; `RefusedFacts.facts` carries names only, up to 16 paths, `secrets` components redacted):
     source_root_missing, source_root_symlink, source_root_not_directory   a top, container or stable root is not a real dir
     partition_unclassified    an entry of a container is none of the listed classes
+    partition_static          the partition constants are inconsistent (raised at import by `static_checks`)
     secret_path_in_root       a secret or credential NAME exists somewhere in the four tops
     external_symlink_unallowed  an absolute or escaping symlink matches no SYMLINK_ALLOWANCE rule
     git_lock_present          a `*.lock` file under a `.git` directory of `repo` or `worktrees`
@@ -75,6 +76,7 @@ AIBOX_FILES = (
 AIBOX_MODULES = (("aibox_data", ("aibox_data.inventory", "aibox_data.transfer")),
                  ("codex_harness", ("codex_harness.kernel.ids",)))
 SCHEMA = "zeus:aibox-migration-001:rehearsal:fileroots-check:1"
+PATH_LIMIT = 160  # characters of one rendered path fact
 LISTED = 16  # names listed in a refusal or a fact; the count is always exact
 
 
@@ -87,7 +89,11 @@ class RefusedFacts(Refused):
 
 
 def _redact(rel: str) -> str:
-    return "/".join("<redacted>" if p.lower() == "secrets" else p for p in rel.split("/"))
+    """A path as a bounded fact: every component the secret-name policy recognizes becomes `<redacted>`, and the rendered
+    string is cut at PATH_LIMIT with a `…` marker (cut after redaction, so it discloses no hidden component)."""
+    text = "/".join("<redacted>" if p.lower() in SECRET_COMPONENTS or _secret_basename(p) else p
+                    for p in rel.split("/"))
+    return text if len(text) <= PATH_LIMIT else text[: PATH_LIMIT - 1] + "…"
 
 
 def _named(paths) -> list[str]:
@@ -125,11 +131,11 @@ def _lstat_dir(srv: Path, rel: str) -> None:
     try:
         info = os.lstat(srv / rel)
     except FileNotFoundError:
-        raise RefusedFacts("source_root_missing", rel, {"path": rel}) from None
+        raise RefusedFacts("source_root_missing", _redact(rel), {"path": _redact(rel)}) from None
     if stat.S_ISLNK(info.st_mode):
-        raise RefusedFacts("source_root_symlink", rel, {"path": rel})
+        raise RefusedFacts("source_root_symlink", _redact(rel), {"path": _redact(rel)})
     if not stat.S_ISDIR(info.st_mode):
-        raise RefusedFacts("source_root_not_directory", rel, {"path": rel})
+        raise RefusedFacts("source_root_not_directory", _redact(rel), {"path": _redact(rel)})
 
 
 def classify(srv) -> dict:
@@ -193,9 +199,12 @@ def survey(srv, roots=FILE_ROOTS, excluded=EXCLUDED_PATHS) -> dict:
 
 def _secret_name(rel: str) -> bool:
     parts = [p.lower() for p in rel.split("/")]
-    base = parts[-1]
-    return (any(p in SECRET_COMPONENTS for p in parts) or base in SECRET_BASENAMES
-            or any(fnmatch.fnmatchcase(base, g) for g in SECRET_BASENAME_GLOBS)
+    return any(p in SECRET_COMPONENTS for p in parts) or _secret_basename(parts[-1])
+
+
+def _secret_basename(base: str) -> bool:
+    base = base.lower()
+    return (base in SECRET_BASENAMES or any(fnmatch.fnmatchcase(base, g) for g in SECRET_BASENAME_GLOBS)
             or base.startswith(SECRET_BASENAME_PREFIXES))
 
 
@@ -250,19 +259,23 @@ def git_locks(srv, found: dict | None = None) -> list:
 
 
 def cp_identity() -> dict:
-    """`CP` is a real (unlinked) executable regular file whose `--version` first line names GNU coreutils cp."""
-    if os.path.realpath(CP) != CP:
-        raise Refused("cp_identity", "CP is not its own real path")
-    info = os.lstat(CP)
-    if not stat.S_ISREG(info.st_mode) or not os.access(CP, os.X_OK):
-        raise Refused("cp_identity", "CP is not an executable regular file")
-    done = subprocess.run([CP, "--version"], capture_output=True, text=True, timeout=10, env=dict(CP_ENV), check=False)
-    first = (done.stdout.splitlines() or [""])[0]
-    if done.returncode != 0 or not first.startswith(CP_VERSION_PREFIX):
-        raise Refused("cp_identity", "CP --version is not GNU coreutils cp")
-    with open(CP, "rb") as handle:
-        digest = hashlib.sha256(handle.read()).hexdigest()
-    return {"path": CP, "sha256": digest, "version": first}
+    """`CP` is a real (unlinked) executable regular file whose `--version` first line names GNU coreutils cp. Every
+    expected probe failure (missing, spawn error, timeout, undecodable output) is one sanitized `Refused("cp_identity")`."""
+    try:
+        if os.path.realpath(CP) != CP:
+            raise Refused("cp_identity", "CP is not its own real path")
+        info = os.lstat(CP)
+        if not stat.S_ISREG(info.st_mode) or not os.access(CP, os.X_OK):
+            raise Refused("cp_identity", "CP is not an executable regular file")
+        done = subprocess.run([CP, "--version"], capture_output=True, text=True, timeout=10, env=dict(CP_ENV), check=False)
+        first = (done.stdout.splitlines() or [""])[0]
+        if done.returncode != 0 or not first.startswith(CP_VERSION_PREFIX):
+            raise Refused("cp_identity", "CP --version is not GNU coreutils cp")
+        with open(CP, "rb") as handle:
+            digest = hashlib.sha256(handle.read()).hexdigest()
+    except (OSError, subprocess.SubprocessError, UnicodeError, ValueError):
+        raise Refused("cp_identity", "the CP probe failed") from None
+    return {"path": CP, "sha256": digest, "version": _redact(first)}
 
 
 def load_aibox_data(repo) -> dict:
@@ -286,10 +299,6 @@ def load_aibox_data(repo) -> dict:
     return {rel: hashlib.sha256((repo / rel).read_bytes()).hexdigest() for rel in AIBOX_FILES}
 
 
-def _bounded(items: list) -> list:
-    return items[:64]
-
-
 def run_check(srv, repo=None) -> dict:
     """The check's facts, in the contracted order; raises `Refused` (a `RefusedFacts` carries facts) on the first failure."""
     started = time.monotonic()
@@ -298,8 +307,8 @@ def run_check(srv, repo=None) -> dict:
     facts["cp"] = cp_identity()
     partition = classify(srv)
     facts["partition"] = {"containers": len(partition["containers"]), "stable_roots": len(partition["stable_roots"]),
-                          "volatile_present": _bounded(partition["volatile_present"]),
-                          "excluded": partition["excluded"]}
+                          "volatile_present": _named(partition["volatile_present"]),
+                          "excluded": _named(partition["excluded"])}
     found = survey(srv)
     secret_names([*found["files"], *found["dirs"]])
     facts["symlinks"] = symlink_facts(srv, found)
@@ -310,7 +319,7 @@ def run_check(srv, repo=None) -> dict:
         roots[root_id] = {"files": len(mine), "bytes": sum(v[1] for _p, v in mine),
                           "symlinks": sum(1 for path, _v in mine if path in found["links"])}
     facts["stable_roots"] = roots
-    facts["stable_files"] = {"count": len(partition["stable_files"]), "paths": _bounded(partition["stable_files"])}
+    facts["stable_files"] = {"count": len(partition["stable_files"]), "paths": _named(partition["stable_files"])}
     facts["aibox_data"] = load_aibox_data(repo)
     facts["elapsed_s"] = round(time.monotonic() - started, 3)
     facts["peak_rss_kb"] = resource.getrusage(resource.RUSAGE_SELF).ru_maxrss
@@ -335,6 +344,11 @@ def main(argv=None) -> int:
         return int(stop.code or 0)
     from .evidence import check_facts
 
+    out = Path(args.out)
+    out_dir, srv_real = Path(os.path.realpath(out.parent)), Path(os.path.realpath(args.srv))
+    if out_dir == srv_real or out_dir.is_relative_to(srv_real):
+        print("usage: --out lies within --srv; the check never writes into its source", file=sys.stderr)
+        return 2
     refused, facts = None, {}
     try:
         facts = run_check(args.srv)

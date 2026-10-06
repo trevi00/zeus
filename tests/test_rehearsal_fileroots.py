@@ -333,3 +333,98 @@ def test_check_cli_end_to_end_in_a_fresh_interpreter(srv, tmp_path):
     assert done.returncode == 0, done.stderr[-400:]
     record = json.loads(out.read_text())
     assert record["ok"] and len(record["facts"]["aibox_data"]) == 7 and record["facts"]["cp"]["path"] == fr.CP
+
+
+# ---- round-1 corrections: out placement, redaction and bounds, cp probe failures ----
+
+def _source_files(root):
+    return sorted(str(p.relative_to(root)) for p in root.rglob("*") if not p.is_dir())
+
+
+def test_an_out_inside_the_source_is_a_usage_error_with_zero_source_writes(srv, monkeypatch):
+    monkeypatch.setattr(fr, "load_aibox_data", lambda repo: {})
+    before = _source_files(srv)
+    assert fr.main(["check", "--srv", str(srv), "--out", str(srv / "runtime" / "lanes" / "out.json")]) == 2
+    assert fr.main(["check", "--srv", str(srv), "--out", str(srv / "out.json")]) == 2
+    assert _source_files(srv) == before
+
+
+def test_an_out_in_an_outside_directory_that_aliases_the_source_is_a_usage_error(srv, tmp_path, monkeypatch):
+    monkeypatch.setattr(fr, "load_aibox_data", lambda repo: {})
+    alias = tmp_path / "alias"
+    alias.symlink_to(srv / "repo")
+    before = _source_files(srv)
+    assert fr.main(["check", "--srv", str(srv), "--out", str(alias / "out.json")]) == 2
+    assert _source_files(srv) == before
+
+
+def test_an_outside_out_succeeds_and_an_existing_one_is_unchanged(srv, tmp_path, monkeypatch):
+    code, _record = run_main(srv, tmp_path / "ok.json", monkeypatch)
+    assert code == 0
+    keep = tmp_path / "keep.json"
+    keep.write_text("keep")
+    assert fr.main(["check", "--srv", str(srv), "--out", str(keep)]) == 2 and keep.read_text() == "keep"
+
+
+@pytest.mark.parametrize("rel,hidden", [
+    ("repo/sub/secrets/y", "secrets"), ("repo/.codex/x", ".codex"), ("repo/.claude/x", ".claude"),
+    ("repo/auth.json", "auth.json"), ("repo/.credentials.json", ".credentials.json"), ("repo/.netrc", ".netrc"),
+    ("repo/.git-credentials", ".git-credentials"), ("repo/.env", ".env"), ("repo/prod.env", "prod.env"),
+    ("repo/id_rsa", "id_rsa"), ("repo/id_ed25519.pub", "id_ed25519"), ("repo/id_ecdsa_x", "id_ecdsa"),
+])
+def test_each_secret_class_gives_a_redacted_bounded_receipt(srv, tripwire, tmp_path, monkeypatch, rel, hidden):
+    touch(srv / rel, "TOPSECRETCONTENT")
+    tripwire["opens"].clear()
+    code, record = run_main(srv, tmp_path / "o.json", monkeypatch)
+    assert (code, record["refused"]) == (1, "secret_path_in_root")
+    check_facts(record["facts"])
+    assert hidden not in "\n".join(record["facts"]["paths"]) and "<redacted>" in record["facts"]["paths"][0]
+    assert not any(o.startswith(str(srv)) for o in tripwire["opens"])
+
+
+def test_overlong_paths_give_bounded_named_receipts_secret_or_not(srv, tmp_path, monkeypatch):
+    deep = "/".join(["a" * 180] * 3)
+    touch(srv / "repo" / deep / "id_rsa")
+    code, record = run_main(srv, tmp_path / "s.json", monkeypatch)
+    assert (code, record["refused"]) == (1, "secret_path_in_root")
+    check_facts(record["facts"])
+    assert all(len(p) <= fr.PATH_LIMIT for p in record["facts"]["paths"]) and record["facts"]["paths"][0].endswith("…")
+
+
+def test_a_long_non_secret_refusal_path_is_bounded(srv, tmp_path, monkeypatch):
+    (srv / "runtime" / ("n" * 250)).mkdir()
+    code, record = run_main(srv, tmp_path / "n.json", monkeypatch)
+    assert (code, record["refused"]) == (1, "partition_unclassified")
+    check_facts(record["facts"])
+    assert all(len(p) <= fr.PATH_LIMIT for p in record["facts"]["paths"])
+
+
+def _cp_stub(tmp_path, mode):
+    stub = tmp_path / "cp"
+    stub.write_text("#!/bin/sh\necho 'cp (GNU coreutils) 9'\n")
+    stub.chmod(mode)
+    return str(stub)
+
+
+@pytest.mark.parametrize("kind", ["missing", "not_executable", "spawn_error", "timeout", "undecodable"])
+def test_a_cp_probe_failure_is_a_sanitized_refusal_before_any_source_read(srv, tripwire, tmp_path, monkeypatch, kind):
+    if kind == "missing":
+        monkeypatch.setattr(fr, "CP", str(tmp_path / "nope"))
+    elif kind == "not_executable":
+        monkeypatch.setattr(fr, "CP", _cp_stub(tmp_path, 0o644))
+    else:
+        monkeypatch.setattr(fr, "CP", _cp_stub(tmp_path, 0o755))
+        raising = {"spawn_error": PermissionError("RAWSPAWNTEXT"),
+                   "timeout": subprocess.TimeoutExpired(["RAWSPAWNTEXT"], 10),
+                   "undecodable": UnicodeDecodeError("utf-8", b"\xff", 0, 1, "RAWSPAWNTEXT")}[kind]
+
+        def boom(*a, **k):
+            raise raising
+
+        monkeypatch.setattr(fr.subprocess, "run", boom)
+    tripwire["opens"].clear()
+    code, record = run_main(srv, tmp_path / "o.json", monkeypatch)
+    assert (code, record["refused"]) == (1, "cp_identity")
+    check_facts(record["facts"])
+    assert "RAWSPAWNTEXT" not in json.dumps(record)
+    assert not any(o.startswith(str(srv)) for o in tripwire["opens"])
