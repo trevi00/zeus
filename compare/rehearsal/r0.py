@@ -6,13 +6,26 @@ Rehearsal design R0 + plan RH-7 (critique #7: stable vs per-invocation fields). 
   and the drop-in DIRECTORY `<FragmentPath>.d/` as a whole (RH-8 F3): every entry, disabled and non-`.conf` ones
   included, with name/type/inode/size and the sha256 of a non-secret regular file; EnvironmentFiles PATHS only
   (never their content or digest); an entry that is a secret/environment file is path-only;
-- per release dir named by an ExecStart or WorkingDirectory, releases/current and every directory that carries the
-  MANAGED payload (bound from the descriptor/startup receipt revision or a path field, even outside releases/current):
-  runtime.json (revision, tree, built_at) and its sha256, pyvenv.cfg sha256, the zeus-harness dist-info RECORD sha256,
-  the interpreter realpath and the interpreter sha256; a payload directory without a `.venv` that holds runtime.json,
-  runtime-files.json, uv.lock and src/ is the `runtime_dir` shape: the sha256 of those files and pyproject.toml, and the
-  executable identity of the LAUNCHING unit's ExecStart argv[0] (realpath, sha256, `sys.version`; nothing in the
-  payload directory is executed); a directory of neither shape is incomplete;
+- per release dir named by an ExecStart or WorkingDirectory, releases/current, every `<srv>/releases/<40 hex>` root that
+  a unit's cgroup child argv[0] is under (RH-7; an argv[0] under `<srv>/releases/` of another shape is incomplete,
+  `children:<unit>:release_shape`) and every directory that carries the MANAGED payload (bound from the descriptor/
+  startup receipt revision or a path field, even outside releases/current): runtime.json (revision, tree, built_at) and
+  its sha256, pyvenv.cfg sha256, the zeus-harness dist-info RECORD sha256, the interpreter realpath and the interpreter
+  sha256; a payload directory without a `.venv` that holds runtime.json, runtime-files.json, uv.lock and src/ is the
+  `runtime_dir` shape (nothing in the payload directory is executed): the sha256 of those files and pyproject.toml, and
+    - `launcher`: {realpath, sha256, sys_version} of the LAUNCHING unit's ExecStart argv[0] and `script_sha256`, the
+      sha256 of the launcher script ExecStart argv[1] names when it is a regular non-secret file (else null);
+    - `unit_template_sha256`: the managed unit's FragmentPath sha256;
+    - `runtime_executables`: for each live cgroup child of the managed unit {realpath, release (root or null),
+      subcommand (supervise|launch|entry|null), interpreter_sha256}, sorted by realpath, pid-free;
+    - `payload_executable`: the ONE child that runs the payload {realpath, release, subcommand, interpreter_sha256,
+      parent_subcommand, cwd_is_payload_location}: the `entry` child (argv[3] of `-m codex_harness.adapters.
+      managed_runtime`, the only argv word read beyond argv[0..2] and only when it is one of the three command words)
+      whose parent (`/proc/<pid>/stat` ppid) is the `supervise` child and whose `/proc/<pid>/cwd` target, when
+      readable, is the payload location (managed_runtime.py: supervise runs `launch` in-process, which owns one `entry`
+      child with cwd=descriptor root). Zero or several such children: `payload_executable` is absent and the record is
+      incomplete (`managed_payload:payload_executable:unresolved`); the launcher is never substituted. `environ` is never
+      read. A directory of neither shape is incomplete;
 - managed-fleet state ids (explicit per-record key allowlists) and the authoritative managed binding `managed.binding`
   (plan_id, descriptor_sha256, instance_id, revision) taken from the injected lane-status JSON row of the managed
   target and cross-checked against the startup receipt, controller state and heartbeat (RH-8 F3 final); the payload
@@ -59,6 +72,11 @@ MANAGED_STABLE = {
 MANAGED_INVOCATION = {"startup-receipt.json": ("instance_id",), "controller-state.json": ("invocation_id",),
                       "heartbeat.json": ("instance_id",)}
 MANAGED_UNIT = "zeus-aibox-managed-fleet.service"
+# `python -m codex_harness.adapters.managed_runtime <sub>`: argv[3] is the only argv word read beyond argv[0..2], and
+# only when it is one of these three non-secret command words (managed_runtime.py main(): supervise runs `launch`
+# in-process, `launch` owns ONE `entry` child with cwd = the descriptor root; `entry` is the payload)
+MANAGED_MODULE = "codex_harness.adapters.managed_runtime"
+SUBCOMMANDS = ("supervise", "launch", "entry")
 RUNTIME_DIR_FILES = ("runtime.json", "runtime-files.json", "uv.lock")
 BINDING_FIELDS = ("plan_id", "descriptor_sha256", "instance_id", "revision")
 IMAGE_LINE = re.compile(r"^(\S+) (sha256:[0-9a-f]{64})$")
@@ -91,6 +109,8 @@ class Recorder:
     def __init__(self, env: Env):
         self.env = env
         self.missing: set[str] = set()
+        self.live: dict[str, list] = {}  # unit -> live cgroup children (pid, argv0, subcommand, release, ppid, cwd)
+        self.fragments: dict[str, str | None] = {}  # unit -> FragmentPath sha256
 
     def miss(self, name: str) -> None:
         self.missing.add(name)
@@ -233,20 +253,71 @@ class Recorder:
         for fname in (*RUNTIME_DIR_FILES, "pyproject.toml"):
             facts[fname.replace(".", "_").replace("-", "_") + "_sha256"] = self.sha(
                 f"{name}:{fname}", os.path.join(location, fname))
-        # the executable is the LAUNCHING unit's ExecStart argv[0], never anything inside the payload directory
+        # `launcher`: the LAUNCHING unit's ExecStart argv[0] (and the script it names), never anything inside the payload
+        # directory; it is NOT the process that runs the payload (that is `payload_executable`, from the cgroup children)
         exec_start = self.show(MANAGED_UNIT, ("ExecStart",)).get("ExecStart", "")
-        hit = re.search(r"argv\[\]=(\S+)", exec_start) or re.search(r"path=(\S+)", exec_start)
-        argv0 = hit.group(1) if hit else ""
+        argv = (re.search(r"argv\[\]=([^;}]*)", exec_start) or re.search(r"path=([^;}]*)", exec_start))
+        words = argv.group(1).split() if argv else []
+        argv0 = words[0] if words else ""
         real = os.path.realpath(argv0) if argv0.startswith("/") else ""
-        if not real or real == os.path.realpath(location) or real.startswith(os.path.realpath(location) + os.sep):
+        location_real = os.path.realpath(location)
+        launcher = {"realpath": real or None}
+        facts["launcher"] = launcher
+        if not real or real == location_real or real.startswith(location_real + os.sep):
             self.miss(f"{name}:launching_executable")
-            facts["interpreter_realpath"] = real or None
-            return facts
-        facts["interpreter_realpath"] = real
-        facts["interpreter_sha256"] = self.sha(f"{name}:interpreter", real)
-        facts["interpreter_version"] = self.cmd(f"{name}:interpreter_version", real, "-c",
-                                                "import sys;print(sys.version)").strip()
+        else:
+            launcher["sha256"] = self.sha(f"{name}:interpreter", real)
+            launcher["sys_version"] = self.cmd(f"{name}:interpreter_version", real, "-c",
+                                               "import sys;print(sys.version)").strip()
+            script = words[1] if len(words) > 1 else ""
+            launcher["script_sha256"] = (self.sha(f"{name}:launcher_script", script)
+                                         if script.startswith("/") and os.path.isfile(script) else None)
+        facts["unit_template_sha256"] = self.fragment_sha(MANAGED_UNIT)
+        executables, payload = self.runtime_executables(location)
+        facts["runtime_executables"] = executables
+        if payload is None:
+            self.miss("managed_payload:payload_executable:unresolved")
+        else:
+            facts["payload_executable"] = payload
         return facts
+
+    def fragment_sha(self, unit: str):
+        """The unit FragmentPath's sha256 (the same value `collect` records as FragmentSha256)."""
+        if unit not in self.fragments:
+            frag = self.show(unit, ("FragmentPath",)).get("FragmentPath", "")
+            self.fragments[unit] = self.sha(f"fragment:{unit}", frag) if frag else None
+            if not frag:
+                self.miss(f"fragment:{unit}")
+        return self.fragments[unit]
+
+    def runtime_executables(self, location: str):
+        """(the executables of every live child of the managed unit sorted by realpath, pid-free; the ONE child that
+        runs the payload or None). The payload child is the `entry` child (argv[3]) whose parent is the `supervise`
+        child and whose cwd, when readable, is the payload location (managed_runtime.py: `launch` spawns `entry` with
+        cwd=descriptor root under the supervising process). Zero or several such children: unresolved, no fallback."""
+        if MANAGED_UNIT not in self.live:
+            self.children(MANAGED_UNIT)
+        kids = self.live.get(MANAGED_UNIT, [])
+        executables = []
+        for kid in kids:
+            real = os.path.realpath(kid["argv0"]) if kid["argv0"].startswith("/") else ""
+            if not real:
+                self.miss(f"payload:{location}:runtime_executable")
+                continue
+            executables.append({"realpath": real, "release": kid["release"], "subcommand": kid["sub"],
+                                "interpreter_sha256": self.sha(f"payload:{location}:runtime_executable", real)})
+        executables.sort(key=lambda e: (e["realpath"], e["subcommand"] or ""))
+        supervisors = {k["pid"] for k in kids if k["sub"] == "supervise"}
+        locations = {os.path.realpath(location)}
+        picked = [k for k in kids if k["sub"] == "entry" and k["ppid"] in supervisors
+                  and (k["cwd"] is None or os.path.realpath(k["cwd"]) in locations)]
+        if len(picked) != 1 or not picked[0]["argv0"].startswith("/"):
+            return executables, None
+        kid = picked[0]
+        return executables, {
+            "realpath": os.path.realpath(kid["argv0"]), "release": kid["release"], "subcommand": "entry",
+            "interpreter_sha256": self.sha(f"payload:{location}:runtime_executable", os.path.realpath(kid["argv0"])),
+            "parent_subcommand": "supervise", "cwd_is_payload_location": None if kid["cwd"] is None else True}
 
     def lane_target(self, target_id) -> dict:
         """The AUTHORITATIVE lane-status row of the managed target (the plan id lives only there); {} when the status
@@ -358,6 +429,33 @@ class Recorder:
 
     # -- children --
 
+    def child_release(self, unit: str, argv0: str):
+        """The `<srv>/releases/<40 hex>` root a child's argv[0] is under; None when it is under no release; a path under
+        `<srv>/releases/` of any other shape is incomplete."""
+        prefix = os.path.join(self.env.srv, "releases") + os.sep
+        if not argv0.startswith(prefix):
+            return None
+        hit = re.match(re.escape(prefix) + r"([0-9a-f]{40})(?:/|$)", argv0)
+        if hit is None:
+            self.miss(f"children:{unit}:release_shape")
+            return None
+        return prefix + hit.group(1)
+
+    def child_links(self, pid: int) -> dict:
+        """The two non-secret discriminators besides argv: the parent pid (`/proc/<pid>/stat`) and the cwd symlink
+        target. Never `environ`. An unreadable one is None (and then does not identify the payload)."""
+        ppid = cwd = None
+        try:
+            with open(os.path.join(self.env.proc, str(pid), "stat")) as fh:
+                ppid = int(fh.read().rsplit(")", 1)[1].split()[1])
+        except (OSError, ValueError, IndexError):
+            pass
+        try:
+            cwd = os.readlink(os.path.join(self.env.proc, str(pid), "cwd"))
+        except OSError:
+            pass
+        return {"ppid": ppid, "cwd": cwd}
+
     def children(self, unit: str) -> dict:
         procs = os.path.join(self.env.cgroup, unit, "cgroup.procs")
         try:
@@ -368,17 +466,23 @@ class Recorder:
         except (OSError, ValueError):
             self.miss(f"cgroup:{unit}")
             return {"cgroup": "unreadable", "children": []}
-        children = []
+        children, live = [], []
         for pid in sorted(pids):
             try:
                 with open(os.path.join(self.env.proc, str(pid), "cmdline"), "rb") as fh:
-                    argv = [a.decode("utf-8", "replace") for a in fh.read().split(b"\0") if a][:3]  # argv[0..2] ONLY
+                    parts = [a.decode("utf-8", "replace") for a in fh.read().split(b"\0") if a][:4]
+                argv = parts[:3]  # argv[0..2] ONLY are recorded
                 children.append({"pid": pid, "argv": argv})
+                sub = parts[3] if len(parts) > 3 and parts[1:3] == ["-m", MANAGED_MODULE] and parts[3] in SUBCOMMANDS else None
+                live.append({"pid": pid, "argv0": argv[0] if argv else "", "sub": sub,
+                             "release": self.child_release(unit, argv[0]) if argv else None,
+                             **(self.child_links(pid) if unit == MANAGED_UNIT else {"ppid": None, "cwd": None})})
             except FileNotFoundError:
                 children.append({"pid": pid, "gone": True})  # exited between the two reads
             except OSError:
                 self.miss(f"cmdline:{unit}:{pid}")
                 children.append({"pid": pid, "unreadable": True})
+        self.live[unit] = live
         return {"cgroup": "present", "children": children}
 
     # -- docker --
@@ -434,6 +538,7 @@ def collect(env: Env | None = None) -> dict:
                 rec.miss(f"dropin:{unit}:{path}")
                 drop.append({"path": path, "error": type(exc).__name__})
         st["FragmentSha256"] = rec.sha(f"fragment:{unit}", frag) if frag else None
+        rec.fragments[unit] = st["FragmentSha256"]
         st["DropIns"] = drop
         st["DropInDir"] = rec.dropin_dir(unit, frag) if frag else None
         st["EnvironmentFiles"] = sorted(set(re.findall(r"(/[^\s;]+)", st.get("EnvironmentFiles", ""))))  # PATHS only
@@ -444,6 +549,8 @@ def collect(env: Env | None = None) -> dict:
     current = os.path.realpath(os.path.join(env.srv, "releases", "current"))
     releases.add(current)
     ids, payload_binding, payload_releases, binding = rec.managed()
+    for kids in rec.live.values():  # every release a child runs (RH-7), beside the ExecStart/WorkingDirectory ones
+        releases.update(kid["release"] for kid in kids if kid["release"])
     record["stable"]["releases"] = {r: rec.release_facts(r) for r in sorted(releases)}
     record["stable"]["releases_current"] = current
     record["stable"]["managed"] = {"binding": binding}
