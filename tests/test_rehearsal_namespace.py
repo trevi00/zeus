@@ -169,7 +169,7 @@ def test_the_env_is_closed_and_reproduces_the_non_secret_dsn_components(world, m
 
 
 def test_a_config_with_a_password_or_an_unknown_key_is_refused(world, tmp_path):
-    for extra in ({"password": "x"}, {"dsn": "postgres://u:pw@h/db"}):
+    for extra in ({"password": "x"}, {"dsn": "an-unknown-key"}):
         bad = tmp_path / "bad.json"
         bad.write_text(json.dumps({"pg_dbname": "d", "pg_user": "u", "search_path": "s", "redis_db": 0, **extra}))
         with pytest.raises(Refused) as info:
