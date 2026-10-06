@@ -11,10 +11,13 @@ failed by collection order. `tests/ported/conftest.py` re-exports these same obj
 """
 
 import json
-
-from _layout import TARGET
+from pathlib import Path
 
 from codex_harness.kernel.ids import digest
+
+# Module-relative on purpose (owner, S11 int61): `tests/ported/` -> parents[2] is the distribution root in BOTH layouts,
+# and child processes import this module with only `tests/ported` on sys.path, where `_layout` is not importable.
+TARGET = Path(__file__).resolve().parents[2]
 
 ATTESTED = {}
 
