@@ -430,6 +430,11 @@ def test_the_revision_mask_hides_a_revision_and_its_derivatives_but_nothing_beha
     unequal["launch"]["again"]["manifest_sha256"] = "5" * 64
     expected, observed, _ = module.rebaseline_normalise(FAMILY, golden, unequal)
     assert expected != observed
+    # the sealed tree and the fixture source revisions (`revisions.a`/`.b`) are revision leaves too
+    tree_golden = {"manifest": {"tree": REV_A}, "revisions": {"a": REV_A, "b": "c" * 40}}
+    tree_actual = {"manifest": {"tree": REV_B}, "revisions": {"a": REV_B, "b": "d" * 40}}
+    expected, observed, _ = module.rebaseline_normalise(FAMILY, tree_golden, tree_actual)
+    assert expected == observed
     # a revision-looking value that is NOT at a revision leaf is not masked
     other = json.loads(json.dumps(actual))
     other["d"]["root"] = f"<root>/runtimes/{'c' * 40}"

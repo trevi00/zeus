@@ -55,7 +55,7 @@
         "files",
         "0o444"
       ],
-      "reason": "R-G1-12b: the sealed runtime tree of the approved rebaseline (main-s2r-b9d8f15) is the M7 tree plus the S2R delta, so its runtime revision (a content hash that names the runtime directory) differs from M7's. Every differing value was confirmed (G1-13c, value by value against the M7 golden) to be that revision, a path or dict key containing it, a manifest digest over such paths, or the sealed tree's own digest and file counts. Revisions are masked only at shared revision leaves as a bijection (<REV:n>); the listed leaves become <leaf:n> by first appearance, so equal values stay equal and unequal values stay unequal. Owners, generations, statuses, results and refusals are never masked."
+      "reason": "R-G1-12b: the sealed runtime tree of the approved rebaseline (main-s2r-b9d8f15) is the M7 tree plus the S2R delta, so its runtime revision (a content hash that names the runtime directory) differs from M7's. Every differing value was confirmed (G1-13c, value by value against the M7 golden) to be that revision, a path or dict key containing it, a manifest digest over such paths, or the sealed tree's own digest and file counts. Revisions (the `revision`, `attested_revision`, `runtime_revision` and `tree` leaves, and `revisions.a`/`revisions.b` of the managed_systemd family: git ids of the sealed fixture sources) are masked only at shared leaves as a bijection (<REV:n>); the listed leaves become <leaf:n> by first appearance, so equal values stay equal and unequal values stay unequal. Owners, generations, statuses, results and refusals are never masked."
     }
   ]
 }

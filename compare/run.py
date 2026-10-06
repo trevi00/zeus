@@ -712,7 +712,10 @@ def split_layers(declarations) -> tuple[list, list]:
 # `rebaseline_runtime_revision` (compare/masks.json) is applied ONLY in a rebaseline-reference run, ONLY to its listed
 # families, and equality-preservingly: it never hides whether two values were equal.
 HEX40 = re.compile(r"[0-9a-f]{40}")
-REVISION_LEAVES = frozenset({"revision", "attested_revision", "runtime_revision"})
+# the revision leaves: the runtime revision itself, the git tree of the sealed revision (`tree`), and the two fixture
+# source revisions the delivery.managed_systemd family reports as `revisions.a` / `revisions.b`
+REVISION_LEAVES = frozenset({"revision", "attested_revision", "runtime_revision", "tree"})
+REVISION_PAIR_LEAVES = frozenset({"a", "b"})
 REVISION_MASK_ID = "rebaseline_runtime_revision"
 MASKS_FILE = COMPARE / "masks.json"
 
@@ -733,7 +736,8 @@ def _revision_pairs(expected, actual, path=()):
     elif isinstance(expected, list) and isinstance(actual, list) and len(expected) == len(actual):
         for index, (e, a) in enumerate(zip(expected, actual)):
             yield from _revision_pairs(e, a, path + (str(index),))
-    elif (isinstance(expected, str) and isinstance(actual, str) and path and path[-1] in REVISION_LEAVES
+    elif (isinstance(expected, str) and isinstance(actual, str) and path
+          and (path[-1] in REVISION_LEAVES or (path[-1] in REVISION_PAIR_LEAVES and path[-2:-1] == ("revisions",)))
           and HEX40.fullmatch(expected) and HEX40.fullmatch(actual) and expected != actual):
         yield path, expected, actual
 
