@@ -1206,6 +1206,67 @@ def validate_generation_restart(document) -> dict:
     return {**document, "halt": dict(halt)}
 
 
+# ----- the maintenance projection (INV-HOST-DELIVERY-MAINTENANCE-001) ----------------------------------
+# The generation lifecycle names and the read-only projection of an intent's recorded generation. They live
+# here, not in `maintenance.py`, because `delivery_status` projects them and `maintenance.py` imports this module.
+# The generation lifecycle. `failed` is terminal and stays OPEN (the target stays held until a separately
+# reviewed resolution); only `bound` closes the maintenance.
+GENERATION_REQUESTED, GENERATION_LAUNCHED, GENERATION_STARTED = "requested", "launched", "started"
+GENERATION_ARMED, GENERATION_BOUND, GENERATION_FAILED = "armed", "bound", "failed"
+GENERATION_STATES = (GENERATION_REQUESTED, GENERATION_LAUNCHED, GENERATION_STARTED, GENERATION_ARMED,
+                     GENERATION_BOUND, GENERATION_FAILED)
+NEXT_PHASE = {GENERATION_REQUESTED: "restart", GENERATION_LAUNCHED: "restart", GENERATION_STARTED: "arm",
+              GENERATION_ARMED: "bind", GENERATION_BOUND: None, GENERATION_FAILED: "owner_review"}
+
+
+def maintenance_of(intent) -> dict | None:
+    """The recorded maintenance generation of one intent (v1 holds at most one), or None for a legacy row."""
+    generations = intent.get("generations") if isinstance(intent, dict) else None
+    rows = [row for row in generations if isinstance(row, dict)] if isinstance(generations, list) else []
+    return rows[-1] if rows else None
+
+
+def maintenance_open(intent) -> bool:
+    """A generation that is not `bound` holds its target; a `failed` one stays open until a separately
+    reviewed resolution (v1 has none)."""
+    generation = maintenance_of(intent)
+    return generation is not None and generation.get("state") != GENERATION_BOUND
+
+
+
+def _part(record, name: str) -> dict:
+    value = (record or {}).get(name)
+    return value if isinstance(value, dict) else {}
+
+
+def maintenance_view(generation) -> dict | None:
+    """The allowlisted projection of one generation: ids, digests, states, codes and times only."""
+    if not isinstance(generation, dict):
+        return None
+    state = generation.get("state")
+    retiring, launched = _part(generation, "retiring"), generation.get("launched")
+    arm, canary, failure = generation.get("arm"), generation.get("canary"), generation.get("failure")
+    new = None
+    if isinstance(launched, dict):
+        new = {"instance_id": _part(launched, "receipt").get("instance_id"),
+               "invocation_id": launched.get("invocation_id")}
+    arm = arm if isinstance(arm, dict) else None
+    return {"maintenance_id": generation.get("id"), "state": state, "open": state != GENERATION_BOUND,
+            "qualified": state == GENERATION_BOUND, "requested_at": generation.get("requested_at"),
+            "updated_at": generation.get("updated_at"),
+            "retiring": {"instance_id": retiring.get("instance_id"), "invocation_id": retiring.get("invocation_id")},
+            "new": new, "deadline": None if arm is None else arm.get("deadline"),
+            "admission": None if arm is None else _part(arm, "control").get("state"),
+            "dispatch": None if arm is None or not isinstance(arm.get("dispatch"), dict)
+            else arm["dispatch"].get("state"),
+            "canary": None if not isinstance(canary, dict) else {
+                "action_id": canary.get("action_id"), "job_id": canary.get("job_id"),
+                "state": _part(canary, "outcome").get("state")},
+            "failure": None if not isinstance(failure, dict) else {"code": failure.get("code"),
+                                                                    "at": failure.get("at")},
+            "evidence_ref": generation.get("evidence_ref"), "next_phase": NEXT_PHASE.get(state)}
+
+
 def next_stage(stage: str) -> str:
     """The stage that follows a completed one; `active` is terminal and follows nothing."""
     if stage not in STAGE_ORDER:
@@ -1282,6 +1343,10 @@ def delivery_progress(row: dict, intent, descriptor_row) -> dict:
             "stage_deadline": (intent or {}).get("stage_deadline"),
             "updated_at": (intent or {}).get("updated_at") or row.get("updated_at")}
     view["next_action"] = stage_next_action(stage, view["outcome"])
+    if maintenance_of(intent) is not None:
+        # Additive (INV-HOST-DELIVERY-MAINTENANCE-001), ONLY for an intent that carries generations, so a
+        # legacy row projects byte-identically: open/not qualified until bound, ids and states only.
+        view["maintenance"] = maintenance_view(maintenance_of(intent))
     return view
 
 
@@ -1494,7 +1559,10 @@ def migration_rejected_source(intent, plan: dict, request: dict) -> str | None:
     return None
 
 
-__all__ = ["MIGRATION_KIND_ENVIRONMENT", "MIGRATION_KIND_EVALUATOR", "MIGRATION_KINDS", "migration_kind",
+__all__ = ["GENERATION_ARMED", "GENERATION_BOUND", "GENERATION_FAILED", "GENERATION_LAUNCHED", "GENERATION_REQUESTED",
+           "GENERATION_STARTED", "GENERATION_STATES", "NEXT_PHASE", "maintenance_of", "maintenance_open",
+           "maintenance_view",
+           "MIGRATION_KIND_ENVIRONMENT", "MIGRATION_KIND_EVALUATOR", "MIGRATION_KINDS", "migration_kind",
            "MIGRATION_ACK_FIELDS", "MIGRATION_ACTIVE", "MIGRATION_HELD", "MIGRATION_REGISTERED",
            "MIGRATION_REQUEST_FIELDS", "MIGRATION_RESERVING", "MIGRATION_STAGED", "migration_rejected_source",
            "migration_lineage_digest", "migration_request_id", "validate_migration_ack", "validate_migration_request",
