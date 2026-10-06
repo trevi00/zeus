@@ -58,14 +58,18 @@ from codex_harness.domain.fleet_maintenance import (
     CLOSE_REASONS,
     CLOSED,
     EXECUTION_SCHEMA,
+    FORWARD_CANDIDATE,
     GRANTED,
     MAINTENANCE_EXPIRED,
     MAINTENANCE_ID,
     OWNER_ACTIONS_BUCKET,
     UNLAUNCHED_REASONS,
+    check_backlog_item,
     check_canary_job,
+    check_forward_job,
     check_owner_action,
     deadline_passed,
+    kind_of,
     open_permit,
     owner_action_matches,
     permit_view,
@@ -108,6 +112,9 @@ BUCKET_UNITS = "fleet_units"
 # INV-FLEET-001 maintenance amendment (INV-HOST-DELIVERY-MAINTENANCE-001): one durable one-job canary
 # permit per maintenance id; `granted` -> `admitted` -> `closed`, or `granted` -> `closed`.
 BUCKET_MAINTENANCE = "fleet_maintenance_admissions"
+# The owner-registered backlog plans (`application.fleet_backlog.BUCKET_PLANS`), READ by the
+# `forward_candidate` permit; the name is repeated because that module imports this one.
+BUCKET_BACKLOG_PLANS = "fleet_backlog_plans"
 # Control-row field naming the managed host activation that paused admission (`activation_gate`).
 ACTIVATION_HOLD = "activation_hold"
 CONTROL_KEY = "admission"
@@ -834,10 +841,27 @@ class Fleet:
         never held a permit scans one empty bucket and reads nothing else."""
         open_ids = []
         for row in tx.scan(BUCKET_MAINTENANCE):
-            job = tx.get(BUCKET_JOBS, row["permit"]["job_id"]) if row.get("state") == CLOSED else None
+            job = Fleet._permit_job(tx, row["permit"]) if row.get("state") == CLOSED else None
             if open_permit(row, job):
                 open_ids.append(row["id"])
         return sorted(open_ids)
+
+    @staticmethod
+    def _permit_job(tx, permit: dict) -> dict | None:
+        """The one job a permit may admit: the canary's deterministic id, or for a `forward_candidate` the
+        job whose manifest digest the permit binds (the digest contains the operation id, so it is unique)."""
+        if kind_of(permit) != FORWARD_CANDIDATE:
+            return tx.get(BUCKET_JOBS, permit["job_id"])
+        return next((job for job in tx.scan(BUCKET_JOBS) if job.get("manifest_sha256") == permit["manifest_sha256"]),
+                    None)
+
+    @staticmethod
+    def _job_is_permits(permit: dict, action, job) -> bool:
+        """The stored job belongs to this permit: the real owner action for a canary, the bound lane for a
+        forward candidate (its digest already matched)."""
+        if kind_of(permit) == FORWARD_CANDIDATE:
+            return isinstance(job, dict) and job.get("lane") == permit["lane"]
+        return owner_action_matches(permit, action)
 
     @classmethod
     def _maintenance_debt(cls, tx) -> bool:
@@ -864,6 +888,14 @@ class Fleet:
             now = self.clock()
             if deadline_passed(permit["deadline"], now):
                 raise FleetRefused("maintenance_expired", "deadline")
+            if kind_of(permit) == FORWARD_CANDIDATE:
+                # G1-04c issuance gate: never while a maintenance generation (a canary permit) is open;
+                # the owner registered the item before this permit, and nothing of maintenance is touched.
+                open_ids = self._open_permits(tx)
+                if any(kind_of(tx.get(BUCKET_MAINTENANCE, other)["permit"]) != FORWARD_CANDIDATE
+                       for other in open_ids):
+                    raise FleetRefused("maintenance_open", "maintenance")
+                check_backlog_item(permit, tx.scan(BUCKET_BACKLOG_PLANS), "maintenance_invalid")
             if any(other != mid for other in self._open_permits(tx)):
                 raise FleetRefused("maintenance_conflict", "maintenance_id")
             old = tx.get(BUCKET_MAINTENANCE, mid)
@@ -909,9 +941,15 @@ class Fleet:
             now = self.clock()
             if deadline_passed(permit["deadline"], now):
                 raise FleetRefused("maintenance_expired", "deadline")
-            check_owner_action(permit, tx.get(OWNER_ACTIONS_BUCKET, permit["action_id"]))
-            job = tx.get(BUCKET_JOBS, permit["job_id"])
-            check_canary_job(permit, job)
+            forward = kind_of(permit) == FORWARD_CANDIDATE
+            if forward:
+                check_backlog_item(permit, tx.scan(BUCKET_BACKLOG_PLANS))
+                job = self._permit_job(tx, permit)
+                check_forward_job(permit, job)
+            else:
+                check_owner_action(permit, tx.get(OWNER_ACTIONS_BUCKET, permit["action_id"]))
+                job = tx.get(BUCKET_JOBS, permit["job_id"])
+                check_canary_job(permit, job)
             jobs = {other["id"]: other for other in tx.scan(BUCKET_JOBS)}
             units = held_units(tx.scan(BUCKET_UNITS))
             if units or any(other["status"] in RESERVING for other in jobs.values()):
@@ -929,6 +967,8 @@ class Fleet:
             row.update(state=ADMITTED, admitted_at=now, lane=job["lane"], manifest_sha256=job["manifest_sha256"],
                        owner_token=job["owner_token"], lane_ack={"proof_sha256": digest(proof), "at": now},
                        history=self._history(row, ADMITTED, now, None))
+            if forward:
+                row["job_id"] = job["id"]
             tx.put(BUCKET_MAINTENANCE, row["id"], row)
         return {"admitted": True, "maintenance_id": row["id"], "job": dict(job)}
 
@@ -953,12 +993,12 @@ class Fleet:
             row = tx.get(BUCKET_MAINTENANCE, mid)
             if row is not None and row["permit_sha256"] != sha:
                 raise FleetRefused("maintenance_conflict", "permit")
-            job = tx.get(BUCKET_JOBS, permit["job_id"])
-            action = tx.get(OWNER_ACTIONS_BUCKET, permit["action_id"])
+            job = self._permit_job(tx, permit)
+            action = None if kind_of(permit) == FORWARD_CANDIDATE else tx.get(OWNER_ACTIONS_BUCKET, permit["action_id"])
             now = self.clock()
             if row is not None and row["state"] == CLOSED:
                 if row.get("close_reason") in UNLAUNCHED_REASONS and job is not None and job["status"] == QUEUED:
-                    if not owner_action_matches(permit, action):
+                    if not self._job_is_permits(permit, action, job):
                         raise FleetRefused("maintenance_conflict", "job")
                     self._fail_unlaunched(tx, job, mid, row["close_reason"], now)
                     row.update(job_status=job["status"],
@@ -974,7 +1014,7 @@ class Fleet:
                 if job is not None:
                     # Only the exact queued canary of this permit's owner action; a job that is already
                     # terminal was never this permit's to close.
-                    if job["status"] != QUEUED or not owner_action_matches(permit, action):
+                    if job["status"] != QUEUED or not self._job_is_permits(permit, action, job):
                         raise FleetRefused("maintenance_conflict", "job")
                     self._fail_unlaunched(tx, job, mid, reason, now)
                 launched = False
