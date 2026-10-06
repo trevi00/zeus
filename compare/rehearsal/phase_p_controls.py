@@ -29,7 +29,7 @@ import sys
 import time
 from pathlib import Path
 
-from . import Refused, check_run8
+from . import Refused, check_run8, fileroots
 from . import phase_p as pp
 from .constants import PG_IMAGE, PRODUCTION_PREFIX, REDIS_IMAGE, create_root, provider_guard
 
@@ -43,6 +43,10 @@ EXPECTED = {
     "restart": {"step": "P4", "reason": "container_restarted"},
     "paused_false": {"step": "P0", "reason": "not_paused_or_not_quiet"},
 }
+# fixed relative paths inside the stand-in srv that `positive_facts` reads back from the seal
+CANARY = "runtime/lanes/harness/workspaces/review-canary-0123456789abcdef/.venv/bin/python"
+RO_FILE, EXEC_FILE, EMPTY_DIR = "managed-fleet/fleetdir/ro.txt", "repo/run.sh", "repo/emptydir"
+LINK_PAIR = ("worktrees/w/a.py", "worktrees/w/h2")
 PSQL = ["psql", "-U", "zeus", "-h", "/var/run/postgresql", "-XAtq", "-v", "ON_ERROR_STOP=1"]
 
 
@@ -64,6 +68,28 @@ def validate_targets(targets: pp.Targets, run8: str, scratch) -> None:
     for path in (targets.monitoring, targets.heartbeat):
         if path in (pp.MONITORING, pp.HEARTBEAT) or not Path(path).resolve().is_relative_to(Path(scratch).resolve()):
             raise Refused("standin_path", path)
+
+
+def build_standin_srv(srv) -> None:
+    """A full synthetic stand-in for the four production tops (the closed partition, the one allowed link, modes, an empty
+    directory and a hard-link pair); it records no events and touches nothing outside `srv`."""
+    srv = Path(srv)
+    for rel in (*fileroots.CONTAINERS, *(rel for _id, rel in fileroots.STABLE_ROOTS), "runtime/control/observations/health",
+                "runtime/tokobs", "runtime/lanes/harness", "repo/.git", "managed-fleet/fleetdir", "worktrees/w", EMPTY_DIR):
+        (srv / rel).mkdir(parents=True, exist_ok=True)
+    for rel in ("runtime/control/monitoring.json", "runtime/control/monitor-collector.log",
+                "runtime/control/observations/health/h.json", "runtime/managed-fleet/heartbeat.json",
+                "runtime/control/fleet-owner.json", "runtime/managed-fleet/descriptor.json", "runtime/tokobs/ledger",
+                "runtime/lanes/harness/l.txt", "runtime/control/artifacts/a.bin", "runtime/control/verification/v.json",
+                "runtime/control/worker-sessions/s.json", "runtime/control/observations/spool/p.json",
+                "managed-fleet/f.json", "repo/a.py", "repo/.git/HEAD", LINK_PAIR[0], RO_FILE, EXEC_FILE):
+        (srv / rel).write_text(f"stand-in {rel}\n")
+    os.chmod(srv / RO_FILE, 0o444)
+    os.chmod(srv / EXEC_FILE, 0o755)
+    os.link(srv / LINK_PAIR[0], srv / LINK_PAIR[1])
+    link = srv / CANARY
+    link.parent.mkdir(parents=True, exist_ok=True)
+    link.symlink_to(fileroots.SYMLINK_ALLOWANCE[0]["target"])
 
 
 def need(what: str, proc) -> None:

@@ -14,7 +14,13 @@ Every production touch is a READ, and every required command's success is part o
       and must be identical; the copied file set and digests must equal the manifest; then `redis-check-aof` (no
       --fix) on the COPY's single manifest, whose exit must be 0.
 - P2b dump again as d0b (the quiescence bracket around P3).
+- P5  (between P2b and P4, so P4's gate brackets it) the four file roots acquired into ROOT/seal by
+      `fileroots.acquire` (E9; layout, closed reason list and bounds are in fileroots' docstring), with
+      pg_stat_activity samples at its start and end and a declared PG-to-file skew.
 - P4  repeat P0: container Id/StartedAt/RestartCount equal and docker-diff digest equal.
+P5 reads: the METADATA of `srv/<4 tops>` minus runtime/tokobs (never `srv` itself); the CONTENT of the stable roots, the
+stable single files and the volatile files (atime may move). Nothing is written under srv; writes go only under ROOT/seal.
+P5 commands: 8 `CP -a -T` argvs, one `CP --version` (inside acquire), and 2 psql (the P1 activity SQL, byte-identical).
 Never: record_run (it buffers stdout into evidence), a secret read, an environment value, a write to production.
 Evidence (names, counts, digests, exit codes; no stderr bodies, no dump bytes) goes to the evidence dir; raw copies and
 failed raw files stay under ROOT, a 0700 directory this tool creates (F4).
@@ -23,6 +29,18 @@ A failure or timeout writes a bounded failed-step receipt. Helper containers car
 `zeus.rehearsal.run=<run8>` and the names `zeus-test-fixture-rh-<run8>-p-<role>` (F2), so the run-owned sweep sees
 them; `settle_helpers` removes only this attempt's named helpers and proves absence, else HOLDs.
 
+Run lock (E9, D5): `PhaseP.run` holds an abstract AF_UNIX socket bound to `"\\0" + RUN_LOCK` for the whole run; a second
+run gets `failed_step {step: lock, reason: phase_p_lock_held}` (another bind error: `phase_p_lock_failed`) and runs no
+command. The socket is released by the kernel when its holder dies (unix(7)); it is network-namespace scoped.
+Interruption (D4): no signal handler. `KeyboardInterrupt` is caught into the receipt (`interrupted`); SIGKILL, OOM and
+RuntimeMaxSec cannot be receipted. VALIDITY: a ROOT whose phase-p.json lacks verdict `ok`, or whose
+`seal/meta/complete.json` is missing or fails `fileroots.verify_seal`, is INVALID and is kept for diagnosis.
+Ceilings (D11): `CEILINGS_S` is, per step, the sum of the `Host.run` timeouts attributed to the step at call time (the
+after-settle is its own `settle_after` key); `CEILING_S` is their sum (22870). P5 is "deadline-bounded; the verify after the
+last admitted cp and the tail are outside; RH-9 adds margin" (its cp_identity probe is 10 s; the 8 cp timeouts are not summed).
+New reasons: phase_p_lock_held, phase_p_lock_failed, interrupted, evidence_unbounded, seal_overlaps_source (ROOT or
+EVIDENCE_DIR overlaps `Targets.srv`, refused before any effect), sql_activity_{start,end}_exit_<n>; acquire's are in fileroots.
+
 All external interfaces go through a `Host` (`run`, `open`) so tests drive synthetic failures without docker.
 usage (cwd compare/): python3 -m rehearsal.phase_p ROOT EVIDENCE_DIR RUN8   (ROOT and EVIDENCE_DIR must not exist)
 """
@@ -30,17 +48,20 @@ usage (cwd compare/): python3 -m rehearsal.phase_p ROOT EVIDENCE_DIR RUN8   (ROO
 from __future__ import annotations
 
 import datetime
+import errno
 import hashlib
 import json
 import os
 import re
+import socket
 import subprocess
 import sys
 from dataclasses import dataclass
 from pathlib import Path
 
-from . import Refused, check_run8
+from . import Refused, check_run8, fileroots
 from .constants import PRODUCTION_PREFIX, RUN_LABEL, create_root, provider_guard
+from .evidence import check_facts
 
 PG, REDIS = "zeus-aibox-postgres", "zeus-aibox-redis"
 REDIS_VOLUME = "zeus-aibox-redisdata"
@@ -54,7 +75,22 @@ HELPER_ROLES = ("redis-snap", "aof-check")
 DUMP_MAGIC = b"PGDMP"
 MANIFEST_LINE = re.compile(r"^(\./.+) (\d+) (\d+) ([0-9a-f]{64})$")
 AOF_MANIFEST_NAME = re.compile(r"^[A-Za-z0-9._-]+\.manifest$")
-SCHEMA = "zeus:aibox-migration-001:rehearsal:phase-p:2"
+SCHEMA = "zeus:aibox-migration-001:rehearsal:phase-p:3"
+RUN_LOCK = "zeus-rehearsal-phase-p"
+ACTIVITY_SQL = ("SELECT coalesce(datname,''), coalesce(application_name,''), count(*) "
+                "FROM pg_stat_activity GROUP BY 1,2 ORDER BY 1,2")
+CEILINGS_S = {  # D11: the Host.run timeouts the code passes, per step (settle: two lists and two removals)
+    "settle": 60 + 2 * 120 + 60,
+    "P0": 2 * (120 + 120),
+    "P1": 2 * 120,
+    "P2a": 2 * 3600,
+    "P3": 900 + 900,
+    "P2b": 2 * 3600,
+    "P5": 2 * 120 + 10 + fileroots.DEADLINE_S + fileroots.CP_TIMEOUT_S,  # deadline-bounded (see the docstring)
+    "P4": 2 * (120 + 120),
+    "settle_after": 60 + 2 * 120 + 60,
+}
+CEILING_S = sum(CEILINGS_S.values())
 
 
 @dataclass(frozen=True)
@@ -67,6 +103,7 @@ class Targets:
     redis_volume: str = REDIS_VOLUME
     monitoring: str = MONITORING
     heartbeat: str = HEARTBEAT
+    srv: str = fileroots.SRV
 
 
 DEFAULT_TARGETS = Targets()
@@ -235,6 +272,7 @@ class PhaseP:
 
     def dump(self, db: str, tag: str) -> dict:
         path = os.path.join(self.root, "p", f"{db}.{tag}.dump")
+        started = now()
         with self.host.open(path, "xb") as out:
             proc = self.host.run(["docker", "exec", self.targets.pg, "pg_dump", "-U", "zeus", "-h", "/var/run/postgresql", "-d", db,
                                   "-Fc", "--lock-wait-timeout=30000", "--no-password"], timeout=3600, stdout=out)
@@ -242,16 +280,18 @@ class PhaseP:
         with open(path, "rb") as fh:
             magic = fh.read(len(DUMP_MAGIC)) == DUMP_MAGIC
         return {"db": db, "exit": proc.returncode, "bytes": size, "sha256": digest, "archive_magic": magic,
-                "stderr_lines": _lines(proc.stderr), "ok": proc.returncode == 0 and size > 0 and magic}
+                "stderr_lines": _lines(proc.stderr), "ok": proc.returncode == 0 and size > 0 and magic,
+                "started_at": started, "finished_at": now()}
 
     def dumps(self, step: str, tag: str) -> None:
-        entry = {"step": step, "dumps": []}
+        entry = {"step": step, "started_at": now(), "dumps": []}
         self.rec["steps"].append(entry)
         for db in DB_SCOPE:
             fact = self.dump(db, tag)
             entry["dumps"].append(fact)
             if not fact["ok"]:  # the raw file stays under ROOT/p; only its size/digest/exit are recorded
                 raise StepFailed(step, f"dump_{db}_failed", exit=fact["exit"], bytes=fact["bytes"])
+        entry["finished_at"] = now()
 
     # -- P3 --
 
@@ -261,7 +301,7 @@ class PhaseP:
         for directory in (out, meta):
             os.makedirs(directory, mode=0o700)
             os.chmod(directory, 0o700)
-        facts = {"step": step}
+        facts = {"step": step, "started_at": now()}
         self.rec["steps"].append(facts)
         proc = self.host.run(
             ["docker", "run", "--rm", "--network", "none", *helper_labels(self.run8),
@@ -302,8 +342,37 @@ class PhaseP:
             timeout=900)
         facts["aof_check_exit"] = check.returncode
         need(step, "aof_check", check)
+        facts["finished_at"] = now()
         facts["ok"] = True
         return facts
+
+    # -- P5 --
+
+    def p5(self) -> None:
+        step = self.step = "P5"
+        entry = {"step": step, "started_at": now()}
+        self.rec["steps"].append(entry)
+        start = self.psql(step, "sql_activity_start", ACTIVITY_SQL)
+        try:
+            facts = fileroots.acquire(self.host, self.targets.srv, Path(self.root) / "seal", self.run8)
+        except fileroots.RefusedFacts as error:
+            raise StepFailed(step, error.code, **error.facts) from None
+        except Refused as error:
+            raise StepFailed(step, error.code, detail=fileroots._redact(error.detail)) from None
+        end = self.psql(step, "sql_activity_end", ACTIVITY_SQL)
+        finished = now()
+        d0b = next(s for s in self.rec["steps"] if s["step"] == "P2b")["finished_at"]
+        candidate = {**entry, **{k: v for k, v in facts.items() if k != "ok"},
+                     "activity_start": start.stdout.splitlines()[:64], "activity_end": end.stdout.splitlines()[:64],
+                     "skew": {"d0b_finished_at": d0b, "p5_started_at": entry["started_at"], "p5_finished_at": finished,
+                              "volatile_read_span_ns": facts["volatile_read_span_ns"]},
+                     "finished_at": finished}
+        try:
+            check_facts(candidate)  # E9: the entry is bounded as a whole before it may carry `ok` (A-F12)
+        except Refused as error:
+            raise StepFailed(step, "evidence_unbounded", rule=error.code) from None
+        entry.update(candidate)
+        entry["ok"] = True
 
     # -- the attempt --
 
@@ -318,8 +387,7 @@ class PhaseP:
             return 1
         self.step = "P1"
         dbs = self.psql("P1", "sql_databases", "SELECT datname FROM pg_database ORDER BY 1")
-        act = self.psql("P1", "sql_activity", "SELECT coalesce(datname,''), coalesce(application_name,''), count(*) "
-                                              "FROM pg_stat_activity GROUP BY 1,2 ORDER BY 1,2")
+        act = self.psql("P1", "sql_activity", ACTIVITY_SQL)
         names = dbs.stdout.split()
         self.rec["steps"].append({"step": "P1", "databases": names, "activity": act.stdout.splitlines(),
                                   "exit": [dbs.returncode, act.returncode]})
@@ -331,6 +399,7 @@ class PhaseP:
         self.redis_copy()
         self.step = "P2b"
         self.dumps("P2b", "d0b")
+        self.p5()
         self.step = "P4"
         p4 = self.gate("P4")
         self.rec["steps"].append({"step": "P4", **p4})
@@ -340,6 +409,26 @@ class PhaseP:
         return 0 if self.rec["verdict"] == "ok" else 1
 
     def run(self) -> int:
+        refuse_overlap((self.root, self.evidence), self.targets.srv)  # before the lock and any effect (D18)
+        lock = socket.socket(socket.AF_UNIX, socket.SOCK_STREAM)  # non-inheritable: no child holds it (D5)
+        try:
+            try:
+                lock.bind("\0" + RUN_LOCK)
+            except OSError as exc:
+                reason = "phase_p_lock_held" if exc.errno == errno.EADDRINUSE else "phase_p_lock_failed"
+                self.rec["failed_step"] = {"step": "lock", "reason": reason}
+                self.rec["verdict"] = f"STOP: lock failed: {reason}"
+                return self.finish(1)
+            code = 1
+            try:
+                code = self.attempt_settled()
+            finally:
+                self.finish(code)
+            return code
+        finally:
+            lock.close()
+
+    def attempt_settled(self) -> int:
         try:
             code = self.attempt()
         except StepFailed as exc:
@@ -351,20 +440,29 @@ class PhaseP:
         except subprocess.TimeoutExpired as exc:
             self.rec["failed_step"] = {"step": self.step, "reason": "timeout", "timeout_s": exc.timeout}
             self.rec["verdict"], code = f"STOP: {self.step} timed out", 1
+        except KeyboardInterrupt:  # D4: no signal handler; a receipt for the one interruption Python can see
+            self.rec["failed_step"] = {"step": self.step, "reason": "interrupted"}
+            self.rec["verdict"], code = f"STOP: {self.step} interrupted", 1
         except Exception as exc:  # a bounded receipt: the exception type only, never its message
             self.rec["failed_step"] = {"step": self.step, "reason": f"exception:{type(exc).__name__}"}
             self.rec["verdict"], code = f"STOP: {self.step} raised {type(exc).__name__}", 1
+        last = self.step
+        self.step = "settle_after"  # its Host.run timeouts are attributed here (D11)
         try:  # the attempt is settled whatever happened: only this attempt's named helpers, absence proven
             self.rec["helpers_after"] = settle_helpers(self.host, self.run8)
         except HoldError as exc:
             self.rec["helpers_after"] = {"residue": exc.ids}
-            self.rec["verdict"], code = f"HOLD: helper residue after {self.step}; {self.rec.get('verdict', '')}", 1
+            self.rec["verdict"], code = f"HOLD: helper residue after {last}; {self.rec.get('verdict', '')}", 1
+        except KeyboardInterrupt:
+            self.rec["helpers_after"] = {"residue": ["settle-interrupted"]}
+            self.rec["verdict"], code = f"HOLD: helper settlement interrupted after {last}; {self.rec.get('verdict', '')}", 1
         except Exception as exc:
             self.rec["helpers_after"] = {"residue": [f"settle-failed:{type(exc).__name__}"]}
             self.rec["verdict"], code = f"HOLD: helper settlement failed; {self.rec.get('verdict', '')}", 1
-        return self.finish(code)
+        return code
 
     def finish(self, code: int) -> int:
+        self.rec.setdefault("verdict", f"STOP: {self.step} aborted")
         with self.host.open(os.path.join(self.evidence, "phase-p.json"), "x") as fh:
             json.dump(self.rec, fh, indent=1, sort_keys=True)
             fh.write("\n")
@@ -372,10 +470,20 @@ class PhaseP:
         return code
 
 
+def refuse_overlap(paths, srv) -> None:
+    """D18: ROOT and EVIDENCE_DIR must not equal, contain or lie inside the source (realpath reads only path metadata)."""
+    real_srv = Path(os.path.realpath(srv))
+    for path in paths:
+        real = Path(os.path.realpath(path))
+        if real == real_srv or real.is_relative_to(real_srv) or real_srv.is_relative_to(real):
+            raise Refused("seal_overlaps_source", "ROOT and EVIDENCE_DIR must not overlap the source")
+
+
 def main(root, evidence, run8, host=None) -> int:
     check_run8(run8)
     if os.path.lexists(root) or os.path.lexists(evidence):
         raise Refused("path_exists", "ROOT and EVIDENCE_DIR must not exist")
+    refuse_overlap((root, evidence), DEFAULT_TARGETS.srv)  # D18: before anything is created
     create_root(Path(root), run8)  # F4: ROOT itself, exclusive 0700, before any child
     os.makedirs(os.path.join(root, "p"), mode=0o700)
     os.chmod(os.path.join(root, "p"), 0o700)

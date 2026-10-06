@@ -11,6 +11,7 @@ opt-in forms and needs `ZEUS_TEST_DOCKER=1`; a skip under that opt-in is a failu
 
 from __future__ import annotations
 
+import dataclasses
 import hashlib
 import io
 import json
@@ -18,17 +19,23 @@ import os
 import re
 import subprocess
 import sys
+import uuid
 
 import pytest
 from _layout import REPO
 
 sys.path.insert(0, str(REPO / "compare"))
-from rehearsal import Refused  # noqa: E402
+from rehearsal import (
+    Refused,  # noqa: E402
+    fileroots,  # noqa: E402
+)
 from rehearsal import copies as cp  # noqa: E402
 from rehearsal import phase_p as pp  # noqa: E402
+from rehearsal import phase_p_controls as pc  # noqa: E402
 from rehearsal.sweep import sweep  # noqa: E402
 
 guard = cp.provider_guard
+SHIPPED = pp.DEFAULT_TARGETS  # captured before any fixture replaces it
 DOCKER = os.environ.get(guard.DOCKER_OPT_IN_ENV) == "1"
 needs_docker = pytest.mark.skipif(not DOCKER, reason="needs ZEUS_TEST_DOCKER=1 (real Docker)")
 RUN8, OTHER8 = "9a8b7c6d", "11223344"
@@ -37,6 +44,49 @@ SOURCE = {"./appendonlydir/appendonly.aof.1.base.rdb": b"rdb-bytes", "./appendon
           "./dump.rdb": b"dump-bytes"}
 MTIME = 1_700_000_000
 SECRET = "SECRET-STDERR-BODY"
+REAL = "/srv/zeus"
+_state = {"active": False, "hits": []}
+
+
+def _hook(event, args):
+    """ONE module-level audit hook, inert unless the autouse fixture activates it: any open/scandir/listdir/subprocess
+    argv naming the real /srv/zeus is recorded and raised (the teardown asserts nothing was recorded)."""
+    if not _state["active"]:
+        return
+    if event == "subprocess.Popen":
+        scanned = [str(a) for a in (args[0], *args[1], *args[2:3])]
+    elif event in ("open", "os.scandir", "os.listdir"):
+        scanned = [str(args[0])] if args else []
+    else:
+        return
+    if any(REAL in text for text in scanned):
+        _state["hits"].append((event, scanned))
+        raise AssertionError(f"tripwire: {event} names the real {REAL}")
+
+
+sys.addaudithook(_hook)
+
+
+@pytest.fixture(autouse=True)
+def standin_srv(tmp_path, monkeypatch):
+    """Every Phase P run reaches P5 over a stand-in srv (A-F4); the production lock name is never bound (D-F8)."""
+    srv = tmp_path / "standin-srv"
+    pc.build_standin_srv(srv)
+    monkeypatch.setattr(pp, "DEFAULT_TARGETS", dataclasses.replace(SHIPPED, srv=str(srv)))
+    monkeypatch.setattr(pp, "RUN_LOCK", f"zeus-rehearsal-test-{uuid.uuid4().hex}")
+    real_acquire = fileroots.acquire
+
+    def acquire(host, source, *args, **kwargs):
+        if os.path.normpath(str(source)) == REAL or os.path.normpath(str(source)).startswith(REAL + "/"):
+            _state["hits"].append(("acquire", str(source)))
+            raise AssertionError("acquire refused: the srv names the real /srv/zeus")
+        return real_acquire(host, source, *args, **kwargs)
+
+    monkeypatch.setattr(fileroots, "acquire", acquire)
+    _state.update(active=True, hits=[])
+    yield srv
+    _state["active"] = False
+    assert _state["hits"] == []
 
 
 class SyntheticHost:
@@ -72,6 +122,8 @@ class SyntheticHost:
         rc = self.fail.get(key, 0)
         err = f"{SECRET} {kind}" if rc else ""
         done = lambda out="": subprocess.CompletedProcess(argv, rc, out if rc == 0 else "", err)  # noqa: E731
+        if kind == "cp":  # the real GNU cp over the stand-in srv, unless a failure or hang names it
+            return pp.Host().run(argv, timeout=timeout) if rc == 0 else done()
         if kind == "inspect":
             moved = self.production_changes and self.snapped
             return done(json.dumps({"Id": "id-" + argv[-1], "Image": "img", "RestartCount": 0, "ExecIDs": [],
@@ -108,6 +160,8 @@ class SyntheticHost:
     # -- internals --
     @staticmethod
     def _kind(argv):
+        if argv[0] == fileroots.CP:
+            return "cp"
         if argv[1] in ("inspect", "diff", "ps", "rm"):
             return argv[1]
         if argv[1] == "exec":
@@ -186,13 +240,14 @@ def test_the_positive_path_passes_and_records_size_mtime_sha256_and_zero_helpers
 
 @pytest.mark.parametrize("key,step", [("inspect#1", "P0"), ("diff#2", "P0"), ("psql#1", "P1"), ("psql#2", "P1"),
                                       ("dump#1", "P2a"), ("dump#2", "P2a"), ("snap#1", "P3"), ("check#1", "P3"),
-                                      ("dump#3", "P2b"), ("dump#4", "P2b"), ("inspect#3", "P4"), ("diff#4", "P4")])
+                                      ("dump#3", "P2b"), ("dump#4", "P2b"), ("cp#1", "P5"), ("psql#3", "P5"), ("psql#4", "P5"),
+                                      ("inspect#3", "P4"), ("diff#4", "P4")])
 def test_each_required_command_failing_stops_with_a_receipt_and_no_dependent_step(tmp_path, key, step):
     host = SyntheticHost(fail={key: 1})
     code, rec, root, evidence = attempt(tmp_path, host)
     assert code == 1 and rec["verdict"].startswith("STOP:") and step in rec["verdict"]
     assert rec["failed_step"]["step"] == step and ("_exit_1" in rec["failed_step"]["reason"] or "failed" in rec["failed_step"]["reason"])
-    order = ["P0", "P1", "P2a", "P3", "P2b", "P4"]
+    order = ["P0", "P1", "P2a", "P3", "P2b", "P5", "P4"]
     done = [s["step"] for s in rec["steps"]]
     assert not any(order.index(s) > order.index(step) for s in done), done  # nothing dependent ran
     assert SECRET not in (evidence / "phase-p.json").read_text()  # stderr bodies are never recorded
@@ -360,9 +415,10 @@ STANDINS = pp.Targets(pg=f"zeus-test-fixture-rh-{RUN8}-prod-pg", redis=f"zeus-te
 
 def test_the_default_targets_are_exactly_the_production_names_and_paths():
     """Expected values are the literal production names (spec What 1), not read from the module's constants."""
-    assert pp.DEFAULT_TARGETS == pp.Targets("zeus-aibox-postgres", "zeus-aibox-redis", "zeus-aibox-redisdata",
-                                            "/srv/zeus/runtime/control/monitoring.json",
-                                            "/srv/zeus/runtime/managed-fleet/heartbeat.json")
+    assert SHIPPED == pp.Targets("zeus-aibox-postgres", "zeus-aibox-redis", "zeus-aibox-redisdata",
+                                 "/srv/zeus/runtime/control/monitoring.json",
+                                 "/srv/zeus/runtime/managed-fleet/heartbeat.json")
+    assert SHIPPED.srv == "/srv/zeus"
     assert pp.PhaseP("/r", "/e", RUN8).targets == pp.DEFAULT_TARGETS
 
 
@@ -375,7 +431,7 @@ def test_main_takes_no_target_override():
         pp.main("/r", "/e", RUN8, None, targets=STANDINS)  # noqa
 
 
-def test_a_phase_p_run_over_stand_in_targets_names_only_those_and_never_a_production_resource(tmp_path):
+def test_a_phase_p_run_over_stand_in_targets_names_only_those_and_never_a_production_resource(tmp_path, standin_srv):
     class StandInHost(SyntheticHost):
         def open(self, path, mode="r"):
             mapped = {STANDINS.monitoring: pp.MONITORING, STANDINS.heartbeat: pp.HEARTBEAT}
@@ -387,7 +443,8 @@ def test_a_phase_p_run_over_stand_in_targets_names_only_those_and_never_a_produc
     cp.create_root(root, RUN8)
     os.makedirs(root / "p", mode=0o700)
     os.makedirs(evidence)
-    assert pp.PhaseP(str(root), str(evidence), RUN8, host, STANDINS).run() == 0
+    standins = dataclasses.replace(STANDINS, srv=str(standin_srv))
+    assert pp.PhaseP(str(root), str(evidence), RUN8, host, standins).run() == 0
     flat = " ".join(" ".join(c) for c in host.calls)
     assert "zeus-aibox" not in flat
     assert f"src={STANDINS.redis_volume},dst=/src,readonly,volume-nocopy" in flat
