@@ -1,0 +1,6 @@
+{
+ "version": 1,
+ "closed": true,
+ "note": "Declared intended A/B write-set differences (rehearsal design 7. R5: 'except declared §4 differences'). Each entry is tied to an AMD-1 section or an S2R hunk (`S2R <commit>:<path>`); an A/B difference that matches no entry fails the run. Starts empty: a difference is declared only after it is observed and traced.",
+ "declared": []
+}
