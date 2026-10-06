@@ -728,6 +728,27 @@ def test_admitted_reserving_job_is_never_expired(tmp_path):
     assert permit["state"] == "admitted" and system["fleet"].job(permit["permit"]["job_id"])["status"] == "dispatching"
 
 
+def test_a_canary_that_settles_after_the_deadline_fails_without_binding_or_rollback(tmp_path):
+    """G1-03 critique #1 (S2M-13/S2M-16): the admitted canary is owned to its real settlement, but one that
+    settles after the ONE deadline never binds: the generation fails, nothing rolls back or is consumed."""
+    system = active_system(tmp_path)
+    document, evidence = dispatched(system)
+    before_row, calls = row_of(system), list(system["host"].calls)
+    owner_completes(system)                                    # accepted, but only after the window
+    system["clock"].advance(601)
+    with pytest.raises(DeliveryRefused) as late:
+        maintain(system, document, evidence, "bind")
+    assert (late.value.reason_code, late.value.field) == ("maintenance_expired", "deadline")
+    intent, generation = intent_of(system), generation_of(system)
+    assert intent["instance_id"] != generation["launched"]["receipt"]["instance_id"]
+    assert row_of(system)["consumed"] == before_row["consumed"] and row_of(system)["instance_id"] == before_row[
+        "instance_id"]
+    assert system["host"].calls == calls and len(system["executor"].calls) == 1 and intent["rollback"] is None
+    assert generation["state"] == "failed" and generation["failure"]["code"] == "maintenance_expired"
+    for phase in ("arm", "bind"):
+        assert refused(lambda: maintain(system, document, evidence, phase)) == ("maintenance_failed", "state")
+
+
 def test_failure_never_rolls_back_resets_supersedes_or_consumes_twice(tmp_path):
     system = active_system(tmp_path)
     host = system["host"]
