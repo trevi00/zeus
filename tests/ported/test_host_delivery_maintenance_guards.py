@@ -6,8 +6,8 @@ methods of the one `HostDelivery` are the split owners' (`objects["controller"].
 `objects["state"].predecessor`); the old-code hazard removes the guards where the split code binds them
 (`DeliveryState.maintenance_held`, `maintenance_open` in `state` and `controller`, `maintenance_hold` in `state` and
 `recovery`), the S2R patch of `application.maintenance_open` / `maintenance_hold` / `HostDelivery._maintenance_held`.
-DEFERRED to batch b (not ported here, not deleted): `test_the_deployment_precondition_is_the_documented_requirement`,
-which reads the INV-HOST-DELIVERY-MAINTENANCE-001 section of `docs/contracts.md` (the contract text is batch b).
+`test_the_deployment_precondition_is_the_documented_requirement` (deferred in batch a) is ported in batch b with the contract text: its
+body is S2R's, with `ROOT` from `_layout.REPO` (the checkout root).
 
 S2R docstring follows.
 
@@ -22,6 +22,7 @@ precondition, not a runtime probe). LABELLED fakes only; see `host_delivery_main
 from __future__ import annotations
 
 import pytest
+from _layout import REPO as ROOT
 from host_delivery_maintenance_fixtures import (
     TARGET,
     active_system,
@@ -236,3 +237,9 @@ def test_legacy_delivery_recovery_queue_paths_add_no_generations_key(tmp_path):
         assert all("maintenance" not in view for view in system["delivery"].status()["deliveries"])
     finally:
         stop_target(system)
+
+
+def test_the_deployment_precondition_is_the_documented_requirement():
+    contracts = (ROOT / "docs" / "contracts.md").read_text(encoding="utf-8")
+    section = contracts.split("## INV-HOST-DELIVERY-MAINTENANCE-001", 1)[1].split("\n## ", 1)[0]
+    assert "DEPLOYMENT PRECONDITION" in section and "mixed" in section.lower()
