@@ -12,6 +12,7 @@ import pytest
 
 from codex_harness.domain.host_delivery import (
     ACTIVE,
+    CREDENTIAL_EVIDENCE_SCHEMA,
     DESCRIPTOR_SCHEMA,
     GENERATION_OBSERVATION_SCHEMA,
     GENERATION_STATES,
@@ -36,6 +37,7 @@ from codex_harness.domain.host_delivery import (
     new_generation_refusal,
     selection_of,
     validate_active_generation,
+    validate_credential_evidence,
     validate_generation_observation,
     validate_restart_authority,
 )
@@ -351,6 +353,52 @@ STARTED = {"id": "active_generation_1:" + "0" * 64, "state": "started",
 ])
 def test_the_live_identity_must_be_exactly_the_started_generation(observed, expected):
     assert new_generation_refusal(DESCRIPTOR, observed, STARTED) == expected
+
+
+# ----- PRIMARY credential evidence ----------------------------------------------------------------------
+def credential(**parts):
+    record = {"schema": CREDENTIAL_EVIDENCE_SCHEMA, "observed_at": "2026-09-22T00:00:20+00:00",
+              "invocation_id": NEW_INVOCATION, "helper_sha256": "4" * 64,
+              "supervisor": {"pid": 1002, "start_ticks": 50002, "has_token": True, "is_primary": True,
+                             "is_secondary": False},
+              "entry": {"pid": 2002, "start_ticks": 60002, "has_token": True, "is_primary": True,
+                        "is_secondary": False}}
+    for key, value in parts.items():
+        record[key] = {**record[key], **value} if isinstance(value, dict) and key in ("supervisor", "entry") else value
+    return record
+
+
+LIVE = validate_generation_observation(launched(unit={"invocation_id": NEW_INVOCATION},
+                                                supervisor={"pid": 1002, "start_ticks": 50002},
+                                                entry={"pid": 2002, "start_ticks": 60002}))
+
+
+@pytest.mark.parametrize("record,field", [
+    (credential(supervisor={"is_secondary": True}), "supervisor"),
+    (credential(entry={"is_primary": False}), "entry"),
+    (credential(entry={"has_token": False}), "entry"),
+    (credential(supervisor={"is_primary": "true"}), "supervisor"),
+    (credential(entry={"has_token": 1}), "entry"),
+    (credential(supervisor={"pid": 1003}), "supervisor"),
+    (credential(entry={"start_ticks": 60003}), "entry"),
+    (credential(invocation_id="9" * 32), "record"),
+    (credential(helper_sha256="sha256:" + "4" * 64), "record"),
+    ({**credential(), "token_sha256": "0" * 64}, "record"),
+    ({**credential(), "schema": "urn:zeus:other:1"}, "record"),
+    (credential(entry={"secret": SENTINEL}), "entry"),
+    ("PRIMARY", "record"),
+])
+def test_credential_evidence_is_strict_and_identity_bound(record, field):
+    with pytest.raises(DeliveryRefused) as refused:
+        validate_credential_evidence(record, LIVE)
+    assert (refused.value.reason_code, refused.value.field) == ("maintenance_primary_unverified", field)
+    assert SENTINEL not in str(refused.value)
+
+
+def test_a_bound_primary_record_is_returned_as_booleans_and_ids_only():
+    checked = validate_credential_evidence(credential(), LIVE)
+    assert checked == credential()
+    assert set(checked) == {"schema", "observed_at", "invocation_id", "helper_sha256", "supervisor", "entry"}
 
 
 # ----- readiness, the view and the legacy projection ------------------------------------------------------

@@ -1,17 +1,20 @@
-"""INV-HOST-DELIVERY-MAINTENANCE-001 end to end, restart phase (this release; ALL-PRIMARY-20260930).
+"""INV-HOST-DELIVERY-MAINTENANCE-001 end to end (integration of the host, Fleet and adapter slices).
 
-One ACTIVE, consumed `managed_fleet_systemd` delivery is restarted through its owner restart phase:
+One ACTIVE, consumed `managed_fleet_systemd` delivery is maintained through its three owner phases:
 
 1. The delivery is driven to ACTIVE by real ticks with the owner's `fleet_worker_operation` canary: a
    LABELLED owner request, then a LABELLED owner receipt and COMPLETED owner action for the incumbent.
-2. `restart --check` is applicable and writes, starts and puts nothing.
-3. `restart` replaces exactly the recorded incumbent through the real guarded graceful lifecycle: one more
+2. `restart` replaces exactly the recorded incumbent through the real guarded graceful lifecycle: one more
    `systemctl start` of the simulated unit, no signal, a new invocation and startup receipt, and the
-   owner target snapshot untouched. PR-2's consumption predicate refuses the unbound new generation, and a
-   replay is cached.
-4. `arm` and `bind` (PR-3's remainder) refuse `maintenance_phase`; the generation stays open (`started`, not
-   re-qualified), a controller tick acts on nothing, and the release, pointer, queue, target row and the old
-   owner canary action are unchanged.
+   owner target snapshot untouched. PR-2's consumption predicate refuses the unbound new generation.
+3. `arm` verifies PRIMARY through the real `CredentialObserver` running a LABELLED helper script against
+   the real `/proc` identities, grants the one-job permit and arms the generation; a LABELLED owner step
+   then writes the REQUESTED canary action and enqueues its job through the real `Fleet.enqueue`, and a
+   replayed `arm` admits and runs exactly that job through the real `MaintenanceCanaryExecutor` and
+   `run_preclaimed` with the labelled `test_fleet.FakeLauncher` (no process, model or provider).
+4. A LABELLED owner step completes the action and writes the instance-bound receipt from its outcome.
+5. `bind` consumes the new instance; PR-2's consumption and canary predicates accept, the permit is
+   closed, and the release, pointer and queue are unchanged.
 
 The host side is real (`test_managed_systemd`): sealed runtimes of a labelled source repository, the real
 `supervise`/`launch`/`entry` fixture workload, real processes. systemd itself is the LABELLED
@@ -29,6 +32,7 @@ from datetime import datetime, timezone
 from pathlib import Path
 
 import pytest
+from test_fleet import FakeLauncher
 from test_host_delivery import (
     PROFILE,
     Clock,
@@ -40,16 +44,18 @@ from test_host_delivery import (
     reviewed_release,
     runtime_image,
 )
-from test_managed_runtime import make_source, read, state
+from test_managed_runtime import fixture_manifest, make_source, read, state
 from test_managed_systemd import SimulatedSystemd, finish, systemd_target
 
 from codex_harness.adapters.host_delivery import (
     DESCRIPTOR_FILE,
     RECEIPT_FILE,
     STATE_FILE,
+    canary_receipt_file,
     owner_qualified_canary,
 )
 from codex_harness.adapters.maintenance_evidence import (
+    CredentialObserver,
     LazyArtifacts,
     control_action_reader,
     trusted_authority_reader,
@@ -91,6 +97,12 @@ needs_profile = pytest.mark.skipif(PROFILE is None, reason="this checkout packag
 TARGET_ID = "managed-fleet"
 DIRECTIVE = b"LABELLED recorded user directive: same-descriptor PRIMARY maintenance of managed-fleet\n"
 ENVIRONMENT_FILES = "/labelled/config/zeus-aibox.env (ignore_errors=no)"
+HELPER = ("# LABELLED test helper: fixed PRIMARY booleans; reads no secret and no process environment\n"
+          "import json, sys\n"
+          "print(json.dumps({'pid': int(sys.argv[2]), 'has_token': True, 'is_primary': True,"
+          " 'is_secondary': False}))\n")
+
+
 class MaintainedSystemd(SimulatedSystemd):
     """LABELLED `SimulatedSystemd` that also reports what the maintenance observation reads: the main
     process as `ExecMainPID`, no pending daemon reload, the unit process's own control group, one
@@ -142,7 +154,7 @@ def system_for(tmp_path, source):
     unit = MaintainedSystemd(Path(target["state_dir"]))
     clock = Clock()
     control = MemoryStore()
-    from codex_harness.application.fleet import Fleet
+    from codex_harness.application.fleet import Fleet, MaintenanceCanaryExecutor
 
     fleet = Fleet(control, clock=clock)
     fleet.register(fixture_config(Path(Path.cwd().anchor) / "labelled-fixture"))
@@ -152,18 +164,23 @@ def system_for(tmp_path, source):
     authorities = tmp_path / "control-runtime" / "artifacts"
     authorities.mkdir(parents=True)
     (authorities / (hashlib.sha256(DIRECTIVE).hexdigest() + ".txt")).write_bytes(DIRECTIVE)
+    helper = tmp_path / "owner" / "credential_bool_fixture.py"
+    helper.parent.mkdir()
+    helper.write_text(HELPER, encoding="utf-8")
+    launcher = FakeLauncher({})
     delivery = HostDelivery(
         store, org, github=FakeGitHub(), hosts={"managed_fleet_systemd": host},
         canaries={CANARY_FLEET: owner_qualified_canary}, clock=clock, observer=observer_for(store), enabled=True,
         resume_seconds=0, authorities=trusted_authority_reader(authorities), artifacts=LazyArtifacts(authorities),
         canary_records=control_action_reader(control),
-        maintenance_fleet=fleet)
+        credentials=CredentialObserver(str(helper), hashlib.sha256(HELPER.encode()).hexdigest()),
+        maintenance_fleet=fleet, canary_executor=MaintenanceCanaryExecutor(fleet, launcher, interval=0.05))
     delivery.register_targets(document)
     plan = plan_document(release, plan_id="managed-plan-1", target_id=TARGET_ID, image=runtime_image(source["root"]),
                          profile=PROFILE, descriptor_revision=source["a"], consumption_timeout=900, canary=CANARY_FLEET)
     delivery.register(plan, pin())
     return {"store": store, "control": control, "fleet": fleet, "clock": clock, "delivery": delivery, "host": host,
-            "unit": unit, "plan": plan, "target": target, "release": release}
+            "unit": unit, "plan": plan, "target": target, "launcher": launcher, "release": release}
 
 
 def owner_request(system) -> None:
@@ -278,7 +295,7 @@ class SignalLedger:
 
 @posix_only
 @needs_profile
-def test_one_active_generation_is_restarted_and_held_open_end_to_end(tmp_path, source, monkeypatch):
+def test_one_active_generation_is_restarted_armed_and_bound_end_to_end(tmp_path, source, monkeypatch):
     system = system_for(tmp_path, source)
     target, unit, fleet, delivery = system["target"], system["unit"], system["fleet"], system["delivery"]
     try:
@@ -320,26 +337,67 @@ def test_one_active_generation_is_restarted_and_held_open_end_to_end(tmp_path, s
         # A replay of the same document is cached and starts nothing.
         assert delivery.maintain(document, evidence, "restart")["cached"] is True and unit.starts == starts + 1
 
-        # ----- this release carries the restart phase only (ALL-PRIMARY-20260930) ----------------------------
-        for phase in ("arm", "bind"):
-            with pytest.raises(DeliveryRefused) as unavailable:
-                delivery.maintain(document, evidence, phase)
-            assert (unavailable.value.reason_code, unavailable.value.field) == ("maintenance_phase", "phase")
-        # The generation stays open (`started`, not re-qualified): a controller tick acts on nothing, starts
-        # nothing, and the release, pointer, queue and the started generation are unchanged.
-        delivery.tick()
-        held = rows(system)
-        assert unit.starts == starts + 1 and signals.sent == []
-        assert [g["state"] for g in held["intent"]["generations"]] == ["started"]
-        assert held["intent"]["stage"] == ACTIVE and held["intent"]["instance_id"] == old["instance_id"]
-        for name in ("release", "pointer", "queue"):
-            assert held[name] == before[name], name
+        # ----- arm: PRIMARY evidence, the one-job permit, the armed generation ------------------------------
+        armed = delivery.maintain(document, evidence, "arm", canary_wait_seconds=10)
+        assert armed["state"] == "armed" and armed["pending"] is True
+        assert armed["reason_code"] == "maintenance_canary_pending"
+        deadline = armed["deadline"]
+        intent = rows(system)["intent"]
+        assert intent["stage"] == AWAITING_CONSUMPTION and intent["candidate_instance_id"] == new["instance_id"]
+        with pytest.raises(MigrationRefused) as awaiting:
+            pr2_consumption(system)
+        assert awaiting.value.field == "delivery_not_active"
+        # LABELLED owner step: the unchanged owner-actions would now owe exactly this new-instance canary.
+        action = owner_canary(system, new["instance_id"])
+        job_id = action["job_id"]
+        assert job_id == do.canary_job_id(action["id"]) and action["binding"]["instance_id"] == new["instance_id"]
+        other = fixture_manifest("op-unrelated")
+        fleet.enqueue("fixture", other, {"path": "docs/GOAL.md", "sha256": "b" * 64, "criterion": "fixture",
+                                         "base_revision": "a" * 40, "bytes": 7}, [])
+        fleet.enqueue("fixture", fixture_manifest(job_id), {"path": "docs/GOAL.md", "sha256": "b" * 64,
+                                                            "criterion": "fixture", "base_revision": "a" * 40,
+                                                            "bytes": 7}, [])
+        system["launcher"].outcomes[job_id] = {"status": "accepted", "reason_code": "lead_accepted", "exit_code": 0,
+                                               "calls": {"reserved": 1, "settled": 1}}
+        dispatched = delivery.maintain(document, evidence, "arm", canary_wait_seconds=10)
+        assert dispatched["state"] == "armed" and dispatched["pending"] is False and dispatched["deadline"] == deadline
+        assert system["launcher"].launched == [job_id], "exactly the owner canary job ran"
+        assert fleet.job(job_id)["status"] == "accepted" and fleet.job("op-unrelated")["status"] == "queued"
         assert fleet.maintenance_readiness()["owner_paused"] is True
-        assert {key: held["target_row"][key] for key in MANAGED_TARGET_FIELDS} == {
-            key: target[key] for key in MANAGED_TARGET_FIELDS}
+        # A replayed arm never launches again.
+        with pytest.raises(DeliveryRefused) as replayed:
+            delivery.maintain(document, evidence, "arm", canary_wait_seconds=10)
+        assert replayed.value.reason_code == "maintenance_already_used"
+        assert system["launcher"].launched == [job_id]
+
+        # ----- the owner completes its canary; bind consumes the new instance ---------------------------------
+        owner_completes(system, action, job_id)
+        bound = delivery.maintain(document, evidence, "bind")
+        assert bound["state"] == "bound" and bound["pending"] is False
+        consumed, startup, current = pr2_consumption(system)
+        assert consumed["instance_id"] == new["instance_id"] == startup["instance_id"]
+        intent = current["intent"]
+        assert intent["stage"] == ACTIVE and intent["instance_id"] == new["instance_id"]
+        assert current["descriptor_row"]["consumed"] is True
+        assert current["descriptor_row"]["history"][-1]["instance_id"] == old["instance_id"]
         with system["control"].transaction() as tx:
+            record = tx.get(BUCKET_ACTIONS, action["id"])
             for identity, row in old_actions.items():
                 assert tx.get(BUCKET_ACTIONS, identity) == row, "the old owner canary action is unchanged"
+        receipt = read(state(target, canary_receipt_file(system["plan"]["plan_id"])))
+        request = TargetFiles.request(target, system["plan"]["plan_id"])
+        incumbent = owner_qualified_canary(target, consumed["descriptor"], {"instance_id": new["instance_id"]},
+                                           plan=system["plan"])
+        hme.require_canary(consumed, incumbent, receipt, request, record, intent=intent,
+                           started_at=startup["started_at"])
+        for name in ("release", "pointer", "queue"):
+            assert current[name] == before[name], name
+        permit = fleet.maintenance_permit(intent["generations"][0]["id"])
+        assert permit["state"] == "closed" and permit["close_reason"] == "maintenance_settled"
+        assert delivery.maintain(document, evidence, "bind")["cached"] is True
+        assert unit.starts == starts + 1 and signals.sent == []
+        assert {key: current["target_row"][key] for key in MANAGED_TARGET_FIELDS} == {
+            key: target[key] for key in MANAGED_TARGET_FIELDS}
     finally:
         finish(system)
 

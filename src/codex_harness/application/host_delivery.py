@@ -48,6 +48,7 @@ from codex_harness.application.releases import (
     require_controller_code,
 )
 from codex_harness.application.tickets import ticket_binding
+from codex_harness.domain.fleet import FleetRefused
 from codex_harness.domain.host_delivery import (
     ACTIVATION_GATE_CODES,
     ACTIVE,
@@ -78,8 +79,10 @@ from codex_harness.domain.host_delivery import (
     GENERATION_REQUESTED,
     GENERATION_STARTED,
     KIND_MANAGED_SYSTEMD,
+    MAINTENANCE_CODES,
     MAINTENANCE_PHASES,
     MAINTENANCE_RESULT_SCHEMA,
+    MANAGED_TARGET_FIELDS,
     MAX_STAGE_ATTEMPTS,
     MERGE_INTENDED,
     MERGED,
@@ -152,6 +155,7 @@ from codex_harness.domain.host_delivery import (
     migration_kind,
     migration_lineage_digest,
     migration_rejected_source,
+    new_generation_refusal,
     new_intent,
     plan_digest,
     recoveries_of,
@@ -165,6 +169,7 @@ from codex_harness.domain.host_delivery import (
     validate_active_generation,
     validate_consumption_rearm,
     validate_consumption_retry,
+    validate_credential_evidence,
     validate_first_activation,
     validate_generation_observation,
     validate_generation_restart,
@@ -174,16 +179,22 @@ from codex_harness.domain.host_delivery import (
     validate_plan,
     validate_targets,
 )
+from codex_harness.domain.host_migration import MigrationRefused, validate_managed_lineage
 from codex_harness.domain.host_migration_evidence import (
     CANARY_RECEIPT_FIELDS,
     DESCRIPTOR_ROW_FIELDS,
     record_view,
+    require_canary,
 )
 from codex_harness.domain.managed_runtime import EnvironmentUnqualified
 from codex_harness.domain.model import ContractError, canonical, digest, utcnow
 from codex_harness.domain.owner_actions import (
     COMPLETED,
     DELIVERY_CANARY,
+    REJECTED,
+    REQUESTED,
+    action_id,
+    canary_job_id,
 )
 from codex_harness.domain.policy import POLICY
 
@@ -205,12 +216,19 @@ RESUME_SECONDS = 15
 # recorded as `scan_bounded` rather than scanned, so selection stays bounded however many exist.
 MAX_SCAN = 64
 # INV-HOST-DELIVERY-MAINTENANCE-001: the prior ACTIVE binding fields a maintenance copies into `prior`, the
-# authority bytes bound, and the one shape of a relayed field.
+# authority bytes bound, the Fleet job states that settle or reserve, and the one shape of a relayed field.
 PRIOR_INTENT_FIELDS = ("stage", "outcome", "instance_id", "canary", "candidate_instance_id", "candidate_launch",
                        "previous_instance_id", "previous_launch", "stage_deadline", "stage_entered_at", "updated_at",
                        "descriptor_sha256")
 MAINTENANCE_AUTHORITY_MAX_BYTES = 262144
+JOB_SETTLED = frozenset({"accepted", "rejected", "failed", "exhausted"})
+JOB_FAILED = frozenset({"rejected", "failed", "exhausted"})
+JOB_RESERVING = frozenset({"dispatching", "unknown"})
+# The Fleet permit close reasons that launched nothing (INV-FLEET-001 maintenance amendment).
+UNLAUNCHED_CLOSE_REASONS = frozenset({"maintenance_expired", "maintenance_cancelled"})
 SAFE_FIELD = re.compile(r"^[a-z][a-z0-9_.]{0,63}$")
+# The Fleet one-job permit schema (INV-FLEET-001 maintenance amendment); the permit dict is built here.
+FLEET_PERMIT_SCHEMA = "urn:zeus:fleet-maintenance-permit:1"
 
 
 class AmbiguousEffect(Exception):
@@ -291,7 +309,8 @@ class HostDelivery:
                  observer=None, enabled=False, releases=None, queue=None,
                  resume_seconds: int = RESUME_SECONDS, verifier=None, evaluator_pins=None,
                  controller_code=None, first_activation=None, authorities=None, artifacts=None,
-                 canary_records=None, maintenance_fleet=None):
+                 canary_records=None, credentials=None, maintenance_fleet=None, canary_executor=None,
+                 qualification_deadline=None):
         self.store, self.org, self.clock = store, org, clock
         self.github, self.hosts, self.canaries = github, hosts or {}, canaries or {}
         # INV-HOST-DELIVERY-VERIFY-001: the owned-attempt port over the existing incumbent
@@ -307,13 +326,15 @@ class HostDelivery:
         # image_source_revision}, re-derived by the adapter from the host settings SSOT, the local image
         # and the candidate's committed profile. Without it no first-activation binding is accepted.
         self.first_activation = first_activation
-        # INV-HOST-DELIVERY-MAINTENANCE-001 ports of the restart phase, all absent by default (a missing one
-        # refuses by name): `authorities(ref) -> bytes` the trusted read-only authority store;
-        # `artifacts.put(body, source)` the content-addressed evidence store; `canary_records(action_id)` the
-        # control-store owner action row, read only; `maintenance_fleet` the control-store Fleet's read-only
-        # maintenance readiness.
+        # INV-HOST-DELIVERY-MAINTENANCE-001 ports, all absent by default (a missing one refuses by name):
+        # `authorities(ref) -> bytes` the trusted read-only authority store; `artifacts.put(body, source)` the
+        # content-addressed evidence store; `canary_records(action_id)` the control-store owner action row,
+        # read only; `credentials(target, identity)` the pinned credential observation helper;
+        # `maintenance_fleet` the control-store Fleet's narrow maintenance seam; `canary_executor` its
+        # one-job executor; `qualification_deadline` the accepted qualification deadline (aware ISO) or None.
         self.authorities, self.artifacts, self.canary_records = authorities, artifacts, canary_records
-        self.maintenance_fleet = maintenance_fleet
+        self.credentials, self.maintenance_fleet = credentials, maintenance_fleet
+        self.canary_executor, self.qualification_deadline = canary_executor, qualification_deadline
         self.observer, self.enabled = observer, bool(enabled)
         self.resume_seconds = int(resume_seconds)
         self.releases = releases if releases is not None else Releases(store, org)
@@ -2025,15 +2046,17 @@ class HostDelivery:
     # controller hold (`ReleaseQueue.hold_maintenance`) fences every lane write, and every phase revalidates
     # before its effect. No lease is held across the canary execution, and no store transaction is ever
     # open across a port call.
-    def maintain(self, document, evidence_ref, phase, *, check=False, startup_seconds=120.0, poll_seconds=1.0) -> dict:
-        """One maintenance phase of one owner document (this release: `restart`). With `check` every refusal is
-        RETURNED as `applicable: False` and nothing is held, put, written or started."""
+    def maintain(self, document, evidence_ref, phase, *, check=False, startup_seconds=120.0, poll_seconds=1.0,
+                 canary_wait_seconds=None) -> dict:
+        """One maintenance phase (`restart`, `arm` or `bind`) of one owner document. With `check` every
+        refusal is RETURNED as `applicable: False` and nothing is held, put, written or started."""
         if phase == "restart":
             return self.maintain_restart(document, evidence_ref, check=check, startup_seconds=startup_seconds,
                                          poll_seconds=poll_seconds)
-        # ALL-PRIMARY-20260930: this release carries the restart phase only. `arm` and `bind` (the paused
-        # one-canary admission and the new-instance consumption) are the named remainder of PR-3; the
-        # generation stays open (`started`, not re-qualified) and every hold stays in force until then.
+        if phase == "arm":
+            return self.maintain_arm(document, evidence_ref, check=check, canary_wait_seconds=canary_wait_seconds)
+        if phase == "bind":
+            return self.maintain_bind(document, evidence_ref, check=check)
         refusal = DeliveryRefused("maintenance_phase", "phase")
         if check:
             return self._maintenance_result({"phase": None, "check": True}, refusal=refusal)
@@ -2043,6 +2066,15 @@ class HostDelivery:
                          poll_seconds=1.0) -> dict:
         return self._maintenance_run("restart", document, evidence_ref, check,
                                      lambda ctx: self._maintain_restart(ctx, startup_seconds, poll_seconds))
+
+    def maintain_arm(self, document, evidence_ref, *, check=False, canary_wait_seconds=None) -> dict:
+        # DN-8: the one-job wait is the operation's own allowance; the numbers live only in POLICY.
+        wait = (POLICY.task_seconds + POLICY.decision_seconds if canary_wait_seconds is None
+                else float(canary_wait_seconds))
+        return self._maintenance_run("arm", document, evidence_ref, check, lambda ctx: self._maintain_arm(ctx, wait))
+
+    def maintain_bind(self, document, evidence_ref, *, check=False) -> dict:
+        return self._maintenance_run("bind", document, evidence_ref, check, self._maintain_bind)
 
     def _maintenance_run(self, phase: str, document, evidence_ref, check: bool, body) -> dict:
         ctx = {"phase": phase, "check": bool(check)}
@@ -2076,6 +2108,8 @@ class HostDelivery:
             raise DeliveryRefused("maintenance_already_used", "document")
         ctx["g"] = generation
         if generation is not None and generation.get("state") == GENERATION_FAILED:
+            if not ctx["check"]:
+                self._settle_control(ctx, generation)
             raise DeliveryRefused("maintenance_failed", "state")
 
     def _maintenance_authority(self, doc: dict) -> None:
@@ -2403,6 +2437,540 @@ class HostDelivery:
                 "invocation_id": retiring["invocation_id"], "launch_sha256": retiring["launch_sha256"],
                 "requested_at": requested_at}
 
+    # --- arm ----------------------------------------------------------------------------------------
+    def _maintain_arm(self, ctx: dict, wait: float) -> dict:
+        generation = ctx["g"]
+        if generation is None or generation.get("state") not in (GENERATION_STARTED, GENERATION_ARMED):
+            raise DeliveryRefused("maintenance_phase", "state")
+        arm = generation.get("arm")
+        if arm is not None and self._expired_at(arm.get("deadline")):
+            # Expiry first; the ONE deadline is never recomputed.
+            if ctx["check"]:
+                raise DeliveryRefused("maintenance_expired", "deadline")
+            self._maintenance_expire(ctx, generation)
+        host, target = self._maintenance_host(ctx)
+        observed = self._maintenance_identity(ctx, host, target, generation)
+        credential = self._maintenance_credentials(target, observed, generation)
+        if generation["state"] == GENERATION_STARTED and arm is None:
+            return self._arm_first(ctx, credential, wait)
+        if generation["state"] == GENERATION_STARTED:
+            return self._arm_resume(ctx, credential, wait)
+        return self._arm_replay(ctx, host, target, wait)
+
+    def _arm_first(self, ctx: dict, credential: dict, wait: float) -> dict:
+        doc, mid, plan, generation = ctx["doc"], ctx["mid"], ctx["plan"], ctx["g"]
+        now = self.clock()
+        deadline = self._deadline_from(now, doc["canary_window_seconds"])
+        if self.qualification_deadline is not None:
+            bound = self._aware(self.qualification_deadline)
+            if bound is None or datetime.fromisoformat(deadline) > bound:
+                raise DeliveryRefused("maintenance_invalid", "canary_window_seconds")
+        self._fleet_ready(mid)
+        binding = {"plan_id": plan["plan_id"], "plan_sha256": doc["plan_sha256"], "target_id": plan["target_id"],
+                   "descriptor_sha256": doc["descriptor_sha256"],
+                   "instance_id": generation["launched"]["receipt"]["instance_id"]}
+        identity = action_id(DELIVERY_CANARY, binding)
+        permit = {"schema": FLEET_PERMIT_SCHEMA, "maintenance_id": mid,
+                  "evidence_ref": ctx["evidence_ref"], **binding, "action_id": identity,
+                  "job_id": canary_job_id(identity), "deadline": deadline}
+        ctx.update(action_id=identity, job_id=permit["job_id"], deadline=deadline)
+        if ctx["check"]:
+            return self._maintenance_result(ctx)
+        arm = {"deadline": deadline, "requested_at": now, "permit": permit, "permit_sha256": digest(permit),
+               "intent_sha256": None, "descriptor_row_sha256": None, "control": {"state": "requested", "at": now},
+               "dispatch": None}
+        prior = generation.get("prior") or {}
+
+        def request(intent, _row):
+            current = self._expect_generation(intent, mid, GENERATION_STARTED)
+            if current.get("arm") is not None:
+                raise DeliveryRefused("maintenance_stale", "generation")
+            return self._with_generation(intent, {
+                **current, "arm": arm,
+                "credential_evidence": [*current.get("credential_evidence", []),
+                                        {**credential, "phase": "arm", "at": now}]}), None
+
+        # T1a: the lane request, under the hold, CAS-pinned to the prior ACTIVE binding. The state stays
+        # `started` and nothing but `generations` changes, so owner-actions can discover nothing yet.
+        holder = self._maintenance_hold(mid, self._unchanged_in(ctx, generation, prior.get("intent_sha256"),
+                                                                prior.get("descriptor_row_sha256"), request))
+        try:
+            return self._arm_grant(ctx, holder, permit, wait)
+        finally:
+            self._maintenance_release(holder)
+
+    def _arm_resume(self, ctx: dict, credential: dict, wait: float) -> dict:
+        """T1a committed, then the control grant or the lane acknowledgement was lost: the SAME permit and
+        deadline are granted (cached) and acknowledged; nothing is recomputed."""
+        mid, generation = ctx["mid"], ctx["g"]
+        permit = generation["arm"]["permit"]
+        ctx.update(action_id=permit["action_id"], job_id=permit["job_id"], deadline=generation["arm"]["deadline"])
+        if ctx["check"]:
+            return self._maintenance_result(ctx)
+        prior, now = generation.get("prior") or {}, self.clock()
+
+        def evidence(intent, _row):
+            current = self._expect_generation(intent, mid, GENERATION_STARTED)
+            return self._with_generation(intent, {
+                **current, "credential_evidence": [*current.get("credential_evidence", []),
+                                                   {**credential, "phase": "arm", "at": now}]}), None
+
+        holder = self._maintenance_hold(mid, self._unchanged_in(ctx, generation, prior.get("intent_sha256"),
+                                                                prior.get("descriptor_row_sha256"), evidence))
+        try:
+            return self._arm_grant(ctx, holder, permit, wait)
+        finally:
+            self._maintenance_release(holder)
+
+    def _arm_grant(self, ctx: dict, holder: dict, permit: dict, wait: float) -> dict:
+        """C1 (the idempotent control grant, no lane transaction open), then T1b, then the dispatch."""
+        self._fleet_call(holder, ctx, lambda fleet: fleet.grant_maintenance_canary(permit))
+        self._arm_acknowledge(ctx, holder)
+        return self._dispatch_attempt(ctx, holder, wait)
+
+    def _arm_acknowledge(self, ctx: dict, holder: dict) -> None:
+        """T1b, ONE owned transaction: the control acknowledgement, `armed`, and the armed transform of
+        the current binding (the new candidate awaits its own canary; the prior ACTIVE facts stay in
+        `prior`). Release, queue and pointer are untouched; same-descriptor history is appended."""
+        mid, plan = ctx["mid"], ctx["plan"]
+        now = self.clock()
+
+        def acknowledge(intent, row):
+            current = self._expect_generation(intent, mid, GENERATION_STARTED)
+            prior = current.get("prior") or {}
+            if digest(_without_generations(intent)) != prior.get("intent_sha256"):
+                raise DeliveryRefused("maintenance_stale", "intent")
+            if digest(row) != prior.get("descriptor_row_sha256"):
+                raise DeliveryRefused("maintenance_stale", "descriptor_row")
+            maintenance_transition(current, GENERATION_ARMED)
+            arm, launched = current["arm"], current["launched"]
+            receipt = launched["receipt"]
+            new = receipt["instance_id"]
+            armed = {key: value for key, value in intent.items() if key != "generations"}
+            armed.update({"stage": AWAITING_CONSUMPTION, "previous_stage": ACTIVE, "outcome": OUTCOME_PENDING,
+                          "reason_code": "maintenance_canary_pending", "error_type": None, "attempts": 0,
+                          "instance_id": None, "canary": None, "candidate_instance_id": new,
+                          "candidate_launch": copy.deepcopy(launched["launch"]), "stage_entered_at": now,
+                          "stage_deadline": arm["deadline"], "updated_at": now})
+            history = list(row.get("history") or [])[-9:] + [{
+                "descriptor_sha256": row.get("descriptor_sha256"), "at": row.get("updated_at"), "consumed": True,
+                "instance_id": row.get("instance_id"), "maintenance_id": mid}]
+            row2 = {**row, "consumed": False, "instance_id": None, "startup_observed": True,
+                    "observed_instance_id": new, "observed_revision": receipt["revision"],
+                    "observed_runtime_root": receipt["runtime_root"], "history": history, "updated_at": now}
+            settled = {**current, "state": GENERATION_ARMED, "updated_at": now,
+                       "arm": {**arm, "control": {"state": "acknowledged", "at": now},
+                               "intent_sha256": digest(armed), "descriptor_row_sha256": digest(row2)},
+                       "observations": [*current.get("observations", []),
+                                        self._observation("arm", GENERATION_ARMED, None, None, now)]}
+            return {**armed, "generations": [settled]}, row2
+
+        generation = self._maintenance_owned(holder, ctx, acknowledge)
+        ctx["g"] = generation
+        self._emit(EVENT_STAGE, "observed", plan, attributes={
+            "plan_id": plan["plan_id"], "release_id": plan["release_id"], "target_id": plan["target_id"],
+            "stage": AWAITING_CONSUMPTION, "previous_stage": ACTIVE})
+        LOGGER.warning("maintenance armed plan=%s id=%s", plan["plan_id"], mid)
+
+    def _arm_replay(self, ctx: dict, host, target: dict, wait: float) -> dict:
+        """An armed generation: reconcile a lost control grant, never respawn admitted work."""
+        mid, generation = ctx["mid"], ctx["g"]
+        arm = generation["arm"]
+        permit = arm["permit"]
+        ctx.update(action_id=permit["action_id"], job_id=permit["job_id"], deadline=arm["deadline"])
+        fleet = self._maintenance_fleet_port()
+        view = self._fleet_read(lambda: fleet.maintenance_permit(mid))
+        state = (view or {}).get("state")
+        if view is None or (arm.get("control") or {}).get("state") == "requested" or state == "granted":
+            if ctx["check"]:
+                return self._maintenance_result(ctx)
+            holder = self._maintenance_hold(mid, self._unchanged_in(ctx, generation, arm.get("intent_sha256"),
+                                                                    arm.get("descriptor_row_sha256")))
+            try:
+                if view is None or state != "granted":
+                    # The control grant's response was lost: the same permit is granted again (cached).
+                    self._fleet_call(holder, ctx, lambda port: port.grant_maintenance_canary(permit))
+                return self._dispatch_attempt(ctx, holder, wait)
+            finally:
+                self._maintenance_release(holder)
+        job = self._fleet_read(lambda: fleet.job(permit["job_id"])) or {}
+        if job.get("status") in JOB_RESERVING:
+            raise DeliveryRefused("maintenance_reconciliation_required", "job")
+        if not ctx["check"] and arm.get("dispatch") is None:
+            try:
+                holder = self._maintenance_hold(mid, None)
+            except DeliveryRefused:
+                holder = None       # informational only; the control row stays the authority
+            if holder is not None:
+                try:
+                    # Reconciled from the control row after a lost arm response; nothing is executed.
+                    self._record_dispatch(ctx, holder, {"job_id": permit["job_id"], "state": "reconciled",
+                                                        "job_status": job.get("status")})
+                finally:
+                    self._maintenance_release(holder)
+        # A replayed arm never respawns: the admission is spent.
+        raise DeliveryRefused("maintenance_already_used", "admission")
+
+    def _dispatch_attempt(self, ctx: dict, holder: dict, wait: float) -> dict:
+        """The ONE canary dispatch of this obligation. The owner action and its queued job must exist and
+        be exactly this binding; the identity and PRIMARY evidence are re-proven immediately before; the
+        proof is pinned from the lane, and the hold is RELEASED before the one-job executor runs."""
+        mid = ctx["mid"]
+        executor, records = self.canary_executor, self.canary_records
+        if executor is None:
+            raise DeliveryRefused("host_port_unavailable", "canary_executor")
+        if records is None:
+            raise DeliveryRefused("host_port_unavailable", "canary_records")
+        fleet = self._maintenance_fleet_port()
+        generation = ctx["g"]
+        permit = generation["arm"]["permit"]
+        try:
+            action = records(permit["action_id"])
+        except Exception:
+            raise DeliveryRefused("host_port_unavailable", "canary_records") from None
+        job = self._fleet_read(lambda: fleet.job(permit["job_id"]))
+        if not isinstance(action, dict) or action.get("state") == "intended" or not isinstance(job, dict):
+            # Owner-actions has not queued the obligation yet: pending, nothing written.
+            self._maintenance_release(holder)
+            return self._maintenance_result(ctx, pending=True, reason_code="maintenance_canary_pending")
+        binding = {key: permit[key] for key in ("plan_id", "plan_sha256", "target_id", "descriptor_sha256",
+                                                "instance_id")}
+        if (action.get("kind") != DELIVERY_CANARY or action.get("state") != REQUESTED
+                or action.get("binding") != binding or action.get("job_id") != permit["job_id"]):
+            self._maintenance_observe(holder, ctx, "maintenance_admission_refused", "action")
+            raise DeliveryRefused("maintenance_admission_refused", "action")
+        if job.get("status") != "queued":
+            code = ("maintenance_reconciliation_required" if job.get("status") in JOB_RESERVING
+                    else "maintenance_already_used")
+            self._maintenance_observe(holder, ctx, code, "job")
+            raise DeliveryRefused(code, "job")
+        host, target = self._maintenance_host(ctx)
+        observed = self._maintenance_identity(ctx, host, target, generation, holder=holder)
+        credential = self._maintenance_credentials(target, observed, generation)
+        now = self.clock()
+
+        def evidence(intent, _row):
+            current = self._expect_generation(intent, mid, GENERATION_ARMED)
+            return self._with_generation(intent, {
+                **current, "credential_evidence": [*current.get("credential_evidence", []),
+                                                   {**credential, "phase": "dispatch", "at": now}]}), None
+
+        generation = self._maintenance_owned(holder, ctx, evidence)
+        arm = generation["arm"]
+        proof = {"maintenance_id": mid, "permit_sha256": arm["permit_sha256"],
+                 "generation_state": generation["state"],
+                 "acknowledged": (arm.get("control") or {}).get("state") == "acknowledged",
+                 "deadline": arm["deadline"], "instance_id": arm["permit"]["instance_id"],
+                 "descriptor_sha256": arm["permit"]["descriptor_sha256"]}
+        # No controller lease across the canary execution (spec D2.3); the logical target hold remains.
+        self._maintenance_release(holder)
+        try:
+            outcome = executor.execute(mid, permit_sha256=arm["permit_sha256"], proof=proof, max_wait_seconds=wait)
+        except FleetRefused as exc:
+            raise self._fleet_refusal(exc) from None
+        except DeliveryRefused:
+            raise
+        except Exception:
+            raise DeliveryRefused("maintenance_reconciliation_required", "job") from None
+        outcome = outcome if isinstance(outcome, dict) else {}
+        status = outcome.get("job_status")
+        dispatch = {"job_id": permit["job_id"], "state": outcome.get("state"),
+                    "job_status": status if type(status) is str else None}
+        try:
+            after = self._maintenance_hold(mid, None)
+        except DeliveryRefused:
+            after = None      # the record is informational; bind reads the permit and the job itself
+        if after is not None:
+            try:
+                self._record_dispatch(ctx, after, dispatch)
+            finally:
+                self._maintenance_release(after)
+        if status in JOB_SETTLED:
+            return self._maintenance_result(ctx)
+        reason = "maintenance_reconciliation_required" if status == "unknown" else "maintenance_canary_pending"
+        return self._maintenance_result(ctx, pending=True, reason_code=reason)
+
+    def _record_dispatch(self, ctx: dict, holder: dict, dispatch: dict) -> None:
+        mid, now = ctx["mid"], self.clock()
+
+        def record(intent, _row):
+            current = self._expect_generation(intent, mid, GENERATION_ARMED)
+            return self._with_generation(intent, {
+                **current, "arm": {**current["arm"], "dispatch": {**dispatch, "at": now}},
+                "observations": [*current.get("observations", []),
+                                 self._observation("arm", GENERATION_ARMED, None, None, now)]}), None
+
+        try:
+            ctx["g"] = self._maintenance_owned(holder, ctx, record)
+        except DeliveryRefused:
+            pass
+
+    # --- bind ---------------------------------------------------------------------------------------
+    def _maintain_bind(self, ctx: dict) -> dict:
+        generation, mid, plan = ctx["g"], ctx["mid"], ctx["plan"]
+        if generation is None:
+            raise DeliveryRefused("maintenance_phase", "state")
+        arm = generation.get("arm") or {}
+        permit = arm.get("permit") or {}
+        ctx.update(action_id=permit.get("action_id"), job_id=permit.get("job_id"), deadline=arm.get("deadline"))
+        if generation.get("state") == GENERATION_BOUND:
+            if (generation.get("canary") or {}).get("settlement") is None and not ctx["check"]:
+                holder = self._maintenance_hold(mid, None)
+                try:
+                    settled = self._bind_settle(ctx, holder)
+                finally:
+                    self._maintenance_release(holder)
+                if not settled:
+                    return self._maintenance_result(ctx, cached=True, pending=True,
+                                                    reason_code="maintenance_reconciliation_required")
+            return self._maintenance_result(ctx, cached=True)
+        if generation.get("state") != GENERATION_ARMED:
+            raise DeliveryRefused("maintenance_phase", "state")
+        if self._expired_at(arm.get("deadline")):
+            if ctx["check"]:
+                raise DeliveryRefused("maintenance_expired", "deadline")
+            self._maintenance_expire(ctx, generation)
+        host, target = self._maintenance_host(ctx)
+        observed = self._maintenance_identity(ctx, host, target, generation)
+        fleet = self._maintenance_fleet_port()
+        view = self._fleet_read(lambda: fleet.maintenance_permit(mid))
+        job = self._fleet_read(lambda: fleet.job(permit["job_id"]))
+        status = (job or {}).get("status")
+        if view is None or view.get("state") == "granted" or job is None or status in ("queued", "dispatching"):
+            return self._maintenance_result(ctx, pending=True, reason_code="maintenance_canary_pending")
+        if status == "unknown":
+            raise DeliveryRefused("maintenance_reconciliation_required", "job")
+        if status in JOB_FAILED:
+            if ctx["check"]:
+                raise DeliveryRefused("maintenance_failed", "job")
+            self._maintenance_fail(ctx, generation, "maintenance_failed", "job")
+        if not (view.get("state") == "admitted"
+                or (view.get("state") == "closed" and view.get("close_reason") == "maintenance_settled")):
+            raise DeliveryRefused("maintenance_canary_unbound", "admission")
+        if self.canary_records is None:
+            raise DeliveryRefused("maintenance_canary_unbound", "canary_records")
+        try:
+            action = self.canary_records(permit["action_id"])
+        except Exception:
+            raise DeliveryRefused("maintenance_canary_unbound", "canary_records") from None
+        state = (action or {}).get("state") if isinstance(action, dict) else None
+        if state == REQUESTED:
+            return self._maintenance_result(ctx, pending=True, reason_code="maintenance_canary_pending")
+        if state == REJECTED:
+            if ctx["check"]:
+                raise DeliveryRefused("maintenance_failed", "action")
+            self._maintenance_fail(ctx, generation, "maintenance_failed", "action")
+        if state != COMPLETED or action.get("id") != permit["action_id"]:
+            raise DeliveryRefused("maintenance_canary_unbound", "action")
+        incumbent, receipt = self._bind_validate(ctx, host, target, observed, generation, action)
+        if ctx["check"]:
+            return self._maintenance_result(ctx)
+        now = self.clock()
+
+        def bind_in(tx, _claim):
+            fresh = self._snapshot_in(tx, plan)
+            if maintenance_of(fresh["intent"]) != generation:
+                raise DeliveryRefused("maintenance_stale", "generation")
+            if self._expired_at(arm["deadline"]):
+                raise DeliveryRefused("maintenance_stale", "deadline")
+            self._require_unchanged(generation, fresh, arm.get("intent_sha256"), arm.get("descriptor_row_sha256"))
+            maintenance_transition(generation, GENERATION_BOUND)
+            new = generation["launched"]["receipt"]["instance_id"]
+            bound = {**generation, "state": GENERATION_BOUND, "updated_at": now,
+                     "canary": {"action_id": permit["action_id"], "job_id": permit["job_id"],
+                                "receipt_sha256": digest(receipt),
+                                "outcome": {"state": "accepted",
+                                            "reason_code": (action.get("outcome") or {}).get("reason_code")},
+                                "bound_at": now, "settlement": None},
+                     "observations": [*generation.get("observations", []),
+                                      self._observation("bind", GENERATION_BOUND, None, None, now)]}
+            intent = fresh["intent"]
+            tx.put(BUCKET_INTENTS, plan["plan_id"], {
+                **intent, "stage": ACTIVE, "previous_stage": AWAITING_CONSUMPTION, "outcome": OUTCOME_ACTIVE,
+                "reason_code": None, "error_type": None, "attempts": 0, "instance_id": new, "canary": incumbent,
+                "stage_deadline": None, "stage_entered_at": now, "updated_at": now, "generations": [bound]})
+            tx.put(BUCKET_DESCRIPTORS, plan["target_id"], {**fresh["descriptor_row"], "consumed": True,
+                                                           "instance_id": new, "updated_at": now})
+            ctx["g"] = bound
+
+        # One lane transaction: ownership, generation, deadline and source hashes, then consumed/new
+        # instance and `bound`. No promotion, queue or pointer write.
+        holder = self._maintenance_hold(mid, bind_in)
+        try:
+            self._emit(EVENT_STAGE, "observed", plan, attributes={
+                "plan_id": plan["plan_id"], "release_id": plan["release_id"], "target_id": plan["target_id"],
+                "stage": ACTIVE, "previous_stage": AWAITING_CONSUMPTION})
+            LOGGER.warning("maintenance bound plan=%s id=%s", plan["plan_id"], mid)
+            settled = self._bind_settle(ctx, holder)
+        finally:
+            self._maintenance_release(holder)
+        if not settled:
+            return self._maintenance_result(ctx, pending=True, reason_code="maintenance_reconciliation_required")
+        return self._maintenance_result(ctx)
+
+    def _bind_validate(self, ctx: dict, host, target: dict, observed: dict, generation: dict, action: dict) -> tuple:
+        """The shared domain canary binding over a PROSPECTIVE consumed view, in memory only: nothing is
+        stored as passed before it holds (HME `require_canary`, unchanged)."""
+        plan, snap = ctx["plan"], ctx["snap"]
+        intent = snap["intent"]
+        reader, requests = getattr(host, "owner_canary", None), getattr(host, "owner_canary_request", None)
+        if reader is None or requests is None:
+            raise DeliveryRefused("maintenance_canary_unbound", "receipt")
+        try:
+            receipt = reader(target, plan["plan_id"])
+        except Exception:
+            raise DeliveryRefused("maintenance_canary_unbound", "receipt") from None
+        try:
+            request = requests(target, plan["plan_id"])
+        except Exception:
+            raise DeliveryRefused("maintenance_canary_unbound", "request") from None
+        if not isinstance(receipt, dict) or receipt.get("unreadable") is True:
+            raise DeliveryRefused("maintenance_canary_unbound", "receipt")
+        if isinstance(request, dict) and request.get("unreadable") is True:
+            raise DeliveryRefused("maintenance_canary_unbound", "request")
+        live = observed["receipt"]
+        startup = {key: live[key] for key in ("instance_id", "pid", "runtime_root", "module_root", "revision")}
+        descriptor = intent["descriptor"]
+        incumbent = self._canary(plan, target, descriptor, startup)
+        try:
+            lineage = validate_managed_lineage({"owner": "managed", "descriptor": descriptor,
+                                                "instance_id": live["instance_id"], "plan_id": plan["plan_id"]})
+            consumed = {"target": {key: target.get(key) for key in sorted(MANAGED_TARGET_FIELDS)}, "plan": plan,
+                        "plan_sha256": snap["plan_row"]["plan_sha256"], "descriptor": descriptor,
+                        "descriptor_sha256": intent["descriptor_sha256"], "instance_id": live["instance_id"],
+                        "lineage": lineage}
+            require_canary(consumed, incumbent, receipt, request, action, intent={"canary": incumbent},
+                           started_at=generation["launched"]["receipt"]["started_at"])
+        except MigrationRefused as exc:
+            raise DeliveryRefused("maintenance_canary_unbound", _safe_field(exc.field) or "canary") from None
+        return incumbent, copy.deepcopy(receipt)
+
+    def _bind_settle(self, ctx: dict, holder: dict) -> bool:
+        """Close the control permit (`maintenance_settled`), then acknowledge that in the lane. A failure
+        leaves `settlement: None` for a bind replay; it never resumes the Fleet."""
+        fleet, generation = self.maintenance_fleet, ctx["g"]
+        if fleet is None:
+            return False
+        try:
+            fleet.close_maintenance_canary(generation["arm"]["permit"], "maintenance_settled")
+        except Exception:
+            return False
+        mid, now = ctx["mid"], self.clock()
+
+        def acknowledge(intent, _row):
+            current = self._expect_generation(intent, mid, GENERATION_BOUND)
+            return self._with_generation(intent, {
+                **current, "canary": {**current["canary"], "settlement": {"state": "closed", "at": now}}}), None
+
+        try:
+            ctx["g"] = self._maintenance_owned(holder, ctx, acknowledge)
+        except DeliveryRefused:
+            return False
+        return True
+
+    # --- failure, expiry and control settlement ------------------------------------------------------
+    def _maintenance_fail(self, ctx: dict, generation: dict, code: str, field: str, holder=None):
+        """Control first (a still-queued canary is cancelled without a spawn; settled admitted work is
+        closed; admitted reserving work is left for a later settle), then the lane failure. No rollback,
+        no host effect, no second generation."""
+        self._fail_control(ctx, generation)
+        self._record_failure(ctx, generation, code, field, holder)
+        raise DeliveryRefused(code, field)
+
+    def _fail_control(self, ctx: dict, generation: dict) -> None:
+        arm, fleet = generation.get("arm"), self.maintenance_fleet
+        if not isinstance(arm, dict) or fleet is None:
+            return
+        permit = arm["permit"]
+        try:
+            view = fleet.maintenance_permit(ctx["mid"])
+            state = (view or {}).get("state")
+            if view is None or state == "granted":
+                fleet.close_maintenance_canary(permit, "maintenance_cancelled")
+            elif state == "admitted" and ((fleet.job(permit["job_id"]) or {}).get("status")
+                                          not in JOB_RESERVING | {None}):
+                fleet.close_maintenance_canary(permit, "maintenance_settled")
+            elif state == "closed" and view.get("close_reason") in UNLAUNCHED_CLOSE_REASONS:
+                # INV-FLEET-001 maintenance amendment: owner-actions may have queued the canary AFTER the
+                # unlaunched close (between the control close and the lane failure). The Fleet keeps such a
+                # stale canary as open debt that blocks every ordinary resume; replaying the close (cached)
+                # fails exactly that queued job without a launch. This replay is its only lane-side path.
+                fleet.close_maintenance_canary(permit, view["close_reason"])
+        except Exception:
+            return    # the lane failure is still recorded; a later replay settles the control row
+
+    def _record_failure(self, ctx: dict, generation: dict, code: str, field: str, holder=None) -> None:
+        mid, plan, phase = ctx["mid"], ctx["plan"], ctx["phase"]
+        now = self.clock()
+        before = []
+
+        def fail(intent, _row):
+            current = self._expect_generation(intent, mid, generation.get("state"))
+            maintenance_transition(current, GENERATION_FAILED)
+            before.append(intent.get("stage"))
+            failed = {**current, "state": GENERATION_FAILED, "updated_at": now,
+                      "failure": {"code": code, "at": now},
+                      "observations": [*current.get("observations", []),
+                                       self._observation(phase, GENERATION_FAILED, code, field, now)]}
+            # The current delivery is BLOCKED under the fixed code; its deadline, row, release, queue and
+            # pointer stay; nothing is rolled back or superseded.
+            return {**intent, "stage": BLOCKED, "previous_stage": intent.get("stage"), "outcome": OUTCOME_BLOCKED,
+                    "reason_code": code, "error_type": None, "updated_at": now,
+                    "generations": [*intent["generations"][:-1], failed]}, None
+
+        if holder is not None:
+            ctx["g"] = self._maintenance_owned(holder, ctx, fail)
+        else:
+            written = []
+            own = self._maintenance_hold(mid, lambda tx, _claim: written.append(self._mutate_in(tx, plan, fail)))
+            self._maintenance_release(own)
+            ctx["g"] = maintenance_of(written[-1])
+        self._emit(EVENT_STAGE, "observed", plan, attributes={
+            "plan_id": plan["plan_id"], "release_id": plan["release_id"], "target_id": plan["target_id"],
+            "stage": BLOCKED, "previous_stage": before[-1] if before else None})
+        self._emit(EVENT_BLOCKED, "blocked", plan, severity="error", reason_code=code,
+                   attributes={"plan_id": plan["plan_id"], "target_id": plan["target_id"],
+                               "stage": before[-1] if before else None, "outcome": OUTCOME_BLOCKED,
+                               "error_type": None, "attempts": 0})
+        LOGGER.warning("maintenance failed plan=%s id=%s", plan["plan_id"], mid)
+
+    def _maintenance_expire(self, ctx: dict, generation: dict):
+        """The ONE arm deadline passed. An unadmitted canary is closed (its queued job failed, nothing
+        launched) BEFORE the lane failure; admitted work that still reserves is never expired, only
+        reconciled; settled admitted work fails the generation and then closes the permit."""
+        fleet = self._maintenance_fleet_port()
+        mid, permit = ctx["mid"], generation["arm"]["permit"]
+        view = self._fleet_read(lambda: fleet.maintenance_permit(mid))
+        state = (view or {}).get("state")
+        if view is None or state == "granted":
+            try:
+                fleet.close_maintenance_canary(permit, "maintenance_expired")
+            except FleetRefused as exc:
+                raise self._fleet_refusal(exc) from None
+            except Exception:
+                raise DeliveryRefused("maintenance_reconciliation_required", "fleet") from None
+            self._record_failure(ctx, generation, "maintenance_expired", "deadline")
+            raise DeliveryRefused("maintenance_expired", "deadline")
+        if state == "admitted":
+            job = self._fleet_read(lambda: fleet.job(permit["job_id"]))
+            if not isinstance(job, dict) or job.get("status") in JOB_RESERVING:
+                raise DeliveryRefused("maintenance_reconciliation_required", "job")
+            self._record_failure(ctx, generation, "maintenance_expired", "deadline")
+            try:
+                fleet.close_maintenance_canary(permit, "maintenance_settled")
+            except Exception:
+                pass      # settled later by `_settle_control` on a replay of the failed generation
+            raise DeliveryRefused("maintenance_expired", "deadline")
+        # Already closed (the lane failure after it was lost): a stale canary queued since then is failed
+        # by the cached close replay before the lane records the failure.
+        self._fail_control(ctx, generation)
+        self._record_failure(ctx, generation, "maintenance_expired", "deadline")
+        raise DeliveryRefused("maintenance_expired", "deadline")
+
+    def _settle_control(self, ctx: dict, generation: dict) -> None:
+        """An idempotent control close appropriate to the job's state; any error leaves it for later."""
+        self._fail_control(ctx, generation)
+
     # --- ports, holds and owned writes --------------------------------------------------------------
     def _maintenance_host(self, ctx: dict):
         if "host" not in ctx:
@@ -2426,6 +2994,33 @@ class HostDelivery:
         if refusal is not None:
             raise DeliveryRefused(*refusal)
 
+    @staticmethod
+    def _fleet_read(read):
+        try:
+            return read()
+        except Exception:
+            raise DeliveryRefused("maintenance_reconciliation_required", "fleet") from None
+
+    def _fleet_call(self, holder: dict, ctx: dict, call):
+        """One control-store call under the hold (no lane transaction open). A Fleet refusal maps to the
+        same maintenance code; an unknown answer (a lost response) needs reconciliation by replay."""
+        fleet = self._maintenance_fleet_port()
+        try:
+            return call(fleet)
+        except FleetRefused as exc:
+            refusal = self._fleet_refusal(exc)
+        except Exception:
+            refusal = DeliveryRefused("maintenance_reconciliation_required", "fleet")
+        self._maintenance_observe(holder, ctx, refusal.reason_code, refusal.field)
+        raise refusal
+
+    @staticmethod
+    def _fleet_refusal(exc) -> DeliveryRefused:
+        code = getattr(exc, "reason_code", None)
+        if type(code) is str and code in MAINTENANCE_CODES:
+            return DeliveryRefused(code, _safe_field(getattr(exc, "field", None)))
+        return DeliveryRefused("maintenance_admission_refused", _safe_field(code) or "fleet")
+
     def _observe_generation(self, host, target: dict, code: str):
         reader = getattr(host, "generation_observation", None)
         if reader is None:
@@ -2444,6 +3039,40 @@ class HostDelivery:
                 host, target, "maintenance_launch_unconfirmed"))
         except DeliveryRefused:
             return None
+
+    def _maintenance_identity(self, ctx: dict, host, target: dict, generation: dict, holder=None) -> dict:
+        """The live identity is exactly the started generation. A definite difference fails the
+        generation; an unknown or a pending reload refuses with nothing written."""
+        raw = self._observe_generation(host, target, "maintenance_launch_unconfirmed")
+        refusal = new_generation_refusal(ctx["snap"]["intent"]["descriptor"], raw, generation)
+        if refusal is not None:
+            if refusal[0] == "maintenance_invocation_mismatch" and not ctx["check"]:
+                self._maintenance_fail(ctx, generation, refusal[0], refusal[1], holder)
+            raise DeliveryRefused(*refusal)
+        return validate_generation_observation(raw)
+
+    def _maintenance_credentials(self, target: dict, observed: dict, generation: dict) -> dict:
+        """The pinned helper's safe PRIMARY evidence bound to the observed supervisor/entry and invocation,
+        and the unchanged source selection. Never a bare boolean assertion; nothing is written on refusal."""
+        port = self.credentials
+        if port is None:
+            raise DeliveryRefused("maintenance_primary_unverified", "credentials")
+        identity = {"supervisor_pid": observed["supervisor"]["pid"], "entry_pid": observed["entry"]["pid"],
+                    "invocation_id": observed["unit"]["invocation_id"]}
+        try:
+            record = port(target, identity)
+        except DeliveryRefused as exc:
+            if exc.reason_code == "maintenance_primary_unverified":
+                raise
+            raise DeliveryRefused("maintenance_primary_unverified", "credentials") from None
+        except Exception:
+            raise DeliveryRefused("maintenance_primary_unverified", "credentials") from None
+        checked = validate_credential_evidence(record, observed)
+        selection = selection_of(observed)
+        if selection != (generation.get("retiring") or {}).get("selection") \
+                or selection != (generation.get("launched") or {}).get("selection"):
+            raise DeliveryRefused("maintenance_primary_unverified", "selection")
+        return checked
 
     def _maintenance_hold(self, mid: str, within) -> dict:
         """The short controller hold (one transaction, `within` inside it); busy is a refusal."""
@@ -3897,5 +4526,5 @@ def _maintenance_unchanged(generation: dict, snap: dict, *, intent_sha256, descr
 
 
 __all__ = ["BUCKET_DESCRIPTORS", "BUCKET_INTENTS", "BUCKET_MIGRATIONS", "BUCKET_PLANS", "BUCKET_TARGETS", "LOGGER",
-           "MAINTENANCE_AUTHORITY_MAX_BYTES",
+           "FLEET_PERMIT_SCHEMA", "JOB_FAILED", "JOB_RESERVING", "JOB_SETTLED", "MAINTENANCE_AUTHORITY_MAX_BYTES",
            "MAX_SCAN", "PRIOR_INTENT_FIELDS", "RESUME_SECONDS", "TARGET_BUSY_STAGES", "AmbiguousEffect", "HostDelivery"]

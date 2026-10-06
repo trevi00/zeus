@@ -10,6 +10,8 @@ from __future__ import annotations
 
 import copy
 import json
+import threading
+from datetime import datetime, timedelta
 
 import pytest
 from host_delivery_maintenance_fixtures import (
@@ -20,13 +22,19 @@ from host_delivery_maintenance_fixtures import (
     TARGET,
     CountingQueue,
     Crash,
+    LossyFleet,
+    RecordingExecutor,
+    ScriptedLauncher,
     active_system,
+    armed,
     authority_store,
     document_for,
     generation_of,
     hold_activation,
     hold_unit,
     intent_of,
+    owner_completes,
+    owner_requests,
     plan_row_of,
     put,
     read,
@@ -34,10 +42,13 @@ from host_delivery_maintenance_fixtures import (
     row_of,
     snapshot,
     steal_lease,
+    write_owner_file,
+    write_request,
 )
 
 from codex_harness.adapters.host_delivery import (
     canary_receipt_file,
+    canary_request_file,
     owner_qualified_canary,
 )
 from codex_harness.application.fleet import BUCKET_CONTROL, CONTROL_KEY
@@ -46,9 +57,12 @@ from codex_harness.application.host_delivery import (
     BUCKET_MIGRATIONS,
     BUCKET_TARGETS,
 )
+from codex_harness.domain import owner_actions as do
 from codex_harness.domain.host_delivery import (
     ACTIVE,
+    AWAITING_CONSUMPTION,
     BLOCKED,
+    EVENT_STAGE,
     KIND_MANAGED,
     MAINTENANCE_RESULT_SCHEMA,
     SWITCHING,
@@ -105,9 +119,17 @@ def lock(system):
 
 
 def effects(system):
-    """Host effects and artifact puts; the Fleet (read only by the restart phase) is covered by the control-store
-    snapshots the tests compare."""
-    return {"calls": list(system["host"].calls), "puts": system["artifacts"].puts}
+    host, fleet = system["host"], system["fleet"]
+    return {"calls": list(host.calls), "puts": system["artifacts"].puts, "fleet": list(fleet.calls),
+            "executor": len(system["executor"].calls)}
+
+
+class Recorder:
+    def __init__(self):
+        self.events = []
+
+    def emit(self, event_type, outcome, **fields):
+        self.events.append((event_type, outcome, fields.get("attributes") or {}))
 
 
 # ----- restart ------------------------------------------------------------------------------------------------
@@ -399,6 +421,498 @@ def test_restart_replay_after_started_is_cached(tmp_path):
     assert snapshot(system["store"], system["control"]) == before and effects(system) == done
 
 
+# ----- arm ----------------------------------------------------------------------------------------------------
+def test_arm_refuses_before_started_and_without_verified_primary(tmp_path):
+    system = active_system(tmp_path)
+    document, evidence = document_for(system)
+    assert refused(lambda: maintain(system, document, evidence, "arm")) == ("maintenance_phase", "state")
+    crash_before_stop(system)
+    with pytest.raises(Crash):
+        maintain(system, document, evidence, "restart")
+    assert refused(lambda: maintain(system, document, evidence, "arm")) == ("maintenance_phase", "state")
+    system["host"].receipt_delay = 10 ** 6
+    refused(lambda: maintain(system, document, evidence, "restart"))
+    assert generation_of(system)["state"] == "launched"
+    assert refused(lambda: maintain(system, document, evidence, "arm")) == ("maintenance_phase", "state")
+    system["host"].receipt_delay = 0
+    assert maintain(system, document, evidence, "restart")["state"] == "started"
+    credentials, host = system["credentials"], system["host"]
+    cases = [
+        ("secondary", lambda: setattr(credentials, "secondary", True), ("maintenance_primary_unverified", "supervisor")),
+        ("not primary", lambda: setattr(credentials, "primary", False),
+         ("maintenance_primary_unverified", "supervisor")),
+        ("no token", lambda: setattr(credentials, "token", False), ("maintenance_primary_unverified", "supervisor")),
+        ("stale identity", lambda: setattr(credentials, "stale", True),
+         ("maintenance_primary_unverified", "supervisor")),
+        ("truthy assertion", lambda: setattr(credentials, "override", lambda r: {
+            **r, "entry": {**r["entry"], "is_primary": "yes"}}), ("maintenance_primary_unverified", "entry")),
+        ("helper failed", lambda: setattr(credentials, "error", RuntimeError(SENTINEL)),
+         ("maintenance_primary_unverified", "credentials")),
+        ("missing helper", lambda: setattr(system["delivery"], "credentials", None),
+         ("maintenance_primary_unverified", "credentials")),
+        ("selection changed", lambda: setattr(host, "environment_sha256", "f" * 64),
+         ("maintenance_primary_unverified", "selection")),
+        ("reload pending", lambda: host.reload_pending(), ("maintenance_reload_pending", "unit")),
+    ]
+    for _name, inject, expected in cases:
+        before, done = snapshot(system["store"], system["control"]), effects(system)
+        inject()
+        assert refused(lambda: maintain(system, document, evidence, "arm")) == expected
+        assert snapshot(system["store"], system["control"]) == before and effects(system) == done
+        credentials.primary, credentials.secondary, credentials.token, credentials.stale = True, False, True, False
+        credentials.override = credentials.error = None
+        system["delivery"].credentials = credentials
+        host.environment_sha256, host.need_reload = "e" * 64, False
+    assert generation_of(system)["arm"] is None and intent_of(system)["stage"] == ACTIVE
+
+
+def test_arm_requests_grants_acknowledges_then_arms_one_deadline(tmp_path):
+    recorder = Recorder()
+    system = active_system(tmp_path, observer=recorder)
+    document, evidence, _ = restarted(system)
+    before_intent = {key: value for key, value in intent_of(system).items() if key != "generations"}
+    before_row, rows = row_of(system), lane_rows(system)
+    fleet, order = system["fleet"], []
+    grant = fleet.grant_maintenance_canary
+
+    def observed_grant(permit):
+        generation, intent = generation_of(system), intent_of(system)
+        order.append(("grant", generation["state"], generation["arm"]["control"]["state"], intent["stage"]))
+        return grant(permit)
+
+    fleet.grant_maintenance_canary = observed_grant
+    recorder.events.clear()
+    requested_at = system["clock"]()
+    result = maintain(system, document, evidence, "arm")
+    assert (result["state"], result["pending"], result["reason_code"]) == ("armed", True, "maintenance_canary_pending")
+    # Lane request (T1a) -> control grant (C1) -> lane acknowledgement and armed transform (T1b).
+    assert order == [("grant", "started", "requested", ACTIVE)]
+    generation, intent, row = generation_of(system), intent_of(system), row_of(system)
+    arm, new = generation["arm"], generation["launched"]["receipt"]["instance_id"]
+    assert arm["control"]["state"] == "acknowledged" and generation["state"] == "armed"
+    assert arm["deadline"] == (datetime.fromisoformat(requested_at) + timedelta(seconds=600)).isoformat()
+    assert result["deadline"] == arm["deadline"] and result["identities"]["action_id"] == arm["permit"]["action_id"]
+    assert arm["permit"]["job_id"] == do.canary_job_id(arm["permit"]["action_id"])
+    assert arm["permit"]["action_id"] == do.action_id(do.DELIVERY_CANARY, {
+        "plan_id": system["plan_id"], "plan_sha256": system["plan_sha256"], "target_id": TARGET,
+        "descriptor_sha256": before_intent["descriptor_sha256"], "instance_id": new})
+    expected_intent = {**before_intent, "stage": AWAITING_CONSUMPTION, "previous_stage": ACTIVE,
+                       "outcome": "pending", "reason_code": "maintenance_canary_pending", "error_type": None,
+                       "attempts": 0, "instance_id": None, "canary": None, "candidate_instance_id": new,
+                       "candidate_launch": generation["launched"]["launch"], "stage_entered_at": intent["updated_at"],
+                       "stage_deadline": arm["deadline"], "updated_at": intent["updated_at"]}
+    assert {key: value for key, value in intent.items() if key != "generations"} == expected_intent
+    assert row == {**before_row, "consumed": False, "instance_id": None, "startup_observed": True,
+                   "observed_instance_id": new, "observed_revision": generation["launched"]["receipt"]["revision"],
+                   "observed_runtime_root": generation["launched"]["receipt"]["runtime_root"],
+                   "history": [*(before_row.get("history") or [])[-9:], {
+                       "descriptor_sha256": before_row["descriptor_sha256"], "at": before_row["updated_at"],
+                       "consumed": True, "instance_id": before_row["instance_id"],
+                       "maintenance_id": generation["id"]}], "updated_at": row["updated_at"]}
+    assert arm["intent_sha256"] == digest({k: v for k, v in intent.items() if k != "generations"})
+    assert arm["descriptor_row_sha256"] == digest(row) and lane_rows(system) == rows
+    assert [e for e in recorder.events if e[0] == EVENT_STAGE] == [(EVENT_STAGE, "observed", {
+        "plan_id": system["plan_id"], "release_id": system["release"]["id"], "target_id": TARGET,
+        "stage": AWAITING_CONSUMPTION, "previous_stage": ACTIVE})]
+    assert [entry["phase"] for entry in generation["credential_evidence"]] == ["arm"]
+    # The ONE deadline is immutable on replay.
+    system["clock"].advance(30)
+    again = maintain(system, document, evidence, "arm")
+    assert again["pending"] is True and generation_of(system)["arm"]["deadline"] == arm["deadline"]
+    assert generation_of(system)["arm"]["permit"] == arm["permit"] and len(order) == 1
+
+
+def test_a_window_beyond_the_qualification_deadline_is_refused(tmp_path):
+    system = active_system(tmp_path)
+    document, evidence, _ = restarted(system)
+    system["delivery"].qualification_deadline = (system["clock"].at + timedelta(seconds=60)).isoformat()
+    before, done = snapshot(system["store"], system["control"]), effects(system)
+    assert refused(lambda: maintain(system, document, evidence, "arm")) == (
+        "maintenance_invalid", "canary_window_seconds")
+    assert snapshot(system["store"], system["control"]) == before and effects(system) == done
+    system["delivery"].qualification_deadline = (system["clock"].at + timedelta(seconds=601)).isoformat()
+    assert maintain(system, document, evidence, "arm")["state"] == "armed"
+
+
+def test_unchanged_owner_actions_owe_exactly_one_new_instance_canary(tmp_path):
+    from test_owner_delivery import canary_owner, rows
+
+    system = active_system(tmp_path / "delivery")
+    document, evidence, _ = restarted(system)
+    world, owner = canary_owner(tmp_path, {"delivery": system["delivery"], "plan": system["plan"]})
+    old = system["old_action"]
+    old_job = {"id": old["job_id"], "status": "accepted", "lane": "a", "manifest_sha256": "6" * 64}
+    with world.control.transaction() as tx:
+        tx.put(BUCKET_ACTIONS, old["id"], old)
+        tx.put(BUCKET_JOBS, old_job["id"], old_job)
+    from host_delivery_maintenance_fixtures import action_reader
+
+    fleet = LossyFleet(world.control, system["clock"])      # the world's registered Fleet, owner-paused
+    fleet.pause()
+    executor = RecordingExecutor(fleet, ScriptedLauncher())
+    system["delivery"].maintenance_fleet, system["delivery"].canary_executor = fleet, executor
+    system["delivery"].canary_records = action_reader(world.control)
+    # While the generation only STARTED (intent still ACTIVE), owner-actions owes nothing.
+    owner.tick("owners-1")
+    assert [r for r in rows(world).values() if r["kind"] == do.DELIVERY_CANARY] == [old]
+    armed_result = maintain(system, document, evidence, "arm")
+    assert armed_result["pending"] is True and executor.calls == []
+    owner.tick("owners-1")
+    canaries = [r for r in rows(world).values() if r["kind"] == do.DELIVERY_CANARY and r["id"] != old["id"]]
+    assert len(canaries) == 1
+    [canary] = canaries
+    permit = generation_of(system)["arm"]["permit"]
+    assert canary["id"] == permit["action_id"] and canary["state"] == do.REQUESTED
+    assert canary["binding"]["instance_id"] == generation_of(system)["launched"]["receipt"]["instance_id"]
+    assert canary["job_id"] == permit["job_id"] and world.jobs()[canary["job_id"]]["status"] == "queued"
+    owner.tick("owners-1")
+    assert len([r for r in rows(world).values() if r["kind"] == do.DELIVERY_CANARY]) == 2
+    with world.control.transaction() as tx:
+        assert tx.get(BUCKET_ACTIONS, old["id"]) == old and tx.get(BUCKET_JOBS, old_job["id"]) == old_job
+    dispatched = maintain(system, document, evidence, "arm")
+    assert dispatched["pending"] is False and len(executor.calls) == 1
+    assert world.jobs()[canary["job_id"]]["status"] == "accepted"
+
+
+def short_steal(system, seconds=10):
+    until = (system["clock"].at + timedelta(seconds=seconds)).isoformat()
+    put(system["store"], "deployment_locks", "controller", {"owner": "labelled-successor", "lease_until": until})
+
+
+def test_lost_control_or_lane_acknowledgements_and_two_arms_spawn_once(tmp_path):
+    system = active_system(tmp_path)
+    fleet = system["fleet"]
+    document, evidence, _ = restarted(system)
+    # C1 committed, its response lost: the lane stays requested; the replay's grant is cached.
+    fleet.commit_then_raise = {"grant"}
+    assert refused(lambda: maintain(system, document, evidence, "arm")) == (
+        "maintenance_reconciliation_required", "fleet")
+    generation = generation_of(system)
+    assert generation["state"] == "started" and generation["arm"]["control"]["state"] == "requested"
+    assert intent_of(system)["stage"] == ACTIVE and len(fleet.permits()) == 1
+    # The lane acknowledgement lost too (a successor held the lease across T1b).
+    grant = fleet.grant_maintenance_canary
+
+    def grant_then_lose_lane(permit):
+        answer = grant(permit)
+        short_steal(system)
+        return answer
+
+    fleet.grant_maintenance_canary = grant_then_lose_lane
+    assert refused(lambda: maintain(system, document, evidence, "arm")) == ("maintenance_stale", "controller")
+    assert generation_of(system)["state"] == "started" and len(fleet.permits()) == 1
+    fleet.grant_maintenance_canary = grant
+    system["clock"].advance(20)
+    result = maintain(system, document, evidence, "arm")
+    assert result["state"] == "armed" and len(fleet.permits()) == 1
+    assert [call for call in fleet.calls if call == "grant"] == ["grant", "grant", "grant"]
+    deadline = generation_of(system)["arm"]["deadline"]
+    owner_requests(system)
+    # Two arm executors: the second runs while the first one's canary is admitted and still running.
+    admitted, finished, answers = threading.Event(), threading.Event(), {}
+
+    def hold_until_second_arm_ran():
+        admitted.set()
+        assert finished.wait(30)
+
+    system["executor"].before_finish = hold_until_second_arm_ran
+
+    def first():
+        answers["first"] = maintain(system, document, evidence, "arm")
+
+    def second():
+        assert admitted.wait(30)
+        try:
+            maintain(system, document, evidence, "arm")
+        except DeliveryRefused as exc:
+            answers["second"] = (exc.reason_code, exc.field)
+        finally:
+            finished.set()
+
+    threads = [threading.Thread(target=first), threading.Thread(target=second)]
+    for thread in threads:
+        thread.start()
+    for thread in threads:
+        thread.join(60)
+    assert answers["second"] == ("maintenance_reconciliation_required", "job")
+    assert answers["first"]["pending"] is False and len(system["executor"].calls) == 1
+    assert [call for call in fleet.calls if call == "admit"] == ["admit"]
+    assert generation_of(system)["arm"]["deadline"] == deadline
+    assert refused(lambda: maintain(system, document, evidence, "arm")) == ("maintenance_already_used", "admission")
+    assert len(system["executor"].calls) == 1
+
+
+def test_an_unknown_dispatch_is_never_executed_again(tmp_path):
+    system = active_system(tmp_path)
+    system["executor"].outcome = "unknown"
+    document, evidence, _ = armed(system)
+    owner_requests(system)
+    result = maintain(system, document, evidence, "arm")
+    assert (result["pending"], result["reason_code"]) == (True, "maintenance_reconciliation_required")
+    for phase in ("arm", "bind"):
+        assert refused(lambda: maintain(system, document, evidence, phase)) == (
+            "maintenance_reconciliation_required", "job")
+    assert len(system["executor"].calls) == 1 and generation_of(system)["state"] == "armed"
+
+
+# ----- expiry and failure ---------------------------------------------------------------------------------------
+def test_expiry_before_admission_fails_without_launch_or_rollback(tmp_path):
+    system = active_system(tmp_path)
+    fleet, host = system["fleet"], system["host"]
+    document, evidence, _ = armed(system)
+    request = owner_requests(system)
+    before_intent, before_row, calls = intent_of(system), row_of(system), list(host.calls)
+    close, order = fleet.close_maintenance_canary, []
+
+    def observed_close(permit, reason):
+        order.append((reason, generation_of(system)["state"]))
+        return close(permit, reason)
+
+    fleet.close_maintenance_canary = observed_close
+    system["clock"].advance(601)
+    assert refused(lambda: maintain(system, document, evidence, "arm")) == ("maintenance_expired", "deadline")
+    assert order == [("maintenance_expired", "armed")]        # the control close BEFORE the lane failure
+    job = read(system["control"], BUCKET_JOBS, request["job_id"])
+    assert job["status"] == "failed" and job["reason_code"] == "maintenance_expired"
+    assert job["maintenance"]["launched"] is False and system["executor"].calls == []
+    permit = fleet.permits()[generation_of(system)["id"]]
+    assert (permit["state"], permit["close_reason"], permit["launched"]) == ("closed", "maintenance_expired", False)
+    intent, generation = intent_of(system), generation_of(system)
+    assert (intent["stage"], intent["reason_code"], intent["outcome"]) == (BLOCKED, "maintenance_expired", "blocked")
+    assert intent["stage_deadline"] == before_intent["stage_deadline"] and intent["rollback"] is None
+    assert generation["state"] == "failed" and generation["failure"]["code"] == "maintenance_expired"
+    assert row_of(system) == before_row and host.calls == calls
+    # Later ticks, replays and a bind change nothing: the failed maintenance holds the target.
+    state = snapshot(system["store"], system["control"])
+    for _ in range(3):
+        tick = system["delivery"].tick()
+        assert tick["blocked"].get(system["plan_id"]) == "maintenance_target_busy"
+    for phase in ("restart", "arm", "bind"):
+        assert refused(lambda: maintain(system, document, evidence, phase)) == ("maintenance_failed", "state")
+    assert snapshot(system["store"], system["control"]) == state and host.calls == calls
+
+
+def test_expiry_without_any_grant_or_job_closes_the_permit_and_fails(tmp_path):
+    system = active_system(tmp_path)
+    fleet = system["fleet"]
+    document, evidence, _ = restarted(system)
+
+    def unreachable(permit):
+        raise TimeoutError("control store unreachable before any commit (labelled injected fault)")
+
+    fleet.grant_maintenance_canary = unreachable
+    assert refused(lambda: maintain(system, document, evidence, "arm")) == (
+        "maintenance_reconciliation_required", "fleet")
+    assert fleet.permits() == {} and generation_of(system)["arm"]["control"]["state"] == "requested"
+    system["clock"].advance(601)
+    assert refused(lambda: maintain(system, document, evidence, "arm")) == ("maintenance_expired", "deadline")
+    permit = fleet.permits()[generation_of(system)["id"]]
+    assert (permit["state"], permit["close_reason"]) == ("closed", "maintenance_expired")
+    assert generation_of(system)["state"] == "failed" and intent_of(system)["stage"] == BLOCKED
+
+
+def test_admitted_reserving_job_is_never_expired(tmp_path):
+    system = active_system(tmp_path)
+    system["executor"].outcome = "running"
+    document, evidence, _ = armed(system)
+    owner_requests(system)
+    result = maintain(system, document, evidence, "arm")
+    assert (result["pending"], result["reason_code"]) == (True, "maintenance_canary_pending")
+    system["clock"].advance(601)
+    state = snapshot(system["store"], system["control"])
+    for phase in ("arm", "bind"):
+        assert refused(lambda: maintain(system, document, evidence, phase)) == (
+            "maintenance_reconciliation_required", "job")
+    assert snapshot(system["store"], system["control"]) == state
+    permit = system["fleet"].permits()[generation_of(system)["id"]]
+    assert permit["state"] == "admitted" and system["fleet"].job(permit["permit"]["job_id"])["status"] == "dispatching"
+
+
+def test_failure_never_rolls_back_resets_supersedes_or_consumes_twice(tmp_path):
+    system = active_system(tmp_path)
+    host = system["host"]
+    document, evidence, _ = restarted(system)
+    before_row, calls = row_of(system), list(host.calls)
+    host.n1(system["target"])        # the started generation is definitely not the live one any more
+    assert refused(lambda: maintain(system, document, evidence, "arm")) == (
+        "maintenance_invocation_mismatch", "instance_id")
+    intent, generation = intent_of(system), generation_of(system)
+    assert (intent["stage"], intent["reason_code"]) == (BLOCKED, "maintenance_invocation_mismatch")
+    assert generation["state"] == "failed" and generation["arm"] is None and len(intent["generations"]) == 1
+    assert row_of(system) == before_row and intent["rollback"] is None
+    state = snapshot(system["store"], system["control"])
+    another, another_evidence = document_for(system, **{"from": document["from"]}, retiring={
+        "instance_id": host.receipt(system["target"])["instance_id"], "invocation_id": host.invocation,
+        "launch_sha256": digest(host.launch_record(system["target"]))})
+    assert refused(lambda: maintain(system, another, another_evidence, "restart")) == (
+        "maintenance_already_used", "document")
+    for phase in ("restart", "arm", "bind"):
+        assert refused(lambda: maintain(system, document, evidence, phase)) == ("maintenance_failed", "state")
+    for _ in range(3):
+        system["delivery"].tick()
+    assert snapshot(system["store"], system["control"]) == state
+    assert host.calls == calls and len(intent_of(system)["generations"]) == 1
+
+
+# ----- bind ---------------------------------------------------------------------------------------------------
+def dispatched(system, *, outcome="accepted"):
+    system["executor"].outcome = outcome
+    document, evidence, _ = armed(system)
+    owner_requests(system)
+    result = maintain(system, document, evidence, "arm")
+    assert result["state"] == "armed"
+    return document, evidence
+
+
+def test_bind_binds_only_the_genuine_new_instance_receipt(tmp_path):
+    system = active_system(tmp_path)
+    rows = lane_rows(system)
+    old_history = len(row_of(system).get("history") or [])
+    document, evidence = dispatched(system)
+    pending = maintain(system, document, evidence, "bind")
+    assert (pending["pending"], pending["reason_code"], pending["state"]) == (True, "maintenance_canary_pending",
+                                                                               "armed")
+    action = owner_completes(system)
+    result = maintain(system, document, evidence, "bind")
+    assert (result["state"], result["pending"], result["cached"]) == ("bound", False, False)
+    intent, row, generation = intent_of(system), row_of(system), generation_of(system)
+    new = generation["launched"]["receipt"]["instance_id"]
+    assert (intent["stage"], intent["outcome"], intent["instance_id"]) == (ACTIVE, "active", new)
+    assert intent["canary"]["passed"] is True and intent["canary"]["evidence"]["action_id"] == action["id"]
+    assert (row["consumed"], row["instance_id"], row["observed_instance_id"]) == (True, new, new)
+    assert len(row["history"]) == old_history + 1 and row["history"][-1]["maintenance_id"] == generation["id"]
+    assert generation["canary"]["settlement"]["state"] == "closed" and generation["state"] == "bound"
+    assert generation["canary"]["action_id"] == action["id"]
+    # PRIMARY evidence was re-proven immediately before the dispatch; booleans, pids and ticks only.
+    assert [entry["phase"] for entry in generation["credential_evidence"]] == ["arm", "dispatch"]
+    assert all(set(entry["supervisor"]) == {"pid", "start_ticks", "has_token", "is_primary", "is_secondary"}
+               for entry in generation["credential_evidence"])
+    assert str(tmp_path) not in json.dumps(result)
+    permit = system["fleet"].permits()[generation["id"]]
+    assert (permit["state"], permit["close_reason"]) == ("closed", "maintenance_settled")
+    assert lane_rows(system) == rows
+    assert read(system["control"], BUCKET_ACTIONS, system["old_action"]["id"]) == system["old_action"]
+    view = system["delivery"].status(system["plan_id"])["deliveries"][0]
+    assert view["maintenance"]["qualified"] is True and view["maintenance"]["open"] is False
+    # The target is free again: an ordinary tick sees only the ACTIVE (terminal) delivery.
+    assert system["delivery"].tick()["blocked"].get(system["plan_id"]) == ACTIVE
+
+
+def receipt_case(**overrides):
+    return lambda system: owner_completes(system, **overrides)
+
+
+def old_receipt(system):
+    owner_completes(system)
+    write_owner_file(system, canary_receipt_file(system["plan_id"]), json.dumps(system["old_receipt"]))
+
+
+def rejected_canary(system):
+    owner_completes(system, verdict=False)
+
+
+UNBOUND = {
+    "old receipt": (old_receipt, "maintenance_canary_unbound"),
+    "passed is a truthy string": (receipt_case(passed="true"), "maintenance_canary_unbound"),
+    "passed is one": (receipt_case(passed=1), "maintenance_canary_unbound"),
+    "wrong instance": (receipt_case(instance_id="9" * 32), "maintenance_canary_unbound"),
+    "no instance": (receipt_case(instance_id=None), "maintenance_canary_unbound"),
+    "wrong action": (receipt_case(evidence={"action_id": "9" * 64, "plan_id": "maintained-plan"}),
+                     "maintenance_canary_unbound"),
+    "wrong descriptor": (receipt_case(descriptor_sha256="9" * 64), "maintenance_canary_unbound"),
+    "recorded before the startup": (receipt_case(recorded_at="2026-09-21T00:00:00+00:00"),
+                                    "maintenance_canary_unbound"),
+    "request mismatch": (lambda s: (owner_completes(s), write_request(s, revision="7" * 40)),
+                         "maintenance_canary_unbound"),
+    "unreadable receipt": (lambda s: (owner_completes(s), write_owner_file(
+        s, canary_receipt_file(s["plan_id"]), SENTINEL + "{")), "maintenance_canary_unbound"),
+    "unreadable request": (lambda s: (owner_completes(s), write_owner_file(
+        s, canary_request_file(s["plan_id"]), "[" + SENTINEL)), "maintenance_canary_unbound"),
+    "canary still requested": (lambda s: None, "pending"),
+}
+
+
+@pytest.mark.parametrize("case", sorted(UNBOUND))
+def test_bind_refuses_every_unbound_receipt(tmp_path, case):
+    system = active_system(tmp_path)
+    document, evidence = dispatched(system)
+    setup, expected = UNBOUND[case]
+    setup(system)
+    state = snapshot(system["store"], system["control"])
+    if expected == "pending":
+        result = maintain(system, document, evidence, "bind")
+        assert (result["pending"], result["reason_code"]) == (True, "maintenance_canary_pending")
+    else:
+        code, field = refused(lambda: maintain(system, document, evidence, "bind"))
+        assert code == expected and SENTINEL not in str(field)
+        checked = maintain(system, document, evidence, "bind", check=True)
+        assert checked["applicable"] is False and SENTINEL not in json.dumps(checked)
+    # Nothing is stored as passed before the binding holds.
+    assert snapshot(system["store"], system["control"]) == state
+    assert generation_of(system)["state"] == "armed" and intent_of(system)["stage"] == AWAITING_CONSUMPTION
+
+
+FAILURES = {
+    "rejected job": ("rejected", lambda s: None, ("maintenance_failed", "job")),
+    "rejected canary": ("accepted", rejected_canary, ("maintenance_failed", "action")),
+    "changed live instance": ("accepted", lambda s: (owner_completes(s), s["host"].n1(s["target"])),
+                              ("maintenance_invocation_mismatch", "instance_id")),
+}
+
+
+@pytest.mark.parametrize("case", sorted(FAILURES))
+def test_a_rejected_or_changed_canary_fails_the_generation_without_rollback(tmp_path, case):
+    system = active_system(tmp_path)
+    outcome, setup, expected = FAILURES[case]
+    document, evidence = dispatched(system, outcome=outcome)
+    setup(system)
+    before_row, calls = row_of(system), list(system["host"].calls)
+    assert refused(lambda: maintain(system, document, evidence, "bind")) == expected
+    intent, generation = intent_of(system), generation_of(system)
+    assert (intent["stage"], intent["reason_code"]) == (BLOCKED, expected[0])
+    assert generation["state"] == "failed" and generation["canary"] is None
+    assert row_of(system) == before_row and row_of(system)["consumed"] is False
+    assert system["host"].calls == calls and intent["rollback"] is None
+
+
+def test_bind_replay_cached_drift_refused_history_kept_settlement_held(tmp_path):
+    system = active_system(tmp_path)
+    fleet = system["fleet"]
+    document, evidence = dispatched(system)
+    owner_completes(system)
+    # Concurrent drift of a pinned source refuses the bind with nothing written.
+    record = read(system["store"], "releases", system["release"]["id"])
+    put(system["store"], "releases", system["release"]["id"], {**record, "note": "labelled concurrent drift"})
+    state = snapshot(system["store"], system["control"])
+    assert refused(lambda: maintain(system, document, evidence, "bind")) == ("maintenance_stale", "release_id")
+    assert snapshot(system["store"], system["control"]) == state
+    put(system["store"], "releases", system["release"]["id"], record)
+    # The control settlement is lost: bound, but the permit stays open and the lane says so.
+    close = fleet.close_maintenance_canary
+
+    def lost_close(permit, reason):
+        fleet.close_maintenance_canary = close
+        raise TimeoutError("close response lost before commit (labelled injected fault)")
+
+    fleet.close_maintenance_canary = lost_close
+    result = maintain(system, document, evidence, "bind")
+    assert (result["state"], result["pending"], result["reason_code"]) == ("bound", True,
+                                                                           "maintenance_reconciliation_required")
+    generation = generation_of(system)
+    assert generation["canary"]["settlement"] is None and fleet.permits()[generation["id"]]["state"] == "admitted"
+    assert fleet.maintenance_readiness()["open_permits"] == [generation["id"]]
+    # A bind replay settles it, then every further replay is cached with no write.
+    settled = maintain(system, document, evidence, "bind")
+    assert (settled["cached"], settled["pending"]) == (True, False)
+    assert generation_of(system)["canary"]["settlement"]["state"] == "closed"
+    state = snapshot(system["store"], system["control"])
+    again = maintain(system, document, evidence, "bind")
+    assert (again["cached"], again["state"]) == (True, "bound")
+    assert snapshot(system["store"], system["control"]) == state
+    history = row_of(system)["history"]
+    assert history[-1]["descriptor_sha256"] == row_of(system)["descriptor_sha256"]      # same-digest history
+
+
 # ----- check mode ---------------------------------------------------------------------------------------------
 def test_check_mode_has_zero_effects_across_phases(tmp_path):
     system = active_system(tmp_path)
@@ -417,16 +931,22 @@ def test_check_mode_has_zero_effects_across_phases(tmp_path):
         return result
 
     assert checked("restart")["applicable"] is True
+    assert (checked("arm")["applicable"], checked("arm")["reason_code"]) == (False, "maintenance_phase")
     maintain(system, document, evidence, "restart")
     assert checked("restart")["cached"] is True
-    # This release carries the restart phase only (ALL-PRIMARY-20260930): arm and bind refuse by name.
-    for phase in ("arm", "bind"):
-        refused = checked(phase)
-        assert (refused["applicable"], refused["reason_code"], refused["field"]) == (
-            False, "maintenance_phase", "phase")
-    assert generation_of(system)["state"] == "started"
+    first_arm = checked("arm")
+    assert first_arm["applicable"] is True and first_arm["deadline"] is not None
+    assert checked("bind")["reason_code"] == "maintenance_phase"
+    maintain(system, document, evidence, "arm")
+    owner_requests(system)
+    assert checked("arm")["applicable"] is True and system["executor"].calls == []
+    maintain(system, document, evidence, "arm")
+    owner_completes(system)
+    bind = checked("bind")
+    assert (bind["applicable"], bind["pending"]) == (True, False)
+    assert generation_of(system)["state"] == "armed"
     bad = {**document, "note": SENTINEL}
-    rejected = maintain(system, bad, "sha256:" + digest(bad), "restart", check=True)
+    rejected = maintain(system, bad, "sha256:" + digest(bad), "bind", check=True)
     assert (rejected["applicable"], rejected["reason_code"], rejected["field"]) == (
         False, "maintenance_invalid", "document")
     assert SENTINEL not in json.dumps(rejected)
@@ -437,8 +957,9 @@ def test_check_mode_has_zero_effects_across_phases(tmp_path):
 def test_every_lane_write_and_hold_is_one_transaction_never_nested(tmp_path):
     """LinkedStores raises on any transaction opened inside another one (the PG advisory lock)."""
     system = active_system(tmp_path)
-    restarted(system)
-    assert generation_of(system)["state"] == "started"
+    document, evidence = dispatched(system)
+    owner_completes(system)
+    assert maintain(system, document, evidence, "bind")["state"] == "bound"
     assert system["store"].transactions > 0 and system["control"].transactions > 0
 
 
@@ -466,13 +987,20 @@ def pr2_observe(system):
     return consumed["instance_id"]
 
 
-def test_pr2_observer_refuses_during_the_open_maintenance(tmp_path):
+def test_pr2_observer_refuses_during_maintenance_and_accepts_after_bind(tmp_path):
     system = active_system(tmp_path)
     assert pr2_observe(system) == intent_of(system)["instance_id"]
-    restarted(system)
-    # The started generation is not a consumption claim: the unchanged PR-2 predicates refuse the new instance
-    # (they accept it only after the remainder's bind), and the historical binding is not relabelled.
+    document, evidence, _ = restarted(system)
     with pytest.raises(MigrationRefused) as during:
         pr2_observe(system)
     assert during.value.field == "instance_binding"
+    maintain(system, document, evidence, "arm")
+    with pytest.raises(MigrationRefused) as armed_view:
+        pr2_observe(system)
+    assert armed_view.value.field == "delivery_not_active"
+    owner_requests(system)
+    maintain(system, document, evidence, "arm")
+    owner_completes(system)
+    assert maintain(system, document, evidence, "bind")["state"] == "bound"
+    assert pr2_observe(system) == generation_of(system)["launched"]["receipt"]["instance_id"]
     assert plan_row_of(system)["plan_sha256"] == system["plan_sha256"]
