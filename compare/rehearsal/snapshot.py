@@ -6,6 +6,7 @@ that (RH-2c), so the scan/snapshot code lives here. Standard library plus `Refus
 
 from __future__ import annotations
 
+import errno
 import hashlib
 import os
 import stat
@@ -99,15 +100,81 @@ def stable_sha256(scan: dict, volatile=VOLATILE_PATHS, excluded=EXCLUDED_PATHS) 
     return hashlib.sha256("".join(lines).encode("utf-8")).hexdigest()
 
 
+def _read_once(path, label: str):
+    """Read `path` through ONE file descriptor (RH-2 P5b-1, D6): open `O_NOFOLLOW|O_NONBLOCK` (a FIFO opens without a
+    writer and is refused below, never waited on), `fstat` that descriptor, then read it, so the recorded mtime, mode,
+    size and bytes all describe one inode even when a writer rename-replaces the path (rename(2): stat-by-path then
+    read-by-path can see two inodes). Returns `(data, info)`, or None when the path does not exist. `label` is the
+    source-relative name used in refusals, never an absolute path."""
+    try:
+        fd = os.open(path, os.O_RDONLY | os.O_NOFOLLOW | os.O_NONBLOCK | os.O_CLOEXEC)
+    except FileNotFoundError:
+        return None
+    except OSError as error:
+        if error.errno == errno.ELOOP:
+            raise Refused("volatile_symlink", label) from None
+        if error.errno == errno.ENXIO:  # a socket
+            raise Refused("volatile_not_regular", label) from None
+        raise Refused("volatile_unreadable", label) from None
+    try:
+        info = os.fstat(fd)
+        if not stat.S_ISREG(info.st_mode):
+            raise Refused("volatile_not_regular", label)
+        chunks = []
+        try:
+            while True:
+                chunk = os.read(fd, 1 << 20)
+                if not chunk:
+                    break
+                chunks.append(chunk)
+        except OSError:
+            raise Refused("volatile_unreadable", label) from None
+    finally:
+        os.close(fd)
+    return b"".join(chunks), info
+
+
+def copy_once(path, target, *, label: str | None = None) -> dict | None:
+    """Read `path` once (see `_read_once`) and write the bytes to a NEW file `target` (0600, exclusive, no symlink
+    following), creating its parents. Returns `{size, mtime_ns, mode, read_at_ns, sha256}` describing exactly the bytes
+    written, or None when `path` is gone. Refusals: `volatile_symlink`, `volatile_not_regular`, `volatile_unreadable`
+    (read side); `seal_write_failed` for any write-side OSError, an existing target included."""
+    label = label if label is not None else Path(path).name
+    got = _read_once(path, label)
+    if got is None:
+        return None
+    data, info = got
+    read_at = time.time_ns()
+    target = Path(target)
+    try:
+        target.parent.mkdir(parents=True, exist_ok=True)
+        fd = os.open(target, os.O_WRONLY | os.O_CREAT | os.O_EXCL | os.O_NOFOLLOW | os.O_CLOEXEC, 0o600)
+        try:
+            os.fchmod(fd, 0o600)
+            view = memoryview(data)
+            while view:
+                view = view[os.write(fd, view):]
+        finally:
+            os.close(fd)
+    except OSError:
+        raise Refused("seal_write_failed", label) from None
+    return {"size": len(data), "mtime_ns": info.st_mtime_ns, "mode": stat.S_IMODE(info.st_mode), "read_at_ns": read_at,
+            "sha256": hashlib.sha256(data).hexdigest()}
+
+
 def snapshot_volatile(source: Path, dest: Path, volatile=VOLATILE_PATHS, excluded=EXCLUDED_PATHS, *,
-                      scan_roots=SCAN_ROOTS, during=None) -> dict:
+                      scan_roots=SCAN_ROOTS, during=None, admit=None) -> dict:
     """Copy each declared volatile file (or the regular files of a declared directory) from `source` to `dest` once,
-    reading it a single time so the recorded size/mtime/sha256 describe exactly the bytes written; the copy is a new
-    inode, so a later change on either side never reaches the other. Symlinks and excluded paths are refused/skipped.
+    reading it a single time so the recorded size/mtime/mode/sha256 describe exactly the bytes written; the copy is a new
+    inode, so a later change on either side never reaches the other. Symlinks and excluded paths are refused/skipped;
+    every refusal names a source-relative path or a name.
+
+    `admit`, when given, is called once with the sorted relative paths about to be read, before the first read.
 
     Fail closed (RH-1b): `scan_roots` are listed (names, sizes, mtimes) before the reads and again after `during()` (the
     staging of the stable subtrees in the real flow, a writer in tests); any other path that changed refuses
-    `volatile_undeclared`; the stable files' digest before and after is recorded (`stable`)."""
+    `volatile_undeclared` (the error's `paths` lists them all); the stable files' digest before and after is recorded
+    (`stable`)."""
     source, dest = Path(source), Path(dest)
     before = scan_tree(source, scan_roots, excluded) if scan_roots else {}
     excl = [_rel_parts(e) for e in excluded]
@@ -119,26 +186,34 @@ def snapshot_volatile(source: Path, dest: Path, volatile=VOLATILE_PATHS, exclude
         base = source.joinpath(*parts)
         if any(source.joinpath(*parts[: i + 1]).is_symlink() for i in range(len(parts))):
             raise Refused("volatile_symlink", rel)
-        if base.is_dir():
+        try:
+            kind = os.lstat(base).st_mode  # one classification per declared path
+        except FileNotFoundError:
+            skipped.append(rel)
+            continue
+        if stat.S_ISLNK(kind):
+            raise Refused("volatile_symlink", rel)
+        if stat.S_ISDIR(kind):
             files += [(rel_file, f) for rel_file, f in _walk(source, base)]
-        elif base.is_file():
+        elif stat.S_ISREG(kind):
             files.append((rel, base))
         else:
-            skipped.append(rel)
-    entries = []
+            raise Refused("volatile_not_regular", rel)
+    reads = []
     for rel, path in sorted(files):
         if any(tuple(rel.split("/"))[: len(e)] == e for e in excl):
             skipped.append(rel)
+        else:
+            reads.append((rel, path))
+    if admit is not None:
+        admit([rel for rel, _path in reads])
+    entries = []
+    for rel, path in reads:
+        done = copy_once(path, dest.joinpath(*rel.split("/")), label=rel)
+        if done is None:
+            skipped.append(rel)
             continue
-        before_stat = path.stat()
-        data = path.read_bytes()
-        read_at = time.time_ns()
-        target = dest.joinpath(*rel.split("/"))
-        target.parent.mkdir(parents=True, exist_ok=True)
-        with open(target, "xb") as handle:
-            handle.write(data)
-        entries.append({"path": rel, "size": len(data), "mtime_ns": before_stat.st_mtime_ns, "read_at_ns": read_at,
-                        "sha256": hashlib.sha256(data).hexdigest()})
+        entries.append({"path": rel, **done})
     if during is not None:
         during()
     reads = [e["read_at_ns"] for e in entries]
@@ -148,8 +223,10 @@ def snapshot_volatile(source: Path, dest: Path, volatile=VOLATILE_PATHS, exclude
         after = scan_tree(source, scan_roots, excluded)
         undeclared = undeclared_changes(before, after, volatile, excluded)
         if undeclared:
-            raise Refused("volatile_undeclared", f"{len(undeclared)} path(s) changed outside the closed list: "
-                          + ", ".join(undeclared[:5]))
+            error = Refused("volatile_undeclared", f"{len(undeclared)} path(s) changed outside the closed list: "
+                            + ", ".join(undeclared[:5]))
+            error.paths = undeclared
+            raise error
         manifest["stable"] = {"files": sum(1 for r in before if not _covered(r, volatile) and not _covered(r, excluded)),
                               "sha256": stable_sha256(before, volatile, excluded),
                               "sha256_after": stable_sha256(after, volatile, excluded), "unchanged": True}

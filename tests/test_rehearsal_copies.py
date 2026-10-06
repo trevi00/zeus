@@ -565,11 +565,12 @@ def test_an_undeclared_changing_path_refuses_volatile_undeclared(tmp_path):
 def test_a_declared_path_changing_during_the_snapshot_is_snapshotted_once_and_an_excluded_one_is_skipped(tmp_path, monkeypatch):
     src, dst = volatile_fixture(tmp_path), tmp_path / "dst"
     reads = []
-    original = cp.Path.read_bytes
+    original = os.open
 
-    def counting(self):
-        reads.append(self.name)
-        return original(self)
+    def counting(path, flags, *args, **kwargs):  # the snapshot reads each file through one os.open (RH-2 P5b-1, D6)
+        if flags & os.O_ACCMODE == os.O_RDONLY:
+            reads.append(os.path.basename(path))
+        return original(path, flags, *args, **kwargs)
 
     def writers():
         (src / "runtime/control/monitoring.json").write_text("m1-after-the-read", encoding="ascii")
@@ -577,8 +578,9 @@ def test_a_declared_path_changing_during_the_snapshot_is_snapshotted_once_and_an
         (src / "runtime/control/observations/health/b.json").write_text("b", encoding="ascii")
         (src / "runtime/tokobs/ledger.sqlite3").write_text("t1-excluded", encoding="ascii")
 
-    monkeypatch.setattr(cp.Path, "read_bytes", counting)
+    monkeypatch.setattr(os, "open", counting)
     manifest = cp.snapshot_volatile(src, dst, during=writers)
+    monkeypatch.undo()
     assert reads.count("monitoring.json") == 1 and reads.count("heartbeat.json") == 1 and reads.count("a.json") == 1
     assert (dst / "runtime/control/monitoring.json").read_text() == "m0"  # the single read, before the change
     assert not (dst / "runtime/control/observations/health/b.json").exists()
