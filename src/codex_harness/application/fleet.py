@@ -53,6 +53,25 @@ from codex_harness.domain.fleet import (
 )
 from codex_harness.domain.fleet_backlog import runner_state
 from codex_harness.domain.fleet_backlog import safe_error_type as safe_backlog_error_type
+from codex_harness.domain.fleet_maintenance import (
+    ADMITTED,
+    CLOSE_REASONS,
+    CLOSED,
+    EXECUTION_SCHEMA,
+    GRANTED,
+    MAINTENANCE_EXPIRED,
+    MAINTENANCE_ID,
+    OWNER_ACTIONS_BUCKET,
+    UNLAUNCHED_REASONS,
+    check_canary_job,
+    check_owner_action,
+    deadline_passed,
+    open_permit,
+    owner_action_matches,
+    permit_view,
+    validate_permit,
+    validate_proof,
+)
 from codex_harness.domain.fleet_recovery import (
     INTERRUPTED,
     canonical_repositories,
@@ -75,7 +94,7 @@ from codex_harness.domain.fleet_recovery import (
     validate_recovery_evidence,
     validate_relocation_request,
 )
-from codex_harness.domain.model import require, utcnow
+from codex_harness.domain.model import digest, require, utcnow
 from codex_harness.domain.operation import manifest_digest
 from codex_harness.domain.usage_policy import MODES, SUBSCRIPTION, accounting_mode
 
@@ -86,6 +105,9 @@ BUCKET_RECOVERY = "fleet_recovery_receipts"
 BUCKET_RELOCATION = "fleet_relocations"
 BUCKET_HOST_MIGRATION = "fleet_host_migrations"
 BUCKET_UNITS = "fleet_units"
+# INV-FLEET-001 maintenance amendment (INV-HOST-DELIVERY-MAINTENANCE-001): one durable one-job canary
+# permit per maintenance id; `granted` -> `admitted` -> `closed`, or `granted` -> `closed`.
+BUCKET_MAINTENANCE = "fleet_maintenance_admissions"
 # Control-row field naming the managed host activation that paused admission (`activation_gate`).
 ACTIVATION_HOLD = "activation_hold"
 CONTROL_KEY = "admission"
@@ -221,6 +243,10 @@ class Fleet:
         with self.store.transaction() as tx:
             if self._registry(tx) is None:
                 raise FleetRefused("unregistered")
+            if not paused and self._maintenance_debt(tx):
+                # INV-FLEET-001 maintenance amendment: general admission stays closed until every
+                # maintenance permit is closed and no stale canary of one is still queued or reserving.
+                raise FleetRefused("maintenance_debt_unsettled", "maintenance")
             # Only the flag changes: a granted effective budget survives pause/resume. An owner pause
             # or resume takes the pause over, so a host activation hold never outlives it.
             control = {key: value for key, value in self._control(tx).items() if key != ACTIVATION_HOLD}
@@ -295,6 +321,10 @@ class Fleet:
         with self.store.transaction() as tx:
             if self._registry(tx) is None:
                 raise FleetRefused("unregistered")
+            if self._maintenance_debt(tx):
+                # INV-FLEET-001 maintenance amendment: a runtime's hold release is a resume too, so it
+                # releases nothing while any maintenance permit or its stale canary is unsettled.
+                return {"released": False}
             control = self._control(tx)
             hold = control.get(ACTIVATION_HOLD)
             if not (control.get("paused") and isinstance(hold, dict)
@@ -456,7 +486,8 @@ class Fleet:
             control = self._control(tx)
             jobs = tx.scan(BUCKET_JOBS)
             units = held_units(tx.scan(BUCKET_UNITS))
-        return maintenance_readiness(registry, control, jobs, units, ACTIVATION_HOLD)
+            open_ids = self._open_permits(tx)
+        return maintenance_readiness(registry, control, jobs, units, ACTIVATION_HOLD, open_ids)
 
     def finalize(self, job_id: str, owner_token: str, outcome: dict) -> dict:
         """Only the dispatching owner records the terminal fact. `unknown` stays reserving."""
@@ -785,6 +816,207 @@ class Fleet:
             rows = tx.scan(BUCKET_RELOCATION)
         return [relocation_view(row) for row in sorted(rows, key=lambda r: (r["recorded_at"], r["id"]))]
 
+    # ----- active-generation maintenance: the one-job canary permit ------------------------
+    # INV-FLEET-001 maintenance amendment (INV-HOST-DELIVERY-MAINTENANCE-001). Each method is ONE
+    # control-store transaction and every refusal is a fixed `FleetRefused` with nothing written. The
+    # Fleet stays owner-paused throughout: nothing here pauses, resumes or releases a hold, and the
+    # ordinary dispatcher (`admit_one`, `reserve_unit`, `FleetRunner.run`) gains no authority.
+    @staticmethod
+    def _owner_paused(control: dict) -> None:
+        """An OWNER pause: paused, and not merely a managed runtime's activation hold."""
+        if not (control.get("paused") is True and control.get(ACTIVATION_HOLD) is None):
+            raise FleetRefused("maintenance_pause_required", "fleet")
+
+    @staticmethod
+    def _open_permits(tx) -> list[str]:
+        """Maintenance ids whose control debt is unsettled: a permit not closed, or a closed one whose
+        canary job is still queued or reserving (`domain.fleet_maintenance.open_permit`). A fleet that
+        never held a permit scans one empty bucket and reads nothing else."""
+        open_ids = []
+        for row in tx.scan(BUCKET_MAINTENANCE):
+            job = tx.get(BUCKET_JOBS, row["permit"]["job_id"]) if row.get("state") == CLOSED else None
+            if open_permit(row, job):
+                open_ids.append(row["id"])
+        return sorted(open_ids)
+
+    @classmethod
+    def _maintenance_debt(cls, tx) -> bool:
+        return bool(cls._open_permits(tx))
+
+    @staticmethod
+    def _history(row: dict, state: str, now: str, reason: str | None) -> list:
+        return list(row.get("history") or []) + [{"state": state, "at": now, "reason": reason}]
+
+    def grant_maintenance_canary(self, permit) -> dict:
+        """Record the one-job permit of one maintenance generation (lane request -> THIS grant -> lane
+        acknowledgement, DN-4), before owner-actions can queue the job, so a stranded canary always
+        has an open permit that blocks every ordinary resume.
+
+        The Fleet must be owner-paused and the deadline fresh; another maintenance's unsettled permit
+        conflicts. The same id replays `cached` in any state only for the identical permit digest; any
+        other permit under that id is `maintenance_conflict`. It admits and launches nothing."""
+        permit = validate_permit(permit)
+        sha, mid = digest(permit), permit["maintenance_id"]
+        with self.store.transaction() as tx:
+            if self._registry(tx) is None:
+                raise FleetRefused("unregistered")
+            self._owner_paused(self._control(tx))
+            now = self.clock()
+            if deadline_passed(permit["deadline"], now):
+                raise FleetRefused("maintenance_expired", "deadline")
+            if any(other != mid for other in self._open_permits(tx)):
+                raise FleetRefused("maintenance_conflict", "maintenance_id")
+            old = tx.get(BUCKET_MAINTENANCE, mid)
+            if old is not None:
+                if old["permit_sha256"] != sha:
+                    raise FleetRefused("maintenance_conflict", "permit")
+                return {"granted": True, "cached": True, "maintenance_id": mid, "permit_sha256": sha,
+                        "state": old["state"]}
+            row = {"id": mid, "maintenance_id": mid, "permit": permit, "permit_sha256": sha, "state": GRANTED,
+                   "granted_at": now, "lane": None, "manifest_sha256": None, "owner_token": None,
+                   "admitted_at": None, "lane_ack": None, "closed_at": None, "close_reason": None,
+                   "job_status": None, "launched": None, "history": [{"state": GRANTED, "at": now, "reason": None}]}
+            tx.put(BUCKET_MAINTENANCE, mid, row)
+        return {"granted": True, "cached": False, "maintenance_id": mid, "permit_sha256": sha, "state": GRANTED}
+
+    def admit_maintenance_canary(self, maintenance_id: str, *, permit_sha256: str, proof: dict,
+                                 budget_exhausted: bool) -> dict:
+        """Claim exactly this permit's owner canary job as `dispatching`, in ONE transaction.
+
+        Required together: an owner-paused Fleet, the granted (never admitted) permit under the same
+        digest, the lane's acknowledged ARMED-generation proof, a fresh deadline, the REAL owner action
+        still REQUESTED under the permit's binding, its canary job still QUEUED, no reserving job and no
+        held execution unit. The ordinary selection then decides over a one-job candidate set with ONLY
+        the pause lifted: budget, stale ceilings, capacity, lane, path and dependency blockers all still
+        refuse. The claim takes a fresh owner token exactly as `admit_one`, and the permit is spent in
+        the same transaction. Other queued jobs are not read-modified. Any refusal writes nothing."""
+        with self.store.transaction() as tx:
+            registry = self._registry(tx)
+            if registry is None:
+                raise FleetRefused("unregistered")
+            control = self._control(tx)
+            self._owner_paused(control)
+            valid_id = type(maintenance_id) is str and MAINTENANCE_ID.fullmatch(maintenance_id) is not None
+            row = tx.get(BUCKET_MAINTENANCE, maintenance_id) if valid_id else None
+            if row is None:
+                raise FleetRefused("maintenance_admission_refused", "permit")
+            if type(permit_sha256) is not str or row["permit_sha256"] != permit_sha256:
+                raise FleetRefused("maintenance_conflict", "permit")
+            if row["state"] != GRANTED:
+                raise FleetRefused("maintenance_already_used", "state")
+            permit = row["permit"]
+            proof = validate_proof(proof, permit, permit_sha256)
+            now = self.clock()
+            if deadline_passed(permit["deadline"], now):
+                raise FleetRefused("maintenance_expired", "deadline")
+            check_owner_action(permit, tx.get(OWNER_ACTIONS_BUCKET, permit["action_id"]))
+            job = tx.get(BUCKET_JOBS, permit["job_id"])
+            check_canary_job(permit, job)
+            jobs = {other["id"]: other for other in tx.scan(BUCKET_JOBS)}
+            units = held_units(tx.scan(BUCKET_UNITS))
+            if units or any(other["status"] in RESERVING for other in jobs.values()):
+                raise FleetRefused("maintenance_debt_unsettled", "fleet")
+            config = effective_config(registry["config"], control)
+            candidates = {job["id"]: job, **{key: other for key, other in jobs.items() if other["status"] != QUEUED}}
+            # The ONLY exception to ordinary admission: `paused=False` for this one candidate.
+            decision = select_admission(config, False, candidates, bool(budget_exhausted),
+                                        self._repository_aliases(tx), units=len(units))
+            if decision["job"] is None or decision["job"]["id"] != job["id"]:
+                raise FleetRefused("maintenance_admission_refused", decision["blocked"].get(job["id"], "capacity"))
+            job.update(status=DISPATCHING, owner_token=self.token(), dispatched_at=now, updated_at=now,
+                       reason_code=None)
+            tx.put(BUCKET_JOBS, job["id"], job)
+            row.update(state=ADMITTED, admitted_at=now, lane=job["lane"], manifest_sha256=job["manifest_sha256"],
+                       owner_token=job["owner_token"], lane_ack={"proof_sha256": digest(proof), "at": now},
+                       history=self._history(row, ADMITTED, now, None))
+            tx.put(BUCKET_MAINTENANCE, row["id"], row)
+        return {"admitted": True, "maintenance_id": row["id"], "job": dict(job)}
+
+    def close_maintenance_canary(self, permit, reason: str) -> dict:
+        """Close one permit, in ONE transaction; never a general Fleet cancel.
+
+        `maintenance_expired` (only at or after the deadline) and `maintenance_cancelled` apply to an
+        UNADMITTED permit: its still-queued canary job - verified against the stored owner action, a
+        foreign job is `maintenance_conflict` - becomes terminal `failed` with that reason and a record
+        that no process was launched. Admitted or reserving work is never expired: it is
+        `maintenance_reconciliation_required` until it settles. `maintenance_settled` needs the
+        admitted permit and its job finalized (not reserving). A missing permit row is created closed;
+        a closed one replays `cached` with its recorded reason, and a canary job queued after an
+        unlaunched close is failed by that replay too, so no stale canary survives to a resume."""
+        permit = validate_permit(permit)
+        if type(reason) is not str or reason not in CLOSE_REASONS:
+            raise FleetRefused("maintenance_invalid", "reason")
+        sha, mid = digest(permit), permit["maintenance_id"]
+        with self.store.transaction() as tx:
+            if self._registry(tx) is None:
+                raise FleetRefused("unregistered")
+            row = tx.get(BUCKET_MAINTENANCE, mid)
+            if row is not None and row["permit_sha256"] != sha:
+                raise FleetRefused("maintenance_conflict", "permit")
+            job = tx.get(BUCKET_JOBS, permit["job_id"])
+            action = tx.get(OWNER_ACTIONS_BUCKET, permit["action_id"])
+            now = self.clock()
+            if row is not None and row["state"] == CLOSED:
+                if row.get("close_reason") in UNLAUNCHED_REASONS and job is not None and job["status"] == QUEUED:
+                    if not owner_action_matches(permit, action):
+                        raise FleetRefused("maintenance_conflict", "job")
+                    self._fail_unlaunched(tx, job, mid, row["close_reason"], now)
+                    row.update(job_status=job["status"],
+                               history=self._history(row, CLOSED, now, "stale_canary_failed"))
+                    tx.put(BUCKET_MAINTENANCE, mid, row)
+                return {"closed": True, "cached": True, "maintenance_id": mid, "close_reason": row["close_reason"],
+                        "job_status": row.get("job_status"), "launched": row.get("launched")}
+            if reason in UNLAUNCHED_REASONS:
+                if (row is not None and row["state"] == ADMITTED) or (job is not None and job["status"] in RESERVING):
+                    raise FleetRefused("maintenance_reconciliation_required", "job")
+                if reason == MAINTENANCE_EXPIRED and not deadline_passed(permit["deadline"], now):
+                    raise FleetRefused("maintenance_stale", "deadline")
+                if job is not None:
+                    # Only the exact queued canary of this permit's owner action; a job that is already
+                    # terminal was never this permit's to close.
+                    if job["status"] != QUEUED or not owner_action_matches(permit, action):
+                        raise FleetRefused("maintenance_conflict", "job")
+                    self._fail_unlaunched(tx, job, mid, reason, now)
+                launched = False
+            else:
+                if row is None or row["state"] != ADMITTED or job is None or job["status"] in RESERVING \
+                        or job["status"] == QUEUED:
+                    raise FleetRefused("maintenance_reconciliation_required", "job")
+                launched = True
+            if row is None:
+                row = {"id": mid, "maintenance_id": mid, "permit": permit, "permit_sha256": sha, "state": CLOSED,
+                       "granted_at": None, "lane": None, "manifest_sha256": None, "owner_token": None,
+                       "admitted_at": None, "lane_ack": None, "history": []}
+            row.update(state=CLOSED, closed_at=now, close_reason=reason,
+                       job_status=job["status"] if job is not None else None, launched=launched,
+                       history=self._history(row, CLOSED, now, reason))
+            tx.put(BUCKET_MAINTENANCE, mid, row)
+        return {"closed": True, "cached": False, "maintenance_id": mid, "close_reason": reason,
+                "job_status": row["job_status"], "launched": launched}
+
+    @staticmethod
+    def _fail_unlaunched(tx, job: dict, maintenance_id: str, reason: str, now: str) -> None:
+        """The queued canary becomes terminal without any process: nothing was ever claimed or spawned."""
+        job.update(status=FAILED, reason_code=reason, updated_at=now, finished_at=now,
+                   maintenance={"maintenance_id": maintenance_id, "launched": False, "reason": reason})
+        tx.put(BUCKET_JOBS, job["id"], job)
+
+    def maintenance_permit(self, maintenance_id: str) -> dict | None:
+        """The safe view of one permit (never its owner token), or None."""
+        if type(maintenance_id) is not str:
+            return None
+        with self.store.transaction() as tx:
+            row = tx.get(BUCKET_MAINTENANCE, maintenance_id)
+        return permit_view(row) if row is not None else None
+
+    def job(self, job_id: str) -> dict | None:
+        """One job's safe view (no owner token), or None."""
+        if type(job_id) is not str:
+            return None
+        with self.store.transaction() as tx:
+            row = tx.get(BUCKET_JOBS, job_id)
+        return self._view(row) if row is not None else None
+
     # ----- read-only ----------------------------------------------------------------------
     def reconciliation_required(self) -> list[str]:
         """Dispatching/unknown jobs: never relaunched, never cleared by an operator command here."""
@@ -802,6 +1034,7 @@ class Fleet:
             control = self._control(tx)
             rows = tx.scan(BUCKET_JOBS)
             deliveries = {row["job_id"]: row for row in tx.scan(BUCKET_DELIVERY)}
+            permits = tx.scan(BUCKET_MAINTENANCE)
         if registry is not None:
             registry = {**registry, "config": effective_config(registry["config"], control)}
         view = projection(registry, bool(control.get("paused")), rows, deliveries)
@@ -809,8 +1042,14 @@ class Fleet:
         # handoff here too, so `pending_owner` is visible in the status a reader actually polls. A
         # job without one keeps its exact previous shape.
         handoffs = {row["id"]: row.get("owner_handoff") for row in rows if row.get("owner_handoff")}
-        return {**view, "jobs": [job if job["id"] not in handoffs else {**job, "owner_handoff": handoffs[job["id"]]}
+        view = {**view, "jobs": [job if job["id"] not in handoffs else {**job, "owner_handoff": handoffs[job["id"]]}
                                  for job in view["jobs"]]}
+        if permits:
+            # INV-FLEET-001 maintenance amendment: permits are visible (safe view, never an owner
+            # token); a fleet that never held one keeps its exact previous status shape.
+            view["maintenance"] = [permit_view(row) for row in sorted(
+                permits, key=lambda r: (str(r.get("granted_at") or r.get("closed_at")), r["id"]))]
+        return view
 
 
 class FleetRunner:
@@ -1128,18 +1367,50 @@ class FleetRunner:
             if job is None:
                 break
             progressed = True
-            summary["admitted"].append(job["id"])
-            try:
-                handle = self.launcher.launch(job)
-            except LaunchRefused as exc:
-                self._finalize(job, {"status": FAILED, "reason_code": exc.reason_code}, summary)
-            except Exception as exc:
-                # The process may or may not exist: the claim, lane and paths stay reserved.
-                self._finalize(job, {"status": UNKNOWN, "reason_code": "spawn_uncertain",
-                                     "error_type": type(exc).__name__}, summary)
-            else:
-                self.children[job["id"]] = (job, handle)
+            self._launch_claimed(job, summary)
         return progressed
+
+    def _launch_claimed(self, job: dict, summary: dict) -> bool:
+        """Launch one job this runner's process already claimed as `dispatching`; True if a child exists.
+
+        The one launch/outcome protocol shared by `_admit` and `run_preclaimed`: a definite pre-spawn
+        refusal finalizes `failed`, an uncertain spawn `unknown` (reserving, never relaunched), and a
+        started child is waited for and finalized by `_reap`."""
+        summary["admitted"].append(job["id"])
+        try:
+            handle = self.launcher.launch(job)
+        except LaunchRefused as exc:
+            self._finalize(job, {"status": FAILED, "reason_code": exc.reason_code}, summary)
+        except Exception as exc:
+            # The process may or may not exist: the claim, lane and paths stay reserved.
+            self._finalize(job, {"status": UNKNOWN, "reason_code": "spawn_uncertain",
+                                 "error_type": type(exc).__name__}, summary)
+        else:
+            self.children[job["id"]] = (job, handle)
+            return True
+        return False
+
+    def run_preclaimed(self, job: dict, *, max_wait_seconds: float) -> dict:
+        """Launch, wait for and finalize exactly ONE job `Fleet.admit_maintenance_canary` already claimed.
+
+        INV-FLEET-001 maintenance amendment: no activation-hold release, admission, reconciliation,
+        backlog, continuation or heartbeat pass runs here, so this is an explicitly owned one-job
+        executor, never a second general runner. A job that is not `dispatching` with an owner token
+        is refused before any launch. The wait is bounded: a child still running at the bound is left
+        to the OS, never killed or relaunched, and its job stays reserving for proof-based
+        reconciliation. `state` is `finished` (reaped and finalized), `running` (the bound elapsed) or
+        `not_launched` (a definite refusal finalized `failed`, or an uncertain spawn `unknown`)."""
+        if not (isinstance(job, dict) and job.get("status") == DISPATCHING and type(job.get("id")) is str
+                and type(job.get("owner_token")) is str and job["owner_token"]):
+            raise FleetRefused("maintenance_admission_refused", "job")
+        summary = {"admitted": [], "finalized": [], "finalize_failures": []}
+        deadline = time.monotonic() + max(0.0, float(max_wait_seconds))
+        launched = self._launch_claimed(job, summary)
+        while self.children and time.monotonic() < deadline:
+            self._reap(summary)
+        state = "running" if self.children else "finished" if launched else "not_launched"
+        return {"job_id": job["id"], "state": state, "finalized": summary["finalized"],
+                "finalize_failures": summary["finalize_failures"]}
 
     def _reap(self, summary: dict) -> bool:
         if not self.children:
@@ -1166,5 +1437,37 @@ class FleetRunner:
         summary["finalized"].append({"id": row["id"], "status": row["status"], "reason_code": row["reason_code"]})
 
 
-__all__ = ["ACTIVATION_HOLD", "BUCKET_CONTROL","BUCKET_DELIVERY", "BUCKET_GRANTS", "BUCKET_JOBS", "BUCKET_RECOVERY",
-           "BUCKET_REGISTRY", "BUCKET_RELOCATION", "BUCKET_UNITS", "Fleet", "FleetRunner", "LaunchRefused", "QUEUED"]
+class MaintenanceCanaryExecutor:
+    """The one-job executor of an armed maintenance generation (INV-FLEET-001 maintenance amendment).
+
+    `execute` consults the machine ledger exactly as the ordinary runner does, admits the permit's
+    canary through `Fleet.admit_maintenance_canary` (whose `FleetRefused` propagates with nothing
+    launched) and runs that one claimed job through `FleetRunner.run_preclaimed` with the same
+    launcher, lane isolation and finalization. It never admits anything else, never resumes the
+    Fleet and never retries: a replay after an admission is `maintenance_already_used`."""
+
+    def __init__(self, fleet: Fleet, launcher, *, sleep=time.sleep, interval: float = 5.0):
+        self.fleet, self.launcher, self.sleep, self.interval = fleet, launcher, sleep, interval
+
+    def execute(self, maintenance_id: str, *, permit_sha256: str, proof: dict, max_wait_seconds: float) -> dict:
+        config = self.fleet.registered()["config"]
+        try:
+            exhausted = bool(self.launcher.budget_exhausted(config["budget"]))
+        except Exception as exc:
+            # An unreadable ledger admits nothing (fail closed); no exception text leaves here.
+            raise FleetRefused("maintenance_admission_refused", "budget_unknown") from exc
+        admitted = self.fleet.admit_maintenance_canary(maintenance_id, permit_sha256=permit_sha256, proof=proof,
+                                                       budget_exhausted=exhausted)
+        runner = FleetRunner(self.fleet, self.launcher, sleep=self.sleep, interval=self.interval)
+        summary = runner.run_preclaimed(admitted["job"], max_wait_seconds=max_wait_seconds)
+        try:
+            job_status = (self.fleet.job(summary["job_id"]) or {}).get("status")
+        except Exception:
+            job_status = None  # unknown here; the lane reads the job again before it binds anything
+        return {"schema": EXECUTION_SCHEMA, "maintenance_id": maintenance_id, "job_id": summary["job_id"],
+                "admitted": True, "state": summary["state"], "job_status": job_status}
+
+
+__all__ = ["ACTIVATION_HOLD", "BUCKET_CONTROL","BUCKET_DELIVERY", "BUCKET_GRANTS", "BUCKET_JOBS", "BUCKET_MAINTENANCE",
+           "BUCKET_RECOVERY", "BUCKET_REGISTRY", "BUCKET_RELOCATION", "BUCKET_UNITS", "Fleet", "FleetRunner",
+           "LaunchRefused", "MaintenanceCanaryExecutor", "QUEUED"]
