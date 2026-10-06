@@ -27,10 +27,14 @@ from dataclasses import dataclass
 from pathlib import Path
 
 from . import Refused, check_run8
-
-COMPARE = Path(__file__).resolve().parent.parent
-sys.path.insert(0, str(COMPARE / "guard"))
-import provider_guard  # noqa: E402
+from .constants import (  # noqa: F401
+    COMPARE,
+    MARKER,
+    PRODUCTION_PREFIX,
+    RUN_LABEL,
+    create_root,
+    provider_guard,
+)
 
 
 def _load_run():
@@ -44,11 +48,9 @@ def _load_run():
 RUN = _load_run()
 PG_IMAGE, REDIS_IMAGE, OWNER_KEY = RUN.PG_IMAGE, RUN.REDIS_IMAGE, RUN.OWNER_KEY
 COPY_NAMES = frozenset({"S", "A", "B", "D", "R7", "seal-b"})
-PRODUCTION_PREFIX = "zeus-aibox-"
-RUN_LABEL, COPY_LABEL = "zeus.rehearsal.run", "zeus.rehearsal.copy"
+COPY_LABEL = "zeus.rehearsal.copy"
 PG_USER, PG_SOCKET_DIR, REDIS_SOCKET_DIR = "zeus", "/var/run/postgresql", "/run/zeus-redis"
 SOCKET_LIMIT = 107  # sun_path
-MARKER = ".rehearsal-root"
 IDENT = re.compile(r"^[A-Za-z0-9][A-Za-z0-9_.-]{0,127}$")
 TOC_LINE = re.compile(r"^\d+;\s+\d+\s+\d+\s+\S")
 PGDATA = "/var/lib/postgresql/data"
@@ -155,17 +157,6 @@ def catalog_sha256(socket: Path, database: str) -> str:
     from codex_harness.delivery.adapters.host_migration import catalog_digest, pg_catalog
 
     return catalog_digest(pg_catalog(pg_dsn(socket, database), database))
-
-
-def create_root(root: Path, run8: str) -> None:
-    """Create ROOT itself, exclusively and umask-proof 0700, with the run marker (RH-8 F4); its parent may be created."""
-    root = Path(root)
-    root.parent.mkdir(parents=True, exist_ok=True)
-    os.mkdir(root, 0o700)  # exclusive: FileExistsError if anything (even a symlink) is already there
-    os.chmod(root, 0o700)  # the umask may have cleared bits mkdir would otherwise keep
-    marker = os.open(root / MARKER, os.O_WRONLY | os.O_CREAT | os.O_EXCL, 0o600)
-    with os.fdopen(marker, "w", encoding="ascii") as handle:
-        handle.write(run8 + "\n")
 
 
 def verify_root(root: Path) -> None:
