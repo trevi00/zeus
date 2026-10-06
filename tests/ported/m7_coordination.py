@@ -148,7 +148,8 @@ ROUTES = {
     "registry": ("register", "registered", "enqueue", "record_delivery", "delivery", "reconciliation_required",
                  "status"),
     "admission": ("admit_one", "reserve_unit", "settle_unit", "units", "held_units", "finalize"),
-    "pause": ("pause", "resume", "activation_gate", "release_activation_hold", "authorize_budget", "budget_grants"),
+    "pause": ("pause", "resume", "activation_gate", "release_activation_hold", "authorize_budget", "budget_grants",
+              "maintenance_readiness"),
     "recovery": ("reconcile_interrupted", "recovery", "relocate", "migrate_host", "relocations"),
 }
 OWNER = {method: owner for owner, methods in ROUTES.items() for method in methods}

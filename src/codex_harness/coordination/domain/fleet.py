@@ -4,7 +4,7 @@ Layer: domain
 Context: coordination
 Owns: fleet configuration, job admission and the read-only team projection values (M7 `domain/fleet.py` moved verbatim in S5, TRACE C1), plus LaunchRefused (from M7 application/fleet)
 Does not own: the store, process, git and provider access (coordination.application, adapters)
-Entry points: FleetRefused, LaunchRefused, validate_config, config_digest, validate_job_manifest, new_job, select_admission, classify_outcome, projection
+Entry points: maintenance_readiness, FleetRefused, LaunchRefused, validate_config, config_digest, validate_job_manifest, new_job, select_admission, classify_outcome, projection
 Contracts: INV-FLEET-001, INV-ISOLATED-WORKER-001
 
 A fleet is one host-authored configuration (`urn:zeus:fleet:1`): up to four lanes, each with its
@@ -439,6 +439,21 @@ def unit_binding(unit: dict) -> dict:
 def held_units(units) -> list[str]:
     """Ids of units still consuming capacity: every unit not released on an exact proof."""
     return sorted(unit["id"] for unit in units if unit.get("state") != UNIT_RELEASED)
+
+
+def maintenance_readiness(registry, control: dict, jobs: list, units_held: list, hold_key: str) -> dict:
+    """INV-HOST-DELIVERY-MAINTENANCE-001: what an active-generation restart needs to know of the Fleet, read in ONE
+    transaction by the caller. `owner_paused` is an owner pause, not a managed runtime's activation hold. This
+    release admits no maintenance canary (the arm phase is PR-3's remainder), so no maintenance permit can exist
+    and `open_permits` is always empty."""
+    if registry is None:
+        return {"registered": False, "paused": False, "owner_paused": False, "activation_hold": False,
+                "reserving": [], "units_held": [], "open_permits": []}
+    paused = control.get("paused") is True
+    hold = control.get(hold_key) is not None
+    return {"registered": True, "paused": paused, "owner_paused": paused and not hold, "activation_hold": hold,
+            "reserving": sorted(job["id"] for job in jobs if job.get("status") in RESERVING),
+            "units_held": list(units_held), "open_permits": []}
 
 
 def check_unit_proof(unit: dict, proof) -> dict:

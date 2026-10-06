@@ -4,11 +4,11 @@ Layer: application
 Context: coordination
 Owns: buckets fleet_control, fleet_budget_grants
 Does not own: admission itself (fleet.admission); the delivery FleetDrain port it will implement (S7)
-Entry points: FleetPause.pause, .resume, .activation_gate, .release_activation_hold, .authorize_budget, .budget_grants
-Contracts: INV-FLEET-001
+Entry points: FleetPause.pause, .resume, .activation_gate, .release_activation_hold, .authorize_budget, .budget_grants, .maintenance_readiness
+Contracts: INV-FLEET-001, INV-HOST-DELIVERY-MAINTENANCE-001
 
 Moved from M7 `application/fleet.py` (SOURCE e38aa722) by the named split (DESIGN-s5 §F); the method
-bodies are M7's.
+bodies are M7's. `maintenance_readiness` is ported from main b9d8f15 (S2R `application/fleet.py`).
 """
 
 from __future__ import annotations
@@ -30,6 +30,7 @@ from codex_harness.coordination.domain.fleet import (
     FleetRefused,
     effective_config,
     held_units,
+    maintenance_readiness,
     safe_code,
     validate_grant,
 )
@@ -166,3 +167,14 @@ class FleetPause:
     def budget_grants(self) -> list[dict]:
         with self.store.transaction() as tx:
             return tx.scan(BUCKET_GRANTS)
+
+    def maintenance_readiness(self) -> dict:
+        """INV-HOST-DELIVERY-MAINTENANCE-001: the owner pause, activation hold, reserving jobs and held units an
+        active-generation restart requires, read in ONE transaction; an unregistered Fleet reports
+        `registered: False`. Reads only; admits, reserves and writes nothing."""
+        with self.store.transaction() as tx:
+            registry = state.registry(tx)
+            control = state.control(tx)
+            jobs = tx.scan(BUCKET_JOBS)
+            units = held_units(tx.scan(BUCKET_UNITS))
+        return maintenance_readiness(registry, control, jobs, units, ACTIVATION_HOLD)
