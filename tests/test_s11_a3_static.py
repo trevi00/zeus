@@ -316,13 +316,14 @@ def unresolved_argv(modules, tree) -> list:
 
 
 def _argv_inputs():
-    return _git("ls-files", "--", TARGET_PREFIX + "deploy", TARGET_PREFIX + "Dockerfile.worker").split()
+    return _git("ls-files", "--", TARGET_PREFIX + "deploy", TARGET_PREFIX + "Dockerfile.worker",
+                TARGET_PREFIX + "Dockerfile").split()
 
 
 def test_every_pinned_argv_names_a_shim_or_a_tree_module():
     tree = import_rules.Tree(SRC)
     inputs, pinned = _argv_inputs(), {}
-    assert TARGET_PREFIX + "Dockerfile.worker" in inputs and TARGET_PREFIX + "deploy/aibox/zeus_aibox_service.py" in inputs
+    assert TARGET_PREFIX + "Dockerfile.worker" in inputs and TARGET_PREFIX + "Dockerfile" in inputs and TARGET_PREFIX + "deploy/aibox/zeus_aibox_service.py" in inputs
     for name in inputs:
         for module in argv_modules(name, (ROOT / name).read_text(encoding="utf-8", errors="replace")):
             pinned.setdefault(module, []).append(name)
