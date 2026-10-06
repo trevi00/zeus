@@ -1,13 +1,13 @@
-"""Ported SOURCE main b9d8f15 (S2R) suite `tests/test_host_delivery_maintenance_cli.py` run against the target (G1-13 batch b).
+"""Ported PR-3 (`feat/host-delivery-maintain-pr3` 09e596ce) suite `tests/test_host_delivery_maintenance_cli.py` run against the target (G1-14b).
 
-Every assertion is S2R's, unchanged. Adaptations are import lines, patch targets and construction only: `host_delivery` is
+Every assertion is PR-3's, unchanged. Adaptations are import lines, patch targets and construction only: `host_delivery` is
 `composition.cli_host_delivery` (the module the S2R patches reached: `maintenance_controller`, `resolve_lane`, `_settings`, ...),
 `execute` / `refusal` / `MAINTENANCE_RESULT_KEYS` are `entry.cli.host_delivery`'s, `cli.host_delivery_command(service, args)` is
 `entry.cli.host_delivery.run(args)` with `composition.build` patched to the case's service. S2R's one `HostDelivery` is the split
 owners: `maintenance_controller` returns the owners namespace and the use case is its `maintenance` attribute (a fake use case is
 `SimpleNamespace(maintenance=fake)`, the resume router fake is `SimpleNamespace(recovery=Controller())`, the recording constructor is `host_delivery_owners`); in the wiring test the S2R attributes of
 the one object are read from the owner that holds them (`maintenance` for the ports, `state` for the hosts and observer, `publication` for github),
-and the Fleet is the `FleetPause` the activation gate uses. The forbidden patch targets are the target homes of the executor
+and the Fleet is the `FleetPause` the activation gate uses (PR-3's `Fleet`: `isinstance(..., FleetPause)` holds, as composition's `MaintenanceFleet` subclasses it and adds the permit methods; the credential, executor and deadline ports are read from the `maintenance` owner as the others are). The forbidden patch targets are the target homes of the executor
 transports, `build_executor` and `FileArtifacts`.
 
 S2R docstring follows.
@@ -37,7 +37,9 @@ from codex_harness.composition import (
 from codex_harness.coordination.application.fleet.pause import FleetPause
 from codex_harness.coordination.application.owner_actions.state import BUCKET_ACTIONS
 from codex_harness.delivery.adapters.maintenance_evidence import (
+    CredentialObserver,
     LazyArtifacts,
+    LazyCanaryExecutor,
 )
 from codex_harness.delivery.domain.host_delivery import (
     KIND_MANAGED_SYSTEMD,
@@ -150,11 +152,8 @@ def test_parser_exposes_maintain_with_exact_options_and_no_token_argument():
     parsed = cli.parser().parse_args(argv)
     assert (parsed.command, parsed.delivery_command, parsed.lane, parsed.phase, parsed.document, parsed.evidence,
             parsed.check) == ("host-delivery", "maintain", "harness", "restart", "doc.json", EVIDENCE, True)
-    assert cli.parser().parse_args(argv[:5] + ["restart"] + argv[6:-1]).phase == "restart"
-    # This release carries the restart phase only (ALL-PRIMARY-20260930): arm and bind are not accepted.
-    for phase in ("arm", "bind"):
-        with pytest.raises(SystemExit):
-            cli.parser().parse_args(argv[:5] + [phase] + argv[6:-1])
+    for phase in ("restart", "arm", "bind"):
+        assert cli.parser().parse_args(argv[:5] + [phase] + argv[6:-1]).phase == phase
     assert cli.parser().parse_args(argv[:-1]).check is False
     options = {option for action in maintain_parser()._actions for option in action.option_strings}
     assert options == {"-h", "--help", "--lane", "--phase", "--document", "--evidence", "--check"}
@@ -174,26 +173,31 @@ def test_execute_routes_phase_check_and_exit_codes(tmp_path, monkeypatch, forbid
     route = {"lane": {"id": "harness", "repository": str(tmp_path), "runtime": str(tmp_path / "rt")},
              "store": lane_store}
     monkeypatch.setattr(host_delivery, "resolve_lane", lambda _service, lane_id: route)
-    fake = FakeMaintenance(result(), result(check=True, applicable=False, state="started",
-                                            reason_code="maintenance_already_used", field="document"),
-                           {**result(state="started"), "raw_document": SENTINEL})
+    fake = FakeMaintenance(result(), result(phase="arm", state="armed", pending=True,
+                                            reason_code="maintenance_canary_pending"),
+                           result(phase="bind", check=True, applicable=False, state="armed",
+                                  reason_code="maintenance_canary_unbound", field="action"),
+                           {**result(phase="bind", state="bound"), "raw_document": SENTINEL})
     built = []
     monkeypatch.setattr(host_delivery, "maintenance_controller",
                         lambda _service, *, store, check: built.append((store, check)) or SimpleNamespace(maintenance=fake))
     path = write_document(tmp_path, maintenance_document())
     started = execute(service, args(lane="harness", document=str(path)))
     assert started == {**result(), "lane": "harness", "exit_code": 0}
-    checked = execute(service, args(document=str(path), check=True))
+    pending = execute(service, args(lane="harness", phase="arm", document=str(path)))
+    assert pending["exit_code"] == 1 and pending["pending"] is True and pending["state"] == "armed"
+    checked = execute(service, args(phase="bind", document=str(path), check=True))
     assert checked["exit_code"] == 1 and checked["applicable"] is False and "lane" not in checked
     # Only the typed result keys are printed, whatever else a result carried.
-    replayed = execute(service, args(document=str(path)))
-    assert replayed["exit_code"] == 0 and SENTINEL not in json.dumps(replayed)
-    assert set(replayed) <= set(MAINTENANCE_RESULT_KEYS) | {"lane", "exit_code"}
+    bound = execute(service, args(phase="bind", document=str(path)))
+    assert bound["exit_code"] == 0 and SENTINEL not in json.dumps(bound)
+    assert set(bound) <= set(MAINTENANCE_RESULT_KEYS) | {"lane", "exit_code"}
     assert fake.calls == [("active_generation_restart", EVIDENCE, "restart", False),
-                          ("active_generation_restart", EVIDENCE, "restart", True),
-                          ("active_generation_restart", EVIDENCE, "restart", False)]
+                          ("active_generation_restart", EVIDENCE, "arm", False),
+                          ("active_generation_restart", EVIDENCE, "bind", True),
+                          ("active_generation_restart", EVIDENCE, "bind", False)]
     # The lane store holds the delivery records; `--check` reaches the controller builder and the use case.
-    assert built == [(lane_store, False), (service.store, True), (service.store, False)]
+    assert built == [(lane_store, False), (lane_store, False), (service.store, True), (service.store, False)]
     assert forbidden == []
 
 
@@ -239,13 +243,13 @@ def test_check_builds_no_observer_git_executor_or_artifact_store(tmp_path, monke
     monkeypatch.setattr(host_delivery, "host_delivery_owners", RecordingDelivery)
     service = service_for()
     path = write_document(tmp_path, maintenance_document())
-    printed = execute(service, args(phase="restart", document=str(path), check=True))
-    assert printed["exit_code"] == 0 and printed["check"] is True
+    for phase in ("restart", "arm", "bind"):
+        printed = execute(service, args(phase=phase, document=str(path), check=True))
+        assert printed["exit_code"] == 0 and printed["check"] is True
     for kwargs in built:
-        assert kwargs["artifacts"] is None and kwargs["observer"] is None
+        assert kwargs["artifacts"] is None and kwargs["canary_executor"] is None and kwargs["observer"] is None
         assert "github" not in kwargs and "verifier" not in kwargs and "first_activation" not in kwargs
-        assert not {"credentials", "canary_executor", "qualification_deadline"} & set(kwargs)
-    assert len(built) == 1 and forbidden == [] and not runtime.exists()
+    assert len(built) == 3 and forbidden == [] and not runtime.exists()
     with service.store.transaction() as tx:
         assert tx.scan(BUCKET_ACTIONS) == []
 
@@ -315,28 +319,50 @@ def test_resume_document_never_routes_to_maintenance(tmp_path, monkeypatch, forb
 # ----- integration: the real port wiring of `maintenance_controller` ---------------------------------------------------
 def test_maintenance_controller_wires_every_port(tmp_path, monkeypatch, forbidden):
     runtime = tmp_path / "runtime"
-    host = {}
-    monkeypatch.setattr(host_delivery, "_settings", lambda: host)
+    # G1-03 ruling (c): these three inputs live in THIS invocation's process environment only. The persisted
+    # configuration (`_settings`) carrying the same names must never supply them.
+    persisted = {"ZEUS_MAINTENANCE_CREDENTIAL_HELPER": "/etc/persisted/helper.py",
+                 "ZEUS_MAINTENANCE_CREDENTIAL_HELPER_SHA256": "b" * 64,
+                 "ZEUS_MAINTENANCE_QUALIFICATION_DEADLINE": "2026-10-01T00:00:00+00:00"}
+    monkeypatch.setattr(host_delivery, "_settings", lambda: dict(persisted))
+    for name in persisted:
+        monkeypatch.delenv(name, raising=False)
+    host = {"ZEUS_MAINTENANCE_CREDENTIAL_HELPER": "/opt/zeus/credential_bool.py",
+            "ZEUS_MAINTENANCE_CREDENTIAL_HELPER_SHA256": "a" * 64,
+            "ZEUS_MAINTENANCE_QUALIFICATION_DEADLINE": "2026-10-02T15:08:43+00:00"}
     import codex_harness.composition.configuration as configuration
     monkeypatch.setattr(configuration, "runtime_dir", lambda: runtime)
     service, lane_store = service_for(), MemoryStore()
+    persisted_only = host_delivery.maintenance_controller(service, store=lane_store, check=True).maintenance
+    assert persisted_only.credentials is None and persisted_only.qualification_deadline is None
+    for name, value in host.items():
+        monkeypatch.setenv(name, value)
     with service.store.transaction() as tx:
         tx.put(BUCKET_ACTIONS, "b" * 64, {"id": "b" * 64, "state": "requested"})
     delivery = host_delivery.maintenance_controller(service, store=lane_store, check=False)
     maintenance, state = delivery.maintenance, delivery.state
     assert maintenance.store is lane_store and state.observer is None and delivery.publication.github is None
-    assert isinstance(maintenance.artifacts, LazyArtifacts)
+    assert isinstance(maintenance.artifacts, LazyArtifacts) and isinstance(maintenance.canary_executor, LazyCanaryExecutor)
     assert isinstance(maintenance.maintenance_fleet, FleetPause) and maintenance.maintenance_fleet.store is service.store
+    assert maintenance.canary_executor.fleet is maintenance.maintenance_fleet
+    assert isinstance(maintenance.credentials, CredentialObserver) and maintenance.credentials.helper_sha256 == "a" * 64
     assert maintenance.canary_records("b" * 64) == {"id": "b" * 64, "state": "requested"}
-    # The restart phase's ports only (ALL-PRIMARY-20260930): no credential helper, executor or deadline port.
-    assert not any(hasattr(maintenance, name) for name in ("credentials", "canary_executor", "qualification_deadline"))
+    assert maintenance.qualification_deadline == "2026-10-02T15:08:43+00:00"
     managed = state.hosts[KIND_MANAGED_SYSTEMD]
     assert isinstance(managed, SystemdManagedFleetTarget) and managed.fleet is maintenance.maintenance_fleet
     with pytest.raises(DeliveryRefused) as unverified:
         maintenance.authorities("sha256:" + "0" * 64)
     assert unverified.value.reason_code == "maintenance_authority_unverified"
     checked = host_delivery.maintenance_controller(service, store=lane_store, check=True).maintenance
-    assert checked.artifacts is None
+    assert checked.artifacts is None and checked.canary_executor is None
     assert callable(checked.authorities) and callable(checked.canary_records)
     # Building either controller created nothing: no runtime, artifact store or lock.
     assert not runtime.exists() and forbidden == []
+    # An owner setting that is present but malformed refuses instead of silently lifting a bound.
+    monkeypatch.setenv("ZEUS_MAINTENANCE_QUALIFICATION_DEADLINE", "not-a-time")
+    with pytest.raises(DeliveryRefused) as invalid:
+        host_delivery.maintenance_controller(service, store=lane_store, check=True)
+    assert (invalid.value.reason_code, invalid.value.field) == ("maintenance_invalid", "qualification_deadline")
+    monkeypatch.delenv("ZEUS_MAINTENANCE_CREDENTIAL_HELPER")
+    monkeypatch.delenv("ZEUS_MAINTENANCE_QUALIFICATION_DEADLINE")
+    assert host_delivery.maintenance_controller(service, store=lane_store, check=True).maintenance.credentials is None

@@ -1,7 +1,7 @@
 """The `zeus host-delivery` composition: the production coordinator, the lane routing and the run loop (INV-HOST-DELIVERY-001).
 
 Layer: composition
-Owns: host_delivery_owners (the builder of the S7 split), maintenance_controller, maintenance_fleet, canary_executor_factory and the private _invocation_environment, _maintenance_fleet_class (PR-3 arm/bind, G1-14b), read_document (S2R, G1-13 batch b), controller, controller_ports, release_verifier, resolve_lane, lane_git, run_loop, load_plan, configured_enabled, read_json and the private _host_settings, _settings, _control_schema, _lane_observer, _git, _observer
+Owns: host_delivery_owners (the builder of the S7 split), maintenance_controller, maintenance_fleet, build_canary_executor and the private _invocation_environment, _maintenance_fleet_class (PR-3 arm/bind, G1-14b), read_document (S2R, G1-13 batch b), controller, controller_ports, release_verifier, resolve_lane, lane_git, run_loop, load_plan, configured_enabled, read_json and the private _host_settings, _settings, _control_schema, _lane_observer, _git, _observer
 Does not own: the argument shape and the command bodies (entry.cli.host_delivery), the core adapters (delivery.adapters.host_delivery), `host_ports` (composition.delivery_hosts) and the launched service (entry.processes.delivery_service)
 Entry points: host_delivery_owners, controller, controller_ports, release_verifier, resolve_lane, lane_git, run_loop
 Contracts: INV-HOST-DELIVERY-001, INV-HOST-DELIVERY-VERIFY-001, INV-HOST-DELIVERY-FIRST-ACTIVATION-001, INV-HOST-DELIVERY-MAINTENANCE-001
@@ -285,11 +285,19 @@ def _maintenance_fleet_class():
     `FleetMaintenance` (PR-3's one `Fleet`). Built lazily: coordination is imported only when a maintenance is wired."""
     from codex_harness.coordination.application.fleet.maintenance import FleetMaintenance
     from codex_harness.coordination.application.fleet.pause import FleetPause
+    from codex_harness.coordination.application.fleet.registry import FleetRegistry
 
     class MaintenanceFleet(FleetPause):
         @property
         def maintenance(self):
             return FleetMaintenance(self.store, clock=self.clock, token=self.token)
+
+        @property
+        def registry(self):
+            return FleetRegistry(self.store, clock=self.clock, token=self.token)
+
+        def registered(self):
+            return self.registry.registered()
 
         def grant_maintenance_canary(self, permit):
             return self.maintenance.grant_maintenance_canary(permit)
@@ -309,21 +317,23 @@ def _maintenance_fleet_class():
     return MaintenanceFleet
 
 
+def _lane_launcher(config, settings):
+    from codex_harness.composition.fleet import lane_launcher
+
+    return lane_launcher(config, settings)
+
+
 def maintenance_fleet(store):
     return _maintenance_fleet_class()(store)
 
 
-def canary_executor_factory(fleet, settings: dict):
-    """PR-3 `LazyCanaryExecutor`'s build: the real lane launcher over the registered Fleet config and coordination's
-    `MaintenanceCanaryExecutor` over the Fleet objects of `fleet`'s control store (G1-14a)."""
-    from codex_harness.composition.fleet import lane_launcher
+def build_canary_executor(fleet, launcher):
+    """PR-3 `LazyCanaryExecutor`'s executor: coordination's `MaintenanceCanaryExecutor` over the Fleet objects of `fleet`'s
+    control store (G1-14a)."""
     from codex_harness.coordination.application.fleet.admission import AdmissionControl
-    from codex_harness.coordination.application.fleet.registry import FleetRegistry
     from codex_harness.coordination.application.fleet.runner import MaintenanceCanaryExecutor
 
-    registry = FleetRegistry(fleet.store)
-    launcher = lane_launcher(registry.registered()["config"], settings)
-    return MaintenanceCanaryExecutor(registry, fleet.maintenance, AdmissionControl(fleet.store), fleet, launcher)
+    return MaintenanceCanaryExecutor(fleet.registry, fleet.maintenance, AdmissionControl(fleet.store), fleet, launcher)
 
 
 def _invocation_environment() -> dict:
@@ -349,6 +359,7 @@ def maintenance_controller(service, *, store, check: bool) -> SimpleNamespace:
     can create nothing. Nothing here prints a DSN or accepts a token; every import is lazy. The maintenance use case is the
     `maintenance` attribute of the returned owners (S2R's one `HostDelivery.maintain`).
     """
+    from codex_harness.composition import delivery_hosts
     from codex_harness.composition.configuration import runtime_dir
     from codex_harness.composition.delivery_hosts import host_ports
     from codex_harness.delivery.adapters.host_delivery import (
@@ -382,8 +393,8 @@ def maintenance_controller(service, *, store, check: bool) -> SimpleNamespace:
                                 enabled=configured_enabled(host), authorities=trusted_authority_reader(root),
                                 artifacts=None if check else LazyArtifacts(root, file_artifacts),
                                 canary_records=control_action_reader(service.store),
-                                credentials=credential_observer(invocation), maintenance_fleet=fleet,
-                                canary_executor=None if check else LazyCanaryExecutor(fleet, host, canary_executor_factory),
+                                credentials=credential_observer(invocation, delivery_hosts.process_reader()), maintenance_fleet=fleet,
+                                canary_executor=(None if check else LazyCanaryExecutor(fleet, host, _lane_launcher, build_canary_executor)),
                                 qualification_deadline=qualification_deadline(invocation))
 
 

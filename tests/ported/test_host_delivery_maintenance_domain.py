@@ -1,9 +1,9 @@
-"""Ported SOURCE main b9d8f15 (S2R) suite `tests/test_host_delivery_maintenance_domain.py` run against the target.
+"""Ported PR-3 (`feat/host-delivery-maintain-pr3` 09e596ce) suite `tests/test_host_delivery_maintenance_domain.py` run against the target (G1-14b).
 
-Every assertion is S2R's, unchanged. Adaptations are import lines only: the delivery domain names come from
+Every assertion is PR-3's (S2R's where PR-3 kept them), unchanged. Adaptations are import lines only (`CREDENTIAL_EVIDENCE_SCHEMA` and `validate_credential_evidence` live in `delivery.domain.maintenance`, the G1-13a split): the delivery domain names come from
 `delivery.domain.host_delivery` and `delivery.domain.maintenance`, `canonical` and `digest` from `kernel.ids`.
 
-S2R docstring follows.
+PR-3 docstring follows.
 
 INV-HOST-DELIVERY-MAINTENANCE-001: the pure maintenance policy (document grammar, generation id,
 transition table, restart classification, identity and credential binding, the allowlisted view).
@@ -26,6 +26,7 @@ from codex_harness.delivery.domain.host_delivery import (
     descriptor_digest,
 )
 from codex_harness.delivery.domain.maintenance import (
+    CREDENTIAL_EVIDENCE_SCHEMA,
     GENERATION_OBSERVATION_SCHEMA,
     GENERATION_STATES,
     GENERATION_TRANSITIONS,
@@ -45,6 +46,7 @@ from codex_harness.delivery.domain.maintenance import (
     new_generation_refusal,
     selection_of,
     validate_active_generation,
+    validate_credential_evidence,
     validate_generation_observation,
     validate_restart_authority,
 )
@@ -360,6 +362,52 @@ STARTED = {"id": "active_generation_1:" + "0" * 64, "state": "started",
 ])
 def test_the_live_identity_must_be_exactly_the_started_generation(observed, expected):
     assert new_generation_refusal(DESCRIPTOR, observed, STARTED) == expected
+
+
+# ----- PRIMARY credential evidence ----------------------------------------------------------------------
+def credential(**parts):
+    record = {"schema": CREDENTIAL_EVIDENCE_SCHEMA, "observed_at": "2026-09-22T00:00:20+00:00",
+              "invocation_id": NEW_INVOCATION, "helper_sha256": "4" * 64,
+              "supervisor": {"pid": 1002, "start_ticks": 50002, "has_token": True, "is_primary": True,
+                             "is_secondary": False},
+              "entry": {"pid": 2002, "start_ticks": 60002, "has_token": True, "is_primary": True,
+                        "is_secondary": False}}
+    for key, value in parts.items():
+        record[key] = {**record[key], **value} if isinstance(value, dict) and key in ("supervisor", "entry") else value
+    return record
+
+
+LIVE = validate_generation_observation(launched(unit={"invocation_id": NEW_INVOCATION},
+                                                supervisor={"pid": 1002, "start_ticks": 50002},
+                                                entry={"pid": 2002, "start_ticks": 60002}))
+
+
+@pytest.mark.parametrize("record,field", [
+    (credential(supervisor={"is_secondary": True}), "supervisor"),
+    (credential(entry={"is_primary": False}), "entry"),
+    (credential(entry={"has_token": False}), "entry"),
+    (credential(supervisor={"is_primary": "true"}), "supervisor"),
+    (credential(entry={"has_token": 1}), "entry"),
+    (credential(supervisor={"pid": 1003}), "supervisor"),
+    (credential(entry={"start_ticks": 60003}), "entry"),
+    (credential(invocation_id="9" * 32), "record"),
+    (credential(helper_sha256="sha256:" + "4" * 64), "record"),
+    ({**credential(), "token_sha256": "0" * 64}, "record"),
+    ({**credential(), "schema": "urn:zeus:other:1"}, "record"),
+    (credential(entry={"secret": SENTINEL}), "entry"),
+    ("PRIMARY", "record"),
+])
+def test_credential_evidence_is_strict_and_identity_bound(record, field):
+    with pytest.raises(DeliveryRefused) as refused:
+        validate_credential_evidence(record, LIVE)
+    assert (refused.value.reason_code, refused.value.field) == ("maintenance_primary_unverified", field)
+    assert SENTINEL not in str(refused.value)
+
+
+def test_a_bound_primary_record_is_returned_as_booleans_and_ids_only():
+    checked = validate_credential_evidence(credential(), LIVE)
+    assert checked == credential()
+    assert set(checked) == {"schema", "observed_at", "invocation_id", "helper_sha256", "supervisor", "entry"}
 
 
 # ----- readiness, the view and the legacy projection ------------------------------------------------------

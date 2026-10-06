@@ -11,8 +11,8 @@ Ported from main b9d8f15 (S2R) `adapters/maintenance_evidence.py` (G1-13 batch b
 `BUCKET_ACTIONS` is the local constant `OWNER_ACTIONS` with the value of `coordination.application.owner_actions.state` (an adapter may
 not import another context's application, as `host_migration_evidence` does); `LazyArtifacts` takes the store constructor as `factory`
 (an adapter may not import `storage.adapters`; composition passes `FileArtifacts`). PR-3 batch b (G1-14b): `LazyCanaryExecutor` takes the
-executor constructor as `factory(fleet, settings)` (an adapter may not import coordination; composition passes the one that builds the
-real `LaneLauncher` and `MaintenanceCanaryExecutor`). The PR-3 docstring follows.
+launcher and executor constructors (an adapter may not import coordination; composition passes `LaneLauncher` and
+`MaintenanceCanaryExecutor`). The PR-3 docstring follows.
 
 The use case (`application.host_delivery.HostDelivery.maintain`) decides; this module only reads,
 and each port refuses with one fixed code and one allowlisted field, never a value:
@@ -51,7 +51,6 @@ from pathlib import Path
 from codex_harness.delivery.adapters.host_migration_evidence import (
     HostReader,
     Unreadable,
-    boottime_offset_usec,
 )
 from codex_harness.delivery.domain.host_delivery import DeliveryRefused
 
@@ -141,9 +140,10 @@ class CredentialObserver:
         self.process_reader = process_reader
 
     def _read_process(self, pid: int):
+        # PR-3 built `HostReader()` here; the reader needs the host_os facts and chokepoint, which an adapter may not
+        # import, so composition passes it (`delivery_hosts.process_reader()`). Without one nothing is observable.
         if self.process_reader is None:
-            reader = HostReader()
-            self.process_reader = lambda value: reader.process(value, boottime_offset_usec())
+            raise _primary_unverified("identity")
         return self.process_reader(pid)
 
     def _start_ticks(self, pid: int) -> int:
@@ -212,7 +212,7 @@ class CredentialObserver:
                 "supervisor": supervisor, "entry": entry}
 
 
-def credential_observer(settings: dict) -> CredentialObserver | None:
+def credential_observer(settings: dict, process_reader=None) -> CredentialObserver | None:
     """The owner-configured helper (an absolute path) and its pinned sha256, or None when either is
     absent or malformed - which the use case refuses as `maintenance_primary_unverified`."""
     settings = settings or {}
@@ -222,7 +222,7 @@ def credential_observer(settings: dict) -> CredentialObserver | None:
     path = Path(helper)
     if not path.is_absolute() or ".." in path.parts:
         return None
-    return CredentialObserver(str(path), pinned)
+    return CredentialObserver(str(path), pinned, process_reader=process_reader)
 
 
 def trusted_authority_reader(root: Path):
@@ -276,15 +276,18 @@ def control_action_reader(store):
 class LazyCanaryExecutor:
     """The one-job maintenance canary executor (INV-FLEET-001 narrow amendment) over the real lane launcher.
 
-    `factory(fleet, settings)` (composition) is called on the first `execute`, which only `arm`'s dispatch
-    attempt calls: restart and bind read no Fleet registry for it, and `--check` never receives one."""
+    `launcher(config, settings)` and `executor(fleet, launcher)` are the constructors composition passes (PR-3 imported
+    `LaneLauncher` and `MaintenanceCanaryExecutor` here). Both are called on the first `execute`, which only `arm`'s
+    dispatch attempt calls: restart and bind read no Fleet registry for it, and `--check` never receives one."""
 
-    def __init__(self, fleet, settings: dict, factory):
-        self.fleet, self.settings, self.factory, self._executor = fleet, settings, factory, None
+    def __init__(self, fleet, settings: dict, launcher, executor):
+        self.fleet, self.settings, self.launcher, self.executor = fleet, settings, launcher, executor
+        self._executor = None
 
     def execute(self, maintenance_id: str, *, permit_sha256: str, proof: dict, max_wait_seconds: float) -> dict:
         if self._executor is None:
-            self._executor = self.factory(self.fleet, self.settings)
+            launcher = self.launcher(self.fleet.registered()["config"], self.settings)
+            self._executor = self.executor(self.fleet, launcher)
         return self._executor.execute(maintenance_id, permit_sha256=permit_sha256, proof=proof,
                                       max_wait_seconds=max_wait_seconds)
 

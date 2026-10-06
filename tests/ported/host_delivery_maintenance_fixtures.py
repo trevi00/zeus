@@ -1,12 +1,15 @@
 """Ported SOURCE main b9d8f15 (S2R) helper `tests/host_delivery_maintenance_fixtures.py` for the target (not collected).
 
-Every fixture body is S2R's, unchanged. Adaptations are import lines only: `HostDelivery`, `MemoryStore` and
+Every fixture body is PR-3's (`feat/host-delivery-maintain-pr3` 09e596ce), unchanged. Adaptations are import lines only (and the
+`RecordingExecutor` super constructor call, below): `HostDelivery`, `MemoryStore` and
 `organization` come from the `m7_delivery` shim (the split delivery objects as composition builds them, with the
 maintenance ports), `Fleet` from the `m7_coordination` facade (its `maintenance_readiness` routed to `FleetPause`), the
 delivery names from `delivery.domain.host_delivery`, `delivery.domain.maintenance`, `delivery.adapters.host_delivery`
-and `delivery.application.host_delivery.state`, the Fleet names from `coordination.application.fleet.state`.
+and `delivery.application.host_delivery.state`, the Fleet names from `coordination.application.fleet.state`,
+`MaintenanceCanaryExecutor` from `coordination.application.fleet.runner` (its constructor takes the Fleet objects `fleet.registry`,
+`.admission`, `.pause_control` of the `m7_coordination.Fleet` facade and the facade itself for the permit calls, instead of one `Fleet`).
 
-S2R docstring follows.
+PR-3 docstring follows (S2R's before it).
 
 LABELLED fixtures for INV-HOST-DELIVERY-MAINTENANCE-001 (helper module; not collected).
 
@@ -15,9 +18,8 @@ Real: `HostDelivery` (registry, register, the ordinary ticks to ACTIVE, the main
 canary receipt/request files and the startup receipt as real JSON files in a temporary state directory.
 LABELLED fakes: the GitHub port (`test_host_delivery.FakeGitHub`), the managed systemd host
 (`FakeManagedHost`: no process, no unit, no signal; it simulates one unit, its supervisor and entry), the
-trusted authority store and the artifact store. The Fleet is the REAL one, registered and owner-paused over the
-SAME control store owner-actions uses; the restart phase reads only its `maintenance_readiness`
-(ALL-PRIMARY-20260930: arm and bind are PR-3's remainder).
+REAL Fleet (`LossyFleet`, registered and owner-paused over the SAME control store owner-actions uses), the
+REAL one-job executor over a labelled launcher, the credential observation helper, the trusted authority store and the artifact store.
 No model, provider, network, live service, real systemd unit, secret or production store is touched.
 
 `LinkedStores` models the one PostgreSQL advisory lock every store takes: opening ANY transaction while
@@ -30,12 +32,16 @@ import copy
 import hashlib
 import json
 import threading
+import time
 from contextlib import contextmanager
 from pathlib import Path
 
 from m7_coordination import Fleet
 from m7_delivery import HostDelivery, MemoryStore, organization
+from test_fleet import GOAL as FLEET_GOAL
+from test_fleet import FakeLauncher
 from test_fleet import config as fleet_config
+from test_fleet import manifest as fleet_manifest
 from test_host_delivery import (
     FIXTURE_IMAGE,
     FIXTURE_PROFILE,
@@ -46,9 +52,11 @@ from test_host_delivery import (
     reviewed_release,
 )
 
+from codex_harness.coordination.application.fleet.runner import MaintenanceCanaryExecutor
 from codex_harness.coordination.application.fleet.state import (
     ACTIVATION_HOLD,
     BUCKET_CONTROL,
+    BUCKET_MAINTENANCE,
     BUCKET_UNITS,
     CONTROL_KEY,
 )
@@ -87,6 +95,7 @@ from codex_harness.delivery.domain.host_delivery import (
     validate_plan,
 )
 from codex_harness.delivery.domain.maintenance import (
+    CREDENTIAL_EVIDENCE_SCHEMA,
     GENERATION_OBSERVATION_SCHEMA,
     MAINTENANCE_KIND,
     MAINTENANCE_REASON,
@@ -105,6 +114,8 @@ AUTHORITY_REF = "sha256:" + hashlib.sha256(AUTHORITY_BYTES).hexdigest()
 SENTINEL = "SENTINEL-must-never-leak"
 BUCKET_ACTIONS = "owner_actions"
 BUCKET_JOBS = "fleet_jobs"
+BUCKET_PERMITS = "fleet_maintenance_admissions_fixture"
+RESERVING = ("dispatching", "unknown")
 
 
 class Crash(BaseException):
@@ -411,10 +422,109 @@ class FakeManagedHost:
 
 
 # ----- the control-store ports -------------------------------------------------------------------------------
-def registered_fleet(control, clock, tmp_path) -> Fleet:
-    """The REAL Fleet registered with the two fixture lanes of `test_fleet.config` and OWNER-paused, over the SAME
-    control store the owner action rows live in; the restart phase reads only its `maintenance_readiness`."""
-    fleet = Fleet(control, clock=clock)
+class LossyFleet(Fleet):
+    """The REAL Fleet (INV-FLEET-001 maintenance amendment: `grant/admit/close_maintenance_canary`, the permit
+    and readiness views) over the SAME control store the owner action rows and Fleet jobs live in. LABELLED
+    instrumentation only: `calls` records which seam calls committed, and a name in `commit_then_raise`
+    loses that call's response AFTER its commit (the transport died on the way back)."""
+
+    def __init__(self, control, clock):
+        super().__init__(control, clock=clock)
+        self.control, self.calls, self.commit_then_raise = control, [], set()
+
+    def _answer(self, name, result):
+        self.calls.append(name)
+        if name in self.commit_then_raise:
+            self.commit_then_raise.discard(name)
+            raise TimeoutError(name + " response lost after commit (labelled injected fault)")
+        return result
+
+    def grant_maintenance_canary(self, permit):
+        return self._answer("grant", super().grant_maintenance_canary(permit))
+
+    def admit_maintenance_canary(self, maintenance_id, **kwargs):
+        return self._answer("admit", super().admit_maintenance_canary(maintenance_id, **kwargs))
+
+    def close_maintenance_canary(self, permit, reason):
+        return self._answer("close", super().close_maintenance_canary(permit, reason))
+
+    def permits(self) -> dict:
+        """The raw permit rows (test inspection only; the product reads the safe `maintenance_permit`)."""
+        with self.control.transaction() as tx:
+            return {row["id"]: copy.deepcopy(row) for row in tx.scan(BUCKET_MAINTENANCE)}
+
+
+OUTCOMES = {
+    "accepted": {"status": "accepted", "reason_code": "lead_accepted", "exit_code": 0,
+                 "calls": {"reserved": 1, "settled": 1}},
+    "rejected": {"status": "rejected", "reason_code": "lead_rejected", "exit_code": 0,
+                 "calls": {"reserved": 1, "settled": 1}},
+    "failed": {"status": "failed", "reason_code": "operation_failed", "exit_code": 1, "calls": {}},
+}
+
+
+class ScriptedLauncher(FakeLauncher):
+    """LABELLED lane launcher (`test_fleet.FakeLauncher`): no process, model or provider. `result` scripts how
+    the ONE admitted canary ends through the REAL `FleetRunner.run_preclaimed` reap/finalize: `accepted`,
+    `rejected` or `failed`; `running` never finishes inside the wait bound (the job stays reserving);
+    `unknown` is an uncertain spawn (finalized `unknown`, never relaunched). `before_finish` runs right after
+    the launch, while the job is claimed `dispatching`."""
+
+    def __init__(self):
+        super().__init__({})
+        self.result, self.before_finish, self.spawns = "accepted", None, []
+
+    def launch(self, job):
+        assert job["status"] == "dispatching" and job["owner_token"]
+        self.spawns.append(job["id"])
+        if self.result == "unknown":
+            raise OSError("spawn interrupted (labelled injected fault)")
+        self.launched.append(job["id"])
+        self.running.add(job["id"])
+        if self.before_finish is not None:
+            self.before_finish()
+        return {"job_id": job["id"]}
+
+    def wait(self, handles, seconds):
+        if self.result == "running":
+            time.sleep(0.01)
+            return []
+        return list(handles)
+
+    def outcome(self, handle, job):
+        self.running.discard(handle["job_id"])
+        return copy.deepcopy(OUTCOMES[self.result])
+
+
+class RecordingExecutor(MaintenanceCanaryExecutor):
+    """The REAL one-job maintenance executor (admission, `run_preclaimed`, finalization) over the labelled
+    launcher; LABELLED instrumentation records each `execute` call only."""
+
+    def __init__(self, fleet, launcher):
+        # Construction adaptation: PR-3's executor held one `Fleet`; the target's holds the Fleet objects it drives
+        # (`m7_coordination.MaintenanceCanaryExecutor` is that constructor as a function, which cannot be subclassed); the maintenance
+        # object is `fleet` itself, so the LossyFleet's recording `admit_maintenance_canary` is the admission the executor calls, as in PR-3.
+        super().__init__(fleet.registry, fleet, fleet.admission, fleet.pause_control, launcher,
+                         sleep=lambda _seconds: None, interval=0.01)
+        self.calls = []
+
+    WAIT_CAP_SECONDS = 0.3
+
+    # How the ONE admitted canary ends is scripted on the labelled launcher; the executor only forwards it.
+    outcome = property(lambda self: self.launcher.result, lambda self, value: setattr(self.launcher, "result", value))
+    before_finish = property(lambda self: self.launcher.before_finish,
+                             lambda self, value: setattr(self.launcher, "before_finish", value))
+
+    def execute(self, maintenance_id, *, permit_sha256, proof, max_wait_seconds):
+        self.calls.append({"maintenance_id": maintenance_id, "proof": dict(proof), "wait": max_wait_seconds})
+        # LABELLED: a job scripted to never finish ("running") is waited for at most this long in real time.
+        return super().execute(maintenance_id, permit_sha256=permit_sha256, proof=proof,
+                               max_wait_seconds=min(max_wait_seconds, self.WAIT_CAP_SECONDS))
+
+
+def registered_fleet(control, clock, tmp_path) -> LossyFleet:
+    """The real Fleet registered with the two fixture lanes of `test_fleet.config` and OWNER-paused."""
+    fleet = LossyFleet(control, clock)
     fleet.register(fleet_config(tmp_path / "fleet"))
     fleet.pause()
     return fleet
@@ -432,6 +542,29 @@ def hold_activation(system) -> None:
 def hold_unit(system, unit_id="conductor-held") -> None:
     """LABELLED injected fact: an execution unit that still holds Fleet capacity (not released)."""
     put(system["control"], BUCKET_UNITS, unit_id, {"id": unit_id, "state": "reserved", "kind": "conductor"})
+
+
+class FakeCredentials:
+    """LABELLED credential observation helper: identity-bound booleans only, from the simulated processes."""
+
+    def __init__(self, host):
+        self.host, self.calls = host, 0
+        self.primary, self.secondary, self.token, self.stale, self.error = True, False, True, False, None
+        self.override = None
+
+    def __call__(self, target, identity):
+        self.calls += 1
+        if self.error is not None:
+            raise self.error
+        supervisor, entry = self.host.supervisor or {}, self.host.entry or {}
+        record = {"schema": CREDENTIAL_EVIDENCE_SCHEMA, "observed_at": self.host.clock(),
+                  "invocation_id": identity["invocation_id"], "helper_sha256": "4" * 64,
+                  "supervisor": {"pid": identity["supervisor_pid"],
+                                 "start_ticks": supervisor.get("start_ticks", 0) + (1 if self.stale else 0),
+                                 "has_token": self.token, "is_primary": self.primary, "is_secondary": self.secondary},
+                  "entry": {"pid": identity["entry_pid"], "start_ticks": entry.get("start_ticks", 0),
+                            "has_token": self.token, "is_primary": self.primary, "is_secondary": self.secondary}}
+        return self.override(record) if self.override is not None else record
 
 
 class FakeArtifacts:
@@ -519,11 +652,13 @@ def active_system(tmp_path, *, control=None, observer=None):
     host = FakeManagedHost(clock)
     fleet = registered_fleet(control, clock, tmp_path)
     artifacts, authorities = FakeArtifacts(), authority_store()
+    credentials = FakeCredentials(host)
+    executor = RecordingExecutor(fleet, ScriptedLauncher())
     delivery = HostDelivery(lane, org, github=FakeGitHub(), hosts={KIND_MANAGED_SYSTEMD: host},
                             canaries={CANARY_STARTUP: startup_identity_canary, CANARY_FLEET: owner_qualified_canary},
                             clock=clock, observer=observer, enabled=True, resume_seconds=0,
                             authorities=authorities, artifacts=artifacts, canary_records=action_reader(control),
-                            maintenance_fleet=fleet)
+                            credentials=credentials, maintenance_fleet=fleet, canary_executor=executor)
     registry = managed_targets(tmp_path)
     delivery.register_targets(registry)
     plan = plan_document(release, plan_id=PLAN_ID, target_id=TARGET, canary=CANARY_FLEET, image=FIXTURE_IMAGE,
@@ -531,7 +666,7 @@ def active_system(tmp_path, *, control=None, observer=None):
     delivery.register(plan, pin())
     system = {"stores": stores, "store": lane, "control": control, "clock": clock, "org": org, "release": release,
               "host": host, "fleet": fleet, "artifacts": artifacts, "authorities": authorities,
-              "delivery": delivery, "plan": plan,
+              "credentials": credentials, "executor": executor, "delivery": delivery, "plan": plan,
               "plan_id": PLAN_ID, "plan_sha256": plan_digest(validate_plan(plan)),
               "target": registry["targets"][0]}
     for _ in range(40):
@@ -597,6 +732,44 @@ def restarted(system, **kwargs) -> tuple:
     return document, evidence, result
 
 
+def owner_requests(system) -> dict:
+    """LABELLED owner-actions step (the `_advance_canary` shape): the new instance-bound canary action is
+    REQUESTED and its fixed job queued in the control store."""
+    generation = generation_of(system)
+    permit = generation["arm"]["permit"]
+    binding = {key: permit[key] for key in ("plan_id", "plan_sha256", "target_id", "descriptor_sha256", "instance_id")}
+    identity = do.action_id(do.DELIVERY_CANARY, binding)
+    assert identity == permit["action_id"]
+    row = {"id": identity, "kind": do.DELIVERY_CANARY, "state": do.REQUESTED, "binding": binding,
+           "binding_sha256": digest(binding), "policy_id": "owners-1", "policy_sha256": "8" * 64,
+           "subject": {"intent_id": "s" * 64, "lane": "a"}, "reason_code": "canary_requested",
+           "job_id": do.canary_job_id(identity), "created_at": system["clock"](), "updated_at": system["clock"](),
+           "version": 2, "history": []}
+    put(system["control"], BUCKET_ACTIONS, identity, row)
+    # The fixed canary job is a REAL queued Fleet job (its id is the operation id), as the owner's request enqueues it.
+    system["fleet"].enqueue("a", fleet_manifest(row["job_id"], ["docs/c.md"]), FLEET_GOAL, [])
+    return row
+
+
+def owner_completes(system, *, verdict=True, **receipt_overrides) -> dict:
+    """LABELLED owner-actions result step: the action COMPLETED (or REJECTED) from the job's outcome and the
+    instance-bound owner receipt written, exactly as `_advance_canary` + `canary_receipt` do."""
+    permit = generation_of(system)["arm"]["permit"]
+    row = read(system["control"], BUCKET_ACTIONS, permit["action_id"])
+    job_id = row["job_id"]
+    outcome = ({"state": do.VERDICT_ACCEPTED, "reason_code": "canary_accepted",
+                "evidence": {"job_id": job_id, "operation_id": job_id, "decision_id": "lead-new",
+                             "execution_ref": "sha256:" + "3" * 64}} if verdict else
+               {"state": do.VERDICT_REJECTED, "reason_code": "canary_rejected",
+                "evidence": {"job_id": job_id, "decision_id": "lead-new"}})
+    row = {**row, "state": do.COMPLETED if verdict else do.REJECTED, "outcome": outcome,
+           "reason_code": outcome["reason_code"], "version": row["version"] + 1}
+    put(system["control"], BUCKET_ACTIONS, row["id"], row)
+    receipt = {**do.canary_receipt(row, outcome, system["clock"]()), **receipt_overrides}
+    _write(system["host"].path(system["target"], canary_receipt_file(system["plan_id"])), receipt)
+    return row
+
+
 def write_request(system, **overrides) -> dict:
     plan = validate_plan(system["plan"])
     document = {"schema": CANARY_REQUEST_SCHEMA, "action_id": "a" * 64, "plan_id": plan["plan_id"],
@@ -618,9 +791,19 @@ def steal_lease(system, owner="labelled-successor-controller") -> None:
     put(system["store"], "deployment_locks", "controller", {"owner": owner, "lease_until": until})
 
 
-__all__ = ["AUTHORITY_BYTES", "AUTHORITY_REF", "BUCKET_ACTIONS", "BUCKET_JOBS", "Crash", "CountingQueue",
-           "DESCRIPTOR_REVISION", "FakeArtifacts", "FakeManagedHost", "LinkedStores", "PLAN_ID", "SENTINEL", "TARGET",
-           "ContractError", "OWNER_CANARY_RECEIPT_SCHEMA", "action_reader", "active_system", "authority_store",
-           "document_for", "generation_of", "hold_activation", "hold_unit", "intent_of", "managed_targets",
-           "old_canary", "plan_row_of", "put", "read", "registered_fleet", "restarted", "row_of", "snapshot",
-           "steal_lease", "write_owner_file", "write_request"]
+def armed(system, **kwargs) -> tuple:
+    """restart, then arm (pending: no owner action yet), returning (document, evidence, arm result)."""
+    document, evidence, _ = restarted(system)
+    result = system["delivery"].maintain(document, evidence, "arm", **kwargs)
+    assert result["state"] == "armed", result
+    return document, evidence, result
+
+
+__all__ = ["AUTHORITY_BYTES", "AUTHORITY_REF", "BUCKET_ACTIONS", "BUCKET_JOBS", "BUCKET_PERMITS", "Crash",
+           "CountingQueue", "DESCRIPTOR_REVISION", "FakeArtifacts", "FakeCredentials", "FakeManagedHost",
+           "LinkedStores", "LossyFleet", "PLAN_ID", "RecordingExecutor", "SENTINEL", "ScriptedLauncher", "TARGET",
+           "ContractError", "OWNER_CANARY_RECEIPT_SCHEMA", "action_reader", "active_system", "armed",
+           "authority_store", "document_for", "generation_of", "hold_activation", "hold_unit", "intent_of",
+           "managed_targets", "old_canary", "owner_completes", "owner_requests", "plan_row_of", "put", "read",
+           "registered_fleet", "restarted", "row_of", "snapshot", "steal_lease", "write_owner_file",
+           "write_request"]
