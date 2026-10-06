@@ -1,0 +1,21 @@
+{
+ "version": 1,
+ "closed": true,
+ "note": "Declared intended A/B write-set differences (rehearsal design 7. R5: 'except declared \u00a74 differences'). Each entry is tied to an AMD-1 section, an S2R hunk (`S2R <commit>:<path>`) or, owner-ratified 2026-10-06 (RH-5 ruling 1), the accepted rebuild slice design that introduced it. An A/B difference that matches no entry fails the run. `ignore_fields` explains only those field names: the row must be equal in everything else.",
+ "declared": [
+  {
+   "id": "x1b2-observer-spool-sequence",
+   "kind": "store",
+   "bucket": "observation_audit",
+   "key_pattern": "[0-9a-f]{64}",
+   "differs": [
+    "changed"
+   ],
+   "ignore_fields": [
+    "number"
+   ],
+   "section": "DESIGN-s9-X \u00a71.3",
+   "reason": "B's run_task emits two observation events A does not (development.role_dispatch_decided, development.usage_split_recorded; src/codex_harness/execution/application/run_task.py:707-711, :911; DESIGN-s9-X \u00a71.3/\u00a71.5), so each later observation_audit row carries a spool sequence number higher by the count of those events. Only the sequence number may differ. Harness precedent: compare/scenarios/observation.schema.json cites 'OBSERVABILITY-COVERAGE-20261002 via OWNER-DECISIONS-S9 D4; DESIGN-s9-X \u00a71'."
+  }
+ ]
+}
