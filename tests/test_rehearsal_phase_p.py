@@ -351,6 +351,51 @@ def test_phase_p_refuses_an_existing_root_or_evidence_dir_before_any_effect(tmp_
     assert caught.value.code == "path_exists" and host.calls == [] and not (tmp_path / "evidence").exists()
 
 
+# ---- the target seam (RH-2b): production defaults, stand-ins only from code ----
+
+STANDINS = pp.Targets(pg=f"zeus-test-fixture-rh-{RUN8}-prod-pg", redis=f"zeus-test-fixture-rh-{RUN8}-prod-redis",
+                      redis_volume=f"zeus-test-fixture-rh-{RUN8}-prod-redisdata", monitoring="/stand-in/monitoring.json",
+                      heartbeat="/stand-in/heartbeat.json")
+
+
+def test_the_default_targets_are_exactly_the_production_names_and_paths():
+    """Expected values are the literal production names (spec What 1), not read from the module's constants."""
+    assert pp.DEFAULT_TARGETS == pp.Targets("zeus-aibox-postgres", "zeus-aibox-redis", "zeus-aibox-redisdata",
+                                            "/srv/zeus/runtime/control/monitoring.json",
+                                            "/srv/zeus/runtime/managed-fleet/heartbeat.json")
+    assert pp.PhaseP("/r", "/e", RUN8).targets == pp.DEFAULT_TARGETS
+
+
+def test_main_takes_no_target_override():
+    """Structural contract (spec What 1: `main` never accepts other targets): the public signature has no such name."""
+    import inspect
+
+    assert list(inspect.signature(pp.main).parameters) == ["root", "evidence", "run8", "host"]
+    with pytest.raises(TypeError):
+        pp.main("/r", "/e", RUN8, None, targets=STANDINS)  # noqa
+
+
+def test_a_phase_p_run_over_stand_in_targets_names_only_those_and_never_a_production_resource(tmp_path):
+    class StandInHost(SyntheticHost):
+        def open(self, path, mode="r"):
+            mapped = {STANDINS.monitoring: pp.MONITORING, STANDINS.heartbeat: pp.HEARTBEAT}
+            assert str(path) not in (pp.MONITORING, pp.HEARTBEAT)  # a production path is never opened
+            return super().open(mapped.get(str(path), path), mode)
+
+    host = StandInHost()
+    root, evidence = tmp_path / "root", tmp_path / "evidence"
+    cp.create_root(root, RUN8)
+    os.makedirs(root / "p", mode=0o700)
+    os.makedirs(evidence)
+    assert pp.PhaseP(str(root), str(evidence), RUN8, host, STANDINS).run() == 0
+    flat = " ".join(" ".join(c) for c in host.calls)
+    assert "zeus-aibox" not in flat
+    assert f"src={STANDINS.redis_volume},dst=/src,readonly,volume-nocopy" in flat
+    named = {c[c.index("inspect") + 3] if c[1] == "inspect" else c[2] for c in host.calls if c[1] in ("inspect", "diff")}
+    assert named == {STANDINS.pg, STANDINS.redis}
+    assert any(c[1] == "exec" and c[2] == STANDINS.pg for c in host.calls)
+
+
 # ---- real Docker (ZEUS_TEST_DOCKER=1): a real labelled fixture helper that outlives its client ----
 
 class DockerHost(pp.Host):
